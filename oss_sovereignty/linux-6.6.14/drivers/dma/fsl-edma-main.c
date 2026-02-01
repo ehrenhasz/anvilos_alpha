@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/dma/fsl-edma.c
- *
- * Copyright 2013-2014 Freescale Semiconductor, Inc.
- *
- * Driver for the Freescale eDMA engine with flexible channel multiplexing
- * capability for DMA request sources. The eDMA block can be found on some
- * Vybrid and Layerscape SoCs.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -165,7 +157,7 @@ static struct dma_chan *fsl_edma3_xlate(struct of_phandle_args *dma_spec,
 			mutex_unlock(&fsl_edma->fsl_edma_mutex);
 			return chan;
 		} else if (b_chmux && !fsl_chan->srcid) {
-			/* if controller support channel mux, choose a free channel */
+			 
 			chan = dma_get_slave_channel(chan);
 			chan->device->privatecnt++;
 			fsl_chan->srcid = dma_spec->args[0];
@@ -230,7 +222,7 @@ static int fsl_edma3_irq_init(struct platform_device *pdev, struct fsl_edma_engi
 		if (fsl_edma->chan_masked & BIT(i))
 			continue;
 
-		/* request channel irq */
+		 
 		fsl_chan->txirq = platform_get_irq(pdev, i);
 		if (fsl_chan->txirq < 0) {
 			dev_err(&pdev->dev, "Can't get chan %d's irq.\n", i);
@@ -264,18 +256,13 @@ fsl_edma2_irq_init(struct platform_device *pdev,
 		dev_err(&pdev->dev, "Interrupts in DTS not correct.\n");
 		return -EINVAL;
 	}
-	/*
-	 * 16 channel independent interrupts + 1 error interrupt on i.mx7ulp.
-	 * 2 channel share one interrupt, for example, ch0/ch16, ch1/ch17...
-	 * For now, just simply request irq without IRQF_SHARED flag, since 16
-	 * channels are enough on i.mx7ulp whose M4 domain own some peripherals.
-	 */
+	 
 	for (i = 0; i < count; i++) {
 		irq = platform_get_irq(pdev, i);
 		if (irq < 0)
 			return -ENXIO;
 
-		/* The last IRQ is for eDMA err */
+		 
 		if (i == count - 1)
 			ret = devm_request_irq(&pdev->dev, irq,
 						fsl_edma_err_handler,
@@ -371,7 +358,7 @@ static const struct of_device_id fsl_edma_dt_ids[] = {
 	{ .compatible = "fsl,imx8qm-adma", .data = &imx8qm_audio_data},
 	{ .compatible = "fsl,imx93-edma3", .data = &imx93_data3},
 	{ .compatible = "fsl,imx93-edma4", .data = &imx93_data4},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_edma_dt_ids);
 
@@ -485,14 +472,14 @@ static int fsl_edma_probe(struct platform_device *pdev)
 	for (i = 0; i < fsl_edma->drvdata->dmamuxs; i++) {
 		char clkname[32];
 
-		/* eDMAv3 mux register move to TCD area if ch_mux exist */
+		 
 		if (drvdata->flags & FSL_EDMA_DRV_SPLIT_REG)
 			break;
 
 		fsl_edma->muxbase[i] = devm_platform_ioremap_resource(pdev,
 								      1 + i);
 		if (IS_ERR(fsl_edma->muxbase[i])) {
-			/* on error: disable all previously enabled clks */
+			 
 			fsl_disable_clocks(fsl_edma, i);
 			return PTR_ERR(fsl_edma->muxbase[i]);
 		}
@@ -501,7 +488,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
 		fsl_edma->muxclk[i] = devm_clk_get_enabled(&pdev->dev, clkname);
 		if (IS_ERR(fsl_edma->muxclk[i])) {
 			dev_err(&pdev->dev, "Missing DMAMUX block clock.\n");
-			/* on error: disable all previously enabled clks */
+			 
 			return PTR_ERR(fsl_edma->muxclk[i]);
 		}
 	}
@@ -585,7 +572,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
 					DMAENGINE_ALIGN_64_BYTES :
 					DMAENGINE_ALIGN_32_BYTES;
 
-	/* Per worst case 'nbytes = 1' take CITER as the max_seg_size */
+	 
 	dma_set_max_seg_size(fsl_edma->dma_dev.dev, 0x3fff);
 
 	fsl_edma->dma_dev.residue_granularity = DMA_RESIDUE_GRANULARITY_SEGMENT;
@@ -609,7 +596,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* enable round robin arbitration */
+	 
 	if (!(drvdata->flags & FSL_EDMA_DRV_SPLIT_REG))
 		edma_writel(fsl_edma, EDMA_CR_ERGA | EDMA_CR_ERCA, regs->cr);
 
@@ -642,7 +629,7 @@ static int fsl_edma_suspend_late(struct device *dev)
 		if (fsl_edma->chan_masked & BIT(i))
 			continue;
 		spin_lock_irqsave(&fsl_chan->vchan.lock, flags);
-		/* Make sure chan is idle or will force disable. */
+		 
 		if (unlikely(!fsl_chan->idle)) {
 			dev_warn(dev, "WARN: There is non-idle channel.");
 			fsl_edma_disable_request(fsl_chan);
@@ -679,11 +666,7 @@ static int fsl_edma_resume_early(struct device *dev)
 	return 0;
 }
 
-/*
- * eDMA provides the service to others, so it should be suspend late
- * and resume early. When eDMA suspend, all of the clients should stop
- * the DMA data transmission and let the channel idle.
- */
+ 
 static const struct dev_pm_ops fsl_edma_pm_ops = {
 	.suspend_late   = fsl_edma_suspend_late,
 	.resume_early   = fsl_edma_resume_early,

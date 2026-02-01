@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8997.h  --  WM8997 ALSA SoC Audio driver
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _WM8997_H
 #define _WM8997_H

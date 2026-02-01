@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *
- * Baikal-T1 Physically Mapped Internal ROM driver
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -20,12 +13,7 @@
 
 #include "physmap-bt1-rom.h"
 
-/*
- * Baikal-T1 SoC ROMs are only accessible by the dword-aligned instructions.
- * We have to take this into account when implementing the data read-methods.
- * Note there is no need in bothering with endianness, since both Baikal-T1
- * CPU and MMIO are LE.
- */
+ 
 static map_word __xipram bt1_rom_map_read(struct map_info *map,
 					  unsigned long ofs)
 {
@@ -34,7 +22,7 @@ static map_word __xipram bt1_rom_map_read(struct map_info *map,
 	map_word ret;
 	u32 data;
 
-	/* Read data within offset dword. */
+	 
 	shift = (uintptr_t)src & 0x3;
 	data = readl_relaxed(src - shift);
 	if (!shift) {
@@ -43,7 +31,7 @@ static map_word __xipram bt1_rom_map_read(struct map_info *map,
 	}
 	ret.x[0] = data >> (shift * BITS_PER_BYTE);
 
-	/* Read data from the next dword. */
+	 
 	shift = 4 - shift;
 	if (ofs + shift >= map->size)
 		return ret;
@@ -65,15 +53,10 @@ static void __xipram bt1_rom_map_copy_from(struct map_info *map,
 	if (len <= 0 || from >= map->size)
 		return;
 
-	/* Make sure we don't go over the map limit. */
+	 
 	len = min_t(ssize_t, map->size - from, len);
 
-	/*
-	 * Since requested data size can be pretty big we have to implement
-	 * the copy procedure as optimal as possible. That's why it's split
-	 * up into the next three stages: unaligned head, aligned body,
-	 * unaligned tail.
-	 */
+	 
 	shift = (uintptr_t)src & 0x3;
 	if (shift) {
 		chunk = min_t(ssize_t, 4 - shift, len);
@@ -104,17 +87,17 @@ int of_flash_probe_bt1_rom(struct platform_device *pdev,
 {
 	struct device *dev = &pdev->dev;
 
-	/* It's supposed to be read-only MTD. */
+	 
 	if (!of_device_is_compatible(np, "mtd-rom")) {
 		dev_info(dev, "No mtd-rom compatible string\n");
 		return 0;
 	}
 
-	/* Multiplatform guard. */
+	 
 	if (!of_device_is_compatible(np, "baikal,bt1-int-rom"))
 		return 0;
 
-	/* Sanity check the device parameters retrieved from DTB. */
+	 
 	if (map->bankwidth != 4)
 		dev_warn(dev, "Bank width is supposed to be 32 bits wide\n");
 

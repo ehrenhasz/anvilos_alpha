@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial busions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #define gm200_i2c_aux(p) container_of((p), struct gm200_i2c_aux, base)
 #include "aux.h"
 
@@ -40,12 +18,12 @@ static int
 gm200_i2c_aux_init(struct gm200_i2c_aux *aux)
 {
 	struct nvkm_device *device = aux->base.pad->i2c->subdev.device;
-	const u32 unksel = 1; /* nfi which to use, or if it matters.. */
+	const u32 unksel = 1;  
 	const u32 ureq = unksel ? 0x00100000 : 0x00200000;
 	const u32 urep = unksel ? 0x01000000 : 0x02000000;
 	u32 ctrl, timeout;
 
-	/* wait up to 1ms for any previous transaction to be done... */
+	 
 	timeout = 1000;
 	do {
 		ctrl = nvkm_rd32(device, 0x00d954 + (aux->ch * 0x50));
@@ -56,7 +34,7 @@ gm200_i2c_aux_init(struct gm200_i2c_aux *aux)
 		}
 	} while (ctrl & 0x07010000);
 
-	/* set some magic, and wait up to 1ms for it to appear */
+	 
 	nvkm_mask(device, 0x00d954 + (aux->ch * 0x50), 0x00700000, ureq);
 	timeout = 1000;
 	do {
@@ -113,15 +91,15 @@ gm200_i2c_aux_xfer(struct nvkm_i2c_aux *obj, bool retry,
 	ctrl |= (*size ? (*size - 1) : 0x00000100);
 	nvkm_wr32(device, 0x00d950 + base, addr);
 
-	/* (maybe) retry transaction a number of times on failure... */
+	 
 	do {
-		/* reset, and delay a while if this is a retry */
+		 
 		nvkm_wr32(device, 0x00d954 + base, 0x80000000 | ctrl);
 		nvkm_wr32(device, 0x00d954 + base, 0x00000000 | ctrl);
 		if (retries)
 			udelay(400);
 
-		/* transaction request, wait up to 2ms for it to complete */
+		 
 		nvkm_wr32(device, 0x00d954 + base, 0x00010000 | ctrl);
 
 		timeout = 2000;
@@ -136,7 +114,7 @@ gm200_i2c_aux_xfer(struct nvkm_i2c_aux *obj, bool retry,
 		} while (ctrl & 0x00010000);
 		ret = 0;
 
-		/* read status, and check if transaction completed ok */
+		 
 		stat = nvkm_mask(device, 0x00d958 + base, 0, 0);
 		if ((stat & 0x000f0000) == 0x00080000 ||
 		    (stat & 0x000f0000) == 0x00020000)

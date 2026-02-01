@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STIH4xx CEC driver
- * Copyright (C) STMicroelectronics SA 2016
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -18,7 +14,7 @@
 
 #define CEC_NAME	"stih-cec"
 
-/* CEC registers  */
+ 
 #define CEC_CLK_DIV           0x0
 #define CEC_CTRL              0x4
 #define CEC_IRQ_CTRL          0x8
@@ -42,13 +38,13 @@
 #define CEC_RX_DATA_TOP       0x64
 #define CEC_RX_DATA_SIZE      0x1
 
-/* CEC_CTRL2 */
+ 
 #define CEC_LINE_INACTIVE_EN   BIT(0)
 #define CEC_AUTO_BUS_ERR_EN    BIT(1)
 #define CEC_STOP_ON_ARB_ERR_EN BIT(2)
 #define CEC_TX_REQ_WAIT_EN     BIT(3)
 
-/* CEC_DATA_ARRAY_CTRL */
+ 
 #define CEC_TX_ARRAY_EN          BIT(0)
 #define CEC_RX_ARRAY_EN          BIT(1)
 #define CEC_TX_ARRAY_RESET       BIT(2)
@@ -56,13 +52,13 @@
 #define CEC_TX_N_OF_BYTES_IRQ_EN BIT(4)
 #define CEC_TX_STOP_ON_NACK      BIT(7)
 
-/* CEC_TX_ARRAY_CTRL */
+ 
 #define CEC_TX_N_OF_BYTES  0x1F
 #define CEC_TX_START       BIT(5)
 #define CEC_TX_AUTO_SOM_EN BIT(6)
 #define CEC_TX_AUTO_EOM_EN BIT(7)
 
-/* CEC_IRQ_CTRL */
+ 
 #define CEC_TX_DONE_IRQ_EN   BIT(0)
 #define CEC_ERROR_IRQ_EN     BIT(2)
 #define CEC_RX_DONE_IRQ_EN   BIT(3)
@@ -71,7 +67,7 @@
 #define CEC_FREE_TIME_IRQ_EN BIT(6)
 #define CEC_PIN_STS_IRQ_EN   BIT(7)
 
-/* CEC_CTRL */
+ 
 #define CEC_IN_FILTER_EN    BIT(0)
 #define CEC_PWR_SAVE_EN     BIT(1)
 #define CEC_EN              BIT(4)
@@ -79,7 +75,7 @@
 #define CEC_RX_RESET_EN     BIT(6)
 #define CEC_IGNORE_RX_ERROR BIT(7)
 
-/* CEC_STATUS */
+ 
 #define CEC_TX_DONE_STS       BIT(0)
 #define CEC_TX_ACK_GET_STS    BIT(1)
 #define CEC_ERROR_STS         BIT(2)
@@ -97,12 +93,12 @@
 #define CEC_RX_ERROR_MIN      BIT(14)
 #define CEC_RX_ERROR_MAX      BIT(15)
 
-/* Signal free time in bit periods (2.4ms) */
+ 
 #define CEC_PRESENT_INIT_SFT 7
 #define CEC_NEW_INIT_SFT     5
 #define CEC_RETRANSMIT_SFT   3
 
-/* Constants for CEC_BIT_TOUT_THRESH register */
+ 
 #define CEC_SBIT_TOUT_47MS BIT(1)
 #define CEC_SBIT_TOUT_48MS (BIT(0) | BIT(1))
 #define CEC_SBIT_TOUT_50MS BIT(2)
@@ -110,11 +106,11 @@
 #define CEC_DBIT_TOUT_28MS BIT(1)
 #define CEC_DBIT_TOUT_29MS (BIT(0) | BIT(1))
 
-/* Constants for CEC_BIT_PULSE_THRESH register */
+ 
 #define CEC_BIT_LPULSE_03MS BIT(1)
 #define CEC_BIT_HPULSE_03MS BIT(3)
 
-/* Constants for CEC_DATA_ARRAY_STATUS register */
+ 
 #define CEC_RX_N_OF_BYTES                     0x1F
 #define CEC_TX_N_OF_BYTES_SENT                BIT(5)
 #define CEC_RX_OVERRUN                        BIT(6)
@@ -134,51 +130,51 @@ static int stih_cec_adap_enable(struct cec_adapter *adap, bool enable)
 	struct stih_cec *cec = cec_get_drvdata(adap);
 
 	if (enable) {
-		/* The doc says (input TCLK_PERIOD * CEC_CLK_DIV) = 0.1ms */
+		 
 		unsigned long clk_freq = clk_get_rate(cec->clk);
 		u32 cec_clk_div = clk_freq / 10000;
 
 		writel(cec_clk_div, cec->regs + CEC_CLK_DIV);
 
-		/* Configuration of the durations activating a timeout */
+		 
 		writel(CEC_SBIT_TOUT_47MS | (CEC_DBIT_TOUT_28MS << 4),
 		       cec->regs + CEC_BIT_TOUT_THRESH);
 
-		/* Configuration of the smallest allowed duration for pulses */
+		 
 		writel(CEC_BIT_LPULSE_03MS | CEC_BIT_HPULSE_03MS,
 		       cec->regs + CEC_BIT_PULSE_THRESH);
 
-		/* Minimum received bit period threshold */
+		 
 		writel(BIT(5) | BIT(7), cec->regs + CEC_TX_CTRL);
 
-		/* Configuration of transceiver data arrays */
+		 
 		writel(CEC_TX_ARRAY_EN | CEC_RX_ARRAY_EN | CEC_TX_STOP_ON_NACK,
 		       cec->regs + CEC_DATA_ARRAY_CTRL);
 
-		/* Configuration of the control bits for CEC Transceiver */
+		 
 		writel(CEC_IN_FILTER_EN | CEC_EN | CEC_RX_RESET_EN,
 		       cec->regs + CEC_CTRL);
 
-		/* Clear logical addresses */
+		 
 		writel(0, cec->regs + CEC_ADDR_TABLE);
 
-		/* Clear the status register */
+		 
 		writel(0x0, cec->regs + CEC_STATUS);
 
-		/* Enable the interrupts */
+		 
 		writel(CEC_TX_DONE_IRQ_EN | CEC_RX_DONE_IRQ_EN |
 		       CEC_RX_SOM_IRQ_EN | CEC_RX_EOM_IRQ_EN |
 		       CEC_ERROR_IRQ_EN,
 		       cec->regs + CEC_IRQ_CTRL);
 
 	} else {
-		/* Clear logical addresses */
+		 
 		writel(0, cec->regs + CEC_ADDR_TABLE);
 
-		/* Clear the status register */
+		 
 		writel(0x0, cec->regs + CEC_STATUS);
 
-		/* Disable the interrupts */
+		 
 		writel(0, cec->regs + CEC_IRQ_CTRL);
 	}
 
@@ -206,14 +202,11 @@ static int stih_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 	struct stih_cec *cec = cec_get_drvdata(adap);
 	int i;
 
-	/* Copy message into registers */
+	 
 	for (i = 0; i < msg->len; i++)
 		writeb(msg->msg[i], cec->regs + CEC_TX_DATA_BASE + i);
 
-	/*
-	 * Start transmission, configure hardware to add start and stop bits
-	 * Signal free time is handled by the hardware
-	 */
+	 
 	writel(CEC_TX_AUTO_SOM_EN | CEC_TX_AUTO_EOM_EN | CEC_TX_START |
 	       msg->len, cec->regs + CEC_TX_ARRAY_CTRL);
 

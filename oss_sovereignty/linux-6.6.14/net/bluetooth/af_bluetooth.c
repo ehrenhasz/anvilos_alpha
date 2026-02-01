@@ -1,28 +1,6 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-   Copyright (C) 2000-2001 Qualcomm Incorporated
+ 
 
-   Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
-
-/* Bluetooth address family and sockets. */
+ 
 
 #include <linux/module.h>
 #include <linux/debugfs.h>
@@ -37,7 +15,7 @@
 #include "leds.h"
 #include "selftest.h"
 
-/* Bluetooth sockets */
+ 
 #define BT_MAX_PROTO	(BTPROTO_LAST + 1)
 static const struct net_proto_family *bt_proto[BT_MAX_PROTO];
 static DEFINE_RWLOCK(bt_proto_lock);
@@ -157,7 +135,7 @@ struct sock *bt_sock_alloc(struct net *net, struct socket *sock,
 	sk->sk_protocol = proto;
 	sk->sk_state    = BT_OPEN;
 
-	/* Init peer information so it can be properly monitored */
+	 
 	if (!kern) {
 		spin_lock(&sk->sk_peer_lock);
 		sk->sk_peer_pid  = get_pid(task_tgid(current));
@@ -202,9 +180,7 @@ void bt_accept_enqueue(struct sock *parent, struct sock *sk, bool bh)
 	list_add_tail(&bt_sk(sk)->accept_q, &bt_sk(parent)->accept_q);
 	bt_sk(sk)->parent = parent;
 
-	/* Copy credentials from parent since for incoming connections the
-	 * socket is allocated by the kernel.
-	 */
+	 
 	spin_lock(&sk->sk_peer_lock);
 	old_pid = sk->sk_peer_pid;
 	old_cred = sk->sk_peer_cred;
@@ -224,9 +200,7 @@ void bt_accept_enqueue(struct sock *parent, struct sock *sk, bool bh)
 }
 EXPORT_SYMBOL(bt_accept_enqueue);
 
-/* Calling function must hold the sk lock.
- * bt_sk(sk)->parent must be non-NULL meaning sk is in the parent list.
- */
+ 
 void bt_accept_unlink(struct sock *sk)
 {
 	BT_DBG("sk %p state %d", sk, sk->sk_state);
@@ -249,29 +223,24 @@ restart:
 	list_for_each_entry_safe(s, n, &bt_sk(parent)->accept_q, accept_q) {
 		sk = (struct sock *)s;
 
-		/* Prevent early freeing of sk due to unlink and sock_kill */
+		 
 		sock_hold(sk);
 		lock_sock(sk);
 
-		/* Check sk has not already been unlinked via
-		 * bt_accept_unlink() due to serialisation caused by sk locking
-		 */
+		 
 		if (!bt_sk(sk)->parent) {
 			BT_DBG("sk %p, already unlinked", sk);
 			release_sock(sk);
 			sock_put(sk);
 
-			/* Restart the loop as sk is no longer in the list
-			 * and also avoid a potential infinite loop because
-			 * list_for_each_entry_safe() is not thread safe.
-			 */
+			 
 			goto restart;
 		}
 
-		/* sk is safely in the parent list so reduce reference count */
+		 
 		sock_put(sk);
 
-		/* FIXME: Is this check still needed */
+		 
 		if (sk->sk_state == BT_CLOSED) {
 			bt_accept_unlink(sk);
 			release_sock(sk);
@@ -455,13 +424,13 @@ int bt_sock_stream_recvmsg(struct socket *sock, struct msghdr *msg,
 
 				skb_walk_frags(skb, frag) {
 					if (chunk <= frag->len) {
-						/* Pulling partial data */
+						 
 						skb->len -= chunk;
 						skb->data_len -= chunk;
 						__skb_pull(frag, chunk);
 						break;
 					} else if (frag->len) {
-						/* Pulling all frag data */
+						 
 						chunk -= frag->len;
 						skb->len -= frag->len;
 						skb->data_len -= frag->len;
@@ -477,7 +446,7 @@ int bt_sock_stream_recvmsg(struct socket *sock, struct msghdr *msg,
 			kfree_skb(skb);
 
 		} else {
-			/* put message back and return */
+			 
 			skb_queue_head(&sk->sk_receive_queue, skb);
 			break;
 		}
@@ -586,7 +555,7 @@ int bt_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 }
 EXPORT_SYMBOL(bt_sock_ioctl);
 
-/* This function expects the sk lock to be held when called */
+ 
 int bt_sock_wait_state(struct sock *sk, int state, unsigned long timeo)
 {
 	DECLARE_WAITQUEUE(wait, current);
@@ -622,7 +591,7 @@ int bt_sock_wait_state(struct sock *sk, int state, unsigned long timeo)
 }
 EXPORT_SYMBOL(bt_sock_wait_state);
 
-/* This function expects the sk lock to be held when called */
+ 
 int bt_sock_wait_ready(struct sock *sk, unsigned int msg_flags)
 {
 	DECLARE_WAITQUEUE(wait, current);

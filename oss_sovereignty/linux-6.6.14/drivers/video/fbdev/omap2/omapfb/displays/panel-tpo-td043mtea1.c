@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TPO TD043MTEA1 Panel driver
- *
- * Author: Gražvydas Ignotas <notasas@gmail.com>
- * Converted to new DSS device model: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -117,7 +112,7 @@ static void tpo_td043_write_gamma(struct spi_device *spi, u16 gamma[12])
 {
 	u8 i, val;
 
-	/* gamma bits [9:8] */
+	 
 	for (val = i = 0; i < 4; i++)
 		val |= (gamma[i] & 0x300) >> ((i + 1) * 2);
 	tpo_td043_write(spi, 0x11, val);
@@ -130,7 +125,7 @@ static void tpo_td043_write_gamma(struct spi_device *spi, u16 gamma[12])
 		val |= (gamma[i+8] & 0x300) >> ((i + 1) * 2);
 	tpo_td043_write(spi, 0x13, val);
 
-	/* gamma bits [7:0] */
+	 
 	for (val = i = 0; i < 12; i++)
 		tpo_td043_write(spi, 0x14 + i, gamma[i] & 0xff);
 }
@@ -292,7 +287,7 @@ static int tpo_td043_power_on(struct panel_drv_data *ddata)
 	if (r != 0)
 		return r;
 
-	/* wait for panel to stabilize */
+	 
 	msleep(160);
 
 	gpiod_set_value_cansleep(ddata->reset_gpio, 0);
@@ -320,7 +315,7 @@ static void tpo_td043_power_off(struct panel_drv_data *ddata)
 
 	gpiod_set_value_cansleep(ddata->reset_gpio, 1);
 
-	/* wait for at least 2 vsyncs before cutting off power */
+	 
 	msleep(50);
 
 	tpo_td043_write(ddata->spi, 3, TPO_R03_VAL_STANDBY);
@@ -372,10 +367,7 @@ static int tpo_td043_enable(struct omap_dss_device *dssdev)
 	if (r)
 		return r;
 
-	/*
-	 * If we are resuming from system suspend, SPI clocks might not be
-	 * enabled yet, so we'll program the LCD from SPI PM resume callback.
-	 */
+	 
 	if (!ddata->spi_suspended) {
 		r = tpo_td043_power_on(ddata);
 		if (r) {

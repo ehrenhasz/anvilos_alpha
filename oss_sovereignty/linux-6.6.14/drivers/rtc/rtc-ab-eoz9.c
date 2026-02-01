@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Real Time Clock driver for AB-RTCMC-32.768kHz-EOZ9 chip.
- * Copyright (C) 2019 Orolia
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/rtc.h>
@@ -324,7 +320,7 @@ static int abeoz9_rtc_setup(struct device *dev, struct device_node *node)
 	struct regmap *regmap = data->regmap;
 	int ret;
 
-	/* Enable Self Recovery, Clock for Watch and EEPROM refresh functions */
+	 
 	ret = regmap_update_bits(regmap, ABEOZ9_REG_CTRL1,
 				 ABEOZ9_REG_CTRL1_MASK,
 				 ABEOZ9_REG_CTRL1_WE |
@@ -353,7 +349,7 @@ static int abeoz9_rtc_setup(struct device *dev, struct device_node *node)
 
 	ret = abeoz9_trickle_parse_dt(node);
 
-	/* Enable built-in termometer */
+	 
 	ret |= ABEOZ9_REG_EEPROM_THE;
 
 	ret = regmap_update_bits(regmap, ABEOZ9_REG_EEPROM,

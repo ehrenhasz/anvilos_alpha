@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * item.c - library routines for handling generic config items
- *
- * Based on kobject:
- *	kobject is Copyright (c) 2002-2003 Patrick Mochel
- *
- * configfs Copyright (C) 2005 Oracle.  All rights reserved.
- *
- * Please see the file Documentation/filesystems/configfs.rst for
- * critical information about using the config_item interface.
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/module.h>
@@ -24,28 +14,17 @@ static inline struct config_item *to_item(struct list_head *entry)
 	return container_of(entry, struct config_item, ci_entry);
 }
 
-/* Evil kernel */
+ 
 static void config_item_release(struct kref *kref);
 
-/**
- *	config_item_init - initialize item.
- *	@item:	item in question.
- */
+ 
 static void config_item_init(struct config_item *item)
 {
 	kref_init(&item->ci_kref);
 	INIT_LIST_HEAD(&item->ci_entry);
 }
 
-/**
- *	config_item_set_name - Set the name of an item
- *	@item:	item.
- *	@fmt:  The vsnprintf()'s format string.
- *
- *	If strlen(name) >= CONFIGFS_ITEM_NAME_LEN, then use a
- *	dynamically allocated string that @item->ci_name points to.
- *	Otherwise, use the static @item->ci_namebuf array.
- */
+ 
 int config_item_set_name(struct config_item *item, const char *fmt, ...)
 {
 	int limit = CONFIGFS_ITEM_NAME_LEN;
@@ -53,9 +32,7 @@ int config_item_set_name(struct config_item *item, const char *fmt, ...)
 	va_list args;
 	char *name;
 
-	/*
-	 * First, try the static array
-	 */
+	 
 	va_start(args, fmt);
 	need = vsnprintf(item->ci_namebuf, limit, fmt, args);
 	va_end(args);
@@ -69,11 +46,11 @@ int config_item_set_name(struct config_item *item, const char *fmt, ...)
 			return -EFAULT;
 	}
 
-	/* Free the old name, if necessary. */
+	 
 	if (item->ci_name && item->ci_name != item->ci_namebuf)
 		kfree(item->ci_name);
 
-	/* Now, set the new name */
+	 
 	item->ci_name = name;
 	return 0;
 }
@@ -137,12 +114,7 @@ static void config_item_release(struct kref *kref)
 	config_item_cleanup(container_of(kref, struct config_item, ci_kref));
 }
 
-/**
- *	config_item_put - decrement refcount for item.
- *	@item:	item.
- *
- *	Decrement the refcount, and if 0, call config_item_cleanup().
- */
+ 
 void config_item_put(struct config_item *item)
 {
 	if (item)
@@ -150,10 +122,7 @@ void config_item_put(struct config_item *item)
 }
 EXPORT_SYMBOL(config_item_put);
 
-/**
- *	config_group_init - initialize a group for use
- *	@group:	config_group
- */
+ 
 void config_group_init(struct config_group *group)
 {
 	config_item_init(&group->cg_item);
@@ -162,15 +131,7 @@ void config_group_init(struct config_group *group)
 }
 EXPORT_SYMBOL(config_group_init);
 
-/**
- *	config_group_find_item - search for item in group.
- *	@group:	group we're looking in.
- *	@name:	item's name.
- *
- *	Iterate over @group->cg_list, looking for a matching config_item.
- *	If matching item is found take a reference and return the item.
- *	Caller must have locked group via @group->cg_subsys->su_mtx.
- */
+ 
 struct config_item *config_group_find_item(struct config_group *group,
 					   const char *name)
 {

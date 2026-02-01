@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/usb/misc/lvstest.c
- *
- * Test pattern generation for Link Layer Validation System Tests
- *
- * Copyright (C) 2014 ST Microelectronics
- * Pratyush Anand <pratyush.anand@gmail.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -19,21 +12,21 @@
 #include <linux/usb/phy.h>
 
 struct lvs_rh {
-	/* root hub interface */
+	 
 	struct usb_interface *intf;
-	/* if lvs device connected */
+	 
 	bool present;
-	/* port no at which lvs device is present */
+	 
 	int portnum;
-	/* urb buffer */
+	 
 	u8 buffer[8];
-	/* class descriptor */
+	 
 	struct usb_hub_descriptor descriptor;
-	/* urb for polling interrupt pipe */
+	 
 	struct urb *urb;
-	/* LVH RH work */
+	 
 	struct work_struct	rh_work;
-	/* RH port status */
+	 
 	struct usb_port_status port_status;
 };
 
@@ -334,7 +327,7 @@ static void lvs_rh_work(struct work_struct *work)
 	int i, ret = 0;
 	u16 portchange;
 
-	/* Examine each root port */
+	 
 	for (i = 1; i <= descriptor->bNbrPorts; i++) {
 		ret = usb_control_msg(hdev, usb_rcvctrlpipe(hdev, 0),
 			USB_REQ_GET_STATUS, USB_DIR_IN | USB_RT_PORT, 0, i,
@@ -406,7 +399,7 @@ static int lvs_rh_probe(struct usb_interface *intf,
 	if (ret)
 		return ret;
 
-	/* valid only for SS root hub */
+	 
 	if (hdev->descriptor.bDeviceProtocol != USB_HUB_PR_SS || hdev->parent) {
 		dev_err(&intf->dev, "Bind LVS driver with SS root Hub only\n");
 		return -EINVAL;
@@ -419,7 +412,7 @@ static int lvs_rh_probe(struct usb_interface *intf,
 	lvs->intf = intf;
 	usb_set_intfdata(intf, lvs);
 
-	/* how many number of ports this root hub has */
+	 
 	ret = usb_control_msg(hdev, usb_rcvctrlpipe(hdev, 0),
 			USB_REQ_GET_DESCRIPTOR, USB_DIR_IN | USB_RT_HUB,
 			USB_DT_SS_HUB << 8, 0, &lvs->descriptor,
@@ -429,7 +422,7 @@ static int lvs_rh_probe(struct usb_interface *intf,
 		return ret < 0 ? ret : -EINVAL;
 	}
 
-	/* submit urb to poll interrupt endpoint */
+	 
 	lvs->urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!lvs->urb)
 		return -ENOMEM;
@@ -458,7 +451,7 @@ static void lvs_rh_disconnect(struct usb_interface *intf)
 {
 	struct lvs_rh *lvs = usb_get_intfdata(intf);
 
-	usb_poison_urb(lvs->urb); /* used in scheduled work */
+	usb_poison_urb(lvs->urb);  
 	flush_work(&lvs->rh_work);
 	usb_free_urb(lvs->urb);
 }

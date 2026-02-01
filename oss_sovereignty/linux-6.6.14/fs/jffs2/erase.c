@@ -1,14 +1,4 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2001-2007 Red Hat, Inc.
- * Copyright © 2004-2010 David Woodhouse <dwmw2@infradead.org>
- *
- * Created by David Woodhouse <dwmw2@infradead.org>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -37,7 +27,7 @@ static void jffs2_erase_block(struct jffs2_sb_info *c,
 	       return;
        }
        bad_offset = jeb->offset;
-#else /* Linux */
+#else  
 	struct erase_info *instr;
 
 	jffs2_dbg(1, "%s(): erase block %#08x (range %#08x-%#08x)\n",
@@ -69,10 +59,10 @@ static void jffs2_erase_block(struct jffs2_sb_info *c,
 
 	bad_offset = instr->fail_addr;
 	kfree(instr);
-#endif /* __ECOS */
+#endif  
 
 	if (ret == -ENOMEM || ret == -EAGAIN) {
-		/* Erase failed immediately. Refile it on the list */
+		 
 		jffs2_dbg(1, "Erase at 0x%08x failed: %d. Refiling on erase_pending_list\n",
 			  jeb->offset, ret);
 		mutex_lock(&c->erase_free_sem);
@@ -143,7 +133,7 @@ int jffs2_erase_pending_blocks(struct jffs2_sb_info *c, int count)
 			BUG();
 		}
 
-		/* Be nice */
+		 
 		cond_resched();
 		mutex_lock(&c->erase_free_sem);
 		spin_lock(&c->erase_completion_lock);
@@ -162,7 +152,7 @@ static void jffs2_erase_succeeded(struct jffs2_sb_info *c, struct jffs2_eraseblo
 	mutex_lock(&c->erase_free_sem);
 	spin_lock(&c->erase_completion_lock);
 	list_move_tail(&jeb->list, &c->erase_complete_list);
-	/* Wake the GC thread to mark them clean */
+	 
 	jffs2_garbage_collect_trigger(c);
 	spin_unlock(&c->erase_completion_lock);
 	mutex_unlock(&c->erase_free_sem);
@@ -171,13 +161,11 @@ static void jffs2_erase_succeeded(struct jffs2_sb_info *c, struct jffs2_eraseblo
 
 static void jffs2_erase_failed(struct jffs2_sb_info *c, struct jffs2_eraseblock *jeb, uint32_t bad_offset)
 {
-	/* For NAND, if the failure did not occur at the device level for a
-	   specific physical page, don't bother updating the bad block table. */
+	 
 	if (jffs2_cleanmarker_oob(c) && (bad_offset != (uint32_t)MTD_FAIL_ADDR_UNKNOWN)) {
-		/* We had a device-level failure to erase.  Let's see if we've
-		   failed too many times. */
+		 
 		if (!jffs2_write_nand_badblock(c, jeb, bad_offset)) {
-			/* We'd like to give this block another try. */
+			 
 			mutex_lock(&c->erase_free_sem);
 			spin_lock(&c->erase_completion_lock);
 			list_move(&jeb->list, &c->erase_pending_list);
@@ -201,8 +189,7 @@ static void jffs2_erase_failed(struct jffs2_sb_info *c, struct jffs2_eraseblock 
 	wake_up(&c->erase_wait);
 }
 
-/* Hmmm. Maybe we should accept the extra space it takes and make
-   this a standard doubly-linked list? */
+ 
 static inline void jffs2_remove_node_refs_from_ino_list(struct jffs2_sb_info *c,
 			struct jffs2_raw_node_ref *ref, struct jffs2_eraseblock *jeb)
 {
@@ -211,19 +198,17 @@ static inline void jffs2_remove_node_refs_from_ino_list(struct jffs2_sb_info *c,
 
 	prev = &ref->next_in_ino;
 
-	/* Walk the inode's list once, removing any nodes from this eraseblock */
+	 
 	while (1) {
 		if (!(*prev)->next_in_ino) {
-			/* We're looking at the jffs2_inode_cache, which is
-			   at the end of the linked list. Stash it and continue
-			   from the beginning of the list */
+			 
 			ic = (struct jffs2_inode_cache *)(*prev);
 			prev = &ic->nodes;
 			continue;
 		}
 
 		if (SECTOR_ADDR((*prev)->flash_offset) == jeb->offset) {
-			/* It's in the block we're erasing */
+			 
 			struct jffs2_raw_node_ref *this;
 
 			this = *prev;
@@ -235,11 +220,11 @@ static inline void jffs2_remove_node_refs_from_ino_list(struct jffs2_sb_info *c,
 
 			continue;
 		}
-		/* Not to be deleted. Skip */
+		 
 		prev = &((*prev)->next_in_ino);
 	}
 
-	/* PARANOIA */
+	 
 	if (!ic) {
 		JFFS2_WARNING("inode_cache/xattr_datum/xattr_ref"
 			      " not found in remove_node_refs()!!\n");
@@ -301,7 +286,7 @@ void jffs2_free_jeb_node_refs(struct jffs2_sb_info *c, struct jffs2_eraseblock *
 		}
 		if (ref->flash_offset != REF_EMPTY_NODE && ref->next_in_ino)
 			jffs2_remove_node_refs_from_ino_list(c, ref, jeb);
-		/* else it was a non-inode node or already removed, so don't bother */
+		 
 
 		ref++;
 	}
@@ -324,7 +309,7 @@ static int jffs2_block_check_erase(struct jffs2_sb_info *c, struct jffs2_erasebl
 			goto do_flash_read;
 		}
 		if (retlen < c->sector_size) {
-			/* Don't muck about if it won't let us point to the whole erase sector */
+			 
 			jffs2_dbg(1, "MTD point returned len too short: 0x%zx\n",
 				  retlen);
 			mtd_unpoint(c->mtd, jeb->offset, retlen);
@@ -376,7 +361,7 @@ static int jffs2_block_check_erase(struct jffs2_sb_info *c, struct jffs2_erasebl
 			goto fail;
 		}
 		for (i=0; i<readlen; i += sizeof(unsigned long)) {
-			/* It's OK. We know it's properly aligned */
+			 
 			unsigned long *datum = ebuf + i;
 			if (*datum + 1) {
 				*bad_offset += i;
@@ -406,11 +391,11 @@ static void jffs2_mark_erased_block(struct jffs2_sb_info *c, struct jffs2_eraseb
 	case -EIO:	goto filebad;
 	}
 
-	/* Write the erase complete marker */
+	 
 	jffs2_dbg(1, "Writing erased marker to block at 0x%08x\n", jeb->offset);
 	bad_offset = jeb->offset;
 
-	/* Cleanmarker in oob area or no cleanmarker at all ? */
+	 
 	if (jffs2_cleanmarker_oob(c) || c->cleanmarker_size == 0) {
 
 		if (jffs2_cleanmarker_oob(c)) {
@@ -445,7 +430,7 @@ static void jffs2_mark_erased_block(struct jffs2_sb_info *c, struct jffs2_eraseb
 			goto filebad;
 		}
 	}
-	/* Everything else got zeroed before the erase */
+	 
 	jeb->free_size = c->sector_size;
 
 	mutex_lock(&c->erase_free_sem);
@@ -454,7 +439,7 @@ static void jffs2_mark_erased_block(struct jffs2_sb_info *c, struct jffs2_eraseb
 	c->erasing_size -= c->sector_size;
 	c->free_size += c->sector_size;
 
-	/* Account for cleanmarker now, if it's in-band */
+	 
 	if (c->cleanmarker_size && !jffs2_cleanmarker_oob(c))
 		jffs2_link_node_ref(c, jeb, jeb->offset | REF_NORMAL, c->cleanmarker_size, NULL);
 
@@ -475,7 +460,7 @@ filebad:
 	return;
 
 refile:
-	/* Stick it back on the list from whence it came and come back later */
+	 
 	mutex_lock(&c->erase_free_sem);
 	spin_lock(&c->erase_completion_lock);
 	jffs2_garbage_collect_trigger(c);

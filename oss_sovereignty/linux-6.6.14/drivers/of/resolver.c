@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions for dealing with DT resolution
- *
- * Copyright (C) 2012 Pantelis Antoniou <panto@antoniou-consulting.com>
- * Copyright (C) 2012 Texas Instruments Inc.
- */
+
+ 
 
 #define pr_fmt(fmt)	"OF: resolver: " fmt
 
@@ -44,11 +39,11 @@ static void adjust_overlay_phandles(struct device_node *overlay,
 	struct property *prop;
 	phandle phandle;
 
-	/* adjust node's phandle in node */
+	 
 	if (overlay->phandle != 0 && overlay->phandle != OF_PHANDLE_ILLEGAL)
 		overlay->phandle += phandle_delta;
 
-	/* copy adjusted phandle into *phandle properties */
+	 
 	for_each_property_of_node(overlay, prop) {
 
 		if (of_prop_cmp(prop->name, "phandle") &&
@@ -82,7 +77,7 @@ static int update_usages_of_a_phandle_reference(struct device_node *overlay,
 	if (!value)
 		return -ENOMEM;
 
-	/* prop_fixup contains a list of tuples of path:property_name:offset */
+	 
 	end = value + prop_fixup->length;
 	for (cur = value; cur < end; cur += len + 1) {
 		len = strlen(cur);
@@ -135,7 +130,7 @@ err_fail:
 	return err;
 }
 
-/* compare nodes taking into account that 'name' strips out the @ part */
+ 
 static int node_name_cmp(const struct device_node *dn1,
 		const struct device_node *dn2)
 {
@@ -145,17 +140,7 @@ static int node_name_cmp(const struct device_node *dn1,
 	return of_node_cmp(n1, n2);
 }
 
-/*
- * Adjust the local phandle references by the given phandle delta.
- *
- * Subtree @local_fixups, which is overlay node __local_fixups__,
- * mirrors the fragment node structure at the root of the overlay.
- *
- * For each property in the fragments that contains a phandle reference,
- * @local_fixups has a property of the same name that contains a list
- * of offsets of the phandle reference(s) within the respective property
- * value(s).  The values at these offsets will be fixed up.
- */
+ 
 static int adjust_local_phandle_references(struct device_node *local_fixups,
 		struct device_node *overlay, int phandle_delta)
 {
@@ -169,7 +154,7 @@ static int adjust_local_phandle_references(struct device_node *local_fixups,
 
 	for_each_property_of_node(local_fixups, prop_fix) {
 
-		/* skip properties added automatically */
+		 
 		if (!of_prop_cmp(prop_fix->name, "name") ||
 		    !of_prop_cmp(prop_fix->name, "phandle") ||
 		    !of_prop_cmp(prop_fix->name, "linux,phandle"))
@@ -196,13 +181,7 @@ static int adjust_local_phandle_references(struct device_node *local_fixups,
 		}
 	}
 
-	/*
-	 * These nested loops recurse down two subtrees in parallel, where the
-	 * node names in the two subtrees match.
-	 *
-	 * The roots of the subtrees are the overlay's __local_fixups__ node
-	 * and the overlay's root node.
-	 */
+	 
 	for_each_child_of_node(local_fixups, child) {
 
 		for_each_child_of_node(overlay, overlay_child)
@@ -227,39 +206,7 @@ static int adjust_local_phandle_references(struct device_node *local_fixups,
 	return 0;
 }
 
-/**
- * of_resolve_phandles - Relocate and resolve overlay against live tree
- *
- * @overlay:	Pointer to devicetree overlay to relocate and resolve
- *
- * Modify (relocate) values of local phandles in @overlay to a range that
- * does not conflict with the live expanded devicetree.  Update references
- * to the local phandles in @overlay.  Update (resolve) phandle references
- * in @overlay that refer to the live expanded devicetree.
- *
- * Phandle values in the live tree are in the range of
- * 1 .. live_tree_max_phandle().  The range of phandle values in the overlay
- * also begin with at 1.  Adjust the phandle values in the overlay to begin
- * at live_tree_max_phandle() + 1.  Update references to the phandles to
- * the adjusted phandle values.
- *
- * The name of each property in the "__fixups__" node in the overlay matches
- * the name of a symbol (a label) in the live tree.  The values of each
- * property in the "__fixups__" node is a list of the property values in the
- * overlay that need to be updated to contain the phandle reference
- * corresponding to that symbol in the live tree.  Update the references in
- * the overlay with the phandle values in the live tree.
- *
- * @overlay must be detached.
- *
- * Resolving and applying @overlay to the live expanded devicetree must be
- * protected by a mechanism to ensure that multiple overlays are processed
- * in a single threaded manner so that multiple overlays will not relocate
- * phandles to overlapping ranges.  The mechanism to enforce this is not
- * yet implemented.
- *
- * Return: %0 on success or a negative error value on error.
- */
+ 
 int of_resolve_phandles(struct device_node *overlay)
 {
 	struct device_node *child, *local_fixups, *refnode;
@@ -315,7 +262,7 @@ int of_resolve_phandles(struct device_node *overlay)
 
 	for_each_property_of_node(overlay_fixups, prop) {
 
-		/* skip properties added automatically */
+		 
 		if (!of_prop_cmp(prop->name, "name"))
 			continue;
 

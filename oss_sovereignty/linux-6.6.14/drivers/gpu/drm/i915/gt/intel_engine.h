@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef _INTEL_RINGBUFFER_H_
 #define _INTEL_RINGBUFFER_H_
 
@@ -24,11 +24,7 @@ struct intel_context;
 struct intel_gt;
 struct lock_class_key;
 
-/* Early gen2 devices have a cacheline of just 32 bytes, using 64 is overkill,
- * but keeps the logic simple. Indeed, the whole purpose of this macro is just
- * to give some inclination as to some of the magic values used in the various
- * workarounds!
- */
+ 
 #define CACHELINE_BYTES 64
 #define CACHELINE_DWORDS (CACHELINE_BYTES / sizeof(u32))
 
@@ -39,18 +35,7 @@ struct lock_class_key;
 		  ##__VA_ARGS__);					\
 } while (0)
 
-/*
- * The register defines to be used with the following macros need to accept a
- * base param, e.g:
- *
- * REG_FOO(base) _MMIO((base) + <relative offset>)
- * ENGINE_READ(engine, REG_FOO);
- *
- * register arrays are to be defined and accessed as follows:
- *
- * REG_BAR(base, i) _MMIO((base) + <relative offset> + (i) * <shift>)
- * ENGINE_READ_IDX(engine, REG_BAR, i)
- */
+ 
 
 #define __ENGINE_REG_OP(op__, engine__, ...) \
 	intel_uncore_##op__((engine__)->uncore, __VA_ARGS__)
@@ -97,9 +82,7 @@ struct lock_class_key;
 			   __val); \
 })
 
-/* seqno size is actually only a uint32, but since we plan to use MI_FLUSH_DW to
- * do the writes, and that must have qw aligned offsets, simply pretend it's 8b.
- */
+ 
 
 static inline unsigned int
 execlists_num_ports(const struct intel_engine_execlists * const execlists)
@@ -113,14 +96,14 @@ execlists_active(const struct intel_engine_execlists *execlists)
 	struct i915_request * const *cur, * const *old, *active;
 
 	cur = READ_ONCE(execlists->active);
-	smp_rmb(); /* pairs with overwrite protection in process_csb() */
+	smp_rmb();  
 	do {
 		old = cur;
 
 		active = READ_ONCE(*cur);
 		cur = READ_ONCE(execlists->active);
 
-		smp_rmb(); /* and complete the seqlock retry */
+		smp_rmb();  
 	} while (unlikely(cur != old));
 
 	return active;
@@ -132,39 +115,20 @@ execlists_unwind_incomplete_requests(struct intel_engine_execlists *execlists);
 static inline u32
 intel_read_status_page(const struct intel_engine_cs *engine, int reg)
 {
-	/* Ensure that the compiler doesn't optimize away the load. */
+	 
 	return READ_ONCE(engine->status_page.addr[reg]);
 }
 
 static inline void
 intel_write_status_page(struct intel_engine_cs *engine, int reg, u32 value)
 {
-	/* Writing into the status page should be done sparingly. Since
-	 * we do when we are uncertain of the device state, we take a bit
-	 * of extra paranoia to try and ensure that the HWS takes the value
-	 * we give and that it doesn't end up trapped inside the CPU!
-	 */
+	 
 	drm_clflush_virt_range(&engine->status_page.addr[reg], sizeof(value));
 	WRITE_ONCE(engine->status_page.addr[reg], value);
 	drm_clflush_virt_range(&engine->status_page.addr[reg], sizeof(value));
 }
 
-/*
- * Reads a dword out of the status page, which is written to from the command
- * queue by automatic updates, MI_REPORT_HEAD, MI_STORE_DATA_INDEX, or
- * MI_STORE_DATA_IMM.
- *
- * The following dwords have a reserved meaning:
- * 0x00: ISR copy, updated when an ISR bit not set in the HWSTAM changes.
- * 0x04: ring 0 head pointer
- * 0x05: ring 1 head pointer (915-class)
- * 0x06: ring 2 head pointer (915-class)
- * 0x10-0x1b: Context status DWords (GM45)
- * 0x1f: Last written status offset. (GM45)
- * 0x20-0x2f: Reserved (Gen6+)
- *
- * The area from dword 0x30 to 0x3ff is available for driver usage.
- */
+ 
 #define I915_GEM_HWS_PREEMPT		0x32
 #define I915_GEM_HWS_PREEMPT_ADDR	(I915_GEM_HWS_PREEMPT * sizeof(u32))
 #define I915_GEM_HWS_SEQNO		0x40
@@ -223,7 +187,7 @@ static inline void __intel_engine_reset(struct intel_engine_cs *engine,
 {
 	if (engine->reset.rewind)
 		engine->reset.rewind(engine, stalled);
-	engine->serial++; /* contexts lost */
+	engine->serial++;  
 }
 
 bool intel_engines_are_idle(struct intel_gt *gt);
@@ -301,12 +265,7 @@ intel_engine_create_parallel(struct intel_engine_cs **engines,
 static inline bool
 intel_virtual_engine_has_heartbeat(const struct intel_engine_cs *engine)
 {
-	/*
-	 * For non-GuC submission we expect the back-end to look at the
-	 * heartbeat status of the actual physical engine that the work
-	 * has been (or is being) scheduled on, so we should only reach
-	 * here with GuC submission enabled.
-	 */
+	 
 	GEM_BUG_ON(!intel_engine_uses_guc(engine));
 
 	return intel_guc_virtual_engine_has_heartbeat(engine);
@@ -356,4 +315,4 @@ u64 intel_clamp_preempt_timeout_ms(struct intel_engine_cs *engine, u64 value);
 u64 intel_clamp_stop_timeout_ms(struct intel_engine_cs *engine, u64 value);
 u64 intel_clamp_timeslice_duration_ms(struct intel_engine_cs *engine, u64 value);
 
-#endif /* _INTEL_RINGBUFFER_H_ */
+#endif  

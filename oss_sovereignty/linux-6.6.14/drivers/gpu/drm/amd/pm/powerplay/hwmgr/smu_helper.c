@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/reboot.h>
@@ -103,10 +82,7 @@ uint32_t phm_set_field_to_u32(u32 offset, u32 original_data, u32 field, u32 size
 	return original_data;
 }
 
-/*
- * Returns once the part of the register indicated by the mask has
- * reached the given value.
- */
+ 
 int phm_wait_on_register(struct pp_hwmgr *hwmgr, uint32_t index,
 			 uint32_t value, uint32_t mask)
 {
@@ -125,18 +101,14 @@ int phm_wait_on_register(struct pp_hwmgr *hwmgr, uint32_t index,
 		udelay(1);
 	}
 
-	/* timeout means wrong logic*/
+	 
 	if (i == hwmgr->usec_timeout)
 		return -1;
 	return 0;
 }
 
 
-/*
- * Returns once the part of the register indicated by the mask has
- * reached the given value.The indirect space is described by giving
- * the memory-mapped index of the indirect index register.
- */
+ 
 int phm_wait_on_indirect_register(struct pp_hwmgr *hwmgr,
 				uint32_t indirect_port,
 				uint32_t index,
@@ -170,7 +142,7 @@ int phm_wait_for_register_unequal(struct pp_hwmgr *hwmgr,
 		udelay(1);
 	}
 
-	/* timeout means wrong logic */
+	 
 	if (i == hwmgr->usec_timeout)
 		return -ETIME;
 	return 0;
@@ -398,11 +370,11 @@ uint8_t phm_get_voltage_index(
 			"Lookup Table empty.", return 0);
 
 	for (i = 0; i < lookup_table->count; i++) {
-		/* find first voltage equal or bigger than requested */
+		 
 		if (lookup_table->entries[i].us_vdd >= voltage)
 			return i;
 	}
-	/* voltage is bigger than max voltage in the table */
+	 
 	return i - 1;
 }
 
@@ -418,12 +390,12 @@ uint8_t phm_get_voltage_id(pp_atomctrl_voltage_table *voltage_table,
 		"Voltage Table empty.", return 0;);
 
 	for (i = 0; i < count; i++) {
-		/* find first voltage bigger than requested */
+		 
 		if (voltage_table->entries[i].value >= voltage)
 			return i;
 	}
 
-	/* voltage is bigger than max voltage in the table */
+	 
 	return i - 1;
 }
 
@@ -468,7 +440,7 @@ int phm_get_sclk_for_voltage_evv(struct pp_hwmgr *hwmgr,
 
 	PP_ASSERT_WITH_CODE(lookup_table->count != 0, "Lookup table is empty", return -EINVAL);
 
-	/* search for leakage voltage ID 0xff01 ~ 0xff08 and sckl */
+	 
 	for (entry_id = 0; entry_id < table_info->vdd_dep_on_sclk->count; entry_id++) {
 		voltage_id = table_info->vdd_dep_on_sclk->entries[entry_id].vddInd;
 		if (lookup_table->entries[voltage_id].us_vdd == virtual_voltage_id)
@@ -485,17 +457,13 @@ int phm_get_sclk_for_voltage_evv(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/**
- * phm_initializa_dynamic_state_adjustment_rule_settings - Initialize Dynamic State Adjustment Rule Settings
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- */
+ 
 int phm_initializa_dynamic_state_adjustment_rule_settings(struct pp_hwmgr *hwmgr)
 {
 	struct phm_clock_voltage_dependency_table *table_clk_vlt;
 	struct phm_ppt_v1_information *pptable_info = (struct phm_ppt_v1_information *)(hwmgr->pptable);
 
-	/* initialize vddc_dep_on_dal_pwrl table */
+	 
 	table_clk_vlt = kzalloc(struct_size(table_clk_vlt, entries, 4),
 				GFP_KERNEL);
 
@@ -615,9 +583,7 @@ int phm_irq_process(struct amdgpu_device *adev,
 			dev_emerg(adev->dev, "ERROR: GPU under temperature range detected!\n");
 		} else if (src_id == VISLANDS30_IV_SRCID_GPIO_19) {
 			dev_emerg(adev->dev, "ERROR: GPU HW Critical Temperature Fault(aka CTF) detected!\n");
-			/*
-			 * HW CTF just occurred. Shutdown to prevent further damage.
-			 */
+			 
 			dev_emerg(adev->dev, "ERROR: System is going to shutdown due to GPU HW CTF!\n");
 			orderly_poweroff(true);
 		}
@@ -629,9 +595,7 @@ int phm_irq_process(struct amdgpu_device *adev,
 			dev_emerg(adev->dev, "ERROR: GPU under temperature range detected!\n");
 	} else if (client_id == SOC15_IH_CLIENTID_ROM_SMUIO) {
 		dev_emerg(adev->dev, "ERROR: GPU HW Critical Temperature Fault(aka CTF) detected!\n");
-		/*
-		 * HW CTF just occurred. Shutdown to prevent further damage.
-		 */
+		 
 		dev_emerg(adev->dev, "ERROR: System is going to shutdown due to GPU HW CTF!\n");
 		orderly_poweroff(true);
 	}
@@ -662,7 +626,7 @@ int smu9_register_irq_handlers(struct pp_hwmgr *hwmgr)
 			THM_9_0__SRCID__THM_DIG_THERM_H2L,
 			source);
 
-	/* Register CTF(GPIO_19) interrupt */
+	 
 	amdgpu_irq_add_id((struct amdgpu_device *)(hwmgr->adev),
 			SOC15_IH_CLIENTID_ROM_SMUIO,
 			SMUIO_9_0__SRCID__SMUIO_GPIO19,

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -32,7 +32,7 @@
 #define CAPTURE_MIN_PERIOD_SIZE     320
 #define SID_MASK_DEFAULT	0xF
 
-/* Default values used if user space does not set */
+ 
 #define COMPR_PLAYBACK_MIN_FRAGMENT_SIZE (8 * 1024)
 #define COMPR_PLAYBACK_MAX_FRAGMENT_SIZE (128 * 1024)
 #define COMPR_PLAYBACK_MIN_NUM_FRAGMENTS (4)
@@ -56,13 +56,13 @@ struct q6asm_dai_rtd {
 	phys_addr_t phys;
 	unsigned int pcm_size;
 	unsigned int pcm_count;
-	unsigned int pcm_irq_pos;       /* IRQ position */
+	unsigned int pcm_irq_pos;        
 	unsigned int periods;
 	unsigned int bytes_sent;
 	unsigned int bytes_received;
 	unsigned int copied_total;
 	uint16_t bits_per_sample;
-	uint16_t source; /* Encoding source bit mask */
+	uint16_t source;  
 	struct audio_client *audio_client;
 	uint32_t next_track_stream_id;
 	bool next_track;
@@ -151,7 +151,7 @@ static struct snd_pcm_hardware q6asm_dai_hardware_playback = {
 		.id = MSM_FRONTEND_DAI_MULTIMEDIA##num,			\
 	}
 
-/* Conventional and unconventional sample rate supported */
+ 
 static unsigned int supported_sample_rates[] = {
 	8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000,
 	88200, 96000, 176400, 192000
@@ -236,9 +236,9 @@ static int q6asm_dai_prepare(struct snd_soc_component *component,
 
 	prtd->pcm_count = snd_pcm_lib_period_bytes(substream);
 	prtd->pcm_irq_pos = 0;
-	/* rate and channels are sent to audio driver */
+	 
 	if (prtd->state) {
-		/* clear the previous setup if any  */
+		 
 		q6asm_cmd(prtd->audio_client, prtd->stream_id, CMD_CLOSE);
 		q6asm_unmap_memory_regions(substream->stream,
 					   prtd->audio_client);
@@ -292,7 +292,7 @@ static int q6asm_dai_prepare(struct snd_soc_component *component,
 							   runtime->channels,
 							   prtd->bits_per_sample);
 
-		/* Queue the buffers */
+		 
 		for (i = 0; i < runtime->periods; i++)
 			q6asm_read(prtd->audio_client, prtd->stream_id);
 
@@ -381,7 +381,7 @@ static int q6asm_dai_open(struct snd_soc_component *component,
 		return ret;
 	}
 
-	/* DSP expects stream id from 1 */
+	 
 	prtd->stream_id = 1;
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -394,7 +394,7 @@ static int q6asm_dai_open(struct snd_soc_component *component,
 				&constraints_sample_rates);
 	if (ret < 0)
 		dev_info(dev, "snd_pcm_hw_constraint_list failed\n");
-	/* Ensure that buffer size is a multiple of period size */
+	 
 	ret = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
 	if (ret < 0)
@@ -528,17 +528,11 @@ static void compress_event_handler(uint32_t opcode, uint32_t token,
 		spin_lock_irqsave(&prtd->lock, flags);
 		if (prtd->notify_on_drain) {
 			if (substream->partial_drain) {
-				/*
-				 * Close old stream and make it stale, switch
-				 * the active stream now!
-				 */
+				 
 				q6asm_cmd_nowait(prtd->audio_client,
 						 prtd->stream_id,
 						 CMD_CLOSE);
-				/*
-				 * vaild stream ids start from 1, So we are
-				 * toggling this between 1 and 2.
-				 */
+				 
 				prtd->stream_id = (prtd->stream_id == 1 ? 2 : 1);
 			}
 
@@ -620,7 +614,7 @@ static int q6asm_dai_compr_open(struct snd_soc_component *component,
 	if (!prtd)
 		return -ENOMEM;
 
-	/* DSP expects stream id from 1 */
+	 
 	prtd->stream_id = 1;
 
 	prtd->cstream = stream;
@@ -754,13 +748,13 @@ static int __q6asm_dai_compr_set_codec_params(struct snd_soc_component *componen
 		wma_cfg.adv_enc_options2 = wma->adv_encoder_option2;
 
 		if (wma_cfg.num_channels == 1)
-			wma_cfg.channel_mask = 4; /* Mono Center */
+			wma_cfg.channel_mask = 4;  
 		else if (wma_cfg.num_channels == 2)
-			wma_cfg.channel_mask = 3; /* Stereo FL/FR */
+			wma_cfg.channel_mask = 3;  
 		else
 			return -EINVAL;
 
-		/* check the codec profile */
+		 
 		switch (codec->profile) {
 		case SND_AUDIOPROFILE_WMA9:
 			wma_cfg.fmtag = 0x161;
@@ -1061,10 +1055,7 @@ static int q6asm_compr_copy(struct snd_soc_component *component,
 
 	bytes_received = prtd->bytes_received;
 
-	/**
-	 * Make sure that next track data pointer is aligned at 32 bit boundary
-	 * This is a Mandatory requirement from DSP data buffers alignment
-	 */
+	 
 	if (prtd->next_track)
 		bytes_received = ALIGN(prtd->bytes_received, prtd->pcm_count);
 
@@ -1096,7 +1087,7 @@ static int q6asm_compr_copy(struct snd_soc_component *component,
 
 	prtd->bytes_received = bytes_received + count;
 
-	/* Kick off the data to dsp if its starving!! */
+	 
 	if (prtd->state == Q6ASM_STREAM_RUNNING && (bytes_in_flight == 0)) {
 		uint32_t bytes_to_write = prtd->pcm_count;
 

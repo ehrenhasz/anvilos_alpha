@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2016 Actifio, Inc. All rights reserved.
- */
+ 
+ 
 
 #include <assert.h>
 #include <fcntl.h>
@@ -49,30 +26,19 @@
 #include <zfs_fletcher.h>
 #include <zlib.h>
 
-/*
- * Emulation of kernel services in userland.
- */
+ 
 
 uint64_t physmem;
 uint32_t hostid;
 struct utsname hw_utsname;
 
-/* If set, all blocks read will be copied to the specified directory. */
+ 
 char *vn_dumpdir = NULL;
 
-/* this only exists to have its address taken */
+ 
 struct proc p0;
 
-/*
- * =========================================================================
- * threads
- * =========================================================================
- *
- * TS_STACK_MIN is dictated by the minimum allowed pthread stack size.  While
- * TS_STACK_MAX is somewhat arbitrary, it was selected to be large enough for
- * the expected stack depth while small enough to avoid exhausting address
- * space with high thread counts.
- */
+ 
 #define	TS_STACK_MIN	MAX(PTHREAD_STACK_MIN, 32768)
 #define	TS_STACK_MAX	(256 * 1024)
 
@@ -107,14 +73,7 @@ zk_thread_create(void (*func)(void *), void *arg, size_t stksize, int state)
 
 	VERIFY0(pthread_attr_setdetachstate(&attr, detachstate));
 
-	/*
-	 * We allow the default stack size in user space to be specified by
-	 * setting the ZFS_STACK_SIZE environment variable.  This allows us
-	 * the convenience of observing and debugging stack overruns in
-	 * user space.  Explicitly specified stack sizes will be honored.
-	 * The usage of ZFS_STACK_SIZE is discussed further in the
-	 * ENVIRONMENT VARIABLES sections of the ztest(1) man page.
-	 */
+	 
 	if (stksize == 0) {
 		stkstr = getenv("ZFS_STACK_SIZE");
 
@@ -127,10 +86,7 @@ zk_thread_create(void (*func)(void *), void *arg, size_t stksize, int state)
 	VERIFY3S(stksize, >, 0);
 	stksize = P2ROUNDUP(MAX(stksize, TS_STACK_MIN), PAGESIZE);
 
-	/*
-	 * If this ever fails, it may be because the stack size is not a
-	 * multiple of system page size.
-	 */
+	 
 	VERIFY0(pthread_attr_setstacksize(&attr, stksize));
 	VERIFY0(pthread_attr_setguardsize(&attr, PAGESIZE));
 
@@ -143,11 +99,7 @@ zk_thread_create(void (*func)(void *), void *arg, size_t stksize, int state)
 	return ((void *)(uintptr_t)tid);
 }
 
-/*
- * =========================================================================
- * kstats
- * =========================================================================
- */
+ 
 kstat_t *
 kstat_create(const char *module, int instance, const char *name,
     const char *class, uchar_t type, ulong_t ndata, uchar_t ks_flag)
@@ -178,11 +130,7 @@ kstat_set_raw_ops(kstat_t *ksp,
 	(void) ksp, (void) headers, (void) data, (void) addr;
 }
 
-/*
- * =========================================================================
- * mutexes
- * =========================================================================
- */
+ 
 
 void
 mutex_init(kmutex_t *mp, char *name, int type, void *cookie)
@@ -234,11 +182,7 @@ mutex_exit(kmutex_t *mp)
 	VERIFY0(pthread_mutex_unlock(&mp->m_lock));
 }
 
-/*
- * =========================================================================
- * rwlocks
- * =========================================================================
- */
+ 
 
 void
 rw_init(krwlock_t *rwlp, char *name, int type, void *arg)
@@ -305,9 +249,7 @@ rw_tryenter(krwlock_t *rwlp, krw_t rw)
 uint32_t
 zone_get_hostid(void *zonep)
 {
-	/*
-	 * We're emulating the system's hostid in userland.
-	 */
+	 
 	(void) zonep;
 	return (hostid);
 }
@@ -319,11 +261,7 @@ rw_tryupgrade(krwlock_t *rwlp)
 	return (0);
 }
 
-/*
- * =========================================================================
- * condition variables
- * =========================================================================
- */
+ 
 
 void
 cv_init(kcondvar_t *cv, char *name, int type, void *arg)
@@ -438,11 +376,7 @@ cv_broadcast(kcondvar_t *cv)
 	VERIFY0(pthread_cond_broadcast(cv));
 }
 
-/*
- * =========================================================================
- * procfs list
- * =========================================================================
- */
+ 
 
 void
 seq_printf(struct seq_file *m, const char *fmt, ...)
@@ -497,17 +431,9 @@ procfs_list_add(procfs_list_t *procfs_list, void *p)
 	list_insert_tail(&procfs_list->pl_list, p);
 }
 
-/*
- * =========================================================================
- * vnode operations
- * =========================================================================
- */
+ 
 
-/*
- * =========================================================================
- * Figure out which debugging statements to print
- * =========================================================================
- */
+ 
 
 static char *dprintf_string;
 static int dprintf_print_all;
@@ -518,10 +444,7 @@ dprintf_find_string(const char *string)
 	char *tmp_str = dprintf_string;
 	int len = strlen(string);
 
-	/*
-	 * Find out if this is a string we want to print.
-	 * String format: file1.c,function_name1,file2.c,file3.c
-	 */
+	 
 
 	while (tmp_str != NULL) {
 		if (strncmp(tmp_str, string, len) == 0 &&
@@ -529,7 +452,7 @@ dprintf_find_string(const char *string)
 			return (1);
 		tmp_str = strchr(tmp_str, ',');
 		if (tmp_str != NULL)
-			tmp_str++; /* Get rid of , */
+			tmp_str++;  
 	}
 	return (0);
 }
@@ -539,19 +462,14 @@ dprintf_setup(int *argc, char **argv)
 {
 	int i, j;
 
-	/*
-	 * Debugging can be specified two ways: by setting the
-	 * environment variable ZFS_DEBUG, or by including a
-	 * "debug=..."  argument on the command line.  The command
-	 * line setting overrides the environment variable.
-	 */
+	 
 
 	for (i = 1; i < *argc; i++) {
 		int len = strlen("debug=");
-		/* First look for a command line argument */
+		 
 		if (strncmp("debug=", argv[i], len) == 0) {
 			dprintf_string = argv[i] + len;
-			/* Remove from args */
+			 
 			for (j = i; j < *argc; j++)
 				argv[j] = argv[j+1];
 			argv[j] = NULL;
@@ -560,13 +478,11 @@ dprintf_setup(int *argc, char **argv)
 	}
 
 	if (dprintf_string == NULL) {
-		/* Look for ZFS_DEBUG environment variable */
+		 
 		dprintf_string = getenv("ZFS_DEBUG");
 	}
 
-	/*
-	 * Are we just turning on all debugging?
-	 */
+	 
 	if (dprintf_find_string("on"))
 		dprintf_print_all = 1;
 
@@ -574,28 +490,24 @@ dprintf_setup(int *argc, char **argv)
 		zfs_flags |= ZFS_DEBUG_DPRINTF;
 }
 
-/*
- * =========================================================================
- * debug printfs
- * =========================================================================
- */
+ 
 void
 __dprintf(boolean_t dprint, const char *file, const char *func,
     int line, const char *fmt, ...)
 {
-	/* Get rid of annoying "../common/" prefix to filename. */
+	 
 	const char *newfile = zfs_basename(file);
 
 	va_list adx;
 	if (dprint) {
-		/* dprintf messages are printed immediately */
+		 
 
 		if (!dprintf_print_all &&
 		    !dprintf_find_string(newfile) &&
 		    !dprintf_find_string(func))
 			return;
 
-		/* Print out just the function name if requested */
+		 
 		flockfile(stdout);
 		if (dprintf_find_string("pid"))
 			(void) printf("%d ", getpid());
@@ -614,7 +526,7 @@ __dprintf(boolean_t dprint, const char *file, const char *func,
 		va_end(adx);
 		funlockfile(stdout);
 	} else {
-		/* zfs_dbgmsg is logged for dumping later */
+		 
 		size_t size;
 		char *buf;
 		int i;
@@ -635,11 +547,7 @@ __dprintf(boolean_t dprint, const char *file, const char *func,
 	}
 }
 
-/*
- * =========================================================================
- * cmn_err() and panic()
- * =========================================================================
- */
+ 
 static char ce_prefix[CE_IGNORE][10] = { "", "NOTICE: ", "WARNING: ", "" };
 static char ce_suffix[CE_IGNORE][2] = { "", "\n", "\n", "" };
 
@@ -650,7 +558,7 @@ vpanic(const char *fmt, va_list adx)
 	(void) vfprintf(stderr, fmt, adx);
 	(void) fprintf(stderr, "\n");
 
-	abort();	/* think of it as a "user-level crash dump" */
+	abort();	 
 }
 
 __attribute__((noreturn)) void
@@ -668,7 +576,7 @@ vcmn_err(int ce, const char *fmt, va_list adx)
 {
 	if (ce == CE_PANIC)
 		vpanic(fmt, adx);
-	if (ce != CE_NOTE) {	/* suppress noise in userland stress testing */
+	if (ce != CE_NOTE) {	 
 		(void) fprintf(stderr, "%s", ce_prefix[ce]);
 		(void) vfprintf(stderr, fmt, adx);
 		(void) fprintf(stderr, "%s", ce_suffix[ce]);
@@ -685,11 +593,7 @@ cmn_err(int ce, const char *fmt, ...)
 	va_end(adx);
 }
 
-/*
- * =========================================================================
- * misc routines
- * =========================================================================
- */
+ 
 
 void
 delay(clock_t ticks)
@@ -697,11 +601,7 @@ delay(clock_t ticks)
 	(void) poll(0, 0, ticks * (1000 / hz));
 }
 
-/*
- * Find highest one bit set.
- * Returns bit number + 1 of highest bit that is set, otherwise returns 0.
- * The __builtin_clzll() function is supported by both GCC and Clang.
- */
+ 
 int
 highbit64(uint64_t i)
 {
@@ -711,11 +611,7 @@ highbit64(uint64_t i)
 	return (NBBY * sizeof (uint64_t) - __builtin_clzll(i));
 }
 
-/*
- * Find lowest one bit set.
- * Returns bit number + 1 of lowest bit that is set, otherwise returns 0.
- * The __builtin_ffsll() function is supported by both GCC and Clang.
- */
+ 
 int
 lowbit64(uint64_t i)
 {
@@ -792,11 +688,7 @@ utsname(void)
 	return (&hw_utsname);
 }
 
-/*
- * =========================================================================
- * kernel emulation setup & teardown
- * =========================================================================
- */
+ 
 static int
 umem_out_of_memory(void)
 {
@@ -964,22 +856,14 @@ kmem_asprintf(const char *fmt, ...)
 	return (buf);
 }
 
-/*
- * kmem_scnprintf() will return the number of characters that it would have
- * printed whenever it is limited by value of the size variable, rather than
- * the number of characters that it did print. This can cause misbehavior on
- * subsequent uses of the return value, so we define a safe version that will
- * return the number of characters actually printed, minus the NULL format
- * character.  Subsequent use of this by the safe string functions is safe
- * whether it is snprintf(), strlcat() or strlcpy().
- */
+ 
 int
 kmem_scnprintf(char *restrict str, size_t size, const char *restrict fmt, ...)
 {
 	int n;
 	va_list ap;
 
-	/* Make the 0 case a no-op so that we do not return -1 */
+	 
 	if (size == 0)
 		return (0);
 
@@ -1064,15 +948,7 @@ zvol_rename_minors(spa_t *spa, const char *oldname, const char *newname,
 	(void) spa, (void) oldname, (void) newname, (void) async;
 }
 
-/*
- * Open file
- *
- * path - fully qualified path to file
- * flags - file attributes O_READ / O_WRITE / O_EXCL
- * fpp - pointer to return file pointer
- *
- * Returns 0 on success underlying error on failure.
- */
+ 
 int
 zfs_file_open(const char *path, int flags, int mode, zfs_file_t **fpp)
 {
@@ -1136,17 +1012,7 @@ zfs_file_close(zfs_file_t *fp)
 	umem_free(fp, sizeof (zfs_file_t));
 }
 
-/*
- * Stateful write - use os internal file pointer to determine where to
- * write and update on successful completion.
- *
- * fp -  pointer to file (pipe, socket, etc) to write to
- * buf - buffer to write
- * count - # of bytes to write
- * resid -  pointer to count of unwritten bytes  (if short write)
- *
- * Returns 0 on success errno on failure.
- */
+ 
 int
 zfs_file_write(zfs_file_t *fp, const void *buf, size_t count, ssize_t *resid)
 {
@@ -1165,17 +1031,7 @@ zfs_file_write(zfs_file_t *fp, const void *buf, size_t count, ssize_t *resid)
 	return (0);
 }
 
-/*
- * Stateless write - os internal file pointer is not updated.
- *
- * fp -  pointer to file (pipe, socket, etc) to write to
- * buf - buffer to write
- * count - # of bytes to write
- * off - file offset to write to (only valid for seekable types)
- * resid -  pointer to count of unwritten bytes
- *
- * Returns 0 on success errno on failure.
- */
+ 
 int
 zfs_file_pwrite(zfs_file_t *fp, const void *buf,
     size_t count, loff_t pos, ssize_t *resid)
@@ -1183,11 +1039,7 @@ zfs_file_pwrite(zfs_file_t *fp, const void *buf,
 	ssize_t rc, split, done;
 	int sectors;
 
-	/*
-	 * To simulate partial disk writes, we split writes into two
-	 * system calls so that the process can be killed in between.
-	 * This is used by ztest to simulate realistic failure modes.
-	 */
+	 
 	sectors = count >> SPA_MINBLOCKSHIFT;
 	split = (sectors > 0 ? rand() % sectors : 0) << SPA_MINBLOCKSHIFT;
 	rc = pwrite64(fp->f_fd, buf, split, pos);
@@ -1198,11 +1050,7 @@ zfs_file_pwrite(zfs_file_t *fp, const void *buf,
 	}
 #ifdef __linux__
 	if (rc == -1 && errno == EINVAL) {
-		/*
-		 * Under Linux, this most likely means an alignment issue
-		 * (memory or disk) due to O_DIRECT, so we abort() in order
-		 * to catch the offender.
-		 */
+		 
 		abort();
 	}
 #endif
@@ -1221,17 +1069,7 @@ zfs_file_pwrite(zfs_file_t *fp, const void *buf,
 	return (0);
 }
 
-/*
- * Stateful read - use os internal file pointer to determine where to
- * read and update on successful completion.
- *
- * fp -  pointer to file (pipe, socket, etc) to read from
- * buf - buffer to write
- * count - # of bytes to read
- * resid -  pointer to count of unread bytes (if short read)
- *
- * Returns 0 on success errno on failure.
- */
+ 
 int
 zfs_file_read(zfs_file_t *fp, void *buf, size_t count, ssize_t *resid)
 {
@@ -1250,17 +1088,7 @@ zfs_file_read(zfs_file_t *fp, void *buf, size_t count, ssize_t *resid)
 	return (0);
 }
 
-/*
- * Stateless read - os internal file pointer is not updated.
- *
- * fp -  pointer to file (pipe, socket, etc) to read from
- * buf - buffer to write
- * count - # of bytes to write
- * off - file offset to read from (only valid for seekable types)
- * resid -  pointer to count of unwritten bytes (if short write)
- *
- * Returns 0 on success errno on failure.
- */
+ 
 int
 zfs_file_pread(zfs_file_t *fp, void *buf, size_t count, loff_t off,
     ssize_t *resid)
@@ -1270,11 +1098,7 @@ zfs_file_pread(zfs_file_t *fp, void *buf, size_t count, loff_t off,
 	rc = pread64(fp->f_fd, buf, count, off);
 	if (rc < 0) {
 #ifdef __linux__
-		/*
-		 * Under Linux, this most likely means an alignment issue
-		 * (memory or disk) due to O_DIRECT, so we abort() in order to
-		 * catch the offender.
-		 */
+		 
 		if (errno == EINVAL)
 			abort();
 #endif
@@ -1297,15 +1121,7 @@ zfs_file_pread(zfs_file_t *fp, void *buf, size_t count, loff_t off,
 	return (0);
 }
 
-/*
- * lseek - set / get file pointer
- *
- * fp -  pointer to file (pipe, socket, etc) to read from
- * offp - value to seek to, returns current value plus passed offset
- * whence - see man pages for standard lseek whence values
- *
- * Returns 0 on success errno on failure (ESPIPE for non seekable types)
- */
+ 
 int
 zfs_file_seek(zfs_file_t *fp, loff_t *offp, int whence)
 {
@@ -1320,16 +1136,7 @@ zfs_file_seek(zfs_file_t *fp, loff_t *offp, int whence)
 	return (0);
 }
 
-/*
- * Get file attributes
- *
- * filp - file pointer
- * zfattr - pointer to file attr structure
- *
- * Currently only used for fetching size and file mode
- *
- * Returns 0 on success or error code of underlying getattr call on failure.
- */
+ 
 int
 zfs_file_getattr(zfs_file_t *fp, zfs_file_attr_t *zfattr)
 {
@@ -1344,14 +1151,7 @@ zfs_file_getattr(zfs_file_t *fp, zfs_file_attr_t *zfattr)
 	return (0);
 }
 
-/*
- * Sync file to disk
- *
- * filp - file pointer
- * flags - O_SYNC and or O_DSYNC
- *
- * Returns 0 on success or error code of underlying sync call on failure.
- */
+ 
 int
 zfs_file_fsync(zfs_file_t *fp, int flags)
 {
@@ -1363,16 +1163,7 @@ zfs_file_fsync(zfs_file_t *fp, int flags)
 	return (0);
 }
 
-/*
- * fallocate - allocate or free space on disk
- *
- * fp - file pointer
- * mode (non-standard options for hole punching etc)
- * offset - offset to start allocating or freeing from
- * len - length to free / allocate
- *
- * OPTIONAL
- */
+ 
 int
 zfs_file_fallocate(zfs_file_t *fp, int mode, loff_t offset, loff_t len)
 {
@@ -1384,42 +1175,21 @@ zfs_file_fallocate(zfs_file_t *fp, int mode, loff_t offset, loff_t len)
 #endif
 }
 
-/*
- * Request current file pointer offset
- *
- * fp - pointer to file
- *
- * Returns current file offset.
- */
+ 
 loff_t
 zfs_file_off(zfs_file_t *fp)
 {
 	return (lseek(fp->f_fd, SEEK_CUR, 0));
 }
 
-/*
- * unlink file
- *
- * path - fully qualified file path
- *
- * Returns 0 on success.
- *
- * OPTIONAL
- */
+ 
 int
 zfs_file_unlink(const char *path)
 {
 	return (remove(path));
 }
 
-/*
- * Get reference to file pointer
- *
- * fd - input file descriptor
- *
- * Returns pointer to file struct or NULL.
- * Unsupported in user space.
- */
+ 
 zfs_file_t *
 zfs_file_get(int fd)
 {
@@ -1427,13 +1197,7 @@ zfs_file_get(int fd)
 	abort();
 	return (NULL);
 }
-/*
- * Drop reference to file pointer
- *
- * fp - pointer to file struct
- *
- * Unsupported in user space.
- */
+ 
 void
 zfs_file_put(zfs_file_t *fp)
 {

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies. */
+ 
+ 
 
 #ifndef __ML5_FS_TTC_H__
 #define __ML5_FS_TTC_H__
@@ -69,4 +69,4 @@ int mlx5_ttc_fwd_default_dest(struct mlx5_ttc_table *ttc,
 bool mlx5_tunnel_inner_ft_supported(struct mlx5_core_dev *mdev);
 u8 mlx5_get_proto_by_tunnel_type(enum mlx5_tunnel_types tt);
 
-#endif /* __MLX5_FS_TTC_H__ */
+#endif  

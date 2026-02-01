@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
+ 
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+ 
+ 
 
 #ifndef _IWARP_H
 #define _IWARP_H
 
-#include <rdma/rdma_user_cm.h> /* RDMA_MAX_PRIVATE_DATA */
+#include <rdma/rdma_user_cm.h>  
 #include <linux/types.h>
 #include <asm/byteorder.h>
 
@@ -24,9 +24,7 @@ struct mpa_rr_params {
 	__be16 pd_len;
 };
 
-/*
- * MPA request/response header bits & fields
- */
+ 
 enum {
 	MPA_RR_FLAG_MARKERS = cpu_to_be16(0x8000),
 	MPA_RR_FLAG_CRC = cpu_to_be16(0x4000),
@@ -36,9 +34,7 @@ enum {
 	MPA_RR_MASK_REVISION = cpu_to_be16(0x00ff)
 };
 
-/*
- * MPA request/reply header
- */
+ 
 struct mpa_rr {
 	__u8 key[16];
 	struct mpa_rr_params params;
@@ -73,12 +69,10 @@ struct mpa_v2_data {
 
 struct mpa_marker {
 	__be16 rsvd;
-	__be16 fpdu_hmd; /* FPDU header-marker distance (= MPA's FPDUPTR) */
+	__be16 fpdu_hmd;  
 };
 
-/*
- * maximum MPA trailer
- */
+ 
 struct mpa_trailer {
 	__u8 pad[4];
 	__be32 crc;
@@ -87,18 +81,13 @@ struct mpa_trailer {
 #define MPA_HDR_SIZE 2
 #define MPA_CRC_SIZE 4
 
-/*
- * Common portion of iWARP headers (MPA, DDP, RDMAP)
- * for any FPDU
- */
+ 
 struct iwarp_ctrl {
 	__be16 mpa_len;
 	__be16 ddp_rdmap_ctrl;
 };
 
-/*
- * DDP/RDMAP Hdr bits & fields
- */
+ 
 enum {
 	DDP_FLAG_TAGGED = cpu_to_be16(0x8000),
 	DDP_FLAG_LAST = cpu_to_be16(0x4000),
@@ -200,9 +189,7 @@ struct iwarp_terminate {
 #endif
 };
 
-/*
- * Terminate Hdr bits & fields
- */
+ 
 enum {
 	TERM_MASK_LAYER = cpu_to_be32(0xf0000000),
 	TERM_MASK_ETYPE = cpu_to_be32(0x0f000000),
@@ -246,10 +233,7 @@ static inline void __rdmap_term_set_ecode(struct iwarp_terminate *term,
 	term->ecode = ecode;
 }
 
-/*
- * Common portion of iWARP headers (MPA, DDP, RDMAP)
- * for an FPDU carrying an untagged DDP segment
- */
+ 
 struct iwarp_ctrl_untagged {
 	struct iwarp_ctrl ctrl;
 	__be32 rsvd;
@@ -258,10 +242,7 @@ struct iwarp_ctrl_untagged {
 	__be32 ddp_mo;
 };
 
-/*
- * Common portion of iWARP headers (MPA, DDP, RDMAP)
- * for an FPDU carrying a tagged DDP segment
- */
+ 
 struct iwarp_ctrl_tagged {
 	struct iwarp_ctrl ctrl;
 	__be32 ddp_stag;
@@ -283,7 +264,7 @@ union iwarp_hdr {
 enum term_elayer {
 	TERM_ERROR_LAYER_RDMAP = 0x00,
 	TERM_ERROR_LAYER_DDP = 0x01,
-	TERM_ERROR_LAYER_LLP = 0x02 /* eg., MPA */
+	TERM_ERROR_LAYER_LLP = 0x02  
 };
 
 enum ddp_etype {
@@ -294,15 +275,15 @@ enum ddp_etype {
 };
 
 enum ddp_ecode {
-	/* unspecified, set to zero */
+	 
 	DDP_ECODE_CATASTROPHIC = 0x00,
-	/* Tagged Buffer Errors */
+	 
 	DDP_ECODE_T_INVALID_STAG = 0x00,
 	DDP_ECODE_T_BASE_BOUNDS = 0x01,
 	DDP_ECODE_T_STAG_NOT_ASSOC = 0x02,
 	DDP_ECODE_T_TO_WRAP = 0x03,
 	DDP_ECODE_T_VERSION = 0x04,
-	/* Untagged Buffer Errors */
+	 
 	DDP_ECODE_UT_INVALID_QN = 0x01,
 	DDP_ECODE_UT_INVALID_MSN_NOBUF = 0x02,
 	DDP_ECODE_UT_INVALID_MSN_RANGE = 0x03,
@@ -339,12 +320,12 @@ enum rdmap_ecode {
 };
 
 enum llp_ecode {
-	LLP_ECODE_TCP_STREAM_LOST = 0x01, /* How to transfer this ?? */
+	LLP_ECODE_TCP_STREAM_LOST = 0x01,  
 	LLP_ECODE_RECEIVED_CRC = 0x02,
 	LLP_ECODE_FPDU_START = 0x03,
 	LLP_ECODE_INVALID_REQ_RESP = 0x04,
 
-	/* Errors for Enhanced Connection Establishment only */
+	 
 	LLP_ECODE_LOCAL_CATASTROPHIC = 0x05,
 	LLP_ECODE_INSUFFICIENT_IRD = 0x06,
 	LLP_ECODE_NO_MATCHING_RTR = 0x07

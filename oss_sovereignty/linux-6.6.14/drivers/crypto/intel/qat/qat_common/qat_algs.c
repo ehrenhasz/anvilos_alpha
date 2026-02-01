@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/crypto.h>
@@ -47,14 +47,14 @@
 static DEFINE_MUTEX(algs_lock);
 static unsigned int active_devs;
 
-/* Common content descriptor */
+ 
 struct qat_alg_cd {
 	union {
-		struct qat_enc { /* Encrypt content desc */
+		struct qat_enc {  
 			struct icp_qat_hw_cipher_algo_blk cipher;
 			struct icp_qat_hw_auth_algo_blk hash;
 		} qat_enc_cd;
-		struct qat_dec { /* Decrypt content desc */
+		struct qat_dec {  
 			struct icp_qat_hw_auth_algo_blk hash;
 			struct icp_qat_hw_cipher_algo_blk cipher;
 		} qat_dec_cd;
@@ -76,7 +76,7 @@ struct qat_alg_aead_ctx {
 		struct sha256_state sha256;
 		struct sha512_state sha512;
 	};
-	char ipad[SHA512_BLOCK_SIZE]; /* sufficient for SHA-1/SHA-256 as well */
+	char ipad[SHA512_BLOCK_SIZE];  
 	char opad[SHA512_BLOCK_SIZE];
 };
 
@@ -252,7 +252,7 @@ static int qat_alg_aead_init_enc_session(struct crypto_aead *aead_tfm,
 	struct icp_qat_fw_cipher_cd_ctrl_hdr *cipher_cd_ctrl = ptr;
 	struct icp_qat_fw_auth_cd_ctrl_hdr *hash_cd_ctrl = ptr;
 
-	/* CD setup */
+	 
 	cipher->aes.cipher_config.val = QAT_AES_HW_CONFIG_ENC(alg, mode);
 	memcpy(cipher->aes.key, keys->enckey, keys->enckeylen);
 	hash->sha.inner_setup.auth_config.config =
@@ -264,7 +264,7 @@ static int qat_alg_aead_init_enc_session(struct crypto_aead *aead_tfm,
 	if (qat_alg_do_precomputes(hash, ctx, keys->authkey, keys->authkeylen))
 		return -EFAULT;
 
-	/* Request setup */
+	 
 	qat_alg_init_common_hdr(header);
 	header->service_cmd_id = ICP_QAT_FW_LA_CMD_CIPHER_HASH;
 	ICP_QAT_FW_LA_DIGEST_IN_BUFFER_SET(header->serv_specif_flags,
@@ -276,13 +276,13 @@ static int qat_alg_aead_init_enc_session(struct crypto_aead *aead_tfm,
 	cd_pars->u.s.content_desc_addr = ctx->enc_cd_paddr;
 	cd_pars->u.s.content_desc_params_sz = sizeof(struct qat_alg_cd) >> 3;
 
-	/* Cipher CD config setup */
+	 
 	cipher_cd_ctrl->cipher_key_sz = keys->enckeylen >> 3;
 	cipher_cd_ctrl->cipher_state_sz = AES_BLOCK_SIZE >> 3;
 	cipher_cd_ctrl->cipher_cfg_offset = 0;
 	ICP_QAT_FW_COMN_CURR_ID_SET(cipher_cd_ctrl, ICP_QAT_FW_SLICE_CIPHER);
 	ICP_QAT_FW_COMN_NEXT_ID_SET(cipher_cd_ctrl, ICP_QAT_FW_SLICE_AUTH);
-	/* Auth CD config setup */
+	 
 	hash_cd_ctrl->hash_cfg_offset = ((char *)hash - (char *)cipher) >> 3;
 	hash_cd_ctrl->hash_flags = ICP_QAT_FW_AUTH_HDR_FLAG_NO_NESTED;
 	hash_cd_ctrl->inner_res_sz = digestsize;
@@ -338,7 +338,7 @@ static int qat_alg_aead_init_dec_session(struct crypto_aead *aead_tfm,
 		((char *)&req_tmpl->serv_specif_rqpars +
 		sizeof(struct icp_qat_fw_la_cipher_req_params));
 
-	/* CD setup */
+	 
 	cipher->aes.cipher_config.val = QAT_AES_HW_CONFIG_DEC(alg, mode);
 	memcpy(cipher->aes.key, keys->enckey, keys->enckeylen);
 	hash->sha.inner_setup.auth_config.config =
@@ -351,7 +351,7 @@ static int qat_alg_aead_init_dec_session(struct crypto_aead *aead_tfm,
 	if (qat_alg_do_precomputes(hash, ctx, keys->authkey, keys->authkeylen))
 		return -EFAULT;
 
-	/* Request setup */
+	 
 	qat_alg_init_common_hdr(header);
 	header->service_cmd_id = ICP_QAT_FW_LA_CMD_HASH_CIPHER;
 	ICP_QAT_FW_LA_DIGEST_IN_BUFFER_SET(header->serv_specif_flags,
@@ -363,7 +363,7 @@ static int qat_alg_aead_init_dec_session(struct crypto_aead *aead_tfm,
 	cd_pars->u.s.content_desc_addr = ctx->dec_cd_paddr;
 	cd_pars->u.s.content_desc_params_sz = sizeof(struct qat_alg_cd) >> 3;
 
-	/* Cipher CD config setup */
+	 
 	cipher_cd_ctrl->cipher_key_sz = keys->enckeylen >> 3;
 	cipher_cd_ctrl->cipher_state_sz = AES_BLOCK_SIZE >> 3;
 	cipher_cd_ctrl->cipher_cfg_offset =
@@ -372,7 +372,7 @@ static int qat_alg_aead_init_dec_session(struct crypto_aead *aead_tfm,
 	ICP_QAT_FW_COMN_CURR_ID_SET(cipher_cd_ctrl, ICP_QAT_FW_SLICE_CIPHER);
 	ICP_QAT_FW_COMN_NEXT_ID_SET(cipher_cd_ctrl, ICP_QAT_FW_SLICE_DRAM_WR);
 
-	/* Auth CD config setup */
+	 
 	hash_cd_ctrl->hash_cfg_offset = 0;
 	hash_cd_ctrl->hash_flags = ICP_QAT_FW_AUTH_HDR_FLAG_NO_NESTED;
 	hash_cd_ctrl->inner_res_sz = digestsize;
@@ -426,9 +426,7 @@ static void qat_alg_skcipher_init_com(struct qat_alg_skcipher_ctx *ctx,
 		ICP_QAT_FW_LA_SLICE_TYPE_SET(header->serv_specif_flags,
 					     ICP_QAT_FW_LA_USE_UCS_SLICE_TYPE);
 
-		/* Store both XTS keys in CD, only the first key is sent
-		 * to the HW, the second key is used for tweak calculation
-		 */
+		 
 		memcpy(cd->ucs_aes.key, key, keylen);
 		keylen = keylen / 2;
 	} else if (aes_v2_capable && mode == ICP_QAT_HW_CIPHER_CTR_MODE) {
@@ -440,7 +438,7 @@ static void qat_alg_skcipher_init_com(struct qat_alg_skcipher_ctx *ctx,
 		memcpy(cd->aes.key, key, keylen);
 	}
 
-	/* Cipher CD config setup */
+	 
 	cd_ctrl->cipher_key_sz = keylen >> 3;
 	cd_ctrl->cipher_state_sz = AES_BLOCK_SIZE >> 3;
 	cd_ctrl->cipher_cfg_offset = 0;
@@ -474,7 +472,7 @@ static void qat_alg_xts_reverse_key(const u8 *key_forward, unsigned int keylen,
 		key = (u8 *)aes_expanded.key_enc + (AES_BLOCK_SIZE * nrounds);
 		memcpy(key_reverse, key, AES_BLOCK_SIZE);
 	} else {
-		/* AES_KEYSIZE_256 */
+		 
 		nrounds = 14;
 		key = (u8 *)aes_expanded.key_enc + (AES_BLOCK_SIZE * nrounds);
 		memcpy(key_reverse, key, AES_BLOCK_SIZE);
@@ -496,11 +494,11 @@ static void qat_alg_skcipher_init_dec(struct qat_alg_skcipher_ctx *ctx,
 	cd_pars->u.s.content_desc_addr = ctx->dec_cd_paddr;
 
 	if (aes_v2_capable && mode == ICP_QAT_HW_CIPHER_XTS_MODE) {
-		/* Key reversing not supported, set no convert */
+		 
 		dec_cd->aes.cipher_config.val =
 				QAT_AES_HW_CONFIG_DEC_NO_CONV(alg, mode);
 
-		/* In-place key reversal */
+		 
 		qat_alg_xts_reverse_key(dec_cd->ucs_aes.key, keylen / 2,
 					dec_cd->ucs_aes.key);
 	} else if (mode != ICP_QAT_HW_CIPHER_CTR_MODE) {

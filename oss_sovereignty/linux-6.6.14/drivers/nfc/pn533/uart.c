@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for NXP PN532 NFC Chip - UART transport layer
- *
- * Copyright (C) 2018 Lemonage Software GmbH
- * Author: Lars Pöschel <poeschel@lemonage.de>
- * All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -29,14 +23,7 @@ struct pn532_uart_phy {
 	struct serdev_device *serdev;
 	struct sk_buff *recv_skb;
 	struct pn533 *priv;
-	/*
-	 * send_wakeup variable is used to control if we need to send a wakeup
-	 * request to the pn532 chip prior to our actual command. There is a
-	 * little propability of a race condition. We decided to not mutex the
-	 * variable as the worst that could happen is, that we send a wakeup
-	 * to the chip that is already awake. This does not hurt. It is a
-	 * no-op to the chip.
-	 */
+	 
 	enum send_wakeup send_wakeup;
 	struct timer_list cmd_timeout;
 	struct sk_buff *cur_out_buf;
@@ -45,7 +32,7 @@ struct pn532_uart_phy {
 static int pn532_uart_send_frame(struct pn533 *dev,
 				struct sk_buff *out)
 {
-	/* wakeup sequence and dummy bytes for waiting time */
+	 
 	static const u8 wakeup[] = {
 		0x55, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -78,7 +65,7 @@ static int pn532_uart_send_frame(struct pn533 *dev,
 
 static int pn532_uart_send_ack(struct pn533 *dev, gfp_t flags)
 {
-	/* spec 7.1.1.3:  Preamble, SoPC (2), ACK Code (2), Postamble */
+	 
 	static const u8 ack[PN533_STD_FRAME_ACK_SIZE] = {
 			0x00, 0x00, 0xff, 0x00, 0xff, 0x00};
 	struct pn532_uart_phy *pn532 = dev->phy;
@@ -94,9 +81,9 @@ static int pn532_uart_send_ack(struct pn533 *dev, gfp_t flags)
 
 static void pn532_uart_abort_cmd(struct pn533 *dev, gfp_t flags)
 {
-	/* An ack will cancel the last issued command */
+	 
 	pn532_uart_send_ack(dev, flags);
-	/* schedule cmd_complete_work to finish current command execution */
+	 
 	pn533_recv_frame(dev, NULL, -ENOENT);
 }
 
@@ -138,13 +125,7 @@ static void pn532_cmd_timeout(struct timer_list *t)
 	pn532_uart_send_frame(dev->priv, dev->cur_out_buf);
 }
 
-/*
- * scans the buffer if it contains a pn532 frame. It is not checked if the
- * frame is really valid. This is later done with pn533_rx_frame_is_valid.
- * This is useful for malformed or errornous transmitted frames. Adjusts the
- * bufferposition where the frame starts, since pn533_recv_frame expects a
- * well formed frame.
- */
+ 
 static int pn532_uart_rx_is_frame(struct sk_buff *skb)
 {
 	struct pn533_std_frame *std;
@@ -154,11 +135,11 @@ static int pn532_uart_rx_is_frame(struct sk_buff *skb)
 
 	for (i = 0; i + PN533_STD_FRAME_ACK_SIZE <= skb->len; i++) {
 		std = (struct pn533_std_frame *)&skb->data[i];
-		/* search start code */
+		 
 		if (std->start_frame != cpu_to_be16(PN533_STD_FRAME_SOF))
 			continue;
 
-		/* frame type */
+		 
 		switch (std->datalen) {
 		case PN533_FRAME_DATALEN_ACK:
 			if (std->datalen_checksum == 0xff) {
@@ -181,17 +162,17 @@ static int pn532_uart_rx_is_frame(struct sk_buff *skb)
 			frame_len = be16_to_cpu(ext->datalen);
 			if (skb->len >= frame_len +
 					sizeof(struct pn533_ext_frame) +
-					2 /* CKS + Postamble */) {
+					2  ) {
 				skb_pull(skb, i);
 				return 1;
 			}
 
 			break;
-		default: /* normal information frame */
+		default:  
 			frame_len = std->datalen;
 			if (skb->len >= frame_len +
 					sizeof(struct pn533_std_frame) +
-					2 /* CKS + Postamble */) {
+					2  ) {
 				skb_pull(skb, i);
 				return 1;
 			}

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2013 Broadcom Corporation
- */
+
+ 
 #if !defined(BRCMF_TRACEPOINT_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define BRCMF_TRACEPOINT_H_
 
@@ -21,7 +19,7 @@ static inline void trace_ ## name(proto) {}
 #define DEFINE_EVENT(evt_class, name, proto, ...) \
 static inline void trace_ ## name(proto) {}
 
-#endif /* CONFIG_BRCM_TRACING */
+#endif  
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM	brcmfmac
@@ -139,6 +137,6 @@ TRACE_EVENT(brcmf_sdpcm_hdr,
 
 #include <trace/define_trace.h>
 
-#endif /* CONFIG_BRCM_TRACING */
+#endif  
 
-#endif /* BRCMF_TRACEPOINT_H_ */
+#endif  

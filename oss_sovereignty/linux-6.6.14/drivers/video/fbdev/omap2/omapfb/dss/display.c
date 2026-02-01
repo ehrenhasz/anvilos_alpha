@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/display.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "DISPLAY"
 
@@ -125,11 +117,7 @@ int omapdss_register_display(struct omap_dss_device *dssdev)
 	struct omap_dss_driver *drv = dssdev->driver;
 	int id;
 
-	/*
-	 * Note: this presumes all the displays are either using DT or non-DT,
-	 * which normally should be the case. This also presumes that all
-	 * displays either have an DT alias, or none has.
-	 */
+	 
 
 	if (dssdev->dev->of_node) {
 		id = of_alias_get_id(dssdev->dev->of_node, "display");
@@ -142,7 +130,7 @@ int omapdss_register_display(struct omap_dss_device *dssdev)
 
 	snprintf(dssdev->alias, sizeof(dssdev->alias), "display%d", id);
 
-	/* Use 'label' property for name, if it exists */
+	 
 	if (dssdev->dev->of_node)
 		of_property_read_string(dssdev->dev->of_node, "label",
 			&dssdev->name);
@@ -193,10 +181,7 @@ void omap_dss_put_device(struct omap_dss_device *dssdev)
 }
 EXPORT_SYMBOL(omap_dss_put_device);
 
-/*
- * ref count of the found device is incremented.
- * ref count of from-device is decremented.
- */
+ 
 struct omap_dss_device *omap_dss_get_next_device(struct omap_dss_device *from)
 {
 	struct list_head *l;

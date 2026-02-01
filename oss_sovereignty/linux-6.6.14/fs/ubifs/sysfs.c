@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2021 Cisco Systems
- *
- * Author: Stefan Schaeckeler
- */
+
+ 
 
 
 #include <linux/fs.h>
@@ -102,7 +96,7 @@ int ubifs_sysfs_register(struct ubifs_info *c)
 		     c->vi.ubi_num, c->vi.vol_id);
 
 	if (n > UBIFS_DFS_DIR_LEN) {
-		/* The array size is too small */
+		 
 		ret = -EINVAL;
 		goto out_free;
 	}

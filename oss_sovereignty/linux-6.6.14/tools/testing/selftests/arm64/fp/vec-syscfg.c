@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 ARM Limited.
- * Original author: Mark Brown <broonie@kernel.org>
- */
+
+ 
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -80,7 +77,7 @@ static int stdio_read_integer(FILE *f, const char *what, int *val)
 	return 0;
 }
 
-/* Start a new process and return the vector length it sees */
+ 
 static int get_child_rdvl(struct vec_data *data)
 {
 	FILE *out;
@@ -106,19 +103,16 @@ static int get_child_rdvl(struct vec_data *data)
 		return -1;
 	}
 
-	/* Child: put vector length on the pipe */
+	 
 	if (child == 0) {
-		/*
-		 * Replace stdout with the pipe, errors to stderr from
-		 * here as kselftest prints to stdout.
-		 */
+		 
 		ret = dup2(pipefd[1], 1);
 		if (ret == -1) {
 			fprintf(stderr, "dup2() %d\n", errno);
 			exit(EXIT_FAILURE);
 		}
 
-		/* exec() a new binary which puts the VL on stdout */
+		 
 		ret = execl(data->rdvl_binary, data->rdvl_binary, NULL);
 		fprintf(stderr, "execl(%s) failed: %d (%s)\n",
 			data->rdvl_binary, errno, strerror(errno));
@@ -128,7 +122,7 @@ static int get_child_rdvl(struct vec_data *data)
 
 	close(pipefd[1]);
 
-	/* Parent; wait for the exit status from the child & verify it */
+	 
 	do {
 		pid = wait(&ret);
 		if (pid == -1) {
@@ -206,10 +200,7 @@ static int file_write_integer(const char *name, int val)
 	return 0;
 }
 
-/*
- * Verify that we can read the default VL via proc, checking that it
- * is set in a freshly spawned child.
- */
+ 
 static void proc_read_default(struct vec_data *data)
 {
 	int default_vl, child_vl, ret;
@@ -218,7 +209,7 @@ static void proc_read_default(struct vec_data *data)
 	if (ret != 0)
 		return;
 
-	/* Is this the actual default seen by new processes? */
+	 
 	child_vl = get_child_rdvl(data);
 	if (child_vl != default_vl) {
 		ksft_test_result_fail("%s is %d but child VL is %d\n",
@@ -232,7 +223,7 @@ static void proc_read_default(struct vec_data *data)
 	data->default_vl = default_vl;
 }
 
-/* Verify that we can write a minimum value and have it take effect */
+ 
 static void proc_write_min(struct vec_data *data)
 {
 	int ret, new_default, child_vl;
@@ -246,12 +237,12 @@ static void proc_write_min(struct vec_data *data)
 	if (ret != 0)
 		return;
 
-	/* What was the new value? */
+	 
 	ret = file_read_integer(data->default_vl_file, &new_default);
 	if (ret != 0)
 		return;
 
-	/* Did it take effect in a new process? */
+	 
 	child_vl = get_child_rdvl(data);
 	if (child_vl != new_default) {
 		ksft_test_result_fail("%s is %d but child VL is %d\n",
@@ -267,7 +258,7 @@ static void proc_write_min(struct vec_data *data)
 	file_write_integer(data->default_vl_file, data->default_vl);
 }
 
-/* Verify that we can write a maximum value and have it take effect */
+ 
 static void proc_write_max(struct vec_data *data)
 {
 	int ret, new_default, child_vl;
@@ -277,17 +268,17 @@ static void proc_write_max(struct vec_data *data)
 		return;
 	}
 
-	/* -1 is accepted by the /proc interface as the maximum VL */
+	 
 	ret = file_write_integer(data->default_vl_file, -1);
 	if (ret != 0)
 		return;
 
-	/* What was the new value? */
+	 
 	ret = file_read_integer(data->default_vl_file, &new_default);
 	if (ret != 0)
 		return;
 
-	/* Did it take effect in a new process? */
+	 
 	child_vl = get_child_rdvl(data);
 	if (child_vl != new_default) {
 		ksft_test_result_fail("%s is %d but child VL is %d\n",
@@ -303,7 +294,7 @@ static void proc_write_max(struct vec_data *data)
 	file_write_integer(data->default_vl_file, data->default_vl);
 }
 
-/* Can we read back a VL from prctl? */
+ 
 static void prctl_get(struct vec_data *data)
 {
 	int ret;
@@ -315,10 +306,10 @@ static void prctl_get(struct vec_data *data)
 		return;
 	}
 
-	/* Mask out any flags */
+	 
 	ret &= PR_SVE_VL_LEN_MASK;
 
-	/* Is that what we can read back directly? */
+	 
 	if (ret == data->rdvl())
 		ksft_test_result_pass("%s current VL is %d\n",
 				      data->name, ret);
@@ -327,7 +318,7 @@ static void prctl_get(struct vec_data *data)
 				      data->name, ret, data->rdvl());
 }
 
-/* Does the prctl let us set the VL we already have? */
+ 
 static void prctl_set_same(struct vec_data *data)
 {
 	int cur_vl = data->rdvl();
@@ -345,7 +336,7 @@ static void prctl_set_same(struct vec_data *data)
 			 data->name, cur_vl, data->rdvl());
 }
 
-/* Can we set a new VL for this process? */
+ 
 static void prctl_set(struct vec_data *data)
 {
 	int ret;
@@ -356,7 +347,7 @@ static void prctl_set(struct vec_data *data)
 		return;
 	}
 
-	/* Try to set the minimum VL */
+	 
 	ret = prctl(data->prctl_set, data->min_vl);
 	if (ret < 0) {
 		ksft_test_result_fail("%s prctl set failed for %d: %d (%s)\n",
@@ -377,7 +368,7 @@ static void prctl_set(struct vec_data *data)
 		return;
 	}
 
-	/* Try to set the maximum VL */
+	 
 	ret = prctl(data->prctl_set, data->max_vl);
 	if (ret < 0) {
 		ksft_test_result_fail("%s prctl set failed for %d: %d (%s)\n",
@@ -392,7 +383,7 @@ static void prctl_set(struct vec_data *data)
 		return;
 	}
 
-	/* The _INHERIT flag should not be present when we read the VL */
+	 
 	ret = prctl(data->prctl_get);
 	if (ret == -1) {
 		ksft_test_result_fail("%s prctl() read failed: %d (%s)\n",
@@ -409,7 +400,7 @@ static void prctl_set(struct vec_data *data)
 	ksft_test_result_pass("%s prctl() set min/max\n", data->name);
 }
 
-/* If we didn't request it a new VL shouldn't affect the child */
+ 
 static void prctl_set_no_child(struct vec_data *data)
 {
 	int ret, child_vl;
@@ -428,12 +419,12 @@ static void prctl_set_no_child(struct vec_data *data)
 		return;
 	}
 
-	/* Ensure the default VL is different */
+	 
 	ret = file_write_integer(data->default_vl_file, data->max_vl);
 	if (ret != 0)
 		return;
 
-	/* Check that the child has the default we just set */
+	 
 	child_vl = get_child_rdvl(data);
 	if (child_vl != data->max_vl) {
 		ksft_test_result_fail("%s is %d but child VL is %d\n",
@@ -447,7 +438,7 @@ static void prctl_set_no_child(struct vec_data *data)
 	file_write_integer(data->default_vl_file, data->default_vl);
 }
 
-/* If we didn't request it a new VL shouldn't affect the child */
+ 
 static void prctl_set_for_child(struct vec_data *data)
 {
 	int ret, child_vl;
@@ -466,7 +457,7 @@ static void prctl_set_for_child(struct vec_data *data)
 		return;
 	}
 
-	/* The _INHERIT flag should be present when we read the VL */
+	 
 	ret = prctl(data->prctl_get);
 	if (ret == -1) {
 		ksft_test_result_fail("%s prctl() read failed: %d (%s)\n",
@@ -479,12 +470,12 @@ static void prctl_set_for_child(struct vec_data *data)
 		return;
 	}
 
-	/* Ensure the default VL is different */
+	 
 	ret = file_write_integer(data->default_vl_file, data->max_vl);
 	if (ret != 0)
 		return;
 
-	/* Check that the child inherited our VL */
+	 
 	child_vl = get_child_rdvl(data);
 	if (child_vl != data->min_vl) {
 		ksft_test_result_fail("%s is %d but child VL is %d\n",
@@ -498,7 +489,7 @@ static void prctl_set_for_child(struct vec_data *data)
 	file_write_integer(data->default_vl_file, data->default_vl);
 }
 
-/* _ONEXEC takes effect only in the child process */
+ 
 static void prctl_set_onexec(struct vec_data *data)
 {
 	int ret, child_vl;
@@ -509,7 +500,7 @@ static void prctl_set_onexec(struct vec_data *data)
 		return;
 	}
 
-	/* Set a known value for the default and our current VL */
+	 
 	ret = file_write_integer(data->default_vl_file, data->max_vl);
 	if (ret != 0)
 		return;
@@ -522,7 +513,7 @@ static void prctl_set_onexec(struct vec_data *data)
 		return;
 	}
 
-	/* Set a different value for the child to have on exec */
+	 
 	ret = prctl(data->prctl_set, data->min_vl | PR_SVE_SET_VL_ONEXEC);
 	if (ret < 0) {
 		ksft_test_result_fail("%s prctl set failed for %d: %d (%s)\n",
@@ -531,14 +522,14 @@ static void prctl_set_onexec(struct vec_data *data)
 		return;
 	}
 
-	/* Our current VL should stay the same */
+	 
 	if (data->rdvl() != data->max_vl) {
 		ksft_test_result_fail("%s VL changed by _ONEXEC prctl()\n",
 				      data->name);
 		return;
 	}
 
-	/* Check that the child inherited our VL */
+	 
 	child_vl = get_child_rdvl(data);
 	if (child_vl != data->min_vl) {
 		ksft_test_result_fail("Set %d _ONEXEC but child VL is %d\n",
@@ -551,7 +542,7 @@ static void prctl_set_onexec(struct vec_data *data)
 	file_write_integer(data->default_vl_file, data->default_vl);
 }
 
-/* For each VQ verify that setting via prctl() does the right thing */
+ 
 static void prctl_set_all_vqs(struct vec_data *data)
 {
 	int ret, vq, vl, new_vl, i;
@@ -570,7 +561,7 @@ static void prctl_set_all_vqs(struct vec_data *data)
 	for (vq = SVE_VQ_MIN; vq <= SVE_VQ_MAX; vq++) {
 		vl = sve_vl_from_vq(vq);
 
-		/* Attempt to set the VL */
+		 
 		ret = prctl(data->prctl_set, vl);
 		if (ret < 0) {
 			errors++;
@@ -582,14 +573,14 @@ static void prctl_set_all_vqs(struct vec_data *data)
 
 		new_vl = ret & PR_SVE_VL_LEN_MASK;
 
-		/* Check that we actually have the reported new VL */
+		 
 		if (data->rdvl() != new_vl) {
 			ksft_print_msg("Set %s VL %d but RDVL reports %d\n",
 				       data->name, new_vl, data->rdvl());
 			errors++;
 		}
 
-		/* Did any other VLs change? */
+		 
 		for (i = 0; i < ARRAY_SIZE(vec_data); i++) {
 			if (&vec_data[i] == data)
 				continue;
@@ -605,11 +596,11 @@ static void prctl_set_all_vqs(struct vec_data *data)
 			}
 		}
 
-		/* Was that the VL we asked for? */
+		 
 		if (new_vl == vl)
 			continue;
 
-		/* Should round up to the minimum VL if below it */
+		 
 		if (vl < data->min_vl) {
 			if (new_vl != data->min_vl) {
 				ksft_print_msg("%s VL %d returned %d not minimum %d\n",
@@ -621,7 +612,7 @@ static void prctl_set_all_vqs(struct vec_data *data)
 			continue;
 		}
 
-		/* Should round down to maximum VL if above it */
+		 
 		if (vl > data->max_vl) {
 			if (new_vl != data->max_vl) {
 				ksft_print_msg("%s VL %d returned %d not maximum %d\n",
@@ -633,7 +624,7 @@ static void prctl_set_all_vqs(struct vec_data *data)
 			continue;
 		}
 
-		/* Otherwise we should've rounded down */
+		 
 		if (!(new_vl < vl)) {
 			ksft_print_msg("%s VL %d returned %d, did not round down\n",
 				       data->name, vl, new_vl);
@@ -650,10 +641,7 @@ static void prctl_set_all_vqs(struct vec_data *data)
 typedef void (*test_type)(struct vec_data *);
 
 static const test_type tests[] = {
-	/*
-	 * The default/min/max tests must be first and in this order
-	 * to provide data for other tests.
-	 */
+	 
 	proc_read_default,
 	proc_write_min,
 	proc_write_max,
@@ -683,10 +671,7 @@ static inline void smstop(void)
 }
 
 
-/*
- * Verify we can change the SVE vector length while SME is active and
- * continue to use SME afterwards.
- */
+ 
 static void change_sve_with_za(void)
 {
 	struct vec_data *sve_data = &vec_data[VEC_SVE];
@@ -699,7 +684,7 @@ static void change_sve_with_za(void)
 		return;
 	}
 
-	/* Ensure we will trigger a change when we set the maximum */
+	 
 	ret = prctl(sve_data->prctl_set, sve_data->min_vl);
 	if (ret != sve_data->min_vl) {
 		ksft_print_msg("Failed to set SVE VL %d: %d\n",
@@ -707,10 +692,10 @@ static void change_sve_with_za(void)
 		pass = false;
 	}
 
-	/* Enable SM and ZA */
+	 
 	smstart();
 
-	/* Trigger another VL change */
+	 
 	ret = prctl(sve_data->prctl_set, sve_data->max_vl);
 	if (ret != sve_data->max_vl) {
 		ksft_print_msg("Failed to set SVE VL %d: %d\n",
@@ -718,20 +703,13 @@ static void change_sve_with_za(void)
 		pass = false;
 	}
 
-	/*
-	 * Spin for a bit with SM enabled to try to trigger another
-	 * save/restore.  We can't use syscalls without exiting
-	 * streaming mode.
-	 */
+	 
 	for (i = 0; i < 100000000; i++)
 		smstart_sm();
 
-	/*
-	 * TODO: Verify that ZA was preserved over the VL change and
-	 * spin.
-	 */
+	 
 
-	/* Clean up after ourselves */
+	 
 	smstop();
 	ret = prctl(sve_data->prctl_set, sve_data->default_vl);
 	if (ret != sve_data->default_vl) {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _MTK_VCODEC_FW_PRIV_H_
 #define _MTK_VCODEC_FW_PRIV_H_
@@ -37,7 +37,7 @@ mtk_vcodec_fw_vpu_init(void *priv, enum mtk_vcodec_fw_use fw_use)
 {
 	return ERR_PTR(-ENODEV);
 }
-#endif /* CONFIG_VIDEO_MEDIATEK_VCODEC_VPU */
+#endif  
 
 #if IS_ENABLED(CONFIG_VIDEO_MEDIATEK_VCODEC_SCP)
 struct mtk_vcodec_fw *mtk_vcodec_fw_scp_init(void *priv, enum mtk_vcodec_fw_use fw_use);
@@ -47,6 +47,6 @@ mtk_vcodec_fw_scp_init(void *priv, enum mtk_vcodec_fw_use fw_use)
 {
 	return ERR_PTR(-ENODEV);
 }
-#endif /* CONFIG_VIDEO_MEDIATEK_VCODEC_SCP */
+#endif  
 
-#endif /* _MTK_VCODEC_FW_PRIV_H_ */
+#endif  

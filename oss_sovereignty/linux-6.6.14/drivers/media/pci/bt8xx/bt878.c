@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * bt878.c: part of the driver for the Pinnacle PCTV Sat DVB PCI card
- *
- * Copyright (C) 2002 Peter Hettkamp <peter.hettkamp@htp-tel.de>
- *
- * large parts based on the bttv driver
- * Copyright (C) 1996,97,98 Ralph  Metzler (rjkm@metzlerbros.de)
- *                        & Marcus Metzler (mocm@metzlerbros.de)
- * (c) 1999,2000 Gerd Knorr <kraxel@goldbach.in-berlin.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -29,9 +20,9 @@
 #include "dst_priv.h"
 
 
-/**************************************/
-/* Miscellaneous utility  definitions */
-/**************************************/
+ 
+ 
+ 
 
 static unsigned int bt878_verbose = 1;
 static unsigned int bt878_debug;
@@ -103,12 +94,12 @@ static int bt878_mem_alloc(struct bt878 *bt)
 	return 0;
 }
 
-/* RISC instructions */
+ 
 #define RISC_WRITE		(0x01 << 28)
 #define RISC_JUMP		(0x07 << 28)
 #define RISC_SYNC		(0x08 << 28)
 
-/* RISC bits */
+ 
 #define RISC_WR_SOL		(1 << 27)
 #define RISC_WR_EOL		(1 << 26)
 #define RISC_IRQ		(1 << 24)
@@ -152,7 +143,7 @@ static void bt878_risc_program(struct bt878 *bt, u32 op_sync_orin)
 	dprintk("bt878: risc len lines %u, bytes per line %u\n",
 			bt->line_count, bt->line_bytes);
 	for (line = 0; line < bt->line_count; line++) {
-		// At the beginning of every block we issue an IRQ with previous (finished) block number set
+		
 		if (!(buf_pos % bt->block_bytes))
 			RISC_INSTR(RISC_WRITE | RISC_WR_SOL | RISC_WR_EOL |
 				   RISC_IRQ |
@@ -178,9 +169,9 @@ static void bt878_risc_program(struct bt878 *bt, u32 op_sync_orin)
 	btwrite((bt->line_count << 16) | bt->line_bytes, BT878_APACK_LEN);
 }
 
-/*****************************/
-/* Start/Stop grabbing funcs */
-/*****************************/
+ 
+ 
+ 
 
 void bt878_start(struct bt878 *bt, u32 controlreg, u32 op_sync_orin,
 		u32 irq_err_ignore)
@@ -188,28 +179,20 @@ void bt878_start(struct bt878 *bt, u32 controlreg, u32 op_sync_orin,
 	u32 int_mask;
 
 	dprintk("bt878 debug: bt878_start (ctl=%8.8x)\n", controlreg);
-	/* complete the writing of the risc dma program now we have
-	 * the card specifics
-	 */
+	 
 	bt878_risc_program(bt, op_sync_orin);
 	controlreg &= ~0x1f;
 	controlreg |= 0x1b;
 
 	btwrite(bt->risc_dma, BT878_ARISC_START);
 
-	/* original int mask had :
-	 *    6    2    8    4    0
-	 * 1111 1111 1000 0000 0000
-	 * SCERR|OCERR|PABORT|RIPERR|FDSR|FTRGT|FBUS|RISCI
-	 * Hacked for DST to:
-	 * SCERR | OCERR | FDSR | FTRGT | FBUS | RISCI
-	 */
+	 
 	int_mask = BT878_ASCERR | BT878_AOCERR | BT878_APABORT |
 		BT878_ARIPERR | BT878_APPERR | BT878_AFDSR | BT878_AFTRGT |
 		BT878_AFBUS | BT878_ARISCI;
 
 
-	/* ignore pesky bits */
+	 
 	int_mask &= ~irq_err_ignore;
 
 	btwrite(int_mask, BT878_AINT_MASK);
@@ -240,9 +223,9 @@ void bt878_stop(struct bt878 *bt)
 EXPORT_SYMBOL(bt878_start);
 EXPORT_SYMBOL(bt878_stop);
 
-/*****************************/
-/* Interrupt service routine */
-/*****************************/
+ 
+ 
+ 
 
 static irqreturn_t bt878_irq(int irq, void *dev_id)
 {
@@ -257,9 +240,9 @@ static irqreturn_t bt878_irq(int irq, void *dev_id)
 		stat = btread(BT878_AINT_STAT);
 		mask = btread(BT878_AINT_MASK);
 		if (!(astat = (stat & mask)))
-			return IRQ_NONE;	/* this interrupt is not for me */
-/*		dprintk("bt878(%d) debug: irq count %d, stat 0x%8.8x, mask 0x%8.8x\n",bt->nr,count,stat,mask); */
-		btwrite(astat, BT878_AINT_STAT);	/* try to clear interrupt condition */
+			return IRQ_NONE;	 
+ 
+		btwrite(astat, BT878_AINT_STAT);	 
 
 
 		if (astat & (BT878_ASCERR | BT878_AOCERR)) {
@@ -324,28 +307,28 @@ bt878_device_control(struct bt878 *bt, unsigned int cmd, union dst_gpio_packet *
 	retval = 0;
 	if (mutex_lock_interruptible(&bt->gpio_lock))
 		return -ERESTARTSYS;
-	/* special gpio signal */
+	 
 	switch (cmd) {
 	    case DST_IG_ENABLE:
-		// dprintk("dvb_bt8xx: dst enable mask 0x%02x enb 0x%02x \n", mp->dstg.enb.mask, mp->dstg.enb.enable);
+		
 		retval = bttv_gpio_enable(bt->bttv_nr,
 				mp->enb.mask,
 				mp->enb.enable);
 		break;
 	    case DST_IG_WRITE:
-		// dprintk("dvb_bt8xx: dst write gpio mask 0x%02x out 0x%02x\n", mp->dstg.outp.mask, mp->dstg.outp.highvals);
+		
 		retval = bttv_write_gpio(bt->bttv_nr,
 				mp->outp.mask,
 				mp->outp.highvals);
 
 		break;
 	    case DST_IG_READ:
-		/* read */
+		 
 		retval =  bttv_read_gpio(bt->bttv_nr, &mp->rd.value);
-		// dprintk("dvb_bt8xx: dst read gpio 0x%02x\n", (unsigned)mp->dstg.rd.value);
+		
 		break;
 	    case DST_IG_TS:
-		/* Set packet size */
+		 
 		bt->TS_Size = mp->psize;
 		break;
 
@@ -391,9 +374,9 @@ static const char * card_name(const struct pci_device_id *id)
 	return id->driver_data ? (const char *)id->driver_data : "Unknown";
 }
 
-/***********************/
-/* PCI device handling */
-/***********************/
+ 
+ 
+ 
 
 static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 {
@@ -447,7 +430,7 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	bt->bt878_mem = ioremap(bt->bt878_adr, 0x1000);
 #endif
 
-	/* clear interrupt mask */
+	 
 	btwrite(0, BT848_INT_MASK);
 
 	result = request_irq(bt->irq, bt878_irq,
@@ -501,16 +484,16 @@ static void bt878_remove(struct pci_dev *pci_dev)
 	if (bt878_verbose)
 		printk(KERN_INFO "bt878(%d): unloading\n", bt->nr);
 
-	/* turn off all capturing, DMA and IRQs */
+	 
 	btand(~0x13, BT878_AGPIO_DMA_CTL);
 
-	/* first disable interrupts before unmapping the memory! */
+	 
 	btwrite(0, BT878_AINT_MASK);
 	btwrite(~0U, BT878_AINT_STAT);
 
-	/* disable PCI bus-mastering */
+	 
 	pci_read_config_byte(bt->dev, PCI_COMMAND, &command);
-	/* Should this be &=~ ?? */
+	 
 	command &= ~PCI_COMMAND_MASTER;
 	pci_write_config_byte(bt->dev, PCI_COMMAND, command);
 
@@ -521,10 +504,7 @@ static void bt878_remove(struct pci_dev *pci_dev)
 
 	release_mem_region(pci_resource_start(bt->dev, 0),
 			   pci_resource_len(bt->dev, 0));
-	/* wake up any waiting processes
-	   because shutdown flag is set, no new processes (in this queue)
-	   are expected
-	 */
+	 
 	bt->shutdown = 1;
 	bt878_mem_free(bt);
 
@@ -539,9 +519,9 @@ static struct pci_driver bt878_pci_driver = {
       .remove	= bt878_remove,
 };
 
-/*******************************/
-/* Module management functions */
-/*******************************/
+ 
+ 
+ 
 
 static int __init bt878_init_module(void)
 {

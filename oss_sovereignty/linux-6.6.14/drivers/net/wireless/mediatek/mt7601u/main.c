@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include "mt7601u.h"
 #include "mac.h"
@@ -49,11 +46,7 @@ static int mt7601u_add_interface(struct ieee80211_hw *hw,
 	unsigned int idx = 0;
 	unsigned int wcid = GROUP_WCID(idx);
 
-	/* Note: for AP do the AP-STA things mt76 does:
-	 *	- beacon offsets
-	 *	- do mac address tricks
-	 *	- shift vif idx
-	 */
+	 
 	mvif->idx = idx;
 
 	if (!ether_addr_equal(dev->macaddr, vif->addr))
@@ -144,10 +137,7 @@ mt7601u_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	if (changed & BSS_CHANGED_BSSID) {
 		mt7601u_addr_wr(dev, MT_MAC_BSSID_DW0, info->bssid);
 
-		/* Note: this is a hack because beacon_int is not changed
-		 *	 on leave nor is any more appropriate event generated.
-		 *	 rt2x00 doesn't seem to be bothered though.
-		 */
+		 
 		if (is_zero_ether_addr(info->bssid))
 			mt7601u_mac_config_tsf(dev, false, 0);
 	}
@@ -300,7 +290,7 @@ mt7601u_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	int idx = key->keyidx;
 	int ret;
 
-	/* fall back to sw encryption for unsupported ciphers */
+	 
 	switch (key->cipher) {
 	case WLAN_CIPHER_SUITE_WEP40:
 	case WLAN_CIPHER_SUITE_WEP104:

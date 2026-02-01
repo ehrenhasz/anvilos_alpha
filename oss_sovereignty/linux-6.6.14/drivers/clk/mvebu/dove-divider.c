@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Dove PMU Core PLL divider driver
- *
- * Cleaned up by substantially rewriting, and converted to DT by
- * Russell King.  Origin is not known.
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -222,10 +217,7 @@ static int dove_divider_init(struct device *dev, void __iomem *base,
 	struct clk *clk;
 	int i;
 
-	/*
-	 * Create the core PLL clock.  We treat this as a fixed rate
-	 * clock as we don't know any better, and documentation is sparse.
-	 */
+	 
 	clk = clk_register_fixed_rate(dev, core_pll[0], NULL, 0, 2000000000UL);
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);

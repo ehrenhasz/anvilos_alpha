@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Based on BLAKE3 v1.3.1, https://github.com/BLAKE3-team/BLAKE3
- * Copyright (c) 2019-2020 Samuel Neves and Jack O'Connor
- * Copyright (c) 2021-2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
 #include <sys/simd.h>
 #include <sys/zfs_context.h>
@@ -46,16 +23,16 @@ static inline void g(uint32_t *state, size_t a, size_t b, size_t c, size_t d,
 static inline void round_fn(uint32_t state[16], const uint32_t *msg,
     size_t round)
 {
-	/* Select the message schedule based on the round. */
+	 
 	const uint8_t *schedule = BLAKE3_MSG_SCHEDULE[round];
 
-	/* Mix the columns. */
+	 
 	g(state, 0, 4, 8, 12, msg[schedule[0]], msg[schedule[1]]);
 	g(state, 1, 5, 9, 13, msg[schedule[2]], msg[schedule[3]]);
 	g(state, 2, 6, 10, 14, msg[schedule[4]], msg[schedule[5]]);
 	g(state, 3, 7, 11, 15, msg[schedule[6]], msg[schedule[7]]);
 
-	/* Mix the rows. */
+	 
 	g(state, 0, 5, 10, 15, msg[schedule[8]], msg[schedule[9]]);
 	g(state, 1, 6, 11, 12, msg[schedule[10]], msg[schedule[11]]);
 	g(state, 2, 7, 8, 13, msg[schedule[12]], msg[schedule[13]]);
@@ -188,7 +165,7 @@ static inline void blake3_hash_many_generic(const uint8_t * const *inputs,
 	}
 }
 
-/* the generic implementation is always okay */
+ 
 static boolean_t blake3_is_supported(void)
 {
 	return (B_TRUE);

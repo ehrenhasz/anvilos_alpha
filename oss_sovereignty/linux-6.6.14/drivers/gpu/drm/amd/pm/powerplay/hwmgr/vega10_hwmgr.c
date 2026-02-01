@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -63,7 +42,7 @@ static const uint32_t channel_number[] = {1, 2, 0, 4, 0, 8, 0, 16, 2};
 #define mmDF_CS_AON0_DramBaseAddress0                                                                  0x0044
 #define mmDF_CS_AON0_DramBaseAddress0_BASE_IDX                                                         0
 
-//DF_CS_AON0_DramBaseAddress0
+
 #define DF_CS_AON0_DramBaseAddress0__AddrRngVal__SHIFT                                                        0x0
 #define DF_CS_AON0_DramBaseAddress0__LgcyMmioHoleEn__SHIFT                                                    0x1
 #define DF_CS_AON0_DramBaseAddress0__IntLvNumChan__SHIFT                                                      0x4
@@ -233,8 +212,8 @@ static int vega10_set_features_platform_caps(struct pp_hwmgr *hwmgr)
 	phm_cap_set(hwmgr->platform_descriptor.platformCaps,
 			PHM_PlatformCaps_SMC);
 
-	/* power tune caps */
-	/* assume disabled */
+	 
+	 
 	phm_cap_unset(hwmgr->platform_descriptor.platformCaps,
 			PHM_PlatformCaps_PowerContainment);
 	phm_cap_unset(hwmgr->platform_descriptor.platformCaps,
@@ -488,7 +467,7 @@ static void vega10_init_dpm_defaults(struct pp_hwmgr *hwmgr)
 	smum_send_msg_to_smc(hwmgr,
 			PPSMC_MSG_GetSmuVersion,
 			&hwmgr->smu_version);
-		/* ACG firmware has major version 5 */
+		 
 	if ((hwmgr->smu_version & 0xff000000) == 0x5000000)
 		data->smu_features[GNLD_ACG].supported = true;
 	if (data->registry_data.didt_support)
@@ -504,7 +483,7 @@ static void vega10_init_dpm_defaults(struct pp_hwmgr *hwmgr)
 		(sub_vendor_id != 0x1002))
 		data->smu_features[GNLD_PCC_LIMIT].supported = true;
 
-	/* Get the SN to turn into a Unique ID */
+	 
 	smum_send_msg_to_smc(hwmgr, PPSMC_MSG_ReadSerialNumTop32, &top32);
 	smum_send_msg_to_smc(hwmgr, PPSMC_MSG_ReadSerialNumBottom32, &bottom32);
 
@@ -525,7 +504,7 @@ static int vega10_get_socclk_for_voltage_evv(struct pp_hwmgr *hwmgr,
 			"Lookup table is empty",
 			return -EINVAL);
 
-	/* search for leakage voltage ID 0xff01 ~ 0xff08 and sclk */
+	 
 	for (entry_id = 0; entry_id < table_info->vdd_dep_on_sclk->count; entry_id++) {
 		voltage_id = table_info->vdd_dep_on_socclk->entries[entry_id].vddInd;
 		if (lookup_table->entries[voltage_id].us_vdd == virtual_voltage_id)
@@ -542,12 +521,7 @@ static int vega10_get_socclk_for_voltage_evv(struct pp_hwmgr *hwmgr,
 }
 
 #define ATOM_VIRTUAL_VOLTAGE_ID0             0xff01
-/**
- * vega10_get_evv_voltages - Get Leakage VDDC based on leakage ID.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * return:  always 0.
- */
+ 
 static int vega10_get_evv_voltages(struct pp_hwmgr *hwmgr)
 {
 	struct vega10_hwmgr *data = hwmgr->backend;
@@ -582,11 +556,11 @@ static int vega10_get_evv_voltages(struct pp_hwmgr *hwmgr)
 					continue);
 
 
-			/* need to make sure vddc is less than 2v or else, it could burn the ASIC. */
+			 
 			PP_ASSERT_WITH_CODE((vddc < 2000 && vddc != 0),
 					"Invalid VDDC value", result = -EINVAL;);
 
-			/* the voltage should not be zero nor equal to leakage ID */
+			 
 			if (vddc != 0 && vddc != vv_id) {
 				data->vddc_leakage.actual_voltage[data->vddc_leakage.count] = (uint16_t)(vddc/100);
 				data->vddc_leakage.leakage_id[data->vddc_leakage.count] = vv_id;
@@ -598,22 +572,16 @@ static int vega10_get_evv_voltages(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * vega10_patch_with_vdd_leakage - Change virtual leakage voltage to actual value.
- *
- * @hwmgr:         the address of the powerplay hardware manager.
- * @voltage:       pointer to changing voltage
- * @leakage_table: pointer to leakage table
- */
+ 
 static void vega10_patch_with_vdd_leakage(struct pp_hwmgr *hwmgr,
 		uint16_t *voltage, struct vega10_leakage_voltage *leakage_table)
 {
 	uint32_t index;
 
-	/* search for leakage voltage ID 0xff01 ~ 0xff08 */
+	 
 	for (index = 0; index < leakage_table->count; index++) {
-		/* if this voltage matches a leakage voltage ID */
-		/* patch with actual leakage voltage */
+		 
+		 
 		if (leakage_table->leakage_id[index] == *voltage) {
 			*voltage = leakage_table->actual_voltage[index];
 			break;
@@ -624,14 +592,7 @@ static void vega10_patch_with_vdd_leakage(struct pp_hwmgr *hwmgr,
 		pr_info("Voltage value looks like a Leakage ID but it's not patched\n");
 }
 
-/**
- * vega10_patch_lookup_table_with_leakage - Patch voltage lookup table by EVV leakages.
- *
- * @hwmgr:         the address of the powerplay hardware manager.
- * @lookup_table:  pointer to voltage lookup table
- * @leakage_table: pointer to leakage table
- * return:         always 0
- */
+ 
 static int vega10_patch_lookup_table_with_leakage(struct pp_hwmgr *hwmgr,
 		phm_ppt_v1_voltage_lookup_table *lookup_table,
 		struct vega10_leakage_voltage *leakage_table)
@@ -718,7 +679,7 @@ static int vega10_sort_lookup_table(struct pp_hwmgr *hwmgr,
 
 	table_size = lookup_table->count;
 
-	/* Sorting voltages */
+	 
 	for (i = 0; i < table_size - 1; i++) {
 		for (j = i + 1; j > 0; j--) {
 			if (lookup_table->entries[j].us_vdd <
@@ -835,12 +796,12 @@ static int vega10_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 	vega10_set_default_registry_data(hwmgr);
 	data->disable_dpm_mask = 0xff;
 
-	/* need to set voltage control types before EVV patching */
+	 
 	data->vddc_control = VEGA10_VOLTAGE_CONTROL_NONE;
 	data->mvdd_control = VEGA10_VOLTAGE_CONTROL_NONE;
 	data->vddci_control = VEGA10_VOLTAGE_CONTROL_NONE;
 
-	/* VDDCR_SOC */
+	 
 	if (pp_atomfwctrl_is_voltage_controlled_by_gpio_v4(hwmgr,
 			VOLTAGE_TYPE_VDDC, VOLTAGE_OBJ_SVID2)) {
 		if (!pp_atomfwctrl_get_voltage_table_v4(hwmgr,
@@ -858,7 +819,7 @@ static int vega10_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 				return -1);
 	}
 
-	/* MVDDC */
+	 
 	if (pp_atomfwctrl_is_voltage_controlled_by_gpio_v4(hwmgr,
 			VOLTAGE_TYPE_MVDDC, VOLTAGE_OBJ_SVID2)) {
 		if (!pp_atomfwctrl_get_voltage_table_v4(hwmgr,
@@ -871,7 +832,7 @@ static int vega10_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 		}
 	}
 
-	 /* VDDCI_MEM */
+	  
 	if (PP_CAP(PHM_PlatformCaps_ControlVDDCI)) {
 		if (pp_atomfwctrl_is_voltage_controlled_by_gpio_v4(hwmgr,
 				VOLTAGE_TYPE_VDDCI, VOLTAGE_OBJ_GPIO_LUT))
@@ -885,18 +846,16 @@ static int vega10_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 	vega10_init_dpm_defaults(hwmgr);
 
 #ifdef PPLIB_VEGA10_EVV_SUPPORT
-	/* Get leakage voltage based on leakage ID. */
+	 
 	PP_ASSERT_WITH_CODE(!vega10_get_evv_voltages(hwmgr),
 			"Get EVV Voltage Failed.  Abort Driver loading!",
 			return -1);
 #endif
 
-	/* Patch our voltage dependency table with actual leakage voltage
-	 * We need to perform leakage translation before it's used by other functions
-	 */
+	 
 	vega10_complete_dependency_tables(hwmgr);
 
-	/* Parse pptable data read from VBIOS */
+	 
 	vega10_set_private_data_based_on_pptable(hwmgr);
 
 	data->is_tlu_enabled = false;
@@ -906,8 +865,8 @@ static int vega10_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 	hwmgr->platform_descriptor.hardwarePerformanceLevels = 2;
 	hwmgr->platform_descriptor.minimumClocksReductionPercentage = 50;
 
-	hwmgr->platform_descriptor.vbiosInterruptId = 0x20000400; /* IRQ_SOURCE1_SW_INT */
-	/* The true clock step depends on the frequency, typically 4.5 or 9 MHz. Here we use 5. */
+	hwmgr->platform_descriptor.vbiosInterruptId = 0x20000400;  
+	 
 	hwmgr->platform_descriptor.clockStep.engineClock = 500;
 	hwmgr->platform_descriptor.clockStep.memoryClock = 500;
 
@@ -915,7 +874,7 @@ static int vega10_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 	if (!hwmgr->not_vf)
 		return result;
 
-	/* Setup default Overdrive Fan control settings */
+	 
 	data->odn_fan_table.target_fan_speed =
 			hwmgr->thermal_controller.advanceFanControlParameters.usMaxFanRPM;
 	data->odn_fan_table.target_temperature =
@@ -1001,13 +960,7 @@ static int vega10_setup_asic_task(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * vega10_trim_voltage_table - Remove repeated voltage values and create table with unique values.
- *
- * @hwmgr:      the address of the powerplay hardware manager.
- * @vol_table:  the pointer to changing voltage table
- * return:      0 in success
- */
+ 
 static int vega10_trim_voltage_table(struct pp_hwmgr *hwmgr,
 		struct pp_atomfwctrl_voltage_table *vol_table)
 {
@@ -1127,11 +1080,7 @@ static int vega10_get_vdd_voltage_table(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/* ---- Voltage Tables ----
- * If the voltage table would be bigger than
- * what will fit into the state table on
- * the SMC keep only the higher entries.
- */
+ 
 static void vega10_trim_voltage_table_to_fit_state_table(
 		struct pp_hwmgr *hwmgr,
 		uint32_t max_vol_steps,
@@ -1150,12 +1099,7 @@ static void vega10_trim_voltage_table_to_fit_state_table(
 	vol_table->count = max_vol_steps;
 }
 
-/**
- * vega10_construct_voltage_tables - Create Voltage Tables.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * return:  always 0
- */
+ 
 static int vega10_construct_voltage_tables(struct pp_hwmgr *hwmgr)
 {
 	struct vega10_hwmgr *data = hwmgr->backend;
@@ -1211,13 +1155,7 @@ static int vega10_construct_voltage_tables(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/*
- * vega10_init_dpm_state
- * Function to initialize all Soft Min/Max and Hard Min/Max to 0xff.
- *
- * @dpm_state: - the address of the DPM Table to initiailize.
- * return:   None.
- */
+ 
 static void vega10_init_dpm_state(struct vega10_dpm_state *dpm_state)
 {
 	dpm_state->soft_min_level = 0xff;
@@ -1285,14 +1223,7 @@ static int vega10_setup_default_pcie_table(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/*
- * This function is to initialize all DPM state tables
- * for SMU based on the dependency table.
- * Dynamic state patching function will then trim these
- * state tables to the allowed range based
- * on the power policy or external client requests,
- * such as UVD request, etc.
- */
+ 
 static int vega10_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 {
 	struct vega10_hwmgr *data = hwmgr->backend;
@@ -1339,7 +1270,7 @@ static int vega10_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 			"MCLK dependency table has to have is missing. This table is mandatory",
 			return -EINVAL);
 
-	/* Initialize Sclk DPM table based on allow Sclk values */
+	 
 	dpm_table = &(data->dpm_table.soc_table);
 	vega10_setup_default_single_dpm_table(hwmgr,
 			dpm_table,
@@ -1356,7 +1287,7 @@ static int vega10_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 					dpm_table->dpm_levels[dpm_table->count-1].value;
 	vega10_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* Initialize Mclk DPM table based on allow Mclk values */
+	 
 	data->dpm_table.mem_table.count = 0;
 	dpm_table = &(data->dpm_table.mem_table);
 	vega10_setup_default_single_dpm_table(hwmgr,
@@ -1409,7 +1340,7 @@ static int vega10_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 	}
 	vega10_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* Assume there is no headless Vega10 for now */
+	 
 	dpm_table = &(data->dpm_table.dcef_table);
 	vega10_setup_default_single_dpm_table(hwmgr,
 			dpm_table,
@@ -1440,29 +1371,20 @@ static int vega10_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 
 	vega10_setup_default_pcie_table(hwmgr);
 
-	/* Zero out the saved copy of the CUSTOM profile
-	 * This will be checked when trying to set the profile
-	 * and will require that new values be passed in
-	 */
+	 
 	data->custom_profile_mode[0] = 0;
 	data->custom_profile_mode[1] = 0;
 	data->custom_profile_mode[2] = 0;
 	data->custom_profile_mode[3] = 0;
 
-	/* save a copy of the default DPM table */
+	 
 	memcpy(&(data->golden_dpm_table), &(data->dpm_table),
 			sizeof(struct vega10_dpm_table));
 
 	return 0;
 }
 
-/*
- * vega10_populate_ulv_state
- * Function to provide parameters for Utral Low Voltage state to SMC.
- *
- * @hwmgr: - the address of the hardware manager.
- * return:   Always 0.
- */
+ 
 static int vega10_populate_ulv_state(struct pp_hwmgr *hwmgr)
 {
 	struct vega10_hwmgr *data = hwmgr->backend;
@@ -1590,15 +1512,7 @@ static int vega10_populate_smc_link_levels(struct pp_hwmgr *hwmgr)
 	return result;
 }
 
-/**
- * vega10_populate_single_gfx_level - Populates single SMC GFXSCLK structure
- *                                    using the provided engine clock
- *
- * @hwmgr:      the address of the hardware manager
- * @gfx_clock:  the GFX clock to use to populate the structure.
- * @current_gfxclk_level:  location in PPTable for the SMC GFXCLK structure.
- * @acg_freq:   ACG frequenty to return (MHz)
- */
+ 
 static int vega10_populate_single_gfx_level(struct pp_hwmgr *hwmgr,
 		uint32_t gfx_clock, PllSetting_t *current_gfxclk_level,
 		uint32_t *acg_freq)
@@ -1640,10 +1554,10 @@ static int vega10_populate_single_gfx_level(struct pp_hwmgr *hwmgr,
 			"Failed to get GFX Clock settings from VBIOS!",
 			return -EINVAL);
 
-	/* Feedback Multiplier: bit 0:8 int, bit 15:12 post_div, bit 31:16 frac */
+	 
 	current_gfxclk_level->FbMult =
 			cpu_to_le32(dividers.ulPll_fb_mult);
-	/* Spread FB Multiplier bit: bit 0:8 int, bit 31:16 frac */
+	 
 	current_gfxclk_level->SsOn = dividers.ucPll_ss_enable;
 	current_gfxclk_level->SsFbMult =
 			cpu_to_le32(dividers.ulPll_ss_fbsmult);
@@ -1651,21 +1565,12 @@ static int vega10_populate_single_gfx_level(struct pp_hwmgr *hwmgr,
 			cpu_to_le16(dividers.usPll_ss_slew_frac);
 	current_gfxclk_level->Did = (uint8_t)(dividers.ulDid);
 
-	*acg_freq = gfx_clock / 100; /* 100 Khz to Mhz conversion */
+	*acg_freq = gfx_clock / 100;  
 
 	return 0;
 }
 
-/**
- * vega10_populate_single_soc_level - Populates single SMC SOCCLK structure
- *                                    using the provided clock.
- *
- * @hwmgr:     the address of the hardware manager.
- * @soc_clock: the SOC clock to use to populate the structure.
- * @current_soc_did:   DFS divider to pass back to caller
- * @current_vol_index: index of current VDD to pass back to caller
- * return:      0 on success
- */
+ 
 static int vega10_populate_single_soc_level(struct pp_hwmgr *hwmgr,
 		uint32_t soc_clock, uint8_t *current_soc_did,
 		uint8_t *current_vol_index)
@@ -1707,12 +1612,7 @@ static int vega10_populate_single_soc_level(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/**
- * vega10_populate_all_graphic_levels - Populates all SMC SCLK levels' structure
- *                                      based on the trimmed allowed dpm engine clock states
- *
- * @hwmgr:      the address of the hardware manager
- */
+ 
 static int vega10_populate_all_graphic_levels(struct pp_hwmgr *hwmgr)
 {
 	struct vega10_hwmgr *data = hwmgr->backend;
@@ -1796,13 +1696,7 @@ static void vega10_populate_vddc_soc_levels(struct pp_hwmgr *hwmgr)
 	}
 }
 
-/*
- * Populates single SMC GFXCLK structure using the provided clock.
- *
- * @hwmgr:     the address of the hardware manager.
- * @mem_clock: the memory clock to use to populate the structure.
- * return:     0 on success..
- */
+ 
 static int vega10_populate_single_memory_level(struct pp_hwmgr *hwmgr,
 		uint32_t mem_clock, uint8_t *current_mem_vid,
 		PllSetting_t *current_memclk_level, uint8_t *current_mem_soc_vind)
@@ -1857,13 +1751,7 @@ static int vega10_populate_single_memory_level(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/**
- * vega10_populate_all_memory_levels - Populates all SMC MCLK levels' structure
- *                                     based on the trimmed allowed dpm memory clock states.
- *
- * @hwmgr:  the address of the hardware manager.
- * return:   PP_Result_OK on success.
- */
+ 
 static int vega10_populate_all_memory_levels(struct pp_hwmgr *hwmgr)
 {
 	struct vega10_hwmgr *data = hwmgr->backend;
@@ -2430,7 +2318,7 @@ static int vega10_avfs_enable(struct pp_hwmgr *hwmgr, bool enable)
 	struct vega10_hwmgr *data = hwmgr->backend;
 
 	if (data->smu_features[GNLD_AVFS].supported) {
-		/* Already enabled or disabled */
+		 
 		if (!(enable ^ data->smu_features[GNLD_AVFS].enabled))
 			return 0;
 
@@ -2536,12 +2424,7 @@ static void vega10_check_dpm_table_updated(struct pp_hwmgr *hwmgr)
 	}
 }
 
-/**
- * vega10_init_smc_table - Initializes the SMC table and uploads it
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * return:  always 0
- */
+ 
 static int vega10_init_smc_table(struct pp_hwmgr *hwmgr)
 {
 	int result;
@@ -2561,7 +2444,7 @@ static int vega10_init_smc_table(struct pp_hwmgr *hwmgr)
 	if (!hwmgr->not_vf)
 		return 0;
 
-	/* initialize ODN table */
+	 
 	if (hwmgr->od_enabled) {
 		if (odn_table->max_vddc) {
 			data->need_update_dpm_table |= DPMTABLE_OD_UPDATE_SCLK | DPMTABLE_OD_UPDATE_MCLK;
@@ -2918,13 +2801,7 @@ static int vega10_stop_dpm(struct pp_hwmgr *hwmgr, uint32_t bitmap)
 	return 0;
 }
 
-/**
- * vega10_start_dpm - Tell SMC to enabled the supported DPMs.
- *
- * @hwmgr:   the address of the powerplay hardware manager.
- * @bitmap:  bitmap for the features to enabled.
- * return:  0 on at least one DPM is successfully enabled.
- */
+ 
 static int vega10_start_dpm(struct pp_hwmgr *hwmgr, uint32_t bitmap)
 {
 	struct vega10_hwmgr *data = hwmgr->backend;
@@ -3021,7 +2898,7 @@ static void vega10_populate_umdpstate_clocks(struct pp_hwmgr *hwmgr)
 	hwmgr->pstate_sclk_peak = table_info->vdd_dep_on_sclk->entries[table_info->vdd_dep_on_sclk->count - 1].clk;
 	hwmgr->pstate_mclk_peak = table_info->vdd_dep_on_mclk->entries[table_info->vdd_dep_on_mclk->count - 1].clk;
 
-	/* make sure the output is in Mhz */
+	 
 	hwmgr->pstate_sclk /= 100;
 	hwmgr->pstate_mclk /= 100;
 	hwmgr->pstate_sclk_peak /= 100;
@@ -3079,7 +2956,7 @@ static int vega10_enable_dpm_tasks(struct pp_hwmgr *hwmgr)
 	}
 
 	if (hwmgr->not_vf) {
-		/* enable didt, do not abort if failed didt */
+		 
 		tmp_result = vega10_enable_didt_config(hwmgr);
 		PP_ASSERT(!tmp_result,
 			  "Failed to enable didt config!");
@@ -3137,17 +3014,13 @@ static int vega10_get_pp_table_entry_callback_func(struct pp_hwmgr *hwmgr,
 			le16_to_cpu(powerplay_table->usMclkDependencyTableOffset));
 
 
-	/* The following fields are not initialized here:
-	 * id orderedList allStatesList
-	 */
+	 
 	power_state->classification.ui_label =
 			(le16_to_cpu(state_entry->usClassification) &
 			ATOM_PPLIB_CLASSIFICATION_UI_MASK) >>
 			ATOM_PPLIB_CLASSIFICATION_UI_SHIFT;
 	power_state->classification.flags = classification_flag;
-	/* NOTE: There is a classification2 flag in BIOS
-	 * that is not being used right now
-	 */
+	 
 	power_state->classification.temporary_state = false;
 	power_state->classification.to_be_deleted = false;
 
@@ -3183,7 +3056,7 @@ static int vega10_get_pp_table_entry_callback_func(struct pp_hwmgr *hwmgr,
 			"Performance levels exceeds Driver limit!",
 			return -1);
 
-	/* Performance levels are arranged from low to high. */
+	 
 	performance_level->soc_clock = socclk_dep_table->entries
 			[state_entry->ucSocClockIndexLow].ulClk;
 	performance_level->gfx_clock = gfxclk_dep_table->entries
@@ -3196,9 +3069,7 @@ static int vega10_get_pp_table_entry_callback_func(struct pp_hwmgr *hwmgr,
 	performance_level->soc_clock = socclk_dep_table->entries
 				[state_entry->ucSocClockIndexHigh].ulClk;
 	if (gfxclk_dep_table->ucRevId == 0) {
-		/* under vega10 pp one vf mode, the gfx clk dpm need be lower
-		 * to level-4 due to the limited 110w-power
-		 */
+		 
 		if (hwmgr->pp_one_vf && (state_entry->ucGfxClockIndexHigh > 0))
 			performance_level->gfx_clock =
 				gfxclk_dep_table->entries[4].ulClk;
@@ -3234,11 +3105,8 @@ static int vega10_get_pp_table_entry(struct pp_hwmgr *hwmgr,
 	if (result)
 		return result;
 
-	/*
-	 * This is the earliest time we have all the dependency table
-	 * and the VBIOS boot state
-	 */
-	/* set DC compatible flag if this state supports DC */
+	 
+	 
 	if (!state->validation.disallowOnDC)
 		vega10_ps->dc_compatible = true;
 
@@ -3288,7 +3156,7 @@ static int vega10_apply_state_adjust_rules(struct pp_hwmgr *hwmgr,
 			&(hwmgr->dyn_state.max_clock_voltage_on_ac) :
 			&(hwmgr->dyn_state.max_clock_voltage_on_dc);
 
-	/* Cap clock DPM tables at DC MAX if it is in DC. */
+	 
 	if (!adev->pm.ac_power) {
 		for (i = 0; i < vega10_ps->performance_level_count; i++) {
 			if (vega10_ps->performance_levels[i].mem_clock >
@@ -3302,7 +3170,7 @@ static int vega10_apply_state_adjust_rules(struct pp_hwmgr *hwmgr,
 		}
 	}
 
-	/* result = PHM_CheckVBlankTime(hwmgr, &vblankTooShort);*/
+	 
 	minimum_clocks.engineClock = hwmgr->display_config->min_core_set_clock;
 	minimum_clocks.memoryClock = hwmgr->display_config->min_mem_set_clock;
 
@@ -3373,13 +3241,11 @@ static int vega10_apply_state_adjust_rules(struct pp_hwmgr *hwmgr,
 				vega10_ps->performance_levels[1].gfx_clock;
 
 	if (disable_mclk_switching) {
-		/* Set Mclk the max of level 0 and level 1 */
+		 
 		if (mclk < vega10_ps->performance_levels[1].mem_clock)
 			mclk = vega10_ps->performance_levels[1].mem_clock;
 
-		/* Find the lowest MCLK frequency that is within
-		 * the tolerable latency defined in DAL
-		 */
+		 
 		latency = hwmgr->display_config->dce_tolerable_mclk_in_active_latency;
 		for (i = 0; i < data->mclk_latency_table.count; i++) {
 			if ((data->mclk_latency_table.entries[i].latency <= latency) &&
@@ -3793,7 +3659,7 @@ static int vega10_update_sclk_threshold(struct pp_hwmgr *hwmgr)
 		data->smc_state_table.pp_table.LowGfxclkInterruptThreshold =
 				cpu_to_le32(low_sclk_interrupt_threshold);
 
-		/* This message will also enable SmcToHost Interrupt */
+		 
 		smum_send_msg_to_smc_with_parameter(hwmgr,
 				PPSMC_MSG_SetLowGfxclkInterruptThreshold,
 				(uint32_t)low_sclk_interrupt_threshold,
@@ -3834,19 +3700,13 @@ static int vega10_set_power_state_tasks(struct pp_hwmgr *hwmgr,
 	PP_ASSERT_WITH_CODE(!result,
 			"Failed to upload PPtable!", return result);
 
-	/*
-	 * If a custom pp table is loaded, set DPMTABLE_OD_UPDATE_VDDC flag.
-	 * That effectively disables AVFS feature.
-	 */
+	 
 	if(hwmgr->hardcode_pp_table != NULL)
 		data->need_update_dpm_table |= DPMTABLE_OD_UPDATE_VDDC;
 
 	vega10_update_avfs(hwmgr);
 
-	/*
-	 * Clear all OD flags except DPMTABLE_OD_UPDATE_VDDC.
-	 * That will help to keep AVFS disabled.
-	 */
+	 
 	data->need_update_dpm_table &= DPMTABLE_OD_UPDATE_VDDC;
 
 	return 0;
@@ -3906,7 +3766,7 @@ static int vega10_get_gpu_power(struct pp_hwmgr *hwmgr,
 
 	smum_send_msg_to_smc(hwmgr, PPSMC_MSG_GetCurrPkgPwr, &value);
 
-	/* SMC returning actual watts, keep consistent with legacy asics, low 8 bit as 8 fractional bits */
+	 
 	*query = value << 8;
 
 	return 0;
@@ -4198,9 +4058,7 @@ static int vega10_get_profiling_clk_mask(struct pp_hwmgr *hwmgr, enum amd_dpm_fo
 	} else if (level == AMD_DPM_FORCED_LEVEL_PROFILE_MIN_MCLK) {
 		*mclk_mask = 0;
 	} else if (level == AMD_DPM_FORCED_LEVEL_PROFILE_PEAK) {
-		/* under vega10  pp one vf mode, the gfx clk dpm need be lower
-		 * to level-4 due to the limited power
-		 */
+		 
 		if (hwmgr->pp_one_vf)
 			*sclk_mask = 4;
 		else
@@ -4996,9 +4854,7 @@ static int vega10_check_states_equal(struct pp_hwmgr *hwmgr,
 	vega10_psa = cast_const_phw_vega10_power_state(pstate1);
 	vega10_psb = cast_const_phw_vega10_power_state(pstate2);
 
-	/* If the two states don't even have the same number of performance levels
-	 * they cannot be the same state.
-	 */
+	 
 	if (vega10_psa->performance_level_count != vega10_psb->performance_level_count) {
 		*equal = false;
 		return 0;
@@ -5007,15 +4863,13 @@ static int vega10_check_states_equal(struct pp_hwmgr *hwmgr,
 	for (i = 0; i < vega10_psa->performance_level_count; i++) {
 		if (!vega10_are_power_levels_equal(&(vega10_psa->performance_levels[i]),
 						   &(vega10_psb->performance_levels[i]))) {
-			/* If we have found even one performance level pair
-			 * that is different the states are different.
-			 */
+			 
 			*equal = false;
 			return 0;
 		}
 	}
 
-	/* If all performance levels are the same try to use the UVD clocks to break the tie.*/
+	 
 	*equal = ((vega10_psa->uvd_clks.vclk == vega10_psb->uvd_clks.vclk) &&
 		  (vega10_psa->uvd_clks.dclk == vega10_psb->uvd_clks.dclk));
 	*equal &= ((vega10_psa->vce_clks.evclk == vega10_psb->vce_clks.evclk) &&
@@ -5326,10 +5180,7 @@ static int vega10_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, ui
 		if (size != 0 && size != 4)
 			return -EINVAL;
 
-		/* If size = 0 and the CUSTOM profile has been set already
-		 * then just apply the profile. The copy stored in the hwmgr
-		 * is zeroed out on init
-		 */
+		 
 		if (size == 0) {
 			if (data->custom_profile_mode[0] != 0)
 				goto out;
@@ -5564,7 +5415,7 @@ static int vega10_odn_edit_dpm_table(struct pp_hwmgr *hwmgr,
 		memcpy(&(data->dpm_table), &(data->golden_dpm_table), sizeof(struct vega10_dpm_table));
 		vega10_odn_initial_default_setting(hwmgr);
 		vega10_odn_update_power_state(hwmgr);
-		/* force to update all clock tables */
+		 
 		data->need_update_dpm_table = DPMTABLE_UPDATE_SCLK |
 					      DPMTABLE_UPDATE_MCLK |
 					      DPMTABLE_UPDATE_SOCCLK;

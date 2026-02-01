@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <stdint.h>
@@ -38,9 +14,9 @@
 
 #if MICROPY_PY_WEBREPL
 
-#if 0 // print debugging info
+#if 0 
 #define DEBUG_printf DEBUG_printf
-#else // don't print debugging info
+#else 
 #define DEBUG_printf(...) (void)0
 #endif
 
@@ -132,7 +108,7 @@ static int write_file_chunk(mp_obj_webrepl_t *self) {
 
 static void handle_op(mp_obj_webrepl_t *self) {
 
-    // Handle operations not requiring opened file
+    
 
     switch (self->hdr.type) {
         case GET_VER: {
@@ -143,7 +119,7 @@ static void handle_op(mp_obj_webrepl_t *self) {
         }
     }
 
-    // Handle operations requiring opened file
+    
 
     mp_obj_t open_args[2] = {
         mp_obj_new_str(self->hdr.fname, strlen(self->hdr.fname)),
@@ -184,12 +160,12 @@ static mp_uint_t webrepl_read(mp_obj_t self_in, void *buf, mp_uint_t size, int *
 }
 
 static mp_uint_t _webrepl_read(mp_obj_t self_in, void *buf, mp_uint_t size, int *errcode) {
-    // We know that os.dupterm always calls with size = 1
+    
     assert(size == 1);
     mp_obj_webrepl_t *self = MP_OBJ_TO_PTR(self_in);
     const mp_stream_p_t *sock_stream = mp_get_stream(self->sock);
     mp_uint_t out_sz = sock_stream->read(self->sock, buf, size, errcode);
-    // DEBUG_printf("webrepl: Read %d initial bytes from websocket\n", out_sz);
+    
     if (out_sz == 0 || out_sz == MP_STREAM_ERROR) {
         return out_sz;
     }
@@ -214,7 +190,7 @@ static mp_uint_t _webrepl_read(mp_obj_t self_in, void *buf, mp_uint_t size, int 
         return -2;
     }
 
-    // If last read data belonged to text record (== REPL)
+    
     int err;
     if (sock_stream->ioctl(self->sock, MP_STREAM_GET_DATA_OPTS, 0, &err) == 1) {
         return out_sz;
@@ -244,7 +220,7 @@ static mp_uint_t _webrepl_read(mp_obj_t self_in, void *buf, mp_uint_t size, int 
     }
 
     if (self->data_to_recv != 0) {
-        // Ports that don't have much available stack can make this filebuf static
+        
         #if MICROPY_PY_WEBREPL_STATIC_FILEBUF
         static
         #endif
@@ -281,10 +257,10 @@ static mp_uint_t _webrepl_read(mp_obj_t self_in, void *buf, mp_uint_t size, int 
         check_file_op_finished(self);
 
         #ifdef MICROPY_PY_WEBREPL_DELAY
-        // Some platforms may have broken drivers and easily gets
-        // overloaded with modest traffic WebREPL file transfers
-        // generate. The basic workaround is a crude rate control
-        // done in such way.
+        
+        
+        
+        
         mp_hal_delay_ms(MICROPY_PY_WEBREPL_DELAY);
         #endif
     }
@@ -295,7 +271,7 @@ static mp_uint_t _webrepl_read(mp_obj_t self_in, void *buf, mp_uint_t size, int 
 static mp_uint_t webrepl_write(mp_obj_t self_in, const void *buf, mp_uint_t size, int *errcode) {
     mp_obj_webrepl_t *self = MP_OBJ_TO_PTR(self_in);
     if (self->state == STATE_PASSWD) {
-        // Don't forward output until passwd is entered
+        
         return size;
     }
     const mp_stream_p_t *stream_p = mp_get_stream(self->sock);
@@ -307,7 +283,7 @@ static mp_uint_t webrepl_ioctl(mp_obj_t o_in, mp_uint_t request, uintptr_t arg, 
     (void)arg;
     switch (request) {
         case MP_STREAM_CLOSE:
-            // TODO: This is a place to do cleanup
+            
             mp_stream_close(self->sock);
             return 0;
 
@@ -366,4 +342,4 @@ const mp_obj_module_t mp_module_webrepl = {
 
 MP_REGISTER_MODULE(MP_QSTR__webrepl, mp_module_webrepl);
 
-#endif // MICROPY_PY_WEBREPL
+#endif 

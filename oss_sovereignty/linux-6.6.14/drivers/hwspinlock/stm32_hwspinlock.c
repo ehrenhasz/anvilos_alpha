@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2018
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -161,7 +158,7 @@ static int __init stm32_hwspinlock_init(void)
 {
 	return platform_driver_register(&stm32_hwspinlock_driver);
 }
-/* board init code might need to reserve hwspinlocks for predefined purposes */
+ 
 postcore_initcall(stm32_hwspinlock_init);
 
 static void __exit stm32_hwspinlock_exit(void)

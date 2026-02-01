@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UFS hardware monitoring support
- * Copyright (c) 2021, Western Digital Corporation
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/units.h>

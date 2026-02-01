@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm Technologies HIDMA Management SYS interface
- *
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/sysfs.h>
 #include <linux/platform_device.h>
@@ -247,7 +243,7 @@ int hidma_mgmt_init_sys(struct hidma_mgmt_dev *mdev)
 	if (!chanops)
 		return -ENOMEM;
 
-	/* create each channel directory here */
+	 
 	for (i = 0; i < mdev->dma_channels; i++) {
 		char name[20];
 
@@ -257,7 +253,7 @@ int hidma_mgmt_init_sys(struct hidma_mgmt_dev *mdev)
 			return -ENOMEM;
 	}
 
-	/* populate common parameters */
+	 
 	for (i = 0; i < ARRAY_SIZE(hidma_mgmt_files); i++) {
 		rc = create_sysfs_entry(mdev, hidma_mgmt_files[i].name,
 					hidma_mgmt_files[i].mode);
@@ -265,7 +261,7 @@ int hidma_mgmt_init_sys(struct hidma_mgmt_dev *mdev)
 			return rc;
 	}
 
-	/* populate parameters that are per channel */
+	 
 	for (i = 0; i < mdev->dma_channels; i++) {
 		rc = create_sysfs_entry_channel(mdev, "priority",
 						(S_IRUGO | S_IWUGO), i,

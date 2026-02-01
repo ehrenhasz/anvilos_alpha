@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #define __EXPORTED_HEADERS__
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
 	memset(&create, 0, sizeof(create));
 
-	/* should fail (offset not page aligned) */
+	 
 	create.memfd  = memfd;
 	create.offset = getpagesize()/2;
 	create.size   = getpagesize();
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* should fail (size not multiple of page) */
+	 
 	create.memfd  = memfd;
 	create.offset = 0;
 	create.size   = getpagesize()/2;
@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* should fail (not memfd) */
-	create.memfd  = 0; /* stdin */
+	 
+	create.memfd  = 0;  
 	create.offset = 0;
 	create.size   = size;
 	buf = ioctl(devfd, UDMABUF_CREATE, &create);
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* should work */
+	 
 	create.memfd  = memfd;
 	create.offset = 0;
 	create.size   = size;

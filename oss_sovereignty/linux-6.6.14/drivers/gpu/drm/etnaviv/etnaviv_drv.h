@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+ 
+ 
 
 #ifndef __ETNAVIV_DRV_H__
 #define __ETNAVIV_DRV_H__
@@ -26,7 +24,7 @@ struct etnaviv_gem_object;
 struct etnaviv_gem_submit;
 struct etnaviv_iommu_global;
 
-#define ETNAVIV_SOFTPIN_START_ADDRESS	SZ_4M /* must be >= SUBALLOC_SIZE */
+#define ETNAVIV_SOFTPIN_START_ADDRESS	SZ_4M  
 
 struct etnaviv_file_private {
 	int id;
@@ -45,7 +43,7 @@ struct etnaviv_drm_private {
 	struct xarray active_contexts;
 	u32 next_context_id;
 
-	/* list of GEM objects: */
+	 
 	struct mutex gem_lock;
 	struct list_head gem_list;
 };
@@ -90,11 +88,7 @@ void etnaviv_gem_describe_objects(struct etnaviv_drm_private *priv,
 #define DBG(fmt, ...) DRM_DEBUG(fmt"\n", ##__VA_ARGS__)
 #define VERB(fmt, ...) if (0) DRM_DEBUG(fmt"\n", ##__VA_ARGS__)
 
-/*
- * Return the storage size of a structure with a variable length array.
- * The array is nelem elements of elem_size, where the base structure
- * is defined by base.  If the size overflows size_t, return zero.
- */
+ 
 static inline size_t size_vstruct(size_t nelem, size_t elem_size, size_t base)
 {
 	if (elem_size && nelem > (SIZE_MAX - base) / elem_size)
@@ -102,11 +96,7 @@ static inline size_t size_vstruct(size_t nelem, size_t elem_size, size_t base)
 	return base + nelem * elem_size;
 }
 
-/*
- * Etnaviv timeouts are specified wrt CLOCK_MONOTONIC, not jiffies.
- * We need to calculate the timeout in terms of number of jiffies
- * between the specified timeout and the current CLOCK_MONOTONIC time.
- */
+ 
 static inline unsigned long etnaviv_timeout_to_jiffies(
 	const struct drm_etnaviv_timespec *timeout)
 {
@@ -117,7 +107,7 @@ static inline unsigned long etnaviv_timeout_to_jiffies(
 
 	ktime_get_ts64(&ts);
 
-	/* timeouts before "now" have already expired */
+	 
 	if (timespec64_compare(&to, &ts) <= 0)
 		return 0;
 
@@ -126,4 +116,4 @@ static inline unsigned long etnaviv_timeout_to_jiffies(
 	return timespec64_to_jiffies(&ts);
 }
 
-#endif /* __ETNAVIV_DRV_H__ */
+#endif  

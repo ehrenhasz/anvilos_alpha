@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ALSA SoC PDM Driver
- *
- * Copyright 2020 Advanced Micro Devices, Inc.
- */
+ 
+ 
 
 #include "rn_chip_offset_byte.h"
 
@@ -41,7 +37,7 @@
 #define TWO_CH 0x02
 #define DELAY_US 5
 #define ACP_COUNTER 20000
-/* time in ms for runtime suspend delay */
+ 
 #define ACP_SUSPEND_DELAY_MS	2000
 
 #define ACP_SRAM_PTE_OFFSET	0x02050000
@@ -89,5 +85,5 @@ static inline void rn_writel(u32 val, void __iomem *base_addr)
 	writel(val, base_addr - ACP_PHY_BASE_ADDRESS);
 }
 
-/* Machine configuration */
+ 
 int snd_amd_acp_find_config(struct pci_dev *pci);

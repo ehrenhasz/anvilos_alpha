@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/netdevice.h>
@@ -42,10 +42,7 @@ void wx_intr_enable(struct wx *wx, u64 qmask)
 }
 EXPORT_SYMBOL(wx_intr_enable);
 
-/**
- * wx_irq_disable - Mask off interrupt generation on the NIC
- * @wx: board private structure
- **/
+ 
 void wx_irq_disable(struct wx *wx)
 {
 	struct pci_dev *pdev = wx->pdev;
@@ -66,10 +63,7 @@ void wx_irq_disable(struct wx *wx)
 }
 EXPORT_SYMBOL(wx_irq_disable);
 
-/* cmd_addr is used for some special command:
- * 1. to be sector address, when implemented erase sector command
- * 2. to be flash address when implemented read, write flash address
- */
+ 
 static int wx_fmgr_cmd_op(struct wx *wx, u32 cmd, u32 cmd_addr)
 {
 	u32 cmd_val = 0, val = 0;
@@ -101,10 +95,10 @@ int wx_check_flash_load(struct wx *hw, u32 check_bit)
 	u32 reg = 0;
 	int err = 0;
 
-	/* if there's flash existing */
+	 
 	if (!(rd32(hw, WX_SPI_STATUS) &
 	      WX_SPI_STATUS_FLASH_BYPASS)) {
-		/* wait hw load flash done */
+		 
 		err = read_poll_timeout(rd32, reg, !(reg & check_bit), 20000, 2000000,
 					false, hw, WX_SPI_ILDR_STATUS);
 		if (err < 0)
@@ -117,18 +111,13 @@ EXPORT_SYMBOL(wx_check_flash_load);
 
 void wx_control_hw(struct wx *wx, bool drv)
 {
-	/* True : Let firmware know the driver has taken over
-	 * False : Let firmware take over control of hw
-	 */
+	 
 	wr32m(wx, WX_CFG_PORT_CTL, WX_CFG_PORT_CTL_DRV_LOAD,
 	      drv ? WX_CFG_PORT_CTL_DRV_LOAD : 0);
 }
 EXPORT_SYMBOL(wx_control_hw);
 
-/**
- * wx_mng_present - returns 0 when management capability is present
- * @wx: pointer to hardware structure
- */
+ 
 int wx_mng_present(struct wx *wx)
 {
 	u32 fwsm;
@@ -141,17 +130,10 @@ int wx_mng_present(struct wx *wx)
 }
 EXPORT_SYMBOL(wx_mng_present);
 
-/* Software lock to be held while software semaphore is being accessed. */
+ 
 static DEFINE_MUTEX(wx_sw_sync_lock);
 
-/**
- *  wx_release_sw_sync - Release SW semaphore
- *  @wx: pointer to hardware structure
- *  @mask: Mask to specify which semaphore to release
- *
- *  Releases the SW semaphore for the specified
- *  function (CSR, PHY0, PHY1, EEPROM, Flash)
- **/
+ 
 static void wx_release_sw_sync(struct wx *wx, u32 mask)
 {
 	mutex_lock(&wx_sw_sync_lock);
@@ -159,14 +141,7 @@ static void wx_release_sw_sync(struct wx *wx, u32 mask)
 	mutex_unlock(&wx_sw_sync_lock);
 }
 
-/**
- *  wx_acquire_sw_sync - Acquire SW semaphore
- *  @wx: pointer to hardware structure
- *  @mask: Mask to specify which semaphore to acquire
- *
- *  Acquires the SW semaphore for the specified
- *  function (CSR, PHY0, PHY1, EEPROM, Flash)
- **/
+ 
 static int wx_acquire_sw_sync(struct wx *wx, u32 mask)
 {
 	u32 sem = 0;
@@ -186,20 +161,7 @@ static int wx_acquire_sw_sync(struct wx *wx, u32 mask)
 	return ret;
 }
 
-/**
- *  wx_host_interface_command - Issue command to manageability block
- *  @wx: pointer to the HW structure
- *  @buffer: contains the command to write and where the return status will
- *   be placed
- *  @length: length of buffer, must be multiple of 4 bytes
- *  @timeout: time in ms to wait for command completion
- *  @return_data: read and return data from the buffer (true) or not (false)
- *   Needed because FW structures are big endian and decoding of
- *   these fields can be 8 bit or 16 bit based on command. Decoding
- *   is not easily understood without making a table of commands.
- *   So we will leave this up to the caller to read back the data
- *   in these cases.
- **/
+ 
 int wx_host_interface_command(struct wx *wx, u32 *buffer,
 			      u32 length, u32 timeout, bool return_data)
 {
@@ -218,7 +180,7 @@ int wx_host_interface_command(struct wx *wx, u32 *buffer,
 	if (status != 0)
 		return status;
 
-	/* Calculate length in DWORDs. We must be DWORD aligned */
+	 
 	if ((length % (sizeof(u32))) != 0) {
 		wx_err(wx, "Buffer length failure, not aligned to dword");
 		status = -EINVAL;
@@ -227,22 +189,20 @@ int wx_host_interface_command(struct wx *wx, u32 *buffer,
 
 	dword_len = length >> 2;
 
-	/* The device driver writes the relevant command block
-	 * into the ram area.
-	 */
+	 
 	for (i = 0; i < dword_len; i++) {
 		wr32a(wx, WX_MNG_MBOX, i, (__force u32)cpu_to_le32(buffer[i]));
-		/* write flush */
+		 
 		buf[i] = rd32a(wx, WX_MNG_MBOX, i);
 	}
-	/* Setting this bit tells the ARC that a new command is pending. */
+	 
 	wr32m(wx, WX_MNG_MBOX_CTL,
 	      WX_MNG_MBOX_CTL_SWRDY, WX_MNG_MBOX_CTL_SWRDY);
 
 	status = read_poll_timeout(rd32, hicr, hicr & WX_MNG_MBOX_CTL_FWRDY, 1000,
 				   timeout * 1000, false, wx, WX_MNG_MBOX_CTL);
 
-	/* Check command completion */
+	 
 	if (status) {
 		wx_dbg(wx, "Command has failed with no status valid.\n");
 
@@ -268,16 +228,16 @@ int wx_host_interface_command(struct wx *wx, u32 *buffer,
 	if (!return_data)
 		goto rel_out;
 
-	/* Calculate length in DWORDs */
+	 
 	dword_len = hdr_size >> 2;
 
-	/* first pull in the header so we know the buffer length */
+	 
 	for (bi = 0; bi < dword_len; bi++) {
 		buffer[bi] = rd32a(wx, WX_MNG_MBOX, bi);
 		le32_to_cpus(&buffer[bi]);
 	}
 
-	/* If there is any thing in data position pull it in */
+	 
 	buf_len = ((struct wx_hic_hdr *)buffer)->buf_len;
 	if (buf_len == 0)
 		goto rel_out;
@@ -288,10 +248,10 @@ int wx_host_interface_command(struct wx *wx, u32 *buffer,
 		goto rel_out;
 	}
 
-	/* Calculate length in DWORDs, add 3 for odd lengths */
+	 
 	dword_len = (buf_len + 3) >> 2;
 
-	/* Pull in the rest of the buffer (bi is where we left off) */
+	 
 	for (; bi <= dword_len; bi++) {
 		buffer[bi] = rd32a(wx, WX_MNG_MBOX, bi);
 		le32_to_cpus(&buffer[bi]);
@@ -303,15 +263,7 @@ rel_out:
 }
 EXPORT_SYMBOL(wx_host_interface_command);
 
-/**
- *  wx_read_ee_hostif_data - Read EEPROM word using a host interface cmd
- *  assuming that the semaphore is already obtained.
- *  @wx: pointer to hardware structure
- *  @offset: offset of  word in the EEPROM to read
- *  @data: word read from the EEPROM
- *
- *  Reads a 16 bit word from the EEPROM using the hostif.
- **/
+ 
 static int wx_read_ee_hostif_data(struct wx *wx, u16 offset, u16 *data)
 {
 	struct wx_hic_read_shadow_ram buffer;
@@ -322,9 +274,9 @@ static int wx_read_ee_hostif_data(struct wx *wx, u16 offset, u16 *data)
 	buffer.hdr.req.buf_lenl = FW_READ_SHADOW_RAM_LEN;
 	buffer.hdr.req.checksum = FW_DEFAULT_CHECKSUM;
 
-	/* convert offset from words to bytes */
+	 
 	buffer.address = (__force u32)cpu_to_be32(offset * 2);
-	/* one word */
+	 
 	buffer.length = (__force u16)cpu_to_be16(sizeof(u16));
 
 	status = wx_host_interface_command(wx, (u32 *)&buffer, sizeof(buffer),
@@ -338,14 +290,7 @@ static int wx_read_ee_hostif_data(struct wx *wx, u16 offset, u16 *data)
 	return status;
 }
 
-/**
- *  wx_read_ee_hostif - Read EEPROM word using a host interface cmd
- *  @wx: pointer to hardware structure
- *  @offset: offset of  word in the EEPROM to read
- *  @data: word read from the EEPROM
- *
- *  Reads a 16 bit word from the EEPROM using the hostif.
- **/
+ 
 int wx_read_ee_hostif(struct wx *wx, u16 offset, u16 *data)
 {
 	int status = 0;
@@ -360,15 +305,7 @@ int wx_read_ee_hostif(struct wx *wx, u16 offset, u16 *data)
 }
 EXPORT_SYMBOL(wx_read_ee_hostif);
 
-/**
- *  wx_read_ee_hostif_buffer- Read EEPROM word(s) using hostif
- *  @wx: pointer to hardware structure
- *  @offset: offset of  word in the EEPROM to read
- *  @words: number of words
- *  @data: word(s) read from the EEPROM
- *
- *  Reads a 16 bit word(s) from the EEPROM using the hostif.
- **/
+ 
 int wx_read_ee_hostif_buffer(struct wx *wx,
 			     u16 offset, u16 words, u16 *data)
 {
@@ -379,7 +316,7 @@ int wx_read_ee_hostif_buffer(struct wx *wx,
 	int status;
 	u32 i;
 
-	/* Take semaphore for the entire operation. */
+	 
 	status = wx_acquire_sw_sync(wx, WX_MNG_SWFW_SYNC_SW_FLASH);
 	if (status != 0)
 		return status;
@@ -395,7 +332,7 @@ int wx_read_ee_hostif_buffer(struct wx *wx,
 		buffer.hdr.req.buf_lenl = FW_READ_SHADOW_RAM_LEN;
 		buffer.hdr.req.checksum = FW_DEFAULT_CHECKSUM;
 
-		/* convert offset from words to bytes */
+		 
 		buffer.address = (__force u32)cpu_to_be32((offset + current_word) * 2);
 		buffer.length = (__force u16)cpu_to_be16(words_to_read * 2);
 
@@ -431,13 +368,7 @@ out:
 }
 EXPORT_SYMBOL(wx_read_ee_hostif_buffer);
 
-/**
- *  wx_init_eeprom_params - Initialize EEPROM params
- *  @wx: pointer to hardware structure
- *
- *  Initializes the EEPROM parameters wx_eeprom_info within the
- *  wx_hw struct in order to set up EEPROM access.
- **/
+ 
 void wx_init_eeprom_params(struct wx *wx)
 {
 	struct wx_eeprom_info *eeprom = &wx->eeprom;
@@ -472,15 +403,7 @@ void wx_init_eeprom_params(struct wx *wx)
 }
 EXPORT_SYMBOL(wx_init_eeprom_params);
 
-/**
- *  wx_get_mac_addr - Generic get MAC address
- *  @wx: pointer to hardware structure
- *  @mac_addr: Adapter MAC address
- *
- *  Reads the adapter's MAC address from first Receive Address Register (RAR0)
- *  A reset of the adapter must be performed prior to calling this function
- *  in order for the MAC address to have been loaded from the EEPROM into RAR0
- **/
+ 
 void wx_get_mac_addr(struct wx *wx, u8 *mac_addr)
 {
 	u32 rar_high;
@@ -499,43 +422,28 @@ void wx_get_mac_addr(struct wx *wx, u8 *mac_addr)
 }
 EXPORT_SYMBOL(wx_get_mac_addr);
 
-/**
- *  wx_set_rar - Set Rx address register
- *  @wx: pointer to hardware structure
- *  @index: Receive address register to write
- *  @addr: Address to put into receive address register
- *  @pools: VMDq "set" or "pool" index
- *  @enable_addr: set flag that address is active
- *
- *  Puts an ethernet address into a receive address register.
- **/
+ 
 static int wx_set_rar(struct wx *wx, u32 index, u8 *addr, u64 pools,
 		      u32 enable_addr)
 {
 	u32 rar_entries = wx->mac.num_rar_entries;
 	u32 rar_low, rar_high;
 
-	/* Make sure we are using a valid rar index range */
+	 
 	if (index >= rar_entries) {
 		wx_err(wx, "RAR index %d is out of range.\n", index);
 		return -EINVAL;
 	}
 
-	/* select the MAC address */
+	 
 	wr32(wx, WX_PSR_MAC_SWC_IDX, index);
 
-	/* setup VMDq pool mapping */
+	 
 	wr32(wx, WX_PSR_MAC_SWC_VM_L, pools & 0xFFFFFFFF);
 	if (wx->mac.type == wx_mac_sp)
 		wr32(wx, WX_PSR_MAC_SWC_VM_H, pools >> 32);
 
-	/* HW expects these in little endian so we reverse the byte
-	 * order from network order (big endian) to little endian
-	 *
-	 * Some parts put the VMDq setting in the extra RAH bits,
-	 * so save everything except the lower 16 bits that hold part
-	 * of the address and the address valid bit.
-	 */
+	 
 	rar_low = ((u32)addr[5] |
 		  ((u32)addr[4] << 8) |
 		  ((u32)addr[3] << 16) |
@@ -555,27 +463,18 @@ static int wx_set_rar(struct wx *wx, u32 index, u8 *addr, u64 pools,
 	return 0;
 }
 
-/**
- *  wx_clear_rar - Remove Rx address register
- *  @wx: pointer to hardware structure
- *  @index: Receive address register to write
- *
- *  Clears an ethernet address from a receive address register.
- **/
+ 
 static int wx_clear_rar(struct wx *wx, u32 index)
 {
 	u32 rar_entries = wx->mac.num_rar_entries;
 
-	/* Make sure we are using a valid rar index range */
+	 
 	if (index >= rar_entries) {
 		wx_err(wx, "RAR index %d is out of range.\n", index);
 		return -EINVAL;
 	}
 
-	/* Some parts put the VMDq setting in the extra RAH bits,
-	 * so save everything except the lower 16 bits that hold part
-	 * of the address and the address valid bit.
-	 */
+	 
 	wr32(wx, WX_PSR_MAC_SWC_IDX, index);
 
 	wr32(wx, WX_PSR_MAC_SWC_VM_L, 0);
@@ -591,18 +490,13 @@ static int wx_clear_rar(struct wx *wx, u32 index)
 	return 0;
 }
 
-/**
- *  wx_clear_vmdq - Disassociate a VMDq pool index from a rx address
- *  @wx: pointer to hardware struct
- *  @rar: receive address register index to disassociate
- *  @vmdq: VMDq pool index to remove from the rar
- **/
+ 
 static int wx_clear_vmdq(struct wx *wx, u32 rar, u32 __maybe_unused vmdq)
 {
 	u32 rar_entries = wx->mac.num_rar_entries;
 	u32 mpsar_lo, mpsar_hi;
 
-	/* Make sure we are using a valid rar index range */
+	 
 	if (rar >= rar_entries) {
 		wx_err(wx, "RAR index %d is out of range.\n", rar);
 		return -EINVAL;
@@ -615,17 +509,14 @@ static int wx_clear_vmdq(struct wx *wx, u32 rar, u32 __maybe_unused vmdq)
 	if (!mpsar_lo && !mpsar_hi)
 		return 0;
 
-	/* was that the last pool using this rar? */
+	 
 	if (mpsar_lo == 0 && mpsar_hi == 0 && rar != 0)
 		wx_clear_rar(wx, rar);
 
 	return 0;
 }
 
-/**
- *  wx_init_uta_tables - Initialize the Unicast Table Array
- *  @wx: pointer to hardware structure
- **/
+ 
 static void wx_init_uta_tables(struct wx *wx)
 {
 	int i;
@@ -636,42 +527,32 @@ static void wx_init_uta_tables(struct wx *wx)
 		wr32(wx, WX_PSR_UC_TBL(i), 0);
 }
 
-/**
- *  wx_init_rx_addrs - Initializes receive address filters.
- *  @wx: pointer to hardware structure
- *
- *  Places the MAC address in receive address register 0 and clears the rest
- *  of the receive address registers. Clears the multicast table. Assumes
- *  the receiver is in reset when the routine is called.
- **/
+ 
 void wx_init_rx_addrs(struct wx *wx)
 {
 	u32 rar_entries = wx->mac.num_rar_entries;
 	u32 psrctl;
 	int i;
 
-	/* If the current mac address is valid, assume it is a software override
-	 * to the permanent address.
-	 * Otherwise, use the permanent address from the eeprom.
-	 */
+	 
 	if (!is_valid_ether_addr(wx->mac.addr)) {
-		/* Get the MAC address from the RAR0 for later reference */
+		 
 		wx_get_mac_addr(wx, wx->mac.addr);
 		wx_dbg(wx, "Keeping Current RAR0 Addr = %pM\n", wx->mac.addr);
 	} else {
-		/* Setup the receive address. */
+		 
 		wx_dbg(wx, "Overriding MAC Address in RAR[0]\n");
 		wx_dbg(wx, "New MAC Addr = %pM\n", wx->mac.addr);
 
 		wx_set_rar(wx, 0, wx->mac.addr, 0, WX_PSR_MAC_SWC_AD_H_AV);
 
 		if (wx->mac.type == wx_mac_sp) {
-			/* clear VMDq pool/queue selection for RAR 0 */
+			 
 			wx_clear_vmdq(wx, 0, WX_CLEAR_VMDQ_ALL);
 		}
 	}
 
-	/* Zero out the other receive addresses. */
+	 
 	wx_dbg(wx, "Clearing RAR[1-%d]\n", rar_entries - 1);
 	for (i = 1; i < rar_entries; i++) {
 		wr32(wx, WX_PSR_MAC_SWC_IDX, i);
@@ -679,7 +560,7 @@ void wx_init_rx_addrs(struct wx *wx)
 		wr32(wx, WX_PSR_MAC_SWC_AD_H, 0);
 	}
 
-	/* Clear the MTA */
+	 
 	wx->addr_ctrl.mta_in_use = 0;
 	psrctl = rd32(wx, WX_PSR_CTL);
 	psrctl &= ~(WX_PSR_CTL_MO | WX_PSR_CTL_MFE);
@@ -712,7 +593,7 @@ static void wx_sync_mac_table(struct wx *wx)
 	}
 }
 
-/* this function destroys the first RAR entry */
+ 
 void wx_mac_set_default_filter(struct wx *wx, u8 *addr)
 {
 	memcpy(&wx->mac_table[0].addr, addr, ETH_ALEN);
@@ -779,7 +660,7 @@ static int wx_del_mac_filter(struct wx *wx, u8 *addr, u16 pool)
 	if (is_zero_ether_addr(addr))
 		return -EINVAL;
 
-	/* search table for addr, if found, set to 0 and sync */
+	 
 	for (i = 0; i < wx->mac.num_rar_entries; i++) {
 		if (!ether_addr_equal(addr, wx->mac_table[i].addr))
 			continue;
@@ -808,22 +689,13 @@ static int wx_available_rars(struct wx *wx)
 	return count;
 }
 
-/**
- * wx_write_uc_addr_list - write unicast addresses to RAR table
- * @netdev: network interface device structure
- * @pool: index for mac table
- *
- * Writes unicast address list to the RAR table.
- * Returns: -ENOMEM on failure/insufficient address space
- *                0 on no addresses written
- *                X on writing X addresses to the RAR table
- **/
+ 
 static int wx_write_uc_addr_list(struct net_device *netdev, int pool)
 {
 	struct wx *wx = netdev_priv(netdev);
 	int count = 0;
 
-	/* return ENOMEM indicating insufficient memory for addresses */
+	 
 	if (netdev_uc_count(netdev) > wx_available_rars(wx))
 		return -ENOMEM;
 
@@ -839,52 +711,35 @@ static int wx_write_uc_addr_list(struct net_device *netdev, int pool)
 	return count;
 }
 
-/**
- *  wx_mta_vector - Determines bit-vector in multicast table to set
- *  @wx: pointer to private structure
- *  @mc_addr: the multicast address
- *
- *  Extracts the 12 bits, from a multicast address, to determine which
- *  bit-vector to set in the multicast table. The hardware uses 12 bits, from
- *  incoming rx multicast addresses, to determine the bit-vector to check in
- *  the MTA. Which of the 4 combination, of 12-bits, the hardware uses is set
- *  by the MO field of the MCSTCTRL. The MO field is set during initialization
- *  to mc_filter_type.
- **/
+ 
 static u32 wx_mta_vector(struct wx *wx, u8 *mc_addr)
 {
 	u32 vector = 0;
 
 	switch (wx->mac.mc_filter_type) {
-	case 0:   /* use bits [47:36] of the address */
+	case 0:    
 		vector = ((mc_addr[4] >> 4) | (((u16)mc_addr[5]) << 4));
 		break;
-	case 1:   /* use bits [46:35] of the address */
+	case 1:    
 		vector = ((mc_addr[4] >> 3) | (((u16)mc_addr[5]) << 5));
 		break;
-	case 2:   /* use bits [45:34] of the address */
+	case 2:    
 		vector = ((mc_addr[4] >> 2) | (((u16)mc_addr[5]) << 6));
 		break;
-	case 3:   /* use bits [43:32] of the address */
+	case 3:    
 		vector = ((mc_addr[4]) | (((u16)mc_addr[5]) << 8));
 		break;
-	default:  /* Invalid mc_filter_type */
+	default:   
 		wx_err(wx, "MC filter type param set incorrectly\n");
 		break;
 	}
 
-	/* vector can only be 12-bits or boundary will be exceeded */
+	 
 	vector &= 0xFFF;
 	return vector;
 }
 
-/**
- *  wx_set_mta - Set bit-vector in multicast table
- *  @wx: pointer to private structure
- *  @mc_addr: Multicast address
- *
- *  Sets the bit-vector in the multicast table.
- **/
+ 
 static void wx_set_mta(struct wx *wx, u8 *mc_addr)
 {
 	u32 vector, vector_bit, vector_reg;
@@ -894,51 +749,33 @@ static void wx_set_mta(struct wx *wx, u8 *mc_addr)
 	vector = wx_mta_vector(wx, mc_addr);
 	wx_dbg(wx, " bit-vector = 0x%03X\n", vector);
 
-	/* The MTA is a register array of 128 32-bit registers. It is treated
-	 * like an array of 4096 bits.  We want to set bit
-	 * BitArray[vector_value]. So we figure out what register the bit is
-	 * in, read it, OR in the new bit, then write back the new value.  The
-	 * register is determined by the upper 7 bits of the vector value and
-	 * the bit within that register are determined by the lower 5 bits of
-	 * the value.
-	 */
+	 
 	vector_reg = (vector >> 5) & 0x7F;
 	vector_bit = vector & 0x1F;
 	wx->mac.mta_shadow[vector_reg] |= (1 << vector_bit);
 }
 
-/**
- *  wx_update_mc_addr_list - Updates MAC list of multicast addresses
- *  @wx: pointer to private structure
- *  @netdev: pointer to net device structure
- *
- *  The given list replaces any existing list. Clears the MC addrs from receive
- *  address registers and the multicast table. Uses unused receive address
- *  registers for the first multicast addresses, and hashes the rest into the
- *  multicast table.
- **/
+ 
 static void wx_update_mc_addr_list(struct wx *wx, struct net_device *netdev)
 {
 	struct netdev_hw_addr *ha;
 	u32 i, psrctl;
 
-	/* Set the new number of MC addresses that we are being requested to
-	 * use.
-	 */
+	 
 	wx->addr_ctrl.num_mc_addrs = netdev_mc_count(netdev);
 	wx->addr_ctrl.mta_in_use = 0;
 
-	/* Clear mta_shadow */
+	 
 	wx_dbg(wx, " Clearing MTA\n");
 	memset(&wx->mac.mta_shadow, 0, sizeof(wx->mac.mta_shadow));
 
-	/* Update mta_shadow */
+	 
 	netdev_for_each_mc_addr(ha, netdev) {
 		wx_dbg(wx, " Adding the multicast addresses:\n");
 		wx_set_mta(wx, ha->addr);
 	}
 
-	/* Enable mta */
+	 
 	for (i = 0; i < wx->mac.mcft_size; i++)
 		wr32a(wx, WX_PSR_MC_TBL(0), i,
 		      wx->mac.mta_shadow[i]);
@@ -954,14 +791,7 @@ static void wx_update_mc_addr_list(struct wx *wx, struct net_device *netdev)
 	wx_dbg(wx, "Update mc addr list Complete\n");
 }
 
-/**
- * wx_write_mc_addr_list - write multicast addresses to MTA
- * @netdev: network interface device structure
- *
- * Writes multicast address list to the MTA hash table.
- * Returns: 0 on no addresses written
- *          X on writing X addresses to MTA
- **/
+ 
 static int wx_write_mc_addr_list(struct net_device *netdev)
 {
 	struct wx *wx = netdev_priv(netdev);
@@ -974,13 +804,7 @@ static int wx_write_mc_addr_list(struct net_device *netdev)
 	return netdev_mc_count(netdev);
 }
 
-/**
- * wx_set_mac - Change the Ethernet Address of the NIC
- * @netdev: network interface device structure
- * @p: pointer to an address structure
- *
- * Returns 0 on success, negative on failure
- **/
+ 
 int wx_set_mac(struct net_device *netdev, void *p)
 {
 	struct wx *wx = netdev_priv(netdev);
@@ -1021,7 +845,7 @@ void wx_disable_rx(struct wx *wx)
 
 		if (!(((wx->subsystem_device_id & WX_NCSI_MASK) == WX_NCSI_SUP) ||
 		      ((wx->subsystem_device_id & WX_WOL_MASK) == WX_WOL_SUP))) {
-			/* disable mac receiver */
+			 
 			wr32m(wx, WX_MAC_RX_CFG,
 			      WX_MAC_RX_CFG_RE, 0);
 		}
@@ -1033,7 +857,7 @@ static void wx_enable_rx(struct wx *wx)
 {
 	u32 psrctl;
 
-	/* enable mac receiver */
+	 
 	wr32m(wx, WX_MAC_RX_CFG,
 	      WX_MAC_RX_CFG_RE, WX_MAC_RX_CFG_RE);
 
@@ -1048,10 +872,7 @@ static void wx_enable_rx(struct wx *wx)
 	}
 }
 
-/**
- * wx_set_rxpba - Initialize Rx packet buffer
- * @wx: pointer to private structure
- **/
+ 
 static void wx_set_rxpba(struct wx *wx)
 {
 	u32 rxpktsize, txpktsize, txpbthresh;
@@ -1059,7 +880,7 @@ static void wx_set_rxpba(struct wx *wx)
 	rxpktsize = wx->mac.rx_pb_size << WX_RDB_PB_SZ_SHIFT;
 	wr32(wx, WX_RDB_PB_SZ(0), rxpktsize);
 
-	/* Only support an equally distributed Tx packet buffer strategy. */
+	 
 	txpktsize = wx->mac.tx_pb_size;
 	txpbthresh = (txpktsize / 1024) - WX_TXPKT_SIZE_MAX;
 	wr32(wx, WX_TDB_PB_SZ(0), txpktsize);
@@ -1087,13 +908,7 @@ static void wx_configure_port(struct wx *wx)
 		wx->tpid[i] = ETH_P_8021Q;
 }
 
-/**
- *  wx_disable_sec_rx_path - Stops the receive data path
- *  @wx: pointer to private structure
- *
- *  Stops the receive data path and waits for the HW to internally empty
- *  the Rx security block
- **/
+ 
 static int wx_disable_sec_rx_path(struct wx *wx)
 {
 	u32 secrx;
@@ -1105,12 +920,7 @@ static int wx_disable_sec_rx_path(struct wx *wx)
 				 1000, 40000, false, wx, WX_RSC_ST);
 }
 
-/**
- *  wx_enable_sec_rx_path - Enables the receive data path
- *  @wx: pointer to private structure
- *
- *  Enables the receive data path.
- **/
+ 
 static void wx_enable_sec_rx_path(struct wx *wx)
 {
 	wr32m(wx, WX_RSC_CTL, WX_RSC_CTL_RX_DIS, 0);
@@ -1139,7 +949,7 @@ void wx_set_rx_mode(struct net_device *netdev)
 
 	features = netdev->features;
 
-	/* Check for Promiscuous and All Multicast modes */
+	 
 	fctrl = rd32(wx, WX_PSR_CTL);
 	fctrl &= ~(WX_PSR_CTL_UPE | WX_PSR_CTL_MPE);
 	vmolr = rd32(wx, WX_PSR_VM_L2CTL(0));
@@ -1150,7 +960,7 @@ void wx_set_rx_mode(struct net_device *netdev)
 	vlnctrl = rd32(wx, WX_PSR_VLAN_CTL);
 	vlnctrl &= ~(WX_PSR_VLAN_CTL_VFE | WX_PSR_VLAN_CTL_CFIEN);
 
-	/* set all bits that we expect to always be set */
+	 
 	fctrl |= WX_PSR_CTL_BAM | WX_PSR_CTL_MFE;
 	vmolr |= WX_PSR_VM_L2CTL_BAM |
 		 WX_PSR_VM_L2CTL_AUPE |
@@ -1161,7 +971,7 @@ void wx_set_rx_mode(struct net_device *netdev)
 	if (netdev->flags & IFF_PROMISC) {
 		wx->addr_ctrl.user_set_promisc = true;
 		fctrl |= WX_PSR_CTL_UPE | WX_PSR_CTL_MPE;
-		/* pf don't want packets routing to vf, so clear UPE */
+		 
 		vmolr |= WX_PSR_VM_L2CTL_MPE;
 		vlnctrl &= ~WX_PSR_VLAN_CTL_VFE;
 	}
@@ -1174,7 +984,7 @@ void wx_set_rx_mode(struct net_device *netdev)
 	if (netdev->features & NETIF_F_RXALL) {
 		vmolr |= (WX_PSR_VM_L2CTL_UPE | WX_PSR_VM_L2CTL_MPE);
 		vlnctrl &= ~WX_PSR_VLAN_CTL_VFE;
-		/* receive bad packets */
+		 
 		wr32m(wx, WX_RSC_CTL,
 		      WX_RSC_CTL_SAVE_MAC_ERR,
 		      WX_RSC_CTL_SAVE_MAC_ERR);
@@ -1182,20 +992,14 @@ void wx_set_rx_mode(struct net_device *netdev)
 		vmolr |= WX_PSR_VM_L2CTL_ROPE | WX_PSR_VM_L2CTL_ROMPE;
 	}
 
-	/* Write addresses to available RAR registers, if there is not
-	 * sufficient space to store all the addresses then enable
-	 * unicast promiscuous mode
-	 */
+	 
 	count = wx_write_uc_addr_list(netdev, 0);
 	if (count < 0) {
 		vmolr &= ~WX_PSR_VM_L2CTL_ROPE;
 		vmolr |= WX_PSR_VM_L2CTL_UPE;
 	}
 
-	/* Write addresses to the MTA, if the attempt fails
-	 * then we should just turn on promiscuous mode so
-	 * that we can at least receive multicast traffic
-	 */
+	 
 	count = wx_write_mc_addr_list(netdev);
 	if (count < 0) {
 		vmolr &= ~WX_PSR_VM_L2CTL_ROMPE;
@@ -1221,7 +1025,7 @@ static void wx_set_rx_buffer_len(struct wx *wx)
 	u32 mhadd, max_frame;
 
 	max_frame = netdev->mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
-	/* adjust max frame to be at least the size of a standard frame */
+	 
 	if (max_frame < (ETH_FRAME_LEN + ETH_FCS_LEN))
 		max_frame = (ETH_FRAME_LEN + ETH_FCS_LEN);
 
@@ -1230,13 +1034,7 @@ static void wx_set_rx_buffer_len(struct wx *wx)
 		wr32(wx, WX_PSR_MAX_SZ, max_frame);
 }
 
-/**
- * wx_change_mtu - Change the Maximum Transfer Unit
- * @netdev: network interface device structure
- * @new_mtu: new value for maximum frame size
- *
- * Returns 0 on success, negative on failure
- **/
+ 
 int wx_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	struct wx *wx = netdev_priv(netdev);
@@ -1248,23 +1046,23 @@ int wx_change_mtu(struct net_device *netdev, int new_mtu)
 }
 EXPORT_SYMBOL(wx_change_mtu);
 
-/* Disable the specified rx queue */
+ 
 void wx_disable_rx_queue(struct wx *wx, struct wx_ring *ring)
 {
 	u8 reg_idx = ring->reg_idx;
 	u32 rxdctl;
 	int ret;
 
-	/* write value back with RRCFG.EN bit cleared */
+	 
 	wr32m(wx, WX_PX_RR_CFG(reg_idx),
 	      WX_PX_RR_CFG_RR_EN, 0);
 
-	/* the hardware may take up to 100us to really disable the rx queue */
+	 
 	ret = read_poll_timeout(rd32, rxdctl, !(rxdctl & WX_PX_RR_CFG_RR_EN),
 				10, 100, true, wx, WX_PX_RR_CFG(reg_idx));
 
 	if (ret == -ETIMEDOUT) {
-		/* Just for information */
+		 
 		wx_err(wx,
 		       "RRCFG.EN on Rx queue %d not cleared within the polling period\n",
 		       reg_idx);
@@ -1282,7 +1080,7 @@ static void wx_enable_rx_queue(struct wx *wx, struct wx_ring *ring)
 				1000, 10000, true, wx, WX_PX_RR_CFG(reg_idx));
 
 	if (ret == -ETIMEDOUT) {
-		/* Just for information */
+		 
 		wx_err(wx,
 		       "RRCFG.EN on Rx queue %d not set within the polling period\n",
 		       reg_idx);
@@ -1299,10 +1097,10 @@ static void wx_configure_srrctl(struct wx *wx,
 	srrctl &= ~(WX_PX_RR_CFG_RR_HDR_SZ |
 		    WX_PX_RR_CFG_RR_BUF_SZ |
 		    WX_PX_RR_CFG_SPLIT_MODE);
-	/* configure header buffer length, needed for RSC */
+	 
 	srrctl |= WX_RXBUFFER_256 << WX_PX_RR_CFG_BHDRSIZE_SHIFT;
 
-	/* configure the packet buffer length */
+	 
 	srrctl |= WX_RX_BUFSZ >> WX_PX_RR_CFG_BSIZEPKT_SHIFT;
 
 	wr32(wx, WX_PX_RR_CFG(reg_idx), srrctl);
@@ -1316,14 +1114,14 @@ static void wx_configure_tx_ring(struct wx *wx,
 	u64 tdba = ring->dma;
 	int ret;
 
-	/* disable queue to avoid issues while updating state */
+	 
 	wr32(wx, WX_PX_TR_CFG(reg_idx), WX_PX_TR_CFG_SWFLSH);
 	WX_WRITE_FLUSH(wx);
 
 	wr32(wx, WX_PX_TR_BAL(reg_idx), tdba & DMA_BIT_MASK(32));
 	wr32(wx, WX_PX_TR_BAH(reg_idx), upper_32_bits(tdba));
 
-	/* reset head and tail pointers */
+	 
 	wr32(wx, WX_PX_TR_RP(reg_idx), 0);
 	wr32(wx, WX_PX_TR_WP(reg_idx), 0);
 	ring->tail = wx->hw_addr + WX_PX_TR_WP(reg_idx);
@@ -1332,14 +1130,14 @@ static void wx_configure_tx_ring(struct wx *wx,
 		txdctl |= ring->count / 128 << WX_PX_TR_CFG_TR_SIZE_SHIFT;
 	txdctl |= 0x20 << WX_PX_TR_CFG_WTHRESH_SHIFT;
 
-	/* reinitialize tx_buffer_info */
+	 
 	memset(ring->tx_buffer_info, 0,
 	       sizeof(struct wx_tx_buffer) * ring->count);
 
-	/* enable queue */
+	 
 	wr32(wx, WX_PX_TR_CFG(reg_idx), txdctl);
 
-	/* poll to verify queue is enabled */
+	 
 	ret = read_poll_timeout(rd32, txdctl, txdctl & WX_PX_TR_CFG_ENABLE,
 				1000, 10000, true, wx, WX_PX_TR_CFG(reg_idx));
 	if (ret == -ETIMEDOUT)
@@ -1354,7 +1152,7 @@ static void wx_configure_rx_ring(struct wx *wx,
 	u64 rdba = ring->dma;
 	u32 rxdctl;
 
-	/* disable queue to avoid issues while updating state */
+	 
 	rxdctl = rd32(wx, WX_PX_RR_CFG(reg_idx));
 	wx_disable_rx_queue(wx, ring);
 
@@ -1369,22 +1167,22 @@ static void wx_configure_rx_ring(struct wx *wx,
 	rxdctl |= 0x1 << WX_PX_RR_CFG_RR_THER_SHIFT;
 	wr32(wx, WX_PX_RR_CFG(reg_idx), rxdctl);
 
-	/* reset head and tail pointers */
+	 
 	wr32(wx, WX_PX_RR_RP(reg_idx), 0);
 	wr32(wx, WX_PX_RR_WP(reg_idx), 0);
 	ring->tail = wx->hw_addr + WX_PX_RR_WP(reg_idx);
 
 	wx_configure_srrctl(wx, ring);
 
-	/* initialize rx_buffer_info */
+	 
 	memset(ring->rx_buffer_info, 0,
 	       sizeof(struct wx_rx_buffer) * ring->count);
 
-	/* initialize Rx descriptor 0 */
+	 
 	rx_desc = WX_RX_DESC(ring, 0);
 	rx_desc->wb.upper.length = 0;
 
-	/* enable receive descriptor ring */
+	 
 	wr32m(wx, WX_PX_RR_CFG(reg_idx),
 	      WX_PX_RR_CFG_RR_EN, WX_PX_RR_CFG_RR_EN);
 
@@ -1392,21 +1190,16 @@ static void wx_configure_rx_ring(struct wx *wx,
 	wx_alloc_rx_buffers(ring, wx_desc_unused(ring));
 }
 
-/**
- * wx_configure_tx - Configure Transmit Unit after Reset
- * @wx: pointer to private structure
- *
- * Configure the Tx unit of the MAC after a reset.
- **/
+ 
 static void wx_configure_tx(struct wx *wx)
 {
 	u32 i;
 
-	/* TDM_CTL.TE must be before Tx queues are enabled */
+	 
 	wr32m(wx, WX_TDM_CTL,
 	      WX_TDM_CTL_TE, WX_TDM_CTL_TE);
 
-	/* Setup the HW Tx Head and Tail descriptor pointers */
+	 
 	for (i = 0; i < wx->num_tx_queues; i++)
 		wx_configure_tx_ring(wx, wx->tx_ring[i]);
 
@@ -1415,7 +1208,7 @@ static void wx_configure_tx(struct wx *wx)
 	if (wx->mac.type == wx_mac_em)
 		wr32m(wx, WX_TSC_CTL, WX_TSC_CTL_TX_DIS | WX_TSC_CTL_TSEC_DIS, 0x1);
 
-	/* enable mac transmitter */
+	 
 	wr32m(wx, WX_MAC_TX_CFG,
 	      WX_MAC_TX_CFG_TE, WX_MAC_TX_CFG_TE);
 }
@@ -1430,12 +1223,7 @@ static void wx_restore_vlan(struct wx *wx)
 		wx_vlan_rx_add_vid(wx->netdev, htons(ETH_P_8021Q), vid);
 }
 
-/**
- * wx_configure_rx - Configure Receive Unit after Reset
- * @wx: pointer to private structure
- *
- * Configure the Rx unit of the MAC after a reset.
- **/
+ 
 void wx_configure_rx(struct wx *wx)
 {
 	u32 psrtype, i;
@@ -1449,29 +1237,27 @@ void wx_configure_rx(struct wx *wx)
 		  WX_RDB_PL_CFG_TUN_TUNHDR;
 	wr32(wx, WX_RDB_PL_CFG(0), psrtype);
 
-	/* enable hw crc stripping */
+	 
 	wr32m(wx, WX_RSC_CTL, WX_RSC_CTL_CRC_STRIP, WX_RSC_CTL_CRC_STRIP);
 
 	if (wx->mac.type == wx_mac_sp) {
 		u32 psrctl;
 
-		/* RSC Setup */
+		 
 		psrctl = rd32(wx, WX_PSR_CTL);
-		psrctl |= WX_PSR_CTL_RSC_ACK; /* Disable RSC for ACK packets */
+		psrctl |= WX_PSR_CTL_RSC_ACK;  
 		psrctl |= WX_PSR_CTL_RSC_DIS;
 		wr32(wx, WX_PSR_CTL, psrctl);
 	}
 
-	/* set_rx_buffer_len must be called before ring initialization */
+	 
 	wx_set_rx_buffer_len(wx);
 
-	/* Setup the HW Rx Head and Tail Descriptor Pointers and
-	 * the Base and Length of the Rx Descriptor Ring
-	 */
+	 
 	for (i = 0; i < wx->num_rx_queues; i++)
 		wx_configure_rx_ring(wx, wx->rx_ring[i]);
 
-	/* Enable all receives, disable security engine prior to block traffic */
+	 
 	ret = wx_disable_sec_rx_path(wx);
 	if (ret < 0)
 		wx_err(wx, "The register status is abnormal, please check device.");
@@ -1483,7 +1269,7 @@ EXPORT_SYMBOL(wx_configure_rx);
 
 static void wx_configure_isb(struct wx *wx)
 {
-	/* set ISB Address */
+	 
 	wr32(wx, WX_PX_ISB_ADDR_L, wx->isb_dma & DMA_BIT_MASK(32));
 	if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
 		wr32(wx, WX_PX_ISB_ADDR_H, upper_32_bits(wx->isb_dma));
@@ -1504,26 +1290,20 @@ void wx_configure(struct wx *wx)
 }
 EXPORT_SYMBOL(wx_configure);
 
-/**
- *  wx_disable_pcie_master - Disable PCI-express master access
- *  @wx: pointer to hardware structure
- *
- *  Disables PCI-Express master access and verifies there are no pending
- *  requests.
- **/
+ 
 int wx_disable_pcie_master(struct wx *wx)
 {
 	int status = 0;
 	u32 val;
 
-	/* Always set this bit to ensure any future transactions are blocked */
+	 
 	pci_clear_master(wx->pdev);
 
-	/* Exit if master requests are blocked */
+	 
 	if (!(rd32(wx, WX_PX_TRANSACTION_PENDING)))
 		return 0;
 
-	/* Poll for master request bit to clear */
+	 
 	status = read_poll_timeout(rd32, val, !val, 100, WX_PCI_MASTER_DISABLE_TIMEOUT,
 				   false, wx, WX_PX_TRANSACTION_PENDING);
 	if (status < 0)
@@ -1533,53 +1313,41 @@ int wx_disable_pcie_master(struct wx *wx)
 }
 EXPORT_SYMBOL(wx_disable_pcie_master);
 
-/**
- *  wx_stop_adapter - Generic stop Tx/Rx units
- *  @wx: pointer to hardware structure
- *
- *  Sets the adapter_stopped flag within wx_hw struct. Clears interrupts,
- *  disables transmit and receive units. The adapter_stopped flag is used by
- *  the shared code and drivers to determine if the adapter is in a stopped
- *  state and should not touch the hardware.
- **/
+ 
 int wx_stop_adapter(struct wx *wx)
 {
 	u16 i;
 
-	/* Set the adapter_stopped flag so other driver functions stop touching
-	 * the hardware
-	 */
+	 
 	wx->adapter_stopped = true;
 
-	/* Disable the receive unit */
+	 
 	wx_disable_rx(wx);
 
-	/* Set interrupt mask to stop interrupts from being generated */
+	 
 	wx_intr_disable(wx, WX_INTR_ALL);
 
-	/* Clear any pending interrupts, flush previous writes */
+	 
 	wr32(wx, WX_PX_MISC_IC, 0xffffffff);
 	wr32(wx, WX_BME_CTL, 0x3);
 
-	/* Disable the transmit unit.  Each queue must be disabled. */
+	 
 	for (i = 0; i < wx->mac.max_tx_queues; i++) {
 		wr32m(wx, WX_PX_TR_CFG(i),
 		      WX_PX_TR_CFG_SWFLSH | WX_PX_TR_CFG_ENABLE,
 		      WX_PX_TR_CFG_SWFLSH);
 	}
 
-	/* Disable the receive unit by stopping each queue */
+	 
 	for (i = 0; i < wx->mac.max_rx_queues; i++) {
 		wr32m(wx, WX_PX_RR_CFG(i),
 		      WX_PX_RR_CFG_RR_EN, 0);
 	}
 
-	/* flush all queues disables */
+	 
 	WX_WRITE_FLUSH(wx);
 
-	/* Prevent the PCI-E bus from hanging by disabling PCI-E master
-	 * access and verify no pending requests
-	 */
+	 
 	return wx_disable_pcie_master(wx);
 }
 EXPORT_SYMBOL(wx_stop_adapter);
@@ -1588,10 +1356,10 @@ void wx_reset_misc(struct wx *wx)
 {
 	int i;
 
-	/* receive packets that size > 2048 */
+	 
 	wr32m(wx, WX_MAC_RX_CFG, WX_MAC_RX_CFG_JE, WX_MAC_RX_CFG_JE);
 
-	/* clear counters on read */
+	 
 	wr32m(wx, WX_MMC_CONTROL,
 	      WX_MMC_CONTROL_RSTONRD, WX_MMC_CONTROL_RSTONRD);
 
@@ -1603,7 +1371,7 @@ void wx_reset_misc(struct wx *wx)
 	wr32m(wx, WX_MIS_RST_ST,
 	      WX_MIS_RST_ST_RST_INIT, 0x1E00);
 
-	/* errata 4: initialize mng flex tbl and wakeup flex tbl*/
+	 
 	wr32(wx, WX_PSR_MNG_FLEX_SEL, 0);
 	for (i = 0; i < 16; i++) {
 		wr32(wx, WX_PSR_MNG_FLEX_DW_L(i), 0);
@@ -1617,21 +1385,13 @@ void wx_reset_misc(struct wx *wx)
 		wr32(wx, WX_PSR_LAN_FLEX_MSK(i), 0);
 	}
 
-	/* set pause frame dst mac addr */
+	 
 	wr32(wx, WX_RDB_PFCMACDAL, 0xC2000001);
 	wr32(wx, WX_RDB_PFCMACDAH, 0x0180);
 }
 EXPORT_SYMBOL(wx_reset_misc);
 
-/**
- *  wx_get_pcie_msix_counts - Gets MSI-X vector count
- *  @wx: pointer to hardware structure
- *  @msix_count: number of MSI interrupts that can be obtained
- *  @max_msix_count: number of MSI interrupts that mac need
- *
- *  Read PCIe configuration space, and get the MSI-X vector count from
- *  the capabilities table.
- **/
+ 
 int wx_get_pcie_msix_counts(struct wx *wx, u16 *msix_count, u16 max_msix_count)
 {
 	struct pci_dev *pdev = wx->pdev;
@@ -1648,7 +1408,7 @@ int wx_get_pcie_msix_counts(struct wx *wx, u16 *msix_count, u16 max_msix_count)
 			     pos + PCI_MSIX_FLAGS,
 			     msix_count);
 	*msix_count &= WX_PCIE_MSIX_TBL_SZ_MASK;
-	/* MSI-X count is zero-based in HW */
+	 
 	*msix_count += 1;
 
 	if (*msix_count > max_msix_count)
@@ -1697,26 +1457,17 @@ int wx_sw_init(struct wx *wx)
 }
 EXPORT_SYMBOL(wx_sw_init);
 
-/**
- *  wx_find_vlvf_slot - find the vlanid or the first empty slot
- *  @wx: pointer to hardware structure
- *  @vlan: VLAN id to write to VLAN filter
- *
- *  return the VLVF index where this VLAN id should be placed
- *
- **/
+ 
 static int wx_find_vlvf_slot(struct wx *wx, u32 vlan)
 {
 	u32 bits = 0, first_empty_slot = 0;
 	int regindex;
 
-	/* short cut the special case */
+	 
 	if (vlan == 0)
 		return 0;
 
-	/* Search for the vlan id in the VLVF entries. Save off the first empty
-	 * slot found along the way
-	 */
+	 
 	for (regindex = 1; regindex < WX_PSR_VLAN_SWC_ENTRIES; regindex++) {
 		wr32(wx, WX_PSR_VLAN_SWC_IDX, regindex);
 		bits = rd32(wx, WX_PSR_VLAN_SWC);
@@ -1736,30 +1487,14 @@ static int wx_find_vlvf_slot(struct wx *wx, u32 vlan)
 	return regindex;
 }
 
-/**
- *  wx_set_vlvf - Set VLAN Pool Filter
- *  @wx: pointer to hardware structure
- *  @vlan: VLAN id to write to VLAN filter
- *  @vind: VMDq output index that maps queue to VLAN id in VFVFB
- *  @vlan_on: boolean flag to turn on/off VLAN in VFVF
- *  @vfta_changed: pointer to boolean flag which indicates whether VFTA
- *                 should be changed
- *
- *  Turn on/off specified bit in VLVF table.
- **/
+ 
 static int wx_set_vlvf(struct wx *wx, u32 vlan, u32 vind, bool vlan_on,
 		       bool *vfta_changed)
 {
 	int vlvf_index;
 	u32 vt, bits;
 
-	/* If VT Mode is set
-	 *   Either vlan_on
-	 *     make sure the vlan is in VLVF
-	 *     set the vind bit in the matching VLVFB
-	 *   Or !vlan_on
-	 *     clear the pool bit and possibly the vind
-	 */
+	 
 	vt = rd32(wx, WX_CFG_PORT_CTL);
 	if (!(vt & WX_CFG_PORT_CTL_NUM_VT_MASK))
 		return 0;
@@ -1770,7 +1505,7 @@ static int wx_set_vlvf(struct wx *wx, u32 vlan, u32 vind, bool vlan_on,
 
 	wr32(wx, WX_PSR_VLAN_SWC_IDX, vlvf_index);
 	if (vlan_on) {
-		/* set the pool bit */
+		 
 		if (vind < 32) {
 			bits = rd32(wx, WX_PSR_VLAN_SWC_VM_L);
 			bits |= (1 << vind);
@@ -1781,7 +1516,7 @@ static int wx_set_vlvf(struct wx *wx, u32 vlan, u32 vind, bool vlan_on,
 			wr32(wx, WX_PSR_VLAN_SWC_VM_H, bits);
 		}
 	} else {
-		/* clear the pool bit */
+		 
 		if (vind < 32) {
 			bits = rd32(wx, WX_PSR_VLAN_SWC_VM_L);
 			bits &= ~(1 << vind);
@@ -1806,36 +1541,20 @@ static int wx_set_vlvf(struct wx *wx, u32 vlan, u32 vind, bool vlan_on,
 	return 0;
 }
 
-/**
- *  wx_set_vfta - Set VLAN filter table
- *  @wx: pointer to hardware structure
- *  @vlan: VLAN id to write to VLAN filter
- *  @vind: VMDq output index that maps queue to VLAN id in VFVFB
- *  @vlan_on: boolean flag to turn on/off VLAN in VFVF
- *
- *  Turn on/off specified VLAN in the VLAN filter table.
- **/
+ 
 static int wx_set_vfta(struct wx *wx, u32 vlan, u32 vind, bool vlan_on)
 {
 	u32 bitindex, vfta, targetbit;
 	bool vfta_changed = false;
 	int regindex, ret;
 
-	/* this is a 2 part operation - first the VFTA, then the
-	 * VLVF and VLVFB if VT Mode is set
-	 * We don't write the VFTA until we know the VLVF part succeeded.
-	 */
+	 
 
-	/* Part 1
-	 * The VFTA is a bitstring made up of 128 32-bit registers
-	 * that enable the particular VLAN id, much like the MTA:
-	 *    bits[11-5]: which register
-	 *    bits[4-0]:  which bit in the register
-	 */
+	 
 	regindex = (vlan >> 5) & 0x7F;
 	bitindex = vlan & 0x1F;
 	targetbit = (1 << bitindex);
-	/* errata 5 */
+	 
 	vfta = wx->mac.vft_shadow[regindex];
 	if (vlan_on) {
 		if (!(vfta & targetbit)) {
@@ -1848,9 +1567,7 @@ static int wx_set_vfta(struct wx *wx, u32 vlan, u32 vind, bool vlan_on)
 			vfta_changed = true;
 		}
 	}
-	/* Part 2
-	 * Call wx_set_vlvf to set VLVFB and VLVF
-	 */
+	 
 	ret = wx_set_vlvf(wx, vlan, vind, vlan_on, &vfta_changed);
 	if (ret != 0)
 		return ret;
@@ -1862,12 +1579,7 @@ static int wx_set_vfta(struct wx *wx, u32 vlan, u32 vind, bool vlan_on)
 	return 0;
 }
 
-/**
- *  wx_clear_vfta - Clear VLAN filter table
- *  @wx: pointer to hardware structure
- *
- *  Clears the VLAN filer table, and the VMDq index associated with the filter
- **/
+ 
 static void wx_clear_vfta(struct wx *wx)
 {
 	u32 offset;
@@ -1890,7 +1602,7 @@ int wx_vlan_rx_add_vid(struct net_device *netdev,
 {
 	struct wx *wx = netdev_priv(netdev);
 
-	/* add VID to filter table */
+	 
 	wx_set_vfta(wx, vid, VMDQ_P(0), true);
 	set_bit(vid, wx->active_vlans);
 
@@ -1902,7 +1614,7 @@ int wx_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
 {
 	struct wx *wx = netdev_priv(netdev);
 
-	/* remove VID from filter table */
+	 
 	if (vid)
 		wx_set_vfta(wx, vid, VMDQ_P(0), false);
 	clear_bit(vid, wx->active_vlans);
@@ -1911,22 +1623,15 @@ int wx_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
 }
 EXPORT_SYMBOL(wx_vlan_rx_kill_vid);
 
-/**
- *  wx_start_hw - Prepare hardware for Tx/Rx
- *  @wx: pointer to hardware structure
- *
- *  Starts the hardware using the generic start_hw function
- *  and the generation start_hw function.
- *  Then performs revision-specific operations, if any.
- **/
+ 
 void wx_start_hw(struct wx *wx)
 {
 	int i;
 
-	/* Clear the VLAN filter table */
+	 
 	wx_clear_vfta(wx);
 	WX_WRITE_FLUSH(wx);
-	/* Clear the rate limiters */
+	 
 	for (i = 0; i < wx->mac.max_tx_queues; i++) {
 		wr32(wx, WX_TDM_RP_IDX, i);
 		wr32(wx, WX_TDM_RP_RATE, 0);

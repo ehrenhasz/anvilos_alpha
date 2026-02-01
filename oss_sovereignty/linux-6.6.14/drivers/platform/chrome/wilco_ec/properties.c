@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Google LLC
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/export.h>
@@ -10,23 +8,23 @@
 #include <linux/types.h>
 #include <asm/unaligned.h>
 
-/* Operation code; what the EC should do with the property */
+ 
 enum ec_property_op {
 	EC_OP_GET = 0,
 	EC_OP_SET = 1,
 };
 
 struct ec_property_request {
-	u8 op; /* One of enum ec_property_op */
-	u8 property_id[4]; /* The 32 bit PID is stored Little Endian */
+	u8 op;  
+	u8 property_id[4];  
 	u8 length;
 	u8 data[WILCO_EC_PROPERTY_MAX_SIZE];
 } __packed;
 
 struct ec_property_response {
 	u8 reserved[2];
-	u8 op; /* One of enum ec_property_op */
-	u8 property_id[4]; /* The 32 bit PID is stored Little Endian */
+	u8 op;  
+	u8 property_id[4];  
 	u8 length;
 	u8 data[WILCO_EC_PROPERTY_MAX_SIZE];
 } __packed;

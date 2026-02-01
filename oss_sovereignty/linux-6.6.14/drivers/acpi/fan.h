@@ -1,22 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
-/*
- * ACPI fan device IDs are shared between the fan driver and the device power
- * management code.
- *
- * Add new device IDs before the generic ACPI fan one.
- */
+ 
 
 #ifndef _ACPI_FAN_H_
 #define _ACPI_FAN_H_
 
 #define ACPI_FAN_DEVICE_IDS	\
-	{"INT3404", }, /* Fan */ \
-	{"INTC1044", }, /* Fan for Tiger Lake generation */ \
-	{"INTC1048", }, /* Fan for Alder Lake generation */ \
-	{"INTC1063", }, /* Fan for Meteor Lake generation */ \
-	{"INTC10A2", }, /* Fan for Raptor Lake generation */ \
-	{"PNP0C0B", } /* Generic ACPI fan */
+	{"INT3404", },   \
+	{"INTC1044", },   \
+	{"INTC1048", },   \
+	{"INTC1063", },   \
+	{"INTC10A2", },   \
+	{"PNP0C0B", }  
 
 #define ACPI_FPS_NAME_LEN	20
 

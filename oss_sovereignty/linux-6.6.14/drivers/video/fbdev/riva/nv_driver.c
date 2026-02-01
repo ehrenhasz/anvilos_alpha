@@ -1,38 +1,11 @@
-/* $XConsortium: nv_driver.c /main/3 1996/10/28 05:13:37 kaleb $ */
-/*
- * Copyright 1996-1997  David J. McKay
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * DAVID J. MCKAY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
+ 
 
-/*
- * GPL licensing note -- nVidia is allowing a liberal interpretation of
- * the documentation restriction above, to merely say that this nVidia's
- * copyright and disclaimer should be included with all code derived
- * from this source.  -- Jeff Garzik <jgarzik@pobox.com>, 01/Nov/99 
- */
+ 
 
-/* Hacked together from mga driver and 3.3.4 NVIDIA driver by Jarno Paananen
-   <jpaana@s2.org> */
+ 
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/nv_setup.c,v 1.18 2002/08/0
-5 20:47:06 mvojkovi Exp $ */
+ 
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -110,7 +83,7 @@ riva_is_second(struct riva_par *par)
 		case 0x017D:
 		case 0x0186:
 		case 0x0187:
-		/* this might not be a good default for the chips below */
+		 
 		case 0x0286:
 		case 0x028C:
 		case 0x0316:
@@ -146,7 +119,7 @@ riva_is_second(struct riva_par *par)
 				par->SecondCRTC = TRUE;
 			else
 				par->SecondCRTC = FALSE;
-		} else /* default */
+		} else  
 			par->SecondCRTC = FALSE;
 	}
 	riva_override_CRTC(par);
@@ -166,9 +139,7 @@ unsigned long riva_get_memlen(struct riva_par *par)
 		if (NV_RD32(chip->PFB, 0x00000000) & 0x00000020) {
 			if (((NV_RD32(chip->PMC, 0x00000000) & 0xF0) == 0x20)
 			    && ((NV_RD32(chip->PMC, 0x00000000)&0x0F)>=0x02)) {
-				/*
-				 * SDRAM 128 ZX.
-				 */
+				 
 				switch (NV_RD32(chip->PFB,0x00000000) & 0x03) {
 				case 2:
 					memlen = 1024 * 4;
@@ -184,9 +155,7 @@ unsigned long riva_get_memlen(struct riva_par *par)
 				memlen = 1024 * 8;
 			}            
 		} else 	{
-			/*
-			 * SGRAM 128.
-			 */
+			 
 			switch (NV_RD32(chip->PFB, 0x00000000) & 0x00000003) {
 			case 0:
 				memlen = 1024 * 8;
@@ -280,17 +249,13 @@ unsigned long riva_get_maxdclk(struct riva_par *par)
 		if (NV_RD32(chip->PFB, 0x00000000) & 0x00000020) {
 			if (((NV_RD32(chip->PMC, 0x00000000) & 0xF0) == 0x20)
 			    && ((NV_RD32(chip->PMC,0x00000000)&0x0F) >= 0x02)) {
-				/*
-				 * SDRAM 128 ZX.
-				 */
+				 
 				dclk = 800000;
 			} else {
 				dclk = 1000000;
 			}            
 		} else {
-			/*
-			 * SGRAM 128.
-			 */
+			 
 			dclk = 1000000;
 		} 
 		break;
@@ -339,7 +304,7 @@ riva_common_setup(struct riva_par *par)
 	
 	if (par->FlatPanel == -1) {
 		switch (par->Chipset & 0xffff) {
-		case 0x0112:   /* known laptop chips */
+		case 0x0112:    
 		case 0x0174:
 		case 0x0175:
 		case 0x0176:
@@ -413,7 +378,7 @@ riva_common_setup(struct riva_par *par)
 	}
 
 	if (par->FlatPanel == -1) {
-		/* Fix me, need x86 DDC code */
+		 
 		par->FlatPanel = 0;
 	}
 	par->riva.flatPanel = (par->FlatPanel > 0) ? TRUE : FALSE;

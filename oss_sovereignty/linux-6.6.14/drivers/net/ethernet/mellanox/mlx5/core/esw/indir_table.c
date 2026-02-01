@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/idr.h>
@@ -39,7 +39,7 @@ struct mlx5_esw_indir_table_entry {
 };
 
 struct mlx5_esw_indir_table {
-	struct mutex lock; /* protects table */
+	struct mutex lock;  
 	DECLARE_HASHTABLE(table, 8);
 };
 
@@ -75,9 +75,7 @@ mlx5_esw_indir_table_needed(struct mlx5_eswitch *esw,
 	vf_sf_vport = mlx5_eswitch_is_vf_vport(esw, vport_num) ||
 		      mlx5_esw_is_sf_vport(esw, vport_num);
 
-	/* Use indirect table for all IP traffic from UL to VF with vport
-	 * destination when source rewrite flag is set.
-	 */
+	 
 	return esw_attr->in_rep->vport == MLX5_VPORT_UPLINK &&
 		vf_sf_vport &&
 		esw->dev == dest_mdev &&
@@ -115,7 +113,7 @@ static int mlx5_esw_indir_table_rule_get(struct mlx5_eswitch *esw,
 	if (!rule)
 		return -ENOMEM;
 
-	/* Modify flow source to recirculate packet */
+	 
 	data = mlx5_eswitch_get_vport_metadata_for_set(esw, esw_attr->rx_tun_attr->decap_vport);
 	err = mlx5e_tc_match_to_reg_set(esw->dev, &mod_acts, MLX5_FLOW_NAMESPACE_FDB,
 					VPORT_TO_REG, data);
@@ -218,7 +216,7 @@ static int mlx5_create_indir_fwd_group(struct mlx5_eswitch *esw,
 	if (!in)
 		return -ENOMEM;
 
-	/* Hold one entry */
+	 
 	MLX5_SET(create_flow_group_in, in, start_flow_index, MLX5_ESW_INDIR_TABLE_FWD_IDX);
 	MLX5_SET(create_flow_group_in, in, end_flow_index, MLX5_ESW_INDIR_TABLE_FWD_IDX);
 	e->fwd_grp = mlx5_create_flow_group(e->ft, in);

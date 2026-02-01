@@ -1,22 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MSI DIGIVOX mini II remote controller keytable
- *
- * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table msi_digivox_ii[] = {
 	{ 0x0302, KEY_NUMERIC_2 },
-	{ 0x0303, KEY_UP },              /* up */
+	{ 0x0303, KEY_UP },               
 	{ 0x0304, KEY_NUMERIC_3 },
 	{ 0x0305, KEY_CHANNELDOWN },
 	{ 0x0308, KEY_NUMERIC_5 },
 	{ 0x0309, KEY_NUMERIC_0 },
 	{ 0x030b, KEY_NUMERIC_8 },
-	{ 0x030d, KEY_DOWN },            /* down */
+	{ 0x030d, KEY_DOWN },             
 	{ 0x0310, KEY_NUMERIC_9 },
 	{ 0x0311, KEY_NUMERIC_7 },
 	{ 0x0314, KEY_VOLUMEUP },

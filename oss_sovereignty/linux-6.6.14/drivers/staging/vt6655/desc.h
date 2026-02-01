@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose:The header file of descriptor
- *
- * Revision History:
- *
- * Author: Tevin Chen
- *
- * Date: May 21, 1996
- *
- */
+ 
+ 
 
 #ifndef __DESC_H__
 #define __DESC_H__
@@ -23,30 +11,30 @@
 #define B_OWNED_BY_CHIP     1
 #define B_OWNED_BY_HOST     0
 
-/* Bits in the RSR register */
+ 
 #define RSR_ADDRBROAD       0x80
 #define RSR_ADDRMULTI       0x40
 #define RSR_ADDRUNI         0x00
 #define RSR_IVLDTYP         0x20
-#define RSR_IVLDLEN         0x10        /* invalid len (> 2312 byte) */
+#define RSR_IVLDLEN         0x10         
 #define RSR_BSSIDOK         0x08
 #define RSR_CRCOK           0x04
 #define RSR_BCNSSIDOK       0x02
 #define RSR_ADDROK          0x01
 
-/* Bits in the new RSR register */
+ 
 #define NEWRSR_DECRYPTOK    0x10
 #define NEWRSR_CFPIND       0x08
 #define NEWRSR_HWUTSF       0x04
 #define NEWRSR_BCNHITAID    0x02
 #define NEWRSR_BCNHITAID0   0x01
 
-/* Bits in the TSR0 register */
+ 
 #define TSR0_PWRSTS1_2      0xC0
 #define TSR0_PWRSTS7        0x20
 #define TSR0_NCR            0x1F
 
-/* Bits in the TSR1 register */
+ 
 #define TSR1_TERR           0x80
 #define TSR1_PWRSTS4_6      0x70
 #define TSR1_RETRYTMO       0x08
@@ -54,14 +42,14 @@
 #define TSR1_PWRSTS3        0x02
 #define ACK_DATA            0x01
 
-/* Bits in the TCR register */
-#define EDMSDU              0x04        /* end of sdu */
-#define TCR_EDP             0x02        /* end of packet */
-#define TCR_STP             0x01        /* start of packet */
+ 
+#define EDMSDU              0x04         
+#define TCR_EDP             0x02         
+#define TCR_STP             0x01         
 
-/* max transmit or receive buffer size */
+ 
 #define CB_MAX_BUF_SIZE     2900U
-					/* NOTE: must be multiple of 4 */
+					 
 #define CB_MAX_TX_BUF_SIZE          CB_MAX_BUF_SIZE
 #define CB_MAX_RX_BUF_SIZE_NORMAL   CB_MAX_BUF_SIZE
 
@@ -73,21 +61,13 @@
 #define CB_MIN_TX_DESC      16
 
 #define CB_MAX_RECEIVED_PACKETS     16
-				/*
-				 * limit our receive routine to indicating
-				 * this many at a time for 2 reasons:
-				 * 1. driver flow control to protocol layer
-				 * 2. limit the time used in ISR routine
-				 */
+				 
 
 #define CB_EXTRA_RD_NUM     32
 #define CB_RD_NUM           32
 #define CB_TD_NUM           32
 
-/*
- * max number of physical segments in a single NDIS packet. Above this
- * threshold, the packet is copied into a single physically contiguous buffer
- */
+ 
 #define CB_MAX_SEGMENT      4
 
 #define CB_MIN_MAP_REG_NUM  4
@@ -95,13 +75,10 @@
 
 #define CB_PROTOCOL_RESERVED_SECTION    16
 
-/*
- * if retrys excess 15 times , tx will abort, and if tx fifo underflow,
- * tx will fail, we should try to resend it
- */
+ 
 #define CB_MAX_TX_ABORT_RETRY   3
 
-/* WMAC definition FIFO Control */
+ 
 #define FIFOCTL_AUTO_FB_1   0x1000
 #define FIFOCTL_AUTO_FB_0   0x0800
 #define FIFOCTL_GRPACK      0x0400
@@ -118,7 +95,7 @@
 #define FIFOCTL_NEEDACK     0x0002
 #define FIFOCTL_LHEAD       0x0001
 
-/* WMAC definition Frag Control */
+ 
 #define FRAGCTL_AES         0x0300
 #define FRAGCTL_TKIP        0x0200
 #define FRAGCTL_LEGACY      0x0100
@@ -140,18 +117,13 @@
 #define TYPE_RXDMA1     1
 #define TYPE_MAXRD      2
 
-/* TD_INFO flags control bit */
-#define TD_FLAGS_NETIF_SKB      0x01    /* check if need release skb */
-/* check if called from private skb (hostap) */
+ 
+#define TD_FLAGS_NETIF_SKB      0x01     
+ 
 #define TD_FLAGS_PRIV_SKB       0x02
-#define TD_FLAGS_PS_RETRY       0x04    /* check if PS STA frame re-transmit */
+#define TD_FLAGS_PS_RETRY       0x04     
 
-/*
- * ref_sk_buff is used for mapping the skb structure between pre-built
- * driver-obj & running kernel. Since different kernel version (2.4x) may
- * change skb structure, i.e. pre-built driver-obj may link to older skb that
- * leads error.
- */
+ 
 
 struct vnt_rd_info {
 	struct sk_buff *skb;
@@ -180,7 +152,7 @@ struct vnt_rdes1 {
 	u16 reserved;
 } __packed;
 
-/* Rx descriptor*/
+ 
 struct vnt_rx_desc {
 	volatile struct vnt_rdes0 rd0;
 	volatile struct vnt_rdes1 rd1;
@@ -223,7 +195,7 @@ struct vnt_td_info {
 	u8 flags;
 };
 
-/* transmit descriptor */
+ 
 struct vnt_tx_desc {
 	volatile struct vnt_tdes0 td0;
 	volatile struct vnt_tdes1 td1;
@@ -233,7 +205,7 @@ struct vnt_tx_desc {
 	struct vnt_td_info *td_info __aligned(8);
 } __packed;
 
-/* Length, Service, and Signal fields of Phy for Tx */
+ 
 struct vnt_phy_field {
 	u8 signal;
 	u8 service;
@@ -246,4 +218,4 @@ union vnt_phy_field_swap {
 	u32 field_write;
 };
 
-#endif /* __DESC_H__ */
+#endif  

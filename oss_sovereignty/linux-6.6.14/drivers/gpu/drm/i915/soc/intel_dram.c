@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -51,16 +49,16 @@ static void pnv_detect_mem_freq(struct drm_i915_private *dev_priv)
 
 	switch (tmp & CLKCFG_FSB_MASK) {
 	case CLKCFG_FSB_533:
-		dev_priv->fsb_freq = 533; /* 133*4 */
+		dev_priv->fsb_freq = 533;  
 		break;
 	case CLKCFG_FSB_800:
-		dev_priv->fsb_freq = 800; /* 200*4 */
+		dev_priv->fsb_freq = 800;  
 		break;
 	case CLKCFG_FSB_667:
-		dev_priv->fsb_freq =  667; /* 167*4 */
+		dev_priv->fsb_freq =  667;  
 		break;
 	case CLKCFG_FSB_400:
-		dev_priv->fsb_freq = 400; /* 100*4 */
+		dev_priv->fsb_freq = 400;  
 		break;
 	}
 
@@ -76,7 +74,7 @@ static void pnv_detect_mem_freq(struct drm_i915_private *dev_priv)
 		break;
 	}
 
-	/* detect pineview DDR3 setting */
+	 
 	tmp = intel_uncore_read(&dev_priv->uncore, CSHRDDR3CTL);
 	dev_priv->is_ddr3 = (tmp & CSHRDDR3CTL_DDR3) ? 1 : 0;
 }
@@ -197,7 +195,7 @@ static int intel_dimm_num_devices(const struct dram_dimm_info *dimm)
 	return dimm->ranks * 64 / (dimm->width ?: 1);
 }
 
-/* Returns total Gb for the whole DIMM */
+ 
 static int skl_get_dimm_size(u16 val)
 {
 	return (val & SKL_DRAM_SIZE_MASK) * 8;
@@ -230,7 +228,7 @@ static int skl_get_dimm_ranks(u16 val)
 	return val + 1;
 }
 
-/* Returns total Gb for the whole DIMM */
+ 
 static int icl_get_dimm_size(u16 val)
 {
 	return (val & ICL_DRAM_SIZE_MASK) * 8 / 2;
@@ -266,7 +264,7 @@ static int icl_get_dimm_ranks(u16 val)
 static bool
 skl_is_16gb_dimm(const struct dram_dimm_info *dimm)
 {
-	/* Convert total Gb to Gb per DRAM device */
+	 
 	return dimm->size / (intel_dimm_num_devices(dimm) ?: 1) == 16;
 }
 
@@ -411,7 +409,7 @@ skl_get_dram_info(struct drm_i915_private *i915)
 	return 0;
 }
 
-/* Returns Gb per DRAM device */
+ 
 static int bxt_get_dimm_size(u32 val)
 {
 	switch (val & BXT_DRAM_SIZE_MASK) {
@@ -482,10 +480,7 @@ static void bxt_get_dimm_info(struct dram_dimm_info *dimm, u32 val)
 	dimm->width = bxt_get_dimm_width(val);
 	dimm->ranks = bxt_get_dimm_ranks(val);
 
-	/*
-	 * Size in register is Gb per DRAM device. Convert to total
-	 * Gb to match the way we report this for non-LP platforms.
-	 */
+	 
 	dimm->size = bxt_get_dimm_size(val) * intel_dimm_num_devices(dimm);
 }
 
@@ -496,9 +491,7 @@ static int bxt_get_dram_info(struct drm_i915_private *i915)
 	u8 valid_ranks = 0;
 	int i;
 
-	/*
-	 * Now read each DUNIT8/9/10/11 to check the rank of each dimms.
-	 */
+	 
 	for (i = BXT_D_CR_DRP0_DUNIT_START; i <= BXT_D_CR_DRP0_DUNIT_END; i++) {
 		struct dram_dimm_info dimm;
 		enum intel_dram_type type;
@@ -647,7 +640,7 @@ static int xelpdp_get_dram_info(struct drm_i915_private *i915)
 
 	dram_info->num_channels = REG_FIELD_GET(MTL_N_OF_POPULATED_CH_MASK, val);
 	dram_info->num_qgv_points = REG_FIELD_GET(MTL_N_OF_ENABLED_QGV_POINTS_MASK, val);
-	/* PSF GV points not supported in D14+ */
+	 
 
 	return 0;
 }
@@ -662,10 +655,7 @@ void intel_dram_detect(struct drm_i915_private *i915)
 	if (GRAPHICS_VER(i915) < 9 || IS_DG2(i915) || !HAS_DISPLAY(i915))
 		return;
 
-	/*
-	 * Assume level 0 watermark latency adjustment is needed until proven
-	 * otherwise, this w/a is not needed by bxt/glk.
-	 */
+	 
 	dram_info->wm_lv_0_adjust_needed = !IS_GEN9_LP(i915);
 
 	if (DISPLAY_VER(i915) >= 14)
@@ -706,15 +696,12 @@ void intel_dram_edram_detect(struct drm_i915_private *i915)
 
 	edram_cap = intel_uncore_read_fw(&i915->uncore, HSW_EDRAM_CAP);
 
-	/* NB: We can't write IDICR yet because we don't have gt funcs set up */
+	 
 
 	if (!(edram_cap & EDRAM_ENABLED))
 		return;
 
-	/*
-	 * The needed capability bits for size calculation are not there with
-	 * pre gen9 so return 128MB always.
-	 */
+	 
 	if (GRAPHICS_VER(i915) < 9)
 		i915->edram_size_mb = 128;
 	else

@@ -1,13 +1,4 @@
-/*
- * Generic DWMAC platform driver
- *
- * Copyright (C) 2007-2011  STMicroelectronics Ltd
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -39,10 +30,10 @@ static int dwmac_generic_probe(struct platform_device *pdev)
 			return  -EINVAL;
 		}
 
-		/* Set default value for multicast hash bins */
+		 
 		plat_dat->multicast_filter_bins = HASH_TABLE_SIZE;
 
-		/* Set default value for unicast filter entries */
+		 
 		plat_dat->unicast_filter_entries = 1;
 	}
 

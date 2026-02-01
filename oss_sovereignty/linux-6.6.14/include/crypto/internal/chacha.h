@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _CRYPTO_INTERNAL_CHACHA_H
 #define _CRYPTO_INTERNAL_CHACHA_H
@@ -40,4 +40,4 @@ static inline int chacha12_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	return chacha_setkey(tfm, key, keysize, 12);
 }
 
-#endif /* _CRYPTO_CHACHA_H */
+#endif  

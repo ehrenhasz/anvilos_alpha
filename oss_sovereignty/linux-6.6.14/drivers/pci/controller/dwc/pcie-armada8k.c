@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Marvell Armada-8K SoCs
- *
- * Armada-8K PCIe Glue Layer Source Code
- *
- * Copyright (C) 2016 Marvell Technology Group Ltd.
- *
- * Author: Yehuda Yitshak <yehuday@marvell.com>
- * Author: Shadi Ammouri <shadi@marvell.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -40,7 +31,7 @@ struct armada8k_pcie {
 #define PCIE_APP_LTSSM_EN		BIT(2)
 #define PCIE_DEVICE_TYPE_SHIFT		4
 #define PCIE_DEVICE_TYPE_MASK		0xF
-#define PCIE_DEVICE_TYPE_RC		0x4 /* Root complex */
+#define PCIE_DEVICE_TYPE_RC		0x4  
 
 #define PCIE_GLOBAL_STATUS_REG		(PCIE_VENDOR_REGS_OFFSET + 0x8)
 #define PCIE_GLB_STS_RDLH_LINK_UP	BIT(1)
@@ -57,10 +48,7 @@ struct armada8k_pcie {
 #define PCIE_AWCACHE_TRC_REG		(PCIE_VENDOR_REGS_OFFSET + 0x54)
 #define PCIE_ARUSER_REG			(PCIE_VENDOR_REGS_OFFSET + 0x5C)
 #define PCIE_AWUSER_REG			(PCIE_VENDOR_REGS_OFFSET + 0x60)
-/*
- * AR/AW Cache defaults: Normal memory, Write-Back, Read / Write
- * allocate
- */
+ 
 #define ARCACHE_DEFAULT_VALUE		0x3511
 #define AWCACHE_DEFAULT_VALUE		0x5311
 
@@ -128,7 +116,7 @@ static int armada8k_pcie_setup_phys(struct armada8k_pcie *pcie)
 		pcie->phy_count++;
 	}
 
-	/* Old bindings miss the PHY handle, so just warn if there is no PHY */
+	 
 	if (!pcie->phy_count)
 		dev_warn(dev, "No available PHY\n");
 
@@ -157,7 +145,7 @@ static int armada8k_pcie_start_link(struct dw_pcie *pci)
 {
 	u32 reg;
 
-	/* Start LTSSM */
+	 
 	reg = dw_pcie_readl_dbi(pci, PCIE_GLOBAL_CONTROL_REG);
 	reg |= PCIE_APP_LTSSM_EN;
 	dw_pcie_writel_dbi(pci, PCIE_GLOBAL_CONTROL_REG, reg);
@@ -171,23 +159,23 @@ static int armada8k_pcie_host_init(struct dw_pcie_rp *pp)
 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
 
 	if (!dw_pcie_link_up(pci)) {
-		/* Disable LTSSM state machine to enable configuration */
+		 
 		reg = dw_pcie_readl_dbi(pci, PCIE_GLOBAL_CONTROL_REG);
 		reg &= ~(PCIE_APP_LTSSM_EN);
 		dw_pcie_writel_dbi(pci, PCIE_GLOBAL_CONTROL_REG, reg);
 	}
 
-	/* Set the device to root complex mode */
+	 
 	reg = dw_pcie_readl_dbi(pci, PCIE_GLOBAL_CONTROL_REG);
 	reg &= ~(PCIE_DEVICE_TYPE_MASK << PCIE_DEVICE_TYPE_SHIFT);
 	reg |= PCIE_DEVICE_TYPE_RC << PCIE_DEVICE_TYPE_SHIFT;
 	dw_pcie_writel_dbi(pci, PCIE_GLOBAL_CONTROL_REG, reg);
 
-	/* Set the PCIe master AxCache attributes */
+	 
 	dw_pcie_writel_dbi(pci, PCIE_ARCACHE_TRC_REG, ARCACHE_DEFAULT_VALUE);
 	dw_pcie_writel_dbi(pci, PCIE_AWCACHE_TRC_REG, AWCACHE_DEFAULT_VALUE);
 
-	/* Set the PCIe master AxDomain attributes */
+	 
 	reg = dw_pcie_readl_dbi(pci, PCIE_ARUSER_REG);
 	reg &= ~(AX_USER_DOMAIN_MASK << AX_USER_DOMAIN_SHIFT);
 	reg |= DOMAIN_OUTER_SHAREABLE << AX_USER_DOMAIN_SHIFT;
@@ -198,7 +186,7 @@ static int armada8k_pcie_host_init(struct dw_pcie_rp *pp)
 	reg |= DOMAIN_OUTER_SHAREABLE << AX_USER_DOMAIN_SHIFT;
 	dw_pcie_writel_dbi(pci, PCIE_AWUSER_REG, reg);
 
-	/* Enable INT A-D interrupts */
+	 
 	reg = dw_pcie_readl_dbi(pci, PCIE_GLOBAL_INT_MASK1_REG);
 	reg |= PCIE_INT_A_ASSERT_MASK | PCIE_INT_B_ASSERT_MASK |
 	       PCIE_INT_C_ASSERT_MASK | PCIE_INT_D_ASSERT_MASK;
@@ -213,11 +201,7 @@ static irqreturn_t armada8k_pcie_irq_handler(int irq, void *arg)
 	struct dw_pcie *pci = pcie->pci;
 	u32 val;
 
-	/*
-	 * Interrupts are directly handled by the device driver of the
-	 * PCI device. However, they are also latched into the PCIe
-	 * controller, so we simply discard them.
-	 */
+	 
 	val = dw_pcie_readl_dbi(pci, PCIE_GLOBAL_INT_CAUSE1_REG);
 	dw_pcie_writel_dbi(pci, PCIE_GLOBAL_INT_CAUSE1_REG, val);
 
@@ -303,7 +287,7 @@ static int armada8k_pcie_probe(struct platform_device *pdev)
 			goto fail_clkreg;
 	}
 
-	/* Get the dw-pcie unit configuration/control registers base. */
+	 
 	base = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ctrl");
 	pci->dbi_base = devm_pci_remap_cfg_resource(dev, base);
 	if (IS_ERR(pci->dbi_base)) {

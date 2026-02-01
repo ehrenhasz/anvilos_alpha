@@ -1,41 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2013,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	toe.c --- table of entries report generator
- */
+ 
 
 #include <progs.priv.h>
 
@@ -58,9 +25,9 @@ typedef struct {
 
 const char *_nc_progname;
 
-static TERMDATA *ptr_termdata;	/* array of terminal data */
-static size_t use_termdata;	/* actual usage in ptr_termdata[] */
-static size_t len_termdata;	/* allocated size of ptr_termdata[] */
+static TERMDATA *ptr_termdata;	 
+static size_t use_termdata;	 
+static size_t len_termdata;	 
 
 #if NO_LEAKS
 #undef ExitProgram
@@ -120,10 +87,7 @@ compare_termdata(const void *a, const void *b)
     return result;
 }
 
-/*
- * Sort the array of TERMDATA and print it.  If more than one database is being
- * reported, add a column to show which database has a given entry.
- */
+ 
 static void
 show_termdata(int eargc, char **eargv)
 {
@@ -148,9 +112,7 @@ show_termdata(int eargc, char **eargv)
 	for (n = 0; n < use_termdata; ++n) {
 	    int nk = -1;
 
-	    /*
-	     * If there is more than one database, show how they differ.
-	     */
+	     
 	    if (eargc > 1) {
 		unsigned long check = 0;
 		int k = 0;
@@ -164,11 +126,7 @@ show_termdata(int eargc, char **eargv)
 			printf("--");
 		    }
 
-		    /*
-		     * If this is the first entry, or its checksum differs
-		     * from the first entry's checksum, print "*". Otherwise
-		     * it looks enough like a duplicate to print "+".
-		     */
+		     
 		    printf("%c-", mark);
 		    check = ptr_termdata[n].checksum;
 		    if (mark == '*' && nk < 0)
@@ -262,10 +220,10 @@ make_db_name(char *dst, const char *src, unsigned limit)
 }
 #endif
 
-typedef void (DescHook) (int /* db_index */ ,
-			 int /* db_limit */ ,
-			 const char * /* term_name */ ,
-			 TERMTYPE2 * /* term */ );
+typedef void (DescHook) (int   ,
+			 int   ,
+			 const char *   ,
+			 TERMTYPE2 *   );
 
 static const char *
 term_description(TERMTYPE2 *tp)
@@ -281,7 +239,7 @@ term_description(TERMTYPE2 *tp)
     return desc;
 }
 
-/* display a description for the type */
+ 
 static void
 deschook(int db_index, int db_limit, const char *term_name, TERMTYPE2 *tp)
 {
@@ -324,7 +282,7 @@ checksum_of(TERMTYPE2 *tp)
     return result;
 }
 
-/* collect data, to sort before display */
+ 
 static void
 sorthook(int db_index, int db_limit, const char *term_name, TERMTYPE2 *tp)
 {
@@ -337,10 +295,7 @@ sorthook(int db_index, int db_limit, const char *term_name, TERMTYPE2 *tp)
 }
 
 #if NCURSES_USE_TERMCAP
-/*
- * Check if the buffer contents are printable ASCII, ensuring that we do not
- * accidentally pick up incompatible binary content from a hashed database.
- */
+ 
 static bool
 is_termcap(char *buffer)
 {
@@ -402,7 +357,7 @@ static int
 typelist(int eargc, char *eargv[],
 	 int verbosity,
 	 DescHook hook)
-/* apply a function to each entry in given terminfo directories */
+ 
 {
     int i;
 
@@ -477,10 +432,10 @@ typelist(int eargc, char *eargv[],
 			continue;
 		    }
 
-		    /* only visit things once, by primary name */
+		     
 		    cn = _nc_first_name(lterm.term_names);
 		    if (!strcmp(cn, name_2)) {
-			/* apply the selected hook function */
+			 
 			hook(i, eargc, cn, &lterm);
 		    }
 		    _nc_free_termtype2(&lterm);
@@ -515,9 +470,9 @@ typelist(int eargc, char *eargv[],
 
 			if (_nc_db_have_data(&key, &data, &have, &used)) {
 			    if (_nc_read_termtype(&lterm, have, used) > 0) {
-				/* only visit things once, by primary name */
+				 
 				cn = _nc_first_name(lterm.term_names);
-				/* apply the selected hook function */
+				 
 				hook(i, eargc, cn, &lterm);
 				_nc_free_termtype2(&lterm);
 			    }
@@ -530,8 +485,8 @@ typelist(int eargc, char *eargv[],
 		}
 	    }
 	}
-#endif /* USE_HASHED_DB */
-#endif /* NCURSES_USE_DATABASE */
+#endif  
+#endif  
 #if NCURSES_USE_TERMCAP
 #if HAVE_BSD_CGETENT
 	{
@@ -558,7 +513,7 @@ typelist(int eargc, char *eargv[],
 	    }
 	}
 #else
-	/* scan termcap text-file only */
+	 
 	if (_nc_is_file_path(eargv[i])) {
 	    char buffer[2048];
 	    FILE *fp;
@@ -614,7 +569,7 @@ main(int argc, char *argv[])
     _nc_progname = _nc_rootname(argv[0]);
 
     while ((this_opt = getopt(argc, argv, "0123456789ahsu:vU:V")) != -1) {
-	/* handle optional parameter */
+	 
 	if (isdigit(this_opt)) {
 	    switch (last_opt) {
 	    case 'v':
@@ -667,12 +622,12 @@ main(int argc, char *argv[])
 	    ExitProgram(EXIT_FAILURE);
 	}
 
-	/* parse entries out of the source file */
+	 
 	_nc_set_source(report_file);
 	_nc_read_entry_source(stdin, 0, FALSE, FALSE, NULLHOOK);
     }
 
-    /* maybe we want a direct-dependency listing? */
+     
     if (direct_dependencies) {
 	ENTRY *qp;
 
@@ -690,7 +645,7 @@ main(int argc, char *argv[])
 	ExitProgram(EXIT_SUCCESS);
     }
 
-    /* maybe we want a reverse-dependency listing? */
+     
     if (invert_dependencies) {
 	ENTRY *qp, *rp;
 
@@ -720,9 +675,7 @@ main(int argc, char *argv[])
 	ExitProgram(EXIT_SUCCESS);
     }
 
-    /*
-     * If we get this far, user wants a simple terminal type listing.
-     */
+     
     if (optind < argc) {
 	code = typelist(argc - optind, argv + optind, header, hook);
     } else if (all_dirs) {

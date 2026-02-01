@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * lib/smp_processor_id.c
- *
- * DEBUG_PREEMPT variant of smp_processor_id().
- */
+
+ 
 #include <linux/export.h>
 #include <linux/kprobes.h>
 #include <linux/sched.h>
@@ -27,15 +23,11 @@ unsigned int check_preemption_disabled(const char *what1, const char *what2)
 		goto out;
 #endif
 
-	/*
-	 * It is valid to assume CPU-locality during early bootup:
-	 */
+	 
 	if (system_state < SYSTEM_SCHEDULING)
 		goto out;
 
-	/*
-	 * Avoid recursion:
-	 */
+	 
 	preempt_disable_notrace();
 
 	instrumentation_begin();

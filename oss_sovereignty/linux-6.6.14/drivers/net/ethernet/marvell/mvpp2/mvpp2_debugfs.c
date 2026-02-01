@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Marvell PPv2 network controller for Armada 375 SoC.
- *
- * Copyright (C) 2018 Marvell
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -39,19 +35,19 @@ struct mvpp2_dbgfs_port_flow_entry {
 };
 
 struct mvpp2_dbgfs_entries {
-	/* Entries for Header Parser debug info */
+	 
 	struct mvpp2_dbgfs_prs_entry prs_entries[MVPP2_PRS_TCAM_SRAM_SIZE];
 
-	/* Entries for Classifier C2 engine debug info */
+	 
 	struct mvpp2_dbgfs_c2_entry c2_entries[MVPP22_CLS_C2_N_ENTRIES];
 
-	/* Entries for Classifier Flow Table debug info */
+	 
 	struct mvpp2_dbgfs_flow_tbl_entry flt_entries[MVPP2_CLS_FLOWS_TBL_SIZE];
 
-	/* Entries for Classifier flows debug info */
+	 
 	struct mvpp2_dbgfs_flow_entry flow_entries[MVPP2_N_PRS_FLOWS];
 
-	/* Entries for per-port flows debug info */
+	 
 	struct mvpp2_dbgfs_port_flow_entry port_flow_entries[MVPP2_MAX_PORTS];
 };
 
@@ -317,11 +313,11 @@ static int mvpp2_dbgfs_filter_show(struct seq_file *s, void *unused)
 
 		pmap = mvpp2_prs_tcam_port_map_get(&pe);
 
-		/* We only want entries active on this port */
+		 
 		if (!test_bit(port->id, &pmap))
 			continue;
 
-		/* Read mac addr from entry */
+		 
 		for (index = 0; index < ETH_ALEN; index++)
 			mvpp2_prs_tcam_data_byte_get(&pe, index, &da[index],
 						     &da_mask[index]);
@@ -493,7 +489,7 @@ static int mvpp2_dbgfs_flow_entry_init(struct dentry *parent,
 	debugfs_create_file("id", 0444, flow_entry_dir, entry,
 			    &mvpp2_dbgfs_flow_id_fops);
 
-	/* Create entry for each port */
+	 
 	for (i = 0; i < priv->port_count; i++) {
 		ret = mvpp2_dbgfs_flow_port_init(flow_entry_dir,
 						 priv->port_list[i], entry);
@@ -539,7 +535,7 @@ static int mvpp2_dbgfs_prs_entry_init(struct dentry *parent,
 	entry->tid = tid;
 	entry->priv = priv;
 
-	/* Create each attr */
+	 
 	debugfs_create_file("sram", 0444, prs_entry_dir, entry,
 			    &mvpp2_dbgfs_prs_sram_fops);
 

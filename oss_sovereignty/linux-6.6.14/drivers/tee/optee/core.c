@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, Linaro Limited
- * Copyright (c) 2016, EPAM Systems
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,10 +27,7 @@ int optee_pool_op_alloc_helper(struct tee_shm_pool *pool, struct tee_shm *shm,
 	struct page *page;
 	int rc = 0;
 
-	/*
-	 * Ignore alignment since this is already going to be page aligned
-	 * and there's no need for any larger alignment.
-	 */
+	 
 	page = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
 	if (!page)
 		return -ENOMEM;
@@ -167,16 +161,13 @@ void optee_release_supp(struct tee_context *ctx)
 
 void optee_remove_common(struct optee *optee)
 {
-	/* Unregister OP-TEE specific client devices on TEE bus */
+	 
 	optee_unregister_devices();
 
 	optee_notif_uninit(optee);
 	optee_shm_arg_cache_uninit(optee);
 	teedev_close_context(optee->ctx);
-	/*
-	 * The two devices have to be unregistered before we can free the
-	 * other resources.
-	 */
+	 
 	tee_device_unregister(optee->supp_teedev);
 	tee_device_unregister(optee->teedev);
 
@@ -190,20 +181,14 @@ static int ffa_abi_rc;
 
 static int __init optee_core_init(void)
 {
-	/*
-	 * The kernel may have crashed at the same time that all available
-	 * secure world threads were suspended and we cannot reschedule the
-	 * suspended threads without access to the crashed kernel's wait_queue.
-	 * Therefore, we cannot reliably initialize the OP-TEE driver in the
-	 * kdump kernel.
-	 */
+	 
 	if (is_kdump_kernel())
 		return -ENODEV;
 
 	smc_abi_rc = optee_smc_abi_register();
 	ffa_abi_rc = optee_ffa_abi_register();
 
-	/* If both failed there's no point with this module */
+	 
 	if (smc_abi_rc && ffa_abi_rc)
 		return smc_abi_rc;
 	return 0;

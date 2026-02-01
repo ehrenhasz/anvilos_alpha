@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _CORESIGHT_CORESIGHT_ETM_H
 #define _CORESIGHT_CORESIGHT_ETM_H
@@ -10,20 +8,9 @@
 #include <linux/spinlock.h>
 #include "coresight-priv.h"
 
-/*
- * Device registers:
- * 0x000 - 0x2FC: Trace         registers
- * 0x300 - 0x314: Management    registers
- * 0x318 - 0xEFC: Trace         registers
- *
- * Coresight registers
- * 0xF00 - 0xF9C: Management    registers
- * 0xFA0 - 0xFA4: Management    registers in PFTv1.0
- *                Trace         registers in PFTv1.1
- * 0xFA8 - 0xFFC: Management    registers
- */
+ 
 
-/* Trace registers (0x000-0x2FC) */
+ 
 #define ETMCR			0x000
 #define ETMCCR			0x004
 #define ETMTRIGGER		0x008
@@ -68,7 +55,7 @@
 #define ETMAUXCR		0x1fc
 #define ETMTRACEIDR		0x200
 #define ETMVMIDCVR		0x240
-/* Management registers (0x300-0x314) */
+ 
 #define ETMOSLAR		0x300
 #define ETMOSLSR		0x304
 #define ETMOSSRR		0x308
@@ -78,8 +65,8 @@
 #define ETM_MAX_CNTR		4
 #define ETM_MAX_CTXID_CMP	3
 
-/* Register definition */
-/* ETMCR - 0x00 */
+ 
+ 
 #define ETMCR_PWD_DWN		BIT(0)
 #define ETMCR_STALL_MODE	BIT(7)
 #define ETMCR_BRANCH_BROADCAST	BIT(8)
@@ -89,15 +76,15 @@
 #define ETMCR_CTXID_SIZE	(BIT(14)|BIT(15))
 #define ETMCR_TIMESTAMP_EN	BIT(28)
 #define ETMCR_RETURN_STACK	BIT(29)
-/* ETMCCR - 0x04 */
+ 
 #define ETMCCR_FIFOFULL		BIT(23)
-/* ETMPDCR - 0x310 */
+ 
 #define ETMPDCR_PWD_UP		BIT(3)
-/* ETMTECR1 - 0x024 */
+ 
 #define ETMTECR1_ADDR_COMP_1	BIT(0)
 #define ETMTECR1_INC_EXC	BIT(24)
 #define ETMTECR1_START_STOP	BIT(25)
-/* ETMCCER - 0x1E8 */
+ 
 #define ETMCCER_TIMESTAMP	BIT(22)
 #define ETMCCER_RETSTACK	BIT(23)
 
@@ -124,55 +111,23 @@
 #define ETM_SEQ_STATE_MAX_VAL	(0x2)
 #define PORT_SIZE_MASK		(GENMASK(21, 21) | GENMASK(6, 4))
 
-#define ETM_HARD_WIRE_RES_A	/* Hard wired, always true */	\
+#define ETM_HARD_WIRE_RES_A	 	\
 				((0x0f << 0)	|		\
-				/* Resource index A */		\
+				 		\
 				(0x06 << 4))
 
-#define ETM_ADD_COMP_0		/* Single addr comparator 1 */	\
+#define ETM_ADD_COMP_0		 	\
 				((0x00 << 7)	|		\
-				/* Resource index B */		\
+				 		\
 				(0x00 << 11))
 
-#define ETM_EVENT_NOT_A		BIT(14) /* NOT(A) */
+#define ETM_EVENT_NOT_A		BIT(14)  
 
 #define ETM_DEFAULT_EVENT_VAL	(ETM_HARD_WIRE_RES_A	|	\
 				 ETM_ADD_COMP_0		|	\
 				 ETM_EVENT_NOT_A)
 
-/**
- * struct etm_config - configuration information related to an ETM
- * @mode:	controls various modes supported by this ETM/PTM.
- * @ctrl:	used in conjunction with @mode.
- * @trigger_event: setting for register ETMTRIGGER.
- * @startstop_ctrl: setting for register ETMTSSCR.
- * @enable_event: setting for register ETMTEEVR.
- * @enable_ctrl1: setting for register ETMTECR1.
- * @enable_ctrl2: setting for register ETMTECR2.
- * @fifofull_level: setting for register ETMFFLR.
- * @addr_idx:	index for the address comparator selection.
- * @addr_val:	value for address comparator register.
- * @addr_acctype: access type for address comparator register.
- * @addr_type:	current status of the comparator register.
- * @cntr_idx:	index for the counter register selection.
- * @cntr_rld_val: reload value of a counter register.
- * @cntr_event:	control for counter enable register.
- * @cntr_rld_event: value for counter reload event register.
- * @cntr_val:	counter value register.
- * @seq_12_event: event causing the transition from 1 to 2.
- * @seq_21_event: event causing the transition from 2 to 1.
- * @seq_23_event: event causing the transition from 2 to 3.
- * @seq_31_event: event causing the transition from 3 to 1.
- * @seq_32_event: event causing the transition from 3 to 2.
- * @seq_13_event: event causing the transition from 1 to 3.
- * @seq_curr_state: current value of the sequencer register.
- * @ctxid_idx: index for the context ID registers.
- * @ctxid_pid: value for the context ID to trigger on.
- * @ctxid_mask: mask applicable to all the context IDs.
- * @sync_freq:	Synchronisation frequency.
- * @timestamp_event: Defines an event that requests the insertion
- *		     of a timestamp into the trace stream.
- */
+ 
 struct etm_config {
 	u32				mode;
 	u32				ctrl;
@@ -205,30 +160,7 @@ struct etm_config {
 	u32				timestamp_event;
 };
 
-/**
- * struct etm_drvdata - specifics associated to an ETM component
- * @base:	memory mapped base address for this component.
- * @atclk:	optional clock for the core parts of the ETM.
- * @csdev:	component vitals needed by the framework.
- * @spinlock:	only one at a time pls.
- * @cpu:	the cpu this component is affined to.
- * @port_size:	port size as reported by ETMCR bit 4-6 and 21.
- * @arch:	ETM/PTM version number.
- * @use_cpu14:	true if management registers need to be accessed via CP14.
- * @mode:	this tracer's mode, i.e sysFS, Perf or disabled.
- * @sticky_enable: true if ETM base configuration has been done.
- * @boot_enable:true if we should start tracing at boot time.
- * @os_unlock:	true if access to management registers is allowed.
- * @nr_addr_cmp:Number of pairs of address comparators as found in ETMCCR.
- * @nr_cntr:	Number of counters as found in ETMCCR bit 13-15.
- * @nr_ext_inp:	Number of external input as found in ETMCCR bit 17-19.
- * @nr_ext_out:	Number of external output as found in ETMCCR bit 20-22.
- * @nr_ctxid_cmp: Number of contextID comparators as found in ETMCCR bit 24-25.
- * @etmccr:	value of register ETMCCR.
- * @etmccer:	value of register ETMCCER.
- * @traceid:	value of the current ID for this component.
- * @config:	structure holding configuration parameters.
- */
+ 
 struct etm_drvdata {
 	void __iomem			*base;
 	struct clk			*atclk;

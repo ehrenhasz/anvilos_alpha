@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tcs3472.c - Support for TAOS TCS3472 color light-to-digital converter
- *
- * Copyright (c) 2013 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * Color light sensor with 16-bit channels for red, green, blue, clear);
- * 7-bit I2C slave address 0x39 (TCS34721, TCS34723) or 0x29 (TCS34725,
- * TCS34727)
- *
- * Datasheet: http://ams.com/eng/content/download/319364/1117183/file/TCS3472_Datasheet_EN_v2.pdf
- *
- * TODO: wait time
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -64,7 +52,7 @@ struct tcs3472_data {
 	u8 control;
 	u8 atime;
 	u8 apers;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		u16 chans[4];
 		s64 timestamp __aligned(8);
@@ -212,10 +200,7 @@ static int tcs3472_write_raw(struct iio_dev *indio_dev,
 	return -EINVAL;
 }
 
-/*
- * Translation from APERS field value to the number of consecutive out-of-range
- * clear channel values before an interrupt is generated
- */
+ 
 static const int tcs3472_intr_pers[] = {
 	0, 1, 2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60
 };
@@ -413,7 +398,7 @@ static ssize_t tcs3472_show_int_time_available(struct device *dev,
 		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06d ",
 			2400 * i);
 
-	/* replace trailing space by newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -504,7 +489,7 @@ static int tcs3472_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* enable device */
+	 
 	data->enable = ret | TCS3472_ENABLE_PON | TCS3472_ENABLE_AEN;
 	data->enable &= ~TCS3472_ENABLE_AIEN;
 	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,

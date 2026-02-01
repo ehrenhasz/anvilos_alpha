@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NXP i.MX93 ADC driver
- *
- * Copyright 2023 NXP
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -21,7 +17,7 @@
 
 #define IMX93_ADC_DRIVER_NAME	"imx93-adc"
 
-/* Register map definition */
+ 
 #define IMX93_ADC_MCR		0x00
 #define IMX93_ADC_MSR		0x04
 #define IMX93_ADC_ISR		0x10
@@ -39,7 +35,7 @@
 #define IMX93_ADC_PCDR7		0x11c
 #define IMX93_ADC_CALSTAT	0x39C
 
-/* ADC bit shift */
+ 
 #define IMX93_ADC_MCR_MODE_MASK			BIT(29)
 #define IMX93_ADC_MCR_NSTART_MASK		BIT(24)
 #define IMX93_ADC_MCR_CALSTART_MASK		BIT(14)
@@ -58,7 +54,7 @@
 #define IMX93_ADC_IMR_ECH_MASK			BIT(0)
 #define IMX93_ADC_PCDR_CDATA_MASK		GENMASK(11, 0)
 
-/* ADC status */
+ 
 #define IMX93_ADC_MSR_ADCSTATUS_IDLE			0
 #define IMX93_ADC_MSR_ADCSTATUS_POWER_DOWN		1
 #define IMX93_ADC_MSR_ADCSTATUS_WAIT_STATE		2
@@ -74,7 +70,7 @@ struct imx93_adc {
 	struct clk *ipg_clk;
 	int irq;
 	struct regulator *vref;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex lock;
 	struct completion completion;
 };
@@ -122,7 +118,7 @@ static void imx93_adc_power_up(struct imx93_adc *adc)
 {
 	u32 mcr;
 
-	/* bring ADC out of power down state, in idle state */
+	 
 	mcr = readl(adc->regs + IMX93_ADC_MCR);
 	mcr &= ~FIELD_PREP(IMX93_ADC_MCR_PWDN_MASK, 1);
 	writel(mcr, adc->regs + IMX93_ADC_MCR);
@@ -132,10 +128,10 @@ static void imx93_adc_config_ad_clk(struct imx93_adc *adc)
 {
 	u32 mcr;
 
-	/* put adc in power down mode */
+	 
 	imx93_adc_power_down(adc);
 
-	/* config the AD_CLK equal to bus clock */
+	 
 	mcr = readl(adc->regs + IMX93_ADC_MCR);
 	mcr |= FIELD_PREP(IMX93_ADC_MCR_ADCLKSE_MASK, 1);
 	writel(mcr, adc->regs + IMX93_ADC_MCR);
@@ -148,27 +144,24 @@ static int imx93_adc_calibration(struct imx93_adc *adc)
 	u32 mcr, msr;
 	int ret;
 
-	/* make sure ADC in power down mode */
+	 
 	imx93_adc_power_down(adc);
 
-	/* config SAR controller operating clock */
+	 
 	mcr = readl(adc->regs + IMX93_ADC_MCR);
 	mcr &= ~FIELD_PREP(IMX93_ADC_MCR_ADCLKSE_MASK, 1);
 	writel(mcr, adc->regs + IMX93_ADC_MCR);
 
 	imx93_adc_power_up(adc);
 
-	/*
-	 * TODO: we use the default TSAMP/NRSMPL/AVGEN in MCR,
-	 * can add the setting of these bit if need in future.
-	 */
+	 
 
-	/* run calibration */
+	 
 	mcr = readl(adc->regs + IMX93_ADC_MCR);
 	mcr |= FIELD_PREP(IMX93_ADC_MCR_CALSTART_MASK, 1);
 	writel(mcr, adc->regs + IMX93_ADC_MCR);
 
-	/* wait calibration to be finished */
+	 
 	ret = readl_poll_timeout(adc->regs + IMX93_ADC_MSR, msr,
 		!(msr & IMX93_ADC_MSR_CALBUSY_MASK), 1000, 2000000);
 	if (ret == -ETIMEDOUT) {
@@ -177,7 +170,7 @@ static int imx93_adc_calibration(struct imx93_adc *adc)
 		return ret;
 	}
 
-	/* check whether calbration is success or not */
+	 
 	msr = readl(adc->regs + IMX93_ADC_MSR);
 	if (msr & IMX93_ADC_MSR_CALFAIL_MASK) {
 		dev_warn(adc->dev, "ADC calibration failed!\n");
@@ -198,23 +191,23 @@ static int imx93_adc_read_channel_conversion(struct imx93_adc *adc,
 
 	reinit_completion(&adc->completion);
 
-	/* config channel mask register */
+	 
 	channel = 1 << channel_number;
 	writel(channel, adc->regs + IMX93_ADC_NCMR0);
 
-	/* TODO: can config desired sample time in CTRn if need */
+	 
 
-	/* config interrupt mask */
+	 
 	imr = FIELD_PREP(IMX93_ADC_IMR_EOC_MASK, 1);
 	writel(imr, adc->regs + IMX93_ADC_IMR);
 	writel(channel, adc->regs + IMX93_ADC_CIMR0);
 
-	/* config one-shot mode */
+	 
 	mcr = readl(adc->regs + IMX93_ADC_MCR);
 	mcr &= ~FIELD_PREP(IMX93_ADC_MCR_MODE_MASK, 1);
 	writel(mcr, adc->regs + IMX93_ADC_MCR);
 
-	/* start normal conversion */
+	 
 	mcr = readl(adc->regs + IMX93_ADC_MCR);
 	mcr |= FIELD_PREP(IMX93_ADC_MCR_NSTART_MASK, 1);
 	writel(mcr, adc->regs + IMX93_ADC_MCR);
@@ -320,7 +313,7 @@ static int imx93_adc_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(adc->regs),
 				     "Failed getting ioremap resource\n");
 
-	/* The third irq is for ADC conversion usage */
+	 
 	adc->irq = platform_get_irq(pdev, 2);
 	if (adc->irq < 0)
 		return adc->irq;
@@ -402,7 +395,7 @@ static int imx93_adc_remove(struct platform_device *pdev)
 	struct imx93_adc *adc = iio_priv(indio_dev);
 	struct device *dev = adc->dev;
 
-	/* adc power down need clock on */
+	 
 	pm_runtime_get_sync(dev);
 
 	pm_runtime_disable(dev);
@@ -466,7 +459,7 @@ static DEFINE_RUNTIME_DEV_PM_OPS(imx93_adc_pm_ops,
 
 static const struct of_device_id imx93_adc_match[] = {
 	{ .compatible = "nxp,imx93-adc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx93_adc_match);
 

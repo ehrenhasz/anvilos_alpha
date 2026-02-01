@@ -1,23 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2016, 2017 by Delphix. All rights reserved.
- * Copyright (c) 2019, 2020 by Christian Schwarz. All rights reserved.
- * Copyright 2020 Joyent, Inc.
- */
+ 
 
 #include <sys/lua/lua.h>
 #include <sys/lua/lauxlib.h>
@@ -60,24 +43,7 @@ zcp_synctask_cleanup(void *arg)
 	fnvlist_free(arg);
 }
 
-/*
- * Generic synctask interface for channel program syncfuncs.
- *
- * To perform some action in syncing context, we'd generally call
- * dsl_sync_task(), but since the Lua script is already running inside a
- * synctask we need to leave out some actions (such as acquiring the config
- * rwlock and performing space checks).
- *
- * If 'sync' is false, executes a dry run and returns the error code.
- *
- * If we are not running in syncing context and we are not doing a dry run
- * (meaning we are running a zfs.sync function in open-context) then we
- * return a Lua error.
- *
- * This function also handles common fatal error cases for channel program
- * library functions. If a fatal error occurs, err_dsname will be the dataset
- * name reported in error messages, if supplied.
- */
+ 
 static int
 zcp_sync_task(lua_State *state, dsl_checkfunc_t *checkfunc,
     dsl_syncfunc_t *syncfunc, void *arg, boolean_t sync, const char *err_dsname)
@@ -194,10 +160,7 @@ zcp_synctask_promote(lua_State *state, boolean_t sync, nvlist_t *err_details)
 	ddpa.cr = ri->zri_cred;
 	ddpa.proc = ri->zri_proc;
 
-	/*
-	 * If there was a snapshot name conflict, then err_ds will be filled
-	 * with a list of conflicting snapshot names.
-	 */
+	 
 	err = zcp_sync_task(state, dsl_dataset_promote_check,
 	    dsl_dataset_promote_sync, &ddpa, sync, dsname);
 
@@ -260,19 +223,12 @@ zcp_synctask_snapshot(lua_State *state, boolean_t sync, nvlist_t *err_details)
 	const char *dsname = lua_tostring(state, 1);
 	zcp_run_info_t *ri = zcp_run_info(state);
 
-	/*
-	 * On old pools, the ZIL must not be active when a snapshot is created,
-	 * but we can't suspend the ZIL because we're already in syncing
-	 * context.
-	 */
+	 
 	if (spa_version(ri->zri_pool->dp_spa) < SPA_VERSION_FAST_SNAP) {
 		return (SET_ERROR(ENOTSUP));
 	}
 
-	/*
-	 * We only allow for a single snapshot rather than a list, so the
-	 * error list output is unnecessary.
-	 */
+	 
 	ddsa.ddsa_errors = NULL;
 	ddsa.ddsa_props = NULL;
 	ddsa.ddsa_cr = ri->zri_cred;
@@ -287,12 +243,7 @@ zcp_synctask_snapshot(lua_State *state, boolean_t sync, nvlist_t *err_details)
 	    dsl_dataset_snapshot_sync, &ddsa, sync, dsname);
 
 	if (err == 0) {
-		/*
-		 * We may need to create a new device minor node for this
-		 * dataset (if it is a zvol and the "snapdev" property is set).
-		 * Save it in the nvlist so that it can be processed in open
-		 * context.
-		 */
+		 
 		fnvlist_add_boolean(ri->zri_new_zvols, dsname);
 	}
 
@@ -344,7 +295,7 @@ static const zcp_synctask_info_t zcp_synctask_inherit_prop_info = {
 	.name = "inherit",
 	.func = zcp_synctask_inherit_prop,
 	.space_check = ZFS_SPACE_CHECK_RESERVED,
-	.blocks_modified = 2, /* 2 * numprops */
+	.blocks_modified = 2,  
 	.pargs = {
 		{ .za_name = "dataset", .za_lua_type = LUA_TSTRING },
 		{ .za_name = "property", .za_lua_type = LUA_TSTRING },
@@ -507,10 +458,7 @@ zcp_synctask_wrapper(lua_State *state)
 	int num_ret = 1;
 	nvlist_t *err_details = fnvlist_alloc();
 
-	/*
-	 * Make sure err_details is properly freed, even if a fatal error is
-	 * thrown during the synctask.
-	 */
+	 
 	zch = zcp_register_cleanup(state, zcp_synctask_cleanup, err_details);
 
 	zcp_synctask_info_t *info = lua_touserdata(state, lua_upvalueindex(1));
@@ -519,7 +467,7 @@ zcp_synctask_wrapper(lua_State *state)
 	zcp_run_info_t *ri = zcp_run_info(state);
 	dsl_pool_t *dp = ri->zri_pool;
 
-	/* MOS space is triple-dittoed, so we multiply by 3. */
+	 
 	uint64_t funcspace =
 	    ((uint64_t)info->blocks_modified << DST_AVG_BLKSHIFT) * 3;
 

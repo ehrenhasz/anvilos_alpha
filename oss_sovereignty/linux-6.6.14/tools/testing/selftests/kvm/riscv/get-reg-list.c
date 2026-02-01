@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Check for KVM_GET_REG_LIST regressions.
- *
- * Copyright (c) 2023 Intel Corporation
- *
- */
+
+ 
 #include <stdio.h>
 #include "kvm_util.h"
 #include "test_util.h"
@@ -17,15 +12,7 @@ static bool isa_ext_cant_disable[KVM_RISCV_ISA_EXT_MAX];
 bool filter_reg(__u64 reg)
 {
 	switch (reg & ~REG_MASK) {
-	/*
-	 * Same set of ISA_EXT registers are not present on all host because
-	 * ISA_EXT registers are visible to the KVM user space based on the
-	 * ISA extensions available on the host. Also, disabling an ISA
-	 * extension using corresponding ISA_EXT register does not affect
-	 * the visibility of the ISA_EXT register itself.
-	 *
-	 * Based on above, we should filter-out all ISA_EXT registers.
-	 */
+	 
 	case KVM_REG_RISCV_ISA_EXT | KVM_RISCV_ISA_EXT_A:
 	case KVM_REG_RISCV_ISA_EXT | KVM_RISCV_ISA_EXT_C:
 	case KVM_REG_RISCV_ISA_EXT | KVM_RISCV_ISA_EXT_D:
@@ -50,7 +37,7 @@ bool filter_reg(__u64 reg)
 	case KVM_REG_RISCV_ISA_EXT | KVM_RISCV_ISA_EXT_ZIFENCEI:
 	case KVM_REG_RISCV_ISA_EXT | KVM_RISCV_ISA_EXT_ZIHPM:
 		return true;
-	/* AIA registers are always available when Ssaia can't be disabled */
+	 
 	case KVM_REG_RISCV_CSR | KVM_REG_RISCV_CSR_AIA | KVM_REG_RISCV_CSR_AIA_REG(siselect):
 	case KVM_REG_RISCV_CSR | KVM_REG_RISCV_CSR_AIA | KVM_REG_RISCV_CSR_AIA_REG(iprio1):
 	case KVM_REG_RISCV_CSR | KVM_REG_RISCV_CSR_AIA | KVM_REG_RISCV_CSR_AIA_REG(iprio2):
@@ -89,10 +76,7 @@ void finalize_vcpu(struct kvm_vcpu *vcpu, struct vcpu_reg_list *c)
 	for (int i = 0; i < KVM_RISCV_ISA_EXT_MAX; i++)
 		__vcpu_get_reg(vcpu, RISCV_ISA_EXT_REG(i), &isa_ext_state[i]);
 
-	/*
-	 * Disable all extensions which were enabled by default
-	 * if they were available in the risc-v host.
-	 */
+	 
 	for (int i = 0; i < KVM_RISCV_ISA_EXT_MAX; i++) {
 		rc = __vcpu_set_reg(vcpu, RISCV_ISA_EXT_REG(i), 0);
 		if (rc && isa_ext_state[i])
@@ -103,10 +87,10 @@ void finalize_vcpu(struct kvm_vcpu *vcpu, struct vcpu_reg_list *c)
 		if (!s->feature)
 			continue;
 
-		/* Try to enable the desired extension */
+		 
 		__vcpu_set_reg(vcpu, RISCV_ISA_EXT_REG(s->feature), 1);
 
-		/* Double check whether the desired extension was enabled */
+		 
 		__TEST_REQUIRE(vcpu_has_ext(vcpu, s->feature),
 			       "%s not available, skipping tests\n", s->name);
 	}
@@ -114,7 +98,7 @@ void finalize_vcpu(struct kvm_vcpu *vcpu, struct vcpu_reg_list *c)
 
 static const char *config_id_to_str(__u64 id)
 {
-	/* reg_off is the offset into struct kvm_riscv_config */
+	 
 	__u64 reg_off = id & ~(REG_MASK | KVM_REG_RISCV_CONFIG);
 
 	switch (reg_off) {
@@ -134,16 +118,13 @@ static const char *config_id_to_str(__u64 id)
 		return "KVM_REG_RISCV_CONFIG_REG(satp_mode)";
 	}
 
-	/*
-	 * Config regs would grow regularly with new pseudo reg added, so
-	 * just show raw id to indicate a new pseudo config reg.
-	 */
+	 
 	return strdup_printf("KVM_REG_RISCV_CONFIG_REG(%lld) /* UNKNOWN */", reg_off);
 }
 
 static const char *core_id_to_str(const char *prefix, __u64 id)
 {
-	/* reg_off is the offset into struct kvm_riscv_core */
+	 
 	__u64 reg_off = id & ~(REG_MASK | KVM_REG_RISCV_CORE);
 
 	switch (reg_off) {
@@ -187,7 +168,7 @@ static const char *core_id_to_str(const char *prefix, __u64 id)
 
 static const char *general_csr_id_to_str(__u64 reg_off)
 {
-	/* reg_off is the offset into struct kvm_riscv_csr */
+	 
 	switch (reg_off) {
 	case KVM_REG_RISCV_CSR_REG(sstatus):
 		return RISCV_CSR_GENERAL(sstatus);
@@ -217,7 +198,7 @@ static const char *general_csr_id_to_str(__u64 reg_off)
 
 static const char *aia_csr_id_to_str(__u64 reg_off)
 {
-	/* reg_off is the offset into struct kvm_riscv_aia_csr */
+	 
 	switch (reg_off) {
 	case KVM_REG_RISCV_CSR_AIA_REG(siselect):
 		return RISCV_CSR_AIA(siselect);
@@ -259,7 +240,7 @@ static const char *csr_id_to_str(const char *prefix, __u64 id)
 
 static const char *timer_id_to_str(const char *prefix, __u64 id)
 {
-	/* reg_off is the offset into struct kvm_riscv_timer */
+	 
 	__u64 reg_off = id & ~(REG_MASK | KVM_REG_RISCV_TIMER);
 
 	switch (reg_off) {
@@ -279,7 +260,7 @@ static const char *timer_id_to_str(const char *prefix, __u64 id)
 
 static const char *fp_f_id_to_str(const char *prefix, __u64 id)
 {
-	/* reg_off is the offset into struct __riscv_f_ext_state */
+	 
 	__u64 reg_off = id & ~(REG_MASK | KVM_REG_RISCV_FP_F);
 
 	switch (reg_off) {
@@ -296,7 +277,7 @@ static const char *fp_f_id_to_str(const char *prefix, __u64 id)
 
 static const char *fp_d_id_to_str(const char *prefix, __u64 id)
 {
-	/* reg_off is the offset into struct __riscv_d_ext_state */
+	 
 	__u64 reg_off = id & ~(REG_MASK | KVM_REG_RISCV_FP_D);
 
 	switch (reg_off) {
@@ -313,7 +294,7 @@ static const char *fp_d_id_to_str(const char *prefix, __u64 id)
 
 static const char *isa_ext_id_to_str(__u64 id)
 {
-	/* reg_off is the offset into unsigned long kvm_isa_ext_arr[] */
+	 
 	__u64 reg_off = id & ~(REG_MASK | KVM_REG_RISCV_ISA_EXT);
 
 	static const char * const kvm_isa_ext_reg_name[] = {
@@ -343,10 +324,7 @@ static const char *isa_ext_id_to_str(__u64 id)
 	};
 
 	if (reg_off >= ARRAY_SIZE(kvm_isa_ext_reg_name)) {
-		/*
-		 * isa_ext regs would grow regularly with new isa extension added, so
-		 * just show "reg" to indicate a new extension.
-		 */
+		 
 		return strdup_printf("%lld /* UNKNOWN */", reg_off);
 	}
 
@@ -355,7 +333,7 @@ static const char *isa_ext_id_to_str(__u64 id)
 
 static const char *sbi_ext_single_id_to_str(__u64 reg_off)
 {
-	/* reg_off is KVM_RISCV_SBI_EXT_ID */
+	 
 	static const char * const kvm_sbi_ext_reg_name[] = {
 		"KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_V01",
 		"KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_TIME",
@@ -369,10 +347,7 @@ static const char *sbi_ext_single_id_to_str(__u64 reg_off)
 	};
 
 	if (reg_off >= ARRAY_SIZE(kvm_sbi_ext_reg_name)) {
-		/*
-		 * sbi_ext regs would grow regularly with new sbi extension added, so
-		 * just show "reg" to indicate a new extension.
-		 */
+		 
 		return strdup_printf("KVM_REG_RISCV_SBI_SINGLE | %lld /* UNKNOWN */", reg_off);
 	}
 
@@ -382,10 +357,7 @@ static const char *sbi_ext_single_id_to_str(__u64 reg_off)
 static const char *sbi_ext_multi_id_to_str(__u64 reg_subtype, __u64 reg_off)
 {
 	if (reg_off > KVM_REG_RISCV_SBI_MULTI_REG_LAST) {
-		/*
-		 * sbi_ext regs would grow regularly with new sbi extension added, so
-		 * just show "reg" to indicate a new extension.
-		 */
+		 
 		return strdup_printf("%lld /* UNKNOWN */", reg_off);
 	}
 
@@ -479,10 +451,7 @@ void print_reg(const char *prefix, __u64 id)
 	}
 }
 
-/*
- * The current blessed list was primed with the output of kernel version
- * v6.5-rc3 and then later updated with new registers.
- */
+ 
 static __u64 base_regs[] = {
 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_CONFIG | KVM_REG_RISCV_CONFIG_REG(isa),
 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_CONFIG | KVM_REG_RISCV_CONFIG_REG(mvendorid),
@@ -549,10 +518,7 @@ static __u64 base_regs[] = {
 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_MULTI_DIS | 0,
 };
 
-/*
- * The skips_set list registers that should skip set test.
- *  - KVM_REG_RISCV_TIMER_REG(state): set would fail if it was not initialized properly.
- */
+ 
 static __u64 base_skips_set[] = {
 	KVM_REG_RISCV | KVM_REG_SIZE_U64 | KVM_REG_RISCV_TIMER | KVM_REG_RISCV_TIMER_REG(state),
 };

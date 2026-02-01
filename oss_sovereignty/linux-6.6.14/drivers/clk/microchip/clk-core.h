@@ -1,21 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Purna Chandra Mandal,<purna.mandal@microchip.com>
- * Copyright (C) 2015 Microchip Technology Inc.  All rights reserved.
- */
+ 
+ 
 #ifndef __MICROCHIP_CLK_PIC32_H_
 #define __MICROCHIP_CLK_PIC32_H_
 
 #include <linux/clk-provider.h>
 
-/* PIC32 clock data */
+ 
 struct pic32_clk_common {
 	struct device *dev;
 	void __iomem *iobase;
-	spinlock_t reg_lock; /* clock lock */
+	spinlock_t reg_lock;  
 };
 
-/* System PLL clock */
+ 
 struct pic32_sys_pll_data {
 	struct clk_init_data init_data;
 	const u32 ctrl_reg;
@@ -23,7 +20,7 @@ struct pic32_sys_pll_data {
 	const u32 lock_mask;
 };
 
-/* System clock */
+ 
 struct pic32_sys_clk_data {
 	struct clk_init_data init_data;
 	const u32 mux_reg;
@@ -32,20 +29,20 @@ struct pic32_sys_clk_data {
 	const u32 slew_div;
 };
 
-/* Reference Oscillator clock */
+ 
 struct pic32_ref_osc_data {
 	struct clk_init_data init_data;
 	const u32 ctrl_reg;
 	const u32 *parent_map;
 };
 
-/* Peripheral Bus clock */
+ 
 struct pic32_periph_clk_data {
 	struct clk_init_data init_data;
 	const u32 ctrl_reg;
 };
 
-/* External Secondary Oscillator clock  */
+ 
 struct pic32_sec_osc_data {
 	struct clk_init_data init_data;
 	const u32 enable_reg;
@@ -73,4 +70,4 @@ struct clk *pic32_spll_clk_register(const struct pic32_sys_pll_data *data,
 struct clk *pic32_sosc_clk_register(const struct pic32_sec_osc_data *data,
 				    struct pic32_clk_common *core);
 
-#endif /* __MICROCHIP_CLK_PIC32_H_*/
+#endif  

@@ -1,43 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/* gw.c - CAN frame Gateway/Router/Bridge with netlink interface
- *
- * Copyright (c) 2019 Volkswagen Group Electronic Research
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of Volkswagen nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * Alternatively, provided that this notice is retained in full, this
- * software may be distributed under the terms of the GNU General
- * Public License ("GPL") version 2, in which case the provisions of the
- * GPL apply INSTEAD OF those given above.
- *
- * The provided data structures and external interfaces from this code
- * are not restricted to be used by modules with a GPL compatible license.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
- * DAMAGE.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -81,7 +43,7 @@ MODULE_PARM_DESC(max_hops,
 static struct notifier_block notifier;
 static struct kmem_cache *cgw_cache __read_mostly;
 
-/* structure that contains the (on-the-fly) CAN frame modifications */
+ 
 struct cf_mod {
 	struct {
 		struct canfd_frame and;
@@ -98,7 +60,7 @@ struct cf_mod {
 	void (*modfunc[MAX_MODFUNCTIONS])(struct canfd_frame *cf,
 					  struct cf_mod *mod);
 
-	/* CAN frame checksum calculation after CAN frame modifications */
+	 
 	struct {
 		struct cgw_csum_xor xor;
 		struct cgw_csum_crc8 crc8;
@@ -112,18 +74,14 @@ struct cf_mod {
 	u32 uid;
 };
 
-/* So far we just support CAN -> CAN routing and frame modifications.
- *
- * The internal can_can_gw structure contains data and attributes for
- * a CAN -> CAN gateway job.
- */
+ 
 struct can_can_gw {
 	struct can_filter filter;
 	int src_idx;
 	int dst_idx;
 };
 
-/* list entry for CAN gateways jobs */
+ 
 struct cgw_job {
 	struct hlist_node list;
 	struct rcu_head rcu;
@@ -132,23 +90,23 @@ struct cgw_job {
 	u32 deleted_frames;
 	struct cf_mod mod;
 	union {
-		/* CAN frame data source */
+		 
 		struct net_device *dev;
 	} src;
 	union {
-		/* CAN frame data destination */
+		 
 		struct net_device *dev;
 	} dst;
 	union {
 		struct can_can_gw ccgw;
-		/* tbc */
+		 
 	};
 	u8 gwtype;
 	u8 limit_hops;
 	u16 flags;
 };
 
-/* modification functions that are invoked in the hot path in can_can_gw_rcv */
+ 
 
 #define MODFUNC(func, op) static void func(struct canfd_frame *cf, \
 					   struct cf_mod *mod) { op ; }
@@ -199,37 +157,37 @@ static void mod_set_fddata(struct canfd_frame *cf, struct cf_mod *mod)
 	memcpy(cf->data, mod->modframe.set.data, CANFD_MAX_DLEN);
 }
 
-/* retrieve valid CC DLC value and store it into 'len' */
+ 
 static void mod_retrieve_ccdlc(struct canfd_frame *cf)
 {
 	struct can_frame *ccf = (struct can_frame *)cf;
 
-	/* len8_dlc is only valid if len == CAN_MAX_DLEN */
+	 
 	if (ccf->len != CAN_MAX_DLEN)
 		return;
 
-	/* do we have a valid len8_dlc value from 9 .. 15 ? */
+	 
 	if (ccf->len8_dlc > CAN_MAX_DLEN && ccf->len8_dlc <= CAN_MAX_RAW_DLC)
 		ccf->len = ccf->len8_dlc;
 }
 
-/* convert valid CC DLC value in 'len' into struct can_frame elements */
+ 
 static void mod_store_ccdlc(struct canfd_frame *cf)
 {
 	struct can_frame *ccf = (struct can_frame *)cf;
 
-	/* clear potential leftovers */
+	 
 	ccf->len8_dlc = 0;
 
-	/* plain data length 0 .. 8 - that was easy */
+	 
 	if (ccf->len <= CAN_MAX_DLEN)
 		return;
 
-	/* potentially broken values are caught in can_can_gw_rcv() */
+	 
 	if (ccf->len > CAN_MAX_RAW_DLC)
 		return;
 
-	/* we have a valid dlc value from 9 .. 15 in ccf->len */
+	 
 	ccf->len8_dlc = ccf->len;
 	ccf->len = CAN_MAX_DLEN;
 }
@@ -263,10 +221,7 @@ static void mod_set_ccdlc(struct canfd_frame *cf, struct cf_mod *mod)
 
 static void canframecpy(struct canfd_frame *dst, struct can_frame *src)
 {
-	/* Copy the struct members separately to ensure that no uninitialized
-	 * data are copied in the 3 bytes hole of the struct. This is needed
-	 * to make easy compares of the data in the struct cf_mod.
-	 */
+	 
 
 	dst->can_id = src->can_id;
 	dst->len = src->len;
@@ -275,10 +230,7 @@ static void canframecpy(struct canfd_frame *dst, struct can_frame *src)
 
 static void canfdframecpy(struct canfd_frame *dst, struct canfd_frame *src)
 {
-	/* Copy the struct members separately to ensure that no uninitialized
-	 * data are copied in the 2 bytes hole of the struct. This is needed
-	 * to make easy compares of the data in the struct cf_mod.
-	 */
+	 
 
 	dst->can_id = src->can_id;
 	dst->flags = src->flags;
@@ -293,13 +245,7 @@ static int cgw_chk_csum_parms(s8 fr, s8 to, s8 re, struct rtcanmsg *r)
 	if (r->flags & CGW_FLAGS_CAN_FD)
 		dlen = CANFD_MAX_DLEN;
 
-	/* absolute dlc values 0 .. 7 => 0 .. 7, e.g. data [0]
-	 * relative to received dlc -1 .. -8 :
-	 * e.g. for received dlc = 8
-	 * -1 => index = 7 (data[7])
-	 * -3 => index = 5 (data[5])
-	 * -8 => index = 0 (data[0])
-	 */
+	 
 
 	if (fr >= -dlen && fr < dlen &&
 	    to >= -dlen && to < dlen &&
@@ -453,7 +399,7 @@ static void cgw_csum_crc8_neg(struct canfd_frame *cf,
 	cf->data[crc8->result_idx] = crc ^ crc8->final_xor_val;
 }
 
-/* the receive & process & send function */
+ 
 static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 {
 	struct cgw_job *gwj = (struct cgw_job *)data;
@@ -461,7 +407,7 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 	struct sk_buff *nskb;
 	int modidx = 0;
 
-	/* process strictly Classic CAN or CAN FD frames */
+	 
 	if (gwj->flags & CGW_FLAGS_CAN_FD) {
 		if (!can_is_canfd_skb(skb))
 			return;
@@ -470,23 +416,14 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 			return;
 	}
 
-	/* Do not handle CAN frames routed more than 'max_hops' times.
-	 * In general we should never catch this delimiter which is intended
-	 * to cover a misconfiguration protection (e.g. circular CAN routes).
-	 *
-	 * The Controller Area Network controllers only accept CAN frames with
-	 * correct CRCs - which are not visible in the controller registers.
-	 * According to skbuff.h documentation the csum_start element for IP
-	 * checksums is undefined/unused when ip_summed == CHECKSUM_UNNECESSARY.
-	 * Only CAN skbs can be processed here which already have this property.
-	 */
+	 
 
 #define cgw_hops(skb) ((skb)->csum_start)
 
 	BUG_ON(skb->ip_summed != CHECKSUM_UNNECESSARY);
 
 	if (cgw_hops(skb) >= max_hops) {
-		/* indicate deleted frames due to misconfiguration */
+		 
 		gwj->deleted_frames++;
 		return;
 	}
@@ -496,16 +433,12 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 		return;
 	}
 
-	/* is sending the skb back to the incoming interface not allowed? */
+	 
 	if (!(gwj->flags & CGW_FLAGS_CAN_IIF_TX_OK) &&
 	    can_skb_prv(skb)->ifindex == gwj->dst.dev->ifindex)
 		return;
 
-	/* clone the given skb, which has not been done in can_rcv()
-	 *
-	 * When there is at least one modification function activated,
-	 * we need to copy the skb as we want to modify skb->data.
-	 */
+	 
 	if (gwj->mod.modfunc[0])
 		nskb = skb_copy(skb, GFP_ATOMIC);
 	else
@@ -516,36 +449,36 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 		return;
 	}
 
-	/* put the incremented hop counter in the cloned skb */
+	 
 	cgw_hops(nskb) = cgw_hops(skb) + 1;
 
-	/* first processing of this CAN frame -> adjust to private hop limit */
+	 
 	if (gwj->limit_hops && cgw_hops(nskb) == 1)
 		cgw_hops(nskb) = max_hops - gwj->limit_hops + 1;
 
 	nskb->dev = gwj->dst.dev;
 
-	/* pointer to modifiable CAN frame */
+	 
 	cf = (struct canfd_frame *)nskb->data;
 
-	/* perform preprocessed modification functions if there are any */
+	 
 	while (modidx < MAX_MODFUNCTIONS && gwj->mod.modfunc[modidx])
 		(*gwj->mod.modfunc[modidx++])(cf, &gwj->mod);
 
-	/* Has the CAN frame been modified? */
+	 
 	if (modidx) {
-		/* get available space for the processed CAN frame type */
+		 
 		int max_len = nskb->len - offsetof(struct canfd_frame, data);
 
-		/* dlc may have changed, make sure it fits to the CAN frame */
+		 
 		if (cf->len > max_len) {
-			/* delete frame due to misconfiguration */
+			 
 			gwj->deleted_frames++;
 			kfree_skb(nskb);
 			return;
 		}
 
-		/* check for checksum updates */
+		 
 		if (gwj->mod.csumfunc.crc8)
 			(*gwj->mod.csumfunc.crc8)(cf, &gwj->mod.csum.crc8);
 
@@ -553,11 +486,11 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 			(*gwj->mod.csumfunc.xor)(cf, &gwj->mod.csum.xor);
 	}
 
-	/* clear the skb timestamp if not configured the other way */
+	 
 	if (!(gwj->flags & CGW_FLAGS_CAN_SRC_TSTAMP))
 		nskb->tstamp = 0;
 
-	/* send to netdevice */
+	 
 	if (can_send(nskb, gwj->flags & CGW_FLAGS_CAN_ECHO))
 		gwj->dropped_frames++;
 	else
@@ -626,7 +559,7 @@ static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj, int type,
 	rtcan->gwtype = gwj->gwtype;
 	rtcan->flags = gwj->flags;
 
-	/* add statistics if available */
+	 
 
 	if (gwj->handled_frames) {
 		if (nla_put_u32(skb, CGW_HANDLED, gwj->handled_frames) < 0)
@@ -643,7 +576,7 @@ static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj, int type,
 			goto cancel;
 	}
 
-	/* check non default settings of attributes */
+	 
 
 	if (gwj->limit_hops) {
 		if (nla_put_u8(skb, CGW_LIM_HOPS, gwj->limit_hops) < 0)
@@ -751,7 +684,7 @@ cancel:
 	return -EMSGSIZE;
 }
 
-/* Dump information about all CAN gateway jobs, in response to RTM_GETROUTE */
+ 
 static int cgw_dump_jobs(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	struct net *net = sock_net(skb->sk);
@@ -796,7 +729,7 @@ static const struct nla_policy cgw_policy[CGW_MAX + 1] = {
 	[CGW_FDMOD_SET]	= { .len = sizeof(struct cgw_fdframe_mod) },
 };
 
-/* check for common and gwtype specific attributes */
+ 
 static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 			  u8 gwtype, void *gwtypeattr, u8 *limhops)
 {
@@ -805,7 +738,7 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 	int modidx = 0;
 	int err = 0;
 
-	/* initialize modification & checksum data space */
+	 
 	memset(mod, 0, sizeof(*mod));
 
 	err = nlmsg_parse_deprecated(nlh, sizeof(struct rtcanmsg), tb,
@@ -820,7 +753,7 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 			return -EINVAL;
 	}
 
-	/* check for AND/OR/XOR/SET modifications */
+	 
 	if (r->flags & CGW_FLAGS_CAN_FD) {
 		struct cgw_fdframe_mod mb;
 
@@ -967,7 +900,7 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 		}
 	}
 
-	/* check for checksum operations after CAN frame modifications */
+	 
 	if (modidx) {
 		if (tb[CGW_CS_CRC8]) {
 			struct cgw_csum_crc8 *c = nla_data(tb[CGW_CS_CRC8]);
@@ -980,9 +913,7 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 			nla_memcpy(&mod->csum.crc8, tb[CGW_CS_CRC8],
 				   CGW_CS_CRC8_LEN);
 
-			/* select dedicated processing function to reduce
-			 * runtime operations in receive hot path.
-			 */
+			 
 			if (c->from_idx < 0 || c->to_idx < 0 ||
 			    c->result_idx < 0)
 				mod->csumfunc.crc8 = cgw_csum_crc8_rel;
@@ -1003,9 +934,7 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 			nla_memcpy(&mod->csum.xor, tb[CGW_CS_XOR],
 				   CGW_CS_XOR_LEN);
 
-			/* select dedicated processing function to reduce
-			 * runtime operations in receive hot path.
-			 */
+			 
 			if (c->from_idx < 0 || c->to_idx < 0 ||
 			    c->result_idx < 0)
 				mod->csumfunc.xor = cgw_csum_xor_rel;
@@ -1020,35 +949,35 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 	}
 
 	if (gwtype == CGW_TYPE_CAN_CAN) {
-		/* check CGW_TYPE_CAN_CAN specific attributes */
+		 
 		struct can_can_gw *ccgw = (struct can_can_gw *)gwtypeattr;
 
 		memset(ccgw, 0, sizeof(*ccgw));
 
-		/* check for can_filter in attributes */
+		 
 		if (tb[CGW_FILTER])
 			nla_memcpy(&ccgw->filter, tb[CGW_FILTER],
 				   sizeof(struct can_filter));
 
 		err = -ENODEV;
 
-		/* specifying two interfaces is mandatory */
+		 
 		if (!tb[CGW_SRC_IF] || !tb[CGW_DST_IF])
 			return err;
 
 		ccgw->src_idx = nla_get_u32(tb[CGW_SRC_IF]);
 		ccgw->dst_idx = nla_get_u32(tb[CGW_DST_IF]);
 
-		/* both indices set to 0 for flushing all routing entries */
+		 
 		if (!ccgw->src_idx && !ccgw->dst_idx)
 			return 0;
 
-		/* only one index set to 0 is an error */
+		 
 		if (!ccgw->src_idx || !ccgw->dst_idx)
 			return err;
 	}
 
-	/* add the checks for other gwtypes here */
+	 
 
 	return 0;
 }
@@ -1074,7 +1003,7 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	if (r->can_family != AF_CAN)
 		return -EPFNOSUPPORT;
 
-	/* so far we only support CAN -> CAN routings */
+	 
 	if (r->gwtype != CGW_TYPE_CAN_CAN)
 		return -EINVAL;
 
@@ -1085,16 +1014,16 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	if (mod.uid) {
 		ASSERT_RTNL();
 
-		/* check for updating an existing job with identical uid */
+		 
 		hlist_for_each_entry(gwj, &net->can.cgw_list, list) {
 			if (gwj->mod.uid != mod.uid)
 				continue;
 
-			/* interfaces & filters must be identical */
+			 
 			if (memcmp(&gwj->ccgw, &ccgw, sizeof(ccgw)))
 				return -EINVAL;
 
-			/* update modifications with disabled softirq & quit */
+			 
 			local_bh_disable();
 			memcpy(&gwj->mod, &mod, sizeof(mod));
 			local_bh_enable();
@@ -1102,7 +1031,7 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 		}
 	}
 
-	/* ifindex == 0 is not allowed for job creation */
+	 
 	if (!ccgw.src_idx || !ccgw.dst_idx)
 		return -ENODEV;
 
@@ -1117,7 +1046,7 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	gwj->gwtype = r->gwtype;
 	gwj->limit_hops = limhops;
 
-	/* insert already parsed information */
+	 
 	memcpy(&gwj->mod, &mod, sizeof(mod));
 	memcpy(&gwj->ccgw, &ccgw, sizeof(ccgw));
 
@@ -1139,7 +1068,7 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	if (gwj->dst.dev->type != ARPHRD_CAN)
 		goto out;
 
-	/* is sending the skb back to the incoming interface intended? */
+	 
 	if (gwj->src.dev == gwj->dst.dev &&
 	    !(gwj->flags & CGW_FLAGS_CAN_IIF_TX_OK)) {
 		err = -EINVAL;
@@ -1194,7 +1123,7 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (r->can_family != AF_CAN)
 		return -EPFNOSUPPORT;
 
-	/* so far we only support CAN -> CAN routings */
+	 
 	if (r->gwtype != CGW_TYPE_CAN_CAN)
 		return -EINVAL;
 
@@ -1202,7 +1131,7 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (err < 0)
 		return err;
 
-	/* two interface indices both set to 0 => remove all entries */
+	 
 	if (!ccgw.src_idx && !ccgw.dst_idx) {
 		cgw_remove_all_jobs(net);
 		return 0;
@@ -1212,7 +1141,7 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	ASSERT_RTNL();
 
-	/* remove only the first matching entry */
+	 
 	hlist_for_each_entry_safe(gwj, nx, &net->can.cgw_list, list) {
 		if (gwj->flags != r->flags)
 			continue;
@@ -1220,17 +1149,17 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 		if (gwj->limit_hops != limhops)
 			continue;
 
-		/* we have a match when uid is enabled and identical */
+		 
 		if (gwj->mod.uid || mod.uid) {
 			if (gwj->mod.uid != mod.uid)
 				continue;
 		} else {
-			/* no uid => check for identical modifications */
+			 
 			if (memcmp(&gwj->mod, &mod, sizeof(mod)))
 				continue;
 		}
 
-		/* if (r->gwtype == CGW_TYPE_CAN_CAN) - is made sure here */
+		 
 		if (memcmp(&gwj->ccgw, &ccgw, sizeof(ccgw)))
 			continue;
 
@@ -1269,7 +1198,7 @@ static __init int cgw_module_init(void)
 {
 	int ret;
 
-	/* sanitize given module parameter */
+	 
 	max_hops = clamp_t(unsigned int, max_hops, CGW_MIN_HOPS, CGW_MAX_HOPS);
 
 	pr_info("can: netlink gateway - max_hops=%d\n",	max_hops);
@@ -1284,7 +1213,7 @@ static __init int cgw_module_init(void)
 	if (!cgw_cache)
 		goto out_cache_create;
 
-	/* set notifier */
+	 
 	notifier.notifier_call = cgw_notifier;
 	ret = register_netdevice_notifier(&notifier);
 	if (ret)
@@ -1327,7 +1256,7 @@ static __exit void cgw_module_exit(void)
 	unregister_netdevice_notifier(&notifier);
 
 	unregister_pernet_subsys(&cangw_pernet_ops);
-	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+	rcu_barrier();  
 
 	kmem_cache_destroy(cgw_cache);
 }

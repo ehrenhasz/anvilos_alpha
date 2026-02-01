@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <net/6lowpan.h>
 #include <net/ndisc.h>
@@ -23,13 +23,7 @@ lowpan_addr_info *lowpan_skb_priv(const struct sk_buff *skb)
 			sizeof(struct lowpan_addr_info));
 }
 
-/* This callback will be called from AF_PACKET and IPv6 stack, the AF_PACKET
- * sockets gives an 8 byte array for addresses only!
- *
- * TODO I think AF_PACKET DGRAM (sending/receiving) RAW (sending) makes no
- * sense here. We should disable it, the right use-case would be AF_INET6
- * RAW/DGRAM sockets.
- */
+ 
 int lowpan_header_create(struct sk_buff *skb, struct net_device *ldev,
 			 unsigned short type, const void *daddr,
 			 const void *saddr, unsigned int len)
@@ -43,13 +37,11 @@ int lowpan_header_create(struct sk_buff *skb, struct net_device *ldev,
 	if (!daddr)
 		return -EINVAL;
 
-	/* TODO:
-	 * if this package isn't ipv6 one, where should it be routed?
-	 */
+	 
 	if (type != ETH_P_IPV6)
 		return 0;
 
-	/* intra-pan communication */
+	 
 	info->saddr.pan_id = wpan_dev->pan_id;
 	info->daddr.pan_id = info->saddr.pan_id;
 
@@ -232,7 +224,7 @@ static int lowpan_header(struct sk_buff *skb, struct net_device *ldev,
 
 	*dgram_size = skb->len;
 	lowpan_header_compress(skb, ldev, &info.daddr, &info.saddr);
-	/* dgram_offset = (saved bytes after compression) + lowpan header len */
+	 
 	*dgram_offset = (*dgram_size - skb->len) + skb_network_header_len(skb);
 
 	cb->type = IEEE802154_FC_TYPE_DATA;
@@ -257,9 +249,7 @@ netdev_tx_t lowpan_xmit(struct sk_buff *skb, struct net_device *ldev)
 
 	WARN_ON_ONCE(skb->len > IPV6_MIN_MTU);
 
-	/* We must take a copy of the skb before we modify/replace the ipv6
-	 * header as the header could be used elsewhere
-	 */
+	 
 	if (unlikely(skb_headroom(skb) < ldev->needed_headroom ||
 		     skb_tailroom(skb) < ldev->needed_tailroom)) {
 		struct sk_buff *nskb;

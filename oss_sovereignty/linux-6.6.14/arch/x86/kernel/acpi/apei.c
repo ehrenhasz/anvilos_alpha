@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Arch-specific APEI-related functions.
- */
+
+ 
 
 #include <acpi/apei.h>
 
@@ -19,11 +17,7 @@ int arch_apei_enable_cmcff(struct acpi_hest_header *hest_hdr, void *data)
 	if (!cmc->enabled)
 		return 0;
 
-	/*
-	 * We expect HEST to provide a list of MC banks that report errors
-	 * in firmware first mode. Otherwise, return non-zero value to
-	 * indicate that we are done parsing HEST.
-	 */
+	 
 	if (!(cmc->flags & ACPI_HEST_FIRMWARE_FIRST) ||
 	    !cmc->num_hardware_banks)
 		return 1;

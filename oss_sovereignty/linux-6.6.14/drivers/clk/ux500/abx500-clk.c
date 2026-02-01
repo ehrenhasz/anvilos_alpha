@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * abx500 clock implementation for ux500 platform.
- *
- * Copyright (C) 2012 ST-Ericsson SA
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -23,7 +18,7 @@
 static struct clk *ab8500_clks[AB8500_NUM_CLKS];
 static struct clk_onecell_data ab8500_clk_data;
 
-/* Clock definitions for ab8500 */
+ 
 static int ab8500_reg_clks(struct device *dev)
 {
 	int ret;
@@ -37,42 +32,42 @@ static int ab8500_reg_clks(struct device *dev)
 		(1 << AB8500_SYSULPCLKCTRL1_SYSULPCLKINTSEL_SHIFT)
 	};
 
-	/* Enable SWAT */
+	 
 	ret = ab8500_sysctrl_set(AB8500_SWATCTRL, AB8500_SWATCTRL_SWATENABLE);
 	if (ret)
 		return ret;
 
-	/* ab8500_sysclk2 */
+	 
 	clk = clk_reg_sysctrl_gate(dev , "ab8500_sysclk2", "ab8500_sysclk",
 		AB8500_SYSULPCLKCTRL1, AB8500_SYSULPCLKCTRL1_SYSCLKBUF2REQ,
 		AB8500_SYSULPCLKCTRL1_SYSCLKBUF2REQ, 0, 0);
 	ab8500_clks[AB8500_SYSCLK_BUF2] = clk;
 
-	/* ab8500_sysclk3 */
+	 
 	clk = clk_reg_sysctrl_gate(dev , "ab8500_sysclk3", "ab8500_sysclk",
 		AB8500_SYSULPCLKCTRL1, AB8500_SYSULPCLKCTRL1_SYSCLKBUF3REQ,
 		AB8500_SYSULPCLKCTRL1_SYSCLKBUF3REQ, 0, 0);
 	ab8500_clks[AB8500_SYSCLK_BUF3] = clk;
 
-	/* ab8500_sysclk4 */
+	 
 	clk = clk_reg_sysctrl_gate(dev , "ab8500_sysclk4", "ab8500_sysclk",
 		AB8500_SYSULPCLKCTRL1, AB8500_SYSULPCLKCTRL1_SYSCLKBUF4REQ,
 		AB8500_SYSULPCLKCTRL1_SYSCLKBUF4REQ, 0, 0);
 	ab8500_clks[AB8500_SYSCLK_BUF4] = clk;
 
-	/* ab_ulpclk */
+	 
 	clk = clk_reg_sysctrl_gate_fixed_rate(dev, "ulpclk", NULL,
 		AB8500_SYSULPCLKCTRL1, AB8500_SYSULPCLKCTRL1_ULPCLKREQ,
 		AB8500_SYSULPCLKCTRL1_ULPCLKREQ,
 		38400000, 9000, 0);
 	ab8500_clks[AB8500_SYSCLK_ULP] = clk;
 
-	/* ab8500_intclk */
+	 
 	clk = clk_reg_sysctrl_set_parent(dev , "intclk", intclk_parents, 2,
 		intclk_reg_sel, intclk_reg_mask, intclk_reg_bits, 0);
 	ab8500_clks[AB8500_SYSCLK_INT] = clk;
 
-	/* ab8500_audioclk */
+	 
 	clk = clk_reg_sysctrl_gate(dev , "audioclk", "intclk",
 		AB8500_SYSULPCLKCTRL1, AB8500_SYSULPCLKCTRL1_AUDIOCLKENA,
 		AB8500_SYSULPCLKCTRL1_AUDIOCLKENA, 0, 0);

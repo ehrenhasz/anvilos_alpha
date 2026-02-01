@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Simple driver for Texas Instruments LM355x LED Flash driver chip
-* Copyright (C) 2012 Texas Instruments
-*/
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -31,7 +28,7 @@ enum lm355x_regs {
 	REG_MAX,
 };
 
-/* operation mode */
+ 
 enum lm355x_mode {
 	MODE_SHDN = 0,
 	MODE_INDIC,
@@ -39,7 +36,7 @@ enum lm355x_mode {
 	MODE_FLASH
 };
 
-/* register map info. */
+ 
 struct lm355x_reg_data {
 	u8 regno;
 	u8 mask;
@@ -62,7 +59,7 @@ struct lm355x_chip_data {
 	struct lm355x_reg_data *regs;
 };
 
-/* specific indicator function for lm3556 */
+ 
 enum lm3556_indic_pulse_time {
 	PULSE_TIME_0_MS = 0,
 	PULSE_TIME_32_MS,
@@ -119,7 +116,7 @@ struct indicator {
 	u8 period_cnt;
 };
 
-/* indicator pattern data only for lm3556 */
+ 
 static struct indicator indicator_pattern[INDIC_PATTERN_SIZE] = {
 	[0] = {(INDIC_N_BLANK_1 << 4) | PULSE_TIME_32_MS, INDIC_PERIOD_1},
 	[1] = {(INDIC_N_BLANK_15 << 4) | PULSE_TIME_32_MS, INDIC_PERIOD_2},
@@ -154,14 +151,14 @@ static char lm355x_name[][I2C_NAME_SIZE] = {
 	[CHIP_LM3556] = LM3556_NAME,
 };
 
-/* chip initialize */
+ 
 static int lm355x_chip_init(struct lm355x_chip_data *chip)
 {
 	int ret;
 	unsigned int reg_val;
 	struct lm355x_platform_data *pdata = chip->pdata;
 
-	/* input and output pins configuration */
+	 
 	switch (chip->type) {
 	case CHIP_LM3554:
 		reg_val = (u32)pdata->pin_tx2 | (u32)pdata->ntc_pin;
@@ -191,7 +188,7 @@ out:
 	return ret;
 }
 
-/* chip control */
+ 
 static int lm355x_control(struct lm355x_chip_data *chip,
 			   u8 brightness, enum lm355x_mode opmode)
 {
@@ -207,7 +204,7 @@ static int lm355x_control(struct lm355x_chip_data *chip,
 		dev_info(chip->dev, "%s Last FLAG is 0x%x\n",
 			 lm355x_name[chip->type],
 			 chip->last_flag & preg[REG_FLAG].mask);
-	/* brightness 0 means shutdown */
+	 
 	if (!brightness)
 		opmode = MODE_SHDN;
 
@@ -291,7 +288,7 @@ static int lm355x_control(struct lm355x_chip_data *chip,
 	default:
 		return -EINVAL;
 	}
-	/* operation mode control */
+	 
 	ret = regmap_update_bits(chip->regmap, preg[REG_OPMODE].regno,
 				 preg[REG_OPMODE].mask,
 				 opmode << preg[REG_OPMODE].shift);
@@ -303,7 +300,7 @@ out:
 	return ret;
 }
 
-/* torch */
+ 
 
 static int lm355x_torch_brightness_set(struct led_classdev *cdev,
 					enum led_brightness brightness)
@@ -318,7 +315,7 @@ static int lm355x_torch_brightness_set(struct led_classdev *cdev,
 	return ret;
 }
 
-/* flash */
+ 
 
 static int lm355x_strobe_brightness_set(struct led_classdev *cdev,
 					 enum led_brightness brightness)
@@ -333,7 +330,7 @@ static int lm355x_strobe_brightness_set(struct led_classdev *cdev,
 	return ret;
 }
 
-/* indicator */
+ 
 
 static int lm355x_indicator_brightness_set(struct led_classdev *cdev,
 					    enum led_brightness brightness)
@@ -348,7 +345,7 @@ static int lm355x_indicator_brightness_set(struct led_classdev *cdev,
 	return ret;
 }
 
-/* indicator pattern only for lm3556*/
+ 
 static ssize_t pattern_store(struct device *dev,
 			     struct device_attribute *attr,
 			     const char *buf, size_t size)
@@ -395,7 +392,7 @@ static const struct regmap_config lm355x_regmap = {
 	.max_register = 0xFF,
 };
 
-/* module initialize */
+ 
 static int lm355x_probe(struct i2c_client *client)
 {
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
@@ -448,7 +445,7 @@ static int lm355x_probe(struct i2c_client *client)
 	if (err < 0)
 		goto err_out;
 
-	/* flash */
+	 
 	chip->cdev_flash.name = "flash";
 	chip->cdev_flash.max_brightness = 16;
 	chip->cdev_flash.brightness_set_blocking = lm355x_strobe_brightness_set;
@@ -456,7 +453,7 @@ static int lm355x_probe(struct i2c_client *client)
 	err = led_classdev_register(&client->dev, &chip->cdev_flash);
 	if (err < 0)
 		goto err_out;
-	/* torch */
+	 
 	chip->cdev_torch.name = "torch";
 	chip->cdev_torch.max_brightness = 8;
 	chip->cdev_torch.brightness_set_blocking = lm355x_torch_brightness_set;
@@ -464,7 +461,7 @@ static int lm355x_probe(struct i2c_client *client)
 	err = led_classdev_register(&client->dev, &chip->cdev_torch);
 	if (err < 0)
 		goto err_create_torch_file;
-	/* indicator */
+	 
 	chip->cdev_indicator.name = "indicator";
 	if (id->driver_data == CHIP_LM3554)
 		chip->cdev_indicator.max_brightness = 4;
@@ -472,7 +469,7 @@ static int lm355x_probe(struct i2c_client *client)
 		chip->cdev_indicator.max_brightness = 8;
 	chip->cdev_indicator.brightness_set_blocking =
 					lm355x_indicator_brightness_set;
-	/* indicator pattern control only for LM3556 */
+	 
 	if (id->driver_data == CHIP_LM3556)
 		chip->cdev_indicator.groups = lm355x_indicator_groups;
 	err = led_classdev_register(&client->dev, &chip->cdev_indicator);

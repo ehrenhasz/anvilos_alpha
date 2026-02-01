@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Broadcom STB generic reset controller for SW_INIT style reset controller
- *
- * Author: Florian Fainelli <f.fainelli@gmail.com>
- * Copyright (C) 2018 Broadcom
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/io.h>
@@ -26,9 +21,7 @@ struct brcmstb_reset {
 #define SW_INIT_BIT(id)		BIT((id) & 0x1f)
 #define SW_INIT_BANK(id)	((id) >> 5)
 
-/* A full bank contains extra registers that we are not utilizing but still
- * qualify as a single bank.
- */
+ 
 #define SW_INIT_BANK_SIZE	0x18
 
 static inline
@@ -55,10 +48,7 @@ static int brcmstb_reset_deassert(struct reset_controller_dev *rcdev,
 	struct brcmstb_reset *priv = to_brcmstb(rcdev);
 
 	writel_relaxed(SW_INIT_BIT(id), priv->base + off + SW_INIT_CLEAR);
-	/* Maximum reset delay after de-asserting a line and seeing block
-	 * operation is typically 14us for the worst case, build some slack
-	 * here.
-	 */
+	 
 	usleep_range(100, 200);
 
 	return 0;
@@ -102,14 +92,14 @@ static int brcmstb_reset_probe(struct platform_device *pdev)
 						   SW_INIT_BANK_SIZE) * 32;
 	priv->rcdev.ops = &brcmstb_reset_ops;
 	priv->rcdev.of_node = kdev->of_node;
-	/* Use defaults: 1 cell and simple xlate function */
+	 
 
 	return devm_reset_controller_register(kdev, &priv->rcdev);
 }
 
 static const struct of_device_id brcmstb_reset_of_match[] = {
 	{ .compatible = "brcm,brcmstb-reset" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, brcmstb_reset_of_match);
 

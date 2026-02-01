@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware vSockets Driver
- *
- * Copyright (C) 2007-2013 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/bitops.h>
@@ -75,9 +71,9 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
 
 static int PROTOCOL_OVERRIDE = -1;
 
-static struct vsock_transport vmci_transport; /* forward declaration */
+static struct vsock_transport vmci_transport;  
 
-/* Helper function to convert from a VMCI error code to a VSock error code. */
+ 
 
 static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
 {
@@ -119,9 +115,7 @@ vmci_transport_packet_init(struct vmci_transport_packet *pkt,
 			   u16 proto,
 			   struct vmci_handle handle)
 {
-	/* We register the stream control handler as an any cid handle so we
-	 * must always send from a source address of VMADDR_CID_ANY
-	 */
+	 
 	pkt->dg.src = vmci_make_handle(VMADDR_CID_ANY,
 				       VMCI_TRANSPORT_PACKET_RID);
 	pkt->dg.dst = vmci_make_handle(dst->svm_cid,
@@ -236,11 +230,7 @@ vmci_transport_send_control_pkt_bh(struct sockaddr_vm *src,
 				   struct vmci_transport_waiting_info *wait,
 				   struct vmci_handle handle)
 {
-	/* Note that it is safe to use a single packet across all CPUs since
-	 * two tasklets of the same type are guaranteed to not ever run
-	 * simultaneously. If that ever changes, or VMCI stops using tasklets,
-	 * we can use per-cpu packets.
-	 */
+	 
 	static struct vmci_transport_packet pkt;
 
 	return __vmci_transport_send_control_pkt(&pkt, src, dst, type,
@@ -509,10 +499,7 @@ static void vmci_transport_release_pending(struct sock *pending)
 	sock_put(pending);
 }
 
-/* We allow two kinds of sockets to communicate with a restricted VM: 1)
- * trusted sockets 2) sockets from applications running as the same user as the
- * VM (this is only true for the host side and only when using hosted products)
- */
+ 
 
 static bool vmci_transport_is_trusted(struct vsock_sock *vsock, u32 peer_cid)
 {
@@ -520,9 +507,7 @@ static bool vmci_transport_is_trusted(struct vsock_sock *vsock, u32 peer_cid)
 	       vmci_is_context_owner(peer_cid, vsock->owner->uid);
 }
 
-/* We allow sending datagrams to and receiving datagrams from a restricted VM
- * only if it is trusted as described in vmci_transport_is_trusted.
- */
+ 
 
 static bool vmci_transport_allow_dgram(struct vsock_sock *vsock, u32 peer_cid)
 {
@@ -553,9 +538,7 @@ vmci_transport_queue_pair_alloc(struct vmci_qp **qpair,
 	int err = 0;
 
 	if (trusted) {
-		/* Try to allocate our queue pair as trusted. This will only
-		 * work if vsock is running in the host.
-		 */
+		 
 
 		err = vmci_qpair_alloc(qpair, handle, produce_size,
 				       consume_size,
@@ -586,9 +569,7 @@ vmci_transport_datagram_create_hnd(u32 resource_id,
 {
 	int err = 0;
 
-	/* Try to allocate our datagram handler as trusted. This will only work
-	 * if vsock is running in the host.
-	 */
+	 
 
 	err = vmci_datagram_create_handle_priv(resource_id, flags,
 					       VMCI_PRIVILEGE_FLAG_TRUSTED,
@@ -603,10 +584,7 @@ vmci_transport_datagram_create_hnd(u32 resource_id,
 	return err;
 }
 
-/* This is invoked as part of a tasklet that's scheduled when the VMCI
- * interrupt fires.  This is run in bottom-half context and if it ever needs to
- * sleep it should defer that work to a work queue.
- */
+ 
 
 static int vmci_transport_recv_dgram_cb(void *data, struct vmci_datagram *dg)
 {
@@ -617,27 +595,19 @@ static int vmci_transport_recv_dgram_cb(void *data, struct vmci_datagram *dg)
 
 	sk = (struct sock *)data;
 
-	/* This handler is privileged when this module is running on the host.
-	 * We will get datagrams from all endpoints (even VMs that are in a
-	 * restricted context). If we get one from a restricted context then
-	 * the destination socket must be trusted.
-	 *
-	 * NOTE: We access the socket struct without holding the lock here.
-	 * This is ok because the field we are interested is never modified
-	 * outside of the create and destruct socket functions.
-	 */
+	 
 	vsk = vsock_sk(sk);
 	if (!vmci_transport_allow_dgram(vsk, dg->src.context))
 		return VMCI_ERROR_NO_ACCESS;
 
 	size = VMCI_DG_SIZE(dg);
 
-	/* Attach the packet to the socket's receive queue as an sk_buff. */
+	 
 	skb = alloc_skb(size, GFP_ATOMIC);
 	if (!skb)
 		return VMCI_ERROR_NO_MEM;
 
-	/* sk_receive_skb() will do a sock_put(), so hold here. */
+	 
 	sock_hold(sk);
 	skb_put(skb, size);
 	memcpy(skb->data, dg, size);
@@ -663,10 +633,7 @@ static bool vmci_transport_stream_allow(u32 cid, u32 port)
 	return true;
 }
 
-/* This is invoked as part of a tasklet that's scheduled when the VMCI
- * interrupt fires.  This is run in bottom-half context but it defers most of
- * its work to the packet handling work queue.
- */
+ 
 
 static int vmci_transport_recv_stream_cb(void *data, struct vmci_datagram *dg)
 {
@@ -682,24 +649,19 @@ static int vmci_transport_recv_stream_cb(void *data, struct vmci_datagram *dg)
 	err = VMCI_SUCCESS;
 	bh_process_pkt = false;
 
-	/* Ignore incoming packets from contexts without sockets, or resources
-	 * that aren't vsock implementations.
-	 */
+	 
 
 	if (!vmci_transport_stream_allow(dg->src.context, -1)
 	    || vmci_transport_peer_rid(dg->src.context) != dg->src.resource)
 		return VMCI_ERROR_NO_ACCESS;
 
 	if (VMCI_DG_SIZE(dg) < sizeof(*pkt))
-		/* Drop datagrams that do not contain full VSock packets. */
+		 
 		return VMCI_ERROR_INVALID_ARGS;
 
 	pkt = (struct vmci_transport_packet *)dg;
 
-	/* Find the socket that should handle this packet.  First we look for a
-	 * connected socket and if there is none we look for a socket bound to
-	 * the destintation address.
-	 */
+	 
 	vsock_addr_init(&src, pkt->dg.src.context, pkt->src_port);
 	vsock_addr_init(&dst, pkt->dg.dst.context, pkt->dst_port);
 
@@ -707,15 +669,7 @@ static int vmci_transport_recv_stream_cb(void *data, struct vmci_datagram *dg)
 	if (!sk) {
 		sk = vsock_find_bound_socket(&dst);
 		if (!sk) {
-			/* We could not find a socket for this specified
-			 * address.  If this packet is a RST, we just drop it.
-			 * If it is another packet, we send a RST.  Note that
-			 * we do not send a RST reply to RSTs so that we do not
-			 * continually send RSTs between two endpoints.
-			 *
-			 * Note that since this is a reply, dst is src and src
-			 * is dst.
-			 */
+			 
 			if (vmci_transport_send_reset_bh(&dst, &src, pkt) < 0)
 				pr_err("unable to send reset\n");
 
@@ -724,40 +678,25 @@ static int vmci_transport_recv_stream_cb(void *data, struct vmci_datagram *dg)
 		}
 	}
 
-	/* If the received packet type is beyond all types known to this
-	 * implementation, reply with an invalid message.  Hopefully this will
-	 * help when implementing backwards compatibility in the future.
-	 */
+	 
 	if (pkt->type >= VMCI_TRANSPORT_PACKET_TYPE_MAX) {
 		vmci_transport_send_invalid_bh(&dst, &src);
 		err = VMCI_ERROR_INVALID_ARGS;
 		goto out;
 	}
 
-	/* This handler is privileged when this module is running on the host.
-	 * We will get datagram connect requests from all endpoints (even VMs
-	 * that are in a restricted context). If we get one from a restricted
-	 * context then the destination socket must be trusted.
-	 *
-	 * NOTE: We access the socket struct without holding the lock here.
-	 * This is ok because the field we are interested is never modified
-	 * outside of the create and destruct socket functions.
-	 */
+	 
 	vsk = vsock_sk(sk);
 	if (!vmci_transport_allow_dgram(vsk, pkt->dg.src.context)) {
 		err = VMCI_ERROR_NO_ACCESS;
 		goto out;
 	}
 
-	/* We do most everything in a work queue, but let's fast path the
-	 * notification of reads and writes to help data transfer performance.
-	 * We can only do this if there is no process context code executing
-	 * for this socket since that may change the state.
-	 */
+	 
 	bh_lock_sock(sk);
 
 	if (!sock_owned_by_user(sk)) {
-		/* The local context ID may be out of date, update it. */
+		 
 		vsk->local_addr.svm_cid = dst.svm_cid;
 
 		if (sk->sk_state == TCP_ESTABLISHED)
@@ -785,11 +724,7 @@ static int vmci_transport_recv_stream_cb(void *data, struct vmci_datagram *dg)
 		INIT_WORK(&recv_pkt_info->work, vmci_transport_recv_pkt_work);
 
 		schedule_work(&recv_pkt_info->work);
-		/* Clear sk so that the reference count incremented by one of
-		 * the Find functions above is not decremented below.  We need
-		 * that reference count for the packet handler we've scheduled
-		 * to run.
-		 */
+		 
 		sk = NULL;
 	}
 
@@ -808,28 +743,14 @@ static void vmci_transport_handle_detach(struct sock *sk)
 	if (!vmci_handle_is_invalid(vmci_trans(vsk)->qp_handle)) {
 		sock_set_flag(sk, SOCK_DONE);
 
-		/* On a detach the peer will not be sending or receiving
-		 * anymore.
-		 */
+		 
 		vsk->peer_shutdown = SHUTDOWN_MASK;
 
-		/* We should not be sending anymore since the peer won't be
-		 * there to receive, but we can still receive if there is data
-		 * left in our consume queue. If the local endpoint is a host,
-		 * we can't call vsock_stream_has_data, since that may block,
-		 * but a host endpoint can't read data once the VM has
-		 * detached, so there is no available data in that case.
-		 */
+		 
 		if (vsk->local_addr.svm_cid == VMADDR_CID_HOST ||
 		    vsock_stream_has_data(vsk) <= 0) {
 			if (sk->sk_state == TCP_SYN_SENT) {
-				/* The peer may detach from a queue pair while
-				 * we are still in the connecting state, i.e.,
-				 * if the peer VM is killed after attaching to
-				 * a queue pair, but before we complete the
-				 * handshake. In that case, we treat the detach
-				 * event like a reset.
-				 */
+				 
 
 				sk->sk_state = TCP_CLOSE;
 				sk->sk_err = ECONNRESET;
@@ -851,26 +772,17 @@ static void vmci_transport_peer_detach_cb(u32 sub_id,
 
 	e_payload = vmci_event_data_const_payload(e_data);
 
-	/* XXX This is lame, we should provide a way to lookup sockets by
-	 * qp_handle.
-	 */
+	 
 	if (vmci_handle_is_invalid(e_payload->handle) ||
 	    !vmci_handle_is_equal(trans->qp_handle, e_payload->handle))
 		return;
 
-	/* We don't ask for delayed CBs when we subscribe to this event (we
-	 * pass 0 as flags to vmci_event_subscribe()).  VMCI makes no
-	 * guarantees in that case about what context we might be running in,
-	 * so it could be BH or process, blockable or non-blockable.  So we
-	 * need to account for all possible contexts here.
-	 */
+	 
 	spin_lock_bh(&trans->lock);
 	if (!trans->sk)
 		goto out;
 
-	/* Apart from here, trans->lock is only grabbed as part of sk destruct,
-	 * where trans->sk isn't locked.
-	 */
+	 
 	bh_lock_sock(trans->sk);
 
 	vmci_transport_handle_detach(trans->sk);
@@ -901,7 +813,7 @@ static void vmci_transport_recv_pkt_work(struct work_struct *work)
 
 	lock_sock(sk);
 
-	/* The local context ID may be out of date. */
+	 
 	vsock_sk(sk)->local_addr.svm_cid = pkt->dg.dst.context;
 
 	switch (sk->sk_state) {
@@ -909,31 +821,21 @@ static void vmci_transport_recv_pkt_work(struct work_struct *work)
 		vmci_transport_recv_listen(sk, pkt);
 		break;
 	case TCP_SYN_SENT:
-		/* Processing of pending connections for servers goes through
-		 * the listening socket, so see vmci_transport_recv_listen()
-		 * for that path.
-		 */
+		 
 		vmci_transport_recv_connecting_client(sk, pkt);
 		break;
 	case TCP_ESTABLISHED:
 		vmci_transport_recv_connected(sk, pkt);
 		break;
 	default:
-		/* Because this function does not run in the same context as
-		 * vmci_transport_recv_stream_cb it is possible that the
-		 * socket has closed. We need to let the other side know or it
-		 * could be sitting in a connect and hang forever. Send a
-		 * reset to prevent that.
-		 */
+		 
 		vmci_transport_send_reset(sk, pkt);
 		break;
 	}
 
 	release_sock(sk);
 	kfree(recv_pkt_info);
-	/* Release reference obtained in the stream callback when we fetched
-	 * this socket out of the bound or connected list.
-	 */
+	 
 	sock_put(sk);
 }
 
@@ -947,18 +849,12 @@ static int vmci_transport_recv_listen(struct sock *sk,
 	bool old_request = false;
 	bool old_pkt_proto = false;
 
-	/* Because we are in the listen state, we could be receiving a packet
-	 * for ourself or any previous connection requests that we received.
-	 * If it's the latter, we try to find a socket in our list of pending
-	 * connections and, if we do, call the appropriate handler for the
-	 * state that socket is in.  Otherwise we try to service the
-	 * connection request.
-	 */
+	 
 	pending = vmci_transport_get_pending(sk, pkt);
 	if (pending) {
 		lock_sock(pending);
 
-		/* The local context ID may be out of date. */
+		 
 		vsock_sk(pending)->local_addr.svm_cid = pkt->dg.dst.context;
 
 		switch (pending->sk_state) {
@@ -981,9 +877,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
 		return err;
 	}
 
-	/* The listen state only accepts connection requests.  Reply with a
-	 * reset unless we received a reset.
-	 */
+	 
 
 	if (!(pkt->type == VMCI_TRANSPORT_PACKET_TYPE_REQUEST ||
 	      pkt->type == VMCI_TRANSPORT_PACKET_TYPE_REQUEST2)) {
@@ -996,10 +890,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
 		return -EINVAL;
 	}
 
-	/* If this socket can't accommodate this connection request, we send a
-	 * reset.  Otherwise we create and initialize a child socket and reply
-	 * with a connection negotiation.
-	 */
+	 
 	if (sk->sk_ack_backlog >= sk->sk_max_ack_backlog) {
 		vmci_transport_reply_reset(pkt);
 		return -ECONNREFUSED;
@@ -1019,18 +910,14 @@ static int vmci_transport_recv_listen(struct sock *sk,
 			pkt->src_port);
 
 	err = vsock_assign_transport(vpending, vsock_sk(sk));
-	/* Transport assigned (looking at remote_addr) must be the same
-	 * where we received the request.
-	 */
+	 
 	if (err || !vmci_check_transport(vpending)) {
 		vmci_transport_send_reset(sk, pkt);
 		sock_put(pending);
 		return err;
 	}
 
-	/* If the proposed size fits within our min/max, accept it. Otherwise
-	 * propose our own size.
-	 */
+	 
 	if (pkt->u.size >= vpending->buffer_min_size &&
 	    pkt->u.size <= vpending->buffer_max_size) {
 		qp_size = pkt->u.size;
@@ -1038,9 +925,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
 		qp_size = vpending->buffer_size;
 	}
 
-	/* Figure out if we are using old or new requests based on the
-	 * overrides pkt types sent by our peer.
-	 */
+	 
 	if (vmci_transport_old_proto_override(&old_pkt_proto)) {
 		old_request = old_pkt_proto;
 	} else {
@@ -1052,7 +937,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
 	}
 
 	if (old_request) {
-		/* Handle a REQUEST (or override) */
+		 
 		u16 version = VSOCK_PROTO_INVALID;
 		if (vmci_transport_proto_to_notify_struct(
 			pending, &version, true))
@@ -1061,20 +946,15 @@ static int vmci_transport_recv_listen(struct sock *sk,
 			err = -EINVAL;
 
 	} else {
-		/* Handle a REQUEST2 (or override) */
+		 
 		int proto_int = pkt->proto;
 		int pos;
 		u16 active_proto_version = 0;
 
-		/* The list of possible protocols is the intersection of all
-		 * protocols the client supports ... plus all the protocols we
-		 * support.
-		 */
+		 
 		proto_int &= vmci_transport_new_proto_supported_versions();
 
-		/* We choose the highest possible protocol version and use that
-		 * one.
-		 */
+		 
 		pos = fls(proto_int);
 		if (pos) {
 			active_proto_version = (1 << (pos - 1));
@@ -1108,15 +988,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
 
 	vmci_trans(vpending)->notify_ops->process_request(pending);
 
-	/* We might never receive another message for this socket and it's not
-	 * connected to any process, so we have to ensure it gets cleaned up
-	 * ourself.  Our delayed work function will take care of that.  Note
-	 * that we do not ever cancel this function since we have few
-	 * guarantees about its state when calling cancel_delayed_work().
-	 * Instead we hold a reference on the socket for that function and make
-	 * it capable of handling cases where it needs to do nothing but
-	 * release that reference.
-	 */
+	 
 	vpending->listener = sk;
 	sock_hold(sk);
 	sock_hold(pending);
@@ -1153,24 +1025,16 @@ vmci_transport_recv_connecting_server(struct sock *listener,
 		}
 		break;
 	default:
-		/* Close and cleanup the connection. */
+		 
 		vmci_transport_send_reset(pending, pkt);
 		skerr = EPROTO;
 		err = pkt->type == VMCI_TRANSPORT_PACKET_TYPE_RST ? 0 : -EINVAL;
 		goto destroy;
 	}
 
-	/* In order to complete the connection we need to attach to the offered
-	 * queue pair and send an attach notification.  We also subscribe to the
-	 * detach event so we know when our peer goes away, and we do that
-	 * before attaching so we don't miss an event.  If all this succeeds,
-	 * we update our state and wakeup anything waiting in accept() for a
-	 * connection.
-	 */
+	 
 
-	/* We don't care about attach since we ensure the other side has
-	 * attached by specifying the ATTACH_ONLY flag below.
-	 */
+	 
 	err = vmci_event_subscribe(VMCI_EVENT_QP_PEER_DETACH,
 				   vmci_transport_peer_detach_cb,
 				   vmci_trans(vpending), &detach_sub_id);
@@ -1183,12 +1047,10 @@ vmci_transport_recv_connecting_server(struct sock *listener,
 
 	vmci_trans(vpending)->detach_sub_id = detach_sub_id;
 
-	/* Now attach to the queue pair the client created. */
+	 
 	handle = pkt->u.handle;
 
-	/* vpending->local_addr always has a context id so we do not need to
-	 * worry about VMADDR_CID_ANY in this case.
-	 */
+	 
 	is_local =
 	    vpending->remote_addr.svm_cid == vpending->local_addr.svm_cid;
 	flags = VMCI_QPFLAG_ATTACH_ONLY;
@@ -1213,27 +1075,12 @@ vmci_transport_recv_connecting_server(struct sock *listener,
 	vmci_trans(vpending)->qp_handle = handle;
 	vmci_trans(vpending)->qpair = qpair;
 
-	/* When we send the attach message, we must be ready to handle incoming
-	 * control messages on the newly connected socket. So we move the
-	 * pending socket to the connected state before sending the attach
-	 * message. Otherwise, an incoming packet triggered by the attach being
-	 * received by the peer may be processed concurrently with what happens
-	 * below after sending the attach message, and that incoming packet
-	 * will find the listening socket instead of the (currently) pending
-	 * socket. Note that enqueueing the socket increments the reference
-	 * count, so even if a reset comes before the connection is accepted,
-	 * the socket will be valid until it is removed from the queue.
-	 *
-	 * If we fail sending the attach below, we remove the socket from the
-	 * connected list and move the socket to TCP_CLOSE before
-	 * releasing the lock, so a pending slow path processing of an incoming
-	 * packet will not see the socket in the connected state in that case.
-	 */
+	 
 	pending->sk_state = TCP_ESTABLISHED;
 
 	vsock_insert_connected(vpending);
 
-	/* Notify our peer of our attach. */
+	 
 	err = vmci_transport_send_attach(pending, handle);
 	if (err < 0) {
 		vsock_remove_connected(vpending);
@@ -1244,16 +1091,11 @@ vmci_transport_recv_connecting_server(struct sock *listener,
 		goto destroy;
 	}
 
-	/* We have a connection. Move the now connected socket from the
-	 * listener's pending list to the accept queue so callers of accept()
-	 * can find it.
-	 */
+	 
 	vsock_remove_pending(listener, pending);
 	vsock_enqueue_accept(listener, pending);
 
-	/* Callers of accept() will be waiting on the listening socket, not
-	 * the pending socket.
-	 */
+	 
 	listener->sk_data_ready(listener);
 
 	return 0;
@@ -1261,13 +1103,7 @@ vmci_transport_recv_connecting_server(struct sock *listener,
 destroy:
 	pending->sk_err = skerr;
 	pending->sk_state = TCP_CLOSE;
-	/* As long as we drop our reference, all necessary cleanup will handle
-	 * when the cleanup function drops its reference and our destruct
-	 * implementation is called.  Note that since the listen handler will
-	 * remove pending from the pending list upon our failure, the cleanup
-	 * function won't drop the additional reference, which is why we do it
-	 * here.
-	 */
+	 
 	sock_put(pending);
 
 	return err;
@@ -1293,11 +1129,7 @@ vmci_transport_recv_connecting_client(struct sock *sk,
 			goto destroy;
 		}
 
-		/* Signify the socket is connected and wakeup the waiter in
-		 * connect(). Also place the socket in the connected table for
-		 * accounting (it can already be found since it's in the bound
-		 * table).
-		 */
+		 
 		sk->sk_state = TCP_ESTABLISHED;
 		sk->sk_socket->state = SS_CONNECTED;
 		vsock_insert_connected(vsk);
@@ -1336,15 +1168,7 @@ vmci_transport_recv_connecting_client(struct sock *sk,
 
 		break;
 	case VMCI_TRANSPORT_PACKET_TYPE_RST:
-		/* Older versions of the linux code (WS 6.5 / ESX 4.0) used to
-		 * continue processing here after they sent an INVALID packet.
-		 * This meant that we got a RST after the INVALID. We ignore a
-		 * RST after an INVALID. The common code doesn't send the RST
-		 * ... so we can hang if an old version of the common code
-		 * fails between getting a REQUEST and sending an OFFER back.
-		 * Not much we can do about it... except hope that it doesn't
-		 * happen.
-		 */
+		 
 		if (vsk->ignore_connecting_rst) {
 			vsk->ignore_connecting_rst = false;
 		} else {
@@ -1355,7 +1179,7 @@ vmci_transport_recv_connecting_client(struct sock *sk,
 
 		break;
 	default:
-		/* Close and cleanup the connection. */
+		 
 		skerr = EPROTO;
 		err = -EINVAL;
 		goto destroy;
@@ -1391,27 +1215,23 @@ static int vmci_transport_recv_connecting_client_negotiate(
 	handle = VMCI_INVALID_HANDLE;
 	detach_sub_id = VMCI_INVALID_ID;
 
-	/* If we have gotten here then we should be past the point where old
-	 * linux vsock could have sent the bogus rst.
-	 */
+	 
 	vsk->sent_request = false;
 	vsk->ignore_connecting_rst = false;
 
-	/* Verify that we're OK with the proposed queue pair size */
+	 
 	if (pkt->u.size < vsk->buffer_min_size ||
 	    pkt->u.size > vsk->buffer_max_size) {
 		err = -EINVAL;
 		goto destroy;
 	}
 
-	/* At this point we know the CID the peer is using to talk to us. */
+	 
 
 	if (vsk->local_addr.svm_cid == VMADDR_CID_ANY)
 		vsk->local_addr.svm_cid = pkt->dg.dst.context;
 
-	/* Setup the notify ops to be the highest supported version that both
-	 * the server and the client support.
-	 */
+	 
 
 	if (vmci_transport_old_proto_override(&old_pkt_proto)) {
 		old_proto = old_pkt_proto;
@@ -1433,12 +1253,7 @@ static int vmci_transport_recv_connecting_client_negotiate(
 		goto destroy;
 	}
 
-	/* Subscribe to detach events first.
-	 *
-	 * XXX We attach once for each queue pair created for now so it is easy
-	 * to find the socket (it's provided), but later we should only
-	 * subscribe once and add a way to lookup sockets by queue pair handle.
-	 */
+	 
 	err = vmci_event_subscribe(VMCI_EVENT_QP_PEER_DETACH,
 				   vmci_transport_peer_detach_cb,
 				   vmci_trans(vsk), &detach_sub_id);
@@ -1447,7 +1262,7 @@ static int vmci_transport_recv_connecting_client_negotiate(
 		goto destroy;
 	}
 
-	/* Make VMCI select the handle for us. */
+	 
 	handle = VMCI_INVALID_HANDLE;
 	is_local = vsk->remote_addr.svm_cid == vsk->local_addr.svm_cid;
 	flags = is_local ? VMCI_QPFLAG_LOCAL : 0;
@@ -1521,14 +1336,7 @@ static int vmci_transport_recv_connected(struct sock *sk,
 	struct vsock_sock *vsk;
 	bool pkt_processed = false;
 
-	/* In cases where we are closing the connection, it's sufficient to
-	 * mark the state change (and maybe error) and wake up any waiting
-	 * threads. Since this is a connected socket, it's owned by a user
-	 * process and will be cleaned up when the failure is passed back on
-	 * the current or next system call.  Our system call implementations
-	 * must therefore check for error and state changes on entry and when
-	 * being awoken.
-	 */
+	 
 	switch (pkt->type) {
 	case VMCI_TRANSPORT_PACKET_TYPE_SHUTDOWN:
 		if (pkt->u.mode) {
@@ -1541,15 +1349,7 @@ static int vmci_transport_recv_connected(struct sock *sk,
 
 	case VMCI_TRANSPORT_PACKET_TYPE_RST:
 		vsk = vsock_sk(sk);
-		/* It is possible that we sent our peer a message (e.g a
-		 * WAITING_READ) right before we got notified that the peer had
-		 * detached. If that happens then we can get a RST pkt back
-		 * from our peer even though there is data available for us to
-		 * read. In that case, don't shutdown the socket completely but
-		 * instead allow the local client to finish reading data off
-		 * the queuepair. Always treat a RST pkt in connected mode like
-		 * a clean shutdown.
-		 */
+		 
 		sock_set_flag(sk, SOCK_DONE);
 		vsk->peer_shutdown = SHUTDOWN_MASK;
 		if (vsock_stream_has_data(vsk) <= 0)
@@ -1628,13 +1428,11 @@ static void vmci_transport_cleanup(struct work_struct *work)
 
 static void vmci_transport_destruct(struct vsock_sock *vsk)
 {
-	/* transport can be NULL if we hit a failure at init() time */
+	 
 	if (!vmci_trans(vsk))
 		return;
 
-	/* Ensure that the detach callback doesn't use the sk/vsk
-	 * we are about to destruct.
-	 */
+	 
 	spin_lock_bh(&vmci_trans(vsk)->lock);
 	vmci_trans(vsk)->sk = NULL;
 	spin_unlock_bh(&vmci_trans(vsk)->lock);
@@ -1667,9 +1465,7 @@ static int vmci_transport_dgram_bind(struct vsock_sock *vsk,
 	u32 flags;
 	int err;
 
-	/* VMCI will select a resource ID for us if we provide
-	 * VMCI_INVALID_ID.
-	 */
+	 
 	port = addr->svm_port == VMADDR_PORT_ANY ?
 			VMCI_INVALID_ID : addr->svm_port;
 
@@ -1706,7 +1502,7 @@ static int vmci_transport_dgram_enqueue(
 	if (!vmci_transport_allow_dgram(vsk, remote_addr->svm_cid))
 		return -EPERM;
 
-	/* Allocate a buffer for the user's message and our packet header. */
+	 
 	dg = kmalloc(len + sizeof(*dg), GFP_KERNEL);
 	if (!dg)
 		return -ENOMEM;
@@ -1743,7 +1539,7 @@ static int vmci_transport_dgram_dequeue(struct vsock_sock *vsk,
 	if (flags & MSG_OOB || flags & MSG_ERRQUEUE)
 		return -EOPNOTSUPP;
 
-	/* Retrieve the head sk_buff from the socket's receive queue. */
+	 
 	err = 0;
 	skb = skb_recv_datagram(&vsk->sk, flags, &err);
 	if (!skb)
@@ -1751,11 +1547,11 @@ static int vmci_transport_dgram_dequeue(struct vsock_sock *vsk,
 
 	dg = (struct vmci_datagram *)skb->data;
 	if (!dg)
-		/* err is 0, meaning we read zero bytes. */
+		 
 		goto out;
 
 	payload_len = dg->payload_size;
-	/* Ensure the sk_buff matches the payload size claimed in the packet. */
+	 
 	if (payload_len != skb->len - sizeof(*dg)) {
 		err = -EINVAL;
 		goto out;
@@ -1766,13 +1562,13 @@ static int vmci_transport_dgram_dequeue(struct vsock_sock *vsk,
 		msg->msg_flags |= MSG_TRUNC;
 	}
 
-	/* Place the datagram payload in the user's iovec. */
+	 
 	err = skb_copy_datagram_msg(skb, sizeof(*dg), msg, payload_len);
 	if (err)
 		goto out;
 
 	if (msg->msg_name) {
-		/* Provide the address of the sender. */
+		 
 		DECLARE_SOCKADDR(struct sockaddr_vm *, vm_addr, msg->msg_name);
 		vsock_addr_init(vm_addr, dg->src.context, dg->src.resource);
 		msg->msg_namelen = sizeof(*vm_addr);
@@ -1787,9 +1583,7 @@ out:
 static bool vmci_transport_dgram_allow(u32 cid, u32 port)
 {
 	if (cid == VMADDR_CID_HYPERVISOR) {
-		/* Registrations of PBRPC Servers do not modify VMX/Hypervisor
-		 * state and are allowed.
-		 */
+		 
 		return port == VMCI_UNITY_PBRPC_REGISTER;
 	}
 
@@ -2085,9 +1879,7 @@ static int __init vmci_transport_init(void)
 {
 	int err;
 
-	/* Create the datagram handle that we will use to send and receive all
-	 * VSocket control messages for this context.
-	 */
+	 
 	err = vmci_transport_datagram_create_hnd(VMCI_TRANSPORT_PACKET_RID,
 						 VMCI_FLAG_ANYCID_DG_HND,
 						 vmci_transport_recv_stream_cb,
@@ -2107,9 +1899,7 @@ static int __init vmci_transport_init(void)
 		goto err_destroy_stream_handle;
 	}
 
-	/* Register only with dgram feature, other features (H2G, G2H) will be
-	 * registered when the first host or guest becomes active.
-	 */
+	 
 	err = vsock_core_register(&vmci_transport, VSOCK_TRANSPORT_F_DGRAM);
 	if (err < 0)
 		goto err_unsubscribe;

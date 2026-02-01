@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * DW100 Hardware dewarper
- *
- * Copyright 2022 NXP
- * Author: Xavier Roumegue (xavier.roumegue@oss.nxp.com)
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -44,11 +38,7 @@
 #define DW100_DEF_LUT_W		(DIV_ROUND_UP(DW100_DEF_W, DW100_BLOCK_SIZE) + 1)
 #define DW100_DEF_LUT_H		(DIV_ROUND_UP(DW100_DEF_H, DW100_BLOCK_SIZE) + 1)
 
-/*
- * 16 controls have been reserved for this driver for future extension, but
- * let's limit the related driver allocation to the effective number of controls
- * in use.
- */
+ 
 #define DW100_MAX_CTRLS			1
 #define DW100_CTRL_DEWARPING_MAP	0
 
@@ -68,7 +58,7 @@ struct dw100_device {
 	struct v4l2_device		v4l2_dev;
 	struct video_device		vfd;
 	struct media_device		mdev;
-	/* Video device lock */
+	 
 	struct mutex			vfd_mutex;
 	void __iomem			*mmio;
 	struct clk_bulk_data		*clks;
@@ -88,10 +78,10 @@ struct dw100_ctx {
 	struct dw100_device		*dw_dev;
 	struct v4l2_ctrl_handler	hdl;
 	struct v4l2_ctrl		*ctrls[DW100_MAX_CTRLS];
-	/* per context m2m queue lock */
+	 
 	struct mutex			vq_mutex;
 
-	/* Look Up Table for pixel remapping */
+	 
 	unsigned int			*map;
 	dma_addr_t			map_dma;
 	size_t				map_size;
@@ -99,7 +89,7 @@ struct dw100_ctx {
 	unsigned int			map_height;
 	bool				user_map_is_set;
 
-	/* Source and destination queue data */
+	 
 	struct dw100_q_data		q_data[2];
 };
 
@@ -300,10 +290,7 @@ static u32 *dw100_get_user_map(struct dw100_ctx *ctx)
 	return ctrl->p_cur.p_u32;
 }
 
-/*
- * Create the dewarp map used by the hardware from the V4L2 control values which
- * have been initialized with an identity map or set by the application.
- */
+ 
 static int dw100_create_mapping(struct dw100_ctx *ctx)
 {
 	u32 *user_map;
@@ -361,17 +348,7 @@ static const struct v4l2_ctrl_ops dw100_ctrl_ops = {
 	.s_ctrl = dw100_s_ctrl,
 };
 
-/*
- * Initialize the dewarping map with an identity mapping.
- *
- * A 16 pixels cell size grid is mapped on the destination image.
- * The last cells width/height might be lesser than 16 if the destination image
- * width/height is not divisible by 16. This dewarping grid map specifies the
- * source image pixel location (x, y) on each grid intersection point.
- * Bilinear interpolation is used to compute inner cell points locations.
- *
- * The coordinates are saved in UQ12.4 fixed point format.
- */
+ 
 static void dw100_ctrl_dewarping_map_init(const struct v4l2_ctrl *ctrl,
 					  u32 from_idx,
 					  union v4l2_ctrl_ptr ptr)
@@ -784,10 +761,7 @@ static int dw100_try_fmt(struct file *file, struct v4l2_format *f)
 							      pix->colorspace,
 							      pix->ycbcr_enc);
 	} else {
-		/*
-		 * The DW100 can't perform colorspace conversion, the colorspace
-		 * on the capture queue must be identical to the output queue.
-		 */
+		 
 		const struct dw100_q_data *q_data =
 			dw100_get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 
@@ -825,7 +799,7 @@ static int dw100_s_fmt(struct dw100_ctx *ctx, struct v4l2_format *f)
 	q_data->crop.width = f->fmt.pix_mp.width;
 	q_data->crop.height = f->fmt.pix_mp.height;
 
-	/* Propagate buffers encoding */
+	 
 
 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
 		struct dw100_q_data *dst_q_data =
@@ -979,7 +953,7 @@ static int dw100_s_selection(struct file *file, void *fh,
 		sel->r.width =
 			clamp(sel->r.width, DW100_MIN_W, wframe - sel->r.left);
 
-		/* UQ16.16 for float operations */
+		 
 		qscalex = (sel->r.width << 16) / wframe;
 		qscaley = (sel->r.height << 16) / hframe;
 		y = sel->r.top;
@@ -1150,30 +1124,13 @@ static void dw100_hw_dewarp_start(struct dw100_device *dw_dev)
 static void dw100_hw_init_ctrl(struct dw100_device *dw_dev)
 {
 	u32 val;
-	/*
-	 * Input format YUV422_SP
-	 * Output format YUV422_SP
-	 * No hardware handshake (SW)
-	 * No automatic double src buffering (Single)
-	 * No automatic double dst buffering (Single)
-	 * No Black Line
-	 * Prefetch image pixel traversal
-	 */
+	 
 
 	val = DW100_DEWARP_CTRL_ENABLE
-	    /* Valid only for auto prefetch mode*/
+	     
 	    | DW100_DEWARP_CTRL_PREFETCH_THRESHOLD(32);
 
-	/*
-	 * Calculation mode required to support any scaling factor,
-	 * but x4 slower than traversal mode.
-	 *
-	 * DW100_DEWARP_CTRL_PREFETCH_MODE_TRAVERSAL
-	 * DW100_DEWARP_CTRL_PREFETCH_MODE_CALCULATION
-	 * DW100_DEWARP_CTRL_PREFETCH_MODE_AUTO
-	 *
-	 * TODO: Find heuristics requiring calculation mode
-	 */
+	 
 	val |= DW100_DEWARP_CTRL_PREFETCH_MODE_CALCULATION;
 
 	dw100_write(dw_dev, DW100_DEWARP_CTRL, val);
@@ -1215,7 +1172,7 @@ static void dw100_hw_set_src_crop(struct dw100_device *dw_dev,
 	const struct v4l2_rect *rect = &src_q_data->crop;
 	u32 src_scale, qscale, left_scale, top_scale;
 
-	/* HW Scale is UQ1.7 encoded */
+	 
 	src_scale = (rect->width << 7) / src_q_data->pix_fmt.width;
 	dw100_hw_set_scale(dw_dev, src_scale);
 
@@ -1250,7 +1207,7 @@ static void dw100_hw_set_source(struct dw100_device *dw_dev,
 		"Set HW source registers for %ux%u - stride %u, pixfmt: %p4cc, dma:%pad\n",
 		width, height, stride, &fourcc, &addr_y);
 
-	/* Pixel Format */
+	 
 	val = dw100_read(dw_dev, DW100_DEWARP_CTRL);
 
 	val &= ~DW100_DEWARP_CTRL_INPUT_FORMAT_MASK;
@@ -1258,13 +1215,11 @@ static void dw100_hw_set_source(struct dw100_device *dw_dev,
 
 	dw100_write(dw_dev, DW100_DEWARP_CTRL, val);
 
-	/* Swap */
+	 
 	val = dw100_read(dw_dev, DW100_SWAP_CONTROL);
 
 	val &= ~DW100_SWAP_CONTROL_SRC_MASK;
-	/*
-	 * Data swapping is performed only on Y plane for source image.
-	 */
+	 
 	if (fmt->reg_swap_uv &&
 	    fmt->reg_format == DW100_DEWARP_CTRL_FORMAT_YUV422_PACKED)
 		val |= DW100_SWAP_CONTROL_SRC(DW100_SWAP_CONTROL_Y
@@ -1272,13 +1227,13 @@ static void dw100_hw_set_source(struct dw100_device *dw_dev,
 
 	dw100_write(dw_dev, DW100_SWAP_CONTROL, val);
 
-	/* Image resolution */
+	 
 	dw100_write(dw_dev, DW100_SRC_IMG_SIZE,
 		    DW100_IMG_SIZE_WIDTH(width) | DW100_IMG_SIZE_HEIGHT(height));
 
 	dw100_write(dw_dev,  DW100_SRC_IMG_STRIDE, stride);
 
-	/* Buffers */
+	 
 	dw100_write(dw_dev, DW100_SRC_IMG_Y_BASE, DW100_IMG_Y_BASE(addr_y));
 	dw100_write(dw_dev, DW100_SRC_IMG_UV_BASE, DW100_IMG_UV_BASE(addr_uv));
 }
@@ -1314,7 +1269,7 @@ static void dw100_hw_set_destination(struct dw100_device *dw_dev,
 		"Set HW source registers for %ux%u - stride %u, pixfmt: %p4cc, dma:%pad\n",
 		width, height, stride, &fourcc, &addr_y);
 
-	/* Pixel Format */
+	 
 	val = dw100_read(dw_dev, DW100_DEWARP_CTRL);
 
 	val &= ~DW100_DEWARP_CTRL_OUTPUT_FORMAT_MASK;
@@ -1322,14 +1277,12 @@ static void dw100_hw_set_destination(struct dw100_device *dw_dev,
 
 	dw100_write(dw_dev, DW100_DEWARP_CTRL, val);
 
-	/* Swap */
+	 
 	val = dw100_read(dw_dev, DW100_SWAP_CONTROL);
 
 	val &= ~DW100_SWAP_CONTROL_DST_MASK;
 
-	/*
-	 * Avoid to swap twice
-	 */
+	 
 	if (fmt->reg_swap_uv ^
 	    (ifmt->reg_swap_uv && ifmt->reg_format !=
 	     DW100_DEWARP_CTRL_FORMAT_YUV422_PACKED)) {
@@ -1343,7 +1296,7 @@ static void dw100_hw_set_destination(struct dw100_device *dw_dev,
 
 	dw100_write(dw_dev, DW100_SWAP_CONTROL, val);
 
-	/* Image resolution */
+	 
 	dw100_write(dw_dev, DW100_DST_IMG_SIZE,
 		    DW100_IMG_SIZE_WIDTH(width) | DW100_IMG_SIZE_HEIGHT(height));
 	dw100_write(dw_dev, DW100_DST_IMG_STRIDE, stride);
@@ -1442,7 +1395,7 @@ static void dw100_start(struct dw100_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 
 	v4l2_m2m_buf_copy_metadata(in_vb, out_vb, true);
 
-	/* Now, let's deal with hardware ... */
+	 
 	dw100_hw_master_bus_disable(dw_dev);
 	dw100_hw_init_ctrl(dw_dev);
 	dw100_hw_set_pixel_boundary(dw_dev);
@@ -1458,7 +1411,7 @@ static void dw100_start(struct dw100_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 	dw100_hw_enable_irq(dw_dev);
 	dw100_hw_dewarp_start(dw_dev);
 
-	/* Enable Bus */
+	 
 	dw100_hw_master_bus_enable(dw_dev);
 }
 

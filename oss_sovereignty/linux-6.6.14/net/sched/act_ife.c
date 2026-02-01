@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/ife.c	Inter-FE action based on ForCES WG InterFE LFB
- *
- *		Refer to:
- *		draft-ietf-forces-interfelfb-03
- *		and
- *		netdev01 paper:
- *		"Distributing Linux Traffic Control Classifier-Action
- *		Subsystem"
- *		Authors: Jamal Hadi Salim and Damascene M. Joachimpillai
- *
- * copyright Jamal Hadi Salim (2015)
-*/
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -50,7 +38,7 @@ int ife_encode_meta_u16(u16 metaval, void *skbdata, struct tcf_meta_info *mi)
 	else if (metaval)
 		edata = metaval;
 
-	if (!edata) /* will not encode */
+	if (!edata)  
 		return 0;
 
 	edata = htons(edata);
@@ -70,7 +58,7 @@ EXPORT_SYMBOL_GPL(ife_get_meta_u32);
 int ife_check_meta_u32(u32 metaval, struct tcf_meta_info *mi)
 {
 	if (metaval || mi->metaval)
-		return 8; /* T+L+V == 2+2+4 */
+		return 8;  
 
 	return 0;
 }
@@ -79,7 +67,7 @@ EXPORT_SYMBOL_GPL(ife_check_meta_u32);
 int ife_check_meta_u16(u16 metaval, struct tcf_meta_info *mi)
 {
 	if (metaval || mi->metaval)
-		return 8; /* T+L+(V) == 2+2+(2+2bytepad) */
+		return 8;  
 
 	return 0;
 }
@@ -94,7 +82,7 @@ int ife_encode_meta_u32(u32 metaval, void *skbdata, struct tcf_meta_info *mi)
 	else if (metaval)
 		edata = metaval;
 
-	if (!edata) /* will not encode */
+	if (!edata)  
 		return 0;
 
 	edata = htonl(edata);
@@ -148,7 +136,7 @@ EXPORT_SYMBOL_GPL(ife_validate_meta_u32);
 
 int ife_validate_meta_u16(void *val, int len)
 {
-	/* length will not include padding */
+	 
 	if (len == sizeof(u16))
 		return 0;
 
@@ -227,12 +215,7 @@ EXPORT_SYMBOL_GPL(register_ife_op);
 static int ife_validate_metatype(struct tcf_meta_ops *ops, void *val, int len)
 {
 	int ret = 0;
-	/* XXX: unfortunately cant use nla_policy at this point
-	* because a length of 0 is valid in the case of
-	* "allow". "use" semantics do enforce for proper
-	* length and i couldve use nla_policy but it makes it hard
-	* to use it just for that..
-	*/
+	 
 	if (ops->validate)
 		return ops->validate(val, len);
 
@@ -260,8 +243,7 @@ static const char *ife_meta_id2name(u32 metaid)
 }
 #endif
 
-/* called when adding new meta information
-*/
+ 
 static int load_metaops_and_vet(u32 metaid, void *val, int len, bool rtnl_held)
 {
 	struct tcf_meta_ops *ops = find_ife_oplist(metaid);
@@ -290,8 +272,7 @@ static int load_metaops_and_vet(u32 metaid, void *val, int len, bool rtnl_held)
 	return ret;
 }
 
-/* called when adding new meta information
-*/
+ 
 static int __add_metainfo(const struct tcf_meta_ops *ops,
 			  struct tcf_ife_info *ife, u32 metaid, void *metaval,
 			  int len, bool atomic, bool exists)
@@ -346,7 +327,7 @@ static int add_metainfo(struct tcf_ife_info *ife, u32 metaid, void *metaval,
 		return -ENOENT;
 	ret = __add_metainfo(ops, ife, metaid, metaval, len, false, exists);
 	if (ret)
-		/*put back what find_ife_oplist took */
+		 
 		module_put(ops->owner);
 	return ret;
 }
@@ -378,7 +359,7 @@ static int dump_metalist(struct sk_buff *skb, struct tcf_ife_info *ife)
 	unsigned char *b = skb_tail_pointer(skb);
 	int total_encoded = 0;
 
-	/*can only happen on decode */
+	 
 	if (list_empty(&ife->metalist))
 		return 0;
 
@@ -403,7 +384,7 @@ out_nlmsg_trim:
 	return -1;
 }
 
-/* under ife->tcf_lock */
+ 
 static void _tcf_ife_cleanup(struct tc_action *a)
 {
 	struct tcf_ife_info *ife = to_ife(a);
@@ -513,10 +494,7 @@ static int tcf_ife_init(struct net *net, struct nlattr *nla,
 
 	parm = nla_data(tb[TCA_IFE_PARMS]);
 
-	/* IFE_DECODE is 0 and indicates the opposite of IFE_ENCODE because
-	 * they cannot run as the same time. Check on all other values which
-	 * are not supported right now.
-	 */
+	 
 	if (parm->flags & ~IFE_ENCODE)
 		return -EINVAL;
 
@@ -605,11 +583,7 @@ static int tcf_ife_init(struct net *net, struct nlattr *nla,
 		if (err)
 			goto metadata_parse_err;
 	} else {
-		/* if no passed metadata allow list or passed allow-all
-		 * then here we process by adding as many supported metadatum
-		 * as we can. You better have at least one else we are
-		 * going to bail out
-		 */
+		 
 		err = use_all_metadata(ife, exists);
 		if (err)
 			goto metadata_parse_err;
@@ -617,7 +591,7 @@ static int tcf_ife_init(struct net *net, struct nlattr *nla,
 
 	if (exists)
 		spin_lock_bh(&ife->tcf_lock);
-	/* protected by tcf_lock when modifying existing action */
+	 
 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
 	p = rcu_replace_pointer(ife->params, p, 1);
 
@@ -678,7 +652,7 @@ static int tcf_ife_dump(struct sk_buff *skb, struct tc_action *a, int bind,
 		goto nla_put_failure;
 
 	if (dump_metalist(skb, ife)) {
-		/*ignore failure to dump metalist */
+		 
 		pr_info("Failed to dump metalist\n");
 	}
 
@@ -696,11 +670,11 @@ static int find_decode_metaid(struct sk_buff *skb, struct tcf_ife_info *ife,
 {
 	struct tcf_meta_info *e;
 
-	/* XXX: use hash to speed up */
+	 
 	list_for_each_entry(e, &ife->metalist, metalist) {
 		if (metaid == e->metaid) {
 			if (e->ops) {
-				/* We check for decode presence already */
+				 
 				return e->ops->decode(skb, mdata, mlen);
 			}
 		}
@@ -744,9 +718,7 @@ static int tcf_ife_decode(struct sk_buff *skb, const struct tc_action *a,
 		}
 
 		if (find_decode_metaid(skb, ife, mtype, dlen, curr_data)) {
-			/* abuse overlimits to count when we receive metadata
-			 * but dont have an ops for it
-			 */
+			 
 			pr_info_ratelimited("Unknown metaid %d dlen %d\n",
 					    mtype, dlen);
 			qstats_overlimit_inc(this_cpu_ptr(ife->common.cpu_qstats));
@@ -764,9 +736,7 @@ static int tcf_ife_decode(struct sk_buff *skb, const struct tc_action *a,
 	return action;
 }
 
-/*XXX: check if we can do this at install time instead of current
- * send data path
-**/
+ 
 static int ife_get_sz(struct sk_buff *skb, struct tcf_ife_info *ife)
 {
 	struct tcf_meta_info *e, *n;
@@ -787,12 +757,9 @@ static int tcf_ife_encode(struct sk_buff *skb, const struct tc_action *a,
 {
 	struct tcf_ife_info *ife = to_ife(a);
 	int action = ife->tcf_action;
-	struct ethhdr *oethh;	/* outer ether header */
+	struct ethhdr *oethh;	 
 	struct tcf_meta_info *e;
-	/*
-	   OUTERHDR:TOTMETALEN:{TLVHDR:Metadatum:TLVHDR..}:ORIGDATA
-	   where ORIGDATA = original ethernet header ...
-	 */
+	 
 	u16 metalen = ife_get_sz(skb, ife);
 	int hdrm = metalen + skb->dev->hard_header_len + IFE_METAHDRLEN;
 	unsigned int skboff = 0;
@@ -809,15 +776,12 @@ static int tcf_ife_encode(struct sk_buff *skb, const struct tc_action *a,
 	bstats_update(this_cpu_ptr(ife->common.cpu_bstats), skb);
 	tcf_lastuse_update(&ife->tcf_tm);
 
-	if (!metalen) {		/* no metadata to send */
-		/* abuse overlimits to count when we allow packet
-		 * with no metadata
-		 */
+	if (!metalen) {		 
+		 
 		qstats_overlimit_inc(this_cpu_ptr(ife->common.cpu_qstats));
 		return action;
 	}
-	/* could be stupid policy setup or mtu config
-	 * so lets be conservative.. */
+	 
 	if ((action == TC_ACT_SHOT) || exceed_mtu) {
 		qstats_drop_inc(this_cpu_ptr(ife->common.cpu_qstats));
 		return TC_ACT_SHOT;
@@ -830,17 +794,14 @@ static int tcf_ife_encode(struct sk_buff *skb, const struct tc_action *a,
 
 	spin_lock(&ife->tcf_lock);
 
-	/* XXX: we dont have a clever way of telling encode to
-	 * not repeat some of the computations that are done by
-	 * ops->presence_check...
-	 */
+	 
 	list_for_each_entry(e, &ife->metalist, metalist) {
 		if (e->ops->encode) {
 			err = e->ops->encode(skb, (void *)(ife_meta + skboff),
 					     e);
 		}
 		if (err < 0) {
-			/* too corrupt to keep around if overwritten */
+			 
 			spin_unlock(&ife->tcf_lock);
 			qstats_drop_inc(this_cpu_ptr(ife->common.cpu_qstats));
 			return TC_ACT_SHOT;

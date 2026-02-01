@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STK1160 driver
- *
- * Copyright (C) 2012 Ezequiel Garcia
- * <elezegarcia--a.t--gmail.com>
- *
- * Based on Easycap driver by R.M. Thomas
- *	Copyright (C) 2010 R.M. Thomas
- *	<rmthomas--a.t--sciolus.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -67,7 +58,7 @@ struct stk1160_buffer *stk1160_next_buffer(struct stk1160 *dev)
 	struct stk1160_buffer *buf = NULL;
 	unsigned long flags = 0;
 
-	/* Current buffer must be NULL when this functions gets called */
+	 
 	WARN_ON(dev->isoc_ctl.buf);
 
 	spin_lock_irqsave(&dev->buf_lock, flags);
@@ -105,16 +96,7 @@ void stk1160_copy_video(struct stk1160 *dev, u8 *src, int len)
 	u8 *dst = buf->mem;
 	int remain;
 
-	/*
-	 * TODO: These stk1160_dbg are very spammy!
-	 * We should 1) check why we are getting them
-	 * and 2) add ratelimit.
-	 *
-	 * UPDATE: One of the reasons (the only one?) for getting these
-	 * is incorrect standard (mismatch between expected and configured).
-	 * So perhaps, we could add a counter for errors. When the counter
-	 * reaches some value, we simply stop streaming.
-	 */
+	 
 
 	len -= 4;
 	src += 4;
@@ -122,34 +104,31 @@ void stk1160_copy_video(struct stk1160 *dev, u8 *src, int len)
 	remain = len;
 
 	linesdone = buf->pos / bytesperline;
-	lineoff = buf->pos % bytesperline; /* offset in current line */
+	lineoff = buf->pos % bytesperline;  
 
 	if (!buf->odd)
 		dst += bytesperline;
 
-	/* Multiply linesdone by two, to take account of the other field */
+	 
 	dst += linesdone * bytesperline * 2 + lineoff;
 
-	/* Copy the remaining of current line */
+	 
 	if (remain < (bytesperline - lineoff))
 		lencopy = remain;
 	else
 		lencopy = bytesperline - lineoff;
 
-	/*
-	 * Check if we have enough space left in the buffer.
-	 * In that case, we force loop exit after copy.
-	 */
+	 
 	if (lencopy > buf->bytesused - buf->length) {
 		lencopy = buf->bytesused - buf->length;
 		remain = lencopy;
 	}
 
-	/* Check if the copy is done */
+	 
 	if (lencopy == 0 || remain == 0)
 		return;
 
-	/* Let the bug hunt begin! sanity checks! */
+	 
 	if (lencopy < 0) {
 		stk1160_dbg("copy skipped: negative lencopy\n");
 		return;
@@ -167,28 +146,25 @@ void stk1160_copy_video(struct stk1160 *dev, u8 *src, int len)
 	buf->pos += lencopy;
 	remain -= lencopy;
 
-	/* Copy current field line by line, interlacing with the other field */
+	 
 	while (remain > 0) {
 
 		dst += lencopy + bytesperline;
 		src += lencopy;
 
-		/* Copy one line at a time */
+		 
 		if (remain < bytesperline)
 			lencopy = remain;
 		else
 			lencopy = bytesperline;
 
-		/*
-		 * Check if we have enough space left in the buffer.
-		 * In that case, we force loop exit after copy.
-		 */
+		 
 		if (lencopy > buf->bytesused - buf->length) {
 			lencopy = buf->bytesused - buf->length;
 			remain = lencopy;
 		}
 
-		/* Check if the copy is done */
+		 
 		if (lencopy == 0 || remain == 0)
 			return;
 
@@ -211,9 +187,7 @@ void stk1160_copy_video(struct stk1160 *dev, u8 *src, int len)
 	}
 }
 
-/*
- * Controls the isoc copy of each urb packet
- */
+ 
 static void stk1160_process_isoc(struct stk1160 *dev, struct urb *urb)
 {
 	int i, len, status;
@@ -225,7 +199,7 @@ static void stk1160_process_isoc(struct stk1160 *dev, struct urb *urb)
 	}
 
 	if (urb->status < 0) {
-		/* Print status and drop current packet (or field?) */
+		 
 		print_err_status(dev, -1, urb->status);
 		return;
 	}
@@ -237,28 +211,18 @@ static void stk1160_process_isoc(struct stk1160 *dev, struct urb *urb)
 			continue;
 		}
 
-		/* Get packet actual length and pointer to data */
+		 
 		p = urb->transfer_buffer + urb->iso_frame_desc[i].offset;
 		len = urb->iso_frame_desc[i].actual_length;
 
-		/* Empty packet */
+		 
 		if (len <= 4)
 			continue;
 
-		/*
-		 * An 8-byte packet sequence means end of field.
-		 * So if we don't have any packet, we start receiving one now
-		 * and if we do have a packet, then we are done with it.
-		 *
-		 * These end of field packets are always 0xc0 or 0x80,
-		 * but not always 8-byte long so we don't check packet length.
-		 */
+		 
 		if (p[0] == 0xc0) {
 
-			/*
-			 * If first byte is 0xc0 then we received
-			 * second field, and frame has ended.
-			 */
+			 
 			if (dev->isoc_ctl.buf != NULL)
 				stk1160_buffer_done(dev);
 
@@ -267,18 +231,13 @@ static void stk1160_process_isoc(struct stk1160 *dev, struct urb *urb)
 				return;
 		}
 
-		/*
-		 * If we don't have a buffer here, then it means we
-		 * haven't found the start mark sequence.
-		 */
+		 
 		if (dev->isoc_ctl.buf == NULL)
 			continue;
 
 		if (p[0] == 0xc0 || p[0] == 0x80) {
 
-			/* We set next packet parity and
-			 * continue to get next one
-			 */
+			 
 			dev->isoc_ctl.buf->odd = *p & 0x40;
 			dev->isoc_ctl.buf->pos = 0;
 			continue;
@@ -289,9 +248,7 @@ static void stk1160_process_isoc(struct stk1160 *dev, struct urb *urb)
 }
 
 
-/*
- * IRQ callback, called by URB callback
- */
+ 
 static void stk1160_isoc_irq(struct urb *urb)
 {
 	int i, rc;
@@ -302,10 +259,10 @@ static void stk1160_isoc_irq(struct urb *urb)
 	switch (urb->status) {
 	case 0:
 		break;
-	case -ECONNRESET:   /* kill */
+	case -ECONNRESET:    
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* TODO: check uvc driver: he frees the queue here */
+		 
 		return;
 	default:
 		stk1160_err("urb error! status %d\n", urb->status);
@@ -318,7 +275,7 @@ static void stk1160_isoc_irq(struct urb *urb)
 
 	stk1160_process_isoc(dev, urb);
 
-	/* Reset urb buffers */
+	 
 	for (i = 0; i < urb->number_of_packets; i++) {
 		urb->iso_frame_desc[i].status = 0;
 		urb->iso_frame_desc[i].actual_length = 0;
@@ -330,18 +287,12 @@ static void stk1160_isoc_irq(struct urb *urb)
 		stk1160_err("urb re-submit failed (%d)\n", rc);
 }
 
-/*
- * Cancel urbs
- * This function can't be called in atomic context
- */
+ 
 void stk1160_cancel_isoc(struct stk1160 *dev)
 {
 	int i, num_bufs = dev->isoc_ctl.num_bufs;
 
-	/*
-	 * This check is not necessary, but we add it
-	 * to avoid a spurious debug message
-	 */
+	 
 	if (!num_bufs)
 		return;
 
@@ -349,11 +300,7 @@ void stk1160_cancel_isoc(struct stk1160 *dev)
 
 	for (i = 0; i < num_bufs; i++) {
 
-		/*
-		 * To kill urbs we can't be in atomic context.
-		 * We don't care for NULL pointer since
-		 * usb_kill_urb allows it.
-		 */
+		 
 		usb_kill_urb(dev->isoc_ctl.urb_ctl[i].urb);
 	}
 
@@ -376,10 +323,7 @@ static void stk_free_urb(struct stk1160 *dev, struct stk1160_urb *stk_urb)
 	stk_urb->dma = 0;
 }
 
-/*
- * Releases urb and transfer buffers
- * Obviusly, associated urb must be killed before releasing it.
- */
+ 
 void stk1160_free_isoc(struct stk1160 *dev)
 {
 	int i, num_bufs = dev->isoc_ctl.num_bufs;
@@ -394,10 +338,7 @@ void stk1160_free_isoc(struct stk1160 *dev)
 	stk1160_dbg("all urb buffers freed\n");
 }
 
-/*
- * Helper for cancelling and freeing urbs
- * This function can't be called in atomic context
- */
+ 
 void stk1160_uninit_isoc(struct stk1160 *dev)
 {
 	stk1160_cancel_isoc(dev);
@@ -415,10 +356,7 @@ static int stk1160_fill_urb(struct stk1160 *dev, struct stk1160_urb *stk_urb,
 	stk_urb->sgt = dma_alloc_noncontiguous(dma_dev, sb_size,
 					       DMA_FROM_DEVICE, GFP_KERNEL, 0);
 
-	/*
-	 * If the buffer allocation failed, we exit but return 0 since
-	 * we allow the driver working with less buffers
-	 */
+	 
 	if (!stk_urb->sgt)
 		goto free_urb;
 
@@ -439,20 +377,14 @@ free_urb:
 
 	return 0;
 }
-/*
- * Allocate URBs
- */
+ 
 int stk1160_alloc_isoc(struct stk1160 *dev)
 {
 	struct urb *urb;
 	int i, j, k, sb_size, max_packets, num_bufs;
 	int ret;
 
-	/*
-	 * It may be necessary to release isoc here,
-	 * since isoc are only released on disconnection.
-	 * (see new_pkt_size flag)
-	 */
+	 
 	if (dev->isoc_ctl.num_bufs)
 		stk1160_uninit_isoc(dev);
 
@@ -465,7 +397,7 @@ int stk1160_alloc_isoc(struct stk1160 *dev)
 	dev->isoc_ctl.buf = NULL;
 	dev->isoc_ctl.max_pkt_size = dev->max_pkt_size;
 
-	/* allocate urbs and transfer buffers */
+	 
 	for (i = 0; i < num_bufs; i++) {
 
 		ret = stk1160_fill_urb(dev, &dev->isoc_ctl.urb_ctl[i],
@@ -476,16 +408,14 @@ int stk1160_alloc_isoc(struct stk1160 *dev)
 		urb = dev->isoc_ctl.urb_ctl[i].urb;
 
 		if (!urb) {
-			/* Not enough transfer buffers, so just give up */
+			 
 			if (i < STK1160_MIN_BUFS)
 				goto free_i_bufs;
 			goto nomore_tx_bufs;
 		}
 		memset(dev->isoc_ctl.urb_ctl[i].transfer_buffer, 0, sb_size);
 
-		/*
-		 * FIXME: Where can I get the endpoint?
-		 */
+		 
 		urb->dev = dev->udev;
 		urb->pipe = usb_rcvisocpipe(dev->udev, STK1160_EP_VIDEO);
 		urb->transfer_buffer = dev->isoc_ctl.urb_ctl[i].transfer_buffer;
@@ -509,17 +439,13 @@ int stk1160_alloc_isoc(struct stk1160 *dev)
 
 	stk1160_dbg("%d urbs allocated\n", num_bufs);
 
-	/* At last we can say we have some buffers */
+	 
 	dev->isoc_ctl.num_bufs = num_bufs;
 
 	return 0;
 
 nomore_tx_bufs:
-	/*
-	 * Failed to allocate desired buffer count. However, we may have
-	 * enough to work fine, so we just free the extra urb,
-	 * store the allocated count and keep going, fingers crossed!
-	 */
+	 
 
 	stk1160_warn("%d urbs allocated. Trying to continue...\n", i);
 
@@ -528,7 +454,7 @@ nomore_tx_bufs:
 	return 0;
 
 free_i_bufs:
-	/* Save the allocated buffers so far, so we can properly free them */
+	 
 	dev->isoc_ctl.num_bufs = i;
 	stk1160_free_isoc(dev);
 	return -ENOMEM;

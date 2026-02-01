@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- *
- * Contributors:
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitops.h>
@@ -162,7 +147,7 @@ static int t7xx_cldma_gpd_rx_from_q(struct cldma_queue *queue, int budget, bool 
 		skb_put(skb, le16_to_cpu(gpd->data_buff_len));
 
 		ret = md_ctrl->recv_skb(queue, skb);
-		/* Break processing, will try again later */
+		 
 		if (ret < 0)
 			return ret;
 
@@ -317,7 +302,7 @@ static void t7xx_cldma_txq_empty_hndl(struct cldma_queue *queue)
 	if (pending_gpd) {
 		struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;
 
-		/* Check current processing TGPD, 64-bit address is in a table by Q index */
+		 
 		ul_curr_addr = ioread64(hw_info->ap_pdn_base + REG_CLDMA_UL_CURRENT_ADDRL_0 +
 					queue->index * sizeof(u64));
 		if (req->gpd_addr != ul_curr_addr) {
@@ -441,7 +426,7 @@ static int t7xx_cldma_rx_ring_init(struct cldma_ctrl *md_ctrl, struct cldma_ring
 		list_add_tail(&req->entry, &ring->gpd_ring);
 	}
 
-	/* Link previous GPD to next GPD, circular */
+	 
 	list_for_each_entry(req, &ring->gpd_ring, entry) {
 		t7xx_cldma_gpd_set_next_ptr(gpd, req->gpd_addr);
 		gpd = req->gpd;
@@ -489,7 +474,7 @@ static int t7xx_cldma_tx_ring_init(struct cldma_ctrl *md_ctrl, struct cldma_ring
 		list_add_tail(&req->entry, &ring->gpd_ring);
 	}
 
-	/* Link previous GPD to next GPD, circular */
+	 
 	list_for_each_entry(req, &ring->gpd_ring, entry) {
 		t7xx_cldma_gpd_set_next_ptr(gpd, req->gpd_addr);
 		gpd = req->gpd;
@@ -498,12 +483,7 @@ static int t7xx_cldma_tx_ring_init(struct cldma_ctrl *md_ctrl, struct cldma_ring
 	return 0;
 }
 
-/**
- * t7xx_cldma_q_reset() - Reset CLDMA request pointers to their initial values.
- * @queue: Pointer to the queue structure.
- *
- * Called with ring_lock (unless called during initialization phase)
- */
+ 
 static void t7xx_cldma_q_reset(struct cldma_queue *queue)
 {
 	struct cldma_request *req;
@@ -552,7 +532,7 @@ static void t7xx_cldma_irq_work_cb(struct cldma_ctrl *md_ctrl)
 	struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;
 	int i;
 
-	/* L2 raw interrupt status */
+	 
 	l2_tx_int = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L2TISAR0);
 	l2_rx_int = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L2RISAR0);
 	l2_tx_int_msk = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L2TIMR0);
@@ -562,7 +542,7 @@ static void t7xx_cldma_irq_work_cb(struct cldma_ctrl *md_ctrl)
 
 	if (l2_tx_int) {
 		if (l2_tx_int & (TQ_ERR_INT_BITMASK | TQ_ACTIVE_START_ERR_INT_BITMASK)) {
-			/* Read and clear L3 TX interrupt status */
+			 
 			val = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L3TISAR0);
 			iowrite32(val, hw_info->ap_pdn_base + REG_CLDMA_L3TISAR0);
 			val = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L3TISAR1);
@@ -587,7 +567,7 @@ static void t7xx_cldma_irq_work_cb(struct cldma_ctrl *md_ctrl)
 
 	if (l2_rx_int) {
 		if (l2_rx_int & (RQ_ERR_INT_BITMASK | RQ_ACTIVE_START_ERR_INT_BITMASK)) {
-			/* Read and clear L3 RX interrupt status */
+			 
 			val = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L3RISAR0);
 			iowrite32(val, hw_info->ap_pdn_base + REG_CLDMA_L3RISAR0);
 			val = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L3RISAR1);
@@ -622,17 +602,7 @@ static bool t7xx_cldma_qs_are_active(struct cldma_ctrl *md_ctrl)
 	return tx_active || rx_active;
 }
 
-/**
- * t7xx_cldma_stop() - Stop CLDMA.
- * @md_ctrl: CLDMA context structure.
- *
- * Stop TX and RX queues. Disable L1 and L2 interrupts.
- * Clear status registers.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code from polling cldma_queues_active.
- */
+ 
 int t7xx_cldma_stop(struct cldma_ctrl *md_ctrl)
 {
 	struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;
@@ -714,13 +684,7 @@ void t7xx_cldma_reset(struct cldma_ctrl *md_ctrl)
 	t7xx_cldma_late_release(md_ctrl);
 }
 
-/**
- * t7xx_cldma_start() - Start CLDMA.
- * @md_ctrl: CLDMA context structure.
- *
- * Set TX/RX start address.
- * Start all RX queues and enable L2 interrupt.
- */
+ 
 void t7xx_cldma_start(struct cldma_ctrl *md_ctrl)
 {
 	unsigned long flags;
@@ -746,7 +710,7 @@ void t7xx_cldma_start(struct cldma_ctrl *md_ctrl)
 							     MTK_RX);
 		}
 
-		/* Enable L2 interrupt */
+		 
 		t7xx_cldma_hw_start_queue(hw_info, CLDMA_ALL_Q, MTK_RX);
 		t7xx_cldma_hw_start(hw_info);
 		md_ctrl->txq_started = 0;
@@ -848,7 +812,7 @@ static int t7xx_cldma_gpd_handle_tx_request(struct cldma_queue *queue, struct cl
 	struct cldma_gpd *gpd = tx_req->gpd;
 	unsigned long flags;
 
-	/* Update GPD */
+	 
 	tx_req->mapped_buff = dma_map_single(md_ctrl->dev, skb->data, skb->len, DMA_TO_DEVICE);
 
 	if (dma_mapping_error(md_ctrl->dev, tx_req->mapped_buff)) {
@@ -859,9 +823,7 @@ static int t7xx_cldma_gpd_handle_tx_request(struct cldma_queue *queue, struct cl
 	t7xx_cldma_gpd_set_data_ptr(gpd, tx_req->mapped_buff);
 	gpd->data_buff_len = cpu_to_le16(skb->len);
 
-	/* This lock must cover TGPD setting, as even without a resume operation,
-	 * CLDMA can send next HWO=1 if last TGPD just finished.
-	 */
+	 
 	spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
 	if (md_ctrl->txq_active & BIT(queue->index))
 		gpd->flags |= GPD_FLAGS_HWO;
@@ -872,13 +834,13 @@ static int t7xx_cldma_gpd_handle_tx_request(struct cldma_queue *queue, struct cl
 	return 0;
 }
 
-/* Called with cldma_lock */
+ 
 static void t7xx_cldma_hw_start_send(struct cldma_ctrl *md_ctrl, int qno,
 				     struct cldma_request *prev_req)
 {
 	struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;
 
-	/* Check whether the device was powered off (CLDMA start address is not set) */
+	 
 	if (!t7xx_cldma_tx_addr_is_set(hw_info, qno)) {
 		t7xx_cldma_hw_init(hw_info);
 		t7xx_cldma_hw_set_start_addr(hw_info, qno, prev_req->gpd_addr, MTK_TX);
@@ -895,30 +857,14 @@ static void t7xx_cldma_hw_start_send(struct cldma_ctrl *md_ctrl, int qno,
 	}
 }
 
-/**
- * t7xx_cldma_set_recv_skb() - Set the callback to handle RX packets.
- * @md_ctrl: CLDMA context structure.
- * @recv_skb: Receiving skb callback.
- */
+ 
 void t7xx_cldma_set_recv_skb(struct cldma_ctrl *md_ctrl,
 			     int (*recv_skb)(struct cldma_queue *queue, struct sk_buff *skb))
 {
 	md_ctrl->recv_skb = recv_skb;
 }
 
-/**
- * t7xx_cldma_send_skb() - Send control data to modem.
- * @md_ctrl: CLDMA context structure.
- * @qno: Queue number.
- * @skb: Socket buffer.
- *
- * Return:
- * * 0		- Success.
- * * -ENOMEM	- Allocation failure.
- * * -EINVAL	- Invalid queue request.
- * * -EIO	- Queue is not active.
- * * -ETIMEDOUT	- Timeout waiting for the device to wake up.
- */
+ 
 int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb)
 {
 	struct cldma_request *tx_req;
@@ -960,10 +906,7 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
 				break;
 			}
 
-			/* Protect the access to the modem for queues operations (resume/start)
-			 * which access shared locations by all the queues.
-			 * cldma_lock is independent of ring_lock which is per queue.
-			 */
+			 
 			spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
 			t7xx_cldma_hw_start_send(md_ctrl, qno, tx_req);
 			spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
@@ -1268,18 +1211,7 @@ static void t7xx_cldma_destroy_wqs(struct cldma_ctrl *md_ctrl)
 	}
 }
 
-/**
- * t7xx_cldma_init() - Initialize CLDMA.
- * @md_ctrl: CLDMA context structure.
- *
- * Allocate and initialize device power management entity.
- * Initialize HIF TX/RX queue structure.
- * Register CLDMA callback ISR with PCIe driver.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code from failure sub-initializations.
- */
+ 
 int t7xx_cldma_init(struct cldma_ctrl *md_ctrl)
 {
 	struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;

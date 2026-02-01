@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef USB_STORAGE_COMMON_H
 #define USB_STORAGE_COMMON_H
 
@@ -10,13 +10,13 @@
 #ifndef DEBUG
 #undef VERBOSE_DEBUG
 #undef DUMP_MSGS
-#endif /* !DEBUG */
+#endif  
 
 #ifdef VERBOSE_DEBUG
 #define VLDBG	LDBG
 #else
 #define VLDBG(lun, fmt, args...) do { } while (0)
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 #define _LMSG(func, lun, fmt, args...)					\
 	do {								\
@@ -35,8 +35,8 @@
 
 #ifdef DUMP_MSGS
 
-#  define dump_msg(fsg, /* const char * */ label,			\
-		   /* const u8 * */ buf, /* unsigned */ length)		\
+#  define dump_msg(fsg,   label,			\
+		     buf,   length)		\
 do {									\
 	if (length < 512) {						\
 		DBG(fsg, "%s, length %u:\n", label, length);		\
@@ -49,8 +49,8 @@ do {									\
 
 #else
 
-#  define dump_msg(fsg, /* const char * */ label, \
-		   /* const u8 * */ buf, /* unsigned */ length) do { } while (0)
+#  define dump_msg(fsg,   label, \
+		     buf,   length) do { } while (0)
 
 #  ifdef VERBOSE_DEBUG
 
@@ -62,14 +62,14 @@ do {									\
 
 #    define dump_cdb(fsg) do { } while (0)
 
-#  endif /* VERBOSE_DEBUG */
+#  endif  
 
-#endif /* DUMP_MSGS */
+#endif  
 
-/* Length of a SCSI Command Data Block */
+ 
 #define MAX_COMMAND_SIZE	16
 
-/* SCSI Sense Key/Additional Sense Code/ASC Qualifier values */
+ 
 #define SS_NO_SENSE				0
 #define SS_COMMUNICATION_FAILURE		0x040800
 #define SS_INVALID_COMMAND			0x052000
@@ -85,14 +85,11 @@ do {									\
 #define SS_WRITE_ERROR				0x030c02
 #define SS_WRITE_PROTECTED			0x072700
 
-#define SK(x)		((u8) ((x) >> 16))	/* Sense Key byte, etc. */
+#define SK(x)		((u8) ((x) >> 16))	 
 #define ASC(x)		((u8) ((x) >> 8))
 #define ASCQ(x)		((u8) (x))
 
-/*
- * Vendor (8 chars), product (16 chars), release (4 hexadecimal digits) and NUL
- * byte
- */
+ 
 #define INQUIRY_STRING_LEN ((size_t) (8 + 16 + 4 + 1))
 
 struct fsg_lun {
@@ -113,12 +110,11 @@ struct fsg_lun {
 	u32		sense_data_info;
 	u32		unit_attention_data;
 
-	unsigned int	blkbits; /* Bits of logical block size
-						       of bound block device */
-	unsigned int	blksize; /* logical block size of bound block device */
+	unsigned int	blkbits;  
+	unsigned int	blksize;  
 	struct device	dev;
-	const char	*name;		/* "lun.name" */
-	const char	**name_pfx;	/* "function.name" */
+	const char	*name;		 
+	const char	**name_pfx;	 
 	char		inquiry_string[INQUIRY_STRING_LEN];
 };
 
@@ -127,10 +123,10 @@ static inline bool fsg_lun_is_open(struct fsg_lun *curlun)
 	return curlun->filp != NULL;
 }
 
-/* Default size of buffer length. */
+ 
 #define FSG_BUFLEN	((u32)16384)
 
-/* Maximal number of LUNs supported in mass storage function */
+ 
 #define FSG_MAX_LUNS	16
 
 enum fsg_buffer_state {
@@ -145,11 +141,7 @@ struct fsg_buffhd {
 	enum fsg_buffer_state		state;
 	struct fsg_buffhd		*next;
 
-	/*
-	 * The NetChip 2280 is faster, and handles some protocol faults
-	 * better, if we don't submit any short bulk-out read requests.
-	 * So we will record the intended request length here.
-	 */
+	 
 	unsigned int			bulk_out_intended_length;
 
 	struct usb_request		*inreq;
@@ -222,4 +214,4 @@ ssize_t fsg_store_inquiry_string(struct fsg_lun *curlun, const char *buf,
 ssize_t fsg_store_forced_eject(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 			       const char *buf, size_t count);
 
-#endif /* USB_STORAGE_COMMON_H */
+#endif  

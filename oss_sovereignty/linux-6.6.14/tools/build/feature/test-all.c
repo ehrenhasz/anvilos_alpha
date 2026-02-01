@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * test-all.c: Try to build all the main testcases at once.
- *
- * A well-configured system will have all the prereqs installed, so we can speed
- * up auto-detection on such systems.
- */
 
-/*
- * Quirk: Python and Perl headers cannot be in arbitrary places, so keep
- * these 3 testcases at the top:
- */
+ 
+
+ 
 #define main main_test_libpython
 # include "test-libpython.c"
 #undef main
@@ -123,11 +115,7 @@
 #undef main
 
 # if 0
-/*
- * Disable libbabeltrace check for test-all, because the requested
- * library version is not released yet in most distributions. Will
- * reenable later.
- */
+ 
 
 #define main main_test_libbabeltrace
 # include "test-libbabeltrace.c"

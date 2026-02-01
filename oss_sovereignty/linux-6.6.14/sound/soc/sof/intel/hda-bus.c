@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Authors: Keyon Jie <yang.jie@linux.intel.com>
+
+
+
+
+
+
+
+
 
 #include <linux/io.h>
 #include <sound/hdaudio.h>
@@ -41,18 +41,11 @@ static void sof_hda_bus_link_power(struct hdac_device *codec, bool enable)
 	if (enable == oldstate)
 		return;
 
-	/*
-	 * Both codec driver and controller can hold references to
-	 * display power. To avoid unnecessary power-up/down cycles,
-	 * controller doesn't immediately release its reference.
-	 *
-	 * If the codec driver powers down the link, release
-	 * the controller reference as well.
-	 */
+	 
 	if (codec->addr == HDA_IDISP_ADDR && !enable)
 		snd_hdac_display_power(bus, HDA_CODEC_IDX_CONTROLLER, false);
 
-	/* WAKEEN needs to be set for disabled links */
+	 
 	update_codec_wake_enable(bus, codec->addr, enable);
 }
 
@@ -63,9 +56,7 @@ static const struct hdac_bus_ops bus_core_ops = {
 };
 #endif
 
-/*
- * This can be used for both with/without hda link support.
- */
+ 
 void sof_hda_bus_init(struct snd_sof_dev *sdev, struct device *dev)
 {
 	struct hdac_bus *bus = sof_to_bus(sdev);
@@ -85,14 +76,11 @@ void sof_hda_bus_init(struct snd_sof_dev *sdev, struct device *dev)
 
 	bus->irq = -1;
 
-	/*
-	 * There is only one HDA bus atm. keep the index as 0.
-	 * Need to fix when there are more than one HDA bus.
-	 */
+	 
 	bus->idx = 0;
 
 	spin_lock_init(&bus->reg_lock);
-#endif /* CONFIG_SND_SOC_SOF_HDA_LINK */
+#endif  
 }
 
 void sof_hda_bus_exit(struct snd_sof_dev *sdev)

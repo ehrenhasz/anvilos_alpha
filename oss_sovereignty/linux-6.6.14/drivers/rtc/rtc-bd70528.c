@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// Copyright (C) 2018 ROHM Semiconductors
-//
-// RTC driver for ROHM BD71828 and BD71815 PMIC
+
+
+
+
+
 
 #include <linux/bcd.h>
 #include <linux/mfd/rohm-bd71815.h>
@@ -13,17 +13,10 @@
 #include <linux/regmap.h>
 #include <linux/rtc.h>
 
-/*
- * On BD71828 and BD71815 the ALM0 MASK is 14 bytes after the ALM0
- * block start
- */
+ 
 #define BD718XX_ALM_EN_OFFSET 14
 
-/*
- * We read regs RTC_SEC => RTC_YEAR
- * this struct is ordered according to chip registers.
- * Keep it u8 only (or packed) to avoid padding issues.
- */
+ 
 struct bd70528_rtc_day {
 	u8 sec;
 	u8 min;
@@ -68,16 +61,11 @@ static inline void tm2rtc(struct rtc_time *t, struct bd70528_rtc_data *r)
 	r->day &= ~BD70528_MASK_RTC_DAY;
 	r->week &= ~BD70528_MASK_RTC_WEEK;
 	r->month &= ~BD70528_MASK_RTC_MONTH;
-	/*
-	 * PM and 24H bits are not used by Wake - thus we clear them
-	 * here and not in tmday2rtc() which is also used by wake.
-	 */
+	 
 	r->time.hour &= ~(BD70528_MASK_RTC_HOUR_PM | BD70528_MASK_RTC_HOUR_24H);
 
 	tmday2rtc(t, &r->time);
-	/*
-	 * We do always set time in 24H mode.
-	 */
+	 
 	r->time.hour |= BD70528_MASK_RTC_HOUR_24H;
 	r->day |= bin2bcd(t->tm_mday);
 	r->week |= bin2bcd(t->tm_wday);
@@ -90,10 +78,7 @@ static inline void rtc2tm(struct bd70528_rtc_data *r, struct rtc_time *t)
 	t->tm_sec = bcd2bin(r->time.sec & BD70528_MASK_RTC_SEC);
 	t->tm_min = bcd2bin(r->time.min & BD70528_MASK_RTC_MINUTE);
 	t->tm_hour = bcd2bin(r->time.hour & BD70528_MASK_RTC_HOUR);
-	/*
-	 * If RTC is in 12H mode, then bit BD70528_MASK_RTC_HOUR_PM
-	 * is not BCD value but tells whether it is AM or PM
-	 */
+	 
 	if (!(r->time.hour & BD70528_MASK_RTC_HOUR_24H)) {
 		t->tm_hour %= 12;
 		if (r->time.hour & BD70528_MASK_RTC_HOUR_PM)
@@ -185,7 +170,7 @@ static int bd70528_get_time(struct device *dev, struct rtc_time *t)
 	struct bd70528_rtc_data rtc_data;
 	int ret;
 
-	/* read the RTC date and time registers all at once */
+	 
 	ret = regmap_bulk_read(r->regmap, r->reg_time_start, &rtc_data,
 			       sizeof(rtc_data));
 	if (ret) {
@@ -262,16 +247,7 @@ static int bd70528_probe(struct platform_device *pdev)
 		irq_name = "bd71815-rtc-alm-0";
 		bd_rtc->reg_time_start = BD71815_REG_RTC_START;
 
-		/*
-		 * See also BD718XX_ALM_EN_OFFSET:
-		 * This works for BD71828 and BD71815 as they have same offset
-		 * between ALM0 start and ALM0_MASK. If new ICs are to be
-		 * added this requires proper check as ALM0_MASK is not located
-		 * at the end of ALM0 block - but after all ALM blocks so if
-		 * amount of ALMs differ the offset to enable/disable is likely
-		 * to be incorrect and enable/disable must be given as own
-		 * reg address here.
-		 */
+		 
 		bd_rtc->bd718xx_alm_block_start = BD71815_REG_RTC_ALM_START;
 		hour_reg = BD71815_REG_HOUR;
 		break;
@@ -328,7 +304,7 @@ static int bd70528_probe(struct platform_device *pdev)
 	rtc->range_max = RTC_TIMESTAMP_END_2099;
 	rtc->ops = rtc_ops;
 
-	/* Request alarm IRQ prior to registerig the RTC */
+	 
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL, &alm_hndlr,
 					IRQF_ONESHOT, "bd70528-rtc", rtc);
 	if (ret)

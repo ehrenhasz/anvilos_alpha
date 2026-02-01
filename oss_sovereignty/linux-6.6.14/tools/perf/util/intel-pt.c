@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_pt.c: Intel Processor Trace support
- * Copyright (c) 2013-2015, Intel Corporation.
- */
+
+ 
 
 #include <inttypes.h>
 #include <linux/perf_event.h>
@@ -169,7 +166,7 @@ enum switch_state {
 	INTEL_PT_SS_EXPECTING_SWITCH_IP,
 };
 
-/* applicable_counters is 64-bits */
+ 
 #define INTEL_PT_MAX_PEBS 64
 
 struct intel_pt_pebs_event {
@@ -306,7 +303,7 @@ static bool intel_pt_log_events(struct intel_pt *pt, u64 tm)
 	if (pt->synth_opts.log_minus_flags & AUXTRACE_LOG_FLG_ALL_PERF_EVTS)
 		return false;
 
-	/* perf_time__ranges_skip_sample does not work if time is zero */
+	 
 	if (!tm)
 		tm = 1;
 
@@ -383,11 +380,7 @@ static int intel_pt_do_fix_overlap(struct intel_pt *pt, struct auxtrace_buffer *
 				      pt->synth_opts.vm_time_correlation);
 	if (!start)
 		return -EINVAL;
-	/*
-	 * In the case of vm_time_correlation, the overlap might contain TSC
-	 * packets that will not be fixed, and that will then no longer work for
-	 * overlap detection. Avoid that by zeroing out the overlap.
-	 */
+	 
 	if (pt->synth_opts.vm_time_correlation)
 		memset(b->data, 0, start - b->data);
 	b->use_size = b->data + b->size - start;
@@ -436,7 +429,7 @@ static int intel_pt_get_buffer(struct intel_pt_queue *ptq,
 	return 0;
 }
 
-/* Do not drop buffers with references - refer intel_pt_get_trace() */
+ 
 static void intel_pt_lookahead_drop_buffer(struct intel_pt_queue *ptq,
 					   struct auxtrace_buffer *buffer)
 {
@@ -446,7 +439,7 @@ static void intel_pt_lookahead_drop_buffer(struct intel_pt_queue *ptq,
 	auxtrace_buffer__drop_data(buffer);
 }
 
-/* Must be serialized with respect to intel_pt_get_trace() */
+ 
 static int intel_pt_lookahead(void *data, intel_pt_lookahead_cb_t cb,
 			      void *cb_data)
 {
@@ -489,10 +482,7 @@ static int intel_pt_lookahead(void *data, intel_pt_lookahead_cb_t cb,
 	return err;
 }
 
-/*
- * This function assumes data is processed sequentially only.
- * Must be serialized with respect to intel_pt_lookahead()
- */
+ 
 static int intel_pt_get_trace(struct intel_pt_buffer *b, void *data)
 {
 	struct intel_pt_queue *ptq = data;
@@ -603,7 +593,7 @@ static struct auxtrace_cache *intel_pt_cache(struct dso *dso,
 
 	bits = intel_pt_cache_size(dso, machine);
 
-	/* Ignoring cache creation failure */
+	 
 	c = auxtrace_cache__new(bits, sizeof(struct intel_pt_cache_entry), 200);
 
 	dso->auxtrace_cache = c;
@@ -666,7 +656,7 @@ static void intel_pt_cache_invalidate(struct dso *dso, struct machine *machine,
 
 static inline bool intel_pt_guest_kernel_ip(uint64_t ip)
 {
-	/* Assumes 64-bit kernel */
+	 
 	return ip & (1ULL << 63);
 }
 
@@ -685,7 +675,7 @@ static inline u8 intel_pt_nr_cpumode(struct intel_pt_queue *ptq, uint64_t ip, bo
 
 static inline u8 intel_pt_cpumode(struct intel_pt_queue *ptq, uint64_t from_ip, uint64_t to_ip)
 {
-	/* No support for non-zero CS base */
+	 
 	if (from_ip)
 		return intel_pt_nr_cpumode(ptq, from_ip, ptq->state->from_nr);
 	return intel_pt_nr_cpumode(ptq, to_ip, ptq->state->to_nr);
@@ -851,7 +841,7 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
 		start_offset = offset;
 		start_ip = *ip;
 
-		/* Load maps to ensure dso->is_64_bit has been updated */
+		 
 		map__load(al.map);
 
 		x86_64 = dso->is_64_bit;
@@ -884,7 +874,7 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
 
 				if (!intel_pt_jmp_16(intel_pt_insn))
 					goto out;
-				/* Check for emulated ptwrite */
+				 
 				offs = offset + intel_pt_insn->length;
 				eptw = intel_pt_emulated_ptwrite(dso, machine, offs);
 				intel_pt_insn->emulated_ptwrite = eptw;
@@ -914,10 +904,7 @@ out:
 	if (!one_map)
 		goto out_no_cache;
 
-	/*
-	 * Didn't lookup in the 'to_ip' case, so do it now to prevent duplicate
-	 * entries.
-	 */
+	 
 	if (to_ip) {
 		struct intel_pt_cache_entry *e;
 
@@ -926,7 +913,7 @@ out:
 			goto out_ret;
 	}
 
-	/* Ignore cache errors */
+	 
 	intel_pt_cache_add(map__dso(al.map), machine, start_offset, insn_cnt,
 			   *ip - start_ip, intel_pt_insn);
 
@@ -990,7 +977,7 @@ static int __intel_pt_pgd_ip(uint64_t ip, void *data)
 	if (ptq->state->to_nr) {
 		if (intel_pt_guest_kernel_ip(ip))
 			return intel_pt_match_pgd_ip(ptq->pt, ip, ip, NULL);
-		/* No support for decoding guest user space */
+		 
 		return -EINVAL;
 	} else if (ip >= ptq->pt->kernel_start) {
 		return intel_pt_match_pgd_ip(ptq->pt, ip, ip, NULL);
@@ -1209,7 +1196,7 @@ static struct ip_callchain *intel_pt_alloc_chain(struct intel_pt *pt)
 {
 	size_t sz = sizeof(struct ip_callchain);
 
-	/* Add 1 to callchain_sz for callchain context */
+	 
 	sz += (pt->synth_opts.callchain_sz + 1) * sizeof(u64);
 	return zalloc(sz);
 }
@@ -1283,7 +1270,7 @@ static void intel_pt_add_br_stack(struct intel_pt *pt,
 	thread__put(thread);
 }
 
-/* INTEL_PT_LBR_0, INTEL_PT_LBR_1 and INTEL_PT_LBR_2 */
+ 
 #define LBRS_MAX (INTEL_PT_BLK_ITEM_ID_CNT * 3U)
 
 static struct intel_pt_queue *intel_pt_alloc_queue(struct intel_pt *pt,
@@ -1341,7 +1328,7 @@ static struct intel_pt_queue *intel_pt_alloc_queue(struct intel_pt *pt,
 	params.first_timestamp = pt->first_timestamp;
 	params.max_loops = pt->max_loops;
 
-	/* Cannot walk code without TNT, so force 'quick' mode */
+	 
 	if (params.branch_enable && intel_pt_disabled_tnt(pt) && !params.quick)
 		params.quick = 1;
 
@@ -1433,11 +1420,11 @@ static int intel_pt_get_guest_from_sideband(struct intel_pt_queue *ptq)
 	int vcpu;
 
 	if (machine_pid <= 0)
-		return 0; /* Not a guest machine */
+		return 0;  
 
 	machine = machines__find(machines, machine_pid);
 	if (!machine)
-		return 0; /* Not a guest machine */
+		return 0;  
 
 	if (ptq->guest_machine != machine) {
 		ptq->guest_machine = NULL;
@@ -1669,11 +1656,7 @@ static inline bool intel_pt_skip_event(struct intel_pt *pt)
 	       pt->num_events++ < pt->synth_opts.initial_skip;
 }
 
-/*
- * Cannot count CBR as skipped because it won't go away until cbr == cbr_seen.
- * Also ensure CBR is first non-skipped event by allowing for 4 more samples
- * from this decoder state.
- */
+ 
 static inline bool intel_pt_skip_cbr_event(struct intel_pt *pt)
 {
 	return pt->synth_opts.initial_skip &&
@@ -1780,10 +1763,7 @@ static int intel_pt_synth_branch_sample(struct intel_pt_queue *ptq)
 	sample.id = ptq->pt->branches_id;
 	sample.stream_id = ptq->pt->branches_id;
 
-	/*
-	 * perf report cannot handle events without a branch stack when using
-	 * SORT_MODE__BRANCH so make a dummy one.
-	 */
+	 
 	if (pt->synth_opts.last_branch && sort__mode == SORT_MODE__BRANCH) {
 		dummy_bs = (struct dummy_branch_stack){
 			.nr = 1,
@@ -1913,10 +1893,7 @@ static void intel_pt_prep_p_sample(struct intel_pt *pt,
 {
 	intel_pt_prep_sample(pt, ptq, event, sample);
 
-	/*
-	 * Zero IP is used to mean "trace start" but that is not the case for
-	 * power or PTWRITE events with no IP, so clear the flags.
-	 */
+	 
 	if (!sample->ip)
 		sample->flags = 0;
 }
@@ -2103,10 +2080,7 @@ static int intel_pt_synth_pwrx_sample(struct intel_pt_queue *ptq)
 					    pt->pwr_events_sample_type);
 }
 
-/*
- * PEBS gp_regs array indexes plus 1 so that 0 means not present. Refer
- * intel_pt_add_gp_regs().
- */
+ 
 static const int pebs_gp_regs[] = {
 	[PERF_REG_X86_FLAGS]	= 1,
 	[PERF_REG_X86_IP]	= 2,
@@ -2138,16 +2112,12 @@ static u64 *intel_pt_add_gp_regs(struct regs_dump *intr_regs, u64 *pos,
 	int i;
 
 	for (i = 0, bit = 1; i < PERF_REG_X86_64_MAX; i++, bit <<= 1) {
-		/* Get the PEBS gp_regs array index */
+		 
 		int n = pebs_gp_regs[i] - 1;
 
 		if (n < 0)
 			continue;
-		/*
-		 * Add only registers that were requested (i.e. 'regs_mask') and
-		 * that were provided (i.e. 'mask'), and update the resulting
-		 * mask (i.e. 'intr_regs->mask') accordingly.
-		 */
+		 
 		if (mask & 1 << n && regs_mask & bit) {
 			intr_regs->mask |= bit;
 			*pos++ = gp_regs[n];
@@ -2168,12 +2138,7 @@ static void intel_pt_add_xmm(struct regs_dump *intr_regs, u64 *pos,
 	u32 mask = items->has_xmm & (regs_mask >> PERF_REG_X86_XMM0);
 	const u64 *xmm = items->xmm;
 
-	/*
-	 * If there are any XMM registers, then there should be all of them.
-	 * Nevertheless, follow the logic to add only registers that were
-	 * requested (i.e. 'regs_mask') and that were provided (i.e. 'mask'),
-	 * and update the resulting mask (i.e. 'intr_regs->mask') accordingly.
-	 */
+	 
 	intr_regs->mask |= (u64)mask << PERF_REG_X86_XMM0;
 
 	for (; mask; mask >>= 1, xmm++) {
@@ -2187,7 +2152,7 @@ static void intel_pt_add_xmm(struct regs_dump *intr_regs, u64 *pos,
 #define LBR_INFO_ABORT		(1ULL << 61)
 #define LBR_INFO_CYCLES		0xffff
 
-/* Refer kernel's intel_pmu_store_pebs_lbrs() */
+ 
 static u64 intel_pt_lbr_flags(u64 info)
 {
 	union {
@@ -2251,7 +2216,7 @@ static int intel_pt_do_synth_pebs_sample(struct intel_pt_queue *ptq, struct evse
 	if (!evsel->core.attr.freq)
 		sample.period = evsel->core.attr.sample_period;
 
-	/* No support for non-zero CS base */
+	 
 	if (items->has_ip)
 		sample.ip = items->ip;
 	else if (items->has_rip)
@@ -2319,23 +2284,11 @@ static int intel_pt_do_synth_pebs_sample(struct intel_pt_queue *ptq, struct evse
 		sample.addr = items->mem_access_address;
 
 	if (sample_type & PERF_SAMPLE_WEIGHT_TYPE) {
-		/*
-		 * Refer kernel's setup_pebs_adaptive_sample_data() and
-		 * intel_hsw_weight().
-		 */
+		 
 		if (items->has_mem_access_latency) {
 			u64 weight = items->mem_access_latency >> 32;
 
-			/*
-			 * Starts from SPR, the mem access latency field
-			 * contains both cache latency [47:32] and instruction
-			 * latency [15:0]. The cache latency is the same as the
-			 * mem access latency on previous platforms.
-			 *
-			 * In practice, no memory access could last than 4G
-			 * cycles. Use latency >> 32 to distinguish the
-			 * different format of the mem access latency field.
-			 */
+			 
 			if (weight > 0) {
 				sample.weight = weight & 0xffff;
 				sample.ins_lat = items->mem_access_latency & 0xffff;
@@ -2343,17 +2296,17 @@ static int intel_pt_do_synth_pebs_sample(struct intel_pt_queue *ptq, struct evse
 				sample.weight = items->mem_access_latency;
 		}
 		if (!sample.weight && items->has_tsx_aux_info) {
-			/* Cycles last block */
+			 
 			sample.weight = (u32)items->tsx_aux_info;
 		}
 	}
 
 	if (sample_type & PERF_SAMPLE_TRANSACTION && items->has_tsx_aux_info) {
 		u64 ax = items->has_rax ? items->rax : 0;
-		/* Refer kernel's intel_hsw_transaction() */
+		 
 		u64 txn = (u8)(items->tsx_aux_info >> 32);
 
-		/* For RTM XABORTs also log the abort code from AX */
+		 
 		if (txn & PERF_TXN_TRANSACTION && ax & 1)
 			txn |= ((ax >> 24) & 0xff) << PERF_TXN_ABORT_SHIFT;
 		sample.transaction = txn;
@@ -2594,14 +2547,11 @@ static int intel_pt_sample(struct intel_pt_queue *ptq)
 		ptq->sample_ipc = ptq->state->flags & INTEL_PT_SAMPLE_IPC;
 	}
 
-	/* Ensure guest code maps are set up */
+	 
 	if (symbol_conf.guest_code && (state->from_nr || state->to_nr))
 		intel_pt_get_guest(ptq);
 
-	/*
-	 * Do PEBS first to allow for the possibility that the PEBS timestamp
-	 * precedes the current timestamp.
-	 */
+	 
 	if (pt->sample_pebs && state->type & INTEL_PT_BLK_ITEMS) {
 		err = intel_pt_synth_pebs_sample(ptq);
 		if (err)
@@ -2701,10 +2651,7 @@ static int intel_pt_sample(struct intel_pt_queue *ptq)
 			u64 to_ip = st->to_ip;
 			u64 from_ip = st->from_ip;
 
-			/*
-			 * perf cannot handle having different machines for ip
-			 * and addr, so create 2 branches.
-			 */
+			 
 			st->to_ip = 0;
 			err = intel_pt_synth_branch_sample(ptq);
 			if (err)
@@ -2837,28 +2784,25 @@ static void intel_pt_disable_sync_switch(struct intel_pt *pt)
 	}
 }
 
-/*
- * To filter against time ranges, it is only necessary to look at the next start
- * or end time.
- */
+ 
 static bool intel_pt_next_time(struct intel_pt_queue *ptq)
 {
 	struct intel_pt *pt = ptq->pt;
 
 	if (ptq->sel_start) {
-		/* Next time is an end time */
+		 
 		ptq->sel_start = false;
 		ptq->sel_timestamp = pt->time_ranges[ptq->sel_idx].end;
 		return true;
 	} else if (ptq->sel_idx + 1 < pt->range_cnt) {
-		/* Next time is a start time */
+		 
 		ptq->sel_start = true;
 		ptq->sel_idx += 1;
 		ptq->sel_timestamp = pt->time_ranges[ptq->sel_idx].start;
 		return true;
 	}
 
-	/* No next time */
+	 
 	return false;
 }
 
@@ -2869,16 +2813,16 @@ static int intel_pt_time_filter(struct intel_pt_queue *ptq, u64 *ff_timestamp)
 	while (1) {
 		if (ptq->sel_start) {
 			if (ptq->timestamp >= ptq->sel_timestamp) {
-				/* After start time, so consider next time */
+				 
 				intel_pt_next_time(ptq);
 				if (!ptq->sel_timestamp) {
-					/* No end time */
+					 
 					return 0;
 				}
-				/* Check against end time */
+				 
 				continue;
 			}
-			/* Before start time, so fast forward */
+			 
 			ptq->have_sample = false;
 			if (ptq->sel_timestamp > *ff_timestamp) {
 				if (ptq->sync_switch) {
@@ -2893,17 +2837,17 @@ static int intel_pt_time_filter(struct intel_pt_queue *ptq, u64 *ff_timestamp)
 			}
 			return 0;
 		} else if (ptq->timestamp > ptq->sel_timestamp) {
-			/* After end time, so consider next time */
+			 
 			if (!intel_pt_next_time(ptq)) {
-				/* No next time range, so stop decoding */
+				 
 				ptq->have_sample = false;
 				ptq->switch_state = INTEL_PT_SS_NOT_TRACING;
 				return 1;
 			}
-			/* Check against next start time */
+			 
 			continue;
 		} else {
-			/* Before end time */
+			 
 			return 0;
 		}
 	}
@@ -2960,14 +2904,14 @@ static int intel_pt_run_decoder(struct intel_pt_queue *ptq, u64 *timestamp)
 		ptq->have_sample = true;
 		intel_pt_sample_flags(ptq);
 
-		/* Use estimated TSC upon return to user space */
+		 
 		if (pt->est_tsc &&
 		    (state->from_ip >= pt->kernel_start || !state->from_ip) &&
 		    state->to_ip && state->to_ip < pt->kernel_start) {
 			intel_pt_log("TSC %"PRIx64" est. TSC %"PRIx64"\n",
 				     state->timestamp, state->est_timestamp);
 			ptq->timestamp = state->est_timestamp;
-		/* Use estimated TSC in unknown switch state */
+		 
 		} else if (ptq->sync_switch &&
 			   ptq->switch_state == INTEL_PT_SS_UNKNOWN &&
 			   intel_pt_is_switch_ip(ptq, state->to_ip) &&
@@ -3231,7 +3175,7 @@ static int intel_pt_process_switch(struct intel_pt *pt,
 
 	return machine__set_current_tid(pt->machine, cpu, -1, tid);
 }
-#endif /* HAVE_LIBTRACEEVENT */
+#endif  
 
 static int intel_pt_context_switch_in(struct intel_pt *pt,
 				      struct perf_sample *sample)
@@ -3261,10 +3205,7 @@ static int intel_pt_context_switch_in(struct intel_pt *pt,
 		}
 	}
 
-	/*
-	 * If the current tid has not been updated yet, ensure it is now that
-	 * a "switch in" event has occurred.
-	 */
+	 
 	if (machine__get_current_tid(pt->machine, cpu) == tid)
 		return 0;
 
@@ -3281,10 +3222,7 @@ static int intel_pt_guest_context_switch(struct intel_pt *pt,
 
 	pt->have_guest_sideband = true;
 
-	/*
-	 * sync_switch cannot handle guest machines at present, so just disable
-	 * it.
-	 */
+	 
 	pt->sync_switch_not_supported = true;
 	if (pt->sync_switch)
 		intel_pt_disable_sync_switch(pt);
@@ -3388,12 +3326,12 @@ static int intel_pt_find_map(struct thread *thread, u8 cpumode, u64 addr,
 	return 0;
 }
 
-/* Invalidate all instruction cache entries that overlap the text poke */
+ 
 static int intel_pt_text_poke(struct intel_pt *pt, union perf_event *event)
 {
 	u8 cpumode = event->header.misc & PERF_RECORD_MISC_CPUMODE_MASK;
 	u64 addr = event->text_poke.addr + event->text_poke.new_len - 1;
-	/* Assume text poke begins in a basic block no more than 4096 bytes */
+	 
 	int cnt = 4096 + event->text_poke.new_len;
 	struct thread *thread = pt->unknown_thread;
 	struct addr_location al;
@@ -3426,11 +3364,7 @@ static int intel_pt_text_poke(struct intel_pt *pt, union perf_event *event)
 			continue;
 
 		if (addr + e->byte_cnt + e->length <= event->text_poke.addr) {
-			/*
-			 * No overlap. Working backwards there cannot be another
-			 * basic block that overlaps the text poke if there is a
-			 * branch instruction before the text poke address.
-			 */
+			 
 			if (e->branch != INTEL_PT_BR_NO_BRANCH)
 				goto out;
 		} else {
@@ -3622,7 +3556,7 @@ static int intel_pt_process_auxtrace_event(struct perf_session *session,
 		if (err)
 			return err;
 
-		/* Dump here now we have copied a piped trace out of the pipe */
+		 
 		if (dump_trace) {
 			if (auxtrace_buffer__get_data(buffer, fd)) {
 				intel_pt_dump_event(pt, buffer->data,
@@ -3779,11 +3713,7 @@ static int intel_pt_synth_events(struct intel_pt *pt,
 		attr.sample_type |= PERF_SAMPLE_CALLCHAIN;
 	if (pt->synth_opts.last_branch) {
 		attr.sample_type |= PERF_SAMPLE_BRANCH_STACK;
-		/*
-		 * We don't use the hardware index, but the sample generation
-		 * code uses the new format branch_stack with this field,
-		 * so the event attributes must indicate that it's present.
-		 */
+		 
 		attr.branch_sample_type |= PERF_SAMPLE_BRANCH_HW_INDEX;
 	}
 
@@ -3988,7 +3918,7 @@ static int intel_pt_perf_config(const char *var, const char *value, void *data)
 	return 0;
 }
 
-/* Find least TSC which converts to ns or later */
+ 
 static u64 intel_pt_tsc_start(u64 ns, struct intel_pt *pt)
 {
 	u64 tsc, tm;
@@ -4008,7 +3938,7 @@ static u64 intel_pt_tsc_start(u64 ns, struct intel_pt *pt)
 	return tsc;
 }
 
-/* Find greatest TSC which converts to ns or earlier */
+ 
 static u64 intel_pt_tsc_end(u64 ns, struct intel_pt *pt)
 {
 	u64 tsc, tm;
@@ -4051,10 +3981,7 @@ static int intel_pt_setup_time_ranges(struct intel_pt *pt,
 		u64 ts = p[i].start;
 		u64 te = p[i].end;
 
-		/*
-		 * Take care to ensure the TSC range matches the perf-time range
-		 * when converted back to perf-time.
-		 */
+		 
 		r->start = ts ? intel_pt_tsc_start(ts, pt) : 0;
 		r->end   = te ? intel_pt_tsc_end(te, pt) : 0;
 
@@ -4224,7 +4151,7 @@ int intel_pt_process_auxtrace_info(union perf_event *event,
 		intel_pt_log_set_name(INTEL_PT_PMU_NAME);
 
 	pt->session = session;
-	pt->machine = &session->machines.host; /* No kvm support */
+	pt->machine = &session->machines.host;  
 	pt->auxtrace_type = auxtrace_info->type;
 	pt->pmu_type = auxtrace_info->priv[INTEL_PT_PMU_TYPE];
 	pt->tc.time_shift = auxtrace_info->priv[INTEL_PT_TIME_SHIFT];
@@ -4322,7 +4249,7 @@ int intel_pt_process_auxtrace_info(union perf_event *event,
 			err = -EINVAL;
 			goto err_free_queues;
 		}
-		/* Currently TSC Offset is calculated using MTC packets */
+		 
 		if (!intel_pt_have_mtc(pt)) {
 			pr_err("MTC packets must have been enabled for VM Time Correlation\n");
 			err = -EINVAL;
@@ -4381,7 +4308,7 @@ int intel_pt_process_auxtrace_info(union perf_event *event,
 		intel_pt_log_enable(log_on_error, log_on_error_size);
 	}
 
-	/* Maximum non-turbo ratio is TSC freq / 100 MHz */
+	 
 	if (pt->tc.time_mult) {
 		u64 tsc_freq = intel_pt_ns_to_ticks(pt, 1000000000);
 
@@ -4430,13 +4357,7 @@ int intel_pt_process_auxtrace_info(union perf_event *event,
 		err = intel_pt_br_stack_init(pt);
 		if (err)
 			goto err_delete_thread;
-		/*
-		 * Additional branch stack size to cater for tracing from the
-		 * actual sample ip to where the sample time is recorded.
-		 * Measured at about 200 branches, but generously set to 1024.
-		 * If kernel space is not being traced, then add just 1 for the
-		 * branch to kernel space.
-		 */
+		 
 		if (intel_pt_tracing_kernel(pt))
 			pt->br_stack_sz_plus += 1024;
 		else

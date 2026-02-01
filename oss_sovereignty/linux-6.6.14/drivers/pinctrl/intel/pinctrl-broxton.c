@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Broxton SoC pinctrl/GPIO driver
- *
- * Copyright (C) 2015, 2016 Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -23,7 +18,7 @@
 #define BXT_COMMUNITY(b, s, e)				\
 	INTEL_COMMUNITY_SIZE(b, s, e, 32, 4, BXT)
 
-/* BXT */
+ 
 static const struct pinctrl_pin_desc bxt_north_pins[] = {
 	PINCTRL_PIN(0, "GPIO_0"),
 	PINCTRL_PIN(1, "GPIO_1"),
@@ -522,7 +517,7 @@ static const struct intel_pinctrl_soc_data *bxt_pinctrl_soc_data[] = {
 	NULL
 };
 
-/* APL */
+ 
 static const struct pinctrl_pin_desc apl_north_pins[] = {
 	PINCTRL_PIN(0, "GPIO_0"),
 	PINCTRL_PIN(1, "GPIO_1"),

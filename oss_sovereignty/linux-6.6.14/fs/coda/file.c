@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * File operations for Coda.
- * Original version: (C) 1996 Peter Braam 
- * Rewritten for Linux 2.1: (C) 1997 Carnegie Mellon University
- *
- * Carnegie Mellon encourages users of this code to contribute improvements
- * to the Coda project. Contact Peter Braam <coda@cs.cmu.edu>.
- */
+
+ 
 
 #include <linux/refcount.h>
 #include <linux/types.h>
@@ -187,15 +180,14 @@ coda_file_mmap(struct file *coda_file, struct vm_area_struct *vma)
 	if (coda_inode->i_mapping == &coda_inode->i_data)
 		coda_inode->i_mapping = host_inode->i_mapping;
 
-	/* only allow additional mmaps as long as userspace isn't changing
-	 * the container file on us! */
+	 
 	else if (coda_inode->i_mapping != host_inode->i_mapping) {
 		spin_unlock(&cii->c_lock);
 		kfree(cvm_ops);
 		return -EBUSY;
 	}
 
-	/* keep track of how often the coda_inode/host_file has been mmapped */
+	 
 	cii->c_mapcount++;
 	cfi->cfi_mapcount++;
 	spin_unlock(&cii->c_lock);
@@ -204,13 +196,11 @@ coda_file_mmap(struct file *coda_file, struct vm_area_struct *vma)
 	ret = call_mmap(vma->vm_file, vma);
 
 	if (ret) {
-		/* if call_mmap fails, our caller will put host_file so we
-		 * should drop the reference to the coda_file that we got.
-		 */
+		 
 		fput(coda_file);
 		kfree(cvm_ops);
 	} else {
-		/* here we add redirects for the open/close vm_operations */
+		 
 		cvm_ops->host_vm_ops = vma->vm_ops;
 		if (vma->vm_ops)
 			cvm_ops->vm_ops = *vma->vm_ops;
@@ -252,7 +242,7 @@ int coda_open(struct inode *coda_inode, struct file *coda_file)
 	cfi->cfi_magic = CODA_MAGIC;
 	cfi->cfi_mapcount = 0;
 	cfi->cfi_container = host_file;
-	/* assume access intents are supported unless we hear otherwise */
+	 
 	cfi->cfi_access_intent = true;
 
 	BUG_ON(coda_file->private_data != NULL);
@@ -276,7 +266,7 @@ int coda_release(struct inode *coda_inode, struct file *coda_file)
 	host_inode = file_inode(cfi->cfi_container);
 	cii = ITOC(coda_inode);
 
-	/* did we mmap this file? */
+	 
 	spin_lock(&cii->c_lock);
 	if (coda_inode->i_mapping == &host_inode->i_data) {
 		cii->c_mapcount -= cfi->cfi_mapcount;
@@ -289,8 +279,7 @@ int coda_release(struct inode *coda_inode, struct file *coda_file)
 	kfree(coda_file->private_data);
 	coda_file->private_data = NULL;
 
-	/* VFS fput ignores the return value from file_operations->release, so
-	 * there is no use returning an error here */
+	 
 	return 0;
 }
 

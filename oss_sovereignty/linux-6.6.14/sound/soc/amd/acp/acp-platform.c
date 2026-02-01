@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*
- * Generic interface for ACP audio blck PCM component
- */
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -132,12 +130,12 @@ void config_pte_for_stream(struct acp_dev_data *adata, struct acp_stream *stream
 	struct acp_resource *rsrc = adata->rsrc;
 	u32 pte_reg, pte_size, reg_val;
 
-	/* Use ATU base Group5 */
+	 
 	pte_reg = ACPAXI2AXI_ATU_BASE_ADDR_GRP_5;
 	pte_size =  ACPAXI2AXI_ATU_PAGE_SIZE_GRP_5;
 	stream->reg_offset = 0x02000000;
 
-	/* Group Enable */
+	 
 	reg_val = rsrc->sram_pte_offset;
 	writel(reg_val | BIT(31), adata->acp_base + pte_reg);
 	writel(PAGE_SIZE_4K_ENABLE,  adata->acp_base + pte_size);
@@ -157,14 +155,14 @@ void config_acp_dma(struct acp_dev_data *adata, struct acp_stream *stream, int s
 	val = stream->pte_offset;
 
 	for (page_idx = 0; page_idx < num_pages; page_idx++) {
-		/* Load the low address of page int ACP SRAM through SRBM */
+		 
 		low = lower_32_bits(addr);
 		high = upper_32_bits(addr);
 		writel(low, adata->acp_base + rsrc->scratch_reg_offset + val);
 		high |= BIT(31);
 		writel(high, adata->acp_base + rsrc->scratch_reg_offset + val + 4);
 
-		/* Move to next physically contiguous page */
+		 
 		val += 8;
 		addr += PAGE_SIZE;
 	}
@@ -215,7 +213,7 @@ static int acp_dma_hw_params(struct snd_soc_component *component,
 	struct acp_stream *stream = substream->runtime->private_data;
 	u64 size = params_buffer_bytes(params);
 
-	/* Configure ACP DMA block with params */
+	 
 	config_pte_for_stream(adata, stream);
 	config_acp_dma(adata, stream, size);
 
@@ -261,7 +259,7 @@ static int acp_dma_close(struct snd_soc_component *component,
 	struct acp_dev_data *adata = dev_get_drvdata(dev);
 	struct acp_stream *stream = substream->runtime->private_data;
 
-	/* Remove entry from list */
+	 
 	spin_lock_irq(&adata->acp_lock);
 	list_del(&stream->list);
 	spin_unlock_irq(&adata->acp_lock);

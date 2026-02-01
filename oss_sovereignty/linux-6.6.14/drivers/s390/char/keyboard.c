@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    ebcdic keycode functions for s390 console drivers
- *
- *  S390 version
- *    Copyright IBM Corp. 2003
- *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com),
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched/signal.h>
@@ -19,9 +13,7 @@
 
 #include "keyboard.h"
 
-/*
- * Handler Tables.
- */
+ 
 #define K_HANDLERS\
 	k_self,		k_fn,		k_spec,		k_ignore,\
 	k_dead,		k_ignore,	k_ignore,	k_ignore,\
@@ -32,7 +24,7 @@ typedef void (k_handler_fn)(struct kbd_data *, unsigned char);
 static k_handler_fn K_HANDLERS;
 static k_handler_fn *k_handler[16] = { K_HANDLERS };
 
-/* maximum values each key_handler can handle */
+ 
 static const int kbd_max_vals[] = {
 	255, ARRAY_SIZE(func_table) - 1, NR_FN_HANDLER - 1, 0,
 	NR_DEAD - 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -40,38 +32,36 @@ static const int kbd_max_vals[] = {
 static const int KBD_NR_TYPES = ARRAY_SIZE(kbd_max_vals);
 
 static const unsigned char ret_diacr[NR_DEAD] = {
-	'`',	/* dead_grave */
-	'\'',	/* dead_acute */
-	'^',	/* dead_circumflex */
-	'~',	/* dead_tilda */
-	'"',	/* dead_diaeresis */
-	',',	/* dead_cedilla */
-	'_',	/* dead_macron */
-	'U',	/* dead_breve */
-	'.',	/* dead_abovedot */
-	'*',	/* dead_abovering */
-	'=',	/* dead_doubleacute */
-	'c',	/* dead_caron */
-	'k',	/* dead_ogonek */
-	'i',	/* dead_iota */
-	'#',	/* dead_voiced_sound */
-	'o',	/* dead_semivoiced_sound */
-	'!',	/* dead_belowdot */
-	'?',	/* dead_hook */
-	'+',	/* dead_horn */
-	'-',	/* dead_stroke */
-	')',	/* dead_abovecomma */
-	'(',	/* dead_abovereversedcomma */
-	':',	/* dead_doublegrave */
-	'n',	/* dead_invertedbreve */
-	';',	/* dead_belowcomma */
-	'$',	/* dead_currency */
-	'@',	/* dead_greek */
+	'`',	 
+	'\'',	 
+	'^',	 
+	'~',	 
+	'"',	 
+	',',	 
+	'_',	 
+	'U',	 
+	'.',	 
+	'*',	 
+	'=',	 
+	'c',	 
+	'k',	 
+	'i',	 
+	'#',	 
+	'o',	 
+	'!',	 
+	'?',	 
+	'+',	 
+	'-',	 
+	')',	 
+	'(',	 
+	':',	 
+	'n',	 
+	';',	 
+	'$',	 
+	'@',	 
 };
 
-/*
- * Alloc/free of kbd_data structures.
- */
+ 
 struct kbd_data *
 kbd_alloc(void) {
 	struct kbd_data *kbd;
@@ -147,9 +137,7 @@ kbd_free(struct kbd_data *kbd)
 	kfree(kbd);
 }
 
-/*
- * Generate ascii -> ebcdic translation table from kbd_data.
- */
+ 
 void
 kbd_ascebc(struct kbd_data *kbd, unsigned char *ascebc)
 {
@@ -174,9 +162,7 @@ kbd_ascebc(struct kbd_data *kbd, unsigned char *ascebc)
 }
 
 #if 0
-/*
- * Generate ebcdic -> ascii translation table from kbd_data.
- */
+ 
 void
 kbd_ebcasc(struct kbd_data *kbd, unsigned char *ebcasc)
 {
@@ -201,13 +187,7 @@ kbd_ebcasc(struct kbd_data *kbd, unsigned char *ebcasc)
 }
 #endif
 
-/*
- * We have a combining character DIACR here, followed by the character CH.
- * If the combination occurs in the table, return the corresponding value.
- * Otherwise, if CH is a space or equals DIACR, return DIACR.
- * Otherwise, conclude that DIACR was not combining after all,
- * queue it and return CH.
- */
+ 
 static unsigned int
 handle_diacr(struct kbd_data *kbd, unsigned int ch)
 {
@@ -229,9 +209,7 @@ handle_diacr(struct kbd_data *kbd, unsigned int ch)
 	return ch;
 }
 
-/*
- * Handle dead key.
- */
+ 
 static void
 k_dead(struct kbd_data *kbd, unsigned char value)
 {
@@ -239,9 +217,7 @@ k_dead(struct kbd_data *kbd, unsigned char value)
 	kbd->diacr = (kbd->diacr ? handle_diacr(kbd, value) : value);
 }
 
-/*
- * Normal character handler.
- */
+ 
 static void
 k_self(struct kbd_data *kbd, unsigned char value)
 {
@@ -250,17 +226,13 @@ k_self(struct kbd_data *kbd, unsigned char value)
 	kbd_put_queue(kbd->port, value);
 }
 
-/*
- * Special key handlers
- */
+ 
 static void
 k_ignore(struct kbd_data *kbd, unsigned char value)
 {
 }
 
-/*
- * Function key handler.
- */
+ 
 static void
 k_fn(struct kbd_data *kbd, unsigned char value)
 {
@@ -277,32 +249,26 @@ k_spec(struct kbd_data *kbd, unsigned char value)
 		kbd->fn_handler[value](kbd);
 }
 
-/*
- * Put utf8 character to tty flip buffer.
- * UTF-8 is defined for words of up to 31 bits,
- * but we need only 16 bits here
- */
+ 
 static void
 to_utf8(struct tty_port *port, ushort c)
 {
 	if (c < 0x80)
-		/*  0******* */
+		 
 		kbd_put_queue(port, c);
 	else if (c < 0x800) {
-		/* 110***** 10****** */
+		 
 		kbd_put_queue(port, 0xc0 | (c >> 6));
 		kbd_put_queue(port, 0x80 | (c & 0x3f));
 	} else {
-		/* 1110**** 10****** 10****** */
+		 
 		kbd_put_queue(port, 0xe0 | (c >> 12));
 		kbd_put_queue(port, 0x80 | ((c >> 6) & 0x3f));
 		kbd_put_queue(port, 0x80 | (c & 0x3f));
 	}
 }
 
-/*
- * Process keycode.
- */
+ 
 void
 kbd_keycode(struct kbd_data *kbd, unsigned int keycode)
 {
@@ -327,7 +293,7 @@ kbd_keycode(struct kbd_data *kbd, unsigned int keycode)
 		if (type == KT_LETTER)
 			type = KT_LATIN;
 		value = KVAL(keysym);
-#ifdef CONFIG_MAGIC_SYSRQ	       /* Handle the SysRq Hack */
+#ifdef CONFIG_MAGIC_SYSRQ	        
 		if (kbd->sysrq) {
 			if (kbd->sysrq == K(KT_LATIN, '-')) {
 				kbd->sysrq = 0;
@@ -338,7 +304,7 @@ kbd_keycode(struct kbd_data *kbd, unsigned int keycode)
 				kbd->sysrq = K(KT_LATIN, '-');
 				return;
 			}
-			/* Incomplete sysrq sequence. */
+			 
 			(*k_handler[KTYP(kbd->sysrq)])(kbd, KVAL(kbd->sysrq));
 			kbd->sysrq = 0;
 		} else if ((type == KT_LATIN && value == '^') ||
@@ -352,9 +318,7 @@ kbd_keycode(struct kbd_data *kbd, unsigned int keycode)
 		to_utf8(kbd->port, keysym);
 }
 
-/*
- * Ioctl stuff.
- */
+ 
 static int
 do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 	      int cmd, int perm)
@@ -391,7 +355,7 @@ do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 		if (!perm)
 			return -EPERM;
 		if (!kb_index && tmp.kb_value == K_NOSUCHMAP) {
-			/* disallocate map */
+			 
 			key_map = kbd->key_maps[kb_table];
 			if (key_map) {
 			    kbd->key_maps[kb_table] = NULL;
@@ -418,10 +382,8 @@ do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 		}
 		ov = U(key_map[kb_index]);
 		if (tmp.kb_value == ov)
-			break;	/* nothing to do */
-		/*
-		 * Attention Key.
-		 */
+			break;	 
+		 
 		if (((ov == K_SAK) || (tmp.kb_value == K_SAK)) &&
 		    !capable(CAP_SYS_ADMIN))
 			return -EPERM;
@@ -439,7 +401,7 @@ do_kdgkb_ioctl(struct kbd_data *kbd, struct kbsentry __user *u_kbs,
 	char *p;
 	int len;
 
-	/* Get u_kbs->kb_func. */
+	 
 	if (get_user(kb_func, &u_kbs->kb_func))
 		return -EFAULT;
 #if MAX_NR_FUNC < 256
@@ -483,12 +445,9 @@ int kbd_ioctl(struct kbd_data *kbd, unsigned int cmd, unsigned long arg)
 
 	argp = (void __user *)arg;
 
-	/*
-	 * To have permissions to do most of the vt ioctls, we either have
-	 * to be the owner of the tty, or have CAP_SYS_TTY_CONFIG.
-	 */
+	 
 	tty = tty_port_tty_get(kbd->port);
-	/* FIXME this test is pretty racy */
+	 
 	perm = current->signal->tty == tty || capable(CAP_SYS_TTY_CONFIG);
 	tty_kref_put(tty);
 	switch (cmd) {

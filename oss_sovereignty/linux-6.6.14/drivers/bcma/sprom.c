@@ -1,11 +1,4 @@
-/*
- * Broadcom specific AMBA
- * SPROM reading
- *
- * Copyright 2011, 2012, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 
@@ -18,24 +11,7 @@
 
 static int(*get_fallback_sprom)(struct bcma_bus *dev, struct ssb_sprom *out);
 
-/**
- * bcma_arch_register_fallback_sprom - Registers a method providing a
- * fallback SPROM if no SPROM is found.
- *
- * @sprom_callback: The callback function.
- *
- * With this function the architecture implementation may register a
- * callback handler which fills the SPROM data structure. The fallback is
- * used for PCI based BCMA devices, where no valid SPROM can be found
- * in the shadow registers and to provide the SPROM for SoCs where BCMA is
- * to control the system bus.
- *
- * This function is useful for weird architectures that have a half-assed
- * BCMA device hardwired to their PCI bus.
- *
- * This function is available for architecture code, only. So it is not
- * exported.
- */
+ 
 int bcma_arch_register_fallback_sprom(int (*sprom_callback)(struct bcma_bus *bus,
 				     struct ssb_sprom *out))
 {
@@ -68,9 +44,7 @@ fail:
 	return err;
 }
 
-/**************************************************
- * R/W ops.
- **************************************************/
+ 
 
 static void bcma_sprom_read(struct bcma_bus *bus, u16 offset, u16 *sprom,
 			    size_t words)
@@ -80,13 +54,11 @@ static void bcma_sprom_read(struct bcma_bus *bus, u16 offset, u16 *sprom,
 		sprom[i] = bcma_read16(bus->drv_cc.core, offset + (i * 2));
 }
 
-/**************************************************
- * Validation.
- **************************************************/
+ 
 
 static inline u8 bcma_crc8(u8 crc, u8 data)
 {
-	/* Polynomial:   x^8 + x^7 + x^6 + x^4 + x^2 + 1   */
+	 
 	static const u8 t[] = {
 		0x00, 0xF7, 0xB9, 0x4E, 0x25, 0xD2, 0x9C, 0x6B,
 		0x4A, 0xBD, 0xF3, 0x04, 0x6F, 0x98, 0xD6, 0x21,
@@ -176,9 +148,7 @@ static int bcma_sprom_valid(struct bcma_bus *bus, const u16 *sprom,
 	return 0;
 }
 
-/**************************************************
- * SPROM extraction.
- **************************************************/
+ 
 
 #define SPOFF(offset)	((offset) / sizeof(u16))
 
@@ -209,9 +179,9 @@ static s8 sprom_extract_antgain(const u16 *in, u16 offset, u16 mask, u16 shift)
 	v = in[SPOFF(offset)];
 	gain = (v & mask) >> shift;
 	if (gain == 0xFF) {
-		gain = 8; /* If unset use 2dBm */
+		gain = 8;  
 	} else {
-		/* Q5.2 Fractional part is stored in 0xC0 */
+		 
 		gain = ((gain & 0xC0) >> 6) | ((gain & 0x3F) << 2);
 	}
 
@@ -281,7 +251,7 @@ static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
 	SPEX(alpha2[0], SSB_SPROM8_CCODE, 0xff00, 8);
 	SPEX(alpha2[1], SSB_SPROM8_CCODE, 0x00ff, 0);
 
-	/* Extract core's power info */
+	 
 	for (i = 0; i < ARRAY_SIZE(pwr_info_offset); i++) {
 		o = pwr_info_offset[i];
 		SPEX(core_pwr_info[i].itssi_2g, o + SSB_SROM8_2G_MAXP_ITSSI,
@@ -397,7 +367,7 @@ static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
 	SPEX32(ofdm5gpo, SSB_SPROM8_OFDM5GPO, ~0, 0);
 	SPEX32(ofdm5ghpo, SSB_SPROM8_OFDM5GHPO, ~0, 0);
 
-	/* Extract the antenna gain values. */
+	 
 	bus->sprom.antenna_gain.a0 = sprom_extract_antgain(sprom,
 							   SSB_SPROM8_AGAIN01,
 							   SSB_SPROM8_AGAIN0,
@@ -474,9 +444,7 @@ static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
 	     SSB_SPROM8_TEMPDELTA_HYSTERESIS_SHIFT);
 }
 
-/*
- * Indicates the presence of external SPROM.
- */
+ 
 static bool bcma_sprom_ext_available(struct bcma_bus *bus)
 {
 	u32 chip_status;
@@ -492,7 +460,7 @@ static bool bcma_sprom_ext_available(struct bcma_bus *bus)
 		return srom_control & BCMA_CC_SROM_CONTROL_PRESENT;
 	}
 
-	/* older chipcommon revisions use chip status register */
+	 
 	chip_status = bcma_read32(bus->drv_cc.core, BCMA_CC_CHIPSTAT);
 	switch (bus->chipinfo.id) {
 	case BCMA_CHIP_ID_BCM4313:
@@ -510,9 +478,7 @@ static bool bcma_sprom_ext_available(struct bcma_bus *bus)
 	return chip_status & present_mask;
 }
 
-/*
- * Indicates that on-chip OTP memory is present and enabled.
- */
+ 
 static bool bcma_sprom_onchip_available(struct bcma_bus *bus)
 {
 	u32 chip_status;
@@ -531,7 +497,7 @@ static bool bcma_sprom_onchip_available(struct bcma_bus *bus)
 	case BCMA_CHIP_ID_BCM43142:
 	case BCMA_CHIP_ID_BCM43224:
 	case BCMA_CHIP_ID_BCM43225:
-		/* for these chips OTP is always available */
+		 
 		present = true;
 		break;
 	case BCMA_CHIP_ID_BCM43131:
@@ -554,22 +520,17 @@ static bool bcma_sprom_onchip_available(struct bcma_bus *bus)
 	return otpsize != 0;
 }
 
-/*
- * Verify OTP is filled and determine the byte
- * offset where SPROM data is located.
- *
- * On error, returns 0; byte offset otherwise.
- */
+ 
 static int bcma_sprom_onchip_offset(struct bcma_bus *bus)
 {
 	struct bcma_device *cc = bus->drv_cc.core;
 	u32 offset;
 
-	/* verify OTP status */
+	 
 	if ((bcma_read32(cc, BCMA_CC_OTPS) & BCMA_CC_OTPS_GU_PROG_HW) == 0)
 		return 0;
 
-	/* obtain bit offset from otplayout register */
+	 
 	offset = (bcma_read32(cc, BCMA_CC_OTPL) & BCMA_CC_OTPL_GURGN_OFFSET);
 	return BCMA_CC_SPROM + (offset >> 3);
 }
@@ -591,22 +552,14 @@ int bcma_sprom_get(struct bcma_bus *bus)
 	if (!bcma_sprom_ext_available(bus)) {
 		bool sprom_onchip;
 
-		/*
-		 * External SPROM takes precedence so check
-		 * on-chip OTP only when no external SPROM
-		 * is present.
-		 */
+		 
 		sprom_onchip = bcma_sprom_onchip_available(bus);
 		if (sprom_onchip) {
-			/* determine offset */
+			 
 			offset = bcma_sprom_onchip_offset(bus);
 		}
 		if (!offset || !sprom_onchip) {
-			/*
-			 * Maybe there is no SPROM on the device?
-			 * Now we ask the arch code if there is some sprom
-			 * available for this device in some other storage.
-			 */
+			 
 			err = bcma_fill_sprom_with_fallback(bus, &bus->sprom);
 			return err;
 		}

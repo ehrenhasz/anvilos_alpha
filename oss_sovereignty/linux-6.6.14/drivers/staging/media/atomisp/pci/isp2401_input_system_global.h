@@ -1,40 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
-/* CSI reveiver has 3 ports. */
+ 
 #define		N_CSI_PORTS (3)
 
 #include "system_local.h"
-#include "isys_dma_global.h"	/*	isys2401_dma_channel,
-				 *	isys2401_dma_cfg_t
-				 */
+#include "isys_dma_global.h"	 
 
-#include "ibuf_ctrl_local.h"	/*	ibuf_cfg_t,
-				 *	ibuf_ctrl_cfg_t
-				 */
+#include "ibuf_ctrl_local.h"	 
 
-#include "isys_stream2mmio.h"	/*	stream2mmio_cfg_t */
+#include "isys_stream2mmio.h"	 
 
-#include "csi_rx.h"		/*	csi_rx_frontend_cfg_t,
-				 *	csi_rx_backend_cfg_t,
-				 *	csi_rx_backend_lut_entry_t
-				 */
+#include "csi_rx.h"		 
 #include "pixelgen.h"
 
-#define INPUT_SYSTEM_N_STREAM_ID  6	/* maximum number of simultaneous
-					virtual channels supported*/
+#define INPUT_SYSTEM_N_STREAM_ID  6	 
 
 typedef enum {
 	INPUT_SYSTEM_SOURCE_TYPE_UNDEFINED = 0,
@@ -147,13 +127,11 @@ struct isp2401_input_system_cfg_s {
 
 typedef struct virtual_input_system_stream_s virtual_input_system_stream_t;
 struct virtual_input_system_stream_s {
-	u32 id;				/*Used when multiple MIPI data types and/or virtual channels are used.
-								Must be unique within one CSI RX
-								and lower than SH_CSS_MAX_ISYS_CHANNEL_NODES */
+	u32 id;				 
 	u8 enable_metadata;
 	input_system_input_port_t	input_port;
 	input_system_channel_t		channel;
-	input_system_channel_t		md_channel; /* metadata channel */
+	input_system_channel_t		md_channel;  
 	u8 online;
 	s8 linked_isys_stream_id;
 	u8 valid;

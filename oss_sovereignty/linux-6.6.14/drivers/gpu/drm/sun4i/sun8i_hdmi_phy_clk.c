@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Jernej Skrabec <jernej.skrabec@siol.net>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 

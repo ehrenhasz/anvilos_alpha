@@ -1,21 +1,4 @@
-/* Implement the most essential subset of POSIX 1003.1-2008 pthread.h.
-
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert, Glen Lenker, and Bruno Haible.  */
+ 
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
@@ -23,17 +6,12 @@
 @PRAGMA_COLUMNS@
 
 #if defined _GL_ALREADY_INCLUDING_PTHREAD_H
-/* Special invocation convention:
-   On Android, we have a sequence of nested includes
-   <pthread.h> -> <time.h> -> <sys/time.h> -> <sys/select.h> ->
-   <signal.h> -> <pthread.h>.
-   In this situation, PTHREAD_COND_INITIALIZER is not yet defined,
-   therefore we should not attempt to define PTHREAD_MUTEX_NORMAL etc.  */
+ 
 
 #@INCLUDE_NEXT@ @NEXT_PTHREAD_H@
 
 #else
-/* Normal invocation convention.  */
+ 
 
 #ifndef _@GUARD_PREFIX@_PTHREAD_H_
 
@@ -41,7 +19,7 @@
 
 # define _GL_ALREADY_INCLUDING_PTHREAD_H
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 # @INCLUDE_NEXT@ @NEXT_PTHREAD_H@
 
 # undef _GL_ALREADY_INCLUDING_PTHREAD_H
@@ -51,8 +29,7 @@
 #ifndef _@GUARD_PREFIX@_PTHREAD_H_
 #define _@GUARD_PREFIX@_PTHREAD_H_
 
-/* This file uses _Noreturn, _GL_ATTRIBUTE_PURE, GNULIB_POSIXCHECK,
-   HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -62,7 +39,7 @@
 #undef __need_system_stdlib_h
 
 
-/* The pthreads-win32 <pthread.h> defines a couple of broken macros.  */
+ 
 #undef asctime_r
 #undef ctime_r
 #undef gmtime_r
@@ -75,25 +52,24 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* The __attribute__ feature is available in gcc versions 2.5 and later.
-   The attribute __pure__ was added in gcc 2.96.  */
+ 
 #ifndef _GL_ATTRIBUTE_PURE
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96) || defined __clang__
 #  define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
 # else
-#  define _GL_ATTRIBUTE_PURE /* empty */
+#  define _GL_ATTRIBUTE_PURE  
 # endif
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _Noreturn is copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
-/* =========== Thread types and macros =========== */
+ 
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
 # if @GNULIB_PTHREAD_THREAD@
@@ -136,7 +112,7 @@ typedef unsigned int pthread_attr_t;
 # endif
 #endif
 
-/* =========== Once-only control (initialization) types and macros ========== */
+ 
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
 # if @GNULIB_PTHREAD_ONCE@
@@ -172,7 +148,7 @@ typedef int pthread_once_t;
 # endif
 #endif
 
-/* =========== Mutex types and macros =========== */
+ 
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
 # if @GNULIB_PTHREAD_MUTEX@
@@ -246,7 +222,7 @@ typedef unsigned int pthread_mutexattr_t;
 # endif
 #endif
 
-/* =========== Read-write lock types and macros =========== */
+ 
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
 # if @GNULIB_PTHREAD_RWLOCK@
@@ -275,7 +251,7 @@ typedef unsigned int pthread_rwlockattr_t;
 #  undef PTHREAD_RWLOCK_INITIALIZER
 #  define PTHREAD_RWLOCK_INITIALIZER { 0 }
 # endif
-#elif @GNULIB_PTHREAD_RWLOCK@ && @REPLACE_PTHREAD_RWLOCK_INIT@ /* i.e. PTHREAD_RWLOCK_UNIMPLEMENTED */
+#elif @GNULIB_PTHREAD_RWLOCK@ && @REPLACE_PTHREAD_RWLOCK_INIT@  
 # if @HAVE_PTHREAD_T@
 #  define pthread_rwlock_t rpl_pthread_rwlock_t
 #  define pthread_rwlockattr_t rpl_pthread_rwlockattr_t
@@ -283,11 +259,11 @@ typedef unsigned int pthread_rwlockattr_t;
 # if !GNULIB_defined_pthread_rwlock_types
 typedef struct
         {
-          pthread_mutex_t lock; /* protects the remaining fields */
-          pthread_cond_t waiting_readers; /* waiting readers */
-          pthread_cond_t waiting_writers; /* waiting writers */
-          unsigned int waiting_writers_count; /* number of waiting writers */
-          int runcount; /* number of readers running, or -1 when a writer runs */
+          pthread_mutex_t lock;  
+          pthread_cond_t waiting_readers;  
+          pthread_cond_t waiting_writers;  
+          unsigned int waiting_writers_count;  
+          int runcount;  
         }
         pthread_rwlock_t;
 typedef unsigned int pthread_rwlockattr_t;
@@ -298,7 +274,7 @@ typedef unsigned int pthread_rwlockattr_t;
    { PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER, PTHREAD_COND_INITIALIZER, 0, 0 }
 #else
 # if @HAVE_PTHREAD_T@
-#  if !defined PTHREAD_RWLOCK_INITIALIZER && defined PTHREAD_RWLOCK_INITIALIZER_NP /* z/OS */
+#  if !defined PTHREAD_RWLOCK_INITIALIZER && defined PTHREAD_RWLOCK_INITIALIZER_NP  
 #   define PTHREAD_RWLOCK_INITIALIZER PTHREAD_RWLOCK_INITIALIZER_NP
 #  endif
 # else
@@ -312,7 +288,7 @@ typedef unsigned int pthread_rwlockattr_t;
 # endif
 #endif
 
-/* =========== Condition variable types and macros =========== */
+ 
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
 # if @GNULIB_PTHREAD_COND@
@@ -353,7 +329,7 @@ typedef unsigned int pthread_condattr_t;
 # endif
 #endif
 
-/* =========== Thread-specific storage types and macros =========== */
+ 
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
 # if @GNULIB_PTHREAD_TSS@
@@ -389,7 +365,7 @@ typedef void ** pthread_key_t;
 # endif
 #endif
 
-/* =========== Spinlock types and macros =========== */
+ 
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
 # if @GNULIB_PTHREAD_SPIN@
@@ -416,7 +392,7 @@ typedef pthread_mutex_t pthread_spinlock_t;
 # define PTHREAD_PROCESS_SHARED 1
 #else
 # if !@HAVE_PTHREAD_SPINLOCK_T@
-/* Approximate spinlocks with mutexes.  */
+ 
 #  if !GNULIB_defined_pthread_spin_types
 typedef pthread_mutex_t pthread_spinlock_t;
 #   define GNULIB_defined_pthread_spin_types 1
@@ -428,7 +404,7 @@ typedef pthread_mutex_t pthread_spinlock_t;
 # endif
 #endif
 
-/* =========== Other types and macros =========== */
+ 
 
 #if !@HAVE_PTHREAD_T@
 # if !GNULIB_defined_other_pthread_types
@@ -462,11 +438,10 @@ typedef unsigned int pthread_barrierattr_t;
 
 #endif
 
-/* =========== Thread functions =========== */
+ 
 
 #if @GNULIB_PTHREAD_THREAD@
-/* The 'restrict' qualifier on ARG is nonsense, but POSIX specifies it this way.
-   Sigh.  */
+ 
 # if @REPLACE_PTHREAD_CREATE@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef pthread_create
@@ -733,7 +708,7 @@ _GL_CXXALIAS_RPL (pthread_exit, void, (void *value));
 #  if !@HAVE_PTHREAD_EXIT@
 _GL_FUNCDECL_SYS (pthread_exit, _Noreturn void, (void *value));
 #  endif
-/* Need to cast because of AIX with xlclang++.  */
+ 
 _GL_CXXALIAS_SYS_CAST (pthread_exit, void, (void *value));
 # endif
 # if __GLIBC__ >= 2
@@ -747,7 +722,7 @@ _GL_WARN_ON_USE (pthread_exit, "pthread_exit is not portable - "
 # endif
 #endif
 
-/* =========== Once-only control (initialization) functions =========== */
+ 
 
 #if @GNULIB_PTHREAD_ONCE@
 # if @REPLACE_PTHREAD_ONCE@
@@ -781,7 +756,7 @@ _GL_WARN_ON_USE (pthread_once, "pthread_once is not portable - "
 # endif
 #endif
 
-/* =========== Mutex functions =========== */
+ 
 
 #if @GNULIB_PTHREAD_MUTEX@
 # if @REPLACE_PTHREAD_MUTEX_INIT@
@@ -865,8 +840,7 @@ _GL_FUNCDECL_SYS (pthread_mutexattr_gettype, int,
                    int *restrict typep)
                   _GL_ARG_NONNULL ((1, 2)));
 #  endif
-/* Need to cast, because on FreeBSD the first parameter is
-                        pthread_mutexattr_t *attr.  */
+ 
 _GL_CXXALIAS_SYS_CAST (pthread_mutexattr_gettype, int,
                        (const pthread_mutexattr_t *restrict attr,
                         int *restrict typep));
@@ -931,8 +905,7 @@ _GL_FUNCDECL_SYS (pthread_mutexattr_getrobust, int,
                    int *restrict robustp)
                   _GL_ARG_NONNULL ((1, 2)));
 #  endif
-/* Need to cast, because on FreeBSD the first parameter is
-                        pthread_mutexattr_t *attr.  */
+ 
 _GL_CXXALIAS_SYS_CAST (pthread_mutexattr_getrobust, int,
                        (const pthread_mutexattr_t *restrict attr,
                         int *restrict robustp));
@@ -1149,7 +1122,7 @@ _GL_WARN_ON_USE (pthread_mutex_destroy, "pthread_mutex_destroy is not portable -
 # endif
 #endif
 
-/* =========== Read-write lock functions =========== */
+ 
 
 #if @GNULIB_PTHREAD_RWLOCK@
 # if @REPLACE_PTHREAD_RWLOCK_INIT@
@@ -1474,7 +1447,7 @@ _GL_WARN_ON_USE (pthread_rwlock_destroy, "pthread_rwlock_destroy is not portable
 # endif
 #endif
 
-/* =========== Condition variable functions =========== */
+ 
 
 #if @GNULIB_PTHREAD_COND@
 # if @REPLACE_PTHREAD_COND_INIT@
@@ -1720,7 +1693,7 @@ _GL_WARN_ON_USE (pthread_cond_destroy, "pthread_cond_destroy is not portable - "
 # endif
 #endif
 
-/* =========== Thread-specific storage functions =========== */
+ 
 
 #if @GNULIB_PTHREAD_TSS@
 # if @REPLACE_PTHREAD_KEY_CREATE@
@@ -1832,7 +1805,7 @@ _GL_WARN_ON_USE (pthread_key_delete, "pthread_key_delete is not portable - "
 # endif
 #endif
 
-/* =========== Spinlock functions =========== */
+ 
 
 #if @GNULIB_PTHREAD_SPIN@
 # if @REPLACE_PTHREAD_SPIN_INIT@
@@ -1975,7 +1948,7 @@ _GL_WARN_ON_USE (pthread_spin_destroy, "pthread_spin_destroy is not portable - "
 
 
 #if defined __cplusplus && defined GNULIB_NAMESPACE && !@HAVE_PTHREAD_H@ && defined __MINGW32__
-/* Provide the symbols required by mingw's <bits/gthr-default.h>.  */
+ 
 using GNULIB_NAMESPACE::pthread_create;
 using GNULIB_NAMESPACE::pthread_self;
 using GNULIB_NAMESPACE::pthread_equal;
@@ -2003,6 +1976,6 @@ using GNULIB_NAMESPACE::pthread_key_delete;
 #endif
 
 
-#endif /* _@GUARD_PREFIX@_PTHREAD_H_ */
-#endif /* _@GUARD_PREFIX@_PTHREAD_H_ */
+#endif  
+#endif  
 #endif

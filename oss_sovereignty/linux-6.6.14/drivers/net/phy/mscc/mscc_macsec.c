@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Driver for Microsemi VSC85xx PHYs - MACsec support
- *
- * Author: Antoine Tenart
- * License: Dual MIT/GPL
- * Copyright (c) 2020 Microsemi Corporation
- */
+
+ 
 
 #include <linux/phy.h>
 #include <dt-bindings/net/mscc-phy-vsc8531.h>
@@ -34,7 +28,7 @@ static u32 vsc8584_macsec_phy_read(struct phy_device *phydev,
 		    MSCC_PHY_MACSEC_20_TARGET(bank >> 2));
 
 	if (bank >> 2 == 0x1)
-		/* non-MACsec access */
+		 
 		bank &= 0x3;
 	else
 		bank = 0;
@@ -74,7 +68,7 @@ static void vsc8584_macsec_phy_write(struct phy_device *phydev,
 	if ((bank >> 2 == 0x1) || (bank >> 2 == 0x3))
 		bank &= 0x3;
 	else
-		/* MACsec access */
+		 
 		bank = 0;
 
 	__phy_write(phydev, MSCC_EXT_PAGE_MACSEC_17, (u16)val);
@@ -96,7 +90,7 @@ failed:
 static void vsc8584_macsec_classification(struct phy_device *phydev,
 					  enum macsec_bank bank)
 {
-	/* enable VLAN tag parsing */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_CP_TAG,
 				 MSCC_MS_SAM_CP_TAG_PARSE_STAG |
 				 MSCC_MS_SAM_CP_TAG_PARSE_QTAG |
@@ -115,36 +109,36 @@ static void vsc8584_macsec_flow_default_action(struct phy_device *phydev,
 		action = MSCC_MS_FLOW_DROP;
 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_NM_FLOW_NCP,
-				 /* MACsec untagged */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_UNTAGGED_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_UNTAGGED_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_UNTAGGED_DEST_PORT(port) |
-				 /* MACsec tagged */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_TAGGED_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_TAGGED_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_TAGGED_DEST_PORT(port) |
-				 /* Bad tag */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_BADTAG_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_BADTAG_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_BADTAG_DEST_PORT(port) |
-				 /* Kay tag */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_KAY_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_KAY_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_NCP_KAY_DEST_PORT(port));
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_NM_FLOW_CP,
-				 /* MACsec untagged */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_UNTAGGED_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_CP_UNTAGGED_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_CP_UNTAGGED_DEST_PORT(port) |
-				 /* MACsec tagged */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_TAGGED_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_CP_TAGGED_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_CP_TAGGED_DEST_PORT(port) |
-				 /* Bad tag */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_BADTAG_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_CP_BADTAG_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_CP_BADTAG_DEST_PORT(port) |
-				 /* Kay tag */
+				  
 				 MSCC_MS_SAM_NM_FLOW_NCP_KAY_FLOW_TYPE(action) |
 				 MSCC_MS_SAM_NM_FLOW_CP_KAY_DROP_ACTION(MSCC_MS_ACTION_DROP) |
 				 MSCC_MS_SAM_NM_FLOW_CP_KAY_DEST_PORT(port));
@@ -158,7 +152,7 @@ static void vsc8584_macsec_integrity_checks(struct phy_device *phydev,
 	if (bank != MACSEC_INGR)
 		return;
 
-	/* Set default rules to pass unmatched frames */
+	 
 	val = vsc8584_macsec_phy_read(phydev, bank,
 				      MSCC_MS_PARAMS2_IG_CC_CONTROL);
 	val |= MSCC_MS_PARAMS2_IG_CC_CONTROL_NON_MATCH_CTRL_ACT |
@@ -182,7 +176,7 @@ static void vsc8584_macsec_block_init(struct phy_device *phydev,
 				 MSCC_MS_ENA_CFG_SW_RST |
 				 MSCC_MS_ENA_CFG_MACSEC_BYPASS_ENA);
 
-	/* Set the MACsec block out of s/w reset and enable clocks */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_ENA_CFG,
 				 MSCC_MS_ENA_CFG_CLK_ENA);
 
@@ -192,12 +186,12 @@ static void vsc8584_macsec_block_init(struct phy_device *phydev,
 				 MSCC_MS_MISC_CONTROL_MC_LATENCY_FIX(bank == MACSEC_INGR ? 57 : 40) |
 				 MSCC_MS_MISC_CONTROL_XFORM_REC_SIZE(bank == MACSEC_INGR ? 1 : 2));
 
-	/* Clear the counters */
+	 
 	val = vsc8584_macsec_phy_read(phydev, bank, MSCC_MS_COUNT_CONTROL);
 	val |= MSCC_MS_COUNT_CONTROL_AUTO_CNTR_RESET;
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_COUNT_CONTROL, val);
 
-	/* Enable octet increment mode */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_PP_CTRL,
 				 MSCC_MS_PP_CTRL_MACSEC_OCTET_INCR_MODE);
 
@@ -207,7 +201,7 @@ static void vsc8584_macsec_block_init(struct phy_device *phydev,
 	val |= MSCC_MS_COUNT_CONTROL_RESET_ALL;
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_COUNT_CONTROL, val);
 
-	/* Set the MTU */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_NON_VLAN_MTU_CHECK,
 				 MSCC_MS_NON_VLAN_MTU_CHECK_NV_MTU_COMPARE(32761) |
 				 MSCC_MS_NON_VLAN_MTU_CHECK_NV_MTU_COMP_DROP);
@@ -234,7 +228,7 @@ static void vsc8584_macsec_block_init(struct phy_device *phydev,
 	vsc8584_macsec_flow_default_action(phydev, bank, false);
 	vsc8584_macsec_integrity_checks(phydev, bank);
 
-	/* Enable the MACsec block */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_ENA_CFG,
 				 MSCC_MS_ENA_CFG_CLK_ENA |
 				 MSCC_MS_ENA_CFG_MACSEC_ENA |
@@ -247,7 +241,7 @@ static void vsc8584_macsec_mac_init(struct phy_device *phydev,
 	u32 val;
 	int i;
 
-	/* Clear host & line stats */
+	 
 	for (i = 0; i < 36; i++)
 		vsc8584_macsec_phy_write(phydev, bank, 0x1c + i, 0);
 
@@ -315,7 +309,7 @@ static void vsc8584_macsec_mac_init(struct phy_device *phydev,
 				 MSCC_MAC_CFG_ENA_CFG_TX_ENA);
 }
 
-/* Must be called with mdio_lock taken */
+ 
 static int __vsc8584_macsec_init(struct phy_device *phydev)
 {
 	struct vsc8531_private *priv = phydev->priv;
@@ -409,7 +403,7 @@ static void vsc8584_macsec_flow(struct phy_device *phydev,
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_MISC_MATCH(idx), match);
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_MASK(idx), mask);
 
-	/* Action for matching packets */
+	 
 	if (flow->action.drop)
 		action = MSCC_MS_FLOW_DROP;
 	else if (flow->action.bypass || flow->port == MSCC_MS_PORT_UNCONTROLLED)
@@ -468,10 +462,10 @@ static void vsc8584_macsec_flow_enable(struct phy_device *phydev,
 	    (flow->bank == MACSEC_EGR && flow->tx_sa && !flow->tx_sa->active))
 		return;
 
-	/* Enable */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_ENTRY_SET1, BIT(idx));
 
-	/* Set in-use */
+	 
 	val = vsc8584_macsec_phy_read(phydev, bank, MSCC_MS_SAM_FLOW_CTRL(idx));
 	val |= MSCC_MS_SAM_FLOW_CTRL_SA_IN_USE;
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_FLOW_CTRL(idx), val);
@@ -483,10 +477,10 @@ static void vsc8584_macsec_flow_disable(struct phy_device *phydev,
 	enum macsec_bank bank = flow->bank;
 	u32 val, idx = flow->index;
 
-	/* Disable */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_ENTRY_CLEAR1, BIT(idx));
 
-	/* Clear in-use */
+	 
 	val = vsc8584_macsec_phy_read(phydev, bank, MSCC_MS_SAM_FLOW_CTRL(idx));
 	val &= ~MSCC_MS_SAM_FLOW_CTRL_SA_IN_USE;
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_SAM_FLOW_CTRL(idx), val);
@@ -500,7 +494,7 @@ static u32 vsc8584_macsec_flow_context_id(struct macsec_flow *flow)
 	return flow->index;
 }
 
-/* Derive the AES key to get a key for the hash autentication */
+ 
 static int vsc8584_macsec_derive_key(const u8 *key, u16 key_len, u8 hkey[16])
 {
 	const u8 input[AES_BLOCK_SIZE] = {0};
@@ -551,38 +545,38 @@ static int vsc8584_macsec_transformation(struct phy_device *phydev,
 		   CONTROL_DIGEST_TYPE(0x2) | CONTROL_SEQ_TYPE(0x1) |
 		   CONTROL_AUTH_ALG(AUTH_ALG_AES_GHAS) | CONTROL_CONTEXT_ID;
 
-	/* Set the control word */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_XFORM_REC(index, rec++),
 				 control);
 
-	/* Set the context ID. Must be unique. */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_XFORM_REC(index, rec++),
 				 vsc8584_macsec_flow_context_id(flow));
 
-	/* Set the encryption/decryption key */
+	 
 	for (i = 0; i < priv->secy->key_len / sizeof(u32); i++)
 		vsc8584_macsec_phy_write(phydev, bank,
 					 MSCC_MS_XFORM_REC(index, rec++),
 					 ((u32 *)key)[i]);
 
-	/* Set the authentication key */
+	 
 	for (i = 0; i < 4; i++)
 		vsc8584_macsec_phy_write(phydev, bank,
 					 MSCC_MS_XFORM_REC(index, rec++),
 					 ((u32 *)hkey)[i]);
 
-	/* Initial sequence number */
+	 
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_XFORM_REC(index, rec++),
 				 bank == MACSEC_INGR ?
 				 flow->rx_sa->next_pn : flow->tx_sa->next_pn);
 
 	if (bank == MACSEC_INGR)
-		/* Set the mask (replay window size) */
+		 
 		vsc8584_macsec_phy_write(phydev, bank,
 					 MSCC_MS_XFORM_REC(index, rec++),
 					 priv->secy->replay_window);
 
-	/* Set the input vectors */
+	 
 	sci = (__force u64)(bank == MACSEC_INGR ? flow->rx_sa->sc->sci : priv->secy->sci);
 	vsc8584_macsec_phy_write(phydev, bank, MSCC_MS_XFORM_REC(index, rec++),
 				 lower_32_bits(sci));
@@ -646,7 +640,7 @@ static int vsc8584_macsec_default_flows(struct phy_device *phydev)
 {
 	struct macsec_flow *flow;
 
-	/* Add a rule to let the MKA traffic go through, ingress */
+	 
 	flow = vsc8584_macsec_alloc_flow(phydev->priv, MACSEC_INGR);
 	if (IS_ERR(flow))
 		return PTR_ERR(flow);
@@ -662,7 +656,7 @@ static int vsc8584_macsec_default_flows(struct phy_device *phydev)
 	vsc8584_macsec_flow(phydev, flow);
 	vsc8584_macsec_flow_enable(phydev, flow);
 
-	/* Add a rule to let the MKA traffic go through, egress */
+	 
 	flow = vsc8584_macsec_alloc_flow(phydev->priv, MACSEC_EGR);
 	if (IS_ERR(flow))
 		return PTR_ERR(flow);
@@ -697,7 +691,7 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
 	flow->assoc_num = ctx->sa.assoc_num;
 	flow->rx_sa = ctx->sa.rx_sa;
 
-	/* Always match tagged packets on ingress */
+	 
 	flow->match.tagged = 1;
 	flow->match.sci = 1;
 
@@ -724,7 +718,7 @@ static int __vsc8584_macsec_add_txsa(struct macsec_context *ctx,
 	flow->assoc_num = ctx->sa.assoc_num;
 	flow->tx_sa = ctx->sa.tx_sa;
 
-	/* Always match untagged packets on egress */
+	 
 	flow->match.untagged = 1;
 
 	vsc8584_macsec_add_flow(ctx->phydev, flow);
@@ -802,7 +796,7 @@ static int vsc8584_macsec_upd_secy(struct macsec_context *ctx)
 
 static int vsc8584_macsec_add_rxsc(struct macsec_context *ctx)
 {
-	/* Nothing to do */
+	 
 	return 0;
 }
 
@@ -856,7 +850,7 @@ static int vsc8584_macsec_upd_rxsa(struct macsec_context *ctx)
 	if (IS_ERR(flow))
 		return PTR_ERR(flow);
 
-	/* Make sure the flow is disabled before updating it */
+	 
 	vsc8584_macsec_flow_disable(ctx->phydev, flow);
 
 	ret = __vsc8584_macsec_add_rxsa(ctx, flow, true);
@@ -910,7 +904,7 @@ static int vsc8584_macsec_upd_txsa(struct macsec_context *ctx)
 	if (IS_ERR(flow))
 		return PTR_ERR(flow);
 
-	/* Make sure the flow is disabled before updating it */
+	 
 	vsc8584_macsec_flow_disable(ctx->phydev, flow);
 
 	ret = __vsc8584_macsec_add_txsa(ctx, flow, true);
@@ -975,7 +969,7 @@ void vsc8584_handle_macsec_interrupt(struct phy_device *phydev)
 	struct macsec_flow *flow, *tmp;
 	u32 cause, rec;
 
-	/* Check MACsec PN rollover */
+	 
 	cause = vsc8584_macsec_phy_read(phydev, MACSEC_EGR,
 					MSCC_MS_INTR_CTRL_STATUS);
 	cause &= MSCC_MS_INTR_CTRL_STATUS_INTR_CLR_STATUS_M;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the NXP SAA7164 PCIe bridge
- *
- *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/list.h>
@@ -23,14 +19,7 @@ MODULE_DESCRIPTION("Driver for NXP SAA7164 based TV cards");
 MODULE_AUTHOR("Steven Toth <stoth@kernellabs.com>");
 MODULE_LICENSE("GPL");
 
-/*
- *  1 Basic
- *  2
- *  4 i2c
- *  8 api
- * 16 cmd
- * 32 bus
- */
+ 
 
 unsigned int saa_debug;
 module_param_named(debug, saa_debug, int, 0644);
@@ -118,7 +107,7 @@ static void saa7164_ts_verifier(struct saa7164_buffer *buf)
 		if (*(bufcpu + i) != 0x47)
 			port->sync_errors++;
 
-		/* TODO: Query pid lower 8 bits, ignoring upper bits intensionally */
+		 
 		pid = ((*(bufcpu + i + 1) & 0x1f) << 8) | *(bufcpu + i + 2);
 		cc = *(bufcpu + i + 3) & 0x0f;
 
@@ -145,10 +134,7 @@ static void saa7164_ts_verifier(struct saa7164_buffer *buf)
 
 	}
 
-	/* Only report errors if we've been through this function at least
-	 * once already and the cached cc values are primed. First time through
-	 * always generates errors.
-	 */
+	 
 	if (port->v_cc_errors && (port->done_first_interrupt > 1))
 		printk(KERN_ERR "video pid cc, %d errors\n", port->v_cc_errors);
 
@@ -169,43 +155,43 @@ static void saa7164_histogram_reset(struct saa7164_histogram *hg, char *name)
 	memset(hg, 0, sizeof(struct saa7164_histogram));
 	strscpy(hg->name, name, sizeof(hg->name));
 
-	/* First 30ms x 1ms */
+	 
 	for (i = 0; i < 30; i++)
 		hg->counter1[0 + i].val = i;
 
-	/* 30 - 200ms x 10ms  */
+	 
 	for (i = 0; i < 18; i++)
 		hg->counter1[30 + i].val = 30 + (i * 10);
 
-	/* 200 - 2000ms x 100ms  */
+	 
 	for (i = 0; i < 15; i++)
 		hg->counter1[48 + i].val = 200 + (i * 200);
 
-	/* Catch all massive value (2secs) */
+	 
 	hg->counter1[55].val = 2000;
 
-	/* Catch all massive value (4secs) */
+	 
 	hg->counter1[56].val = 4000;
 
-	/* Catch all massive value (8secs) */
+	 
 	hg->counter1[57].val = 8000;
 
-	/* Catch all massive value (15secs) */
+	 
 	hg->counter1[58].val = 15000;
 
-	/* Catch all massive value (30secs) */
+	 
 	hg->counter1[59].val = 30000;
 
-	/* Catch all massive value (60secs) */
+	 
 	hg->counter1[60].val = 60000;
 
-	/* Catch all massive value (5mins) */
+	 
 	hg->counter1[61].val = 300000;
 
-	/* Catch all massive value (15mins) */
+	 
 	hg->counter1[62].val = 900000;
 
-	/* Catch all massive values (1hr) */
+	 
 	hg->counter1[63].val = 3600000;
 }
 
@@ -263,11 +249,11 @@ static void saa7164_work_enchandler_helper(struct saa7164_port *port, int bufnr)
 
 		if (buf->idx == bufnr) {
 
-			/* Found the buffer, deal with it */
+			 
 			dprintk(DBGLVL_IRQ, "%s() bufnr: %d\n", __func__, bufnr);
 
 			if (crc_checking) {
-				/* Throw a new checksum on the dma buffer */
+				 
 				buf->crc = crc32(0, buf->cpu, buf->actual_size);
 			}
 
@@ -291,17 +277,17 @@ static void saa7164_work_enchandler_helper(struct saa7164_port *port, int bufnr)
 			}
 
 			if ((port->nr != SAA7164_PORT_VBI1) && (port->nr != SAA7164_PORT_VBI2)) {
-				/* Validate the incoming buffer content */
+				 
 				if (port->encoder_params.stream_type == V4L2_MPEG_STREAM_TYPE_MPEG2_TS)
 					saa7164_ts_verifier(buf);
 				else if (port->encoder_params.stream_type == V4L2_MPEG_STREAM_TYPE_MPEG2_PS)
 					saa7164_pack_verifier(buf);
 			}
 
-			/* find a free user buffer and clone to it */
+			 
 			if (!list_empty(&port->list_buf_free.list)) {
 
-				/* Pull the first buffer from the used list */
+				 
 				ubuf = list_first_entry(&port->list_buf_free.list,
 					struct saa7164_user_buffer, list);
 
@@ -310,17 +296,17 @@ static void saa7164_work_enchandler_helper(struct saa7164_port *port, int bufnr)
 					memcpy(ubuf->data, buf->cpu, ubuf->actual_size);
 
 					if (crc_checking) {
-						/* Throw a new checksum on the read buffer */
+						 
 						ubuf->crc = crc32(0, ubuf->data, ubuf->actual_size);
 					}
 
-					/* Requeue the buffer on the free list */
+					 
 					ubuf->pos = 0;
 
 					list_move_tail(&ubuf->list,
 						&port->list_buf_used.list);
 
-					/* Flag any userland waiters */
+					 
 					wake_up_interruptible(&port->wait_read);
 
 				} else {
@@ -330,13 +316,11 @@ static void saa7164_work_enchandler_helper(struct saa7164_port *port, int bufnr)
 			} else
 				printk(KERN_ERR "encirq no free buffers, increase param encoder_buffers\n");
 
-			/* Ensure offset into buffer remains 0, fill buffer
-			 * with known bad data. We check for this data at a later point
-			 * in time. */
+			 
 			saa7164_buffer_zero_offsets(port, bufnr);
 			memset(buf->cpu, 0xff, buf->pci_size);
 			if (crc_checking) {
-				/* Throw yet aanother new checksum on the dma buffer */
+				 
 				buf->crc = crc32(0, buf->cpu, buf->actual_size);
 			}
 
@@ -378,14 +362,14 @@ static void saa7164_work_enchandler(struct work_struct *w)
 		port->last_svc_rp
 		);
 
-	/* Current write position */
+	 
 	wp = saa7164_readl(port->bufcounter);
 	if (wp > (port->hwcfg.buffercount - 1)) {
 		printk(KERN_ERR "%s() illegal buf count %d\n", __func__, wp);
 		return;
 	}
 
-	/* Most current complete buffer */
+	 
 	if (wp == 0)
 		mcb = (port->hwcfg.buffercount - 1);
 	else
@@ -410,14 +394,14 @@ static void saa7164_work_enchandler(struct work_struct *w)
 			break;
 	}
 
-	/* TODO: Convert this into a /proc/saa7164 style readable file */
+	 
 	if (print_histogram == port->nr) {
 		saa7164_histogram_print(port, &port->irq_interval);
 		saa7164_histogram_print(port, &port->svc_interval);
 		saa7164_histogram_print(port, &port->irq_svc_interval);
 		saa7164_histogram_print(port, &port->read_interval);
 		saa7164_histogram_print(port, &port->poll_interval);
-		/* TODO: fix this to preserve any previous state */
+		 
 		print_histogram = 64 + port->nr;
 	}
 }
@@ -453,14 +437,14 @@ static void saa7164_work_vbihandler(struct work_struct *w)
 		port->last_svc_rp
 		);
 
-	/* Current write position */
+	 
 	wp = saa7164_readl(port->bufcounter);
 	if (wp > (port->hwcfg.buffercount - 1)) {
 		printk(KERN_ERR "%s() illegal buf count %d\n", __func__, wp);
 		return;
 	}
 
-	/* Most current complete buffer */
+	 
 	if (wp == 0)
 		mcb = (port->hwcfg.buffercount - 1);
 	else
@@ -485,14 +469,14 @@ static void saa7164_work_vbihandler(struct work_struct *w)
 			break;
 	}
 
-	/* TODO: Convert this into a /proc/saa7164 style readable file */
+	 
 	if (print_histogram == port->nr) {
 		saa7164_histogram_print(port, &port->irq_interval);
 		saa7164_histogram_print(port, &port->svc_interval);
 		saa7164_histogram_print(port, &port->irq_svc_interval);
 		saa7164_histogram_print(port, &port->read_interval);
 		saa7164_histogram_print(port, &port->poll_interval);
-		/* TODO: fix this to preserve any previous state */
+		 
 		print_histogram = 64 + port->nr;
 	}
 }
@@ -501,7 +485,7 @@ static void saa7164_work_cmdhandler(struct work_struct *w)
 {
 	struct saa7164_dev *dev = container_of(w, struct saa7164_dev, workcmd);
 
-	/* Wake up any complete commands */
+	 
 	saa7164_irq_dequeue(dev);
 }
 
@@ -509,7 +493,7 @@ static void saa7164_buffer_deliver(struct saa7164_buffer *buf)
 {
 	struct saa7164_port *port = buf->port;
 
-	/* Feed the transport payload into the kernel demux */
+	 
 	dvb_dmx_swfilter_packets(&port->dvb.demux, (u8 *)buf->cpu,
 		SAA7164_TS_NUMBER_OF_LINES);
 
@@ -519,13 +503,13 @@ static irqreturn_t saa7164_irq_vbi(struct saa7164_port *port)
 {
 	struct saa7164_dev *dev = port->dev;
 
-	/* Store old time */
+	 
 	port->last_irq_msecs_diff = port->last_irq_msecs;
 
-	/* Collect new stats */
+	 
 	port->last_irq_msecs = jiffies_to_msecs(jiffies);
 
-	/* Calculate stats */
+	 
 	port->last_irq_msecs_diff = port->last_irq_msecs -
 		port->last_irq_msecs_diff;
 
@@ -535,7 +519,7 @@ static irqreturn_t saa7164_irq_vbi(struct saa7164_port *port)
 	dprintk(DBGLVL_IRQ, "%s() %Ldms elapsed\n", __func__,
 		port->last_irq_msecs_diff);
 
-	/* Tis calls the vbi irq handler */
+	 
 	schedule_work(&port->workenc);
 	return 0;
 }
@@ -544,13 +528,13 @@ static irqreturn_t saa7164_irq_encoder(struct saa7164_port *port)
 {
 	struct saa7164_dev *dev = port->dev;
 
-	/* Store old time */
+	 
 	port->last_irq_msecs_diff = port->last_irq_msecs;
 
-	/* Collect new stats */
+	 
 	port->last_irq_msecs = jiffies_to_msecs(jiffies);
 
-	/* Calculate stats */
+	 
 	port->last_irq_msecs_diff = port->last_irq_msecs -
 		port->last_irq_msecs_diff;
 
@@ -571,26 +555,26 @@ static irqreturn_t saa7164_irq_ts(struct saa7164_port *port)
 	struct list_head *c, *n;
 	int wp, i = 0, rp;
 
-	/* Find the current write point from the hardware */
+	 
 	wp = saa7164_readl(port->bufcounter);
 
 	BUG_ON(wp > (port->hwcfg.buffercount - 1));
 
-	/* Find the previous buffer to the current write point */
+	 
 	if (wp == 0)
 		rp = (port->hwcfg.buffercount - 1);
 	else
 		rp = wp - 1;
 
-	/* Lookup the WP in the buffer list */
-	/* TODO: turn this into a worker thread */
+	 
+	 
 	list_for_each_safe(c, n, &port->dmaqueue.list) {
 		buf = list_entry(c, struct saa7164_buffer, list);
 		BUG_ON(i > port->hwcfg.buffercount);
 		i++;
 
 		if (buf->idx == rp) {
-			/* Found the buffer, deal with it */
+			 
 			dprintk(DBGLVL_IRQ, "%s() wp: %d processing: %d\n",
 				__func__, wp, rp);
 			saa7164_buffer_deliver(buf);
@@ -601,7 +585,7 @@ static irqreturn_t saa7164_irq_ts(struct saa7164_port *port)
 	return 0;
 }
 
-/* Primary IRQ handler and dispatch mechanism */
+ 
 static irqreturn_t saa7164_irq(int irq, void *dev_id)
 {
 	struct saa7164_dev *dev = dev_id;
@@ -623,15 +607,11 @@ static irqreturn_t saa7164_irq(int irq, void *dev_id)
 	porte = &dev->ports[SAA7164_PORT_VBI1];
 	portf = &dev->ports[SAA7164_PORT_VBI2];
 
-	/* Check that the hardware is accessible. If the status bytes are
-	 * 0xFF then the device is not accessible, the IRQ belongs
-	 * to another driver.
-	 * 4 x u32 interrupt registers.
-	 */
+	 
 	for (i = 0; i < INT_SIZE/4; i++) {
 
-		/* TODO: Convert into saa7164_readl() */
-		/* Read the 4 hardware interrupt registers */
+		 
+		 
 		intstat[i] = saa7164_readl(dev->int_status + (i * 4));
 
 		if (intstat[i])
@@ -640,64 +620,61 @@ static irqreturn_t saa7164_irq(int irq, void *dev_id)
 	if (handled == 0)
 		goto out;
 
-	/* For each of the HW interrupt registers */
+	 
 	for (i = 0; i < INT_SIZE/4; i++) {
 
 		if (intstat[i]) {
-			/* Each function of the board has it's own interruptid.
-			 * Find the function that triggered then call
-			 * it's handler.
-			 */
+			 
 			for (bit = 0; bit < 32; bit++) {
 
 				if (((intstat[i] >> bit) & 0x00000001) == 0)
 					continue;
 
-				/* Calculate the interrupt id (0x00 to 0x7f) */
+				 
 
 				intid = (i * 32) + bit;
 				if (intid == dev->intfdesc.bInterruptId) {
-					/* A response to an cmd/api call */
+					 
 					schedule_work(&dev->workcmd);
 				} else if (intid == porta->hwcfg.interruptid) {
 
-					/* Transport path 1 */
+					 
 					saa7164_irq_ts(porta);
 
 				} else if (intid == portb->hwcfg.interruptid) {
 
-					/* Transport path 2 */
+					 
 					saa7164_irq_ts(portb);
 
 				} else if (intid == portc->hwcfg.interruptid) {
 
-					/* Encoder path 1 */
+					 
 					saa7164_irq_encoder(portc);
 
 				} else if (intid == portd->hwcfg.interruptid) {
 
-					/* Encoder path 2 */
+					 
 					saa7164_irq_encoder(portd);
 
 				} else if (intid == porte->hwcfg.interruptid) {
 
-					/* VBI path 1 */
+					 
 					saa7164_irq_vbi(porte);
 
 				} else if (intid == portf->hwcfg.interruptid) {
 
-					/* VBI path 2 */
+					 
 					saa7164_irq_vbi(portf);
 
 				} else {
-					/* Find the function */
+					 
 					dprintk(DBGLVL_IRQ,
 						"%s() unhandled interrupt reg 0x%x bit 0x%x intid = 0x%x\n",
 						__func__, i, bit, intid);
 				}
 			}
 
-			/* Ack it */
+			 
 			saa7164_writel(dev->int_ack + (i * 4), intstat[i]);
 
 		}
@@ -742,7 +719,7 @@ u32 saa7164_getcurrentfirmwareversion(struct saa7164_dev *dev)
 	return reg;
 }
 
-/* TODO: Debugging func, remove */
+ 
 void saa7164_dumpregs(struct saa7164_dev *dev, u32 addr)
 {
 	int i;
@@ -835,11 +812,7 @@ static void saa7164_dump_busdesc(struct saa7164_dev *dev)
 	dprintk(1, " .ResponseRead  = 0x%x\n", dev->busdesc.ResponseRead);
 }
 
-/* Much of the hardware configuration and PCI registers are configured
- * dynamically depending on firmware. We have to cache some initial
- * structures then use these to locate other important structures
- * from PCI space.
- */
+ 
 static void saa7164_get_descriptors(struct saa7164_dev *dev)
 {
 	memcpy_fromio(&dev->hwdesc, dev->bmmio, sizeof(struct tmComResHWDescr));
@@ -905,17 +878,17 @@ static int saa7164_port_init(struct saa7164_dev *dev, int portnr)
 	if ((portnr == SAA7164_PORT_ENC1) || (portnr == SAA7164_PORT_ENC2)) {
 		port->type = SAA7164_MPEG_ENCODER;
 
-		/* We need a deferred interrupt handler for cmd handling */
+		 
 		INIT_WORK(&port->workenc, saa7164_work_enchandler);
 	} else if ((portnr == SAA7164_PORT_VBI1) || (portnr == SAA7164_PORT_VBI2)) {
 		port->type = SAA7164_MPEG_VBI;
 
-		/* We need a deferred interrupt handler for cmd handling */
+		 
 		INIT_WORK(&port->workenc, saa7164_work_vbihandler);
 	} else
 		BUG();
 
-	/* Init all the critical resources */
+	 
 	mutex_init(&port->dvb.lock);
 	INIT_LIST_HEAD(&port->dmaqueue.list);
 	mutex_init(&port->dmaqueue_lock);
@@ -951,7 +924,7 @@ static int saa7164_dev_setup(struct saa7164_dev *dev)
 	list_add_tail(&dev->devlist, &saa7164_devlist);
 	mutex_unlock(&devlist);
 
-	/* board config */
+	 
 	dev->board = UNSET;
 	if (card[dev->nr] < saa7164_bcount)
 		dev->board = card[dev->nr];
@@ -970,7 +943,7 @@ static int saa7164_dev_setup(struct saa7164_dev *dev)
 	dev->pci_bus  = dev->pci->bus->number;
 	dev->pci_slot = PCI_SLOT(dev->pci->devfn);
 
-	/* I2C Defaults / setup */
+	 
 	dev->i2c_bus[0].dev = dev;
 	dev->i2c_bus[0].nr = 0;
 	dev->i2c_bus[1].dev = dev;
@@ -978,7 +951,7 @@ static int saa7164_dev_setup(struct saa7164_dev *dev)
 	dev->i2c_bus[2].dev = dev;
 	dev->i2c_bus[2].nr = 2;
 
-	/* Transport + Encoder ports 1, 2, 3, 4 - Defaults / setup */
+	 
 	saa7164_port_init(dev, SAA7164_PORT_TS1);
 	saa7164_port_init(dev, SAA7164_PORT_TS2);
 	saa7164_port_init(dev, SAA7164_PORT_ENC1);
@@ -995,7 +968,7 @@ static int saa7164_dev_setup(struct saa7164_dev *dev)
 		return -ENODEV;
 	}
 
-	/* PCI/e allocations */
+	 
 	dev->lmmio = ioremap(pci_resource_start(dev->pci, 0),
 			     pci_resource_len(dev->pci, 0));
 
@@ -1005,7 +978,7 @@ static int saa7164_dev_setup(struct saa7164_dev *dev)
 	dev->bmmio = (u8 __iomem *)dev->lmmio;
 	dev->bmmio2 = (u8 __iomem *)dev->lmmio2;
 
-	/* Interrupt and ack register locations offset of bmmio */
+	 
 	dev->int_status = 0x183000 + 0xf80;
 	dev->int_ack = 0x183000 + 0xf90;
 
@@ -1087,7 +1060,7 @@ static int saa7164_seq_show(struct seq_file *m, void *v)
 
 	seq_printf(m, "%s = %p\n", dev->name, dev);
 
-	/* Lock the bus from any other access */
+	 
 	b = &dev->bus;
 	mutex_lock(&b->lock);
 
@@ -1181,13 +1154,13 @@ static int saa7164_thread_function(void *data)
 
 		dprintk(DBGLVL_THR, "thread running\n");
 
-		/* Dump the firmware debug message to console */
-		/* Polling this costs us 1-2% of the arm CPU */
-		/* convert this into a respnde to interrupt 0x7a */
+		 
+		 
+		 
 		saa7164_api_collect_debug(dev);
 
-		/* Monitor CPU load every 1 second */
-		if ((last_poll_time + 1000 /* ms */) < jiffies_to_msecs(jiffies)) {
+		 
+		if ((last_poll_time + 1000  ) < jiffies_to_msecs(jiffies)) {
 			saa7164_api_get_load_info(dev, &fwinfo);
 			last_poll_time = jiffies_to_msecs(jiffies);
 		}
@@ -1216,12 +1189,12 @@ static bool saa7164_enable_msi(struct pci_dev *pci_dev, struct saa7164_dev *dev)
 		return false;
 	}
 
-	/* no error - so request an msi interrupt */
+	 
 	err = request_irq(pci_dev->irq, saa7164_irq, 0,
 						dev->name, dev);
 
 	if (err) {
-		/* fall back to legacy interrupt */
+		 
 		printk(KERN_ERR "%s() Failed to get an MSI interrupt. Falling back to a shared IRQ\n",
 		       __func__);
 		pci_disable_msi(pci_dev);
@@ -1248,7 +1221,7 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 		goto fail_free;
 	}
 
-	/* pci init */
+	 
 	dev->pci = pci_dev;
 	if (pci_enable_device(pci_dev)) {
 		err = -EIO;
@@ -1260,7 +1233,7 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 		goto fail_dev;
 	}
 
-	/* print pci info */
+	 
 	dev->pci_rev = pci_dev->revision;
 	pci_read_config_byte(pci_dev, PCI_LATENCY_TIMER,  &dev->pci_lat);
 	printk(KERN_INFO "%s/0: found at %s, rev: %d, irq: %d, latency: %d, mmio: 0x%llx\n",
@@ -1270,19 +1243,18 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 		(unsigned long long)pci_resource_start(pci_dev, 0));
 
 	pci_set_master(pci_dev);
-	/* TODO */
+	 
 	err = dma_set_mask(&pci_dev->dev, 0xffffffff);
 	if (err) {
 		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
 		goto fail_irq;
 	}
 
-	/* irq bit */
+	 
 	if (saa7164_enable_msi(pci_dev, dev)) {
 		dev->msi = true;
 	} else {
-		/* if we have an error (i.e. we don't have an interrupt)
-			 or msi is not enabled - fallback to shared interrupt */
+		 
 
 		err = request_irq(pci_dev->irq, saa7164_irq,
 				IRQF_SHARED, dev->name, dev);
@@ -1297,7 +1269,7 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 
 	pci_set_drvdata(pci_dev, dev);
 
-	/* Init the internal command list */
+	 
 	for (i = 0; i < SAA_CMD_MAX_MSG_UNITS; i++) {
 		dev->cmds[i].seqno = i;
 		dev->cmds[i].inuse = 0;
@@ -1305,10 +1277,10 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 		init_waitqueue_head(&dev->cmds[i].wait);
 	}
 
-	/* We need a deferred interrupt handler for cmd handling */
+	 
 	INIT_WORK(&dev->workcmd, saa7164_work_cmdhandler);
 
-	/* Only load the firmware if we know the board */
+	 
 	if (dev->board != SAA7164_BOARD_UNKNOWN) {
 
 		err = saa7164_downloadfirmware(dev);
@@ -1328,9 +1300,7 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 				"Failed to setup the bus, will continue\n");
 		saa7164_bus_dump(dev);
 
-		/* Ping the running firmware via the command bus and get the
-		 * firmware version, this checks the bus is running OK.
-		 */
+		 
 		version = 0;
 		if (saa7164_api_get_fw_version(dev, &version) == SAA_OK)
 			dprintk(1, "Bus is operating correctly using version %d.%d.%d.%d (0x%x)\n",
@@ -1343,22 +1313,17 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 			printk(KERN_ERR
 				"Failed to communicate with the firmware\n");
 
-		/* Bring up the I2C buses */
+		 
 		saa7164_i2c_register(&dev->i2c_bus[0]);
 		saa7164_i2c_register(&dev->i2c_bus[1]);
 		saa7164_i2c_register(&dev->i2c_bus[2]);
 		saa7164_gpio_setup(dev);
 		saa7164_card_setup(dev);
 
-		/* Parse the dynamic device configuration, find various
-		 * media endpoints (MPEG, WMV, PS, TS) and cache their
-		 * configuration details into the driver, so we can
-		 * reference them later during simething_register() func,
-		 * interrupt handlers, deferred work handlers etc.
-		 */
+		 
 		saa7164_api_enum_subdevs(dev);
 
-		/* Begin to create the video sub-systems and register funcs */
+		 
 		if (saa7164_boards[dev->board].porta == SAA7164_MPEG_DVB) {
 			if (saa7164_dvb_register(&dev->ports[SAA7164_PORT_TS1]) < 0) {
 				printk(KERN_ERR "%s() Failed to register dvb adapters on porta\n",
@@ -1412,7 +1377,7 @@ static int saa7164_initdev(struct pci_dev *pci_dev,
 			}
 		}
 
-	} /* != BOARD_UNKNOWN */
+	}  
 	else
 		printk(KERN_ERR "%s() Unsupported board detected, registering without firmware\n",
 		       __func__);
@@ -1490,7 +1455,7 @@ static void saa7164_finidev(struct pci_dev *pci_dev)
 	saa7164_i2c_unregister(&dev->i2c_bus[1]);
 	saa7164_i2c_unregister(&dev->i2c_bus[2]);
 
-	/* unregister stuff */
+	 
 	free_irq(pci_dev->irq, dev);
 
 	if (dev->msi) {
@@ -1511,13 +1476,13 @@ static void saa7164_finidev(struct pci_dev *pci_dev)
 
 static const struct pci_device_id saa7164_pci_tbl[] = {
 	{
-		/* SAA7164 */
+		 
 		.vendor       = 0x1131,
 		.device       = 0x7164,
 		.subvendor    = PCI_ANY_ID,
 		.subdevice    = PCI_ANY_ID,
 	}, {
-		/* --- end of list --- */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(pci, saa7164_pci_tbl);

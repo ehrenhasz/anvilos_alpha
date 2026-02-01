@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /* I2C access for DA9055 PMICs.
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+  
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -46,13 +41,7 @@ static void da9055_i2c_remove(struct i2c_client *i2c)
 	da9055_device_exit(da9055);
 }
 
-/*
- * DO NOT change the device Ids. The naming is intentionally specific as both
- * the PMIC and CODEC parts of this chip are instantiated separately as I2C
- * devices (both have configurable I2C addresses, and are to all intents and
- * purposes separate). As a result there are specific DA9055 ids for PMIC
- * and CODEC, which must be different to operate together.
- */
+ 
 static const struct i2c_device_id da9055_i2c_id[] = {
 	{"da9055-pmic", 0},
 	{ }

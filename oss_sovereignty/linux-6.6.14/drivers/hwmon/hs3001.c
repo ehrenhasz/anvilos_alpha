@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * This is a non-complete driver implementation for the
- * HS3001 humidity and temperature sensor and compatibles. It does not include
- * the configuration possibilities, where it needs to be set to 'programming mode'
- * during power-up.
- *
- *
- * Copyright (C) 2023 SYS TEC electronic AG
- * Author: Andre Werner <andre.werner@systec-electronic.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -22,12 +13,12 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 
-/* Measurement times */
-#define HS3001_WAKEUP_TIME	100	/* us */
-#define HS3001_8BIT_RESOLUTION	550	/* us */
-#define HS3001_10BIT_RESOLUTION	1310	/* us */
-#define HS3001_12BIT_RESOLUTION	4500	/* us */
-#define HS3001_14BIT_RESOLUTION	16900	/* us */
+ 
+#define HS3001_WAKEUP_TIME	100	 
+#define HS3001_8BIT_RESOLUTION	550	 
+#define HS3001_10BIT_RESOLUTION	1310	 
+#define HS3001_12BIT_RESOLUTION	4500	 
+#define HS3001_14BIT_RESOLUTION	16900	 
 
 #define HS3001_RESPONSE_LENGTH	4
 
@@ -36,21 +27,21 @@
 #define HS3001_MASK_HUMIDITY_0X3FFF	GENMASK(13, 0)
 #define HS3001_MASK_STATUS_0XC0	GENMASK(7, 6)
 
-/* Definitions for Status Bits of A/D Data */
-#define HS3001_DATA_VALID	0x00	/* Valid Data */
-#define HS3001_DATA_STALE	0x01	/* Stale Data */
+ 
+#define HS3001_DATA_VALID	0x00	 
+#define HS3001_DATA_STALE	0x01	 
 
 struct hs3001_data {
 	struct i2c_client *client;
-	struct mutex i2c_lock; /* lock for sending i2c commands */
-	u32 wait_time;		/* in us */
-	int temperature;	/* in milli degree */
-	u32 humidity;		/* in milli % */
+	struct mutex i2c_lock;  
+	u32 wait_time;		 
+	int temperature;	 
+	u32 humidity;		 
 };
 
 static int hs3001_extract_temperature(u16 raw)
 {
-	/* fixpoint arithmetic 1 digit */
+	 
 	u32 temp = (raw >> 2) * HS3001_FIXPOINT_ARITH * 165;
 
 	temp /= (1 << 14) - 1;
@@ -101,7 +92,7 @@ static int hs3001_data_fetch_command(struct i2c_client *client,
 static umode_t hs3001_is_visible(const void *data, enum hwmon_sensor_types type,
 				 u32 attr, int channel)
 {
-	/* Both, humidity and temperature can only be read. */
+	 
 	return 0444;
 }
 
@@ -119,10 +110,7 @@ static int hs3001_read(struct device *dev, enum hwmon_sensor_types type,
 		return ret;
 	}
 
-	/*
-	 * Sensor needs some time to process measurement depending on
-	 * resolution (ref. datasheet)
-	 */
+	 
 	fsleep(data->wait_time);
 
 	ret = hs3001_data_fetch_command(client, data);
@@ -173,7 +161,7 @@ static const struct hwmon_chip_info hs3001_chip_info = {
 	.info = hs3001_info,
 };
 
-/* device ID table */
+ 
 static const struct i2c_device_id hs3001_ids[] = {
 	{ "hs3001", 0 },
 	{ },
@@ -203,11 +191,7 @@ static int hs3001_probe(struct i2c_client *client)
 
 	data->client = client;
 
-	/*
-	 * Measurement time = wake-up time + measurement time temperature
-	 * + measurement time humidity. This is currently static, because
-	 * enabling programming mode is not supported, yet.
-	 */
+	 
 	data->wait_time = (HS3001_WAKEUP_TIME + HS3001_14BIT_RESOLUTION +
 			   HS3001_14BIT_RESOLUTION);
 

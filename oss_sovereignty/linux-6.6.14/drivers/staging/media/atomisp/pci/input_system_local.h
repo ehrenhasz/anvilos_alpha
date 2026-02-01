@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *    (c) 2020 Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
- */
+ 
+
+ 
 
 #include "type_support.h"
 #include "input_system_global.h"
@@ -37,17 +35,17 @@ struct input_system_network_cfg_s {
 };
 
 typedef struct {
-// TBD.
+
 	u32	dummy_parameter;
 } target_isp_cfg_t;
 
 typedef struct {
-// TBD.
+
 	u32	dummy_parameter;
 } target_sp_cfg_t;
 
 typedef struct {
-// TBD.
+
 	u32	dummy_parameter;
 } target_strm2mem_cfg_t;
 
@@ -57,7 +55,7 @@ struct input_switch_cfg_channel_s {
 };
 
 struct backend_channel_cfg_s {
-	u32	fmt_control_word_1; // Format config.
+	u32	fmt_control_word_1; 
 	u32	fmt_control_word_2;
 	u32	no_side_band;
 };
@@ -74,17 +72,7 @@ struct input_switch_cfg_s {
 	u32 vsync_data_reg;
 };
 
-/*
- * In 2300 ports can be configured independently and stream
- * formats need to be specified. In 2400, there are only 8
- * supported configurations but the HW is fused to support
- * only a single one.
- *
- * In 2300 the compressed format types are programmed by the
- * user. In 2400 all stream formats are encoded on the stream.
- *
- * Use the enum to check validity of a user configuration
- */
+ 
 typedef enum {
 	MONO_4L_1L_0L = 0,
 	MONO_3L_1L_0L,
@@ -124,17 +112,15 @@ typedef enum {
 
 typedef struct rx_cfg_s		rx_cfg_t;
 
-/*
- * Applied per port
- */
+ 
 struct rx_cfg_s {
-	rx_mode_t			mode;	/* The HW config */
-	enum mipi_port_id		port;	/* The port ID to apply the control on */
+	rx_mode_t			mode;	 
+	enum mipi_port_id		port;	 
 	unsigned int		timeout;
 	unsigned int		initcount;
 	unsigned int		synccount;
 	unsigned int		rxcount;
-	mipi_predictor_t	comp;	/* Just for backward compatibility */
+	mipi_predictor_t	comp;	 
 	bool                is_two_ppc;
 };
 

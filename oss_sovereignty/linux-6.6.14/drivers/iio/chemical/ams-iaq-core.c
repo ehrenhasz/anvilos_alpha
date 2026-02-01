@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ams-iaq-core.c - Support for AMS iAQ-Core VOC sensors
- *
- * Copyright (C) 2015, 2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -77,7 +72,7 @@ static int ams_iaqcore_get_measurement(struct ams_iaqcore_data *data)
 {
 	int ret;
 
-	/* sensor can only be polled once a second max per datasheet */
+	 
 	if (!time_after(jiffies, data->last_update + HZ))
 		return 0;
 
@@ -148,7 +143,7 @@ static int ams_iaqcore_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, indio_dev);
 	data->client = client;
 
-	/* so initial reading will complete */
+	 
 	data->last_update = jiffies - HZ;
 	mutex_init(&data->lock);
 

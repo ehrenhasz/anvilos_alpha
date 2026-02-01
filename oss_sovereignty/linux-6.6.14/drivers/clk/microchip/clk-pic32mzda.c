@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Purna Chandra Mandal,<purna.mandal@microchip.com>
- * Copyright (C) 2015 Microchip Technology Inc.  All rights reserved.
- */
+
+ 
 #include <dt-bindings/clock/microchip,pic32-clock.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -16,11 +13,11 @@
 
 #include "clk-core.h"
 
-/* FRC Postscaler */
+ 
 #define OSC_FRCDIV_MASK		0x07
 #define OSC_FRCDIV_SHIFT	24
 
-/* SPLL fields */
+ 
 #define PLL_ICLK_MASK		0x01
 #define PLL_ICLK_SHIFT		7
 
@@ -78,7 +75,7 @@ static const struct pic32_periph_clk_data periph_clocks[] = {
 
 static const struct pic32_sys_clk_data sys_mux_clk = {
 	.slew_reg = 0x1c0,
-	.slew_div = 2, /* step of div_4 -> div_2 -> no_div */
+	.slew_div = 2,  
 	.init_data = {
 		.name = "sys_clk",
 		.parent_names = (const char *[]) {
@@ -123,7 +120,7 @@ static int pic32mzda_critical_clks[] = {
 	PB2CLK, PB7CLK
 };
 
-/* PIC32MZDA clock data */
+ 
 struct pic32mzda_clk_data {
 	struct clk *clks[MAXCLKS];
 	struct pic32_clk_common core;
@@ -138,11 +135,11 @@ static int pic32_fscm_nmi(struct notifier_block *nb,
 
 	cd  = container_of(nb, struct pic32mzda_clk_data, failsafe_notifier);
 
-	/* SYSCLK is now running from BFRCCLK. Report clock failure. */
+	 
 	if (readl(cd->core.iobase) & BIT(2))
 		pr_alert("pic32-clk: FSCM detected clk failure.\n");
 
-	/* TODO: detect reason of failure and recover accordingly */
+	 
 
 	return NOTIFY_OK;
 }
@@ -172,7 +169,7 @@ static int pic32mzda_clk_probe(struct platform_device *pdev)
 	core->dev = &pdev->dev;
 	clks = &cd->clks[0];
 
-	/* register fixed rate clocks */
+	 
 	clks[POSCCLK] = clk_register_fixed_rate(&pdev->dev, "posc_clk", NULL,
 						0, 24000000);
 	clks[FRCCLK] =  clk_register_fixed_rate(&pdev->dev, "frc_clk", NULL,
@@ -183,12 +180,12 @@ static int pic32mzda_clk_probe(struct platform_device *pdev)
 						0, 32000);
 	clks[UPLLCLK] = clk_register_fixed_rate(&pdev->dev, "usbphy_clk", NULL,
 						0, 24000000);
-	/* fixed rate (optional) clock */
+	 
 	if (of_property_read_bool(np, "microchip,pic32mzda-sosc")) {
 		pr_info("pic32-clk: dt requests SOSC.\n");
 		clks[SOSCCLK] = pic32_sosc_clk_register(&sosc_clk, core);
 	}
-	/* divider clock */
+	 
 	clks[FRCDIVCLK] = clk_register_divider(&pdev->dev, "frcdiv_clk",
 					       "frc_clk", 0,
 					       core->iobase,
@@ -196,7 +193,7 @@ static int pic32mzda_clk_probe(struct platform_device *pdev)
 					       OSC_FRCDIV_MASK,
 					       CLK_DIVIDER_POWER_OF_TWO,
 					       &core->reg_lock);
-	/* PLL ICLK mux */
+	 
 	pll_mux_clk = clk_register_mux(&pdev->dev, "spll_mux_clk",
 				       pll_mux_parents, 2, 0,
 				       core->iobase + 0x020,
@@ -204,26 +201,26 @@ static int pic32mzda_clk_probe(struct platform_device *pdev)
 	if (IS_ERR(pll_mux_clk))
 		pr_err("spll_mux_clk: clk register failed\n");
 
-	/* PLL */
+	 
 	clks[PLLCLK] = pic32_spll_clk_register(&sys_pll, core);
-	/* SYSTEM clock */
+	 
 	clks[SCLK] = pic32_sys_clk_register(&sys_mux_clk, core);
-	/* Peripheral bus clocks */
+	 
 	for (nr_clks = PB1CLK, i = 0; nr_clks <= PB7CLK; i++, nr_clks++)
 		clks[nr_clks] = pic32_periph_clk_register(&periph_clocks[i],
 							  core);
-	/* Reference oscillator clock */
+	 
 	for (nr_clks = REF1CLK, i = 0; nr_clks <= REF5CLK; i++, nr_clks++)
 		clks[nr_clks] = pic32_refo_clk_register(&ref_clks[i], core);
 
-	/* register clkdev */
+	 
 	for (i = 0; i < MAXCLKS; i++) {
 		if (IS_ERR(clks[i]))
 			continue;
 		clk_register_clkdev(clks[i], NULL, __clk_get_name(clks[i]));
 	}
 
-	/* register clock provider */
+	 
 	cd->onecell_data.clks = clks;
 	cd->onecell_data.clk_num = MAXCLKS;
 	ret = of_clk_add_provider(np, of_clk_src_onecell_get,
@@ -231,7 +228,7 @@ static int pic32mzda_clk_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* force enable critical clocks */
+	 
 	for (i = 0; i < ARRAY_SIZE(pic32mzda_critical_clks); i++) {
 		clk = clks[pic32mzda_critical_clks[i]];
 		if (clk_prepare_enable(clk))
@@ -239,7 +236,7 @@ static int pic32mzda_clk_probe(struct platform_device *pdev)
 				__clk_get_name(clk));
 	}
 
-	/* register NMI for failsafe clock monitor */
+	 
 	cd->failsafe_notifier.notifier_call = pic32_fscm_nmi;
 	return register_nmi_notifier(&cd->failsafe_notifier);
 }

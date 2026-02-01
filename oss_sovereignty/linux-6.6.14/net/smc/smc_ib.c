@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- *  IB infrastructure:
- *  Establish SMC-R as an Infiniband Client to be notified about added and
- *  removed IB devices of type RDMA.
- *  Determine device and port characteristics for these IB devices.
- *
- *  Copyright IBM Corp. 2016
- *
- *  Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if_vlan.h>
@@ -30,19 +19,19 @@
 #include "smc.h"
 #include "smc_netlink.h"
 
-#define SMC_MAX_CQE 32766	/* max. # of completion queue elements */
+#define SMC_MAX_CQE 32766	 
 
 #define SMC_QP_MIN_RNR_TIMER		5
-#define SMC_QP_TIMEOUT			15 /* 4096 * 2 ** timeout usec */
-#define SMC_QP_RETRY_CNT			7 /* 7: infinite */
-#define SMC_QP_RNR_RETRY			7 /* 7: infinite */
+#define SMC_QP_TIMEOUT			15  
+#define SMC_QP_RETRY_CNT			7  
+#define SMC_QP_RNR_RETRY			7  
 
-struct smc_ib_devices smc_ib_devices = {	/* smc-registered ib devices */
+struct smc_ib_devices smc_ib_devices = {	 
 	.mutex = __MUTEX_INITIALIZER(smc_ib_devices.mutex),
 	.list = LIST_HEAD_INIT(smc_ib_devices.list),
 };
 
-u8 local_systemid[SMC_SYSTEMID_LEN];		/* unique system identifier */
+u8 local_systemid[SMC_SYSTEMID_LEN];		 
 
 static int smc_ib_modify_qp_init(struct smc_link *lnk)
 {
@@ -83,10 +72,8 @@ static int smc_ib_modify_qp_rtr(struct smc_link *lnk)
 		memcpy(&qp_attr.ah_attr.roce.dmac, lnk->peer_mac,
 		       sizeof(lnk->peer_mac));
 	qp_attr.dest_qp_num = lnk->peer_qpn;
-	qp_attr.rq_psn = lnk->peer_psn; /* starting receive packet seq # */
-	qp_attr.max_dest_rd_atomic = 1; /* max # of resources for incoming
-					 * requests
-					 */
+	qp_attr.rq_psn = lnk->peer_psn;  
+	qp_attr.max_dest_rd_atomic = 1;  
 	qp_attr.min_rnr_timer = SMC_QP_MIN_RNR_TIMER;
 
 	return ib_modify_qp(lnk->roce_qp, &qp_attr, qp_attr_mask);
@@ -98,13 +85,11 @@ int smc_ib_modify_qp_rts(struct smc_link *lnk)
 
 	memset(&qp_attr, 0, sizeof(qp_attr));
 	qp_attr.qp_state = IB_QPS_RTS;
-	qp_attr.timeout = SMC_QP_TIMEOUT;	/* local ack timeout */
-	qp_attr.retry_cnt = SMC_QP_RETRY_CNT;	/* retry count */
-	qp_attr.rnr_retry = SMC_QP_RNR_RETRY;	/* RNR retries, 7=infinite */
-	qp_attr.sq_psn = lnk->psn_initial;	/* starting send packet seq # */
-	qp_attr.max_rd_atomic = 1;	/* # of outstanding RDMA reads and
-					 * atomic ops allowed
-					 */
+	qp_attr.timeout = SMC_QP_TIMEOUT;	 
+	qp_attr.retry_cnt = SMC_QP_RETRY_CNT;	 
+	qp_attr.rnr_retry = SMC_QP_RNR_RETRY;	 
+	qp_attr.sq_psn = lnk->psn_initial;	 
+	qp_attr.max_rd_atomic = 1;	 
 	return ib_modify_qp(lnk->roce_qp, &qp_attr,
 			    IB_QP_STATE | IB_QP_TIMEOUT | IB_QP_RETRY_CNT |
 			    IB_QP_SQ_PSN | IB_QP_RNR_RETRY |
@@ -166,11 +151,7 @@ static int smc_ib_fill_mac(struct smc_ib_device *smcibdev, u8 ibport)
 	return rc;
 }
 
-/* Create an identifier unique for this instance of SMC-R.
- * The MAC-address of the first active registered IB device
- * plus a random 2-byte number is used to create this identifier.
- * This name is delivered to the peer during connection initialization.
- */
+ 
 static inline void smc_ib_define_local_systemid(struct smc_ib_device *smcibdev,
 						u8 ibport)
 {
@@ -265,7 +246,7 @@ out:
 	return -ENODEV;
 }
 
-/* determine the gid for an ib-device port and vlan id */
+ 
 int smc_ib_determine_gid(struct smc_ib_device *smcibdev, u8 ibport,
 			 unsigned short vlan_id, u8 gid[], u8 *sgid_index,
 			 struct smc_init_info_smcrv2 *smcrv2)
@@ -298,7 +279,7 @@ int smc_ib_determine_gid(struct smc_ib_device *smcibdev, u8 ibport,
 	return -ENODEV;
 }
 
-/* check if gid is still defined on smcibdev */
+ 
 static bool smc_ib_check_link_gid(u8 gid[SMC_GID_SIZE], bool smcrv2,
 				  struct smc_ib_device *smcibdev, u8 ibport)
 {
@@ -324,7 +305,7 @@ static bool smc_ib_check_link_gid(u8 gid[SMC_GID_SIZE], bool smcrv2,
 	return rc;
 }
 
-/* check all links if the gid is still defined on smcibdev */
+ 
 static void smc_ib_gid_check(struct smc_ib_device *smcibdev, u8 ibport)
 {
 	struct smc_link_group *lgr;
@@ -334,7 +315,7 @@ static void smc_ib_gid_check(struct smc_ib_device *smcibdev, u8 ibport)
 	list_for_each_entry(lgr, &smc_lgr_list.list, list) {
 		if (strncmp(smcibdev->pnetid[ibport - 1], lgr->pnet_id,
 			    SMC_MAX_PNETID_LEN))
-			continue; /* lgr is not affected */
+			continue;  
 		if (list_empty(&lgr->list))
 			continue;
 		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
@@ -360,19 +341,19 @@ static int smc_ib_remember_port_attr(struct smc_ib_device *smcibdev, u8 ibport)
 			   &smcibdev->pattr[ibport - 1]);
 	if (rc)
 		goto out;
-	/* the SMC protocol requires specification of the RoCE MAC address */
+	 
 	rc = smc_ib_fill_mac(smcibdev, ibport);
 	if (rc)
 		goto out;
 	if (!smc_ib_is_valid_local_systemid() &&
 	    smc_ib_port_active(smcibdev, ibport))
-		/* create unique system identifier */
+		 
 		smc_ib_define_local_systemid(smcibdev, ibport);
 out:
 	return rc;
 }
 
-/* process context wrapper for might_sleep smc_ib_remember_port_attr */
+ 
 static void smc_ib_port_event_work(struct work_struct *work)
 {
 	struct smc_ib_device *smcibdev = container_of(
@@ -393,7 +374,7 @@ static void smc_ib_port_event_work(struct work_struct *work)
 	}
 }
 
-/* can be called in IRQ context */
+ 
 static void smc_ib_global_event_handler(struct ib_event_handler *handler,
 					struct ib_event *ibevent)
 {
@@ -405,7 +386,7 @@ static void smc_ib_global_event_handler(struct ib_event_handler *handler,
 
 	switch (ibevent->event) {
 	case IB_EVENT_DEVICE_FATAL:
-		/* terminate all ports on device */
+		 
 		for (port_idx = 0; port_idx < SMC_MAX_PORTS; port_idx++) {
 			set_bit(port_idx, &smcibdev->port_event_mask);
 			if (!test_and_set_bit(port_idx,
@@ -654,7 +635,7 @@ void smc_ib_destroy_queue_pair(struct smc_link *lnk)
 	lnk->roce_qp = NULL;
 }
 
-/* create a queue pair within the protection domain for a link */
+ 
 int smc_ib_create_queue_pair(struct smc_link *lnk)
 {
 	int sges_per_buf = (lnk->lgr->smc_version == SMC_V2) ? 2 : 1;
@@ -665,9 +646,7 @@ int smc_ib_create_queue_pair(struct smc_link *lnk)
 		.recv_cq = lnk->smcibdev->roce_cq_recv,
 		.srq = NULL,
 		.cap = {
-				/* include unsolicited rdma_writes as well,
-				 * there are max. 2 RDMA_WRITE per 1 WR_SEND
-				 */
+				 
 			.max_send_wr = SMC_WR_BUF_CNT * 3,
 			.max_recv_wr = SMC_WR_BUF_CNT * 3,
 			.max_send_sge = SMC_IB_MAX_SEND_SGE,
@@ -698,7 +677,7 @@ static int smc_ib_map_mr_sg(struct smc_buf_desc *buf_slot, u8 link_idx)
 	unsigned int offset = 0;
 	int sg_num;
 
-	/* map the largest prefix of a dma mapped SG list */
+	 
 	sg_num = ib_map_mr_sg(buf_slot->mr[link_idx],
 			      buf_slot->sgt[link_idx].sgl,
 			      buf_slot->sgt[link_idx].orig_nents,
@@ -707,12 +686,12 @@ static int smc_ib_map_mr_sg(struct smc_buf_desc *buf_slot, u8 link_idx)
 	return sg_num;
 }
 
-/* Allocate a memory region and map the dma mapped SG list of buf_slot */
+ 
 int smc_ib_get_memory_region(struct ib_pd *pd, int access_flags,
 			     struct smc_buf_desc *buf_slot, u8 link_idx)
 {
 	if (buf_slot->mr[link_idx])
-		return 0; /* already done */
+		return 0;  
 
 	buf_slot->mr[link_idx] =
 		ib_alloc_mr(pd, IB_MR_TYPE_MEM_REG, 1 << buf_slot->order);
@@ -738,7 +717,7 @@ bool smc_ib_is_sg_need_sync(struct smc_link *lnk,
 	unsigned int i;
 	bool ret = false;
 
-	/* for now there is just one DMA address */
+	 
 	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
 		    buf_slot->sgt[lnk->link_idx].nents, i) {
 		if (!sg_dma_len(sg))
@@ -754,7 +733,7 @@ out:
 	return ret;
 }
 
-/* synchronize buffer usage for cpu access */
+ 
 void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
 			    struct smc_buf_desc *buf_slot,
 			    enum dma_data_direction data_direction)
@@ -765,7 +744,7 @@ void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
 	if (!(buf_slot->is_dma_need_sync & (1U << lnk->link_idx)))
 		return;
 
-	/* for now there is just one DMA address */
+	 
 	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
 		    buf_slot->sgt[lnk->link_idx].nents, i) {
 		if (!sg_dma_len(sg))
@@ -777,7 +756,7 @@ void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
 	}
 }
 
-/* synchronize buffer usage for device access */
+ 
 void smc_ib_sync_sg_for_device(struct smc_link *lnk,
 			       struct smc_buf_desc *buf_slot,
 			       enum dma_data_direction data_direction)
@@ -788,7 +767,7 @@ void smc_ib_sync_sg_for_device(struct smc_link *lnk,
 	if (!(buf_slot->is_dma_need_sync & (1U << lnk->link_idx)))
 		return;
 
-	/* for now there is just one DMA address */
+	 
 	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
 		    buf_slot->sgt[lnk->link_idx].nents, i) {
 		if (!sg_dma_len(sg))
@@ -800,7 +779,7 @@ void smc_ib_sync_sg_for_device(struct smc_link *lnk,
 	}
 }
 
-/* Map a new TX or RX buffer SG-table to DMA */
+ 
 int smc_ib_buf_map_sg(struct smc_link *lnk,
 		      struct smc_buf_desc *buf_slot,
 		      enum dma_data_direction data_direction)
@@ -822,7 +801,7 @@ void smc_ib_buf_unmap_sg(struct smc_link *lnk,
 			 enum dma_data_direction data_direction)
 {
 	if (!buf_slot->sgt[lnk->link_idx].sgl->dma_address)
-		return; /* already unmapped */
+		return;  
 
 	ib_dma_unmap_sg(lnk->smcibdev->ibdev,
 			buf_slot->sgt[lnk->link_idx].sgl,
@@ -842,7 +821,7 @@ long smc_ib_setup_per_ibdev(struct smc_ib_device *smcibdev)
 	rc = 0;
 	if (smcibdev->initialized)
 		goto out;
-	/* the calculated number of cq entries fits to mlx5 cq allocation */
+	 
 	cqe_size_order = cache_line_size() == 128 ? 7 : 6;
 	smc_order = MAX_ORDER - cqe_size_order;
 	if (SMC_MAX_CQE + 2 > (0x00000001 << smc_order) * PAGE_SIZE)
@@ -931,7 +910,7 @@ void smc_ib_ndev_change(struct net_device *ndev, unsigned long event)
 	mutex_unlock(&smc_ib_devices.mutex);
 }
 
-/* callback function for ib_register_client() */
+ 
 static int smc_ib_add_dev(struct ib_device *ibdev)
 {
 	struct smc_ib_device *smcibdev;
@@ -958,7 +937,7 @@ static int smc_ib_add_dev(struct ib_device *ibdev)
 			      smc_ib_global_event_handler);
 	ib_register_event_handler(&smcibdev->event_handler);
 
-	/* trigger reading of the port attributes */
+	 
 	port_cnt = smcibdev->ibdev->phys_port_cnt;
 	pr_warn_ratelimited("smc: adding ib device %s with port count %d\n",
 			    smcibdev->ibdev->name, port_cnt);
@@ -966,7 +945,7 @@ static int smc_ib_add_dev(struct ib_device *ibdev)
 	     i < min_t(size_t, port_cnt, SMC_MAX_PORTS);
 	     i++) {
 		set_bit(i, &smcibdev->port_event_mask);
-		/* determine pnetids of the port */
+		 
 		if (smc_pnetid_by_dev_port(ibdev->dev.parent, i,
 					   smcibdev->pnetid[i]))
 			smc_pnetid_by_table_ib(smcibdev, i + 1);
@@ -983,13 +962,13 @@ static int smc_ib_add_dev(struct ib_device *ibdev)
 	return 0;
 }
 
-/* callback function for ib_unregister_client() */
+ 
 static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
 {
 	struct smc_ib_device *smcibdev = client_data;
 
 	mutex_lock(&smc_ib_devices.mutex);
-	list_del_init(&smcibdev->list); /* remove from smc_ib_devices */
+	list_del_init(&smcibdev->list);  
 	mutex_unlock(&smc_ib_devices.mutex);
 	pr_warn_ratelimited("smc: removing ib device %s\n",
 			    smcibdev->ibdev->name);

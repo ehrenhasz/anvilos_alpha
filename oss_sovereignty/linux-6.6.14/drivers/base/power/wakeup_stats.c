@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Wakeup statistics in sysfs
- *
- * Copyright (c) 2019 Linux Foundation
- * Copyright (c) 2019 Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- * Copyright (c) 2019 Google Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/idr.h>
@@ -169,11 +163,7 @@ error:
 	return ERR_PTR(retval);
 }
 
-/**
- * wakeup_source_sysfs_add - Add wakeup_source attributes to sysfs.
- * @parent: Device given wakeup source is associated with (or NULL if virtual).
- * @ws: Wakeup source to be added in sysfs.
- */
+ 
 int wakeup_source_sysfs_add(struct device *parent, struct wakeup_source *ws)
 {
 	struct device *dev;
@@ -186,11 +176,7 @@ int wakeup_source_sysfs_add(struct device *parent, struct wakeup_source *ws)
 	return 0;
 }
 
-/**
- * pm_wakeup_source_sysfs_add - Add wakeup_source attributes to sysfs
- * for a device if they're missing.
- * @parent: Device given wakeup source is associated with
- */
+ 
 int pm_wakeup_source_sysfs_add(struct device *parent)
 {
 	if (!parent->power.wakeup || parent->power.wakeup->dev)
@@ -199,10 +185,7 @@ int pm_wakeup_source_sysfs_add(struct device *parent)
 	return wakeup_source_sysfs_add(parent, parent->power.wakeup);
 }
 
-/**
- * wakeup_source_sysfs_remove - Remove wakeup_source attributes from sysfs.
- * @ws: Wakeup source to be removed from sysfs.
- */
+ 
 void wakeup_source_sysfs_remove(struct wakeup_source *ws)
 {
 	device_unregister(ws->dev);

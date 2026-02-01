@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/fanotify.h>
 #include <linux/fdtable.h>
 #include <linux/fsnotify_backend.h>
 #include <linux/init.h>
 #include <linux/jiffies.h>
-#include <linux/kernel.h> /* UINT_MAX */
+#include <linux/kernel.h>  
 #include <linux/mount.h>
 #include <linux/sched.h>
 #include <linux/sched/user.h>
@@ -55,16 +55,14 @@ static unsigned int fanotify_hash_fh(struct fanotify_fh *fh)
 {
 	long salt = (long)fh->type | (long)fh->len << 8;
 
-	/*
-	 * full_name_hash() works long by long, so it handles fh buf optimally.
-	 */
+	 
 	return full_name_hash((void *)salt, fanotify_fh_buf(fh), fh->len);
 }
 
 static bool fanotify_fid_event_equal(struct fanotify_fid_event *ffe1,
 				     struct fanotify_fid_event *ffe2)
 {
-	/* Do not merge fid events without object fh */
+	 
 	if (!ffe1->object_fh.len)
 		return false;
 
@@ -113,7 +111,7 @@ static bool fanotify_name_event_equal(struct fanotify_name_event *fne1,
 	struct fanotify_info *info1 = &fne1->info;
 	struct fanotify_info *info2 = &fne2->info;
 
-	/* Do not merge name events without dir fh */
+	 
 	if (!info1->dir_fh_totlen)
 		return false;
 
@@ -126,7 +124,7 @@ static bool fanotify_name_event_equal(struct fanotify_name_event *fne1,
 static bool fanotify_error_event_equal(struct fanotify_error_event *fee1,
 				       struct fanotify_error_event *fee2)
 {
-	/* Error events against the same file system are always merged. */
+	 
 	if (!fanotify_fsid_equal(&fee1->fsid, &fee2->fsid))
 		return false;
 
@@ -142,21 +140,11 @@ static bool fanotify_should_merge(struct fanotify_event *old,
 	    old->type != new->type || old->pid != new->pid)
 		return false;
 
-	/*
-	 * We want to merge many dirent events in the same dir (i.e.
-	 * creates/unlinks/renames), but we do not want to merge dirent
-	 * events referring to subdirs with dirent events referring to
-	 * non subdirs, otherwise, user won't be able to tell from a
-	 * mask FAN_CREATE|FAN_DELETE|FAN_ONDIR if it describes mkdir+
-	 * unlink pair or rmdir+create pair of events.
-	 */
+	 
 	if ((old->mask & FS_ISDIR) != (new->mask & FS_ISDIR))
 		return false;
 
-	/*
-	 * FAN_RENAME event is reported with special info record types,
-	 * so we cannot merge it with other events.
-	 */
+	 
 	if ((old->mask & FAN_RENAME) != (new->mask & FAN_RENAME))
 		return false;
 
@@ -180,10 +168,10 @@ static bool fanotify_should_merge(struct fanotify_event *old,
 	return false;
 }
 
-/* Limit event merges to limit CPU overhead per event */
+ 
 #define FANOTIFY_MAX_MERGE_EVENTS 128
 
-/* and the list better be locked by something too! */
+ 
 static int fanotify_merge(struct fsnotify_group *group,
 			  struct fsnotify_event *event)
 {
@@ -195,11 +183,7 @@ static int fanotify_merge(struct fsnotify_group *group,
 	pr_debug("%s: group=%p event=%p bucket=%u\n", __func__,
 		 group, event, bucket);
 
-	/*
-	 * Don't merge a permission event with any other event so that we know
-	 * the event structure we have created in fanotify_handle_event() is the
-	 * one we should check for permission response.
-	 */
+	 
 	if (fanotify_is_perm_event(new->mask))
 		return 0;
 
@@ -219,13 +203,7 @@ static int fanotify_merge(struct fsnotify_group *group,
 	return 0;
 }
 
-/*
- * Wait for response to permission event. The function also takes care of
- * freeing the permission event (or offloads that in case the wait is canceled
- * by a signal). The function returns 0 in case access got allowed by userspace,
- * -EPERM in case userspace disallowed the access, and -ERESTARTSYS in case
- * the wait got interrupted by a signal.
- */
+ 
 static int fanotify_get_response(struct fsnotify_group *group,
 				 struct fanotify_perm_event *event,
 				 struct fsnotify_iter_info *iter_info)
@@ -236,32 +214,28 @@ static int fanotify_get_response(struct fsnotify_group *group,
 
 	ret = wait_event_killable(group->fanotify_data.access_waitq,
 				  event->state == FAN_EVENT_ANSWERED);
-	/* Signal pending? */
+	 
 	if (ret < 0) {
 		spin_lock(&group->notification_lock);
-		/* Event reported to userspace and no answer yet? */
+		 
 		if (event->state == FAN_EVENT_REPORTED) {
-			/* Event will get freed once userspace answers to it */
+			 
 			event->state = FAN_EVENT_CANCELED;
 			spin_unlock(&group->notification_lock);
 			return ret;
 		}
-		/* Event not yet reported? Just remove it. */
+		 
 		if (event->state == FAN_EVENT_INIT) {
 			fsnotify_remove_queued_event(group, &event->fae.fse);
-			/* Permission events are not supposed to be hashed */
+			 
 			WARN_ON_ONCE(!hlist_unhashed(&event->fae.merge_list));
 		}
-		/*
-		 * Event may be also answered in case signal delivery raced
-		 * with wakeup. In that case we have nothing to do besides
-		 * freeing the event and reporting error.
-		 */
+		 
 		spin_unlock(&group->notification_lock);
 		goto out;
 	}
 
-	/* userspace responded, convert to something usable */
+	 
 	switch (event->response & FANOTIFY_RESPONSE_ACCESS) {
 	case FAN_ALLOW:
 		ret = 0;
@@ -271,7 +245,7 @@ static int fanotify_get_response(struct fsnotify_group *group,
 		ret = -EPERM;
 	}
 
-	/* Check if the response should be audited */
+	 
 	if (event->response & FAN_AUDIT)
 		audit_fanotify(event->response & ~FAN_AUDIT,
 			       &event->audit_rule);
@@ -284,12 +258,7 @@ out:
 	return ret;
 }
 
-/*
- * This function returns a mask for an event that only contains the flags
- * that have been specifically requested by the user. Flags that may have
- * been included within the event mask, but have not been explicitly
- * requested by the user, will not be present in the returned mask.
- */
+ 
 static u32 fanotify_group_event_mask(struct fsnotify_group *group,
 				     struct fsnotify_iter_info *iter_info,
 				     u32 *match_mask, u32 event_mask,
@@ -309,54 +278,38 @@ static u32 fanotify_group_event_mask(struct fsnotify_group *group,
 		 __func__, iter_info->report_mask, event_mask, data, data_type);
 
 	if (!fid_mode) {
-		/* Do we have path to open a file descriptor? */
+		 
 		if (!path)
 			return 0;
-		/* Path type events are only relevant for files and dirs */
+		 
 		if (!d_is_reg(path->dentry) && !d_can_lookup(path->dentry))
 			return 0;
 	} else if (!(fid_mode & FAN_REPORT_FID)) {
-		/* Do we have a directory inode to report? */
+		 
 		if (!dir && !ondir)
 			return 0;
 	}
 
 	fsnotify_foreach_iter_mark_type(iter_info, mark, type) {
-		/*
-		 * Apply ignore mask depending on event flags in ignore mask.
-		 */
+		 
 		marks_ignore_mask |=
 			fsnotify_effective_ignore_mask(mark, ondir, type);
 
-		/*
-		 * Send the event depending on event flags in mark mask.
-		 */
+		 
 		if (!fsnotify_mask_applicable(mark->mask, ondir, type))
 			continue;
 
 		marks_mask |= mark->mask;
 
-		/* Record the mark types of this group that matched the event */
+		 
 		*match_mask |= 1U << type;
 	}
 
 	test_mask = event_mask & marks_mask & ~marks_ignore_mask;
 
-	/*
-	 * For dirent modification events (create/delete/move) that do not carry
-	 * the child entry name information, we report FAN_ONDIR for mkdir/rmdir
-	 * so user can differentiate them from creat/unlink.
-	 *
-	 * For backward compatibility and consistency, do not report FAN_ONDIR
-	 * to user in legacy fanotify mode (reporting fd) and report FAN_ONDIR
-	 * to user in fid mode for all event types.
-	 *
-	 * We never report FAN_EVENT_ON_CHILD to user, but we do pass it in to
-	 * fanotify_alloc_event() when group is reporting fid as indication
-	 * that event happened on child.
-	 */
+	 
 	if (fid_mode) {
-		/* Do not report event flags without any event */
+		 
 		if (!(test_mask & ~FANOTIFY_EVENT_FLAGS))
 			return 0;
 	} else {
@@ -366,12 +319,7 @@ static u32 fanotify_group_event_mask(struct fsnotify_group *group,
 	return test_mask & user_mask;
 }
 
-/*
- * Check size needed to encode fanotify_fh.
- *
- * Return size of encoded fh without fanotify_fh header.
- * Return 0 on failure to encode.
- */
+ 
 static int fanotify_encode_fh_len(struct inode *inode)
 {
 	int dwords = 0;
@@ -383,23 +331,14 @@ static int fanotify_encode_fh_len(struct inode *inode)
 	exportfs_encode_fid(inode, NULL, &dwords);
 	fh_len = dwords << 2;
 
-	/*
-	 * struct fanotify_error_event might be preallocated and is
-	 * limited to MAX_HANDLE_SZ.  This should never happen, but
-	 * safeguard by forcing an invalid file handle.
-	 */
+	 
 	if (WARN_ON_ONCE(fh_len > MAX_HANDLE_SZ))
 		return 0;
 
 	return fh_len;
 }
 
-/*
- * Encode fanotify_fh.
- *
- * Return total size of encoded fh including fanotify_fh header.
- * Return 0 on failure to encode.
- */
+ 
 static int fanotify_encode_fh(struct fanotify_fh *fh, struct inode *inode,
 			      unsigned int fh_len, unsigned int *hash,
 			      gfp_t gfp)
@@ -413,25 +352,18 @@ static int fanotify_encode_fh(struct fanotify_fh *fh, struct inode *inode,
 	fh->len = 0;
 	fh->flags = 0;
 
-	/*
-	 * Invalid FHs are used by FAN_FS_ERROR for errors not
-	 * linked to any inode. The f_handle won't be reported
-	 * back to userspace.
-	 */
+	 
 	if (!inode)
 		goto out;
 
-	/*
-	 * !gpf means preallocated variable size fh, but fh_len could
-	 * be zero in that case if encoding fh len failed.
-	 */
+	 
 	err = -ENOENT;
 	if (fh_len < 4 || WARN_ON_ONCE(fh_len % 4) || fh_len > MAX_HANDLE_SZ)
 		goto out_err;
 
-	/* No external buffer in a variable size allocated fh */
+	 
 	if (gfp && fh_len > FANOTIFY_INLINE_FH_LEN) {
-		/* Treat failure to allocate fh as failure to encode fh */
+		 
 		err = -ENOMEM;
 		ext_buf = kmalloc(fh_len, gfp);
 		if (!ext_buf)
@@ -452,10 +384,7 @@ static int fanotify_encode_fh(struct fanotify_fh *fh, struct inode *inode,
 	fh->len = fh_len;
 
 out:
-	/*
-	 * Mix fh into event merge key.  Hash might be NULL in case of
-	 * unhashed FID events (i.e. FAN_FS_ERROR).
-	 */
+	 
 	if (hash)
 		*hash ^= fanotify_hash_fh(fh);
 
@@ -466,20 +395,13 @@ out_err:
 			    type, fh_len, err);
 	kfree(ext_buf);
 	*fanotify_fh_ext_buf_ptr(fh) = NULL;
-	/* Report the event without a file identifier on encode error */
+	 
 	fh->type = FILEID_INVALID;
 	fh->len = 0;
 	return 0;
 }
 
-/*
- * FAN_REPORT_FID is ambiguous in that it reports the fid of the child for
- * some events and the fid of the parent for create/delete/move events.
- *
- * With the FAN_REPORT_TARGET_FID flag, the fid of the child is reported
- * also in create/delete/move events in addition to the fid of the parent
- * and the name of the child.
- */
+ 
 static inline bool fanotify_report_child_fid(unsigned int fid_mode, u32 mask)
 {
 	if (mask & ALL_FSNOTIFY_DIRENT_EVENTS)
@@ -488,20 +410,7 @@ static inline bool fanotify_report_child_fid(unsigned int fid_mode, u32 mask)
 	return (fid_mode & FAN_REPORT_FID) && !(mask & FAN_ONDIR);
 }
 
-/*
- * The inode to use as identifier when reporting fid depends on the event
- * and the group flags.
- *
- * With the group flag FAN_REPORT_TARGET_FID, always report the child fid.
- *
- * Without the group flag FAN_REPORT_TARGET_FID, report the modified directory
- * fid on dirent events and the child fid otherwise.
- *
- * For example:
- * FS_ATTRIB reports the child fid even if reported on a watched parent.
- * FS_CREATE reports the modified dir fid without FAN_REPORT_TARGET_FID.
- *       and reports the created child fid with FAN_REPORT_TARGET_FID.
- */
+ 
 static struct inode *fanotify_fid_inode(u32 event_mask, const void *data,
 					int data_type, struct inode *dir,
 					unsigned int fid_mode)
@@ -513,14 +422,7 @@ static struct inode *fanotify_fid_inode(u32 event_mask, const void *data,
 	return fsnotify_data_inode(data, data_type);
 }
 
-/*
- * The inode to use as identifier when reporting dir fid depends on the event.
- * Report the modified directory inode on dirent modification events.
- * Report the "victim" inode if "victim" is a directory.
- * Report the parent inode if "victim" is not a directory and event is
- * reported to parent.
- * Otherwise, do not report dir fid.
- */
+ 
 static struct inode *fanotify_dfid_inode(u32 event_mask, const void *data,
 					 int data_type, struct inode *dir)
 {
@@ -614,7 +516,7 @@ static struct fanotify_event *fanotify_alloc_name_event(struct inode *dir,
 	unsigned long name2_len = name2 ? name2->len : 0;
 	unsigned int len, size;
 
-	/* Reserve terminating null byte even for empty name */
+	 
 	size = sizeof(*fne) + name_len + name2_len + 2;
 	if (dir_fh_len)
 		size += FANOTIFY_FH_HDR_LEN + dir_fh_len;
@@ -696,7 +598,7 @@ static struct fanotify_event *fanotify_alloc_error_event(
 	inode = report->inode;
 	fh_len = fanotify_encode_fh_len(inode);
 
-	/* Bad fh_len. Fallback to using an invalid fh. Should never happen. */
+	 
 	if (!fh_len && inode)
 		inode = NULL;
 
@@ -729,28 +631,13 @@ static struct fanotify_event *fanotify_alloc_event(
 	struct pid *pid;
 
 	if ((fid_mode & FAN_REPORT_DIR_FID) && dirid) {
-		/*
-		 * For certain events and group flags, report the child fid
-		 * in addition to reporting the parent fid and maybe child name.
-		 */
+		 
 		if (fanotify_report_child_fid(fid_mode, mask) && id != dirid)
 			child = id;
 
 		id = dirid;
 
-		/*
-		 * We record file name only in a group with FAN_REPORT_NAME
-		 * and when we have a directory inode to report.
-		 *
-		 * For directory entry modification event, we record the fid of
-		 * the directory and the name of the modified entry.
-		 *
-		 * For event on non-directory that is reported to parent, we
-		 * record the fid of the parent and the name of the child.
-		 *
-		 * Even if not reporting name, we need a variable length
-		 * fanotify_name_event if reporting both parent and child fids.
-		 */
+		 
 		if (!(fid_mode & FAN_REPORT_NAME)) {
 			name_event = !!child;
 			file_name = NULL;
@@ -758,20 +645,14 @@ static struct fanotify_event *fanotify_alloc_event(
 			name_event = true;
 		}
 
-		/*
-		 * In the special case of FAN_RENAME event, use the match_mask
-		 * to determine if we need to report only the old parent+name,
-		 * only the new parent+name or both.
-		 * 'dirid' and 'file_name' are the old parent+name and
-		 * 'moved' has the new parent+name.
-		 */
+		 
 		if (mask & FAN_RENAME) {
 			bool report_old, report_new;
 
 			if (WARN_ON_ONCE(!match_mask))
 				return NULL;
 
-			/* Report both old and new parent+name if sb watching */
+			 
 			report_old = report_new =
 				match_mask & (1U << FSNOTIFY_ITER_TYPE_SB);
 			report_old |=
@@ -780,29 +661,24 @@ static struct fanotify_event *fanotify_alloc_event(
 				match_mask & (1U << FSNOTIFY_ITER_TYPE_INODE2);
 
 			if (!report_old) {
-				/* Do not report old parent+name */
+				 
 				dirid = NULL;
 				file_name = NULL;
 			}
 			if (report_new) {
-				/* Report new parent+name */
+				 
 				moved = fsnotify_data_dentry(data, data_type);
 			}
 		}
 	}
 
-	/*
-	 * For queues with unlimited length lost events are not expected and
-	 * can possibly have security implications. Avoid losing events when
-	 * memory is short. For the limited size queues, avoid OOM killer in the
-	 * target monitoring memcg as it may have security repercussion.
-	 */
+	 
 	if (group->max_events == UINT_MAX)
 		gfp |= __GFP_NOFAIL;
 	else
 		gfp |= __GFP_RETRY_MAYFAIL;
 
-	/* Whoever is interested in the event, pays for the allocation. */
+	 
 	old_memcg = set_active_memcg(group->memcg);
 
 	if (fanotify_is_perm_event(mask)) {
@@ -827,7 +703,7 @@ static struct fanotify_event *fanotify_alloc_event(
 	else
 		pid = get_pid(task_tgid(current));
 
-	/* Mix event info, FAN_ONDIR flag and pid into event merge key */
+	 
 	hash ^= hash_long((unsigned long)pid | ondir, FANOTIFY_EVENT_HASH_BITS);
 	fanotify_init_event(event, hash, mask);
 	event->pid = pid;
@@ -837,11 +713,7 @@ out:
 	return event;
 }
 
-/*
- * Get cached fsid of the filesystem containing the object from any connector.
- * All connectors are supposed to have the same fsid, but we do not verify that
- * here.
- */
+ 
 static __kernel_fsid_t fanotify_get_fsid(struct fsnotify_iter_info *iter_info)
 {
 	struct fsnotify_mark *mark;
@@ -852,12 +724,12 @@ static __kernel_fsid_t fanotify_get_fsid(struct fsnotify_iter_info *iter_info)
 		struct fsnotify_mark_connector *conn;
 
 		conn = READ_ONCE(mark->connector);
-		/* Mark is just getting destroyed or created? */
+		 
 		if (!conn)
 			continue;
 		if (!(conn->flags & FSNOTIFY_CONN_FLAG_HAS_FSID))
 			continue;
-		/* Pairs with smp_wmb() in fsnotify_add_mark_list() */
+		 
 		smp_rmb();
 		fsid = conn->fsid;
 		if (WARN_ON_ONCE(!fsid.val[0] && !fsid.val[1]))
@@ -868,9 +740,7 @@ static __kernel_fsid_t fanotify_get_fsid(struct fsnotify_iter_info *iter_info)
 	return fsid;
 }
 
-/*
- * Add an event to hash table for faster merge.
- */
+ 
 static void fanotify_insert_event(struct fsnotify_group *group,
 				  struct fsnotify_event *fsn_event)
 {
@@ -934,17 +804,14 @@ static int fanotify_handle_event(struct fsnotify_group *group, u32 mask,
 		 group, mask, match_mask);
 
 	if (fanotify_is_perm_event(mask)) {
-		/*
-		 * fsnotify_prepare_user_wait() fails if we race with mark
-		 * deletion.  Just let the operation pass in that case.
-		 */
+		 
 		if (!fsnotify_prepare_user_wait(iter_info))
 			return 0;
 	}
 
 	if (FAN_GROUP_FLAG(group, FANOTIFY_FID_BITS)) {
 		fsid = fanotify_get_fsid(iter_info);
-		/* Racing with mark destruction or creation? */
+		 
 		if (!fsid.val[0] && !fsid.val[1])
 			return 0;
 	}
@@ -953,10 +820,7 @@ static int fanotify_handle_event(struct fsnotify_group *group, u32 mask,
 				     file_name, &fsid, match_mask);
 	ret = -ENOMEM;
 	if (unlikely(!event)) {
-		/*
-		 * We don't queue overflow events for permission events as
-		 * there the access is denied and so no event is in fact lost.
-		 */
+		 
 		if (!fanotify_is_perm_event(mask))
 			fsnotify_queue_overflow(group);
 		goto finish;
@@ -966,9 +830,9 @@ static int fanotify_handle_event(struct fsnotify_group *group, u32 mask,
 	ret = fsnotify_insert_event(group, fsn_event, fanotify_merge,
 				    fanotify_insert_event);
 	if (ret) {
-		/* Permission events shouldn't be merged */
+		 
 		BUG_ON(ret == 1 && mask & FANOTIFY_PERM_EVENTS);
-		/* Our event wasn't used in the end. Free it. */
+		 
 		fsnotify_destroy_event(group, fsn_event);
 
 		ret = 0;

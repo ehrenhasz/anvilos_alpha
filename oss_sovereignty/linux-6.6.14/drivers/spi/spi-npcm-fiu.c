@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Nuvoton Technology corporation.
+
+
 
 #include <linux/bits.h>
 #include <linux/init.h>
@@ -16,11 +16,11 @@
 #include <linux/spi/spi-mem.h>
 #include <linux/mfd/syscon.h>
 
-/* NPCM7xx GCR module */
+ 
 #define NPCM7XX_INTCR3_OFFSET		0x9C
 #define NPCM7XX_INTCR3_FIU_FIX		BIT(6)
 
-/* Flash Interface Unit (FIU) Registers */
+ 
 #define NPCM_FIU_DRD_CFG		0x00
 #define NPCM_FIU_DWR_CFG		0x04
 #define NPCM_FIU_UMA_CFG		0x08
@@ -39,7 +39,7 @@
 #define NPCM_FIU_CFG			0x78
 #define NPCM_FIU_MAX_REG_LIMIT		0x80
 
-/* FIU Direct Read Configuration Register */
+ 
 #define NPCM_FIU_DRD_CFG_LCK		BIT(31)
 #define NPCM_FIU_DRD_CFG_R_BURST	GENMASK(25, 24)
 #define NPCM_FIU_DRD_CFG_ADDSIZ		GENMASK(17, 16)
@@ -50,7 +50,7 @@
 #define NPCM_FIU_DRD_DBW_SHIFT		12
 #define NPCM_FIU_DRD_ACCTYPE_SHIFT	8
 
-/* FIU Direct Write Configuration Register */
+ 
 #define NPCM_FIU_DWR_CFG_LCK		BIT(31)
 #define NPCM_FIU_DWR_CFG_W_BURST	GENMASK(25, 24)
 #define NPCM_FIU_DWR_CFG_ADDSIZ		GENMASK(17, 16)
@@ -61,7 +61,7 @@
 #define NPCM_FIU_DWR_ABPCK_SHIFT	10
 #define NPCM_FIU_DWR_DBPCK_SHIFT	8
 
-/* FIU UMA Configuration Register */
+ 
 #define NPCM_FIU_UMA_CFG_LCK		BIT(31)
 #define NPCM_FIU_UMA_CFG_CMMLCK		BIT(30)
 #define NPCM_FIU_UMA_CFG_RDATSIZ	GENMASK(28, 24)
@@ -83,7 +83,7 @@
 #define NPCM_FIU_UMA_CFG_DBSIZ_SHIFT	21
 #define NPCM_FIU_UMA_CFG_RDATSIZ_SHIFT	24
 
-/* FIU UMA Control and Status Register */
+ 
 #define NPCM_FIU_UMA_CTS_RDYIE		BIT(25)
 #define NPCM_FIU_UMA_CTS_RDYST		BIT(24)
 #define NPCM_FIU_UMA_CTS_SW_CS		BIT(16)
@@ -91,71 +91,71 @@
 #define NPCM_FIU_UMA_CTS_EXEC_DONE	BIT(0)
 #define NPCM_FIU_UMA_CTS_DEV_NUM_SHIFT	8
 
-/* FIU UMA Command Register */
+ 
 #define NPCM_FIU_UMA_CMD_DUM3		GENMASK(31, 24)
 #define NPCM_FIU_UMA_CMD_DUM2		GENMASK(23, 16)
 #define NPCM_FIU_UMA_CMD_DUM1		GENMASK(15, 8)
 #define NPCM_FIU_UMA_CMD_CMD		GENMASK(7, 0)
 
-/* FIU UMA Address Register */
+ 
 #define NPCM_FIU_UMA_ADDR_UMA_ADDR	GENMASK(31, 0)
 #define NPCM_FIU_UMA_ADDR_AB3		GENMASK(31, 24)
 #define NPCM_FIU_UMA_ADDR_AB2		GENMASK(23, 16)
 #define NPCM_FIU_UMA_ADDR_AB1		GENMASK(15, 8)
 #define NPCM_FIU_UMA_ADDR_AB0		GENMASK(7, 0)
 
-/* FIU UMA Write Data Bytes 0-3 Register */
+ 
 #define NPCM_FIU_UMA_DW0_WB3		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DW0_WB2		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DW0_WB1		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DW0_WB0		GENMASK(7, 0)
 
-/* FIU UMA Write Data Bytes 4-7 Register */
+ 
 #define NPCM_FIU_UMA_DW1_WB7		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DW1_WB6		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DW1_WB5		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DW1_WB4		GENMASK(7, 0)
 
-/* FIU UMA Write Data Bytes 8-11 Register */
+ 
 #define NPCM_FIU_UMA_DW2_WB11		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DW2_WB10		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DW2_WB9		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DW2_WB8		GENMASK(7, 0)
 
-/* FIU UMA Write Data Bytes 12-15 Register */
+ 
 #define NPCM_FIU_UMA_DW3_WB15		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DW3_WB14		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DW3_WB13		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DW3_WB12		GENMASK(7, 0)
 
-/* FIU UMA Read Data Bytes 0-3 Register */
+ 
 #define NPCM_FIU_UMA_DR0_RB3		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DR0_RB2		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DR0_RB1		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DR0_RB0		GENMASK(7, 0)
 
-/* FIU UMA Read Data Bytes 4-7 Register */
+ 
 #define NPCM_FIU_UMA_DR1_RB15		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DR1_RB14		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DR1_RB13		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DR1_RB12		GENMASK(7, 0)
 
-/* FIU UMA Read Data Bytes 8-11 Register */
+ 
 #define NPCM_FIU_UMA_DR2_RB15		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DR2_RB14		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DR2_RB13		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DR2_RB12		GENMASK(7, 0)
 
-/* FIU UMA Read Data Bytes 12-15 Register */
+ 
 #define NPCM_FIU_UMA_DR3_RB15		GENMASK(31, 24)
 #define NPCM_FIU_UMA_DR3_RB14		GENMASK(23, 16)
 #define NPCM_FIU_UMA_DR3_RB13		GENMASK(15, 8)
 #define NPCM_FIU_UMA_DR3_RB12		GENMASK(7, 0)
 
-/* FIU Configuration Register */
+ 
 #define NPCM_FIU_CFG_FIU_FIX		BIT(31)
 
-/* FIU Read Mode */
+ 
 enum {
 	DRD_SINGLE_WIRE_MODE	= 0,
 	DRD_DUAL_IO_MODE	= 1,
@@ -461,7 +461,7 @@ static int npcm_fiu_manualwrite(struct spi_mem *mem,
 	if (ret)
 		return ret;
 
-	/* Starting the data writing loop in multiples of 8 */
+	 
 	for (idx = 0; idx < num_data_chunks; ++idx) {
 		ret = npcm_fiu_uma_write(mem, op, data[0], false,
 					 &data[1], CHUNK_SIZE - 1);
@@ -471,7 +471,7 @@ static int npcm_fiu_manualwrite(struct spi_mem *mem,
 		data += CHUNK_SIZE;
 	}
 
-	/* Handling chunk remains */
+	 
 	if (remain_data > 0) {
 		ret = npcm_fiu_uma_write(mem, op, data[0], false,
 					 &data[1], remain_data - 1);
@@ -690,7 +690,7 @@ static const struct spi_controller_mem_ops npcm_fiu_mem_ops = {
 static const struct of_device_id npcm_fiu_dt_ids[] = {
 	{ .compatible = "nuvoton,npcm750-fiu", .data = &npcm7xx_fiu_data  },
 	{ .compatible = "nuvoton,npcm845-fiu", .data = &npxm8xx_fiu_data  },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int npcm_fiu_probe(struct platform_device *pdev)

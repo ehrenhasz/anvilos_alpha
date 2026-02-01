@@ -1,27 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NXP TDA10071 + Conexant CX24118A DVB-S/S2 demodulator + tuner driver
- *
- * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "tda10071_priv.h"
 
 static const struct dvb_frontend_ops tda10071_ops;
 
-/*
- * XXX: regmap_update_bits() does not fit our needs as it does not support
- * partially volatile registers. Also it performs register read even mask is as
- * wide as register value.
- */
-/* write single register with mask */
+ 
+ 
 static int tda10071_wr_reg_mask(struct tda10071_dev *dev,
 				u8 reg, u8 val, u8 mask)
 {
 	int ret;
 	u8 tmp;
 
-	/* no need for read if whole reg is written */
+	 
 	if (mask != 0xff) {
 		ret = regmap_bulk_read(dev->regmap, reg, &tmp, 1);
 		if (ret)
@@ -35,7 +27,7 @@ static int tda10071_wr_reg_mask(struct tda10071_dev *dev,
 	return regmap_bulk_write(dev->regmap, reg, &val, 1);
 }
 
-/* execute firmware command */
+ 
 static int tda10071_cmd_execute(struct tda10071_dev *dev,
 	struct tda10071_cmd *cmd)
 {
@@ -50,17 +42,17 @@ static int tda10071_cmd_execute(struct tda10071_dev *dev,
 
 	mutex_lock(&dev->cmd_execute_mutex);
 
-	/* write cmd and args for firmware */
+	 
 	ret = regmap_bulk_write(dev->regmap, 0x00, cmd->args, cmd->len);
 	if (ret)
 		goto error_mutex_unlock;
 
-	/* start cmd execution */
+	 
 	ret = regmap_write(dev->regmap, 0x1f, 1);
 	if (ret)
 		goto error_mutex_unlock;
 
-	/* wait cmd execution terminate */
+	 
 	for (i = 1000, uitmp = 1; i && uitmp; i--) {
 		ret = regmap_read(dev->regmap, 0x1f, &uitmp);
 		if (ret)
@@ -197,7 +189,7 @@ static int tda10071_diseqc_send_master_cmd(struct dvb_frontend *fe,
 		goto error;
 	}
 
-	/* wait LNB TX */
+	 
 	for (i = 500, uitmp = 0; i && !uitmp; i--) {
 		ret = regmap_read(dev->regmap, 0x47, &uitmp);
 		if (ret)
@@ -252,7 +244,7 @@ static int tda10071_diseqc_recv_slave_reply(struct dvb_frontend *fe,
 
 	dev_dbg(&client->dev, "\n");
 
-	/* wait LNB RX */
+	 
 	for (i = 500, uitmp = 0; i && !uitmp; i--) {
 		ret = regmap_read(dev->regmap, 0x47, &uitmp);
 		if (ret)
@@ -268,16 +260,16 @@ static int tda10071_diseqc_recv_slave_reply(struct dvb_frontend *fe,
 		goto error;
 	}
 
-	/* reply len */
+	 
 	ret = regmap_read(dev->regmap, 0x46, &uitmp);
 	if (ret)
 		goto error;
 
-	reply->msg_len = uitmp & 0x1f; /* [4:0] */
+	reply->msg_len = uitmp & 0x1f;  
 	if (reply->msg_len > sizeof(reply->msg))
-		reply->msg_len = sizeof(reply->msg); /* truncate API max */
+		reply->msg_len = sizeof(reply->msg);  
 
-	/* read reply */
+	 
 	cmd.args[0] = CMD_LNB_UPDATE_REPLY;
 	cmd.args[1] = 0;
 	cmd.len = 2;
@@ -326,7 +318,7 @@ static int tda10071_diseqc_send_burst(struct dvb_frontend *fe,
 		goto error;
 	}
 
-	/* wait LNB TX */
+	 
 	for (i = 500, uitmp = 0; i && !uitmp; i--) {
 		ret = regmap_read(dev->regmap, 0x47, &uitmp);
 		if (ret)
@@ -381,17 +373,17 @@ static int tda10071_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	if (ret)
 		goto error;
 
-	/* 0x39[0] tuner PLL */
-	if (uitmp & 0x02) /* demod PLL */
+	 
+	if (uitmp & 0x02)  
 		*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER;
-	if (uitmp & 0x04) /* viterbi or LDPC*/
+	if (uitmp & 0x04)  
 		*status |= FE_HAS_VITERBI;
-	if (uitmp & 0x08) /* RS or BCH */
+	if (uitmp & 0x08)  
 		*status |= FE_HAS_SYNC | FE_HAS_LOCK;
 
 	dev->fe_status = *status;
 
-	/* signal strength */
+	 
 	if (dev->fe_status & FE_HAS_SIGNAL) {
 		cmd.args[0] = CMD_GET_AGCACC;
 		cmd.args[1] = 0;
@@ -400,7 +392,7 @@ static int tda10071_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		if (ret)
 			goto error;
 
-		/* input power estimate dBm */
+		 
 		ret = regmap_read(dev->regmap, 0x50, &uitmp);
 		if (ret)
 			goto error;
@@ -411,9 +403,9 @@ static int tda10071_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (dev->fe_status & FE_HAS_VITERBI) {
-		/* Es/No */
+		 
 		ret = regmap_bulk_read(dev->regmap, 0x3a, buf, 2);
 		if (ret)
 			goto error;
@@ -424,9 +416,9 @@ static int tda10071_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* UCB/PER/BER */
+	 
 	if (dev->fe_status & FE_HAS_LOCK) {
-		/* TODO: report total bits/packets */
+		 
 		u8 delivery_system, reg, len;
 
 		switch (dev->delivery_system) {
@@ -516,8 +508,8 @@ static int tda10071_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 
 	if (c->strength.stat[0].scale == FE_SCALE_DECIBEL) {
 		uitmp = div_s64(c->strength.stat[0].svalue, 1000) + 256;
-		uitmp = clamp(uitmp, 181U, 236U); /* -75dBm - -20dBm */
-		/* scale value to 0x0000-0xffff */
+		uitmp = clamp(uitmp, 181U, 236U);  
+		 
 		*strength = (uitmp-181) * 0xffff / (236-181);
 	} else {
 		*strength = 0;
@@ -574,8 +566,7 @@ static int tda10071_set_frontend(struct dvb_frontend *fe)
 		inversion = 0;
 		break;
 	case INVERSION_AUTO:
-		/* 2 = auto; try first on then off
-		 * 3 = auto; try first off then on */
+		 
 		inversion = 3;
 		break;
 	default:
@@ -817,7 +808,7 @@ static int tda10071_init(struct dvb_frontend *fe)
 	};
 
 	if (dev->warm) {
-		/* warm state - wake up device from sleep */
+		 
 
 		for (i = 0; i < ARRAY_SIZE(tab); i++) {
 			ret = tda10071_wr_reg_mask(dev, tab[i].reg,
@@ -834,9 +825,9 @@ static int tda10071_init(struct dvb_frontend *fe)
 		if (ret)
 			goto error;
 	} else {
-		/* cold state - try to download firmware */
+		 
 
-		/* request the firmware, this will block and timeout */
+		 
 		ret = request_firmware(&fw, fw_file, &client->dev);
 		if (ret) {
 			dev_err(&client->dev,
@@ -845,7 +836,7 @@ static int tda10071_init(struct dvb_frontend *fe)
 			goto error;
 		}
 
-		/* init */
+		 
 		for (i = 0; i < ARRAY_SIZE(tab2); i++) {
 			ret = tda10071_wr_reg_mask(dev, tab2[i].reg,
 				tab2[i].val, tab2[i].mask);
@@ -853,7 +844,7 @@ static int tda10071_init(struct dvb_frontend *fe)
 				goto error_release_firmware;
 		}
 
-		/*  download firmware */
+		 
 		ret = regmap_write(dev->regmap, 0xe0, 0x7f);
 		if (ret)
 			goto error_release_firmware;
@@ -876,7 +867,7 @@ static int tda10071_init(struct dvb_frontend *fe)
 		dev_info(&client->dev, "downloading firmware from file '%s'\n",
 			 fw_file);
 
-		/* do not download last byte */
+		 
 		fw_size = fw->size - 1;
 
 		for (remaining = fw_size; remaining > 0;
@@ -903,10 +894,10 @@ static int tda10071_init(struct dvb_frontend *fe)
 		if (ret)
 			goto error;
 
-		/* wait firmware start */
+		 
 		msleep(250);
 
-		/* firmware status */
+		 
 		ret = regmap_read(dev->regmap, 0x51, &uitmp);
 		if (ret)
 			goto error;
@@ -1017,7 +1008,7 @@ static int tda10071_init(struct dvb_frontend *fe)
 			goto error;
 	}
 
-	/* init stats here in order signal app which stats are supported */
+	 
 	c->strength.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->cnr.len = 1;
@@ -1176,7 +1167,7 @@ static int tda10071_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* chip ID */
+	 
 	ret = regmap_read(dev->regmap, 0xff, &uitmp);
 	if (ret)
 		goto err_kfree;
@@ -1185,7 +1176,7 @@ static int tda10071_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* chip type */
+	 
 	ret = regmap_read(dev->regmap, 0xdd, &uitmp);
 	if (ret)
 		goto err_kfree;
@@ -1194,7 +1185,7 @@ static int tda10071_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* chip version */
+	 
 	ret = regmap_read(dev->regmap, 0xfe, &uitmp);
 	if (ret)
 		goto err_kfree;
@@ -1203,12 +1194,12 @@ static int tda10071_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* create dvb_frontend */
+	 
 	memcpy(&dev->fe.ops, &tda10071_ops, sizeof(struct dvb_frontend_ops));
 	dev->fe.demodulator_priv = dev;
 	i2c_set_clientdata(client, dev);
 
-	/* setup callbacks */
+	 
 	pdata->get_dvb_frontend = tda10071_get_dvb_frontend;
 
 	dev_info(&client->dev, "NXP TDA10071 successfully identified\n");

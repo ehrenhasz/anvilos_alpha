@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_rapl_tpmi: Intel RAPL driver via TPMI interface
- *
- * Copyright (c) 2023, Intel Corporation.
- * All Rights Reserved.
- *
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/auxiliary_bus.h>
@@ -17,7 +11,7 @@
 
 #define TPMI_RAPL_VERSION 1
 
-/* 1 header + 10 registers + 5 reserved. 8 bytes for each. */
+ 
 #define TPMI_RAPL_DOMAIN_SIZE 128
 
 enum tpmi_rapl_domain_type {
@@ -140,7 +134,7 @@ static int parse_one_domain(struct tpmi_rapl_package *trp, u32 offset)
 	int tpmi_domain_size, tpmi_domain_flags;
 	u64 tpmi_domain_header = readq(trp->base + offset);
 
-	/* Domain Parent bits are ignored for now */
+	 
 	tpmi_domain_version = tpmi_domain_header & 0xff;
 	tpmi_domain_type = tpmi_domain_header >> 8 & 0xff;
 	tpmi_domain_size = tpmi_domain_header >> 16 & 0xff;
@@ -151,13 +145,13 @@ static int parse_one_domain(struct tpmi_rapl_package *trp, u32 offset)
 		return -ENODEV;
 	}
 
-	/* Domain size: in unit of 128 Bytes */
+	 
 	if (tpmi_domain_size != 1) {
 		pr_warn(FW_BUG "Invalid Domain size %d\n", tpmi_domain_size);
 		return -EINVAL;
 	}
 
-	/* Unit register and Energy Status register are mandatory for each domain */
+	 
 	if (!(tpmi_domain_flags & BIT(TPMI_RAPL_REG_UNIT)) ||
 	    !(tpmi_domain_flags & BIT(TPMI_RAPL_REG_ENERGY_STATUS))) {
 		pr_warn(FW_BUG "Invalid Domain flag 0x%x\n", tpmi_domain_flags);
@@ -271,7 +265,7 @@ static int intel_rapl_tpmi_probe(struct auxiliary_device *auxdev,
 	trp->priv.write_raw = tpmi_rapl_write_raw;
 	trp->priv.control_type = tpmi_control_type;
 
-	/* RAPL TPMI I/F is per physical package */
+	 
 	trp->rp = rapl_find_package_domain(info->package_id, &trp->priv, false);
 	if (trp->rp) {
 		dev_err(&auxdev->dev, "Domain for Package%d already exists\n", info->package_id);

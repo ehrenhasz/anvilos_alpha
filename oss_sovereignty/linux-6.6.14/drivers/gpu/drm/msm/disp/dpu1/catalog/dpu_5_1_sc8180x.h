@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DPU_5_1_SC8180X_H
 #define _DPU_5_1_SC8180X_H
@@ -336,7 +333,7 @@ static const struct dpu_intf_cfg sc8180x_intf[] = {
 		.intr_vsync = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 29),
 		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF2_TEAR_INTR, 2),
 	},
-	/* INTF_3 is for MST, wired to INTF_DP 0 and 1, use dummy index until this is supported */
+	 
 	{
 		.name = "intf_3", .id = INTF_3,
 		.base = 0x6b800, .len = 0x280,
@@ -388,7 +385,7 @@ static const struct dpu_perf_cfg sc8180x_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
+		 
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},

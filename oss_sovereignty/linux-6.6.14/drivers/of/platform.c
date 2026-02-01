@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *    Copyright (C) 2006 Benjamin Herrenschmidt, IBM Corp.
- *			 <benh@kernel.crashing.org>
- *    and		 Arnd Bergmann, IBM Corp.
- *    Merged from powerpc/kernel/of_platform.c and
- *    sparc{,64}/kernel/of_device.c by Stephen Rothwell
- */
+
+ 
 
 #define pr_fmt(fmt)	"OF: " fmt
 
@@ -29,19 +23,11 @@ const struct of_device_id of_default_bus_match_table[] = {
 	{ .compatible = "isa", },
 #ifdef CONFIG_ARM_AMBA
 	{ .compatible = "arm,amba-bus", },
-#endif /* CONFIG_ARM_AMBA */
-	{} /* Empty terminated list */
+#endif  
+	{}  
 };
 
-/**
- * of_find_device_by_node - Find the platform_device associated with a node
- * @np: Pointer to device tree node
- *
- * Takes a reference to the embedded struct device which needs to be dropped
- * after use.
- *
- * Return: platform_device pointer, or NULL if not found
- */
+ 
 struct platform_device *of_find_device_by_node(struct device_node *np)
 {
 	struct device *dev;
@@ -55,16 +41,11 @@ int of_device_add(struct platform_device *ofdev)
 {
 	BUG_ON(ofdev->dev.of_node == NULL);
 
-	/* name and id have to be set so that the platform bus doesn't get
-	 * confused on matching */
+	 
 	ofdev->name = dev_name(&ofdev->dev);
 	ofdev->id = PLATFORM_DEVID_NONE;
 
-	/*
-	 * If this device has not binding numa node in devicetree, that is
-	 * of_node_to_nid returns NUMA_NO_NODE. device_add will assume that this
-	 * device is on the same node as the parent.
-	 */
+	 
 	set_dev_node(&ofdev->dev, of_node_to_nid(ofdev->dev.of_node));
 
 	return device_add(&ofdev->dev);
@@ -86,25 +67,12 @@ EXPORT_SYMBOL(of_device_unregister);
 #ifdef CONFIG_OF_ADDRESS
 static const struct of_device_id of_skipped_node_table[] = {
 	{ .compatible = "operating-points-v2", },
-	{} /* Empty terminated list */
+	{}  
 };
 
-/*
- * The following routines scan a subtree and registers a device for
- * each applicable node.
- *
- * Note: sparc doesn't use these routines because it has a different
- * mechanism for creating devices from device tree nodes.
- */
+ 
 
-/**
- * of_device_make_bus_id - Use the device node data to assign a unique name
- * @dev: pointer to device structure that is linked to a device tree node
- *
- * This routine will first try using the translated bus address to
- * derive a unique name. If it cannot, then it will prepend names from
- * parent nodes until a unique name can be derived.
- */
+ 
 static void of_device_make_bus_id(struct device *dev)
 {
 	struct device_node *node = dev->of_node;
@@ -112,12 +80,9 @@ static void of_device_make_bus_id(struct device *dev)
 	u64 addr;
 	u32 mask;
 
-	/* Construct the name, using parent nodes if necessary to ensure uniqueness */
+	 
 	while (node->parent) {
-		/*
-		 * If the address can be translated, then that is as much
-		 * uniqueness as we need. Make it the first component and return
-		 */
+		 
 		reg = of_get_property(node, "reg", NULL);
 		if (reg && (addr = of_translate_address(node, reg)) != OF_BAD_ADDR) {
 			if (!of_property_read_u32(node, "mask", &mask))
@@ -130,19 +95,14 @@ static void of_device_make_bus_id(struct device *dev)
 			return;
 		}
 
-		/* format arguments only used if dev_name() resolves to NULL */
+		 
 		dev_set_name(dev, dev_name(dev) ? "%s:%s" : "%s",
 			     kbasename(node->full_name), dev_name(dev));
 		node = node->parent;
 	}
 }
 
-/**
- * of_device_alloc - Allocate and initialize an of_device
- * @np: device node to assign to device
- * @bus_id: Name to assign to the device.  May be null to use default name.
- * @parent: Parent device.
- */
+ 
 struct platform_device *of_device_alloc(struct device_node *np,
 				  const char *bus_id,
 				  struct device *parent)
@@ -155,10 +115,10 @@ struct platform_device *of_device_alloc(struct device_node *np,
 	if (!dev)
 		return NULL;
 
-	/* count the io resources */
+	 
 	num_reg = of_address_count(np);
 
-	/* Populate the resource table */
+	 
 	if (num_reg) {
 		res = kcalloc(num_reg, sizeof(*res), GFP_KERNEL);
 		if (!res) {
@@ -174,7 +134,7 @@ struct platform_device *of_device_alloc(struct device_node *np,
 		}
 	}
 
-	/* setup generic device info */
+	 
 	device_set_node(&dev->dev, of_fwnode_handle(of_node_get(np)));
 	dev->dev.parent = parent ? : &platform_bus;
 
@@ -187,16 +147,7 @@ struct platform_device *of_device_alloc(struct device_node *np,
 }
 EXPORT_SYMBOL(of_device_alloc);
 
-/**
- * of_platform_device_create_pdata - Alloc, initialize and register an of_device
- * @np: pointer to node to create device for
- * @bus_id: name to assign device
- * @platform_data: pointer to populate platform_data pointer with
- * @parent: Linux device model parent device.
- *
- * Return: Pointer to created platform device, or NULL if a device was not
- * registered.  Unavailable devices will not get registered.
- */
+ 
 static struct platform_device *of_platform_device_create_pdata(
 					struct device_node *np,
 					const char *bus_id,
@@ -232,15 +183,7 @@ err_clear_flag:
 	return NULL;
 }
 
-/**
- * of_platform_device_create - Alloc, initialize and register an of_device
- * @np: pointer to node to create device for
- * @bus_id: name to assign device
- * @parent: Linux device model parent device.
- *
- * Return: Pointer to created platform device, or NULL if a device was not
- * registered.  Unavailable devices will not get registered.
- */
+ 
 struct platform_device *of_platform_device_create(struct device_node *np,
 					    const char *bus_id,
 					    struct device *parent)
@@ -268,11 +211,11 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 	if (!dev)
 		goto err_clear_flag;
 
-	/* AMBA devices only support a single DMA mask */
+	 
 	dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 	dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
 
-	/* setup generic device info */
+	 
 	device_set_node(&dev->dev, of_fwnode_handle(of_node_get(node)));
 	dev->dev.parent = parent ? : &platform_bus;
 	dev->dev.platform_data = platform_data;
@@ -281,7 +224,7 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 	else
 		of_device_make_bus_id(&dev->dev);
 
-	/* Allow the HW Peripheral ID to be overridden */
+	 
 	of_property_read_u32(node, "arm,primecell-periphid", &dev->periphid);
 
 	ret = of_address_to_resource(node, 0, &dev->res);
@@ -306,7 +249,7 @@ err_clear_flag:
 	of_node_clear_flag(node, OF_POPULATED);
 	return NULL;
 }
-#else /* CONFIG_ARM_AMBA */
+#else  
 static struct amba_device *of_amba_device_create(struct device_node *node,
 						 const char *bus_id,
 						 void *platform_data,
@@ -314,11 +257,9 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 {
 	return NULL;
 }
-#endif /* CONFIG_ARM_AMBA */
+#endif  
 
-/*
- * of_dev_lookup() - Given a device node, lookup the preferred Linux name
- */
+ 
 static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *lookup,
 				 struct device_node *np)
 {
@@ -344,7 +285,7 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
 	if (!compatible)
 		return NULL;
 
-	/* Try compatible match if no phys_addr and name are specified */
+	 
 	auxdata = lookup;
 	for (; auxdata->compatible; auxdata++) {
 		if (!of_device_is_compatible(np, auxdata->compatible))
@@ -358,17 +299,7 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
 	return NULL;
 }
 
-/**
- * of_platform_bus_create() - Create a device for a node and its children.
- * @bus: device node of the bus to instantiate
- * @matches: match table for bus nodes
- * @lookup: auxdata table for matching id and platform_data with device nodes
- * @parent: parent for new device, or NULL for top level.
- * @strict: require compatible property
- *
- * Creates a platform_device for the provided device_node, and optionally
- * recursively create devices for all the child nodes.
- */
+ 
 static int of_platform_bus_create(struct device_node *bus,
 				  const struct of_device_id *matches,
 				  const struct of_dev_auxdata *lookup,
@@ -381,14 +312,14 @@ static int of_platform_bus_create(struct device_node *bus,
 	void *platform_data = NULL;
 	int rc = 0;
 
-	/* Make sure it has a compatible property */
+	 
 	if (strict && (!of_get_property(bus, "compatible", NULL))) {
 		pr_debug("%s() - skipping %pOF, no compatible prop\n",
 			 __func__, bus);
 		return 0;
 	}
 
-	/* Skip nodes for which we don't want to create devices */
+	 
 	if (unlikely(of_match_node(of_skipped_node_table, bus))) {
 		pr_debug("%s() - skipping %pOF node\n", __func__, bus);
 		return 0;
@@ -407,10 +338,7 @@ static int of_platform_bus_create(struct device_node *bus,
 	}
 
 	if (of_device_is_compatible(bus, "arm,primecell")) {
-		/*
-		 * Don't return an error here to keep compatibility with older
-		 * device tree files.
-		 */
+		 
 		of_amba_device_create(bus, bus_id, platform_data, parent);
 		return 0;
 	}
@@ -431,15 +359,7 @@ static int of_platform_bus_create(struct device_node *bus,
 	return rc;
 }
 
-/**
- * of_platform_bus_probe() - Probe the device-tree for platform buses
- * @root: parent of the first level to probe or NULL for the root of the tree
- * @matches: match table for bus nodes
- * @parent: parent to hook devices from, NULL for toplevel
- *
- * Note that children of the provided root are not instantiated as devices
- * unless the specified root itself matches the bus list and is not NULL.
- */
+ 
 int of_platform_bus_probe(struct device_node *root,
 			  const struct of_device_id *matches,
 			  struct device *parent)
@@ -454,7 +374,7 @@ int of_platform_bus_probe(struct device_node *root,
 	pr_debug("%s()\n", __func__);
 	pr_debug(" starting at: %pOF\n", root);
 
-	/* Do a self check of bus type, if there's a match, create children */
+	 
 	if (of_match_node(matches, root)) {
 		rc = of_platform_bus_create(root, matches, NULL, parent, false);
 	} else for_each_child_of_node(root, child) {
@@ -472,25 +392,7 @@ int of_platform_bus_probe(struct device_node *root,
 }
 EXPORT_SYMBOL(of_platform_bus_probe);
 
-/**
- * of_platform_populate() - Populate platform_devices from device tree data
- * @root: parent of the first level to probe or NULL for the root of the tree
- * @matches: match table, NULL to use the default
- * @lookup: auxdata table for matching id and platform_data with device nodes
- * @parent: parent to hook devices from, NULL for toplevel
- *
- * Similar to of_platform_bus_probe(), this function walks the device tree
- * and creates devices from nodes.  It differs in that it follows the modern
- * convention of requiring all device nodes to have a 'compatible' property,
- * and it is suitable for creating devices which are children of the root
- * node (of_platform_bus_probe will only create children of the root which
- * are selected by the @matches argument).
- *
- * New board support should be using this function instead of
- * of_platform_bus_probe().
- *
- * Return: 0 on success, < 0 on failure.
- */
+ 
 int of_platform_populate(struct device_node *root,
 			const struct of_device_id *matches,
 			const struct of_dev_auxdata *lookup,
@@ -558,15 +460,9 @@ static int __init of_platform_default_populate_init(void)
 		int display_number = 0;
 		int ret;
 
-		/* Check if we have a MacOS display without a node spec */
+		 
 		if (of_property_present(of_chosen, "linux,bootx-noscreen")) {
-			/*
-			 * The old code tried to work out which node was the MacOS
-			 * display based on the address. I'm dropping that since the
-			 * lack of a node spec only happens with old BootX versions
-			 * (users can update) and with this code, they'll still get
-			 * a display (just not the palette hacks).
-			 */
+			 
 			dev = platform_device_alloc("bootx-noscreen", 0);
 			if (WARN_ON(!dev))
 				return -ENOMEM;
@@ -577,11 +473,7 @@ static int __init of_platform_default_populate_init(void)
 			}
 		}
 
-		/*
-		 * For OF framebuffers, first create the device for the boot display,
-		 * then for the other framebuffers. Only fail for the boot display;
-		 * ignore errors for the rest.
-		 */
+		 
 		for_each_node_by_type(node, "display") {
 			if (!of_get_property(node, "linux,opened", NULL) ||
 			    !of_get_property(node, "linux,boot-display", NULL))
@@ -606,11 +498,7 @@ static int __init of_platform_default_populate_init(void)
 		}
 
 	} else {
-		/*
-		 * Handle certain compatibles explicitly, since we don't want to create
-		 * platform_devices for every node in /reserved-memory with a
-		 * "compatible",
-		 */
+		 
 		for_each_matching_node(node, reserved_mem_matches)
 			of_platform_device_create(node, NULL, NULL);
 
@@ -624,7 +512,7 @@ static int __init of_platform_default_populate_init(void)
 		of_platform_device_create(node, NULL, NULL);
 		of_node_put(node);
 
-		/* Populate everything else. */
+		 
 		of_platform_default_populate(NULL, NULL, NULL);
 	}
 
@@ -641,11 +529,11 @@ late_initcall_sync(of_platform_sync_state_init);
 
 int of_platform_device_destroy(struct device *dev, void *data)
 {
-	/* Do not touch devices not populated from the device tree */
+	 
 	if (!dev->of_node || !of_node_check_flag(dev->of_node, OF_POPULATED))
 		return 0;
 
-	/* Recurse for any nodes that were treated as busses */
+	 
 	if (of_node_check_flag(dev->of_node, OF_POPULATED_BUS))
 		device_for_each_child(dev, NULL, of_platform_device_destroy);
 
@@ -663,15 +551,7 @@ int of_platform_device_destroy(struct device *dev, void *data)
 }
 EXPORT_SYMBOL_GPL(of_platform_device_destroy);
 
-/**
- * of_platform_depopulate() - Remove devices populated from device tree
- * @parent: device which children will be removed
- *
- * Complementary to of_platform_populate(), this function removes children
- * of the given device (and, recurrently, their children) that have been
- * created from their respective device tree nodes (and only those,
- * leaving others - eg. manually created - unharmed).
- */
+ 
 void of_platform_depopulate(struct device *parent)
 {
 	if (parent->of_node && of_node_check_flag(parent->of_node, OF_POPULATED_BUS)) {
@@ -686,15 +566,7 @@ static void devm_of_platform_populate_release(struct device *dev, void *res)
 	of_platform_depopulate(*(struct device **)res);
 }
 
-/**
- * devm_of_platform_populate() - Populate platform_devices from device tree data
- * @dev: device that requested to populate from device tree data
- *
- * Similar to of_platform_populate(), but will automatically call
- * of_platform_depopulate() when the device is unbound from the bus.
- *
- * Return: 0 on success, < 0 on failure.
- */
+ 
 int devm_of_platform_populate(struct device *dev)
 {
 	struct device **ptr;
@@ -732,15 +604,7 @@ static int devm_of_platform_match(struct device *dev, void *res, void *data)
 	return *ptr == data;
 }
 
-/**
- * devm_of_platform_depopulate() - Remove devices populated from device tree
- * @dev: device that requested to depopulate from device tree data
- *
- * Complementary to devm_of_platform_populate(), this function removes children
- * of the given device (and, recurrently, their children) that have been
- * created from their respective device tree nodes (and only those,
- * leaving others - eg. manually created - unharmed).
- */
+ 
 void devm_of_platform_depopulate(struct device *dev)
 {
 	int ret;
@@ -762,20 +626,17 @@ static int of_platform_notify(struct notifier_block *nb,
 
 	switch (of_reconfig_get_state_change(action, rd)) {
 	case OF_RECONFIG_CHANGE_ADD:
-		/* verify that the parent is a bus */
+		 
 		if (!of_node_check_flag(rd->dn->parent, OF_POPULATED_BUS))
-			return NOTIFY_OK;	/* not for us */
+			return NOTIFY_OK;	 
 
-		/* already populated? (driver using of_populate manually) */
+		 
 		if (of_node_check_flag(rd->dn, OF_POPULATED))
 			return NOTIFY_OK;
 
-		/*
-		 * Clear the flag before adding the device so that fw_devlink
-		 * doesn't skip adding consumers to this device.
-		 */
+		 
 		rd->dn->fwnode.flags &= ~FWNODE_FLAG_NOT_DEVICE;
-		/* pdev_parent may be NULL when no bus platform device */
+		 
 		pdev_parent = of_find_device_by_node(rd->dn->parent);
 		pdev = of_platform_device_create(rd->dn, NULL,
 				pdev_parent ? &pdev_parent->dev : NULL);
@@ -784,26 +645,26 @@ static int of_platform_notify(struct notifier_block *nb,
 		if (pdev == NULL) {
 			pr_err("%s: failed to create for '%pOF'\n",
 					__func__, rd->dn);
-			/* of_platform_device_create tosses the error code */
+			 
 			return notifier_from_errno(-EINVAL);
 		}
 		break;
 
 	case OF_RECONFIG_CHANGE_REMOVE:
 
-		/* already depopulated? */
+		 
 		if (!of_node_check_flag(rd->dn, OF_POPULATED))
 			return NOTIFY_OK;
 
-		/* find our device by node */
+		 
 		pdev = of_find_device_by_node(rd->dn);
 		if (pdev == NULL)
-			return NOTIFY_OK;	/* no? not meant for us */
+			return NOTIFY_OK;	 
 
-		/* unregister takes one ref away */
+		 
 		of_platform_device_destroy(&pdev->dev, &children_left);
 
-		/* and put the reference of the find */
+		 
 		platform_device_put(pdev);
 		break;
 	}
@@ -819,6 +680,6 @@ void of_platform_register_reconfig_notifier(void)
 {
 	WARN_ON(of_reconfig_notifier_register(&platform_of_notifier));
 }
-#endif /* CONFIG_OF_DYNAMIC */
+#endif  
 
-#endif /* CONFIG_OF_ADDRESS */
+#endif  

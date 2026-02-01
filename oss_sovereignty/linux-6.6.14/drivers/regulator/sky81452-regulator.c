@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// sky81452-regulator.c	SKY81452 regulator driver
-//
-// Copyright 2014 Skyworks Solutions Inc.
-// Author : Gyungoh Yoo <jack.yoo@skyworksinc.com>
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -14,11 +14,11 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/of_regulator.h>
 
-/* registers */
+ 
 #define SKY81452_REG1	0x01
 #define SKY81452_REG3	0x03
 
-/* bit mask */
+ 
 #define SKY81452_LEN	0x40
 #define SKY81452_LOUT	0x1F
 

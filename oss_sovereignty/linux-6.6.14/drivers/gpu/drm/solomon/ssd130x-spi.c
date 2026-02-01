@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRM driver for Solomon SSD130X OLED displays (SPI bus)
- *
- * Copyright 2022 Red Hat Inc.
- * Authors: Javier Martinez Canillas <javierm@redhat.com>
- */
+
+ 
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 
@@ -18,16 +13,7 @@ struct ssd130x_spi_transport {
 	struct gpio_desc *dc;
 };
 
-/*
- * The regmap bus .write handler, it is just a wrapper around spi_write()
- * but toggling the Data/Command control pin (D/C#). Since for 4-wire SPI
- * a D/C# pin is used, in contrast with I2C where a control byte is sent,
- * prior to every data byte, that contains a bit with the D/C# value.
- *
- * These control bytes are considered registers by the ssd130x core driver
- * and can be used by the ssd130x SPI driver to determine if the data sent
- * is for a command register or for the Graphic Display Data RAM (GDDRAM).
- */
+ 
 static int ssd130x_spi_write(void *context, const void *data, size_t count)
 {
 	struct ssd130x_spi_transport *t = context;
@@ -40,11 +26,11 @@ static int ssd130x_spi_write(void *context, const void *data, size_t count)
 	if (*reg == SSD130X_DATA)
 		gpiod_set_value_cansleep(t->dc, 1);
 
-	/* Remove control byte since is not used in a 4-wire SPI interface */
+	 
 	return spi_write(spi, reg + 1, count - 1);
 }
 
-/* The ssd130x driver does not read registers but regmap expects a .read */
+ 
 static int ssd130x_spi_read(void *context, const void *reg, size_t reg_size,
 			    void *val, size_t val_size)
 {
@@ -128,26 +114,19 @@ static const struct of_device_id ssd130x_of_match[] = {
 		.compatible = "solomon,ssd1309",
 		.data = &ssd130x_variants[SSD1309_ID],
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ssd130x_of_match);
 
 #if IS_MODULE(CONFIG_DRM_SSD130X_SPI)
-/*
- * The SPI core always reports a MODALIAS uevent of the form "spi:<dev>", even
- * if the device was registered via OF. This means that the module will not be
- * auto loaded, unless it contains an alias that matches the MODALIAS reported.
- *
- * To workaround this issue, add a SPI device ID table. Even when this should
- * not be needed for this driver to match the registered SPI devices.
- */
+ 
 static const struct spi_device_id ssd130x_spi_table[] = {
 	{ "sh1106",  SH1106_ID },
 	{ "ssd1305", SSD1305_ID },
 	{ "ssd1306", SSD1306_ID },
 	{ "ssd1307", SSD1307_ID },
 	{ "ssd1309", SSD1309_ID },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, ssd130x_spi_table);
 #endif

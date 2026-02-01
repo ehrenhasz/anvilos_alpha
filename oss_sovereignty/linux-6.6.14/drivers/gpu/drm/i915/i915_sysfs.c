@@ -1,29 +1,4 @@
-/*
- * Copyright © 2012 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Ben Widawsky <ben@bwidawsk.net>
- *
- */
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -121,18 +96,14 @@ i915_l3_write(struct file *filp, struct kobject *kobj,
 	count = round_down(count, sizeof(u32));
 	memcpy(remap_info + offset / sizeof(u32), buf, count);
 
-	/* NB: We defer the remapping until we switch to the context */
+	 
 	list_for_each_entry(ctx, &i915->gem.contexts.list, link)
 		ctx->remap_slice |= BIT(slice);
 
 	spin_unlock(&i915->gem.contexts.lock);
 	kfree(freeme);
 
-	/*
-	 * TODO: Ideally we really want a GPU reset here to make sure errors
-	 * aren't propagated. Since I cannot find a stable way to reset the GPU
-	 * at this point it is left as a TODO.
-	*/
+	 
 
 	return count;
 }
@@ -167,12 +138,7 @@ static ssize_t error_state_read(struct file *filp, struct kobject *kobj,
 	struct i915_gpu_coredump *gpu;
 	ssize_t ret = 0;
 
-	/*
-	 * FIXME: Concurrent clients triggering resets and reading + clearing
-	 * dumps can cause inconsistent sysfs reads when a user calls in with a
-	 * non-zero offset to complete a prior partial read but the
-	 * gpu_coredump has been cleared or replaced.
-	 */
+	 
 
 	gpu = i915_first_error_state(i915);
 	if (IS_ERR(gpu)) {

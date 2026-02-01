@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  hosts.c Copyright (C) 1992 Drew Eckhardt
- *          Copyright (C) 1993, 1994, 1995 Eric Youngdale
- *          Copyright (C) 2002-2003 Christoph Hellwig
- *
- *  mid to lowlevel SCSI driver interface
- *      Initial versions: Drew Eckhardt
- *      Subsequent revisions: Eric Youngdale
- *
- *  <drew@colorado.edu>
- *
- *  Jiffies wrap fixes (host->resetting), 3 Dec 1998 Andrea Arcangeli
- *  Added QLOGIC QLA1280 SCSI controller kernel host support. 
- *     August 4, 1999 Fred Lewis, Intel DuPont
- *
- *  Updated to reflect the new initialization scheme for the higher 
- *  level of scsi drivers (sd/sr/st)
- *  September 17, 2000 Torben Mathiasen <tmm@image.dk>
- *
- *  Restructured scsi_host lists and associated functions.
- *  September 04, 2002 Mike Anderson (andmike@us.ibm.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/blkdev.h>
@@ -64,14 +43,7 @@ static struct class shost_class = {
 	.dev_groups	= scsi_shost_groups,
 };
 
-/**
- *	scsi_host_set_state - Take the given host through the host state model.
- *	@shost:	scsi host to change the state of.
- *	@state:	state to change to.
- *
- *	Returns zero if unsuccessful or an error if the requested
- *	transition is illegal.
- **/
+ 
 int scsi_host_set_state(struct Scsi_Host *shost, enum scsi_host_state state)
 {
 	enum scsi_host_state oldstate = shost->shost_state;
@@ -81,9 +53,7 @@ int scsi_host_set_state(struct Scsi_Host *shost, enum scsi_host_state state)
 
 	switch (state) {
 	case SHOST_CREATED:
-		/* There are no legal states that come back to
-		 * created.  This is the manually initialised start
-		 * state */
+		 
 		goto illegal;
 
 	case SHOST_RUNNING:
@@ -158,10 +128,7 @@ int scsi_host_set_state(struct Scsi_Host *shost, enum scsi_host_state state)
 	return -EINVAL;
 }
 
-/**
- * scsi_remove_host - remove a scsi host
- * @shost:	a pointer to a scsi host to remove
- **/
+ 
 void scsi_remove_host(struct Scsi_Host *shost)
 {
 	unsigned long flags;
@@ -183,12 +150,7 @@ void scsi_remove_host(struct Scsi_Host *shost)
 	scsi_proc_host_rm(shost);
 	scsi_proc_hostdir_rm(shost->hostt);
 
-	/*
-	 * New SCSI devices cannot be attached anymore because of the SCSI host
-	 * state so drop the tag set refcnt. Wait until the tag set refcnt drops
-	 * to zero because .exit_cmd_priv implementations may need the host
-	 * pointer.
-	 */
+	 
 	kref_put(&shost->tagset_refcnt, scsi_mq_free_tags);
 	wait_for_completion(&shost->tagset_freed);
 
@@ -203,19 +165,7 @@ void scsi_remove_host(struct Scsi_Host *shost)
 }
 EXPORT_SYMBOL(scsi_remove_host);
 
-/**
- * scsi_add_host_with_dma - add a scsi host with dma device
- * @shost:	scsi host pointer to add
- * @dev:	a struct device of type scsi class
- * @dma_dev:	dma device for the host
- *
- * Note: You rarely need to worry about this unless you're in a
- * virtualised host environments, so use the simpler scsi_add_host()
- * function instead.
- *
- * Return value: 
- * 	0 on success / != 0 for error
- **/
+ 
 int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
 			   struct device *dma_dev)
 {
@@ -231,7 +181,7 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
 		goto fail;
 	}
 
-	/* Use min_t(int, ...) in case shost->can_queue exceeds SHRT_MAX */
+	 
 	shost->cmd_per_lun = min_t(int, shost->cmd_per_lun,
 				   shost->can_queue);
 
@@ -258,11 +208,7 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
 	kref_init(&shost->tagset_refcnt);
 	init_completion(&shost->tagset_freed);
 
-	/*
-	 * Increase usage count temporarily here so that calling
-	 * scsi_autopm_put_host() will trigger runtime idle if there is
-	 * nothing else preventing suspending the device.
-	 */
+	 
 	pm_runtime_get_noresume(&shost->shost_gendev);
 	pm_runtime_set_active(&shost->shost_gendev);
 	pm_runtime_enable(&shost->shost_gendev);
@@ -312,17 +258,11 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
 	scsi_autopm_put_host(shost);
 	return error;
 
-	/*
-	 * Any host allocation in this function will be freed in
-	 * scsi_host_dev_release().
-	 */
+	 
  out_del_dev:
 	device_del(&shost->shost_dev);
  out_del_gendev:
-	/*
-	 * Host state is SHOST_RUNNING so we have to explicitly release
-	 * ->shost_dev.
-	 */
+	 
 	put_device(&shost->shost_dev);
 	device_del(&shost->shost_gendev);
  out_disable_runtime_pm:
@@ -341,7 +281,7 @@ static void scsi_host_dev_release(struct device *dev)
 	struct Scsi_Host *shost = dev_to_shost(dev);
 	struct device *parent = dev->parent;
 
-	/* Wait for functions invoked through call_rcu(&scmd->rcu, ...) */
+	 
 	rcu_barrier();
 
 	if (shost->tmf_work_q)
@@ -352,13 +292,7 @@ static void scsi_host_dev_release(struct device *dev)
 		destroy_workqueue(shost->work_q);
 
 	if (shost->shost_state == SHOST_CREATED) {
-		/*
-		 * Free the shost_dev device name here if scsi_host_alloc()
-		 * and scsi_host_put() have been called but neither
-		 * scsi_host_add() nor scsi_remove_host() has been called.
-		 * This avoids that the memory allocated for the shost_dev
-		 * name is leaked.
-		 */
+		 
 		kfree(dev_name(&shost->shost_dev));
 	}
 
@@ -376,19 +310,7 @@ static struct device_type scsi_host_type = {
 	.release =	scsi_host_dev_release,
 };
 
-/**
- * scsi_host_alloc - register a scsi host adapter instance.
- * @sht:	pointer to scsi host template
- * @privsize:	extra bytes to allocate for driver
- *
- * Note:
- * 	Allocate a new Scsi_Host and perform basic initialization.
- * 	The host is not published to the scsi midlayer until scsi_add_host
- * 	is called.
- *
- * Return value:
- * 	Pointer to a new Scsi_Host
- **/
+ 
 struct Scsi_Host *scsi_host_alloc(const struct scsi_host_template *sht, int privsize)
 {
 	struct Scsi_Host *shost;
@@ -418,20 +340,15 @@ struct Scsi_Host *scsi_host_alloc(const struct scsi_host_template *sht, int priv
 
 	shost->dma_channel = 0xff;
 
-	/* These three are default values which can be overridden */
+	 
 	shost->max_channel = 0;
 	shost->max_id = 8;
 	shost->max_lun = 8;
 
-	/* Give each shost a default transportt */
+	 
 	shost->transportt = &blank_transport_template;
 
-	/*
-	 * All drivers right now should be able to handle 12 byte
-	 * commands.  Every so often there are requests for 16 byte
-	 * commands, but individual low-level drivers need to certify that
-	 * they actually do something sensible with such commands.
-	 */
+	 
 	shost->max_cmd_len = 12;
 	shost->hostt = sht;
 	shost->this_id = sht->this_id;
@@ -454,7 +371,7 @@ struct Scsi_Host *scsi_host_alloc(const struct scsi_host_template *sht, int priv
 		shost->eh_deadline = shost_eh_deadline * HZ;
 
 	if (sht->supported_mode == MODE_UNKNOWN)
-		/* means we didn't set it ... default to INITIATOR */
+		 
 		shost->active_mode = MODE_INITIATOR;
 	else
 		shost->active_mode = sht->supported_mode;
@@ -464,10 +381,7 @@ struct Scsi_Host *scsi_host_alloc(const struct scsi_host_template *sht, int priv
 	else
 		shost->max_host_blocked = SCSI_DEFAULT_HOST_BLOCKED;
 
-	/*
-	 * If the driver imposes no hard sector transfer limit, start at
-	 * machine infinity initially.
-	 */
+	 
 	if (sht->max_sectors)
 		shost->max_sectors = sht->max_sectors;
 	else
@@ -478,9 +392,7 @@ struct Scsi_Host *scsi_host_alloc(const struct scsi_host_template *sht, int priv
 	else
 		shost->max_segment_size = BLK_MAX_SEGMENT_SIZE;
 
-	/*
-	 * assume a 4GB boundary, if not set
-	 */
+	 
 	if (sht->dma_boundary)
 		shost->dma_boundary = sht->dma_boundary;
 	else
@@ -523,11 +435,7 @@ struct Scsi_Host *scsi_host_alloc(const struct scsi_host_template *sht, int priv
 		goto fail;
 	return shost;
  fail:
-	/*
-	 * Host state is still SHOST_CREATED and that is enough to release
-	 * ->shost_gendev. scsi_host_dev_release() will free
-	 * dev_name(&shost->shost_dev).
-	 */
+	 
 	put_device(&shost->shost_gendev);
 
 	return NULL;
@@ -543,17 +451,7 @@ static int __scsi_host_match(struct device *dev, const void *data)
 	return p->host_no == *hostnum;
 }
 
-/**
- * scsi_host_lookup - get a reference to a Scsi_Host by host no
- * @hostnum:	host number to locate
- *
- * Return value:
- *	A pointer to located Scsi_Host or NULL.
- *
- *	The caller must do a scsi_host_put() to drop the reference
- *	that scsi_host_get() took. The put_device() below dropped
- *	the reference from class_find_device().
- **/
+ 
 struct Scsi_Host *scsi_host_lookup(unsigned int hostnum)
 {
 	struct device *cdev;
@@ -569,10 +467,7 @@ struct Scsi_Host *scsi_host_lookup(unsigned int hostnum)
 }
 EXPORT_SYMBOL(scsi_host_lookup);
 
-/**
- * scsi_host_get - inc a Scsi_Host ref count
- * @shost:	Pointer to Scsi_Host to inc.
- **/
+ 
 struct Scsi_Host *scsi_host_get(struct Scsi_Host *shost)
 {
 	if ((shost->shost_state == SHOST_DEL) ||
@@ -593,10 +488,7 @@ static bool scsi_host_check_in_flight(struct request *rq, void *data)
 	return true;
 }
 
-/**
- * scsi_host_busy - Return the host busy counter
- * @shost:	Pointer to Scsi_Host to inc.
- **/
+ 
 int scsi_host_busy(struct Scsi_Host *shost)
 {
 	int cnt = 0;
@@ -607,10 +499,7 @@ int scsi_host_busy(struct Scsi_Host *shost)
 }
 EXPORT_SYMBOL(scsi_host_busy);
 
-/**
- * scsi_host_put - dec a Scsi_Host ref count
- * @shost:	Pointer to Scsi_Host to dec.
- **/
+ 
 void scsi_host_put(struct Scsi_Host *shost)
 {
 	put_device(&shost->shost_gendev);
@@ -634,16 +523,7 @@ int scsi_is_host_device(const struct device *dev)
 }
 EXPORT_SYMBOL(scsi_is_host_device);
 
-/**
- * scsi_queue_work - Queue work to the Scsi_Host workqueue.
- * @shost:	Pointer to Scsi_Host.
- * @work:	Work to queue for execution.
- *
- * Return value:
- * 	1 - work queued for execution
- *	0 - work is already queued
- *	-EINVAL - work queue doesn't exist
- **/
+ 
 int scsi_queue_work(struct Scsi_Host *shost, struct work_struct *work)
 {
 	if (unlikely(!shost->work_q)) {
@@ -659,10 +539,7 @@ int scsi_queue_work(struct Scsi_Host *shost, struct work_struct *work)
 }
 EXPORT_SYMBOL_GPL(scsi_queue_work);
 
-/**
- * scsi_flush_work - Flush a Scsi_Host's workqueue.
- * @shost:	Pointer to Scsi_Host.
- **/
+ 
 void scsi_flush_work(struct Scsi_Host *shost)
 {
 	if (!shost->work_q) {
@@ -689,16 +566,7 @@ static bool complete_all_cmds_iter(struct request *rq, void *data)
 	return true;
 }
 
-/**
- * scsi_host_complete_all_commands - Terminate all running commands
- * @shost:	Scsi Host on which commands should be terminated
- * @status:	Status to be set for the terminated commands
- *
- * There is no protection against modification of the number
- * of outstanding commands. It is the responsibility of the
- * caller to ensure that concurrent I/O submission and/or
- * completion is stopped when calling this function.
- */
+ 
 void scsi_host_complete_all_commands(struct Scsi_Host *shost,
 				     enum scsi_host_status status)
 {
@@ -720,15 +588,7 @@ static bool __scsi_host_busy_iter_fn(struct request *req, void *priv)
 	return iter_data->fn(sc, iter_data->priv);
 }
 
-/**
- * scsi_host_busy_iter - Iterate over all busy commands
- * @shost:	Pointer to Scsi_Host.
- * @fn:		Function to call on each busy command
- * @priv:	Data pointer passed to @fn
- *
- * If locking against concurrent command completions is required
- * ithas to be provided by the caller
- **/
+ 
 void scsi_host_busy_iter(struct Scsi_Host *shost,
 			 bool (*fn)(struct scsi_cmnd *, void *),
 			 void *priv)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STM32 CEC driver
- * Copyright (C) STMicroelectronics SA 2017
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -17,13 +13,13 @@
 
 #define CEC_NAME	"stm32-cec"
 
-/* CEC registers  */
-#define CEC_CR		0x0000 /* Control Register */
-#define CEC_CFGR	0x0004 /* ConFiGuration Register */
-#define CEC_TXDR	0x0008 /* Rx data Register */
-#define CEC_RXDR	0x000C /* Rx data Register */
-#define CEC_ISR		0x0010 /* Interrupt and status Register */
-#define CEC_IER		0x0014 /* Interrupt enable Register */
+ 
+#define CEC_CR		0x0000  
+#define CEC_CFGR	0x0004  
+#define CEC_TXDR	0x0008  
+#define CEC_RXDR	0x000C  
+#define CEC_ISR		0x0010  
+#define CEC_IER		0x0014  
 
 #define TXEOM		BIT(2)
 #define TXSOM		BIT(1)
@@ -55,11 +51,7 @@
 #define ALL_TX_IT	(TXEND | TXBR | TXACKE | TXERR | TXUDR | ARBLST)
 #define ALL_RX_IT	(RXEND | RXBR | RXACKE | RXOVR)
 
-/*
- * 400 ms is the time it takes for one 16 byte message to be
- * transferred and 5 is the maximum number of retries. Add
- * another 100 ms as a margin.
- */
+ 
 #define CEC_XFER_TIMEOUT_MS (5 * 400 + 100)
 
 struct stm32_cec {
@@ -107,12 +99,12 @@ static void stm32_tx_done(struct stm32_cec *cec, u32 status)
 	}
 
 	if (cec->irq_status & TXBR) {
-		/* send next byte */
+		 
 		if (cec->tx_cnt < cec->tx_msg.len)
 			regmap_write(cec->regmap, CEC_TXDR,
 				     cec->tx_msg.msg[cec->tx_cnt++]);
 
-		/* TXEOM is set to command transmission of the last byte */
+		 
 		if (cec->tx_cnt == cec->tx_msg.len)
 			regmap_update_bits(cec->regmap, CEC_CR, TXEOM, TXEOM);
 	}
@@ -196,7 +188,7 @@ static int stm32_cec_adap_log_addr(struct cec_adapter *adap, u8 logical_addr)
 	u32 oar = (1 << logical_addr) << 16;
 	u32 val;
 
-	/* Poll every 100µs the register CEC_CR to wait end of transmission */
+	 
 	regmap_read_poll_timeout(cec->regmap, CEC_CR, val, !(val & TXSOM),
 				 100, CEC_XFER_TIMEOUT_MS * 1000);
 	regmap_update_bits(cec->regmap, CEC_CR, CECEN, 0);
@@ -216,21 +208,18 @@ static int stm32_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 {
 	struct stm32_cec *cec = adap->priv;
 
-	/* Copy message */
+	 
 	cec->tx_msg = *msg;
 	cec->tx_cnt = 0;
 
-	/*
-	 * If the CEC message consists of only one byte,
-	 * TXEOM must be set before of TXSOM.
-	 */
+	 
 	if (cec->tx_msg.len == 1)
 		regmap_update_bits(cec->regmap, CEC_CR, TXEOM, TXEOM);
 
-	/* TXSOM is set to command transmission of the first byte */
+	 
 	regmap_update_bits(cec->regmap, CEC_CR, TXSOM, TXSOM);
 
-	/* Write the header (first byte of message) */
+	 
 	regmap_write(cec->regmap, CEC_TXDR, cec->tx_msg.msg[0]);
 	cec->tx_cnt++;
 
@@ -312,10 +301,7 @@ static int stm32_cec_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * CEC_CAP_PHYS_ADDR caps should be removed when a cec notifier is
-	 * available for example when a drm driver can provide edid
-	 */
+	 
 	cec->adap = cec_allocate_adapter(&stm32_cec_adap_ops, cec,
 			CEC_NAME, caps,	CEC_MAX_LOG_ADDRS);
 	ret = PTR_ERR_OR_ZERO(cec->adap);
@@ -355,7 +341,7 @@ static void stm32_cec_remove(struct platform_device *pdev)
 
 static const struct of_device_id stm32_cec_of_match[] = {
 	{ .compatible = "st,stm32-cec" },
-	{ /* end node */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, stm32_cec_of_match);
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_CONNTRACK_COMMON_H
 #define _NF_CONNTRACK_COMMON_H
 
@@ -30,7 +30,7 @@ struct nf_conntrack {
 
 void nf_conntrack_destroy(struct nf_conntrack *nfct);
 
-/* like nf_ct_put, but without module dependency on nf_conntrack */
+ 
 static inline void nf_conntrack_put(struct nf_conntrack *nfct)
 {
 	if (nfct && refcount_dec_and_test(&nfct->use))
@@ -42,4 +42,4 @@ static inline void nf_conntrack_get(struct nf_conntrack *nfct)
 		refcount_inc(&nfct->use);
 }
 
-#endif /* _NF_CONNTRACK_COMMON_H */
+#endif  

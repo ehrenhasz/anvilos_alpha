@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "core.h"
 #include "dp_tx.h"
@@ -131,7 +128,7 @@ tcl_ring_sel:
 			return -ENOSPC;
 		}
 
-		/* Check if the next ring is available */
+		 
 		ring_selector++;
 		goto tcl_ring_sel;
 	}
@@ -198,11 +195,11 @@ tcl_ring_sel:
 		}
 		break;
 	case HAL_TCL_ENCAP_TYPE_ETHERNET:
-		/* no need to encap */
+		 
 		break;
 	case HAL_TCL_ENCAP_TYPE_802_3:
 	default:
-		/* TODO: Take care of other encap modes as well */
+		 
 		ret = -EINVAL;
 		atomic_inc(&ab->soc_stats.tx_err.misc_fail);
 		goto fail_remove_idr;
@@ -230,19 +227,13 @@ tcl_ring_sel:
 
 	hal_tcl_desc = (void *)ath11k_hal_srng_src_get_next_entry(ab, tcl_ring);
 	if (unlikely(!hal_tcl_desc)) {
-		/* NOTE: It is highly unlikely we'll be running out of tcl_ring
-		 * desc because the desc is directly enqueued onto hw queue.
-		 */
+		 
 		ath11k_hal_srng_access_end(ab, tcl_ring);
 		ab->soc_stats.tx_err.desc_na[ti.ring_id]++;
 		spin_unlock_bh(&tcl_ring->lock);
 		ret = -ENOMEM;
 
-		/* Checking for available tcl descriptors in another ring in
-		 * case of failure due to full tcl ring now, is better than
-		 * checking this ring earlier for each pkt tx.
-		 * Restart ring selection if some rings are not checked yet.
-		 */
+		 
 		if (unlikely(ring_map != (BIT(ab->hw_params.max_tx_ring)) - 1) &&
 		    ab->hw_params.tcl_ring_retry && ab->hw_params.max_tx_ring > 1) {
 			tcl_ring_retry = true;
@@ -417,9 +408,7 @@ ath11k_dp_tx_process_htt_tx_complete(struct ath11k_base *ab,
 		ath11k_dp_tx_free_txbuf(ab, mac_id, msdu_id, tx_ring);
 		break;
 	case HAL_WBM_REL_HTT_TX_COMP_STATUS_MEC_NOTIFY:
-		/* This event is to be handled only when the driver decides to
-		 * use WDS offload functionality.
-		 */
+		 
 		break;
 	default:
 		ath11k_warn(ab, "Unknown htt tx status %d\n", wbm_status);
@@ -480,9 +469,7 @@ void ath11k_dp_tx_update_txcompl(struct ath11k *ar, struct hal_tx_status *ts)
 	ru_tones = FIELD_GET(HAL_TX_RATE_STATS_INFO0_TONES_IN_RU, ts->rate_stats);
 	ofdma = FIELD_GET(HAL_TX_RATE_STATS_INFO0_OFDMA_TX, ts->rate_stats);
 
-	/* This is to prefer choose the real NSS value arsta->last_txrate.nss,
-	 * if it is invalid, then choose the NSS value while assoc.
-	 */
+	 
 	if (arsta->last_txrate.nss)
 		arsta->txrate.nss = arsta->last_txrate.nss;
 	else
@@ -557,7 +544,7 @@ static void ath11k_dp_tx_complete_msdu(struct ath11k *ar,
 	struct rate_info rate;
 
 	if (WARN_ON_ONCE(ts->buf_rel_source != HAL_WBM_REL_SRC_MODULE_TQM)) {
-		/* Must not happen */
+		 
 		return;
 	}
 
@@ -578,7 +565,7 @@ static void ath11k_dp_tx_complete_msdu(struct ath11k *ar,
 	info = IEEE80211_SKB_CB(msdu);
 	memset(&info->status, 0, sizeof(info->status));
 
-	/* skip tx rate update from ieee80211_status*/
+	 
 	info->status.rates[0].idx = -1;
 
 	if (ts->status == HAL_WBM_TQM_REL_REASON_FRAME_ACKED &&
@@ -704,7 +691,7 @@ void ath11k_dp_tx_completion_handler(struct ath11k_base *ab, int ring_id)
 	if (unlikely((ath11k_hal_srng_dst_peek(ab, status_ring) != NULL) &&
 		     (ATH11K_TX_COMPL_NEXT(tx_ring->tx_status_head) ==
 		      tx_ring->tx_status_tail))) {
-		/* TODO: Process pending tx_status messages when kfifo_is_full() */
+		 
 		ath11k_warn(ab, "Unable to process some of the tx_status ring desc because status_fifo is full\n");
 	}
 
@@ -771,21 +758,18 @@ int ath11k_dp_tx_send_reo_cmd(struct ath11k_base *ab, struct dp_rx_tid *rx_tid,
 	cmd_ring = &ab->hal.srng_list[dp->reo_cmd_ring.ring_id];
 	cmd_num = ath11k_hal_reo_cmd_send(ab, cmd_ring, type, cmd);
 
-	/* cmd_num should start from 1, during failure return the error code */
+	 
 	if (cmd_num < 0)
 		return cmd_num;
 
-	/* reo cmd ring descriptors has cmd_num starting from 1 */
+	 
 	if (cmd_num == 0)
 		return -EINVAL;
 
 	if (!cb)
 		return 0;
 
-	/* Can this be optimized so that we keep the pending command list only
-	 * for tid delete command to free up the resource on the command status
-	 * indication?
-	 */
+	 
 	dp_cmd = kzalloc(sizeof(*dp_cmd), GFP_ATOMIC);
 
 	if (!dp_cmd)
@@ -816,9 +800,7 @@ ath11k_dp_tx_get_ring_id_type(struct ath11k_base *ab,
 	case HAL_RXDMA_BUF:
 		lmac_ring_id_offset = mac_id * HAL_SRNG_RINGS_PER_LMAC;
 
-		/* for QCA6390, host fills rx buffer to fw and fw fills to
-		 * rxbuf ring for each rxdma
-		 */
+		 
 		if (!ab->hw_params.rx_mac_buf_ring) {
 			if (!(ring_id == (HAL_SRNG_RING_ID_WMAC1_SW2RXDMA0_BUF +
 					  lmac_ring_id_offset) ||
@@ -1217,7 +1199,7 @@ int ath11k_dp_tx_htt_monitor_mode_ring_config(struct ath11k *ar, bool reset)
 						       DP_RXDMA_REFILL_RING_SIZE,
 						       &tlv_filter);
 	} else if (!reset) {
-		/* set in monitor mode only */
+		 
 		for (i = 0; i < ab->hw_params.num_rxmda_per_pdev; i++) {
 			ring_id = dp->rx_mac_buf_ring[i].ring_id;
 			ret = ath11k_dp_tx_htt_rx_filter_setup(ar->ab, ring_id,

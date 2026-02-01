@@ -1,20 +1,4 @@
-/* install - copy files and set attributes
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -44,7 +28,7 @@
 #include "utimens.h"
 #include "xstrtol.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "install"
 
 #define AUTHORS proper_name ("David MacKenzie")
@@ -60,49 +44,42 @@ static bool use_default_selinux_context = true;
 # define endpwent() ((void) 0)
 #endif
 
-/* The user name that will own the files, or nullptr to make the owner
-   the current user ID. */
+ 
 static char *owner_name;
 
-/* The user ID corresponding to 'owner_name'. */
+ 
 static uid_t owner_id;
 
-/* The group name that will own the files, or nullptr to make the group
-   the current group ID. */
+ 
 static char *group_name;
 
-/* The group ID corresponding to 'group_name'. */
+ 
 static gid_t group_id;
 
 #define DEFAULT_MODE (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)
 
-/* The file mode bits to which non-directory files will be set.  The umask has
-   no effect. */
+ 
 static mode_t mode = DEFAULT_MODE;
 
-/* Similar, but for directories.  */
+ 
 static mode_t dir_mode = DEFAULT_MODE;
 
-/* The file mode bits that the user cares about.  This should be a
-   superset of DIR_MODE and a subset of CHMOD_MODE_BITS.  This matters
-   for directories, since otherwise directories may keep their S_ISUID
-   or S_ISGID bits.  */
+ 
 static mode_t dir_mode_bits = CHMOD_MODE_BITS;
 
-/* Compare files before installing (-C) */
+ 
 static bool copy_only_if_needed;
 
-/* If true, strip executable files after copying them. */
+ 
 static bool strip_files;
 
-/* If true, install a directory instead of a regular file. */
+ 
 static bool dir_arg;
 
-/* Program used to strip binaries, "strip" is default */
+ 
 static char const *strip_program = "strip";
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   DEBUG_OPTION = CHAR_MAX + 1,
@@ -133,8 +110,7 @@ static struct option const long_options[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Compare content of opened files using file descriptors A_FD and B_FD. Return
-   true if files are equal. */
+ 
 static bool
 have_same_content (int a_fd, int b_fd)
 {
@@ -154,7 +130,7 @@ have_same_content (int a_fd, int b_fd)
   return size == 0;
 }
 
-/* Return true for mode with non-permission bits. */
+ 
 static bool
 extra_mode (mode_t input)
 {
@@ -162,8 +138,7 @@ extra_mode (mode_t input)
   return !! (input & ~ mask);
 }
 
-/* Return true if copy of file SRC_NAME to file DEST_NAME aka
-   DEST_DIRFD+DEST_RELNAME is necessary. */
+ 
 static bool
 need_copy (char const *src_name, char const *dest_name,
            int dest_dirfd, char const *dest_relname,
@@ -176,7 +151,7 @@ need_copy (char const *src_name, char const *dest_name,
   if (extra_mode (mode))
     return true;
 
-  /* compare files using stat */
+   
   if (lstat (src_name, &src_sb) != 0)
     return true;
 
@@ -211,7 +186,7 @@ need_copy (char const *src_name, char const *dest_name,
   else if (dest_sb.st_gid != group_id)
     return true;
 
-  /* compare SELinux context if preserving */
+   
   if (selinux_enabled && x->preserve_security_context)
     {
       char *file_scontext = nullptr;
@@ -235,7 +210,7 @@ need_copy (char const *src_name, char const *dest_name,
         return true;
     }
 
-  /* compare files content */
+   
   src_fd = open (src_name, O_RDONLY | O_BINARY);
   if (src_fd < 0)
     return true;
@@ -282,18 +257,16 @@ cp_option_init (struct cp_options *x)
   x->symbolic_link = false;
   x->backup_type = no_backups;
 
-  /* Create destination files initially writable so we can run strip on them.
-     Although GNU strip works fine on read-only files, some others
-     would fail.  */
+   
   x->set_mode = true;
   x->mode = S_IRUSR | S_IWUSR;
   x->stdin_tty = false;
 
   x->open_dangling_dest_symlink = false;
   x->update = false;
-  x->require_preserve_context = false;  /* Not used by install currently.  */
-  x->preserve_security_context = false; /* Whether to copy context from src.  */
-  x->set_security_context = nullptr; /* Whether to set sys default context.  */
+  x->require_preserve_context = false;   
+  x->preserve_security_context = false;  
+  x->set_security_context = nullptr;  
   x->preserve_xattr = false;
   x->verbose = false;
   x->dest_info = nullptr;
@@ -315,10 +288,7 @@ get_labeling_handle (void)
   return hnd;
 }
 
-/* Modify file context to match the specified policy.
-   If an error occurs the file will remain with the default directory
-   context.  Note this sets the context to that returned by selabel_lookup
-   and thus discards MLS levels and user identity of the FILE.  */
+ 
 static void
 setdefaultfilecon (char const *file)
 {
@@ -327,7 +297,7 @@ setdefaultfilecon (char const *file)
 
   if (selinux_enabled != 1)
     {
-      /* Indicate no context found. */
+       
       return;
     }
   if (lstat (file, &st) != 0)
@@ -352,7 +322,7 @@ setdefaultfilecon (char const *file)
   freecon (scontext);
 }
 
-/* Report that directory DIR was made, if OPTIONS requests this.  */
+ 
 static void
 announce_mkdir (char const *dir, void *options)
 {
@@ -361,9 +331,7 @@ announce_mkdir (char const *dir, void *options)
     prog_fprintf (stdout, _("creating directory %s"), quoteaf (dir));
 }
 
-/* Make ancestor directory DIR, whose last file name component is
-   COMPONENT, with options OPTIONS.  Assume the working directory is
-   COMPONENT's parent.  */
+ 
 static int
 make_ancestor (char const *dir, char const *component, void *options)
 {
@@ -380,7 +348,7 @@ make_ancestor (char const *dir, char const *component, void *options)
   return r;
 }
 
-/* Process a command-line file name, for the -d option.  */
+ 
 static int
 process_dir (char *dir, struct savewd *wd, void *options)
 {
@@ -392,11 +360,7 @@ process_dir (char *dir, struct savewd *wd, void *options)
           ? EXIT_SUCCESS
           : EXIT_FAILURE);
 
-  /* FIXME: Due to the current structure of make_dir_parents()
-     we don't have the facility to call defaultcon() before the
-     final component of DIR is created.  So for now, create the
-     final component with the context from previous component
-     and here we set the context for the final component. */
+   
   if (ret == EXIT_SUCCESS && x->set_security_context)
     {
       if (! restorecon (x->set_security_context, last_component (dir), false)
@@ -408,8 +372,7 @@ process_dir (char *dir, struct savewd *wd, void *options)
   return ret;
 }
 
-/* Copy file FROM onto file TO aka TO_DIRFD+TO_RELNAME, creating TO if
-   necessary.  Return true if successful.  */
+ 
 
 static bool
 copy_file (char const *from, char const *to,
@@ -420,33 +383,18 @@ copy_file (char const *from, char const *to,
   if (copy_only_if_needed && !need_copy (from, to, to_dirfd, to_relname, x))
     return true;
 
-  /* Allow installing from non-regular files like /dev/null.
-     Charles Karney reported that some Sun version of install allows that
-     and that sendmail's installation process relies on the behavior.
-     However, since !x->recursive, the call to "copy" will fail if FROM
-     is a directory.  */
+   
 
   return copy (from, to, to_dirfd, to_relname, 0, x, &copy_into_self, nullptr);
 }
 
-/* Set the attributes of file or directory NAME aka DIRFD+RELNAME.
-   Return true if successful.  */
+ 
 
 static bool
 change_attributes (char const *name, int dirfd, char const *relname)
 {
   bool ok = false;
-  /* chown must precede chmod because on some systems,
-     chown clears the set[ug]id bits for non-superusers,
-     resulting in incorrect permissions.
-     On System V, users can give away files with chown and then not
-     be able to chmod them.  So don't give files away.
-
-     We don't normally ignore errors from chown because the idea of
-     the install command is that the file is supposed to end up with
-     precisely the attributes that the user specified (or defaulted).
-     If the file doesn't end up with the group they asked for, they'll
-     want to know.  */
+   
 
   if (! (owner_id == (uid_t) -1 && group_id == (gid_t) -1)
       && lchownat (dirfd, relname, owner_id, group_id) != 0)
@@ -462,8 +410,7 @@ change_attributes (char const *name, int dirfd, char const *relname)
   return ok;
 }
 
-/* Set the timestamps of file DEST aka DIRFD+RELNAME to match those of SRC_SB.
-   Return true if successful.  */
+ 
 
 static bool
 change_timestamps (struct stat const *src_sb, char const *dest,
@@ -481,11 +428,7 @@ change_timestamps (struct stat const *src_sb, char const *dest,
   return true;
 }
 
-/* Strip the symbol table from the file NAME.
-   We could dig the magic number out of the file first to
-   determine whether to strip it, but the header files and
-   magic numbers vary so much from system to system that making
-   it portable would be very difficult.  Not worth the effort. */
+ 
 
 static bool
 strip (char const *name)
@@ -499,7 +442,7 @@ strip (char const *name)
     case -1:
       error (0, errno, _("fork system call failed"));
       break;
-    case 0:			/* Child. */
+    case 0:			 
       {
         char const *safe_name = name;
         if (name && *name == '-')
@@ -508,19 +451,19 @@ strip (char const *name)
         error (EXIT_FAILURE, errno, _("cannot run %s"),
                quoteaf (strip_program));
       }
-    default:			/* Parent. */
+    default:			 
       if (waitpid (pid, &status, 0) < 0)
         error (0, errno, _("waiting for strip"));
       else if (! WIFEXITED (status) || WEXITSTATUS (status))
         error (0, 0, _("strip process terminated abnormally"));
       else
-        ok = true;      /* strip succeeded */
+        ok = true;       
       break;
     }
   return ok;
 }
 
-/* Initialize the user and group ownership of the files to install. */
+ 
 
 static void
 get_ids (void)
@@ -1022,8 +965,7 @@ main (int argc, char **argv)
     exit_status = savewd_process_files (n_files, file, process_dir, &x);
   else
     {
-      /* FIXME: it's a little gross that this initialization is
-         required by copy.c::copy. */
+       
       hash_init ();
 
       if (!target_directory)

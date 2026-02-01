@@ -1,44 +1,4 @@
-/* This file is part of the Emulex RoCE Device Driver for
- * RoCE (RDMA over Converged Ethernet) adapters.
- * Copyright (C) 2012-2015 Emulex. All rights reserved.
- * EMULEX and SLI are trademarks of Emulex.
- * www.emulex.com
- *
- * This software is available to you under a choice of one of two licenses.
- * You may choose to be licensed under the terms of the GNU General Public
- * License (GPL) Version 2, available from the file COPYING in the main
- * directory of this source tree, or the BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+ 
 
 #include <linux/sched.h>
 #include <linux/interrupt.h>
@@ -347,7 +307,7 @@ static void ocrdma_init_mch(struct ocrdma_mbx_hdr *cmd_hdr,
 			    u8 opcode, u8 subsys, u32 cmd_len)
 {
 	cmd_hdr->subsys_op = (opcode | (subsys << OCRDMA_MCH_SUBSYS_SHIFT));
-	cmd_hdr->timeout = 20; /* seconds */
+	cmd_hdr->timeout = 20;  
 	cmd_hdr->cmd_len = cmd_len - sizeof(struct ocrdma_mbx_hdr);
 }
 
@@ -502,9 +462,7 @@ static void ocrdma_destroy_eq(struct ocrdma_dev *dev, struct ocrdma_eq *eq)
 {
 	int irq;
 
-	/* disarm EQ so that interrupts are not generated
-	 * during freeing and EQ delete is in progress.
-	 */
+	 
 	ocrdma_ring_eq_db(dev, eq->q.id, false, false, 0);
 
 	irq = ocrdma_get_irq(dev, eq);
@@ -554,7 +512,7 @@ static int ocrdma_mbx_mq_cq_create(struct ocrdma_dev *dev,
 
 static u32 ocrdma_encoded_q_len(int q_len)
 {
-	u32 len_encoded = fls(q_len);	/* log2(len) + 1 */
+	u32 len_encoded = fls(q_len);	 
 
 	if (len_encoded == 16)
 		len_encoded = 0;
@@ -582,7 +540,7 @@ static int ocrdma_mbx_create_mq(struct ocrdma_dev *dev,
 
 	cmd->async_event_bitmap = BIT(OCRDMA_ASYNC_GRP5_EVE_CODE);
 	cmd->async_event_bitmap |= BIT(OCRDMA_ASYNC_RDMA_EVE_CODE);
-	/* Request link events on this  MQ. */
+	 
 	cmd->async_event_bitmap |= BIT(OCRDMA_ASYNC_LINK_EVE_CODE);
 
 	cmd->async_cqid_ringsize = cq->id;
@@ -605,7 +563,7 @@ static int ocrdma_create_mq(struct ocrdma_dev *dev)
 {
 	int status;
 
-	/* Alloc completion queue for Mailbox queue */
+	 
 	status = ocrdma_alloc_q(dev, &dev->mq.cq, OCRDMA_MQ_CQ_LEN,
 				sizeof(struct ocrdma_mcqe));
 	if (status)
@@ -620,7 +578,7 @@ static int ocrdma_create_mq(struct ocrdma_dev *dev)
 	init_waitqueue_head(&dev->mqe_ctx.cmd_wait);
 	mutex_init(&dev->mqe_ctx.lock);
 
-	/* Alloc Mailbox queue */
+	 
 	status = ocrdma_alloc_q(dev, &dev->mq.sq, OCRDMA_MQ_LEN,
 				sizeof(struct ocrdma_mqe));
 	if (status)
@@ -645,7 +603,7 @@ static void ocrdma_destroy_mq(struct ocrdma_dev *dev)
 {
 	struct ocrdma_queue_info *mbxq, *cq;
 
-	/* mqe_ctx lock synchronizes with any other pending cmds. */
+	 
 	mutex_lock(&dev->mqe_ctx.lock);
 	mbxq = &dev->mq.sq;
 	if (mbxq->created) {
@@ -687,10 +645,7 @@ static void ocrdma_dispatch_ibevent(struct ocrdma_dev *dev,
 	u16 qpid = cqe->qpvalid_qpid & OCRDMA_AE_MCQE_QPID_MASK;
 	u16 cqid = cqe->cqvalid_cqid & OCRDMA_AE_MCQE_CQID_MASK;
 
-	/*
-	 * Some FW version returns wrong qp or cq ids in CQEs.
-	 * Checking whether the IDs are valid
-	 */
+	 
 
 	if (cqe->qpvalid_qpid & OCRDMA_AE_MCQE_QPVALID) {
 		if (qpid < dev->attr.max_qp)
@@ -819,7 +774,7 @@ static void ocrdma_process_grp5_aync(struct ocrdma_dev *dev,
 		atomic_set(&dev->update_sl, 1);
 		break;
 	default:
-		/* Not interested evts. */
+		 
 		break;
 	}
 }
@@ -842,7 +797,7 @@ static void ocrdma_process_link_state(struct ocrdma_dev *dev,
 
 static void ocrdma_process_acqe(struct ocrdma_dev *dev, void *ae_cqe)
 {
-	/* async CQE processing */
+	 
 	struct ocrdma_ae_mcqe *cqe = ae_cqe;
 	u32 evt_code = (cqe->valid_ae_event & OCRDMA_AE_MCQE_EVENT_CODE_MASK) >>
 			OCRDMA_AE_MCQE_EVENT_CODE_SHIFT;
@@ -915,14 +870,10 @@ static struct ocrdma_cq *_ocrdma_qp_buddy_cq_handler(struct ocrdma_dev *dev,
 
 		if (qp->srq)
 			continue;
-		/* if wq and rq share the same cq, than comp_handler
-		 * is already invoked.
-		 */
+		 
 		if (qp->sq_cq == qp->rq_cq)
 			continue;
-		/* if completion came on sq, rq's cq is buddy cq.
-		 * if completion came on rq, sq's cq is buddy cq.
-		 */
+		 
 		if (qp->sq_cq == cq)
 			bcq = qp->rq_cq;
 		else
@@ -938,23 +889,15 @@ static void ocrdma_qp_buddy_cq_handler(struct ocrdma_dev *dev,
 	unsigned long flags;
 	struct ocrdma_cq *bcq = NULL;
 
-	/* Go through list of QPs in error state which are using this CQ
-	 * and invoke its callback handler to trigger CQE processing for
-	 * error/flushed CQE. It is rare to find more than few entries in
-	 * this list as most consumers stops after getting error CQE.
-	 * List is traversed only once when a matching buddy cq found for a QP.
-	 */
+	 
 	spin_lock_irqsave(&dev->flush_q_lock, flags);
-	/* Check if buddy CQ is present.
-	 * true - Check for  SQ CQ
-	 * false - Check for RQ CQ
-	 */
+	 
 	bcq = _ocrdma_qp_buddy_cq_handler(dev, cq, true);
 	if (bcq == NULL)
 		bcq = _ocrdma_qp_buddy_cq_handler(dev, cq, false);
 	spin_unlock_irqrestore(&dev->flush_q_lock, flags);
 
-	/* if there is valid buddy cq, look for its completion handler */
+	 
 	if (bcq && bcq->ibcq.comp_handler) {
 		spin_lock_irqsave(&bcq->comp_handler_lock, flags);
 		(*bcq->ibcq.comp_handler) (&bcq->ibcq, bcq->ibcq.cq_context);
@@ -984,7 +927,7 @@ static void ocrdma_qp_cq_handler(struct ocrdma_dev *dev, u16 cq_idx)
 
 static void ocrdma_cq_handler(struct ocrdma_dev *dev, u16 cq_id)
 {
-	/* process the MQ-CQE. */
+	 
 	if (cq_id == dev->mq.cq.id)
 		ocrdma_mq_cq_handler(dev, cq_id);
 	else
@@ -1014,18 +957,16 @@ static irqreturn_t ocrdma_irq_handler(int irq, void *handle)
 			break;
 
 		ptr->id_valid = 0;
-		/* ring eq doorbell as soon as its consumed. */
+		 
 		ocrdma_ring_eq_db(dev, eq->q.id, false, true, 1);
-		/* check whether its CQE or not. */
+		 
 		if ((eqe.id_valid & OCRDMA_EQE_FOR_CQE_MASK) == 0) {
 			cq_id = eqe.id_valid >> OCRDMA_EQE_RESOURCE_ID_SHIFT;
 			ocrdma_cq_handler(dev, cq_id);
 		}
 		ocrdma_eq_inc_tail(eq);
 
-		/* There can be a stale EQE after the last bound CQ is
-		 * destroyed. EQE valid and budget == 0 implies this.
-		 */
+		 
 		if (budget)
 			budget--;
 
@@ -1045,7 +986,7 @@ static void ocrdma_post_mqe(struct ocrdma_dev *dev, struct ocrdma_mqe *cmd)
 	mqe = ocrdma_get_mqe(dev);
 	cmd->hdr.tag_lo = dev->mq.sq.head;
 	ocrdma_copy_cpu_to_le32(mqe, cmd, sizeof(*mqe));
-	/* make sure descriptor is written before ringing doorbell */
+	 
 	wmb();
 	ocrdma_mq_inc_head(dev);
 	ocrdma_ring_mq_db(dev);
@@ -1054,7 +995,7 @@ static void ocrdma_post_mqe(struct ocrdma_dev *dev, struct ocrdma_mqe *cmd)
 static int ocrdma_wait_mqe_cmpl(struct ocrdma_dev *dev)
 {
 	long status;
-	/* 30 sec timeout */
+	 
 	status = wait_event_timeout(dev->mqe_ctx.cmd_wait,
 				    (dev->mqe_ctx.cmd_done != false),
 				    msecs_to_jiffies(30000));
@@ -1068,7 +1009,7 @@ static int ocrdma_wait_mqe_cmpl(struct ocrdma_dev *dev)
 	}
 }
 
-/* issue a mailbox command on the MQ */
+ 
 static int ocrdma_mbx_cmd(struct ocrdma_dev *dev, struct ocrdma_mqe *mqe)
 {
 	int status = 0;
@@ -1095,7 +1036,7 @@ static int ocrdma_mbx_cmd(struct ocrdma_dev *dev, struct ocrdma_mqe *mqe)
 		pr_err("%s() cqe_status=0x%x, ext_status=0x%x,\n",
 		       __func__, cqe_status, ext_status);
 		if (rsp) {
-			/* This is for embedded cmds. */
+			 
 			pr_err("opcode=0x%x, subsystem=0x%x\n",
 			       (rsp->subsys_op & OCRDMA_MBX_RSP_OPCODE_MASK) >>
 				OCRDMA_MBX_RSP_OPCODE_SHIFT,
@@ -1105,7 +1046,7 @@ static int ocrdma_mbx_cmd(struct ocrdma_dev *dev, struct ocrdma_mqe *mqe)
 		status = ocrdma_get_mbx_cqe_errno(cqe_status);
 		goto mbx_err;
 	}
-	/* For non embedded, rsp errors are handled in ocrdma_nonemb_mbx_cmd */
+	 
 	if (rsp && (mqe->u.rsp.status & OCRDMA_MBX_RSP_STATUS_MASK))
 		status = ocrdma_get_mbx_errno(mqe->u.rsp.status);
 mbx_err:
@@ -1125,9 +1066,7 @@ static int ocrdma_nonemb_mbx_cmd(struct ocrdma_dev *dev, struct ocrdma_mqe *mqe,
 
 	status = ocrdma_mbx_cmd(dev, mqe);
 	if (!status)
-		/* For non embedded, only CQE failures are handled in
-		 * ocrdma_mbx_cmd. We need to check for RSP errors.
-		 */
+		 
 		if (rsp->status & OCRDMA_MBX_RSP_STATUS_MASK)
 			status = ocrdma_get_mbx_errno(rsp->status);
 
@@ -1232,7 +1171,7 @@ static int ocrdma_check_fw_config(struct ocrdma_dev *dev,
 	return 0;
 }
 
-/* can be issued only during init time. */
+ 
 static int ocrdma_mbx_query_fw_ver(struct ocrdma_dev *dev)
 {
 	int status = -ENOMEM;
@@ -1259,7 +1198,7 @@ mbx_err:
 	return status;
 }
 
-/* can be issued only during init time. */
+ 
 static int ocrdma_mbx_query_fw_config(struct ocrdma_dev *dev)
 {
 	int status = -ENOMEM;
@@ -1302,7 +1241,7 @@ int ocrdma_mbx_rdma_stats(struct ocrdma_dev *dev, bool reset)
 	mqe->u.nonemb_req.sge[0].pa_hi = (u32) upper_32_bits(dev->stats_mem.pa);
 	mqe->u.nonemb_req.sge[0].len = dev->stats_mem.size;
 
-	/* Cache the old stats */
+	 
 	memcpy(old_stats, req, sizeof(struct ocrdma_rdma_stats_resp));
 	memset(req, 0, dev->stats_mem.size);
 
@@ -1315,7 +1254,7 @@ int ocrdma_mbx_rdma_stats(struct ocrdma_dev *dev, bool reset)
 
 	status = ocrdma_nonemb_mbx_cmd(dev, mqe, dev->stats_mem.va);
 	if (status)
-		/* Copy from cache, if mbox fails */
+		 
 		memcpy(req, old_stats, sizeof(struct ocrdma_rdma_stats_resp));
 	else
 		ocrdma_le32_to_cpu(req, dev->stats_mem.size);
@@ -1509,7 +1448,7 @@ static int ocrdma_mbx_alloc_pd_range(struct ocrdma_dev *dev)
 	struct ocrdma_alloc_pd_range *cmd;
 	struct ocrdma_alloc_pd_range_rsp *rsp;
 
-	/* Pre allocate the DPP PDs */
+	 
 	if (dev->attr.max_dpp_pds) {
 		cmd = ocrdma_init_emb_mqe(OCRDMA_CMD_ALLOC_PD_RANGE,
 					  sizeof(*cmd));
@@ -1550,7 +1489,7 @@ static int ocrdma_mbx_alloc_pd_range(struct ocrdma_dev *dev)
 	kfree(cmd);
 
 	if (dev->pd_mgr->pd_norm_bitmap || dev->pd_mgr->pd_dpp_bitmap) {
-		/* Enable PD resource manager */
+		 
 		dev->pd_mgr->pd_prealloc_valid = true;
 		return 0;
 	}
@@ -1561,7 +1500,7 @@ static void ocrdma_mbx_dealloc_pd_range(struct ocrdma_dev *dev)
 {
 	struct ocrdma_dealloc_pd_range *cmd;
 
-	/* return normal PDs to firmware */
+	 
 	cmd = ocrdma_init_emb_mqe(OCRDMA_CMD_DEALLOC_PD_RANGE, sizeof(*cmd));
 	if (!cmd)
 		goto mbx_err;
@@ -1574,7 +1513,7 @@ static void ocrdma_mbx_dealloc_pd_range(struct ocrdma_dev *dev)
 
 	if (dev->pd_mgr->max_dpp_pd) {
 		kfree(cmd);
-		/* return DPP PDs to firmware */
+		 
 		cmd = ocrdma_init_emb_mqe(OCRDMA_CMD_DEALLOC_PD_RANGE,
 					  sizeof(*cmd));
 		if (!cmd)
@@ -1620,7 +1559,7 @@ static int ocrdma_build_q_conf(u32 *num_entries, int entry_size,
 
 	*num_entries = roundup_pow_of_two(*num_entries);
 	mem_size = *num_entries * entry_size;
-	/* find the possible lowest possible multiplier */
+	 
 	for (i = 0; i < OCRDMA_MAX_Q_PAGE_SIZE_CNT; i++) {
 		if (mem_size <= (OCRDMA_Q_PAGE_BASE_SIZE << i))
 			break;
@@ -1654,12 +1593,12 @@ static int ocrdma_mbx_create_ah_tbl(struct ocrdma_dev *dev)
 	max_ah = OCRDMA_MAX_AH;
 	dev->av_tbl.size = sizeof(struct ocrdma_av) * max_ah;
 
-	/* number of PBEs in PBL */
+	 
 	cmd->ah_conf = (OCRDMA_AH_TBL_PAGES <<
 				OCRDMA_CREATE_AH_NUM_PAGES_SHIFT) &
 				OCRDMA_CREATE_AH_NUM_PAGES_MASK;
 
-	/* page size */
+	 
 	for (i = 0; i < OCRDMA_MAX_Q_PAGE_SIZE_CNT; i++) {
 		if (PAGE_SIZE == (OCRDMA_MIN_Q_PAGE_SIZE << i))
 			break;
@@ -1667,7 +1606,7 @@ static int ocrdma_mbx_create_ah_tbl(struct ocrdma_dev *dev)
 	cmd->ah_conf |= (i << OCRDMA_CREATE_AH_PAGE_SIZE_SHIFT) &
 				OCRDMA_CREATE_AH_PAGE_SIZE_MASK;
 
-	/* ah_entry size */
+	 
 	cmd->ah_conf |= (sizeof(struct ocrdma_av) <<
 				OCRDMA_CREATE_AH_ENTRY_SIZE_SHIFT) &
 				OCRDMA_CREATE_AH_ENTRY_SIZE_MASK;
@@ -1737,10 +1676,7 @@ static void ocrdma_mbx_delete_ah_tbl(struct ocrdma_dev *dev)
 	kfree(cmd);
 }
 
-/* Multiple CQs uses the EQ. This routine returns least used
- * EQ to associate with CQ. This will distributes the interrupt
- * processing and CPU load to associated EQ, vector and so to that CPU.
- */
+ 
 static u16 ocrdma_bind_eq(struct ocrdma_dev *dev)
 {
 	int i, selected_eq = 0, cq_cnt = 0;
@@ -1749,9 +1685,7 @@ static u16 ocrdma_bind_eq(struct ocrdma_dev *dev)
 	mutex_lock(&dev->dev_lock);
 	cq_cnt = dev->eq_tbl[0].cq_cnt;
 	eq_id = dev->eq_tbl[0].q.id;
-	/* find the EQ which is has the least number of
-	 * CQs associated with it.
-	 */
+	 
 	for (i = 0; i < dev->eq_cnt; i++) {
 		if (dev->eq_tbl[i].cq_cnt < cq_cnt) {
 			cq_cnt = dev->eq_tbl[i].cq_cnt;
@@ -1828,7 +1762,7 @@ int ocrdma_mbx_create_cq(struct ocrdma_dev *dev, struct ocrdma_cq *cq,
 	cqe_count = cq->len / cqe_size;
 	cq->cqe_cnt = cqe_count;
 	if (cqe_count > 1024) {
-		/* Set cnt to 3 to indicate more than 1024 cq entries */
+		 
 		cmd->cmd.ev_cnt_flags |= (0x3 << OCRDMA_CREATE_CQ_CNT_SHIFT);
 	} else {
 		u8 count = 0;
@@ -1847,7 +1781,7 @@ int ocrdma_mbx_create_cq(struct ocrdma_dev *dev, struct ocrdma_cq *cq,
 		}
 		cmd->cmd.ev_cnt_flags |= (count << OCRDMA_CREATE_CQ_CNT_SHIFT);
 	}
-	/* shared eq between all the consumer cqs. */
+	 
 	cmd->cmd.eqn = cq->eqn;
 	if (ocrdma_get_asic_type(dev) == OCRDMA_ASIC_GEN_SKH_R) {
 		if (dpp_cq)
@@ -1861,7 +1795,7 @@ int ocrdma_mbx_create_cq(struct ocrdma_dev *dev, struct ocrdma_cq *cq,
 		cq->phase_change = true;
 	}
 
-	/* pd_id valid only for v3 */
+	 
 	cmd->cmd.pdid_cqecnt |= (pd_id <<
 		OCRDMA_CREATE_CQ_CMD_PDID_SHIFT);
 	ocrdma_build_q_pages(&cmd->cmd.pa[0], hw_pages, cq->pa, page_size);
@@ -2050,7 +1984,7 @@ int ocrdma_reg_mr(struct ocrdma_dev *dev,
 		pr_err("%s() status=%d\n", __func__, status);
 		return status;
 	}
-	/* if there is no more pbls to register then exit. */
+	 
 	if (last)
 		return 0;
 
@@ -2058,9 +1992,7 @@ int ocrdma_reg_mr(struct ocrdma_dev *dev,
 		pbl_offset += cur_pbl_cnt;
 		pending_pbl_cnt -= cur_pbl_cnt;
 		cur_pbl_cnt = min(pending_pbl_cnt, MAX_OCRDMA_NSMR_PBL);
-		/* if we reach the end of the pbls, then need to set the last
-		 * bit, indicating no more pbls to register for this memory key.
-		 */
+		 
 		if (cur_pbl_cnt == pending_pbl_cnt)
 			last = 1;
 
@@ -2134,7 +2066,7 @@ int ocrdma_qp_state_change(struct ocrdma_qp *qp, enum ib_qp_state new_ib_state,
 	enum ocrdma_qp_state new_state;
 	new_state = get_ocrdma_qp_state(new_ib_state);
 
-	/* sync with wqe and rqe posting */
+	 
 	spin_lock_irqsave(&qp->q_lock, flags);
 
 	if (old_ib_state)
@@ -2187,7 +2119,7 @@ static int ocrdma_set_create_qp_sq_cmd(struct ocrdma_create_qp_req *cmd,
 	u32 max_wqe_allocated;
 	u32 max_sges = attrs->cap.max_send_sge;
 
-	/* QP1 may exceed 127 */
+	 
 	max_wqe_allocated = min_t(u32, attrs->cap.max_send_wr + 1,
 				dev->attr.max_wqe);
 
@@ -2512,7 +2444,7 @@ static int ocrdma_set_av_params(struct ocrdma_qp *qp,
 	    (grh->hop_limit << OCRDMA_QP_PARAMS_HOP_LMT_SHIFT);
 	cmd->flags |= OCRDMA_QP_PARA_FLOW_LBL_VALID;
 
-	/* GIDs */
+	 
 	memcpy(&cmd->params.dgid[0], &grh->dgid.raw[0],
 	       sizeof(cmd->params.dgid));
 
@@ -2540,7 +2472,7 @@ static int ocrdma_set_av_params(struct ocrdma_qp *qp,
 		memcpy(&cmd->params.sgid[0],
 		       &sgid_addr._sockaddr_in.sin_addr.s_addr, 4);
 	}
-	/* convert them to LE format. */
+	 
 	ocrdma_cpu_to_le32(&cmd->params.dgid[0], sizeof(cmd->params.dgid));
 	ocrdma_cpu_to_le32(&cmd->params.sgid[0], sizeof(cmd->params.sgid));
 	cmd->params.vlan_dmac_b4_to_b5 = mac_addr[4] | (mac_addr[5] << 8);
@@ -2588,7 +2520,7 @@ static int ocrdma_set_qp_params(struct ocrdma_qp *qp,
 		if (status)
 			return status;
 	} else if (qp->qp_type == IB_QPT_GSI || qp->qp_type == IB_QPT_UD) {
-		/* set the default mac address for UD, GSI QPs */
+		 
 		cmd->params.dmac_b0_to_b3 = dev->nic_info.mac_addr[0] |
 			(dev->nic_info.mac_addr[1] << 8) |
 			(dev->nic_info.mac_addr[2] << 16) |
@@ -3103,7 +3035,7 @@ static int ocrdma_create_eqs(struct ocrdma_dev *dev)
 			goto done;
 		dev->eq_cnt += 1;
 	}
-	/* one eq is sufficient for data path to work */
+	 
 	return 0;
 done:
 	ocrdma_destroy_eqs(dev);
@@ -3188,7 +3120,7 @@ int ocrdma_init_hw(struct ocrdma_dev *dev)
 {
 	int status;
 
-	/* create the eqs  */
+	 
 	status = ocrdma_create_eqs(dev);
 	if (status)
 		goto qpeq_err;
@@ -3232,9 +3164,9 @@ void ocrdma_cleanup_hw(struct ocrdma_dev *dev)
 	ocrdma_free_pd_pool(dev);
 	ocrdma_mbx_delete_ah_tbl(dev);
 
-	/* cleanup the control path */
+	 
 	ocrdma_destroy_mq(dev);
 
-	/* cleanup the eqs */
+	 
 	ocrdma_destroy_eqs(dev);
 }

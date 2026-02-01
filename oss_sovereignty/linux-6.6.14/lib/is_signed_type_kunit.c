@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- *	./tools/testing/kunit/kunit.py run is_signed_type [--raw_output]
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <kunit/test.h>

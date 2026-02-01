@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		The IP forwarding functionality.
- *
- * Authors:	see ip.c
- *
- * Fixes:
- *		Many		:	Split from ip.c , see ip_input.c for
- *					history.
- *		Dave Gregorich	:	NULL ip_rt_put fix for multicast
- *					routing.
- *		Jos Vos		:	Add call_out_firewall before sending,
- *					use output device for accounting.
- *		Jos Vos		:	Call forward firewall after routing
- *					(always use output device).
- *		Mike McLagan	:	Routing by source
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/mm.h>
@@ -48,7 +29,7 @@ static bool ip_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
 	if (unlikely((ip_hdr(skb)->frag_off & htons(IP_DF)) == 0))
 		return false;
 
-	/* original fragment exceeds mtu and DF is set */
+	 
 	if (unlikely(IPCB(skb)->frag_max_size > mtu))
 		return true;
 
@@ -85,13 +66,13 @@ static int ip_forward_finish(struct net *net, struct sock *sk, struct sk_buff *s
 int ip_forward(struct sk_buff *skb)
 {
 	u32 mtu;
-	struct iphdr *iph;	/* Our header */
-	struct rtable *rt;	/* Route we use */
+	struct iphdr *iph;	 
+	struct rtable *rt;	 
 	struct ip_options *opt	= &(IPCB(skb)->opt);
 	struct net *net;
 	SKB_DR(reason);
 
-	/* that should never happen */
+	 
 	if (skb->pkt_type != PACKET_HOST)
 		goto drop;
 
@@ -112,11 +93,7 @@ int ip_forward(struct sk_buff *skb)
 	skb_forward_csum(skb);
 	net = dev_net(skb->dev);
 
-	/*
-	 *	According to the RFC, we must first decrease the TTL field. If
-	 *	that reaches zero, we must reply an ICMP control message telling
-	 *	that the packet's lifetime expired.
-	 */
+	 
 	if (ip_hdr(skb)->ttl <= 1)
 		goto too_many_hops;
 
@@ -140,18 +117,15 @@ int ip_forward(struct sk_buff *skb)
 		goto drop;
 	}
 
-	/* We are about to mangle packet. Copy it! */
+	 
 	if (skb_cow(skb, LL_RESERVED_SPACE(rt->dst.dev)+rt->dst.header_len))
 		goto drop;
 	iph = ip_hdr(skb);
 
-	/* Decrease ttl after skb cow done */
+	 
 	ip_decrease_ttl(iph);
 
-	/*
-	 *	We now generate an ICMP HOST REDIRECT giving the route
-	 *	we calculated.
-	 */
+	 
 	if (IPCB(skb)->flags & IPSKB_DOREDIRECT && !opt->srr &&
 	    !skb_sec_path(skb))
 		ip_rt_send_redirect(skb);
@@ -164,14 +138,12 @@ int ip_forward(struct sk_buff *skb)
 		       ip_forward_finish);
 
 sr_failed:
-	/*
-	 *	Strict routing permits no gatewaying
-	 */
+	 
 	 icmp_send(skb, ICMP_DEST_UNREACH, ICMP_SR_FAILED, 0);
 	 goto drop;
 
 too_many_hops:
-	/* Tell the sender its packet died... */
+	 
 	__IP_INC_STATS(net, IPSTATS_MIB_INHDRERRORS);
 	icmp_send(skb, ICMP_TIME_EXCEEDED, ICMP_EXC_TTL, 0);
 	SKB_DR_SET(reason, IP_INHDR);

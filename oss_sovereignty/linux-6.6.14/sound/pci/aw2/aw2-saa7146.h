@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*****************************************************************************
- *
- * Copyright (C) 2008 Cedric Bregardis <cedric.bregardis@free.fr> and
- * Jean-Christian Hassler <jhassler@free.fr>
- *
- * This file is part of the Audiowerk2 ALSA driver
- *
- *****************************************************************************/
+ 
+ 
 
 #ifndef AW2_SAA7146_H
 #define AW2_SAA7146_H
@@ -26,7 +19,7 @@ struct snd_aw2_saa7146_cb_param {
 	void *p_callback_param;
 };
 
-/* definition of the chip-specific record */
+ 
 
 struct snd_aw2_saa7146 {
 	void __iomem *base_addr;

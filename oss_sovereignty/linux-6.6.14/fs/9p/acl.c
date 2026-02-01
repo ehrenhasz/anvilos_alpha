@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * Copyright IBM Corporation, 2010
- * Author Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -71,7 +68,7 @@ static struct posix_acl *__v9fs_get_acl(struct p9_fid *fid, const char *name)
 	if (retval == -ENODATA || retval == -ENOSYS || retval == -EOPNOTSUPP)
 		return NULL;
 
-	/* map everything else to -EIO */
+	 
 	return ERR_PTR(-EIO);
 }
 
@@ -88,7 +85,7 @@ int v9fs_get_acl(struct inode *inode, struct p9_fid *fid)
 		set_cached_acl(inode, ACL_TYPE_ACCESS, NULL);
 		return 0;
 	}
-	/* get the default/access acl values and cache them */
+	 
 	dacl = __v9fs_get_acl(fid, XATTR_NAME_POSIX_ACL_DEFAULT);
 	pacl = __v9fs_get_acl(fid, XATTR_NAME_POSIX_ACL_ACCESS);
 
@@ -110,10 +107,7 @@ int v9fs_get_acl(struct inode *inode, struct p9_fid *fid)
 static struct posix_acl *v9fs_get_cached_acl(struct inode *inode, int type)
 {
 	struct posix_acl *acl;
-	/*
-	 * 9p Always cache the acl value when
-	 * instantiating the inode (v9fs_inode_from_fid)
-	 */
+	 
 	acl = get_cached_acl(inode, type);
 	BUG_ON(is_uncached_acl(acl));
 	return acl;
@@ -129,10 +123,7 @@ struct posix_acl *v9fs_iop_get_inode_acl(struct inode *inode, int type, bool rcu
 	v9ses = v9fs_inode2v9ses(inode);
 	if (((v9ses->flags & V9FS_ACCESS_MASK) != V9FS_ACCESS_CLIENT) ||
 			((v9ses->flags & V9FS_ACL_MASK) != V9FS_POSIX_ACL)) {
-		/*
-		 * On access = client  and acl = on mode get the acl
-		 * values from the server
-		 */
+		 
 		return NULL;
 	}
 	return v9fs_get_cached_acl(inode, type);
@@ -145,7 +136,7 @@ struct posix_acl *v9fs_iop_get_acl(struct mnt_idmap *idmap,
 	struct v9fs_session_info *v9ses;
 
 	v9ses = v9fs_dentry2v9ses(dentry);
-	/* We allow set/get/list of acl when access=client is not specified. */
+	 
 	if ((v9ses->flags & V9FS_ACCESS_MASK) != V9FS_ACCESS_CLIENT)
 		return v9fs_acl_get(dentry, posix_acl_xattr_name(type));
 	return v9fs_get_cached_acl(d_inode(dentry), type);
@@ -179,10 +170,7 @@ int v9fs_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 			goto err_out;
 	}
 
-	/*
-	 * set the attribute on the remote. Without even looking at the
-	 * xattr value. We leave it to the server to validate
-	 */
+	 
 	acl_name = posix_acl_xattr_name(type);
 	v9ses = v9fs_dentry2v9ses(dentry);
 	if ((v9ses->flags & V9FS_ACCESS_MASK) != V9FS_ACCESS_CLIENT) {
@@ -212,19 +200,13 @@ int v9fs_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 			if (retval)
 				goto err_out;
 			if (!acl_mode) {
-				/*
-				 * ACL can be represented by the mode bits.
-				 * So don't update ACL below.
-				 */
+				 
 				kfree(value);
 				value = NULL;
 				size = 0;
 			}
 			iattr.ia_valid = ATTR_MODE;
-			/*
-			 * FIXME should we update ctime ?
-			 * What is the following setxattr update the mode ?
-			 */
+			 
 			v9fs_vfs_setattr_dotl(&nop_mnt_idmap, dentry, &iattr);
 		}
 		break;
@@ -255,7 +237,7 @@ static int v9fs_set_acl(struct p9_fid *fid, int type, struct posix_acl *acl)
 	if (!acl)
 		return 0;
 
-	/* Set a setxattr request to server */
+	 
 	size = posix_acl_xattr_size(acl->a_count);
 	buffer = kmalloc(size, GFP_KERNEL);
 	if (!buffer)

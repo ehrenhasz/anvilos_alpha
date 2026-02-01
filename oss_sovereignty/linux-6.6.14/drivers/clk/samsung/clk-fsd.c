@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017-2022 Samsung Electronics Co., Ltd.
- *             https://www.samsung.com
- * Copyright (c) 2017-2022 Tesla, Inc.
- *             https://www.tesla.com
- *
- * Common Clock Framework support for FSD SoC.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -20,7 +13,7 @@
 #include "clk.h"
 #include "clk-exynos-arm64.h"
 
-/* Register Offset definitions for CMU_CMU (0x11c10000) */
+ 
 #define PLL_LOCKTIME_PLL_SHARED0			0x0
 #define PLL_LOCKTIME_PLL_SHARED1			0x4
 #define PLL_LOCKTIME_PLL_SHARED2			0x8
@@ -172,7 +165,7 @@ static const struct samsung_pll_clock cmu_pll_clks[] __initconst = {
 	    PLL_CON0_PLL_SHARED3, pll_shared3_rate_table),
 };
 
-/* List of parent clocks for Muxes in CMU_CMU */
+ 
 PNAME(mout_cmu_shared0_pll_p) = { "fin_pll", "fout_pll_shared0" };
 PNAME(mout_cmu_shared1_pll_p) = { "fin_pll", "fout_pll_shared1" };
 PNAME(mout_cmu_shared2_pll_p) = { "fin_pll", "fout_pll_shared2" };
@@ -312,7 +305,7 @@ static void __init fsd_clk_cmu_init(struct device_node *np)
 
 CLK_OF_DECLARE(fsd_clk_cmu, "tesla,fsd-clock-cmu", fsd_clk_cmu_init);
 
-/* Register Offset definitions for CMU_PERIC (0x14010000) */
+ 
 #define PLL_CON0_PERIC_DMACLK_MUX		0x100
 #define PLL_CON0_PERIC_EQOS_BUSCLK_MUX		0x120
 #define PLL_CON0_PERIC_PCLK_MUX			0x140
@@ -485,7 +478,7 @@ static const struct samsung_fixed_rate_clock peric_fixed_clks[] __initconst = {
 	FRATE(PERIC_EQOS_PHYRXCLK, "eqos_phyrxclk", NULL, 0, 125000000),
 };
 
-/* List of parent clocks for Muxes in CMU_PERIC */
+ 
 PNAME(mout_peric_dmaclk_p) = { "fin_pll", "cmu_peric_shared1div4_dmaclk_gate" };
 PNAME(mout_peric_eqos_busclk_p) = { "fin_pll", "dout_cmu_pll_shared0_div4" };
 PNAME(mout_peric_pclk_p) = { "fin_pll", "dout_cmu_peric_shared1div36" };
@@ -671,7 +664,7 @@ static const struct samsung_cmu_info peric_cmu_info __initconst = {
 	.clk_name		= "dout_cmu_pll_shared0_div4",
 };
 
-/* Register Offset definitions for CMU_FSYS0 (0x15010000) */
+ 
 #define PLL_CON0_CLKCMU_FSYS0_UNIPRO		0x100
 #define PLL_CON0_CLK_FSYS0_SLAVEBUSCLK		0x140
 #define PLL_CON0_EQOS_RGMII_125_MUX1		0x160
@@ -794,7 +787,7 @@ static const struct samsung_fixed_rate_clock fsys0_fixed_clks[] __initconst = {
 	FRATE(0, "xtal_clk_pcie_phy", NULL, 0, 100000000),
 };
 
-/* List of parent clocks for Muxes in CMU_FSYS0 */
+ 
 PNAME(mout_fsys0_clkcmu_fsys0_unipro_p) = { "fin_pll", "dout_cmu_pll_shared0_div6" };
 PNAME(mout_fsys0_clk_fsys0_slavebusclk_p) = { "fin_pll", "dout_cmu_fsys0_shared1div4" };
 PNAME(mout_fsys0_eqos_rgmii_125_mux1_p) = { "fin_pll", "dout_cmu_fsys0_shared0div4" };
@@ -970,7 +963,7 @@ static const struct samsung_cmu_info fsys0_cmu_info __initconst = {
 	.clk_name		= "dout_cmu_fsys0_shared1div4",
 };
 
-/* Register Offset definitions for CMU_FSYS1 (0x16810000) */
+ 
 #define PLL_CON0_ACLK_FSYS1_BUSP_MUX			0x100
 #define PLL_CON0_PCLKL_FSYS1_BUSP_MUX			0x180
 #define DIV_CLK_FSYS1_PHY0_OSCCLK			0x1800
@@ -1042,7 +1035,7 @@ static const struct samsung_fixed_rate_clock fsys1_fixed_clks[] __initconst = {
 	FRATE(0, "clk_fsys1_phy1_ref", NULL, 0, 100000000),
 };
 
-/* List of parent clocks for Muxes in CMU_FSYS1 */
+ 
 PNAME(mout_fsys1_pclkl_fsys1_busp_mux_p) = { "fin_pll", "dout_cmu_fsys1_shared0div8" };
 PNAME(mout_fsys1_aclk_fsys1_busp_mux_p) = { "fin_pll", "dout_cmu_fsys1_shared0div4" };
 
@@ -1142,7 +1135,7 @@ static const struct samsung_cmu_info fsys1_cmu_info __initconst = {
 	.clk_name		= "dout_cmu_fsys1_shared0div4",
 };
 
-/* Register Offset definitions for CMU_IMEM (0x10010000) */
+ 
 #define PLL_CON0_CLK_IMEM_ACLK				0x100
 #define PLL_CON0_CLK_IMEM_INTMEMCLK			0x120
 #define PLL_CON0_CLK_IMEM_TCUCLK			0x140
@@ -1425,7 +1418,7 @@ static void __init fsd_clk_imem_init(struct device_node *np)
 
 CLK_OF_DECLARE(fsd_clk_imem, "tesla,fsd-clock-imem", fsd_clk_imem_init);
 
-/* Register Offset definitions for CMU_MFC (0x12810000) */
+ 
 #define PLL_LOCKTIME_PLL_MFC					0x0
 #define PLL_CON0_PLL_MFC					0x100
 #define MUX_MFC_BUSD						0x1000
@@ -1543,7 +1536,7 @@ static const struct samsung_cmu_info mfc_cmu_info __initconst = {
 	.nr_clk_regs		= ARRAY_SIZE(mfc_clk_regs),
 };
 
-/* Register Offset definitions for CMU_CAM_CSI (0x12610000) */
+ 
 #define PLL_LOCKTIME_PLL_CAM_CSI		0x0
 #define PLL_CON0_PLL_CAM_CSI			0x100
 #define DIV_CAM_CSI0_ACLK			0x1800
@@ -1747,12 +1740,7 @@ static const struct samsung_cmu_info cam_csi_cmu_info __initconst = {
 	.nr_clk_regs		= ARRAY_SIZE(cam_csi_clk_regs),
 };
 
-/**
- * fsd_cmu_probe - Probe function for FSD platform clocks
- * @pdev: Pointer to platform device
- *
- * Configure clock hierarchy for clock domains of FSD platform
- */
+ 
 static int __init fsd_cmu_probe(struct platform_device *pdev)
 {
 	const struct samsung_cmu_info *info;
@@ -1764,7 +1752,7 @@ static int __init fsd_cmu_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/* CMUs which belong to Power Domains and need runtime PM to be implemented */
+ 
 static const struct of_device_id fsd_cmu_of_match[] = {
 	{
 		.compatible = "tesla,fsd-clock-peric",

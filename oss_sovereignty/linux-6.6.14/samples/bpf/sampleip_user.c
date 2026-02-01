@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sampleip: sample instruction pointer and frequency count in a BPF map.
- *
- * Copyright 2016 Netflix, Inc.
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -47,8 +43,8 @@ static int sampling_start(int freq, struct bpf_program *prog,
 	};
 
 	for (i = 0; i < nr_cpus; i++) {
-		pmu_fd = sys_perf_event_open(&pe_sample_attr, -1 /* pid */, i,
-					    -1 /* group_fd */, 0 /* flags */);
+		pmu_fd = sys_perf_event_open(&pe_sample_attr, -1  , i,
+					    -1  , 0  );
 		if (pmu_fd < 0) {
 			fprintf(stderr, "ERROR: Initializing perf sampling\n");
 			return 1;
@@ -78,7 +74,7 @@ struct ipcount {
 	__u32 count;
 };
 
-/* used for sorting */
+ 
 struct ipcount counts[MAX_IPS];
 
 static int count_cmp(const void *p1, const void *p2)
@@ -95,7 +91,7 @@ static void print_ip_map(int fd)
 
 	printf("%-19s %-32s %s\n", "ADDR", "KSYM", "COUNT");
 
-	/* fetch IPs and counts */
+	 
 	key = 0, i = 0;
 	while (bpf_map_get_next_key(fd, &key, &next_key) == 0) {
 		bpf_map_lookup_elem(fd, &next_key, &value);
@@ -105,7 +101,7 @@ static void print_ip_map(int fd)
 	}
 	max = i;
 
-	/* sort and print */
+	 
 	qsort(counts, max, sizeof(struct ipcount), count_cmp);
 	for (i = 0; i < max; i++) {
 		if (counts[i].ip > _text_addr) {
@@ -144,7 +140,7 @@ int main(int argc, char **argv)
 	struct bpf_link **links;
 	char filename[256];
 
-	/* process arguments */
+	 
 	while ((opt = getopt(argc, argv, "F:h")) != -1) {
 		switch (opt) {
 		case 'F':
@@ -163,20 +159,20 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/* initialize kernel symbol translation */
+	 
 	if (load_kallsyms()) {
 		fprintf(stderr, "ERROR: loading /proc/kallsyms\n");
 		return 2;
 	}
 
-	/* used to determine whether the address is kernel space */
+	 
 	_text_addr = ksym_get_addr("_text");
 	if (!_text_addr) {
 		fprintf(stderr, "ERROR: no '_text' in /proc/kallsyms\n");
 		return 3;
 	}
 
-	/* create perf FDs for each CPU */
+	 
 	nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
 	links = calloc(nr_cpus, sizeof(struct bpf_link *));
 	if (!links) {
@@ -198,7 +194,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;
@@ -213,7 +209,7 @@ int main(int argc, char **argv)
 	signal(SIGINT, int_exit);
 	signal(SIGTERM, int_exit);
 
-	/* do sampling */
+	 
 	printf("Sampling at %d Hertz for %d seconds. Ctrl-C also ends.\n",
 	       freq, secs);
 	if (sampling_start(freq, prog, links) != 0)
@@ -224,7 +220,7 @@ int main(int argc, char **argv)
 
 cleanup:
 	sampling_end(links);
-	/* output sample counts */
+	 
 	if (!error)
 		print_ip_map(map_fd);
 

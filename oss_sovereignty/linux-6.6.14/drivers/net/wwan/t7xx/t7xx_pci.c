@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bits.h>
@@ -54,7 +39,7 @@
 
 enum t7xx_pm_state {
 	MTK_PM_EXCEPTION,
-	MTK_PM_INIT,		/* Device initialized, but handshake not completed */
+	MTK_PM_INIT,		 
 	MTK_PM_SUSPENDED,
 	MTK_PM_RESUMED,
 };
@@ -113,7 +98,7 @@ static int t7xx_pci_pm_init(struct t7xx_pci_dev *t7xx_dev)
 
 void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev)
 {
-	/* Enable the PCIe resource lock only after MD deep sleep is done */
+	 
 	t7xx_mhccif_mask_clr(t7xx_dev,
 			     D2H_INT_DS_LOCK_ACK |
 			     D2H_INT_SUSPEND_ACK |
@@ -131,9 +116,7 @@ void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev)
 
 static int t7xx_pci_pm_reinit(struct t7xx_pci_dev *t7xx_dev)
 {
-	/* The device is kept in FSM re-init flow
-	 * so just roll back PM setting to the init setting.
-	 */
+	 
 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_INIT);
 
 	pm_runtime_get_noresume(&t7xx_dev->pdev->dev);
@@ -197,15 +180,7 @@ int t7xx_pci_sleep_disable_complete(struct t7xx_pci_dev *t7xx_dev)
 	return ret;
 }
 
-/**
- * t7xx_pci_disable_sleep() - Disable deep sleep capability.
- * @t7xx_dev: MTK device.
- *
- * Lock the deep sleep capability, note that the device can still go into deep sleep
- * state while device is in D0 state, from the host's point-of-view.
- *
- * If device is in deep sleep state, wake up the device and disable deep sleep capability.
- */
+ 
 void t7xx_pci_disable_sleep(struct t7xx_pci_dev *t7xx_dev)
 {
 	unsigned long flags;
@@ -235,12 +210,7 @@ unlock_and_complete:
 	complete_all(&t7xx_dev->sleep_lock_acquire);
 }
 
-/**
- * t7xx_pci_enable_sleep() - Enable deep sleep capability.
- * @t7xx_dev: MTK device.
- *
- * After enabling deep sleep, device can enter into deep sleep state.
- */
+ 
 void t7xx_pci_enable_sleep(struct t7xx_pci_dev *t7xx_dev)
 {
 	unsigned long flags;
@@ -347,12 +317,10 @@ static void t7xx_pcie_interrupt_reinit(struct t7xx_pci_dev *t7xx_dev)
 {
 	t7xx_pcie_set_mac_msix_cfg(t7xx_dev, EXT_INT_NUM);
 
-	/* Disable interrupt first and let the IPs enable them */
+	 
 	iowrite32(MSIX_MSK_SET_ALL, IREG_BASE(t7xx_dev) + IMASK_HOST_MSIX_CLR_GRP0_0);
 
-	/* Device disables PCIe interrupts during resume and
-	 * following function will re-enable PCIe interrupts.
-	 */
+	 
 	t7xx_pcie_mac_interrupts_en(t7xx_dev);
 	t7xx_pcie_mac_set_int(t7xx_dev, MHCCIF_INT);
 }
@@ -422,10 +390,7 @@ static int __t7xx_pci_pm_resume(struct pci_dev *pdev, bool state_check)
 	prev_state = ioread32(IREG_BASE(t7xx_dev) + T7XX_PCIE_PM_RESUME_STATE);
 
 	if (state_check) {
-		/* For D3/L3 resume, the device could boot so quickly that the
-		 * initial value of the dummy register might be overwritten.
-		 * Identify new boots if the ATR source address register is not initialized.
-		 */
+		 
 		u32 atr_reg_val = ioread32(IREG_BASE(t7xx_dev) +
 					   ATR_PCIE_WIN0_T0_ATR_PARAM_SRC_ADDR);
 		if (prev_state == PM_RESUME_REG_STATE_L3 ||
@@ -633,7 +598,7 @@ static int t7xx_setup_msix(struct t7xx_pci_dev *t7xx_dev)
 	struct pci_dev *pdev = t7xx_dev->pdev;
 	int ret;
 
-	/* Only using 6 interrupts, but HW-design requires power-of-2 IRQs allocation */
+	 
 	ret = pci_alloc_irq_vectors(pdev, EXT_INT_NUM, EXT_INT_NUM, PCI_IRQ_MSIX);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to allocate MSI-X entry: %d\n", ret);
@@ -661,7 +626,7 @@ static int t7xx_interrupt_init(struct t7xx_pci_dev *t7xx_dev)
 	if (ret)
 		return ret;
 
-	/* IPs enable interrupts when ready */
+	 
 	for (i = 0; i < EXT_INT_NUM; i++)
 		t7xx_pcie_mac_set_int(t7xx_dev, i);
 

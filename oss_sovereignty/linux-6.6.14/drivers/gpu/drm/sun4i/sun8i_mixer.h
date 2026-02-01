@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- */
+ 
+ 
 
 #ifndef _SUN8I_MIXER_H_
 #define _SUN8I_MIXER_H_
@@ -57,9 +55,9 @@
 #define SUN8I_MIXER_BLEND_PIPE_CTL_EN(pipe)	BIT(8 + pipe)
 #define SUN8I_MIXER_BLEND_PIPE_CTL_FC_EN(pipe)	BIT(pipe)
 
-/* colors are always in AARRGGBB format */
+ 
 #define SUN8I_MIXER_BLEND_COLOR_BLACK		0xff000000
-/* The following numbers are some still unknown magic numbers */
+ 
 #define SUN8I_MIXER_BLEND_MODE_DEF		0x03010301
 
 #define SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(n)	(0xf << ((n) << 2))
@@ -102,26 +100,23 @@
 #define SUN8I_MIXER_FBFMT_NV16		4
 #define SUN8I_MIXER_FBFMT_NV61		5
 #define SUN8I_MIXER_FBFMT_YUV422	6
-/* format 7 doesn't exist */
+ 
 #define SUN8I_MIXER_FBFMT_NV12		8
 #define SUN8I_MIXER_FBFMT_NV21		9
 #define SUN8I_MIXER_FBFMT_YUV420	10
-/* format 11 doesn't exist */
-/* format 12 is semi-planar YUV411 UVUV */
-/* format 13 is semi-planar YUV411 VUVU */
+ 
+ 
+ 
 #define SUN8I_MIXER_FBFMT_YUV411	14
-/* format 15 doesn't exist */
+ 
 #define SUN8I_MIXER_FBFMT_P010_YUV	16
-/* format 17 is P010 YVU */
+ 
 #define SUN8I_MIXER_FBFMT_P210_YUV	18
-/* format 19 is P210 YVU */
-/* format 20 is packed YVU444 10-bit */
-/* format 21 is packed YUV444 10-bit */
+ 
+ 
+ 
 
-/*
- * Sub-engines listed bellow are unused for now. The EN registers are here only
- * to be used to disable these sub-engines.
- */
+ 
 #define SUN8I_MIXER_FCE_EN			0xa0000
 #define SUN8I_MIXER_BWS_EN			0xa2000
 #define SUN8I_MIXER_LTI_EN			0xa4000
@@ -142,28 +137,15 @@
 #define SUN50I_MIXER_CDC1_EN			0xd8000
 
 enum {
-	/* First mixer or second mixer with VEP support. */
+	 
 	CCSC_MIXER0_LAYOUT,
-	/* Second mixer without VEP support. */
+	 
 	CCSC_MIXER1_LAYOUT,
-	/* First mixer with the MMIO layout found in the D1 SoC. */
+	 
 	CCSC_D1_MIXER0_LAYOUT,
 };
 
-/**
- * struct sun8i_mixer_cfg - mixer HW configuration
- * @vi_num: number of VI channels
- * @ui_num: number of UI channels
- * @scaler_mask: bitmask which tells which channel supports scaling
- *	First, scaler supports for VI channels is defined and after that, scaler
- *	support for UI channels. For example, if mixer has 2 VI channels without
- *	scaler and 2 UI channels with scaler, bitmask would be 0xC.
- * @ccsc: select set of CCSC base addresses from the enumeration above.
- * @mod_rate: module clock rate that needs to be set in order to have
- *	a functional block.
- * @is_de3: true, if this is next gen display engine 3.0, false otherwise.
- * @scaline_yuv: size of a scanline for VI scaler for YUV formats.
- */
+ 
 struct sun8i_mixer_cfg {
 	int		vi_num;
 	int		ui_num;
@@ -207,4 +189,4 @@ sun8i_channel_base(struct sun8i_mixer *mixer, int channel)
 }
 
 int sun8i_mixer_drm_format_to_hw(u32 format, u32 *hw_format);
-#endif /* _SUN8I_MIXER_H_ */
+#endif  

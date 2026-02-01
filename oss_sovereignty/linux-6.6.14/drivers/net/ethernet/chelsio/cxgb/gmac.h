@@ -1,31 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*****************************************************************************
- *                                                                           *
- * File: gmac.h                                                              *
- * $Revision: 1.6 $                                                          *
- * $Date: 2005/06/21 18:29:47 $                                              *
- * Description:                                                              *
- *  Generic MAC functionality.                                               *
- *  part of the Chelsio 10Gb Ethernet Driver.                                *
- *                                                                           *
- *                                                                           *
- * http://www.chelsio.com                                                    *
- *                                                                           *
- * Copyright (c) 2003 - 2005 Chelsio Communications, Inc.                    *
- * All rights reserved.                                                      *
- *                                                                           *
- * Maintainers: maintainers@chelsio.com                                      *
- *                                                                           *
- * Authors: Dimitrios Michailidis   <dm@chelsio.com>                         *
- *          Tina Yang               <tainay@chelsio.com>                     *
- *          Felix Marti             <felix@chelsio.com>                      *
- *          Scott Bardone           <sbardone@chelsio.com>                   *
- *          Kurt Ottaway            <kottaway@chelsio.com>                   *
- *          Frank DiMambro          <frank@chelsio.com>                      *
- *                                                                           *
- * History:                                                                  *
- *                                                                           *
- ****************************************************************************/
+ 
+ 
 
 #ifndef _CXGB_GMAC_H_
 #define _CXGB_GMAC_H_
@@ -43,7 +17,7 @@ enum {
 };
 
 struct cmac_statistics {
-	/* Transmit */
+	 
 	u64 TxOctetsOK;
 	u64 TxOctetsBad;
 	u64 TxUnicastFramesOK;
@@ -62,7 +36,7 @@ struct cmac_statistics {
 	u64 TxJumboFramesOK;
 	u64 TxJumboOctetsOK;
 
-	/* Receive */
+	 
 	u64 RxOctetsOK;
 	u64 RxOctetsBad;
 	u64 RxUnicastFramesOK;
@@ -129,4 +103,4 @@ struct gmac {
 extern const struct gmac t1_pm3393_ops;
 extern const struct gmac t1_vsc7326_ops;
 
-#endif /* _CXGB_GMAC_H_ */
+#endif  

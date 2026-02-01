@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Nuvoton WPCM450 SoC Identification
- *
- * Copyright (C) 2022 Jonathan Neuschäfer
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/of.h>

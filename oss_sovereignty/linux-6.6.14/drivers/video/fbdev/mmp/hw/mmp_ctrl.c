@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/video/mmp/hw/mmp_ctrl.c
- * Marvell MMP series Display Controller support
- *
- * Copyright (C) 2012 Marvell Technology Group Ltd.
- * Authors:  Guoqing Li <ligq@marvell.com>
- *          Lisa Du <cldu@marvell.com>
- *          Zhou Zhu <zzhu3@marvell.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -36,7 +28,7 @@ static irqreturn_t ctrl_handle_irq(int irq, void *dev_id)
 	imask = readl_relaxed(ctrl->reg_base + SPU_IRQ_ENA);
 
 	do {
-		/* clear clock only */
+		 
 		tmp = readl_relaxed(ctrl->reg_base + SPU_IRQ_ISR);
 		if (tmp & isr)
 			writel_relaxed(~isr, ctrl->reg_base + SPU_IRQ_ISR);
@@ -130,7 +122,7 @@ static void overlay_set_win(struct mmp_overlay *overlay, struct mmp_win *win)
 {
 	struct lcd_regs *regs = path_regs(overlay->path);
 
-	/* assert win supported */
+	 
 	memcpy(&overlay->win, win, sizeof(struct mmp_win));
 
 	mutex_lock(&overlay->access_ok);
@@ -236,7 +228,7 @@ static int overlay_set_addr(struct mmp_overlay *overlay, struct mmp_addr *addr)
 {
 	struct lcd_regs *regs = path_regs(overlay->path);
 
-	/* FIXME: assert addr supported */
+	 
 	memcpy(&overlay->addr, addr, sizeof(struct mmp_addr));
 
 	if (overlay_is_vid(overlay)) {
@@ -256,12 +248,12 @@ static void path_set_mode(struct mmp_path *path, struct mmp_mode *mode)
 		link_config = path_to_path_plat(path)->link_config,
 		dsi_rbswap = path_to_path_plat(path)->link_config;
 
-	/* FIXME: assert videomode supported */
+	 
 	memcpy(&path->mode, mode, sizeof(struct mmp_mode));
 
 	mutex_lock(&path->access_ok);
 
-	/* polarity of timing signals */
+	 
 	tmp = readl_relaxed(ctrl_regs(path) + intf_ctrl(path->id)) & 0x1;
 	tmp |= mode->vsync_invert ? 0 : 0x8;
 	tmp |= mode->hsync_invert ? 0 : 0x4;
@@ -269,7 +261,7 @@ static void path_set_mode(struct mmp_path *path, struct mmp_mode *mode)
 	tmp |= CFG_DUMB_ENA(1);
 	writel_relaxed(tmp, ctrl_regs(path) + intf_ctrl(path->id));
 
-	/* interface rb_swap setting */
+	 
 	tmp = readl_relaxed(ctrl_regs(path) + intf_rbswap_ctrl(path->id)) &
 		(~(CFG_INTFRBSWAP_MASK));
 	tmp |= dsi_rbswap & CFG_INTFRBSWAP_MASK;
@@ -288,7 +280,7 @@ static void path_set_mode(struct mmp_path *path, struct mmp_mode *mode)
 	writel_relaxed((total_y << 16) | total_x,
 		(void __iomem *)&regs->screen_size);
 
-	/* vsync ctrl */
+	 
 	if (path->output_type == PATH_OUT_DSI)
 		vsync_ctrl = 0x01330133;
 	else
@@ -296,7 +288,7 @@ static void path_set_mode(struct mmp_path *path, struct mmp_mode *mode)
 					| (mode->xres + mode->right_margin);
 	writel_relaxed(vsync_ctrl, (void __iomem *)&regs->vsync_ctrl);
 
-	/* set pixclock div */
+	 
 	sclk_src = clk_get_rate(path_to_ctrl(path)->clk);
 	sclk_div = sclk_src / mode->pixclock_freq;
 	if (sclk_div * mode->pixclock_freq < sclk_src)
@@ -324,16 +316,13 @@ static void ctrl_set_default(struct mmphw_ctrl *ctrl)
 {
 	u32 tmp, irq_mask;
 
-	/*
-	 * LCD Global control(LCD_TOP_CTRL) should be configed before
-	 * any other LCD registers read/write, or there maybe issues.
-	 */
+	 
 	tmp = readl_relaxed(ctrl->reg_base + LCD_TOP_CTRL);
 	tmp |= 0xfff0;
 	writel_relaxed(tmp, ctrl->reg_base + LCD_TOP_CTRL);
 
 
-	/* disable all interrupts */
+	 
 	irq_mask = path_imasks(0) | err_imask(0) |
 		   path_imasks(1) | err_imask(1);
 	tmp = readl_relaxed(ctrl->reg_base + SPU_IRQ_ENA);
@@ -349,7 +338,7 @@ static void path_set_default(struct mmp_path *path)
 
 	path_config = path_to_path_plat(path)->path_config;
 
-	/* Configure IOPAD: should be parallel only */
+	 
 	if (PATH_OUT_PARALLEL == path->output_type) {
 		mask = CFG_IOPADMODE_MASK | CFG_BURST_MASK | CFG_BOUNDARY_MASK;
 		tmp = readl_relaxed(ctrl_regs(path) + SPU_IOPAD_CONTROL);
@@ -358,32 +347,24 @@ static void path_set_default(struct mmp_path *path)
 		writel_relaxed(tmp, ctrl_regs(path) + SPU_IOPAD_CONTROL);
 	}
 
-	/* Select path clock source */
+	 
 	tmp = readl_relaxed(ctrl_regs(path) + LCD_SCLK(path));
 	tmp &= ~SCLK_SRC_SEL_MASK;
 	tmp |= path_config;
 	writel_relaxed(tmp, ctrl_regs(path) + LCD_SCLK(path));
 
-	/*
-	 * Configure default bits: vsync triggers DMA,
-	 * power save enable, configure alpha registers to
-	 * display 100% graphics, and set pixel command.
-	 */
+	 
 	dma_ctrl1 = 0x2032ff81;
 
 	dma_ctrl1 |= CFG_VSYNC_INV_MASK;
 	writel_relaxed(dma_ctrl1, ctrl_regs(path) + dma_ctrl(1, path->id));
 
-	/* Configure default register values */
+	 
 	writel_relaxed(0x00000000, (void __iomem *)&regs->blank_color);
 	writel_relaxed(0x00000000, (void __iomem *)&regs->g_1);
 	writel_relaxed(0x00000000, (void __iomem *)&regs->g_start);
 
-	/*
-	 * 1.enable multiple burst request in DMA AXI
-	 * bus arbiter for faster read if not tv path;
-	 * 2.enable horizontal smooth filter;
-	 */
+	 
 	mask = CFG_GRA_HSMOOTH_MASK | CFG_DMA_HSMOOTH_MASK | CFG_ARBFAST_ENA(1);
 	tmp = readl_relaxed(ctrl_regs(path) + dma_ctrl(0, path->id));
 	tmp |= mask;
@@ -401,7 +382,7 @@ static int path_init(struct mmphw_path_plat *path_plat,
 
 	dev_info(ctrl->dev, "%s: %s\n", __func__, config->name);
 
-	/* init driver data */
+	 
 	path_info = kzalloc(sizeof(*path_info), GFP_KERNEL);
 	if (!path_info)
 		return 0;
@@ -414,7 +395,7 @@ static int path_init(struct mmphw_path_plat *path_plat,
 	path_info->set_mode = path_set_mode;
 	path_info->plat_data = path_plat;
 
-	/* create/register platform device */
+	 
 	path = mmp_register_path(path_info);
 	if (!path) {
 		kfree(path_info);
@@ -446,7 +427,7 @@ static int mmphw_probe(struct platform_device *pdev)
 	struct mmphw_path_plat *path_plat;
 	struct mmphw_ctrl *ctrl = NULL;
 
-	/* get resources from platform data */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		dev_err(&pdev->dev, "%s: no IO memory defined\n", __func__);
@@ -460,7 +441,7 @@ static int mmphw_probe(struct platform_device *pdev)
 		goto failed;
 	}
 
-	/* get configs from platform data */
+	 
 	mi = pdev->dev.platform_data;
 	if (mi == NULL || !mi->path_num || !mi->paths) {
 		dev_err(&pdev->dev, "%s: no platform data defined\n", __func__);
@@ -468,7 +449,7 @@ static int mmphw_probe(struct platform_device *pdev)
 		goto failed;
 	}
 
-	/* allocate */
+	 
 	ctrl = devm_kzalloc(&pdev->dev,
 			    struct_size(ctrl, path_plats, mi->path_num),
 			    GFP_KERNEL);
@@ -484,7 +465,7 @@ static int mmphw_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, ctrl);
 	mutex_init(&ctrl->access_ok);
 
-	/* map registers.*/
+	 
 	if (!devm_request_mem_region(ctrl->dev, res->start,
 			resource_size(res), ctrl->name)) {
 		dev_err(ctrl->dev,
@@ -501,7 +482,7 @@ static int mmphw_probe(struct platform_device *pdev)
 		goto failed;
 	}
 
-	/* request irq */
+	 
 	ret = devm_request_irq(ctrl->dev, ctrl->irq, ctrl_handle_irq,
 		IRQF_SHARED, "lcd_controller", ctrl);
 	if (ret < 0) {
@@ -511,7 +492,7 @@ static int mmphw_probe(struct platform_device *pdev)
 		goto failed;
 	}
 
-	/* get clock */
+	 
 	ctrl->clk = devm_clk_get(ctrl->dev, mi->clk_name);
 	if (IS_ERR(ctrl->clk)) {
 		ret = PTR_ERR(ctrl->clk);
@@ -523,17 +504,17 @@ static int mmphw_probe(struct platform_device *pdev)
 	if (ret)
 		goto failed;
 
-	/* init global regs */
+	 
 	ctrl_set_default(ctrl);
 
-	/* init pathes from machine info and register them */
+	 
 	for (i = 0; i < ctrl->path_num; i++) {
-		/* get from config and machine info */
+		 
 		path_plat = &ctrl->path_plats[i];
 		path_plat->id = i;
 		path_plat->ctrl = ctrl;
 
-		/* path init */
+		 
 		if (!path_init(path_plat, &mi->paths[i])) {
 			ret = -EINVAL;
 			goto failed_path_init;

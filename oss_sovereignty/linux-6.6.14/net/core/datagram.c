@@ -1,38 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	SUCS NET3:
- *
- *	Generic datagram handling routines. These are generic for all
- *	protocols. Possibly a generic IP version on top of these would
- *	make sense. Not tonight however 8-).
- *	This is used because UDP, RAW, PACKET, DDP, IPX, AX.25 and
- *	NetROM layer all have identical poll code and mostly
- *	identical recvmsg() code. So we share it here. The poll was
- *	shared before but buried in udp.c so I moved it.
- *
- *	Authors:	Alan Cox <alan@lxorguk.ukuu.org.uk>. (datagram_poll() from old
- *						     udp.c code)
- *
- *	Fixes:
- *		Alan Cox	:	NULL return from skb_peek_copy()
- *					understood
- *		Alan Cox	:	Rewrote skb_read_datagram to avoid the
- *					skb_peek_copy stuff.
- *		Alan Cox	:	Added support for SOCK_SEQPACKET.
- *					IPX can no longer use the SO_TYPE hack
- *					but AX.25 now works right, and SPX is
- *					feasible.
- *		Alan Cox	:	Fixed write poll of non IP protocol
- *					crash.
- *		Florian  La Roche:	Changed for my new skbuff handling.
- *		Darryl Miles	:	Fixed non-blocking SOCK_SEQPACKET.
- *		Linus Torvalds	:	BSD semantic fixes.
- *		Alan Cox	:	Datagram iovec handling
- *		Darryl Miles	:	Fixed non-blocking SOCK_STREAM.
- *		Alan Cox	:	POSIXisms
- *		Pete Wyckoff    :       Unconnected accept() fix.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -62,9 +29,7 @@
 #include <trace/events/skb.h>
 #include <net/busy_poll.h>
 
-/*
- *	Is a socket 'connection oriented' ?
- */
+ 
 static inline int connection_based(struct sock *sk)
 {
 	return sk->sk_type == SOCK_SEQPACKET || sk->sk_type == SOCK_STREAM;
@@ -73,16 +38,12 @@ static inline int connection_based(struct sock *sk)
 static int receiver_wake_function(wait_queue_entry_t *wait, unsigned int mode, int sync,
 				  void *key)
 {
-	/*
-	 * Avoid a wakeup if event not interesting for us
-	 */
+	 
 	if (key && !(key_to_poll(key) & (EPOLLIN | EPOLLERR)))
 		return 0;
 	return autoremove_wake_function(wait, mode, sync, key);
 }
-/*
- * Wait for the last received packet to be different from skb
- */
+ 
 int __skb_wait_for_more_packets(struct sock *sk, struct sk_buff_head *queue,
 				int *err, long *timeo_p,
 				const struct sk_buff *skb)
@@ -92,7 +53,7 @@ int __skb_wait_for_more_packets(struct sock *sk, struct sk_buff_head *queue,
 
 	prepare_to_wait_exclusive(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 
-	/* Socket errors? */
+	 
 	error = sock_error(sk);
 	if (error)
 		goto out_err;
@@ -100,19 +61,17 @@ int __skb_wait_for_more_packets(struct sock *sk, struct sk_buff_head *queue,
 	if (READ_ONCE(queue->prev) != skb)
 		goto out;
 
-	/* Socket shut down? */
+	 
 	if (sk->sk_shutdown & RCV_SHUTDOWN)
 		goto out_noerr;
 
-	/* Sequenced packets can come disconnected.
-	 * If so we report the problem
-	 */
+	 
 	error = -ENOTCONN;
 	if (connection_based(sk) &&
 	    !(sk->sk_state == TCP_ESTABLISHED || sk->sk_state == TCP_LISTEN))
 		goto out_err;
 
-	/* handle signals */
+	 
 	if (signal_pending(current))
 		goto interrupted;
 
@@ -140,7 +99,7 @@ static struct sk_buff *skb_set_peeked(struct sk_buff *skb)
 	if (skb->peeked)
 		return skb;
 
-	/* We have to unshare an skb before modifying it. */
+	 
 	if (!skb_shared(skb))
 		goto done;
 
@@ -202,41 +161,7 @@ struct sk_buff *__skb_try_recv_from_queue(struct sock *sk,
 	return NULL;
 }
 
-/**
- *	__skb_try_recv_datagram - Receive a datagram skbuff
- *	@sk: socket
- *	@queue: socket queue from which to receive
- *	@flags: MSG\_ flags
- *	@off: an offset in bytes to peek skb from. Returns an offset
- *	      within an skb where data actually starts
- *	@err: error code returned
- *	@last: set to last peeked message to inform the wait function
- *	       what to look for when peeking
- *
- *	Get a datagram skbuff, understands the peeking, nonblocking wakeups
- *	and possible races. This replaces identical code in packet, raw and
- *	udp, as well as the IPX AX.25 and Appletalk. It also finally fixes
- *	the long standing peek and read race for datagram sockets. If you
- *	alter this routine remember it must be re-entrant.
- *
- *	This function will lock the socket if a skb is returned, so
- *	the caller needs to unlock the socket in that case (usually by
- *	calling skb_free_datagram). Returns NULL with @err set to
- *	-EAGAIN if no data was available or to some other value if an
- *	error was detected.
- *
- *	* It does not lock socket since today. This function is
- *	* free of race conditions. This measure should/can improve
- *	* significantly datagram socket latencies at high loads,
- *	* when data copying to user space takes lots of time.
- *	* (BTW I've just killed the last cli() in IP/IPv6/core/netlink/packet
- *	*  8) Great win.)
- *	*			                    --ANK (980729)
- *
- *	The order of the tests when we find no data waiting are specified
- *	quite explicitly by POSIX 1003.1g, don't change them without having
- *	the standard around please.
- */
+ 
 struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
 					struct sk_buff_head *queue,
 					unsigned int flags, int *off, int *err,
@@ -244,21 +169,14 @@ struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
 {
 	struct sk_buff *skb;
 	unsigned long cpu_flags;
-	/*
-	 * Caller is allowed not to check sk->sk_err before skb_recv_datagram()
-	 */
+	 
 	int error = sock_error(sk);
 
 	if (error)
 		goto no_packet;
 
 	do {
-		/* Again only user level code calls this function, so nothing
-		 * interrupt level will suddenly eat the receive_queue.
-		 *
-		 * Look at current nfs client by the way...
-		 * However, this function was correct in any case. 8)
-		 */
+		 
 		spin_lock_irqsave(&queue->lock, cpu_flags);
 		skb = __skb_try_recv_from_queue(sk, queue, flags, off, &error,
 						last);
@@ -337,7 +255,7 @@ void __skb_free_datagram_locked(struct sock *sk, struct sk_buff *skb, int len)
 	skb_orphan(skb);
 	unlock_sock_fast(sk, slow);
 
-	/* skb is now orphaned, can be freed outside of locked section */
+	 
 	__kfree_skb(skb);
 }
 EXPORT_SYMBOL(__skb_free_datagram_locked);
@@ -367,26 +285,7 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
 }
 EXPORT_SYMBOL(__sk_queue_drop_skb);
 
-/**
- *	skb_kill_datagram - Free a datagram skbuff forcibly
- *	@sk: socket
- *	@skb: datagram skbuff
- *	@flags: MSG\_ flags
- *
- *	This function frees a datagram skbuff that was received by
- *	skb_recv_datagram.  The flags argument must match the one
- *	used for skb_recv_datagram.
- *
- *	If the MSG_PEEK flag is set, and the packet is still on the
- *	receive queue of the socket, it will be taken off the queue
- *	before it is freed.
- *
- *	This function currently only disables BH when acquiring the
- *	sk_receive_queue lock.  Therefore it must not be used in a
- *	context where that lock is acquired in an IRQ context.
- *
- *	It returns 0 if the packet was removed by us.
- */
+ 
 
 int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags)
 {
@@ -412,7 +311,7 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
 	int i, copy = start - offset, start_off = offset, n;
 	struct sk_buff *frag_iter;
 
-	/* Copy header. */
+	 
 	if (copy > 0) {
 		if (copy > len)
 			copy = len;
@@ -425,7 +324,7 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
 			return 0;
 	}
 
-	/* Copy paged appendix. Hmm... why does this look so complicated? */
+	 
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 		int end;
 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
@@ -473,10 +372,7 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
 	if (!len)
 		return 0;
 
-	/* This is not really a user copy fault, but rather someone
-	 * gave us a bogus length on the skb.  We should probably
-	 * print a warning here as it may indicate a kernel bug.
-	 */
+	 
 
 fault:
 	iov_iter_revert(to, offset - start_off);
@@ -489,15 +385,7 @@ short_copy:
 	return 0;
 }
 
-/**
- *	skb_copy_and_hash_datagram_iter - Copy datagram to an iovec iterator
- *          and update a hash.
- *	@skb: buffer to copy
- *	@offset: offset in the buffer to start copying from
- *	@to: iovec iterator to copy to
- *	@len: amount of data to copy from buffer to iovec
- *      @hash: hash request to update
- */
+ 
 int skb_copy_and_hash_datagram_iter(const struct sk_buff *skb, int offset,
 			   struct iov_iter *to, int len,
 			   struct ahash_request *hash)
@@ -513,13 +401,7 @@ static size_t simple_copy_to_iter(const void *addr, size_t bytes,
 	return copy_to_iter(addr, bytes, i);
 }
 
-/**
- *	skb_copy_datagram_iter - Copy a datagram to an iovec iterator.
- *	@skb: buffer to copy
- *	@offset: offset in the buffer to start copying from
- *	@to: iovec iterator to copy to
- *	@len: amount of data to copy from buffer to iovec
- */
+ 
 int skb_copy_datagram_iter(const struct sk_buff *skb, int offset,
 			   struct iov_iter *to, int len)
 {
@@ -529,15 +411,7 @@ int skb_copy_datagram_iter(const struct sk_buff *skb, int offset,
 }
 EXPORT_SYMBOL(skb_copy_datagram_iter);
 
-/**
- *	skb_copy_datagram_from_iter - Copy a datagram from an iov_iter.
- *	@skb: buffer to copy
- *	@offset: offset in the buffer to start copying to
- *	@from: the copy source
- *	@len: amount of data to copy to buffer from iovec
- *
- *	Returns 0 or -EFAULT.
- */
+ 
 int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 				 struct iov_iter *from,
 				 int len)
@@ -546,7 +420,7 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 	int i, copy = start - offset;
 	struct sk_buff *frag_iter;
 
-	/* Copy header. */
+	 
 	if (copy > 0) {
 		if (copy > len)
 			copy = len;
@@ -557,7 +431,7 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 		offset += copy;
 	}
 
-	/* Copy paged appendix. Hmm... why does this look so complicated? */
+	 
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 		int end;
 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
@@ -671,11 +545,7 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
 				if (head == skb_frag_page(last) &&
 				    start == skb_frag_off(last) + skb_frag_size(last)) {
 					skb_frag_size_add(last, size);
-					/* We combined this page, we need to release
-					 * a reference. Since compound pages refcount
-					 * is shared among many pages, batch the refcount
-					 * adjustments to limit false sharing.
-					 */
+					 
 					last_head = head;
 					refs++;
 					continue;
@@ -694,21 +564,12 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
 }
 EXPORT_SYMBOL(__zerocopy_sg_from_iter);
 
-/**
- *	zerocopy_sg_from_iter - Build a zerocopy datagram from an iov_iter
- *	@skb: buffer to copy
- *	@from: the source to copy from
- *
- *	The function will first copy up to headlen, and then pin the userspace
- *	pages and build frags through them.
- *
- *	Returns 0, -EFAULT or -EMSGSIZE.
- */
+ 
 int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *from)
 {
 	int copy = min_t(int, skb_headlen(skb), iov_iter_count(from));
 
-	/* copy up to skb headlen */
+	 
 	if (skb_copy_datagram_from_iter(skb, 0, from, copy))
 		return -EFAULT;
 
@@ -716,15 +577,7 @@ int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *from)
 }
 EXPORT_SYMBOL(zerocopy_sg_from_iter);
 
-/**
- *	skb_copy_and_csum_datagram - Copy datagram to an iovec iterator
- *          and update a checksum.
- *	@skb: buffer to copy
- *	@offset: offset in the buffer to start copying from
- *	@to: iovec iterator to copy to
- *	@len: amount of data to copy from buffer to iovec
- *      @csump: checksum pointer
- */
+ 
 static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
 				      struct iov_iter *to, int len,
 				      __wsum *csump)
@@ -741,18 +594,7 @@ static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
 	return 0;
 }
 
-/**
- *	skb_copy_and_csum_datagram_msg - Copy and checksum skb to user iovec.
- *	@skb: skbuff
- *	@hlen: hardware length
- *	@msg: destination
- *
- *	Caller _must_ check that skb will fit to this iovec.
- *
- *	Returns: 0       - success.
- *		 -EINVAL - checksum failure.
- *		 -EFAULT - fault during copy.
- */
+ 
 int skb_copy_and_csum_datagram_msg(struct sk_buff *skb,
 				   int hlen, struct msghdr *msg)
 {
@@ -788,20 +630,7 @@ fault:
 }
 EXPORT_SYMBOL(skb_copy_and_csum_datagram_msg);
 
-/**
- * 	datagram_poll - generic datagram poll
- *	@file: file struct
- *	@sock: socket
- *	@wait: poll table
- *
- *	Datagram poll: Again totally generic. This also handles
- *	sequenced packet sockets providing the socket receive queue
- *	is only ever holding data ready to receive.
- *
- *	Note: when you *don't* use this routine for this protocol,
- *	and you use a different write policy from sock_writeable()
- *	then please supply your own write_space callback.
- */
+ 
 __poll_t datagram_poll(struct file *file, struct socket *sock,
 			   poll_table *wait)
 {
@@ -812,7 +641,7 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
 	sock_poll_wait(file, sock, wait);
 	mask = 0;
 
-	/* exceptional events? */
+	 
 	if (READ_ONCE(sk->sk_err) ||
 	    !skb_queue_empty_lockless(&sk->sk_error_queue))
 		mask |= EPOLLERR |
@@ -824,22 +653,22 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
 	if (shutdown == SHUTDOWN_MASK)
 		mask |= EPOLLHUP;
 
-	/* readable? */
+	 
 	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
 		mask |= EPOLLIN | EPOLLRDNORM;
 
-	/* Connection-based need to check for termination and startup */
+	 
 	if (connection_based(sk)) {
 		int state = READ_ONCE(sk->sk_state);
 
 		if (state == TCP_CLOSE)
 			mask |= EPOLLHUP;
-		/* connection hasn't started yet? */
+		 
 		if (state == TCP_SYN_SENT)
 			return mask;
 	}
 
-	/* writable? */
+	 
 	if (sock_writeable(sk))
 		mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
 	else

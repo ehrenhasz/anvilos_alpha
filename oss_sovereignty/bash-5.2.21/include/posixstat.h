@@ -1,26 +1,8 @@
-/* posixstat.h -- Posix stat(2) definitions for systems that
-   don't have them. */
+ 
 
-/* Copyright (C) 1987-2019 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* This file should be included instead of <sys/stat.h>.
-   It relies on the local sys/stat.h to work though. */
+ 
 #if !defined (_POSIXSTAT_H_)
 #define _POSIXSTAT_H_
 
@@ -33,20 +15,19 @@
 #  undef S_ISFIFO
 #  undef S_ISREG
 #  undef S_ISLNK
-#endif /* STAT_MACROS_BROKEN */
+#endif  
 
-/* These are guaranteed to work only on isc386 */
+ 
 #if !defined (S_IFDIR) && !defined (S_ISDIR)
 #  define S_IFDIR 0040000
-#endif /* !S_IFDIR && !S_ISDIR */
+#endif  
 #if !defined (S_IFMT)
 #  define S_IFMT  0170000
-#endif /* !S_IFMT */
+#endif  
 
-/* Posix 1003.1 5.6.1.1 <sys/stat.h> file types */
+ 
 
-/* Some Posix-wannabe systems define _S_IF* macros instead of S_IF*, but
-   do not provide the S_IS* macros that Posix requires. */
+ 
 
 #if defined (_S_IFMT) && !defined (S_IFMT)
 #define S_IFMT _S_IFMT
@@ -73,90 +54,86 @@
 #define S_IFSOCK _S_IFSOCK
 #endif
 
-/* Test for each symbol individually and define the ones necessary (some
-   systems claiming Posix compatibility define some but not all). */
+ 
 
 #if defined (S_IFBLK) && !defined (S_ISBLK)
-#define	S_ISBLK(m)	(((m)&S_IFMT) == S_IFBLK)	/* block device */
+#define	S_ISBLK(m)	(((m)&S_IFMT) == S_IFBLK)	 
 #endif
 
 #if defined (S_IFCHR) && !defined (S_ISCHR)
-#define	S_ISCHR(m)	(((m)&S_IFMT) == S_IFCHR)	/* character device */
+#define	S_ISCHR(m)	(((m)&S_IFMT) == S_IFCHR)	 
 #endif
 
 #if defined (S_IFDIR) && !defined (S_ISDIR)
-#define	S_ISDIR(m)	(((m)&S_IFMT) == S_IFDIR)	/* directory */
+#define	S_ISDIR(m)	(((m)&S_IFMT) == S_IFDIR)	 
 #endif
 
 #if defined (S_IFREG) && !defined (S_ISREG)
-#define	S_ISREG(m)	(((m)&S_IFMT) == S_IFREG)	/* file */
+#define	S_ISREG(m)	(((m)&S_IFMT) == S_IFREG)	 
 #endif
 
 #if defined (S_IFIFO) && !defined (S_ISFIFO)
-#define	S_ISFIFO(m)	(((m)&S_IFMT) == S_IFIFO)	/* fifo - named pipe */
+#define	S_ISFIFO(m)	(((m)&S_IFMT) == S_IFIFO)	 
 #endif
 
 #if defined (S_IFLNK) && !defined (S_ISLNK)
-#define	S_ISLNK(m)	(((m)&S_IFMT) == S_IFLNK)	/* symbolic link */
+#define	S_ISLNK(m)	(((m)&S_IFMT) == S_IFLNK)	 
 #endif
 
 #if defined (S_IFSOCK) && !defined (S_ISSOCK)
-#define	S_ISSOCK(m)	(((m)&S_IFMT) == S_IFSOCK)	/* socket */
+#define	S_ISSOCK(m)	(((m)&S_IFMT) == S_IFSOCK)	 
 #endif
 
-/*
- * POSIX 1003.1 5.6.1.2 <sys/stat.h> File Modes
- */
+ 
 
 #if !defined (S_IRWXU)
 #  if !defined (S_IREAD)
 #    define S_IREAD	00400
 #    define S_IWRITE	00200
 #    define S_IEXEC	00100
-#  endif /* S_IREAD */
+#  endif  
 
 #  if !defined (S_IRUSR)
-#    define S_IRUSR	S_IREAD			/* read, owner */
-#    define S_IWUSR	S_IWRITE		/* write, owner */
-#    define S_IXUSR	S_IEXEC			/* execute, owner */
+#    define S_IRUSR	S_IREAD			 
+#    define S_IWUSR	S_IWRITE		 
+#    define S_IXUSR	S_IEXEC			 
 
-#    define S_IRGRP	(S_IREAD  >> 3)		/* read, group */
-#    define S_IWGRP	(S_IWRITE >> 3)		/* write, group */
-#    define S_IXGRP	(S_IEXEC  >> 3)		/* execute, group */
+#    define S_IRGRP	(S_IREAD  >> 3)		 
+#    define S_IWGRP	(S_IWRITE >> 3)		 
+#    define S_IXGRP	(S_IEXEC  >> 3)		 
 
-#    define S_IROTH	(S_IREAD  >> 6)		/* read, other */
-#    define S_IWOTH	(S_IWRITE >> 6)		/* write, other */
-#    define S_IXOTH	(S_IEXEC  >> 6)		/* execute, other */
-#  endif /* !S_IRUSR */
+#    define S_IROTH	(S_IREAD  >> 6)		 
+#    define S_IWOTH	(S_IWRITE >> 6)		 
+#    define S_IXOTH	(S_IEXEC  >> 6)		 
+#  endif  
 
 #  define S_IRWXU	(S_IRUSR | S_IWUSR | S_IXUSR)
 #  define S_IRWXG	(S_IRGRP | S_IWGRP | S_IXGRP)
 #  define S_IRWXO	(S_IROTH | S_IWOTH | S_IXOTH)
-#else /* !S_IRWXU */
-  /* S_IRWXU is defined, but "group" and "other" bits might not be
-     (happens in certain versions of MinGW).  */
+#else  
+   
 #  if !defined (S_IRGRP)
-#    define S_IRGRP	(S_IREAD  >> 3)		/* read, group */
-#    define S_IWGRP	(S_IWRITE >> 3)		/* write, group */
-#    define S_IXGRP	(S_IEXEC  >> 3)		/* execute, group */
-#  endif /* !S_IRGRP */
+#    define S_IRGRP	(S_IREAD  >> 3)		 
+#    define S_IWGRP	(S_IWRITE >> 3)		 
+#    define S_IXGRP	(S_IEXEC  >> 3)		 
+#  endif  
 
 #  if !defined (S_IROTH)
-#    define S_IROTH	(S_IREAD  >> 6)		/* read, other */
-#    define S_IWOTH	(S_IWRITE >> 6)		/* write, other */
-#    define S_IXOTH	(S_IEXEC  >> 6)		/* execute, other */
-#  endif /* !S_IROTH */
+#    define S_IROTH	(S_IREAD  >> 6)		 
+#    define S_IWOTH	(S_IWRITE >> 6)		 
+#    define S_IXOTH	(S_IEXEC  >> 6)		 
+#  endif  
 #  if !defined (S_IRWXG)
 #    define S_IRWXG	(S_IRGRP | S_IWGRP | S_IXGRP)
 #  endif
 #  if !defined (S_IRWXO)
 #    define S_IRWXO	(S_IROTH | S_IWOTH | S_IXOTH)
 #  endif
-#endif /* !S_IRWXU */
+#endif  
 
-/* These are non-standard, but are used in builtins.c$symbolic_umask() */
+ 
 #define S_IRUGO		(S_IRUSR | S_IRGRP | S_IROTH)
 #define S_IWUGO		(S_IWUSR | S_IWGRP | S_IWOTH)
 #define S_IXUGO		(S_IXUSR | S_IXGRP | S_IXOTH)
 
-#endif /* _POSIXSTAT_H_ */
+#endif  

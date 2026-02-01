@@ -1,16 +1,4 @@
-/*
- * netfilter module to limit the number of parallel tcp
- * connections per IP address.
- *   (c) 2000 Gerd Knorr <kraxel@bytesex.org>
- *   Nov 2002: Martin Bene <martin.bene@icomedias.com>:
- *		only ignore TIME_WAIT or gone connections
- *   (C) CC Computer Consultants GmbH, 2007
- *
- * based on ...
- *
- * Kernel module to match connection tracking information.
- * GPL (C) 1999  Rusty Russell (rusty@rustcorp.com.au).
- */
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/ip.h>
@@ -72,7 +60,7 @@ connlimit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	connections = nf_conncount_count(net, info->data, key, tuple_ptr,
 					 zone);
 	if (connections == 0)
-		/* kmalloc failed, drop it entirely */
+		 
 		goto hotdrop;
 
 	return (connections > info->limit) ^ !!(info->flags & XT_CONNLIMIT_INVERT);
@@ -93,7 +81,7 @@ static int connlimit_mt_check(const struct xt_mtchk_param *par)
 	else
 		keylen += sizeof(struct in_addr);
 
-	/* init private data */
+	 
 	info->data = nf_conncount_init(par->net, par->family, keylen);
 
 	return PTR_ERR_OR_ZERO(info->data);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Crypto user configuration API.
- *
- * Copyright (C) 2017-2018 Corentin Labbe <clabbe@baylibre.com>
- *
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/cryptouser.h>

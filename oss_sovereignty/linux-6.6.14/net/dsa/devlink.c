@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DSA devlink handling
- */
+
+ 
 
 #include <net/dsa.h>
 #include <net/devlink.h>
@@ -369,9 +367,7 @@ int dsa_switch_devlink_alloc(struct dsa_switch *ds)
 	struct dsa_devlink_priv *dl_priv;
 	struct devlink *dl;
 
-	/* Add the switch to devlink before calling setup, so that setup can
-	 * add dpipe tables
-	 */
+	 
 	dl = devlink_alloc(&dsa_devlink_ops, sizeof(*dl_priv), ds->dev);
 	if (!dl)
 		return -ENOMEM;

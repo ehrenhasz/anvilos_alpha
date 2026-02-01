@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) Sunplus Inc.
- * Author: Tony Huang <tonyhuang.sunplus@gmail.com>
- * Author: Li-hao Kuo <lhjeff911@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -148,7 +144,7 @@
 struct spmmc_tuning_info {
 	int enable_tuning;
 	int need_tuning;
-	int retried; /* how many times has been retried */
+	int retried;  
 	u32 rd_crc_dly:3;
 	u32 rd_dat_dly:3;
 	u32 rd_rsp_dly:3;
@@ -165,7 +161,7 @@ struct spmmc_host {
 	struct clk *clk;
 	struct reset_control *rstc;
 	struct mmc_host *mmc;
-	struct mmc_request *mrq; /* current mrq */
+	struct mmc_request *mrq;  
 	int irq;
 	int dmapio_mode;
 	struct spmmc_tuning_info tuning_info;
@@ -322,9 +318,7 @@ static void spmmc_set_bus_width(struct spmmc_host *host, int width)
 	writel(value, host->base + SPMMC_SD_CONFIG0_REG);
 }
 
-/*
- * select the working mode of controller: sd/sdio/emmc
- */
+ 
 static void spmmc_set_sdmmc_mode(struct spmmc_host *host)
 {
 	u32 value = readl(host->base + SPMMC_SD_CONFIG0_REG);
@@ -338,11 +332,7 @@ static void spmmc_sw_reset(struct spmmc_host *host)
 {
 	u32 value;
 
-	/*
-	 * Must reset dma operation first, or it will
-	 * be stuck on sd_state == 0x1c00 because of
-	 * a controller software reset bug
-	 */
+	 
 	value = readl(host->base + SPMMC_HW_DMA_CTRL_REG);
 	value |= SPMMC_DMAIDLE;
 	writel(value, host->base + SPMMC_HW_DMA_CTRL_REG);
@@ -360,12 +350,12 @@ static void spmmc_prepare_cmd(struct spmmc_host *host, struct mmc_command *cmd)
 {
 	u32 value;
 
-	/* add start bit, according to spec, command format */
+	 
 	value = ((cmd->opcode | 0x40) << 24) | (cmd->arg >> 8);
 	writel(value, host->base + SPMMC_SD_CMDBUF0_3_REG);
 	writeb(cmd->arg & 0xff, host->base + SPMMC_SD_CMDBUF4_REG);
 
-	/* disable interrupt if needed */
+	 
 	value = readl(host->base + SPMMC_SD_INT_REG);
 	value |= SPMMC_SDINT_SDCMPCLR;
 	value &= ~SPMMC_SDINT_SDCMPEN;
@@ -382,10 +372,7 @@ static void spmmc_prepare_cmd(struct spmmc_host *host, struct mmc_command *cmd)
 
 		return;
 	}
-	/*
-	 * Currently, host is not capable of checking R2's CRC7,
-	 * thus, enable crc7 check only for 48 bit response commands
-	 */
+	 
 	if (cmd->flags & MMC_RSP_CRC && !(cmd->flags & MMC_RSP_136))
 		value |= SPMMC_SD_RSP_CHK_EN;
 	else
@@ -472,12 +459,12 @@ static void spmmc_prepare_data(struct spmmc_host *host, struct mmc_data *data)
 		}
 		value &= ~SPMMC_SD_PIO_MODE;
 		writel(value, host->base + SPMMC_SD_CONFIG0_REG);
-		/* enable interrupt if needed */
+		 
 		if (data->blksz * data->blocks > host->dma_int_threshold) {
 			host->dma_use_int = 1;
 			value = readl(host->base + SPMMC_SD_INT_REG);
 			value &= ~SPMMC_SDINT_SDCMPEN;
-			value |= FIELD_PREP(SPMMC_SDINT_SDCMPEN, 1); /* sdcmpen */
+			value |= FIELD_PREP(SPMMC_SDINT_SDCMPEN, 1);  
 			writel(value, host->base + SPMMC_SD_INT_REG);
 		}
 	} else {
@@ -601,11 +588,7 @@ static int spmmc_check_error(struct spmmc_host *host, struct mmc_request *mrq)
 	return ret;
 }
 
-/*
- * the strategy is:
- * 1. if several continuous delays are acceptable, we choose a middle one;
- * 2. otherwise, we choose the first one.
- */
+ 
 static inline int spmmc_find_best_delay(u8 candidate_dly)
 {
 	int f, w, value;
@@ -652,7 +635,7 @@ static void spmmc_xfer_data_pio(struct spmmc_host *host, struct mmc_data *data)
 				*buf = readl(host->base + SPMMC_SD_PIODATARX_REG);
 			}
 			buf++;
-			/* tx/rx 4 bytes one time in pio mode */
+			 
 			consumed += 4;
 			remain -= 4;
 		} while (remain);
@@ -679,11 +662,7 @@ static void spmmc_controller_init(struct spmmc_host *host)
 	writel(value, host->base + SPMMC_CARD_MEDIATYPE_SRCDST_REG);
 }
 
-/*
- * 1. unmap scatterlist if needed;
- * 2. get response & check error conditions;
- * 3. notify mmc layer the request is done
- */
+ 
 static void spmmc_finish_request(struct spmmc_host *host, struct mmc_request *mrq)
 {
 	struct mmc_command *cmd;
@@ -709,7 +688,7 @@ static void spmmc_finish_request(struct spmmc_host *host, struct mmc_request *mr
 	mmc_request_done(host->mmc, mrq);
 }
 
-/* Interrupt Service Routine */
+ 
 static irqreturn_t spmmc_irq(int irq, void *dev_id)
 {
 	struct spmmc_host *host = dev_id;
@@ -735,7 +714,7 @@ static void spmmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	cmd = mrq->cmd;
 
 	spmmc_prepare_cmd(host, cmd);
-	/* we need manually read response R2. */
+	 
 	if (cmd->flags & MMC_RSP_136) {
 		spmmc_trigger_transaction(host);
 		spmmc_get_rsp(host, cmd);
@@ -749,7 +728,7 @@ static void spmmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 		if (host->dmapio_mode == SPMMC_PIO_MODE && data) {
 			u32 value;
-			/* pio data transfer do not use interrupt */
+			 
 			value = readl(host->base + SPMMC_SD_INT_REG);
 			value &= ~SPMMC_SDINT_SDCMPEN;
 			writel(value, host->base + SPMMC_SD_INT_REG);
@@ -776,17 +755,11 @@ static void spmmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	spmmc_set_bus_clk(host, ios->clock);
 	spmmc_set_bus_timing(host, ios->timing);
 	spmmc_set_bus_width(host, ios->bus_width);
-	/* ensure mode is correct, because we might have hw reset the controller */
+	 
 	spmmc_set_sdmmc_mode(host);
 }
 
-/*
- * Return values for the get_cd callback should be:
- *   0 for a absent card
- *   1 for a present card
- *   -ENOSYS when not supported (equal to NULL callback)
- *   or a negative errno value when something bad happened
- */
+ 
 static int spmmc_get_cd(struct mmc_host *mmc)
 {
 	int ret = 0;
@@ -976,7 +949,7 @@ static const struct of_device_id spmmc_of_table[] = {
 	{
 		.compatible = "sunplus,sp7021-mmc",
 	},
-	{/* sentinel */}
+	{ }
 };
 MODULE_DEVICE_TABLE(of, spmmc_of_table);
 

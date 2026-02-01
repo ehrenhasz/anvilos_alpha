@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom STB AVS TMON thermal sensor driver
- *
- * Copyright (c) 2015-2017 Broadcom
- */
+
+ 
 
 #define DRV_NAME	"brcmstb_thermal"
 
@@ -48,11 +44,11 @@
 #define AVS_TMON_TEMP_INT_CODE		0x1c
 #define AVS_TMON_TP_TEST_ENABLE		0x20
 
-/* Default coefficients */
+ 
 #define AVS_TMON_TEMP_SLOPE		487
 #define AVS_TMON_TEMP_OFFSET		410040
 
-/* HW related temperature constants */
+ 
 #define AVS_TMON_TEMP_MAX		0x3ff
 #define AVS_TMON_TEMP_MIN		-88161
 #define AVS_TMON_TEMP_MASK		AVS_TMON_TEMP_MAX
@@ -65,18 +61,18 @@ enum avs_tmon_trip_type {
 };
 
 struct avs_tmon_trip {
-	/* HW bit to enable the trip */
+	 
 	u32 enable_offs;
 	u32 enable_mask;
 
-	/* HW field to read the trip temperature */
+	 
 	u32 reg_offs;
 	u32 reg_msk;
 	int reg_shift;
 };
 
 static struct avs_tmon_trip avs_tmon_trips[] = {
-	/* Trips when temperature is below threshold */
+	 
 	[TMON_TRIP_TYPE_LOW] = {
 		.enable_offs	= AVS_TMON_EN_TEMP_INT_SRCS,
 		.enable_mask	= AVS_TMON_EN_TEMP_INT_SRCS_low,
@@ -84,7 +80,7 @@ static struct avs_tmon_trip avs_tmon_trips[] = {
 		.reg_msk	= AVS_TMON_INT_THRESH_low_msk,
 		.reg_shift	= AVS_TMON_INT_THRESH_low_shift,
 	},
-	/* Trips when temperature is above threshold */
+	 
 	[TMON_TRIP_TYPE_HIGH] = {
 		.enable_offs	= AVS_TMON_EN_TEMP_INT_SRCS,
 		.enable_mask	= AVS_TMON_EN_TEMP_INT_SRCS_high,
@@ -92,7 +88,7 @@ static struct avs_tmon_trip avs_tmon_trips[] = {
 		.reg_msk	= AVS_TMON_INT_THRESH_high_msk,
 		.reg_shift	= AVS_TMON_INT_THRESH_high_shift,
 	},
-	/* Automatically resets chip when above threshold */
+	 
 	[TMON_TRIP_TYPE_RESET] = {
 		.enable_offs	= AVS_TMON_EN_OVERTEMP_RESET,
 		.enable_mask	= AVS_TMON_EN_OVERTEMP_RESET_msk,
@@ -112,11 +108,11 @@ struct brcmstb_thermal_priv {
 	void __iomem *tmon_base;
 	struct device *dev;
 	struct thermal_zone_device *thermal;
-	/* Process specific thermal parameters used for calculations */
+	 
 	const struct brcmstb_thermal_params *temp_params;
 };
 
-/* Convert a HW code to a temperature reading (millidegree celsius) */
+ 
 static inline int avs_tmon_code_to_temp(struct brcmstb_thermal_priv *priv,
 					u32 code)
 {
@@ -126,12 +122,7 @@ static inline int avs_tmon_code_to_temp(struct brcmstb_thermal_priv *priv,
 	return (offset - (int)((code & AVS_TMON_TEMP_MASK) * mult));
 }
 
-/*
- * Convert a temperature value (millidegree celsius) to a HW code
- *
- * @temp: temperature to convert
- * @low: if true, round toward the low side
- */
+ 
 static inline u32 avs_tmon_temp_to_code(struct brcmstb_thermal_priv *priv,
 					int temp, bool low)
 {
@@ -139,10 +130,10 @@ static inline u32 avs_tmon_temp_to_code(struct brcmstb_thermal_priv *priv,
 	int mult = priv->temp_params->mult;
 
 	if (temp < AVS_TMON_TEMP_MIN)
-		return AVS_TMON_TEMP_MAX;	/* Maximum code value */
+		return AVS_TMON_TEMP_MAX;	 
 
 	if (temp >= offset)
-		return 0;	/* Minimum code value */
+		return 0;	 
 
 	if (low)
 		return (u32)(DIV_ROUND_UP(offset - temp, mult));
@@ -209,7 +200,7 @@ static void avs_tmon_set_trip_temp(struct brcmstb_thermal_priv *priv,
 
 	dev_dbg(priv->dev, "set temp %d to %d\n", type, temp);
 
-	/* round toward low temp for the low interrupt */
+	 
 	val = avs_tmon_temp_to_code(priv, temp,
 				    type == TMON_TRIP_TYPE_LOW);
 
@@ -242,17 +233,14 @@ static irqreturn_t brcmstb_tmon_irq_thread(int irq, void *data)
 	dev_dbg(priv->dev, "low/intr/high: %d/%d/%d\n",
 			low, intr, high);
 
-	/* Disable high-temp until next threshold shift */
+	 
 	if (intr >= high)
 		avs_tmon_trip_enable(priv, TMON_TRIP_TYPE_HIGH, 0);
-	/* Disable low-temp until next threshold shift */
+	 
 	if (intr <= low)
 		avs_tmon_trip_enable(priv, TMON_TRIP_TYPE_LOW, 0);
 
-	/*
-	 * Notify using the interrupt temperature, in case the temperature
-	 * changes before it can next be read out
-	 */
+	 
 	thermal_zone_device_update(priv->thermal, intr);
 
 	return IRQ_HANDLED;
@@ -264,10 +252,7 @@ static int brcmstb_set_trips(struct thermal_zone_device *tz, int low, int high)
 
 	dev_dbg(priv->dev, "set trips %d <--> %d\n", low, high);
 
-	/*
-	 * Disable low-temp if "low" is too small. As per thermal framework
-	 * API, we use -INT_MAX rather than INT_MIN.
-	 */
+	 
 	if (low <= -INT_MAX) {
 		avs_tmon_trip_enable(priv, TMON_TRIP_TYPE_LOW, 0);
 	} else {
@@ -275,7 +260,7 @@ static int brcmstb_set_trips(struct thermal_zone_device *tz, int low, int high)
 		avs_tmon_trip_enable(priv, TMON_TRIP_TYPE_LOW, 1);
 	}
 
-	/* Disable high-temp if "high" is too big. */
+	 
 	if (high == INT_MAX) {
 		avs_tmon_trip_enable(priv, TMON_TRIP_TYPE_HIGH, 0);
 	} else {

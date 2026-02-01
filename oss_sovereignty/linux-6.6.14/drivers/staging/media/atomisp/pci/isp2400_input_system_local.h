@@ -1,27 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __INPUT_SYSTEM_LOCAL_H_INCLUDED__
 #define __INPUT_SYSTEM_LOCAL_H_INCLUDED__
 
-#include "input_system_defs.h"		/* HIVE_ISYS_GPREG_MULTICAST_A_IDX,... */
+#include "input_system_defs.h"		 
 
-/*
- * _HRT_CSS_RECEIVER_2400_TWO_PIXEL_EN_REG_IDX,
- * _HRT_CSS_RECEIVER_2400_CSI2_FUNC_PROG_REG_IDX,...
- */
+ 
 #include "css_receiver_2400_defs.h"
 
 #include "isp_capture_defs.h"
@@ -36,7 +21,7 @@ struct target_cfg2400_s {
 	target_strm2mem_cfg_t	target_strm2mem_cfg;
 };
 
-// Configuration of a channel.
+
 struct channel_cfg_s {
 	u32		ch_id;
 	backend_channel_cfg_t	backend_ch;
@@ -45,24 +30,24 @@ struct channel_cfg_s {
 	target_cfg2400_t	target_cfg;
 };
 
-// Complete configuration for input system.
+
 struct input_system_cfg2400_s {
 	input_system_source_t source_type;
 	input_system_config_flags_t	source_type_flags;
-	//channel_cfg_t		channel[N_CHANNELS];
+	
 	input_system_config_flags_t	ch_flags[N_CHANNELS];
-	//  This is the place where the buffers' settings are collected, as given.
+	
 	csi_cfg_t			csi_value[N_CSI_PORTS];
 	input_system_config_flags_t	csi_flags[N_CSI_PORTS];
 
-	// Possible another struct for ib.
-	// This buffers set at the end, based on the all configurations.
+	
+	
 	isp2400_ib_buffer_t			csi_buffer[N_CSI_PORTS];
 	input_system_config_flags_t	csi_buffer_flags[N_CSI_PORTS];
 	isp2400_ib_buffer_t			acquisition_buffer_unique;
 	input_system_config_flags_t	acquisition_buffer_unique_flags;
-	u32			unallocated_ib_mem_words; // Used for check.DEFAULT = IB_CAPACITY_IN_WORDS.
-	//uint32_t			acq_allocated_ib_mem_words;
+	u32			unallocated_ib_mem_words; 
+	
 
 	input_system_connection_t		multicast[N_CSI_PORTS];
 	input_system_multiplex_t		multiplexer;
@@ -88,21 +73,19 @@ struct input_system_cfg2400_s {
 
 };
 
-/*
- * For each MIPI port
- */
+ 
 #define _HRT_CSS_RECEIVER_DEVICE_READY_REG_IDX			_HRT_CSS_RECEIVER_2400_DEVICE_READY_REG_IDX
 #define _HRT_CSS_RECEIVER_IRQ_STATUS_REG_IDX			_HRT_CSS_RECEIVER_2400_IRQ_STATUS_REG_IDX
 #define _HRT_CSS_RECEIVER_IRQ_ENABLE_REG_IDX			_HRT_CSS_RECEIVER_2400_IRQ_ENABLE_REG_IDX
 #define _HRT_CSS_RECEIVER_TIMEOUT_COUNT_REG_IDX		    _HRT_CSS_RECEIVER_2400_CSI2_FUNC_PROG_REG_IDX
 #define _HRT_CSS_RECEIVER_INIT_COUNT_REG_IDX			_HRT_CSS_RECEIVER_2400_INIT_COUNT_REG_IDX
-/* new regs for each MIPI port w.r.t. 2300 */
+ 
 #define _HRT_CSS_RECEIVER_RAW16_18_DATAID_REG_IDX       _HRT_CSS_RECEIVER_2400_RAW16_18_DATAID_REG_IDX
 #define _HRT_CSS_RECEIVER_SYNC_COUNT_REG_IDX            _HRT_CSS_RECEIVER_2400_SYNC_COUNT_REG_IDX
 #define _HRT_CSS_RECEIVER_RX_COUNT_REG_IDX              _HRT_CSS_RECEIVER_2400_RX_COUNT_REG_IDX
 
-/* _HRT_CSS_RECEIVER_2400_COMP_FORMAT_REG_IDX is not defined per MIPI port but per channel */
-/* _HRT_CSS_RECEIVER_2400_COMP_PREDICT_REG_IDX is not defined per MIPI port but per channel */
+ 
+ 
 #define _HRT_CSS_RECEIVER_FS_TO_LS_DELAY_REG_IDX        _HRT_CSS_RECEIVER_2400_FS_TO_LS_DELAY_REG_IDX
 #define _HRT_CSS_RECEIVER_LS_TO_DATA_DELAY_REG_IDX      _HRT_CSS_RECEIVER_2400_LS_TO_DATA_DELAY_REG_IDX
 #define _HRT_CSS_RECEIVER_DATA_TO_LE_DELAY_REG_IDX      _HRT_CSS_RECEIVER_2400_DATA_TO_LE_DELAY_REG_IDX
@@ -115,7 +98,7 @@ struct input_system_cfg2400_s {
 #define _HRT_CSS_RECEIVER_FORCE_RAW8_REG_IDX            _HRT_CSS_RECEIVER_2400_FORCE_RAW8_REG_IDX
 #define _HRT_CSS_RECEIVER_RAW16_REG_IDX                 _HRT_CSS_RECEIVER_2400_RAW16_REG_IDX
 
-/* Previously MIPI port regs, now 2x2 logical channel regs */
+ 
 #define _HRT_CSS_RECEIVER_COMP_SCHEME_VC0_REG0_IDX		_HRT_CSS_RECEIVER_2400_COMP_SCHEME_VC0_REG0_IDX
 #define _HRT_CSS_RECEIVER_COMP_SCHEME_VC0_REG1_IDX		_HRT_CSS_RECEIVER_2400_COMP_SCHEME_VC0_REG1_IDX
 #define _HRT_CSS_RECEIVER_COMP_SCHEME_VC1_REG0_IDX		_HRT_CSS_RECEIVER_2400_COMP_SCHEME_VC1_REG0_IDX
@@ -125,7 +108,7 @@ struct input_system_cfg2400_s {
 #define _HRT_CSS_RECEIVER_COMP_SCHEME_VC3_REG0_IDX		_HRT_CSS_RECEIVER_2400_COMP_SCHEME_VC3_REG0_IDX
 #define _HRT_CSS_RECEIVER_COMP_SCHEME_VC3_REG1_IDX		_HRT_CSS_RECEIVER_2400_COMP_SCHEME_VC3_REG1_IDX
 
-/* Second backend is at offset 0x0700 w.r.t. the first port at offset 0x0100 */
+ 
 #define _HRT_CSS_BE_OFFSET                              448
 #define _HRT_CSS_RECEIVER_BE_GSP_ACC_OVL_REG_IDX        (_HRT_CSS_RECEIVER_2400_BE_GSP_ACC_OVL_REG_IDX + _HRT_CSS_BE_OFFSET)
 #define _HRT_CSS_RECEIVER_BE_SRST_REG_IDX               (_HRT_CSS_RECEIVER_2400_BE_SRST_REG_IDX + _HRT_CSS_BE_OFFSET)
@@ -173,27 +156,27 @@ typedef enum {
 	MIPI_FORMAT_RGB444,
 	MIPI_FORMAT_RGB565,
 	MIPI_FORMAT_RGB666,
-	MIPI_FORMAT_RAW8,		/* 5 */
+	MIPI_FORMAT_RAW8,		 
 	MIPI_FORMAT_RAW10,
 	MIPI_FORMAT_RAW6,
 	MIPI_FORMAT_RAW7,
 	MIPI_FORMAT_RAW12,
-	MIPI_FORMAT_RAW14,		/* 10 */
+	MIPI_FORMAT_RAW14,		 
 	MIPI_FORMAT_YUV420_8,
 	MIPI_FORMAT_YUV420_10,
 	MIPI_FORMAT_YUV422_8,
 	MIPI_FORMAT_YUV422_10,
-	MIPI_FORMAT_CUSTOM0,	/* 15 */
+	MIPI_FORMAT_CUSTOM0,	 
 	MIPI_FORMAT_YUV420_8_LEGACY,
 	MIPI_FORMAT_EMBEDDED,
 	MIPI_FORMAT_CUSTOM1,
 	MIPI_FORMAT_CUSTOM2,
-	MIPI_FORMAT_CUSTOM3,	/* 20 */
+	MIPI_FORMAT_CUSTOM3,	 
 	MIPI_FORMAT_CUSTOM4,
 	MIPI_FORMAT_CUSTOM5,
 	MIPI_FORMAT_CUSTOM6,
 	MIPI_FORMAT_CUSTOM7,
-	MIPI_FORMAT_YUV420_8_SHIFT,	/* 25 */
+	MIPI_FORMAT_YUV420_8_SHIFT,	 
 	MIPI_FORMAT_YUV420_10_SHIFT,
 	MIPI_FORMAT_RAW16,
 	MIPI_FORMAT_RAW18,
@@ -204,7 +187,7 @@ typedef enum {
 #define MIPI_FORMAT_BINARY_8	MIPI_FORMAT_CUSTOM0
 #define N_MIPI_FORMAT_CUSTOM	8
 
-/* The number of stores for compressed format types */
+ 
 #define	N_MIPI_COMPRESSOR_CONTEXT	(N_RX_CHANNEL_ID * N_MIPI_FORMAT_CUSTOM)
 
 typedef enum {
@@ -217,7 +200,7 @@ typedef enum {
 	RX_IRQ_INFO_ERR_SOT_SYNC     = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_SOT_SYNC_HS_BIT,
 	RX_IRQ_INFO_ERR_CONTROL      = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_CONTROL_BIT,
 	RX_IRQ_INFO_ERR_ECC_DOUBLE   = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_ECC_DOUBLE_BIT,
-	/*	RX_IRQ_INFO_NO_ERR           = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_ECC_NO_CORRECTION_BIT, */
+	 
 	RX_IRQ_INFO_ERR_CRC          = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_CRC_BIT,
 	RX_IRQ_INFO_ERR_UNKNOWN_ID   = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_ID_BIT,
 	RX_IRQ_INFO_ERR_FRAME_SYNC   = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_FRAME_SYNC_BIT,
@@ -227,7 +210,7 @@ typedef enum {
 	RX_IRQ_INFO_ERR_LINE_SYNC    = 1UL << _HRT_CSS_RECEIVER_IRQ_ERR_LINE_SYNC_BIT,
 }  rx_irq_info_t;
 
-/* NOTE: The base has already an offset of 0x0100 */
+ 
 static const hrt_address __maybe_unused MIPI_PORT_OFFSET[N_MIPI_PORT_ID] = {
 	0x00000000UL,
 	0x00000100UL,
@@ -260,13 +243,11 @@ struct capture_unit_state_s {
 	int	Start_Addr;
 	int	Mem_Region_Size;
 	int	Num_Mem_Regions;
-	/*	int	Init;   write-only registers
-		int	Start;
-		int	Stop;      */
+	 
 };
 
 struct acquisition_unit_state_s {
-	/*	int	Init;   write-only register */
+	 
 	int	Received_Short_Packets;
 	int	Received_Long_Packets;
 	int	Last_Command;
@@ -302,7 +283,7 @@ struct ctrl_unit_state_s {
 	int	acq_start_addr;
 	int	acq_mem_region_size;
 	int	acq_num_mem_regions;
-	/*	int	ctrl_init;  write only register */
+	 
 	int	capt_reserve_one_mem_region;
 };
 
@@ -330,8 +311,8 @@ struct mipi_port_state_s {
 	u32	timeout_count;
 	u16	init_count;
 	u16	raw16_18;
-	u32	sync_count;		/*4 x uint8_t */
-	u32	rx_count;		/*4 x uint8_t */
+	u32	sync_count;		 
+	u32	rx_count;		 
 	u8		lane_sync_count[MIPI_4LANE_CFG];
 	u8		lane_rx_count[MIPI_4LANE_CFG];
 };
@@ -372,4 +353,4 @@ struct receiver_state_s {
 	int	be_irq_clear;
 };
 
-#endif /* __INPUT_SYSTEM_LOCAL_H_INCLUDED__ */
+#endif  

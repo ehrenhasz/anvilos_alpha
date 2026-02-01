@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef OXYGEN_H_INCLUDED
 #define OXYGEN_H_INCLUDED
 
@@ -8,7 +8,7 @@
 #include <linux/workqueue.h>
 #include "oxygen_regs.h"
 
-/* 1 << PCM_x == OXYGEN_CHANNEL_x */
+ 
 #define PCM_A		0
 #define PCM_B		1
 #define PCM_C		2
@@ -23,16 +23,16 @@
 
 #define OXYGEN_IO_SIZE	0x100
 
-#define OXYGEN_EEPROM_ID	0x434d	/* "CM" */
+#define OXYGEN_EEPROM_ID	0x434d	 
 
-/* model-specific configuration of outputs/inputs */
+ 
 #define PLAYBACK_0_TO_I2S	0x0001
-     /* PLAYBACK_0_TO_AC97_0		not implemented */
+      
 #define PLAYBACK_1_TO_SPDIF	0x0004
 #define PLAYBACK_2_TO_AC97_1	0x0008
 #define CAPTURE_0_FROM_I2S_1	0x0010
 #define CAPTURE_0_FROM_I2S_2	0x0020
-     /* CAPTURE_0_FROM_AC97_0		not implemented */
+      
 #define CAPTURE_1_FROM_SPDIF	0x0080
 #define CAPTURE_2_FROM_I2S_2	0x0100
 #define CAPTURE_2_FROM_AC97_1	0x0200
@@ -152,7 +152,7 @@ struct oxygen {
 	struct oxygen_model model;
 };
 
-/* oxygen_lib.c */
+ 
 
 int oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
 		     struct module *owner,
@@ -166,17 +166,17 @@ extern const struct dev_pm_ops oxygen_pci_pm;
 #endif
 void oxygen_pci_shutdown(struct pci_dev *pci);
 
-/* oxygen_mixer.c */
+ 
 
 int oxygen_mixer_init(struct oxygen *chip);
 void oxygen_update_dac_routing(struct oxygen *chip);
 void oxygen_update_spdif_source(struct oxygen *chip);
 
-/* oxygen_pcm.c */
+ 
 
 int oxygen_pcm_init(struct oxygen *chip);
 
-/* oxygen_io.c */
+ 
 
 u8 oxygen_read8(struct oxygen *chip, unsigned int reg);
 u16 oxygen_read16(struct oxygen *chip, unsigned int reg);

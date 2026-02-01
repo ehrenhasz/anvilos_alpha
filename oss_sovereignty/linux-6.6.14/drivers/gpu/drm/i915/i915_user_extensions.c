@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #include <linux/nospec.h>
 #include <linux/sched/signal.h>
@@ -25,7 +21,7 @@ int i915_user_extensions(struct i915_user_extension __user *ext,
 		u32 name;
 		u64 next;
 
-		if (!stackdepth--) /* recursion vs useful flexibility */
+		if (!stackdepth--)  
 			return -E2BIG;
 
 		err = check_user_mbz(&ext->flags);

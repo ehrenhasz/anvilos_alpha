@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Keystone accumulator queue manager
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com
- * Author:	Sandeep Nair <sandeep_n@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- *		Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
@@ -57,10 +50,7 @@ static int knav_acc_set_notify(struct knav_range_info *range,
 	struct knav_device *kdev = range->kdev;
 	u32 mask, offset;
 
-	/*
-	 * when enabling, we need to re-trigger an interrupt if we
-	 * have descriptors pending
-	 */
+	 
 	if (!enabled || atomic_read(&kq->desc_count) <= 0)
 		return 0;
 
@@ -111,7 +101,7 @@ static irqreturn_t knav_acc_int_handler(int irq, void *_instdata)
 		atomic_dec(&acc->retrigger_count);
 		__knav_acc_notify(range, acc);
 		writel_relaxed(1, pdsp->intd + ACC_INTD_OFFSET_COUNT(channel));
-		/* ack the interrupt */
+		 
 		writel_relaxed(ACC_CHANNEL_INT_BASE + channel,
 			       pdsp->intd + ACC_INTD_OFFSET_EOI);
 
@@ -179,13 +169,13 @@ static irqreturn_t knav_acc_int_handler(int irq, void *_instdata)
 	dma_sync_single_for_device(kdev->dev, list_dma, info->list_size,
 				   DMA_TO_DEVICE);
 
-	/* flip to the other list */
+	 
 	acc->list_index ^= 1;
 
-	/* reset the interrupt counter */
+	 
 	writel_relaxed(1, pdsp->intd + ACC_INTD_OFFSET_COUNT(channel));
 
-	/* ack the interrupt */
+	 
 	writel_relaxed(ACC_CHANNEL_INT_BASE + channel,
 		       pdsp->intd + ACC_INTD_OFFSET_EOI);
 
@@ -289,7 +279,7 @@ knav_acc_write(struct knav_device *kdev, struct knav_pdsp_info *pdsp,
 	writel_relaxed(cmd->queue_mask, &pdsp->acc_command->queue_mask);
 	writel_relaxed(cmd->command, &pdsp->acc_command->command);
 
-	/* wait for the command to clear */
+	 
 	do {
 		result = readl_relaxed(&pdsp->acc_command->command);
 	} while ((result >> 8) & 0xff);
@@ -459,15 +449,7 @@ static struct knav_range_ops knav_acc_range_ops = {
 	.free_range	= knav_acc_free_range,
 };
 
-/**
- * knav_init_acc_range: Initialise accumulator ranges
- *
- * @kdev:		qmss device
- * @node:		device node
- * @range:		qmms range information
- *
- * Return 0 on success or error
- */
+ 
 int knav_init_acc_range(struct knav_device *kdev,
 			struct device_node *node,
 			struct knav_range_info *range)
@@ -538,7 +520,7 @@ int knav_init_acc_range(struct knav_device *kdev,
 		}
 	}
 
-	/* figure out list size */
+	 
 	list_size  = info->list_entries;
 	list_size *= ACC_LIST_ENTRY_WORDS * sizeof(u32);
 	info->list_size = list_size;
@@ -553,7 +535,7 @@ int knav_init_acc_range(struct knav_device *kdev,
 		acc = range->acc + channel;
 		acc->channel = info->start_channel + channel;
 
-		/* allocate memory for the two lists */
+		 
 		list_mem = alloc_pages_exact(mem_size, GFP_KERNEL | GFP_DMA);
 		if (!list_mem)
 			return -ENOMEM;

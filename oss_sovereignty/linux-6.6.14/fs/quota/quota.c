@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Quota code necessary even when VFS quota support is not compiled
- * into the kernel.  The interesting stuff is over in dquot.c, here
- * we have symbols for initial quotactl(2) handling, the sysctl(2)
- * variables, etc - things needed even when quota support disabled.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/namei.h>
@@ -28,7 +23,7 @@ static int check_quotactl_permission(struct super_block *sb, int type, int cmd,
 				     qid_t id)
 {
 	switch (cmd) {
-	/* these commands do not require any special privilegues */
+	 
 	case Q_GETFMT:
 	case Q_SYNC:
 	case Q_GETINFO:
@@ -36,7 +31,7 @@ static int check_quotactl_permission(struct super_block *sb, int type, int cmd,
 	case Q_XGETQSTATV:
 	case Q_XQUOTASYNC:
 		break;
-	/* allow to query information for dquots we "own" */
+	 
 	case Q_GETQUOTA:
 	case Q_XGETQUOTA:
 		if ((type == USRQUOTA && uid_eq(current_euid(), make_kuid(current_user_ns(), id))) ||
@@ -230,10 +225,7 @@ static int quota_getquota(struct super_block *sb, int type, qid_t id,
 	return 0;
 }
 
-/*
- * Return quota for next active quota >= this id, if any exists,
- * otherwise return -ENOENT via ->get_nextdqblk
- */
+ 
 static int quota_getnextquota(struct super_block *sb, int type, qid_t id,
 			  void __user *addr)
 {
@@ -250,7 +242,7 @@ static int quota_getnextquota(struct super_block *sb, int type, qid_t id,
 	ret = sb->s_qcop->get_nextdqblk(sb, &qid, &fdq);
 	if (ret)
 		return ret;
-	/* struct if_nextdqblk is a superset of struct if_dqblk */
+	 
 	copy_to_if_dqblk((struct if_dqblk *)&idq, &fdq);
 	idq.dqb_id = from_kqid(current_user_ns(), qid);
 	if (copy_to_user(addr, &idq, sizeof(idq)))
@@ -365,7 +357,7 @@ static int quota_getstate(struct super_block *sb, int type,
 	memset(fqs, 0, sizeof(*fqs));
 	fqs->qs_version = FS_QSTAT_VERSION;
 	fqs->qs_flags = quota_state_to_flags(&state);
-	/* No quota enabled? */
+	 
 	if (!fqs->qs_flags)
 		return -ENOSYS;
 	fqs->qs_incoredqs = state.s_incoredqs;
@@ -376,7 +368,7 @@ static int quota_getstate(struct super_block *sb, int type,
 	fqs->qs_bwarnlimit = state.s_state[type].spc_warnlimit;
 	fqs->qs_iwarnlimit = state.s_state[type].ino_warnlimit;
 
-	/* Inodes may be allocated even if inactive; copy out if present */
+	 
 	if (state.s_state[USRQUOTA].ino) {
 		fqs->qs_uquota.qfs_ino = state.s_state[USRQUOTA].ino;
 		fqs->qs_uquota.qfs_nblks = state.s_state[USRQUOTA].blocks;
@@ -388,11 +380,7 @@ static int quota_getstate(struct super_block *sb, int type,
 		fqs->qs_gquota.qfs_nextents = state.s_state[GRPQUOTA].nextents;
 	}
 	if (state.s_state[PRJQUOTA].ino) {
-		/*
-		 * Q_XGETQSTAT doesn't have room for both group and project
-		 * quotas.  So, allow the project quota values to be copied out
-		 * only if there is no group quota information available.
-		 */
+		 
 		if (!(state.s_state[GRPQUOTA].flags & QCI_ACCT_ENABLED)) {
 			fqs->qs_gquota.qfs_ino = state.s_state[PRJQUOTA].ino;
 			fqs->qs_gquota.qfs_nblks =
@@ -463,7 +451,7 @@ static int quota_getstatev(struct super_block *sb, int type,
 	memset(fqs, 0, sizeof(*fqs));
 	fqs->qs_version = FS_QSTAT_VERSION;
 	fqs->qs_flags = quota_state_to_flags(&state);
-	/* No quota enabled? */
+	 
 	if (!fqs->qs_flags)
 		return -ENOSYS;
 	fqs->qs_incoredqs = state.s_incoredqs;
@@ -475,7 +463,7 @@ static int quota_getstatev(struct super_block *sb, int type,
 	fqs->qs_iwarnlimit = state.s_state[type].ino_warnlimit;
 	fqs->qs_rtbwarnlimit = state.s_state[type].rt_spc_warnlimit;
 
-	/* Inodes may be allocated even if inactive; copy out if present */
+	 
 	if (state.s_state[USRQUOTA].ino) {
 		fqs->qs_uquota.qfs_ino = state.s_state[USRQUOTA].ino;
 		fqs->qs_uquota.qfs_nblks = state.s_state[USRQUOTA].blocks;
@@ -503,10 +491,10 @@ static int quota_getxstatev(struct super_block *sb, int type, void __user *addr)
 		return -ENOSYS;
 
 	memset(&fqs, 0, sizeof(fqs));
-	if (copy_from_user(&fqs, addr, 1)) /* Just read qs_version */
+	if (copy_from_user(&fqs, addr, 1))  
 		return -EFAULT;
 
-	/* If this kernel doesn't support user specified version, fail */
+	 
 	switch (fqs.qs_version) {
 	case FS_QSTATV_VERSION1:
 		break;
@@ -519,11 +507,7 @@ static int quota_getxstatev(struct super_block *sb, int type, void __user *addr)
 	return ret;
 }
 
-/*
- * XFS defines BBTOB and BTOBB macros inside fs/xfs/ and we cannot move them
- * out of there as xfsprogs rely on definitions being in that header file. So
- * just define same functions here for quota purposes.
- */
+ 
 #define XFS_BB_SHIFT 9
 
 static inline u64 quota_bbtob(u64 blocks)
@@ -635,7 +619,7 @@ static int quota_setxquota(struct super_block *sb, int type, qid_t id,
 	qid = make_kqid(current_user_ns(), type, id);
 	if (!qid_has_mapping(sb->s_user_ns, qid))
 		return -EINVAL;
-	/* Are we actually setting timer / warning limits for all users? */
+	 
 	if (from_kqid(sb->s_user_ns, qid) == 0 &&
 	    fdq.d_fieldmask & (FS_DQ_WARNS_MASK | FS_DQ_TIMER_MASK)) {
 		struct qc_info qinfo;
@@ -647,7 +631,7 @@ static int quota_setxquota(struct super_block *sb, int type, qid_t id,
 		ret = sb->s_qcop->set_info(sb, type, &qinfo);
 		if (ret)
 			return ret;
-		/* These are already done */
+		 
 		fdq.d_fieldmask &= ~(FS_DQ_WARNS_MASK | FS_DQ_TIMER_MASK);
 	}
 	copy_from_xfs_dqblk(&qdq, &fdq);
@@ -724,10 +708,7 @@ static int quota_getxquota(struct super_block *sb, int type, qid_t id,
 	return ret;
 }
 
-/*
- * Return quota for next active quota >= this id, if any exists,
- * otherwise return -ENOENT via ->get_nextdqblk.
- */
+ 
 static int quota_getnextxquota(struct super_block *sb, int type, qid_t id,
 			    void __user *addr)
 {
@@ -763,17 +744,14 @@ static int quota_rmxquota(struct super_block *sb, void __user *addr)
 	return sb->s_qcop->rm_xquota(sb, flags);
 }
 
-/* Copy parameters and call proper function */
+ 
 static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
 		       void __user *addr, const struct path *path)
 {
 	int ret;
 
 	type = array_index_nospec(type, MAXQUOTAS);
-	/*
-	 * Quota not supported on this fs? Check this before s_quota_types
-	 * since they needn't be set if quota is not supported at all.
-	 */
+	 
 	if (!sb->s_qcop)
 		return -ENOSYS;
 	if (!(sb->s_quota_types & (1 << type)))
@@ -823,21 +801,17 @@ static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
 	case Q_XQUOTASYNC:
 		if (sb_rdonly(sb))
 			return -EROFS;
-		/* XFS quotas are fully coherent now, making this call a noop */
+		 
 		return 0;
 	default:
 		return -EINVAL;
 	}
 }
 
-/* Return 1 if 'cmd' will block on frozen filesystem */
+ 
 static int quotactl_cmd_write(int cmd)
 {
-	/*
-	 * We cannot allow Q_GETQUOTA and Q_GETNEXTQUOTA without write access
-	 * as dquot_acquire() may allocate space for new structure and OCFS2
-	 * needs to increment on-disk use count.
-	 */
+	 
 	switch (cmd) {
 	case Q_GETFMT:
 	case Q_GETINFO:
@@ -852,17 +826,14 @@ static int quotactl_cmd_write(int cmd)
 	return 1;
 }
 
-/* Return true if quotactl command is manipulating quota on/off state */
+ 
 static bool quotactl_cmd_onoff(int cmd)
 {
 	return (cmd == Q_QUOTAON) || (cmd == Q_QUOTAOFF) ||
 		 (cmd == Q_XQUOTAON) || (cmd == Q_XQUOTAOFF);
 }
 
-/*
- * look up a superblock on which quota ops will be performed
- * - use the name of a block device to find the superblock thereon
- */
+ 
 static struct super_block *quotactl_block(const char __user *special, int cmd)
 {
 #ifdef CONFIG_BLOCK
@@ -895,7 +866,7 @@ retry:
 			up_write(&sb->s_umount);
 		else
 			up_read(&sb->s_umount);
-		/* Wait for sb to unfreeze */
+		 
 		sb_start_write(sb);
 		sb_end_write(sb);
 		put_super(sb);
@@ -908,12 +879,7 @@ retry:
 #endif
 }
 
-/*
- * This is the system call interface. This communicates with
- * the user-level programs. Currently this only supports diskquota
- * calls. Maybe we need to add the process quotas etc. in the future,
- * but we probably should use rlimits for that.
- */
+ 
 SYSCALL_DEFINE4(quotactl, unsigned int, cmd, const char __user *, special,
 		qid_t, id, void __user *, addr)
 {
@@ -928,22 +894,14 @@ SYSCALL_DEFINE4(quotactl, unsigned int, cmd, const char __user *, special,
 	if (type >= MAXQUOTAS)
 		return -EINVAL;
 
-	/*
-	 * As a special case Q_SYNC can be called without a specific device.
-	 * It will iterate all superblocks that have quota enabled and call
-	 * the sync action on each of them.
-	 */
+	 
 	if (!special) {
 		if (cmds == Q_SYNC)
 			return quota_sync_all(type);
 		return -ENODEV;
 	}
 
-	/*
-	 * Path for quotaon has to be resolved before grabbing superblock
-	 * because that gets s_umount sem which is also possibly needed by path
-	 * resolution (think about autofs) and thus deadlocks could arise.
-	 */
+	 
 	if (cmds == Q_QUOTAON) {
 		ret = user_path_at(AT_FDCWD, addr, LOOKUP_FOLLOW|LOOKUP_AUTOMOUNT, &path);
 		if (ret)

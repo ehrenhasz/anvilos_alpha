@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI SN65DSI83,84,85 driver
- *
- * Currently supported:
- * - SN65DSI83
- *   = 1x Single-link DSI ~ 1x Single-link LVDS
- *   - Supported
- *   - Single-link LVDS mode tested
- * - SN65DSI84
- *   = 1x Single-link DSI ~ 2x Single-link or 1x Dual-link LVDS
- *   - Supported
- *   - Dual-link LVDS mode tested
- *   - 2x Single-link LVDS mode unsupported
- *     (should be easy to add by someone who has the HW)
- * - SN65DSI85
- *   = 2x Single-link or 1x Dual-link DSI ~ 2x Single-link or 1x Dual-link LVDS
- *   - Unsupported
- *     (should be easy to add by someone who has the HW)
- *
- * Copyright (C) 2021 Marek Vasut <marex@denx.de>
- *
- * Based on previous work of:
- * Valentin Raevsky <valentin@compulab.co.il>
- * Philippe Schenker <philippe.schenker@toradex.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -44,9 +20,9 @@
 #include <drm/drm_print.h>
 #include <drm/drm_probe_helper.h>
 
-/* ID registers */
+ 
 #define REG_ID(n)				(0x00 + (n))
-/* Reset and clock registers */
+ 
 #define REG_RC_RESET				0x09
 #define  REG_RC_RESET_SOFT_RESET		BIT(0)
 #define REG_RC_LVDS_PLL				0x0a
@@ -58,11 +34,11 @@
 #define  REG_RC_DSI_CLK_REFCLK_MULTIPLIER(n)	((n) & 0x3)
 #define REG_RC_PLL_EN				0x0d
 #define  REG_RC_PLL_EN_PLL_EN			BIT(0)
-/* DSI registers */
+ 
 #define REG_DSI_LANE				0x10
-#define  REG_DSI_LANE_LEFT_RIGHT_PIXELS		BIT(7)	/* DSI85-only */
-#define  REG_DSI_LANE_DSI_CHANNEL_MODE_DUAL	0	/* DSI85-only */
-#define  REG_DSI_LANE_DSI_CHANNEL_MODE_2SINGLE	BIT(6)	/* DSI85-only */
+#define  REG_DSI_LANE_LEFT_RIGHT_PIXELS		BIT(7)	 
+#define  REG_DSI_LANE_DSI_CHANNEL_MODE_DUAL	0	 
+#define  REG_DSI_LANE_DSI_CHANNEL_MODE_2SINGLE	BIT(6)	 
 #define  REG_DSI_LANE_DSI_CHANNEL_MODE_SINGLE	BIT(5)
 #define  REG_DSI_LANE_CHA_DSI_LANES(n)		(((n) & 0x3) << 3)
 #define  REG_DSI_LANE_CHB_DSI_LANES(n)		(((n) & 0x3) << 1)
@@ -72,12 +48,12 @@
 #define  REG_DSI_EQ_CHA_DSI_CLK_EQ(n)		(((n) & 0x3) << 2)
 #define REG_DSI_CLK				0x12
 #define  REG_DSI_CLK_CHA_DSI_CLK_RANGE(n)	((n) & 0xff)
-/* LVDS registers */
+ 
 #define REG_LVDS_FMT				0x18
 #define  REG_LVDS_FMT_DE_NEG_POLARITY		BIT(7)
 #define  REG_LVDS_FMT_HS_NEG_POLARITY		BIT(6)
 #define  REG_LVDS_FMT_VS_NEG_POLARITY		BIT(5)
-#define  REG_LVDS_FMT_LVDS_LINK_CFG		BIT(4)	/* 0:AB 1:A-only */
+#define  REG_LVDS_FMT_LVDS_LINK_CFG		BIT(4)	 
 #define  REG_LVDS_FMT_CHA_24BPP_MODE		BIT(3)
 #define  REG_LVDS_FMT_CHB_24BPP_MODE		BIT(2)
 #define  REG_LVDS_FMT_CHA_24BPP_FORMAT1		BIT(1)
@@ -96,7 +72,7 @@
 #define REG_LVDS_CM				0x1b
 #define  REG_LVDS_CM_CHA_LVDS_CM_ADJUST(n)	(((n) & 0x3) << 4)
 #define  REG_LVDS_CM_CHB_LVDS_CM_ADJUST(n)	((n) & 0x3)
-/* Video registers */
+ 
 #define REG_VID_CHA_ACTIVE_LINE_LENGTH_LOW	0x20
 #define REG_VID_CHA_ACTIVE_LINE_LENGTH_HIGH	0x21
 #define REG_VID_CHA_VERTICAL_DISPLAY_SIZE_LOW	0x24
@@ -112,7 +88,7 @@
 #define REG_VID_CHA_HORIZONTAL_FRONT_PORCH	0x38
 #define REG_VID_CHA_VERTICAL_FRONT_PORCH	0x3a
 #define REG_VID_CHA_TEST_PATTERN		0x3c
-/* IRQ registers */
+ 
 #define REG_IRQ_GLOBAL				0xe0
 #define  REG_IRQ_GLOBAL_IRQ_EN			BIT(0)
 #define REG_IRQ_EN				0xe1
@@ -264,20 +240,7 @@ static void sn65dsi83_detach(struct drm_bridge *bridge)
 static u8 sn65dsi83_get_lvds_range(struct sn65dsi83 *ctx,
 				   const struct drm_display_mode *mode)
 {
-	/*
-	 * The encoding of the LVDS_CLK_RANGE is as follows:
-	 * 000 - 25 MHz <= LVDS_CLK < 37.5 MHz
-	 * 001 - 37.5 MHz <= LVDS_CLK < 62.5 MHz
-	 * 010 - 62.5 MHz <= LVDS_CLK < 87.5 MHz
-	 * 011 - 87.5 MHz <= LVDS_CLK < 112.5 MHz
-	 * 100 - 112.5 MHz <= LVDS_CLK < 137.5 MHz
-	 * 101 - 137.5 MHz <= LVDS_CLK <= 154 MHz
-	 * which is a range of 12.5MHz..162.5MHz in 50MHz steps, except that
-	 * the ends of the ranges are clamped to the supported range. Since
-	 * sn65dsi83_mode_valid() already filters the valid modes and limits
-	 * the clock to 25..154 MHz, the range calculation can be simplified
-	 * as follows:
-	 */
+	 
 	int mode_clock = mode->clock;
 
 	if (ctx->lvds_dual_link)
@@ -289,20 +252,7 @@ static u8 sn65dsi83_get_lvds_range(struct sn65dsi83 *ctx,
 static u8 sn65dsi83_get_dsi_range(struct sn65dsi83 *ctx,
 				  const struct drm_display_mode *mode)
 {
-	/*
-	 * The encoding of the CHA_DSI_CLK_RANGE is as follows:
-	 * 0x00 through 0x07 - Reserved
-	 * 0x08 - 40 <= DSI_CLK < 45 MHz
-	 * 0x09 - 45 <= DSI_CLK < 50 MHz
-	 * ...
-	 * 0x63 - 495 <= DSI_CLK < 500 MHz
-	 * 0x64 - 500 MHz
-	 * 0x65 through 0xFF - Reserved
-	 * which is DSI clock in 5 MHz steps, clamped to 40..500 MHz.
-	 * The DSI clock are calculated as:
-	 *  DSI_CLK = mode clock * bpp / dsi_data_lanes / 2
-	 * the 2 is there because the bus is DDR.
-	 */
+	 
 	return DIV_ROUND_UP(clamp((unsigned int)mode->clock *
 			    mipi_dsi_pixel_format_to_bpp(ctx->dsi->format) /
 			    ctx->dsi->lanes / 2, 40000U, 500000U), 5000U);
@@ -310,7 +260,7 @@ static u8 sn65dsi83_get_dsi_range(struct sn65dsi83 *ctx,
 
 static u8 sn65dsi83_get_dsi_div(struct sn65dsi83 *ctx)
 {
-	/* The divider is (DSI_CLK / LVDS_CLK) - 1, which really is: */
+	 
 	unsigned int dsi_div = mipi_dsi_pixel_format_to_bpp(ctx->dsi->format);
 
 	dsi_div /= ctx->dsi->lanes;
@@ -344,11 +294,11 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
 		return;
 	}
 
-	/* Deassert reset */
+	 
 	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
 	usleep_range(10000, 11000);
 
-	/* Get the LVDS format from the bridge state. */
+	 
 	bridge_state = drm_atomic_get_new_bridge_state(state, bridge);
 
 	switch (bridge_state->output_bus_cfg.format) {
@@ -365,11 +315,7 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
 		lvds_format_jeida = false;
 		break;
 	default:
-		/*
-		 * Some bridges still don't set the correct
-		 * LVDS bus pixel format, use SPWG24 default
-		 * format until those are fixed.
-		 */
+		 
 		lvds_format_24bpp = true;
 		lvds_format_jeida = false;
 		dev_warn(ctx->dev,
@@ -378,21 +324,18 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
 		break;
 	}
 
-	/*
-	 * Retrieve the CRTC adjusted mode. This requires a little dance to go
-	 * from the bridge to the encoder, to the connector and to the CRTC.
-	 */
+	 
 	connector = drm_atomic_get_new_connector_for_encoder(state,
 							     bridge->encoder);
 	crtc = drm_atomic_get_new_connector_state(state, connector)->crtc;
 	crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
 	mode = &crtc_state->adjusted_mode;
 
-	/* Clear reset, disable PLL */
+	 
 	regmap_write(ctx->regmap, REG_RC_RESET, 0x00);
 	regmap_write(ctx->regmap, REG_RC_PLL_EN, 0x00);
 
-	/* Reference clock derived from DSI link clock. */
+	 
 	regmap_write(ctx->regmap, REG_RC_LVDS_PLL,
 		     REG_RC_LVDS_PLL_LVDS_CLK_RANGE(sn65dsi83_get_lvds_range(ctx, mode)) |
 		     REG_RC_LVDS_PLL_HS_CLK_SRC_DPHY);
@@ -401,36 +344,36 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
 	regmap_write(ctx->regmap, REG_RC_DSI_CLK,
 		     REG_RC_DSI_CLK_DSI_CLK_DIVIDER(sn65dsi83_get_dsi_div(ctx)));
 
-	/* Set number of DSI lanes and LVDS link config. */
+	 
 	regmap_write(ctx->regmap, REG_DSI_LANE,
 		     REG_DSI_LANE_DSI_CHANNEL_MODE_SINGLE |
 		     REG_DSI_LANE_CHA_DSI_LANES(~(ctx->dsi->lanes - 1)) |
-		     /* CHB is DSI85-only, set to default on DSI83/DSI84 */
+		      
 		     REG_DSI_LANE_CHB_DSI_LANES(3));
-	/* No equalization. */
+	 
 	regmap_write(ctx->regmap, REG_DSI_EQ, 0x00);
 
-	/* Set up sync signal polarity. */
+	 
 	val = (mode->flags & DRM_MODE_FLAG_NHSYNC ?
 	       REG_LVDS_FMT_HS_NEG_POLARITY : 0) |
 	      (mode->flags & DRM_MODE_FLAG_NVSYNC ?
 	       REG_LVDS_FMT_VS_NEG_POLARITY : 0);
 
-	/* Set up bits-per-pixel, 18bpp or 24bpp. */
+	 
 	if (lvds_format_24bpp) {
 		val |= REG_LVDS_FMT_CHA_24BPP_MODE;
 		if (ctx->lvds_dual_link)
 			val |= REG_LVDS_FMT_CHB_24BPP_MODE;
 	}
 
-	/* Set up LVDS format, JEIDA/Format 1 or SPWG/Format 2 */
+	 
 	if (lvds_format_jeida) {
 		val |= REG_LVDS_FMT_CHA_24BPP_FORMAT1;
 		if (ctx->lvds_dual_link)
 			val |= REG_LVDS_FMT_CHB_24BPP_FORMAT1;
 	}
 
-	/* Set up LVDS output config (DSI84,DSI85) */
+	 
 	if (!ctx->lvds_dual_link)
 		val |= REG_LVDS_FMT_LVDS_LINK_CFG;
 
@@ -449,7 +392,7 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
 	le16val = cpu_to_le16(mode->vdisplay);
 	regmap_bulk_write(ctx->regmap, REG_VID_CHA_VERTICAL_DISPLAY_SIZE_LOW,
 			  &le16val, 2);
-	/* 32 + 1 pixel clock to ensure proper operation */
+	 
 	le16val = cpu_to_le16(32 + 1);
 	regmap_bulk_write(ctx->regmap, REG_VID_CHA_SYNC_DELAY_LOW, &le16val, 2);
 	le16val = cpu_to_le16(mode->hsync_end - mode->hsync_start);
@@ -468,7 +411,7 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
 		     mode->vsync_start - mode->vdisplay);
 	regmap_write(ctx->regmap, REG_VID_CHA_TEST_PATTERN, 0x00);
 
-	/* Enable PLL */
+	 
 	regmap_write(ctx->regmap, REG_RC_PLL_EN, REG_RC_PLL_EN_PLL_EN);
 	usleep_range(3000, 4000);
 	ret = regmap_read_poll_timeout(ctx->regmap, REG_RC_LVDS_PLL, pval,
@@ -476,16 +419,16 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
 				       1000, 100000);
 	if (ret) {
 		dev_err(ctx->dev, "failed to lock PLL, ret=%i\n", ret);
-		/* On failure, disable PLL again and exit. */
+		 
 		regmap_write(ctx->regmap, REG_RC_PLL_EN, 0x00);
 		regulator_disable(ctx->vcc);
 		return;
 	}
 
-	/* Trigger reset after CSR register update. */
+	 
 	regmap_write(ctx->regmap, REG_RC_RESET, REG_RC_RESET_SOFT_RESET);
 
-	/* Wait for 10ms after soft reset as specified in datasheet */
+	 
 	usleep_range(10000, 12000);
 }
 
@@ -495,11 +438,11 @@ static void sn65dsi83_atomic_enable(struct drm_bridge *bridge,
 	struct sn65dsi83 *ctx = bridge_to_sn65dsi83(bridge);
 	unsigned int pval;
 
-	/* Clear all errors that got asserted during initialization. */
+	 
 	regmap_read(ctx->regmap, REG_IRQ_STAT, &pval);
 	regmap_write(ctx->regmap, REG_IRQ_STAT, pval);
 
-	/* Wait for 1ms and check for errors in status register */
+	 
 	usleep_range(1000, 1100);
 	regmap_read(ctx->regmap, REG_IRQ_STAT, &pval);
 	if (pval)
@@ -512,7 +455,7 @@ static void sn65dsi83_atomic_disable(struct drm_bridge *bridge,
 	struct sn65dsi83 *ctx = bridge_to_sn65dsi83(bridge);
 	int ret;
 
-	/* Put the chip in reset, pull EN line low, and assure 10ms reset low timing. */
+	 
 	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
 	usleep_range(10000, 11000);
 
@@ -528,7 +471,7 @@ sn65dsi83_mode_valid(struct drm_bridge *bridge,
 		     const struct drm_display_info *info,
 		     const struct drm_display_mode *mode)
 {
-	/* LVDS output clock range 25..154 MHz */
+	 
 	if (mode->clock < 25000)
 		return MODE_CLOCK_LOW;
 	if (mode->clock > 154000)
@@ -556,7 +499,7 @@ sn65dsi83_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	if (!input_fmts)
 		return NULL;
 
-	/* This is the DSI-end bus format */
+	 
 	input_fmts[0] = MEDIA_BUS_FMT_RGB888_1X24;
 	*num_input_fmts = 1;
 
@@ -596,11 +539,11 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
 
 		if (dual_link == DRM_LVDS_DUAL_LINK_ODD_EVEN_PIXELS) {
 			ctx->lvds_dual_link = true;
-			/* Odd pixels to LVDS Channel A, even pixels to B */
+			 
 			ctx->lvds_dual_link_even_odd_swap = false;
 		} else if (dual_link == DRM_LVDS_DUAL_LINK_EVEN_ODD_PIXELS) {
 			ctx->lvds_dual_link = true;
-			/* Even pixels to LVDS Channel A, odd pixels to B */
+			 
 			ctx->lvds_dual_link_even_odd_swap = true;
 		}
 	}
@@ -689,7 +632,7 @@ static int sn65dsi83_probe(struct i2c_client *client)
 		model = id->driver_data;
 	}
 
-	/* Put the chip in reset, pull EN line low, and assure 10ms reset low timing. */
+	 
 	ctx->enable_gpio = devm_gpiod_get_optional(ctx->dev, "enable",
 						   GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->enable_gpio))

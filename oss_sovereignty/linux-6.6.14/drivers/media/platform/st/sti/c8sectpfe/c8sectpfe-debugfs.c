@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * c8sectpfe-debugfs.c - C8SECTPFE STi DVB driver
- *
- * Copyright (c) STMicroelectronics 2015
- *
- * Author: Peter Griffin <peter.griffin@linaro.org>
- *
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/device.h>
 #include <linux/interrupt.h>

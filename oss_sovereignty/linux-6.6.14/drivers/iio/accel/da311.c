@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for the MiraMEMS DA311 3-axis accelerometer
- *
- * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
- * Copyright (c) 2011-2013 MiraMEMS Sensing Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -14,13 +9,9 @@
 
 #define DA311_CHIP_ID			0x13
 
-/*
- * Note register addressed go from 0 - 0x3f and then wrap.
- * For some reason there are 2 banks with 0 - 0x3f addresses,
- * rather then a single 0-0x7f bank.
- */
+ 
 
-/* Bank 0 regs */
+ 
 #define DA311_REG_BANK			0x0000
 #define DA311_REG_LDO_REG		0x0006
 #define DA311_REG_CHIP_ID		0x000f
@@ -52,7 +43,7 @@
 #define DA311_REG_TIME_LATENCY		0x003c
 #define DA311_REG_TIME_WINDOW		0x003d
 
-/* Bank 1 regs */
+ 
 #define DA311_REG_SOFT_RESET		0x0105
 #define DA311_REG_OTP_XOFF_L		0x0110
 #define DA311_REG_OTP_XOFF_H		0x0111
@@ -70,10 +61,7 @@
 #define DA311_REG_TEMP_OFF3		0x0129
 #define DA311_REG_OTP_TRIM_THERM_H	0x011a
 
-/*
- * a value of + or -1024 corresponds to + or - 1G
- * scale = 9.81 / 1024 = 0.009580078
- */
+ 
 
 static const int da311_nscale = 9580078;
 
@@ -87,7 +75,7 @@ static const int da311_nscale = 9580078;
 }
 
 static const struct iio_chan_spec da311_channels[] = {
-	/* | 0x80 comes from the android driver */
+	 
 	DA311_CHANNEL(DA311_REG_OUT_X_L | 0x80, X),
 	DA311_CHANNEL(DA311_REG_OUT_Y_L | 0x80, Y),
 	DA311_CHANNEL(DA311_REG_OUT_Z_L | 0x80, Z),
@@ -104,7 +92,7 @@ static int da311_register_mask_write(struct i2c_client *client, u16 addr,
 	u8 tmp_data = 0;
 
 	if (addr & 0xff00) {
-		/* Select bank 1 */
+		 
 		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x01);
 		if (ret < 0)
 			return ret;
@@ -124,7 +112,7 @@ static int da311_register_mask_write(struct i2c_client *client, u16 addr,
 		return ret;
 
 	if (addr & 0xff00) {
-		/* Back to bank 0 */
+		 
 		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x00);
 		if (ret < 0)
 			return ret;
@@ -133,7 +121,7 @@ static int da311_register_mask_write(struct i2c_client *client, u16 addr,
 	return 0;
 }
 
-/* Init sequence taken from the android driver */
+ 
 static int da311_reset(struct i2c_client *client)
 {
 	static const struct {
@@ -155,7 +143,7 @@ static int da311_reset(struct i2c_client *client)
 	};
 	int i, ret;
 
-	/* Reset */
+	 
 	ret = da311_register_mask_write(client, DA311_REG_SOFT_RESET,
 					0xff, 0xaa);
 	if (ret < 0)
@@ -193,10 +181,7 @@ static int da311_read_raw(struct iio_dev *indio_dev,
 		ret = i2c_smbus_read_word_data(data->client, chan->address);
 		if (ret < 0)
 			return ret;
-		/*
-		 * Values are 12 bits, stored as 16 bits with the 4
-		 * least significant bits always 0.
-		 */
+		 
 		*val = (short)ret >> 4;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:

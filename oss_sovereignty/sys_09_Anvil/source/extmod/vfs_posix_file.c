@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2018 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mphal.h"
 #include "py/mpthread.h"
@@ -92,7 +68,7 @@ mp_obj_t mp_vfs_posix_file_open(const mp_obj_type_t *type, mp_obj_t file_in, mp_
     }
 
     mp_obj_vfs_posix_file_t *o = mp_obj_malloc_with_finaliser(mp_obj_vfs_posix_file_t, type);
-    o->fd = -1; // In case open() fails below, initialise this as a "closed" file object.
+    o->fd = -1; 
 
     mp_obj_t fid = file_in;
 
@@ -153,10 +129,10 @@ static mp_uint_t vfs_posix_file_ioctl(mp_obj_t o_in, mp_uint_t request, uintptr_
     switch (request) {
         case MP_STREAM_FLUSH: {
             int ret;
-            // fsync(stdin/stdout/stderr) may fail with EINVAL (or ENOTSUP on macos or EBADF
-            // on windows), because the OS doesn't buffer these except for instance when they
-            // are redirected from/to file, but don't propagate that error out.  Because data
-            // is not buffered by us, and stdin/out/err.flush() should just be a no-op.
+            
+            
+            
+            
             #if defined(__APPLE__)
             #define VFS_POSIX_STREAM_STDIO_ERR_CATCH (err == EINVAL || err == ENOTSUP)
             #elif defined(_MSC_VER)
@@ -283,19 +259,19 @@ mp_obj_vfs_posix_file_t mp_sys_stdin_buffer_obj = {{&mp_type_vfs_posix_fileio}, 
 mp_obj_vfs_posix_file_t mp_sys_stdout_buffer_obj = {{&mp_type_vfs_posix_fileio}, STDOUT_FILENO};
 mp_obj_vfs_posix_file_t mp_sys_stderr_buffer_obj = {{&mp_type_vfs_posix_fileio}, STDERR_FILENO};
 
-// Forward declarations.
+
 mp_obj_vfs_posix_file_t mp_sys_stdin_obj;
 mp_obj_vfs_posix_file_t mp_sys_stdout_obj;
 mp_obj_vfs_posix_file_t mp_sys_stderr_obj;
 
 static void vfs_posix_textio_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
     if (dest[0] != MP_OBJ_NULL) {
-        // These objects are read-only.
+        
         return;
     }
 
     if (attr == MP_QSTR_buffer) {
-        // Implement the `buffer` attribute only on std{in,out,err} instances.
+        
         if (MP_OBJ_TO_PTR(self_in) == &mp_sys_stdin_obj) {
             dest[0] = MP_OBJ_FROM_PTR(&mp_sys_stdin_buffer_obj);
             return;
@@ -310,7 +286,7 @@ static void vfs_posix_textio_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
         }
     }
 
-    // Any other attribute - forward to locals dict.
+    
     dest[1] = MP_OBJ_SENTINEL;
 };
 
@@ -320,7 +296,7 @@ static void vfs_posix_textio_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
 
 #define VFS_POSIX_TEXTIO_TYPE_ATTR
 
-#endif // MICROPY_PY_SYS_STDIO_BUFFER
+#endif 
 
 MP_DEFINE_CONST_OBJ_TYPE(
     mp_type_vfs_posix_textio,
@@ -336,4 +312,4 @@ mp_obj_vfs_posix_file_t mp_sys_stdin_obj = {{&mp_type_vfs_posix_textio}, STDIN_F
 mp_obj_vfs_posix_file_t mp_sys_stdout_obj = {{&mp_type_vfs_posix_textio}, STDOUT_FILENO};
 mp_obj_vfs_posix_file_t mp_sys_stderr_obj = {{&mp_type_vfs_posix_textio}, STDERR_FILENO};
 
-#endif // MICROPY_VFS_POSIX
+#endif 

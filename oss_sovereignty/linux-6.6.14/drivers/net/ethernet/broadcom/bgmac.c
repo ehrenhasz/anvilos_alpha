@@ -1,10 +1,4 @@
-/*
- * Driver for (BCM4706)? GBit MAC core on BCMA bus.
- *
- * Copyright (C) 2012 Rafał Miłecki <zajec5@gmail.com>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
@@ -34,9 +28,7 @@ static bool bgmac_wait_value(struct bgmac *bgmac, u16 reg, u32 mask,
 	return false;
 }
 
-/**************************************************
- * DMA
- **************************************************/
+ 
 
 static void bgmac_dma_tx_reset(struct bgmac *bgmac, struct bgmac_dma_ring *ring)
 {
@@ -46,10 +38,7 @@ static void bgmac_dma_tx_reset(struct bgmac *bgmac, struct bgmac_dma_ring *ring)
 	if (!ring->mmio_base)
 		return;
 
-	/* Suspend DMA TX ring first.
-	 * bgmac_wait_value doesn't support waiting for any of few values, so
-	 * implement whole loop here.
-	 */
+	 
 	bgmac_write(bgmac, ring->mmio_base + BGMAC_DMA_TX_CTL,
 		    BGMAC_DMA_TX_SUSPEND);
 	for (i = 0; i < 10000 / 10; i++) {
@@ -67,7 +56,7 @@ static void bgmac_dma_tx_reset(struct bgmac *bgmac, struct bgmac_dma_ring *ring)
 		dev_err(bgmac->dev, "Timeout suspending DMA TX ring 0x%X (BGMAC_DMA_TX_STAT: 0x%08X)\n",
 			ring->mmio_base, val);
 
-	/* Remove SUSPEND bit */
+	 
 	bgmac_write(bgmac, ring->mmio_base + BGMAC_DMA_TX_CTL, 0);
 	if (!bgmac_wait_value(bgmac,
 			      ring->mmio_base + BGMAC_DMA_TX_STATUS,
@@ -150,9 +139,7 @@ static netdev_tx_t bgmac_dma_tx_add(struct bgmac *bgmac,
 
 	nr_frags = skb_shinfo(skb)->nr_frags;
 
-	/* ring->end - ring->start will return the number of valid slots,
-	 * even when ring->end overflows
-	 */
+	 
 	if (ring->end - ring->start + nr_frags + 1 >= BGMAC_TX_RING_SLOTS) {
 		netdev_err(bgmac->net_dev, "TX ring is full, queue should be stopped!\n");
 		netif_stop_queue(net_dev);
@@ -194,9 +181,7 @@ static netdev_tx_t bgmac_dma_tx_add(struct bgmac *bgmac,
 
 	wmb();
 
-	/* Increase ring->end to point empty slot. We tell hardware the first
-	 * slot it should *not* read.
-	 */
+	 
 	bgmac_write(bgmac, ring->mmio_base + BGMAC_DMA_TX_INDEX,
 		    ring->index_base +
 		    (ring->end % BGMAC_TX_RING_SLOTS) *
@@ -231,14 +216,14 @@ err_drop:
 	return NETDEV_TX_OK;
 }
 
-/* Free transmitted packets */
+ 
 static void bgmac_dma_tx_free(struct bgmac *bgmac, struct bgmac_dma_ring *ring)
 {
 	struct device *dma_dev = bgmac->dma_dev;
 	int empty_slot;
 	unsigned bytes_compl = 0, pkts_compl = 0;
 
-	/* The last slot that hardware didn't consume yet */
+	 
 	empty_slot = bgmac_read(bgmac, ring->mmio_base + BGMAC_DMA_TX_STATUS);
 	empty_slot &= BGMAC_DMA_TX_STATDPTR;
 	empty_slot -= ring->index_base;
@@ -258,7 +243,7 @@ static void bgmac_dma_tx_free(struct bgmac *bgmac, struct bgmac_dma_ring *ring)
 		ctl1 = le32_to_cpu(ring->cpu_base[slot_idx].ctl1);
 		len = ctl1 & BGMAC_DESC_CTL1_LEN;
 		if (ctl0 & BGMAC_DESC_CTL0_SOF)
-			/* Unmap no longer used buffer */
+			 
 			dma_unmap_single(dma_dev, slot->dma_addr, len,
 					 DMA_TO_DEVICE);
 		else
@@ -271,7 +256,7 @@ static void bgmac_dma_tx_free(struct bgmac *bgmac, struct bgmac_dma_ring *ring)
 			bytes_compl += slot->skb->len;
 			pkts_compl++;
 
-			/* Free memory! :) */
+			 
 			dev_kfree_skb(slot->skb);
 			slot->skb = NULL;
 		}
@@ -310,7 +295,7 @@ static void bgmac_dma_rx_enable(struct bgmac *bgmac,
 
 	ctl = bgmac_read(bgmac, ring->mmio_base + BGMAC_DMA_RX_CTL);
 
-	/* preserve ONLY bits 16-17 from current hardware value */
+	 
 	ctl &= BGMAC_DMA_RX_ADDREXT_MASK;
 
 	if (bgmac->feature_flags & BGMAC_FEAT_RX_MASK_SETUP) {
@@ -338,17 +323,17 @@ static int bgmac_dma_rx_skb_for_slot(struct bgmac *bgmac,
 	struct bgmac_rx_header *rx;
 	void *buf;
 
-	/* Alloc skb */
+	 
 	buf = netdev_alloc_frag(BGMAC_RX_ALLOC_SIZE);
 	if (!buf)
 		return -ENOMEM;
 
-	/* Poison - if everything goes fine, hardware will overwrite it */
+	 
 	rx = buf + BGMAC_RX_BUF_OFFSET;
 	rx->len = cpu_to_le16(0xdead);
 	rx->flags = cpu_to_le16(0xbeef);
 
-	/* Map skb for the DMA */
+	 
 	dma_addr = dma_map_single(dma_dev, buf + BGMAC_RX_BUF_OFFSET,
 				  BGMAC_RX_BUF_SIZE, DMA_FROM_DEVICE);
 	if (dma_mapping_error(dma_dev, dma_addr)) {
@@ -357,7 +342,7 @@ static int bgmac_dma_rx_skb_for_slot(struct bgmac *bgmac,
 		return -ENOMEM;
 	}
 
-	/* Update the slot */
+	 
 	slot->buf = buf;
 	slot->dma_addr = dma_addr;
 
@@ -383,10 +368,8 @@ static void bgmac_dma_rx_setup_desc(struct bgmac *bgmac,
 	if (desc_idx == BGMAC_RX_RING_SLOTS - 1)
 		ctl0 |= BGMAC_DESC_CTL0_EOT;
 	ctl1 |= BGMAC_RX_BUF_SIZE & BGMAC_DESC_CTL1_LEN;
-	/* Is there any BGMAC device that requires extension? */
-	/* ctl1 |= (addrext << B43_DMA64_DCTL1_ADDREXT_SHIFT) &
-	 * B43_DMA64_DCTL1_ADDREXT_MASK;
-	 */
+	 
+	 
 
 	dma_desc->addr_low = cpu_to_le32(lower_32_bits(ring->slots[desc_idx].dma_addr));
 	dma_desc->addr_high = cpu_to_le32(upper_32_bits(ring->slots[desc_idx].dma_addr));
@@ -431,21 +414,21 @@ static int bgmac_dma_rx_read(struct bgmac *bgmac, struct bgmac_dma_ring *ring,
 		u16 len, flags;
 
 		do {
-			/* Prepare new skb as replacement */
+			 
 			if (bgmac_dma_rx_skb_for_slot(bgmac, slot)) {
 				bgmac_dma_rx_poison_buf(dma_dev, slot);
 				break;
 			}
 
-			/* Unmap buffer to make it accessible to the CPU */
+			 
 			dma_unmap_single(dma_dev, dma_addr,
 					 BGMAC_RX_BUF_SIZE, DMA_FROM_DEVICE);
 
-			/* Get info from the header */
+			 
 			len = le16_to_cpu(rx->len);
 			flags = le16_to_cpu(rx->flags);
 
-			/* Check for poison and drop or pass the packet */
+			 
 			if (len == 0xdead && flags == 0xbeef) {
 				netdev_err(bgmac->net_dev, "Found poisoned packet at slot %d, DMA issue!\n",
 					   ring->start);
@@ -463,7 +446,7 @@ static int bgmac_dma_rx_read(struct bgmac *bgmac, struct bgmac_dma_ring *ring,
 				break;
 			}
 
-			/* Omit CRC. */
+			 
 			len -= ETH_FCS_LEN;
 
 			skb = build_skb(buf, BGMAC_RX_ALLOC_SIZE);
@@ -491,7 +474,7 @@ static int bgmac_dma_rx_read(struct bgmac *bgmac, struct bgmac_dma_ring *ring,
 		if (++ring->start >= BGMAC_RX_RING_SLOTS)
 			ring->start = 0;
 
-		if (handled >= weight) /* Should never be greater */
+		if (handled >= weight)  
 			break;
 	}
 
@@ -500,7 +483,7 @@ static int bgmac_dma_rx_read(struct bgmac *bgmac, struct bgmac_dma_ring *ring,
 	return handled;
 }
 
-/* Does ring support unaligned addressing? */
+ 
 static bool bgmac_dma_unaligned(struct bgmac *bgmac,
 				struct bgmac_dma_ring *ring,
 				enum bgmac_dma_ring_type ring_type)
@@ -579,7 +562,7 @@ static void bgmac_dma_ring_desc_free(struct bgmac *bgmac,
 	if (!ring->cpu_base)
 	    return;
 
-	/* Free ring of descriptors */
+	 
 	size = num_slots * sizeof(struct bgmac_dma_desc);
 	dma_free_coherent(dma_dev, size, ring->cpu_base,
 			  ring->dma_base);
@@ -615,7 +598,7 @@ static int bgmac_dma_alloc(struct bgmac *bgmac)
 	struct bgmac_dma_ring *ring;
 	static const u16 ring_base[] = { BGMAC_DMA_BASE0, BGMAC_DMA_BASE1,
 					 BGMAC_DMA_BASE2, BGMAC_DMA_BASE3, };
-	int size; /* ring size: different for Tx and Rx */
+	int size;  
 	int i;
 
 	BUILD_BUG_ON(BGMAC_MAX_TX_RINGS > ARRAY_SIZE(ring_base));
@@ -632,7 +615,7 @@ static int bgmac_dma_alloc(struct bgmac *bgmac)
 		ring = &bgmac->tx_ring[i];
 		ring->mmio_base = ring_base[i];
 
-		/* Alloc ring of descriptors */
+		 
 		size = BGMAC_TX_RING_SLOTS * sizeof(struct bgmac_dma_desc);
 		ring->cpu_base = dma_alloc_coherent(dma_dev, size,
 						    &ring->dma_base,
@@ -650,14 +633,14 @@ static int bgmac_dma_alloc(struct bgmac *bgmac)
 		else
 			ring->index_base = 0;
 
-		/* No need to alloc TX slots yet */
+		 
 	}
 
 	for (i = 0; i < BGMAC_MAX_RX_RINGS; i++) {
 		ring = &bgmac->rx_ring[i];
 		ring->mmio_base = ring_base[i];
 
-		/* Alloc ring of descriptors */
+		 
 		size = BGMAC_RX_RING_SLOTS * sizeof(struct bgmac_dma_desc);
 		ring->cpu_base = dma_alloc_coherent(dma_dev, size,
 						    &ring->dma_base,
@@ -701,7 +684,7 @@ static int bgmac_dma_init(struct bgmac *bgmac)
 			bgmac_dma_tx_enable(bgmac, ring);
 
 		ring->start = 0;
-		ring->end = 0;	/* Points the slot that should *not* be read */
+		ring->end = 0;	 
 	}
 
 	for (i = 0; i < BGMAC_MAX_RX_RINGS; i++) {
@@ -739,13 +722,9 @@ error:
 }
 
 
-/**************************************************
- * Chip ops
- **************************************************/
+ 
 
-/* TODO: can we just drop @force? Can we don't reset MAC at all if there is
- * nothing to change? Try if after stabilizng driver.
- */
+ 
 static void bgmac_umac_cmd_maskset(struct bgmac *bgmac, u32 mask, u32 set,
 				   bool force)
 {
@@ -788,7 +767,7 @@ static void bgmac_set_rx_mode(struct net_device *net_dev)
 		bgmac_umac_cmd_maskset(bgmac, ~CMD_PROMISC, 0, true);
 }
 
-#if 0 /* We don't use that regs yet */
+#if 0  
 static void bgmac_chip_stats_update(struct bgmac *bgmac)
 {
 	int i;
@@ -804,7 +783,7 @@ static void bgmac_chip_stats_update(struct bgmac *bgmac)
 					   BGMAC_RX_GOOD_OCTETS + (i * 4));
 	}
 
-	/* TODO: what else? how to handle BCM4706? Specs are needed */
+	 
 }
 #endif
 
@@ -822,7 +801,7 @@ static void bgmac_clear_mib(struct bgmac *bgmac)
 		bgmac_read(bgmac, BGMAC_RX_GOOD_OCTETS + (i * 4));
 }
 
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/gmac_speed */
+ 
 static void bgmac_mac_speed(struct bgmac *bgmac)
 {
 	u32 mask = ~(CMD_SPEED_MASK << CMD_SPEED_SHIFT | CMD_HD_EN);
@@ -884,7 +863,7 @@ static void bgmac_chip_reset_idm_config(struct bgmac *bgmac)
 	if (bgmac->feature_flags & BGMAC_FEAT_IOST_ATTACHED)
 		iost &= ~BGMAC_BCMA_IOST_ATTACHED;
 
-	/* 3GMAC: for BCM4707 & BCM47094, only do core reset at bgmac_probe() */
+	 
 	if (!(bgmac->feature_flags & BGMAC_FEAT_NO_RESET)) {
 		u32 flags = 0;
 
@@ -902,7 +881,7 @@ static void bgmac_chip_reset_idm_config(struct bgmac *bgmac)
 				~BGMAC_BCMA_IOCTL_SW_RESET);
 }
 
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/chipreset */
+ 
 static void bgmac_chip_reset(struct bgmac *bgmac)
 {
 	u32 cmdcfg_sr;
@@ -910,7 +889,7 @@ static void bgmac_chip_reset(struct bgmac *bgmac)
 
 	if (bgmac_clk_enabled(bgmac)) {
 		if (!bgmac->stats_grabbed) {
-			/* bgmac_chip_stats_update(bgmac); */
+			 
 			bgmac->stats_grabbed = true;
 		}
 
@@ -923,13 +902,13 @@ static void bgmac_chip_reset(struct bgmac *bgmac)
 		for (i = 0; i < BGMAC_MAX_RX_RINGS; i++)
 			bgmac_dma_rx_reset(bgmac, &bgmac->rx_ring[i]);
 
-		/* TODO: Clear software multicast filter list */
+		 
 	}
 
 	if (!(bgmac->feature_flags & BGMAC_FEAT_IDM_MASK))
 		bgmac_chip_reset_idm_config(bgmac);
 
-	/* Request Misc PLL for corerev > 2 */
+	 
 	if (bgmac->feature_flags & BGMAC_FEAT_MISC_PLL_REQ) {
 		bgmac_set(bgmac, BCMA_CLKCTLST,
 			  BGMAC_BCMA_CLKCTLST_MISC_PLL_REQ);
@@ -985,11 +964,7 @@ static void bgmac_chip_reset(struct bgmac *bgmac)
 				      BGMAC_CHIPCTL_7_IF_TYPE_RGMII);
 	}
 
-	/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/gmac_reset
-	 * Specs don't say about using UMAC_CMD_SR, but in this routine
-	 * UMAC_CMD is read _after_ putting chip in a reset. So it has to
-	 * be keps until taking MAC out of the reset.
-	 */
+	 
 	if (bgmac->feature_flags & BGMAC_FEAT_CMDCFG_SR_REV4)
 		cmdcfg_sr = CMD_SW_RESET;
 	else
@@ -1041,7 +1016,7 @@ static void bgmac_chip_intrs_off(struct bgmac *bgmac)
 	bgmac_read(bgmac, BGMAC_INT_MASK);
 }
 
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/gmac_enable */
+ 
 static void bgmac_enable(struct bgmac *bgmac)
 {
 	u32 cmdcfg_sr;
@@ -1095,16 +1070,16 @@ static void bgmac_enable(struct bgmac *bgmac)
 	}
 }
 
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/chipinit */
+ 
 static void bgmac_chip_init(struct bgmac *bgmac)
 {
-	/* Clear any erroneously pending interrupts */
+	 
 	bgmac_write(bgmac, BGMAC_INT_STATUS, ~0);
 
-	/* 1 interrupt per received frame */
+	 
 	bgmac_write(bgmac, BGMAC_INT_RECV_LAZY, 1 << BGMAC_IRL_FC_SHIFT);
 
-	/* Enable 802.3x tx flow control (honor received PAUSE frames) */
+	 
 	bgmac_umac_cmd_maskset(bgmac, ~CMD_RX_PAUSE_IGNORE, 0, true);
 
 	bgmac_set_rx_mode(bgmac->net_dev);
@@ -1137,7 +1112,7 @@ static irqreturn_t bgmac_interrupt(int irq, void *dev_id)
 	if (int_status)
 		dev_err(bgmac->dev, "Unknown IRQs: 0x%08X\n", int_status);
 
-	/* Disable new interrupts until handling existing ones */
+	 
 	bgmac_chip_intrs_off(bgmac);
 
 	napi_schedule(&bgmac->napi);
@@ -1150,13 +1125,13 @@ static int bgmac_poll(struct napi_struct *napi, int weight)
 	struct bgmac *bgmac = container_of(napi, struct bgmac, napi);
 	int handled = 0;
 
-	/* Ack */
+	 
 	bgmac_write(bgmac, BGMAC_INT_STATUS, ~0);
 
 	bgmac_dma_tx_free(bgmac, &bgmac->tx_ring[0]);
 	handled += bgmac_dma_rx_read(bgmac, &bgmac->rx_ring[0], weight);
 
-	/* Poll again if more events arrived in the meantime */
+	 
 	if (bgmac_read(bgmac, BGMAC_INT_STATUS) & (BGMAC_IS_TX0 | BGMAC_IS_RX))
 		return weight;
 
@@ -1168,9 +1143,7 @@ static int bgmac_poll(struct napi_struct *napi, int weight)
 	return handled;
 }
 
-/**************************************************
- * net_device_ops
- **************************************************/
+ 
 
 static int bgmac_open(struct net_device *net_dev)
 {
@@ -1183,7 +1156,7 @@ static int bgmac_open(struct net_device *net_dev)
 	if (err)
 		return err;
 
-	/* Specs say about reclaiming rings here, but we do that in DMA init */
+	 
 	bgmac_chip_init(bgmac);
 
 	err = request_irq(bgmac->irq, bgmac_interrupt, IRQF_SHARED,
@@ -1226,7 +1199,7 @@ static netdev_tx_t bgmac_start_xmit(struct sk_buff *skb,
 	struct bgmac *bgmac = netdev_priv(net_dev);
 	struct bgmac_dma_ring *ring;
 
-	/* No QOS support yet */
+	 
 	ring = &bgmac->tx_ring[0];
 	return bgmac_dma_tx_add(bgmac, ring, skb);
 }
@@ -1267,9 +1240,7 @@ static const struct net_device_ops bgmac_netdev_ops = {
 	.ndo_change_mtu		= bgmac_change_mtu,
 };
 
-/**************************************************
- * ethtool_ops
- **************************************************/
+ 
 
 struct bgmac_stat {
 	u8 size;
@@ -1408,9 +1379,7 @@ static const struct ethtool_ops bgmac_ethtool_ops = {
 	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
 };
 
-/**************************************************
- * MII
- **************************************************/
+ 
 
 void bgmac_adjust_link(struct net_device *net_dev)
 {
@@ -1469,7 +1438,7 @@ struct bgmac *bgmac_alloc(struct device *dev)
 	struct net_device *net_dev;
 	struct bgmac *bgmac;
 
-	/* Allocation and references */
+	 
 	net_dev = devm_alloc_etherdev(dev, sizeof(*bgmac));
 	if (!net_dev)
 		return NULL;
@@ -1504,14 +1473,12 @@ int bgmac_enet_probe(struct bgmac *bgmac)
 			 net_dev->dev_addr);
 	}
 
-	/* This (reset &) enable is not preset in specs or reference driver but
-	 * Broadcom does it in arch PCI code when enabling fake PCI device.
-	 */
+	 
 	bgmac_clk_enable(bgmac, 0);
 
 	bgmac_chip_intrs_off(bgmac);
 
-	/* This seems to be fixing IRQ by assigning OOB #6 to the core */
+	 
 	if (!(bgmac->feature_flags & BGMAC_FEAT_IDM_MASK)) {
 		if (bgmac->feature_flags & BGMAC_FEAT_IRQ_ID_OOB_6)
 			bgmac_idm_write(bgmac, BCMA_OOB_SEL_OUT_A30, 0x86);
@@ -1541,7 +1508,7 @@ int bgmac_enet_probe(struct bgmac *bgmac)
 	net_dev->hw_features = net_dev->features;
 	net_dev->vlan_features = net_dev->features;
 
-	/* Omit FCS from max MTU size */
+	 
 	net_dev->max_mtu = BGMAC_RX_MAX_FRAME_SIZE - ETH_FCS_LEN;
 
 	bgmac->in_init = false;

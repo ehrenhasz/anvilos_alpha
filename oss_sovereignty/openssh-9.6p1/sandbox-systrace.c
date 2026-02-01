@@ -1,19 +1,5 @@
-/* $OpenBSD: sandbox-systrace.c,v 1.18 2015/10/02 01:39:26 deraadt Exp $ */
-/*
- * Copyright (c) 2011 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -47,7 +33,7 @@ struct sandbox_policy {
 	int action;
 };
 
-/* Permitted syscalls in preauth. Unlisted syscalls get SYSTR_POLICY_KILL */
+ 
 static const struct sandbox_policy preauth_policy[] = {
 	{ SYS_exit, SYSTR_POLICY_PERMIT },
 #ifdef SYS_kbind
@@ -62,10 +48,10 @@ static const struct sandbox_policy preauth_policy[] = {
 	{ SYS_sigprocmask, SYSTR_POLICY_PERMIT },
 
 #ifdef SYS_getentropy
-	/* OpenBSD 5.6 and newer use getentropy(2) to seed arc4random(3). */
+	 
 	{ SYS_getentropy, SYSTR_POLICY_PERMIT },
 #else
-	/* Previous releases used sysctl(3)'s kern.arnd variable. */
+	 
 	{ SYS___sysctl, SYSTR_POLICY_PERMIT },
 #endif
 #ifdef SYS_sendsyslog
@@ -128,7 +114,7 @@ ssh_sandbox_parent(struct ssh_sandbox *box, pid_t child_pid,
 	pid_t pid;
 	struct systrace_policy policy;
 
-	/* Wait for the child to send itself a SIGSTOP */
+	 
 	debug3("%s: wait for child %ld", __func__, (long)child_pid);
 	do {
 		pid = waitpid(child_pid, &status, WUNTRACED);
@@ -146,7 +132,7 @@ ssh_sandbox_parent(struct ssh_sandbox *box, pid_t child_pid,
 	debug3("%s: child %ld stopped", __func__, (long)child_pid);
 	box->child_pid = child_pid;
 
-	/* Set up systracing of child */
+	 
 	if ((dev_systrace = open("/dev/systrace", O_RDONLY)) == -1)
 		fatal("%s: open(\"/dev/systrace\"): %s", __func__,
 		    strerror(errno));
@@ -159,7 +145,7 @@ ssh_sandbox_parent(struct ssh_sandbox *box, pid_t child_pid,
 		fatal("%s: ioctl(%d, STRIOCATTACH, %d): %s", __func__,
 		    box->systrace_fd, child_pid, strerror(errno));
 
-	/* Allocate and assign policy */
+	 
 	memset(&policy, 0, sizeof(policy));
 	policy.strp_op = SYSTR_POLICY_NEW;
 	policy.strp_maxents = SYS_MAXSYSCALL;
@@ -173,7 +159,7 @@ ssh_sandbox_parent(struct ssh_sandbox *box, pid_t child_pid,
 		fatal("%s: ioctl(%d, STRIOCPOLICY (assign)): %s",
 		    __func__, box->systrace_fd, strerror(errno));
 
-	/* Set per-syscall policy */
+	 
 	for (i = 0; i < SYS_MAXSYSCALL; i++) {
 		found = 0;
 		for (j = 0; allowed_syscalls[j].syscall != -1; j++) {
@@ -193,7 +179,7 @@ ssh_sandbox_parent(struct ssh_sandbox *box, pid_t child_pid,
 			    __func__, box->systrace_fd, strerror(errno));
 	}
 
-	/* Signal the child to start running */
+	 
 	debug3("%s: start child %ld", __func__, (long)child_pid);
 	if (kill(box->child_pid, SIGCONT) != 0)
 		fatal("%s: kill(%d, SIGCONT)", __func__, box->child_pid);
@@ -202,7 +188,7 @@ ssh_sandbox_parent(struct ssh_sandbox *box, pid_t child_pid,
 void
 ssh_sandbox_parent_finish(struct ssh_sandbox *box)
 {
-	/* Closing this before the child exits will terminate it */
+	 
 	close(box->systrace_fd);
 
 	free(box);
@@ -215,4 +201,4 @@ ssh_sandbox_parent_preauth(struct ssh_sandbox *box, pid_t child_pid)
 	ssh_sandbox_parent(box, child_pid, preauth_policy);
 }
 
-#endif /* SANDBOX_SYSTRACE */
+#endif  

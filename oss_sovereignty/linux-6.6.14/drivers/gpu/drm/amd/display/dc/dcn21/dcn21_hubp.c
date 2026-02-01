@@ -1,27 +1,4 @@
-/*
-* Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dcn10/dcn10_hubp.h"
 #include "dcn21_hubp.h"
@@ -43,37 +20,7 @@
 #define FN(reg_name, field_name) \
 	hubp21->hubp_shift->field_name, hubp21->hubp_mask->field_name
 
-/*
- * In DCN2.1, the non-double buffered version of the following 4 DLG registers are used in RTL.
- * As a result, if S/W updates any of these registers during a mode change,
- * the current frame before the mode change will use the new value right away
- * and can lead to generating incorrect request deadlines and incorrect TTU/QoS behavior.
- *
- * REFCYC_PER_VM_GROUP_FLIP[22:0]
- * REFCYC_PER_VM_GROUP_VBLANK[22:0]
- * REFCYC_PER_VM_REQ_FLIP[22:0]
- * REFCYC_PER_VM_REQ_VBLANK[22:0]
- *
- * REFCYC_PER_VM_*_FLIP affects the deadline of the VM requests generated
- * when flipping to a new surface
- *
- * REFCYC_PER_VM_*_VBLANK affects the deadline of the VM requests generated
- * during prefetch  period of a frame. The prefetch starts at a pre-determined
- * number of lines before the display active per frame
- *
- * DCN may underflow due to incorrectly programming these registers
- * during VM stage of prefetch/iflip. First lines of display active
- * or a sub-region of active using a new surface will be corrupted
- * until the VM data returns at flip/mode change transitions
- *
- * Work around:
- * workaround is always opt to use the more aggressive settings.
- * On any mode switch, if the new reg values are smaller than the current values,
- * then update the regs with the new values.
- *
- * Link to the ticket: http://ontrack-internal.amd.com/browse/DEDCN21-142
- *
- */
+ 
 void apply_DEDCN21_142_wa_for_hostvm_deadline(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_dlg_regs_st *dlg_attr)
@@ -173,9 +120,7 @@ static void hubp21_setup(
 		struct _vcs_dpi_display_rq_regs_st *rq_regs,
 		struct _vcs_dpi_display_pipe_dest_params_st *pipe_dest)
 {
-	/* otg is locked when this func is called. Register are double buffered.
-	 * disable the requestors is not needed
-	 */
+	 
 
 	hubp2_vready_at_or_After_vsync(hubp, pipe_dest);
 	hubp21_program_requestor(hubp, rq_regs);
@@ -198,7 +143,7 @@ static void hubp21_set_viewport(
 		  PRI_VIEWPORT_X_START, viewport->x,
 		  PRI_VIEWPORT_Y_START, viewport->y);
 
-	/*for stereo*/
+	 
 	REG_SET_2(DCSURF_SEC_VIEWPORT_DIMENSION, 0,
 		  SEC_VIEWPORT_WIDTH, viewport->width,
 		  SEC_VIEWPORT_HEIGHT, viewport->height);
@@ -207,7 +152,7 @@ static void hubp21_set_viewport(
 		  SEC_VIEWPORT_X_START, viewport->x,
 		  SEC_VIEWPORT_Y_START, viewport->y);
 
-	/* DC supports NV12 only at the moment */
+	 
 	REG_SET_2(DCSURF_PRI_VIEWPORT_DIMENSION_C, 0,
 		  PRI_VIEWPORT_WIDTH_C, viewport_c->width,
 		  PRI_VIEWPORT_HEIGHT_C, viewport_c->height);
@@ -233,7 +178,7 @@ static void hubp21_set_vm_system_aperture_settings(struct hubp *hubp,
 	PHYSICAL_ADDRESS_LOC mc_vm_apt_low;
 	PHYSICAL_ADDRESS_LOC mc_vm_apt_high;
 
-	// The format of high/low are 48:18 of the 48 bit addr
+	
 	mc_vm_apt_low.quad_part = apt->sys_low.quad_part >> 18;
 	mc_vm_apt_high.quad_part = apt->sys_high.quad_part >> 18;
 
@@ -261,7 +206,7 @@ static void hubp21_validate_dml_output(struct hubp *hubp,
 	DC_LOGGER_INIT(ctx->logger);
 	DC_LOG_DEBUG("DML Validation | Running Validation");
 
-	/* Requester - Per hubp */
+	 
 	REG_GET(HUBPRET_CONTROL,
 		DET_BUF_PLANE1_BASE_ADDRESS, &rq_regs.plane1_base_address);
 	REG_GET_4(DCN_EXPANSION_MODE,
@@ -351,7 +296,7 @@ static void hubp21_validate_dml_output(struct hubp *hubp,
 				dml_rq_regs->rq_regs_c.pte_row_height_linear, rq_regs.rq_regs_c.pte_row_height_linear);
 
 
-	/* DLG - Per hubp */
+	 
 	REG_GET_2(BLANK_OFFSET_0,
 		REFCYC_H_BLANK_END, &dlg_attr.refcyc_h_blank_end,
 		DLG_V_BLANK_END, &dlg_attr.dlg_vblank_end);
@@ -387,7 +332,7 @@ static void hubp21_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | REF_FREQ_TO_PIX_FREQ:REF_FREQ_TO_PIX_FREQ - Expected: %u  Actual: %u\n",
 				dml_dlg_attr->ref_freq_to_pix_freq, dlg_attr.ref_freq_to_pix_freq);
 
-	/* DLG - Per luma/chroma */
+	 
 	REG_GET(VBLANK_PARAMETERS_1,
 		REFCYC_PER_PTE_GROUP_VBLANK_L, &dlg_attr.refcyc_per_pte_group_vblank_l);
 	if (REG(NOM_PARAMETERS_0))
@@ -472,7 +417,7 @@ static void hubp21_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | VBLANK_PARAMETERS_4:REFCYC_PER_META_CHUNK_VBLANK_C - Expected: %u  Actual: %u\n",
 				dml_dlg_attr->refcyc_per_meta_chunk_vblank_c, dlg_attr.refcyc_per_meta_chunk_vblank_c);
 
-	/* TTU - per hubp */
+	 
 	REG_GET_2(DCN_TTU_QOS_WM,
 		QoS_LEVEL_LOW_WM, &ttu_attr.qos_level_low_wm,
 		QoS_LEVEL_HIGH_WM, &ttu_attr.qos_level_high_wm);
@@ -484,8 +429,8 @@ static void hubp21_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | DCN_TTU_QOS_WM:QoS_LEVEL_HIGH_WM - Expected: %u  Actual: %u\n",
 				dml_ttu_attr->qos_level_high_wm, ttu_attr.qos_level_high_wm);
 
-	/* TTU - per luma/chroma */
-	/* Assumed surf0 is luma and 1 is chroma */
+	 
+	 
 	REG_GET_3(DCN_SURF0_TTU_CNTL0,
 		REFCYC_PER_REQ_DELIVERY, &ttu_attr.refcyc_per_req_delivery_l,
 		QoS_LEVEL_FIXED, &ttu_attr.qos_level_fixed_l,
@@ -552,7 +497,7 @@ static void hubp21_validate_dml_output(struct hubp *hubp,
 		DC_LOG_DEBUG("DML Validation | DCN_SURF1_TTU_CNTL1:REFCYC_PER_REQ_DELIVERY_PRE - Expected: %u  Actual: %u\n",
 				dml_ttu_attr->refcyc_per_req_delivery_pre_c, ttu_attr.refcyc_per_req_delivery_pre_c);
 
-	/* Host VM deadline regs */
+	 
 	REG_GET(VBLANK_PARAMETERS_5,
 		REFCYC_PER_VM_GROUP_VBLANK, &dlg_attr.refcyc_per_vm_group_vblank);
 	REG_GET(VBLANK_PARAMETERS_6,
@@ -688,9 +633,9 @@ static void dmcub_PLAT_54186_wa(struct hubp *hubp,
 	cmd.PLAT_54186_wa.flip.flip_params.tmz_surface = flip_regs->tmz_surface;
 	cmd.PLAT_54186_wa.flip.flip_params.vmid = flip_regs->vmid;
 
-	PERF_TRACE();  // TODO: remove after performance is stable.
+	PERF_TRACE();  
 	dm_execute_dmub_cmd(hubp->ctx, &cmd, DM_DMUB_WAIT_TYPE_WAIT);
-	PERF_TRACE();  // TODO: remove after performance is stable.
+	PERF_TRACE();  
 }
 
 static bool hubp21_program_surface_flip_and_addr(
@@ -803,11 +748,11 @@ static bool hubp21_program_surface_flip_and_addr(
 
 static void hubp21_init(struct hubp *hubp)
 {
-	// DEDCN21-133: Inconsistent row starting line for flip between DPTE and Meta
-	// This is a chicken bit to enable the ECO fix.
+	
+	
 
 	struct dcn21_hubp *hubp21 = TO_DCN21_HUBP(hubp);
-	//hubp[i].HUBPREQ_DEBUG.HUBPREQ_DEBUG[26] = 1;
+	
 	REG_WRITE(HUBPREQ_DEBUG, 1 << 26);
 }
 static struct hubp_funcs dcn21_hubp_funcs = {

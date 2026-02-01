@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014-2015 Toradex AG
- * Author: Stefan Agner <stefan@agner.ch>
- *
- * IRQ chip driver for MSCM interrupt router available on Vybrid SoC's.
- * The interrupt router is between the CPU's interrupt controller and the
- * peripheral. The router allows to route the peripheral interrupts to
- * one of the two available CPU's on Vybrid VF6xx SoC's (Cortex-A5 or
- * Cortex-M4). The router will be configured transparently on a IRQ
- * request.
- *
- * o All peripheral interrupts of the Vybrid SoC can be routed to
- *   CPU 0, CPU 1 or both. The routing is useful for dual-core
- *   variants of Vybrid SoC such as VF6xx. This driver routes the
- *   requested interrupt to the CPU currently running on.
- *
- * o It is required to setup the interrupt router even on single-core
- *   variants of Vybrid.
- */
+
+ 
 
 #include <linux/cpu_pm.h>
 #include <linux/io.h>

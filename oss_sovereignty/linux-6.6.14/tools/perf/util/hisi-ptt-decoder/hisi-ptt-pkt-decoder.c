@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HiSilicon PCIe Trace and Tuning (PTT) support
- * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,29 +12,7 @@
 #include "../color.h"
 #include "hisi-ptt-pkt-decoder.h"
 
-/*
- * For 8DW format, the bit[31:11] of DW0 is always 0x1fffff, which can be
- * used to distinguish the data format.
- * 8DW format is like:
- *   bits [                 31:11                 ][       10:0       ]
- *        |---------------------------------------|-------------------|
- *    DW0 [                0x1fffff               ][ Reserved (0x7ff) ]
- *    DW1 [                       Prefix                              ]
- *    DW2 [                     Header DW0                            ]
- *    DW3 [                     Header DW1                            ]
- *    DW4 [                     Header DW2                            ]
- *    DW5 [                     Header DW3                            ]
- *    DW6 [                   Reserved (0x0)                          ]
- *    DW7 [                        Time                               ]
- *
- * 4DW format is like:
- *   bits [31:30] [ 29:25 ][24][23][22][21][    20:11   ][    10:0    ]
- *        |-----|---------|---|---|---|---|-------------|-------------|
- *    DW0 [ Fmt ][  Type  ][T9][T8][TH][SO][   Length   ][    Time    ]
- *    DW1 [                     Header DW1                            ]
- *    DW2 [                     Header DW2                            ]
- *    DW3 [                     Header DW3                            ]
- */
+ 
 
 enum hisi_ptt_8dw_pkt_field_type {
 	HISI_PTT_8DW_CHK_AND_RSV0,
@@ -106,7 +81,7 @@ static int hisi_ptt_8dw_kpt_desc(const unsigned char *buf, int pos)
 	int i;
 
 	for (i = 0; i < HISI_PTT_8DW_TYPE_MAX; i++) {
-		/* Do not show 8DW check field and reserved fields */
+		 
 		if (i == HISI_PTT_8DW_CHK_AND_RSV0 || i == HISI_PTT_8DW_RSV1) {
 			pos += HISI_PTT_FIELD_LENTH;
 			continue;

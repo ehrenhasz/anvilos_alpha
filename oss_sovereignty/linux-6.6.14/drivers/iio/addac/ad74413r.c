@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Analog Devices, Inc.
- * Author: Cosmin Tanislav <cosmin.tanislav@analog.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/bitfield.h>
@@ -60,10 +57,7 @@ struct ad74413r_state {
 	unsigned int			num_comparator_gpios;
 	u32				sense_resistor_ohms;
 
-	/*
-	 * Synchronize consecutive operations when doing a one-shot
-	 * conversion and when updating the ADC samples SPI message.
-	 */
+	 
 	struct mutex			lock;
 
 	const struct ad74413r_chip_info	*chip_info;
@@ -78,10 +72,7 @@ struct ad74413r_state {
 	struct spi_message	adc_samples_msg;
 	struct spi_transfer	adc_samples_xfer[AD74413R_CHANNEL_MAX + 1];
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	struct {
 		u8 rx_buf[AD74413R_FRAME_SIZE * AD74413R_CHANNEL_MAX];
 		s64 timestamp;
@@ -460,19 +451,14 @@ static int ad74413r_set_adc_conv_seq(struct ad74413r_state *st,
 {
 	int ret;
 
-	/*
-	 * These bits do not clear when a conversion completes.
-	 * To enable a subsequent conversion, repeat the write.
-	 */
+	 
 	ret = regmap_write_bits(st->regmap, AD74413R_REG_ADC_CONV_CTRL,
 				AD74413R_CONV_SEQ_MASK,
 				FIELD_PREP(AD74413R_CONV_SEQ_MASK, status));
 	if (ret)
 		return ret;
 
-	/*
-	 * Wait 100us before starting conversions.
-	 */
+	 
 	usleep_range(100, 120);
 
 	return 0;
@@ -891,18 +877,7 @@ static int ad74413r_update_scan_mode(struct iio_dev *indio_dev,
 	if (*active_scan_mask == 0)
 		goto out;
 
-	/*
-	 * The read select register is used to select which register's value
-	 * will be sent by the slave on the next SPI frame.
-	 *
-	 * Create an SPI message that, on each step, writes to the read select
-	 * register to select the ADC result of the next enabled channel, and
-	 * reads the ADC result of the previous enabled channel.
-	 *
-	 * Example:
-	 * W: [WCH1] [WCH2] [WCH2] [WCH3] [    ]
-	 * R: [    ] [RCH1] [RCH2] [RCH3] [RCH4]
-	 */
+	 
 
 	for_each_set_bit(channel, active_scan_mask, AD74413R_CHANNEL_MAX) {
 		ret = ad74413r_set_adc_channel_enable(st, channel, true);

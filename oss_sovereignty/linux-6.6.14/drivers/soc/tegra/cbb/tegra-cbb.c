@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION. All rights reserved
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpufeature.h>
@@ -156,7 +154,7 @@ int tegra_cbb_register(struct tegra_cbb *cbb)
 		}
 	}
 
-	/* register interrupt handler for errors due to different initiators */
+	 
 	ret = cbb->ops->interrupt_enable(cbb);
 	if (ret < 0) {
 		dev_err(cbb->dev, "Failed to register CBB Interrupt ISR");

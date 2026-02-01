@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+ 
+ 
 
 #ifndef __RTSX_PCI_H
 #define __RTSX_PCI_H
@@ -84,9 +78,7 @@
 
 #define RTSX_DUM_REG			0x1C
 
-/*
- * macros for easy use
- */
+ 
 #define rtsx_pci_writel(pcr, reg, value) \
 	iowrite32(value, (pcr)->remap_addr + reg)
 #define rtsx_pci_readl(pcr, reg) \
@@ -515,7 +507,7 @@
 #define CARD_PULL_CTL5			0xFD64
 #define CARD_PULL_CTL6			0xFD65
 
-/* PCI Express Related Registers */
+ 
 #define IRQEN0				0xFE20
 #define IRQSTAT0			0xFE21
 #define    DMA_DONE_INT			0x80
@@ -659,7 +651,7 @@
 #define   PM_WAKE_EN			0x01
 #define PM_CTRL4			0xFF47
 
-/* FW config info register */
+ 
 #define RTS5261_FW_CFG_INFO0		0xFF50
 #define   RTS5261_FW_EXPRESS_TEST_MASK	(0x01 << 0)
 #define   RTS5261_FW_EA_MODE_MASK	(0x01 << 5)
@@ -681,7 +673,7 @@
 #define REG_CFG_VCM_ON_TIMER 0xFEA8
 #define REG_CFG_OOBS_POLLING 0xFEA9
 
-/* Memory mapping */
+ 
 #define SRAM_BASE			0xE600
 #define RBUF_BASE			0xF400
 #define PPBUF_BASE1			0xF800
@@ -715,11 +707,11 @@
 #define LDO_VCC_CFG0			0xFF72
 #define   LDO_VCC_LMTVTH_MASK		0x30
 #define   LDO_VCC_LMTVTH_2A		0x10
-/*RTS5260*/
+ 
 #define   RTS5260_DVCC_TUNE_MASK	0x70
 #define   RTS5260_DVCC_33		0x70
 
-/*RTS5261*/
+ 
 #define RTS5261_LDO1_CFG0		0xFF72
 #define   RTS5261_LDO1_OCP_THD_MASK	(0x07 << 5)
 #define   RTS5261_LDO1_OCP_EN		(0x01 << 4)
@@ -733,7 +725,7 @@
 #define   LDO_VCC_1V8			0x04
 #define   LDO_VCC_3V3			0x07
 #define   LDO_VCC_LMT_EN		0x08
-/*RTS5260*/
+ 
 #define	  LDO_POW_SDVDD1_MASK		0x08
 #define	  LDO_POW_SDVDD1_ON		0x08
 #define	  LDO_POW_SDVDD1_OFF		0x00
@@ -766,7 +758,7 @@
 
 #define RTS5260_AUTOLOAD_CFG4		0xFF7F
 #define   RTS5260_MIMO_DISABLE		0x8A
-/*RTS5261*/
+ 
 #define   RTS5261_AUX_CLK_16M_EN		(1 << 5)
 
 #define RTS5260_REG_GPIO_CTL0		0xFC1A
@@ -803,7 +795,7 @@
 #define CFG_L1_0_RET_VALUE_DEFAULT	0x1B
 #define CFG_L1_0_CRC_MISC_RET_VALUE_DEFAULT	0x0C
 
-/* OCPCTL */
+ 
 #define SD_DETECT_EN			0x08
 #define SD_OCP_INT_EN			0x04
 #define SD_OCP_INT_CLR			0x02
@@ -814,7 +806,7 @@
 #define SDVIO_OCP_INT_CLR		(1 << 5)
 #define SDVIO_OC_CLR			(1 << 4)
 
-/* OCPSTAT */
+ 
 #define SD_OCP_DETECT			0x08
 #define SD_OC_NOW			0x04
 #define SD_OC_EVER			0x02
@@ -828,7 +820,7 @@
 #define REG_OCPPARA1			0xFD6B
 #define REG_OCPPARA2			0xFD6D
 
-/* rts5260 DV3318 OCP-related registers */
+ 
 #define REG_DV3318_OCPCTL		0xFD89
 #define DV3318_OCP_TIME_MASK	0xF0
 #define DV3318_DETECT_EN		0x08
@@ -844,7 +836,7 @@
 
 #define SD_OCP_GLITCH_MASK		0x0F
 
-/* OCPPARA1 */
+ 
 #define SDVIO_OCP_TIME_60		0x00
 #define SDVIO_OCP_TIME_100		0x10
 #define SDVIO_OCP_TIME_200		0x20
@@ -863,7 +855,7 @@
 #define SD_OCP_TIME_1100		0x06
 #define SD_OCP_TIME_MASK		0x07
 
-/* OCPPARA2 */
+ 
 #define SDVIO_OCP_THD_190		0x00
 #define SDVIO_OCP_THD_250		0x10
 #define SDVIO_OCP_THD_320		0x20
@@ -920,7 +912,7 @@
 #define SD_OCP_GLITCH_9M		0x0E
 #define SD_OCP_GLITCH_10M		0x0F
 
-/* Phy register */
+ 
 #define PHY_PCR				0x00
 #define   PHY_PCR_FORCE_CODE		0xB000
 #define   PHY_PCR_OOBS_CALI_50		0x0800
@@ -1122,23 +1114,7 @@ enum ASPM_MODE  {ASPM_MODE_CFG, ASPM_MODE_REG};
 #define L1_SNOOZE_TEST_EN		BIT(5)
 #define LTR_L1SS_PWR_GATE_CHECK_CARD_EN	BIT(6)
 
-/*
- * struct rtsx_cr_option  - card reader option
- * @dev_flags: device flags
- * @force_clkreq_0: force clock request
- * @ltr_en: enable ltr mode flag
- * @ltr_enabled: ltr mode in configure space flag
- * @ltr_active: ltr mode status
- * @ltr_active_latency: ltr mode active latency
- * @ltr_idle_latency: ltr mode idle latency
- * @ltr_l1off_latency: ltr mode l1off latency
- * @l1_snooze_delay: l1 snooze delay
- * @ltr_l1off_sspwrgate: ltr l1off sspwrgate
- * @ltr_l1off_snooze_sspwrgate: ltr l1off snooze sspwrgate
- * @ocp_en: enable ocp flag
- * @sd_400mA_ocp_thd: 400mA ocp thd
- * @sd_800mA_ocp_thd: 800mA ocp thd
- */
+ 
 struct rtsx_cr_option {
 	u32 dev_flags;
 	bool force_clkreq_0;
@@ -1156,11 +1132,7 @@ struct rtsx_cr_option {
 	u8 sd_800mA_ocp_thd;
 };
 
-/*
- * struct rtsx_hw_param  - card reader hardware param
- * @interrupt_en: indicate which interrutp enable
- * @ocp_glitch: ocp glitch time
- */
+ 
 struct rtsx_hw_param {
 	u32 interrupt_en;
 	u8 ocp_glitch;
@@ -1179,12 +1151,12 @@ struct rtsx_pcr {
 	struct rtsx_cr_option	option;
 	struct rtsx_hw_param hw_param;
 
-	/* pci resources */
+	 
 	unsigned long			addr;
 	void __iomem			*remap_addr;
 	int				irq;
 
-	/* host reserved buffer */
+	 
 	void				*rtsx_resv_buf;
 	dma_addr_t			rtsx_resv_buf_addr;
 

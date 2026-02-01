@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
+ 
+ 
 
 #ifndef __MT76x02_H
 #define __MT76x02_H
@@ -85,7 +82,7 @@ struct mt76x02_rate_power {
 };
 
 struct mt76x02_dev {
-	union { /* must be first */
+	union {  
 		struct mt76_dev mt76;
 		struct mt76_phy mphy;
 	};
@@ -135,7 +132,7 @@ struct mt76x02_dev {
 
 	struct mt76x02_dfs_pattern_detector dfs_pd;
 
-	/* edcca monitor */
+	 
 	unsigned long ed_trigger_timeout;
 	bool ed_tx_blocked;
 	bool ed_monitor;
@@ -284,4 +281,4 @@ mt76x02_rx_get_sta_wcid(struct mt76x02_sta *sta, bool unicast)
 		return &sta->vif->group_wcid;
 }
 
-#endif /* __MT76x02_H */
+#endif  

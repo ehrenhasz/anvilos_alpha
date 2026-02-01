@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Scaler library
- *
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -54,10 +46,7 @@ void sc_dump_regs(struct sc_data *sc)
 }
 EXPORT_SYMBOL(sc_dump_regs);
 
-/*
- * set the horizontal scaler coefficients according to the ratio of output to
- * input widths, after accounting for up to two levels of decimation
- */
+ 
 void sc_set_hs_coeffs(struct sc_data *sc, void *addr, unsigned int src_w,
 		unsigned int dst_w)
 {
@@ -71,9 +60,9 @@ void sc_set_hs_coeffs(struct sc_data *sc, void *addr, unsigned int src_w,
 		idx = HS_UP_SCALE;
 	} else {
 		if ((dst_w << 1) < src_w)
-			dst_w <<= 1;	/* first level decimation */
+			dst_w <<= 1;	 
 		if ((dst_w << 1) < src_w)
-			dst_w <<= 1;	/* second level decimation */
+			dst_w <<= 1;	 
 
 		if (dst_w == src_w) {
 			idx = HS_LE_16_16_SCALE;
@@ -90,12 +79,7 @@ void sc_set_hs_coeffs(struct sc_data *sc, void *addr, unsigned int src_w,
 	for (i = 0; i < SC_NUM_PHASES * 2; i++) {
 		for (j = 0; j < SC_H_NUM_TAPS; j++)
 			*coeff_h++ = *cp++;
-		/*
-		 * for each phase, the scaler expects space for 8 coefficients
-		 * in it's memory. For the horizontal scaler, we copy the first
-		 * 7 coefficients and skip the last slot to move to the next
-		 * row to hold coefficients for the next phase
-		 */
+		 
 		coeff_h += SC_NUM_TAPS_MEM_ALIGN - SC_H_NUM_TAPS;
 	}
 
@@ -103,10 +87,7 @@ void sc_set_hs_coeffs(struct sc_data *sc, void *addr, unsigned int src_w,
 }
 EXPORT_SYMBOL(sc_set_hs_coeffs);
 
-/*
- * set the vertical scaler coefficients according to the ratio of output to
- * input heights
- */
+ 
 void sc_set_vs_coeffs(struct sc_data *sc, void *addr, unsigned int src_h,
 		unsigned int dst_h)
 {
@@ -132,11 +113,7 @@ void sc_set_vs_coeffs(struct sc_data *sc, void *addr, unsigned int src_h,
 	for (i = 0; i < SC_NUM_PHASES * 2; i++) {
 		for (j = 0; j < SC_V_NUM_TAPS; j++)
 			*coeff_v++ = *cp++;
-		/*
-		 * for the vertical scaler, we copy the first 5 coefficients and
-		 * skip the last 3 slots to move to the next row to hold
-		 * coefficients for the next phase
-		 */
+		 
 		coeff_v += SC_NUM_TAPS_MEM_ALIGN - SC_V_NUM_TAPS;
 	}
 
@@ -158,10 +135,7 @@ void sc_config_scaler(struct sc_data *sc, u32 *sc_reg0, u32 *sc_reg8,
 	u16 factor = 0;
 	int row_acc_init_rav = 0, row_acc_init_rav_b = 0;
 	u32 row_acc_inc = 0, row_acc_offset = 0, row_acc_offset_b = 0;
-	/*
-	 * location of SC register in payload memory with respect to the first
-	 * register in the mmr address data block
-	 */
+	 
 	u32 *sc_reg9 = sc_reg8 + 1;
 	u32 *sc_reg12 = sc_reg8 + 4;
 	u32 *sc_reg13 = sc_reg8 + 5;
@@ -169,7 +143,7 @@ void sc_config_scaler(struct sc_data *sc, u32 *sc_reg0, u32 *sc_reg8,
 
 	val = sc_reg0[0];
 
-	/* clear all the features(they may get enabled elsewhere later) */
+	 
 	val &= ~(CFG_SELFGEN_FID | CFG_TRIM | CFG_ENABLE_SIN2_VER_INTP |
 		CFG_INTERLACE_I | CFG_DCM_4X | CFG_DCM_2X | CFG_AUTO_HS |
 		CFG_ENABLE_EV | CFG_USE_RAV | CFG_INVT_FID | CFG_SC_BYPASS |
@@ -181,12 +155,12 @@ void sc_config_scaler(struct sc_data *sc, u32 *sc_reg0, u32 *sc_reg8,
 		return;
 	}
 
-	/* we only support linear scaling for now */
+	 
 	val |= CFG_LINEAR;
 
-	/* configure horizontal scaler */
+	 
 
-	/* enable 2X or 4X decimation */
+	 
 	dcm_x = src_w / dst_w;
 	if (dcm_x > 4) {
 		val |= CFG_DCM_4X;
@@ -207,9 +181,9 @@ void sc_config_scaler(struct sc_data *sc, u32 *sc_reg0, u32 *sc_reg8,
 		src_w, dst_w, dcm_shift == 2 ? "4x" :
 		(dcm_shift == 1 ? "2x" : "none"), lin_acc_inc);
 
-	/* configure vertical scaler */
+	 
 
-	/* use RAV for vertical scaler if vertical downscaling is > 4x */
+	 
 	if (dst_h < (src_h >> 2)) {
 		use_rav = true;
 		val |= CFG_USE_RAV;
@@ -218,7 +192,7 @@ void sc_config_scaler(struct sc_data *sc, u32 *sc_reg0, u32 *sc_reg8,
 	}
 
 	if (use_rav) {
-		/* use RAV */
+		 
 		factor = (u16) ((dst_h << 10) / src_h);
 
 		row_acc_init_rav = factor + ((1 + factor) >> 1);
@@ -238,7 +212,7 @@ void sc_config_scaler(struct sc_data *sc, u32 *sc_reg0, u32 *sc_reg8,
 			src_h, dst_h, factor, row_acc_init_rav,
 			row_acc_init_rav_b);
 	} else {
-		/* use polyphase */
+		 
 		row_acc_inc = ((src_h - 1) << 16) / (dst_h - 1);
 		row_acc_offset = 0;
 		row_acc_offset_b = 0;

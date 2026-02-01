@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for Conexant CX24113/CX24128 Tuner (Satellite)
- *
- *  Copyright (C) 2007-8 Patrick Boettcher <pb@linuxtv.org>
- */
+ 
+ 
 
 #ifndef CX24113_H
 #define CX24113_H
@@ -11,7 +7,7 @@
 struct dvb_frontend;
 
 struct cx24113_config {
-	u8 i2c_addr; /* 0x14 or 0x54 */
+	u8 i2c_addr;  
 
 	u32 xtal_khz;
 };
@@ -35,4 +31,4 @@ static inline void cx24113_agc_callback(struct dvb_frontend *fe)
 }
 #endif
 
-#endif /* CX24113_H */
+#endif  

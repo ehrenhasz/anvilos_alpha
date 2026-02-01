@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cobalt interrupt handling
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+
+ 
 
 #include <media/i2c/adv7604.h>
 
@@ -35,10 +30,7 @@ static void cobalt_dma_stream_queue_handler(struct cobalt_stream *s)
 		return;
 	}
 
-	/* Give the fresh filled up buffer to the user.
-	 * Note that the interrupt is only sent if the DMA can continue
-	 * with a new buffer, so it is always safe to return this buffer
-	 * to userspace. */
+	 
 	cb = list_first_entry(&s->bufs, struct cobalt_buffer, list);
 	list_del(&cb->list);
 	spin_unlock(&s->irqlock);
@@ -123,8 +115,7 @@ done:
 		s->skip_first_frames--;
 	}
 	cb->vb.vb2_buf.timestamp = ktime_get_ns();
-	/* TODO: the sequence number should be read from the FPGA so we
-	   also know about dropped frames. */
+	 
 	cb->vb.sequence = s->sequence++;
 	vb2_buffer_done(&cb->vb.vb2_buf,
 			(skip || s->unstable_frame) ?
@@ -140,7 +131,7 @@ irqreturn_t cobalt_irq_handler(int irq, void *dev_id)
 	u32 edge = cobalt_read_bar1(cobalt, COBALT_SYS_STAT_EDGE);
 	int i;
 
-	/* Clear DMA interrupt */
+	 
 	cobalt_write_bar0(cobalt, DMA_INTERRUPT_STATUS_REG, dma_interrupt);
 	cobalt_write_bar1(cobalt, COBALT_SYS_STAT_MASK, mask & ~edge);
 	cobalt_write_bar1(cobalt, COBALT_SYS_STAT_EDGE, edge);
@@ -151,8 +142,7 @@ irqreturn_t cobalt_irq_handler(int irq, void *dev_id)
 
 		if (dma_interrupt & (1 << s->dma_channel)) {
 			cobalt->irq_dma[i]++;
-			/* Give fresh buffer to user and chain newly
-			 * queued buffers */
+			 
 			cobalt_dma_stream_queue_handler(s);
 			if (!s->is_audio) {
 				edge &= ~dma_fifo_mask;

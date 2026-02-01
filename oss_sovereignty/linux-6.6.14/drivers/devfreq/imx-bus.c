@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/devfreq.h>
@@ -53,7 +51,7 @@ static void imx_bus_exit(struct device *dev)
 	platform_device_unregister(priv->icc_pdev);
 }
 
-/* imx_bus_init_icc() - register matching icc provider if required */
+ 
 static int imx_bus_init_icc(struct device *dev)
 {
 	struct imx_bus *priv = dev_get_drvdata(dev);
@@ -94,15 +92,7 @@ static int imx_bus_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/*
-	 * Fetch the clock to adjust but don't explicitly enable.
-	 *
-	 * For imx bus clock clk_set_rate is safe no matter if the clock is on
-	 * or off and some peripheral side-buses might be off unless enabled by
-	 * drivers for devices on those specific buses.
-	 *
-	 * Rate adjustment on a disabled bus clock just takes effect later.
-	 */
+	 
 	priv->clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(priv->clk)) {
 		ret = PTR_ERR(priv->clk);
@@ -148,7 +138,7 @@ static const struct of_device_id imx_bus_of_match[] = {
 	{ .compatible = "fsl,imx8mp-noc", .data = "imx8mp-interconnect", },
 	{ .compatible = "fsl,imx8m-noc", },
 	{ .compatible = "fsl,imx8m-nic", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx_bus_of_match);
 

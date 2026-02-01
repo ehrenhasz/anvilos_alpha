@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Private definitions for the generic associative array implementation.
- *
- * See Documentation/core-api/assoc_array.rst for information.
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 
 #ifndef _LINUX_ASSOC_ARRAY_PRIV_H
 #define _LINUX_ASSOC_ARRAY_PRIV_H
@@ -14,41 +8,17 @@
 
 #include <linux/assoc_array.h>
 
-#define ASSOC_ARRAY_FAN_OUT		16	/* Number of slots per node */
+#define ASSOC_ARRAY_FAN_OUT		16	 
 #define ASSOC_ARRAY_FAN_MASK		(ASSOC_ARRAY_FAN_OUT - 1)
 #define ASSOC_ARRAY_LEVEL_STEP		(ilog2(ASSOC_ARRAY_FAN_OUT))
 #define ASSOC_ARRAY_LEVEL_STEP_MASK	(ASSOC_ARRAY_LEVEL_STEP - 1)
 #define ASSOC_ARRAY_KEY_CHUNK_MASK	(ASSOC_ARRAY_KEY_CHUNK_SIZE - 1)
 #define ASSOC_ARRAY_KEY_CHUNK_SHIFT	(ilog2(BITS_PER_LONG))
 
-/*
- * Undefined type representing a pointer with type information in the bottom
- * two bits.
- */
+ 
 struct assoc_array_ptr;
 
-/*
- * An N-way node in the tree.
- *
- * Each slot contains one of four things:
- *
- *	(1) Nothing (NULL).
- *
- *	(2) A leaf object (pointer types 0).
- *
- *	(3) A next-level node (pointer type 1, subtype 0).
- *
- *	(4) A shortcut (pointer type 1, subtype 1).
- *
- * The tree is optimised for search-by-ID, but permits reasonable iteration
- * also.
- *
- * The tree is navigated by constructing an index key consisting of an array of
- * segments, where each segment is ilog2(ASSOC_ARRAY_FAN_OUT) bits in size.
- *
- * The segments correspond to levels of the tree (the first segment is used at
- * level 0, the second at level 1, etc.).
- */
+ 
 struct assoc_array_node {
 	struct assoc_array_ptr	*back_pointer;
 	u8			parent_slot;
@@ -56,10 +26,7 @@ struct assoc_array_node {
 	unsigned long		nr_leaves_on_branch;
 };
 
-/*
- * A shortcut through the index space out to where a collection of nodes/leaves
- * with the same IDs live.
- */
+ 
 struct assoc_array_shortcut {
 	struct assoc_array_ptr	*back_pointer;
 	int			parent_slot;
@@ -68,9 +35,7 @@ struct assoc_array_shortcut {
 	unsigned long		index_key[];
 };
 
-/*
- * Preallocation cache.
- */
+ 
 struct assoc_array_edit {
 	struct rcu_head			rcu;
 	struct assoc_array		*array;
@@ -97,17 +62,10 @@ struct assoc_array_edit {
 	u8				segment_cache[ASSOC_ARRAY_FAN_OUT + 1];
 };
 
-/*
- * Internal tree member pointers are marked in the bottom one or two bits to
- * indicate what type they are so that we don't have to look behind every
- * pointer to see what it points to.
- *
- * We provide functions to test type annotations and to create and translate
- * the annotated pointers.
- */
+ 
 #define ASSOC_ARRAY_PTR_TYPE_MASK 0x1UL
-#define ASSOC_ARRAY_PTR_LEAF_TYPE 0x0UL	/* Points to leaf (or nowhere) */
-#define ASSOC_ARRAY_PTR_META_TYPE 0x1UL	/* Points to node or shortcut */
+#define ASSOC_ARRAY_PTR_LEAF_TYPE 0x0UL	 
+#define ASSOC_ARRAY_PTR_META_TYPE 0x1UL	 
 #define ASSOC_ARRAY_PTR_SUBTYPE_MASK	0x2UL
 #define ASSOC_ARRAY_PTR_NODE_SUBTYPE	0x0UL
 #define ASSOC_ARRAY_PTR_SHORTCUT_SUBTYPE 0x2UL
@@ -174,5 +132,5 @@ struct assoc_array_ptr *assoc_array_shortcut_to_ptr(const struct assoc_array_sho
 		p, ASSOC_ARRAY_PTR_META_TYPE | ASSOC_ARRAY_PTR_SHORTCUT_SUBTYPE);
 }
 
-#endif /* CONFIG_ASSOCIATIVE_ARRAY */
-#endif /* _LINUX_ASSOC_ARRAY_PRIV_H */
+#endif  
+#endif  

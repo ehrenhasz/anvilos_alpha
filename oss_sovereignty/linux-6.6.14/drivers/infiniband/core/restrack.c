@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved.
- */
+
+ 
 
 #include <rdma/rdma_cm.h>
 #include <rdma/ib_verbs.h>
@@ -14,12 +12,7 @@
 #include "cma_priv.h"
 #include "restrack.h"
 
-/**
- * rdma_restrack_init() - initialize and allocate resource tracking
- * @dev:  IB device
- *
- * Return: 0 on success
- */
+ 
 int rdma_restrack_init(struct ib_device *dev)
 {
 	struct rdma_restrack_root *rt;
@@ -53,10 +46,7 @@ static const char *type2str(enum rdma_restrack_type type)
 	return names[type];
 };
 
-/**
- * rdma_restrack_clean() - clean resource tracking
- * @dev:  IB device
- */
+ 
 void rdma_restrack_clean(struct ib_device *dev)
 {
 	struct rdma_restrack_root *rt = dev->res;
@@ -80,11 +70,7 @@ void rdma_restrack_clean(struct ib_device *dev)
 				if (rdma_is_kernel_res(e)) {
 					owner = e->kern_name;
 				} else {
-					/*
-					 * There is no need to call get_task_struct here,
-					 * because we can be here only if there are more
-					 * get_task_struct() call than put_task_struct().
-					 */
+					 
 					get_task_comm(buf, e->task);
 					owner = buf;
 				}
@@ -104,11 +90,7 @@ void rdma_restrack_clean(struct ib_device *dev)
 	kfree(rt);
 }
 
-/**
- * rdma_restrack_count() - the current usage of specific object
- * @dev:  IB device
- * @type: actual type of object to operate
- */
+ 
 int rdma_restrack_count(struct ib_device *dev, enum rdma_restrack_type type)
 {
 	struct rdma_restrack_root *rt = &dev->res[type];
@@ -150,12 +132,7 @@ static struct ib_device *res_to_dev(struct rdma_restrack_entry *res)
 	}
 }
 
-/**
- * rdma_restrack_attach_task() - attach the task onto this resource,
- * valid for user space restrack entries.
- * @res:  resource entry
- * @task: the task to attach
- */
+ 
 static void rdma_restrack_attach_task(struct rdma_restrack_entry *res,
 				      struct task_struct *task)
 {
@@ -169,11 +146,7 @@ static void rdma_restrack_attach_task(struct rdma_restrack_entry *res,
 	res->user = true;
 }
 
-/**
- * rdma_restrack_set_name() - set the task for this resource
- * @res:  resource entry
- * @caller: kernel name, the current task will be used if the caller is NULL.
- */
+ 
 void rdma_restrack_set_name(struct rdma_restrack_entry *res, const char *caller)
 {
 	if (caller) {
@@ -185,12 +158,7 @@ void rdma_restrack_set_name(struct rdma_restrack_entry *res, const char *caller)
 }
 EXPORT_SYMBOL(rdma_restrack_set_name);
 
-/**
- * rdma_restrack_parent_name() - set the restrack name properties based
- * on parent restrack
- * @dst: destination resource entry
- * @parent: parent resource entry
- */
+ 
 void rdma_restrack_parent_name(struct rdma_restrack_entry *dst,
 			       const struct rdma_restrack_entry *parent)
 {
@@ -201,12 +169,7 @@ void rdma_restrack_parent_name(struct rdma_restrack_entry *dst,
 }
 EXPORT_SYMBOL(rdma_restrack_parent_name);
 
-/**
- * rdma_restrack_new() - Initializes new restrack entry to allow _put() interface
- * to release memory in fully automatic way.
- * @res: Entry to initialize
- * @type: REstrack type
- */
+ 
 void rdma_restrack_new(struct rdma_restrack_entry *res,
 		       enum rdma_restrack_type type)
 {
@@ -216,10 +179,7 @@ void rdma_restrack_new(struct rdma_restrack_entry *res,
 }
 EXPORT_SYMBOL(rdma_restrack_new);
 
-/**
- * rdma_restrack_add() - add object to the reource tracking database
- * @res:  resource entry
- */
+ 
 void rdma_restrack_add(struct rdma_restrack_entry *res)
 {
 	struct ib_device *dev = res_to_dev(res);
@@ -235,7 +195,7 @@ void rdma_restrack_add(struct rdma_restrack_entry *res)
 	rt = &dev->res[res->type];
 
 	if (res->type == RDMA_RESTRACK_QP) {
-		/* Special case to ensure that LQPN points to right QP */
+		 
 		struct ib_qp *qp = container_of(res, struct ib_qp, res);
 
 		WARN_ONCE(qp->qp_num >> 24 || qp->port >> 8,
@@ -248,7 +208,7 @@ void rdma_restrack_add(struct rdma_restrack_entry *res)
 		if (ret)
 			res->id = 0;
 	} else if (res->type == RDMA_RESTRACK_COUNTER) {
-		/* Special case to ensure that cntn points to right counter */
+		 
 		struct rdma_counter *counter;
 
 		counter = container_of(res, struct rdma_counter, res);
@@ -272,14 +232,7 @@ int __must_check rdma_restrack_get(struct rdma_restrack_entry *res)
 }
 EXPORT_SYMBOL(rdma_restrack_get);
 
-/**
- * rdma_restrack_get_byid() - translate from ID to restrack object
- * @dev: IB device
- * @type: resource track type
- * @id: ID to take a look
- *
- * Return: Pointer to restrack entry or -ENOENT in case of error.
- */
+ 
 struct rdma_restrack_entry *
 rdma_restrack_get_byid(struct ib_device *dev,
 		       enum rdma_restrack_type type, u32 id)
@@ -315,10 +268,7 @@ int rdma_restrack_put(struct rdma_restrack_entry *res)
 }
 EXPORT_SYMBOL(rdma_restrack_put);
 
-/**
- * rdma_restrack_del() - delete object from the reource tracking database
- * @res:  resource entry
- */
+ 
 void rdma_restrack_del(struct rdma_restrack_entry *res)
 {
 	struct rdma_restrack_entry *old;

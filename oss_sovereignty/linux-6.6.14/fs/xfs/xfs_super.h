@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #ifndef __XFS_SUPER_H__
 #define __XFS_SUPER_H__
 
@@ -73,7 +70,7 @@ extern void xfs_qm_exit(void);
 				XFS_WARN_STRING \
 				XFS_QUOTA_STRING \
 				XFS_ASSERT_FATAL_STRING \
-				XFS_DBG_STRING /* DBG must be last */
+				XFS_DBG_STRING  
 
 #ifdef DEBUG
 # define XFS_WQFLAGS(wqflags)	(WQ_SYSFS | (wqflags))
@@ -102,4 +99,4 @@ extern struct workqueue_struct *xfs_discard_wq;
 
 struct dentry *xfs_debugfs_mkdir(const char *name, struct dentry *parent);
 
-#endif	/* __XFS_SUPER_H__ */
+#endif	 

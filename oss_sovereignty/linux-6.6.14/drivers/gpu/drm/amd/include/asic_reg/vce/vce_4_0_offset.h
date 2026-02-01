@@ -1,30 +1,11 @@
-/*
- * Copyright (C) 2017  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _vce_4_0_OFFSET_HEADER
 #define _vce_4_0_OFFSET_HEADER
 
 
 
-// addressBlock: vce0_vce_dec
-// base address: 0x22000
+
+
 #define mmVCE_STATUS                                                                                   0x0a01
 #define mmVCE_STATUS_BASE_IDX                                                                          0
 #define mmVCE_VCPU_CNTL                                                                                0x0a05
@@ -111,8 +92,8 @@
 #define mmVCE_SYS_INT_STATUS_BASE_IDX                                                                  0
 
 
-// addressBlock: vce0_ctl_dec
-// base address: 0x22780
+
+
 #define mmVCE_UENC_CLOCK_GATING                                                                        0x0bef
 #define mmVCE_UENC_CLOCK_GATING_BASE_IDX                                                               0
 #define mmVCE_UENC_REG_CLOCK_GATING                                                                    0x0bf0
@@ -121,8 +102,8 @@
 #define mmVCE_UENC_CLOCK_GATING_2_BASE_IDX                                                             0
 
 
-// addressBlock: vce0_vce_sclk_dec
-// base address: 0x23700
+
+
 #define mmVCE_LMI_VCPU_CACHE_40BIT_BAR                                                                 0x0fcc
 #define mmVCE_LMI_VCPU_CACHE_40BIT_BAR_BASE_IDX                                                        0
 #define mmVCE_LMI_CTRL2                                                                                0x0fcf
@@ -177,8 +158,8 @@
 #define mmVCE_LMI_VCPU_CACHE_40BIT_BAR7_BASE_IDX                                                       0
 
 
-// addressBlock: vce0_mmsch_dec
-// base address: 0x23b00
+
+
 #define mmVCE_MMSCH_VF_VMID                                                                            0x10cb
 #define mmVCE_MMSCH_VF_VMID_BASE_IDX                                                                   0
 #define mmVCE_MMSCH_VF_CTX_ADDR_LO                                                                     0x10cc
@@ -199,8 +180,8 @@
 #define mmVCE_MMSCH_VF_MAILBOX_RESP_BASE_IDX                                                           0
 
 
-// addressBlock: vce0_vce_rb_pg_dec
-// base address: 0x23fa0
+
+
 #define mmVCE_HW_VERSION                                                                               0x11e8
 #define mmVCE_HW_VERSION_BASE_IDX                                                                      0
 

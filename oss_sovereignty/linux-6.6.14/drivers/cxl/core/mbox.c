@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2020 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/security.h>
 #include <linux/debugfs.h>
 #include <linux/ktime.h>
@@ -14,14 +14,7 @@
 
 static bool cxl_raw_allow_all;
 
-/**
- * DOC: cxl mbox
- *
- * Core implementation of the CXL 2.0 Type-3 Memory Device Mailbox. The
- * implementation is used by the cxl_pci driver to initialize the device
- * and implement the cxl_mem.h IOCTL UAPI. It also implements the
- * backend of the cxl_pmem_ctl() transport for LIBNVDIMM.
- */
+ 
 
 #define cxl_for_each_cmd(cmd)                                                  \
 	for ((cmd) = &cxl_mem_commands[0];                                     \
@@ -39,12 +32,7 @@ static bool cxl_raw_allow_all;
 	}
 
 #define CXL_VARIABLE_PAYLOAD	~0U
-/*
- * This table defines the supported mailbox commands for the driver. This table
- * is made up of a UAPI structure. Non-negative values as parameters in the
- * table will be validated against the user's input. For example, if size_in is
- * 0, and the user passed in 1, it is an error.
- */
+ 
 static struct cxl_mem_command cxl_mem_commands[CXL_MEM_COMMAND_ID_MAX] = {
 	CXL_CMD(IDENTIFY, 0, 0x43, CXL_CMD_FLAG_FORCE_ENABLE),
 #ifdef CONFIG_CXL_MEM_RAW_COMMANDS
@@ -65,28 +53,7 @@ static struct cxl_mem_command cxl_mem_commands[CXL_MEM_COMMAND_ID_MAX] = {
 	CXL_CMD(GET_SCAN_MEDIA_CAPS, 0x10, 0x4, 0),
 };
 
-/*
- * Commands that RAW doesn't permit. The rationale for each:
- *
- * CXL_MBOX_OP_ACTIVATE_FW: Firmware activation requires adjustment /
- * coordination of transaction timeout values at the root bridge level.
- *
- * CXL_MBOX_OP_SET_PARTITION_INFO: The device memory map may change live
- * and needs to be coordinated with HDM updates.
- *
- * CXL_MBOX_OP_SET_LSA: The label storage area may be cached by the
- * driver and any writes from userspace invalidates those contents.
- *
- * CXL_MBOX_OP_SET_SHUTDOWN_STATE: Set shutdown state assumes no writes
- * to the device after it is marked clean, userspace can not make that
- * assertion.
- *
- * CXL_MBOX_OP_[GET_]SCAN_MEDIA: The kernel provides a native error list that
- * is kept up to date with patrol notifications and error management.
- *
- * CXL_MBOX_OP_[GET_,INJECT_,CLEAR_]POISON: These commands require kernel
- * driver orchestration for safety.
- */
+ 
 static u16 cxl_disabled_raw_commands[] = {
 	CXL_MBOX_OP_ACTIVATE_FW,
 	CXL_MBOX_OP_SET_PARTITION_INFO,
@@ -99,16 +66,11 @@ static u16 cxl_disabled_raw_commands[] = {
 	CXL_MBOX_OP_CLEAR_POISON,
 };
 
-/*
- * Command sets that RAW doesn't permit. All opcodes in this set are
- * disabled because they pass plain text security payloads over the
- * user/kernel boundary. This functionality is intended to be wrapped
- * behind the keys ABI which allows for encrypted payloads in the UAPI
- */
+ 
 static u8 security_command_sets[] = {
-	0x44, /* Sanitize */
-	0x45, /* Persistent Memory Data-at-rest Security */
-	0x46, /* Security Passthrough */
+	0x44,  
+	0x45,  
+	0x46,  
 };
 
 static bool cxl_is_security_command(u16 opcode)
@@ -219,24 +181,7 @@ static const char *cxl_mem_opcode_to_name(u16 opcode)
 	return cxl_command_names[c->info.id].name;
 }
 
-/**
- * cxl_internal_send_cmd() - Kernel internal interface to send a mailbox command
- * @mds: The driver data for the operation
- * @mbox_cmd: initialized command to execute
- *
- * Context: Any context.
- * Return:
- *  * %>=0	- Number of bytes returned in @out.
- *  * %-E2BIG	- Payload is too large for hardware.
- *  * %-EBUSY	- Couldn't acquire exclusive mailbox access.
- *  * %-EFAULT	- Hardware error occurred.
- *  * %-ENXIO	- Command completed, but device reported an error.
- *  * %-EIO	- Unexpected output size.
- *
- * Mailbox commands may execute successfully yet the device itself reported an
- * error. While this distinction can be useful for commands from userspace, the
- * kernel will only be able to use results when both are successful.
- */
+ 
 int cxl_internal_send_cmd(struct cxl_memdev_state *mds,
 			  struct cxl_mbox_cmd *mbox_cmd)
 {
@@ -250,10 +195,7 @@ int cxl_internal_send_cmd(struct cxl_memdev_state *mds,
 	out_size = mbox_cmd->size_out;
 	min_out = mbox_cmd->min_out;
 	rc = mds->mbox_send(mds, mbox_cmd);
-	/*
-	 * EIO is reserved for a payload size mismatch and mbox_send()
-	 * may not return this error.
-	 */
+	 
 	if (WARN_ONCE(rc == -EIO, "Bad return code: -EIO"))
 		return -ENXIO;
 	if (rc)
@@ -266,10 +208,7 @@ int cxl_internal_send_cmd(struct cxl_memdev_state *mds,
 	if (!out_size)
 		return 0;
 
-	/*
-	 * Variable sized output needs to at least satisfy the caller's
-	 * minimum if not the fully requested size.
-	 */
+	 
 	if (min_out == 0)
 		min_out = out_size;
 
@@ -302,24 +241,7 @@ static bool cxl_mem_raw_command_allowed(u16 opcode)
 	return true;
 }
 
-/**
- * cxl_payload_from_user_allowed() - Check contents of in_payload.
- * @opcode: The mailbox command opcode.
- * @payload_in: Pointer to the input payload passed in from user space.
- *
- * Return:
- *  * true	- payload_in passes check for @opcode.
- *  * false	- payload_in contains invalid or unsupported values.
- *
- * The driver may inspect payload contents before sending a mailbox
- * command from user space to the device. The intent is to reject
- * commands with input payloads that are known to be unsafe. This
- * check is not intended to replace the users careful selection of
- * mailbox command parameters and makes no guarantee that the user
- * command will succeed, nor that it is appropriate.
- *
- * The specific checks are determined by the opcode.
- */
+ 
 static bool cxl_payload_from_user_allowed(u16 opcode, void *payload_in)
 {
 	switch (opcode) {
@@ -359,7 +281,7 @@ static int cxl_mbox_cmd_ctor(struct cxl_mbox_cmd *mbox,
 		}
 	}
 
-	/* Prepare to handle a full payload for variable sized output */
+	 
 	if (out_size == CXL_VARIABLE_PAYLOAD)
 		mbox->size_out = mds->payload_size;
 	else
@@ -388,11 +310,7 @@ static int cxl_to_mem_cmd_raw(struct cxl_mem_command *mem_cmd,
 	if (send_cmd->raw.rsvd)
 		return -EINVAL;
 
-	/*
-	 * Unlike supported commands, the output size of RAW commands
-	 * gets passed along without further checking, so it must be
-	 * validated here.
-	 */
+	 
 	if (send_cmd->out.size > mds->payload_size)
 		return -EINVAL;
 
@@ -429,20 +347,20 @@ static int cxl_to_mem_cmd(struct cxl_mem_command *mem_cmd,
 	if (send_cmd->in.rsvd || send_cmd->out.rsvd)
 		return -EINVAL;
 
-	/* Check that the command is enabled for hardware */
+	 
 	if (!test_bit(info->id, mds->enabled_cmds))
 		return -ENOTTY;
 
-	/* Check that the command is not claimed for exclusive kernel use */
+	 
 	if (test_bit(info->id, mds->exclusive_cmds))
 		return -EBUSY;
 
-	/* Check the input buffer is the expected size */
+	 
 	if ((info->size_in != CXL_VARIABLE_PAYLOAD) &&
 	    (info->size_in != send_cmd->in.size))
 		return -ENOMEM;
 
-	/* Check the output buffer is at least large enough */
+	 
 	if ((info->size_out != CXL_VARIABLE_PAYLOAD) &&
 	    (send_cmd->out.size < info->size_out))
 		return -ENOMEM;
@@ -460,23 +378,7 @@ static int cxl_to_mem_cmd(struct cxl_mem_command *mem_cmd,
 	return 0;
 }
 
-/**
- * cxl_validate_cmd_from_user() - Check fields for CXL_MEM_SEND_COMMAND.
- * @mbox_cmd: Sanitized and populated &struct cxl_mbox_cmd.
- * @mds: The driver data for the operation
- * @send_cmd: &struct cxl_send_command copied in from userspace.
- *
- * Return:
- *  * %0	- @out_cmd is ready to send.
- *  * %-ENOTTY	- Invalid command specified.
- *  * %-EINVAL	- Reserved fields or invalid values were used.
- *  * %-ENOMEM	- Input or output buffer wasn't sized properly.
- *  * %-EPERM	- Attempted to use a protected command.
- *  * %-EBUSY	- Kernel has claimed exclusive access to this opcode
- *
- * The result of this command is a fully validated command in @mbox_cmd that is
- * safe to send to the hardware.
- */
+ 
 static int cxl_validate_cmd_from_user(struct cxl_mbox_cmd *mbox_cmd,
 				      struct cxl_memdev_state *mds,
 				      const struct cxl_send_command *send_cmd)
@@ -487,15 +389,11 @@ static int cxl_validate_cmd_from_user(struct cxl_mbox_cmd *mbox_cmd,
 	if (send_cmd->id == 0 || send_cmd->id >= CXL_MEM_COMMAND_ID_MAX)
 		return -ENOTTY;
 
-	/*
-	 * The user can never specify an input payload larger than what hardware
-	 * supports, but output can be arbitrarily large (simply write out as
-	 * much data as the hardware provides).
-	 */
+	 
 	if (send_cmd->in.size > mds->payload_size)
 		return -EINVAL;
 
-	/* Sanitize and construct a cxl_mem_command */
+	 
 	if (send_cmd->id == CXL_MEM_COMMAND_ID_RAW)
 		rc = cxl_to_mem_cmd_raw(&mem_cmd, send_cmd, mds);
 	else
@@ -504,7 +402,7 @@ static int cxl_validate_cmd_from_user(struct cxl_mbox_cmd *mbox_cmd,
 	if (rc)
 		return rc;
 
-	/* Sanitize and construct a cxl_mbox_cmd */
+	 
 	return cxl_mbox_cmd_ctor(mbox_cmd, mds, mem_cmd.opcode,
 				 mem_cmd.info.size_in, mem_cmd.info.size_out,
 				 send_cmd->in.payload);
@@ -524,14 +422,11 @@ int cxl_query_cmd(struct cxl_memdev *cxlmd,
 	if (get_user(n_commands, &q->n_commands))
 		return -EFAULT;
 
-	/* returns the total number if 0 elements are requested. */
+	 
 	if (n_commands == 0)
 		return put_user(ARRAY_SIZE(cxl_mem_commands), &q->n_commands);
 
-	/*
-	 * otherwise, return max(n_commands, total commands) cxl_command_info
-	 * structures.
-	 */
+	 
 	cxl_for_each_cmd(cmd) {
 		struct cxl_command_info info = cmd->info;
 
@@ -550,29 +445,7 @@ int cxl_query_cmd(struct cxl_memdev *cxlmd,
 	return 0;
 }
 
-/**
- * handle_mailbox_cmd_from_user() - Dispatch a mailbox command for userspace.
- * @mds: The driver data for the operation
- * @mbox_cmd: The validated mailbox command.
- * @out_payload: Pointer to userspace's output payload.
- * @size_out: (Input) Max payload size to copy out.
- *            (Output) Payload size hardware generated.
- * @retval: Hardware generated return code from the operation.
- *
- * Return:
- *  * %0	- Mailbox transaction succeeded. This implies the mailbox
- *		  protocol completed successfully not that the operation itself
- *		  was successful.
- *  * %-ENOMEM  - Couldn't allocate a bounce buffer.
- *  * %-EFAULT	- Something happened with copy_to/from_user.
- *  * %-EINTR	- Mailbox acquisition interrupted.
- *  * %-EXXX	- Transaction level failures.
- *
- * Dispatches a mailbox command on behalf of a userspace request.
- * The output payload is copied to userspace.
- *
- * See cxl_send_cmd().
- */
+ 
 static int handle_mailbox_cmd_from_user(struct cxl_memdev_state *mds,
 					struct cxl_mbox_cmd *mbox_cmd,
 					u64 out_payload, s32 *size_out,
@@ -592,11 +465,7 @@ static int handle_mailbox_cmd_from_user(struct cxl_memdev_state *mds,
 	if (rc)
 		goto out;
 
-	/*
-	 * @size_out contains the max size that's allowed to be written back out
-	 * to userspace. While the payload may have written more output than
-	 * this it will have to be ignored.
-	 */
+	 
 	if (mbox_cmd->size_out) {
 		dev_WARN_ONCE(dev, mbox_cmd->size_out > *size_out,
 			      "Invalid return size\n");
@@ -671,11 +540,7 @@ static int cxl_xfer_log(struct cxl_memdev_state *mds, uuid_t *uuid,
 
 		rc = cxl_internal_send_cmd(mds, &mbox_cmd);
 
-		/*
-		 * The output payload length that indicates the number
-		 * of valid bytes can be smaller than the Log buffer
-		 * size.
-		 */
+		 
 		if (rc == -EIO && mbox_cmd.size_out < xfer_size) {
 			offset += mbox_cmd.size_out;
 			break;
@@ -694,15 +559,7 @@ static int cxl_xfer_log(struct cxl_memdev_state *mds, uuid_t *uuid,
 	return 0;
 }
 
-/**
- * cxl_walk_cel() - Walk through the Command Effects Log.
- * @mds: The driver data for the operation
- * @size: Length of the Command Effects Log.
- * @cel: CEL
- *
- * Iterate over each entry in the CEL and determine if the driver supports the
- * command. If so, the command is enabled for the device and can be used later.
- */
+ 
 static void cxl_walk_cel(struct cxl_memdev_state *mds, size_t size, u8 *cel)
 {
 	struct cxl_cel_entry *cel_entry;
@@ -751,7 +608,7 @@ static struct cxl_mbox_get_supported_logs *cxl_get_gsl(struct cxl_memdev_state *
 		.opcode = CXL_MBOX_OP_GET_SUPPORTED_LOGS,
 		.size_out = mds->payload_size,
 		.payload_out = ret,
-		/* At least the record number field must be valid */
+		 
 		.min_out = 2,
 	};
 	rc = cxl_internal_send_cmd(mds, &mbox_cmd);
@@ -769,22 +626,13 @@ enum {
 	VENDOR_DEBUG_UUID,
 };
 
-/* See CXL 2.0 Table 170. Get Log Input Payload */
+ 
 static const uuid_t log_uuid[] = {
 	[CEL_UUID] = DEFINE_CXL_CEL_UUID,
 	[VENDOR_DEBUG_UUID] = DEFINE_CXL_VENDOR_DEBUG_UUID,
 };
 
-/**
- * cxl_enumerate_cmds() - Enumerate commands for a device.
- * @mds: The driver data for the operation
- *
- * Returns 0 if enumerate completed successfully.
- *
- * CXL devices have optional support for certain commands. This function will
- * determine the set of supported commands for the hardware and update the
- * enabled_cmds bitmap in the @mds.
- */
+ 
 int cxl_enumerate_cmds(struct cxl_memdev_state *mds)
 {
 	struct cxl_mbox_get_supported_logs *gsl;
@@ -822,12 +670,12 @@ int cxl_enumerate_cmds(struct cxl_memdev_state *mds)
 		cxl_walk_cel(mds, size, log);
 		kvfree(log);
 
-		/* In case CEL was bogus, enable some default commands. */
+		 
 		cxl_for_each_cmd(cmd)
 			if (cmd->flags & CXL_CMD_FLAG_FORCE_ENABLE)
 				set_bit(cmd->info.id, mds->enabled_cmds);
 
-		/* Found the required CEL */
+		 
 		rc = 0;
 	}
 out:
@@ -836,26 +684,17 @@ out:
 }
 EXPORT_SYMBOL_NS_GPL(cxl_enumerate_cmds, CXL);
 
-/*
- * General Media Event Record
- * CXL rev 3.0 Section 8.2.9.2.1.1; Table 8-43
- */
+ 
 static const uuid_t gen_media_event_uuid =
 	UUID_INIT(0xfbcd0a77, 0xc260, 0x417f,
 		  0x85, 0xa9, 0x08, 0x8b, 0x16, 0x21, 0xeb, 0xa6);
 
-/*
- * DRAM Event Record
- * CXL rev 3.0 section 8.2.9.2.1.2; Table 8-44
- */
+ 
 static const uuid_t dram_event_uuid =
 	UUID_INIT(0x601dcbb3, 0x9c06, 0x4eab,
 		  0xb8, 0xaf, 0x4e, 0x9b, 0xfb, 0x5c, 0x96, 0x24);
 
-/*
- * Memory Module Event Record
- * CXL rev 3.0 section 8.2.9.2.1.3; Table 8-45
- */
+ 
 static const uuid_t mem_mod_event_uuid =
 	UUID_INIT(0xfe927475, 0xdd59, 0x4339,
 		  0xa5, 0x86, 0x79, 0xba, 0xb1, 0x13, 0xb7, 0x74);
@@ -881,7 +720,7 @@ static void cxl_event_trace_record(const struct cxl_memdev *cxlmd,
 
 		trace_cxl_memory_module(cxlmd, type, rec);
 	} else {
-		/* For unknown record types print just the header */
+		 
 		trace_cxl_generic_event(cxlmd, type, record);
 	}
 }
@@ -899,7 +738,7 @@ static int cxl_clear_event_record(struct cxl_memdev_state *mds,
 	int rc = 0;
 	int i;
 
-	/* Payload size may limit the max handles */
+	 
 	if (pl_size > mds->payload_size) {
 		max_handles = (mds->payload_size - sizeof(*payload)) /
 			      sizeof(__le16);
@@ -920,10 +759,7 @@ static int cxl_clear_event_record(struct cxl_memdev_state *mds,
 		.size_in = pl_size,
 	};
 
-	/*
-	 * Clear Event Records uses u8 for the handle cnt while Get Event
-	 * Record can return up to 0xffff records.
-	 */
+	 
 	i = 0;
 	for (cnt = 0; cnt < total; cnt++) {
 		payload->handles[i++] = get_pl->records[cnt].hdr.handle;
@@ -939,7 +775,7 @@ static int cxl_clear_event_record(struct cxl_memdev_state *mds,
 		}
 	}
 
-	/* Clear what is left if any */
+	 
 	if (i) {
 		payload->nr_recs = i;
 		mbox_cmd.size_in = struct_size(payload, handles, i);
@@ -1009,17 +845,7 @@ static void cxl_mem_get_records_log(struct cxl_memdev_state *mds,
 	mutex_unlock(&mds->event.log_lock);
 }
 
-/**
- * cxl_mem_get_event_records - Get Event Records from the device
- * @mds: The driver data for the operation
- * @status: Event Status register value identifying which events are available.
- *
- * Retrieve all event records available on the device, report them as trace
- * events, and clear them.
- *
- * See CXL rev 3.0 @8.2.9.2.2 Get Event Records
- * See CXL rev 3.0 @8.2.9.2.3 Clear Event Records
- */
+ 
 void cxl_mem_get_event_records(struct cxl_memdev_state *mds, u32 status)
 {
 	dev_dbg(mds->cxlds.dev, "Reading event logs: %x\n", status);
@@ -1035,18 +861,7 @@ void cxl_mem_get_event_records(struct cxl_memdev_state *mds, u32 status)
 }
 EXPORT_SYMBOL_NS_GPL(cxl_mem_get_event_records, CXL);
 
-/**
- * cxl_mem_get_partition_info - Get partition info
- * @mds: The driver data for the operation
- *
- * Retrieve the current partition info for the device specified.  The active
- * values are the current capacity in bytes.  If not 0, the 'next' values are
- * the pending values, in bytes, which take affect on next cold reset.
- *
- * Return: 0 if no error: or the result of the mailbox command.
- *
- * See CXL @8.2.9.5.2.1 Get Partition Info
- */
+ 
 static int cxl_mem_get_partition_info(struct cxl_memdev_state *mds)
 {
 	struct cxl_mbox_get_partition_info pi;
@@ -1074,18 +889,10 @@ static int cxl_mem_get_partition_info(struct cxl_memdev_state *mds)
 	return 0;
 }
 
-/**
- * cxl_dev_state_identify() - Send the IDENTIFY command to the device.
- * @mds: The driver data for the operation
- *
- * Return: 0 if identify was executed successfully or media not ready.
- *
- * This will dispatch the identify command to the device and on success populate
- * structures to be exported to sysfs.
- */
+ 
 int cxl_dev_state_identify(struct cxl_memdev_state *mds)
 {
-	/* See CXL 2.0 Table 175 Identify Memory Device Output Payload */
+	 
 	struct cxl_mbox_identify id;
 	struct cxl_mbox_cmd mbox_cmd;
 	u32 val;
@@ -1149,11 +956,7 @@ static int __cxl_mem_sanitize(struct cxl_memdev_state *mds, u16 cmd)
 		return rc;
 	}
 
-	/*
-	 * Prior to using these commands, any security applied to
-	 * the user data areas of the device shall be DISABLED (or
-	 * UNLOCKED for secure erase case).
-	 */
+	 
 	sec_out = le32_to_cpu(out.flags);
 	if (sec_out & CXL_PMEM_SEC_STATE_USER_PASS_SET)
 		return -EINVAL;
@@ -1172,34 +975,18 @@ static int __cxl_mem_sanitize(struct cxl_memdev_state *mds, u16 cmd)
 }
 
 
-/**
- * cxl_mem_sanitize() - Send a sanitization command to the device.
- * @cxlmd: The device for the operation
- * @cmd: The specific sanitization command opcode
- *
- * Return: 0 if the command was executed successfully, regardless of
- * whether or not the actual security operation is done in the background,
- * such as for the Sanitize case.
- * Error return values can be the result of the mailbox command, -EINVAL
- * when security requirements are not met or invalid contexts, or -EBUSY
- * if the sanitize operation is already in flight.
- *
- * See CXL 3.0 @8.2.9.8.5.1 Sanitize and @8.2.9.8.5.2 Secure Erase.
- */
+ 
 int cxl_mem_sanitize(struct cxl_memdev *cxlmd, u16 cmd)
 {
 	struct cxl_memdev_state *mds = to_cxl_memdev_state(cxlmd->cxlds);
 	struct cxl_port  *endpoint;
 	int rc;
 
-	/* synchronize with cxl_mem_probe() and decoder write operations */
+	 
 	device_lock(&cxlmd->dev);
 	endpoint = cxlmd->endpoint;
 	down_read(&cxl_region_rwsem);
-	/*
-	 * Require an endpoint to be safe otherwise the driver can not
-	 * be sure that the device is unmapped.
-	 */
+	 
 	if (endpoint && cxl_num_decoders_committed(endpoint) == 0)
 		rc = __cxl_mem_sanitize(mds, cmd);
 	else
@@ -1292,11 +1079,7 @@ int cxl_set_timestamp(struct cxl_memdev_state *mds)
 	};
 
 	rc = cxl_internal_send_cmd(mds, &mbox_cmd);
-	/*
-	 * Command is optional. Devices may have another way of providing
-	 * a timestamp, or may return all 0s in timestamp fields.
-	 * Don't report an error if this command isn't supported
-	 */
+	 
 	if (rc && (mbox_cmd.return_code != CXL_MBOX_CMD_RC_UNSUPPORTED))
 		return rc;
 
@@ -1341,7 +1124,7 @@ int cxl_mem_get_poison(struct cxl_memdev *cxlmd, u64 offset, u64 len,
 					 po->flags, po->overflow_ts,
 					 CXL_POISON_TRACE_LIST);
 
-		/* Protect against an uncleared _FLAG_MORE */
+		 
 		nr_records = nr_records + le16_to_cpu(po->count);
 		if (nr_records >= mds->poison.max_errors) {
 			dev_dbg(&cxlmd->dev, "Max Error Records reached: %d\n",
@@ -1360,7 +1143,7 @@ static void free_poison_buf(void *buf)
 	kvfree(buf);
 }
 
-/* Get Poison List output buffer is protected by mds->poison.lock */
+ 
 static int cxl_poison_alloc_buf(struct cxl_memdev_state *mds)
 {
 	mds->poison.list_out = kvmalloc(mds->payload_size, GFP_KERNEL);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Analogix DP (Display Port) Core interface driver.
- *
- * Copyright (C) 2015 Rockchip Electronics Co., Ltd.
- */
+ 
+ 
 #ifndef _ANALOGIX_DP_H_
 #define _ANALOGIX_DP_H_
 
@@ -50,4 +46,4 @@ void analogix_dp_remove(struct analogix_dp_device *dp);
 int analogix_dp_start_crc(struct drm_connector *connector);
 int analogix_dp_stop_crc(struct drm_connector *connector);
 
-#endif /* _ANALOGIX_DP_H_ */
+#endif  

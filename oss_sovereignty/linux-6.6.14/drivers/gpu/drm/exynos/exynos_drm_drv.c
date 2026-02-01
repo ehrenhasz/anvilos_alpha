@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Authors:
- *	Inki Dae <inki.dae@samsung.com>
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *	Seung-Woo Kim <sw0312.kim@samsung.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/dma-mapping.h>
@@ -36,12 +30,7 @@
 #define DRIVER_DESC	"Samsung SoC DRM"
 #define DRIVER_DATE	"20180330"
 
-/*
- * Interface history:
- *
- * 1.0 - Original version
- * 1.1 - Upgrade IPP driver to version 2.0
- */
+ 
 #define DRIVER_MAJOR	1
 #define DRIVER_MINOR	1
 
@@ -140,7 +129,7 @@ static const struct dev_pm_ops exynos_drm_pm_ops = {
 	.complete = exynos_drm_resume,
 };
 
-/* forward declaration */
+ 
 static struct platform_driver exynos_drm_platform_driver;
 
 struct exynos_drm_driver_info {
@@ -148,16 +137,13 @@ struct exynos_drm_driver_info {
 	unsigned int flags;
 };
 
-#define DRM_COMPONENT_DRIVER	BIT(0)	/* supports component framework */
-#define DRM_VIRTUAL_DEVICE	BIT(1)	/* create virtual platform device */
-#define DRM_FIMC_DEVICE		BIT(2)	/* devices shared with V4L2 subsystem */
+#define DRM_COMPONENT_DRIVER	BIT(0)	 
+#define DRM_VIRTUAL_DEVICE	BIT(1)	 
+#define DRM_FIMC_DEVICE		BIT(2)	 
 
 #define DRV_PTR(drv, cond) (IS_ENABLED(cond) ? &drv : NULL)
 
-/*
- * Connector drivers should not be placed before associated crtc drivers,
- * because connector requires pipe number of its crtc during initialization.
- */
+ 
 static struct exynos_drm_driver_info exynos_drm_drivers[] = {
 	{
 		DRV_PTR(fimd_driver, CONFIG_DRM_EXYNOS_FIMD),
@@ -261,7 +247,7 @@ static int exynos_drm_bind(struct device *dev)
 
 	exynos_drm_mode_config_init(drm);
 
-	/* setup possible_clones. */
+	 
 	clone_mask = 0;
 	list_for_each_entry(encoder, &drm->mode_config.encoder_list, head)
 		clone_mask |= drm_encoder_mask(encoder);
@@ -269,7 +255,7 @@ static int exynos_drm_bind(struct device *dev)
 	list_for_each_entry(encoder, &drm->mode_config.encoder_list, head)
 		encoder->possible_clones = clone_mask;
 
-	/* Try to bind all sub drivers. */
+	 
 	ret = component_bind_all(drm->dev, drm);
 	if (ret)
 		goto err_mode_config_cleanup;
@@ -280,10 +266,10 @@ static int exynos_drm_bind(struct device *dev)
 
 	drm_mode_config_reset(drm);
 
-	/* init kms poll for handling hpd */
+	 
 	drm_kms_helper_poll_init(drm);
 
-	/* register the DRM device */
+	 
 	ret = drm_dev_register(drm, 0);
 	if (ret < 0)
 		goto err_cleanup_poll;

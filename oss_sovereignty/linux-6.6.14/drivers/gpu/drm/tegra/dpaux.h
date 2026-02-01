@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+ 
+ 
 
 #ifndef DRM_TEGRA_DPAUX_H
 #define DRM_TEGRA_DPAUX_H

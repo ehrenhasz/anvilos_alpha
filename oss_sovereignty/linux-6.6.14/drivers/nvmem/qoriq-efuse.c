@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2023  Westermo Network Technologies AB
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -19,10 +17,10 @@ static int qoriq_efuse_read(void *context, unsigned int offset, void *val,
 {
 	struct qoriq_efuse_priv *priv = context;
 
-	/* .stride = 4 so offset is guaranteed to be aligned */
+	 
 	__ioread32_copy(val, priv->base + offset, bytes / 4);
 
-	/* Ignore trailing bytes (there shouldn't be any) */
+	 
 
 	return 0;
 }
@@ -60,7 +58,7 @@ static int qoriq_efuse_probe(struct platform_device *pdev)
 
 static const struct of_device_id qoriq_efuse_of_match[] = {
 	{ .compatible = "fsl,t1023-sfp", },
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, qoriq_efuse_of_match);
 

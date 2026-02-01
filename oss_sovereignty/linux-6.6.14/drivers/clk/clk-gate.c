@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2010-2011 Canonical Ltd <jeremy.kerr@canonical.com>
- * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
- *
- * Gated clock implementation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -14,15 +9,7 @@
 #include <linux/err.h>
 #include <linux/string.h>
 
-/**
- * DOC: basic gatable clock which can gate and ungate it's ouput
- *
- * Traits of this clock:
- * prepare - clk_(un)prepare only ensures parent is (un)prepared
- * enable - clk_enable and clk_disable are functional & control gating
- * rate - inherits rate from parent.  No clk_set_rate support
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
 static inline u32 clk_gate_readl(struct clk_gate *gate)
 {
@@ -40,19 +27,7 @@ static inline void clk_gate_writel(struct clk_gate *gate, u32 val)
 		writel(val, gate->reg);
 }
 
-/*
- * It works on following logic:
- *
- * For enabling clock, enable = 1
- *	set2dis = 1	-> clear bit	-> set = 0
- *	set2dis = 0	-> set bit	-> set = 1
- *
- * For disabling clock, enable = 0
- *	set2dis = 1	-> set bit	-> set = 1
- *	set2dis = 0	-> clear bit	-> set = 0
- *
- * So, result is always: enable xor set2dis.
- */
+ 
 static void clk_gate_endisable(struct clk_hw *hw, int enable)
 {
 	struct clk_gate *gate = to_clk_gate(hw);
@@ -107,7 +82,7 @@ int clk_gate_is_enabled(struct clk_hw *hw)
 
 	reg = clk_gate_readl(gate);
 
-	/* if a set bit disables this clk, flip it before masking */
+	 
 	if (gate->flags & CLK_GATE_SET_TO_DISABLE)
 		reg ^= BIT(gate->bit_idx);
 
@@ -144,7 +119,7 @@ struct clk_hw *__clk_hw_register_gate(struct device *dev,
 		}
 	}
 
-	/* allocate the gate */
+	 
 	gate = kzalloc(sizeof(*gate), GFP_KERNEL);
 	if (!gate)
 		return ERR_PTR(-ENOMEM);
@@ -160,7 +135,7 @@ struct clk_hw *__clk_hw_register_gate(struct device *dev,
 	else
 		init.num_parents = 0;
 
-	/* struct clk_gate assignments */
+	 
 	gate->reg = reg;
 	gate->bit_idx = bit_idx;
 	gate->flags = clk_gate_flags;

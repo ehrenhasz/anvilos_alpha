@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MaxLinear MxL301RF OFDM tuner driver
- *
- * Copyright (C) 2014 Akihiro Tsukada <tskd08@gmail.com>
- */
 
-/*
- * NOTICE:
- * This driver is incomplete and lacks init/config of the chips,
- * as the necessary info is not disclosed.
- * Other features like get_if_frequency() are missing as well.
- * It assumes that users of this driver (such as a PCI bridge of
- * DTV receiver cards) properly init and configure the chip
- * via I2C *before* calling this driver's init() function.
- *
- * Currently, PT3 driver is the only one that uses this driver,
- * and contains init/config code in its firmware.
- * Thus some part of the code might be dependent on PT3 specific config.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include "mxl301rf.h"
@@ -62,9 +46,9 @@ static int reg_read(struct mxl301rf_state *state, u8 reg, u8 *val)
 	return (ret == 1) ? 0 : ret;
 }
 
-/* tuner_ops */
+ 
 
-/* get RSSI and update propery cache, set to *out in % */
+ 
 static int mxl301rf_get_rf_strength(struct dvb_frontend *fe, u16 *out)
 {
 	struct mxl301rf_state *state;
@@ -97,21 +81,21 @@ static int mxl301rf_get_rf_strength(struct dvb_frontend *fe, u16 *out)
 
 	rf_in = (rf_in2 & 0x07) << 8 | rf_in1;
 	rf_off = (rf_off2 & 0x0f) << 5 | (rf_off1 >> 3);
-	level = rf_in - rf_off - (113 << 3); /* x8 dBm */
+	level = rf_in - rf_off - (113 << 3);  
 	level = level * 1000 / 8;
 	rssi->stat[0].svalue = level;
 	rssi->stat[0].scale = FE_SCALE_DECIBEL;
-	/* *out = (level - min) * 100 / (max - min) */
+	 
 	*out = (rf_in - rf_off + (1 << 9) - 1) * 100 / ((5 << 9) - 2);
 	return 0;
 }
 
-/* spur shift parameters */
+ 
 struct shf {
-	u32	freq;		/* Channel center frequency */
-	u32	ofst_th;	/* Offset frequency threshold */
-	u8	shf_val;	/* Spur shift value */
-	u8	shf_dir;	/* Spur shift direction */
+	u32	freq;		 
+	u32	ofst_th;	 
+	u8	shf_val;	 
+	u8	shf_dir;	 
 };
 
 static const struct shf shf_tab[] = {
@@ -153,19 +137,19 @@ static const struct reg_val set_idac[] = {
 static int mxl301rf_set_params(struct dvb_frontend *fe)
 {
 	struct reg_val tune0[] = {
-		{ 0x13, 0x00 },		/* abort tuning */
+		{ 0x13, 0x00 },		 
 		{ 0x3b, 0xc0 },
 		{ 0x3b, 0x80 },
-		{ 0x10, 0x95 },		/* BW */
+		{ 0x10, 0x95 },		 
 		{ 0x1a, 0x05 },
-		{ 0x61, 0x00 },		/* spur shift value (placeholder) */
-		{ 0x62, 0xa0 }		/* spur shift direction (placeholder) */
+		{ 0x61, 0x00 },		 
+		{ 0x62, 0xa0 }		 
 	};
 
 	struct reg_val tune1[] = {
-		{ 0x11, 0x40 },		/* RF frequency L (placeholder) */
-		{ 0x12, 0x0e },		/* RF frequency H (placeholder) */
-		{ 0x13, 0x01 }		/* start tune */
+		{ 0x11, 0x40 },		 
+		{ 0x12, 0x0e },		 
+		{ 0x13, 0x01 }		 
 	};
 
 	struct mxl301rf_state *state;
@@ -177,7 +161,7 @@ static int mxl301rf_set_params(struct dvb_frontend *fe)
 	state = fe->tuner_priv;
 	freq = fe->dtv_property_cache.frequency;
 
-	/* spur shift function (for analog) */
+	 
 	for (i = 0; i < ARRAY_SIZE(shf_tab); i++) {
 		if (freq >= (shf_tab[i].freq - shf_tab[i].ofst_th) * 1000 &&
 		    freq <= (shf_tab[i].freq + shf_tab[i].ofst_th) * 1000) {
@@ -191,7 +175,7 @@ static int mxl301rf_set_params(struct dvb_frontend *fe)
 		goto failed;
 	usleep_range(3000, 4000);
 
-	/* convert freq to 10.6 fixed point float [MHz] */
+	 
 	f = freq / 1000000;
 	tmp = freq % 1000000;
 	div = 1000000;
@@ -245,10 +229,7 @@ static int mxl301rf_sleep(struct dvb_frontend *fe)
 }
 
 
-/* init sequence is not public.
- * the parent must have init'ed the device.
- * just wake up here.
- */
+ 
 static int mxl301rf_init(struct dvb_frontend *fe)
 {
 	struct mxl301rf_state *state;
@@ -265,7 +246,7 @@ static int mxl301rf_init(struct dvb_frontend *fe)
 	return 0;
 }
 
-/* I2C driver functions */
+ 
 
 static const struct dvb_tuner_ops mxl301rf_ops = {
 	.info = {

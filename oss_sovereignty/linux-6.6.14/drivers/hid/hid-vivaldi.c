@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HID support for Vivaldi Keyboard
- *
- * Copyright 2020 Google LLC.
- * Author: Sean O'Brien <seobrien@chromium.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>

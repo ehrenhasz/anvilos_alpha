@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Passthrough DMA device driver
- * -- Based on the CCP driver
- *
- * Copyright (C) 2016,2021 Advanced Micro Devices, Inc.
- *
- * Author: Sanjay R Mehta <sanju.mehta@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include "ptdma.h"
 #include "../dmaengine.h"
@@ -61,7 +53,7 @@ static int pt_dma_start_desc(struct pt_dma_desc *desc)
 
 	pt->tdata.cmd = pt_cmd;
 
-	/* Execute the command */
+	 
 	pt_cmd->ret = pt_core_perform_passthru(cmd_q, pt_engine);
 
 	return 0;
@@ -69,7 +61,7 @@ static int pt_dma_start_desc(struct pt_dma_desc *desc)
 
 static struct pt_dma_desc *pt_next_dma_desc(struct pt_dma_chan *chan)
 {
-	/* Get the next DMA descriptor on the active list */
+	 
 	struct virt_dma_desc *vd = vchan_next_desc(&chan->vc);
 
 	return vd ? to_pt_desc(vd) : NULL;
@@ -82,11 +74,11 @@ static struct pt_dma_desc *pt_handle_active_desc(struct pt_dma_chan *chan,
 	struct virt_dma_desc *vd;
 	unsigned long flags;
 
-	/* Loop over descriptors until one is found with commands */
+	 
 	do {
 		if (desc) {
 			if (!desc->issued_to_hw) {
-				/* No errors, keep going */
+				 
 				if (desc->status != DMA_ERROR)
 					return desc;
 			}
@@ -108,7 +100,7 @@ static struct pt_dma_desc *pt_handle_active_desc(struct pt_dma_chan *chan,
 				dma_descriptor_unmap(tx_desc);
 				list_del(&desc->vd.node);
 			} else {
-				/* Don't handle it twice */
+				 
 				tx_desc = NULL;
 			}
 		}
@@ -144,10 +136,10 @@ static void pt_cmd_callback(void *data, int err)
 		desc->status = DMA_ERROR;
 
 	while (true) {
-		/* Check for DMA descriptor completion */
+		 
 		desc = pt_handle_active_desc(chan, desc);
 
-		/* Don't submit cmd if no descriptor or DMA is paused */
+		 
 		if (!desc)
 			break;
 
@@ -253,7 +245,7 @@ static void pt_issue_pending(struct dma_chan *dma_chan)
 
 	spin_unlock_irqrestore(&chan->vc.lock, flags);
 
-	/* If there was nothing active, start processing */
+	 
 	if (engine_is_idle && desc)
 		pt_cmd_callback(desc, 0);
 }
@@ -292,7 +284,7 @@ static int pt_resume(struct dma_chan *dma_chan)
 	desc = pt_next_dma_desc(chan);
 	spin_unlock_irqrestore(&chan->vc.lock, flags);
 
-	/* If there was something active, re-start */
+	 
 	if (desc)
 		pt_cmd_callback(desc, 0);
 
@@ -360,10 +352,7 @@ int pt_dmaengine_register(struct pt_device *pt)
 	dma_cap_set(DMA_MEMCPY, dma_dev->cap_mask);
 	dma_cap_set(DMA_INTERRUPT, dma_dev->cap_mask);
 
-	/*
-	 * PTDMA is intended to be used with the AMD NTB devices, hence
-	 * marking it as DMA_PRIVATE.
-	 */
+	 
 	dma_cap_set(DMA_PRIVATE, dma_dev->cap_mask);
 
 	INIT_LIST_HEAD(&dma_dev->channels);
@@ -371,7 +360,7 @@ int pt_dmaengine_register(struct pt_device *pt)
 	chan = pt->pt_dma_chan;
 	chan->pt = pt;
 
-	/* Set base and prep routines */
+	 
 	dma_dev->device_free_chan_resources = pt_free_chan_resources;
 	dma_dev->device_prep_dma_memcpy = pt_prep_dma_memcpy;
 	dma_dev->device_prep_dma_interrupt = pt_prep_dma_interrupt;

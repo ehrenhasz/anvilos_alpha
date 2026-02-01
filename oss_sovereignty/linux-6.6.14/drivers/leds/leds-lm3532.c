@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// TI LM3532 LED driver
-// Copyright (C) 2019 Texas Instruments Incorporated - https://www.ti.com/
-// https://www.ti.com/lit/ds/symlink/lm3532.pdf
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -44,12 +44,12 @@
 #define LM3532_REG_ZONE_TRGT_C	0x7a
 #define LM3532_REG_MAX		0x7e
 
-/* Control Enable */
+ 
 #define LM3532_CTRL_A_ENABLE	BIT(0)
 #define LM3532_CTRL_B_ENABLE	BIT(1)
 #define LM3532_CTRL_C_ENABLE	BIT(2)
 
-/* PWM Zone Control */
+ 
 #define LM3532_PWM_ZONE_MASK	0x7c
 #define LM3532_PWM_ZONE_0_EN	BIT(2)
 #define LM3532_PWM_ZONE_1_EN	BIT(3)
@@ -57,7 +57,7 @@
 #define LM3532_PWM_ZONE_3_EN	BIT(5)
 #define LM3532_PWM_ZONE_4_EN	BIT(6)
 
-/* Brightness Configuration */
+ 
 #define LM3532_I2C_CTRL		BIT(0)
 #define LM3532_ALS_CTRL		0
 #define LM3532_LINEAR_MAP	BIT(1)
@@ -71,7 +71,7 @@
 #define LM3532_ENABLE_ALS	BIT(3)
 #define LM3532_ALS_SEL_SHIFT	6
 
-/* Zone Boundary Register */
+ 
 #define LM3532_ALS_WINDOW_mV	2000
 #define LM3532_ALS_ZB_MAX	4
 #define LM3532_ALS_OFFSET_mV	2
@@ -94,18 +94,7 @@
 #define LM3532_FS_CURR_MAX	29800
 #define LM3532_FS_CURR_STEP	800
 
-/*
- * struct lm3532_als_data
- * @config: value of ALS configuration register
- * @als1_imp_sel: value of ALS1 resistor select register
- * @als2_imp_sel: value of ALS2 resistor select register
- * @als_avrg_time: ALS averaging time
- * @als_input_mode: ALS input mode for brightness control
- * @als_vmin: Minimum ALS voltage
- * @als_vmax: Maximum ALS voltage
- * @zone_lo: values of ALS lo ZB(Zone Boundary) registers
- * @zone_hi: values of ALS hi ZB(Zone Boundary) registers
- */
+ 
 struct lm3532_als_data {
 	u8 config;
 	u8 als1_imp_sel;
@@ -118,18 +107,7 @@ struct lm3532_als_data {
 	u8 zones_hi[LM3532_ALS_ZB_MAX];
 };
 
-/**
- * struct lm3532_led
- * @led_dev: led class device
- * @priv: Pointer the device data structure
- * @control_bank: Control bank the LED is associated to
- * @mode: Mode of the LED string
- * @ctrl_brt_pointer: Zone target register that controls the sink
- * @num_leds: Number of LED strings are supported in this array
- * @full_scale_current: The full-scale current setting for the current sink.
- * @led_strings: The LED strings supported in this array
- * @enabled: Enabled status
- */
+ 
 struct lm3532_led {
 	struct led_classdev led_dev;
 	struct lm3532_data *priv;
@@ -143,19 +121,7 @@ struct lm3532_led {
 	u32 led_strings[LM3532_MAX_CONTROL_BANKS];
 };
 
-/**
- * struct lm3532_data
- * @enable_gpio: Hardware enable gpio
- * @regulator: regulator
- * @client: i2c client
- * @regmap: Devices register map
- * @dev: Pointer to the devices device struct
- * @lock: Lock for reading/writing the device
- * @als_data: Pointer to the als data struct
- * @runtime_ramp_up: Runtime ramp up setting
- * @runtime_ramp_down: Runtime ramp down setting
- * @leds: Array of LED strings
- */
+ 
 struct lm3532_data {
 	struct gpio_desc *enable_gpio;
 	struct regulator *regulator;
@@ -229,7 +195,7 @@ static int lm3532_get_als_imp_index(int als_imped)
 		if (als_imped == als_imp_table[i])
 			return i;
 
-		/* Find an approximate index by looking up the table */
+		 
 		if (als_imped < als_imp_table[i - 1] &&
 		    als_imped > als_imp_table[i]) {
 			if (als_imped - als_imp_table[i - 1] <
@@ -251,7 +217,7 @@ static int lm3532_get_index(const int table[], int size, int value)
 		if (value == table[i])
 			return i;
 
-		/* Find an approximate index by looking up the table */
+		 
 		if (value > table[i - 1] &&
 		    value < table[i]) {
 			if (value - table[i - 1] < table[i] - value)
@@ -293,7 +259,7 @@ static int lm3532_get_ramp_index(int ramp_time)
 				ramp_time);
 }
 
-/* Caller must take care of locking */
+ 
 static int lm3532_led_enable(struct lm3532_led *led_data)
 {
 	int ctrl_en_val = BIT(led_data->control_bank);
@@ -318,7 +284,7 @@ static int lm3532_led_enable(struct lm3532_led *led_data)
 	return 0;
 }
 
-/* Caller must take care of locking */
+ 
 static int lm3532_led_disable(struct lm3532_led *led_data)
 {
 	int ctrl_en_val = BIT(led_data->control_bank);
@@ -398,10 +364,7 @@ static int lm3532_init_registers(struct lm3532_led *led)
 		gpiod_direction_output(drvdata->enable_gpio, 1);
 
 	brightness_config_reg = LM3532_REG_ZONE_CFG_A + led->control_bank * 2;
-	/*
-	 * This could be hard coded to the default value but the control
-	 * brightness register may have changed during boot.
-	 */
+	 
 	ret = regmap_read(drvdata->regmap, brightness_config_reg,
 			  &led->ctrl_brt_pointer);
 	if (ret)

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/9p/trans_xen
- *
- * Xen transport layer.
- *
- * Copyright (C) 2017 by Stefano Stabellini <stefano@aporeto.com>
- */
+
+ 
 
 #include <xen/events.h>
 #include <xen/grant_table.h>
@@ -28,10 +22,10 @@ struct xen_9pfs_header {
 	uint8_t id;
 	uint16_t tag;
 
-	/* uint8_t sdata[]; */
+	 
 } __attribute__((packed));
 
-/* One per ring, more than one per 9pfs share */
+ 
 struct xen_9pfs_dataring {
 	struct xen_9pfs_front_priv *priv;
 
@@ -39,7 +33,7 @@ struct xen_9pfs_dataring {
 	grant_ref_t ref;
 	int evtchn;
 	int irq;
-	/* protect a ring from concurrent accesses */
+	 
 	spinlock_t lock;
 
 	struct xen_9pfs_data data;
@@ -47,7 +41,7 @@ struct xen_9pfs_dataring {
 	struct work_struct work;
 };
 
-/* One per 9pfs share */
+ 
 struct xen_9pfs_front_priv {
 	struct list_head list;
 	struct xenbus_device *dev;
@@ -61,7 +55,7 @@ struct xen_9pfs_front_priv {
 static LIST_HEAD(xen_9pfs_devs);
 static DEFINE_RWLOCK(xen_9pfs_lock);
 
-/* We don't currently allow canceling of requests */
+ 
 static int p9_xen_cancel(struct p9_client *client, struct p9_req_t *req)
 {
 	return 1;
@@ -158,7 +152,7 @@ again:
 			      XEN_9PFS_RING_SIZE(ring));
 
 	WRITE_ONCE(p9_req->status, REQ_STATUS_SENT);
-	virt_wmb();			/* write ring before updating pointer */
+	virt_wmb();			 
 	prod += size;
 	ring->intf->out_prod = prod;
 	spin_unlock_irqrestore(&ring->lock, flags);
@@ -194,7 +188,7 @@ static void p9_xen_response(struct work_struct *work)
 		masked_prod = xen_9pfs_mask(prod, XEN_9PFS_RING_SIZE(ring));
 		masked_cons = xen_9pfs_mask(cons, XEN_9PFS_RING_SIZE(ring));
 
-		/* First, read just the header */
+		 
 		xen_9pfs_read_packet(&h, ring->data.in, sizeof(h),
 				     masked_prod, &masked_cons,
 				     XEN_9PFS_RING_SIZE(ring));
@@ -222,7 +216,7 @@ static void p9_xen_response(struct work_struct *work)
 		req->rc.offset = 0;
 
 		masked_cons = xen_9pfs_mask(cons, XEN_9PFS_RING_SIZE(ring));
-		/* Then, read the whole packet (including the header) */
+		 
 		xen_9pfs_read_packet(req->rc.sdata, ring->data.in, h.size,
 				     masked_prod, &masked_cons,
 				     XEN_9PFS_RING_SIZE(ring));
@@ -244,7 +238,7 @@ static irqreturn_t xen_9pfs_front_event_handler(int irq, void *r)
 	struct xen_9pfs_dataring *ring = r;
 
 	if (!ring || !ring->priv->client) {
-		/* ignore spurious interrupt */
+		 
 		return IRQ_HANDLED;
 	}
 
@@ -524,7 +518,7 @@ static void xen_9pfs_front_changed(struct xenbus_device *dev,
 	case XenbusStateClosed:
 		if (dev->state == XenbusStateClosed)
 			break;
-		fallthrough;	/* Missed the backend's CLOSING state */
+		fallthrough;	 
 	case XenbusStateClosing:
 		xenbus_frontend_closed(dev);
 		break;

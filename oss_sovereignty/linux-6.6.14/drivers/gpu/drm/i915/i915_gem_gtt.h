@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_GEM_GTT_H__
 #define __I915_GEM_GTT_H__
@@ -18,7 +16,7 @@ struct drm_i915_gem_object;
 struct i915_address_space;
 struct i915_gem_ww_ctx;
 
-#define I915_COLOR_UNEVICTABLE (-1) /* a non-vma sharing the address space */
+#define I915_COLOR_UNEVICTABLE (-1)  
 
 int __must_check i915_gem_gtt_prepare_pages(struct drm_i915_gem_object *obj,
 					    struct sg_table *pages);
@@ -37,7 +35,7 @@ int i915_gem_gtt_insert(struct i915_address_space *vm,
 			u64 size, u64 alignment, unsigned long color,
 			u64 start, u64 end, unsigned int flags);
 
-/* Flags used by pin/bind&friends. */
+ 
 #define PIN_NOEVICT		BIT_ULL(0)
 #define PIN_NOSEARCH		BIT_ULL(1)
 #define PIN_NONBLOCK		BIT_ULL(2)
@@ -47,10 +45,10 @@ int i915_gem_gtt_insert(struct i915_address_space *vm,
 #define PIN_OFFSET_BIAS		BIT_ULL(6)
 #define PIN_OFFSET_FIXED	BIT_ULL(7)
 #define PIN_OFFSET_GUARD	BIT_ULL(8)
-#define PIN_VALIDATE		BIT_ULL(9) /* validate placement only, no need to call unpin() */
+#define PIN_VALIDATE		BIT_ULL(9)  
 
-#define PIN_GLOBAL		BIT_ULL(10) /* I915_VMA_GLOBAL_BIND */
-#define PIN_USER		BIT_ULL(11) /* I915_VMA_LOCAL_BIND */
+#define PIN_GLOBAL		BIT_ULL(10)  
+#define PIN_USER		BIT_ULL(11)  
 
 #define PIN_OFFSET_MASK		I915_GTT_PAGE_MASK
 

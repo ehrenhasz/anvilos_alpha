@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/firmware.h>
 #include <linux/kfifo.h>
@@ -12,7 +12,7 @@
 #include "avs.h"
 #include "messages.h"
 
-/* Caller responsible for holding adev->modres_mutex. */
+ 
 static int avs_module_entry_index(struct avs_dev *adev, const guid_t *uuid)
 {
 	int i;
@@ -28,7 +28,7 @@ static int avs_module_entry_index(struct avs_dev *adev, const guid_t *uuid)
 	return -ENOENT;
 }
 
-/* Caller responsible for holding adev->modres_mutex. */
+ 
 static int avs_module_id_entry_index(struct avs_dev *adev, u32 module_id)
 {
 	int i;
@@ -96,7 +96,7 @@ bool avs_is_module_ida_empty(struct avs_dev *adev, u32 module_id)
 	return ret;
 }
 
-/* Caller responsible for holding adev->modres_mutex. */
+ 
 static void avs_module_ida_destroy(struct avs_dev *adev)
 {
 	int i = adev->mods_info ? adev->mods_info->count : 0;
@@ -108,7 +108,7 @@ static void avs_module_ida_destroy(struct avs_dev *adev)
 	kfree(adev->mod_idas);
 }
 
-/* Caller responsible for holding adev->modres_mutex. */
+ 
 static int
 avs_module_ida_alloc(struct avs_dev *adev, struct avs_mods_info *newinfo, bool purge)
 {
@@ -144,7 +144,7 @@ avs_module_ida_alloc(struct avs_dev *adev, struct avs_mods_info *newinfo, bool p
 		ida_init(ida_ptrs[i]);
 	}
 
-	/* If old elements have been reused, don't wipe them. */
+	 
 	if (tocopy_count)
 		kfree(adev->mod_idas);
 	else
@@ -171,7 +171,7 @@ int avs_module_info_init(struct avs_dev *adev, bool purge)
 		goto exit;
 	}
 
-	/* Refresh current information with newly received table. */
+	 
 	kfree(adev->mods_info);
 	adev->mods_info = info;
 
@@ -227,17 +227,13 @@ exit:
 	mutex_unlock(&adev->modres_mutex);
 }
 
-/*
- * Once driver loads FW it should keep it in memory, so we are not affected
- * by FW removal from filesystem or even worse by loading different FW at
- * runtime suspend/resume.
- */
+ 
 int avs_request_firmware(struct avs_dev *adev, const struct firmware **fw_p, const char *name)
 {
 	struct avs_fw_entry *entry;
 	int ret;
 
-	/* first check in list if it is not already loaded */
+	 
 	list_for_each_entry(entry, &adev->fw_list, node) {
 		if (!strcmp(name, entry->name)) {
 			*fw_p = entry->fw;
@@ -245,7 +241,7 @@ int avs_request_firmware(struct avs_dev *adev, const struct firmware **fw_p, con
 		}
 	}
 
-	/* FW is not loaded, let's load it now and add to the list */
+	 
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 	if (!entry)
 		return -ENOMEM;
@@ -270,10 +266,7 @@ int avs_request_firmware(struct avs_dev *adev, const struct firmware **fw_p, con
 	return 0;
 }
 
-/*
- * Release single FW entry, used to handle errors in functions calling
- * avs_request_firmware()
- */
+ 
 void avs_release_last_firmware(struct avs_dev *adev)
 {
 	struct avs_fw_entry *entry;
@@ -286,9 +279,7 @@ void avs_release_last_firmware(struct avs_dev *adev)
 	kfree(entry);
 }
 
-/*
- * Release all FW entries, used on driver removal
- */
+ 
 void avs_release_firmwares(struct avs_dev *adev)
 {
 	struct avs_fw_entry *entry, *tmp;

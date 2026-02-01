@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
@@ -338,13 +338,13 @@ static void ionic_sw_stats_get_values(struct ionic_lif *lif, u64 **buf)
 }
 
 const struct ionic_stats_group_intf ionic_stats_groups[] = {
-	/* SW Stats group */
+	 
 	{
 		.get_strings = ionic_sw_stats_get_strings,
 		.get_values = ionic_sw_stats_get_values,
 		.get_count = ionic_sw_stats_get_count,
 	},
-	/* Add more stat groups here */
+	 
 };
 
 const int ionic_num_stats_grps = ARRAY_SIZE(ionic_stats_groups);

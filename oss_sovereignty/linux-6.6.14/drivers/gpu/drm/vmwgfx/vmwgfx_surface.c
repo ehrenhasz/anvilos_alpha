@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
@@ -40,40 +16,21 @@
 #define SVGA3D_FLAGS_LOWER_32(svga3d_flags) \
 	(svga3d_flags & ((uint64_t)U32_MAX))
 
-/**
- * struct vmw_user_surface - User-space visible surface resource
- *
- * @prime:          The TTM prime object.
- * @base:           The TTM base object handling user-space visibility.
- * @srf:            The surface metadata.
- * @master:         Master of the creating client. Used for security check.
- */
+ 
 struct vmw_user_surface {
 	struct ttm_prime_object prime;
 	struct vmw_surface srf;
 	struct drm_master *master;
 };
 
-/**
- * struct vmw_surface_offset - Backing store mip level offset info
- *
- * @face:           Surface face.
- * @mip:            Mip level.
- * @bo_offset:      Offset into backing store of this mip level.
- *
- */
+ 
 struct vmw_surface_offset {
 	uint32_t face;
 	uint32_t mip;
 	uint32_t bo_offset;
 };
 
-/**
- * struct vmw_surface_dirty - Surface dirty-tracker
- * @cache: Cached layout information of the surface.
- * @num_subres: Number of subresources.
- * @boxes: Array of SVGA3dBoxes indicating dirty regions. One per subresource.
- */
+ 
 struct vmw_surface_dirty {
 	struct vmw_surface_cache cache;
 	u32 num_subres;
@@ -159,9 +116,7 @@ static const struct vmw_res_func vmw_gb_surface_func = {
 	.clean = vmw_surface_clean,
 };
 
-/*
- * struct vmw_surface_dma - SVGA3D DMA command
- */
+ 
 struct vmw_surface_dma {
 	SVGA3dCmdHeader header;
 	SVGA3dCmdSurfaceDMA body;
@@ -169,45 +124,27 @@ struct vmw_surface_dma {
 	SVGA3dCmdSurfaceDMASuffix suffix;
 };
 
-/*
- * struct vmw_surface_define - SVGA3D Surface Define command
- */
+ 
 struct vmw_surface_define {
 	SVGA3dCmdHeader header;
 	SVGA3dCmdDefineSurface body;
 };
 
-/*
- * struct vmw_surface_destroy - SVGA3D Surface Destroy command
- */
+ 
 struct vmw_surface_destroy {
 	SVGA3dCmdHeader header;
 	SVGA3dCmdDestroySurface body;
 };
 
 
-/**
- * vmw_surface_dma_size - Compute fifo size for a dma command.
- *
- * @srf: Pointer to a struct vmw_surface
- *
- * Computes the required size for a surface dma command for backup or
- * restoration of the surface represented by @srf.
- */
+ 
 static inline uint32_t vmw_surface_dma_size(const struct vmw_surface *srf)
 {
 	return srf->metadata.num_sizes * sizeof(struct vmw_surface_dma);
 }
 
 
-/**
- * vmw_surface_define_size - Compute fifo size for a surface define command.
- *
- * @srf: Pointer to a struct vmw_surface
- *
- * Computes the required size for a surface define command for the definition
- * of the surface represented by @srf.
- */
+ 
 static inline uint32_t vmw_surface_define_size(const struct vmw_surface *srf)
 {
 	return sizeof(struct vmw_surface_define) + srf->metadata.num_sizes *
@@ -215,23 +152,13 @@ static inline uint32_t vmw_surface_define_size(const struct vmw_surface *srf)
 }
 
 
-/**
- * vmw_surface_destroy_size - Compute fifo size for a surface destroy command.
- *
- * Computes the required size for a surface destroy command for the destruction
- * of a hw surface.
- */
+ 
 static inline uint32_t vmw_surface_destroy_size(void)
 {
 	return sizeof(struct vmw_surface_destroy);
 }
 
-/**
- * vmw_surface_destroy_encode - Encode a surface_destroy command.
- *
- * @id: The surface id
- * @cmd_space: Pointer to memory area in which the commands should be encoded.
- */
+ 
 static void vmw_surface_destroy_encode(uint32_t id,
 				       void *cmd_space)
 {
@@ -243,12 +170,7 @@ static void vmw_surface_destroy_encode(uint32_t id,
 	cmd->body.sid = id;
 }
 
-/**
- * vmw_surface_define_encode - Encode a surface_define command.
- *
- * @srf: Pointer to a struct vmw_surface object.
- * @cmd_space: Pointer to memory area in which the commands should be encoded.
- */
+ 
 static void vmw_surface_define_encode(const struct vmw_surface *srf,
 				      void *cmd_space)
 {
@@ -265,11 +187,7 @@ static void vmw_surface_define_encode(const struct vmw_surface *srf,
 	cmd->header.id = SVGA_3D_CMD_SURFACE_DEFINE;
 	cmd->header.size = cmd_len;
 	cmd->body.sid = srf->res.id;
-	/*
-	 * Downcast of surfaceFlags, was upcasted when received from user-space,
-	 * since driver internally stores as 64 bit.
-	 * For legacy surface define only 32 bit flag is supported.
-	 */
+	 
 	cmd->body.surfaceFlags = (SVGA3dSurface1Flags)srf->metadata.flags;
 	cmd->body.format = srf->metadata.format;
 	for (i = 0; i < DRM_VMW_MAX_SURFACE_FACES; ++i)
@@ -286,15 +204,7 @@ static void vmw_surface_define_encode(const struct vmw_surface *srf,
 	}
 }
 
-/**
- * vmw_surface_dma_encode - Encode a surface_dma command.
- *
- * @srf: Pointer to a struct vmw_surface object.
- * @cmd_space: Pointer to memory area in which the commands should be encoded.
- * @ptr: Pointer to an SVGAGuestPtr indicating where the surface contents
- * should be placed or read from.
- * @to_surface: Boolean whether to DMA to the surface or from the surface.
- */
+ 
 static void vmw_surface_dma_encode(struct vmw_surface *srf,
 				   void *cmd_space,
 				   const SVGAGuestPtr *ptr,
@@ -346,15 +256,7 @@ static void vmw_surface_dma_encode(struct vmw_surface *srf,
 };
 
 
-/**
- * vmw_hw_surface_destroy - destroy a Device surface
- *
- * @res:        Pointer to a struct vmw_resource embedded in a struct
- *              vmw_surface.
- *
- * Destroys a the device surface associated with a struct vmw_surface if
- * any, and adjusts resource count accordingly.
- */
+ 
 static void vmw_hw_surface_destroy(struct vmw_resource *res)
 {
 
@@ -375,11 +277,7 @@ static void vmw_hw_surface_destroy(struct vmw_resource *res)
 		vmw_surface_destroy_encode(res->id, cmd);
 		vmw_cmd_commit(dev_priv, vmw_surface_destroy_size());
 
-		/*
-		 * used_memory_size_atomic, or separate lock
-		 * to avoid taking dev_priv::cmdbuf_mutex in
-		 * the destroy path.
-		 */
+		 
 
 		mutex_lock(&dev_priv->cmdbuf_mutex);
 		dev_priv->used_memory_size -= res->guest_memory_size;
@@ -387,19 +285,7 @@ static void vmw_hw_surface_destroy(struct vmw_resource *res)
 	}
 }
 
-/**
- * vmw_legacy_srf_create - Create a device surface as part of the
- * resource validation process.
- *
- * @res: Pointer to a struct vmw_surface.
- *
- * If the surface doesn't have a hw id.
- *
- * Returns -EBUSY if there wasn't sufficient device resources to
- * complete the validation. Retry after freeing up resources.
- *
- * May return other errors if the kernel is out of guest resources.
- */
+ 
 static int vmw_legacy_srf_create(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -416,9 +302,7 @@ static int vmw_legacy_srf_create(struct vmw_resource *res)
 		     dev_priv->memory_size))
 		return -EBUSY;
 
-	/*
-	 * Alloc id for the resource.
-	 */
+	 
 
 	ret = vmw_resource_alloc_id(res);
 	if (unlikely(ret != 0)) {
@@ -431,9 +315,7 @@ static int vmw_legacy_srf_create(struct vmw_resource *res)
 		goto out_no_fifo;
 	}
 
-	/*
-	 * Encode surface define- commands.
-	 */
+	 
 
 	submit_size = vmw_surface_define_size(srf);
 	cmd = VMW_CMD_RESERVE(dev_priv, submit_size);
@@ -446,9 +328,7 @@ static int vmw_legacy_srf_create(struct vmw_resource *res)
 	vmw_cmd_commit(dev_priv, submit_size);
 	vmw_fifo_resource_inc(dev_priv);
 
-	/*
-	 * Surface memory usage accounting.
-	 */
+	 
 
 	dev_priv->used_memory_size += res->guest_memory_size;
 	return 0;
@@ -459,22 +339,7 @@ out_no_id:
 	return ret;
 }
 
-/**
- * vmw_legacy_srf_dma - Copy backup data to or from a legacy surface.
- *
- * @res:            Pointer to a struct vmw_res embedded in a struct
- *                  vmw_surface.
- * @val_buf:        Pointer to a struct ttm_validate_buffer containing
- *                  information about the backup buffer.
- * @bind:           Boolean wether to DMA to the surface.
- *
- * Transfer backup data to or from a legacy surface as part of the
- * validation process.
- * May return other errors if the kernel is out of guest resources.
- * The backup buffer will be fenced or idle upon successful completion,
- * and if the surface needs persistent backup storage, the backup buffer
- * will also be returned reserved iff @bind is true.
- */
+ 
 static int vmw_legacy_srf_dma(struct vmw_resource *res,
 			      struct ttm_validate_buffer *val_buf,
 			      bool bind)
@@ -497,9 +362,7 @@ static int vmw_legacy_srf_dma(struct vmw_resource *res,
 
 	vmw_cmd_commit(dev_priv, submit_size);
 
-	/*
-	 * Create a fence object and fence the backup buffer.
-	 */
+	 
 
 	(void) vmw_execbuf_fence_commands(NULL, dev_priv,
 					  &fence, NULL);
@@ -512,18 +375,7 @@ static int vmw_legacy_srf_dma(struct vmw_resource *res,
 	return 0;
 }
 
-/**
- * vmw_legacy_srf_bind - Perform a legacy surface bind as part of the
- *                       surface validation process.
- *
- * @res:            Pointer to a struct vmw_res embedded in a struct
- *                  vmw_surface.
- * @val_buf:        Pointer to a struct ttm_validate_buffer containing
- *                  information about the backup buffer.
- *
- * This function will copy backup data to the surface if the
- * backup buffer is dirty.
- */
+ 
 static int vmw_legacy_srf_bind(struct vmw_resource *res,
 			       struct ttm_validate_buffer *val_buf)
 {
@@ -534,18 +386,7 @@ static int vmw_legacy_srf_bind(struct vmw_resource *res,
 }
 
 
-/**
- * vmw_legacy_srf_unbind - Perform a legacy surface unbind as part of the
- *                         surface eviction process.
- *
- * @res:            Pointer to a struct vmw_res embedded in a struct
- *                  vmw_surface.
- * @readback:       Readback - only true if dirty
- * @val_buf:        Pointer to a struct ttm_validate_buffer containing
- *                  information about the backup buffer.
- *
- * This function will copy backup data from the surface.
- */
+ 
 static int vmw_legacy_srf_unbind(struct vmw_resource *res,
 				 bool readback,
 				 struct ttm_validate_buffer *val_buf)
@@ -555,13 +396,7 @@ static int vmw_legacy_srf_unbind(struct vmw_resource *res,
 	return 0;
 }
 
-/**
- * vmw_legacy_srf_destroy - Destroy a device surface as part of a
- *                          resource eviction process.
- *
- * @res:            Pointer to a struct vmw_res embedded in a struct
- *                  vmw_surface.
- */
+ 
 static int vmw_legacy_srf_destroy(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -570,9 +405,7 @@ static int vmw_legacy_srf_destroy(struct vmw_resource *res)
 
 	BUG_ON(res->id == -1);
 
-	/*
-	 * Encode the dma- and surface destroy commands.
-	 */
+	 
 
 	submit_size = vmw_surface_destroy_size();
 	cmd = VMW_CMD_RESERVE(dev_priv, submit_size);
@@ -582,15 +415,11 @@ static int vmw_legacy_srf_destroy(struct vmw_resource *res)
 	vmw_surface_destroy_encode(res->id, cmd);
 	vmw_cmd_commit(dev_priv, submit_size);
 
-	/*
-	 * Surface memory usage accounting.
-	 */
+	 
 
 	dev_priv->used_memory_size -= res->guest_memory_size;
 
-	/*
-	 * Release the surface ID.
-	 */
+	 
 
 	vmw_resource_release_id(res);
 	vmw_fifo_resource_dec(dev_priv);
@@ -599,14 +428,7 @@ static int vmw_legacy_srf_destroy(struct vmw_resource *res)
 }
 
 
-/**
- * vmw_surface_init - initialize a struct vmw_surface
- *
- * @dev_priv:       Pointer to a device private struct.
- * @srf:            Pointer to the struct vmw_surface to initialize.
- * @res_free:       Pointer to a resource destructor used to free
- *                  the object.
- */
+ 
 static int vmw_surface_init(struct vmw_private *dev_priv,
 			    struct vmw_surface *srf,
 			    void (*res_free) (struct vmw_resource *res))
@@ -624,25 +446,14 @@ static int vmw_surface_init(struct vmw_private *dev_priv,
 		return ret;
 	}
 
-	/*
-	 * The surface won't be visible to hardware until a
-	 * surface validate.
-	 */
+	 
 
 	INIT_LIST_HEAD(&srf->view_list);
 	res->hw_destroy = vmw_hw_surface_destroy;
 	return ret;
 }
 
-/**
- * vmw_user_surface_base_to_res - TTM base object to resource converter for
- *                                user visible surfaces
- *
- * @base:           Pointer to a TTM base object
- *
- * Returns the struct vmw_resource embedded in a struct vmw_surface
- * for the user-visible object identified by the TTM base object @base.
- */
+ 
 static struct vmw_resource *
 vmw_user_surface_base_to_res(struct ttm_base_object *base)
 {
@@ -650,11 +461,7 @@ vmw_user_surface_base_to_res(struct ttm_base_object *base)
 			      prime.base)->srf.res);
 }
 
-/**
- * vmw_user_surface_free - User visible surface resource destructor
- *
- * @res:            A struct vmw_resource embedded in a struct vmw_surface.
- */
+ 
 static void vmw_user_surface_free(struct vmw_resource *res)
 {
 	struct vmw_surface *srf = vmw_res_to_srf(res);
@@ -670,15 +477,7 @@ static void vmw_user_surface_free(struct vmw_resource *res)
 	ttm_prime_object_kfree(user_srf, prime);
 }
 
-/**
- * vmw_user_surface_base_release - User visible surface TTM base object destructor
- *
- * @p_base:         Pointer to a pointer to a TTM base object
- *                  embedded in a struct vmw_user_surface.
- *
- * Drops the base object's reference on its resource, and the
- * pointer pointed to by *p_base is set to NULL.
- */
+ 
 static void vmw_user_surface_base_release(struct ttm_base_object **p_base)
 {
 	struct ttm_base_object *base = *p_base;
@@ -690,14 +489,7 @@ static void vmw_user_surface_base_release(struct ttm_base_object **p_base)
 	vmw_resource_unreference(&res);
 }
 
-/**
- * vmw_surface_destroy_ioctl - Ioctl function implementing
- *                                  the user surface destroy functionality.
- *
- * @dev:            Pointer to a struct drm_device.
- * @data:           Pointer to data copied from / to user-space.
- * @file_priv:      Pointer to a drm file private structure.
- */
+ 
 int vmw_surface_destroy_ioctl(struct drm_device *dev, void *data,
 			      struct drm_file *file_priv)
 {
@@ -707,14 +499,7 @@ int vmw_surface_destroy_ioctl(struct drm_device *dev, void *data,
 	return ttm_ref_object_base_unref(tfile, arg->sid);
 }
 
-/**
- * vmw_surface_define_ioctl - Ioctl function implementing
- *                                  the user surface define functionality.
- *
- * @dev:            Pointer to a struct drm_device.
- * @data:           Pointer to data copied from / to user-space.
- * @file_priv:      Pointer to a drm file private structure.
- */
+ 
 int vmw_surface_define_ioctl(struct drm_device *dev, void *data,
 			     struct drm_file *file_priv)
 {
@@ -765,7 +550,7 @@ int vmw_surface_define_ioctl(struct drm_device *dev, void *data,
 	metadata = &srf->metadata;
 	res = &srf->res;
 
-	/* Driver internally stores as 64-bit flags */
+	 
 	metadata->flags = (SVGA3dSurfaceAllFlags)req->flags;
 	metadata->format = req->format;
 	metadata->scanout = req->scanout;
@@ -838,19 +623,13 @@ int vmw_surface_define_ioctl(struct drm_device *dev, void *data,
 	if (drm_is_primary_client(file_priv))
 		user_srf->master = drm_file_get_master(file_priv);
 
-	/**
-	 * From this point, the generic resource management functions
-	 * destroy the object on failure.
-	 */
+	 
 
 	ret = vmw_surface_init(dev_priv, srf, vmw_user_surface_free);
 	if (unlikely(ret != 0))
 		goto out_unlock;
 
-	/*
-	 * A gb-aware client referencing a shared surface will
-	 * expect a backup buffer to be present.
-	 */
+	 
 	if (dev_priv->has_mob && req->shareable) {
 		struct vmw_bo_params params = {
 			.domain = VMW_BO_DOMAIN_SYS,
@@ -933,17 +712,14 @@ vmw_surface_handle_reference(struct vmw_private *dev_priv,
 		user_srf = container_of(base, struct vmw_user_surface,
 					prime.base);
 
-		/* Error out if we are unauthenticated primary */
+		 
 		if (drm_is_primary_client(file_priv) &&
 		    !file_priv->authenticated) {
 			ret = -EACCES;
 			goto out_bad_resource;
 		}
 
-		/*
-		 * Make sure the surface creator has the same
-		 * authenticating master, or is already registered with us.
-		 */
+		 
 		if (drm_is_primary_client(file_priv) &&
 		    user_srf->master != file_priv->master)
 			require_exist = true;
@@ -970,14 +746,7 @@ out_no_lookup:
 	return ret;
 }
 
-/**
- * vmw_surface_reference_ioctl - Ioctl function implementing
- *                                  the user surface reference functionality.
- *
- * @dev:            Pointer to a struct drm_device.
- * @data:           Pointer to data copied from / to user-space.
- * @file_priv:      Pointer to a drm file private structure.
- */
+ 
 int vmw_surface_reference_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file_priv)
 {
@@ -1001,7 +770,7 @@ int vmw_surface_reference_ioctl(struct drm_device *dev, void *data,
 	user_srf = container_of(base, struct vmw_user_surface, prime.base);
 	srf = &user_srf->srf;
 
-	/* Downcast of flags when sending back to user space */
+	 
 	rep->flags = (uint32_t)srf->metadata.flags;
 	rep->format = srf->metadata.format;
 	memcpy(rep->mip_levels, srf->metadata.mip_levels,
@@ -1024,12 +793,7 @@ int vmw_surface_reference_ioctl(struct drm_device *dev, void *data,
 	return ret;
 }
 
-/**
- * vmw_gb_surface_create - Encode a surface_define command.
- *
- * @res:        Pointer to a struct vmw_resource embedded in a struct
- *              vmw_surface.
- */
+ 
 static int vmw_gb_surface_create(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -1078,7 +842,7 @@ static int vmw_gb_surface_create(struct vmw_resource *res)
 		cmd_len = sizeof(cmd3->body);
 		submit_len = sizeof(*cmd3);
 	} else if (metadata->array_size > 0) {
-		/* VMW_SM_4 support verified at creation time. */
+		 
 		cmd_id = SVGA_3D_CMD_DEFINE_GB_SURFACE_V2;
 		cmd_len = sizeof(cmd2->body);
 		submit_len = sizeof(*cmd2);
@@ -1203,7 +967,7 @@ static int vmw_gb_surface_bind(struct vmw_resource *res,
 	vmw_cmd_commit(dev_priv, submit_size);
 
 	if (res->guest_memory_bo->dirty && res->guest_memory_dirty) {
-		/* We've just made a full upload. Cear dirty regions. */
+		 
 		vmw_bo_dirty_clear_res(res);
 	}
 
@@ -1264,9 +1028,7 @@ static int vmw_gb_surface_unbind(struct vmw_resource *res,
 
 	vmw_cmd_commit(dev_priv, submit_size);
 
-	/*
-	 * Create a fence object and fence the backup buffer.
-	 */
+	 
 
 	(void) vmw_execbuf_fence_commands(NULL, dev_priv,
 					  &fence, NULL);
@@ -1312,14 +1074,7 @@ static int vmw_gb_surface_destroy(struct vmw_resource *res)
 	return 0;
 }
 
-/**
- * vmw_gb_surface_define_ioctl - Ioctl function implementing
- * the user surface define functionality.
- *
- * @dev: Pointer to a struct drm_device.
- * @data: Pointer to data copied from / to user-space.
- * @file_priv: Pointer to a drm file private structure.
- */
+ 
 int vmw_gb_surface_define_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file_priv)
 {
@@ -1339,14 +1094,7 @@ int vmw_gb_surface_define_ioctl(struct drm_device *dev, void *data,
 	return vmw_gb_surface_define_internal(dev, &req_ext, rep, file_priv);
 }
 
-/**
- * vmw_gb_surface_reference_ioctl - Ioctl function implementing
- * the user surface reference functionality.
- *
- * @dev: Pointer to a struct drm_device.
- * @data: Pointer to data copied from / to user-space.
- * @file_priv: Pointer to a drm file private structure.
- */
+ 
 int vmw_gb_surface_reference_ioctl(struct drm_device *dev, void *data,
 				   struct drm_file *file_priv)
 {
@@ -1368,14 +1116,7 @@ int vmw_gb_surface_reference_ioctl(struct drm_device *dev, void *data,
 	return ret;
 }
 
-/**
- * vmw_gb_surface_define_ext_ioctl - Ioctl function implementing
- * the user surface define functionality.
- *
- * @dev: Pointer to a struct drm_device.
- * @data: Pointer to data copied from / to user-space.
- * @file_priv: Pointer to a drm file private structure.
- */
+ 
 int vmw_gb_surface_define_ext_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file_priv)
 {
@@ -1387,14 +1128,7 @@ int vmw_gb_surface_define_ext_ioctl(struct drm_device *dev, void *data,
 	return vmw_gb_surface_define_internal(dev, req, rep, file_priv);
 }
 
-/**
- * vmw_gb_surface_reference_ext_ioctl - Ioctl function implementing
- * the user surface reference functionality.
- *
- * @dev: Pointer to a struct drm_device.
- * @data: Pointer to data copied from / to user-space.
- * @file_priv: Pointer to a drm file private structure.
- */
+ 
 int vmw_gb_surface_reference_ext_ioctl(struct drm_device *dev, void *data,
 				   struct drm_file *file_priv)
 {
@@ -1406,15 +1140,7 @@ int vmw_gb_surface_reference_ext_ioctl(struct drm_device *dev, void *data,
 	return vmw_gb_surface_reference_internal(dev, req, rep, file_priv);
 }
 
-/**
- * vmw_gb_surface_define_internal - Ioctl function implementing
- * the user surface define functionality.
- *
- * @dev: Pointer to a struct drm_device.
- * @req: Request argument from user-space.
- * @rep: Response argument to user-space.
- * @file_priv: Pointer to a drm file private structure.
- */
+ 
 static int
 vmw_gb_surface_define_internal(struct drm_device *dev,
 			       struct drm_vmw_gb_surface_create_ext_req *req,
@@ -1434,7 +1160,7 @@ vmw_gb_surface_define_internal(struct drm_device *dev,
 		SVGA3D_FLAGS_64(req->svga3d_flags_upper_32_bits,
 				req->base.svga3d_flags);
 
-	/* array_size must be null for non-GL3 host. */
+	 
 	if (req->base.array_size > 0 && !has_sm4_context(dev_priv)) {
 		VMW_DEBUG_USER("SM4 surface not supported.\n");
 		return -EINVAL;
@@ -1488,7 +1214,7 @@ vmw_gb_surface_define_internal(struct drm_device *dev,
 	metadata.scanout = req->base.drm_surface_flags &
 		drm_vmw_surface_flag_scanout;
 
-	/* Define a surface based on the parameters. */
+	 
 	ret = vmw_gb_surface_define(dev_priv, &metadata, &srf);
 	if (ret != 0) {
 		VMW_DEBUG_USER("Failed to define surface.\n");
@@ -1579,15 +1305,7 @@ out_unlock:
 	return ret;
 }
 
-/**
- * vmw_gb_surface_reference_internal - Ioctl function implementing
- * the user surface reference functionality.
- *
- * @dev: Pointer to a struct drm_device.
- * @req: Pointer to user-space request surface arg.
- * @rep: Pointer to response to user-space.
- * @file_priv: Pointer to a drm file private structure.
- */
+ 
 static int
 vmw_gb_surface_reference_internal(struct drm_device *dev,
 				  struct drm_vmw_surface_arg *req,
@@ -1615,7 +1333,7 @@ vmw_gb_surface_reference_internal(struct drm_device *dev,
 	}
 	metadata = &srf->metadata;
 
-	mutex_lock(&dev_priv->cmdbuf_mutex); /* Protect res->backup */
+	mutex_lock(&dev_priv->cmdbuf_mutex);  
 	ret = drm_gem_handle_create(file_priv, &srf->res.guest_memory_bo->tbo.base,
 				    &backup_handle);
 	mutex_unlock(&dev_priv->cmdbuf_mutex);
@@ -1654,18 +1372,7 @@ out_bad_resource:
 	return ret;
 }
 
-/**
- * vmw_subres_dirty_add - Add a dirty region to a subresource
- * @dirty: The surfaces's dirty tracker.
- * @loc_start: The location corresponding to the start of the region.
- * @loc_end: The location corresponding to the end of the region.
- *
- * As we are assuming that @loc_start and @loc_end represent a sequential
- * range of backing store memory, if the region spans multiple lines then
- * regardless of the x coordinate, the full lines are dirtied.
- * Correspondingly if the region spans multiple z slices, then full rather
- * than partial z slices are dirtied.
- */
+ 
 static void vmw_subres_dirty_add(struct vmw_surface_dirty *dirty,
 				 const struct vmw_surface_loc *loc_start,
 				 const struct vmw_surface_loc *loc_end)
@@ -1709,11 +1416,7 @@ static void vmw_subres_dirty_add(struct vmw_surface_dirty *dirty,
 	}
 }
 
-/**
- * vmw_subres_dirty_full - Mark a full subresource as dirty
- * @dirty: The surface's dirty tracker.
- * @subres: The subresource
- */
+ 
 static void vmw_subres_dirty_full(struct vmw_surface_dirty *dirty, u32 subres)
 {
 	const struct vmw_surface_cache *cache = &dirty->cache;
@@ -1729,10 +1432,7 @@ static void vmw_subres_dirty_full(struct vmw_surface_dirty *dirty, u32 subres)
 	box->d = size->depth;
 }
 
-/*
- * vmw_surface_tex_dirty_add_range - The dirty_add_range callback for texture
- * surfaces.
- */
+ 
 static void vmw_surface_tex_dirty_range_add(struct vmw_resource *res,
 					    size_t start, size_t end)
 {
@@ -1752,21 +1452,16 @@ static void vmw_surface_tex_dirty_range_add(struct vmw_resource *res,
 	if (loc1.sheet != loc2.sheet) {
 		u32 sub_res;
 
-		/*
-		 * Multiple multisample sheets. To do this in an optimized
-		 * fashion, compute the dirty region for each sheet and the
-		 * resulting union. Since this is not a common case, just dirty
-		 * the whole surface.
-		 */
+		 
 		for (sub_res = 0; sub_res < dirty->num_subres; ++sub_res)
 			vmw_subres_dirty_full(dirty, sub_res);
 		return;
 	}
 	if (loc1.sub_resource + 1 == loc2.sub_resource) {
-		/* Dirty range covers a single sub-resource */
+		 
 		vmw_subres_dirty_add(dirty, &loc1, &loc2);
 	} else {
-		/* Dirty range covers multiple sub-resources */
+		 
 		struct vmw_surface_loc loc_min, loc_max;
 		u32 sub_res;
 
@@ -1780,10 +1475,7 @@ static void vmw_surface_tex_dirty_range_add(struct vmw_resource *res,
 	}
 }
 
-/*
- * vmw_surface_tex_dirty_add_range - The dirty_add_range callback for buffer
- * surfaces.
- */
+ 
 static void vmw_surface_buf_dirty_range_add(struct vmw_resource *res,
 					    size_t start, size_t end)
 {
@@ -1804,9 +1496,7 @@ static void vmw_surface_buf_dirty_range_add(struct vmw_resource *res,
 		box->w = end - box->x;
 }
 
-/*
- * vmw_surface_tex_dirty_add_range - The dirty_add_range callback for surfaces
- */
+ 
 static void vmw_surface_dirty_range_add(struct vmw_resource *res, size_t start,
 					size_t end)
 {
@@ -1822,9 +1512,7 @@ static void vmw_surface_dirty_range_add(struct vmw_resource *res, size_t start,
 		vmw_surface_tex_dirty_range_add(res, start, end);
 }
 
-/*
- * vmw_surface_dirty_sync - The surface's dirty_sync callback.
- */
+ 
 static int vmw_surface_dirty_sync(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -1868,10 +1556,7 @@ static int vmw_surface_dirty_sync(struct vmw_resource *res)
 		if (!box->d)
 			continue;
 
-		/*
-		 * DX_UPDATE_SUBRESOURCE is aware of array surfaces.
-		 * UPDATE_GB_IMAGE is not.
-		 */
+		 
 		if (has_sm4_context(dev_priv)) {
 			cmd1->header.id = SVGA_3D_CMD_DX_UPDATE_SUBRESOURCE;
 			cmd1->header.size = sizeof(cmd1->body);
@@ -1899,9 +1584,7 @@ static int vmw_surface_dirty_sync(struct vmw_resource *res)
 	return 0;
 }
 
-/*
- * vmw_surface_dirty_alloc - The surface's dirty_alloc callback.
- */
+ 
 static int vmw_surface_dirty_alloc(struct vmw_resource *res)
 {
 	struct vmw_surface *srf = vmw_res_to_srf(res);
@@ -1950,9 +1633,7 @@ out_no_dirty:
 	return ret;
 }
 
-/*
- * vmw_surface_dirty_free - The surface's dirty_free callback
- */
+ 
 static void vmw_surface_dirty_free(struct vmw_resource *res)
 {
 	struct vmw_surface_dirty *dirty =
@@ -1962,9 +1643,7 @@ static void vmw_surface_dirty_free(struct vmw_resource *res)
 	res->dirty = NULL;
 }
 
-/*
- * vmw_surface_clean - The surface's clean callback
- */
+ 
 static int vmw_surface_clean(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -1987,18 +1666,7 @@ static int vmw_surface_clean(struct vmw_resource *res)
 	return 0;
 }
 
-/*
- * vmw_gb_surface_define - Define a private GB surface
- *
- * @dev_priv: Pointer to a device private.
- * @metadata: Metadata representing the surface to create.
- * @user_srf_out: allocated user_srf. Set to NULL on failure.
- *
- * GB surfaces allocated by this function will not have a user mode handle, and
- * thus will only be visible to vmwgfx.  For optimization reasons the
- * surface may later be given a user mode handle by another function to make
- * it available to user mode drivers.
- */
+ 
 int vmw_gb_surface_define(struct vmw_private *dev_priv,
 			  const struct vmw_surface_metadata *req,
 			  struct vmw_surface **srf_out)
@@ -2081,24 +1749,14 @@ int vmw_gb_surface_define(struct vmw_private *dev_priv,
 	if (metadata->flags & SVGA3D_SURFACE_BIND_STREAM_OUTPUT)
 		srf->res.guest_memory_size += sizeof(SVGA3dDXSOState);
 
-	/*
-	 * Don't set SVGA3D_SURFACE_SCREENTARGET flag for a scanout surface with
-	 * size greater than STDU max width/height. This is really a workaround
-	 * to support creation of big framebuffer requested by some user-space
-	 * for whole topology. That big framebuffer won't really be used for
-	 * binding with screen target as during prepare_fb a separate surface is
-	 * created so it's safe to ignore SVGA3D_SURFACE_SCREENTARGET flag.
-	 */
+	 
 	if (dev_priv->active_display_unit == vmw_du_screen_target &&
 	    metadata->scanout &&
 	    metadata->base_size.width <= dev_priv->stdu_max_width &&
 	    metadata->base_size.height <= dev_priv->stdu_max_height)
 		metadata->flags |= SVGA3D_SURFACE_SCREENTARGET;
 
-	/*
-	 * From this point, the generic resource management functions
-	 * destroy the object on failure.
-	 */
+	 
 	ret = vmw_surface_init(dev_priv, srf, vmw_user_surface_free);
 
 	return ret;

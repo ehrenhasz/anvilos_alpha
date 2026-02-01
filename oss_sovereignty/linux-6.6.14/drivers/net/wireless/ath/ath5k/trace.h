@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #if !defined(__TRACE_ATH5K_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __TRACE_ATH5K_H
 
@@ -93,7 +93,7 @@ TRACE_EVENT(ath5k_tx_complete,
 	)
 );
 
-#endif /* __TRACE_ATH5K_H */
+#endif  
 
 #if defined(CONFIG_ATH5K_TRACER) && !defined(__CHECKER__)
 

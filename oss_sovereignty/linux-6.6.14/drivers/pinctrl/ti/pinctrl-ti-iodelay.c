@@ -1,13 +1,4 @@
-/*
- * Support for configuration of IO Delay module found on Texas Instruments SoCs
- * such as DRA7
- *
- * Copyright (C) 2015-2017 Texas Instruments Incorporated - https://www.ti.com/
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -28,31 +19,7 @@
 
 #define DRIVER_NAME	"ti-iodelay"
 
-/**
- * struct ti_iodelay_reg_data - Describes the registers for the iodelay instance
- * @signature_mask: CONFIG_REG mask for the signature bits (see TRM)
- * @signature_value: CONFIG_REG signature value to be written (see TRM)
- * @lock_mask: CONFIG_REG mask for the lock bits (see TRM)
- * @lock_val: CONFIG_REG lock value for the lock bits (see TRM)
- * @unlock_val:CONFIG_REG unlock value for the lock bits (see TRM)
- * @binary_data_coarse_mask: CONFIG_REG coarse mask (see TRM)
- * @binary_data_fine_mask: CONFIG_REG fine mask (see TRM)
- * @reg_refclk_offset: Refclk register offset
- * @refclk_period_mask: Refclk mask
- * @reg_coarse_offset: Coarse register configuration offset
- * @coarse_delay_count_mask: Coarse delay count mask
- * @coarse_ref_count_mask: Coarse ref count mask
- * @reg_fine_offset: Fine register configuration offset
- * @fine_delay_count_mask: Fine delay count mask
- * @fine_ref_count_mask: Fine ref count mask
- * @reg_global_lock_offset: Global iodelay module lock register offset
- * @global_lock_mask: Lock mask
- * @global_unlock_val: Unlock value
- * @global_lock_val: Lock value
- * @reg_start_offset: Offset to iodelay registers after the CONFIG_REG_0 to 8
- * @reg_nr_per_pin: Number of iodelay registers for each pin
- * @regmap_config: Regmap configuration for the IODelay region
- */
+ 
 struct ti_iodelay_reg_data {
 	u32 signature_mask;
 	u32 signature_value;
@@ -84,16 +51,7 @@ struct ti_iodelay_reg_data {
 	struct regmap_config *regmap_config;
 };
 
-/**
- * struct ti_iodelay_reg_values - Computed io_reg configuration values (see TRM)
- * @coarse_ref_count: Coarse reference count
- * @coarse_delay_count: Coarse delay count
- * @fine_ref_count: Fine reference count
- * @fine_delay_count: Fine Delay count
- * @ref_clk_period: Reference Clock period
- * @cdpe: Coarse delay parameter
- * @fdpe: Fine delay parameter
- */
+ 
 struct ti_iodelay_reg_values {
 	u16 coarse_ref_count;
 	u16 coarse_delay_count;
@@ -107,42 +65,21 @@ struct ti_iodelay_reg_values {
 	u32 fdpe;
 };
 
-/**
- * struct ti_iodelay_cfg - Description of each configuration parameters
- * @offset: Configuration register offset
- * @a_delay: Agnostic Delay (in ps)
- * @g_delay: Gnostic Delay (in ps)
- */
+ 
 struct ti_iodelay_cfg {
 	u16 offset;
 	u16 a_delay;
 	u16 g_delay;
 };
 
-/**
- * struct ti_iodelay_pingroup - Structure that describes one group
- * @cfg: configuration array for the pin (from dt)
- * @ncfg: number of configuration values allocated
- * @config: pinconf "Config" - currently a dummy value
- */
+ 
 struct ti_iodelay_pingroup {
 	struct ti_iodelay_cfg *cfg;
 	int ncfg;
 	unsigned long config;
 };
 
-/**
- * struct ti_iodelay_device - Represents information for a iodelay instance
- * @dev: Device pointer
- * @phys_base: Physical address base of the iodelay device
- * @reg_base: Virtual address base of the iodelay device
- * @regmap: Regmap for this iodelay instance
- * @pctl: Pinctrl device
- * @desc: pinctrl descriptor for pctl
- * @pa: pinctrl pin wise description
- * @reg_data: Register definition data for the IODelay instance
- * @reg_init_conf_values: Initial configuration values.
- */
+ 
 struct ti_iodelay_device {
 	struct device *dev;
 	unsigned long phys_base;
@@ -157,54 +94,27 @@ struct ti_iodelay_device {
 	struct ti_iodelay_reg_values reg_init_conf_values;
 };
 
-/**
- * ti_iodelay_extract() - extract bits for a field
- * @val: Register value
- * @mask: Mask
- *
- * Return: extracted value which is appropriately shifted
- */
+ 
 static inline u32 ti_iodelay_extract(u32 val, u32 mask)
 {
 	return (val & mask) >> __ffs(mask);
 }
 
-/**
- * ti_iodelay_compute_dpe() - Compute equation for delay parameter
- * @period: Period to use
- * @ref: Reference Count
- * @delay: Delay count
- * @delay_m: Delay multiplier
- *
- * Return: Computed delay parameter
- */
+ 
 static inline u32 ti_iodelay_compute_dpe(u16 period, u16 ref, u16 delay,
 					 u16 delay_m)
 {
 	u64 m, d;
 
-	/* Handle overflow conditions */
+	 
 	m = 10 * (u64)period * (u64)ref;
 	d = 2 * (u64)delay * (u64)delay_m;
 
-	/* Truncate result back to 32 bits */
+	 
 	return div64_u64(m, d);
 }
 
-/**
- * ti_iodelay_pinconf_set() - Configure the pin configuration
- * @iod: iodelay device
- * @cfg: Configuration
- *
- * Update the configuration register as per TRM and lockup once done.
- * *IMPORTANT NOTE* SoC TRM does recommend doing iodelay programmation only
- * while in Isolation. But, then, isolation also implies that every pin
- * on the SoC (including DDR) will be isolated out. The only benefit being
- * a glitchless configuration, However, the intent of this driver is purely
- * to support a "glitchy" configuration where applicable.
- *
- * Return: 0 in case of success, else appropriate error value
- */
+ 
 static int ti_iodelay_pinconf_set(struct ti_iodelay_device *iod,
 				  struct ti_iodelay_cfg *cfg)
 {
@@ -218,7 +128,7 @@ static int ti_iodelay_pinconf_set(struct ti_iodelay_device *iod,
 	u32 reg_mask, reg_val, tmp_val;
 	int r;
 
-	/* NOTE: Truncation is expected in all division below */
+	 
 	g_delay_coarse = cfg->g_delay / 920;
 	g_delay_fine = ((cfg->g_delay % 920) * 10) / 60;
 
@@ -255,12 +165,7 @@ static int ti_iodelay_pinconf_set(struct ti_iodelay_device *iod,
 	}
 	reg_val |= tmp_val;
 
-	/*
-	 * NOTE: we leave the iodelay values unlocked - this is to work around
-	 * situations such as those found with mmc mode change.
-	 * However, this leaves open any unwarranted changes to padconf register
-	 * impacting iodelay configuration. Use with care!
-	 */
+	 
 	reg_mask |= reg->lock_mask;
 	reg_val |= reg->unlock_val << __ffs(reg->lock_mask);
 	r = regmap_update_bits(iod->regmap, cfg->offset, reg_mask, reg_val);
@@ -272,14 +177,7 @@ static int ti_iodelay_pinconf_set(struct ti_iodelay_device *iod,
 	return r;
 }
 
-/**
- * ti_iodelay_pinconf_init_dev() - Initialize IODelay device
- * @iod: iodelay device
- *
- * Unlocks the iodelay region, computes the common parameters
- *
- * Return: 0 in case of success, else appropriate error value
- */
+ 
 static int ti_iodelay_pinconf_init_dev(struct ti_iodelay_device *iod)
 {
 	const struct ti_iodelay_reg_data *reg = iod->reg_data;
@@ -288,13 +186,13 @@ static int ti_iodelay_pinconf_init_dev(struct ti_iodelay_device *iod)
 	u32 val;
 	int r;
 
-	/* unlock the iodelay region */
+	 
 	r = regmap_update_bits(iod->regmap, reg->reg_global_lock_offset,
 			       reg->global_lock_mask, reg->global_unlock_val);
 	if (r)
 		return r;
 
-	/* Read up Recalibration sequence done by bootloader */
+	 
 	r = regmap_read(iod->regmap, reg->reg_refclk_offset, &val);
 	if (r)
 		return r;
@@ -352,28 +250,17 @@ static int ti_iodelay_pinconf_init_dev(struct ti_iodelay_device *iod)
 	return 0;
 }
 
-/**
- * ti_iodelay_pinconf_deinit_dev() - deinit the iodelay device
- * @iod:	IODelay device
- *
- * Deinitialize the IODelay device (basically just lock the region back up.
- */
+ 
 static void ti_iodelay_pinconf_deinit_dev(struct ti_iodelay_device *iod)
 {
 	const struct ti_iodelay_reg_data *reg = iod->reg_data;
 
-	/* lock the iodelay region back again */
+	 
 	regmap_update_bits(iod->regmap, reg->reg_global_lock_offset,
 			   reg->global_lock_mask, reg->global_lock_val);
 }
 
-/**
- * ti_iodelay_get_pingroup() - Find the group mapped by a group selector
- * @iod: iodelay device
- * @selector: Group Selector
- *
- * Return: Corresponding group representing group selector
- */
+ 
 static struct ti_iodelay_pingroup *
 ti_iodelay_get_pingroup(struct ti_iodelay_device *iod, unsigned int selector)
 {
@@ -390,11 +277,7 @@ ti_iodelay_get_pingroup(struct ti_iodelay_device *iod, unsigned int selector)
 	return g->data;
 }
 
-/**
- * ti_iodelay_offset_to_pin() - get a pin index based on the register offset
- * @iod: iodelay driver instance
- * @offset: register offset from the base
- */
+ 
 static int ti_iodelay_offset_to_pin(struct ti_iodelay_device *iod,
 				    unsigned int offset)
 {
@@ -413,16 +296,7 @@ static int ti_iodelay_offset_to_pin(struct ti_iodelay_device *iod,
 	return index;
 }
 
-/**
- * ti_iodelay_node_iterator() - Iterate iodelay node
- * @pctldev: Pin controller driver
- * @np: Device node
- * @pinctrl_spec: Parsed arguments from device tree
- * @pins: Array of pins in the pin group
- * @pin_index: Pin index in the pin array
- * @data: Pin controller driver specific data
- *
- */
+ 
 static int ti_iodelay_node_iterator(struct pinctrl_dev *pctldev,
 				    struct device_node *np,
 				    const struct of_phandle_args *pinctrl_spec,
@@ -447,7 +321,7 @@ static int ti_iodelay_node_iterator(struct pinctrl_dev *pctldev,
 		return -EINVAL;
 	}
 
-	/* Index plus two value cells */
+	 
 	cfg[pin_index].offset = pinctrl_spec->args[0];
 	cfg[pin_index].a_delay = pinctrl_spec->args[1] & 0xffff;
 	cfg[pin_index].g_delay = pinctrl_spec->args[2] & 0xffff;
@@ -470,18 +344,7 @@ static int ti_iodelay_node_iterator(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/**
- * ti_iodelay_dt_node_to_map() - Map a device tree node to appropriate group
- * @pctldev: pinctrl device representing IODelay device
- * @np: Node Pointer (device tree)
- * @map: Pinctrl Map returned back to pinctrl framework
- * @num_maps: Number of maps (1)
- *
- * Maps the device tree description into a group of configuration parameters
- * for iodelay block entry.
- *
- * Return: 0 in case of success, else appropriate error value
- */
+ 
 static int ti_iodelay_dt_node_to_map(struct pinctrl_dev *pctldev,
 				     struct device_node *np,
 				     struct pinctrl_map **map,
@@ -566,14 +429,7 @@ free_map:
 	return error;
 }
 
-/**
- * ti_iodelay_pinconf_group_get() - Get the group configuration
- * @pctldev: pinctrl device representing IODelay device
- * @selector: Group selector
- * @config: Configuration returned
- *
- * Return: The configuration if the group is valid, else returns -EINVAL
- */
+ 
 static int ti_iodelay_pinconf_group_get(struct pinctrl_dev *pctldev,
 					unsigned int selector,
 					unsigned long *config)
@@ -591,15 +447,7 @@ static int ti_iodelay_pinconf_group_get(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/**
- * ti_iodelay_pinconf_group_set() - Configure the groups of pins
- * @pctldev: pinctrl device representing IODelay device
- * @selector: Group selector
- * @configs: Configurations
- * @num_configs: Number of configurations
- *
- * Return: 0 if all went fine, else appropriate error value.
- */
+ 
 static int ti_iodelay_pinconf_group_set(struct pinctrl_dev *pctldev,
 					unsigned int selector,
 					unsigned long *configs,
@@ -634,11 +482,7 @@ static int ti_iodelay_pinconf_group_set(struct pinctrl_dev *pctldev,
 }
 
 #ifdef CONFIG_DEBUG_FS
-/**
- * ti_iodelay_pin_to_offset() - get pin register offset based on the pin index
- * @iod: iodelay driver instance
- * @selector: Pin index
- */
+ 
 static unsigned int ti_iodelay_pin_to_offset(struct ti_iodelay_device *iod,
 					     unsigned int selector)
 {
@@ -682,14 +526,7 @@ static void ti_iodelay_pin_dbg_show(struct pinctrl_dev *pctldev,
 		   in, oen, out, DRIVER_NAME);
 }
 
-/**
- * ti_iodelay_pinconf_group_dbg_show() - show the group information
- * @pctldev: Show the group information
- * @s: Sequence file
- * @selector: Group selector
- *
- * Provide the configuration information of the selected group
- */
+ 
 static void ti_iodelay_pinconf_group_dbg_show(struct pinctrl_dev *pctldev,
 					      struct seq_file *s,
 					      unsigned int selector)
@@ -733,14 +570,7 @@ static const struct pinconf_ops ti_iodelay_pinctrl_pinconf_ops = {
 #endif
 };
 
-/**
- * ti_iodelay_alloc_pins() - Allocate structures needed for pins for iodelay
- * @dev: Device pointer
- * @iod: iodelay device
- * @base_phy: Base Physical Address
- *
- * Return: 0 if all went fine, else appropriate error value.
- */
+ 
 static int ti_iodelay_alloc_pins(struct device *dev,
 				 struct ti_iodelay_device *iod, u32 base_phy)
 {
@@ -808,16 +638,11 @@ static struct ti_iodelay_reg_data dra7_iodelay_data = {
 
 static const struct of_device_id ti_iodelay_of_match[] = {
 	{.compatible = "ti,dra7-iodelay", .data = &dra7_iodelay_data},
-	{ /* Hopefully no more.. */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ti_iodelay_of_match);
 
-/**
- * ti_iodelay_probe() - Standard probe
- * @pdev: platform device
- *
- * Return: 0 if all went fine, else appropriate error value.
- */
+ 
 static int ti_iodelay_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -848,7 +673,7 @@ static int ti_iodelay_probe(struct platform_device *pdev)
 	iod->dev = dev;
 	iod->reg_data = match->data;
 
-	/* So far We can assume there is only 1 bank of registers */
+	 
 	iod->reg_base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(iod->reg_base)) {
 		ret = PTR_ERR(iod->reg_base);
@@ -873,7 +698,7 @@ static int ti_iodelay_probe(struct platform_device *pdev)
 		goto exit_out;
 
 	iod->desc.pctlops = &ti_iodelay_pinctrl_ops;
-	/* no pinmux ops - we are pinconf */
+	 
 	iod->desc.confops = &ti_iodelay_pinctrl_pinconf_ops;
 	iod->desc.name = dev_name(dev);
 	iod->desc.owner = THIS_MODULE;
@@ -893,12 +718,7 @@ exit_out:
 	return ret;
 }
 
-/**
- * ti_iodelay_remove() - standard remove
- * @pdev: platform device
- *
- * Return: 0 if all went fine, else appropriate error value.
- */
+ 
 static int ti_iodelay_remove(struct platform_device *pdev)
 {
 	struct ti_iodelay_device *iod = platform_get_drvdata(pdev);
@@ -911,7 +731,7 @@ static int ti_iodelay_remove(struct platform_device *pdev)
 
 	ti_iodelay_pinconf_deinit_dev(iod);
 
-	/* Expect other allocations to be freed by devm */
+	 
 
 	return 0;
 }

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Null algorithms, aka Much Ado About Nothing.
- *
- * These are needed for IPsec, and may be useful in general for
- * testing & debugging.
- *
- * The null cipher is compliant with RFC2410.
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- */
+
+ 
 
 #include <crypto/null.h>
 #include <crypto/internal/hash.h>

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPv6 over IPv4 tunnel device - Simple Internet Transition (SIT)
- *	Linux INET6 implementation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- *	Alexey Kuznetsov	<kuznet@ms2.inr.ac.ru>
- *
- *	Changes:
- * Roger Venning <r.venning@telstra.com>:	6to4 support
- * Nate Thompson <nate@thebog.net>:		6to4 support
- * Fred Templin <fred.l.templin@boeing.com>:	isatap support
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -52,11 +40,7 @@
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
 
-/*
-   This version of net/ipv6/sit.c is cloned of net/ipv4/ip_gre.c
-
-   For comments look at net/ipv4/ip_gre.c --ANK
- */
+ 
 
 #define IP6_SIT_HASH_SIZE  16
 #define HASH(addr) (((__force u32)addr^((__force u32)addr>>4))&0xF)
@@ -90,9 +74,7 @@ static inline struct sit_net *dev_to_sit_net(struct net_device *dev)
 	return net_generic(t->net, sit_net_id);
 }
 
-/*
- * Must be invoked with rcu_read_lock
- */
+ 
 static struct ip_tunnel *ipip6_tunnel_lookup(struct net *net,
 					     struct net_device *dev,
 					     __be32 remote, __be32 local,
@@ -316,9 +298,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
 	if (cmax > 1 && kprl.addr != htonl(INADDR_ANY))
 		cmax = 1;
 
-	/* For simple GET or for root users,
-	 * we try harder to allocate.
-	 */
+	 
 	kp = (cmax <= 1 || capable(CAP_NET_ADMIN)) ?
 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL_ACCOUNT | __GFP_NOWARN) :
 		NULL;
@@ -326,11 +306,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
 	ca = min(t->prl_count, cmax);
 
 	if (!kp) {
-		/* We don't try hard to allocate much memory for
-		 * non-root users.
-		 * For root users, retry allocating enough memory for
-		 * the answer.
-		 */
+		 
 		kp = kcalloc(ca, sizeof(*kp), GFP_ATOMIC | __GFP_ACCOUNT |
 					      __GFP_NOWARN);
 		if (!kp) {
@@ -540,20 +516,17 @@ static int ipip6_err(struct sk_buff *skb, u32 info)
 	case ICMP_DEST_UNREACH:
 		switch (code) {
 		case ICMP_SR_FAILED:
-			/* Impossible event. */
+			 
 			return 0;
 		default:
-			/* All others are translated to HOST_UNREACH.
-			   rfc2003 contains "deep thoughts" about NET_UNREACH,
-			   I believe they are just ether pollution. --ANK
-			 */
+			 
 			break;
 		}
 		break;
 	case ICMP_TIME_EXCEEDED:
 		if (code != ICMP_EXC_TTL)
 			return 0;
-		data_len = icmp_hdr(skb)->un.reserved[1] * 4; /* RFC 4884 4.1 */
+		data_len = icmp_hdr(skb)->un.reserved[1] * 4;  
 		break;
 	case ICMP_REDIRECT:
 		break;
@@ -609,18 +582,7 @@ static inline bool is_spoofed_6rd(struct ip_tunnel *tunnel, const __be32 v4addr,
 	return false;
 }
 
-/* Checks if an address matches an address on the tunnel interface.
- * Used to detect the NAT of proto 41 packets and let them pass spoofing test.
- * Long story:
- * This function is called after we considered the packet as spoofed
- * in is_spoofed_6rd.
- * We may have a router that is doing NAT for proto 41 packets
- * for an internal station. Destination a.a.a.a/PREFIX:bbbb:bbbb
- * will be translated to n.n.n.n/PREFIX:bbbb:bbbb. And is_spoofed_6rd
- * function will return true, dropping the packet.
- * But, we can still check if is spoofed against the IP
- * addresses associated with the interface.
- */
+ 
 static bool only_dnatted(const struct ip_tunnel *tunnel,
 	const struct in6_addr *v6dst)
 {
@@ -635,7 +597,7 @@ static bool only_dnatted(const struct ip_tunnel *tunnel,
 	return ipv6_chk_custom_prefix(v6dst, prefix_len, tunnel->dev);
 }
 
-/* Returns true if a packet is spoofed */
+ 
 static bool packet_is_spoofed(struct sk_buff *skb,
 			      const struct iphdr *iph,
 			      struct ip_tunnel *tunnel)
@@ -702,9 +664,7 @@ static int ipip6_rcv(struct sk_buff *skb)
 		    !net_eq(tunnel->net, dev_net(tunnel->dev))))
 			goto out;
 
-		/* skb can be uncloned in iptunnel_pull_header, so
-		 * old iph is no longer valid
-		 */
+		 
 		iph = (const struct iphdr *)skb_mac_header(skb);
 		skb_reset_mac_header(skb);
 
@@ -727,7 +687,7 @@ static int ipip6_rcv(struct sk_buff *skb)
 		return 0;
 	}
 
-	/* no tunnel matched,  let upstream know, ipsec may handle it */
+	 
 	return 1;
 out:
 	kfree_skb(skb);
@@ -735,13 +695,13 @@ out:
 }
 
 static const struct tnl_ptk_info ipip_tpi = {
-	/* no tunnel info required for ipip. */
+	 
 	.proto = htons(ETH_P_IP),
 };
 
 #if IS_ENABLED(CONFIG_MPLS)
 static const struct tnl_ptk_info mplsip_tpi = {
-	/* no tunnel info required for mplsip. */
+	 
 	.proto = htons(ETH_P_MPLS_UC),
 };
 #endif
@@ -798,10 +758,7 @@ static int mplsip_rcv(struct sk_buff *skb)
 }
 #endif
 
-/*
- * If the IPv6 address comes from 6rd / 6to4 (RFC 3056) addr space this function
- * stores the embedded IPv4 address in v4dst and returns true.
- */
+ 
 static bool check_6rd(struct ip_tunnel *tunnel, const struct in6_addr *v6dst,
 		      __be32 *v4dst)
 {
@@ -829,7 +786,7 @@ static bool check_6rd(struct ip_tunnel *tunnel, const struct in6_addr *v6dst,
 	}
 #else
 	if (v6dst->s6_addr16[0] == htons(0x2002)) {
-		/* 6to4 v6 addr has 16 bits prefix, 32 v4addr, 16 SLA, ... */
+		 
 		memcpy(v4dst, &v6dst->s6_addr16[1], 4);
 		return true;
 	}
@@ -845,10 +802,7 @@ static inline __be32 try_6rd(struct ip_tunnel *tunnel,
 	return dst;
 }
 
-/*
- *	This function assumes it is being called from dev_queue_xmit()
- *	and that skb is filled properly by that function.
- */
+ 
 
 static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 				     struct net_device *dev)
@@ -858,9 +812,9 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 	const struct ipv6hdr *iph6 = ipv6_hdr(skb);
 	u8     tos = tunnel->parms.iph.tos;
 	__be16 df = tiph->frag_off;
-	struct rtable *rt;		/* Route to the other host */
-	struct net_device *tdev;	/* Device to other host */
-	unsigned int max_headroom;	/* The extra header space needed */
+	struct rtable *rt;		 
+	struct net_device *tdev;	 
+	unsigned int max_headroom;	 
 	__be32 dst = tiph->daddr;
 	struct flowi4 fl4;
 	int    mtu;
@@ -873,7 +827,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 	if (tos == 1)
 		tos = ipv6_get_dsfield(iph6);
 
-	/* ISATAP (RFC4214) - must come before 6to4 */
+	 
 	if (dev->priv_flags & IFF_ISATAP) {
 		struct neighbour *neigh = NULL;
 		bool do_tx_error = false;
@@ -999,9 +953,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 			tunnel->err_count = 0;
 	}
 
-	/*
-	 * Okay, now see if we can stuff it in the buffer as-is.
-	 */
+	 
 	max_headroom = LL_RESERVED_SPACE(tdev) + t_hlen;
 
 	if (skb_headroom(skb) < max_headroom || skb_shared(skb) ||
@@ -1238,7 +1190,7 @@ ipip6_tunnel_6rdctl(struct net_device *dev, struct ip_tunnel_6rd __user *data,
 	return 0;
 }
 
-#endif /* CONFIG_IPV6_SIT_6RD */
+#endif  
 
 static bool ipip6_valid_ip_proto(u8 ipproto)
 {
@@ -1514,7 +1466,7 @@ static void ipip6_netlink_parms(struct nlattr *data[],
 }
 
 #ifdef CONFIG_IPV6_SIT_6RD
-/* This function returns true when 6RD attributes are present in the nl msg */
+ 
 static bool ipip6_netlink_6rd_parms(struct nlattr *data[],
 				    struct ip_tunnel_6rd *ip6rd)
 {
@@ -1649,41 +1601,41 @@ static int ipip6_changelink(struct net_device *dev, struct nlattr *tb[],
 static size_t ipip6_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_IPTUN_LINK */
+		 
 		nla_total_size(4) +
-		/* IFLA_IPTUN_LOCAL */
+		 
 		nla_total_size(4) +
-		/* IFLA_IPTUN_REMOTE */
+		 
 		nla_total_size(4) +
-		/* IFLA_IPTUN_TTL */
+		 
 		nla_total_size(1) +
-		/* IFLA_IPTUN_TOS */
+		 
 		nla_total_size(1) +
-		/* IFLA_IPTUN_PMTUDISC */
+		 
 		nla_total_size(1) +
-		/* IFLA_IPTUN_FLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_PROTO */
+		 
 		nla_total_size(1) +
 #ifdef CONFIG_IPV6_SIT_6RD
-		/* IFLA_IPTUN_6RD_PREFIX */
+		 
 		nla_total_size(sizeof(struct in6_addr)) +
-		/* IFLA_IPTUN_6RD_RELAY_PREFIX */
+		 
 		nla_total_size(4) +
-		/* IFLA_IPTUN_6RD_PREFIXLEN */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_6RD_RELAY_PREFIXLEN */
+		 
 		nla_total_size(2) +
 #endif
-		/* IFLA_IPTUN_ENCAP_TYPE */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_ENCAP_FLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_ENCAP_SPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_ENCAP_DPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_FWMARK */
+		 
 		nla_total_size(4) +
 		0;
 }
@@ -1817,9 +1769,7 @@ static void __net_exit sit_destroy_tunnels(struct net *net,
 
 			t = rtnl_dereference(sitn->tunnels[prio][h]);
 			while (t) {
-				/* If dev is in the same netns, it has already
-				 * been added to the list by the previous loop.
-				 */
+				 
 				if (!net_eq(dev_net(t->dev), net))
 					unregister_netdevice_queue(t->dev,
 								   head);
@@ -1852,9 +1802,7 @@ static int __net_init sit_init_net(struct net *net)
 	}
 	dev_net_set(sitn->fb_tunnel_dev, net);
 	sitn->fb_tunnel_dev->rtnl_link_ops = &sit_link_ops;
-	/* FB netdevice is special: we have one, and only one per netns.
-	 * Allowing to move it to another netns is clearly unsafe.
-	 */
+	 
 	sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
 
 	err = register_netdev(sitn->fb_tunnel_dev);
@@ -1905,7 +1853,7 @@ static void __exit sit_cleanup(void)
 #endif
 
 	unregister_pernet_device(&sit_net_ops);
-	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+	rcu_barrier();  
 }
 
 static int __init sit_init(void)

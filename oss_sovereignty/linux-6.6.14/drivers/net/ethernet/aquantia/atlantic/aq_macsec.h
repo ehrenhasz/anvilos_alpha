@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef AQ_MACSEC_H
 #define AQ_MACSEC_H
@@ -24,7 +22,7 @@ enum aq_macsec_sc_sa {
 };
 
 struct aq_macsec_common_stats {
-	/* Ingress Common Counters */
+	 
 	struct {
 		u64 ctl_pkts;
 		u64 tagged_miss_pkts;
@@ -44,7 +42,7 @@ struct aq_macsec_common_stats {
 		u64 unctrl_hit_drop_redir;
 	} in;
 
-	/* Egress Common Counters */
+	 
 	struct {
 		u64 ctl_pkts;
 		u64 unknown_sa_pkts;
@@ -55,7 +53,7 @@ struct aq_macsec_common_stats {
 	} out;
 };
 
-/* Ingress SA Counters */
+ 
 struct aq_macsec_rx_sa_stats {
 	u64 untagged_hit_pkts;
 	u64 ctrl_hit_drop_redir_pkts;
@@ -71,7 +69,7 @@ struct aq_macsec_rx_sa_stats {
 	u64 decrypted_octets;
 };
 
-/* Egress SA Counters */
+ 
 struct aq_macsec_tx_sa_stats {
 	u64 sa_hit_drop_redirect;
 	u64 sa_protected2_pkts;
@@ -79,7 +77,7 @@ struct aq_macsec_tx_sa_stats {
 	u64 sa_encrypted_pkts;
 };
 
-/* Egress SC Counters */
+ 
 struct aq_macsec_tx_sc_stats {
 	u64 sc_protected_pkts;
 	u64 sc_encrypted_pkts;
@@ -107,13 +105,13 @@ struct aq_macsec_rxsc {
 
 struct aq_macsec_cfg {
 	enum aq_macsec_sc_sa sc_sa;
-	/* Egress channel configuration */
+	 
 	unsigned long txsc_idx_busy;
 	struct aq_macsec_txsc aq_txsc[AQ_MACSEC_MAX_SC];
-	/* Ingress channel configuration */
+	 
 	unsigned long rxsc_idx_busy;
 	struct aq_macsec_rxsc aq_rxsc[AQ_MACSEC_MAX_SC];
-	/* Statistics / counters */
+	 
 	struct aq_macsec_common_stats stats;
 };
 
@@ -130,4 +128,4 @@ int aq_macsec_tx_sa_cnt(struct aq_nic_s *nic);
 
 #endif
 
-#endif /* AQ_MACSEC_H */
+#endif  

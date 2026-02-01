@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *   Copyright (C) International Business Machines  Corp., 2000,2005
- *
- *   Modified by Steve French (sfrench@us.ibm.com)
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/string.h>
 #include <linux/ctype.h>
@@ -47,7 +42,7 @@ void cifs_dump_detail(void *buf, struct TCP_Server_Info *server)
 		cifs_dbg(VFS, "smb buf %p len %u\n", smb,
 			 server->ops->calc_smb_size(smb));
 	}
-#endif /* CONFIG_CIFS_DEBUG2 */
+#endif  
 }
 
 void cifs_dump_mids(struct TCP_Server_Info *server)
@@ -73,7 +68,7 @@ void cifs_dump_mids(struct TCP_Server_Info *server)
 			 mid_entry->resp_buf,
 			 mid_entry->when_received,
 			 jiffies);
-#endif /* STATS2 */
+#endif  
 		cifs_dbg(VFS, "IsMult: %d IsEnd: %d\n",
 			 mid_entry->multiRsp, mid_entry->multiEnd);
 		if (mid_entry->resp_buf) {
@@ -83,7 +78,7 @@ void cifs_dump_mids(struct TCP_Server_Info *server)
 		}
 	}
 	spin_unlock(&server->mid_lock);
-#endif /* CONFIG_CIFS_DEBUG2 */
+#endif  
 }
 
 #ifdef CONFIG_PROC_FS
@@ -158,7 +153,7 @@ cifs_dump_channel(struct seq_file *m, int i, struct cifs_chan *chan)
 #ifdef CONFIG_NET_NS
 	if (server->net)
 		seq_printf(m, " Net namespace: %u ", server->net->ns.inum);
-#endif /* NET_NS */
+#endif  
 
 }
 
@@ -241,7 +236,7 @@ static int cifs_debug_files_proc_show(struct seq_file *m, void *v)
 	seq_printf(m, " <filename> <mid>\n");
 #else
 	seq_printf(m, " <filename>\n");
-#endif /* CIFS_DEBUG2 */
+#endif  
 	spin_lock(&cifs_tcp_ses_lock);
 	list_for_each_entry(server, &cifs_tcp_ses_list, tcp_ses_list) {
 		list_for_each_entry(ses, &server->smb_ses_list, smb_ses_list) {
@@ -262,7 +257,7 @@ static int cifs_debug_files_proc_show(struct seq_file *m, void *v)
 					seq_printf(m, " %llu\n", cfile->fid.mid);
 #else
 					seq_printf(m, "\n");
-#endif /* CIFS_DEBUG2 */
+#endif  
 				}
 				spin_unlock(&tcon->open_file_lock);
 			}
@@ -334,7 +329,7 @@ static int cifs_debug_data_proc_show(struct seq_file *m, void *v)
 	c = 0;
 	spin_lock(&cifs_tcp_ses_lock);
 	list_for_each_entry(server, &cifs_tcp_ses_list, tcp_ses_list) {
-		/* channel info will be printed as a part of sessions below */
+		 
 		if (SERVER_IS_CHAN(server))
 			continue;
 
@@ -442,7 +437,7 @@ skip_rdma:
 #ifdef CONFIG_NET_NS
 		if (server->net)
 			seq_printf(m, " Net namespace: %u ", server->net->ns.inum);
-#endif /* NET_NS */
+#endif  
 
 		seq_printf(m, "\nIn Send: %d In MaxReq Wait: %d",
 				atomic_read(&server->in_send),
@@ -486,11 +481,11 @@ skip_rdma:
 			seq_printf(m, "\n\tSecurity type: %s ",
 				get_security_type_str(server->ops->select_sectype(server, ses->sectype)));
 
-			/* dump session id helpful for use with network trace */
+			 
 			seq_printf(m, " SessionId: 0x%llx", ses->Suid);
 			if (ses->session_flags & SMB2_SESSION_FLAG_ENCRYPT_DATA) {
 				seq_puts(m, " encrypted");
-				/* can help in debugging to show encryption type */
+				 
 				if (server->cipher_type == SMB2_ENCRYPTION_AES256_GCM)
 					seq_puts(m, "(gcm256)");
 			}
@@ -606,7 +601,7 @@ skip_rdma:
 	seq_putc(m, '\n');
 	cifs_swn_dump(m);
 
-	/* BB add code to dump additional info such as TCP session info now */
+	 
 	return 0;
 }
 
@@ -626,7 +621,7 @@ static ssize_t cifs_stats_proc_write(struct file *file,
 
 		atomic_set(&total_buf_alloc_count, 0);
 		atomic_set(&total_small_buf_alloc_count, 0);
-#endif /* CONFIG_CIFS_STATS2 */
+#endif  
 		atomic_set(&tcpSesReconnectCount, 0);
 		atomic_set(&tconInfoReconnectCount, 0);
 
@@ -645,7 +640,7 @@ static ssize_t cifs_stats_proc_write(struct file *file,
 				server->slowest_cmd[i] = 0;
 				server->fastest_cmd[0] = 0;
 			}
-#endif /* CONFIG_CIFS_STATS2 */
+#endif  
 			list_for_each_entry(ses, &server->smb_ses_list, smb_ses_list) {
 				list_for_each_entry(tcon, &ses->tcon_list, tcon_list) {
 					atomic_set(&tcon->num_smbs_sent, 0);
@@ -671,7 +666,7 @@ static int cifs_stats_proc_show(struct seq_file *m, void *v)
 	int i;
 #ifdef CONFIG_CIFS_STATS2
 	int j;
-#endif /* STATS2 */
+#endif  
 	struct TCP_Server_Info *server;
 	struct cifs_ses *ses;
 	struct cifs_tcon *tcon;
@@ -689,7 +684,7 @@ static int cifs_stats_proc_show(struct seq_file *m, void *v)
 	seq_printf(m, "Total Large %d Small %d Allocations\n",
 				atomic_read(&total_buf_alloc_count),
 				atomic_read(&total_small_buf_alloc_count));
-#endif /* CONFIG_CIFS_STATS2 */
+#endif  
 
 	seq_printf(m, "Operations (MIDs): %d\n", atomic_read(&mid_count));
 	seq_printf(m,
@@ -723,7 +718,7 @@ static int cifs_stats_proc_show(struct seq_file *m, void *v)
 					server->hostname, j);
 				spin_unlock(&server->srv_lock);
 			}
-#endif /* STATS2 */
+#endif  
 		list_for_each_entry(ses, &server->smb_ses_list, smb_ses_list) {
 			list_for_each_entry(tcon, &ses->tcon_list, tcon_list) {
 				i++;
@@ -908,7 +903,7 @@ static ssize_t cifsFYI_proc_write(struct file *file, const char __user *buffer,
 	if (kstrtobool(c, &bv) == 0)
 		cifsFYI = bv;
 	else if ((c[0] > '1') && (c[0] <= '9'))
-		cifsFYI = (int) (c[0] - '0'); /* see cifs_debug.h for meanings */
+		cifsFYI = (int) (c[0] - '0');  
 	else
 		return -EINVAL;
 
@@ -1027,11 +1022,7 @@ static int cifs_security_flags_proc_open(struct inode *inode, struct file *file)
 	return single_open(file, cifs_security_flags_proc_show, NULL);
 }
 
-/*
- * Ensure that if someone sets a MUST flag, that we disable all other MAY
- * flags except for the ones corresponding to the given MUST flag. If there are
- * multiple MUST flags, then try to prefer more secure ones.
- */
+ 
 static void
 cifs_security_flags_handle_must_flags(unsigned int *flags)
 {
@@ -1064,7 +1055,7 @@ static ssize_t cifs_security_flags_proc_write(struct file *file,
 		return -EFAULT;
 
 	if (count < 3) {
-		/* single char or single char followed by null */
+		 
 		if (kstrtobool(flags_string, &bv) == 0) {
 			global_secflags = bv ? CIFSSEC_MAX : CIFSSEC_DEF;
 			return count;
@@ -1075,7 +1066,7 @@ static ssize_t cifs_security_flags_proc_write(struct file *file,
 		}
 	}
 
-	/* else we have a number */
+	 
 	rc = kstrtouint(flags_string, 0, &flags);
 	if (rc) {
 		cifs_dbg(VFS, "Invalid SecurityFlags: %s\n",
@@ -1098,16 +1089,16 @@ static ssize_t cifs_security_flags_proc_write(struct file *file,
 
 	cifs_security_flags_handle_must_flags(&flags);
 
-	/* flags look ok - update the global security flags for cifs module */
+	 
 	global_secflags = flags;
 	if (global_secflags & CIFSSEC_MUST_SIGN) {
-		/* requiring signing implies signing is allowed */
+		 
 		global_secflags |= CIFSSEC_MAY_SIGN;
 		cifs_dbg(FYI, "packet signing now required\n");
 	} else if ((global_secflags & CIFSSEC_MAY_SIGN) == 0) {
 		cifs_dbg(FYI, "packet signing disabled\n");
 	}
-	/* BB should we turn on MAY flags for other MUST options? */
+	 
 	return count;
 }
 
@@ -1119,14 +1110,14 @@ static const struct proc_ops cifs_security_flags_proc_ops = {
 	.proc_write	= cifs_security_flags_proc_write,
 };
 
-/* To make it easier to debug, can help to show mount params */
+ 
 static int cifs_mount_params_proc_show(struct seq_file *m, void *v)
 {
 	const struct fs_parameter_spec *p;
 	const char *type;
 
 	for (p = smb3_fs_parameters; p->name; p++) {
-		/* cannot use switch with pointers... */
+		 
 		if (!p->type) {
 			if (p->flags == fs_param_neg_with_no)
 				type = "noflag";
@@ -1159,8 +1150,8 @@ static const struct proc_ops cifs_mount_params_proc_ops = {
 	.proc_read	= seq_read,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= single_release,
-	/* No need for write for now */
-	/* .proc_write	= cifs_mount_params_proc_write, */
+	 
+	 
 };
 
 #else
@@ -1171,4 +1162,4 @@ inline void cifs_proc_init(void)
 inline void cifs_proc_clean(void)
 {
 }
-#endif /* PROC_FS */
+#endif  

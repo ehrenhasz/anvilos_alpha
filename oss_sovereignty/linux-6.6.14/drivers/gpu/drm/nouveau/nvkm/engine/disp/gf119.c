@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "chan.h"
 #include "hdmi.h"
@@ -214,15 +192,11 @@ gf119_sor_hdmi_infoframe_vsi(struct nvkm_ior *ior, int head, void *data, u32 siz
 	if (!size)
 		return;
 
-	/*
-	 * These appear to be the audio infoframe registers,
-	 * but no other set of infoframe registers has yet
-	 * been found.
-	 */
+	 
 	nvkm_wr32(device, 0x616738 + hoff, vsi.header);
 	nvkm_wr32(device, 0x61673c + hoff, vsi.subpack0_low);
 	nvkm_wr32(device, 0x616740 + hoff, vsi.subpack0_high);
-	/* Is there a second (or further?) set of subpack registers here? */
+	 
 
 	nvkm_mask(device, 0x616730 + hoff, 0x00000001, 0x00000001);
 }
@@ -266,12 +240,12 @@ gf119_sor_hdmi_ctrl(struct nvkm_ior *ior, int head, bool enable, u8 max_ac_packe
 		return;
 	}
 
-	/* ??? InfoFrame? */
+	 
 	nvkm_mask(device, 0x6167a4 + hoff, 0x00000001, 0x00000000);
 	nvkm_wr32(device, 0x6167ac + hoff, 0x00000010);
 	nvkm_mask(device, 0x6167a4 + hoff, 0x00000001, 0x00000001);
 
-	/* HDMI_CTRL */
+	 
 	nvkm_mask(device, 0x616798 + hoff, 0x401f007f, ctrl);
 }
 
@@ -444,7 +418,7 @@ gf119_head_state(struct nvkm_head *head, struct nvkm_head_state *state)
 	case 6: state->or.depth = 30; break;
 	case 5: state->or.depth = 24; break;
 	case 2: state->or.depth = 18; break;
-	case 0: state->or.depth = 18; break; /*XXX: "default" */
+	case 0: state->or.depth = 18; break;  
 	default:
 		state->or.depth = 18;
 		WARN_ON(1);
@@ -540,7 +514,7 @@ gf119_disp_pioc_init(struct nvkm_disp_chan *chan)
 	int ctrl = chan->chid.ctrl;
 	int user = chan->chid.user;
 
-	/* activate channel */
+	 
 	nvkm_wr32(device, 0x610490 + (ctrl * 0x10), 0x00000001);
 	if (nvkm_msec(device, 2000,
 		u32 tmp = nvkm_rd32(device, 0x610490 + (ctrl * 0x10));
@@ -578,7 +552,7 @@ gf119_disp_dmac_fini(struct nvkm_disp_chan *chan)
 	int ctrl = chan->chid.ctrl;
 	int user = chan->chid.user;
 
-	/* deactivate channel */
+	 
 	nvkm_mask(device, 0x610490 + (ctrl * 0x0010), 0x00001010, 0x00001000);
 	nvkm_mask(device, 0x610490 + (ctrl * 0x0010), 0x00000003, 0x00000000);
 	if (nvkm_msec(device, 2000,
@@ -600,7 +574,7 @@ gf119_disp_dmac_init(struct nvkm_disp_chan *chan)
 	int ctrl = chan->chid.ctrl;
 	int user = chan->chid.user;
 
-	/* initialise channel for dma command submission */
+	 
 	nvkm_wr32(device, 0x610494 + (ctrl * 0x0010), chan->push);
 	nvkm_wr32(device, 0x610498 + (ctrl * 0x0010), 0x00010000);
 	nvkm_wr32(device, 0x61049c + (ctrl * 0x0010), 0x00000001);
@@ -608,7 +582,7 @@ gf119_disp_dmac_init(struct nvkm_disp_chan *chan)
 	nvkm_wr32(device, 0x640000 + (ctrl * 0x1000), chan->suspend_put);
 	nvkm_wr32(device, 0x610490 + (ctrl * 0x0010), 0x00000013);
 
-	/* wait for it to go inactive */
+	 
 	if (nvkm_msec(device, 2000,
 		if (!(nvkm_rd32(device, 0x610490 + (ctrl * 0x10)) & 0x80000000))
 			break;
@@ -947,7 +921,7 @@ gf119_disp_core_fini(struct nvkm_disp_chan *chan)
 	struct nvkm_subdev *subdev = &chan->disp->engine.subdev;
 	struct nvkm_device *device = subdev->device;
 
-	/* deactivate channel */
+	 
 	nvkm_mask(device, 0x610490, 0x00000010, 0x00000000);
 	nvkm_mask(device, 0x610490, 0x00000003, 0x00000000);
 	if (nvkm_msec(device, 2000,
@@ -967,7 +941,7 @@ gf119_disp_core_init(struct nvkm_disp_chan *chan)
 	struct nvkm_subdev *subdev = &chan->disp->engine.subdev;
 	struct nvkm_device *device = subdev->device;
 
-	/* initialise channel for dma command submission */
+	 
 	nvkm_wr32(device, 0x610494, chan->push);
 	nvkm_wr32(device, 0x610498, 0x00010000);
 	nvkm_wr32(device, 0x61049c, 0x00000001);
@@ -975,7 +949,7 @@ gf119_disp_core_init(struct nvkm_disp_chan *chan)
 	nvkm_wr32(device, 0x640000, chan->suspend_put);
 	nvkm_wr32(device, 0x610490, 0x01000013);
 
-	/* wait for it to go inactive */
+	 
 	if (nvkm_msec(device, 2000,
 		if (!(nvkm_rd32(device, 0x610490) & 0x80000000))
 			break;
@@ -1157,7 +1131,7 @@ void
 gf119_disp_fini(struct nvkm_disp *disp)
 {
 	struct nvkm_device *device = disp->engine.subdev.device;
-	/* disable all interrupts */
+	 
 	nvkm_wr32(device, 0x6100b0, 0x00000000);
 }
 
@@ -1169,12 +1143,9 @@ gf119_disp_init(struct nvkm_disp *disp)
 	u32 tmp;
 	int i;
 
-	/* The below segments of code copying values from one register to
-	 * another appear to inform EVO of the display capabilities or
-	 * something similar.
-	 */
+	 
 
-	/* ... CRTC caps */
+	 
 	list_for_each_entry(head, &disp->heads, head) {
 		const u32 hoff = head->id * 0x800;
 		tmp = nvkm_rd32(device, 0x616104 + hoff);
@@ -1185,19 +1156,19 @@ gf119_disp_init(struct nvkm_disp *disp)
 		nvkm_wr32(device, 0x6101bc + hoff, tmp);
 	}
 
-	/* ... DAC caps */
+	 
 	for (i = 0; i < disp->dac.nr; i++) {
 		tmp = nvkm_rd32(device, 0x61a000 + (i * 0x800));
 		nvkm_wr32(device, 0x6101c0 + (i * 0x800), tmp);
 	}
 
-	/* ... SOR caps */
+	 
 	for (i = 0; i < disp->sor.nr; i++) {
 		tmp = nvkm_rd32(device, 0x61c000 + (i * 0x800));
 		nvkm_wr32(device, 0x6301c4 + (i * 0x800), tmp);
 	}
 
-	/* steal display away from vbios, or something like that */
+	 
 	if (nvkm_rd32(device, 0x6100ac) & 0x00000100) {
 		nvkm_wr32(device, 0x6100ac, 0x00000100);
 		nvkm_mask(device, 0x6194e8, 0x00000001, 0x00000000);
@@ -1208,20 +1179,15 @@ gf119_disp_init(struct nvkm_disp *disp)
 			return -EBUSY;
 	}
 
-	/* point at display engine memory area (hash table, objects) */
+	 
 	nvkm_wr32(device, 0x610010, (disp->inst->addr >> 8) | 9);
 
-	/* enable supervisor interrupts, disable everything else */
+	 
 	nvkm_wr32(device, 0x610090, 0x00000000);
 	nvkm_wr32(device, 0x6100a0, 0x00000000);
 	nvkm_wr32(device, 0x6100b0, 0x00000307);
 
-	/* disable underflow reporting, preventing an intermittent issue
-	 * on some gk104 boards where the production vbios left this
-	 * setting enabled by default.
-	 *
-	 * ftp://download.nvidia.com/open-gpu-doc/gk104-disable-underflow-reporting/1/gk104-disable-underflow-reporting.txt
-	 */
+	 
 	list_for_each_entry(head, &disp->heads, head) {
 		const u32 hoff = head->id * 0x800;
 		nvkm_mask(device, 0x616308 + hoff, 0x00000111, 0x00000010);

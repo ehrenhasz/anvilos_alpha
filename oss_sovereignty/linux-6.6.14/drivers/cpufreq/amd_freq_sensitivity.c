@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * amd_freq_sensitivity.c: AMD frequency sensitivity feedback powersave bias
- *                         for the ondemand governor.
- *
- * Copyright (C) 2013 Advanced Micro Devices, Inc.
- *
- * Author: Jacob Shin <jacob.shin@amd.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -58,7 +51,7 @@ static unsigned int amd_powersave_bias_target(struct cpufreq_policy *policy,
 	actual.h &= 0x00ffffff;
 	reference.h &= 0x00ffffff;
 
-	/* counter wrapped around, so stay on current frequency */
+	 
 	if (actual.q < data->actual || reference.q < data->reference) {
 		freq_next = policy->cur;
 		goto out;
@@ -67,7 +60,7 @@ static unsigned int amd_powersave_bias_target(struct cpufreq_policy *policy,
 	d_actual = actual.q - data->actual;
 	d_reference = reference.q - data->reference;
 
-	/* divide by 0, so stay on current frequency as well */
+	 
 	if (d_reference == 0) {
 		freq_next = policy->cur;
 		goto out;
@@ -78,7 +71,7 @@ static unsigned int amd_powersave_bias_target(struct cpufreq_policy *policy,
 
 	clamp(sensitivity, 0, POWERSAVE_BIAS_MAX);
 
-	/* this workload is not CPU bound, so choose a lower freq */
+	 
 	if (sensitivity < od_tuners->powersave_bias) {
 		if (data->freq_prev == policy->cur)
 			freq_next = policy->cur;

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bma180.c - IIO driver for Bosch BMA180 triaxial acceleration sensor
- *
- * Copyright 2013 Oleksandr Kravchenko <x0199363@ti.com>
- *
- * Support for BMA250 (c) Peter Meerwald <pmeerw@pmeerw.net>
- *
- * SPI is not supported by driver
- * BMA023/BMA150/SMB380: 7-bit I2C slave address 0x38
- * BMA180: 7-bit I2C slave address 0x40 or 0x41
- * BMA250: 7-bit I2C slave address 0x18 or 0x19
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -62,21 +51,21 @@ struct bma180_part_info {
 	void (*chip_disable)(struct bma180_data *data);
 };
 
-/* Register set */
+ 
 #define BMA023_CTRL_REG0	0x0a
 #define BMA023_CTRL_REG1	0x0b
 #define BMA023_CTRL_REG2	0x14
 #define BMA023_CTRL_REG3	0x15
 
-#define BMA023_RANGE_MASK	GENMASK(4, 3) /* Range of accel values */
-#define BMA023_BW_MASK		GENMASK(2, 0) /* Accel bandwidth */
+#define BMA023_RANGE_MASK	GENMASK(4, 3)  
+#define BMA023_BW_MASK		GENMASK(2, 0)  
 #define BMA023_SLEEP		BIT(0)
 #define BMA023_INT_RESET_MASK	BIT(6)
-#define BMA023_NEW_DATA_INT	BIT(5) /* Intr every new accel data is ready */
+#define BMA023_NEW_DATA_INT	BIT(5)  
 #define BMA023_RESET_VAL	BIT(1)
 
-#define BMA180_CHIP_ID		0x00 /* Need to distinguish BMA180 from other */
-#define BMA180_ACC_X_LSB	0x02 /* First of 6 registers of accel data */
+#define BMA180_CHIP_ID		0x00  
+#define BMA180_ACC_X_LSB	0x02  
 #define BMA180_TEMP		0x08
 #define BMA180_CTRL_REG0	0x0d
 #define BMA180_RESET		0x10
@@ -85,31 +74,31 @@ struct bma180_part_info {
 #define BMA180_TCO_Z		0x30
 #define BMA180_OFFSET_LSB1	0x35
 
-/* BMA180_CTRL_REG0 bits */
-#define BMA180_DIS_WAKE_UP	BIT(0) /* Disable wake up mode */
-#define BMA180_SLEEP		BIT(1) /* 1 - chip will sleep */
-#define BMA180_EE_W		BIT(4) /* Unlock writing to addr from 0x20 */
-#define BMA180_RESET_INT	BIT(6) /* Reset pending interrupts */
+ 
+#define BMA180_DIS_WAKE_UP	BIT(0)  
+#define BMA180_SLEEP		BIT(1)  
+#define BMA180_EE_W		BIT(4)  
+#define BMA180_RESET_INT	BIT(6)  
 
-/* BMA180_CTRL_REG3 bits */
-#define BMA180_NEW_DATA_INT	BIT(1) /* Intr every new accel data is ready */
+ 
+#define BMA180_NEW_DATA_INT	BIT(1)  
 
-/* BMA180_OFFSET_LSB1 skipping mode bit */
+ 
 #define BMA180_SMP_SKIP		BIT(0)
 
-/* Bit masks for registers bit fields */
-#define BMA180_RANGE		0x0e /* Range of measured accel values */
-#define BMA180_BW		0xf0 /* Accel bandwidth */
-#define BMA180_MODE_CONFIG	0x03 /* Config operation modes */
+ 
+#define BMA180_RANGE		0x0e  
+#define BMA180_BW		0xf0  
+#define BMA180_MODE_CONFIG	0x03  
 
-/* We have to write this value in reset register to do soft reset */
+ 
 #define BMA180_RESET_VAL	0xb6
 
 #define BMA023_ID_REG_VAL	0x02
 #define BMA180_ID_REG_VAL	0x03
 #define BMA250_ID_REG_VAL	0x03
 
-/* Chip power modes */
+ 
 #define BMA180_LOW_POWER	0x03
 
 #define BMA250_RANGE_REG	0x0f
@@ -120,14 +109,14 @@ struct bma180_part_info {
 #define BMA250_INT_MAP_REG	0x1a
 #define BMA250_INT_RESET_REG	0x21
 
-#define BMA250_RANGE_MASK	GENMASK(3, 0) /* Range of accel values */
-#define BMA250_BW_MASK		GENMASK(4, 0) /* Accel bandwidth */
+#define BMA250_RANGE_MASK	GENMASK(3, 0)  
+#define BMA250_BW_MASK		GENMASK(4, 0)  
 #define BMA250_BW_OFFSET	8
-#define BMA250_SUSPEND_MASK	BIT(7) /* chip will sleep */
+#define BMA250_SUSPEND_MASK	BIT(7)  
 #define BMA250_LOWPOWER_MASK	BIT(6)
 #define BMA250_DATA_INTEN_MASK	BIT(4)
 #define BMA250_INT1_DATA_MASK	BIT(0)
-#define BMA250_INT_RESET_MASK	BIT(7) /* Reset pending interrupts */
+#define BMA250_INT_RESET_MASK	BIT(7)  
 
 struct bma180_data {
 	struct regulator *vdd_supply;
@@ -141,7 +130,7 @@ struct bma180_data {
 	int scale;
 	int bw;
 	bool pmode;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		s16 chan[4];
 		s64 timestamp __aligned(8);
@@ -155,13 +144,13 @@ enum bma180_chan {
 	TEMP
 };
 
-static int bma023_bw_table[] = { 25, 50, 100, 190, 375, 750, 1500 }; /* Hz */
+static int bma023_bw_table[] = { 25, 50, 100, 190, 375, 750, 1500 };  
 static int bma023_scale_table[] = { 2452, 4903, 9709, };
 
-static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 };  
 static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
 
-static int bma250_bw_table[] = { 8, 16, 31, 63, 125, 250, 500, 1000 }; /* Hz */
+static int bma250_bw_table[] = { 8, 16, 31, 63, 125, 250, 500, 1000 };  
 static int bma250_scale_table[] = { 0, 0, 0, 38344, 0, 76590, 0, 0, 153180, 0,
 	0, 0, 306458 };
 
@@ -333,7 +322,7 @@ static int bma180_soft_reset(struct bma180_data *data)
 
 static int bma180_chip_init(struct bma180_data *data)
 {
-	/* Try to read chip_id register. It must return 0x03. */
+	 
 	int ret = i2c_smbus_read_byte_data(data->client, BMA180_CHIP_ID);
 
 	if (ret < 0)
@@ -347,10 +336,7 @@ static int bma180_chip_init(struct bma180_data *data)
 	ret = bma180_soft_reset(data);
 	if (ret)
 		return ret;
-	/*
-	 * No serial transaction should occur within minimum 10 us
-	 * after soft_reset command
-	 */
+	 
 	msleep(20);
 
 	return bma180_set_new_data_intr_state(data, false);
@@ -363,10 +349,10 @@ static int bma023_chip_config(struct bma180_data *data)
 	if (ret)
 		goto err;
 
-	ret = bma180_set_bw(data, 50); /* 50 Hz */
+	ret = bma180_set_bw(data, 50);  
 	if (ret)
 		goto err;
-	ret = bma180_set_scale(data, 2452); /* 2 G */
+	ret = bma180_set_scale(data, 2452);  
 	if (ret)
 		goto err;
 
@@ -395,10 +381,10 @@ static int bma180_chip_config(struct bma180_data *data)
 	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
 	if (ret)
 		goto err;
-	ret = bma180_set_bw(data, 20); /* 20 Hz */
+	ret = bma180_set_bw(data, 20);  
 	if (ret)
 		goto err;
-	ret = bma180_set_scale(data, 2452); /* 2 G */
+	ret = bma180_set_scale(data, 2452);  
 	if (ret)
 		goto err;
 
@@ -418,16 +404,13 @@ static int bma250_chip_config(struct bma180_data *data)
 	ret = bma180_set_pmode(data, false);
 	if (ret)
 		goto err;
-	ret = bma180_set_bw(data, 16); /* 16 Hz */
+	ret = bma180_set_bw(data, 16);  
 	if (ret)
 		goto err;
-	ret = bma180_set_scale(data, 38344); /* 2 G */
+	ret = bma180_set_scale(data, 38344);  
 	if (ret)
 		goto err;
-	/*
-	 * This enables dataready interrupt on the INT1 pin
-	 * FIXME: support using the INT2 pin
-	 */
+	 
 	ret = bma180_set_bits(data, BMA250_INT_MAP_REG, BMA250_INT1_DATA_MASK, 1);
 	if (ret)
 		goto err;
@@ -760,7 +743,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		.num_scales = ARRAY_SIZE(bma023_scale_table),
 		.bw_table = bma023_bw_table,
 		.num_bw = ARRAY_SIZE(bma023_bw_table),
-		/* No temperature channel */
+		 
 		.temp_offset = 0,
 		.int_reset_reg = BMA023_CTRL_REG0,
 		.int_reset_mask = BMA023_INT_RESET_MASK,
@@ -770,7 +753,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		.bw_mask = BMA023_BW_MASK,
 		.scale_reg = BMA023_CTRL_REG2,
 		.scale_mask = BMA023_RANGE_MASK,
-		/* No power mode on bma023 */
+		 
 		.power_reg = 0,
 		.power_mask = 0,
 		.lowpower_val = 0,
@@ -789,7 +772,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		.num_scales = ARRAY_SIZE(bma023_scale_table),
 		.bw_table = bma023_bw_table,
 		.num_bw = ARRAY_SIZE(bma023_bw_table),
-		.temp_offset = -60, /* 0 LSB @ -30 degree C */
+		.temp_offset = -60,  
 		.int_reset_reg = BMA023_CTRL_REG0,
 		.int_reset_mask = BMA023_INT_RESET_MASK,
 		.sleep_reg = BMA023_CTRL_REG0,
@@ -798,7 +781,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		.bw_mask = BMA023_BW_MASK,
 		.scale_reg = BMA023_CTRL_REG2,
 		.scale_mask = BMA023_RANGE_MASK,
-		/* No power mode on bma150 */
+		 
 		.power_reg = 0,
 		.power_mask = 0,
 		.lowpower_val = 0,
@@ -817,7 +800,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		.num_scales = ARRAY_SIZE(bma180_scale_table),
 		.bw_table = bma180_bw_table,
 		.num_bw = ARRAY_SIZE(bma180_bw_table),
-		.temp_offset = 48, /* 0 LSB @ 24 degree C */
+		.temp_offset = 48,  
 		.int_reset_reg = BMA180_CTRL_REG0,
 		.int_reset_mask = BMA180_RESET_INT,
 		.sleep_reg = BMA180_CTRL_REG0,
@@ -844,7 +827,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		.num_scales = ARRAY_SIZE(bma250_scale_table),
 		.bw_table = bma250_bw_table,
 		.num_bw = ARRAY_SIZE(bma250_bw_table),
-		.temp_offset = 48, /* 0 LSB @ 24 degree C */
+		.temp_offset = 48,  
 		.int_reset_reg = BMA250_INT_RESET_REG,
 		.int_reset_mask = BMA250_INT_RESET_MASK,
 		.sleep_reg = BMA250_POWER_REG,
@@ -956,7 +939,7 @@ static int bma180_probe(struct i2c_client *client)
 		return dev_err_probe(dev, PTR_ERR(data->vddio_supply),
 				     "Failed to get vddio regulator\n");
 
-	/* Typical voltage 2.4V these are min and max */
+	 
 	ret = regulator_set_voltage(data->vdd_supply, 1620000, 3600000);
 	if (ret)
 		return ret;
@@ -973,7 +956,7 @@ static int bma180_probe(struct i2c_client *client)
 		dev_err(dev, "Failed to enable vddio regulator: %d\n", ret);
 		goto err_disable_vdd;
 	}
-	/* Wait to make sure we started up properly (3 ms at least) */
+	 
 	usleep_range(3000, 5000);
 
 	ret = data->part_info->chip_config(data);

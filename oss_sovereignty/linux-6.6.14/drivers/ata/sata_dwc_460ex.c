@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/ata/sata_dwc_460ex.c
- *
- * Synopsys DesignWare Cores (DWC) SATA host driver
- *
- * Author: Mark Miesfeld <mmiesfeld@amcc.com>
- *
- * Ported from 2.6.19.2 to 2.6.25/26 by Stefan Roese <sr@denx.de>
- * Copyright 2008 DENX Software Engineering
- *
- * Based on versions provided by AMCC and Synopsys which are:
- *          Copyright 2006 Applied Micro Circuits Corporation
- *          COPYRIGHT (C) 2005  SYNOPSYS, INC.  ALL RIGHTS RESERVED
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,7 +18,7 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
 
-/* These two are defined in "libata.h" */
+ 
 #undef	DRV_NAME
 #undef	DRV_VERSION
 
@@ -41,7 +28,7 @@
 #define sata_dwc_writel(a, v)	writel_relaxed(v, a)
 #define sata_dwc_readl(a)	readl_relaxed(a)
 
-#define AHB_DMA_BRST_DFLT	64	/* 16 data items burst length */
+#define AHB_DMA_BRST_DFLT	64	 
 
 enum {
 	SATA_DWC_MAX_PORTS = 1,
@@ -50,42 +37,42 @@ enum {
 	SATA_DWC_REG_OFFSET = 0x64,
 };
 
-/* DWC SATA Registers */
+ 
 struct sata_dwc_regs {
-	u32 fptagr;		/* 1st party DMA tag */
-	u32 fpbor;		/* 1st party DMA buffer offset */
-	u32 fptcr;		/* 1st party DMA Xfr count */
-	u32 dmacr;		/* DMA Control */
-	u32 dbtsr;		/* DMA Burst Transac size */
-	u32 intpr;		/* Interrupt Pending */
-	u32 intmr;		/* Interrupt Mask */
-	u32 errmr;		/* Error Mask */
-	u32 llcr;		/* Link Layer Control */
-	u32 phycr;		/* PHY Control */
-	u32 physr;		/* PHY Status */
-	u32 rxbistpd;		/* Recvd BIST pattern def register */
-	u32 rxbistpd1;		/* Recvd BIST data dword1 */
-	u32 rxbistpd2;		/* Recvd BIST pattern data dword2 */
-	u32 txbistpd;		/* Trans BIST pattern def register */
-	u32 txbistpd1;		/* Trans BIST data dword1 */
-	u32 txbistpd2;		/* Trans BIST data dword2 */
-	u32 bistcr;		/* BIST Control Register */
-	u32 bistfctr;		/* BIST FIS Count Register */
-	u32 bistsr;		/* BIST Status Register */
-	u32 bistdecr;		/* BIST Dword Error count register */
-	u32 res[15];		/* Reserved locations */
-	u32 testr;		/* Test Register */
-	u32 versionr;		/* Version Register */
-	u32 idr;		/* ID Register */
-	u32 unimpl[192];	/* Unimplemented */
-	u32 dmadr[256];		/* FIFO Locations in DMA Mode */
+	u32 fptagr;		 
+	u32 fpbor;		 
+	u32 fptcr;		 
+	u32 dmacr;		 
+	u32 dbtsr;		 
+	u32 intpr;		 
+	u32 intmr;		 
+	u32 errmr;		 
+	u32 llcr;		 
+	u32 phycr;		 
+	u32 physr;		 
+	u32 rxbistpd;		 
+	u32 rxbistpd1;		 
+	u32 rxbistpd2;		 
+	u32 txbistpd;		 
+	u32 txbistpd1;		 
+	u32 txbistpd2;		 
+	u32 bistcr;		 
+	u32 bistfctr;		 
+	u32 bistsr;		 
+	u32 bistdecr;		 
+	u32 res[15];		 
+	u32 testr;		 
+	u32 versionr;		 
+	u32 idr;		 
+	u32 unimpl[192];	 
+	u32 dmadr[256];		 
 };
 
 enum {
 	SCR_SCONTROL_DET_ENABLE	=	0x00000001,
 	SCR_SSTATUS_DET_PRESENT	=	0x00000001,
 	SCR_SERROR_DIAG_X	=	0x04000000,
-/* DWC SATA Register Operations */
+ 
 	SATA_DWC_TXFIFO_DEPTH	=	0x01FF,
 	SATA_DWC_RXFIFO_DEPTH	=	0x01FF,
 	SATA_DWC_DMACR_TMOD_TXCHEN =	0x00000004,
@@ -106,7 +93,7 @@ enum {
 	SATA_DWC_LLCR_SCRAMEN	=	0x00000001,
 	SATA_DWC_LLCR_DESCRAMEN	=	0x00000002,
 	SATA_DWC_LLCR_RPDEN	=	0x00000004,
-/* This is all error bits, zero's are reserved fields. */
+ 
 	SATA_DWC_SERROR_ERR_BITS =	0x0FFF0F03
 };
 
@@ -119,10 +106,10 @@ enum {
 #define SATA_DWC_DBTSR_MRD(size)	((((size)/4) & SATA_DWC_RXFIFO_DEPTH)\
 						 << 16)
 struct sata_dwc_device {
-	struct device		*dev;		/* generic device struct */
-	struct ata_probe_ent	*pe;		/* ptr to probe-ent */
+	struct device		*dev;		 
+	struct ata_probe_ent	*pe;		 
 	struct ata_host		*host;
-	struct sata_dwc_regs __iomem *sata_dwc_regs;	/* DW SATA specific */
+	struct sata_dwc_regs __iomem *sata_dwc_regs;	 
 	u32			sactive_issued;
 	u32			sactive_queued;
 	struct phy		*phy;
@@ -132,10 +119,7 @@ struct sata_dwc_device {
 #endif
 };
 
-/*
- * Allow one extra special slot for commands and DMA management
- * to account for libata internal commands.
- */
+ 
 #define SATA_DWC_QCMD_MAX	(ATA_MAX_QUEUE + 1)
 
 struct sata_dwc_device_port {
@@ -143,15 +127,13 @@ struct sata_dwc_device_port {
 	int			cmd_issued[SATA_DWC_QCMD_MAX];
 	int			dma_pending[SATA_DWC_QCMD_MAX];
 
-	/* DMA info */
+	 
 	struct dma_chan			*chan;
 	struct dma_async_tx_descriptor	*desc[SATA_DWC_QCMD_MAX];
 	u32				dma_interrupt_count;
 };
 
-/*
- * Commonly used DWC SATA driver macros
- */
+ 
 #define HSDEV_FROM_HOST(host)	((struct sata_dwc_device *)(host)->private_data)
 #define HSDEV_FROM_AP(ap)	((struct sata_dwc_device *)(ap)->host->private_data)
 #define HSDEVP_FROM_AP(ap)	((struct sata_dwc_device_port *)(ap)->private_data)
@@ -169,9 +151,7 @@ enum {
 	SATA_DWC_DMA_PENDING_RX		= 2,
 };
 
-/*
- * Prototypes
- */
+ 
 static void sata_dwc_bmdma_start_by_tag(struct ata_queued_cmd *qc, u8 tag);
 static int sata_dwc_qc_complete(struct ata_port *ap, struct ata_queued_cmd *qc);
 static void sata_dwc_dma_xfer_complete(struct ata_port *ap);
@@ -212,7 +192,7 @@ static int sata_dwc_dma_get_channel_old(struct sata_dwc_device_port *hsdevp)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
-	/* Acquire DMA channel */
+	 
 	hsdevp->chan = dma_request_channel(mask, sata_dwc_dma_filter, hsdevp);
 	if (!hsdevp->chan) {
 		dev_err(dev, "%s: dma channel unavailable\n", __func__);
@@ -235,19 +215,19 @@ static int sata_dwc_dma_init_old(struct platform_device *pdev,
 	hsdev->dma->dev = dev;
 	hsdev->dma->id = pdev->id;
 
-	/* Get SATA DMA interrupt number */
+	 
 	hsdev->dma->irq = irq_of_parse_and_map(np, 1);
 	if (!hsdev->dma->irq) {
 		dev_err(dev, "no SATA DMA irq\n");
 		return -ENODEV;
 	}
 
-	/* Get physical SATA DMA register base address */
+	 
 	hsdev->dma->regs = devm_platform_ioremap_resource(pdev, 1);
 	if (IS_ERR(hsdev->dma->regs))
 		return PTR_ERR(hsdev->dma->regs);
 
-	/* Initialize AHB DMAC */
+	 
 	return dw_dma_probe(hsdev->dma);
 }
 
@@ -300,11 +280,7 @@ static void dma_dwc_xfer_done(void *hsdev_instance)
 	hsdevp = HSDEVP_FROM_AP(ap);
 	tag = ap->link.active_tag;
 
-	/*
-	 * Each DMA command produces 2 interrupts.  Only
-	 * complete the command after both interrupts have been
-	 * seen. (See sata_dwc_isr())
-	 */
+	 
 	hsdevp->dma_interrupt_count++;
 	sata_dwc_clear_dmacr(hsdevp, tag);
 
@@ -330,20 +306,20 @@ static struct dma_async_tx_descriptor *dma_dwc_xfer_setup(struct ata_queued_cmd 
 	if (qc->dma_dir == DMA_DEV_TO_MEM) {
 		sconf.src_addr = hsdev->dmadr;
 		sconf.device_fc = false;
-	} else {	/* DMA_MEM_TO_DEV */
+	} else {	 
 		sconf.dst_addr = hsdev->dmadr;
 		sconf.device_fc = false;
 	}
 
 	sconf.direction = qc->dma_dir;
-	sconf.src_maxburst = AHB_DMA_BRST_DFLT / 4;	/* in items */
-	sconf.dst_maxburst = AHB_DMA_BRST_DFLT / 4;	/* in items */
+	sconf.src_maxburst = AHB_DMA_BRST_DFLT / 4;	 
+	sconf.dst_maxburst = AHB_DMA_BRST_DFLT / 4;	 
 	sconf.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	sconf.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 
 	dmaengine_slave_config(hsdevp->chan, &sconf);
 
-	/* Convert SG list to linked list of items (LLIs) for AHB DMA */
+	 
 	desc = dmaengine_prep_slave_sg(hsdevp->chan, qc->sg, qc->n_elem,
 				       qc->dma_dir,
 				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
@@ -407,7 +383,7 @@ static u32 qcmd_tag_to_mask(u8 tag)
 	return 0x00000001 << (tag & 0x1f);
 }
 
-/* See ahci.c */
+ 
 static void sata_dwc_error_intr(struct ata_port *ap,
 				struct sata_dwc_device *hsdev, uint intpr)
 {
@@ -430,16 +406,16 @@ static void sata_dwc_error_intr(struct ata_port *ap,
 		__func__, serror, intpr, status, hsdevp->dma_interrupt_count,
 		hsdevp->dma_pending[tag], hsdevp->cmd_issued[tag]);
 
-	/* Clear error register and interrupt bit */
+	 
 	clear_serror(ap);
 	clear_interrupt_bit(hsdev, SATA_DWC_INTPR_ERR);
 
-	/* This is the only error happening now.  TODO check for exact error */
+	 
 
 	err_mask |= AC_ERR_HOST_BUS;
 	action |= ATA_EH_RESET;
 
-	/* Pass this on to EH */
+	 
 	ehi->serror |= serror;
 	ehi->action |= action;
 
@@ -452,13 +428,7 @@ static void sata_dwc_error_intr(struct ata_port *ap,
 	ata_port_abort(ap);
 }
 
-/*
- * Function : sata_dwc_isr
- * arguments : irq, void *dev_instance, struct pt_regs *regs
- * Return value : irqreturn_t - status of IRQ
- * This Interrupt handler called via port ops registered function.
- * .irq_handler = sata_dwc_isr
- */
+ 
 static irqreturn_t sata_dwc_isr(int irq, void *dev_instance)
 {
 	struct ata_host *host = (struct ata_host *)dev_instance;
@@ -474,7 +444,7 @@ static irqreturn_t sata_dwc_isr(int irq, void *dev_instance)
 
 	spin_lock_irqsave(&host->lock, flags);
 
-	/* Read the interrupt register */
+	 
 	intpr = sata_dwc_readl(&hsdev->sata_dwc_regs->intpr);
 
 	ap = host->ports[port];
@@ -483,14 +453,14 @@ static irqreturn_t sata_dwc_isr(int irq, void *dev_instance)
 	dev_dbg(ap->dev, "%s intpr=0x%08x active_tag=%d\n", __func__, intpr,
 		ap->link.active_tag);
 
-	/* Check for error interrupt */
+	 
 	if (intpr & SATA_DWC_INTPR_ERR) {
 		sata_dwc_error_intr(ap, hsdev, intpr);
 		handled = 1;
 		goto DONE;
 	}
 
-	/* Check for DMA SETUP FIS (FP DMA) interrupt */
+	 
 	if (intpr & SATA_DWC_INTPR_NEWFP) {
 		clear_interrupt_bit(hsdev, SATA_DWC_INTPR_NEWFP);
 
@@ -507,11 +477,7 @@ static irqreturn_t sata_dwc_isr(int irq, void *dev_instance)
 			handled = 1;
 			goto DONE;
 		}
-		/*
-		 * Start FP DMA for NCQ command.  At this point the tag is the
-		 * active tag.  It is the tag that matches the command about to
-		 * be completed.
-		 */
+		 
 		trace_ata_bmdma_start(ap, &qc->tf, tag);
 		qc->ap->link.active_tag = tag;
 		sata_dwc_bmdma_start_by_tag(qc, tag);
@@ -522,7 +488,7 @@ static irqreturn_t sata_dwc_isr(int irq, void *dev_instance)
 	sata_dwc_scr_read(&ap->link, SCR_ACTIVE, &sactive);
 	tag_mask = (hsdev->sactive_issued | sactive) ^ sactive;
 
-	/* If no sactive issued and tag_mask is zero then this is not NCQ */
+	 
 	if (hsdev->sactive_issued == 0 && tag_mask == 0) {
 		if (ap->link.active_tag == ATA_TAG_POISON)
 			tag = 0;
@@ -530,7 +496,7 @@ static irqreturn_t sata_dwc_isr(int irq, void *dev_instance)
 			tag = ap->link.active_tag;
 		qc = ata_qc_from_tag(ap, tag);
 
-		/* DEV interrupt w/ no active qc? */
+		 
 		if (unlikely(!qc || (qc->tf.flags & ATA_TFLAG_POLLING))) {
 			dev_err(ap->dev,
 				"%s interrupt with no active qc qc=%p\n",
@@ -555,12 +521,7 @@ static irqreturn_t sata_dwc_isr(int irq, void *dev_instance)
 			__func__, get_prot_descript(qc->tf.protocol));
 DRVSTILLBUSY:
 		if (ata_is_dma(qc->tf.protocol)) {
-			/*
-			 * Each DMA transaction produces 2 interrupts. The DMAC
-			 * transfer complete interrupt and the SATA controller
-			 * operation done interrupt. The command should be
-			 * completed only after both interrupts are seen.
-			 */
+			 
 			hsdevp->dma_interrupt_count++;
 			if (hsdevp->dma_pending[tag] == \
 					SATA_DWC_DMA_PENDING_NONE) {
@@ -585,14 +546,9 @@ DRVSTILLBUSY:
 		goto DONE;
 	}
 
-	/*
-	 * This is a NCQ command. At this point we need to figure out for which
-	 * tags we have gotten a completion interrupt.  One interrupt may serve
-	 * as completion for more than one operation when commands are queued
-	 * (NCQ).  We need to process each completed command.
-	 */
+	 
 
-	 /* process completed commands */
+	  
 	sata_dwc_scr_read(&ap->link, SCR_ACTIVE, &sactive);
 	tag_mask = (hsdev->sactive_issued | sactive) ^ sactive;
 
@@ -608,7 +564,7 @@ DRVSTILLBUSY:
 			 sactive, hsdev->sactive_issued, tag_mask);
 	}
 
-	/* read just to clear ... not bad if currently still busy */
+	 
 	status = ap->ops->sff_check_status(ap);
 	dev_dbg(ap->dev, "%s ATA status register=0x%x\n", __func__, status);
 
@@ -627,11 +583,11 @@ DRVSTILLBUSY:
 			goto DONE;
 		}
 
-		/* To be picked up by completion functions */
+		 
 		qc->ap->link.active_tag = tag;
 		hsdevp->cmd_issued[tag] = SATA_DWC_CMD_ISSUED_NOT;
 
-		/* Let libata/scsi layers handle error */
+		 
 		if (status & ATA_ERR) {
 			dev_dbg(ap->dev, "%s ATA_ERR (0x%x)\n", __func__,
 				status);
@@ -640,7 +596,7 @@ DRVSTILLBUSY:
 			goto DONE;
 		}
 
-		/* Process completed command */
+		 
 		dev_dbg(ap->dev, "%s NCQ command, protocol: %s\n", __func__,
 			get_prot_descript(qc->tf.protocol));
 		if (ata_is_dma(qc->tf.protocol)) {
@@ -661,15 +617,9 @@ STILLBUSY:
 		ap->stats.idle_irq++;
 		dev_warn(ap->dev, "STILL BUSY IRQ ata%d: irq trap\n",
 			ap->print_id);
-	} /* while tag_mask */
+	}  
 
-	/*
-	 * Check to see if any commands completed while we were processing our
-	 * initial set of completed commands (read status clears interrupts,
-	 * so we might miss a completed command interrupt if one came in while
-	 * we were processing --we read status as part of processing a completed
-	 * command).
-	 */
+	 
 	sata_dwc_scr_read(&ap->link, SCR_ACTIVE, &sactive2);
 	if (sactive2 != sactive) {
 		dev_dbg(ap->dev,
@@ -695,10 +645,7 @@ static void sata_dwc_clear_dmacr(struct sata_dwc_device_port *hsdevp, u8 tag)
 		dmacr = SATA_DWC_DMACR_TX_CLEAR(dmacr);
 		sata_dwc_writel(&hsdev->sata_dwc_regs->dmacr, dmacr);
 	} else {
-		/*
-		 * This should not happen, it indicates the driver is out of
-		 * sync.  If it does happen, clear dmacr anyway.
-		 */
+		 
 		dev_err(hsdev->dev,
 			"%s DMA protocol RX and TX DMA not pending tag=0x%02x pending=%d dmacr: 0x%08x\n",
 			__func__, tag, hsdevp->dma_pending[tag], dmacr);
@@ -754,7 +701,7 @@ static int sata_dwc_qc_complete(struct ata_port *ap, struct ata_queued_cmd *qc)
 		"QC complete cmd=0x%02x status=0x%02x ata%u: protocol=%d\n",
 		qc->tf.command, status, ap->print_id, qc->tf.protocol);
 
-	/* clear active bit */
+	 
 	mask = (~(qcmd_tag_to_mask(tag)));
 	hsdev->sactive_queued = hsdev->sactive_queued & mask;
 	hsdev->sactive_issued = hsdev->sactive_issued & mask;
@@ -764,16 +711,13 @@ static int sata_dwc_qc_complete(struct ata_port *ap, struct ata_queued_cmd *qc)
 
 static void sata_dwc_enable_interrupts(struct sata_dwc_device *hsdev)
 {
-	/* Enable selective interrupts by setting the interrupt maskregister*/
+	 
 	sata_dwc_writel(&hsdev->sata_dwc_regs->intmr,
 			SATA_DWC_INTMR_ERRM |
 			SATA_DWC_INTMR_NEWFPM |
 			SATA_DWC_INTMR_PMABRTM |
 			SATA_DWC_INTMR_DMATM);
-	/*
-	 * Unmask the error bits that should trigger an error interrupt by
-	 * setting the error mask register.
-	 */
+	 
 	sata_dwc_writel(&hsdev->sata_dwc_regs->errmr, SATA_DWC_SERROR_ERR_BITS);
 
 	dev_dbg(hsdev->dev, "%s: INTMR = 0x%08x, ERRMR = 0x%08x\n",
@@ -823,12 +767,7 @@ static int sata_dwc_dma_get_channel(struct sata_dwc_device_port *hsdevp)
 	return 0;
 }
 
-/*
- * Function : sata_dwc_port_start
- * arguments : struct ata_ioports *port
- * Return value : returns 0 if success, error code otherwise
- * This function allocates the scatter gather LLI table for AHB DMA
- */
+ 
 static int sata_dwc_port_start(struct ata_port *ap)
 {
 	int err = 0;
@@ -849,7 +788,7 @@ static int sata_dwc_port_start(struct ata_port *ap)
 		goto CLEANUP;
 	}
 
-	/* Allocate Port Struct */
+	 
 	hsdevp = kzalloc(sizeof(*hsdevp), GFP_KERNEL);
 	if (!hsdevp) {
 		err = -ENOMEM;
@@ -868,7 +807,7 @@ static int sata_dwc_port_start(struct ata_port *ap)
 	for (i = 0; i < SATA_DWC_QCMD_MAX; i++)
 		hsdevp->cmd_issued[i] = SATA_DWC_CMD_ISSUED_NOT;
 
-	ap->bmdma_prd = NULL;	/* set these so libata doesn't use them */
+	ap->bmdma_prd = NULL;	 
 	ap->bmdma_prd_dma = 0;
 
 	if (ap->port_no == 0)  {
@@ -884,7 +823,7 @@ static int sata_dwc_port_start(struct ata_port *ap)
 				 SATA_DWC_DBTSR_MRD(AHB_DMA_BRST_DFLT)));
 	}
 
-	/* Clear any error bits before libata starts issuing commands */
+	 
 	clear_serror(ap);
 	ap->private_data = hsdevp;
 	dev_dbg(ap->dev, "%s: done\n", __func__);
@@ -912,13 +851,7 @@ static void sata_dwc_port_stop(struct ata_port *ap)
 	ap->private_data = NULL;
 }
 
-/*
- * Function : sata_dwc_exec_command_by_tag
- * arguments : ata_port *ap, ata_taskfile *tf, u8 tag, u32 cmd_issued
- * Return value : None
- * This function keeps track of individual command tag ids and calls
- * ata_exec_command in libata
- */
+ 
 static void sata_dwc_exec_command_by_tag(struct ata_port *ap,
 					 struct ata_taskfile *tf,
 					 u8 tag, u32 cmd_issued)
@@ -927,12 +860,7 @@ static void sata_dwc_exec_command_by_tag(struct ata_port *ap,
 
 	hsdevp->cmd_issued[tag] = cmd_issued;
 
-	/*
-	 * Clear SError before executing a new command.
-	 * sata_dwc_scr_write and read can not be used here. Clearing the PM
-	 * managed SError register for the disk needs to be done before the
-	 * task file is loaded.
-	 */
+	 
 	clear_serror(ap);
 	ata_sff_exec_command(ap, tf);
 }
@@ -990,7 +918,7 @@ static void sata_dwc_bmdma_start_by_tag(struct ata_queued_cmd *qc, u8 tag)
 			sata_dwc_writel(&hsdev->sata_dwc_regs->dmacr,
 					SATA_DWC_DMACR_RXCHEN);
 
-		/* Enable AHB DMA transfer on the specified channel */
+		 
 		dmaengine_submit(desc);
 		dma_async_issue_pending(hsdevp->chan);
 	}
@@ -1055,11 +983,11 @@ static int sata_dwc_hardreset(struct ata_link *link, unsigned int *class,
 
 	sata_dwc_enable_interrupts(hsdev);
 
-	/* Reconfigure the DMA control register */
+	 
 	sata_dwc_writel(&hsdev->sata_dwc_regs->dmacr,
 			SATA_DWC_DMACR_TXRXCH_CLEAR);
 
-	/* Reconfigure the DMA Burst Transaction Size register */
+	 
 	sata_dwc_writel(&hsdev->sata_dwc_regs->dbtsr,
 			SATA_DWC_DBTSR_MWR(AHB_DMA_BRST_DFLT) |
 			SATA_DWC_DBTSR_MRD(AHB_DMA_BRST_DFLT));
@@ -1069,28 +997,17 @@ static int sata_dwc_hardreset(struct ata_link *link, unsigned int *class,
 
 static void sata_dwc_dev_select(struct ata_port *ap, unsigned int device)
 {
-	/* SATA DWC is master only */
+	 
 }
 
-/*
- * scsi mid-layer and libata interface structures
- */
+ 
 static const struct scsi_host_template sata_dwc_sht = {
 	ATA_NCQ_SHT(DRV_NAME),
-	/*
-	 * test-only: Currently this driver doesn't handle NCQ
-	 * correctly. We enable NCQ but set the queue depth to a
-	 * max of 1. This will get fixed in in a future release.
-	 */
+	 
 	.sg_tablesize		= LIBATA_MAX_PRD,
-	/* .can_queue		= ATA_MAX_QUEUE, */
-	/*
-	 * Make sure a LLI block is not created that will span 8K max FIS
-	 * boundary. If the block spans such a FIS boundary, there is a chance
-	 * that a DMA burst will cross that boundary -- this results in an
-	 * error in the host controller.
-	 */
-	.dma_boundary		= 0x1fff /* ATA_DMA_BOUNDARY */,
+	 
+	 
+	.dma_boundary		= 0x1fff  ,
 };
 
 static struct ata_port_operations sata_dwc_ops = {
@@ -1137,7 +1054,7 @@ static int sata_dwc_probe(struct platform_device *ofdev)
 	const struct ata_port_info *ppi[] = { &pi, NULL };
 	struct resource *res;
 
-	/* Allocate DWC SATA device */
+	 
 	host = ata_host_alloc_pinfo(dev, ppi, SATA_DWC_MAX_PORTS);
 	hsdev = devm_kzalloc(dev, sizeof(*hsdev), GFP_KERNEL);
 	if (!host || !hsdev)
@@ -1145,33 +1062,33 @@ static int sata_dwc_probe(struct platform_device *ofdev)
 
 	host->private_data = hsdev;
 
-	/* Ioremap SATA registers */
+	 
 	base = devm_platform_get_and_ioremap_resource(ofdev, 0, &res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 	dev_dbg(dev, "ioremap done for SATA register address\n");
 
-	/* Synopsys DWC SATA specific Registers */
+	 
 	hsdev->sata_dwc_regs = base + SATA_DWC_REG_OFFSET;
 	hsdev->dmadr = res->start + SATA_DWC_REG_OFFSET + offsetof(struct sata_dwc_regs, dmadr);
 
-	/* Setup port */
+	 
 	host->ports[0]->ioaddr.cmd_addr = base;
 	host->ports[0]->ioaddr.scr_addr = base + SATA_DWC_SCR_OFFSET;
 	sata_dwc_setup_port(&host->ports[0]->ioaddr, base);
 
-	/* Read the ID and Version Registers */
+	 
 	idr = sata_dwc_readl(&hsdev->sata_dwc_regs->idr);
 	versionr = sata_dwc_readl(&hsdev->sata_dwc_regs->versionr);
 	dev_notice(dev, "id %d, controller version %c.%c%c\n", idr, ver[0], ver[1], ver[2]);
 
-	/* Save dev for later use in dev_xxx() routines */
+	 
 	hsdev->dev = dev;
 
-	/* Enable SATA Interrupts */
+	 
 	sata_dwc_enable_interrupts(hsdev);
 
-	/* Get SATA interrupt number */
+	 
 	irq = irq_of_parse_and_map(np, 0);
 	if (!irq) {
 		dev_err(dev, "no SATA DMA irq\n");
@@ -1194,11 +1111,7 @@ static int sata_dwc_probe(struct platform_device *ofdev)
 	if (err)
 		goto error_out;
 
-	/*
-	 * Now, register with libATA core, this will also initiate the
-	 * device discovery process, invoking our port_start() handler &
-	 * error_handler() to execute a dummy Softreset EH session
-	 */
+	 
 	err = ata_host_activate(host, irq, sata_dwc_isr, 0, &sata_dwc_sht);
 	if (err)
 		dev_err(dev, "failed to activate host");
@@ -1221,7 +1134,7 @@ static void sata_dwc_remove(struct platform_device *ofdev)
 	phy_exit(hsdev->phy);
 
 #ifdef CONFIG_SATA_DWC_OLD_DMA
-	/* Free SATA DMA resources */
+	 
 	sata_dwc_dma_exit_old(hsdev);
 #endif
 

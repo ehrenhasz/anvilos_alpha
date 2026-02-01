@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2017 Rockchip Electronics Co. Ltd.
- * Author: Elaine <zhangqing@rock-chips.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3128_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3128_H
 
-/* core clocks */
+ 
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_CPLL		3
@@ -16,7 +13,7 @@
 #define PLL_GPLL_DIV2		6
 #define PLL_GPLL_DIV3		7
 
-/* sclk gates (special clocks) */
+ 
 #define SCLK_SPI0		65
 #define SCLK_NANDC		67
 #define SCLK_SDMMC		68
@@ -67,11 +64,11 @@
 #define SCLK_SFC		153
 #define SCLK_USB480M		154
 
-/* dclk gates */
+ 
 #define DCLK_VOP		190
 #define DCLK_EBC		191
 
-/* aclk gates */
+ 
 #define ACLK_VIO0		192
 #define ACLK_VIO1		193
 #define ACLK_DMAC		194
@@ -87,7 +84,7 @@
 #define ACLK_GMAC		212
 #define ACLK_GPU		213
 
-/* pclk gates */
+ 
 #define PCLK_SARADC		318
 #define PCLK_WDT		319
 #define PCLK_GPIO0		320
@@ -117,7 +114,7 @@
 #define PCLK_PMU_PRE		368
 #define PCLK_SIM_CARD		369
 
-/* hclk gates */
+ 
 #define HCLK_SPDIF		440
 #define HCLK_GPS		441
 #define HCLK_USBHOST		442
@@ -146,7 +143,7 @@
 
 #define CLK_NR_CLKS		(HCLK_PERI + 1)
 
-/* soft-reset indices */
+ 
 #define SRST_CORE0_PO		0
 #define SRST_CORE1_PO		1
 #define SRST_CORE2_PO		2

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include "dr_types.h"
 #include "dr_ste.h"
@@ -524,10 +524,7 @@ dr_action_reformat_to_action_type(enum mlx5dr_action_reformat_type reformat_type
 	return 0;
 }
 
-/* Apply the actions on the rule STE array starting from the last_ste.
- * Actions might require more than one STE, new_num_stes will return
- * the new size of the STEs array, rule with actions.
- */
+ 
 static void dr_actions_apply(struct mlx5dr_domain *dmn,
 			     enum mlx5dr_domain_nic_type nic_type,
 			     u8 *action_type_set,
@@ -574,7 +571,7 @@ int dr_action_validate_and_get_next_state(enum dr_action_domain action_domain,
 {
 	u32 cur_state = *state;
 
-	/* Check action state machine is valid */
+	 
 	*state = next_action_state[action_domain][cur_state][action_type];
 
 	if (*state == DR_ACTION_STATE_ERR)
@@ -591,10 +588,7 @@ static int dr_action_handle_cs_recalc(struct mlx5dr_domain *dmn,
 
 	switch (dest_action->action_type) {
 	case DR_ACTION_TYP_FT:
-		/* Allow destination flow table only if table is a terminating
-		 * table, since there is an *assumption* that in such case FW
-		 * will recalculate the CS.
-		 */
+		 
 		if (dest_action->dest_tbl->is_fw_tbl) {
 			*final_icm_addr = dest_action->dest_tbl->fw_tbl.rx_icm_addr;
 		} else {
@@ -605,9 +599,7 @@ static int dr_action_handle_cs_recalc(struct mlx5dr_domain *dmn,
 		break;
 
 	case DR_ACTION_TYP_VPORT:
-		/* If destination is vport we will get the FW flow table
-		 * that recalculates the CS and forwards to the vport.
-		 */
+		 
 		ret = mlx5dr_domain_get_recalc_cs_ft_addr(dest_action->vport->dmn,
 							  dest_action->vport->caps->num,
 							  final_icm_addr);
@@ -631,27 +623,22 @@ static void dr_action_modify_ttl_adjust(struct mlx5dr_domain *dmn,
 {
 	*recalc_cs_required = false;
 
-	/* if device supports csum recalculation - no adjustment needed */
+	 
 	if (mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps))
 		return;
 
-	/* no adjustment needed on TX rules */
+	 
 	if (!rx_rule)
 		return;
 
 	if (!MLX5_CAP_ESW_FLOWTABLE(dmn->mdev, fdb_ipv4_ttl_modify)) {
-		/* Ignore the modify TTL action.
-		 * It is always kept as last HW action.
-		 */
+		 
 		attr->modify_actions--;
 		return;
 	}
 
 	if (dmn->type == MLX5DR_DOMAIN_TYPE_FDB)
-		/* Due to a HW bug on some devices, modifying TTL on RX flows
-		 * will cause an incorrect checksum calculation. In such cases
-		 * we will use a FW table to recalculate the checksum.
-		 */
+		 
 		*recalc_cs_required = true;
 }
 
@@ -915,14 +902,14 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
 			return -EINVAL;
 		}
 
-		/* Check action duplication */
+		 
 		if (++action_type_set[action_type] > max_actions_type) {
 			mlx5dr_err(dmn, "Action type %d supports only max %d time(s)\n",
 				   action_type, max_actions_type);
 			return -EINVAL;
 		}
 
-		/* Check action state machine is valid */
+		 
 		if (dr_action_validate_and_get_next_state(action_domain,
 							  action_type,
 							  &state)) {
@@ -1140,9 +1127,7 @@ mlx5dr_action_create_dest_match_range(struct mlx5dr_domain *dmn,
 	if (ret)
 		goto free_miss_tbl_action;
 
-	/* No need to increase refcount on domain for this action,
-	 * the hit/miss table actions will do it internally.
-	 */
+	 
 
 	return action;
 
@@ -1518,7 +1503,7 @@ mlx5dr_action_create_packet_reformat(struct mlx5dr_domain *dmn,
 
 	refcount_inc(&dmn->refcount);
 
-	/* General checks */
+	 
 	ret = dr_action_reformat_to_action_type(reformat_type, &action_type);
 	if (ret) {
 		mlx5dr_dbg(dmn, "Invalid reformat_type provided\n");
@@ -1568,11 +1553,11 @@ dr_action_modify_sw_to_hw_add(struct mlx5dr_domain *dmn,
 	u16 sw_field;
 	u32 data;
 
-	/* Get SW modify action data */
+	 
 	sw_field = MLX5_GET(set_action_in, sw_action, field);
 	data = MLX5_GET(set_action_in, sw_action, data);
 
-	/* Convert SW data to HW modify action format */
+	 
 	hw_action_info = mlx5dr_ste_conv_modify_hdr_sw_field(dmn->ste_ctx, sw_field);
 	if (!hw_action_info) {
 		mlx5dr_dbg(dmn, "Modify add action invalid field given\n");
@@ -1604,20 +1589,20 @@ dr_action_modify_sw_to_hw_set(struct mlx5dr_domain *dmn,
 	u16 sw_field;
 	u32 data;
 
-	/* Get SW modify action data */
+	 
 	length = MLX5_GET(set_action_in, sw_action, length);
 	offset = MLX5_GET(set_action_in, sw_action, offset);
 	sw_field = MLX5_GET(set_action_in, sw_action, field);
 	data = MLX5_GET(set_action_in, sw_action, data);
 
-	/* Convert SW data to HW modify action format */
+	 
 	hw_action_info = mlx5dr_ste_conv_modify_hdr_sw_field(dmn->ste_ctx, sw_field);
 	if (!hw_action_info) {
 		mlx5dr_dbg(dmn, "Modify set action invalid field given\n");
 		return -EINVAL;
 	}
 
-	/* PRM defines that length zero specific length of 32bits */
+	 
 	length = length ? length : 32;
 
 	max_length = hw_action_info->end - hw_action_info->start + 1;
@@ -1651,14 +1636,14 @@ dr_action_modify_sw_to_hw_copy(struct mlx5dr_domain *dmn,
 	const struct mlx5dr_ste_action_modify_field *hw_src_action_info;
 	u16 src_field, dst_field;
 
-	/* Get SW modify action data */
+	 
 	src_field = MLX5_GET(copy_action_in, sw_action, src_field);
 	dst_field = MLX5_GET(copy_action_in, sw_action, dst_field);
 	src_offset = MLX5_GET(copy_action_in, sw_action, src_offset);
 	dst_offset = MLX5_GET(copy_action_in, sw_action, dst_offset);
 	length = MLX5_GET(copy_action_in, sw_action, length);
 
-	/* Convert SW data to HW modify action format */
+	 
 	hw_src_action_info = mlx5dr_ste_conv_modify_hdr_sw_field(dmn->ste_ctx, src_field);
 	hw_dst_action_info = mlx5dr_ste_conv_modify_hdr_sw_field(dmn->ste_ctx, dst_field);
 	if (!hw_src_action_info || !hw_dst_action_info) {
@@ -1666,7 +1651,7 @@ dr_action_modify_sw_to_hw_copy(struct mlx5dr_domain *dmn,
 		return -EINVAL;
 	}
 
-	/* PRM defines that length zero specific length of 32bits */
+	 
 	length = length ? length : 32;
 
 	src_max_length = hw_src_action_info->end -
@@ -1707,7 +1692,7 @@ dr_action_modify_sw_to_hw(struct mlx5dr_domain *dmn,
 	*hw_action = 0;
 	*ret_src_hw_info = NULL;
 
-	/* Get SW modify action type */
+	 
 	action = MLX5_GET(set_action_in, sw_action, action_type);
 
 	switch (action) {
@@ -1893,7 +1878,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
 	action->rewrite->allow_tx = 1;
 
 	for (i = 0; i < num_sw_actions || modify_ttl_sw_action; i++) {
-		/* modify TTL is handled separately, as a last action */
+		 
 		if (i == num_sw_actions) {
 			sw_action = modify_ttl_sw_action;
 			modify_ttl_sw_action = NULL;
@@ -1913,7 +1898,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
 			continue;
 		}
 
-		/* Convert SW action to HW action */
+		 
 		ret = dr_action_modify_sw_to_hw(dmn,
 						sw_action,
 						&hw_action,
@@ -1922,7 +1907,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
 		if (ret)
 			return ret;
 
-		/* Due to a HW limitation we cannot modify 2 different L3 types */
+		 
 		if (l3_type && hw_dst_action_info->l3_type &&
 		    hw_dst_action_info->l3_type != l3_type) {
 			mlx5dr_dbg(dmn, "Action list can't support two different L3 types\n");
@@ -1931,7 +1916,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
 		if (hw_dst_action_info->l3_type)
 			l3_type = hw_dst_action_info->l3_type;
 
-		/* Due to a HW limitation we cannot modify two different L4 types */
+		 
 		if (l4_type && hw_dst_action_info->l4_type &&
 		    hw_dst_action_info->l4_type != l4_type) {
 			mlx5dr_dbg(dmn, "Action list can't support two different L4 types\n");
@@ -1940,15 +1925,11 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
 		if (hw_dst_action_info->l4_type)
 			l4_type = hw_dst_action_info->l4_type;
 
-		/* HW reads and executes two actions at once this means we
-		 * need to create a gap if two actions access the same field
-		 */
+		 
 		if ((hw_idx % 2) && (hw_field == hw_dst_action_info->hw_field ||
 				     (hw_src_action_info &&
 				      hw_field == hw_src_action_info->hw_field))) {
-			/* Check if after gap insertion the total number of HW
-			 * modify actions doesn't exceeds the limit
-			 */
+			 
 			hw_idx++;
 			if (hw_idx >= max_hw_actions) {
 				mlx5dr_dbg(dmn, "Modify header action number exceeds HW limit\n");
@@ -1961,7 +1942,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
 		hw_idx++;
 	}
 
-	/* if the resulting HW actions list is empty, add NOP action */
+	 
 	if (!hw_idx)
 		hw_idx++;
 

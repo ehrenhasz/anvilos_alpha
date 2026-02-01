@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_debugfs.h>
 #include <drm/drm_file.h>
@@ -59,10 +57,7 @@ static int fw_trace_config_show(struct seq_file *s, void *v)
 {
 	struct drm_info_node *node = (struct drm_info_node *)s->private;
 	struct ivpu_device *vdev = to_ivpu_device(node->minor->dev);
-	/**
-	 * WA: VPU_JSM_MSG_TRACE_GET_CONFIG command is not working yet,
-	 * so we use values from vdev->fw instead of calling ivpu_jsm_trace_get_config()
-	 */
+	 
 	u32 trace_level = vdev->fw->trace_level;
 	u32 trace_destination_mask = vdev->fw->trace_destination_mask;
 	u64 trace_hw_component_mask = vdev->fw->trace_hw_component_mask;

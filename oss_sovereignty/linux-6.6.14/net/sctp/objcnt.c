@@ -1,32 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright IBM Corp. 2001, 2004
- *
- * This file is part of the SCTP kernel implementation
- *
- * Support for memory object debugging.  This allows one to monitor the
- * object allocations/deallocations for types instrumented for this
- * via the proc fs.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Jon Grimm             <jgrimm@us.ibm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
 #include <net/sctp/sctp.h>
 
-/*
- * Global counters to count raw object allocation counts.
- * To add new counters, choose a unique suffix for the variable
- * name as the helper macros key off this suffix to make
- * life easier for the programmer.
- */
+ 
 
 SCTP_DBG_OBJCNT(sock);
 SCTP_DBG_OBJCNT(ep);
@@ -39,9 +19,7 @@ SCTP_DBG_OBJCNT(addr);
 SCTP_DBG_OBJCNT(datamsg);
 SCTP_DBG_OBJCNT(keys);
 
-/* An array to make it easy to pretty print the debug information
- * to the proc fs.
- */
+ 
 static struct sctp_dbg_objcnt_entry sctp_dbg_objcnt[] = {
 	SCTP_DBG_OBJCNT_ENTRY(sock),
 	SCTP_DBG_OBJCNT_ENTRY(ep),
@@ -55,10 +33,7 @@ static struct sctp_dbg_objcnt_entry sctp_dbg_objcnt[] = {
 	SCTP_DBG_OBJCNT_ENTRY(keys),
 };
 
-/* Callback from procfs to read out objcount information.
- * Walk through the entries in the sctp_dbg_objcnt array, dumping
- * the raw object counts for each monitored type.
- */
+ 
 static int sctp_objcnt_seq_show(struct seq_file *seq, void *v)
 {
 	int i;
@@ -93,7 +68,7 @@ static const struct seq_operations sctp_objcnt_seq_ops = {
 	.show  = sctp_objcnt_seq_show,
 };
 
-/* Initialize the objcount in the proc filesystem.  */
+ 
 void sctp_dbg_objcnt_init(struct net *net)
 {
 	struct proc_dir_entry *ent;

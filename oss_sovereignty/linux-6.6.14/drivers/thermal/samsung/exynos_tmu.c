@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * exynos_tmu.c - Samsung Exynos TMU (Thermal Management Unit)
- *
- *  Copyright (C) 2014 Samsung Electronics
- *  Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
- *  Lukasz Majewski <l.majewski@samsung.com>
- *
- *  Copyright (C) 2011 Samsung Electronics
- *  Donggeun Kim <dg77.kim@samsung.com>
- *  Amit Daniel Kachhap <amit.kachhap@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -24,7 +14,7 @@
 
 #include <dt-bindings/thermal/thermal_exynos.h>
 
-/* Exynos generic registers */
+ 
 #define EXYNOS_TMU_REG_TRIMINFO		0x0
 #define EXYNOS_TMU_REG_CONTROL		0x20
 #define EXYNOS_TMU_REG_STATUS		0x28
@@ -40,14 +30,14 @@
 #define EXYNOS_TMU_BUF_SLOPE_SEL_SHIFT	8
 #define EXYNOS_TMU_CORE_EN_SHIFT	0
 
-/* Exynos3250 specific registers */
+ 
 #define EXYNOS_TMU_TRIMINFO_CON1	0x10
 
-/* Exynos4210 specific registers */
+ 
 #define EXYNOS4210_TMU_REG_THRESHOLD_TEMP	0x44
 #define EXYNOS4210_TMU_REG_TRIG_LEVEL0	0x50
 
-/* Exynos5250, Exynos4412, Exynos3250 specific registers */
+ 
 #define EXYNOS_TMU_TRIMINFO_CON2	0x14
 #define EXYNOS_THD_TEMP_RISE		0x50
 #define EXYNOS_THD_TEMP_FALL		0x54
@@ -70,17 +60,17 @@
 #define EXYNOS_EMUL_DATA_MASK	0xFF
 #define EXYNOS_EMUL_ENABLE	0x1
 
-/* Exynos5260 specific */
+ 
 #define EXYNOS5260_TMU_REG_INTEN		0xC0
 #define EXYNOS5260_TMU_REG_INTSTAT		0xC4
 #define EXYNOS5260_TMU_REG_INTCLEAR		0xC8
 #define EXYNOS5260_EMUL_CON			0x100
 
-/* Exynos4412 specific */
+ 
 #define EXYNOS4412_MUX_ADDR_VALUE          6
 #define EXYNOS4412_MUX_ADDR_SHIFT          20
 
-/* Exynos5433 specific registers */
+ 
 #define EXYNOS5433_THD_TEMP_RISE3_0		0x050
 #define EXYNOS5433_THD_TEMP_RISE7_4		0x054
 #define EXYNOS5433_THD_TEMP_FALL3_0		0x060
@@ -103,7 +93,7 @@
 
 #define EXYNOS5433_G3D_BASE			0x10070000
 
-/* Exynos7 specific registers */
+ 
 #define EXYNOS7_THD_TEMP_RISE7_6		0x50
 #define EXYNOS7_THD_TEMP_FALL7_6		0x60
 #define EXYNOS7_TMU_REG_INTEN			0x110
@@ -135,43 +125,7 @@ enum soc_type {
 	SOC_ARCH_EXYNOS7,
 };
 
-/**
- * struct exynos_tmu_data : A structure to hold the private data of the TMU
- *			    driver
- * @id: identifier of the one instance of the TMU controller.
- * @base: base address of the single instance of the TMU controller.
- * @base_second: base address of the common registers of the TMU controller.
- * @irq: irq number of the TMU controller.
- * @soc: id of the SOC type.
- * @irq_work: pointer to the irq work structure.
- * @lock: lock to implement synchronization.
- * @clk: pointer to the clock structure.
- * @clk_sec: pointer to the clock structure for accessing the base_second.
- * @sclk: pointer to the clock structure for accessing the tmu special clk.
- * @cal_type: calibration type for temperature
- * @efuse_value: SoC defined fuse value
- * @min_efuse_value: minimum valid trimming data
- * @max_efuse_value: maximum valid trimming data
- * @temp_error1: fused value of the first point trim.
- * @temp_error2: fused value of the second point trim.
- * @gain: gain of amplifier in the positive-TC generator block
- *	0 < gain <= 15
- * @reference_voltage: reference voltage of amplifier
- *	in the positive-TC generator block
- *	0 < reference_voltage <= 31
- * @regulator: pointer to the TMU regulator structure.
- * @reg_conf: pointer to structure to register with core thermal.
- * @tzd: pointer to thermal_zone_device structure
- * @ntrip: number of supported trip points.
- * @enabled: current status of TMU device
- * @tmu_set_trip_temp: SoC specific method to set trip (rising threshold)
- * @tmu_set_trip_hyst: SoC specific to set hysteresis (falling threshold)
- * @tmu_initialize: SoC specific TMU initialization method
- * @tmu_control: SoC specific TMU control method
- * @tmu_read: SoC specific TMU temperature read method
- * @tmu_set_emulation: SoC specific TMU emulation setting method
- * @tmu_clear_irqs: SoC specific TMU interrupts clearing method
- */
+ 
 struct exynos_tmu_data {
 	int id;
 	void __iomem *base;
@@ -204,10 +158,7 @@ struct exynos_tmu_data {
 	void (*tmu_clear_irqs)(struct exynos_tmu_data *data);
 };
 
-/*
- * TMU treats temperature as a mapped temperature code.
- * The temperature is converted differently depending on the calibration type.
- */
+ 
 static int temp_to_code(struct exynos_tmu_data *data, u8 temp)
 {
 	if (data->cal_type == TYPE_ONE_POINT_TRIMMING)
@@ -219,10 +170,7 @@ static int temp_to_code(struct exynos_tmu_data *data, u8 temp)
 		data->temp_error1;
 }
 
-/*
- * Calculate a temperature value from a temperature code.
- * The unit of the temperature is degree Celsius.
- */
+ 
 static int code_to_temp(struct exynos_tmu_data *data, u16 temp_code)
 {
 	if (data->cal_type == TYPE_ONE_POINT_TRIMMING)
@@ -264,7 +212,7 @@ static int exynos_tmu_initialize(struct platform_device *pdev)
 	int ret = 0, temp;
 
 	ret = thermal_zone_get_crit_temp(tzd, &temp);
-	if (ret && data->soc != SOC_ARCH_EXYNOS5433) { /* FIXME */
+	if (ret && data->soc != SOC_ARCH_EXYNOS5433) {  
 		dev_err(&pdev->dev,
 			"No CRITICAL trip point defined in device tree!\n");
 		goto out;
@@ -292,7 +240,7 @@ static int exynos_tmu_initialize(struct platform_device *pdev)
 
 		data->tmu_initialize(pdev);
 
-		/* Write temperature code for rising and falling threshold */
+		 
 		for (i = 0; i < ntrips; i++) {
 
 			struct thermal_trip trip;
@@ -367,7 +315,7 @@ static void exynos4210_tmu_set_trip_temp(struct exynos_tmu_data *data,
 	writeb(temp, data->base + EXYNOS4210_TMU_REG_TRIG_LEVEL0 + trip_id * 4);
 }
 
-/* failing thresholds are not supported on Exynos4210 */
+ 
 static void exynos4210_tmu_set_trip_hyst(struct exynos_tmu_data *data,
 					 int trip, u8 temp, u8 hyst)
 {
@@ -427,7 +375,7 @@ static void exynos4412_tmu_initialize(struct platform_device *pdev)
 		writel(ctrl, data->base + EXYNOS_TMU_TRIMINFO_CON2);
 	}
 
-	/* On exynos5420 the triminfo register is in the shared space */
+	 
 	if (data->soc == SOC_ARCH_EXYNOS5420_TRIMINFO)
 		trim_info = readl(data->base_second + EXYNOS_TMU_REG_TRIMINFO);
 	else
@@ -485,12 +433,12 @@ static void exynos5433_tmu_initialize(struct platform_device *pdev)
 	trim_info = readl(data->base + EXYNOS_TMU_REG_TRIMINFO);
 	sanitize_temp_error(data, trim_info);
 
-	/* Read the temperature sensor id */
+	 
 	sensor_id = (trim_info & EXYNOS5433_TRIMINFO_SENSOR_ID_MASK)
 				>> EXYNOS5433_TRIMINFO_SENSOR_ID_SHIFT;
 	dev_info(&pdev->dev, "Temperature sensor ID: 0x%x\n", sensor_id);
 
-	/* Read the calibration mode */
+	 
 	writel(trim_info, data->base + EXYNOS_TMU_REG_TRIMINFO);
 	cal_type = (trim_info & EXYNOS5433_TRIMINFO_CALIB_SEL_MASK)
 				>> EXYNOS5433_TRIMINFO_CALIB_SEL_SHIFT;
@@ -651,10 +599,7 @@ static int exynos_get_temp(struct thermal_zone_device *tz, int *temp)
 	if (!data || !data->tmu_read)
 		return -EINVAL;
 	else if (!data->enabled)
-		/*
-		 * Called too early, probably
-		 * from thermal_zone_of_sensor_register().
-		 */
+		 
 		return -EAGAIN;
 
 	mutex_lock(&data->lock);
@@ -745,13 +690,13 @@ out:
 #define exynos4412_tmu_set_emulation NULL
 static int exynos_tmu_set_emulation(struct thermal_zone_device *tz, int temp)
 	{ return -EINVAL; }
-#endif /* CONFIG_THERMAL_EMULATION */
+#endif  
 
 static int exynos4210_tmu_read(struct exynos_tmu_data *data)
 {
 	int ret = readb(data->base + EXYNOS_TMU_REG_CURRENT_TEMP);
 
-	/* "temp_code" should range between 75 and 175 */
+	 
 	return (ret < 75 || ret > 175) ? -ENODATA : ret;
 }
 
@@ -776,7 +721,7 @@ static void exynos_tmu_work(struct work_struct *work)
 	mutex_lock(&data->lock);
 	clk_enable(data->clk);
 
-	/* TODO: take action based on particular interrupt */
+	 
 	data->tmu_clear_irqs(data);
 
 	clk_disable(data->clk);
@@ -804,14 +749,7 @@ static void exynos4210_tmu_clear_irqs(struct exynos_tmu_data *data)
 	}
 
 	val_irq = readl(data->base + tmu_intstat);
-	/*
-	 * Clear the interrupts.  Please note that the documentation for
-	 * Exynos3250, Exynos4412, Exynos5250 and Exynos5260 incorrectly
-	 * states that INTCLEAR register has a different placing of bits
-	 * responsible for FALL IRQs than INTSTAT register.  Exynos5420
-	 * and Exynos5440 documentation is correct (Exynos4210 doesn't
-	 * support FALL IRQs at all).
-	 */
+	 
 	writel(val_irq, data->base + tmu_intclear);
 }
 
@@ -968,10 +906,7 @@ static int exynos_map_dt_data(struct platform_device *pdev)
 
 	data->cal_type = TYPE_ONE_POINT_TRIMMING;
 
-	/*
-	 * Check if the TMU shares some registers and then try to map the
-	 * memory of common registers.
-	 */
+	 
 	if (data->soc != SOC_ARCH_EXYNOS5420_TRIMINFO)
 		return 0;
 
@@ -1008,11 +943,7 @@ static int exynos_tmu_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, data);
 	mutex_init(&data->lock);
 
-	/*
-	 * Try enabling the regulator if found
-	 * TODO: Add regulator as an SOC feature, so that regulator enable
-	 * is a compulsory call.
-	 */
+	 
 	data->regulator = devm_regulator_get_optional(&pdev->dev, "vtmu");
 	if (!IS_ERR(data->regulator)) {
 		ret = regulator_enable(data->regulator);
@@ -1080,10 +1011,7 @@ static int exynos_tmu_probe(struct platform_device *pdev)
 		break;
 	}
 
-	/*
-	 * data->tzd must be registered before calling exynos_tmu_initialize(),
-	 * requesting irq and calling exynos_tmu_control().
-	 */
+	 
 	data->tzd = devm_thermal_of_zone_register(&pdev->dev, 0, data,
 						  &exynos_sensor_ops);
 	if (IS_ERR(data->tzd)) {

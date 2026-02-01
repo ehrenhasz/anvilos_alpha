@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Google
- *
- * Authors:
- *      Thiebaud Weksteen <tweek@google.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/efi.h>
@@ -13,7 +8,7 @@
 #include "../tpm.h"
 #include "common.h"
 
-/* read binary bios log from EFI configuration table */
+ 
 int tpm_read_log_efi(struct tpm_chip *chip)
 {
 
@@ -55,7 +50,7 @@ int tpm_read_log_efi(struct tpm_chip *chip)
 		return -ENOMEM;
 	}
 
-	/* malloc EventLog space */
+	 
 	log->bios_event_log = devm_kmemdup(&chip->dev, log_tbl->log, log_size, GFP_KERNEL);
 	if (!log->bios_event_log) {
 		ret = -ENOMEM;
@@ -82,16 +77,10 @@ int tpm_read_log_efi(struct tpm_chip *chip)
 		goto out;
 	}
 
-	/*
-	 * The 'final events log' size excludes the 'final events preboot log'
-	 * at its beginning.
-	 */
+	 
 	final_events_log_size -= log_tbl->final_events_preboot_size;
 
-	/*
-	 * Allocate memory for the 'combined log' where we will append the
-	 * 'final events log' to.
-	 */
+	 
 	tmp = devm_krealloc(&chip->dev, log->bios_event_log,
 			    log_size + final_events_log_size,
 			    GFP_KERNEL);
@@ -103,18 +92,11 @@ int tpm_read_log_efi(struct tpm_chip *chip)
 
 	log->bios_event_log = tmp;
 
-	/*
-	 * Append any of the 'final events log' that didn't also end up in the
-	 * 'main log'. Events can be logged in both if events are generated
-	 * between GetEventLog() and ExitBootServices().
-	 */
+	 
 	memcpy((void *)log->bios_event_log + log_size,
 	       final_tbl->events + log_tbl->final_events_preboot_size,
 	       final_events_log_size);
-	/*
-	 * The size of the 'combined log' is the size of the 'main log' plus
-	 * the size of the 'final events log'.
-	 */
+	 
 	log->bios_event_log_end = log->bios_event_log +
 		log_size + final_events_log_size;
 

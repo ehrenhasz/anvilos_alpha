@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ACPI PCI Hot Plug Controller Driver
- *
- * Copyright (C) 1995,2001 Compaq Computer Corporation
- * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2001 IBM Corp.
- * Copyright (C) 2002 Hiroshi Aono (h-aono@ap.jp.nec.com)
- * Copyright (C) 2002,2003 Takayoshi Kochi (t-kochi@bq.jp.nec.com)
- * Copyright (C) 2002,2003 NEC Corporation
- * Copyright (C) 2003-2005 Matthew Wilcox (willy@infradead.org)
- * Copyright (C) 2003-2005 Hewlett Packard
- *
- * All rights reserved.
- *
- * Send feedback to <kristen.c.accardi@intel.com>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "acpiphp: " fmt
 
@@ -31,12 +15,12 @@
 #include <linux/smp.h>
 #include "acpiphp.h"
 
-/* name size which is used for entries in pcihpfs */
-#define SLOT_NAME_SIZE  21              /* {_SUN} */
+ 
+#define SLOT_NAME_SIZE  21               
 
 bool acpiphp_disabled;
 
-/* local variables */
+ 
 static struct acpiphp_attention_info *attention_info;
 
 #define DRIVER_VERSION	"0.5"
@@ -66,14 +50,7 @@ static const struct hotplug_slot_ops acpi_hotplug_slot_ops = {
 	.get_adapter_status	= get_adapter_status,
 };
 
-/**
- * acpiphp_register_attention - set attention LED callback
- * @info: must be completely filled with LED callbacks
- *
- * Description: This is used to register a hardware specific ACPI
- * driver that manipulates the attention LED.  All the fields in
- * info must be set.
- */
+ 
 int acpiphp_register_attention(struct acpiphp_attention_info *info)
 {
 	int retval = -EINVAL;
@@ -88,14 +65,7 @@ int acpiphp_register_attention(struct acpiphp_attention_info *info)
 EXPORT_SYMBOL_GPL(acpiphp_register_attention);
 
 
-/**
- * acpiphp_unregister_attention - unset attention LED callback
- * @info: must match the pointer used to register
- *
- * Description: This is used to un-register a hardware specific acpi
- * driver that manipulates the attention LED.  The pointer to the
- * info struct must be the same as the one used to set it.
- */
+ 
 int acpiphp_unregister_attention(struct acpiphp_attention_info *info)
 {
 	int retval = -EINVAL;
@@ -109,49 +79,31 @@ int acpiphp_unregister_attention(struct acpiphp_attention_info *info)
 EXPORT_SYMBOL_GPL(acpiphp_unregister_attention);
 
 
-/**
- * enable_slot - power on and enable a slot
- * @hotplug_slot: slot to enable
- *
- * Actual tasks are done in acpiphp_enable_slot()
- */
+ 
 static int enable_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct slot *slot = to_slot(hotplug_slot);
 
 	pr_debug("%s - physical_slot = %s\n", __func__, slot_name(slot));
 
-	/* enable the specified slot */
+	 
 	return acpiphp_enable_slot(slot->acpi_slot);
 }
 
 
-/**
- * disable_slot - disable and power off a slot
- * @hotplug_slot: slot to disable
- *
- * Actual tasks are done in acpiphp_disable_slot()
- */
+ 
 static int disable_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct slot *slot = to_slot(hotplug_slot);
 
 	pr_debug("%s - physical_slot = %s\n", __func__, slot_name(slot));
 
-	/* disable the specified slot */
+	 
 	return acpiphp_disable_slot(slot->acpi_slot);
 }
 
 
-/**
- * set_attention_status - set attention LED
- * @hotplug_slot: slot to set attention LED on
- * @status: value to set attention LED to (0 or 1)
- *
- * attention status LED, so we use a callback that
- * was registered with us.  This allows hardware specific
- * ACPI implementations to blink the light for us.
- */
+ 
 static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
 {
 	int retval = -ENODEV;
@@ -168,14 +120,7 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
 }
 
 
-/**
- * get_power_status - get power status of a slot
- * @hotplug_slot: slot to get status
- * @value: pointer to store status
- *
- * Some platforms may not implement _STA method properly.
- * In that case, the value returned may not be reliable.
- */
+ 
 static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	struct slot *slot = to_slot(hotplug_slot);
@@ -188,16 +133,7 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 }
 
 
-/**
- * get_attention_status - get attention LED status
- * @hotplug_slot: slot to get status from
- * @value: returns with value of attention LED
- *
- * ACPI doesn't have known method to determine the state
- * of the attention status LED, so we use a callback that
- * was registered with us.  This allows hardware specific
- * ACPI implementations to determine its state.
- */
+ 
 static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	int retval = -EINVAL;
@@ -214,14 +150,7 @@ static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 }
 
 
-/**
- * get_latch_status - get latch status of a slot
- * @hotplug_slot: slot to get status
- * @value: pointer to store status
- *
- * ACPI doesn't provide any formal means to access latch status.
- * Instead, we fake latch status from _STA.
- */
+ 
 static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	struct slot *slot = to_slot(hotplug_slot);
@@ -234,14 +163,7 @@ static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
 }
 
 
-/**
- * get_adapter_status - get adapter status of a slot
- * @hotplug_slot: slot to get status
- * @value: pointer to store status
- *
- * ACPI doesn't provide any formal means to access adapter status.
- * Instead, we fake adapter status from _STA.
- */
+ 
 static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	struct slot *slot = to_slot(hotplug_slot);
@@ -253,7 +175,7 @@ static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 	return 0;
 }
 
-/* callback routine to initialize 'struct slot' for each slot */
+ 
 int acpiphp_register_hotplug_slot(struct acpiphp_slot *acpiphp_slot,
 				  unsigned int sun)
 {

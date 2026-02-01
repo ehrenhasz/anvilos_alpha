@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: ISC */
+ 
 
 #ifndef __MT7603_REGS_H
 #define __MT7603_REGS_H

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
+
+ 
 #include <argp.h>
 #include "bench.h"
 #include "strncmp_bench.skel.h"
@@ -87,7 +87,7 @@ static void strncmp_setup(void)
 
 	memcpy(ctx.skel->bss->str, target, args.cmp_str_len);
 	ctx.skel->bss->str[args.cmp_str_len] = '\0';
-	/* Make bss->str < rodata->target */
+	 
 	ctx.skel->bss->str[args.cmp_str_len - 1] -= 1;
 
 	err = strncmp_bench__load(ctx.skel);

@@ -1,10 +1,4 @@
-/*
- * Copyright 2005, Red Hat, Inc., Ingo Molnar
- * Released under the General Public License (GPL).
- *
- * This file contains the spinlock/rwlock implementations for
- * DEBUG_SPINLOCK.
- */
+ 
 
 #include <linux/spinlock.h>
 #include <linux/nmi.h>
@@ -17,9 +11,7 @@ void __raw_spin_lock_init(raw_spinlock_t *lock, const char *name,
 			  struct lock_class_key *key, short inner)
 {
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
-	/*
-	 * Make sure we are not reinitializing a held lock:
-	 */
+	 
 	debug_check_no_locks_freed((void *)lock, sizeof(*lock));
 	lockdep_init_map_wait(&lock->dep_map, name, key, 0, inner);
 #endif
@@ -36,9 +28,7 @@ void __rwlock_init(rwlock_t *lock, const char *name,
 		   struct lock_class_key *key)
 {
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
-	/*
-	 * Make sure we are not reinitializing a held lock:
-	 */
+	 
 	debug_check_no_locks_freed((void *)lock, sizeof(*lock));
 	lockdep_init_map_wait(&lock->dep_map, name, key, 0, LD_WAIT_CONFIG);
 #endif
@@ -105,10 +95,7 @@ static inline void debug_spin_unlock(raw_spinlock_t *lock)
 	WRITE_ONCE(lock->owner_cpu, -1);
 }
 
-/*
- * We are now relying on the NMI watchdog to detect lockup instead of doing
- * the detection here with an unfair lock which can cause problem of its own.
- */
+ 
 void do_raw_spin_lock(raw_spinlock_t *lock)
 {
 	debug_spin_lock_before(lock);
@@ -126,9 +113,7 @@ int do_raw_spin_trylock(raw_spinlock_t *lock)
 		debug_spin_lock_after(lock);
 	}
 #ifndef CONFIG_SMP
-	/*
-	 * Must not happen on UP:
-	 */
+	 
 	SPIN_BUG_ON(!ret, lock, "trylock failure on UP");
 #endif
 	return ret;
@@ -166,9 +151,7 @@ int do_raw_read_trylock(rwlock_t *lock)
 	int ret = arch_read_trylock(&lock->raw_lock);
 
 #ifndef CONFIG_SMP
-	/*
-	 * Must not happen on UP:
-	 */
+	 
 	RWLOCK_BUG_ON(!ret, lock, "trylock failure on UP");
 #endif
 	return ret;
@@ -218,9 +201,7 @@ int do_raw_write_trylock(rwlock_t *lock)
 	if (ret)
 		debug_write_lock_after(lock);
 #ifndef CONFIG_SMP
-	/*
-	 * Must not happen on UP:
-	 */
+	 
 	RWLOCK_BUG_ON(!ret, lock, "trylock failure on UP");
 #endif
 	return ret;
@@ -232,4 +213,4 @@ void do_raw_write_unlock(rwlock_t *lock)
 	arch_write_unlock(&lock->raw_lock);
 }
 
-#endif /* !CONFIG_PREEMPT_RT */
+#endif  

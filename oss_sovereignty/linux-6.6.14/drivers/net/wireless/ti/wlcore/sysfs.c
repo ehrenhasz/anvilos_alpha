@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wlcore
- *
- * Copyright (C) 2013 Texas Instruments Inc.
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -105,18 +101,18 @@ static ssize_t wl1271_sysfs_read_fwlog(struct file *filp, struct kobject *kobj,
 	if (ret < 0)
 		return -ERESTARTSYS;
 
-	/* Check if the fwlog is still valid */
+	 
 	if (wl->fwlog_size < 0) {
 		mutex_unlock(&wl->mutex);
 		return 0;
 	}
 
-	/* Seeking is not supported - old logs are not kept. Disregard pos. */
+	 
 	len = min_t(size_t, count, wl->fwlog_size);
 	wl->fwlog_size -= len;
 	memcpy(buffer, wl->fwlog, len);
 
-	/* Make room for new messages */
+	 
 	memmove(wl->fwlog, wl->fwlog + len, wl->fwlog_size);
 
 	mutex_unlock(&wl->mutex);
@@ -133,21 +129,21 @@ int wlcore_sysfs_init(struct wl1271 *wl)
 {
 	int ret;
 
-	/* Create sysfs file to control bt coex state */
+	 
 	ret = device_create_file(wl->dev, &dev_attr_bt_coex_state);
 	if (ret < 0) {
 		wl1271_error("failed to create sysfs file bt_coex_state");
 		goto out;
 	}
 
-	/* Create sysfs file to get HW PG version */
+	 
 	ret = device_create_file(wl->dev, &dev_attr_hw_pg_ver);
 	if (ret < 0) {
 		wl1271_error("failed to create sysfs file hw_pg_ver");
 		goto out_bt_coex_state;
 	}
 
-	/* Create sysfs file for the FW log */
+	 
 	ret = device_create_bin_file(wl->dev, &fwlog_attr);
 	if (ret < 0) {
 		wl1271_error("failed to create sysfs file fwlog");

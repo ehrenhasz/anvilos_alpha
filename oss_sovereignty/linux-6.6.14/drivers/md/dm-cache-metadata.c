@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-cache-metadata.h"
 
@@ -16,47 +12,34 @@
 #include <linux/device-mapper.h>
 #include <linux/refcount.h>
 
-/*----------------------------------------------------------------*/
+ 
 
 #define DM_MSG_PREFIX   "cache metadata"
 
 #define CACHE_SUPERBLOCK_MAGIC 06142003
 #define CACHE_SUPERBLOCK_LOCATION 0
 
-/*
- * defines a range of metadata versions that this module can handle.
- */
+ 
 #define MIN_CACHE_VERSION 1
 #define MAX_CACHE_VERSION 2
 
-/*
- *  3 for btree insert +
- *  2 for btree lookup used within space map
- */
+ 
 #define CACHE_MAX_CONCURRENT_LOCKS 5
 #define SPACE_MAP_ROOT_SIZE 128
 
 enum superblock_flag_bits {
-	/* for spotting crashes that would invalidate the dirty bitset */
+	 
 	CLEAN_SHUTDOWN,
-	/* metadata must be checked using the tools */
+	 
 	NEEDS_CHECK,
 };
 
-/*
- * Each mapping from cache block -> origin block carries a set of flags.
- */
+ 
 enum mapping_bits {
-	/*
-	 * A valid mapping.  Because we're using an array we clear this
-	 * flag for an non existant mapping.
-	 */
+	 
 	M_VALID = 1,
 
-	/*
-	 * The data on the cache is different from that on the origin.
-	 * This flag is only used by metadata format 1.
-	 */
+	 
 	M_DIRTY = 2
 };
 
@@ -95,9 +78,7 @@ struct cache_disk_superblock {
 
 	__le32 policy_version[CACHE_POLICY_VERSION_SIZE];
 
-	/*
-	 * Metadata format 2 fields.
-	 */
+	 
 	__le64 dirty_root;
 } __packed;
 
@@ -134,40 +115,23 @@ struct dm_cache_metadata {
 	size_t policy_hint_size;
 	struct dm_cache_statistics stats;
 
-	/*
-	 * Reading the space map root can fail, so we read it into this
-	 * buffer before the superblock is locked and updated.
-	 */
+	 
 	__u8 metadata_space_map_root[SPACE_MAP_ROOT_SIZE];
 
-	/*
-	 * Set if a transaction has to be aborted but the attempt to roll
-	 * back to the previous (good) transaction failed.  The only
-	 * metadata operation permissible in this state is the closing of
-	 * the device.
-	 */
+	 
 	bool fail_io:1;
 
-	/*
-	 * Metadata format 2 fields.
-	 */
+	 
 	dm_block_t dirty_root;
 	struct dm_disk_bitset dirty_info;
 
-	/*
-	 * These structures are used when loading metadata.  They're too
-	 * big to put on the stack.
-	 */
+	 
 	struct dm_array_cursor mapping_cursor;
 	struct dm_array_cursor hint_cursor;
 	struct dm_bitset_cursor dirty_cursor;
 };
 
-/*
- *-----------------------------------------------------------------
- * superblock validator
- *-----------------------------------------------------------------
- */
+ 
 #define SUPERBLOCK_CSUM_XOR 9031977
 
 static void sb_prepare_for_write(struct dm_block_validator *v,
@@ -234,7 +198,7 @@ static struct dm_block_validator sb_validator = {
 	.check = sb_check
 };
 
-/*----------------------------------------------------------------*/
+ 
 
 static int superblock_read_lock(struct dm_cache_metadata *cmd,
 				struct dm_block **sblock)
@@ -257,7 +221,7 @@ static int superblock_lock(struct dm_cache_metadata *cmd,
 				&sb_validator, sblock);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int __superblock_all_zeroes(struct dm_block_manager *bm, bool *result)
 {
@@ -267,9 +231,7 @@ static int __superblock_all_zeroes(struct dm_block_manager *bm, bool *result)
 	__le64 *data_le, zero = cpu_to_le64(0);
 	unsigned int sb_block_size = dm_bm_block_size(bm) / sizeof(__le64);
 
-	/*
-	 * We can't use a validator here - it may be all zeroes.
-	 */
+	 
 	r = dm_bm_read_lock(bm, CACHE_SUPERBLOCK_LOCATION, NULL, &b);
 	if (r)
 		return r;
@@ -338,7 +300,7 @@ static int __write_initial_superblock(struct dm_cache_metadata *cmd)
 	struct cache_disk_superblock *disk_super;
 	sector_t bdev_size = bdev_nr_sectors(cmd->bdev);
 
-	/* FIXME: see if we can lose the max sectors limit */
+	 
 	if (bdev_size > DM_CACHE_METADATA_MAX_SECTORS)
 		bdev_size = DM_CACHE_METADATA_MAX_SECTORS;
 
@@ -346,10 +308,7 @@ static int __write_initial_superblock(struct dm_cache_metadata *cmd)
 	if (r < 0)
 		return r;
 
-	/*
-	 * dm_sm_copy_root() can fail.  So we need to do it before we start
-	 * updating the superblock.
-	 */
+	 
 	r = __save_sm_root(cmd);
 	if (r)
 		return r;
@@ -448,9 +407,7 @@ static int __check_incompat_features(struct cache_disk_superblock *disk_super,
 		return -EINVAL;
 	}
 
-	/*
-	 * Check for read-only metadata to skip the following RDWR checks.
-	 */
+	 
 	if (bdev_read_only(cmd->bdev))
 		return 0;
 
@@ -479,7 +436,7 @@ static int __open_metadata(struct dm_cache_metadata *cmd)
 
 	disk_super = dm_block_data(sblock);
 
-	/* Verify the data block size hasn't changed */
+	 
 	if (le32_to_cpu(disk_super->data_block_size) != cmd->data_block_size) {
 		DMERR("changing the data block size (from %u to %llu) is not supported",
 		      le32_to_cpu(disk_super->data_block_size),
@@ -614,9 +571,7 @@ static void read_superblock_fields(struct dm_cache_metadata *cmd,
 	cmd->changed = false;
 }
 
-/*
- * The mutator updates the superblock flags.
- */
+ 
 static int __begin_transaction_flags(struct dm_cache_metadata *cmd,
 				     flags_mutator mutator)
 {
@@ -642,10 +597,7 @@ static int __begin_transaction(struct dm_cache_metadata *cmd)
 	struct cache_disk_superblock *disk_super;
 	struct dm_block *sblock;
 
-	/*
-	 * We re-read the superblock every time.  Shouldn't need to do this
-	 * really.
-	 */
+	 
 	r = superblock_read_lock(cmd, &sblock);
 	if (r)
 		return r;
@@ -664,9 +616,7 @@ static int __commit_transaction(struct dm_cache_metadata *cmd,
 	struct cache_disk_superblock *disk_super;
 	struct dm_block *sblock;
 
-	/*
-	 * We need to know if the cache_disk_superblock exceeds a 512-byte sector.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(struct cache_disk_superblock) > 512);
 
 	if (separate_dirty_bits(cmd)) {
@@ -722,13 +672,9 @@ static int __commit_transaction(struct dm_cache_metadata *cmd,
 	return dm_tm_commit(cmd->tm, sblock);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * The mappings are held in a dm-array that has 64-bit values stored in
- * little-endian format.  The index is the cblock, the high 48bits of the
- * value are the oblock and the low 16 bit the flags.
- */
+ 
 #define FLAGS_MASK ((1 << 16) - 1)
 
 static __le64 pack_value(dm_oblock_t block, unsigned int flags)
@@ -749,7 +695,7 @@ static void unpack_value(__le64 value_le, dm_oblock_t *block, unsigned int *flag
 	*flags = value & FLAGS_MASK;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static struct dm_cache_metadata *metadata_open(struct block_device *bdev,
 					       sector_t data_block_size,
@@ -791,11 +737,7 @@ static struct dm_cache_metadata *metadata_open(struct block_device *bdev,
 	return cmd;
 }
 
-/*
- * We keep a little list of ref counted metadata objects to prevent two
- * different target instances creating separate bufio instances.  This is
- * an issue if a table is reloaded before the suspend.
- */
+ 
 static DEFINE_MUTEX(table_lock);
 static LIST_HEAD(table);
 
@@ -887,9 +829,7 @@ void dm_cache_metadata_close(struct dm_cache_metadata *cmd)
 	}
 }
 
-/*
- * Checks that the given cache block is either unmapped or clean.
- */
+ 
 static int block_clean_combined_dirty(struct dm_cache_metadata *cmd, dm_cblock_t b,
 				      bool *result)
 {
@@ -943,7 +883,7 @@ static int blocks_are_clean_separate_dirty(struct dm_cache_metadata *cmd,
 	*result = true;
 
 	if (from_cblock(cmd->cache_blocks) == 0)
-		/* Nothing to do */
+		 
 		return 0;
 
 	r = dm_bitset_cursor_begin(&cmd->dirty_info, cmd->dirty_root,
@@ -961,10 +901,7 @@ static int blocks_are_clean_separate_dirty(struct dm_cache_metadata *cmd,
 	}
 
 	while (begin != end) {
-		/*
-		 * We assume that unmapped blocks have their dirty bit
-		 * cleared.
-		 */
+		 
 		dirty_flag = dm_bitset_cursor_get_value(&cmd->dirty_cursor);
 		if (dirty_flag) {
 			DMERR("%s: cache block %llu is dirty", __func__,
@@ -1166,7 +1103,7 @@ static int __load_discards(struct dm_cache_metadata *cmd,
 	struct dm_bitset_cursor c;
 
 	if (from_dblock(cmd->discard_nr_blocks) == 0)
-		/* nothing to do */
+		 
 		return 0;
 
 	if (cmd->clean_when_opened) {
@@ -1298,21 +1235,15 @@ static bool policy_unchanged(struct dm_cache_metadata *cmd,
 	const unsigned int *policy_version = dm_cache_policy_get_version(policy);
 	size_t policy_hint_size = dm_cache_policy_get_hint_size(policy);
 
-	/*
-	 * Ensure policy names match.
-	 */
+	 
 	if (strncmp(cmd->policy_name, policy_name, sizeof(cmd->policy_name)))
 		return false;
 
-	/*
-	 * Ensure policy major versions match.
-	 */
+	 
 	if (cmd->policy_version[0] != policy_version[0])
 		return false;
 
-	/*
-	 * Ensure policy hint sizes match.
-	 */
+	 
 	if (cmd->policy_hint_size != policy_hint_size)
 		return false;
 
@@ -1424,7 +1355,7 @@ static int __load_mappings(struct dm_cache_metadata *cmd,
 	bool hints_valid = hints_array_available(cmd, policy);
 
 	if (from_cblock(cmd->cache_blocks) == 0)
-		/* Nothing to do */
+		 
 		return 0;
 
 	r = dm_array_cursor_begin(&cmd->info, cmd->root, &cmd->mapping_cursor);
@@ -1464,9 +1395,7 @@ static int __load_mappings(struct dm_cache_metadata *cmd,
 		if (r)
 			goto out;
 
-		/*
-		 * We need to break out before we move the cursors.
-		 */
+		 
 		if (cb >= (from_cblock(cmd->cache_blocks) - 1))
 			break;
 
@@ -1565,7 +1494,7 @@ static int __dirty(struct dm_cache_metadata *cmd, dm_cblock_t cblock, bool dirty
 	unpack_value(value, &oblock, &flags);
 
 	if (((flags & M_DIRTY) && dirty) || (!(flags & M_DIRTY) && !dirty))
-		/* nothing to be done */
+		 
 		return 0;
 
 	value = pack_value(oblock, (flags & ~M_DIRTY) | (dirty ? M_DIRTY : 0));
@@ -1606,7 +1535,7 @@ static int __set_dirty_bits_v2(struct dm_cache_metadata *cmd, unsigned int nr_bi
 {
 	int r = 0;
 
-	/* nr_bits is really just a sanity check */
+	 
 	if (nr_bits != from_cblock(cmd->cache_blocks)) {
 		DMERR("dirty bitset is wrong size");
 		return -EINVAL;
@@ -1698,7 +1627,7 @@ int dm_cache_get_metadata_dev_size(struct dm_cache_metadata *cmd,
 	return r;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int get_hint(uint32_t index, void *value_le, void *context)
 {
@@ -1711,10 +1640,7 @@ static int get_hint(uint32_t index, void *value_le, void *context)
 	return 0;
 }
 
-/*
- * It's quicker to always delete the hint array, and recreate with
- * dm_array_new().
- */
+ 
 static int write_hints(struct dm_cache_metadata *cmd, struct dm_cache_policy *policy)
 {
 	int r;
@@ -1731,7 +1657,7 @@ static int write_hints(struct dm_cache_metadata *cmd, struct dm_cache_policy *po
 
 	hint_size = dm_cache_policy_get_hint_size(policy);
 	if (!hint_size)
-		return 0; /* short-circuit hints initialization */
+		return 0;  
 	cmd->policy_hint_size = hint_size;
 
 	if (cmd->hint_root) {
@@ -1820,16 +1746,11 @@ int dm_cache_metadata_abort(struct dm_cache_metadata *cmd)
 	int r = -EINVAL;
 	struct dm_block_manager *old_bm = NULL, *new_bm = NULL;
 
-	/* fail_io is double-checked with cmd->root_lock held below */
+	 
 	if (unlikely(cmd->fail_io))
 		return r;
 
-	/*
-	 * Replacement block manager (new_bm) is created and old_bm destroyed outside of
-	 * cmd root_lock to avoid ABBA deadlock that would result (due to life-cycle of
-	 * shrinker associated with the block manager's bufio client vs cmd root_lock).
-	 * - must take shrinker_rwsem without holding cmd->root_lock
-	 */
+	 
 	new_bm = dm_block_manager_create(cmd->bdev, DM_CACHE_METADATA_BLOCK_SIZE << SECTOR_SHIFT,
 					 CACHE_MAX_CONCURRENT_LOCKS);
 

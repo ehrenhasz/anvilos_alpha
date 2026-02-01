@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Texas Instruments Incorporated - https://www.ti.com/
- *
- * Texas Instruments DDR3 ECC error correction and detection driver
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/edac.h>
@@ -27,7 +11,7 @@
 
 #include "edac_module.h"
 
-/* EMIF controller registers */
+ 
 #define EMIF_SDRAM_CONFIG		0x008
 #define EMIF_IRQ_STATUS			0x0ac
 #define EMIF_IRQ_ENABLE_SET		0x0b4
@@ -37,7 +21,7 @@
 #define EMIF_1B_ECC_ERR_ADDR_LOG	0x13c
 #define EMIF_2B_ECC_ERR_ADDR_LOG	0x140
 
-/* Bit definitions for EMIF_SDRAM_CONFIG */
+ 
 #define SDRAM_TYPE_SHIFT		29
 #define SDRAM_TYPE_MASK			GENMASK(31, 29)
 #define SDRAM_TYPE_DDR3			(3 << SDRAM_TYPE_SHIFT)
@@ -60,12 +44,12 @@
 
 #define EMIF_1B_ECC_ERR_THRSH_SHIFT	24
 
-/* IRQ bit definitions */
+ 
 #define EMIF_1B_ECC_ERR			BIT(5)
 #define EMIF_2B_ECC_ERR			BIT(4)
 #define EMIF_WR_ECC_ERR			BIT(3)
 #define EMIF_SYS_ERR			BIT(0)
-/* Bit 31 enables ECC and 28 enables RMW */
+ 
 #define ECC_ENABLED			(BIT(31) | BIT(28))
 
 #define EDAC_MOD_NAME			"ti-emif-edac"
@@ -251,7 +235,7 @@ static int ti_edac_probe(struct platform_device *pdev)
 	layers[0].type = EDAC_MC_LAYER_ALL_MEM;
 	layers[0].size = 1;
 
-	/* Allocate ID number for our EMIF controller */
+	 
 	emif_id = _emif_get_id(pdev->dev.of_node);
 	if (emif_id < 0)
 		return -EINVAL;
@@ -271,10 +255,10 @@ static int ti_edac_probe(struct platform_device *pdev)
 	mci->ctl_name = id->compatible;
 	mci->dev_name = dev_name(&pdev->dev);
 
-	/* Setup memory layout */
+	 
 	ti_edac_setup_dimm(mci, (u32)(id->data));
 
-	/* add EMIF ECC error handler */
+	 
 	error_irq = platform_get_irq(pdev, 0);
 	if (error_irq < 0) {
 		ret = error_irq;
@@ -296,11 +280,11 @@ static int ti_edac_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Generate an interrupt with each 1b error */
+	 
 	ti_edac_writel(edac, 1 << EMIF_1B_ECC_ERR_THRSH_SHIFT,
 		       EMIF_1B_ECC_ERR_THRSH);
 
-	/* Enable interrupts */
+	 
 	ti_edac_writel(edac,
 		       EMIF_1B_ECC_ERR | EMIF_2B_ECC_ERR | EMIF_WR_ECC_ERR,
 		       EMIF_IRQ_ENABLE_SET);

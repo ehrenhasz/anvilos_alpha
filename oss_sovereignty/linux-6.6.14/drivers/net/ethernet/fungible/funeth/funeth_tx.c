@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+
 
 #include <linux/dma-mapping.h>
 #include <linux/ip.h>
@@ -15,10 +15,7 @@
 #define FUN_XDP_CLEAN_THRES 32
 #define FUN_XDP_CLEAN_BATCH 16
 
-/* DMA-map a packet and return the (length, DMA_address) pairs for its
- * segments. If a mapping error occurs -ENOMEM is returned. The packet
- * consists of an skb_shared_info and one additional address/length pair.
- */
+ 
 static int fun_map_pkt(struct device *dev, const struct skb_shared_info *si,
 		       void *data, unsigned int data_len,
 		       dma_addr_t *addr, unsigned int *len)
@@ -49,32 +46,25 @@ unwind:
 	return -ENOMEM;
 }
 
-/* Return the address just past the end of a Tx queue's descriptor ring.
- * It exploits the fact that the HW writeback area is just after the end
- * of the descriptor ring.
- */
+ 
 static void *txq_end(const struct funeth_txq *q)
 {
 	return (void *)q->hw_wb;
 }
 
-/* Return the amount of space within a Tx ring from the given address to the
- * end.
- */
+ 
 static unsigned int txq_to_end(const struct funeth_txq *q, void *p)
 {
 	return txq_end(q) - p;
 }
 
-/* Return the number of Tx descriptors occupied by a Tx request. */
+ 
 static unsigned int tx_req_ndesc(const struct fun_eth_tx_req *req)
 {
 	return DIV_ROUND_UP(req->len8, FUNETH_SQE_SIZE / 8);
 }
 
-/* Write a gather list to the Tx descriptor at @req from @ngle address/length
- * pairs.
- */
+ 
 static struct fun_dataop_gl *fun_write_gl(const struct funeth_txq *q,
 					  struct fun_eth_tx_req *req,
 					  const dma_addr_t *addrs,
@@ -140,12 +130,7 @@ static struct sk_buff *fun_tls_tx(struct sk_buff *skb, struct funeth_txq *q,
 #endif
 }
 
-/* Write as many descriptors as needed for the supplied skb starting at the
- * current producer location. The caller has made certain enough descriptors
- * are available.
- *
- * Returns the number of descriptors written, 0 on error.
- */
+ 
 static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
 				   unsigned int tls_len)
 {
@@ -235,7 +220,7 @@ static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
 					     skb_transport_offset(skb), 0, 0);
 			FUN_QSTAT_INC(q, tx_uso);
 		} else {
-			/* HW considers one set of headers as inner */
+			 
 			flags = FUN_ETH_INNER_LSO |
 				FUN_ETH_UPDATE_INNER_L4_CKSUM |
 				FUN_ETH_UPDATE_INNER_L3_LEN;
@@ -304,16 +289,13 @@ static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
 	return tx_req_ndesc(req);
 }
 
-/* Return the number of available descriptors of a Tx queue.
- * HW assumes head==tail means the ring is empty so we need to keep one
- * descriptor unused.
- */
+ 
 static unsigned int fun_txq_avail(const struct funeth_txq *q)
 {
 	return q->mask - q->prod_cnt + q->cons_cnt;
 }
 
-/* Stop a queue if it can't handle another worst-case packet. */
+ 
 static void fun_tx_check_stop(struct funeth_txq *q)
 {
 	if (likely(fun_txq_avail(q) >= FUNETH_MAX_PKT_DESC))
@@ -321,10 +303,7 @@ static void fun_tx_check_stop(struct funeth_txq *q)
 
 	netif_tx_stop_queue(q->ndq);
 
-	/* NAPI reclaim is freeing packets in parallel with us and we may race.
-	 * We have stopped the queue but check again after synchronizing with
-	 * reclaim.
-	 */
+	 
 	smp_mb();
 	if (likely(fun_txq_avail(q) < FUNETH_MAX_PKT_DESC))
 		FUN_QSTAT_INC(q, tx_nstops);
@@ -332,9 +311,7 @@ static void fun_tx_check_stop(struct funeth_txq *q)
 		netif_tx_start_queue(q->ndq);
 }
 
-/* Return true if a queue has enough space to restart. Current condition is
- * that the queue must be >= 1/4 empty.
- */
+ 
 static bool fun_txq_may_restart(struct funeth_txq *q)
 {
 	return fun_txq_avail(q) >= q->mask / 4;
@@ -373,23 +350,19 @@ netdev_tx_t fun_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	return NETDEV_TX_OK;
 
 dropped:
-	/* A dropped packet may be the last one in a xmit_more train,
-	 * ring the doorbell just in case.
-	 */
+	 
 	if (!netdev_xmit_more())
 		fun_txq_wr_db(q);
 	return NETDEV_TX_OK;
 }
 
-/* Return a Tx queue's HW head index written back to host memory. */
+ 
 static u16 txq_hw_head(const struct funeth_txq *q)
 {
 	return (u16)be64_to_cpu(*q->hw_wb);
 }
 
-/* Unmap the Tx packet starting at the given descriptor index and
- * return the number of Tx descriptors it occupied.
- */
+ 
 static unsigned int fun_unmap_pkt(const struct funeth_txq *q, unsigned int idx)
 {
 	const struct fun_eth_tx_req *req = fun_tx_desc_addr(q, idx);
@@ -415,26 +388,18 @@ static unsigned int fun_unmap_pkt(const struct funeth_txq *q, unsigned int idx)
 	return tx_req_ndesc(req);
 }
 
-/* Reclaim completed Tx descriptors and free their packets. Restart a stopped
- * queue if we freed enough descriptors.
- *
- * Return true if we exhausted the budget while there is more work to be done.
- */
+ 
 static bool fun_txq_reclaim(struct funeth_txq *q, int budget)
 {
 	unsigned int npkts = 0, nbytes = 0, ndesc = 0;
 	unsigned int head, limit, reclaim_idx;
 
-	/* budget may be 0, e.g., netpoll */
+	 
 	limit = budget ? budget : UINT_MAX;
 
 	for (head = txq_hw_head(q), reclaim_idx = q->cons_cnt & q->mask;
 	     head != reclaim_idx && npkts < limit; head = txq_hw_head(q)) {
-		/* The HW head is continually updated, ensure we don't read
-		 * descriptor state before the head tells us to reclaim it.
-		 * On the enqueue side the doorbell is an implicit write
-		 * barrier.
-		 */
+		 
 		rmb();
 
 		do {
@@ -453,7 +418,7 @@ static bool fun_txq_reclaim(struct funeth_txq *q, int budget)
 
 	q->cons_cnt += ndesc;
 	netdev_tx_completed_queue(q->ndq, npkts, nbytes);
-	smp_mb(); /* pairs with the one in fun_tx_check_stop() */
+	smp_mb();  
 
 	if (unlikely(netif_tx_queue_stopped(q->ndq) &&
 		     fun_txq_may_restart(q))) {
@@ -464,7 +429,7 @@ static bool fun_txq_reclaim(struct funeth_txq *q, int budget)
 	return reclaim_idx != head;
 }
 
-/* The NAPI handler for Tx queues. */
+ 
 int fun_txq_napi_poll(struct napi_struct *napi, int budget)
 {
 	struct fun_irq *irq = container_of(napi, struct fun_irq, napi);
@@ -472,26 +437,22 @@ int fun_txq_napi_poll(struct napi_struct *napi, int budget)
 	unsigned int db_val;
 
 	if (fun_txq_reclaim(q, budget))
-		return budget;               /* exhausted budget */
+		return budget;                
 
-	napi_complete(napi);                 /* exhausted pending work */
+	napi_complete(napi);                  
 	db_val = READ_ONCE(q->irq_db_val) | (q->cons_cnt & q->mask);
 	writel(db_val, q->db);
 	return 0;
 }
 
-/* Reclaim up to @budget completed Tx packets from a TX XDP queue. */
+ 
 static unsigned int fun_xdpq_clean(struct funeth_txq *q, unsigned int budget)
 {
 	unsigned int npkts = 0, ndesc = 0, head, reclaim_idx;
 
 	for (head = txq_hw_head(q), reclaim_idx = q->cons_cnt & q->mask;
 	     head != reclaim_idx && npkts < budget; head = txq_hw_head(q)) {
-		/* The HW head is continually updated, ensure we don't read
-		 * descriptor state before the head tells us to reclaim it.
-		 * On the enqueue side the doorbell is an implicit write
-		 * barrier.
-		 */
+		 
 		rmb();
 
 		do {
@@ -595,9 +556,7 @@ int fun_xdp_xmit_frames(struct net_device *dev, int n,
 	return i;
 }
 
-/* Purge a Tx queue of any queued packets. Should be called once HW access
- * to the packets has been revoked, e.g., after the queue has been disabled.
- */
+ 
 static void fun_txq_purge(struct funeth_txq *q)
 {
 	while (q->cons_cnt != q->prod_cnt) {
@@ -619,7 +578,7 @@ static void fun_xdpq_purge(struct funeth_txq *q)
 	}
 }
 
-/* Create a Tx queue, allocating all the host resources needed. */
+ 
 static struct funeth_txq *fun_txq_create_sw(struct net_device *dev,
 					    unsigned int qidx,
 					    unsigned int ndesc,
@@ -630,9 +589,9 @@ static struct funeth_txq *fun_txq_create_sw(struct net_device *dev,
 	int numa_node;
 
 	if (irq)
-		numa_node = fun_irq_node(irq); /* skb Tx queue */
+		numa_node = fun_irq_node(irq);  
 	else
-		numa_node = cpu_to_node(qidx); /* XDP Tx queue */
+		numa_node = cpu_to_node(qidx);  
 
 	q = kzalloc_node(sizeof(*q), GFP_KERNEL, numa_node);
 	if (!q)
@@ -676,7 +635,7 @@ static void fun_txq_free_sw(struct funeth_txq *q)
 	kfree(q);
 }
 
-/* Allocate the device portion of a Tx queue. */
+ 
 int fun_txq_create_dev(struct funeth_txq *q, struct fun_irq *irq)
 {
 	struct funeth_priv *fp = netdev_priv(q->netdev);
@@ -753,9 +712,7 @@ static void fun_txq_free_dev(struct funeth_txq *q)
 	q->init_state = FUN_QSTATE_INIT_SW;
 }
 
-/* Create or advance a Tx queue, allocating all the host and device resources
- * needed to reach the target state.
- */
+ 
 int funeth_txq_create(struct net_device *dev, unsigned int qidx,
 		      unsigned int ndesc, struct fun_irq *irq, int state,
 		      struct funeth_txq **qp)
@@ -783,9 +740,7 @@ out:
 	return 0;
 }
 
-/* Free Tx queue resources until it reaches the target state.
- * The queue must be already disconnected from the stack.
- */
+ 
 struct funeth_txq *funeth_txq_free(struct funeth_txq *q, int state)
 {
 	if (state < FUN_QSTATE_INIT_FULL)

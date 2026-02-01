@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
+ 
+ 
 
 #ifndef __MLX5_MACSEC_H__
 #define __MLX5_MACSEC_H__
@@ -26,4 +26,4 @@ static inline void mlx5r_macsec_dealloc_gids(struct mlx5_ib_dev *dev) {}
 static inline void mlx5r_macsec_event_register(struct mlx5_ib_dev *dev) {}
 static inline void mlx5r_macsec_event_unregister(struct mlx5_ib_dev *dev) {}
 #endif
-#endif /* __MLX5_MACSEC_H__ */
+#endif  

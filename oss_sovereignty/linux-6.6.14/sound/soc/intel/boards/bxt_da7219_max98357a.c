@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Broxton-P I2S Machine Driver
- *
- * Copyright (C) 2016, Intel Corporation. All rights reserved.
- *
- * Modified from:
- *   Intel Skylake I2S Machine driver
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -124,17 +117,17 @@ static const struct snd_soc_dapm_widget max98390_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route audio_map[] = {
-	/* HP jack connectors - unknown if we have jack detection */
+	 
 	{"Headphone Jack", NULL, "HPL"},
 	{"Headphone Jack", NULL, "HPR"},
 
-	/* other jacks */
+	 
 	{"MIC", NULL, "Headset Mic"},
 
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 
-	/* CODEC BE connections */
+	 
 	{"HDMI1", NULL, "hif5-0 Output"},
 	{"HDMI2", NULL, "hif6-0 Output"},
 	{"HDMI2", NULL, "hif7-0 Output"},
@@ -146,7 +139,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"hifi1", NULL, "iDisp1 Tx"},
 	{"iDisp1 Tx", NULL, "iDisp1_out"},
 
-	/* DMIC */
+	 
 	{"dmic01_hifi", NULL, "DMIC01 Rx"},
 	{"DMIC01 Rx", NULL, "DMIC AIF"},
 
@@ -156,12 +149,12 @@ static const struct snd_soc_dapm_route audio_map[] = {
 };
 
 static const struct snd_soc_dapm_route max98357a_routes[] = {
-	/* speaker */
+	 
 	{"Spk", NULL, "Speaker"},
 };
 
 static const struct snd_soc_dapm_route max98390_routes[] = {
-	/* Speaker */
+	 
 	{"Left Spk", NULL, "Left BE_OUT"},
 	{"Right Spk", NULL, "Right BE_OUT"},
 };
@@ -212,11 +205,11 @@ static int broxton_ssp_fixup(struct snd_soc_pcm_runtime *rtd,
 			SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = chan->max = DUAL_CHANNEL;
 
-	/* set SSP to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 
@@ -230,7 +223,7 @@ static int broxton_da7219_codec_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
 	int clk_freq;
 
-	/* Configure sysclk for codec */
+	 
 	if (soc_intel_is_cml())
 		clk_freq = 24000000;
 	else
@@ -244,10 +237,7 @@ static int broxton_da7219_codec_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
-	/*
-	 * Headset buttons map to the google Reference headset.
-	 * These can be configured by userspace.
-	 */
+	 
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset Jack",
 					 SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 					 SND_JACK_BTN_2 | SND_JACK_BTN_3 | SND_JACK_LINEOUT,
@@ -335,12 +325,7 @@ static int bxt_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/*
-	 * On this platform for PCM device we support,
-	 * 48Khz
-	 * stereo
-	 * 16 bit audio
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -422,7 +407,7 @@ static const struct snd_soc_ops broxton_refcap_ops = {
 	.startup = broxton_refcap_startup,
 };
 
-/* broxton digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEF(dummy,
 	DAILINK_COMP_ARRAY(COMP_DUMMY()));
 
@@ -447,7 +432,7 @@ SND_SOC_DAILINK_DEF(hdmi2,
 SND_SOC_DAILINK_DEF(hdmi3,
 	DAILINK_COMP_ARRAY(COMP_CPU("HDMI3 Pin")));
 
- /* Back End DAI */
+  
 SND_SOC_DAILINK_DEF(ssp5_pin,
 	DAILINK_COMP_ARRAY(COMP_CPU("SSP5 Pin")));
 SND_SOC_DAILINK_DEF(ssp5_codec,
@@ -455,8 +440,8 @@ SND_SOC_DAILINK_DEF(ssp5_codec,
 				      BXT_MAXIM_CODEC_DAI)));
 SND_SOC_DAILINK_DEF(max98390_codec,
 	DAILINK_COMP_ARRAY(
-	/* Left */	COMP_CODEC(MAX98390_DEV0_NAME, "max98390-aif1"),
-	/* Right */	COMP_CODEC(MAX98390_DEV1_NAME, "max98390-aif1")));
+	 	COMP_CODEC(MAX98390_DEV0_NAME, "max98390-aif1"),
+	 	COMP_CODEC(MAX98390_DEV1_NAME, "max98390-aif1")));
 
 SND_SOC_DAILINK_DEF(ssp1_pin,
 	DAILINK_COMP_ARRAY(COMP_CPU("SSP1 Pin")));
@@ -494,7 +479,7 @@ SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:0e.0")));
 
 static struct snd_soc_dai_link broxton_dais[] = {
-	/* Front End DAI links */
+	 
 	[BXT_DPCM_AUDIO_PB] =
 	{
 		.name = "Bxt Audio Port",
@@ -583,9 +568,9 @@ static struct snd_soc_dai_link broxton_dais[] = {
 		.dynamic = 1,
 		SND_SOC_DAILINK_REG(hdmi3, dummy, platform),
 	},
-	/* Back End DAI links */
+	 
 	{
-		/* SSP5 - Codec */
+		 
 		.name = "SSP5-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -598,7 +583,7 @@ static struct snd_soc_dai_link broxton_dais[] = {
 		SND_SOC_DAILINK_REG(ssp5_pin, ssp5_codec, platform),
 	},
 	{
-		/* SSP1 - Codec */
+		 
 		.name = "SSP1-Codec",
 		.id = 1,
 		.no_pcm = 1,
@@ -755,7 +740,7 @@ static int bxt_card_late_probe(struct snd_soc_card *card)
 	return hdac_hdmi_jack_port_init(component, &card->dapm);
 }
 
-/* broxton audio machine driver for SPT + da7219 */
+ 
 static struct snd_soc_card broxton_audio_card = {
 	.name = "bxtda7219max",
 	.owner = THIS_MODULE,
@@ -795,15 +780,15 @@ static int broxton_audio_probe(struct platform_device *pdev)
 		unsigned int i;
 
 		broxton_audio_card.name = "glkda7219max";
-		/* Fixup the SSP entries for geminilake */
+		 
 		for (i = 0; i < ARRAY_SIZE(broxton_dais); i++) {
-			/* MAXIM_CODEC is connected to SSP1. */
+			 
 			if (!strcmp(broxton_dais[i].codecs->dai_name,
 				    BXT_MAXIM_CODEC_DAI)) {
 				broxton_dais[i].name = "SSP1-Codec";
 				broxton_dais[i].cpus->dai_name = "SSP1 Pin";
 			}
-			/* DIALOG_CODE is connected to SSP2 */
+			 
 			else if (!strcmp(broxton_dais[i].codecs->dai_name,
 					 BXT_DIALOG_CODEC_DAI)) {
 				broxton_dais[i].name = "SSP2-Codec";
@@ -822,7 +807,7 @@ static int broxton_audio_probe(struct platform_device *pdev)
 			broxton_audio_card.name = "cmlda7219max";
 
 		for (i = 0; i < ARRAY_SIZE(broxton_dais); i++) {
-			/* MAXIM_CODEC is connected to SSP1. */
+			 
 			if (!strcmp(broxton_dais[i].codecs->dai_name,
 					BXT_MAXIM_CODEC_DAI)) {
 				broxton_dais[i].name = "SSP1-Codec";
@@ -834,7 +819,7 @@ static int broxton_audio_probe(struct platform_device *pdev)
 					broxton_dais[i].dpcm_capture = 1;
 				}
 			}
-			/* DIALOG_CODEC is connected to SSP0 */
+			 
 			else if (!strcmp(broxton_dais[i].codecs->dai_name,
 					BXT_DIALOG_CODEC_DAI)) {
 				broxton_dais[i].name = "SSP0-Codec";
@@ -843,7 +828,7 @@ static int broxton_audio_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* override platform name, if required */
+	 
 	mach = pdev->dev.platform_data;
 	platform_name = mach->mach_params.platform;
 
@@ -875,7 +860,7 @@ static struct platform_driver broxton_audio = {
 };
 module_platform_driver(broxton_audio)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("Audio Machine driver-DA7219 & MAX98357A in I2S mode");
 MODULE_AUTHOR("Sathyanarayana Nujella <sathyanarayana.nujella@intel.com>");
 MODULE_AUTHOR("Rohit Ainapure <rohit.m.ainapure@intel.com>");

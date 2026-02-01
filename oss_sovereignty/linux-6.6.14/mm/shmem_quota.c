@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * In memory quota format relies on quota infrastructure to store dquot
- * information for us. While conventional quota formats for file systems
- * with persistent storage can load quota information into dquot from the
- * storage on-demand and hence quota dquot shrinker can free any dquot
- * that is not currently being used, it must be avoided here. Otherwise we
- * can lose valuable information, user provided limits, because there is
- * no persistent storage to load the information from afterwards.
- *
- * One information that in-memory quota format needs to keep track of is
- * a sorted list of ids for each quota type. This is done by utilizing
- * an rb tree which root is stored in mem_dqinfo->dqi_priv for each quota
- * type.
- *
- * This format can be used to support quota on file system without persistent
- * storage such as tmpfs.
- *
- * Author:	Lukas Czerner <lczerner@redhat.com>
- *		Carlos Maiolino <cmaiolino@redhat.com>
- *
- * Copyright (C) 2023 Red Hat, Inc.
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -36,14 +15,9 @@
 
 #ifdef CONFIG_TMPFS_QUOTA
 
-/*
- * The following constants define the amount of time given a user
- * before the soft limits are treated as hard limits (usually resulting
- * in an allocation failure). The timer is started when the user crosses
- * their soft limit, it is reset when they go below their soft limit.
- */
-#define SHMEM_MAX_IQ_TIME 604800	/* (7*24*60*60) 1 week */
-#define SHMEM_MAX_DQ_TIME 604800	/* (7*24*60*60) 1 week */
+ 
+#define SHMEM_MAX_IQ_TIME 604800	 
+#define SHMEM_MAX_DQ_TIME 604800	 
 
 struct quota_id {
 	struct rb_node	node;
@@ -56,14 +30,11 @@ struct quota_id {
 
 static int shmem_check_quota_file(struct super_block *sb, int type)
 {
-	/* There is no real quota file, nothing to do */
+	 
 	return 1;
 }
 
-/*
- * There is no real quota file. Just allocate rb_root for quota ids and
- * set limits
- */
+ 
 static int shmem_read_file_info(struct super_block *sb, int type)
 {
 	struct quota_info *dqopt = sb_dqopt(sb);
@@ -85,13 +56,11 @@ static int shmem_read_file_info(struct super_block *sb, int type)
 
 static int shmem_write_file_info(struct super_block *sb, int type)
 {
-	/* There is no real quota file, nothing to do */
+	 
 	return 0;
 }
 
-/*
- * Free all the quota_id entries in the rb tree and rb_root.
- */
+ 
 static int shmem_free_file_info(struct super_block *sb, int type)
 {
 	struct mem_dqinfo *info = &sb_dqopt(sb)->info[type];
@@ -158,10 +127,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * Load dquot with limits from existing entry, or create the new entry if
- * it does not exist.
- */
+ 
 static int shmem_acquire_dquot(struct dquot *dquot)
 {
 	struct mem_dqinfo *info = sb_dqinfo(dquot->dq_sb, dquot->dq_id.type);
@@ -188,7 +154,7 @@ static int shmem_acquire_dquot(struct dquot *dquot)
 			goto found;
 	}
 
-	/* We don't have entry for this id yet, create it */
+	 
 	new_entry = kzalloc(sizeof(struct quota_id), GFP_NOFS);
 	if (!new_entry) {
 		ret = -ENOMEM;
@@ -210,7 +176,7 @@ static int shmem_acquire_dquot(struct dquot *dquot)
 	entry = new_entry;
 
 found:
-	/* Load the stored limits from the tree */
+	 
 	spin_lock(&dquot->dq_dqb_lock);
 	dquot->dq_dqb.dqb_bhardlimit = entry->bhardlimit;
 	dquot->dq_dqb.dqb_bsoftlimit = entry->bsoftlimit;
@@ -224,7 +190,7 @@ found:
 		set_bit(DQ_FAKE_B, &dquot->dq_flags);
 	spin_unlock(&dquot->dq_dqb_lock);
 
-	/* Make sure flags update is visible after dquot has been filled */
+	 
 	smp_mb__before_atomic();
 	set_bit(DQ_ACTIVE_B, &dquot->dq_flags);
 out_unlock:
@@ -256,11 +222,7 @@ static bool shmem_is_empty_dquot(struct dquot *dquot)
 
 	return false;
 }
-/*
- * Store limits from dquot in the tree unless it's fake. If it is fake
- * remove the id from the tree since there is no useful information in
- * there.
- */
+ 
 static int shmem_release_dquot(struct dquot *dquot)
 {
 	struct mem_dqinfo *info = sb_dqinfo(dquot->dq_sb, dquot->dq_id.type);
@@ -270,7 +232,7 @@ static int shmem_release_dquot(struct dquot *dquot)
 	struct quota_id *entry = NULL;
 
 	mutex_lock(&dquot->dq_lock);
-	/* Check whether we are not racing with some other dqget() */
+	 
 	if (dquot_is_busy(dquot))
 		goto out_dqlock;
 
@@ -286,7 +248,7 @@ static int shmem_release_dquot(struct dquot *dquot)
 			goto found;
 	}
 
-	/* We should always find the entry in the rb tree */
+	 
 	WARN_ONCE(1, "quota id %u from dquot %p, not in rb tree!\n", id, dquot);
 	up_write(&dqopt->dqio_sem);
 	mutex_unlock(&dquot->dq_lock);
@@ -294,11 +256,11 @@ static int shmem_release_dquot(struct dquot *dquot)
 
 found:
 	if (shmem_is_empty_dquot(dquot)) {
-		/* Remove entry from the tree */
+		 
 		rb_erase(&entry->node, info->dqi_priv);
 		kfree(entry);
 	} else {
-		/* Store the limits in the tree */
+		 
 		spin_lock(&dquot->dq_dqb_lock);
 		entry->bhardlimit = dquot->dq_dqb.dqb_bhardlimit;
 		entry->bsoftlimit = dquot->dq_dqb.dqb_bsoftlimit;
@@ -347,4 +309,4 @@ const struct dquot_operations shmem_quota_operations = {
 	.mark_dirty		= shmem_mark_dquot_dirty,
 	.get_next_id		= shmem_get_next_id,
 };
-#endif /* CONFIG_TMPFS_QUOTA */
+#endif  

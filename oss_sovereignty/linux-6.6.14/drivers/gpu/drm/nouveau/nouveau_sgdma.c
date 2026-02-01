@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include <linux/pagemap.h>
 #include <linux/slab.h>
 #include <drm/ttm/ttm_tt.h>
@@ -9,9 +9,7 @@
 #include "nouveau_bo.h"
 
 struct nouveau_sgdma_be {
-	/* this has to be the first field so populate/unpopulated in
-	 * nouve_bo.c works properly, otherwise have to move them here
-	 */
+	 
 	struct ttm_tt ttm;
 	struct nouveau_mem *mem;
 };

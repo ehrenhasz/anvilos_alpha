@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Hantro VPU codec driver
- *
- * Copyright 2018 Google LLC.
- *	Tomasz Figa <tfiga@chromium.org>
- */
+ 
+ 
 
 #ifndef HANTRO_G1_REGS_H_
 #define HANTRO_G1_REGS_H_
 
 #define G1_SWREG(nr)                 ((nr) * 4)
 
-/* Decoder registers. */
+ 
 #define G1_REG_INTERRUPT				0x004
 #define     G1_REG_INTERRUPT_DEC_PIC_INF		BIT(24)
 #define     G1_REG_INTERRUPT_DEC_TIMEOUT		BIT(18)
@@ -68,7 +63,7 @@
 #define     G1_REG_DEC_CTRL0_PICORD_COUNT_E		BIT(9)
 #define     G1_REG_DEC_CTRL0_DEC_AHB_HLOCK_E		BIT(8)
 #define     G1_REG_DEC_CTRL0_DEC_AXI_WR_ID(x)		(((x) & 0xff) << 0)
-/* Setting AXI ID to 0xff to get auto generated ID to avoid possible conflicts */
+ 
 #define     G1_REG_DEC_CTRL0_DEC_AXI_AUTO		G1_REG_DEC_CTRL0_DEC_AXI_WR_ID(0xff)
 #define G1_REG_DEC_CTRL1				0x010
 #define     G1_REG_DEC_CTRL1_PIC_MB_WIDTH(x)		(((x) & 0x1ff) << 23)
@@ -302,7 +297,7 @@
 #define     G1_REG_REF_BUF_CTRL2_APF_THRESHOLD(x)	(((x) & 0x3fff) << 0)
 #define G1_REG_SOFT_RESET				0x194
 
-/* Post-processor registers. */
+ 
 #define G1_REG_PP_INTERRUPT		G1_SWREG(60)
 #define    G1_REG_PP_READY_IRQ		BIT(12)
 #define    G1_REG_PP_IRQ		BIT(8)
@@ -353,4 +348,4 @@
 #define G1_REG_PP_DISPLAY_WIDTH		G1_SWREG(92)
 #define G1_REG_PP_FUSE			G1_SWREG(99)
 
-#endif /* HANTRO_G1_REGS_H_ */
+#endif  

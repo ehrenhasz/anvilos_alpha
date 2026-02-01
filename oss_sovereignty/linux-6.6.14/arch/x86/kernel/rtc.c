@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC related functions
- */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/mc146818rtc.h>
 #include <linux/export.h>
@@ -14,25 +12,15 @@
 #include <asm/setup.h>
 
 #ifdef CONFIG_X86_32
-/*
- * This is a special lock that is owned by the CPU and holds the index
- * register we are working with.  It is required for NMI access to the
- * CMOS/RTC registers.  See arch/x86/include/asm/mc146818rtc.h for details.
- */
+ 
 volatile unsigned long cmos_lock;
 EXPORT_SYMBOL(cmos_lock);
-#endif /* CONFIG_X86_32 */
+#endif  
 
 DEFINE_SPINLOCK(rtc_lock);
 EXPORT_SYMBOL(rtc_lock);
 
-/*
- * In order to set the CMOS clock precisely, mach_set_cmos_time has to be
- * called 500 ms after the second nowtime has started, because when
- * nowtime is written into the registers of the CMOS clock, it will
- * jump to the next second precisely 500 ms later. Check the Motorola
- * MC146818A or Dallas DS12887 data sheet for details.
- */
+ 
 int mach_set_cmos_time(const struct timespec64 *now)
 {
 	unsigned long long nowtime = now->tv_sec;
@@ -58,10 +46,7 @@ void mach_get_cmos_time(struct timespec64 *now)
 {
 	struct rtc_time tm;
 
-	/*
-	 * If pm_trace abused the RTC as storage, set the timespec to 0,
-	 * which tells the caller that this RTC value is unusable.
-	 */
+	 
 	if (!pm_trace_rtc_valid()) {
 		now->tv_sec = now->tv_nsec = 0;
 		return;
@@ -77,7 +62,7 @@ void mach_get_cmos_time(struct timespec64 *now)
 	now->tv_nsec = 0;
 }
 
-/* Routines for accessing the CMOS RAM/RTC. */
+ 
 unsigned char rtc_cmos_read(unsigned char addr)
 {
 	unsigned char val;
@@ -105,7 +90,7 @@ int update_persistent_clock64(struct timespec64 now)
 	return x86_platform.set_wallclock(&now);
 }
 
-/* not static: needed by APM */
+ 
 void read_persistent_clock64(struct timespec64 *ts)
 {
 	x86_platform.get_wallclock(ts);

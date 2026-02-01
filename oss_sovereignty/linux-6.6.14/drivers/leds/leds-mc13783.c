@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LEDs driver for Freescale MC13783/MC13892/MC34708
- *
- * Copyright (C) 2010 Philippe Rétornaz
- *
- * Based on leds-da903x:
- * Copyright (C) 2008 Compulab, Ltd.
- *      Mike Rapoport <mike@compulab.co.il>
- *
- * Copyright (C) 2006-2008 Marvell International Ltd.
- *      Eric Miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2019 Radxa Limited
- * Copyright (c) 2022 Edgeble AI Technologies Pvt. Ltd.
- *
- * Author:
- * - Jagan Teki <jagan@amarulasolutions.com>
- * - Stephen Chen <stephen@radxa.com>
- */
+
+ 
 
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_modes.h>
@@ -660,7 +653,7 @@ static const struct of_device_id jadard_of_match[] = {
 		.compatible = "radxa,display-8hd-ad002",
 		.data = &radxa_display_8hd_ad002_desc
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jadard_of_match);
 

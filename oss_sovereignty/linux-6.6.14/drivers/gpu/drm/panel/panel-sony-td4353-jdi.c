@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Konrad Dybcio <konrad.dybcio@somainline.org>
- *
- * Generated with linux-mdss-dsi-panel-driver-generator with a
- * substantial amount of manual adjustments.
- *
- * SONY Downstream kernel calls this one:
- * - "JDI ID3" for Akari  (XZ2)
- * - "JDI ID4" for Apollo (XZ2 Compact)
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -24,10 +15,7 @@
 
 enum {
 	TYPE_TAMA_60HZ,
-	/*
-	 * Leaving room for expansion - SONY very often uses
-	 * *truly reliably* overclockable panels on their flagships!
-	 */
+	 
 };
 
 struct sony_td4353_jdi {
@@ -309,7 +297,7 @@ static void sony_td4353_jdi_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id sony_td4353_jdi_of_match[] = {
 	{ .compatible = "sony,td4353-jdi-tama", .data = (void *)TYPE_TAMA_60HZ },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sony_td4353_jdi_of_match);
 

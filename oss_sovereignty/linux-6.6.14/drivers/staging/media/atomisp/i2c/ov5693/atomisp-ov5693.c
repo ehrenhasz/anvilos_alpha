@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for OmniVision OV5693 1080p HD camera sensor.
- *
- * Copyright (c) 2013 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -46,12 +31,7 @@
 		} \
 	} while (0)
 
-/* Value 30ms reached through experimentation on byt ecs.
- * The DS specifies a much lower value but when using a smaller value
- * the I2C bus sometimes locks up permanently when starting the camera.
- * This issue could not be reproduced on cht, so we can reduce the
- * delay value to a lower value when insmod.
- */
+ 
 static uint up_delay = 30;
 module_param(up_delay, uint, 0644);
 MODULE_PARM_DESC(up_delay,
@@ -123,7 +103,7 @@ static int ad5823_i2c_read(struct i2c_client *client, u8 reg, u8 *val)
 
 static const u32 ov5693_embedded_effective_size = 28;
 
-/* i2c read/write stuff */
+ 
 static int ov5693_read_reg(struct i2c_client *client,
 			   u16 data_length, u16 reg, u16 *val)
 {
@@ -151,7 +131,7 @@ static int ov5693_read_reg(struct i2c_client *client,
 	msg[0].len = I2C_MSG_LENGTH;
 	msg[0].buf = data;
 
-	/* high byte goes out first */
+	 
 	data[0] = (u8)(reg >> 8);
 	data[1] = (u8)(reg & 0xff);
 
@@ -170,7 +150,7 @@ static int ov5693_read_reg(struct i2c_client *client,
 	}
 
 	*val = 0;
-	/* high byte comes first */
+	 
 	if (data_length == OV5693_8BIT)
 		*val = (u8)data[0];
 	else if (data_length == OV5693_16BIT)
@@ -214,20 +194,7 @@ static int vcm_dw_i2c_write(struct i2c_client *client, u16 data)
 	return ret == num_msg ? 0 : -EIO;
 }
 
-/*
- * Theory: per datasheet, the two VCMs both allow for a 2-byte read.
- * The DW9714 doesn't actually specify what this does (it has a
- * two-byte write-only protocol, but specifies the read sequence as
- * legal), but it returns the same data (zeroes) always, after an
- * undocumented initial NAK.  The AD5823 has a one-byte address
- * register to which all writes go, and subsequent reads will cycle
- * through the 8 bytes of registers.  Notably, the default values (the
- * device is always power-cycled affirmatively, so we can rely on
- * these) in AD5823 are not pairwise repetitions of the same 16 bit
- * word.  So all we have to do is sequentially read two bytes at a
- * time and see if we detect a difference in any of the first four
- * pairs.
- */
+ 
 static int vcm_detect(struct i2c_client *client)
 {
 	int i, ret;
@@ -241,10 +208,7 @@ static int vcm_detect(struct i2c_client *client)
 		msg.buf = (u8 *)&data;
 		ret = i2c_transfer(client->adapter, &msg, 1);
 
-		/*
-		 * DW9714 always fails the first read and returns
-		 * zeroes for subsequent ones
-		 */
+		 
 		if (i == 0 && ret == -EREMOTEIO) {
 			data0 = 0;
 			continue;
@@ -265,7 +229,7 @@ static int ov5693_write_reg(struct i2c_client *client, u16 data_length,
 	int ret;
 	unsigned char data[4] = {0};
 	__be16 *wreg = (void *)data;
-	const u16 len = data_length + sizeof(u16); /* 16-bit address + data */
+	const u16 len = data_length + sizeof(u16);  
 
 	if (data_length != OV5693_8BIT && data_length != OV5693_16BIT) {
 		dev_err(&client->dev,
@@ -273,13 +237,13 @@ static int ov5693_write_reg(struct i2c_client *client, u16 data_length,
 		return -EINVAL;
 	}
 
-	/* high byte goes out first */
+	 
 	*wreg = cpu_to_be16(reg);
 
 	if (data_length == OV5693_8BIT) {
 		data[2] = (u8)(val);
 	} else {
-		/* OV5693_16BIT */
+		 
 		__be16 *wdata = (void *)&data[2];
 
 		*wdata = cpu_to_be16(val);
@@ -294,20 +258,7 @@ static int ov5693_write_reg(struct i2c_client *client, u16 data_length,
 	return ret;
 }
 
-/*
- * ov5693_write_reg_array - Initializes a list of OV5693 registers
- * @client: i2c driver client structure
- * @reglist: list of registers to be written
- *
- * This function initializes a list of registers. When consecutive addresses
- * are found in a row on the list, this function creates a buffer and sends
- * consecutive data in a single i2c_transfer().
- *
- * __ov5693_flush_reg_array, __ov5693_buf_reg_array() and
- * __ov5693_write_reg_is_consecutive() are internal functions to
- * ov5693_write_reg_array_fast() and should be not used anywhere else.
- *
- */
+ 
 
 static int __ov5693_flush_reg_array(struct i2c_client *client,
 				    struct ov5693_write_ctrl *ctrl)
@@ -318,7 +269,7 @@ static int __ov5693_flush_reg_array(struct i2c_client *client,
 	if (ctrl->index == 0)
 		return 0;
 
-	size = sizeof(u16) + ctrl->index; /* 16-bit address + data */
+	size = sizeof(u16) + ctrl->index;  
 
 	*reg = cpu_to_be16(ctrl->buffer.addr);
 	ctrl->index = 0;
@@ -348,16 +299,13 @@ static int __ov5693_buf_reg_array(struct i2c_client *client,
 		return -EINVAL;
 	}
 
-	/* When first item is added, we need to store its starting address */
+	 
 	if (ctrl->index == 0)
 		ctrl->buffer.addr = next->reg;
 
 	ctrl->index += size;
 
-	/*
-	 * Buffer cannot guarantee free space for u32? Better flush it to avoid
-	 * possible lack of memory for next item.
-	 */
+	 
 	if (ctrl->index + sizeof(u16) >= OV5693_MAX_WRITE_BUF_SIZE)
 		return __ov5693_flush_reg_array(client, ctrl);
 
@@ -391,10 +339,7 @@ static int ov5693_write_reg_array(struct i2c_client *client,
 			msleep(next->val);
 			break;
 		default:
-			/*
-			 * If next address is not consecutive, data needs to be
-			 * flushed before proceed.
-			 */
+			 
 			if (!__ov5693_write_reg_is_consecutive(client, &ctrl,
 							       next)) {
 				err = __ov5693_flush_reg_array(client, &ctrl);
@@ -426,16 +371,12 @@ static long __ov5693_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 
 	hts = ov5693_res[dev->fmt_idx].pixels_per_line;
 	vts = ov5693_res[dev->fmt_idx].lines_per_frame;
-	/*
-	 * If coarse_itg is larger than 1<<15, can not write to reg directly.
-	 * The way is to write coarse_itg/2 to the reg, meanwhile write 2*hts
-	 * to the reg.
-	 */
+	 
 	if (coarse_itg > (1 << 15)) {
 		hts = hts * 2;
 		coarse_itg = (int)coarse_itg / 2;
 	}
-	/* group hold */
+	 
 	ret = ov5693_write_reg(client, OV5693_8BIT,
 			       OV5693_GROUP_ACCESS, 0x00);
 	if (ret) {
@@ -459,7 +400,7 @@ static long __ov5693_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 			__func__, OV5693_TIMING_HTS_L);
 		return ret;
 	}
-	/* Increase the VTS to match exposure + MARGIN */
+	 
 	if (coarse_itg > vts - OV5693_INTEGRATION_TIME_MARGIN)
 		vts = (u16)coarse_itg + OV5693_INTEGRATION_TIME_MARGIN;
 
@@ -479,9 +420,9 @@ static long __ov5693_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 		return ret;
 	}
 
-	/* set exposure */
+	 
 
-	/* Lower four bit should be 0*/
+	 
 	exp_val = coarse_itg << 4;
 	ret = ov5693_write_reg(client, OV5693_8BIT,
 			       OV5693_EXPOSURE_L, exp_val & 0xFF);
@@ -507,7 +448,7 @@ static long __ov5693_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 		return ret;
 	}
 
-	/* Analog gain */
+	 
 	ret = ov5693_write_reg(client, OV5693_8BIT,
 			       OV5693_AGC_L, gain & 0xff);
 	if (ret) {
@@ -524,7 +465,7 @@ static long __ov5693_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 		return ret;
 	}
 
-	/* Digital gain */
+	 
 	if (digitgain) {
 		ret = ov5693_write_reg(client, OV5693_16BIT,
 				       OV5693_MWB_RED_GAIN_H, digitgain);
@@ -551,13 +492,13 @@ static long __ov5693_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 		}
 	}
 
-	/* End group */
+	 
 	ret = ov5693_write_reg(client, OV5693_8BIT,
 			       OV5693_GROUP_ACCESS, 0x10);
 	if (ret)
 		return ret;
 
-	/* Delay launch group */
+	 
 	ret = ov5693_write_reg(client, OV5693_8BIT,
 			       OV5693_GROUP_ACCESS, 0xa0);
 	if (ret)
@@ -585,7 +526,7 @@ static long ov5693_s_exposure(struct v4l2_subdev *sd,
 	u16 analog_gain = exposure->gain[0];
 	u16 digital_gain = exposure->gain[1];
 
-	/* we should not accept the invalid value below */
+	 
 	if (analog_gain == 0) {
 		struct i2c_client *client = v4l2_get_subdevdata(sd);
 
@@ -624,26 +565,26 @@ static int __ov5693_otp_read(struct v4l2_subdev *sd, u8 *buf)
 
 	dev->otp_size = 0;
 	for (i = 1; i < OV5693_OTP_BANK_MAX; i++) {
-		/*set bank NO and OTP read mode. */
+		 
 		ret = ov5693_write_reg(client, OV5693_8BIT, OV5693_OTP_BANK_REG,
-				       (i | 0xc0));	//[7:6] 2'b11 [5:0] bank no
+				       (i | 0xc0));	 
 		if (ret) {
 			dev_err(&client->dev, "failed to prepare OTP page\n");
 			return ret;
 		}
-		//pr_debug("write 0x%x->0x%x\n",OV5693_OTP_BANK_REG,(i|0xc0));
+		
 
-		/*enable read */
+		 
 		ret = ov5693_write_reg(client, OV5693_8BIT, OV5693_OTP_READ_REG,
-				       OV5693_OTP_MODE_READ);	// enable :1
+				       OV5693_OTP_MODE_READ);	
 		if (ret) {
 			dev_err(&client->dev,
 				"failed to set OTP reading mode page");
 			return ret;
 		}
-		//pr_debug("write 0x%x->0x%x\n",OV5693_OTP_READ_REG,OV5693_OTP_MODE_READ);
+		
 
-		/* Reading the OTP data array */
+		 
 		ret = ov5693_read_otp_reg_array(client, OV5693_OTP_BANK_SIZE,
 						OV5693_OTP_START_ADDR,
 						b);
@@ -652,9 +593,9 @@ static int __ov5693_otp_read(struct v4l2_subdev *sd, u8 *buf)
 			return ret;
 		}
 
-		//pr_debug("BANK[%2d] %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n", i, *b, *(b+1), *(b+2), *(b+3), *(b+4), *(b+5), *(b+6), *(b+7), *(b+8), *(b+9), *(b+10), *(b+11), *(b+12), *(b+13), *(b+14), *(b+15));
+		
 
-		//Intel OTP map, try to read 320byts first.
+		
 		if (i == 21) {
 			if ((*b) == 0) {
 				dev->otp_size = 320;
@@ -664,7 +605,7 @@ static int __ov5693_otp_read(struct v4l2_subdev *sd, u8 *buf)
 				continue;
 			}
 		} else if (i ==
-			   24) {		//if the first 320bytes data doesn't not exist, try to read the next 32bytes data.
+			   24) {		
 			if ((*b) == 0) {
 				dev->otp_size = 32;
 				break;
@@ -673,12 +614,12 @@ static int __ov5693_otp_read(struct v4l2_subdev *sd, u8 *buf)
 				continue;
 			}
 		} else if (i ==
-			   27) {		//if the prvious 32bytes data doesn't exist, try to read the next 32bytes data again.
+			   27) {		
 			if ((*b) == 0) {
 				dev->otp_size = 32;
 				break;
 			} else {
-				dev->otp_size = 0;	// no OTP data.
+				dev->otp_size = 0;	
 				break;
 			}
 		}
@@ -688,11 +629,7 @@ static int __ov5693_otp_read(struct v4l2_subdev *sd, u8 *buf)
 	return 0;
 }
 
-/*
- * Read otp data and store it into a kmalloced buffer.
- * The caller must kfree the buffer when no more needed.
- * @size: set to the size of the returned otp data.
- */
+ 
 static void *ov5693_otp_read(struct v4l2_subdev *sd)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -703,7 +640,7 @@ static void *ov5693_otp_read(struct v4l2_subdev *sd)
 	if (!buf)
 		return ERR_PTR(-ENOMEM);
 
-	//otp valid after mipi on and sw stream on
+	
 	ret = ov5693_write_reg(client, OV5693_8BIT, OV5693_FRAME_OFF_NUM, 0x00);
 
 	ret = ov5693_write_reg(client, OV5693_8BIT,
@@ -711,13 +648,13 @@ static void *ov5693_otp_read(struct v4l2_subdev *sd)
 
 	ret = __ov5693_otp_read(sd, buf);
 
-	//mipi off and sw stream off after otp read
+	
 	ret = ov5693_write_reg(client, OV5693_8BIT, OV5693_FRAME_OFF_NUM, 0x0f);
 
 	ret = ov5693_write_reg(client, OV5693_8BIT,
 			       OV5693_SW_STREAM, OV5693_STOP_STREAMING);
 
-	/* Driver has failed to find valid data */
+	 
 	if (ret) {
 		dev_err(&client->dev, "sensor found no valid OTP data\n");
 		return ERR_PTR(ret);
@@ -737,17 +674,14 @@ static long ov5693_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	return 0;
 }
 
-/*
- * This returns the exposure time being used. This should only be used
- * for filling in EXIF data, not for actual image processing.
- */
+ 
 static int ov5693_q_exposure(struct v4l2_subdev *sd, s32 *value)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	u16 reg_v, reg_v2;
 	int ret;
 
-	/* get exposure */
+	 
 	ret = ov5693_read_reg(client, OV5693_8BIT,
 			      OV5693_EXPOSURE_L,
 			      &reg_v);
@@ -782,19 +716,19 @@ static int ad5823_t_focus_vcm(struct v4l2_subdev *sd, u16 val)
 	if (ret)
 		return ret;
 
-	/* set reg VCM_CODE_MSB Bit[1:0] */
+	 
 	vcm_code = (vcm_code & VCM_CODE_MSB_MASK) |
 		   ((val >> 8) & ~VCM_CODE_MSB_MASK);
 	ret = ad5823_i2c_write(client, AD5823_REG_VCM_CODE_MSB, vcm_code);
 	if (ret)
 		return ret;
 
-	/* set reg VCM_CODE_LSB Bit[7:0] */
+	 
 	ret = ad5823_i2c_write(client, AD5823_REG_VCM_CODE_LSB, (val & 0xff));
 	if (ret)
 		return ret;
 
-	/* set required vcm move time */
+	 
 	vcm_code = AD5823_RESONANCE_PERIOD / AD5823_RESONANCE_COEF
 		   - AD5823_HIGH_FREQ_RANGE;
 	ret = ad5823_i2c_write(client, AD5823_REG_VCM_MOVE_TIME, vcm_code);
@@ -1008,7 +942,7 @@ static const struct v4l2_ctrl_config ov5693_controls[] = {
 		.type = V4L2_CTRL_TYPE_INTEGER,
 		.name = "focus status",
 		.min = 0,
-		.max = 100,		/* allow enum to grow in the future */
+		.max = 100,		 
 		.step = 1,
 		.def = 0,
 		.flags = 0,
@@ -1048,11 +982,11 @@ static int ov5693_init(struct v4l2_subdev *sd)
 	dev->vcm_update = false;
 
 	if (dev->vcm == VCM_AD5823) {
-		ret = vcm_ad_i2c_wr8(client, 0x01, 0x01); /* vcm init test */
+		ret = vcm_ad_i2c_wr8(client, 0x01, 0x01);  
 		if (ret)
 			dev_err(&client->dev,
 				"vcm reset failed\n");
-		/*change the mode*/
+		 
 		ret = ad5823_i2c_write(client, AD5823_REG_VCM_CODE_MSB,
 				       AD5823_RING_CTRL_ENABLE);
 		if (ret)
@@ -1065,7 +999,7 @@ static int ov5693_init(struct v4l2_subdev *sd)
 				"vcm change mode failed\n");
 	}
 
-	/*change initial focus value for ad5823*/
+	 
 	if (dev->vcm == VCM_AD5823) {
 		dev->focus = AD5823_INIT_FOCUS_POS;
 		ov5693_t_focus_abs(sd, AD5823_INIT_FOCUS_POS);
@@ -1087,13 +1021,7 @@ static int power_ctrl(struct v4l2_subdev *sd, bool flag)
 	if (!dev || !dev->platform_data)
 		return -ENODEV;
 
-	/*
-	 * This driver assumes "internal DVDD, PWDNB tied to DOVDD".
-	 * In this set up only gpio0 (XSHUTDN) should be available
-	 * but in some products (for example ECS) gpio1 (PWDNB) is
-	 * also available. If gpio1 is available we emulate it being
-	 * tied to DOVDD here.
-	 */
+	 
 	if (flag) {
 		ret = dev->platform_data->v2p8_ctrl(sd, 1);
 		dev->platform_data->gpio1_ctrl(sd, 1);
@@ -1135,16 +1063,16 @@ static int __power_up(struct v4l2_subdev *sd)
 		return -ENODEV;
 	}
 
-	/* power control */
+	 
 	ret = power_ctrl(sd, 1);
 	if (ret)
 		goto fail_power;
 
-	/* according to DS, at least 5ms is needed between DOVDD and PWDN */
-	/* add this delay time to 10~11ms*/
+	 
+	 
 	usleep_range(10000, 11000);
 
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 1);
 	if (ret) {
 		ret = gpio_ctrl(sd, 1);
@@ -1152,7 +1080,7 @@ static int __power_up(struct v4l2_subdev *sd)
 			goto fail_power;
 	}
 
-	/* flis clock control */
+	 
 	ret = dev->platform_data->flisclk_ctrl(sd, 1);
 	if (ret)
 		goto fail_clk;
@@ -1187,7 +1115,7 @@ static int power_down(struct v4l2_subdev *sd)
 	if (ret)
 		dev_err(&client->dev, "flisclk failed\n");
 
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 0);
 	if (ret) {
 		ret = gpio_ctrl(sd, 0);
@@ -1195,7 +1123,7 @@ static int power_down(struct v4l2_subdev *sd)
 			dev_err(&client->dev, "gpio failed 2\n");
 	}
 
-	/* power control */
+	 
 	ret = power_ctrl(sd, 0);
 	if (ret)
 		dev_err(&client->dev, "vprog failed.\n");
@@ -1229,7 +1157,7 @@ static int ov5693_s_power(struct v4l2_subdev *sd, int on)
 		ret = power_up(sd);
 		if (!ret) {
 			ret = ov5693_init(sd);
-			/* restore settings */
+			 
 			ov5693_res = ov5693_res_preview;
 			N_RES = N_RES_PREVIEW;
 		}
@@ -1237,18 +1165,7 @@ static int ov5693_s_power(struct v4l2_subdev *sd, int on)
 	return ret;
 }
 
-/*
- * distance - calculate the distance
- * @res: resolution
- * @w: width
- * @h: height
- *
- * Get the gap between res_w/res_h and w/h.
- * distance = (res_w/res_h - w/h) / (w/h) * 8192
- * res->width/height smaller than w/h wouldn't be considered.
- * The gap of ratio larger than 1/8 wouldn't be considered.
- * Returns the value of gap or -1 if fail.
- */
+ 
 #define LARGEST_ALLOWED_RATIO_MISMATCH 1024
 static int distance(struct ov5693_resolution *res, u32 w, u32 h)
 {
@@ -1272,11 +1189,7 @@ static int distance(struct ov5693_resolution *res, u32 w, u32 h)
 	return distance;
 }
 
-/* Return the nearest higher resolution index
- * Firstly try to find the approximate aspect ratio resolution
- * If we find multiple same AR resolutions, choose the
- * minimal size.
- */
+ 
 static int nearest_resolution_index(int w, int h)
 {
 	int i;
@@ -1320,7 +1233,7 @@ static int get_resolution_index(int w, int h)
 	return -1;
 }
 
-/* TODO: remove it. */
+ 
 static int startup(struct v4l2_subdev *sd)
 {
 	struct ov5693_device *dev = to_ov5693_sensor(sd);
@@ -1371,7 +1284,7 @@ static int ov5693_set_fmt(struct v4l2_subdev *sd,
 	mutex_lock(&dev->input_lock);
 	idx = nearest_resolution_index(fmt->width, fmt->height);
 	if (idx == -1) {
-		/* return the largest resolution */
+		 
 		fmt->width = ov5693_res[N_RES - 1].width;
 		fmt->height = ov5693_res[N_RES - 1].height;
 	} else {
@@ -1422,11 +1335,7 @@ static int ov5693_set_fmt(struct v4l2_subdev *sd,
 		}
 	}
 
-	/*
-	 * After sensor settings are set to HW, sometimes stream is started.
-	 * This would cause ISP timeout because ISP is not ready to receive
-	 * data yet. So add stop streaming here.
-	 */
+	 
 	ret = ov5693_write_reg(client, OV5693_8BIT, OV5693_SW_STREAM,
 			       OV5693_STOP_STREAMING);
 	if (ret)
@@ -1528,10 +1437,7 @@ static int ov5693_s_config(struct v4l2_subdev *sd,
 	    (struct camera_sensor_platform_data *)platform_data;
 
 	mutex_lock(&dev->input_lock);
-	/* power off the module, then power on it in future
-	 * as first power on by board may not fulfill the
-	 * power on sequqence needed by the module
-	 */
+	 
 	ret = power_down(sd);
 	if (ret) {
 		dev_err(&client->dev, "ov5693 power-off err.\n");
@@ -1551,7 +1457,7 @@ static int ov5693_s_config(struct v4l2_subdev *sd,
 	if (ret)
 		goto fail_csi_cfg;
 
-	/* config & detect sensor */
+	 
 	ret = ov5693_detect(client);
 	if (ret) {
 		dev_err(&client->dev, "ov5693_detect err s_config.\n");
@@ -1560,7 +1466,7 @@ static int ov5693_s_config(struct v4l2_subdev *sd,
 
 	dev->otp_data = ov5693_otp_read(sd);
 
-	/* turn off sensor, after probed */
+	 
 	ret = power_down(sd);
 	if (ret) {
 		dev_err(&client->dev, "ov5693 power-off err.\n");
@@ -1668,12 +1574,7 @@ static int ov5693_probe(struct i2c_client *client)
 	void *pdata;
 	unsigned int i;
 
-	/*
-	 * Firmware workaround: Some modules use a "secondary default"
-	 * address of 0x10 which doesn't appear on schematics, and
-	 * some BIOS versions haven't gotten the memo.  Work around
-	 * via config.
-	 */
+	 
 	i2c = gmin_get_var_int(&client->dev, false, "I2CAddr", -1);
 	if (i2c != -1) {
 		dev_info(&client->dev,
@@ -1728,7 +1629,7 @@ static int ov5693_probe(struct i2c_client *client)
 		return dev->ctrl_handler.error;
 	}
 
-	/* Use same lock for controls as for everything else. */
+	 
 	dev->ctrl_handler.lock = &dev->input_lock;
 	dev->sd.ctrl_handler = &dev->ctrl_handler;
 

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  include/linux/irqchip/irq-st.h
- *
- *  Copyright (C) 2014 STMicroelectronics – All Rights Reserved
- *
- *  Author: Lee Jones <lee.jones@linaro.org>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_INTERRUPT_CONTROLLER_ST_H
 #define _DT_BINDINGS_INTERRUPT_CONTROLLER_ST_H

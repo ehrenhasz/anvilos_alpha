@@ -1,16 +1,6 @@
-/* $OpenBSD: misc.h,v 1.106 2023/10/11 22:42:26 djm Exp $ */
+ 
 
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
 
 #ifndef _MISC_H
 #define _MISC_H
@@ -21,29 +11,29 @@
 #include <stdio.h>
 #include <signal.h>
 
-/* Data structure for representing a forwarding request. */
+ 
 struct Forward {
-	char	 *listen_host;		/* Host (address) to listen on. */
-	int	  listen_port;		/* Port to forward. */
-	char	 *listen_path;		/* Path to bind domain socket. */
-	char	 *connect_host;		/* Host to connect. */
-	int	  connect_port;		/* Port to connect on connect_host. */
-	char	 *connect_path;		/* Path to connect domain socket. */
-	int	  allocated_port;	/* Dynamically allocated listen port */
-	int	  handle;		/* Handle for dynamic listen ports */
+	char	 *listen_host;		 
+	int	  listen_port;		 
+	char	 *listen_path;		 
+	char	 *connect_host;		 
+	int	  connect_port;		 
+	char	 *connect_path;		 
+	int	  allocated_port;	 
+	int	  handle;		 
 };
 
 int forward_equals(const struct Forward *, const struct Forward *);
 int daemonized(void);
 
-/* Common server and client forwarding options. */
+ 
 struct ForwardOptions {
-	int	 gateway_ports; /* Allow remote connects to forwarded ports. */
-	mode_t	 streamlocal_bind_mask; /* umask for streamlocal binds */
-	int	 streamlocal_bind_unlink; /* unlink socket before bind */
+	int	 gateway_ports;  
+	mode_t	 streamlocal_bind_mask;  
+	int	 streamlocal_bind_unlink;  
 };
 
-/* misc.c */
+ 
 
 char	*chop(char *);
 void	 rtrim(char *);
@@ -107,11 +97,11 @@ const char *ssh_gai_strerror(int);
 
 typedef void privdrop_fn(struct passwd *);
 typedef void privrestore_fn(void);
-#define	SSH_SUBPROCESS_STDOUT_DISCARD	(1)     /* Discard stdout */
-#define	SSH_SUBPROCESS_STDOUT_CAPTURE	(1<<1)  /* Redirect stdout */
-#define	SSH_SUBPROCESS_STDERR_DISCARD	(1<<2)  /* Discard stderr */
-#define	SSH_SUBPROCESS_UNSAFE_PATH	(1<<3)	/* Don't check for safe cmd */
-#define	SSH_SUBPROCESS_PRESERVE_ENV	(1<<4)	/* Keep parent environment */
+#define	SSH_SUBPROCESS_STDOUT_DISCARD	(1)      
+#define	SSH_SUBPROCESS_STDOUT_CAPTURE	(1<<1)   
+#define	SSH_SUBPROCESS_STDERR_DISCARD	(1<<2)   
+#define	SSH_SUBPROCESS_UNSAFE_PATH	(1<<3)	 
+#define	SSH_SUBPROCESS_PRESERVE_ENV	(1<<4)	 
 pid_t subprocess(const char *, const char *, int, char **, FILE **, u_int,
     struct passwd *, privdrop_fn *, privrestore_fn *);
 
@@ -129,7 +119,7 @@ void	 freeargs(arglist *);
 
 int	 tun_open(int, int, char **);
 
-/* Common definitions for ssh tunnel device forwarding */
+ 
 #define SSH_TUNMODE_NO		0x00
 #define SSH_TUNMODE_POINTOPOINT	0x01
 #define SSH_TUNMODE_ETHERNET	0x02
@@ -140,10 +130,10 @@ int	 tun_open(int, int, char **);
 #define SSH_TUNID_ERR		(SSH_TUNID_ANY - 1)
 #define SSH_TUNID_MAX		(SSH_TUNID_ANY - 2)
 
-/* Fake port to indicate that host field is really a path. */
+ 
 #define PORT_STREAMLOCAL	-2
 
-/* Functions to extract or store big-endian words of various sizes */
+ 
 u_int64_t	get_u64(const void *)
     __attribute__((__bounded__( __minbytes__, 1, 8)));
 u_int32_t	get_u32(const void *)
@@ -157,7 +147,7 @@ void		put_u32(void *, u_int32_t)
 void		put_u16(void *, u_int16_t)
     __attribute__((__bounded__( __minbytes__, 1, 2)));
 
-/* Little-endian store/load, used by umac.c */
+ 
 u_int32_t	get_u32_le(const void *)
     __attribute__((__bounded__(__minbytes__, 1, 4)));
 void		put_u32_le(void *, u_int32_t)
@@ -165,9 +155,9 @@ void		put_u32_le(void *, u_int32_t)
 
 struct bwlimit {
 	size_t buflen;
-	u_int64_t rate;		/* desired rate in kbit/s */
-	u_int64_t thresh;	/* threshold after which we'll check timers */
-	u_int64_t lamt;		/* amount written in last timer interval */
+	u_int64_t rate;		 
+	u_int64_t thresh;	 
+	u_int64_t lamt;		 
 	struct timeval bwstart, bwend;
 };
 
@@ -199,12 +189,12 @@ int	 safe_path(const char *, struct stat *, const char *, uid_t,
 int	 safe_path_fd(int, const char *, struct passwd *,
 	    char *err, size_t errlen);
 
-/* authorized_key-style options parsing helpers */
+ 
 int	opt_flag(const char *opt, int allow_negate, const char **optsp);
 char	*opt_dequote(const char **sp, const char **errstrp);
 int	opt_match(const char **opts, const char *term);
 
-/* readconf/servconf option lists */
+ 
 void	opt_array_append(const char *file, const int line,
 	    const char *directive, char ***array, u_int *lp, const char *s);
 void	opt_array_append2(const char *file, const int line,
@@ -221,7 +211,7 @@ int ptimeout_get_ms(struct timespec *pt);
 struct timespec *ptimeout_get_tsp(struct timespec *pt);
 int ptimeout_isset(struct timespec *pt);
 
-/* readpass.c */
+ 
 
 #define RP_ECHO			0x0001
 #define RP_ALLOW_STDIN		0x0002
@@ -244,7 +234,7 @@ void	notify_complete(struct notifier_ctx *, const char *, ...)
 typedef void (*sshsig_t)(int);
 sshsig_t ssh_signal(int, sshsig_t);
 
-/* On OpenBSD time_t is int64_t which is long long. */
-/* #define SSH_TIME_T_MAX LLONG_MAX */
+ 
+ 
 
-#endif /* _MISC_H */
+#endif  

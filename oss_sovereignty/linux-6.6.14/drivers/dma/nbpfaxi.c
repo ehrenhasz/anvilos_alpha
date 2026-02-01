@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013-2014 Renesas Electronics Europe Ltd.
- * Author: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
@@ -26,10 +23,10 @@
 #define NBPF_REG_CHAN_OFFSET	0
 #define NBPF_REG_CHAN_SIZE	0x40
 
-/* Channel Current Transaction Byte register */
+ 
 #define NBPF_CHAN_CUR_TR_BYTE	0x20
 
-/* Channel Status register */
+ 
 #define NBPF_CHAN_STAT	0x24
 #define NBPF_CHAN_STAT_EN	1
 #define NBPF_CHAN_STAT_TACT	4
@@ -38,7 +35,7 @@
 #define NBPF_CHAN_STAT_TC	0x40
 #define NBPF_CHAN_STAT_DER	0x400
 
-/* Channel Control register */
+ 
 #define NBPF_CHAN_CTRL	0x28
 #define NBPF_CHAN_CTRL_SETEN	1
 #define NBPF_CHAN_CTRL_CLREN	2
@@ -50,39 +47,39 @@
 #define NBPF_CHAN_CTRL_SETSUS	0x100
 #define NBPF_CHAN_CTRL_CLRSUS	0x200
 
-/* Channel Configuration register */
+ 
 #define NBPF_CHAN_CFG	0x2c
-#define NBPF_CHAN_CFG_SEL	7		/* terminal SELect: 0..7 */
-#define NBPF_CHAN_CFG_REQD	8		/* REQuest Direction: DMAREQ is 0: input, 1: output */
-#define NBPF_CHAN_CFG_LOEN	0x10		/* LOw ENable: low DMA request line is: 0: inactive, 1: active */
-#define NBPF_CHAN_CFG_HIEN	0x20		/* HIgh ENable: high DMA request line is: 0: inactive, 1: active */
-#define NBPF_CHAN_CFG_LVL	0x40		/* LeVeL: DMA request line is sensed as 0: edge, 1: level */
-#define NBPF_CHAN_CFG_AM	0x700		/* ACK Mode: 0: Pulse mode, 1: Level mode, b'1x: Bus Cycle */
-#define NBPF_CHAN_CFG_SDS	0xf000		/* Source Data Size: 0: 8 bits,... , 7: 1024 bits */
-#define NBPF_CHAN_CFG_DDS	0xf0000		/* Destination Data Size: as above */
-#define NBPF_CHAN_CFG_SAD	0x100000	/* Source ADdress counting: 0: increment, 1: fixed */
-#define NBPF_CHAN_CFG_DAD	0x200000	/* Destination ADdress counting: 0: increment, 1: fixed */
-#define NBPF_CHAN_CFG_TM	0x400000	/* Transfer Mode: 0: single, 1: block TM */
-#define NBPF_CHAN_CFG_DEM	0x1000000	/* DMAEND interrupt Mask */
-#define NBPF_CHAN_CFG_TCM	0x2000000	/* DMATCO interrupt Mask */
-#define NBPF_CHAN_CFG_SBE	0x8000000	/* Sweep Buffer Enable */
-#define NBPF_CHAN_CFG_RSEL	0x10000000	/* RM: Register Set sELect */
-#define NBPF_CHAN_CFG_RSW	0x20000000	/* RM: Register Select sWitch */
-#define NBPF_CHAN_CFG_REN	0x40000000	/* RM: Register Set Enable */
-#define NBPF_CHAN_CFG_DMS	0x80000000	/* 0: register mode (RM), 1: link mode (LM) */
+#define NBPF_CHAN_CFG_SEL	7		 
+#define NBPF_CHAN_CFG_REQD	8		 
+#define NBPF_CHAN_CFG_LOEN	0x10		 
+#define NBPF_CHAN_CFG_HIEN	0x20		 
+#define NBPF_CHAN_CFG_LVL	0x40		 
+#define NBPF_CHAN_CFG_AM	0x700		 
+#define NBPF_CHAN_CFG_SDS	0xf000		 
+#define NBPF_CHAN_CFG_DDS	0xf0000		 
+#define NBPF_CHAN_CFG_SAD	0x100000	 
+#define NBPF_CHAN_CFG_DAD	0x200000	 
+#define NBPF_CHAN_CFG_TM	0x400000	 
+#define NBPF_CHAN_CFG_DEM	0x1000000	 
+#define NBPF_CHAN_CFG_TCM	0x2000000	 
+#define NBPF_CHAN_CFG_SBE	0x8000000	 
+#define NBPF_CHAN_CFG_RSEL	0x10000000	 
+#define NBPF_CHAN_CFG_RSW	0x20000000	 
+#define NBPF_CHAN_CFG_REN	0x40000000	 
+#define NBPF_CHAN_CFG_DMS	0x80000000	 
 
 #define NBPF_CHAN_NXLA	0x38
 #define NBPF_CHAN_CRLA	0x3c
 
-/* Link Header field */
+ 
 #define NBPF_HEADER_LV	1
 #define NBPF_HEADER_LE	2
 #define NBPF_HEADER_WBD	4
 #define NBPF_HEADER_DIM	8
 
 #define NBPF_CTRL	0x300
-#define NBPF_CTRL_PR	1		/* 0: fixed priority, 1: round robin */
-#define NBPF_CTRL_LVINT	2		/* DMAEND and DMAERR signalling: 0: pulse, 1: level */
+#define NBPF_CTRL_PR	1		 
+#define NBPF_CTRL_LVINT	2		 
 
 #define NBPF_DSTAT_ER	0x314
 #define NBPF_DSTAT_END	0x318
@@ -99,22 +96,7 @@ struct nbpf_config {
 	int buffer_size;
 };
 
-/*
- * We've got 3 types of objects, used to describe DMA transfers:
- * 1. high-level descriptor, containing a struct dma_async_tx_descriptor object
- *	in it, used to communicate with the user
- * 2. hardware DMA link descriptors, that we pass to DMAC for DMA transfer
- *	queuing, these must be DMAable, using either the streaming DMA API or
- *	allocated from coherent memory - one per SG segment
- * 3. one per SG segment descriptors, used to manage HW link descriptors from
- *	(2). They do not have to be DMAable. They can either be (a) allocated
- *	together with link descriptors as mixed (DMA / CPU) objects, or (b)
- *	separately. Even if allocated separately it would be best to link them
- *	to link descriptors once during channel resource allocation and always
- *	use them as a single object.
- * Therefore for both cases (a) and (b) at run-time objects (2) and (3) shall be
- * treated as a single SG segment descriptor.
- */
+ 
 
 struct nbpf_link_reg {
 	u32	header;
@@ -138,15 +120,7 @@ struct nbpf_link_desc {
 	struct list_head node;
 };
 
-/**
- * struct nbpf_desc - DMA transfer descriptor
- * @async_tx:	dmaengine object
- * @user_wait:	waiting for a user ack
- * @length:	total transfer length
- * @chan:	associated DMAC channel
- * @sg:		list of hardware descriptors, represented by struct nbpf_link_desc
- * @node:	member in channel descriptor lists
- */
+ 
 struct nbpf_desc {
 	struct dma_async_tx_descriptor async_tx;
 	bool user_wait;
@@ -156,7 +130,7 @@ struct nbpf_desc {
 	struct list_head node;
 };
 
-/* Take a wild guess: allocate 4 segments per descriptor */
+ 
 #define NBPF_SEGMENTS_PER_DESC 4
 #define NBPF_DESCS_PER_PAGE ((PAGE_SIZE - sizeof(struct list_head)) /	\
 	(sizeof(struct nbpf_desc) +					\
@@ -171,33 +145,7 @@ struct nbpf_desc_page {
 	struct nbpf_link_reg hwdesc[NBPF_SEGMENTS_PER_PAGE];
 };
 
-/**
- * struct nbpf_channel - one DMAC channel
- * @dma_chan:	standard dmaengine channel object
- * @tasklet:	channel specific tasklet used for callbacks
- * @base:	register address base
- * @nbpf:	DMAC
- * @name:	IRQ name
- * @irq:	IRQ number
- * @slave_src_addr:	source address for slave DMA
- * @slave_src_width:	source slave data size in bytes
- * @slave_src_burst:	maximum source slave burst size in bytes
- * @slave_dst_addr:	destination address for slave DMA
- * @slave_dst_width:	destination slave data size in bytes
- * @slave_dst_burst:	maximum destination slave burst size in bytes
- * @terminal:	DMA terminal, assigned to this channel
- * @dmarq_cfg:	DMA request line configuration - high / low, edge / level for NBPF_CHAN_CFG
- * @flags:	configuration flags from DT
- * @lock:	protect descriptor lists
- * @free_links:	list of free link descriptors
- * @free:	list of free descriptors
- * @queued:	list of queued descriptors
- * @active:	list of descriptors, scheduled for processing
- * @done:	list of completed descriptors, waiting post-processing
- * @desc_page:	list of additionally allocated descriptor pages - if any
- * @running:	linked descriptor of running transaction
- * @paused:	are translations on this channel paused?
- */
+ 
 struct nbpf_channel {
 	struct dma_chan dma_chan;
 	struct tasklet_struct tasklet;
@@ -289,17 +237,9 @@ static struct nbpf_config nbpf_cfg[] = {
 
 #define nbpf_to_chan(d) container_of(d, struct nbpf_channel, dma_chan)
 
-/*
- * dmaengine drivers seem to have a lot in common and instead of sharing more
- * code, they reimplement those common algorithms independently. In this driver
- * we try to separate the hardware-specific part from the (largely) generic
- * part. This improves code readability and makes it possible in the future to
- * reuse the generic code in form of a helper library. That generic code should
- * be suitable for various DMA controllers, using transfer descriptors in RAM
- * and pushing one SG list at a time to the DMA controller.
- */
+ 
 
-/*		Hardware-specific part		*/
+ 
 
 static inline u32 nbpf_chan_read(struct nbpf_channel *chan,
 				 unsigned int offset)
@@ -367,7 +307,7 @@ static void nbpf_error_clear(struct nbpf_channel *chan)
 	u32 status;
 	int i;
 
-	/* Stop the channel, make sure DMA has been aborted */
+	 
 	nbpf_chan_halt(chan);
 
 	for (i = 1000; i; i--) {
@@ -393,7 +333,7 @@ static int nbpf_start(struct nbpf_desc *desc)
 	nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_SETEN | NBPF_CHAN_CTRL_CLRSUS);
 	chan->paused = false;
 
-	/* Software trigger MEMCPY - only MEMCPY uses the block mode */
+	 
 	if (ldesc->hwdesc->config & NBPF_CHAN_CFG_TM)
 		nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_STG);
 
@@ -414,7 +354,7 @@ static void nbpf_chan_prepare(struct nbpf_channel *chan)
 
 static void nbpf_chan_prepare_default(struct nbpf_channel *chan)
 {
-	/* Don't output DMAACK */
+	 
 	chan->dmarq_cfg = NBPF_CHAN_CFG_AM & 0x400;
 	chan->terminal = 0;
 	chan->flags = 0;
@@ -422,11 +362,7 @@ static void nbpf_chan_prepare_default(struct nbpf_channel *chan)
 
 static void nbpf_chan_configure(struct nbpf_channel *chan)
 {
-	/*
-	 * We assume, that only the link mode and DMA request line configuration
-	 * have to be set in the configuration register manually. Dynamic
-	 * per-transfer configuration will be loaded from transfer descriptors.
-	 */
+	 
 	nbpf_chan_write(chan, NBPF_CHAN_CFG, NBPF_CHAN_CFG_DMS | chan->dmarq_cfg);
 }
 
@@ -455,7 +391,7 @@ static u32 nbpf_xfer_ds(struct nbpf_device *nbpf, size_t size,
 		}
 	}
 
-	/* Maximum supported bursts depend on the buffer size */
+	 
 	return min_t(int, __ffs(size), ilog2(max_burst));
 }
 
@@ -490,17 +426,7 @@ static size_t nbpf_xfer_size(struct nbpf_device *nbpf,
 	return nbpf_xfer_ds(nbpf, size, DMA_TRANS_NONE);
 }
 
-/*
- * We need a way to recognise slaves, whose data is sent "raw" over the bus,
- * i.e. it isn't known in advance how many bytes will be received. Therefore
- * the slave driver has to provide a "large enough" buffer and either read the
- * buffer, when it is full, or detect, that some data has arrived, then wait for
- * a timeout, if no more data arrives - receive what's already there. We want to
- * handle such slaves in a special way to allow an optimised mode for other
- * users, for whom the amount of data is known in advance. So far there's no way
- * to recognise such slaves. We use a data-width check to distinguish between
- * the SD host and the PL011 UART.
- */
+ 
 
 static int nbpf_prep_one(struct nbpf_link_desc *ldesc,
 			 enum dma_transfer_direction direction,
@@ -520,22 +446,7 @@ static int nbpf_prep_one(struct nbpf_link_desc *ldesc,
 	hwdesc->dst_addr = dst;
 	hwdesc->transaction_size = size;
 
-	/*
-	 * set config: SAD, DAD, DDS, SDS, etc.
-	 * Note on transfer sizes: the DMAC can perform unaligned DMA transfers,
-	 * but it is important to have transaction size a multiple of both
-	 * receiver and transmitter transfer sizes. It is also possible to use
-	 * different RAM and device transfer sizes, and it does work well with
-	 * some devices, e.g. with V08R07S01E SD host controllers, which can use
-	 * 128 byte transfers. But this doesn't work with other devices,
-	 * especially when the transaction size is unknown. This is the case,
-	 * e.g. with serial drivers like amba-pl011.c. For reception it sets up
-	 * the transaction size of 4K and if fewer bytes are received, it
-	 * pauses DMA and reads out data received via DMA as well as those left
-	 * in the Rx FIFO. For this to work with the RAM side using burst
-	 * transfers we enable the SBE bit and terminate the transfer in our
-	 * .device_pause handler.
-	 */
+	 
 	mem_xfer = nbpf_xfer_ds(chan->nbpf, size, direction);
 
 	switch (direction) {
@@ -543,13 +454,10 @@ static int nbpf_prep_one(struct nbpf_link_desc *ldesc,
 		can_burst = chan->slave_src_width >= 3;
 		slave_xfer = min(mem_xfer, can_burst ?
 				 chan->slave_src_burst : chan->slave_src_width);
-		/*
-		 * Is the slave narrower than 64 bits, i.e. isn't using the full
-		 * bus width and cannot use bursts?
-		 */
+		 
 		if (mem_xfer > chan->slave_src_burst && !can_burst)
 			mem_xfer = chan->slave_src_burst;
-		/* Device-to-RAM DMA is unreliable without REQD set */
+		 
 		hwdesc->config = NBPF_CHAN_CFG_SAD | (NBPF_CHAN_CFG_DDS & (mem_xfer << 16)) |
 			(NBPF_CHAN_CFG_SDS & (slave_xfer << 12)) | NBPF_CHAN_CFG_REQD |
 			NBPF_CHAN_CFG_SBE;
@@ -595,9 +503,9 @@ static void nbpf_configure(struct nbpf_device *nbpf)
 	nbpf_write(nbpf, NBPF_CTRL, NBPF_CTRL_LVINT);
 }
 
-/*		Generic part			*/
+ 
 
-/* DMA ENGINE functions */
+ 
 static void nbpf_issue_pending(struct dma_chan *dchan)
 {
 	struct nbpf_channel *chan = nbpf_to_chan(dchan);
@@ -726,10 +634,7 @@ static int nbpf_desc_page_alloc(struct nbpf_channel *chan)
 		list_add_tail(&desc->node, &head);
 	}
 
-	/*
-	 * This function cannot be called from interrupt context, so, no need to
-	 * save flags
-	 */
+	 
 	spin_lock_irq(&chan->lock);
 	list_splice_tail(&lhead, &chan->free_links);
 	list_splice_tail(&head, &chan->free);
@@ -773,12 +678,7 @@ static void nbpf_scan_acked(struct nbpf_channel *chan)
 	}
 }
 
-/*
- * We have to allocate descriptors with the channel lock dropped. This means,
- * before we re-acquire the lock buffers can be taken already, so we have to
- * re-check after re-acquiring the lock and possibly retry, if buffers are gone
- * again.
- */
+ 
 static struct nbpf_desc *nbpf_desc_get(struct nbpf_channel *chan, size_t len)
 {
 	struct nbpf_desc *desc = NULL;
@@ -792,7 +692,7 @@ static struct nbpf_desc *nbpf_desc_get(struct nbpf_channel *chan, size_t len)
 		int i = 0, ret;
 
 		if (list_empty(&chan->free)) {
-			/* No more free descriptors */
+			 
 			spin_unlock_irq(&chan->lock);
 			ret = nbpf_desc_page_alloc(chan);
 			if (ret < 0)
@@ -805,7 +705,7 @@ static struct nbpf_desc *nbpf_desc_get(struct nbpf_channel *chan, size_t len)
 
 		do {
 			if (list_empty(&chan->free_links)) {
-				/* No more free link descriptors */
+				 
 				spin_unlock_irq(&chan->lock);
 				ret = nbpf_desc_page_alloc(chan);
 				if (ret < 0) {
@@ -868,7 +768,7 @@ static int nbpf_pause(struct dma_chan *dchan)
 
 	chan->paused = true;
 	nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_SETSUS);
-	/* See comment in nbpf_prep_one() */
+	 
 	nbpf_chan_write(chan, NBPF_CHAN_CTRL, NBPF_CHAN_CTRL_CLREN);
 
 	return 0;
@@ -894,11 +794,7 @@ static int nbpf_config(struct dma_chan *dchan,
 
 	dev_dbg(dchan->device->dev, "Entry %s\n", __func__);
 
-	/*
-	 * We could check config->slave_id to match chan->terminal here,
-	 * but with DT they would be coming from the same source, so
-	 * such a check would be superflous
-	 */
+	 
 
 	chan->slave_dst_addr = config->dst_addr;
 	chan->slave_dst_width = nbpf_xfer_size(chan->nbpf,
@@ -956,10 +852,7 @@ static struct dma_async_tx_descriptor *nbpf_prep_sg(struct nbpf_channel *chan,
 	desc->async_tx.cookie = -EBUSY;
 	desc->user_wait = false;
 
-	/*
-	 * This is a private descriptor list, and we own the descriptor. No need
-	 * to lock.
-	 */
+	 
 	list_for_each_entry(ldesc, &desc->sg, node) {
 		int ret = nbpf_prep_one(ldesc, direction,
 					sg_dma_address(src_sg),
@@ -981,7 +874,7 @@ static struct dma_async_tx_descriptor *nbpf_prep_sg(struct nbpf_channel *chan,
 
 	desc->length = data_len;
 
-	/* The user has to return the descriptor to us ASAP via .tx_submit() */
+	 
 	return &desc->async_tx;
 }
 
@@ -1068,7 +961,7 @@ static void nbpf_free_chan_resources(struct dma_chan *dchan)
 
 	nbpf_chan_halt(chan);
 	nbpf_chan_idle(chan);
-	/* Clean up for if a channel is re-used for MEMCPY after slave DMA */
+	 
 	nbpf_chan_prepare_default(chan);
 
 	list_for_each_entry_safe(dpage, tmp, &chan->desc_page, node) {
@@ -1125,14 +1018,11 @@ static void nbpf_chan_tasklet(struct tasklet_struct *t)
 
 		list_for_each_entry_safe(desc, tmp, &chan->done, node) {
 			if (!desc->user_wait) {
-				/* Newly completed descriptor, have to process */
+				 
 				found = true;
 				break;
 			} else if (async_tx_test_ack(&desc->async_tx)) {
-				/*
-				 * This descriptor was waiting for a user ACK,
-				 * it can be recycled now.
-				 */
+				 
 				list_del(&desc->node);
 				spin_unlock_irq(&chan->lock);
 				nbpf_desc_put(desc);
@@ -1145,17 +1035,14 @@ static void nbpf_chan_tasklet(struct tasklet_struct *t)
 			continue;
 
 		if (!found) {
-			/* This can happen if TERMINATE_ALL has been called */
+			 
 			spin_unlock_irq(&chan->lock);
 			break;
 		}
 
 		dma_cookie_complete(&desc->async_tx);
 
-		/*
-		 * With released lock we cannot dereference desc, maybe it's
-		 * still on the "done" list
-		 */
+		 
 		if (async_tx_test_ack(&desc->async_tx)) {
 			list_del(&desc->node);
 			must_put = true;
@@ -1166,7 +1053,7 @@ static void nbpf_chan_tasklet(struct tasklet_struct *t)
 
 		dmaengine_desc_get_callback(&desc->async_tx, &cb);
 
-		/* ack and callback completed descriptor */
+		 
 		spin_unlock_irq(&chan->lock);
 
 		dmaengine_desc_callback_invoke(&cb, NULL);
@@ -1232,7 +1119,7 @@ static irqreturn_t nbpf_err_irq(int irq, void *dev)
 
 	do {
 		struct nbpf_channel *chan = nbpf_error_get_channel(nbpf, error);
-		/* On error: abort all queued transfers, no callback */
+		 
 		nbpf_error_clear(chan);
 		nbpf_chan_idle(chan);
 		error = nbpf_error_get(nbpf);
@@ -1266,7 +1153,7 @@ static int nbpf_chan_probe(struct nbpf_device *nbpf, int n)
 	if (ret < 0)
 		return ret;
 
-	/* Add the channel to DMA device channel list */
+	 
 	list_add_tail(&chan->dma_chan.device_node,
 		      &dma_dev->channels);
 
@@ -1296,12 +1183,12 @@ static int nbpf_probe(struct platform_device *pdev)
 	const struct nbpf_config *cfg;
 	int num_channels;
 	int ret, irq, eirq, i;
-	int irqbuf[9] /* maximum 8 channels + error IRQ */;
+	int irqbuf[9]  ;
 	unsigned int irqs = 0;
 
 	BUILD_BUG_ON(sizeof(struct nbpf_desc_page) > PAGE_SIZE);
 
-	/* DT only */
+	 
 	if (!np)
 		return -ENODEV;
 
@@ -1339,12 +1226,7 @@ static int nbpf_probe(struct platform_device *pdev)
 			irqbuf[irqs++] = irq;
 	}
 
-	/*
-	 * 3 IRQ resource schemes are supported:
-	 * 1. 1 shared IRQ for error and all channels
-	 * 2. 2 IRQs: one for error and one shared for all channels
-	 * 3. 1 IRQ for error and an own IRQ for each channel
-	 */
+	 
 	if (irqs != 1 && irqs != 2 && irqs != num_channels + 1)
 		return -ENXIO;
 
@@ -1363,7 +1245,7 @@ static int nbpf_probe(struct platform_device *pdev)
 
 			for (i = 0, chan = nbpf->chan; i <= num_channels;
 			     i++, chan++) {
-				/* Skip the error IRQ */
+				 
 				if (irqbuf[i] == eirq)
 					i++;
 				chan->irq = irqbuf[i];
@@ -1372,7 +1254,7 @@ static int nbpf_probe(struct platform_device *pdev)
 			if (chan != nbpf->chan + num_channels)
 				return -EINVAL;
 		} else {
-			/* 2 IRQs and more than one channel */
+			 
 			if (irqbuf[0] == eirq)
 				irq = irqbuf[1];
 			else
@@ -1391,7 +1273,7 @@ static int nbpf_probe(struct platform_device *pdev)
 
 	INIT_LIST_HEAD(&dma_dev->channels);
 
-	/* Create DMA Channel */
+	 
 	for (i = 0; i < num_channels; i++) {
 		ret = nbpf_chan_probe(nbpf, i);
 		if (ret < 0)
@@ -1402,7 +1284,7 @@ static int nbpf_probe(struct platform_device *pdev)
 	dma_cap_set(DMA_SLAVE, dma_dev->cap_mask);
 	dma_cap_set(DMA_PRIVATE, dma_dev->cap_mask);
 
-	/* Common and MEMCPY operations */
+	 
 	dma_dev->device_alloc_chan_resources
 		= nbpf_alloc_chan_resources;
 	dma_dev->device_free_chan_resources = nbpf_free_chan_resources;
@@ -1410,15 +1292,9 @@ static int nbpf_probe(struct platform_device *pdev)
 	dma_dev->device_tx_status = nbpf_tx_status;
 	dma_dev->device_issue_pending = nbpf_issue_pending;
 
-	/*
-	 * If we drop support for unaligned MEMCPY buffer addresses and / or
-	 * lengths by setting
-	 * dma_dev->copy_align = 4;
-	 * then we can set transfer length to 4 bytes in nbpf_prep_one() for
-	 * DMA_MEM_TO_MEM
-	 */
+	 
 
-	/* Compulsory for DMA_SLAVE fields */
+	 
 	dma_dev->device_prep_slave_sg = nbpf_prep_slave_sg;
 	dma_dev->device_config = nbpf_config;
 	dma_dev->device_pause = nbpf_pause;

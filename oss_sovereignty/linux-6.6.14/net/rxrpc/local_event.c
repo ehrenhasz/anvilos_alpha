@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AF_RXRPC local endpoint management
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -16,20 +12,16 @@
 #include <generated/utsrelease.h>
 #include "ar-internal.h"
 
-static char rxrpc_version_string[65]; // "linux-" UTS_RELEASE " AF_RXRPC";
+static char rxrpc_version_string[65]; 
 
-/*
- * Generate the VERSION packet string.
- */
+ 
 void rxrpc_gen_version_string(void)
 {
 	snprintf(rxrpc_version_string, sizeof(rxrpc_version_string),
 		 "linux-%.49s AF_RXRPC", UTS_RELEASE);
 }
 
-/*
- * Reply to a version request
- */
+ 
 void rxrpc_send_version_request(struct rxrpc_local *local,
 				struct rxrpc_host_header *hdr,
 				struct sk_buff *skb)

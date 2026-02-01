@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * System Specific setup for PCEngines ALIX.
- * At the moment this means setup of GPIO control of LEDs
- * on Alix.2/3/6 boards.
- *
- * Copyright (C) 2008 Constantin Baranov <const@mimas.ru>
- * Copyright (C) 2011 Ed Wildgoose <kernel@wildgooses.com>
- *                and Philip Prindeville <philipp@redfish-solutions.com>
- *
- * TODO: There are large similarities with leds-net5501.c
- * by Alessandro Zummo <a.zummo@towertech.it>
- * In the future leds-net5501.c should be migrated over to platform
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -31,14 +19,10 @@
 #define BIOS_SIGNATURE_COREBOOT		0x500
 #define BIOS_REGION_SIZE		0x10000
 
-/*
- * This driver is not modular, but to keep back compatibility
- * with existing use cases, continuing with module_param is
- * the easiest way forward.
- */
+ 
 static bool force = 0;
 module_param(force, bool, 0444);
-/* FIXME: Award bios is not automatically detected as Alix platform */
+ 
 MODULE_PARM_DESC(force, "Force detection as ALIX.2/ALIX.3 platform");
 
 static struct gpio_keys_button alix_gpio_buttons[] = {
@@ -90,7 +74,7 @@ static struct gpio_led_platform_data alix_leds_data = {
 static struct gpiod_lookup_table alix_leds_gpio_table = {
 	.dev_id = "leds-gpio",
 	.table = {
-		/* The Geode GPIOs should be on the CS5535 companion chip */
+		 
 		GPIO_LOOKUP_IDX("cs5535-gpio", 6, NULL, 0, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX("cs5535-gpio", 25, NULL, 1, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX("cs5535-gpio", 27, NULL, 2, GPIO_ACTIVE_LOW),
@@ -111,7 +95,7 @@ static struct platform_device *alix_devs[] __initdata = {
 
 static void __init register_alix(void)
 {
-	/* Setup LED control through leds-gpio driver */
+	 
 	gpiod_add_lookup_table(&alix_leds_gpio_table);
 	platform_add_devices(alix_devs, ARRAY_SIZE(alix_devs));
 }
@@ -144,12 +128,12 @@ static bool __init alix_present(unsigned long bios_phys,
 
 		memcpy(name, p, sizeof(name));
 
-		/* remove the first \0 character from string */
+		 
 		a = strchr(name, '\0');
 		if (a)
 			*a = ' ';
 
-		/* cut the string at a newline */
+		 
 		a = strchr(name, '\r');
 		if (a)
 			*a = '\0';

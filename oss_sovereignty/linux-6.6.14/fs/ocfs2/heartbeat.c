@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * heartbeat.c
- *
- * Register ourselves with the heartbeat service, keep our node maps
- * up to date, and fire off recovery when needed.
- *
- * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/fs.h>
@@ -25,8 +18,7 @@
 
 #include "buffer_head_io.h"
 
-/* special case -1 for now
- * TODO: should *really* make sure the calling func never passes -1!!  */
+ 
 static void ocfs2_node_map_init(struct ocfs2_node_map *map)
 {
 	map->num_nodes = OCFS2_NODE_MAP_MAX_NODES;
@@ -48,12 +40,7 @@ void ocfs2_do_node_down(int node_num, void *data)
 	trace_ocfs2_do_node_down(node_num);
 
 	if (!osb->cconn) {
-		/*
-		 * No cluster connection means we're not even ready to
-		 * participate yet.  We check the slots after the cluster
-		 * comes up, so we will notice the node death then.  We
-		 * can safely ignore it here.
-		 */
+		 
 		return;
 	}
 

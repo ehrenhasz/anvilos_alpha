@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC key management
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * RxRPC keys should have a description of describing their purpose:
- *	"afs@example.com"
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,10 +22,7 @@ static void rxrpc_destroy(struct key *);
 static void rxrpc_describe(const struct key *, struct seq_file *);
 static long rxrpc_read(const struct key *, char *, size_t);
 
-/*
- * rxrpc defined keys take an arbitrary string as the description and an
- * arbitrary blob of data as the payload
- */
+ 
 struct key_type key_type_rxrpc = {
 	.name		= "rxrpc",
 	.flags		= KEY_TYPE_NET_DOMAIN,
@@ -45,10 +35,7 @@ struct key_type key_type_rxrpc = {
 };
 EXPORT_SYMBOL(key_type_rxrpc);
 
-/*
- * parse an RxKAD type XDR format token
- * - the caller guarantees we have at least 4 words
- */
+ 
 static int rxrpc_preparse_xdr_rxkad(struct key_preparsed_payload *prep,
 				    size_t datalen,
 				    const __be32 *xdr, unsigned int toklen)
@@ -112,10 +99,10 @@ static int rxrpc_preparse_xdr_rxkad(struct key_preparsed_payload *prep,
 		       token->kad->ticket[4], token->kad->ticket[5],
 		       token->kad->ticket[6], token->kad->ticket[7]);
 
-	/* count the number of tokens attached */
+	 
 	prep->payload.data[1] = (void *)((unsigned long)prep->payload.data[1] + 1);
 
-	/* attach the data */
+	 
 	for (pptoken = (struct rxrpc_key_token **)&prep->payload.data[0];
 	     *pptoken;
 	     pptoken = &(*pptoken)->next)
@@ -129,10 +116,7 @@ static int rxrpc_preparse_xdr_rxkad(struct key_preparsed_payload *prep,
 	return 0;
 }
 
-/*
- * attempt to parse the data as the XDR format
- * - the caller guarantees we have more than 7 words
- */
+ 
 static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
 {
 	const __be32 *xdr = prep->data, *token, *p;
@@ -148,17 +132,16 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
 	if (datalen > AFSTOKEN_LENGTH_MAX)
 		goto not_xdr;
 
-	/* XDR is an array of __be32's */
+	 
 	if (datalen & 3)
 		goto not_xdr;
 
-	/* the flags should be 0 (the setpag bit must be handled by
-	 * userspace) */
+	 
 	if (ntohl(*xdr++) != 0)
 		goto not_xdr;
 	datalen -= 4;
 
-	/* check the cell name */
+	 
 	len = ntohl(*xdr++);
 	if (len < 1 || len > AFSTOKEN_CELL_MAX)
 		goto not_xdr;
@@ -179,7 +162,7 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
 	datalen -= paddedlen;
 	xdr += paddedlen >> 2;
 
-	/* get the token count */
+	 
 	if (datalen < 12)
 		goto not_xdr;
 	ntoken = ntohl(*xdr++);
@@ -188,7 +171,7 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
 	if (ntoken < 1 || ntoken > AFSTOKEN_MAX)
 		goto not_xdr;
 
-	/* check each token wrapper */
+	 
 	p = xdr;
 	loop = ntoken;
 	do {
@@ -210,9 +193,7 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
 	if (datalen != 0)
 		goto not_xdr;
 
-	/* okay: we're going to assume it's valid XDR format
-	 * - we ignore the cellname, relying on the key to be correctly named
-	 */
+	 
 	ret = -EPROTONOSUPPORT;
 	do {
 		toklen = ntohl(*xdr++);
@@ -259,21 +240,7 @@ not_xdr:
 	return -EPROTO;
 }
 
-/*
- * Preparse an rxrpc defined key.
- *
- * Data should be of the form:
- *	OFFSET	LEN	CONTENT
- *	0	4	key interface version number
- *	4	2	security index (type)
- *	6	2	ticket length
- *	8	4	key expiry time (time_t)
- *	12	4	kvno
- *	16	8	session key
- *	24	[len]	ticket
- *
- * if no data is provided, then a no-security key is made
- */
+ 
 static int rxrpc_preparse(struct key_preparsed_payload *prep)
 {
 	const struct rxrpc_key_data_v1 *v1;
@@ -285,18 +252,18 @@ static int rxrpc_preparse(struct key_preparsed_payload *prep)
 
 	_enter("%zu", prep->datalen);
 
-	/* handle a no-security key */
+	 
 	if (!prep->data && prep->datalen == 0)
 		return 0;
 
-	/* determine if the XDR payload format is being used */
+	 
 	if (prep->datalen > 7 * 4) {
 		ret = rxrpc_preparse_xdr(prep);
 		if (ret != -EPROTO)
 			return ret;
 	}
 
-	/* get the key interface version number */
+	 
 	ret = -EINVAL;
 	if (prep->datalen <= 4 || !prep->data)
 		goto error;
@@ -310,7 +277,7 @@ static int rxrpc_preparse(struct key_preparsed_payload *prep)
 	if (kver != 1)
 		goto error;
 
-	/* deal with a version 1 key */
+	 
 	ret = -EINVAL;
 	if (prep->datalen < sizeof(*v1))
 		goto error;
@@ -357,10 +324,10 @@ static int rxrpc_preparse(struct key_preparsed_payload *prep)
 	memcpy(&token->kad->session_key, &v1->session_key, 8);
 	memcpy(&token->kad->ticket, v1->ticket, v1->ticket_length);
 
-	/* count the number of tokens attached */
+	 
 	prep->payload.data[1] = (void *)((unsigned long)prep->payload.data[1] + 1);
 
-	/* attach the data */
+	 
 	pp = (struct rxrpc_key_token **)&prep->payload.data[0];
 	while (*pp)
 		pp = &(*pp)->next;
@@ -377,9 +344,7 @@ error:
 	return ret;
 }
 
-/*
- * Free token list.
- */
+ 
 static void rxrpc_free_token_list(struct rxrpc_key_token *token)
 {
 	struct rxrpc_key_token *next;
@@ -400,25 +365,19 @@ static void rxrpc_free_token_list(struct rxrpc_key_token *token)
 	}
 }
 
-/*
- * Clean up preparse data.
- */
+ 
 static void rxrpc_free_preparse(struct key_preparsed_payload *prep)
 {
 	rxrpc_free_token_list(prep->payload.data[0]);
 }
 
-/*
- * dispose of the data dangling from the corpse of a rxrpc key
- */
+ 
 static void rxrpc_destroy(struct key *key)
 {
 	rxrpc_free_token_list(key->payload.data[0]);
 }
 
-/*
- * describe the rxrpc key
- */
+ 
 static void rxrpc_describe(const struct key *key, struct seq_file *m)
 {
 	const struct rxrpc_key_token *token;
@@ -433,7 +392,7 @@ static void rxrpc_describe(const struct key *key, struct seq_file *m)
 		case RXRPC_SECURITY_RXKAD:
 			seq_puts(m, "ka");
 			break;
-		default: /* we have a ticket we can't encode */
+		default:  
 			seq_printf(m, "%u", token->security_index);
 			break;
 		}
@@ -442,9 +401,7 @@ static void rxrpc_describe(const struct key *key, struct seq_file *m)
 	}
 }
 
-/*
- * grab the security key for a socket
- */
+ 
 int rxrpc_request_key(struct rxrpc_sock *rx, sockptr_t optval, int optlen)
 {
 	struct key *key;
@@ -472,9 +429,7 @@ int rxrpc_request_key(struct rxrpc_sock *rx, sockptr_t optval, int optlen)
 	return 0;
 }
 
-/*
- * generate a server data key
- */
+ 
 int rxrpc_get_server_data_key(struct rxrpc_connection *conn,
 			      const void *session_key,
 			      time64_t expiry,
@@ -525,13 +480,7 @@ error:
 }
 EXPORT_SYMBOL(rxrpc_get_server_data_key);
 
-/**
- * rxrpc_get_null_key - Generate a null RxRPC key
- * @keyname: The name to give the key.
- *
- * Generate a null RxRPC key that can be used to indicate anonymous security is
- * required for a particular domain.
- */
+ 
 struct key *rxrpc_get_null_key(const char *keyname)
 {
 	const struct cred *cred = current_cred();
@@ -555,10 +504,7 @@ struct key *rxrpc_get_null_key(const char *keyname)
 }
 EXPORT_SYMBOL(rxrpc_get_null_key);
 
-/*
- * read the contents of an rxrpc key
- * - this returns the result in XDR form
- */
+ 
 static long rxrpc_read(const struct key *key,
 		       char *buffer, size_t buflen)
 {
@@ -570,32 +516,30 @@ static long rxrpc_read(const struct key *key,
 
 	_enter("");
 
-	/* we don't know what form we should return non-AFS keys in */
+	 
 	if (memcmp(key->description, "afs@", 4) != 0)
 		return -EOPNOTSUPP;
 	cnlen = strlen(key->description + 4);
 
 #define RND(X) (((X) + 3) & ~3)
 
-	/* AFS keys we return in XDR form, so we need to work out the size of
-	 * the XDR */
-	size = 2 * 4;	/* flags, cellname len */
-	size += RND(cnlen);	/* cellname */
-	size += 1 * 4;	/* token count */
+	 
+	size = 2 * 4;	 
+	size += RND(cnlen);	 
+	size += 1 * 4;	 
 
 	ntoks = 0;
 	for (token = key->payload.data[0]; token; token = token->next) {
-		toksize = 4;	/* sec index */
+		toksize = 4;	 
 
 		switch (token->security_index) {
 		case RXRPC_SECURITY_RXKAD:
-			toksize += 8 * 4;	/* viceid, kvno, key*2, begin,
-						 * end, primary, tktlen */
+			toksize += 8 * 4;	 
 			if (!token->no_leak_key)
 				toksize += RND(token->kad->ticket_len);
 			break;
 
-		default: /* we have a ticket we can't encode */
+		default:  
 			pr_err("Unsupported key token type (%u)\n",
 			       token->security_index);
 			return -ENOPKG;
@@ -606,7 +550,7 @@ static long rxrpc_read(const struct key *key,
 			return -EIO;
 
 		toksizes[ntoks++] = toksize;
-		size += toksize + 4; /* each token has a length word */
+		size += toksize + 4;  
 	}
 
 #undef RND
@@ -649,8 +593,8 @@ static long rxrpc_read(const struct key *key,
 		ENCODE_DATA(strlen(_s), _s);	\
 	} while(0)
 
-	ENCODE(0);					/* flags */
-	ENCODE_DATA(cnlen, key->description + 4);	/* cellname */
+	ENCODE(0);					 
+	ENCODE_DATA(cnlen, key->description + 4);	 
 	ENCODE(ntoks);
 
 	tok = 0;

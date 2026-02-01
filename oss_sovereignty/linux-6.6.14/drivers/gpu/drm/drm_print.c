@@ -1,27 +1,4 @@
-/*
- * Copyright (C) 2016 Red Hat
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- * Rob Clark <robdclark@gmail.com>
- */
+ 
 
 #include <linux/stdarg.h>
 
@@ -35,10 +12,7 @@
 #include <drm/drm_drv.h>
 #include <drm/drm_print.h>
 
-/*
- * __drm_debug: Enable debug output.
- * Bitmask of DRM_UT_x. See include/drm/drm_print.h for details.
- */
+ 
 unsigned long __drm_debug;
 EXPORT_SYMBOL(__drm_debug);
 
@@ -55,7 +29,7 @@ MODULE_PARM_DESC(debug, "Enable debug output, where each bit enables a debug cat
 #if !defined(CONFIG_DRM_USE_DYNAMIC_DEBUG)
 module_param_named(debug, __drm_debug, ulong, 0600);
 #else
-/* classnames must match vals of enum drm_debug_category */
+ 
 DECLARE_DYNDBG_CLASSMAP(drm_debug_classes, DD_CLASS_TYPE_DISJOINT_BITS, 0,
 			"DRM_UT_CORE",
 			"DRM_UT_DRIVER",
@@ -99,7 +73,7 @@ void __drm_puts_coredump(struct drm_printer *p, const char *str)
 		if (copy > iterator->remain)
 			copy = iterator->remain;
 
-		/* Copy out the bit of the string that we need */
+		 
 		memcpy(iterator->data,
 			str + (iterator->start - iterator->offset), copy);
 
@@ -127,16 +101,16 @@ void __drm_printfn_coredump(struct drm_printer *p, struct va_format *vaf)
 	if (!iterator->remain)
 		return;
 
-	/* Figure out how big the string will be */
+	 
 	len = snprintf(NULL, 0, "%pV", vaf);
 
-	/* This is the easiest path, we've already advanced beyond the offset */
+	 
 	if (iterator->offset + len <= iterator->start) {
 		iterator->offset += len;
 		return;
 	}
 
-	/* Then check if we can directly copy into the target buffer */
+	 
 	if ((iterator->offset >= iterator->start) && (len < iterator->remain)) {
 		ssize_t pos = iterator->offset - iterator->start;
 
@@ -149,10 +123,7 @@ void __drm_printfn_coredump(struct drm_printer *p, struct va_format *vaf)
 		return;
 	}
 
-	/*
-	 * Finally, hit the slow path and make a temporary string to copy over
-	 * using _drm_puts_coredump
-	 */
+	 
 	buf = kmalloc(len + 1, GFP_KERNEL | __GFP_NOWARN | __GFP_NORETRY);
 	if (!buf)
 		return;
@@ -184,7 +155,7 @@ EXPORT_SYMBOL(__drm_printfn_info);
 
 void __drm_printfn_debug(struct drm_printer *p, struct va_format *vaf)
 {
-	/* pr_debug callsite decorations are unhelpful here */
+	 
 	printk(KERN_DEBUG "%s %pV", p->prefix, vaf);
 }
 EXPORT_SYMBOL(__drm_printfn_debug);
@@ -195,14 +166,7 @@ void __drm_printfn_err(struct drm_printer *p, struct va_format *vaf)
 }
 EXPORT_SYMBOL(__drm_printfn_err);
 
-/**
- * drm_puts - print a const string to a &drm_printer stream
- * @p: the &drm printer
- * @str: const string
- *
- * Allow &drm_printer types that have a constant string
- * option to use it.
- */
+ 
 void drm_puts(struct drm_printer *p, const char *str)
 {
 	if (p->puts)
@@ -212,11 +176,7 @@ void drm_puts(struct drm_printer *p, const char *str)
 }
 EXPORT_SYMBOL(drm_puts);
 
-/**
- * drm_printf - print to a &drm_printer stream
- * @p: the &drm_printer
- * @f: format string
- */
+ 
 void drm_printf(struct drm_printer *p, const char *f, ...)
 {
 	va_list args;
@@ -227,16 +187,7 @@ void drm_printf(struct drm_printer *p, const char *f, ...)
 }
 EXPORT_SYMBOL(drm_printf);
 
-/**
- * drm_print_bits - print bits to a &drm_printer stream
- *
- * Print bits (in flag fields for example) in human readable form.
- *
- * @p: the &drm_printer
- * @value: field value.
- * @bits: Array with bit names.
- * @nbits: Size of bit names array.
- */
+ 
 void drm_print_bits(struct drm_printer *p, unsigned long value,
 		    const char * const bits[], unsigned int nbits)
 {
@@ -288,7 +239,7 @@ void __drm_dev_dbg(struct _ddebug *desc, const struct device *dev,
 	if (!__drm_debug_enabled(category))
 		return;
 
-	/* we know we are printing for either syslog, tracefs, or both */
+	 
 	va_start(args, format);
 	vaf.fmt = format;
 	vaf.va = &args;
@@ -339,18 +290,7 @@ void __drm_err(const char *format, ...)
 }
 EXPORT_SYMBOL(__drm_err);
 
-/**
- * drm_print_regset32 - print the contents of registers to a
- * &drm_printer stream.
- *
- * @p: the &drm printer
- * @regset: the list of registers to print.
- *
- * Often in driver debug, it's useful to be able to either capture the
- * contents of registers in the steady state using debugfs or at
- * specific points during operation.  This lets the driver have a
- * single list of registers for both.
- */
+ 
 void drm_print_regset32(struct drm_printer *p, struct debugfs_regset32 *regset)
 {
 	int namelen = 0;

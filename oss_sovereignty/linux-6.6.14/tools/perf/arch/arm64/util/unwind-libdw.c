@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <elfutils/libdwfl.h>
 #include "perf_regs.h"
 #include "../../../util/unwind-libdw.h"

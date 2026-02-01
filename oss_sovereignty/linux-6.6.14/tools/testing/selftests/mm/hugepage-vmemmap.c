@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A test case of using hugepage memory in a user application using the
- * mmap system call with MAP_HUGETLB flag.  Before running this program
- * make sure the administrator has allocated enough default sized huge
- * pages to cover the 2 MB allocation.
- */
+
+ 
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -25,12 +20,7 @@
 #define PM_PFRAME_BITS		55
 #define PM_PFRAME_MASK		~((1UL << PM_PFRAME_BITS) - 1)
 
-/*
- * For ia64 architecture, Linux kernel reserves Region number 4 for hugepages.
- * That means the addresses starting with 0x800000... will need to be
- * specified.  Specifying a fixed address is not required on ppc64, i386
- * or x86_64.
- */
+ 
 #ifdef __ia64__
 #define MAP_ADDR		(void *)(0x8000000000000000UL)
 #define MAP_FLAGS		(MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB | MAP_FIXED)
@@ -81,11 +71,7 @@ static int check_page_flags(unsigned long pfn)
 		return -1;
 	}
 
-	/*
-	 * pages other than the first page must be tail and shouldn't be head;
-	 * this also verifies kernel has correctly set the fake page_head to tail
-	 * while hugetlb_free_vmemmap is enabled.
-	 */
+	 
 	for (i = 1; i < MAP_LENGTH / PAGE_SIZE; i++) {
 		read(fd, &pageflags, sizeof(pageflags));
 		if ((pageflags & TAIL_PAGE_FLAGS) != TAIL_PAGE_FLAGS ||
@@ -112,7 +98,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	/* Trigger allocation of HugeTLB page. */
+	 
 	write_bytes(addr, MAP_LENGTH);
 
 	pfn = virt_to_pfn(addr);
@@ -130,7 +116,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	/* munmap() length of MAP_HUGETLB memory must be hugepage aligned */
+	 
 	if (munmap(addr, MAP_LENGTH)) {
 		perror("munmap");
 		exit(1);

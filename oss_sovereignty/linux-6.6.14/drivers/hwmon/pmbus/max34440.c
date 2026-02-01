@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Maxim MAX34440/MAX34441
- *
- * Copyright (c) 2011 Ericsson AB.
- * Copyright (c) 2012 Guenter Roeck
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -31,10 +26,7 @@ enum chips { max34440, max34441, max34446, max34451, max34460, max34461 };
 #define MAX34440_STATUS_OT_FAULT	BIT(5)
 #define MAX34440_STATUS_OT_WARN		BIT(6)
 
-/*
- * The whole max344* family have IOUT_OC_WARN_LIMIT and IOUT_OC_FAULT_LIMIT
- * swapped from the standard pmbus spec addresses.
- */
+ 
 #define MAX34440_IOUT_OC_WARN_LIMIT	0x46
 #define MAX34440_IOUT_OC_FAULT_LIMIT	0x4A
 
@@ -221,18 +213,7 @@ static int max34440_read_byte_data(struct i2c_client *client, int page, int reg)
 static int max34451_set_supported_funcs(struct i2c_client *client,
 					 struct max34440_data *data)
 {
-	/*
-	 * Each of the channel 0-15 can be configured to monitor the following
-	 * functions based on MFR_CHANNEL_CONFIG[5:0]
-	 * 0x10: Sequencing + voltage monitoring (only valid for PAGES 0–11)
-	 * 0x20: Voltage monitoring (no sequencing)
-	 * 0x21: Voltage read only
-	 * 0x22: Current monitoring
-	 * 0x23: Current read only
-	 * 0x30: General-purpose input active low
-	 * 0x34: General-purpose input active high
-	 * 0x00:  Disabled
-	 */
+	 
 
 	int page, rv;
 
@@ -279,13 +260,13 @@ static struct pmbus_driver_info max34440_info[] = {
 		.format[PSC_CURRENT_OUT] = direct,
 		.m[PSC_VOLTAGE_IN] = 1,
 		.b[PSC_VOLTAGE_IN] = 0,
-		.R[PSC_VOLTAGE_IN] = 3,	    /* R = 0 in datasheet reflects mV */
+		.R[PSC_VOLTAGE_IN] = 3,	     
 		.m[PSC_VOLTAGE_OUT] = 1,
 		.b[PSC_VOLTAGE_OUT] = 0,
-		.R[PSC_VOLTAGE_OUT] = 3,    /* R = 0 in datasheet reflects mV */
+		.R[PSC_VOLTAGE_OUT] = 3,     
 		.m[PSC_CURRENT_OUT] = 1,
 		.b[PSC_CURRENT_OUT] = 0,
-		.R[PSC_CURRENT_OUT] = 3,    /* R = 0 in datasheet reflects mA */
+		.R[PSC_CURRENT_OUT] = 3,     
 		.m[PSC_TEMPERATURE] = 1,
 		.b[PSC_TEMPERATURE] = 0,
 		.R[PSC_TEMPERATURE] = 2,
@@ -407,7 +388,7 @@ static struct pmbus_driver_info max34440_info[] = {
 		.m[PSC_TEMPERATURE] = 1,
 		.b[PSC_TEMPERATURE] = 0,
 		.R[PSC_TEMPERATURE] = 2,
-		/* func 0-15 is set dynamically before probing */
+		 
 		.func[16] = PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP,
 		.func[17] = PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP,
 		.func[18] = PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP,
@@ -472,7 +453,7 @@ static struct pmbus_driver_info max34440_info[] = {
 		.func[13] = PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT,
 		.func[14] = PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT,
 		.func[15] = PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT,
-		/* page 16 is reserved */
+		 
 		.func[17] = PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP,
 		.func[18] = PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP,
 		.func[19] = PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP,
@@ -515,7 +496,7 @@ static const struct i2c_device_id max34440_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, max34440_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver max34440_driver = {
 	.driver = {
 		   .name = "max34440",

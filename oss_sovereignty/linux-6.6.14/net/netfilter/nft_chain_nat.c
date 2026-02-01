@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/module.h>
 #include <linux/netfilter/nf_tables.h>
@@ -144,5 +144,5 @@ MODULE_ALIAS_NFT_CHAIN(AF_INET, "nat");
 MODULE_ALIAS_NFT_CHAIN(AF_INET6, "nat");
 #endif
 #ifdef CONFIG_NF_TABLES_INET
-MODULE_ALIAS_NFT_CHAIN(1, "nat");	/* NFPROTO_INET */
+MODULE_ALIAS_NFT_CHAIN(1, "nat");	 
 #endif

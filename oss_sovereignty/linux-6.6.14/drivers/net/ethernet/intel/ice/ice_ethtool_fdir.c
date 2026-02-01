@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2018-2020, Intel Corporation. */
 
-/* flow director ethtool support for ice */
+ 
+
+ 
 
 #include "ice.h"
 #include "ice_lib.h"
@@ -26,18 +26,10 @@ static struct in6_addr zero_ipv6_addr_mask = {
 	}
 };
 
-/* calls to ice_flow_add_prof require the number of segments in the array
- * for segs_cnt. In this code that is one more than the index.
- */
+ 
 #define TNL_SEG_CNT(_TNL_) ((_TNL_) + 1)
 
-/**
- * ice_fltr_to_ethtool_flow - convert filter type values to ethtool
- * flow type values
- * @flow: filter type to be converted
- *
- * Returns the corresponding ethtool flow type.
- */
+ 
 static int ice_fltr_to_ethtool_flow(enum ice_fltr_ptype flow)
 {
 	switch (flow) {
@@ -58,17 +50,12 @@ static int ice_fltr_to_ethtool_flow(enum ice_fltr_ptype flow)
 	case ICE_FLTR_PTYPE_NONF_IPV6_OTHER:
 		return IPV6_USER_FLOW;
 	default:
-		/* 0 is undefined ethtool flow */
+		 
 		return 0;
 	}
 }
 
-/**
- * ice_ethtool_flow_to_fltr - convert ethtool flow type to filter enum
- * @eth: Ethtool flow type to be converted
- *
- * Returns flow enum
- */
+ 
 static enum ice_fltr_ptype ice_ethtool_flow_to_fltr(int eth)
 {
 	switch (eth) {
@@ -93,26 +80,13 @@ static enum ice_fltr_ptype ice_ethtool_flow_to_fltr(int eth)
 	}
 }
 
-/**
- * ice_is_mask_valid - check mask field set
- * @mask: full mask to check
- * @field: field for which mask should be valid
- *
- * If the mask is fully set return true. If it is not valid for field return
- * false.
- */
+ 
 static bool ice_is_mask_valid(u64 mask, u64 field)
 {
 	return (mask & field) == field;
 }
 
-/**
- * ice_get_ethtool_fdir_entry - fill ethtool structure with fdir filter data
- * @hw: hardware structure that contains filter list
- * @cmd: ethtool command data structure to receive the filter data
- *
- * Returns 0 on success and -EINVAL on failure
- */
+ 
 int ice_get_ethtool_fdir_entry(struct ice_hw *hw, struct ethtool_rxnfc *cmd)
 {
 	struct ethtool_rx_flow_spec *fsp;
@@ -220,14 +194,7 @@ release_lock:
 	return ret;
 }
 
-/**
- * ice_get_fdir_fltr_ids - fill buffer with filter IDs of active filters
- * @hw: hardware structure containing the filter list
- * @cmd: ethtool command data structure
- * @rule_locs: ethtool array passed in from OS to receive filter IDs
- *
- * Returns 0 as expected for success by ethtool
- */
+ 
 int
 ice_get_fdir_fltr_ids(struct ice_hw *hw, struct ethtool_rxnfc *cmd,
 		      u32 *rule_locs)
@@ -236,7 +203,7 @@ ice_get_fdir_fltr_ids(struct ice_hw *hw, struct ethtool_rxnfc *cmd,
 	unsigned int cnt = 0;
 	int val = 0;
 
-	/* report total rule count */
+	 
 	cmd->data = ice_get_fdir_cnt_all(hw);
 
 	mutex_lock(&hw->fdir_fltr_lock);
@@ -257,12 +224,7 @@ release_lock:
 	return val;
 }
 
-/**
- * ice_fdir_remap_entries - update the FDir entries in profile
- * @prof: FDir structure pointer
- * @tun: tunneled or non-tunneled packet
- * @idx: FDir entry index
- */
+ 
 static void
 ice_fdir_remap_entries(struct ice_fd_hw_prof *prof, int tun, int idx)
 {
@@ -282,11 +244,7 @@ ice_fdir_remap_entries(struct ice_fd_hw_prof *prof, int tun, int idx)
 	}
 }
 
-/**
- * ice_fdir_rem_adq_chnl - remove an ADQ channel from HW filter rules
- * @hw: hardware structure containing filter list
- * @vsi_idx: VSI handle
- */
+ 
 void ice_fdir_rem_adq_chnl(struct ice_hw *hw, u16 vsi_idx)
 {
 	int status, flow;
@@ -315,12 +273,10 @@ void ice_fdir_rem_adq_chnl(struct ice_hw *hw, u16 vsi_idx)
 				break;
 			}
 
-			/* after clearing FDir entries update the remaining */
+			 
 			ice_fdir_remap_entries(prof, tun, i);
 
-			/* find flow profile corresponding to prof_id and clear
-			 * vsi_idx from bitmap.
-			 */
+			 
 			status = ice_flow_rem_vsi_prof(hw, vsi_idx, prof_id);
 			if (status) {
 				dev_err(ice_hw_to_dev(hw), "ice_flow_rem_vsi_prof() failed status=%d\n",
@@ -331,12 +287,7 @@ void ice_fdir_rem_adq_chnl(struct ice_hw *hw, u16 vsi_idx)
 	}
 }
 
-/**
- * ice_fdir_get_hw_prof - return the ice_fd_hw_proc associated with a flow
- * @hw: hardware structure containing the filter list
- * @blk: hardware block
- * @flow: FDir flow type to release
- */
+ 
 static struct ice_fd_hw_prof *
 ice_fdir_get_hw_prof(struct ice_hw *hw, enum ice_block blk, int flow)
 {
@@ -346,12 +297,7 @@ ice_fdir_get_hw_prof(struct ice_hw *hw, enum ice_block blk, int flow)
 	return NULL;
 }
 
-/**
- * ice_fdir_erase_flow_from_hw - remove a flow from the HW profile tables
- * @hw: hardware structure containing the filter list
- * @blk: hardware block
- * @flow: FDir flow type to release
- */
+ 
 static void
 ice_fdir_erase_flow_from_hw(struct ice_hw *hw, enum ice_block blk, int flow)
 {
@@ -380,12 +326,7 @@ ice_fdir_erase_flow_from_hw(struct ice_hw *hw, enum ice_block blk, int flow)
 	}
 }
 
-/**
- * ice_fdir_rem_flow - release the ice_flow structures for a filter type
- * @hw: hardware structure containing the filter list
- * @blk: hardware block
- * @flow_type: FDir flow type to release
- */
+ 
 static void
 ice_fdir_rem_flow(struct ice_hw *hw, enum ice_block blk,
 		  enum ice_fltr_ptype flow_type)
@@ -410,23 +351,17 @@ ice_fdir_rem_flow(struct ice_hw *hw, enum ice_block blk,
 	prof->cnt = 0;
 }
 
-/**
- * ice_fdir_release_flows - release all flows in use for later replay
- * @hw: pointer to HW instance
- */
+ 
 void ice_fdir_release_flows(struct ice_hw *hw)
 {
 	int flow;
 
-	/* release Flow Director HW table entries */
+	 
 	for (flow = 0; flow < ICE_FLTR_PTYPE_MAX; flow++)
 		ice_fdir_erase_flow_from_hw(hw, ICE_BLK_FD, flow);
 }
 
-/**
- * ice_fdir_replay_flows - replay HW Flow Director filter info
- * @hw: pointer to HW instance
- */
+ 
 void ice_fdir_replay_flows(struct ice_hw *hw)
 {
 	int flow;
@@ -470,13 +405,7 @@ void ice_fdir_replay_flows(struct ice_hw *hw)
 	}
 }
 
-/**
- * ice_parse_rx_flow_user_data - deconstruct user-defined data
- * @fsp: pointer to ethtool Rx flow specification
- * @data: pointer to userdef data structure for storage
- *
- * Returns 0 on success, negative error value on failure
- */
+ 
 static int
 ice_parse_rx_flow_user_data(struct ethtool_rx_flow_spec *fsp,
 			    struct ice_rx_flow_userdef *data)
@@ -497,9 +426,7 @@ ice_parse_rx_flow_user_data(struct ethtool_rx_flow_spec *fsp,
 #define ICE_USERDEF_FLEX_OFFS_M	GENMASK_ULL(31, ICE_USERDEF_FLEX_OFFS_S)
 #define ICE_USERDEF_FLEX_FLTR_M	GENMASK_ULL(31, 0)
 
-	/* 0x1fe is the maximum value for offsets stored in the internal
-	 * filtering tables.
-	 */
+	 
 #define ICE_USERDEF_FLEX_MAX_OFFS_VAL 0x1fe
 
 	if (!ice_is_mask_valid(mask, ICE_USERDEF_FLEX_FLTR_M) ||
@@ -517,51 +444,31 @@ ice_parse_rx_flow_user_data(struct ethtool_rx_flow_spec *fsp,
 	return 0;
 }
 
-/**
- * ice_fdir_num_avail_fltr - return the number of unused flow director filters
- * @hw: pointer to hardware structure
- * @vsi: software VSI structure
- *
- * There are 2 filter pools: guaranteed and best effort(shared). Each VSI can
- * use filters from either pool. The guaranteed pool is divided between VSIs.
- * The best effort filter pool is common to all VSIs and is a device shared
- * resource pool. The number of filters available to this VSI is the sum of
- * the VSIs guaranteed filter pool and the global available best effort
- * filter pool.
- *
- * Returns the number of available flow director filters to this VSI
- */
+ 
 static int ice_fdir_num_avail_fltr(struct ice_hw *hw, struct ice_vsi *vsi)
 {
 	u16 vsi_num = ice_get_hw_vsi_num(hw, vsi->idx);
 	u16 num_guar;
 	u16 num_be;
 
-	/* total guaranteed filters assigned to this VSI */
+	 
 	num_guar = vsi->num_gfltr;
 
-	/* minus the guaranteed filters programed by this VSI */
+	 
 	num_guar -= (rd32(hw, VSIQF_FD_CNT(vsi_num)) &
 		     VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S;
 
-	/* total global best effort filters */
+	 
 	num_be = hw->func_caps.fd_fltr_best_effort;
 
-	/* minus the global best effort filters programmed */
+	 
 	num_be -= (rd32(hw, GLQF_FD_CNT) & GLQF_FD_CNT_FD_BCNT_M) >>
 		   GLQF_FD_CNT_FD_BCNT_S;
 
 	return num_guar + num_be;
 }
 
-/**
- * ice_fdir_alloc_flow_prof - allocate FDir flow profile structure(s)
- * @hw: HW structure containing the FDir flow profile structure(s)
- * @flow: flow type to allocate the flow profile for
- *
- * Allocate the fdir_prof and fdir_prof[flow] if not already created. Return 0
- * on success and negative on error.
- */
+ 
 static int
 ice_fdir_alloc_flow_prof(struct ice_hw *hw, enum ice_fltr_ptype flow)
 {
@@ -588,14 +495,7 @@ ice_fdir_alloc_flow_prof(struct ice_hw *hw, enum ice_fltr_ptype flow)
 	return 0;
 }
 
-/**
- * ice_fdir_prof_vsi_idx - find or insert a vsi_idx in structure
- * @prof: pointer to flow director HW profile
- * @vsi_idx: vsi_idx to locate
- *
- * return the index of the vsi_idx. if vsi_idx is not found insert it
- * into the vsi_h table.
- */
+ 
 static u16
 ice_fdir_prof_vsi_idx(struct ice_fd_hw_prof *prof, int vsi_idx)
 {
@@ -610,13 +510,7 @@ ice_fdir_prof_vsi_idx(struct ice_fd_hw_prof *prof, int vsi_idx)
 	return idx;
 }
 
-/**
- * ice_fdir_set_hw_fltr_rule - Configure HW tables to generate a FDir rule
- * @pf: pointer to the PF structure
- * @seg: protocol header description pointer
- * @flow: filter enum
- * @tun: FDir segment to program
- */
+ 
 static int
 ice_fdir_set_hw_fltr_rule(struct ice_pf *pf, struct ice_flow_seg_info *seg,
 			  enum ice_fltr_ptype flow, enum ice_fd_hw_seg tun)
@@ -649,16 +543,11 @@ ice_fdir_set_hw_fltr_rule(struct ice_pf *pf, struct ice_flow_seg_info *seg,
 	hw_prof = hw->fdir_prof[flow];
 	old_seg = hw_prof->fdir_seg[tun];
 	if (old_seg) {
-		/* This flow_type already has a changed input set.
-		 * If it matches the requested input set then we are
-		 * done. Or, if it's different then it's an error.
-		 */
+		 
 		if (!memcmp(old_seg, seg, sizeof(*seg)))
 			return -EEXIST;
 
-		/* if there are FDir filters using this flow,
-		 * then return error.
-		 */
+		 
 		if (hw->fdir_fltr_cnt[flow]) {
 			dev_err(dev, "Failed to add filter.  Flow director filters on each port must have the same input set.\n");
 			return -EINVAL;
@@ -670,14 +559,11 @@ ice_fdir_set_hw_fltr_rule(struct ice_pf *pf, struct ice_flow_seg_info *seg,
 			return -EINVAL;
 		}
 
-		/* remove HW filter definition */
+		 
 		ice_fdir_rem_flow(hw, ICE_BLK_FD, flow);
 	}
 
-	/* Adding a profile, but there is only one header supported.
-	 * That is the final parameters are 1 header (segment), no
-	 * actions (NULL) and zero actions 0.
-	 */
+	 
 	prof_id = flow + tun * ICE_FLTR_PTYPE_MAX;
 	err = ice_flow_add_prof(hw, ICE_BLK_FD, ICE_FLOW_RX, prof_id, seg,
 				TNL_SEG_CNT(tun), &prof);
@@ -732,10 +618,7 @@ err_unroll:
 	entry1_h = 0;
 	hw_prof->fdir_seg[tun] = NULL;
 
-	/* The variable del_last will be used to determine when to clean up
-	 * the VSI group data. The VSI data is not needed if there are no
-	 * segments.
-	 */
+	 
 	del_last = true;
 	for (idx = 0; idx < ICE_FD_HW_SEG_MAX; idx++)
 		if (hw_prof->fdir_seg[idx]) {
@@ -767,16 +650,7 @@ err_prof:
 	return err;
 }
 
-/**
- * ice_set_init_fdir_seg
- * @seg: flow segment for programming
- * @l3_proto: ICE_FLOW_SEG_HDR_IPV4 or ICE_FLOW_SEG_HDR_IPV6
- * @l4_proto: ICE_FLOW_SEG_HDR_TCP or ICE_FLOW_SEG_HDR_UDP
- *
- * Set the configuration for perfect filters to the provided flow segment for
- * programming the HW filter. This is to be called only when initializing
- * filters as this function it assumes no filters exist.
- */
+ 
 static int
 ice_set_init_fdir_seg(struct ice_flow_seg_info *seg,
 		      enum ice_flow_seg_hdr l3_proto,
@@ -809,32 +683,26 @@ ice_set_init_fdir_seg(struct ice_flow_seg_info *seg,
 
 	ICE_FLOW_SET_HDRS(seg, l3_proto | l4_proto);
 
-	/* IP source address */
+	 
 	ice_flow_set_fld(seg, src_addr, ICE_FLOW_FLD_OFF_INVAL,
 			 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL, false);
 
-	/* IP destination address */
+	 
 	ice_flow_set_fld(seg, dst_addr, ICE_FLOW_FLD_OFF_INVAL,
 			 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL, false);
 
-	/* Layer 4 source port */
+	 
 	ice_flow_set_fld(seg, src_port, ICE_FLOW_FLD_OFF_INVAL,
 			 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL, false);
 
-	/* Layer 4 destination port */
+	 
 	ice_flow_set_fld(seg, dst_port, ICE_FLOW_FLD_OFF_INVAL,
 			 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL, false);
 
 	return 0;
 }
 
-/**
- * ice_create_init_fdir_rule
- * @pf: PF structure
- * @flow: filter enum
- *
- * Return error value or 0 on success.
- */
+ 
 static int
 ice_create_init_fdir_rule(struct ice_pf *pf, enum ice_fltr_ptype flow)
 {
@@ -843,7 +711,7 @@ ice_create_init_fdir_rule(struct ice_pf *pf, enum ice_fltr_ptype flow)
 	struct ice_hw *hw = &pf->hw;
 	int ret;
 
-	/* if there is already a filter rule for kind return -EINVAL */
+	 
 	if (hw->fdir_prof && hw->fdir_prof[flow] &&
 	    hw->fdir_prof[flow]->fdir_seg[0])
 		return -EINVAL;
@@ -876,19 +744,17 @@ ice_create_init_fdir_rule(struct ice_pf *pf, enum ice_fltr_ptype flow)
 	if (ret)
 		goto err_exit;
 
-	/* add filter for outer headers */
+	 
 	ret = ice_fdir_set_hw_fltr_rule(pf, seg, flow, ICE_FD_HW_SEG_NON_TUN);
 	if (ret)
-		/* could not write filter, free memory */
+		 
 		goto err_exit;
 
-	/* make tunneled filter HW entries if possible */
+	 
 	memcpy(&tun_seg[1], seg, sizeof(*seg));
 	ret = ice_fdir_set_hw_fltr_rule(pf, tun_seg, flow, ICE_FD_HW_SEG_TUN);
 	if (ret)
-		/* could not write tunnel filter, but outer header filter
-		 * exists
-		 */
+		 
 		devm_kfree(dev, tun_seg);
 
 	set_bit(flow, hw->fdir_perfect_fltr);
@@ -900,17 +766,7 @@ err_exit:
 	return -EOPNOTSUPP;
 }
 
-/**
- * ice_set_fdir_ip4_seg
- * @seg: flow segment for programming
- * @tcp_ip4_spec: mask data from ethtool
- * @l4_proto: Layer 4 protocol to program
- * @perfect_fltr: only valid on success; returns true if perfect filter,
- *		  false if not
- *
- * Set the mask data into the flow segment to be used to program HW
- * table based on provided L4 protocol for IPv4
- */
+ 
 static int
 ice_set_fdir_ip4_seg(struct ice_flow_seg_info *seg,
 		     struct ethtool_tcpip4_spec *tcp_ip4_spec,
@@ -918,12 +774,12 @@ ice_set_fdir_ip4_seg(struct ice_flow_seg_info *seg,
 {
 	enum ice_flow_field src_port, dst_port;
 
-	/* make sure we don't have any empty rule */
+	 
 	if (!tcp_ip4_spec->psrc && !tcp_ip4_spec->ip4src &&
 	    !tcp_ip4_spec->pdst && !tcp_ip4_spec->ip4dst)
 		return -EINVAL;
 
-	/* filtering on TOS not supported */
+	 
 	if (tcp_ip4_spec->tos)
 		return -EOPNOTSUPP;
 
@@ -943,7 +799,7 @@ ice_set_fdir_ip4_seg(struct ice_flow_seg_info *seg,
 	*perfect_fltr = true;
 	ICE_FLOW_SET_HDRS(seg, ICE_FLOW_SEG_HDR_IPV4 | l4_proto);
 
-	/* IP source address */
+	 
 	if (tcp_ip4_spec->ip4src == htonl(0xFFFFFFFF))
 		ice_flow_set_fld(seg, ICE_FLOW_FIELD_IDX_IPV4_SA,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -953,7 +809,7 @@ ice_set_fdir_ip4_seg(struct ice_flow_seg_info *seg,
 	else
 		return -EOPNOTSUPP;
 
-	/* IP destination address */
+	 
 	if (tcp_ip4_spec->ip4dst == htonl(0xFFFFFFFF))
 		ice_flow_set_fld(seg, ICE_FLOW_FIELD_IDX_IPV4_DA,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -963,7 +819,7 @@ ice_set_fdir_ip4_seg(struct ice_flow_seg_info *seg,
 	else
 		return -EOPNOTSUPP;
 
-	/* Layer 4 source port */
+	 
 	if (tcp_ip4_spec->psrc == htons(0xFFFF))
 		ice_flow_set_fld(seg, src_port, ICE_FLOW_FLD_OFF_INVAL,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -973,7 +829,7 @@ ice_set_fdir_ip4_seg(struct ice_flow_seg_info *seg,
 	else
 		return -EOPNOTSUPP;
 
-	/* Layer 4 destination port */
+	 
 	if (tcp_ip4_spec->pdst == htons(0xFFFF))
 		ice_flow_set_fld(seg, dst_port, ICE_FLOW_FLD_OFF_INVAL,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -986,39 +842,30 @@ ice_set_fdir_ip4_seg(struct ice_flow_seg_info *seg,
 	return 0;
 }
 
-/**
- * ice_set_fdir_ip4_usr_seg
- * @seg: flow segment for programming
- * @usr_ip4_spec: ethtool userdef packet offset
- * @perfect_fltr: only valid on success; returns true if perfect filter,
- *		  false if not
- *
- * Set the offset data into the flow segment to be used to program HW
- * table for IPv4
- */
+ 
 static int
 ice_set_fdir_ip4_usr_seg(struct ice_flow_seg_info *seg,
 			 struct ethtool_usrip4_spec *usr_ip4_spec,
 			 bool *perfect_fltr)
 {
-	/* first 4 bytes of Layer 4 header */
+	 
 	if (usr_ip4_spec->l4_4_bytes)
 		return -EINVAL;
 	if (usr_ip4_spec->tos)
 		return -EINVAL;
 	if (usr_ip4_spec->ip_ver)
 		return -EINVAL;
-	/* Filtering on Layer 4 protocol not supported */
+	 
 	if (usr_ip4_spec->proto)
 		return -EOPNOTSUPP;
-	/* empty rules are not valid */
+	 
 	if (!usr_ip4_spec->ip4src && !usr_ip4_spec->ip4dst)
 		return -EINVAL;
 
 	*perfect_fltr = true;
 	ICE_FLOW_SET_HDRS(seg, ICE_FLOW_SEG_HDR_IPV4);
 
-	/* IP source address */
+	 
 	if (usr_ip4_spec->ip4src == htonl(0xFFFFFFFF))
 		ice_flow_set_fld(seg, ICE_FLOW_FIELD_IDX_IPV4_SA,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -1028,7 +875,7 @@ ice_set_fdir_ip4_usr_seg(struct ice_flow_seg_info *seg,
 	else
 		return -EOPNOTSUPP;
 
-	/* IP destination address */
+	 
 	if (usr_ip4_spec->ip4dst == htonl(0xFFFFFFFF))
 		ice_flow_set_fld(seg, ICE_FLOW_FIELD_IDX_IPV4_DA,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -1041,17 +888,7 @@ ice_set_fdir_ip4_usr_seg(struct ice_flow_seg_info *seg,
 	return 0;
 }
 
-/**
- * ice_set_fdir_ip6_seg
- * @seg: flow segment for programming
- * @tcp_ip6_spec: mask data from ethtool
- * @l4_proto: Layer 4 protocol to program
- * @perfect_fltr: only valid on success; returns true if perfect filter,
- *		  false if not
- *
- * Set the mask data into the flow segment to be used to program HW
- * table based on provided L4 protocol for IPv6
- */
+ 
 static int
 ice_set_fdir_ip6_seg(struct ice_flow_seg_info *seg,
 		     struct ethtool_tcpip6_spec *tcp_ip6_spec,
@@ -1059,7 +896,7 @@ ice_set_fdir_ip6_seg(struct ice_flow_seg_info *seg,
 {
 	enum ice_flow_field src_port, dst_port;
 
-	/* make sure we don't have any empty rule */
+	 
 	if (!memcmp(tcp_ip6_spec->ip6src, &zero_ipv6_addr_mask,
 		    sizeof(struct in6_addr)) &&
 	    !memcmp(tcp_ip6_spec->ip6dst, &zero_ipv6_addr_mask,
@@ -1067,7 +904,7 @@ ice_set_fdir_ip6_seg(struct ice_flow_seg_info *seg,
 	    !tcp_ip6_spec->psrc && !tcp_ip6_spec->pdst)
 		return -EINVAL;
 
-	/* filtering on TC not supported */
+	 
 	if (tcp_ip6_spec->tclass)
 		return -EOPNOTSUPP;
 
@@ -1109,7 +946,7 @@ ice_set_fdir_ip6_seg(struct ice_flow_seg_info *seg,
 	else
 		return -EOPNOTSUPP;
 
-	/* Layer 4 source port */
+	 
 	if (tcp_ip6_spec->psrc == htons(0xFFFF))
 		ice_flow_set_fld(seg, src_port, ICE_FLOW_FLD_OFF_INVAL,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -1119,7 +956,7 @@ ice_set_fdir_ip6_seg(struct ice_flow_seg_info *seg,
 	else
 		return -EOPNOTSUPP;
 
-	/* Layer 4 destination port */
+	 
 	if (tcp_ip6_spec->pdst == htons(0xFFFF))
 		ice_flow_set_fld(seg, dst_port, ICE_FLOW_FLD_OFF_INVAL,
 				 ICE_FLOW_FLD_OFF_INVAL, ICE_FLOW_FLD_OFF_INVAL,
@@ -1132,31 +969,22 @@ ice_set_fdir_ip6_seg(struct ice_flow_seg_info *seg,
 	return 0;
 }
 
-/**
- * ice_set_fdir_ip6_usr_seg
- * @seg: flow segment for programming
- * @usr_ip6_spec: ethtool userdef packet offset
- * @perfect_fltr: only valid on success; returns true if perfect filter,
- *		  false if not
- *
- * Set the offset data into the flow segment to be used to program HW
- * table for IPv6
- */
+ 
 static int
 ice_set_fdir_ip6_usr_seg(struct ice_flow_seg_info *seg,
 			 struct ethtool_usrip6_spec *usr_ip6_spec,
 			 bool *perfect_fltr)
 {
-	/* filtering on Layer 4 bytes not supported */
+	 
 	if (usr_ip6_spec->l4_4_bytes)
 		return -EOPNOTSUPP;
-	/* filtering on TC not supported */
+	 
 	if (usr_ip6_spec->tclass)
 		return -EOPNOTSUPP;
-	/* filtering on Layer 4 protocol not supported */
+	 
 	if (usr_ip6_spec->l4_proto)
 		return -EOPNOTSUPP;
-	/* empty rules are not valid */
+	 
 	if (!memcmp(usr_ip6_spec->ip6src, &zero_ipv6_addr_mask,
 		    sizeof(struct in6_addr)) &&
 	    !memcmp(usr_ip6_spec->ip6dst, &zero_ipv6_addr_mask,
@@ -1191,14 +1019,7 @@ ice_set_fdir_ip6_usr_seg(struct ice_flow_seg_info *seg,
 	return 0;
 }
 
-/**
- * ice_cfg_fdir_xtrct_seq - Configure extraction sequence for the given filter
- * @pf: PF structure
- * @fsp: pointer to ethtool Rx flow specification
- * @user: user defined data from flow specification
- *
- * Returns 0 on success.
- */
+ 
 static int
 ice_cfg_fdir_xtrct_seq(struct ice_pf *pf, struct ethtool_rx_flow_spec *fsp,
 		       struct ice_rx_flow_userdef *user)
@@ -1266,7 +1087,7 @@ ice_cfg_fdir_xtrct_seq(struct ice_pf *pf, struct ethtool_rx_flow_spec *fsp,
 	if (ret)
 		goto err_exit;
 
-	/* tunnel segments are shifted up one. */
+	 
 	memcpy(&tun_seg[1], seg, sizeof(*seg));
 
 	if (user && user->flex_fltr) {
@@ -1285,28 +1106,28 @@ ice_cfg_fdir_xtrct_seq(struct ice_pf *pf, struct ethtool_rx_flow_spec *fsp,
 
 	assign_bit(fltr_idx, hw->fdir_perfect_fltr, perfect_filter);
 
-	/* add filter for outer headers */
+	 
 	ret = ice_fdir_set_hw_fltr_rule(pf, seg, fltr_idx,
 					ICE_FD_HW_SEG_NON_TUN);
 	if (ret == -EEXIST) {
-		/* Rule already exists, free memory and count as success */
+		 
 		ret = 0;
 		goto err_exit;
 	} else if (ret) {
-		/* could not write filter, free memory */
+		 
 		goto err_exit;
 	}
 
-	/* make tunneled filter HW entries if possible */
+	 
 	memcpy(&tun_seg[1], seg, sizeof(*seg));
 	ret = ice_fdir_set_hw_fltr_rule(pf, tun_seg, fltr_idx,
 					ICE_FD_HW_SEG_TUN);
 	if (ret == -EEXIST) {
-		/* Rule already exists, free memory and count as success */
+		 
 		devm_kfree(dev, tun_seg);
 		ret = 0;
 	} else if (ret) {
-		/* could not write tunnel filter, but outer filter exists */
+		 
 		devm_kfree(dev, tun_seg);
 	}
 
@@ -1319,14 +1140,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_update_per_q_fltr
- * @vsi: ptr to VSI
- * @q_index: queue index
- * @inc: true to increment or false to decrement per queue filter count
- *
- * This function is used to keep track of per queue sideband filters
- */
+ 
 static void ice_update_per_q_fltr(struct ice_vsi *vsi, u32 q_index, bool inc)
 {
 	struct ice_rx_ring *rx_ring;
@@ -1344,15 +1158,7 @@ static void ice_update_per_q_fltr(struct ice_vsi *vsi, u32 q_index, bool inc)
 		atomic_dec_if_positive(&rx_ring->ch->num_sb_fltr);
 }
 
-/**
- * ice_fdir_write_fltr - send a flow director filter to the hardware
- * @pf: PF data structure
- * @input: filter structure
- * @add: true adds filter and false removed filter
- * @is_tun: true adds inner filter on tunnel and false outer headers
- *
- * returns 0 on success and negative value on error
- */
+ 
 int
 ice_fdir_write_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input, bool add,
 		    bool is_tun)
@@ -1386,10 +1192,10 @@ ice_fdir_write_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input, bool add,
 	if (err)
 		goto err_free_all;
 
-	/* repeat for fragment packet */
+	 
 	has_frag = ice_fdir_has_frag(input->flow_type);
 	if (has_frag) {
-		/* does not return error */
+		 
 		ice_fdir_get_prgm_desc(hw, input, &desc, add);
 		err = ice_fdir_get_gen_prgm_pkt(hw, input, frag_pkt, true,
 						is_tun);
@@ -1415,14 +1221,7 @@ err_frag:
 	return err;
 }
 
-/**
- * ice_fdir_write_all_fltr - send a flow director filter to the hardware
- * @pf: PF data structure
- * @input: filter structure
- * @add: true adds filter and false removed filter
- *
- * returns 0 on success and negative value on error
- */
+ 
 static int
 ice_fdir_write_all_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input,
 			bool add)
@@ -1443,10 +1242,7 @@ ice_fdir_write_all_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input,
 	return 0;
 }
 
-/**
- * ice_fdir_replay_fltrs - replay filters from the HW filter list
- * @pf: board private structure
- */
+ 
 void ice_fdir_replay_fltrs(struct ice_pf *pf)
 {
 	struct ice_fdir_fltr *f_rule;
@@ -1461,17 +1257,12 @@ void ice_fdir_replay_fltrs(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_fdir_create_dflt_rules - create default perfect filters
- * @pf: PF data structure
- *
- * Returns 0 for success or error.
- */
+ 
 int ice_fdir_create_dflt_rules(struct ice_pf *pf)
 {
 	int err;
 
-	/* Create perfect TCP and UDP rules in hardware. */
+	 
 	err = ice_create_init_fdir_rule(pf, ICE_FLTR_PTYPE_NONF_IPV4_TCP);
 	if (err)
 		return err;
@@ -1489,12 +1280,7 @@ int ice_fdir_create_dflt_rules(struct ice_pf *pf)
 	return err;
 }
 
-/**
- * ice_fdir_del_all_fltrs - Delete all flow director filters
- * @vsi: the VSI being changed
- *
- * This function needs to be called while holding hw->fdir_fltr_lock
- */
+ 
 void ice_fdir_del_all_fltrs(struct ice_vsi *vsi)
 {
 	struct ice_fdir_fltr *f_rule, *tmp;
@@ -1509,11 +1295,7 @@ void ice_fdir_del_all_fltrs(struct ice_vsi *vsi)
 	}
 }
 
-/**
- * ice_vsi_manage_fdir - turn on/off flow director
- * @vsi: the VSI being changed
- * @ena: boolean value indicating if this is an enable or disable request
- */
+ 
 void ice_vsi_manage_fdir(struct ice_vsi *vsi, bool ena)
 {
 	struct ice_pf *pf = vsi->back;
@@ -1542,11 +1324,7 @@ release_lock:
 	mutex_unlock(&hw->fdir_fltr_lock);
 }
 
-/**
- * ice_fdir_do_rem_flow - delete flow and possibly add perfect flow
- * @pf: PF structure
- * @flow_type: FDir flow type to release
- */
+ 
 static void
 ice_fdir_do_rem_flow(struct ice_pf *pf, enum ice_fltr_ptype flow_type)
 {
@@ -1567,14 +1345,7 @@ ice_fdir_do_rem_flow(struct ice_pf *pf, enum ice_fltr_ptype flow_type)
 		ice_create_init_fdir_rule(pf, flow_type);
 }
 
-/**
- * ice_fdir_update_list_entry - add or delete a filter from the filter list
- * @pf: PF structure
- * @input: filter structure
- * @fltr_idx: ethtool index of filter to modify
- *
- * returns 0 on success and negative on errors
- */
+ 
 static int
 ice_fdir_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
 			   int fltr_idx)
@@ -1584,7 +1355,7 @@ ice_fdir_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
 	struct ice_vsi *vsi;
 	int err = -ENOENT;
 
-	/* Do not update filters during reset */
+	 
 	if (ice_is_reset_in_progress(pf->state))
 		return -EBUSY;
 
@@ -1598,12 +1369,10 @@ ice_fdir_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
 		if (err)
 			return err;
 		ice_fdir_update_cntrs(hw, old_fltr->flow_type, false);
-		/* update sb-filters count, specific to ring->channel */
+		 
 		ice_update_per_q_fltr(vsi, old_fltr->orig_q_index, false);
 		if (!input && !hw->fdir_fltr_cnt[old_fltr->flow_type])
-			/* we just deleted the last filter of flow_type so we
-			 * should also delete the HW filter info.
-			 */
+			 
 			ice_fdir_do_rem_flow(pf, old_fltr->flow_type);
 		list_del(&old_fltr->fltr_node);
 		devm_kfree(ice_hw_to_dev(hw), old_fltr);
@@ -1611,19 +1380,13 @@ ice_fdir_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
 	if (!input)
 		return err;
 	ice_fdir_list_add_fltr(hw, input);
-	/* update sb-filters count, specific to ring->channel */
+	 
 	ice_update_per_q_fltr(vsi, input->orig_q_index, true);
 	ice_fdir_update_cntrs(hw, input->flow_type, true);
 	return 0;
 }
 
-/**
- * ice_del_fdir_ethtool - delete Flow Director filter
- * @vsi: pointer to target VSI
- * @cmd: command to add or delete Flow Director filter
- *
- * Returns 0 on success and negative values for failure
- */
+ 
 int ice_del_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 {
 	struct ethtool_rx_flow_spec *fsp =
@@ -1635,7 +1398,7 @@ int ice_del_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 	if (!test_bit(ICE_FLAG_FD_ENA, pf->flags))
 		return -EOPNOTSUPP;
 
-	/* Do not delete filters during reset */
+	 
 	if (ice_is_reset_in_progress(pf->state)) {
 		dev_err(ice_pf_to_dev(pf), "Device is resetting - deleting Flow Director filters not supported during reset\n");
 		return -EBUSY;
@@ -1651,15 +1414,7 @@ int ice_del_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 	return val;
 }
 
-/**
- * ice_update_ring_dest_vsi - update dest ring and dest VSI
- * @vsi: pointer to target VSI
- * @dest_vsi: ptr to dest VSI index
- * @ring: ptr to dest ring
- *
- * This function updates destination VSI and queue if user specifies
- * target queue which falls in channel's (aka ADQ) queue region
- */
+ 
 static void
 ice_update_ring_dest_vsi(struct ice_vsi *vsi, u16 *dest_vsi, u32 *ring)
 {
@@ -1669,27 +1424,20 @@ ice_update_ring_dest_vsi(struct ice_vsi *vsi, u16 *dest_vsi, u32 *ring)
 		if (!ch->ch_vsi)
 			continue;
 
-		/* make sure to locate corresponding channel based on "queue"
-		 * specified
-		 */
+		 
 		if ((*ring < ch->base_q) ||
 		    (*ring >= (ch->base_q + ch->num_rxq)))
 			continue;
 
-		/* update the dest_vsi based on channel */
+		 
 		*dest_vsi = ch->ch_vsi->idx;
 
-		/* update the "ring" to be correct based on channel */
+		 
 		*ring -= ch->base_q;
 	}
 }
 
-/**
- * ice_set_fdir_input_set - Set the input set for Flow Director
- * @vsi: pointer to target VSI
- * @fsp: pointer to ethtool Rx flow specification
- * @input: filter structure
- */
+ 
 static int
 ice_set_fdir_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
 		       struct ice_fdir_fltr *input)
@@ -1732,10 +1480,7 @@ ice_set_fdir_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
 	input->q_index = q_index;
 	flow_type = fsp->flow_type & ~FLOW_EXT;
 
-	/* Record the original queue index as specified by user.
-	 * with channel configuration 'q_index' becomes relative
-	 * to TC (channel).
-	 */
+	 
 	input->orig_q_index = orig_q_index;
 	input->dest_vsi = dest_vsi;
 	input->dest_ctl = dest_ctl;
@@ -1807,7 +1552,7 @@ ice_set_fdir_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
 		input->ip.v6.l4_header = fsp->h_u.usr_ip6_spec.l4_4_bytes;
 		input->ip.v6.tc = fsp->h_u.usr_ip6_spec.tclass;
 
-		/* if no protocol requested, use IPPROTO_NONE */
+		 
 		if (!fsp->m_u.usr_ip6_spec.l4_proto)
 			input->ip.v6.proto = IPPROTO_NONE;
 		else
@@ -1822,20 +1567,14 @@ ice_set_fdir_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
 		input->mask.v6.proto = fsp->m_u.usr_ip6_spec.l4_proto;
 		break;
 	default:
-		/* not doing un-parsed flow types */
+		 
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-/**
- * ice_add_fdir_ethtool - Add/Remove Flow Director filter
- * @vsi: pointer to target VSI
- * @cmd: command to add or delete Flow Director filter
- *
- * Returns 0 on success and negative values for failure
- */
+ 
 int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 {
 	struct ice_rx_flow_userdef userdata;
@@ -1858,7 +1597,7 @@ int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 	if (!test_bit(ICE_FLAG_FD_ENA, pf->flags))
 		return -EOPNOTSUPP;
 
-	/* Do not program filters during reset */
+	 
 	if (ice_is_reset_in_progress(pf->state)) {
 		dev_err(dev, "Device is resetting - adding Flow Director filters not supported during reset\n");
 		return -EBUSY;
@@ -1881,7 +1620,7 @@ int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 		return -ENOSPC;
 	}
 
-	/* return error if not an update and no available filters */
+	 
 	fltrs_needed = ice_get_open_tunnel_port(hw, &tunnel_port, TNL_ALL) ? 2 : 1;
 	if (!ice_fdir_find_fltr_by_idx(hw, fsp->location) &&
 	    ice_fdir_num_avail_fltr(hw, pf->vsi[vsi->idx]) < fltrs_needed) {
@@ -1913,7 +1652,7 @@ int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 	input->fdid_prio = ICE_FXD_FLTR_QW1_FDID_PRI_THREE;
 	input->comp_report = ICE_FXD_FLTR_QW0_COMP_REPORT_SW_FAIL;
 
-	/* input struct is added to the HW filter list */
+	 
 	ret = ice_fdir_update_list_entry(pf, input, fsp->location);
 	if (ret)
 		goto release_lock;
@@ -1926,7 +1665,7 @@ int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
 
 remove_sw_rule:
 	ice_fdir_update_cntrs(hw, input->flow_type, false);
-	/* update sb-filters count, specific to ring->channel */
+	 
 	ice_update_per_q_fltr(vsi, input->orig_q_index, false);
 	list_del(&input->fltr_node);
 release_lock:

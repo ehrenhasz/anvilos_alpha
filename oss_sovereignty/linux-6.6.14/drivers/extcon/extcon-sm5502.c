@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * extcon-sm5502.c - Silicon Mitus SM5502 extcon drvier to support USB switches
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- * Author: Chanwoo Choi <cw00.choi@samsung.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -19,7 +14,7 @@
 
 #include "extcon-sm5502.h"
 
-#define	DELAY_MS_DEFAULT		17000	/* unit: millisecond */
+#define	DELAY_MS_DEFAULT		17000	 
 
 struct muic_irq {
 	unsigned int irq;
@@ -49,12 +44,7 @@ struct sm5502_muic_info {
 
 	struct mutex mutex;
 
-	/*
-	 * Use delayed workqueue to detect cable state and then
-	 * notify cable state to notifiee/platform through uevent.
-	 * After completing the booting of platform, the extcon provider
-	 * driver should notify cable state to upper layer.
-	 */
+	 
 	struct delayed_work wq_detcable;
 };
 
@@ -70,7 +60,7 @@ struct sm5502_type {
 	int (*parse_irq)(struct sm5502_muic_info *info, int irq_type);
 };
 
-/* Default value of SM5502 register to bring up MUIC device. */
+ 
 static struct reg_data sm5502_reg_data[] = {
 	{
 		.reg = SM5502_REG_RESET,
@@ -98,7 +88,7 @@ static struct reg_data sm5502_reg_data[] = {
 	},
 };
 
-/* Default value of SM5504 register to bring up MUIC device. */
+ 
 static struct reg_data sm5504_reg_data[] = {
 	{
 		.reg = SM5502_REG_RESET,
@@ -125,7 +115,7 @@ static struct reg_data sm5504_reg_data[] = {
 	},
 };
 
-/* List of detectable cables */
+ 
 static const unsigned int sm5502_extcon_cable[] = {
 	EXTCON_USB,
 	EXTCON_USB_HOST,
@@ -134,7 +124,7 @@ static const unsigned int sm5502_extcon_cable[] = {
 	EXTCON_NONE,
 };
 
-/* Define supported accessory type */
+ 
 enum sm5502_muic_acc_type {
 	SM5502_MUIC_ADC_GROUND = 0x0,
 	SM5502_MUIC_ADC_SEND_END_BUTTON,
@@ -169,22 +159,19 @@ enum sm5502_muic_acc_type {
 	SM5502_MUIC_ADC_AUDIO_TYPE1,
 	SM5502_MUIC_ADC_OPEN = 0x1f,
 
-	/*
-	 * The below accessories have same ADC value (0x1f or 0x1e).
-	 * So, Device type1 is used to separate specific accessory.
-	 */
-							/* |---------|--ADC| */
-							/* |    [7:5]|[4:0]| */
-	SM5502_MUIC_ADC_AUDIO_TYPE1_FULL_REMOTE = 0x3e,	/* |      001|11110| */
-	SM5502_MUIC_ADC_AUDIO_TYPE1_SEND_END = 0x5e,	/* |      010|11110| */
-							/* |Dev Type1|--ADC| */
-	SM5502_MUIC_ADC_GROUND_USB_OTG = 0x80,		/* |      100|00000| */
-	SM5502_MUIC_ADC_OPEN_USB = 0x5f,		/* |      010|11111| */
-	SM5502_MUIC_ADC_OPEN_TA = 0xdf,			/* |      110|11111| */
-	SM5502_MUIC_ADC_OPEN_USB_OTG = 0xff,		/* |      111|11111| */
+	 
+							 
+							 
+	SM5502_MUIC_ADC_AUDIO_TYPE1_FULL_REMOTE = 0x3e,	 
+	SM5502_MUIC_ADC_AUDIO_TYPE1_SEND_END = 0x5e,	 
+							 
+	SM5502_MUIC_ADC_GROUND_USB_OTG = 0x80,		 
+	SM5502_MUIC_ADC_OPEN_USB = 0x5f,		 
+	SM5502_MUIC_ADC_OPEN_TA = 0xdf,			 
+	SM5502_MUIC_ADC_OPEN_USB_OTG = 0xff,		 
 };
 
-/* List of supported interrupt for SM5502 */
+ 
 static struct muic_irq sm5502_muic_irqs[] = {
 	{ SM5502_IRQ_INT1_ATTACH,	"muic-attach" },
 	{ SM5502_IRQ_INT1_DETACH,	"muic-detach" },
@@ -202,9 +189,9 @@ static struct muic_irq sm5502_muic_irqs[] = {
 	{ SM5502_IRQ_INT2_MHL,		"muic-mhl" },
 };
 
-/* Define interrupt list of SM5502 to register regmap_irq */
+ 
 static const struct regmap_irq sm5502_irqs[] = {
-	/* INT1 interrupts */
+	 
 	{ .reg_offset = 0, .mask = SM5502_IRQ_INT1_ATTACH_MASK, },
 	{ .reg_offset = 0, .mask = SM5502_IRQ_INT1_DETACH_MASK, },
 	{ .reg_offset = 0, .mask = SM5502_IRQ_INT1_KP_MASK, },
@@ -214,7 +201,7 @@ static const struct regmap_irq sm5502_irqs[] = {
 	{ .reg_offset = 0, .mask = SM5502_IRQ_INT1_OCP_EVENT_MASK, },
 	{ .reg_offset = 0, .mask = SM5502_IRQ_INT1_OVP_OCP_DIS_MASK, },
 
-	/* INT2 interrupts */
+	 
 	{ .reg_offset = 1, .mask = SM5502_IRQ_INT2_VBUS_DET_MASK,},
 	{ .reg_offset = 1, .mask = SM5502_IRQ_INT2_REV_ACCE_MASK, },
 	{ .reg_offset = 1, .mask = SM5502_IRQ_INT2_ADC_CHG_MASK, },
@@ -232,7 +219,7 @@ static const struct regmap_irq_chip sm5502_muic_irq_chip = {
 	.num_irqs		= ARRAY_SIZE(sm5502_irqs),
 };
 
-/* List of supported interrupt for SM5504 */
+ 
 static struct muic_irq sm5504_muic_irqs[] = {
 	{ SM5504_IRQ_INT1_ATTACH,	"muic-attach" },
 	{ SM5504_IRQ_INT1_DETACH,	"muic-detach" },
@@ -250,9 +237,9 @@ static struct muic_irq sm5504_muic_irqs[] = {
 	{ SM5504_IRQ_INT2_OVP_OCP_EVENT, "muic-ovp-ocp-event" },
 };
 
-/* Define interrupt list of SM5504 to register regmap_irq */
+ 
 static const struct regmap_irq sm5504_irqs[] = {
-	/* INT1 interrupts */
+	 
 	{ .reg_offset = 0, .mask = SM5504_IRQ_INT1_ATTACH_MASK, },
 	{ .reg_offset = 0, .mask = SM5504_IRQ_INT1_DETACH_MASK, },
 	{ .reg_offset = 0, .mask = SM5504_IRQ_INT1_CHG_DET_MASK, },
@@ -261,7 +248,7 @@ static const struct regmap_irq sm5504_irqs[] = {
 	{ .reg_offset = 0, .mask = SM5504_IRQ_INT1_CONNECT_MASK, },
 	{ .reg_offset = 0, .mask = SM5504_IRQ_INT1_ADC_CHG_MASK, },
 
-	/* INT2 interrupts */
+	 
 	{ .reg_offset = 1, .mask = SM5504_IRQ_INT2_RID_CHG_MASK,},
 	{ .reg_offset = 1, .mask = SM5504_IRQ_INT2_UVLO_MASK, },
 	{ .reg_offset = 1, .mask = SM5504_IRQ_INT2_POR_MASK, },
@@ -280,7 +267,7 @@ static const struct regmap_irq_chip sm5504_muic_irq_chip = {
 	.num_irqs		= ARRAY_SIZE(sm5504_irqs),
 };
 
-/* Define regmap configuration of SM5502 for I2C communication  */
+ 
 static bool sm5502_muic_volatile_reg(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
@@ -300,7 +287,7 @@ static const struct regmap_config sm5502_muic_regmap_config = {
 	.max_register	= SM5502_REG_END,
 };
 
-/* Change DM_CON/DP_CON/VBUSIN switch according to cable type */
+ 
 static int sm5502_muic_set_path(struct sm5502_muic_info *info,
 				unsigned int con_sw, unsigned int vbus_sw,
 				bool attached)
@@ -355,23 +342,20 @@ static int sm5502_muic_set_path(struct sm5502_muic_info *info,
 	return 0;
 }
 
-/* Return cable type of attached or detached accessories */
+ 
 static unsigned int sm5502_muic_get_cable_type(struct sm5502_muic_info *info)
 {
 	unsigned int cable_type, adc, dev_type1;
 	int ret;
 
-	/* Read ADC value according to external cable or button */
+	 
 	ret = regmap_read(info->regmap, SM5502_REG_ADC, &adc);
 	if (ret) {
 		dev_err(info->dev, "failed to read ADC register\n");
 		return ret;
 	}
 
-	/*
-	 * If ADC is SM5502_MUIC_ADC_GROUND(0x0), external cable hasn't
-	 * connected with to MUIC device.
-	 */
+	 
 	cable_type = adc & SM5502_REG_ADC_MASK;
 
 	switch (cable_type) {
@@ -423,12 +407,7 @@ static unsigned int sm5502_muic_get_cable_type(struct sm5502_muic_info *info)
 	case SM5502_MUIC_ADC_FACTORY_MODE_BOOT_ON_UART:
 		break;
 	case SM5502_MUIC_ADC_AUDIO_TYPE1:
-		/*
-		 * Check whether cable type is
-		 * SM5502_MUIC_ADC_AUDIO_TYPE1_FULL_REMOTE
-		 * or SM5502_MUIC_ADC_AUDIO_TYPE1_SEND_END
-		 * by using Button event.
-		 */
+		 
 		break;
 	case SM5502_MUIC_ADC_OPEN:
 		ret = regmap_read(info->regmap, SM5502_REG_DEV_TYPE1,
@@ -476,7 +455,7 @@ static int sm5502_muic_cable_handler(struct sm5502_muic_info *info,
 	unsigned int id;
 	int ret;
 
-	/* Get the type of attached or detached cable */
+	 
 	if (attached)
 		cable_type = sm5502_muic_get_cable_type(info);
 	else
@@ -506,12 +485,12 @@ static int sm5502_muic_cable_handler(struct sm5502_muic_info *info,
 		return 0;
 	}
 
-	/* Change internal hardware path(DM_CON/DP_CON, VBUSIN) */
+	 
 	ret = sm5502_muic_set_path(info, con_sw, vbus_sw, attached);
 	if (ret < 0)
 		return ret;
 
-	/* Change the state of external accessory */
+	 
 	extcon_set_state_sync(info->edev, id, attached);
 	if (id == EXTCON_USB)
 		extcon_set_state_sync(info->edev, EXTCON_CHG_USB_SDP,
@@ -531,7 +510,7 @@ static void sm5502_muic_irq_work(struct work_struct *work)
 
 	mutex_lock(&info->mutex);
 
-	/* Detect attached or detached cables */
+	 
 	if (info->irq_attach) {
 		ret = sm5502_muic_cable_handler(info, true);
 		info->irq_attach = false;
@@ -547,10 +526,7 @@ static void sm5502_muic_irq_work(struct work_struct *work)
 	mutex_unlock(&info->mutex);
 }
 
-/*
- * Sets irq_attach or irq_detach in sm5502_muic_info and returns 0.
- * Returns -ESRCH if irq_type does not match registered IRQ for this dev type.
- */
+ 
 static int sm5502_parse_irq(struct sm5502_muic_info *info, int irq_type)
 {
 	switch (irq_type) {
@@ -633,7 +609,7 @@ static void sm5502_muic_detect_cable_wq(struct work_struct *work)
 				struct sm5502_muic_info, wq_detcable);
 	int ret;
 
-	/* Notify the state of connector cable or not  */
+	 
 	ret = sm5502_muic_cable_handler(info, true);
 	if (ret < 0)
 		dev_warn(info->dev, "failed to detect cable state\n");
@@ -644,7 +620,7 @@ static void sm5502_init_dev_type(struct sm5502_muic_info *info)
 	unsigned int reg_data, vendor_id, version_id;
 	int i, ret;
 
-	/* To test I2C, Print version_id and vendor_id of SM5502 */
+	 
 	ret = regmap_read(info->regmap, SM5502_REG_DEVICE_ID, &reg_data);
 	if (ret) {
 		dev_err(info->dev,
@@ -660,7 +636,7 @@ static void sm5502_init_dev_type(struct sm5502_muic_info *info)
 	dev_info(info->dev, "Device type: version: 0x%x, vendor: 0x%x\n",
 			    version_id, vendor_id);
 
-	/* Initiazle the register of SM5502 device to bring-up */
+	 
 	for (i = 0; i < info->type->num_reg_data; i++) {
 		unsigned int val = 0;
 
@@ -709,7 +685,7 @@ static int sm5022_muic_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Support irq domain for SM5502 MUIC device */
+	 
 	irq_flags = IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_SHARED;
 	ret = devm_regmap_add_irq_chip(info->dev, info->regmap, info->irq,
 				       irq_flags, 0, info->type->irq_chip,
@@ -741,33 +717,26 @@ static int sm5022_muic_i2c_probe(struct i2c_client *i2c)
 		}
 	}
 
-	/* Allocate extcon device */
+	 
 	info->edev = devm_extcon_dev_allocate(info->dev, sm5502_extcon_cable);
 	if (IS_ERR(info->edev)) {
 		dev_err(info->dev, "failed to allocate memory for extcon\n");
 		return -ENOMEM;
 	}
 
-	/* Register extcon device */
+	 
 	ret = devm_extcon_dev_register(info->dev, info->edev);
 	if (ret) {
 		dev_err(info->dev, "failed to register extcon device\n");
 		return ret;
 	}
 
-	/*
-	 * Detect accessory after completing the initialization of platform
-	 *
-	 * - Use delayed workqueue to detect cable state and then
-	 * notify cable state to notifiee/platform through uevent.
-	 * After completing the booting of platform, the extcon provider
-	 * driver should notify cable state to upper layer.
-	 */
+	 
 	INIT_DELAYED_WORK(&info->wq_detcable, sm5502_muic_detect_cable_wq);
 	queue_delayed_work(system_power_efficient_wq, &info->wq_detcable,
 			msecs_to_jiffies(DELAY_MS_DEFAULT));
 
-	/* Initialize SM5502 device and print vendor id and version id */
+	 
 	sm5502_init_dev_type(info);
 
 	return 0;

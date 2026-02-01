@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * f2fs sysfs interface
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- * Copyright (c) 2017 Chao Yu <chao@kernel.org>
- */
+
+ 
 #include <linux/compiler.h>
 #include <linux/proc_fs.h>
 #include <linux/f2fs_fs.h>
@@ -22,23 +16,23 @@
 
 static struct proc_dir_entry *f2fs_proc_root;
 
-/* Sysfs support for f2fs */
+ 
 enum {
-	GC_THREAD,	/* struct f2fs_gc_thread */
-	SM_INFO,	/* struct f2fs_sm_info */
-	DCC_INFO,	/* struct discard_cmd_control */
-	NM_INFO,	/* struct f2fs_nm_info */
-	F2FS_SBI,	/* struct f2fs_sb_info */
+	GC_THREAD,	 
+	SM_INFO,	 
+	DCC_INFO,	 
+	NM_INFO,	 
+	F2FS_SBI,	 
 #ifdef CONFIG_F2FS_STAT_FS
-	STAT_INFO,	/* struct f2fs_stat_info */
+	STAT_INFO,	 
 #endif
 #ifdef CONFIG_F2FS_FAULT_INJECTION
-	FAULT_INFO_RATE,	/* struct f2fs_fault_info */
-	FAULT_INFO_TYPE,	/* struct f2fs_fault_info */
+	FAULT_INFO_RATE,	 
+	FAULT_INFO_TYPE,	 
 #endif
-	RESERVED_BLOCKS,	/* struct f2fs_sb_info */
-	CPRC_INFO,	/* struct ckpt_req_control */
-	ATGC_INFO,	/* struct atgc_management */
+	RESERVED_BLOCKS,	 
+	CPRC_INFO,	 
+	ATGC_INFO,	 
 };
 
 static const char *gc_mode_names[MAX_GC_MODE] = {
@@ -785,24 +779,7 @@ static void f2fs_sb_release(struct kobject *kobj)
 	complete(&sbi->s_kobj_unregister);
 }
 
-/*
- * Note that there are three feature list entries:
- * 1) /sys/fs/f2fs/features
- *   : shows runtime features supported by in-kernel f2fs along with Kconfig.
- *     - ref. F2FS_FEATURE_RO_ATTR()
- *
- * 2) /sys/fs/f2fs/$s_id/features <deprecated>
- *   : shows on-disk features enabled by mkfs.f2fs, used for old kernels. This
- *     won't add new feature anymore, and thus, users should check entries in 3)
- *     instead of this 2).
- *
- * 3) /sys/fs/f2fs/$s_id/feature_list
- *   : shows on-disk features enabled by mkfs.f2fs per instance, which follows
- *     sysfs entry rule where each entry should expose single value.
- *     This list covers old feature list provided by 2) and beyond. Therefore,
- *     please add new on-disk feature in this list only.
- *     - ref. F2FS_SB_FEATURE_RO_ATTR()
- */
+ 
 static ssize_t f2fs_feature_show(struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
@@ -901,13 +878,13 @@ static struct f2fs_attr f2fs_attr_##name = __ATTR(name, 0444, name##_show, NULL)
 #define ATGC_INFO_RW_ATTR(name, elname)				\
 	F2FS_RW_ATTR(ATGC_INFO, atgc_management, name, elname)
 
-/* GC_THREAD ATTR */
+ 
 GC_THREAD_RW_ATTR(gc_urgent_sleep_time, urgent_sleep_time);
 GC_THREAD_RW_ATTR(gc_min_sleep_time, min_sleep_time);
 GC_THREAD_RW_ATTR(gc_max_sleep_time, max_sleep_time);
 GC_THREAD_RW_ATTR(gc_no_gc_sleep_time, no_gc_sleep_time);
 
-/* SM_INFO ATTR */
+ 
 SM_INFO_RW_ATTR(reclaim_segments, rec_prefree_segments);
 SM_INFO_GENERAL_RW_ATTR(ipu_policy);
 SM_INFO_GENERAL_RW_ATTR(min_ipu_util);
@@ -916,7 +893,7 @@ SM_INFO_GENERAL_RW_ATTR(min_seq_blocks);
 SM_INFO_GENERAL_RW_ATTR(min_hot_blocks);
 SM_INFO_GENERAL_RW_ATTR(min_ssr_sections);
 
-/* DCC_INFO ATTR */
+ 
 DCC_INFO_RW_ATTR(max_small_discards, max_discards);
 DCC_INFO_GENERAL_RW_ATTR(max_discard_request);
 DCC_INFO_GENERAL_RW_ATTR(min_discard_issue_time);
@@ -927,13 +904,13 @@ DCC_INFO_GENERAL_RW_ATTR(discard_urgent_util);
 DCC_INFO_GENERAL_RW_ATTR(discard_granularity);
 DCC_INFO_GENERAL_RW_ATTR(max_ordered_discard);
 
-/* NM_INFO ATTR */
+ 
 NM_INFO_RW_ATTR(max_roll_forward_node_blocks, max_rf_node_blocks);
 NM_INFO_GENERAL_RW_ATTR(ram_thresh);
 NM_INFO_GENERAL_RW_ATTR(ra_nid_pages);
 NM_INFO_GENERAL_RW_ATTR(dirty_nats_ratio);
 
-/* F2FS_SBI ATTR */
+ 
 F2FS_RW_ATTR(F2FS_SBI, f2fs_super_block, extension_list, extension_list);
 F2FS_SBI_RW_ATTR(gc_idle, gc_mode);
 F2FS_SBI_RW_ATTR(gc_urgent, gc_mode);
@@ -967,12 +944,12 @@ F2FS_SBI_GENERAL_RW_ATTR(compr_new_inode);
 F2FS_SBI_GENERAL_RW_ATTR(compress_percent);
 F2FS_SBI_GENERAL_RW_ATTR(compress_watermark);
 #endif
-/* atomic write */
+ 
 F2FS_SBI_GENERAL_RO_ATTR(current_atomic_write);
 F2FS_SBI_GENERAL_RW_ATTR(peak_atomic_write);
 F2FS_SBI_GENERAL_RW_ATTR(committed_atomic_block);
 F2FS_SBI_GENERAL_RW_ATTR(revoked_atomic_block);
-/* block age extent cache */
+ 
 F2FS_SBI_GENERAL_RW_ATTR(hot_data_age_threshold);
 F2FS_SBI_GENERAL_RW_ATTR(warm_data_age_threshold);
 F2FS_SBI_GENERAL_RW_ATTR(last_age_weight);
@@ -980,7 +957,7 @@ F2FS_SBI_GENERAL_RW_ATTR(last_age_weight);
 F2FS_SBI_GENERAL_RO_ATTR(unusable_blocks_per_sec);
 #endif
 
-/* STAT_INFO ATTR */
+ 
 #ifdef CONFIG_F2FS_STAT_FS
 STAT_INFO_RO_ATTR(cp_foreground_calls, cp_call_count[FOREGROUND]);
 STAT_INFO_RO_ATTR(cp_background_calls, cp_call_count[BACKGROUND]);
@@ -988,19 +965,19 @@ STAT_INFO_RO_ATTR(gc_foreground_calls, gc_call_count[FOREGROUND]);
 STAT_INFO_RO_ATTR(gc_background_calls, gc_call_count[BACKGROUND]);
 #endif
 
-/* FAULT_INFO ATTR */
+ 
 #ifdef CONFIG_F2FS_FAULT_INJECTION
 FAULT_INFO_GENERAL_RW_ATTR(FAULT_INFO_RATE, inject_rate);
 FAULT_INFO_GENERAL_RW_ATTR(FAULT_INFO_TYPE, inject_type);
 #endif
 
-/* RESERVED_BLOCKS ATTR */
+ 
 RESERVED_BLOCKS_GENERAL_RW_ATTR(reserved_blocks);
 
-/* CPRC_INFO ATTR */
+ 
 CPRC_INFO_GENERAL_RW_ATTR(ckpt_thread_ioprio);
 
-/* ATGC_INFO ATTR */
+ 
 ATGC_INFO_RW_ATTR(atgc_candidate_ratio, candidate_ratio);
 ATGC_INFO_RW_ATTR(atgc_candidate_count, max_candidate_count);
 ATGC_INFO_RW_ATTR(atgc_age_weight, age_weight);
@@ -1030,7 +1007,7 @@ F2FS_FEATURE_RO_ATTR(test_dummy_encryption_v2);
 #if IS_ENABLED(CONFIG_UNICODE)
 F2FS_FEATURE_RO_ATTR(encrypted_casefold);
 #endif
-#endif /* CONFIG_FS_ENCRYPTION */
+#endif  
 #ifdef CONFIG_BLK_DEV_ZONED
 F2FS_FEATURE_RO_ATTR(block_zoned);
 #endif
@@ -1139,7 +1116,7 @@ static struct attribute *f2fs_attrs[] = {
 	ATTR_LIST(compress_percent),
 	ATTR_LIST(compress_watermark),
 #endif
-	/* For ATGC */
+	 
 	ATTR_LIST(atgc_candidate_ratio),
 	ATTR_LIST(atgc_candidate_count),
 	ATTR_LIST(atgc_age_weight),
@@ -1167,7 +1144,7 @@ static struct attribute *f2fs_feat_attrs[] = {
 #if IS_ENABLED(CONFIG_UNICODE)
 	ATTR_LIST(encrypted_casefold),
 #endif
-#endif /* CONFIG_FS_ENCRYPTION */
+#endif  
 #ifdef CONFIG_BLK_DEV_ZONED
 	ATTR_LIST(block_zoned),
 #endif

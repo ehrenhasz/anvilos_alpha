@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GSC_FW_H_
 #define _INTEL_GSC_FW_H_

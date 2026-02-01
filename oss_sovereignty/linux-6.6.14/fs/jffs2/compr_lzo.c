@@ -1,14 +1,4 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2007 Nokia Corporation. All rights reserved.
- * Copyright © 2004-2010 David Woodhouse <dwmw2@infradead.org>
- *
- * Created by Richard Purdie <rpurdie@openedhand.com>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -19,7 +9,7 @@
 
 static void *lzo_mem;
 static void *lzo_compress_buf;
-static DEFINE_MUTEX(deflate_mutex);	/* for lzo_mem and lzo_compress_buf */
+static DEFINE_MUTEX(deflate_mutex);	 
 
 static void free_workspace(void)
 {

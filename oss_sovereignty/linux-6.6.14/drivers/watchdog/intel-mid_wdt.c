@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *      intel-mid_wdt: generic Intel MID SCU watchdog driver
- *
- *      Platforms supported so far:
- *      - Merrifield only
- *
- *      Copyright (C) 2014 Intel Corporation. All rights reserved.
- *      Contact: David Cohen <david.a.cohen@linux.intel.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -26,7 +18,7 @@
 #define MID_WDT_TIMEOUT_MAX		170
 #define MID_WDT_DEFAULT_TIMEOUT		90
 
-/* SCU watchdog messages */
+ 
 enum {
 	SCU_WATCHDOG_START = 0,
 	SCU_WATCHDOG_STOP,
@@ -58,12 +50,7 @@ static int wdt_start(struct watchdog_device *wd)
 		u32 timeout;
 	} ipc_wd_start = { timeout - MID_WDT_PRETIMEOUT, timeout };
 
-	/*
-	 * SCU expects the input size for watchdog IPC to be 2 which is the
-	 * size of the structure in dwords. SCU IPC normally takes bytes
-	 * but this is a special case where we specify size to be different
-	 * than inlen.
-	 */
+	 
 	in_size = DIV_ROUND_UP(sizeof(ipc_wd_start), 4);
 
 	ret = wdt_command(mid, SCU_WATCHDOG_START, &ipc_wd_start,
@@ -102,7 +89,7 @@ static irqreturn_t mid_wdt_irq(int irq, void *dev_id)
 {
 	panic("Kernel Watchdog");
 
-	/* This code should not be reached */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -166,20 +153,12 @@ static int mid_wdt_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * The firmware followed by U-Boot leaves the watchdog running
-	 * with the default threshold which may vary. When we get here
-	 * we should make a decision to prevent any side effects before
-	 * user space daemon will take care of it. The best option,
-	 * taking into consideration that there is no way to read values
-	 * back from hardware, is to enforce watchdog being run with
-	 * deterministic values.
-	 */
+	 
 	ret = wdt_start(wdt_dev);
 	if (ret)
 		return ret;
 
-	/* Make sure the watchdog is serviced */
+	 
 	set_bit(WDOG_HW_RUNNING, &wdt_dev->status);
 
 	ret = devm_watchdog_register_device(dev, wdt_dev);

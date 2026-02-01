@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  AVM BlueFRITZ! USB driver
- *
- *  Copyright (C) 2003-2006  Marcel Holtmann <marcel@holtmann.org>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -28,10 +23,10 @@
 static struct usb_driver bfusb_driver;
 
 static const struct usb_device_id bfusb_table[] = {
-	/* AVM BlueFRITZ! USB */
+	 
 	{ USB_DEVICE(0x057c, 0x2200) },
 
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(usb, bfusb_table);
@@ -468,12 +463,12 @@ static int bfusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 		break;
 	}
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 
 	count = skb->len;
 
-	/* Max HCI frame size seems to be 1511 + 1 */
+	 
 	nskb = bt_skb_alloc(count + 32, GFP_KERNEL);
 	if (!nskb) {
 		bt_dev_err(hdev, "Can't allocate memory for new packet");
@@ -496,7 +491,7 @@ static int bfusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 		count -= size;
 	}
 
-	/* Don't send frame with multiple size of bulk max packet */
+	 
 	if ((nskb->len % data->bulk_pkt_size) == 0) {
 		buf[0] = 0xdd;
 		buf[1] = 0x00;
@@ -606,7 +601,7 @@ static int bfusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 
 	BT_DBG("intf %p id %p", intf, id);
 
-	/* Check number of endpoints */
+	 
 	if (intf->cur_altsetting->desc.bNumEndpoints < 2)
 		return -EIO;
 
@@ -618,7 +613,7 @@ static int bfusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 		goto done;
 	}
 
-	/* Initialize control structure and load firmware */
+	 
 	data = devm_kzalloc(&intf->dev, sizeof(struct bfusb_data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
@@ -653,7 +648,7 @@ static int bfusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 
 	release_firmware(firmware);
 
-	/* Initialize and register HCI device */
+	 
 	hdev = hci_alloc_dev();
 	if (!hdev) {
 		BT_ERR("Can't allocate HCI device");

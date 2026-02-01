@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
- *
- * Description: CoreSight Replicator driver
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/amba/bus.h>
@@ -26,15 +22,7 @@
 
 DEFINE_CORESIGHT_DEVLIST(replicator_devs, "replicator");
 
-/**
- * struct replicator_drvdata - specifics associated to a replicator component
- * @base:	memory mapped base address for this component. Also indicates
- *		whether this one is programmable or not.
- * @atclk:	optional clock for the core parts of the replicator.
- * @csdev:	component vitals needed by the framework
- * @spinlock:	serialize enable/disable operations.
- * @check_idfilter_val: check if the context is lost upon clock removal.
- */
+ 
 struct replicator_drvdata {
 	void __iomem		*base;
 	struct clk		*atclk;
@@ -58,9 +46,7 @@ static void dynamic_replicator_reset(struct replicator_drvdata *drvdata)
 	CS_LOCK(drvdata->base);
 }
 
-/*
- * replicator_reset : Reset the replicator configuration to sane values.
- */
+ 
 static inline void replicator_reset(struct replicator_drvdata *drvdata)
 {
 	if (drvdata->base)
@@ -79,10 +65,7 @@ static int dynamic_replicator_enable(struct replicator_drvdata *drvdata,
 	id0val = readl_relaxed(drvdata->base + REPLICATOR_IDFILTER0);
 	id1val = readl_relaxed(drvdata->base + REPLICATOR_IDFILTER1);
 
-	/*
-	 * Some replicator designs lose context when AMBA clocks are removed,
-	 * so have a check for this.
-	 */
+	 
 	if (drvdata->check_idfilter_val && id0val == 0x0 && id1val == 0x0)
 		id0val = id1val = 0xff;
 
@@ -103,7 +86,7 @@ static int dynamic_replicator_enable(struct replicator_drvdata *drvdata,
 		}
 	}
 
-	/* Ensure that the outport is enabled. */
+	 
 	if (!rc) {
 		writel_relaxed(id0val, drvdata->base + REPLICATOR_IDFILTER0);
 		writel_relaxed(id1val, drvdata->base + REPLICATOR_IDFILTER1);
@@ -160,7 +143,7 @@ static void dynamic_replicator_disable(struct replicator_drvdata *drvdata,
 
 	CS_UNLOCK(drvdata->base);
 
-	/* disable the flow of ATB data through port */
+	 
 	writel_relaxed(0xff, drvdata->base + reg);
 
 	if ((readl_relaxed(drvdata->base + REPLICATOR_IDFILTER0) == 0xff) &&
@@ -236,17 +219,14 @@ static int replicator_probe(struct device *dev, struct resource *res)
 	if (!drvdata)
 		return -ENOMEM;
 
-	drvdata->atclk = devm_clk_get(dev, "atclk"); /* optional */
+	drvdata->atclk = devm_clk_get(dev, "atclk");  
 	if (!IS_ERR(drvdata->atclk)) {
 		ret = clk_prepare_enable(drvdata->atclk);
 		if (ret)
 			return ret;
 	}
 
-	/*
-	 * Map the device base for dynamic-replicator, which has been
-	 * validated by AMBA core
-	 */
+	 
 	if (res) {
 		base = devm_ioremap_resource(dev, res);
 		if (IS_ERR(base)) {
@@ -309,7 +289,7 @@ static int static_replicator_probe(struct platform_device *pdev)
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
-	/* Static replicators do not have programming base */
+	 
 	ret = replicator_probe(&pdev->dev, NULL);
 
 	if (ret) {
@@ -364,7 +344,7 @@ MODULE_DEVICE_TABLE(of, static_replicator_match);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id static_replicator_acpi_ids[] = {
-	{"ARMHC985", 0}, /* ARM CoreSight Static Replicator */
+	{"ARMHC985", 0},  
 	{}
 };
 
@@ -376,7 +356,7 @@ static struct platform_driver static_replicator_driver = {
 	.remove         = static_replicator_remove,
 	.driver         = {
 		.name   = "coresight-static-replicator",
-		/* THIS_MODULE is taken care of by platform_driver_register() */
+		 
 		.of_match_table = of_match_ptr(static_replicator_match),
 		.acpi_match_table = ACPI_PTR(static_replicator_acpi_ids),
 		.pm	= &replicator_dev_pm_ops,
@@ -397,7 +377,7 @@ static void dynamic_replicator_remove(struct amba_device *adev)
 
 static const struct amba_id dynamic_replicator_ids[] = {
 	CS_AMBA_ID(0x000bb909),
-	CS_AMBA_ID(0x000bb9ec),		/* Coresight SoC-600 */
+	CS_AMBA_ID(0x000bb9ec),		 
 	{},
 };
 

@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "soc15.h"
 #include "soc15d.h"
@@ -85,11 +64,7 @@ static const struct soc15_reg_golden golden_settings_gc_9_4_2_alde[] = {
 	SOC15_REG_GOLDEN_VALUE(GC, 0, regTCI_CNTL_3, 0xff, 0x20),
 };
 
-/*
- * This shader is used to clear VGPRS and LDS, and also write the input
- * pattern into the write back buffer, which will be used by driver to
- * check whether all SIMDs have been covered.
-*/
+ 
 static const u32 vgpr_init_compute_shader_aldebaran[] = {
 	0xb8840904, 0xb8851a04, 0xb8861344, 0xb8831804, 0x9208ff06, 0x00000280,
 	0x9209a805, 0x920a8a04, 0x81080908, 0x81080a08, 0x81080308, 0x8e078208,
@@ -194,8 +169,8 @@ const struct soc15_reg_entry vgpr_init_regs_aldebaran[] = {
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_NUM_THREAD_Y), 4 },
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_NUM_THREAD_Z), 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_PGM_RSRC1), 0xbf },
-	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_PGM_RSRC2), 0x400006 },  /* 64KB LDS */
-	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_PGM_RSRC3), 0x3F }, /*  63 - accum-offset = 256 */
+	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_PGM_RSRC2), 0x400006 },   
+	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_PGM_RSRC3), 0x3F },  
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_STATIC_THREAD_MGMT_SE0), 0xffffffff },
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_STATIC_THREAD_MGMT_SE1), 0xffffffff },
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_STATIC_THREAD_MGMT_SE2), 0xffffffff },
@@ -206,16 +181,7 @@ const struct soc15_reg_entry vgpr_init_regs_aldebaran[] = {
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_STATIC_THREAD_MGMT_SE7), 0xffffffff },
 };
 
-/*
- * The below shaders are used to clear SGPRS, and also write the input
- * pattern into the write back buffer. The first two dispatch should be
- * scheduled simultaneously which make sure that all SGPRS could be
- * allocated, so the dispatch 1 need check write back buffer before scheduled,
- * make sure that waves of dispatch 0 are all dispacthed to all simds
- * balanced. both dispatch 0 and dispatch 1 should be halted until all waves
- * are dispatched, and then driver write a pattern to the shared memory to make
- * all waves continue.
-*/
+ 
 static const u32 sgpr112_init_compute_shader_aldebaran[] = {
 	0xb8840904, 0xb8851a04, 0xb8861344, 0xb8831804, 0x9208ff06, 0x00000280,
 	0x9209a805, 0x920a8a04, 0x81080908, 0x81080a08, 0x81080308, 0x8e078208,
@@ -302,11 +268,7 @@ const struct soc15_reg_entry sgpr96_init_regs_aldebaran[] = {
 	{ SOC15_REG_ENTRY(GC, 0, regCOMPUTE_STATIC_THREAD_MGMT_SE7), 0xffffffff },
 };
 
-/*
- * This shader is used to clear the uninitiated sgprs after the above
- * two dispatches, because of hardware feature, dispath 0 couldn't clear
- * top hole sgprs. Therefore need 4 waves per SIMD to cover these sgprs
-*/
+ 
 static const u32 sgpr64_init_compute_shader_aldebaran[] = {
 	0xb8840904, 0xb8851a04, 0xb8861344, 0xb8831804, 0x9208ff06, 0x00000280,
 	0x9209a805, 0x920a8a04, 0x81080908, 0x81080a08, 0x81080308, 0x8e078208,
@@ -360,7 +322,7 @@ static int gfx_v9_4_2_run_shader(struct amdgpu_device *adev,
 	shader_offset = total_size;
 	total_size += ALIGN(shader_size, 256);
 
-	/* allocate an indirect buffer to put the commands in */
+	 
 	memset(ib, 0, sizeof(*ib));
 	r = amdgpu_ib_get(adev, NULL, total_size,
 					AMDGPU_IB_POOL_DIRECT, ib);
@@ -369,14 +331,14 @@ static int gfx_v9_4_2_run_shader(struct amdgpu_device *adev,
 		return r;
 	}
 
-	/* load the compute shaders */
+	 
 	for (i = 0; i < shader_size/sizeof(u32); i++)
 		ib->ptr[i + (shader_offset / 4)] = shader_ptr[i];
 
-	/* init the ib length to 0 */
+	 
 	ib->length_dw = 0;
 
-	/* write the register state for the compute dispatch */
+	 
 	for (i = 0; i < regs_size; i++) {
 		ib->ptr[ib->length_dw++] = PACKET3(PACKET3_SET_SH_REG, 1);
 		ib->ptr[ib->length_dw++] = SOC15_REG_ENTRY_OFFSET(init_regs[i])
@@ -384,7 +346,7 @@ static int gfx_v9_4_2_run_shader(struct amdgpu_device *adev,
 		ib->ptr[ib->length_dw++] = init_regs[i].reg_value;
 	}
 
-	/* write the shader start address: mmCOMPUTE_PGM_LO, mmCOMPUTE_PGM_HI */
+	 
 	gpu_addr = (ib->gpu_addr + (u64)shader_offset) >> 8;
 	ib->ptr[ib->length_dw++] = PACKET3(PACKET3_SET_SH_REG, 2);
 	ib->ptr[ib->length_dw++] = SOC15_REG_OFFSET(GC, 0, regCOMPUTE_PGM_LO)
@@ -392,7 +354,7 @@ static int gfx_v9_4_2_run_shader(struct amdgpu_device *adev,
 	ib->ptr[ib->length_dw++] = lower_32_bits(gpu_addr);
 	ib->ptr[ib->length_dw++] = upper_32_bits(gpu_addr);
 
-	/* write the wb buffer address */
+	 
 	ib->ptr[ib->length_dw++] = PACKET3(PACKET3_SET_SH_REG, 3);
 	ib->ptr[ib->length_dw++] = SOC15_REG_OFFSET(GC, 0, regCOMPUTE_USER_DATA_0)
 							- PACKET3_SET_SH_REG_START;
@@ -400,15 +362,15 @@ static int gfx_v9_4_2_run_shader(struct amdgpu_device *adev,
 	ib->ptr[ib->length_dw++] = upper_32_bits(wb_gpu_addr);
 	ib->ptr[ib->length_dw++] = pattern;
 
-	/* write dispatch packet */
+	 
 	ib->ptr[ib->length_dw++] = PACKET3(PACKET3_DISPATCH_DIRECT, 3);
-	ib->ptr[ib->length_dw++] = compute_dim_x; /* x */
-	ib->ptr[ib->length_dw++] = 1; /* y */
-	ib->ptr[ib->length_dw++] = 1; /* z */
+	ib->ptr[ib->length_dw++] = compute_dim_x;  
+	ib->ptr[ib->length_dw++] = 1;  
+	ib->ptr[ib->length_dw++] = 1;  
 	ib->ptr[ib->length_dw++] =
 		REG_SET_FIELD(0, COMPUTE_DISPATCH_INITIATOR, COMPUTE_SHADER_EN, 1);
 
-	/* shedule the ib on the ring */
+	 
 	r = amdgpu_ib_schedule(ring, 1, ib, NULL, fence_ptr);
 	if (r) {
 		dev_err(adev->dev, "ib submit failed (%d).\n", r);
@@ -497,12 +459,12 @@ static int gfx_v9_4_2_do_sgprs_init(struct amdgpu_device *adev)
 	struct dma_fence *fences[3];
 	u32 pattern[3] = { 0x1, 0x5, 0xa };
 
-	/* bail if the compute ring is not ready */
+	 
 	if (!adev->gfx.compute_ring[0].sched.ready ||
 		 !adev->gfx.compute_ring[1].sched.ready)
 		return 0;
 
-	/* allocate the write-back buffer from IB */
+	 
 	memset(&wb_ib, 0, sizeof(wb_ib));
 	r = amdgpu_ib_get(adev, NULL, (1 + wb_size) * sizeof(uint32_t),
 			  AMDGPU_IB_POOL_DIRECT, &wb_ib);
@@ -533,7 +495,7 @@ static int gfx_v9_4_2_do_sgprs_init(struct amdgpu_device *adev)
 			true);
 	if (r) {
 		dev_err(adev->dev, "wave coverage failed when clear first 224 sgprs\n");
-		wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
+		wb_ib.ptr[0] = 0xdeadbeaf;  
 		goto disp0_failed;
 	}
 
@@ -557,13 +519,13 @@ static int gfx_v9_4_2_do_sgprs_init(struct amdgpu_device *adev)
 			true);
 	if (r) {
 		dev_err(adev->dev, "wave coverage failed when clear first 576 sgprs\n");
-		wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
+		wb_ib.ptr[0] = 0xdeadbeaf;  
 		goto disp1_failed;
 	}
 
-	wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
+	wb_ib.ptr[0] = 0xdeadbeaf;  
 
-	/* wait for the GPU to finish processing the IB */
+	 
 	r = dma_fence_wait(fences[0], false);
 	if (r) {
 		dev_err(adev->dev, "timeout to clear first 224 sgprs\n");
@@ -598,11 +560,11 @@ static int gfx_v9_4_2_do_sgprs_init(struct amdgpu_device *adev)
 			true);
 	if (r) {
 		dev_err(adev->dev, "wave coverage failed when clear first 256 sgprs\n");
-		wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
+		wb_ib.ptr[0] = 0xdeadbeaf;  
 		goto disp2_failed;
 	}
 
-	wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
+	wb_ib.ptr[0] = 0xdeadbeaf;  
 
 	r = dma_fence_wait(fences[2], false);
 	if (r) {
@@ -633,7 +595,7 @@ pro_end:
 static int gfx_v9_4_2_do_vgprs_init(struct amdgpu_device *adev)
 {
 	int r;
-	/* CU_ID: 0~15, SIMD_ID: 0~3, WAVE_ID: 0 ~ 9 */
+	 
 	int wb_size = adev->gfx.config.max_shader_engines *
 			 CU_ID_MAX * SIMD_ID_MAX * WAVE_ID_MAX;
 	struct amdgpu_ib wb_ib;
@@ -641,11 +603,11 @@ static int gfx_v9_4_2_do_vgprs_init(struct amdgpu_device *adev)
 	struct dma_fence *fence;
 	u32 pattern = 0xa;
 
-	/* bail if the compute ring is not ready */
+	 
 	if (!adev->gfx.compute_ring[0].sched.ready)
 		return 0;
 
-	/* allocate the write-back buffer from IB */
+	 
 	memset(&wb_ib, 0, sizeof(wb_ib));
 	r = amdgpu_ib_get(adev, NULL, (1 + wb_size) * sizeof(uint32_t),
 			  AMDGPU_IB_POOL_DIRECT, &wb_ib);
@@ -669,7 +631,7 @@ static int gfx_v9_4_2_do_vgprs_init(struct amdgpu_device *adev)
 		goto pro_end;
 	}
 
-	/* wait for the GPU to finish processing the IB */
+	 
 	r = dma_fence_wait(fence, false);
 	if (r) {
 		dev_err(adev->dev, "timeout to clear vgprs\n");
@@ -702,12 +664,11 @@ pro_end:
 
 int gfx_v9_4_2_do_edc_gpr_workarounds(struct amdgpu_device *adev)
 {
-	/* only support when RAS is enabled */
+	 
 	if (!amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__GFX))
 		return 0;
 
-	/* Workaround for ALDEBARAN, skip GPRs init in GPU reset.
-	   Will remove it once GPRs init algorithm works for all CU settings. */
+	 
 	if (amdgpu_in_reset(adev))
 		return 0;
 
@@ -728,7 +689,7 @@ void gfx_v9_4_2_init_golden_registers(struct amdgpu_device *adev,
 					golden_settings_gc_9_4_2_alde,
 					ARRAY_SIZE(golden_settings_gc_9_4_2_alde));
 
-	/* apply golden settings per die */
+	 
 	switch (die_id) {
 	case 0:
 		soc15_program_register_sequence(adev,
@@ -797,50 +758,50 @@ void gfx_v9_4_2_set_power_brake_sequence(struct amdgpu_device *adev)
 }
 
 static const struct soc15_reg_entry gfx_v9_4_2_edc_counter_regs[] = {
-	/* CPF */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regCPF_EDC_ROQ_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regCPF_EDC_TAG_CNT), 0, 1, 1 },
-	/* CPC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regCPC_EDC_SCRATCH_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regCPC_EDC_UCODE_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regDC_EDC_STATE_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regDC_EDC_CSINVOC_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regDC_EDC_RESTORE_CNT), 0, 1, 1 },
-	/* GDS */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regGDS_EDC_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regGDS_EDC_GRBM_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regGDS_EDC_OA_DED), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regGDS_EDC_OA_PHY_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regGDS_EDC_OA_PIPE_CNT), 0, 1, 1 },
-	/* RLC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regRLC_EDC_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, regRLC_EDC_CNT2), 0, 1, 1 },
-	/* SPI */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regSPI_EDC_CNT), 0, 8, 1 },
-	/* SQC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regSQC_EDC_CNT), 0, 8, 7 },
 	{ SOC15_REG_ENTRY(GC, 0, regSQC_EDC_CNT2), 0, 8, 7 },
 	{ SOC15_REG_ENTRY(GC, 0, regSQC_EDC_CNT3), 0, 8, 7 },
 	{ SOC15_REG_ENTRY(GC, 0, regSQC_EDC_PARITY_CNT3), 0, 8, 7 },
-	/* SQ */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regSQ_EDC_CNT), 0, 8, 14 },
-	/* TCP */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regTCP_EDC_CNT_NEW), 0, 8, 14 },
-	/* TCI */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regTCI_EDC_CNT), 0, 1, 69 },
-	/* TCC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regTCC_EDC_CNT), 0, 1, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, regTCC_EDC_CNT2), 0, 1, 16 },
-	/* TCA */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regTCA_EDC_CNT), 0, 1, 2 },
-	/* TCX */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regTCX_EDC_CNT), 0, 1, 2 },
 	{ SOC15_REG_ENTRY(GC, 0, regTCX_EDC_CNT2), 0, 1, 2 },
-	/* TD */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regTD_EDC_CNT), 0, 8, 14 },
-	/* TA */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regTA_EDC_CNT), 0, 8, 14 },
-	/* GCEA */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT), 0, 1, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT2), 0, 1, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT3), 0, 1, 16 },
@@ -874,7 +835,7 @@ static void gfx_v9_4_2_select_se_sh(struct amdgpu_device *adev, u32 se_num,
 }
 
 static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
-	/* CPF */
+	 
 	{ "CPF_ROQ_ME2", SOC15_REG_ENTRY(GC, 0, regCPF_EDC_ROQ_CNT),
 	  SOC15_REG_FIELD(CPF_EDC_ROQ_CNT, SEC_COUNT_ME2),
 	  SOC15_REG_FIELD(CPF_EDC_ROQ_CNT, DED_COUNT_ME2) },
@@ -885,7 +846,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(CPF_EDC_TAG_CNT, SEC_COUNT),
 	  SOC15_REG_FIELD(CPF_EDC_TAG_CNT, DED_COUNT) },
 
-	/* CPC */
+	 
 	{ "CPC_SCRATCH", SOC15_REG_ENTRY(GC, 0, regCPC_EDC_SCRATCH_CNT),
 	  SOC15_REG_FIELD(CPC_EDC_SCRATCH_CNT, SEC_COUNT),
 	  SOC15_REG_FIELD(CPC_EDC_SCRATCH_CNT, DED_COUNT) },
@@ -912,7 +873,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(DC_EDC_RESTORE_CNT, SEC_COUNT1_ME1),
 	  SOC15_REG_FIELD(DC_EDC_RESTORE_CNT, DED_COUNT1_ME1) },
 
-	/* GDS */
+	 
 	{ "GDS_GRBM", SOC15_REG_ENTRY(GC, 0, regGDS_EDC_GRBM_CNT),
 	  SOC15_REG_FIELD(GDS_EDC_GRBM_CNT, SEC),
 	  SOC15_REG_FIELD(GDS_EDC_GRBM_CNT, DED) },
@@ -981,7 +942,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_ENTRY(GC, 0, regGDS_EDC_OA_DED), 0, 0,
 	  SOC15_REG_FIELD(GDS_EDC_OA_DED, ME2_PIPE3_DED) },
 
-	/* RLC */
+	 
 	{ "RLCG_INSTR_RAM", SOC15_REG_ENTRY(GC, 0, regRLC_EDC_CNT),
 	  SOC15_REG_FIELD(RLC_EDC_CNT, RLCG_INSTR_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(RLC_EDC_CNT, RLCG_INSTR_RAM_DED_COUNT) },
@@ -1031,7 +992,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(RLC_EDC_CNT2, RLC_SPM_SE7_SCRATCH_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(RLC_EDC_CNT2, RLC_SPM_SE7_SCRATCH_RAM_DED_COUNT) },
 
-	/* SPI */
+	 
 	{ "SPI_SR_MEM", SOC15_REG_ENTRY(GC, 0, regSPI_EDC_CNT),
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_SR_MEM_SEC_COUNT),
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_SR_MEM_DED_COUNT) },
@@ -1045,7 +1006,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_LIFE_CNT_SEC_COUNT),
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_LIFE_CNT_DED_COUNT) },
 
-	/* SQC - regSQC_EDC_CNT */
+	 
 	{ "SQC_DATA_CU0_WRITE_DATA_BUF", SOC15_REG_ENTRY(GC, 0, regSQC_EDC_CNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT, DATA_CU0_WRITE_DATA_BUF_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT, DATA_CU0_WRITE_DATA_BUF_DED_COUNT) },
@@ -1071,7 +1032,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(SQC_EDC_CNT, DATA_CU3_UTCL1_LFIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT, DATA_CU3_UTCL1_LFIFO_DED_COUNT) },
 
-	/* SQC - regSQC_EDC_CNT2 */
+	 
 	{ "SQC_INST_BANKA_TAG_RAM", SOC15_REG_ENTRY(GC, 0, regSQC_EDC_CNT2),
 	  SOC15_REG_FIELD(SQC_EDC_CNT2, INST_BANKA_TAG_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT2, INST_BANKA_TAG_RAM_DED_COUNT) },
@@ -1091,7 +1052,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(SQC_EDC_CNT2, DATA_BANKA_DIRTY_BIT_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT2, DATA_BANKA_DIRTY_BIT_RAM_DED_COUNT) },
 
-	/* SQC - regSQC_EDC_CNT3 */
+	 
 	{ "SQC_INST_BANKB_TAG_RAM", SOC15_REG_ENTRY(GC, 0, regSQC_EDC_CNT3),
 	  SOC15_REG_FIELD(SQC_EDC_CNT3, INST_BANKB_TAG_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT3, INST_BANKB_TAG_RAM_DED_COUNT) },
@@ -1108,7 +1069,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(SQC_EDC_CNT3, DATA_BANKB_DIRTY_BIT_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT3, DATA_BANKB_DIRTY_BIT_RAM_DED_COUNT) },
 
-	/* SQC - regSQC_EDC_PARITY_CNT3 */
+	 
 	{ "SQC_INST_BANKA_UTCL1_MISS_FIFO", SOC15_REG_ENTRY(GC, 0, regSQC_EDC_PARITY_CNT3),
 	  SOC15_REG_FIELD(SQC_EDC_PARITY_CNT3, INST_BANKA_UTCL1_MISS_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_PARITY_CNT3, INST_BANKA_UTCL1_MISS_FIFO_DED_COUNT) },
@@ -1134,7 +1095,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(SQC_EDC_PARITY_CNT3, DATA_BANKB_MISS_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_PARITY_CNT3, DATA_BANKB_MISS_FIFO_DED_COUNT) },
 
-	/* SQ */
+	 
 	{ "SQ_LDS_D", SOC15_REG_ENTRY(GC, 0, regSQ_EDC_CNT),
 	  SOC15_REG_FIELD(SQ_EDC_CNT, LDS_D_SEC_COUNT),
 	  SOC15_REG_FIELD(SQ_EDC_CNT, LDS_D_DED_COUNT) },
@@ -1157,7 +1118,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(SQ_EDC_CNT, VGPR3_SEC_COUNT),
 	  SOC15_REG_FIELD(SQ_EDC_CNT, VGPR3_DED_COUNT) },
 
-	/* TCP */
+	 
 	{ "TCP_CACHE_RAM", SOC15_REG_ENTRY(GC, 0, regTCP_EDC_CNT_NEW),
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, CACHE_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, CACHE_RAM_DED_COUNT) },
@@ -1180,12 +1141,12 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, UTCL1_LFIFO1_SEC_COUNT),
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, UTCL1_LFIFO1_DED_COUNT) },
 
-	/* TCI */
+	 
 	{ "TCI_WRITE_RAM", SOC15_REG_ENTRY(GC, 0, regTCI_EDC_CNT),
 	  SOC15_REG_FIELD(TCI_EDC_CNT, WRITE_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(TCI_EDC_CNT, WRITE_RAM_DED_COUNT) },
 
-	/* TCC */
+	 
 	{ "TCC_CACHE_DATA", SOC15_REG_ENTRY(GC, 0, regTCC_EDC_CNT),
 	  SOC15_REG_FIELD(TCC_EDC_CNT, CACHE_DATA_SEC_COUNT),
 	  SOC15_REG_FIELD(TCC_EDC_CNT, CACHE_DATA_DED_COUNT) },
@@ -1232,7 +1193,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(TCC_EDC_CNT2, RETURN_DATA_SEC_COUNT),
 	  SOC15_REG_FIELD(TCC_EDC_CNT2, RETURN_DATA_DED_COUNT) },
 
-	/* TCA */
+	 
 	{ "TCA_HOLE_FIFO", SOC15_REG_ENTRY(GC, 0, regTCA_EDC_CNT),
 	  SOC15_REG_FIELD(TCA_EDC_CNT, HOLE_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TCA_EDC_CNT, HOLE_FIFO_DED_COUNT) },
@@ -1240,7 +1201,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(TCA_EDC_CNT, REQ_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TCA_EDC_CNT, REQ_FIFO_DED_COUNT) },
 
-	/* TCX */
+	 
 	{ "TCX_GROUP0", SOC15_REG_ENTRY(GC, 0, regTCX_EDC_CNT),
 	  SOC15_REG_FIELD(TCX_EDC_CNT, GROUP0_SEC_COUNT),
 	  SOC15_REG_FIELD(TCX_EDC_CNT, GROUP0_DED_COUNT) },
@@ -1277,7 +1238,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	{ "TCX_GROUP14", SOC15_REG_ENTRY(GC, 0, regTCX_EDC_CNT2),
 	  SOC15_REG_FIELD(TCX_EDC_CNT2, GROUP14_SED_COUNT), 0, 0 },
 
-	/* TD */
+	 
 	{ "TD_SS_FIFO_LO", SOC15_REG_ENTRY(GC, 0, regTD_EDC_CNT),
 	  SOC15_REG_FIELD(TD_EDC_CNT, SS_FIFO_LO_SEC_COUNT),
 	  SOC15_REG_FIELD(TD_EDC_CNT, SS_FIFO_LO_DED_COUNT) },
@@ -1288,7 +1249,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(TD_EDC_CNT, CS_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TD_EDC_CNT, CS_FIFO_DED_COUNT) },
 
-	/* TA */
+	 
 	{ "TA_FS_DFIFO", SOC15_REG_ENTRY(GC, 0, regTA_EDC_CNT),
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_DFIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_DFIFO_DED_COUNT) },
@@ -1308,7 +1269,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_AFIFO_HI_SEC_COUNT),
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_AFIFO_HI_DED_COUNT) },
 
-	/* EA - regGCEA_EDC_CNT */
+	 
 	{ "EA_DRAMRD_CMDMEM", SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT, DRAMRD_CMDMEM_SEC_COUNT),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT, DRAMRD_CMDMEM_DED_COUNT) },
@@ -1336,7 +1297,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	{ "EA_IOWR_CMDMEM", SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT, IOWR_CMDMEM_SED_COUNT), 0, 0 },
 
-	/* EA - regGCEA_EDC_CNT2 */
+	 
 	{ "EA_GMIRD_CMDMEM", SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT2),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT2, GMIRD_CMDMEM_SEC_COUNT),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT2, GMIRD_CMDMEM_DED_COUNT) },
@@ -1363,7 +1324,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_2_ras_fields[] = {
 	  SOC15_REG_FIELD(GCEA_EDC_CNT2, MAM_D3MEM_SED_COUNT),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT2, MAM_D3MEM_DED_COUNT) },
 
-	/* EA - regGCEA_EDC_CNT3 */
+	 
 	{ "EA_DRAMRD_PAGEMEM", SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT3), 0, 0,
 	  SOC15_REG_FIELD(GCEA_EDC_CNT3, DRAMRD_PAGEMEM_DED_COUNT) },
 	{ "EA_DRAMWR_PAGEMEM", SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT3), 0, 0,
@@ -1507,7 +1468,7 @@ static int gfx_v9_4_2_query_sram_edc_count(struct amdgpu_device *adev,
 			     k++) {
 				gfx_v9_4_2_select_se_sh(adev, j, 0, k);
 
-				/* if sec/ded_count is null, just clear counter */
+				 
 				if (!sec_count || !ded_count) {
 					WREG32(SOC15_REG_ENTRY_OFFSET(
 						gfx_v9_4_2_edc_counter_regs[i]), 0);
@@ -1524,7 +1485,7 @@ static int gfx_v9_4_2_query_sram_edc_count(struct amdgpu_device *adev,
 					&gfx_v9_4_2_edc_counter_regs[i],
 					j, k, data, &sec_cnt, &ded_cnt);
 
-				/* clear counter after read */
+				 
 				WREG32(SOC15_REG_ENTRY_OFFSET(
 					gfx_v9_4_2_edc_counter_regs[i]), 0);
 			}
@@ -1614,7 +1575,7 @@ static int gfx_v9_4_2_query_utc_edc_count(struct amdgpu_device *adev,
 		for (j = 0; j < num_instances; j++) {
 			WREG32(SOC15_REG_ENTRY_OFFSET(blk->idx_reg), j);
 
-			/* if sec/ded_count is NULL, just clear counter */
+			 
 			if (!sec_count || !ded_count) {
 				WREG32(SOC15_REG_ENTRY_OFFSET(blk->data_reg),
 				       blk->clear);
@@ -1630,11 +1591,11 @@ static int gfx_v9_4_2_query_utc_edc_count(struct amdgpu_device *adev,
 			ded_cnt = SOC15_RAS_REG_FIELD_VAL(data, *blk, ded);
 			*ded_count += ded_cnt;
 
-			/* clear counter after read */
+			 
 			WREG32(SOC15_REG_ENTRY_OFFSET(blk->data_reg),
 			       blk->clear);
 
-			/* print the edc count */
+			 
 			if (sec_cnt || ded_cnt)
 				gfx_v9_4_2_log_utc_edc_count(adev, blk, j, sec_cnt,
 							     ded_cnt);
@@ -1722,7 +1683,7 @@ static void gfx_v9_4_2_query_ea_err_status(struct amdgpu_device *adev)
 				dev_warn(adev->dev, "GCEA err detected at instance: %d, status: 0x%x!\n",
 						j, reg_value);
 			}
-			/* clear after read */
+			 
 			reg_value = REG_SET_FIELD(reg_value, GCEA_ERR_STATUS,
 						  CLEAR_ERROR_STATUS, 0x1);
 			WREG32(SOC15_REG_ENTRY_OFFSET(gfx_v9_4_2_ea_err_status_regs), reg_value);
@@ -1880,7 +1841,7 @@ static void gfx_v9_4_2_query_sq_timeout_status(struct amdgpu_device *adev)
 					gfx_v9_4_2_log_cu_timeout_status(
 						adev, status);
 				}
-				/* clear old status */
+				 
 				WREG32_SOC15(GC, 0, regSQ_TIMEOUT_STATUS, 0);
 			}
 		}
@@ -1918,7 +1879,7 @@ static bool gfx_v9_4_2_query_uctl2_poison_status(struct amdgpu_device *adev)
 
 	hub = &adev->vmhub[AMDGPU_GFXHUB(0)];
 	status = RREG32(hub->vm_l2_pro_fault_status);
-	/* reset page fault status */
+	 
 	WREG32_P(hub->vm_l2_pro_fault_cntl, 1, ~1);
 
 	return REG_GET_FIELD(status, VM_L2_PROTECTION_FAULT_STATUS, FED);

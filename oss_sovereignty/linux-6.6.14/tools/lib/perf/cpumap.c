@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <perf/cpumap.h>
 #include <stdlib.h>
 #include <linux/refcount.h>
@@ -113,7 +113,7 @@ static struct perf_cpu_map *cpu_map__trim_new(int nr_cpus, const struct perf_cpu
 	if (cpus != NULL) {
 		memcpy(RC_CHK_ACCESS(cpus)->map, tmp_cpus, payload_size);
 		qsort(RC_CHK_ACCESS(cpus)->map, nr_cpus, sizeof(struct perf_cpu), cmp_cpu);
-		/* Remove dups */
+		 
 		j = 0;
 		for (i = 0; i < nr_cpus; i++) {
 			if (i == 0 ||
@@ -213,11 +213,7 @@ struct perf_cpu_map *perf_cpu_map__new(const char *cpu_list)
 	if (!cpu_list)
 		return cpu_map__read_all_cpu_map();
 
-	/*
-	 * must handle the case of empty cpumap to cover
-	 * TOPOLOGY header for NUMA nodes with no CPU
-	 * ( e.g., because of CPU hotplug)
-	 */
+	 
 	if (!isdigit(*cpu_list) && *cpu_list != '\0')
 		goto out;
 
@@ -246,7 +242,7 @@ struct perf_cpu_map *perf_cpu_map__new(const char *cpu_list)
 						  "Consider raising MAX_NR_CPUS\n", MAX_NR_CPUS);
 
 		for (; start_cpu <= end_cpu; start_cpu++) {
-			/* check for duplicates */
+			 
 			for (i = 0; i < nr_cpus; i++)
 				if (tmp_cpus[i].cpu == (int)start_cpu)
 					goto invalid;
@@ -367,13 +363,13 @@ struct perf_cpu perf_cpu_map__max(const struct perf_cpu_map *map)
 		.cpu = -1
 	};
 
-	// cpu_map__trim_new() qsort()s it, cpu_map__default_new() sorts it as well.
+	
 	return __perf_cpu_map__nr(map) > 0
 		? __perf_cpu_map__cpu(map, __perf_cpu_map__nr(map) - 1)
 		: result;
 }
 
-/** Is 'b' a subset of 'a'. */
+ 
 bool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu_map *b)
 {
 	if (a == b || !b)
@@ -393,13 +389,7 @@ bool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu
 	return false;
 }
 
-/*
- * Merge two cpumaps
- *
- * orig either gets freed and replaced with a new map, or reused
- * with no reference count change (similar to "realloc")
- * other has its reference count increased.
- */
+ 
 
 struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
 					 struct perf_cpu_map *other)
@@ -421,7 +411,7 @@ struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
 	if (!tmp_cpus)
 		return NULL;
 
-	/* Standard merge algorithm from wikipedia */
+	 
 	i = j = k = 0;
 	while (i < __perf_cpu_map__nr(orig) && j < __perf_cpu_map__nr(other)) {
 		if (__perf_cpu_map__cpu(orig, i).cpu <= __perf_cpu_map__cpu(other, j).cpu) {

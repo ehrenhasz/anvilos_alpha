@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Low Power Subsystem PWM controller PCI driver
- *
- * Copyright (C) 2014, Intel Corporation
- *
- * Derived from the original pwm-lpss.c
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -50,10 +44,7 @@ static void pwm_lpss_remove_pci(struct pci_dev *pdev)
 
 static int pwm_lpss_runtime_suspend_pci(struct device *dev)
 {
-	/*
-	 * The PCI core will handle transition to D3 automatically. We only
-	 * need to provide runtime PM hooks for that to happen.
-	 */
+	 
 	return 0;
 }
 

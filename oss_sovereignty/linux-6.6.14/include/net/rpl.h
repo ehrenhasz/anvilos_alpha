@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  RPL implementation
- *
- *  Author:
- *  (C) 2020 Alexander Aring <alex.aring@gmail.com>
- */
+ 
+ 
 
 #ifndef _NET_RPL_H
 #define _NET_RPL_H
@@ -31,4 +26,4 @@ void ipv6_rpl_srh_compress(struct ipv6_rpl_sr_hdr *outhdr,
 			   const struct ipv6_rpl_sr_hdr *inhdr,
 			   const struct in6_addr *daddr, unsigned char n);
 
-#endif /* _NET_RPL_H */
+#endif  

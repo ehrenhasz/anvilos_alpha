@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - core interface
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -35,21 +29,21 @@
 }
 
 static const struct resource chg_irqs[] = {
-	/* Charger Interrupts */
+	 
 	{
 		.start = LP8788_INT_CHG_INPUT_STATE,
 		.end   = LP8788_INT_PRECHG_TIMEOUT,
 		.name  = LP8788_CHG_IRQ,
 		.flags = IORESOURCE_IRQ,
 	},
-	/* Power Routing Switch Interrupts */
+	 
 	{
 		.start = LP8788_INT_ENTER_SYS_SUPPORT,
 		.end   = LP8788_INT_EXIT_SYS_SUPPORT,
 		.name  = LP8788_PRSW_IRQ,
 		.flags = IORESOURCE_IRQ,
 	},
-	/* Battery Interrupts */
+	 
 	{
 		.start = LP8788_INT_BATT_LOW,
 		.end   = LP8788_INT_NO_BATT,
@@ -68,13 +62,13 @@ static const struct resource rtc_irqs[] = {
 };
 
 static const struct mfd_cell lp8788_devs[] = {
-	/* 4 bucks */
+	 
 	MFD_DEV_WITH_ID(BUCK, 1),
 	MFD_DEV_WITH_ID(BUCK, 2),
 	MFD_DEV_WITH_ID(BUCK, 3),
 	MFD_DEV_WITH_ID(BUCK, 4),
 
-	/* 12 digital ldos */
+	 
 	MFD_DEV_WITH_ID(DLDO, 1),
 	MFD_DEV_WITH_ID(DLDO, 2),
 	MFD_DEV_WITH_ID(DLDO, 3),
@@ -88,7 +82,7 @@ static const struct mfd_cell lp8788_devs[] = {
 	MFD_DEV_WITH_ID(DLDO, 11),
 	MFD_DEV_WITH_ID(DLDO, 12),
 
-	/* 10 analog ldos */
+	 
 	MFD_DEV_WITH_ID(ALDO, 1),
 	MFD_DEV_WITH_ID(ALDO, 2),
 	MFD_DEV_WITH_ID(ALDO, 3),
@@ -100,22 +94,22 @@ static const struct mfd_cell lp8788_devs[] = {
 	MFD_DEV_WITH_ID(ALDO, 9),
 	MFD_DEV_WITH_ID(ALDO, 10),
 
-	/* ADC */
+	 
 	MFD_DEV_SIMPLE(ADC),
 
-	/* battery charger */
+	 
 	MFD_DEV_WITH_RESOURCE(CHARGER, chg_irqs, ARRAY_SIZE(chg_irqs)),
 
-	/* rtc */
+	 
 	MFD_DEV_WITH_RESOURCE(RTC, rtc_irqs, ARRAY_SIZE(rtc_irqs)),
 
-	/* backlight */
+	 
 	MFD_DEV_SIMPLE(BACKLIGHT),
 
-	/* current sink for vibrator */
+	 
 	MFD_DEV_SIMPLE(VIBRATOR),
 
-	/* current sink for keypad LED */
+	 
 	MFD_DEV_SIMPLE(KEYLED),
 };
 

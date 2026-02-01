@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Author:	Sjur Brendeland
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
 
@@ -24,19 +21,16 @@ do {					   \
 struct cfpktq {
 	struct sk_buff_head head;
 	atomic_t count;
-	/* Lock protects count updates */
+	 
 	spinlock_t lock;
 };
 
-/*
- * net/caif/ is generic and does not
- * understand SKB, so we do this typecast
- */
+ 
 struct cfpkt {
 	struct sk_buff skb;
 };
 
-/* Private data inside SKB */
+ 
 struct cfpkt_priv_data {
 	struct dev_info dev_info;
 	bool erronous;
@@ -182,7 +176,7 @@ int cfpkt_add_body(struct cfpkt *pkt, const void *data, u16 len)
 
 	lastskb = skb;
 
-	/* Check whether we need to add space at the tail */
+	 
 	if (unlikely(skb_tailroom(skb) < len)) {
 		if (likely(len < PKT_LEN_WHEN_EXTENDING))
 			addlen = PKT_LEN_WHEN_EXTENDING;
@@ -190,17 +184,17 @@ int cfpkt_add_body(struct cfpkt *pkt, const void *data, u16 len)
 			addlen = len;
 	}
 
-	/* Check whether we need to change the SKB before writing to the tail */
+	 
 	if (unlikely((addlen > 0) || skb_cloned(skb) || skb_shared(skb))) {
 
-		/* Make sure data is writable */
+		 
 		if (unlikely(skb_cow_data(skb, addlen, &lastskb) < 0)) {
 			PKT_ERROR(pkt, "cow failed\n");
 			return -EPROTO;
 		}
 	}
 
-	/* All set to put the last SKB and optionally write data there. */
+	 
 	to = pskb_put(skb, lastskb, len);
 	if (likely(data))
 		memcpy(to, data, len);
@@ -226,7 +220,7 @@ int cfpkt_add_head(struct cfpkt *pkt, const void *data2, u16 len)
 		return -EPROTO;
 	}
 
-	/* Make sure data is writable */
+	 
 	ret = skb_cow_data(skb, 0, &lastskb);
 	if (unlikely(ret < 0)) {
 		PKT_ERROR(pkt, "cow failed\n");
@@ -254,10 +248,7 @@ int cfpkt_iterate(struct cfpkt *pkt,
 		  u16 (*iter_func)(u16, void *, u16),
 		  u16 data)
 {
-	/*
-	 * Don't care about the performance hit of linearizing,
-	 * Checksum should not be used on high-speed interfaces anyway.
-	 */
+	 
 	if (unlikely(is_erronous(pkt)))
 		return -EPROTO;
 	if (unlikely(skb_linearize(&pkt->skb) != 0)) {
@@ -284,7 +275,7 @@ int cfpkt_setlen(struct cfpkt *pkt, u16 len)
 		return cfpkt_getlen(pkt);
 	}
 
-	/* Need to expand SKB */
+	 
 	if (unlikely(!cfpkt_pad_trail(pkt, len - skb->len)))
 		PKT_ERROR(pkt, "skb_pad_trail failed\n");
 
@@ -311,7 +302,7 @@ struct cfpkt *cfpkt_append(struct cfpkt *dstpkt,
 		neededtailspace = addlen;
 
 	if (dst->tail + neededtailspace > dst->end) {
-		/* Create a dumplicate of 'dst' with more tail space */
+		 
 		struct cfpkt *tmppkt;
 		dstlen = skb_headlen(dst);
 		createlen = dstlen + neededtailspace;
@@ -344,7 +335,7 @@ struct cfpkt *cfpkt_split(struct cfpkt *pkt, u16 pos)
 		return NULL;
 	}
 
-	/* Create a new packet for the second part of the data */
+	 
 	tmppkt = cfpkt_create_pfx(len2nd + PKT_PREFIX + PKT_POSTFIX,
 				  PKT_PREFIX);
 	if (tmppkt == NULL)
@@ -357,7 +348,7 @@ struct cfpkt *cfpkt_split(struct cfpkt *pkt, u16 pos)
 
 	skb_put_data(skb2, split, len2nd);
 
-	/* Reduce the length of the original packet */
+	 
 	skb_trim(skb, pos);
 
 	skb2->priority = skb->priority;

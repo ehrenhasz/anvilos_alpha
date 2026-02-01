@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Qualcomm PMIC VBUS output regulator driver
-//
-// Copyright (c) 2020, The Linux Foundation. All rights reserved.
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -84,7 +84,7 @@ static int qcom_usb_vbus_regulator_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Disable HW logic for VBUS enable */
+	 
 	regmap_update_bits(regmap, base + OTG_CFG, OTG_EN_SRC_CFG, 0);
 
 	return 0;

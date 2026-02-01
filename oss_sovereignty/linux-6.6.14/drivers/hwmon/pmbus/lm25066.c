@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for LM25056 / LM25066 / LM5064 / LM5066
- *
- * Copyright (c) 2011 Ericsson AB.
- * Copyright (c) 2013 Guenter Roeck
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -33,11 +28,11 @@ enum chips { lm25056, lm25066, lm5064, lm5066, lm5066i };
 #define LM25066_READ_AVG_IIN		0xde
 #define LM25066_READ_AVG_PIN		0xdf
 
-#define LM25066_DEV_SETUP_CL		BIT(4)	/* Current limit */
+#define LM25066_DEV_SETUP_CL		BIT(4)	 
 
 #define LM25066_SAMPLES_FOR_AVG_MAX	4096
 
-/* LM25056 only */
+ 
 
 #define LM25056_VAUX_OV_WARN_LIMIT	0xe3
 #define LM25056_VAUX_UV_WARN_LIMIT	0xe4
@@ -229,7 +224,7 @@ static const struct __coeff lm25066_coeff[][PSC_NUM_CLASSES + 2] = {
 
 struct lm25066_data {
 	int id;
-	u16 rlimit;			/* Maximum register value */
+	u16 rlimit;			 
 	struct pmbus_driver_info info;
 };
 
@@ -247,23 +242,23 @@ static int lm25066_read_word_data(struct i2c_client *client, int page,
 		ret = pmbus_read_word_data(client, 0, 0xff, LM25066_READ_VAUX);
 		if (ret < 0)
 			break;
-		/* Adjust returned value to match VIN coefficients */
+		 
 		switch (data->id) {
 		case lm25056:
-			/* VIN: 6.14 mV VAUX: 293 uV LSB */
+			 
 			ret = DIV_ROUND_CLOSEST(ret * 293, 6140);
 			break;
 		case lm25066:
-			/* VIN: 4.54 mV VAUX: 283.2 uV LSB */
+			 
 			ret = DIV_ROUND_CLOSEST(ret * 2832, 45400);
 			break;
 		case lm5064:
-			/* VIN: 4.53 mV VAUX: 700 uV LSB */
+			 
 			ret = DIV_ROUND_CLOSEST(ret * 70, 453);
 			break;
 		case lm5066:
 		case lm5066i:
-			/* VIN: 2.18 mV VAUX: 725 uV LSB */
+			 
 			ret = DIV_ROUND_CLOSEST(ret * 725, 2180);
 			break;
 		}
@@ -331,7 +326,7 @@ static int lm25056_read_word_data(struct i2c_client *client, int page,
 					   LM25056_VAUX_UV_WARN_LIMIT);
 		if (ret < 0)
 			break;
-		/* Adjust returned value to match VIN coefficients */
+		 
 		ret = DIV_ROUND_CLOSEST(ret * 293, 6140);
 		break;
 	case PMBUS_VIRT_VMON_OV_WARN_LIMIT:
@@ -339,7 +334,7 @@ static int lm25056_read_word_data(struct i2c_client *client, int page,
 					   LM25056_VAUX_OV_WARN_LIMIT);
 		if (ret < 0)
 			break;
-		/* Adjust returned value to match VIN coefficients */
+		 
 		ret = DIV_ROUND_CLOSEST(ret * 293, 6140);
 		break;
 	default:
@@ -407,14 +402,14 @@ static int lm25066_write_word_data(struct i2c_client *client, int page, int reg,
 					    word);
 		break;
 	case PMBUS_VIRT_VMON_UV_WARN_LIMIT:
-		/* Adjust from VIN coefficients (for LM25056) */
+		 
 		word = DIV_ROUND_CLOSEST((int)word * 6140, 293);
 		word = ((s16)word < 0) ? 0 : clamp_val(word, 0, data->rlimit);
 		ret = pmbus_write_word_data(client, 0,
 					    LM25056_VAUX_UV_WARN_LIMIT, word);
 		break;
 	case PMBUS_VIRT_VMON_OV_WARN_LIMIT:
-		/* Adjust from VIN coefficients (for LM25056) */
+		 
 		word = DIV_ROUND_CLOSEST((int)word * 6140, 293);
 		word = ((s16)word < 0) ? 0 : clamp_val(word, 0, data->rlimit);
 		ret = pmbus_write_word_data(client, 0,
@@ -541,10 +536,7 @@ static int lm25066_probe(struct i2c_client *client)
 		info->b[PSC_POWER] = coeff[PSC_POWER].b;
 	}
 
-	/*
-	 * Values in the TI datasheets are normalized for a 1mOhm sense
-	 * resistor; assume that unless DT specifies a value explicitly.
-	 */
+	 
 	if (of_property_read_u32(client->dev.of_node, "shunt-resistor-micro-ohms", &shunt))
 		shunt = 1000;
 
@@ -552,7 +544,7 @@ static int lm25066_probe(struct i2c_client *client)
 	info->m[PSC_POWER] = info->m[PSC_POWER] * shunt / 1000;
 
 #if IS_ENABLED(CONFIG_SENSORS_LM25066_REGULATOR)
-	/* LM25056 doesn't support OPERATION */
+	 
 	if (data->id != lm25056) {
 		info->num_regulators = ARRAY_SIZE(lm25066_reg_desc);
 		info->reg_desc = lm25066_reg_desc;
@@ -562,7 +554,7 @@ static int lm25066_probe(struct i2c_client *client)
 	return pmbus_do_probe(client, info);
 }
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver lm25066_driver = {
 	.driver = {
 		   .name = "lm25066",

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022, Linaro Ltd.
- */
+ 
+ 
 
 #ifndef QCOM_PHY_QMP_PCS_V5_20_H_
 #define QCOM_PHY_QMP_PCS_V5_20_H_

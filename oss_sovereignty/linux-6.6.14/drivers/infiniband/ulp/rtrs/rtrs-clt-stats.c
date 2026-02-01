@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
 
@@ -23,7 +17,7 @@ void rtrs_clt_update_wc_stats(struct rtrs_clt_con *con)
 	if (con->cpu != cpu) {
 		s->cpu_migr.to++;
 
-		/* Careful here, override s pointer */
+		 
 		s = per_cpu_ptr(stats->pcpu_stats, con->cpu);
 		atomic_inc(&s->cpu_migr.from);
 	}
@@ -188,10 +182,7 @@ int rtrs_clt_init_stats(struct rtrs_clt_stats *stats)
 	if (!stats->pcpu_stats)
 		return -ENOMEM;
 
-	/*
-	 * successful_cnt will be set to 0 after session
-	 * is established for the first time
-	 */
+	 
 	stats->reconnects.successful_cnt = -1;
 
 	return 0;

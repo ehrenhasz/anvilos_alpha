@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Utility routines
- *
- * Copyright (C) 2015 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 #include <linux/udp.h>
 #include "ar-internal.h"
 
-/*
- * Fill out a peer address from a socket buffer containing a packet.
- */
+ 
 int rxrpc_extract_addr_from_skb(struct sockaddr_rxrpc *srx, struct sk_buff *skb)
 {
 	memset(srx, 0, sizeof(*srx));

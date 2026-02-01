@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ROHM BD9571MWV-M and BD9574MWF-M GPIO driver
- *
- * Copyright (C) 2017 Marek Vasut <marek.vasut+renesas@gmail.com>
- *
- * Based on the TPS65086 driver
- *
- * NOTE: Interrupts are not supported yet.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/mfd/rohm-generic.h>
@@ -51,7 +43,7 @@ static int bd9571mwv_gpio_direction_output(struct gpio_chip *chip,
 {
 	struct bd9571mwv_gpio *gpio = gpiochip_get_data(chip);
 
-	/* Set the initial value */
+	 
 	regmap_update_bits(gpio->regmap, BD9571MWV_GPIO_OUT,
 			   BIT(offset), value ? BIT(offset) : 0);
 	regmap_update_bits(gpio->regmap, BD9571MWV_GPIO_DIR,
@@ -112,7 +104,7 @@ static int bd9571mwv_gpio_probe(struct platform_device *pdev)
 static const struct platform_device_id bd9571mwv_gpio_id_table[] = {
 	{ "bd9571mwv-gpio", ROHM_CHIP_TYPE_BD9571 },
 	{ "bd9574mwf-gpio", ROHM_CHIP_TYPE_BD9574 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, bd9571mwv_gpio_id_table);
 

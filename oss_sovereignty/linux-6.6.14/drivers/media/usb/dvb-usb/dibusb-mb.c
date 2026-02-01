@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant linux driver for mobile DVB-T USB devices based on
- * reference designs made by DiBcom (http://www.dibcom.fr/) (DiB3000M-B)
- *
- * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
- *
- * based on GPL code from DiBcom, which has
- * Copyright (C) 2004 Amaury Demol for DiBcom
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include "dibusb.h"
 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
@@ -60,9 +51,7 @@ static int dibusb_panasonic_tuner_attach(struct dvb_usb_adapter *adap)
 	return 0;
 }
 
-/* Some of the Artec 1.1 device aren't equipped with the default tuner
- * (Thomson Cable), but with a Panasonic ENV77H11D5.  This function figures
- * this out. */
+ 
 static int dibusb_tuner_probe_and_attach(struct dvb_usb_adapter *adap)
 {
 	u8 b[2] = { 0,0 }, b2[1];
@@ -73,7 +62,7 @@ static int dibusb_tuner_probe_and_attach(struct dvb_usb_adapter *adap)
 	};
 	struct dibusb_state *st = adap->priv;
 
-	/* the Panasonic sits on I2C addrass 0x60, the Thomson on 0x61 */
+	 
 	msg[0].addr = msg[1].addr = st->tuner_addr = 0x60;
 
 	if (adap->fe_adap[0].fe->ops.i2c_gate_ctrl)
@@ -98,7 +87,7 @@ static int dibusb_tuner_probe_and_attach(struct dvb_usb_adapter *adap)
 	return ret;
 }
 
-/* USB Driver stuff */
+ 
 static struct dvb_usb_device_properties dibusb1_1_properties;
 static struct dvb_usb_device_properties dibusb1_1_an2235_properties;
 static struct dvb_usb_device_properties dibusb2_0b_properties;
@@ -120,7 +109,7 @@ static int dibusb_probe(struct usb_interface *intf,
 	return -EINVAL;
 }
 
-/* do not change the order of the ID table */
+ 
 enum {
 	WIDEVIEW_DVBT_USB_COLD,
 	WIDEVIEW_DVBT_USB_WARM,
@@ -215,7 +204,7 @@ static struct dvb_usb_device_properties dibusb1_1_properties = {
 			.frontend_attach  = dibusb_dib3000mb_frontend_attach,
 			.tuner_attach     = dibusb_tuner_probe_and_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 7,
@@ -236,7 +225,7 @@ static struct dvb_usb_device_properties dibusb1_1_properties = {
 	.rc.legacy = {
 		.rc_interval      = DEFAULT_RC_INTERVAL,
 		.rc_map_table     = rc_map_dibusb_table,
-		.rc_map_size      = 111, /* wow, that is ugly ... I want to load it to the driver dynamically */
+		.rc_map_size      = 111,  
 		.rc_query         = dibusb_rc_query,
 	},
 
@@ -305,7 +294,7 @@ static struct dvb_usb_device_properties dibusb1_1_an2235_properties = {
 			.frontend_attach  = dibusb_dib3000mb_frontend_attach,
 			.tuner_attach     = dibusb_tuner_probe_and_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 7,
@@ -325,7 +314,7 @@ static struct dvb_usb_device_properties dibusb1_1_an2235_properties = {
 	.rc.legacy = {
 		.rc_interval      = DEFAULT_RC_INTERVAL,
 		.rc_map_table     = rc_map_dibusb_table,
-		.rc_map_size      = 111, /* wow, that is ugly ... I want to load it to the driver dynamically */
+		.rc_map_size      = 111,  
 		.rc_query         = dibusb_rc_query,
 	},
 
@@ -374,7 +363,7 @@ static struct dvb_usb_device_properties dibusb2_0b_properties = {
 			.frontend_attach  = dibusb_dib3000mb_frontend_attach,
 			.tuner_attach     = dibusb_thomson_tuner_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 7,
@@ -394,7 +383,7 @@ static struct dvb_usb_device_properties dibusb2_0b_properties = {
 	.rc.legacy = {
 		.rc_interval      = DEFAULT_RC_INTERVAL,
 		.rc_map_table     = rc_map_dibusb_table,
-		.rc_map_size      = 111, /* wow, that is ugly ... I want to load it to the driver dynamically */
+		.rc_map_size      = 111,  
 		.rc_query         = dibusb_rc_query,
 	},
 
@@ -436,7 +425,7 @@ static struct dvb_usb_device_properties artec_t1_usb2_properties = {
 			.pid_filter_ctrl  = dibusb_pid_filter_ctrl,
 			.frontend_attach  = dibusb_dib3000mb_frontend_attach,
 			.tuner_attach     = dibusb_tuner_probe_and_attach,
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 7,
@@ -456,7 +445,7 @@ static struct dvb_usb_device_properties artec_t1_usb2_properties = {
 	.rc.legacy = {
 		.rc_interval      = DEFAULT_RC_INTERVAL,
 		.rc_map_table     = rc_map_dibusb_table,
-		.rc_map_size      = 111, /* wow, that is ugly ... I want to load it to the driver dynamically */
+		.rc_map_size      = 111,  
 		.rc_query         = dibusb_rc_query,
 	},
 

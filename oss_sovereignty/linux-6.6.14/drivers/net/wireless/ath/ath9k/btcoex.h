@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2009-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef BTCOEX_H
 #define BTCOEX_H
@@ -32,7 +18,7 @@
 #define ATH_BTCOEX_BTSCAN_DUTY_CYCLE 90
 #define ATH_BTCOEX_BMISS_THRESH   50
 
-#define ATH_BT_PRIORITY_TIME_THRESHOLD 1000 /* ms */
+#define ATH_BT_PRIORITY_TIME_THRESHOLD 1000  
 #define ATH_BT_CNT_THRESHOLD	       3
 #define ATH_BT_CNT_SCAN_THRESHOLD      15
 
@@ -47,7 +33,7 @@
 
 #define ATH_AIC_MAX_BT_CHANNEL  79
 
-/* Defines the BT AR_BT_COEX_WGHT used */
+ 
 enum ath_stomp_type {
 	ATH_BTCOEX_STOMP_ALL,
 	ATH_BTCOEX_STOMP_LOW,
@@ -81,8 +67,8 @@ struct ath9k_hw_mci {
 	bool update_2g5g;
 	bool is_2g;
 	bool query_bt;
-	bool unhalt_bt_gpm; /* need send UNHALT */
-	bool halted_bt_gpm; /* HALT sent */
+	bool unhalt_bt_gpm;  
+	bool halted_bt_gpm;  
 	bool need_flush_btinfo;
 	bool bt_version_known;
 	bool wlan_channels_update;
@@ -112,10 +98,10 @@ struct ath_btcoex_hw {
 	u8 wlanactive_gpio;
 	u8 btactive_gpio;
 	u8 btpriority_gpio;
-	u32 bt_coex_mode; 	/* Register setting for AR_BT_COEX_MODE */
-	u32 bt_coex_weights; 	/* Register setting for AR_BT_COEX_WEIGHT */
-	u32 bt_coex_mode2; 	/* Register setting for AR_BT_COEX_MODE2 */
-	u32 bt_coex_mode3;	/* Register setting for AR_BT_COEX_MODE3 */
+	u32 bt_coex_mode; 	 
+	u32 bt_coex_weights; 	 
+	u32 bt_coex_mode2; 	 
+	u32 bt_coex_mode3;	 
 	u32 bt_weight[AR9300_NUM_BT_WEIGHTS];
 	u32 wlan_weight[AR9300_NUM_WLAN_WEIGHTS];
 	u8 tx_prio[ATH_BTCOEX_STOMP_MAX];

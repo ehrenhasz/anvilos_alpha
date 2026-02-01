@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Jaroslav Kysela <perex@perex.cz>
+
+
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -40,24 +40,16 @@ static const struct snd_soc_acpi_codecs __maybe_unused essx_83x6 = {
 	.codecs = { "ESSX8316", "ESSX8326", "ESSX8336"},
 };
 
-/*
- * configuration table
- * - the order of similar PCI ID entries is important!
- * - the first successful match will win
- */
+ 
 static const struct config_entry config_table[] = {
-/* Merrifield */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_MERRIFIELD)
 	{
 		.flags = FLAG_SOF,
 		.device = PCI_DEVICE_ID_INTEL_SST_TNG,
 	},
 #endif
-/*
- * Apollolake (Broxton-P)
- * the legacy HDAudio driver is used except on Up Squared (SOF) and
- * Chromebooks (SST), as well as devices based on the ES8336 codec
- */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_APOLLOLAKE)
 	{
 		.flags = FLAG_SOF,
@@ -94,12 +86,9 @@ static const struct config_entry config_table[] = {
 		}
 	},
 #endif
-/*
- * Skylake and Kabylake use legacy HDAudio driver except for Google
- * Chromebooks (SST)
- */
+ 
 
-/* Sunrise Point-LP */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_INTEL_SKL)
 	{
 		.flags = FLAG_SST,
@@ -119,7 +108,7 @@ static const struct config_entry config_table[] = {
 		.device = PCI_DEVICE_ID_INTEL_HDA_SKL_LP,
 	},
 #endif
-/* Kabylake-LP */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_INTEL_KBL)
 	{
 		.flags = FLAG_SST,
@@ -140,11 +129,8 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/*
- * Geminilake uses legacy HDAudio driver except for Google
- * Chromebooks and devices based on the ES8336 codec
- */
-/* Geminilake */
+ 
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_GEMINILAKE)
 	{
 		.flags = FLAG_SOF,
@@ -166,18 +152,9 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/*
- * CoffeeLake, CannonLake, CometLake, IceLake, TigerLake, AlderLake,
- * RaptorLake use legacy HDAudio driver except for Google Chromebooks
- * and when DMICs are present. Two cases are required since Coreboot
- * does not expose NHLT tables.
- *
- * When the Chromebook quirk is not present, it's based on information
- * that no such device exists. When the quirk is present, it could be
- * either based on product information or a placeholder.
- */
+ 
 
-/* Cannonlake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_CANNONLAKE)
 	{
 		.flags = FLAG_SOF,
@@ -209,7 +186,7 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/* Coffelake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_COFFEELAKE)
 	{
 		.flags = FLAG_SOF,
@@ -231,7 +208,7 @@ static const struct config_entry config_table[] = {
 #endif
 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_COMETLAKE)
-/* Cometlake-LP */
+ 
 	{
 		.flags = FLAG_SOF,
 		.device = PCI_DEVICE_ID_INTEL_HDA_CML_LP,
@@ -249,7 +226,7 @@ static const struct config_entry config_table[] = {
 				},
 			},
 			{
-				/* early version of SKU 09C6 */
+				 
 				.matches = {
 					DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc"),
 					DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "0983")
@@ -267,7 +244,7 @@ static const struct config_entry config_table[] = {
 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
 		.device = PCI_DEVICE_ID_INTEL_HDA_CML_LP,
 	},
-/* Cometlake-H */
+ 
 	{
 		.flags = FLAG_SOF,
 		.device = PCI_DEVICE_ID_INTEL_HDA_CML_H,
@@ -298,7 +275,7 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/* Icelake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_ICELAKE)
 	{
 		.flags = FLAG_SOF,
@@ -324,7 +301,7 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/* Jasper Lake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_JASPERLAKE)
 	{
 		.flags = FLAG_SOF,
@@ -356,7 +333,7 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/* Tigerlake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_TIGERLAKE)
 	{
 		.flags = FLAG_SOF,
@@ -392,7 +369,7 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/* Elkhart Lake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_ELKHARTLAKE)
 	{
 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC,
@@ -404,7 +381,7 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/* Alder Lake / Raptor Lake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_ALDERLAKE)
 	{
 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
@@ -514,18 +491,18 @@ static const struct config_entry config_table[] = {
 	},
 #endif
 
-/* Meteor Lake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_METEORLAKE)
-	/* Meteorlake-P */
+	 
 	{
 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
 		.device = PCI_DEVICE_ID_INTEL_HDA_MTL,
 	},
 #endif
 
-/* Lunar Lake */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_LUNARLAKE)
-	/* Lunarlake-P */
+	 
 	{
 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
 		.device = PCI_DEVICE_ID_INTEL_HDA_LNL_P,
@@ -598,14 +575,11 @@ int snd_intel_dsp_driver_probe(struct pci_dev *pci)
 {
 	const struct config_entry *cfg;
 
-	/* Intel vendor only */
+	 
 	if (pci->vendor != PCI_VENDOR_ID_INTEL)
 		return SND_INTEL_DSP_DRIVER_ANY;
 
-	/*
-	 * Legacy devices don't have a PCI-based DSP and use HDaudio
-	 * for HDMI/DP support, ignore kernel parameter
-	 */
+	 
 	switch (pci->device) {
 	case PCI_DEVICE_ID_INTEL_HDA_BDW:
 	case PCI_DEVICE_ID_INTEL_HDA_HSW_0:
@@ -619,13 +593,7 @@ int snd_intel_dsp_driver_probe(struct pci_dev *pci)
 	if (dsp_driver > 0 && dsp_driver <= SND_INTEL_DSP_DRIVER_LAST)
 		return dsp_driver;
 
-	/*
-	 * detect DSP by checking class/subclass/prog-id information
-	 * class=04 subclass 03 prog-if 00: no DSP, use legacy driver
-	 * class=04 subclass 01 prog-if 00: DSP is present
-	 *  (and may be required e.g. for DMIC or SSP support)
-	 * class=04 subclass 03 prog-if 80: use DSP or legacy mode
-	 */
+	 
 	if (pci->class == 0x040300)
 		return SND_INTEL_DSP_DRIVER_LEGACY;
 	if (pci->class != 0x040100 && pci->class != 0x040380) {
@@ -635,7 +603,7 @@ int snd_intel_dsp_driver_probe(struct pci_dev *pci)
 
 	dev_info(&pci->dev, "DSP detected with PCI class/subclass/prog-if info 0x%06x\n", pci->class);
 
-	/* find the configuration for the specific device */
+	 
 	cfg = snd_intel_dsp_find_config(pci, config_table, ARRAY_SIZE(config_table));
 	if (!cfg)
 		return SND_INTEL_DSP_DRIVER_ANY;
@@ -671,7 +639,7 @@ int snd_intel_dsp_driver_probe(struct pci_dev *pci)
 }
 EXPORT_SYMBOL_GPL(snd_intel_dsp_driver_probe);
 
-/* Should we default to SOF or SST for BYT/CHT ? */
+ 
 #if IS_ENABLED(CONFIG_SND_INTEL_BYT_PREFER_SOF) || \
     !IS_ENABLED(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_ACPI)
 #define FLAG_SST_OR_SOF_BYT	FLAG_SOF
@@ -679,26 +647,22 @@ EXPORT_SYMBOL_GPL(snd_intel_dsp_driver_probe);
 #define FLAG_SST_OR_SOF_BYT	FLAG_SST
 #endif
 
-/*
- * configuration table
- * - the order of similar ACPI ID entries is important!
- * - the first successful match will win
- */
+ 
 static const struct config_entry acpi_config_table[] = {
 #if IS_ENABLED(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_ACPI) || \
     IS_ENABLED(CONFIG_SND_SOC_SOF_BAYTRAIL)
-/* BayTrail */
+ 
 	{
 		.flags = FLAG_SST_OR_SOF_BYT,
 		.acpi_hid = "80860F28",
 	},
-/* CherryTrail */
+ 
 	{
 		.flags = FLAG_SST_OR_SOF_BYT,
 		.acpi_hid = "808622A8",
 	},
 #endif
-/* Broadwell */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_INTEL_CATPT)
 	{
 		.flags = FLAG_SST,
@@ -711,7 +675,7 @@ static const struct config_entry acpi_config_table[] = {
 		.acpi_hid = "INT3438"
 	},
 #endif
-/* Haswell - not supported by SOF but added for consistency */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_INTEL_CATPT)
 	{
 		.flags = FLAG_SST,
@@ -746,7 +710,7 @@ int snd_intel_acpi_dsp_driver_probe(struct device *dev, const u8 acpi_hid[ACPI_I
 			 SND_INTEL_DSP_DRIVER_LEGACY);
 	}
 
-	/* find the configuration for the specific device */
+	 
 	cfg = snd_intel_acpi_dsp_find_config(acpi_hid,  acpi_config_table,
 					     ARRAY_SIZE(acpi_config_table));
 	if (!cfg)

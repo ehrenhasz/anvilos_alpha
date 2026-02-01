@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_RTNETLINK_H
 #define __LINUX_RTNETLINK_H
 
@@ -31,7 +31,7 @@ void rtmsg_ifinfo_send(struct sk_buff *skb, struct net_device *dev,
 		       gfp_t flags, u32 portid, const struct nlmsghdr *nlh);
 
 
-/* RTNL is used as a global lock for all changes to network configuration  */
+ 
 extern void rtnl_lock(void);
 extern void rtnl_unlock(void);
 extern int rtnl_trylock(void);
@@ -50,25 +50,13 @@ static inline bool lockdep_rtnl_is_held(void)
 {
 	return true;
 }
-#endif /* #ifdef CONFIG_PROVE_LOCKING */
+#endif  
 
-/**
- * rcu_dereference_rtnl - rcu_dereference with debug checking
- * @p: The pointer to read, prior to dereferencing
- *
- * Do an rcu_dereference(p), but check caller either holds rcu_read_lock()
- * or RTNL. Note : Please prefer rtnl_dereference() or rcu_dereference()
- */
+ 
 #define rcu_dereference_rtnl(p)					\
 	rcu_dereference_check(p, lockdep_rtnl_is_held())
 
-/**
- * rtnl_dereference - fetch RCU pointer when updates are prevented by RTNL
- * @p: The pointer to read, prior to dereferencing
- *
- * Return the value of the specified RCU-protected pointer, but omit
- * the READ_ONCE(), because caller holds RTNL.
- */
+ 
 #define rtnl_dereference(p)					\
 	rcu_dereference_protected(p, lockdep_rtnl_is_held())
 
@@ -130,4 +118,4 @@ extern int ndo_dflt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
 
 extern void rtnl_offload_xstats_notify(struct net_device *dev);
 
-#endif	/* __LINUX_RTNETLINK_H */
+#endif	 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_MEMORY_REGION_H__
 #define __INTEL_MEMORY_REGION_H__
@@ -35,7 +33,7 @@ enum intel_region_id {
 	INTEL_REGION_LMEM_3,
 	INTEL_REGION_STOLEN_SMEM,
 	INTEL_REGION_STOLEN_LMEM,
-	INTEL_REGION_UNKNOWN, /* Should be last */
+	INTEL_REGION_UNKNOWN,  
 };
 
 #define REGION_SMEM     BIT(INTEL_REGION_SMEM)
@@ -80,10 +78,10 @@ struct intel_memory_region {
 	u16 instance;
 	enum intel_region_id id;
 	char name[16];
-	bool private; /* not for userspace */
+	bool private;  
 
 	struct {
-		struct mutex lock; /* Protects access to objects */
+		struct mutex lock;  
 		struct list_head list;
 	} objects;
 

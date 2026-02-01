@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /* Driver for Virtio crypto device.
-  *
-  * Copyright 2016 HUAWEI TECHNOLOGIES CO., LTD.
-  */
+
+  
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -105,14 +102,10 @@ static int virtcrypto_find_vqs(struct virtio_crypto *vi)
 	const char **names;
 	struct device *dev = &vi->vdev->dev;
 
-	/*
-	 * We expect 1 data virtqueue, followed by
-	 * possible N-1 data queues used in multiqueue mode,
-	 * followed by control vq.
-	 */
+	 
 	total_vqs = vi->max_data_queues + 1;
 
-	/* Allocate space for find_vqs parameters */
+	 
 	vqs = kcalloc(total_vqs, sizeof(*vqs), GFP_KERNEL);
 	if (!vqs)
 		goto err_vq;
@@ -123,11 +116,11 @@ static int virtcrypto_find_vqs(struct virtio_crypto *vi)
 	if (!names)
 		goto err_names;
 
-	/* Parameters for control virtqueue */
+	 
 	callbacks[total_vqs - 1] = virtcrypto_ctrlq_callback;
 	names[total_vqs - 1] = "controlq";
 
-	/* Allocate/initialize parameters for data virtqueues */
+	 
 	for (i = 0; i < vi->max_data_queues; i++) {
 		callbacks[i] = virtcrypto_dataq_callback;
 		snprintf(vi->data_vq[i].name, sizeof(vi->data_vq[i].name),
@@ -144,7 +137,7 @@ static int virtcrypto_find_vqs(struct virtio_crypto *vi)
 	for (i = 0; i < vi->max_data_queues; i++) {
 		spin_lock_init(&vi->data_vq[i].lock);
 		vi->data_vq[i].vq = vqs[i];
-		/* Initialize crypto engine */
+		 
 		vi->data_vq[i].engine = crypto_engine_alloc_init_and_set(dev, true, NULL, true,
 						virtqueue_get_vring_size(vqs[i]));
 		if (!vi->data_vq[i].engine) {
@@ -199,21 +192,13 @@ static void virtcrypto_set_affinity(struct virtio_crypto *vcrypto)
 	int i = 0;
 	int cpu;
 
-	/*
-	 * In single queue mode, we don't set the cpu affinity.
-	 */
+	 
 	if (vcrypto->curr_queue == 1 || vcrypto->max_data_queues == 1) {
 		virtcrypto_clean_affinity(vcrypto, -1);
 		return;
 	}
 
-	/*
-	 * In multiqueue mode, we let the queue to be private to one cpu
-	 * by setting the affinity hint to eliminate the contention.
-	 *
-	 * TODO: adds cpu hotplug support by register cpu notifier.
-	 *
-	 */
+	 
 	for_each_online_cpu(cpu) {
 		virtqueue_set_affinity(vcrypto->data_vq[i].vq, cpumask_of(cpu));
 		if (++i >= vcrypto->max_data_queues)
@@ -232,7 +217,7 @@ static int virtcrypto_init_vqs(struct virtio_crypto *vi)
 {
 	int ret;
 
-	/* Allocate send & receive queues */
+	 
 	ret = virtcrypto_alloc_queues(vi);
 	if (ret)
 		goto err;
@@ -261,10 +246,7 @@ static int virtcrypto_update_status(struct virtio_crypto *vcrypto)
 	virtio_cread_le(vcrypto->vdev,
 			struct virtio_crypto_config, status, &status);
 
-	/*
-	 * Unknown status bits would be a host error and the driver
-	 * should consider the device to be broken.
-	 */
+	 
 	if (status & (~VIRTIO_CRYPTO_S_HW_READY)) {
 		dev_warn(&vcrypto->vdev->dev,
 				"Unknown status bits: 0x%x\n", status);
@@ -372,11 +354,7 @@ static int virtcrypto_probe(struct virtio_device *vdev)
 	}
 
 	if (num_possible_nodes() > 1 && dev_to_node(&vdev->dev) < 0) {
-		/*
-		 * If the accelerator is connected to a node with no memory
-		 * there is no point in using the accelerator since the remote
-		 * memory transaction will be very slow.
-		 */
+		 
 		dev_err(&vdev->dev, "Invalid NUMA configuration.\n");
 		return -EINVAL;
 	}
@@ -415,7 +393,7 @@ static int virtcrypto_probe(struct virtio_device *vdev)
 		virtio_cread_le(vdev, struct virtio_crypto_config,
 				akcipher_algo, &akcipher_algo);
 
-	/* Add virtio crypto device to global table */
+	 
 	err = virtcrypto_devmgr_add_dev(vcrypto);
 	if (err) {
 		dev_err(&vdev->dev, "Failed to add new virtio crypto device.\n");
@@ -427,7 +405,7 @@ static int virtcrypto_probe(struct virtio_device *vdev)
 
 	spin_lock_init(&vcrypto->ctrl_lock);
 
-	/* Use single data queue as default */
+	 
 	vcrypto->curr_queue = 1;
 	vcrypto->max_data_queues = max_data_queues;
 	vcrypto->max_cipher_key_len = max_cipher_key_len;
@@ -573,7 +551,7 @@ free_vqs:
 #endif
 
 static const unsigned int features[] = {
-	/* none */
+	 
 };
 
 static const struct virtio_device_id id_table[] = {

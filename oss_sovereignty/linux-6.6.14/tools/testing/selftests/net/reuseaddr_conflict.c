@@ -1,11 +1,4 @@
-/*
- * Test for the regression introduced by
- *
- * b9470c27607b ("inet: kill smallest_size and smallest_port")
- *
- * If we open an ipv4 socket on a port with reuseaddr we shouldn't reset the tb
- * when we open the ipv6 conterpart, which is what was happening previously.
- */
+ 
 #include <errno.h>
 #include <error.h>
 #include <arpa/inet.h>

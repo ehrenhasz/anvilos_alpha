@@ -1,24 +1,8 @@
-/* Query the name of the current global locale.
-   Copyright (C) 2019-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2019.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include "setlocale_null.h"
 
 #include <errno.h>
@@ -32,7 +16,7 @@
 #if !(SETLOCALE_NULL_ALL_MTSAFE && SETLOCALE_NULL_ONE_MTSAFE)
 # if defined _WIN32 && !defined __CYGWIN__
 
-#  define WIN32_LEAN_AND_MEAN  /* avoid including junk */
+#  define WIN32_LEAN_AND_MEAN   
 #  include <windows.h>
 
 # elif HAVE_PTHREAD_API
@@ -53,7 +37,7 @@
 # endif
 #endif
 
-/* Use the system's setlocale() function, not the gnulib override, here.  */
+ 
 #undef setlocale
 
 static const char *
@@ -91,18 +75,14 @@ static int
 setlocale_null_unlocked (int category, char *buf, size_t bufsize)
 {
 #if defined _WIN32 && !defined __CYGWIN__ && defined _MSC_VER
-  /* On native Windows, nowadays, the setlocale() implementation is based
-     on _wsetlocale() and uses malloc() for the result.  We are better off
-     using _wsetlocale() directly.  */
+   
   const wchar_t *result = _wsetlocale (category, NULL);
 
   if (result == NULL)
     {
-      /* CATEGORY is invalid.  */
+       
       if (bufsize > 0)
-        /* Return an empty string in BUF.
-           This is a convenience for callers that don't want to write explicit
-           code for handling EINVAL.  */
+         
         buf[0] = '\0';
       return EINVAL;
     }
@@ -113,7 +93,7 @@ setlocale_null_unlocked (int category, char *buf, size_t bufsize)
         {
           size_t i;
 
-          /* Convert wchar_t[] -> char[], assuming plain ASCII.  */
+           
           for (i = 0; i <= length; i++)
             buf[i] = result[i];
 
@@ -123,12 +103,10 @@ setlocale_null_unlocked (int category, char *buf, size_t bufsize)
         {
           if (bufsize > 0)
             {
-              /* Return a truncated result in BUF.
-                 This is a convenience for callers that don't want to write
-                 explicit code for handling ERANGE.  */
+               
               size_t i;
 
-              /* Convert wchar_t[] -> char[], assuming plain ASCII.  */
+               
               for (i = 0; i < bufsize; i++)
                 buf[i] = result[i];
               buf[bufsize - 1] = '\0';
@@ -141,11 +119,9 @@ setlocale_null_unlocked (int category, char *buf, size_t bufsize)
 
   if (result == NULL)
     {
-      /* CATEGORY is invalid.  */
+       
       if (bufsize > 0)
-        /* Return an empty string in BUF.
-           This is a convenience for callers that don't want to write explicit
-           code for handling EINVAL.  */
+         
         buf[0] = '\0';
       return EINVAL;
     }
@@ -161,9 +137,7 @@ setlocale_null_unlocked (int category, char *buf, size_t bufsize)
         {
           if (bufsize > 0)
             {
-              /* Return a truncated result in BUF.
-                 This is a convenience for callers that don't want to write
-                 explicit code for handling ERANGE.  */
+               
               memcpy (buf, result, bufsize - 1);
               buf[bufsize - 1] = '\0';
             }
@@ -173,12 +147,11 @@ setlocale_null_unlocked (int category, char *buf, size_t bufsize)
 #endif
 }
 
-#if !(SETLOCALE_NULL_ALL_MTSAFE && SETLOCALE_NULL_ONE_MTSAFE) /* musl libc, macOS, FreeBSD, NetBSD, OpenBSD, AIX, Haiku, Cygwin < 3.4.6 */
+#if !(SETLOCALE_NULL_ALL_MTSAFE && SETLOCALE_NULL_ONE_MTSAFE)  
 
-/* Use a lock, so that no two threads can invoke setlocale_null_unlocked
-   at the same time.  */
+ 
 
-/* Prohibit renaming this symbol.  */
+ 
 # undef gl_get_setlocale_null_lock
 
 # if defined _WIN32 && !defined __CYGWIN__
@@ -198,7 +171,7 @@ setlocale_null_with_lock (int category, char *buf, size_t bufsize)
   return ret;
 }
 
-# elif HAVE_PTHREAD_API /* musl libc, macOS, FreeBSD, NetBSD, OpenBSD, AIX, Haiku, Cygwin < 3.4.6 */
+# elif HAVE_PTHREAD_API  
 
 extern
 #  if defined _WIN32 || defined __CYGWIN__
@@ -206,15 +179,15 @@ extern
 #  endif
   pthread_mutex_t *gl_get_setlocale_null_lock (void);
 
-#  if HAVE_WEAK_SYMBOLS /* musl libc, FreeBSD, NetBSD, OpenBSD, Haiku */
+#  if HAVE_WEAK_SYMBOLS  
 
-    /* Avoid the need to link with '-lpthread'.  */
+     
 #   pragma weak pthread_mutex_lock
 #   pragma weak pthread_mutex_unlock
 
-    /* Determine whether libpthread is in use.  */
+     
 #   pragma weak pthread_mutexattr_gettype
-    /* See the comments in lock.h.  */
+     
 #   define pthread_in_use() \
       (pthread_mutexattr_gettype != NULL || c11_threads_in_use ())
 
@@ -304,16 +277,7 @@ setlocale_null (int category)
   return setlocale_null_androidfix (category);
 #else
 
-  /* This call must be multithread-safe.  To achieve this without using
-     thread-local storage:
-       1. We use a specific static buffer for each possible CATEGORY
-          argument.  So that different threads can call setlocale_mtsafe
-          with different CATEGORY arguments, without interfering.
-       2. We use a simple strcpy or memcpy to fill this static buffer.
-          Filling it through, for example, strcpy + strcat would not be
-          guaranteed to leave the buffer's contents intact if another thread
-          is currently accessing it.  If necessary, the contents is first
-          assembled in a stack-allocated buffer.  */
+   
   if (category == LC_ALL)
     {
 # if SETLOCALE_NULL_ALL_MTSAFE
@@ -399,7 +363,7 @@ setlocale_null (int category)
         case LC_IDENTIFICATION: i = LC_IDENTIFICATION_INDEX; break;
 #  endif
         default:
-          /* If you get here, a #ifdef LC_xxx is missing.  */
+           
           abort ();
         }
 

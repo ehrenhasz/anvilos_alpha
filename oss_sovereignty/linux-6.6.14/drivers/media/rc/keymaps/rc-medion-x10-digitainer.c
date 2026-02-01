@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Medion X10 RF remote keytable (Digitainer variant)
- *
- * Copyright (C) 2012 Anssi Hannula <anssi.hannula@iki.fi>
- *
- * This keymap is for a variant that has a distinctive scrollwheel instead of
- * up/down buttons (tested with P/N 40009936 / 20018268), reportedly
- * originally shipped with Medion Digitainer but now sold separately simply as
- * an "X10" remote.
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/rc-map.h>
@@ -18,23 +9,23 @@ static struct rc_map_table medion_x10_digitainer[] = {
 
 	{ 0x2c, KEY_TV },
 	{ 0x2d, KEY_VIDEO },
-	{ 0x04, KEY_DVD },    /* CD/DVD */
-	{ 0x16, KEY_TEXT },   /* "teletext" icon, i.e. a screen with lines */
+	{ 0x04, KEY_DVD },     
+	{ 0x16, KEY_TEXT },    
 	{ 0x06, KEY_AUDIO },
 	{ 0x2e, KEY_RADIO },
-	{ 0x31, KEY_EPG },    /* a screen with an open book */
-	{ 0x05, KEY_IMAGES }, /* Photo */
+	{ 0x31, KEY_EPG },     
+	{ 0x05, KEY_IMAGES },  
 	{ 0x2f, KEY_INFO },
 
-	{ 0x78, KEY_UP },     /* scrollwheel up 1 notch */
-	/* 0x79..0x7f: 2-8 notches, driver repeats 0x78 entry */
+	{ 0x78, KEY_UP },      
+	 
 
-	{ 0x70, KEY_DOWN },   /* scrollwheel down 1 notch */
-	/* 0x71..0x77: 2-8 notches, driver repeats 0x70 entry */
+	{ 0x70, KEY_DOWN },    
+	 
 
 	{ 0x19, KEY_MENU },
 	{ 0x1d, KEY_LEFT },
-	{ 0x1e, KEY_OK },     /* scrollwheel press */
+	{ 0x1e, KEY_OK },      
 	{ 0x1f, KEY_RIGHT },
 	{ 0x20, KEY_BACK },
 
@@ -42,16 +33,16 @@ static struct rc_map_table medion_x10_digitainer[] = {
 	{ 0x08, KEY_VOLUMEDOWN },
 	{ 0x00, KEY_MUTE },
 
-	{ 0x1b, KEY_SELECT }, /* also has "U" rotated 90 degrees CCW */
+	{ 0x1b, KEY_SELECT },  
 
 	{ 0x0b, KEY_CHANNELUP },
 	{ 0x0c, KEY_CHANNELDOWN },
 	{ 0x1c, KEY_LAST },
 
-	{ 0x32, KEY_RED },    /* also Audio */
-	{ 0x33, KEY_GREEN },  /* also Subtitle */
-	{ 0x34, KEY_YELLOW }, /* also Angle */
-	{ 0x35, KEY_BLUE },   /* also Title */
+	{ 0x32, KEY_RED },     
+	{ 0x33, KEY_GREEN },   
+	{ 0x34, KEY_YELLOW },  
+	{ 0x35, KEY_BLUE },    
 
 	{ 0x28, KEY_STOP },
 	{ 0x29, KEY_PAUSE },
@@ -74,11 +65,7 @@ static struct rc_map_table medion_x10_digitainer[] = {
 	{ 0x15, KEY_NUMERIC_9 },
 	{ 0x17, KEY_NUMERIC_0 },
 
-	/* these do not actually exist on this remote, but these scancodes
-	 * exist on all other Medion X10 remotes and adding them here allows
-	 * such remotes to be adequately usable with this keymap in case
-	 * this keymap is wrongly used with them (which is quite possible as
-	 * there are lots of different Medion X10 remotes): */
+	 
 	{ 0x1a, KEY_UP },
 	{ 0x22, KEY_DOWN },
 };

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Intel Corporation.
- */
+
+ 
 #include "test/nfit_test.h"
 #include <linux/mm.h>
 #include "../../../drivers/dax/dax-private.h"

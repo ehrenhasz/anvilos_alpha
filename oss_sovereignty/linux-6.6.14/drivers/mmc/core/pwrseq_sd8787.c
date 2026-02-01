@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pwrseq_sd8787.c - power sequence support for Marvell SD8787 BT + Wifi chip
- *
- * Copyright (C) 2016 Matt Ranostay <matt@ranostay.consulting>
- *
- * Based on the original work pwrseq_simple.c
- *  Copyright (C) 2014 Linaro Ltd
- *  Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -54,7 +46,7 @@ static void mmc_pwrseq_wilc1000_pre_power_on(struct mmc_host *host)
 {
 	struct mmc_pwrseq_sd8787 *pwrseq = to_pwrseq_sd8787(host->pwrseq);
 
-	/* The pwrdn_gpio is really CHIP_EN, reset_gpio is RESETN */
+	 
 	gpiod_set_value_cansleep(pwrseq->pwrdn_gpio, 1);
 	msleep(5);
 	gpiod_set_value_cansleep(pwrseq->reset_gpio, 1);
@@ -81,7 +73,7 @@ static const struct mmc_pwrseq_ops mmc_pwrseq_wilc1000_ops = {
 static const struct of_device_id mmc_pwrseq_sd8787_of_match[] = {
 	{ .compatible = "mmc-pwrseq-sd8787", .data = &mmc_pwrseq_sd8787_ops },
 	{ .compatible = "mmc-pwrseq-wilc1000", .data = &mmc_pwrseq_wilc1000_ops },
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, mmc_pwrseq_sd8787_of_match);
 

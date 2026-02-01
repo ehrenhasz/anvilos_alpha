@@ -1,18 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AD714X CapTouch Programmable Controller driver (SPI bus)
- *
- * Copyright 2009-2011 Analog Devices Inc.
- */
 
-#include <linux/input.h>	/* BUS_SPI */
+ 
+
+#include <linux/input.h>	 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
 #include <linux/pm.h>
 #include <linux/types.h>
 #include "ad714x.h"
 
-#define AD714x_SPI_CMD_PREFIX      0xE000   /* bits 15:11 */
+#define AD714x_SPI_CMD_PREFIX      0xE000    
 #define AD714x_SPI_READ            BIT(10)
 
 static int ad714x_spi_read(struct ad714x_chip *chip,

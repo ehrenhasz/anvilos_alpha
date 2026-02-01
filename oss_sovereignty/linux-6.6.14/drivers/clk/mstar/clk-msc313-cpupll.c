@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Daniel Palmer <daniel@thingy.jp>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -9,39 +7,7 @@
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 
-/*
- * This IP is not documented outside of the messy vendor driver.
- * Below is what we think the registers look like based on looking at
- * the vendor code and poking at the hardware:
- *
- * 0x140 -- LPF low. Seems to store one half of the clock transition
- * 0x144 /
- * 0x148 -- LPF high. Seems to store one half of the clock transition
- * 0x14c /
- * 0x150 -- vendor code says "toggle lpf enable"
- * 0x154 -- mu?
- * 0x15c -- lpf_update_count?
- * 0x160 -- vendor code says "switch to LPF". Clock source config? Register bank?
- * 0x164 -- vendor code says "from low to high" which seems to mean transition from LPF low to
- * LPF high.
- * 0x174 -- Seems to be the PLL lock status bit
- * 0x180 -- Seems to be the current frequency, this might need to be populated by software?
- * 0x184 /  The vendor driver uses these to set the initial value of LPF low
- *
- * Frequency seems to be calculated like this:
- * (parent clock (432mhz) / register_magic_value) * 16 * 524288
- * Only the lower 24 bits of the resulting value will be used. In addition, the
- * PLL doesn't seem to be able to lock on frequencies lower than 220 MHz, as
- * divisor 0xfb586f (220 MHz) works but 0xfb7fff locks up.
- *
- * Vendor values:
- * frequency - register value
- *
- * 400000000  - 0x0067AE14
- * 600000000  - 0x00451EB8,
- * 800000000  - 0x0033D70A,
- * 1000000000 - 0x002978d4,
- */
+ 
 
 #define REG_LPF_LOW_L		0x140
 #define REG_LPF_LOW_H		0x144
@@ -146,10 +112,7 @@ static long msc313_cpupll_round_rate(struct clk_hw *hw, unsigned long rate,
 	u32 reg = msc313_cpupll_regforfrequecy(rate, *parent_rate);
 	long rounded = msc313_cpupll_frequencyforreg(reg, *parent_rate);
 
-	/*
-	 * This is my poor attempt at making sure the resulting
-	 * rate doesn't overshoot the requested rate.
-	 */
+	 
 	for (; rounded >= rate && reg > 0; reg--)
 		rounded = msc313_cpupll_frequencyforreg(reg, *parent_rate);
 
@@ -193,7 +156,7 @@ static int msc313_cpupll_probe(struct platform_device *pdev)
 	if (IS_ERR(cpupll->base))
 		return PTR_ERR(cpupll->base);
 
-	/* LPF might not contain the current frequency so fix that up */
+	 
 	msc313_cpupll_reg_write32(cpupll, REG_LPF_LOW_L,
 				  msc313_cpupll_reg_read32(cpupll, REG_CURRENT));
 

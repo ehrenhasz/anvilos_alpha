@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Keyboard backlight LED driver for ChromeOS
-//
-// Copyright (C) 2012 Google, Inc.
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -22,18 +22,7 @@ struct keyboard_led {
 	struct cros_ec_device *ec;
 };
 
-/**
- * struct keyboard_led_drvdata - keyboard LED driver data.
- * @init:			Init function.
- * @brightness_get:		Get LED brightness level.
- * @brightness_set:		Set LED brightness level.  Must not sleep.
- * @brightness_set_blocking:	Set LED brightness level.  It can block the
- *				caller for the time required for accessing a
- *				LED device register
- * @max_brightness:		Maximum brightness.
- *
- * See struct led_classdev in include/linux/leds.h for more details.
- */
+ 
 struct keyboard_led_drvdata {
 	int (*init)(struct platform_device *pdev);
 
@@ -51,7 +40,7 @@ struct keyboard_led_drvdata {
 
 #ifdef CONFIG_ACPI
 
-/* Keyboard LED ACPI Device must be defined in firmware */
+ 
 #define ACPI_KEYBOARD_BACKLIGHT_DEVICE	"\\_SB.KBLT"
 #define ACPI_KEYBOARD_BACKLIGHT_READ	ACPI_KEYBOARD_BACKLIGHT_DEVICE ".KBQC"
 #define ACPI_KEYBOARD_BACKLIGHT_WRITE	ACPI_KEYBOARD_BACKLIGHT_DEVICE ".KBCM"
@@ -97,7 +86,7 @@ static int keyboard_led_init_acpi(struct platform_device *pdev)
 	acpi_handle handle;
 	acpi_status status;
 
-	/* Look for the keyboard LED ACPI Device */
+	 
 	status = acpi_get_handle(ACPI_ROOT_OBJECT,
 				 ACPI_KEYBOARD_BACKLIGHT_DEVICE,
 				 &handle);
@@ -117,7 +106,7 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
 	.max_brightness = KEYBOARD_BACKLIGHT_MAX,
 };
 
-#endif /* CONFIG_ACPI */
+#endif  
 
 #if IS_ENABLED(CONFIG_CROS_EC)
 
@@ -187,11 +176,11 @@ static const __maybe_unused struct keyboard_led_drvdata keyboard_led_drvdata_ec_
 	.max_brightness = KEYBOARD_BACKLIGHT_MAX,
 };
 
-#else /* IS_ENABLED(CONFIG_CROS_EC) */
+#else  
 
 static const __maybe_unused struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
 
-#endif /* IS_ENABLED(CONFIG_CROS_EC) */
+#endif  
 
 static int keyboard_led_probe(struct platform_device *pdev)
 {

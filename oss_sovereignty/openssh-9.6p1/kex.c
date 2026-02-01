@@ -1,27 +1,5 @@
-/* $OpenBSD: kex.c,v 1.184 2023/12/18 14:45:49 djm Exp $ */
-/*
- * Copyright (c) 2000, 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -64,7 +42,7 @@
 #include "digest.h"
 #include "xmalloc.h"
 
-/* prototype */
+ 
 static int kex_choose_conf(struct ssh *, uint32_t seq);
 static int kex_input_newkeys(int, u_int32_t, struct ssh *);
 
@@ -97,7 +75,7 @@ static const struct kexalg kexalgs[] = {
 	{ KEX_DHGEX_SHA1, KEX_DH_GEX_SHA1, 0, SSH_DIGEST_SHA1 },
 #ifdef HAVE_EVP_SHA256
 	{ KEX_DHGEX_SHA256, KEX_DH_GEX_SHA256, 0, SSH_DIGEST_SHA256 },
-#endif /* HAVE_EVP_SHA256 */
+#endif  
 #ifdef OPENSSL_HAS_ECC
 	{ KEX_ECDH_SHA2_NISTP256, KEX_ECDH_SHA2,
 	    NID_X9_62_prime256v1, SSH_DIGEST_SHA256 },
@@ -106,9 +84,9 @@ static const struct kexalg kexalgs[] = {
 # ifdef OPENSSL_HAS_NISTP521
 	{ KEX_ECDH_SHA2_NISTP521, KEX_ECDH_SHA2, NID_secp521r1,
 	    SSH_DIGEST_SHA512 },
-# endif /* OPENSSL_HAS_NISTP521 */
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+# endif  
+#endif  
+#endif  
 #if defined(HAVE_EVP_SHA256) || !defined(WITH_OPENSSL)
 	{ KEX_CURVE25519_SHA256, KEX_C25519_SHA256, 0, SSH_DIGEST_SHA256 },
 	{ KEX_CURVE25519_SHA256_OLD, KEX_C25519_SHA256, 0, SSH_DIGEST_SHA256 },
@@ -116,7 +94,7 @@ static const struct kexalg kexalgs[] = {
 	{ KEX_SNTRUP761X25519_SHA512, KEX_KEM_SNTRUP761X25519_SHA512, 0,
 	    SSH_DIGEST_SHA512 },
 #endif
-#endif /* HAVE_EVP_SHA256 || !WITH_OPENSSL */
+#endif  
 	{ NULL, 0, -1, -1},
 };
 
@@ -154,7 +132,7 @@ kex_alg_by_name(const char *name)
 	return NULL;
 }
 
-/* Validate KEX method name list */
+ 
 int
 kex_names_valid(const char *names)
 {
@@ -177,7 +155,7 @@ kex_names_valid(const char *names)
 	return 1;
 }
 
-/* returns non-zero if proposal contains any algorithm from algs */
+ 
 static int
 has_any_alg(const char *proposal, const char *algs)
 {
@@ -189,10 +167,7 @@ has_any_alg(const char *proposal, const char *algs)
 	return 1;
 }
 
-/*
- * Concatenate algorithm names, avoiding duplicates in the process.
- * Caller must free returned string.
- */
+ 
 char *
 kex_names_cat(const char *a, const char *b)
 {
@@ -214,25 +189,19 @@ kex_names_cat(const char *a, const char *b)
 	strlcpy(ret, a, len);
 	for ((p = strsep(&cp, ",")); p && *p != '\0'; (p = strsep(&cp, ","))) {
 		if (has_any_alg(ret, p))
-			continue; /* Algorithm already present */
+			continue;  
 		if (strlcat(ret, ",", len) >= len ||
 		    strlcat(ret, p, len) >= len) {
 			free(tmp);
 			free(ret);
-			return NULL; /* Shouldn't happen */
+			return NULL;  
 		}
 	}
 	free(tmp);
 	return ret;
 }
 
-/*
- * Assemble a list of algorithms from a default list and a string from a
- * configuration file. The user-provided string may begin with '+' to
- * indicate that it should be appended to the default, '-' that the
- * specified names should be removed, or '^' that they should be placed
- * at the head.
- */
+ 
 int
 kex_assemble_names(char **listp, const char *def, const char *all)
 {
@@ -252,7 +221,7 @@ kex_assemble_names(char **listp, const char *def, const char *all)
 	list = *listp;
 	*listp = NULL;
 	if (*list == '+') {
-		/* Append names to default list */
+		 
 		if ((tmp = kex_names_cat(def, list + 1)) == NULL) {
 			r = SSH_ERR_ALLOC_FAIL;
 			goto fail;
@@ -260,16 +229,16 @@ kex_assemble_names(char **listp, const char *def, const char *all)
 		free(list);
 		list = tmp;
 	} else if (*list == '-') {
-		/* Remove names from default list */
+		 
 		if ((*listp = match_filter_denylist(def, list + 1)) == NULL) {
 			r = SSH_ERR_ALLOC_FAIL;
 			goto fail;
 		}
 		free(list);
-		/* filtering has already been done */
+		 
 		return 0;
 	} else if (*list == '^') {
-		/* Place names at head of default list */
+		 
 		if ((tmp = kex_names_cat(list + 1, def)) == NULL) {
 			r = SSH_ERR_ALLOC_FAIL;
 			goto fail;
@@ -277,23 +246,19 @@ kex_assemble_names(char **listp, const char *def, const char *all)
 		free(list);
 		list = tmp;
 	} else {
-		/* Explicit list, overrides default - just use "list" as is */
+		 
 	}
 
-	/*
-	 * The supplied names may be a pattern-list. For the -list case,
-	 * the patterns are applied above. For the +list and explicit list
-	 * cases we need to do it now.
-	 */
+	 
 	ret = NULL;
 	if ((patterns = opatterns = strdup(list)) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto fail;
 	}
-	/* Apply positive (i.e. non-negated) patterns from the list */
+	 
 	while ((cp = strsep(&patterns, ",")) != NULL) {
 		if (*cp == '!') {
-			/* negated matches are not supported here */
+			 
 			r = SSH_ERR_INVALID_ARGUMENT;
 			goto fail;
 		}
@@ -310,13 +275,13 @@ kex_assemble_names(char **listp, const char *def, const char *all)
 		ret = tmp;
 	}
 	if (ret == NULL || *ret == '\0') {
-		/* An empty name-list is an error */
-		/* XXX better error code? */
+		 
+		 
 		r = SSH_ERR_INVALID_ARGUMENT;
 		goto fail;
 	}
 
-	/* success */
+	 
 	*listp = ret;
 	ret = NULL;
 	r = 0;
@@ -329,12 +294,7 @@ kex_assemble_names(char **listp, const char *def, const char *all)
 	return r;
 }
 
-/*
- * Fill out a proposal array with dynamically allocated values, which may
- * be modified as required for compatibility reasons.
- * Any of the options may be NULL, in which case the default is used.
- * Array contents must be freed by calling kex_proposal_free_entries.
- */
+ 
 void
 kex_proposal_populate_entries(struct ssh *ssh, char *prop[PROPOSAL_MAX],
     const char *kexalgos, const char *ciphers, const char *macs,
@@ -349,7 +309,7 @@ kex_proposal_populate_entries(struct ssh *ssh, char *prop[PROPOSAL_MAX],
 	if (prop == NULL)
 		fatal_f("proposal missing");
 
-	/* Append EXT_INFO signalling to KexAlgorithms */
+	 
 	if (kexalgos == NULL)
 		kexalgos = defprop[PROPOSAL_KEX_ALGS];
 	if ((cp = kex_names_cat(kexalgos, ssh->kex->server ?
@@ -393,7 +353,7 @@ kex_proposal_free_entries(char *prop[PROPOSAL_MAX])
 		free(prop[i]);
 }
 
-/* put algorithm proposal into buffer */
+ 
 int
 kex_prop2buf(struct sshbuf *b, char *proposal[PROPOSAL_MAX])
 {
@@ -402,10 +362,7 @@ kex_prop2buf(struct sshbuf *b, char *proposal[PROPOSAL_MAX])
 
 	sshbuf_reset(b);
 
-	/*
-	 * add a dummy cookie, the cookie will be overwritten by
-	 * kex_send_kexinit(), each time a kexinit is set
-	 */
+	 
 	for (i = 0; i < KEX_COOKIE_LEN; i++) {
 		if ((r = sshbuf_put_u8(b, 0)) != 0)
 			return r;
@@ -414,13 +371,13 @@ kex_prop2buf(struct sshbuf *b, char *proposal[PROPOSAL_MAX])
 		if ((r = sshbuf_put_cstring(b, proposal[i])) != 0)
 			return r;
 	}
-	if ((r = sshbuf_put_u8(b, 0)) != 0 ||	/* first_kex_packet_follows */
-	    (r = sshbuf_put_u32(b, 0)) != 0)	/* uint32 reserved */
+	if ((r = sshbuf_put_u8(b, 0)) != 0 ||	 
+	    (r = sshbuf_put_u32(b, 0)) != 0)	 
 		return r;
 	return 0;
 }
 
-/* parse buffer and return algorithm proposal */
+ 
 int
 kex_buf2prop(struct sshbuf *raw, int *first_kex_follows, char ***propp)
 {
@@ -437,11 +394,11 @@ kex_buf2prop(struct sshbuf *raw, int *first_kex_follows, char ***propp)
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
 	}
-	if ((r = sshbuf_consume(b, KEX_COOKIE_LEN)) != 0) { /* skip cookie */
+	if ((r = sshbuf_consume(b, KEX_COOKIE_LEN)) != 0) {  
 		error_fr(r, "consume cookie");
 		goto out;
 	}
-	/* extract kex init proposal strings */
+	 
 	for (i = 0; i < PROPOSAL_MAX; i++) {
 		if ((r = sshbuf_get_cstring(b, &(proposal[i]), NULL)) != 0) {
 			error_fr(r, "parse proposal %u", i);
@@ -449,9 +406,9 @@ kex_buf2prop(struct sshbuf *raw, int *first_kex_follows, char ***propp)
 		}
 		debug2("%s: %s", proposal_names[i], proposal[i]);
 	}
-	/* first kex follows / reserved */
-	if ((r = sshbuf_get_u8(b, &v)) != 0 ||	/* first_kex_follows */
-	    (r = sshbuf_get_u32(b, &i)) != 0) {	/* reserved */
+	 
+	if ((r = sshbuf_get_u8(b, &v)) != 0 ||	 
+	    (r = sshbuf_get_u32(b, &i)) != 0) {	 
 		error_fr(r, "parse");
 		goto out;
 	}
@@ -485,7 +442,7 @@ kex_protocol_error(int type, u_int32_t seq, struct ssh *ssh)
 {
 	int r;
 
-	/* If in strict mode, any unexpected message is an error */
+	 
 	if ((ssh->kex->flags & KEX_INITIAL) && ssh->kex->kex_strict) {
 		ssh_packet_disconnect(ssh, "strict KEX violation: "
 		    "unexpected packet type %u (seqnr %u)", type, seq);
@@ -511,13 +468,7 @@ kex_set_server_sig_algs(struct ssh *ssh, const char *allowed_algs)
 	char *alg, *oalgs, *algs, *sigalgs;
 	const char *sigalg;
 
-	/*
-	 * NB. allowed algorithms may contain certificate algorithms that
-	 * map to a specific plain signature type, e.g.
-	 * rsa-sha2-512-cert-v01@openssh.com => rsa-sha2-512
-	 * We need to be careful here to match these, retain the mapping
-	 * and only add each signature algorithm once.
-	 */
+	 
 	if ((sigalgs = sshkey_alg_list(0, 1, 1, ',')) == NULL)
 		fatal_f("sshkey_alg_list failed");
 	oalgs = algs = xstrdup(allowed_algs);
@@ -529,7 +480,7 @@ kex_set_server_sig_algs(struct ssh *ssh, const char *allowed_algs)
 			continue;
 		if (!has_any_alg(sigalg, sigalgs))
 			continue;
-		/* Don't add an algorithm twice. */
+		 
 		if (ssh->kex->server_sig_algs != NULL &&
 		    has_any_alg(sigalg, ssh->kex->server_sig_algs))
 			continue;
@@ -574,7 +525,7 @@ kex_compose_ext_info_client(struct ssh *ssh, struct sshbuf *m)
 		error_fr(r, "compose");
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	return r;
@@ -591,7 +542,7 @@ kex_maybe_send_ext_info(struct ssh *ssh)
 	if (!ssh->kex->ext_info_c && !ssh->kex->ext_info_s)
 		return 0;
 
-	/* Compose EXT_INFO packet. */
+	 
 	if ((m = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
 	if (ssh->kex->ext_info_c &&
@@ -601,7 +552,7 @@ kex_maybe_send_ext_info(struct ssh *ssh)
 	    (r = kex_compose_ext_info_client(ssh, m)) != 0)
 		goto fail;
 
-	/* Send the actual KEX_INFO packet */
+	 
 	debug("Sending SSH2_MSG_EXT_INFO");
 	if ((r = sshpkt_start(ssh, SSH2_MSG_EXT_INFO)) != 0 ||
 	    (r = sshpkt_putb(ssh, m)) != 0 ||
@@ -654,7 +605,7 @@ kex_send_newkeys(struct ssh *ssh)
 	return 0;
 }
 
-/* Check whether an ext_info value contains the expected version string */
+ 
 static int
 kex_ext_info_check_ver(struct kex *kex, const char *name,
     const u_char *val, size_t len, const char *want_ver, u_int flag)
@@ -677,9 +628,9 @@ kex_ext_info_client_parse(struct ssh *ssh, const char *name,
 {
 	int r;
 
-	/* NB. some messages are only accepted in the initial EXT_INFO */
+	 
 	if (strcmp(name, "server-sig-algs") == 0) {
-		/* Ensure no \0 lurking in value */
+		 
 		if (memchr(value, '\0', vlen) != NULL) {
 			error_f("nul byte in %s", name);
 			return SSH_ERR_INVALID_FORMAT;
@@ -786,7 +737,7 @@ kex_input_newkeys(int type, u_int32_t seq, struct ssh *ssh)
 	kex->done = 1;
 	kex->flags &= ~KEX_INITIAL;
 	sshbuf_reset(kex->peer);
-	/* sshbuf_reset(kex->my); */
+	 
 	kex->flags &= ~KEX_INIT_SENT;
 	free(kex->name);
 	kex->name = NULL;
@@ -808,7 +759,7 @@ kex_send_kexinit(struct ssh *ssh)
 		return 0;
 	kex->done = 0;
 
-	/* generate a random cookie */
+	 
 	if (sshbuf_len(kex->my) < KEX_COOKIE_LEN) {
 		error_f("bad kex length: %zu < %d",
 		    sshbuf_len(kex->my), KEX_COOKIE_LEN);
@@ -850,7 +801,7 @@ kex_input_kexinit(int type, u_int32_t seq, struct ssh *ssh)
 	if ((r = sshbuf_put(kex->peer, ptr, dlen)) != 0)
 		return r;
 
-	/* discard packet */
+	 
 	for (i = 0; i < KEX_COOKIE_LEN; i++) {
 		if ((r = sshpkt_get_u8(ssh, NULL)) != 0) {
 			error_fr(r, "discard cookie");
@@ -863,18 +814,9 @@ kex_input_kexinit(int type, u_int32_t seq, struct ssh *ssh)
 			return r;
 		}
 	}
-	/*
-	 * XXX RFC4253 sec 7: "each side MAY guess" - currently no supported
-	 * KEX method has the server move first, but a server might be using
-	 * a custom method or one that we otherwise don't support. We should
-	 * be prepared to remember first_kex_follows here so we can eat a
-	 * packet later.
-	 * XXX2 - RFC4253 is kind of ambiguous on what first_kex_follows means
-	 * for cases where the server *doesn't* go first. I guess we should
-	 * ignore it when it is set for these cases, which is what we do now.
-	 */
-	if ((r = sshpkt_get_u8(ssh, NULL)) != 0 ||	/* first_kex_follows */
-	    (r = sshpkt_get_u32(ssh, NULL)) != 0 ||	/* reserved */
+	 
+	if ((r = sshpkt_get_u8(ssh, NULL)) != 0 ||	 
+	    (r = sshpkt_get_u32(ssh, NULL)) != 0 ||	 
 	    (r = sshpkt_get_end(ssh)) != 0)
 			return r;
 
@@ -950,8 +892,8 @@ kex_free(struct kex *kex)
 	DH_free(kex->dh);
 #ifdef OPENSSL_HAS_ECC
 	EC_KEY_free(kex->ec_client_key);
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	for (mode = 0; mode < MODE_MAX; mode++) {
 		kex_free_newkeys(kex->newkeys[mode]);
 		kex->newkeys[mode] = NULL;
@@ -990,7 +932,7 @@ kex_setup(struct ssh *ssh, char *proposal[PROPOSAL_MAX])
 
 	if ((r = kex_ready(ssh, proposal)) != 0)
 		return r;
-	if ((r = kex_send_kexinit(ssh)) != 0) {		/* we start */
+	if ((r = kex_send_kexinit(ssh)) != 0) {		 
 		kex_free(ssh->kex);
 		ssh->kex = NULL;
 		return r;
@@ -998,10 +940,7 @@ kex_setup(struct ssh *ssh, char *proposal[PROPOSAL_MAX])
 	return 0;
 }
 
-/*
- * Request key re-exchange, returns 0 on success or a ssherr.h error
- * code otherwise. Must not be called if KEX is incomplete or in-progress.
- */
+ 
 int
 kex_start_rekex(struct ssh *ssh)
 {
@@ -1070,7 +1009,7 @@ choose_comp(struct sshcomp *comp, char *client, char *server)
 	} else if (strcmp(name, "zlib") == 0) {
 		comp->type = COMP_ZLIB;
 	} else
-#endif	/* WITH_ZLIB */
+#endif	 
 	if (strcmp(name, "none") == 0) {
 		comp->type = COMP_NONE;
 	} else {
@@ -1177,7 +1116,7 @@ kex_choose_conf(struct ssh *ssh, uint32_t seq)
 		sprop=peer;
 	}
 
-	/* Check whether peer supports ext_info/kex_strict */
+	 
 	if ((kex->flags & KEX_INITIAL) != 0) {
 		if (kex->server) {
 			kex->ext_info_c = kexalgs_contains(peer, "ext-info-c");
@@ -1197,7 +1136,7 @@ kex_choose_conf(struct ssh *ssh, uint32_t seq)
 		}
 	}
 
-	/* Check whether client supports rsa-sha2 algorithms */
+	 
 	if (kex->server && (kex->flags & KEX_INITIAL)) {
 		if (has_any_alg(peer[PROPOSAL_SERVER_HOST_KEY_ALGS],
 		    "rsa-sha2-256,rsa-sha2-256-cert-v01@openssh.com"))
@@ -1207,7 +1146,7 @@ kex_choose_conf(struct ssh *ssh, uint32_t seq)
 			kex->flags |= KEX_RSA_SHA2_512_SUPPORTED;
 	}
 
-	/* Algorithm Negotiation */
+	 
 	if ((r = choose_kex(kex, cprop[PROPOSAL_KEX_ALGS],
 	    sprop[PROPOSAL_KEX_ALGS])) != 0) {
 		kex->failed_choice = peer[PROPOSAL_KEX_ALGS];
@@ -1238,7 +1177,7 @@ kex_choose_conf(struct ssh *ssh, uint32_t seq)
 			goto out;
 		}
 		authlen = cipher_authlen(newkeys->enc.cipher);
-		/* ignore mac for authenticated encryption */
+		 
 		if (authlen == 0 &&
 		    (r = choose_mac(ssh, &newkeys->mac, cprop[nmac],
 		    sprop[nmac])) != 0) {
@@ -1270,11 +1209,11 @@ kex_choose_conf(struct ssh *ssh, uint32_t seq)
 		dh_need = MAXIMUM(dh_need, newkeys->enc.iv_len);
 		dh_need = MAXIMUM(dh_need, newkeys->mac.key_len);
 	}
-	/* XXX need runden? */
+	 
 	kex->we_need = need;
 	kex->dh_need = dh_need;
 
-	/* ignore the next message if the proposals do not match */
+	 
 	if (first_kex_follows && !proposals_match(my, peer))
 		ssh->dispatch_skip_packets = 1;
 	r = 0;
@@ -1303,7 +1242,7 @@ derive_key(struct ssh *ssh, int id, u_int need, u_char *hash, u_int hashlen,
 		goto out;
 	}
 
-	/* K1 = HASH(K || H || "A" || session_id) */
+	 
 	if ((hashctx = ssh_digest_start(kex->hash_alg)) == NULL ||
 	    ssh_digest_update_buffer(hashctx, shared_secret) != 0 ||
 	    ssh_digest_update(hashctx, hash, hashlen) != 0 ||
@@ -1317,11 +1256,7 @@ derive_key(struct ssh *ssh, int id, u_int need, u_char *hash, u_int hashlen,
 	ssh_digest_free(hashctx);
 	hashctx = NULL;
 
-	/*
-	 * expand key:
-	 * Kn = HASH(K || H || K1 || K2 || ... || Kn-1)
-	 * Key = K1 || K2 || ... || Kn
-	 */
+	 
 	for (have = mdsz; need > have; have += mdsz) {
 		if ((hashctx = ssh_digest_start(kex->hash_alg)) == NULL ||
 		    ssh_digest_update_buffer(hashctx, shared_secret) != 0 ||
@@ -1358,7 +1293,7 @@ kex_derive_keys(struct ssh *ssh, u_char *hash, u_int hashlen,
 	u_int i, j, mode, ctos;
 	int r;
 
-	/* save initial hash as session id */
+	 
 	if ((kex->flags & KEX_INITIAL) != 0) {
 		if (sshbuf_len(kex->session_id) != 0) {
 			error_f("already have session ID at kex");
@@ -1436,10 +1371,7 @@ dump_digest(const char *msg, const u_char *digest, int len)
 }
 #endif
 
-/*
- * Send a plaintext error message to the peer, suffixed by \r\n.
- * Only used during banner exchange, and there only for the server.
- */
+ 
 static void
 send_error(struct ssh *ssh, char *msg)
 {
@@ -1455,11 +1387,7 @@ send_error(struct ssh *ssh, char *msg)
 		error_f("write: %.100s", strerror(errno));
 }
 
-/*
- * Sends our identification string and waits for the peer's. Will block for
- * up to timeout_ms (or indefinitely if timeout_ms <= 0).
- * Returns on 0 success or a ssherr.h code on failure.
- */
+ 
 int
 kex_exchange_identification(struct ssh *ssh, int timeout_ms,
     const char *version_addendum)
@@ -1475,7 +1403,7 @@ kex_exchange_identification(struct ssh *ssh, int timeout_ms,
 	char *our_version_string = NULL, *peer_version_string = NULL;
 	char *cp, *remote_version = NULL;
 
-	/* Prepare and send our banner */
+	 
 	sshbuf_reset(our_version);
 	if (version_addendum != NULL && *version_addendum == '\0')
 		version_addendum = NULL;
@@ -1496,7 +1424,7 @@ kex_exchange_identification(struct ssh *ssh, int timeout_ms,
 		r = SSH_ERR_SYSTEM_ERROR;
 		goto out;
 	}
-	if ((r = sshbuf_consume_end(our_version, 2)) != 0) { /* trim \r\n */
+	if ((r = sshbuf_consume_end(our_version, 2)) != 0) {  
 		oerrno = errno;
 		error_fr(r, "sshbuf_consume_end");
 		goto out;
@@ -1509,7 +1437,7 @@ kex_exchange_identification(struct ssh *ssh, int timeout_ms,
 	}
 	debug("Local version string %.100s", our_version_string);
 
-	/* Read other side's version identification. */
+	 
 	for (n = 0; ; n++) {
 		if (n >= SSH_MAX_PRE_BANNER_LINES) {
 			send_error(ssh, "No SSH identification string "
@@ -1573,17 +1501,17 @@ kex_exchange_identification(struct ssh *ssh, int timeout_ms,
 				goto invalid;
 			}
 		}
-		/* Is this an actual protocol banner? */
+		 
 		if (sshbuf_len(peer_version) > 4 &&
 		    memcmp(sshbuf_ptr(peer_version), "SSH-", 4) == 0)
 			break;
-		/* If not, then just log the line and continue */
+		 
 		if ((cp = sshbuf_dup_string(peer_version)) == NULL) {
 			error_f("sshbuf_dup_string failed");
 			r = SSH_ERR_ALLOC_FAIL;
 			goto out;
 		}
-		/* Do not accept lines before the SSH ident from a client */
+		 
 		if (ssh->kex->server) {
 			verbose_f("client sent invalid protocol identifier "
 			    "\"%.256s\"", cp);
@@ -1596,17 +1524,14 @@ kex_exchange_identification(struct ssh *ssh, int timeout_ms,
 	peer_version_string = sshbuf_dup_string(peer_version);
 	if (peer_version_string == NULL)
 		fatal_f("sshbuf_dup_string failed");
-	/* XXX must be same size for sscanf */
+	 
 	if ((remote_version = calloc(1, sshbuf_len(peer_version))) == NULL) {
 		error_f("calloc failed");
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
 	}
 
-	/*
-	 * Check that the versions match.  In future this might accept
-	 * several versions and set appropriate flags to handle them.
-	 */
+	 
 	if (sscanf(peer_version_string, "SSH-%d.%d-%[^\n]\n",
 	    &remote_major, &remote_minor, remote_version) != 3) {
 		error("Bad remote protocol version identification: '%.100s'",
@@ -1644,17 +1569,17 @@ kex_exchange_identification(struct ssh *ssh, int timeout_ms,
 		logit("probed from %s port %d with %s.  Don't panic.",
 		    ssh_remote_ipaddr(ssh), ssh_remote_port(ssh),
 		    peer_version_string);
-		r = SSH_ERR_CONN_CLOSED; /* XXX */
+		r = SSH_ERR_CONN_CLOSED;  
 		goto out;
 	}
 	if (ssh->kex->server && (ssh->compat & SSH_BUG_SCANNER) != 0) {
 		logit("scanned from %s port %d with %s.  Don't panic.",
 		    ssh_remote_ipaddr(ssh), ssh_remote_port(ssh),
 		    peer_version_string);
-		r = SSH_ERR_CONN_CLOSED; /* XXX */
+		r = SSH_ERR_CONN_CLOSED;  
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	free(our_version_string);

@@ -1,40 +1,15 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* DC interface (public) */
+ 
 #include "dm_services.h"
 #include "dc.h"
 
-/* DC core (private) */
+ 
 #include "core_types.h"
 #include "transform.h"
 #include "dpp.h"
 
-/*******************************************************************************
- * Private functions
- ******************************************************************************/
+ 
 static void dc_plane_construct(struct dc_context *ctx, struct dc_plane_state *plane_state)
 {
 	plane_state->ctx = ctx;
@@ -91,14 +66,12 @@ static void dc_plane_destruct(struct dc_plane_state *plane_state)
 
 }
 
-/*******************************************************************************
- * Public functions
- ******************************************************************************/
+ 
 void enable_surface_flip_reporting(struct dc_plane_state *plane_state,
 		uint32_t controller_id)
 {
 	plane_state->irq_source = controller_id + DC_IRQ_SOURCE_PFLIP1 - 1;
-	/*register_flip_interrupt(surface);*/
+	 
 }
 
 struct dc_plane_state *dc_create_plane_state(struct dc *dc)
@@ -115,17 +88,7 @@ struct dc_plane_state *dc_create_plane_state(struct dc *dc)
 	return plane_state;
 }
 
-/*
- *****************************************************************************
- *  Function: dc_plane_get_status
- *
- *  @brief
- *     Looks up the pipe context of plane_state and updates the pending status
- *     of the pipe context. Then returns plane_state->status
- *
- *  @param [in] plane_state: pointer to the plane_state to get the status of
- *****************************************************************************
- */
+ 
 const struct dc_plane_status *dc_plane_get_status(
 		const struct dc_plane_state *plane_state)
 {
@@ -137,7 +100,7 @@ const struct dc_plane_status *dc_plane_get_status(
 		!plane_state->ctx ||
 		!plane_state->ctx->dc) {
 		ASSERT(0);
-		return NULL; /* remove this if above assert never hit */
+		return NULL;  
 	}
 
 	plane_status = &plane_state->status;
@@ -146,7 +109,7 @@ const struct dc_plane_status *dc_plane_get_status(
 	if (dc->current_state == NULL)
 		return NULL;
 
-	/* Find the current plane state and set its pending bit to false */
+	 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		struct pipe_ctx *pipe_ctx =
 				&dc->current_state->res_ctx.pipe_ctx[i];

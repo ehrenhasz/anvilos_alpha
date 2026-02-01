@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -108,7 +108,7 @@ static void test_ktls(int family)
 	close(sfd);
 	sfd = -1;
 
-	/* Setup KTLS */
+	 
 	ret = setsockopt(fd, IPPROTO_TCP, TCP_ULP, "tls", sizeof("tls"));
 	if (!ASSERT_OK(ret, "setsockopt"))
 		goto err_out;
@@ -128,13 +128,10 @@ static void test_ktls(int family)
 	if (!ASSERT_OK(ret, "setsockopt"))
 		goto err_out;
 
-	/* KTLS is enabled */
+	 
 
 	close(fd);
-	/* At this point, the cfd socket is at the CLOSE_WAIT state
-	 * and still run TLS protocol.  The test for
-	 * BPF_TCP_CLOSE_WAIT should be run at this point.
-	 */
+	 
 	ret = read(cfd, &buf, sizeof(buf));
 	ASSERT_EQ(ret, 0, "read");
 	close(cfd);

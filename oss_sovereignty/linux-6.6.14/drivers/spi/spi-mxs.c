@@ -1,22 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Freescale MXS SPI master driver
-//
-// Copyright 2012 DENX Software Engineering, GmbH.
-// Copyright 2012 Freescale Semiconductor, Inc.
-// Copyright 2008 Embedded Alley Solutions, Inc All Rights Reserved.
-//
-// Rework and transition to new API by:
-// Marek Vasut <marex@denx.de>
-//
-// Based on previous attempt by:
-// Fabio Estevam <fabio.estevam@freescale.com>
-//
-// Based on code from U-Boot bootloader by:
-// Marek Vasut <marex@denx.de>
-//
-// Based on spi-stmp.c, which is:
-// Author: Dmitry Pervushin <dimka@embeddedalley.com>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/ioport.h>
@@ -42,22 +42,19 @@
 
 #define DRIVER_NAME		"mxs-spi"
 
-/* Use 10S timeout for very long transfers, it should suffice. */
+ 
 #define SSP_TIMEOUT		10000
 
 #define SG_MAXLEN		0xff00
 
-/*
- * Flags for txrx functions.  More efficient that using an argument register for
- * each one.
- */
-#define TXRX_WRITE		(1<<0)	/* This is a write */
-#define TXRX_DEASSERT_CS	(1<<1)	/* De-assert CS at end of txrx */
+ 
+#define TXRX_WRITE		(1<<0)	 
+#define TXRX_DEASSERT_CS	(1<<1)	 
 
 struct mxs_spi {
 	struct mxs_ssp		ssp;
 	struct completion	c;
-	unsigned int		sck;	/* Rate requested (vs actual) */
+	unsigned int		sck;	 
 };
 
 static int mxs_spi_setup_transfer(struct spi_device *dev,
@@ -74,16 +71,9 @@ static int mxs_spi_setup_transfer(struct spi_device *dev,
 
 	if (hz != spi->sck) {
 		mxs_ssp_set_clk_rate(ssp, hz);
-		/*
-		 * Save requested rate, hz, rather than the actual rate,
-		 * ssp->clk_rate.  Otherwise we would set the rate every transfer
-		 * when the actual rate is not quite the same as requested rate.
-		 */
+		 
 		spi->sck = hz;
-		/*
-		 * Perhaps we should return an error if the actual clock is
-		 * nowhere close to what was requested?
-		 */
+		 
 	}
 
 	writel(BM_SSP_CTRL0_LOCK_CS,
@@ -105,14 +95,7 @@ static u32 mxs_spi_cs_to_reg(unsigned cs)
 {
 	u32 select = 0;
 
-	/*
-	 * i.MX28 Datasheet: 17.10.1: HW_SSP_CTRL0
-	 *
-	 * The bits BM_SSP_CTRL0_WAIT_FOR_CMD and BM_SSP_CTRL0_WAIT_FOR_IRQ
-	 * in HW_SSP_CTRL0 register do have multiple usage, please refer to
-	 * the datasheet for further details. In SPI mode, they are used to
-	 * toggle the chip-select lines (nCS pins).
-	 */
+	 
 	if (cs & 1)
 		select |= BM_SSP_CTRL0_WAIT_FOR_CMD;
 	if (cs & 2)
@@ -187,7 +170,7 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 
 	reinit_completion(&spi->c);
 
-	/* Chip select was already programmed into CTRL0 */
+	 
 	ctrl0 = readl(ssp->base + HW_SSP_CTRL0);
 	ctrl0 &= ~(BM_SSP_CTRL0_XFER_COUNT | BM_SSP_CTRL0_IGNORE_CRC |
 		 BM_SSP_CTRL0_READ);
@@ -196,15 +179,12 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 	if (!(flags & TXRX_WRITE))
 		ctrl0 |= BM_SSP_CTRL0_READ;
 
-	/* Queue the DMA data transfer. */
+	 
 	for (sg_count = 0; sg_count < sgs; sg_count++) {
-		/* Prepare the transfer descriptor. */
+		 
 		min = min(len, desc_len);
 
-		/*
-		 * De-assert CS on last segment if flag is set (i.e., no more
-		 * transfers will follow)
-		 */
+		 
 		if ((sg_count + 1 == sgs) && (flags & TXRX_DEASSERT_CS))
 			ctrl0 |= BM_SSP_CTRL0_IGNORE_CRC;
 
@@ -236,7 +216,7 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 		len -= min;
 		buf += min;
 
-		/* Queue the PIO register write transfer. */
+		 
 		desc = dmaengine_prep_slave_sg(ssp->dmach,
 				(struct scatterlist *)dma_xfer[sg_count].pio,
 				(ssp->devid == IMX23_SSP) ? 1 : 4,
@@ -262,14 +242,11 @@ static int mxs_spi_txrx_dma(struct mxs_spi *spi,
 		}
 	}
 
-	/*
-	 * The last descriptor must have this callback,
-	 * to finish the DMA transaction.
-	 */
+	 
 	desc->callback = mxs_ssp_dma_irq_callback;
 	desc->callback_param = spi;
 
-	/* Start the transfer. */
+	 
 	dmaengine_submit(desc);
 	dma_async_issue_pending(ssp->dmach);
 
@@ -366,7 +343,7 @@ static int mxs_spi_transfer_one(struct spi_master *master,
 	unsigned int flag;
 	int status = 0;
 
-	/* Program CS register bits here, it will be used for all transfers. */
+	 
 	writel(BM_SSP_CTRL0_WAIT_FOR_CMD | BM_SSP_CTRL0_WAIT_FOR_IRQ,
 	       ssp->base + HW_SSP_CTRL0 + STMP_OFFSET_REG_CLR);
 	writel(mxs_spi_cs_to_reg(spi_get_chipselect(m->spi, 0)),
@@ -380,19 +357,11 @@ static int mxs_spi_transfer_one(struct spi_master *master,
 		if (status)
 			break;
 
-		/* De-assert on last transfer, inverted by cs_change flag */
+		 
 		flag = (&t->transfer_list == m->transfers.prev) ^ t->cs_change ?
 		       TXRX_DEASSERT_CS : 0;
 
-		/*
-		 * Small blocks can be transfered via PIO.
-		 * Measured by empiric means:
-		 *
-		 * dd if=/dev/mtdblock0 of=/dev/null bs=1024k count=1
-		 *
-		 * DMA only: 2.164808 seconds, 473.0KB/s
-		 * Combined: 1.676276 seconds, 610.9KB/s
-		 */
+		 
 		if (t->len < 32) {
 			writel(BM_SSP_CTRL1_DMA_ENABLE,
 				ssp->base + HW_SSP_CTRL1(ssp) +
@@ -519,7 +488,7 @@ static const struct dev_pm_ops mxs_spi_pm = {
 static const struct of_device_id mxs_spi_dt_ids[] = {
 	{ .compatible = "fsl,imx23-spi", .data = (void *) IMX23_SSP, },
 	{ .compatible = "fsl,imx28-spi", .data = (void *) IMX28_SSP, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxs_spi_dt_ids);
 
@@ -536,11 +505,7 @@ static int mxs_spi_probe(struct platform_device *pdev)
 	int devid, clk_freq;
 	int ret = 0, irq_err;
 
-	/*
-	 * Default clock speed for the SPI core. 160MHz seems to
-	 * work reasonably well with most SPI flashes, so use this
-	 * as a default. Override with "clock-frequency" DT prop.
-	 */
+	 
 	const int clk_freq_default = 160000000;
 
 	irq_err = platform_get_irq(pdev, 0);

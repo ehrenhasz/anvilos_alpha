@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PTP 1588 clock support - User space test program
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- */
+
+ 
 #define _GNU_SOURCE
-#define __SANE_USERSPACE_TYPES__        /* For PPC64, to get LL64 types */
+#define __SANE_USERSPACE_TYPES__         
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -37,7 +33,7 @@
 
 #define NSEC_PER_SEC 1000000000LL
 
-/* clock_adjtime is not available in GLIBC < 2.14 */
+ 
 #if !__GLIBC_PREREQ(2, 14)
 #include <sys/syscall.h>
 static int clock_adjtime(clockid_t id, struct timex *tx)
@@ -51,7 +47,7 @@ static void show_flag_test(int rq_index, unsigned int flags, int err)
 	printf("PTP_EXTTS_REQUEST%c flags 0x%08x : (%d) %s\n",
 	       rq_index ? '1' + rq_index : ' ',
 	       flags, err, strerror(errno));
-	/* sigh, uClibc ... */
+	 
 	errno = 0;
 }
 
@@ -94,17 +90,7 @@ static clockid_t get_clockid(int fd)
 
 static long ppb_to_scaled_ppm(int ppb)
 {
-	/*
-	 * The 'freq' field in the 'struct timex' is in parts per
-	 * million, but with a 16 bit binary fractional field.
-	 * Instead of calculating either one of
-	 *
-	 *    scaled_ppm = (ppb / 1000) << 16  [1]
-	 *    scaled_ppm = (ppb << 16) / 1000  [2]
-	 *
-	 * we simply use double precision math, in order to avoid the
-	 * truncation in [1] and the possible overflow in [2].
-	 */
+	 
 	return (long) (ppb * 65.536);
 }
 
@@ -433,7 +419,7 @@ int main(int argc, char *argv[])
 			       event.t.sec, event.t.nsec);
 			fflush(stdout);
 		}
-		/* Disable the feature again. */
+		 
 		extts_request.flags = 0;
 		if (ioctl(fd, PTP_EXTTS_REQUEST, &extts_request)) {
 			perror("PTP_EXTTS_REQUEST");

@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    driver for Microchip PQI-based storage controllers
- *    Copyright (c) 2019-2023 Microchip Technology Inc. and its subsidiaries
- *    Copyright (c) 2016-2018 Microsemi Corporation
- *    Copyright (c) 2016 PMC-Sierra, Inc.
- *
- *    Questions/Comments/Bugfixes to storagedev@microchip.com
- *
- */
+ 
+ 
 
 #if !defined(_SMARTPQI_SIS_H)
 #define _SMARTPQI_SIS_H
@@ -34,4 +26,4 @@ int sis_wait_for_fw_triage_completion(struct pqi_ctrl_info *ctrl_info);
 
 extern unsigned int sis_ctrl_ready_timeout_secs;
 
-#endif	/* _SMARTPQI_SIS_H */
+#endif	 

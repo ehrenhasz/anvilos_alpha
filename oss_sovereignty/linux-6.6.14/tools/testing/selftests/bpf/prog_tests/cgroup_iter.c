@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Google */
+
+ 
 
 #include <test_progs.h>
 #include <bpf/libbpf.h>
@@ -82,7 +82,7 @@ static void read_from_cgroup_iter(struct bpf_program *prog, int cgroup_fd,
 
 	ASSERT_STREQ(buf, expected_output, testname);
 
-	/* read() after iter finishes should be ok. */
+	 
 	if (len == 0)
 		ASSERT_OK(read(iter_fd, buf, sizeof(buf)), "second_read");
 
@@ -91,7 +91,7 @@ free_link:
 	bpf_link__destroy(link);
 }
 
-/* Invalid cgroup. */
+ 
 static void test_invalid_cgroup(struct cgroup_iter *skel)
 {
 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
@@ -108,7 +108,7 @@ static void test_invalid_cgroup(struct cgroup_iter *skel)
 	bpf_link__destroy(link);
 }
 
-/* Specifying both cgroup_fd and cgroup_id is invalid. */
+ 
 static void test_invalid_cgroup_spec(struct cgroup_iter *skel)
 {
 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
@@ -126,7 +126,7 @@ static void test_invalid_cgroup_spec(struct cgroup_iter *skel)
 	bpf_link__destroy(link);
 }
 
-/* Preorder walk prints parent and child in order. */
+ 
 static void test_walk_preorder(struct cgroup_iter *skel)
 {
 	snprintf(expected_output, sizeof(expected_output),
@@ -137,7 +137,7 @@ static void test_walk_preorder(struct cgroup_iter *skel)
 			      BPF_CGROUP_ITER_DESCENDANTS_PRE, "preorder");
 }
 
-/* Postorder walk prints child and parent in order. */
+ 
 static void test_walk_postorder(struct cgroup_iter *skel)
 {
 	snprintf(expected_output, sizeof(expected_output),
@@ -148,10 +148,10 @@ static void test_walk_postorder(struct cgroup_iter *skel)
 			      BPF_CGROUP_ITER_DESCENDANTS_POST, "postorder");
 }
 
-/* Walking parents prints parent and then root. */
+ 
 static void test_walk_ancestors_up(struct cgroup_iter *skel)
 {
-	/* terminate the walk when ROOT is met. */
+	 
 	skel->bss->terminal_cgroup = cg_id[ROOT];
 
 	snprintf(expected_output, sizeof(expected_output),
@@ -164,10 +164,10 @@ static void test_walk_ancestors_up(struct cgroup_iter *skel)
 	skel->bss->terminal_cgroup = 0;
 }
 
-/* Early termination prints parent only. */
+ 
 static void test_early_termination(struct cgroup_iter *skel)
 {
-	/* terminate the walk after the first element is processed. */
+	 
 	skel->bss->terminate_early = 1;
 
 	snprintf(expected_output, sizeof(expected_output),
@@ -179,7 +179,7 @@ static void test_early_termination(struct cgroup_iter *skel)
 	skel->bss->terminate_early = 0;
 }
 
-/* Waling self prints self only. */
+ 
 static void test_walk_self_only(struct cgroup_iter *skel)
 {
 	snprintf(expected_output, sizeof(expected_output),
@@ -204,9 +204,7 @@ static void test_walk_dead_self_only(struct cgroup_iter *skel)
 	if (!ASSERT_GE(cgrp_fd, 0, "create cgrp"))
 		return;
 
-	/* The cgroup will be dead during read() iteration, so it only has
-	 * epilogue in the output
-	 */
+	 
 	snprintf(expected_output, sizeof(expected_output), EPILOGUE);
 
 	memset(&linfo, 0, sizeof(linfo));
@@ -223,17 +221,14 @@ static void test_walk_dead_self_only(struct cgroup_iter *skel)
 	if (!ASSERT_GE(iter_fd, 0, "iter_create"))
 		goto free_link;
 
-	/* Close link fd and cgroup fd */
+	 
 	bpf_link__destroy(link);
 	close(cgrp_fd);
 
-	/* Remove cgroup to mark it as dead */
+	 
 	remove_cgroup(cgrp_name);
 
-	/* Two kern_sync_rcu() and usleep() pairs are used to wait for the
-	 * releases of cgroup css, and the last kern_sync_rcu() and usleep()
-	 * pair is used to wait for the free of cgroup itself.
-	 */
+	 
 	kern_sync_rcu();
 	usleep(8000);
 	kern_sync_rcu();
@@ -251,7 +246,7 @@ static void test_walk_dead_self_only(struct cgroup_iter *skel)
 
 	ASSERT_STREQ(buf, expected_output, "dead cgroup output");
 
-	/* read() after iter finishes should be ok. */
+	 
 	if (len == 0)
 		ASSERT_OK(read(iter_fd, buf, sizeof(buf)), "second_read");
 

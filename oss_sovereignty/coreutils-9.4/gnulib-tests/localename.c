@@ -1,32 +1,13 @@
-/* Determine name of the currently selected locale.
-   Copyright (C) 1995-2023 Free Software Foundation, Inc.
+ 
+ 
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as published by
-   the Free Software Foundation; either version 2.1 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Ulrich Drepper <drepper@gnu.org>, 1995.  */
-/* Native Windows code written by Tor Lillqvist <tml@iki.fi>.  */
-/* Mac OS X code written by Bruno Haible <bruno@clisp.org>.  */
-
-/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
-   optimizes away the locale == NULL tests below in duplocale() and freelocale(),
-   or xlclang reports -Wtautological-pointer-compare warnings for these tests.
- */
+ 
 #define _GL_ARG_NONNULL(params)
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include "localename.h"
 
 #include <limits.h>
@@ -40,7 +21,7 @@
 #include "thread-optim.h"
 
 #if HAVE_GOOD_USELOCALE
-/* Mac OS X 10.5 defines the locale_t type in <xlocale.h>.  */
+ 
 # if defined __APPLE__ && defined __MACH__
 #  include <xlocale.h>
 # endif
@@ -50,7 +31,7 @@
 # include "glthread/lock.h"
 # if defined __sun
 #  if HAVE_GETLOCALENAME_L
-/* Solaris >= 12.  */
+ 
 extern char * getlocalename_l(int, locale_t);
 #  elif HAVE_SOLARIS114_LOCALES
 #   include <sys/localedef.h>
@@ -74,144 +55,12 @@ extern char * getlocalename_l(int, locale_t);
 # include "glthread/lock.h"
 #endif
 
-#if defined WINDOWS_NATIVE || defined __CYGWIN__ /* Native Windows or Cygwin */
+#if defined WINDOWS_NATIVE || defined __CYGWIN__  
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 # include <winnls.h>
-/* List of language codes, sorted by value:
-   0x01 LANG_ARABIC
-   0x02 LANG_BULGARIAN
-   0x03 LANG_CATALAN
-   0x04 LANG_CHINESE
-   0x05 LANG_CZECH
-   0x06 LANG_DANISH
-   0x07 LANG_GERMAN
-   0x08 LANG_GREEK
-   0x09 LANG_ENGLISH
-   0x0a LANG_SPANISH
-   0x0b LANG_FINNISH
-   0x0c LANG_FRENCH
-   0x0d LANG_HEBREW
-   0x0e LANG_HUNGARIAN
-   0x0f LANG_ICELANDIC
-   0x10 LANG_ITALIAN
-   0x11 LANG_JAPANESE
-   0x12 LANG_KOREAN
-   0x13 LANG_DUTCH
-   0x14 LANG_NORWEGIAN
-   0x15 LANG_POLISH
-   0x16 LANG_PORTUGUESE
-   0x17 LANG_ROMANSH
-   0x18 LANG_ROMANIAN
-   0x19 LANG_RUSSIAN
-   0x1a LANG_CROATIAN == LANG_SERBIAN
-   0x1b LANG_SLOVAK
-   0x1c LANG_ALBANIAN
-   0x1d LANG_SWEDISH
-   0x1e LANG_THAI
-   0x1f LANG_TURKISH
-   0x20 LANG_URDU
-   0x21 LANG_INDONESIAN
-   0x22 LANG_UKRAINIAN
-   0x23 LANG_BELARUSIAN
-   0x24 LANG_SLOVENIAN
-   0x25 LANG_ESTONIAN
-   0x26 LANG_LATVIAN
-   0x27 LANG_LITHUANIAN
-   0x28 LANG_TAJIK
-   0x29 LANG_FARSI
-   0x2a LANG_VIETNAMESE
-   0x2b LANG_ARMENIAN
-   0x2c LANG_AZERI
-   0x2d LANG_BASQUE
-   0x2e LANG_SORBIAN
-   0x2f LANG_MACEDONIAN
-   0x30 LANG_SUTU
-   0x31 LANG_TSONGA
-   0x32 LANG_TSWANA
-   0x33 LANG_VENDA
-   0x34 LANG_XHOSA
-   0x35 LANG_ZULU
-   0x36 LANG_AFRIKAANS
-   0x37 LANG_GEORGIAN
-   0x38 LANG_FAEROESE
-   0x39 LANG_HINDI
-   0x3a LANG_MALTESE
-   0x3b LANG_SAMI
-   0x3c LANG_GAELIC
-   0x3d LANG_YIDDISH
-   0x3e LANG_MALAY
-   0x3f LANG_KAZAK
-   0x40 LANG_KYRGYZ
-   0x41 LANG_SWAHILI
-   0x42 LANG_TURKMEN
-   0x43 LANG_UZBEK
-   0x44 LANG_TATAR
-   0x45 LANG_BENGALI
-   0x46 LANG_PUNJABI
-   0x47 LANG_GUJARATI
-   0x48 LANG_ORIYA
-   0x49 LANG_TAMIL
-   0x4a LANG_TELUGU
-   0x4b LANG_KANNADA
-   0x4c LANG_MALAYALAM
-   0x4d LANG_ASSAMESE
-   0x4e LANG_MARATHI
-   0x4f LANG_SANSKRIT
-   0x50 LANG_MONGOLIAN
-   0x51 LANG_TIBETAN
-   0x52 LANG_WELSH
-   0x53 LANG_CAMBODIAN
-   0x54 LANG_LAO
-   0x55 LANG_BURMESE
-   0x56 LANG_GALICIAN
-   0x57 LANG_KONKANI
-   0x58 LANG_MANIPURI
-   0x59 LANG_SINDHI
-   0x5a LANG_SYRIAC
-   0x5b LANG_SINHALESE
-   0x5c LANG_CHEROKEE
-   0x5d LANG_INUKTITUT
-   0x5e LANG_AMHARIC
-   0x5f LANG_TAMAZIGHT
-   0x60 LANG_KASHMIRI
-   0x61 LANG_NEPALI
-   0x62 LANG_FRISIAN
-   0x63 LANG_PASHTO
-   0x64 LANG_TAGALOG
-   0x65 LANG_DIVEHI
-   0x66 LANG_EDO
-   0x67 LANG_FULFULDE
-   0x68 LANG_HAUSA
-   0x69 LANG_IBIBIO
-   0x6a LANG_YORUBA
-   0x6d LANG_BASHKIR
-   0x6e LANG_LUXEMBOURGISH
-   0x6f LANG_GREENLANDIC
-   0x70 LANG_IGBO
-   0x71 LANG_KANURI
-   0x72 LANG_OROMO
-   0x73 LANG_TIGRINYA
-   0x74 LANG_GUARANI
-   0x75 LANG_HAWAIIAN
-   0x76 LANG_LATIN
-   0x77 LANG_SOMALI
-   0x78 LANG_YI
-   0x79 LANG_PAPIAMENTU
-   0x7a LANG_MAPUDUNGUN
-   0x7c LANG_MOHAWK
-   0x7e LANG_BRETON
-   0x82 LANG_OCCITAN
-   0x83 LANG_CORSICAN
-   0x84 LANG_ALSATIAN
-   0x85 LANG_YAKUT
-   0x86 LANG_KICHE
-   0x87 LANG_KINYARWANDA
-   0x88 LANG_WOLOF
-   0x8c LANG_DARI
-   0x91 LANG_SCOTTISH_GAELIC
-*/
-/* Mingw headers don't have latest language and sublanguage codes.  */
+ 
+ 
 # ifndef LANG_AFRIKAANS
 # define LANG_AFRIKAANS 0x36
 # endif
@@ -1138,47 +987,35 @@ extern char * getlocalename_l(int, locale_t);
 # ifndef SUBLANG_ZULU_SOUTH_AFRICA
 # define SUBLANG_ZULU_SOUTH_AFRICA 0x01
 # endif
-/* GetLocaleInfoA operations.  */
+ 
 # ifndef LOCALE_SNAME
 # define LOCALE_SNAME 0x5c
 # endif
 # ifndef LOCALE_NAME_MAX_LENGTH
 # define LOCALE_NAME_MAX_LENGTH 85
 # endif
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef GetLocaleInfo
 # define GetLocaleInfo GetLocaleInfoA
 # undef EnumSystemLocales
 # define EnumSystemLocales EnumSystemLocalesA
 #endif
 
-/* We want to use the system's setlocale() function here, not the gnulib
-   override.  */
+ 
 #undef setlocale
 
 
 #if HAVE_CFPREFERENCESCOPYAPPVALUE
-/* Mac OS X 10.4 or newer */
+ 
 
-/* Canonicalize a Mac OS X locale name to a Unix locale name.
-   NAME is a sufficiently large buffer.
-   On input, it contains the Mac OS X locale name.
-   On output, it contains the Unix locale name.  */
+ 
 # if !defined IN_LIBINTL
 static
 # endif
 void
 gl_locale_name_canonicalize (char *name)
 {
-  /* This conversion is based on a posting by
-     Deborah GoldSmith <goldsmit@apple.com> on 2005-03-08,
-     https://lists.apple.com/archives/carbon-dev/2005/Mar/msg00293.html */
-
-  /* Convert legacy (NeXTstep inherited) English names to Unix (ISO 639 and
-     ISO 3166) names.  Prior to Mac OS X 10.3, there is no API for doing this.
-     Therefore we do it ourselves, using a table based on the results of the
-     Mac OS X 10.3.8 function
-     CFLocaleCreateCanonicalLocaleIdentifierFromString().  */
+   
   typedef struct { const char legacy[21+1]; const char unixy[5+1]; }
           legacy_entry;
   static const legacy_entry legacy_table[] = {
@@ -1228,7 +1065,7 @@ gl_locale_name_canonicalize (char *name)
     { "Greenlandic",           "kl" },
     { "Guarani",               "gn" },
     { "Gujarati",              "gu" },
-    { "Hawaiian",              "haw" }, /* Yes, "haw", not "cpe".  */
+    { "Hawaiian",              "haw" },  
     { "Hebrew",                "he" },
     { "Hindi",                 "hi" },
     { "Hungarian",             "hu" },
@@ -1261,7 +1098,7 @@ gl_locale_name_canonicalize (char *name)
     { "Moldavian",             "mo" },
     { "Mongolian",             "mn" },
     { "Nepali",                "ne" },
-    { "Norwegian",             "nb" }, /* Yes, "nb", not the obsolete "no".  */
+    { "Norwegian",             "nb" },  
     { "Nyanja",                "ny" },
     { "Nynorsk",               "nn" },
     { "Oriya",                 "or" },
@@ -1279,7 +1116,7 @@ gl_locale_name_canonicalize (char *name)
     { "Ruanda",                "rw" },
     { "Rundi",                 "rn" },
     { "Russian",               "ru" },
-    { "Sami",                  "se_NO" }, /* Not just "se".  */
+    { "Sami",                  "se_NO" },  
     { "Sanskrit",              "sa" },
     { "Scottish",              "gd" },
     { "Serbian",               "sr" },
@@ -1315,70 +1152,45 @@ gl_locale_name_canonicalize (char *name)
     { "Yiddish",               "yi" }
   };
 
-  /* Convert new-style locale names with language tags (ISO 639 and ISO 15924)
-     to Unix (ISO 639 and ISO 3166) names.  */
+   
   typedef struct { const char langtag[7+1]; const char unixy[12+1]; }
           langtag_entry;
   static const langtag_entry langtag_table[] = {
-    /* Mac OS X has "az-Arab", "az-Cyrl", "az-Latn".
-       The default script for az on Unix is Latin.  */
+     
     { "az-Latn", "az" },
-    /* Mac OS X has "bs-Cyrl", "bs-Latn".
-       The default script for bs on Unix is Latin.  */
+     
     { "bs-Latn", "bs" },
-    /* Mac OS X has "ga-dots".  Does not yet exist on Unix.  */
+     
     { "ga-dots", "ga" },
-    /* Mac OS X has "kk-Cyrl".
-       The default script for kk on Unix is Cyrillic.  */
+     
     { "kk-Cyrl", "kk" },
-    /* Mac OS X has "mn-Cyrl", "mn-Mong".
-       The default script for mn on Unix is Cyrillic.  */
+     
     { "mn-Cyrl", "mn" },
-    /* Mac OS X has "ms-Arab", "ms-Latn".
-       The default script for ms on Unix is Latin.  */
+     
     { "ms-Latn", "ms" },
-    /* Mac OS X has "pa-Arab", "pa-Guru".
-       Country codes are used to distinguish these on Unix.  */
+     
     { "pa-Arab", "pa_PK" },
     { "pa-Guru", "pa_IN" },
-    /* Mac OS X has "shi-Latn", "shi-Tfng".  Does not yet exist on Unix.  */
-    /* Mac OS X has "sr-Cyrl", "sr-Latn".
-       The default script for sr on Unix is Cyrillic.  */
+     
+     
     { "sr-Cyrl", "sr" },
-    /* Mac OS X has "tg-Cyrl".
-       The default script for tg on Unix is Cyrillic.  */
+     
     { "tg-Cyrl", "tg" },
-    /* Mac OS X has "tk-Cyrl".
-       The default script for tk on Unix is Cyrillic.  */
+     
     { "tk-Cyrl", "tk" },
-    /* Mac OS X has "tt-Cyrl".
-       The default script for tt on Unix is Cyrillic.  */
+     
     { "tt-Cyrl", "tt" },
-    /* Mac OS X has "uz-Arab", "uz-Cyrl", "uz-Latn".
-       The default script for uz on Unix is Latin.  */
+     
     { "uz-Latn", "uz" },
-    /* Mac OS X has "vai-Latn", "vai-Vaii".  Does not yet exist on Unix.  */
-    /* Mac OS X has "yue-Hans", "yue-Hant".
-       The default script for yue on Unix is Simplified Han.  */
+     
+     
     { "yue-Hans", "yue" },
-    /* Mac OS X has "zh-Hans", "zh-Hant".
-       Country codes are used to distinguish these on Unix.  */
+     
     { "zh-Hans", "zh_CN" },
     { "zh-Hant", "zh_TW" }
   };
 
-  /* Convert script names (ISO 15924) to Unix conventions.
-     See https://www.unicode.org/iso15924/iso15924-codes.html  */
-  typedef struct { const char script[4+1]; const char unixy[9+1]; }
-          script_entry;
-  static const script_entry script_table[] = {
-    { "Arab", "arabic" },
-    { "Cyrl", "cyrillic" },
-    { "Latn", "latin" },
-    { "Mong", "mongolian" }
-  };
-
-  /* Step 1: Convert using legacy_table.  */
+   
   if (name[0] >= 'A' && name[0] <= 'Z')
     {
       unsigned int i1, i2;
@@ -1386,8 +1198,7 @@ gl_locale_name_canonicalize (char *name)
       i2 = sizeof (legacy_table) / sizeof (legacy_entry);
       while (i2 - i1 > 1)
         {
-          /* At this point we know that if name occurs in legacy_table,
-             its index must be >= i1 and < i2.  */
+           
           unsigned int i = (i1 + i2) >> 1;
           const legacy_entry *p = &legacy_table[i];
           if (strcmp (name, p->legacy) < 0)
@@ -1402,7 +1213,7 @@ gl_locale_name_canonicalize (char *name)
         }
     }
 
-  /* Step 2: Convert using langtag_table and script_table.  */
+   
   if (strlen (name) == 7 && name[2] == '-')
     {
       unsigned int i1, i2;
@@ -1410,8 +1221,7 @@ gl_locale_name_canonicalize (char *name)
       i2 = sizeof (langtag_table) / sizeof (langtag_entry);
       while (i2 - i1 > 1)
         {
-          /* At this point we know that if name occurs in langtag_table,
-             its index must be >= i1 and < i2.  */
+           
           unsigned int i = (i1 + i2) >> 1;
           const langtag_entry *p = &langtag_table[i];
           if (strcmp (name, p->langtag) < 0)
@@ -1429,8 +1239,7 @@ gl_locale_name_canonicalize (char *name)
       i2 = sizeof (script_table) / sizeof (script_entry);
       while (i2 - i1 > 1)
         {
-          /* At this point we know that if (name + 3) occurs in script_table,
-             its index must be >= i1 and < i2.  */
+           
           unsigned int i = (i1 + i2) >> 1;
           const script_entry *p = &script_table[i];
           if (strcmp (name + 3, p->script) < 0)
@@ -1446,7 +1255,7 @@ gl_locale_name_canonicalize (char *name)
         }
     }
 
-  /* Step 3: Convert new-style dash to Unix underscore. */
+   
   {
     char *p;
     for (p = name; *p != '\0'; p++)
@@ -1458,20 +1267,16 @@ gl_locale_name_canonicalize (char *name)
 #endif
 
 
-#if defined WINDOWS_NATIVE || defined __CYGWIN__ /* Native Windows or Cygwin */
+#if defined WINDOWS_NATIVE || defined __CYGWIN__  
 
-/* Canonicalize a Windows native locale name to a Unix locale name.
-   NAME is a sufficiently large buffer.
-   On input, it contains the Windows locale name.
-   On output, it contains the Unix locale name.  */
+ 
 # if !defined IN_LIBINTL
 static
 # endif
 void
 gl_locale_name_canonicalize (char *name)
 {
-  /* FIXME: This is probably incomplete: it does not handle "zh-Hans" and
-     "zh-Hant".  */
+   
   char *p;
 
   for (p = name; *p != '\0'; p++)
@@ -1499,102 +1304,30 @@ static
 const char *
 gl_locale_name_from_win32_LANGID (LANGID langid)
 {
-  /* Activate the new code only when the GETTEXT_MUI environment variable is
-     set, for the time being, since the new code is not well tested.  */
+   
   if (getenv ("GETTEXT_MUI") != NULL)
     {
       static char namebuf[256];
 
-      /* Query the system's notion of locale name.
-         On Windows95/98/ME, GetLocaleInfoA returns some incorrect results.
-         But we don't need to support systems that are so old.  */
+       
       if (GetLocaleInfoA (MAKELCID (langid, SORT_DEFAULT), LOCALE_SNAME,
                           namebuf, sizeof (namebuf) - 1))
         {
-          /* Convert it to a Unix locale name.  */
+           
           gl_locale_name_canonicalize (namebuf);
           return namebuf;
         }
     }
-  /* Internet Explorer has an LCID to RFC3066 name mapping stored in
-     HKEY_CLASSES_ROOT\Mime\Database\Rfc1766.  But we better don't use that
-     since IE's i18n subsystem is known to be inconsistent with the native
-     Windows base (e.g. they have different character conversion facilities
-     that produce different results).  */
-  /* Use our own table.  */
+   
+   
   {
     int primary, sub;
 
-    /* Split into language and territory part.  */
+     
     primary = PRIMARYLANGID (langid);
     sub = SUBLANGID (langid);
 
-    /* Dispatch on language.
-       See also https://www.unicode.org/unicode/onlinedat/languages.html .
-       For details about languages, see https://www.ethnologue.com/ .  */
-    switch (primary)
-      {
-      case LANG_AFRIKAANS:
-        switch (sub)
-          {
-          case SUBLANG_AFRIKAANS_SOUTH_AFRICA: return "af_ZA";
-          }
-        return "af";
-      case LANG_ALBANIAN:
-        switch (sub)
-          {
-          case SUBLANG_ALBANIAN_ALBANIA: return "sq_AL";
-          }
-        return "sq";
-      case LANG_ALSATIAN:
-        switch (sub)
-          {
-          case SUBLANG_ALSATIAN_FRANCE: return "gsw_FR";
-          }
-        return "gsw";
-      case LANG_AMHARIC:
-        switch (sub)
-          {
-          case SUBLANG_AMHARIC_ETHIOPIA: return "am_ET";
-          }
-        return "am";
-      case LANG_ARABIC:
-        switch (sub)
-          {
-          case SUBLANG_ARABIC_SAUDI_ARABIA: return "ar_SA";
-          case SUBLANG_ARABIC_IRAQ: return "ar_IQ";
-          case SUBLANG_ARABIC_EGYPT: return "ar_EG";
-          case SUBLANG_ARABIC_LIBYA: return "ar_LY";
-          case SUBLANG_ARABIC_ALGERIA: return "ar_DZ";
-          case SUBLANG_ARABIC_MOROCCO: return "ar_MA";
-          case SUBLANG_ARABIC_TUNISIA: return "ar_TN";
-          case SUBLANG_ARABIC_OMAN: return "ar_OM";
-          case SUBLANG_ARABIC_YEMEN: return "ar_YE";
-          case SUBLANG_ARABIC_SYRIA: return "ar_SY";
-          case SUBLANG_ARABIC_JORDAN: return "ar_JO";
-          case SUBLANG_ARABIC_LEBANON: return "ar_LB";
-          case SUBLANG_ARABIC_KUWAIT: return "ar_KW";
-          case SUBLANG_ARABIC_UAE: return "ar_AE";
-          case SUBLANG_ARABIC_BAHRAIN: return "ar_BH";
-          case SUBLANG_ARABIC_QATAR: return "ar_QA";
-          }
-        return "ar";
-      case LANG_ARMENIAN:
-        switch (sub)
-          {
-          case SUBLANG_ARMENIAN_ARMENIA: return "hy_AM";
-          }
-        return "hy";
-      case LANG_ASSAMESE:
-        switch (sub)
-          {
-          case SUBLANG_ASSAMESE_INDIA: return "as_IN";
-          }
-        return "as";
-      case LANG_AZERI:
-        switch (sub)
-          {
-          /* FIXME: Adjust this when Azerbaijani locales appear on Unix.  */
+     
           case 0x1e: return "az@latin";
           case SUBLANG_AZERI_LATIN: return "az_AZ@latin";
           case 0x1d: return "az@cyrillic";
@@ -1612,7 +1345,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           {
           case SUBLANG_BASQUE_BASQUE: return "eu_ES";
           }
-        return "eu"; /* Ambiguous: could be "eu_ES" or "eu_FR".  */
+        return "eu";  
       case LANG_BELARUSIAN:
         switch (sub)
           {
@@ -1667,9 +1400,9 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           {
           case SUBLANG_CHINESE_TRADITIONAL: case 0x1f: return "zh_TW";
           case SUBLANG_CHINESE_SIMPLIFIED: case 0x00: return "zh_CN";
-          case SUBLANG_CHINESE_HONGKONG: return "zh_HK"; /* traditional */
-          case SUBLANG_CHINESE_SINGAPORE: return "zh_SG"; /* simplified */
-          case SUBLANG_CHINESE_MACAU: return "zh_MO"; /* traditional */
+          case SUBLANG_CHINESE_HONGKONG: return "zh_HK";  
+          case SUBLANG_CHINESE_SINGAPORE: return "zh_SG";  
+          case SUBLANG_CHINESE_MACAU: return "zh_MO";  
           }
         return "zh";
       case LANG_CORSICAN:
@@ -1678,36 +1411,29 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           case SUBLANG_CORSICAN_FRANCE: return "co_FR";
           }
         return "co";
-      case LANG_CROATIAN:      /* LANG_CROATIAN == LANG_SERBIAN == LANG_BOSNIAN
-                                * What used to be called Serbo-Croatian
-                                * should really now be two separate
-                                * languages because of political reasons.
-                                * (Says tml, who knows nothing about Serbian
-                                * or Croatian.)
-                                * (I can feel those flames coming already.)
-                                */
+      case LANG_CROATIAN:       
         switch (sub)
           {
-          /* Croatian */
+           
           case 0x00: return "hr";
           case SUBLANG_CROATIAN_CROATIA: return "hr_HR";
           case SUBLANG_CROATIAN_BOSNIA_HERZEGOVINA_LATIN: return "hr_BA";
-          /* Serbian */
+           
           case 0x1f: return "sr";
-          case 0x1c: return "sr"; /* latin */
-          case SUBLANG_SERBIAN_LATIN: return "sr_CS"; /* latin */
-          case 0x09: return "sr_RS"; /* latin */
-          case 0x0b: return "sr_ME"; /* latin */
-          case 0x06: return "sr_BA"; /* latin */
+          case 0x1c: return "sr";  
+          case SUBLANG_SERBIAN_LATIN: return "sr_CS";  
+          case 0x09: return "sr_RS";  
+          case 0x0b: return "sr_ME";  
+          case 0x06: return "sr_BA";  
           case 0x1b: return "sr@cyrillic";
           case SUBLANG_SERBIAN_CYRILLIC: return "sr_CS@cyrillic";
           case 0x0a: return "sr_RS@cyrillic";
           case 0x0c: return "sr_ME@cyrillic";
           case 0x07: return "sr_BA@cyrillic";
-          /* Bosnian */
+           
           case 0x1e: return "bs";
-          case 0x1a: return "bs"; /* latin */
-          case SUBLANG_BOSNIAN_BOSNIA_HERZEGOVINA_LATIN: return "bs_BA"; /* latin */
+          case 0x1a: return "bs";  
+          case SUBLANG_BOSNIAN_BOSNIA_HERZEGOVINA_LATIN: return "bs_BA";  
           case 0x19: return "bs@cyrillic";
           case SUBLANG_BOSNIAN_BOSNIA_HERZEGOVINA_CYRILLIC: return "bs_BA@cyrillic";
           }
@@ -1725,7 +1451,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "da";
       case LANG_DARI:
-        /* FIXME: Adjust this when such locales appear on Unix.  */
+         
         switch (sub)
           {
           case SUBLANG_DARI_AFGHANISTAN: return "prs_AF";
@@ -1741,7 +1467,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
         switch (sub)
           {
           case SUBLANG_DUTCH: return "nl_NL";
-          case SUBLANG_DUTCH_BELGIAN: /* FLEMISH, VLAAMS */ return "nl_BE";
+          case SUBLANG_DUTCH_BELGIAN:   return "nl_BE";
           case SUBLANG_DUTCH_SURINAM: return "nl_SR";
           }
         return "nl";
@@ -1754,10 +1480,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
       case LANG_ENGLISH:
         switch (sub)
           {
-          /* SUBLANG_ENGLISH_US == SUBLANG_DEFAULT. Heh. I thought
-           * English was the language spoken in England.
-           * Oh well.
-           */
+           
           case SUBLANG_ENGLISH_US: return "en_US";
           case SUBLANG_ENGLISH_UK: return "en_GB";
           case SUBLANG_ENGLISH_AUS: return "en_AU";
@@ -1766,7 +1489,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           case SUBLANG_ENGLISH_EIRE: return "en_IE";
           case SUBLANG_ENGLISH_SOUTH_AFRICA: return "en_ZA";
           case SUBLANG_ENGLISH_JAMAICA: return "en_JM";
-          case SUBLANG_ENGLISH_CARIBBEAN: return "en_GD"; /* Grenada? */
+          case SUBLANG_ENGLISH_CARIBBEAN: return "en_GD";  
           case SUBLANG_ENGLISH_BELIZE: return "en_BZ";
           case SUBLANG_ENGLISH_TRINIDAD: return "en_TT";
           case SUBLANG_ENGLISH_ZIMBABWE: return "en_ZW";
@@ -1806,12 +1529,12 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
         switch (sub)
           {
           case SUBLANG_FRENCH: return "fr_FR";
-          case SUBLANG_FRENCH_BELGIAN: /* WALLOON */ return "fr_BE";
+          case SUBLANG_FRENCH_BELGIAN:   return "fr_BE";
           case SUBLANG_FRENCH_CANADIAN: return "fr_CA";
           case SUBLANG_FRENCH_SWISS: return "fr_CH";
           case SUBLANG_FRENCH_LUXEMBOURG: return "fr_LU";
           case SUBLANG_FRENCH_MONACO: return "fr_MC";
-          case SUBLANG_FRENCH_WESTINDIES: return "fr"; /* Caribbean? */
+          case SUBLANG_FRENCH_WESTINDIES: return "fr";  
           case SUBLANG_FRENCH_REUNION: return "fr_RE";
           case SUBLANG_FRENCH_CONGO: return "fr_CG";
           case SUBLANG_FRENCH_SENEGAL: return "fr_SN";
@@ -1829,7 +1552,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "fy";
       case LANG_FULFULDE:
-        /* Spoken in Nigeria, Guinea, Senegal, Mali, Niger, Cameroon, Benin.  */
+         
         switch (sub)
           {
           case SUBLANG_DEFAULT: return "ff_NG";
@@ -1838,8 +1561,8 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
       case LANG_GAELIC:
         switch (sub)
           {
-          case 0x01: /* SCOTTISH */
-            /* old, superseded by LANG_SCOTTISH_GAELIC */
+          case 0x01:  
+             
             return "gd_GB";
           case SUBLANG_IRISH_IRELAND: return "ga_IE";
           }
@@ -1898,8 +1621,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "ha";
       case LANG_HAWAIIAN:
-        /* FIXME: Do they mean Hawaiian ("haw_US", 1000 speakers)
-           or Hawaii Creole English ("cpe_US", 600000 speakers)?  */
+         
         switch (sub)
           {
           case SUBLANG_DEFAULT: return "cpe_US";
@@ -1950,8 +1672,8 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
       case LANG_INUKTITUT:
         switch (sub)
           {
-          case 0x1e: return "iu"; /* syllabic */
-          case SUBLANG_INUKTITUT_CANADA: return "iu_CA"; /* syllabic */
+          case 0x1e: return "iu";  
+          case SUBLANG_INUKTITUT_CANADA: return "iu_CA";  
           case 0x1f: return "iu@latin";
           case SUBLANG_INUKTITUT_CANADA_LATIN: return "iu_CA@latin";
           }
@@ -1995,7 +1717,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "kk";
       case LANG_KICHE:
-        /* FIXME: Adjust this when such locales appear on Unix.  */
+         
         switch (sub)
           {
           case SUBLANG_KICHE_GUATEMALA: return "qut_GT";
@@ -2008,7 +1730,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "rw";
       case LANG_KONKANI:
-        /* FIXME: Adjust this when such locales appear on Unix.  */
+         
         switch (sub)
           {
           case SUBLANG_KONKANI_INDIA: return "kok_IN";
@@ -2082,7 +1804,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "mt";
       case LANG_MANIPURI:
-        /* FIXME: Adjust this when such locales appear on Unix.  */
+         
         switch (sub)
           {
           case SUBLANG_DEFAULT: return "mni_IN";
@@ -2118,7 +1840,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           case SUBLANG_MONGOLIAN_CYRILLIC_MONGOLIA: case 0x1e: return "mn_MN";
           case SUBLANG_MONGOLIAN_PRC: case 0x1f: return "mn_CN";
           }
-        return "mn"; /* Ambiguous: could be "mn_CN" or "mn_MN".  */
+        return "mn";  
       case LANG_NEPALI:
         switch (sub)
           {
@@ -2164,7 +1886,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           {
           case SUBLANG_PASHTO_AFGHANISTAN: return "ps_AF";
           }
-        return "ps"; /* Ambiguous: could be "ps_PK" or "ps_AF".  */
+        return "ps";  
       case LANG_POLISH:
         switch (sub)
           {
@@ -2174,8 +1896,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
       case LANG_PORTUGUESE:
         switch (sub)
           {
-          /* Hmm. SUBLANG_PORTUGUESE_BRAZILIAN == SUBLANG_DEFAULT.
-             Same phenomenon as SUBLANG_ENGLISH_US == SUBLANG_DEFAULT. */
+           
           case SUBLANG_PORTUGUESE_BRAZILIAN: return "pt_BR";
           case SUBLANG_PORTUGUESE: return "pt_PT";
           }
@@ -2183,12 +1904,12 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
       case LANG_PUNJABI:
         switch (sub)
           {
-          case SUBLANG_PUNJABI_INDIA: return "pa_IN"; /* Gurmukhi script */
-          case SUBLANG_PUNJABI_PAKISTAN: return "pa_PK"; /* Arabic script */
+          case SUBLANG_PUNJABI_INDIA: return "pa_IN";  
+          case SUBLANG_PUNJABI_PAKISTAN: return "pa_PK";  
           }
         return "pa";
       case LANG_QUECHUA:
-        /* Note: Microsoft uses the non-ISO language code "quz".  */
+         
         switch (sub)
           {
           case SUBLANG_QUECHUA_BOLIVIA: return "qu_BO";
@@ -2215,31 +1936,31 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           case SUBLANG_RUSSIAN_RUSSIA: return "ru_RU";
           case SUBLANG_RUSSIAN_MOLDAVIA: return "ru_MD";
           }
-        return "ru"; /* Ambiguous: could be "ru_RU" or "ru_UA" or "ru_MD".  */
+        return "ru";  
       case LANG_SAMI:
         switch (sub)
           {
-          /* Northern Sami */
+           
           case 0x00: return "se";
           case SUBLANG_SAMI_NORTHERN_NORWAY: return "se_NO";
           case SUBLANG_SAMI_NORTHERN_SWEDEN: return "se_SE";
           case SUBLANG_SAMI_NORTHERN_FINLAND: return "se_FI";
-          /* Lule Sami */
+           
           case 0x1f: return "smj";
           case SUBLANG_SAMI_LULE_NORWAY: return "smj_NO";
           case SUBLANG_SAMI_LULE_SWEDEN: return "smj_SE";
-          /* Southern Sami */
+           
           case 0x1e: return "sma";
           case SUBLANG_SAMI_SOUTHERN_NORWAY: return "sma_NO";
           case SUBLANG_SAMI_SOUTHERN_SWEDEN: return "sma_SE";
-          /* Skolt Sami */
+           
           case 0x1d: return "sms";
           case SUBLANG_SAMI_SKOLT_FINLAND: return "sms_FI";
-          /* Inari Sami */
+           
           case 0x1c: return "smn";
           case SUBLANG_SAMI_INARI_FINLAND: return "smn_FI";
           }
-        return "se"; /* or "smi"? */
+        return "se";  
       case LANG_SANSKRIT:
         switch (sub)
           {
@@ -2257,7 +1978,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           {
           case SUBLANG_SINDHI_INDIA: return "sd_IN";
           case SUBLANG_SINDHI_PAKISTAN: return "sd_PK";
-          /*case SUBLANG_SINDHI_AFGHANISTAN: return "sd_AF";*/
+           
           }
         return "sd";
       case LANG_SINHALESE:
@@ -2285,23 +2006,19 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "so";
       case LANG_SORBIAN:
-        /* FIXME: Adjust this when such locales appear on Unix.  */
+         
         switch (sub)
           {
-          /* Upper Sorbian */
+           
           case 0x00: return "hsb";
           case SUBLANG_UPPER_SORBIAN_GERMANY: return "hsb_DE";
-          /* Lower Sorbian */
+           
           case 0x1f: return "dsb";
           case SUBLANG_LOWER_SORBIAN_GERMANY: return "dsb_DE";
           }
         return "wen";
       case LANG_SOTHO:
-        /* <https://docs.microsoft.com/en-us/windows/desktop/Intl/language-identifier-constants-and-strings>
-           calls it "Sesotho sa Leboa"; according to
-           <https://www.ethnologue.com/show_language.asp?code=nso>
-           <https://www.ethnologue.com/show_language.asp?code=sot>
-           it's the same as Northern Sotho.  */
+         
         switch (sub)
           {
           case SUBLANG_SOTHO_SOUTH_AFRICA: return "nso_ZA";
@@ -2313,7 +2030,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           case SUBLANG_SPANISH: return "es_ES";
           case SUBLANG_SPANISH_MEXICAN: return "es_MX";
           case SUBLANG_SPANISH_MODERN:
-            return "es_ES@modern";      /* not seen on Unix */
+            return "es_ES@modern";       
           case SUBLANG_SPANISH_GUATEMALA: return "es_GT";
           case SUBLANG_SPANISH_COSTA_RICA: return "es_CR";
           case SUBLANG_SPANISH_PANAMA: return "es_PA";
@@ -2337,7 +2054,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
       case LANG_SUTU:
         switch (sub)
           {
-          case SUBLANG_DEFAULT: return "bnt_TZ"; /* or "st_LS" or "nso_ZA"? */
+          case SUBLANG_DEFAULT: return "bnt_TZ";  
           }
         return "bnt";
       case LANG_SWAHILI:
@@ -2356,15 +2073,15 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
       case LANG_SYRIAC:
         switch (sub)
           {
-          case SUBLANG_SYRIAC_SYRIA: return "syr_SY"; /* An extinct language.  */
+          case SUBLANG_SYRIAC_SYRIA: return "syr_SY";  
           }
         return "syr";
       case LANG_TAGALOG:
         switch (sub)
           {
-          case SUBLANG_TAGALOG_PHILIPPINES: return "tl_PH"; /* or "fil_PH"? */
+          case SUBLANG_TAGALOG_PHILIPPINES: return "tl_PH";  
           }
-        return "tl"; /* or "fil"? */
+        return "tl";  
       case LANG_TAJIK:
         switch (sub)
           {
@@ -2373,10 +2090,10 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "tg";
       case LANG_TAMAZIGHT:
-        /* Note: Microsoft uses the non-ISO language code "tmz".  */
+         
         switch (sub)
           {
-          /* FIXME: Adjust this when Tamazight locales appear on Unix.  */
+           
           case SUBLANG_TAMAZIGHT_ARABIC: return "ber_MA@arabic";
           case 0x1f: return "ber@latin";
           case SUBLANG_TAMAZIGHT_ALGERIA_LATIN: return "ber_DZ@latin";
@@ -2387,7 +2104,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           {
           case SUBLANG_TAMIL_INDIA: return "ta_IN";
           }
-        return "ta"; /* Ambiguous: could be "ta_IN" or "ta_LK" or "ta_SG".  */
+        return "ta";  
       case LANG_TATAR:
         switch (sub)
           {
@@ -2410,8 +2127,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
         switch (sub)
           {
           case SUBLANG_TIBETAN_PRC:
-            /* Most Tibetans would not like "bo_CN".  But Tibet does not yet
-               have a country code of its own.  */
+             
             return "bo";
           case SUBLANG_TIBETAN_BHUTAN: return "bo_BT";
           }
@@ -2430,7 +2146,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
           }
         return "ts";
       case LANG_TSWANA:
-        /* Spoken in South Africa, Botswana.  */
+         
         switch (sub)
           {
           case SUBLANG_TSWANA_SOUTH_AFRICA: return "tn_ZA";
@@ -2549,7 +2265,7 @@ gl_locale_name_from_win32_LCID (LCID lcid)
 {
   LANGID langid;
 
-  /* Strip off the sorting rules, keep only the language part.  */
+   
   langid = LANGIDFROMLCID (lcid);
 
   return gl_locale_name_from_win32_LANGID (langid);
@@ -2557,12 +2273,11 @@ gl_locale_name_from_win32_LCID (LCID lcid)
 
 # ifdef WINDOWS_NATIVE
 
-/* Two variables to interface between get_lcid and the EnumLocales
-   callback function below.  */
+ 
 static LCID found_lcid;
 static char lname[LC_MAX * (LOCALE_NAME_MAX_LENGTH + 1) + 1];
 
-/* Callback function for EnumLocales.  */
+ 
 static BOOL CALLBACK
 enum_locales_fn (LPSTR locale_num_str)
 {
@@ -2591,22 +2306,18 @@ enum_locales_fn (LPSTR locale_num_str)
   return TRUE;
 }
 
-/* This lock protects the get_lcid against multiple simultaneous calls.  */
+ 
 gl_lock_define_initialized(static, get_lcid_lock)
 
-/* Return the Locale ID (LCID) number given the locale's name, a
-   string, in LOCALE_NAME.  This works by enumerating all the locales
-   supported by the system, until we find one whose name matches
-   LOCALE_NAME.  */
+ 
 static LCID
 get_lcid (const char *locale_name)
 {
-  /* A simple cache.  */
+   
   static LCID last_lcid;
   static char last_locale[1000];
 
-  /* Lock while looking for an LCID, to protect access to static
-     variables: last_lcid, last_locale, found_lcid, and lname.  */
+   
   gl_lock_lock (get_lcid_lock);
   if (last_lcid > 0 && strcmp (locale_name, last_locale) == 0)
     {
@@ -2630,17 +2341,13 @@ get_lcid (const char *locale_name)
 #endif
 
 
-#if HAVE_GOOD_USELOCALE /* glibc, Mac OS X, FreeBSD >= 9.1, Cygwin >= 2.6,
-                           Solaris 11 OpenIndiana, or Solaris >= 11.4  */
+#if HAVE_GOOD_USELOCALE  
 
-/* Simple hash set of strings.  We don't want to drag in lots of hash table
-   code here.  */
+ 
 
 # define SIZE_BITS (sizeof (size_t) * CHAR_BIT)
 
-/* A hash function for NUL-terminated char* strings using
-   the method described by Bruno Haible.
-   See https://www.haible.de/bruno/hashfunc.html.  */
+ 
 static size_t _GL_ATTRIBUTE_PURE
 string_hash (const void *x)
 {
@@ -2653,10 +2360,9 @@ string_hash (const void *x)
   return h;
 }
 
-/* A hash table of fixed size.  Multiple threads can access it read-only
-   simultaneously, but only one thread can insert into it at the same time.  */
+ 
 
-/* A node in a hash bucket collision list.  */
+ 
 struct struniq_hash_node
   {
     struct struniq_hash_node * volatile next;
@@ -2665,14 +2371,12 @@ struct struniq_hash_node
 
 # define STRUNIQ_HASH_TABLE_SIZE 257
 static struct struniq_hash_node * volatile struniq_hash_table[STRUNIQ_HASH_TABLE_SIZE]
-  /* = { NULL, ..., NULL } */;
+   ;
 
-/* This lock protects the struniq_hash_table against multiple simultaneous
-   insertions.  */
+ 
 gl_lock_define_initialized(static, struniq_lock)
 
-/* Store a copy of the given string in a string pool with indefinite extent.
-   Return a pointer to this copy.  */
+ 
 static const char *
 struniq (const char *string)
 {
@@ -2689,15 +2393,14 @@ struniq (const char *string)
     (struct struniq_hash_node *)
     malloc (FLEXSIZEOF (struct struniq_hash_node, contents, size));
   if (new_node == NULL)
-    /* Out of memory.  Return a statically allocated string.  */
+     
     return "C";
   memcpy (new_node->contents, string, size);
   {
     bool mt = gl_multithreaded ();
-    /* Lock while inserting new_node.  */
+     
     if (mt) gl_lock_lock (struniq_lock);
-    /* Check whether another thread already added the string while we were
-       waiting on the lock.  */
+     
     for (p = struniq_hash_table[slot]; p != NULL; p = p->next)
       if (strcmp (p->contents, string) == 0)
         {
@@ -2705,12 +2408,11 @@ struniq (const char *string)
           new_node = p;
           goto done;
         }
-    /* Really insert new_node into the hash table.  Fill new_node entirely
-       first, because other threads may be iterating over the linked list.  */
+     
     new_node->next = struniq_hash_table[slot];
     struniq_hash_table[slot] = new_node;
    done:
-    /* Unlock after new_node is inserted.  */
+     
     if (mt) gl_lock_unlock (struniq_lock);
   }
   return new_node->contents;
@@ -2721,36 +2423,31 @@ struniq (const char *string)
 
 #if LOCALENAME_ENHANCE_LOCALE_FUNCS
 
-/* The 'locale_t' object does not contain the names of the locale categories.
-   We have to associate them with the object through a hash table.
-   The hash table is defined in localename-table.[hc].  */
+ 
 
-/* Returns the name of a given locale category in a given locale_t object,
-   allocated as a string with indefinite extent.  */
+ 
 static const char *
 get_locale_t_name (int category, locale_t locale)
 {
   if (locale == LC_GLOBAL_LOCALE)
     {
-      /* Query the global locale.  */
+       
       const char *name = setlocale_null (category);
       if (name != NULL)
         return struniq (name);
       else
-        /* Should normally not happen.  */
+         
         return "";
     }
   else
     {
-      /* Look up the names in the hash table.  */
+       
       size_t hashcode = locale_hash_function (locale);
       size_t slot = hashcode % LOCALE_HASH_TABLE_SIZE;
-      /* If the locale was not found in the table, return "".  This can
-         happen if the application uses the original newlocale()/duplocale()
-         functions instead of the overridden ones.  */
+       
       const char *name = "";
       struct locale_hash_node *p;
-      /* Lock while looking up the hash node.  */
+       
       gl_rwlock_rdlock (locale_lock);
       for (p = locale_hash_table[slot]; p != NULL; p = p->next)
         if (p->locale == locale)
@@ -2767,7 +2464,7 @@ get_locale_t_name (int category, locale_t locale)
 #  error "newlocale, duplocale, freelocale not being replaced as expected!"
 # endif
 
-/* newlocale() override.  */
+ 
 locale_t
 newlocale (int category_mask, const char *name, locale_t base)
 #undef newlocale
@@ -2776,18 +2473,18 @@ newlocale (int category_mask, const char *name, locale_t base)
   struct locale_hash_node *node;
   locale_t result;
 
-  /* Make sure name has indefinite extent.  */
+   
   if (((LC_CTYPE_MASK | LC_NUMERIC_MASK | LC_TIME_MASK | LC_COLLATE_MASK
         | LC_MONETARY_MASK | LC_MESSAGES_MASK)
        & category_mask) != 0)
     name = struniq (name);
 
-  /* Determine the category names of the result.  */
+   
   if (((LC_CTYPE_MASK | LC_NUMERIC_MASK | LC_TIME_MASK | LC_COLLATE_MASK
         | LC_MONETARY_MASK | LC_MESSAGES_MASK)
        & ~category_mask) == 0)
     {
-      /* Use name, ignore base.  */
+       
       int category;
 
       name = struniq (name);
@@ -2796,7 +2493,7 @@ newlocale (int category_mask, const char *name, locale_t base)
     }
   else
     {
-      /* Use base, possibly also name.  */
+       
       if (base == NULL)
         {
           int category;
@@ -2871,12 +2568,11 @@ newlocale (int category_mask, const char *name, locale_t base)
         }
       else
         {
-          /* Look up the names of base in the hash table.  Like multiple calls
-             of get_locale_t_name, but locking only once.  */
+           
           struct locale_hash_node *p;
           int category;
 
-          /* Lock while looking up the hash node.  */
+           
           gl_rwlock_rdlock (locale_lock);
           for (p = locale_hash_table[locale_hash_function (base) % LOCALE_HASH_TABLE_SIZE];
                p != NULL;
@@ -2923,7 +2619,7 @@ newlocale (int category_mask, const char *name, locale_t base)
 
   node = (struct locale_hash_node *) malloc (sizeof (struct locale_hash_node));
   if (node == NULL)
-    /* errno is set to ENOMEM.  */
+     
     return NULL;
 
   result = newlocale (category_mask, name, base);
@@ -2933,23 +2629,22 @@ newlocale (int category_mask, const char *name, locale_t base)
       return NULL;
     }
 
-  /* Fill the hash node.  */
+   
   node->locale = result;
   node->names = names;
 
-  /* Insert it in the hash table.  */
+   
   {
     size_t hashcode = locale_hash_function (result);
     size_t slot = hashcode % LOCALE_HASH_TABLE_SIZE;
     struct locale_hash_node *p;
 
-    /* Lock while inserting the new node.  */
+     
     gl_rwlock_wrlock (locale_lock);
     for (p = locale_hash_table[slot]; p != NULL; p = p->next)
       if (p->locale == result)
         {
-          /* This can happen if the application uses the original freelocale()
-             function instead of the overridden one.  */
+           
           p->names = node->names;
           break;
         }
@@ -2968,7 +2663,7 @@ newlocale (int category_mask, const char *name, locale_t base)
   return result;
 }
 
-/* duplocale() override.  */
+ 
 locale_t
 duplocale (locale_t locale)
 #undef duplocale
@@ -2977,12 +2672,12 @@ duplocale (locale_t locale)
   locale_t result;
 
   if (locale == NULL)
-    /* Invalid argument.  */
+     
     abort ();
 
   node = (struct locale_hash_node *) malloc (sizeof (struct locale_hash_node));
   if (node == NULL)
-    /* errno is set to ENOMEM.  */
+     
     return NULL;
 
   result = duplocale (locale);
@@ -2992,7 +2687,7 @@ duplocale (locale_t locale)
       return NULL;
     }
 
-  /* Fill the hash node.  */
+   
   node->locale = result;
   if (locale == LC_GLOBAL_LOCALE)
     {
@@ -3002,14 +2697,14 @@ duplocale (locale_t locale)
         node->names.category_name[category] =
           get_locale_t_name (category, LC_GLOBAL_LOCALE);
 
-      /* Lock before inserting the new node.  */
+       
       gl_rwlock_wrlock (locale_lock);
     }
   else
     {
       struct locale_hash_node *p;
 
-      /* Lock once, for the lookup and the insertion.  */
+       
       gl_rwlock_wrlock (locale_lock);
 
       for (p = locale_hash_table[locale_hash_function (locale) % LOCALE_HASH_TABLE_SIZE];
@@ -3021,9 +2716,7 @@ duplocale (locale_t locale)
         node->names = p->names;
       else
         {
-          /* This can happen if the application uses the original
-             newlocale()/duplocale() functions instead of the overridden
-             ones.  */
+           
           int category;
 
           for (category = 0; category < 6; category++)
@@ -3031,7 +2724,7 @@ duplocale (locale_t locale)
         }
     }
 
-  /* Insert it in the hash table.  */
+   
   {
     size_t hashcode = locale_hash_function (result);
     size_t slot = hashcode % LOCALE_HASH_TABLE_SIZE;
@@ -3040,8 +2733,7 @@ duplocale (locale_t locale)
     for (p = locale_hash_table[slot]; p != NULL; p = p->next)
       if (p->locale == result)
         {
-          /* This can happen if the application uses the original freelocale()
-             function instead of the overridden one.  */
+           
           p->names = node->names;
           break;
         }
@@ -3060,13 +2752,13 @@ duplocale (locale_t locale)
   return result;
 }
 
-/* freelocale() override.  */
+ 
 void
 freelocale (locale_t locale)
 #undef freelocale
 {
   if (locale == NULL || locale == LC_GLOBAL_LOCALE)
-    /* Invalid argument.  */
+     
     abort ();
 
   {
@@ -3076,7 +2768,7 @@ freelocale (locale_t locale)
     struct locale_hash_node **p;
 
     found = NULL;
-    /* Lock while removing the hash node.  */
+     
     gl_rwlock_wrlock (locale_lock);
     for (p = &locale_hash_table[slot]; *p != NULL; p = &(*p)->next)
       if ((*p)->locale == locale)
@@ -3097,8 +2789,7 @@ freelocale (locale_t locale)
 
 #if defined IN_LIBINTL || HAVE_GOOD_USELOCALE
 
-/* Like gl_locale_name_thread, except that the result is not in storage of
-   indefinite extent.  */
+ 
 # if !defined IN_LIBINTL
 static
 # endif
@@ -3111,21 +2802,18 @@ gl_locale_name_thread_unsafe (int category, _GL_UNUSED const char *categoryname)
     if (thread_locale != LC_GLOBAL_LOCALE)
       {
 #  if __GLIBC__ >= 2 && !defined __UCLIBC__
-        /* Work around an incorrect definition of the _NL_LOCALE_NAME macro in
-           glibc < 2.12.
-           See <https://sourceware.org/bugzilla/show_bug.cgi?id=10968>.  */
+         
         const char *name =
           nl_langinfo (_NL_ITEM ((category), _NL_ITEM_INDEX (-1)));
         if (name[0] == '\0')
-          /* Fallback code for glibc < 2.4, which did not implement
-             nl_langinfo (_NL_LOCALE_NAME (category)).  */
+           
           name = thread_locale->__names[category];
         return name;
 #  elif defined __linux__ && HAVE_LANGINFO_H && defined NL_LOCALE_NAME
-        /* musl libc */
+         
         return nl_langinfo_l (NL_LOCALE_NAME (category), thread_locale);
 #  elif (defined __FreeBSD__ || defined __DragonFly__) || (defined __APPLE__ && defined __MACH__)
-        /* FreeBSD, Mac OS X */
+         
         int mask;
 
         switch (category)
@@ -3148,16 +2836,16 @@ gl_locale_name_thread_unsafe (int category, _GL_UNUSED const char *categoryname)
           case LC_MESSAGES:
             mask = LC_MESSAGES_MASK;
             break;
-          default: /* We shouldn't get here.  */
+          default:  
             return "";
           }
         return querylocale (mask, thread_locale);
 #  elif defined __sun
 #   if HAVE_GETLOCALENAME_L
-        /* Solaris >= 12.  */
+         
         return getlocalename_l (category, thread_locale);
 #   elif HAVE_SOLARIS114_LOCALES
-        /* Solaris >= 11.4.  */
+         
         void *lcp = (*thread_locale)->core.data->lcp;
         if (lcp != NULL)
           switch (category)
@@ -3169,15 +2857,13 @@ gl_locale_name_thread_unsafe (int category, _GL_UNUSED const char *categoryname)
             case LC_MONETARY:
             case LC_MESSAGES:
               return ((const char * const *) lcp)[category];
-            default: /* We shouldn't get here.  */
+            default:  
               return "";
             }
 #   elif HAVE_NAMELESS_LOCALES
         return get_locale_t_name (category, thread_locale);
 #   else
-        /* Solaris 11 OpenIndiana.
-           For the internal structure of locale objects, see
-           https://github.com/OpenIndiana/illumos-gate/blob/master/usr/src/lib/libc/port/locale/localeimpl.h  */
+         
         switch (category)
           {
           case LC_CTYPE:
@@ -3187,48 +2873,38 @@ gl_locale_name_thread_unsafe (int category, _GL_UNUSED const char *categoryname)
           case LC_MONETARY:
           case LC_MESSAGES:
             return ((const char * const *) thread_locale)[category];
-          default: /* We shouldn't get here.  */
+          default:  
             return "";
           }
 #   endif
 #  elif defined _AIX && HAVE_NAMELESS_LOCALES
         return get_locale_t_name (category, thread_locale);
 #  elif defined __CYGWIN__
-        /* Cygwin < 2.6 lacks uselocale and thread-local locales altogether.
-           Cygwin <= 2.6.1 lacks NL_LOCALE_NAME, requiring peeking inside
-           an opaque struct.  */
+         
 #   ifdef NL_LOCALE_NAME
         return nl_langinfo_l (NL_LOCALE_NAME (category), thread_locale);
 #   else
-        /* FIXME: Remove when we can assume new-enough Cygwin.  */
+         
         struct __locale_t {
           char categories[7][32];
         };
         return ((struct __locale_t *) thread_locale)->categories[category];
 #   endif
 #  elif defined __HAIKU__
-        /* Since 2022, Haiku has per-thread locales.  locale_t is 'void *',
-           but in fact a 'LocaleBackendData *'.  */
+         
         struct LocaleBackendData {
           int magic;
-          void /*BPrivate::Libroot::LocaleBackend*/ *backend;
-          void /*BPrivate::Libroot::LocaleDataBridge*/ *databridge;
+          void   *backend;
+          void   *databridge;
         };
         void *thread_locale_backend =
           ((struct LocaleBackendData *) thread_locale)->backend;
         if (thread_locale_backend != NULL)
           {
-            /* The only existing concrete subclass of
-               BPrivate::Libroot::LocaleBackend is
-               BPrivate::Libroot::ICULocaleBackend.
-               Invoke the (non-virtual) method
-               BPrivate::Libroot::ICULocaleBackend::_QueryLocale on it.
-               This method is located in a separate shared library,
-               libroot-addon-icu.so.  */
-            static void * volatile querylocale_method /* = NULL */;
-            static int volatile querylocale_found /* = 0 */;
-            /* Attempt to open this shared library, the first time we get
-               here.  */
+             
+            static void * volatile querylocale_method  ;
+            static int volatile querylocale_found  ;
+             
             if (querylocale_found == 0)
               {
                 void *handle =
@@ -3243,30 +2919,23 @@ gl_locale_name_thread_unsafe (int category, _GL_UNUSED const char *categoryname)
                         querylocale_found = 1;
                       }
                     else
-                      /* Could not find the symbol.  */
+                       
                       querylocale_found = -1;
                   }
                 else
-                  /* Could not open the separate shared library.  */
+                   
                   querylocale_found = -1;
               }
             if (querylocale_found > 0)
               {
-                /* The _QueryLocale method is a non-static C++ method with
-                   parameters (int category) and return type 'const char *'.
-                   See
-                     haiku/headers/private/libroot/locale/ICULocaleBackend.h
-                     haiku/src/system/libroot/add-ons/icu/ICULocaleBackend.cpp
-                   This is the same as a C function with parameters
-                     (BPrivate::Libroot::LocaleBackend* this, int category)
-                   and return type 'const char *'.  Invoke it.  */
+                 
                 const char * (*querylocale_func) (void *, int) =
                   (const char * (*) (void *, int)) querylocale_method;
                 return querylocale_func (thread_locale_backend, category);
               }
           }
         else
-          /* It's the "C" or "POSIX" locale.  */
+           
           return "C";
 #  elif defined __ANDROID__
         return MB_CUR_MAX == 4 ? "C.UTF-8" : "C";
@@ -3287,18 +2956,11 @@ gl_locale_name_thread (int category, _GL_UNUSED const char *categoryname)
   if (name != NULL)
     return struniq (name);
 #endif
-  /* On WINDOWS_NATIVE, don't use GetThreadLocale() here, because when
-     SetThreadLocale has not been called - which is a very frequent case -
-     the value of GetThreadLocale() ignores past calls to 'setlocale'.  */
+   
   return NULL;
 }
 
-/* XPG3 defines the result of 'setlocale (category, NULL)' as:
-   "Directs 'setlocale()' to query 'category' and return the current
-    setting of 'local'."
-   However it does not specify the exact format.  Neither do SUSV2 and
-   ISO C 99.  So we can use this feature only on selected systems (e.g.
-   those using GNU C Library).  */
+ 
 #if defined _LIBC || ((defined __GLIBC__ && __GLIBC__ >= 2) && !defined __UCLIBC__)
 # define HAVE_LOCALE_NULL
 #endif
@@ -3310,13 +2972,10 @@ gl_locale_name_posix (int category, _GL_UNUSED const char *categoryname)
   if (LC_MIN <= category && category <= LC_MAX)
     {
       const char *locname =
-        /* setlocale_null (category) is identical to setlocale (category, NULL)
-           on this platform.  */
+         
         setlocale (category, NULL);
 
-      /* Convert locale name to LCID.  We don't want to use
-         LocaleNameToLCID because (a) it is only available since Vista,
-         and (b) it doesn't accept locale names returned by 'setlocale'.  */
+       
       LCID lcid = get_lcid (locname);
 
       if (lcid > 0)
@@ -3326,38 +2985,19 @@ gl_locale_name_posix (int category, _GL_UNUSED const char *categoryname)
   {
     const char *locname;
 
-    /* Use the POSIX methods of looking to 'LC_ALL', 'LC_xxx', and 'LANG'.
-       On some systems this can be done by the 'setlocale' function itself.  */
+     
 #if defined HAVE_LC_MESSAGES && defined HAVE_LOCALE_NULL
     locname = setlocale_null (category);
 #else
-    /* On other systems we ignore what setlocale reports and instead look at the
-       environment variables directly.  This is necessary
-         1. on systems which have a facility for customizing the default locale
-            (Mac OS X, native Windows, Cygwin) and where the system's setlocale()
-            function ignores this default locale (Mac OS X, Cygwin), in two cases:
-            a. when the user missed to use the setlocale() override from libintl
-               (for example by not including <libintl.h>),
-            b. when setlocale supports only the "C" locale, such as on Cygwin
-               1.5.x.  In this case even the override from libintl cannot help.
-         2. on all systems where setlocale supports only the "C" locale.  */
-    /* Strictly speaking, it is a POSIX violation to look at the environment
-       variables regardless whether setlocale has been called or not.  POSIX
-       says:
-           "For C-language programs, the POSIX locale shall be the
-            default locale when the setlocale() function is not called."
-       But we assume that all programs that use internationalized APIs call
-       setlocale (LC_ALL, "").  */
+     
+     
     locname = gl_locale_name_environ (category, categoryname);
 #endif
-    /* Convert the locale name from the format returned by setlocale() or found
-       in the environment variables to the XPG syntax.  */
+     
 #if defined WINDOWS_NATIVE
     if (locname != NULL)
       {
-        /* Convert locale name to LCID.  We don't want to use
-           LocaleNameToLCID because (a) it is only available since Vista,
-           and (b) it doesn't accept locale names returned by 'setlocale'.  */
+         
         LCID lcid = get_lcid (locname);
 
         if (lcid > 0)
@@ -3373,26 +3013,24 @@ gl_locale_name_environ (_GL_UNUSED int category, const char *categoryname)
 {
   const char *retval;
 
-  /* Setting of LC_ALL overrides all other.  */
+   
   retval = getenv ("LC_ALL");
   if (retval != NULL && retval[0] != '\0')
     return retval;
-  /* Next comes the name of the desired category.  */
+   
   retval = getenv (categoryname);
   if (retval != NULL && retval[0] != '\0')
     return retval;
-  /* Last possibility is the LANG environment variable.  */
+   
   retval = getenv ("LANG");
   if (retval != NULL && retval[0] != '\0')
     {
 #if HAVE_CFPREFERENCESCOPYAPPVALUE
-      /* Mac OS X 10.2 or newer.
-         Ignore invalid LANG value set by the Terminal application.  */
+       
       if (strcmp (retval, "UTF-8") != 0)
 #endif
 #if defined __CYGWIN__
-      /* Cygwin.
-         Ignore dummy LANG value set by ~/.profile.  */
+       
       if (strcmp (retval, "C.UTF-8") != 0)
 #endif
         return retval;
@@ -3404,60 +3042,22 @@ gl_locale_name_environ (_GL_UNUSED int category, const char *categoryname)
 const char *
 gl_locale_name_default (void)
 {
-  /* POSIX:2001 says:
-     "All implementations shall define a locale as the default locale, to be
-      invoked when no environment variables are set, or set to the empty
-      string.  This default locale can be the POSIX locale or any other
-      implementation-defined locale.  Some implementations may provide
-      facilities for local installation administrators to set the default
-      locale, customizing it for each location.  POSIX:2001 does not require
-      such a facility.
-
-     The systems with such a facility are Mac OS X and Windows: They provide a
-     GUI that allows the user to choose a locale.
-       - On Mac OS X, by default, none of LC_* or LANG are set.  Starting with
-         Mac OS X 10.4 or 10.5, LANG is set for processes launched by the
-         'Terminal' application (but sometimes to an incorrect value "UTF-8").
-         When no environment variable is set, setlocale (LC_ALL, "") uses the
-         "C" locale.
-       - On native Windows, by default, none of LC_* or LANG are set.
-         When no environment variable is set, setlocale (LC_ALL, "") uses the
-         locale chosen by the user.
-       - On Cygwin 1.5.x, by default, none of LC_* or LANG are set.
-         When no environment variable is set, setlocale (LC_ALL, "") uses the
-         "C" locale.
-       - On Cygwin 1.7, by default, LANG is set to "C.UTF-8" when the default
-         ~/.profile is executed.
-         When no environment variable is set, setlocale (LC_ALL, "") uses the
-         "C.UTF-8" locale, which operates in the same way as the "C" locale.
-  */
+   
 
 #if !(HAVE_CFPREFERENCESCOPYAPPVALUE || defined WINDOWS_NATIVE || defined __CYGWIN__)
 
-  /* The system does not have a way of setting the locale, other than the
-     POSIX specified environment variables.  We use C as default locale.  */
+   
   return "C";
 
 #else
 
-  /* Return an XPG style locale name language[_territory][@modifier].
-     Don't even bother determining the codeset; it's not useful in this
-     context, because message catalogs are not specific to a single
-     codeset.  */
+   
 
 # if HAVE_CFPREFERENCESCOPYAPPVALUE
-  /* Mac OS X 10.4 or newer */
-  /* Don't use the API introduced in Mac OS X 10.5, CFLocaleCopyCurrent,
-     because in macOS 10.13.4 it has the following behaviour:
-     When two or more languages are specified in the
-     "System Preferences > Language & Region > Preferred Languages" panel,
-     it returns en_CC where CC is the territory (even when English is not among
-     the preferred languages!).  What we want instead is what
-     CFLocaleCopyCurrent returned in earlier macOS releases and what
-     CFPreferencesCopyAppValue still returns, namely ll_CC where ll is the
-     first among the preferred languages and CC is the territory.  */
+   
+   
   {
-    /* Cache the locale name, since CoreFoundation calls are expensive.  */
+     
     static const char *cached_localename;
 
     if (cached_localename == NULL)
@@ -3485,11 +3085,11 @@ gl_locale_name_default (void)
 
 # endif
 
-# if defined WINDOWS_NATIVE || defined __CYGWIN__ /* Native Windows or Cygwin */
+# if defined WINDOWS_NATIVE || defined __CYGWIN__  
   {
     LCID lcid;
 
-    /* Use native Windows API locale ID.  */
+     
     lcid = GetThreadLocale ();
 
     return gl_locale_name_from_win32_LCID (lcid);
@@ -3498,11 +3098,7 @@ gl_locale_name_default (void)
 #endif
 }
 
-/* Determine the current locale's name, and canonicalize it into XPG syntax
-     language[_territory][.codeset][@modifier]
-   The codeset part in the result is not reliable; the locale_charset()
-   should be used for codeset information instead.
-   The result must not be freed; it is statically allocated.  */
+ 
 
 const char *
 gl_locale_name (int category, const char *categoryname)

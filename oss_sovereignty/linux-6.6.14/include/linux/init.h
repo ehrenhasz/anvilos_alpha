@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_INIT_H
 #define _LINUX_INIT_H
 
@@ -7,71 +7,23 @@
 #include <linux/stringify.h>
 #include <linux/types.h>
 
-/* Built-in __init functions needn't be compiled with retpoline */
+ 
 #if defined(__noretpoline) && !defined(MODULE)
 #define __noinitretpoline __noretpoline
 #else
 #define __noinitretpoline
 #endif
 
-/* These macros are used to mark some functions or 
- * initialized data (doesn't apply to uninitialized data)
- * as `initialization' functions. The kernel can take this
- * as hint that the function is used only during the initialization
- * phase and free up used memory resources after
- *
- * Usage:
- * For functions:
- * 
- * You should add __init immediately before the function name, like:
- *
- * static void __init initme(int x, int y)
- * {
- *    extern int z; z = x * y;
- * }
- *
- * If the function has a prototype somewhere, you can also add
- * __init between closing brace of the prototype and semicolon:
- *
- * extern int initialize_foobar_device(int, int, int) __init;
- *
- * For initialized data:
- * You should insert __initdata or __initconst between the variable name
- * and equal sign followed by value, e.g.:
- *
- * static int init_variable __initdata = 0;
- * static const char linux_logo[] __initconst = { 0x32, 0x36, ... };
- *
- * Don't forget to initialize data not at file scope, i.e. within a function,
- * as gcc otherwise puts the data into the bss section and not into the init
- * section.
- */
+ 
 
-/* These are for everybody (although not all archs will actually
-   discard it in modules) */
+ 
 #define __init		__section(".init.text") __cold  __latent_entropy __noinitretpoline
 #define __initdata	__section(".init.data")
 #define __initconst	__section(".init.rodata")
 #define __exitdata	__section(".exit.data")
 #define __exit_call	__used __section(".exitcall.exit")
 
-/*
- * modpost check for section mismatches during the kernel build.
- * A section mismatch happens when there are references from a
- * code or data section to an init section (both code or data).
- * The init sections are (for most archs) discarded by the kernel
- * when early init has completed so all such references are potential bugs.
- * For exit sections the same issue exists.
- *
- * The following markers are used for the cases where the reference to
- * the *init / *exit section (code or data) is valid and will teach
- * modpost not to issue a warning.  Intended semantics is that a code or
- * data tagged __ref* can reference code or data from init section without
- * producing a warning (of course, no warning does not mean code is
- * correct, so optimally document why the __ref is needed and why it's OK).
- *
- * The markers follow same syntax rules as __init / __initdata.
- */
+ 
 #define __ref            __section(".ref.text") noinline
 #define __refdata        __section(".ref.data")
 #define __refconst       __section(".ref.rodata")
@@ -84,7 +36,7 @@
 
 #define __exit          __section(".exit.text") __exitused __cold notrace
 
-/* Used for MEMORY_HOTPLUG */
+ 
 #define __meminit        __section(".meminit.text") __cold notrace \
 						  __latent_entropy
 #define __meminitdata    __section(".meminit.data")
@@ -93,7 +45,7 @@
 #define __memexitdata    __section(".memexit.data")
 #define __memexitconst   __section(".memexit.rodata")
 
-/* For assembly routines */
+ 
 #define __HEAD		.section	".head.text","ax"
 #define __INIT		.section	".init.text","ax"
 #define __FINIT		.previous
@@ -106,15 +58,13 @@
 #define __MEMINITDATA    .section	".meminit.data", "aw"
 #define __MEMINITRODATA  .section	".meminit.rodata", "a"
 
-/* silence warnings when references are OK */
+ 
 #define __REF            .section       ".ref.text", "ax"
 #define __REFDATA        .section       ".ref.data", "aw"
 #define __REFCONST       .section       ".ref.rodata", "a"
 
 #ifndef __ASSEMBLY__
-/*
- * Used for initialization calls..
- */
+ 
 typedef int (*initcall_t)(void);
 typedef void (*exitcall_t)(void);
 
@@ -136,19 +86,19 @@ static inline initcall_t initcall_from_entry(initcall_entry_t *entry)
 
 extern initcall_entry_t __con_initcall_start[], __con_initcall_end[];
 
-/* Used for constructor calls. */
+ 
 typedef void (*ctor_fn_t)(void);
 
 struct file_system_type;
 
-/* Defined in init/main.c */
+ 
 extern int do_one_initcall(initcall_t fn);
 extern char __initdata boot_command_line[];
 extern char *saved_command_line;
 extern unsigned int saved_command_line_len;
 extern unsigned int reset_devices;
 
-/* used by init/main.c */
+ 
 void setup_arch(char **);
 void prepare_namespace(void);
 void __init init_rootfs(void);
@@ -188,23 +138,9 @@ extern bool initcall_debug;
 
 #ifndef __ASSEMBLY__
 
-/*
- * initcalls are now grouped by functionality into separate
- * subsections. Ordering inside the subsections is determined
- * by link order. 
- * For backwards compatibility, initcall() puts the call in 
- * the device init subsection.
- *
- * The `id' arg to __define_initcall() is needed so that multiple initcalls
- * can point at the same handler without causing duplicate-symbol build errors.
- *
- * Initcalls are run by placing pointers in initcall sections that the
- * kernel iterates at runtime. The linker can do dead code / data elimination
- * and remove that completely, so the initcall sections have to be marked
- * as KEEP() in the linker script.
- */
+ 
 
-/* Format: <modname>__<counter>_<line>_<fn> */
+ 
 #define __initcall_id(fn)					\
 	__PASTE(__KBUILD_MODNAME,				\
 	__PASTE(__,						\
@@ -213,7 +149,7 @@ extern bool initcall_debug;
 	__PASTE(__LINE__,					\
 	__PASTE(_, fn))))))
 
-/* Format: __<prefix>__<iid><id> */
+ 
 #define __initcall_name(prefix, __iid, id)			\
 	__PASTE(__,						\
 	__PASTE(prefix,						\
@@ -221,21 +157,11 @@ extern bool initcall_debug;
 	__PASTE(__iid, id))))
 
 #ifdef CONFIG_LTO_CLANG
-/*
- * With LTO, the compiler doesn't necessarily obey link order for
- * initcalls. In order to preserve the correct order, we add each
- * variable into its own section and generate a linker script (in
- * scripts/link-vmlinux.sh) to specify the order of the sections.
- */
+ 
 #define __initcall_section(__sec, __iid)			\
 	#__sec ".init.." #__iid
 
-/*
- * With LTO, the compiler can rename static functions to avoid
- * global naming collisions. We use a global stub function for
- * initcalls to create a stable symbol name whose address can be
- * taken in inline assembly when PREL32 relocations are used.
- */
+ 
 #define __initcall_stub(fn, __iid, id)				\
 	__initcall_name(initstub, __iid, id)
 
@@ -281,20 +207,10 @@ extern bool initcall_debug;
 
 #define __define_initcall(fn, id) ___define_initcall(fn, id, .initcall##id)
 
-/*
- * Early initcalls run before initializing SMP.
- *
- * Only for built-in code, not modules.
- */
+ 
 #define early_initcall(fn)		__define_initcall(fn, early)
 
-/*
- * A "pure" initcall has no dependencies on anything else, and purely
- * initializes variables that couldn't be statically initialized.
- *
- * This only exists for built-in code, not for modules.
- * Keep main.c:initcall_level_names[] in sync.
- */
+ 
 #define pure_initcall(fn)		__define_initcall(fn, 0)
 
 #define core_initcall(fn)		__define_initcall(fn, 1)
@@ -328,12 +244,7 @@ struct obs_kernel_param {
 
 extern const struct obs_kernel_param __setup_start[], __setup_end[];
 
-/*
- * Only for really core code.  See moduleparam.h for the normal way.
- *
- * Force the alignment so the compiler doesn't space elements of the
- * obs_kernel_param "array" too far apart in .init.setup.
- */
+ 
 #define __setup_param(str, unique_id, fn, early)			\
 	static const char __setup_str_##unique_id[] __initconst		\
 		__aligned(1) = str; 					\
@@ -342,20 +253,11 @@ extern const struct obs_kernel_param __setup_start[], __setup_end[];
 		__aligned(__alignof__(struct obs_kernel_param))		\
 		= { __setup_str_##unique_id, fn, early }
 
-/*
- * NOTE: __setup functions return values:
- * @fn returns 1 (or non-zero) if the option argument is "handled"
- * and returns 0 if the option argument is "not handled".
- */
+ 
 #define __setup(str, fn)						\
 	__setup_param(str, fn, fn, 0)
 
-/*
- * NOTE: @fn is as per module_param, not __setup!
- * I.e., @fn returns 0 for no error or non-zero for error
- * (possibly @fn returns a -errno value, but it does not matter).
- * Emits warning if @fn returns non-zero.
- */
+ 
 #define early_param(str, fn)						\
 	__setup_param(str, fn, fn, 1)
 
@@ -377,18 +279,18 @@ extern const struct obs_kernel_param __setup_start[], __setup_end[];
 	}								\
 	early_param(str_off, parse_##var##_off)
 
-/* Relies on boot_command_line being set */
+ 
 void __init parse_early_param(void);
 void __init parse_early_options(char *cmdline);
-#endif /* __ASSEMBLY__ */
+#endif  
 
-#else /* MODULE */
+#else  
 
-#define __setup_param(str, unique_id, fn)	/* nothing */
-#define __setup(str, func) 			/* nothing */
+#define __setup_param(str, unique_id, fn)	 
+#define __setup(str, func) 			 
 #endif
 
-/* Data marked not to be saved by software suspend */
+ 
 #define __nosavedata __section(".data..nosave")
 
 #ifdef MODULE
@@ -397,4 +299,4 @@ void __init parse_early_options(char *cmdline);
 #define __exit_p(x) NULL
 #endif
 
-#endif /* _LINUX_INIT_H */
+#endif  

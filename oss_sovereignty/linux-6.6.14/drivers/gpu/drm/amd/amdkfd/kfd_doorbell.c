@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 #include "kfd_priv.h"
 #include <linux/mm.h>
 #include <linux/mman.h>
@@ -27,26 +7,11 @@
 #include <linux/io.h>
 #include <linux/idr.h>
 
-/*
- * This extension supports a kernel level doorbells management for the
- * kernel queues using the first doorbell page reserved for the kernel.
- */
+ 
 
-/*
- * Each device exposes a doorbell aperture, a PCI MMIO aperture that
- * receives 32-bit writes that are passed to queues as wptr values.
- * The doorbells are intended to be written by applications as part
- * of queueing work on user-mode queues.
- * We assign doorbells to applications in PAGE_SIZE-sized and aligned chunks.
- * We map the doorbell address space into user-mode when a process creates
- * its first queue on each device.
- * Although the mapping is done by KFD, it is equivalent to an mmap of
- * the /dev/kfd with the particular device encoded in the mmap offset.
- * There will be other uses for mmap of /dev/kfd, so only a range of
- * offsets (KFD_MMAP_DOORBELL_START-END) is used for doorbells.
- */
+ 
 
-/* # of doorbell bytes allocated for each process. */
+ 
 size_t kfd_doorbell_process_slice(struct kfd_dev *kfd)
 {
 	if (!kfd->shared_resources.enable_mes)
@@ -58,27 +23,22 @@ size_t kfd_doorbell_process_slice(struct kfd_dev *kfd)
 					(struct amdgpu_device *)kfd->adev);
 }
 
-/* Doorbell calculations for device init. */
+ 
 int kfd_doorbell_init(struct kfd_dev *kfd)
 {
 	int size = PAGE_SIZE;
 	int r;
 
-	/*
-	 * Todo: KFD kernel level operations need only one doorbell for
-	 * ring test/HWS. So instead of reserving a whole page here for
-	 * kernel, reserve and consume a doorbell from existing KGD kernel
-	 * doorbell page.
-	 */
+	 
 
-	/* Bitmap to dynamically allocate doorbells from kernel page */
+	 
 	kfd->doorbell_bitmap = bitmap_zalloc(size / sizeof(u32), GFP_KERNEL);
 	if (!kfd->doorbell_bitmap) {
 		DRM_ERROR("Failed to allocate kernel doorbell bitmap\n");
 		return -ENOMEM;
 	}
 
-	/* Alloc a doorbell page for KFD kernel usages */
+	 
 	r = amdgpu_bo_create_kernel(kfd->adev,
 				    size,
 				    PAGE_SIZE,
@@ -109,10 +69,7 @@ int kfd_doorbell_mmap(struct kfd_node *dev, struct kfd_process *process,
 	phys_addr_t address;
 	struct kfd_process_device *pdd;
 
-	/*
-	 * For simplicitly we only allow mapping of the entire doorbell
-	 * allocation of a single device & process.
-	 */
+	 
 	if (vma->vm_end - vma->vm_start != kfd_doorbell_process_slice(dev->kfd))
 		return -EINVAL;
 
@@ -120,7 +77,7 @@ int kfd_doorbell_mmap(struct kfd_node *dev, struct kfd_process *process,
 	if (!pdd)
 		return -EINVAL;
 
-	/* Calculate physical address of doorbell */
+	 
 	address = kfd_get_process_doorbells(pdd);
 	if (!address)
 		return -ENOMEM;
@@ -146,7 +103,7 @@ int kfd_doorbell_mmap(struct kfd_node *dev, struct kfd_process *process,
 }
 
 
-/* get kernel iomem pointer for a doorbell */
+ 
 void __iomem *kfd_get_kernel_doorbell(struct kfd_dev *kfd,
 					unsigned int *doorbell_off)
 {
@@ -215,7 +172,7 @@ static int init_doorbell_bitmap(struct qcm_process_device *qpd,
 	if (!KFD_IS_SOC15(dev))
 		return 0;
 
-	/* Mask out doorbells reserved for SDMA, IH, and VCN on SOC15. */
+	 
 	pr_debug("reserved doorbell 0x%03x - 0x%03x\n", range_start, range_end);
 	pr_debug("reserved doorbell 0x%03x - 0x%03x\n",
 			range_start + KFD_QUEUE_DOORBELL_MIRROR_OFFSET,
@@ -239,7 +196,7 @@ phys_addr_t kfd_get_process_doorbells(struct kfd_process_device *pdd)
 
 	if (!pdd->qpd.proc_doorbells) {
 		if (kfd_alloc_process_doorbells(pdd->dev->kfd, pdd))
-			/* phys_addr_t 0 is error */
+			 
 			return 0;
 	}
 
@@ -255,7 +212,7 @@ int kfd_alloc_process_doorbells(struct kfd_dev *kfd, struct kfd_process_device *
 	int r;
 	struct qcm_process_device *qpd = &pdd->qpd;
 
-	/* Allocate bitmap for dynamic doorbell allocation */
+	 
 	qpd->doorbell_bitmap = bitmap_zalloc(KFD_MAX_NUM_OF_QUEUES_PER_PROCESS,
 					     GFP_KERNEL);
 	if (!qpd->doorbell_bitmap) {
@@ -270,7 +227,7 @@ int kfd_alloc_process_doorbells(struct kfd_dev *kfd, struct kfd_process_device *
 		goto err;
 	}
 
-	/* Allocate doorbells for this process */
+	 
 	r = amdgpu_bo_create_kernel(kfd->adev,
 				    kfd_doorbell_process_slice(kfd),
 				    PAGE_SIZE,

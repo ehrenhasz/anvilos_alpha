@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_PCH_REFCLK_H_
 #define _INTEL_PCH_REFCLK_H_

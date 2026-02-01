@@ -1,34 +1,11 @@
-/* Test of condition variables in multithreaded situations.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#if USE_ISOC_THREADS || USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS || USE_WINDOWS_THREADS
-
-/* Which tests to perform.
-   Uncomment some of these, to verify that all tests crash if no locking
-   is enabled.  */
+ 
 #define DO_TEST_COND 1
 #define DO_TEST_TIMEDCOND 1
 
-/* Whether to help the scheduler through explicit sched_yield().
-   Uncomment this to see if the operating system has a fair scheduler.  */
+ 
 #define EXPLICIT_YIELD 1
 
-/* Whether to print debugging messages.  */
+ 
 #define ENABLE_DEBUGGING 0
 
 #include <pthread.h>
@@ -61,9 +38,7 @@
 #endif
 
 
-/*
- * Condition check
- */
+ 
 static int cond_value = 0;
 static pthread_cond_t condtest;
 static pthread_mutex_t lockcond;
@@ -104,7 +79,7 @@ test_pthread_cond_wait ()
     }
   while (ret == -1 && (remain.tv_sec != 0 || remain.tv_nsec != 0));
 
-  /* signal condition */
+   
   ASSERT (pthread_mutex_lock (&lockcond) == 0);
   cond_value = 1;
   ASSERT (pthread_cond_signal (&condtest) == 0);
@@ -117,9 +92,7 @@ test_pthread_cond_wait ()
 }
 
 
-/*
- * Timed Condition check
- */
+ 
 static int cond_timeout;
 
 static void
@@ -174,7 +147,7 @@ test_pthread_cond_timedwait (void)
     }
   while (ret == -1 && (remain.tv_sec != 0 || remain.tv_nsec != 0));
 
-  /* signal condition */
+   
   ASSERT (pthread_mutex_lock (&lockcond) == 0);
   cond_value = 1;
   ASSERT (pthread_cond_signal (&condtest) == 0);
@@ -190,8 +163,7 @@ int
 main ()
 {
 #if HAVE_DECL_ALARM
-  /* Declare failure if test takes too long, by using default abort
-     caused by SIGALRM.  */
+   
   int alarm_value = 600;
   signal (SIGALRM, SIG_DFL);
   alarm (alarm_value);
@@ -224,7 +196,7 @@ main ()
 
 #else
 
-/* No multithreading available.  */
+ 
 
 #include <stdio.h>
 

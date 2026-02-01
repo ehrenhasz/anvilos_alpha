@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/socket.h>
@@ -62,10 +62,10 @@ void setup_udp_tunnel_sock(struct net *net, struct socket *sock,
 {
 	struct sock *sk = sock->sk;
 
-	/* Disable multicast loopback */
+	 
 	inet_clear_bit(MC_LOOP, sk);
 
-	/* Enable CHECKSUM_UNNECESSARY to CHECKSUM_COMPLETE conversion */
+	 
 	inet_inc_convert_csum(sk);
 
 	rcu_assign_sk_user_data(sk, cfg->sk_user_data);
@@ -110,7 +110,7 @@ void udp_tunnel_drop_rx_port(struct net_device *dev, struct socket *sock,
 }
 EXPORT_SYMBOL_GPL(udp_tunnel_drop_rx_port);
 
-/* Notify netdevs that UDP port started listening */
+ 
 void udp_tunnel_notify_add_rx_port(struct socket *sock, unsigned short type)
 {
 	struct sock *sk = sock->sk;
@@ -130,7 +130,7 @@ void udp_tunnel_notify_add_rx_port(struct socket *sock, unsigned short type)
 }
 EXPORT_SYMBOL_GPL(udp_tunnel_notify_add_rx_port);
 
-/* Notify netdevs that UDP port is no more listening */
+ 
 void udp_tunnel_notify_del_rx_port(struct socket *sock, unsigned short type)
 {
 	struct sock *sk = sock->sk;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2017 Konsulko Group Inc. All rights reserved.
- *
- * Author:
- *	 Pantelis Antoniou <pantelis.antoniou@konsulko.com>
- */
+
+ 
 
 #include <assert.h>
 #include <ctype.h>
@@ -20,7 +15,7 @@
 
 #define BUF_INCREMENT	65536
 
-/* Usage related data. */
+ 
 static const char usage_synopsis[] =
 	"apply a number of overlays to a base blob\n"
 	"	fdtoverlay <options> [<overlay.dtbo> [<overlay.dtbo>]]\n"
@@ -49,10 +44,7 @@ static void *apply_one(char *base, const char *overlay, size_t *buf_len,
 	char *tmpo;
 	int ret;
 
-	/*
-	 * We take a copies first, because a a failed apply can trash
-	 * both the base blob and the overlay
-	 */
+	 
 	tmpo = xmalloc(fdt_totalsize(overlay));
 
 	do {
@@ -111,11 +103,11 @@ static int do_fdtoverlay(const char *input_filename,
 		goto out_err;
 	}
 
-	/* allocate blob pointer array */
+	 
 	ovblob = xmalloc(sizeof(*ovblob) * argc);
 	memset(ovblob, 0, sizeof(*ovblob) * argc);
 
-	/* read and keep track of the overlay blobs */
+	 
 	for (i = 0; i < argc; i++) {
 		size_t ov_len;
 		ovblob[i] = utilfdt_read(argv[i], &ov_len);
@@ -134,7 +126,7 @@ static int do_fdtoverlay(const char *input_filename,
 
 	buf_len = fdt_totalsize(blob);
 
-	/* apply the overlays in sequence */
+	 
 	for (i = 0; i < argc; i++) {
 		blob = apply_one(blob, ovblob[i], &buf_len, argv[i]);
 		if (!blob)

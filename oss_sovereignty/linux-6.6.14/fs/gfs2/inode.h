@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __INODE_DOT_H__
 #define __INODE_DOT_H__
@@ -123,7 +120,7 @@ static inline int gfs2_localflocks(const struct gfs2_sbd *sdp)
 {
 	return sdp->sd_args.ar_localflocks;
 }
-#else /* Single node only */
+#else  
 #define gfs2_file_fops gfs2_file_fops_nolock
 #define gfs2_dir_fops gfs2_dir_fops_nolock
 
@@ -131,7 +128,7 @@ static inline int gfs2_localflocks(const struct gfs2_sbd *sdp)
 {
 	return 1;
 }
-#endif /* CONFIG_GFS2_FS_LOCKING_DLM */
+#endif  
 
-#endif /* __INODE_DOT_H__ */
+#endif  
 

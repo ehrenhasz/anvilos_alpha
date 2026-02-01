@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015 FUJITSU LIMITED
- */
+ 
+ 
 
 #ifndef FJES_HW_H_
 #define FJES_HW_H_
@@ -21,10 +18,10 @@ struct fjes_hw;
 #define FJES_DEBUG_PAGE_SIZE 4096
 #define FJES_DEBUG_BUFFER_SIZE	(16 * FJES_DEBUG_PAGE_SIZE)
 
-#define FJES_DEVICE_RESET_TIMEOUT  ((17 + 1) * 3 * 8) /* sec */
-#define FJES_COMMAND_REQ_TIMEOUT  ((5 + 1) * 3 * 8) /* sec */
-#define FJES_COMMAND_REQ_BUFF_TIMEOUT	(60 * 3) /* sec */
-#define FJES_COMMAND_EPSTOP_WAIT_TIMEOUT	(1) /* sec */
+#define FJES_DEVICE_RESET_TIMEOUT  ((17 + 1) * 3 * 8)  
+#define FJES_COMMAND_REQ_TIMEOUT  ((5 + 1) * 3 * 8)  
+#define FJES_COMMAND_REQ_BUFF_TIMEOUT	(60 * 3)  
+#define FJES_COMMAND_EPSTOP_WAIT_TIMEOUT	(1)  
 
 #define FJES_CMD_REQ_ERR_INFO_PARAM  (0x0001)
 #define FJES_CMD_REQ_ERR_INFO_STATUS (0x0002)
@@ -88,13 +85,13 @@ struct fjes_hw;
 #define FJES_DEV_COMMAND_STOP_DBG_REQ_LEN (4)
 #define FJES_DEV_COMMAND_STOP_DBG_RES_LEN (8)
 
-/* Frame & MTU */
+ 
 struct esmem_frame {
 	__le32 frame_size;
 	u8 frame_data[];
 };
 
-/* EP partner status */
+ 
 enum ep_partner_status {
 	EP_PARTNER_UNSHARE,
 	EP_PARTNER_SHARED,
@@ -103,13 +100,13 @@ enum ep_partner_status {
 	EP_PARTNER_STATUS_MAX,
 };
 
-/* shared status region */
+ 
 struct fjes_device_shared_info {
 	int epnum;
 	u8 ep_status[];
 };
 
-/* structures for command control request data*/
+ 
 union fjes_device_command_req {
 	struct {
 		__le32 length;
@@ -134,7 +131,7 @@ union fjes_device_command_req {
 	} stop_trace;
 };
 
-/* structures for command control response data */
+ 
 union fjes_device_command_res {
 	struct {
 		__le32 length;
@@ -162,7 +159,7 @@ union fjes_device_command_res {
 	} stop_trace;
 };
 
-/* request command type */
+ 
 enum fjes_dev_command_request_type {
 	FJES_CMD_REQ_INFO		= 0x0001,
 	FJES_CMD_REQ_SHARE_BUFFER	= 0x0002,
@@ -171,7 +168,7 @@ enum fjes_dev_command_request_type {
 	FJES_CMD_REQ_STOP_DEBUG		= 0x0200,
 };
 
-/* parameter for command control */
+ 
 struct fjes_device_command_param {
 	u32 req_len;
 	phys_addr_t req_start;
@@ -180,7 +177,7 @@ struct fjes_device_command_param {
 	phys_addr_t share_start;
 };
 
-/* error code for command control */
+ 
 enum fjes_dev_command_response_e {
 	FJES_CMD_STATUS_UNKNOWN,
 	FJES_CMD_STATUS_NORMAL,
@@ -189,7 +186,7 @@ enum fjes_dev_command_response_e {
 	FJES_CMD_STATUS_ERROR_STATUS,
 };
 
-/* EP buffer information */
+ 
 union ep_buffer_info {
 	u8 raw[EP_BUFFER_INFO_SIZE];
 
@@ -224,7 +221,7 @@ union ep_buffer_info {
 
 };
 
-/* statistics of EP */
+ 
 struct fjes_drv_ep_stats {
 	u64 com_regist_buf_exec;
 	u64 com_unregist_buf_exec;
@@ -242,7 +239,7 @@ struct fjes_drv_ep_stats {
 	u64 tx_dropped_vlanid_mismatch;
 };
 
-/* buffer pair for Extended Partition */
+ 
 struct ep_share_mem_info {
 	struct epbuf_handler {
 		void *buffer;
@@ -287,7 +284,7 @@ struct fjes_hw_info {
 	struct es_device_trace *trace;
 	u64 trace_size;
 
-	struct mutex lock; /* buffer lock*/
+	struct mutex lock;  
 
 	unsigned long buffer_share_bit;
 	unsigned long buffer_unshare_reserve_bit;
@@ -316,7 +313,7 @@ struct fjes_hw {
 
 	struct fjes_hw_info hw_info;
 
-	spinlock_t rx_status_lock; /* spinlock for rx_status */
+	spinlock_t rx_status_lock;  
 
 	u32 debug_mode;
 };
@@ -353,4 +350,4 @@ int fjes_hw_epbuf_tx_pkt_send(struct epbuf_handler *, void *, size_t);
 
 int fjes_hw_start_debug(struct fjes_hw *);
 int fjes_hw_stop_debug(struct fjes_hw *);
-#endif /* FJES_HW_H_ */
+#endif  

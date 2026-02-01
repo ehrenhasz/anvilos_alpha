@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI access driver for TI TPS65912x PMICs
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- *
- * Based on the TPS65218 driver and the previous TPS65912 driver by
- * Margarita Olaya Cabrera <magi@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -17,7 +9,7 @@
 
 static const struct of_device_id tps65912_spi_of_match_table[] = {
 	{ .compatible = "ti,tps65912", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tps65912_spi_of_match_table);
 
@@ -51,7 +43,7 @@ static void tps65912_spi_remove(struct spi_device *spi)
 
 static const struct spi_device_id tps65912_spi_id_table[] = {
 	{ "tps65912", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, tps65912_spi_id_table);
 

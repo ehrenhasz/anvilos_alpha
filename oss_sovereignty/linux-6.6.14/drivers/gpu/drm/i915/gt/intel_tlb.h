@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_TLB_H
 #define INTEL_TLB_H
@@ -26,4 +24,4 @@ static inline u32 intel_gt_next_invalidate_tlb_full(const struct intel_gt *gt)
 	return intel_gt_tlb_seqno(gt) | 1;
 }
 
-#endif /* INTEL_TLB_H */
+#endif  

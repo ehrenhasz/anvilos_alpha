@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 #ifndef ATH12K_DP_RX_H
 #define ATH12K_DP_RX_H
 
@@ -20,7 +17,7 @@ struct ath12k_dp_rx_tid {
 	u32 ba_win_sz;
 	bool active;
 
-	/* Info related to rx fragments */
+	 
 	u32 cur_sn;
 	u16 last_frag_no;
 	u16 rx_frag_bitmap;
@@ -28,7 +25,7 @@ struct ath12k_dp_rx_tid {
 	struct sk_buff_head rx_frags;
 	struct hal_reo_dest_ring *dst_ring_desc;
 
-	/* Timer info related to fragments */
+	 
 	struct timer_list frag_timer;
 	struct ath12k_base *ab;
 };
@@ -142,4 +139,4 @@ ath12k_dp_rx_h_find_peer(struct ath12k_base *ab, struct sk_buff *msdu);
 int ath12k_dp_rxdma_ring_sel_config_qcn9274(struct ath12k_base *ab);
 int ath12k_dp_rxdma_ring_sel_config_wcn7850(struct ath12k_base *ab);
 
-#endif /* ATH12K_DP_RX_H */
+#endif  

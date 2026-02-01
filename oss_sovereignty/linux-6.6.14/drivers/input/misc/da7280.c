@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * DA7280 Haptic device driver
- *
- * Copyright (c) 2020 Dialog Semiconductor.
- * Author: Roy Im <Roy.Im.Opensource@diasemi.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -18,7 +13,7 @@
 #include <linux/workqueue.h>
 #include <linux/uaccess.h>
 
-/* Registers */
+ 
 #define DA7280_IRQ_EVENT1			0x03
 #define DA7280_IRQ_EVENT_WARNING_DIAG		0x04
 #define DA7280_IRQ_EVENT_SEQ_DIAG		0x05
@@ -47,9 +42,9 @@
 #define DA7280_IRQ_MASK2			0x83
 #define DA7280_SNP_MEM_99			0xE7
 
-/* Register field */
+ 
 
-/* DA7280_IRQ_EVENT1 (Address 0x03) */
+ 
 #define DA7280_E_SEQ_CONTINUE_MASK		BIT(0)
 #define DA7280_E_UVLO_MASK			BIT(1)
 #define DA7280_E_SEQ_DONE_MASK			BIT(2)
@@ -59,18 +54,18 @@
 #define DA7280_E_ACTUATOR_FAULT_MASK		BIT(6)
 #define DA7280_E_OC_FAULT_MASK			BIT(7)
 
-/* DA7280_IRQ_EVENT_WARNING_DIAG (Address 0x04) */
+ 
 #define DA7280_E_OVERTEMP_WARN_MASK             BIT(3)
 #define DA7280_E_MEM_TYPE_MASK                  BIT(4)
 #define DA7280_E_LIM_DRIVE_ACC_MASK             BIT(6)
 #define DA7280_E_LIM_DRIVE_MASK                 BIT(7)
 
-/* DA7280_IRQ_EVENT_PAT_DIAG (Address 0x05) */
+ 
 #define DA7280_E_PWM_FAULT_MASK			BIT(5)
 #define DA7280_E_MEM_FAULT_MASK			BIT(6)
 #define DA7280_E_SEQ_ID_FAULT_MASK		BIT(7)
 
-/* DA7280_IRQ_STATUS1 (Address 0x06) */
+ 
 #define DA7280_STA_SEQ_CONTINUE_MASK		BIT(0)
 #define DA7280_STA_UVLO_VBAT_OK_MASK		BIT(1)
 #define DA7280_STA_SEQ_DONE_MASK		BIT(2)
@@ -80,7 +75,7 @@
 #define DA7280_STA_ACTUATOR_MASK		BIT(6)
 #define DA7280_STA_OC_MASK			BIT(7)
 
-/* DA7280_IRQ_MASK1 (Address 0x07) */
+ 
 #define DA7280_SEQ_CONTINUE_M_MASK		BIT(0)
 #define DA7280_E_UVLO_M_MASK			BIT(1)
 #define DA7280_SEQ_DONE_M_MASK			BIT(2)
@@ -90,10 +85,10 @@
 #define DA7280_ACTUATOR_M_MASK			BIT(6)
 #define DA7280_OC_M_MASK			BIT(7)
 
-/* DA7280_ACTUATOR3 (Address 0x0e) */
+ 
 #define DA7280_IMAX_MASK			GENMASK(4, 0)
 
-/* DA7280_TOP_CFG1 (Address 0x13) */
+ 
 #define DA7280_AMP_PID_EN_MASK			BIT(0)
 #define DA7280_RAPID_STOP_EN_MASK		BIT(1)
 #define DA7280_ACCELERATION_EN_MASK		BIT(2)
@@ -101,51 +96,51 @@
 #define DA7280_BEMF_SENSE_EN_MASK		BIT(4)
 #define DA7280_ACTUATOR_TYPE_MASK		BIT(5)
 
-/* DA7280_TOP_CFG2 (Address 0x14) */
+ 
 #define DA7280_FULL_BRAKE_THR_MASK		GENMASK(3, 0)
 #define DA7280_MEM_DATA_SIGNED_MASK		BIT(4)
 
-/* DA7280_TOP_CFG4 (Address 0x16) */
+ 
 #define DA7280_TST_CALIB_IMPEDANCE_DIS_MASK	BIT(6)
 #define DA7280_V2I_FACTOR_FREEZE_MASK		BIT(7)
 
-/* DA7280_TOP_INT_CFG1 (Address 0x17) */
+ 
 #define DA7280_BEMF_FAULT_LIM_MASK		GENMASK(1, 0)
 
-/* DA7280_TOP_CTL1 (Address 0x22) */
+ 
 #define DA7280_OPERATION_MODE_MASK		GENMASK(2, 0)
 #define DA7280_STANDBY_EN_MASK			BIT(3)
 #define DA7280_SEQ_START_MASK			BIT(4)
 
-/* DA7280_SEQ_CTL2 (Address 0x28) */
+ 
 #define DA7280_PS_SEQ_ID_MASK			GENMASK(3, 0)
 #define DA7280_PS_SEQ_LOOP_MASK			GENMASK(7, 4)
 
-/* DA7280_GPIO_0_CTL (Address 0x29) */
+ 
 #define DA7280_GPI0_POLARITY_MASK		GENMASK(1, 0)
 #define DA7280_GPI0_MODE_MASK			BIT(2)
 #define DA7280_GPI0_SEQUENCE_ID_MASK		GENMASK(6, 3)
 
-/* DA7280_GPIO_1_CTL (Address 0x2a) */
+ 
 #define DA7280_GPI1_POLARITY_MASK		GENMASK(1, 0)
 #define DA7280_GPI1_MODE_MASK			BIT(2)
 #define DA7280_GPI1_SEQUENCE_ID_MASK		GENMASK(6, 3)
 
-/* DA7280_GPIO_2_CTL (Address 0x2b) */
+ 
 #define DA7280_GPI2_POLARITY_MASK		GENMASK(1, 0)
 #define DA7280_GPI2_MODE_MASK			BIT(2)
 #define DA7280_GPI2_SEQUENCE_ID_MASK		GENMASK(6, 3)
 
-/* DA7280_MEM_CTL2 (Address 0x2d) */
+ 
 #define DA7280_WAV_MEM_LOCK_MASK		BIT(7)
 
-/* DA7280_TOP_CFG5 (Address 0x6e) */
+ 
 #define DA7280_V2I_FACTOR_OFFSET_EN_MASK	BIT(0)
 
-/* DA7280_IRQ_MASK2 (Address 0x83) */
+ 
 #define DA7280_ADC_SAT_M_MASK			BIT(7)
 
-/* Controls */
+ 
 
 #define DA7280_VOLTAGE_RATE_MAX			6000000
 #define DA7280_VOLTAGE_RATE_STEP		23400
@@ -178,7 +173,7 @@
 
 #define DA7280_FF_EFFECT_COUNT_MAX		15
 
-/* Maximum gain is 0x7fff for PWM mode */
+ 
 #define DA7280_MAX_MAGNITUDE_SHIFT		15
 
 enum da7280_haptic_dev_t {
@@ -286,7 +281,7 @@ static int da7280_haptic_mem_update(struct da7280_haptic *haptics)
 	unsigned int val;
 	int error;
 
-	/* The patterns should be updated when haptic is not working */
+	 
 	error = regmap_read(haptics->regmap, DA7280_IRQ_STATUS1, &val);
 	if (error)
 		return error;
@@ -296,7 +291,7 @@ static int da7280_haptic_mem_update(struct da7280_haptic *haptics)
 		return -EBUSY;
 	}
 
-	/* Patterns are not updated if the lock bit is enabled */
+	 
 	val = 0;
 	error = regmap_read(haptics->regmap, DA7280_MEM_CTL2, &val);
 	if (error)
@@ -306,7 +301,7 @@ static int da7280_haptic_mem_update(struct da7280_haptic *haptics)
 		return -EACCES;
 	}
 
-	/* Set to Inactive mode to make sure safety */
+	 
 	error = regmap_update_bits(haptics->regmap,
 				   DA7280_TOP_CTL1,
 				   DA7280_OPERATION_MODE_MASK,
@@ -339,11 +334,7 @@ static int da7280_haptic_set_pwm(struct da7280_haptic *haptics, bool enabled)
 		period_mag_multi = (u64)state.period * haptics->gain;
 		period_mag_multi >>= DA7280_MAX_MAGNITUDE_SHIFT;
 
-		/*
-		 * The interpretation of duty cycle depends on the acc_en,
-		 * it should be between 50% and 100% for acc_en = 0.
-		 * See datasheet 'PWM mode' section.
-		 */
+		 
 		if (!haptics->acc_en) {
 			period_mag_multi += state.period;
 			period_mag_multi /= 2;
@@ -368,13 +359,13 @@ static void da7280_haptic_activate(struct da7280_haptic *haptics)
 
 	switch (haptics->op_mode) {
 	case DA7280_DRO_MODE:
-		/* the valid range check when acc_en is enabled */
+		 
 		if (haptics->acc_en && haptics->level > 0x7F)
 			haptics->level = 0x7F;
 		else if (haptics->level > 0xFF)
 			haptics->level = 0xFF;
 
-		/* Set level as a % of ACTUATOR_NOMMAX (nommax) */
+		 
 		error = regmap_write(haptics->regmap, DA7280_TOP_CTL2,
 				     haptics->level);
 		if (error) {
@@ -391,18 +382,11 @@ static void da7280_haptic_activate(struct da7280_haptic *haptics)
 		break;
 
 	case DA7280_RTWM_MODE:
-		/*
-		 * The pattern will be played by the PS_SEQ_ID and the
-		 * PS_SEQ_LOOP
-		 */
+		 
 		break;
 
 	case DA7280_ETWM_MODE:
-		/*
-		 * The pattern will be played by the GPI[N] state,
-		 * GPI(N)_SEQUENCE_ID and the PS_SEQ_LOOP. See the
-		 * datasheet for the details.
-		 */
+		 
 		break;
 
 	default:
@@ -443,7 +427,7 @@ static void da7280_haptic_deactivate(struct da7280_haptic *haptics)
 	if (!haptics->active)
 		return;
 
-	/* Set to Inactive mode */
+	 
 	error = regmap_update_bits(haptics->regmap,
 				   DA7280_TOP_CTL1,
 				   DA7280_OPERATION_MODE_MASK, 0);
@@ -512,12 +496,12 @@ static int da7280_haptics_upload_effect(struct input_dev *dev,
 	int tmp, i, num;
 	int error;
 
-	/* The effect should be uploaded when haptic is not working */
+	 
 	if (haptics->active)
 		return -EBUSY;
 
 	switch (effect->type) {
-	/* DRO/PWM modes support this type */
+	 
 	case FF_CONSTANT:
 		haptics->op_mode = haptics->const_op_mode;
 		if (haptics->op_mode == DA7280_DRO_MODE) {
@@ -530,7 +514,7 @@ static int da7280_haptics_upload_effect(struct input_dev *dev,
 					0 : effect->u.constant.level;
 		break;
 
-	/* RTWM/ETWM modes support this type */
+	 
 	case FF_PERIODIC:
 		if (effect->u.periodic.waveform != FF_CUSTOM) {
 			dev_err(haptics->dev,
@@ -538,13 +522,7 @@ static int da7280_haptics_upload_effect(struct input_dev *dev,
 			return -EINVAL;
 		}
 
-		/*
-		 * Load the data and check the length.
-		 * the data will be patterns in this case: 4 < X <= 100,
-		 * and will be saved into the waveform memory inside DA728x.
-		 * If X = 2, the data will be PS_SEQ_ID and PS_SEQ_LOOP.
-		 * If X = 3, the 1st data will be GPIX_SEQUENCE_ID .
-		 */
+		 
 		if (effect->u.periodic.custom_len == DA7280_CUSTOM_DATA_LEN)
 			goto set_seq_id_loop;
 
@@ -780,9 +758,7 @@ static void da7280_parse_properties(struct device *dev,
 	u32 val;
 	int error;
 
-	/*
-	 * If there is no property, then use the mode programmed into the chip.
-	 */
+	 
 	haptics->dev_type = DA7280_DEV_MAX;
 	error = device_property_read_string(dev, "dlg,actuator-type", &str);
 	if (!error)
@@ -834,7 +810,7 @@ static void da7280_parse_properties(struct device *dev,
 		}
 	}
 
-	/* If no property, set to zero as default is to do nothing. */
+	 
 	haptics->ps_seq_id = 0;
 	error = device_property_read_u32(dev, "dlg,ps-seq-id", &val);
 	if (!error && val <= DA7280_SEQ_ID_MAX)
@@ -845,7 +821,7 @@ static void da7280_parse_properties(struct device *dev,
 	if (!error && val <= DA7280_SEQ_LOOP_MAX)
 		haptics->ps_seq_loop = val;
 
-	/* GPI0~2 Control */
+	 
 	for (i = 0; i <= DA7280_GPI_SEQ_ID_MAX; i++) {
 		gpi_str1[7] = '0' + i;
 		haptics->gpi_ctl[i].seq_id = DA7280_GPI_SEQ_ID_DFT + i;
@@ -906,7 +882,7 @@ static irqreturn_t da7280_irq_handler(int irq, void *data)
 	u8 events[DA7280_IRQ_NUM];
 	int error;
 
-	/* Check what events have happened */
+	 
 	error = regmap_bulk_read(haptics->regmap, DA7280_IRQ_EVENT1,
 				 events, sizeof(events));
 	if (error) {
@@ -914,7 +890,7 @@ static irqreturn_t da7280_irq_handler(int irq, void *data)
 		goto out;
 	}
 
-	/* Clear events */
+	 
 	error = regmap_write(haptics->regmap, DA7280_IRQ_EVENT1, events[0]);
 	if (error) {
 		dev_err(dev, "failed to clear interrupts: %d\n", error);
@@ -922,10 +898,7 @@ static irqreturn_t da7280_irq_handler(int irq, void *data)
 	}
 
 	if (events[0] & DA7280_E_SEQ_FAULT_MASK) {
-		/*
-		 * Stop first if haptic is active, otherwise, the fault may
-		 * happen continually even though the bit is cleared.
-		 */
+		 
 		error = regmap_update_bits(haptics->regmap, DA7280_TOP_CTL1,
 					   DA7280_OPERATION_MODE_MASK, 0);
 		if (error)
@@ -966,10 +939,7 @@ static int da7280_init(struct da7280_haptic *haptics)
 	int error, i;
 	u8 mask = 0;
 
-	/*
-	 * If device type is DA7280_DEV_MAX then simply use currently
-	 * programmed mode.
-	 */
+	 
 	if (haptics->dev_type == DA7280_DEV_MAX) {
 		error = regmap_read(haptics->regmap, DA7280_TOP_CFG1, &val);
 		if (error)
@@ -979,7 +949,7 @@ static int da7280_init(struct da7280_haptic *haptics)
 					DA7280_ERM_COIN : DA7280_LRA;
 	}
 
-	/* Apply user settings */
+	 
 	if (haptics->dev_type == DA7280_LRA &&
 	    haptics->resonant_freq_l != DA7280_SKIP_INIT) {
 		error = regmap_write(haptics->regmap, DA7280_FRQ_LRA_PER_H,
@@ -1090,14 +1060,14 @@ static int da7280_init(struct da7280_haptic *haptics)
 			goto out_err;
 	}
 
-	/* Set  PS_SEQ_ID and PS_SEQ_LOOP */
+	 
 	val = FIELD_PREP(DA7280_PS_SEQ_ID_MASK, haptics->ps_seq_id) |
 		FIELD_PREP(DA7280_PS_SEQ_LOOP_MASK, haptics->ps_seq_loop);
 	error = regmap_write(haptics->regmap, DA7280_SEQ_CTL2, val);
 	if (error)
 		goto out_err;
 
-	/* GPI(N) CTL */
+	 
 	for (i = 0; i < 3; i++) {
 		val = FIELD_PREP(DA7280_GPI0_SEQUENCE_ID_MASK,
 				 haptics->gpi_ctl[i].seq_id) |
@@ -1111,7 +1081,7 @@ static int da7280_init(struct da7280_haptic *haptics)
 			goto out_err;
 	}
 
-	/* Mask ADC_SAT_M bit as default */
+	 
 	error = regmap_update_bits(haptics->regmap,
 				   DA7280_IRQ_MASK2,
 				   DA7280_ADC_SAT_M_MASK,
@@ -1119,7 +1089,7 @@ static int da7280_init(struct da7280_haptic *haptics)
 	if (error)
 		goto out_err;
 
-	/* Clear Interrupts */
+	 
 	error = regmap_write(haptics->regmap, DA7280_IRQ_EVENT1, 0xff);
 	if (error)
 		goto out_err;
@@ -1172,7 +1142,7 @@ static int da7280_probe(struct i2c_client *client)
 			return error;
 		}
 
-		/* Sync up PWM state and ensure it is off. */
+		 
 		pwm_init_state(haptics->pwm_dev, &state);
 		state.enabled = false;
 		error = pwm_apply_state(haptics->pwm_dev, &state);
@@ -1181,10 +1151,7 @@ static int da7280_probe(struct i2c_client *client)
 			return error;
 		}
 
-		/*
-		 * Check PWM period, PWM freq = 1000000 / state.period.
-		 * The valid PWM freq range: 10k ~ 250kHz.
-		 */
+		 
 		if (state.period > 100000 || state.period < 4000) {
 			dev_err(dev, "Unsupported PWM period: %lld\n",
 				state.period);
@@ -1211,7 +1178,7 @@ static int da7280_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Initialize input device for haptic device */
+	 
 	input_dev = devm_input_allocate_device(dev);
 	if (!input_dev) {
 		dev_err(dev, "Failed to allocate input device\n");
@@ -1266,10 +1233,7 @@ static int da7280_suspend(struct device *dev)
 
 	mutex_lock(&haptics->input_dev->mutex);
 
-	/*
-	 * Make sure no new requests will be submitted while device is
-	 * suspended.
-	 */
+	 
 	spin_lock_irq(&haptics->input_dev->event_lock);
 	haptics->suspended = true;
 	spin_unlock_irq(&haptics->input_dev->event_lock);

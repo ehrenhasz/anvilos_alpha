@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS cell alias detection
- *
- * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/sched.h>
@@ -11,20 +7,18 @@
 #include <keys/rxrpc-type.h>
 #include "internal.h"
 
-/*
- * Sample a volume.
- */
+ 
 static struct afs_volume *afs_sample_volume(struct afs_cell *cell, struct key *key,
 					    const char *name, unsigned int namelen)
 {
 	struct afs_volume *volume;
 	struct afs_fs_context fc = {
-		.type		= 0, /* Explicitly leave it to the VLDB */
+		.type		= 0,  
 		.volnamesz	= namelen,
 		.volname	= name,
 		.net		= cell->net,
 		.cell		= cell,
-		.key		= key, /* This might need to be something */
+		.key		= key,  
 	};
 
 	volume = afs_create_volume(&fc);
@@ -32,9 +26,7 @@ static struct afs_volume *afs_sample_volume(struct afs_cell *cell, struct key *k
 	return volume;
 }
 
-/*
- * Compare two addresses.
- */
+ 
 static int afs_compare_addrs(const struct sockaddr_rxrpc *srx_a,
 			     const struct sockaddr_rxrpc *srx_b)
 {
@@ -81,9 +73,7 @@ out:
 	return diff;
 }
 
-/*
- * Compare the address lists of a pair of fileservers.
- */
+ 
 static int afs_compare_fs_alists(const struct afs_server *server_a,
 				 const struct afs_server *server_b)
 {
@@ -112,10 +102,7 @@ static int afs_compare_fs_alists(const struct afs_server *server_a,
 	return addr_matches;
 }
 
-/*
- * Compare the fileserver lists of two volumes.  The server lists are sorted in
- * order of ascending UUID.
- */
+ 
 static int afs_compare_volume_slists(const struct afs_volume *vol_a,
 				     const struct afs_volume *vol_b)
 {
@@ -150,9 +137,7 @@ static int afs_compare_volume_slists(const struct afs_volume *vol_a,
 	return addr_matches;
 }
 
-/*
- * Compare root.cell volumes.
- */
+ 
 static int afs_compare_cell_roots(struct afs_cell *cell)
 {
 	struct afs_cell *p;
@@ -165,7 +150,7 @@ static int afs_compare_cell_roots(struct afs_cell *cell)
 		if (p == cell || p->alias_of)
 			continue;
 		if (!p->root_volume)
-			continue; /* Ignore cells that don't have a root.cell volume. */
+			continue;  
 
 		if (afs_compare_volume_slists(cell->root_volume, p->root_volume) != 0)
 			goto is_alias;
@@ -181,16 +166,14 @@ is_alias:
 	return 1;
 }
 
-/*
- * Query the new cell for a volume from a cell we're already using.
- */
+ 
 static int afs_query_for_alias_one(struct afs_cell *cell, struct key *key,
 				   struct afs_cell *p)
 {
 	struct afs_volume *volume, *pvol = NULL;
 	int ret;
 
-	/* Arbitrarily pick a volume from the list. */
+	 
 	read_seqlock_excl(&p->volume_lock);
 	if (!RB_EMPTY_ROOT(&p->volumes))
 		pvol = afs_get_volume(rb_entry(p->volumes.rb_node,
@@ -202,19 +185,17 @@ static int afs_query_for_alias_one(struct afs_cell *cell, struct key *key,
 
 	_enter("%s:%s", cell->name, pvol->name);
 
-	/* And see if it's in the new cell. */
+	 
 	volume = afs_sample_volume(cell, key, pvol->name, pvol->name_len);
 	if (IS_ERR(volume)) {
 		afs_put_volume(cell->net, pvol, afs_volume_trace_put_query_alias);
 		if (PTR_ERR(volume) != -ENOMEDIUM)
 			return PTR_ERR(volume);
-		/* That volume is not in the new cell, so not an alias */
+		 
 		return 0;
 	}
 
-	/* The new cell has a like-named volume also - compare volume ID,
-	 * server and address lists.
-	 */
+	 
 	ret = 0;
 	if (pvol->vid == volume->vid) {
 		rcu_read_lock();
@@ -228,9 +209,7 @@ static int afs_query_for_alias_one(struct afs_cell *cell, struct key *key,
 	return ret;
 }
 
-/*
- * Query the new cell for volumes we know exist in cells we're already using.
- */
+ 
 static int afs_query_for_alias(struct afs_cell *cell, struct key *key)
 {
 	struct afs_cell *p;
@@ -246,7 +225,7 @@ static int afs_query_for_alias(struct afs_cell *cell, struct key *key)
 		if (RB_EMPTY_ROOT(&p->volumes))
 			continue;
 		if (p->root_volume)
-			continue; /* Ignore cells that have a root.cell volume. */
+			continue;  
 		afs_use_cell(p, afs_cell_trace_use_check_alias);
 		mutex_unlock(&cell->net->proc_cells_lock);
 
@@ -266,13 +245,11 @@ static int afs_query_for_alias(struct afs_cell *cell, struct key *key)
 	return 0;
 
 is_alias:
-	cell->alias_of = p; /* Transfer our ref */
+	cell->alias_of = p;  
 	return 1;
 }
 
-/*
- * Look up a VLDB record for a volume.
- */
+ 
 static char *afs_vl_get_cell_name(struct afs_cell *cell, struct key *key)
 {
 	struct afs_vl_cursor vc;
@@ -319,7 +296,7 @@ static int yfs_check_canonical_cell_name(struct afs_cell *cell, struct key *key)
 	if (IS_ERR(master))
 		return PTR_ERR(master);
 
-	cell->alias_of = master; /* Transfer our ref */
+	cell->alias_of = master;  
 	return 1;
 }
 
@@ -334,7 +311,7 @@ static int afs_do_cell_detect_alias(struct afs_cell *cell, struct key *key)
 	if (ret != -EOPNOTSUPP)
 		return ret;
 
-	/* Try and get the root.cell volume for comparison with other cells */
+	 
 	root_volume = afs_sample_volume(cell, key, "root.cell", 9);
 	if (!IS_ERR(root_volume)) {
 		cell->root_volume = root_volume;
@@ -344,20 +321,11 @@ static int afs_do_cell_detect_alias(struct afs_cell *cell, struct key *key)
 	if (PTR_ERR(root_volume) != -ENOMEDIUM)
 		return PTR_ERR(root_volume);
 
-	/* Okay, this cell doesn't have an root.cell volume.  We need to
-	 * locate some other random volume and use that to check.
-	 */
+	 
 	return afs_query_for_alias(cell, key);
 }
 
-/*
- * Check to see if a new cell is an alias of a cell we already have.  At this
- * point we have the cell's volume server list.
- *
- * Returns 0 if we didn't detect an alias, 1 if we found an alias and an error
- * if we had problems gathering the data required.  In the case the we did
- * detect an alias, cell->alias_of is set to point to the assumed master.
- */
+ 
 int afs_cell_detect_alias(struct afs_cell *cell, struct key *key)
 {
 	struct afs_net *net = cell->net;

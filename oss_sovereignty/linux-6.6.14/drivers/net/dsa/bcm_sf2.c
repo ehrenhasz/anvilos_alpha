@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom Starfighter 2 DSA switch driver
- *
- * Copyright (C) 2014, Broadcom Corporation
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/module.h>
@@ -58,7 +54,7 @@ static u16 bcm_sf2_reg_rgmii_cntrl(struct bcm_sf2_priv *priv, int port)
 
 	WARN_ONCE(1, "Unsupported port %d\n", port);
 
-	/* RO fallback reg */
+	 
 	return REG_SWITCH_STATUS;
 }
 
@@ -90,7 +86,7 @@ static u16 bcm_sf2_reg_led_base(struct bcm_sf2_priv *priv, int port)
 
 	WARN_ONCE(1, "Unsupported port %d\n", port);
 
-	/* RO fallback reg */
+	 
 	return REG_SWITCH_STATUS;
 }
 
@@ -108,11 +104,11 @@ static u32 bcm_sf2_port_override_offset(struct bcm_sf2_priv *priv, int port)
 		WARN_ONCE(1, "Unsupported device: %d\n", priv->type);
 	}
 
-	/* RO fallback register */
+	 
 	return REG_SWITCH_STATUS;
 }
 
-/* Return the number of active ports, not counting the IMP (CPU) port */
+ 
 static unsigned int bcm_sf2_num_active_ports(struct dsa_switch *ds)
 {
 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
@@ -133,7 +129,7 @@ static void bcm_sf2_recalc_clock(struct dsa_switch *ds)
 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
 	unsigned long new_rate;
 	unsigned int ports_active;
-	/* Frequenty in Mhz */
+	 
 	static const unsigned long rate_table[] = {
 		59220000,
 		60820000,
@@ -145,9 +141,7 @@ static void bcm_sf2_recalc_clock(struct dsa_switch *ds)
 	if (ports_active == 0 || !priv->clk_mdiv)
 		return;
 
-	/* If we overflow our table, just use the recommended operational
-	 * frequency
-	 */
+	 
 	if (ports_active > ARRAY_SIZE(rate_table))
 		new_rate = 90000000;
 	else
@@ -161,22 +155,20 @@ static void bcm_sf2_imp_setup(struct dsa_switch *ds, int port)
 	unsigned int i;
 	u32 reg;
 
-	/* Enable the port memories */
+	 
 	reg = core_readl(priv, CORE_MEM_PSM_VDD_CTRL);
 	reg &= ~P_TXQ_PSM_VDD(port);
 	core_writel(priv, reg, CORE_MEM_PSM_VDD_CTRL);
 
-	/* Enable forwarding */
+	 
 	core_writel(priv, SW_FWDG_EN, CORE_SWMODE);
 
-	/* Enable IMP port in dumb mode */
+	 
 	reg = core_readl(priv, CORE_SWITCH_CTRL);
 	reg |= MII_DUMB_FWDG_EN;
 	core_writel(priv, reg, CORE_SWITCH_CTRL);
 
-	/* Configure Traffic Class to QoS mapping, allow each priority to map
-	 * to a different queue number
-	 */
+	 
 	reg = core_readl(priv, CORE_PORT_TC2_QOS_MAP_PORT(port));
 	for (i = 0; i < SF2_NUM_EGRESS_QUEUES; i++)
 		reg |= i << (PRT_TO_QID_SHIFT * i);
@@ -185,7 +177,7 @@ static void bcm_sf2_imp_setup(struct dsa_switch *ds, int port)
 	b53_brcm_hdr_setup(ds, port);
 
 	if (port == 8) {
-		/* Enable Broadcast, Multicast, Unicast forwarding to IMP port */
+		 
 		reg = core_readl(priv, CORE_IMP_CTL);
 		reg |= (RX_BCST_EN | RX_MCST_EN | RX_UCST_EN);
 		reg &= ~(RX_DIS | TX_DIS);
@@ -220,7 +212,7 @@ static void bcm_sf2_gphy_enable_set(struct dsa_switch *ds, bool enable)
 	}
 	reg_writel(priv, reg, REG_SPHY_CNTRL);
 
-	/* Use PHY-driven LED signaling */
+	 
 	if (!enable) {
 		u16 led_ctrl = bcm_sf2_reg_led_base(priv, 0);
 
@@ -243,7 +235,7 @@ static inline void bcm_sf2_port_intr_enable(struct bcm_sf2_priv *priv,
 		off = P7_IRQ_OFF;
 		break;
 	case 0:
-		/* Port 0 interrupts are located on the first bank */
+		 
 		intrl2_0_mask_clear(priv, P_IRQ_MASK(P0_IRQ_OFF));
 		return;
 	default:
@@ -264,7 +256,7 @@ static inline void bcm_sf2_port_intr_disable(struct bcm_sf2_priv *priv,
 		off = P7_IRQ_OFF;
 		break;
 	case 0:
-		/* Port 0 interrupts are located on the first bank */
+		 
 		intrl2_0_mask_set(priv, P_IRQ_MASK(P0_IRQ_OFF));
 		intrl2_0_writel(priv, P_IRQ_MASK(P0_IRQ_OFF), INTRL2_CPU_CLEAR);
 		return;
@@ -291,49 +283,39 @@ static int bcm_sf2_port_setup(struct dsa_switch *ds, int port,
 
 	bcm_sf2_recalc_clock(ds);
 
-	/* Clear the memory power down */
+	 
 	reg = core_readl(priv, CORE_MEM_PSM_VDD_CTRL);
 	reg &= ~P_TXQ_PSM_VDD(port);
 	core_writel(priv, reg, CORE_MEM_PSM_VDD_CTRL);
 
-	/* Enable Broadcom tags for that port if requested */
+	 
 	if (priv->brcm_tag_mask & BIT(port))
 		b53_brcm_hdr_setup(ds, port);
 
-	/* Configure Traffic Class to QoS mapping, allow each priority to map
-	 * to a different queue number
-	 */
+	 
 	reg = core_readl(priv, CORE_PORT_TC2_QOS_MAP_PORT(port));
 	for (i = 0; i < SF2_NUM_EGRESS_QUEUES; i++)
 		reg |= i << (PRT_TO_QID_SHIFT * i);
 	core_writel(priv, reg, CORE_PORT_TC2_QOS_MAP_PORT(port));
 
-	/* Re-enable the GPHY and re-apply workarounds */
+	 
 	if (priv->int_phy_mask & 1 << port && priv->hw_params.num_gphy == 1) {
 		bcm_sf2_gphy_enable_set(ds, true);
 		if (phy) {
-			/* if phy_stop() has been called before, phy
-			 * will be in halted state, and phy_start()
-			 * will call resume.
-			 *
-			 * the resume path does not configure back
-			 * autoneg settings, and since we hard reset
-			 * the phy manually here, we need to reset the
-			 * state machine also.
-			 */
+			 
 			phy->state = PHY_READY;
 			phy_init_hw(phy);
 		}
 	}
 
-	/* Enable MoCA port interrupts to get notified */
+	 
 	if (port == priv->moca_port)
 		bcm_sf2_port_intr_enable(priv, port);
 
-	/* Set per-queue pause threshold to 32 */
+	 
 	core_writel(priv, 32, CORE_TXQ_THD_PAUSE_QN_PORT(port));
 
-	/* Set ACB threshold to 24 */
+	 
 	for (i = 0; i < SF2_NUM_EGRESS_QUEUES; i++) {
 		reg = acb_readl(priv, ACB_QUEUE_CFG(port *
 						    SF2_NUM_EGRESS_QUEUES + i));
@@ -351,7 +333,7 @@ static void bcm_sf2_port_disable(struct dsa_switch *ds, int port)
 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
 	u32 reg;
 
-	/* Disable learning while in WoL mode */
+	 
 	if (priv->wol_ports_mask & (1 << port)) {
 		reg = core_readl(priv, CORE_DIS_LEARN);
 		reg |= BIT(port);
@@ -367,7 +349,7 @@ static void bcm_sf2_port_disable(struct dsa_switch *ds, int port)
 
 	b53_disable_port(ds, port);
 
-	/* Power down the port memory */
+	 
 	reg = core_readl(priv, CORE_MEM_PSM_VDD_CTRL);
 	reg |= P_TXQ_PSM_VDD(port);
 	core_writel(priv, reg, CORE_MEM_PSM_VDD_CTRL);
@@ -388,12 +370,12 @@ static int bcm_sf2_sw_indir_rw(struct bcm_sf2_priv *priv, int op, int addr,
 	reg |= MDIO_MASTER_SEL;
 	reg_writel(priv, reg, REG_SWITCH_CNTRL);
 
-	/* Page << 8 | offset */
+	 
 	reg = 0x70;
 	reg <<= 2;
 	core_writel(priv, addr, reg);
 
-	/* Page << 8 | offset */
+	 
 	reg = 0x80 << 8 | regnum << 1;
 	reg <<= 2;
 
@@ -413,9 +395,7 @@ static int bcm_sf2_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
 {
 	struct bcm_sf2_priv *priv = bus->priv;
 
-	/* Intercept reads from Broadcom pseudo-PHY address, else, send
-	 * them to our master MDIO bus controller
-	 */
+	 
 	if (addr == BRCM_PSEUDO_PHY_ADDR && priv->indir_phy_mask & BIT(addr))
 		return bcm_sf2_sw_indir_rw(priv, 1, addr, regnum, 0);
 	else
@@ -427,9 +407,7 @@ static int bcm_sf2_sw_mdio_write(struct mii_bus *bus, int addr, int regnum,
 {
 	struct bcm_sf2_priv *priv = bus->priv;
 
-	/* Intercept writes to the Broadcom pseudo-PHY address, else,
-	 * send them to our master MDIO bus controller
-	 */
+	 
 	if (addr == BRCM_PSEUDO_PHY_ADDR && priv->indir_phy_mask & BIT(addr))
 		return bcm_sf2_sw_indir_rw(priv, 0, addr, regnum, val);
 	else
@@ -476,9 +454,7 @@ static int bcm_sf2_sw_rst(struct bcm_sf2_priv *priv)
 	u32 reg;
 	int ret;
 
-	/* The watchdog reset does not work on 7278, we need to hit the
-	 * "external" reset line through the reset controller.
-	 */
+	 
 	if (priv->type == BCM7278_DEVICE_ID) {
 		ret = reset_control_assert(priv->rcdev);
 		if (ret)
@@ -520,7 +496,7 @@ static void bcm_sf2_crossbar_setup(struct bcm_sf2_priv *priv)
 	case BCM4908_DEVICE_ID:
 		shift = CROSSBAR_BCM4908_INT_P7 * priv->num_crossbar_int_ports;
 		reg &= ~(mask << shift);
-		if (0) /* FIXME */
+		if (0)  
 			reg |= CROSSBAR_BCM4908_EXT_SERDES << shift;
 		else if (priv->int_phy_mask & BIT(7))
 			reg |= CROSSBAR_BCM4908_EXT_GPHY4 << shift;
@@ -574,11 +550,7 @@ static void bcm_sf2_identify_ports(struct bcm_sf2_priv *priv,
 
 		port_st = &priv->port_sts[port_num];
 
-		/* Internal PHYs get assigned a specific 'phy-mode' property
-		 * value: "internal" to help flag them before MDIO probing
-		 * has completed, since they might be turned off at that
-		 * time
-		 */
+		 
 		err = of_get_phy_mode(port, &port_st->mode);
 		if (err)
 			continue;
@@ -592,10 +564,7 @@ static void bcm_sf2_identify_ports(struct bcm_sf2_priv *priv,
 		if (of_property_read_bool(port, "brcm,use-bcm-hdr"))
 			priv->brcm_tag_mask |= 1 << port_num;
 
-		/* Ensure that port 5 is not picked up as a DSA CPU port
-		 * flavour but a regular port instead. We should be using
-		 * devlink to be able to set the port flavour.
-		 */
+		 
 		if (port_num == 5 && priv->type == BCM7278_DEVICE_ID) {
 			prop = of_find_property(port, "ethernet", NULL);
 			if (prop)
@@ -613,7 +582,7 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
 	static int index;
 	int err, reg;
 
-	/* Find our integrated MDIO bus node */
+	 
 	dn = of_find_compatible_node(NULL, NULL, "brcm,unimac-mdio");
 	priv->master_mii_bus = of_mdio_find_bus(dn);
 	if (!priv->master_mii_bus) {
@@ -637,16 +606,7 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
 		 index++);
 	priv->slave_mii_bus->dev.of_node = dn;
 
-	/* Include the pseudo-PHY address to divert reads towards our
-	 * workaround. This is only required for 7445D0, since 7445E0
-	 * disconnects the internal switch pseudo-PHY such that we can use the
-	 * regular SWITCH_MDIO master controller instead.
-	 *
-	 * Here we flag the pseudo PHY as needing special treatment and would
-	 * otherwise make all other PHY read/writes go to the master MDIO bus
-	 * controller that comes with this switch backed by the "mdio-unimac"
-	 * driver.
-	 */
+	 
 	if (of_machine_is_compatible("brcm,bcm7445d0"))
 		priv->indir_phy_mask |= (1 << BRCM_PSEUDO_PHY_ADDR) | (1 << 0);
 	else
@@ -657,10 +617,7 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
 	priv->slave_mii_bus->parent = ds->dev->parent;
 	priv->slave_mii_bus->phy_mask = ~priv->indir_phy_mask;
 
-	/* We need to make sure that of_phy_connect() will not work by
-	 * removing the 'phandle' and 'linux,phandle' properties and
-	 * unregister the existing PHY device that was already registered.
-	 */
+	 
 	for_each_available_child_of_node(dn, child) {
 		if (of_property_read_u32(child, "reg", &reg) ||
 		    reg >= PHY_MAX_ADDR)
@@ -709,10 +666,7 @@ static u32 bcm_sf2_sw_get_phy_flags(struct dsa_switch *ds, int port)
 {
 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
 
-	/* The BCM7xxx PHY driver expects to find the integrated PHY revision
-	 * in bits 15:8 and the patch level in bits 7:0 which is exactly what
-	 * the REG_PHY_REVISION register layout is.
-	 */
+	 
 	if (priv->int_phy_mask & BIT(port))
 		return priv->hw_params.gphy_rev;
 	else
@@ -768,15 +722,13 @@ static void bcm_sf2_sw_mac_config(struct dsa_switch *ds, int port,
 		port_mode = EXT_REVMII;
 		break;
 	default:
-		/* Nothing required for all other PHYs: internal and MoCA */
+		 
 		return;
 	}
 
 	reg_rgmii_ctrl = bcm_sf2_reg_rgmii_cntrl(priv, port);
 
-	/* Clear id_mode_dis bit, and the existing port mode, let
-	 * RGMII_MODE_EN bet set by mac_link_{up,down}
-	 */
+	 
 	reg = reg_readl(priv, reg_rgmii_ctrl);
 	reg &= ~ID_MODE_DIS;
 	reg &= ~(PORT_MODE_MASK << PORT_MODE_SHIFT);
@@ -802,7 +754,7 @@ static void bcm_sf2_sw_mac_link_set(struct dsa_switch *ds, int port,
 
 	reg_rgmii_ctrl = bcm_sf2_reg_rgmii_cntrl(priv, port);
 
-	/* If the link is down, just disable the interface to conserve power */
+	 
 	reg = reg_readl(priv, reg_rgmii_ctrl);
 	if (link)
 		reg |= RGMII_MODE_EN;
@@ -899,21 +851,10 @@ static void bcm_sf2_sw_fixed_state(struct dsa_switch *ds, int port,
 
 	status->link = false;
 
-	/* MoCA port is special as we do not get link status from CORE_LNKSTS,
-	 * which means that we need to force the link at the port override
-	 * level to get the data to flow. We do use what the interrupt handler
-	 * did determine before.
-	 *
-	 * For the other ports, we just force the link status, since this is
-	 * a fixed PHY device.
-	 */
+	 
 	if (port == priv->moca_port) {
 		status->link = priv->port_sts[port].link;
-		/* For MoCA interfaces, also force a link down notification
-		 * since some version of the user-space daemon (mocad) use
-		 * cmd->autoneg to force the link, which messes up the PHY
-		 * state machine and make it go in PHY_FORCING state instead.
-		 */
+		 
 		if (!status->link)
 			netif_carrier_off(dsa_to_port(ds, port)->slave);
 		status->duplex = DUPLEX_FULL;
@@ -927,7 +868,7 @@ static void bcm_sf2_enable_acb(struct dsa_switch *ds)
 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
 	u32 reg;
 
-	/* Enable ACB globally */
+	 
 	reg = acb_readl(priv, ACB_CONTROL);
 	reg |= (ACB_FLUSH_MASK << ACB_FLUSH_SHIFT);
 	acb_writel(priv, reg, ACB_CONTROL);
@@ -943,10 +884,7 @@ static int bcm_sf2_sw_suspend(struct dsa_switch *ds)
 
 	bcm_sf2_intr_disable(priv);
 
-	/* Disable all ports physically present including the IMP
-	 * port, the other ones have already been disabled during
-	 * bcm_sf2_sw_setup
-	 */
+	 
 	for (port = 0; port < ds->num_ports; port++) {
 		if (dsa_is_user_port(ds, port) || dsa_is_cpu_port(ds, port))
 			bcm_sf2_port_disable(ds, port);
@@ -993,11 +931,11 @@ static void bcm_sf2_sw_get_wol(struct dsa_switch *ds, int port,
 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
 	struct ethtool_wolinfo pwol = { };
 
-	/* Get the parent device WoL settings */
+	 
 	if (p->ethtool_ops->get_wol)
 		p->ethtool_ops->get_wol(p, &pwol);
 
-	/* Advertise the parent device supported settings */
+	 
 	wol->supported = pwol.supported;
 	memset(&wol->sopass, 0, sizeof(wol->sopass));
 
@@ -1028,10 +966,7 @@ static int bcm_sf2_sw_set_wol(struct dsa_switch *ds, int port,
 	else
 		priv->wol_ports_mask &= ~(1 << port);
 
-	/* If we have at least one port enabled, make sure the CPU port
-	 * is also enabled. If the CPU port is the last one enabled, we disable
-	 * it since this configuration does not make sense.
-	 */
+	 
 	if (priv->wol_ports_mask && priv->wol_ports_mask != (1 << cpu_port))
 		priv->wol_ports_mask |= (1 << cpu_port);
 	else
@@ -1045,9 +980,9 @@ static int bcm_sf2_sw_setup(struct dsa_switch *ds)
 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
 	unsigned int port;
 
-	/* Enable all valid ports and disable those unused */
+	 
 	for (port = 0; port < priv->hw_params.num_ports; port++) {
-		/* IMP port receives special treatment */
+		 
 		if (dsa_is_user_port(ds, port))
 			bcm_sf2_port_setup(ds, port, NULL);
 		else if (dsa_is_cpu_port(ds, port))
@@ -1067,10 +1002,7 @@ static void bcm_sf2_sw_teardown(struct dsa_switch *ds)
 	dsa_devlink_resources_unregister(ds);
 }
 
-/* The SWITCH_CORE register space is managed by b53 but operates on a page +
- * register basis so we need to translate that into an address that the
- * bus-glue understands.
- */
+ 
 #define SF2_PAGE_REG_MKADDR(page, reg)	((page) << 10 | (reg) << 2)
 
 static int bcm_sf2_core_read8(struct b53_device *dev, u8 page, u8 reg,
@@ -1276,7 +1208,7 @@ static const struct bcm_sf2_of_data bcm_sf2_4908_data = {
 	.num_crossbar_int_ports = 2,
 };
 
-/* Register offsets for the SWITCH_REG_* block */
+ 
 static const u16 bcm_sf2_7445_reg_offsets[] = {
 	[REG_SWITCH_CNTRL]	= 0x00,
 	[REG_SWITCH_STATUS]	= 0x04,
@@ -1336,7 +1268,7 @@ static const struct of_device_id bcm_sf2_of_match[] = {
 	{ .compatible = "brcm,bcm7278-switch-v4.8",
 	  .data = &bcm_sf2_7278_data
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, bcm_sf2_of_match);
 
@@ -1379,7 +1311,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 
 	data = of_id->data;
 
-	/* Set SWITCH_REG register offsets and SWITCH_CORE align factor */
+	 
 	priv->type = data->type;
 	priv->reg_offsets = data->reg_offsets;
 	priv->core_reg_align = data->core_reg_align;
@@ -1391,10 +1323,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 	if (IS_ERR(priv->rcdev))
 		return PTR_ERR(priv->rcdev);
 
-	/* Auto-detection using standard registers will not work, so
-	 * provide an indication of what kind of device we are for
-	 * b53_common to work with
-	 */
+	 
 	pdata->chip_id = priv->type;
 	dev->pdata = pdata;
 
@@ -1402,7 +1331,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 	ds = dev->ds;
 	ds->ops = &bcm_sf2_ops;
 
-	/* Advertise the 8 egress queues */
+	 
 	ds->num_tx_queues = SF2_NUM_EGRESS_QUEUES;
 
 	dev_set_drvdata(&pdev->dev, priv);
@@ -1411,13 +1340,11 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 	mutex_init(&priv->cfp.lock);
 	INIT_LIST_HEAD(&priv->cfp.rules_list);
 
-	/* CFP rule #0 cannot be used for specific classifications, flag it as
-	 * permanently used
-	 */
+	 
 	set_bit(0, priv->cfp.used);
 	set_bit(0, priv->cfp.unique);
 
-	/* Balance of_node_put() done by of_find_node_by_name() */
+	 
 	of_node_get(dn);
 	ports = of_find_node_by_name(dn, "ports");
 	if (ports) {
@@ -1480,7 +1407,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 		goto out_mdio;
 	}
 
-	/* Disable all interrupts and request them */
+	 
 	bcm_sf2_intr_disable(priv);
 
 	ret = devm_request_irq(&pdev->dev, priv->irq0, bcm_sf2_switch_0_isr, 0,
@@ -1497,19 +1424,19 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 		goto out_mdio;
 	}
 
-	/* Reset the MIB counters */
+	 
 	reg = core_readl(priv, CORE_GMNCFGCFG);
 	reg |= RST_MIB_CNT;
 	core_writel(priv, reg, CORE_GMNCFGCFG);
 	reg &= ~RST_MIB_CNT;
 	core_writel(priv, reg, CORE_GMNCFGCFG);
 
-	/* Get the maximum number of ports for this switch */
+	 
 	priv->hw_params.num_ports = core_readl(priv, CORE_IMP0_PRT_ID) + 1;
 	if (priv->hw_params.num_ports > DSA_MAX_PORTS)
 		priv->hw_params.num_ports = DSA_MAX_PORTS;
 
-	/* Assume a single GPHY setup if we can't read that property */
+	 
 	if (of_property_read_u32(dn, "brcm,num-gphy",
 				 &priv->hw_params.num_gphy))
 		priv->hw_params.num_gphy = 1;
@@ -1551,7 +1478,7 @@ static int bcm_sf2_sw_remove(struct platform_device *pdev)
 		return 0;
 
 	priv->wol_ports_mask = 0;
-	/* Disable interrupts */
+	 
 	bcm_sf2_intr_disable(priv);
 	dsa_unregister_switch(priv->dev->ds);
 	bcm_sf2_cfp_exit(priv->dev->ds);
@@ -1571,12 +1498,7 @@ static void bcm_sf2_sw_shutdown(struct platform_device *pdev)
 	if (!priv)
 		return;
 
-	/* For a kernel about to be kexec'd we want to keep the GPHY on for a
-	 * successful MDIO bus scan to occur. If we did turn off the GPHY
-	 * before (e.g: port_disable), this will also power it back on.
-	 *
-	 * Do not rely on kexec_in_progress, just power the PHY on.
-	 */
+	 
 	if (priv->hw_params.num_gphy == 1)
 		bcm_sf2_gphy_enable_set(priv->dev->ds, true);
 
@@ -1599,7 +1521,7 @@ static int bcm_sf2_resume(struct device *dev)
 
 	return dsa_switch_resume(priv->dev->ds);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(bcm_sf2_pm_ops,
 			 bcm_sf2_suspend, bcm_sf2_resume);

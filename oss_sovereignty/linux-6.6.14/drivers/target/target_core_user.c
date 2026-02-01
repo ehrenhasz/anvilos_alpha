@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Shaohua Li <shli@kernel.org>
- * Copyright (C) 2014 Red Hat, Inc.
- * Copyright (C) 2015 Arrikto, Inc.
- * Copyright (C) 2017 Chinamobile, Inc.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/module.h>
@@ -30,57 +25,24 @@
 
 #include <linux/target_core_user.h>
 
-/**
- * DOC: Userspace I/O
- * Userspace I/O
- * -------------
- *
- * Define a shared-memory interface for LIO to pass SCSI commands and
- * data to userspace for processing. This is to allow backends that
- * are too complex for in-kernel support to be possible.
- *
- * It uses the UIO framework to do a lot of the device-creation and
- * introspection work for us.
- *
- * See the .h file for how the ring is laid out. Note that while the
- * command ring is defined, the particulars of the data area are
- * not. Offset values in the command entry point to other locations
- * internal to the mmap-ed area. There is separate space outside the
- * command ring for data buffers. This leaves maximum flexibility for
- * moving buffer allocations, or even page flipping or other
- * allocation techniques, without altering the command ring layout.
- *
- * SECURITY:
- * The user process must be assumed to be malicious. There's no way to
- * prevent it breaking the command ring protocol if it wants, but in
- * order to prevent other issues we must only ever read *data* from
- * the shared memory area, not offsets or sizes. This applies to
- * command ring entries as well as the mailbox. Extra code needed for
- * this may have a 'UAM' comment.
- */
+ 
 
 #define TCMU_TIME_OUT (30 * MSEC_PER_SEC)
 
-/* For mailbox plus cmd ring, the size is fixed 8MB */
+ 
 #define MB_CMDR_SIZE_DEF (8 * 1024 * 1024)
-/* Offset of cmd ring is size of mailbox */
+ 
 #define CMDR_OFF ((__u32)sizeof(struct tcmu_mailbox))
 #define CMDR_SIZE_DEF (MB_CMDR_SIZE_DEF - CMDR_OFF)
 
-/*
- * For data area, the default block size is PAGE_SIZE and
- * the default total size is 256K * PAGE_SIZE.
- */
+ 
 #define DATA_PAGES_PER_BLK_DEF 1
 #define DATA_AREA_PAGES_DEF (256 * 1024)
 
 #define TCMU_MBS_TO_PAGES(_mbs) ((size_t)_mbs << (20 - PAGE_SHIFT))
 #define TCMU_PAGES_TO_MBS(_pages) (_pages >> (20 - PAGE_SHIFT))
 
-/*
- * Default number of global data blocks(512K * PAGE_SIZE)
- * when the unmap thread will be started.
- */
+ 
 #define TCMU_GLOBAL_MAX_PAGES_DEF (512 * 1024)
 
 static u8 tcmu_kern_cmd_reply_supported;
@@ -100,7 +62,7 @@ static LIST_HEAD(tcmu_nl_cmd_list);
 struct tcmu_dev;
 
 struct tcmu_nl_cmd {
-	/* wake up thread waiting for reply */
+	 
 	struct completion complete;
 	struct list_head nl_list;
 	struct tcmu_dev *udev;
@@ -135,8 +97,8 @@ struct tcmu_dev {
 	void *cmdr;
 	u32 cmdr_size;
 	u32 cmdr_last_cleaned;
-	/* Offset of data area from start of mb */
-	/* Must add data_off and mb_addr to get the address */
+	 
+	 
 	size_t data_off;
 	int data_area_mb;
 	uint32_t max_blocks;
@@ -180,8 +142,7 @@ struct tcmu_cmd {
 
 	uint16_t cmd_id;
 
-	/* Can't use se_cmd when cleaning up expired cmds, because if
-	   cmd has been completed then accessing se_cmd is off limits */
+	 
 	uint32_t dbi_cnt;
 	uint32_t dbi_bidi_cnt;
 	uint32_t dbi_cur;
@@ -204,16 +165,7 @@ struct tcmu_tmr {
 	int16_t tmr_cmd_ids[];
 };
 
-/*
- * To avoid dead lock the mutex lock order should always be:
- *
- * mutex_lock(&root_udev_mutex);
- * ...
- * mutex_lock(&tcmu_dev->cmdr_lock);
- * mutex_unlock(&tcmu_dev->cmdr_lock);
- * ...
- * mutex_unlock(&root_udev_mutex);
- */
+ 
 static DEFINE_MUTEX(root_udev_mutex);
 static LIST_HEAD(root_udev);
 
@@ -352,7 +304,7 @@ static const struct kernel_param_ops tcmu_reset_netlink_op = {
 module_param_cb(reset_netlink, &tcmu_reset_netlink_op, NULL, S_IWUSR);
 MODULE_PARM_DESC(reset_netlink, "Reset netlink commands.");
 
-/* multicast group */
+ 
 enum tcmu_multicast_groups {
 	TCMU_MCGRP_CONFIG,
 };
@@ -473,7 +425,7 @@ static const struct genl_small_ops tcmu_genl_ops[] = {
 	},
 };
 
-/* Our generic netlink family */
+ 
 static struct genl_family tcmu_genl_family __ro_after_init = {
 	.module = THIS_MODULE,
 	.hdrsize = 0,
@@ -517,7 +469,7 @@ static inline int tcmu_get_empty_block(struct tcmu_dev *udev,
 		return -1;
 
 	dpi = dbi * udev->data_pages_per_blk;
-	/* Count the number of already allocated pages */
+	 
 	xas_set(&xas, dpi);
 	rcu_read_lock();
 	for (cnt = 0; xas_next(&xas) && cnt < page_cnt;)
@@ -525,7 +477,7 @@ static inline int tcmu_get_empty_block(struct tcmu_dev *udev,
 	rcu_read_unlock();
 
 	for (i = cnt; i < page_cnt; i++) {
-		/* try to get new zeroed page from the mm */
+		 
 		page = alloc_page(GFP_NOIO | __GFP_ZERO);
 		if (!page)
 			break;
@@ -554,7 +506,7 @@ static inline int tcmu_get_empty_block(struct tcmu_dev *udev,
 static int tcmu_get_empty_blocks(struct tcmu_dev *udev,
 				 struct tcmu_cmd *tcmu_cmd, int length)
 {
-	/* start value of dbi + 1 must not be a valid dbi */
+	 
 	int dbi = -2;
 	int blk_data_len, iov_cnt = 0;
 	uint32_t blk_size = udev->data_blk_size;
@@ -596,21 +548,18 @@ static inline void tcmu_cmd_set_block_cnts(struct tcmu_cmd *cmd)
 static int new_block_to_iov(struct tcmu_dev *udev, struct tcmu_cmd *cmd,
 			    struct iovec **iov, int prev_dbi, int len)
 {
-	/* Get the next dbi */
+	 
 	int dbi = tcmu_cmd_get_dbi(cmd);
 
-	/* Do not add more than udev->data_blk_size to iov */
+	 
 	len = min_t(int,  len, udev->data_blk_size);
 
-	/*
-	 * The following code will gather and map the blocks to the same iovec
-	 * when the blocks are all next to each other.
-	 */
+	 
 	if (dbi != prev_dbi + 1) {
-		/* dbi is not next to previous dbi, so start new iov */
+		 
 		if (prev_dbi >= 0)
 			(*iov)++;
-		/* write offset relative to mb_addr */
+		 
 		(*iov)->iov_base = (void __user *)
 				   (udev->data_off + dbi * udev->data_blk_size);
 	}
@@ -622,10 +571,10 @@ static int new_block_to_iov(struct tcmu_dev *udev, struct tcmu_cmd *cmd,
 static void tcmu_setup_iovs(struct tcmu_dev *udev, struct tcmu_cmd *cmd,
 			    struct iovec **iov, int data_length)
 {
-	/* start value of dbi + 1 must not be a valid dbi */
+	 
 	int dbi = -2;
 
-	/* We prepare the IOVs for DMA_FROM_DEVICE transfer direction */
+	 
 	for (; data_length > 0; data_length -= udev->data_blk_size)
 		dbi = new_block_to_iov(udev, cmd, iov, dbi, data_length);
 }
@@ -669,10 +618,7 @@ static inline void tcmu_flush_dcache_range(void *vaddr, size_t size)
 	}
 }
 
-/*
- * Some ring helper functions. We don't assume size is a power of 2 so
- * we can't use circ_buf.h.
- */
+ 
 static inline size_t spc_used(size_t head, size_t tail, size_t size)
 {
 	int diff = head - tail;
@@ -685,7 +631,7 @@ static inline size_t spc_used(size_t head, size_t tail, size_t size)
 
 static inline size_t spc_free(size_t head, size_t tail, size_t size)
 {
-	/* Keep 1 byte unused or we can't tell full from empty */
+	 
 	return (size - spc_used(head, tail, size) - 1);
 }
 
@@ -704,7 +650,7 @@ static inline void tcmu_copy_data(struct tcmu_dev *udev,
 				  struct scatterlist *sg, unsigned int sg_nents,
 				  struct iovec **iov, size_t data_len)
 {
-	/* start value of dbi + 1 must not be a valid dbi */
+	 
 	int dbi = -2;
 	size_t page_remaining, cp_len;
 	int page_cnt, page_inx, dpi;
@@ -742,7 +688,7 @@ static inline void tcmu_copy_data(struct tcmu_dev *udev,
 
 			while (page_remaining && data_len) {
 				if (!sg_miter_next(&sg_iter)) {
-					/* set length to 0 to abort outer loop */
+					 
 					data_len = 0;
 					pr_debug("%s: aborting data copy due to exhausted sg_list\n",
 						 __func__);
@@ -791,11 +737,7 @@ static void gather_data_area(struct tcmu_dev *udev, struct tcmu_cmd *tcmu_cmd,
 		data_sg = se_cmd->t_data_sg;
 		data_nents = se_cmd->t_data_nents;
 	} else {
-		/*
-		 * For bidi case, the first count blocks are for Data-Out
-		 * buffer blocks, and before gathering the Data-In buffer
-		 * the Data-Out buffer blocks should be skipped.
-		 */
+		 
 		tcmu_cmd_set_dbi_cur(tcmu_cmd,
 				     tcmu_cmd->dbi_cnt - tcmu_cmd->dbi_bidi_cnt);
 
@@ -812,11 +754,7 @@ static inline size_t spc_bitmap_free(unsigned long *bitmap, uint32_t thresh)
 	return thresh - bitmap_weight(bitmap, thresh);
 }
 
-/*
- * We can't queue a command until we have space available on the cmd ring.
- *
- * Called with ring lock held.
- */
+ 
 static bool is_ring_space_avail(struct tcmu_dev *udev, size_t cmd_size)
 {
 	struct tcmu_mailbox *mb = udev->mb_addr;
@@ -825,12 +763,9 @@ static bool is_ring_space_avail(struct tcmu_dev *udev, size_t cmd_size)
 
 	tcmu_flush_dcache_range(mb, sizeof(*mb));
 
-	cmd_head = mb->cmd_head % udev->cmdr_size; /* UAM */
+	cmd_head = mb->cmd_head % udev->cmdr_size;  
 
-	/*
-	 * If cmd end-of-ring space is too small then we need space for a NOP plus
-	 * original cmd - cmds are internally contiguous.
-	 */
+	 
 	if (head_to_end(cmd_head, udev->cmdr_size) >= cmd_size)
 		cmd_needed = cmd_size;
 	else
@@ -845,12 +780,7 @@ static bool is_ring_space_avail(struct tcmu_dev *udev, size_t cmd_size)
 	return true;
 }
 
-/*
- * We have to allocate data buffers before we can queue a command.
- * Returns -1 on error (not enough space) or number of needed iovs on success
- *
- * Called with ring lock held.
- */
+ 
 static int tcmu_alloc_data_space(struct tcmu_dev *udev, struct tcmu_cmd *cmd,
 				  int *iov_bidi_cnt)
 {
@@ -859,7 +789,7 @@ static int tcmu_alloc_data_space(struct tcmu_dev *udev, struct tcmu_cmd *cmd,
 	if (!cmd->dbi_cnt)
 		goto wr_iov_cnts;
 
-	/* try to check and get the data blocks as needed */
+	 
 	space = spc_bitmap_free(udev->data_bitmap, udev->dbi_thresh);
 	if (space < cmd->dbi_cnt) {
 		unsigned long blocks_left =
@@ -931,10 +861,7 @@ static int add_to_qfull_queue(struct tcmu_cmd *tcmu_cmd)
 	struct tcmu_dev *udev = tcmu_cmd->tcmu_dev;
 	unsigned int tmo;
 
-	/*
-	 * For backwards compat if qfull_time_out is not set use
-	 * cmd_time_out and if that's not set use the default time out.
-	 */
+	 
 	if (!udev->qfull_time_out)
 		return -ETIMEDOUT;
 	else if (udev->qfull_time_out > 0)
@@ -956,16 +883,16 @@ static uint32_t ring_insert_padding(struct tcmu_dev *udev, size_t cmd_size)
 {
 	struct tcmu_cmd_entry_hdr *hdr;
 	struct tcmu_mailbox *mb = udev->mb_addr;
-	uint32_t cmd_head = mb->cmd_head % udev->cmdr_size; /* UAM */
+	uint32_t cmd_head = mb->cmd_head % udev->cmdr_size;  
 
-	/* Insert a PAD if end-of-ring space is too small */
+	 
 	if (head_to_end(cmd_head, udev->cmdr_size) < cmd_size) {
 		size_t pad_size = head_to_end(cmd_head, udev->cmdr_size);
 
 		hdr = udev->cmdr + cmd_head;
 		tcmu_hdr_set_op(&hdr->len_op, TCMU_OP_PAD);
 		tcmu_hdr_set_len(&hdr->len_op, pad_size);
-		hdr->cmd_id = 0; /* not used for PAD */
+		hdr->cmd_id = 0;  
 		hdr->kflags = 0;
 		hdr->uflags = 0;
 		tcmu_flush_dcache_range(hdr, sizeof(*hdr));
@@ -973,7 +900,7 @@ static uint32_t ring_insert_padding(struct tcmu_dev *udev, size_t cmd_size)
 		UPDATE_HEAD(mb->cmd_head, pad_size, udev->cmdr_size);
 		tcmu_flush_dcache_range(mb, sizeof(*mb));
 
-		cmd_head = mb->cmd_head % udev->cmdr_size; /* UAM */
+		cmd_head = mb->cmd_head % udev->cmdr_size;  
 		WARN_ON(cmd_head != 0);
 	}
 
@@ -999,16 +926,7 @@ static struct se_dev_plug *tcmu_plug_device(struct se_device *se_dev)
 	return NULL;
 }
 
-/**
- * queue_cmd_ring - queue cmd to ring or internally
- * @tcmu_cmd: cmd to queue
- * @scsi_err: TCM error code if failure (-1) returned.
- *
- * Returns:
- * -1 we cannot queue internally or to the ring.
- *  0 success
- *  1 internally queued to wait for ring memory to free.
- */
+ 
 static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
 {
 	struct tcmu_dev *udev = tcmu_cmd->tcmu_dev;
@@ -1021,7 +939,7 @@ static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
 	uint32_t cmd_id, cmd_head;
 	uint64_t cdb_off;
 	uint32_t blk_size = udev->data_blk_size;
-	/* size of data buffer needed */
+	 
 	size_t data_length = (size_t)tcmu_cmd->dbi_cnt * blk_size;
 
 	*scsi_err = TCM_NO_SENSE;
@@ -1050,10 +968,7 @@ static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
 	if (iov_cnt < 0)
 		goto free_and_queue;
 
-	/*
-	 * Must be a certain minimum size for response sense info, but
-	 * also may be larger if the iov array is large.
-	 */
+	 
 	base_command_size = tcmu_cmd_get_base_cmd_size(iov_cnt);
 	command_size = tcmu_cmd_get_cmd_size(tcmu_cmd, base_command_size);
 
@@ -1066,10 +981,7 @@ static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
 	}
 
 	if (!is_ring_space_avail(udev, command_size))
-		/*
-		 * Don't leave commands partially setup because the unmap
-		 * thread might need the blocks to make forward progress.
-		 */
+		 
 		goto free_and_queue;
 
 	if (xa_alloc(&udev->commands, &cmd_id, tcmu_cmd, XA_LIMIT(1, 0xffff),
@@ -1091,7 +1003,7 @@ static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
 	memset(entry, 0, command_size);
 	tcmu_hdr_set_op(&entry->hdr.len_op, TCMU_OP_CMD);
 
-	/* prepare iov list and copy data to data area if necessary */
+	 
 	tcmu_cmd_reset_dbi_cur(tcmu_cmd);
 	iov = &entry->req.iov[0];
 
@@ -1103,7 +1015,7 @@ static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
 
 	entry->req.iov_cnt = iov_cnt - iov_bidi_cnt;
 
-	/* Handle BIDI commands */
+	 
 	if (se_cmd->se_cmd_flags & SCF_BIDI) {
 		iov++;
 		tcmu_setup_iovs(udev, tcmu_cmd, &iov, tcmu_cmd->data_len_bidi);
@@ -1116,7 +1028,7 @@ static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
 
 	tcmu_hdr_set_len(&entry->hdr.len_op, command_size);
 
-	/* All offsets relative to mb_addr, not start of entry! */
+	 
 	cdb_off = CMDR_OFF + cmd_head + base_command_size;
 	memcpy((void *) mb + cdb_off, se_cmd->t_task_cdb, scsi_command_size(se_cmd->t_task_cdb));
 	entry->req.cdb_off = cdb_off;
@@ -1145,15 +1057,7 @@ queue:
 	return 1;
 }
 
-/**
- * queue_tmr_ring - queue tmr info to ring or internally
- * @udev: related tcmu_dev
- * @tmr: tcmu_tmr containing tmr info to queue
- *
- * Returns:
- *  0 success
- *  1 internally queued to wait for ring memory to free.
- */
+ 
 static int
 queue_tmr_ring(struct tcmu_dev *udev, struct tcmu_tmr *tmr)
 {
@@ -1264,13 +1168,13 @@ tcmu_tmr_notify(struct se_device *se_dev, enum tcm_tmreq_table tmf,
 
 	mutex_lock(&udev->cmdr_lock);
 
-	/* First we check for aborted commands in qfull_queue */
+	 
 	list_for_each_entry(se_cmd, cmd_list, state_list) {
 		i++;
 		if (!se_cmd->priv)
 			continue;
 		cmd = se_cmd->priv;
-		/* Commands on qfull queue have no id yet */
+		 
 		if (cmd->cmd_id) {
 			cmd_cnt++;
 			continue;
@@ -1326,10 +1230,7 @@ static bool tcmu_handle_completion(struct tcmu_cmd *cmd,
 	bool ret = true;
 	uint32_t read_len;
 
-	/*
-	 * cmd has been completed already from timeout, just reclaim
-	 * data area space and free cmd
-	 */
+	 
 	if (test_bit(TCMU_CMD_BIT_EXPIRED, &cmd->flags)) {
 		WARN_ON_ONCE(se_cmd);
 		goto out;
@@ -1369,12 +1270,12 @@ static bool tcmu_handle_completion(struct tcmu_cmd *cmd,
 			se_cmd->se_cmd_flags |= SCF_TREAT_READ_AS_NORMAL;
 	}
 	if (se_cmd->se_cmd_flags & SCF_BIDI) {
-		/* Get Data-In buffer before clean up */
+		 
 		gather_data_area(udev, cmd, true, read_len);
 	} else if (se_cmd->data_direction == DMA_FROM_DEVICE) {
 		gather_data_area(udev, cmd, false, read_len);
 	} else if (se_cmd->data_direction == DMA_TO_DEVICE) {
-		/* TODO: */
+		 
 	} else if (se_cmd->data_direction != DMA_NONE) {
 		pr_warn("TCMU: data direction was %d!\n",
 			se_cmd->data_direction);
@@ -1394,14 +1295,7 @@ out:
 		tcmu_cmd_free_data(cmd, cmd->dbi_cnt);
 		tcmu_free_cmd(cmd);
 	} else {
-		/*
-		 * Keep this command after completion, since userspace still
-		 * needs the data buffer. Mark it with TCMU_CMD_BIT_KEEP_BUF
-		 * and reset potential TCMU_CMD_BIT_EXPIRED, so we don't accept
-		 * a second completion later.
-		 * Userspace can free the buffer later by writing the cmd_id
-		 * to new action attribute free_kept_buf.
-		 */
+		 
 		clear_bit(TCMU_CMD_BIT_EXPIRED, &cmd->flags);
 		set_bit(TCMU_CMD_BIT_KEEP_BUF, &cmd->flags);
 	}
@@ -1428,10 +1322,7 @@ static int tcmu_run_tmr_queue(struct tcmu_dev *udev)
 
 		if (queue_tmr_ring(udev, tmr)) {
 			pr_debug("ran out of space during tmr queue run\n");
-			/*
-			 * tmr was requeued, so just put all tmrs back in
-			 * the queue
-			 */
+			 
 			list_splice_tail(&tmrs, &udev->tmr_queue);
 			return 0;
 		}
@@ -1459,10 +1350,7 @@ static bool tcmu_handle_completions(struct tcmu_dev *udev)
 		struct tcmu_cmd_entry *entry = udev->cmdr + udev->cmdr_last_cleaned;
 		bool keep_buf;
 
-		/*
-		 * Flush max. up to end of cmd ring since current entry might
-		 * be a padding that is shorter than sizeof(*entry)
-		 */
+		 
 		size_t ring_left = head_to_end(udev->cmdr_last_cleaned,
 					       udev->cmdr_size);
 		tcmu_flush_dcache_range(entry, ring_left < sizeof(*entry) ?
@@ -1503,10 +1391,7 @@ static bool tcmu_handle_completions(struct tcmu_dev *udev)
 
 	if (atomic_read(&global_page_count) > tcmu_global_max_pages &&
 	    xa_empty(&udev->commands) && list_empty(&udev->qfull_queue)) {
-		/*
-		 * Allocated blocks exceeded global block limit, currently no
-		 * more pending or waiting commands so try to reclaim blocks.
-		 */
+		 
 		schedule_delayed_work(&tcmu_unmap_work, 0);
 	}
 	if (udev->cmd_time_out)
@@ -1670,24 +1555,7 @@ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
 	last = (last + 1) * udev->data_pages_per_blk - 1;
 	xa_for_each_range(&udev->data_pages, dpi, page, first, last) {
 		xa_erase(&udev->data_pages, dpi);
-		/*
-		 * While reaching here there may be page faults occurring on
-		 * the to-be-released pages. A race condition may occur if
-		 * unmap_mapping_range() is called before page faults on these
-		 * pages have completed; a valid but stale map is created.
-		 *
-		 * If another command subsequently runs and needs to extend
-		 * dbi_thresh, it may reuse the slot corresponding to the
-		 * previous page in data_bitmap. Though we will allocate a new
-		 * page for the slot in data_area, no page fault will happen
-		 * because we have a valid map. Therefore the command's data
-		 * will be lost.
-		 *
-		 * We lock and unlock pages that are to be released to ensure
-		 * all page faults have completed. This way
-		 * unmap_mapping_range() can ensure stale maps are cleanly
-		 * removed.
-		 */
+		 
 		lock_page(page);
 		unlock_page(page);
 		__free_page(page);
@@ -1725,13 +1593,13 @@ static void tcmu_dev_kref_release(struct kref *kref)
 		list_del(&udev->timedout_entry);
 	spin_unlock_bh(&timed_out_udevs_lock);
 
-	/* Upper layer should drain all requests before calling this */
+	 
 	mutex_lock(&udev->cmdr_lock);
 	xa_for_each(&udev->commands, i, cmd) {
 		if (tcmu_check_and_free_pending_cmd(cmd) != 0)
 			all_expired = false;
 	}
-	/* There can be left over TMR cmds. Remove them. */
+	 
 	tcmu_remove_all_queued_tmr(udev);
 	if (!list_empty(&udev->qfull_queue))
 		all_expired = false;
@@ -1768,13 +1636,7 @@ static void run_qfull_queue(struct tcmu_dev *udev, bool fail)
 			 tcmu_cmd, udev->name);
 
 		if (fail) {
-			/*
-			 * We were not able to even start the command, so
-			 * fail with busy to allow a retry in case runner
-			 * was only temporarily down. If the device is being
-			 * removed then LIO core will do the right thing and
-			 * fail the retry.
-			 */
+			 
 			tcmu_cmd->se_cmd->priv = NULL;
 			target_complete_cmd(tcmu_cmd->se_cmd, SAM_STAT_BUSY);
 			tcmu_free_cmd(tcmu_cmd);
@@ -1785,20 +1647,14 @@ static void run_qfull_queue(struct tcmu_dev *udev, bool fail)
 		if (ret < 0) {
 			pr_debug("cmd %p on dev %s failed with %u\n",
 				 tcmu_cmd, udev->name, scsi_ret);
-			/*
-			 * Ignore scsi_ret for now. target_complete_cmd
-			 * drops it.
-			 */
+			 
 			tcmu_cmd->se_cmd->priv = NULL;
 			target_complete_cmd(tcmu_cmd->se_cmd,
 					    SAM_STAT_CHECK_CONDITION);
 			tcmu_free_cmd(tcmu_cmd);
 		} else if (ret > 0) {
 			pr_debug("ran out of space during cmdr queue run\n");
-			/*
-			 * cmd was requeued, so just put all cmds back in
-			 * the queue
-			 */
+			 
 			list_splice_tail(&cmds, &udev->qfull_queue);
 			break;
 		}
@@ -1819,10 +1675,7 @@ static int tcmu_irqcontrol(struct uio_info *info, s32 irq_on)
 	return 0;
 }
 
-/*
- * mmap code from uio.c. Copied here because we want to hook mmap()
- * and this stuff must come along.
- */
+ 
 static int tcmu_find_mem_index(struct vm_area_struct *vma)
 {
 	struct tcmu_dev *udev = vma->vm_private_data;
@@ -1849,10 +1702,7 @@ static struct page *tcmu_try_get_data_page(struct tcmu_dev *udev, uint32_t dpi)
 		return page;
 	}
 
-	/*
-	 * Userspace messed up and passed in a address not in the
-	 * data iov passed to it.
-	 */
+	 
 	pr_err("Invalid addr to data page mapping (dpi %u) on device %s\n",
 	       dpi, udev->name);
 	mutex_unlock(&udev->cmdr_lock);
@@ -1875,7 +1725,7 @@ static void tcmu_vma_close(struct vm_area_struct *vma)
 
 	pr_debug("vma_close\n");
 
-	/* release ref from tcmu_vma_open */
+	 
 	kref_put(&udev->kref, tcmu_dev_kref_release);
 }
 
@@ -1892,21 +1742,18 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
 	if (mi < 0)
 		return VM_FAULT_SIGBUS;
 
-	/*
-	 * We need to subtract mi because userspace uses offset = N*PAGE_SIZE
-	 * to use mem[N].
-	 */
+	 
 	offset = (vmf->pgoff - mi) << PAGE_SHIFT;
 
 	if (offset < udev->data_off) {
-		/* For the vmalloc()ed cmd area pages */
+		 
 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
 		page = vmalloc_to_page(addr);
 		get_page(page);
 	} else {
 		uint32_t dpi;
 
-		/* For the dynamically growing data area pages */
+		 
 		dpi = (offset - udev->data_off) / PAGE_SIZE;
 		page = tcmu_try_get_data_page(udev, dpi);
 		if (!page)
@@ -1933,7 +1780,7 @@ static int tcmu_mmap(struct uio_info *info, struct vm_area_struct *vma)
 
 	vma->vm_private_data = udev;
 
-	/* Ensure the mmap is exactly the right size */
+	 
 	if (vma_pages(vma) != udev->mmap_pages)
 		return -EINVAL;
 
@@ -1946,7 +1793,7 @@ static int tcmu_open(struct uio_info *info, struct inode *inode)
 {
 	struct tcmu_dev *udev = container_of(info, struct tcmu_dev, uio_info);
 
-	/* O_EXCL not supported for char devs, so fake it? */
+	 
 	if (test_and_set_bit(TCMU_DEV_BIT_OPEN, &udev->flags))
 		return -EBUSY;
 
@@ -1967,13 +1814,7 @@ static int tcmu_release(struct uio_info *info, struct inode *inode)
 	mutex_lock(&udev->cmdr_lock);
 
 	xa_for_each(&udev->commands, i, cmd) {
-		/* Cmds with KEEP_BUF set are no longer on the ring, but
-		 * userspace still holds the data buffer. If userspace closes
-		 * we implicitly free these cmds and buffers, since after new
-		 * open the (new ?) userspace cannot find the cmd in the ring
-		 * and thus never will release the buffer by writing cmd_id to
-		 * free_kept_buf action attribute.
-		 */
+		 
 		if (!test_bit(TCMU_CMD_BIT_KEEP_BUF, &cmd->flags))
 			continue;
 		pr_debug("removing KEEP_BUF cmd %u on dev %s from ring\n",
@@ -1984,10 +1825,7 @@ static int tcmu_release(struct uio_info *info, struct inode *inode)
 		tcmu_cmd_free_data(cmd, cmd->dbi_cnt);
 		tcmu_free_cmd(cmd);
 	}
-	/*
-	 * We only freed data space, not ring space. Therefore we dont call
-	 * run_tmr_queue, but call run_qfull_queue if tmr_list is empty.
-	 */
+	 
 	if (freed && list_empty(&udev->tmr_queue))
 		run_qfull_queue(udev, false);
 
@@ -2132,7 +1970,7 @@ static int tcmu_netlink_event_send(struct tcmu_dev *udev,
 	ret = genlmsg_multicast_allns(&tcmu_genl_family, skb, 0,
 				      TCMU_MCGRP_CONFIG, GFP_KERNEL);
 
-	/* Wait during an add as the listener may not be up yet */
+	 
 	if (ret == 0 ||
 	   (ret == -ESRCH && cmd == TCMU_CMD_ADDED_DEVICE))
 		return tcmu_wait_genl_cmd_reply(udev);
@@ -2187,7 +2025,7 @@ static int tcmu_update_uio_info(struct tcmu_dev *udev)
 	if (!str)
 		return -ENOMEM;
 
-	/* If the old string exists, free it */
+	 
 	kfree(info->name);
 	info->name = str;
 
@@ -2222,16 +2060,16 @@ static int tcmu_configure_device(struct se_device *dev)
 		goto err_vzalloc;
 	}
 
-	/* mailbox fits in first part of CMDR space */
+	 
 	udev->mb_addr = mb;
 	udev->cmdr = (void *)mb + CMDR_OFF;
 	udev->data_off = udev->cmdr_size + CMDR_OFF;
 	data_size = TCMU_MBS_TO_PAGES(udev->data_area_mb) << PAGE_SHIFT;
 	udev->mmap_pages = (data_size + udev->cmdr_size + CMDR_OFF) >> PAGE_SHIFT;
 	udev->data_blk_size = udev->data_pages_per_blk * PAGE_SIZE;
-	udev->dbi_thresh = 0; /* Default in Idle state */
+	udev->dbi_thresh = 0;  
 
-	/* Initialise the mailbox of the ring buffer */
+	 
 	mb->version = TCMU_MAILBOX_VERSION;
 	mb->flags = TCMU_MAILBOX_FLAG_CAP_OOOC |
 		    TCMU_MAILBOX_FLAG_CAP_READ_LEN |
@@ -2261,26 +2099,21 @@ static int tcmu_configure_device(struct se_device *dev)
 	if (ret)
 		goto err_register;
 
-	/* User can set hw_block_size before enable the device */
+	 
 	if (dev->dev_attrib.hw_block_size == 0)
 		dev->dev_attrib.hw_block_size = 512;
-	/* Other attributes can be configured in userspace */
+	 
 	if (!dev->dev_attrib.hw_max_sectors)
 		dev->dev_attrib.hw_max_sectors = 128;
 	if (!dev->dev_attrib.emulate_write_cache)
 		dev->dev_attrib.emulate_write_cache = 0;
 	dev->dev_attrib.hw_queue_depth = 128;
 
-	/* If user didn't explicitly disable netlink reply support, use
-	 * module scope setting.
-	 */
+	 
 	if (udev->nl_reply_supported >= 0)
 		udev->nl_reply_supported = tcmu_kern_cmd_reply_supported;
 
-	/*
-	 * Get a ref incase userspace does a close on the uio device before
-	 * LIO has initiated tcmu_free_device.
-	 */
+	 
 	kref_get(&udev->kref);
 
 	ret = tcmu_send_dev_add_event(udev);
@@ -2313,7 +2146,7 @@ static void tcmu_free_device(struct se_device *dev)
 {
 	struct tcmu_dev *udev = TCMU_DEV(dev);
 
-	/* release ref from init */
+	 
 	kref_put(&udev->kref, tcmu_dev_kref_release);
 }
 
@@ -2332,7 +2165,7 @@ static void tcmu_destroy_device(struct se_device *dev)
 
 	uio_unregister_device(&udev->uio_info);
 
-	/* release ref from configure */
+	 
 	kref_put(&udev->kref, tcmu_dev_kref_release);
 }
 
@@ -2350,9 +2183,9 @@ static void tcmu_block_dev(struct tcmu_dev *udev)
 	if (test_and_set_bit(TCMU_DEV_BIT_BLOCKED, &udev->flags))
 		goto unlock;
 
-	/* complete IO that has executed successfully */
+	 
 	tcmu_handle_completions(udev);
-	/* fail IO waiting to be queued */
+	 
 	run_qfull_queue(udev, true);
 
 unlock:
@@ -2382,13 +2215,10 @@ static void tcmu_reset_ring(struct tcmu_dev *udev, u8 err_level)
 			list_del_init(&cmd->queue_entry);
 			cmd->se_cmd->priv = NULL;
 			if (err_level == 1) {
-				/*
-				 * Userspace was not able to start the
-				 * command or it is retryable.
-				 */
+				 
 				target_complete_cmd(cmd->se_cmd, SAM_STAT_BUSY);
 			} else {
-				/* hard failure */
+				 
 				target_complete_cmd(cmd->se_cmd,
 						    SAM_STAT_CHECK_CONDITION);
 			}
@@ -2410,13 +2240,7 @@ static void tcmu_reset_ring(struct tcmu_dev *udev, u8 err_level)
 
 	del_timer(&udev->cmd_timer);
 
-	/*
-	 * ring is empty and qfull queue never contains aborted commands.
-	 * So TMRs in tmr queue do not contain relevant cmd_ids.
-	 * After a ring reset userspace should do a fresh start, so
-	 * even LUN RESET message is no longer relevant.
-	 * Therefore remove all TMRs from qfull queue
-	 */
+	 
 	tcmu_remove_all_queued_tmr(udev);
 
 	run_qfull_queue(udev, false);
@@ -2813,7 +2637,7 @@ static ssize_t tcmu_dev_config_store(struct config_item *item, const char *page,
 	if (!len || len > TCMU_CONFIG_LEN - 1)
 		return -EINVAL;
 
-	/* Check if device has been configured before */
+	 
 	if (target_dev_configured(&udev->se_dev)) {
 		ret = tcmu_send_dev_config_event(udev, page);
 		if (ret) {
@@ -2875,7 +2699,7 @@ static ssize_t tcmu_dev_size_store(struct config_item *item, const char *page,
 	if (ret < 0)
 		return ret;
 
-	/* Check if device has been configured before */
+	 
 	if (target_dev_configured(&udev->se_dev)) {
 		ret = tcmu_send_dev_size_event(udev, val);
 		if (ret) {
@@ -2957,7 +2781,7 @@ static ssize_t tcmu_emulate_write_cache_store(struct config_item *item,
 	if (ret < 0)
 		return ret;
 
-	/* Check if device has been configured before */
+	 
 	if (target_dev_configured(&udev->se_dev)) {
 		ret = tcmu_send_emulate_write_cache(udev, val);
 		if (ret) {
@@ -3124,10 +2948,7 @@ static ssize_t tcmu_free_kept_buf_store(struct config_item *item, const char *pa
 
 	tcmu_cmd_free_data(cmd, cmd->dbi_cnt);
 	tcmu_free_cmd(cmd);
-	/*
-	 * We only freed data space, not ring space. Therefore we dont call
-	 * run_tmr_queue, but call run_qfull_queue if tmr_list is empty.
-	 */
+	 
 	if (list_empty(&udev->tmr_queue))
 		run_qfull_queue(udev, false);
 
@@ -3202,11 +3023,11 @@ static void find_free_blocks(void)
 			continue;
 		}
 
-		/* Try to complete the finished commands first */
+		 
 		if (tcmu_handle_completions(udev))
 			run_qfull_queue(udev, false);
 
-		/* Skip the udevs in idle */
+		 
 		if (!udev->dbi_thresh) {
 			mutex_unlock(&udev->cmdr_lock);
 			continue;
@@ -3215,14 +3036,11 @@ static void find_free_blocks(void)
 		end = udev->dbi_max + 1;
 		block = find_last_bit(udev->data_bitmap, end);
 		if (block == udev->dbi_max) {
-			/*
-			 * The last bit is dbi_max, so it is not possible
-			 * reclaim any blocks.
-			 */
+			 
 			mutex_unlock(&udev->cmdr_lock);
 			continue;
 		} else if (block == end) {
-			/* The current udev will goto idle state */
+			 
 			udev->dbi_thresh = start = 0;
 			udev->dbi_max = 0;
 		} else {
@@ -3230,19 +3048,10 @@ static void find_free_blocks(void)
 			udev->dbi_max = block;
 		}
 
-		/*
-		 * Release the block pages.
-		 *
-		 * Also note that since tcmu_vma_fault() gets an extra page
-		 * refcount, tcmu_blocks_release() won't free pages if pages
-		 * are mapped. This means it is safe to call
-		 * tcmu_blocks_release() before unmap_mapping_range() which
-		 * drops the refcount of any pages it unmaps and thus releases
-		 * them.
-		 */
+		 
 		pages_freed = tcmu_blocks_release(udev, start, end - 1);
 
-		/* Here will truncate the data area from off */
+		 
 		off = udev->data_off + (loff_t)start * udev->data_blk_size;
 		unmap_mapping_range(udev->inode->i_mapping, off, 0, 1);
 
@@ -3275,10 +3084,7 @@ static void check_timedout_devices(void)
 
 		mutex_lock(&udev->cmdr_lock);
 
-		/*
-		 * If cmd_time_out is disabled but qfull is set deadline
-		 * will only reflect the qfull timeout. Ignore it.
-		 */
+		 
 		if (udev->cmd_time_out) {
 			list_for_each_entry_safe(cmd, tmp_cmd,
 						 &udev->inflight_queue,

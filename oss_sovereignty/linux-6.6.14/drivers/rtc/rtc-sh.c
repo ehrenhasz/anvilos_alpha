@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH On-Chip RTC Support
- *
- * Copyright (C) 2006 - 2009  Paul Mundt
- * Copyright (C) 2006  Jamie Lenehan
- * Copyright (C) 2008  Angelo Castello
- *
- * Based on the old arch/sh/kernel/cpu/rtc.c by:
- *
- *  Copyright (C) 2000  Philipp Rumpf <prumpf@tux.org>
- *  Copyright (C) 1999  Tetsuya Okada & Niibe Yutaka
- */
+
+ 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
 #include <linux/kernel.h>
@@ -28,9 +17,9 @@
 #ifdef CONFIG_SUPERH
 #include <asm/rtc.h>
 #else
-/* Default values for RZ/A RTC */
+ 
 #define rtc_reg_size		sizeof(u16)
-#define RTC_BIT_INVERTED        0	/* no chip bugs */
+#define RTC_BIT_INVERTED        0	 
 #define RTC_CAP_4_DIGIT_YEAR    (1 << 0)
 #define RTC_DEF_CAPABILITIES    RTC_CAP_4_DIGIT_YEAR
 #endif
@@ -41,57 +30,47 @@
 
 #define R64CNT		RTC_REG(0)
 
-#define RSECCNT		RTC_REG(1)	/* RTC sec */
-#define RMINCNT		RTC_REG(2)	/* RTC min */
-#define RHRCNT		RTC_REG(3)	/* RTC hour */
-#define RWKCNT		RTC_REG(4)	/* RTC week */
-#define RDAYCNT		RTC_REG(5)	/* RTC day */
-#define RMONCNT		RTC_REG(6)	/* RTC month */
-#define RYRCNT		RTC_REG(7)	/* RTC year */
-#define RSECAR		RTC_REG(8)	/* ALARM sec */
-#define RMINAR		RTC_REG(9)	/* ALARM min */
-#define RHRAR		RTC_REG(10)	/* ALARM hour */
-#define RWKAR		RTC_REG(11)	/* ALARM week */
-#define RDAYAR		RTC_REG(12)	/* ALARM day */
-#define RMONAR		RTC_REG(13)	/* ALARM month */
-#define RCR1		RTC_REG(14)	/* Control */
-#define RCR2		RTC_REG(15)	/* Control */
+#define RSECCNT		RTC_REG(1)	 
+#define RMINCNT		RTC_REG(2)	 
+#define RHRCNT		RTC_REG(3)	 
+#define RWKCNT		RTC_REG(4)	 
+#define RDAYCNT		RTC_REG(5)	 
+#define RMONCNT		RTC_REG(6)	 
+#define RYRCNT		RTC_REG(7)	 
+#define RSECAR		RTC_REG(8)	 
+#define RMINAR		RTC_REG(9)	 
+#define RHRAR		RTC_REG(10)	 
+#define RWKAR		RTC_REG(11)	 
+#define RDAYAR		RTC_REG(12)	 
+#define RMONAR		RTC_REG(13)	 
+#define RCR1		RTC_REG(14)	 
+#define RCR2		RTC_REG(15)	 
 
-/*
- * Note on RYRAR and RCR3: Up until this point most of the register
- * definitions are consistent across all of the available parts. However,
- * the placement of the optional RYRAR and RCR3 (the RYRAR control
- * register used to control RYRCNT/RYRAR compare) varies considerably
- * across various parts, occasionally being mapped in to a completely
- * unrelated address space. For proper RYRAR support a separate resource
- * would have to be handed off, but as this is purely optional in
- * practice, we simply opt not to support it, thereby keeping the code
- * quite a bit more simplified.
- */
+ 
 
-/* ALARM Bits - or with BCD encoded value */
-#define AR_ENB		0x80	/* Enable for alarm cmp   */
+ 
+#define AR_ENB		0x80	 
 
-/* Period Bits */
-#define PF_HP		0x100	/* Enable Half Period to support 8,32,128Hz */
-#define PF_COUNT	0x200	/* Half periodic counter */
-#define PF_OXS		0x400	/* Periodic One x Second */
-#define PF_KOU		0x800	/* Kernel or User periodic request 1=kernel */
+ 
+#define PF_HP		0x100	 
+#define PF_COUNT	0x200	 
+#define PF_OXS		0x400	 
+#define PF_KOU		0x800	 
 #define PF_MASK		0xf00
 
-/* RCR1 Bits */
-#define RCR1_CF		0x80	/* Carry Flag             */
-#define RCR1_CIE	0x10	/* Carry Interrupt Enable */
-#define RCR1_AIE	0x08	/* Alarm Interrupt Enable */
-#define RCR1_AF		0x01	/* Alarm Flag             */
+ 
+#define RCR1_CF		0x80	 
+#define RCR1_CIE	0x10	 
+#define RCR1_AIE	0x08	 
+#define RCR1_AF		0x01	 
 
-/* RCR2 Bits */
-#define RCR2_PEF	0x80	/* PEriodic interrupt Flag */
-#define RCR2_PESMASK	0x70	/* Periodic interrupt Set  */
-#define RCR2_RTCEN	0x08	/* ENable RTC              */
-#define RCR2_ADJ	0x04	/* ADJustment (30-second)  */
-#define RCR2_RESET	0x02	/* Reset bit               */
-#define RCR2_START	0x01	/* Start bit               */
+ 
+#define RCR2_PEF	0x80	 
+#define RCR2_PESMASK	0x70	 
+#define RCR2_RTCEN	0x08	 
+#define RCR2_ADJ	0x04	 
+#define RCR2_RESET	0x02	 
+#define RCR2_START	0x01	 
 
 struct sh_rtc {
 	void __iomem		*regbase;
@@ -103,7 +82,7 @@ struct sh_rtc {
 	struct clk		*clk;
 	struct rtc_device	*rtc_dev;
 	spinlock_t		lock;
-	unsigned long		capabilities;	/* See asm/rtc.h for cap bits */
+	unsigned long		capabilities;	 
 	unsigned short		periodic_freq;
 };
 
@@ -116,7 +95,7 @@ static int __sh_rtc_interrupt(struct sh_rtc *rtc)
 	tmp &= ~RCR1_CF;
 	writeb(tmp, rtc->regbase + RCR1);
 
-	/* Users have requested One x Second IRQ */
+	 
 	if (pending && rtc->periodic_freq & PF_OXS)
 		rtc_update_irq(rtc->rtc_dev, 1, RTC_UF | RTC_IRQF);
 
@@ -150,7 +129,7 @@ static int __sh_rtc_periodic(struct sh_rtc *rtc)
 	if (!pending)
 		return 0;
 
-	/* Half period enabled than one skipped and the next notified */
+	 
 	if ((rtc->periodic_freq & PF_HP) && (rtc->periodic_freq & PF_COUNT))
 		rtc->periodic_freq &= ~PF_COUNT;
 	else {
@@ -285,7 +264,7 @@ static int sh_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		spin_lock_irq(&rtc->lock);
 
 		tmp = readb(rtc->regbase + RCR1);
-		tmp &= ~RCR1_CF; /* Clear CF-bit */
+		tmp &= ~RCR1_CF;  
 		tmp |= RCR1_CIE;
 		writeb(tmp, rtc->regbase + RCR1);
 
@@ -320,7 +299,7 @@ static int sh_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_sec--;
 #endif
 
-	/* only keep the carry interrupt enabled if UIE is on */
+	 
 	if (!(rtc->periodic_freq & PF_OXS))
 		sh_rtc_setcie(dev, 0);
 
@@ -341,7 +320,7 @@ static int sh_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	spin_lock_irq(&rtc->lock);
 
-	/* Reset pre-scaler & stop RTC */
+	 
 	tmp = readb(rtc->regbase + RCR2);
 	tmp |= RCR2_RESET;
 	tmp &= ~RCR2_START;
@@ -363,7 +342,7 @@ static int sh_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		writeb(bin2bcd(year), rtc->regbase + RYRCNT);
 	}
 
-	/* Start RTC */
+	 
 	tmp = readb(rtc->regbase + RCR2);
 	tmp &= ~RCR2_RESET;
 	tmp |= RCR2_RTCEN | RCR2_START;
@@ -377,11 +356,11 @@ static int sh_rtc_set_time(struct device *dev, struct rtc_time *tm)
 static inline int sh_rtc_read_alarm_value(struct sh_rtc *rtc, int reg_off)
 {
 	unsigned int byte;
-	int value = -1;			/* return -1 for ignored values */
+	int value = -1;			 
 
 	byte = readb(rtc->regbase + reg_off);
 	if (byte & AR_ENB) {
-		byte &= ~AR_ENB;	/* strip the enable bit */
+		byte &= ~AR_ENB;	 
 		value = bcd2bin(byte);
 	}
 
@@ -402,7 +381,7 @@ static int sh_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 	tm->tm_mday	= sh_rtc_read_alarm_value(rtc, RDAYAR);
 	tm->tm_mon	= sh_rtc_read_alarm_value(rtc, RMONAR);
 	if (tm->tm_mon > 0)
-		tm->tm_mon -= 1; /* RTC is 1-12, tm_mon is 0-11 */
+		tm->tm_mon -= 1;  
 
 	wkalrm->enabled = (readb(rtc->regbase + RCR1) & RCR1_AIE) ? 1 : 0;
 
@@ -414,7 +393,7 @@ static int sh_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 static inline void sh_rtc_write_alarm_value(struct sh_rtc *rtc,
 					    int value, int reg_off)
 {
-	/* < 0 for a value that is ignored */
+	 
 	if (value < 0)
 		writeb(0, rtc->regbase + reg_off);
 	else
@@ -430,12 +409,12 @@ static int sh_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 
 	spin_lock_irq(&rtc->lock);
 
-	/* disable alarm interrupt and clear the alarm flag */
+	 
 	rcr1 = readb(rtc->regbase + RCR1);
 	rcr1 &= ~(RCR1_AF | RCR1_AIE);
 	writeb(rcr1, rtc->regbase + RCR1);
 
-	/* set alarm time */
+	 
 	sh_rtc_write_alarm_value(rtc, tm->tm_sec,  RSECAR);
 	sh_rtc_write_alarm_value(rtc, tm->tm_min,  RMINAR);
 	sh_rtc_write_alarm_value(rtc, tm->tm_hour, RHRAR);
@@ -478,7 +457,7 @@ static int __init sh_rtc_probe(struct platform_device *pdev)
 
 	spin_lock_init(&rtc->lock);
 
-	/* get periodic/carry/alarm irqs */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (unlikely(ret <= 0)) {
 		dev_err(&pdev->dev, "No IRQ resource\n");
@@ -510,7 +489,7 @@ static int __init sh_rtc_probe(struct platform_device *pdev)
 
 	if (!pdev->dev.of_node) {
 		clk_id = pdev->id;
-		/* With a single device, the clock id is still "rtc0" */
+		 
 		if (clk_id < 0)
 			clk_id = 0;
 
@@ -520,12 +499,7 @@ static int __init sh_rtc_probe(struct platform_device *pdev)
 
 	rtc->clk = devm_clk_get(&pdev->dev, clk_name);
 	if (IS_ERR(rtc->clk)) {
-		/*
-		 * No error handling for rtc->clk intentionally, not all
-		 * platforms will have a unique clock for the RTC, and
-		 * the clk API can handle the struct clk pointer being
-		 * NULL.
-		 */
+		 
 		rtc->clk = NULL;
 	}
 
@@ -542,16 +516,13 @@ static int __init sh_rtc_probe(struct platform_device *pdev)
 		struct sh_rtc_platform_info *pinfo =
 			dev_get_platdata(&pdev->dev);
 
-		/*
-		 * Some CPUs have special capabilities in addition to the
-		 * default set. Add those in here.
-		 */
+		 
 		rtc->capabilities |= pinfo->capabilities;
 	}
 #endif
 
 	if (rtc->carry_irq <= 0) {
-		/* register shared periodic/carry/alarm irq */
+		 
 		ret = devm_request_irq(&pdev->dev, rtc->periodic_irq,
 				sh_rtc_shared, 0, "sh-rtc", rtc);
 		if (unlikely(ret)) {
@@ -561,7 +532,7 @@ static int __init sh_rtc_probe(struct platform_device *pdev)
 			goto err_unmap;
 		}
 	} else {
-		/* register periodic/carry/alarm irqs */
+		 
 		ret = devm_request_irq(&pdev->dev, rtc->periodic_irq,
 				sh_rtc_periodic, 0, "sh-rtc period", rtc);
 		if (unlikely(ret)) {
@@ -592,7 +563,7 @@ static int __init sh_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, rtc);
 
-	/* everything disabled by default */
+	 
 	sh_rtc_setaie(&pdev->dev, 0);
 	sh_rtc_setcie(&pdev->dev, 0);
 
@@ -664,7 +635,7 @@ static SIMPLE_DEV_PM_OPS(sh_rtc_pm_ops, sh_rtc_suspend, sh_rtc_resume);
 
 static const struct of_device_id sh_rtc_of_match[] = {
 	{ .compatible = "renesas,sh-rtc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sh_rtc_of_match);
 

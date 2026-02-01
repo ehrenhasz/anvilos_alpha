@@ -1,15 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 1997-1998 Transmeta Corporation -- All Rights Reserved
- * Copyright 2001-2006 Ian Kent <raven@themaw.net>
- */
+
+ 
 
 #include <linux/sched/signal.h>
 #include "autofs_i.h"
 
-/* We make this a static variable rather than a part of the superblock; it
- * is better if we don't reassign numbers easily even across filesystems
- */
+ 
 static autofs_wqt_t autofs_next_wait_queue = 1;
 
 void autofs_catatonic_mode(struct autofs_sb_info *sbi)
@@ -26,10 +21,10 @@ void autofs_catatonic_mode(struct autofs_sb_info *sbi)
 
 	sbi->flags |= AUTOFS_SBI_CATATONIC;
 	wq = sbi->queues;
-	sbi->queues = NULL;	/* Erase all wait queues */
+	sbi->queues = NULL;	 
 	while (wq) {
 		nwq = wq->next;
-		wq->status = -ENOENT; /* Magic is gone - report failure */
+		wq->status = -ENOENT;  
 		kfree(wq->name.name - wq->offset);
 		wq->name.name = NULL;
 		wake_up(&wq->queue);
@@ -37,7 +32,7 @@ void autofs_catatonic_mode(struct autofs_sb_info *sbi)
 			kfree(wq);
 		wq = nwq;
 	}
-	fput(sbi->pipe);	/* Close the pipe */
+	fput(sbi->pipe);	 
 	sbi->pipe = NULL;
 	sbi->pipefd = -1;
 	mutex_unlock(&sbi->wq_mutex);
@@ -62,9 +57,7 @@ static int autofs_write(struct autofs_sb_info *sbi,
 	}
 	mutex_unlock(&sbi->pipe_mutex);
 
-	/* Keep the currently executing process from receiving a
-	 * SIGPIPE unless it was already supposed to get one
-	 */
+	 
 	if (wr == -EPIPE && !sigpipe) {
 		spin_lock_irqsave(&current->sighand->siglock, flags);
 		sigdelset(&current->pending.signal, SIGPIPE);
@@ -72,7 +65,7 @@ static int autofs_write(struct autofs_sb_info *sbi,
 		spin_unlock_irqrestore(&current->sighand->siglock, flags);
 	}
 
-	/* if 'wr' returned 0 (impossible) we assume -EIO (safe) */
+	 
 	return bytes == 0 ? 0 : wr < 0 ? wr : -EIO;
 }
 
@@ -93,13 +86,13 @@ static void autofs_notify_daemon(struct autofs_sb_info *sbi,
 		 (unsigned long) wq->wait_queue_token,
 		 wq->name.len, wq->name.name, type);
 
-	memset(&pkt, 0, sizeof(pkt)); /* For security reasons */
+	memset(&pkt, 0, sizeof(pkt));  
 
 	pkt.hdr.proto_version = sbi->version;
 	pkt.hdr.type = type;
 
 	switch (type) {
-	/* Kernel protocol v4 missing and expire packets */
+	 
 	case autofs_ptype_missing:
 	{
 		struct autofs_packet_missing *mp = &pkt.v4_pkt.missing;
@@ -125,10 +118,7 @@ static void autofs_notify_daemon(struct autofs_sb_info *sbi,
 		ep->name[wq->name.len] = '\0';
 		break;
 	}
-	/*
-	 * Kernel protocol v5 packet for handling indirect and direct
-	 * mount missing and expire requests
-	 */
+	 
 	case autofs_ptype_missing_indirect:
 	case autofs_ptype_expire_indirect:
 	case autofs_ptype_missing_direct:
@@ -166,7 +156,7 @@ static void autofs_notify_daemon(struct autofs_sb_info *sbi,
 		break;
 	case -ENOMEM:
 	case -ERESTARTSYS:
-		/* Just fail this one */
+		 
 		autofs_wait_release(sbi, wq->wait_queue_token, ret);
 		break;
 	default:
@@ -191,14 +181,7 @@ autofs_find_wait(struct autofs_sb_info *sbi, const struct qstr *qstr)
 	return wq;
 }
 
-/*
- * Check if we have a valid request.
- * Returns
- * 1 if the request should continue.
- *   In this case we can return an autofs_wait_queue entry if one is
- *   found or NULL to idicate a new wait needs to be created.
- * 0 or a negative errno if the request shouldn't continue.
- */
+ 
 static int validate_request(struct autofs_wait_queue **wait,
 			    struct autofs_sb_info *sbi,
 			    const struct qstr *qstr,
@@ -211,7 +194,7 @@ static int validate_request(struct autofs_wait_queue **wait,
 	if (sbi->flags & AUTOFS_SBI_CATATONIC)
 		return -ENOENT;
 
-	/* Wait in progress, continue; */
+	 
 	wq = autofs_find_wait(sbi, qstr);
 	if (wq) {
 		*wait = wq;
@@ -220,22 +203,14 @@ static int validate_request(struct autofs_wait_queue **wait,
 
 	*wait = NULL;
 
-	/* If we don't yet have any info this is a new request */
+	 
 	ino = autofs_dentry_ino(dentry);
 	if (!ino)
 		return 1;
 
-	/*
-	 * If we've been asked to wait on an existing expire (NFY_NONE)
-	 * but there is no wait in the queue ...
-	 */
+	 
 	if (notify == NFY_NONE) {
-		/*
-		 * Either we've betean the pending expire to post it's
-		 * wait or it finished while we waited on the mutex.
-		 * So we need to wait till either, the wait appears
-		 * or the expire finishes.
-		 */
+		 
 
 		while (ino->flags & AUTOFS_INF_EXPIRING) {
 			mutex_unlock(&sbi->wq_mutex);
@@ -253,30 +228,17 @@ static int validate_request(struct autofs_wait_queue **wait,
 			}
 		}
 
-		/*
-		 * Not ideal but the status has already gone. Of the two
-		 * cases where we wait on NFY_NONE neither depend on the
-		 * return status of the wait.
-		 */
+		 
 		return 0;
 	}
 
-	/*
-	 * If we've been asked to trigger a mount and the request
-	 * completed while we waited on the mutex ...
-	 */
+	 
 	if (notify == NFY_MOUNT) {
 		struct dentry *new = NULL;
 		struct path this;
 		int valid = 1;
 
-		/*
-		 * If the dentry was successfully mounted while we slept
-		 * on the wait queue mutex we can return success. If it
-		 * isn't mounted (doesn't have submounts for the case of
-		 * a multi-mount with no mount at it's base) we can
-		 * continue on and create a new request.
-		 */
+		 
 		if (!IS_ROOT(dentry)) {
 			if (d_unhashed(dentry) &&
 			    d_really_is_positive(dentry)) {
@@ -312,29 +274,18 @@ int autofs_wait(struct autofs_sb_info *sbi,
 	pid_t pid;
 	pid_t tgid;
 
-	/* In catatonic mode, we don't wait for nobody */
+	 
 	if (sbi->flags & AUTOFS_SBI_CATATONIC)
 		return -ENOENT;
 
-	/*
-	 * Try translating pids to the namespace of the daemon.
-	 *
-	 * Zero means failure: we are in an unrelated pid namespace.
-	 */
+	 
 	pid = task_pid_nr_ns(current, ns_of_pid(sbi->oz_pgrp));
 	tgid = task_tgid_nr_ns(current, ns_of_pid(sbi->oz_pgrp));
 	if (pid == 0 || tgid == 0)
 		return -ENOENT;
 
 	if (d_really_is_negative(dentry)) {
-		/*
-		 * A wait for a negative dentry is invalid for certain
-		 * cases. A direct or offset mount "always" has its mount
-		 * point directory created and so the request dentry must
-		 * be positive or the map key doesn't exist. The situation
-		 * is very similar for indirect mounts except only dentrys
-		 * in the root of the autofs file system may be negative.
-		 */
+		 
 		if (autofs_type_trigger(sbi->type))
 			return -ENOENT;
 		else if (!IS_ROOT(dentry->d_parent))
@@ -345,7 +296,7 @@ int autofs_wait(struct autofs_sb_info *sbi,
 	if (!name)
 		return -ENOMEM;
 
-	/* If this is a direct mount request create a dummy name */
+	 
 	if (IS_ROOT(dentry) && autofs_type_trigger(sbi->type)) {
 		qstr.name = name;
 		qstr.len = sprintf(name, "%p", dentry);
@@ -355,7 +306,7 @@ int autofs_wait(struct autofs_sb_info *sbi,
 			kfree(name);
 			return -ENOENT;
 		}
-		qstr.name = ++p; // skip the leading slash
+		qstr.name = ++p; 
 		qstr.len = strlen(p);
 		offset = p - name;
 	}
@@ -375,7 +326,7 @@ int autofs_wait(struct autofs_sb_info *sbi,
 	}
 
 	if (!wq) {
-		/* Create a new wait queue */
+		 
 		wq = kmalloc(sizeof(struct autofs_wait_queue), GFP_KERNEL);
 		if (!wq) {
 			kfree(name);
@@ -397,7 +348,7 @@ int autofs_wait(struct autofs_sb_info *sbi,
 		wq->gid = current_gid();
 		wq->pid = pid;
 		wq->tgid = tgid;
-		wq->status = -EINTR; /* Status return if interrupted */
+		wq->status = -EINTR;  
 		wq->wait_ctr = 2;
 
 		if (sbi->version < 5) {
@@ -420,9 +371,7 @@ int autofs_wait(struct autofs_sb_info *sbi,
 			 (unsigned long) wq->wait_queue_token, wq->name.len,
 			 wq->name.name, notify);
 
-		/*
-		 * autofs_notify_daemon() may block; it will unlock ->wq_mutex
-		 */
+		 
 		autofs_notify_daemon(sbi, wq, type);
 	} else {
 		wq->wait_ctr++;
@@ -433,36 +382,25 @@ int autofs_wait(struct autofs_sb_info *sbi,
 		kfree(name);
 	}
 
-	/*
-	 * wq->name.name is NULL iff the lock is already released
-	 * or the mount has been made catatonic.
-	 */
+	 
 	wait_event_killable(wq->queue, wq->name.name == NULL);
 	status = wq->status;
 
-	/*
-	 * For direct and offset mounts we need to track the requester's
-	 * uid and gid in the dentry info struct. This is so it can be
-	 * supplied, on request, by the misc device ioctl interface.
-	 * This is needed during daemon resatart when reconnecting
-	 * to existing, active, autofs mounts. The uid and gid (and
-	 * related string values) may be used for macro substitution
-	 * in autofs mount maps.
-	 */
+	 
 	if (!status) {
 		struct autofs_info *ino;
 		struct dentry *de = NULL;
 
-		/* direct mount or browsable map */
+		 
 		ino = autofs_dentry_ino(dentry);
 		if (!ino) {
-			/* If not lookup actual dentry used */
+			 
 			de = d_lookup(dentry->d_parent, &dentry->d_name);
 			if (de)
 				ino = autofs_dentry_ino(de);
 		}
 
-		/* Set mount requester */
+		 
 		if (ino) {
 			spin_lock(&sbi->fs_lock);
 			ino->uid = wq->uid;
@@ -474,7 +412,7 @@ int autofs_wait(struct autofs_sb_info *sbi,
 			dput(de);
 	}
 
-	/* Are we the last process to need status? */
+	 
 	mutex_lock(&sbi->wq_mutex);
 	if (!--wq->wait_ctr)
 		kfree(wq);
@@ -500,9 +438,9 @@ int autofs_wait_release(struct autofs_sb_info *sbi,
 		return -EINVAL;
 	}
 
-	*wql = wq->next;	/* Unlink from chain */
+	*wql = wq->next;	 
 	kfree(wq->name.name - wq->offset);
-	wq->name.name = NULL;	/* Do not wait on this queue */
+	wq->name.name = NULL;	 
 	wq->status = status;
 	wake_up(&wq->queue);
 	if (!--wq->wait_ctr)

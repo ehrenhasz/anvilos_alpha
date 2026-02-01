@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW89_PHY_H__
 #define __RTW89_PHY_H__
@@ -193,7 +192,7 @@ enum rtw89_phy_status_ie_type {
 	RTW89_PHYSTS_IE30_DBG_CCK_PATH_C		= 30,
 	RTW89_PHYSTS_IE31_DBG_CCK_PATH_D		= 31,
 
-	/* keep last */
+	 
 	RTW89_PHYSTS_IE_NUM,
 	RTW89_PHYSTS_IE_MAX = RTW89_PHYSTS_IE_NUM - 1
 };

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Microsemi Ocelot Switch driver
- *
- * Copyright (c) 2021 Innovative Advantage Inc.
- */
+ 
+ 
 
 #ifndef VSC7514_REGS_H
 #define VSC7514_REGS_H

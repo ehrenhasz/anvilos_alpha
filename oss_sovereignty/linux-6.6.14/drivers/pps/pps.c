@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PPS core file
- *
- * Copyright (C) 2005-2009   Rodolfo Giometti <giometti@linux.it>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,9 +17,7 @@
 
 #include "kc.h"
 
-/*
- * Local variables
- */
+ 
 
 static dev_t pps_devt;
 static struct class *pps_class;
@@ -31,9 +25,7 @@ static struct class *pps_class;
 static DEFINE_MUTEX(pps_idr_lock);
 static DEFINE_IDR(pps_idr);
 
-/*
- * Char device methods
- */
+ 
 
 static __poll_t pps_cdev_poll(struct file *file, poll_table *wait)
 {
@@ -55,7 +47,7 @@ static int pps_cdev_pps_fetch(struct pps_device *pps, struct pps_fdata *fdata)
 	unsigned int ev = pps->last_ev;
 	int err = 0;
 
-	/* Manage the timeout */
+	 
 	if (fdata->timeout.flags & PPS_TIME_INVALID)
 		err = wait_event_interruptible(pps->queue,
 				ev != pps->last_ev);
@@ -78,7 +70,7 @@ static int pps_cdev_pps_fetch(struct pps_device *pps, struct pps_fdata *fdata)
 		}
 	}
 
-	/* Check for pending signals */
+	 
 	if (err == -ERESTARTSYS) {
 		dev_dbg(pps->dev, "pending signal caught\n");
 		return -EINTR;
@@ -102,7 +94,7 @@ static long pps_cdev_ioctl(struct file *file,
 
 		spin_lock_irq(&pps->lock);
 
-		/* Get the current parameters */
+		 
 		params = pps->params;
 
 		spin_unlock_irq(&pps->lock);
@@ -116,7 +108,7 @@ static long pps_cdev_ioctl(struct file *file,
 	case PPS_SETPARAMS:
 		dev_dbg(pps->dev, "PPS_SETPARAMS\n");
 
-		/* Check the capabilities */
+		 
 		if (!capable(CAP_SYS_TIME))
 			return -EPERM;
 
@@ -129,7 +121,7 @@ static long pps_cdev_ioctl(struct file *file,
 			return -EINVAL;
 		}
 
-		/* Check for supported capabilities */
+		 
 		if ((params.mode & ~pps->info.mode) != 0) {
 			dev_dbg(pps->dev, "unsupported capabilities (%x)\n",
 								params.mode);
@@ -138,12 +130,12 @@ static long pps_cdev_ioctl(struct file *file,
 
 		spin_lock_irq(&pps->lock);
 
-		/* Save the new parameters */
+		 
 		pps->params = params;
 
-		/* Restore the read only parameters */
+		 
 		if ((params.mode & (PPS_TSFMT_TSPEC | PPS_TSFMT_NTPFP)) == 0) {
-			/* section 3.3 of RFC 2783 interpreted */
+			 
 			dev_dbg(pps->dev, "time format unspecified (%x)\n",
 								params.mode);
 			pps->params.mode |= PPS_TSFMT_TSPEC;
@@ -152,11 +144,7 @@ static long pps_cdev_ioctl(struct file *file,
 			pps->params.mode |= PPS_CANWAIT;
 		pps->params.api_version = PPS_API_VERS;
 
-		/*
-		 * Clear unused fields of pps_kparams to avoid leaking
-		 * uninitialized data of the PPS_SETPARAMS caller via
-		 * PPS_GETPARAMS
-		 */
+		 
 		pps->params.assert_off_tu.flags = 0;
 		pps->params.clear_off_tu.flags = 0;
 
@@ -186,7 +174,7 @@ static long pps_cdev_ioctl(struct file *file,
 		if (err)
 			return err;
 
-		/* Return the fetched timestamp */
+		 
 		spin_lock_irq(&pps->lock);
 
 		fdata.info.assert_sequence = pps->assert_sequence;
@@ -208,7 +196,7 @@ static long pps_cdev_ioctl(struct file *file,
 
 		dev_dbg(pps->dev, "PPS_KC_BIND\n");
 
-		/* Check the capabilities */
+		 
 		if (!capable(CAP_SYS_TIME))
 			return -EPERM;
 
@@ -216,14 +204,14 @@ static long pps_cdev_ioctl(struct file *file,
 					sizeof(struct pps_bind_args)))
 			return -EFAULT;
 
-		/* Check for supported capabilities */
+		 
 		if ((bind_args.edge & ~pps->info.mode) != 0) {
 			dev_err(pps->dev, "unsupported capabilities (%x)\n",
 					bind_args.edge);
 			return -EINVAL;
 		}
 
-		/* Validate parameters roughly */
+		 
 		if (bind_args.tsformat != PPS_TSFMT_TSPEC ||
 				(bind_args.edge & ~PPS_CAPTUREBOTH) != 0 ||
 				bind_args.consumer != PPS_KC_HARDPPS) {
@@ -272,7 +260,7 @@ static long pps_cdev_compat_ioctl(struct file *file,
 		if (err)
 			return err;
 
-		/* Return the fetched timestamp */
+		 
 		spin_lock_irq(&pps->lock);
 
 		compat.info.assert_sequence = pps->assert_sequence;
@@ -313,9 +301,7 @@ static int pps_cdev_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/*
- * Char device stuff
- */
+ 
 
 static const struct file_operations pps_cdev_fops = {
 	.owner		= THIS_MODULE,
@@ -334,7 +320,7 @@ static void pps_device_destruct(struct device *dev)
 
 	cdev_del(&pps->cdev);
 
-	/* Now we can release the ID for re-use */
+	 
 	pr_debug("deallocating pps%d\n", pps->id);
 	mutex_lock(&pps_idr_lock);
 	idr_remove(&pps_idr, pps->id);
@@ -350,10 +336,7 @@ int pps_register_cdev(struct pps_device *pps)
 	dev_t devt;
 
 	mutex_lock(&pps_idr_lock);
-	/*
-	 * Get new ID for the new PPS source.  After idr_alloc() calling
-	 * the new source will be freely available into the kernel.
-	 */
+	 
 	err = idr_alloc(&pps_idr, pps, 0, PPS_MAX_SOURCES, GFP_KERNEL);
 	if (err < 0) {
 		if (err == -ENOSPC) {
@@ -384,7 +367,7 @@ int pps_register_cdev(struct pps_device *pps)
 		goto del_cdev;
 	}
 
-	/* Override the release function with our own */
+	 
 	pps->dev->release = pps_device_destruct;
 
 	pr_debug("source %s got cdev (%d:%d)\n", pps->info.name,
@@ -410,24 +393,7 @@ void pps_unregister_cdev(struct pps_device *pps)
 	device_destroy(pps_class, pps->dev->devt);
 }
 
-/*
- * Look up a pps device by magic cookie.
- * The cookie is usually a pointer to some enclosing device, but this
- * code doesn't care; you should never be dereferencing it.
- *
- * This is a bit of a kludge that is currently used only by the PPS
- * serial line discipline.  It may need to be tweaked when a second user
- * is found.
- *
- * There is no function interface for setting the lookup_cookie field.
- * It's initialized to NULL when the pps device is created, and if a
- * client wants to use it, just fill it in afterward.
- *
- * The cookie is automatically set to NULL in pps_unregister_source()
- * so that it will not be used again, even if the pps device cannot
- * be removed from the idr due to pending references holding the minor
- * number in use.
- */
+ 
 struct pps_device *pps_lookup_dev(void const *cookie)
 {
 	struct pps_device *pps;
@@ -442,9 +408,7 @@ struct pps_device *pps_lookup_dev(void const *cookie)
 }
 EXPORT_SYMBOL(pps_lookup_dev);
 
-/*
- * Module stuff
- */
+ 
 
 static void __exit pps_exit(void)
 {

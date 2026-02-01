@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2013 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/buffer_head.h>
@@ -30,9 +28,7 @@ int __exfat_write_inode(struct inode *inode, int sync)
 	if (inode->i_ino == EXFAT_ROOT_INO)
 		return 0;
 
-	/*
-	 * If the inode is already unlinked, there is no need for updating it.
-	 */
+	 
 	if (ei->dir.dir == DIR_DELETED)
 		return 0;
 
@@ -41,7 +37,7 @@ int __exfat_write_inode(struct inode *inode, int sync)
 
 	exfat_set_volume_dirty(sb);
 
-	/* get the directory entry of given file or directory */
+	 
 	if (exfat_get_dentry_set(&es, sb, &(ei->dir), ei->entry, ES_ALL_ENTRIES))
 		return -EIO;
 	ep = exfat_get_dentry_cached(&es, ES_IDX_FILE);
@@ -49,7 +45,7 @@ int __exfat_write_inode(struct inode *inode, int sync)
 
 	ep->dentry.file.attr = cpu_to_le16(exfat_make_attr(inode));
 
-	/* set FILE_INFO structure using the acquired struct exfat_dentry */
+	 
 	exfat_set_entry_time(sbi, &ei->i_crtime,
 			&ep->dentry.file.create_tz,
 			&ep->dentry.file.create_time,
@@ -66,7 +62,7 @@ int __exfat_write_inode(struct inode *inode, int sync)
 			&ep->dentry.file.access_date,
 			NULL);
 
-	/* File size should be zero if there is no cluster allocated */
+	 
 	on_disk_size = i_size_read(inode);
 
 	if (ei->start_clu == EXFAT_EOF_CLUSTER)
@@ -103,11 +99,7 @@ void exfat_sync_inode(struct inode *inode)
 	__exfat_write_inode(inode, 1);
 }
 
-/*
- * Input: inode, (logical) clu_offset, target allocation area
- * Output: errcode, cluster number
- * *clu = (~0), if it's unable to allocate a new cluster
- */
+ 
 static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
 		unsigned int *clu, int create)
 {
@@ -152,11 +144,11 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
 
 		clu_offset -= fclus;
 	} else {
-		/* hint information */
+		 
 		if (clu_offset > 0 && ei->hint_bmap.off != EXFAT_EOF_CLUSTER &&
 		    ei->hint_bmap.off > 0 && clu_offset >= ei->hint_bmap.off) {
 			clu_offset -= ei->hint_bmap.off;
-			/* hint_bmap.clu should be valid */
+			 
 			WARN_ON(ei->hint_bmap.clu < 2);
 			*clu = ei->hint_bmap.clu;
 		}
@@ -177,9 +169,9 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
 		new_clu.size = 0;
 		new_clu.flags = ei->flags;
 
-		/* allocate a cluster */
+		 
 		if (num_to_be_allocated < 1) {
-			/* Broken FAT (i_sze > allocated FAT) */
+			 
 			exfat_fs_error(sb, "broken FAT chain.");
 			return -EIO;
 		}
@@ -197,17 +189,14 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
 			return -EIO;
 		}
 
-		/* append to the FAT chain */
+		 
 		if (last_clu == EXFAT_EOF_CLUSTER) {
 			if (new_clu.flags == ALLOC_FAT_CHAIN)
 				ei->flags = ALLOC_FAT_CHAIN;
 			ei->start_clu = new_clu.dir;
 		} else {
 			if (new_clu.flags != ei->flags) {
-				/* no-fat-chain bit is disabled,
-				 * so fat-chain should be synced with
-				 * alloc-bitmap
-				 */
+				 
 				exfat_chain_cont_cluster(sb, ei->start_clu,
 					num_clusters);
 				ei->flags = ALLOC_FAT_CHAIN;
@@ -222,13 +211,7 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
 
 		inode->i_blocks += EXFAT_CLU_TO_B(num_to_be_allocated, sbi) >> 9;
 
-		/*
-		 * Move *clu pointer along FAT chains (hole care) because the
-		 * caller of this function expect *clu to be the last cluster.
-		 * This only works when num_to_be_allocated >= 2,
-		 * *clu = (the first cluster of the allocated chain) =>
-		 * (the last cluster of ...)
-		 */
+		 
 		if (ei->flags == ALLOC_NO_FAT_CHAIN) {
 			*clu += num_to_be_allocated - 1;
 		} else {
@@ -241,7 +224,7 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
 
 	}
 
-	/* hint information */
+	 
 	ei->hint_bmap.off = local_clu_offset;
 	ei->hint_bmap.clu = *clu;
 
@@ -255,9 +238,7 @@ static int exfat_map_new_buffer(struct exfat_inode_info *ei,
 		return -EIO;
 	set_buffer_new(bh);
 
-	/*
-	 * Adjust i_size_aligned if i_size_ondisk is bigger than it.
-	 */
+	 
 	if (ei->i_size_ondisk > ei->i_size_aligned)
 		ei->i_size_aligned = ei->i_size_ondisk;
 	return 0;
@@ -282,7 +263,7 @@ static int exfat_get_block(struct inode *inode, sector_t iblock,
 	if (iblock >= last_block && !create)
 		goto done;
 
-	/* Is this block already allocated? */
+	 
 	err = exfat_map_cluster(inode, iblock >> sbi->sect_per_clus_bits,
 			&cluster, create);
 	if (err) {
@@ -296,14 +277,14 @@ static int exfat_get_block(struct inode *inode, sector_t iblock,
 	if (cluster == EXFAT_EOF_CLUSTER)
 		goto done;
 
-	/* sector offset in cluster */
+	 
 	sec_offset = iblock & (sbi->sect_per_clus - 1);
 
 	phys = exfat_cluster_to_sector(sbi, cluster) + sec_offset;
 	mapped_blocks = sbi->sect_per_clus - sec_offset;
 	max_blocks = min(mapped_blocks, max_blocks);
 
-	/* Treat newly added block / cluster */
+	 
 	if (iblock < last_block)
 		create = 0;
 
@@ -415,23 +396,12 @@ static ssize_t exfat_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
 	ssize_t ret;
 
 	if (rw == WRITE) {
-		/*
-		 * FIXME: blockdev_direct_IO() doesn't use ->write_begin(),
-		 * so we need to update the ->i_size_aligned to block boundary.
-		 *
-		 * But we must fill the remaining area or hole by nul for
-		 * updating ->i_size_aligned
-		 *
-		 * Return 0, and fallback to normal buffered write.
-		 */
+		 
 		if (EXFAT_I(inode)->i_size_aligned < size)
 			return 0;
 	}
 
-	/*
-	 * Need to use the DIO_LOCKING for avoiding the race
-	 * condition of exfat_get_block() and ->truncate().
-	 */
+	 
 	ret = blockdev_direct_IO(iocb, inode, iter, exfat_get_block);
 	if (ret < 0 && (rw & WRITE))
 		exfat_write_failed(mapping, size);
@@ -442,20 +412,14 @@ static sector_t exfat_aop_bmap(struct address_space *mapping, sector_t block)
 {
 	sector_t blocknr;
 
-	/* exfat_get_cluster() assumes the requested blocknr isn't truncated. */
+	 
 	down_read(&EXFAT_I(mapping->host)->truncate_lock);
 	blocknr = generic_block_bmap(mapping, block, exfat_get_block);
 	up_read(&EXFAT_I(mapping->host)->truncate_lock);
 	return blocknr;
 }
 
-/*
- * exfat_block_truncate_page() zeroes out a mapping from file offset `from'
- * up to the end of the block which corresponds to `from'.
- * This is required during truncate to physically zeroout the tail end
- * of that block so it doesn't yield old data if the file is later grown.
- * Also, avoid causing failure from fsx for cases of "data past EOF"
- */
+ 
 int exfat_block_truncate_page(struct inode *inode, loff_t from)
 {
 	return block_truncate_page(inode->i_mapping, from, exfat_get_block);
@@ -521,7 +485,7 @@ struct inode *exfat_iget(struct super_block *sb, loff_t i_pos)
 	return inode;
 }
 
-/* doesn't deal with root inode */
+ 
 static int exfat_fill_inode(struct inode *inode, struct exfat_dir_entry *info)
 {
 	struct exfat_sb_info *sbi = EXFAT_SB(inode->i_sb);
@@ -547,13 +511,13 @@ static int exfat_fill_inode(struct inode *inode, struct exfat_dir_entry *info)
 	inode_inc_iversion(inode);
 	inode->i_generation = get_random_u32();
 
-	if (info->attr & ATTR_SUBDIR) { /* directory */
+	if (info->attr & ATTR_SUBDIR) {  
 		inode->i_generation &= ~1;
 		inode->i_mode = exfat_make_mode(sbi, info->attr, 0777);
 		inode->i_op = &exfat_dir_inode_operations;
 		inode->i_fop = &exfat_dir_operations;
 		set_nlink(inode, info->num_subdirs);
-	} else { /* regular file */
+	} else {  
 		inode->i_generation |= 1;
 		inode->i_mode = exfat_make_mode(sbi, info->attr, 0777);
 		inode->i_op = &exfat_file_inode_operations;
@@ -564,7 +528,7 @@ static int exfat_fill_inode(struct inode *inode, struct exfat_dir_entry *info)
 
 	i_size_write(inode, size);
 
-	/* ondisk and aligned size should be aligned with block size */
+	 
 	if (size & (inode->i_sb->s_blocksize - 1)) {
 		size |= (inode->i_sb->s_blocksize - 1);
 		size++;

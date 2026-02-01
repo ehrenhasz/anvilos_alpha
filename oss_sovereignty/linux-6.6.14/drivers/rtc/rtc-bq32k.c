@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for TI BQ32000 RTC.
- *
- * Copyright (C) 2009 Semihalf.
- * Copyright (C) 2014 Pavel Machek <pavel@denx.de>
- *
- * You can get hardware description at
- * https://www.ti.com/lit/ds/symlink/bq32000.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -17,26 +9,24 @@
 #include <linux/errno.h>
 #include <linux/bcd.h>
 
-#define BQ32K_SECONDS		0x00	/* Seconds register address */
-#define BQ32K_SECONDS_MASK	0x7F	/* Mask over seconds value */
-#define BQ32K_STOP		0x80	/* Oscillator Stop flat */
+#define BQ32K_SECONDS		0x00	 
+#define BQ32K_SECONDS_MASK	0x7F	 
+#define BQ32K_STOP		0x80	 
 
-#define BQ32K_MINUTES		0x01	/* Minutes register address */
-#define BQ32K_MINUTES_MASK	0x7F	/* Mask over minutes value */
-#define BQ32K_OF		0x80	/* Oscillator Failure flag */
+#define BQ32K_MINUTES		0x01	 
+#define BQ32K_MINUTES_MASK	0x7F	 
+#define BQ32K_OF		0x80	 
 
-#define BQ32K_HOURS_MASK	0x3F	/* Mask over hours value */
-#define BQ32K_CENT		0x40	/* Century flag */
-#define BQ32K_CENT_EN		0x80	/* Century flag enable bit */
+#define BQ32K_HOURS_MASK	0x3F	 
+#define BQ32K_CENT		0x40	 
+#define BQ32K_CENT_EN		0x80	 
 
-#define BQ32K_CALIBRATION	0x07	/* CAL_CFG1, calibration and control */
-#define BQ32K_TCH2		0x08	/* Trickle charge enable */
-#define BQ32K_CFG2		0x09	/* Trickle charger control */
-#define BQ32K_TCFE		BIT(6)	/* Trickle charge FET bypass */
+#define BQ32K_CALIBRATION	0x07	 
+#define BQ32K_TCH2		0x08	 
+#define BQ32K_CFG2		0x09	 
+#define BQ32K_TCFE		BIT(6)	 
 
-#define MAX_LEN			10	/* Maximum number of consecutive
-					 * register for this particular RTC.
-					 */
+#define MAX_LEN			10	 
 
 struct bq32k_regs {
 	uint8_t		seconds;
@@ -96,10 +86,7 @@ static int bq32k_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	if (error)
 		return error;
 
-	/*
-	 * In case of oscillator failure, the register contents should be
-	 * considered invalid. The flag is cleared the next time the RTC is set.
-	 */
+	 
 	if (regs.minutes & BQ32K_OF)
 		return -EINVAL;
 
@@ -151,10 +138,7 @@ static int trickle_charger_of_init(struct device *dev, struct device_node *node)
 
 	switch (ohms) {
 	case 180+940:
-		/*
-		 * TCHE[3:0] == 0x05, TCH2 == 1, TCFE == 0 (charging
-		 * over diode and 940ohm resistor)
-		 */
+		 
 
 		if (of_property_read_bool(node, "trickle-diode-disable")) {
 			dev_err(dev, "diode and resistor mismatch\n");
@@ -164,7 +148,7 @@ static int trickle_charger_of_init(struct device *dev, struct device_node *node)
 		break;
 
 	case 180+20000:
-		/* diode disabled */
+		 
 
 		if (!of_property_read_bool(node, "trickle-diode-disable")) {
 			dev_err(dev, "bq32k: diode and resistor mismatch\n");
@@ -260,7 +244,7 @@ static int bq32k_probe(struct i2c_client *client)
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
-	/* Check Oscillator Stop flag */
+	 
 	error = bq32k_read(dev, &reg, BQ32K_SECONDS, 1);
 	if (!error && (reg & BQ32K_STOP)) {
 		dev_warn(dev, "Oscillator was halted. Restarting...\n");
@@ -270,7 +254,7 @@ static int bq32k_probe(struct i2c_client *client)
 	if (error)
 		return error;
 
-	/* Check Oscillator Failure flag */
+	 
 	error = bq32k_read(dev, &reg, BQ32K_MINUTES, 1);
 	if (error)
 		return error;

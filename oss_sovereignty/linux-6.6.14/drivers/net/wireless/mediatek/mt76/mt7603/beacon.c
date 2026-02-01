@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include "mt7603.h"
 
@@ -113,7 +113,7 @@ void mt7603_pre_tbtt_tasklet(struct tasklet_struct *t)
 	data.dev = dev;
 	__skb_queue_head_init(&data.q);
 
-	/* Flush all previous CAB queue packets and beacons */
+	 
 	mt76_wr(dev, MT_WF_ARB_CAB_FLUSH, GENMASK(30, 16) | BIT(0));
 
 	mt76_queue_tx_cleanup(dev, dev->mphy.q_tx[MT_TXQ_CAB], false);
@@ -200,7 +200,7 @@ void mt7603_beacon_set_timer(struct mt7603_dev *dev, int idx, int intval)
 	mt76_wr(dev, MT_TBTT,
 		FIELD_PREP(MT_TBTT_PERIOD, intval) | MT_TBTT_CAL_ENABLE);
 
-	mt76_wr(dev, MT_TBTT_TIMER_CFG, 0x99); /* start timer */
+	mt76_wr(dev, MT_TBTT_TIMER_CFG, 0x99);  
 
 	mt76_rmw_field(dev, MT_ARB_SCR, MT_ARB_SCR_BCNQ_OPMODE_MASK,
 		       MT_BCNQ_OPMODE_AP);

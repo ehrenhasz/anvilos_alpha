@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UEFI Common Platform Error Record (CPER) support
- *
- * Copyright (C) 2017, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -93,14 +89,11 @@ static void cper_print_arm_err_info(const char *pfx, u32 type,
 	bool proc_context_corrupt, corrected, precise_pc, restartable_pc;
 	bool time_out, access_mode;
 
-	/* If the type is unknown, bail. */
+	 
 	if (type > CPER_ARM_MAX_TYPE)
 		return;
 
-	/*
-	 * Vendor type errors have error information values that are vendor
-	 * specific.
-	 */
+	 
 	if (type == CPER_ARM_VENDOR_ERROR)
 		return;
 
@@ -189,7 +182,7 @@ static void cper_print_arm_err_info(const char *pfx, u32 type,
 			printk("%sProgram execution can be restarted reliably at the PC associated with the error.\n", pfx);
 	}
 
-	/* The rest of the fields are specific to bus errors */
+	 
 	if (type != CPER_ARM_BUS_ERROR)
 		return;
 

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/******************************************************************************
- *
- *   Copyright © International Business Machines  Corp., 2009
- *
- * DESCRIPTION
- *      1. Block a thread using FUTEX_WAIT
- *      2. Attempt to use FUTEX_CMP_REQUEUE_PI on the futex from 1.
- *      3. The kernel must detect the mismatch and return -EINVAL.
- *
- * AUTHOR
- *      Darren Hart <dvhart@linux.intel.com>
- *
- * HISTORY
- *      2009-Nov-9: Initial version by Darren Hart <dvhart@linux.intel.com>
- *
- *****************************************************************************/
+
+ 
 
 #include <errno.h>
 #include <getopt.h>
@@ -84,23 +69,14 @@ int main(int argc, char *argv[])
 		ret = RET_ERROR;
 		goto out;
 	}
-	/* Allow the child to block in the kernel. */
+	 
 	sleep(1);
 
-	/*
-	 * The kernel should detect the waiter did not setup the
-	 * q->requeue_pi_key and return -EINVAL. If it does not,
-	 * it likely gave the lock to the child, which is now hung
-	 * in the kernel.
-	 */
+	 
 	ret = futex_cmp_requeue_pi(&f1, f1, &f2, 1, 0, FUTEX_PRIVATE_FLAG);
 	if (ret < 0) {
 		if (errno == EINVAL) {
-			/*
-			 * The kernel correctly detected the mismatched
-			 * requeue_pi target and aborted. Wake the child with
-			 * FUTEX_WAKE.
-			 */
+			 
 			ret = futex_wake(&f1, 1, FUTEX_PRIVATE_FLAG);
 			if (ret == 1) {
 				ret = RET_PASS;
@@ -129,7 +105,7 @@ int main(int argc, char *argv[])
 		ret = child_ret;
 
  out:
-	/* If the kernel crashes, we shouldn't return at all. */
+	 
 	print_result(TEST_NAME, ret);
 	return ret;
 }

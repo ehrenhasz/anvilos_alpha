@@ -1,38 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2004 Voltaire, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef MTHCA_DEV_H
 #define MTHCA_DEV_H
@@ -81,7 +47,7 @@ enum {
 	MTHCA_AV_SIZE         =  0x20,
 	MTHCA_MGM_ENTRY_SIZE  = 0x100,
 
-	/* Arbel FW gives us these, but we need them for Tavor */
+	 
 	MTHCA_MPT_ENTRY_SIZE  =  0x40,
 	MTHCA_MTT_SEG_SIZE    =  0x40,
 
@@ -296,7 +262,7 @@ struct mthca_dev {
 	u32              rev_id;
 	char             board_id[MTHCA_BOARD_ID_LEN];
 
-	/* firmware info */
+	 
 	u64              fw_ver;
 	union {
 		struct {
@@ -368,11 +334,11 @@ extern int mthca_debug_level;
 			dev_printk(KERN_DEBUG, &mdev->pdev->dev, format, ## arg); \
 	} while (0)
 
-#else /* CONFIG_INFINIBAND_MTHCA_DEBUG */
+#else  
 
 #define mthca_dbg(mdev, format, arg...) do { (void) mdev; } while (0)
 
-#endif /* CONFIG_INFINIBAND_MTHCA_DEBUG */
+#endif  
 
 #define mthca_err(mdev, format, arg...) \
 	dev_err(&mdev->pdev->dev, format, ## arg)
@@ -582,4 +548,4 @@ static inline int mthca_is_memfree(struct mthca_dev *dev)
 	return dev->mthca_flags & MTHCA_FLAG_MEMFREE;
 }
 
-#endif /* MTHCA_DEV_H */
+#endif  

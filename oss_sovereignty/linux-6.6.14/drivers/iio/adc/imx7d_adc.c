@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale i.MX7D ADC driver
- *
- * Copyright (C) 2015 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -21,7 +17,7 @@
 #include <linux/iio/driver.h>
 #include <linux/iio/sysfs.h>
 
-/* ADC register */
+ 
 #define IMX7D_REG_ADC_CH_A_CFG1			0x00
 #define IMX7D_REG_ADC_CH_A_CFG2			0x10
 #define IMX7D_REG_ADC_CH_B_CFG1			0x20
@@ -102,14 +98,14 @@ struct imx7d_adc_feature {
 	enum imx7d_adc_clk_pre_div clk_pre_div;
 	enum imx7d_adc_average_num avg_num;
 
-	u32 core_time_unit;	/* impact the sample rate */
+	u32 core_time_unit;	 
 };
 
 struct imx7d_adc {
 	struct device *dev;
 	void __iomem *regs;
 	struct clk *clk;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex lock;
 	u32 vref_uv;
 	u32 value;
@@ -191,10 +187,7 @@ static void imx7d_adc_sample_rate_set(struct imx7d_adc *info)
 	u32 tmp_cfg1;
 	u32 sample_rate = 0;
 
-	/*
-	 * Before sample set, disable channel A,B,C,D. Here we
-	 * clear the bit 31 of register REG_ADC_CH_A\B\C\D_CFG1.
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		tmp_cfg1 =
 			readl(info->regs + i * IMX7D_EACH_CHANNEL_REG_OFFSET);
@@ -215,14 +208,14 @@ static void imx7d_adc_hw_init(struct imx7d_adc *info)
 {
 	u32 cfg;
 
-	/* power up and enable adc analogue core */
+	 
 	cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
 	cfg &= ~(IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
 		 IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN);
 	cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_EN;
 	writel(cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
 
-	/* enable channel A,B,C,D interrupt */
+	 
 	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN,
 	       info->regs + IMX7D_REG_ADC_INT_SIG_EN);
 	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN,
@@ -239,32 +232,21 @@ static void imx7d_adc_channel_set(struct imx7d_adc *info)
 
 	channel = info->channel;
 
-	/* the channel choose single conversion, and enable average mode */
+	 
 	cfg1 |= (IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN |
 		 IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE |
 		 IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN);
 
-	/*
-	 * physical channel 0 chose logical channel A
-	 * physical channel 1 chose logical channel B
-	 * physical channel 2 chose logical channel C
-	 * physical channel 3 chose logical channel D
-	 */
+	 
 	cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(channel);
 
-	/*
-	 * read register REG_ADC_CH_A\B\C\D_CFG2, according to the
-	 * channel chosen
-	 */
+	 
 	cfg2 = readl(info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel +
 		     IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
 
 	cfg2 |= imx7d_adc_average_num[info->adc_feature.avg_num];
 
-	/*
-	 * write the register REG_ADC_CH_A\B\C\D_CFG2, according to
-	 * the channel chosen
-	 */
+	 
 	writel(cfg2, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel +
 	       IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
 	writel(cfg1, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel);
@@ -339,19 +321,14 @@ static int imx7d_adc_read_data(struct imx7d_adc *info)
 
 	channel = info->channel & 0x03;
 
-	/*
-	 * channel A and B conversion result share one register,
-	 * bit[27~16] is the channel B conversion result,
-	 * bit[11~0] is the channel A conversion result.
-	 * channel C and D is the same.
-	 */
+	 
 	if (channel < 2)
 		value = readl(info->regs + IMX7D_REG_ADC_CHA_B_CNV_RSLT);
 	else
 		value = readl(info->regs + IMX7D_REG_ADC_CHC_D_CNV_RSLT);
-	if (channel & 0x1)	/* channel B or D */
+	if (channel & 0x1)	 
 		value = (value >> 16) & 0xFFF;
-	else			/* channel A or C */
+	else			 
 		value &= 0xFFF;
 
 	return value;
@@ -367,20 +344,12 @@ static irqreturn_t imx7d_adc_isr(int irq, void *dev_id)
 		info->value = imx7d_adc_read_data(info);
 		complete(&info->completion);
 
-		/*
-		 * The register IMX7D_REG_ADC_INT_STATUS can't clear
-		 * itself after read operation, need software to write
-		 * 0 to the related bit. Here we clear the channel A/B/C/D
-		 * conversion finished flag.
-		 */
+		 
 		status &= ~IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS;
 		writel(status, info->regs + IMX7D_REG_ADC_INT_STATUS);
 	}
 
-	/*
-	 * If the channel A/B/C/D conversion timeout, report it and clear these
-	 * timeout flags.
-	 */
+	 
 	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_CONV_TIME_OUT) {
 		dev_err(info->dev,
 			"ADC got conversion time out interrupt: 0x%08x\n",
@@ -413,7 +382,7 @@ static const struct iio_info imx7d_adc_iio_info = {
 
 static const struct of_device_id imx7d_adc_match[] = {
 	{ .compatible = "fsl,imx7d-adc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx7d_adc_match);
 

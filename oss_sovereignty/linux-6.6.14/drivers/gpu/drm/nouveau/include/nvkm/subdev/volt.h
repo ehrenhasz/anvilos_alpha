@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_VOLT_H__
 #define __NVKM_VOLT_H__
 #include <core/subdev.h>
@@ -17,12 +17,7 @@ struct nvkm_volt {
 	u32 max_uv;
 	u32 min_uv;
 
-	/*
-	 * These are fully functional map entries creating a sw ceiling for
-	 * the voltage. These all can describe different kind of curves, so
-	 * that for any given temperature a different one can return the lowest
-	 * value of all three.
-	 */
+	 
 	u8 max0_id;
 	u8 max1_id;
 	u8 max2_id;

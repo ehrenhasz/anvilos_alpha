@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2019 Markus Friedl
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -38,7 +24,7 @@
 #include <openssl/ecdsa.h>
 #include <openssl/pem.h>
 
-/* Use OpenSSL SHA256 instead of libc */
+ 
 #define SHA256Init(x)		SHA256_Init(x)
 #define SHA256Update(x, y, z)	SHA256_Update(x, y, z)
 #define SHA256Final(x, y)	SHA256_Final(x, y)
@@ -46,9 +32,9 @@
 
 #elif defined(HAVE_SHA2_H)
 #include <sha2.h>
-#endif /* WITH_OPENSSL */
+#endif  
 
-/* #define SK_DEBUG 1 */
+ 
 
 #if SSH_SK_VERSION_MAJOR != 0x000a0000
 # error SK API has changed, sk-dummy.c needs an update
@@ -59,7 +45,7 @@
 # define sk_enroll		ssh_sk_enroll
 # define sk_sign		ssh_sk_sign
 # define sk_load_resident_keys	ssh_sk_load_resident_keys
-#endif /* !SK_STANDALONE */
+#endif  
 
 static void skdebug(const char *func, const char *fmt, ...)
     __attribute__((__format__ (printf, 2, 3)));
@@ -76,8 +62,8 @@ skdebug(const char *func, const char *fmt, ...)
 	fputc('\n', stderr);
 	va_end(ap);
 #else
-	(void)func; /* XXX */
-	(void)fmt; /* XXX */
+	(void)func;  
+	(void)fmt;  
 #endif
 }
 
@@ -135,7 +121,7 @@ pack_key_ecdsa(struct sk_enroll_response *response)
 		skdebug(__func__, "EC_POINT_point2oct failed");
 		goto out;
 	}
-	/* Key handle contains PEM encoded private key */
+	 
 	if (!PEM_write_bio_ECPrivateKey(bio, key, NULL, NULL, 0, NULL, NULL)) {
 		skdebug(__func__, "PEM_write_bio_ECPrivateKey failed");
 		goto out;
@@ -150,7 +136,7 @@ pack_key_ecdsa(struct sk_enroll_response *response)
 	}
 	response->key_handle_len = (size_t)privlen;
 	memcpy(response->key_handle, privptr, response->key_handle_len);
-	/* success */
+	 
 	ret = 0;
  out:
 	if (ret != 0) {
@@ -197,14 +183,14 @@ pack_key_ed25519(struct sk_enroll_response *response)
 		goto out;
 	}
 	memcpy(response->public_key, pk, sizeof(pk));
-	/* Key handle contains sk */
+	 
 	response->key_handle_len = sizeof(sk);
 	if ((response->key_handle = malloc(response->key_handle_len)) == NULL) {
 		skdebug(__func__, "malloc key_handle failed");
 		goto out;
 	}
 	memcpy(response->key_handle, sk, sizeof(sk));
-	/* success */
+	 
 	ret = 0;
  out:
 	if (ret != 0)
@@ -238,7 +224,7 @@ sk_enroll(uint32_t alg, const uint8_t *challenge, size_t challenge_len,
 	struct sk_enroll_response *response = NULL;
 	int ret = SSH_SK_ERR_GENERAL;
 
-	(void)flags; /* XXX; unused */
+	(void)flags;  
 
 	if (enroll_response == NULL) {
 		skdebug(__func__, "enroll_response == NULL");
@@ -246,7 +232,7 @@ sk_enroll(uint32_t alg, const uint8_t *challenge, size_t challenge_len,
 	}
 	*enroll_response = NULL;
 	if (check_options(options) != 0)
-		goto out; /* error already logged */
+		goto out;  
 	if ((response = calloc(1, sizeof(*response))) == NULL) {
 		skdebug(__func__, "calloc response failed");
 		goto out;
@@ -265,7 +251,7 @@ sk_enroll(uint32_t alg, const uint8_t *challenge, size_t challenge_len,
 		skdebug(__func__, "unsupported key type %d", alg);
 		return -1;
 	}
-	/* Have to return something here */
+	 
 	if ((response->signature = calloc(1, 1)) == NULL) {
 		skdebug(__func__, "calloc signature failed");
 		goto out;
@@ -322,7 +308,7 @@ sig_ecdsa(const uint8_t *message, size_t message_len,
 	uint8_t	sighash[SHA256_DIGEST_LENGTH];
 	uint8_t countbuf[4];
 
-	/* Decode EC_KEY from key handle */
+	 
 	if ((bio = BIO_new(BIO_s_mem())) == NULL ||
 	    BIO_write(bio, key_handle, key_handle_len) != (int)key_handle_len) {
 		skdebug(__func__, "BIO setup failed");
@@ -340,12 +326,12 @@ sig_ecdsa(const uint8_t *message, size_t message_len,
 		skdebug(__func__, "EVP_PKEY_get1_EC_KEY failed");
 		goto out;
 	}
-	/* Expect message to be pre-hashed */
+	 
 	if (message_len != SHA256_DIGEST_LENGTH) {
 		skdebug(__func__, "bad message len %zu", message_len);
 		goto out;
 	}
-	/* Prepare data to be signed */
+	 
 	dump("message", message, message_len);
 	SHA256Init(&ctx);
 	SHA256Update(&ctx, (const u_char *)application, strlen(application));
@@ -364,7 +350,7 @@ sig_ecdsa(const uint8_t *message, size_t message_len,
 	SHA256Update(&ctx, message, message_len);
 	SHA256Final(sighash, &ctx);
 	dump("sighash", sighash, sizeof(sighash));
-	/* create and encode signature */
+	 
 	if ((sig = ECDSA_do_sign(sighash, sizeof(sighash), ec)) == NULL) {
 		skdebug(__func__, "ECDSA_do_sign failed");
 		goto out;
@@ -419,12 +405,12 @@ sig_ed25519(const uint8_t *message, size_t message_len,
 		skdebug(__func__, "bad key handle length %zu", key_handle_len);
 		goto out;
 	}
-	/* Expect message to be pre-hashed */
+	 
 	if (message_len != SHA256_DIGEST_LENGTH) {
 		skdebug(__func__, "bad message len %zu", message_len);
 		goto out;
 	}
-	/* Prepare data to be signed */
+	 
 	dump("message", message, message_len);
 	SHA256Init(&ctx);
 	SHA256Update(&ctx, (const u_char *)application, strlen(application));
@@ -446,7 +432,7 @@ sig_ed25519(const uint8_t *message, size_t message_len,
 		goto out;
 	}
 	dump("signbuf", signbuf, sizeof(signbuf));
-	/* create and encode signature */
+	 
 	smlen = sizeof(signbuf);
 	if (crypto_sign_ed25519(sig, &smlen, signbuf, sizeof(signbuf),
 	    key_handle) != 0) {
@@ -495,7 +481,7 @@ sk_sign(uint32_t alg, const uint8_t *data, size_t datalen,
 	}
 	*sign_response = NULL;
 	if (check_options(options) != 0)
-		goto out; /* error already logged */
+		goto out;  
 	if ((response = calloc(1, sizeof(*response))) == NULL) {
 		skdebug(__func__, "calloc response failed");
 		goto out;

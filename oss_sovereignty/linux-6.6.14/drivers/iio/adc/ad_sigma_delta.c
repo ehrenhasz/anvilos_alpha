@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support code for Analog Devices Sigma-Delta ADCs
- *
- * Copyright 2012 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/align.h>
 #include <linux/interrupt.h>
@@ -31,30 +26,15 @@
 #define AD_SD_REG_COMM		0x00
 #define AD_SD_REG_DATA		0x03
 
-/**
- * ad_sd_set_comm() - Set communications register
- *
- * @sigma_delta: The sigma delta device
- * @comm: New value for the communications register
- */
+ 
 void ad_sd_set_comm(struct ad_sigma_delta *sigma_delta, uint8_t comm)
 {
-	/* Some variants use the lower two bits of the communications register
-	 * to select the channel */
+	 
 	sigma_delta->comm = comm & AD_SD_COMM_CHAN_MASK;
 }
 EXPORT_SYMBOL_NS_GPL(ad_sd_set_comm, IIO_AD_SIGMA_DELTA);
 
-/**
- * ad_sd_write_reg() - Write a register
- *
- * @sigma_delta: The sigma delta device
- * @reg: Address of the register
- * @size: Size of the register (0-3)
- * @val: Value to write to the register
- *
- * Returns 0 on success, an error code otherwise.
- **/
+ 
 int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
 	unsigned int size, unsigned int val)
 {
@@ -132,16 +112,7 @@ static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
 	return ret;
 }
 
-/**
- * ad_sd_read_reg() - Read a register
- *
- * @sigma_delta: The sigma delta device
- * @reg: Address of the register
- * @size: Size of the register (1-4)
- * @val: Read value
- *
- * Returns 0 on success, an error code otherwise.
- **/
+ 
 int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
 	unsigned int reg, unsigned int size, unsigned int *val)
 {
@@ -174,14 +145,7 @@ out:
 }
 EXPORT_SYMBOL_NS_GPL(ad_sd_read_reg, IIO_AD_SIGMA_DELTA);
 
-/**
- * ad_sd_reset() - Reset the serial interface
- *
- * @sigma_delta: The sigma delta device
- * @reset_length: Number of SCLKs with DIN = 1
- *
- * Returns 0 on success, an error code otherwise.
- **/
+ 
 int ad_sd_reset(struct ad_sigma_delta *sigma_delta,
 	unsigned int reset_length)
 {
@@ -241,14 +205,7 @@ out:
 }
 EXPORT_SYMBOL_NS_GPL(ad_sd_calibrate, IIO_AD_SIGMA_DELTA);
 
-/**
- * ad_sd_calibrate_all() - Performs channel calibration
- * @sigma_delta: The sigma delta device
- * @cb: Array of channels and calibration type to perform
- * @n: Number of items in cb
- *
- * Returns 0 on success, an error code otherwise.
- **/
+ 
 int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
 	const struct ad_sd_calib_data *cb, unsigned int n)
 {
@@ -265,14 +222,7 @@ int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
 }
 EXPORT_SYMBOL_NS_GPL(ad_sd_calibrate_all, IIO_AD_SIGMA_DELTA);
 
-/**
- * ad_sigma_delta_single_conversion() - Performs a single data conversion
- * @indio_dev: The IIO device
- * @chan: The conversion is done for this channel
- * @val: Pointer to the location where to store the read value
- *
- * Returns: 0 on success, an error value otherwise.
- */
+ 
 int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
 	const struct iio_chan_spec *chan, int *val)
 {
@@ -357,11 +307,7 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
 			return ret;
 		slot = 1;
 	} else {
-		/*
-		 * At this point update_scan_mode already enabled the required channels.
-		 * For sigma-delta sequencer drivers with multiple slots, an update_scan_mode
-		 * implementation is mandatory.
-		 */
+		 
 		slot = 0;
 		for_each_set_bit(i, indio_dev->active_scan_mask, indio_dev->masklength) {
 			sigma_delta->slots[slot] = indio_dev->channels[i].address;
@@ -451,7 +397,7 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
 	else
 		data_reg = AD_SD_REG_DATA;
 
-	/* Status word will be appended to the sample during transfer */
+	 
 	if (sigma_delta->status_appended)
 		transfer_size = reg_size + 1;
 	else
@@ -465,23 +411,15 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
 		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[0]);
 		break;
 	case 3:
-		/*
-		 * Data array after transfer will look like (if status is appended):
-		 * data[] = { [0][sample][sample][sample][status] }
-		 * Keeping the first byte 0 shifts the status postion by 1 byte to the right.
-		 */
+		 
 		status_pos = reg_size + 1;
 
-		/* We store 24 bit samples in a 32 bit word. Keep the upper
-		 * byte set to zero. */
+		 
 		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[1]);
 		break;
 	}
 
-	/*
-	 * For devices sampling only one channel at
-	 * once, there is no need for sample number tracking.
-	 */
+	 
 	if (sigma_delta->active_slots == 1) {
 		iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
 		goto irq_handled;
@@ -492,10 +430,7 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
 
 		converted_channel = data[status_pos] & sigma_delta->info->status_ch_mask;
 		if (converted_channel != sigma_delta->slots[sigma_delta->current_slot]) {
-			/*
-			 * Desync occurred during continuous sampling of multiple channels.
-			 * Drop this incomplete sample and start from first channel again.
-			 */
+			 
 
 			sigma_delta->current_slot = 0;
 			goto irq_handled;
@@ -546,14 +481,7 @@ static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
 	return IRQ_HANDLED;
 }
 
-/**
- * ad_sd_validate_trigger() - validate_trigger callback for ad_sigma_delta devices
- * @indio_dev: The IIO device
- * @trig: The new trigger
- *
- * Returns: 0 if the 'trig' matches the trigger registered by the ad_sigma_delta
- * device, -EINVAL otherwise.
- */
+ 
 int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig)
 {
 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
@@ -585,7 +513,7 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
 
 	sigma_delta->irq_dis = true;
 
-	/* the IRQ core clears IRQ_DISABLE_UNLAZY flag when freeing an IRQ */
+	 
 	irq_set_status_flags(sigma_delta->spi->irq, IRQ_DISABLE_UNLAZY);
 
 	ret = devm_request_irq(dev, sigma_delta->spi->irq,
@@ -602,17 +530,13 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
 	if (ret)
 		return ret;
 
-	/* select default trigger */
+	 
 	indio_dev->trig = iio_trigger_get(sigma_delta->trig);
 
 	return 0;
 }
 
-/**
- * devm_ad_sd_setup_buffer_and_trigger() - Device-managed buffer & trigger setup
- * @dev: Device object to which to bind the life-time of the resources attached
- * @indio_dev: The IIO device
- */
+ 
 int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev)
 {
 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
@@ -634,23 +558,14 @@ int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indi
 }
 EXPORT_SYMBOL_NS_GPL(devm_ad_sd_setup_buffer_and_trigger, IIO_AD_SIGMA_DELTA);
 
-/**
- * ad_sd_init() - Initializes a ad_sigma_delta struct
- * @sigma_delta: The ad_sigma_delta device
- * @indio_dev: The IIO device which the Sigma Delta device is used for
- * @spi: The SPI device for the ad_sigma_delta device
- * @info: Device specific callbacks and options
- *
- * This function needs to be called before any other operations are performed on
- * the ad_sigma_delta struct.
- */
+ 
 int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
 	struct spi_device *spi, const struct ad_sigma_delta_info *info)
 {
 	sigma_delta->spi = spi;
 	sigma_delta->info = info;
 
-	/* If the field is unset in ad_sigma_delta_info, asume there can only be 1 slot. */
+	 
 	if (!info->num_slots)
 		sigma_delta->num_slots = 1;
 	else

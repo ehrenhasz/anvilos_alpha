@@ -1,29 +1,4 @@
-/*
- * Copyright 2008 Jerome Glisse.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * PRECISION INSIGHT AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *    Jerome Glisse <glisse@freedesktop.org>
- */
+ 
 
 #include <linux/file.h>
 #include <linux/pagemap.h>
@@ -83,19 +58,16 @@ static int amdgpu_cs_job_idx(struct amdgpu_cs_parser *p,
 	if (r)
 		return r;
 
-	/*
-	 * Abort if there is no run queue associated with this entity.
-	 * Possibly because of disabled HW IP.
-	 */
+	 
 	if (entity->rq == NULL)
 		return -EINVAL;
 
-	/* Check if we can add this IB to some existing job */
+	 
 	for (i = 0; i < p->gang_size; ++i)
 		if (p->entities[i] == entity)
 			return i;
 
-	/* If not increase the gang size if possible */
+	 
 	if (i == AMDGPU_CS_GANG_SIZE)
 		return -EINVAL;
 
@@ -171,7 +143,7 @@ error_free:
 	return r;
 }
 
-/* Copy the data from userspace and go over it the first time */
+ 
 static int amdgpu_cs_pass1(struct amdgpu_cs_parser *p,
 			   union drm_amdgpu_cs *cs)
 {
@@ -190,7 +162,7 @@ static int amdgpu_cs_pass1(struct amdgpu_cs_parser *p,
 	if (!chunk_array)
 		return -ENOMEM;
 
-	/* get chunks */
+	 
 	chunk_array_user = u64_to_user_ptr(cs->in.chunks);
 	if (copy_from_user(chunk_array, chunk_array_user,
 			   sizeof(uint64_t)*cs->in.num_chunks)) {
@@ -237,7 +209,7 @@ static int amdgpu_cs_pass1(struct amdgpu_cs_parser *p,
 			goto free_partial_kdata;
 		}
 
-		/* Assume the worst on the following checks */
+		 
 		ret = -EINVAL;
 		switch (p->chunks[i].chunk_id) {
 		case AMDGPU_CHUNK_ID_IB:
@@ -304,7 +276,7 @@ static int amdgpu_cs_pass1(struct amdgpu_cs_parser *p,
 		p->gang_leader->uf_addr = uf_offset;
 	kvfree(chunk_array);
 
-	/* Use this opportunity to fill in task info for the vm */
+	 
 	amdgpu_vm_set_task_info(vm);
 
 	return 0;
@@ -344,7 +316,7 @@ static int amdgpu_cs_p2_ib(struct amdgpu_cs_parser *p,
 	ring = amdgpu_job_ring(job);
 	ib = &job->ibs[job->num_ibs++];
 
-	/* MM engine doesn't support user fences */
+	 
 	if (p->uf_bo && ring->funcs->no_user_fence)
 		return -EINVAL;
 
@@ -355,8 +327,7 @@ static int amdgpu_cs_p2_ib(struct amdgpu_cs_parser *p,
 		else
 			(*de_preempt)++;
 
-		/* Each GFX command submit allows only 1 IB max
-		 * preemptible for CE & DE */
+		 
 		if (*ce_preempt > 1 || *de_preempt > 1)
 			return -EINVAL;
 	}
@@ -638,15 +609,13 @@ static int amdgpu_cs_pass2(struct amdgpu_cs_parser *p)
 	return 0;
 }
 
-/* Convert microseconds to bytes. */
+ 
 static u64 us_to_bytes(struct amdgpu_device *adev, s64 us)
 {
 	if (us <= 0 || !adev->mm_stats.log2_max_MBps)
 		return 0;
 
-	/* Since accum_us is incremented by a million per second, just
-	 * multiply it by the number of MB/s to get the number of bytes.
-	 */
+	 
 	return us << adev->mm_stats.log2_max_MBps;
 }
 
@@ -658,32 +627,14 @@ static s64 bytes_to_us(struct amdgpu_device *adev, u64 bytes)
 	return bytes >> adev->mm_stats.log2_max_MBps;
 }
 
-/* Returns how many bytes TTM can move right now. If no bytes can be moved,
- * it returns 0. If it returns non-zero, it's OK to move at least one buffer,
- * which means it can go over the threshold once. If that happens, the driver
- * will be in debt and no other buffer migrations can be done until that debt
- * is repaid.
- *
- * This approach allows moving a buffer of any size (it's important to allow
- * that).
- *
- * The currency is simply time in microseconds and it increases as the clock
- * ticks. The accumulated microseconds (us) are converted to bytes and
- * returned.
- */
+ 
 static void amdgpu_cs_get_threshold_for_moves(struct amdgpu_device *adev,
 					      u64 *max_bytes,
 					      u64 *max_vis_bytes)
 {
 	s64 time_us, increment_us;
 	u64 free_vram, total_vram, used_vram;
-	/* Allow a maximum of 200 accumulated ms. This is basically per-IB
-	 * throttling.
-	 *
-	 * It means that in order to get full max MBps, at least 5 IBs per
-	 * second must be submitted and not more than 200ms apart from each
-	 * other.
-	 */
+	 
 	const s64 us_upper_bound = 200000;
 
 	if (!adev->mm_stats.log2_max_MBps) {
@@ -698,45 +649,30 @@ static void amdgpu_cs_get_threshold_for_moves(struct amdgpu_device *adev,
 
 	spin_lock(&adev->mm_stats.lock);
 
-	/* Increase the amount of accumulated us. */
+	 
 	time_us = ktime_to_us(ktime_get());
 	increment_us = time_us - adev->mm_stats.last_update_us;
 	adev->mm_stats.last_update_us = time_us;
 	adev->mm_stats.accum_us = min(adev->mm_stats.accum_us + increment_us,
 				      us_upper_bound);
 
-	/* This prevents the short period of low performance when the VRAM
-	 * usage is low and the driver is in debt or doesn't have enough
-	 * accumulated us to fill VRAM quickly.
-	 *
-	 * The situation can occur in these cases:
-	 * - a lot of VRAM is freed by userspace
-	 * - the presence of a big buffer causes a lot of evictions
-	 *   (solution: split buffers into smaller ones)
-	 *
-	 * If 128 MB or 1/8th of VRAM is free, start filling it now by setting
-	 * accum_us to a positive number.
-	 */
+	 
 	if (free_vram >= 128 * 1024 * 1024 || free_vram >= total_vram / 8) {
 		s64 min_us;
 
-		/* Be more aggressive on dGPUs. Try to fill a portion of free
-		 * VRAM now.
-		 */
+		 
 		if (!(adev->flags & AMD_IS_APU))
 			min_us = bytes_to_us(adev, free_vram / 4);
 		else
-			min_us = 0; /* Reset accum_us on APUs. */
+			min_us = 0;  
 
 		adev->mm_stats.accum_us = max(min_us, adev->mm_stats.accum_us);
 	}
 
-	/* This is set to 0 if the driver is in debt to disallow (optional)
-	 * buffer moves.
-	 */
+	 
 	*max_bytes = us_to_bytes(adev, adev->mm_stats.accum_us);
 
-	/* Do the same for visible VRAM if half of it is free */
+	 
 	if (!amdgpu_gmc_vram_full_visible(&adev->gmc)) {
 		u64 total_vis_vram = adev->gmc.visible_vram_size;
 		u64 used_vis_vram =
@@ -762,10 +698,7 @@ static void amdgpu_cs_get_threshold_for_moves(struct amdgpu_device *adev,
 	spin_unlock(&adev->mm_stats.lock);
 }
 
-/* Report how many bytes have really been moved for the last command
- * submission. This can result in a debt that can stop buffer migrations
- * temporarily.
- */
+ 
 void amdgpu_cs_report_moved_bytes(struct amdgpu_device *adev, u64 num_bytes,
 				  u64 num_vis_bytes)
 {
@@ -790,18 +723,13 @@ static int amdgpu_cs_bo_validate(void *param, struct amdgpu_bo *bo)
 	if (bo->tbo.pin_count)
 		return 0;
 
-	/* Don't move this buffer if we have depleted our allowance
-	 * to move it. Don't move anything if the threshold is zero.
-	 */
+	 
 	if (p->bytes_moved < p->bytes_moved_threshold &&
 	    (!bo->tbo.base.dma_buf ||
 	    list_empty(&bo->tbo.base.dma_buf->attachments))) {
 		if (!amdgpu_gmc_vram_full_visible(&adev->gmc) &&
 		    (bo->flags & AMDGPU_GEM_CREATE_CPU_ACCESS_REQUIRED)) {
-			/* And don't move a CPU_ACCESS_REQUIRED BO to limited
-			 * visible VRAM if we've depleted our allowance to do
-			 * that.
-			 */
+			 
 			if (p->bytes_moved_vis < p->bytes_moved_vis_threshold)
 				domain = bo->preferred_domains;
 			else
@@ -842,7 +770,7 @@ static int amdgpu_cs_parser_bos(struct amdgpu_cs_parser *p,
 	unsigned int i;
 	int r;
 
-	/* p->bo_list could already be assigned if AMDGPU_CHUNK_ID_BO_HANDLES is present */
+	 
 	if (cs->in.bo_list_handle) {
 		if (p->bo_list)
 			return -EINVAL;
@@ -852,7 +780,7 @@ static int amdgpu_cs_parser_bos(struct amdgpu_cs_parser *p,
 		if (r)
 			return r;
 	} else if (!p->bo_list) {
-		/* Create a empty bo_list when no handle is provided */
+		 
 		r = amdgpu_bo_list_create(p->adev, p->filp, NULL, 0,
 					  &p->bo_list);
 		if (r)
@@ -861,10 +789,7 @@ static int amdgpu_cs_parser_bos(struct amdgpu_cs_parser *p,
 
 	mutex_lock(&p->bo_list->bo_list_mutex);
 
-	/* Get userptr backing pages. If pages are updated after registered
-	 * in amdgpu_gem_userptr_ioctl(), amdgpu_cs_list_validate() will do
-	 * amdgpu_ttm_backend_bind() to flush and invalidate new pages
-	 */
+	 
 	amdgpu_bo_list_for_each_userptr_entry(e, p->bo_list) {
 		bool userpage_invalidated = false;
 		struct amdgpu_bo *bo = e->bo;
@@ -902,7 +827,7 @@ static int amdgpu_cs_parser_bos(struct amdgpu_cs_parser *p,
 			goto out_free_user_pages;
 
 		amdgpu_bo_list_for_each_entry(e, p->bo_list) {
-			/* One fence for TTM and one for each CS job */
+			 
 			r = drm_exec_prepare_obj(&p->exec, &e->bo->tbo.base,
 						 1 + p->gang_size);
 			drm_exec_retry_on_contention(&p->exec);
@@ -1019,7 +944,7 @@ static int amdgpu_cs_patch_ibs(struct amdgpu_cs_parser *p,
 	unsigned int i;
 	int r;
 
-	/* Only for UVD/VCE VM emulation */
+	 
 	if (!ring->funcs->parse_cs && !ring->funcs->patch_cs_in_place)
 		return 0;
 
@@ -1043,7 +968,7 @@ static int amdgpu_cs_patch_ibs(struct amdgpu_cs_parser *p,
 			return -EINVAL;
 		}
 
-		/* the IB should be reserved at this point */
+		 
 		r = amdgpu_bo_kmap(aobj, (void **)&kptr);
 		if (r)
 			return r;
@@ -1153,11 +1078,11 @@ static int amdgpu_cs_vm_handling(struct amdgpu_cs_parser *p)
 	}
 
 	if (amdgpu_vm_debug) {
-		/* Invalidate all BOs to test for userspace bugs */
+		 
 		amdgpu_bo_list_for_each_entry(e, p->bo_list) {
 			struct amdgpu_bo *bo = e->bo;
 
-			/* ignore duplicates */
+			 
 			if (!bo)
 				continue;
 
@@ -1209,12 +1134,7 @@ static int amdgpu_cs_sync_rings(struct amdgpu_cs_parser *p)
 	while ((fence = amdgpu_sync_get_fence(&p->sync))) {
 		struct drm_sched_fence *s_fence = to_drm_sched_fence(fence);
 
-		/*
-		 * When we have an dependency it might be necessary to insert a
-		 * pipeline sync to make sure that all caches etc are flushed and the
-		 * next job actually sees the results from the previous one
-		 * before we start executing on the same scheduler ring.
-		 */
+		 
 		if (!s_fence || s_fence->sched != sched) {
 			dma_fence_put(fence);
 			continue;
@@ -1280,15 +1200,10 @@ static int amdgpu_cs_submit(struct amdgpu_cs_parser *p,
 			amdgpu_job_set_gang_leader(p->jobs[i], leader);
 	}
 
-	/* No memory allocation is allowed while holding the notifier lock.
-	 * The lock is held until amdgpu_cs_submit is finished and fence is
-	 * added to BOs.
-	 */
+	 
 	mutex_lock(&p->adev->notifier_lock);
 
-	/* If userptr are invalidated after amdgpu_cs_parser_bos(), return
-	 * -EAGAIN, drmIoctl in libdrm will restart the amdgpu_cs_ioctl.
-	 */
+	 
 	r = 0;
 	amdgpu_bo_list_for_each_userptr_entry(e, p->bo_list) {
 		r |= !amdgpu_ttm_tt_get_user_pages_done(e->bo->tbo.ttm,
@@ -1306,7 +1221,7 @@ static int amdgpu_cs_submit(struct amdgpu_cs_parser *p,
 
 		ttm_bo_move_to_lru_tail_unlocked(&gem_to_amdgpu_bo(gobj)->tbo);
 
-		/* Everybody except for the gang leader uses READ */
+		 
 		for (i = 0; i < p->gang_size; ++i) {
 			if (p->jobs[i] == leader)
 				continue;
@@ -1316,7 +1231,7 @@ static int amdgpu_cs_submit(struct amdgpu_cs_parser *p,
 					   DMA_RESV_USAGE_READ);
 		}
 
-		/* The gang leader as remembered as writer */
+		 
 		dma_resv_add_fence(gobj->resv, p->fence, DMA_RESV_USAGE_WRITE);
 	}
 
@@ -1348,7 +1263,7 @@ static int amdgpu_cs_submit(struct amdgpu_cs_parser *p,
 	return 0;
 }
 
-/* Cleanup the parser structure */
+ 
 static void amdgpu_cs_parser_fini(struct amdgpu_cs_parser *parser)
 {
 	unsigned int i;
@@ -1444,15 +1359,7 @@ error_fini:
 	return r;
 }
 
-/**
- * amdgpu_cs_wait_ioctl - wait for a command submission to finish
- *
- * @dev: drm device
- * @data: data from userspace
- * @filp: file private
- *
- * Wait for the command submission identified by handle to finish.
- */
+ 
 int amdgpu_cs_wait_ioctl(struct drm_device *dev, void *data,
 			 struct drm_file *filp)
 {
@@ -1495,13 +1402,7 @@ int amdgpu_cs_wait_ioctl(struct drm_device *dev, void *data,
 	return 0;
 }
 
-/**
- * amdgpu_cs_get_fence - helper to get fence from drm_amdgpu_fence
- *
- * @adev: amdgpu device
- * @filp: file private
- * @user: drm_amdgpu_fence copied from user space
- */
+ 
 static struct dma_fence *amdgpu_cs_get_fence(struct amdgpu_device *adev,
 					     struct drm_file *filp,
 					     struct drm_amdgpu_fence *user)
@@ -1588,14 +1489,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
 	}
 }
 
-/**
- * amdgpu_cs_wait_all_fences - wait on all fences to signal
- *
- * @adev: amdgpu device
- * @filp: file private
- * @wait: wait parameters
- * @fences: array of drm_amdgpu_fence
- */
+ 
 static int amdgpu_cs_wait_all_fences(struct amdgpu_device *adev,
 				     struct drm_file *filp,
 				     union drm_amdgpu_wait_fences *wait,
@@ -1633,14 +1527,7 @@ static int amdgpu_cs_wait_all_fences(struct amdgpu_device *adev,
 	return 0;
 }
 
-/**
- * amdgpu_cs_wait_any_fence - wait on any fence to signal
- *
- * @adev: amdgpu device
- * @filp: file private
- * @wait: wait parameters
- * @fences: array of drm_amdgpu_fence
- */
+ 
 static int amdgpu_cs_wait_any_fence(struct amdgpu_device *adev,
 				    struct drm_file *filp,
 				    union drm_amdgpu_wait_fences *wait,
@@ -1653,7 +1540,7 @@ static int amdgpu_cs_wait_any_fence(struct amdgpu_device *adev,
 	unsigned int i;
 	long r;
 
-	/* Prepare the fence array */
+	 
 	array = kcalloc(fence_count, sizeof(struct dma_fence *), GFP_KERNEL);
 
 	if (array == NULL)
@@ -1668,7 +1555,7 @@ static int amdgpu_cs_wait_any_fence(struct amdgpu_device *adev,
 			goto err_free_fence_array;
 		} else if (fence) {
 			array[i] = fence;
-		} else { /* NULL, the fence has been already signaled */
+		} else {  
 			r = 1;
 			first = i;
 			goto out;
@@ -1698,13 +1585,7 @@ err_free_fence_array:
 	return r;
 }
 
-/**
- * amdgpu_cs_wait_fences_ioctl - wait for multiple command submissions to finish
- *
- * @dev: drm device
- * @data: data from userspace
- * @filp: file private
- */
+ 
 int amdgpu_cs_wait_fences_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *filp)
 {
@@ -1715,7 +1596,7 @@ int amdgpu_cs_wait_fences_ioctl(struct drm_device *dev, void *data,
 	struct drm_amdgpu_fence *fences;
 	int r;
 
-	/* Get the fences from userspace */
+	 
 	fences = kmalloc_array(fence_count, sizeof(struct drm_amdgpu_fence),
 			GFP_KERNEL);
 	if (fences == NULL)
@@ -1739,18 +1620,7 @@ err_free_fences:
 	return r;
 }
 
-/**
- * amdgpu_cs_find_mapping - find bo_va for VM address
- *
- * @parser: command submission parser context
- * @addr: VM address
- * @bo: resulting BO of the mapping found
- * @map: Placeholder to return found BO mapping
- *
- * Search the buffer objects in the command submission context for a certain
- * virtual memory address. Returns allocation structure when found, NULL
- * otherwise.
- */
+ 
 int amdgpu_cs_find_mapping(struct amdgpu_cs_parser *parser,
 			   uint64_t addr, struct amdgpu_bo **bo,
 			   struct amdgpu_bo_va_mapping **map)
@@ -1770,7 +1640,7 @@ int amdgpu_cs_find_mapping(struct amdgpu_cs_parser *parser,
 	*bo = mapping->bo_va->base.bo;
 	*map = mapping;
 
-	/* Double check that the BO is reserved by this CS */
+	 
 	if (dma_resv_locking_ctx((*bo)->tbo.base.resv) != &parser->exec.ticket)
 		return -EINVAL;
 

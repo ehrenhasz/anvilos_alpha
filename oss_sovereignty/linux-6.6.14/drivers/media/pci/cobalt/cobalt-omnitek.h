@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Omnitek Scatter-Gather DMA Controller
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+ 
+ 
 
 #ifndef COBALT_OMNITEK_H
 #define COBALT_OMNITEK_H

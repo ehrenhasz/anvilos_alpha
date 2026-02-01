@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-// test ir decoder
-//
-// Copyright (C) 2018 Sean Young <sean@mess.org>
 
-// When sending LIRC_MODE_SCANCODE, the IR will be encoded. rc-loopback
-// will send this IR to the receiver side, where we try to read the decoded
-// IR. Decoding happens in a separate kernel thread, so we will need to
-// wait until that is scheduled, hence we use poll to check for read
-// readiness.
+
+
+
+
+
+
+
+
+
 
 #include <linux/lirc.h>
 #include <errno.h>
@@ -29,10 +29,7 @@
 #define SYSFS_PATH_MAX 256
 #define DNAME_PATH_MAX 256
 
-/*
- * Support ancient lirc.h which does not have these values. Can be removed
- * once RHEL 8 is no longer a relevant testing platform.
- */
+ 
 #if RC_PROTO_MAX < 26
 #define RC_PROTO_RCMM12 24
 #define RC_PROTO_RCMM24 25

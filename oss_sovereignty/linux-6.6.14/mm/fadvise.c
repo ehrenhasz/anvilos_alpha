@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mm/fadvise.c
- *
- * Copyright (C) 2002, Linus Torvalds
- *
- * 11Jan2003	Andrew Morton
- *		Initial version.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/file.h>
@@ -23,17 +16,14 @@
 
 #include "internal.h"
 
-/*
- * POSIX_FADV_WILLNEED could set PG_Referenced, and POSIX_FADV_NOREUSE could
- * deactivate the pages and clear PG_Referenced.
- */
+ 
 
 int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
 {
 	struct inode *inode;
 	struct address_space *mapping;
 	struct backing_dev_info *bdi;
-	loff_t endbyte;			/* inclusive */
+	loff_t endbyte;			 
 	pgoff_t start_index;
 	pgoff_t end_index;
 	unsigned long nrpages;
@@ -56,7 +46,7 @@ int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
 		case POSIX_FADV_WILLNEED:
 		case POSIX_FADV_NOREUSE:
 		case POSIX_FADV_DONTNEED:
-			/* no bad return value, but ignore advice */
+			 
 			break;
 		default:
 			return -EINVAL;
@@ -64,16 +54,12 @@ int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
 		return 0;
 	}
 
-	/*
-	 * Careful about overflows. Len == 0 means "as much as possible".  Use
-	 * unsigned math because signed overflows are undefined and UBSan
-	 * complains.
-	 */
+	 
 	endbyte = (u64)offset + (u64)len;
 	if (!len || endbyte < len)
 		endbyte = LLONG_MAX;
 	else
-		endbyte--;		/* inclusive */
+		endbyte--;		 
 
 	switch (advice) {
 	case POSIX_FADV_NORMAL:
@@ -94,11 +80,11 @@ int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
 		spin_unlock(&file->f_lock);
 		break;
 	case POSIX_FADV_WILLNEED:
-		/* First and last PARTIAL page! */
+		 
 		start_index = offset >> PAGE_SHIFT;
 		end_index = endbyte >> PAGE_SHIFT;
 
-		/* Careful about overflow on the "+1" */
+		 
 		nrpages = end_index - start_index + 1;
 		if (!nrpages)
 			nrpages = ~0UL;
@@ -114,27 +100,13 @@ int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
 		__filemap_fdatawrite_range(mapping, offset, endbyte,
 					   WB_SYNC_NONE);
 
-		/*
-		 * First and last FULL page! Partial pages are deliberately
-		 * preserved on the expectation that it is better to preserve
-		 * needed memory than to discard unneeded memory.
-		 */
+		 
 		start_index = (offset+(PAGE_SIZE-1)) >> PAGE_SHIFT;
 		end_index = (endbyte >> PAGE_SHIFT);
-		/*
-		 * The page at end_index will be inclusively discarded according
-		 * by invalidate_mapping_pages(), so subtracting 1 from
-		 * end_index means we will skip the last page.  But if endbyte
-		 * is page aligned or is at the end of file, we should not skip
-		 * that page - discarding the last page is safe enough.
-		 */
+		 
 		if ((endbyte & ~PAGE_MASK) != ~PAGE_MASK &&
 				endbyte != inode->i_size - 1) {
-			/* First page is tricky as 0 - 1 = -1, but pgoff_t
-			 * is unsigned, so the end_index >= start_index
-			 * check below would be true and we'll discard the whole
-			 * file cache which is not what was asked.
-			 */
+			 
 			if (end_index == 0)
 				break;
 
@@ -144,25 +116,13 @@ int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
 		if (end_index >= start_index) {
 			unsigned long nr_failed = 0;
 
-			/*
-			 * It's common to FADV_DONTNEED right after
-			 * the read or write that instantiates the
-			 * pages, in which case there will be some
-			 * sitting on the local LRU cache. Try to
-			 * avoid the expensive remote drain and the
-			 * second cache tree walk below by flushing
-			 * them out right away.
-			 */
+			 
 			lru_add_drain();
 
 			mapping_try_invalidate(mapping, start_index, end_index,
 					&nr_failed);
 
-			/*
-			 * The failures may be due to the folio being
-			 * in the LRU cache of a remote CPU. Drain all
-			 * caches and try again.
-			 */
+			 
 			if (nr_failed) {
 				lru_add_drain_all();
 				invalidate_mapping_pages(mapping, start_index,

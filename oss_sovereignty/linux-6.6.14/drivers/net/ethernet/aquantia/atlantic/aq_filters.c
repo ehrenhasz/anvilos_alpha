@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2014-2019 aQuantia Corporation. */
 
-/* File aq_filters.c: RX filters related functions. */
+ 
+
+ 
 
 #include "aq_filters.h"
 
@@ -362,9 +362,7 @@ static bool aq_fvlan_is_busy(struct aq_rx_filter_vlan *aq_vlans, int vlan)
 	return false;
 }
 
-/* Function rebuilds array of vlan filters so that filters with assigned
- * queue have a precedence over just vlans on the interface.
- */
+ 
 static void aq_fvlan_rebuild(struct aq_nic_s *aq_nic,
 			     unsigned long *active_vlans,
 			     struct aq_rx_filter_vlan *aq_vlans)
@@ -411,7 +409,7 @@ static int aq_set_data_fvlan(struct aq_nic_s *aq_nic,
 	if (!add)
 		return 0;
 
-	/* remove vlan if it was in table without queue assignment */
+	 
 	for (i = 0; i < AQ_VLAN_MAX_FILTERS; ++i) {
 		if (aq_vlans[i].vlan_id ==
 		   (be16_to_cpu(fsp->h_ext.vlan_tci) & VLAN_VID_MASK)) {
@@ -855,7 +853,7 @@ int aq_filters_vlans_update(struct aq_nic_s *aq_nic)
 				!(aq_nic->packet_filter & IFF_PROMISC));
 			aq_nic->aq_nic_cfg.is_vlan_force_promisc = false;
 		} else {
-		/* otherwise left in promiscue mode */
+		 
 			aq_nic->aq_nic_cfg.is_vlan_force_promisc = true;
 		}
 	}

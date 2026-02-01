@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright (c) 2010-2012 Broadcom. All rights reserved. */
+ 
+ 
 
 #ifndef VCHIQ_CORE_H
 #define VCHIQ_CORE_H
@@ -14,7 +14,7 @@
 #include "../../include/linux/raspberrypi/vchiq.h"
 #include "vchiq_cfg.h"
 
-/* Do this so that we can test-build the code on non-rpi systems */
+ 
 #if IS_ENABLED(CONFIG_RASPBERRYPI_FIRMWARE)
 
 #else
@@ -23,14 +23,14 @@
 #define dsb(a)
 #endif
 
-#endif	/* IS_ENABLED(CONFIG_RASPBERRYPI_FIRMWARE) */
+#endif	 
 
 #define VCHIQ_SERVICE_HANDLE_INVALID 0
 
 #define VCHIQ_SLOT_SIZE     4096
 #define VCHIQ_MAX_MSG_SIZE  (VCHIQ_SLOT_SIZE - sizeof(struct vchiq_header))
 
-/* Run time control of log level, based on KERN_XXX level. */
+ 
 #define VCHIQ_LOG_DEFAULT  4
 #define VCHIQ_LOG_ERROR    3
 #define VCHIQ_LOG_WARNING  4
@@ -107,14 +107,14 @@ enum {
 #define DEBUG_COUNT(d) \
 	do { debug_ptr[DEBUG_ ## d]++; dsb(sy); } while (0)
 
-#else /* VCHIQ_ENABLE_DEBUG */
+#else  
 
 #define DEBUG_INITIALISE(local)
 #define DEBUG_TRACE(d)
 #define DEBUG_VALUE(d, v)
 #define DEBUG_COUNT(d)
 
-#endif /* VCHIQ_ENABLE_DEBUG */
+#endif  
 
 enum vchiq_connstate {
 	VCHIQ_CONNSTATE_DISCONNECTED,
@@ -158,32 +158,15 @@ struct vchiq_bulk {
 };
 
 struct vchiq_bulk_queue {
-	int local_insert;  /* Where to insert the next local bulk */
-	int remote_insert; /* Where to insert the next remote bulk (master) */
-	int process;       /* Bulk to transfer next */
-	int remote_notify; /* Bulk to notify the remote client of next (mstr) */
-	int remove;        /* Bulk to notify the local client of, and remove, next */
+	int local_insert;   
+	int remote_insert;  
+	int process;        
+	int remote_notify;  
+	int remove;         
 	struct vchiq_bulk bulks[VCHIQ_NUM_SERVICE_BULKS];
 };
 
-/*
- * Remote events provide a way of presenting several virtual doorbells to a
- * peer (ARM host to VPU) using only one physical doorbell. They can be thought
- * of as a way for the peer to signal a semaphore, in this case implemented as
- * a workqueue.
- *
- * Remote events remain signalled until acknowledged by the receiver, and they
- * are non-counting. They are designed in such a way as to minimise the number
- * of interrupts and avoid unnecessary waiting.
- *
- * A remote_event is as small data structures that live in shared memory. It
- * comprises two booleans - armed and fired:
- *
- * The sender sets fired when they signal the receiver.
- * If fired is set, the receiver has been signalled and need not wait.
- * The receiver sets the armed field before they begin to wait.
- * If armed is set, the receiver is waiting and wishes to be woken by interrupt.
- */
+ 
 struct remote_event {
 	int armed;
 	int fired;
@@ -197,7 +180,7 @@ struct vchiq_slot {
 };
 
 struct vchiq_slot_info {
-	/* Use two counters rather than one to avoid the need for a mutex. */
+	 
 	short use_count;
 	short release_count;
 };
@@ -257,11 +240,7 @@ struct vchiq_service {
 	struct vchiq_header *msg_queue[VCHIQ_MAX_SLOTS];
 };
 
-/*
- * The quota information is outside struct vchiq_service so that it can
- * be statically allocated, since for accounting reasons a service's slot
- * usage is carried over between users of the same port number.
- */
+ 
 struct vchiq_service_quota {
 	unsigned short slot_quota;
 	unsigned short slot_use_count;
@@ -272,48 +251,38 @@ struct vchiq_service_quota {
 };
 
 struct vchiq_shared_state {
-	/* A non-zero value here indicates that the content is valid. */
+	 
 	int initialised;
 
-	/* The first and last (inclusive) slots allocated to the owner. */
+	 
 	int slot_first;
 	int slot_last;
 
-	/* The slot allocated to synchronous messages from the owner. */
+	 
 	int slot_sync;
 
-	/*
-	 * Signalling this event indicates that owner's slot handler thread
-	 * should run.
-	 */
+	 
 	struct remote_event trigger;
 
-	/*
-	 * Indicates the byte position within the stream where the next message
-	 * will be written. The least significant bits are an index into the
-	 * slot. The next bits are the index of the slot in slot_queue.
-	 */
+	 
 	int tx_pos;
 
-	/* This event should be signalled when a slot is recycled. */
+	 
 	struct remote_event recycle;
 
-	/* The slot_queue index where the next recycled slot will be written. */
+	 
 	int slot_queue_recycle;
 
-	/* This event should be signalled when a synchronous message is sent. */
+	 
 	struct remote_event sync_trigger;
 
-	/*
-	 * This event should be signalled when a synchronous message has been
-	 * released.
-	 */
+	 
 	struct remote_event sync_release;
 
-	/* A circular buffer of slot indexes. */
+	 
 	int slot_queue[VCHIQ_MAX_SLOTS_PER_SIDE];
 
-	/* Debugging state */
+	 
 	int debug[DEBUG_MAX];
 };
 
@@ -345,32 +314,32 @@ struct vchiq_state {
 	unsigned short default_slot_quota;
 	unsigned short default_message_quota;
 
-	/* Event indicating connect message received */
+	 
 	struct completion connect;
 
-	/* Mutex protecting services */
+	 
 	struct mutex mutex;
 	struct vchiq_instance **instance;
 
-	/* Processes incoming messages */
+	 
 	struct task_struct *slot_handler_thread;
 
-	/* Processes recycled slots */
+	 
 	struct task_struct *recycle_thread;
 
-	/* Processes synchronous messages */
+	 
 	struct task_struct *sync_thread;
 
-	/* Local implementation of the trigger remote event */
+	 
 	wait_queue_head_t trigger_event;
 
-	/* Local implementation of the recycle remote event */
+	 
 	wait_queue_head_t recycle_event;
 
-	/* Local implementation of the sync trigger remote event */
+	 
 	wait_queue_head_t sync_trigger_event;
 
-	/* Local implementation of the sync release remote event */
+	 
 	wait_queue_head_t sync_release_event;
 
 	char *tx_data;
@@ -385,47 +354,39 @@ struct vchiq_state {
 
 	struct mutex bulk_transfer_mutex;
 
-	/*
-	 * Indicates the byte position within the stream from where the next
-	 * message will be read. The least significant bits are an index into
-	 * the slot.The next bits are the index of the slot in
-	 * remote->slot_queue.
-	 */
+	 
 	int rx_pos;
 
-	/*
-	 * A cached copy of local->tx_pos. Only write to local->tx_pos, and read
-	 * from remote->tx_pos.
-	 */
+	 
 	int local_tx_pos;
 
-	/* The slot_queue index of the slot to become available next. */
+	 
 	int slot_queue_available;
 
-	/* A flag to indicate if any poll has been requested */
+	 
 	int poll_needed;
 
-	/* Ths index of the previous slot used for data messages. */
+	 
 	int previous_data_index;
 
-	/* The number of slots occupied by data messages. */
+	 
 	unsigned short data_use_count;
 
-	/* The maximum number of slots to be occupied by data messages. */
+	 
 	unsigned short data_quota;
 
-	/* An array of bit sets indicating which services must be polled. */
+	 
 	atomic_t poll_services[BITSET_SIZE(VCHIQ_MAX_SERVICES)];
 
-	/* The number of the first unused service */
+	 
 	int unused_service;
 
-	/* Signalled when a free slot becomes available. */
+	 
 	struct completion slot_available_event;
 
 	struct completion slot_remove_event;
 
-	/* Signalled when a free data slot becomes available. */
+	 
 	struct completion data_quota_event;
 
 	struct state_stats_struct {
@@ -451,14 +412,11 @@ struct bulk_waiter {
 
 struct vchiq_config {
 	unsigned int max_msg_size;
-	unsigned int bulk_threshold;	/* The message size above which it
-					 * is better to use a bulk transfer
-					 * (<= max_msg_size)
-					 */
+	unsigned int bulk_threshold;	 
 	unsigned int max_outstanding_bulks;
 	unsigned int max_services;
-	short version;      /* The version of VCHIQ */
-	short version_min;  /* The minimum compatible version of VCHIQ */
+	short version;       
+	short version_min;   
 };
 
 extern spinlock_t bulk_waiter_spinlock;

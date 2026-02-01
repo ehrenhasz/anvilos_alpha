@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook  */
+
+ 
 #include <linux/compiler.h>
 #include <linux/err.h>
 
@@ -110,15 +110,15 @@ static int load_btf(void)
 {
 	const char btf_str_sec[] = "\0bpf_spin_lock\0val\0cnt\0l";
 	__u32 btf_raw_types[] = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-		/* struct bpf_spin_lock */                      /* [2] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),   
+		                        
 		BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),
-		BTF_MEMBER_ENC(15, 1, 0), /* int val; */
-		/* struct val */                                /* [3] */
+		BTF_MEMBER_ENC(15, 1, 0),  
+		                                  
 		BTF_TYPE_ENC(15, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 8),
-		BTF_MEMBER_ENC(19, 1, 0), /* int cnt; */
-		BTF_MEMBER_ENC(23, 2, 32),/* struct bpf_spin_lock l; */
+		BTF_MEMBER_ENC(19, 1, 0),  
+		BTF_MEMBER_ENC(23, 2, 32), 
 	};
 	struct btf_header btf_hdr = {
 		.magic = BTF_MAGIC,
@@ -282,7 +282,7 @@ static void *update_thread(void *arg)
 	} value = { .cnt = 0xeB9F, .lock = 0, };
 	int map_fd = READ_ONCE(sk_storage_map);
 	int sk_fd = *(int *)arg;
-	int err = 0; /* Suppress compiler false alarm */
+	int err = 0;  
 
 	while (!is_stopped()) {
 		err = bpf_map_update_elem(map_fd, &sk_fd, &value, 0);
@@ -306,7 +306,7 @@ static void *delete_thread(void *arg)
 {
 	int map_fd = READ_ONCE(sk_storage_map);
 	int sk_fd = *(int *)arg;
-	int err = 0; /* Suppress compiler false alarm */
+	int err = 0;  
 
 	while (!is_stopped()) {
 		err = bpf_map_delete_elem(map_fd, &sk_fd);
@@ -475,7 +475,7 @@ static void test_sk_storage_map_basic(void)
 	CHECK(map_fd == -1, "bpf_map_create(good_xattr)",
 	      "map_fd:%d errno:%d\n", map_fd, errno);
 
-	/* Add new elem */
+	 
 	memcpy(&lookup_value, &value, sizeof(value));
 	err = bpf_map_update_elem(map_fd, &sk_fd, &value,
 				  BPF_NOEXIST | BPF_F_LOCK);
@@ -488,7 +488,7 @@ static void test_sk_storage_map_basic(void)
 	      "err:%d errno:%d lock:%x cnt:%x(%x)\n",
 	      err, errno, lookup_value.lock, lookup_value.cnt, value.cnt);
 
-	/* Bump the cnt and update with BPF_EXIST | BPF_F_LOCK */
+	 
 	value.cnt += 1;
 	value.lock = 2;
 	err = bpf_map_update_elem(map_fd, &sk_fd, &value,
@@ -502,7 +502,7 @@ static void test_sk_storage_map_basic(void)
 	      "err:%d errno:%d lock:%x cnt:%x(%x)\n",
 	      err, errno, lookup_value.lock, lookup_value.cnt, value.cnt);
 
-	/* Bump the cnt and update with BPF_EXIST */
+	 
 	value.cnt += 1;
 	value.lock = 2;
 	err = bpf_map_update_elem(map_fd, &sk_fd, &value, BPF_EXIST);
@@ -515,7 +515,7 @@ static void test_sk_storage_map_basic(void)
 	      "err:%d errno:%d lock:%x cnt:%x(%x)\n",
 	      err, errno, lookup_value.lock, lookup_value.cnt, value.cnt);
 
-	/* Update with BPF_NOEXIST */
+	 
 	value.cnt += 1;
 	value.lock = 2;
 	err = bpf_map_update_elem(map_fd, &sk_fd, &value,
@@ -534,7 +534,7 @@ static void test_sk_storage_map_basic(void)
 	      "err:%d errno:%d lock:%x cnt:%x(%x)\n",
 	      err, errno, lookup_value.lock, lookup_value.cnt, value.cnt);
 
-	/* Bump the cnt again and update with map_flags == 0 */
+	 
 	value.cnt += 1;
 	value.lock = 2;
 	err = bpf_map_update_elem(map_fd, &sk_fd, &value, 0);
@@ -547,7 +547,7 @@ static void test_sk_storage_map_basic(void)
 	      "err:%d errno:%d lock:%x cnt:%x(%x)\n",
 	      err, errno, lookup_value.lock, lookup_value.cnt, value.cnt);
 
-	/* Test delete elem */
+	 
 	err = bpf_map_delete_elem(map_fd, &sk_fd);
 	CHECK(err, "bpf_map_delete_elem()", "err:%d errno:%d\n",
 	      err, errno);

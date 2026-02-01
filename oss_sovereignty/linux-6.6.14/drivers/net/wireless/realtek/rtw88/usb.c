@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -233,13 +232,13 @@ static void rtw_usb_write_port_tx_complete(struct urb *urb)
 		info = IEEE80211_SKB_CB(skb);
 		tx_data = rtw_usb_get_tx_data(skb);
 
-		/* enqueue to wait for tx report */
+		 
 		if (info->flags & IEEE80211_TX_CTL_REQ_TX_STATUS) {
 			rtw_tx_report_enqueue(rtwdev, skb, tx_data->sn);
 			continue;
 		}
 
-		/* always ACK for others, then they won't be marked as drop */
+		 
 		ieee80211_tx_info_clear_status(info);
 		if (info->flags & IEEE80211_TX_CTL_NO_ACK)
 			info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
@@ -648,7 +647,7 @@ err:
 
 static int rtw_usb_setup(struct rtw_dev *rtwdev)
 {
-	/* empty function for rtw_hci_ops */
+	 
 	return 0;
 }
 
@@ -663,17 +662,17 @@ static void rtw_usb_stop(struct rtw_dev *rtwdev)
 
 static void rtw_usb_deep_ps(struct rtw_dev *rtwdev, bool enter)
 {
-	/* empty function for rtw_hci_ops */
+	 
 }
 
 static void rtw_usb_link_ps(struct rtw_dev *rtwdev, bool enter)
 {
-	/* empty function for rtw_hci_ops */
+	 
 }
 
 static void rtw_usb_interface_cfg(struct rtw_dev *rtwdev)
 {
-	/* empty function for rtw_hci_ops */
+	 
 }
 
 static struct rtw_hci_ops rtw_usb_ops = {

@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "smumgr.h"
 #include "smu9_smumgr.h"
@@ -28,7 +7,7 @@
 #include "pp_debug.h"
 
 
-/* MP Apertures */
+ 
 #define MP0_Public                  0x03800000
 #define MP0_SRAM                    0x03900000
 #define MP1_Public                  0x03b00000
@@ -50,12 +29,7 @@ bool smu9_is_smc_ram_running(struct pp_hwmgr *hwmgr)
 	return false;
 }
 
-/*
- * Check if SMC has responded to previous message.
- *
- * @param    smumgr  the address of the powerplay hardware manager.
- * @return   TRUE    SMC has responded, FALSE otherwise.
- */
+ 
 static uint32_t smu9_wait_for_response(struct pp_hwmgr *hwmgr)
 {
 	struct amdgpu_device *adev = hwmgr->adev;
@@ -84,12 +58,7 @@ static uint32_t smu9_wait_for_response(struct pp_hwmgr *hwmgr)
 	}
 }
 
-/*
- * Send a message to the SMC, and do not wait for its response.
- * @param    smumgr  the address of the powerplay hardware manager.
- * @param    msg the message to send.
- * @return   Always return 0.
- */
+ 
 static int smu9_send_msg_to_smc_without_waiting(struct pp_hwmgr *hwmgr,
 						uint16_t msg)
 {
@@ -104,12 +73,7 @@ static int smu9_send_msg_to_smc_without_waiting(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/*
- * Send a message to the SMC, and wait for its response.
- * @param    hwmgr  the address of the powerplay hardware manager.
- * @param    msg the message to send.
- * @return   Always return 0.
- */
+ 
 int smu9_send_msg_to_smc(struct pp_hwmgr *hwmgr, uint16_t msg)
 {
 	struct amdgpu_device *adev = hwmgr->adev;
@@ -131,13 +95,7 @@ int smu9_send_msg_to_smc(struct pp_hwmgr *hwmgr, uint16_t msg)
 	return 0;
 }
 
-/*
- * Send a message to the SMC with parameter
- * @param    hwmgr:  the address of the powerplay hardware manager.
- * @param    msg: the message to send.
- * @param    parameter: the parameter to send
- * @return   Always return 0.
- */
+ 
 int smu9_send_msg_to_smc_with_parameter(struct pp_hwmgr *hwmgr,
 					uint16_t msg, uint32_t parameter)
 {

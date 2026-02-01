@@ -1,35 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Zhi Wang <zhi.a.wang@intel.com>
- *    Zhenyu Wang <zhenyuw@linux.intel.com>
- *    Xiao Zheng <xiao.zheng@intel.com>
- *
- * Contributors:
- *    Min He <min.he@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *
- */
+ 
 
 #ifndef _GVT_GTT_H_
 #define _GVT_GTT_H_
@@ -158,22 +127,18 @@ struct intel_vgpu_mm {
 	union {
 		struct {
 			enum intel_gvt_gtt_type root_entry_type;
-			/*
-			 * The 4 PDPs in ring context. For 48bit addressing,
-			 * only PDP0 is valid and point to PML4. For 32it
-			 * addressing, all 4 are used as true PDPs.
-			 */
+			 
 			u64 guest_pdps[GVT_RING_CTX_NR_PDPS];
 			u64 shadow_pdps[GVT_RING_CTX_NR_PDPS];
 			bool shadowed;
 
 			struct list_head list;
 			struct list_head lru_list;
-			struct list_head link; /* possible LRI shadow mm list */
+			struct list_head link;  
 		} ppgtt_mm;
 		struct {
 			void *virtual_ggtt;
-			/* Save/restore for PM */
+			 
 			u64 *host_ggtt_aperture;
 			u64 *host_ggtt_hidden;
 			struct list_head partial_pte_list;
@@ -240,14 +205,14 @@ struct intel_vgpu_oos_page {
 
 #define GTT_ENTRY_NUM_IN_ONE_PAGE 512
 
-/* Represent a vgpu shadow page table. */
+ 
 struct intel_vgpu_ppgtt_spt {
 	atomic_t refcount;
 	struct intel_vgpu *vgpu;
 
 	struct {
 		enum intel_gvt_gtt_type type;
-		bool pde_ips; /* for 64KB PTEs */
+		bool pde_ips;  
 		void *vaddr;
 		struct page *page;
 		unsigned long mfn;
@@ -255,7 +220,7 @@ struct intel_vgpu_ppgtt_spt {
 
 	struct {
 		enum intel_gvt_gtt_type type;
-		bool pde_ips; /* for 64KB PTEs */
+		bool pde_ips;  
 		unsigned long gfn;
 		unsigned long write_cnt;
 		struct intel_vgpu_oos_page *oos_page;
@@ -293,4 +258,4 @@ int intel_vgpu_emulate_ggtt_mmio_write(struct intel_vgpu *vgpu,
 void intel_vgpu_destroy_all_ppgtt_mm(struct intel_vgpu *vgpu);
 void intel_gvt_restore_ggtt(struct intel_gvt *gvt);
 
-#endif /* _GVT_GTT_H_ */
+#endif  

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015, 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _HFI1_DEVICE_H
 #define _HFI1_DEVICE_H
@@ -16,4 +14,4 @@ const char *class_name(void);
 int __init dev_init(void);
 void dev_cleanup(void);
 
-#endif                          /* _HFI1_DEVICE_H */
+#endif                           

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include <drm/drm_framebuffer.h>
 #include "komeda_dev.h"
 #include "komeda_kms.h"
@@ -21,10 +17,10 @@ komeda_wb_init_data_flow(struct komeda_layer *wb_layer,
 	dflow->out_w = fb->width;
 	dflow->out_h = fb->height;
 
-	/* the write back data comes from the compiz */
+	 
 	pipeline_composition_size(kcrtc_st, &dflow->in_w, &dflow->in_h);
 	dflow->input.component = &wb_layer->base.pipeline->compiz->base;
-	/* compiz doesn't output alpha */
+	 
 	dflow->pixel_blend_mode = DRM_MODE_BLEND_PIXEL_NONE;
 	dflow->rot = DRM_MODE_ROTATE_0;
 
@@ -54,10 +50,7 @@ komeda_wb_encoder_atomic_check(struct drm_encoder *encoder,
 
 	wb_layer = to_kconn(to_wb_conn(conn_st->connector))->wb_layer;
 
-	/*
-	 * No need for a full modested when the only connector changed is the
-	 * writeback connector.
-	 */
+	 
 	if (crtc_st->connectors_changed &&
 	    is_only_changed_connector(crtc_st, conn_st->connector))
 		crtc_st->connectors_changed = false;

@@ -1,23 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2005 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+ 
+ 
 
 #ifndef __LOCKSPACE_DOT_H__
 #define __LOCKSPACE_DOT_H__
 
-/* DLM_LSFL_FS
- *   The lockspace user is in the kernel (i.e. filesystem).  Enables
- *   direct bast/cast callbacks.
- *
- * internal lockspace flag - will be removed in future
- */
+ 
 #define DLM_LSFL_FS	0x00000004
 
 int dlm_lockspace_init(void);
@@ -33,5 +20,5 @@ int dlm_new_user_lockspace(const char *name, const char *cluster,
 			   void *ops_arg, int *ops_result,
 			   dlm_lockspace_t **lockspace);
 
-#endif				/* __LOCKSPACE_DOT_H__ */
+#endif				 
 

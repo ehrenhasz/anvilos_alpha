@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Marvell Technology Group Ltd.
- *
- * Alexandre Belloni <alexandre.belloni@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -34,10 +29,7 @@ struct berlin2_pll {
 #define RFDIV_MASK	0x1f
 #define DIVSEL_MASK	0xf
 
-/*
- * The output frequency formula for the pll is:
- * clkout = fbdiv / refdiv * parent / vcodiv
- */
+ 
 static unsigned long
 berlin2_pll_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 {
@@ -85,7 +77,7 @@ berlin2_pll_register(const struct berlin2_pll_map *map,
 	if (!pll)
 		return -ENOMEM;
 
-	/* copy pll_map to allow __initconst */
+	 
 	memcpy(&pll->map, map, sizeof(*map));
 	pll->base = base;
 	pll->hw.init = &init;

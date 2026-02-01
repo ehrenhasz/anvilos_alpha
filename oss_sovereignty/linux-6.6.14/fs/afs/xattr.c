@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Extended attribute handling for AFS.  We use xattrs to get and set metadata
- * instead of providing pioctl().
- *
- * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/fs.h>
 #include <linux/xattr.h>
 #include "internal.h"
 
-/*
- * Deal with the result of a successful fetch ACL operation.
- */
+ 
 static void afs_acl_success(struct afs_operation *op)
 {
 	afs_vnode_commit_status(op, &op->file[0]);
@@ -30,9 +23,7 @@ static const struct afs_operation_ops afs_fetch_acl_operation = {
 	.put		= afs_acl_put,
 };
 
-/*
- * Get a file's ACL.
- */
+ 
 static int afs_xattr_get_acl(const struct xattr_handler *handler,
 			     struct dentry *dentry,
 			     struct inode *inode, const char *name,
@@ -93,9 +84,7 @@ static const struct afs_operation_ops afs_store_acl_operation = {
 	.put		= afs_acl_put,
 };
 
-/*
- * Set a file's AFS3 ACL.
- */
+ 
 static int afs_xattr_set_acl(const struct xattr_handler *handler,
 			     struct mnt_idmap *idmap,
                              struct dentry *dentry,
@@ -129,12 +118,10 @@ static const struct xattr_handler afs_xattr_afs_acl_handler = {
 static const struct afs_operation_ops yfs_fetch_opaque_acl_operation = {
 	.issue_yfs_rpc	= yfs_fs_fetch_opaque_acl,
 	.success	= afs_acl_success,
-	/* Don't free op->yacl in .put here */
+	 
 };
 
-/*
- * Get a file's YFS ACL.
- */
+ 
 static int afs_xattr_get_yfs(const struct xattr_handler *handler,
 			     struct dentry *dentry,
 			     struct inode *inode, const char *name,
@@ -224,9 +211,7 @@ static const struct afs_operation_ops yfs_store_opaque_acl2_operation = {
 	.put		= afs_acl_put,
 };
 
-/*
- * Set a file's YFS ACL.
- */
+ 
 static int afs_xattr_set_yfs(const struct xattr_handler *handler,
 			     struct mnt_idmap *idmap,
                              struct dentry *dentry,
@@ -262,9 +247,7 @@ static const struct xattr_handler afs_xattr_yfs_handler = {
 	.set	= afs_xattr_set_yfs,
 };
 
-/*
- * Get the name of the cell on which a file resides.
- */
+ 
 static int afs_xattr_get_cell(const struct xattr_handler *handler,
 			      struct dentry *dentry,
 			      struct inode *inode, const char *name,
@@ -288,10 +271,7 @@ static const struct xattr_handler afs_xattr_afs_cell_handler = {
 	.get	= afs_xattr_get_cell,
 };
 
-/*
- * Get the volume ID, vnode ID and vnode uniquifier of a file as a sequence of
- * hex numbers separated by colons.
- */
+ 
 static int afs_xattr_get_fid(const struct xattr_handler *handler,
 			     struct dentry *dentry,
 			     struct inode *inode, const char *name,
@@ -301,9 +281,7 @@ static int afs_xattr_get_fid(const struct xattr_handler *handler,
 	char text[16 + 1 + 24 + 1 + 8 + 1];
 	size_t len;
 
-	/* The volume ID is 64-bit, the vnode ID is 96-bit and the
-	 * uniquifier is 32-bit.
-	 */
+	 
 	len = scnprintf(text, sizeof(text), "%llx:", vnode->fid.vid);
 	if (vnode->fid.vnode_hi)
 		len += scnprintf(text + len, sizeof(text) - len, "%x%016llx",
@@ -327,9 +305,7 @@ static const struct xattr_handler afs_xattr_afs_fid_handler = {
 	.get	= afs_xattr_get_fid,
 };
 
-/*
- * Get the name of the volume on which a file resides.
- */
+ 
 static int afs_xattr_get_volume(const struct xattr_handler *handler,
 			      struct dentry *dentry,
 			      struct inode *inode, const char *name,
@@ -358,6 +334,6 @@ const struct xattr_handler *afs_xattr_handlers[] = {
 	&afs_xattr_afs_cell_handler,
 	&afs_xattr_afs_fid_handler,
 	&afs_xattr_afs_volume_handler,
-	&afs_xattr_yfs_handler,		/* afs.yfs. prefix */
+	&afs_xattr_yfs_handler,		 
 	NULL
 };

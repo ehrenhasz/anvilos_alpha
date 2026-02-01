@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define pr_fmt(fmt) "irq-ls-extirq: " fmt
 
@@ -28,10 +28,7 @@ static void ls_extirq_intpcr_rmw(struct ls_extirq_data *priv, u32 mask,
 {
 	u32 intpcr;
 
-	/*
-	 * Serialize concurrent calls to ls_extirq_set_type() from multiple
-	 * IRQ descriptors, making sure the read-modify-write is atomic.
-	 */
+	 
 	raw_spin_lock(&priv->lock);
 
 	if (priv->big_endian)
@@ -188,10 +185,7 @@ ls_extirq_of_init(struct device_node *node, struct device_node *parent)
 		goto err_alloc_priv;
 	}
 
-	/*
-	 * All extirq OF nodes are under a scfg/syscon node with
-	 * the 'ranges' property
-	 */
+	 
 	priv->intpcr = of_iomap(node, 0);
 	if (!priv->intpcr) {
 		pr_err("Cannot ioremap OF node %pOF\n", node);

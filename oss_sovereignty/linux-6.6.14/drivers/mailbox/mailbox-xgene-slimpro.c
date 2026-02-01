@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * APM X-Gene SLIMpro MailBox Driver
- *
- * Copyright (c) 2015, Applied Micro Circuits Corporation
- * Author: Feng Kan fkan@apm.com
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -21,7 +16,7 @@
 #define MBOX_STATUS_AVAIL_MASK		BIT(16)
 #define MBOX_STATUS_ACK_MASK		BIT(0)
 
-/* Configuration and Status Registers */
+ 
 #define REG_DB_IN		0x00
 #define REG_DB_DIN0		0x04
 #define REG_DB_DIN1		0x08
@@ -31,15 +26,7 @@
 #define REG_DB_STAT		0x20
 #define REG_DB_STATMASK		0x24
 
-/**
- * X-Gene SlimPRO mailbox channel information
- *
- * @dev:	Device to which it is attached
- * @chan:	Pointer to mailbox communication channel
- * @reg:	Base address to access channel registers
- * @irq:	Interrupt number of the channel
- * @rx_msg:	Received message storage
- */
+ 
 struct slimpro_mbox_chan {
 	struct device		*dev;
 	struct mbox_chan	*chan;
@@ -48,17 +35,7 @@ struct slimpro_mbox_chan {
 	u32			rx_msg[3];
 };
 
-/**
- * X-Gene SlimPRO Mailbox controller data
- *
- * X-Gene SlimPRO Mailbox controller has 8 communication channels.
- * Each channel has a separate IRQ number assigned to it.
- *
- * @mb_ctrl:	Representation of the communication channel controller
- * @mc:		Array of SlimPRO mailbox channels of the controller
- * @chans:	Array of mailbox communication channels
- *
- */
+ 
 struct slimpro_mbox {
 	struct mbox_controller		mb_ctrl;
 	struct slimpro_mbox_chan	mc[MBOX_CNT];
@@ -137,10 +114,10 @@ static int slimpro_mbox_startup(struct mbox_chan *chan)
 		return rc;
 	}
 
-	/* Enable HW interrupt */
+	 
 	writel(MBOX_STATUS_ACK_MASK | MBOX_STATUS_AVAIL_MASK,
 	       mb_chan->reg + REG_DB_STAT);
-	/* Unmask doorbell status interrupt */
+	 
 	val = readl(mb_chan->reg + REG_DB_STATMASK);
 	val &= ~(MBOX_STATUS_ACK_MASK | MBOX_STATUS_AVAIL_MASK);
 	writel(val, mb_chan->reg + REG_DB_STATMASK);
@@ -153,7 +130,7 @@ static void slimpro_mbox_shutdown(struct mbox_chan *chan)
 	struct slimpro_mbox_chan *mb_chan = chan->con_priv;
 	u32 val;
 
-	/* Mask doorbell status interrupt */
+	 
 	val = readl(mb_chan->reg + REG_DB_STATMASK);
 	val |= (MBOX_STATUS_ACK_MASK | MBOX_STATUS_AVAIL_MASK);
 	writel(val, mb_chan->reg + REG_DB_STATMASK);
@@ -184,7 +161,7 @@ static int slimpro_mbox_probe(struct platform_device *pdev)
 	if (IS_ERR(mb_base))
 		return PTR_ERR(mb_base);
 
-	/* Setup mailbox links */
+	 
 	for (i = 0; i < MBOX_CNT; i++) {
 		ctx->mc[i].irq = platform_get_irq(pdev, i);
 		if (ctx->mc[i].irq < 0) {
@@ -202,7 +179,7 @@ static int slimpro_mbox_probe(struct platform_device *pdev)
 		ctx->chans[i].con_priv = &ctx->mc[i];
 	}
 
-	/* Setup mailbox controller */
+	 
 	ctx->mb_ctrl.dev = &pdev->dev;
 	ctx->mb_ctrl.chans = ctx->chans;
 	ctx->mb_ctrl.txdone_irq = true;

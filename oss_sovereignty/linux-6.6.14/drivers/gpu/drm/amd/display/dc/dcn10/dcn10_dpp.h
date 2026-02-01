@@ -1,26 +1,4 @@
-/* Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_DPP_DCN10_H__
 #define __DAL_DPP_DCN10_H__
@@ -30,14 +8,14 @@
 #define TO_DCN10_DPP(dpp)\
 	container_of(dpp, struct dcn10_dpp, base)
 
-/* TODO: Use correct number of taps. Using polaris values for now */
+ 
 #define LB_TOTAL_NUMBER_OF_ENTRIES 5124
 #define LB_BITS_PER_ENTRY 144
 
 #define TF_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
-//Used to resolve corner case
+
 #define TF2_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## _ ## field_name ## post_fix
 
@@ -441,32 +419,7 @@
 	TF_SF(CURSOR0_CURSOR_CONTROL, CURSOR_ENABLE, mask_sh), \
 	TF_SF(DPP_TOP0_DPP_CONTROL, DPPCLK_RATE_CONTROL, mask_sh)
 
-/*
- *
-	DCN1 CM debug status register definition
-
-	register :ID9_CM_STATUS do
-	implement_ref :cm
-	map to:  :cmdebugind, at: j
-	width 32
-	disclosure   NEVER
-
-		field :ID9_VUPDATE_CFG, [0], R
-		field :ID9_IGAM_LUT_MODE, [2..1], R
-		field :ID9_BNS_BYPASS, [3], R
-		field :ID9_ICSC_MODE, [5..4], R
-		field :ID9_DGAM_LUT_MODE, [8..6], R
-		field :ID9_HDR_BYPASS, [9], R
-		field :ID9_GAMUT_REMAP_MODE, [11..10], R
-		field :ID9_RGAM_LUT_MODE, [14..12], R
-		#1 free bit
-		field :ID9_OCSC_MODE, [18..16], R
-		field :ID9_DENORM_MODE, [21..19], R
-		field :ID9_ROUND_TRUNC_MODE, [25..22], R
-		field :ID9_DITHER_EN, [26], R
-		field :ID9_DITHER_MODE, [28..27], R
-	end
-*/
+ 
 
 #define TF_DEBUG_REG_LIST_SH_DCN10 \
 	.CM_TEST_DEBUG_DATA_ID9_ICSC_MODE = 4, \
@@ -1468,12 +1421,12 @@ void dpp1_cm_configure_regamma_lut(
 		struct dpp *dpp_base,
 		bool is_ram_a);
 
-/*program re gamma RAM A*/
+ 
 void dpp1_cm_program_regamma_luta_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);
 
-/*program re gamma RAM B*/
+ 
 void dpp1_cm_program_regamma_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);

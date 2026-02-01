@@ -1,20 +1,4 @@
-/* Test userspec.c
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering.  */
+ 
 
 #include <config.h>
 
@@ -52,28 +36,27 @@ static struct test T[] =
     { "+1",                      1, -1, "",   "",   NULL},
     { ":+0",                    -1,  0, "",   "",   NULL},
     { "+22:+42",                22, 42, "",   "",   NULL},
-    /* (uint32_t)-1 should be invalid everywhere */
+     
     { "+4294967295:+4294967295", 0,  0, NULL, NULL, "invalid user"},
-    /* likewise, but with only the group being invalid */
+     
     { "+0:+4294967295",          0,  0, NULL, NULL, "invalid group"},
     { ":+4294967295",            0,  0, NULL, NULL, "invalid group"},
-    /* and only the user being invalid */
+     
     { "+4294967295:+0",          0,  0, NULL, NULL, "invalid user"},
-    /* and using 2^32 */
+     
     { "+4294967296:+4294967296", 0,  0, NULL, NULL, "invalid user"},
     { "+0:+4294967296",          0,  0, NULL, NULL, "invalid group"},
     { ":+4294967296",            0,  0, NULL, NULL, "invalid group"},
     { "+4294967296:+0",          0,  0, NULL, NULL, "invalid user"},
-    /* numeric user and no group is invalid */
+     
     { "+4294967295:",            0,  0, NULL, NULL, "invalid spec"},
     { "+4294967296:",            0,  0, NULL, NULL, "invalid spec"},
     { "+1:",                     0,  0, NULL, NULL, "invalid spec"},
     { "+0:",                     0,  0, NULL, NULL, "invalid spec"},
 
-    /* "username:" must expand to UID:GID where GID is username's login group */
-    /* Add an entry like the following to the table, if possible.
-    { "U_NAME:",              UID,GID, U_NAME, G_NAME, NULL}, */
-    { "" /* placeholder */,    -1, -1,     "",     "", NULL},
+     
+     
+    { ""  ,    -1, -1,     "",     "", NULL},
   };
 
 #define STREQ(a, b) (strcmp (a, b) == 0)
@@ -100,8 +83,7 @@ main (void)
   unsigned int i;
   int fail = 0;
 
-  /* Find a UID that has both a user name and login group name,
-     but skip UID 0.  */
+   
   {
     uid_t uid;
     for (uid = 1200; 0 < uid; uid--)
@@ -117,7 +99,7 @@ main (void)
         if (sizeof T[j].in - 2 < len)
           continue;
 
-        /* Store "username:" in T[j].in.  */
+         
         memcpy(T[j].in, pw->pw_name, len);
         strcpy(T[j].in + len, ":");
 
@@ -166,7 +148,7 @@ main (void)
 
       if (T[i].result)
         {
-          /* Expected a non-NULL result diagnostic, yet got NULL.  */
+           
           diag = "NULL";
           printf ("%s diagnostic mismatch (-: expected diagnostic; +:actual)\n"
                   "-%s\n+%s\n", T[i].in, T[i].result, diag);
@@ -174,8 +156,7 @@ main (void)
         }
       else
         {
-          /* Should get the same result, but with a warning, if replacing
-             ':' with '.'.  */
+           
           char *colon = strchr (T[i].in, ':');
           if (colon)
             {
@@ -202,7 +183,7 @@ main (void)
         }
     }
 
-  /* Ensure NULL parameters are ignored.  */
+   
   {
     uid_t uid = (uid_t) -1;
     char const *diag = parse_user_spec ("", &uid, NULL, NULL, NULL);
@@ -216,8 +197,4 @@ main (void)
   return fail;
 }
 
-/*
-Local Variables:
-indent-tabs-mode: nil
-End:
-*/
+ 

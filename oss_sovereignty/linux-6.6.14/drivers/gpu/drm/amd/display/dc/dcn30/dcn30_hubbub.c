@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dm_services.h"
@@ -86,7 +63,7 @@ int hubbub3_init_dchub_sys_ctx(struct hubbub *hubbub,
 		phys_config.page_table_base_addr = pa_config->gart_config.page_table_base_addr;
 		phys_config.depth = 0;
 		phys_config.block_size = 0;
-		// Init VMID 0 based on PA config
+		
 		dcn20_vmid_setup(&hubbub1->vmid[0], &phys_config);
 	}
 
@@ -111,19 +88,7 @@ bool hubbub3_program_watermarks(
 	if (hubbub21_program_pstate_watermarks(hubbub, watermarks, refclk_mhz, safe_to_lower))
 		wm_pending = true;
 
-	/*
-	 * The DCHub arbiter has a mechanism to dynamically rate limit the DCHub request stream to the fabric.
-	 * If the memory controller is fully utilized and the DCHub requestors are
-	 * well ahead of their amortized schedule, then it is safe to prevent the next winner
-	 * from being committed and sent to the fabric.
-	 * The utilization of the memory controller is approximated by ensuring that
-	 * the number of outstanding requests is greater than a threshold specified
-	 * by the ARB_MIN_REQ_OUTSTANDING. To determine that the DCHub requestors are well ahead of the amortized schedule,
-	 * the slack of the next winner is compared with the ARB_SAT_LEVEL in DLG RefClk cycles.
-	 *
-	 * TODO: Revisit request limit after figure out right number. request limit for Renoir isn't decided yet, set maximum value (0x1FF)
-	 * to turn off it for now.
-	 */
+	 
 	REG_SET(DCHUBBUB_ARB_SAT_LEVEL, 0,
 			DCHUBBUB_ARB_SAT_LEVEL, 60 * refclk_mhz);
 	REG_UPDATE(DCHUBBUB_ARB_DF_REQ_OUTSTAND,
@@ -229,8 +194,8 @@ bool hubbub3_dcc_support_swizzle(
 static void hubbub3_get_blk256_size(unsigned int *blk256_width, unsigned int *blk256_height,
 		unsigned int bytes_per_element)
 {
-	/* copied from DML.  might want to refactor DML to leverage from DML */
-	/* DML : get_blk256_size */
+	 
+	 
 	if (bytes_per_element == 1) {
 		*blk256_width = 16;
 		*blk256_height = 16;
@@ -264,12 +229,12 @@ static void hubbub3_det_request_size(
 	swath_bytes_vert_wc = height * blk256_width * bpe;
 
 	*req128_horz_wc = (2 * swath_bytes_horz_wc <= detile_buf_size) ?
-			false : /* full 256B request */
-			true; /* half 128b request */
+			false :  
+			true;  
 
 	*req128_vert_wc = (2 * swath_bytes_vert_wc <= detile_buf_size) ?
-			false : /* full 256B request */
-			true; /* half 128b request */
+			false :  
+			true;  
 }
 
 bool hubbub3_get_dcc_compression_cap(struct hubbub *hubbub,
@@ -277,7 +242,7 @@ bool hubbub3_get_dcc_compression_cap(struct hubbub *hubbub,
 		struct dc_surface_dcc_cap *output)
 {
 	struct dc *dc = hubbub->ctx->dc;
-	/* implement section 1.6.2.1 of DCN1_Programming_Guide.docx */
+	 
 	enum dcc_control dcc_control;
 	unsigned int bpe;
 	enum segment_order segment_order_horz, segment_order_vert;
@@ -321,16 +286,14 @@ bool hubbub3_get_dcc_compression_cap(struct hubbub *hubbub,
 			segment_order_horz == segment_order__non_contiguous) ||
 			(req128_vert_wc &&
 			segment_order_vert == segment_order__non_contiguous))
-			/* access_dir not known, must use most constraining */
+			 
 			dcc_control = dcc_control__256_64_64;
 		else
-			/* reg128 is true for either horz and vert
-			 * but segment_order is contiguous
-			 */
+			 
 			dcc_control = dcc_control__128_128_xxx;
 	}
 
-	/* Exception for 64KB_R_X */
+	 
 	if ((bpe == 2) && (input->swizzle_mode == DC_SW_64KB_R_X))
 		dcc_control = dcc_control__128_128_xxx;
 
@@ -394,7 +357,7 @@ void hubbub3_force_pstate_change_control(struct hubbub *hubbub,
 			DCHUBBUB_ARB_ALLOW_PSTATE_CHANGE_FORCE_ENABLE, force);
 }
 
-/* Copy values from WM set A to all other sets */
+ 
 void hubbub3_init_watermarks(struct hubbub *hubbub)
 {
 	struct dcn20_hubbub *hubbub1 = TO_DCN20_HUBBUB(hubbub);
@@ -468,6 +431,6 @@ void hubbub3_construct(struct dcn20_hubbub *hubbub3,
 	hubbub3->masks = hubbub_mask;
 
 	hubbub3->debug_test_index_pstate = 0xB;
-	hubbub3->detile_buf_size = 184 * 1024; /* 184KB for DCN3 */
+	hubbub3->detile_buf_size = 184 * 1024;  
 }
 

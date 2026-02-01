@@ -1,38 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      MOTU Midi Timepiece ALSA Main routines
- *      Copyright by Michael T. Mayers (c) Jan 09, 2000
- *      mail: michael@tweakoz.com
- *      Thanks to John Galbraith
- *
- *      This driver is for the 'Mark Of The Unicorn' (MOTU)
- *      MidiTimePiece AV multiport MIDI interface 
- *
- *      IOPORTS
- *      -------
- *      8 MIDI Ins and 8 MIDI outs
- *      Video Sync In (BNC), Word Sync Out (BNC), 
- *      ADAT Sync Out (DB9)
- *      SMPTE in/out (1/4")
- *      2 programmable pedal/footswitch inputs and 4 programmable MIDI controller knobs.
- *      Macintosh RS422 serial port
- *      RS422 "network" port for ganging multiple MTP's
- *      PC Parallel Port ( which this driver currently uses )
- *
- *      MISC FEATURES
- *      -------------
- *      Hardware MIDI routing, merging, and filtering   
- *      MIDI Synchronization to Video, ADAT, SMPTE and other Clock sources
- *      128 'scene' memories, recallable from MIDI program change
- *
- * ChangeLog
- * Jun 11 2001	Takashi Iwai <tiwai@suse.de>
- *      - Recoded & debugged
- *      - Added timer interrupt for midi outputs
- *      - hwports is between 1 and 8, which specifies the number of hardware ports.
- *        The three global ports, computer, adat and broadcast ports, are created
- *        always after h/w and remote ports.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -47,23 +14,21 @@
 #include <sound/rawmidi.h>
 #include <linux/delay.h>
 
-/*
- *      globals
- */
+ 
 MODULE_AUTHOR("Michael T. Mayers");
 MODULE_DESCRIPTION("MOTU MidiTimePiece AV multiport MIDI");
 MODULE_LICENSE("GPL");
 
-// io resources
+ 
 #define MTPAV_IOBASE		0x378
 #define MTPAV_IRQ		7
 #define MTPAV_MAX_PORTS		8
 
 static int index = SNDRV_DEFAULT_IDX1;
 static char *id = SNDRV_DEFAULT_STR1;
-static long port = MTPAV_IOBASE;	/* 0x378, 0x278 */
-static int irq = MTPAV_IRQ;		/* 7, 5 */
-static int hwports = MTPAV_MAX_PORTS;	/* use hardware ports 1-8 */
+static long port = MTPAV_IOBASE;	 
+static int irq = MTPAV_IRQ;		 
+static int hwports = MTPAV_MAX_PORTS;	 
 
 module_param(index, int, 0444);
 MODULE_PARM_DESC(index, "Index value for MotuMTPAV MIDI.");
@@ -78,12 +43,10 @@ MODULE_PARM_DESC(hwports, "Hardware ports # for MotuMTPAV MIDI.");
 
 static struct platform_device *device;
 
-/*
- *      defines
- */
-//#define USE_FAKE_MTP //       don't actually read/write to MTP device (for debugging without an actual unit) (does not work yet)
+ 
+ 
 
-// parallel port usage masks
+ 
 #define SIGS_BYTE 0x08
 #define SIGS_RFD 0x80
 #define SIGS_IRQ 0x40
@@ -98,7 +61,7 @@ static struct platform_device *device;
 #define SREG 1
 #define CREG 2
 
-//
+ 
 #define MTPAV_MODE_INPUT_OPENED		0x01
 #define MTPAV_MODE_OUTPUT_OPENED	0x02
 #define MTPAV_MODE_INPUT_TRIGGERED	0x04
@@ -107,8 +70,7 @@ static struct platform_device *device;
 #define NUMPORTS (0x12+1)
 
 
-/*
- */
+ 
 
 struct mtpav_port {
 	u8 number;
@@ -123,39 +85,23 @@ struct mtpav {
 	struct snd_card *card;
 	unsigned long port;
 	struct resource *res_port;
-	int irq;			/* interrupt (for inputs) */
+	int irq;			 
 	spinlock_t spinlock;
-	int share_irq;			/* number of accesses to input interrupts */
-	int istimer;			/* number of accesses to timer interrupts */
-	struct timer_list timer;	/* timer interrupts for outputs */
+	int share_irq;			 
+	int istimer;			 
+	struct timer_list timer;	 
 	struct snd_rawmidi *rmidi;
-	int num_ports;		/* number of hw ports (1-8) */
-	struct mtpav_port ports[NUMPORTS];	/* all ports including computer, adat and bc */
+	int num_ports;		 
+	struct mtpav_port ports[NUMPORTS];	 
 
-	u32 inmidiport;		/* selected input midi port */
-	u32 inmidistate;	/* during midi command 0xf5 */
+	u32 inmidiport;		 
+	u32 inmidistate;	 
 
-	u32 outmidihwport;	/* selected output midi hw port */
+	u32 outmidihwport;	 
 };
 
 
-/*
- * possible hardware ports (selected by 0xf5 port message)
- *      0x00		all ports
- *      0x01 .. 0x08    this MTP's ports 1..8
- *      0x09 .. 0x10    networked MTP's ports (9..16)
- *      0x11            networked MTP's computer port
- *      0x63            to ADAT
- *
- * mappig:
- *  subdevice 0 - (X-1)    ports
- *            X - (2*X-1)  networked ports
- *            X            computer
- *            X+1          ADAT
- *            X+2          all ports
- *
- *  where X = chip->num_ports
- */
+ 
 
 #define MTPAV_PIDX_COMPUTER	0
 #define MTPAV_PIDX_ADAT		1
@@ -165,42 +111,41 @@ struct mtpav {
 static int translate_subdevice_to_hwport(struct mtpav *chip, int subdev)
 {
 	if (subdev < 0)
-		return 0x01; /* invalid - use port 0 as default */
+		return 0x01;  
 	else if (subdev < chip->num_ports)
-		return subdev + 1; /* single mtp port */
+		return subdev + 1;  
 	else if (subdev < chip->num_ports * 2)
-		return subdev - chip->num_ports + 0x09; /* remote port */
+		return subdev - chip->num_ports + 0x09;  
 	else if (subdev == chip->num_ports * 2 + MTPAV_PIDX_COMPUTER)
-		return 0x11; /* computer port */
+		return 0x11;  
 	else if (subdev == chip->num_ports + MTPAV_PIDX_ADAT)
-		return 0x63;		/* ADAT */
-	return 0; /* all ports */
+		return 0x63;		 
+	return 0;  
 }
 
 static int translate_hwport_to_subdevice(struct mtpav *chip, int hwport)
 {
 	int p;
-	if (hwport <= 0x00) /* all ports */
+	if (hwport <= 0x00)  
 		return chip->num_ports + MTPAV_PIDX_BROADCAST;
-	else if (hwport <= 0x08) { /* single port */
+	else if (hwport <= 0x08) {  
 		p = hwport - 1;
 		if (p >= chip->num_ports)
 			p = 0;
 		return p;
-	} else if (hwport <= 0x10) { /* remote port */
+	} else if (hwport <= 0x10) {  
 		p = hwport - 0x09 + chip->num_ports;
 		if (p >= chip->num_ports * 2)
 			p = chip->num_ports;
 		return p;
-	} else if (hwport == 0x11)  /* computer port */
+	} else if (hwport == 0x11)   
 		return chip->num_ports + MTPAV_PIDX_COMPUTER;
-	else  /* ADAT */
+	else   
 		return chip->num_ports + MTPAV_PIDX_ADAT;
 }
 
 
-/*
- */
+ 
 
 static u8 snd_mtpav_getreg(struct mtpav *chip, u16 reg)
 {
@@ -217,8 +162,7 @@ static u8 snd_mtpav_getreg(struct mtpav *chip, u16 reg)
 	return rval;
 }
 
-/*
- */
+ 
 
 static inline void snd_mtpav_mputreg(struct mtpav *chip, u16 reg, u8 val)
 {
@@ -226,8 +170,7 @@ static inline void snd_mtpav_mputreg(struct mtpav *chip, u16 reg, u8 val)
 		outb(val, chip->port + reg);
 }
 
-/*
- */
+ 
 
 static void snd_mtpav_wait_rfdhi(struct mtpav *chip)
 {
@@ -249,51 +192,47 @@ static void snd_mtpav_send_byte(struct mtpav *chip, u8 byte)
 
 	snd_mtpav_wait_rfdhi(chip);
 
-	/////////////////
+	 
 
 	tcbyt = snd_mtpav_getreg(chip, CREG);
 	clrwrite = tcbyt & (SIGC_WRITE ^ 0xff);
 	setwrite = tcbyt | SIGC_WRITE;
 
 	snd_mtpav_mputreg(chip, DREG, byte);
-	snd_mtpav_mputreg(chip, CREG, clrwrite);	// clear write bit
+	snd_mtpav_mputreg(chip, CREG, clrwrite);	 
 
-	snd_mtpav_mputreg(chip, CREG, setwrite);	// set write bit
+	snd_mtpav_mputreg(chip, CREG, setwrite);	 
 
 }
 
 
-/*
- */
+ 
 
-/* call this with spin lock held */
+ 
 static void snd_mtpav_output_port_write(struct mtpav *mtp_card,
 					struct mtpav_port *portp,
 					struct snd_rawmidi_substream *substream)
 {
 	u8 outbyte;
 
-	// Get the outbyte first, so we can emulate running status if
-	// necessary
+	 
+	 
 	if (snd_rawmidi_transmit(substream, &outbyte, 1) != 1)
 		return;
 
-	// send port change command if necessary
+	 
 
 	if (portp->hwport != mtp_card->outmidihwport) {
 		mtp_card->outmidihwport = portp->hwport;
 
 		snd_mtpav_send_byte(mtp_card, 0xf5);
 		snd_mtpav_send_byte(mtp_card, portp->hwport);
-		/*
-		snd_printk(KERN_DEBUG "new outport: 0x%x\n",
-			   (unsigned int) portp->hwport);
-		*/
+		 
 		if (!(outbyte & 0x80) && portp->running_status)
 			snd_mtpav_send_byte(mtp_card, portp->running_status);
 	}
 
-	// send data
+	 
 
 	do {
 		if (outbyte & 0x80)
@@ -315,11 +254,9 @@ static void snd_mtpav_output_write(struct snd_rawmidi_substream *substream)
 }
 
 
-/*
- *      mtpav control
- */
+ 
 
-static void snd_mtpav_portscan(struct mtpav *chip)	// put mtp into smart routing mode
+static void snd_mtpav_portscan(struct mtpav *chip)	 
 {
 	u8 p;
 
@@ -330,8 +267,7 @@ static void snd_mtpav_portscan(struct mtpav *chip)	// put mtp into smart routing
 	}
 }
 
-/*
- */
+ 
 
 static int snd_mtpav_input_open(struct snd_rawmidi_substream *substream)
 {
@@ -343,13 +279,12 @@ static int snd_mtpav_input_open(struct snd_rawmidi_substream *substream)
 	portp->mode |= MTPAV_MODE_INPUT_OPENED;
 	portp->input = substream;
 	if (mtp_card->share_irq++ == 0)
-		snd_mtpav_mputreg(mtp_card, CREG, (SIGC_INTEN | SIGC_WRITE));	// enable pport interrupts
+		snd_mtpav_mputreg(mtp_card, CREG, (SIGC_INTEN | SIGC_WRITE));	 
 	spin_unlock_irqrestore(&mtp_card->spinlock, flags);
 	return 0;
 }
 
-/*
- */
+ 
 
 static int snd_mtpav_input_close(struct snd_rawmidi_substream *substream)
 {
@@ -361,13 +296,12 @@ static int snd_mtpav_input_close(struct snd_rawmidi_substream *substream)
 	portp->mode &= ~MTPAV_MODE_INPUT_OPENED;
 	portp->input = NULL;
 	if (--mtp_card->share_irq == 0)
-		snd_mtpav_mputreg(mtp_card, CREG, 0);	// disable pport interrupts
+		snd_mtpav_mputreg(mtp_card, CREG, 0);	 
 	spin_unlock_irqrestore(&mtp_card->spinlock, flags);
 	return 0;
 }
 
-/*
- */
+ 
 
 static void snd_mtpav_input_trigger(struct snd_rawmidi_substream *substream, int up)
 {
@@ -385,9 +319,7 @@ static void snd_mtpav_input_trigger(struct snd_rawmidi_substream *substream, int
 }
 
 
-/*
- * timer interrupt for outputs
- */
+ 
 
 static void snd_mtpav_output_timer(struct timer_list *t)
 {
@@ -396,9 +328,9 @@ static void snd_mtpav_output_timer(struct timer_list *t)
 	int p;
 
 	spin_lock_irqsave(&chip->spinlock, flags);
-	/* reprogram timer */
+	 
 	mod_timer(&chip->timer, 1 + jiffies);
-	/* process each port */
+	 
 	for (p = 0; p <= chip->num_ports * 2 + MTPAV_PIDX_BROADCAST; p++) {
 		struct mtpav_port *portp = &chip->ports[p];
 		if ((portp->mode & MTPAV_MODE_OUTPUT_TRIGGERED) && portp->output)
@@ -407,20 +339,19 @@ static void snd_mtpav_output_timer(struct timer_list *t)
 	spin_unlock_irqrestore(&chip->spinlock, flags);
 }
 
-/* spinlock held! */
+ 
 static void snd_mtpav_add_output_timer(struct mtpav *chip)
 {
 	mod_timer(&chip->timer, 1 + jiffies);
 }
 
-/* spinlock held! */
+ 
 static void snd_mtpav_remove_output_timer(struct mtpav *chip)
 {
 	del_timer(&chip->timer);
 }
 
-/*
- */
+ 
 
 static int snd_mtpav_output_open(struct snd_rawmidi_substream *substream)
 {
@@ -435,8 +366,7 @@ static int snd_mtpav_output_open(struct snd_rawmidi_substream *substream)
 	return 0;
 };
 
-/*
- */
+ 
 
 static int snd_mtpav_output_close(struct snd_rawmidi_substream *substream)
 {
@@ -451,8 +381,7 @@ static int snd_mtpav_output_close(struct snd_rawmidi_substream *substream)
 	return 0;
 };
 
-/*
- */
+ 
 
 static void snd_mtpav_output_trigger(struct snd_rawmidi_substream *substream, int up)
 {
@@ -478,9 +407,7 @@ static void snd_mtpav_output_trigger(struct snd_rawmidi_substream *substream, in
 		snd_mtpav_output_write(substream);
 }
 
-/*
- * midi interrupt for inputs
- */
+ 
 
 static void snd_mtpav_inmidi_process(struct mtpav *mcrd, u8 inbyte)
 {
@@ -497,13 +424,13 @@ static void snd_mtpav_inmidi_process(struct mtpav *mcrd, u8 inbyte)
 static void snd_mtpav_inmidi_h(struct mtpav *mcrd, u8 inbyte)
 {
 	if (inbyte >= 0xf8) {
-		/* real-time midi code */
+		 
 		snd_mtpav_inmidi_process(mcrd, inbyte);
 		return;
 	}
 
-	if (mcrd->inmidistate == 0) {	// awaiting command
-		if (inbyte == 0xf5)	// MTP port #
+	if (mcrd->inmidistate == 0) {	 
+		if (inbyte == 0xf5)	 
 			mcrd->inmidistate = 1;
 		else
 			snd_mtpav_inmidi_process(mcrd, inbyte);
@@ -522,7 +449,7 @@ static void snd_mtpav_read_bytes(struct mtpav *mcrd)
 
 	u8 sbyt = snd_mtpav_getreg(mcrd, SREG);
 
-	/* printk(KERN_DEBUG "snd_mtpav_read_bytes() sbyt: 0x%x\n", sbyt); */
+	 
 
 	if (!(sbyt & SIGS_BYTE))
 		return;
@@ -561,9 +488,7 @@ static irqreturn_t snd_mtpav_irqh(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * get ISA resources
- */
+ 
 static int snd_mtpav_get_ISA(struct mtpav *mcard)
 {
 	mcard->res_port = devm_request_region(mcard->card->dev, port, 3,
@@ -583,8 +508,7 @@ static int snd_mtpav_get_ISA(struct mtpav *mcard)
 }
 
 
-/*
- */
+ 
 
 static const struct snd_rawmidi_ops snd_mtpav_output = {
 	.open =		snd_mtpav_output_open,
@@ -599,9 +523,7 @@ static const struct snd_rawmidi_ops snd_mtpav_input = {
 };
 
 
-/*
- * get RAWMIDI resources
- */
+ 
 
 static void snd_mtpav_set_name(struct mtpav *chip,
 			       struct snd_rawmidi_substream *substream)
@@ -657,8 +579,7 @@ static int snd_mtpav_get_RAWMIDI(struct mtpav *mcard)
 	return 0;
 }
 
-/*
- */
+ 
 
 static void snd_mtpav_free(struct snd_card *card)
 {
@@ -671,8 +592,7 @@ static void snd_mtpav_free(struct snd_card *card)
 	spin_unlock_irqrestore(&crd->spinlock, flags);
 }
 
-/*
- */
+ 
 static int snd_mtpav_probe(struct platform_device *dev)
 {
 	struct snd_card *card;

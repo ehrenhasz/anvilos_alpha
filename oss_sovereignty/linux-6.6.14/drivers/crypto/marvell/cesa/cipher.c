@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cipher algorithms supported by the CESA: DES, 3DES and AES.
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- * Author: Arnaud Ebalard <arno@natisbad.org>
- *
- * This work is based on an initial version written by
- * Sebastian Andrzej Siewior < sebastian at breakpoint dot cc >
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/internal/des.h>
@@ -101,7 +93,7 @@ static void mv_cesa_skcipher_std_step(struct skcipher_request *req)
 	sreq->size = len;
 	mv_cesa_set_crypt_op_len(&sreq->op, len);
 
-	/* FIXME: only update enc_len field */
+	 
 	if (!sreq->skip_ctx) {
 		if (engine->pool)
 			memcpy(engine->sram_pool, &sreq->op, sizeof(sreq->op));
@@ -358,18 +350,18 @@ static int mv_cesa_skcipher_dma_req_init(struct skcipher_request *req,
 
 		mv_cesa_set_crypt_op_len(op, iter.base.op_len);
 
-		/* Add input transfers */
+		 
 		ret = mv_cesa_dma_add_op_transfers(&basereq->chain, &iter.base,
 						   &iter.src, flags);
 		if (ret)
 			goto err_free_tdma;
 
-		/* Add dummy desc to launch the crypto operation */
+		 
 		ret = mv_cesa_dma_add_dummy_launch(&basereq->chain, flags);
 		if (ret)
 			goto err_free_tdma;
 
-		/* Add output transfers */
+		 
 		ret = mv_cesa_dma_add_op_transfers(&basereq->chain, &iter.base,
 						   &iter.dst, flags);
 		if (ret)
@@ -377,7 +369,7 @@ static int mv_cesa_skcipher_dma_req_init(struct skcipher_request *req,
 
 	} while (mv_cesa_skcipher_req_iter_next_op(&iter));
 
-	/* Add output data for IV */
+	 
 	ret = mv_cesa_dma_add_result_op(&basereq->chain,
 					CESA_SA_CFG_SRAM_OFFSET,
 					CESA_SA_DATA_SRAM_OFFSET,

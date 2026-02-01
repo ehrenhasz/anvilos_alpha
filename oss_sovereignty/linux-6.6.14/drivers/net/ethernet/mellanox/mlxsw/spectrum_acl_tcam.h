@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+ 
+ 
 
 #ifndef _MLXSW_SPECTRUM_ACL_TCAM_H
 #define _MLXSW_SPECTRUM_ACL_TCAM_H
@@ -12,16 +12,16 @@
 #include "core_acl_flex_keys.h"
 
 struct mlxsw_sp_acl_tcam {
-	unsigned long *used_regions; /* bit array */
+	unsigned long *used_regions;  
 	unsigned int max_regions;
-	unsigned long *used_groups;  /* bit array */
+	unsigned long *used_groups;   
 	unsigned int max_groups;
 	unsigned int max_group_size;
-	struct mutex lock; /* guards vregion list */
+	struct mutex lock;  
 	struct list_head vregion_list;
-	u32 vregion_rehash_intrvl;   /* ms */
+	u32 vregion_rehash_intrvl;    
 	unsigned long priv[];
-	/* priv has to be always the last item */
+	 
 };
 
 size_t mlxsw_sp_acl_tcam_priv_size(struct mlxsw_sp *mlxsw_sp);
@@ -76,14 +76,14 @@ struct mlxsw_sp_acl_tcam_vregion;
 struct mlxsw_sp_acl_tcam_region {
 	struct mlxsw_sp_acl_tcam_vregion *vregion;
 	struct mlxsw_sp_acl_tcam_group *group;
-	struct list_head list; /* Member of a TCAM group */
+	struct list_head list;  
 	enum mlxsw_reg_ptar_key_type key_type;
-	u16 id; /* ACL ID and region ID - they are same */
+	u16 id;  
 	char tcam_region_info[MLXSW_REG_PXXX_TCAM_REGION_INFO_LEN];
 	struct mlxsw_afk_key_info *key_info;
 	struct mlxsw_sp *mlxsw_sp;
 	unsigned long priv[];
-	/* priv has to be always the last item */
+	 
 };
 
 struct mlxsw_sp_acl_ctcam_region {
@@ -154,8 +154,8 @@ struct mlxsw_sp_acl_atcam {
 };
 
 struct mlxsw_sp_acl_atcam_region {
-	struct rhashtable entries_ht; /* A-TCAM only */
-	struct list_head entries_list; /* A-TCAM only */
+	struct rhashtable entries_ht;  
+	struct list_head entries_list;  
 	struct mlxsw_sp_acl_ctcam_region cregion;
 	const struct mlxsw_sp_acl_atcam_region_ops *ops;
 	struct mlxsw_sp_acl_tcam_region *region;
@@ -166,9 +166,7 @@ struct mlxsw_sp_acl_atcam_region {
 };
 
 struct mlxsw_sp_acl_atcam_entry_ht_key {
-	char full_enc_key[MLXSW_REG_PTCEX_FLEX_KEY_BLOCKS_LEN]; /* Encoded
-								 * key.
-								 */
+	char full_enc_key[MLXSW_REG_PTCEX_FLEX_KEY_BLOCKS_LEN];  
 	u8 erp_id;
 };
 
@@ -178,11 +176,9 @@ struct mlxsw_sp_acl_atcam_chunk {
 
 struct mlxsw_sp_acl_atcam_entry {
 	struct rhash_head ht_node;
-	struct list_head list; /* Member in entries_list */
+	struct list_head list;  
 	struct mlxsw_sp_acl_atcam_entry_ht_key ht_key;
-	char enc_key[MLXSW_REG_PTCEX_FLEX_KEY_BLOCKS_LEN]; /* Encoded key,
-							    * minus delta bits.
-							    */
+	char enc_key[MLXSW_REG_PTCEX_FLEX_KEY_BLOCKS_LEN];  
 	struct {
 		u16 start;
 		u8 mask;

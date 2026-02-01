@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NXP AUDMIX ALSA SoC Digital Audio Interface (DAI) driver
- *
- * Copyright 2017 NXP
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -26,7 +22,7 @@ static const char
 	*mask_sel[] = { "Unmask", "Mask", };
 
 static const struct soc_enum fsl_audmix_enum[] = {
-/* FSL_AUDMIX_CTR enums */
+ 
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_CTR, FSL_AUDMIX_CTR_MIXCLK_SHIFT, tdm_sel),
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_CTR, FSL_AUDMIX_CTR_OUTSRC_SHIFT, mode_sel),
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_CTR, FSL_AUDMIX_CTR_OUTWIDTH_SHIFT, width_sel),
@@ -34,10 +30,10 @@ SOC_ENUM_SINGLE_S(FSL_AUDMIX_CTR, FSL_AUDMIX_CTR_MASKRTDF_SHIFT, mask_sel),
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_CTR, FSL_AUDMIX_CTR_MASKCKDF_SHIFT, mask_sel),
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_CTR, FSL_AUDMIX_CTR_SYNCMODE_SHIFT, endis_sel),
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_CTR, FSL_AUDMIX_CTR_SYNCSRC_SHIFT, tdm_sel),
-/* FSL_AUDMIX_ATCR0 enums */
+ 
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_ATCR0, 0, endis_sel),
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_ATCR0, 1, updn_sel),
-/* FSL_AUDMIX_ATCR1 enums */
+ 
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_ATCR1, 0, endis_sel),
 SOC_ENUM_SINGLE_S(FSL_AUDMIX_ATCR1, 1, updn_sel),
 };
@@ -49,37 +45,37 @@ struct fsl_audmix_state {
 };
 
 static const struct fsl_audmix_state prms[4][4] = {{
-	/* DIS->DIS, do nothing */
+	 
 	{ .tdms = 0, .clk = 0, .msg = "" },
-	/* DIS->TDM1*/
+	 
 	{ .tdms = 1, .clk = 1, .msg = "DIS->TDM1: TDM1 not started!\n" },
-	/* DIS->TDM2*/
+	 
 	{ .tdms = 2, .clk = 2, .msg = "DIS->TDM2: TDM2 not started!\n" },
-	/* DIS->MIX */
+	 
 	{ .tdms = 3, .clk = 0, .msg = "DIS->MIX: Please start both TDMs!\n" }
-}, {	/* TDM1->DIS */
+}, {	 
 	{ .tdms = 1, .clk = 0, .msg = "TDM1->DIS: TDM1 not started!\n" },
-	/* TDM1->TDM1, do nothing */
+	 
 	{ .tdms = 0, .clk = 0, .msg = "" },
-	/* TDM1->TDM2 */
+	 
 	{ .tdms = 3, .clk = 2, .msg = "TDM1->TDM2: Please start both TDMs!\n" },
-	/* TDM1->MIX */
+	 
 	{ .tdms = 3, .clk = 0, .msg = "TDM1->MIX: Please start both TDMs!\n" }
-}, {	/* TDM2->DIS */
+}, {	 
 	{ .tdms = 2, .clk = 0, .msg = "TDM2->DIS: TDM2 not started!\n" },
-	/* TDM2->TDM1 */
+	 
 	{ .tdms = 3, .clk = 1, .msg = "TDM2->TDM1: Please start both TDMs!\n" },
-	/* TDM2->TDM2, do nothing */
+	 
 	{ .tdms = 0, .clk = 0, .msg = "" },
-	/* TDM2->MIX */
+	 
 	{ .tdms = 3, .clk = 0, .msg = "TDM2->MIX: Please start both TDMs!\n" }
-}, {	/* MIX->DIS */
+}, {	 
 	{ .tdms = 3, .clk = 0, .msg = "MIX->DIS: Please start both TDMs!\n" },
-	/* MIX->TDM1 */
+	 
 	{ .tdms = 3, .clk = 1, .msg = "MIX->TDM1: Please start both TDMs!\n" },
-	/* MIX->TDM2 */
+	 
 	{ .tdms = 3, .clk = 2, .msg = "MIX->TDM2: Please start both TDMs!\n" },
-	/* MIX->MIX, do nothing */
+	 
 	{ .tdms = 0, .clk = 0, .msg = "" }
 }, };
 
@@ -88,7 +84,7 @@ static int fsl_audmix_state_trans(struct snd_soc_component *comp,
 				  const struct fsl_audmix_state prm)
 {
 	struct fsl_audmix *priv = snd_soc_component_get_drvdata(comp);
-	/* Enforce all required TDMs are started */
+	 
 	if ((priv->tdms & prm.tdms) != prm.tdms) {
 		dev_dbg(comp->dev, "%s", prm.msg);
 		return -EINVAL;
@@ -97,7 +93,7 @@ static int fsl_audmix_state_trans(struct snd_soc_component *comp,
 	switch (prm.clk) {
 	case 1:
 	case 2:
-		/* Set mix clock */
+		 
 		(*mask) |= FSL_AUDMIX_CTR_MIXCLK_MASK;
 		(*ctr)  |= FSL_AUDMIX_CTR_MIXCLK(prm.clk - 1);
 		break;
@@ -117,7 +113,7 @@ static int fsl_audmix_put_mix_clk_src(struct snd_kcontrol *kcontrol,
 	unsigned int *item = ucontrol->value.enumerated.item;
 	unsigned int reg_val, val, mix_clk;
 
-	/* Get current state */
+	 
 	reg_val = snd_soc_component_read(comp, FSL_AUDMIX_CTR);
 	mix_clk = ((reg_val & FSL_AUDMIX_CTR_MIXCLK_MASK)
 			>> FSL_AUDMIX_CTR_MIXCLK_SHIFT);
@@ -125,10 +121,7 @@ static int fsl_audmix_put_mix_clk_src(struct snd_kcontrol *kcontrol,
 
 	dev_dbg(comp->dev, "TDMs=x%08x, val=x%08x\n", priv->tdms, val);
 
-	/**
-	 * Ensure the current selected mixer clock is available
-	 * for configuration propagation
-	 */
+	 
 	if (!(priv->tdms & BIT(mix_clk))) {
 		dev_err(comp->dev,
 			"Started TDM%d needed for config propagation!\n",
@@ -157,27 +150,24 @@ static int fsl_audmix_put_out_src(struct snd_kcontrol *kcontrol,
 	unsigned int reg_val, val, mask = 0, ctr = 0;
 	int ret;
 
-	/* Get current state */
+	 
 	reg_val = snd_soc_component_read(comp, FSL_AUDMIX_CTR);
 
-	/* "From" state */
+	 
 	out_src = ((reg_val & FSL_AUDMIX_CTR_OUTSRC_MASK)
 			>> FSL_AUDMIX_CTR_OUTSRC_SHIFT);
 	mix_clk = ((reg_val & FSL_AUDMIX_CTR_MIXCLK_MASK)
 			>> FSL_AUDMIX_CTR_MIXCLK_SHIFT);
 
-	/* "To" state */
+	 
 	val = snd_soc_enum_item_to_val(e, item[0]);
 
 	dev_dbg(comp->dev, "TDMs=x%08x, val=x%08x\n", priv->tdms, val);
 
-	/* Check if state is changing ... */
+	 
 	if (out_src == val)
 		return 0;
-	/**
-	 * Ensure the current selected mixer clock is available
-	 * for configuration propagation
-	 */
+	 
 	if (!(priv->tdms & BIT(mix_clk))) {
 		dev_err(comp->dev,
 			"Started TDM%d needed for config propagation!\n",
@@ -185,12 +175,12 @@ static int fsl_audmix_put_out_src(struct snd_kcontrol *kcontrol,
 		return -EINVAL;
 	}
 
-	/* Check state transition constraints */
+	 
 	ret = fsl_audmix_state_trans(comp, &mask, &ctr, prms[out_src][val]);
 	if (ret)
 		return ret;
 
-	/* Complete transition to new state */
+	 
 	mask |= FSL_AUDMIX_CTR_OUTSRC_MASK;
 	ctr  |= FSL_AUDMIX_CTR_OUTSRC(val);
 
@@ -198,7 +188,7 @@ static int fsl_audmix_put_out_src(struct snd_kcontrol *kcontrol,
 }
 
 static const struct snd_kcontrol_new fsl_audmix_snd_controls[] = {
-	/* FSL_AUDMIX_CTR controls */
+	 
 	SOC_ENUM_EXT("Mixing Clock Source", fsl_audmix_enum[0],
 		     snd_soc_get_enum_double, fsl_audmix_put_mix_clk_src),
 	SOC_ENUM_EXT("Output Source", fsl_audmix_enum[1],
@@ -208,7 +198,7 @@ static const struct snd_kcontrol_new fsl_audmix_snd_controls[] = {
 	SOC_ENUM("Clock Freq Diff Error", fsl_audmix_enum[4]),
 	SOC_ENUM("Sync Mode Config", fsl_audmix_enum[5]),
 	SOC_ENUM("Sync Mode Clk Source", fsl_audmix_enum[6]),
-	/* TDM1 Attenuation controls */
+	 
 	SOC_ENUM("TDM1 Attenuation", fsl_audmix_enum[7]),
 	SOC_ENUM("TDM1 Attenuation Direction", fsl_audmix_enum[8]),
 	SOC_SINGLE("TDM1 Attenuation Step Divider", FSL_AUDMIX_ATCR0,
@@ -221,7 +211,7 @@ static const struct snd_kcontrol_new fsl_audmix_snd_controls[] = {
 		   0, 0x3ffff, 0),
 	SOC_SINGLE("TDM1 Attenuation Step Target", FSL_AUDMIX_ATSTPTGT0,
 		   0, 0x3ffff, 0),
-	/* TDM2 Attenuation controls */
+	 
 	SOC_ENUM("TDM2 Attenuation", fsl_audmix_enum[9]),
 	SOC_ENUM("TDM2 Attenuation Direction", fsl_audmix_enum[10]),
 	SOC_SINGLE("TDM2 Attenuation Step Divider", FSL_AUDMIX_ATCR1,
@@ -241,7 +231,7 @@ static int fsl_audmix_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct snd_soc_component *comp = dai->component;
 	u32 mask = 0, ctr = 0;
 
-	/* AUDMIX is working in DSP_A format only */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_DSP_A:
 		break;
@@ -249,7 +239,7 @@ static int fsl_audmix_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* For playback the AUDMIX is consumer, and for record is provider */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
 	case SND_SOC_DAIFMT_BP_FP:
@@ -260,11 +250,11 @@ static int fsl_audmix_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Output data will be written on positive edge of the clock */
+		 
 		ctr |= FSL_AUDMIX_CTR_OUTCKPOL(0);
 		break;
 	case SND_SOC_DAIFMT_NB_NF:
-		/* Output data will be written on negative edge of the clock */
+		 
 		ctr |= FSL_AUDMIX_CTR_OUTCKPOL(1);
 		break;
 	default:
@@ -282,7 +272,7 @@ static int fsl_audmix_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 	struct fsl_audmix *priv = snd_soc_dai_get_drvdata(dai);
 	unsigned long lock_flags;
 
-	/* Capture stream shall not be handled */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 		return 0;
 
@@ -448,7 +438,7 @@ static const struct of_device_id fsl_audmix_ids[] = {
 	{
 		.compatible = "fsl,imx8qm-audmix",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_audmix_ids);
 
@@ -463,7 +453,7 @@ static int fsl_audmix_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* Get the addresses */
+	 
 	regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(regs))
 		return PTR_ERR(regs);
@@ -544,7 +534,7 @@ static int fsl_audmix_runtime_suspend(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops fsl_audmix_pm = {
 	SET_RUNTIME_PM_OPS(fsl_audmix_runtime_suspend,

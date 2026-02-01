@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * exynos_ppmu.c - Exynos PPMU (Platform Performance Monitoring Unit) support
- *
- * Copyright (c) 2014-2015 Samsung Electronics Co., Ltd.
- * Author : Chanwoo Choi <cw00.choi@samsung.com>
- *
- * This driver is based on drivers/devfreq/exynos/exynos_ppmu.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -52,11 +45,11 @@ static struct __exynos_ppmu_events {
 	char *name;
 	int id;
 } ppmu_events[] = {
-	/* For Exynos3250, Exynos4 and Exynos5260 */
+	 
 	PPMU_EVENT(g3d),
 	PPMU_EVENT(fsys),
 
-	/* For Exynos4 SoCs and Exynos3250 */
+	 
 	PPMU_EVENT(dmc0),
 	PPMU_EVENT(dmc1),
 	PPMU_EVENT(cpu),
@@ -65,14 +58,14 @@ static struct __exynos_ppmu_events {
 	PPMU_EVENT(lcd0),
 	PPMU_EVENT(camif),
 
-	/* Only for Exynos3250 and Exynos5260 */
+	 
 	PPMU_EVENT(mfc),
 
-	/* Only for Exynos4 SoCs */
+	 
 	PPMU_EVENT(mfc-left),
 	PPMU_EVENT(mfc-right),
 
-	/* Only for Exynos5260 SoCs */
+	 
 	PPMU_EVENT(drex0-s0),
 	PPMU_EVENT(drex0-s1),
 	PPMU_EVENT(drex1-s0),
@@ -86,7 +79,7 @@ static struct __exynos_ppmu_events {
 	PPMU_EVENT(fimd0x),
 	PPMU_EVENT(fimd1x),
 
-	/* Only for Exynos5433 SoCs */
+	 
 	PPMU_EVENT(d0-cpu),
 	PPMU_EVENT(d0-general),
 	PPMU_EVENT(d0-rt),
@@ -94,12 +87,12 @@ static struct __exynos_ppmu_events {
 	PPMU_EVENT(d1-general),
 	PPMU_EVENT(d1-rt),
 
-	/* For Exynos5422 SoC, deprecated (backwards compatible) */
+	 
 	PPMU_EVENT(dmc0_0),
 	PPMU_EVENT(dmc0_1),
 	PPMU_EVENT(dmc1_0),
 	PPMU_EVENT(dmc1_1),
-	/* For Exynos5422 SoC */
+	 
 	PPMU_EVENT(dmc0-0),
 	PPMU_EVENT(dmc0-1),
 	PPMU_EVENT(dmc1-0),
@@ -122,16 +115,14 @@ static int exynos_ppmu_find_ppmu_id(struct devfreq_event_dev *edev)
 	return __exynos_ppmu_find_ppmu_id(edev->desc->name);
 }
 
-/*
- * The devfreq-event ops structure for PPMU v1.1
- */
+ 
 static int exynos_ppmu_disable(struct devfreq_event_dev *edev)
 {
 	struct exynos_ppmu *info = devfreq_event_get_drvdata(edev);
 	int ret;
 	u32 pmnc;
 
-	/* Disable all counters */
+	 
 	ret = regmap_write(info->regmap, PPMU_CNTENC,
 				PPMU_CCNT_MASK |
 				PPMU_PMCNT0_MASK |
@@ -141,7 +132,7 @@ static int exynos_ppmu_disable(struct devfreq_event_dev *edev)
 	if (ret < 0)
 		return ret;
 
-	/* Disable PPMU */
+	 
 	ret = regmap_read(info->regmap, PPMU_PMNC, &pmnc);
 	if (ret < 0)
 		return ret;
@@ -164,7 +155,7 @@ static int exynos_ppmu_set_event(struct devfreq_event_dev *edev)
 	if (id < 0)
 		return id;
 
-	/* Enable specific counter */
+	 
 	ret = regmap_read(info->regmap, PPMU_CNTENS, &cntens);
 	if (ret < 0)
 		return ret;
@@ -174,13 +165,13 @@ static int exynos_ppmu_set_event(struct devfreq_event_dev *edev)
 	if (ret < 0)
 		return ret;
 
-	/* Set the event of proper data type monitoring */
+	 
 	ret = regmap_write(info->regmap, PPMU_BEVTxSEL(id),
 			   edev->desc->event_type);
 	if (ret < 0)
 		return ret;
 
-	/* Reset cycle counter/performance counter and enable PPMU */
+	 
 	ret = regmap_read(info->regmap, PPMU_PMNC, &pmnc);
 	if (ret < 0)
 		return ret;
@@ -211,7 +202,7 @@ static int exynos_ppmu_get_event(struct devfreq_event_dev *edev,
 	if (id < 0)
 		return -EINVAL;
 
-	/* Disable PPMU */
+	 
 	ret = regmap_read(info->regmap, PPMU_PMNC, &pmnc);
 	if (ret < 0)
 		return ret;
@@ -221,13 +212,13 @@ static int exynos_ppmu_get_event(struct devfreq_event_dev *edev,
 	if (ret < 0)
 		return ret;
 
-	/* Read cycle count */
+	 
 	ret = regmap_read(info->regmap, PPMU_CCNT, &total_count);
 	if (ret < 0)
 		return ret;
 	edata->total_count = total_count;
 
-	/* Read performance count */
+	 
 	switch (id) {
 	case PPMU_PMNCNT0:
 	case PPMU_PMNCNT1:
@@ -252,7 +243,7 @@ static int exynos_ppmu_get_event(struct devfreq_event_dev *edev,
 		return -EINVAL;
 	}
 
-	/* Disable specific counter */
+	 
 	ret = regmap_read(info->regmap, PPMU_CNTENC, &cntenc);
 	if (ret < 0)
 		return ret;
@@ -274,16 +265,14 @@ static const struct devfreq_event_ops exynos_ppmu_ops = {
 	.get_event = exynos_ppmu_get_event,
 };
 
-/*
- * The devfreq-event ops structure for PPMU v2.0
- */
+ 
 static int exynos_ppmu_v2_disable(struct devfreq_event_dev *edev)
 {
 	struct exynos_ppmu *info = devfreq_event_get_drvdata(edev);
 	int ret;
 	u32 pmnc, clear;
 
-	/* Disable all counters */
+	 
 	clear = (PPMU_CCNT_MASK | PPMU_PMCNT0_MASK | PPMU_PMCNT1_MASK
 		| PPMU_PMCNT2_MASK | PPMU_PMCNT3_MASK);
 	ret = regmap_write(info->regmap, PPMU_V2_FLAG, clear);
@@ -358,7 +347,7 @@ static int exynos_ppmu_v2_disable(struct devfreq_event_dev *edev)
 	if (ret < 0)
 		return ret;
 
-	/* Disable PPMU */
+	 
 	ret = regmap_read(info->regmap, PPMU_V2_PMNC, &pmnc);
 	if (ret < 0)
 		return ret;
@@ -378,7 +367,7 @@ static int exynos_ppmu_v2_set_event(struct devfreq_event_dev *edev)
 	int id = exynos_ppmu_find_ppmu_id(edev);
 	int ret;
 
-	/* Enable all counters */
+	 
 	ret = regmap_read(info->regmap, PPMU_V2_CNTENS, &cntens);
 	if (ret < 0)
 		return ret;
@@ -388,13 +377,13 @@ static int exynos_ppmu_v2_set_event(struct devfreq_event_dev *edev)
 	if (ret < 0)
 		return ret;
 
-	/* Set the event of proper data type monitoring */
+	 
 	ret = regmap_write(info->regmap, PPMU_V2_CH_EVx_TYPE(id),
 			   edev->desc->event_type);
 	if (ret < 0)
 		return ret;
 
-	/* Reset cycle counter/performance counter and enable PPMU */
+	 
 	ret = regmap_read(info->regmap, PPMU_V2_PMNC, &pmnc);
 	if (ret < 0)
 		return ret;
@@ -427,7 +416,7 @@ static int exynos_ppmu_v2_get_event(struct devfreq_event_dev *edev,
 	unsigned int total_count, count;
 	unsigned long load_count = 0;
 
-	/* Disable PPMU */
+	 
 	ret = regmap_read(info->regmap, PPMU_V2_PMNC, &pmnc);
 	if (ret < 0)
 		return ret;
@@ -437,7 +426,7 @@ static int exynos_ppmu_v2_get_event(struct devfreq_event_dev *edev,
 	if (ret < 0)
 		return ret;
 
-	/* Read cycle count and performance count */
+	 
 	ret = regmap_read(info->regmap, PPMU_V2_CCNT, &total_count);
 	if (ret < 0)
 		return ret;
@@ -467,7 +456,7 @@ static int exynos_ppmu_v2_get_event(struct devfreq_event_dev *edev,
 	}
 	edata->load_count = load_count;
 
-	/* Disable all counters */
+	 
 	ret = regmap_read(info->regmap, PPMU_V2_CNTENC, &cntenc);
 	if (ret < 0)
 		return 0;
@@ -496,7 +485,7 @@ static const struct of_device_id exynos_ppmu_id_match[] = {
 		.compatible = "samsung,exynos-ppmu-v2",
 		.data = (void *)EXYNOS_TYPE_PPMU_V2,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, exynos_ppmu_id_match);
 
@@ -565,14 +554,9 @@ static int of_get_devfreq_events(struct device_node *np,
 		ret = of_property_read_u32(node, "event-data-type",
 					   &desc[j].event_type);
 		if (ret) {
-			/* Set the event of proper data type counting.
-			 * Check if the data type has been defined in DT,
-			 * use default if not.
-			 */
+			 
 			if (info->ppmu_type == EXYNOS_TYPE_PPMU_V2) {
-				/* Not all registers take the same value for
-				 * read+write data count.
-				 */
+				 
 				switch (ppmu_events[i].id) {
 				case PPMU_PMNCNT0:
 				case PPMU_PMNCNT1:
@@ -620,7 +604,7 @@ static int exynos_ppmu_parse_dt(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* Maps the memory mapped IO to control PPMU register */
+	 
 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -661,7 +645,7 @@ static int exynos_ppmu_probe(struct platform_device *pdev)
 
 	info->dev = &pdev->dev;
 
-	/* Parse dt data to get resource */
+	 
 	ret = exynos_ppmu_parse_dt(pdev, info);
 	if (ret < 0) {
 		dev_err(&pdev->dev,

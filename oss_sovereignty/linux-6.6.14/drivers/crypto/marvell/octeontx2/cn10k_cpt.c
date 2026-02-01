@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2021 Marvell. */
+
+ 
 
 #include <linux/soc/marvell/octeontx2/asm.h>
 #include "otx2_cptpf.h"
@@ -29,16 +29,13 @@ static void cn10k_cpt_send_cmd(union otx2_cpt_inst_s *cptinst, u32 insts_num,
 	u64 val = (lf->slot & 0x7FF);
 	u64 tar_addr = 0;
 
-	/* tar_addr<6:4> = Size of first LMTST - 1 in units of 128b. */
+	 
 	tar_addr |= (__force u64)lf->ioreg |
 		    (((OTX2_CPT_INST_SIZE/16) - 1) & 0x7) << 4;
-	/*
-	 * Make sure memory areas pointed in CPT_INST_S
-	 * are flushed before the instruction is sent to CPT
-	 */
+	 
 	dma_wmb();
 
-	/* Copy CPT command to LMTLINE */
+	 
 	memcpy_toio(lmtline, cptinst, insts_num * OTX2_CPT_INST_SIZE);
 	cn10k_lmt_flush(val, tar_addr);
 }
@@ -86,7 +83,7 @@ int cn10k_cptvf_lmtst_init(struct otx2_cptvf_dev *cptvf)
 	cptvf->lfs.ops = &cn10k_hw_ops;
 	offset = pci_resource_start(pdev, PCI_MBOX_BAR_NUM);
 	size = pci_resource_len(pdev, PCI_MBOX_BAR_NUM);
-	/* Map VF LMILINE region */
+	 
 	cptvf->lfs.lmt_base = devm_ioremap_wc(&pdev->dev, offset, size);
 	if (!cptvf->lfs.lmt_base) {
 		dev_err(&pdev->dev, "Unable to map BAR4\n");

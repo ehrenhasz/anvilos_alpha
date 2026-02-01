@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- *
- * CTU CAN FD IP Core
- *
- * Copyright (C) 2015-2018 Ondrej Ille <ondrej.ille@gmail.com> FEE CTU
- * Copyright (C) 2018-2021 Ondrej Ille <ondrej.ille@gmail.com> self-funded
- * Copyright (C) 2018-2019 Martin Jerabek <martin.jerabek01@gmail.com> FEE CTU
- * Copyright (C) 2018-2022 Pavel Pisa <pisa@cmp.felk.cvut.cz> FEE CTU/self-funded
- *
- * Project advisors:
- *     Jiri Novak <jnovak@fel.cvut.cz>
- *     Pavel Pisa <pisa@cmp.felk.cvut.cz>
- *
- * Department of Measurement         (http://meas.fel.cvut.cz/)
- * Faculty of Electrical Engineering (http://www.fel.cvut.cz)
- * Czech Technical University        (http://www.cvut.cz/)
- ******************************************************************************/
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -69,16 +53,7 @@ static void ctucan_pci_set_drvdata(struct device *dev,
 	priv->irq_flags = IRQF_SHARED;
 }
 
-/**
- * ctucan_pci_probe - PCI registration call
- * @pdev:	Handle to the pci device structure
- * @ent:	Pointer to the entry from ctucan_pci_tbl
- *
- * This function does all the memory allocation and registration for the CAN
- * device.
- *
- * Return: 0 on success and failure value on error
- */
+ 
 static int ctucan_pci_probe(struct pci_dev *pdev,
 			    const struct pci_device_id *ent)
 {
@@ -131,7 +106,7 @@ static int ctucan_pci_probe(struct pci_dev *pdev,
 		goto err_release_regions;
 	}
 
-	/* Cyclone IV PCI Express Control Registers Area */
+	 
 	bar0_base = pci_iomap(pdev, 0, pci_resource_len(pdev, 0));
 	if (!bar0_base) {
 		dev_err(dev, "PCI BAR 0 cannot be mapped\n");
@@ -186,9 +161,7 @@ static int ctucan_pci_probe(struct pci_dev *pdev,
 		core_i++;
 	}
 
-	/* enable interrupt in
-	 * Avalon-MM to PCI Express Interrupt Enable Register
-	 */
+	 
 	cra_a2p_ie = ioread32(cra_addr + CYCLONE_IV_CRA_A2P_IE);
 	dev_info(dev, "cra_a2p_ie 0x%08x\n", cra_a2p_ie);
 	cra_a2p_ie |= 1;
@@ -215,13 +188,7 @@ err:
 	return ret;
 }
 
-/**
- * ctucan_pci_remove - Unregister the device after releasing the resources
- * @pdev:	Handle to the pci device structure
- *
- * This function frees all the resources allocated to the device.
- * Return: 0 always
- */
+ 
 static void ctucan_pci_remove(struct pci_dev *pdev)
 {
 	struct net_device *ndev;
@@ -235,9 +202,7 @@ static void ctucan_pci_remove(struct pci_dev *pdev)
 		return;
 	}
 
-	/* disable interrupt in
-	 * Avalon-MM to PCI Express Interrupt Enable Register
-	 */
+	 
 	if (bdata->cra_base)
 		iowrite32(0, bdata->cra_base + CYCLONE_IV_CRA_A2P_IE);
 

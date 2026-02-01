@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/************************************************************************
- * Copyright 2003 Digi International (www.digi.com)
- *
- * Copyright (C) 2004 IBM Corporation. All rights reserved.
- *
- * Contact Information:
- * Scott H Kilau <Scott_Kilau@digi.com>
- * Wendy Xiong   <wendyx@us.ibm.com>
- *
- *
- ***********************************************************************/
+
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
@@ -72,7 +62,7 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_release_regions;
 	}
 
-	/* store the info for the board we've found */
+	 
 	brd->boardnum = adapter_count++;
 	brd->pci_dev = pdev;
 
@@ -109,7 +99,7 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	spin_lock_init(&brd->bd_intr_lock);
 
-	/* store which revision we have */
+	 
 	brd->rev = pdev->revision;
 
 	brd->irq = pdev->irq;
@@ -123,17 +113,9 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		jsm_dbg(INIT, &brd->pci_dev,
 			"jsm_found_board - Classic adapter\n");
 
-		/*
-		 * For PCI ClassicBoards
-		 * PCI Local Address (.i.e. "resource" number) space
-		 * 0	PLX Memory Mapped Config
-		 * 1	PLX I/O Mapped Config
-		 * 2	I/O Mapped UARTs and Status
-		 * 3	Memory Mapped VPD
-		 * 4	Memory Mapped UARTs and Status
-		 */
+		 
 
-		/* Get the PCI Base Address Registers */
+		 
 		brd->membase = pci_resource_start(pdev, 4);
 		brd->membase_end = pci_resource_end(pdev, 4);
 
@@ -146,7 +128,7 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		brd->iobase_end = pci_resource_end(pdev, 1);
 		brd->iobase = ((unsigned int)(brd->iobase)) & 0xFFFE;
 
-		/* Assign the board_ops struct */
+		 
 		brd->bd_ops = &jsm_cls_ops;
 
 		brd->bd_uart_offset = 0x8;
@@ -161,11 +143,7 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 			goto out_kfree_brd;
 		}
 
-		/*
-		 * Enable Local Interrupt 1			(0x1),
-		 * Local Interrupt 1 Polarity Active high	(0x2),
-		 * Enable PCI interrupt				(0x43)
-		 */
+		 
 		outb(0x43, brd->iobase + 0x4c);
 
 		break;
@@ -185,7 +163,7 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 		jsm_dbg(INIT, &brd->pci_dev, "jsm_found_board - NEO adapter\n");
 
-		/* get the PCI Base Address Registers */
+		 
 		brd->membase	= pci_resource_start(pdev, 0);
 		brd->membase_end = pci_resource_end(pdev, 0);
 
@@ -194,7 +172,7 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		else
 			brd->membase &= ~0xF;
 
-		/* Assign the board_ops struct */
+		 
 		brd->bd_ops = &jsm_neo_ops;
 
 		brd->bd_uart_offset = 0x200;
@@ -230,13 +208,13 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	rc = jsm_uart_port_init(brd);
 	if (rc < 0) {
-		/* XXX: leaking all resources from jsm_tty_init here! */
+		 
 		dev_err(&pdev->dev, "Can't init uart port (%d)\n", rc);
 		rc = -ENXIO;
 		goto out_free_irq;
 	}
 
-	/* Log the information about the board */
+	 
 	dev_info(&pdev->dev, "board %d: Digi Classic/Neo (rev %d), irq %d\n",
 			adapter_count, brd->rev, brd->irq);
 
@@ -269,7 +247,7 @@ static void jsm_remove_one(struct pci_dev *pdev)
 	case PCI_DEVICE_ID_CLASSIC_4_422:
 	case PCI_DEVICE_ID_CLASSIC_8:
 	case PCI_DEVICE_ID_CLASSIC_8_422:
-		/* Tell card not to interrupt anymore. */
+		 
 		outb(0x0, brd->iobase + 0x4c);
 		break;
 	default:
@@ -281,7 +259,7 @@ static void jsm_remove_one(struct pci_dev *pdev)
 	free_irq(brd->irq, brd);
 	iounmap(brd->re_map_membase);
 
-	/* Free all allocated channels structs */
+	 
 	for (i = 0; i < brd->maxports; i++) {
 		if (brd->channels[i]) {
 			kfree(brd->channels[i]->ch_rqueue);

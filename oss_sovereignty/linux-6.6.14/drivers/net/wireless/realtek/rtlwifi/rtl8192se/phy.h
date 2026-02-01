@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92S_PHY_H__
 #define __RTL92S_PHY_H__
@@ -7,8 +7,7 @@
 #define MAX_TXPWR_IDX_NMODE_92S		63
 #define MAX_DOZE_WAITING_TIMES_9x	64
 
-/* Channel switch:The size of
- * command tables for switch channel */
+ 
 #define MAX_PRECMD_CNT			16
 #define MAX_RFDEPENDCMD_CNT		16
 #define MAX_POSTCMD_CNT			16
@@ -40,9 +39,9 @@ struct swchnlcmd {
 };
 
 enum baseband_config_type {
-	/* Radio Path A */
+	 
 	BASEBAND_CONFIG_PHY_REG = 0,
-	/* Radio Path B */
+	 
 	BASEBAND_CONFIG_AGC_TAB = 1,
 };
 

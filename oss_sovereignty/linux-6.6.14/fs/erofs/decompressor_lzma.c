@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <linux/xz.h>
 #include <linux/module.h>
 #include "compress.h"
@@ -10,7 +10,7 @@ struct z_erofs_lzma {
 	u8 bounce[PAGE_SIZE];
 };
 
-/* considering the LZMA performance, no need to use a lockless list for now */
+ 
 static DEFINE_SPINLOCK(z_erofs_lzma_lock);
 static unsigned int z_erofs_lzma_max_dictsize;
 static unsigned int z_erofs_lzma_nstrms, z_erofs_lzma_avail_strms;
@@ -21,7 +21,7 @@ module_param_named(lzma_streams, z_erofs_lzma_nstrms, uint, 0444);
 
 void z_erofs_lzma_exit(void)
 {
-	/* there should be no running fs instance */
+	 
 	while (z_erofs_lzma_avail_strms) {
 		struct z_erofs_lzma *strm;
 
@@ -51,7 +51,7 @@ int __init z_erofs_lzma_init(void)
 {
 	unsigned int i;
 
-	/* by default, use # of possible CPUs instead */
+	 
 	if (!z_erofs_lzma_nstrms)
 		z_erofs_lzma_nstrms = num_possible_cpus();
 
@@ -98,7 +98,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
 
 	erofs_info(sb, "EXPERIMENTAL MicroLZMA in use. Use at your own risk!");
 
-	/* in case 2 z_erofs_load_lzma_config() race to avoid deadlock */
+	 
 	mutex_lock(&lzma_resize_mutex);
 
 	if (z_erofs_lzma_max_dictsize >= dict_size) {
@@ -106,7 +106,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
 		return 0;
 	}
 
-	/* 1. collect/isolate all streams for the following check */
+	 
 	for (i = 0; i < z_erofs_lzma_avail_strms; ++i) {
 		struct z_erofs_lzma *last;
 
@@ -129,7 +129,7 @@ again:
 	}
 
 	err = 0;
-	/* 2. walk each isolated stream and grow max dict_size if needed */
+	 
 	for (strm = head; strm; strm = strm->next) {
 		if (strm->state)
 			xz_dec_microlzma_end(strm->state);
@@ -138,7 +138,7 @@ again:
 			err = -ENOMEM;
 	}
 
-	/* 3. push back all to the global list and update max dict_size */
+	 
 	spin_lock(&z_erofs_lzma_lock);
 	DBG_BUGON(z_erofs_lzma_head);
 	z_erofs_lzma_head = head;
@@ -163,7 +163,7 @@ int z_erofs_lzma_decompress(struct z_erofs_decompress_req *rq,
 	bool bounced = false;
 	int no, ni, j, err = 0;
 
-	/* 1. get the exact LZMA compressed size */
+	 
 	kin = kmap(*rq->in);
 	err = z_erofs_fixup_insize(rq, kin + rq->pageofs_in,
 			min_t(unsigned int, rq->inputsize,
@@ -173,7 +173,7 @@ int z_erofs_lzma_decompress(struct z_erofs_decompress_req *rq,
 		return err;
 	}
 
-	/* 2. get an available lzma context */
+	 
 again:
 	spin_lock(&z_erofs_lzma_lock);
 	strm = z_erofs_lzma_head;
@@ -185,7 +185,7 @@ again:
 	z_erofs_lzma_head = strm->next;
 	spin_unlock(&z_erofs_lzma_lock);
 
-	/* 3. multi-call decompress */
+	 
 	inlen = rq->inputsize;
 	outlen = rq->outputsize;
 	xz_dec_microlzma_reset(strm->state, inlen, outlen,
@@ -217,7 +217,7 @@ again:
 			strm->buf.out_size = min_t(u32, outlen,
 						   PAGE_SIZE - pageofs);
 			outlen -= strm->buf.out_size;
-			if (!rq->out[no] && rq->fillgaps) {	/* deduped */
+			if (!rq->out[no] && rq->fillgaps) {	 
 				rq->out[no] = erofs_allocpage(pagepool,
 						GFP_KERNEL | __GFP_NOFAIL);
 				set_page_private(rq->out[no],
@@ -242,12 +242,7 @@ again:
 			bounced = false;
 		}
 
-		/*
-		 * Handle overlapping: Use bounced buffer if the compressed
-		 * data is under processing; Otherwise, Use short-lived pages
-		 * from the on-stack pagepool where pages share with the same
-		 * request.
-		 */
+		 
 		if (!bounced && rq->out[no] == rq->in[ni]) {
 			memcpy(strm->bounce, strm->buf.in, strm->buf.in_size);
 			strm->buf.in = strm->bounce;
@@ -284,7 +279,7 @@ again:
 		kunmap(rq->out[no]);
 	if (ni < nrpages_in)
 		kunmap(rq->in[ni]);
-	/* 4. push back LZMA stream context to the global list */
+	 
 	spin_lock(&z_erofs_lzma_lock);
 	strm->next = z_erofs_lzma_head;
 	z_erofs_lzma_head = strm;

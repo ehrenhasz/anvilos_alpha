@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	common UDP/RAW code
- *	Linux INET6 implementation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/errno.h>
@@ -167,9 +161,7 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
 		fl6_flowlabel = usin->sin6_flowinfo & IPV6_FLOWINFO_MASK;
 
 	if (ipv6_addr_any(&usin->sin6_addr)) {
-		/*
-		 *	connect to self
-		 */
+		 
 		if (ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
 			ipv6_addr_set_v4mapped(htonl(INADDR_LOOPBACK),
 					       &usin->sin6_addr);
@@ -230,14 +222,14 @@ ipv4_connected:
 		if (!sk->sk_bound_dev_if && (addr_type & IPV6_ADDR_MULTICAST))
 			WRITE_ONCE(sk->sk_bound_dev_if, np->mcast_oif);
 
-		/* Connect to link-local address requires an interface */
+		 
 		if (!sk->sk_bound_dev_if) {
 			err = -EINVAL;
 			goto out;
 		}
 	}
 
-	/* save the current peer information before updating it */
+	 
 	old_daddr = sk->sk_v6_daddr;
 	old_fl6_flowlabel = np->flow_label;
 	old_dport = inet->inet_dport;
@@ -246,16 +238,11 @@ ipv4_connected:
 	np->flow_label = fl6_flowlabel;
 	inet->inet_dport = usin->sin6_port;
 
-	/*
-	 *	Check for a route to destination an obtain the
-	 *	destination cache for it.
-	 */
+	 
 
 	err = ip6_datagram_dst_update(sk, true);
 	if (err) {
-		/* Restore the socket peer info, to keep it consistent with
-		 * the old socket state
-		 */
+		 
 		sk->sk_v6_daddr = old_daddr;
 		np->flow_label = old_fl6_flowlabel;
 		inet->inet_dport = old_dport;
@@ -417,9 +404,7 @@ void ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu)
 	kfree_skb(skb);
 }
 
-/* For some errors we have valid addr_offset even with zero payload and
- * zero port. Also, addr_offset should be supported if port is set.
- */
+ 
 static inline bool ipv6_datagram_support_addr(struct sock_exterr_skb *serr)
 {
 	return serr->ee.ee_origin == SO_EE_ORIGIN_ICMP6 ||
@@ -427,12 +412,7 @@ static inline bool ipv6_datagram_support_addr(struct sock_exterr_skb *serr)
 	       serr->ee.ee_origin == SO_EE_ORIGIN_LOCAL || serr->port;
 }
 
-/* IPv6 supports cmsg on all origins aside from SO_EE_ORIGIN_LOCAL.
- *
- * At one point, excluding local errors was a quick test to identify icmp/icmp6
- * errors. This is no longer true, but the test remained, so the v6 stack,
- * unlike v4, also honors cmsg requests on all wifi and timestamp errors.
- */
+ 
 static bool ip6_datagram_support_cmsg(struct sk_buff *skb,
 				      struct sock_exterr_skb *serr)
 {
@@ -449,9 +429,7 @@ static bool ip6_datagram_support_cmsg(struct sk_buff *skb,
 	return true;
 }
 
-/*
- *	Handle MSG_ERRQUEUE
- */
+ 
 int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
@@ -531,7 +509,7 @@ int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 
 	put_cmsg(msg, SOL_IPV6, IPV6_RECVERR, sizeof(errhdr), &errhdr);
 
-	/* Now we could try to dump offended packet options */
+	 
 
 	msg->msg_flags |= MSG_ERRQUEUE;
 	err = copied;
@@ -542,9 +520,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(ipv6_recv_error);
 
-/*
- *	Handle IPV6_RECVPATHMTU
- */
+ 
 int ipv6_recv_rxpmtu(struct sock *sk, struct msghdr *msg, int len,
 		     int *addr_len)
 {
@@ -641,7 +617,7 @@ void ip6_datagram_recv_specific_ctl(struct sock *sk, struct msghdr *msg,
 			put_cmsg(msg, SOL_IPV6, IPV6_FLOWINFO, sizeof(flowinfo), &flowinfo);
 	}
 
-	/* HbH is allowed only once */
+	 
 	if (np->rxopt.bits.hopopts && (opt->flags & IP6SKB_HOPBYHOP)) {
 		u8 *ptr = nh + sizeof(struct ipv6hdr);
 		put_cmsg(msg, SOL_IPV6, IPV6_HOPOPTS, (ptr[1]+1)<<3, ptr);
@@ -649,15 +625,7 @@ void ip6_datagram_recv_specific_ctl(struct sock *sk, struct msghdr *msg,
 
 	if (opt->lastopt &&
 	    (np->rxopt.bits.dstopts || np->rxopt.bits.srcrt)) {
-		/*
-		 * Silly enough, but we need to reparse in order to
-		 * report extension headers (except for HbH)
-		 * in order.
-		 *
-		 * Also note that IPV6_RECVRTHDRDSTOPTS is NOT
-		 * (and WILL NOT be) defined because
-		 * IPV6_RECVDSTOPTS is more generic. --yoshfuji
-		 */
+		 
 		unsigned int off = sizeof(struct ipv6hdr);
 		u8 nexthdr = ipv6_hdr(skb)->nexthdr;
 
@@ -692,7 +660,7 @@ void ip6_datagram_recv_specific_ctl(struct sock *sk, struct msghdr *msg,
 		}
 	}
 
-	/* socket options in old style */
+	 
 	if (np->rxopt.bits.rxoinfo) {
 		struct in6_pktinfo src_info;
 
@@ -727,10 +695,7 @@ void ip6_datagram_recv_specific_ctl(struct sock *sk, struct msghdr *msg,
 		ports = skb_header_pointer(skb, skb_transport_offset(skb),
 					   sizeof(_ports), &_ports);
 		if (ports) {
-			/* All current transport protocols have the port numbers in the
-			 * first four bytes of the transport header and this function is
-			 * written with this assumption in mind.
-			 */
+			 
 			sin6.sin6_family = AF_INET6;
 			sin6.sin6_addr = ipv6_hdr(skb)->daddr;
 			sin6.sin6_port = ports[1];
@@ -963,7 +928,7 @@ int ip6_datagram_send_ctl(struct net *net, struct sock *sk,
 				goto exit_f;
 			}
 
-			/* segments left must also match */
+			 
 			if ((rthdr->hdrlen >> 1) != rthdr->segments_left) {
 				err = -EINVAL;
 				goto exit_f;

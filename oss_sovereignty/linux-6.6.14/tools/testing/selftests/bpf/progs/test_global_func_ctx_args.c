@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -10,9 +10,7 @@ char _license[] SEC("license") = "GPL";
 
 static long stack[256];
 
-/*
- * KPROBE contexts
- */
+ 
 
 __weak int kprobe_typedef_ctx_subprog(bpf_user_pt_regs_t *ctx)
 {
@@ -40,7 +38,7 @@ int kprobe_resolved_ctx(void *ctx)
 	return kprobe_struct_ctx_subprog(ctx);
 }
 
-/* this is current hack to make this work on old kernels */
+ 
 struct bpf_user_pt_regs_t {};
 
 __weak int kprobe_workaround_ctx_subprog(struct bpf_user_pt_regs_t *ctx)
@@ -55,9 +53,7 @@ int kprobe_workaround_ctx(void *ctx)
 	return kprobe_workaround_ctx_subprog(ctx);
 }
 
-/*
- * RAW_TRACEPOINT contexts
- */
+ 
 
 __weak int raw_tp_ctx_subprog(struct bpf_raw_tracepoint_args *ctx)
 {
@@ -71,9 +67,7 @@ int raw_tp_ctx(void *ctx)
 	return raw_tp_ctx_subprog(ctx);
 }
 
-/*
- * RAW_TRACEPOINT_WRITABLE contexts
- */
+ 
 
 __weak int raw_tp_writable_ctx_subprog(struct bpf_raw_tracepoint_args *ctx)
 {
@@ -87,9 +81,7 @@ int raw_tp_writable_ctx(void *ctx)
 	return raw_tp_writable_ctx_subprog(ctx);
 }
 
-/*
- * PERF_EVENT contexts
- */
+ 
 
 __weak int perf_event_ctx_subprog(struct bpf_perf_event_data *ctx)
 {

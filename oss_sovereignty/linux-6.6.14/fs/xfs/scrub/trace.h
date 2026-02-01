@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- *
- * NOTE: none of these tracepoints shall be considered a stable kernel ABI
- * as they can change at any time.  See xfs_trace.h for documentation of
- * specific units found in tracepoint output.
- */
+
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xfs_scrub
 
@@ -20,12 +13,7 @@ struct xfile;
 struct xfarray;
 struct xfarray_sortinfo;
 
-/*
- * ftrace's __print_symbolic requires that all enum values be wrapped in the
- * TRACE_DEFINE_ENUM macro so that the enum value can be encoded in the ftrace
- * ring buffer.  Somehow this was only worth mentioning in the ftrace sample
- * code.
- */
+ 
 TRACE_DEFINE_ENUM(XFS_BTNUM_BNOi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_CNTi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_BMAPi);
@@ -1066,9 +1054,9 @@ TRACE_EVENT(xchk_rtsum_record_free,
 		  __entry->pos,
 		  __entry->v)
 );
-#endif /* CONFIG_XFS_RT */
+#endif  
 
-/* repair tracepoints */
+ 
 #if IS_ENABLED(CONFIG_XFS_ONLINE_REPAIR)
 
 DECLARE_EVENT_CLASS(xrep_extent_class,
@@ -1331,9 +1319,9 @@ TRACE_EVENT(xrep_ialloc_insert,
 		  __entry->freemask)
 )
 
-#endif /* IS_ENABLED(CONFIG_XFS_ONLINE_REPAIR) */
+#endif  
 
-#endif /* _TRACE_XFS_SCRUB_TRACE_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

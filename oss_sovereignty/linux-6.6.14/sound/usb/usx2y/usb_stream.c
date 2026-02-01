@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2007, 2008 Karsten Wiese <fzu@wemgehoertderstaat.de>
- */
+
+ 
 
 #include <linux/usb.h>
 #include <linux/gfp.h>
 
 #include "usb_stream.h"
 
-/*                             setup                                  */
+ 
 
 static unsigned int usb_stream_next_packet_size(struct usb_stream_kernel *sk)
 {
@@ -109,19 +107,13 @@ static int init_urbs(struct usb_stream_kernel *sk, unsigned int use_packsize,
 	return 0;
 }
 
-/*
- * convert a sampling rate into our full speed format (fs/1000 in Q16.16)
- * this will overflow at approx 524 kHz
- */
+ 
 static inline unsigned int get_usb_full_speed_rate(unsigned int rate)
 {
 	return ((rate << 13) + 62) / 125;
 }
 
-/*
- * convert a sampling rate into USB high speed format (fs/8000 in Q16.16)
- * this will overflow at approx 4 MHz
- */
+ 
 static inline unsigned int get_usb_high_speed_rate(unsigned int rate)
 {
 	return ((rate << 10) + 62) / 125;
@@ -173,11 +165,7 @@ struct usb_stream *usb_stream_new(struct usb_stream_kernel *sk,
 	max_packsize = use_packsize ?
 		use_packsize : usb_maxpacket(dev, in_pipe);
 
-	/*
-		t_period = period_frames / sample_rate
-		iso_packs = t_period / t_iso_frame
-			= (period_frames / sample_rate) * (1 / t_iso_frame)
-	*/
+	 
 
 	packets = period_frames * usb_frames / sample_rate + 1;
 
@@ -222,7 +210,7 @@ struct usb_stream *usb_stream_new(struct usb_stream_kernel *sk,
 		return NULL;
 	}
 
-	/* calculate the frequency in 16.16 format */
+	 
 	if (dev->speed == USB_SPEED_FULL)
 		sk->freqn = get_usb_full_speed_rate(sample_rate);
 	else
@@ -238,7 +226,7 @@ out:
 	return sk->s;
 }
 
-/*                             start                                  */
+ 
 
 static bool balance_check(struct usb_stream_kernel *sk, struct urb *urb)
 {
@@ -382,9 +370,7 @@ report_failure:
 }
 
 #ifdef DEBUG_LOOP_BACK
-/*
-  This loop_back() shows how to read/write the period data.
- */
+ 
 static void loop_back(struct usb_stream *s)
 {
 	char *i, *o;
@@ -604,7 +590,7 @@ static void stream_start(struct usb_stream_kernel *sk,
 		return;
 
 	if (s->state == usb_stream_sync1 && s->insize_done > 360000) {
-		/* just guesswork                            ^^^^^^ */
+		 
 		s->state = usb_stream_ready;
 		subs_set_complete(sk->inurb, i_capture_idle);
 		subs_set_complete(sk->outurb, i_playback_idle);
@@ -750,7 +736,7 @@ check_retry:
 	sk->completed_inurb = sk->inurb[USB_STREAM_NURBS - 1];
 	sk->completed_outurb = sk->outurb[USB_STREAM_NURBS - 1];
 
-/* wait, check */
+ 
 	{
 		int wait_ms = 3000;
 
@@ -765,7 +751,7 @@ check_retry:
 }
 
 
-/*                             stop                                   */
+ 
 
 void usb_stream_stop(struct usb_stream_kernel *sk)
 {

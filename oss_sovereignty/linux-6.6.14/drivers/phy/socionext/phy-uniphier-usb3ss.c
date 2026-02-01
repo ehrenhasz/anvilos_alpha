@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * phy-uniphier-usb3ss.c - SS-PHY driver for Socionext UniPhier USB3 controller
- * Copyright 2015-2018 Socionext Inc.
- * Author:
- *      Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- * Contributors:
- *      Motoya Tanigawa <tanigawa.motoya@socionext.com>
- *      Masami Hiramatsu <masami.hiramatsu@linaro.org>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -31,14 +23,14 @@
 
 #define PHY_F(regno, msb, lsb) { (regno), (msb), (lsb) }
 
-#define CDR_CPD_TRIM	PHY_F(7, 3, 0)	/* RxPLL charge pump current */
-#define CDR_CPF_TRIM	PHY_F(8, 3, 0)	/* RxPLL charge pump current 2 */
-#define TX_PLL_TRIM	PHY_F(9, 3, 0)	/* TxPLL charge pump current */
-#define BGAP_TRIM	PHY_F(11, 3, 0)	/* Bandgap voltage */
-#define CDR_TRIM	PHY_F(13, 6, 5)	/* Clock Data Recovery setting */
-#define VCO_CTRL	PHY_F(26, 7, 4)	/* VCO control */
-#define VCOPLL_CTRL	PHY_F(27, 2, 0)	/* TxPLL VCO tuning */
-#define VCOPLL_CM	PHY_F(28, 1, 0)	/* TxPLL voltage */
+#define CDR_CPD_TRIM	PHY_F(7, 3, 0)	 
+#define CDR_CPF_TRIM	PHY_F(8, 3, 0)	 
+#define TX_PLL_TRIM	PHY_F(9, 3, 0)	 
+#define BGAP_TRIM	PHY_F(11, 3, 0)	 
+#define CDR_TRIM	PHY_F(13, 6, 5)	 
+#define VCO_CTRL	PHY_F(26, 7, 4)	 
+#define VCOPLL_CTRL	PHY_F(27, 2, 0)	 
+#define VCOPLL_CM	PHY_F(28, 1, 0)	 
 
 #define MAX_PHY_PARAMS	7
 
@@ -69,7 +61,7 @@ struct uniphier_u3ssphy_soc_data {
 static void uniphier_u3ssphy_testio_write(struct uniphier_u3ssphy_priv *priv,
 					  u32 data)
 {
-	/* need to read TESTO twice after accessing TESTI */
+	 
 	writel(data, priv->base + SSPHY_TESTI);
 	readl(priv->base + SSPHY_TESTO);
 	readl(priv->base + SSPHY_TESTO);
@@ -82,13 +74,13 @@ static void uniphier_u3ssphy_set_param(struct uniphier_u3ssphy_priv *priv,
 	u8 field_mask = GENMASK(p->field.msb, p->field.lsb);
 	u8 data;
 
-	/* read previous data */
+	 
 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
 	uniphier_u3ssphy_testio_write(priv, val);
 	val = readl(priv->base + SSPHY_TESTO) & TESTO_DAT_MASK;
 
-	/* update value */
+	 
 	val &= ~field_mask;
 	data = field_mask & (p->value << p->field.lsb);
 	val  = FIELD_PREP(TESTI_DAT_MASK, data | val);
@@ -97,7 +89,7 @@ static void uniphier_u3ssphy_set_param(struct uniphier_u3ssphy_priv *priv,
 	uniphier_u3ssphy_testio_write(priv, val | TESTI_WR_EN);
 	uniphier_u3ssphy_testio_write(priv, val);
 
-	/* read current data as dummy */
+	 
 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
 	uniphier_u3ssphy_testio_write(priv, val);
@@ -334,7 +326,7 @@ static const struct of_device_id uniphier_u3ssphy_match[] = {
 		.compatible = "socionext,uniphier-nx1-usb3-ssphy",
 		.data = &uniphier_ld20_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_u3ssphy_match);
 

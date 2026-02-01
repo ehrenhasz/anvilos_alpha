@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * si1145.c - Support for Silabs SI1132 and SI1141/2/3/5/6/7 combined ambient
- * light, UV index and proximity sensors
- *
- * Copyright 2014-16 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
- * Copyright 2016 Crestez Dan Leonard <leonard.crestez@intel.com>
- *
- * SI1132 (7-bit I2C slave address 0x60)
- * SI1141/2/3 (7-bit I2C slave address 0x5a)
- * SI1145/6/6 (7-bit I2C slave address 0x60)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -58,13 +48,13 @@
 #define SI1145_UCOEF3_DEFAULT		0x01
 #define SI1145_UCOEF4_DEFAULT		0x00
 
-/* Helper to figure out PS_LED register / shift per channel */
+ 
 #define SI1145_PS_LED_REG(ch) \
 	(((ch) == 2) ? SI1145_REG_PS_LED3 : SI1145_REG_PS_LED21)
 #define SI1145_PS_LED_SHIFT(ch) \
 	(((ch) == 1) ? 4 : 0)
 
-/* Parameter offsets */
+ 
 #define SI1145_PARAM_CHLIST		0x01
 #define SI1145_PARAM_PSLED12_SELECT	0x02
 #define SI1145_PARAM_PSLED3_SELECT	0x03
@@ -88,7 +78,7 @@
 #define SI1145_PARAM_ALSIR_ADC_MISC	0x1f
 #define SI1145_PARAM_ADC_OFFSET		0x1a
 
-/* Channel enable masks for CHLIST parameter */
+ 
 #define SI1145_CHLIST_EN_PS1		BIT(0)
 #define SI1145_CHLIST_EN_PS2		BIT(1)
 #define SI1145_CHLIST_EN_PS3		BIT(2)
@@ -97,12 +87,12 @@
 #define SI1145_CHLIST_EN_AUX		BIT(6)
 #define SI1145_CHLIST_EN_UV		BIT(7)
 
-/* Proximity measurement mode for ADC_MISC parameter */
+ 
 #define SI1145_PS_ADC_MODE_NORMAL	BIT(2)
-/* Signal range mask for ADC_MISC parameter */
+ 
 #define SI1145_ADC_MISC_RANGE		BIT(5)
 
-/* Commands for REG_COMMAND */
+ 
 #define SI1145_CMD_NOP			0x00
 #define SI1145_CMD_RESET		0x01
 #define SI1145_CMD_PS_FORCE		0x05
@@ -120,22 +110,22 @@
 #define SI1145_RSP_INVALID_SETTING	0x80
 #define SI1145_RSP_COUNTER_MASK		0x0F
 
-/* Minimum sleep after each command to ensure it's received */
+ 
 #define SI1145_COMMAND_MINSLEEP_MS	5
-/* Return -ETIMEDOUT after this long */
+ 
 #define SI1145_COMMAND_TIMEOUT_MS	25
 
-/* Interrupt configuration masks for INT_CFG register */
-#define SI1145_INT_CFG_OE		BIT(0) /* enable interrupt */
-#define SI1145_INT_CFG_MODE		BIT(1) /* auto reset interrupt pin */
+ 
+#define SI1145_INT_CFG_OE		BIT(0)  
+#define SI1145_INT_CFG_MODE		BIT(1)  
 
-/* Interrupt enable masks for IRQ_ENABLE register */
+ 
 #define SI1145_MASK_ALL_IE		(BIT(4) | BIT(3) | BIT(2) | BIT(0))
 
 #define SI1145_MUX_TEMP			0x65
 #define SI1145_MUX_VDD			0x75
 
-/* Proximity LED current; see Table 2 in datasheet */
+ 
 #define SI1145_LED_CURRENT_45mA		0x04
 
 enum {
@@ -157,19 +147,7 @@ struct si1145_part_info {
 	bool uncompressed_meas_rate;
 };
 
-/**
- * struct si1145_data - si1145 chip state data
- * @client:	I2C client
- * @lock:	mutex to protect shared state.
- * @cmdlock:	Low-level mutex to protect command execution only
- * @rsp_seq:	Next expected response number or -1 if counter reset required
- * @scan_mask:	Saved scan mask to avoid duplicate set_chlist
- * @autonomous: If automatic measurements are active (for buffer support)
- * @part_info:	Part information
- * @trig:	Pointer to iio trigger
- * @meas_rate:	Value of MEAS_RATE register. Only set in HW in auto mode
- * @buffer:	Used to pack data read from sensor.
- */
+ 
 struct si1145_data {
 	struct i2c_client *client;
 	struct mutex lock;
@@ -180,23 +158,11 @@ struct si1145_data {
 	bool autonomous;
 	struct iio_trigger *trig;
 	int meas_rate;
-	/*
-	 * Ensure timestamp will be naturally aligned if present.
-	 * Maximum buffer size (may be only partly used if not all
-	 * channels are enabled):
-	 *   6*2 bytes channels data + 4 bytes alignment +
-	 *   8 bytes timestamp
-	 */
+	 
 	u8 buffer[24] __aligned(8);
 };
 
-/*
- * __si1145_command_reset() - Send CMD_NOP and wait for response 0
- *
- * Does not modify data->rsp_seq
- *
- * Return: 0 on success and -errno on error.
- */
+ 
 static int __si1145_command_reset(struct si1145_data *data)
 {
 	struct device *dev = &data->client->dev;
@@ -223,15 +189,7 @@ static int __si1145_command_reset(struct si1145_data *data)
 	}
 }
 
-/*
- * si1145_command() - Execute a command and poll the response register
- *
- * All conversion overflows are reported as -EOVERFLOW
- * INVALID_SETTING is reported as -EINVAL
- * Timeouts are reported as -ETIMEDOUT
- *
- * Return: 0 on success or -errno on failure
- */
+ 
 static int si1145_command(struct si1145_data *data, u8 cmd)
 {
 	struct device *dev = &data->client->dev;
@@ -255,7 +213,7 @@ static int si1145_command(struct si1145_data *data, u8 cmd)
 		dev_warn(dev, "failed to write command, ret=%d\n", ret);
 		goto out;
 	}
-	/* Sleep a little to ensure the command is received */
+	 
 	msleep(SI1145_COMMAND_MINSLEEP_MS);
 
 	stop_jiffies = jiffies + SI1145_COMMAND_TIMEOUT_MS * HZ / 1000;
@@ -294,14 +252,14 @@ static int si1145_command(struct si1145_data *data, u8 cmd)
 					 cmd);
 				ret = -EINVAL;
 			} else {
-				/* All overflows are treated identically */
+				 
 				dev_dbg(dev, "overflow, ret=%d, cmd=0x%02x\n",
 					ret, cmd);
 				ret = -EOVERFLOW;
 			}
 		}
 
-		/* Force a counter reset next time */
+		 
 		data->rsp_seq = -1;
 		break;
 	}
@@ -330,7 +288,7 @@ static int si1145_param_set(struct si1145_data *data, u8 param, u8 value)
 	return si1145_param_update(data, SI1145_CMD_PARAM_SET, param, value);
 }
 
-/* Set param. Returns negative errno or current value */
+ 
 static int si1145_param_query(struct si1145_data *data, u8 param)
 {
 	int ret;
@@ -342,7 +300,7 @@ static int si1145_param_query(struct si1145_data *data, u8 param)
 	return i2c_smbus_read_byte_data(data->client, SI1145_REG_PARAM_RD);
 }
 
-/* Expand 8 bit compressed value to 16 bit, see Silabs AN498 */
+ 
 static u16 si1145_uncompress(u8 x)
 {
 	u16 result = 0;
@@ -359,7 +317,7 @@ static u16 si1145_uncompress(u8 x)
 	return result >> (4 - exponent);
 }
 
-/* Compress 16 bit value to 8 bit, see Silabs AN498 */
+ 
 static u8 si1145_compress(u16 x)
 {
 	u32 exponent = 0;
@@ -395,7 +353,7 @@ static u8 si1145_compress(u16 x)
 	return (exponent << 4) | ((significand >> 1) & 0xF);
 }
 
-/* Write meas_rate in hardware */
+ 
 static int si1145_set_meas_rate(struct si1145_data *data, int interval)
 {
 	if (data->part_info->uncompressed_meas_rate)
@@ -416,7 +374,7 @@ static int si1145_read_samp_freq(struct si1145_data *data, int *val, int *val2)
 	return IIO_VAL_FRACTIONAL;
 }
 
-/* Set the samp freq in driver private data */
+ 
 static int si1145_store_samp_freq(struct si1145_data *data, int val)
 {
 	int ret = 0;
@@ -510,7 +468,7 @@ static int si1145_set_chlist(struct iio_dev *indio_dev, unsigned long scan_mask)
 	int ret;
 	int i;
 
-	/* channel list already set, no need to reprogram */
+	 
 	if (data->scan_mask == scan_mask)
 		return 0;
 
@@ -578,10 +536,7 @@ static int si1145_measure(struct iio_dev *indio_dev,
 	return i2c_smbus_read_word_data(data->client, chan->address);
 }
 
-/*
- * Conversion between iio scale and ADC_GAIN values
- * These could be further adjusted but proximity/intensity are dimensionless
- */
+ 
 static const int si1145_proximity_scale_available[] = {
 	128, 64, 32, 16, 8, 4};
 static const int si1145_intensity_scale_available[] = {
@@ -692,18 +647,11 @@ static int si1145_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_OFFSET:
 		switch (chan->type) {
 		case IIO_TEMP:
-			/*
-			 * -ADC offset - ADC counts @ 25°C -
-			 *   35 * ADC counts / °C
-			 */
+			 
 			*val = -256 - 11136 + 25 * 35;
 			return IIO_VAL_INT;
 		default:
-			/*
-			 * All ADC measurements have are by default offset
-			 * by -256
-			 * See AN498 5.6.3
-			 */
+			 
 			ret = si1145_param_query(data, SI1145_PARAM_ADC_OFFSET);
 			if (ret < 0)
 				return ret;
@@ -760,7 +708,7 @@ static int si1145_write_raw(struct iio_dev *indio_dev,
 			iio_device_release_direct_mode(indio_dev);
 			return ret;
 		}
-		/* Set recovery period to one's complement of gain */
+		 
 		ret = si1145_param_set(data, reg2, (~val & 0x07) << 4);
 		iio_device_release_direct_mode(indio_dev);
 		return ret;
@@ -1020,23 +968,23 @@ static int si1145_initialize(struct si1145_data *data)
 		return ret;
 	msleep(SI1145_COMMAND_TIMEOUT_MS);
 
-	/* Hardware key, magic value */
+	 
 	ret = i2c_smbus_write_byte_data(client, SI1145_REG_HW_KEY, 0x17);
 	if (ret < 0)
 		return ret;
 	msleep(SI1145_COMMAND_TIMEOUT_MS);
 
-	/* Turn off autonomous mode */
+	 
 	ret = si1145_set_meas_rate(data, 0);
 	if (ret < 0)
 		return ret;
 
-	/* Initialize sampling freq to 10 Hz */
+	 
 	ret = si1145_store_samp_freq(data, 10);
 	if (ret < 0)
 		return ret;
 
-	/* Set LED currents to 45 mA; have 4 bits, see Table 2 in datasheet */
+	 
 	switch (data->part_info->num_leds) {
 	case 3:
 		ret = i2c_smbus_write_byte_data(client,
@@ -1063,7 +1011,7 @@ static int si1145_initialize(struct si1145_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Set normal proximity measurement mode */
+	 
 	ret = si1145_param_set(data, SI1145_PARAM_PS_ADC_MISC,
 			       SI1145_PS_ADC_MODE_NORMAL);
 	if (ret < 0)
@@ -1073,12 +1021,12 @@ static int si1145_initialize(struct si1145_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* ADC_COUNTER should be one complement of ADC_GAIN */
+	 
 	ret = si1145_param_set(data, SI1145_PARAM_PS_ADC_COUNTER, 0x06 << 4);
 	if (ret < 0)
 		return ret;
 
-	/* Set ALS visible measurement mode */
+	 
 	ret = si1145_param_set(data, SI1145_PARAM_ALSVIS_ADC_MISC,
 			       SI1145_ADC_MISC_RANGE);
 	if (ret < 0)
@@ -1093,7 +1041,7 @@ static int si1145_initialize(struct si1145_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Set ALS IR measurement mode */
+	 
 	ret = si1145_param_set(data, SI1145_PARAM_ALSIR_ADC_MISC,
 			       SI1145_ADC_MISC_RANGE);
 	if (ret < 0)
@@ -1108,10 +1056,7 @@ static int si1145_initialize(struct si1145_data *data)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Initialize UCOEF to default values in datasheet
-	 * These registers are normally zero on reset
-	 */
+	 
 	if (data->part_info == &si1145_part_info[SI1132] ||
 		data->part_info == &si1145_part_info[SI1145] ||
 		data->part_info == &si1145_part_info[SI1146] ||
@@ -1138,11 +1083,7 @@ static int si1145_initialize(struct si1145_data *data)
 	return 0;
 }
 
-/*
- * Program the channels we want to measure with CMD_PSALS_AUTO. No need for
- * _postdisable as we stop with CMD_PSALS_PAUSE; single measurement (direct)
- * mode reprograms the channels list anyway...
- */
+ 
 static int si1145_buffer_preenable(struct iio_dev *indio_dev)
 {
 	struct si1145_data *data = iio_priv(indio_dev);
@@ -1162,7 +1103,7 @@ static bool si1145_validate_scan_mask(struct iio_dev *indio_dev,
 	unsigned int count = 0;
 	int i;
 
-	/* Check that at most one AUX channel is enabled */
+	 
 	for_each_set_bit(i, scan_mask, data->part_info->num_channels) {
 		if (indio_dev->channels[i].address == SI1145_REG_AUX_DATA)
 			count++;
@@ -1176,12 +1117,7 @@ static const struct iio_buffer_setup_ops si1145_buffer_setup_ops = {
 	.validate_scan_mask = si1145_validate_scan_mask,
 };
 
-/*
- * si1145_trigger_set_state() - Set trigger state
- *
- * When not using triggers interrupts are disabled and measurement rate is
- * set to zero in order to minimize power consumption.
- */
+ 
 static int si1145_trigger_set_state(struct iio_trigger *trig, bool state)
 {
 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
@@ -1208,7 +1144,7 @@ static int si1145_trigger_set_state(struct iio_trigger *trig, bool state)
 			goto disable;
 	} else {
 disable:
-		/* Disable as much as possible skipping errors */
+		 
 		ret = si1145_command(data, SI1145_CMD_PSALS_PAUSE);
 		if (ret < 0 && !err)
 			err = ret;

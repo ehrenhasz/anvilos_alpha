@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2020 NXP
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -12,9 +10,9 @@
 #include <linux/of.h>
 #include <linux/io.h>
 
-#define URTX0 0x40 /* Transmitter Register */
-#define UTS_TXFULL (1<<4) /* TxFIFO full */
-#define IMX21_UTS 0xb4 /* UART Test Register on all other i.mx*/
+#define URTX0 0x40  
+#define UTS_TXFULL (1<<4)  
+#define IMX21_UTS 0xb4  
 
 static void imx_uart_console_early_putchar(struct uart_port *port, unsigned char ch)
 {

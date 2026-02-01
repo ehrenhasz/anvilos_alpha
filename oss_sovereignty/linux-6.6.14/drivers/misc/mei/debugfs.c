@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012-2022, Intel Corporation. All rights reserved
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -29,7 +26,7 @@ static int mei_dbgfs_meclients_show(struct seq_file *m, void *unused)
 
 	seq_puts(m, "  |id|fix|         UUID                       |con|msg len|sb|refc|vt|\n");
 
-	/*  if the driver is not enabled the list won't be consistent */
+	 
 	if (dev->dev_state != MEI_DEV_ENABLED)
 		goto out;
 
@@ -68,7 +65,7 @@ static int mei_dbgfs_active_show(struct seq_file *m, void *unused)
 
 	seq_puts(m, "   |me|host|state|rd|wr|wrq\n");
 
-	/*  if the driver is not enabled the list won't be consistent */
+	 
 	if (dev->dev_state != MEI_DEV_ENABLED)
 		goto out;
 
@@ -157,11 +154,7 @@ static const struct file_operations mei_dbgfs_allow_fa_fops = {
 	.llseek = generic_file_llseek,
 };
 
-/**
- * mei_dbgfs_deregister - Remove the debugfs files and directories
- *
- * @dev: the mei device structure
- */
+ 
 void mei_dbgfs_deregister(struct mei_device *dev)
 {
 	if (!dev->dbgfs_dir)
@@ -170,12 +163,7 @@ void mei_dbgfs_deregister(struct mei_device *dev)
 	dev->dbgfs_dir = NULL;
 }
 
-/**
- * mei_dbgfs_register - Add the debugfs files
- *
- * @dev: the mei device structure
- * @name: the mei device name
- */
+ 
 void mei_dbgfs_register(struct mei_device *dev, const char *name)
 {
 	struct dentry *dir;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -282,7 +280,7 @@ static int clk_sam9x5_peripheral_determine_rate(struct clk_hw *hw,
 	if (periph->id < PERIPHERAL_ID_MIN || !periph->range.max)
 		return parent_rate;
 
-	/* Fist step: check the available dividers. */
+	 
 	for (shift = 0; shift <= PERIPHERAL_MAX_SHIFT; shift++) {
 		tmp_rate = parent_rate >> shift;
 
@@ -299,7 +297,7 @@ static int clk_sam9x5_peripheral_determine_rate(struct clk_hw *hw,
 	if (periph->chg_pid < 0)
 		goto end;
 
-	/* Step two: try to request rate from parent. */
+	 
 	parent = clk_hw_get_parent_by_index(hw, periph->chg_pid);
 	if (!parent)
 		goto end;

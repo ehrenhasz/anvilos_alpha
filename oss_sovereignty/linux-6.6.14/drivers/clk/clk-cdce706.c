@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI CDCE706 programmable 3-PLL clock synthesizer driver
- *
- * Copyright (c) 2014 Cadence Design Systems Inc.
- *
- * Reference: https://www.ti.com/lit/ds/symlink/cdce706.pdf
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>

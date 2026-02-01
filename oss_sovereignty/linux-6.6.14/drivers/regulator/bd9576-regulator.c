@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ROHM Semiconductors
-// ROHM BD9576MUF/BD9573MUF regulator driver
+
+
+
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -138,7 +138,7 @@ static int bd957x_vout34_list_voltage(struct regulator_dev *rdev,
 	int multiplier = selector & desc->vsel_mask & 0x7f;
 	int tune;
 
-	/* VOUT3 and 4 has 10mV step */
+	 
 	tune = multiplier * 10000;
 
 	if (!(selector & 0x80))
@@ -245,7 +245,7 @@ static bool check_ocp_flag_mismatch(struct regulator_dev *rdev, int severity,
 	    r->uvd_notif != REGULATOR_EVENT_OVER_CURRENT_WARN)) {
 		dev_warn(rdev_get_dev(rdev),
 			 "Can't support both OCP WARN and ERR\n");
-		/* Do not overwrite ERR config with WARN */
+		 
 		if (severity == REGULATOR_SEVERITY_WARN)
 			return true;
 
@@ -336,7 +336,7 @@ static int bd9576_set_ocp(struct regulator_dev *rdev, int lim_uA, int severity,
 		} else {
 			range = voutS1_ocp_ranges_internal;
 			num_ranges = ARRAY_SIZE(voutS1_ocp_ranges_internal);
-			/* Internal values are already micro-amperes */
+			 
 			rfet = 1000;
 		}
 	} else {
@@ -350,16 +350,13 @@ static int bd9576_set_ocp(struct regulator_dev *rdev, int lim_uA, int severity,
 		} else {
 			range = voutS1_ocw_ranges_internal;
 			num_ranges = ARRAY_SIZE(voutS1_ocw_ranges_internal);
-			/* Internal values are already micro-amperes */
+			 
 			rfet = 1000;
 		}
 
-		/* We abuse uvd fields for OCW on VoutS1 */
+		 
 		if (r->uvd_notif) {
-			/*
-			 * If both warning and error are requested, prioritize
-			 * ERROR configuration
-			 */
+			 
 			if (check_ocp_flag_mismatch(rdev, severity, r))
 				return 0;
 		} else {
@@ -369,12 +366,7 @@ static int bd9576_set_ocp(struct regulator_dev *rdev, int lim_uA, int severity,
 		}
 	}
 
-	/*
-	 * limits are given in uA, rfet is mOhm
-	 * Divide lim_uA by 1000 to get Vfet in uV.
-	 * (We expect both Rfet and limit uA to be magnitude of hundreds of
-	 * milli Amperes & milli Ohms => we should still have decent accuracy)
-	 */
+	 
 	Vfet = lim_uA/1000 * rfet;
 
 	return bd9576_set_limit(range, num_ranges, d->regmap,
@@ -394,10 +386,7 @@ static int bd9576_set_uvp(struct regulator_dev *rdev, int lim_uV, int severity,
 		return 0;
 	}
 
-	/*
-	 * BD9576 has enable control as a special value in limit reg. Can't
-	 * set limit but keep feature disabled or enable W/O given limit.
-	 */
+	 
 	if ((lim_uV && !enable) || (!lim_uV && enable))
 		return -EINVAL;
 
@@ -406,10 +395,7 @@ static int bd9576_set_uvp(struct regulator_dev *rdev, int lim_uV, int severity,
 
 	mask = r->xvd_mask;
 	reg = r->uvd_reg;
-	/*
-	 * Check that there is no mismatch for what the detection IRQs are to
-	 * be used.
-	 */
+	 
 	if (r->uvd_notif) {
 		if (check_uvd_flag_mismatch(rdev, severity, r))
 			return 0;
@@ -434,10 +420,7 @@ static int bd9576_set_ovp(struct regulator_dev *rdev, int lim_uV, int severity,
 		return 0;
 	}
 
-	/*
-	 * BD9576 has enable control as a special value in limit reg. Can't
-	 * set limit but keep feature disabled or enable W/O given limit.
-	 */
+	 
 	if ((lim_uV && !enable) || (!lim_uV && enable))
 		return -EINVAL;
 
@@ -446,10 +429,7 @@ static int bd9576_set_ovp(struct regulator_dev *rdev, int lim_uV, int severity,
 
 	mask = r->xvd_mask;
 	reg = r->ovd_reg;
-	/*
-	 * Check that there is no mismatch for what the detection IRQs are to
-	 * be used.
-	 */
+	 
 	if (r->ovd_notif) {
 		if (check_ovd_flag_mismatch(rdev, severity, r))
 			return 0;
@@ -469,14 +449,11 @@ static int bd9576_set_tw(struct regulator_dev *rdev, int lim, int severity,
 	struct bd957x_regulator_data *r;
 	int i;
 
-	/*
-	 * BD9576MUF has fixed temperature limits
-	 * The detection can only be enabled/disabled
-	 */
+	 
 	if (lim)
 		return -EINVAL;
 
-	/* Protection can't be disabled */
+	 
 	if (severity == REGULATOR_SEVERITY_PROT) {
 		if (!enable)
 			return -EINVAL;
@@ -487,10 +464,7 @@ static int bd9576_set_tw(struct regulator_dev *rdev, int lim, int severity,
 	r = container_of(rdev->desc, struct bd957x_regulator_data, desc);
 	d = rdev_get_drvdata(rdev);
 
-	/*
-	 * Check that there is no mismatch for what the detection IRQs are to
-	 * be used.
-	 */
+	 
 	if (r->temp_notif)
 		if (check_temp_flag_mismatch(rdev, severity, r))
 			return 0;
@@ -501,10 +475,7 @@ static int bd9576_set_tw(struct regulator_dev *rdev, int lim, int severity,
 		return regmap_update_bits(d->regmap, BD957X_REG_INT_THERM_MASK,
 					 BD9576_THERM_IRQ_MASK_TW, 0);
 
-	/*
-	 * If any of the regulators is interested in thermal warning we keep IRQ
-	 * enabled.
-	 */
+	 
 	for (i = 0; i < BD9576_NUM_REGULATORS; i++)
 		if (d->regulator_data[i].temp_notif)
 			return 0;
@@ -743,19 +714,12 @@ static int bd9576_renable(struct regulator_irq_data *rid, int reg, int mask)
 		return REGULATOR_FAILED_RETRY;
 
 	if (rid->opaque && rid->opaque == (val & mask)) {
-		/*
-		 * It seems we stil have same status. Ack and return
-		 * information that we are still out of limits and core
-		 * should not enable IRQ
-		 */
+		 
 		regmap_write(d->regmap, reg, mask & val);
 		return REGULATOR_ERROR_ON;
 	}
 	rid->opaque = 0;
-	/*
-	 * Status was changed. Either prolem was solved or we have new issues.
-	 * Let's re-enable IRQs and be prepared to report problems again
-	 */
+	 
 	return REGULATOR_ERROR_CLEARED;
 }
 
@@ -789,17 +753,11 @@ static int bd9576_uvd_handler(int irq, struct regulator_irq_data *rid,
 
 	rid->opaque = val & UVD_IRQ_VALID_MASK;
 
-	/*
-	 * Go through the set status bits and report either error or warning
-	 * to the notifier depending on what was flagged in DT
-	 */
+	 
 	*dev_mask = val & BD9576_xVD_IRQ_MASK_VOUT1TO4;
-	/* There is 1 bit gap in register after Vout1 .. Vout4 statuses */
+	 
 	*dev_mask |= ((val & BD9576_xVD_IRQ_MASK_VOUTL1) >> 1);
-	/*
-	 * We (ab)use the uvd for OCW notification. DT parsing should
-	 * have added correct OCW flag to uvd_notif and uvd_err for S1
-	 */
+	 
 	*dev_mask |= ((val & BD9576_UVD_IRQ_MASK_VOUTS1_OCW) >> 1);
 
 	for_each_set_bit(i, dev_mask, 6) {
@@ -836,7 +794,7 @@ static int bd9576_ovd_handler(int irq, struct regulator_irq_data *rid,
 		return 0;
 
 	*dev_mask = val & BD9576_xVD_IRQ_MASK_VOUT1TO4;
-	/* There is 1 bit gap in register after Vout1 .. Vout4 statuses */
+	 
 	*dev_mask |= ((val & BD9576_xVD_IRQ_MASK_VOUTL1) >> 1);
 
 	for_each_set_bit(i, dev_mask, 5) {
@@ -850,7 +808,7 @@ static int bd9576_ovd_handler(int irq, struct regulator_irq_data *rid,
 		stat->errors	= rdata->ovd_err;
 	}
 
-	/* Clear the sub-IRQ status */
+	 
 	regmap_write(d->regmap, BD957X_REG_INT_OVD_STAT,
 		     OVD_IRQ_VALID_MASK & val);
 
@@ -887,7 +845,7 @@ static int bd9576_thermal_handler(int irq, struct regulator_irq_data *rid,
 		stat->errors	= rdata->temp_err;
 	}
 
-	/* Clear the sub-IRQ status */
+	 
 	regmap_write(d->regmap, BD957X_REG_INT_THERM_STAT,
 		     BD9576_THERM_IRQ_MASK_TW);
 
@@ -902,9 +860,9 @@ static int bd957x_probe(struct platform_device *pdev)
 	struct regmap *regmap;
 	struct bd957x_data *ic_data;
 	struct regulator_config config = { 0 };
-	/* All regulators are related to UVD and thermal IRQs... */
+	 
 	struct regulator_dev *rdevs[BD9576_NUM_REGULATORS];
-	/* ...But VoutS1 is not flagged by OVD IRQ */
+	 
 	struct regulator_dev *ovd_devs[BD9576_NUM_OVD_REGULATORS];
 	static const struct regulator_irq_desc bd9576_notif_uvd = {
 		.name = "bd9576-uvd",
@@ -947,29 +905,15 @@ static int bd957x_probe(struct platform_device *pdev)
 
 		dev_dbg(&pdev->dev, "GPIO controlled mode\n");
 
-		/* VOUT1 enable state judged by VOUT1_EN pin */
-		/* See if we have GPIO defined */
+		 
+		 
 		en = devm_fwnode_gpiod_get(&pdev->dev,
 					   dev_fwnode(pdev->dev.parent),
 					   "rohm,vout1-en", GPIOD_OUT_LOW,
 					   "vout1-en");
 
-		/* VOUT1_OPS gpio ctrl */
-		/*
-		 * Regulator core prioritizes the ena_gpio over
-		 * enable/disable/is_enabled callbacks so no need to clear them
-		 * even if GPIO is used. So, we can still use same ops.
-		 *
-		 * In theory it is possible someone wants to set vout1-en LOW
-		 * during OTP loading and set VOUT1 to be controlled by GPIO -
-		 * but control the GPIO from some where else than this driver.
-		 * For that to work we should unset the is_enabled callback
-		 * here.
-		 *
-		 * I believe such case where rohm,vout1-en-low is set and
-		 * vout1-en-gpios is not is likely to be a misconfiguration.
-		 * So let's just err out for now.
-		 */
+		 
+		 
 		if (!IS_ERR(en))
 			config.ena_gpiod = en;
 		else
@@ -977,13 +921,7 @@ static int bd957x_probe(struct platform_device *pdev)
 					"Failed to get VOUT1 control GPIO\n");
 	}
 
-	/*
-	 * If more than one PMIC needs to be controlled by same processor then
-	 * allocate the regulator data array here and use bd9576_regulators as
-	 * template. At the moment I see no such use-case so I spare some
-	 * bytes and use bd9576_regulators directly for non-constant configs
-	 * like DDR voltage selection.
-	 */
+	 
 	platform_set_drvdata(pdev, ic_data);
 	ddr_sel = device_property_read_bool(pdev->dev.parent,
 					    "rohm,ddr-sel-low");
@@ -1039,10 +977,7 @@ static int bd957x_probe(struct platform_device *pdev)
 			return dev_err_probe(&pdev->dev, PTR_ERR(r->rdev),
 					"failed to register %s regulator\n",
 					desc->name);
-		/*
-		 * Clear the VOUT1 GPIO setting - rest of the regulators do not
-		 * support GPIO control
-		 */
+		 
 		config.ena_gpiod = NULL;
 
 		if (!may_have_irqs)
@@ -1054,15 +989,7 @@ static int bd957x_probe(struct platform_device *pdev)
 	}
 	if (may_have_irqs) {
 		void *ret;
-		/*
-		 * We can add both the possible error and warning flags here
-		 * because the core uses these only for status clearing and
-		 * if we use warnings - errors are always clear and the other
-		 * way around. We can also add CURRENT flag for all regulators
-		 * because it is never set if it is not supported. Same applies
-		 * to setting UVD for VoutS1 - it is not accidentally cleared
-		 * as it is never set.
-		 */
+		 
 		int uvd_errs = REGULATOR_ERROR_UNDER_VOLTAGE |
 			       REGULATOR_ERROR_UNDER_VOLTAGE_WARN |
 			       REGULATOR_ERROR_OVER_CURRENT |
@@ -1075,7 +1002,7 @@ static int bd957x_probe(struct platform_device *pdev)
 
 		irq = platform_get_irq_byname(pdev, "bd9576-uvd");
 
-		/* Register notifiers - can fail if IRQ is not given */
+		 
 		ret = devm_regulator_irq_helper(&pdev->dev, &bd9576_notif_uvd,
 						irq, 0, uvd_errs, NULL,
 						&rdevs[0],

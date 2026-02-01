@@ -1,20 +1,4 @@
-/* Test argv iterator
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering.  */
+ 
 
 #include <config.h>
 
@@ -68,7 +52,7 @@ main (void)
           size_t n_found = 0;
           if (use_stream)
             {
-              /* Generate an identical list to be read via FP.  */
+               
               ASSERT ((fp = write_nul_delimited_argv (av[i])) != NULL);
               ai = argv_iter_init_stream (fp);
             }
@@ -90,8 +74,7 @@ main (void)
                 ++n_found;
               if (ai_err == AI_ERR_EOF)
                 break;
-              /* In stream mode, the strings are equal, but
-                 in argv mode the actual pointers are equal.  */
+               
               ASSERT (use_stream
                       ? STREQ (s, av[i][n_found - 1])
                       : s == av[i][n_found - 1]);

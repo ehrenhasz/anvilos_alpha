@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2015 Toradex AG
- *
- * Stefan Agner <stefan@agner.ch>
- *
- * Freescale TCON device driver
- */
+ 
+ 
 
 #ifndef __FSL_TCON_H__
 #define __FSL_TCON_H__
@@ -26,4 +20,4 @@ void fsl_tcon_free(struct fsl_tcon *tcon);
 void fsl_tcon_bypass_disable(struct fsl_tcon *tcon);
 void fsl_tcon_bypass_enable(struct fsl_tcon *tcon);
 
-#endif /* __FSL_TCON_H__ */
+#endif  

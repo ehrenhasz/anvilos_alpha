@@ -1,31 +1,6 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/*
- * Pre-requisites: headers required by header of this unit
- */
+ 
 
 #include "dm_services.h"
 #include "include/gpio_interface.h"
@@ -33,22 +8,15 @@
 #include "hw_translate.h"
 #include "hw_factory.h"
 
-/*
- * Header of this unit
- */
+ 
 
 #include "gpio_service.h"
 
-/*
- * Post-requisites: headers required by this unit
- */
+ 
 
 #include "hw_gpio.h"
 
-/*
- * @brief
- * Public API.
- */
+ 
 
 struct gpio_service *dal_gpio_service_create(
 	enum dce_version dce_version,
@@ -77,7 +45,7 @@ struct gpio_service *dal_gpio_service_create(
 		goto failure_1;
 	}
 
-	/* allocate and initialize busyness storage */
+	 
 	{
 		index_of_id = 0;
 		service->ctx = ctx;
@@ -198,7 +166,7 @@ void dal_gpio_service_destroy(
 		return;
 	}
 
-	/* free business storage */
+	 
 	{
 		uint32_t index_of_id = 0;
 
@@ -229,10 +197,7 @@ enum gpio_result dal_mux_setup_config(
 	return dal_gpio_set_config(mux, &config_data);
 }
 
-/*
- * @brief
- * Private API.
- */
+ 
 
 static bool is_pin_busy(
 	const struct gpio_service *service,
@@ -325,7 +290,7 @@ enum gpio_result dal_gpio_service_open(
 		service->factory.funcs->define_hpd_registers(*pin, en);
 	break;
 
-	//TODO: gsl and sync support? create_sync and create_gsl are NULL
+	
 	case GPIO_ID_SYNC:
 	case GPIO_ID_GSL:
 	break;
@@ -417,10 +382,7 @@ enum gpio_result dal_irq_setup_hpd_filter(
 	return dal_gpio_set_config(irq, &config_data);
 }
 
-/*
- * @brief
- * Creation and destruction
- */
+ 
 
 struct gpio *dal_gpio_create_irq(
 	struct gpio_service *service,
@@ -555,13 +517,10 @@ enum gpio_result dal_ddc_open(
 		goto failure;
 	}
 
-	/* DDC clock and data pins should belong
-	 * to the same DDC block id,
-	 * we use the data pin to set the pad mode. */
+	 
 
 	if (mode == GPIO_MODE_INPUT)
-		/* this is from detect_sink_type,
-		 * we need extra delay there */
+		 
 		config_data.type = GPIO_CONFIG_TYPE_I2C_AUX_DUAL_MODE;
 	else
 		config_data.type = GPIO_CONFIG_TYPE_DDC;
@@ -600,10 +559,7 @@ enum gpio_result dal_ddc_change_mode(
 
 	result = dal_gpio_change_mode(ddc->pin_data, mode);
 
-	/* [anaumov] DAL2 code returns GPIO_RESULT_NON_SPECIFIC_ERROR
-	 * in case of failures;
-	 * set_mode() is so that, in case of failure,
-	 * we must explicitly set original mode */
+	 
 
 	if (result != GPIO_RESULT_OK)
 		goto failure;

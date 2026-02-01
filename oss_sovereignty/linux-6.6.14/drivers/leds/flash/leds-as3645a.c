@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/leds/leds-as3645a.c - AS3645A and LM3555 flash controllers driver
- *
- * Copyright (C) 2008-2011 Nokia Corporation
- * Copyright (c) 2011, 2017 Intel Corporation.
- *
- * Based on drivers/media/i2c/as3645a.c.
- *
- * Contact: Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -25,33 +16,31 @@
 #define AS_TIMER_US_TO_CODE(t)			(((t) / 1000 - 100) / 50)
 #define AS_TIMER_CODE_TO_US(c)			((50 * (c) + 100) * 1000)
 
-/* Register definitions */
+ 
 
-/* Read-only Design info register: Reset state: xxxx 0001 */
+ 
 #define AS_DESIGN_INFO_REG			0x00
 #define AS_DESIGN_INFO_FACTORY(x)		(((x) >> 4))
 #define AS_DESIGN_INFO_MODEL(x)			((x) & 0x0f)
 
-/* Read-only Version control register: Reset state: 0000 0000
- * for first engineering samples
- */
+ 
 #define AS_VERSION_CONTROL_REG			0x01
 #define AS_VERSION_CONTROL_RFU(x)		(((x) >> 4))
 #define AS_VERSION_CONTROL_VERSION(x)		((x) & 0x0f)
 
-/* Read / Write	(Indicator and timer register): Reset state: 0000 1111 */
+ 
 #define AS_INDICATOR_AND_TIMER_REG		0x02
 #define AS_INDICATOR_AND_TIMER_TIMEOUT_SHIFT	0
 #define AS_INDICATOR_AND_TIMER_VREF_SHIFT	4
 #define AS_INDICATOR_AND_TIMER_INDICATOR_SHIFT	6
 
-/* Read / Write	(Current set register): Reset state: 0110 1001 */
+ 
 #define AS_CURRENT_SET_REG			0x03
 #define AS_CURRENT_ASSIST_LIGHT_SHIFT		0
 #define AS_CURRENT_LED_DET_ON			(1 << 3)
 #define AS_CURRENT_FLASH_CURRENT_SHIFT		4
 
-/* Read / Write	(Control register): Reset state: 1011 0100 */
+ 
 #define AS_CONTROL_REG				0x04
 #define AS_CONTROL_MODE_SETTING_SHIFT		0
 #define AS_CONTROL_STROBE_ON			(1 << 2)
@@ -61,7 +50,7 @@
 #define AS_CONTROL_STROBE_TYPE_LEVEL		(1 << 5)
 #define AS_CONTROL_COIL_PEAK_SHIFT		6
 
-/* Read only (D3 is read / write) (Fault and info): Reset state: 0000 x000 */
+ 
 #define AS_FAULT_INFO_REG			0x05
 #define AS_FAULT_INFO_INDUCTOR_PEAK_LIMIT	(1 << 1)
 #define AS_FAULT_INFO_INDICATOR_LED		(1 << 2)
@@ -71,32 +60,32 @@
 #define AS_FAULT_INFO_SHORT_CIRCUIT		(1 << 6)
 #define AS_FAULT_INFO_OVER_VOLTAGE		(1 << 7)
 
-/* Boost register */
+ 
 #define AS_BOOST_REG				0x0d
 #define AS_BOOST_CURRENT_DISABLE		(0 << 0)
 #define AS_BOOST_CURRENT_ENABLE			(1 << 0)
 
-/* Password register is used to unlock boost register writing */
+ 
 #define AS_PASSWORD_REG				0x0f
 #define AS_PASSWORD_UNLOCK_VALUE		0x55
 
 #define AS_NAME					"as3645a"
-#define AS_I2C_ADDR				(0x60 >> 1) /* W:0x60, R:0x61 */
+#define AS_I2C_ADDR				(0x60 >> 1)  
 
-#define AS_FLASH_TIMEOUT_MIN			100000	/* us */
+#define AS_FLASH_TIMEOUT_MIN			100000	 
 #define AS_FLASH_TIMEOUT_MAX			850000
 #define AS_FLASH_TIMEOUT_STEP			50000
 
-#define AS_FLASH_INTENSITY_MIN			200000	/* uA */
+#define AS_FLASH_INTENSITY_MIN			200000	 
 #define AS_FLASH_INTENSITY_MAX_1LED		500000
 #define AS_FLASH_INTENSITY_MAX_2LEDS		400000
 #define AS_FLASH_INTENSITY_STEP			20000
 
-#define AS_TORCH_INTENSITY_MIN			20000	/* uA */
+#define AS_TORCH_INTENSITY_MIN			20000	 
 #define AS_TORCH_INTENSITY_MAX			160000
 #define AS_TORCH_INTENSITY_STEP			20000
 
-#define AS_INDICATOR_INTENSITY_MIN		0	/* uA */
+#define AS_INDICATOR_INTENSITY_MIN		0	 
 #define AS_INDICATOR_INTENSITY_MAX		10000
 #define AS_INDICATOR_INTENSITY_STEP		2500
 
@@ -104,7 +93,7 @@
 #define AS_PEAK_mA_TO_REG(a) \
 	((min_t(u32, AS_PEAK_mA_MAX, a) - 1250) / 250)
 
-/* LED numbers for Devicetree */
+ 
 #define AS_LED_FLASH				0
 #define AS_LED_INDICATOR			1
 
@@ -152,7 +141,7 @@ struct as3645a {
 #define iled_cdev_to_as3645a(__iled_cdev) \
 	container_of(__iled_cdev, struct as3645a, iled_cdev)
 
-/* Return negative errno else zero on success */
+ 
 static int as3645a_write(struct as3645a *flash, u8 addr, u8 val)
 {
 	struct i2c_client *client = flash->client;
@@ -166,7 +155,7 @@ static int as3645a_write(struct as3645a *flash, u8 addr, u8 val)
 	return rval;
 }
 
-/* Return negative errno else a data byte received from the device. */
+ 
 static int as3645a_read(struct as3645a *flash, u8 addr)
 {
 	struct i2c_client *client = flash->client;
@@ -180,20 +169,9 @@ static int as3645a_read(struct as3645a *flash, u8 addr)
 	return rval;
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware configuration and trigger
- */
+ 
 
-/**
- * as3645a_set_current - Set flash configuration registers
- * @flash: The flash
- *
- * Configure the hardware with flash, assist and indicator currents, as well as
- * flash timeout.
- *
- * Return 0 on success, or a negative error code if an I2C communication error
- * occurred.
- */
+ 
 static int as3645a_set_current(struct as3645a *flash)
 {
 	u8 val;
@@ -219,23 +197,13 @@ static int as3645a_set_timeout(struct as3645a *flash)
 	return as3645a_write(flash, AS_INDICATOR_AND_TIMER_REG, val);
 }
 
-/**
- * as3645a_set_control - Set flash control register
- * @flash: The flash
- * @mode: Desired output mode
- * @on: Desired output state
- *
- * Configure the hardware with output mode and state.
- *
- * Return 0 on success, or a negative error code if an I2C communication error
- * occurred.
- */
+ 
 static int
 as3645a_set_control(struct as3645a *flash, enum as_mode mode, bool on)
 {
 	u8 reg;
 
-	/* Configure output parameters and operation mode. */
+	 
 	reg = (flash->cfg.peak << AS_CONTROL_COIL_PEAK_SHIFT)
 	    | (on ? AS_CONTROL_OUT_ON : 0)
 	    | mode;
@@ -253,7 +221,7 @@ static int as3645a_get_fault(struct led_classdev_flash *fled, u32 *fault)
 	struct as3645a *flash = fled_to_as3645a(fled);
 	int rval;
 
-	/* NOTE: reading register clears fault status */
+	 
 	rval = as3645a_read(flash, AS_FAULT_INFO_REG);
 	if (rval < 0)
 		return rval;
@@ -331,7 +299,7 @@ static int as3645a_set_assist_brightness(struct led_classdev *fled_cdev,
 	int rval;
 
 	if (brightness) {
-		/* Register value 0 is 20 mA. */
+		 
 		flash->assist_current = brightness - 1;
 
 		rval = as3645a_set_current(flash);
@@ -383,7 +351,7 @@ static int as3645a_setup(struct as3645a *flash)
 	u32 fault = 0;
 	int rval;
 
-	/* clear errors */
+	 
 	rval = as3645a_read(flash, AS_FAULT_INFO_REG);
 	if (rval < 0)
 		return rval;
@@ -402,7 +370,7 @@ static int as3645a_setup(struct as3645a *flash)
 	if (rval < 0)
 		return rval;
 
-	/* read status */
+	 
 	rval = as3645a_get_fault(&flash->fled, &fault);
 	if (rval < 0)
 		return rval;
@@ -441,7 +409,7 @@ static int as3645a_detect(struct as3645a *flash)
 	rfu = AS_VERSION_CONTROL_RFU(rval);
 	version = AS_VERSION_CONTROL_VERSION(rval);
 
-	/* Verify the chip model and version. */
+	 
 	if (model != 0x01 || rfu != 0x00) {
 		dev_err(dev, "AS3645A not detected (model %d rfu %d)\n",
 			model, rfu);
@@ -605,7 +573,7 @@ static int as3645a_led_class_setup(struct as3645a *flash)
 	flash->fled.ops = &as3645a_led_flash_ops;
 
 	fled_cdev->brightness_set_blocking = as3645a_set_assist_brightness;
-	/* Value 0 is off in LED class. */
+	 
 	fled_cdev->max_brightness =
 		as3645a_current_to_reg(flash, false,
 				       flash->cfg.assist_max_ua) + 1;

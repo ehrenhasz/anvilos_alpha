@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Flash memory access on SA11x0 based devices
- *
- * (C) 2000 Nicolas Pitre <nico@fluxnic.net>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/ioport.h>
@@ -46,10 +42,10 @@ static void sa1100_set_vpp(struct map_info *map, int on)
 
 	spin_lock_irqsave(&sa1100_vpp_lock, flags);
 	if (on) {
-		if (++sa1100_vpp_refcnt == 1)   /* first nested 'on' */
+		if (++sa1100_vpp_refcnt == 1)    
 			subdev->plat->set_vpp(1);
 	} else {
-		if (--sa1100_vpp_refcnt == 0)   /* last nested 'off' */
+		if (--sa1100_vpp_refcnt == 0)    
 			subdev->plat->set_vpp(0);
 	}
 	spin_unlock_irqrestore(&sa1100_vpp_lock, flags);
@@ -73,10 +69,7 @@ static int sa1100_probe_subdev(struct sa_subdev_info *subdev, struct resource *r
 	phys = res->start;
 	size = res->end - phys + 1;
 
-	/*
-	 * Retrieve the bankwidth from the MSC registers.
-	 * We currently only implement CS0 and CS1 here.
-	 */
+	 
 	switch (phys) {
 	default:
 		printk(KERN_WARNING "SA1100 flash: unknown base address "
@@ -109,10 +102,7 @@ static int sa1100_probe_subdev(struct sa_subdev_info *subdev, struct resource *r
 
 	simple_map_init(&subdev->map);
 
-	/*
-	 * Now let's probe for the actual flash.  Do it here since
-	 * specific machine settings might have been set above.
-	 */
+	 
 	subdev->mtd = do_map_probe(subdev->plat->map_name, &subdev->map);
 	if (subdev->mtd == NULL) {
 		ret = -ENXIO;
@@ -155,9 +145,7 @@ static struct sa_info *sa1100_setup_mtd(struct platform_device *pdev,
 	struct sa_info *info;
 	int nr, size, i, ret = 0;
 
-	/*
-	 * Count number of devices.
-	 */
+	 
 	for (nr = 0; ; nr++)
 		if (!platform_get_resource(pdev, IORESOURCE_MEM, nr))
 			break;
@@ -169,9 +157,7 @@ static struct sa_info *sa1100_setup_mtd(struct platform_device *pdev,
 
 	size = sizeof(struct sa_info) + sizeof(struct sa_subdev_info) * nr;
 
-	/*
-	 * Allocate the map_info structs in one go.
-	 */
+	 
 	info = kzalloc(size, GFP_KERNEL);
 	if (!info) {
 		ret = -ENOMEM;
@@ -184,9 +170,7 @@ static struct sa_info *sa1100_setup_mtd(struct platform_device *pdev,
 			goto err;
 	}
 
-	/*
-	 * Claim and then map the memory regions.
-	 */
+	 
 	for (i = 0; i < nr; i++) {
 		struct sa_subdev_info *subdev = &info->subdev[i];
 		struct resource *res;
@@ -206,17 +190,11 @@ static struct sa_info *sa1100_setup_mtd(struct platform_device *pdev,
 
 	info->num_subdev = i;
 
-	/*
-	 * ENXIO is special.  It means we didn't find a chip when we probed.
-	 */
+	 
 	if (ret != 0 && !(ret == -ENXIO && info->num_subdev > 0))
 		goto err;
 
-	/*
-	 * If we found one device, don't bother with concat support.  If
-	 * we found multiple devices, use concat if we have it available,
-	 * otherwise fail.  Either way, it'll be called "sa1100".
-	 */
+	 
 	if (info->num_subdev == 1) {
 		strcpy(info->subdev[0].name, plat->name);
 		info->mtd = info->subdev[0].mtd;
@@ -230,9 +208,7 @@ static struct sa_info *sa1100_setup_mtd(struct platform_device *pdev,
 			goto err;
 		}
 
-		/*
-		 * We detected multiple devices.  Concatenate them together.
-		 */
+		 
 		for (i = 0; i < info->num_subdev; i++)
 			cdev[i] = info->subdev[i].mtd;
 
@@ -272,9 +248,7 @@ static int sa1100_mtd_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	/*
-	 * Partition selection stuff.
-	 */
+	 
 	mtd_device_parse_register(info->mtd, part_probes, NULL, plat->parts,
 				  plat->nr_parts);
 

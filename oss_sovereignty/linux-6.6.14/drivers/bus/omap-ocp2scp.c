@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * omap-ocp2scp.c - transform ocp interface protocol to scp protocol
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -44,19 +39,7 @@ static int omap_ocp2scp_probe(struct platform_device *pdev)
 	}
 
 	pm_runtime_enable(&pdev->dev);
-	/*
-	 * As per AM572x TRM: http://www.ti.com/lit/ug/spruhz6/spruhz6.pdf
-	 * under section 26.3.2.2, table 26-26 OCP2SCP TIMING Caution;
-	 * As per OMAP4430 TRM: http://www.ti.com/lit/ug/swpu231ap/swpu231ap.pdf
-	 * under section 23.12.6.2.2 , Table 23-1213 OCP2SCP TIMING Caution;
-	 * As per OMAP4460 TRM: http://www.ti.com/lit/ug/swpu235ab/swpu235ab.pdf
-	 * under section 23.12.6.2.2, Table 23-1213 OCP2SCP TIMING Caution;
-	 * As per OMAP543x TRM http://www.ti.com/lit/pdf/swpu249
-	 * under section 27.3.2.2, Table 27-27 OCP2SCP TIMING Caution;
-	 *
-	 * Read path of OCP2SCP is not working properly due to low reset value
-	 * of SYNC2 parameter in OCP2SCP. Suggested reset value is 0x6 or more.
-	 */
+	 
 	if (!of_device_is_compatible(np, "ti,am437x-ocp2scp")) {
 		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		regs = devm_ioremap_resource(&pdev->dev, res);

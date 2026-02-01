@@ -1,13 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * ALSA SoC TLV320AIC3x codec driver SPI interface
- *
- * Author:      Arun KS, <arunks@mistralsolutions.com>
- * Copyright:   (C) 2008 Mistral Solutions Pvt Ltd.,
- *
- * Based on sound/soc/codecs/wm8731.c by Richard Purdie
- *
- */
+ 
 
 #include <linux/spi/spi.h>
 #include <linux/module.h>

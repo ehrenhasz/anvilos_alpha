@@ -1,31 +1,14 @@
-/* Creating and controlling threads.
-   Copyright (C) 2005-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2005.
-   Based on GCC's gthr-posix.h, gthr-posix95.h, gthr-win32.h.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include "glthread/thread.h"
 
 #include <stdlib.h>
 #include "glthread/lock.h"
 
-/* ========================================================================= */
+ 
 
 #if USE_ISOC_THREADS
 
@@ -35,12 +18,10 @@ struct thrd_with_exitvalue
   void * volatile exitvalue;
 };
 
-/* The Thread-Specific Storage (TSS) key that allows to access each thread's
-   'struct thrd_with_exitvalue *' pointer.  */
+ 
 static tss_t thrd_with_exitvalue_key;
 
-/* Initializes thrd_with_exitvalue_key.
-   This function must only be called once.  */
+ 
 static void
 do_init_thrd_with_exitvalue_key (void)
 {
@@ -48,7 +29,7 @@ do_init_thrd_with_exitvalue_key (void)
     abort ();
 }
 
-/* Initializes thrd_with_exitvalue_key.  */
+ 
 static void
 init_thrd_with_exitvalue_key (void)
 {
@@ -61,7 +42,7 @@ typedef union
           struct thrd_with_exitvalue t;
           struct
           {
-            thrd_t tid; /* reserve memory for t.tid */
+            thrd_t tid;  
             void *(*mainfunc) (void *);
             void *arg;
           } a;
@@ -71,7 +52,7 @@ typedef union
 static int
 thrd_main_func (void *pmarg)
 {
-  /* Unpack the object that combines mainfunc and arg.  */
+   
   main_arg_t *main_arg = (main_arg_t *) pmarg;
   void *(*mainfunc) (void *) = main_arg->a.mainfunc;
   void *arg = main_arg->a.arg;
@@ -79,10 +60,10 @@ thrd_main_func (void *pmarg)
   if (tss_set (thrd_with_exitvalue_key, &main_arg->t) != thrd_success)
     abort ();
 
-  /* Execute mainfunc, with arg as argument.  */
+   
   {
     void *exitvalue = mainfunc (arg);
-    /* Store the exitvalue, for use by glthread_join().  */
+     
     main_arg->t.exitvalue = exitvalue;
     return 0;
   }
@@ -93,10 +74,7 @@ glthread_create (gl_thread_t *threadp, void *(*mainfunc) (void *), void *arg)
 {
   init_thrd_with_exitvalue_key ();
   {
-    /* Combine mainfunc and arg in a single object.
-       A stack-allocated object does not work, because it would be out of
-       existence when thrd_create returns before thrd_main_func is
-       entered.  So, allocate it in the heap.  */
+     
     main_arg_t *main_arg = (main_arg_t *) malloc (sizeof (main_arg_t));
     if (main_arg == NULL)
       return ENOMEM;
@@ -127,8 +105,7 @@ gl_thread_self (void)
       (struct thrd_with_exitvalue *) tss_get (thrd_with_exitvalue_key);
     if (thread == NULL)
       {
-        /* This happens only in threads that have not been created through
-           glthread_create(), such as the main thread.  */
+         
         for (;;)
           {
             thread =
@@ -136,8 +113,7 @@ gl_thread_self (void)
               malloc (sizeof (struct thrd_with_exitvalue));
             if (thread != NULL)
               break;
-            /* Memory allocation failed.  There is not much we can do.  Have to
-               busy-loop, waiting for the availability of memory.  */
+             
             {
               struct timespec ts =
                 {
@@ -148,7 +124,7 @@ gl_thread_self (void)
             }
           }
         thread->tid = thrd_current ();
-        thread->exitvalue = NULL; /* just to be deterministic */
+        thread->exitvalue = NULL;  
         if (tss_set (thrd_with_exitvalue_key, thread) != thrd_success)
           abort ();
       }
@@ -159,8 +135,7 @@ gl_thread_self (void)
 int
 glthread_join (gl_thread_t thread, void **return_value_ptr)
 {
-  /* On Solaris 11.4, thrd_join crashes when the second argument we pass is
-     NULL.  */
+   
   int dummy;
 
   if (thread == gl_thread_self ())
@@ -183,7 +158,7 @@ gl_thread_exit (void *return_value)
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS
 
@@ -191,19 +166,19 @@ gl_thread_exit (void *return_value)
 
 #if defined PTW32_VERSION || defined __MVS__
 
-const gl_thread_t gl_null_thread /* = { .p = NULL } */;
+const gl_thread_t gl_null_thread  ;
 
 #endif
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_WINDOWS_THREADS
 
 #endif
 
-/* ========================================================================= */
+ 
 
 gl_thread_t
 gl_thread_create (void *(*func) (void *arg), void *arg)

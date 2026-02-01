@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cryptographic API.
- *
- * Support for OMAP SHA1/MD5 HW acceleration.
- *
- * Copyright (c) 2010 Nokia Corporation
- * Author: Dmitry Kasatkin <dmitry.kasatkin@nokia.com>
- * Copyright (c) 2011 Texas Instruments Incorporated
- *
- * Some ideas are from old omap-sha1-md5.c driver.
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -97,7 +87,7 @@
 
 #define DEFAULT_AUTOSUSPEND_DELAY	1000
 
-/* mostly device flags */
+ 
 #define FLAGS_FINAL		1
 #define FLAGS_DMA_ACTIVE	2
 #define FLAGS_OUTPUT_READY	3
@@ -109,7 +99,7 @@
 #define FLAGS_SGS_ALLOCED	10
 #define FLAGS_HUGE		11
 
-/* context flags */
+ 
 #define FLAGS_FINUP		16
 
 #define FLAGS_MODE_SHIFT	18
@@ -147,12 +137,12 @@ struct omap_sham_reqctx {
 	size_t			bufcnt;
 	size_t			buflen;
 
-	/* walk state */
+	 
 	struct scatterlist	*sg;
 	struct scatterlist	sgl[2];
-	int			offset;	/* offset in current sg */
+	int			offset;	 
 	int			sg_len;
-	unsigned int		total;	/* total request */
+	unsigned int		total;	 
 
 	u8			buffer[] OMAP_ALIGNED;
 };
@@ -166,7 +156,7 @@ struct omap_sham_hmac_ctx {
 struct omap_sham_ctx {
 	unsigned long		flags;
 
-	/* fallback stuff */
+	 
 	struct crypto_shash	*fallback;
 
 	struct omap_sham_hmac_ctx base[];
@@ -333,7 +323,7 @@ static void omap_sham_copy_ready_hash(struct ahash_request *req)
 		d = MD5_DIGEST_SIZE / sizeof(u32);
 		break;
 	case FLAGS_MODE_SHA1:
-		/* OMAP2 SHA1 is big endian */
+		 
 		if (test_bit(FLAGS_BE32_SHA1, &ctx->dd->flags))
 			big_endian = 1;
 		d = SHA1_DIGEST_SIZE / sizeof(u32);
@@ -374,10 +364,7 @@ static void omap_sham_write_ctrl_omap2(struct omap_sham_dev *dd, size_t length,
 	omap_sham_write_mask(dd, SHA_REG_MASK(dd),
 		SHA_REG_MASK_IT_EN | (dma ? SHA_REG_MASK_DMA_EN : 0),
 		SHA_REG_MASK_IT_EN | SHA_REG_MASK_DMA_EN);
-	/*
-	 * Setting ALGO_CONST only for the first iteration
-	 * and CLOSE_HASH only for the last one.
-	 */
+	 
 	if ((ctx->flags & FLAGS_MODE_MASK) == FLAGS_MODE_SHA1)
 		val |= SHA_REG_CTRL_ALGO;
 	if (!ctx->digcnt)
@@ -440,11 +427,7 @@ static void omap_sham_write_ctrl_omap4(struct omap_sham_dev *dd, size_t length,
 	if (likely(ctx->digcnt))
 		omap_sham_write(dd, SHA_REG_DIGCNT(dd), ctx->digcnt);
 
-	/*
-	 * Setting ALGO_CONST only for the first iteration and
-	 * CLOSE_HASH only for the last one. Note that flags mode bits
-	 * correspond to algorithm encoding in mode register.
-	 */
+	 
 	val = (ctx->flags & FLAGS_MODE_MASK) >> (FLAGS_MODE_SHIFT);
 	if (!ctx->digcnt) {
 		struct crypto_ahash *tfm = crypto_ahash_reqtfm(dd->req);
@@ -512,12 +495,12 @@ static int omap_sham_xmit_cpu(struct omap_sham_dev *dd, size_t length,
 	dd->pdata->write_ctrl(dd, length, final, 0);
 	dd->pdata->trigger(dd, length);
 
-	/* should be non-zero before next lines to disable clocks later */
+	 
 	ctx->digcnt += length;
 	ctx->total -= length;
 
 	if (final)
-		set_bit(FLAGS_FINAL, &dd->flags); /* catch last interrupt */
+		set_bit(FLAGS_FINAL, &dd->flags);  
 
 	set_bit(FLAGS_CPU, &dd->flags);
 
@@ -610,7 +593,7 @@ static int omap_sham_xmit_dma(struct omap_sham_dev *dd, size_t length,
 	ctx->total -= length;
 
 	if (final)
-		set_bit(FLAGS_FINAL, &dd->flags); /* catch last interrupt */
+		set_bit(FLAGS_FINAL, &dd->flags);  
 
 	set_bit(FLAGS_DMA_ACTIVE, &dd->flags);
 
@@ -1022,7 +1005,7 @@ static int omap_sham_update_req(struct omap_sham_dev *dd)
 	else
 		err = omap_sham_xmit_dma(dd, ctx->total, final);
 
-	/* wait for dma completion before can take more data */
+	 
 	dev_dbg(dd->dev, "update: err: %d, digcnt: %zd\n", err, ctx->digcnt);
 
 	return err;
@@ -1038,10 +1021,7 @@ static int omap_sham_final_req(struct omap_sham_dev *dd)
 		return 0;
 
 	if ((ctx->total <= get_block_size(ctx)) || dd->polling_mode)
-		/*
-		 * faster to handle last block with cpu or
-		 * use cpu when dma is not present.
-		 */
+		 
 		use_dma = 0;
 
 	if (use_dma)
@@ -1151,7 +1131,7 @@ static void omap_sham_finish_req(struct ahash_request *req, int err)
 		dd->pdata->copy_hash(req, 1);
 
 	if (dd->flags & BIT(FLAGS_HUGE)) {
-		/* Re-enqueue the request */
+		 
 		omap_sham_enqueue(req, ctx->op);
 		return;
 	}
@@ -1163,7 +1143,7 @@ static void omap_sham_finish_req(struct ahash_request *req, int err)
 		ctx->flags |= BIT(FLAGS_ERROR);
 	}
 
-	/* atomic operation is not needed here */
+	 
 	dd->flags &= ~(BIT(FLAGS_FINAL) | BIT(FLAGS_CPU) |
 			BIT(FLAGS_DMA_READY) | BIT(FLAGS_OUTPUT_READY));
 
@@ -1218,11 +1198,7 @@ static int omap_sham_final_shash(struct ahash_request *req)
 	struct omap_sham_reqctx *ctx = ahash_request_ctx(req);
 	int offset = 0;
 
-	/*
-	 * If we are running HMAC on limited hardware support, skip
-	 * the ipad in the beginning of the buffer if we are going for
-	 * software fallback algorithm.
-	 */
+	 
 	if (test_bit(FLAGS_HMAC, &ctx->flags) &&
 	    !test_bit(FLAGS_AUTO_XOR, &ctx->dd->flags))
 		offset = get_block_size(ctx);
@@ -1238,21 +1214,15 @@ static int omap_sham_final(struct ahash_request *req)
 	ctx->flags |= BIT(FLAGS_FINUP);
 
 	if (ctx->flags & BIT(FLAGS_ERROR))
-		return 0; /* uncompleted hash is not needed */
+		return 0;  
 
-	/*
-	 * OMAP HW accel works only with buffers >= 9.
-	 * HMAC is always >= 9 because ipad == block size.
-	 * If buffersize is less than fallback_sz, we use fallback
-	 * SW encoding, as using DMA + HW in this case doesn't provide
-	 * any benefit.
-	 */
+	 
 	if (!ctx->digcnt && ctx->bufcnt < ctx->dd->fallback_sz)
 		return omap_sham_final_shash(req);
 	else if (ctx->bufcnt)
 		return omap_sham_enqueue(req, OP_FINAL);
 
-	/* copy ready hash (+ finalize hmac) */
+	 
 	return omap_sham_finish(req);
 }
 
@@ -1266,10 +1236,7 @@ static int omap_sham_finup(struct ahash_request *req)
 	err1 = omap_sham_update(req);
 	if (err1 == -EINPROGRESS || err1 == -EBUSY)
 		return err1;
-	/*
-	 * final() has to be always called to cleanup resources
-	 * even if udpate() failed, except EINPROGRESS
-	 */
+	 
 	err2 = omap_sham_final(req);
 
 	return err1 ?: err2;
@@ -1322,7 +1289,7 @@ static int omap_sham_cra_init_alg(struct crypto_tfm *tfm, const char *alg_base)
 	struct omap_sham_ctx *tctx = crypto_tfm_ctx(tfm);
 	const char *alg_name = crypto_tfm_alg_name(tfm);
 
-	/* Allocate a fallback and abort if it failed. */
+	 
 	tctx->fallback = crypto_alloc_shash(alg_name, 0,
 					    CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(tctx->fallback)) {
@@ -1517,7 +1484,7 @@ static struct ahash_engine_alg algs_sha1_md5[] = {
 }
 };
 
-/* OMAP4 has some algs in addition to what OMAP2 has */
+ 
 static struct ahash_engine_alg algs_sha224_sha256[] = {
 {
 	.base.init		= omap_sham_init,
@@ -1735,7 +1702,7 @@ static void omap_sham_done_task(unsigned long data)
 			}
 		}
 		if (test_and_clear_bit(FLAGS_OUTPUT_READY, &dd->flags)) {
-			/* hash or semi-hash ready */
+			 
 			clear_bit(FLAGS_DMA_READY, &dd->flags);
 			goto finish;
 		}
@@ -1745,7 +1712,7 @@ static void omap_sham_done_task(unsigned long data)
 
 finish:
 	dev_dbg(dd->dev, "update done: err: %d\n", err);
-	/* finish curent request */
+	 
 	omap_sham_finish_req(dd->req, err);
 }
 
@@ -1762,7 +1729,7 @@ static irqreturn_t omap_sham_irq_omap2(int irq, void *dev_id)
 	struct omap_sham_dev *dd = dev_id;
 
 	if (unlikely(test_bit(FLAGS_FINAL, &dd->flags)))
-		/* final -> allow device to go to power-saving mode */
+		 
 		omap_sham_write_mask(dd, SHA_REG_CTRL, 0, SHA_REG_CTRL_LENGTH);
 
 	omap_sham_write_mask(dd, SHA_REG_CTRL, SHA_REG_CTRL_OUTPUT_READY,
@@ -1957,7 +1924,7 @@ static int omap_sham_get_res_pdev(struct omap_sham_dev *dd,
 	struct resource *r;
 	int err = 0;
 
-	/* Get the base address */
+	 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r) {
 		dev_err(dev, "no MEM resource info\n");
@@ -1966,14 +1933,14 @@ static int omap_sham_get_res_pdev(struct omap_sham_dev *dd,
 	}
 	memcpy(res, r, sizeof(*res));
 
-	/* Get the IRQ */
+	 
 	dd->irq = platform_get_irq(pdev, 0);
 	if (dd->irq < 0) {
 		err = dd->irq;
 		goto err;
 	}
 
-	/* Only OMAP2/3 can be non-DT */
+	 
 	dd->pdata = &omap_sham_pdata_omap2;
 
 err:
@@ -1999,7 +1966,7 @@ static ssize_t fallback_store(struct device *dev, struct device_attribute *attr,
 	if (status)
 		return status;
 
-	/* HW accelerator only works with buffers > 9 */
+	 
 	if (value < 9) {
 		dev_err(dev, "minimum fallback size 9\n");
 		return -EINVAL;
@@ -2033,11 +2000,7 @@ static ssize_t queue_len_store(struct device *dev,
 	if (value < 1)
 		return -EINVAL;
 
-	/*
-	 * Changing the queue size in fly is safe, if size becomes smaller
-	 * than current size, it will just not accept new entries until
-	 * it has shrank enough.
-	 */
+	 
 	dd->queue.max_qlen = value;
 
 	return size;

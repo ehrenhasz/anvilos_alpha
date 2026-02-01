@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2014 Facebook.  All rights reserved.
- */
+ 
+ 
 
 #ifndef BTRFS_REF_VERIFY_H
 #define BTRFS_REF_VERIFY_H
@@ -44,6 +42,6 @@ static inline void btrfs_init_ref_verify(struct btrfs_fs_info *fs_info)
 {
 }
 
-#endif /* CONFIG_BTRFS_FS_REF_VERIFY */
+#endif  
 
 #endif

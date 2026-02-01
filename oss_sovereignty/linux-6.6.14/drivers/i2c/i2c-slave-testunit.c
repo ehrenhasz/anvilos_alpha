@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C slave mode testunit
- *
- * Copyright (C) 2020 by Wolfram Sang, Sang Engineering <wsa@sang-engineering.com>
- * Copyright (C) 2020 by Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/i2c.h>
@@ -12,12 +7,12 @@
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/slab.h>
-#include <linux/workqueue.h> /* FIXME: is system_long_wq the best choice? */
+#include <linux/workqueue.h>  
 
 #define TU_CUR_VERSION 0x01
 
 enum testunit_cmds {
-	TU_CMD_READ_BYTES = 1,	/* save 0 for ABORT, RESET or similar */
+	TU_CMD_READ_BYTES = 1,	 
 	TU_CMD_HOST_NOTIFY,
 	TU_CMD_SMBUS_BLOCK_PROC_CALL,
 	TU_NUM_CMDS
@@ -75,7 +70,7 @@ static void i2c_slave_testunit_work(struct work_struct *work)
 
 	if (msg.addr != I2C_CLIENT_END) {
 		ret = i2c_transfer(tu->client->adapter, &msg, 1);
-		/* convert '0 msgs transferred' to errno */
+		 
 		ret = (ret == 0) ? -EIO : ret;
 	}
 
@@ -106,7 +101,7 @@ static int i2c_slave_testunit_slave_cb(struct i2c_client *client,
 		if (tu->reg_idx <= TU_NUM_REGS)
 			tu->reg_idx++;
 
-		/* TU_REG_CMD always written at this point */
+		 
 		if (tu->regs[TU_REG_CMD] >= TU_NUM_CMDS)
 			ret = -EINVAL;
 

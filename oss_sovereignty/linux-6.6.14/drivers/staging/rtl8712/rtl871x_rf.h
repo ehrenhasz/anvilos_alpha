@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+ 
+ 
 #ifndef	__RTL871X_RF_H_
 #define __RTL871X_RF_H_
 
@@ -26,12 +15,12 @@
 #define NUM_CHANNELS	15
 
 struct	regulatory_class {
-	u32	starting_freq;		/*MHz, */
+	u32	starting_freq;		 
 	u8	channel_set[NUM_CHANNELS];
-	u8	channel_cck_power[NUM_CHANNELS]; /*dbm*/
-	u8	channel_ofdm_power[NUM_CHANNELS];/*dbm*/
-	u8	txpower_limit;		/*dbm*/
-	u8	channel_spacing;	/*MHz*/
+	u8	channel_cck_power[NUM_CHANNELS];  
+	u8	channel_ofdm_power[NUM_CHANNELS]; 
+	u8	txpower_limit;		 
+	u8	channel_spacing;	 
 	u8	modem;
 };
 
@@ -52,4 +41,4 @@ enum {
 	RTL8712_RFC_2T2R = 0x22
 };
 
-#endif /*__RTL871X_RF_H_*/
+#endif  

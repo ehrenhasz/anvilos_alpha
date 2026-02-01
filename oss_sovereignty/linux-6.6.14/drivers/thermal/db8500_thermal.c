@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * db8500_thermal.c - DB8500 Thermal Management Implementation
- *
- * Copyright (C) 2012 ST-Ericsson
- * Copyright (C) 2012-2019 Linaro Ltd.
- *
- * Authors: Hongbo Zhang, Linus Walleij
- */
+
+ 
 
 #include <linux/cpu_cooling.h>
 #include <linux/interrupt.h>
@@ -20,10 +13,7 @@
 #define PRCMU_DEFAULT_MEASURE_TIME	0xFFF
 #define PRCMU_DEFAULT_LOW_TEMP		0
 
-/**
- * db8500_thermal_points - the interpolation points that trigger
- * interrupts
- */
+ 
 static const unsigned long db8500_thermal_points[] = {
 	15000,
 	20000,
@@ -39,12 +29,7 @@ static const unsigned long db8500_thermal_points[] = {
 	70000,
 	75000,
 	80000,
-	/*
-	 * This is where things start to get really bad for the
-	 * SoC and the thermal zones should be set up to trigger
-	 * critical temperature at 85000 mC so we don't get above
-	 * this point.
-	 */
+	 
 	85000,
 	90000,
 	95000,
@@ -58,16 +43,12 @@ struct db8500_thermal_zone {
 	unsigned int cur_index;
 };
 
-/* Callback to get current temperature */
+ 
 static int db8500_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 {
 	struct db8500_thermal_zone *th = thermal_zone_device_priv(tz);
 
-	/*
-	 * TODO: There is no PRCMU interface to get temperature data currently,
-	 * so a pseudo temperature is returned , it works for thermal framework
-	 * and this will be fixed when the PRCMU interface is available.
-	 */
+	 
 	*temp = th->interpolated_temp;
 
 	return 0;
@@ -87,10 +68,7 @@ static void db8500_thermal_update_config(struct db8500_thermal_zone *th,
 	th->cur_index = idx;
 	th->interpolated_temp = (next_low + next_high)/2;
 
-	/*
-	 * The PRCMU accept absolute temperatures in celsius so divide
-	 * down the millicelsius with 1000
-	 */
+	 
 	prcmu_config_hotmon((u8)(next_low/1000), (u8)(next_high/1000));
 	prcmu_start_temp_sense(PRCMU_DEFAULT_MEASURE_TIME);
 }
@@ -102,7 +80,7 @@ static irqreturn_t prcmu_low_irq_handler(int irq, void *irq_data)
 	unsigned long next_low, next_high;
 
 	if (idx == 0)
-		/* Meaningless for thermal management, ignoring it */
+		 
 		return IRQ_HANDLED;
 
 	if (idx == 1) {
@@ -140,7 +118,7 @@ static irqreturn_t prcmu_high_irq_handler(int irq, void *irq_data)
 		dev_dbg(th->dev,
 			"PRCMU set max %ld, min %ld\n", next_high, next_low);
 	} else if (idx == num_points - 1)
-		/* So we roof out 1 degree over the max point */
+		 
 		th->interpolated_temp = db8500_thermal_points[idx] + 1;
 
 	thermal_zone_device_update(th->tz, THERMAL_EVENT_UNSPECIFIED);
@@ -184,7 +162,7 @@ static int db8500_thermal_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* register of thermal sensor and get info from DT */
+	 
 	th->tz = devm_thermal_of_zone_register(dev, 0, th, &thdev_ops);
 	if (IS_ERR(th->tz)) {
 		dev_err(dev, "register thermal zone sensor failed\n");
@@ -192,7 +170,7 @@ static int db8500_thermal_probe(struct platform_device *pdev)
 	}
 	dev_info(dev, "thermal zone sensor registered\n");
 
-	/* Start measuring at the lowest point */
+	 
 	db8500_thermal_update_config(th, 0, PRCMU_DEFAULT_LOW_TEMP,
 				     db8500_thermal_points[0]);
 
@@ -213,7 +191,7 @@ static int db8500_thermal_resume(struct platform_device *pdev)
 {
 	struct db8500_thermal_zone *th = platform_get_drvdata(pdev);
 
-	/* Resume and start measuring at the lowest point */
+	 
 	db8500_thermal_update_config(th, 0, PRCMU_DEFAULT_LOW_TEMP,
 				     db8500_thermal_points[0]);
 

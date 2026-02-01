@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Atmel AT42QT1070 QTouch Sensor Controller
- *
- *  Copyright (C) 2011 Atmel
- *
- *  Authors: Bo Shen <voice.shen@atmel.com>
- *
- *  Base on AT42QT2160 driver by:
- *  Raphael Derosso Pereira <raphaelpereira@gmail.com>
- *  Copyright (C) 2009
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,7 +10,7 @@
 #include <linux/jiffies.h>
 #include <linux/delay.h>
 
-/* Address for each register */
+ 
 #define CHIP_ID            0x00
 #define QT1070_CHIP_ID     0x2E
 
@@ -31,15 +21,15 @@
 
 #define KEY_STATUS         0x03
 
-/* Calibrate */
+ 
 #define CALIBRATE_CMD      0x38
 #define QT1070_CAL_TIME    200
 
-/* Reset */
+ 
 #define RESET              0x39
 #define QT1070_RESET_TIME  255
 
-/* AT42QT1070 support up to 7 keys */
+ 
 static const unsigned short qt1070_key2code[] = {
 	KEY_0, KEY_1, KEY_2, KEY_3,
 	KEY_4, KEY_5, KEY_6,
@@ -81,14 +71,14 @@ static bool qt1070_identify(struct i2c_client *client)
 {
 	int id, ver;
 
-	/* Read Chip ID */
+	 
 	id = qt1070_read(client, CHIP_ID);
 	if (id != QT1070_CHIP_ID) {
 		dev_err(&client->dev, "ID %d not supported\n", id);
 		return false;
 	}
 
-	/* Read firmware version */
+	 
 	ver = qt1070_read(client, FW_VERSION);
 	if (ver < 0) {
 		dev_err(&client->dev, "could not read the firmware version\n");
@@ -108,10 +98,10 @@ static irqreturn_t qt1070_interrupt(int irq, void *dev_id)
 	int i;
 	u8 new_keys, keyval, mask = 0x01;
 
-	/* Read the detected status register, thus clearing interrupt */
+	 
 	qt1070_read(client, DET_STATUS);
 
-	/* Read which key changed */
+	 
 	new_keys = qt1070_read(client, KEY_STATUS);
 
 	for (i = 0; i < ARRAY_SIZE(qt1070_key2code); i++) {
@@ -145,7 +135,7 @@ static int qt1070_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Identify the qt1070 chip */
+	 
 	if (!qt1070_identify(client))
 		return -ENODEV;
 
@@ -165,7 +155,7 @@ static int qt1070_probe(struct i2c_client *client)
 	input->name = "AT42QT1070 QTouch Sensor";
 	input->id.bustype = BUS_I2C;
 
-	/* Add the keycode */
+	 
 	input->keycode = data->keycodes;
 	input->keycodesize = sizeof(data->keycodes[0]);
 	input->keycodemax = ARRAY_SIZE(qt1070_key2code);
@@ -177,11 +167,11 @@ static int qt1070_probe(struct i2c_client *client)
 		__set_bit(qt1070_key2code[i], input->keybit);
 	}
 
-	/* Calibrate device */
+	 
 	qt1070_write(client, CALIBRATE_CMD, 1);
 	msleep(QT1070_CAL_TIME);
 
-	/* Soft reset */
+	 
 	qt1070_write(client, RESET, 1);
 	msleep(QT1070_RESET_TIME);
 
@@ -194,7 +184,7 @@ static int qt1070_probe(struct i2c_client *client)
 		return err;
 	}
 
-	/* Register the input device */
+	 
 	err = input_register_device(data->input);
 	if (err) {
 		dev_err(&client->dev, "Failed to register input device\n");
@@ -203,7 +193,7 @@ static int qt1070_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, data);
 
-	/* Read to clear the chang line */
+	 
 	qt1070_read(client, DET_STATUS);
 
 	return 0;

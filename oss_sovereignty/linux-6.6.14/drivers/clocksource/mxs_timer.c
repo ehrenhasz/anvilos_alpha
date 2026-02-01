@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-//  Copyright (C) 2000-2001 Deep Blue Solutions
-//  Copyright (C) 2002 Shane Nay (shane@minirl.com)
-//  Copyright (C) 2006-2007 Pavel Pisa (ppisa@pikron.com)
-//  Copyright (C) 2008 Juergen Beisert (kernel@pengutronix.de)
-//  Copyright (C) 2010 Freescale Semiconductor, Inc. All Rights Reserved.
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -17,15 +17,7 @@
 #include <linux/stmp_device.h>
 #include <linux/sched_clock.h>
 
-/*
- * There are 2 versions of the timrot on Freescale MXS-based SoCs.
- * The v1 on MX23 only gets 16 bits counter, while v2 on MX28
- * extends the counter to 32 bits.
- *
- * The implementation uses two timers, one for clock_event and
- * another for clocksource. MX28 uses timrot 0 and 1, while MX23
- * uses 0 and 2.
- */
+ 
 
 #define MX23_TIMROT_VERSION_OFFSET	0x0a0
 #define MX28_TIMROT_VERSION_OFFSET	0x120
@@ -34,20 +26,13 @@
 #define BV_TIMROT_VERSION_2		0x02
 #define timrot_is_v1()	(timrot_major_version == BV_TIMROT_VERSION_1)
 
-/*
- * There are 4 registers for each timrotv2 instance, and 2 registers
- * for each timrotv1. So address step 0x40 in macros below strides
- * one instance of timrotv2 while two instances of timrotv1.
- *
- * As the result, HW_TIMROT_XXXn(1) defines the address of timrot1
- * on MX28 while timrot2 on MX23.
- */
-/* common between v1 and v2 */
+ 
+ 
 #define HW_TIMROT_ROTCTRL		0x00
 #define HW_TIMROT_TIMCTRLn(n)		(0x20 + (n) * 0x40)
-/* v1 only */
+ 
 #define HW_TIMROT_TIMCOUNTn(n)		(0x30 + (n) * 0x40)
-/* v2 only */
+ 
 #define HW_TIMROT_RUNNING_COUNTn(n)	(0x30 + (n) * 0x40)
 #define HW_TIMROT_FIXED_COUNTn(n)	(0x40 + (n) * 0x40)
 
@@ -92,7 +77,7 @@ static u64 timrotv1_get_cycles(struct clocksource *cs)
 static int timrotv1_set_next_event(unsigned long evt,
 					struct clock_event_device *dev)
 {
-	/* timrot decrements the count */
+	 
 	__raw_writel(evt, mxs_timrot_base + HW_TIMROT_TIMCOUNTn(0));
 
 	return 0;
@@ -101,7 +86,7 @@ static int timrotv1_set_next_event(unsigned long evt,
 static int timrotv2_set_next_event(unsigned long evt,
 					struct clock_event_device *dev)
 {
-	/* timrot decrements the count */
+	 
 	__raw_writel(evt, mxs_timrot_base + HW_TIMROT_FIXED_COUNTn(0));
 
 	return 0;
@@ -119,17 +104,17 @@ static irqreturn_t mxs_timer_interrupt(int irq, void *dev_id)
 
 static void mxs_irq_clear(char *state)
 {
-	/* Disable interrupt in timer module */
+	 
 	timrot_irq_disable();
 
-	/* Set event time into the furthest future */
+	 
 	if (timrot_is_v1())
 		__raw_writel(0xffff, mxs_timrot_base + HW_TIMROT_TIMCOUNTn(1));
 	else
 		__raw_writel(0xffffffff,
 			     mxs_timrot_base + HW_TIMROT_FIXED_COUNTn(1));
 
-	/* Clear pending interrupt */
+	 
 	timrot_irq_acknowledge();
 	pr_debug("%s: changing mode to %s\n", __func__, state);
 }
@@ -218,19 +203,17 @@ static int __init mxs_timer_init(struct device_node *np)
 	if (ret)
 		return ret;
 
-	/*
-	 * Initialize timers to a known state
-	 */
+	 
 	stmp_reset_block(mxs_timrot_base + HW_TIMROT_ROTCTRL);
 
-	/* get timrot version */
+	 
 	timrot_major_version = __raw_readl(mxs_timrot_base +
 			(of_device_is_compatible(np, "fsl,imx23-timrot") ?
 						MX23_TIMROT_VERSION_OFFSET :
 						MX28_TIMROT_VERSION_OFFSET));
 	timrot_major_version >>= BP_TIMROT_MAJOR_VERSION;
 
-	/* one for clock_event */
+	 
 	__raw_writel((timrot_is_v1() ?
 			BV_TIMROTv1_TIMCTRLn_SELECT__32KHZ_XTAL :
 			BV_TIMROTv2_TIMCTRLn_SELECT__TICK_ALWAYS) |
@@ -238,14 +221,14 @@ static int __init mxs_timer_init(struct device_node *np)
 			BM_TIMROT_TIMCTRLn_IRQ_EN,
 			mxs_timrot_base + HW_TIMROT_TIMCTRLn(0));
 
-	/* another for clocksource */
+	 
 	__raw_writel((timrot_is_v1() ?
 			BV_TIMROTv1_TIMCTRLn_SELECT__32KHZ_XTAL :
 			BV_TIMROTv2_TIMCTRLn_SELECT__TICK_ALWAYS) |
 			BM_TIMROT_TIMCTRLn_RELOAD,
 			mxs_timrot_base + HW_TIMROT_TIMCTRLn(1));
 
-	/* set clocksource timer fixed count to the maximum */
+	 
 	if (timrot_is_v1())
 		__raw_writel(0xffff,
 			mxs_timrot_base + HW_TIMROT_TIMCOUNTn(1));
@@ -253,7 +236,7 @@ static int __init mxs_timer_init(struct device_node *np)
 		__raw_writel(0xffffffff,
 			mxs_timrot_base + HW_TIMROT_FIXED_COUNTn(1));
 
-	/* init and register the timer to the framework */
+	 
 	ret = mxs_clocksource_init(timer_clk);
 	if (ret)
 		return ret;
@@ -262,7 +245,7 @@ static int __init mxs_timer_init(struct device_node *np)
 	if (ret)
 		return ret;
 
-	/* Make irqs happen */
+	 
 	irq = irq_of_parse_and_map(np, 0);
 	if (irq <= 0)
 		return -EINVAL;

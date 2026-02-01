@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Perf support for the Statistical Profiling Extension, introduced as
- * part of ARMv8.2.
- *
- * Copyright (C) 2016 ARM Limited
- *
- * Author: Will Deacon <will.deacon@arm.com>
- */
+
+ 
 
 #define PMUNAME					"arm_spe"
 #define DRVNAME					PMUNAME "_pmu"
@@ -39,11 +32,7 @@
 #include <asm/mmu.h>
 #include <asm/sysreg.h>
 
-/*
- * Cache if the event is allowed to trace Context information.
- * This allows us to perform the check, i.e, perfmon_capable(),
- * in the context of the event owner, once, during the event_init().
- */
+ 
 #define SPE_PMU_HW_FLAGS_CX			0x00001
 
 static_assert((PERF_EVENT_FLAG_ARCH & SPE_PMU_HW_FLAGS_CX) == SPE_PMU_HW_FLAGS_CX);
@@ -73,7 +62,7 @@ struct arm_spe_pmu {
 	cpumask_t				supported_cpus;
 	struct hlist_node			hotplug_node;
 
-	int					irq; /* PPI */
+	int					irq;  
 	u16					pmsver;
 	u16					min_period;
 	u16					counter_sz;
@@ -95,10 +84,10 @@ struct arm_spe_pmu {
 
 #define to_spe_pmu(p) (container_of(p, struct arm_spe_pmu, pmu))
 
-/* Convert a free-running index from perf into an SPE buffer offset */
+ 
 #define PERF_IDX2OFF(idx, buf)	((idx) % ((buf)->nr_pages << PAGE_SHIFT))
 
-/* Keep track of our dynamic hotplug state */
+ 
 static enum cpuhp_state arm_spe_pmu_online;
 
 enum arm_spe_pmu_buf_fault_action {
@@ -107,7 +96,7 @@ enum arm_spe_pmu_buf_fault_action {
 	SPE_PMU_BUF_FAULT_ACT_OK,
 };
 
-/* This sysfs gunk was really good fun to write. */
+ 
 enum arm_spe_pmu_capabilities {
 	SPE_PMU_CAP_ARCH_INST = 0,
 	SPE_PMU_CAP_ERND,
@@ -171,42 +160,42 @@ static const struct attribute_group arm_spe_pmu_cap_group = {
 	.attrs	= arm_spe_pmu_cap_attr,
 };
 
-/* User ABI */
-#define ATTR_CFG_FLD_ts_enable_CFG		config	/* PMSCR_EL1.TS */
+ 
+#define ATTR_CFG_FLD_ts_enable_CFG		config	 
 #define ATTR_CFG_FLD_ts_enable_LO		0
 #define ATTR_CFG_FLD_ts_enable_HI		0
-#define ATTR_CFG_FLD_pa_enable_CFG		config	/* PMSCR_EL1.PA */
+#define ATTR_CFG_FLD_pa_enable_CFG		config	 
 #define ATTR_CFG_FLD_pa_enable_LO		1
 #define ATTR_CFG_FLD_pa_enable_HI		1
-#define ATTR_CFG_FLD_pct_enable_CFG		config	/* PMSCR_EL1.PCT */
+#define ATTR_CFG_FLD_pct_enable_CFG		config	 
 #define ATTR_CFG_FLD_pct_enable_LO		2
 #define ATTR_CFG_FLD_pct_enable_HI		2
-#define ATTR_CFG_FLD_jitter_CFG			config	/* PMSIRR_EL1.RND */
+#define ATTR_CFG_FLD_jitter_CFG			config	 
 #define ATTR_CFG_FLD_jitter_LO			16
 #define ATTR_CFG_FLD_jitter_HI			16
-#define ATTR_CFG_FLD_branch_filter_CFG		config	/* PMSFCR_EL1.B */
+#define ATTR_CFG_FLD_branch_filter_CFG		config	 
 #define ATTR_CFG_FLD_branch_filter_LO		32
 #define ATTR_CFG_FLD_branch_filter_HI		32
-#define ATTR_CFG_FLD_load_filter_CFG		config	/* PMSFCR_EL1.LD */
+#define ATTR_CFG_FLD_load_filter_CFG		config	 
 #define ATTR_CFG_FLD_load_filter_LO		33
 #define ATTR_CFG_FLD_load_filter_HI		33
-#define ATTR_CFG_FLD_store_filter_CFG		config	/* PMSFCR_EL1.ST */
+#define ATTR_CFG_FLD_store_filter_CFG		config	 
 #define ATTR_CFG_FLD_store_filter_LO		34
 #define ATTR_CFG_FLD_store_filter_HI		34
 
-#define ATTR_CFG_FLD_event_filter_CFG		config1	/* PMSEVFR_EL1 */
+#define ATTR_CFG_FLD_event_filter_CFG		config1	 
 #define ATTR_CFG_FLD_event_filter_LO		0
 #define ATTR_CFG_FLD_event_filter_HI		63
 
-#define ATTR_CFG_FLD_min_latency_CFG		config2	/* PMSLATFR_EL1.MINLAT */
+#define ATTR_CFG_FLD_min_latency_CFG		config2	 
 #define ATTR_CFG_FLD_min_latency_LO		0
 #define ATTR_CFG_FLD_min_latency_HI		11
 
-#define ATTR_CFG_FLD_inv_event_filter_CFG	config3	/* PMSNEVFR_EL1 */
+#define ATTR_CFG_FLD_inv_event_filter_CFG	config3	 
 #define ATTR_CFG_FLD_inv_event_filter_LO	0
 #define ATTR_CFG_FLD_inv_event_filter_HI	63
 
-/* Why does everything I do descend into this? */
+ 
 #define __GEN_PMU_FORMAT_ATTR(cfg, lo, hi)				\
 	(lo) == (hi) ? #cfg ":" #lo "\n" : #cfg ":" #lo "-" #hi
 
@@ -297,7 +286,7 @@ static const struct attribute_group *arm_spe_pmu_attr_groups[] = {
 	NULL,
 };
 
-/* Convert between user ABI and register values */
+ 
 static u64 arm_spe_event_to_pmscr(struct perf_event *event)
 {
 	struct perf_event_attr *attr = &event->attr;
@@ -407,19 +396,11 @@ static u64 arm_spe_pmu_next_snapshot_off(struct perf_output_handle *handle)
 	u64 head = PERF_IDX2OFF(handle->head, buf);
 	u64 limit = buf->nr_pages * PAGE_SIZE;
 
-	/*
-	 * The trace format isn't parseable in reverse, so clamp
-	 * the limit to half of the buffer size in snapshot mode
-	 * so that the worst case is half a buffer of records, as
-	 * opposed to a single record.
-	 */
+	 
 	if (head < limit >> 1)
 		limit >>= 1;
 
-	/*
-	 * If we're within max_record_sz of the limit, we must
-	 * pad, move the head index and recompute the limit.
-	 */
+	 
 	if (limit - head < spe_pmu->max_record_sz) {
 		arm_spe_pmu_pad_buf(handle, limit - head);
 		handle->head = PERF_IDX2OFF(limit, buf);
@@ -437,20 +418,7 @@ static u64 __arm_spe_pmu_next_off(struct perf_output_handle *handle)
 	u64 limit = bufsize;
 	u64 head, tail, wakeup;
 
-	/*
-	 * The head can be misaligned for two reasons:
-	 *
-	 * 1. The hardware left PMBPTR pointing to the first byte after
-	 *    a record when generating a buffer management event.
-	 *
-	 * 2. We used perf_aux_output_skip to consume handle->size bytes
-	 *    and CIRC_SPACE was used to compute the size, which always
-	 *    leaves one entry free.
-	 *
-	 * Deal with this by padding to the next alignment boundary and
-	 * moving the head index. If we run out of buffer space, we'll
-	 * reduce handle->size to zero and end up reporting truncation.
-	 */
+	 
 	head = PERF_IDX2OFF(handle->head, buf);
 	if (!IS_ALIGNED(head, spe_pmu->align)) {
 		unsigned long delta = roundup(head, spe_pmu->align) - head;
@@ -460,32 +428,19 @@ static u64 __arm_spe_pmu_next_off(struct perf_output_handle *handle)
 		head = PERF_IDX2OFF(handle->head, buf);
 	}
 
-	/* If we've run out of free space, then nothing more to do */
+	 
 	if (!handle->size)
 		goto no_space;
 
-	/* Compute the tail and wakeup indices now that we've aligned head */
+	 
 	tail = PERF_IDX2OFF(handle->head + handle->size, buf);
 	wakeup = PERF_IDX2OFF(handle->wakeup, buf);
 
-	/*
-	 * Avoid clobbering unconsumed data. We know we have space, so
-	 * if we see head == tail we know that the buffer is empty. If
-	 * head > tail, then there's nothing to clobber prior to
-	 * wrapping.
-	 */
+	 
 	if (head < tail)
 		limit = round_down(tail, PAGE_SIZE);
 
-	/*
-	 * Wakeup may be arbitrarily far into the future. If it's not in
-	 * the current generation, either we'll wrap before hitting it,
-	 * or it's in the past and has been handled already.
-	 *
-	 * If there's a wakeup before we wrap, arrange to be woken up by
-	 * the page boundary following it. Keep the tail boundary if
-	 * that's lower.
-	 */
+	 
 	if (handle->wakeup < (handle->head + handle->size) && head <= wakeup)
 		limit = min(limit, round_up(wakeup, PAGE_SIZE));
 
@@ -506,10 +461,7 @@ static u64 arm_spe_pmu_next_off(struct perf_output_handle *handle)
 	u64 limit = __arm_spe_pmu_next_off(handle);
 	u64 head = PERF_IDX2OFF(handle->head, buf);
 
-	/*
-	 * If the head has come too close to the end of the buffer,
-	 * then pad to the end and recompute the limit.
-	 */
+	 
 	if (limit && (limit - head < spe_pmu->max_record_sz)) {
 		arm_spe_pmu_pad_buf(handle, limit - head);
 		limit = __arm_spe_pmu_next_off(handle);
@@ -524,14 +476,11 @@ static void arm_spe_perf_aux_output_begin(struct perf_output_handle *handle,
 	u64 base, limit;
 	struct arm_spe_pmu_buf *buf;
 
-	/* Start a new aux session */
+	 
 	buf = perf_aux_output_begin(handle, event);
 	if (!buf) {
 		event->hw.state |= PERF_HES_STOPPED;
-		/*
-		 * We still need to clear the limit pointer, since the
-		 * profiler might only be disabled by virtue of a fault.
-		 */
+		 
 		limit = 0;
 		goto out_write_limit;
 	}
@@ -565,20 +514,20 @@ static void arm_spe_perf_aux_output_end(struct perf_output_handle *handle)
 
 static void arm_spe_pmu_disable_and_drain_local(void)
 {
-	/* Disable profiling at EL0 and EL1 */
+	 
 	write_sysreg_s(0, SYS_PMSCR_EL1);
 	isb();
 
-	/* Drain any buffered data */
+	 
 	psb_csync();
 	dsb(nsh);
 
-	/* Disable the profiling buffer */
+	 
 	write_sysreg_s(0, SYS_PMBLIMITR_EL1);
 	isb();
 }
 
-/* IRQ handling */
+ 
 static enum arm_spe_pmu_buf_fault_action
 arm_spe_pmu_buf_get_fault_act(struct perf_output_handle *handle)
 {
@@ -586,37 +535,31 @@ arm_spe_pmu_buf_get_fault_act(struct perf_output_handle *handle)
 	u64 pmbsr;
 	enum arm_spe_pmu_buf_fault_action ret;
 
-	/*
-	 * Ensure new profiling data is visible to the CPU and any external
-	 * aborts have been resolved.
-	 */
+	 
 	psb_csync();
 	dsb(nsh);
 
-	/* Ensure hardware updates to PMBPTR_EL1 are visible */
+	 
 	isb();
 
-	/* Service required? */
+	 
 	pmbsr = read_sysreg_s(SYS_PMBSR_EL1);
 	if (!FIELD_GET(PMBSR_EL1_S, pmbsr))
 		return SPE_PMU_BUF_FAULT_ACT_SPURIOUS;
 
-	/*
-	 * If we've lost data, disable profiling and also set the PARTIAL
-	 * flag to indicate that the last record is corrupted.
-	 */
+	 
 	if (FIELD_GET(PMBSR_EL1_DL, pmbsr))
 		perf_aux_output_flag(handle, PERF_AUX_FLAG_TRUNCATED |
 					     PERF_AUX_FLAG_PARTIAL);
 
-	/* Report collisions to userspace so that it can up the period */
+	 
 	if (FIELD_GET(PMBSR_EL1_COLL, pmbsr))
 		perf_aux_output_flag(handle, PERF_AUX_FLAG_COLLISION);
 
-	/* We only expect buffer management events */
+	 
 	switch (FIELD_GET(PMBSR_EL1_EC, pmbsr)) {
 	case PMBSR_EL1_EC_BUF:
-		/* Handled below */
+		 
 		break;
 	case PMBSR_EL1_EC_FAULT_S1:
 	case PMBSR_EL1_EC_FAULT_S2:
@@ -627,7 +570,7 @@ arm_spe_pmu_buf_get_fault_act(struct perf_output_handle *handle)
 		goto out_err;
 	}
 
-	/* Buffer management event */
+	 
 	switch (FIELD_GET(PMBSR_EL1_BUF_BSC_MASK, pmbsr)) {
 	case PMBSR_EL1_BUF_BSC_FULL:
 		ret = SPE_PMU_BUF_FAULT_ACT_OK;
@@ -661,41 +604,27 @@ static irqreturn_t arm_spe_pmu_irq_handler(int irq, void *dev)
 	if (act == SPE_PMU_BUF_FAULT_ACT_SPURIOUS)
 		return IRQ_NONE;
 
-	/*
-	 * Ensure perf callbacks have completed, which may disable the
-	 * profiling buffer in response to a TRUNCATION flag.
-	 */
+	 
 	irq_work_run();
 
 	switch (act) {
 	case SPE_PMU_BUF_FAULT_ACT_FATAL:
-		/*
-		 * If a fatal exception occurred then leaving the profiling
-		 * buffer enabled is a recipe waiting to happen. Since
-		 * fatal faults don't always imply truncation, make sure
-		 * that the profiling buffer is disabled explicitly before
-		 * clearing the syndrome register.
-		 */
+		 
 		arm_spe_pmu_disable_and_drain_local();
 		break;
 	case SPE_PMU_BUF_FAULT_ACT_OK:
-		/*
-		 * We handled the fault (the buffer was full), so resume
-		 * profiling as long as we didn't detect truncation.
-		 * PMBPTR might be misaligned, but we'll burn that bridge
-		 * when we get to it.
-		 */
+		 
 		if (!(handle->aux_flags & PERF_AUX_FLAG_TRUNCATED)) {
 			arm_spe_perf_aux_output_begin(handle, event);
 			isb();
 		}
 		break;
 	case SPE_PMU_BUF_FAULT_ACT_SPURIOUS:
-		/* We've seen you before, but GCC has the memory of a sieve. */
+		 
 		break;
 	}
 
-	/* The buffer pointers are now sane, so resume profiling. */
+	 
 	write_sysreg_s(0, SYS_PMBSR_EL1);
 	return IRQ_HANDLED;
 }
@@ -708,20 +637,20 @@ static u64 arm_spe_pmsevfr_res0(u16 pmsver)
 	case ID_AA64DFR0_EL1_PMSVer_V1P1:
 		return PMSEVFR_EL1_RES0_V1P1;
 	case ID_AA64DFR0_EL1_PMSVer_V1P2:
-	/* Return the highest version we support in default */
+	 
 	default:
 		return PMSEVFR_EL1_RES0_V1P2;
 	}
 }
 
-/* Perf callbacks */
+ 
 static int arm_spe_pmu_event_init(struct perf_event *event)
 {
 	u64 reg;
 	struct perf_event_attr *attr = &event->attr;
 	struct arm_spe_pmu *spe_pmu = to_spe_pmu(event->pmu);
 
-	/* This is, of course, deeply driver-specific */
+	 
 	if (attr->type != event->pmu->type)
 		return -ENOENT;
 
@@ -738,13 +667,7 @@ static int arm_spe_pmu_event_init(struct perf_event *event)
 	if (attr->exclude_idle)
 		return -EOPNOTSUPP;
 
-	/*
-	 * Feedback-directed frequency throttling doesn't work when we
-	 * have a buffer of samples. We'd need to manually count the
-	 * samples in the buffer when it fills up and adjust the event
-	 * count to reflect that. Instead, just force the user to specify
-	 * a sample period.
-	 */
+	 
 	if (attr->freq)
 		return -EINVAL;
 
@@ -819,19 +742,15 @@ static void arm_spe_pmu_stop(struct perf_event *event, int flags)
 	struct hw_perf_event *hwc = &event->hw;
 	struct perf_output_handle *handle = this_cpu_ptr(spe_pmu->handle);
 
-	/* If we're already stopped, then nothing to do */
+	 
 	if (hwc->state & PERF_HES_STOPPED)
 		return;
 
-	/* Stop all trace generation */
+	 
 	arm_spe_pmu_disable_and_drain_local();
 
 	if (flags & PERF_EF_UPDATE) {
-		/*
-		 * If there's a fault pending then ensure we contain it
-		 * to this buffer, since we might be on the context-switch
-		 * path.
-		 */
+		 
 		if (perf_get_aux(handle)) {
 			enum arm_spe_pmu_buf_fault_action act;
 
@@ -842,11 +761,7 @@ static void arm_spe_pmu_stop(struct perf_event *event, int flags)
 				write_sysreg_s(0, SYS_PMBSR_EL1);
 		}
 
-		/*
-		 * This may also contain ECOUNT, but nobody else should
-		 * be looking at period_left, since we forbid frequency
-		 * based sampling.
-		 */
+		 
 		local64_set(&hwc->period_left, read_sysreg_s(SYS_PMSICR_EL1));
 		hwc->state |= PERF_HES_UPTODATE;
 	}
@@ -891,16 +806,11 @@ static void *arm_spe_pmu_setup_aux(struct perf_event *event, void **pages,
 	struct page **pglist;
 	struct arm_spe_pmu_buf *buf;
 
-	/* We need at least two pages for this to work. */
+	 
 	if (nr_pages < 2)
 		return NULL;
 
-	/*
-	 * We require an even number of pages for snapshot mode, so that
-	 * we can effectively treat the buffer as consisting of two equal
-	 * parts and give userspace a fighting chance of getting some
-	 * useful data out of it.
-	 */
+	 
 	if (snapshot && (nr_pages & 1))
 		return NULL;
 
@@ -943,7 +853,7 @@ static void arm_spe_pmu_free_aux(void *aux)
 	kfree(buf);
 }
 
-/* Initialisation and teardown functions */
+ 
 static int arm_spe_pmu_perf_init(struct arm_spe_pmu *spe_pmu)
 {
 	static atomic_t pmu_idx = ATOMIC_INIT(-1);
@@ -956,16 +866,7 @@ static int arm_spe_pmu_perf_init(struct arm_spe_pmu *spe_pmu)
 		.module = THIS_MODULE,
 		.capabilities	= PERF_PMU_CAP_EXCLUSIVE | PERF_PMU_CAP_ITRACE,
 		.attr_groups	= arm_spe_pmu_attr_groups,
-		/*
-		 * We hitch a ride on the software context here, so that
-		 * we can support per-task profiling (which is not possible
-		 * with the invalid context as it doesn't get sched callbacks).
-		 * This requires that userspace either uses a dummy event for
-		 * perf_event_open, since the aux buffer is not setup until
-		 * a subsequent mmap, or creates the profiling event in a
-		 * disabled state and explicitly PERF_EVENT_IOC_ENABLEs it
-		 * once the buffer has been created.
-		 */
+		 
 		.task_ctx_nr	= perf_sw_context,
 		.event_init	= arm_spe_pmu_event_init,
 		.add		= arm_spe_pmu_add,
@@ -1009,7 +910,7 @@ static void __arm_spe_pmu_dev_probe(void *info)
 	}
 	spe_pmu->pmsver = (u16)fld;
 
-	/* Read PMBIDR first to determine whether or not we have access */
+	 
 	reg = read_sysreg_s(SYS_PMBIDR_EL1);
 	if (FIELD_GET(PMBIDR_EL1_P, reg)) {
 		dev_err(dev,
@@ -1017,7 +918,7 @@ static void __arm_spe_pmu_dev_probe(void *info)
 		return;
 	}
 
-	/* Minimum alignment. If it's out-of-range, then fail the probe */
+	 
 	fld = FIELD_GET(PMBIDR_EL1_ALIGN, reg);
 	spe_pmu->align = 1 << fld;
 	if (spe_pmu->align > SZ_2K) {
@@ -1026,7 +927,7 @@ static void __arm_spe_pmu_dev_probe(void *info)
 		return;
 	}
 
-	/* It's now safe to read PMSIDR and figure out what we've got */
+	 
 	reg = read_sysreg_s(SYS_PMSIDR_EL1);
 	if (FIELD_GET(PMSIDR_EL1_FE, reg))
 		spe_pmu->features |= SPE_PMU_FEAT_FILT_EVT;
@@ -1049,7 +950,7 @@ static void __arm_spe_pmu_dev_probe(void *info)
 	if (FIELD_GET(PMSIDR_EL1_ERND, reg))
 		spe_pmu->features |= SPE_PMU_FEAT_ERND;
 
-	/* This field has a spaced out encoding, so just use a look-up */
+	 
 	fld = FIELD_GET(PMSIDR_EL1_INTERVAL, reg);
 	switch (fld) {
 	case PMSIDR_EL1_INTERVAL_256:
@@ -1081,7 +982,7 @@ static void __arm_spe_pmu_dev_probe(void *info)
 		spe_pmu->min_period = 4096;
 	}
 
-	/* Maximum record size. If it's out-of-range, then fail the probe */
+	 
 	fld = FIELD_GET(PMSIDR_EL1_MAXSIZE, reg);
 	spe_pmu->max_record_sz = 1 << fld;
 	if (spe_pmu->max_record_sz > SZ_2K || spe_pmu->max_record_sz < 16) {
@@ -1113,17 +1014,14 @@ static void __arm_spe_pmu_dev_probe(void *info)
 
 static void __arm_spe_pmu_reset_local(void)
 {
-	/*
-	 * This is probably overkill, as we have no idea where we're
-	 * draining any buffered data to...
-	 */
+	 
 	arm_spe_pmu_disable_and_drain_local();
 
-	/* Reset the buffer base pointer */
+	 
 	write_sysreg_s(0, SYS_PMBPTR_EL1);
 	isb();
 
-	/* Clear any pending management interrupts */
+	 
 	write_sysreg_s(0, SYS_PMBSR_EL1);
 	isb();
 }
@@ -1173,22 +1071,18 @@ static int arm_spe_pmu_dev_init(struct arm_spe_pmu *spe_pmu)
 	int ret;
 	cpumask_t *mask = &spe_pmu->supported_cpus;
 
-	/* Make sure we probe the hardware on a relevant CPU */
+	 
 	ret = smp_call_function_any(mask,  __arm_spe_pmu_dev_probe, spe_pmu, 1);
 	if (ret || !(spe_pmu->features & SPE_PMU_FEAT_DEV_PROBED))
 		return -ENXIO;
 
-	/* Request our PPIs (note that the IRQ is still disabled) */
+	 
 	ret = request_percpu_irq(spe_pmu->irq, arm_spe_pmu_irq_handler, DRVNAME,
 				 spe_pmu->handle);
 	if (ret)
 		return ret;
 
-	/*
-	 * Register our hotplug notifier now so we don't miss any events.
-	 * This will enable the IRQ for any supported CPUs that are already
-	 * up.
-	 */
+	 
 	ret = cpuhp_state_add_instance(arm_spe_pmu_online,
 				       &spe_pmu->hotplug_node);
 	if (ret)
@@ -1203,7 +1097,7 @@ static void arm_spe_pmu_dev_teardown(struct arm_spe_pmu *spe_pmu)
 	free_percpu_irq(spe_pmu->irq, spe_pmu->handle);
 }
 
-/* Driver and device probing */
+ 
 static int arm_spe_pmu_irq_probe(struct arm_spe_pmu *spe_pmu)
 {
 	struct platform_device *pdev = spe_pmu->pdev;
@@ -1228,7 +1122,7 @@ static int arm_spe_pmu_irq_probe(struct arm_spe_pmu *spe_pmu)
 
 static const struct of_device_id arm_spe_pmu_of_match[] = {
 	{ .compatible = "arm,statistical-profiling-extension-v1", .data = (void *)1 },
-	{ /* Sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, arm_spe_pmu_of_match);
 
@@ -1244,10 +1138,7 @@ static int arm_spe_pmu_device_probe(struct platform_device *pdev)
 	struct arm_spe_pmu *spe_pmu;
 	struct device *dev = &pdev->dev;
 
-	/*
-	 * If kernelspace is unmapped when running at EL0, then the SPE
-	 * buffer will fault and prematurely terminate the AUX session.
-	 */
+	 
 	if (arm64_kernel_unmapped_at_el0()) {
 		dev_warn_once(dev, "profiling buffer inaccessible. Try passing \"kpti=off\" on the kernel command line\n");
 		return -EPERM;

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// SLG51000 High PSRR, Multi-Output Regulators
-// Copyright (C) 2019  Dialog Semiconductor
-//
-// Author: Eric Jeong <eric.jeong.opensource@diasemi.com>
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -319,7 +319,7 @@ static int slg51000_regulator_init(struct slg51000 *chip)
 				rdesc->linear_min_sel = 0;
 				break;
 			}
-			fallthrough;	/* to the check below */
+			fallthrough;	 
 
 		default:
 			rdesc->linear_min_sel = vsel_range[0];
@@ -352,7 +352,7 @@ static irqreturn_t slg51000_irq_handler(int irq, void *data)
 	int ret, i, handled = IRQ_NONE;
 	unsigned int evt_otp, mask_otp;
 
-	/* Read event[R0], status[R1] and mask[R2] register */
+	 
 	for (i = 0; i < SLG51000_MAX_EVT_REGISTER; i++) {
 		ret = regmap_bulk_read(regmap, es_reg[i].ereg, evt[i], REG_MAX);
 		if (ret < 0) {

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2021 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include "clk-gate.h"
 #include "clk-mtk.h"
@@ -77,12 +77,12 @@ static const struct mtk_gate_regs infra_ao4_cg_regs = {
 	GATE_INFRA_AO4_FLAGS(_id, _name, _parent, _shift, 0)
 
 static const struct mtk_gate infra_ao_clks[] = {
-	/* INFRA_AO0 */
+	 
 	GATE_INFRA_AO0(CLK_INFRA_AO_PMIC_TMR, "infra_ao_pmic_tmr", "top_pwrap_ulposc", 0),
 	GATE_INFRA_AO0(CLK_INFRA_AO_PMIC_AP, "infra_ao_pmic_ap", "top_pwrap_ulposc", 1),
 	GATE_INFRA_AO0(CLK_INFRA_AO_PMIC_MD, "infra_ao_pmic_md", "top_pwrap_ulposc", 2),
 	GATE_INFRA_AO0(CLK_INFRA_AO_PMIC_CONN, "infra_ao_pmic_conn", "top_pwrap_ulposc", 3),
-	/* infra_ao_sej is main clock is for secure engine with JTAG support */
+	 
 	GATE_INFRA_AO0_FLAGS(CLK_INFRA_AO_SEJ, "infra_ao_sej", "top_axi", 5, CLK_IS_CRITICAL),
 	GATE_INFRA_AO0(CLK_INFRA_AO_APXGPT, "infra_ao_apxgpt", "top_axi", 6),
 	GATE_INFRA_AO0(CLK_INFRA_AO_GCE, "infra_ao_gce", "top_axi", 8),
@@ -102,7 +102,7 @@ static const struct mtk_gate infra_ao_clks[] = {
 	GATE_INFRA_AO0(CLK_INFRA_AO_GCE_26M, "infra_ao_gce_26m", "clk26m", 27),
 	GATE_INFRA_AO0(CLK_INFRA_AO_CQ_DMA_FPC, "infra_ao_cq_dma_fpc", "fpc", 28),
 	GATE_INFRA_AO0(CLK_INFRA_AO_UART5, "infra_ao_uart5", "top_uart", 29),
-	/* INFRA_AO1 */
+	 
 	GATE_INFRA_AO1(CLK_INFRA_AO_HDMI_26M, "infra_ao_hdmi_26m", "clk26m", 0),
 	GATE_INFRA_AO1(CLK_INFRA_AO_SPI0, "infra_ao_spi0", "top_spi", 1),
 	GATE_INFRA_AO1(CLK_INFRA_AO_MSDC0, "infra_ao_msdc0", "top_msdc50_0_hclk", 2),
@@ -119,7 +119,7 @@ static const struct mtk_gate infra_ao_clks[] = {
 	GATE_INFRA_AO1(CLK_INFRA_AO_MSDC1_SRC, "infra_ao_msdc1_src", "top_msdc30_1", 16),
 	GATE_INFRA_AO1(CLK_INFRA_AO_CEC_66M_B, "infra_ao_cec_66m_b", "top_axi", 17),
 	GATE_INFRA_AO1(CLK_INFRA_AO_PCIE_TL_96M, "infra_ao_pcie_tl_96m", "top_tl", 18),
-	/* infra_ao_device_apc is for device access permission control module */
+	 
 	GATE_INFRA_AO1_FLAGS(CLK_INFRA_AO_DEVICE_APC, "infra_ao_device_apc", "top_axi", 20,
 			     CLK_IS_CRITICAL),
 	GATE_INFRA_AO1(CLK_INFRA_AO_ECC_66M_H, "infra_ao_ecc_66m_h", "top_axi", 23),
@@ -128,7 +128,7 @@ static const struct mtk_gate infra_ao_clks[] = {
 	GATE_INFRA_AO1(CLK_INFRA_AO_PCIE_TL_32K, "infra_ao_pcie_tl_32k", "clk32k", 26),
 	GATE_INFRA_AO1(CLK_INFRA_AO_DBG_TRACE, "infra_ao_dbg_trace", "top_axi", 29),
 	GATE_INFRA_AO1(CLK_INFRA_AO_DRAMC_F26M, "infra_ao_dramc_f26m", "clk26m", 31),
-	/* INFRA_AO2 */
+	 
 	GATE_INFRA_AO2(CLK_INFRA_AO_IRTX, "infra_ao_irtx", "top_axi", 0),
 	GATE_INFRA_AO2(CLK_INFRA_AO_SSUSB, "infra_ao_ssusb", "top_usb_top", 1),
 	GATE_INFRA_AO2(CLK_INFRA_AO_DISP_PWM, "infra_ao_disp_pwm", "top_disp_pwm0", 2),
@@ -140,7 +140,7 @@ static const struct mtk_gate infra_ao_clks[] = {
 	GATE_INFRA_AO2(CLK_INFRA_AO_UNIPRO_SYS, "infra_ao_unipro_sys", "top_ufs", 11),
 	GATE_INFRA_AO2(CLK_INFRA_AO_UNIPRO_TICK, "infra_ao_unipro_tick", "top_ufs_tick1us", 12),
 	GATE_INFRA_AO2(CLK_INFRA_AO_UFS_MP_SAP_B, "infra_ao_ufs_mp_sap_b", "top_ufs_mp_sap_cfg", 13),
-	/* pwrmcu is used by ATF for platform PM: clocks must never be disabled by the kernel */
+	 
 	GATE_INFRA_AO2_FLAGS(CLK_INFRA_AO_PWRMCU, "infra_ao_pwrmcu", "top_pwrmcu", 15,
 			     CLK_IS_CRITICAL),
 	GATE_INFRA_AO2_FLAGS(CLK_INFRA_AO_PWRMCU_BUS_H, "infra_ao_pwrmcu_bus_h", "top_axi", 17,
@@ -153,7 +153,7 @@ static const struct mtk_gate infra_ao_clks[] = {
 	GATE_INFRA_AO2(CLK_INFRA_AO_AES, "infra_ao_aes", "top_aes_ufsfde", 29),
 	GATE_INFRA_AO2(CLK_INFRA_AO_UFS_TICK, "infra_ao_ufs_tick", "top_ufs_tick1us", 30),
 	GATE_INFRA_AO2(CLK_INFRA_AO_SSUSB_XHCI, "infra_ao_ssusb_xhci", "top_ssusb_xhci", 31),
-	/* INFRA_AO3 */
+	 
 	GATE_INFRA_AO3(CLK_INFRA_AO_MSDC0_SELF, "infra_ao_msdc0f", "top_msdc50_0", 0),
 	GATE_INFRA_AO3(CLK_INFRA_AO_MSDC1_SELF, "infra_ao_msdc1f", "top_msdc50_0", 1),
 	GATE_INFRA_AO3(CLK_INFRA_AO_MSDC2_SELF, "infra_ao_msdc2f", "top_msdc50_0", 2),
@@ -167,14 +167,14 @@ static const struct mtk_gate infra_ao_clks[] = {
 	GATE_INFRA_AO3(CLK_INFRA_AO_GCPU_133M_B, "infra_ao_gcpu_133m_b", "top_axi", 17),
 	GATE_INFRA_AO3(CLK_INFRA_AO_DISP_PWM1, "infra_ao_disp_pwm1", "top_disp_pwm1", 20),
 	GATE_INFRA_AO3(CLK_INFRA_AO_FBIST2FPC, "infra_ao_fbist2fpc", "top_msdc50_0", 24),
-	/* infra_ao_device_apc_sync is for device access permission control module */
+	 
 	GATE_INFRA_AO3_FLAGS(CLK_INFRA_AO_DEVICE_APC_SYNC, "infra_ao_device_apc_sync", "top_axi", 25,
 			     CLK_IS_CRITICAL),
 	GATE_INFRA_AO3(CLK_INFRA_AO_PCIE_P1_PERI_26M, "infra_ao_pcie_p1_peri_26m", "clk26m", 26),
 	GATE_INFRA_AO3(CLK_INFRA_AO_SPIS0, "infra_ao_spis0", "top_spis", 28),
 	GATE_INFRA_AO3(CLK_INFRA_AO_SPIS1, "infra_ao_spis1", "top_spis", 29),
-	/* INFRA_AO4 */
-	/* infra_ao_133m_m_peri infra_ao_66m_m_peri are main clocks of peripheral */
+	 
+	 
 	GATE_INFRA_AO4_FLAGS(CLK_INFRA_AO_133M_M_PERI, "infra_ao_133m_m_peri", "top_axi", 0,
 			     CLK_IS_CRITICAL),
 	GATE_INFRA_AO4_FLAGS(CLK_INFRA_AO_66M_M_PERI, "infra_ao_66m_m_peri", "top_axi", 1,
@@ -226,7 +226,7 @@ static const struct of_device_id of_match_clk_mt8195_infra_ao[] = {
 		.compatible = "mediatek,mt8195-infracfg_ao",
 		.data = &infra_ao_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8195_infra_ao);

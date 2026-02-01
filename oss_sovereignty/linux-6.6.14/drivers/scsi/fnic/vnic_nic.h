@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+ 
+ 
 #ifndef _VNIC_NIC_H_
 #define _VNIC_NIC_H_
 
-/*
- * These defines avoid symbol clash between fnic and enic (Cisco 10G Eth
- * Driver) when both are built with CONFIG options =y
- */
+ 
 #define vnic_set_nic_cfg fnic_set_nic_cfg
 
 #define NIC_CFG_RSS_DEFAULT_CPU_MASK_FIELD	0xffUL
@@ -54,4 +48,4 @@ static inline void vnic_set_nic_cfg(u32 *nic_cfg,
 			<< NIC_CFG_IG_VLAN_STRIP_EN_SHIFT);
 }
 
-#endif /* _VNIC_NIC_H_ */
+#endif  

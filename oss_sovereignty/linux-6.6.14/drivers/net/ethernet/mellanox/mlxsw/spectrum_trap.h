@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2020 Mellanox Technologies. All rights reserved */
+ 
+ 
 
 #ifndef _MLXSW_SPECTRUM_TRAP_H
 #define _MLXSW_SPECTRUM_TRAP_H
@@ -9,18 +9,18 @@
 
 struct mlxsw_sp_trap {
 	struct mlxsw_sp_trap_policer_item *policer_items_arr;
-	size_t policers_count; /* Number of registered policers */
+	size_t policers_count;  
 
 	struct mlxsw_sp_trap_group_item *group_items_arr;
-	size_t groups_count; /* Number of registered groups */
+	size_t groups_count;  
 
 	struct mlxsw_sp_trap_item *trap_items_arr;
-	size_t traps_count; /* Number of registered traps */
+	size_t traps_count;  
 
 	u16 thin_policer_hw_id;
 
 	u64 max_policers;
-	unsigned long policers_usage[]; /* Usage bitmap */
+	unsigned long policers_usage[];  
 };
 
 struct mlxsw_sp_trap_ops {

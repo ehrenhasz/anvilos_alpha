@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Support Intel uncore PerfMon discovery mechanism.
- * Copyright(c) 2021 Intel Corporation.
- */
+ 
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include "uncore.h"
@@ -20,7 +17,7 @@ static bool has_generic_discovery_table(void)
 	if (!dev)
 		return false;
 
-	/* A discovery table device has the unique capability ID. */
+	 
 	dvsec = pci_find_next_ext_capability(dev, 0, UNCORE_EXT_CAP_ID_DISCOVERY);
 	pci_dev_put(dev);
 	if (dvsec)
@@ -35,11 +32,7 @@ static int get_device_die_id(struct pci_dev *dev)
 {
 	int node = pcibus_to_node(dev->bus);
 
-	/*
-	 * If the NUMA info is not available, assume that the logical die id is
-	 * continuous in the order in which the discovery table devices are
-	 * detected.
-	 */
+	 
 	if (node < 0)
 		return logical_die_id++;
 
@@ -143,7 +136,7 @@ uncore_insert_box_info(struct uncore_unit_discovery *unit,
 				unit->box_type);
 			return;
 		}
-		/* Store the first box of each die */
+		 
 		if (!type->box_ctrl_die[die])
 			type->box_ctrl_die[die] = unit->ctl;
 		return;
@@ -161,7 +154,7 @@ uncore_insert_box_info(struct uncore_unit_discovery *unit,
 	if (!ids)
 		goto free_box_offset;
 
-	/* Store generic information for the first box */
+	 
 	if (!type->num_boxes) {
 		type->box_ctrl = unit->ctl;
 		type->box_ctrl_die[die] = unit->ctl;
@@ -249,7 +242,7 @@ static int parse_discovery_table(struct pci_dev *dev, int die,
 	if (!io_addr)
 		return -ENOMEM;
 
-	/* Read Global Discovery State */
+	 
 	memcpy_fromio(&global, io_addr, sizeof(struct uncore_global_discovery));
 	if (uncore_discovery_invalid_unit(global)) {
 		pr_info("Invalid Global Discovery State: 0x%llx 0x%llx 0x%llx\n",
@@ -264,7 +257,7 @@ static int parse_discovery_table(struct pci_dev *dev, int die,
 	if (!io_addr)
 		return -ENOMEM;
 
-	/* Parsing Unit Discovery State */
+	 
 	for (i = 0; i < global.max_units; i++) {
 		memcpy_fromio(&unit, io_addr + (i + 1) * (global.stride * 8),
 			      sizeof(struct uncore_unit_discovery));
@@ -298,10 +291,7 @@ bool intel_uncore_has_discovery_tables(int *ignore)
 	else
 		device = PCI_ANY_ID;
 
-	/*
-	 * Start a new search and iterates through the list of
-	 * the discovery table devices.
-	 */
+	 
 	while ((dev = pci_get_device(PCI_VENDOR_ID_INTEL, device, dev)) != NULL) {
 		while ((dvsec = pci_find_next_ext_capability(dev, dvsec, UNCORE_EXT_CAP_ID_DISCOVERY))) {
 			pci_read_config_dword(dev, dvsec + UNCORE_DISCOVERY_DVSEC_OFFSET, &val);
@@ -326,7 +316,7 @@ bool intel_uncore_has_discovery_tables(int *ignore)
 		}
 	}
 
-	/* None of the discovery tables are available */
+	 
 	if (!parsed)
 		ret = false;
 err:

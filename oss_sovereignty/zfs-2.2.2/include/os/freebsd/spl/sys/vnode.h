@@ -1,30 +1,4 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $FreeBSD$
- */
+ 
 
 #ifndef _OPENSOLARIS_SYS_VNODE_H_
 #define	_OPENSOLARIS_SYS_VNODE_H_
@@ -48,8 +22,8 @@ typedef enum vtype vtype_t;
 #include <sys/namei.h>
 enum symfollow { NO_FOLLOW = NOFOLLOW };
 
-#define	NOCRED	((struct ucred *)0)	/* no credential available */
-#define	F_FREESP	11 	/* Free file space */
+#define	NOCRED	((struct ucred *)0)	 
+#define	F_FREESP	11 	 
 
 #include <sys/proc.h>
 #include <sys/vnode_impl.h>
@@ -130,14 +104,11 @@ vn_flush_cached_data(vnode_t *vp, boolean_t sync)
 #define	specvp(vp, rdev, type, cr)	(VN_HOLD(vp), (vp))
 #define	MANDLOCK(vp, mode)	(0)
 
-/*
- * We will use va_spare is place of Solaris' va_mask.
- * This field is initialized in zfs_setattr().
- */
+ 
 #define	va_mask		va_spare
-/* TODO: va_fileid is shorter than va_nodeid !!! */
+ 
 #define	va_nodeid	va_fileid
-/* TODO: This field needs conversion! */
+ 
 #define	va_nblocks	va_bytes
 #define	va_blksize	va_blocksize
 
@@ -145,9 +116,7 @@ vn_flush_cached_data(vnode_t *vp, boolean_t sync)
 
 #define	FIGNORECASE	0x00
 
-/*
- * Attributes of interest to the caller of setattr or getattr.
- */
+ 
 
 #undef AT_UID
 #undef AT_GID
@@ -165,14 +134,9 @@ vn_flush_cached_data(vnode_t *vp, boolean_t sync)
 #define	AT_RDEV		0x00800
 #define	AT_BLKSIZE	0x01000
 #define	AT_NBLOCKS	0x02000
-/*			0x04000 */	/* unused */
+ 	 
 #define	AT_SEQ		0x08000
-/*
- * If AT_XVATTR is set then there are additional bits to process in
- * the xvattr_t's attribute bitmap.  If this is not set then the bitmap
- * MUST be ignored.  Note that this bit must be set/cleared explicitly.
- * That is, setting AT_ALL will NOT set AT_XVATTR.
- */
+ 
 #define	AT_XVATTR	0x10000
 
 #define	AT_ALL		(AT_MODE|AT_UID|AT_GID|AT_FSID|AT_NODEID|\
@@ -215,4 +179,4 @@ vattr_init_mask(vattr_t *vap)
 
 #include <sys/vfs.h>
 
-#endif	/* _OPENSOLARIS_SYS_VNODE_H_ */
+#endif	 

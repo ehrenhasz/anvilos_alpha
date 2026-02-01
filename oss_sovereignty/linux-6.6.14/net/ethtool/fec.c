@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -128,9 +128,7 @@ static int fec_prepare_data(const struct ethnl_req_info *req_base,
 	ethtool_fec_to_link_modes(fec.active_fec, active_fec_modes, NULL);
 	data->active_fec = find_first_bit(active_fec_modes,
 					  __ETHTOOL_LINK_MODE_MASK_NBITS);
-	/* Don't report attr if no FEC mode set. Note that
-	 * ethtool_fecparam_to_link_modes() ignores NONE and AUTO.
-	 */
+	 
 	if (data->active_fec == __ETHTOOL_LINK_MODE_MASK_NBITS)
 		data->active_fec = 0;
 
@@ -154,8 +152,8 @@ static int fec_reply_size(const struct ethnl_req_info *req_base,
 		return ret;
 	len += ret;
 
-	len += nla_total_size(sizeof(u8)) +	/* _FEC_AUTO */
-	       nla_total_size(sizeof(u32));	/* _FEC_ACTIVE */
+	len += nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u32));	 
 
 	if (req_base->flags & ETHTOOL_FLAG_STATS)
 		len += 3 * nla_total_size_64bit(sizeof(u64) *
@@ -217,7 +215,7 @@ static int fec_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* FEC_SET */
+ 
 
 const struct nla_policy ethnl_fec_set_policy[ETHTOOL_A_FEC_AUTO + 1] = {
 	[ETHTOOL_A_FEC_HEADER]	= NLA_POLICY_NESTED(ethnl_header_policy),

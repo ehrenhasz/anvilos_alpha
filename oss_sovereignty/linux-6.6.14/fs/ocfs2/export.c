@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * export.c
- *
- * Functions to facilitate NFS exporting
- *
- * Copyright (C) 2002, 2005 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/types.h>
@@ -48,17 +42,11 @@ static struct dentry *ocfs2_get_dentry(struct super_block *sb,
 	}
 
 	inode = ocfs2_ilookup(sb, blkno);
-	/*
-	 * If the inode exists in memory, we only need to check it's
-	 * generation number
-	 */
+	 
 	if (inode)
 		goto check_gen;
 
-	/*
-	 * This will synchronize us against ocfs2_delete_inode() on
-	 * all nodes
-	 */
+	 
 	status = ocfs2_nfs_sync_lock(osb, 1);
 	if (status < 0) {
 		mlog(ML_ERROR, "getting nfs sync lock(EX) failed %d\n", status);
@@ -68,11 +56,7 @@ static struct dentry *ocfs2_get_dentry(struct super_block *sb,
 	status = ocfs2_test_inode_bit(osb, blkno, &set);
 	if (status < 0) {
 		if (status == -EINVAL) {
-			/*
-			 * The blkno NFS gave us doesn't even show up
-			 * as an inode, we return -ESTALE to be
-			 * nice
-			 */
+			 
 			status = -ESTALE;
 		} else
 			mlog(ML_ERROR, "test inode bit failed %d\n", status);
@@ -80,7 +64,7 @@ static struct dentry *ocfs2_get_dentry(struct super_block *sb,
 	}
 
 	trace_ocfs2_get_dentry_test_bit(status, set);
-	/* If the inode allocator bit is clear, this inode must be stale */
+	 
 	if (!set) {
 		status = -ESTALE;
 		goto unlock_nfs_sync;

@@ -1,28 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <drm/drm_drv.h>
@@ -52,13 +28,7 @@ static void vce_v4_0_mc_resume(struct amdgpu_device *adev);
 static void vce_v4_0_set_ring_funcs(struct amdgpu_device *adev);
 static void vce_v4_0_set_irq_funcs(struct amdgpu_device *adev);
 
-/**
- * vce_v4_0_ring_get_rptr - get read pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware read pointer
- */
+ 
 static uint64_t vce_v4_0_ring_get_rptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -71,13 +41,7 @@ static uint64_t vce_v4_0_ring_get_rptr(struct amdgpu_ring *ring)
 		return RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_RB_RPTR3));
 }
 
-/**
- * vce_v4_0_ring_get_wptr - get write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware write pointer
- */
+ 
 static uint64_t vce_v4_0_ring_get_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -93,19 +57,13 @@ static uint64_t vce_v4_0_ring_get_wptr(struct amdgpu_ring *ring)
 		return RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_RB_WPTR3));
 }
 
-/**
- * vce_v4_0_ring_set_wptr - set write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Commits the write pointer to the hardware
- */
+ 
 static void vce_v4_0_ring_set_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
 
 	if (ring->use_doorbell) {
-		/* XXX check if swapping is necessary on BE */
+		 
 		*ring->wptr_cpu_addr = lower_32_bits(ring->wptr);
 		WDOORBELL32(ring->doorbell_index, lower_32_bits(ring->wptr));
 		return;
@@ -160,20 +118,20 @@ static int vce_v4_0_mmsch_start(struct amdgpu_device *adev,
 
 	size = header->header_size + header->vce_table_size + header->uvd_table_size;
 
-	/* 1, write to vce_mmsch_vf_ctx_addr_lo/hi register with GPU mc addr of memory descriptor location */
+	 
 	WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_CTX_ADDR_LO), lower_32_bits(addr));
 	WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_CTX_ADDR_HI), upper_32_bits(addr));
 
-	/* 2, update vmid of descriptor */
+	 
 	data = RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_VMID));
 	data &= ~VCE_MMSCH_VF_VMID__VF_CTX_VMID_MASK;
-	data |= (0 << VCE_MMSCH_VF_VMID__VF_CTX_VMID__SHIFT); /* use domain0 for MM scheduler */
+	data |= (0 << VCE_MMSCH_VF_VMID__VF_CTX_VMID__SHIFT);  
 	WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_VMID), data);
 
-	/* 3, notify mmsch about the size of this descriptor */
+	 
 	WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_CTX_SIZE), size);
 
-	/* 4, set resp to zero */
+	 
 	WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_MAILBOX_RESP), 0);
 
 	WDOORBELL32(adev->vce.ring[0].doorbell_index, 0);
@@ -181,7 +139,7 @@ static int vce_v4_0_mmsch_start(struct amdgpu_device *adev,
 	adev->vce.ring[0].wptr = 0;
 	adev->vce.ring[0].wptr_old = 0;
 
-	/* 5, kick off the initialization and wait until VCE_MMSCH_VF_MAILBOX_RESP becomes non-zero */
+	 
 	WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_MAILBOX_HOST), 0x10000001);
 
 	data = RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_MMSCH_VF_MAILBOX_RESP));
@@ -238,7 +196,7 @@ static int vce_v4_0_sriov_start(struct amdgpu_device *adev)
 		MMSCH_V1_0_INSERT_DIRECT_WT(SOC15_REG_OFFSET(VCE, 0, mmVCE_RB_SIZE),
 					    ring->ring_size / 4);
 
-		/* BEGING OF MC_RESUME */
+		 
 		MMSCH_V1_0_INSERT_DIRECT_WT(SOC15_REG_OFFSET(VCE, 0, mmVCE_LMI_CTRL), 0x398000);
 		MMSCH_V1_0_INSERT_DIRECT_RD_MOD_WT(SOC15_REG_OFFSET(VCE, 0, mmVCE_LMI_CACHE_CTRL), ~0x1, 0);
 		MMSCH_V1_0_INSERT_DIRECT_WT(SOC15_REG_OFFSET(VCE, 0, mmVCE_LMI_SWAP_CNTL), 0);
@@ -301,7 +259,7 @@ static int vce_v4_0_sriov_start(struct amdgpu_device *adev)
 						   VCE_SYS_INT_EN__VCE_SYS_INT_TRAP_INTERRUPT_EN_MASK,
 						   VCE_SYS_INT_EN__VCE_SYS_INT_TRAP_INTERRUPT_EN_MASK);
 
-		/* end of MC_RESUME */
+		 
 		MMSCH_V1_0_INSERT_DIRECT_RD_MOD_WT(SOC15_REG_OFFSET(VCE, 0, mmVCE_STATUS),
 						   VCE_STATUS__JOB_BUSY_MASK, ~VCE_STATUS__JOB_BUSY_MASK);
 		MMSCH_V1_0_INSERT_DIRECT_RD_MOD_WT(SOC15_REG_OFFSET(VCE, 0, mmVCE_VCPU_CNTL),
@@ -313,11 +271,11 @@ static int vce_v4_0_sriov_start(struct amdgpu_device *adev)
 					      VCE_STATUS_VCPU_REPORT_FW_LOADED_MASK,
 					      VCE_STATUS_VCPU_REPORT_FW_LOADED_MASK);
 
-		/* clear BUSY flag */
+		 
 		MMSCH_V1_0_INSERT_DIRECT_RD_MOD_WT(SOC15_REG_OFFSET(VCE, 0, mmVCE_STATUS),
 						   ~VCE_STATUS__JOB_BUSY_MASK, 0);
 
-		/* add end packet */
+		 
 		memcpy((void *)init_table, &end, sizeof(struct mmsch_v1_0_cmd_end));
 		table_size += sizeof(struct mmsch_v1_0_cmd_end) / 4;
 		header->vce_table_size = table_size;
@@ -326,13 +284,7 @@ static int vce_v4_0_sriov_start(struct amdgpu_device *adev)
 	return vce_v4_0_mmsch_start(adev, &adev->virt.mm_table);
 }
 
-/**
- * vce_v4_0_start - start VCE block
- *
- * @adev: amdgpu_device pointer
- *
- * Setup and start the VCE block
- */
+ 
 static int vce_v4_0_start(struct amdgpu_device *adev)
 {
 	struct amdgpu_ring *ring;
@@ -374,7 +326,7 @@ static int vce_v4_0_start(struct amdgpu_device *adev)
 
 	r = vce_v4_0_firmware_loaded(adev);
 
-	/* clear BUSY flag */
+	 
 	WREG32_P(SOC15_REG_OFFSET(VCE, 0, mmVCE_STATUS), 0, ~VCE_STATUS__JOB_BUSY_MASK);
 
 	if (r) {
@@ -388,21 +340,19 @@ static int vce_v4_0_start(struct amdgpu_device *adev)
 static int vce_v4_0_stop(struct amdgpu_device *adev)
 {
 
-	/* Disable VCPU */
+	 
 	WREG32_P(SOC15_REG_OFFSET(VCE, 0, mmVCE_VCPU_CNTL), 0, ~0x200001);
 
-	/* hold on ECPU */
+	 
 	WREG32_P(SOC15_REG_OFFSET(VCE, 0, mmVCE_SOFT_RESET),
 			VCE_SOFT_RESET__ECPU_SOFT_RESET_MASK,
 			~VCE_SOFT_RESET__ECPU_SOFT_RESET_MASK);
 
-	/* clear VCE_STATUS */
+	 
 	WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_STATUS), 0);
 
-	/* Set Clock-Gating off */
-	/* if (adev->cg_flags & AMD_CG_SUPPORT_VCE_MGCG)
-		vce_v4_0_set_vce_sw_clock_gating(adev, false);
-	*/
+	 
+	 
 
 	return 0;
 }
@@ -411,7 +361,7 @@ static int vce_v4_0_early_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	if (amdgpu_sriov_vf(adev)) /* currently only VCN0 support SRIOV */
+	if (amdgpu_sriov_vf(adev))  
 		adev->vce.num_rings = 1;
 	else
 		adev->vce.num_rings = 3;
@@ -469,12 +419,10 @@ static int vce_v4_0_sw_init(void *handle)
 		ring->vm_hub = AMDGPU_MMHUB0(0);
 		sprintf(ring->name, "vce%d", i);
 		if (amdgpu_sriov_vf(adev)) {
-			/* DOORBELL only works under SRIOV */
+			 
 			ring->use_doorbell = true;
 
-			/* currently only use the first encoding ring for sriov,
-			 * so set unused location for other unused rings.
-			 */
+			 
 			if (i == 0)
 				ring->doorbell_index = adev->doorbell_index.uvd_vce.vce_ring0_1 * 2;
 			else
@@ -503,7 +451,7 @@ static int vce_v4_0_sw_fini(void *handle)
 	int r;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* free MM table */
+	 
 	amdgpu_virt_free_mm_table(adev);
 
 	if (adev->firmware.load_type == AMDGPU_FW_LOAD_PSP) {
@@ -548,10 +496,10 @@ static int vce_v4_0_hw_fini(void *handle)
 	cancel_delayed_work_sync(&adev->vce.idle_work);
 
 	if (!amdgpu_sriov_vf(adev)) {
-		/* vce_v4_0_wait_for_idle(handle); */
+		 
 		vce_v4_0_stop(adev);
 	} else {
-		/* full access mode, so don't touch any VCE register */
+		 
 		DRM_DEBUG("For SRIOV client, shouldn't do anything.\n");
 	}
 
@@ -576,17 +524,7 @@ static int vce_v4_0_suspend(void *handle)
 		drm_dev_exit(idx);
 	}
 
-	/*
-	 * Proper cleanups before halting the HW engine:
-	 *   - cancel the delayed idle work
-	 *   - enable powergating
-	 *   - enable clockgating
-	 *   - disable dpm
-	 *
-	 * TODO: to align with the VCN implementation, move the
-	 * jobs for clockgating/powergating/dpm setting to
-	 * ->set_powergating_state().
-	 */
+	 
 	cancel_delayed_work_sync(&adev->vce.idle_work);
 
 	if (adev->pm.dpm_enabled) {
@@ -692,7 +630,7 @@ static void vce_v4_0_mc_resume(struct amdgpu_device *adev)
 static int vce_v4_0_set_clockgating_state(void *handle,
 					  enum amd_clockgating_state state)
 {
-	/* needed for driver unload*/
+	 
 	return 0;
 }
 
@@ -720,9 +658,9 @@ static int vce_v4_0_wait_for_idle(void *handle)
 	return -ETIMEDOUT;
 }
 
-#define  VCE_STATUS_VCPU_REPORT_AUTO_BUSY_MASK  0x00000008L   /* AUTO_BUSY */
-#define  VCE_STATUS_VCPU_REPORT_RB0_BUSY_MASK   0x00000010L   /* RB0_BUSY */
-#define  VCE_STATUS_VCPU_REPORT_RB1_BUSY_MASK   0x00000020L   /* RB1_BUSY */
+#define  VCE_STATUS_VCPU_REPORT_AUTO_BUSY_MASK  0x00000008L    
+#define  VCE_STATUS_VCPU_REPORT_RB0_BUSY_MASK   0x00000010L    
+#define  VCE_STATUS_VCPU_REPORT_RB1_BUSY_MASK   0x00000020L    
 #define  AMDGPU_VCE_STATUS_BUSY_MASK (VCE_STATUS_VCPU_REPORT_AUTO_BUSY_MASK | \
 				      VCE_STATUS_VCPU_REPORT_RB0_BUSY_MASK)
 
@@ -731,19 +669,7 @@ static bool vce_v4_0_check_soft_reset(void *handle)
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 	u32 srbm_soft_reset = 0;
 
-	/* According to VCE team , we should use VCE_STATUS instead
-	 * SRBM_STATUS.VCE_BUSY bit for busy status checking.
-	 * GRBM_GFX_INDEX.INSTANCE_INDEX is used to specify which VCE
-	 * instance's registers are accessed
-	 * (0 for 1st instance, 10 for 2nd instance).
-	 *
-	 *VCE_STATUS
-	 *|UENC|ACPI|AUTO ACTIVE|RB1 |RB0 |RB2 |          |FW_LOADED|JOB |
-	 *|----+----+-----------+----+----+----+----------+---------+----|
-	 *|bit8|bit7|    bit6   |bit5|bit4|bit3|   bit2   |  bit1   |bit0|
-	 *
-	 * VCE team suggest use bit 3--bit 6 for busy status check
-	 */
+	 
 	mutex_lock(&adev->grbm_idx_mutex);
 	WREG32_FIELD(GRBM_GFX_INDEX, INSTANCE_INDEX, 0);
 	if (RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_STATUS) & AMDGPU_VCE_STATUS_BUSY_MASK) {
@@ -791,7 +717,7 @@ static int vce_v4_0_soft_reset(void *handle)
 		WREG32(mmSRBM_SOFT_RESET, tmp);
 		tmp = RREG32(mmSRBM_SOFT_RESET);
 
-		/* Wait a little for things to settle down */
+		 
 		udelay(50);
 	}
 
@@ -842,14 +768,10 @@ static void vce_v4_0_set_vce_sw_clock_gating(struct amdgpu_device *adev,
 {
 	u32 data;
 
-	/* Set Override to disable Clock Gating */
+	 
 	vce_v4_0_override_vce_clock_gating(adev, true);
 
-	/* This function enables MGCG which is controlled by firmware.
-	   With the clocks in the gated state the core is still
-	   accessible but the firmware will throttle the clocks on the
-	   fly as necessary.
-	*/
+	 
 	if (gated) {
 		data = RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_CLOCK_GATING_B));
 		data |= 0x1ff;
@@ -933,20 +855,20 @@ static int vce_v4_0_set_clockgating_state(void *handle,
 
 	mutex_lock(&adev->grbm_idx_mutex);
 	for (i = 0; i < 2; i++) {
-		/* Program VCE Instance 0 or 1 if not harvested */
+		 
 		if (adev->vce.harvest_config & (1 << i))
 			continue;
 
 		WREG32_FIELD(GRBM_GFX_INDEX, VCE_INSTANCE, i);
 
 		if (enable) {
-			/* initialize VCE_CLOCK_GATING_A: Clock ON/OFF delay */
+			 
 			uint32_t data = RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_CLOCK_GATING_A);
 			data &= ~(0xf | 0xff0);
 			data |= ((0x0 << 0) | (0x04 << 4));
 			WREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_CLOCK_GATING_A, data);
 
-			/* initialize VCE_UENC_CLOCK_GATING: Clock ON/OFF delay */
+			 
 			data = RREG32(SOC15_REG_OFFSET(VCE, 0, mmVCE_UENC_CLOCK_GATING);
 			data &= ~(0xf | 0xff0);
 			data |= ((0x0 << 0) | (0x04 << 4));
@@ -966,13 +888,7 @@ static int vce_v4_0_set_clockgating_state(void *handle,
 static int vce_v4_0_set_powergating_state(void *handle,
 					  enum amd_powergating_state state)
 {
-	/* This doesn't actually powergate the VCE block.
-	 * That's done in the dpm code via the SMC.  This
-	 * just re-inits the block as necessary.  The actual
-	 * gating still happens in the dpm code.  We should
-	 * revisit this when there is a cleaner line between
-	 * the smc and the hw blocks
-	 */
+	 
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 	if (state == AMD_PG_STATE_GATE)
@@ -1026,7 +942,7 @@ static void vce_v4_0_emit_vm_flush(struct amdgpu_ring *ring,
 
 	pd_addr = amdgpu_gmc_emit_flush_gpu_tlb(ring, vmid, pd_addr);
 
-	/* wait for reg writes */
+	 
 	vce_v4_0_emit_reg_wait(ring, hub->ctx0_ptb_addr_lo32 +
 			       vmid * hub->ctx_addr_distance,
 			       lower_32_bits(pd_addr), 0xffffffff);
@@ -1088,12 +1004,12 @@ const struct amd_ip_funcs vce_v4_0_ip_funcs = {
 	.hw_fini = vce_v4_0_hw_fini,
 	.suspend = vce_v4_0_suspend,
 	.resume = vce_v4_0_resume,
-	.is_idle = NULL /* vce_v4_0_is_idle */,
-	.wait_for_idle = NULL /* vce_v4_0_wait_for_idle */,
-	.check_soft_reset = NULL /* vce_v4_0_check_soft_reset */,
-	.pre_soft_reset = NULL /* vce_v4_0_pre_soft_reset */,
-	.soft_reset = NULL /* vce_v4_0_soft_reset */,
-	.post_soft_reset = NULL /* vce_v4_0_post_soft_reset */,
+	.is_idle = NULL  ,
+	.wait_for_idle = NULL  ,
+	.check_soft_reset = NULL  ,
+	.pre_soft_reset = NULL  ,
+	.soft_reset = NULL  ,
+	.post_soft_reset = NULL  ,
 	.set_clockgating_state = vce_v4_0_set_clockgating_state,
 	.set_powergating_state = vce_v4_0_set_powergating_state,
 };
@@ -1111,10 +1027,10 @@ static const struct amdgpu_ring_funcs vce_v4_0_ring_vm_funcs = {
 	.emit_frame_size =
 		SOC15_FLUSH_GPU_TLB_NUM_WREG * 3 +
 		SOC15_FLUSH_GPU_TLB_NUM_REG_WAIT * 4 +
-		4 + /* vce_v4_0_emit_vm_flush */
-		5 + 5 + /* amdgpu_vce_ring_emit_fence x2 vm fence */
-		1, /* vce_v4_0_ring_insert_end */
-	.emit_ib_size = 5, /* vce_v4_0_ring_emit_ib */
+		4 +  
+		5 + 5 +  
+		1,  
+	.emit_ib_size = 5,  
 	.emit_ib = vce_v4_0_ring_emit_ib,
 	.emit_vm_flush = vce_v4_0_emit_vm_flush,
 	.emit_fence = vce_v4_0_ring_emit_fence,

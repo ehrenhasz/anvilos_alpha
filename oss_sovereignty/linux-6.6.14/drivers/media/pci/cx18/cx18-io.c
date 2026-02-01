@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  cx18 driver PCI memory mapped IO access routines
- *
- *  Copyright (C) 2007  Hans Verkuil <hverkuil@xs4all.nl>
- *  Copyright (C) 2008  Andy Walls <awalls@md.metrocast.net>
- */
+
+ 
 
 #include "cx18-driver.h"
 #include "cx18-io.h"
@@ -16,7 +11,7 @@ void cx18_memset_io(struct cx18 *cx, void __iomem *addr, int val, size_t count)
 	u16 val2 = val | (val << 8);
 	u32 val4 = val2 | (val2 << 16);
 
-	/* Align writes on the CX23418's addresses */
+	 
 	if ((count > 0) && ((unsigned long)dst & 1)) {
 		cx18_writeb(cx, (u8) val, dst);
 		count--;

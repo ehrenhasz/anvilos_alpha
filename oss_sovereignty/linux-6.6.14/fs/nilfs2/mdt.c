@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Meta data file for NILFS
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Ryusuke Konishi.
- */
+
+ 
 
 #include <linux/buffer_head.h>
 #include <linux/mpage.h>
@@ -19,7 +13,7 @@
 #include "segment.h"
 #include "page.h"
 #include "mdt.h"
-#include "alloc.h"		/* nilfs_palloc_destroy_cache() */
+#include "alloc.h"		 
 
 #include <trace/events/nilfs2.h>
 
@@ -36,9 +30,9 @@ nilfs_mdt_insert_new_block(struct inode *inode, unsigned long block,
 	void *kaddr;
 	int ret;
 
-	/* Caller exclude read accesses using page lock */
+	 
 
-	/* set_buffer_new(bh); */
+	 
 	bh->b_blocknr = 0;
 
 	ret = nilfs_bmap_insert(ii->i_bmap, block, (unsigned long)bh);
@@ -122,7 +116,7 @@ nilfs_mdt_submit_block(struct inode *inode, unsigned long blkoff, blk_opf_t opf,
 	if (unlikely(!bh))
 		goto failed;
 
-	ret = -EEXIST; /* internal code */
+	ret = -EEXIST;  
 	if (buffer_uptodate(bh))
 		goto out;
 
@@ -131,7 +125,7 @@ nilfs_mdt_submit_block(struct inode *inode, unsigned long blkoff, blk_opf_t opf,
 			ret = -EBUSY;
 			goto failed_bh;
 		}
-	} else /* opf == REQ_OP_READ */
+	} else  
 		lock_buffer(bh);
 
 	if (buffer_uptodate(bh)) {
@@ -174,7 +168,7 @@ static int nilfs_mdt_read_block(struct inode *inode, unsigned long block,
 	int err;
 
 	err = nilfs_mdt_submit_block(inode, block, REQ_OP_READ, &first_bh);
-	if (err == -EEXIST) /* internal code */
+	if (err == -EEXIST)  
 		goto out;
 
 	if (unlikely(err))
@@ -189,7 +183,7 @@ static int nilfs_mdt_read_block(struct inode *inode, unsigned long block,
 				brelse(bh);
 			else if (err != -EBUSY)
 				break;
-				/* abort readahead if bmap lookup failed */
+				 
 			if (!buffer_locked(first_bh))
 				goto out_no_wait;
 		}
@@ -215,30 +209,7 @@ static int nilfs_mdt_read_block(struct inode *inode, unsigned long block,
 	return err;
 }
 
-/**
- * nilfs_mdt_get_block - read or create a buffer on meta data file.
- * @inode: inode of the meta data file
- * @blkoff: block offset
- * @create: create flag
- * @init_block: initializer used for newly allocated block
- * @out_bh: output of a pointer to the buffer_head
- *
- * nilfs_mdt_get_block() looks up the specified buffer and tries to create
- * a new buffer if @create is not zero.  On success, the returned buffer is
- * assured to be either existing or formatted using a buffer lock on success.
- * @out_bh is substituted only when zero is returned.
- *
- * Return Value: On success, it returns 0. On error, the following negative
- * error code is returned.
- *
- * %-ENOMEM - Insufficient memory available.
- *
- * %-EIO - I/O error
- *
- * %-ENOENT - the specified block does not exist (hole block)
- *
- * %-EROFS - Read only filesystem (for create mode)
- */
+ 
 int nilfs_mdt_get_block(struct inode *inode, unsigned long blkoff, int create,
 			void (*init_block)(struct inode *,
 					   struct buffer_head *, void *),
@@ -246,7 +217,7 @@ int nilfs_mdt_get_block(struct inode *inode, unsigned long blkoff, int create,
 {
 	int ret;
 
-	/* Should be rewritten with merging nilfs_mdt_read_block() */
+	 
  retry:
 	ret = nilfs_mdt_read_block(inode, blkoff, !create, out_bh);
 	if (!create || ret != -ENOENT)
@@ -254,34 +225,13 @@ int nilfs_mdt_get_block(struct inode *inode, unsigned long blkoff, int create,
 
 	ret = nilfs_mdt_create_block(inode, blkoff, out_bh, init_block);
 	if (unlikely(ret == -EEXIST)) {
-		/* create = 0; */  /* limit read-create loop retries */
+		    
 		goto retry;
 	}
 	return ret;
 }
 
-/**
- * nilfs_mdt_find_block - find and get a buffer on meta data file.
- * @inode: inode of the meta data file
- * @start: start block offset (inclusive)
- * @end: end block offset (inclusive)
- * @blkoff: block offset
- * @out_bh: place to store a pointer to buffer_head struct
- *
- * nilfs_mdt_find_block() looks up an existing block in range of
- * [@start, @end] and stores pointer to a buffer head of the block to
- * @out_bh, and block offset to @blkoff, respectively.  @out_bh and
- * @blkoff are substituted only when zero is returned.
- *
- * Return Value: On success, it returns 0. On error, the following negative
- * error code is returned.
- *
- * %-ENOMEM - Insufficient memory available.
- *
- * %-EIO - I/O error
- *
- * %-ENOENT - no block was found in the range
- */
+ 
 int nilfs_mdt_find_block(struct inode *inode, unsigned long start,
 			 unsigned long end, unsigned long *blkoff,
 			 struct buffer_head **out_bh)
@@ -314,18 +264,7 @@ out:
 	return ret;
 }
 
-/**
- * nilfs_mdt_delete_block - make a hole on the meta data file.
- * @inode: inode of the meta data file
- * @block: block offset
- *
- * Return Value: On success, zero is returned.
- * On error, one of the following negative error code is returned.
- *
- * %-ENOMEM - Insufficient memory available.
- *
- * %-EIO - I/O error
- */
+ 
 int nilfs_mdt_delete_block(struct inode *inode, unsigned long block)
 {
 	struct nilfs_inode_info *ii = NILFS_I(inode);
@@ -339,21 +278,7 @@ int nilfs_mdt_delete_block(struct inode *inode, unsigned long block)
 	return err;
 }
 
-/**
- * nilfs_mdt_forget_block - discard dirty state and try to remove the page
- * @inode: inode of the meta data file
- * @block: block offset
- *
- * nilfs_mdt_forget_block() clears a dirty flag of the specified buffer, and
- * tries to release the page including the buffer from a page cache.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error code is returned.
- *
- * %-EBUSY - page has an active buffer.
- *
- * %-ENOENT - page cache has no page addressed by the offset.
- */
+ 
 int nilfs_mdt_forget_block(struct inode *inode, unsigned long block)
 {
 	pgoff_t index = (pgoff_t)block >>
@@ -406,12 +331,7 @@ nilfs_mdt_write_page(struct page *page, struct writeback_control *wbc)
 	int err = 0;
 
 	if (inode && sb_rdonly(inode->i_sb)) {
-		/*
-		 * It means that filesystem was remounted in read-only
-		 * mode because of error or metadata corruption. But we
-		 * have dirty pages that try to be flushed in background.
-		 * So, here we simply discard this dirty page.
-		 */
+		 
 		nilfs_clear_dirty_page(page, false);
 		unlock_page(page);
 		return -EROFS;
@@ -465,10 +385,7 @@ int nilfs_mdt_init(struct inode *inode, gfp_t gfp_mask, size_t objsz)
 	return 0;
 }
 
-/**
- * nilfs_mdt_clear - do cleanup for the metadata file
- * @inode: inode of the metadata file
- */
+ 
 void nilfs_mdt_clear(struct inode *inode)
 {
 	struct nilfs_mdt_info *mdi = NILFS_MDT(inode);
@@ -486,15 +403,12 @@ void nilfs_mdt_clear(struct inode *inode)
 	}
 }
 
-/**
- * nilfs_mdt_destroy - release resources used by the metadata file
- * @inode: inode of the metadata file
- */
+ 
 void nilfs_mdt_destroy(struct inode *inode)
 {
 	struct nilfs_mdt_info *mdi = NILFS_MDT(inode);
 
-	kfree(mdi->mi_bgl); /* kfree(NULL) is safe */
+	kfree(mdi->mi_bgl);  
 	kfree(mdi);
 }
 
@@ -508,11 +422,7 @@ void nilfs_mdt_set_entry_size(struct inode *inode, unsigned int entry_size,
 	mi->mi_first_entry_offset = DIV_ROUND_UP(header_size, entry_size);
 }
 
-/**
- * nilfs_mdt_setup_shadow_map - setup shadow map and bind it to metadata file
- * @inode: inode of the metadata file
- * @shadow: shadow mapping
- */
+ 
 int nilfs_mdt_setup_shadow_map(struct inode *inode,
 			       struct nilfs_shadow_map *shadow)
 {
@@ -530,10 +440,7 @@ int nilfs_mdt_setup_shadow_map(struct inode *inode,
 	return 0;
 }
 
-/**
- * nilfs_mdt_save_to_shadow_map - copy bmap and dirty pages to shadow map
- * @inode: inode of the metadata file
- */
+ 
 int nilfs_mdt_save_to_shadow_map(struct inode *inode)
 {
 	struct nilfs_mdt_info *mi = NILFS_MDT(inode);
@@ -579,7 +486,7 @@ int nilfs_mdt_freeze_buffer(struct inode *inode, struct buffer_head *bh)
 			      &shadow->frozen_buffers);
 		set_buffer_nilfs_redirected(bh);
 	} else {
-		brelse(bh_frozen); /* already frozen */
+		brelse(bh_frozen);  
 	}
 
 	unlock_page(page);
@@ -616,14 +523,11 @@ static void nilfs_release_frozen_buffers(struct nilfs_shadow_map *shadow)
 		bh = list_first_entry(head, struct buffer_head,
 				      b_assoc_buffers);
 		list_del_init(&bh->b_assoc_buffers);
-		brelse(bh); /* drop ref-count to make it releasable */
+		brelse(bh);  
 	}
 }
 
-/**
- * nilfs_mdt_restore_from_shadow_map - restore dirty pages and bmap state
- * @inode: inode of the metadata file
- */
+ 
 void nilfs_mdt_restore_from_shadow_map(struct inode *inode)
 {
 	struct nilfs_mdt_info *mi = NILFS_MDT(inode);
@@ -647,10 +551,7 @@ void nilfs_mdt_restore_from_shadow_map(struct inode *inode)
 	up_write(&mi->mi_sem);
 }
 
-/**
- * nilfs_mdt_clear_shadow_map - truncate pages in shadow map caches
- * @inode: inode of the metadata file
- */
+ 
 void nilfs_mdt_clear_shadow_map(struct inode *inode)
 {
 	struct nilfs_mdt_info *mi = NILFS_MDT(inode);

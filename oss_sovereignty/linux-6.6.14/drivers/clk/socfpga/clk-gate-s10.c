@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017, Intel Corporation
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -66,13 +64,13 @@ static u8 socfpga_gate_get_parent(struct clk_hw *hwclk)
 	    streq(name, SOCFPGA_EMAC2_CLK)) {
 		second_bypass = readl(socfpgaclk->bypass_reg -
 				      STRATIX10_BYPASS_OFFSET);
-		/* EMACA bypass to bootclk @0xB0 offset */
+		 
 		if (second_bypass & 0x1)
-			if (parent == 0) /* only applicable if parent is maca */
+			if (parent == 0)  
 				parent = BOOTCLK_BYPASS;
 
 		if (second_bypass & 0x2)
-			if (parent == 1) /* only applicable if parent is macb */
+			if (parent == 1)  
 				parent = BOOTCLK_BYPASS;
 	}
 	return parent;
@@ -96,13 +94,13 @@ static u8 socfpga_agilex_gate_get_parent(struct clk_hw *hwclk)
 	    streq(name, SOCFPGA_EMAC2_CLK)) {
 		second_bypass = readl(socfpgaclk->bypass_reg -
 				      AGILEX_BYPASS_OFFSET);
-		/* EMACA bypass to bootclk @0x88 offset */
+		 
 		if (second_bypass & 0x1)
-			if (parent == 0) /* only applicable if parent is maca */
+			if (parent == 0)  
 				parent = BOOTCLK_BYPASS;
 
 		if (second_bypass & 0x2)
-			if (parent == 1) /* only applicable if parent is macb */
+			if (parent == 1)  
 				parent = BOOTCLK_BYPASS;
 	}
 

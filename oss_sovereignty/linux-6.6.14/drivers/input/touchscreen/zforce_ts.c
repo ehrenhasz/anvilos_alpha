@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012-2013 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- *
- * based in parts on Nook zforce driver
- *
- * Copyright (C) 2010 Barnes & Noble, Inc.
- * Author: Pieter Truter<ptruter@intrinsyc.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/hrtimer.h>
@@ -29,16 +21,16 @@
 #define FRAME_START		0xee
 #define FRAME_MAXSIZE		257
 
-/* Offsets of the different parts of the payload the controller sends */
+ 
 #define PAYLOAD_HEADER		0
 #define PAYLOAD_LENGTH		1
 #define PAYLOAD_BODY		2
 
-/* Response offsets */
+ 
 #define RESPONSE_ID		0
 #define RESPONSE_DATA		1
 
-/* Commands */
+ 
 #define COMMAND_DEACTIVATE	0x00
 #define COMMAND_INITIALIZE	0x01
 #define COMMAND_RESOLUTION	0x02
@@ -47,10 +39,7 @@
 #define COMMAND_SCANFREQ	0x08
 #define COMMAND_STATUS		0X1e
 
-/*
- * Responses the controller sends as a result of
- * command requests
- */
+ 
 #define RESPONSE_DEACTIVATE	0x00
 #define RESPONSE_INITIALIZE	0x01
 #define RESPONSE_RESOLUTION	0x02
@@ -58,11 +47,7 @@
 #define RESPONSE_SCANFREQ	0x08
 #define RESPONSE_STATUS		0X1e
 
-/*
- * Notifications are sent by the touch controller without
- * being requested by the driver and include for example
- * touch indications
- */
+ 
 #define NOTIFICATION_TOUCH		0x04
 #define NOTIFICATION_BOOTCOMPLETE	0x07
 #define NOTIFICATION_OVERRUN		0x25
@@ -90,19 +75,7 @@ struct zforce_point {
 	int prblty;
 };
 
-/*
- * @client		the i2c_client
- * @input		the input device
- * @suspending		in the process of going to suspend (don't emit wakeup
- *			events for commands executed to suspend the device)
- * @suspended		device suspended
- * @access_mutex	serialize i2c-access, to keep multipart reads together
- * @command_done	completion to wait for the command result
- * @command_mutex	serialize commands sent to the ic
- * @command_waiting	the id of the command that is currently waiting
- *			for a result
- * @command_result	returned result of the command
- */
+ 
 struct zforce_ts {
 	struct i2c_client	*client;
 	struct input_dev	*input;
@@ -118,7 +91,7 @@ struct zforce_ts {
 	bool			suspended;
 	bool			boot_complete;
 
-	/* Firmware version information */
+	 
 	u16			version_major;
 	u16			version_minor;
 	u16			version_build;
@@ -141,7 +114,7 @@ static int zforce_command(struct zforce_ts *ts, u8 cmd)
 	dev_dbg(&client->dev, "%s: 0x%x\n", __func__, cmd);
 
 	buf[0] = FRAME_START;
-	buf[1] = 1; /* data size, command only */
+	buf[1] = 1;  
 	buf[2] = cmd;
 
 	mutex_lock(&ts->access_mutex);
@@ -212,7 +185,7 @@ static int zforce_command_wait(struct zforce_ts *ts, u8 cmd)
 	dev_dbg(&client->dev, "%s: 0x%x\n", __func__, cmd);
 
 	buf[0] = FRAME_START;
-	buf[1] = 1; /* data size, command only */
+	buf[1] = 1;  
 	buf[2] = cmd;
 
 	ret = zforce_send_wait(ts, &buf[0], ARRAY_SIZE(buf));
@@ -296,17 +269,14 @@ static int zforce_start(struct zforce_ts *ts)
 		goto error;
 	}
 
-	/* start sending touch events */
+	 
 	ret = zforce_command(ts, COMMAND_DATAREQUEST);
 	if (ret) {
 		dev_err(&client->dev, "Unable to request data\n");
 		goto error;
 	}
 
-	/*
-	 * Per NN, initial cal. take max. of 200msec.
-	 * Allow time to complete this calibration
-	 */
+	 
 	msleep(200);
 
 	return 0;
@@ -323,7 +293,7 @@ static int zforce_stop(struct zforce_ts *ts)
 
 	dev_dbg(&client->dev, "stopping device\n");
 
-	/* Deactivates touch sensing and puts the device into sleep. */
+	 
 	ret = zforce_command_wait(ts, COMMAND_DEACTIVATE);
 	if (ret != 0) {
 		dev_err(&client->dev, "could not deactivate device, %d\n",
@@ -365,7 +335,7 @@ static int zforce_touch_event(struct zforce_ts *ts, u8 *payload)
 		point.state = payload[9 * i + 5] & 0x0f;
 		point.id = (payload[9 * i + 5] & 0xf0) >> 4;
 
-		/* determine touch major, minor and orientation */
+		 
 		point.area_major = max(payload[9 * i + 6],
 					  payload[9 * i + 7]);
 		point.area_minor = min(payload[9 * i + 6],
@@ -383,7 +353,7 @@ static int zforce_touch_event(struct zforce_ts *ts, u8 *payload)
 			point.area_major, point.area_minor,
 			point.orientation);
 
-		/* the zforce id starts with "1", so needs to be decreased */
+		 
 		input_mt_slot(ts->input, point.id - 1);
 
 		input_mt_report_slot_state(ts->input, MT_TOOL_FINGER,
@@ -420,7 +390,7 @@ static int zforce_read_packet(struct zforce_ts *ts, u8 *buf)
 
 	mutex_lock(&ts->access_mutex);
 
-	/* read 2 byte message header */
+	 
 	ret = i2c_master_recv(client, buf, 2);
 	if (ret < 0) {
 		dev_err(&client->dev, "error reading header: %d\n", ret);
@@ -440,7 +410,7 @@ static int zforce_read_packet(struct zforce_ts *ts, u8 *buf)
 		goto unlock;
 	}
 
-	/* read the message */
+	 
 	ret = i2c_master_recv(client, &buf[PAYLOAD_BODY], buf[PAYLOAD_LENGTH]);
 	if (ret < 0) {
 		dev_err(&client->dev, "error reading payload: %d\n", ret);
@@ -487,10 +457,7 @@ static irqreturn_t zforce_irq_thread(int irq, void *dev_id)
 	u8 payload_buffer[FRAME_MAXSIZE];
 	u8 *payload;
 
-	/*
-	 * When still suspended, return.
-	 * Due to the level-interrupt we will get re-triggered later.
-	 */
+	 
 	if (ts->suspended) {
 		msleep(20);
 		return IRQ_HANDLED;
@@ -498,19 +465,11 @@ static irqreturn_t zforce_irq_thread(int irq, void *dev_id)
 
 	dev_dbg(&client->dev, "handling interrupt\n");
 
-	/* Don't emit wakeup events from commands run by zforce_suspend */
+	 
 	if (!ts->suspending && device_may_wakeup(&client->dev))
 		pm_stay_awake(&client->dev);
 
-	/*
-	 * Run at least once and exit the loop if
-	 * - the optional interrupt GPIO isn't specified
-	 *   (there is only one packet read per ISR invocation, then)
-	 * or
-	 * - the GPIO isn't active any more
-	 *   (packet read until the level GPIO indicates that there is
-	 *    no IRQ any more)
-	 */
+	 
 	do {
 		ret = zforce_read_packet(ts, payload_buffer);
 		if (ret < 0) {
@@ -523,10 +482,7 @@ static irqreturn_t zforce_irq_thread(int irq, void *dev_id)
 
 		switch (payload[RESPONSE_ID]) {
 		case NOTIFICATION_TOUCH:
-			/*
-			 * Always report touch-events received while
-			 * suspending, when being a wakeup source
-			 */
+			 
 			if (ts->suspending && device_may_wakeup(&client->dev))
 				pm_wakeup_event(&client->dev, 500);
 			zforce_touch_event(ts, &payload[RESPONSE_DATA]);
@@ -547,10 +503,7 @@ static irqreturn_t zforce_irq_thread(int irq, void *dev_id)
 			break;
 
 		case RESPONSE_STATUS:
-			/*
-			 * Version Payload Results
-			 * [2:major] [2:minor] [2:build] [2:rev]
-			 */
+			 
 			ts->version_major = (payload[RESPONSE_DATA + 1] << 8) |
 						payload[RESPONSE_DATA];
 			ts->version_minor = (payload[RESPONSE_DATA + 3] << 8) |
@@ -618,14 +571,11 @@ static int zforce_suspend(struct device *dev)
 	mutex_lock(&input->mutex);
 	ts->suspending = true;
 
-	/*
-	 * When configured as a wakeup source device should always wake
-	 * the system, therefore start device if necessary.
-	 */
+	 
 	if (device_may_wakeup(&client->dev)) {
 		dev_dbg(&client->dev, "suspend while being a wakeup source\n");
 
-		/* Need to start device, if not open, to be a wakeup source. */
+		 
 		if (!input_device_enabled(input)) {
 			ret = zforce_start(ts);
 			if (ret)
@@ -669,7 +619,7 @@ static int zforce_resume(struct device *dev)
 
 		disable_irq_wake(client->irq);
 
-		/* need to stop device if it was not open on suspend */
+		 
 		if (!input_device_enabled(input)) {
 			ret = zforce_stop(ts);
 			if (ret)
@@ -768,12 +718,9 @@ static int zforce_probe(struct i2c_client *client)
 			return ret;
 		}
 	} else {
-		/*
-		 * Deprecated GPIO handling for compatibility
-		 * with legacy binding.
-		 */
+		 
 
-		/* INT GPIO */
+		 
 		ts->gpio_int = devm_gpiod_get_index(&client->dev, NULL, 0,
 						    GPIOD_IN);
 		if (IS_ERR(ts->gpio_int)) {
@@ -783,7 +730,7 @@ static int zforce_probe(struct i2c_client *client)
 			return ret;
 		}
 
-		/* RST GPIO */
+		 
 		ts->gpio_rst = devm_gpiod_get_index(&client->dev, NULL, 1,
 					    GPIOD_OUT_HIGH);
 		if (IS_ERR(ts->gpio_rst)) {
@@ -804,10 +751,7 @@ static int zforce_probe(struct i2c_client *client)
 		if (ret)
 			return ret;
 
-		/*
-		 * according to datasheet add 100us grace time after regular
-		 * regulator enable delay.
-		 */
+		 
 		udelay(100);
 	}
 
@@ -816,7 +760,7 @@ static int zforce_probe(struct i2c_client *client)
 		dev_err(&client->dev, "failed to register reset action, %d\n",
 			ret);
 
-		/* hereafter the regulator will be disabled by the action */
+		 
 		if (!IS_ERR(ts->reg_vdd))
 			regulator_disable(ts->reg_vdd);
 
@@ -850,7 +794,7 @@ static int zforce_probe(struct i2c_client *client)
 	__set_bit(EV_SYN, input_dev->evbit);
 	__set_bit(EV_ABS, input_dev->evbit);
 
-	/* For multi touch */
+	 
 	input_set_abs_params(input_dev, ABS_MT_POSITION_X, 0,
 			     pdata->x_max, 0, 0);
 	input_set_abs_params(input_dev, ABS_MT_POSITION_Y, 0,
@@ -867,13 +811,7 @@ static int zforce_probe(struct i2c_client *client)
 
 	init_completion(&ts->command_done);
 
-	/*
-	 * The zforce pulls the interrupt low when it has data ready.
-	 * After it is triggered the isr thread runs until all the available
-	 * packets have been read and the interrupt is high again.
-	 * Therefore we can trigger the interrupt anytime it is low and do
-	 * not need to limit it to the interrupt edge.
-	 */
+	 
 	ret = devm_request_threaded_irq(&client->dev, client->irq,
 					zforce_irq, zforce_irq_thread,
 					IRQF_TRIGGER_LOW | IRQF_ONESHOT,
@@ -885,21 +823,21 @@ static int zforce_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, ts);
 
-	/* let the controller boot */
+	 
 	zforce_reset_deassert(ts);
 
 	ts->command_waiting = NOTIFICATION_BOOTCOMPLETE;
 	if (wait_for_completion_timeout(&ts->command_done, WAIT_TIMEOUT) == 0)
 		dev_warn(&client->dev, "bootcomplete timed out\n");
 
-	/* need to start device to get version information */
+	 
 	ret = zforce_command_wait(ts, COMMAND_INITIALIZE);
 	if (ret) {
 		dev_err(&client->dev, "unable to initialize, %d\n", ret);
 		return ret;
 	}
 
-	/* this gets the firmware version among other information */
+	 
 	ret = zforce_command_wait(ts, COMMAND_STATUS);
 	if (ret < 0) {
 		dev_err(&client->dev, "couldn't get status, %d\n", ret);
@@ -907,7 +845,7 @@ static int zforce_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* stop device and put it into sleep until it is opened */
+	 
 	ret = zforce_stop(ts);
 	if (ret < 0)
 		return ret;

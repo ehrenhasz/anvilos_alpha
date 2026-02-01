@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Sensirion SHTC1 humidity and temperature sensor driver
- *
- * Copyright (C) 2014 Sensirion AG, Switzerland
- * Author: Johannes Winkelmann <johannes.winkelmann@sensirion.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -16,29 +12,24 @@
 #include <linux/platform_data/shtc1.h>
 #include <linux/of.h>
 
-/* commands (high precision mode) */
+ 
 static const unsigned char shtc1_cmd_measure_blocking_hpm[]    = { 0x7C, 0xA2 };
 static const unsigned char shtc1_cmd_measure_nonblocking_hpm[] = { 0x78, 0x66 };
 
-/* commands (low precision mode) */
+ 
 static const unsigned char shtc1_cmd_measure_blocking_lpm[]    = { 0x64, 0x58 };
 static const unsigned char shtc1_cmd_measure_nonblocking_lpm[] = { 0x60, 0x9c };
 
-/* command for reading the ID register */
+ 
 static const unsigned char shtc1_cmd_read_id_reg[]             = { 0xef, 0xc8 };
 
-/*
- * constants for reading the ID register
- * SHTC1: 0x0007 with mask 0x003f
- * SHTW1: 0x0007 with mask 0x003f
- * SHTC3: 0x0807 with mask 0x083f
- */
+ 
 #define SHTC3_ID      0x0807
 #define SHTC3_ID_MASK 0x083f
 #define SHTC1_ID      0x0007
 #define SHTC1_ID_MASK 0x003f
 
-/* delays for non-blocking i2c commands, both in us */
+ 
 #define SHTC1_NONBLOCKING_WAIT_TIME_HPM  14400
 #define SHTC1_NONBLOCKING_WAIT_TIME_LPM   1000
 #define SHTC3_NONBLOCKING_WAIT_TIME_HPM  12100
@@ -56,16 +47,16 @@ struct shtc1_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
 	bool valid;
-	unsigned long last_updated; /* in jiffies */
+	unsigned long last_updated;  
 
 	const unsigned char *command;
-	unsigned int nonblocking_wait_time; /* in us */
+	unsigned int nonblocking_wait_time;  
 
 	struct shtc1_platform_data setup;
 	enum shtcx_chips chip;
 
-	int temperature; /* 1000 * temperature in dgr C */
-	int humidity; /* 1000 * relative humidity in %RH */
+	int temperature;  
+	int humidity;  
 };
 
 static int shtc1_update_values(struct i2c_client *client,
@@ -78,12 +69,7 @@ static int shtc1_update_values(struct i2c_client *client,
 		return ret < 0 ? ret : -EIO;
 	}
 
-	/*
-	 * In blocking mode (clock stretching mode) the I2C bus
-	 * is blocked for other traffic, thus the call to i2c_master_recv()
-	 * will wait until the data is ready. For non blocking mode, we
-	 * have to wait ourselves.
-	 */
+	 
 	if (!data->setup.blocking_io)
 		usleep_range(data->nonblocking_wait_time,
 			     data->nonblocking_wait_time + 1000);
@@ -97,7 +83,7 @@ static int shtc1_update_values(struct i2c_client *client,
 	return 0;
 }
 
-/* sysfs attributes */
+ 
 static struct shtc1_data *shtc1_update_client(struct device *dev)
 {
 	struct shtc1_data *data = dev_get_drvdata(dev);
@@ -113,13 +99,7 @@ static struct shtc1_data *shtc1_update_client(struct device *dev)
 		if (ret)
 			goto out;
 
-		/*
-		 * From datasheet:
-		 * T = -45 + 175 * ST / 2^16
-		 * RH = 100 * SRH / 2^16
-		 *
-		 * Adapted for integer fixed point (3 digit) arithmetic.
-		 */
+		 
 		val = be16_to_cpup((__be16 *)buf);
 		data->temperature = ((21875 * val) >> 13) - 45000;
 		val = be16_to_cpup((__be16 *)(buf + 3));
@@ -257,7 +237,7 @@ static int shtc1_probe(struct i2c_client *client)
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/* device ID table */
+ 
 static const struct i2c_device_id shtc1_id[] = {
 	{ "shtc1", shtc1 },
 	{ "shtw1", shtc1 },

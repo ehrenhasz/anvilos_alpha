@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2016 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_context.h"
 #include "gt/intel_ring.h"
@@ -114,15 +112,12 @@ static void hw_delay_complete(struct timer_list *t)
 
 	spin_lock_irqsave(&engine->hw_lock, flags);
 
-	/* Timer fired, first request is complete */
+	 
 	request = first_request(engine);
 	if (request)
 		advance(request);
 
-	/*
-	 * Also immediately signal any subsequent 0-delay requests, but
-	 * requeue the timer for the next delayed request.
-	 */
+	 
 	while ((request = first_request(engine))) {
 		if (request->mock.delay) {
 			mod_timer(&engine->hw_delay,
@@ -263,12 +258,7 @@ static void mock_remove_from_engine(struct i915_request *rq)
 {
 	struct intel_engine_cs *engine, *locked;
 
-	/*
-	 * Virtual engines complicate acquiring the engine timeline lock,
-	 * as their rq->engine pointer is not stable until under that
-	 * engine lock. The simple ploy we use is to take the lock then
-	 * check that the rq still belongs to the newly locked engine.
-	 */
+	 
 
 	locked = READ_ONCE(rq->engine);
 	spin_lock_irq(&locked->sched_engine->lock);
@@ -301,12 +291,12 @@ static void mock_reset_cancel(struct intel_engine_cs *engine)
 
 	spin_lock_irqsave(&engine->sched_engine->lock, flags);
 
-	/* Mark all submitted requests as skipped. */
+	 
 	list_for_each_entry(rq, &engine->sched_engine->requests, sched.link)
 		i915_request_put(i915_request_mark_eio(rq));
 	intel_engine_signal_breadcrumbs(engine);
 
-	/* Cancel and submit all pending requests. */
+	 
 	list_for_each_entry(rq, &mock->hw_queue, mock.link) {
 		if (i915_request_mark_eio(rq)) {
 			__i915_request_submit(rq);
@@ -351,7 +341,7 @@ struct intel_engine_cs *mock_engine(struct drm_i915_private *i915,
 	if (!engine)
 		return NULL;
 
-	/* minimal engine setup for requests */
+	 
 	engine->base.i915 = i915;
 	engine->base.gt = to_gt(i915);
 	engine->base.uncore = to_gt(i915)->uncore;
@@ -380,7 +370,7 @@ struct intel_engine_cs *mock_engine(struct drm_i915_private *i915,
 	to_gt(i915)->engine[id] = &engine->base;
 	to_gt(i915)->engine_class[0][id] = &engine->base;
 
-	/* fake hw queue */
+	 
 	spin_lock_init(&engine->hw_lock);
 	timer_setup(&engine->hw_delay, hw_delay_complete, 0);
 	INIT_LIST_HEAD(&engine->hw_queue);
@@ -413,7 +403,7 @@ int mock_engine_init(struct intel_engine_cs *engine)
 	if (IS_ERR(ce))
 		goto err_breadcrumbs;
 
-	/* We insist the kernel context is using the status_page */
+	 
 	engine->status_page.vma = ce->timeline->hwsp_ggtt;
 
 	engine->kernel_context = ce;

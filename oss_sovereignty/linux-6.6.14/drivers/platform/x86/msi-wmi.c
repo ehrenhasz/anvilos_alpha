@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MSI WMI hotkeys
- *
- * Copyright (C) 2009 Novell <trenn@suse.de>
- *
- * Most stuff taken over from hp-wmi
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -33,19 +27,19 @@ MODULE_ALIAS("wmi:" MSIWMI_MSI_EVENT_GUID);
 MODULE_ALIAS("wmi:" MSIWMI_WIND_EVENT_GUID);
 
 enum msi_scancodes {
-	/* Generic MSI keys (not present on MSI Wind) */
+	 
 	MSI_KEY_BRIGHTNESSUP	= 0xD0,
 	MSI_KEY_BRIGHTNESSDOWN,
 	MSI_KEY_VOLUMEUP,
 	MSI_KEY_VOLUMEDOWN,
 	MSI_KEY_MUTE,
-	/* MSI Wind keys */
-	WIND_KEY_TOUCHPAD	= 0x08,	/* Fn+F3 touchpad toggle */
-	WIND_KEY_BLUETOOTH	= 0x56,	/* Fn+F11 Bluetooth toggle */
-	WIND_KEY_CAMERA,		/* Fn+F6 webcam toggle */
-	WIND_KEY_WLAN		= 0x5f,	/* Fn+F11 Wi-Fi toggle */
-	WIND_KEY_TURBO,			/* Fn+F10 turbo mode toggle */
-	WIND_KEY_ECO		= 0x69,	/* Fn+F10 ECO mode toggle */
+	 
+	WIND_KEY_TOUCHPAD	= 0x08,	 
+	WIND_KEY_BLUETOOTH	= 0x56,	 
+	WIND_KEY_CAMERA,		 
+	WIND_KEY_WLAN		= 0x5f,	 
+	WIND_KEY_TURBO,			 
+	WIND_KEY_ECO		= 0x69,	 
 };
 static struct key_entry msi_wmi_keymap[] = {
 	{ KE_KEY, MSI_KEY_BRIGHTNESSUP,		{KEY_BRIGHTNESSUP} },
@@ -54,18 +48,18 @@ static struct key_entry msi_wmi_keymap[] = {
 	{ KE_KEY, MSI_KEY_VOLUMEDOWN,		{KEY_VOLUMEDOWN} },
 	{ KE_KEY, MSI_KEY_MUTE,			{KEY_MUTE} },
 
-	/* These keys work without WMI. Ignore them to avoid double keycodes */
+	 
 	{ KE_IGNORE, WIND_KEY_TOUCHPAD,		{KEY_TOUCHPAD_TOGGLE} },
 	{ KE_IGNORE, WIND_KEY_BLUETOOTH,	{KEY_BLUETOOTH} },
 	{ KE_IGNORE, WIND_KEY_CAMERA,		{KEY_CAMERA} },
 	{ KE_IGNORE, WIND_KEY_WLAN,		{KEY_WLAN} },
 
-	/* These are unknown WMI events found on MSI Wind */
+	 
 	{ KE_IGNORE, 0x00 },
 	{ KE_IGNORE, 0x62 },
 	{ KE_IGNORE, 0x63 },
 
-	/* These are MSI Wind keys that should be handled via WMI */
+	 
 	{ KE_KEY, WIND_KEY_TURBO,		{KEY_PROG1} },
 	{ KE_KEY, WIND_KEY_ECO,			{KEY_PROG2} },
 
@@ -134,7 +128,7 @@ static int bl_get(struct backlight_device *bd)
 {
 	int level, err, ret;
 
-	/* Instance 1 is "get backlight", cmp with DSDT */
+	 
 	err = msi_wmi_query_block(1, &ret);
 	if (err) {
 		pr_err("Could not query backlight: %d\n", err);
@@ -161,7 +155,7 @@ static int bl_set_status(struct backlight_device *bd)
 	if (bright >= ARRAY_SIZE(backlight_map) || bright < 0)
 		return -EINVAL;
 
-	/* Instance 0 is "set backlight" */
+	 
 	return msi_wmi_set_block(0, backlight_map[bright]);
 }
 
@@ -198,8 +192,7 @@ static void msi_wmi_notify(u32 value, void *context)
 		if (event_wmi->quirk_last_pressed) {
 			ktime_t cur = ktime_get_real();
 			ktime_t diff = ktime_sub(cur, last_pressed);
-			/* Ignore event if any event happened in a 50 ms
-			   timeframe -> Key press may result in 10-20 GPEs */
+			 
 			if (ktime_to_us(diff) < 1000 * 50) {
 				pr_debug("Suppressed key event 0x%X - "
 					 "Last press was %lld us ago\n",
@@ -210,7 +203,7 @@ static void msi_wmi_notify(u32 value, void *context)
 		}
 
 		if (key->type == KE_KEY &&
-		/* Brightness is served via acpi video driver */
+		 
 		(backlight ||
 		(key->code != MSI_KEY_BRIGHTNESSUP &&
 		key->code != MSI_KEY_BRIGHTNESSDOWN))) {

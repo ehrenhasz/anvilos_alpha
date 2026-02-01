@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+ 
 
 #include "cn10k.h"
 #include "otx2_reg.h"
@@ -36,7 +32,7 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
 	}
 
 	pfvf->hw_ops = &cn10k_hw_ops;
-	/* Total LMTLINES = num_online_cpus() * 32 (For Burst flush).*/
+	 
 	pfvf->tot_lmt_lines = (num_online_cpus() * LMT_BURST_SIZE);
 	pfvf->hw.lmt_info = alloc_percpu(struct otx2_lmt_info);
 
@@ -77,28 +73,26 @@ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
 	struct nix_cn10k_aq_enq_req *aq;
 	struct otx2_nic *pfvf = dev;
 
-	/* Get memory to put this msg */
+	 
 	aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
 	if (!aq)
 		return -ENOMEM;
 
 	aq->sq.cq = pfvf->hw.rx_queues + qidx;
-	aq->sq.max_sqe_size = NIX_MAXSQESZ_W16; /* 128 byte */
+	aq->sq.max_sqe_size = NIX_MAXSQESZ_W16;  
 	aq->sq.cq_ena = 1;
 	aq->sq.ena = 1;
 	aq->sq.smq = otx2_get_smq_idx(pfvf, qidx);
 	aq->sq.smq_rr_weight = mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
 	aq->sq.default_chan = pfvf->hw.tx_chan_base;
-	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
+	aq->sq.sqe_stype = NIX_STYPE_STF;  
 	aq->sq.sqb_aura = sqb_aura;
 	aq->sq.sq_int_ena = NIX_SQINT_BITS;
 	aq->sq.qint_idx = 0;
-	/* Due pipelining impact minimum 2000 unused SQ CQE's
-	 * need to maintain to avoid CQ overflow.
-	 */
+	 
 	aq->sq.cq_limit = ((SEND_CQ_SKID * 256) / (pfvf->qset.sqe_cnt));
 
-	/* Fill AQ info */
+	 
 	aq->qidx = qidx;
 	aq->ctype = NIX_AQ_CTYPE_SQ;
 	aq->op = NIX_AQ_INSTOP_INIT;
@@ -115,7 +109,7 @@ int cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
 	dma_addr_t bufptr;
 	int num_ptrs = 1;
 
-	/* Refill pool with new buffers */
+	 
 	while (cq->pool_ptrs) {
 		if (otx2_alloc_buffer(pfvf, cq, &bufptr)) {
 			if (num_ptrs--)
@@ -142,15 +136,9 @@ void cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq, int size, int qidx)
 	u64 val = 0, tar_addr = 0;
 
 	lmt_info = per_cpu_ptr(pfvf->hw.lmt_info, smp_processor_id());
-	/* FIXME: val[0:10] LMT_ID.
-	 * [12:15] no of LMTST - 1 in the burst.
-	 * [19:63] data size of each LMTST in the burst except first.
-	 */
+	 
 	val = (lmt_info->lmt_id & 0x7FF);
-	/* Target address for LMTST flush tells HW how many 128bit
-	 * words are present.
-	 * tar_addr[6:4] size of first LMTST - 1 in units of 128b.
-	 */
+	 
 	tar_addr |= sq->io_addr | (((size / 16) - 1) & 0x7) << 4;
 	dma_wmb();
 	memcpy((u64 *)lmt_info->lmt_addr, sq->sqe_base, size);
@@ -176,7 +164,7 @@ int cn10k_free_all_ipolicers(struct otx2_nic *pfvf)
 		goto out;
 	}
 
-	/* Free all bandwidth profiles allocated */
+	 
 	req->free_all = true;
 
 	rc = otx2_sync_mbox_msg(&pfvf->mbox);
@@ -232,22 +220,18 @@ int cn10k_alloc_matchall_ipolicer(struct otx2_nic *pfvf)
 	return ret;
 }
 
-#define POLICER_TIMESTAMP	  1  /* 1 second */
-#define MAX_RATE_EXP		  22 /* Valid rate exponent range: 0 - 22 */
+#define POLICER_TIMESTAMP	  1   
+#define MAX_RATE_EXP		  22  
 
 static void cn10k_get_ingress_burst_cfg(u32 burst, u32 *burst_exp,
 					u32 *burst_mantissa)
 {
 	int tmp;
 
-	/* Burst is calculated as
-	 * (1+[BURST_MANTISSA]/256)*2^[BURST_EXPONENT]
-	 * This is the upper limit on number tokens (bytes) that
-	 * can be accumulated in the bucket.
-	 */
+	 
 	*burst_exp = ilog2(burst);
 	if (burst < 256) {
-		/* No float: can't express mantissa in this case */
+		 
 		*burst_mantissa = 0;
 		return;
 	}
@@ -255,10 +239,7 @@ static void cn10k_get_ingress_burst_cfg(u32 burst, u32 *burst_exp,
 	if (*burst_exp > MAX_RATE_EXP)
 		*burst_exp = MAX_RATE_EXP;
 
-	/* Calculate mantissa
-	 * Find remaining bytes 'burst - 2^burst_exp'
-	 * mantissa = (remaining bytes) / 2^ (burst_exp - 8)
-	 */
+	 
 	tmp = burst - rounddown_pow_of_two(burst);
 	*burst_mantissa = tmp / (1UL << (*burst_exp - 8));
 }
@@ -270,15 +251,7 @@ static void cn10k_get_ingress_rate_cfg(u64 rate, u32 *rate_exp,
 	u32 exp = 0;
 	u64 tmp;
 
-	/* Figure out mantissa, exponent and divider from given max pkt rate
-	 *
-	 * To achieve desired rate HW adds
-	 * (1+[RATE_MANTISSA]/256)*2^[RATE_EXPONENT] tokens (bytes) at every
-	 * policer timeunit * 2^rdiv ie 2 * 2^rdiv usecs, to the token bucket.
-	 * Here policer timeunit is 2 usecs and rate is in bits per sec.
-	 * Since floating point cannot be used below algorithm uses 1000000
-	 * scale factor to support rates upto 100Gbps.
-	 */
+	 
 	tmp = rate * 32 * 2;
 	if (tmp < 256000000) {
 		while (tmp < 256000000) {
@@ -307,7 +280,7 @@ int cn10k_map_unmap_rq_policer(struct otx2_nic *pfvf, int rq_idx,
 	if (!aq)
 		return -ENOMEM;
 
-	/* Enable policing and set the bandwidth profile (policer) index */
+	 
 	if (map)
 		aq->rq.policer_ena = 1;
 	else
@@ -317,7 +290,7 @@ int cn10k_map_unmap_rq_policer(struct otx2_nic *pfvf, int rq_idx,
 	aq->rq.band_prof_id = policer;
 	aq->rq_mask.band_prof_id = GENMASK(9, 0);
 
-	/* Fill AQ info */
+	 
 	aq->qidx = rq_idx;
 	aq->ctype = NIX_AQ_CTYPE_RQ;
 	aq->op = NIX_AQ_INSTOP_WRITE;
@@ -346,7 +319,7 @@ int cn10k_free_matchall_ipolicer(struct otx2_nic *pfvf)
 
 	mutex_lock(&pfvf->mbox.lock);
 
-	/* Remove RQ's policer mapping */
+	 
 	for (qidx = 0; qidx < hw->rx_queues; qidx++)
 		cn10k_map_unmap_rq_policer(pfvf, qidx,
 					   hw->matchall_ipolicer, false);
@@ -365,20 +338,20 @@ int cn10k_set_ipolicer_rate(struct otx2_nic *pfvf, u16 profile,
 	u32 rate_exp, rate_mantissa;
 	u32 rdiv;
 
-	/* Get exponent and mantissa values for the desired rate */
+	 
 	cn10k_get_ingress_burst_cfg(burst, &burst_exp, &burst_mantissa);
 	cn10k_get_ingress_rate_cfg(rate, &rate_exp, &rate_mantissa, &rdiv);
 
-	/* Init bandwidth profile */
+	 
 	aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
 	if (!aq)
 		return -ENOMEM;
 
-	/* Set initial color mode to blind */
+	 
 	aq->prof.icolor = 0x03;
 	aq->prof_mask.icolor = 0x03;
 
-	/* Set rate and burst values */
+	 
 	aq->prof.cir_exponent = rate_exp;
 	aq->prof_mask.cir_exponent = 0x1F;
 
@@ -395,19 +368,7 @@ int cn10k_set_ipolicer_rate(struct otx2_nic *pfvf, u16 profile,
 	aq->prof_mask.rdiv = 0xF;
 
 	if (pps) {
-		/* The amount of decremented tokens is calculated according to
-		 * the following equation:
-		 * max([ LMODE ? 0 : (packet_length - LXPTR)] +
-		 *	     ([ADJUST_MANTISSA]/256 - 1) * 2^[ADJUST_EXPONENT],
-		 *	1/256)
-		 * if LMODE is 1 then rate limiting will be based on
-		 * PPS otherwise bps.
-		 * The aim of the ADJUST value is to specify a token cost per
-		 * packet in contrary to the packet length that specifies a
-		 * cost per byte. To rate limit based on PPS adjust mantissa
-		 * is set as 384 and exponent as 1 so that number of tokens
-		 * decremented becomes 1 i.e, 1 token per packeet.
-		 */
+		 
 		aq->prof.adjust_exponent = 1;
 		aq->prof_mask.adjust_exponent = 0x1F;
 
@@ -418,9 +379,7 @@ int cn10k_set_ipolicer_rate(struct otx2_nic *pfvf, u16 profile,
 		aq->prof_mask.lmode = 0x1;
 	}
 
-	/* Two rate three color marker
-	 * With PEIR/EIR set to zero, color will be either green or red
-	 */
+	 
 	aq->prof.meter_algo = 2;
 	aq->prof_mask.meter_algo = 0x3;
 
@@ -433,11 +392,7 @@ int cn10k_set_ipolicer_rate(struct otx2_nic *pfvf, u16 profile,
 	aq->prof.gc_action = NIX_RX_BAND_PROF_ACTIONRESULT_PASS;
 	aq->prof_mask.gc_action = 0x3;
 
-	/* Setting exponent value as 24 and mantissa as 0 configures
-	 * the bucket with zero values making bucket unused. Peak
-	 * information rate and Excess information rate buckets are
-	 * unused here.
-	 */
+	 
 	aq->prof.peir_exponent = 24;
 	aq->prof_mask.peir_exponent = 0x1F;
 
@@ -453,7 +408,7 @@ int cn10k_set_ipolicer_rate(struct otx2_nic *pfvf, u16 profile,
 	aq->prof.hl_en = 0;
 	aq->prof_mask.hl_en = 1;
 
-	/* Fill AQ info */
+	 
 	aq->qidx = profile;
 	aq->ctype = NIX_AQ_CTYPE_BANDPROF;
 	aq->op = NIX_AQ_INSTOP_WRITE;

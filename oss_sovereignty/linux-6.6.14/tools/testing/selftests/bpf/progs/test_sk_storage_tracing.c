@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -19,7 +19,7 @@ struct {
 	__type(value, struct sk_stg);
 } sk_stg_map SEC(".maps");
 
-/* Testing delete */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
 	__uint(map_flags, BPF_F_NO_PREALLOC);
@@ -95,7 +95,7 @@ int BPF_PROG(inet_csk_accept, struct sock *sk, int flags, int *err, bool kern,
 SEC("tp_btf/tcp_retransmit_synack")
 int BPF_PROG(tcp_retransmit_synack, struct sock* sk, struct request_sock* req)
 {
-	/* load only test */
+	 
 	bpf_sk_storage_get(&sk_stg_map, sk, 0, 0);
 	bpf_sk_storage_get(&sk_stg_map, req->sk, 0, 0);
 	return 0;

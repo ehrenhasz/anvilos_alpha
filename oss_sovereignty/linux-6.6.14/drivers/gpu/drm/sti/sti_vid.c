@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+
+ 
 #include <linux/seq_file.h>
 
 #include <drm/drm_debugfs.h>
@@ -13,7 +10,7 @@
 #include "sti_vid.h"
 #include "sti_vtg.h"
 
-/* Registers */
+ 
 #define VID_CTL                 0x00
 #define VID_ALP                 0x04
 #define VID_CLF                 0x08
@@ -30,26 +27,19 @@
 #define VID_TINT                0x74
 #define VID_CSAT                0x78
 
-/* Registers values */
+ 
 #define VID_CTL_IGNORE          (BIT(31) | BIT(30))
 #define VID_CTL_PSI_ENABLE      (BIT(2) | BIT(1) | BIT(0))
 #define VID_ALP_OPAQUE          0x00000080
 #define VID_BC_DFLT             0x00008000
 #define VID_TINT_DFLT           0x00000000
 #define VID_CSAT_DFLT           0x00000080
-/* YCbCr to RGB BT709:
- * R = Y+1.5391Cr
- * G = Y-0.4590Cr-0.1826Cb
- * B = Y+1.8125Cb */
+ 
 #define VID_MPR0_BT709          0x0A800000
 #define VID_MPR1_BT709          0x0AC50000
 #define VID_MPR2_BT709          0x07150545
 #define VID_MPR3_BT709          0x00000AE8
-/* YCbCr to RGB BT709:
- * R = Y+1.3711Cr
- * G = Y-0.6992Cr-0.3359Cb
- * B = Y+1.7344Cb
- */
+ 
 #define VID_MPR0_BT601          0x0A800000
 #define VID_MPR1_BT601          0x0AAF0000
 #define VID_MPR2_BT601          0x094E0754
@@ -148,12 +138,11 @@ void sti_vid_commit(struct sti_vid *vid,
 	int src_h = state->src_h >> 16;
 	u32 val, ydo, xdo, yds, xds;
 
-	/* Input / output size
-	 * Align to upper even value */
+	 
 	dst_w = ALIGN(dst_w, 2);
 	dst_h = ALIGN(dst_h, 2);
 
-	/* Unmask */
+	 
 	val = readl(vid->regs + VID_CTL);
 	val &= ~VID_CTL_IGNORE;
 	writel(val, vid->regs + VID_CTL);
@@ -166,7 +155,7 @@ void sti_vid_commit(struct sti_vid *vid,
 	writel((ydo << 16) | xdo, vid->regs + VID_VPO);
 	writel((yds << 16) | xds, vid->regs + VID_VPS);
 
-	/* Color conversion parameters */
+	 
 	if (src_h >= VID_MIN_HD_HEIGHT) {
 		writel(VID_MPR0_BT709, vid->regs + VID_MPR0);
 		writel(VID_MPR1_BT709, vid->regs + VID_MPR1);
@@ -184,7 +173,7 @@ void sti_vid_disable(struct sti_vid *vid)
 {
 	u32 val;
 
-	/* Mask */
+	 
 	val = readl(vid->regs + VID_CTL);
 	val |= VID_CTL_IGNORE;
 	writel(val, vid->regs + VID_CTL);
@@ -192,13 +181,13 @@ void sti_vid_disable(struct sti_vid *vid)
 
 static void sti_vid_init(struct sti_vid *vid)
 {
-	/* Enable PSI, Mask layer */
+	 
 	writel(VID_CTL_PSI_ENABLE | VID_CTL_IGNORE, vid->regs + VID_CTL);
 
-	/* Opaque */
+	 
 	writel(VID_ALP_OPAQUE, vid->regs + VID_ALP);
 
-	/* Brightness, contrast, tint, saturation */
+	 
 	writel(VID_BC_DFLT, vid->regs + VID_BC);
 	writel(VID_TINT_DFLT, vid->regs + VID_TINT);
 	writel(VID_CSAT_DFLT, vid->regs + VID_CSAT);

@@ -1,27 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+ 
 
 #ifndef __T7XX_REG_H__
 #define __T7XX_REG_H__
 
 #include <linux/bits.h>
 
-/* Device base address offset */
+ 
 #define MHCCIF_RC_DEV_BASE			0x10024000
 
 #define REG_RC2EP_SW_BSY			0x04
@@ -31,7 +15,7 @@
 #define H2D_CH_EXCEPTION_ACK			1
 #define H2D_CH_EXCEPTION_CLEARQ_ACK		2
 #define H2D_CH_DS_LOCK				3
-/* Channels 4-8 are reserved */
+ 
 #define H2D_CH_SUSPEND_REQ			9
 #define H2D_CH_RESUME_REQ			10
 #define H2D_CH_SUSPEND_REQ_AP			11
@@ -51,7 +35,7 @@
 #define D2H_INT_EXCEPTION_CLEARQ_DONE		BIT(3)
 #define D2H_INT_EXCEPTION_ALLQ_RESET		BIT(4)
 #define D2H_INT_PORT_ENUM			BIT(5)
-/* Bits 6-10 are reserved */
+ 
 #define D2H_INT_SUSPEND_ACK			BIT(11)
 #define D2H_INT_RESUME_ACK			BIT(12)
 #define D2H_INT_SUSPEND_ACK_AP			BIT(13)
@@ -59,14 +43,14 @@
 #define D2H_INT_ASYNC_AP_HK			BIT(15)
 #define D2H_INT_ASYNC_MD_HK			BIT(16)
 
-/* Register base */
+ 
 #define INFRACFG_AO_DEV_CHIP			0x10001000
 
-/* ATR setting */
+ 
 #define T7XX_PCIE_REG_TRSL_ADDR_CHIP		0x10000000
 #define T7XX_PCIE_REG_SIZE_CHIP			0x00400000
 
-/* Reset Generic Unit (RGU) */
+ 
 #define TOPRGU_CH_PCIE_IRQ_STA			0x1000790c
 
 #define ATR_PORT_OFFSET				0x100
@@ -74,7 +58,7 @@
 #define ATR_TABLE_NUM_PER_ATR			8
 #define ATR_TRANSPARENT_SIZE			0x3f
 
-/* PCIE_MAC_IREG Register Definition */
+ 
 
 #define ISTAT_HST_CTRL				0x01ac
 #define ISTAT_HST_CTRL_DIS			BIT(0)
@@ -134,7 +118,7 @@ enum t7xx_int {
 	CLDMA3_INT,
 };
 
-/* DPMA definitions */
+ 
 
 #define DPMAIF_PD_BASE				0x1022d000
 #define BASE_DPMAIF_UL				DPMAIF_PD_BASE
@@ -246,7 +230,7 @@ enum t7xx_int {
 #define DPMAIF_AP_AO_RGU_DEASSERT		0x10001144
 #define DPMAIF_AP_AO_RST_BIT			BIT(6)
 
-/* DPMAIF init/restore */
+ 
 #define DPMAIF_UL_ADD_NOT_READY			BIT(31)
 #define DPMAIF_UL_ADD_UPDATE			BIT(31)
 #define DPMAIF_UL_ADD_COUNT_MASK		GENMASK(15, 0)
@@ -298,29 +282,29 @@ enum t7xx_int {
 
 #define DPMAIF_DL_RD_WR_IDX_MSK			GENMASK(17, 0)
 
-/* DPMAIF_UL_CHK_BUSY */
+ 
 #define DPMAIF_UL_IDLE_STS			BIT(11)
-/* DPMAIF_DL_CHK_BUSY */
+ 
 #define DPMAIF_DL_IDLE_STS			BIT(23)
-/* DPMAIF_AO_DL_RDY_CHK_THRES */
+ 
 #define DPMAIF_DL_PKT_CHECKSUM_EN		BIT(31)
 #define DPMAIF_PORT_MODE_PCIE			BIT(30)
 #define DPMAIF_DL_BURST_PIT_EN			BIT(13)
-/* DPMAIF_DL_BAT_INIT_CON1 */
+ 
 #define DPMAIF_DL_BAT_CACHE_PRI			BIT(22)
-/* DPMAIF_AP_MEM_CLR */
+ 
 #define DPMAIF_MEM_CLR				BIT(0)
-/* DPMAIF_AP_OVERWRITE_CFG */
+ 
 #define DPMAIF_SRAM_SYNC			BIT(0)
-/* DPMAIF_AO_UL_INIT_SET */
+ 
 #define DPMAIF_UL_INIT_DONE			BIT(0)
-/* DPMAIF_AO_DL_INIT_SET */
+ 
 #define DPMAIF_DL_INIT_DONE			BIT(0)
-/* DPMAIF_AO_DL_PIT_SEQ_END */
+ 
 #define DPMAIF_DL_PIT_SEQ_MSK			GENMASK(7, 0)
-/* DPMAIF_UL_RESERVE_AO_RW */
+ 
 #define DPMAIF_PCIE_MODE_SET_VALUE		0x55
-/* DPMAIF_AP_CG_EN */
+ 
 #define DPMAIF_CG_EN				0x7f
 
 #define DPMAIF_UDL_IP_BUSY			BIT(0)
@@ -334,7 +318,7 @@ enum t7xx_int {
 #define DPMAIF_DLQ_LOW_TIMEOUT_THRES_MKS	GENMASK(15, 0)
 #define DPMAIF_DLQ_HIGH_TIMEOUT_THRES_MSK	GENMASK(31, 16)
 
-/* DPMAIF DLQ HW configure */
+ 
 #define DPMAIF_AGG_MAX_LEN_DF			65535
 #define DPMAIF_AGG_TBL_ENT_NUM_DF		50
 #define DPMAIF_HASH_PRIME_DF			13
@@ -347,4 +331,4 @@ enum t7xx_int {
 #define DPMAIF_DLQPIT_CHAN_OFS			16
 #define DPMAIF_ADD_DLQ_PIT_CHAN_OFS		20
 
-#endif /* __T7XX_REG_H__ */
+#endif  

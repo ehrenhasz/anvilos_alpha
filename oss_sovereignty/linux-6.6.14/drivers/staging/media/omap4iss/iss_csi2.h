@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * TI OMAP4 ISS V4L2 Driver - CSI2 module
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+ 
+ 
 
 #ifndef OMAP4_ISS_CSI2_H
 #define OMAP4_ISS_CSI2_H
@@ -17,7 +11,7 @@
 
 struct iss_csiphy;
 
-/* This is not an exhaustive list */
+ 
 enum iss_csi2_pix_formats {
 	CSI2_PIX_FMT_OTHERS = 0,
 	CSI2_PIX_FMT_YUV422_8BIT = 0x1e,
@@ -71,16 +65,16 @@ enum iss_csi2_frame_mode {
 #define ISS_CSI2_MAX_CTX_NUM	7
 
 struct iss_csi2_ctx_cfg {
-	u8 ctxnum;		/* context number 0 - 7 */
+	u8 ctxnum;		 
 	u8 dpcm_decompress;
 
-	/* Fields in CSI2_CTx_CTRL2 - locked by CSI2_CTx_CTRL1.CTX_EN */
+	 
 	u8 virtual_id;
-	u16 format_id;		/* as in CSI2_CTx_CTRL2[9:0] */
-	u8 dpcm_predictor;	/* 1: simple, 0: advanced */
+	u16 format_id;		 
+	u8 dpcm_predictor;	 
 	u16 frame;
 
-	/* Fields in CSI2_CTx_CTRL1/3 - Shadowed */
+	 
 	u16 alpha;
 	u16 data_offset;
 	u32 ping_addr;
@@ -92,7 +86,7 @@ struct iss_csi2_ctx_cfg {
 };
 
 struct iss_csi2_timing_cfg {
-	u8 ionum;			/* IO1 or IO2 as in CSI2_TIMING */
+	u8 ionum;			 
 	unsigned force_rx_mode:1;
 	unsigned stop_state_16x:1;
 	unsigned stop_state_4x:1;
@@ -123,15 +117,15 @@ struct iss_csi2_device {
 	struct iss_video video_out;
 	struct iss_device *iss;
 
-	u8 available;		/* Is the IP present on the silicon? */
+	u8 available;		 
 
-	/* memory resources, as defined in enum iss_mem_resources */
+	 
 	unsigned int regs1;
 	unsigned int regs2;
-	/* ISP subclock, as defined in enum iss_isp_subclk_resource */
+	 
 	unsigned int subclk;
 
-	u32 output; /* output to IPIPEIF, memory or both? */
+	u32 output;  
 	bool dpcm_decompress;
 	unsigned int frame_skip;
 
@@ -152,4 +146,4 @@ void omap4iss_csi2_cleanup(struct iss_device *iss);
 void omap4iss_csi2_unregister_entities(struct iss_csi2_device *csi2);
 int omap4iss_csi2_register_entities(struct iss_csi2_device *csi2,
 				    struct v4l2_device *vdev);
-#endif	/* OMAP4_ISS_CSI2_H */
+#endif	 

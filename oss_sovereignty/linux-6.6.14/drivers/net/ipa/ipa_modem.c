@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2018-2022 Linaro Ltd.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/if_arp.h>
@@ -26,8 +24,8 @@
 #include "ipa_power.h"
 
 #define IPA_NETDEV_NAME		"rmnet_ipa%d"
-#define IPA_NETDEV_TAILROOM	0	/* for padding by mux layer */
-#define IPA_NETDEV_TIMEOUT	10	/* seconds */
+#define IPA_NETDEV_TAILROOM	0	 
+#define IPA_NETDEV_TIMEOUT	10	 
 
 enum ipa_modem_state {
 	IPA_MODEM_STATE_STOPPED	= 0,
@@ -36,17 +34,13 @@ enum ipa_modem_state {
 	IPA_MODEM_STATE_STOPPING,
 };
 
-/**
- * struct ipa_priv - IPA network device private data
- * @ipa:	IPA pointer
- * @work:	Work structure used to wake the modem netdev TX queue
- */
+ 
 struct ipa_priv {
 	struct ipa *ipa;
 	struct work_struct work;
 };
 
-/** ipa_open() - Opens the modem network interface */
+ 
 static int ipa_open(struct net_device *netdev)
 {
 	struct ipa_priv *priv = netdev_priv(netdev);
@@ -82,7 +76,7 @@ err_power_put:
 	return ret;
 }
 
-/** ipa_stop() - Stops the modem network interface. */
+ 
 static int ipa_stop(struct net_device *netdev)
 {
 	struct ipa_priv *priv = netdev_priv(netdev);
@@ -106,14 +100,7 @@ out_power_put:
 	return 0;
 }
 
-/** ipa_start_xmit() - Transmits an skb.
- * @skb: skb to be transmitted
- * @dev: network device
- *
- * Return codes:
- * NETDEV_TX_OK: Success
- * NETDEV_TX_BUSY: Error while transmitting the skb. Try again later
- */
+ 
 static netdev_tx_t
 ipa_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
@@ -132,21 +119,18 @@ ipa_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	if (endpoint->config.qmap && skb->protocol != htons(ETH_P_MAP))
 		goto err_drop_skb;
 
-	/* The hardware must be powered for us to transmit */
+	 
 	dev = &ipa->pdev->dev;
 	ret = pm_runtime_get(dev);
 	if (ret < 1) {
-		/* If a resume won't happen, just drop the packet */
+		 
 		if (ret < 0 && ret != -EINPROGRESS) {
 			ipa_power_modem_queue_active(ipa);
 			pm_runtime_put_noidle(dev);
 			goto err_drop_skb;
 		}
 
-		/* No power (yet).  Stop the network stack from transmitting
-		 * until we're resumed; ipa_modem_resume() arranges for the
-		 * TX queue to be started again.
-		 */
+		 
 		ipa_power_modem_queue_stop(ipa);
 
 		pm_runtime_put_noidle(dev);
@@ -201,7 +185,7 @@ static const struct net_device_ops ipa_modem_ops = {
 	.ndo_start_xmit	= ipa_start_xmit,
 };
 
-/** ipa_modem_netdev_setup() - netdev setup function for the modem */
+ 
 static void ipa_modem_netdev_setup(struct net_device *netdev)
 {
 	netdev->netdev_ops = &ipa_modem_ops;
@@ -219,18 +203,14 @@ static void ipa_modem_netdev_setup(struct net_device *netdev)
 	netdev->priv_flags |= IFF_TX_SKB_SHARING;
 	eth_broadcast_addr(netdev->broadcast);
 
-	/* The endpoint is configured for QMAP */
+	 
 	netdev->needed_headroom = sizeof(struct rmnet_map_header);
 	netdev->needed_tailroom = IPA_NETDEV_TAILROOM;
 	netdev->watchdog_timeo = IPA_NETDEV_TIMEOUT * HZ;
 	netdev->hw_features = NETIF_F_SG;
 }
 
-/** ipa_modem_suspend() - suspend callback
- * @netdev:	Network device
- *
- * Suspend the modem's endpoints.
- */
+ 
 void ipa_modem_suspend(struct net_device *netdev)
 {
 	struct ipa_priv *priv = netdev_priv(netdev);
@@ -243,17 +223,7 @@ void ipa_modem_suspend(struct net_device *netdev)
 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]);
 }
 
-/**
- * ipa_modem_wake_queue_work() - enable modem netdev queue
- * @work:	Work structure
- *
- * Re-enable transmit on the modem network device.  This is called
- * in (power management) work queue context, scheduled when resuming
- * the modem.  We can't enable the queue directly in ipa_modem_resume()
- * because transmits restart the instant the queue is awakened; but the
- * device power state won't be ACTIVE until *after* ipa_modem_resume()
- * returns.
- */
+ 
 static void ipa_modem_wake_queue_work(struct work_struct *work)
 {
 	struct ipa_priv *priv = container_of(work, struct ipa_priv, work);
@@ -261,11 +231,7 @@ static void ipa_modem_wake_queue_work(struct work_struct *work)
 	ipa_power_modem_queue_wake(priv->ipa);
 }
 
-/** ipa_modem_resume() - resume callback for runtime_pm
- * @dev: pointer to device
- *
- * Resume the modem's endpoints.
- */
+ 
 void ipa_modem_resume(struct net_device *netdev)
 {
 	struct ipa_priv *priv = netdev_priv(netdev);
@@ -277,7 +243,7 @@ void ipa_modem_resume(struct net_device *netdev)
 	ipa_endpoint_resume_one(ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]);
 	ipa_endpoint_resume_one(ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]);
 
-	/* Arrange for the TX queue to be restarted */
+	 
 	(void)queue_pm_work(&priv->work);
 }
 
@@ -288,11 +254,11 @@ int ipa_modem_start(struct ipa *ipa)
 	struct ipa_priv *priv;
 	int ret;
 
-	/* Only attempt to start the modem if it's stopped */
+	 
 	state = atomic_cmpxchg(&ipa->modem_state, IPA_MODEM_STATE_STOPPED,
 			       IPA_MODEM_STATE_STARTING);
 
-	/* Silently ignore attempts when running, or when changing state */
+	 
 	if (state != IPA_MODEM_STATE_STOPPED)
 		return 0;
 
@@ -334,24 +300,24 @@ int ipa_modem_stop(struct ipa *ipa)
 	struct net_device *netdev = ipa->modem_netdev;
 	enum ipa_modem_state state;
 
-	/* Only attempt to stop the modem if it's running */
+	 
 	state = atomic_cmpxchg(&ipa->modem_state, IPA_MODEM_STATE_RUNNING,
 			       IPA_MODEM_STATE_STOPPING);
 
-	/* Silently ignore attempts when already stopped */
+	 
 	if (state == IPA_MODEM_STATE_STOPPED)
 		return 0;
 
-	/* If we're somewhere between stopped and starting, we're busy */
+	 
 	if (state != IPA_MODEM_STATE_RUNNING)
 		return -EBUSY;
 
-	/* Clean up the netdev and endpoints if it was started */
+	 
 	if (netdev) {
 		struct ipa_priv *priv = netdev_priv(netdev);
 
 		cancel_work_sync(&priv->work);
-		/* If it was opened, stop it first */
+		 
 		if (netdev->flags & IFF_UP)
 			(void)ipa_stop(netdev);
 		unregister_netdev(netdev);
@@ -367,13 +333,13 @@ int ipa_modem_stop(struct ipa *ipa)
 	return 0;
 }
 
-/* Treat a "clean" modem stop the same as a crash */
+ 
 static void ipa_modem_crashed(struct ipa *ipa)
 {
 	struct device *dev = &ipa->pdev->dev;
 	int ret;
 
-	/* Prevent the modem from triggering a call to ipa_setup() */
+	 
 	ipa_smp2p_irq_disable_setup(ipa);
 
 	ret = pm_runtime_get_sync(dev);
@@ -402,7 +368,7 @@ static void ipa_modem_crashed(struct ipa *ipa)
 	if (ret)
 		dev_err(dev, "error %d stopping modem\n", ret);
 
-	/* Now prepare for the next modem boot */
+	 
 	ret = ipa_mem_zero_modem(ipa);
 	if (ret)
 		dev_err(dev, "error %d zeroing modem memory regions\n", ret);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018-2019, Bridge Systems BV
- * Copyright (C) 2018-2019, Bootlin
- * Copyright (C) 2017, Free Electrons
- *
- * This file based on panel-ilitek-ili9881c.c
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -86,7 +80,7 @@ static int rb070d30_panel_disable(struct drm_panel *panel)
 	return mipi_dsi_dcs_enter_sleep_mode(ctx->dsi);
 }
 
-/* Default timings */
+ 
 static const struct drm_display_mode default_mode = {
 	.clock		= 51206,
 	.hdisplay	= 1024,
@@ -169,20 +163,14 @@ static int rb070d30_panel_dsi_probe(struct mipi_dsi_device *dsi)
 		return PTR_ERR(ctx->gpios.power);
 	}
 
-	/*
-	 * We don't change the state of that GPIO later on but we need
-	 * to force it into a low state.
-	 */
+	 
 	ctx->gpios.updn = devm_gpiod_get(&dsi->dev, "updn", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->gpios.updn)) {
 		dev_err(&dsi->dev, "Couldn't get our updn GPIO\n");
 		return PTR_ERR(ctx->gpios.updn);
 	}
 
-	/*
-	 * We don't change the state of that GPIO later on but we need
-	 * to force it into a low state.
-	 */
+	 
 	ctx->gpios.shlr = devm_gpiod_get(&dsi->dev, "shlr", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->gpios.shlr)) {
 		dev_err(&dsi->dev, "Couldn't get our shlr GPIO\n");
@@ -218,7 +206,7 @@ static void rb070d30_panel_dsi_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id rb070d30_panel_of_match[] = {
 	{ .compatible = "ronbo,rb070d30" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rb070d30_panel_of_match);
 

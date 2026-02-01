@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM PL353 SMC driver
- *
- * Copyright (C) 2012 - 2018 Xilinx, Inc
- * Author: Punnaiah Choudary Kalluri <punnaiah@xilinx.com>
- * Author: Naga Sureshkumar Relli <nagasure@xilinx.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/kernel.h>
@@ -15,11 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/amba/bus.h>
 
-/**
- * struct pl353_smc_data - Private smc driver structure
- * @memclk:		Pointer to the peripheral clock
- * @aclk:		Pointer to the AXI peripheral clock
- */
+ 
 struct pl353_smc_data {
 	struct clk		*memclk;
 	struct clk		*aclk;
@@ -107,7 +97,7 @@ static int pl353_smc_probe(struct amba_device *adev, const struct amba_id *id)
 
 	amba_set_drvdata(adev, pl353_smc);
 
-	/* Find compatible children. Only a single child is supported */
+	 
 	for_each_available_child_of_node(of_node, child) {
 		match = of_match_node(pl353_smc_supported_children, child);
 		if (!match) {

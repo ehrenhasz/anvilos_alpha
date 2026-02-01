@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2023 Intel Corporation. All rights reserved.
-//
-// Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -16,7 +16,7 @@
 #include "../ops.h"
 #include "../sof-pci-dev.h"
 
-/* platform specific devices */
+ 
 #include "hda.h"
 #include "mtl.h"
 
@@ -46,14 +46,14 @@ static const struct sof_dev_desc lnl_desc = {
 	.ops_init = sof_lnl_ops_init,
 };
 
-/* PCI IDs */
+ 
 static const struct pci_device_id sof_pci_ids[] = {
-	{ PCI_DEVICE_DATA(INTEL, HDA_LNL_P, &lnl_desc) }, /* LNL-P */
+	{ PCI_DEVICE_DATA(INTEL, HDA_LNL_P, &lnl_desc) },  
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, sof_pci_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver snd_sof_pci_intel_lnl_driver = {
 	.name = "sof-audio-pci-intel-lnl",
 	.id_table = sof_pci_ids,

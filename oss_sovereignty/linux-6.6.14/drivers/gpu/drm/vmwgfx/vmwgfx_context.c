@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include <drm/ttm/ttm_placement.h>
 
@@ -114,9 +90,7 @@ static const struct vmw_res_func vmw_dx_context_func = {
 	.unbind = vmw_dx_context_unbind
 };
 
-/*
- * Context management:
- */
+ 
 
 static void vmw_context_cotables_unref(struct vmw_private *dev_priv,
 				       struct vmw_user_context *uctx)
@@ -291,9 +265,7 @@ out_early:
 }
 
 
-/*
- * GB context.
- */
+ 
 
 static int vmw_gb_context_create(struct vmw_resource *res)
 {
@@ -416,9 +388,7 @@ static int vmw_gb_context_unbind(struct vmw_resource *res,
 	vmw_cmd_commit(dev_priv, submit_size);
 	mutex_unlock(&dev_priv->binding_mutex);
 
-	/*
-	 * Create a fence object and fence the backup buffer.
-	 */
+	 
 
 	(void) vmw_execbuf_fence_commands(NULL, dev_priv,
 					  &fence, NULL);
@@ -458,9 +428,7 @@ static int vmw_gb_context_destroy(struct vmw_resource *res)
 	return 0;
 }
 
-/*
- * DX context.
- */
+ 
 
 static int vmw_dx_context_create(struct vmw_resource *res)
 {
@@ -533,20 +501,7 @@ static int vmw_dx_context_bind(struct vmw_resource *res,
 	return 0;
 }
 
-/**
- * vmw_dx_context_scrub_cotables - Scrub all bindings and
- * cotables from a context
- *
- * @ctx: Pointer to the context resource
- * @readback: Whether to save the otable contents on scrubbing.
- *
- * COtables must be unbound before their context, but unbinding requires
- * the backup buffer being reserved, whereas scrubbing does not.
- * This function scrubs all cotables of a context, potentially reading back
- * the contents into their backup buffers. However, scrubbing cotables
- * also makes the device context invalid, so scrub all bindings first so
- * that doesn't have to be done later with an invalid context.
- */
+ 
 void vmw_dx_context_scrub_cotables(struct vmw_resource *ctx,
 				   bool readback)
 {
@@ -560,7 +515,7 @@ void vmw_dx_context_scrub_cotables(struct vmw_resource *ctx,
 	for (i = 0; i < cotable_max; ++i) {
 		struct vmw_resource *res;
 
-		/* Avoid racing with ongoing cotable destruction. */
+		 
 		spin_lock(&uctx->cotable_lock);
 		res = uctx->cotables[vmw_cotable_scrub_order[i]];
 		if (res)
@@ -632,9 +587,7 @@ static int vmw_dx_context_unbind(struct vmw_resource *res,
 	vmw_cmd_commit(dev_priv, submit_size);
 	mutex_unlock(&dev_priv->binding_mutex);
 
-	/*
-	 * Create a fence object and fence the backup buffer.
-	 */
+	 
 
 	(void) vmw_execbuf_fence_commands(NULL, dev_priv,
 					  &fence, NULL);
@@ -674,9 +627,7 @@ static int vmw_dx_context_destroy(struct vmw_resource *res)
 	return 0;
 }
 
-/*
- * User-space context management:
- */
+ 
 
 static struct vmw_resource *
 vmw_user_context_base_to_res(struct ttm_base_object *base)
@@ -697,10 +648,7 @@ static void vmw_user_context_free(struct vmw_resource *res)
 	ttm_base_object_kfree(ctx, base);
 }
 
-/*
- * This function is called when user space has no more references on the
- * base object. It releases the base-object's reference on the resource object.
- */
+ 
 
 static void vmw_user_context_base_release(struct ttm_base_object **p_base)
 {
@@ -748,9 +696,7 @@ static int vmw_context_define(struct drm_device *dev, void *data,
 	ctx->base.shareable = false;
 	ctx->base.tfile = NULL;
 
-	/*
-	 * From here on, the destructor takes over resource freeing.
-	 */
+	 
 
 	ret = vmw_context_init(dev_priv, res, vmw_user_context_free, dx);
 	if (unlikely(ret != 0))
@@ -795,14 +741,7 @@ int vmw_extended_context_define_ioctl(struct drm_device *dev, void *data,
 	return -EINVAL;
 }
 
-/**
- * vmw_context_binding_list - Return a list of context bindings
- *
- * @ctx: The context resource
- *
- * Returns the current list of bindings of the given context. Note that
- * this list becomes stale as soon as the dev_priv::binding_mutex is unlocked.
- */
+ 
 struct list_head *vmw_context_binding_list(struct vmw_resource *ctx)
 {
 	struct vmw_user_context *uctx =
@@ -829,33 +768,14 @@ struct vmw_resource *vmw_context_cotable(struct vmw_resource *ctx,
 		cotables[cotable_type];
 }
 
-/**
- * vmw_context_binding_state -
- * Return a pointer to a context binding state structure
- *
- * @ctx: The context resource
- *
- * Returns the current state of bindings of the given context. Note that
- * this state becomes stale as soon as the dev_priv::binding_mutex is unlocked.
- */
+ 
 struct vmw_ctx_binding_state *
 vmw_context_binding_state(struct vmw_resource *ctx)
 {
 	return container_of(ctx, struct vmw_user_context, res)->cbs;
 }
 
-/**
- * vmw_context_bind_dx_query -
- * Sets query MOB for the context.  If @mob is NULL, then this function will
- * remove the association between the MOB and the context.  This function
- * assumes the binding_mutex is held.
- *
- * @ctx_res: The context resource
- * @mob: a reference to the query MOB
- *
- * Returns -EINVAL if a MOB has already been set and does not match the one
- * specified in the parameter.  0 otherwise.
- */
+ 
 int vmw_context_bind_dx_query(struct vmw_resource *ctx_res,
 			      struct vmw_bo *mob)
 {
@@ -872,7 +792,7 @@ int vmw_context_bind_dx_query(struct vmw_resource *ctx_res,
 		return 0;
 	}
 
-	/* Can only have one MOB per context for queries */
+	 
 	if (uctx->dx_query_mob && uctx->dx_query_mob != mob)
 		return -EINVAL;
 
@@ -884,11 +804,7 @@ int vmw_context_bind_dx_query(struct vmw_resource *ctx_res,
 	return 0;
 }
 
-/**
- * vmw_context_get_dx_query_mob - Returns non-counted reference to DX query mob
- *
- * @ctx_res: The context resource
- */
+ 
 struct vmw_bo *
 vmw_context_get_dx_query_mob(struct vmw_resource *ctx_res)
 {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -133,7 +130,7 @@ struct tegra_hdmi_audio_config {
 };
 
 static const struct tmds_config tegra20_tmds_config[] = {
-	{ /* slow pixel clock modes */
+	{  
 		.pclk = 27000000,
 		.pll0 = SOR_PLL_BG_V17_S(3) | SOR_PLL_ICHPMP(1) |
 			SOR_PLL_RESISTORSEL | SOR_PLL_VCOCAP(0) |
@@ -148,7 +145,7 @@ static const struct tmds_config tegra20_tmds_config[] = {
 			DRIVE_CURRENT_LANE2(DRIVE_CURRENT_7_125_mA) |
 			DRIVE_CURRENT_LANE3(DRIVE_CURRENT_7_125_mA),
 	},
-	{ /* high pixel clock modes */
+	{  
 		.pclk = UINT_MAX,
 		.pll0 = SOR_PLL_BG_V17_S(3) | SOR_PLL_ICHPMP(1) |
 			SOR_PLL_RESISTORSEL | SOR_PLL_VCOCAP(1) |
@@ -166,7 +163,7 @@ static const struct tmds_config tegra20_tmds_config[] = {
 };
 
 static const struct tmds_config tegra30_tmds_config[] = {
-	{ /* 480p modes */
+	{  
 		.pclk = 27000000,
 		.pll0 = SOR_PLL_BG_V17_S(3) | SOR_PLL_ICHPMP(1) |
 			SOR_PLL_RESISTORSEL | SOR_PLL_VCOCAP(0) |
@@ -180,7 +177,7 @@ static const struct tmds_config tegra30_tmds_config[] = {
 			DRIVE_CURRENT_LANE1(DRIVE_CURRENT_5_250_mA) |
 			DRIVE_CURRENT_LANE2(DRIVE_CURRENT_5_250_mA) |
 			DRIVE_CURRENT_LANE3(DRIVE_CURRENT_5_250_mA),
-	}, { /* 720p modes */
+	}, {  
 		.pclk = 74250000,
 		.pll0 = SOR_PLL_BG_V17_S(3) | SOR_PLL_ICHPMP(1) |
 			SOR_PLL_RESISTORSEL | SOR_PLL_VCOCAP(1) |
@@ -194,7 +191,7 @@ static const struct tmds_config tegra30_tmds_config[] = {
 			DRIVE_CURRENT_LANE1(DRIVE_CURRENT_5_250_mA) |
 			DRIVE_CURRENT_LANE2(DRIVE_CURRENT_5_250_mA) |
 			DRIVE_CURRENT_LANE3(DRIVE_CURRENT_5_250_mA),
-	}, { /* 1080p modes */
+	}, {  
 		.pclk = UINT_MAX,
 		.pll0 = SOR_PLL_BG_V17_S(3) | SOR_PLL_ICHPMP(1) |
 			SOR_PLL_RESISTORSEL | SOR_PLL_VCOCAP(3) |
@@ -212,7 +209,7 @@ static const struct tmds_config tegra30_tmds_config[] = {
 };
 
 static const struct tmds_config tegra114_tmds_config[] = {
-	{ /* 480p/576p / 25.2MHz/27MHz modes */
+	{  
 		.pclk = 27000000,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(0) | SOR_PLL_RESISTORSEL,
@@ -230,7 +227,7 @@ static const struct tmds_config tegra114_tmds_config[] = {
 			PEAK_CURRENT_LANE1(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE2(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE3(PEAK_CURRENT_0_000_mA),
-	}, { /* 720p / 74.25MHz modes */
+	}, {  
 		.pclk = 74250000,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(1) | SOR_PLL_RESISTORSEL,
@@ -249,7 +246,7 @@ static const struct tmds_config tegra114_tmds_config[] = {
 			PEAK_CURRENT_LANE1(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE2(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE3(PEAK_CURRENT_0_000_mA),
-	}, { /* 1080p / 148.5MHz modes */
+	}, {  
 		.pclk = 148500000,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(3) | SOR_PLL_RESISTORSEL,
@@ -268,7 +265,7 @@ static const struct tmds_config tegra114_tmds_config[] = {
 			PEAK_CURRENT_LANE1(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE2(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE3(PEAK_CURRENT_0_000_mA),
-	}, { /* 225/297MHz modes */
+	}, {  
 		.pclk = UINT_MAX,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(0xf) | SOR_PLL_RESISTORSEL,
@@ -291,7 +288,7 @@ static const struct tmds_config tegra114_tmds_config[] = {
 };
 
 static const struct tmds_config tegra124_tmds_config[] = {
-	{ /* 480p/576p / 25.2MHz/27MHz modes */
+	{  
 		.pclk = 27000000,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(0) | SOR_PLL_RESISTORSEL,
@@ -309,7 +306,7 @@ static const struct tmds_config tegra124_tmds_config[] = {
 			PEAK_CURRENT_LANE1(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE2(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE3(PEAK_CURRENT_0_000_mA),
-	}, { /* 720p / 74.25MHz modes */
+	}, {  
 		.pclk = 74250000,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(1) | SOR_PLL_RESISTORSEL,
@@ -328,7 +325,7 @@ static const struct tmds_config tegra124_tmds_config[] = {
 			PEAK_CURRENT_LANE1(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE2(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE3(PEAK_CURRENT_0_000_mA),
-	}, { /* 1080p / 148.5MHz modes */
+	}, {  
 		.pclk = 148500000,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(3) | SOR_PLL_RESISTORSEL,
@@ -347,7 +344,7 @@ static const struct tmds_config tegra124_tmds_config[] = {
 			PEAK_CURRENT_LANE1(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE2(PEAK_CURRENT_0_000_mA) |
 			PEAK_CURRENT_LANE3(PEAK_CURRENT_0_000_mA),
-	}, { /* 225/297MHz modes */
+	}, {  
 		.pclk = UINT_MAX,
 		.pll0 = SOR_PLL_ICHPMP(1) | SOR_PLL_BG_V17_S(3) |
 			SOR_PLL_VCOCAP(0xf) | SOR_PLL_RESISTORSEL,
@@ -401,22 +398,22 @@ tegra_hdmi_get_audio_config(unsigned int audio_freq, unsigned int pix_clock,
 		unsigned int delta;
 		int64_t cts, err;
 
-		/* compute aval in 48.16 fixed point */
+		 
 		aval_f = ((int64_t)24000000 << 16) * n;
 		do_div(aval_f, afreq);
-		/* It should round without any rest */
+		 
 		if (aval_f & 0xFFFF)
 			continue;
 
-		/* Compute cts in 48.16 fixed point */
+		 
 		cts_f = ((int64_t)pix_clock << 16) * n;
 		do_div(cts_f, afreq);
-		/* Round it to the nearest integer */
+		 
 		cts = (cts_f & ~0xFFFF) + ((cts_f & BIT(15)) << 1);
 
 		delta = abs(n - ideal_n);
 
-		/* Compute the absolute error */
+		 
 		err = abs((int64_t)cts_f - cts);
 		if (err < min_err || (err == min_err && delta < min_delta)) {
 			config->n = n;
@@ -511,24 +508,9 @@ static int tegra_hdmi_setup_audio(struct tegra_hdmi *hdmi)
 		break;
 	}
 
-	/*
-	 * Tegra30 and later use a slightly modified version of the register
-	 * layout to accomodate for changes related to supporting HDA as the
-	 * audio input source for HDMI. The source select field has moved to
-	 * the SOR_AUDIO_CNTRL0 register, but the error tolerance and frames
-	 * per block fields remain in the AUDIO_CNTRL0 register.
-	 */
+	 
 	if (hdmi->config->has_hda) {
-		/*
-		 * Inject null samples into the audio FIFO for every frame in
-		 * which the codec did not receive any samples. This applies
-		 * to stereo LPCM only.
-		 *
-		 * XXX: This seems to be a remnant of MCP days when this was
-		 * used to work around issues with monitors not being able to
-		 * play back system startup sounds early. It is possibly not
-		 * needed on Linux at all.
-		 */
+		 
 		if (hdmi->format.channels == 2)
 			value = SOR_AUDIO_CNTRL0_INJECT_NULLSMPL;
 		else
@@ -539,10 +521,7 @@ static int tegra_hdmi_setup_audio(struct tegra_hdmi *hdmi)
 		tegra_hdmi_writel(hdmi, value, HDMI_NV_PDISP_SOR_AUDIO_CNTRL0);
 	}
 
-	/*
-	 * On Tegra20, HDA is not a supported audio source and the source
-	 * select field is part of the AUDIO_CNTRL0 register.
-	 */
+	 
 	value = AUDIO_CNTRL0_FRAMES_PER_BLOCK(0xc0) |
 		AUDIO_CNTRL0_ERROR_TOLERANCE(6);
 
@@ -551,9 +530,7 @@ static int tegra_hdmi_setup_audio(struct tegra_hdmi *hdmi)
 
 	tegra_hdmi_writel(hdmi, value, HDMI_NV_PDISP_AUDIO_CNTRL0);
 
-	/*
-	 * Advertise support for High Bit-Rate on Tegra114 and later.
-	 */
+	 
 	if (hdmi->config->has_hbr) {
 		value = tegra_hdmi_readl(hdmi, HDMI_NV_PDISP_SOR_AUDIO_SPARE0);
 		value |= SOR_AUDIO_SPARE0_HBR_ENABLE;
@@ -626,12 +603,7 @@ static void tegra_hdmi_write_eld(struct tegra_hdmi *hdmi)
 		tegra_hdmi_writel(hdmi, i << 8 | hdmi->output.connector.eld[i],
 				  HDMI_NV_PDISP_SOR_AUDIO_HDA_ELD_BUFWR);
 
-	/*
-	 * The HDA codec will always report an ELD buffer size of 96 bytes and
-	 * the HDA codec driver will check that each byte read from the buffer
-	 * is valid. Therefore every byte must be written, even if no 96 bytes
-	 * were parsed from EDID.
-	 */
+	 
 	for (i = length; i < HDMI_ELD_BUFFER_SIZE; i++)
 		tegra_hdmi_writel(hdmi, i << 8 | 0,
 				  HDMI_NV_PDISP_SOR_AUDIO_HDA_ELD_BUFWR);
@@ -684,11 +656,7 @@ static void tegra_hdmi_write_infopack(struct tegra_hdmi *hdmi, const void *data,
 	tegra_hdmi_writel(hdmi, value, offset);
 	offset++;
 
-	/*
-	 * Each subpack contains 7 bytes, divided into:
-	 * - subpack_low: bytes 0 - 3
-	 * - subpack_high: bytes 4 - 6 (with byte 7 padded to 0x00)
-	 */
+	 
 	for (i = 3, j = 0; i < size; i += 7, j += 8) {
 		size_t rem = size - i, num = min_t(size_t, rem, 4);
 
@@ -765,12 +733,7 @@ static void tegra_hdmi_setup_audio_infoframe(struct tegra_hdmi *hdmi)
 		return;
 	}
 
-	/*
-	 * The audio infoframe has only one set of subpack registers, so the
-	 * infoframe needs to be truncated. One set of subpack registers can
-	 * contain 7 bytes. Including the 3 byte header only the first 10
-	 * bytes can be programmed.
-	 */
+	 
 	tegra_hdmi_write_infopack(hdmi, buffer, min_t(size_t, 10, err));
 }
 
@@ -1168,10 +1131,7 @@ static void tegra_hdmi_encoder_disable(struct drm_encoder *encoder)
 
 	tegra_hdmi_audio_lock(hdmi);
 
-	/*
-	 * The following accesses registers of the display controller, so make
-	 * sure it's only executed when the output is attached to one.
-	 */
+	 
 	if (dc) {
 		value = tegra_dc_readl(dc, DC_DISP_DISP_WIN_OPTIONS);
 		value &= ~HDMI_ENABLE;
@@ -1221,11 +1181,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 
 	tegra_hdmi_audio_lock(hdmi);
 
-	/*
-	 * Enable and unmask the HDA codec SCRATCH0 register interrupt. This
-	 * is used for interoperability between the HDA codec driver and the
-	 * HDMI driver.
-	 */
+	 
 	tegra_hdmi_writel(hdmi, INT_CODEC_SCRATCH0, HDMI_NV_PDISP_INT_ENABLE);
 	tegra_hdmi_writel(hdmi, INT_CODEC_SCRATCH0, HDMI_NV_PDISP_INT_MASK);
 
@@ -1242,7 +1198,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 
 	DRM_DEBUG_KMS("HDMI clock rate: %lu Hz\n", clk_get_rate(hdmi->clk));
 
-	/* power up sequence */
+	 
 	value = tegra_hdmi_readl(hdmi, HDMI_NV_PDISP_SOR_PLL0);
 	value &= ~SOR_PLL_PDBG;
 	tegra_hdmi_writel(hdmi, value, HDMI_NV_PDISP_SOR_PLL0);
@@ -1258,7 +1214,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 	tegra_dc_writel(dc, DITHER_CONTROL_DISABLE | BASE_COLOR_SIZE_888,
 			DC_DISP_DISP_COLOR_CONTROL);
 
-	/* video_preamble uses h_pulse2 */
+	 
 	pulse_start = 1 + h_sync_width + h_back_porch - 10;
 
 	tegra_dc_writel(dc, H_PULSE2_ENABLE, DC_DISP_DISP_SIGNAL_OPTIONS0);
@@ -1295,10 +1251,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 
 	hdmi->dvi = !tegra_output_is_hdmi(output);
 	if (!hdmi->dvi) {
-		/*
-		 * Make sure that the audio format has been configured before
-		 * enabling audio, otherwise we may try to divide by zero.
-		*/
+		 
 		if (hdmi->format.sample_rate > 0) {
 			err = tegra_hdmi_setup_audio(hdmi);
 			if (err < 0)
@@ -1327,7 +1280,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 			tegra_hdmi_setup_stereo_infoframe(hdmi);
 	}
 
-	/* TMDS CONFIG */
+	 
 	for (i = 0; i < hdmi->config->num_tmds; i++) {
 		if (hdmi->pixel_clock <= hdmi->config->tmds[i].pclk) {
 			tegra_hdmi_setup_tmds(hdmi, &hdmi->config->tmds[i]);
@@ -1361,7 +1314,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 	value |= SOR_CSTM_MODE_TMDS;
 	tegra_hdmi_writel(hdmi, value, HDMI_NV_PDISP_SOR_CSTM);
 
-	/* start SOR */
+	 
 	tegra_hdmi_writel(hdmi,
 			  SOR_PWR_NORMAL_STATE_PU |
 			  SOR_PWR_NORMAL_START_NORMAL |
@@ -1386,7 +1339,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 		SOR_STATE_ASY_PROTOCOL_SINGLE_TMDS_A |
 		SOR_STATE_ASY_DEPOL_POS;
 
-	/* setup sync polarities */
+	 
 	if (mode->flags & DRM_MODE_FLAG_PHSYNC)
 		value |= SOR_STATE_ASY_HSYNCPOL_POS;
 
@@ -1425,7 +1378,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
 			tegra_hdmi_enable_stereo_infoframe(hdmi);
 	}
 
-	/* TODO: add HDCP support */
+	 
 
 	tegra_hdmi_audio_unlock(hdmi);
 }

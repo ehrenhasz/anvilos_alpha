@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -17,7 +14,7 @@
 #include "scrub/scrub.h"
 #include "scrub/common.h"
 
-/* Set us up with the realtime metadata locked. */
+ 
 int
 xchk_setup_rtbitmap(
 	struct xfs_scrub	*sc)
@@ -36,9 +33,9 @@ xchk_setup_rtbitmap(
 	return 0;
 }
 
-/* Realtime bitmap. */
+ 
 
-/* Scrub a free extent record from the realtime bitmap. */
+ 
 STATIC int
 xchk_rtbitmap_rec(
 	struct xfs_mount	*mp,
@@ -58,7 +55,7 @@ xchk_rtbitmap_rec(
 	return 0;
 }
 
-/* Make sure the entire rtbitmap file is mapped with written extents. */
+ 
 STATIC int
 xchk_rtbitmap_check_extents(
 	struct xfs_scrub	*sc)
@@ -74,7 +71,7 @@ xchk_rtbitmap_check_extents(
 		    (sc->sm->sm_flags & XFS_SCRUB_OFLAG_CORRUPT))
 			break;
 
-		/* Make sure we have a written extent. */
+		 
 		nmap = 1;
 		error = xfs_bmapi_read(mp->m_rbmip, off,
 				mp->m_sb.sb_rbmblocks - off, &map, &nmap,
@@ -93,21 +90,21 @@ xchk_rtbitmap_check_extents(
 	return error;
 }
 
-/* Scrub the realtime bitmap. */
+ 
 int
 xchk_rtbitmap(
 	struct xfs_scrub	*sc)
 {
 	int			error;
 
-	/* Is the size of the rtbitmap correct? */
+	 
 	if (sc->mp->m_rbmip->i_disk_size !=
 	    XFS_FSB_TO_B(sc->mp, sc->mp->m_sb.sb_rbmblocks)) {
 		xchk_ino_set_corrupt(sc, sc->mp->m_rbmip->i_ino);
 		return 0;
 	}
 
-	/* Invoke the fork scrubber. */
+	 
 	error = xchk_metadata_inode_forks(sc);
 	if (error || (sc->sm->sm_flags & XFS_SCRUB_OFLAG_CORRUPT))
 		return error;
@@ -124,7 +121,7 @@ out:
 	return error;
 }
 
-/* xref check that the extent is not free in the rtbitmap */
+ 
 void
 xchk_xref_is_used_rt_space(
 	struct xfs_scrub	*sc,

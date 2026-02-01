@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- *
- * Introduced single menu mode (show all sub-menus in one large tree).
- * 2002-11-06 Petr Baudis <pasky@ucw.cz>
- *
- * i18n, 2005, Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- */
+
+ 
 
 #include <ctype.h>
 #include <errno.h>
@@ -461,7 +454,7 @@ again:
 		return;
 	}
 
-	/* strip the prefix if necessary */
+	 
 	dialog_input = dialog_input_result;
 	if (strncasecmp(dialog_input_result, CONFIG_, strlen(CONFIG_)) == 0)
 		dialog_input += strlen(CONFIG_);
@@ -511,10 +504,7 @@ static void build_conf(struct menu *menu)
 	char ch;
 	bool visible;
 
-	/*
-	 * note: menu_is_visible() has side effect that it will
-	 * recalc the value of the symbol.
-	 */
+	 
 	visible = menu_is_visible(menu);
 	if (show_all_options && !menu_has_prompt(menu))
 		return;
@@ -650,7 +640,7 @@ static void build_conf(struct menu *menu)
 				item_set_data(menu);
 				break;
 			default:
-				tmp = 2 + strlen(sym_get_string_value(sym)); /* () = 2 */
+				tmp = 2 + strlen(sym_get_string_value(sym));  
 				item_make("(%s)", sym_get_string_value(sym));
 				tmp = indent - tmp + 4;
 				if (tmp < 0)
@@ -982,7 +972,7 @@ static int handle_exit(void)
 			return 1;
 		}
 		conf_write_autoconf(0);
-		/* fall through */
+		 
 	case -1:
 		if (!silent)
 			printf("\n\n"
@@ -1017,7 +1007,7 @@ int main(int ac, char **av)
 
 	if (ac > 1 && strcmp(av[1], "-s") == 0) {
 		silent = 1;
-		/* Silence conf_read() until the real callback is set up */
+		 
 		conf_set_message_callback(NULL);
 		av++;
 	}

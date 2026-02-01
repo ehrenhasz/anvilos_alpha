@@ -1,31 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for Sony / PS2 / PS3 / PS4 BD devices.
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2008 Jiri Slaby
- *  Copyright (c) 2012 David Dillow <dave@thedillows.org>
- *  Copyright (c) 2006-2013 Jiri Kosina
- *  Copyright (c) 2013 Colin Leitner <colin.leitner@gmail.com>
- *  Copyright (c) 2014-2016 Frank Praznik <frank.praznik@gmail.com>
- *  Copyright (c) 2018 Todd Kelner
- *  Copyright (c) 2020-2021 Pascal Giard <pascal.giard@etsmtl.ca>
- *  Copyright (c) 2020 Sanjay Govind <sanjay.govind9@gmail.com>
- *  Copyright (c) 2021 Daniel Nguyen <daniel.nguyen.1@ens.etsmtl.ca>
- */
 
-/*
- */
+ 
 
-/*
- * NOTE: in order for the Sony PS3 BD Remote Control to be found by
- * a Bluetooth host, the key combination Start+Enter has to be kept pressed
- * for about 7 seconds with the Bluetooth Host Controller in discovering mode.
- *
- * There will be no PIN request from the device.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -77,208 +55,192 @@
 #define NSG_MRXU_MAX_X 1667
 #define NSG_MRXU_MAX_Y 1868
 
-/* The PS3/Wii U dongles require a poke every 10 seconds, but the PS4
- * requires one every 8 seconds. Using 8 seconds for all for simplicity.
- */
-#define GHL_GUITAR_POKE_INTERVAL 8 /* In seconds */
+ 
+#define GHL_GUITAR_POKE_INTERVAL 8  
 #define GUITAR_TILT_USAGE 44
 
-/* Magic data taken from GHLtarUtility:
- * https://github.com/ghlre/GHLtarUtility/blob/master/PS3Guitar.cs
- * Note: The Wii U and PS3 dongles happen to share the same!
- */
+ 
 static const char ghl_ps3wiiu_magic_data[] = {
 	0x02, 0x08, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-/* Magic data for the PS4 dongles sniffed with a USB protocol
- * analyzer.
- */
+ 
 static const char ghl_ps4_magic_data[] = {
 	0x30, 0x02, 0x08, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-/* PS/3 Motion controller */
+ 
 static u8 motion_rdesc[] = {
-	0x05, 0x01,         /*  Usage Page (Desktop),               */
-	0x09, 0x04,         /*  Usage (Joystick),                   */
-	0xA1, 0x01,         /*  Collection (Application),           */
-	0xA1, 0x02,         /*      Collection (Logical),           */
-	0x85, 0x01,         /*          Report ID (1),              */
-	0x75, 0x01,         /*          Report Size (1),            */
-	0x95, 0x15,         /*          Report Count (21),          */
-	0x15, 0x00,         /*          Logical Minimum (0),        */
-	0x25, 0x01,         /*          Logical Maximum (1),        */
-	0x35, 0x00,         /*          Physical Minimum (0),       */
-	0x45, 0x01,         /*          Physical Maximum (1),       */
-	0x05, 0x09,         /*          Usage Page (Button),        */
-	0x19, 0x01,         /*          Usage Minimum (01h),        */
-	0x29, 0x15,         /*          Usage Maximum (15h),        */
-	0x81, 0x02,         /*          Input (Variable),           * Buttons */
-	0x95, 0x0B,         /*          Report Count (11),          */
-	0x06, 0x00, 0xFF,   /*          Usage Page (FF00h),         */
-	0x81, 0x03,         /*          Input (Constant, Variable), * Padding */
-	0x15, 0x00,         /*          Logical Minimum (0),        */
-	0x26, 0xFF, 0x00,   /*          Logical Maximum (255),      */
-	0x05, 0x01,         /*          Usage Page (Desktop),       */
-	0xA1, 0x00,         /*          Collection (Physical),      */
-	0x75, 0x08,         /*              Report Size (8),        */
-	0x95, 0x01,         /*              Report Count (1),       */
-	0x35, 0x00,         /*              Physical Minimum (0),   */
-	0x46, 0xFF, 0x00,   /*              Physical Maximum (255), */
-	0x09, 0x30,         /*              Usage (X),              */
-	0x81, 0x02,         /*              Input (Variable),       * Trigger */
-	0xC0,               /*          End Collection,             */
-	0x06, 0x00, 0xFF,   /*          Usage Page (FF00h),         */
-	0x75, 0x08,         /*          Report Size (8),            */
-	0x95, 0x07,         /*          Report Count (7),           * skip 7 bytes */
-	0x81, 0x02,         /*          Input (Variable),           */
-	0x05, 0x01,         /*          Usage Page (Desktop),       */
-	0x75, 0x10,         /*          Report Size (16),           */
-	0x46, 0xFF, 0xFF,   /*          Physical Maximum (65535),   */
-	0x27, 0xFF, 0xFF, 0x00, 0x00, /*      Logical Maximum (65535),    */
-	0x95, 0x03,         /*          Report Count (3),           * 3x Accels */
-	0x09, 0x33,         /*              Usage (rX),             */
-	0x09, 0x34,         /*              Usage (rY),             */
-	0x09, 0x35,         /*              Usage (rZ),             */
-	0x81, 0x02,         /*          Input (Variable),           */
-	0x06, 0x00, 0xFF,   /*          Usage Page (FF00h),         */
-	0x95, 0x03,         /*          Report Count (3),           * Skip Accels 2nd frame */
-	0x81, 0x02,         /*          Input (Variable),           */
-	0x05, 0x01,         /*          Usage Page (Desktop),       */
-	0x09, 0x01,         /*          Usage (Pointer),            */
-	0x95, 0x03,         /*          Report Count (3),           * 3x Gyros */
-	0x81, 0x02,         /*          Input (Variable),           */
-	0x06, 0x00, 0xFF,   /*          Usage Page (FF00h),         */
-	0x95, 0x03,         /*          Report Count (3),           * Skip Gyros 2nd frame */
-	0x81, 0x02,         /*          Input (Variable),           */
-	0x75, 0x0C,         /*          Report Size (12),           */
-	0x46, 0xFF, 0x0F,   /*          Physical Maximum (4095),    */
-	0x26, 0xFF, 0x0F,   /*          Logical Maximum (4095),     */
-	0x95, 0x04,         /*          Report Count (4),           * Skip Temp and Magnetometers */
-	0x81, 0x02,         /*          Input (Variable),           */
-	0x75, 0x08,         /*          Report Size (8),            */
-	0x46, 0xFF, 0x00,   /*          Physical Maximum (255),     */
-	0x26, 0xFF, 0x00,   /*          Logical Maximum (255),      */
-	0x95, 0x06,         /*          Report Count (6),           * Skip Timestamp and Extension Bytes */
-	0x81, 0x02,         /*          Input (Variable),           */
-	0x75, 0x08,         /*          Report Size (8),            */
-	0x95, 0x30,         /*          Report Count (48),          */
-	0x09, 0x01,         /*          Usage (Pointer),            */
-	0x91, 0x02,         /*          Output (Variable),          */
-	0x75, 0x08,         /*          Report Size (8),            */
-	0x95, 0x30,         /*          Report Count (48),          */
-	0x09, 0x01,         /*          Usage (Pointer),            */
-	0xB1, 0x02,         /*          Feature (Variable),         */
-	0xC0,               /*      End Collection,                 */
-	0xA1, 0x02,         /*      Collection (Logical),           */
-	0x85, 0x02,         /*          Report ID (2),              */
-	0x75, 0x08,         /*          Report Size (8),            */
-	0x95, 0x30,         /*          Report Count (48),          */
-	0x09, 0x01,         /*          Usage (Pointer),            */
-	0xB1, 0x02,         /*          Feature (Variable),         */
-	0xC0,               /*      End Collection,                 */
-	0xA1, 0x02,         /*      Collection (Logical),           */
-	0x85, 0xEE,         /*          Report ID (238),            */
-	0x75, 0x08,         /*          Report Size (8),            */
-	0x95, 0x30,         /*          Report Count (48),          */
-	0x09, 0x01,         /*          Usage (Pointer),            */
-	0xB1, 0x02,         /*          Feature (Variable),         */
-	0xC0,               /*      End Collection,                 */
-	0xA1, 0x02,         /*      Collection (Logical),           */
-	0x85, 0xEF,         /*          Report ID (239),            */
-	0x75, 0x08,         /*          Report Size (8),            */
-	0x95, 0x30,         /*          Report Count (48),          */
-	0x09, 0x01,         /*          Usage (Pointer),            */
-	0xB1, 0x02,         /*          Feature (Variable),         */
-	0xC0,               /*      End Collection,                 */
-	0xC0                /*  End Collection                      */
+	0x05, 0x01,          
+	0x09, 0x04,          
+	0xA1, 0x01,          
+	0xA1, 0x02,          
+	0x85, 0x01,          
+	0x75, 0x01,          
+	0x95, 0x15,          
+	0x15, 0x00,          
+	0x25, 0x01,          
+	0x35, 0x00,          
+	0x45, 0x01,          
+	0x05, 0x09,          
+	0x19, 0x01,          
+	0x29, 0x15,          
+	0x81, 0x02,          
+	0x95, 0x0B,          
+	0x06, 0x00, 0xFF,    
+	0x81, 0x03,          
+	0x15, 0x00,          
+	0x26, 0xFF, 0x00,    
+	0x05, 0x01,          
+	0xA1, 0x00,          
+	0x75, 0x08,          
+	0x95, 0x01,          
+	0x35, 0x00,          
+	0x46, 0xFF, 0x00,    
+	0x09, 0x30,          
+	0x81, 0x02,          
+	0xC0,                
+	0x06, 0x00, 0xFF,    
+	0x75, 0x08,          
+	0x95, 0x07,          
+	0x81, 0x02,          
+	0x05, 0x01,          
+	0x75, 0x10,          
+	0x46, 0xFF, 0xFF,    
+	0x27, 0xFF, 0xFF, 0x00, 0x00,  
+	0x95, 0x03,          
+	0x09, 0x33,          
+	0x09, 0x34,          
+	0x09, 0x35,          
+	0x81, 0x02,          
+	0x06, 0x00, 0xFF,    
+	0x95, 0x03,          
+	0x81, 0x02,          
+	0x05, 0x01,          
+	0x09, 0x01,          
+	0x95, 0x03,          
+	0x81, 0x02,          
+	0x06, 0x00, 0xFF,    
+	0x95, 0x03,          
+	0x81, 0x02,          
+	0x75, 0x0C,          
+	0x46, 0xFF, 0x0F,    
+	0x26, 0xFF, 0x0F,    
+	0x95, 0x04,          
+	0x81, 0x02,          
+	0x75, 0x08,          
+	0x46, 0xFF, 0x00,    
+	0x26, 0xFF, 0x00,    
+	0x95, 0x06,          
+	0x81, 0x02,          
+	0x75, 0x08,          
+	0x95, 0x30,          
+	0x09, 0x01,          
+	0x91, 0x02,          
+	0x75, 0x08,          
+	0x95, 0x30,          
+	0x09, 0x01,          
+	0xB1, 0x02,          
+	0xC0,                
+	0xA1, 0x02,          
+	0x85, 0x02,          
+	0x75, 0x08,          
+	0x95, 0x30,          
+	0x09, 0x01,          
+	0xB1, 0x02,          
+	0xC0,                
+	0xA1, 0x02,          
+	0x85, 0xEE,          
+	0x75, 0x08,          
+	0x95, 0x30,          
+	0x09, 0x01,          
+	0xB1, 0x02,          
+	0xC0,                
+	0xA1, 0x02,          
+	0x85, 0xEF,          
+	0x75, 0x08,          
+	0x95, 0x30,          
+	0x09, 0x01,          
+	0xB1, 0x02,          
+	0xC0,                
+	0xC0                 
 };
 
 static u8 ps3remote_rdesc[] = {
-	0x05, 0x01,          /* GUsagePage Generic Desktop */
-	0x09, 0x05,          /* LUsage 0x05 [Game Pad] */
-	0xA1, 0x01,          /* MCollection Application (mouse, keyboard) */
+	0x05, 0x01,           
+	0x09, 0x05,           
+	0xA1, 0x01,           
 
-	 /* Use collection 1 for joypad buttons */
-	 0xA1, 0x02,         /* MCollection Logical (interrelated data) */
+	  
+	 0xA1, 0x02,          
 
-	  /*
-	   * Ignore the 1st byte, maybe it is used for a controller
-	   * number but it's not needed for correct operation
-	   */
-	  0x75, 0x08,        /* GReportSize 0x08 [8] */
-	  0x95, 0x01,        /* GReportCount 0x01 [1] */
-	  0x81, 0x01,        /* MInput 0x01 (Const[0] Arr[1] Abs[2]) */
+	   
+	  0x75, 0x08,         
+	  0x95, 0x01,         
+	  0x81, 0x01,         
 
-	  /*
-	   * Bytes from 2nd to 4th are a bitmap for joypad buttons, for these
-	   * buttons multiple keypresses are allowed
-	   */
-	  0x05, 0x09,        /* GUsagePage Button */
-	  0x19, 0x01,        /* LUsageMinimum 0x01 [Button 1 (primary/trigger)] */
-	  0x29, 0x18,        /* LUsageMaximum 0x18 [Button 24] */
-	  0x14,              /* GLogicalMinimum [0] */
-	  0x25, 0x01,        /* GLogicalMaximum 0x01 [1] */
-	  0x75, 0x01,        /* GReportSize 0x01 [1] */
-	  0x95, 0x18,        /* GReportCount 0x18 [24] */
-	  0x81, 0x02,        /* MInput 0x02 (Data[0] Var[1] Abs[2]) */
+	   
+	  0x05, 0x09,         
+	  0x19, 0x01,         
+	  0x29, 0x18,         
+	  0x14,               
+	  0x25, 0x01,         
+	  0x75, 0x01,         
+	  0x95, 0x18,         
+	  0x81, 0x02,         
 
-	  0xC0,              /* MEndCollection */
+	  0xC0,               
 
-	 /* Use collection 2 for remote control buttons */
-	 0xA1, 0x02,         /* MCollection Logical (interrelated data) */
+	  
+	 0xA1, 0x02,          
 
-	  /* 5th byte is used for remote control buttons */
-	  0x05, 0x09,        /* GUsagePage Button */
-	  0x18,              /* LUsageMinimum [No button pressed] */
-	  0x29, 0xFE,        /* LUsageMaximum 0xFE [Button 254] */
-	  0x14,              /* GLogicalMinimum [0] */
-	  0x26, 0xFE, 0x00,  /* GLogicalMaximum 0x00FE [254] */
-	  0x75, 0x08,        /* GReportSize 0x08 [8] */
-	  0x95, 0x01,        /* GReportCount 0x01 [1] */
-	  0x80,              /* MInput  */
+	   
+	  0x05, 0x09,         
+	  0x18,               
+	  0x29, 0xFE,         
+	  0x14,               
+	  0x26, 0xFE, 0x00,   
+	  0x75, 0x08,         
+	  0x95, 0x01,         
+	  0x80,               
 
-	  /*
-	   * Ignore bytes from 6th to 11th, 6th to 10th are always constant at
-	   * 0xff and 11th is for press indication
-	   */
-	  0x75, 0x08,        /* GReportSize 0x08 [8] */
-	  0x95, 0x06,        /* GReportCount 0x06 [6] */
-	  0x81, 0x01,        /* MInput 0x01 (Const[0] Arr[1] Abs[2]) */
+	   
+	  0x75, 0x08,         
+	  0x95, 0x06,         
+	  0x81, 0x01,         
 
-	  /* 12th byte is for battery strength */
-	  0x05, 0x06,        /* GUsagePage Generic Device Controls */
-	  0x09, 0x20,        /* LUsage 0x20 [Battery Strength] */
-	  0x14,              /* GLogicalMinimum [0] */
-	  0x25, 0x05,        /* GLogicalMaximum 0x05 [5] */
-	  0x75, 0x08,        /* GReportSize 0x08 [8] */
-	  0x95, 0x01,        /* GReportCount 0x01 [1] */
-	  0x81, 0x02,        /* MInput 0x02 (Data[0] Var[1] Abs[2]) */
+	   
+	  0x05, 0x06,         
+	  0x09, 0x20,         
+	  0x14,               
+	  0x25, 0x05,         
+	  0x75, 0x08,         
+	  0x95, 0x01,         
+	  0x81, 0x02,         
 
-	  0xC0,              /* MEndCollection */
+	  0xC0,               
 
-	 0xC0                /* MEndCollection [Game Pad] */
+	 0xC0                 
 };
 
 static const unsigned int ps3remote_keymap_joypad_buttons[] = {
 	[0x01] = KEY_SELECT,
-	[0x02] = BTN_THUMBL,		/* L3 */
-	[0x03] = BTN_THUMBR,		/* R3 */
+	[0x02] = BTN_THUMBL,		 
+	[0x03] = BTN_THUMBR,		 
 	[0x04] = BTN_START,
 	[0x05] = KEY_UP,
 	[0x06] = KEY_RIGHT,
 	[0x07] = KEY_DOWN,
 	[0x08] = KEY_LEFT,
-	[0x09] = BTN_TL2,		/* L2 */
-	[0x0a] = BTN_TR2,		/* R2 */
-	[0x0b] = BTN_TL,		/* L1 */
-	[0x0c] = BTN_TR,		/* R1 */
-	[0x0d] = KEY_OPTION,		/* options/triangle */
-	[0x0e] = KEY_BACK,		/* back/circle */
-	[0x0f] = BTN_0,			/* cross */
-	[0x10] = KEY_SCREEN,		/* view/square */
-	[0x11] = KEY_HOMEPAGE,		/* PS button */
+	[0x09] = BTN_TL2,		 
+	[0x0a] = BTN_TR2,		 
+	[0x0b] = BTN_TL,		 
+	[0x0c] = BTN_TR,		 
+	[0x0d] = KEY_OPTION,		 
+	[0x0e] = KEY_BACK,		 
+	[0x0f] = BTN_0,			 
+	[0x10] = KEY_SCREEN,		 
+	[0x11] = KEY_HOMEPAGE,		 
 	[0x14] = KEY_ENTER,
 };
 static const unsigned int ps3remote_keymap_remote_buttons[] = {
@@ -292,25 +254,25 @@ static const unsigned int ps3remote_keymap_remote_buttons[] = {
 	[0x07] = KEY_8,
 	[0x08] = KEY_9,
 	[0x09] = KEY_0,
-	[0x0e] = KEY_ESC,		/* return */
+	[0x0e] = KEY_ESC,		 
 	[0x0f] = KEY_CLEAR,
 	[0x16] = KEY_EJECTCD,
-	[0x1a] = KEY_MENU,		/* top menu */
+	[0x1a] = KEY_MENU,		 
 	[0x28] = KEY_TIME,
 	[0x30] = KEY_PREVIOUS,
 	[0x31] = KEY_NEXT,
 	[0x32] = KEY_PLAY,
-	[0x33] = KEY_REWIND,		/* scan back */
-	[0x34] = KEY_FORWARD,		/* scan forward */
+	[0x33] = KEY_REWIND,		 
+	[0x34] = KEY_FORWARD,		 
 	[0x38] = KEY_STOP,
 	[0x39] = KEY_PAUSE,
-	[0x40] = KEY_CONTEXT_MENU,	/* pop up/menu */
-	[0x60] = KEY_FRAMEBACK,		/* slow/step back */
-	[0x61] = KEY_FRAMEFORWARD,	/* slow/step forward */
+	[0x40] = KEY_CONTEXT_MENU,	 
+	[0x60] = KEY_FRAMEBACK,		 
+	[0x61] = KEY_FRAMEFORWARD,	 
 	[0x63] = KEY_SUBTITLE,
 	[0x64] = KEY_AUDIO,
 	[0x65] = KEY_ANGLE,
-	[0x70] = KEY_INFO,		/* display */
+	[0x70] = KEY_INFO,		 
 	[0x80] = KEY_BLUE,
 	[0x81] = KEY_RED,
 	[0x82] = KEY_GREEN,
@@ -318,23 +280,7 @@ static const unsigned int ps3remote_keymap_remote_buttons[] = {
 };
 
 static const unsigned int buzz_keymap[] = {
-	/*
-	 * The controller has 4 remote buzzers, each with one LED and 5
-	 * buttons.
-	 *
-	 * We use the mapping chosen by the controller, which is:
-	 *
-	 * Key          Offset
-	 * -------------------
-	 * Buzz              1
-	 * Blue              5
-	 * Orange            4
-	 * Green             3
-	 * Yellow            2
-	 *
-	 * So, for example, the orange button on the third buzzer is mapped to
-	 * BTN_TRIGGER_HAPPY14
-	 */
+	 
 	 [1] = BTN_TRIGGER_HAPPY1,
 	 [2] = BTN_TRIGGER_HAPPY2,
 	 [3] = BTN_TRIGGER_HAPPY3,
@@ -357,65 +303,59 @@ static const unsigned int buzz_keymap[] = {
 	[20] = BTN_TRIGGER_HAPPY20,
 };
 
-/* The Navigation controller is a partial DS3 and uses the same HID report
- * and hence the same keymap indices, however not all axes/buttons
- * are physically present. We use the same axis and button mapping as
- * the DS3, which uses the Linux gamepad spec.
- */
+ 
 static const unsigned int navigation_absmap[] = {
 	[0x30] = ABS_X,
 	[0x31] = ABS_Y,
-	[0x33] = ABS_Z, /* L2 */
+	[0x33] = ABS_Z,  
 };
 
-/* Buttons not physically available on the device, but still available
- * in the reports are explicitly set to 0 for documentation purposes.
- */
+ 
 static const unsigned int navigation_keymap[] = {
-	[0x01] = 0, /* Select */
-	[0x02] = BTN_THUMBL, /* L3 */
-	[0x03] = 0, /* R3 */
-	[0x04] = 0, /* Start */
-	[0x05] = BTN_DPAD_UP, /* Up */
-	[0x06] = BTN_DPAD_RIGHT, /* Right */
-	[0x07] = BTN_DPAD_DOWN, /* Down */
-	[0x08] = BTN_DPAD_LEFT, /* Left */
-	[0x09] = BTN_TL2, /* L2 */
-	[0x0a] = 0, /* R2 */
-	[0x0b] = BTN_TL, /* L1 */
-	[0x0c] = 0, /* R1 */
-	[0x0d] = BTN_NORTH, /* Triangle */
-	[0x0e] = BTN_EAST, /* Circle */
-	[0x0f] = BTN_SOUTH, /* Cross */
-	[0x10] = BTN_WEST, /* Square */
-	[0x11] = BTN_MODE, /* PS */
+	[0x01] = 0,  
+	[0x02] = BTN_THUMBL,  
+	[0x03] = 0,  
+	[0x04] = 0,  
+	[0x05] = BTN_DPAD_UP,  
+	[0x06] = BTN_DPAD_RIGHT,  
+	[0x07] = BTN_DPAD_DOWN,  
+	[0x08] = BTN_DPAD_LEFT,  
+	[0x09] = BTN_TL2,  
+	[0x0a] = 0,  
+	[0x0b] = BTN_TL,  
+	[0x0c] = 0,  
+	[0x0d] = BTN_NORTH,  
+	[0x0e] = BTN_EAST,  
+	[0x0f] = BTN_SOUTH,  
+	[0x10] = BTN_WEST,  
+	[0x11] = BTN_MODE,  
 };
 
 static const unsigned int sixaxis_absmap[] = {
 	[0x30] = ABS_X,
 	[0x31] = ABS_Y,
-	[0x32] = ABS_RX, /* right stick X */
-	[0x35] = ABS_RY, /* right stick Y */
+	[0x32] = ABS_RX,  
+	[0x35] = ABS_RY,  
 };
 
 static const unsigned int sixaxis_keymap[] = {
-	[0x01] = BTN_SELECT, /* Select */
-	[0x02] = BTN_THUMBL, /* L3 */
-	[0x03] = BTN_THUMBR, /* R3 */
-	[0x04] = BTN_START, /* Start */
-	[0x05] = BTN_DPAD_UP, /* Up */
-	[0x06] = BTN_DPAD_RIGHT, /* Right */
-	[0x07] = BTN_DPAD_DOWN, /* Down */
-	[0x08] = BTN_DPAD_LEFT, /* Left */
-	[0x09] = BTN_TL2, /* L2 */
-	[0x0a] = BTN_TR2, /* R2 */
-	[0x0b] = BTN_TL, /* L1 */
-	[0x0c] = BTN_TR, /* R1 */
-	[0x0d] = BTN_NORTH, /* Triangle */
-	[0x0e] = BTN_EAST, /* Circle */
-	[0x0f] = BTN_SOUTH, /* Cross */
-	[0x10] = BTN_WEST, /* Square */
-	[0x11] = BTN_MODE, /* PS */
+	[0x01] = BTN_SELECT,  
+	[0x02] = BTN_THUMBL,  
+	[0x03] = BTN_THUMBR,  
+	[0x04] = BTN_START,  
+	[0x05] = BTN_DPAD_UP,  
+	[0x06] = BTN_DPAD_RIGHT,  
+	[0x07] = BTN_DPAD_DOWN,  
+	[0x08] = BTN_DPAD_LEFT,  
+	[0x09] = BTN_TL2,  
+	[0x0a] = BTN_TR2,  
+	[0x0b] = BTN_TL,  
+	[0x0c] = BTN_TR,  
+	[0x0d] = BTN_NORTH,  
+	[0x0e] = BTN_EAST,  
+	[0x0f] = BTN_SOUTH,  
+	[0x10] = BTN_WEST,  
+	[0x11] = BTN_MODE,  
 };
 
 static enum power_supply_property sony_battery_props[] = {
@@ -426,28 +366,28 @@ static enum power_supply_property sony_battery_props[] = {
 };
 
 struct sixaxis_led {
-	u8 time_enabled; /* the total time the led is active (0xff means forever) */
-	u8 duty_length;  /* how long a cycle is in deciseconds (0 means "really fast") */
+	u8 time_enabled;  
+	u8 duty_length;   
 	u8 enabled;
-	u8 duty_off; /* % of duty_length the led is off (0xff means 100%) */
-	u8 duty_on;  /* % of duty_length the led is on (0xff mean 100%) */
+	u8 duty_off;  
+	u8 duty_on;   
 } __packed;
 
 struct sixaxis_rumble {
 	u8 padding;
-	u8 right_duration; /* Right motor duration (0xff means forever) */
-	u8 right_motor_on; /* Right (small) motor on/off, only supports values of 0 or 1 (off/on) */
-	u8 left_duration;    /* Left motor duration (0xff means forever) */
-	u8 left_motor_force; /* left (large) motor, supports force values from 0 to 255 */
+	u8 right_duration;  
+	u8 right_motor_on;  
+	u8 left_duration;     
+	u8 left_motor_force;  
 } __packed;
 
 struct sixaxis_output_report {
 	u8 report_id;
 	struct sixaxis_rumble rumble;
 	u8 padding[4];
-	u8 leds_bitmap; /* bitmap of enabled LEDs: LED_1 = 0x02, LED_2 = 0x04, ... */
-	struct sixaxis_led led[4];    /* LEDx at (4 - x) */
-	struct sixaxis_led _reserved; /* LED5, not actually soldered */
+	u8 leds_bitmap;  
+	struct sixaxis_led led[4];     
+	struct sixaxis_led _reserved;  
 } __packed;
 
 union sixaxis_output_report_01 {
@@ -510,7 +450,7 @@ struct sony_sc {
 	u8 led_delay_off[MAX_LEDS];
 	u8 led_count;
 
-	/* GH Live */
+	 
 	struct urb *ghl_urb;
 	struct timer_list ghl_poke_timer;
 };
@@ -664,13 +604,9 @@ static int navigation_mapping(struct hid_device *hdev, struct hid_input *hi,
 		hid_map_usage_clear(hi, usage, bit, max, EV_KEY, key);
 		return 1;
 	} else if (usage->hid == HID_GD_POINTER) {
-		/* See comment in sixaxis_mapping, basically the L2 (and R2)
-		 * triggers are reported through GD Pointer.
-		 * In addition we ignore any analog button 'axes' and only
-		 * support digital buttons.
-		 */
+		 
 		switch (usage->usage_index) {
-		case 8: /* L2 */
+		case 8:  
 			usage->hid = HID_GD_Z;
 			break;
 		default:
@@ -709,17 +645,12 @@ static int sixaxis_mapping(struct hid_device *hdev, struct hid_input *hi,
 		hid_map_usage_clear(hi, usage, bit, max, EV_KEY, key);
 		return 1;
 	} else if (usage->hid == HID_GD_POINTER) {
-		/* The DS3 provides analog values for most buttons and even
-		 * for HAT axes through GD Pointer. L2 and R2 are reported
-		 * among these as well instead of as GD Z / RZ. Remap L2
-		 * and R2 and ignore other analog 'button axes' as there is
-		 * no good way for reporting them.
-		 */
+		 
 		switch (usage->usage_index) {
-		case 8: /* L2 */
+		case 8:  
 			usage->hid = HID_GD_Z;
 			break;
-		case 9: /* R2 */
+		case 9:  
 			usage->hid = HID_GD_RZ;
 			break;
 		default:
@@ -751,19 +682,16 @@ static u8 *sony_report_fixup(struct hid_device *hdev, u8 *rdesc,
 	if (sc->quirks & (SINO_LITE_CONTROLLER | FUTUREMAX_DANCE_MAT))
 		return rdesc;
 
-	/*
-	 * Some Sony RF receivers wrongly declare the mouse pointer as a
-	 * a constant non-data variable.
-	 */
+	 
 	if ((sc->quirks & VAIO_RDESC_CONSTANT) && *rsize >= 56 &&
-	    /* usage page: generic desktop controls */
-	    /* rdesc[0] == 0x05 && rdesc[1] == 0x01 && */
-	    /* usage: mouse */
+	     
+	     
+	     
 	    rdesc[2] == 0x09 && rdesc[3] == 0x02 &&
-	    /* input (usage page for x,y axes): constant, variable, relative */
+	     
 	    rdesc[54] == 0x81 && rdesc[55] == 0x07) {
 		hid_info(hdev, "Fixing up Sony RF Receiver report descriptor\n");
-		/* input: data, variable, relative */
+		 
 		rdesc[55] = 0x06;
 	}
 
@@ -773,16 +701,13 @@ static u8 *sony_report_fixup(struct hid_device *hdev, u8 *rdesc,
 	if (sc->quirks & PS3REMOTE)
 		return ps3remote_fixup(hdev, rdesc, rsize);
 
-	/*
-	 * Some knock-off USB dongles incorrectly report their button count
-	 * as 13 instead of 16 causing three non-functional buttons.
-	 */
+	 
 	if ((sc->quirks & SIXAXIS_CONTROLLER_USB) && *rsize >= 45 &&
-		/* Report Count (13) */
+		 
 		rdesc[23] == 0x95 && rdesc[24] == 0x0D &&
-		/* Usage Maximum (13) */
+		 
 		rdesc[37] == 0x29 && rdesc[38] == 0x0D &&
-		/* Report Count (3) */
+		 
 		rdesc[43] == 0x95 && rdesc[44] == 0x03) {
 		hid_info(hdev, "Fixing up USB dongle report descriptor\n");
 		rdesc[24] = 0x10;
@@ -801,12 +726,7 @@ static void sixaxis_parse_report(struct sony_sc *sc, u8 *rd, int size)
 	u8 battery_capacity;
 	int battery_status;
 
-	/*
-	 * The sixaxis is charging if the battery value is 0xee
-	 * and it is fully charged if the value is 0xef.
-	 * It does not report the actual level while charging so it
-	 * is set to 100% while charging is in progress.
-	 */
+	 
 	offset = (sc->quirks & MOTION_CONTROLLER) ? 12 : 30;
 
 	if (rd[offset] >= 0xee) {
@@ -830,7 +750,7 @@ static void sixaxis_parse_report(struct sony_sc *sc, u8 *rd, int size)
 		val = ((rd[offset+1] << 8) | rd[offset]) - 511;
 		input_report_abs(sc->sensor_dev, ABS_X, val);
 
-		/* Y and Z are swapped and inversed */
+		 
 		val = 511 - ((rd[offset+5] << 8) | rd[offset+4]);
 		input_report_abs(sc->sensor_dev, ABS_Y, val);
 
@@ -846,24 +766,7 @@ static void nsg_mrxu_parse_report(struct sony_sc *sc, u8 *rd, int size)
 	int n, offset, relx, rely;
 	u8 active;
 
-	/*
-	 * The NSG-MRxU multi-touch trackpad data starts at offset 1 and
-	 *   the touch-related data starts at offset 2.
-	 * For the first byte, bit 0 is set when touchpad button is pressed.
-	 * Bit 2 is set when a touch is active and the drag (Fn) key is pressed.
-	 * This drag key is mapped to BTN_LEFT.  It is operational only when a 
-	 *   touch point is active.
-	 * Bit 4 is set when only the first touch point is active.
-	 * Bit 6 is set when only the second touch point is active.
-	 * Bits 5 and 7 are set when both touch points are active.
-	 * The next 3 bytes are two 12 bit X/Y coordinates for the first touch.
-	 * The following byte, offset 5, has the touch width and length.
-	 *   Bits 0-4=X (width), bits 5-7=Y (length).
-	 * A signed relative X coordinate is at offset 6.
-	 * The bytes at offset 7-9 are the second touch X/Y coordinates.
-	 * Offset 10 has the second touch width and length.
-	 * Offset 11 has the relative Y coordinate.
-	 */
+	 
 	offset = 1;
 
 	input_report_key(sc->touchpad, BTN_LEFT, rd[offset] & 0x0F);
@@ -895,11 +798,7 @@ static void nsg_mrxu_parse_report(struct sony_sc *sc, u8 *rd, int size)
 			input_report_abs(sc->touchpad, ABS_MT_POSITION_X, x);
 			input_report_abs(sc->touchpad, ABS_MT_POSITION_Y,
 				NSG_MRXU_MAX_Y - y);
-			/*
-			 * The relative coordinates belong to the first touch
-			 * point, when present, or to the second touch point
-			 * when the first is not active.
-			 */
+			 
 			if ((n == 0) || ((n == 1) && (active & 0x01))) {
 				input_report_rel(sc->touchpad, REL_X, relx);
 				input_report_rel(sc->touchpad, REL_Y, rely);
@@ -920,19 +819,9 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
 {
 	struct sony_sc *sc = hid_get_drvdata(hdev);
 
-	/*
-	 * Sixaxis HID report has acclerometers/gyro with MSByte first, this
-	 * has to be BYTE_SWAPPED before passing up to joystick interface
-	 */
+	 
 	if ((sc->quirks & SIXAXIS_CONTROLLER) && rd[0] == 0x01 && size == 49) {
-		/*
-		 * When connected via Bluetooth the Sixaxis occasionally sends
-		 * a report with the second byte 0xff and the rest zeroed.
-		 *
-		 * This report does not reflect the actual state of the
-		 * controller must be ignored to avoid generating false input
-		 * events.
-		 */
+		 
 		if (rd[1] == 0xff)
 			return -EINVAL;
 
@@ -1001,7 +890,7 @@ static int sony_mapping(struct hid_device *hdev, struct hid_input *hi,
 	if (sc->quirks & GH_GUITAR_CONTROLLER)
 		return guitar_mapping(hdev, hi, field, usage, bit, max);
 
-	/* Let hid-core decide for the others */
+	 
 	return 0;
 }
 
@@ -1025,12 +914,7 @@ static int sony_register_touchpad(struct sony_sc *sc, int touch_count,
 	sc->touchpad->id.product = sc->hdev->product;
 	sc->touchpad->id.version = sc->hdev->version;
 
-	/* This suffix was originally apended when hid-sony also
-	 * supported DS4 devices. The DS4 was implemented using multiple
-	 * evdev nodes and hence had the need to separete them out using
-	 * a suffix. Other devices which were added later like Sony TV remotes
-	 * inhirited this suffix.
-	 */
+	 
 	name_sz = strlen(sc->hdev->name) + sizeof(TOUCHPAD_SUFFIX);
 	name = devm_kzalloc(&sc->hdev->dev, name_sz, GFP_KERNEL);
 	if (!name)
@@ -1038,7 +922,7 @@ static int sony_register_touchpad(struct sony_sc *sc, int touch_count,
 	snprintf(name, name_sz, "%s" TOUCHPAD_SUFFIX, sc->hdev->name);
 	sc->touchpad->name = name;
 
-	/* We map the button underneath the touchpad to BTN_LEFT. */
+	 
 	__set_bit(EV_KEY, sc->touchpad->evbit);
 	__set_bit(BTN_LEFT, sc->touchpad->keybit);
 	__set_bit(INPUT_PROP_BUTTONPAD, sc->touchpad->propbit);
@@ -1091,9 +975,7 @@ static int sony_register_sensors(struct sony_sc *sc)
 	sc->sensor_dev->id.product = sc->hdev->product;
 	sc->sensor_dev->id.version = sc->hdev->version;
 
-	/* Append a suffix to the controller name as there are various
-	 * DS4 compatible non-Sony devices with different names.
-	 */
+	 
 	name_sz = strlen(sc->hdev->name) + sizeof(SENSOR_SUFFIX);
 	name = devm_kzalloc(&sc->hdev->dev, name_sz, GFP_KERNEL);
 	if (!name)
@@ -1102,12 +984,7 @@ static int sony_register_sensors(struct sony_sc *sc)
 	sc->sensor_dev->name = name;
 
 	if (sc->quirks & SIXAXIS_CONTROLLER) {
-		/* For the DS3 we only support the accelerometer, which works
-		 * quite well even without calibration. The device also has
-		 * a 1-axis gyro, but it is very difficult to manage from within
-		 * the driver even to get data, the sensor is inaccurate and
-		 * the behavior is very different between hardware revisions.
-		 */
+		 
 		input_set_abs_params(sc->sensor_dev, ABS_X, -512, 511, 4, 0);
 		input_set_abs_params(sc->sensor_dev, ABS_Y, -512, 511, 4, 0);
 		input_set_abs_params(sc->sensor_dev, ABS_Z, -512, 511, 4, 0);
@@ -1125,11 +1002,7 @@ static int sony_register_sensors(struct sony_sc *sc)
 	return 0;
 }
 
-/*
- * Sending HID_REQ_GET_REPORT changes the operation mode of the ps3 controller
- * to "operational".  Without this, the ps3 controller will not report any
- * events.
- */
+ 
 static int sixaxis_set_operational_usb(struct hid_device *hdev)
 {
 	struct sony_sc *sc = hid_get_drvdata(hdev);
@@ -1149,10 +1022,7 @@ static int sixaxis_set_operational_usb(struct hid_device *hdev)
 		goto out;
 	}
 
-	/*
-	 * Some compatible controllers like the Speedlink Strike FX and
-	 * Gasia need another query plus an USB interrupt to get operational.
-	 */
+	 
 	ret = hid_hw_raw_request(hdev, 0xf5, buf, SIXAXIS_REPORT_0xF5_SIZE,
 				 HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
 	if (ret < 0) {
@@ -1160,10 +1030,7 @@ static int sixaxis_set_operational_usb(struct hid_device *hdev)
 		goto out;
 	}
 
-	/*
-	 * But the USB interrupt would cause SHANWAN controllers to
-	 * start rumbling non-stop, so skip step 3 for these controllers.
-	 */
+	 
 	if (sc->quirks & SHANWAN_GAMEPAD)
 		goto out;
 
@@ -1268,13 +1135,7 @@ static void sony_led_set_brightness(struct led_classdev *led,
 		return;
 	}
 
-	/*
-	 * The Sixaxis on USB will override any LED settings sent to it
-	 * and keep flashing all of the LEDs until the PS button is pressed.
-	 * Updates, even if redundant, must be always be sent to the
-	 * controller to avoid having to toggle the state of an LED just to
-	 * stop the flashing later on.
-	 */
+	 
 	force_update = !!(drv_data->quirks & SIXAXIS_CONTROLLER_USB);
 
 	for (n = 0; n < drv_data->led_count; n++) {
@@ -1285,7 +1146,7 @@ static void sony_led_set_brightness(struct led_classdev *led,
 
 			drv_data->led_state[n] = value;
 
-			/* Setting the brightness stops the blinking */
+			 
 			drv_data->led_delay_on[n] = 0;
 			drv_data->led_delay_off[n] = 0;
 
@@ -1331,13 +1192,13 @@ static int sony_led_blink_set(struct led_classdev *led, unsigned long *delay_on,
 		return -EINVAL;
 	}
 
-	/* Max delay is 255 deciseconds or 2550 milliseconds */
+	 
 	if (*delay_on > 2550)
 		*delay_on = 2550;
 	if (*delay_off > 2550)
 		*delay_off = 2550;
 
-	/* Blink at 1 Hz if both values are zero */
+	 
 	if (!*delay_on && !*delay_off)
 		*delay_on = *delay_off = 500;
 
@@ -1349,11 +1210,11 @@ static int sony_led_blink_set(struct led_classdev *led, unsigned long *delay_on,
 			break;
 	}
 
-	/* This LED is not registered on this device */
+	 
 	if (n >= drv_data->led_count)
 		return -EINVAL;
 
-	/* Don't schedule work if the values didn't change */
+	 
 	if (new_on != drv_data->led_delay_on[n] ||
 		new_off != drv_data->led_delay_off[n]) {
 		drv_data->led_delay_on[n] = new_on;
@@ -1386,7 +1247,7 @@ static int sony_leds_init(struct sony_sc *sc)
 		use_color_names = 0;
 		name_len = strlen("::buzz#");
 		name_fmt = "%s::buzz%d";
-		/* Validate expected report characteristics. */
+		 
 		if (!hid_validate_values(hdev, HID_OUTPUT_REPORT, 0, 0, 7))
 			return -ENODEV;
 	} else if (sc->quirks & MOTION_CONTROLLER) {
@@ -1413,11 +1274,7 @@ static int sony_leds_init(struct sony_sc *sc)
 		name_fmt = "%s::sony%d";
 	}
 
-	/*
-	 * Clear LEDs as we have no way of reading their initial state. This is
-	 * only relevant if the driver is loaded after somebody actively set the
-	 * LEDs to on
-	 */
+	 
 	sony_set_leds(sc);
 
 	name_sz = strlen(dev_name(&hdev->dev)) + name_len + 1;
@@ -1479,7 +1336,7 @@ static void sixaxis_send_output_report(struct sony_sc *sc)
 		(struct sixaxis_output_report *)sc->output_report_dmabuf;
 	int n;
 
-	/* Initialize the report with default values */
+	 
 	memcpy(report, &default_report, sizeof(struct sixaxis_output_report));
 
 #ifdef CONFIG_SONY_FF
@@ -1492,19 +1349,11 @@ static void sixaxis_send_output_report(struct sony_sc *sc)
 	report->leds_bitmap |= sc->led_state[2] << 3;
 	report->leds_bitmap |= sc->led_state[3] << 4;
 
-	/* Set flag for all leds off, required for 3rd party INTEC controller */
+	 
 	if ((report->leds_bitmap & 0x1E) == 0)
 		report->leds_bitmap |= 0x20;
 
-	/*
-	 * The LEDs in the report are indexed in reverse order to their
-	 * corresponding light on the controller.
-	 * Index 0 = LED 4, index 1 = LED 3, etc...
-	 *
-	 * In the case of both delay values being zero (blinking disabled) the
-	 * default report values should be used or the controller LED will be
-	 * always off.
-	 */
+	 
 	for (n = 0; n < 4; n++) {
 		if (sc->led_delay_on[n] || sc->led_delay_off[n]) {
 			report->led[3 - n].duty_off = sc->led_delay_off[n];
@@ -1512,7 +1361,7 @@ static void sixaxis_send_output_report(struct sony_sc *sc)
 		}
 	}
 
-	/* SHANWAN controllers require output reports via intr channel */
+	 
 	if (sc->quirks & SHANWAN_GAMEPAD)
 		hid_hw_output_report(sc->hdev, (u8 *)report,
 				sizeof(struct sixaxis_output_report));
@@ -1530,7 +1379,7 @@ static void motion_send_output_report(struct sony_sc *sc)
 
 	memset(report, 0, MOTION_REPORT_0x02_SIZE);
 
-	report->type = 0x02; /* set leds */
+	report->type = 0x02;  
 	report->r = sc->led_state[0];
 	report->g = sc->led_state[1];
 	report->b = sc->led_state[2];
@@ -1663,10 +1512,7 @@ static int sony_battery_probe(struct sony_sc *sc, int append_dev_id)
 	struct hid_device *hdev = sc->hdev;
 	int ret;
 
-	/*
-	 * Set the default battery level to 100% to avoid low battery warnings
-	 * if the battery is polled before the first device report is received.
-	 */
+	 
 	sc->battery_capacity = 100;
 
 	sc->battery_desc.properties = sony_battery_props;
@@ -1691,17 +1537,7 @@ static int sony_battery_probe(struct sony_sc *sc, int append_dev_id)
 	return 0;
 }
 
-/*
- * If a controller is plugged in via USB while already connected via Bluetooth
- * it will show up as two devices. A global list of connected controllers and
- * their MAC addresses is maintained to ensure that a device is only connected
- * once.
- *
- * Some USB-only devices masquerade as Sixaxis controllers and all have the
- * same dummy Bluetooth address, so a comparison of the connection type is
- * required.  Devices are only rejected in the case where two devices have
- * matching Bluetooth addresses on different bus types.
- */
+ 
 static inline int sony_compare_connection_type(struct sony_sc *sc0,
 						struct sony_sc *sc1)
 {
@@ -1758,7 +1594,7 @@ static int sony_get_bt_devaddr(struct sony_sc *sc)
 {
 	int ret;
 
-	/* HIDP stores the device MAC address as a string in the uniq field. */
+	 
 	ret = strlen(sc->hdev->uniq);
 	if (ret != 17)
 		return -EINVAL;
@@ -1782,12 +1618,7 @@ static int sony_check_add(struct sony_sc *sc)
 	if ((sc->quirks & MOTION_CONTROLLER_BT) ||
 	    (sc->quirks & NAVIGATION_CONTROLLER_BT) ||
 	    (sc->quirks & SIXAXIS_CONTROLLER_BT)) {
-		/*
-		 * sony_get_bt_devaddr() attempts to parse the Bluetooth MAC
-		 * address from the uniq string where HIDP stores it.
-		 * As uniq cannot be guaranteed to be a MAC address in all cases
-		 * a failure of this function should not prevent the connection.
-		 */
+		 
 		if (sony_get_bt_devaddr(sc) < 0) {
 			hid_warn(sc->hdev, "UNIQ does not contain a MAC address; duplicate check skipped\n");
 			return 0;
@@ -1798,11 +1629,7 @@ static int sony_check_add(struct sony_sc *sc)
 		if (!buf)
 			return -ENOMEM;
 
-		/*
-		 * The MAC address of a Sixaxis controller connected via USB can
-		 * be retrieved with feature report 0xf2. The address begins at
-		 * offset 4.
-		 */
+		 
 		ret = hid_hw_raw_request(sc->hdev, 0xf2, buf,
 				SIXAXIS_REPORT_0xF2_SIZE, HID_FEATURE_REPORT,
 				HID_REQ_GET_REPORT);
@@ -1813,10 +1640,7 @@ static int sony_check_add(struct sony_sc *sc)
 			goto out_free;
 		}
 
-		/*
-		 * The Sixaxis device MAC in the report is big-endian and must
-		 * be byte-swapped.
-		 */
+		 
 		for (n = 0; n < 6; n++)
 			sc->mac_address[5-n] = buf[4+n];
 
@@ -1839,10 +1663,7 @@ static int sony_set_device_id(struct sony_sc *sc)
 {
 	int ret;
 
-	/*
-	 * Only Sixaxis controllers get an id.
-	 * All others are set to -1.
-	 */
+	 
 	if (sc->quirks & SIXAXIS_CONTROLLER) {
 		ret = ida_simple_get(&sony_device_id_allocator, 0, 0,
 					GFP_KERNEL);
@@ -1913,22 +1734,7 @@ static int sony_input_configured(struct hid_device *hdev,
 	}
 
 	if (sc->quirks & NAVIGATION_CONTROLLER_USB) {
-		/*
-		 * The Sony Sixaxis does not handle HID Output Reports on the
-		 * Interrupt EP like it could, so we need to force HID Output
-		 * Reports to use HID_REQ_SET_REPORT on the Control EP.
-		 *
-		 * There is also another issue about HID Output Reports via USB,
-		 * the Sixaxis does not want the report_id as part of the data
-		 * packet, so we have to discard buf[0] when sending the actual
-		 * control message, even for numbered reports, humpf!
-		 *
-		 * Additionally, the Sixaxis on USB isn't properly initialized
-		 * until the PS logo button is pressed and as such won't retain
-		 * any state set by an output report, so the initial
-		 * configuration report is deferred until the first input
-		 * report arrives.
-		 */
+		 
 		hdev->quirks |= HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP;
 		hdev->quirks |= HID_QUIRK_SKIP_OUTPUT_REPORT_ID;
 		sc->defer_initialization = 1;
@@ -1941,10 +1747,7 @@ static int sony_input_configured(struct hid_device *hdev,
 
 		sony_init_output_report(sc, sixaxis_send_output_report);
 	} else if (sc->quirks & NAVIGATION_CONTROLLER_BT) {
-		/*
-		 * The Navigation controller wants output reports sent on the ctrl
-		 * endpoint when connected via Bluetooth.
-		 */
+		 
 		hdev->quirks |= HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP;
 
 		ret = sixaxis_set_operational_bt(hdev);
@@ -1955,12 +1758,7 @@ static int sony_input_configured(struct hid_device *hdev,
 
 		sony_init_output_report(sc, sixaxis_send_output_report);
 	} else if (sc->quirks & SIXAXIS_CONTROLLER_USB) {
-		/*
-		 * The Sony Sixaxis does not handle HID Output Reports on the
-		 * Interrupt EP and the device only becomes active when the
-		 * PS button is pressed. See comment for Navigation controller
-		 * above for more details.
-		 */
+		 
 		hdev->quirks |= HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP;
 		hdev->quirks |= HID_QUIRK_SKIP_OUTPUT_REPORT_ID;
 		sc->defer_initialization = 1;
@@ -1980,10 +1778,7 @@ static int sony_input_configured(struct hid_device *hdev,
 
 		sony_init_output_report(sc, sixaxis_send_output_report);
 	} else if (sc->quirks & SIXAXIS_CONTROLLER_BT) {
-		/*
-		 * The Sixaxis wants output reports sent on the ctrl endpoint
-		 * when connected via Bluetooth.
-		 */
+		 
 		hdev->quirks |= HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP;
 
 		ret = sixaxis_set_operational_bt(hdev);
@@ -2001,10 +1796,7 @@ static int sony_input_configured(struct hid_device *hdev,
 
 		sony_init_output_report(sc, sixaxis_send_output_report);
 	} else if (sc->quirks & NSG_MRXU_REMOTE) {
-		/*
-		 * The NSG-MRxU touchpad supports 2 touches and has a
-		 * resolution of 1667x1868
-		 */
+		 
 		ret = sony_register_touchpad(sc, 2,
 			NSG_MRXU_MAX_X, NSG_MRXU_MAX_Y, 15, 15, 1);
 		if (ret) {
@@ -2031,7 +1823,7 @@ static int sony_input_configured(struct hid_device *hdev,
 		if (ret < 0)
 			goto err_stop;
 
-		/* Open the device to receive reports with battery info */
+		 
 		ret = hid_hw_open(hdev);
 		if (ret < 0) {
 			hid_err(hdev, "hw open failed\n");
@@ -2093,12 +1885,7 @@ static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	else if (sc->quirks & SIXAXIS_CONTROLLER)
 		connect_mask |= HID_CONNECT_HIDDEV_FORCE;
 
-	/* Patch the hw version on DS3 compatible devices, so applications can
-	 * distinguish between the default HID mappings and the mappings defined
-	 * by the Linux game controller spec. This is important for the SDL2
-	 * library, which has a game controller database, which uses device ids
-	 * in combination with version as a key.
-	 */
+	 
 	if (sc->quirks & SIXAXIS_CONTROLLER)
 		hdev->version |= 0x8000;
 
@@ -2108,14 +1895,7 @@ static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		return ret;
 	}
 
-	/* sony_input_configured can fail, but this doesn't result
-	 * in hid_hw_start failures (intended). Check whether
-	 * the HID layer claimed the device else fail.
-	 * We don't know the actual reason for the failure, most
-	 * likely it is due to EEXIST in case of double connection
-	 * of USB and Bluetooth, but could have been due to ENOMEM
-	 * or other reasons as well.
-	 */
+	 
 	if (!(hdev->claimed & HID_CLAIMED_INPUT)) {
 		hid_err(hdev, "failed to claim input\n");
 		ret = -ENODEV;
@@ -2187,7 +1967,7 @@ static int sony_suspend(struct hid_device *hdev, pm_message_t message)
 {
 #ifdef CONFIG_SONY_FF
 
-	/* On suspend stop any running force-feedback events */
+	 
 	if (SONY_FF_SUPPORT) {
 		struct sony_sc *sc = hid_get_drvdata(hdev);
 
@@ -2203,10 +1983,7 @@ static int sony_resume(struct hid_device *hdev)
 {
 	struct sony_sc *sc = hid_get_drvdata(hdev);
 
-	/*
-	 * The Sixaxis and navigation controllers on USB need to be
-	 * reinitialized on resume or they won't behave properly.
-	 */
+	 
 	if ((sc->quirks & SIXAXIS_CONTROLLER_USB) ||
 		(sc->quirks & NAVIGATION_CONTROLLER_USB)) {
 		sixaxis_set_operational_usb(sc->hdev);
@@ -2235,42 +2012,39 @@ static const struct hid_device_id sony_devices[] = {
 		.driver_data = VAIO_RDESC_CONSTANT },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGP_MOUSE),
 		.driver_data = VAIO_RDESC_CONSTANT },
-	/*
-	 * Wired Buzz Controller. Reported as Sony Hub from its USB ID and as
-	 * Logitech joystick from the device descriptor.
-	 */
+	 
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_BUZZ_CONTROLLER),
 		.driver_data = BUZZ_CONTROLLER },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_WIRELESS_BUZZ_CONTROLLER),
 		.driver_data = BUZZ_CONTROLLER },
-	/* PS3 BD Remote Control */
+	 
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_BDREMOTE),
 		.driver_data = PS3REMOTE },
-	/* Logitech Harmony Adapter for PS3 */
+	 
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_HARMONY_PS3),
 		.driver_data = PS3REMOTE },
-	/* SMK-Link PS3 BD Remote Control */
+	 
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SMK, USB_DEVICE_ID_SMK_PS3_BDREMOTE),
 		.driver_data = PS3REMOTE },
-	/* Nyko Core Controller for PS3 */
+	 
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SINO_LITE, USB_DEVICE_ID_SINO_LITE_CONTROLLER),
 		.driver_data = SIXAXIS_CONTROLLER_USB | SINO_LITE_CONTROLLER },
-	/* SMK-Link NSG-MR5U Remote Control */
+	 
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SMK, USB_DEVICE_ID_SMK_NSG_MR5U_REMOTE),
 		.driver_data = NSG_MR5U_REMOTE_BT },
-	/* SMK-Link NSG-MR7U Remote Control */
+	 
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SMK, USB_DEVICE_ID_SMK_NSG_MR7U_REMOTE),
 		.driver_data = NSG_MR7U_REMOTE_BT },
-	/* Guitar Hero Live PS3 and Wii U guitar dongles */
+	 
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY_RHYTHM, USB_DEVICE_ID_SONY_PS3WIIU_GHLIVE_DONGLE),
 		.driver_data = GHL_GUITAR_PS3WIIU | GH_GUITAR_CONTROLLER },
-	/* Guitar Hero PC Guitar Dongle */
+	 
 	{ HID_USB_DEVICE(USB_VENDOR_ID_REDOCTANE, USB_DEVICE_ID_REDOCTANE_GUITAR_DONGLE),
 		.driver_data = GH_GUITAR_CONTROLLER },
-	/* Guitar Hero PS3 World Tour Guitar Dongle */
+	 
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY_RHYTHM, USB_DEVICE_ID_SONY_PS3_GUITAR_DONGLE),
 		.driver_data = GH_GUITAR_CONTROLLER },
-	/* Guitar Hero Live PS4 guitar dongles */
+	 
 	{ HID_USB_DEVICE(USB_VENDOR_ID_REDOCTANE, USB_DEVICE_ID_REDOCTANE_PS4_GHLIVE_DONGLE),
 		.driver_data = GHL_GUITAR_PS4 | GH_GUITAR_CONTROLLER },
 	{ }

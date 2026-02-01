@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Atheros AR71xx/AR724x/AR913x specific interrupt handling
- *
- *  Copyright (C) 2015 Alban Bedel <albeu@free.fr>
- *  Copyright (C) 2010-2011 Jaiganesh Narayanan <jnarayanan@atheros.com>
- *  Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
- *
- *  Parts of this file are based on Atheros' 2.6.15/2.6.31 BSP
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irqchip.h>
@@ -17,15 +8,7 @@
 #include <asm/irq_cpu.h>
 #include <asm/mach-ath79/ath79.h>
 
-/*
- * The IP2/IP3 lines are tied to a PCI/WMAC/USB device. Drivers for
- * these devices typically allocate coherent DMA memory, however the
- * DMA controller may still have some unsynchronized data in the FIFO.
- * Issue a flush in the handlers to ensure that the driver sees
- * the update.
- *
- * This array map the interrupt lines to the DDR write buffer channels.
- */
+ 
 
 static unsigned irq_wb_chan[8] = {
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -58,7 +41,7 @@ static int __init ar79_cpu_intc_of_init(
 {
 	int err, i, count;
 
-	/* Fill the irq_wb_chan table */
+	 
 	count = of_count_phandle_with_args(
 		node, "qca,ddr-wb-channels", "#qca,ddr-wb-channel-cells");
 

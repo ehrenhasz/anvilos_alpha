@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/fcntl.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
+
+ 
 
 #include <linux/syscalls.h>
 #include <linux/init.h>
@@ -39,24 +35,21 @@ static int setfl(int fd, struct file * filp, unsigned int arg)
 	struct inode * inode = file_inode(filp);
 	int error = 0;
 
-	/*
-	 * O_APPEND cannot be cleared if the file is marked as append-only
-	 * and the file is open for write.
-	 */
+	 
 	if (((arg ^ filp->f_flags) & O_APPEND) && IS_APPEND(inode))
 		return -EPERM;
 
-	/* O_NOATIME can only be set by the owner or superuser */
+	 
 	if ((arg & O_NOATIME) && !(filp->f_flags & O_NOATIME))
 		if (!inode_owner_or_capable(file_mnt_idmap(filp), inode))
 			return -EPERM;
 
-	/* required for strict SunOS emulation */
+	 
 	if (O_NONBLOCK != O_NDELAY)
 	       if (arg & O_NDELAY)
 		   arg |= O_NONBLOCK;
 
-	/* Pipe packetized mode is controlled by O_DIRECT flag */
+	 
 	if (!S_ISFIFO(inode->i_mode) &&
 	    (arg & O_DIRECT) &&
 	    !(filp->f_mode & FMODE_CAN_ODIRECT))
@@ -67,9 +60,7 @@ static int setfl(int fd, struct file * filp, unsigned int arg)
 	if (error)
 		return error;
 
-	/*
-	 * ->fasync() is responsible for setting the FASYNC bit.
-	 */
+	 
 	if (((arg ^ filp->f_flags) & FASYNC) && filp->f_op->fasync) {
 		error = filp->f_op->fasync(fd, filp, (arg & FASYNC) != 0);
 		if (error < 0)
@@ -120,7 +111,7 @@ int f_setown(struct file *filp, int who, int force)
 
 	type = PIDTYPE_TGID;
 	if (who < 0) {
-		/* avoid overflow below */
+		 
 		if (who == INT_MIN)
 			return -EINVAL;
 
@@ -342,7 +333,7 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
 		err = setfl(fd, filp, argi);
 		break;
 #if BITS_PER_LONG != 32
-	/* 32-bit arches must use fcntl64() */
+	 
 	case F_OFD_GETLK:
 #endif
 	case F_GETLK:
@@ -353,7 +344,7 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
 			return -EFAULT;
 		break;
 #if BITS_PER_LONG != 32
-	/* 32-bit arches must use fcntl64() */
+	 
 	case F_OFD_SETLK:
 	case F_OFD_SETLKW:
 		fallthrough;
@@ -365,13 +356,7 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
 		err = fcntl_setlk(fd, filp, cmd, &flock);
 		break;
 	case F_GETOWN:
-		/*
-		 * XXX If f_owner is a process group, the
-		 * negative return value will get converted
-		 * into an error.  Oops.  If we keep the
-		 * current syscall conventions, the only way
-		 * to fix this will be in libc.
-		 */
+		 
 		err = f_getown(filp);
 		force_successful_syscall_return();
 		break;
@@ -391,7 +376,7 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
 		err = filp->f_owner.signum;
 		break;
 	case F_SETSIG:
-		/* arg == 0 restores default behaviour. */
+		 
 		if (!valid_signal(argi)) {
 			break;
 		}
@@ -513,7 +498,7 @@ out:
 #endif
 
 #ifdef CONFIG_COMPAT
-/* careful - don't use anywhere else */
+ 
 #define copy_flock_fields(dst, src)		\
 	(dst)->l_type = (src)->l_type;		\
 	(dst)->l_whence = (src)->l_whence;	\
@@ -582,15 +567,7 @@ convert_fcntl_cmd(unsigned int cmd)
 	return cmd;
 }
 
-/*
- * GETLK was successful and we need to return the data, but it needs to fit in
- * the compat structure.
- * l_start shouldn't be too big, unless the original start + end is greater than
- * COMPAT_OFF_T_MAX, in which case the app was asking for trouble, so we return
- * -EOVERFLOW in that case.  l_len could be too big, in which case we just
- * truncate it, and only allow the app to see that part of the conflicting lock
- * that might make sense to it anyway
- */
+ 
 static int fixup_compat_flock(struct flock *flock)
 {
 	if (flock->l_start > COMPAT_OFF_T_MAX)
@@ -687,15 +664,15 @@ COMPAT_SYSCALL_DEFINE3(fcntl, unsigned int, fd, unsigned int, cmd,
 }
 #endif
 
-/* Table to convert sigio signal codes into poll band bitmaps */
+ 
 
 static const __poll_t band_table[NSIGPOLL] = {
-	EPOLLIN | EPOLLRDNORM,			/* POLL_IN */
-	EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND,	/* POLL_OUT */
-	EPOLLIN | EPOLLRDNORM | EPOLLMSG,		/* POLL_MSG */
-	EPOLLERR,				/* POLL_ERR */
-	EPOLLPRI | EPOLLRDBAND,			/* POLL_PRI */
-	EPOLLHUP | EPOLLERR			/* POLL_HUP */
+	EPOLLIN | EPOLLRDNORM,			 
+	EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND,	 
+	EPOLLIN | EPOLLRDNORM | EPOLLMSG,		 
+	EPOLLERR,				 
+	EPOLLPRI | EPOLLRDBAND,			 
+	EPOLLHUP | EPOLLERR			 
 };
 
 static inline int sigio_perm(struct task_struct *p,
@@ -718,10 +695,7 @@ static void send_sigio_to_task(struct task_struct *p,
 			       struct fown_struct *fown,
 			       int fd, int reason, enum pid_type type)
 {
-	/*
-	 * F_SETSIG can change ->signum lockless in parallel, make
-	 * sure we read it once and use the same value throughout.
-	 */
+	 
 	int signum = READ_ONCE(fown->signum);
 
 	if (!sigio_perm(p, fown, signum))
@@ -731,30 +705,16 @@ static void send_sigio_to_task(struct task_struct *p,
 		default: {
 			kernel_siginfo_t si;
 
-			/* Queue a rt signal with the appropriate fd as its
-			   value.  We use SI_SIGIO as the source, not 
-			   SI_KERNEL, since kernel signals always get 
-			   delivered even if we can't queue.  Failure to
-			   queue in this case _should_ be reported; we fall
-			   back to SIGIO in that case. --sct */
+			 
 			clear_siginfo(&si);
 			si.si_signo = signum;
 			si.si_errno = 0;
 		        si.si_code  = reason;
-			/*
-			 * Posix definies POLL_IN and friends to be signal
-			 * specific si_codes for SIG_POLL.  Linux extended
-			 * these si_codes to other signals in a way that is
-			 * ambiguous if other signals also have signal
-			 * specific si_codes.  In that case use SI_SIGIO instead
-			 * to remove the ambiguity.
-			 */
+			 
 			if ((signum != SIGPOLL) && sig_specific_sicodes(signum))
 				si.si_code = SI_SIGIO;
 
-			/* Make sure we are called with one of the POLL_*
-			   reasons, otherwise we could leak kernel stack into
-			   userspace.  */
+			 
 			BUG_ON((reason < POLL_IN) || ((reason - POLL_IN) >= NSIGPOLL));
 			if (reason - POLL_IN >= NSIGPOLL)
 				si.si_band  = ~0L;
@@ -764,7 +724,7 @@ static void send_sigio_to_task(struct task_struct *p,
 			if (!do_send_sig_info(signum, &si, p, type))
 				break;
 		}
-			fallthrough;	/* fall back on the old plain SIGIO signal */
+			fallthrough;	 
 		case 0:
 			do_send_sig_info(SIGIO, SEND_SIG_PRIV, p, type);
 	}
@@ -852,15 +812,7 @@ static void fasync_free_rcu(struct rcu_head *head)
 			container_of(head, struct fasync_struct, fa_rcu));
 }
 
-/*
- * Remove a fasync entry. If successfully removed, return
- * positive and clear the FASYNC flag. If no entry exists,
- * do nothing and return 0.
- *
- * NOTE! It is very important that the FASYNC flag always
- * match the state "is the filp on a fasync list".
- *
- */
+ 
 int fasync_remove_entry(struct file *filp, struct fasync_struct **fapp)
 {
 	struct fasync_struct *fa, **fp;
@@ -892,23 +844,13 @@ struct fasync_struct *fasync_alloc(void)
 	return kmem_cache_alloc(fasync_cache, GFP_KERNEL);
 }
 
-/*
- * NOTE! This can be used only for unused fasync entries:
- * entries that actually got inserted on the fasync list
- * need to be released by rcu - see fasync_remove_entry.
- */
+ 
 void fasync_free(struct fasync_struct *new)
 {
 	kmem_cache_free(fasync_cache, new);
 }
 
-/*
- * Insert a new entry into the fasync list.  Return the pointer to the
- * old one if we didn't use the new one.
- *
- * NOTE! It is very important that the FASYNC flag always
- * match the state "is the filp on a fasync list".
- */
+ 
 struct fasync_struct *fasync_insert_entry(int fd, struct file *filp, struct fasync_struct **fapp, struct fasync_struct *new)
 {
         struct fasync_struct *fa, **fp;
@@ -939,10 +881,7 @@ out:
 	return fa;
 }
 
-/*
- * Add a fasync entry. Return negative on error, positive if
- * added, and zero if did nothing but change an existing one.
- */
+ 
 static int fasync_add_entry(int fd, struct file *filp, struct fasync_struct **fapp)
 {
 	struct fasync_struct *new;
@@ -951,13 +890,7 @@ static int fasync_add_entry(int fd, struct file *filp, struct fasync_struct **fa
 	if (!new)
 		return -ENOMEM;
 
-	/*
-	 * fasync_insert_entry() returns the old (update) entry if
-	 * it existed.
-	 *
-	 * So free the (unused) new entry and return 0 to let the
-	 * caller know that we didn't add any new fasync entries.
-	 */
+	 
 	if (fasync_insert_entry(fd, filp, fapp, new)) {
 		fasync_free(new);
 		return 0;
@@ -966,12 +899,7 @@ static int fasync_add_entry(int fd, struct file *filp, struct fasync_struct **fa
 	return 1;
 }
 
-/*
- * fasync_helper() is used by almost all character device drivers
- * to set up the fasync queue, and for regular files by the file
- * lease code. It returns negative on error, 0 if it did no changes
- * and positive if it added/deleted the entry.
- */
+ 
 int fasync_helper(int fd, struct file * filp, int on, struct fasync_struct **fapp)
 {
 	if (!on)
@@ -981,9 +909,7 @@ int fasync_helper(int fd, struct file * filp, int on, struct fasync_struct **fap
 
 EXPORT_SYMBOL(fasync_helper);
 
-/*
- * rcu_read_lock() is held
- */
+ 
 static void kill_fasync_rcu(struct fasync_struct *fa, int sig, int band)
 {
 	while (fa) {
@@ -998,9 +924,7 @@ static void kill_fasync_rcu(struct fasync_struct *fa, int sig, int band)
 		read_lock_irqsave(&fa->fa_lock, flags);
 		if (fa->fa_file) {
 			fown = &fa->fa_file->f_owner;
-			/* Don't send SIGURG to processes which have not set a
-			   queued signum: SIGURG has its own default signalling
-			   mechanism. */
+			 
 			if (!(sig == SIGURG && fown->signum == 0))
 				send_sigio(fown, fa->fa_fd, band);
 		}
@@ -1011,9 +935,7 @@ static void kill_fasync_rcu(struct fasync_struct *fa, int sig, int band)
 
 void kill_fasync(struct fasync_struct **fp, int sig, int band)
 {
-	/* First a quick test without locking: usually
-	 * the list is empty.
-	 */
+	 
 	if (*fp) {
 		rcu_read_lock();
 		kill_fasync_rcu(rcu_dereference(*fp), sig, band);
@@ -1024,12 +946,8 @@ EXPORT_SYMBOL(kill_fasync);
 
 static int __init fcntl_init(void)
 {
-	/*
-	 * Please add new bits here to ensure allocation uniqueness.
-	 * Exceptions: O_NONBLOCK is a two bit define on parisc; O_NDELAY
-	 * is defined as O_NONBLOCK on some platforms and not on others.
-	 */
-	BUILD_BUG_ON(21 - 1 /* for O_RDONLY being 0 */ !=
+	 
+	BUILD_BUG_ON(21 - 1   !=
 		HWEIGHT32(
 			(VALID_OPEN_FLAGS & ~(O_NONBLOCK | O_NDELAY)) |
 			__FMODE_EXEC | __FMODE_NONOTIFY));

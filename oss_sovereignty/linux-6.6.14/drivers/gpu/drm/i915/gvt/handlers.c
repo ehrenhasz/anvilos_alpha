@@ -1,40 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *    Eddie Dong <eddie.dong@intel.com>
- *    Zhiyuan Lv <zhiyuan.lv@intel.com>
- *
- * Contributors:
- *    Min He <min.he@intel.com>
- *    Tina Zhang <tina.zhang@intel.com>
- *    Pei Zhang <pei.zhang@intel.com>
- *    Niu Bing <bing.niu@intel.com>
- *    Ping Gao <ping.a.gao@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
-
- */
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -53,7 +17,7 @@
 #include "display/vlv_dsi_pll_regs.h"
 #include "gt/intel_gt_regs.h"
 
-/* XXX FIXME i915 has changed PP_XXX definition */
+ 
 #define PCH_PP_STATUS  _MMIO(0xc7200)
 #define PCH_PP_CONTROL _MMIO(0xc7204)
 #define PCH_PP_ON_DELAYS _MMIO(0xc7208)
@@ -141,14 +105,7 @@ static int setup_mmio_info(struct intel_gvt *gvt, u32 offset, u32 size,
 	return 0;
 }
 
-/**
- * intel_gvt_render_mmio_to_engine - convert a mmio offset into the engine
- * @gvt: a GVT device
- * @offset: register offset
- *
- * Returns:
- * The engine containing the offset within its mmio page.
- */
+ 
 const struct intel_engine_cs *
 intel_gvt_render_mmio_to_engine(struct intel_gvt *gvt, unsigned int offset)
 {
@@ -198,10 +155,7 @@ static int sanitize_fence_mmio_access(struct intel_vgpu *vgpu,
 		gvt_vgpu_err("access oob fence reg %d/%d\n",
 			     fence_num, max_fence);
 
-		/* When guest access oob fence regs without access
-		 * pv_info first, we treat guest not supporting GVT,
-		 * and we will let vgpu enter failsafe mode.
-		 */
+		 
 		if (!vgpu->pv_notified)
 			enter_failsafe_mode(vgpu,
 					GVT_FAILSAFE_UNSUPPORTED_GUEST);
@@ -223,10 +177,7 @@ static int gamw_echo_dev_rw_ia_write(struct intel_vgpu *vgpu,
 		else if (!ips)
 			gvt_dbg_core("vgpu%d: ips disabled\n", vgpu->id);
 		else {
-			/* All engines must be enabled together for vGPU,
-			 * since we don't know which engine the ppgtt will
-			 * bind to when shadowing.
-			 */
+			 
 			gvt_vgpu_err("Unsupported IPS setting %x, cannot enable 64K gtt.\n",
 				     ips);
 			return -EINVAL;
@@ -295,7 +246,7 @@ static int mul_force_wake_write(struct intel_vgpu *vgpu,
 			ack_reg_offset = FORCEWAKE_ACK_MEDIA_GEN9_REG;
 			break;
 		default:
-			/*should not hit here*/
+			 
 			gvt_vgpu_err("invalid forcewake offset 0x%x\n", offset);
 			return -EINVAL;
 		}
@@ -348,10 +299,10 @@ static int gdrst_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 		engine_mask &= vgpu->gvt->gt->info.engine_mask;
 	}
 
-	/* vgpu_lock already hold by emulate mmio r/w */
+	 
 	intel_gvt_reset_vgpu_locked(vgpu, false, engine_mask);
 
-	/* sw will wait for the device to ack the reset request */
+	 
 	vgpu_vreg(vgpu, offset) = 0;
 
 	return 0;
@@ -441,21 +392,7 @@ static int dpy_reg_mmio_read(struct intel_vgpu *vgpu, unsigned int offset,
 	return 0;
 }
 
-/*
- * Only PIPE_A is enabled in current vGPU display and PIPE_A is tied to
- *   TRANSCODER_A in HW. DDI/PORT could be PORT_x depends on
- *   setup_virtual_dp_monitor().
- * emulate_monitor_status_change() set up PLL for PORT_x as the initial enabled
- *   DPLL. Later guest driver may setup a different DPLLx when setting mode.
- * So the correct sequence to find DP stream clock is:
- *   Check TRANS_DDI_FUNC_CTL on TRANSCODER_A to get PORT_x.
- *   Check correct PLLx for PORT_x to get PLL frequency and DP bitrate.
- * Then Refresh rate then can be calculated based on follow equations:
- *   Pixel clock = h_total * v_total * refresh_rate
- *   stream clock = Pixel clock
- *   ls_clk = DP bitrate
- *   Link M/N = strm_clk / ls_clk
- */
+ 
 
 static u32 bdw_vgpu_get_dp_bitrate(struct intel_vgpu *vgpu, enum port port)
 {
@@ -541,7 +478,7 @@ static u32 bxt_vgpu_get_dp_bitrate(struct intel_vgpu *vgpu, enum port port)
 	struct dpll clock = {0};
 	u32 temp;
 
-	/* Port to PHY mapping is fixed, see bxt_ddi_phy_info{} */
+	 
 	switch (port) {
 	case PORT_A:
 		phy = DPIO_PHY1;
@@ -601,7 +538,7 @@ static u32 skl_vgpu_get_dp_bitrate(struct intel_vgpu *vgpu, enum port port)
 	u32 dp_br = 0;
 	enum intel_dpll_id dpll_id = DPLL_ID_SKL_DPLL0;
 
-	/* Find the enabled DPLL for the DDI/PORT */
+	 
 	if (!(vgpu_vreg_t(vgpu, DPLL_CTRL2) & DPLL_CTRL2_DDI_CLK_OFF(port)) &&
 	    (vgpu_vreg_t(vgpu, DPLL_CTRL2) & DPLL_CTRL2_DDI_SEL_OVERRIDE(port))) {
 		dpll_id += (vgpu_vreg_t(vgpu, DPLL_CTRL2) &
@@ -613,7 +550,7 @@ static u32 skl_vgpu_get_dp_bitrate(struct intel_vgpu *vgpu, enum port port)
 		return dp_br;
 	}
 
-	/* Find PLL output frequency from correct DPLL, and get bir rate */
+	 
 	switch ((vgpu_vreg_t(vgpu, DPLL_CTRL1) &
 		DPLL_CTRL1_LINK_RATE_MASK(dpll_id)) >>
 		DPLL_CTRL1_LINK_RATE_SHIFT(dpll_id)) {
@@ -650,7 +587,7 @@ static void vgpu_update_refresh_rate(struct intel_vgpu *vgpu)
 	enum port port;
 	u32 dp_br, link_m, link_n, htotal, vtotal;
 
-	/* Find DDI/PORT assigned to TRANSCODER_A, expect B or D */
+	 
 	port = (vgpu_vreg_t(vgpu, TRANS_DDI_FUNC_CTL(TRANSCODER_A)) &
 		TRANS_DDI_PORT_MASK) >> TRANS_DDI_PORT_SHIFT;
 	if (port != PORT_B && port != PORT_D) {
@@ -658,7 +595,7 @@ static void vgpu_update_refresh_rate(struct intel_vgpu *vgpu)
 		return;
 	}
 
-	/* Calculate DP bitrate from PLL */
+	 
 	if (IS_BROADWELL(dev_priv))
 		dp_br = bdw_vgpu_get_dp_bitrate(vgpu, port);
 	else if (IS_BROXTON(dev_priv))
@@ -666,11 +603,11 @@ static void vgpu_update_refresh_rate(struct intel_vgpu *vgpu)
 	else
 		dp_br = skl_vgpu_get_dp_bitrate(vgpu, port);
 
-	/* Get DP link symbol clock M/N */
+	 
 	link_m = vgpu_vreg_t(vgpu, PIPE_LINK_M1(TRANSCODER_A));
 	link_n = vgpu_vreg_t(vgpu, PIPE_LINK_N1(TRANSCODER_A));
 
-	/* Get H/V total from transcoder timing */
+	 
 	htotal = (vgpu_vreg_t(vgpu, TRANS_HTOTAL(TRANSCODER_A)) >> TRANS_HTOTAL_SHIFT);
 	vtotal = (vgpu_vreg_t(vgpu, TRANS_VTOTAL(TRANSCODER_A)) >> TRANS_VTOTAL_SHIFT);
 
@@ -679,11 +616,11 @@ static void vgpu_update_refresh_rate(struct intel_vgpu *vgpu)
 		u32 new_rate = 0;
 		u32 *old_rate = &(intel_vgpu_port(vgpu, vgpu->display.port_num)->vrefresh_k);
 
-		/* Calcuate pixel clock by (ls_clk * M / N) */
+		 
 		pixel_clk = div_u64(mul_u32_u32(link_m, dp_br), link_n);
 		pixel_clk *= MSEC_PER_SEC;
 
-		/* Calcuate refresh rate by (pixel_clk / (h_total * v_total)) */
+		 
 		new_rate = DIV64_U64_ROUND_CLOSEST(mul_u64_u32_shr(pixel_clk, MSEC_PER_SEC, 0), mul_u32_u32(htotal + 1, vtotal + 1));
 
 		if (*old_rate != new_rate)
@@ -713,15 +650,15 @@ static int pipeconf_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 	return 0;
 }
 
-/* sorted in ascending order */
+ 
 static i915_reg_t force_nonpriv_white_list[] = {
 	_MMIO(0xd80),
-	GEN9_CS_DEBUG_MODE1, //_MMIO(0x20ec)
-	GEN9_CTX_PREEMPT_REG,//_MMIO(0x2248)
-	CL_PRIMITIVES_COUNT, //_MMIO(0x2340)
-	PS_INVOCATION_COUNT, //_MMIO(0x2348)
-	PS_DEPTH_COUNT, //_MMIO(0x2350)
-	GEN8_CS_CHICKEN1,//_MMIO(0x2580)
+	GEN9_CS_DEBUG_MODE1, 
+	GEN9_CTX_PREEMPT_REG,
+	CL_PRIMITIVES_COUNT, 
+	PS_INVOCATION_COUNT, 
+	PS_DEPTH_COUNT, 
+	GEN8_CS_CHICKEN1,
 	_MMIO(0x2690),
 	_MMIO(0x2694),
 	_MMIO(0x2698),
@@ -730,10 +667,10 @@ static i915_reg_t force_nonpriv_white_list[] = {
 	_MMIO(0x4de0),
 	_MMIO(0x4de4),
 	_MMIO(0x4dfc),
-	GEN7_COMMON_SLICE_CHICKEN1,//_MMIO(0x7010)
+	GEN7_COMMON_SLICE_CHICKEN1,
 	_MMIO(0x7014),
-	HDC_CHICKEN0,//_MMIO(0x7300)
-	GEN8_HDC_CHICKEN1,//_MMIO(0x7304)
+	HDC_CHICKEN0,
+	GEN8_HDC_CHICKEN1,
 	_MMIO(0x7700),
 	_MMIO(0x7704),
 	_MMIO(0x7708),
@@ -748,7 +685,7 @@ static i915_reg_t force_nonpriv_white_list[] = {
 	_MMIO(0x64844),
 };
 
-/* a simple bsearch */
+ 
 static inline bool in_whitelist(u32 reg)
 {
 	int left = 0, right = ARRAY_SIZE(force_nonpriv_white_list);
@@ -860,7 +797,7 @@ static int check_fdi_rx_train_status(struct intel_vgpu *vgpu,
 	fdi_rx_check_bits = FDI_RX_ENABLE | fdi_rx_train_bits;
 	fdi_tx_check_bits = FDI_TX_ENABLE | fdi_tx_train_bits;
 
-	/* If imr bit has been masked */
+	 
 	if (vgpu_vreg_t(vgpu, fdi_rx_imr) & fdi_iir_check_bits)
 		return 0;
 
@@ -1099,7 +1036,7 @@ static int trigger_aux_channel_interrupt(struct intel_vgpu *vgpu,
 static int dp_aux_ch_ctl_trans_done(struct intel_vgpu *vgpu, u32 value,
 		unsigned int reg, int len, bool data_valid)
 {
-	/* mark transaction done */
+	 
 	value |= DP_AUX_CH_CTL_DONE;
 	value &= ~DP_AUX_CH_CTL_SEND_BUSY;
 	value &= ~DP_AUX_CH_CTL_RECEIVE_ERROR;
@@ -1109,7 +1046,7 @@ static int dp_aux_ch_ctl_trans_done(struct intel_vgpu *vgpu, u32 value,
 	else
 		value |= DP_AUX_CH_CTL_TIME_OUT_ERROR;
 
-	/* message size */
+	 
 	value &= ~(0xf << 20);
 	value |= (len << 20);
 	vgpu_vreg(vgpu, reg) = value;
@@ -1123,27 +1060,27 @@ static void dp_aux_ch_ctl_link_training(struct intel_vgpu_dpcd_data *dpcd,
 		u8 t)
 {
 	if ((t & DPCD_TRAINING_PATTERN_SET_MASK) == DPCD_TRAINING_PATTERN_1) {
-		/* training pattern 1 for CR */
-		/* set LANE0_CR_DONE, LANE1_CR_DONE */
+		 
+		 
 		dpcd->data[DPCD_LANE0_1_STATUS] |= DPCD_LANES_CR_DONE;
-		/* set LANE2_CR_DONE, LANE3_CR_DONE */
+		 
 		dpcd->data[DPCD_LANE2_3_STATUS] |= DPCD_LANES_CR_DONE;
 	} else if ((t & DPCD_TRAINING_PATTERN_SET_MASK) ==
 			DPCD_TRAINING_PATTERN_2) {
-		/* training pattern 2 for EQ */
-		/* Set CHANNEL_EQ_DONE and  SYMBOL_LOCKED for Lane0_1 */
+		 
+		 
 		dpcd->data[DPCD_LANE0_1_STATUS] |= DPCD_LANES_EQ_DONE;
 		dpcd->data[DPCD_LANE0_1_STATUS] |= DPCD_SYMBOL_LOCKED;
-		/* Set CHANNEL_EQ_DONE and  SYMBOL_LOCKED for Lane2_3 */
+		 
 		dpcd->data[DPCD_LANE2_3_STATUS] |= DPCD_LANES_EQ_DONE;
 		dpcd->data[DPCD_LANE2_3_STATUS] |= DPCD_SYMBOL_LOCKED;
-		/* set INTERLANE_ALIGN_DONE */
+		 
 		dpcd->data[DPCD_LANE_ALIGN_STATUS_UPDATED] |=
 			DPCD_INTERLANE_ALIGN_DONE;
 	} else if ((t & DPCD_TRAINING_PATTERN_SET_MASK) ==
 			DPCD_LINK_TRAINING_DISABLED) {
-		/* finish link training */
-		/* set sink status as synchronized */
+		 
+		 
 		dpcd->data[DPCD_SINK_STATUS] = DPCD_SINK_IN_SYNC;
 	}
 }
@@ -1178,16 +1115,16 @@ static int dp_aux_ch_ctl_mmio_write(struct intel_vgpu *vgpu,
 
 	if ((GRAPHICS_VER(vgpu->gvt->gt->i915) >= 9)
 		&& offset != _REG_SKL_DP_AUX_CH_CTL(port_index)) {
-		/* SKL DPB/C/D aux ctl register changed */
+		 
 		return 0;
 	} else if (IS_BROADWELL(vgpu->gvt->gt->i915) &&
 		   offset != _REG_HSW_DP_AUX_CH_CTL(port_index)) {
-		/* write to the data registers */
+		 
 		return 0;
 	}
 
 	if (!(data & DP_AUX_CH_CTL_SEND_BUSY)) {
-		/* just want to clear the sticky bits */
+		 
 		vgpu_vreg(vgpu, offset) = 0;
 		return 0;
 	}
@@ -1195,7 +1132,7 @@ static int dp_aux_ch_ctl_mmio_write(struct intel_vgpu *vgpu,
 	port = &display->ports[port_index];
 	dpcd = port->dpcd;
 
-	/* read out message from DATA1 register */
+	 
 	msg = vgpu_vreg(vgpu, offset + 4);
 	addr = (msg >> 8) & 0xffff;
 	ctrl = (msg >> 24) & 0xff;
@@ -1207,31 +1144,21 @@ static int dp_aux_ch_ctl_mmio_write(struct intel_vgpu *vgpu,
 		u8 buf[16];
 
 		if ((addr + len + 1) >= DPCD_SIZE) {
-			/*
-			 * Write request exceeds what we supported,
-			 * DCPD spec: When a Source Device is writing a DPCD
-			 * address not supported by the Sink Device, the Sink
-			 * Device shall reply with AUX NACK and “M” equal to
-			 * zero.
-			 */
+			 
 
-			/* NAK the write */
+			 
 			vgpu_vreg(vgpu, offset + 4) = AUX_NATIVE_REPLY_NAK;
 			dp_aux_ch_ctl_trans_done(vgpu, data, offset, 2, true);
 			return 0;
 		}
 
-		/*
-		 * Write request format: Headr (command + address + size) occupies
-		 * 4 bytes, followed by (len + 1) bytes of data. See details at
-		 * intel_dp_aux_transfer().
-		 */
+		 
 		if ((len + 1 + 4) > AUX_BURST_SIZE) {
 			gvt_vgpu_err("dp_aux_header: len %d is too large\n", len);
 			return -EINVAL;
 		}
 
-		/* unpack data from vreg to buf */
+		 
 		for (t = 0; t < 4; t++) {
 			u32 r = vgpu_vreg(vgpu, offset + 8 + t * 4);
 
@@ -1241,20 +1168,20 @@ static int dp_aux_ch_ctl_mmio_write(struct intel_vgpu *vgpu,
 			buf[t * 4 + 3] = r & 0xff;
 		}
 
-		/* write to virtual DPCD */
+		 
 		if (dpcd && dpcd->data_valid) {
 			for (t = 0; t <= len; t++) {
 				int p = addr + t;
 
 				dpcd->data[p] = buf[t];
-				/* check for link training */
+				 
 				if (p == DPCD_TRAINING_PATTERN_SET)
 					dp_aux_ch_ctl_link_training(dpcd,
 							buf[t]);
 			}
 		}
 
-		/* ACK the write */
+		 
 		vgpu_vreg(vgpu, offset + 4) = 0;
 		dp_aux_ch_ctl_trans_done(vgpu, data, offset, 1,
 				dpcd && dpcd->data_valid);
@@ -1265,15 +1192,9 @@ static int dp_aux_ch_ctl_mmio_write(struct intel_vgpu *vgpu,
 		int idx, i, ret = 0;
 
 		if ((addr + len + 1) >= DPCD_SIZE) {
-			/*
-			 * read request exceeds what we supported
-			 * DPCD spec: A Sink Device receiving a Native AUX CH
-			 * read request for an unsupported DPCD address must
-			 * reply with an AUX ACK and read data set equal to
-			 * zero instead of replying with AUX NACK.
-			 */
+			 
 
-			/* ACK the READ*/
+			 
 			vgpu_vreg(vgpu, offset + 4) = 0;
 			vgpu_vreg(vgpu, offset + 8) = 0;
 			vgpu_vreg(vgpu, offset + 12) = 0;
@@ -1286,20 +1207,18 @@ static int dp_aux_ch_ctl_mmio_write(struct intel_vgpu *vgpu,
 		}
 
 		for (idx = 1; idx <= 5; idx++) {
-			/* clear the data registers */
+			 
 			vgpu_vreg(vgpu, offset + 4 * idx) = 0;
 		}
 
-		/*
-		 * Read reply format: ACK (1 byte) plus (len + 1) bytes of data.
-		 */
+		 
 		if ((len + 2) > AUX_BURST_SIZE) {
 			gvt_vgpu_err("dp_aux_header: len %d is too large\n", len);
 			return -EINVAL;
 		}
 
-		/* read from virtual DPCD to vreg */
-		/* first 4 bytes: [ACK][addr][addr+1][addr+2] */
+		 
+		 
 		if (dpcd && dpcd->data_valid) {
 			for (i = 1; i <= (len + 1); i++) {
 				int t;
@@ -1320,7 +1239,7 @@ static int dp_aux_ch_ctl_mmio_write(struct intel_vgpu *vgpu,
 		return 0;
 	}
 
-	/* i2c transaction starts */
+	 
 	intel_gvt_i2c_handle_aux_ch_write(vgpu, port_index, offset, p_data);
 
 	if (data & DP_AUX_CH_CTL_INTERRUPT)
@@ -1452,7 +1371,7 @@ static int pvinfo_mmio_read(struct intel_vgpu *vgpu, unsigned int offset,
 			_vgtif_reg(avail_rs.fence_num) + 4)
 			invalid_read = true;
 		break;
-	case 0x78010:	/* vgt_caps */
+	case 0x78010:	 
 	case 0x7881c:
 		break;
 	default:
@@ -1486,7 +1405,7 @@ static int handle_g2v_notification(struct intel_vgpu *vgpu, int notification)
 		return intel_vgpu_put_ppgtt_mm(vgpu, pdps);
 	case VGT_G2V_EXECLIST_CONTEXT_CREATE:
 	case VGT_G2V_EXECLIST_CONTEXT_DESTROY:
-	case 1:	/* Remove this in guest driver. */
+	case 1:	 
 		break;
 	default:
 		gvt_vgpu_err("Invalid PV notification %d\n", notification);
@@ -1523,7 +1442,7 @@ static int pvinfo_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 	case _vgtif_reg(g2v_notify):
 		handle_g2v_notification(vgpu, data);
 		break;
-	/* add xhot and yhot to handled list to avoid error log */
+	 
 	case _vgtif_reg(cursor_x_hot):
 	case _vgtif_reg(cursor_y_hot):
 	case _vgtif_reg(pdp[0].lo):
@@ -1688,21 +1607,13 @@ static int mailbox_write(struct intel_vgpu *vgpu, unsigned int offset,
 		    IS_KABYLAKE(vgpu->gvt->gt->i915) ||
 		    IS_COFFEELAKE(vgpu->gvt->gt->i915) ||
 		    IS_COMETLAKE(vgpu->gvt->gt->i915)) {
-			/**
-			 * "Read memory latency" command on gen9.
-			 * Below memory latency values are read
-			 * from skylake platform.
-			 */
+			 
 			if (!*data0)
 				*data0 = 0x1e1a1100;
 			else
 				*data0 = 0x61514b3d;
 		} else if (IS_BROXTON(vgpu->gvt->gt->i915)) {
-			/**
-			 * "Read memory latency" command on gen9.
-			 * Below memory latency values are read
-			 * from Broxton MRB.
-			 */
+			 
 			if (!*data0)
 				*data0 = 0x16080707;
 			else
@@ -1723,12 +1634,7 @@ static int mailbox_write(struct intel_vgpu *vgpu, unsigned int offset,
 
 	gvt_dbg_core("VM(%d) write %x to mailbox, return data0 %x\n",
 		     vgpu->id, value, *data0);
-	/**
-	 * PCODE_READY clear means ready for pcode read/write,
-	 * PCODE_ERROR_MASK clear means no error happened. In GVT-g we
-	 * always emulate as pcode read/write success and ready for access
-	 * anytime, since we don't touch real physical registers here.
-	 */
+	 
 	value &= ~(GEN6_PCODE_READY | GEN6_PCODE_ERROR_MASK);
 	return intel_vgpu_default_mmio_write(vgpu, offset, &value, bytes);
 }
@@ -1747,11 +1653,7 @@ static int hws_pga_write(struct intel_vgpu *vgpu, unsigned int offset,
 		return -EINVAL;
 	}
 
-	/*
-	 * Need to emulate all the HWSP register write to ensure host can
-	 * update the VM CSB status correctly. Here listed registers can
-	 * support BDW, SKL or other platforms with same HWSP registers.
-	 */
+	 
 	if (unlikely(!engine)) {
 		gvt_vgpu_err("access unknown hardware status page register:0x%x\n",
 			     offset);
@@ -1784,7 +1686,7 @@ static int skl_lcpll_write(struct intel_vgpu *vgpu, unsigned int offset,
 {
 	u32 v = *(u32 *)p_data;
 
-	/* other bits are MBZ. */
+	 
 	v &= (1 << 31) | (1 << 30);
 	v & (1 << 31) ? (v |= (1 << 30)) : (v &= ~(1 << 30));
 
@@ -1902,16 +1804,7 @@ static int edp_psr_imr_iir_write(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/*
- * FixMe:
- * If guest fills non-priv batch buffer on ApolloLake/Broxton as Mesa i965 did:
- * 717e7539124d (i965: Use a WC map and memcpy for the batch instead of pwrite.)
- * Due to the missing flush of bb filled by VM vCPU, host GPU hangs on executing
- * these MI_BATCH_BUFFER.
- * Temporarily workaround this by setting SNOOP bit for PAT3 used by PPGTT
- * PML4 PTE: PAT(0) PCD(1) PWT(1).
- * The performance is still expected to be low, will need further improvement.
- */
+ 
 static int bxt_ppat_low_write(struct intel_vgpu *vgpu, unsigned int offset,
 			      void *p_data, unsigned int bytes)
 {
@@ -1934,7 +1827,7 @@ static int guc_status_read(struct intel_vgpu *vgpu,
 			   unsigned int offset, void *p_data,
 			   unsigned int bytes)
 {
-	/* keep MIA_IN_RESET before clearing */
+	 
 	read_vreg(vgpu, offset, p_data, bytes);
 	vgpu_vreg(vgpu, offset) &= ~GS_MIA_IN_RESET;
 	return 0;
@@ -1947,12 +1840,7 @@ static int mmio_read_from_hw(struct intel_vgpu *vgpu,
 	const struct intel_engine_cs *engine =
 		intel_gvt_render_mmio_to_engine(gvt, offset);
 
-	/**
-	 * Read HW reg in following case
-	 * a. the offset isn't a ring mmio
-	 * b. the offset's ring is running on hw.
-	 * c. the offset is ring time stamp mmio
-	 */
+	 
 
 	if (!engine ||
 	    vgpu == gvt->scheduler.engine_owner[engine->id] ||
@@ -1979,18 +1867,7 @@ static int elsp_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 	if (drm_WARN_ON(&i915->drm, !engine))
 		return -EINVAL;
 
-	/*
-	 * Due to d3_entered is used to indicate skipping PPGTT invalidation on
-	 * vGPU reset, it's set on D0->D3 on PCI config write, and cleared after
-	 * vGPU reset if in resuming.
-	 * In S0ix exit, the device power state also transite from D3 to D0 as
-	 * S3 resume, but no vGPU reset (triggered by QEMU devic model). After
-	 * S0ix exit, all engines continue to work. However the d3_entered
-	 * remains set which will break next vGPU reset logic (miss the expected
-	 * PPGTT invalidation).
-	 * Engines can only work in D0. Thus the 1st elsp write gives GVT a
-	 * chance to clear d3_entered.
-	 */
+	 
 	if (vgpu->d3_entered)
 		vgpu->d3_entered = false;
 
@@ -2036,10 +1913,7 @@ static int ring_mode_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 		return 0;
 	}
 
-	/* when PPGTT mode enabled, we will check if guest has called
-	 * pvinfo, if not, we will treat this guest as non-gvtg-aware
-	 * guest, and stop emulating its cfg space, mmio, gtt, etc.
-	 */
+	 
 	if ((IS_MASKED_BITS_ENABLED(data, GFX_PPGTT_ENABLE) ||
 	    IS_MASKED_BITS_ENABLED(data, GFX_RUN_LIST_ENABLE)) &&
 	    !vgpu->pv_notified) {
@@ -2221,7 +2095,7 @@ static int init_generic_mmio_info(struct intel_gvt *gvt)
 	MMIO_RING_DFH(RING_ACTHD, D_ALL, 0, mmio_read_from_hw, NULL);
 	MMIO_RING_GM(RING_START, D_ALL, NULL, NULL);
 
-	/* RING MODE */
+	 
 #define RING_REG(base) _MMIO((base) + 0x29c)
 	MMIO_RING_DFH(RING_REG, D_ALL,
 		F_MODE_MASK | F_CMD_ACCESS | F_CMD_WRITE_PATCH, NULL,
@@ -2266,7 +2140,7 @@ static int init_generic_mmio_info(struct intel_gvt *gvt)
 	MMIO_DFH(HSW_HALF_SLICE_CHICKEN3, D_ALL, F_MODE_MASK | F_CMD_ACCESS, NULL, NULL);
 	MMIO_DFH(GEN7_HALF_SLICE_CHICKEN1, D_ALL, F_MODE_MASK | F_CMD_ACCESS, NULL, NULL);
 
-	/* display */
+	 
 	MMIO_DH(TRANSCONF(TRANSCODER_A), D_ALL, NULL, pipeconf_mmio_write);
 	MMIO_DH(TRANSCONF(TRANSCODER_B), D_ALL, NULL, pipeconf_mmio_write);
 	MMIO_DH(TRANSCONF(TRANSCODER_C), D_ALL, NULL, pipeconf_mmio_write);
@@ -2717,7 +2591,7 @@ static int init_skl_mmio_info(struct intel_gvt *gvt)
 	MMIO_DFH(GEN9_CS_DEBUG_MODE1, D_SKL_PLUS, F_MODE_MASK | F_CMD_ACCESS,
 		NULL, NULL);
 
-	/* TRTT */
+	 
 	MMIO_DFH(TRVATTL3PTRDW(0), D_SKL_PLUS, F_CMD_ACCESS, NULL, NULL);
 	MMIO_DFH(TRVATTL3PTRDW(1), D_SKL_PLUS, F_CMD_ACCESS, NULL, NULL);
 	MMIO_DFH(TRVATTL3PTRDW(2), D_SKL_PLUS, F_CMD_ACCESS, NULL, NULL);
@@ -2809,14 +2683,7 @@ static struct gvt_mmio_block *find_mmio_block(struct intel_gvt *gvt,
 	return NULL;
 }
 
-/**
- * intel_gvt_clean_mmio_info - clean up MMIO information table for GVT device
- * @gvt: GVT device
- *
- * This function is called at the driver unloading stage, to clean up the MMIO
- * information table of GVT device
- *
- */
+ 
 void intel_gvt_clean_mmio_info(struct intel_gvt *gvt)
 {
 	struct hlist_node *tmp;
@@ -2853,10 +2720,7 @@ static int handle_mmio(struct intel_gvt_mmio_table_iter *iter, u32 offset,
 			WARN(1, "dup mmio definition offset %x\n",
 				info->offset);
 
-			/* We return -EEXIST here to make GVT-g load fail.
-			 * So duplicated MMIO can be found as soon as
-			 * possible.
-			 */
+			 
 			return -EEXIST;
 		}
 
@@ -2938,16 +2802,7 @@ static int init_mmio_block_handlers(struct intel_gvt *gvt)
 	return 0;
 }
 
-/**
- * intel_gvt_setup_mmio_info - setup MMIO information table for GVT device
- * @gvt: GVT device
- *
- * This function is called at the initialization stage, to setup the MMIO
- * information table for GVT device
- *
- * Returns:
- * zero on success, negative if failed.
- */
+ 
 int intel_gvt_setup_mmio_info(struct intel_gvt *gvt)
 {
 	struct intel_gvt_device_info *info = &gvt->device_info;
@@ -3003,15 +2858,7 @@ err:
 	return ret;
 }
 
-/**
- * intel_gvt_for_each_tracked_mmio - iterate each tracked mmio
- * @gvt: a GVT device
- * @handler: the handler
- * @data: private data given to handler
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_gvt_for_each_tracked_mmio(struct intel_gvt *gvt,
 	int (*handler)(struct intel_gvt *gvt, u32 offset, void *data),
 	void *data)
@@ -3027,7 +2874,7 @@ int intel_gvt_for_each_tracked_mmio(struct intel_gvt *gvt,
 	}
 
 	for (i = 0; i < gvt->mmio.num_mmio_block; i++, block++) {
-		/* pvinfo data doesn't come from hw mmio */
+		 
 		if (i915_mmio_reg_offset(block->offset) == VGT_PVINFO_PAGE)
 			continue;
 
@@ -3040,16 +2887,7 @@ int intel_gvt_for_each_tracked_mmio(struct intel_gvt *gvt,
 	return 0;
 }
 
-/**
- * intel_vgpu_default_mmio_read - default MMIO read handler
- * @vgpu: a vGPU
- * @offset: access offset
- * @p_data: data return buffer
- * @bytes: access data length
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_default_mmio_read(struct intel_vgpu *vgpu, unsigned int offset,
 		void *p_data, unsigned int bytes)
 {
@@ -3057,16 +2895,7 @@ int intel_vgpu_default_mmio_read(struct intel_vgpu *vgpu, unsigned int offset,
 	return 0;
 }
 
-/**
- * intel_vgpu_default_mmio_write() - default MMIO write handler
- * @vgpu: a vGPU
- * @offset: access offset
- * @p_data: write data buffer
- * @bytes: access data length
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_default_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 		void *p_data, unsigned int bytes)
 {
@@ -3074,16 +2903,7 @@ int intel_vgpu_default_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 	return 0;
 }
 
-/**
- * intel_vgpu_mask_mmio_write - write mask register
- * @vgpu: a vGPU
- * @offset: access offset
- * @p_data: write data buffer
- * @bytes: access data length
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_mask_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 		void *p_data, unsigned int bytes)
 {
@@ -3098,34 +2918,14 @@ int intel_vgpu_mask_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 	return 0;
 }
 
-/**
- * intel_gvt_in_force_nonpriv_whitelist - if a mmio is in whitelist to be
- * force-nopriv register
- *
- * @gvt: a GVT device
- * @offset: register offset
- *
- * Returns:
- * True if the register is in force-nonpriv whitelist;
- * False if outside;
- */
+ 
 bool intel_gvt_in_force_nonpriv_whitelist(struct intel_gvt *gvt,
 					  unsigned int offset)
 {
 	return in_whitelist(offset);
 }
 
-/**
- * intel_vgpu_mmio_reg_rw - emulate tracked mmio registers
- * @vgpu: a vGPU
- * @offset: register offset
- * @pdata: data buffer
- * @bytes: data length
- * @is_read: read or write
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_mmio_reg_rw(struct intel_vgpu *vgpu, unsigned int offset,
 			   void *pdata, unsigned int bytes, bool is_read)
 {
@@ -3139,9 +2939,7 @@ int intel_vgpu_mmio_reg_rw(struct intel_vgpu *vgpu, unsigned int offset,
 	if (drm_WARN_ON(&i915->drm, bytes > 8))
 		return -EINVAL;
 
-	/*
-	 * Handle special MMIO blocks.
-	 */
+	 
 	mmio_block = find_mmio_block(gvt, offset);
 	if (mmio_block) {
 		func = is_read ? mmio_block->read : mmio_block->write;
@@ -3150,9 +2948,7 @@ int intel_vgpu_mmio_reg_rw(struct intel_vgpu *vgpu, unsigned int offset,
 		goto default_rw;
 	}
 
-	/*
-	 * Normal tracked MMIOs.
-	 */
+	 
 	mmio_info = intel_gvt_find_mmio_info(gvt, offset);
 	if (!mmio_info) {
 		gvt_dbg_mmio("untracked MMIO %08x len %d\n", offset, bytes);
@@ -3176,14 +2972,14 @@ int intel_vgpu_mmio_reg_rw(struct intel_vgpu *vgpu, unsigned int offset,
 			gvt_vgpu_err("try to write RO reg %x\n", offset);
 			return 0;
 		} else {
-			/* keep the RO bits in the virtual register */
+			 
 			memcpy(&data, pdata, bytes);
 			data &= ~ro_mask;
 			data |= vgpu_vreg(vgpu, offset) & ro_mask;
 			ret = mmio_info->write(vgpu, offset, &data, bytes);
 		}
 
-		/* higher 16bits of mode ctl regs are mask bits for change */
+		 
 		if (intel_gvt_mmio_has_mode_mask(gvt, mmio_info->offset)) {
 			u32 mask = vgpu_vreg(vgpu, offset) >> 16;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xfrm_proc.c
- *
- * Copyright (C)2006-2007 USAGI/WIDE Project
- *
- * Authors:	Masahide NAKAMURA <nakam@linux-ipv6.org>
- */
+
+ 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/export.h>

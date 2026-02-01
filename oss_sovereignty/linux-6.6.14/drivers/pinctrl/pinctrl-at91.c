@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * at91 pinctrl driver based on at91 pinmux core
- *
- * Copyright (C) 2011-2012 Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -20,7 +16,7 @@
 #include <linux/slab.h>
 #include <linux/string_helpers.h>
 
-/* Since we request GPIOs from ourself */
+ 
 #include <linux/pinctrl/consumer.h>
 #include <linux/pinctrl/machine.h>
 #include <linux/pinctrl/pinconf.h>
@@ -35,20 +31,7 @@
 
 struct at91_pinctrl_mux_ops;
 
-/**
- * struct at91_gpio_chip: at91 gpio chip
- * @chip: gpio chip
- * @range: gpio range
- * @next: bank sharing same clock
- * @pioc_hwirq: PIO bank interrupt identifier on AIC
- * @pioc_virq: PIO bank Linux virtual interrupt
- * @regbase: PIO bank virtual address
- * @clock: associated clock
- * @ops: at91 pinctrl mux ops
- * @wakeups: wakeup interrupts
- * @backups: interrupts disabled in suspend
- * @id: gpio chip identifier
- */
+ 
 struct at91_gpio_chip {
 	struct gpio_chip	chip;
 	struct pinctrl_gpio_range range;
@@ -85,15 +68,7 @@ static int gpio_banks;
 #define DEBOUNCE_VAL_SHIFT	17
 #define DEBOUNCE_VAL	(0x3fff << DEBOUNCE_VAL_SHIFT)
 
-/*
- * These defines will translated the dt binding settings to our internal
- * settings. They are not necessarily the same value as the register setting.
- * The actual drive strength current of low, medium and high must be looked up
- * from the corresponding device datasheet. This value is different for pins
- * that are even in the same banks. It is also dependent on VCC.
- * DRIVE_STRENGTH_DEFAULT is just a placeholder to avoid changing the drive
- * strength when there is no dt config for it.
- */
+ 
 enum drive_strength_bit {
 	DRIVE_STRENGTH_BIT_DEF,
 	DRIVE_STRENGTH_BIT_LOW,
@@ -111,12 +86,7 @@ enum slewrate_bit {
 
 #define SLEWRATE_BIT_MSK(name)		(SLEWRATE_BIT_##name << SLEWRATE_SHIFT)
 
-/**
- * struct at91_pmx_func - describes AT91 pinmux functions
- * @name: the name of this specific function
- * @groups: corresponding pin groups
- * @ngroups: the number of groups
- */
+ 
 struct at91_pmx_func {
 	const char	*name;
 	const char	**groups;
@@ -131,13 +101,7 @@ enum at91_mux {
 	AT91_MUX_PERIPH_D = 4,
 };
 
-/**
- * struct at91_pmx_pin - describes an At91 pin mux
- * @bank: the bank of the pin
- * @pin: the pin number in the @bank
- * @mux: the mux mode : gpio or periph_x of the pin i.e. alternate function.
- * @conf: the configuration of the pin: PULL_UP, MULTIDRIVE etc...
- */
+ 
 struct at91_pmx_pin {
 	uint32_t	bank;
 	uint32_t	pin;
@@ -145,16 +109,7 @@ struct at91_pmx_pin {
 	unsigned long	conf;
 };
 
-/**
- * struct at91_pin_group - describes an At91 pin group
- * @name: the name of this specific pin group
- * @pins_conf: the mux mode for each pin in this group. The size of this
- *	array is the same as pins.
- * @pins: an array of discrete physical pins used in this group, taken
- *	from the driver-local pin enumeration space
- * @npins: the number of pins in this group array, i.e. the number of
- *	elements in .pins so we can iterate over that array
- */
+ 
 struct at91_pin_group {
 	const char		*name;
 	struct at91_pmx_pin	*pins_conf;
@@ -162,31 +117,7 @@ struct at91_pin_group {
 	unsigned		npins;
 };
 
-/**
- * struct at91_pinctrl_mux_ops - describes an AT91 mux ops group
- * on new IP with support for periph C and D the way to mux in
- * periph A and B has changed
- * So provide the right call back
- * if not present means the IP does not support it
- * @get_periph: return the periph mode configured
- * @mux_A_periph: mux as periph A
- * @mux_B_periph: mux as periph B
- * @mux_C_periph: mux as periph C
- * @mux_D_periph: mux as periph D
- * @get_deglitch: get deglitch status
- * @set_deglitch: enable/disable deglitch
- * @get_debounce: get debounce status
- * @set_debounce: enable/disable debounce
- * @get_pulldown: get pulldown status
- * @set_pulldown: enable/disable pulldown
- * @get_schmitt_trig: get schmitt trigger status
- * @disable_schmitt_trig: disable schmitt trigger
- * @get_drivestrength: get driver strength
- * @set_drivestrength: set driver strength
- * @get_slewrate: get slew rate
- * @set_slewrate: set slew rate
- * @irq_type: return irq type
- */
+ 
 struct at91_pinctrl_mux_ops {
 	enum at91_mux (*get_periph)(void __iomem *pio, unsigned mask);
 	void (*mux_A_periph)(void __iomem *pio, unsigned mask);
@@ -206,7 +137,7 @@ struct at91_pinctrl_mux_ops {
 					u32 strength);
 	unsigned (*get_slewrate)(void __iomem *pio, unsigned pin);
 	void (*set_slewrate)(void __iomem *pio, unsigned pin, u32 slewrate);
-	/* irq */
+	 
 	int (*irq_type)(struct irq_data *d, unsigned type);
 };
 
@@ -297,10 +228,7 @@ static int at91_dt_node_to_map(struct pinctrl_dev *pctldev,
 	int map_num = 1;
 	int i;
 
-	/*
-	 * first find the group of this node and check if we need to create
-	 * config maps for pins
-	 */
+	 
 	grp = at91_pinctrl_find_group_by_name(info, np->name);
 	if (!grp) {
 		dev_err(info->dev, "unable to find group for node %pOFn\n",
@@ -317,7 +245,7 @@ static int at91_dt_node_to_map(struct pinctrl_dev *pctldev,
 	*map = new_map;
 	*num_maps = map_num;
 
-	/* create mux map */
+	 
 	parent = of_get_parent(np);
 	if (!parent) {
 		devm_kfree(pctldev->dev, new_map);
@@ -328,7 +256,7 @@ static int at91_dt_node_to_map(struct pinctrl_dev *pctldev,
 	new_map[0].data.mux.group = np->name;
 	of_node_put(parent);
 
-	/* create config map */
+	 
 	new_map++;
 	for (i = 0; i < grp->npins; i++) {
 		new_map[i].type = PIN_MAP_TYPE_CONFIGS_PIN;
@@ -379,24 +307,21 @@ static unsigned pin_to_mask(unsigned int pin)
 
 static unsigned two_bit_pin_value_shift_amount(unsigned int pin)
 {
-	/* return the shift value for a pin for "two bit" per pin registers,
-	 * i.e. drive strength */
+	 
 	return 2*((pin >= MAX_NB_GPIO_PER_BANK/2)
 			? pin - MAX_NB_GPIO_PER_BANK/2 : pin);
 }
 
 static unsigned sama5d3_get_drive_register(unsigned int pin)
 {
-	/* drive strength is split between two registers
-	 * with two bits per pin */
+	 
 	return (pin >= MAX_NB_GPIO_PER_BANK/2)
 			? SAMA5D3_PIO_DRIVER2 : SAMA5D3_PIO_DRIVER1;
 }
 
 static unsigned at91sam9x5_get_drive_register(unsigned int pin)
 {
-	/* drive strength is split between two registers
-	 * with two bits per pin */
+	 
 	return (pin >= MAX_NB_GPIO_PER_BANK/2)
 			? AT91SAM9X5_PIO_DRIVER2 : AT91SAM9X5_PIO_DRIVER1;
 }
@@ -588,8 +513,7 @@ static unsigned at91_mux_sama5d3_get_drivestrength(void __iomem *pio,
 	unsigned tmp = read_drive_strength(pio +
 					sama5d3_get_drive_register(pin), pin);
 
-	/* SAMA5 strength is 1:1 with our defines,
-	 * except 0 is equivalent to low per datasheet */
+	 
 	if (!tmp)
 		tmp = DRIVE_STRENGTH_BIT_MSK(LOW);
 
@@ -602,8 +526,7 @@ static unsigned at91_mux_sam9x5_get_drivestrength(void __iomem *pio,
 	unsigned tmp = read_drive_strength(pio +
 				at91sam9x5_get_drive_register(pin), pin);
 
-	/* strength is inverse in SAM9x5s hardware with the pinctrl defines
-	 * hardware: 0 = hi, 1 = med, 2 = low, 3 = rsvd */
+	 
 	tmp = DRIVE_STRENGTH_BIT_MSK(HI) - tmp;
 
 	return tmp;
@@ -644,23 +567,22 @@ static void set_drive_strength(void __iomem *reg, unsigned pin, u32 strength)
 static void at91_mux_sama5d3_set_drivestrength(void __iomem *pio, unsigned pin,
 						u32 setting)
 {
-	/* do nothing if setting is zero */
+	 
 	if (!setting)
 		return;
 
-	/* strength is 1 to 1 with setting for SAMA5 */
+	 
 	set_drive_strength(pio + sama5d3_get_drive_register(pin), pin, setting);
 }
 
 static void at91_mux_sam9x5_set_drivestrength(void __iomem *pio, unsigned pin,
 						u32 setting)
 {
-	/* do nothing if setting is zero */
+	 
 	if (!setting)
 		return;
 
-	/* strength is inverse on SAM9x5s with our defines
-	 * 0 = hi, 1 = med, 2 = low, 3 = rsvd */
+	 
 	setting = DRIVE_STRENGTH_BIT_MSK(HI) - setting;
 
 	set_drive_strength(pio + at91sam9x5_get_drive_register(pin), pin,
@@ -679,7 +601,7 @@ static void at91_mux_sam9x60_set_drivestrength(void __iomem *pio, unsigned pin,
 
 	tmp = readl_relaxed(pio + SAM9X60_PIO_DRIVER1);
 
-	/* Strength is 0: low, 1: hi */
+	 
 	if (setting == DRIVE_STRENGTH_BIT_LOW)
 		tmp &= ~BIT(pin);
 	else
@@ -790,7 +712,7 @@ static int pin_check_config(struct at91_pinctrl *info, const char *name,
 {
 	int mux;
 
-	/* check if it's a valid config */
+	 
 	if (pin->bank >= gpio_banks) {
 		dev_err(info->dev, "%s: pin conf %d bank_id %d >= nbanks %d\n",
 			name, index, pin->bank, gpio_banks);
@@ -854,8 +776,7 @@ static int at91_pmx_set(struct pinctrl_dev *pctldev, unsigned selector,
 	dev_dbg(info->dev, "enable function %s group %s\n",
 		info->functions[selector].name, info->groups[group].name);
 
-	/* first check that all the pins of the group are valid with a valid
-	 * parameter */
+	 
 	for (i = 0; i < npins; i++) {
 		pin = &pins_conf[i];
 		ret = pin_check_config(info, info->groups[group].name, i, pin);
@@ -967,7 +888,7 @@ static void at91_gpio_disable_free(struct pinctrl_dev *pctldev,
 	struct at91_pinctrl *npct = pinctrl_dev_get_drvdata(pctldev);
 
 	dev_dbg(npct->dev, "disable pin %u as GPIO\n", offset);
-	/* Set the pin to some default state, GPIO is usually default */
+	 
 }
 
 static const struct pinmux_ops at91_pmx_ops = {
@@ -1071,7 +992,7 @@ static int at91_pinconf_set(struct pinctrl_dev *pctldev,
 			info->ops->set_slewrate(pio, pin,
 				(config & SLEWRATE) >> SLEWRATE_SHIFT);
 
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -1203,15 +1124,12 @@ static int at91_pinctrl_parse_groups(struct device_node *np,
 
 	dev_dbg(info->dev, "group(%d): %pOFn\n", index, np);
 
-	/* Initialise group */
+	 
 	grp->name = np->name;
 
-	/*
-	 * the binding format is atmel,pins = <bank pin mux CONFIG ...>,
-	 * do sanity check and calculate pins number
-	 */
+	 
 	list = of_get_property(np, "atmel,pins", &size);
-	/* we do not check return since it's safe node passed down */
+	 
 	size /= sizeof(*list);
 	if (!size || size % 4) {
 		dev_err(info->dev, "wrong pins number or pins and configs should be by 4\n");
@@ -1256,7 +1174,7 @@ static int at91_pinctrl_parse_functions(struct device_node *np,
 
 	func = &info->functions[index];
 
-	/* Initialise function */
+	 
 	func->name = np->name;
 	func->ngroups = of_get_child_count(np);
 	if (func->ngroups == 0) {
@@ -1286,7 +1204,7 @@ static const struct of_device_id at91_pinctrl_of_match[] = {
 	{ .compatible = "atmel,at91sam9x5-pinctrl", .data = &at91sam9x5_ops },
 	{ .compatible = "atmel,at91rm9200-pinctrl", .data = &at91rm9200_ops },
 	{ .compatible = "microchip,sam9x60-pinctrl", .data = &sam9x60_ops },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int at91_pinctrl_probe_dt(struct platform_device *pdev,
@@ -1306,11 +1224,7 @@ static int at91_pinctrl_probe_dt(struct platform_device *pdev,
 	info->ops = of_device_get_match_data(dev);
 	at91_pinctrl_child_count(info, np);
 
-	/*
-	 * We need all the GPIO drivers to probe FIRST, or we will not be able
-	 * to obtain references to the struct gpio_chip * for them, and we
-	 * need this to proceed.
-	 */
+	 
 	for (i = 0; i < MAX_GPIO_BANKS; i++)
 		if (gpio_chips[i])
 			ngpio_chips_enabled++;
@@ -1408,7 +1322,7 @@ static int at91_pinctrl_probe(struct platform_device *pdev)
 	if (IS_ERR(info->pctl))
 		return dev_err_probe(dev, PTR_ERR(info->pctl), "could not register AT91 pinctrl driver\n");
 
-	/* We will handle a range of GPIO pins */
+	 
 	for (i = 0; i < gpio_banks; i++)
 		if (gpio_chips[i])
 			pinctrl_add_gpio_range(info->pctl, &gpio_chips[i]->range);
@@ -1470,7 +1384,7 @@ static void at91_gpio_set_multiple(struct gpio_chip *chip,
 	void __iomem *pio = at91_gpio->regbase;
 
 #define BITS_MASK(bits) (((bits) == 32) ? ~0U : (BIT(bits) - 1))
-	/* Mask additionally to ngpio as not all GPIO controllers have 32 pins */
+	 
 	uint32_t set_mask = (*mask & *bits) & BITS_MASK(chip->ngpio);
 	uint32_t clear_mask = (*mask & ~(*bits)) & BITS_MASK(chip->ngpio);
 
@@ -1538,19 +1452,7 @@ static void gpio_irq_release_resources(struct irq_data *d)
 	gpiochip_unlock_as_irq(&at91_gpio->chip, irqd_to_hwirq(d));
 }
 
-/* Several AIC controller irqs are dispatched through this GPIO handler.
- * To use any AT91_PIN_* as an externally triggered IRQ, first call
- * at91_set_gpio_input() then maybe enable its glitch filter.
- * Then just request_irq() with the pin ID; it works like any ARM IRQ
- * handler.
- * First implementation always triggers on rising and falling edges
- * whereas the newer PIO3 can be additionally configured to trigger on
- * level, edge with any polarity.
- *
- * Alternatively, certain pins may be used directly as IRQ0..IRQ6 after
- * configuring them with at91_set_a_periph() or at91_set_b_periph().
- * IRQ0..IRQ6 should be configurable, e.g. level vs edge triggering.
- */
+ 
 
 static void gpio_irq_mask(struct irq_data *d)
 {
@@ -1589,7 +1491,7 @@ static int gpio_irq_type(struct irq_data *d, unsigned type)
 	}
 }
 
-/* Alternate irq type for PIO3 support */
+ 
 static int alt_gpio_irq_type(struct irq_data *d, unsigned type)
 {
 	struct at91_gpio_chip *at91_gpio = irq_data_get_irq_chip_data(d);
@@ -1618,10 +1520,7 @@ static int alt_gpio_irq_type(struct irq_data *d, unsigned type)
 		writel_relaxed(mask, pio + PIO_REHLSR);
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
-		/*
-		 * disable additional interrupt modes:
-		 * fall back to default behavior
-		 */
+		 
 		irq_set_handler_locked(d, handle_simple_irq);
 		writel_relaxed(mask, pio + PIO_AIMDR);
 		return 0;
@@ -1631,7 +1530,7 @@ static int alt_gpio_irq_type(struct irq_data *d, unsigned type)
 		return -EINVAL;
 	}
 
-	/* enable additional interrupt modes */
+	 
 	writel_relaxed(mask, pio + PIO_AIMER);
 
 	return 0;
@@ -1639,7 +1538,7 @@ static int alt_gpio_irq_type(struct irq_data *d, unsigned type)
 
 static void gpio_irq_ack(struct irq_data *d)
 {
-	/* the interrupt is already cleared before by reading ISR */
+	 
 }
 
 static int gpio_irq_set_wake(struct irq_data *d, unsigned state)
@@ -1700,10 +1599,7 @@ static void gpio_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(chip, desc);
 	for (;;) {
-		/* Reading ISR acks pending (edge triggered) GPIO interrupts.
-		 * When there are none pending, we're finished unless we need
-		 * to process multiple banks (like ID_PIOCDE on sam9263).
-		 */
+		 
 		isr = readl_relaxed(pio + PIO_ISR) & readl_relaxed(pio + PIO_IMR);
 		if (!isr) {
 			if (!at91_gpio->next)
@@ -1718,7 +1614,7 @@ static void gpio_irq_handler(struct irq_desc *desc)
 			generic_handle_domain_irq(gpio_chip->irq.domain, n);
 	}
 	chained_irq_exit(chip, desc);
-	/* now it may re-trigger */
+	 
 }
 
 static int at91_gpio_of_irq_setup(struct platform_device *pdev,
@@ -1749,24 +1645,16 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
 	gpio_irqchip->irq_set_type = at91_gpio->ops->irq_type;
 	gpio_irqchip->flags = IRQCHIP_IMMUTABLE;
 
-	/* Disable irqs of this PIO controller */
+	 
 	writel_relaxed(~0, at91_gpio->regbase + PIO_IDR);
 
-	/*
-	 * Let the generic code handle this edge IRQ, the chained
-	 * handler will perform the actual work of handling the parent
-	 * interrupt.
-	 */
+	 
 	girq = &at91_gpio->chip.irq;
 	gpio_irq_chip_set_chip(girq, gpio_irqchip);
 	girq->default_type = IRQ_TYPE_NONE;
 	girq->handler = handle_edge_irq;
 
-	/*
-	 * The top level handler handles one bank of GPIOs, except
-	 * on some SoC it can handle up to three...
-	 * We only set up the handler for the first of the list.
-	 */
+	 
 	gpiochip_prev = irq_get_handler_data(at91_gpio->pioc_virq);
 	if (!gpiochip_prev) {
 		girq->parent_handler = gpio_irq_handler;
@@ -1781,7 +1669,7 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
 	}
 
 	prev = gpiochip_get_data(gpiochip_prev);
-	/* we can only have 2 banks before */
+	 
 	for (i = 0; i < 2; i++) {
 		if (prev->next) {
 			prev = prev->next;
@@ -1794,7 +1682,7 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
 	return -EINVAL;
 }
 
-/* This structure is replicated for each GPIO block allocated at probe time */
+ 
 static const struct gpio_chip at91_gpio_template = {
 	.request		= gpiochip_generic_request,
 	.free			= gpiochip_generic_free,
@@ -1813,7 +1701,7 @@ static const struct of_device_id at91_gpio_of_match[] = {
 	{ .compatible = "atmel,at91sam9x5-gpio", .data = &at91sam9x5_ops, },
 	{ .compatible = "atmel,at91rm9200-gpio", .data = &at91rm9200_ops },
 	{ .compatible = "microchip,sam9x60-gpio", .data = &sam9x60_ops },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int at91_gpio_probe(struct platform_device *pdev)

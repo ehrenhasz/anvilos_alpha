@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) International Business Machines  Corp., 2002-2004
- *   Copyright (C) Andreas Gruenbacher, 2001
- *   Copyright (C) Linus Torvalds, 1991, 1992
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/slab.h>

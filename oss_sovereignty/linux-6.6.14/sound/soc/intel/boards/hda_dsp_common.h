@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2019 Intel Corporation.
- */
+ 
+ 
 
-/*
- * This file defines helper functions used by multiple
- * Intel HDA based machine drivers.
- */
+ 
 
 #ifndef __HDA_DSP_COMMON_H
 #define __HDA_DSP_COMMON_H
@@ -26,4 +21,4 @@ static inline int hda_dsp_hdmi_build_controls(struct snd_soc_card *card,
 }
 #endif
 
-#endif /* __HDA_DSP_COMMON_H */
+#endif  

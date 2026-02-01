@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2023 Nuvoton Technologies.
- * Author: Chi-Fen Li <cfli0@nuvoton.com>
- *
- * Device Tree binding constants for MA35D1 reset controller.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_RESET_MA35D1_H
 #define __DT_BINDINGS_RESET_MA35D1_H

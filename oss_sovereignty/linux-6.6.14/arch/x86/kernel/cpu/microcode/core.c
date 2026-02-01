@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CPU Microcode Update Driver for Linux
- *
- * Copyright (C) 2000-2006 Tigran Aivazian <aivazian.tigran@gmail.com>
- *	      2006	Shaohua Li <shaohua.li@intel.com>
- *	      2013-2016	Borislav Petkov <bp@alien8.de>
- *
- * X86 CPU microcode early update for Linux:
- *
- *	Copyright (C) 2012 Fenghua Yu <fenghua.yu@intel.com>
- *			   H Peter Anvin" <hpa@zytor.com>
- *		  (C) 2015 Borislav Petkov <bp@alien8.de>
- *
- * This driver allows to upgrade microcode on x86 processors.
- */
+
+ 
 
 #define pr_fmt(fmt) "microcode: " fmt
 
@@ -48,17 +34,7 @@ bool initrd_gone;
 
 LIST_HEAD(microcode_cache);
 
-/*
- * Synchronization.
- *
- * All non cpu-hotplug-callback call sites use:
- *
- * - cpus_read_lock/unlock() to synchronize with
- *   the cpu-hotplug-callback call sites.
- *
- * We guarantee that only a single cpu is being
- * updated at any particular moment of time.
- */
+ 
 struct ucode_cpu_info		ucode_cpu_info[NR_CPUS];
 
 struct cpu_info_ctx {
@@ -66,23 +42,15 @@ struct cpu_info_ctx {
 	int			err;
 };
 
-/*
- * Those patch levels cannot be updated to newer ones and thus should be final.
- */
+ 
 static u32 final_levels[] = {
 	0x01000098,
 	0x0100009f,
 	0x010000af,
-	0, /* T-101 terminator */
+	0,  
 };
 
-/*
- * Check the current patch level on this CPU.
- *
- * Returns:
- *  - true: if update should stop
- *  - false: otherwise
- */
+ 
 static bool amd_check_current_patch_level(void)
 {
 	u32 lvl, dummy, i;
@@ -111,17 +79,13 @@ static bool __init check_loader_disabled_bsp(void)
 	const char *option  = (const char *)__pa_nodebug(__dis_opt_str);
 	bool *res = (bool *)__pa_nodebug(&dis_ucode_ldr);
 
-#else /* CONFIG_X86_64 */
+#else  
 	const char *cmdline = boot_command_line;
 	const char *option  = __dis_opt_str;
 	bool *res = &dis_ucode_ldr;
 #endif
 
-	/*
-	 * CPUID(1).ECX[31]: reserved for hypervisor use. This is still not
-	 * completely accurate as xen pv guests don't see that CPUID bit set but
-	 * that's good enough as they don't land on the BSP path anyway.
-	 */
+	 
 	if (native_cpuid_ecx(1) & BIT(31))
 		return *res;
 
@@ -248,14 +212,11 @@ struct cpio_data find_microcode_in_initrd(const char *path, bool use_pa)
 
 	size = params->hdr.ramdisk_size;
 
-	/*
-	 * Set start only if we have an initrd image. We cannot use initrd_start
-	 * because it is not set that early yet.
-	 */
+	 
 	if (size)
 		start = params->hdr.ramdisk_image;
 
-# else /* CONFIG_X86_64 */
+# else  
 	size  = (unsigned long)boot_params.ext_ramdisk_size << 32;
 	size |= boot_params.hdr.ramdisk_size;
 
@@ -267,35 +228,21 @@ struct cpio_data find_microcode_in_initrd(const char *path, bool use_pa)
 	}
 # endif
 
-	/*
-	 * Fixup the start address: after reserve_initrd() runs, initrd_start
-	 * has the virtual address of the beginning of the initrd. It also
-	 * possibly relocates the ramdisk. In either case, initrd_start contains
-	 * the updated address so use that instead.
-	 *
-	 * initrd_gone is for the hotplug case where we've thrown out initrd
-	 * already.
-	 */
+	 
 	if (!use_pa) {
 		if (initrd_gone)
 			return (struct cpio_data){ NULL, 0, "" };
 		if (initrd_start)
 			start = initrd_start;
 	} else {
-		/*
-		 * The picture with physical addresses is a bit different: we
-		 * need to get the *physical* address to which the ramdisk was
-		 * relocated, i.e., relocated_ramdisk (not initrd_start) and
-		 * since we're running from physical addresses, we need to access
-		 * relocated_ramdisk through its *physical* address too.
-		 */
+		 
 		u64 *rr = (u64 *)__pa_nodebug(&relocated_ramdisk);
 		if (*rr)
 			start = *rr;
 	}
 
 	return find_cpio_data(path, (void *)start, size, NULL);
-#else /* !CONFIG_BLK_DEV_INITRD */
+#else  
 	return (struct cpio_data){ NULL, 0, "" };
 #endif
 }
@@ -321,31 +268,18 @@ static void reload_early_microcode(unsigned int cpu)
 	}
 }
 
-/* fake device for request_firmware */
+ 
 static struct platform_device	*microcode_pdev;
 
 #ifdef CONFIG_MICROCODE_LATE_LOADING
-/*
- * Late loading dance. Why the heavy-handed stomp_machine effort?
- *
- * - HT siblings must be idle and not execute other code while the other sibling
- *   is loading microcode in order to avoid any negative interactions caused by
- *   the loading.
- *
- * - In addition, microcode update on the cores must be serialized until this
- *   requirement can be relaxed in the future. Right now, this is conservative
- *   and good.
- */
-#define SPINUNIT 100 /* 100 nsec */
+ 
+#define SPINUNIT 100  
 
 static int check_online_cpus(void)
 {
 	unsigned int cpu;
 
-	/*
-	 * Make sure all CPUs are online.  It's fine for SMT to be disabled if
-	 * all the primary threads are still online.
-	 */
+	 
 	for_each_present_cpu(cpu) {
 		if (topology_is_primary_thread(cpu) && !cpu_online(cpu)) {
 			pr_err("Not all CPUs online, aborting microcode update.\n");
@@ -380,31 +314,18 @@ static int __wait_for_cpus(atomic_t *t, long long timeout)
 	return 0;
 }
 
-/*
- * Returns:
- * < 0 - on error
- *   0 - success (no update done or microcode was updated)
- */
+ 
 static int __reload_late(void *info)
 {
 	int cpu = smp_processor_id();
 	enum ucode_state err;
 	int ret = 0;
 
-	/*
-	 * Wait for all CPUs to arrive. A load will not be attempted unless all
-	 * CPUs show up.
-	 * */
+	 
 	if (__wait_for_cpus(&late_cpus_in, NSEC_PER_SEC))
 		return -1;
 
-	/*
-	 * On an SMT system, it suffices to load the microcode on one sibling of
-	 * the core because the microcode engine is shared between the threads.
-	 * Synchronization still needs to take place so that no concurrent
-	 * loading attempts happen on multiple threads of an SMT core. See
-	 * below.
-	 */
+	 
 	if (cpumask_first(topology_sibling_cpumask(cpu)) == cpu)
 		err = microcode_ops->apply_microcode(cpu);
 	else
@@ -421,22 +342,14 @@ wait_for_siblings:
 	if (__wait_for_cpus(&late_cpus_out, NSEC_PER_SEC))
 		panic("Timeout during microcode update!\n");
 
-	/*
-	 * At least one thread has completed update on each core.
-	 * For others, simply call the update to make sure the
-	 * per-cpu cpuinfo can be updated with right microcode
-	 * revision.
-	 */
+	 
 	if (cpumask_first(topology_sibling_cpumask(cpu)) != cpu)
 		err = microcode_ops->apply_microcode(cpu);
 
 	return ret;
 }
 
-/*
- * Reload microcode late on all CPUs. Wait for a sec until they
- * all gather together.
- */
+ 
 static int microcode_reload_late(void)
 {
 	int old = boot_cpu_data.microcode, ret;
@@ -448,10 +361,7 @@ static int microcode_reload_late(void)
 	atomic_set(&late_cpus_in,  0);
 	atomic_set(&late_cpus_out, 0);
 
-	/*
-	 * Take a snapshot before the microcode update in order to compare and
-	 * check whether any bits changed after an update.
-	 */
+	 
 	store_cpu_caps(&prev_info);
 
 	ret = stop_machine_cpuslocked(__reload_late, NULL, cpu_online_mask);
@@ -552,9 +462,7 @@ static enum ucode_state microcode_init_cpu(int cpu)
 	return microcode_ops->apply_microcode(cpu);
 }
 
-/**
- * microcode_bsp_resume - Update boot CPU microcode during resume.
- */
+ 
 void microcode_bsp_resume(void)
 {
 	int cpu = smp_processor_id();
@@ -596,7 +504,7 @@ static int mc_cpu_down_prep(unsigned int cpu)
 
 	microcode_fini_cpu(cpu);
 
-	/* Suspend is in progress, only remove the interface */
+	 
 	sysfs_remove_group(&dev->kobj, &mc_attr_group);
 	pr_debug("%s: CPU%d\n", __func__, cpu);
 
@@ -662,7 +570,7 @@ static int __init microcode_init(void)
 		}
 	}
 
-	/* Do per-CPU setup */
+	 
 	schedule_on_each_cpu(setup_online_cpu);
 
 	register_syscore_ops(&mc_syscore_ops);

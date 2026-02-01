@@ -1,31 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright IBM Corp. 2001, 2004
- * Copyright (c) 1999-2000 Cisco, Inc.
- * Copyright (c) 1999-2001 Motorola, Inc.
- * Copyright (c) 2001 Intel Corp.
- *
- * This file is part of the SCTP kernel implementation
- *
- * This file converts numerical ID value to alphabetical names for SCTP
- * terms such as chunk type, parameter time, event type, etc.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    La Monte H.P. Yarroll <piggy@acm.org>
- *    Karl Knutson          <karl@athena.chicago.il.us>
- *    Xingang Guo           <xingang.guo@intel.com>
- *    Jon Grimm             <jgrimm@us.ibm.com>
- *    Daisy Chang	    <daisyc@us.ibm.com>
- *    Sridhar Samudrala	    <sri@us.ibm.com>
- */
+
+ 
 
 #include <net/sctp/sctp.h>
 
-/* These are printable forms of Chunk ID's from section 3.1.  */
+ 
 static const char *const sctp_cid_tbl[SCTP_NUM_BASE_CHUNK_TYPES] = {
 	"DATA",
 	"INIT",
@@ -44,7 +22,7 @@ static const char *const sctp_cid_tbl[SCTP_NUM_BASE_CHUNK_TYPES] = {
 	"SHUTDOWN_COMPLETE",
 };
 
-/* Lookup "chunk type" debug name. */
+ 
 const char *sctp_cname(const union sctp_subtype cid)
 {
 	if (cid.chunk <= SCTP_CID_BASE_MAX)
@@ -79,7 +57,7 @@ const char *sctp_cname(const union sctp_subtype cid)
 	return "unknown chunk";
 }
 
-/* These are printable forms of the states.  */
+ 
 const char *const sctp_state_tbl[SCTP_STATE_NUM_STATES] = {
 	"STATE_CLOSED",
 	"STATE_COOKIE_WAIT",
@@ -91,7 +69,7 @@ const char *const sctp_state_tbl[SCTP_STATE_NUM_STATES] = {
 	"STATE_SHUTDOWN_ACK_SENT",
 };
 
-/* Events that could change the state of an association.  */
+ 
 const char *const sctp_evttype_tbl[] = {
 	"EVENT_T_unknown",
 	"EVENT_T_CHUNK",
@@ -100,7 +78,7 @@ const char *const sctp_evttype_tbl[] = {
 	"EVENT_T_PRIMITIVE"
 };
 
-/* Return value of a state function */
+ 
 const char *const sctp_status_tbl[] = {
 	"DISPOSITION_DISCARD",
 	"DISPOSITION_CONSUME",
@@ -113,7 +91,7 @@ const char *const sctp_status_tbl[] = {
 	"DISPOSITION_BUG"
 };
 
-/* Printable forms of primitives */
+ 
 static const char *const sctp_primitive_tbl[SCTP_NUM_PRIMITIVE_TYPES] = {
 	"PRIMITIVE_ASSOCIATE",
 	"PRIMITIVE_SHUTDOWN",
@@ -123,7 +101,7 @@ static const char *const sctp_primitive_tbl[SCTP_NUM_PRIMITIVE_TYPES] = {
 	"PRIMITIVE_ASCONF",
 };
 
-/* Lookup primitive debug name. */
+ 
 const char *sctp_pname(const union sctp_subtype id)
 {
 	if (id.primitive <= SCTP_EVENT_PRIMITIVE_MAX)
@@ -136,7 +114,7 @@ static const char *const sctp_other_tbl[] = {
 	"ICMP_PROTO_UNREACH",
 };
 
-/* Lookup "other" debug name. */
+ 
 const char *sctp_oname(const union sctp_subtype id)
 {
 	if (id.other <= SCTP_EVENT_OTHER_MAX)
@@ -159,7 +137,7 @@ static const char *const sctp_timer_tbl[] = {
 	"TIMEOUT_AUTOCLOSE",
 };
 
-/* Lookup timer debug name. */
+ 
 const char *sctp_tname(const union sctp_subtype id)
 {
 	BUILD_BUG_ON(SCTP_EVENT_TIMEOUT_MAX + 1 != ARRAY_SIZE(sctp_timer_tbl));

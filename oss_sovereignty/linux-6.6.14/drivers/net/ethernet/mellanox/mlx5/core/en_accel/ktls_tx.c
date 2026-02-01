@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2019 Mellanox Technologies.
+
+
 
 #include <linux/debugfs.h>
 #include "en_accel/ktls.h"
@@ -18,9 +18,7 @@ static u8
 mlx5e_ktls_dumps_num_wqes(struct mlx5e_params *params, unsigned int nfrags,
 			  unsigned int sync_len)
 {
-	/* Given the MTU and sync_len, calculates an upper bound for the
-	 * number of DUMP WQEs needed for the TX resync of a record.
-	 */
+	 
 	return nfrags + DIV_ROUND_UP(sync_len, MLX5E_SW2HW_MTU(params, params->sw_mtu));
 }
 
@@ -36,7 +34,7 @@ u16 mlx5e_ktls_get_stop_room(struct mlx5_core_dev *mdev, struct mlx5e_params *pa
 	stop_room += mlx5e_stop_room_for_wqe(mdev, MLX5E_TLS_SET_STATIC_PARAMS_WQEBBS);
 	stop_room += mlx5e_stop_room_for_wqe(mdev, MLX5E_TLS_SET_PROGRESS_PARAMS_WQEBBS);
 	stop_room += num_dumps * mlx5e_stop_room_for_wqe(mdev, MLX5E_KTLS_DUMP_WQEBBS);
-	stop_room += 1; /* fence nop */
+	stop_room += 1;  
 
 	return stop_room;
 }
@@ -88,12 +86,12 @@ static int mlx5e_ktls_destroy_tis_cb(struct mlx5_core_dev *mdev, u32 tisn,
 }
 
 struct mlx5e_ktls_offload_context_tx {
-	/* fast path */
+	 
 	u32 expected_seq;
 	u32 tisn;
 	bool ctx_post_pending;
-	/* control / resync */
-	struct list_head list_node; /* member of the pool */
+	 
+	struct list_head list_node;  
 	union mlx5e_crypto_info crypto_info;
 	struct tls_offload_context_tx *tx_ctx;
 	struct mlx5_core_dev *mdev;
@@ -123,7 +121,7 @@ mlx5e_get_ktls_tx_priv_ctx(struct tls_context *tls_ctx)
 	return *ctx;
 }
 
-/* struct for callback API management */
+ 
 struct mlx5e_async_ctx {
 	struct mlx5_async_work context;
 	struct mlx5_async_ctx *async_ctx;
@@ -257,7 +255,7 @@ static void mlx5e_tls_priv_tx_list_cleanup(struct mlx5_core_dev *mdev,
 	mlx5e_bulk_async_cleanup(bulk_async);
 }
 
-/* Recycling pool API */
+ 
 
 #define MLX5E_TLS_TX_POOL_BULK (16)
 #define MLX5E_TLS_TX_POOL_HIGH (4 * 1024)
@@ -266,7 +264,7 @@ static void mlx5e_tls_priv_tx_list_cleanup(struct mlx5_core_dev *mdev,
 struct mlx5e_tls_tx_pool {
 	struct mlx5_core_dev *mdev;
 	struct mlx5e_tls_sw_stats *sw_stats;
-	struct mutex lock; /* Protects access to the pool */
+	struct mutex lock;  
 	struct list_head list;
 	size_t size;
 
@@ -428,10 +426,7 @@ static struct mlx5e_ktls_offload_context_tx *pool_pop(struct mlx5e_tls_tx_pool *
 
 	mutex_lock(&pool->lock);
 	if (unlikely(pool->size == 0)) {
-		/* pool is empty:
-		 * - trigger the populating work, and
-		 * - serve the current context via the regular blocking api.
-		 */
+		 
 		queue_work(pool->wq, &pool->create_work);
 		mutex_unlock(&pool->lock);
 		obj = mlx5e_tls_priv_tx_init(pool->mdev, pool->sw_stats, NULL);
@@ -449,7 +444,7 @@ static struct mlx5e_ktls_offload_context_tx *pool_pop(struct mlx5e_tls_tx_pool *
 	return obj;
 }
 
-/* End of pool API */
+ 
 
 int mlx5e_ktls_add_tx(struct net_device *netdev, struct sock *sk,
 		      struct tls_crypto_info *crypto_info, u32 start_offload_tcp_sn)
@@ -637,14 +632,7 @@ tx_sync_info_get(struct mlx5e_ktls_offload_context_tx *priv_tx,
 		goto out;
 	}
 
-	/* There are the following cases:
-	 * 1. packet ends before start marker: bypass offload.
-	 * 2. packet starts before start marker and ends after it: drop,
-	 *    not supported, breaks contract with kernel.
-	 * 3. packet ends before tls record info starts: drop,
-	 *    this packet was already acknowledged and its record info
-	 *    was released.
-	 */
+	 
 	ends_before = before(tcp_seq + datalen - 1, tls_record_start_seq(record));
 
 	if (unlikely(tls_record_is_start_marker(record))) {
@@ -664,7 +652,7 @@ tx_sync_info_get(struct mlx5e_ktls_offload_context_tx *priv_tx,
 		remaining -= skb_frag_size(frag);
 		info->frags[i++] = *frag;
 	}
-	/* reduce the part which will be sent with the original SKB */
+	 
 	if (remaining < 0)
 		skb_frag_size_add(&info->frags[i - 1], remaining);
 	info->nr_frags = i;
@@ -780,10 +768,7 @@ mlx5e_ktls_tx_handle_ooo(struct mlx5e_ktls_offload_context_tx *priv_tx,
 
 	ret = tx_sync_info_get(priv_tx, seq, datalen, &info);
 	if (unlikely(ret != MLX5E_KTLS_SYNC_DONE))
-		/* We might get here with ret == FAIL if a retransmission
-		 * reaches the driver after the relevant record is acked.
-		 * It should be safe to drop the packet in this case
-		 */
+		 
 		return ret;
 
 	tx_post_resync_params(sq, priv_tx, info.rcd_sn);
@@ -816,11 +801,7 @@ mlx5e_ktls_tx_handle_ooo(struct mlx5e_ktls_offload_context_tx *priv_tx,
 
 err_out:
 	for (; i < info.nr_frags; i++)
-		/* The put_page() here undoes the page ref obtained in tx_sync_info_get().
-		 * Page refs obtained for the DUMP WQEs above (by page_ref_add) will be
-		 * released only upon their completions (or in mlx5e_free_txqsq_descs,
-		 * if channel closes).
-		 */
+		 
 		put_page(skb_frag_page(&info.frags[i]));
 
 	return MLX5E_KTLS_SYNC_FAIL;
@@ -845,10 +826,7 @@ bool mlx5e_ktls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
 
 	tls_ctx = tls_get_ctx(skb->sk);
 	tls_netdev = rcu_dereference_bh(tls_ctx->netdev);
-	/* Don't WARN on NULL: if tls_device_down is running in parallel,
-	 * netdev might become NULL, even if tls_is_skb_tx_device_offloaded was
-	 * true. Rather continue processing this packet.
-	 */
+	 
 	if (WARN_ON_ONCE(tls_netdev && tls_netdev != netdev))
 		goto err_out;
 
@@ -915,9 +893,7 @@ int mlx5e_ktls_init_tx(struct mlx5e_priv *priv)
 	if (!mlx5e_is_ktls_device(priv->mdev))
 		return 0;
 
-	/* DEK pool could be used by either or both of TX and RX. But we have to
-	 * put the creation here to avoid syndrome when doing devlink reload.
-	 */
+	 
 	dek_pool = mlx5_crypto_dek_pool_create(priv->mdev, MLX5_ACCEL_OBJ_TLS_KEY);
 	if (IS_ERR(dek_pool))
 		return PTR_ERR(dek_pool);

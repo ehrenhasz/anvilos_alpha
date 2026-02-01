@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __KVM_X86_VMX_NESTED_H
 #define __KVM_X86_VMX_NESTED_H
 
@@ -6,14 +6,12 @@
 #include "vmcs12.h"
 #include "vmx.h"
 
-/*
- * Status returned by nested_vmx_enter_non_root_mode():
- */
+ 
 enum nvmx_vmentry_status {
-	NVMX_VMENTRY_SUCCESS,		/* Entered VMX non-root mode */
-	NVMX_VMENTRY_VMFAIL,		/* Consistency check VMFail */
-	NVMX_VMENTRY_VMEXIT,		/* Consistency check VMExit */
-	NVMX_VMENTRY_KVM_INTERNAL_ERROR,/* KVM internal error */
+	NVMX_VMENTRY_SUCCESS,		 
+	NVMX_VMENTRY_VMFAIL,		 
+	NVMX_VMENTRY_VMEXIT,		 
+	NVMX_VMENTRY_KVM_INTERNAL_ERROR, 
 };
 
 void vmx_leave_nested(struct kvm_vcpu *vcpu);
@@ -46,16 +44,12 @@ static inline struct vmcs12 *get_shadow_vmcs12(struct kvm_vcpu *vcpu)
 	return to_vmx(vcpu)->nested.cached_shadow_vmcs12;
 }
 
-/*
- * Note: the same condition is checked against the state provided by userspace
- * in vmx_set_nested_state; if it is satisfied, the nested state must include
- * the VMCS12.
- */
+ 
 static inline int vmx_has_valid_vmcs12(struct kvm_vcpu *vcpu)
 {
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 
-	/* 'hv_evmcs_vmptr' can also be EVMPTR_MAP_PENDING here */
+	 
 	return vmx->nested.current_vmptr != -1ull ||
 		vmx->nested.hv_evmcs_vmptr != EVMPTR_INVALID;
 }
@@ -69,7 +63,7 @@ static inline u16 nested_get_vpid02(struct kvm_vcpu *vcpu)
 
 static inline unsigned long nested_ept_get_eptp(struct kvm_vcpu *vcpu)
 {
-	/* return the page table to be shadowed - in our case, EPT12 */
+	 
 	return get_vmcs12(vcpu)->ept_pointer;
 }
 
@@ -78,12 +72,7 @@ static inline bool nested_ept_ad_enabled(struct kvm_vcpu *vcpu)
 	return nested_ept_get_eptp(vcpu) & VMX_EPTP_AD_ENABLE_BIT;
 }
 
-/*
- * Return the cr0/4 value that a nested guest would read. This is a combination
- * of L1's "real" cr0 used to run the guest (guest_cr0), and the bits shadowed
- * by the L1 hypervisor (cr0_read_shadow).  KVM must emulate CPU behavior as
- * the value+mask loaded into vmcs02 may not match the vmcs12 fields.
- */
+ 
 static inline unsigned long nested_read_cr0(struct vmcs12 *fields)
 {
 	return (fields->guest_cr0 & ~fields->cr0_guest_host_mask) |
@@ -100,11 +89,7 @@ static inline unsigned nested_cpu_vmx_misc_cr3_count(struct kvm_vcpu *vcpu)
 	return vmx_misc_cr3_count(to_vmx(vcpu)->nested.msrs.misc_low);
 }
 
-/*
- * Do the virtual VMX capability MSRs specify that L1 can use VMWRITE
- * to modify any valid field of the VMCS, or are the VM-exit
- * information fields read-only?
- */
+ 
 static inline bool nested_cpu_has_vmwrite_any_field(struct kvm_vcpu *vcpu)
 {
 	return to_vmx(vcpu)->nested.msrs.misc_low &
@@ -229,10 +214,7 @@ static inline bool nested_exit_on_nmi(struct kvm_vcpu *vcpu)
 	return nested_cpu_has_nmi_exiting(get_vmcs12(vcpu));
 }
 
-/*
- * In nested virtualization, check if L1 asked to exit on external interrupts.
- * For most existing hypervisors, this will always return true.
- */
+ 
 static inline bool nested_exit_on_intr(struct kvm_vcpu *vcpu)
 {
 	return get_vmcs12(vcpu)->pin_based_vm_exec_control &
@@ -244,10 +226,7 @@ static inline bool nested_cpu_has_encls_exit(struct vmcs12 *vmcs12)
 	return nested_cpu_has2(vmcs12, SECONDARY_EXEC_ENCLS_EXITING);
 }
 
-/*
- * if fixed0[i] == 1: val[i] must be 1
- * if fixed1[i] == 0: val[i] must be 0
- */
+ 
 static inline bool fixed_bits_valid(u64 val, u64 fixed0, u64 fixed1)
 {
 	return ((val & fixed1) | fixed0) == val;
@@ -284,10 +263,10 @@ static inline bool nested_cr4_valid(struct kvm_vcpu *vcpu, unsigned long val)
 	       __kvm_is_valid_cr4(vcpu, val);
 }
 
-/* No difference in the restrictions on guest and host CR4 in VMX operation. */
+ 
 #define nested_guest_cr4_valid	nested_cr4_valid
 #define nested_host_cr4_valid	nested_cr4_valid
 
 extern struct kvm_x86_nested_ops vmx_nested_ops;
 
-#endif /* __KVM_X86_VMX_NESTED_H */
+#endif  

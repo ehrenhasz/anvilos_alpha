@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2016-2018 Mellanox Technologies. All rights reserved
- * Copyright (c) 2016 Ivan Vecera <cera@cera.cz>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -14,21 +12,21 @@
 #include "core.h"
 #include "core_env.h"
 
-#define MLXSW_THERMAL_POLL_INT	1000	/* ms */
-#define MLXSW_THERMAL_SLOW_POLL_INT	20000	/* ms */
-#define MLXSW_THERMAL_ASIC_TEMP_NORM	75000	/* 75C */
-#define MLXSW_THERMAL_ASIC_TEMP_HIGH	85000	/* 85C */
-#define MLXSW_THERMAL_ASIC_TEMP_HOT	105000	/* 105C */
-#define MLXSW_THERMAL_MODULE_TEMP_NORM	55000	/* 55C */
-#define MLXSW_THERMAL_MODULE_TEMP_HIGH	65000	/* 65C */
-#define MLXSW_THERMAL_MODULE_TEMP_HOT	80000	/* 80C */
-#define MLXSW_THERMAL_HYSTERESIS_TEMP	5000	/* 5C */
+#define MLXSW_THERMAL_POLL_INT	1000	 
+#define MLXSW_THERMAL_SLOW_POLL_INT	20000	 
+#define MLXSW_THERMAL_ASIC_TEMP_NORM	75000	 
+#define MLXSW_THERMAL_ASIC_TEMP_HIGH	85000	 
+#define MLXSW_THERMAL_ASIC_TEMP_HOT	105000	 
+#define MLXSW_THERMAL_MODULE_TEMP_NORM	55000	 
+#define MLXSW_THERMAL_MODULE_TEMP_HIGH	65000	 
+#define MLXSW_THERMAL_MODULE_TEMP_HOT	80000	 
+#define MLXSW_THERMAL_HYSTERESIS_TEMP	5000	 
 #define MLXSW_THERMAL_MODULE_TEMP_SHIFT	(MLXSW_THERMAL_HYSTERESIS_TEMP * 2)
 #define MLXSW_THERMAL_MAX_STATE	10
 #define MLXSW_THERMAL_MIN_STATE	2
 #define MLXSW_THERMAL_MAX_DUTY	255
 
-/* External cooling devices, allowed for binding to mlxsw thermal zones. */
+ 
 static char * const mlxsw_thermal_external_allowed_cdev[] = {
 	"mlxreg_fan",
 };
@@ -39,36 +37,36 @@ struct mlxsw_cooling_states {
 };
 
 static const struct thermal_trip default_thermal_trips[] = {
-	{	/* In range - 0-40% PWM */
+	{	 
 		.type		= THERMAL_TRIP_ACTIVE,
 		.temperature	= MLXSW_THERMAL_ASIC_TEMP_NORM,
 		.hysteresis	= MLXSW_THERMAL_HYSTERESIS_TEMP,
 	},
 	{
-		/* In range - 40-100% PWM */
+		 
 		.type		= THERMAL_TRIP_ACTIVE,
 		.temperature	= MLXSW_THERMAL_ASIC_TEMP_HIGH,
 		.hysteresis	= MLXSW_THERMAL_HYSTERESIS_TEMP,
 	},
-	{	/* Warning */
+	{	 
 		.type		= THERMAL_TRIP_HOT,
 		.temperature	= MLXSW_THERMAL_ASIC_TEMP_HOT,
 	},
 };
 
 static const struct thermal_trip default_thermal_module_trips[] = {
-	{	/* In range - 0-40% PWM */
+	{	 
 		.type		= THERMAL_TRIP_ACTIVE,
 		.temperature	= MLXSW_THERMAL_MODULE_TEMP_NORM,
 		.hysteresis	= MLXSW_THERMAL_HYSTERESIS_TEMP,
 	},
 	{
-		/* In range - 40-100% PWM */
+		 
 		.type		= THERMAL_TRIP_ACTIVE,
 		.temperature	= MLXSW_THERMAL_MODULE_TEMP_HIGH,
 		.hysteresis	= MLXSW_THERMAL_HYSTERESIS_TEMP,
 	},
-	{	/* Warning */
+	{	 
 		.type		= THERMAL_TRIP_HOT,
 		.temperature	= MLXSW_THERMAL_MODULE_TEMP_HOT,
 	},
@@ -91,7 +89,7 @@ static const struct mlxsw_cooling_states default_cooling_states[] = {
 
 #define MLXSW_THERMAL_NUM_TRIPS	ARRAY_SIZE(default_thermal_trips)
 
-/* Make sure all trips are writable */
+ 
 #define MLXSW_THERMAL_TRIP_MASK	(BIT(MLXSW_THERMAL_NUM_TRIPS) - 1)
 
 struct mlxsw_thermal;
@@ -101,7 +99,7 @@ struct mlxsw_thermal_module {
 	struct thermal_zone_device *tzdev;
 	struct thermal_trip trips[MLXSW_THERMAL_NUM_TRIPS];
 	struct mlxsw_cooling_states cooling_states[MLXSW_THERMAL_NUM_TRIPS];
-	int module; /* Module or gearbox number */
+	int module;  
 	u8 slot_index;
 };
 
@@ -146,7 +144,7 @@ static int mlxsw_get_cooling_device_idx(struct mlxsw_thermal *thermal,
 		if (thermal->cdevs[i] == cdev)
 			return i;
 
-	/* Allow mlxsw thermal zone binding to an external cooling device */
+	 
 	for (i = 0; i < ARRAY_SIZE(mlxsw_thermal_external_allowed_cdev); i++) {
 		if (!strcmp(cdev->type, mlxsw_thermal_external_allowed_cdev[i]))
 			return 0;
@@ -162,7 +160,7 @@ static int mlxsw_thermal_bind(struct thermal_zone_device *tzdev,
 	struct device *dev = thermal->bus_info->dev;
 	int i, err;
 
-	/* If the cooling device is one of ours bind it */
+	 
 	if (mlxsw_get_cooling_device_idx(thermal, cdev) < 0)
 		return 0;
 
@@ -189,7 +187,7 @@ static int mlxsw_thermal_unbind(struct thermal_zone_device *tzdev,
 	int i;
 	int err;
 
-	/* If the cooling device is our one unbind it */
+	 
 	if (mlxsw_get_cooling_device_idx(thermal, cdev) < 0)
 		return 0;
 
@@ -242,7 +240,7 @@ static int mlxsw_thermal_module_bind(struct thermal_zone_device *tzdev,
 	struct mlxsw_thermal *thermal = tz->parent;
 	int i, j, err;
 
-	/* If the cooling device is one of ours bind it */
+	 
 	if (mlxsw_get_cooling_device_idx(thermal, cdev) < 0)
 		return 0;
 
@@ -272,7 +270,7 @@ static int mlxsw_thermal_module_unbind(struct thermal_zone_device *tzdev,
 	int i;
 	int err;
 
-	/* If the cooling device is one of ours unbind it */
+	 
 	if (mlxsw_get_cooling_device_idx(thermal, cdev) < 0)
 		return 0;
 
@@ -387,7 +385,7 @@ static int mlxsw_thermal_set_cur_state(struct thermal_cooling_device *cdev,
 	if (idx < 0)
 		return idx;
 
-	/* Normalize the state to the valid speed range. */
+	 
 	state = max_t(unsigned long, MLXSW_THERMAL_MIN_STATE, state);
 	mlxsw_reg_mfsc_pack(mfsc_pl, idx, mlxsw_state_to_duty(state));
 	err = mlxsw_reg_write(thermal->core, MLXSW_REG(mfsc), mfsc_pl);
@@ -450,7 +448,7 @@ mlxsw_thermal_module_init(struct device *dev, struct mlxsw_core *core,
 	struct mlxsw_thermal_module *module_tz;
 
 	module_tz = &area->tz_module_arr[module];
-	/* Skip if parent is already set (case of port split). */
+	 
 	if (module_tz->parent)
 		return;
 	module_tz->module = module;
@@ -490,7 +488,7 @@ mlxsw_thermal_modules_init(struct device *dev, struct mlxsw_core *core,
 	mlxsw_reg_mgpir_unpack(mgpir_pl, NULL, NULL, NULL,
 			       &area->tz_module_num, NULL);
 
-	/* For modular system module counter could be zero. */
+	 
 	if (!area->tz_module_num)
 		return 0;
 
@@ -735,13 +733,13 @@ int mlxsw_thermal_init(struct mlxsw_core *core,
 
 			mlxsw_reg_mfsl_pack(mfsl_pl, i, 0, 0);
 
-			/* We need to query the register to preserve maximum */
+			 
 			err = mlxsw_reg_query(thermal->core, MLXSW_REG(mfsl),
 					      mfsl_pl);
 			if (err)
 				goto err_reg_query;
 
-			/* set the minimal RPMs to 0 */
+			 
 			mlxsw_reg_mfsl_tach_min_set(mfsl_pl, 0);
 			err = mlxsw_reg_write(thermal->core, MLXSW_REG(mfsl),
 					      mfsl_pl);

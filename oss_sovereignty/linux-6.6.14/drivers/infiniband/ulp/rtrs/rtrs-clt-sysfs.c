@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
 
@@ -131,7 +125,7 @@ static ssize_t mpath_policy_store(struct device *dev,
 		return count;
 	}
 
-	/* distinguish "mi" and "min-latency" with length */
+	 
 	len = strnlen(buf, NAME_MAX);
 	if (buf[len - 1] == '\n')
 		len--;

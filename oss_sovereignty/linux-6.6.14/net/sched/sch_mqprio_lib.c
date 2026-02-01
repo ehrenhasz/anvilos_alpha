@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/net.h>
 #include <linux/netdevice.h>
@@ -8,7 +8,7 @@
 
 #include "sch_mqprio_lib.h"
 
-/* Returns true if the intervals [a, b) and [c, d) overlap. */
+ 
 static bool intervals_overlap(int a, int b, int c, int d)
 {
 	int left = max(a, c), right = min(b, d);
@@ -32,9 +32,7 @@ static int mqprio_validate_queue_counts(struct net_device *dev,
 			return -EINVAL;
 		}
 
-		/* Verify the queue count is in tx range being equal to the
-		 * real_num_tx_queues indicates the last queue is in use.
-		 */
+		 
 		if (qopt->offset[i] >= dev->real_num_tx_queues ||
 		    last > dev->real_num_tx_queues) {
 			NL_SET_ERR_MSG_FMT_MOD(extack,
@@ -47,7 +45,7 @@ static int mqprio_validate_queue_counts(struct net_device *dev,
 		if (allow_overlapping_txqs)
 			continue;
 
-		/* Verify that the offset and counts do not overlap */
+		 
 		for (j = i + 1; j < qopt->num_tc; j++) {
 			if (intervals_overlap(qopt->offset[i], last,
 					      qopt->offset[j],
@@ -72,14 +70,14 @@ int mqprio_validate_qopt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
 {
 	int i, err;
 
-	/* Verify num_tc is not out of max range */
+	 
 	if (qopt->num_tc > TC_MAX_QUEUE) {
 		NL_SET_ERR_MSG(extack,
 			       "Number of traffic classes is outside valid range");
 		return -EINVAL;
 	}
 
-	/* Verify priority mapping uses valid tcs */
+	 
 	for (i = 0; i <= TC_BITMASK; i++) {
 		if (qopt->prio_tc_map[i] >= qopt->num_tc) {
 			NL_SET_ERR_MSG(extack,

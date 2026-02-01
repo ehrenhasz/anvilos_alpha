@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Inter Processor Interrupt(IPI) Mailbox Driver
- *
- * Copyright (C) 2018 Xilinx, Inc.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/delay.h>
@@ -18,14 +14,14 @@
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 
-/* IPI agent ID any */
+ 
 #define IPI_ID_ANY 0xFFUL
 
-/* indicate if ZynqMP IPI mailbox driver uses SMC calls or HVC calls */
+ 
 #define USE_SMC 0
 #define USE_HVC 1
 
-/* Default IPI SMC function IDs */
+ 
 #define SMC_IPI_MAILBOX_OPEN		0x82001000U
 #define SMC_IPI_MAILBOX_RELEASE		0x82001001U
 #define SMC_IPI_MAILBOX_STATUS_ENQUIRY	0x82001002U
@@ -34,34 +30,19 @@
 #define SMC_IPI_MAILBOX_ENABLE_IRQ	0x82001005U
 #define SMC_IPI_MAILBOX_DISABLE_IRQ	0x82001006U
 
-/* IPI SMC Macros */
-#define IPI_SMC_ENQUIRY_DIRQ_MASK	0x00000001UL /* Flag to indicate if
-						      * notification interrupt
-						      * to be disabled.
-						      */
-#define IPI_SMC_ACK_EIRQ_MASK		0x00000001UL /* Flag to indicate if
-						      * notification interrupt
-						      * to be enabled.
-						      */
+ 
+#define IPI_SMC_ENQUIRY_DIRQ_MASK	0x00000001UL  
+#define IPI_SMC_ACK_EIRQ_MASK		0x00000001UL  
 
-/* IPI mailbox status */
+ 
 #define IPI_MB_STATUS_IDLE		0
 #define IPI_MB_STATUS_SEND_PENDING	1
 #define IPI_MB_STATUS_RECV_PENDING	2
 
-#define IPI_MB_CHNL_TX	0 /* IPI mailbox TX channel */
-#define IPI_MB_CHNL_RX	1 /* IPI mailbox RX channel */
+#define IPI_MB_CHNL_TX	0  
+#define IPI_MB_CHNL_RX	1  
 
-/**
- * struct zynqmp_ipi_mchan - Description of a Xilinx ZynqMP IPI mailbox channel
- * @is_opened: indicate if the IPI channel is opened
- * @req_buf: local to remote request buffer start address
- * @resp_buf: local to remote response buffer start address
- * @req_buf_size: request buffer size
- * @resp_buf_size: response buffer size
- * @rx_buf: receive buffer to pass received message to client
- * @chan_type: channel type
- */
+ 
 struct zynqmp_ipi_mchan {
 	int is_opened;
 	void __iomem *req_buf;
@@ -72,17 +53,7 @@ struct zynqmp_ipi_mchan {
 	unsigned int chan_type;
 };
 
-/**
- * struct zynqmp_ipi_mbox - Description of a ZynqMP IPI mailbox
- *                          platform data.
- * @pdata:		  pointer to the IPI private data
- * @dev:                  device pointer corresponding to the Xilinx ZynqMP
- *                        IPI mailbox
- * @remote_id:            remote IPI agent ID
- * @mbox:                 mailbox Controller
- * @mchans:               array for channels, tx channel and rx channel.
- * @irq:                  IPI agent interrupt ID
- */
+ 
 struct zynqmp_ipi_mbox {
 	struct zynqmp_ipi_pdata *pdata;
 	struct device dev;
@@ -91,17 +62,7 @@ struct zynqmp_ipi_mbox {
 	struct zynqmp_ipi_mchan mchans[2];
 };
 
-/**
- * struct zynqmp_ipi_pdata - Description of z ZynqMP IPI agent platform data.
- *
- * @dev:                  device pointer corresponding to the Xilinx ZynqMP
- *                        IPI agent
- * @irq:                  IPI agent interrupt ID
- * @method:               IPI SMC or HVC is going to be used
- * @local_id:             local IPI agent ID
- * @num_mboxes:           number of mailboxes of this IPI agent
- * @ipi_mboxes:           IPI mailboxes of this IPI agent
- */
+ 
 struct zynqmp_ipi_pdata {
 	struct device *dev;
 	int irq;
@@ -131,16 +92,7 @@ static void zynqmp_ipi_fw_call(struct zynqmp_ipi_mbox *ipi_mbox,
 		arm_smccc_hvc(a0, a1, a2, a3, 0, 0, 0, 0, res);
 }
 
-/**
- * zynqmp_ipi_interrupt - Interrupt handler for IPI notification
- *
- * @irq:  Interrupt number
- * @data: ZynqMP IPI mailbox platform data.
- *
- * Return: -EINVAL if there is no instance
- * IRQ_NONE if the interrupt is not ours.
- * IRQ_HANDLED if the rx interrupt was successfully handled.
- */
+ 
 static irqreturn_t zynqmp_ipi_interrupt(int irq, void *data)
 {
 	struct zynqmp_ipi_pdata *pdata = data;
@@ -175,13 +127,7 @@ static irqreturn_t zynqmp_ipi_interrupt(int irq, void *data)
 	return status;
 }
 
-/**
- * zynqmp_ipi_peek_data - Peek to see if there are any rx messages.
- *
- * @chan: Channel Pointer
- *
- * Return: 'true' if there is pending rx data, 'false' if there is none.
- */
+ 
 static bool zynqmp_ipi_peek_data(struct mbox_chan *chan)
 {
 	struct device *dev = chan->mbox->dev;
@@ -201,27 +147,19 @@ static bool zynqmp_ipi_peek_data(struct mbox_chan *chan)
 	ret = (int)(res.a0 & 0xFFFFFFFF);
 
 	if (mchan->chan_type == IPI_MB_CHNL_TX) {
-		/* TX channel, check if the message has been acked
-		 * by the remote, if yes, response is available.
-		 */
+		 
 		if (ret < 0 || ret & IPI_MB_STATUS_SEND_PENDING)
 			return false;
 		else
 			return true;
 	} else if (ret > 0 && ret & IPI_MB_STATUS_RECV_PENDING) {
-		/* RX channel, check if there is message arrived. */
+		 
 		return true;
 	}
 	return false;
 }
 
-/**
- * zynqmp_ipi_last_tx_done - See if the last tx message is sent
- *
- * @chan: Channel pointer
- *
- * Return: 'true' is no pending tx data, 'false' if there are any.
- */
+ 
 static bool zynqmp_ipi_last_tx_done(struct mbox_chan *chan)
 {
 	struct device *dev = chan->mbox->dev;
@@ -237,29 +175,20 @@ static bool zynqmp_ipi_last_tx_done(struct mbox_chan *chan)
 	}
 
 	if (mchan->chan_type == IPI_MB_CHNL_TX) {
-		/* We only need to check if the message been taken
-		 * by the remote in the TX channel
-		 */
+		 
 		arg0 = SMC_IPI_MAILBOX_STATUS_ENQUIRY;
 		zynqmp_ipi_fw_call(ipi_mbox, arg0, 0, &res);
-		/* Check the SMC call status, a0 of the result */
+		 
 		ret = (int)(res.a0 & 0xFFFFFFFF);
 		if (ret < 0 || ret & IPI_MB_STATUS_SEND_PENDING)
 			return false;
 		return true;
 	}
-	/* Always true for the response message in RX channel */
+	 
 	return true;
 }
 
-/**
- * zynqmp_ipi_send_data - Send data
- *
- * @chan: Channel Pointer
- * @data: Message Pointer
- *
- * Return: 0 if all goes good, else appropriate error messages.
- */
+ 
 static int zynqmp_ipi_send_data(struct mbox_chan *chan, void *data)
 {
 	struct device *dev = chan->mbox->dev;
@@ -275,7 +204,7 @@ static int zynqmp_ipi_send_data(struct mbox_chan *chan, void *data)
 	}
 
 	if (mchan->chan_type == IPI_MB_CHNL_TX) {
-		/* Send request message */
+		 
 		if (msg && msg->len > mchan->req_buf_size) {
 			dev_err(dev, "channel %d message length %u > max %lu\n",
 				mchan->chan_type, (unsigned int)msg->len,
@@ -284,11 +213,11 @@ static int zynqmp_ipi_send_data(struct mbox_chan *chan, void *data)
 		}
 		if (msg && msg->len)
 			memcpy_toio(mchan->req_buf, msg->data, msg->len);
-		/* Kick IPI mailbox to send message */
+		 
 		arg0 = SMC_IPI_MAILBOX_NOTIFY;
 		zynqmp_ipi_fw_call(ipi_mbox, arg0, 0, &res);
 	} else {
-		/* Send response message */
+		 
 		if (msg && msg->len > mchan->resp_buf_size) {
 			dev_err(dev, "channel %d message length %u > max %lu\n",
 				mchan->chan_type, (unsigned int)msg->len,
@@ -304,13 +233,7 @@ static int zynqmp_ipi_send_data(struct mbox_chan *chan, void *data)
 	return 0;
 }
 
-/**
- * zynqmp_ipi_startup - Startup the IPI channel
- *
- * @chan: Channel pointer
- *
- * Return: 0 if all goes good, else return corresponding error message
- */
+ 
 static int zynqmp_ipi_startup(struct mbox_chan *chan)
 {
 	struct device *dev = chan->mbox->dev;
@@ -324,12 +247,12 @@ static int zynqmp_ipi_startup(struct mbox_chan *chan)
 	if (mchan->is_opened)
 		return 0;
 
-	/* If no channel has been opened, open the IPI mailbox */
+	 
 	nchan_type = (mchan->chan_type + 1) % 2;
 	if (!ipi_mbox->mchans[nchan_type].is_opened) {
 		arg0 = SMC_IPI_MAILBOX_OPEN;
 		zynqmp_ipi_fw_call(ipi_mbox, arg0, 0, &res);
-		/* Check the SMC call status, a0 of the result */
+		 
 		ret = (int)(res.a0 & 0xFFFFFFFF);
 		if (ret < 0) {
 			dev_err(dev, "SMC to open the IPI channel failed.\n");
@@ -338,7 +261,7 @@ static int zynqmp_ipi_startup(struct mbox_chan *chan)
 		ret = 0;
 	}
 
-	/* If it is RX channel, enable the IPI notification interrupt */
+	 
 	if (mchan->chan_type == IPI_MB_CHNL_RX) {
 		arg0 = SMC_IPI_MAILBOX_ENABLE_IRQ;
 		zynqmp_ipi_fw_call(ipi_mbox, arg0, 0, &res);
@@ -348,11 +271,7 @@ static int zynqmp_ipi_startup(struct mbox_chan *chan)
 	return ret;
 }
 
-/**
- * zynqmp_ipi_shutdown - Shutdown the IPI channel
- *
- * @chan: Channel pointer
- */
+ 
 static void zynqmp_ipi_shutdown(struct mbox_chan *chan)
 {
 	struct device *dev = chan->mbox->dev;
@@ -365,13 +284,13 @@ static void zynqmp_ipi_shutdown(struct mbox_chan *chan)
 	if (!mchan->is_opened)
 		return;
 
-	/* If it is RX channel, disable notification interrupt */
+	 
 	chan_type = mchan->chan_type;
 	if (chan_type == IPI_MB_CHNL_RX) {
 		arg0 = SMC_IPI_MAILBOX_DISABLE_IRQ;
 		zynqmp_ipi_fw_call(ipi_mbox, arg0, 0, &res);
 	}
-	/* Release IPI mailbox if no other channel is opened */
+	 
 	chan_type = (chan_type + 1) % 2;
 	if (!ipi_mbox->mchans[chan_type].is_opened) {
 		arg0 = SMC_IPI_MAILBOX_RELEASE;
@@ -381,7 +300,7 @@ static void zynqmp_ipi_shutdown(struct mbox_chan *chan)
 	mchan->is_opened = 0;
 }
 
-/* ZynqMP IPI mailbox operations */
+ 
 static const struct mbox_chan_ops zynqmp_ipi_chan_ops = {
 	.startup = zynqmp_ipi_startup,
 	.shutdown = zynqmp_ipi_shutdown,
@@ -390,14 +309,7 @@ static const struct mbox_chan_ops zynqmp_ipi_chan_ops = {
 	.send_data = zynqmp_ipi_send_data,
 };
 
-/**
- * zynqmp_ipi_of_xlate - Translate of phandle to IPI mailbox channel
- *
- * @mbox: mailbox controller pointer
- * @p:    phandle pointer
- *
- * Return: Mailbox channel, else return error pointer.
- */
+ 
 static struct mbox_chan *zynqmp_ipi_of_xlate(struct mbox_controller *mbox,
 					     const struct of_phandle_args *p)
 {
@@ -405,7 +317,7 @@ static struct mbox_chan *zynqmp_ipi_of_xlate(struct mbox_controller *mbox,
 	struct device *dev = mbox->dev;
 	unsigned int chan_type;
 
-	/* Only supports TX and RX channels */
+	 
 	chan_type = p->args[0];
 	if (chan_type != IPI_MB_CHNL_TX && chan_type != IPI_MB_CHNL_RX) {
 		dev_err(dev, "req chnl failure: invalid chnl type %u.\n",
@@ -422,15 +334,7 @@ static const struct of_device_id zynqmp_ipi_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, zynqmp_ipi_of_match);
 
-/**
- * zynqmp_ipi_mbox_get_buf_res - Get buffer resource from the IPI dev node
- *
- * @node: IPI mbox device child node
- * @name: name of the IPI buffer
- * @res: pointer to where the resource information will be stored.
- *
- * Return: 0 for success, negative value for failure
- */
+ 
 static int zynqmp_ipi_mbox_get_buf_res(struct device_node *node,
 				       const char *name,
 				       struct resource *res)
@@ -447,27 +351,13 @@ static int zynqmp_ipi_mbox_get_buf_res(struct device_node *node,
 	return -ENODEV;
 }
 
-/**
- * zynqmp_ipi_mbox_dev_release() - release the existence of a ipi mbox dev
- *
- * @dev: the ipi mailbox device
- *
- * This is to avoid the no device release() function kernel warning.
- *
- */
+ 
 static void zynqmp_ipi_mbox_dev_release(struct device *dev)
 {
 	(void)dev;
 }
 
-/**
- * zynqmp_ipi_mbox_probe - probe IPI mailbox resource from device node
- *
- * @ipi_mbox: pointer to IPI mailbox private data structure
- * @node: IPI mailbox device node
- *
- * Return: 0 for success, negative value for failure
- */
+ 
 static int zynqmp_ipi_mbox_probe(struct zynqmp_ipi_mbox *ipi_mbox,
 				 struct device_node *node)
 {
@@ -480,7 +370,7 @@ static int zynqmp_ipi_mbox_probe(struct zynqmp_ipi_mbox *ipi_mbox,
 	int ret;
 
 	dev = ipi_mbox->pdata->dev;
-	/* Initialize dev for IPI mailbox */
+	 
 	ipi_mbox->dev.parent = dev;
 	ipi_mbox->dev.release = NULL;
 	ipi_mbox->dev.of_node = node;
@@ -570,7 +460,7 @@ static int zynqmp_ipi_mbox_probe(struct zynqmp_ipi_mbox *ipi_mbox,
 	if (!mchan->rx_buf)
 		return -ENOMEM;
 
-	/* Get the IPI remote agent ID */
+	 
 	ret = of_property_read_u32(node, "xlnx,ipi-id", &ipi_mbox->remote_id);
 	if (ret < 0) {
 		dev_err(dev, "No IPI remote ID is specified.\n");
@@ -603,11 +493,7 @@ static int zynqmp_ipi_mbox_probe(struct zynqmp_ipi_mbox *ipi_mbox,
 	return ret;
 }
 
-/**
- * zynqmp_ipi_free_mboxes - Free IPI mailboxes devices
- *
- * @pdata: IPI private data
- */
+ 
 static void zynqmp_ipi_free_mboxes(struct zynqmp_ipi_pdata *pdata)
 {
 	struct zynqmp_ipi_mbox *ipi_mbox;
@@ -644,7 +530,7 @@ static int zynqmp_ipi_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	pdata->dev = dev;
 
-	/* Get the IPI local agents ID */
+	 
 	ret = of_property_read_u32(np, "xlnx,ipi-id", &pdata->local_id);
 	if (ret < 0) {
 		dev_err(dev, "No IPI local ID is specified.\n");
@@ -666,7 +552,7 @@ static int zynqmp_ipi_probe(struct platform_device *pdev)
 		mbox++;
 	}
 
-	/* IPI IRQ */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		goto free_mbox_dev;

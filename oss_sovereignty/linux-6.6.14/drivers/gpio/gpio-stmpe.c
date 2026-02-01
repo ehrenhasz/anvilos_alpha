@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -15,16 +11,13 @@
 #include <linux/seq_file.h>
 #include <linux/bitops.h>
 
-/*
- * These registers are modified under the irq bus lock and cached to avoid
- * unnecessary writes in bus_sync_unlock.
- */
+ 
 enum { REG_RE, REG_FE, REG_IE };
 
 enum { LSB, CSB, MSB };
 
 #define CACHE_NR_REGS	3
-/* No variant has more than 24 GPIOs */
+ 
 #define CACHE_NR_BANKS	(24 / 8)
 
 struct stmpe_gpio {
@@ -33,7 +26,7 @@ struct stmpe_gpio {
 	struct device *dev;
 	struct mutex irq_lock;
 	u32 norequest_mask;
-	/* Caches of interrupt control registers for bus_lock */
+	 
 	u8 regs[CACHE_NR_REGS][CACHE_NR_BANKS];
 	u8 oldregs[CACHE_NR_REGS][CACHE_NR_BANKS];
 };
@@ -61,10 +54,7 @@ static void stmpe_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 	u8 reg = stmpe->regs[which + (offset / 8)];
 	u8 mask = BIT(offset % 8);
 
-	/*
-	 * Some variants have single register for gpio set/clear functionality.
-	 * For them we need to write 0 to clear and 1 to set.
-	 */
+	 
 	if (stmpe->regs[STMPE_IDX_GPSR_LSB] == stmpe->regs[STMPE_IDX_GPCR_LSB])
 		stmpe_set_bits(stmpe, reg, mask, val ? mask : 0);
 	else
@@ -148,7 +138,7 @@ static int stmpe_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 	if (type & IRQ_TYPE_LEVEL_LOW || type & IRQ_TYPE_LEVEL_HIGH)
 		return -EINVAL;
 
-	/* STMPE801 and STMPE 1600 don't have RE and FE registers */
+	 
 	if (stmpe_gpio->stmpe->partnum == STMPE801 ||
 	    stmpe_gpio->stmpe->partnum == STMPE1600)
 		return 0;
@@ -193,18 +183,14 @@ static void stmpe_gpio_irq_sync_unlock(struct irq_data *d)
 	};
 	int i, j;
 
-	/*
-	 * STMPE1600: to be able to get IRQ from pins,
-	 * a read must be done on GPMR register, or a write in
-	 * GPSR or GPCR registers
-	 */
+	 
 	if (stmpe->partnum == STMPE1600) {
 		stmpe_reg_read(stmpe, stmpe->regs[STMPE_IDX_GPMR_LSB]);
 		stmpe_reg_read(stmpe, stmpe->regs[STMPE_IDX_GPMR_CSB]);
 	}
 
 	for (i = 0; i < CACHE_NR_REGS; i++) {
-		/* STMPE801 and STMPE1600 don't have RE and FE registers */
+		 
 		if ((stmpe->partnum == STMPE801 ||
 		     stmpe->partnum == STMPE1600) &&
 		     (i != REG_IE))
@@ -382,14 +368,7 @@ static irqreturn_t stmpe_gpio_irq(int irq, void *dev)
 	int ret;
 	int i;
 
-	/*
-	 * the stmpe_block_read() call below, imposes to set statmsbreg
-	 * with the register located at the lowest address. As STMPE1600
-	 * variant is the only one which respect registers address's order
-	 * (LSB regs located at lowest address than MSB ones) whereas all
-	 * the others have a registers layout with MSB located before the
-	 * LSB regs.
-	 */
+	 
 	if (stmpe->partnum == STMPE1600)
 		statmsbreg = stmpe->regs[STMPE_IDX_ISGPIOR_LSB];
 	else
@@ -419,11 +398,7 @@ static irqreturn_t stmpe_gpio_irq(int irq, void *dev)
 			stat &= ~BIT(bit);
 		}
 
-		/*
-		 * interrupt status register write has no effect on
-		 * 801/1801/1600, bits are cleared when read.
-		 * Edge detect register is not present on 801/1600/1801
-		 */
+		 
 		if (stmpe->partnum != STMPE801 && stmpe->partnum != STMPE1600 &&
 		    stmpe->partnum != STMPE1801) {
 			stmpe_reg_write(stmpe, statmsbreg + i, status[i]);
@@ -446,7 +421,7 @@ static void stmpe_init_irq_valid_mask(struct gpio_chip *gc,
 	if (!stmpe_gpio->norequest_mask)
 		return;
 
-	/* Forbid unused lines to be mapped as IRQs */
+	 
 	for (i = 0; i < sizeof(u32); i++) {
 		if (stmpe_gpio->norequest_mask & BIT(i))
 			clear_bit(i, valid_mask);
@@ -516,7 +491,7 @@ static int stmpe_gpio_probe(struct platform_device *pdev)
 
 		girq = &stmpe_gpio->chip.irq;
 		gpio_irq_chip_set_chip(girq, &stmpe_gpio_irq_chip);
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->parent_handler = NULL;
 		girq->num_parents = 0;
 		girq->parents = NULL;

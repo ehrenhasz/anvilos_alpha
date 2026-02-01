@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) STMicroelectronics 2019
-// Author(s): Fabrice Gasnier <fabrice.gasnier@st.com>.
+
+
+
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -10,11 +10,11 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/of_regulator.h>
 
-/* STM32H7 SYSCFG register */
+ 
 #define STM32H7_SYSCFG_PMCR		0x04
 #define STM32H7_SYSCFG_BOOSTE_MASK	BIT(8)
 
-/* STM32MP1 SYSCFG has set and clear registers */
+ 
 #define STM32MP1_SYSCFG_PMCSETR		0x04
 #define STM32MP1_SYSCFG_PMCCLRR		0x44
 #define STM32MP1_SYSCFG_EN_BOOSTER_MASK	BIT(8)
@@ -31,7 +31,7 @@ static const struct regulator_desc stm32h7_booster_desc = {
 	.n_voltages = 1,
 	.type = REGULATOR_VOLTAGE,
 	.fixed_uV = 3300000,
-	.ramp_delay = 66000, /* up to 50us to stabilize */
+	.ramp_delay = 66000,  
 	.ops = &stm32h7_booster_ops,
 	.enable_reg = STM32H7_SYSCFG_PMCR,
 	.enable_mask = STM32H7_SYSCFG_BOOSTE_MASK,

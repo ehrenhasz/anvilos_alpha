@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_IFE_H
 #define __NET_IFE_H
 
@@ -49,4 +49,4 @@ static inline void *ife_tlv_meta_next(void *skbdata)
 
 #endif
 
-#endif /* __NET_IFE_H */
+#endif  

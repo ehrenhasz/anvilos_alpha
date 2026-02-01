@@ -1,75 +1,45 @@
-/* expand-common - common functionality for expand/unexpand
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "fadvise.h"
-#include "quote.h"
-
-#include "expand-common.h"
-
-/* If true, convert blanks even after nonblank characters have been
-   read on the line.  */
+ 
 bool convert_entire_line = false;
 
-/* If nonzero, the size of all tab stops.  If zero, use 'tab_list' instead.  */
+ 
 static uintmax_t tab_size = 0;
 
-/* If nonzero, the size of all tab stops after the last specified.  */
+ 
 static uintmax_t extend_size = 0;
 
-/* If nonzero, an increment for additional tab stops after the last specified.*/
+ 
 static uintmax_t increment_size = 0;
 
-/* The maximum distance between tab stops.  */
+ 
 size_t max_column_width;
 
-/* Array of the explicit column numbers of the tab stops;
-   after 'tab_list' is exhausted, each additional tab is replaced
-   by a space.  The first column is column 0.  */
+ 
 static uintmax_t *tab_list = nullptr;
 
-/* The number of allocated entries in 'tab_list'.  */
+ 
 static size_t n_tabs_allocated = 0;
 
-/* The index of the first invalid element of 'tab_list',
-   where the next element can be added.  */
+ 
 static size_t first_free_tab = 0;
 
-/* Null-terminated array of input filenames.  */
+ 
 static char **file_list = nullptr;
 
-/* Default for 'file_list' if no files are given on the command line.  */
+ 
 static char *stdin_argv[] =
 {
   (char *) "-", nullptr
 };
 
-/* True if we have ever read standard input.  */
+ 
 static bool have_read_stdin = false;
 
-/* The desired exit status.  */
+ 
 int exit_status = EXIT_SUCCESS;
 
 
 
-/* Add tab stop TABVAL to the end of 'tab_list'.  */
+ 
 extern void
 add_tab_stop (uintmax_t tabval)
 {
@@ -122,8 +92,7 @@ set_increment_size (uintmax_t tabval)
   return ok;
 }
 
-/* Add the comma or blank separated list of tab stops STOPS
-   to the list of tab stops.  */
+ 
 extern void
 parse_tab_stops (char const *stops)
 {
@@ -192,7 +161,7 @@ parse_tab_stops (char const *stops)
               num_start = stops;
             }
 
-          /* Detect overflow.  */
+           
           if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0', uintmax_t))
             {
               size_t len = strspn (num_start, "0123456789");
@@ -226,8 +195,7 @@ parse_tab_stops (char const *stops)
     exit (EXIT_FAILURE);
 }
 
-/* Check that the list of tab stops TABS, with ENTRIES entries,
-   contains only nonzero, ascending values.  */
+ 
 
 static void
 validate_tab_stops (uintmax_t const *tabs, size_t entries)
@@ -247,14 +215,7 @@ validate_tab_stops (uintmax_t const *tabs, size_t entries)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
-/* Called after all command-line options have been parsed,
-   and add_tab_stop/parse_tab_stops have been called.
-   Will validate the tab-stop values,
-   and set the final values to:
-   tab-stops = 8 (if no tab-stops given on command line)
-   tab-stops = N (if value N specified as the only value).
-   tab-stops = distinct values given on command line (if multiple values given).
-*/
+ 
 extern void
 finalize_tab_stops (void)
 {
@@ -277,12 +238,11 @@ get_next_tab_column (const uintmax_t column, size_t *tab_index,
 {
   *last_tab = false;
 
-  /* single tab-size - return multiples of it */
+   
   if (tab_size)
     return column + (tab_size - column % tab_size);
 
-  /* multiple tab-sizes - iterate them until the tab position is beyond
-     the current input column. */
+   
   for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
     {
         uintmax_t tab = tab_list[*tab_index];
@@ -290,11 +250,11 @@ get_next_tab_column (const uintmax_t column, size_t *tab_index,
             return tab;
     }
 
-  /* relative last tab - return multiples of it */
+   
   if (extend_size)
     return column + (extend_size - column % extend_size);
 
-  /* incremental last tab - add increment_size to the previous tab stop */
+   
   if (increment_size)
     {
       uintmax_t end_tab = tab_list[first_free_tab - 1];
@@ -309,7 +269,7 @@ get_next_tab_column (const uintmax_t column, size_t *tab_index,
 
 
 
-/* Sets new file-list */
+ 
 extern void
 set_file_list (char **list)
 {
@@ -321,10 +281,7 @@ set_file_list (char **list)
     file_list = list;
 }
 
-/* Close the old stream pointer FP if it is non-null,
-   and return a new one opened to read the next input file.
-   Open a filename of '-' as the standard input.
-   Return nullptr if there are no more input files.  */
+ 
 
 extern FILE *
 next_file (FILE *fp)
@@ -338,7 +295,7 @@ next_file (FILE *fp)
       if (!ferror (fp))
         err = 0;
       if (STREQ (prev_file, "-"))
-        clearerr (fp);		/* Also clear EOF.  */
+        clearerr (fp);		 
       else if (fclose (fp) != 0)
         err = errno;
       if (err)
@@ -369,7 +326,7 @@ next_file (FILE *fp)
   return nullptr;
 }
 
-/* */
+ 
 extern void
 cleanup_file_list_stdin (void)
 {
@@ -381,7 +338,7 @@ cleanup_file_list_stdin (void)
 extern void
 emit_tab_list_info (void)
 {
-  /* suppress syntax check for emit_mandatory_arg_note() */
+   
   fputs (_("\
   -t, --tabs=LIST  use comma separated list of tab positions.\n\
 "), stdout);

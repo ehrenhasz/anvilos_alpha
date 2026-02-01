@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
@@ -9,9 +9,7 @@ struct {
 	__uint(max_entries, 4);
 } dm_ports SEC(".maps");
 
-/* valid program on DEVMAP entry via SEC name;
- * has access to egress and ingress ifindex
- */
+ 
 SEC("xdp/devmap")
 int xdp_dummy_dm(struct xdp_md *ctx)
 {

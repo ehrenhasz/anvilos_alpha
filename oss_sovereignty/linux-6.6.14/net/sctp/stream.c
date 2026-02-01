@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright IBM Corp. 2001, 2004
- * Copyright (c) 1999-2000 Cisco, Inc.
- * Copyright (c) 1999-2001 Motorola, Inc.
- * Copyright (c) 2001 Intel Corp.
- *
- * This file is part of the SCTP kernel implementation
- *
- * This file contains sctp stream maniuplation primitives and helpers.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Xin Long <lucien.xin@gmail.com>
- */
+
+ 
 
 #include <linux/list.h>
 #include <net/sctp/sctp.h>
@@ -38,11 +22,9 @@ static void sctp_stream_shrink_out(struct sctp_stream *stream, __u16 outcnt)
 			continue;
 
 		sctp_sched_dequeue_common(outq, ch);
-		/* No need to call dequeue_done here because
-		 * the chunks are not scheduled by now.
-		 */
+		 
 
-		/* Mark as failed send. */
+		 
 		sctp_chunk_fail(ch, (__force __u32)SCTP_ERROR_INV_STRM);
 		if (asoc->peer.prsctp_capable &&
 		    SCTP_PR_PRIO_ENABLED(ch->sinfo.sinfo_flags))
@@ -65,10 +47,7 @@ static void sctp_stream_free_ext(struct sctp_stream *stream, __u16 sid)
 	SCTP_SO(stream, sid)->ext = NULL;
 }
 
-/* Migrates chunks from stream queues to new stream queues if needed,
- * but not across associations. Also, removes those chunks to streams
- * higher than the new max.
- */
+ 
 static void sctp_stream_outq_migrate(struct sctp_stream *stream,
 				     struct sctp_stream *new, __u16 outcnt)
 {
@@ -78,10 +57,7 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
 		sctp_stream_shrink_out(stream, outcnt);
 
 	if (new) {
-		/* Here we actually move the old ext stuff into the new
-		 * buffer, because we want to keep it. Then
-		 * sctp_stream_update will swap ->out pointers.
-		 */
+		 
 		for (i = 0; i < outcnt; i++) {
 			sctp_stream_free_ext(new, i);
 			SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
@@ -135,13 +111,11 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
 
 	gfp |= __GFP_NOWARN;
 
-	/* Initial stream->out size may be very big, so free it and alloc
-	 * a new one with new outcnt to save memory if needed.
-	 */
+	 
 	if (outcnt == stream->outcnt)
 		goto handle_in;
 
-	/* Filter out chunks queued on streams that won't exist anymore */
+	 
 	sched->unsched_all(stream);
 	sctp_stream_outq_migrate(stream, NULL, outcnt);
 	sched->sched_all(stream);
@@ -398,7 +372,7 @@ int sctp_send_reset_assoc(struct sctp_association *asoc)
 	if (!chunk)
 		return -ENOMEM;
 
-	/* Block further xmit of data until this request is completed */
+	 
 	for (i = 0; i < stream->outcnt; i++)
 		SCTP_SO(stream, i)->state = SCTP_STREAM_CLOSED;
 
@@ -492,10 +466,7 @@ static struct sctp_paramhdr *sctp_chunk_lookup_strreset_param(
 
 	hdr = (struct sctp_reconf_chunk *)chunk->chunk_hdr;
 	sctp_walk_params(param, hdr) {
-		/* sctp_strreset_tsnreq is actually the basic structure
-		 * of all stream reconf params, so it's safe to use it
-		 * to access request_seq.
-		 */
+		 
 		struct sctp_strreset_tsnreq *req = param.v;
 
 		if ((!resp_seq || req->request_seq == resp_seq) &&
@@ -544,10 +515,7 @@ struct sctp_chunk *sctp_process_strreset_outreq(
 	}
 	asoc->strreset_inseq++;
 
-	/* Check strreset_enable after inseq inc, as sender cannot tell
-	 * the peer doesn't enable strreset after receiving response with
-	 * result denied, as well as to keep consistent with bsd.
-	 */
+	 
 	if (!(asoc->strreset_enable & SCTP_ENABLE_RESET_STREAM_REQ))
 		goto out;
 
@@ -564,7 +532,7 @@ struct sctp_chunk *sctp_process_strreset_outreq(
 		if (!sctp_chunk_lookup_strreset_param(
 				asoc, outreq->response_seq,
 				SCTP_PARAM_RESET_IN_REQUEST)) {
-			/* same process with outstanding isn't 0 */
+			 
 			result = SCTP_STRRESET_ERR_IN_PROGRESS;
 			goto out;
 		}
@@ -722,41 +690,24 @@ struct sctp_chunk *sctp_process_strreset_tsnreq(
 		goto out;
 	}
 
-	/* G4: The same processing as though a FWD-TSN chunk (as defined in
-	 *     [RFC3758]) with all streams affected and a new cumulative TSN
-	 *     ACK of the Receiver's Next TSN minus 1 were received MUST be
-	 *     performed.
-	 */
+	 
 	max_tsn_seen = sctp_tsnmap_get_max_tsn_seen(&asoc->peer.tsn_map);
 	asoc->stream.si->report_ftsn(&asoc->ulpq, max_tsn_seen);
 
-	/* G1: Compute an appropriate value for the Receiver's Next TSN -- the
-	 *     TSN that the peer should use to send the next DATA chunk.  The
-	 *     value SHOULD be the smallest TSN not acknowledged by the
-	 *     receiver of the request plus 2^31.
-	 */
+	 
 	init_tsn = sctp_tsnmap_get_ctsn(&asoc->peer.tsn_map) + (1 << 31);
 	sctp_tsnmap_init(&asoc->peer.tsn_map, SCTP_TSN_MAP_INITIAL,
 			 init_tsn, GFP_ATOMIC);
 
-	/* G3: The same processing as though a SACK chunk with no gap report
-	 *     and a cumulative TSN ACK of the Sender's Next TSN minus 1 were
-	 *     received MUST be performed.
-	 */
+	 
 	sctp_outq_free(&asoc->outqueue);
 
-	/* G2: Compute an appropriate value for the local endpoint's next TSN,
-	 *     i.e., the next TSN assigned by the receiver of the SSN/TSN reset
-	 *     chunk.  The value SHOULD be the highest TSN sent by the receiver
-	 *     of the request plus 1.
-	 */
+	 
 	next_tsn = asoc->next_tsn;
 	asoc->ctsn_ack_point = next_tsn - 1;
 	asoc->adv_peer_ack_point = asoc->ctsn_ack_point;
 
-	/* G5:  The next expected and outgoing SSNs MUST be reset to 0 for all
-	 *      incoming and outgoing streams.
-	 */
+	 
 	for (i = 0; i < stream->outcnt; i++) {
 		SCTP_SO(stream, i)->mid = 0;
 		SCTP_SO(stream, i)->mid_uo = 0;
@@ -813,7 +764,7 @@ struct sctp_chunk *sctp_process_strreset_addstrm_out(
 	if (asoc->strreset_chunk) {
 		if (!sctp_chunk_lookup_strreset_param(
 			asoc, 0, SCTP_PARAM_RESET_ADD_IN_STREAMS)) {
-			/* same process with outstanding isn't 0 */
+			 
 			result = SCTP_STRRESET_ERR_IN_PROGRESS;
 			goto out;
 		}
@@ -929,7 +880,7 @@ struct sctp_chunk *sctp_process_strreset_resp(
 
 	result = ntohl(resp->result);
 	if (result != SCTP_STRRESET_PERFORMED) {
-		/* if in progress, do nothing but retransmit */
+		 
 		if (result == SCTP_STRRESET_IN_PROGRESS)
 			return NULL;
 		else if (result == SCTP_STRRESET_DENIED)
@@ -975,7 +926,7 @@ struct sctp_chunk *sctp_process_strreset_resp(
 		struct sctp_strreset_inreq *inreq;
 		__be16 *str_p;
 
-		/* if the result is performed, it's impossible for inreq */
+		 
 		if (result == SCTP_STRRESET_PERFORMED)
 			return NULL;
 
@@ -992,7 +943,7 @@ struct sctp_chunk *sctp_process_strreset_resp(
 		struct sctp_strreset_resptsn *resptsn;
 		__u32 stsn, rtsn;
 
-		/* check for resptsn, as sctp_verify_reconf didn't do it*/
+		 
 		if (ntohs(param.p->length) != sizeof(*resptsn))
 			return NULL;
 
@@ -1011,10 +962,7 @@ struct sctp_chunk *sctp_process_strreset_resp(
 					 SCTP_TSN_MAP_INITIAL,
 					 stsn, GFP_ATOMIC);
 
-			/* Clean up sacked and abandoned queues only. As the
-			 * out_chunk_list may not be empty, splice it to temp,
-			 * then get it back after sctp_outq_free is done.
-			 */
+			 
 			list_splice_init(&asoc->outqueue.out_chunk_list, &temp);
 			sctp_outq_free(&asoc->outqueue);
 			list_splice_init(&temp, &asoc->outqueue.out_chunk_list);
@@ -1057,9 +1005,7 @@ struct sctp_chunk *sctp_process_strreset_resp(
 	} else if (req->type == SCTP_PARAM_RESET_ADD_IN_STREAMS) {
 		struct sctp_strreset_addstrm *addstrm;
 
-		/* if the result is performed, it's impossible for addstrm in
-		 * request.
-		 */
+		 
 		if (result == SCTP_STRRESET_PERFORMED)
 			return NULL;
 
@@ -1073,7 +1019,7 @@ struct sctp_chunk *sctp_process_strreset_resp(
 	asoc->strreset_outstanding--;
 	asoc->strreset_outseq++;
 
-	/* remove everything for this reconf request */
+	 
 	if (!asoc->strreset_outstanding) {
 		t = asoc->strreset_chunk->transport;
 		if (del_timer(&t->reconf_timer))

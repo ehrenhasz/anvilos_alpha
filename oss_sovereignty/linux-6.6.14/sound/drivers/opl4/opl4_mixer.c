@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OPL4 mixer functions
- * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include "opl4_local.h"
 #include <sound/control.h>

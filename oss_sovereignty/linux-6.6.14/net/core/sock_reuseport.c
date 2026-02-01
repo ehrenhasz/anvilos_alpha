@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * To speed up listener socket lookup, create an array to store all sockets
- * listening on the same port.  This allows a decision to be made after finding
- * the first socket.  An optional BPF program can also be configured for
- * selecting the socket index from the array of available sockets.
- */
+
+ 
 
 #include <net/ip.h>
 #include <net/sock_reuseport.h>
@@ -39,13 +34,13 @@ EXPORT_SYMBOL(reuseport_has_conns_set);
 
 static void __reuseport_get_incoming_cpu(struct sock_reuseport *reuse)
 {
-	/* Paired with READ_ONCE() in reuseport_select_sock_by_hash(). */
+	 
 	WRITE_ONCE(reuse->incoming_cpu, reuse->incoming_cpu + 1);
 }
 
 static void __reuseport_put_incoming_cpu(struct sock_reuseport *reuse)
 {
-	/* Paired with READ_ONCE() in reuseport_select_sock_by_hash(). */
+	 
 	WRITE_ONCE(reuse->incoming_cpu, reuse->incoming_cpu - 1);
 }
 
@@ -67,28 +62,21 @@ void reuseport_update_incoming_cpu(struct sock *sk, int val)
 	int old_sk_incoming_cpu;
 
 	if (unlikely(!rcu_access_pointer(sk->sk_reuseport_cb))) {
-		/* Paired with REAE_ONCE() in sk_incoming_cpu_update()
-		 * and compute_score().
-		 */
+		 
 		WRITE_ONCE(sk->sk_incoming_cpu, val);
 		return;
 	}
 
 	spin_lock_bh(&reuseport_lock);
 
-	/* This must be done under reuseport_lock to avoid a race with
-	 * reuseport_grow(), which accesses sk->sk_incoming_cpu without
-	 * lock_sock() when detaching a shutdown()ed sk.
-	 *
-	 * Paired with READ_ONCE() in reuseport_select_sock_by_hash().
-	 */
+	 
 	old_sk_incoming_cpu = sk->sk_incoming_cpu;
 	WRITE_ONCE(sk->sk_incoming_cpu, val);
 
 	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
 					  lockdep_is_held(&reuseport_lock));
 
-	/* reuseport_grow() has detached a closed sk. */
+	 
 	if (!reuse)
 		goto out;
 
@@ -125,7 +113,7 @@ static void __reuseport_add_sock(struct sock *sk,
 				 struct sock_reuseport *reuse)
 {
 	reuse->socks[reuse->num_socks] = sk;
-	/* paired with smp_rmb() in reuseport_(select|migrate)_sock() */
+	 
 	smp_wmb();
 	reuse->num_socks++;
 	reuseport_get_incoming_cpu(sk, reuse);
@@ -150,7 +138,7 @@ static void __reuseport_add_closed_sock(struct sock *sk,
 					struct sock_reuseport *reuse)
 {
 	reuse->socks[reuse->max_socks - reuse->num_closed_socks - 1] = sk;
-	/* paired with READ_ONCE() in inet_csk_bind_conflict() */
+	 
 	WRITE_ONCE(reuse->num_closed_socks, reuse->num_closed_socks + 1);
 	reuseport_get_incoming_cpu(sk, reuse);
 }
@@ -164,7 +152,7 @@ static bool __reuseport_detach_closed_sock(struct sock *sk,
 		return false;
 
 	reuse->socks[i] = reuse->socks[reuse->max_socks - reuse->num_closed_socks];
-	/* paired with READ_ONCE() in inet_csk_bind_conflict() */
+	 
 	WRITE_ONCE(reuse->num_closed_socks, reuse->num_closed_socks - 1);
 	reuseport_put_incoming_cpu(sk, reuse);
 
@@ -191,27 +179,20 @@ int reuseport_alloc(struct sock *sk, bool bind_inany)
 	struct sock_reuseport *reuse;
 	int id, ret = 0;
 
-	/* bh lock used since this function call may precede hlist lock in
-	 * soft irq of receive path or setsockopt from process context
-	 */
+	 
 	spin_lock_bh(&reuseport_lock);
 
-	/* Allocation attempts can occur concurrently via the setsockopt path
-	 * and the bind/hash path.  Nothing to do when we lose the race.
-	 */
+	 
 	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
 					  lockdep_is_held(&reuseport_lock));
 	if (reuse) {
 		if (reuse->num_closed_socks) {
-			/* sk was shutdown()ed before */
+			 
 			ret = reuseport_resurrect(sk, reuse, NULL, bind_inany);
 			goto out;
 		}
 
-		/* Only set reuse->bind_inany if the bind_inany is true.
-		 * Otherwise, it will overwrite the reuse->bind_inany
-		 * which was set by the bind/hash path.
-		 */
+		 
 		if (bind_inany)
 			reuse->bind_inany = bind_inany;
 		goto out;
@@ -252,10 +233,7 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
 	more_socks_size = reuse->max_socks * 2U;
 	if (more_socks_size > U16_MAX) {
 		if (reuse->num_closed_socks) {
-			/* Make room by removing a closed sk.
-			 * The child has already been migrated.
-			 * Only reqsk left at this point.
-			 */
+			 
 			struct sock *sk;
 
 			sk = reuse->socks[reuse->max_socks - reuse->num_closed_socks];
@@ -292,10 +270,7 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
 		rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
 				   more_reuse);
 
-	/* Note: we use kfree_rcu here instead of reuseport_free_rcu so
-	 * that reuse and more_reuse can temporarily share a reference
-	 * to prog.
-	 */
+	 
 	kfree_rcu(reuse, rcu);
 	return more_reuse;
 }
@@ -310,14 +285,7 @@ static void reuseport_free_rcu(struct rcu_head *head)
 	kfree(reuse);
 }
 
-/**
- *  reuseport_add_sock - Add a socket to the reuseport group of another.
- *  @sk:  New socket to add to the group.
- *  @sk2: Socket belonging to the existing reuseport group.
- *  @bind_inany: Whether or not the group is bound to a local INANY address.
- *
- *  May return ENOMEM and not add socket to group under memory pressure.
- */
+ 
 int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
 {
 	struct sock_reuseport *old_reuse, *reuse;
@@ -335,7 +303,7 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
 	old_reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
 					      lockdep_is_held(&reuseport_lock));
 	if (old_reuse && old_reuse->num_closed_socks) {
-		/* sk was shutdown()ed before */
+		 
 		int err = reuseport_resurrect(sk, old_reuse, reuse, reuse->bind_inany);
 
 		spin_unlock_bh(&reuseport_lock);
@@ -370,21 +338,14 @@ static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse
 			       struct sock_reuseport *reuse, bool bind_inany)
 {
 	if (old_reuse == reuse) {
-		/* If sk was in the same reuseport group, just pop sk out of
-		 * the closed section and push sk into the listening section.
-		 */
+		 
 		__reuseport_detach_closed_sock(sk, old_reuse);
 		__reuseport_add_sock(sk, old_reuse);
 		return 0;
 	}
 
 	if (!reuse) {
-		/* In bind()/listen() path, we cannot carry over the eBPF prog
-		 * for the shutdown()ed socket. In setsockopt() path, we should
-		 * not change the eBPF prog of listening sockets by attaching a
-		 * prog to the shutdown()ed socket. Thus, we will allocate a new
-		 * reuseport group and detach sk from the old group.
-		 */
+		 
 		int id;
 
 		reuse = __reuseport_alloc(INIT_SOCKS);
@@ -400,14 +361,7 @@ static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse
 		reuse->reuseport_id = id;
 		reuse->bind_inany = bind_inany;
 	} else {
-		/* Move sk from the old group to the new one if
-		 * - all the other listeners in the old group were close()d or
-		 *   shutdown()ed, and then sk2 has listen()ed on the same port
-		 * OR
-		 * - sk listen()ed without bind() (or with autobind), was
-		 *   shutdown()ed, and then listen()s on another port which
-		 *   sk2 listen()s on.
-		 */
+		 
 		if (reuse->num_socks + reuse->num_closed_socks == reuse->max_socks) {
 			reuse = reuseport_grow(reuse);
 			if (!reuse)
@@ -433,18 +387,11 @@ void reuseport_detach_sock(struct sock *sk)
 	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
 					  lockdep_is_held(&reuseport_lock));
 
-	/* reuseport_grow() has detached a closed sk */
+	 
 	if (!reuse)
 		goto out;
 
-	/* Notify the bpf side. The sk may be added to a sockarray
-	 * map. If so, sockarray logic will remove it from the map.
-	 *
-	 * Other bpf map types that work with reuseport, like sockmap,
-	 * don't need an explicit callback from here. They override sk
-	 * unhash/close ops to remove the sk from the map before we
-	 * get to this point.
-	 */
+	 
 	bpf_sk_reuseport_detach(sk);
 
 	rcu_assign_pointer(sk->sk_reuseport_cb, NULL);
@@ -475,9 +422,7 @@ void reuseport_stop_listen_sock(struct sock *sk)
 
 		if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_migrate_req) ||
 		    (prog && prog->expected_attach_type == BPF_SK_REUSEPORT_SELECT_OR_MIGRATE)) {
-			/* Migration capable, move sk from the listening section
-			 * to the closed section.
-			 */
+			 
 			bpf_sk_reuseport_detach(sk);
 
 			__reuseport_detach_sock(sk, reuse);
@@ -490,7 +435,7 @@ void reuseport_stop_listen_sock(struct sock *sk)
 		spin_unlock_bh(&reuseport_lock);
 	}
 
-	/* Not capable to do migration, detach immediately */
+	 
 	reuseport_detach_sock(sk);
 }
 EXPORT_SYMBOL(reuseport_stop_listen_sock);
@@ -509,7 +454,7 @@ static struct sock *run_bpf_filter(struct sock_reuseport *reuse, u16 socks,
 		skb = nskb;
 	}
 
-	/* temporarily advance data past protocol header */
+	 
 	if (!pskb_pull(skb, hdr_len)) {
 		kfree_skb(nskb);
 		return NULL;
@@ -536,11 +481,11 @@ static struct sock *reuseport_select_sock_by_hash(struct sock_reuseport *reuse,
 		struct sock *sk = reuse->socks[i];
 
 		if (sk->sk_state != TCP_ESTABLISHED) {
-			/* Paired with WRITE_ONCE() in __reuseport_(get|put)_incoming_cpu(). */
+			 
 			if (!READ_ONCE(reuse->incoming_cpu))
 				return sk;
 
-			/* Paired with WRITE_ONCE() in reuseport_update_incoming_cpu(). */
+			 
 			if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
 				return sk;
 
@@ -556,16 +501,7 @@ static struct sock *reuseport_select_sock_by_hash(struct sock_reuseport *reuse,
 	return first_valid_sk;
 }
 
-/**
- *  reuseport_select_sock - Select a socket from an SO_REUSEPORT group.
- *  @sk: First socket in the group.
- *  @hash: When no BPF filter is available, use this hash to select.
- *  @skb: skb to run through BPF filter.
- *  @hdr_len: BPF filter expects skb data pointer at payload data.  If
- *    the skb does not yet point at the payload, this parameter represents
- *    how far the pointer needs to advance to reach the payload.
- *  Returns a socket that should receive the packet (or NULL on error).
- */
+ 
 struct sock *reuseport_select_sock(struct sock *sk,
 				   u32 hash,
 				   struct sk_buff *skb,
@@ -579,14 +515,14 @@ struct sock *reuseport_select_sock(struct sock *sk,
 	rcu_read_lock();
 	reuse = rcu_dereference(sk->sk_reuseport_cb);
 
-	/* if memory allocation failed or add call is not yet complete */
+	 
 	if (!reuse)
 		goto out;
 
 	prog = rcu_dereference(reuse->prog);
 	socks = READ_ONCE(reuse->num_socks);
 	if (likely(socks)) {
-		/* paired with smp_wmb() in __reuseport_add_sock() */
+		 
 		smp_rmb();
 
 		if (!prog || !skb)
@@ -598,7 +534,7 @@ struct sock *reuseport_select_sock(struct sock *sk,
 			sk2 = run_bpf_filter(reuse, socks, prog, skb, hdr_len);
 
 select_by_hash:
-		/* no bpf or invalid bpf result: fall back to hash usage */
+		 
 		if (!sk2)
 			sk2 = reuseport_select_sock_by_hash(reuse, hash, socks);
 	}
@@ -609,15 +545,7 @@ out:
 }
 EXPORT_SYMBOL(reuseport_select_sock);
 
-/**
- *  reuseport_migrate_sock - Select a socket from an SO_REUSEPORT group.
- *  @sk: close()ed or shutdown()ed socket in the group.
- *  @migrating_sk: ESTABLISHED/SYN_RECV full socket in the accept queue or
- *    NEW_SYN_RECV request socket during 3WHS.
- *  @skb: skb to run through BPF filter.
- *  Returns a socket (with sk_refcnt +1) that should accept the child socket
- *  (or NULL on error).
- */
+ 
 struct sock *reuseport_migrate_sock(struct sock *sk,
 				    struct sock *migrating_sk,
 				    struct sk_buff *skb)
@@ -639,7 +567,7 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
 	if (unlikely(!socks))
 		goto failure;
 
-	/* paired with smp_wmb() in __reuseport_add_sock() */
+	 
 	smp_rmb();
 
 	hash = migrating_sk->sk_hash;
@@ -696,7 +624,7 @@ int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog)
 		if (err)
 			return err;
 	} else if (!rcu_access_pointer(sk->sk_reuseport_cb)) {
-		/* The socket wasn't bound with SO_REUSEPORT */
+		 
 		return -EINVAL;
 	}
 
@@ -723,9 +651,7 @@ int reuseport_detach_prog(struct sock *sk)
 	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
 					  lockdep_is_held(&reuseport_lock));
 
-	/* reuse must be checked after acquiring the reuseport_lock
-	 * because reuseport_grow() can detach a closed sk.
-	 */
+	 
 	if (!reuse) {
 		spin_unlock_bh(&reuseport_lock);
 		return sk->sk_reuseport ? -ENOENT : -EINVAL;

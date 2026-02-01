@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #define _GNU_SOURCE
 #include <netinet/in.h>
@@ -220,11 +220,7 @@ static void check_sk_pkt_out_cnt(int accept_fd, int cli_fd)
 		err = bpf_map_lookup_elem(sk_pkt_out_cnt10_fd, &accept_fd,
 					  &pkt_out_cnt10);
 
-	/* The bpf prog only counts for fullsock and
-	 * passive connection did not become fullsock until 3WHS
-	 * had been finished, so the bpf prog only counted two data
-	 * packet out.
-	 */
+	 
 	CHECK(err || pkt_out_cnt.cnt < 0xeB9F + 2 ||
 	      pkt_out_cnt10.cnt < 0xeB9F + 20,
 	      "bpf_map_lookup_elem(sk_pkt_out_cnt, &accept_fd)",
@@ -237,12 +233,7 @@ static void check_sk_pkt_out_cnt(int accept_fd, int cli_fd)
 	if (!err)
 		err = bpf_map_lookup_elem(sk_pkt_out_cnt10_fd, &cli_fd,
 					  &pkt_out_cnt10);
-	/* Active connection is fullsock from the beginning.
-	 * 1 SYN and 1 ACK during 3WHS
-	 * 2 Acks on data packet.
-	 *
-	 * The bpf_prog initialized it to 0xeB9F.
-	 */
+	 
 	CHECK(err || pkt_out_cnt.cnt < 0xeB9F + 4 ||
 	      pkt_out_cnt10.cnt < 0xeB9F + 40,
 	      "bpf_map_lookup_elem(sk_pkt_out_cnt, &cli_fd)",
@@ -277,9 +268,9 @@ static void test(void)
 	socklen_t addrlen = sizeof(struct sockaddr_in6);
 	char buf[DATA_LEN];
 
-	/* Prepare listen_fd */
+	 
 	listen_fd = start_server(AF_INET6, SOCK_STREAM, "::1", 0xcafe, 0);
-	/* start_server() has logged the error details */
+	 
 	if (CHECK_FAIL(listen_fd == -1))
 		goto done;
 
@@ -308,9 +299,7 @@ static void test(void)
 		goto done;
 
 	for (i = 0; i < 2; i++) {
-		/* Send some data from accept_fd to cli_fd.
-		 * MSG_EOR to stop kernel from coalescing two pkts.
-		 */
+		 
 		err = send(accept_fd, DATA, DATA_LEN, MSG_EOR);
 		if (CHECK(err != DATA_LEN, "send(accept_fd)",
 			  "err:%d errno:%d\n", err, errno))
@@ -349,11 +338,11 @@ void serial_test_sock_fields(void)
 	int parent_cg_fd = -1, child_cg_fd = -1;
 	struct bpf_link *link;
 
-	/* Use a dedicated netns to have a fixed listen port */
+	 
 	if (!create_netns())
 		return;
 
-	/* Create a cgroup, get fd, and join it */
+	 
 	parent_cg_fd = test__join_cgroup(PARENT_CGROUP);
 	if (CHECK_FAIL(parent_cg_fd < 0))
 		return;

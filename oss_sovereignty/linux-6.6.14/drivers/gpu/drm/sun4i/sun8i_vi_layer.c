@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) Jernej Skrabec <jernej.skrabec@siol.net>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -125,7 +123,7 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 	hphase = state->src.x1 & 0xffff;
 	vphase = state->src.y1 & 0xffff;
 
-	/* make coordinates dividable by subsampling factor */
+	 
 	if (format->hsub > 1) {
 		int mask, remainder;
 
@@ -147,7 +145,7 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 	insize = SUN8I_MIXER_SIZE(src_w, src_h);
 	outsize = SUN8I_MIXER_SIZE(dst_w, dst_h);
 
-	/* Set height and width */
+	 
 	DRM_DEBUG_DRIVER("Layer source offset X: %d Y: %d\n",
 			 (state->src.x1 >> 16) & ~(format->hsub - 1),
 			 (state->src.y1 >> 16) & ~(format->vsub - 1));
@@ -159,10 +157,7 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 		     SUN8I_MIXER_CHAN_VI_OVL_SIZE(ch_base),
 		     insize);
 
-	/*
-	 * Scaler must be enabled for subsampled formats, so it scales
-	 * chroma to same size as luma.
-	 */
+	 
 	subsampled = format->hsub > 1 || format->vsub > 1;
 
 	if (insize != outsize || subsampled || hphase || vphase) {
@@ -176,7 +171,7 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 		mode = &plane->state->crtc->state->mode;
 		fps = (mode->clock * 1000) / (mode->vtotal * mode->htotal);
 		ability = clk_get_rate(mixer->mod_clk);
-		/* BSP algorithm assumes 80% efficiency of VI scaler unit */
+		 
 		ability *= 80;
 		do_div(ability, mode->vdisplay * fps * max(src_w, dst_w));
 
@@ -189,7 +184,7 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 			src_h = vn;
 		}
 
-		/* it seems that every RGB scaler has buffer for 2048 pixels */
+		 
 		scanline = subsampled ? mixer->cfg->scanline_yuv : 2048;
 
 		if (src_w > scanline) {
@@ -228,7 +223,7 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 		     SUN8I_MIXER_CHAN_VI_DS_N(vn) |
 		     SUN8I_MIXER_CHAN_VI_DS_M(vm));
 
-	/* Set base coordinates */
+	 
 	DRM_DEBUG_DRIVER("Layer destination coordinates X: %d Y: %d\n",
 			 state->dst.x1, state->dst.y1);
 	DRM_DEBUG_DRIVER("Layer destination size W: %d H: %d\n", dst_w, dst_h);
@@ -316,17 +311,17 @@ static int sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
 
 	ch_base = sun8i_channel_base(mixer, channel);
 
-	/* Adjust x and y to be dividable by subsampling factor */
+	 
 	src_x = (state->src.x1 >> 16) & ~(format->hsub - 1);
 	src_y = (state->src.y1 >> 16) & ~(format->vsub - 1);
 
 	for (i = 0; i < format->num_planes; i++) {
-		/* Get the physical address of the buffer in memory */
+		 
 		gem = drm_fb_dma_get_gem_obj(fb, i);
 
 		DRM_DEBUG_DRIVER("Using GEM @ %pad\n", &gem->dma_addr);
 
-		/* Compute the start of the displayed memory */
+		 
 		dma_addr = gem->dma_addr + fb->offsets[i];
 
 		dx = src_x;
@@ -337,11 +332,11 @@ static int sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
 			dy /= format->vsub;
 		}
 
-		/* Fixup framebuffer address for src coordinates */
+		 
 		dma_addr += dx * format->cpp[i];
 		dma_addr += dy * fb->pitches[i];
 
-		/* Set the line width */
+		 
 		DRM_DEBUG_DRIVER("Layer %d. line width: %d bytes\n",
 				 i + 1, fb->pitches[i]);
 		regmap_write(mixer->engine.regs,
@@ -451,11 +446,7 @@ static const struct drm_plane_funcs sun8i_vi_layer_funcs = {
 	.update_plane		= drm_atomic_helper_update_plane,
 };
 
-/*
- * While DE2 VI layer supports same RGB formats as UI layer, alpha
- * channel is ignored. This structure lists all unique variants
- * where alpha channel is replaced with "don't care" (X) channel.
- */
+ 
 static const u32 sun8i_vi_layer_formats[] = {
 	DRM_FORMAT_BGR565,
 	DRM_FORMAT_BGR888,
@@ -565,7 +556,7 @@ struct sun8i_vi_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
 	if (!mixer->cfg->ui_num && index == 0)
 		type = DRM_PLANE_TYPE_PRIMARY;
 
-	/* possible crtcs are set later */
+	 
 	ret = drm_universal_plane_init(drm, &layer->plane, 0,
 				       &sun8i_vi_layer_funcs,
 				       formats, format_count,

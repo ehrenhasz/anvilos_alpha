@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hpfs/namei.c
- *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
- *
- *  adding & removing files & directories
- */
+
+ 
 #include <linux/sched.h>
 #include "hpfs_fn.h"
 
@@ -47,7 +41,7 @@ static int hpfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	memset(&dee, 0, sizeof dee);
 	dee.directory = 1;
 	if (!(mode & 0222)) dee.read_only = 1;
-	/*dee.archive = 0;*/
+	 
 	dee.hidden = name[0] == '.';
 	dee.fnode = cpu_to_le32(fno);
 	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(local_get_seconds(dir->i_sb));
@@ -92,7 +86,7 @@ static int hpfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	de->creation_date = de->write_date = de->read_date = cpu_to_le32(local_get_seconds(dir->i_sb));
 	if (!(mode & 0222)) de->read_only = 1;
 	de->first = de->directory = 1;
-	/*de->hidden = de->system = 0;*/
+	 
 	de->fnode = cpu_to_le32(fno);
 	mark_buffer_dirty(bh);
 	brelse(bh);
@@ -396,7 +390,7 @@ static int hpfs_unlink(struct inode *dir, struct dentry *dentry)
 		hpfs_error(dir->i_sb, "there was error when removing dirent");
 		err = -EFSERROR;
 		break;
-	case 2:		/* no space for deleting */
+	case 2:		 
 		err = -ENOSPC;
 		break;
 	default:
@@ -530,9 +524,9 @@ static int hpfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	hpfs_adjust_length(old_name, &old_len);
 
 	hpfs_lock(i->i_sb);
-	/* order doesn't matter, due to VFS exclusion */
+	 
 	
-	/* Erm? Moving over the empty non-busy directory is perfectly legal */
+	 
 	if (new_inode && S_ISDIR(new_inode->i_mode)) {
 		err = -EINVAL;
 		goto end1;

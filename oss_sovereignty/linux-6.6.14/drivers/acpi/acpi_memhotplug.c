@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2004, 2013 Intel Corporation
- * Author: Naveen B S <naveen.b.s@intel.com>
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- *
- * All rights reserved.
- *
- * ACPI based HotPlug driver that supports Memory Hotplug
- * This driver fields notifications from firmware for memory add
- * and remove operations and alerts the VM of the affected memory
- * ranges.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/memory.h>
@@ -44,10 +33,10 @@ static struct acpi_scan_handler memory_device_handler = {
 
 struct acpi_memory_info {
 	struct list_head list;
-	u64 start_addr;		/* Memory Range start physical addr */
-	u64 length;		/* Memory Range length */
-	unsigned short caching;	/* memory cache attribute */
-	unsigned short write_protect;	/* memory read/write attribute */
+	u64 start_addr;		 
+	u64 length;		 
+	unsigned short caching;	 
+	unsigned short write_protect;	 
 	unsigned int enabled:1;
 };
 
@@ -71,7 +60,7 @@ acpi_memory_get_resource(struct acpi_resource *resource, void *context)
 		return AE_OK;
 
 	list_for_each_entry(info, &mem_device->res_list, list) {
-		/* Can we combine the resource range information? */
+		 
 		if ((info->caching == address64.info.mem.caching) &&
 		    (info->write_protect == address64.info.mem.write_protect) &&
 		    (info->start_addr + info->length == address64.address.minimum)) {
@@ -126,15 +115,12 @@ static int acpi_memory_check_device(struct acpi_memory_device *mem_device)
 {
 	unsigned long long current_status;
 
-	/* Get device present/absent information from the _STA */
+	 
 	if (ACPI_FAILURE(acpi_evaluate_integer(mem_device->device->handle,
 					       METHOD_NAME__STA, NULL,
 					       &current_status)))
 		return -ENODEV;
-	/*
-	 * Check for device status. Device should be
-	 * present/enabled/functioning.
-	 */
+	 
 	if (!((current_status & ACPI_STA_DEVICE_PRESENT)
 	      && (current_status & ACPI_STA_DEVICE_ENABLED)
 	      && (current_status & ACPI_STA_DEVICE_FUNCTIONING)))
@@ -181,7 +167,7 @@ static int acpi_memory_enable_device(struct acpi_memory_device *mem_device)
 	list_for_each_entry(info, &mem_device->res_list, list) {
 		if (!info->length)
 			continue;
-		/* We want a single node for the whole memory group */
+		 
 		if (node < 0)
 			node = memory_add_physaddr_to_nid(info->start_addr);
 		total_length += info->length;
@@ -197,17 +183,9 @@ static int acpi_memory_enable_device(struct acpi_memory_device *mem_device)
 		return mgid;
 	mem_device->mgid = mgid;
 
-	/*
-	 * Tell the VM there is more memory here...
-	 * Note: Assume that this function returns zero on success
-	 * We don't have memory-hot-add rollback function,now.
-	 * (i.e. memory-hot-remove function)
-	 */
+	 
 	list_for_each_entry(info, &mem_device->res_list, list) {
-		/*
-		 * If the memory block size is zero, please ignore it.
-		 * Don't try to do the following memory hotplug flowchart.
-		 */
+		 
 		if (!info->length)
 			continue;
 
@@ -215,11 +193,7 @@ static int acpi_memory_enable_device(struct acpi_memory_device *mem_device)
 		result = __add_memory(mgid, info->start_addr, info->length,
 				      mhp_flags);
 
-		/*
-		 * If the memory block has been used by the kernel, add_memory()
-		 * returns -EEXIST. If add_memory() returns the other error, it
-		 * means that this memory block is not used by the kernel.
-		 */
+		 
 		if (result && result != -EEXIST)
 			continue;
 
@@ -231,24 +205,14 @@ static int acpi_memory_enable_device(struct acpi_memory_device *mem_device)
 
 		info->enabled = 1;
 
-		/*
-		 * Add num_enable even if add_memory() returns -EEXIST, so the
-		 * device is bound to this driver.
-		 */
+		 
 		num_enabled++;
 	}
 	if (!num_enabled) {
 		dev_err(&mem_device->device->dev, "add_memory failed\n");
 		return -EINVAL;
 	}
-	/*
-	 * Sometimes the memory device will contain several memory blocks.
-	 * When one memory block is hot-added to the system memory, it will
-	 * be regarded as a success.
-	 * Otherwise if the last memory block can't be hot-added to the system
-	 * memory, it will be failure and the memory device can't be bound with
-	 * driver.
-	 */
+	 
 	return 0;
 }
 
@@ -272,7 +236,7 @@ static void acpi_memory_device_free(struct acpi_memory_device *mem_device)
 	if (!mem_device)
 		return;
 
-	/* In case we succeeded adding *some* memory, unregistering fails. */
+	 
 	if (mem_device->mgid >= 0)
 		memory_group_unregister(mem_device->mgid);
 
@@ -301,7 +265,7 @@ static int acpi_memory_device_add(struct acpi_device *device,
 	sprintf(acpi_device_class(device), "%s", ACPI_MEMORY_DEVICE_CLASS);
 	device->driver_data = mem_device;
 
-	/* Get the range from the _CRS */
+	 
 	result = acpi_memory_get_device_resources(mem_device);
 	if (result) {
 		device->driver_data = NULL;
@@ -368,4 +332,4 @@ void __init acpi_memory_hotplug_init(void)
 	acpi_scan_add_handler(&memory_device_handler);
 }
 
-#endif /* CONFIG_ACPI_HOTPLUG_MEMORY */
+#endif  

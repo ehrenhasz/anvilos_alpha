@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS server record management
- *
- * Copyright (C) 2002, 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -11,16 +7,14 @@
 #include "internal.h"
 #include "protocol_yfs.h"
 
-static unsigned afs_server_gc_delay = 10;	/* Server record timeout in seconds */
+static unsigned afs_server_gc_delay = 10;	 
 static atomic_t afs_server_debug_id;
 
 static struct afs_server *afs_maybe_use_server(struct afs_server *,
 					       enum afs_server_trace);
 static void __afs_put_server(struct afs_net *, struct afs_server *);
 
-/*
- * Find a server by one of its addresses.
- */
+ 
 struct afs_server *afs_find_server(struct afs_net *net,
 				   const struct sockaddr_rxrpc *srx)
 {
@@ -83,9 +77,7 @@ struct afs_server *afs_find_server(struct afs_net *net,
 	return server;
 }
 
-/*
- * Look up a server by its UUID and mark it active.
- */
+ 
 struct afs_server *afs_find_server_by_uuid(struct afs_net *net, const uuid_t *uuid)
 {
 	struct afs_server *server = NULL;
@@ -95,10 +87,7 @@ struct afs_server *afs_find_server_by_uuid(struct afs_net *net, const uuid_t *uu
 	_enter("%pU", uuid);
 
 	do {
-		/* Unfortunately, rbtree walking doesn't give reliable results
-		 * under just the RCU read lock, so we have to check for
-		 * changes.
-		 */
+		 
 		if (server)
 			afs_unuse_server(net, server, afs_server_trace_put_uuid_rsq);
 		server = NULL;
@@ -129,11 +118,7 @@ struct afs_server *afs_find_server_by_uuid(struct afs_net *net, const uuid_t *uu
 	return server;
 }
 
-/*
- * Install a server record in the namespace tree.  If there's a clash, we stick
- * it into a list anchored on whichever afs_server struct is actually in the
- * tree.
- */
+ 
 static struct afs_server *afs_install_server(struct afs_cell *cell,
 					     struct afs_server *candidate)
 {
@@ -147,7 +132,7 @@ static struct afs_server *afs_install_server(struct afs_cell *cell,
 
 	write_seqlock(&net->fs_lock);
 
-	/* Firstly install the server in the UUID lookup tree */
+	 
 	pp = &net->fs_servers.rb_node;
 	p = NULL;
 	while (*pp) {
@@ -163,9 +148,7 @@ static struct afs_server *afs_install_server(struct afs_cell *cell,
 			if (server->cell == cell)
 				goto exists;
 
-			/* We have the same UUID representing servers in
-			 * different cells.  Append the new server to the list.
-			 */
+			 
 			for (;;) {
 				next = rcu_dereference_protected(
 					server->uuid_next,
@@ -191,14 +174,7 @@ added_dup:
 	alist = rcu_dereference_protected(server->addresses,
 					  lockdep_is_held(&net->fs_addr_lock.lock));
 
-	/* Secondly, if the server has any IPv4 and/or IPv6 addresses, install
-	 * it in the IPv4 and/or IPv6 reverse-map lists.
-	 *
-	 * TODO: For speed we want to use something other than a flat list
-	 * here; even sorting the list in terms of lowest address would help a
-	 * bit, but anything we might want to do gets messy and memory
-	 * intensive.
-	 */
+	 
 	if (alist->nr_ipv4 > 0)
 		hlist_add_head_rcu(&server->addr4_link, &net->fs_addresses4);
 	if (alist->nr_addrs > alist->nr_ipv4)
@@ -212,9 +188,7 @@ exists:
 	return server;
 }
 
-/*
- * Allocate a new server record and mark it active.
- */
+ 
 static struct afs_server *afs_alloc_server(struct afs_cell *cell,
 					   const uuid_t *uuid,
 					   struct afs_addr_list *alist)
@@ -252,9 +226,7 @@ enomem:
 	return NULL;
 }
 
-/*
- * Look up an address record for a server
- */
+ 
 static struct afs_addr_list *afs_vl_lookup_addrs(struct afs_cell *cell,
 						 struct key *key, const uuid_t *uuid)
 {
@@ -277,9 +249,7 @@ static struct afs_addr_list *afs_vl_lookup_addrs(struct afs_cell *cell,
 	return ret < 0 ? ERR_PTR(ret) : alist;
 }
 
-/*
- * Get or create a fileserver record.
- */
+ 
 struct afs_server *afs_lookup_server(struct afs_cell *cell, struct key *key,
 				     const uuid_t *uuid, u32 addr_version)
 {
@@ -310,20 +280,14 @@ struct afs_server *afs_lookup_server(struct afs_cell *cell, struct key *key,
 		afs_put_addrlist(alist);
 		kfree(candidate);
 	} else {
-		/* Immediately dispatch an asynchronous probe to each interface
-		 * on the fileserver.  This will make sure the repeat-probing
-		 * service is started.
-		 */
+		 
 		afs_fs_probe_fileserver(cell->net, server, key, true);
 	}
 
 	return server;
 }
 
-/*
- * Set the server timer to fire after a given delay, assuming it's not already
- * set for an earlier time.
- */
+ 
 static void afs_set_server_timer(struct afs_net *net, time64_t delay)
 {
 	if (net->live) {
@@ -333,10 +297,7 @@ static void afs_set_server_timer(struct afs_net *net, time64_t delay)
 	}
 }
 
-/*
- * Server management timer.  We have an increment on fs_outstanding that we
- * need to pass along to the work item.
- */
+ 
 void afs_servers_timer(struct timer_list *timer)
 {
 	struct afs_net *net = container_of(timer, struct afs_net, fs_timer);
@@ -346,9 +307,7 @@ void afs_servers_timer(struct timer_list *timer)
 		afs_dec_servers_outstanding(net);
 }
 
-/*
- * Get a reference on a server object.
- */
+ 
 struct afs_server *afs_get_server(struct afs_server *server,
 				  enum afs_server_trace reason)
 {
@@ -361,9 +320,7 @@ struct afs_server *afs_get_server(struct afs_server *server,
 	return server;
 }
 
-/*
- * Try to get a reference on a server object.
- */
+ 
 static struct afs_server *afs_maybe_use_server(struct afs_server *server,
 					       enum afs_server_trace reason)
 {
@@ -378,9 +335,7 @@ static struct afs_server *afs_maybe_use_server(struct afs_server *server,
 	return server;
 }
 
-/*
- * Get an active count on a server object.
- */
+ 
 struct afs_server *afs_use_server(struct afs_server *server, enum afs_server_trace reason)
 {
 	unsigned int a;
@@ -393,9 +348,7 @@ struct afs_server *afs_use_server(struct afs_server *server, enum afs_server_tra
 	return server;
 }
 
-/*
- * Release a reference on a server record.
- */
+ 
 void afs_put_server(struct afs_net *net, struct afs_server *server,
 		    enum afs_server_trace reason)
 {
@@ -413,10 +366,7 @@ void afs_put_server(struct afs_net *net, struct afs_server *server,
 		__afs_put_server(net, server);
 }
 
-/*
- * Drop an active count on a server object without updating the last-unused
- * time.
- */
+ 
 void afs_unuse_server_notime(struct afs_net *net, struct afs_server *server,
 			     enum afs_server_trace reason)
 {
@@ -429,9 +379,7 @@ void afs_unuse_server_notime(struct afs_net *net, struct afs_server *server,
 	}
 }
 
-/*
- * Drop an active count on a server object.
- */
+ 
 void afs_unuse_server(struct afs_net *net, struct afs_server *server,
 		      enum afs_server_trace reason)
 {
@@ -469,9 +417,7 @@ static void afs_give_up_callbacks(struct afs_net *net, struct afs_server *server
 	afs_fs_give_up_all_callbacks(net, server, &ac, NULL);
 }
 
-/*
- * destroy a dead server
- */
+ 
 static void afs_destroy_server(struct afs_net *net, struct afs_server *server)
 {
 	if (test_bit(AFS_SERVER_FL_MAY_HAVE_CB, &server->flags))
@@ -481,9 +427,7 @@ static void afs_destroy_server(struct afs_net *net, struct afs_server *server)
 	afs_put_server(net, server, afs_server_trace_destroy);
 }
 
-/*
- * Garbage collect any expired servers.
- */
+ 
 static void afs_gc_servers(struct afs_net *net, struct afs_server *gc_list)
 {
 	struct afs_server *server, *next, *prev;
@@ -502,7 +446,7 @@ static void afs_gc_servers(struct afs_net *net, struct afs_server *gc_list)
 				server->uuid_next, lockdep_is_held(&net->fs_lock.lock));
 			prev = server->uuid_prev;
 			if (!prev) {
-				/* The one at the front is in the tree */
+				 
 				if (!next) {
 					rb_erase(&server->uuid_rb, &net->fs_servers);
 				} else {
@@ -512,7 +456,7 @@ static void afs_gc_servers(struct afs_net *net, struct afs_server *gc_list)
 					next->uuid_prev = NULL;
 				}
 			} else {
-				/* This server is not at the front */
+				 
 				rcu_assign_pointer(prev->uuid_next, next);
 				if (next)
 					next->uuid_prev = prev;
@@ -532,13 +476,7 @@ static void afs_gc_servers(struct afs_net *net, struct afs_server *gc_list)
 	}
 }
 
-/*
- * Manage the records of servers known to be within a network namespace.  This
- * includes garbage collecting unused servers.
- *
- * Note also that we were given an increment on net->servers_outstanding by
- * whoever queued us that we need to deal with before returning.
- */
+ 
 void afs_manage_servers(struct work_struct *work)
 {
 	struct afs_net *net = container_of(work, struct afs_net, fs_manager);
@@ -549,9 +487,7 @@ void afs_manage_servers(struct work_struct *work)
 
 	_enter("");
 
-	/* Trawl the server list looking for servers that have expired from
-	 * lack of use.
-	 */
+	 
 	read_seqlock_excl(&net->fs_lock);
 
 	for (cursor = rb_first(&net->fs_servers); cursor; cursor = rb_next(cursor)) {
@@ -585,10 +521,7 @@ void afs_manage_servers(struct work_struct *work)
 
 	read_sequnlock_excl(&net->fs_lock);
 
-	/* Update the timer on the way out.  We have to pass an increment on
-	 * servers_outstanding in the namespace that we are in to the timer or
-	 * the work scheduler.
-	 */
+	 
 	if (!purging && next_manage < TIME64_MAX) {
 		now = ktime_get_real_seconds();
 
@@ -613,9 +546,7 @@ static void afs_queue_server_manager(struct afs_net *net)
 		afs_dec_servers_outstanding(net);
 }
 
-/*
- * Purge list of servers.
- */
+ 
 void afs_purge_servers(struct afs_net *net)
 {
 	_enter("");
@@ -632,9 +563,7 @@ void afs_purge_servers(struct afs_net *net)
 	_leave("");
 }
 
-/*
- * Get an update for a server's address list.
- */
+ 
 static noinline bool afs_update_server_record(struct afs_operation *op,
 					      struct afs_server *server)
 {
@@ -675,9 +604,7 @@ static noinline bool afs_update_server_record(struct afs_operation *op,
 	return true;
 }
 
-/*
- * See if a server's address list needs updating.
- */
+ 
 bool afs_check_server_record(struct afs_operation *op, struct afs_server *server)
 {
 	bool success;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Emma Mobile GPIO Support - GIO
- *
- *  Copyright (C) 2012 Magnus Damm
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -134,27 +130,27 @@ static int em_gio_irq_set_type(struct irq_data *d, unsigned int type)
 
 	pr_debug("gio: sense irq = %d, mode = %d\n", offset, value);
 
-	/* 8 x 4 bit fields in 4 IDT registers */
+	 
 	reg = GIO_IDT(offset >> 3);
 	shift = (offset & 0x07) << 4;
 
 	spin_lock_irqsave(&p->sense_lock, flags);
 
-	/* disable the interrupt in IIA */
+	 
 	tmp = em_gio_read(p, GIO_IIA);
 	tmp &= ~BIT(offset);
 	em_gio_write(p, GIO_IIA, tmp);
 
-	/* change the sense setting in IDT */
+	 
 	tmp = em_gio_read(p, reg);
 	tmp &= ~(0xf << shift);
 	tmp |= value << shift;
 	em_gio_write(p, reg, tmp);
 
-	/* clear pending interrupts */
+	 
 	em_gio_write(p, GIO_IIR, BIT(offset));
 
-	/* enable the interrupt in IIA */
+	 
 	tmp = em_gio_read(p, GIO_IIA);
 	tmp |= BIT(offset);
 	em_gio_write(p, GIO_IIA, tmp);
@@ -199,14 +195,14 @@ static int em_gio_get(struct gpio_chip *chip, unsigned offset)
 static void __em_gio_set(struct gpio_chip *chip, unsigned int reg,
 			 unsigned shift, int value)
 {
-	/* upper 16 bits contains mask and lower 16 actual value */
+	 
 	em_gio_write(gpio_to_priv(chip), reg,
 		     (BIT(shift + 16)) | (value << shift));
 }
 
 static void em_gio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
-	/* output is split into two registers */
+	 
 	if (offset < 16)
 		__em_gio_set(chip, GIO_OL, offset, value);
 	else
@@ -216,7 +212,7 @@ static void em_gio_set(struct gpio_chip *chip, unsigned offset, int value)
 static int em_gio_direction_output(struct gpio_chip *chip, unsigned offset,
 				   int value)
 {
-	/* write GPIO value to output before selecting output mode of pin */
+	 
 	em_gio_set(chip, offset, value);
 	em_gio_write(gpio_to_priv(chip), GIO_E1, BIT(offset));
 	return 0;
@@ -236,9 +232,7 @@ static void em_gio_free(struct gpio_chip *chip, unsigned offset)
 {
 	pinctrl_gpio_free(chip->base + offset);
 
-	/* Set the GPIO as an input to ensure that the next GPIO request won't
-	* drive the GPIO pin as an output.
-	*/
+	 
 	em_gio_direction_input(chip, offset);
 }
 

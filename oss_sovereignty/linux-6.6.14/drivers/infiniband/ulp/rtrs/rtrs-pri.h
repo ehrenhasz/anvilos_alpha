@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+ 
+ 
 
 #ifndef RTRS_PRI_H
 #define RTRS_PRI_H
@@ -23,14 +17,7 @@
 #define RTRS_PROTO_VER_STRING __stringify(RTRS_PROTO_VER_MAJOR) "." \
 			       __stringify(RTRS_PROTO_VER_MINOR)
 
-/*
- * Max IB immediate data size is 2^28 (MAX_IMM_PAYL_BITS)
- * and the minimum chunk size is 4096 (2^12).
- * So the maximum sess_queue_depth is 65535 (2^16 - 1) in theory
- * since queue_depth in rtrs_msg_conn_rsp is defined as le16.
- * Therefore the pratical max value of sess_queue_depth is
- * somewhere between 1 and 65535 and it depends on the system.
- */
+ 
 #define MAX_SESS_QUEUE_DEPTH 65535
 
 enum rtrs_imm_const {
@@ -41,11 +28,11 @@ enum rtrs_imm_const {
 };
 
 enum rtrs_imm_type {
-	RTRS_IO_REQ_IMM       = 0, /* client to server */
-	RTRS_IO_RSP_IMM       = 1, /* server to client */
-	RTRS_IO_RSP_W_INV_IMM = 2, /* server to client */
+	RTRS_IO_REQ_IMM       = 0,  
+	RTRS_IO_RSP_IMM       = 1,  
+	RTRS_IO_RSP_W_INV_IMM = 2,  
 
-	RTRS_HB_MSG_IMM = 8, /* HB: HeartBeat */
+	RTRS_HB_MSG_IMM = 8,  
 	RTRS_HB_ACK_IMM = 9,
 
 	RTRS_LAST_IMM,
@@ -121,7 +108,7 @@ struct rtrs_path {
 	ktime_t			hb_cur_latency;
 };
 
-/* rtrs information unit */
+ 
 struct rtrs_iu {
 	struct ib_cqe           cqe;
 	dma_addr_t              dma_addr;
@@ -130,14 +117,7 @@ struct rtrs_iu {
 	enum dma_data_direction direction;
 };
 
-/**
- * enum rtrs_msg_types - RTRS message types, see also rtrs/README
- * @RTRS_MSG_INFO_REQ:		Client additional info request to the server
- * @RTRS_MSG_INFO_RSP:		Server additional info response to the client
- * @RTRS_MSG_WRITE:		Client writes data per RDMA to server
- * @RTRS_MSG_READ:		Client requests data transfer from server
- * @RTRS_MSG_RKEY_RSP:		Server refreshed rkey for rbuf
- */
+ 
 enum rtrs_msg_types {
 	RTRS_MSG_INFO_REQ,
 	RTRS_MSG_INFO_RSP,
@@ -146,48 +126,24 @@ enum rtrs_msg_types {
 	RTRS_MSG_RKEY_RSP,
 };
 
-/**
- * enum rtrs_msg_flags - RTRS message flags.
- * @RTRS_NEED_INVAL:	Send invalidation in response.
- * @RTRS_MSG_NEW_RKEY_F: Send refreshed rkey in response.
- */
+ 
 enum rtrs_msg_flags {
 	RTRS_MSG_NEED_INVAL_F = 1 << 0,
 	RTRS_MSG_NEW_RKEY_F = 1 << 1,
 };
 
-/**
- * struct rtrs_sg_desc - RDMA-Buffer entry description
- * @addr:	Address of RDMA destination buffer
- * @key:	Authorization rkey to write to the buffer
- * @len:	Size of the buffer
- */
+ 
 struct rtrs_sg_desc {
 	__le64			addr;
 	__le32			key;
 	__le32			len;
 };
 
-/**
- * struct rtrs_msg_conn_req - Client connection request to the server
- * @magic:	   RTRS magic
- * @version:	   RTRS protocol version
- * @cid:	   Current connection id
- * @cid_num:	   Number of connections per session
- * @recon_cnt:	   Reconnections counter
- * @sess_uuid:	   UUID of a session (path)
- * @paths_uuid:	   UUID of a group of sessions (paths)
- *
- * NOTE: max size 56 bytes, see man rdma_connect().
- */
+ 
 struct rtrs_msg_conn_req {
-	/* Is set to 0 by cma.c in case of AF_IB, do not touch that.
-	 * see https://www.spinics.net/lists/linux-rdma/msg22397.html
-	 */
+	 
 	u8		__cma_version;
-	/* On sender side that should be set to 0, or cma_save_ip_info()
-	 * extract garbage and will fail.
-	 */
+	 
 	u8		__ip_version;
 	__le16		magic;
 	__le16		version;
@@ -201,17 +157,7 @@ struct rtrs_msg_conn_req {
 	u8		reserved[11];
 };
 
-/**
- * struct rtrs_msg_conn_rsp - Server connection response to the client
- * @magic:	   RTRS magic
- * @version:	   RTRS protocol version
- * @errno:	   If rdma_accept() then 0, if rdma_reject() indicates error
- * @queue_depth:   max inflight messages (queue-depth) in this session
- * @max_io_size:   max io size server supports
- * @max_hdr_size:  max msg header size server supports
- *
- * NOTE: size is 56 bytes, max possible is 136 bytes, see man rdma_accept().
- */
+ 
 struct rtrs_msg_conn_rsp {
 	__le16		magic;
 	__le16		version;
@@ -223,23 +169,14 @@ struct rtrs_msg_conn_rsp {
 	u8		reserved[36];
 };
 
-/**
- * struct rtrs_msg_info_req
- * @type:		@RTRS_MSG_INFO_REQ
- * @pathname:		Path name chosen by client
- */
+ 
 struct rtrs_msg_info_req {
 	__le16		type;
 	u8		pathname[NAME_MAX];
 	u8		reserved[15];
 };
 
-/**
- * struct rtrs_msg_info_rsp
- * @type:		@RTRS_MSG_INFO_RSP
- * @sg_cnt:		Number of @desc entries
- * @desc:		RDMA buffers where the client can write to server
- */
+ 
 struct rtrs_msg_info_rsp {
 	__le16		type;
 	__le16          sg_cnt;
@@ -247,25 +184,14 @@ struct rtrs_msg_info_rsp {
 	struct rtrs_sg_desc desc[];
 };
 
-/**
- * struct rtrs_msg_rkey_rsp
- * @type:		@RTRS_MSG_RKEY_RSP
- * @buf_id:		RDMA buf_id of the new rkey
- * @rkey:		new remote key for RDMA buffers id from server
- */
+ 
 struct rtrs_msg_rkey_rsp {
 	__le16		type;
 	__le16          buf_id;
 	__le32		rkey;
 };
 
-/**
- * struct rtrs_msg_rdma_read - RDMA data transfer request from client
- * @type:		always @RTRS_MSG_READ
- * @usr_len:		length of user payload
- * @sg_cnt:		number of @desc entries
- * @desc:		RDMA buffers where the server can write the result to
- */
+ 
 struct rtrs_msg_rdma_read {
 	__le16			type;
 	__le16			usr_len;
@@ -274,25 +200,18 @@ struct rtrs_msg_rdma_read {
 	struct rtrs_sg_desc    desc[];
 };
 
-/**
- * struct_msg_rdma_write - Message transferred to server with RDMA-Write
- * @type:		always @RTRS_MSG_WRITE
- * @usr_len:		length of user payload
- */
+ 
 struct rtrs_msg_rdma_write {
 	__le16			type;
 	__le16			usr_len;
 };
 
-/**
- * struct_msg_rdma_hdr - header for read or write request
- * @type:		@RTRS_MSG_WRITE | @RTRS_MSG_READ
- */
+ 
 struct rtrs_msg_rdma_hdr {
 	__le16			type;
 };
 
-/* rtrs.c */
+ 
 
 struct rtrs_iu *rtrs_iu_alloc(u32 queue_num, size_t size, gfp_t t,
 			      struct ib_device *dev, enum dma_data_direction,
@@ -356,7 +275,7 @@ static inline u32 rtrs_to_io_rsp_imm(u32 msg_id, int errno, bool w_inval)
 	enum rtrs_imm_type type;
 	u32 payload;
 
-	/* 9 bits for errno, 19 bits for msg_id */
+	 
 	payload = (abs(errno) & 0x1ff) << 19 | (msg_id & 0x7ffff);
 	type = w_inval ? RTRS_IO_RSP_W_INV_IMM : RTRS_IO_RSP_IMM;
 
@@ -365,7 +284,7 @@ static inline u32 rtrs_to_io_rsp_imm(u32 msg_id, int errno, bool w_inval)
 
 static inline void rtrs_from_io_rsp_imm(u32 payload, u32 *msg_id, int *errno)
 {
-	/* 9 bits for errno, 19 bits for msg_id */
+	 
 	*msg_id = payload & 0x7ffff;
 	*errno = -(int)((payload >> 19) & 0x1ff);
 }
@@ -403,4 +322,4 @@ STAT_STORE_FUNC(type, stat, reset)					\
 STAT_SHOW_FUNC(type, stat, print)					\
 static struct kobj_attribute stat##_attr = __ATTR_RW(stat)
 
-#endif /* RTRS_PRI_H */
+#endif  

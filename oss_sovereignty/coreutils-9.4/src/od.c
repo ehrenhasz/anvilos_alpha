@@ -1,20 +1,4 @@
-/* od -- dump files in octal and other formats
-   Copyright (C) 1992-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering.  */
+ 
 
 #include <config.h>
 
@@ -33,19 +17,18 @@
 #include "xstrtol.h"
 #include "xstrtol-error.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "od"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-/* The default number of input bytes per output line.  */
+ 
 #define DEFAULT_BYTES_PER_BLOCK 16
 
 #if HAVE_UNSIGNED_LONG_LONG_INT
 typedef unsigned long long int unsigned_long_long_int;
 #else
-/* This is just a place-holder to avoid a few '#if' directives.
-   In this case, the type isn't actually used.  */
+ 
 typedef unsigned long int unsigned_long_long_int;
 #endif
 
@@ -57,7 +40,7 @@ enum size_spec
     INT,
     LONG,
     LONG_LONG,
-    /* FIXME: add INTMAX support, too */
+     
     FLOAT_SINGLE,
     FLOAT_DOUBLE,
     FLOAT_LONG_DOUBLE,
@@ -77,10 +60,7 @@ enum output_format
 
 #define MAX_INTEGRAL_TYPE_SIZE sizeof (unsigned_long_long_int)
 
-/* The maximum number of bytes needed for a format string, including
-   the trailing nul.  Each format string expects a variable amount of
-   padding (guaranteed to be at least 1 plus the field width), then an
-   element that will be formatted in the field.  */
+ 
 enum
   {
     FMT_BYTES_ALLOCATED =
@@ -92,36 +72,24 @@ enum
                                   sizeof PRIxMAX)))))
   };
 
-/* Ensure that our choice for FMT_BYTES_ALLOCATED is reasonable.  */
+ 
 static_assert (MAX_INTEGRAL_TYPE_SIZE * CHAR_BIT / 3 <= 99);
 
-/* Each output format specification (from '-t spec' or from
-   old-style options) is represented by one of these structures.  */
+ 
 struct tspec
   {
     enum output_format fmt;
-    enum size_spec size; /* Type of input object.  */
-    /* FIELDS is the number of fields per line, BLANK is the number of
-       fields to leave blank.  WIDTH is width of one field, excluding
-       leading space, and PAD is total pad to divide among FIELDS.
-       PAD is at least as large as FIELDS.  */
+    enum size_spec size;  
+     
     void (*print_function) (size_t fields, size_t blank, void const *data,
                             char const *fmt, int width, int pad);
-    char fmt_string[FMT_BYTES_ALLOCATED]; /* Of the style "%*d".  */
+    char fmt_string[FMT_BYTES_ALLOCATED];  
     bool hexl_mode_trailer;
-    int field_width; /* Minimum width of a field, excluding leading space.  */
-    int pad_width; /* Total padding to be divided among fields.  */
+    int field_width;  
+    int pad_width;  
   };
 
-/* Convert the number of 8-bit bytes of a binary representation to
-   the number of characters (digits + sign if the type is signed)
-   required to represent the same quantity in the specified base/type.
-   For example, a 32-bit (4-byte) quantity may require a field width
-   as wide as the following for these types:
-   11	unsigned octal
-   11	signed decimal
-   10	unsigned decimal
-   8	unsigned hexadecimal  */
+ 
 
 static char const bytes_to_oct_digits[] =
 {0, 3, 6, 8, 11, 14, 16, 19, 22, 25, 27, 30, 32, 35, 38, 41, 43};
@@ -135,19 +103,17 @@ static char const bytes_to_unsigned_dec_digits[] =
 static char const bytes_to_hex_digits[] =
 {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32};
 
-/* It'll be a while before we see integral types wider than 16 bytes,
-   but if/when it happens, this check will catch it.  Without this check,
-   a wider type would provoke a buffer overrun.  */
+ 
 static_assert (MAX_INTEGRAL_TYPE_SIZE
                < ARRAY_CARDINALITY (bytes_to_hex_digits));
 
-/* Make sure the other arrays have the same length.  */
+ 
 static_assert (sizeof bytes_to_oct_digits == sizeof bytes_to_signed_dec_digits);
 static_assert (sizeof bytes_to_oct_digits
                == sizeof bytes_to_unsigned_dec_digits);
 static_assert (sizeof bytes_to_oct_digits == sizeof bytes_to_hex_digits);
 
-/* Convert enum size_spec to the size of the named type.  */
+ 
 static const int width_bytes[] =
 {
   -1,
@@ -161,11 +127,10 @@ static const int width_bytes[] =
   sizeof (long double)
 };
 
-/* Ensure that for each member of 'enum size_spec' there is an
-   initializer in the width_bytes array.  */
+ 
 static_assert (ARRAY_CARDINALITY (width_bytes) == N_SIZE_SPECS);
 
-/* Names for some non-printing characters.  */
+ 
 static char const charname[33][4] =
 {
   "nul", "soh", "stx", "etx", "eot", "enq", "ack", "bel",
@@ -175,90 +140,77 @@ static char const charname[33][4] =
   "sp"
 };
 
-/* Address base (8, 10 or 16).  */
+ 
 static int address_base;
 
-/* The number of octal digits required to represent the largest
-   address value.  */
+ 
 #define MAX_ADDRESS_LENGTH \
   ((sizeof (uintmax_t) * CHAR_BIT + CHAR_BIT - 1) / 3)
 
-/* Width of a normal address.  */
+ 
 static int address_pad_len;
 
-/* Minimum length when detecting --strings.  */
+ 
 static size_t string_min;
 
-/* True when in --strings mode.  */
+ 
 static bool flag_dump_strings;
 
-/* True if we should recognize the older non-option arguments
-   that specified at most one file and optional arguments specifying
-   offset and pseudo-start address.  */
+ 
 static bool traditional;
 
-/* True if an old-style 'pseudo-address' was specified.  */
+ 
 static bool flag_pseudo_start;
 
-/* The difference between the old-style pseudo starting address and
-   the number of bytes to skip.  */
+ 
 static uintmax_t pseudo_offset;
 
-/* Function that accepts an address and an optional following char,
-   and prints the address and char to stdout.  */
+ 
 static void (*format_address) (uintmax_t, char);
 
-/* The number of input bytes to skip before formatting and writing.  */
+ 
 static uintmax_t n_bytes_to_skip = 0;
 
-/* When false, MAX_BYTES_TO_FORMAT and END_OFFSET are ignored, and all
-   input is formatted.  */
+ 
 static bool limit_bytes_to_format = false;
 
-/* The maximum number of bytes that will be formatted.  */
+ 
 static uintmax_t max_bytes_to_format;
 
-/* The offset of the first byte after the last byte to be formatted.  */
+ 
 static uintmax_t end_offset;
 
-/* When true and two or more consecutive blocks are equal, format
-   only the first block and output an asterisk alone on the following
-   line to indicate that identical blocks have been elided.  */
+ 
 static bool abbreviate_duplicate_blocks = true;
 
-/* An array of specs describing how to format each input block.  */
+ 
 static struct tspec *spec;
 
-/* The number of format specs.  */
+ 
 static size_t n_specs;
 
-/* The allocated length of SPEC.  */
+ 
 static size_t n_specs_allocated;
 
-/* The number of input bytes formatted per output line.  It must be
-   a multiple of the least common multiple of the sizes associated with
-   the specified output types.  It should be as large as possible, but
-   no larger than 16 -- unless specified with the -w option.  */
+ 
 static size_t bytes_per_block;
 
-/* Human-readable representation of *file_list (for error messages).
-   It differs from file_list[-1] only when file_list[-1] is "-".  */
+ 
 static char const *input_filename;
 
-/* A null-terminated list of the file-arguments from the command line.  */
+ 
 static char const *const *file_list;
 
-/* Initializer for file_list if no file-arguments
-   were specified on the command line.  */
+ 
 static char const *const default_file_list[] = {"-", nullptr};
 
-/* The input stream associated with the current file.  */
+ 
 static FILE *in_stream;
 
-/* If true, at least one of the files we read was standard input.  */
+ 
 static bool have_read_stdin;
 
-/* Map the size in bytes to a type identifier.  */
+ 
 static enum size_spec integral_type_size[MAX_INTEGRAL_TYPE_SIZE + 1];
 
 #define MAX_FP_TYPE_SIZE sizeof (long double)
@@ -268,13 +220,12 @@ static enum size_spec fp_type_size[MAX_FP_TYPE_SIZE + 1];
 # define WORDS_BIGENDIAN 0
 #endif
 
-/* Use native endianness by default.  */
+ 
 static bool input_swap;
 
 static char const short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   TRADITIONAL_OPTION = CHAR_MAX + 1,
@@ -425,7 +376,7 @@ Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
   exit (status);
 }
 
-/* Define the print functions.  */
+ 
 
 #define PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
 static void                                                             \
@@ -587,13 +538,7 @@ print_ascii (size_t fields, size_t blank, void const *block,
     }
 }
 
-/* Convert a null-terminated (possibly zero-length) string S to an
-   int value.  If S points to a non-digit set *P to S,
-   *VAL to 0, and return true.  Otherwise, accumulate the integer value of
-   the string of digits.  If the string of digits represents a value
-   larger than INT_MAX, don't modify *VAL or *P and return false.
-   Otherwise, advance *P to the first non-digit after S, set *VAL to
-   the result of the conversion and return true.  */
+ 
 
 static bool
 simple_strtoi (char const *s, char const **p, int *val)
@@ -608,24 +553,7 @@ simple_strtoi (char const *s, char const **p, int *val)
   return true;
 }
 
-/* If S points to a single valid modern od format string, put
-   a description of that format in *TSPEC, make *NEXT point at the
-   character following the just-decoded format (if *NEXT is non-null),
-   and return true.  If S is not valid, don't modify *NEXT or *TSPEC,
-   give a diagnostic, and return false.  For example, if S were
-   "d4afL" *NEXT would be set to "afL" and *TSPEC would be
-     {
-       fmt = SIGNED_DECIMAL;
-       size = INT or LONG; (whichever integral_type_size[4] resolves to)
-       print_function = print_int; (assuming size == INT)
-       field_width = 11;
-       fmt_string = "%*d";
-      }
-   pad_width is determined later, but is at least as large as the
-   number of fields printed per row.
-   S_ORIG is solely for reporting errors.  It should be the full format
-   string argument.
-   */
+ 
 
 static bool ATTRIBUTE_NONNULL ()
 decode_one_format (char const *s_orig, char const *s, char const **next,
@@ -673,9 +601,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
         default:
           if (! simple_strtoi (s, &p, &size))
             {
-              /* The integer at P in S would overflow an int.
-                 A digit string that long is sufficiently odd looking
-                 that the following diagnostic is sufficient.  */
+               
               error (0, 0, _("invalid type string %s"), quote (s_orig));
               return false;
             }
@@ -791,9 +717,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
         default:
           if (! simple_strtoi (s, &p, &size))
             {
-              /* The integer at P in S would overflow an int.
-                 A digit string that long is sufficiently odd looking
-                 that the following diagnostic is sufficient.  */
+               
               error (0, 0, _("invalid type string %s"), quote (s_orig));
               return false;
             }
@@ -881,12 +805,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
   return true;
 }
 
-/* Given a list of one or more input filenames FILE_LIST, set the global
-   file pointer IN_STREAM and the global string INPUT_FILENAME to the
-   first one that can be successfully opened. Modify FILE_LIST to
-   reference the next filename in the list.  A file name of "-" is
-   interpreted as standard input.  If any file open fails, give an error
-   message and return false.  */
+ 
 
 static bool
 open_next_file (void)
@@ -925,12 +844,7 @@ open_next_file (void)
   return ok;
 }
 
-/* Test whether there have been errors on in_stream, and close it if
-   it is not standard input.  Return false if there has been an error
-   on in_stream or stdout; return true otherwise.  This function will
-   report more than one error only if both a read and a write error
-   have occurred.  IN_ERRNO, if nonzero, is the error number
-   corresponding to the most recent action for IN_STREAM.  */
+ 
 
 static bool
 check_and_close (int in_errno)
@@ -963,9 +877,7 @@ check_and_close (int in_errno)
   return ok;
 }
 
-/* Decode the modern od format string S.  Append the decoded
-   representation to the global array SPEC, reallocating SPEC if
-   necessary.  Return true if S is valid.  */
+ 
 
 static bool ATTRIBUTE_NONNULL ()
 decode_format_string (char const *s)
@@ -990,12 +902,7 @@ decode_format_string (char const *s)
   return true;
 }
 
-/* Given a list of one or more input filenames FILE_LIST, set the global
-   file pointer IN_STREAM to position N_SKIP in the concatenation of
-   those files.  If any file operation fails or if there are fewer than
-   N_SKIP bytes in the combined input, give an error message and return
-   false.  When possible, use seek rather than read operations to
-   advance IN_STREAM.  */
+ 
 
 static bool
 skip (uintmax_t n_skip)
@@ -1006,31 +913,17 @@ skip (uintmax_t n_skip)
   if (n_skip == 0)
     return true;
 
-  while (in_stream != nullptr)	/* EOF.  */
+  while (in_stream != nullptr)	 
     {
       struct stat file_stats;
 
-      /* First try seeking.  For large offsets, this extra work is
-         worthwhile.  If the offset is below some threshold it may be
-         more efficient to move the pointer by reading.  There are two
-         issues when trying to seek:
-           - the file must be seekable.
-           - before seeking to the specified position, make sure
-             that the new position is in the current file.
-             Try to do that by getting file's size using fstat.
-             But that will work only for regular files.  */
+       
 
       if (fstat (fileno (in_stream), &file_stats) == 0)
         {
           bool usable_size = usable_st_size (&file_stats);
 
-          /* The st_size field is valid for regular files.
-             If the number of bytes left to skip is larger than
-             the size of the current file, we can decrement n_skip
-             and go on to the next file.  Skip this optimization also
-             when st_size is no greater than the block size, because
-             some kernels report nonsense small file sizes for
-             proc-like file systems.  */
+           
           if (usable_size && ST_BLKSIZE (file_stats) < file_stats.st_size)
             {
               if ((uintmax_t) file_stats.st_size < n_skip)
@@ -1049,9 +942,7 @@ skip (uintmax_t n_skip)
           else if (!usable_size && fseeko (in_stream, n_skip, SEEK_CUR) == 0)
             n_skip = 0;
 
-          /* If it's not a regular file with nonnegative size,
-             or if it's so small that it might be in a proc-like file system,
-             position the file pointer by reading.  */
+           
 
           else
             {
@@ -1083,7 +974,7 @@ skip (uintmax_t n_skip)
             break;
         }
 
-      else   /* cannot fstat() file */
+      else    
         {
           error (0, errno, "%s", quotef (input_filename));
           ok = false;
@@ -1117,8 +1008,7 @@ format_address_std (uintmax_t address, char c)
   *--p = c;
   pbound = p - address_pad_len;
 
-  /* Use a special case of the code for each base.  This is measurably
-     faster than generic code.  */
+   
   switch (address_base)
     {
     case 8:
@@ -1162,15 +1052,7 @@ format_address_label (uintmax_t address, char c)
   format_address_paren (address + pseudo_offset, c);
 }
 
-/* Write N_BYTES bytes from CURR_BLOCK to standard output once for each
-   of the N_SPEC format specs.  CURRENT_OFFSET is the byte address of
-   CURR_BLOCK in the concatenation of input files, and it is printed
-   (optionally) only before the output line associated with the first
-   format spec.  When duplicate blocks are being abbreviated, the output
-   for a sequence of identical input blocks is the output for the first
-   block followed by an asterisk alone on a line.  It is valid to compare
-   the blocks PREV_BLOCK and CURR_BLOCK only when N_BYTES == BYTES_PER_BLOCK.
-   That condition may be false only for the last input block.  */
+ 
 
 static void
 write_block (uintmax_t current_offset, size_t n_bytes,
@@ -1187,8 +1069,7 @@ write_block (uintmax_t current_offset, size_t n_bytes,
     {
       if (prev_pair_equal)
         {
-          /* The two preceding blocks were equal, and the current
-             block is the same as the last one, so print nothing.  */
+           
         }
       else
         {
@@ -1213,7 +1094,7 @@ write_block (uintmax_t current_offset, size_t n_bytes,
                                      spec[i].field_width, spec[i].pad_width);
           if (spec[i].hexl_mode_trailer)
             {
-              /* space-pad out to full line width, then dump the trailer */
+               
               int field_width = spec[i].field_width;
               int pad_width = (spec[i].pad_width * blank_fields
                                / fields_per_block);
@@ -1226,16 +1107,7 @@ write_block (uintmax_t current_offset, size_t n_bytes,
   first = false;
 }
 
-/* Read a single byte into *C from the concatenation of the input files
-   named in the global array FILE_LIST.  On the first call to this
-   function, the global variable IN_STREAM is expected to be an open
-   stream associated with the input file INPUT_FILENAME.  If IN_STREAM
-   is at end-of-file, close it and update the global variables IN_STREAM
-   and INPUT_FILENAME so they correspond to the next file in the list.
-   Then try to read a byte from the newly opened file.  Repeat if
-   necessary until EOF is reached for the last file in FILE_LIST, then
-   set *C to EOF and return.  Subsequent calls do likewise.  Return
-   true if successful.  */
+ 
 
 static bool
 read_char (int *c)
@@ -1244,7 +1116,7 @@ read_char (int *c)
 
   *c = EOF;
 
-  while (in_stream != nullptr)	/* EOF.  */
+  while (in_stream != nullptr)	 
     {
       *c = fgetc (in_stream);
 
@@ -1259,19 +1131,7 @@ read_char (int *c)
   return ok;
 }
 
-/* Read N bytes into BLOCK from the concatenation of the input files
-   named in the global array FILE_LIST.  On the first call to this
-   function, the global variable IN_STREAM is expected to be an open
-   stream associated with the input file INPUT_FILENAME.  If all N
-   bytes cannot be read from IN_STREAM, close IN_STREAM and update
-   the global variables IN_STREAM and INPUT_FILENAME.  Then try to
-   read the remaining bytes from the newly opened file.  Repeat if
-   necessary until EOF is reached for the last file in FILE_LIST.
-   On subsequent calls, don't modify BLOCK and return true.  Set
-   *N_BYTES_IN_BUFFER to the number of bytes read.  If an error occurs,
-   it will be detected through ferror when the stream is about to be
-   closed.  If there is an error, give a message but continue reading
-   as usual and return false.  Otherwise return true.  */
+ 
 
 static bool
 read_block (size_t n, char *block, size_t *n_bytes_in_buffer)
@@ -1282,7 +1142,7 @@ read_block (size_t n, char *block, size_t *n_bytes_in_buffer)
 
   *n_bytes_in_buffer = 0;
 
-  while (in_stream != nullptr)	/* EOF.  */
+  while (in_stream != nullptr)	 
     {
       size_t n_needed;
       size_t n_read;
@@ -1303,8 +1163,7 @@ read_block (size_t n, char *block, size_t *n_bytes_in_buffer)
   return ok;
 }
 
-/* Return the least common multiple of the sizes associated
-   with the format specs.  */
+ 
 
 ATTRIBUTE_PURE
 static int
@@ -1317,8 +1176,7 @@ get_lcm (void)
   return l_c_m;
 }
 
-/* If S is a valid traditional offset specification with an optional
-   leading '+' return true and set *OFFSET to the offset it denotes.  */
+ 
 
 static bool
 parse_old_offset (char const *s, uintmax_t *offset)
@@ -1328,13 +1186,11 @@ parse_old_offset (char const *s, uintmax_t *offset)
   if (*s == '\0')
     return false;
 
-  /* Skip over any leading '+'. */
+   
   if (s[0] == '+')
     ++s;
 
-  /* Determine the radix we'll use to interpret S.  If there is a '.',
-     it's decimal, otherwise, if the string begins with '0X'or '0x',
-     it's hexadecimal, else octal.  */
+   
   if (strchr (s, '.') != nullptr)
     radix = 10;
   else
@@ -1348,17 +1204,7 @@ parse_old_offset (char const *s, uintmax_t *offset)
   return xstrtoumax (s, nullptr, radix, offset, "Bb") == LONGINT_OK;
 }
 
-/* Read a chunk of size BYTES_PER_BLOCK from the input files, write the
-   formatted block to standard output, and repeat until the specified
-   maximum number of bytes has been read or until all input has been
-   processed.  If the last block read is smaller than BYTES_PER_BLOCK
-   and its size is not a multiple of the size associated with a format
-   spec, extend the input block with zero bytes until its length is a
-   multiple of all format spec sizes.  Write the final block.  Finally,
-   write on a line by itself the offset of the byte after the last byte
-   read.  Accumulate return values from calls to read_block and
-   check_and_close, and if any was false, return false.
-   Otherwise, return true.  */
+ 
 
 static bool
 dump (void)
@@ -1422,8 +1268,7 @@ dump (void)
 
       l_c_m = get_lcm ();
 
-      /* Ensure zero-byte padding up to the smallest multiple of l_c_m that
-         is at least as large as n_bytes_read.  */
+       
       bytes_to_write = l_c_m * ((n_bytes_read + l_c_m - 1) / l_c_m);
 
       memset (block[idx] + n_bytes_read, 0, bytes_to_write - n_bytes_read);
@@ -1441,11 +1286,7 @@ dump (void)
   return ok;
 }
 
-/* STRINGS mode.  Find each "string constant" in the input.
-   A string constant is a run of at least 'string_min' ASCII
-   graphic (or formatting) characters terminated by a null.
-   Based on a function written by Richard Stallman for a
-   traditional version of od.  Return true if successful.  */
+ 
 
 static bool
 dump_strings (void)
@@ -1460,7 +1301,7 @@ dump_strings (void)
       size_t i;
       int c;
 
-      /* See if the next 'string_min' chars are all printing chars.  */
+       
     tryline:
 
       if (limit_bytes_to_format
@@ -1477,13 +1318,12 @@ dump_strings (void)
               return ok;
             }
           if (! isprint (c))
-            /* Found a non-printing.  Try again starting with next char.  */
+             
             goto tryline;
           buf[i] = c;
         }
 
-      /* We found a run of 'string_min' printable characters.
-         Now see if it is terminated with a null byte.  */
+       
       while (!limit_bytes_to_format || address < end_offset)
         {
           if (i == bufsize)
@@ -1498,14 +1338,13 @@ dump_strings (void)
               return ok;
             }
           if (c == '\0')
-            break;		/* It is; print this string.  */
+            break;		 
           if (! isprint (c))
-            goto tryline;	/* It isn't; give up on this string.  */
-          buf[i++] = c;		/* String continues; store it all.  */
+            goto tryline;	 
+          buf[i++] = c;		 
         }
 
-      /* If we get here, the string is all printable and null-terminated,
-         so print it.  It is all in 'buf' and 'i' is its length.  */
+       
       buf[i] = 0;
       format_address (address - i - 1, ' ');
 
@@ -1548,8 +1387,7 @@ dump_strings (void)
       putchar ('\n');
     }
 
-  /* We reach this point only if we search through
-     (max_bytes_to_format - string_min) bytes before reaching EOF.  */
+   
 
   free (buf);
 
@@ -1570,8 +1408,7 @@ main (int argc, char **argv)
   size_t width_per_block = 0;
   static char const multipliers[] = "bEGKkMmPQRTYZ0";
 
-  /* The old-style 'pseudo starting address' to be printed in parentheses
-     after any true address.  */
+   
   uintmax_t pseudo_start IF_LINT ( = 0);
 
   initialize_main (&argc, &argv);
@@ -1590,8 +1427,7 @@ main (int argc, char **argv)
   integral_type_size[sizeof (int)] = INT;
   integral_type_size[sizeof (long int)] = LONG;
 #if HAVE_UNSIGNED_LONG_LONG_INT
-  /* If 'long int' and 'long long int' have the same size, it's fine
-     to overwrite the entry for 'long' with this one.  */
+   
   integral_type_size[sizeof (unsigned_long_long_int)] = LONG_LONG;
 #endif
 
@@ -1599,9 +1435,7 @@ main (int argc, char **argv)
     fp_type_size[i] = NO_SIZE;
 
   fp_type_size[sizeof (float)] = FLOAT_SINGLE;
-  /* The array entry for 'double' is filled in after that for 'long double'
-     so that if they are the same size, we avoid any overhead of
-     long double computation in libc.  */
+   
   fp_type_size[sizeof (long double)] = FLOAT_LONG_DOUBLE;
   fp_type_size[sizeof (double)] = FLOAT_DOUBLE;
 
@@ -1685,8 +1519,7 @@ main (int argc, char **argv)
               if (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
 
-              /* The minimum string length may be no larger than SIZE_MAX,
-                 since we may allocate a buffer of this size.  */
+               
               if (SIZE_MAX < tmp)
                 error (EXIT_FAILURE, 0, _("%s is too large"), quote (optarg));
 
@@ -1721,12 +1554,7 @@ main (int argc, char **argv)
             }
           break;
 
-          /* The next several cases map the traditional format
-             specification options to the corresponding modern format
-             specs.  GNU od accepts any combination of old- and
-             new-style options.  Format specification options accumulate.
-             The obsolescent and undocumented formats are compatible
-             with FreeBSD 4.10 od.  */
+           
 
 #define CASE_OLD_ARG(old_char,new_string)		\
         case old_char:					\
@@ -1736,21 +1564,21 @@ main (int argc, char **argv)
           CASE_OLD_ARG ('a', "a");
           CASE_OLD_ARG ('b', "o1");
           CASE_OLD_ARG ('c', "c");
-          CASE_OLD_ARG ('D', "u4"); /* obsolescent and undocumented */
+          CASE_OLD_ARG ('D', "u4");  
           CASE_OLD_ARG ('d', "u2");
-        case 'F': /* obsolescent and undocumented alias */
-          CASE_OLD_ARG ('e', "fD"); /* obsolescent and undocumented */
+        case 'F':  
+          CASE_OLD_ARG ('e', "fD");  
           CASE_OLD_ARG ('f', "fF");
-        case 'X': /* obsolescent and undocumented alias */
-          CASE_OLD_ARG ('H', "x4"); /* obsolescent and undocumented */
+        case 'X':  
+          CASE_OLD_ARG ('H', "x4");  
           CASE_OLD_ARG ('i', "dI");
-        case 'I': case 'L': /* obsolescent and undocumented aliases */
+        case 'I': case 'L':  
           CASE_OLD_ARG ('l', "dL");
-          CASE_OLD_ARG ('O', "o4"); /* obsolescent and undocumented */
-        case 'B': /* obsolescent and undocumented alias */
+          CASE_OLD_ARG ('O', "o4");  
+        case 'B':  
           CASE_OLD_ARG ('o', "o2");
           CASE_OLD_ARG ('s', "d2");
-        case 'h': /* obsolescent and undocumented alias */
+        case 'h':  
           CASE_OLD_ARG ('x', "x2");
 
 #undef CASE_OLD_ARG
@@ -1792,17 +1620,7 @@ main (int argc, char **argv)
 
   n_files = argc - optind;
 
-  /* If the --traditional option is used, there may be from
-     0 to 3 remaining command line arguments;  handle each case
-     separately.
-        od [file] [[+]offset[.][b] [[+]label[.][b]]]
-     The offset and label have the same syntax.
-
-     If --traditional is not given, and if no modern options are
-     given, and if the offset begins with + or (if there are two
-     operands) a digit, accept only this form, as per POSIX:
-        od [file] [[+]offset[.][b]]
-  */
+   
 
   if (!modern || traditional)
     {
@@ -1892,33 +1710,30 @@ main (int argc, char **argv)
 
   if (n_files > 0)
     {
-      /* Set the global pointer FILE_LIST so that it
-         references the first file-argument on the command-line.  */
+       
 
       file_list = (char const *const *) &argv[optind];
     }
   else
     {
-      /* No files were listed on the command line.
-         Set the global pointer FILE_LIST so that it
-         references the null-terminated list of one name: "-".  */
+       
 
       file_list = default_file_list;
     }
 
-  /* open the first input file */
+   
   ok = open_next_file ();
   if (in_stream == nullptr)
     goto cleanup;
 
-  /* skip over any unwanted header bytes */
+   
   ok &= skip (n_bytes_to_skip);
   if (in_stream == nullptr)
     goto cleanup;
 
   pseudo_offset = (flag_pseudo_start ? pseudo_start - n_bytes_to_skip : 0);
 
-  /* Compute output block length.  */
+   
   l_c_m = get_lcm ();
 
   if (width_specified)
@@ -1940,7 +1755,7 @@ main (int argc, char **argv)
         bytes_per_block = l_c_m;
     }
 
-  /* Compute padding necessary to align output block.  */
+   
   for (i = 0; i < n_specs; i++)
     {
       int fields_per_block = bytes_per_block / width_bytes[spec[i].size];

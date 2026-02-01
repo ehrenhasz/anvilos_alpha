@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SiFive FU540 Platform DMA driver
- * Copyright (C) 2019 SiFive
- *
- * Based partially on:
- * - drivers/dma/fsl-edma.c
- * - drivers/dma/dw-edma/
- * - drivers/dma/pxa-dma.c
- *
- * See the following sources for further documentation:
- * - Chapter 12 "Platform DMA Engine (PDMA)" of
- *   SiFive FU540-C000 v1.0
- *   https://static.dev.sifive.com/FU540-C000-v1.0.pdf
- */
+
+ 
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -276,7 +263,7 @@ static void sf_pdma_issue_pending(struct dma_chan *dchan)
 	spin_lock_irqsave(&chan->vchan.lock, flags);
 
 	if (!chan->desc && vchan_issue_pending(&chan->vchan)) {
-		/* vchan_issue_pending has made a check that desc in not NULL */
+		 
 		chan->desc = sf_pdma_get_first_pending_desc(chan);
 		sf_pdma_xfer_desc(chan);
 	}
@@ -324,11 +311,11 @@ static void sf_pdma_errbh_tasklet(struct tasklet_struct *t)
 
 	spin_lock_irqsave(&chan->lock, flags);
 	if (chan->retries <= 0) {
-		/* fail to recover */
+		 
 		spin_unlock_irqrestore(&chan->lock, flags);
 		dmaengine_desc_get_callback_invoke(desc->async_tx, NULL);
 	} else {
-		/* retry */
+		 
 		chan->retries--;
 		chan->xfer_err = true;
 		chan->status = DMA_ERROR;
@@ -351,7 +338,7 @@ static irqreturn_t sf_pdma_done_isr(int irq, void *dev_id)
 	if (!residue) {
 		tasklet_hi_schedule(&chan->done_tasklet);
 	} else {
-		/* submit next trascatioin if possible */
+		 
 		struct sf_pdma_desc *desc = chan->desc;
 
 		desc->src_addr += desc->xfer_size - residue;
@@ -380,21 +367,7 @@ static irqreturn_t sf_pdma_err_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * sf_pdma_irq_init() - Init PDMA IRQ Handlers
- * @pdev: pointer of platform_device
- * @pdma: pointer of PDMA engine. Caller should check NULL
- *
- * Initialize DONE and ERROR interrupt handler for 4 channels. Caller should
- * make sure the pointer passed in are non-NULL. This function should be called
- * only one time during the device probe.
- *
- * Context: Any context.
- *
- * Return:
- * * 0		- OK to init all IRQ handlers
- * * -EINVAL	- Fail to request IRQ
- */
+ 
 static int sf_pdma_irq_init(struct platform_device *pdev, struct sf_pdma *pdma)
 {
 	int irq, r, i;
@@ -433,18 +406,7 @@ static int sf_pdma_irq_init(struct platform_device *pdev, struct sf_pdma *pdma)
 	return 0;
 }
 
-/**
- * sf_pdma_setup_chans() - Init settings of each channel
- * @pdma: pointer of PDMA engine. Caller should check NULL
- *
- * Initialize all data structure and register base. Caller should make sure
- * the pointer passed in are non-NULL. This function should be called only
- * one time during the device probe.
- *
- * Context: Any context.
- *
- * Return: none
- */
+ 
 static void sf_pdma_setup_chans(struct sf_pdma *pdma)
 {
 	int i;
@@ -502,7 +464,7 @@ static int sf_pdma_probe(struct platform_device *pdev)
 
 	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels", &n_chans);
 	if (ret) {
-		/* backwards-compatibility for no dma-channels property */
+		 
 		dev_dbg(&pdev->dev, "set number of channels to default value: 4\n");
 		n_chans = PDMA_MAX_NR_CH;
 	} else if (n_chans > PDMA_MAX_NR_CH) {
@@ -529,7 +491,7 @@ static int sf_pdma_probe(struct platform_device *pdev)
 
 	pdma->dma_dev.dev = &pdev->dev;
 
-	/* Setup capability */
+	 
 	dma_cap_set(DMA_MEMCPY, pdma->dma_dev.cap_mask);
 	pdma->dma_dev.copy_align = 2;
 	pdma->dma_dev.src_addr_widths = widths;
@@ -538,7 +500,7 @@ static int sf_pdma_probe(struct platform_device *pdev)
 	pdma->dma_dev.residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
 	pdma->dma_dev.descriptor_reuse = true;
 
-	/* Setup DMA APIs */
+	 
 	pdma->dma_dev.device_alloc_chan_resources =
 		sf_pdma_alloc_chan_resources;
 	pdma->dma_dev.device_free_chan_resources =
@@ -614,7 +576,7 @@ static void __exit sf_pdma_exit(void)
 	platform_driver_unregister(&sf_pdma_driver);
 }
 
-/* do early init */
+ 
 subsys_initcall(sf_pdma_init);
 module_exit(sf_pdma_exit);
 

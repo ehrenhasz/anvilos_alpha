@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 
 #include <drm/drm_print.h>
 #include <linux/clk.h>
@@ -57,7 +53,7 @@ komeda_pipeline_get_new_state(struct komeda_pipeline *pipe,
 	return NULL;
 }
 
-/* Assign pipeline for crtc */
+ 
 static struct komeda_pipeline_state *
 komeda_pipeline_get_state_and_set_crtc(struct komeda_pipeline *pipe,
 				       struct drm_atomic_state *state,
@@ -75,7 +71,7 @@ komeda_pipeline_get_state_and_set_crtc(struct komeda_pipeline *pipe,
 		return ERR_PTR(-EBUSY);
 	}
 
-	/* pipeline only can be disabled when the it is free or unused */
+	 
 	if (!crtc && st->active_comps) {
 		DRM_DEBUG_ATOMIC("Disabling a busy pipeline:%d.\n", pipe->id);
 		return ERR_PTR(-EBUSY);
@@ -122,31 +118,7 @@ komeda_component_get_old_state(struct komeda_component *c,
 	return NULL;
 }
 
-/**
- * komeda_component_get_state_and_set_user()
- *
- * @c: component to get state and set user
- * @state: global atomic state
- * @user: direct user, the binding user
- * @crtc: the CRTC user, the big boss :)
- *
- * This function accepts two users:
- * -   The direct user: can be plane/crtc/wb_connector depends on component
- * -   The big boss (CRTC)
- * CRTC is the big boss (the final user), because all component resources
- * eventually will be assigned to CRTC, like the layer will be binding to
- * kms_plane, but kms plane will be binding to a CRTC eventually.
- *
- * The big boss (CRTC) is for pipeline assignment, since &komeda_component isn't
- * independent and can be assigned to CRTC freely, but belongs to a specific
- * pipeline, only pipeline can be shared between crtc, and pipeline as a whole
- * (include all the internal components) assigned to a specific CRTC.
- *
- * So when set a user to komeda_component, need first to check the status of
- * component->pipeline to see if the pipeline is available on this specific
- * CRTC. if the pipeline is busy (assigned to another CRTC), even the required
- * component is free, the component still cannot be assigned to the direct user.
- */
+ 
 static struct komeda_component_state *
 komeda_component_get_state_and_set_user(struct komeda_component *c,
 					struct drm_atomic_state *state,
@@ -156,7 +128,7 @@ komeda_component_get_state_and_set_user(struct komeda_component *c,
 	struct komeda_pipeline_state *pipe_st;
 	struct komeda_component_state *st;
 
-	/* First check if the pipeline is available */
+	 
 	pipe_st = komeda_pipeline_get_state_and_set_crtc(c->pipeline,
 							 state, crtc);
 	if (IS_ERR(pipe_st))
@@ -166,14 +138,14 @@ komeda_component_get_state_and_set_user(struct komeda_component *c,
 	if (IS_ERR(st))
 		return st;
 
-	/* check if the component has been occupied */
+	 
 	if (is_switching_user(user, st->binding_user)) {
 		DRM_DEBUG_ATOMIC("required %s is busy.\n", c->name);
 		return ERR_PTR(-EBUSY);
 	}
 
 	st->binding_user = user;
-	/* mark the component as active if user is valid */
+	 
 	if (st->binding_user)
 		pipe_st->active_comps |= BIT(c->id);
 
@@ -189,11 +161,7 @@ komeda_component_add_input(struct komeda_component_state *state,
 
 	WARN_ON((idx < 0 || idx >= c->max_active_inputs));
 
-	/* since the inputs[i] is only valid when it is active. So if a input[i]
-	 * is a newly enabled input which switches from disable to enable, then
-	 * the old inputs[i] is undefined (NOT zeroed), we can not rely on
-	 * memcmp, but directly mark it changed
-	 */
+	 
 	if (!has_bit(idx, state->affected_inputs) ||
 	    memcmp(&state->inputs[idx], input, sizeof(*input))) {
 		memcpy(&state->inputs[idx], input, sizeof(*input));
@@ -250,7 +218,7 @@ komeda_component_validate_private(struct komeda_component *c,
 	return err;
 }
 
-/* Get current available scaler from the component->supported_outputs */
+ 
 static struct komeda_scaler *
 komeda_component_get_avail_scaler(struct komeda_component *c,
 				  struct drm_atomic_state *state)
@@ -383,13 +351,10 @@ komeda_layer_validate(struct komeda_layer *layer,
 	if (err)
 		return err;
 
-	/* update the data flow for the next stage */
+	 
 	komeda_component_set_output(&dflow->input, &layer->base, 0);
 
-	/*
-	 * The rotation has been handled by layer, so adjusted the data flow for
-	 * the next stage.
-	 */
+	 
 	komeda_rotate_data_flow(dflow, st->rot);
 
 	return 0;
@@ -464,9 +429,7 @@ komeda_scaler_check_cfg(struct komeda_scaler *scaler,
 		return -EINVAL;
 	}
 
-	/* If input comes from compiz that means the scaling is for writeback
-	 * and scaler can not do upscaling for writeback
-	 */
+	 
 	if (has_bit(dflow->input.component->id, KOMEDA_PIPELINE_COMPIZS))
 		max_upscaling = 1;
 	else
@@ -542,7 +505,7 @@ komeda_scaler_validate(void *user,
 	st->total_hsize_in = dflow->total_in_w;
 	st->total_hsize_out = dflow->total_out_w;
 
-	/* Enable alpha processing if the next stage needs the pixel alpha */
+	 
 	st->en_alpha = dflow->pixel_blend_mode != DRM_MODE_BLEND_PIXEL_NONE;
 	st->en_scaling = dflow->en_scaling;
 	st->en_img_enhancement = dflow->en_img_enhancement;
@@ -676,7 +639,7 @@ komeda_compiz_set_input(struct komeda_compiz *compiz,
 	int idx = dflow->blending_zorder;
 
 	pipeline_composition_size(kcrtc_st, &compiz_w, &compiz_h);
-	/* check display rect */
+	 
 	if ((dflow->out_x + dflow->out_w > compiz_w) ||
 	    (dflow->out_y + dflow->out_h > compiz_h) ||
 	     dflow->out_w == 0 || dflow->out_h == 0) {
@@ -705,7 +668,7 @@ komeda_compiz_set_input(struct komeda_compiz *compiz,
 
 	old_st = komeda_component_get_old_state(&compiz->base, drm_st);
 
-	/* compare with old to check if this input has been changed */
+	 
 	if (WARN_ON(!old_st) ||
 	    memcmp(&(to_compiz_st(old_st)->cins[idx]), cin, sizeof(*cin)))
 		c_st->changed_active_inputs |= BIT(idx);
@@ -735,17 +698,13 @@ komeda_compiz_validate(struct komeda_compiz *compiz,
 
 	komeda_component_set_output(&dflow->input, &compiz->base, 0);
 
-	/* compiz output dflow will be fed to the next pipeline stage, prepare
-	 * the data flow configuration for the next stage
-	 */
+	 
 	if (dflow) {
 		dflow->in_w = st->hsize;
 		dflow->in_h = st->vsize;
 		dflow->out_w = dflow->in_w;
 		dflow->out_h = dflow->in_h;
-		/* the output data of compiz doesn't have alpha, it only can be
-		 * used as bottom layer when blend it with master layers
-		 */
+		 
 		dflow->pixel_blend_mode = DRM_MODE_BLEND_PIXEL_NONE;
 		dflow->layer_alpha = 0xFF;
 		dflow->blending_zorder = 0;
@@ -848,7 +807,7 @@ void komeda_complete_data_flow_cfg(struct komeda_layer *layer,
 	dflow->total_in_h = dflow->in_h;
 	dflow->total_out_w = dflow->out_w;
 
-	/* if format doesn't have alpha, fix blend mode to PIXEL_NONE */
+	 
 	if (!fb->format->has_alpha)
 		dflow->pixel_blend_mode = DRM_MODE_BLEND_PIXEL_NONE;
 
@@ -858,13 +817,11 @@ void komeda_complete_data_flow_cfg(struct komeda_layer *layer,
 	dflow->en_scaling = (w != dflow->out_w) || (h != dflow->out_h);
 	dflow->is_yuv = fb->format->is_yuv;
 
-	/* try to enable image enhancer if data flow is a 2x+ upscaling */
+	 
 	dflow->en_img_enhancement = dflow->out_w >= 2 * w ||
 				    dflow->out_h >= 2 * h;
 
-	/* try to enable split if scaling exceed the scaler's acceptable
-	 * input/output range.
-	 */
+	 
 	if (dflow->en_scaling && scaler)
 		dflow->en_split = !malidp_in_range(&scaler->hsize, dflow->in_w) ||
 				  !malidp_in_range(&scaler->hsize, dflow->out_w);
@@ -901,7 +858,7 @@ int komeda_build_layer_data_flow(struct komeda_layer *layer,
 	if (err)
 		return err;
 
-	/* if split, check if can put the data flow into merger */
+	 
 	if (dflow->en_split && merger_is_available(pipe, dflow))
 		return 0;
 
@@ -910,37 +867,7 @@ int komeda_build_layer_data_flow(struct komeda_layer *layer,
 	return err;
 }
 
-/*
- * Split is introduced for workaround scaler's input/output size limitation.
- * The idea is simple, if one scaler can not fit the requirement, use two.
- * So split splits the big source image to two half parts (left/right) and do
- * the scaling by two scaler separately and independently.
- * But split also imports an edge problem in the middle of the image when
- * scaling, to avoid it, split isn't a simple half-and-half, but add an extra
- * pixels (overlap) to both side, after split the left/right will be:
- * - left: [0, src_length/2 + overlap]
- * - right: [src_length/2 - overlap, src_length]
- * The extra overlap do eliminate the edge problem, but which may also generates
- * unnecessary pixels when scaling, we need to crop them before scaler output
- * the result to the next stage. and for the how to crop, it depends on the
- * unneeded pixels, another words the position where overlay has been added.
- * - left: crop the right
- * - right: crop the left
- *
- * The diagram for how to do the split
- *
- *  <---------------------left->out_w ---------------->
- * |--------------------------------|---right_crop-----| <- left after split
- *  \                                \                /
- *   \                                \<--overlap--->/
- *   |-----------------|-------------|(Middle)------|-----------------| <- src
- *                     /<---overlap--->\                               \
- *                    /                 \                               \
- * right after split->|-----left_crop---|--------------------------------|
- *                    ^<------------------- right->out_w --------------->^
- *
- * NOTE: To consistent with HW the output_w always contains the crop size.
- */
+ 
 
 static void komeda_split_data_flow(struct komeda_scaler *scaler,
 				   struct komeda_data_flow_cfg *dflow,
@@ -962,9 +889,7 @@ static void komeda_split_data_flow(struct komeda_scaler *scaler,
 	if (dflow->en_scaling && scaler)
 		overlap += scaler->scaling_split_overlap;
 
-	/* original dflow may fed into splitter, and which doesn't need
-	 * enhancement overlap
-	 */
+	 
 	dflow->overlap = overlap;
 
 	if (dflow->en_img_enhancement && scaler)
@@ -973,32 +898,24 @@ static void komeda_split_data_flow(struct komeda_scaler *scaler,
 	l_dflow->overlap = overlap;
 	r_dflow->overlap = overlap;
 
-	/* split the origin content */
-	/* left/right here always means the left/right part of display image,
-	 * not the source Image
-	 */
-	/* DRM rotation is anti-clockwise */
+	 
+	 
+	 
 	if (r90) {
 		if (dflow->en_scaling) {
 			l_dflow->in_h = ALIGN(dflow->in_h, 2) / 2 + l_dflow->overlap;
 			r_dflow->in_h = l_dflow->in_h;
 		} else if (dflow->en_img_enhancement) {
-			/* enhancer only */
+			 
 			l_dflow->in_h = ALIGN(dflow->in_h, 2) / 2 + l_dflow->overlap;
 			r_dflow->in_h = dflow->in_h / 2 + r_dflow->overlap;
 		} else {
-			/* split without scaler, no overlap */
+			 
 			l_dflow->in_h = ALIGN(((dflow->in_h + 1) >> 1), 2);
 			r_dflow->in_h = dflow->in_h - l_dflow->in_h;
 		}
 
-		/* Consider YUV format, after split, the split source w/h
-		 * may not aligned to 2. we have two choices for such case.
-		 * 1. scaler is enabled (overlap != 0), we can do a alignment
-		 *    both left/right and crop the extra data by scaler.
-		 * 2. scaler is not enabled, only align the split left
-		 *    src/disp, and the rest part assign to right
-		 */
+		 
 		if ((overlap != 0) && dflow->is_yuv) {
 			l_dflow->in_h = ALIGN(l_dflow->in_h, 2);
 			r_dflow->in_h = ALIGN(r_dflow->in_h, 2);
@@ -1020,20 +937,20 @@ static void komeda_split_data_flow(struct komeda_scaler *scaler,
 			r_dflow->in_w = dflow->in_w - l_dflow->in_w;
 		}
 
-		/* do YUV alignment when scaler enabled */
+		 
 		if ((overlap != 0) && dflow->is_yuv) {
 			l_dflow->in_w = ALIGN(l_dflow->in_w, 2);
 			r_dflow->in_w = ALIGN(r_dflow->in_w, 2);
 		}
 
-		/* on flip_h, the left display content from the right-source */
+		 
 		if (flip_h)
 			l_dflow->in_x = dflow->in_w + dflow->in_x - l_dflow->in_w;
 		else
 			r_dflow->in_x = dflow->in_w + dflow->in_x - r_dflow->in_w;
 	}
 
-	/* split the disp_rect */
+	 
 	if (dflow->en_scaling || dflow->en_img_enhancement)
 		l_dflow->out_w = ((dflow->out_w + 1) >> 1);
 	else
@@ -1044,8 +961,8 @@ static void komeda_split_data_flow(struct komeda_scaler *scaler,
 	l_dflow->out_x = dflow->out_x;
 	r_dflow->out_x = l_dflow->out_w + l_dflow->out_x;
 
-	/* calculate the scaling crop */
-	/* left scaler output more data and do crop */
+	 
+	 
 	if (r90) {
 		l_out = (dflow->out_w * l_dflow->in_h) / dflow->in_h;
 		r_out = (dflow->out_w * r_dflow->in_h) / dflow->in_h;
@@ -1059,29 +976,12 @@ static void komeda_split_data_flow(struct komeda_scaler *scaler,
 	r_dflow->left_crop  = r_out - r_dflow->out_w;
 	r_dflow->right_crop = 0;
 
-	/* out_w includes the crop length */
+	 
 	l_dflow->out_w += l_dflow->right_crop + l_dflow->left_crop;
 	r_dflow->out_w += r_dflow->right_crop + r_dflow->left_crop;
 }
 
-/* For layer split, a plane state will be split to two data flows and handled
- * by two separated komeda layer input pipelines. komeda supports two types of
- * layer split:
- * - none-scaling split:
- *             / layer-left -> \
- * plane_state                  compiz-> ...
- *             \ layer-right-> /
- *
- * - scaling split:
- *             / layer-left -> scaler->\
- * plane_state                          merger -> compiz-> ...
- *             \ layer-right-> scaler->/
- *
- * Since merger only supports scaler as input, so for none-scaling split, two
- * layer data flows will be output to compiz directly. for scaling_split, two
- * data flow will be merged by merger firstly, then merger outputs one merged
- * data flow to compiz.
- */
+ 
 int komeda_build_layer_split_data_flow(struct komeda_layer *left,
 				       struct komeda_plane_state *kplane_st,
 				       struct komeda_crtc_state *kcrtc_st,
@@ -1110,16 +1010,14 @@ int komeda_build_layer_split_data_flow(struct komeda_layer *left,
 	if (err)
 		return err;
 
-	/* The rotation has been handled by layer, so adjusted the data flow */
+	 
 	komeda_rotate_data_flow(dflow, dflow->rot);
 
-	/* left and right dflow has been merged to compiz already,
-	 * no need merger to merge them anymore.
-	 */
+	 
 	if (r_dflow.input.component == l_dflow.input.component)
 		return 0;
 
-	/* line merger path */
+	 
 	err = komeda_merger_validate(pipe->merger, plane, kcrtc_st,
 				     &l_dflow, &r_dflow, dflow);
 	if (err)
@@ -1130,7 +1028,7 @@ int komeda_build_layer_split_data_flow(struct komeda_layer *left,
 	return err;
 }
 
-/* writeback data path: compiz -> scaler -> wb_layer -> memory */
+ 
 int komeda_build_wb_data_flow(struct komeda_layer *wb_layer,
 			      struct drm_connector_state *conn_st,
 			      struct komeda_crtc_state *kcrtc_st,
@@ -1146,11 +1044,7 @@ int komeda_build_wb_data_flow(struct komeda_layer *wb_layer,
 	return komeda_wb_layer_validate(wb_layer, conn_st, dflow);
 }
 
-/* writeback scaling split data path:
- *                   /-> scaler ->\
- * compiz -> splitter              merger -> wb_layer -> memory
- *                   \-> scaler ->/
- */
+ 
 int komeda_build_wb_split_data_flow(struct komeda_layer *wb_layer,
 				    struct drm_connector_state *conn_st,
 				    struct komeda_crtc_state *kcrtc_st,
@@ -1181,16 +1075,14 @@ int komeda_build_wb_split_data_flow(struct komeda_layer *wb_layer,
 	return komeda_wb_layer_validate(wb_layer, conn_st, dflow);
 }
 
-/* build display output data flow, the data path is:
- * compiz -> improc -> timing_ctrlr
- */
+ 
 int komeda_build_display_data_flow(struct komeda_crtc *kcrtc,
 				   struct komeda_crtc_state *kcrtc_st)
 {
 	struct komeda_pipeline *master = kcrtc->master;
 	struct komeda_pipeline *slave  = kcrtc->slave;
-	struct komeda_data_flow_cfg m_dflow; /* master data flow */
-	struct komeda_data_flow_cfg s_dflow; /* slave data flow */
+	struct komeda_data_flow_cfg m_dflow;  
+	struct komeda_data_flow_cfg s_dflow;  
 	int err;
 
 	memset(&m_dflow, 0, sizeof(m_dflow));
@@ -1201,7 +1093,7 @@ int komeda_build_display_data_flow(struct komeda_crtc *kcrtc,
 		if (err)
 			return err;
 
-		/* merge the slave dflow into master pipeline */
+		 
 		err = komeda_compiz_set_input(master->compiz, kcrtc_st,
 					      &s_dflow);
 		if (err)
@@ -1238,7 +1130,7 @@ komeda_pipeline_unbound_components(struct komeda_pipeline *pipe,
 
 	disabling_comps = (~new->active_comps) & old->active_comps;
 
-	/* unbound all disabling component */
+	 
 	for_each_set_bit(id, &disabling_comps, 32) {
 		c = komeda_pipeline_get_component(pipe, id);
 		c_st = komeda_component_get_state_and_set_user(c,
@@ -1251,14 +1143,14 @@ komeda_pipeline_unbound_components(struct komeda_pipeline *pipe,
 	return 0;
 }
 
-/* release unclaimed pipeline resource */
+ 
 int komeda_release_unclaimed_resources(struct komeda_pipeline *pipe,
 				       struct komeda_crtc_state *kcrtc_st)
 {
 	struct drm_atomic_state *drm_st = kcrtc_st->base.state;
 	struct komeda_pipeline_state *st;
 
-	/* ignore the pipeline which is not affected */
+	 
 	if (!pipe || !has_bit(pipe->id, kcrtc_st->affected_pipes))
 		return 0;
 
@@ -1274,16 +1166,7 @@ int komeda_release_unclaimed_resources(struct komeda_pipeline *pipe,
 
 }
 
-/* Since standalone disabled components must be disabled separately and in the
- * last, So a complete disable operation may needs to call pipeline_disable
- * twice (two phase disabling).
- * Phase 1: disable the common components, flush it.
- * Phase 2: disable the standalone disabled components, flush it.
- *
- * RETURNS:
- * true: disable is not complete, needs a phase 2 disable.
- * false: disable is complete.
- */
+ 
 bool komeda_pipeline_disable(struct komeda_pipeline *pipe,
 			     struct drm_atomic_state *old_state)
 {
@@ -1308,22 +1191,13 @@ bool komeda_pipeline_disable(struct komeda_pipeline *pipe,
 		c = komeda_pipeline_get_component(pipe, id);
 		c_st = priv_to_comp_st(c->obj.state);
 
-		/*
-		 * If we disabled a component then all active_inputs should be
-		 * put in the list of changed_active_inputs, so they get
-		 * re-enabled.
-		 * This usually happens during a modeset when the pipeline is
-		 * first disabled and then the actual state gets committed
-		 * again.
-		 */
+		 
 		c_st->changed_active_inputs |= c_st->active_inputs;
 
 		c->funcs->disable(c);
 	}
 
-	/* Update the pipeline state, if there are components that are still
-	 * active, return true for calling the phase 2 disable.
-	 */
+	 
 	old->active_comps &= ~disabling_comps;
 
 	return old->active_comps ? true : false;

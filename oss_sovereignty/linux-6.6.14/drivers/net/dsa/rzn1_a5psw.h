@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2022 Schneider Electric
- *
- * Clément Léger <clement.leger@bootlin.com>
- */
+ 
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -123,7 +119,7 @@
 #define A5PSW_MDIO_CFG_STATUS_BUSY	BIT(0)
 
 #define A5PSW_MDIO_COMMAND		0x704
-/* Register is named TRAININIT in datasheet and should be set when reading */
+ 
 #define A5PSW_MDIO_COMMAND_READ		BIT(15)
 #define A5PSW_MDIO_COMMAND_PHY_ADDR	GENMASK(9, 5)
 #define A5PSW_MDIO_COMMAND_REG_ADDR	GENMASK(4, 0)
@@ -149,7 +145,7 @@
 
 #define A5PSW_STATS_HIWORD		0x900
 
-/* Stats */
+ 
 #define A5PSW_aFramesTransmittedOK		0x868
 #define A5PSW_aFramesReceivedOK			0x86C
 #define A5PSW_aFrameCheckSequenceErrors		0x870
@@ -158,7 +154,7 @@
 #define A5PSW_aOctetsReceivedOK			0x87C
 #define A5PSW_aTxPAUSEMACCtrlFrames		0x880
 #define A5PSW_aRxPAUSEMACCtrlFrames		0x884
-/* If */
+ 
 #define A5PSW_ifInErrors			0x888
 #define A5PSW_ifOutErrors			0x88C
 #define A5PSW_ifInUcastPkts			0x890
@@ -168,7 +164,7 @@
 #define A5PSW_ifOutUcastPkts			0x8A0
 #define A5PSW_ifOutMulticastPkts		0x8A4
 #define A5PSW_ifOutBroadcastPkts		0x8A8
-/* Ether */
+ 
 #define A5PSW_etherStatsDropEvents		0x8AC
 #define A5PSW_etherStatsOctets			0x8B0
 #define A5PSW_etherStatsPkts			0x8B4
@@ -204,7 +200,7 @@
 #define A5PSW_TAG_LEN			8
 #define A5PSW_VLAN_COUNT		32
 
-/* Ensure enough space for 2 VLAN tags */
+ 
 #define A5PSW_EXTRA_MTU_LEN		(A5PSW_TAG_LEN + 8)
 #define A5PSW_MAX_MTU			(A5PSW_JUMBO_LEN - A5PSW_EXTRA_MTU_LEN)
 
@@ -231,22 +227,7 @@ union lk_data {
 	struct fdb_entry entry;
 };
 
-/**
- * struct a5psw - switch struct
- * @base: Base address of the switch
- * @hclk: hclk_switch clock
- * @clk: clk_switch clock
- * @dev: Device associated to the switch
- * @mii_bus: MDIO bus struct
- * @mdio_freq: MDIO bus frequency requested
- * @pcs: Array of PCS connected to the switch ports (not for the CPU)
- * @ds: DSA switch struct
- * @stats_lock: lock to access statistics (shared HI counter)
- * @lk_lock: Lock for the lookup table
- * @reg_lock: Lock for register read-modify-write operation
- * @bridged_ports: Mask of ports that are bridged and should be flooded
- * @br_dev: Bridge net device
- */
+ 
 struct a5psw {
 	void __iomem *base;
 	struct clk *hclk;

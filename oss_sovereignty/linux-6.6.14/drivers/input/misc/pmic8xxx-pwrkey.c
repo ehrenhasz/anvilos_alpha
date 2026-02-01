@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -25,11 +24,11 @@
 
 #define SLEEP_CTRL_SMPL_EN_RESET		0x04
 
-/* Regulator master enable addresses */
+ 
 #define REG_PM8058_VREG_EN_MSM			0x018
 #define REG_PM8058_VREG_EN_GRP_5_4		0x1c8
 
-/* Regulator control registers for shutdown/reset */
+ 
 #define PM8058_S0_CTRL				0x004
 #define PM8058_S1_CTRL				0x005
 #define PM8058_S3_CTRL				0x111
@@ -42,14 +41,14 @@
 #define PM8058_REGULATOR_PULL_DOWN_MASK		0x40
 #define PM8058_REGULATOR_PULL_DOWN_EN		0x40
 
-/* Buck CTRL register */
+ 
 #define PM8058_SMPS_LEGACY_VREF_SEL		0x20
 #define PM8058_SMPS_LEGACY_VPROG_MASK		0x1f
 #define PM8058_SMPS_ADVANCED_BAND_MASK		0xC0
 #define PM8058_SMPS_ADVANCED_BAND_SHIFT		6
 #define PM8058_SMPS_ADVANCED_VPROG_MASK		0x3f
 
-/* Buck TEST2 registers for shutdown/reset */
+ 
 #define PM8058_S0_TEST2				0x084
 #define PM8058_S1_TEST2				0x085
 #define PM8058_S3_TEST2				0x11a
@@ -59,20 +58,15 @@
 #define PM8058_REGULATOR_BANK_SHIFT		4
 #define PM8058_REGULATOR_BANK_SEL(n)	((n) << PM8058_REGULATOR_BANK_SHIFT)
 
-/* Buck TEST2 register bank 1 */
+ 
 #define PM8058_SMPS_LEGACY_VLOW_SEL		0x01
 
-/* Buck TEST2 register bank 7 */
+ 
 #define PM8058_SMPS_ADVANCED_MODE_MASK		0x02
 #define PM8058_SMPS_ADVANCED_MODE		0x02
 #define PM8058_SMPS_LEGACY_MODE			0x00
 
-/**
- * struct pmic8xxx_pwrkey - pmic8xxx pwrkey information
- * @key_press_irq: key press irq number
- * @regmap: device regmap
- * @shutdown_fn: shutdown configuration function
- */
+ 
 struct pmic8xxx_pwrkey {
 	int key_press_irq;
 	struct regmap *regmap;
@@ -135,11 +129,7 @@ static void pmic8xxx_pwrkey_shutdown(struct platform_device *pdev)
 			return;
 	}
 
-	/*
-	 * Select action to perform (reset or shutdown) when PS_HOLD goes low.
-	 * Also ensure that KPD, CBL0, and CBL1 pull ups are enabled and that
-	 * USB charging is enabled.
-	 */
+	 
 	mask = PON_CNTL_1_PULL_UP_EN | PON_CNTL_1_USB_PWR_EN;
 	mask |= PON_CNTL_1_WD_EN_RESET;
 	val = mask;
@@ -149,12 +139,7 @@ static void pmic8xxx_pwrkey_shutdown(struct platform_device *pdev)
 	regmap_update_bits(pwrkey->regmap, PON_CNTL_1, mask, val);
 }
 
-/*
- * Set an SMPS regulator to be disabled in its CTRL register, but enabled
- * in the master enable register.  Also set it's pull down enable bit.
- * Take care to make sure that the output voltage doesn't change if switching
- * from advanced mode to legacy mode.
- */
+ 
 static int pm8058_disable_smps_locally_set_pull_down(struct regmap *regmap,
 	u16 ctrl_addr, u16 test2_addr, u16 master_enable_addr,
 	u8 master_enable_bit)
@@ -173,9 +158,9 @@ static int pm8058_disable_smps_locally_set_pull_down(struct regmap *regmap,
 		return error;
 
 	reg &= PM8058_SMPS_ADVANCED_MODE_MASK;
-	/* Check if in advanced mode. */
+	 
 	if (reg == PM8058_SMPS_ADVANCED_MODE) {
-		/* Determine current output voltage. */
+		 
 		error = regmap_read(regmap, ctrl_addr, &reg);
 		if (error)
 			return error;
@@ -200,12 +185,12 @@ static int pm8058_disable_smps_locally_set_pull_down(struct regmap *regmap,
 			return -EPERM;
 		}
 		vprog = reg & PM8058_SMPS_ADVANCED_VPROG_MASK;
-		/* Round up if fine step is in use. */
+		 
 		vprog = (vprog + 1) >> 1;
 		if (vprog > PM8058_SMPS_LEGACY_VPROG_MASK)
 			vprog = PM8058_SMPS_LEGACY_VPROG_MASK;
 
-		/* Set VLOW_SEL bit. */
+		 
 		bank = PM8058_REGULATOR_BANK_SEL(1);
 		error = regmap_write(regmap, test2_addr, bank);
 		if (error)
@@ -219,7 +204,7 @@ static int pm8058_disable_smps_locally_set_pull_down(struct regmap *regmap,
 		if (error)
 			return error;
 
-		/* Switch to legacy mode */
+		 
 		bank = PM8058_REGULATOR_BANK_SEL(7);
 		error = regmap_write(regmap, test2_addr, bank);
 		if (error)
@@ -235,7 +220,7 @@ static int pm8058_disable_smps_locally_set_pull_down(struct regmap *regmap,
 		if (error)
 			return error;
 
-		/* Enable locally, enable pull down, keep voltage the same. */
+		 
 		error = regmap_update_bits(regmap, ctrl_addr,
 			PM8058_REGULATOR_ENABLE_MASK |
 			PM8058_REGULATOR_PULL_DOWN_MASK |
@@ -247,13 +232,13 @@ static int pm8058_disable_smps_locally_set_pull_down(struct regmap *regmap,
 			return error;
 	}
 
-	/* Enable in master control register. */
+	 
 	error = regmap_update_bits(regmap, master_enable_addr,
 			master_enable_bit, master_enable_bit);
 	if (error)
 		return error;
 
-	/* Disable locally and enable pull down. */
+	 
 	return regmap_update_bits(regmap, ctrl_addr,
 		PM8058_REGULATOR_ENABLE_MASK | PM8058_REGULATOR_PULL_DOWN_MASK,
 		PM8058_REGULATOR_DISABLE | PM8058_REGULATOR_PULL_DOWN_EN);
@@ -264,13 +249,13 @@ static int pm8058_disable_ldo_locally_set_pull_down(struct regmap *regmap,
 {
 	int error;
 
-	/* Enable LDO in master control register. */
+	 
 	error = regmap_update_bits(regmap, master_enable_addr,
 			master_enable_bit, master_enable_bit);
 	if (error)
 		return error;
 
-	/* Disable LDO in CTRL register and set pull down */
+	 
 	return regmap_update_bits(regmap, ctrl_addr,
 		PM8058_REGULATOR_ENABLE_MASK | PM8058_REGULATOR_PULL_DOWN_MASK,
 		PM8058_REGULATOR_DISABLE | PM8058_REGULATOR_PULL_DOWN_EN);
@@ -282,9 +267,9 @@ static int pm8058_pwrkey_shutdown(struct pmic8xxx_pwrkey *pwrkey, bool reset)
 	struct regmap *regmap = pwrkey->regmap;
 	u8 mask, val;
 
-	/* When shutting down, enable active pulldowns on important rails. */
+	 
 	if (!reset) {
-		/* Disable SMPS's 0,1,3 locally and set pulldown enable bits. */
+		 
 		pm8058_disable_smps_locally_set_pull_down(regmap,
 			PM8058_S0_CTRL, PM8058_S0_TEST2,
 			REG_PM8058_VREG_EN_MSM, BIT(7));
@@ -294,21 +279,18 @@ static int pm8058_pwrkey_shutdown(struct pmic8xxx_pwrkey *pwrkey, bool reset)
 		pm8058_disable_smps_locally_set_pull_down(regmap,
 			PM8058_S3_CTRL, PM8058_S3_TEST2,
 			REG_PM8058_VREG_EN_GRP_5_4, BIT(7) | BIT(4));
-		/* Disable LDO 21 locally and set pulldown enable bit. */
+		 
 		pm8058_disable_ldo_locally_set_pull_down(regmap,
 			PM8058_L21_CTRL, REG_PM8058_VREG_EN_GRP_5_4,
 			BIT(1));
 	}
 
-	/*
-	 * Fix-up: Set regulator LDO22 to 1.225 V in high power mode. Leave its
-	 * pull-down state intact. This ensures a safe shutdown.
-	 */
+	 
 	error = regmap_update_bits(regmap, PM8058_L22_CTRL, 0xbf, 0x93);
 	if (error)
 		return error;
 
-	/* Enable SMPL if resetting is desired */
+	 
 	mask = SLEEP_CTRL_SMPL_EN_RESET;
 	val = 0;
 	if (reset)
@@ -322,7 +304,7 @@ static int pm8921_pwrkey_shutdown(struct pmic8xxx_pwrkey *pwrkey, bool reset)
 	u8 mask = SLEEP_CTRL_SMPL_EN_RESET;
 	u8 val = 0;
 
-	/* Enable SMPL if resetting is desired */
+	 
 	if (reset)
 		val = mask;
 	return regmap_update_bits(regmap, PM8921_SLEEP_CTRL, mask, val);
@@ -344,7 +326,7 @@ static int pmic8xxx_pwrkey_probe(struct platform_device *pdev)
 	if (of_property_read_u32(pdev->dev.of_node, "debounce", &kpd_delay))
 		kpd_delay = 15625;
 
-	/* Valid range of pwr key trigger delay is 1/64 sec to 2 seconds. */
+	 
 	if (kpd_delay > USEC_PER_SEC * 2 || kpd_delay < USEC_PER_SEC / 64) {
 		dev_err(&pdev->dev, "invalid power key trigger delay\n");
 		return -EINVAL;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* exynos_drm_fb.c
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Authors:
- *	Inki Dae <inki.dae@samsung.com>
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *	Seung-Woo Kim <sw0312.kim@samsung.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -27,19 +20,13 @@ static int check_fb_gem_memory_type(struct drm_device *drm_dev,
 {
 	unsigned int flags;
 
-	/*
-	 * if exynos drm driver supports iommu then framebuffer can use
-	 * all the buffer types.
-	 */
+	 
 	if (is_drm_iommu_supported(drm_dev))
 		return 0;
 
 	flags = exynos_gem->flags;
 
-	/*
-	 * Physically non-contiguous memory type for framebuffer is not
-	 * supported without IOMMU.
-	 */
+	 
 	if (IS_NONCONTIG_BUFFER(flags)) {
 		DRM_DEV_ERROR(drm_dev->dev,
 			      "Non-contiguous GEM memory is not supported.\n");
@@ -165,11 +152,7 @@ void exynos_drm_mode_config_init(struct drm_device *dev)
 	dev->mode_config.min_width = 0;
 	dev->mode_config.min_height = 0;
 
-	/*
-	 * set max width and height as default value(4096x4096).
-	 * this value would be used to check framebuffer size limitation
-	 * at drm_mode_addfb().
-	 */
+	 
 	dev->mode_config.max_width = 4096;
 	dev->mode_config.max_height = 4096;
 

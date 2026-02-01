@@ -1,40 +1,11 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #ifndef _T4FW_RI_API_H_
 #define _T4FW_RI_API_H_
 
 #include "t4fw_api.h"
 
 enum fw_ri_wr_opcode {
-	FW_RI_RDMA_WRITE		= 0x0,	/* IETF RDMAP v1.0 ... */
+	FW_RI_RDMA_WRITE		= 0x0,	 
 	FW_RI_READ_REQ			= 0x1,
 	FW_RI_READ_RESP			= 0x2,
 	FW_RI_SEND			= 0x3,
@@ -42,7 +13,7 @@ enum fw_ri_wr_opcode {
 	FW_RI_SEND_WITH_SE		= 0x5,
 	FW_RI_SEND_WITH_SE_INV		= 0x6,
 	FW_RI_TERMINATE			= 0x7,
-	FW_RI_RDMA_INIT			= 0x8,	/* CHELSIO RI specific ... */
+	FW_RI_RDMA_INIT			= 0x8,	 
 	FW_RI_BIND_MW			= 0x9,
 	FW_RI_FAST_REGISTER		= 0xa,
 	FW_RI_LOCAL_INV			= 0xb,
@@ -540,10 +511,7 @@ struct fw_ri_rdma_write_wr {
 	__u16  wrid;
 	__u8   r1[3];
 	__u8   len16;
-	/*
-	 * Use union for immediate data to be consistent with stack's 32 bit
-	 * data and iWARP spec's 64 bit data.
-	 */
+	 
 	union {
 		struct {
 			__be32 imm_data32;
@@ -813,4 +781,4 @@ struct fw_ri_wr {
 #define FW_RI_WR_P2PTYPE_G(x)	\
 	(((x) >> FW_RI_WR_P2PTYPE_S) & FW_RI_WR_P2PTYPE_M)
 
-#endif /* _T4FW_RI_API_H_ */
+#endif  

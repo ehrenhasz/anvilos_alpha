@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Broadcom Corporation
- * Copyright 2014 Linaro Limited
- */
+
+ 
 
 #include "clk-kona.h"
 #include "dt-bindings/clock/bcm21664.h"
@@ -10,7 +7,7 @@
 #define BCM21664_CCU_COMMON(_name, _capname) \
 	KONA_CCU_COMMON(BCM21664, _name, _capname)
 
-/* Root CCU */
+ 
 
 static struct peri_clk_data frac_1m_data = {
 	.gate		= HW_SW_GATE(0x214, 16, 0, 1),
@@ -19,7 +16,7 @@ static struct peri_clk_data frac_1m_data = {
 
 static struct ccu_data root_ccu_data = {
 	BCM21664_CCU_COMMON(root, ROOT),
-	/* no policy control */
+	 
 	.kona_clks	= {
 		[BCM21664_ROOT_CCU_FRAC_1M] =
 			KONA_CLK(root, frac_1m, peri),
@@ -27,7 +24,7 @@ static struct ccu_data root_ccu_data = {
 	},
 };
 
-/* AON CCU */
+ 
 
 static struct peri_clk_data hub_timer_data = {
 	.gate		= HW_SW_GATE(0x0414, 16, 0, 1),
@@ -52,7 +49,7 @@ static struct ccu_data aon_ccu_data = {
 	},
 };
 
-/* Master CCU */
+ 
 
 static struct peri_clk_data sdio1_data = {
 	.gate		= HW_SW_GATE(0x0358, 18, 2, 3),
@@ -103,22 +100,22 @@ static struct peri_clk_data sdio4_data = {
 };
 
 static struct peri_clk_data sdio1_sleep_data = {
-	.clocks		= CLOCKS("ref_32k"),	/* Verify */
+	.clocks		= CLOCKS("ref_32k"),	 
 	.gate		= HW_SW_GATE(0x0358, 18, 2, 3),
 };
 
 static struct peri_clk_data sdio2_sleep_data = {
-	.clocks		= CLOCKS("ref_32k"),	/* Verify */
+	.clocks		= CLOCKS("ref_32k"),	 
 	.gate		= HW_SW_GATE(0x035c, 18, 2, 3),
 };
 
 static struct peri_clk_data sdio3_sleep_data = {
-	.clocks		= CLOCKS("ref_32k"),	/* Verify */
+	.clocks		= CLOCKS("ref_32k"),	 
 	.gate		= HW_SW_GATE(0x0364, 18, 2, 3),
 };
 
 static struct peri_clk_data sdio4_sleep_data = {
-	.clocks		= CLOCKS("ref_32k"),	/* Verify */
+	.clocks		= CLOCKS("ref_32k"),	 
 	.gate		= HW_SW_GATE(0x0360, 18, 2, 3),
 };
 
@@ -149,7 +146,7 @@ static struct ccu_data master_ccu_data = {
 	},
 };
 
-/* Slave CCU */
+ 
 
 static struct peri_clk_data uartb_data = {
 	.gate		= HW_SW_GATE(0x0400, 18, 2, 3),
@@ -250,7 +247,7 @@ static struct ccu_data slave_ccu_data = {
 	},
 };
 
-/* Device tree match table callback functions */
+ 
 
 static void __init kona_dt_root_ccu_setup(struct device_node *node)
 {

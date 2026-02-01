@@ -1,22 +1,7 @@
-/*
- * Qlogic FAS408 ISA card driver
- *
- * Copyright 1994, Tom Zerucha.   
- * tz@execpc.com
- * 
- * Redistributable under terms of the GNU General Public License
- *
- * For the avoidance of doubt the "preferred form" of this code is one which
- * is in an open non patent encumbered format. Where cryptographic key signing
- * forms part of the process of creating an executable the information
- * including keys needed to generate an equivalently functional executable
- * are deemed to be part of the source code.
- *
- * Check qlogicfas408.c for more credits and info.
- */
+ 
 
 #include <linux/module.h>
-#include <linux/blkdev.h>		/* to get disk capacity */
+#include <linux/blkdev.h>		 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/init.h>
@@ -39,35 +24,23 @@
 #include <scsi/scsi_tcq.h>
 #include "qlogicfas408.h"
 
-/* Set the following to 2 to use normal interrupt (active high/totempole-
- * tristate), otherwise use 0 (REQUIRED FOR PCMCIA) for active low, open
- * drain
- */
+ 
 #define INT_TYPE	2
 
 static char qlogicfas_name[] = "qlogicfas";
 
-/*
- *	Look for qlogic card and init if found 
- */
+ 
  
 static struct Scsi_Host *__qlogicfas_detect(struct scsi_host_template *host,
 								int qbase,
 								int qlirq)
 {
-	int qltyp;		/* type of chip */
+	int qltyp;		 
 	int qinitid;
-	struct Scsi_Host *hreg;	/* registered host structure */
+	struct Scsi_Host *hreg;	 
 	struct qlogicfas408_priv *priv;
 
-	/*	Qlogic Cards only exist at 0x230 or 0x330 (the chip itself
-	 *	decodes the address - I check 230 first since MIDI cards are
-	 *	typically at 0x330
-	 *
-	 *	Theoretically, two Qlogic cards can coexist in the same system.
-	 *	This should work by simply using this as a loadable module for
-	 *	the second card, but I haven't tested this.
-	 */
+	 
 
 	if (!qbase || qlirq == -1)
 		goto err;
@@ -91,7 +64,7 @@ static struct Scsi_Host *__qlogicfas_detect(struct scsi_host_template *host,
 	qltyp = qlogicfas408_get_chip_type(qbase, INT_TYPE);
 	qinitid = host->this_id;
 	if (qinitid < 0)
-		qinitid = 7;	/* if no ID, use 7 */
+		qinitid = 7;	 
 
 	qlogicfas408_setup(qbase, qinitid, INT_TYPE);
 
@@ -155,7 +128,7 @@ static int qlogicfas_detect(struct scsi_host_template *sht)
 	for (num = 0; num < MAX_QLOGICFAS; num++) {
 		shost = __qlogicfas_detect(sht, iobase[num], irq[num]);
 		if (shost == NULL) {
-			/* no more devices */
+			 
 			break;
 		}
 		priv = get_priv_by_host(shost);
@@ -182,9 +155,7 @@ static int qlogicfas_release(struct Scsi_Host *shost)
 	return 0;
 }
 
-/*
- *	The driver template is also needed for PCMCIA
- */
+ 
 static struct scsi_host_template qlogicfas_driver_template = {
 	.module			= THIS_MODULE,
 	.name			= qlogicfas_name,
@@ -203,7 +174,7 @@ static struct scsi_host_template qlogicfas_driver_template = {
 static __init int qlogicfas_init(void)
 {
 	if (!qlogicfas_detect(&qlogicfas_driver_template)) {
-		/* no cards found */
+		 
 		printk(KERN_INFO "%s: no cards were found, please specify "
 				 "I/O address and IRQ using iobase= and irq= "
 				 "options", qlogicfas_name);

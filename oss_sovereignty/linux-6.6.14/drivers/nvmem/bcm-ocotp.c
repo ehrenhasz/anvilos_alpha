@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2016 Broadcom
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -10,27 +10,23 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/*
- * # of tries for OTP Status. The time to execute a command varies. The slowest
- * commands are writes which also vary based on the # of bits turned on. Writing
- * 0xffffffff takes ~3800 us.
- */
+ 
 #define OTPC_RETRIES                 5000
 
-/* Sequence to enable OTP program */
+ 
 #define OTPC_PROG_EN_SEQ             { 0xf, 0x4, 0x8, 0xd }
 
-/* OTPC Commands */
+ 
 #define OTPC_CMD_READ                0x0
 #define OTPC_CMD_OTP_PROG_ENABLE     0x2
 #define OTPC_CMD_OTP_PROG_DISABLE    0x3
 #define OTPC_CMD_PROGRAM             0x8
 
-/* OTPC Status Bits */
+ 
 #define OTPC_STAT_CMD_DONE           BIT(1)
 #define OTPC_STAT_PROG_OK            BIT(2)
 
-/* OTPC register definition */
+ 
 #define OTPC_MODE_REG_OFFSET         0x0
 #define OTPC_MODE_REG_OTPC_MODE      0
 #define OTPC_COMMAND_OFFSET          0x4
@@ -47,11 +43,11 @@
 
 
 struct otpc_map {
-	/* in words. */
+	 
 	u32 otpc_row_size;
-	/* 128 bit row / 4 words support. */
+	 
 	u16 data_r_offset[4];
-	/* 128 bit row / 4 words support. */
+	 
 	u16 data_w_offset[4];
 };
 
@@ -122,7 +118,7 @@ static int enable_ocotp_program(void __iomem *base)
 	int i;
 	int ret;
 
-	/* Write the magic sequence to enable programming */
+	 
 	set_command(base, OTPC_CMD_OTP_PROG_ENABLE);
 	for (i = 0; i < ARRAY_SIZE(vals); i++) {
 		write_cpu_data(base, vals[i]);
@@ -236,7 +232,7 @@ MODULE_DEVICE_TABLE(of, bcm_otpc_dt_ids);
 static const struct acpi_device_id bcm_otpc_acpi_ids[] __maybe_unused = {
 	{ .id = "BRCM0700", .driver_data = (kernel_ulong_t)&otp_map },
 	{ .id = "BRCM0701", .driver_data = (kernel_ulong_t)&otp_map_v2 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, bcm_otpc_acpi_ids);
 
@@ -256,20 +252,20 @@ static int bcm_otpc_probe(struct platform_device *pdev)
 	if (!priv->map)
 		return -ENODEV;
 
-	/* Get OTP base address register. */
+	 
 	priv->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(priv->base)) {
 		dev_err(dev, "unable to map I/O memory\n");
 		return PTR_ERR(priv->base);
 	}
 
-	/* Enable CPU access to OTPC. */
+	 
 	writel(readl(priv->base + OTPC_MODE_REG_OFFSET) |
 		BIT(OTPC_MODE_REG_OTPC_MODE),
 		priv->base + OTPC_MODE_REG_OFFSET);
 	reset_start_bit(priv->base);
 
-	/* Read size of memory in words. */
+	 
 	err = device_property_read_u32(dev, "brcm,ocotp-size", &num_words);
 	if (err) {
 		dev_err(dev, "size parameter not specified\n");

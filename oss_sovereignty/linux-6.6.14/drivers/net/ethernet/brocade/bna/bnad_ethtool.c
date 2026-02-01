@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linux network driver for QLogic BR-series Converged Network Adapter.
- */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014-2015 QLogic Corporation
- * All rights reserved
- * www.qlogic.com
- */
+
+ 
+ 
 
 #include "cna.h"
 
@@ -265,7 +258,7 @@ static int
 bnad_set_link_ksettings(struct net_device *netdev,
 			const struct ethtool_link_ksettings *cmd)
 {
-	/* 10G full duplex setting supported only */
+	 
 	if (cmd->base.autoneg == AUTONEG_ENABLE)
 		return -EOPNOTSUPP;
 
@@ -315,7 +308,7 @@ static int bnad_get_coalesce(struct net_device *netdev,
 	struct bnad *bnad = netdev_priv(netdev);
 	unsigned long flags;
 
-	/* Lock rqd. to access bnad->bna_lock */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	coalesce->use_adaptive_rx_coalesce =
 		(bnad->cfg_flags & BNAD_CF_DIM_ENABLED) ? true : false;
@@ -350,11 +343,7 @@ static int bnad_set_coalesce(struct net_device *netdev,
 		return -EINVAL;
 
 	mutex_lock(&bnad->conf_mutex);
-	/*
-	 * Do not need to store rx_coalesce_usecs here
-	 * Every time DIM is disabled, we can get it from the
-	 * stack.
-	 */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	if (coalesce->use_adaptive_rx_coalesce) {
 		if (!(bnad->cfg_flags & BNAD_CF_DIM_ENABLED)) {
@@ -395,7 +384,7 @@ static int bnad_set_coalesce(struct net_device *netdev,
 
 	}
 
-	/* Add Tx Inter-pkt DMA count?  */
+	 
 
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
@@ -465,7 +454,7 @@ bnad_set_ringparam(struct net_device *netdev,
 		}
 
 		if (!err && bnad->rx_info[0].rx) {
-			/* restore rx configuration */
+			 
 			bnad_restore_vlans(bnad, 0);
 			bnad_enable_default_bcast(bnad);
 			spin_lock_irqsave(&bnad->bna_lock, flags);
@@ -716,7 +705,7 @@ bnad_per_q_stats_fill(struct bnad *bnad, u64 *buf, int bi)
 				bnad->rx_info[i].rx_ctrl[j].ccb->rcb[0]->rxq) {
 				buf[bi++] = bnad->rx_info[i].rx_ctrl[j].
 						ccb->producer_index;
-				buf[bi++] = 0; /* ccb->consumer_index */
+				buf[bi++] = 0;  
 				buf[bi++] = *(bnad->rx_info[i].rx_ctrl[j].
 						ccb->hw_producer_index);
 
@@ -805,10 +794,7 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 		return;
 	}
 
-	/*
-	 * Used bna_lock to sync reads from bna_stats, which is written
-	 * under the same lock
-	 */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 
 	memset(&net_stats64, 0, sizeof(net_stats64));
@@ -830,15 +816,15 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 	buf[bi++] = net_stats64.rx_frame_errors;
 	buf[bi++] = net_stats64.tx_fifo_errors;
 
-	/* Get netif_queue_stopped from stack */
+	 
 	bnad->stats.drv_stats.netif_queue_stopped = netif_queue_stopped(netdev);
 
-	/* Fill driver stats into ethtool buffers */
+	 
 	stats64 = (u64 *)&bnad->stats.drv_stats;
 	for (i = 0; i < sizeof(struct bnad_drv_stats) / sizeof(u64); i++)
 		buf[bi++] = stats64[i];
 
-	/* Fill hardware stats excluding the rxf/txf into ethtool bufs */
+	 
 	stats64 = (u64 *) &bnad->stats.bna_stats->hw_stats;
 	for (i = 0;
 	     i < offsetof(struct bfi_enet_stats, rxf_stats[0]) /
@@ -846,7 +832,7 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 	     i++)
 		buf[bi++] = stats64[i];
 
-	/* Fill txf stats into ethtool buffers */
+	 
 	bmap = bna_tx_rid_mask(&bnad->bna);
 	for (i = 0; bmap; i++) {
 		if (bmap & 1) {
@@ -859,7 +845,7 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 		bmap >>= 1;
 	}
 
-	/*  Fill rxf stats into ethtool buffers */
+	 
 	bmap = bna_rx_rid_mask(&bnad->bna);
 	for (i = 0; bmap; i++) {
 		if (bmap & 1) {
@@ -872,7 +858,7 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 		bmap >>= 1;
 	}
 
-	/* Fill per Q stats into ethtool buffers */
+	 
 	bi = bnad_per_q_stats_fill(bnad, buf, bi);
 
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
@@ -920,7 +906,7 @@ bnad_get_flash_partition_by_offset(struct bnad *bnad, u32 offset,
 	wait_for_completion(&fcomp.comp);
 	ret = fcomp.comp_status;
 
-	/* Check for the flash type & base offset value */
+	 
 	if (ret == BFA_STATUS_OK) {
 		for (i = 0; i < flash_attr->npart; i++) {
 			if (offset >= flash_attr->part[i].part_off &&
@@ -952,10 +938,10 @@ bnad_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
 	unsigned long flags = 0;
 	int ret = 0;
 
-	/* Fill the magic value */
+	 
 	eeprom->magic = bnad->pcidev->vendor | (bnad->pcidev->device << 16);
 
-	/* Query the flash partition based on the offset */
+	 
 	flash_part = bnad_get_flash_partition_by_offset(bnad,
 				eeprom->offset, &base_offset);
 	if (flash_part == 0)
@@ -992,12 +978,12 @@ bnad_set_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
 	unsigned long flags = 0;
 	int ret = 0;
 
-	/* Check if the flash update request is valid */
+	 
 	if (eeprom->magic != (bnad->pcidev->vendor |
 			     (bnad->pcidev->device << 16)))
 		return -EINVAL;
 
-	/* Query the flash partition based on the offset */
+	 
 	flash_part = bnad_get_flash_partition_by_offset(bnad,
 				eeprom->offset, &base_offset);
 	if (flash_part == 0)

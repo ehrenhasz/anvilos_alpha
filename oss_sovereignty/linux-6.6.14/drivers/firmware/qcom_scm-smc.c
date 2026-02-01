@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015,2019 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/errno.h>
@@ -14,10 +13,7 @@
 
 #include "qcom_scm.h"
 
-/**
- * struct arm_smccc_args
- * @args:	The array of values used in registers in smc instruction
- */
+ 
 struct arm_smccc_args {
 	unsigned long args[8];
 };
@@ -75,7 +71,7 @@ int scm_get_wq_ctx(u32 *wq_ctx, u32 *flags, u32 *more_pending)
 				ARM_SMCCC_SMC_64, ARM_SMCCC_OWNER_SIP,
 				SCM_SMC_FNID(QCOM_SCM_SVC_WAITQ, QCOM_SCM_WAITQ_GET_WQ_CTX));
 
-	/* Guaranteed to return only success or error, no WAITQ_* */
+	 
 	__scm_smc_do_quirk(&get_wq_ctx, &get_wq_res);
 	ret = get_wq_res.a0;
 	if (ret)
@@ -203,7 +199,7 @@ int __scm_smc_call(struct device *dev, const struct qcom_scm_desc *desc,
 		smc.args[SCM_SMC_LAST_REG_IDX] = args_phys;
 	}
 
-	/* ret error check follows after args_virt cleanup*/
+	 
 	ret = __scm_smc_do(dev, &smc, &smc_res, atomic);
 
 	if (args_virt) {

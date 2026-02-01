@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "ia_css_types.h"
 #include "sh_css_defs.h"
@@ -20,9 +8,9 @@
 #include "ia_css_de2.host.h"
 
 const struct ia_css_ecd_config default_ecd_config = {
-	(1 << (ISP_VEC_ELEMBITS - 1)) * 2 / 3,	/* 2/3 */
-	(1 << (ISP_VEC_ELEMBITS - 1)) - 1,	/* 1.0 */
-	0,					/* 0.0 */
+	(1 << (ISP_VEC_ELEMBITS - 1)) * 2 / 3,	 
+	(1 << (ISP_VEC_ELEMBITS - 1)) - 1,	 
+	0,					 
 };
 
 void

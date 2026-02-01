@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2017 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <crypto/aead.h>
 #include <net/xfrm.h>
@@ -76,25 +45,14 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
 				struct mlx5_wqe_eth_seg *eseg, u8 mode,
 				struct xfrm_offload *xo)
 {
-	/* Tunnel Mode:
-	 * SWP:      OutL3       InL3  InL4
-	 * Pkt: MAC  IP     ESP  IP    L4
-	 *
-	 * Transport Mode:
-	 * SWP:      OutL3       OutL4
-	 * Pkt: MAC  IP     ESP  L4
-	 *
-	 * Tunnel(VXLAN TCP/UDP) over Transport Mode
-	 * SWP:      OutL3                   InL3  InL4
-	 * Pkt: MAC  IP     ESP  UDP  VXLAN  IP    L4
-	 */
+	 
 
-	/* Shared settings */
+	 
 	eseg->swp_outer_l3_offset = skb_network_offset(skb) / 2;
 	if (skb->protocol == htons(ETH_P_IPV6))
 		eseg->swp_flags |= MLX5_ETH_WQE_SWP_OUTER_L3_IPV6;
 
-	/* Tunnel mode */
+	 
 	if (mode == XFRM_MODE_TUNNEL) {
 		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
 		if (xo->proto == IPPROTO_IPV6)
@@ -105,7 +63,7 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
 			fallthrough;
 		case IPPROTO_TCP:
-			/* IP | ESP | IP | [TCP | UDP] */
+			 
 			eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
 			break;
 		default:
@@ -114,7 +72,7 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
 		return;
 	}
 
-	/* Transport mode */
+	 
 	if (mode != XFRM_MODE_TRANSPORT)
 		return;
 
@@ -124,14 +82,14 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_OUTER_L4_UDP;
 			fallthrough;
 		case IPPROTO_TCP:
-			/* IP | ESP | TCP */
+			 
 			eseg->swp_outer_l4_offset = skb_inner_transport_offset(skb) / 2;
 			break;
 		default:
 			break;
 		}
 	} else {
-		/* Tunnel(VXLAN TCP/UDP) over Transport Mode */
+		 
 		switch (xo->inner_ipproto) {
 		case IPPROTO_UDP:
 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
@@ -166,7 +124,7 @@ void mlx5e_ipsec_set_iv_esn(struct sk_buff *skb, struct xfrm_state *x,
 		seq_hi = xo->seq.hi;
 	}
 
-	/* Place the SN in the IV field */
+	 
 	seqno = cpu_to_be64(xo->seq.low + ((u64)seq_hi << 32));
 	iv_offset = skb_transport_offset(skb) + sizeof(struct ip_esp_hdr);
 	skb_store_bits(skb, iv_offset, &seqno, 8);
@@ -178,7 +136,7 @@ void mlx5e_ipsec_set_iv(struct sk_buff *skb, struct xfrm_state *x,
 	int iv_offset;
 	__be64 seqno;
 
-	/* Place the SN in the IV field */
+	 
 	seqno = cpu_to_be64(xo->seq.low + ((u64)xo->seq.hi << 32));
 	iv_offset = skb_transport_offset(skb) + sizeof(struct ip_esp_hdr);
 	skb_store_bits(skb, iv_offset, &seqno, 8);

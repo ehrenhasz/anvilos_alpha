@@ -1,44 +1,4 @@
-/*
- * Copyright (c) 2000-2001 Adaptec Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- *
- * String handling code courtesy of Gerard Roudier's <groudier@club-internet.fr>
- * sym driver.
- *
- * $Id: //depot/aic7xxx/linux/drivers/scsi/aic7xxx/aic79xx_proc.c#19 $
- */
+ 
 #include "aic79xx_osm.h"
 #include "aic79xx_inline.h"
 
@@ -49,43 +9,34 @@ static void	ahd_dump_target_state(struct ahd_softc *ahd,
 static void	ahd_dump_device_state(struct seq_file *m,
 				      struct scsi_device *sdev);
 
-/*
- * Table of syncrates that don't follow the "divisible by 4"
- * rule. This table will be expanded in future SCSI specs.
- */
+ 
 static const struct {
 	u_int period_factor;
-	u_int period;	/* in 100ths of ns */
+	u_int period;	 
 } scsi_syncrates[] = {
-	{ 0x08, 625 },	/* FAST-160 */
-	{ 0x09, 1250 },	/* FAST-80 */
-	{ 0x0a, 2500 },	/* FAST-40 40MHz */
-	{ 0x0b, 3030 },	/* FAST-40 33MHz */
-	{ 0x0c, 5000 }	/* FAST-20 */
+	{ 0x08, 625 },	 
+	{ 0x09, 1250 },	 
+	{ 0x0a, 2500 },	 
+	{ 0x0b, 3030 },	 
+	{ 0x0c, 5000 }	 
 };
 
-/*
- * Return the frequency in kHz corresponding to the given
- * sync period factor.
- */
+ 
 static u_int
 ahd_calc_syncsrate(u_int period_factor)
 {
 	int i;
 
-	/* See if the period is in the "exception" table */
+	 
 	for (i = 0; i < ARRAY_SIZE(scsi_syncrates); i++) {
 
 		if (period_factor == scsi_syncrates[i].period_factor) {
-			/* Period in kHz */
+			 
 			return (100000000 / scsi_syncrates[i].period);
 		}
 	}
 
-	/*
-	 * Wasn't in the table, so use the standard
-	 * 4 times conversion.
-	 */
+	 
 	return (10000000 / (period_factor * 4 * 10));
 }
 
@@ -214,7 +165,7 @@ ahd_proc_write_seeprom(struct Scsi_Host *shost, char *buffer, int length)
 	int paused;
 	int written;
 
-	/* Default to failure. */
+	 
 	written = -EINVAL;
 	ahd_lock(ahd, &s);
 	paused = ahd_is_paused(ahd);
@@ -256,7 +207,7 @@ ahd_proc_write_seeprom(struct Scsi_Host *shost, char *buffer, int length)
 				  sizeof(struct seeprom_config)/2);
 		ahd_read_seeprom(ahd, (uint16_t *)ahd->seep_config,
 				 start_addr, sizeof(struct seeprom_config)/2,
-				 /*ByteStream*/FALSE);
+				  FALSE);
 		ahd_release_seeprom(ahd);
 		written = length;
 	}
@@ -268,9 +219,7 @@ done:
 	ahd_unlock(ahd, &s);
 	return (written);
 }
-/*
- * Return information to handle /proc support for the driver.
- */
+ 
 int
 ahd_linux_show_info(struct seq_file *m, struct Scsi_Host *shost)
 {
@@ -310,7 +259,7 @@ ahd_linux_show_info(struct seq_file *m, struct Scsi_Host *shost)
 	for (i = 0; i < max_targ; i++) {
 
 		ahd_dump_target_state(ahd, m, ahd->our_id, 'A',
-				      /*target_id*/i);
+				       i);
 	}
 	return 0;
 }

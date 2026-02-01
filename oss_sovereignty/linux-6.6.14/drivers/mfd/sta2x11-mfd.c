@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STA2x11 mfd for GPIO, SCTL and APBREG
- *
- * Copyright (c) 2009-2011 Wind River Systems, Inc.
- * Copyright (c) 2011 ST Microelectronics (Alessandro Rubini, Davide Ciminaghi)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -32,7 +27,7 @@ static inline int __reg_within_range(unsigned int r,
 	return ((r >= start) && (r <= end));
 }
 
-/* This describes STA2X11 MFD chip for us, we may have several */
+ 
 struct sta2x11_mfd {
 	struct sta2x11_instance *instance;
 	struct regmap *regmap[sta2x11_n_mfd_plat_devs];
@@ -43,7 +38,7 @@ struct sta2x11_mfd {
 
 static LIST_HEAD(sta2x11_mfd_list);
 
-/* Three functions to act on the list */
+ 
 static struct sta2x11_mfd *sta2x11_mfd_find(struct pci_dev *pdev)
 {
 	struct sta2x11_instance *instance;
@@ -88,7 +83,7 @@ static int sta2x11_mfd_add(struct pci_dev *pdev, gfp_t flags)
 	return 0;
 }
 
-/* This function is exported and is not expected to fail */
+ 
 u32 __sta2x11_mfd_mask(struct pci_dev *pdev, u32 reg, u32 mask, u32 val,
 		       enum sta2x11_mfd_plat_dev index)
 {
@@ -140,9 +135,7 @@ int sta2x11_mfd_get_regs_data(struct platform_device *dev,
 }
 EXPORT_SYMBOL(sta2x11_mfd_get_regs_data);
 
-/*
- * Special sta2x11-mfd regmap lock/unlock functions
- */
+ 
 
 static void sta2x11_regmap_lock(void *__lock)
 {
@@ -156,7 +149,7 @@ static void sta2x11_regmap_unlock(void *__lock)
 	spin_unlock(lock);
 }
 
-/* OTP (one time programmable registers do not require locking */
+ 
 static void sta2x11_regmap_nolock(void *__lock)
 {
 }
@@ -207,7 +200,7 @@ static struct regmap_config sta2x11_scr_regmap_config = {
 
 static bool sta2x11_apbreg_readable_reg(struct device *dev, unsigned int reg)
 {
-	/* Two blocks (CAN and MLB, SARAC) 0x100 bytes apart */
+	 
 	if (reg >= APBREG_BSR_SARAC)
 		reg -= APBREG_BSR_SARAC;
 	switch (reg) {
@@ -291,7 +284,7 @@ sta2x11_mfd_regmap_configs[sta2x11_n_mfd_plat_devs] = {
 	[sta2x11_scr] = &sta2x11_scr_regmap_config,
 };
 
-/* Probe for the four platform devices */
+ 
 
 static int sta2x11_mfd_platform_probe(struct platform_device *dev,
 				      enum sta2x11_mfd_plat_dev index)
@@ -322,10 +315,7 @@ static int sta2x11_mfd_platform_probe(struct platform_device *dev,
 		return -ENOMEM;
 	}
 	regmap_config->lock_arg = &mfd->lock;
-	/*
-	   No caching, registers could be reached both via regmap and via
-	   void __iomem *
-	*/
+	 
 	regmap_config->cache_type = REGCACHE_NONE;
 	mfd->regmap[index] = devm_regmap_init_mmio(&dev->dev, mfd->regs[index],
 						   regmap_config);
@@ -354,7 +344,7 @@ static int sta2x11_scr_probe(struct platform_device *dev)
 	return sta2x11_mfd_platform_probe(dev, sta2x11_scr);
 }
 
-/* The three platform drivers */
+ 
 static struct platform_driver sta2x11_sctl_platform_driver = {
 	.driver = {
 		.name	= STA2X11_MFD_SCTL_NAME,
@@ -395,14 +385,11 @@ static int __init sta2x11_drivers_init(void)
 	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
 }
 
-/*
- * What follows are the PCI devices that host the above pdevs.
- * Each logic block is 4kB and they are all consecutive: we use this info.
- */
+ 
 
-/* Mfd 0 device */
+ 
 
-/* Mfd 0, Bar 0 */
+ 
 enum mfd0_bar0_cells {
 	STA2X11_GPIO_0 = 0,
 	STA2X11_GPIO_1,
@@ -412,7 +399,7 @@ enum mfd0_bar0_cells {
 	STA2X11_SCR,
 	STA2X11_TIME,
 };
-/* Mfd 0 , Bar 1 */
+ 
 enum mfd0_bar1_cells {
 	STA2X11_APBREG = 0,
 };
@@ -424,7 +411,7 @@ enum mfd0_bar1_cells {
 
 static const struct resource gpio_resources[] = {
 	{
-		/* 4 consecutive cells, 1 driver */
+		 
 		.name = STA2X11_MFD_GPIO_NAME,
 		.start = 0,
 		.end = (4 * 4096) - 1,
@@ -449,7 +436,7 @@ static const struct resource apbreg_resources[] = {
 	{ .name = _name, .num_resources = ARRAY_SIZE(_r), .resources = _r, }
 
 static struct mfd_cell sta2x11_mfd0_bar0[] = {
-	/* offset 0: we add pdata later */
+	 
 	DEV(STA2X11_MFD_GPIO_NAME, gpio_resources),
 	DEV(STA2X11_MFD_SCTL_NAME, sctl_resources),
 	DEV(STA2X11_MFD_SCR_NAME,  scr_resources),
@@ -460,14 +447,14 @@ static struct mfd_cell sta2x11_mfd0_bar1[] = {
 	DEV(STA2X11_MFD_APBREG_NAME, apbreg_resources),
 };
 
-/* Mfd 1 devices */
+ 
 
-/* Mfd 1, Bar 0 */
+ 
 enum mfd1_bar0_cells {
 	STA2X11_VIC = 0,
 };
 
-/* Mfd 1, Bar 1 */
+ 
 enum mfd1_bar1_cells {
 	STA2X11_APB_SOC_REGS = 0,
 };
@@ -524,7 +511,7 @@ struct sta2x11_mfd_setup_data {
 #define STA2X11_MFD1 1
 
 static struct sta2x11_mfd_setup_data mfd_setup_data[] = {
-	/* Mfd 0: gpio, sctl, scr, timers / apbregs */
+	 
 	[STA2X11_MFD0] = {
 		.bars = {
 			[0] = {
@@ -537,7 +524,7 @@ static struct sta2x11_mfd_setup_data mfd_setup_data[] = {
 			},
 		},
 	},
-	/* Mfd 1: vic / apb-soc-regs */
+	 
 	[STA2X11_MFD1] = {
 		.bars = {
 			[0] = {
@@ -585,14 +572,14 @@ static int sta2x11_mfd_probe(struct pci_dev *pdev,
 		&mfd_setup_data[STA2X11_MFD0] :
 		&mfd_setup_data[STA2X11_MFD1];
 
-	/* platform data is the pci device for all of them */
+	 
 	sta2x11_mfd_setup(pdev, setup_data);
 
-	/* Record this pdev before mfd_add_devices: their probe looks for it */
+	 
 	if (!sta2x11_mfd_find(pdev))
 		sta2x11_mfd_add(pdev, GFP_KERNEL);
 
-	/* Just 2 bars for all mfd's at present */
+	 
 	for (i = 0; i < 2; i++) {
 		err = mfd_add_devices(&pdev->dev, -1,
 				      setup_data->bars[i].cells,
@@ -635,11 +622,6 @@ static int __init sta2x11_mfd_init(void)
 	return pci_register_driver(&sta2x11_mfd_driver);
 }
 
-/*
- * All of this must be ready before "normal" devices like MMCI appear.
- * But MFD (the pci device) can't be too early. The following choice
- * prepares platform drivers very early and probe the PCI device later,
- * but before other PCI devices.
- */
+ 
 subsys_initcall(sta2x11_drivers_init);
 rootfs_initcall(sta2x11_mfd_init);

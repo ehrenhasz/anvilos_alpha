@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- *
- * Refactored from usbip_host_driver.c, which is:
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -86,7 +78,7 @@ struct usbip_exported_device *usbip_exported_device_new(
 	if (edev->status < 0)
 		goto err;
 
-	/* reallocate buffer to include usb interface data */
+	 
 	size = sizeof(struct usbip_exported_device) +
 		edev->udev.bNumInterfaces * sizeof(struct usbip_usb_interface);
 
@@ -99,7 +91,7 @@ struct usbip_exported_device *usbip_exported_device_new(
 	}
 
 	for (i = 0; i < edev->udev.bNumInterfaces; i++) {
-		/* vudc does not support reading interfaces */
+		 
 		if (!hdriver->ops.read_interface)
 			break;
 		hdriver->ops.read_interface(&edev->udev, i, &edev->uinf[i]);
@@ -136,7 +128,7 @@ static int refresh_exported_devices(struct usbip_host_driver *hdriver)
 		if (dev == NULL)
 			continue;
 
-		/* Check whether device uses usbip driver. */
+		 
 		if (hdriver->ops.is_my_device(dev)) {
 			edev = usbip_exported_device_new(hdriver, path);
 			if (!edev) {
@@ -235,7 +227,7 @@ int usbip_export_device(struct usbip_exported_device *edev, int sockfd)
 		return ret;
 	}
 
-	/* only the first interface is true */
+	 
 	size = snprintf(sockfd_attr_path, sizeof(sockfd_attr_path), "%s/%s",
 			edev->udev.path, attr_name);
 	if (size < 0 || (unsigned int)size >= sizeof(sockfd_attr_path)) {

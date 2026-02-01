@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013, 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -48,7 +46,7 @@
 #define RCG_N_OFFSET(rcg)	((rcg)->cmd_rcgr + (rcg)->cfg_off + N_REG)
 #define RCG_D_OFFSET(rcg)	((rcg)->cmd_rcgr + (rcg)->cfg_off + D_REG)
 
-/* Dynamic Frequency Scaling */
+ 
 #define MAX_PERF_LEVEL		8
 #define SE_CMD_DFSR_OFFSET	0x14
 #define SE_CMD_DFS_EN		BIT(0)
@@ -120,7 +118,7 @@ static int update_config(struct clk_rcg2 *rcg)
 	if (ret)
 		return ret;
 
-	/* Wait for update to take effect */
+	 
 	for (count = 500; count > 0; count--) {
 		ret = regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CMD_REG, &cmd);
 		if (ret)
@@ -148,13 +146,7 @@ static int clk_rcg2_set_parent(struct clk_hw *hw, u8 index)
 	return update_config(rcg);
 }
 
-/*
- * Calculate m/n:d rate
- *
- *          parent_rate     m
- *   rate = ----------- x  ---
- *            hid_div       n
- */
+ 
 static unsigned long
 calc_rate(unsigned long rate, u32 m, u32 n, u32 mode, u32 hid_div)
 {
@@ -298,7 +290,7 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f,
 		if (ret)
 			return ret;
 
-		/* Calculate 2d value */
+		 
 		d_val = f->n;
 
 		n_minus_m = f->n - f->m;
@@ -401,7 +393,7 @@ static int clk_rcg2_get_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
 	u32 notn_m, n, m, d, not2d, mask;
 
 	if (!rcg->mnd_width) {
-		/* 50 % duty-cycle for Non-MND RCGs */
+		 
 		duty->num = 1;
 		duty->den = 2;
 		return 0;
@@ -412,7 +404,7 @@ static int clk_rcg2_get_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
 	regmap_read(rcg->clkr.regmap, RCG_N_OFFSET(rcg), &notn_m);
 
 	if (!not2d && !m && !notn_m) {
-		/* 50 % duty-cycle always */
+		 
 		duty->num = 1;
 		duty->den = 2;
 		return 0;
@@ -437,7 +429,7 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
 	u32 notn_m, n, m, d, not2d, mask, duty_per, cfg;
 	int ret;
 
-	/* Duty-cycle cannot be modified for non-MND RCGs */
+	 
 	if (!rcg->mnd_width)
 		return -EINVAL;
 
@@ -447,7 +439,7 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
 	regmap_read(rcg->clkr.regmap, RCG_M_OFFSET(rcg), &m);
 	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
 
-	/* Duty-cycle cannot be modified if MND divider is in bypass mode. */
+	 
 	if (!(cfg & CFG_MODE_MASK))
 		return -EINVAL;
 
@@ -455,13 +447,10 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
 
 	duty_per = (duty->num * 100) / duty->den;
 
-	/* Calculate 2d value */
+	 
 	d = DIV_ROUND_CLOSEST(n * duty_per * 2, 100);
 
-	/*
-	 * Check bit widths of 2d. If D is too big reduce duty cycle.
-	 * Also make sure it is never zero.
-	 */
+	 
 	d = clamp_val(d, 1, mask);
 
 	if ((d / 2) > (n - m))
@@ -517,25 +506,25 @@ struct frac_entry {
 	int den;
 };
 
-static const struct frac_entry frac_table_675m[] = {	/* link rate of 270M */
-	{ 52, 295 },	/* 119 M */
-	{ 11, 57 },	/* 130.25 M */
-	{ 63, 307 },	/* 138.50 M */
-	{ 11, 50 },	/* 148.50 M */
-	{ 47, 206 },	/* 154 M */
-	{ 31, 100 },	/* 205.25 M */
-	{ 107, 269 },	/* 268.50 M */
+static const struct frac_entry frac_table_675m[] = {	 
+	{ 52, 295 },	 
+	{ 11, 57 },	 
+	{ 63, 307 },	 
+	{ 11, 50 },	 
+	{ 47, 206 },	 
+	{ 31, 100 },	 
+	{ 107, 269 },	 
 	{ },
 };
 
-static struct frac_entry frac_table_810m[] = { /* Link rate of 162M */
-	{ 31, 211 },	/* 119 M */
-	{ 32, 199 },	/* 130.25 M */
-	{ 63, 307 },	/* 138.50 M */
-	{ 11, 60 },	/* 148.50 M */
-	{ 50, 263 },	/* 154 M */
-	{ 31, 120 },	/* 205.25 M */
-	{ 119, 359 },	/* 268.50 M */
+static struct frac_entry frac_table_810m[] = {  
+	{ 31, 211 },	 
+	{ 32, 199 },	 
+	{ 63, 307 },	 
+	{ 11, 60 },	 
+	{ 50, 263 },	 
+	{ 31, 120 },	 
+	{ 119, 359 },	 
 	{ },
 };
 
@@ -581,7 +570,7 @@ static int clk_edp_pixel_set_rate(struct clk_hw *hw, unsigned long rate,
 static int clk_edp_pixel_set_rate_and_parent(struct clk_hw *hw,
 		unsigned long rate, unsigned long parent_rate, u8 index)
 {
-	/* Parent index is set statically in frequency table */
+	 
 	return clk_edp_pixel_set_rate(hw, rate, parent_rate);
 }
 
@@ -597,7 +586,7 @@ static int clk_edp_pixel_determine_rate(struct clk_hw *hw,
 	u32 hid_div;
 	int index = qcom_find_src_index(hw, rcg->parent_map, f->src);
 
-	/* Force the correct parent */
+	 
 	req->best_parent_hw = clk_hw_get_parent_by_index(hw, index);
 	req->best_parent_rate = clk_hw_get_rate(req->best_parent_hw);
 
@@ -682,7 +671,7 @@ static int clk_byte_set_rate(struct clk_hw *hw, unsigned long rate,
 static int clk_byte_set_rate_and_parent(struct clk_hw *hw,
 		unsigned long rate, unsigned long parent_rate, u8 index)
 {
-	/* Parent index is set statically in frequency table */
+	 
 	return clk_byte_set_rate(hw, rate, parent_rate);
 }
 
@@ -752,7 +741,7 @@ static int clk_byte2_set_rate(struct clk_hw *hw, unsigned long rate,
 static int clk_byte2_set_rate_and_parent(struct clk_hw *hw,
 		unsigned long rate, unsigned long parent_rate, u8 index)
 {
-	/* Read the hardware to determine parent during set_rate */
+	 
 	return clk_byte2_set_rate(hw, rate, parent_rate);
 }
 
@@ -871,11 +860,7 @@ static int clk_gfx3d_determine_rate(struct clk_hw *hw,
 	p0 = cgfx->hws[0];
 	p1 = cgfx->hws[1];
 	p2 = cgfx->hws[2];
-	/*
-	 * This function does ping-pong the RCG between PLLs: if we don't
-	 * have at least one fixed PLL and two variable ones,
-	 * then it's not going to work correctly.
-	 */
+	 
 	if (WARN_ON(!p0 || !p1 || !p2))
 		return -EINVAL;
 
@@ -890,7 +875,7 @@ static int clk_gfx3d_determine_rate(struct clk_hw *hw,
 
 	parent_req.rate = req->rate * mux_div;
 
-	/* This has to be a fixed rate PLL */
+	 
 	p0_rate = clk_hw_get_rate(p0);
 
 	if (parent_req.rate == p0_rate) {
@@ -900,7 +885,7 @@ static int clk_gfx3d_determine_rate(struct clk_hw *hw,
 	}
 
 	if (req->best_parent_hw == p0) {
-		/* Are we going back to a previously used rate? */
+		 
 		if (clk_hw_get_rate(p2) == parent_req.rate)
 			req->best_parent_hw = p2;
 		else
@@ -939,7 +924,7 @@ static int clk_gfx3d_set_rate_and_parent(struct clk_hw *hw, unsigned long rate,
 	int ret;
 
 	cfg = rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
-	/* On some targets, the GFX3D RCG may need to divide PLL frequency */
+	 
 	if (cgfx->div > 1)
 		cfg |= ((2 * cgfx->div) - 1) << CFG_SRC_DIV_SHIFT;
 
@@ -953,11 +938,7 @@ static int clk_gfx3d_set_rate_and_parent(struct clk_hw *hw, unsigned long rate,
 static int clk_gfx3d_set_rate(struct clk_hw *hw, unsigned long rate,
 			      unsigned long parent_rate)
 {
-	/*
-	 * We should never get here; clk_gfx3d_determine_rate() should always
-	 * make us use a different parent than what we're currently using, so
-	 * clk_gfx3d_set_rate_and_parent() should always be called.
-	 */
+	 
 	return 0;
 }
 
@@ -983,7 +964,7 @@ static int clk_rcg2_set_force_enable(struct clk_hw *hw)
 	if (ret)
 		return ret;
 
-	/* wait for RCG to turn ON */
+	 
 	for (count = 500; count > 0; count--) {
 		if (clk_rcg2_is_enabled(hw))
 			return 0;
@@ -1030,11 +1011,7 @@ static int clk_rcg2_shared_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (!f)
 		return -EINVAL;
 
-	/*
-	 * In case clock is disabled, update the M, N and D registers, cache
-	 * the CFG value in parked_cfg and don't hit the update bit of CMD
-	 * register.
-	 */
+	 
 	if (!clk_hw_is_enabled(hw))
 		return __clk_rcg2_configure(rcg, f, &rcg->parked_cfg);
 
@@ -1052,15 +1029,12 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
 	int ret;
 
-	/*
-	 * Set the update bit because required configuration has already
-	 * been written in clk_rcg2_shared_set_rate()
-	 */
+	 
 	ret = clk_rcg2_set_force_enable(hw);
 	if (ret)
 		return ret;
 
-	/* Write back the stored configuration corresponding to current rate */
+	 
 	ret = regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, rcg->parked_cfg);
 	if (ret)
 		return ret;
@@ -1076,20 +1050,10 @@ static void clk_rcg2_shared_disable(struct clk_hw *hw)
 {
 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
 
-	/*
-	 * Store current configuration as switching to safe source would clear
-	 * the SRC and DIV of CFG register
-	 */
+	 
 	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &rcg->parked_cfg);
 
-	/*
-	 * Park the RCG at a safe configuration - sourced off of safe source.
-	 * Force enable and disable the RCG while configuring it to safeguard
-	 * against any update signal coming from the downstream clock.
-	 * The current parent is still prepared and enabled at this point, and
-	 * the safe source is always on while application processor subsystem
-	 * is online. Therefore, the RCG can safely switch its parent.
-	 */
+	 
 	clk_rcg2_set_force_enable(hw);
 
 	regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG,
@@ -1104,7 +1068,7 @@ static u8 clk_rcg2_shared_get_parent(struct clk_hw *hw)
 {
 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
 
-	/* If the shared rcg is parked use the cached cfg instead */
+	 
 	if (!clk_hw_is_enabled(hw))
 		return __clk_rcg2_get_parent(hw, rcg->parked_cfg);
 
@@ -1115,7 +1079,7 @@ static int clk_rcg2_shared_set_parent(struct clk_hw *hw, u8 index)
 {
 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
 
-	/* If the shared rcg is parked only update the cached cfg */
+	 
 	if (!clk_hw_is_enabled(hw)) {
 		rcg->parked_cfg &= ~CFG_SRC_SEL_MASK;
 		rcg->parked_cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
@@ -1131,7 +1095,7 @@ clk_rcg2_shared_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 {
 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
 
-	/* If the shared rcg is parked use the cached cfg instead */
+	 
 	if (!clk_hw_is_enabled(hw))
 		return __clk_rcg2_recalc_rate(hw, parent_rate, rcg->parked_cfg);
 
@@ -1150,7 +1114,7 @@ const struct clk_ops clk_rcg2_shared_ops = {
 };
 EXPORT_SYMBOL_GPL(clk_rcg2_shared_ops);
 
-/* Common APIs to be used for DFS based RCGR */
+ 
 static void clk_rcg2_dfs_populate_freq(struct clk_hw *hw, unsigned int l,
 				       struct freq_tbl *f)
 {
@@ -1204,7 +1168,7 @@ static int clk_rcg2_dfs_populate_freq_table(struct clk_rcg2 *rcg)
 	struct freq_tbl *freq_tbl;
 	int i;
 
-	/* Allocate space for 1 extra since table is NULL terminated */
+	 
 	freq_tbl = kcalloc(MAX_PERF_LEVEL + 1, sizeof(*freq_tbl), GFP_KERNEL);
 	if (!freq_tbl)
 		return -ENOMEM;
@@ -1248,13 +1212,7 @@ clk_rcg2_dfs_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	if (rcg->freq_tbl)
 		return rcg->freq_tbl[level].freq;
 
-	/*
-	 * Assume that parent_rate is actually the parent because
-	 * we can't do any better at figuring it out when the table
-	 * hasn't been populated yet. We only populate the table
-	 * in determine_rate because we can't guarantee the parents
-	 * will be registered with the framework until then.
-	 */
+	 
 	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + SE_PERF_DFSR(level),
 		    &cfg);
 
@@ -1303,10 +1261,7 @@ static int clk_rcg2_enable_dfs(const struct clk_rcg_dfs_data *data,
 	if (!(val & SE_CMD_DFS_EN))
 		return 0;
 
-	/*
-	 * Rate changes with consumer writing a register in
-	 * their own I/O region
-	 */
+	 
 	init->flags |= CLK_GET_RATE_NOCACHE;
 	init->ops = &clk_rcg2_dfs_ops;
 
@@ -1387,7 +1342,7 @@ static int clk_rcg2_dp_determine_rate(struct clk_hw *hw,
 	unsigned long num, den;
 	u64 tmp;
 
-	/* Parent rate is a fixed phy link rate */
+	 
 	rational_best_approximation(req->best_parent_rate, req->rate,
 			GENMASK(rcg->mnd_width - 1, 0),
 			GENMASK(rcg->mnd_width - 1, 0), &den, &num);

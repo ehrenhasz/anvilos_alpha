@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dell-smm-hwmon.c -- Linux driver for accessing the SMM BIOS on Dell laptops.
- *
- * Copyright (C) 2001  Massimo Dal Zotto <dz@debian.org>
- *
- * Hwmon integration:
- * Copyright (C) 2011  Jean Delvare <jdelvare@suse.de>
- * Copyright (C) 2013, 2014  Guenter Roeck <linux@roeck-us.net>
- * Copyright (C) 2014, 2015  Pali Rohár <pali@kernel.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -49,7 +40,7 @@
 #define I8K_SMM_GET_DELL_SIG1	0xfea3
 #define I8K_SMM_GET_DELL_SIG2	0xffa3
 
-/* in usecs */
+ 
 #define DELL_SMM_MAX_DURATION  250000
 
 #define I8K_FAN_MULT		30
@@ -70,7 +61,7 @@
 #define DELL_SMM_NO_FANS	3
 
 struct dell_smm_data {
-	struct mutex i8k_mutex; /* lock for sensors writes */
+	struct mutex i8k_mutex;  
 	char bios_version[4];
 	char bios_machineid[16];
 	uint i8k_fan_mult;
@@ -166,9 +157,7 @@ static inline const char __init *i8k_get_dmi_data(int field)
 	return dmi_data && *dmi_data ? dmi_data : "?";
 }
 
-/*
- * Call the System Management Mode BIOS. Code provided by Jonathan Buzzard.
- */
+ 
 static int i8k_smm_func(void *par)
 {
 	ktime_t calltime = ktime_get();
@@ -178,7 +167,7 @@ static int i8k_smm_func(void *par)
 	unsigned char carry;
 	long long duration;
 
-	/* SMM requires CPU 0 */
+	 
 	if (smp_processor_id() != 0)
 		return -EBUSY;
 
@@ -206,9 +195,7 @@ static int i8k_smm_func(void *par)
 	return 0;
 }
 
-/*
- * Call the System Management Mode BIOS.
- */
+ 
 static int i8k_smm(struct smm_regs *regs)
 {
 	int ret;
@@ -220,9 +207,7 @@ static int i8k_smm(struct smm_regs *regs)
 	return ret;
 }
 
-/*
- * Read the fan status.
- */
+ 
 static int i8k_get_fan_status(const struct dell_smm_data *data, u8 fan)
 {
 	struct smm_regs regs = {
@@ -236,9 +221,7 @@ static int i8k_get_fan_status(const struct dell_smm_data *data, u8 fan)
 	return i8k_smm(&regs) ? : regs.eax & 0xff;
 }
 
-/*
- * Read the fan speed in RPM.
- */
+ 
 static int i8k_get_fan_speed(const struct dell_smm_data *data, u8 fan)
 {
 	struct smm_regs regs = {
@@ -252,9 +235,7 @@ static int i8k_get_fan_speed(const struct dell_smm_data *data, u8 fan)
 	return i8k_smm(&regs) ? : (regs.eax & 0xffff) * data->i8k_fan_mult;
 }
 
-/*
- * Read the fan type.
- */
+ 
 static int _i8k_get_fan_type(const struct dell_smm_data *data, u8 fan)
 {
 	struct smm_regs regs = {
@@ -270,16 +251,14 @@ static int _i8k_get_fan_type(const struct dell_smm_data *data, u8 fan)
 
 static int i8k_get_fan_type(struct dell_smm_data *data, u8 fan)
 {
-	/* I8K_SMM_GET_FAN_TYPE SMM call is expensive, so cache values */
+	 
 	if (data->fan_type[fan] == INT_MIN)
 		data->fan_type[fan] = _i8k_get_fan_type(data, fan);
 
 	return data->fan_type[fan];
 }
 
-/*
- * Read the fan nominal rpm for specific fan speed.
- */
+ 
 static int __init i8k_get_fan_nominal_speed(const struct dell_smm_data *data, u8 fan, int speed)
 {
 	struct smm_regs regs = {
@@ -293,9 +272,7 @@ static int __init i8k_get_fan_nominal_speed(const struct dell_smm_data *data, u8
 	return i8k_smm(&regs) ? : (regs.eax & 0xffff);
 }
 
-/*
- * Enable or disable automatic BIOS fan control support
- */
+ 
 static int i8k_enable_fan_auto_mode(const struct dell_smm_data *data, bool enable)
 {
 	struct smm_regs regs = { };
@@ -307,9 +284,7 @@ static int i8k_enable_fan_auto_mode(const struct dell_smm_data *data, bool enabl
 	return i8k_smm(&regs);
 }
 
-/*
- * Set the fan speed (off, low, high, ...).
- */
+ 
 static int i8k_set_fan(const struct dell_smm_data *data, u8 fan, int speed)
 {
 	struct smm_regs regs = { .eax = I8K_SMM_SET_FAN, };
@@ -333,9 +308,7 @@ static int __init i8k_get_temp_type(u8 sensor)
 	return i8k_smm(&regs) ? : regs.eax & 0xff;
 }
 
-/*
- * Read the cpu temperature.
- */
+ 
 static int _i8k_get_temp(u8 sensor)
 {
 	struct smm_regs regs = {
@@ -350,25 +323,12 @@ static int i8k_get_temp(u8 sensor)
 {
 	int temp = _i8k_get_temp(sensor);
 
-	/*
-	 * Sometimes the temperature sensor returns 0x99, which is out of range.
-	 * In this case we retry (once) before returning an error.
-	 # 1003655137 00000058 00005a4b
-	 # 1003655138 00000099 00003a80 <--- 0x99 = 153 degrees
-	 # 1003655139 00000054 00005c52
-	 */
+	 
 	if (temp == 0x99) {
 		msleep(100);
 		temp = _i8k_get_temp(sensor);
 	}
-	/*
-	 * Return -ENODATA for all invalid temperatures.
-	 *
-	 * Known instances are the 0x99 value as seen above as well as
-	 * 0xc1 (193), which may be returned when trying to read the GPU
-	 * temperature if the system supports a GPU and it is currently
-	 * turned off.
-	 */
+	 
 	if (temp > I8K_MAX_TEMP)
 		return -ENODATA;
 
@@ -389,9 +349,7 @@ static int __init i8k_get_dell_signature(int req_fn)
 
 #if IS_ENABLED(CONFIG_I8K)
 
-/*
- * Read the Fn key status.
- */
+ 
 static int i8k_get_fn_status(void)
 {
 	struct smm_regs regs = { .eax = I8K_SMM_FN_STATUS, };
@@ -413,9 +371,7 @@ static int i8k_get_fn_status(void)
 	}
 }
 
-/*
- * Read the power status.
- */
+ 
 static int i8k_get_power_status(void)
 {
 	struct smm_regs regs = { .eax = I8K_SMM_POWER_STATUS, };
@@ -428,9 +384,7 @@ static int i8k_get_power_status(void)
 	return (regs.eax & 0xff) == I8K_POWER_AC ? I8K_AC : I8K_BATTERY;
 }
 
-/*
- * Procfs interface
- */
+ 
 
 static long i8k_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
 {
@@ -530,40 +484,25 @@ static long i8k_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
-/*
- * Print the information for /proc/i8k.
- */
+ 
 static int i8k_proc_show(struct seq_file *seq, void *offset)
 {
 	struct dell_smm_data *data = seq->private;
 	int fn_key, cpu_temp, ac_power;
 	int left_fan, right_fan, left_speed, right_speed;
 
-	cpu_temp	= i8k_get_temp(0);				/* 11100 µs */
-	left_fan	= i8k_get_fan_status(data, I8K_FAN_LEFT);	/*   580 µs */
-	right_fan	= i8k_get_fan_status(data, I8K_FAN_RIGHT);	/*   580 µs */
-	left_speed	= i8k_get_fan_speed(data, I8K_FAN_LEFT);	/*   580 µs */
-	right_speed	= i8k_get_fan_speed(data, I8K_FAN_RIGHT);	/*   580 µs */
-	fn_key		= i8k_get_fn_status();				/*   750 µs */
+	cpu_temp	= i8k_get_temp(0);				 
+	left_fan	= i8k_get_fan_status(data, I8K_FAN_LEFT);	 
+	right_fan	= i8k_get_fan_status(data, I8K_FAN_RIGHT);	 
+	left_speed	= i8k_get_fan_speed(data, I8K_FAN_LEFT);	 
+	right_speed	= i8k_get_fan_speed(data, I8K_FAN_RIGHT);	 
+	fn_key		= i8k_get_fn_status();				 
 	if (power_status)
-		ac_power = i8k_get_power_status();			/* 14700 µs */
+		ac_power = i8k_get_power_status();			 
 	else
 		ac_power = -1;
 
-	/*
-	 * Info:
-	 *
-	 * 1)  Format version (this will change if format changes)
-	 * 2)  BIOS version
-	 * 3)  BIOS machine ID
-	 * 4)  Cpu temperature
-	 * 5)  Left fan status
-	 * 6)  Right fan status
-	 * 7)  Left fan speed
-	 * 8)  Right fan speed
-	 * 9)  AC power
-	 * 10) Fn Key status
-	 */
+	 
 	seq_printf(seq, "%s %s %s %d %d %d %d %d %d %d\n",
 		   I8K_PROC_FMT,
 		   data->bios_version,
@@ -597,7 +536,7 @@ static void __init i8k_init_procfs(struct device *dev)
 {
 	struct dell_smm_data *data = dev_get_drvdata(dev);
 
-	/* Only register exit function if creation was successful */
+	 
 	if (proc_create_data("i8k", 0, NULL, &i8k_proc_ops, data))
 		devm_add_action_or_reset(dev, i8k_exit_procfs, NULL);
 }
@@ -664,7 +603,7 @@ static umode_t dell_smm_is_visible(const void *drvdata, enum hwmon_sensor_types 
 	case hwmon_temp:
 		switch (attr) {
 		case hwmon_temp_input:
-			/* _i8k_get_temp() is fine since we do not care about the actual value */
+			 
 			if (data->temp_type[channel] >= 0 || _i8k_get_temp(channel) >= 0)
 				return 0444;
 
@@ -716,12 +655,7 @@ static umode_t dell_smm_is_visible(const void *drvdata, enum hwmon_sensor_types 
 			break;
 		case hwmon_pwm_enable:
 			if (data->auto_fan)
-				/*
-				 * There is no command for retrieve the current status
-				 * from BIOS, and userspace/firmware itself can change
-				 * it.
-				 * Thus we can only provide write-only access for now.
-				 */
+				 
 				return 0200;
 
 			break;
@@ -1013,7 +947,7 @@ static int __init dell_smm_init_hwmon(struct device *dev)
 
 		data->fan[i] = true;
 
-		/* the cooling device is not critical, ignore failures */
+		 
 		if (IS_REACHABLE(CONFIG_THERMAL)) {
 			err = dell_smm_init_cdev(dev, i);
 			if (err < 0)
@@ -1030,17 +964,13 @@ static int __init dell_smm_init_hwmon(struct device *dev)
 		for (state = 0; state <= data->i8k_fan_max; state++) {
 			err = i8k_get_fan_nominal_speed(data, i, state);
 			if (err < 0) {
-				/* Mark nominal speed table as invalid in case of error */
+				 
 				devm_kfree(dev, data->fan_nominal_speed[i]);
 				data->fan_nominal_speed[i] = NULL;
 				break;
 			}
 			data->fan_nominal_speed[i][state] = err;
-			/*
-			 * Autodetect fan multiplier based on nominal rpm if multiplier
-			 * was not specified as module param or in DMI. If fan reports
-			 * rpm value too high then set multiplier to 1.
-			 */
+			 
 			if (!fan_mult && err > I8K_FAN_RPM_THRESHOLD)
 				data->i8k_fan_mult = 1;
 		}
@@ -1064,10 +994,7 @@ enum i8k_configs {
 	DELL_XPS,
 };
 
-/*
- * Only use for machines which need some special configuration
- * in order to work correctly (e.g. if autoconfig fails on this machines).
- */
+ 
 
 static const struct i8k_config_data i8k_config_data[] __initconst = {
 	[DELL_LATITUDE_D520] = {
@@ -1132,7 +1059,7 @@ static const struct dmi_system_id i8k_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Latitude"),
 		},
 	},
-	{	/* UK Inspiron 6400  */
+	{	 
 		.ident = "Dell Inspiron 3",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
@@ -1197,12 +1124,7 @@ static const struct dmi_system_id i8k_dmi_table[] __initconst = {
 
 MODULE_DEVICE_TABLE(dmi, i8k_dmi_table);
 
-/*
- * On some machines once I8K_SMM_GET_FAN_TYPE is issued then CPU fan speed
- * randomly going up and down due to bug in Dell SMM or BIOS. Here is blacklist
- * of affected Dell machines for which we disallow I8K_SMM_GET_FAN_TYPE call.
- * See bug: https://bugzilla.kernel.org/show_bug.cgi?id=100121
- */
+ 
 static const struct dmi_system_id i8k_blacklist_fan_type_dmi_table[] __initconst = {
 	{
 		.ident = "Dell Studio XPS 8000",
@@ -1235,12 +1157,7 @@ static const struct dmi_system_id i8k_blacklist_fan_type_dmi_table[] __initconst
 	{ }
 };
 
-/*
- * On some machines all fan related SMM functions implemented by Dell BIOS
- * firmware freeze kernel for about 500ms. Until Dell fixes these problems fan
- * support for affected blacklisted Dell machines stay disabled.
- * See bug: https://bugzilla.kernel.org/show_bug.cgi?id=195751
- */
+ 
 static const struct dmi_system_id i8k_blacklist_fan_support_dmi_table[] __initconst = {
 	{
 		.ident = "Dell Inspiron 7720",
@@ -1377,10 +1294,7 @@ static int __init dell_smm_probe(struct platform_device *pdev)
 	strscpy(data->bios_machineid, i8k_get_dmi_data(DMI_PRODUCT_SERIAL),
 		sizeof(data->bios_machineid));
 
-	/*
-	 * Set fan multiplier and maximal fan speed from dmi config
-	 * Values specified in module parameters override values from dmi
-	 */
+	 
 	id = dmi_first_match(i8k_dmi_table);
 	if (id && id->driver_data) {
 		const struct i8k_config_data *conf = id->driver_data;
@@ -1392,7 +1306,7 @@ static int __init dell_smm_probe(struct platform_device *pdev)
 			fan_max = conf->fan_max;
 	}
 
-	/* All options must not be 0 */
+	 
 	data->i8k_fan_mult = fan_mult ? : I8K_FAN_MULT;
 	data->i8k_fan_max = fan_max ? : I8K_FAN_HIGH;
 	data->i8k_pwm_mult = DIV_ROUND_UP(255, data->i8k_fan_max);
@@ -1423,14 +1337,10 @@ static struct platform_driver dell_smm_driver = {
 
 static struct platform_device *dell_smm_device;
 
-/*
- * Probe for the presence of a supported laptop.
- */
+ 
 static int __init i8k_init(void)
 {
-	/*
-	 * Get DMI information
-	 */
+	 
 	if (!dmi_check_system(i8k_dmi_table)) {
 		if (!ignore_dmi && !force)
 			return -ENODEV;
@@ -1442,9 +1352,7 @@ static int __init i8k_init(void)
 			i8k_get_dmi_data(DMI_BIOS_VERSION));
 	}
 
-	/*
-	 * Get SMM Dell signature
-	 */
+	 
 	if (i8k_get_dell_signature(I8K_SMM_GET_DELL_SIG1) &&
 	    i8k_get_dell_signature(I8K_SMM_GET_DELL_SIG2)) {
 		if (!force)

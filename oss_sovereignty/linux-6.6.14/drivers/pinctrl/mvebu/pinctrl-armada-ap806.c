@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell Armada ap806 pinctrl driver based on mvebu pinctrl core
- *
- * Copyright (C) 2017 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- * Hanna Hawa <hannah@marvell.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -112,7 +105,7 @@ static int armada_ap806_pinctrl_probe(struct platform_device *pdev)
 	if (!match || !pdev->dev.parent)
 		return -ENODEV;
 
-	soc->variant = 0; /* no variants for Armada AP806 */
+	soc->variant = 0;  
 	soc->controls = armada_ap806_mpp_controls;
 	soc->ncontrols = ARRAY_SIZE(armada_ap806_mpp_controls);
 	soc->gpioranges = armada_ap806_mpp_gpio_ranges;

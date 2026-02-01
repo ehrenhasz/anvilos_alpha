@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_ENGINE_PM_H
 #define INTEL_ENGINE_PM_H
@@ -89,14 +87,7 @@ intel_engine_create_kernel_request(struct intel_engine_cs *engine)
 {
 	struct i915_request *rq;
 
-	/*
-	 * The engine->kernel_context is special as it is used inside
-	 * the engine-pm barrier (see __engine_park()), circumventing
-	 * the usual mutexes and relying on the engine-pm barrier
-	 * instead. So whenever we use the engine->kernel_context
-	 * outside of the barrier, we must manually handle the
-	 * engine wakeref to serialise with the use inside.
-	 */
+	 
 	intel_engine_pm_get(engine);
 	rq = i915_request_create(engine->kernel_context);
 	intel_engine_pm_put(engine);
@@ -108,4 +99,4 @@ void intel_engine_init__pm(struct intel_engine_cs *engine);
 
 void intel_engine_reset_pinned_contexts(struct intel_engine_cs *engine);
 
-#endif /* INTEL_ENGINE_PM_H */
+#endif  

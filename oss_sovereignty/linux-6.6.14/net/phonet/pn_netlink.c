@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * File: pn_netlink.c
- *
- * Phonet netlink interface
- *
- * Copyright (C) 2008 Nokia Corporation.
- *
- * Authors: Sakari Ailus <sakari.ailus@nokia.com>
- *          Remi Denis-Courmont
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netlink.h>
@@ -17,7 +8,7 @@
 #include <net/sock.h>
 #include <net/phonet/pn_dev.h>
 
-/* Device address handling */
+ 
 
 static int fill_addr(struct sk_buff *skb, struct net_device *dev, u8 addr,
 		     u32 portid, u32 seq, int event);
@@ -76,7 +67,7 @@ static int addr_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
 		return -EINVAL;
 	pnaddr = nla_get_u8(tb[IFA_LOCAL]);
 	if (pnaddr & 3)
-		/* Phonet addresses only have 6 high-order bits */
+		 
 		return -EINVAL;
 
 	dev = __dev_get_by_index(net, ifm->ifa_index);
@@ -155,7 +146,7 @@ out:
 	return skb->len;
 }
 
-/* Routes handling */
+ 
 
 static int fill_route(struct sk_buff *skb, struct net_device *dev, u8 dst,
 			u32 portid, u32 seq, int event)
@@ -244,7 +235,7 @@ static int route_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (tb[RTA_DST] == NULL || tb[RTA_OIF] == NULL)
 		return -EINVAL;
 	dst = nla_get_u8(tb[RTA_DST]);
-	if (dst & 3) /* Phonet addresses only have 6 high-order bits */
+	if (dst & 3)  
 		return -EINVAL;
 
 	dev = __dev_get_by_index(net, nla_get_u32(tb[RTA_OIF]));
@@ -291,7 +282,7 @@ int __init phonet_netlink_register(void)
 	if (err)
 		return err;
 
-	/* Further rtnl_register_module() cannot fail */
+	 
 	rtnl_register_module(THIS_MODULE, PF_PHONET, RTM_DELADDR,
 			     addr_doit, NULL, 0);
 	rtnl_register_module(THIS_MODULE, PF_PHONET, RTM_GETADDR,

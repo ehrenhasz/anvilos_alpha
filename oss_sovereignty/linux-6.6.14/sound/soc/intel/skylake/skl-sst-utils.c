@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  skl-sst-utils.c - SKL sst utils functions
- *
- *  Copyright (C) 2016 Intel Corp
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/slab.h>
@@ -14,7 +10,7 @@
 
 #define DEFAULT_HASH_SHA256_LEN 32
 
-/* FW Extended Manifest Header id = $AE1 */
+ 
 #define SKL_EXT_MANIFEST_HEADER_MAGIC   0x31454124
 
 union seg_flags {
@@ -159,16 +155,7 @@ static inline int skl_pvtid_128(struct uuid_module *module)
 	return -EINVAL;
 }
 
-/**
- * skl_get_pvt_id: generate a private id for use as module id
- *
- * @skl: driver context
- * @uuid_mod: module's uuid
- * @instance_id: module's instance id
- *
- * This generates a 128 bit private unique id for a module TYPE so that
- * module instance is unique
- */
+ 
 int skl_get_pvt_id(struct skl_dev *skl, guid_t *uuid_mod, int instance_id)
 {
 	struct uuid_module *module;
@@ -190,15 +177,7 @@ int skl_get_pvt_id(struct skl_dev *skl, guid_t *uuid_mod, int instance_id)
 }
 EXPORT_SYMBOL_GPL(skl_get_pvt_id);
 
-/**
- * skl_put_pvt_id: free up the private id allocated
- *
- * @skl: driver context
- * @uuid_mod: module's uuid
- * @pvt_id: module pvt id
- *
- * This frees a 128 bit private unique id previously generated
- */
+ 
 int skl_put_pvt_id(struct skl_dev *skl, guid_t *uuid_mod, int *pvt_id)
 {
 	int i;
@@ -222,10 +201,7 @@ int skl_put_pvt_id(struct skl_dev *skl, guid_t *uuid_mod, int *pvt_id)
 }
 EXPORT_SYMBOL_GPL(skl_put_pvt_id);
 
-/*
- * Parse the firmware binary to get the UUID, module id
- * and loadable flags
- */
+ 
 int snd_skl_parse_uuids(struct sst_dsp *ctx, const struct firmware *fw,
 			unsigned int offset, int index)
 {
@@ -239,7 +215,7 @@ int snd_skl_parse_uuids(struct sst_dsp *ctx, const struct firmware *fw,
 	unsigned int safe_file;
 	int ret;
 
-	/* Get the FW pointer to derive ADSP header */
+	 
 	stripped_fw.data = fw->data;
 	stripped_fw.size = fw->size;
 
@@ -247,7 +223,7 @@ int snd_skl_parse_uuids(struct sst_dsp *ctx, const struct firmware *fw,
 
 	buf = stripped_fw.data;
 
-	/* check if we have enough space in file to move to header */
+	 
 	safe_file = sizeof(*adsp_hdr) + offset;
 	if (stripped_fw.size <= safe_file) {
 		dev_err(ctx->dev, "Small fw file size, No space for hdr\n");
@@ -256,7 +232,7 @@ int snd_skl_parse_uuids(struct sst_dsp *ctx, const struct firmware *fw,
 
 	adsp_hdr = (struct adsp_fw_hdr *)(buf + offset);
 
-	/* check 1st module entry is in file */
+	 
 	safe_file += adsp_hdr->len + sizeof(*mod_entry);
 	if (stripped_fw.size <= safe_file) {
 		dev_err(ctx->dev, "Small fw file size, No module entry\n");
@@ -267,7 +243,7 @@ int snd_skl_parse_uuids(struct sst_dsp *ctx, const struct firmware *fw,
 
 	num_entry = adsp_hdr->num_modules;
 
-	/* check all entries are in file */
+	 
 	safe_file += num_entry * sizeof(*mod_entry);
 	if (stripped_fw.size <= safe_file) {
 		dev_err(ctx->dev, "Small fw file size, No modules\n");
@@ -275,13 +251,7 @@ int snd_skl_parse_uuids(struct sst_dsp *ctx, const struct firmware *fw,
 	}
 
 
-	/*
-	 * Read the UUID(GUID) from FW Manifest.
-	 *
-	 * The 16 byte UUID format is: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXX
-	 * Populate the UUID table to store module_id and loadable flags
-	 * for the module.
-	 */
+	 
 
 	for (i = 0; i < num_entry; i++, mod_entry++) {
 		module = kzalloc(sizeof(*module), GFP_KERNEL);
@@ -327,18 +297,12 @@ void skl_freeup_uuid_list(struct skl_dev *skl)
 	}
 }
 
-/*
- * some firmware binary contains some extended manifest. This needs
- * to be stripped in that case before we load and use that image.
- *
- * Get the module id for the module by checking
- * the table for the UUID for the module
- */
+ 
 int skl_dsp_strip_extended_manifest(struct firmware *fw)
 {
 	struct skl_ext_manifest_hdr *hdr;
 
-	/* check if fw file is greater than header we are looking */
+	 
 	if (fw->size < sizeof(hdr)) {
 		pr_err("%s: Firmware file small, no hdr\n", __func__);
 		return -EINVAL;
@@ -415,7 +379,7 @@ void skl_release_library(struct skl_lib_info *linfo, int lib_count)
 {
 	int i;
 
-	/* library indices start from 1 to N. 0 represents base FW */
+	 
 	for (i = 1; i < lib_count; i++) {
 		if (linfo[i].fw) {
 			release_firmware(linfo[i].fw);

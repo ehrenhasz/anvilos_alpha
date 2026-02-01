@@ -1,32 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * aio_iiro_16.c
- * Comedi driver for Access I/O Products 104-IIRO-16 board
- * Copyright (C) 2006 C&C Technologies, Inc.
- */
 
-/*
- * Driver: aio_iiro_16
- * Description: Access I/O Products PC/104 Isolated Input/Relay Output Board
- * Author: Zachary Ware <zach.ware@cctechnol.com>
- * Devices: [Access I/O] 104-IIRO-16 (aio_iiro_16)
- * Status: experimental
- *
- * Configuration Options:
- *   [0] - I/O port base address
- *   [1] - IRQ (optional)
- *
- * The board supports interrupts on change of state of the digital inputs.
- * The sample data returned by the async command indicates which inputs
- * changed state and the current state of the inputs:
- *
- *	Bit 23 - IRQ Enable (1) / Disable (0)
- *	Bit 17 - Input 8-15 Changed State (1 = Changed, 0 = No Change)
- *	Bit 16 - Input 0-7 Changed State (1 = Changed, 0 = No Change)
- *	Bit 15 - Digital input 15
- *	...
- *	Bit 0  - Digital input 0
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -102,7 +77,7 @@ static int aio_iiro_16_cos_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -113,10 +88,10 @@ static int aio_iiro_16_cos_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -128,9 +103,9 @@ static int aio_iiro_16_cos_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -173,10 +148,7 @@ static int aio_iiro_16_attach(struct comedi_device *dev,
 
 	aio_iiro_enable_irq(dev, false);
 
-	/*
-	 * Digital input change of state interrupts are optionally supported
-	 * using IRQ 2-7, 10-12, 14, or 15.
-	 */
+	 
 	if ((1 << it->options[1]) & 0xdcfc) {
 		ret = request_irq(it->options[1], aio_iiro_16_cos, 0,
 				  dev->board_name, dev);
@@ -188,7 +160,7 @@ static int aio_iiro_16_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -197,11 +169,11 @@ static int aio_iiro_16_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= aio_iiro_16_do_insn_bits;
 
-	/* get the initial state of the relays */
+	 
 	s->state = inb(dev->iobase + AIO_IIRO_16_RELAY_0_7) |
 		   (inb(dev->iobase + AIO_IIRO_16_RELAY_8_15) << 8);
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;

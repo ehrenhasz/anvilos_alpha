@@ -1,21 +1,4 @@
-/*
- * Driver for the MDIO interface of Marvell network interfaces.
- *
- * Since the MDIO interface of Marvell network interfaces is shared
- * between all network interfaces, having a single driver allows to
- * handle concurrent accesses properly (you may have four Ethernet
- * ports, but they in fact share the same SMI interface to access
- * the MDIO bus). This driver is currently used by the mvneta and
- * mv643xx_eth drivers.
- *
- * Copyright (C) 2012 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/acpi_mdio.h>
@@ -52,12 +35,8 @@
 #define  MVMDIO_XSMI_BUSY		BIT(30)
 #define MVMDIO_XSMI_ADDR_REG		0x8
 
-/*
- * SMI Timeout measurements:
- * - Kirkwood 88F6281 (Globalscale Dreamplug): 45us to 95us (Interrupt)
- * - Armada 370       (Globalscale Mirabox):   41us to 43us (Polled)
- */
-#define MVMDIO_SMI_TIMEOUT		1000 /* 1000us = 1ms */
+ 
+#define MVMDIO_SMI_TIMEOUT		1000  
 #define MVMDIO_SMI_POLL_INTERVAL_MIN	45
 #define MVMDIO_SMI_POLL_INTERVAL_MAX	55
 
@@ -67,12 +46,7 @@
 struct orion_mdio_dev {
 	void __iomem *regs;
 	struct clk *clk[4];
-	/*
-	 * If we have access to the error interrupt pin (which is
-	 * somewhat misnamed as it not only reflects internal errors
-	 * but also reflects SMI completion), use that to wait for
-	 * SMI access completion instead of polling the SMI busy bit.
-	 */
+	 
 	int err_interrupt;
 	wait_queue_head_t smi_busy_wait;
 };
@@ -88,8 +62,7 @@ struct orion_mdio_ops {
 	unsigned int poll_interval_max;
 };
 
-/* Wait for the SMI unit to be ready for another operation
- */
+ 
 static int orion_mdio_wait_ready(const struct orion_mdio_ops *ops,
 				 struct mii_bus *bus)
 {
@@ -111,10 +84,7 @@ static int orion_mdio_wait_ready(const struct orion_mdio_ops *ops,
 			if (time_is_before_jiffies(end))
 				++timedout;
 	        } else {
-			/* wait_event_timeout does not guarantee a delay of at
-			 * least one whole jiffie, so timeout must be no less
-			 * than two.
-			 */
+			 
 			if (timeout < 2)
 				timeout = 2;
 			wait_event_timeout(dev->smi_busy_wait,
@@ -357,9 +327,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
 		goto out_mdio;
 	}
 
-	/* For the platforms not supporting DT/ACPI fall-back
-	 * to mdiobus_register via of_mdiobus_register.
-	 */
+	 
 	if (is_acpi_node(pdev->dev.fwnode))
 		ret = acpi_mdiobus_register(bus, pdev->dev.fwnode);
 	else

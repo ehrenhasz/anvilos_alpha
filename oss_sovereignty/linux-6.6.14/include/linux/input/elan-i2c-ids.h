@@ -1,19 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Elan I2C/SMBus Touchpad device whitelist
- *
- * Copyright (c) 2013 ELAN Microelectronics Corp.
- *
- * Author: æ維 (Duson Lin) <dusonlin@emc.com.tw>
- * Author: KT Liao <kt.liao@emc.com.tw>
- * Version: 1.6.3
- *
- * Based on cyapa driver:
- * copyright (c) 2011-2012 Cypress Semiconductor, Inc.
- * copyright (c) 2011-2012 Google, Inc.
- *
- * Trademarks are the property of their respective owners.
- */
+ 
+ 
 
 #ifndef __ELAN_I2C_IDS_H
 #define __ELAN_I2C_IDS_H
@@ -45,7 +31,7 @@ static const struct acpi_device_id elan_acpi_id[] = {
 	{ "ELAN0618", 0 },
 	{ "ELAN0619", 0 },
 	{ "ELAN061A", 0 },
-/*	{ "ELAN061B", 0 }, not working on the Lenovo Legion Y7000 */
+ 
 	{ "ELAN061C", 0 },
 	{ "ELAN061D", 0 },
 	{ "ELAN061E", 0 },
@@ -64,17 +50,17 @@ static const struct acpi_device_id elan_acpi_id[] = {
 	{ "ELAN062B", 0 },
 	{ "ELAN062C", 0 },
 	{ "ELAN062D", 0 },
-	{ "ELAN062E", 0 }, /* Lenovo V340 Whiskey Lake U */
-	{ "ELAN062F", 0 }, /* Lenovo V340 Comet Lake U */
+	{ "ELAN062E", 0 },  
+	{ "ELAN062F", 0 },  
 	{ "ELAN0631", 0 },
 	{ "ELAN0632", 0 },
-	{ "ELAN0633", 0 }, /* Lenovo S145 */
-	{ "ELAN0634", 0 }, /* Lenovo V340 Ice lake */
-	{ "ELAN0635", 0 }, /* Lenovo V1415-IIL */
-	{ "ELAN0636", 0 }, /* Lenovo V1415-Dali */
-	{ "ELAN0637", 0 }, /* Lenovo V1415-IGLR */
+	{ "ELAN0633", 0 },  
+	{ "ELAN0634", 0 },  
+	{ "ELAN0635", 0 },  
+	{ "ELAN0636", 0 },  
+	{ "ELAN0637", 0 },  
 	{ "ELAN1000", 0 },
 	{ }
 };
 
-#endif /* __ELAN_I2C_IDS_H */
+#endif  

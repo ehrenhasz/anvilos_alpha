@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Raspberry Pi cpufreq driver
- *
- * Copyright (C) 2019, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpu.h>
@@ -36,10 +32,7 @@ static int raspberrypi_cpufreq_probe(struct platform_device *pdev)
 		return PTR_ERR(clk);
 	}
 
-	/*
-	 * The max and min frequencies are configurable in the Raspberry Pi
-	 * firmware, so we query them at runtime.
-	 */
+	 
 	min = roundup(clk_round_rate(clk, 0), RASPBERRYPI_FREQ_INTERVAL);
 	max = roundup(clk_round_rate(clk, ULONG_MAX), RASPBERRYPI_FREQ_INTERVAL);
 	clk_put(clk);
@@ -76,10 +69,7 @@ static void raspberrypi_cpufreq_remove(struct platform_device *pdev)
 	platform_device_unregister(cpufreq_dt);
 }
 
-/*
- * Since the driver depends on clk-raspberrypi, which may return EPROBE_DEFER,
- * all the activity is performed in the probe, which may be defered as well.
- */
+ 
 static struct platform_driver raspberrypi_cpufreq_driver = {
 	.driver = {
 		.name = "raspberrypi-cpufreq",

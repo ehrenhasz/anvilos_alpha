@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020 Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -32,7 +29,7 @@ struct lpi_pinctrl {
 	char __iomem *tlmm_base;
 	char __iomem *slew_base;
 	struct clk_bulk_data clks[MAX_LPI_NUM_CLKS];
-	/* Protects from concurrent register updates */
+	 
 	struct mutex lock;
 	DECLARE_BITMAP(ever_gpio, MAX_NR_GPIO);
 	const struct lpi_pinctrl_variant_data *data;
@@ -107,12 +104,7 @@ static int lpi_gpio_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
 	mutex_lock(&pctrl->lock);
 	val = lpi_gpio_read(pctrl, pin, LPI_GPIO_CFG_REG);
 
-	/*
-	 * If this is the first time muxing to GPIO and the direction is
-	 * output, make sure that we're not going to be glitching the pin
-	 * by reading the current state of the pin and setting it as the
-	 * output.
-	 */
+	 
 	if (i == GPIO_FUNC && (val & LPI_GPIO_OE_MASK) &&
 	    !test_and_set_bit(group, pctrl->ever_gpio)) {
 		u32 io_val = lpi_gpio_read(pctrl, group, LPI_GPIO_VALUE_REG);
@@ -250,10 +242,7 @@ static int lpi_config_set(struct pinctrl_dev *pctldev, unsigned int group,
 		}
 	}
 
-	/*
-	 * As per Hardware Programming Guide, when configuring pin as output,
-	 * set the pin value before setting output-enable (OE).
-	 */
+	 
 	if (output_enabled) {
 		val = u32_encode_bits(value ? 1 : 0, LPI_GPIO_VALUE_OUT_MASK);
 		lpi_gpio_write(pctrl, group, LPI_GPIO_VALUE_REG, val);

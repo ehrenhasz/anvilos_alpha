@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 IBM Corporation
- * Author: Mimi Zohar <zohar@us.ibm.com>
- *
- * File: integrity_audit.c
- *	Audit calls for the integrity subsystem
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/gfp.h>
@@ -14,7 +8,7 @@
 
 static int integrity_audit_info;
 
-/* ima_audit_setup - enable informational auditing messages */
+ 
 static int __init integrity_audit_setup(char *str)
 {
 	unsigned long audit;
@@ -41,7 +35,7 @@ void integrity_audit_message(int audit_msgno, struct inode *inode,
 	struct audit_buffer *ab;
 	char name[TASK_COMM_LEN];
 
-	if (!integrity_audit_info && audit_info == 1)	/* Skip info messages */
+	if (!integrity_audit_info && audit_info == 1)	 
 		return;
 
 	ab = audit_log_start(audit_context(), GFP_KERNEL, audit_msgno);

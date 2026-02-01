@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/pci.h>
 #include <linux/vmalloc.h>
@@ -57,9 +57,7 @@ static void mgag200_g200_init_registers(struct mgag200_g200_device *g200)
 	mgag200_init_registers(mdev);
 }
 
-/*
- * PIXPLLC
- */
+ 
 
 static int mgag200_g200_pixpllc_atomic_check(struct drm_crtc *crtc, struct drm_atomic_state *new_state)
 {
@@ -163,9 +161,7 @@ static void mgag200_g200_pixpllc_atomic_update(struct drm_crtc *crtc,
 	WREG_DAC(MGA1064_PIX_PLLC_P, xpixpllcp);
 }
 
-/*
- * Mode-setting pipeline
- */
+ 
 
 static const struct drm_plane_helper_funcs mgag200_g200_primary_plane_helper_funcs = {
 	MGAG200_PRIMARY_PLANE_HELPER_FUNCS,
@@ -226,7 +222,7 @@ static int mgag200_g200_pipeline_init(struct mga_device *mdev)
 	}
 	drm_crtc_helper_add(crtc, &mgag200_g200_crtc_helper_funcs);
 
-	/* FIXME: legacy gamma tables, but atomic gamma doesn't work without */
+	 
 	drm_mode_crtc_set_gamma_size(crtc, MGAG200_LUT_SIZE);
 	drm_crtc_enable_color_mgmt(crtc, 0, false, MGAG200_LUT_SIZE);
 
@@ -263,9 +259,7 @@ static int mgag200_g200_pipeline_init(struct mga_device *mdev)
 	return 0;
 }
 
-/*
- * DRM Device
- */
+ 
 
 static const struct mgag200_device_info mgag200_g200_device_info =
 	MGAG200_DEVICE_INFO_INIT(2048, 2048, 0, false, 1, 3, false);
@@ -284,18 +278,18 @@ static void mgag200_g200_interpret_bios(struct mgag200_g200_device *g200,
 	int offset;
 	int tmp;
 
-	/* Test for MATROX string. */
+	 
 	if (size < 45 + sizeof(matrox))
 		return;
 	if (memcmp(&bios[45], matrox, sizeof(matrox)) != 0)
 		return;
 
-	/* Get the PInS offset. */
+	 
 	if (size < MGA_BIOS_OFFSET + 2)
 		return;
 	offset = (bios[MGA_BIOS_OFFSET + 1] << 8) | bios[MGA_BIOS_OFFSET];
 
-	/* Get PInS data structure. */
+	 
 
 	if (size < offset + 6)
 		return;
@@ -322,7 +316,7 @@ static void mgag200_g200_interpret_bios(struct mgag200_g200_device *g200,
 
 	drm_dbg_kms(dev, "MATROX BIOS PInS version %d size: %d found\n", version, pins_len);
 
-	/* Extract the clock values */
+	 
 
 	switch (version) {
 	case 1:

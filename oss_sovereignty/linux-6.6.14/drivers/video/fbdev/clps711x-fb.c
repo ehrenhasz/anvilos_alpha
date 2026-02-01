@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cirrus Logic CLPS711X FB driver
- *
- * Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- * Based on driver by Russell King <rmk@arm.linux.org.uk>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/fb.h>
@@ -22,7 +17,7 @@
 #define CLPS711X_FB_NAME	"clps711x-fb"
 #define CLPS711X_FB_BPP_MAX	(4)
 
-/* Registers relative to LCDCON */
+ 
 #define CLPS711X_LCDCON		(0x0000)
 # define LCDCON_GSEN		BIT(30)
 # define LCDCON_GSMD		BIT(31)
@@ -52,7 +47,7 @@ static int clps711x_fb_setcolreg(u_int regno, u_int red, u_int green,
 
 	shift = 4 * (regno & 7);
 	mask  = 0xf << shift;
-	/* gray = 0.30*R + 0.58*G + 0.11*B */
+	 
 	level = (((red * 77 + green * 151 + blue * 28) >> 20) << shift) & mask;
 	if (cfb->cmap_invert)
 		level = 0xf - level;
@@ -138,7 +133,7 @@ static int clps711x_fb_set_par(struct fb_info *info)
 	if (info->var.bits_per_pixel >= 2)
 		lcdcon |= LCDCON_GSEN;
 
-	/* LCDCON must only be changed while the LCD is disabled */
+	 
 	regmap_update_bits(cfb->syscon, SYSCON_OFFSET, SYSCON1_LCDEN, 0);
 	writel(lcdcon, cfb->base + CLPS711X_LCDCON);
 	regmap_update_bits(cfb->syscon, SYSCON_OFFSET,
@@ -149,7 +144,7 @@ static int clps711x_fb_set_par(struct fb_info *info)
 
 static int clps711x_fb_blank(int blank, struct fb_info *info)
 {
-	/* Return happy */
+	 
 	return 0;
 }
 
@@ -244,7 +239,7 @@ static int clps711x_fb_probe(struct platform_device *pdev)
 		goto out_fb_release;
 	}
 
-	/* Physical address should be aligned to 256 MiB */
+	 
 	if (res->start & 0x0fffffff) {
 		ret = -EINVAL;
 		goto out_fb_release;
@@ -287,7 +282,7 @@ static int clps711x_fb_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_fb_release;
 
-	/* Force disable LCD on any mismatch */
+	 
 	if (info->fix.smem_start != (readb(cfb->base + CLPS711X_FBADDR) << 28))
 		regmap_update_bits(cfb->syscon, SYSCON_OFFSET,
 				   SYSCON1_LCDEN, 0);
@@ -297,9 +292,9 @@ static int clps711x_fb_probe(struct platform_device *pdev)
 		goto out_fb_release;
 
 	if (!(val & SYSCON1_LCDEN)) {
-		/* Setup start FB address */
+		 
 		writeb(info->fix.smem_start >> 28, cfb->base + CLPS711X_FBADDR);
-		/* Clean FB memory */
+		 
 		memset_io(info->screen_base, 0, cfb->buffsize);
 	}
 

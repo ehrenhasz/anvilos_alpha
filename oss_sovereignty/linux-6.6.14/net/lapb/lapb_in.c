@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	LAPB release 002
- *
- *	This code REQUIRES 2.1.15 or higher/ NET3.038
- *
- *	History
- *	LAPB 001	Jonathan Naulor	Started Coding
- *	LAPB 002	Jonathan Naylor	New timer architecture.
- *	2000-10-29	Henner Eisen	lapb_data_indication() return status.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -32,10 +23,7 @@
 #include <linux/interrupt.h>
 #include <net/lapb.h>
 
-/*
- *	State machine for state 0, Disconnected State.
- *	The handling of the timer(s) is in file lapb_timer.c.
- */
+ 
 static void lapb_state0_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 				struct lapb_frame *frame)
 {
@@ -103,10 +91,7 @@ static void lapb_state0_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 	kfree_skb(skb);
 }
 
-/*
- *	State machine for state 1, Awaiting Connection State.
- *	The handling of the timer(s) is in file lapb_timer.c.
- */
+ 
 static void lapb_state1_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 				struct lapb_frame *frame)
 {
@@ -179,10 +164,7 @@ static void lapb_state1_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 	kfree_skb(skb);
 }
 
-/*
- *	State machine for state 2, Awaiting Release State.
- *	The handling of the timer(s) is in file lapb_timer.c
- */
+ 
 static void lapb_state2_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 				struct lapb_frame *frame)
 {
@@ -239,10 +221,7 @@ static void lapb_state2_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 	kfree_skb(skb);
 }
 
-/*
- *	State machine for state 3, Connected State.
- *	The handling of the timer(s) is in file lapb_timer.c
- */
+ 
 static void lapb_state3_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 				struct lapb_frame *frame)
 {
@@ -401,13 +380,7 @@ static void lapb_state3_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 			int cn;
 			cn = lapb_data_indication(lapb, skb);
 			queued = 1;
-			/*
-			 * If upper layer has dropped the frame, we
-			 * basically ignore any further protocol
-			 * processing. This will cause the peer
-			 * to re-transmit the frame later like
-			 * a frame lost on the wire.
-			 */
+			 
 			if (cn == NET_RX_DROP) {
 				pr_debug("rx congestion\n");
 				break;
@@ -465,10 +438,7 @@ static void lapb_state3_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 		kfree_skb(skb);
 }
 
-/*
- *	State machine for state 4, Frame Reject State.
- *	The handling of the timer(s) is in file lapb_timer.c.
- */
+ 
 static void lapb_state4_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 				struct lapb_frame *frame)
 {
@@ -527,9 +497,7 @@ static void lapb_state4_machine(struct lapb_cb *lapb, struct sk_buff *skb,
 	kfree_skb(skb);
 }
 
-/*
- *	Process an incoming LAPB frame
- */
+ 
 void lapb_data_input(struct lapb_cb *lapb, struct sk_buff *skb)
 {
 	struct lapb_frame frame;

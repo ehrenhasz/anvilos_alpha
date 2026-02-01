@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <unistd.h>
 #include <string.h>
@@ -31,17 +9,9 @@
 #include <stdarg.h>
 #include "libnvpair.h"
 
-/*
- * libnvpair - A tools library for manipulating <name, value> pairs.
- *
- *	This library provides routines packing an unpacking nv pairs
- *	for transporting data across process boundaries, transporting
- *	between kernel and userland, and possibly saving onto disk files.
- */
+ 
 
-/*
- * Print control structure.
- */
+ 
 
 #define	DEFINEOP(opname, vtype) \
 	struct { \
@@ -88,14 +58,14 @@ struct nvlist_printops {
 };
 
 struct nvlist_prtctl {
-	FILE *nvprt_fp;			/* output destination */
-	enum nvlist_indent_mode nvprt_indent_mode; /* see above */
-	int nvprt_indent;		/* absolute indent, or tab depth */
-	int nvprt_indentinc;		/* indent or tab increment */
-	const char *nvprt_nmfmt;	/* member name format, max one %s */
-	const char *nvprt_eomfmt;	/* after member format, e.g. "\n" */
-	const char *nvprt_btwnarrfmt;	/* between array members */
-	int nvprt_btwnarrfmt_nl;	/* nvprt_eoamfmt includes newline? */
+	FILE *nvprt_fp;			 
+	enum nvlist_indent_mode nvprt_indent_mode;  
+	int nvprt_indent;		 
+	int nvprt_indentinc;		 
+	const char *nvprt_nmfmt;	 
+	const char *nvprt_eomfmt;	 
+	const char *nvprt_btwnarrfmt;	 
+	int nvprt_btwnarrfmt_nl;	 
 	struct nvlist_printops *nvprt_dfltops;
 	struct nvlist_printops *nvprt_custops;
 };
@@ -142,13 +112,7 @@ struct nvlist_prtctl {
 
 static void nvlist_print_with_indent(nvlist_t *, nvlist_prtctl_t);
 
-/*
- * ======================================================================
- * |									|
- * | Indentation							|
- * |									|
- * ======================================================================
- */
+ 
 
 static void
 indent(nvlist_prtctl_t pctl, int onemore)
@@ -168,22 +132,9 @@ indent(nvlist_prtctl_t pctl, int onemore)
 	}
 }
 
-/*
- * ======================================================================
- * |									|
- * | Default nvlist member rendering functions.				|
- * |									|
- * ======================================================================
- */
+ 
 
-/*
- * Generate functions to print single-valued nvlist members.
- *
- * type_and_variant - suffix to form function name
- * vtype - C type for the member value
- * ptype - C type to cast value to for printing
- * vfmt - format string for pair value, e.g "%d" or "0x%llx"
- */
+ 
 
 #define	NVLIST_PRTFUNC(type_and_variant, vtype, ptype, vfmt) \
 static int \
@@ -199,12 +150,7 @@ nvprint_##type_and_variant(nvlist_prtctl_t pctl, void *private, \
 	return (1); \
 }
 
-/*
- * Workaround for GCC 12+ with UBSan enabled deficencies.
- *
- * GCC 12+ invoked with -fsanitize=undefined incorrectly reports the code
- * below as violating -Wformat-overflow.
- */
+ 
 #if defined(__GNUC__) && !defined(__clang__) && \
 	defined(ZFS_UBSAN_ENABLED) && defined(HAVE_FORMAT_OVERFLOW)
 #pragma GCC diagnostic push
@@ -229,9 +175,7 @@ NVLIST_PRTFUNC(hrtime, hrtime_t, hrtime_t, "0x%llx")
 #pragma GCC diagnostic pop
 #endif
 
-/*
- * Generate functions to print array-valued nvlist members.
- */
+ 
 
 #define	NVLIST_ARRPRTFUNC(type_and_variant, vtype, ptype, vfmt) \
 static int \
@@ -314,13 +258,7 @@ nvaprint_nvlist_array(nvlist_prtctl_t pctl, void *private,
 	return (1);
 }
 
-/*
- * ======================================================================
- * |									|
- * | Interfaces that allow control over formatting.			|
- * |									|
- * ======================================================================
- */
+ 
 
 void
 nvlist_prtctl_setdest(nvlist_prtctl_t pctl, FILE *fp)
@@ -423,13 +361,7 @@ nvlist_prtctl_dofmt(nvlist_prtctl_t pctl, enum nvlist_prtctl_fmt which, ...)
 	va_end(ap);
 }
 
-/*
- * ======================================================================
- * |									|
- * | Interfaces to allow appointment of replacement rendering functions.|
- * |									|
- * ======================================================================
- */
+ 
 
 #define	NVLIST_PRINTCTL_REPLACE(type, vtype) \
 void \
@@ -480,13 +412,7 @@ NVLIST_PRINTCTL_AREPLACE(uint64_array, uint64_t *)
 NVLIST_PRINTCTL_AREPLACE(string_array, const char **)
 NVLIST_PRINTCTL_AREPLACE(nvlist_array, nvlist_t **)
 
-/*
- * ======================================================================
- * |									|
- * | Interfaces to manage nvlist_prtctl_t cookies.			|
- * |									|
- * ======================================================================
- */
+ 
 
 
 static const struct nvlist_printops defprtops =
@@ -565,17 +491,9 @@ nvlist_prtctl_free(nvlist_prtctl_t pctl)
 	}
 }
 
-/*
- * ======================================================================
- * |									|
- * | Top-level print request interfaces.				|
- * |									|
- * ======================================================================
- */
+ 
 
-/*
- * nvlist_print - Prints elements in an event buffer
- */
+ 
 static void
 nvlist_print_with_indent(nvlist_t *nvl, nvlist_prtctl_t pctl)
 {
@@ -801,9 +719,7 @@ nvlist_prt(nvlist_t *nvl, nvlist_prtctl_t pctl)
 	} \
 }
 
-/*
- * Similar to nvlist_print() but handles arrays slightly differently.
- */
+ 
 void
 dump_nvlist(nvlist_t *list, int indent)
 {
@@ -936,30 +852,9 @@ dump_nvlist(nvlist_t *list, int indent)
 	}
 }
 
-/*
- * ======================================================================
- * |									|
- * | Misc private interface.						|
- * |									|
- * ======================================================================
- */
+ 
 
-/*
- * Determine if string 'value' matches 'nvp' value.  The 'value' string is
- * converted, depending on the type of 'nvp', prior to match.  For numeric
- * types, a radix independent sscanf conversion of 'value' is used. If 'nvp'
- * is an array type, 'ai' is the index into the array against which we are
- * checking for match. If nvp is of DATA_TYPE_STRING*, the caller can pass
- * in a regex_t compilation of value in 'value_regex' to trigger regular
- * expression string match instead of simple strcmp().
- *
- * Return 1 on match, 0 on no-match, and -1 on error.  If the error is
- * related to value syntax error and 'ep' is non-NULL, *ep will point into
- * the 'value' string at the location where the error exists.
- *
- * NOTE: It may be possible to move the non-regex_t version of this into
- * common code used by library/kernel/boot.
- */
+ 
 int
 nvpair_value_match_regex(nvpair_t *nvp, int ai,
     const char *value, regex_t *value_regex, const char **ep)
@@ -972,14 +867,14 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 		*ep = NULL;
 
 	if ((nvp == NULL) || (value == NULL))
-		return (-1);		/* error fail match - invalid args */
+		return (-1);		 
 
-	/* make sure array and index combination make sense */
+	 
 	if ((nvpair_type_is_array(nvp) && (ai < 0)) ||
 	    (!nvpair_type_is_array(nvp) && (ai >= 0)))
-		return (-1);		/* error fail match - bad index */
+		return (-1);		 
 
-	/* non-string values should be single 'chunk' */
+	 
 	if ((nvpair_type(nvp) != DATA_TYPE_STRING) &&
 	    (nvpair_type(nvp) != DATA_TYPE_STRING_ARRAY)) {
 		value += strspn(value, " \t");
@@ -987,7 +882,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 		if (*evalue) {
 			if (ep)
 				*ep = evalue;
-			return (-1);	/* error fail match - syntax */
+			return (-1);	 
 		}
 	}
 
@@ -996,15 +891,15 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_STRING: {
 		const char *val;
 
-		/* check string value for match */
+		 
 		if (nvpair_value_string(nvp, &val) == 0) {
 			if (value_regex) {
 				if (regexec(value_regex, val,
 				    (size_t)0, NULL, 0) == 0)
-					return (1);	/* match */
+					return (1);	 
 			} else {
 				if (strcmp(value, val) == 0)
-					return (1);	/* match */
+					return (1);	 
 			}
 		}
 		break;
@@ -1012,7 +907,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_STRING_ARRAY: {
 		const char **val_array;
 
-		/* check indexed string value of array for match */
+		 
 		if ((nvpair_value_string_array(nvp, &val_array, &a_len) == 0) &&
 		    (ai < a_len)) {
 			if (value_regex) {
@@ -1029,7 +924,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_BYTE: {
 		uchar_t val, val_arg;
 
-		/* scanf uchar_t from value and check for match */
+		 
 		sr = sscanf(value, "%c", &val_arg);
 		if ((sr == 1) && (nvpair_value_byte(nvp, &val) == 0) &&
 		    (val == val_arg))
@@ -1040,7 +935,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 		uchar_t *val_array, val_arg;
 
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%c", &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_byte_array(nvp, &val_array, &a_len) == 0) &&
@@ -1052,7 +947,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT8: {
 		int8_t val, val_arg;
 
-		/* scanf int8_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi8, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int8(nvp, &val) == 0) &&
@@ -1063,7 +958,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT8_ARRAY: {
 		int8_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi8, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int8_array(nvp, &val_array, &a_len) == 0) &&
@@ -1075,7 +970,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT8: {
 		uint8_t val, val_arg;
 
-		/* scanf uint8_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi8, (int8_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint8(nvp, &val) == 0) &&
@@ -1086,7 +981,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT8_ARRAY: {
 		uint8_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi8, (int8_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint8_array(nvp, &val_array, &a_len) == 0) &&
@@ -1098,7 +993,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT16: {
 		int16_t val, val_arg;
 
-		/* scanf int16_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi16, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int16(nvp, &val) == 0) &&
@@ -1109,7 +1004,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT16_ARRAY: {
 		int16_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi16, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int16_array(nvp, &val_array, &a_len) == 0) &&
@@ -1121,7 +1016,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT16: {
 		uint16_t val, val_arg;
 
-		/* scanf uint16_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi16, (int16_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint16(nvp, &val) == 0) &&
@@ -1132,7 +1027,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT16_ARRAY: {
 		uint16_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi16, (int16_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint16_array(nvp, &val_array, &a_len) == 0) &&
@@ -1144,7 +1039,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT32: {
 		int32_t val, val_arg;
 
-		/* scanf int32_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi32, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int32(nvp, &val) == 0) &&
@@ -1155,7 +1050,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT32_ARRAY: {
 		int32_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi32, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int32_array(nvp, &val_array, &a_len) == 0) &&
@@ -1167,7 +1062,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT32: {
 		uint32_t val, val_arg;
 
-		/* scanf uint32_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi32, (int32_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint32(nvp, &val) == 0) &&
@@ -1178,7 +1073,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT32_ARRAY: {
 		uint32_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi32, (int32_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint32_array(nvp, &val_array, &a_len) == 0) &&
@@ -1190,7 +1085,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT64: {
 		int64_t val, val_arg;
 
-		/* scanf int64_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi64, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int64(nvp, &val) == 0) &&
@@ -1201,7 +1096,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_INT64_ARRAY: {
 		int64_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi64, &val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_int64_array(nvp, &val_array, &a_len) == 0) &&
@@ -1213,7 +1108,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT64: {
 		uint64_t val_arg, val;
 
-		/* scanf uint64_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi64, (int64_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint64(nvp, &val) == 0) &&
@@ -1224,7 +1119,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_UINT64_ARRAY: {
 		uint64_t *val_array, val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi64, (int64_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_uint64_array(nvp, &val_array, &a_len) == 0) &&
@@ -1237,7 +1132,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 		int32_t val_arg;
 		boolean_t val;
 
-		/* scanf boolean_t from value and check for match */
+		 
 		sr = sscanf(value, "%"SCNi32, (int32_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_boolean_value(nvp, &val) == 0) &&
@@ -1249,7 +1144,7 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 		boolean_t *val_array;
 		int32_t val_arg;
 
-		/* check indexed value of array for match */
+		 
 		sr = sscanf(value, "%"SCNi32, (int32_t *)&val_arg);
 		if ((sr == 1) &&
 		    (nvpair_value_boolean_array(nvp,
@@ -1266,23 +1161,18 @@ nvpair_value_match_regex(nvpair_t *nvp, int ai,
 	case DATA_TYPE_DOUBLE:
 	case DATA_TYPE_UNKNOWN:
 	default:
-		/*
-		 * unknown/unsupported data type
-		 */
-		return (-1);		/* error fail match */
+		 
+		return (-1);		 
 	}
 
-	/*
-	 * check to see if sscanf failed conversion, return approximate
-	 * pointer to problem
-	 */
+	 
 	if (sr != 1) {
 		if (ep)
 			*ep = value;
-		return (-1);		/* error fail match  - syntax */
+		return (-1);		 
 	}
 
-	return (0);			/* fail match */
+	return (0);			 
 }
 
 int

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021 Aspeed Technology Inc.
- */
+
+ 
 #include <crypto/engine.h>
 #include <crypto/internal/akcipher.h>
 #include <crypto/internal/rsa.h>
@@ -28,47 +26,39 @@
 	dev_dbg((d)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
 #endif
 
-/*****************************
- *                           *
- * ACRY register definitions *
- *                           *
- * ***************************/
-#define ASPEED_ACRY_TRIGGER		0x000	/* ACRY Engine Control: trigger */
-#define ASPEED_ACRY_DMA_CMD		0x048	/* ACRY Engine Control: Command */
-#define ASPEED_ACRY_DMA_SRC_BASE	0x04C	/* ACRY DRAM base address for DMA */
-#define ASPEED_ACRY_DMA_LEN		0x050	/* ACRY Data Length of DMA */
-#define ASPEED_ACRY_RSA_KEY_LEN		0x058	/* ACRY RSA Exp/Mod Key Length (Bits) */
-#define ASPEED_ACRY_INT_MASK		0x3F8	/* ACRY Interrupt Mask */
-#define ASPEED_ACRY_STATUS		0x3FC	/* ACRY Interrupt Status */
+ 
+#define ASPEED_ACRY_TRIGGER		0x000	 
+#define ASPEED_ACRY_DMA_CMD		0x048	 
+#define ASPEED_ACRY_DMA_SRC_BASE	0x04C	 
+#define ASPEED_ACRY_DMA_LEN		0x050	 
+#define ASPEED_ACRY_RSA_KEY_LEN		0x058	 
+#define ASPEED_ACRY_INT_MASK		0x3F8	 
+#define ASPEED_ACRY_STATUS		0x3FC	 
 
-/* rsa trigger */
+ 
 #define  ACRY_CMD_RSA_TRIGGER		BIT(0)
 #define  ACRY_CMD_DMA_RSA_TRIGGER	BIT(1)
 
-/* rsa dma cmd */
+ 
 #define  ACRY_CMD_DMA_SRAM_MODE_RSA	(0x3 << 4)
 #define  ACRY_CMD_DMEM_AHB		BIT(8)
 #define  ACRY_CMD_DMA_SRAM_AHB_ENGINE	0
 
-/* rsa key len */
+ 
 #define  RSA_E_BITS_LEN(x)		((x) << 16)
 #define  RSA_M_BITS_LEN(x)		(x)
 
-/* acry isr */
+ 
 #define  ACRY_RSA_ISR			BIT(1)
 
-#define ASPEED_ACRY_BUFF_SIZE		0x1800	/* DMA buffer size */
-#define ASPEED_ACRY_SRAM_MAX_LEN	2048	/* ACRY SRAM maximum length (Bytes) */
-#define ASPEED_ACRY_RSA_MAX_KEY_LEN	512	/* ACRY RSA maximum key length (Bytes) */
+#define ASPEED_ACRY_BUFF_SIZE		0x1800	 
+#define ASPEED_ACRY_SRAM_MAX_LEN	2048	 
+#define ASPEED_ACRY_RSA_MAX_KEY_LEN	512	 
 
 #define CRYPTO_FLAGS_BUSY		BIT(1)
 #define BYTES_PER_DWORD			4
 
-/*****************************
- *                           *
- * AHBC register definitions *
- *                           *
- * ***************************/
+ 
 #define AHBC_REGION_PROT		0x240
 #define REGION_ACRYM			BIT(23)
 
@@ -94,16 +84,16 @@ struct aspeed_acry_dev {
 	aspeed_acry_fn_t		resume;
 	unsigned long			flags;
 
-	/* ACRY output SRAM buffer */
+	 
 	void __iomem			*acry_sram;
 
-	/* ACRY input DMA buffer */
+	 
 	void				*buf_addr;
 	dma_addr_t			buf_dma_addr;
 
 	struct crypto_engine		*crypt_engine_rsa;
 
-	/* ACRY SRAM memory mapped */
+	 
 	int				exp_dw_mapping[ASPEED_ACRY_RSA_MAX_KEY_LEN];
 	int				mod_dw_mapping[ASPEED_ACRY_RSA_MAX_KEY_LEN];
 	int				data_byte_mapping[ASPEED_ACRY_SRAM_MAX_LEN];
@@ -204,9 +194,7 @@ static int aspeed_acry_complete(struct aspeed_acry_dev *acry_dev, int err)
 	return err;
 }
 
-/*
- * Copy Data to DMA buffer for engine used.
- */
+ 
 static void aspeed_acry_rsa_sg_copy_to_buffer(struct aspeed_acry_dev *acry_dev,
 					      u8 *buf, struct scatterlist *src,
 					      size_t nbytes)
@@ -231,19 +219,7 @@ static void aspeed_acry_rsa_sg_copy_to_buffer(struct aspeed_acry_dev *acry_dev,
 	}
 }
 
-/*
- * Copy Exp/Mod to DMA buffer for engine used.
- *
- * Params:
- * - mode 0 : Exponential
- * - mode 1 : Modulus
- *
- * Example:
- * - DRAM memory layout:
- *	D[0], D[4], D[8], D[12]
- * - ACRY SRAM memory layout should reverse the order of source data:
- *	D[12], D[8], D[4], D[0]
- */
+ 
 static int aspeed_acry_rsa_ctx_copy(struct aspeed_acry_dev *acry_dev, void *buf,
 				    const void *xbuf, size_t nbytes,
 				    enum aspeed_rsa_key_mode mode)
@@ -259,7 +235,7 @@ static int aspeed_acry_rsa_ctx_copy(struct aspeed_acry_dev *acry_dev, void *buf,
 	if (nbytes > ASPEED_ACRY_RSA_MAX_KEY_LEN)
 		return -ENOMEM;
 
-	/* Remove the leading zeros */
+	 
 	while (nbytes > 0 && src[0] == 0) {
 		src++;
 		nbytes--;
@@ -269,7 +245,7 @@ static int aspeed_acry_rsa_ctx_copy(struct aspeed_acry_dev *acry_dev, void *buf,
 	if (nbytes > 0)
 		nbits -= count_leading_zeros(src[0]) - (BITS_PER_LONG - 8);
 
-	/* double-world alignment */
+	 
 	ndw = DIV_ROUND_UP(nbytes, BYTES_PER_DWORD);
 
 	if (nbytes > 0) {
@@ -286,7 +262,7 @@ static int aspeed_acry_rsa_ctx_copy(struct aspeed_acry_dev *acry_dev, void *buf,
 
 			if (mode == ASPEED_RSA_EXP_MODE)
 				idx = acry_dev->exp_dw_mapping[j - 1];
-			else /* mode == ASPEED_RSA_MOD_MODE */
+			else  
 				idx = acry_dev->mod_dw_mapping[j - 1];
 
 			dw_buf[idx] = cpu_to_le32(data);
@@ -307,10 +283,10 @@ static int aspeed_acry_rsa_transfer(struct aspeed_acry_dev *acry_dev)
 	int i = 0, j;
 	int data_idx;
 
-	/* Set Data Memory to AHB(CPU) Access Mode */
+	 
 	ast_acry_write(acry_dev, ACRY_CMD_DMEM_AHB, ASPEED_ACRY_DMA_CMD);
 
-	/* Disable ACRY SRAM protection */
+	 
 	regmap_update_bits(acry_dev->ahbc, AHBC_REGION_PROT,
 			   REGION_ACRYM, 0);
 
@@ -358,7 +334,7 @@ static int aspeed_acry_rsa_trigger(struct aspeed_acry_dev *acry_dev)
 
 	memzero_explicit(acry_dev->buf_addr, ASPEED_ACRY_BUFF_SIZE);
 
-	/* Copy source data to DMA buffer */
+	 
 	aspeed_acry_rsa_sg_copy_to_buffer(acry_dev, acry_dev->buf_addr,
 					  req->src, req->src_len);
 
@@ -370,7 +346,7 @@ static int aspeed_acry_rsa_trigger(struct aspeed_acry_dev *acry_dev)
 				__func__);
 			return -EINVAL;
 		}
-		/* Copy key e to DMA buffer */
+		 
 		ne = aspeed_acry_rsa_ctx_copy(acry_dev, acry_dev->buf_addr,
 					      ctx->e, ctx->e_sz,
 					      ASPEED_RSA_EXP_MODE);
@@ -380,7 +356,7 @@ static int aspeed_acry_rsa_trigger(struct aspeed_acry_dev *acry_dev)
 				__func__);
 			return -EINVAL;
 		}
-		/* Copy key d to DMA buffer */
+		 
 		ne = aspeed_acry_rsa_ctx_copy(acry_dev, acry_dev->buf_addr,
 					      ctx->key.d, ctx->key.d_sz,
 					      ASPEED_RSA_EXP_MODE);
@@ -395,7 +371,7 @@ static int aspeed_acry_rsa_trigger(struct aspeed_acry_dev *acry_dev)
 
 	acry_dev->resume = aspeed_acry_rsa_transfer;
 
-	/* Enable ACRY SRAM protection */
+	 
 	regmap_update_bits(acry_dev->ahbc, AHBC_REGION_PROT,
 			   REGION_ACRYM, REGION_ACRYM);
 
@@ -403,7 +379,7 @@ static int aspeed_acry_rsa_trigger(struct aspeed_acry_dev *acry_dev)
 	ast_acry_write(acry_dev, ACRY_CMD_DMA_SRAM_MODE_RSA |
 			  ACRY_CMD_DMA_SRAM_AHB_ENGINE, ASPEED_ACRY_DMA_CMD);
 
-	/* Trigger RSA engines */
+	 
 	ast_acry_write(acry_dev, ACRY_CMD_RSA_TRIGGER |
 			  ACRY_CMD_DMA_RSA_TRIGGER, ASPEED_ACRY_TRIGGER);
 
@@ -500,9 +476,7 @@ static int aspeed_acry_rsa_setkey(struct crypto_akcipher *tfm, const void *key,
 		return ret;
 	}
 
-	/* Aspeed engine supports up to 4096 bits,
-	 * Use software fallback instead.
-	 */
+	 
 	if (ctx->key.n_sz > ASPEED_ACRY_RSA_MAX_KEY_LEN)
 		return 0;
 
@@ -648,7 +622,7 @@ static void aspeed_acry_unregister(struct aspeed_acry_dev *acry_dev)
 		crypto_engine_unregister_akcipher(&aspeed_acry_akcipher_algs[i].akcipher);
 }
 
-/* ACRY interrupt service routine. */
+ 
 static irqreturn_t aspeed_acry_irq(int irq, void *dev)
 {
 	struct aspeed_acry_dev *acry_dev = (struct aspeed_acry_dev *)dev;
@@ -660,7 +634,7 @@ static irqreturn_t aspeed_acry_irq(int irq, void *dev)
 	ACRY_DBG(acry_dev, "irq sts:0x%x\n", sts);
 
 	if (sts & ACRY_RSA_ISR) {
-		/* Stop RSA engine */
+		 
 		ast_acry_write(acry_dev, 0, ASPEED_ACRY_TRIGGER);
 
 		if (acry_dev->flags & CRYPTO_FLAGS_BUSY)
@@ -672,10 +646,7 @@ static irqreturn_t aspeed_acry_irq(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * ACRY SRAM has its own memory layout.
- * Set the DRAM to SRAM indexing for future used.
- */
+ 
 static void aspeed_acry_sram_mapping(struct aspeed_acry_dev *acry_dev)
 {
 	int i, j = 0;
@@ -727,7 +698,7 @@ static int aspeed_acry_probe(struct platform_device *pdev)
 	if (IS_ERR(acry_dev->acry_sram))
 		return PTR_ERR(acry_dev->acry_sram);
 
-	/* Get irq number and register it */
+	 
 	acry_dev->irq = platform_get_irq(pdev, 0);
 	if (acry_dev->irq < 0)
 		return -ENXIO;
@@ -752,7 +723,7 @@ static int aspeed_acry_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Initialize crypto hardware engine structure for RSA */
+	 
 	acry_dev->crypt_engine_rsa = crypto_engine_alloc_init(dev, true);
 	if (!acry_dev->crypt_engine_rsa) {
 		rc = -ENOMEM;
@@ -766,10 +737,10 @@ static int aspeed_acry_probe(struct platform_device *pdev)
 	tasklet_init(&acry_dev->done_task, aspeed_acry_done_task,
 		     (unsigned long)acry_dev);
 
-	/* Set Data Memory to AHB(CPU) Access Mode */
+	 
 	ast_acry_write(acry_dev, ACRY_CMD_DMEM_AHB, ASPEED_ACRY_DMA_CMD);
 
-	/* Initialize ACRY SRAM index */
+	 
 	aspeed_acry_sram_mapping(acry_dev);
 
 	acry_dev->buf_addr = dmam_alloc_coherent(dev, ASPEED_ACRY_BUFF_SIZE,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * xt_LED.c - netfilter target to make LEDs blink upon packet matches
- *
- * Copyright (C) 2008 Adam Nielsen <a.nielsen@shikadi.net>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -23,11 +19,7 @@ MODULE_ALIAS("ip6t_LED");
 static LIST_HEAD(xt_led_triggers);
 static DEFINE_MUTEX(xt_led_mutex);
 
-/*
- * This is declared in here (the kernel module) only, to avoid having these
- * dependencies in userspace code.  This is what xt_led_info.internal_data
- * points to.
- */
+ 
 struct xt_led_info_internal {
 	struct list_head list;
 	int refcnt;
@@ -36,7 +28,7 @@ struct xt_led_info_internal {
 	struct timer_list timer;
 };
 
-#define XT_LED_BLINK_DELAY 50 /* ms */
+#define XT_LED_BLINK_DELAY 50  
 
 static unsigned int
 led_tg(struct sk_buff *skb, const struct xt_action_param *par)
@@ -44,10 +36,7 @@ led_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	const struct xt_led_info *ledinfo = par->targinfo;
 	struct xt_led_info_internal *ledinternal = ledinfo->internal_data;
 
-	/*
-	 * If "always blink" is enabled, and there's still some time until the
-	 * LED will switch off, briefly switch it off now.
-	 */
+	 
 	if ((ledinfo->delay > 0) && ledinfo->always_blink &&
 	    timer_pending(&ledinternal->timer))
 		led_trigger_blink_oneshot(&ledinternal->netfilter_led_trigger,
@@ -55,17 +44,17 @@ led_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	else
 		led_trigger_event(&ledinternal->netfilter_led_trigger, LED_FULL);
 
-	/* If there's a positive delay, start/update the timer */
+	 
 	if (ledinfo->delay > 0) {
 		mod_timer(&ledinternal->timer,
 			  jiffies + msecs_to_jiffies(ledinfo->delay));
 
-	/* Otherwise if there was no delay given, blink as fast as possible */
+	 
 	} else if (ledinfo->delay == 0) {
 		led_trigger_event(&ledinternal->netfilter_led_trigger, LED_OFF);
 	}
 
-	/* else the delay is negative, which means switch on and stay on */
+	 
 
 	return XT_CONTINUE;
 }
@@ -125,9 +114,7 @@ static int led_tg_check(const struct xt_tgchk_param *par)
 		goto exit_alloc;
 	}
 
-	/* Since the letinternal timer can be shared between multiple targets,
-	 * always set it up, even if the current target does not need it
-	 */
+	 
 	timer_setup(&ledinternal->timer, led_timeout_callback, 0);
 
 	list_add_tail(&ledinternal->list, &xt_led_triggers);

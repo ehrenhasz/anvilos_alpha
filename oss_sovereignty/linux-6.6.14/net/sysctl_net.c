@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* -*- linux-c -*-
- * sysctl_net.c: sysctl interface to net subsystem.
- *
- * Begun April 1, 1996, Mike Shaver.
- * Added /proc/sys/net directories for each protocol family. [MS]
- *
- * Revision 1.2  1996/05/08  20:24:40  shaver
- * Added bits for NET_BRIDGE and the NET_IPV4_ARP stuff and
- * NET_IPV4_IP_FORWARD.
- *
- *
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/export.h>
@@ -38,13 +27,13 @@ static int is_seen(struct ctl_table_set *set)
 	return &current->nsproxy->net_ns->sysctls == set;
 }
 
-/* Return standard mode bits for table entry. */
+ 
 static int net_ctl_permissions(struct ctl_table_header *head,
 			       struct ctl_table *table)
 {
 	struct net *net = container_of(head->set, struct net, sysctls);
 
-	/* Allow network administrator to have same access as root. */
+	 
 	if (ns_capable_noaudit(net->user_ns, CAP_NET_ADMIN)) {
 		int mode = (table->mode >> 6) & 7;
 		return (mode << 6) | (mode << 3) | mode;
@@ -97,10 +86,7 @@ __init int net_sysctl_init(void)
 {
 	static struct ctl_table empty[1];
 	int ret = -ENOMEM;
-	/* Avoid limitations in the sysctl implementation by
-	 * registering "/proc/sys/net" as an empty directory not in a
-	 * network namespace.
-	 */
+	 
 	net_header = register_sysctl_sz("net", empty, 0);
 	if (!net_header)
 		goto out;
@@ -115,12 +101,7 @@ out1:
 	goto out;
 }
 
-/* Verify that sysctls for non-init netns are safe by either:
- * 1) being read-only, or
- * 2) having a data pointer which points outside of the global kernel/module
- *    data segment, and rather into the heap where a per-net object was
- *    allocated.
- */
+ 
 static void ensure_safe_net_sysctl(struct net *net, const char *path,
 				   struct ctl_table *table, size_t table_size)
 {
@@ -135,13 +116,13 @@ static void ensure_safe_net_sysctl(struct net *net, const char *path,
 		pr_debug("  procname=%s mode=%o proc_handler=%ps data=%p\n",
 			 ent->procname, ent->mode, ent->proc_handler, ent->data);
 
-		/* If it's not writable inside the netns, then it can't hurt. */
+		 
 		if ((ent->mode & 0222) == 0) {
 			pr_debug("    Not writable by anyone\n");
 			continue;
 		}
 
-		/* Where does data point? */
+		 
 		addr = (unsigned long)ent->data;
 		if (is_module_address(addr))
 			where = "module";
@@ -150,13 +131,11 @@ static void ensure_safe_net_sysctl(struct net *net, const char *path,
 		else
 			continue;
 
-		/* If it is writable and points to kernel/module global
-		 * data, then it's probably a netns leak.
-		 */
+		 
 		WARN(1, "sysctl %s/%s: data points to %s global data: %ps\n",
 		     path, ent->procname, where, ent->data);
 
-		/* Make it "safe" by dropping writable perms */
+		 
 		ent->mode &= ~0222;
 	}
 }

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Texas Instruments K3 AM65 Ethernet Switchdev Driver
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+ 
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if_bridge.h>
@@ -211,9 +207,7 @@ static int am65_cpsw_port_vlan_del(struct am65_cpsw_port *port, u16 vid,
 	if (ret != 0)
 		return ret;
 
-	/* We don't care for the return value here, error is returned only if
-	 * the unicast entry is not present
-	 */
+	 
 	if (cpu_port)
 		cpsw_ale_del_ucast(cpsw->ale, port->slave.mac_addr,
 				   HOST_PORT_NUM, ALE_VLAN, vid);
@@ -221,9 +215,7 @@ static int am65_cpsw_port_vlan_del(struct am65_cpsw_port *port, u16 vid,
 	if (vid == am65_cpsw_get_pvid(port))
 		am65_cpsw_set_pvid(port, 0, 0, 0);
 
-	/* We don't care for the return value here, error is returned only if
-	 * the multicast entry is not present
-	 */
+	 
 	cpsw_ale_del_mcast(cpsw->ale, port->ndev->broadcast, port_mask,
 			   ALE_VLAN, vid);
 	netdev_dbg(port->ndev, "VID del: %s: vid:%u ports:%X\n",
@@ -289,7 +281,7 @@ static int am65_cpsw_port_mdb_del(struct am65_cpsw_port *port,
 	else
 		del_mask = BIT(port->port_id);
 
-	/* Ignore error as error code is returned only when entry is already removed */
+	 
 	cpsw_ale_del_mcast(cpsw->ale, mdb->addr, del_mask,
 			   ALE_VLAN, mdb->vid);
 	netdev_dbg(port->ndev, "MDB del: %s: vid %u:%pM  ports: %X\n",
@@ -415,7 +407,7 @@ static void am65_cpsw_switchdev_event_work(struct work_struct *work)
 	dev_put(port->ndev);
 }
 
-/* called under rcu_read_lock() */
+ 
 static int am65_cpsw_switchdev_event(struct notifier_block *unused,
 				     unsigned long event, void *ptr)
 {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains common KASAN error reporting code.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Andrey Ryabinin <ryabinin.a.a@gmail.com>
- *
- * Some code borrowed from https://github.com/xairy/kasan-prototype by
- *        Andrey Konovalov <andreyknvl@gmail.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/bitops.h>
@@ -48,7 +40,7 @@ enum kasan_arg_fault {
 
 static enum kasan_arg_fault kasan_arg_fault __ro_after_init = KASAN_ARG_FAULT_DEFAULT;
 
-/* kasan.fault=report/panic */
+ 
 static int __init early_kasan_fault(char *arg)
 {
 	if (!arg)
@@ -74,18 +66,7 @@ static int __init kasan_set_multi_shot(char *str)
 }
 __setup("kasan_multi_shot", kasan_set_multi_shot);
 
-/*
- * This function is used to check whether KASAN reports are suppressed for
- * software KASAN modes via kasan_disable/enable_current() critical sections.
- *
- * This is done to avoid:
- * 1. False-positive reports when accessing slab metadata,
- * 2. Deadlocking when poisoned memory is accessed by the reporting code.
- *
- * Hardware Tag-Based KASAN instead relies on:
- * For #1: Resetting tags via kasan_reset_tag().
- * For #2: Suppression of tag checks via CPU, see report_suppress_start/end().
- */
+ 
 static bool report_suppressed_sw(void)
 {
 #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
@@ -98,10 +79,7 @@ static bool report_suppressed_sw(void)
 static void report_suppress_start(void)
 {
 #ifdef CONFIG_KASAN_HW_TAGS
-	/*
-	 * Disable preemption for the duration of printing a KASAN report, as
-	 * hw_suppress_tag_checks_start() disables checks on the current CPU.
-	 */
+	 
 	preempt_disable();
 	hw_suppress_tag_checks_start();
 #else
@@ -119,11 +97,7 @@ static void report_suppress_stop(void)
 #endif
 }
 
-/*
- * Used to avoid reporting more than one KASAN bug unless kasan_multi_shot
- * is enabled. Note that KASAN tests effectively enable kasan_multi_shot
- * for their duration.
- */
+ 
 static bool report_enabled(void)
 {
 	if (test_bit(KASAN_BIT_MULTI_SHOT, &kasan_flags))
@@ -150,10 +124,7 @@ EXPORT_SYMBOL_GPL(kasan_restore_multi_shot);
 
 #if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
 
-/*
- * Whether the KASAN KUnit test suite is currently being executed.
- * Updated in kasan_test.c.
- */
+ 
 static bool kasan_kunit_executing;
 
 void kasan_kunit_test_suite_start(void)
@@ -173,11 +144,11 @@ static bool kasan_kunit_test_suite_executing(void)
 	return READ_ONCE(kasan_kunit_executing);
 }
 
-#else /* CONFIG_KASAN_KUNIT_TEST */
+#else  
 
 static inline bool kasan_kunit_test_suite_executing(void) { return false; }
 
-#endif /* CONFIG_KASAN_KUNIT_TEST */
+#endif  
 
 #if IS_ENABLED(CONFIG_KUNIT)
 
@@ -193,22 +164,22 @@ static void fail_non_kasan_kunit_test(void)
 		kunit_set_failure(test);
 }
 
-#else /* CONFIG_KUNIT */
+#else  
 
 static inline void fail_non_kasan_kunit_test(void) { }
 
-#endif /* CONFIG_KUNIT */
+#endif  
 
 static DEFINE_SPINLOCK(report_lock);
 
 static void start_report(unsigned long *flags, bool sync)
 {
 	fail_non_kasan_kunit_test();
-	/* Respect the /proc/sys/kernel/traceoff_on_warning interface. */
+	 
 	disable_trace_on_warning();
-	/* Do not allow LOCKDEP mangling KASAN reports. */
+	 
 	lockdep_off();
-	/* Make sure we don't end up in loop. */
+	 
 	report_suppress_start();
 	spin_lock_irqsave(&report_lock, *flags);
 	pr_err("==================================================================\n");
@@ -298,13 +269,7 @@ static void describe_object_addr(const void *addr, struct kasan_report_info *inf
 		rel_bytes = access_addr - object_addr;
 	}
 
-	/*
-	 * Tag-Based modes use the stack ring to infer the bug type, but the
-	 * memory region state description is generated based on the metadata.
-	 * Thus, defining the region state as below can contradict the metadata.
-	 * Fixing this requires further improvements, so only infer the state
-	 * for the Generic mode.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_KASAN_GENERIC)) {
 		if (strcmp(info->bug_type, "slab-out-of-bounds") == 0)
 			region_state = "allocated ";
@@ -376,10 +341,7 @@ static void print_address_description(void *addr, u8 tag,
 	}
 
 	if (object_is_on_stack(addr)) {
-		/*
-		 * Currently, KASAN supports printing frame information only
-		 * for accesses to the task's own stack.
-		 */
+		 
 		kasan_print_address_stack_frame(addr);
 		pr_err("\n");
 	}
@@ -412,16 +374,7 @@ static bool meta_row_is_guilty(const void *row, const void *addr)
 
 static int meta_pointer_offset(const void *row, const void *addr)
 {
-	/*
-	 * Memory state around the buggy address:
-	 *  ff00ff00ff00ff00: 00 00 00 05 fe fe fe fe fe fe fe fe fe fe fe fe
-	 *  ...
-	 *
-	 * The length of ">ff00ff00ff00ff00: " is
-	 *    3 + (BITS_PER_LONG / 8) * 2 chars.
-	 * The length of each granule metadata is 2 bytes
-	 *    plus 1 byte for space.
-	 */
+	 
 	return 3 + (BITS_PER_LONG / 8) * 2 +
 		(addr - row) / KASAN_GRANULE_SIZE * 3 + 1;
 }
@@ -443,11 +396,7 @@ static void print_memory_metadata(const void *addr)
 		snprintf(buffer, sizeof(buffer),
 				(i == 0) ? ">%px: " : " %px: ", row);
 
-		/*
-		 * We should not pass a shadow pointer to generic
-		 * function, because generic functions may try to
-		 * access kasan mapping for the passed address.
-		 */
+		 
 		kasan_metadata_fetch_row(&metadata[0], row);
 
 		print_hex_dump(KERN_ERR, buffer,
@@ -495,9 +444,9 @@ static void complete_report_info(struct kasan_report_info *info)
 		info->cache = slab->slab_cache;
 		info->object = nearest_obj(info->cache, slab, addr);
 
-		/* Try to determine allocation size based on the metadata. */
+		 
 		info->alloc_size = kasan_get_alloc_size(info->object, info->cache);
-		/* Fallback to the object size if failed. */
+		 
 		if (!info->alloc_size)
 			info->alloc_size = info->cache->object_size;
 	} else
@@ -511,11 +460,11 @@ static void complete_report_info(struct kasan_report_info *info)
 		info->bug_type = "double-free";
 		break;
 	default:
-		/* bug_type filled in by kasan_complete_mode_report_info. */
+		 
 		break;
 	}
 
-	/* Fill in mode-specific report info fields. */
+	 
 	kasan_complete_mode_report_info(info);
 }
 
@@ -524,15 +473,7 @@ void kasan_report_invalid_free(void *ptr, unsigned long ip, enum kasan_report_ty
 	unsigned long flags;
 	struct kasan_report_info info;
 
-	/*
-	 * Do not check report_suppressed_sw(), as an invalid-free cannot be
-	 * caused by accessing poisoned memory and thus should not be suppressed
-	 * by kasan_disable/enable_current() critical sections.
-	 *
-	 * Note that for Hardware Tag-Based KASAN, kasan_report_invalid_free()
-	 * is triggered by explicit tag checks and not by the ones performed by
-	 * the CPU. Thus, reporting invalid-free is not suppressed as well.
-	 */
+	 
 	if (unlikely(!report_enabled()))
 		return;
 
@@ -549,18 +490,11 @@ void kasan_report_invalid_free(void *ptr, unsigned long ip, enum kasan_report_ty
 
 	print_report(&info);
 
-	/*
-	 * Invalid free is considered a "write" since the allocator's metadata
-	 * updates involves writes.
-	 */
+	 
 	end_report(&flags, ptr, true);
 }
 
-/*
- * kasan_report() is the only reporting function that uses
- * user_access_save/restore(): kasan_report_invalid_free() cannot be called
- * from a UACCESS region, and kasan_report_async() is not used on x86.
- */
+ 
 bool kasan_report(const void *addr, size_t size, bool is_write,
 			unsigned long ip)
 {
@@ -600,11 +534,7 @@ void kasan_report_async(void)
 {
 	unsigned long flags;
 
-	/*
-	 * Do not check report_suppressed_sw(), as
-	 * kasan_disable/enable_current() critical sections do not affect
-	 * Hardware Tag-Based KASAN.
-	 */
+	 
 	if (unlikely(!report_enabled()))
 		return;
 
@@ -613,23 +543,13 @@ void kasan_report_async(void)
 	pr_err("Asynchronous fault: no details available\n");
 	pr_err("\n");
 	dump_stack_lvl(KERN_ERR);
-	/*
-	 * Conservatively set is_write=true, because no details are available.
-	 * In this mode, kasan.fault=panic_on_write is like kasan.fault=panic.
-	 */
+	 
 	end_report(&flags, NULL, true);
 }
-#endif /* CONFIG_KASAN_HW_TAGS */
+#endif  
 
 #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
-/*
- * With CONFIG_KASAN_INLINE, accesses to bogus pointers (outside the high
- * canonical half of the address space) cause out-of-bounds shadow memory reads
- * before the actual access. For addresses in the low canonical half of the
- * address space, as well as most non-canonical addresses, that out-of-bounds
- * shadow memory access lands in the non-canonical part of the address space.
- * Help the user figure out what the original bogus pointer was.
- */
+ 
 void kasan_non_canonical_hook(unsigned long addr)
 {
 	unsigned long orig_addr;
@@ -639,17 +559,7 @@ void kasan_non_canonical_hook(unsigned long addr)
 		return;
 
 	orig_addr = (addr - KASAN_SHADOW_OFFSET) << KASAN_SHADOW_SCALE_SHIFT;
-	/*
-	 * For faults near the shadow address for NULL, we can be fairly certain
-	 * that this is a KASAN shadow memory access.
-	 * For faults that correspond to shadow for low canonical addresses, we
-	 * can still be pretty sure - that shadow region is a fairly narrow
-	 * chunk of the non-canonical address space.
-	 * But faults that look like shadow for non-canonical addresses are a
-	 * really large chunk of the address space. In that case, we still
-	 * print the decoded address, but make it clear that this is not
-	 * necessarily what's actually going on.
-	 */
+	 
 	if (orig_addr < PAGE_SIZE)
 		bug_type = "null-ptr-deref";
 	else if (orig_addr < TASK_SIZE)

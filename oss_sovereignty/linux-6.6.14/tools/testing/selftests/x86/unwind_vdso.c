@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * unwind_vdso.c - tests unwind info for AT_SYSINFO in the vDSO
- * Copyright (c) 2014-2015 Andrew Lutomirski
- *
- * This tests __kernel_vsyscall's unwind info.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -17,7 +12,7 @@
 
 int main()
 {
-	/* We need getauxval(). */
+	 
 	printf("[SKIP]\tGLIBC before 2.16 cannot compile this test\n");
 	return 0;
 }
@@ -61,8 +56,8 @@ static bool got_sysinfo = false;
 static unsigned long return_address;
 
 struct unwind_state {
-	unsigned long ip;	/* trap source */
-	int depth;		/* -1 until we hit the trap source */
+	unsigned long ip;	 
+	int depth;		 
 };
 
 _Unwind_Reason_Code trace_fn(struct _Unwind_Context * ctx, void *opaque)
@@ -74,12 +69,12 @@ _Unwind_Reason_Code trace_fn(struct _Unwind_Context * ctx, void *opaque)
 		if (ip == state->ip)
 			state->depth = 0;
 		else
-			return _URC_NO_REASON;	/* Not there yet */
+			return _URC_NO_REASON;	 
 	}
 	printf("\t  0x%lx\n", ip);
 
 	if (ip == return_address) {
-		/* Here we are. */
+		 
 		unsigned long eax = _Unwind_GetGR(ctx, 0);
 		unsigned long ecx = _Unwind_GetGR(ctx, 1);
 		unsigned long edx = _Unwind_GetGR(ctx, 2);
@@ -113,7 +108,7 @@ static void sigtrap(int sig, siginfo_t *info, void *ctx_void)
 	if (!got_sysinfo && ip == sysinfo) {
 		got_sysinfo = true;
 
-		/* Find the return address. */
+		 
 		return_address = *(unsigned long *)(unsigned long)ctx->uc_mcontext.gregs[REG_ESP];
 
 		printf("\tIn vsyscall at 0x%lx, returning to 0x%lx\n",
@@ -121,7 +116,7 @@ static void sigtrap(int sig, siginfo_t *info, void *ctx_void)
 	}
 
 	if (!got_sysinfo)
-		return;		/* Not there yet */
+		return;		 
 
 	if (ip == return_address) {
 		ctx->uc_mcontext.gregs[REG_EFL] &= ~X86_EFLAGS_TF;
@@ -151,18 +146,14 @@ int main()
 
 	sethandler(SIGTRAP, sigtrap, 0);
 
-	syscall(SYS_getpid);  /* Force symbol binding without TF set. */
+	syscall(SYS_getpid);   
 	printf("[RUN]\tSet TF and check a fast syscall\n");
 	set_eflags(get_eflags() | X86_EFLAGS_TF);
 	syscall(SYS_getpid, 1, 2, 3, 4, 5, 6);
 	if (!got_sysinfo) {
 		set_eflags(get_eflags() & ~X86_EFLAGS_TF);
 
-		/*
-		 * The most likely cause of this is that you're on Debian or
-		 * a Debian-based distro, you're missing libc6-i686, and you're
-		 * affected by libc/19006 (https://sourceware.org/PR19006).
-		 */
+		 
 		printf("[WARN]\tsyscall(2) didn't enter AT_SYSINFO\n");
 	}
 
@@ -180,4 +171,4 @@ int main()
 	}
 }
 
-#endif	/* New enough libc */
+#endif	 

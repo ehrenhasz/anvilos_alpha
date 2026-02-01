@@ -1,30 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Free Electrons
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * Allwinner A31 APB0 clock driver
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/*
- * The APB0 clk has a configurable divisor.
- *
- * We must use a clk_div_table and not a regular power of 2
- * divisor here, because the first 2 values divide the clock
- * by 2.
- */
+ 
 static const struct clk_div_table sun6i_a31_apb0_divs[] = {
 	{ .val = 0, .div = 2, },
 	{ .val = 1, .div = 2, },
 	{ .val = 2, .div = 4, },
 	{ .val = 3, .div = 8, },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
@@ -56,7 +44,7 @@ static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
 
 static const struct of_device_id sun6i_a31_apb0_clk_dt_ids[] = {
 	{ .compatible = "allwinner,sun6i-a31-apb0-clk" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sun6i_a31_apb0_clk_driver = {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis PCI bridge driver
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
 
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -233,7 +229,7 @@ int mantis_dvb_init(struct mantis_pci *mantis)
 
 	return 0;
 
-	/* Error conditions ..	*/
+	 
 err5:
 	tasklet_kill(&mantis->tasklet);
 	dvb_net_release(&mantis->dvbnet);
@@ -265,7 +261,7 @@ int mantis_dvb_exit(struct mantis_pci *mantis)
 	int err;
 
 	if (mantis->fe) {
-		/* mantis_ca_exit(mantis); */
+		 
 		err = mantis_frontend_shutdown(mantis);
 		if (err != 0)
 			dprintk(MANTIS_ERROR, 1, "Frontend exit while POWER ON! <%d>", err);

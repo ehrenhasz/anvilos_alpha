@@ -1,20 +1,4 @@
-/* Compute checksums of files or strings.
-   Copyright (C) 1995-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>.  */
+ 
 
 #include <config.h>
 
@@ -56,7 +40,7 @@
 #include "stdio--.h"
 #include "xbinary-io.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #if HASH_ALGO_SUM
 # define PROGRAM_NAME "sum"
 # define DIGEST_TYPE_STRING "BSD"
@@ -152,15 +136,14 @@
 #endif
 #define DIGEST_BIN_BYTES (DIGEST_BITS / 8)
 
-/* The minimum length of a valid digest line.  This length does
-   not include any newline character at the end of a line.  */
+ 
 #if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# define MIN_DIGEST_LINE_LENGTH 3 /* With -l 8.  */
+# define MIN_DIGEST_LINE_LENGTH 3  
 #else
 # define MIN_DIGEST_LINE_LENGTH \
-   (DIGEST_HEX_BYTES /* length of hexadecimal message digest */ \
-    + 1 /* blank */ \
-    + 1 /* minimum filename length */ )
+   (DIGEST_HEX_BYTES   \
+    + 1   \
+    + 1   )
 #endif
 
 #if !HASH_ALGO_SUM
@@ -170,51 +153,48 @@ output_file (char const *file, int binary_file, void const *digest,
              uintmax_t length);
 #endif
 
-/* True if any of the files read were the standard input. */
+ 
 static bool have_read_stdin;
 
-/* The minimum length of a valid checksum line for the selected algorithm.  */
+ 
 static size_t min_digest_line_length;
 
-/* Set to the length of a digest hex string for the selected algorithm.  */
+ 
 static size_t digest_hex_bytes;
 
-/* With --check, don't generate any output.
-   The exit code indicates success or failure.  */
+ 
 static bool status_only = false;
 
-/* With --check, print a message to standard error warning about each
-   improperly formatted checksum line.  */
+ 
 static bool warn = false;
 
-/* With --check, ignore missing files.  */
+ 
 static bool ignore_missing = false;
 
-/* With --check, suppress the "OK" printed for each verified file.  */
+ 
 static bool quiet = false;
 
-/* With --check, exit with a non-zero return code if any line is
-   improperly formatted. */
+ 
 static bool strict = false;
 
-/* Whether a BSD reversed format checksum is detected.  */
+ 
 static int bsd_reversed = -1;
 
-/* line delimiter.  */
+ 
 static unsigned char digest_delim = '\n';
 
 #if HASH_ALGO_CKSUM
-/* If true, print base64-encoded digests, not hex.  */
+ 
 static bool base64_digest = false;
 #endif
 
-/* If true, print binary digests, not hex.  */
+ 
 static bool raw_digest = false;
 
 #if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 # define BLAKE2B_MAX_LEN BLAKE2B_OUTBYTES
 static uintmax_t digest_length;
-#endif /* HASH_ALGO_BLAKE2 */
+#endif  
 
 typedef void (*digest_output_fn)(char const *, int, void const *, bool,
                                  bool, unsigned char, bool, uintmax_t);
@@ -354,8 +334,7 @@ static digest_output_fn cksum_output_fns[]=
 bool cksum_debug;
 #endif
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 
 enum
 {

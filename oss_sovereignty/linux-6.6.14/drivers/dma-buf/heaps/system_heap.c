@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DMABUF System heap exporter
- *
- * Copyright (C) 2011 Google, Inc.
- * Copyright (C) 2019, 2020 Linaro Ltd.
- *
- * Portions based off of Andrew Davis' SRAM heap:
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/dma-mapping.h>
@@ -45,12 +36,7 @@ struct dma_heap_attachment {
 				| __GFP_NORETRY) & ~__GFP_RECLAIM) \
 				| __GFP_COMP)
 static gfp_t order_flags[] = {HIGH_ORDER_GFP, HIGH_ORDER_GFP, LOW_ORDER_GFP};
-/*
- * The selection of the orders used for allocation (1MB, 64K, 4K) is designed
- * to match with the sizes often found in IOMMUs. Using order 4 pages instead
- * of order 0 pages can significantly improve the performance of many IOMMUs
- * by reducing TLB pressure and time spent updating page tables.
- */
+ 
 static const unsigned int orders[] = {8, 4, 0};
 #define NUM_ORDERS ARRAY_SIZE(orders)
 
@@ -359,10 +345,7 @@ static struct dma_buf *system_heap_allocate(struct dma_heap *heap,
 	INIT_LIST_HEAD(&pages);
 	i = 0;
 	while (size_remaining > 0) {
-		/*
-		 * Avoid trying to allocate memory if the process
-		 * has been killed by SIGKILL
-		 */
+		 
 		if (fatal_signal_pending(current)) {
 			ret = -EINTR;
 			goto free_buffer;
@@ -389,7 +372,7 @@ static struct dma_buf *system_heap_allocate(struct dma_heap *heap,
 		list_del(&page->lru);
 	}
 
-	/* create the dmabuf */
+	 
 	exp_info.exp_name = dma_heap_get_name(heap);
 	exp_info.ops = &system_heap_buf_ops;
 	exp_info.size = buffer->len;

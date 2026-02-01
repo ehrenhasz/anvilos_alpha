@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Expose the ChromeOS EC through sysfs
-//
-// Copyright (C) 2014 Google, Inc.
+
+
+
+
 
 #include <linux/ctype.h>
 #include <linux/delay.h>
@@ -20,7 +20,7 @@
 
 #define DRV_NAME "cros-ec-sysfs"
 
-/* Accessor functions */
+ 
 
 static ssize_t reboot_show(struct device *dev,
 			   struct device_attribute *attr, char *buf)
@@ -66,7 +66,7 @@ static ssize_t reboot_store(struct device *dev,
 
 	param->flags = 0;
 	while (1) {
-		/* Find word to start scanning */
+		 
 		while (buf[offset] && isspace(buf[offset]))
 			offset++;
 		if (!buf[offset])
@@ -85,7 +85,7 @@ static ssize_t reboot_store(struct device *dev,
 			}
 		}
 
-		/* On to the next word, if any */
+		 
 		while (buf[offset] && !isspace(buf[offset]))
 			offset++;
 	}
@@ -123,7 +123,7 @@ static ssize_t version_show(struct device *dev,
 	if (!msg)
 		return -ENOMEM;
 
-	/* Get versions. RW may change. */
+	 
 	msg->version = 0;
 	msg->command = EC_CMD_GET_VERSION + ec->cmd_offset;
 	msg->insize = sizeof(*r_ver);
@@ -134,7 +134,7 @@ static ssize_t version_show(struct device *dev,
 		goto exit;
 	}
 	r_ver = (struct ec_response_get_version *)msg->data;
-	/* Strings should be null-terminated, but let's be sure. */
+	 
 	r_ver->version_string_ro[sizeof(r_ver->version_string_ro) - 1] = '\0';
 	r_ver->version_string_rw[sizeof(r_ver->version_string_rw) - 1] = '\0';
 	count += sysfs_emit_at(buf, count, "RO version:    %s\n", r_ver->version_string_ro);
@@ -143,7 +143,7 @@ static ssize_t version_show(struct device *dev,
 			   (r_ver->current_image < ARRAY_SIZE(image_names) ?
 			    image_names[r_ver->current_image] : "?"));
 
-	/* Get build info. */
+	 
 	msg->command = EC_CMD_GET_BUILD_INFO + ec->cmd_offset;
 	msg->insize = EC_HOST_PARAM_SIZE;
 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
@@ -156,7 +156,7 @@ static ssize_t version_show(struct device *dev,
 		count += sysfs_emit_at(buf, count, "Build info:    %s\n", msg->data);
 	}
 
-	/* Get chip info. */
+	 
 	msg->command = EC_CMD_GET_CHIP_INFO + ec->cmd_offset;
 	msg->insize = sizeof(*r_chip);
 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
@@ -175,7 +175,7 @@ static ssize_t version_show(struct device *dev,
 		count += sysfs_emit_at(buf, count, "Chip revision: %s\n", r_chip->revision);
 	}
 
-	/* Get board version */
+	 
 	msg->command = EC_CMD_GET_BOARD_VERSION + ec->cmd_offset;
 	msg->insize = sizeof(*r_board);
 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
@@ -208,7 +208,7 @@ static ssize_t flashinfo_show(struct device *dev,
 	if (!msg)
 		return -ENOMEM;
 
-	/* The flash info shouldn't ever change, but ask each time anyway. */
+	 
 	msg->version = 0;
 	msg->command = EC_CMD_FLASH_INFO + ec->cmd_offset;
 	msg->insize = sizeof(*resp);
@@ -229,7 +229,7 @@ exit:
 	return ret;
 }
 
-/* Keyboard wake angle control */
+ 
 static ssize_t kb_wake_angle_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
@@ -295,7 +295,7 @@ static ssize_t kb_wake_angle_store(struct device *dev,
 	return count;
 }
 
-/* Module initialization */
+ 
 
 static DEVICE_ATTR_RW(reboot);
 static DEVICE_ATTR_RO(version);

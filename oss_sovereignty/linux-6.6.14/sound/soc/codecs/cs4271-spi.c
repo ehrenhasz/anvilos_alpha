@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CS4271 SPI audio driver
- *
- * Copyright (c) 2010 Alexander Sverdlin <subaparts@yandex.ru>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>

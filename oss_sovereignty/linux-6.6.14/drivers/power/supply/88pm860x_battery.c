@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery driver for Marvell 88PM860x PMIC
- *
- * Copyright (c) 2012 Marvell International Ltd.
- * Author:	Jett Zhou <jtzhou@marvell.com>
- *		Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,47 +11,47 @@
 #include <linux/mfd/88pm860x.h>
 #include <linux/delay.h>
 
-/* bit definitions of Status Query Interface 2 */
+ 
 #define STATUS2_CHG			(1 << 2)
 #define STATUS2_BAT			(1 << 3)
 #define STATUS2_VBUS			(1 << 4)
 
-/* bit definitions of Measurement Enable 1 Register */
+ 
 #define MEAS1_TINT			(1 << 3)
 #define MEAS1_GP1			(1 << 5)
 
-/* bit definitions of Measurement Enable 3 Register */
+ 
 #define MEAS3_IBAT			(1 << 0)
 #define MEAS3_BAT_DET			(1 << 1)
 #define MEAS3_CC			(1 << 2)
 
-/* bit definitions of Measurement Off Time Register */
+ 
 #define MEAS_OFF_SLEEP_EN		(1 << 1)
 
-/* bit definitions of GPADC Bias Current 2 Register */
+ 
 #define GPBIAS2_GPADC1_SET		(2 << 4)
-/* GPADC1 Bias Current value in uA unit */
+ 
 #define GPBIAS2_GPADC1_UA		((GPBIAS2_GPADC1_SET >> 4) * 5 + 1)
 
-/* bit definitions of GPADC Misc 1 Register */
+ 
 #define GPMISC1_GPADC_EN		(1 << 0)
 
-/* bit definitions of Charger Control 6 Register */
+ 
 #define CC6_BAT_DET_GPADC1		1
 
-/* bit definitions of Coulomb Counter Reading Register */
+ 
 #define CCNT_AVG_SEL			(4 << 3)
 
-/* bit definitions of RTC miscellaneous Register1 */
+ 
 #define RTC_SOC_5LSB		(0x1F << 3)
 
-/* bit definitions of RTC Register1 */
+ 
 #define RTC_SOC_3MSB		(0x7)
 
-/* bit definitions of Power up Log register */
+ 
 #define BAT_WU_LOG			(1<<6)
 
-/* coulomb counter index */
+ 
 #define CCNT_POS1			0
 #define CCNT_POS2			1
 #define CCNT_NEG1			2
@@ -65,30 +59,27 @@
 #define CCNT_SPOS			4
 #define CCNT_SNEG			5
 
-/* OCV -- Open Circuit Voltage */
+ 
 #define OCV_MODE_ACTIVE			0
 #define OCV_MODE_SLEEP			1
 
-/* Vbat range of CC for measuring Rbat */
+ 
 #define LOW_BAT_THRESHOLD		3600
 #define VBATT_RESISTOR_MIN		3800
 #define VBATT_RESISTOR_MAX		4100
 
-/* TBAT for batt, TINT for chip itself */
+ 
 #define PM860X_TEMP_TINT		(0)
 #define PM860X_TEMP_TBAT		(1)
 
-/*
- * Battery temperature based on NTC resistor, defined
- * corresponding resistor value  -- Ohm / C degeree.
- */
-#define TBAT_NEG_25D		127773	/* -25 */
-#define TBAT_NEG_10D		54564	/* -10 */
-#define TBAT_0D			32330	/* 0 */
-#define TBAT_10D		19785	/* 10 */
-#define TBAT_20D		12468	/* 20 */
-#define TBAT_30D		8072	/* 30 */
-#define TBAT_40D		5356	/* 40 */
+ 
+#define TBAT_NEG_25D		127773	 
+#define TBAT_NEG_10D		54564	 
+#define TBAT_0D			32330	 
+#define TBAT_10D		19785	 
+#define TBAT_20D		12468	 
+#define TBAT_30D		8072	 
+#define TBAT_40D		5356	 
 
 struct pm860x_battery_info {
 	struct pm860x_chip *chip;
@@ -101,11 +92,11 @@ struct pm860x_battery_info {
 	int irq_cc;
 	int irq_batt;
 	int max_capacity;
-	int resistor;		/* Battery Internal Resistor */
+	int resistor;		 
 	int last_capacity;
 	int start_soc;
 	unsigned present:1;
-	unsigned temp_type:1;	/* TINT or TBAT */
+	unsigned temp_type:1;	 
 };
 
 struct ccnt {
@@ -114,14 +105,11 @@ struct ccnt {
 	unsigned int spos;
 	unsigned int sneg;
 
-	int total_chg;		/* mAh(3.6C) */
-	int total_dischg;	/* mAh(3.6C) */
+	int total_chg;		 
+	int total_dischg;	 
 };
 
-/*
- * State of Charge.
- * The first number is mAh(=3.6C), and the second number is percent point.
- */
+ 
 static int array_soc[][2] = {
 	{4170, 100}, {4154, 99}, {4136, 98}, {4122, 97}, {4107, 96},
 	{4102, 95}, {4088, 94}, {4081, 93}, {4070, 92}, {4060, 91},
@@ -147,10 +135,7 @@ static int array_soc[][2] = {
 
 static struct ccnt ccnt_data;
 
-/*
- * register 1 bit[7:0] -- bit[11:4] of measured value of voltage
- * register 0 bit[3:0] -- bit[3:0] of measured value of voltage
- */
+ 
 static int measure_12bit_voltage(struct pm860x_battery_info *info,
 				 int offset, int *data)
 {
@@ -162,7 +147,7 @@ static int measure_12bit_voltage(struct pm860x_battery_info *info,
 		return ret;
 
 	*data = ((buf[0] & 0xff) << 4) | (buf[1] & 0x0f);
-	/* V_MEAS(mV) = data * 1.8 * 1000 / (2^12) */
+	 
 	*data = ((*data & 0xfff) * 9 * 25) >> 9;
 	return 0;
 }
@@ -178,26 +163,18 @@ static int measure_vbatt(struct pm860x_battery_info *info, int state,
 		ret = measure_12bit_voltage(info, PM8607_VBAT_MEAS1, data);
 		if (ret)
 			return ret;
-		/* V_BATT_MEAS(mV) = value * 3 * 1.8 * 1000 / (2^12) */
+		 
 		*data *= 3;
 		break;
 	case OCV_MODE_SLEEP:
-		/*
-		 * voltage value of VBATT in sleep mode is saved in different
-		 * registers.
-		 * bit[11:10] -- bit[7:6] of LDO9(0x18)
-		 * bit[9:8] -- bit[7:6] of LDO8(0x17)
-		 * bit[7:6] -- bit[7:6] of LDO7(0x16)
-		 * bit[5:4] -- bit[7:6] of LDO6(0x15)
-		 * bit[3:0] -- bit[7:4] of LDO5(0x14)
-		 */
+		 
 		ret = pm860x_bulk_read(info->i2c, PM8607_LDO5, 5, buf);
 		if (ret < 0)
 			return ret;
 		ret = ((buf[4] >> 6) << 10) | ((buf[3] >> 6) << 8)
 		    | ((buf[2] >> 6) << 6) | ((buf[1] >> 6) << 4)
 		    | (buf[0] >> 4);
-		/* V_BATT_MEAS(mV) = data * 3 * 1.8 * 1000 / (2^12) */
+		 
 		*data = ((*data & 0xff) * 27 * 25) >> 9;
 		break;
 	default:
@@ -206,10 +183,7 @@ static int measure_vbatt(struct pm860x_battery_info *info, int state,
 	return 0;
 }
 
-/*
- * Return value is signed data.
- * Negative value means discharging, and positive value means charging.
- */
+ 
 static int measure_current(struct pm860x_battery_info *info, int *data)
 {
 	unsigned char buf[2];
@@ -221,7 +195,7 @@ static int measure_current(struct pm860x_battery_info *info, int *data)
 		return ret;
 
 	s = ((buf[0] & 0xff) << 8) | (buf[1] & 0xff);
-	/* current(mA) = value * 0.125 */
+	 
 	*data = s >> 3;
 	return 0;
 }
@@ -285,7 +259,7 @@ static int calc_ccnt(struct pm860x_battery_info *info, struct ccnt *ccnt)
 	if (ret)
 		goto out;
 	sum |= (data & 0xffff) << 16;
-	sum = ~sum + 1;		/* since it's negative */
+	sum = ~sum + 1;		 
 	ccnt->neg += sum;
 
 	ret = read_ccnt(info, CCNT_SPOS, &data);
@@ -296,11 +270,7 @@ static int calc_ccnt(struct pm860x_battery_info *info, struct ccnt *ccnt)
 	if (ret)
 		goto out;
 
-	/*
-	 * charge(mAh)  = count * 1.6984 * 1e(-8)
-	 *              = count * 16984 * 1.024 * 1.024 * 1.024 / (2 ^ 40)
-	 *              = count * 18236 / (2 ^ 40)
-	 */
+	 
 	ccnt->total_chg = (int) ((ccnt->pos * 18236) >> 40);
 	ccnt->total_dischg = (int) ((ccnt->neg * 18236) >> 40);
 	return 0;
@@ -313,7 +283,7 @@ static int clear_ccnt(struct pm860x_battery_info *info, struct ccnt *ccnt)
 	int data;
 
 	memset(ccnt, 0, sizeof(*ccnt));
-	/* read to clear ccnt */
+	 
 	read_ccnt(info, CCNT_POS1, &data);
 	read_ccnt(info, CCNT_POS2, &data);
 	read_ccnt(info, CCNT_NEG1, &data);
@@ -323,7 +293,7 @@ static int clear_ccnt(struct pm860x_battery_info *info, struct ccnt *ccnt)
 	return 0;
 }
 
-/* Calculate Open Circuit Voltage */
+ 
 static int calc_ocv(struct pm860x_battery_info *info, int *ocv)
 {
 	int ret;
@@ -362,7 +332,7 @@ out:
 	return ret;
 }
 
-/* Calculate State of Charge (percent points) */
+ 
 static int calc_soc(struct pm860x_battery_info *info, int state, int *soc)
 {
 	int i;
@@ -422,7 +392,7 @@ static irqreturn_t pm860x_batt_handler(int irq, void *data)
 		info->temp_type = PM860X_TEMP_TINT;
 	}
 	mutex_unlock(&info->lock);
-	/* clear ccnt since battery is attached or dettached */
+	 
 	clear_ccnt(info, &ccnt_data);
 	return IRQ_HANDLED;
 }
@@ -435,7 +405,7 @@ static void pm860x_init_battery(struct pm860x_battery_info *info)
 	int bat_remove;
 	int soc = 0;
 
-	/* measure enable on GPADC1 */
+	 
 	data = MEAS1_GP1;
 	if (info->temp_type == PM860X_TEMP_TINT)
 		data |= MEAS1_TINT;
@@ -443,13 +413,13 @@ static void pm860x_init_battery(struct pm860x_battery_info *info)
 	if (ret)
 		goto out;
 
-	/* measure enable on IBAT, BAT_DET, CC. IBAT is depend on CC. */
+	 
 	data = MEAS3_IBAT | MEAS3_BAT_DET | MEAS3_CC;
 	ret = pm860x_set_bits(info->i2c, PM8607_MEAS_EN3, data, data);
 	if (ret)
 		goto out;
 
-	/* measure disable CC in sleep time  */
+	 
 	ret = pm860x_reg_write(info->i2c, PM8607_MEAS_OFF_TIME1, 0x82);
 	if (ret)
 		goto out;
@@ -457,13 +427,13 @@ static void pm860x_init_battery(struct pm860x_battery_info *info)
 	if (ret)
 		goto out;
 
-	/* enable GPADC */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_GPADC_MISC1,
 			    GPMISC1_GPADC_EN, GPMISC1_GPADC_EN);
 	if (ret < 0)
 		goto out;
 
-	/* detect battery via GPADC1 */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_CHG_CTRL6,
 			    CC6_BAT_DET_GPADC1, CC6_BAT_DET_GPADC1);
 	if (ret < 0)
@@ -474,13 +444,13 @@ static void pm860x_init_battery(struct pm860x_battery_info *info)
 	if (ret < 0)
 		goto out;
 
-	/* set GPADC1 bias */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_GP_BIAS2, 0xF << 4,
 			      GPBIAS2_GPADC1_SET);
 	if (ret < 0)
 		goto out;
 
-	/* check whether battery present) */
+	 
 	mutex_lock(&info->lock);
 	ret = pm860x_reg_read(info->i2c, PM8607_STATUS_2);
 	if (ret < 0) {
@@ -506,7 +476,7 @@ static void pm860x_init_battery(struct pm860x_battery_info *info)
 	dev_dbg(info->dev, "battery wake up? %s\n",
 		bat_remove != 0 ? "yes" : "no");
 
-	/* restore SOC from RTC domain register */
+	 
 	if (bat_remove == 0) {
 		buf[0] = pm860x_reg_read(info->i2c, PM8607_RTC_MISC2);
 		buf[1] = pm860x_reg_read(info->i2c, PM8607_RTC1);
@@ -534,7 +504,7 @@ static void set_temp_threshold(struct pm860x_battery_info *info,
 {
 	int data;
 
-	/* (tmp << 8) / 1800 */
+	 
 	if (min <= 0)
 		data = 0;
 	else
@@ -566,46 +536,46 @@ static int measure_temp(struct pm860x_battery_info *info, int *data)
 		ret = measure_12bit_voltage(info, PM8607_GPADC1_MEAS1, data);
 		if (ret)
 			return ret;
-		/* meausered Vtbat(mV) / Ibias_current(11uA)*/
+		 
 		*data = (*data * 1000) / GPBIAS2_GPADC1_UA;
 
 		if (*data > TBAT_NEG_25D) {
-			temp = -30;	/* over cold , suppose -30 roughly */
+			temp = -30;	 
 			max = TBAT_NEG_10D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, 0, max);
 		} else if (*data > TBAT_NEG_10D) {
-			temp = -15;	/* -15 degree, code */
+			temp = -15;	 
 			max = TBAT_NEG_10D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, 0, max);
 		} else if (*data > TBAT_0D) {
-			temp = -5;	/* -5 degree */
+			temp = -5;	 
 			min = TBAT_NEG_10D * GPBIAS2_GPADC1_UA / 1000;
 			max = TBAT_40D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, min, max);
 		} else if (*data > TBAT_10D) {
-			temp = 5;	/* in range of (0, 10) */
+			temp = 5;	 
 			min = TBAT_NEG_10D * GPBIAS2_GPADC1_UA / 1000;
 			max = TBAT_40D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, min, max);
 		} else if (*data > TBAT_20D) {
-			temp = 15;	/* in range of (10, 20) */
+			temp = 15;	 
 			min = TBAT_NEG_10D * GPBIAS2_GPADC1_UA / 1000;
 			max = TBAT_40D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, min, max);
 		} else if (*data > TBAT_30D) {
-			temp = 25;	/* in range of (20, 30) */
+			temp = 25;	 
 			min = TBAT_NEG_10D * GPBIAS2_GPADC1_UA / 1000;
 			max = TBAT_40D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, min, max);
 		} else if (*data > TBAT_40D) {
-			temp = 35;	/* in range of (30, 40) */
+			temp = 35;	 
 			min = TBAT_NEG_10D * GPBIAS2_GPADC1_UA / 1000;
 			max = TBAT_40D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, min, max);
 		} else {
 			min = TBAT_40D * GPBIAS2_GPADC1_UA / 1000;
 			set_temp_threshold(info, min, 0);
-			temp = 45;	/* over heat ,suppose 45 roughly */
+			temp = 45;	 
 		}
 
 		dev_dbg(info->dev, "temp_C:%d C,temp_mv:%d mv\n", temp, *data);
@@ -626,25 +596,22 @@ static int calc_resistor(struct pm860x_battery_info *info)
 	int i;
 
 	ret = measure_current(info, &data);
-	/* make sure that charging is launched by data > 0 */
+	 
 	if (ret || data < 0)
 		goto out;
 
 	ret = measure_vbatt(info, OCV_MODE_ACTIVE, &data);
 	if (ret)
 		goto out;
-	/* calculate resistor only in CC charge mode */
+	 
 	if (data < VBATT_RESISTOR_MIN || data > VBATT_RESISTOR_MAX)
 		goto out;
 
-	/* current is saved */
+	 
 	if (set_charger_current(info, 500, &chg_current))
 		goto out;
 
-	/*
-	 * set charge current as 500mA, wait about 500ms till charging
-	 * process is launched and stable with the newer charging current.
-	 */
+	 
 	msleep(500);
 
 	for (i = 0, vbatt_sum1 = 0, ibatt_sum1 = 0; i < 10; i++) {
@@ -657,17 +624,14 @@ static int calc_resistor(struct pm860x_battery_info *info)
 			goto out_meas;
 
 		if (data < 0)
-			ibatt_sum1 = ibatt_sum1 - data;	/* discharging */
+			ibatt_sum1 = ibatt_sum1 - data;	 
 		else
-			ibatt_sum1 = ibatt_sum1 + data;	/* charging */
+			ibatt_sum1 = ibatt_sum1 + data;	 
 	}
 
 	if (set_charger_current(info, 100, &ret))
 		goto out_meas;
-	/*
-	 * set charge current as 100mA, wait about 500ms till charging
-	 * process is launched and stable with the newer charging current.
-	 */
+	 
 	msleep(500);
 
 	for (i = 0, vbatt_sum2 = 0, ibatt_sum2 = 0; i < 10; i++) {
@@ -680,18 +644,18 @@ static int calc_resistor(struct pm860x_battery_info *info)
 			goto out_meas;
 
 		if (data < 0)
-			ibatt_sum2 = ibatt_sum2 - data;	/* discharging */
+			ibatt_sum2 = ibatt_sum2 - data;	 
 		else
-			ibatt_sum2 = ibatt_sum2 + data;	/* charging */
+			ibatt_sum2 = ibatt_sum2 + data;	 
 	}
 
-	/* restore current setting */
+	 
 	if (set_charger_current(info, chg_current, &ret))
 		goto out_meas;
 
 	if ((vbatt_sum1 > vbatt_sum2) && (ibatt_sum1 > ibatt_sum2) &&
 			(ibatt_sum2 > 0)) {
-		/* calculate resistor in discharging case */
+		 
 		data = 1000 * (vbatt_sum1 - vbatt_sum2)
 		    / (ibatt_sum1 - ibatt_sum2);
 		if ((data - info->resistor > 0) &&
@@ -745,7 +709,7 @@ soc:
 	ret = measure_current(info, &ibat);
 	if (ret)
 		goto out;
-	/* Calculate the capacity when discharging(ibat < 0) */
+	 
 	if (ibat < 0) {
 		ret = calc_soc(info, OCV_MODE_ACTIVE, &cap_ocv);
 		if (ret)
@@ -754,24 +718,16 @@ soc:
 		if (ret)
 			goto out;
 		if (data <= LOW_BAT_THRESHOLD) {
-			/* choose the lower capacity value to report
-			 * between vbat and CC when vbat < 3.6v;
-			 * than 3.6v;
-			 */
+			 
 			*cap = min(cap_ocv, cap_cc);
 		} else {
-			/* when detect vbat > 3.6v, but cap_cc < 15,and
-			 * cap_ocv is 10% larger than cap_cc, we can think
-			 * CC have some accumulation error, switch to OCV
-			 * to estimate capacity;
-			 * */
+			 
 			if (cap_cc < 15 && cap_ocv - cap_cc > 10)
 				*cap = cap_ocv;
 			else
 				*cap = cap_cc;
 		}
-		/* when discharging, make sure current capacity
-		 * is lower than last*/
+		 
 		if (*cap > info->last_capacity)
 			*cap = info->last_capacity;
 	} else {
@@ -782,10 +738,7 @@ soc:
 	dev_dbg(info->dev, "%s, cap_ocv:%d cap_cc:%d, cap:%d\n",
 		(ibat < 0) ? "discharging" : "charging",
 		 cap_ocv, cap_cc, *cap);
-	/*
-	 * store the current capacity to RTC domain register,
-	 * after next power up , it will be restored.
-	 */
+	 
 	pm860x_set_bits(info->i2c, PM8607_RTC_MISC2, RTC_SOC_5LSB,
 			(*cap & 0x1F) << 3);
 	pm860x_set_bits(info->i2c, PM8607_RTC1, RTC_SOC_3MSB,
@@ -822,7 +775,7 @@ static int pm860x_batt_get_prop(struct power_supply *psy,
 			data = 0;
 		else if (data > 100)
 			data = 100;
-		/* return 100 if battery is not attached */
+		 
 		if (!info->present)
 			data = 100;
 		val->intval = data;
@@ -831,14 +784,14 @@ static int pm860x_batt_get_prop(struct power_supply *psy,
 		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-		/* return real vbatt Voltage */
+		 
 		ret = measure_vbatt(info, OCV_MODE_ACTIVE, &data);
 		if (ret)
 			return ret;
 		val->intval = data * 1000;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_AVG:
-		/* return Open Circuit Voltage (not measured voltage) */
+		 
 		ret = calc_ocv(info, &data);
 		if (ret)
 			return ret;
@@ -857,7 +810,7 @@ static int pm860x_batt_get_prop(struct power_supply *psy,
 				return ret;
 			data *= 10;
 		} else {
-			/* Fake Temp 25C Without Battery */
+			 
 			data = 250;
 		}
 		val->intval = data;
@@ -943,11 +896,11 @@ static int pm860x_battery_probe(struct platform_device *pdev)
 	if (pdata && pdata->max_capacity)
 		info->max_capacity = pdata->max_capacity;
 	else
-		info->max_capacity = 1500;	/* set default capacity */
+		info->max_capacity = 1500;	 
 	if (pdata && pdata->resistor)
 		info->resistor = pdata->resistor;
 	else
-		info->resistor = 300;	/* set default internal resistor */
+		info->resistor = 300;	 
 
 	info->battery = devm_power_supply_register(&pdev->dev,
 						   &pm860x_battery_desc,

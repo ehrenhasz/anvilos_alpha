@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* String matching match for iptables
- *
- * (C) 2005 Pablo Neira Ayuso <pablo@eurodev.net>
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/init.h>
@@ -41,7 +38,7 @@ static int string_mt_check(const struct xt_mtchk_param *par)
 	struct ts_config *ts_conf;
 	int flags = TS_AUTOLOAD;
 
-	/* Damn, can't handle this case properly with iptables... */
+	 
 	if (conf->from_offset > conf->to_offset)
 		return -EINVAL;
 	if (conf->algo[XT_STRING_MAX_ALGO_NAME_SIZE - 1] != '\0')

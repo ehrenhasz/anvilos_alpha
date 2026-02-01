@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm Ramp Controller driver
- * Copyright (c) 2022, AngeloGioacchino Del Regno
- *                     <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/kernel.h>
@@ -28,20 +24,7 @@
 
 #define RC_UPDATE_TIMEOUT_US	500
 
-/**
- * struct qcom_ramp_controller_desc - SoC specific parameters
- * @cfg_dfs_sid:      Dynamic Frequency Scaling SID configuration
- * @cfg_link_sid:     Link SID configuration
- * @cfg_lmh_sid:      Limits Management hardware SID configuration
- * @cfg_ramp_en:      Ramp Controller enable sequence
- * @cfg_ramp_dis:     Ramp Controller disable sequence
- * @cmd_reg:          Command register offset
- * @num_dfs_sids:     Number of DFS SIDs (max 8)
- * @num_link_sids:    Number of Link SIDs (max 3)
- * @num_lmh_sids:     Number of LMh SIDs (max 8)
- * @num_ramp_en:      Number of entries in enable sequence
- * @num_ramp_dis:     Number of entries in disable sequence
- */
+ 
 struct qcom_ramp_controller_desc {
 	const struct reg_sequence *cfg_dfs_sid;
 	const struct reg_sequence *cfg_link_sid;
@@ -56,22 +39,13 @@ struct qcom_ramp_controller_desc {
 	u8 num_ramp_dis;
 };
 
-/**
- * struct qcom_ramp_controller - Main driver structure
- * @regmap: Regmap handle
- * @desc:   SoC specific parameters
- */
+ 
 struct qcom_ramp_controller {
 	struct regmap *regmap;
 	const struct qcom_ramp_controller_desc *desc;
 };
 
-/**
- * rc_wait_for_update() - Wait for Ramp Controller root update
- * @qrc: Main driver structure
- *
- * Return: Zero for success or negative number for failure
- */
+ 
 static int rc_wait_for_update(struct qcom_ramp_controller *qrc)
 {
 	const struct qcom_ramp_controller_desc *d = qrc->desc;
@@ -87,13 +61,7 @@ static int rc_wait_for_update(struct qcom_ramp_controller *qrc)
 					1, RC_UPDATE_TIMEOUT_US);
 }
 
-/**
- * rc_set_cfg_update() - Ramp Controller configuration update
- * @qrc: Main driver structure
- * @ce: Configuration entry to update
- *
- * Return: Zero for success or negative number for failure
- */
+ 
 static int rc_set_cfg_update(struct qcom_ramp_controller *qrc, u8 ce)
 {
 	const struct qcom_ramp_controller_desc *d = qrc->desc;
@@ -101,50 +69,37 @@ static int rc_set_cfg_update(struct qcom_ramp_controller *qrc, u8 ce)
 	u32 ack, val;
 	int ret;
 
-	/* The ack bit is between bits 16-31 of RC_REG_CFG_UPDATE */
+	 
 	ack = FIELD_PREP(RC_CFG_ACK, BIT(ce));
 
-	/* Write the configuration type first... */
+	 
 	ret = regmap_set_bits(r, d->cmd_reg + RC_REG_CFG_UPDATE, ce);
 	if (ret)
 		return ret;
 
-	/* ...and after that, enable the update bit to sync the changes */
+	 
 	ret = regmap_set_bits(r, d->cmd_reg + RC_REG_CFG_UPDATE, RC_CFG_UPDATE_EN);
 	if (ret)
 		return ret;
 
-	/* Wait for the changes to go through */
+	 
 	ret = regmap_read_poll_timeout(r, d->cmd_reg + RC_REG_CFG_UPDATE, val,
 				       val & ack, 1, RC_UPDATE_TIMEOUT_US);
 	if (ret)
 		return ret;
 
-	/*
-	 * Configuration update success! The CFG_UPDATE register will not be
-	 * cleared automatically upon applying the configuration, so we have
-	 * to do that manually in order to leave the ramp controller in a
-	 * predictable and clean state.
-	 */
+	 
 	ret = regmap_write(r, d->cmd_reg + RC_REG_CFG_UPDATE, 0);
 	if (ret)
 		return ret;
 
-	/* Wait for the update bit cleared ack */
+	 
 	return regmap_read_poll_timeout(r, d->cmd_reg + RC_REG_CFG_UPDATE,
 					val, !(val & RC_CFG_ACK), 1,
 					RC_UPDATE_TIMEOUT_US);
 }
 
-/**
- * rc_write_cfg - Send configuration sequence
- * @qrc: Main driver structure
- * @seq: Register sequence to send before asking for update
- * @ce: Configuration SID
- * @nsids: Total number of SIDs
- *
- * Returns: Zero for success or negative number for error
- */
+ 
 static int rc_write_cfg(struct qcom_ramp_controller *qrc,
 			const struct reg_sequence *seq,
 			u16 ce, u8 nsids)
@@ -152,17 +107,17 @@ static int rc_write_cfg(struct qcom_ramp_controller *qrc,
 	int ret;
 	u8 i;
 
-	/* Check if, and wait until the ramp controller is ready */
+	 
 	ret = rc_wait_for_update(qrc);
 	if (ret)
 		return ret;
 
-	/* Write the sequence */
+	 
 	ret = regmap_multi_reg_write(qrc->regmap, seq, nsids);
 	if (ret)
 		return ret;
 
-	/* Pull the trigger: do config update starting from the last sid */
+	 
 	for (i = 0; i < nsids; i++) {
 		ret = rc_set_cfg_update(qrc, (u8)ce - i);
 		if (ret)
@@ -172,12 +127,7 @@ static int rc_write_cfg(struct qcom_ramp_controller *qrc,
 	return 0;
 }
 
-/**
- * rc_ramp_ctrl_enable() - Enable Ramp up/down Control
- * @qrc: Main driver structure
- *
- * Return: Zero for success or negative number for error
- */
+ 
 static int rc_ramp_ctrl_enable(struct qcom_ramp_controller *qrc)
 {
 	const struct qcom_ramp_controller_desc *d = qrc->desc;
@@ -192,22 +142,13 @@ static int rc_ramp_ctrl_enable(struct qcom_ramp_controller *qrc)
 	return 0;
 }
 
-/**
- * qcom_ramp_controller_start() - Initialize and start the ramp controller
- * @qrc: Main driver structure
- *
- * The Ramp Controller needs to be initialized by programming the relevant
- * registers with SoC-specific configuration: once programming is done,
- * the hardware will take care of the rest (no further handling required).
- *
- * Return: Zero for success or negative number for error
- */
+ 
 static int qcom_ramp_controller_start(struct qcom_ramp_controller *qrc)
 {
 	const struct qcom_ramp_controller_desc *d = qrc->desc;
 	int ret;
 
-	/* Program LMH, DFS, Link SIDs */
+	 
 	ret = rc_write_cfg(qrc, d->cfg_lmh_sid, RC_LMH_SID, d->num_lmh_sids);
 	if (ret)
 		return ret;
@@ -220,7 +161,7 @@ static int qcom_ramp_controller_start(struct qcom_ramp_controller *qrc)
 	if (ret)
 		return ret;
 
-	/* Everything is ready! Enable the ramp up/down control */
+	 
 	return rc_ramp_ctrl_enable(qrc);
 }
 
@@ -254,9 +195,9 @@ static const struct reg_sequence msm8976_cfg_lmh_sid[] = {
 };
 
 static const struct reg_sequence msm8976_cfg_ramp_en[] = {
-	{ 0x50, 0x800 }, /* pre_en */
-	{ 0x50, 0xc00 }, /* en */
-	{ 0x50, 0x400 }  /* post_en */
+	{ 0x50, 0x800 },  
+	{ 0x50, 0xc00 },  
+	{ 0x50, 0x400 }   
 };
 
 static const struct reg_sequence msm8976_cfg_ramp_dis[] = {
@@ -321,7 +262,7 @@ static void qcom_ramp_controller_remove(struct platform_device *pdev)
 
 static const struct of_device_id qcom_ramp_controller_match_table[] = {
 	{ .compatible = "qcom,msm8976-ramp-controller", .data = &msm8976_rc_cfg },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, qcom_ramp_controller_match_table);
 

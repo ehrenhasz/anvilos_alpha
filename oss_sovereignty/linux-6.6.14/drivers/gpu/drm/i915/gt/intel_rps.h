@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_RPS_H
 #define INTEL_RPS_H
@@ -128,4 +126,4 @@ static inline void intel_rps_clear_timer(struct intel_rps *rps)
 	clear_bit(INTEL_RPS_TIMER, &rps->flags);
 }
 
-#endif /* INTEL_RPS_H */
+#endif  

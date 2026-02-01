@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-vfe-170.c
- *
- * Qualcomm MSM Camera Subsystem - VFE (Video Front End) Module v170
- *
- * Copyright (C) 2020-2021 Linaro Ltd.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -117,7 +111,7 @@
 #define		STATUS0_COMP_OVERWRITE		BIT(12)
 #define		STATUS0_OVERFLOW		BIT(13)
 #define		STATUS0_VIOLATION		BIT(14)
-/* WM_CLIENT_BUF_DONE defined for buffers 0:19 */
+ 
 #define		STATUS1_WM_CLIENT_BUF_DONE(n)		BIT(n)
 #define		STATUS1_EARLY_DONE			BIT(24)
 #define		STATUS2_DUAL_COMP0_BUF_DONE		BIT(0)
@@ -213,7 +207,7 @@ static void vfe_global_reset(struct vfe_device *vfe)
 
 	writel_relaxed(BIT(31), vfe->base + VFE_IRQ_MASK_0);
 
-	/* Make sure IRQ mask has been written before resetting */
+	 
 	wmb();
 
 	writel_relaxed(reset_bits, vfe->base + VFE_GLOBAL_RESET_CMD);
@@ -223,21 +217,21 @@ static void vfe_wm_start(struct vfe_device *vfe, u8 wm, struct vfe_line *line)
 {
 	u32 val;
 
-	/*Set Debug Registers*/
+	 
 	val = DEBUG_STATUS_CFG_STATUS0(1) |
 	      DEBUG_STATUS_CFG_STATUS0(7);
 	writel_relaxed(val, vfe->base + VFE_BUS_WM_DEBUG_STATUS_CFG);
 
-	/* BUS_WM_INPUT_IF_ADDR_SYNC_FRAME_HEADER */
+	 
 	writel_relaxed(0, vfe->base + VFE_BUS_WM_ADDR_SYNC_FRAME_HEADER);
 
-	/* no clock gating at bus input */
+	 
 	val = WM_CGC_OVERRIDE_ALL;
 	writel_relaxed(val, vfe->base + VFE_BUS_WM_CGC_OVERRIDE);
 
 	writel_relaxed(0x0, vfe->base + VFE_BUS_WM_TEST_BUS_CTRL);
 
-	/* if addr_no_sync has default value then config the addr no sync reg */
+	 
 	val = WM_ADDR_NO_SYNC_DEFAULT_VAL;
 	writel_relaxed(val, vfe->base + VFE_BUS_WM_ADDR_SYNC_NO_SYNC);
 
@@ -250,13 +244,13 @@ static void vfe_wm_start(struct vfe_device *vfe, u8 wm, struct vfe_line *line)
 	writel_relaxed(val, vfe->base + VFE_BUS_WM_BUFFER_HEIGHT_CFG(wm));
 
 	val = 0;
-	writel_relaxed(val, vfe->base + VFE_BUS_WM_PACKER_CFG(wm)); // XXX 1 for PLAIN8?
+	writel_relaxed(val, vfe->base + VFE_BUS_WM_PACKER_CFG(wm)); 
 
-	/* Configure stride for RDIs */
+	 
 	val = WM_STRIDE_DEFAULT_STRIDE;
 	writel_relaxed(val, vfe->base + VFE_BUS_WM_STRIDE(wm));
 
-	/* Enable WM */
+	 
 	val = 1 << WM_CFG_EN |
 	      MODE_MIPI_RAW << WM_CFG_MODE;
 	writel_relaxed(val, vfe->base + VFE_BUS_WM_CFG(wm));
@@ -264,7 +258,7 @@ static void vfe_wm_start(struct vfe_device *vfe, u8 wm, struct vfe_line *line)
 
 static void vfe_wm_stop(struct vfe_device *vfe, u8 wm)
 {
-	/* Disable WM */
+	 
 	writel_relaxed(0, vfe->base + VFE_BUS_WM_CFG(wm));
 }
 
@@ -283,12 +277,12 @@ static void vfe_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 {
 	vfe->reg_update |= REG_UPDATE_RDI(line_id);
 
-	/* Enforce ordering between previous reg writes and reg update */
+	 
 	wmb();
 
 	writel_relaxed(vfe->reg_update, vfe->base + VFE_REG_UPDATE_CMD);
 
-	/* Enforce ordering between reg update and subsequent reg writes */
+	 
 	wmb();
 }
 
@@ -321,7 +315,7 @@ static void vfe_isr_read(struct vfe_device *vfe, u32 *status0, u32 *status1)
 	writel_relaxed(*status0, vfe->base + VFE_IRQ_CLEAR_0);
 	writel_relaxed(*status1, vfe->base + VFE_IRQ_CLEAR_1);
 
-	/* Enforce ordering between IRQ Clear and Global IRQ Clear */
+	 
 	wmb();
 	writel_relaxed(CMD_GLOBAL_CLEAR, vfe->base + VFE_IRQ_CMD);
 }
@@ -333,13 +327,7 @@ static void vfe_violation_read(struct vfe_device *vfe)
 	pr_err_ratelimited("VFE: violation = 0x%08x\n", violation);
 }
 
-/*
- * vfe_isr - VFE module interrupt handler
- * @irq: Interrupt line
- * @dev: VFE device
- *
- * Return IRQ_HANDLED on success
- */
+ 
 static irqreturn_t vfe_isr(int irq, void *dev)
 {
 	struct vfe_device *vfe = dev;
@@ -357,7 +345,7 @@ static irqreturn_t vfe_isr(int irq, void *dev)
 		writel_relaxed(vfe_bus_status[i], vfe->base + VFE_BUS_IRQ_CLEAR(i));
 	}
 
-	/* Enforce ordering between IRQ reading and interpretation */
+	 
 	wmb();
 
 	writel_relaxed(CMD_GLOBAL_CLEAR, vfe->base + VFE_IRQ_CMD);
@@ -386,15 +374,10 @@ static irqreturn_t vfe_isr(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * vfe_halt - Trigger halt on VFE module and wait to complete
- * @vfe: VFE device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_halt(struct vfe_device *vfe)
 {
-	/* rely on vfe_disable_output() to stop the VFE */
+	 
 	return 0;
 }
 
@@ -452,7 +435,7 @@ static int vfe_enable_output(struct vfe_line *line)
 		struct v4l2_subdev *subdev = media_entity_to_v4l2_subdev(sensor);
 
 		v4l2_subdev_call(subdev, sensor, g_skip_frames, &frame_skip);
-		/* Max frame skip is 29 frames */
+		 
 		if (frame_skip > VFE_FRAME_DROP_VAL - 1)
 			frame_skip = VFE_FRAME_DROP_VAL - 1;
 	}
@@ -509,12 +492,7 @@ static void vfe_disable_output(struct vfe_line *line)
 	vfe_reset(vfe);
 }
 
-/*
- * vfe_enable - Enable streaming on VFE line
- * @line: VFE line
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_enable(struct vfe_line *line)
 {
 	struct vfe_device *vfe = to_vfe(line);
@@ -554,12 +532,7 @@ error_get_output:
 	return ret;
 }
 
-/*
- * vfe_disable - Disable streaming on VFE line
- * @line: VFE line
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_disable(struct vfe_line *line)
 {
 	struct vfe_device *vfe = to_vfe(line);
@@ -577,21 +550,13 @@ static int vfe_disable(struct vfe_line *line)
 	return 0;
 }
 
-/*
- * vfe_isr_sof - Process start of frame interrupt
- * @vfe: VFE Device
- * @line_id: VFE line
- */
+ 
 static void vfe_isr_sof(struct vfe_device *vfe, enum vfe_line_id line_id)
 {
-	/* nop */
+	 
 }
 
-/*
- * vfe_isr_reg_update - Process reg update interrupt
- * @vfe: VFE Device
- * @line_id: VFE line
- */
+ 
 static void vfe_isr_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 {
 	struct vfe_output *output;
@@ -610,11 +575,7 @@ static void vfe_isr_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 	spin_unlock_irqrestore(&vfe->output_lock, flags);
 }
 
-/*
- * vfe_isr_wm_done - Process write master done interrupt
- * @vfe: VFE Device
- * @wm: Write master id
- */
+ 
 static void vfe_isr_wm_done(struct vfe_device *vfe, u8 wm)
 {
 	struct vfe_line *line = &vfe->line[vfe->wm_output_map[wm]];
@@ -665,10 +626,7 @@ out_unlock:
 	spin_unlock_irqrestore(&vfe->output_lock, flags);
 }
 
-/*
- * vfe_pm_domain_off - Disable power domains specific to this VFE.
- * @vfe: VFE Device
- */
+ 
 static void vfe_pm_domain_off(struct vfe_device *vfe)
 {
 	struct camss *camss = vfe->camss;
@@ -679,10 +637,7 @@ static void vfe_pm_domain_off(struct vfe_device *vfe)
 	device_link_del(camss->genpd_link[vfe->id]);
 }
 
-/*
- * vfe_pm_domain_on - Enable power domains specific to this VFE.
- * @vfe: VFE Device
- */
+ 
 static int vfe_pm_domain_on(struct vfe_device *vfe)
 {
 	struct camss *camss = vfe->camss;
@@ -701,16 +656,7 @@ static int vfe_pm_domain_on(struct vfe_device *vfe)
 	return 0;
 }
 
-/*
- * vfe_queue_buffer - Add empty buffer
- * @vid: Video device structure
- * @buf: Buffer to be enqueued
- *
- * Add an empty buffer - depending on the current number of buffers it will be
- * put in pending buffer queue or directly given to the hardware to be filled.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_queue_buffer(struct camss_video *vid,
 			    struct camss_buffer *buf)
 {

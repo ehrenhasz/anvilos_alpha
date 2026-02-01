@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Josh Poimboeuf <jpoimboe@redhat.com>
- */
 
-/*
- * This file reads all the special sections which have alternate instructions
- * which can be patched in or redirected to at runtime.
- */
+ 
+
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -21,9 +16,9 @@ struct special_entry {
 	const char *sec;
 	bool group, jump_or_nop;
 	unsigned char size, orig, new;
-	unsigned char orig_len, new_len; /* group only */
-	unsigned char feature; /* ALTERNATIVE macro CPU feature */
-	unsigned char key; /* jump_label key */
+	unsigned char orig_len, new_len;  
+	unsigned char feature;  
+	unsigned char key;  
 };
 
 static const struct special_entry entries[] = {
@@ -112,7 +107,7 @@ static int get_alt_entry(struct elf *elf, const struct special_entry *entry,
 
 		reloc_to_sec_off(new_reloc, &alt->new_sec, &alt->new_off);
 
-		/* _ASM_EXTABLE_EX hack */
+		 
 		if (alt->new_off >= 0x7ffffff0)
 			alt->new_off -= 0x7ffffff0;
 	}
@@ -132,11 +127,7 @@ static int get_alt_entry(struct elf *elf, const struct special_entry *entry,
 	return 0;
 }
 
-/*
- * Read all the special sections and create a list of special_alt structs which
- * describe all the alternate instructions which can be patched in or
- * redirected to at runtime.
- */
+ 
 int special_get_alts(struct elf *elf, struct list_head *alts)
 {
 	const struct special_entry *entry;

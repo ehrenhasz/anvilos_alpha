@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Kernel module to match L2TP header parameters. */
 
-/* (C) 2013      James Chapman <jchapman@katalix.com>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -22,7 +21,7 @@
 #include <linux/netfilter/xt_tcpudp.h>
 #include <linux/netfilter/xt_l2tp.h>
 
-/* L2TP header masks */
+ 
 #define L2TP_HDR_T_BIT	0x8000
 #define L2TP_HDR_L_BIT	0x4000
 #define L2TP_HDR_VER	0x000f
@@ -33,7 +32,7 @@ MODULE_DESCRIPTION("Xtables: L2TP header match");
 MODULE_ALIAS("ipt_l2tp");
 MODULE_ALIAS("ip6t_l2tp");
 
-/* The L2TP fields that can be matched */
+ 
 struct l2tp_data {
 	u32 tid;
 	u32 sid;
@@ -54,13 +53,13 @@ static bool l2tp_match(const struct xt_l2tp_info *info, struct l2tp_data *data)
 	if ((info->flags & XT_L2TP_VERSION) && (info->version != data->version))
 		return false;
 
-	/* Check tid only for L2TPv3 control or any L2TPv2 packets */
+	 
 	if ((info->flags & XT_L2TP_TID) &&
 	    ((data->type == XT_L2TP_TYPE_CONTROL) || (data->version == 2)) &&
 	    (info->tid != data->tid))
 		return false;
 
-	/* Check sid only for L2TP data packets */
+	 
 	if ((info->flags & XT_L2TP_SID) && (data->type == XT_L2TP_TYPE_DATA) &&
 	    (info->sid != data->sid))
 		return false;
@@ -68,14 +67,7 @@ static bool l2tp_match(const struct xt_l2tp_info *info, struct l2tp_data *data)
 	return true;
 }
 
-/* Parse L2TP header fields when UDP encapsulation is used. Handles
- * L2TPv2 and L2TPv3. Note the L2TPv3 control and data packets have a
- * different format. See
- * RFC2661, Section 3.1, L2TPv2 Header Format
- * RFC3931, Section 3.2.1, L2TPv3 Control Message Header
- * RFC3931, Section 3.2.2, L2TPv3 Data Message Header
- * RFC3931, Section 4.1.2.1, L2TPv3 Session Header over UDP
- */
+ 
 static bool l2tp_udp_mt(const struct sk_buff *skb, struct xt_action_param *par, u16 thoff)
 {
 	const struct xt_l2tp_info *info = par->matchinfo;
@@ -89,9 +81,7 @@ static bool l2tp_udp_mt(const struct sk_buff *skb, struct xt_action_param *par, 
 	if (par->fragoff != 0)
 		return false;
 
-	/* Extract L2TP header fields. The flags in the first 16 bits
-	 * tell us where the other fields are.
-	 */
+	 
 	lh = skb_header_pointer(skb, offs, 2, &lhbuf);
 	if (lh == NULL)
 		return false;
@@ -103,12 +93,7 @@ static bool l2tp_udp_mt(const struct sk_buff *skb, struct xt_action_param *par, 
 		data.type = XT_L2TP_TYPE_DATA;
 	data.version = (u8) flags & L2TP_HDR_VER;
 
-	/* Now extract the L2TP tid/sid. These are in different places
-	 * for L2TPv2 (rfc2661) and L2TPv3 (rfc3931). For L2TPv2, we
-	 * must also check to see if the length field is present,
-	 * since this affects the offsets into the packet of the
-	 * tid/sid fields.
-	 */
+	 
 	if (data.version == 3) {
 		lh = skb_header_pointer(skb, offs + 4, 4, &lhbuf);
 		if (lh == NULL)
@@ -131,11 +116,7 @@ static bool l2tp_udp_mt(const struct sk_buff *skb, struct xt_action_param *par, 
 	return l2tp_match(info, &data);
 }
 
-/* Parse L2TP header fields for IP encapsulation (no UDP header).
- * L2TPv3 data packets have a different form with IP encap. See
- * RC3931, Section 4.1.1.1, L2TPv3 Session Header over IP.
- * RC3931, Section 4.1.1.2, L2TPv3 Control and Data Traffic over IP.
- */
+ 
 static bool l2tp_ip_mt(const struct sk_buff *skb, struct xt_action_param *par, u16 thoff)
 {
 	const struct xt_l2tp_info *info = par->matchinfo;
@@ -143,14 +124,12 @@ static bool l2tp_ip_mt(const struct sk_buff *skb, struct xt_action_param *par, u
 	union l2tp_val lhbuf;
 	struct l2tp_data data = { 0, };
 
-	/* For IP encap, the L2TP sid is the first 32-bits. */
+	 
 	lh = skb_header_pointer(skb, thoff, sizeof(lhbuf), &lhbuf);
 	if (lh == NULL)
 		return false;
 	if (lh->val32 == 0) {
-		/* Must be a control packet. The L2TP tid is further
-		 * into the packet.
-		 */
+		 
 		data.type = XT_L2TP_TYPE_CONTROL;
 		lh = skb_header_pointer(skb, thoff + 8, sizeof(lhbuf),
 					&lhbuf);
@@ -172,7 +151,7 @@ static bool l2tp_mt4(const struct sk_buff *skb, struct xt_action_param *par)
 	struct iphdr *iph = ip_hdr(skb);
 	u8 ipproto = iph->protocol;
 
-	/* l2tp_mt_check4 already restricts the transport protocol */
+	 
 	switch (ipproto) {
 	case IPPROTO_UDP:
 		return l2tp_udp_mt(skb, par, par->thoff);
@@ -194,7 +173,7 @@ static bool l2tp_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 	if (fragoff != 0)
 		return false;
 
-	/* l2tp_mt_check6 already restricts the transport protocol */
+	 
 	switch (ipproto) {
 	case IPPROTO_UDP:
 		return l2tp_udp_mt(skb, par, thoff);
@@ -210,14 +189,14 @@ static int l2tp_mt_check(const struct xt_mtchk_param *par)
 {
 	const struct xt_l2tp_info *info = par->matchinfo;
 
-	/* Check for invalid flags */
+	 
 	if (info->flags & ~(XT_L2TP_TID | XT_L2TP_SID | XT_L2TP_VERSION |
 			    XT_L2TP_TYPE)) {
 		pr_info_ratelimited("unknown flags: %x\n", info->flags);
 		return -EINVAL;
 	}
 
-	/* At least one of tid, sid or type=control must be specified */
+	 
 	if ((!(info->flags & XT_L2TP_TID)) &&
 	    (!(info->flags & XT_L2TP_SID)) &&
 	    ((!(info->flags & XT_L2TP_TYPE)) ||
@@ -227,9 +206,7 @@ static int l2tp_mt_check(const struct xt_mtchk_param *par)
 		return -EINVAL;
 	}
 
-	/* If version 2 is specified, check that incompatible params
-	 * are not supplied
-	 */
+	 
 	if (info->flags & XT_L2TP_VERSION) {
 		if ((info->version < 2) || (info->version > 3)) {
 			pr_info_ratelimited("wrong L2TP version: %u\n",

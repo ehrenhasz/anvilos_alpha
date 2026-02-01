@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Renesas R-Car CMD support
-//
-// Copyright (C) 2015 Renesas Solutions Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+
+
+
+
+
+
 
 #include "rsnd.h"
 
@@ -45,11 +45,7 @@ static int rsnd_cmd_init(struct rsnd_mod *mod,
 		struct rsnd_dai *rdai;
 		int i;
 
-		/*
-		 * it is assuming that integrater is well understanding about
-		 * data path. Here doesn't check impossible connection,
-		 * like src2 + src5
-		 */
+		 
 		data = 0;
 		for_each_rsnd_dai(rdai, priv, i) {
 			struct rsnd_dai_stream *tio = &rdai->playback;
@@ -157,11 +153,11 @@ int rsnd_cmd_probe(struct rsnd_priv *priv)
 	struct rsnd_cmd *cmd;
 	int i, nr;
 
-	/* This driver doesn't support Gen1 at this point */
+	 
 	if (rsnd_is_gen1(priv))
 		return 0;
 
-	/* same number as DVC */
+	 
 	nr = priv->dvc_nr;
 	if (!nr)
 		return 0;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/dynamic_debug.h>
@@ -69,7 +69,7 @@ void ionic_rx_filter_replay(struct ionic_lif *lif)
 				continue;
 			}
 
-			/* remove from old id list, save new id in tmp list */
+			 
 			spin_lock_bh(&lif->rx_filters.lock);
 			hlist_del(&f->by_id);
 			spin_unlock_bh(&lif->rx_filters.lock);
@@ -78,7 +78,7 @@ void ionic_rx_filter_replay(struct ionic_lif *lif)
 		}
 	}
 
-	/* rebuild the by_id hash lists with the new filter ids */
+	 
 	spin_lock_bh(&lif->rx_filters.lock);
 	hlist_for_each_entry_safe(f, tmp, &new_id_list, by_id) {
 		key = f->filter_id & IONIC_RX_FILTER_HLISTS_MASK;
@@ -152,7 +152,7 @@ int ionic_rx_filter_save(struct ionic_lif *lif, u32 flow_id, u16 rxq_index,
 	}
 
 	if (f) {
-		/* remove from current linking so we can refresh it */
+		 
 		hlist_del(&f->by_id);
 		hlist_del(&f->by_hash);
 	} else {
@@ -318,16 +318,16 @@ static int ionic_lif_filter_add(struct ionic_lif *lif,
 	spin_lock_bh(&lif->rx_filters.lock);
 	f = ionic_rx_filter_find(lif, &ctx.cmd.rx_filter_add);
 	if (f) {
-		/* don't bother if we already have it and it is sync'd */
+		 
 		if (f->state == IONIC_FILTER_STATE_SYNCED) {
 			spin_unlock_bh(&lif->rx_filters.lock);
 			return 0;
 		}
 
-		/* mark preemptively as sync'd to block any parallel attempts */
+		 
 		f->state = IONIC_FILTER_STATE_SYNCED;
 	} else {
-		/* save as SYNCED to catch any DEL requests while processing */
+		 
 		err = ionic_rx_filter_save(lif, 0, IONIC_RXQ_INDEX_ANY, 0, &ctx,
 					   IONIC_FILTER_STATE_SYNCED);
 	}
@@ -335,11 +335,7 @@ static int ionic_lif_filter_add(struct ionic_lif *lif,
 	if (err)
 		return err;
 
-	/* Don't bother with the write to FW if we know there's no room,
-	 * we can try again on the next sync attempt.
-	 * Since the FW doesn't have a way to tell us the vlan limit,
-	 * we start max_vlans at 0 until we hit the ENOSPC error.
-	 */
+	 
 	switch (le16_to_cpu(ctx.cmd.rx_filter_add.match)) {
 	case IONIC_RX_FILTER_MATCH_VLAN:
 		netdev_dbg(lif->netdev, "%s: rx_filter add VLAN %d\n",
@@ -362,29 +358,24 @@ static int ionic_lif_filter_add(struct ionic_lif *lif,
 	spin_lock_bh(&lif->rx_filters.lock);
 
 	if (err && err != -EEXIST) {
-		/* set the state back to NEW so we can try again later */
+		 
 		f = ionic_rx_filter_find(lif, &ctx.cmd.rx_filter_add);
 		if (f && f->state == IONIC_FILTER_STATE_SYNCED) {
 			f->state = IONIC_FILTER_STATE_NEW;
 
-			/* If -ENOSPC we won't waste time trying to sync again
-			 * until there is a delete that might make room
-			 */
+			 
 			if (err != -ENOSPC)
 				set_bit(IONIC_LIF_F_FILTER_SYNC_NEEDED, lif->state);
 		}
 
 		spin_unlock_bh(&lif->rx_filters.lock);
 
-		/* store the max_vlans limit that we found */
+		 
 		if (err == -ENOSPC &&
 		    le16_to_cpu(ctx.cmd.rx_filter_add.match) == IONIC_RX_FILTER_MATCH_VLAN)
 			lif->max_vlans = lif->nvlans;
 
-		/* Prevent unnecessary error messages on recoverable
-		 * errors as the filter will get retried on the next
-		 * sync attempt.
-		 */
+		 
 		switch (err) {
 		case -ENOSPC:
 		case -ENXIO:
@@ -426,11 +417,7 @@ static int ionic_lif_filter_add(struct ionic_lif *lif,
 
 	f = ionic_rx_filter_find(lif, &ctx.cmd.rx_filter_add);
 	if (f && f->state == IONIC_FILTER_STATE_OLD) {
-		/* Someone requested a delete while we were adding
-		 * so update the filter info with the results from the add
-		 * and the data will be there for the delete on the next
-		 * sync cycle.
-		 */
+		 
 		err = ionic_rx_filter_save(lif, 0, IONIC_RXQ_INDEX_ANY, 0, &ctx,
 					   IONIC_FILTER_STATE_OLD);
 	} else {
@@ -511,7 +498,7 @@ static int ionic_lif_filter_del(struct ionic_lif *lif,
 		err = ionic_adminq_post_wait_nomsg(lif, &ctx);
 
 		switch (err) {
-			/* ignore these errors */
+			 
 		case -EEXIST:
 		case -ENXIO:
 		case -ETIMEDOUT:
@@ -572,9 +559,7 @@ void ionic_rx_filter_sync(struct ionic_lif *lif)
 
 	clear_bit(IONIC_LIF_F_FILTER_SYNC_NEEDED, lif->state);
 
-	/* Copy the filters to be added and deleted
-	 * into a separate local list that needs no locking.
-	 */
+	 
 	spin_lock_bh(&lif->rx_filters.lock);
 	for (i = 0; i < IONIC_RX_FILTER_HLISTS; i++) {
 		head = &lif->rx_filters.by_id[i];
@@ -598,11 +583,7 @@ void ionic_rx_filter_sync(struct ionic_lif *lif)
 loop_out:
 	spin_unlock_bh(&lif->rx_filters.lock);
 
-	/* If the add or delete fails, it won't get marked as sync'd
-	 * and will be tried again in the next sync action.
-	 * Do the deletes first in case we're in an overflow state and
-	 * they can clear room for some new filters
-	 */
+	 
 	list_for_each_entry_safe(sync_item, spos, &sync_del_list, list) {
 		ionic_lif_filter_del(lif, &sync_item->f.cmd);
 

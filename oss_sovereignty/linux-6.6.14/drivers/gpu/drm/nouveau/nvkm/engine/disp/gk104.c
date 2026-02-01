@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "chan.h"
 #include "hdmi.h"
@@ -38,7 +16,7 @@ gk104_sor_hdmi_infoframe_vsi(struct nvkm_ior *ior, int head, void *data, u32 siz
 
 	pack_hdmi_infoframe(&vsi, data, size);
 
-	/* GENERIC(?) / Vendor InfoFrame? */
+	 
 	nvkm_mask(device, 0x690100 + hoff, 0x00010001, 0x00000000);
 	if (!size)
 		return;
@@ -46,7 +24,7 @@ gk104_sor_hdmi_infoframe_vsi(struct nvkm_ior *ior, int head, void *data, u32 siz
 	nvkm_wr32(device, 0x690108 + hoff, vsi.header);
 	nvkm_wr32(device, 0x69010c + hoff, vsi.subpack0_low);
 	nvkm_wr32(device, 0x690110 + hoff, vsi.subpack0_high);
-	/* Is there a second (or further?) set of subpack registers here? */
+	 
 	nvkm_mask(device, 0x690100 + hoff, 0x00000001, 0x00000001);
 }
 
@@ -59,7 +37,7 @@ gk104_sor_hdmi_infoframe_avi(struct nvkm_ior *ior, int head, void *data, u32 siz
 
 	pack_hdmi_infoframe(&avi, data, size);
 
-	/* AVI InfoFrame */
+	 
 	nvkm_mask(device, 0x690000 + hoff, 0x00000001, 0x00000000);
 	if (!size)
 		return;
@@ -91,15 +69,15 @@ gk104_sor_hdmi_ctrl(struct nvkm_ior *ior, int head, bool enable, u8 max_ac_packe
 		return;
 	}
 
-	/* ??? InfoFrame? */
+	 
 	nvkm_mask(device, 0x6900c0 + hdmi, 0x00000001, 0x00000000);
 	nvkm_wr32(device, 0x6900cc + hdmi, 0x00000010);
 	nvkm_mask(device, 0x6900c0 + hdmi, 0x00000001, 0x00000001);
 
-	/* ??? */
+	 
 	nvkm_wr32(device, 0x690080 + hdmi, 0x82000000);
 
-	/* HDMI_CTRL */
+	 
 	nvkm_mask(device, 0x616798 + hoff, 0x401f007f, ctrl);
 }
 

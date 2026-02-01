@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor basic permission sets definitions.
- *
- * Copyright 2017 Canonical Ltd.
- */
+ 
+ 
 
 #ifndef __AA_PERM_H
 #define __AA_PERM_H
@@ -21,32 +15,32 @@
 #define AA_MAY_CREATE		0x0010
 #define AA_MAY_DELETE		0x0020
 #define AA_MAY_OPEN		0x0040
-#define AA_MAY_RENAME		0x0080		/* pair */
+#define AA_MAY_RENAME		0x0080		 
 
-#define AA_MAY_SETATTR		0x0100		/* meta write */
-#define AA_MAY_GETATTR		0x0200		/* meta read */
-#define AA_MAY_SETCRED		0x0400		/* security cred/attr */
+#define AA_MAY_SETATTR		0x0100		 
+#define AA_MAY_GETATTR		0x0200		 
+#define AA_MAY_SETCRED		0x0400		 
 #define AA_MAY_GETCRED		0x0800
 
-#define AA_MAY_CHMOD		0x1000		/* pair */
-#define AA_MAY_CHOWN		0x2000		/* pair */
-#define AA_MAY_CHGRP		0x4000		/* pair */
-#define AA_MAY_LOCK		0x8000		/* LINK_SUBSET overlaid */
+#define AA_MAY_CHMOD		0x1000		 
+#define AA_MAY_CHOWN		0x2000		 
+#define AA_MAY_CHGRP		0x4000		 
+#define AA_MAY_LOCK		0x8000		 
 
 #define AA_EXEC_MMAP		0x00010000
-#define AA_MAY_MPROT		0x00020000	/* extend conditions */
-#define AA_MAY_LINK		0x00040000	/* pair */
-#define AA_MAY_SNAPSHOT		0x00080000	/* pair */
+#define AA_MAY_MPROT		0x00020000	 
+#define AA_MAY_LINK		0x00040000	 
+#define AA_MAY_SNAPSHOT		0x00080000	 
 
 #define AA_MAY_DELEGATE
 #define AA_CONT_MATCH		0x08000000
 
 #define AA_MAY_STACK		0x10000000
-#define AA_MAY_ONEXEC		0x20000000 /* either stack or change_profile */
+#define AA_MAY_ONEXEC		0x20000000  
 #define AA_MAY_CHANGE_PROFILE	0x40000000
 #define AA_MAY_CHANGEHAT	0x80000000
 
-#define AA_LINK_SUBSET		AA_MAY_LOCK	/* overlaid */
+#define AA_LINK_SUBSET		AA_MAY_LOCK	 
 
 
 #define PERMS_CHRS_MASK (MAY_READ | MAY_WRITE | AA_MAY_CREATE |		\
@@ -65,29 +59,26 @@ extern const char *aa_file_perm_names[];
 
 struct aa_perms {
 	u32 allow;
-	u32 deny;	/* explicit deny, or conflict if allow also set */
+	u32 deny;	 
 
-	u32 subtree;	/* allow perm on full subtree only when allow is set */
-	u32 cond;	/* set only when ~allow and ~deny */
+	u32 subtree;	 
+	u32 cond;	 
 
-	u32 kill;	/* set only when ~allow | deny */
-	u32 complain;	/* accumulates only used when ~allow & ~deny */
-	u32 prompt;	/* accumulates only used when ~allow & ~deny */
+	u32 kill;	 
+	u32 complain;	 
+	u32 prompt;	 
 
-	u32 audit;	/* set only when allow is set */
-	u32 quiet;	/* set only when ~allow | deny */
-	u32 hide;	/* set only when  ~allow | deny */
+	u32 audit;	 
+	u32 quiet;	 
+	u32 hide;	 
 
 
 	u32 xindex;
-	u32 tag;	/* tag string index, if present */
-	u32 label;	/* label string index, if present */
+	u32 tag;	 
+	u32 label;	 
 };
 
-/*
- * Indexes are broken into a 24 bit index and 8 bit flag.
- * For the index to be valid there must be a value in the flag
- */
+ 
 #define AA_INDEX_MASK			0x00ffffff
 #define AA_INDEX_FLAG_MASK		0xff000000
 #define AA_INDEX_NONE			0
@@ -96,11 +87,7 @@ struct aa_perms {
 extern struct aa_perms nullperms;
 extern struct aa_perms allperms;
 
-/**
- * aa_perms_accum_raw - accumulate perms with out masking off overlapping perms
- * @accum - perms struct to accumulate into
- * @addend - perms struct to add to @accum
- */
+ 
 static inline void aa_perms_accum_raw(struct aa_perms *accum,
 				      struct aa_perms *addend)
 {
@@ -123,11 +110,7 @@ static inline void aa_perms_accum_raw(struct aa_perms *accum,
 		accum->label = addend->label;
 }
 
-/**
- * aa_perms_accum - accumulate perms, masking off overlapping perms
- * @accum - perms struct to accumulate into
- * @addend - perms struct to add to @accum
- */
+ 
 static inline void aa_perms_accum(struct aa_perms *accum,
 				  struct aa_perms *addend)
 {
@@ -160,11 +143,7 @@ static inline void aa_perms_accum(struct aa_perms *accum,
 })
 
 
-/*
- * TODO: update for labels pointing to labels instead of profiles
- * TODO: optimize the walk, currently does subwalk of L2 for each P in L1
- * gah this doesn't allow for label compound check!!!!
- */
+ 
 #define xcheck_ns_profile_profile(P1, P2, FN, args...)		\
 ({								\
 	int ____e = 0;						\
@@ -186,7 +165,7 @@ static inline void aa_perms_accum(struct aa_perms *accum,
 	fn_for_each((L1), __p1, FN(__p1, (L2), args));		\
 })
 
-/* Do the cross check but applying FN at the profiles level */
+ 
 #define xcheck_labels_profiles(L1, L2, FN, args...)		\
 	xcheck_ns_labels((L1), (L2), xcheck_ns_profile_label, (FN), args)
 
@@ -216,4 +195,4 @@ int aa_profile_label_perm(struct aa_profile *profile, struct aa_profile *target,
 int aa_check_perms(struct aa_profile *profile, struct aa_perms *perms,
 		   u32 request, struct apparmor_audit_data *ad,
 		   void (*cb)(struct audit_buffer *, void *));
-#endif /* __AA_PERM_H */
+#endif  

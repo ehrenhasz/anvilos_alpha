@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2021 MediaTek Inc. */
+
+ 
 
 #include "mt7921.h"
 #include "mcu.h"

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is for all the tests related to validating kernel memory
- * permissions: non-executable regions, non-writable regions, and
- * even non-readable regions.
- */
+
+ 
 #include "lkdtm.h"
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -12,32 +8,29 @@
 #include <asm/cacheflush.h>
 #include <asm/sections.h>
 
-/* Whether or not to fill the target memory area with do_nothing(). */
+ 
 #define CODE_WRITE	true
 #define CODE_AS_IS	false
 
-/* How many bytes to copy to be sure we've copied enough of do_nothing(). */
+ 
 #define EXEC_SIZE 64
 
-/* This is non-const, so it will end up in the .data section. */
+ 
 static u8 data_area[EXEC_SIZE];
 
-/* This is const, so it will end up in the .rodata section. */
+ 
 static const unsigned long rodata = 0xAA55AA55;
 
-/* This is marked __ro_after_init, so it should ultimately be .rodata. */
+ 
 static unsigned long ro_after_init __ro_after_init = 0x55AA5500;
 
-/*
- * This just returns to the caller. It is designed to be copied into
- * non-executable memory regions.
- */
+ 
 static noinline void do_nothing(void)
 {
 	return;
 }
 
-/* Must immediately follow do_nothing for size calculuations to work out. */
+ 
 static noinline void do_overwritten(void)
 {
 	pr_info("do_overwritten wasn't overwritten!\n");
@@ -85,7 +78,7 @@ static void execute_user_location(void *dst)
 {
 	int copied;
 
-	/* Intentionally crossing kernel/user memory boundary. */
+	 
 	void (*func)(void);
 	func_desc_t fdesc;
 	void *do_nothing_text = dereference_function_descriptor(do_nothing);
@@ -105,7 +98,7 @@ static void execute_user_location(void *dst)
 
 static void lkdtm_WRITE_RO(void)
 {
-	/* Explicitly cast away "const" for the test and make volatile. */
+	 
 	volatile unsigned long *ptr = (unsigned long *)&rodata;
 
 	pr_info("attempting bad rodata write at %px\n", ptr);
@@ -117,11 +110,7 @@ static void lkdtm_WRITE_RO_AFTER_INIT(void)
 {
 	volatile unsigned long *ptr = &ro_after_init;
 
-	/*
-	 * Verify we were written to during init. Since an Oops
-	 * is considered a "success", a failure is to just skip the
-	 * real test.
-	 */
+	 
 	if ((*ptr & 0xAA) != 0xAA) {
 		pr_info("%p was NOT written during init!?\n", ptr);
 		return;
@@ -267,7 +256,7 @@ static void lkdtm_ACCESS_NULL(void)
 
 void __init lkdtm_perms_init(void)
 {
-	/* Make sure we can write to __ro_after_init values during __init */
+	 
 	ro_after_init |= 0xAA;
 }
 

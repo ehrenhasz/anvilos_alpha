@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #ifndef BRCMFMAC_BUS_H
 #define BRCMFMAC_BUS_H
@@ -11,7 +9,7 @@
 #include <linux/device.h>
 #include "debug.h"
 
-/* IDs of the 6 default common rings of msgbuf protocol */
+ 
 #define BRCMF_H2D_MSGRING_CONTROL_SUBMIT	0
 #define BRCMF_H2D_MSGRING_RXPOST_SUBMIT		1
 #define BRCMF_H2D_MSGRING_FLOWRING_IDSTART	2
@@ -25,34 +23,34 @@
 #define BRCMF_NROF_COMMON_MSGRINGS	(BRCMF_NROF_H2D_COMMON_MSGRINGS + \
 					 BRCMF_NROF_D2H_COMMON_MSGRINGS)
 
-/* The interval to poll console */
+ 
 #define BRCMF_CONSOLE	10
 
-/* The maximum console interval value (5 mins) */
+ 
 #define MAX_CONSOLE_INTERVAL	(5 * 60)
 
 enum brcmf_fwvendor {
 	BRCMF_FWVENDOR_WCC,
 	BRCMF_FWVENDOR_CYW,
 	BRCMF_FWVENDOR_BCA,
-	/* keep last */
+	 
 	BRCMF_FWVENDOR_NUM,
 	BRCMF_FWVENDOR_INVALID
 };
 
-/* The level of bus communication with the dongle */
+ 
 enum brcmf_bus_state {
-	BRCMF_BUS_DOWN,		/* Not ready for frame transfers */
-	BRCMF_BUS_UP		/* Ready for frame transfers */
+	BRCMF_BUS_DOWN,		 
+	BRCMF_BUS_UP		 
 };
 
-/* The level of bus communication with the dongle */
+ 
 enum brcmf_bus_protocol_type {
 	BRCMF_PROTO_BCDC,
 	BRCMF_PROTO_MSGBUF
 };
 
-/* Firmware blobs that may be available */
+ 
 enum brcmf_blob_type {
 	BRCMF_BLOB_CLM,
 	BRCMF_BLOB_TXCAP,
@@ -67,31 +65,7 @@ struct brcmf_bus_dcmd {
 	struct list_head list;
 };
 
-/**
- * struct brcmf_bus_ops - bus callback operations.
- *
- * @preinit: execute bus/device specific dongle init commands (optional).
- * @init: prepare for communication with dongle.
- * @stop: clear pending frames, disable data flow.
- * @txdata: send a data frame to the dongle. When the data
- *	has been transferred, the common driver must be
- *	notified using brcmf_txcomplete(). The common
- *	driver calls this function with interrupts
- *	disabled.
- * @txctl: transmit a control request message to dongle.
- * @rxctl: receive a control response message from dongle.
- * @gettxq: obtain a reference of bus transmit queue (optional).
- * @wowl_config: specify if dongle is configured for wowl when going to suspend
- * @get_ramsize: obtain size of device memory.
- * @get_memdump: obtain device memory dump in provided buffer.
- * @get_blob: obtain a firmware blob.
- * @remove: initiate unbind of the device.
- *
- * This structure provides an abstract interface towards the
- * bus specific driver. For control messages to common driver
- * will assure there is only one active transaction. Unless
- * indicated otherwise these callbacks are mandatory.
- */
+ 
 struct brcmf_bus_ops {
 	int (*preinit)(struct device *dev);
 	void (*stop)(struct device *dev);
@@ -110,17 +84,7 @@ struct brcmf_bus_ops {
 };
 
 
-/**
- * struct brcmf_bus_msgbuf - bus ringbuf if in case of msgbuf.
- *
- * @commonrings: commonrings which are always there.
- * @flowrings: commonrings which are dynamically created and destroyed for data.
- * @rx_dataoffset: if set then all rx data has this offset.
- * @max_rxbufpost: maximum number of buffers to post for rx.
- * @max_flowrings: maximum number of tx flow rings supported.
- * @max_submissionrings: maximum number of submission rings(h2d) supported.
- * @max_completionrings: maximum number of completion rings(d2h) supported.
- */
+ 
 struct brcmf_bus_msgbuf {
 	struct brcmf_commonring *commonrings[BRCMF_NROF_COMMON_MSGRINGS];
 	struct brcmf_commonring **flowrings;
@@ -132,36 +96,13 @@ struct brcmf_bus_msgbuf {
 };
 
 
-/**
- * struct brcmf_bus_stats - bus statistic counters.
- *
- * @pktcowed: packets cowed for extra headroom/unorphan.
- * @pktcow_failed: packets dropped due to failed cow-ing.
- */
+ 
 struct brcmf_bus_stats {
 	atomic_t pktcowed;
 	atomic_t pktcow_failed;
 };
 
-/**
- * struct brcmf_bus - interface structure between common and bus layer
- *
- * @bus_priv: pointer to private bus device.
- * @proto_type: protocol type, bcdc or msgbuf
- * @dev: device pointer of bus device.
- * @drvr: public driver information.
- * @state: operational state of the bus interface.
- * @stats: statistics shared between common and bus layer.
- * @maxctl: maximum size for rxctl request message.
- * @chip: device identifier of the dongle chip.
- * @chiprev: revision of the dongle chip.
- * @fwvid: firmware vendor-support identifier of the device.
- * @always_use_fws_queue: bus wants use queue also when fwsignal is inactive.
- * @wowl_supported: is wowl supported by bus driver.
- * @ops: callbacks for this bus instance.
- * @msgbuf: msgbuf protocol parameters provided by bus layer.
- * @list: member used to add this bus instance to linked list.
- */
+ 
 struct brcmf_bus {
 	union {
 		struct brcmf_sdio_dev *sdio;
@@ -186,9 +127,7 @@ struct brcmf_bus {
 	struct list_head list;
 };
 
-/*
- * callback wrappers
- */
+ 
 static inline int brcmf_bus_preinit(struct brcmf_bus *bus)
 {
 	if (!bus->ops->preinit)
@@ -286,30 +225,28 @@ static inline void brcmf_bus_remove(struct brcmf_bus *bus)
 	bus->ops->remove(bus->dev);
 }
 
-/*
- * interface functions from common layer
- */
+ 
 
-/* Receive frame for delivery to OS.  Callee disposes of rxp. */
+ 
 void brcmf_rx_frame(struct device *dev, struct sk_buff *rxp, bool handle_event,
 		    bool inirq);
-/* Receive async event packet from firmware. Callee disposes of rxp. */
+ 
 void brcmf_rx_event(struct device *dev, struct sk_buff *rxp);
 
 int brcmf_alloc(struct device *dev, struct brcmf_mp_device *settings);
-/* Indication from bus module regarding presence/insertion of dongle. */
+ 
 int brcmf_attach(struct device *dev);
-/* Indication from bus module regarding removal/absence of dongle */
+ 
 void brcmf_detach(struct device *dev);
 void brcmf_free(struct device *dev);
-/* Indication from bus module that dongle should be reset */
+ 
 void brcmf_dev_reset(struct device *dev);
-/* Request from bus module to initiate a coredump */
+ 
 void brcmf_dev_coredump(struct device *dev);
-/* Indication that firmware has halted or crashed */
+ 
 void brcmf_fw_crashed(struct device *dev);
 
-/* Configure the "global" bus state used by upper layers */
+ 
 void brcmf_bus_change_state(struct brcmf_bus *bus, enum brcmf_bus_state state);
 
 s32 brcmf_iovar_data_set(struct device *dev, char *name, void *data, u32 len);
@@ -339,4 +276,4 @@ static inline void brcmf_pcie_exit(void) { }
 static inline int brcmf_pcie_register(void) { return 0; }
 #endif
 
-#endif /* BRCMFMAC_BUS_H */
+#endif  

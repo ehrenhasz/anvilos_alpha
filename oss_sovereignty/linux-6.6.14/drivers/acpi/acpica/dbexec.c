@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbexec - debugger control method execution
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -15,7 +11,7 @@ ACPI_MODULE_NAME("dbexec")
 
 static struct acpi_db_method_info acpi_gbl_db_method_info;
 
-/* Local prototypes */
+ 
 
 static acpi_status
 acpi_db_execute_method(struct acpi_db_method_info *info,
@@ -33,19 +29,7 @@ acpi_db_execution_walk(acpi_handle obj_handle,
 
 static void ACPI_SYSTEM_XFACE acpi_db_single_execution_thread(void *context);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_delete_objects
- *
- * PARAMETERS:  count               - Count of objects in the list
- *              objects             - Array of ACPI_OBJECTs to be deleted
- *
- * RETURN:      None
- *
- * DESCRIPTION: Delete a list of ACPI_OBJECTS. Handles packages and nested
- *              packages via recursion.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_delete_objects(u32 count, union acpi_object *objects)
 {
@@ -60,12 +44,12 @@ void acpi_db_delete_objects(u32 count, union acpi_object *objects)
 
 		case ACPI_TYPE_PACKAGE:
 
-			/* Recursive call to delete package elements */
+			 
 
 			acpi_db_delete_objects(objects[i].package.count,
 					       objects[i].package.elements);
 
-			/* Free the elements array */
+			 
 
 			ACPI_FREE(objects[i].package.elements);
 			break;
@@ -77,19 +61,7 @@ void acpi_db_delete_objects(u32 count, union acpi_object *objects)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_execute_method
- *
- * PARAMETERS:  info            - Valid info segment
- *              return_obj      - Where to put return object
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute a control method. Used to evaluate objects via the
- *              "EXECUTE" or "EVALUATE" commands.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_execute_method(struct acpi_db_method_info *info,
@@ -109,15 +81,15 @@ acpi_db_execute_method(struct acpi_db_method_info *info,
 	param_objects.count = 0;
 	param_objects.pointer = NULL;
 
-	/* Pass through any command-line arguments */
+	 
 
 	if (info->args && info->args[0]) {
 
-		/* Get arguments passed on the command line */
+		 
 
 		for (i = 0; (info->args[i] && *(info->args[i])); i++) {
 
-			/* Convert input string (token) to an actual union acpi_object */
+			 
 
 			status = acpi_db_convert_to_object(info->types[i],
 							   info->args[i],
@@ -133,12 +105,12 @@ acpi_db_execute_method(struct acpi_db_method_info *info,
 		param_objects.pointer = params;
 	}
 
-	/* Prepare for a return object of arbitrary size */
+	 
 
 	return_obj->pointer = acpi_gbl_db_buffer;
 	return_obj->length = ACPI_DEBUG_BUFFER_SIZE;
 
-	/* Do the actual method execution */
+	 
 
 	acpi_gbl_method_executing = TRUE;
 	status = acpi_evaluate_object(NULL, info->pathname,
@@ -150,7 +122,7 @@ acpi_db_execute_method(struct acpi_db_method_info *info,
 	if (ACPI_FAILURE(status)) {
 		if ((status == AE_ABORT_METHOD) || acpi_gbl_abort_method) {
 
-			/* Clear the abort and fall back to the debugger prompt */
+			 
 
 			ACPI_EXCEPTION((AE_INFO, status,
 					"Aborting top-level method"));
@@ -178,17 +150,7 @@ cleanup:
 	return_ACPI_STATUS(status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_execute_setup
- *
- * PARAMETERS:  info            - Valid method info
- *
- * RETURN:      None
- *
- * DESCRIPTION: Setup info segment prior to method execution
- *
- ******************************************************************************/
+ 
 
 static acpi_status acpi_db_execute_setup(struct acpi_db_method_info *info)
 {
@@ -196,7 +158,7 @@ static acpi_status acpi_db_execute_setup(struct acpi_db_method_info *info)
 
 	ACPI_FUNCTION_NAME(db_execute_setup);
 
-	/* Concatenate the current scope to the supplied name */
+	 
 
 	info->pathname[0] = 0;
 	if ((info->name[0] != '\\') && (info->name[0] != '/')) {
@@ -224,7 +186,7 @@ static acpi_status acpi_db_execute_setup(struct acpi_db_method_info *info)
 	}
 
 	else {
-		/* No single step, allow redirection to a file */
+		 
 
 		acpi_db_set_output_destination(ACPI_DB_REDIRECTABLE_OUTPUT);
 	}
@@ -246,19 +208,7 @@ u32 acpi_db_get_cache_info(struct acpi_memory_list *cache)
 }
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_get_outstanding_allocations
- *
- * PARAMETERS:  None
- *
- * RETURN:      Current global allocation count minus cache entries
- *
- * DESCRIPTION: Determine the current number of "outstanding" allocations --
- *              those allocations that have not been freed and also are not
- *              in one of the various object caches.
- *
- ******************************************************************************/
+ 
 
 static u32 acpi_db_get_outstanding_allocations(void)
 {
@@ -275,18 +225,7 @@ static u32 acpi_db_get_outstanding_allocations(void)
 	return (outstanding);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_execution_walk
- *
- * PARAMETERS:  WALK_CALLBACK
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute a control method. Name is relative to the current
- *              scope.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_execution_walk(acpi_handle obj_handle,
@@ -308,7 +247,7 @@ acpi_db_execution_walk(acpi_handle obj_handle,
 
 	acpi_ns_print_node_pathname(node, "Evaluating");
 
-	/* Do the actual method execution */
+	 
 
 	acpi_os_printf("\n");
 	acpi_gbl_method_executing = TRUE;
@@ -324,22 +263,7 @@ acpi_db_execution_walk(acpi_handle obj_handle,
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_execute
- *
- * PARAMETERS:  name                - Name of method to execute
- *              args                - Parameters to the method
- *              Types               -
- *              flags               - single step/no single step
- *
- * RETURN:      None
- *
- * DESCRIPTION: Execute a control method. Name is relative to the current
- *              scope. Function used for the "EXECUTE", "EVALUATE", and
- *              "ALL" commands
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
@@ -353,16 +277,13 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 	u32 allocations;
 #endif
 
-	/*
-	 * Allow one execution to be performed by debugger or single step
-	 * execution will be dead locked by the interpreter mutexes.
-	 */
+	 
 	if (acpi_gbl_method_executing) {
 		acpi_os_printf("Only one debugger execution is allowed.\n");
 		return;
 	}
 #ifdef ACPI_DEBUG_OUTPUT
-	/* Memory allocation tracking */
+	 
 
 	previous_allocations = acpi_db_get_outstanding_allocations();
 #endif
@@ -390,7 +311,7 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 	strcpy(name_string, name);
 	acpi_ut_strupr(name_string);
 
-	/* Subcommand to Execute all predefined names in the namespace */
+	 
 
 	if (!strncmp(name_string, "PREDEF", 6)) {
 		acpi_db_evaluate_predefined_names();
@@ -398,7 +319,7 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 		return;
 	}
 
-	/* Command (ALL <nameseg>) to execute all methods of a particular name */
+	 
 
 	else if (flags & EX_ALL) {
 		acpi_gbl_db_method_info.name = name_string;
@@ -423,7 +344,7 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 		return;
 	}
 
-	/* Get the NS node, determines existence also */
+	 
 
 	status = acpi_get_handle(NULL, acpi_gbl_db_method_info.pathname,
 				 &acpi_gbl_db_method_info.method);
@@ -433,15 +354,12 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 	}
 	ACPI_FREE(name_string);
 
-	/*
-	 * Allow any handlers in separate threads to complete.
-	 * (Such as Notify handlers invoked from AML executed above).
-	 */
+	 
 	acpi_os_sleep((u64)10);
 
 #ifdef ACPI_DEBUG_OUTPUT
 
-	/* Memory allocation tracking */
+	 
 
 	allocations =
 	    acpi_db_get_outstanding_allocations() - previous_allocations;
@@ -460,7 +378,7 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 			       acpi_gbl_db_method_info.pathname,
 			       acpi_format_exception(status));
 	} else {
-		/* Display a return object, if any */
+		 
 
 		if (return_obj.length) {
 			acpi_os_printf("Evaluation of %s returned object %p, "
@@ -472,7 +390,7 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 			acpi_db_dump_external_object(return_obj.pointer, 1);
 			acpi_os_printf("\n");
 
-			/* Dump a _PLD buffer if present */
+			 
 
 			if (ACPI_COMPARE_NAMESEG
 			    ((ACPI_CAST_PTR
@@ -491,18 +409,7 @@ acpi_db_execute(char *name, char **args, acpi_object_type *types, u32 flags)
 	acpi_db_set_output_destination(ACPI_DB_CONSOLE_OUTPUT);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_method_thread
- *
- * PARAMETERS:  context             - Execution info segment
- *
- * RETURN:      None
- *
- * DESCRIPTION: Debugger execute thread. Waits for a command line, then
- *              simply dispatches it.
- *
- ******************************************************************************/
+ 
 
 static void ACPI_SYSTEM_XFACE acpi_db_method_thread(void *context)
 {
@@ -513,14 +420,7 @@ static void ACPI_SYSTEM_XFACE acpi_db_method_thread(void *context)
 	u8 allow;
 	struct acpi_buffer return_obj;
 
-	/*
-	 * acpi_gbl_db_method_info.Arguments will be passed as method arguments.
-	 * Prevent acpi_gbl_db_method_info from being modified by multiple threads
-	 * concurrently.
-	 *
-	 * Note: The arguments we are passing are used by the ASL test suite
-	 * (aslts). Do not change them without updating the tests.
-	 */
+	 
 	(void)acpi_os_wait_semaphore(info->info_gate, 1, ACPI_WAIT_FOREVER);
 
 	if (info->init_args) {
@@ -571,7 +471,7 @@ static void ACPI_SYSTEM_XFACE acpi_db_method_thread(void *context)
 #endif
 	}
 
-	/* Signal our completion */
+	 
 
 	allow = 0;
 	(void)acpi_os_wait_semaphore(info->thread_complete_gate,
@@ -580,7 +480,7 @@ static void ACPI_SYSTEM_XFACE acpi_db_method_thread(void *context)
 
 	if (info->num_completed == info->num_threads) {
 
-		/* Do signal for main thread once only */
+		 
 		allow = 1;
 	}
 
@@ -596,17 +496,7 @@ static void ACPI_SYSTEM_XFACE acpi_db_method_thread(void *context)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_single_execution_thread
- *
- * PARAMETERS:  context                 - Method info struct
- *
- * RETURN:      None
- *
- * DESCRIPTION: Create one thread and execute a method
- *
- ******************************************************************************/
+ 
 
 static void ACPI_SYSTEM_XFACE acpi_db_single_execution_thread(void *context)
 {
@@ -623,7 +513,7 @@ static void ACPI_SYSTEM_XFACE acpi_db_single_execution_thread(void *context)
 		return;
 	}
 
-	/* Display a return object, if any */
+	 
 
 	if (return_obj.length) {
 		acpi_os_printf("Evaluation of %s returned object %p, "
@@ -638,20 +528,7 @@ static void ACPI_SYSTEM_XFACE acpi_db_single_execution_thread(void *context)
 		       ACPI_DEBUGGER_COMMAND_PROMPT);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_create_execution_thread
- *
- * PARAMETERS:  method_name_arg         - Control method to execute
- *              arguments               - Array of arguments to the method
- *              types                   - Corresponding array of object types
- *
- * RETURN:      None
- *
- * DESCRIPTION: Create a single thread to evaluate a namespace object. Handles
- *              arguments passed on command line for control methods.
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_create_execution_thread(char *method_name_arg,
@@ -666,7 +543,7 @@ acpi_db_create_execution_thread(char *method_name_arg,
 	acpi_gbl_db_method_info.args = acpi_gbl_db_method_info.arguments;
 	acpi_gbl_db_method_info.types = acpi_gbl_db_method_info.arg_types;
 
-	/* Setup method arguments, up to 7 (0-6) */
+	 
 
 	for (i = 0; (i < ACPI_METHOD_NUM_ARGS) && *arguments; i++) {
 		acpi_gbl_db_method_info.arguments[i] = *arguments;
@@ -681,7 +558,7 @@ acpi_db_create_execution_thread(char *method_name_arg,
 		return;
 	}
 
-	/* Get the NS node, determines existence also */
+	 
 
 	status = acpi_get_handle(NULL, acpi_gbl_db_method_info.pathname,
 				 &acpi_gbl_db_method_info.method);
@@ -702,19 +579,7 @@ acpi_db_create_execution_thread(char *method_name_arg,
 	acpi_os_printf("\nBackground thread started\n");
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_create_execution_threads
- *
- * PARAMETERS:  num_threads_arg         - Number of threads to create
- *              num_loops_arg           - Loop count for the thread(s)
- *              method_name_arg         - Control method to execute
- *
- * RETURN:      None
- *
- * DESCRIPTION: Create threads to execute method(s)
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_create_execution_threads(char *num_threads_arg,
@@ -729,7 +594,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 	acpi_mutex thread_complete_gate;
 	acpi_mutex info_gate;
 
-	/* Get the arguments */
+	 
 
 	num_threads = strtoul(num_threads_arg, NULL, 0);
 	num_loops = strtoul(num_loops_arg, NULL, 0);
@@ -740,10 +605,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 		return;
 	}
 
-	/*
-	 * Create the semaphore for synchronization of
-	 * the created threads with the main thread.
-	 */
+	 
 	status = acpi_os_create_semaphore(1, 0, &main_thread_gate);
 	if (ACPI_FAILURE(status)) {
 		acpi_os_printf("Could not create semaphore for "
@@ -752,10 +614,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 		return;
 	}
 
-	/*
-	 * Create the semaphore for synchronization
-	 * between the created threads.
-	 */
+	 
 	status = acpi_os_create_semaphore(1, 1, &thread_complete_gate);
 	if (ACPI_FAILURE(status)) {
 		acpi_os_printf("Could not create semaphore for "
@@ -779,7 +638,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 
 	memset(&acpi_gbl_db_method_info, 0, sizeof(struct acpi_db_method_info));
 
-	/* Array to store IDs of threads */
+	 
 
 	acpi_gbl_db_method_info.num_threads = num_threads;
 	size = sizeof(acpi_thread_id) * acpi_gbl_db_method_info.num_threads;
@@ -794,7 +653,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 	}
 	memset(acpi_gbl_db_method_info.threads, 0, size);
 
-	/* Setup the context to be passed to each thread */
+	 
 
 	acpi_gbl_db_method_info.name = method_name_arg;
 	acpi_gbl_db_method_info.flags = 0;
@@ -803,7 +662,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 	acpi_gbl_db_method_info.thread_complete_gate = thread_complete_gate;
 	acpi_gbl_db_method_info.info_gate = info_gate;
 
-	/* Init arguments to be passed to method */
+	 
 
 	acpi_gbl_db_method_info.init_args = 1;
 	acpi_gbl_db_method_info.args = acpi_gbl_db_method_info.arguments;
@@ -828,7 +687,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 		goto cleanup_and_exit;
 	}
 
-	/* Get the NS node, determines existence also */
+	 
 
 	status = acpi_get_handle(NULL, acpi_gbl_db_method_info.pathname,
 				 &acpi_gbl_db_method_info.method);
@@ -839,7 +698,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 		goto cleanup_and_exit;
 	}
 
-	/* Create the threads */
+	 
 
 	acpi_os_printf("Creating %X threads to execute %X times each\n",
 		       num_threads, num_loops);
@@ -854,7 +713,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 		}
 	}
 
-	/* Wait for all threads to complete */
+	 
 
 	(void)acpi_os_wait_semaphore(main_thread_gate, 1, ACPI_WAIT_FOREVER);
 
@@ -864,7 +723,7 @@ acpi_db_create_execution_threads(char *num_threads_arg,
 
 cleanup_and_exit:
 
-	/* Cleanup and exit */
+	 
 
 	(void)acpi_os_delete_semaphore(main_thread_gate);
 	(void)acpi_os_delete_semaphore(thread_complete_gate);

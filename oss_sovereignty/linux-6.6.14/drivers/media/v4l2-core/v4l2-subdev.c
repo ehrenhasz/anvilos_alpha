@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * V4L2 sub-device
- *
- * Copyright (C) 2010 Nokia Corporation
- *
- * Contact: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	    Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/ioctl.h>
@@ -26,22 +19,12 @@
 #include <media/v4l2-ioctl.h>
 
 #if defined(CONFIG_VIDEO_V4L2_SUBDEV_API)
-/*
- * The Streams API is an experimental feature. To use the Streams API, set
- * 'v4l2_subdev_enable_streams_api' to 1 below.
- */
+ 
 
 static bool v4l2_subdev_enable_streams_api;
 #endif
 
-/*
- * Maximum stream ID is 63 for now, as we use u64 bitmask to represent a set
- * of streams.
- *
- * Note that V4L2_FRAME_DESC_ENTRY_MAX is related: V4L2_FRAME_DESC_ENTRY_MAX
- * restricts the total number of streams in a pad, although the stream ID is
- * not restricted.
- */
+ 
 #define V4L2_SUBDEV_MAX_STREAM_ID 63
 
 #include "v4l2-subdev-priv.h"
@@ -135,7 +118,7 @@ static int subdev_close(struct file *file)
 
 	return 0;
 }
-#else /* CONFIG_VIDEO_V4L2_SUBDEV_API */
+#else  
 static int subdev_open(struct file *file)
 {
 	return -ENODEV;
@@ -145,7 +128,7 @@ static int subdev_close(struct file *file)
 {
 	return -ENODEV;
 }
-#endif /* CONFIG_VIDEO_V4L2_SUBDEV_API */
+#endif  
 
 static inline int check_which(u32 which)
 {
@@ -165,7 +148,7 @@ static inline int check_pad(struct v4l2_subdev *sd, u32 pad)
 		return 0;
 	}
 #endif
-	/* allow pad 0 on subdevices not registered as media entities */
+	 
 	if (pad > 0)
 		return -EINVAL;
 	return 0;
@@ -379,11 +362,7 @@ static int call_s_stream(struct v4l2_subdev *sd, int enable)
 }
 
 #ifdef CONFIG_MEDIA_CONTROLLER
-/*
- * Create state-management wrapper for pad ops dealing with subdev state. The
- * wrapper handles the case where the caller does not provide the called
- * subdev's state. This should be removed when all the callers are fixed.
- */
+ 
 #define DEFINE_STATE_WRAPPER(f, arg_type)                                  \
 	static int call_##f##_state(struct v4l2_subdev *sd,                \
 				    struct v4l2_subdev_state *_state,      \
@@ -399,7 +378,7 @@ static int call_s_stream(struct v4l2_subdev *sd, int enable)
 		return ret;                                                \
 	}
 
-#else /* CONFIG_MEDIA_CONTROLLER */
+#else  
 
 #define DEFINE_STATE_WRAPPER(f, arg_type)                            \
 	static int call_##f##_state(struct v4l2_subdev *sd,          \
@@ -409,7 +388,7 @@ static int call_s_stream(struct v4l2_subdev *sd, int enable)
 		return call_##f(sd, state, arg);                     \
 	}
 
-#endif /* CONFIG_MEDIA_CONTROLLER */
+#endif  
 
 DEFINE_STATE_WRAPPER(get_fmt, struct v4l2_subdev_format);
 DEFINE_STATE_WRAPPER(set_fmt, struct v4l2_subdev_format);
@@ -502,10 +481,7 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg,
 				       V4L2_SUBDEV_CLIENT_CAP_STREAMS;
 	int rval;
 
-	/*
-	 * If the streams API is not enabled, remove V4L2_SUBDEV_CAP_STREAMS.
-	 * Remove this when the API is no longer experimental.
-	 */
+	 
 	if (!v4l2_subdev_enable_streams_api)
 		streams_subdev = false;
 
@@ -523,14 +499,7 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg,
 	}
 
 	case VIDIOC_QUERYCTRL:
-		/*
-		 * TODO: this really should be folded into v4l2_queryctrl (this
-		 * currently returns -EINVAL for NULL control handlers).
-		 * However, v4l2_queryctrl() is still called directly by
-		 * drivers as well and until that has been addressed I believe
-		 * it is safer to do the check here. The same is true for the
-		 * other control ioctls below.
-		 */
+		 
 		if (!vfh->ctrl_handler)
 			return -ENOTTY;
 		return v4l2_queryctrl(vfh->ctrl_handler, arg);
@@ -927,15 +896,11 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg,
 	case VIDIOC_SUBDEV_S_CLIENT_CAP: {
 		struct v4l2_subdev_client_capability *client_cap = arg;
 
-		/*
-		 * Clear V4L2_SUBDEV_CLIENT_CAP_STREAMS if streams API is not
-		 * enabled. Remove this when streams API is no longer
-		 * experimental.
-		 */
+		 
 		if (!v4l2_subdev_enable_streams_api)
 			client_cap->capabilities &= ~V4L2_SUBDEV_CLIENT_CAP_STREAMS;
 
-		/* Filter out unsupported capabilities */
+		 
 		client_cap->capabilities &= V4L2_SUBDEV_CLIENT_CAP_STREAMS;
 
 		subdev_fh->client_caps = client_cap->capabilities;
@@ -998,7 +963,7 @@ static long subdev_compat_ioctl32(struct file *file, unsigned int cmd,
 }
 #endif
 
-#else /* CONFIG_VIDEO_V4L2_SUBDEV_API */
+#else  
 static long subdev_ioctl(struct file *file, unsigned int cmd,
 			 unsigned long arg)
 {
@@ -1012,7 +977,7 @@ static long subdev_compat_ioctl32(struct file *file, unsigned int cmd,
 	return -ENODEV;
 }
 #endif
-#endif /* CONFIG_VIDEO_V4L2_SUBDEV_API */
+#endif  
 
 static __poll_t subdev_poll(struct file *file, poll_table *wait)
 {
@@ -1072,7 +1037,7 @@ int v4l2_subdev_link_validate_default(struct v4l2_subdev *sd,
 {
 	bool pass = true;
 
-	/* The width, height and code must match. */
+	 
 	if (source_fmt->format.width != sink_fmt->format.width) {
 		dev_dbg(sd->entity.graph_obj.mdev->dev,
 			"%s: width does not match (source %u, sink %u)\n",
@@ -1097,10 +1062,7 @@ int v4l2_subdev_link_validate_default(struct v4l2_subdev *sd,
 		pass = false;
 	}
 
-	/* The field order must match, or the sink field order must be NONE
-	 * to support interlaced hardware connected to bridges that support
-	 * progressive formats only.
-	 */
+	 
 	if (source_fmt->format.field != sink_fmt->format.field &&
 	    sink_fmt->format.field != V4L2_FIELD_NONE) {
 		dev_dbg(sd->entity.graph_obj.mdev->dev,
@@ -1202,7 +1164,7 @@ static void __v4l2_link_validate_get_streams(struct media_pad *pad,
 		v4l2_subdev_unlock_state(state);
 }
 
-#endif /* CONFIG_VIDEO_V4L2_SUBDEV_API */
+#endif  
 
 static void v4l2_link_validate_get_streams(struct media_pad *pad,
 					   u64 *streams_mask,
@@ -1211,7 +1173,7 @@ static void v4l2_link_validate_get_streams(struct media_pad *pad,
 	struct v4l2_subdev *subdev = media_entity_to_v4l2_subdev(pad->entity);
 
 	if (!(subdev->flags & V4L2_SUBDEV_FL_STREAMS)) {
-		/* Non-streams subdevs have an implicit stream 0 */
+		 
 		*streams_mask = BIT_ULL(0);
 		return;
 	}
@@ -1219,7 +1181,7 @@ static void v4l2_link_validate_get_streams(struct media_pad *pad,
 #if defined(CONFIG_VIDEO_V4L2_SUBDEV_API)
 	__v4l2_link_validate_get_streams(pad, streams_mask, states_locked);
 #else
-	/* This shouldn't happen */
+	 
 	*streams_mask = 0;
 #endif
 }
@@ -1242,11 +1204,7 @@ static int v4l2_subdev_link_validate_locked(struct media_link *link, bool states
 	v4l2_link_validate_get_streams(link->source, &source_streams_mask, states_locked);
 	v4l2_link_validate_get_streams(link->sink, &sink_streams_mask, states_locked);
 
-	/*
-	 * It is ok to have more source streams than sink streams as extra
-	 * source streams can just be ignored by the receiver, but having extra
-	 * sink streams is an error as streams must have a source.
-	 */
+	 
 	dangling_sink_streams = (source_streams_mask ^ sink_streams_mask) &
 				sink_streams_mask;
 	if (dangling_sink_streams) {
@@ -1255,7 +1213,7 @@ static int v4l2_subdev_link_validate_locked(struct media_link *link, bool states
 		return -EINVAL;
 	}
 
-	/* Validate source and sink stream formats */
+	 
 
 	for (stream = 0; stream < sizeof(sink_streams_mask) * 8; ++stream) {
 		struct v4l2_subdev_format sink_fmt, source_fmt;
@@ -1287,7 +1245,7 @@ static int v4l2_subdev_link_validate_locked(struct media_link *link, bool states
 			continue;
 		}
 
-		/* TODO: add stream number to link_validate() */
+		 
 		ret = v4l2_subdev_call(sink_subdev, pad, link_validate, link,
 				       &source_fmt, &sink_fmt);
 		if (!ret)
@@ -1395,7 +1353,7 @@ __v4l2_subdev_state_alloc(struct v4l2_subdev *sd, const char *lock_name,
 	else
 		state->lock = &state->_lock;
 
-	/* Drivers that support streams do not need the legacy pad config */
+	 
 	if (!(sd->flags & V4L2_SUBDEV_FL_STREAMS) && sd->entity.num_pads) {
 		state->pads = kvcalloc(sd->entity.num_pads,
 				       sizeof(*state->pads), GFP_KERNEL);
@@ -1405,10 +1363,7 @@ __v4l2_subdev_state_alloc(struct v4l2_subdev *sd, const char *lock_name,
 		}
 	}
 
-	/*
-	 * There can be no race at this point, but we lock the state anyway to
-	 * satisfy lockdep checks.
-	 */
+	 
 	v4l2_subdev_lock_state(state);
 	ret = v4l2_subdev_call(sd, pad, init_cfg, state);
 	v4l2_subdev_unlock_state(state);
@@ -1486,11 +1441,9 @@ v4l2_subdev_init_stream_configs(struct v4l2_subdev_stream_configs *stream_config
 	struct v4l2_subdev_route *route;
 	u32 idx;
 
-	/* Count number of formats needed */
+	 
 	for_each_active_route(routing, route) {
-		/*
-		 * Each route needs a format on both ends of the route.
-		 */
+		 
 		new_configs.num_configs += 2;
 	}
 
@@ -1503,10 +1456,7 @@ v4l2_subdev_init_stream_configs(struct v4l2_subdev_stream_configs *stream_config
 			return -ENOMEM;
 	}
 
-	/*
-	 * Fill in the 'pad' and stream' value for each item in the array from
-	 * the routing table
-	 */
+	 
 	idx = 0;
 
 	for_each_active_route(routing, route) {
@@ -1789,7 +1739,7 @@ int v4l2_subdev_routing_validate(struct v4l2_subdev *sd,
 	for (i = 0; i < routing->num_routes; ++i) {
 		const struct v4l2_subdev_route *route = &routing->routes[i];
 
-		/* Validate the sink and source pad numbers. */
+		 
 		if (route->sink_pad >= sd->entity.num_pads ||
 		    !(sd->entity.pads[route->sink_pad].flags & MEDIA_PAD_FL_SINK)) {
 			dev_dbg(sd->dev, "route %u sink (%u) is not a sink pad\n",
@@ -1804,10 +1754,7 @@ int v4l2_subdev_routing_validate(struct v4l2_subdev *sd,
 			goto out;
 		}
 
-		/*
-		 * V4L2_SUBDEV_ROUTING_NO_SINK_STREAM_MIX: all streams from a
-		 * sink pad must be routed to a single source pad.
-		 */
+		 
 		if (disallow & V4L2_SUBDEV_ROUTING_NO_SINK_STREAM_MIX) {
 			if (remote_pads[route->sink_pad] != U32_MAX &&
 			    remote_pads[route->sink_pad] != route->source_pad) {
@@ -1818,10 +1765,7 @@ int v4l2_subdev_routing_validate(struct v4l2_subdev *sd,
 			}
 		}
 
-		/*
-		 * V4L2_SUBDEV_ROUTING_NO_SOURCE_STREAM_MIX: all streams on a
-		 * source pad must originate from a single sink pad.
-		 */
+		 
 		if (disallow & V4L2_SUBDEV_ROUTING_NO_SOURCE_STREAM_MIX) {
 			if (remote_pads[route->source_pad] != U32_MAX &&
 			    remote_pads[route->source_pad] != route->sink_pad) {
@@ -1832,11 +1776,7 @@ int v4l2_subdev_routing_validate(struct v4l2_subdev *sd,
 			}
 		}
 
-		/*
-		 * V4L2_SUBDEV_ROUTING_NO_SINK_MULTIPLEXING: Pads on the sink
-		 * side can not do stream multiplexing, i.e. there can be only
-		 * a single stream in a sink pad.
-		 */
+		 
 		if (disallow & V4L2_SUBDEV_ROUTING_NO_SINK_MULTIPLEXING) {
 			if (remote_pads[route->sink_pad] != U32_MAX) {
 				dev_dbg(sd->dev,
@@ -1846,11 +1786,7 @@ int v4l2_subdev_routing_validate(struct v4l2_subdev *sd,
 			}
 		}
 
-		/*
-		 * V4L2_SUBDEV_ROUTING_NO_SOURCE_MULTIPLEXING: Pads on the
-		 * source side can not do stream multiplexing, i.e. there can
-		 * be only a single stream in a source pad.
-		 */
+		 
 		if (disallow & V4L2_SUBDEV_ROUTING_NO_SOURCE_MULTIPLEXING) {
 			if (remote_pads[route->source_pad] != U32_MAX) {
 				dev_dbg(sd->dev,
@@ -1868,10 +1804,7 @@ int v4l2_subdev_routing_validate(struct v4l2_subdev *sd,
 		for (j = i + 1; j < routing->num_routes; ++j) {
 			const struct v4l2_subdev_route *r = &routing->routes[j];
 
-			/*
-			 * V4L2_SUBDEV_ROUTING_NO_1_TO_N: No two routes can
-			 * originate from the same (sink) stream.
-			 */
+			 
 			if ((disallow & V4L2_SUBDEV_ROUTING_NO_1_TO_N) &&
 			    route->sink_pad == r->sink_pad &&
 			    route->sink_stream == r->sink_stream) {
@@ -1882,10 +1815,7 @@ int v4l2_subdev_routing_validate(struct v4l2_subdev *sd,
 				goto out;
 			}
 
-			/*
-			 * V4L2_SUBDEV_ROUTING_NO_N_TO_1: No two routes can end
-			 * at the same (source) stream.
-			 */
+			 
 			if ((disallow & V4L2_SUBDEV_ROUTING_NO_N_TO_1) &&
 			    route->source_pad == r->source_pad &&
 			    route->source_stream == r->source_stream) {
@@ -1913,12 +1843,7 @@ static int v4l2_subdev_enable_streams_fallback(struct v4l2_subdev *sd, u32 pad,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * The subdev doesn't implement pad-based stream enable, fall back
-	 * on the .s_stream() operation. This can only be done for subdevs that
-	 * have a single source pad, as sd->enabled_streams is global to the
-	 * subdev.
-	 */
+	 
 	if (!(sd->entity.pads[pad].flags & MEDIA_PAD_FL_SOURCE))
 		return -EOPNOTSUPP;
 
@@ -1933,7 +1858,7 @@ static int v4l2_subdev_enable_streams_fallback(struct v4l2_subdev *sd, u32 pad,
 		return -EALREADY;
 	}
 
-	/* Start streaming when the first streams are enabled. */
+	 
 	if (!sd->enabled_streams) {
 		ret = v4l2_subdev_call(sd, video, s_stream, 1);
 		if (ret)
@@ -1954,24 +1879,21 @@ int v4l2_subdev_enable_streams(struct v4l2_subdev *sd, u32 pad,
 	unsigned int i;
 	int ret;
 
-	/* A few basic sanity checks first. */
+	 
 	if (pad >= sd->entity.num_pads)
 		return -EINVAL;
 
 	if (!streams_mask)
 		return 0;
 
-	/* Fallback on .s_stream() if .enable_streams() isn't available. */
+	 
 	if (!sd->ops->pad || !sd->ops->pad->enable_streams)
 		return v4l2_subdev_enable_streams_fallback(sd, pad,
 							   streams_mask);
 
 	state = v4l2_subdev_lock_and_get_active_state(sd);
 
-	/*
-	 * Verify that the requested streams exist and that they are not
-	 * already enabled.
-	 */
+	 
 	for (i = 0; i < state->stream_configs.num_configs; ++i) {
 		struct v4l2_subdev_stream_config *cfg =
 			&state->stream_configs.configs[i];
@@ -1998,7 +1920,7 @@ int v4l2_subdev_enable_streams(struct v4l2_subdev *sd, u32 pad,
 
 	dev_dbg(dev, "enable streams %u:%#llx\n", pad, streams_mask);
 
-	/* Call the .enable_streams() operation. */
+	 
 	ret = v4l2_subdev_call(sd, pad, enable_streams, state, pad,
 			       streams_mask);
 	if (ret) {
@@ -2007,7 +1929,7 @@ int v4l2_subdev_enable_streams(struct v4l2_subdev *sd, u32 pad,
 		goto done;
 	}
 
-	/* Mark the streams as enabled. */
+	 
 	for (i = 0; i < state->stream_configs.num_configs; ++i) {
 		struct v4l2_subdev_stream_config *cfg =
 			&state->stream_configs.configs[i];
@@ -2030,12 +1952,7 @@ static int v4l2_subdev_disable_streams_fallback(struct v4l2_subdev *sd, u32 pad,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * If the subdev doesn't implement pad-based stream enable, fall  back
-	 * on the .s_stream() operation. This can only be done for subdevs that
-	 * have a single source pad, as sd->enabled_streams is global to the
-	 * subdev.
-	 */
+	 
 	if (!(sd->entity.pads[pad].flags & MEDIA_PAD_FL_SOURCE))
 		return -EOPNOTSUPP;
 
@@ -2050,7 +1967,7 @@ static int v4l2_subdev_disable_streams_fallback(struct v4l2_subdev *sd, u32 pad,
 		return -EALREADY;
 	}
 
-	/* Stop streaming when the last streams are disabled. */
+	 
 	if (!(sd->enabled_streams & ~streams_mask)) {
 		ret = v4l2_subdev_call(sd, video, s_stream, 0);
 		if (ret)
@@ -2071,24 +1988,21 @@ int v4l2_subdev_disable_streams(struct v4l2_subdev *sd, u32 pad,
 	unsigned int i;
 	int ret;
 
-	/* A few basic sanity checks first. */
+	 
 	if (pad >= sd->entity.num_pads)
 		return -EINVAL;
 
 	if (!streams_mask)
 		return 0;
 
-	/* Fallback on .s_stream() if .disable_streams() isn't available. */
+	 
 	if (!sd->ops->pad || !sd->ops->pad->disable_streams)
 		return v4l2_subdev_disable_streams_fallback(sd, pad,
 							    streams_mask);
 
 	state = v4l2_subdev_lock_and_get_active_state(sd);
 
-	/*
-	 * Verify that the requested streams exist and that they are not
-	 * already disabled.
-	 */
+	 
 	for (i = 0; i < state->stream_configs.num_configs; ++i) {
 		struct v4l2_subdev_stream_config *cfg =
 			&state->stream_configs.configs[i];
@@ -2115,7 +2029,7 @@ int v4l2_subdev_disable_streams(struct v4l2_subdev *sd, u32 pad,
 
 	dev_dbg(dev, "disable streams %u:%#llx\n", pad, streams_mask);
 
-	/* Call the .disable_streams() operation. */
+	 
 	ret = v4l2_subdev_call(sd, pad, disable_streams, state, pad,
 			       streams_mask);
 	if (ret) {
@@ -2124,7 +2038,7 @@ int v4l2_subdev_disable_streams(struct v4l2_subdev *sd, u32 pad,
 		goto done;
 	}
 
-	/* Mark the streams as disabled. */
+	 
 	for (i = 0; i < state->stream_configs.num_configs; ++i) {
 		struct v4l2_subdev_stream_config *cfg =
 			&state->stream_configs.configs[i];
@@ -2148,11 +2062,7 @@ int v4l2_subdev_s_stream_helper(struct v4l2_subdev *sd, int enable)
 	u64 source_mask = 0;
 	int pad_index = -1;
 
-	/*
-	 * Find the source pad. This helper is meant for subdevs that have a
-	 * single source pad, so failures shouldn't happen, but catch them
-	 * loudly nonetheless as they indicate a driver bug.
-	 */
+	 
 	media_entity_for_each_pad(&sd->entity, pad) {
 		if (pad->flags & MEDIA_PAD_FL_SOURCE) {
 			pad_index = pad->index;
@@ -2163,9 +2073,7 @@ int v4l2_subdev_s_stream_helper(struct v4l2_subdev *sd, int enable)
 	if (WARN_ON(pad_index == -1))
 		return -EINVAL;
 
-	/*
-	 * As there's a single source pad, just collect all the source streams.
-	 */
+	 
 	state = v4l2_subdev_lock_and_get_active_state(sd);
 
 	for_each_active_route(&state->routing, route)
@@ -2180,9 +2088,9 @@ int v4l2_subdev_s_stream_helper(struct v4l2_subdev *sd, int enable)
 }
 EXPORT_SYMBOL_GPL(v4l2_subdev_s_stream_helper);
 
-#endif /* CONFIG_VIDEO_V4L2_SUBDEV_API */
+#endif  
 
-#endif /* CONFIG_MEDIA_CONTROLLER */
+#endif  
 
 void v4l2_subdev_init(struct v4l2_subdev *sd, const struct v4l2_subdev_ops *ops)
 {

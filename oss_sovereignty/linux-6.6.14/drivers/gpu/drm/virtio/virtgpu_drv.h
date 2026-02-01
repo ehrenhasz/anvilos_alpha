@@ -1,27 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #ifndef VIRTIO_DRV_H
 #define VIRTIO_DRV_H
@@ -61,11 +38,11 @@
 struct virtio_gpu_object_params {
 	unsigned long size;
 	bool dumb;
-	/* 3d */
+	 
 	bool virgl;
 	bool blob;
 
-	/* classic resources only */
+	 
 	uint32_t format;
 	uint32_t width;
 	uint32_t height;
@@ -77,7 +54,7 @@ struct virtio_gpu_object_params {
 	uint32_t nr_samples;
 	uint32_t flags;
 
-	/* blob resources only */
+	 
 	uint32_t ctx_id;
 	uint32_t blob_mem;
 	uint32_t blob_flags;
@@ -231,7 +208,7 @@ struct virtio_gpu_device {
 	struct ida	resource_ida;
 
 	wait_queue_head_t resp_wq;
-	/* current display info */
+	 
 	spinlock_t display_info_lock;
 	bool display_info_pending;
 
@@ -260,9 +237,9 @@ struct virtio_gpu_device {
 	uint64_t capset_id_mask;
 	struct list_head cap_cache;
 
-	/* protects uuid state when exporting */
+	 
 	spinlock_t resource_export_lock;
-	/* protects map state and host_visible_mm */
+	 
 	spinlock_t host_visible_lock;
 };
 
@@ -276,19 +253,19 @@ struct virtio_gpu_fpriv {
 	struct mutex context_lock;
 };
 
-/* virtgpu_ioctl.c */
+ 
 #define DRM_VIRTIO_NUM_IOCTLS 12
 extern struct drm_ioctl_desc virtio_gpu_ioctls[DRM_VIRTIO_NUM_IOCTLS];
 void virtio_gpu_create_context(struct drm_device *dev, struct drm_file *file);
 
-/* virtgpu_kms.c */
+ 
 int virtio_gpu_init(struct virtio_device *vdev, struct drm_device *dev);
 void virtio_gpu_deinit(struct drm_device *dev);
 void virtio_gpu_release(struct drm_device *dev);
 int virtio_gpu_driver_open(struct drm_device *dev, struct drm_file *file);
 void virtio_gpu_driver_postclose(struct drm_device *dev, struct drm_file *file);
 
-/* virtgpu_gem.c */
+ 
 int virtio_gpu_gem_object_open(struct drm_gem_object *obj,
 			       struct drm_file *file);
 void virtio_gpu_gem_object_close(struct drm_gem_object *obj,
@@ -314,7 +291,7 @@ void virtio_gpu_array_put_free_delayed(struct virtio_gpu_device *vgdev,
 				       struct virtio_gpu_object_array *objs);
 void virtio_gpu_array_put_free_work(struct work_struct *work);
 
-/* virtgpu_vq.c */
+ 
 int virtio_gpu_alloc_vbufs(struct virtio_gpu_device *vgdev);
 void virtio_gpu_free_vbufs(struct virtio_gpu_device *vgdev);
 void virtio_gpu_cmd_create_resource(struct virtio_gpu_device *vgdev,
@@ -425,17 +402,17 @@ virtio_gpu_cmd_set_scanout_blob(struct virtio_gpu_device *vgdev,
 				uint32_t width, uint32_t height,
 				uint32_t x, uint32_t y);
 
-/* virtgpu_display.c */
+ 
 int virtio_gpu_modeset_init(struct virtio_gpu_device *vgdev);
 void virtio_gpu_modeset_fini(struct virtio_gpu_device *vgdev);
 
-/* virtgpu_plane.c */
+ 
 uint32_t virtio_gpu_translate_format(uint32_t drm_fourcc);
 struct drm_plane *virtio_gpu_plane_init(struct virtio_gpu_device *vgdev,
 					enum drm_plane_type type,
 					int index);
 
-/* virtgpu_fence.c */
+ 
 struct virtio_gpu_fence *virtio_gpu_fence_alloc(struct virtio_gpu_device *vgdev,
 						uint64_t base_fence_ctx,
 						uint32_t ring_idx);
@@ -445,7 +422,7 @@ void virtio_gpu_fence_emit(struct virtio_gpu_device *vgdev,
 void virtio_gpu_fence_event_process(struct virtio_gpu_device *vdev,
 				    u64 fence_id);
 
-/* virtgpu_object.c */
+ 
 void virtio_gpu_cleanup_object(struct virtio_gpu_object *bo);
 struct drm_gem_object *virtio_gpu_create_object(struct drm_device *dev,
 						size_t size);
@@ -458,7 +435,7 @@ bool virtio_gpu_is_shmem(struct virtio_gpu_object *bo);
 
 int virtio_gpu_resource_id_get(struct virtio_gpu_device *vgdev,
 			       uint32_t *resid);
-/* virtgpu_prime.c */
+ 
 int virtio_gpu_resource_assign_uuid(struct virtio_gpu_device *vgdev,
 				    struct virtio_gpu_object *bo);
 struct dma_buf *virtgpu_gem_prime_export(struct drm_gem_object *obj,
@@ -471,10 +448,10 @@ struct drm_gem_object *virtgpu_gem_prime_import_sg_table(
 	struct drm_device *dev, struct dma_buf_attachment *attach,
 	struct sg_table *sgt);
 
-/* virtgpu_debugfs.c */
+ 
 void virtio_gpu_debugfs_init(struct drm_minor *minor);
 
-/* virtgpu_vram.c */
+ 
 bool virtio_gpu_is_vram(struct virtio_gpu_object *bo);
 int virtio_gpu_vram_create(struct virtio_gpu_device *vgdev,
 			   struct virtio_gpu_object_params *params,
@@ -486,7 +463,7 @@ void virtio_gpu_vram_unmap_dma_buf(struct device *dev,
 				   struct sg_table *sgt,
 				   enum dma_data_direction dir);
 
-/* virtgpu_submit.c */
+ 
 int virtio_gpu_execbuffer_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *file);
 

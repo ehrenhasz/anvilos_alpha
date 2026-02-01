@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright(c) 2020-2023 Intel Corporation
- */
+ 
+ 
 #ifndef __IWL_PNVM_H__
 #define __IWL_PNVM_H__
 
@@ -26,4 +24,4 @@ void iwl_pnvm_get_fs_name(struct iwl_trans *trans,
 		 iwl_drv_get_fwname_pre(trans, _fw_name_pre));
 }
 
-#endif /* __IWL_PNVM_H__ */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
@@ -83,11 +83,7 @@ static void update_rx_toggle(struct cppi41_dma_channel *cppi41_channel)
 	csr = musb_readw(hw_ep->regs, MUSB_RXCSR);
 	toggle = csr & MUSB_RXCSR_H_DATATOGGLE ? 1 : 0;
 
-	/*
-	 * AM335x Advisory 1.0.13: Due to internal synchronisation error the
-	 * data toggle may reset from DATA1 to DATA0 during receiving data from
-	 * more than one endpoint.
-	 */
+	 
 	if (!toggle && toggle == cppi41_channel->usb_toggle) {
 		csr |= MUSB_RXCSR_H_DATATOGGLE | MUSB_RXCSR_H_WR_DATATOGGLE;
 		musb_writew(cppi41_channel->hw_ep->regs, MUSB_RXCSR, csr);
@@ -124,16 +120,13 @@ static void cppi41_trans_done(struct cppi41_dma_channel *cppi41_channel)
 	if (!cppi41_channel->prog_len ||
 	    (cppi41_channel->channel.status == MUSB_DMA_STATUS_FREE)) {
 
-		/* done, complete */
+		 
 		cppi41_channel->channel.actual_len =
 			cppi41_channel->transferred;
 		cppi41_channel->channel.status = MUSB_DMA_STATUS_FREE;
 		cppi41_channel->channel.rx_packet_done = true;
 
-		/*
-		 * transmit ZLP using PIO mode for transfers which size is
-		 * multiple of EP packet size.
-		 */
+		 
 		if (cppi41_channel->tx_zlp && (cppi41_channel->transferred %
 					cppi41_channel->packet_sz) == 0) {
 			musb_ep_select(musb->mregs, hw_ep->epnum);
@@ -144,7 +137,7 @@ static void cppi41_trans_done(struct cppi41_dma_channel *cppi41_channel)
 		trace_musb_cppi41_done(cppi41_channel);
 		musb_dma_completion(musb, hw_ep->epnum, cppi41_channel->is_tx);
 	} else {
-		/* next iteration, reload */
+		 
 		struct dma_chan *dc = cppi41_channel->dc;
 		struct dma_async_tx_descriptor *dma_desc;
 		enum dma_transfer_direction direction;
@@ -261,14 +254,7 @@ static void cppi41_dma_callback(void *private_data,
 			type = hw_ep->ep_in.type;
 
 		if (type == USB_ENDPOINT_XFER_ISOC)
-			/*
-			 * Don't use the early-TX-interrupt workaround below
-			 * for Isoch transfter. Since Isoch are periodic
-			 * transfer, by the time the next transfer is
-			 * scheduled, the current one should be done already.
-			 *
-			 * This avoids audio playback underrun issue.
-			 */
+			 
 			empty = true;
 		else
 			empty = musb_is_tx_fifo_empty(hw_ep);
@@ -279,16 +265,7 @@ static void cppi41_dma_callback(void *private_data,
 		goto out;
 	}
 
-	/*
-	 * On AM335x it has been observed that the TX interrupt fires
-	 * too early that means the TXFIFO is not yet empty but the DMA
-	 * engine says that it is done with the transfer. We don't
-	 * receive a FIFO empty interrupt so the only thing we can do is
-	 * to poll for the bit. On HS it usually takes 2us, on FS around
-	 * 110us - 150us depending on the transfer size.
-	 * We spin on HS (no longer than 25us and setup a timer on
-	 * FS to check for the bit and complete the transfer.
-	 */
+	 
 	if (is_host_active(musb)) {
 		if (musb->port1_status & USB_PORT_STAT_HIGH_SPEED)
 			is_hs = 1;
@@ -426,23 +403,20 @@ static bool cppi41_configure_channel(struct dma_channel *channel,
 	cppi41_channel->packet_sz = packet_sz;
 	cppi41_channel->tx_zlp = (cppi41_channel->is_tx && mode) ? 1 : 0;
 
-	/*
-	 * Due to AM335x' Advisory 1.0.13 we are not allowed to transfer more
-	 * than max packet size at a time.
-	 */
+	 
 	if (cppi41_channel->is_tx)
 		use_gen_rndis = 1;
 
 	if (use_gen_rndis) {
-		/* RNDIS mode */
+		 
 		if (len > packet_sz) {
 			musb_writel(musb->ctrl_base,
 				RNDIS_REG(cppi41_channel->port_num), len);
-			/* gen rndis */
+			 
 			controller->set_dma_mode(cppi41_channel,
 					EP_MODE_DMA_GEN_RNDIS);
 
-			/* auto req */
+			 
 			cppi41_set_autoreq_mode(cppi41_channel,
 					EP_MODE_AUTOREQ_ALL_NEOP);
 		} else {
@@ -454,7 +428,7 @@ static bool cppi41_configure_channel(struct dma_channel *channel,
 					EP_MODE_AUTOREQ_NONE);
 		}
 	} else {
-		/* fallback mode */
+		 
 		controller->set_dma_mode(cppi41_channel,
 				EP_MODE_DMA_TRANSPARENT);
 		cppi41_set_autoreq_mode(cppi41_channel, EP_MODE_AUTOREQ_NONE);
@@ -566,7 +540,7 @@ static int cppi41_is_compatible(struct dma_channel *channel, u16 maxpacket,
 		return 0;
 	if (cppi41_channel->is_tx)
 		return 1;
-	/* AM335x Advisory 1.0.13. No workaround for device RX mode */
+	 
 	return 0;
 }
 
@@ -595,14 +569,14 @@ static int cppi41_dma_channel_abort(struct dma_channel *channel)
 	} else {
 		cppi41_set_autoreq_mode(cppi41_channel, EP_MODE_AUTOREQ_NONE);
 
-		/* delay to drain to cppi dma pipeline for isoch */
+		 
 		udelay(250);
 
 		csr = musb_readw(epio, MUSB_RXCSR);
 		csr &= ~(MUSB_RXCSR_H_REQPKT | MUSB_RXCSR_DMAENAB);
 		musb_writew(epio, MUSB_RXCSR, csr);
 
-		/* wait to drain cppi dma pipe line */
+		 
 		udelay(50);
 
 		csr = musb_readw(epio, MUSB_RXCSR);
@@ -613,7 +587,7 @@ static int cppi41_dma_channel_abort(struct dma_channel *channel)
 		}
 	}
 
-	/* DA8xx Advisory 2.3.27: wait 250 ms before to start the teardown */
+	 
 	if (musb->ops->quirks & MUSB_DA8XX)
 		mdelay(250);
 

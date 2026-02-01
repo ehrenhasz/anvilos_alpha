@@ -1,40 +1,4 @@
-/*
- * Broadcom NetXtreme-E RoCE driver.
- *
- * Copyright (c) 2016 - 2017, Broadcom. All rights reserved.  The term
- * Broadcom refers to Broadcom Limited and/or its subsidiaries.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Description: QPLib resource manager (header)
- */
+ 
 
 #ifndef __BNXT_QPLIB_RES_H__
 #define __BNXT_QPLIB_RES_H__
@@ -158,21 +122,21 @@ struct bnxt_qplib_hwq_attr {
 
 struct bnxt_qplib_hwq {
 	struct pci_dev			*pdev;
-	/* lock to protect qplib_hwq */
+	 
 	spinlock_t			lock;
 	struct bnxt_qplib_pbl		pbl[PBL_LVL_MAX + 1];
-	enum bnxt_qplib_pbl_lvl		level;		/* 0, 1, or 2 */
-	/* ptr for easy access to the PBL entries */
+	enum bnxt_qplib_pbl_lvl		level;		 
+	 
 	void				**pbl_ptr;
-	/* ptr for easy access to the dma_addr */
+	 
 	dma_addr_t			*pbl_dma_ptr;
 	u32				max_elements;
 	u32				depth;
-	u16				element_size;	/* Size of each entry */
-	u16				qe_ppg;	/* queue entry per page */
+	u16				element_size;	 
+	u16				qe_ppg;	 
 
-	u32				prod;		/* raw */
-	u32				cons;		/* raw */
+	u32				prod;		 
+	u32				cons;		 
 	u8				cp_bit;
 	u8				is_user;
 	u64				*pad_pg;
@@ -188,7 +152,7 @@ struct bnxt_qplib_db_info {
 	u32			max_slot;
 };
 
-/* Tables */
+ 
 struct bnxt_qplib_pd_tbl {
 	unsigned long			*tbl;
 	u32				max;
@@ -221,7 +185,7 @@ struct bnxt_qplib_dpi_tbl {
 	void				**app_tbl;
 	unsigned long			*tbl;
 	u16				max;
-	struct bnxt_qplib_reg_desc	ucreg; /* Hold entire DB bar. */
+	struct bnxt_qplib_reg_desc	ucreg;  
 	struct bnxt_qplib_reg_desc	wcreg;
 	void __iomem			*priv_db;
 };
@@ -250,7 +214,7 @@ struct bnxt_qplib_vf_res {
 #define MAX_TQM_ALLOC_BLK_SIZE          8
 struct bnxt_qplib_tqm_ctx {
 	struct bnxt_qplib_hwq           pde;
-	u8                              pde_level; /* Original level */
+	u8                              pde_level;  
 	struct bnxt_qplib_hwq           qtbl[MAX_TQM_ALLOC_REQ];
 	u8                              qcount[MAX_TQM_ALLOC_REQ];
 };
@@ -277,11 +241,11 @@ struct bnxt_qplib_res {
 	struct net_device		*netdev;
 	struct bnxt_qplib_rcfw		*rcfw;
 	struct bnxt_qplib_pd_tbl	pd_tbl;
-	/* To protect the pd table bit map */
+	 
 	struct mutex			pd_tbl_lock;
 	struct bnxt_qplib_sgid_tbl	sgid_tbl;
 	struct bnxt_qplib_dpi_tbl	dpi_tbl;
-	/* To protect the dpi table bit map */
+	 
 	struct mutex                    dpi_tbl_lock;
 	bool				prio;
 	bool                            is_vf;
@@ -488,4 +452,4 @@ static inline u8 bnxt_qplib_dbr_pacing_en(struct bnxt_qplib_chip_ctx *cctx)
 	return cctx->modes.dbr_pacing;
 }
 
-#endif /* __BNXT_QPLIB_RES_H__ */
+#endif  

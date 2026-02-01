@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+ 
+ 
 #ifndef __ND_H__
 #define __ND_H__
 #include <linux/libnvdimm.h>
@@ -15,11 +13,7 @@
 #include "label.h"
 
 enum {
-	/*
-	 * Limits the maximum number of block apertures a dimm can
-	 * support and is an input to the geometry/on-disk-format of a
-	 * BTT instance
-	 */
+	 
 	ND_MAX_LANES = 256,
 	INT_LBASIZE_ALIGNMENT = 64,
 	NVDIMM_IO_ATOMIC = 1,
@@ -152,7 +146,7 @@ static inline void nsl_set_rawsize(struct nvdimm_drvdata *ndd,
 static inline u64 nsl_get_isetcookie(struct nvdimm_drvdata *ndd,
 				     struct nd_namespace_label *nd_label)
 {
-	/* WARN future refactor attempts that break this assumption */
+	 
 	if (dev_WARN_ONCE(ndd->dev, ndd->cxl,
 			  "CXL labels do not use the isetcookie concept\n"))
 		return 0;
@@ -171,10 +165,7 @@ static inline bool nsl_validate_isetcookie(struct nvdimm_drvdata *ndd,
 					   struct nd_namespace_label *nd_label,
 					   u64 cookie)
 {
-	/*
-	 * Let the EFI and CXL validation comingle, where fields that
-	 * don't matter to CXL always validate.
-	 */
+	 
 	if (ndd->cxl)
 		return true;
 	return cookie == __le64_to_cpu(nd_label->efi.isetcookie);
@@ -233,10 +224,7 @@ static inline void nsl_set_nrange(struct nvdimm_drvdata *ndd,
 static inline u64 nsl_get_lbasize(struct nvdimm_drvdata *ndd,
 				  struct nd_namespace_label *nd_label)
 {
-	/*
-	 * Yes, for some reason the EFI labels convey a massive 64-bit
-	 * lbasize, that got fixed for CXL.
-	 */
+	 
 	if (ndd->cxl)
 		return __le16_to_cpu(nd_label->cxl.lbasize);
 	return __le64_to_cpu(nd_label->efi.lbasize);
@@ -391,12 +379,7 @@ struct nd_mapping {
 	int position;
 	struct list_head labels;
 	struct mutex lock;
-	/*
-	 * @ndd is for private use at region enable / disable time for
-	 * get_ndd() + put_ndd(), all other nd_mapping to ndd
-	 * conversions use to_ndd() which respects enabled state of the
-	 * nvdimm.
-	 */
+	 
 	struct nvdimm_drvdata *ndd;
 };
 
@@ -434,9 +417,7 @@ static inline bool nsl_validate_nlabel(struct nd_region *nd_region,
 	return nsl_get_nlabel(ndd, nd_label) == nd_region->ndr_mappings;
 }
 
-/*
- * Lookup next in the repeating sequence of 01, 10, and 11.
- */
+ 
 static inline unsigned nd_inc_seq(unsigned seq)
 {
 	static const unsigned next[] = { 0, 2, 3, 1 };
@@ -651,7 +632,7 @@ int devm_namespace_enable(struct device *dev, struct nd_namespace_common *ndns,
 void devm_namespace_disable(struct device *dev,
 		struct nd_namespace_common *ndns);
 #if IS_ENABLED(CONFIG_ND_CLAIM)
-/* max struct page size independent of kernel config */
+ 
 #define MAX_STRUCT_PAGE_SIZE 64
 int nvdimm_setup_pfn(struct nd_pfn *nd_pfn, struct dev_pagemap *pgmap);
 #else
@@ -677,4 +658,4 @@ static inline bool is_bad_pmem(struct badblocks *bb, sector_t sector,
 }
 const uuid_t *nd_dev_to_uuid(struct device *dev);
 bool pmem_should_map_pages(struct device *dev);
-#endif /* __ND_H__ */
+#endif  

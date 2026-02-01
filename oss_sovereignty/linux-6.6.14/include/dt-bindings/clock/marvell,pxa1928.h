@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DTS_MARVELL_PXA1928_CLOCK_H
 #define __DTS_MARVELL_PXA1928_CLOCK_H
 
-/*
- * Clock ID values here correspond to the control register offset/4.
- */
+ 
 
-/* apb peripherals */
+ 
 #define PXA1928_CLK_RTC			0x00
 #define PXA1928_CLK_TWSI0		0x01
 #define PXA1928_CLK_TWSI1		0x02
@@ -38,7 +36,7 @@
 #define PXA1928_CLK_THSENS_GC		0x28
 
 
-/* axi peripherals */
+ 
 #define PXA1928_CLK_SDH0		0x15
 #define PXA1928_CLK_SDH1		0x16
 #define PXA1928_CLK_USB			0x17

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic USB GNSS receiver driver
- *
- * Copyright (C) 2021 Johan Hovold <johan@kernel.org>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gnss.h>
@@ -17,7 +13,7 @@
 #define GNSS_USB_WRITE_TIMEOUT	1000
 
 static const struct usb_device_id gnss_usb_id_table[] = {
-	{ USB_DEVICE(0x1199, 0xb000) },		/* Sierra Wireless XM1210 */
+	{ USB_DEVICE(0x1199, 0xb000) },		 
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, gnss_usb_id_table);

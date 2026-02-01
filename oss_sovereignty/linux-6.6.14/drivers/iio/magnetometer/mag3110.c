@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mag3110.c - Support for Freescale MAG3110 magnetometer sensor
- *
- * Copyright (c) 2013 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * (7-bit I2C slave address 0x0e)
- *
- * TODO: irq, user offset, oversampling, continuous mode
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,12 +12,12 @@
 #include <linux/regulator/consumer.h>
 
 #define MAG3110_STATUS 0x00
-#define MAG3110_OUT_X 0x01 /* MSB first */
+#define MAG3110_OUT_X 0x01  
 #define MAG3110_OUT_Y 0x03
 #define MAG3110_OUT_Z 0x05
 #define MAG3110_WHO_AM_I 0x07
 #define MAG3110_SYSMOD 0x08
-#define MAG3110_OFF_X 0x09 /* MSB first */
+#define MAG3110_OFF_X 0x09  
 #define MAG3110_OFF_Y 0x0b
 #define MAG3110_OFF_Z 0x0d
 #define MAG3110_DIE_TEMP 0x0f
@@ -40,15 +32,15 @@
 
 #define MAG3110_SYSMOD_MODE_MASK GENMASK(1, 0)
 
-#define MAG3110_CTRL_TM BIT(1) /* trigger single measurement */
-#define MAG3110_CTRL_AC BIT(0) /* continuous measurements */
+#define MAG3110_CTRL_TM BIT(1)  
+#define MAG3110_CTRL_AC BIT(0)  
 
-#define MAG3110_CTRL_AUTO_MRST_EN BIT(7) /* magnetic auto-reset */
-#define MAG3110_CTRL_RAW BIT(5) /* measurements not user-offset corrected */
+#define MAG3110_CTRL_AUTO_MRST_EN BIT(7)  
+#define MAG3110_CTRL_RAW BIT(5)  
 
 #define MAG3110_DEVICE_ID 0xc4
 
-/* Each client has this additional data */
+ 
 struct mag3110_data {
 	struct i2c_client *client;
 	struct mutex lock;
@@ -56,7 +48,7 @@ struct mag3110_data {
 	int sleep_val;
 	struct regulator *vdd_reg;
 	struct regulator *vddio_reg;
-	/* Ensure natural alignment of timestamp */
+	 
 	struct {
 		__be16 channels[3];
 		u8 temperature;
@@ -69,7 +61,7 @@ static int mag3110_request(struct mag3110_data *data)
 	int ret, tries = 150;
 
 	if ((data->ctrl_reg1 & MAG3110_CTRL_AC) == 0) {
-		/* trigger measurement */
+		 
 		ret = i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
 			data->ctrl_reg1 | MAG3110_CTRL_TM);
 		if (ret < 0)
@@ -80,7 +72,7 @@ static int mag3110_request(struct mag3110_data *data)
 		ret = i2c_smbus_read_byte_data(data->client, MAG3110_STATUS);
 		if (ret < 0)
 			return ret;
-		/* wait for data ready */
+		 
 		if ((ret & MAG3110_STATUS_DRDY) == MAG3110_STATUS_DRDY)
 			break;
 
@@ -124,7 +116,7 @@ static ssize_t mag3110_show_int_plus_micros(char *buf,
 		len += scnprintf(buf + len, PAGE_SIZE - len,
 			"%d.%06d ", vals[n][0], vals[n][1]);
 
-	/* replace trailing space by newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -182,18 +174,14 @@ static int mag3110_wait_standby(struct mag3110_data *data)
 {
 	int ret, tries = 30;
 
-	/*
-	 * Takes up to 1/ODR to come out of active mode into stby
-	 * Longest expected period is 12.5seconds.
-	 * We'll sleep for 500ms between checks
-	 */
+	 
 	while (tries-- > 0) {
 		ret = i2c_smbus_read_byte_data(data->client, MAG3110_SYSMOD);
 		if (ret < 0) {
 			dev_err(&data->client->dev, "i2c error\n");
 			return ret;
 		}
-		/* wait for standby */
+		 
 		if ((ret & MAG3110_SYSMOD_MODE_MASK) == 0)
 			break;
 
@@ -214,7 +202,7 @@ static int mag3110_active(struct mag3110_data *data)
 					 data->ctrl_reg1);
 }
 
-/* returns >0 if active, 0 if in standby and <0 on error */
+ 
 static int mag3110_is_active(struct mag3110_data *data)
 {
 	int reg;
@@ -239,17 +227,14 @@ static int mag3110_change_config(struct mag3110_data *data, u8 reg, u8 val)
 		goto fail;
 	}
 
-	/* config can only be changed when in standby */
+	 
 	if (is_active > 0) {
 		ret = mag3110_standby(data);
 		if (ret < 0)
 			goto fail;
 	}
 
-	/*
-	 * After coming out of active we must wait for the part
-	 * to transition to STBY. This can take up to 1 /ODR to occur
-	 */
+	 
 	ret = mag3110_wait_standby(data);
 	if (ret < 0)
 		goto fail;
@@ -286,7 +271,7 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
 			return ret;
 
 		switch (chan->type) {
-		case IIO_MAGN: /* in 0.1 uT / LSB */
+		case IIO_MAGN:  
 			ret = mag3110_read(data, buffer);
 			if (ret < 0)
 				goto release;
@@ -295,7 +280,7 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
 					    chan->scan_type.realbits - 1);
 			ret = IIO_VAL_INT;
 			break;
-		case IIO_TEMP: /* in 1 C / LSB */
+		case IIO_TEMP:  
 			mutex_lock(&data->lock);
 			ret = mag3110_request(data);
 			if (ret < 0) {

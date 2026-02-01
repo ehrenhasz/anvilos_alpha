@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2021-2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
 #include <sys/simd.h>
 #include <sys/zfs_context.h>
@@ -275,7 +254,7 @@ static const blake3_ops_t *const blake3_impls[] = {
 #endif
 };
 
-/* use the generic implementation functions */
+ 
 #define	IMPL_NAME		"blake3"
 #define	IMPL_OPS_T		blake3_ops_t
 #define	IMPL_ARRAY		blake3_impls
@@ -289,9 +268,7 @@ void **blake3_per_cpu_ctx;
 void
 blake3_per_cpu_ctx_init(void)
 {
-	/*
-	 * Create "The Godfather" ptr to hold all blake3 ctx
-	 */
+	 
 	blake3_per_cpu_ctx = kmem_alloc(max_ncpus * sizeof (void *), KM_SLEEP);
 	for (int i = 0; i < max_ncpus; i++) {
 		blake3_per_cpu_ctx[i] = kmem_alloc(sizeof (BLAKE3_CTX),
@@ -321,15 +298,15 @@ blake3_param_get(char *buffer, zfs_kernel_param_t *unused)
 	char *fmt;
 	int cnt = 0;
 
-	/* cycling */
+	 
 	fmt = IMPL_FMT(impl, IMPL_CYCLE);
 	cnt += kmem_scnprintf(buffer + cnt, PAGE_SIZE - cnt, fmt, "cycle");
 
-	/* list fastest */
+	 
 	fmt = IMPL_FMT(impl, IMPL_FASTEST);
 	cnt += kmem_scnprintf(buffer + cnt, PAGE_SIZE - cnt, fmt, "fastest");
 
-	/* list all supported implementations */
+	 
 	generic_impl_init();
 	for (uint32_t i = 0; i < generic_supp_impls_cnt; ++i) {
 		fmt = IMPL_FMT(impl, i);
@@ -365,15 +342,15 @@ blake3_param(ZFS_MODULE_PARAM_ARGS)
 
 		s = sbuf_new_for_sysctl(NULL, NULL, init_buflen, req);
 
-		/* cycling */
+		 
 		fmt = IMPL_FMT(impl, IMPL_CYCLE);
 		(void) sbuf_printf(s, fmt, "cycle");
 
-		/* list fastest */
+		 
 		fmt = IMPL_FMT(impl, IMPL_FASTEST);
 		(void) sbuf_printf(s, fmt, "fastest");
 
-		/* list all supported implementations */
+		 
 		for (uint32_t i = 0; i < generic_supp_impls_cnt; ++i) {
 			fmt = IMPL_FMT(impl, i);
 			(void) sbuf_printf(s, fmt, generic_supp_impls[i]->name);

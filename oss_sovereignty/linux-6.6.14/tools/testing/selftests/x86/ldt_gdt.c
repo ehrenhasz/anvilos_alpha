@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ldt_gdt.c - Test cases for LDT and GDT access
- * Copyright (c) 2015 Andrew Lutomirski
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <err.h>
@@ -54,10 +51,10 @@
 
 static int nerrs;
 
-/* Points to an array of 1024 ints, each holding its own index. */
+ 
 static const unsigned int *counter_page;
 static struct user_desc *low_user_desc;
-static struct user_desc *low_user_desc_clear;  /* Use to delete GDT entry */
+static struct user_desc *low_user_desc_clear;   
 static int gdt_entry_num;
 
 static void check_invalid_segment(uint16_t index, int ldt)
@@ -115,13 +112,10 @@ static void check_valid_segment(uint16_t index, int ldt,
 		return;
 	}
 
-	/* The SDM says "bits 19:16 are undefined".  Thanks. */
+	 
 	ar &= ~0xF0000;
 
-	/*
-	 * NB: Different Linux versions do different things with the
-	 * accessed bit in set_thread_area().
-	 */
+	 
 	if (ar != expected_ar && ar != (expected_ar | AR_ACCESSED)) {
 		printf("[FAIL]\t%s entry %hu has AR 0x%08X but expected 0x%08X\n",
 		       (ldt ? "LDT" : "GDT"), index, ar, expected_ar);
@@ -144,7 +138,7 @@ static bool install_valid_mode(const struct user_desc *d, uint32_t ar,
 
 	if (!ldt) {
 #ifndef __i386__
-		/* No point testing set_thread_area in a 64-bit build */
+		 
 		return false;
 #endif
 		if (!gdt_entry_num)
@@ -192,7 +186,7 @@ static bool install_valid(const struct user_desc *desc, uint32_t ar)
 
 	if (desc->contents <= 1 && desc->seg_32bit &&
 	    !desc->seg_not_present) {
-		/* Should work in the GDT, too. */
+		 
 		install_valid_mode(desc, ar, false, false);
 	}
 
@@ -248,7 +242,7 @@ static void do_simple_tests(void)
 		.base_addr       = 0,
 		.limit           = 10,
 		.seg_32bit       = 1,
-		.contents        = 2, /* Code, not conforming */
+		.contents        = 2,  
 		.read_exec_only  = 0,
 		.limit_in_pages  = 0,
 		.seg_not_present = 0,
@@ -372,11 +366,11 @@ static void do_simple_tests(void)
 		printf("[SKIP]\tSkipping fork and size tests because we have no LDT\n");
 	}
 
-	/* Test entry_number too high. */
+	 
 	desc.entry_number = 8192;
 	fail_install(&desc);
 
-	/* Test deletion and actions mistakeable for deletion. */
+	 
 	memset(&desc, 0, sizeof(desc));
 	install_valid(&desc, AR_DPL3 | AR_TYPE_RWDATA | AR_S | AR_P);
 
@@ -424,12 +418,7 @@ static void do_simple_tests(void)
 	install_invalid(&desc, true);
 }
 
-/*
- * 0: thread is idle
- * 1: thread armed
- * 2: thread should clear LDT entry 0
- * 3: thread should exit
- */
+ 
 static volatile unsigned int ftx;
 
 static void *threadproc(void *ctx)
@@ -438,7 +427,7 @@ static void *threadproc(void *ctx)
 	CPU_ZERO(&cpuset);
 	CPU_SET(1, &cpuset);
 	if (sched_setaffinity(0, sizeof(cpuset), &cpuset) != 0)
-		err(1, "sched_setaffinity to CPU 1");	/* should never fail */
+		err(1, "sched_setaffinity to CPU 1");	 
 
 	while (1) {
 		syscall(SYS_futex, &ftx, FUTEX_WAIT, 0, NULL, NULL, 0);
@@ -447,12 +436,12 @@ static void *threadproc(void *ctx)
 				return NULL;
 		}
 
-		/* clear LDT entry 0 */
+		 
 		const struct user_desc desc = {};
 		if (syscall(SYS_modify_ldt, 1, &desc, sizeof(desc)) != 0)
 			err(1, "modify_ldt");
 
-		/* If ftx == 2, set it to zero.  If ftx == 100, quit. */
+		 
 		unsigned int x = -2;
 		asm volatile ("lock xaddl %[x], %[ftx]" :
 			      [x] "+r" (x), [ftx] "+m" (ftx));
@@ -467,12 +456,9 @@ static void *threadproc(void *ctx)
 #define SA_RESTORER 0x04000000
 #endif
 
-/*
- * The UAPI header calls this 'struct sigaction', which conflicts with
- * glibc.  Sigh.
- */
+ 
 struct fake_ksigaction {
-	void *handler;  /* the real type is nasty */
+	void *handler;   
 	unsigned long sa_flags;
 	void (*sa_restorer)(void);
 	unsigned char sigset[8];
@@ -483,14 +469,7 @@ static void fix_sa_restorer(int sig)
 	struct fake_ksigaction ksa;
 
 	if (syscall(SYS_rt_sigaction, sig, NULL, &ksa, 8) == 0) {
-		/*
-		 * glibc has a nasty bug: it sometimes writes garbage to
-		 * sa_restorer.  This interacts quite badly with anything
-		 * that fiddles with SS because it can trigger legacy
-		 * stack switching.  Patch it up.  See:
-		 *
-		 * https://sourceware.org/bugzilla/show_bug.cgi?id=21269
-		 */
+		 
 		if (!(ksa.sa_flags & SA_RESTORER) && ksa.sa_restorer) {
 			ksa.sa_restorer = NULL;
 			if (syscall(SYS_rt_sigaction, sig, &ksa, NULL,
@@ -502,7 +481,7 @@ static void fix_sa_restorer(int sig)
 #else
 static void fix_sa_restorer(int sig)
 {
-	/* 64-bit glibc works fine. */
+	 
 }
 #endif
 
@@ -550,7 +529,7 @@ static void do_multicpu_tests(void)
 
 	sethandler(SIGSEGV, sigsegv, 0);
 #ifdef __i386__
-	/* True 32-bit kernels send SIGILL instead of SIGSEGV on IRET faults. */
+	 
 	sethandler(SIGILL, sigsegv, 0);
 #endif
 
@@ -565,7 +544,7 @@ static void do_multicpu_tests(void)
 		if (sigsetjmp(jmpbuf, 1) != 0)
 			continue;
 
-		/* Make sure the thread is ready after the last test. */
+		 
 		while (ftx != 0)
 			;
 
@@ -574,7 +553,7 @@ static void do_multicpu_tests(void)
 			.base_addr       = 0,
 			.limit           = 0xfffff,
 			.seg_32bit       = 1,
-			.contents        = 0, /* Data */
+			.contents        = 0,  
 			.read_exec_only  = 0,
 			.limit_in_pages  = 1,
 			.seg_not_present = 0,
@@ -588,28 +567,25 @@ static void do_multicpu_tests(void)
 			break;
 		}
 
-		/* Arm the thread. */
+		 
 		ftx = 1;
 		syscall(SYS_futex, &ftx, FUTEX_WAKE, 0, NULL, NULL, 0);
 
 		asm volatile ("mov %0, %%ss" : : "r" (0x7));
 
-		/* Go! */
+		 
 		ftx = 2;
 
 		while (ftx != 0)
 			;
 
-		/*
-		 * On success, modify_ldt will segfault us synchronously,
-		 * and we'll escape via siglongjmp.
-		 */
+		 
 
 		failures++;
 		asm volatile ("mov %0, %%ss" : : "rm" (orig_ss));
 	}
 
-	ftx = 100;  /* Kill the thread. */
+	ftx = 100;   
 	syscall(SYS_futex, &ftx, FUTEX_WAKE, 0, NULL, NULL, 0);
 
 	if (pthread_join(thread, NULL) != 0)
@@ -625,10 +601,7 @@ static void do_multicpu_tests(void)
 
 static int finish_exec_test(void)
 {
-	/*
-	 * Older kernel versions did inherit the LDT on exec() which is
-	 * wrong because exec() starts from a clean state.
-	 */
+	 
 	check_invalid_segment(0, 1);
 
 	return nerrs ? 1 : 0;
@@ -643,7 +616,7 @@ static void do_exec_test(void)
 		.base_addr       = 0,
 		.limit           = 42,
 		.seg_32bit       = 1,
-		.contents        = 2, /* Code, not conforming */
+		.contents        = 2,  
 		.read_exec_only  = 0,
 		.limit_in_pages  = 0,
 		.seg_not_present = 0,
@@ -655,7 +628,7 @@ static void do_exec_test(void)
 	if (child == 0) {
 		execl("/proc/self/exe", "ldt_gdt_test_exec", NULL);
 		printf("[FAIL]\tCould not exec self\n");
-		exit(1);	/* exec failed */
+		exit(1);	 
 	} else {
 		int status;
 		if (waitpid(child, &status, 0) != child ||
@@ -705,7 +678,7 @@ static void setup_low_user_desc(void)
 	low_user_desc->base_addr	= (unsigned long)&counter_page[1];
 	low_user_desc->limit		= 0xfffff;
 	low_user_desc->seg_32bit	= 1;
-	low_user_desc->contents		= 0; /* Data, grow-up*/
+	low_user_desc->contents		= 0;  
 	low_user_desc->read_exec_only	= 0;
 	low_user_desc->limit_in_pages	= 1;
 	low_user_desc->seg_not_present	= 0;
@@ -727,7 +700,7 @@ static void setup_low_user_desc(void)
 static void test_gdt_invalidation(void)
 {
 	if (!gdt_entry_num)
-		return;	/* 64-bit only system -- we can't use set_thread_area */
+		return;	 
 
 	unsigned short prev_sel;
 	unsigned short sel;
@@ -738,7 +711,7 @@ static void test_gdt_invalidation(void)
 	unsigned long new_base;
 #endif
 
-	/* Test DS */
+	 
 	invoke_set_thread_area();
 	eax = 243;
 	sel = (gdt_entry_num << 3) | 3;
@@ -748,7 +721,7 @@ static void test_gdt_invalidation(void)
 		      "pushl %%ebx\n\t"
 #endif
 		      "movl %[arg1], %%ebx\n\t"
-		      "int $0x80\n\t"	/* Should invalidate ds */
+		      "int $0x80\n\t"	 
 #ifdef __i386__
 		      "popl %%ebx\n\t"
 #endif
@@ -769,7 +742,7 @@ static void test_gdt_invalidation(void)
 	printf("[%s]\tInvalidate DS with set_thread_area: new DS = 0x%hx\n",
 	       result, sel);
 
-	/* Test ES */
+	 
 	invoke_set_thread_area();
 	eax = 243;
 	sel = (gdt_entry_num << 3) | 3;
@@ -779,7 +752,7 @@ static void test_gdt_invalidation(void)
 		      "pushl %%ebx\n\t"
 #endif
 		      "movl %[arg1], %%ebx\n\t"
-		      "int $0x80\n\t"	/* Should invalidate es */
+		      "int $0x80\n\t"	 
 #ifdef __i386__
 		      "popl %%ebx\n\t"
 #endif
@@ -800,7 +773,7 @@ static void test_gdt_invalidation(void)
 	printf("[%s]\tInvalidate ES with set_thread_area: new ES = 0x%hx\n",
 	       result, sel);
 
-	/* Test FS */
+	 
 	invoke_set_thread_area();
 	eax = 243;
 	sel = (gdt_entry_num << 3) | 3;
@@ -813,7 +786,7 @@ static void test_gdt_invalidation(void)
 		      "pushl %%ebx\n\t"
 #endif
 		      "movl %[arg1], %%ebx\n\t"
-		      "int $0x80\n\t"	/* Should invalidate fs */
+		      "int $0x80\n\t"	 
 #ifdef __i386__
 		      "popl %%ebx\n\t"
 #endif
@@ -828,7 +801,7 @@ static void test_gdt_invalidation(void)
 	syscall(SYS_arch_prctl, ARCH_GET_FS, &new_base);
 #endif
 
-	/* Restore FS/BASE for glibc */
+	 
 	asm volatile ("movw %[prev_sel], %%fs" : : [prev_sel] "rm" (prev_sel));
 #ifdef __x86_64__
 	if (saved_base)
@@ -853,7 +826,7 @@ static void test_gdt_invalidation(void)
 	}
 #endif
 
-	/* Test GS */
+	 
 	invoke_set_thread_area();
 	eax = 243;
 	sel = (gdt_entry_num << 3) | 3;
@@ -866,7 +839,7 @@ static void test_gdt_invalidation(void)
 		      "pushl %%ebx\n\t"
 #endif
 		      "movl %[arg1], %%ebx\n\t"
-		      "int $0x80\n\t"	/* Should invalidate gs */
+		      "int $0x80\n\t"	 
 #ifdef __i386__
 		      "popl %%ebx\n\t"
 #endif
@@ -881,7 +854,7 @@ static void test_gdt_invalidation(void)
 	syscall(SYS_arch_prctl, ARCH_GET_GS, &new_base);
 #endif
 
-	/* Restore GS/BASE for glibc */
+	 
 	asm volatile ("movw %[prev_sel], %%gs" : : [prev_sel] "rm" (prev_sel));
 #ifdef __x86_64__
 	if (saved_base)

@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define nv40_clk(p) container_of((p), struct nv40_clk, base)
 #include "priv.h"
 #include "pll.h"
@@ -105,7 +83,7 @@ nv40_clk_read(struct nvkm_clk *base, enum nv_clk_src src)
 	case nv_clk_src_crystal:
 		return device->crystal;
 	case nv_clk_src_href:
-		return 100000; /*XXX: PCIE/AGP differ*/
+		return 100000;  
 	case nv_clk_src_core:
 		return read_clk(clk, (mast & 0x00000003) >> 0);
 	case nv_clk_src_shader:
@@ -151,7 +129,7 @@ nv40_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 	int N1, M1, N2, M2, log2P;
 	int ret;
 
-	/* core/geometric clock */
+	 
 	ret = nv40_clk_calc_pll(clk, 0x004000, gclk,
 				&N1, &M1, &N2, &M2, &log2P);
 	if (ret < 0)
@@ -165,7 +143,7 @@ nv40_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 		clk->npll_coef = (N2 << 24) | (M2 << 16) | (N1 << 8) | M1;
 	}
 
-	/* use the second pll for shader/rop clock, if it differs from core */
+	 
 	if (sclk && sclk != gclk) {
 		ret = nv40_clk_calc_pll(clk, 0x004008, sclk,
 					&N1, &M1, NULL, NULL, &log2P);

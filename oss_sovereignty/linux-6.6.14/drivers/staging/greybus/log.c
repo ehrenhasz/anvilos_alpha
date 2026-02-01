@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus driver for the log protocol
- *
- * Copyright 2016 Google Inc.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -27,7 +23,7 @@ static int gb_log_request_handler(struct gb_operation *op)
 		return -EINVAL;
 	}
 
-	/* Verify size of payload */
+	 
 	if (op->request->payload_size < sizeof(*receive)) {
 		dev_err(dev, "log request too small (%zu < %zu)\n",
 			op->request->payload_size, sizeof(*receive));
@@ -50,13 +46,10 @@ static int gb_log_request_handler(struct gb_operation *op)
 		return -EINVAL;
 	}
 
-	/* Ensure the buffer is 0 terminated */
+	 
 	receive->msg[len - 1] = '\0';
 
-	/*
-	 * Print with dev_dbg() so that it can be easily turned off using
-	 * dynamic debugging (and prevent any DoS)
-	 */
+	 
 	dev_dbg(dev, "%s", receive->msg);
 
 	return 0;

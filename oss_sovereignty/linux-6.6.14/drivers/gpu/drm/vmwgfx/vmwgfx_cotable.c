@@ -1,34 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2014-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
-/*
- * Treat context OTables as resources to make use of the resource
- * backing MOB eviction mechanism, that is used to read back the COTable
- * whenever the backing MOB is evicted.
- */
+
+ 
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
@@ -38,17 +10,7 @@
 
 #include <drm/ttm/ttm_placement.h>
 
-/**
- * struct vmw_cotable - Context Object Table resource
- *
- * @res: struct vmw_resource we are deriving from.
- * @ctx: non-refcounted pointer to the owning context.
- * @size_read_back: Size of data read back during eviction.
- * @seen_entries: Seen entries in command stream for this cotable.
- * @type: The cotable type.
- * @scrubbed: Whether the cotable has been scrubbed.
- * @resource_list: List of resources in the cotable.
- */
+ 
 struct vmw_cotable {
 	struct vmw_resource res;
 	struct vmw_resource *ctx;
@@ -59,14 +21,7 @@ struct vmw_cotable {
 	struct list_head resource_list;
 };
 
-/**
- * struct vmw_cotable_info - Static info about cotable types
- *
- * @min_initial_entries: Min number of initial intries at cotable allocation
- * for this cotable type.
- * @size: Size of each entry.
- * @unbind_func: Unbind call-back function.
- */
+ 
 struct vmw_cotable_info {
 	u32 min_initial_entries;
 	u32 size;
@@ -75,17 +30,7 @@ struct vmw_cotable_info {
 };
 
 
-/*
- * Getting the initial size right is difficult because it all depends
- * on what the userspace is doing. The sizes will be aligned up to
- * a PAGE_SIZE so we just want to make sure that for majority of apps
- * the initial number of entries doesn't require an immediate resize.
- * For all cotables except SVGACOTableDXElementLayoutEntry and
- * SVGACOTableDXBlendStateEntry the initial number of entries fits
- * within the PAGE_SIZE. For SVGACOTableDXElementLayoutEntry and
- * SVGACOTableDXBlendStateEntry we want to reserve two pages,
- * because that's what all apps will require initially.
- */
+ 
 static const struct vmw_cotable_info co_info[] = {
 	{1, sizeof(SVGACOTableDXRTViewEntry), &vmw_view_cotable_list_destroy},
 	{1, sizeof(SVGACOTableDXDSViewEntry), &vmw_view_cotable_list_destroy},
@@ -101,11 +46,7 @@ static const struct vmw_cotable_info co_info[] = {
 	{1, sizeof(SVGACOTableDXUAViewEntry), &vmw_view_cotable_list_destroy}
 };
 
-/*
- * Cotables with bindings that we remove must be scrubbed first,
- * otherwise, the device will swap in an invalid context when we remove
- * bindings before scrubbing a cotable...
- */
+ 
 const SVGACOTableType vmw_cotable_scrub_order[] = {
 	SVGA_COTABLE_RTVIEW,
 	SVGA_COTABLE_DSVIEW,
@@ -144,40 +85,20 @@ static const struct vmw_res_func vmw_cotable_func = {
 	.unbind = vmw_cotable_unbind,
 };
 
-/**
- * vmw_cotable - Convert a struct vmw_resource pointer to a struct
- * vmw_cotable pointer
- *
- * @res: Pointer to the resource.
- */
+ 
 static struct vmw_cotable *vmw_cotable(struct vmw_resource *res)
 {
 	return container_of(res, struct vmw_cotable, res);
 }
 
-/**
- * vmw_cotable_destroy - Cotable resource destroy callback
- *
- * @res: Pointer to the cotable resource.
- *
- * There is no device cotable destroy command, so this function only
- * makes sure that the resource id is set to invalid.
- */
+ 
 static int vmw_cotable_destroy(struct vmw_resource *res)
 {
 	res->id = -1;
 	return 0;
 }
 
-/**
- * vmw_cotable_unscrub - Undo a cotable unscrub operation
- *
- * @res: Pointer to the cotable resource
- *
- * This function issues commands to (re)bind the cotable to
- * its backing mob, which needs to be validated and reserved at this point.
- * This is identical to bind() except the function interface looks different.
- */
+ 
 static int vmw_cotable_unscrub(struct vmw_resource *res)
 {
 	struct vmw_cotable *vcotbl = vmw_cotable(res);
@@ -210,49 +131,17 @@ static int vmw_cotable_unscrub(struct vmw_resource *res)
 	return 0;
 }
 
-/**
- * vmw_cotable_bind - Undo a cotable unscrub operation
- *
- * @res: Pointer to the cotable resource
- * @val_buf: Pointer to a struct ttm_validate_buffer prepared by the caller
- * for convenience / fencing.
- *
- * This function issues commands to (re)bind the cotable to
- * its backing mob, which needs to be validated and reserved at this point.
- */
+ 
 static int vmw_cotable_bind(struct vmw_resource *res,
 			    struct ttm_validate_buffer *val_buf)
 {
-	/*
-	 * The create() callback may have changed @res->backup without
-	 * the caller noticing, and with val_buf->bo still pointing to
-	 * the old backup buffer. Although hackish, and not used currently,
-	 * take the opportunity to correct the value here so that it's not
-	 * misused in the future.
-	 */
+	 
 	val_buf->bo = &res->guest_memory_bo->tbo;
 
 	return vmw_cotable_unscrub(res);
 }
 
-/**
- * vmw_cotable_scrub - Scrub the cotable from the device.
- *
- * @res: Pointer to the cotable resource.
- * @readback: Whether initiate a readback of the cotable data to the backup
- * buffer.
- *
- * In some situations (context swapouts) it might be desirable to make the
- * device forget about the cotable without performing a full unbind. A full
- * unbind requires reserved backup buffers and it might not be possible to
- * reserve them due to locking order violation issues. The vmw_cotable_scrub
- * function implements a partial unbind() without that requirement but with the
- * following restrictions.
- * 1) Before the cotable is again used by the GPU, vmw_cotable_unscrub() must
- *    be called.
- * 2) Before the cotable backing buffer is used by the CPU, or during the
- *    resource destruction, vmw_cotable_unbind() must be called.
- */
+ 
 int vmw_cotable_scrub(struct vmw_resource *res, bool readback)
 {
 	struct vmw_cotable *vcotbl = vmw_cotable(res);
@@ -302,22 +191,13 @@ int vmw_cotable_scrub(struct vmw_resource *res, bool readback)
 	vmw_cmd_commit_flush(dev_priv, submit_size);
 	vcotbl->scrubbed = true;
 
-	/* Trigger a create() on next validate. */
+	 
 	res->id = -1;
 
 	return 0;
 }
 
-/**
- * vmw_cotable_unbind - Cotable resource unbind callback
- *
- * @res: Pointer to the cotable resource.
- * @readback: Whether to read back cotable data to the backup buffer.
- * @val_buf: Pointer to a struct ttm_validate_buffer prepared by the caller
- * for convenience / fencing.
- *
- * Unbinds the cotable from the device and fences the backup buffer.
- */
+ 
 static int vmw_cotable_unbind(struct vmw_resource *res,
 			      bool readback,
 			      struct ttm_validate_buffer *val_buf)
@@ -345,14 +225,7 @@ static int vmw_cotable_unbind(struct vmw_resource *res,
 	return 0;
 }
 
-/**
- * vmw_cotable_readback - Read back a cotable without unbinding.
- *
- * @res: The cotable resource.
- *
- * Reads back a cotable to its backing mob without scrubbing the MOB from
- * the cotable. The MOB is fenced for subsequent CPU access.
- */
+ 
 static int vmw_cotable_readback(struct vmw_resource *res)
 {
 	struct vmw_cotable *vcotbl = vmw_cotable(res);
@@ -384,18 +257,7 @@ static int vmw_cotable_readback(struct vmw_resource *res)
 	return 0;
 }
 
-/**
- * vmw_cotable_resize - Resize a cotable.
- *
- * @res: The cotable resource.
- * @new_size: The new size.
- *
- * Resizes a cotable and binds the new backup buffer.
- * On failure the cotable is left intact.
- * Important! This function may not fail once the MOB switch has been
- * committed to hardware. That would put the device context in an
- * invalid state which we can't currently recover from.
- */
+ 
 static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 {
 	struct ttm_operation_ctx ctx = { false, false };
@@ -427,11 +289,7 @@ static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 	cur_size_read_back = vcotbl->size_read_back;
 	vcotbl->size_read_back = old_size_read_back;
 
-	/*
-	 * While device is processing, Allocate and reserve a buffer object
-	 * for the new COTable. Initially pin the buffer object to make sure
-	 * we can use tryreserve without failure.
-	 */
+	 
 	ret = vmw_gem_object_create(dev_priv, &bo_params, &buf);
 	if (ret) {
 		DRM_ERROR("Failed initializing new cotable MOB.\n");
@@ -447,10 +305,7 @@ static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 		goto out_wait;
 	}
 
-	/*
-	 * Do a page by page copy of COTables. This eliminates slow vmap()s.
-	 * This should really be a TTM utility.
-	 */
+	 
 	for (i = 0; i < PFN_UP(old_bo->resource->size); ++i) {
 		bool dummy;
 
@@ -471,7 +326,7 @@ static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 		ttm_bo_kunmap(&old_map);
 	}
 
-	/* Unpin new buffer, and switch backup buffers. */
+	 
 	vmw_bo_placement_set(buf,
 			     VMW_BO_DOMAIN_MOB,
 			     VMW_BO_DOMAIN_MOB);
@@ -486,10 +341,7 @@ static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 	res->guest_memory_size = new_size;
 	vcotbl->size_read_back = cur_size_read_back;
 
-	/*
-	 * Now tell the device to switch. If this fails, then we need to
-	 * revert the full resize.
-	 */
+	 
 	ret = vmw_cotable_unscrub(res);
 	if (ret) {
 		DRM_ERROR("Failed switching COTable backup buffer.\n");
@@ -501,7 +353,7 @@ static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 	}
 
 	vmw_resource_mob_attach(res);
-	/* Let go of the old mob. */
+	 
 	vmw_user_bo_unref(&old_buf);
 	res->id = vcotbl->type;
 
@@ -509,7 +361,7 @@ static int vmw_cotable_resize(struct vmw_resource *res, size_t new_size)
 	if (unlikely(ret))
 		goto out_wait;
 
-	/* Release the pin acquired in vmw_bo_create */
+	 
 	ttm_bo_unpin(bo);
 
 	MKS_STAT_TIME_POP(MKSSTAT_KERN_COTABLE_RESIZE);
@@ -529,18 +381,7 @@ out_done:
 	return ret;
 }
 
-/**
- * vmw_cotable_create - Cotable resource create callback
- *
- * @res: Pointer to a cotable resource.
- *
- * There is no separate create command for cotables, so this callback, which
- * is called before bind() in the validation sequence is instead used for two
- * things.
- * 1) Unscrub the cotable if it is scrubbed and still attached to a backup
- *    buffer.
- * 2) Resize the cotable if needed.
- */
+ 
 static int vmw_cotable_create(struct vmw_resource *res)
 {
 	struct vmw_cotable *vcotbl = vmw_cotable(res);
@@ -548,7 +389,7 @@ static int vmw_cotable_create(struct vmw_resource *res)
 	size_t needed_size;
 	int ret;
 
-	/* Check whether we need to resize the cotable */
+	 
 	needed_size = (vcotbl->seen_entries + 1) * co_info[vcotbl->type].size;
 	while (needed_size > new_size)
 		new_size *= 2;
@@ -566,36 +407,19 @@ static int vmw_cotable_create(struct vmw_resource *res)
 	return vmw_cotable_resize(res, new_size);
 }
 
-/**
- * vmw_hw_cotable_destroy - Cotable hw_destroy callback
- *
- * @res: Pointer to a cotable resource.
- *
- * The final (part of resource destruction) destroy callback.
- */
+ 
 static void vmw_hw_cotable_destroy(struct vmw_resource *res)
 {
 	(void) vmw_cotable_destroy(res);
 }
 
-/**
- * vmw_cotable_free - Cotable resource destructor
- *
- * @res: Pointer to a cotable resource.
- */
+ 
 static void vmw_cotable_free(struct vmw_resource *res)
 {
 	kfree(res);
 }
 
-/**
- * vmw_cotable_alloc - Create a cotable resource
- *
- * @dev_priv: Pointer to a device private struct.
- * @ctx: Pointer to the context resource.
- * The cotable resource will not add a refcount.
- * @type: The cotable type.
- */
+ 
 struct vmw_resource *vmw_cotable_alloc(struct vmw_private *dev_priv,
 				       struct vmw_resource *ctx,
 				       u32 type)
@@ -640,12 +464,7 @@ out_no_alloc:
 	return ERR_PTR(ret);
 }
 
-/**
- * vmw_cotable_notify - Notify the cotable about an item creation
- *
- * @res: Pointer to a cotable resource.
- * @id: Item id.
- */
+ 
 int vmw_cotable_notify(struct vmw_resource *res, int id)
 {
 	struct vmw_cotable *vcotbl = vmw_cotable(res);
@@ -657,7 +476,7 @@ int vmw_cotable_notify(struct vmw_resource *res, int id)
 	}
 
 	if (vcotbl->seen_entries < id) {
-		/* Trigger a call to create() on next validate */
+		 
 		res->id = -1;
 		vcotbl->seen_entries = id;
 	}
@@ -665,13 +484,7 @@ int vmw_cotable_notify(struct vmw_resource *res, int id)
 	return 0;
 }
 
-/**
- * vmw_cotable_add_resource - add a view to the cotable's list of active views.
- *
- * @res: pointer struct vmw_resource representing the cotable.
- * @head: pointer to the struct list_head member of the resource, dedicated
- * to the cotable active resource list.
- */
+ 
 void vmw_cotable_add_resource(struct vmw_resource *res, struct list_head *head)
 {
 	struct vmw_cotable *vcotbl =

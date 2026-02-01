@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ufs
@@ -54,7 +52,7 @@
 	EM(UFS_TSF_TM_INPUT,	"TM_INPUT")                     \
 	EMe(UFS_TSF_TM_OUTPUT,	"TM_OUTPUT")
 
-/* Enums require being exported to userspace, for user tool parsing */
+ 
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
@@ -66,10 +64,7 @@ UFSCHD_CLK_GATING_STATES;
 UFS_CMD_TRACE_STRINGS
 UFS_CMD_TRACE_TSF_TYPES
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a, b)	{a, b},
@@ -392,7 +387,7 @@ TRACE_EVENT(ufshcd_exception_event,
 	)
 );
 
-#endif /* if !defined(_TRACE_UFS_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

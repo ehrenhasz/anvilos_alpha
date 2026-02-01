@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hisilicon NAND Flash controller driver
- *
- * Copyright © 2012-2014 HiSilicon Technologies Co., Ltd.
- *              http://www.hisilicon.com
- *
- * Author: Zhou Wang <wangzhou.bry@gmail.com>
- * The initial developer of the original code is Zhiyong Cai
- * <caizhiyong@huawei.com>
- */
+
+ 
 #include <linux/of.h>
 #include <linux/mtd/mtd.h>
 #include <linux/sizes.h>
@@ -138,7 +129,7 @@ struct hinfc_host {
 	dma_addr_t		dma_buffer;
 	dma_addr_t		dma_oob;
 	int			version;
-	unsigned int            irq_status; /* interrupt status */
+	unsigned int            irq_status;  
 };
 
 static inline unsigned int hinfc_read(struct hinfc_host *host, unsigned int reg)
@@ -160,7 +151,7 @@ static void wait_controller_finished(struct hinfc_host *host)
 	while (time_before(jiffies, timeout)) {
 		val = hinfc_read(host, HINFC504_STATUS);
 		if (host->command == NAND_CMD_ERASE2) {
-			/* nfc is ready */
+			 
 			while (!(val & HINFC504_READY))	{
 				usleep_range(500, 1000);
 				val = hinfc_read(host, HINFC504_STATUS);
@@ -172,7 +163,7 @@ static void wait_controller_finished(struct hinfc_host *host)
 			return;
 	}
 
-	/* wait cmd timeout */
+	 
 	dev_err(host->dev, "Wait NAND controller exec cmd timeout.\n");
 }
 
@@ -226,7 +217,7 @@ static void hisi_nfc_dma_transfer(struct hinfc_host *host, int todev)
 
 	if (!ret) {
 		dev_err(host->dev, "DMA operation(irq) timeout!\n");
-		/* sanity check */
+		 
 		val = hinfc_read(host, HINFC504_DMA_CTRL);
 		if (!(val & HINFC504_DMA_CTRL_DMA_START))
 			dev_err(host->dev, "DMA is already done but without irq ACK!\n");
@@ -396,9 +387,9 @@ static void set_addr(struct mtd_info *mtd, int column, int page_addr)
 	host->addr_value[0] = 0;
 	host->addr_value[1] = 0;
 
-	/* Serially input address */
+	 
 	if (column != -1) {
-		/* Adjust columns for 16 bit buswidth */
+		 
 		if (chip->options & NAND_BUSWIDTH_16 &&
 				!nand_opcode_8bits(command))
 			column >>= 1;
@@ -500,7 +491,7 @@ static irqreturn_t hinfc_irq_handle(int irq, void *devid)
 	unsigned int flag;
 
 	flag = hinfc_read(host, HINFC504_INTS);
-	/* store interrupts state */
+	 
 	host->irq_status |= flag;
 
 	if (flag & HINFC504_INTS_DMA) {
@@ -526,11 +517,11 @@ static int hisi_nand_read_page_hwecc(struct nand_chip *chip, uint8_t *buf,
 	nand_read_page_op(chip, page, 0, buf, mtd->writesize);
 	chip->legacy.read_buf(chip, chip->oob_poi, mtd->oobsize);
 
-	/* errors which can not be corrected by ECC */
+	 
 	if (host->irq_status & HINFC504_INTS_UE) {
 		mtd->ecc_stats.failed++;
 	} else if (host->irq_status & HINFC504_INTS_CE) {
-		/* TODO: need add other ECC modes! */
+		 
 		switch (chip->ecc.strength) {
 		case 16:
 			status_ecc = hinfc_read(host, HINFC504_ECC_STATUS) >>
@@ -590,7 +581,7 @@ static void hisi_nfc_host_init(struct hinfc_host *host)
 	host->cache_addr_value[1]	= ~0;
 	host->chipselect		= 0;
 
-	/* default page size: 2K, ecc_none. need modify */
+	 
 	flag = HINFC504_CON_OP_MODE_NORMAL | HINFC504_CON_READY_BUSY_SEL
 		| ((0x001 & HINFC504_CON_PAGESIZE_MASK)
 			<< HINFC504_CON_PAGEISZE_SHIFT)
@@ -605,14 +596,14 @@ static void hisi_nfc_host_init(struct hinfc_host *host)
 	hinfc_write(host, SET_HINFC504_PWIDTH(HINFC504_W_LATCH,
 		    HINFC504_R_LATCH, HINFC504_RW_LATCH), HINFC504_PWIDTH);
 
-	/* enable DMA irq */
+	 
 	hinfc_write(host, HINFC504_INTEN_DMA, HINFC504_INTEN);
 }
 
 static int hisi_ooblayout_ecc(struct mtd_info *mtd, int section,
 			      struct mtd_oob_region *oobregion)
 {
-	/* FIXME: add ECC bytes position */
+	 
 	return -ENOTSUPP;
 }
 
@@ -667,22 +658,22 @@ static int hisi_nfc_ecc_probe(struct hinfc_host *host)
 		if (mtd->writesize == 2048)
 			mtd_set_ooblayout(mtd, &hisi_ooblayout_ops);
 
-		/* TODO: add more page size support */
+		 
 		break;
 
-	/* TODO: add more ecc strength support */
+	 
 	default:
 		dev_err(dev, "not support strength: %d\n", chip->ecc.strength);
 		return -EINVAL;
 	}
 
 	flag = hinfc_read(host, HINFC504_CON);
-	/* add ecc type configure */
+	 
 	flag |= ((ecc_bits & HINFC504_CON_ECCTYPE_MASK)
 						<< HINFC504_CON_ECCTYPE_SHIFT);
 	hinfc_write(host, flag, HINFC504_CON);
 
-	/* enable ecc irq */
+	 
 	flag = hinfc_read(host, HINFC504_INTEN) & 0xfff;
 	hinfc_write(host, flag | HINFC504_INTEN_UE | HINFC504_INTEN_CE,
 		    HINFC504_INTEN);
@@ -711,10 +702,7 @@ static int hisi_nfc_attach_chip(struct nand_chip *chip)
 	case 2048:
 		flag |= (0x001 << HINFC504_CON_PAGEISZE_SHIFT);
 		break;
-	/*
-	 * TODO: add more pagesize support,
-	 * default pagesize has been set in hisi_nfc_host_init
-	 */
+	 
 	default:
 		dev_err(host->dev, "NON-2KB page size nand flash\n");
 		return -EINVAL;

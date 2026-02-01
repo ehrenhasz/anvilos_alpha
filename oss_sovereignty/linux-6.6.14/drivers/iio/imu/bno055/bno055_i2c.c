@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for I2C-interfaced Bosch BNO055 IMU.
- *
- * Copyright (C) 2021-2022 Istituto Italiano di Tecnologia
- * Electronic Design Laboratory
- * Written by Andrea Merello <andrea.merello@iit.it>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>

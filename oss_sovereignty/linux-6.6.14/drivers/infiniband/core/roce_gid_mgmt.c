@@ -1,41 +1,11 @@
-/*
- * Copyright (c) 2015, Mellanox Technologies inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "core_priv.h"
 
 #include <linux/in.h>
 #include <linux/in6.h>
 
-/* For in6_dev_get/in6_dev_put */
+ 
 #include <net/addrconf.h>
 #include <net/bonding.h>
 
@@ -122,7 +92,7 @@ static void update_gid(enum gid_op_type gid_op, struct ib_device *ib_dev,
 enum bonding_slave_state {
 	BONDING_SLAVE_STATE_ACTIVE	= 1UL << 0,
 	BONDING_SLAVE_STATE_INACTIVE	= 1UL << 1,
-	/* No primary slave or the device isn't a slave in bonding */
+	 
 	BONDING_SLAVE_STATE_NA		= 1UL << 2,
 };
 
@@ -186,17 +156,7 @@ is_eth_port_inactive_slave_filter(struct ib_device *ib_dev, u32 port,
 	return res;
 }
 
-/**
- * is_ndev_for_default_gid_filter - Check if a given netdevice
- * can be considered for default GIDs or not.
- * @ib_dev:		IB device to check
- * @port:		Port to consider for adding default GID
- * @rdma_ndev:		rdma netdevice pointer
- * @cookie:             Netdevice to consider to form a default GID
- *
- * is_ndev_for_default_gid_filter() returns true if a given netdevice can be
- * considered for deriving default RoCE GID, returns false otherwise.
- */
+ 
 static bool
 is_ndev_for_default_gid_filter(struct ib_device *ib_dev, u32 port,
 			       struct net_device *rdma_ndev, void *cookie)
@@ -209,13 +169,7 @@ is_ndev_for_default_gid_filter(struct ib_device *ib_dev, u32 port,
 
 	rcu_read_lock();
 
-	/*
-	 * When rdma netdevice is used in bonding, bonding master netdevice
-	 * should be considered for default GIDs. Therefore, ignore slave rdma
-	 * netdevices when bonding is considered.
-	 * Additionally when event(cookie) netdevice is bond master device,
-	 * make sure that it the upper netdevice of rdma netdevice.
-	 */
+	 
 	res = ((cookie_ndev == rdma_ndev && !netif_is_bond_slave(rdma_ndev)) ||
 	       (netif_is_bond_master(cookie_ndev) &&
 		rdma_is_upper_dev_rcu(rdma_ndev, cookie_ndev)));
@@ -248,18 +202,7 @@ static bool upper_device_filter(struct ib_device *ib_dev, u32 port,
 	return res;
 }
 
-/**
- * is_upper_ndev_bond_master_filter - Check if a given netdevice
- * is bond master device of netdevice of the RDMA device of port.
- * @ib_dev:		IB device to check
- * @port:		Port to consider for adding default GID
- * @rdma_ndev:		Pointer to rdma netdevice
- * @cookie:	        Netdevice to consider to form a default GID
- *
- * is_upper_ndev_bond_master_filter() returns true if a cookie_netdev
- * is bond master device and rdma_ndev is its lower netdevice. It might
- * not have been established as slave device yet.
- */
+ 
 static bool
 is_upper_ndev_bond_master_filter(struct ib_device *ib_dev, u32 port,
 				 struct net_device *rdma_ndev,
@@ -438,15 +381,7 @@ static void del_netdev_ips(struct ib_device *ib_dev, u32 port,
 	ib_cache_gid_del_all_netdev_gids(ib_dev, port, cookie);
 }
 
-/**
- * del_default_gids - Delete default GIDs of the event/cookie netdevice
- * @ib_dev:	RDMA device pointer
- * @port:	Port of the RDMA device whose GID table to consider
- * @rdma_ndev:	Unused rdma netdevice
- * @cookie:	Pointer to event netdevice
- *
- * del_default_gids() deletes the default GIDs of the event/cookie netdevice.
- */
+ 
 static void del_default_gids(struct ib_device *ib_dev, u32 port,
 			     struct net_device *rdma_ndev, void *cookie)
 {
@@ -478,18 +413,12 @@ static void enum_all_gids_of_dev_cb(struct ib_device *ib_dev,
 	struct net *net;
 	struct net_device *ndev;
 
-	/* Lock the rtnl to make sure the netdevs does not move under
-	 * our feet
-	 */
+	 
 	rtnl_lock();
 	down_read(&net_rwsem);
 	for_each_net(net)
 		for_each_netdev(net, ndev) {
-			/*
-			 * Filter and add default GIDs of the primary netdevice
-			 * when not in bonding mode, or add default GIDs
-			 * of bond master device, when in bonding mode.
-			 */
+			 
 			if (is_ndev_for_default_gid_filter(ib_dev, port,
 							   rdma_ndev, ndev))
 				add_default_gids(ib_dev, port, rdma_ndev, ndev);
@@ -502,12 +431,7 @@ static void enum_all_gids_of_dev_cb(struct ib_device *ib_dev,
 	rtnl_unlock();
 }
 
-/**
- * rdma_roce_rescan_device - Rescan all of the network devices in the system
- * and add their gids, as needed, to the relevant RoCE devices.
- *
- * @ib_dev:         the rdma device
- */
+ 
 void rdma_roce_rescan_device(struct ib_device *ib_dev)
 {
 	ib_enum_roce_netdev(ib_dev, pass_all_filter, NULL,
@@ -612,10 +536,7 @@ static void del_netdev_default_ips_join(struct ib_device *ib_dev, u32 port,
 	}
 }
 
-/* The following functions operate on all IB devices. netdevice_event and
- * addr_event execute ib_enum_all_roce_netdevs through a work.
- * ib_enum_all_roce_netdevs iterates through all IB devices.
- */
+ 
 
 static void netdevice_event_work_handler(struct work_struct *_work)
 {
@@ -701,20 +622,17 @@ ndev_event_link(struct net_device *event_ndev,
 				.cb	= del_default_gids,
 				.filter	= is_upper_ndev_bond_master_filter
 			};
-	/*
-	 * When a lower netdev is linked to its upper bonding
-	 * netdev, delete lower slave netdev's default GIDs.
-	 */
+	 
 	cmds[0] = bonding_default_del_cmd;
 	cmds[0].ndev = event_ndev;
 	cmds[0].filter_ndev = changeupper_info->upper_dev;
 
-	/* Now add bonding upper device default GIDs */
+	 
 	cmds[1] = bonding_default_add_cmd;
 	cmds[1].ndev = changeupper_info->upper_dev;
 	cmds[1].filter_ndev = changeupper_info->upper_dev;
 
-	/* Now add bonding upper device IP based GIDs */
+	 
 	cmds[2] = add_cmd_upper_ips;
 	cmds[2].ndev = changeupper_info->upper_dev;
 	cmds[2].filter_ndev = changeupper_info->upper_dev;
@@ -789,9 +707,9 @@ static int netdevice_event(struct notifier_block *this, unsigned long event,
 
 	case NETDEV_BONDING_FAILOVER:
 		cmds[0] = bonding_event_ips_del_cmd;
-		/* Add default GIDs of the bond device */
+		 
 		cmds[1] = bonding_default_add_cmd;
-		/* Add IP based GIDs of the bond device */
+		 
 		cmds[2] = add_cmd_upper_ips;
 		break;
 
@@ -904,11 +822,7 @@ int __init roce_gid_mgmt_init(void)
 	register_inetaddr_notifier(&nb_inetaddr);
 	if (IS_ENABLED(CONFIG_IPV6))
 		register_inet6addr_notifier(&nb_inet6addr);
-	/* We relay on the netdevice notifier to enumerate all
-	 * existing devices in the system. Register to this notifier
-	 * last to make sure we will not miss any IP add/del
-	 * callbacks.
-	 */
+	 
 	register_netdevice_notifier(&nb_netdevice);
 
 	return 0;
@@ -920,10 +834,6 @@ void __exit roce_gid_mgmt_cleanup(void)
 		unregister_inet6addr_notifier(&nb_inet6addr);
 	unregister_inetaddr_notifier(&nb_inetaddr);
 	unregister_netdevice_notifier(&nb_netdevice);
-	/* Ensure all gid deletion tasks complete before we go down,
-	 * to avoid any reference to free'd memory. By the time
-	 * ib-core is removed, all physical devices have been removed,
-	 * so no issue with remaining hardware contexts.
-	 */
+	 
 	destroy_workqueue(gid_cache_wq);
 }

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wlcore
- *
- * Copyright (C) 2014 Texas Instruments. All rights reserved.
- */
+ 
+ 
 
 #ifndef __WLCORE_VENDOR_H__
 #define __WLCORE_VENDOR_H__
@@ -39,4 +35,4 @@ enum wlcore_vendor_events {
 	WLCORE_VENDOR_EVENT_SC_DECODE,
 };
 
-#endif /* __WLCORE_VENDOR_H__ */
+#endif  

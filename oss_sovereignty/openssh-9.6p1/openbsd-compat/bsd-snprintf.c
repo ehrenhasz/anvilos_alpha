@@ -1,100 +1,10 @@
-/*
- * Copyright Patrick Powell 1995
- * This code is based on code written by Patrick Powell (papowell@astart.com)
- * It may be used for any purpose as long as this notice remains intact
- * on all source code distributions
- */
+ 
 
-/**************************************************************
- * Original:
- * Patrick Powell Tue Apr 11 09:48:21 PDT 1995
- * A bombproof version of doprnt (dopr) included.
- * Sigh.  This sort of thing is always nasty do deal with.  Note that
- * the version here does not include floating point...
- *
- * snprintf() is used instead of sprintf() as it does limit checks
- * for string length.  This covers a nasty loophole.
- *
- * The other functions are there to prevent NULL pointers from
- * causing nast effects.
- *
- * More Recently:
- *  Brandon Long <blong@fiction.net> 9/15/96 for mutt 0.43
- *  This was ugly.  It is still ugly.  I opted out of floating point
- *  numbers, but the formatter understands just about everything
- *  from the normal C string format, at least as far as I can tell from
- *  the Solaris 2.5 printf(3S) man page.
- *
- *  Brandon Long <blong@fiction.net> 10/22/97 for mutt 0.87.1
- *    Ok, added some minimal floating point support, which means this
- *    probably requires libm on most operating systems.  Don't yet
- *    support the exponent (e,E) and sigfig (g,G).  Also, fmtint()
- *    was pretty badly broken, it just wasn't being exercised in ways
- *    which showed it, so that's been fixed.  Also, formatted the code
- *    to mutt conventions, and removed dead code left over from the
- *    original.  Also, there is now a builtin-test, just compile with:
- *           gcc -DTEST_SNPRINTF -o snprintf snprintf.c -lm
- *    and run snprintf for results.
- *
- *  Thomas Roessler <roessler@guug.de> 01/27/98 for mutt 0.89i
- *    The PGP code was using unsigned hexadecimal formats.
- *    Unfortunately, unsigned formats simply didn't work.
- *
- *  Michael Elkins <me@cs.hmc.edu> 03/05/98 for mutt 0.90.8
- *    The original code assumed that both snprintf() and vsnprintf() were
- *    missing.  Some systems only have snprintf() but not vsnprintf(), so
- *    the code is now broken down under HAVE_SNPRINTF and HAVE_VSNPRINTF.
- *
- *  Andrew Tridgell (tridge@samba.org) Oct 1998
- *    fixed handling of %.0f
- *    added test for HAVE_LONG_DOUBLE
- *
- * tridge@samba.org, idra@samba.org, April 2001
- *    got rid of fcvt code (twas buggy and made testing harder)
- *    added C99 semantics
- *
- * date: 2002/12/19 19:56:31;  author: herb;  state: Exp;  lines: +2 -0
- * actually print args for %g and %e
- *
- * date: 2002/06/03 13:37:52;  author: jmcd;  state: Exp;  lines: +8 -0
- * Since includes.h isn't included here, VA_COPY has to be defined here.  I don't
- * see any include file that is guaranteed to be here, so I'm defining it
- * locally.  Fixes AIX and Solaris builds.
- *
- * date: 2002/06/03 03:07:24;  author: tridge;  state: Exp;  lines: +5 -13
- * put the ifdef for HAVE_VA_COPY in one place rather than in lots of
- * functions
- *
- * date: 2002/05/17 14:51:22;  author: jmcd;  state: Exp;  lines: +21 -4
- * Fix usage of va_list passed as an arg.  Use __va_copy before using it
- * when it exists.
- *
- * date: 2002/04/16 22:38:04;  author: idra;  state: Exp;  lines: +20 -14
- * Fix incorrect zpadlen handling in fmtfp.
- * Thanks to Ollie Oldham <ollie.oldham@metro-optix.com> for spotting it.
- * few mods to make it easier to compile the tests.
- * added the "Ollie" test to the floating point ones.
- *
- * Martin Pool (mbp@samba.org) April 2003
- *    Remove NO_CONFIG_H so that the test case can be built within a source
- *    tree with less trouble.
- *    Remove unnecessary SAFE_FREE() definition.
- *
- * Martin Pool (mbp@samba.org) May 2003
- *    Put in a prototype for dummy_snprintf() to quiet compiler warnings.
- *
- *    Move #endif to make sure VA_COPY, LDOUBLE, etc are defined even
- *    if the C library has some snprintf functions already.
- *
- * Damien Miller (djm@mindrot.org) Jan 2007
- *    Fix integer overflows in return value.
- *    Make formatting quite a bit faster by inlining dopr_outch()
- *
- **************************************************************/
+ 
 
 #include "includes.h"
 
-#if defined(BROKEN_SNPRINTF)		/* For those with broken snprintf() */
+#if defined(BROKEN_SNPRINTF)		 
 # undef HAVE_SNPRINTF
 # undef HAVE_VSNPRINTF
 #endif
@@ -120,11 +30,9 @@
 # define LLONG long
 #endif
 
-/*
- * dopr(): poor man's version of doprintf
- */
+ 
 
-/* format read states */
+ 
 #define DP_S_DEFAULT 0
 #define DP_S_FLAGS   1
 #define DP_S_MIN     2
@@ -134,7 +42,7 @@
 #define DP_S_CONV    6
 #define DP_S_DONE    7
 
-/* format flags - Bits */
+ 
 #define DP_F_MINUS	(1 << 0)
 #define DP_F_PLUS	(1 << 1)
 #define DP_F_SPACE	(1 << 2)
@@ -143,7 +51,7 @@
 #define DP_F_UP		(1 << 5)
 #define DP_F_UNSIGNED	(1 << 6)
 
-/* Conversion Flags */
+ 
 #define DP_C_SHORT   1
 #define DP_C_LONG    2
 #define DP_C_LDOUBLE 3
@@ -284,7 +192,7 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args_in)
 			case 'l':
 				cflags = DP_C_LONG;
 				ch = *format++;
-				if (ch == 'l') {	/* It's a long long */
+				if (ch == 'l') {	 
 					cflags = DP_C_LLONG;
 					ch = *format++;
 				}
@@ -469,11 +377,11 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args_in)
 				DOPR_OUTCH(buffer, currlen, maxlen, ch);
 				break;
 			case 'w':
-				/* not supported yet, treat as next char */
+				 
 				ch = *format++;
 				break;
 			default:
-				/* Unknown, skip */
+				 
 				break;
 			}
 			ch = *format++;
@@ -484,8 +392,8 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args_in)
 		case DP_S_DONE:
 			break;
 		default:
-			/* hmm? */
-			break; /* some picky compilers need this */
+			 
+			break;  
 		}
 	}
 	if (maxlen != 0) {
@@ -505,7 +413,7 @@ static int
 fmtstr(char *buffer, size_t *currlen, size_t maxlen,
     char *value, int flags, int min, int max)
 {
-	int padlen, strln;     /* amount to pad */
+	int padlen, strln;      
 	int cnt = 0;
 
 #ifdef DEBUG_SNPRINTF
@@ -515,12 +423,12 @@ fmtstr(char *buffer, size_t *currlen, size_t maxlen,
 		value = "<NULL>";
 	}
 
-	for (strln = 0; strln < max && value[strln]; ++strln); /* strlen */
+	for (strln = 0; strln < max && value[strln]; ++strln);  
 	padlen = min - strln;
 	if (padlen < 0)
 		padlen = 0;
 	if (flags & DP_F_MINUS)
-		padlen = -padlen; /* Left Justify */
+		padlen = -padlen;  
 
 	while ((padlen > 0) && (cnt < max)) {
 		DOPR_OUTCH(buffer, *currlen, maxlen, ' ');
@@ -540,7 +448,7 @@ fmtstr(char *buffer, size_t *currlen, size_t maxlen,
 	return 0;
 }
 
-/* Have to handle DP_F_NUM (ie 0x and 0 alternates) */
+ 
 
 static int
 fmtint(char *buffer, size_t *currlen, size_t maxlen,
@@ -550,8 +458,8 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
 	unsigned LLONG uvalue;
 	char convert[20];
 	int place = 0;
-	int spadlen = 0; /* amount to space pad */
-	int zpadlen = 0; /* amount to zero pad */
+	int spadlen = 0;  
+	int zpadlen = 0;  
 	int caps = 0;
 
 	if (max < 0)
@@ -564,14 +472,14 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
 			signvalue = '-';
 			uvalue = -value;
 		} else {
-			if (flags & DP_F_PLUS)  /* Do a sign (+/i) */
+			if (flags & DP_F_PLUS)   
 				signvalue = '+';
 			else if (flags & DP_F_SPACE)
 				signvalue = ' ';
 		}
 	}
 
-	if (flags & DP_F_UP) caps = 1; /* Should characters be upper case? */
+	if (flags & DP_F_UP) caps = 1;  
 
 	do {
 		convert[place++] =
@@ -591,24 +499,24 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
 		spadlen = 0;
 	}
 	if (flags & DP_F_MINUS)
-		spadlen = -spadlen; /* Left Justifty */
+		spadlen = -spadlen;  
 
 #ifdef DEBUG_SNPRINTF
 	printf("zpad: %d, spad: %d, min: %d, max: %d, place: %d\n",
 	    zpadlen, spadlen, min, max, place);
 #endif
 
-	/* Spaces */
+	 
 	while (spadlen > 0) {
 		DOPR_OUTCH(buffer, *currlen, maxlen, ' ');
 		--spadlen;
 	}
 
-	/* Sign */
+	 
 	if (signvalue)
 		DOPR_OUTCH(buffer, *currlen, maxlen, signvalue);
 
-	/* Zeros */
+	 
 	if (zpadlen > 0) {
 		while (zpadlen > 0) {
 			DOPR_OUTCH(buffer, *currlen, maxlen, '0');
@@ -616,13 +524,13 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
 		}
 	}
 
-	/* Digits */
+	 
 	while (place > 0) {
 		--place;
 		DOPR_OUTCH(buffer, *currlen, maxlen, convert[place]);
 	}
 
-	/* Left Justified spaces */
+	 
 	while (spadlen < 0) {
 		DOPR_OUTCH(buffer, *currlen, maxlen, ' ');
 		++spadlen;
@@ -663,8 +571,7 @@ static LLONG ROUND(LDOUBLE value)
 	return intpart;
 }
 
-/* a replacement for modf that doesn't need the math library. Should
-   be portable, but slow */
+ 
 static double my_modf(double x0, double *iptr)
 {
 	int i;
@@ -680,10 +587,7 @@ static double my_modf(double x0, double *iptr)
 	}
 
 	if (i == 100) {
-		/*
-		 * yikes! the number is beyond what we can handle.
-		 * What do we do?
-		 */
+		 
 		(*iptr) = 0;
 		return 0;
 	}
@@ -712,7 +616,7 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 	char fconvert[311];
 	int iplace = 0;
 	int fplace = 0;
-	int padlen = 0; /* amount to pad */
+	int padlen = 0;  
 	int zpadlen = 0;
 #if 0
 	int caps = 0;
@@ -722,10 +626,7 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 	double fracpart;
 	double temp;
 
-	/*
-	 * AIX manpage says the default is 0, but Solaris says the default
-	 * is 6, and sprintf on AIX defaults to 6
-	 */
+	 
 	if (max < 0)
 		max = 6;
 
@@ -734,7 +635,7 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 	if (fvalue < 0) {
 		signvalue = '-';
 	} else {
-		if (flags & DP_F_PLUS) { /* Do a sign (+/i) */
+		if (flags & DP_F_PLUS) {  
 			signvalue = '+';
 		} else {
 			if (flags & DP_F_SPACE)
@@ -743,23 +644,18 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 	}
 
 #if 0
-	if (flags & DP_F_UP) caps = 1; /* Should characters be upper case? */
+	if (flags & DP_F_UP) caps = 1;  
 #endif
 
 #if 0
-	 if (max == 0) ufvalue += 0.5; /* if max = 0 we must round */
+	 if (max == 0) ufvalue += 0.5;  
 #endif
 
-	/*
-	 * Sorry, we only support 16 digits past the decimal because of our
-	 * conversion method
-	 */
+	 
 	if (max > 16)
 		max = 16;
 
-	/* We "cheat" by converting the fractional part to integer by
-	 * multiplying by a factor of 10
-	 */
+	 
 
 	temp = ufvalue;
 	my_modf(temp, &intpart);
@@ -771,41 +667,41 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 		fracpart -= POW10(max);
 	}
 
-	/* Convert integer part */
+	 
 	do {
 		temp = intpart*0.1;
 		my_modf(temp, &intpart);
 		idx = (int) ((temp -intpart +0.05)* 10.0);
-		/* idx = (int) (((double)(temp*0.1) -intpart +0.05) *10.0); */
-		/* printf ("%llf, %f, %x\n", temp, intpart, idx); */
+		 
+		 
 		iconvert[iplace++] = "0123456789"[idx];
 	} while (intpart && (iplace < 311));
 	if (iplace == 311) iplace--;
 	iconvert[iplace] = 0;
 
-	/* Convert fractional part */
+	 
 	if (fracpart)
 	{
 		do {
 			temp = fracpart*0.1;
 			my_modf(temp, &fracpart);
 			idx = (int) ((temp -fracpart +0.05)* 10.0);
-			/* idx = (int) ((((temp/10) -fracpart) +0.05) *10); */
-			/* printf ("%lf, %lf, %ld\n", temp, fracpart, idx ); */
+			 
+			 
 			fconvert[fplace++] = "0123456789"[idx];
 		} while(fracpart && (fplace < 311));
 		if (fplace == 311) fplace--;
 	}
 	fconvert[fplace] = 0;
 
-	/* -1 for decimal point, another -1 if we are printing a sign */
+	 
 	padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0);
 	zpadlen = max - fplace;
 	if (zpadlen < 0) zpadlen = 0;
 	if (padlen < 0)
 		padlen = 0;
 	if (flags & DP_F_MINUS)
-		padlen = -padlen; /* Left Justifty */
+		padlen = -padlen;  
 
 	if ((flags & DP_F_ZERO) && (padlen > 0)) {
 		if (signvalue) {
@@ -834,10 +730,7 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 	printf("fmtfp: fplace=%d zpadlen=%d\n", fplace, zpadlen);
 #endif
 
-	/*
-	 * Decimal point.  This should probably use locale to find the correct
-	 * char to print out.
-	 */
+	 
 	if (max > 0) {
 		DOPR_OUTCH(buffer, *currlen, maxlen, '.');
 
@@ -858,7 +751,7 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 	}
 	return 0;
 }
-#endif /* !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF) */
+#endif  
 
 #if !defined(HAVE_VSNPRINTF)
 int

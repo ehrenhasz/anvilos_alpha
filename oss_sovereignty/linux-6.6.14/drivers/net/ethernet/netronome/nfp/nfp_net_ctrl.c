@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -23,7 +23,7 @@ nfp_net_tls_parse_crypto_ops(struct device *dev, struct nfp_net_tlv_caps *caps,
 			     unsigned int length, unsigned int offset,
 			     bool rx_stream_scan)
 {
-	/* Ignore the legacy TLV if new one was already parsed */
+	 
 	if (caps->tls_resync_ss && !rx_stream_scan)
 		return true;
 
@@ -61,7 +61,7 @@ int nfp_net_tlv_caps_parse(struct device *dev, u8 __iomem *ctrl_mem,
 		length = FIELD_GET(NFP_NET_CFG_TLV_HEADER_LENGTH, hdr);
 		offset = data - ctrl_mem;
 
-		/* Advance past the header */
+		 
 		data += 4;
 
 		if (length % NFP_NET_CFG_TLV_LENGTH_INC) {
@@ -165,6 +165,6 @@ int nfp_net_tlv_caps_parse(struct device *dev, u8 __iomem *ctrl_mem,
 		}
 	}
 
-	/* Not reached */
+	 
 	return -EINVAL;
 }

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-// videomate-tv-pvr.h - Keytable for videomate_tv_pvr Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -61,7 +61,7 @@ static struct rc_map_list videomate_tv_pvr_map = {
 	.map = {
 		.scan     = videomate_tv_pvr,
 		.size     = ARRAY_SIZE(videomate_tv_pvr),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_VIDEOMATE_TV_PVR,
 	}
 };

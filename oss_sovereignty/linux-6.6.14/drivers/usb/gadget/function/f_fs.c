@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * f_fs.c -- user mode file system API for USB composite function controllers
- *
- * Copyright (C) 2010 Samsung Electronics
- * Author: Michal Nazarewicz <mina86@mina86.com>
- *
- * Based on inode.c (GadgetFS) which was:
- * Copyright (C) 2003-2004 David Brownell
- * Copyright (C) 2003 Agilent Technologies
- */
+
+ 
 
 
-/* #define DEBUG */
-/* #define VERBOSE_DEBUG */
+ 
+ 
 
 #include <linux/blkdev.h>
 #include <linux/pagemap.h>
@@ -41,27 +32,27 @@
 #include "u_os_desc.h"
 #include "configfs.h"
 
-#define FUNCTIONFS_MAGIC	0xa647361 /* Chosen by a honest dice roll ;) */
+#define FUNCTIONFS_MAGIC	0xa647361  
 
-/* Reference counter handling */
+ 
 static void ffs_data_get(struct ffs_data *ffs);
 static void ffs_data_put(struct ffs_data *ffs);
-/* Creates new ffs_data object. */
+ 
 static struct ffs_data *__must_check ffs_data_new(const char *dev_name)
 	__attribute__((malloc));
 
-/* Opened counter handling. */
+ 
 static void ffs_data_opened(struct ffs_data *ffs);
 static void ffs_data_closed(struct ffs_data *ffs);
 
-/* Called with ffs->mutex held; take over ownership of data. */
+ 
 static int __must_check
 __ffs_data_got_descs(struct ffs_data *ffs, char *data, size_t len);
 static int __must_check
 __ffs_data_got_strings(struct ffs_data *ffs, char *data, size_t len);
 
 
-/* The function structure ***************************************************/
+ 
 
 struct ffs_ep;
 
@@ -112,89 +103,35 @@ static int ffs_func_revmap_ep(struct ffs_function *func, u8 num);
 static int ffs_func_revmap_intf(struct ffs_function *func, u8 intf);
 
 
-/* The endpoints structures *************************************************/
+ 
 
 struct ffs_ep {
-	struct usb_ep			*ep;	/* P: ffs->eps_lock */
-	struct usb_request		*req;	/* P: epfile->mutex */
+	struct usb_ep			*ep;	 
+	struct usb_request		*req;	 
 
-	/* [0]: full speed, [1]: high speed, [2]: super speed */
+	 
 	struct usb_endpoint_descriptor	*descs[3];
 
 	u8				num;
 };
 
 struct ffs_epfile {
-	/* Protects ep->ep and ep->req. */
+	 
 	struct mutex			mutex;
 
 	struct ffs_data			*ffs;
-	struct ffs_ep			*ep;	/* P: ffs->eps_lock */
+	struct ffs_ep			*ep;	 
 
 	struct dentry			*dentry;
 
-	/*
-	 * Buffer for holding data from partial reads which may happen since
-	 * we’re rounding user read requests to a multiple of a max packet size.
-	 *
-	 * The pointer is initialised with NULL value and may be set by
-	 * __ffs_epfile_read_data function to point to a temporary buffer.
-	 *
-	 * In normal operation, calls to __ffs_epfile_read_buffered will consume
-	 * data from said buffer and eventually free it.  Importantly, while the
-	 * function is using the buffer, it sets the pointer to NULL.  This is
-	 * all right since __ffs_epfile_read_data and __ffs_epfile_read_buffered
-	 * can never run concurrently (they are synchronised by epfile->mutex)
-	 * so the latter will not assign a new value to the pointer.
-	 *
-	 * Meanwhile ffs_func_eps_disable frees the buffer (if the pointer is
-	 * valid) and sets the pointer to READ_BUFFER_DROP value.  This special
-	 * value is crux of the synchronisation between ffs_func_eps_disable and
-	 * __ffs_epfile_read_data.
-	 *
-	 * Once __ffs_epfile_read_data is about to finish it will try to set the
-	 * pointer back to its old value (as described above), but seeing as the
-	 * pointer is not-NULL (namely READ_BUFFER_DROP) it will instead free
-	 * the buffer.
-	 *
-	 * == State transitions ==
-	 *
-	 * • ptr == NULL:  (initial state)
-	 *   ◦ __ffs_epfile_read_buffer_free: go to ptr == DROP
-	 *   ◦ __ffs_epfile_read_buffered:    nop
-	 *   ◦ __ffs_epfile_read_data allocates temp buffer: go to ptr == buf
-	 *   ◦ reading finishes:              n/a, not in ‘and reading’ state
-	 * • ptr == DROP:
-	 *   ◦ __ffs_epfile_read_buffer_free: nop
-	 *   ◦ __ffs_epfile_read_buffered:    go to ptr == NULL
-	 *   ◦ __ffs_epfile_read_data allocates temp buffer: free buf, nop
-	 *   ◦ reading finishes:              n/a, not in ‘and reading’ state
-	 * • ptr == buf:
-	 *   ◦ __ffs_epfile_read_buffer_free: free buf, go to ptr == DROP
-	 *   ◦ __ffs_epfile_read_buffered:    go to ptr == NULL and reading
-	 *   ◦ __ffs_epfile_read_data:        n/a, __ffs_epfile_read_buffered
-	 *                                    is always called first
-	 *   ◦ reading finishes:              n/a, not in ‘and reading’ state
-	 * • ptr == NULL and reading:
-	 *   ◦ __ffs_epfile_read_buffer_free: go to ptr == DROP and reading
-	 *   ◦ __ffs_epfile_read_buffered:    n/a, mutex is held
-	 *   ◦ __ffs_epfile_read_data:        n/a, mutex is held
-	 *   ◦ reading finishes and …
-	 *     … all data read:               free buf, go to ptr == NULL
-	 *     … otherwise:                   go to ptr == buf and reading
-	 * • ptr == DROP and reading:
-	 *   ◦ __ffs_epfile_read_buffer_free: nop
-	 *   ◦ __ffs_epfile_read_buffered:    n/a, mutex is held
-	 *   ◦ __ffs_epfile_read_data:        n/a, mutex is held
-	 *   ◦ reading finishes:              free buf, go to ptr == DROP
-	 */
+	 
 	struct ffs_buffer		*read_buffer;
 #define READ_BUFFER_DROP ((struct ffs_buffer *)ERR_PTR(-ESHUTDOWN))
 
 	char				name[5];
 
-	unsigned char			in;	/* P: ffs->eps_lock */
-	unsigned char			isoc;	/* P: ffs->eps_lock */
+	unsigned char			in;	 
+	unsigned char			isoc;	 
 
 	unsigned char			_pad;
 };
@@ -205,7 +142,7 @@ struct ffs_buffer {
 	char storage[];
 };
 
-/*  ffs_io_data structure ***************************************************/
+ 
 
 struct ffs_io_data {
 	bool aio;
@@ -243,7 +180,7 @@ static struct dentry *
 ffs_sb_create_file(struct super_block *sb, const char *name, void *data,
 		   const struct file_operations *fops);
 
-/* Devices management *******************************************************/
+ 
 
 DEFINE_MUTEX(ffs_lock);
 EXPORT_SYMBOL_GPL(ffs_lock);
@@ -256,7 +193,7 @@ static void ffs_release_dev(struct ffs_dev *ffs_dev);
 static int ffs_ready(struct ffs_data *ffs);
 static void ffs_closed(struct ffs_data *ffs);
 
-/* Misc helper functions ****************************************************/
+ 
 
 static int ffs_mutex_lock(struct mutex *mutex, unsigned nonblock)
 	__attribute__((warn_unused_result, nonnull));
@@ -264,7 +201,7 @@ static char *ffs_prepare_buffer(const char __user *buf, size_t len)
 	__attribute__((warn_unused_result, nonnull));
 
 
-/* Control file aka ep0 *****************************************************/
+ 
 
 static void ffs_ep0_complete(struct usb_ep *ep, struct usb_request *req)
 {
@@ -291,11 +228,7 @@ static int __ffs_ep0_queue_wait(struct ffs_data *ffs, char *data, size_t len)
 	req->buf      = data;
 	req->length   = len;
 
-	/*
-	 * UDC layer requires to provide a buffer even for ZLP, but should
-	 * not use it at all. Let's provide some poisoned pointer to catch
-	 * possible bug in the driver.
-	 */
+	 
 	if (req->buf == NULL)
 		req->buf = (void *)0xDEADBABE;
 
@@ -335,20 +268,20 @@ static ssize_t ffs_ep0_write(struct file *file, const char __user *buf,
 	ssize_t ret;
 	char *data;
 
-	/* Fast check if setup was canceled */
+	 
 	if (ffs_setup_state_clear_cancelled(ffs) == FFS_SETUP_CANCELLED)
 		return -EIDRM;
 
-	/* Acquire mutex */
+	 
 	ret = ffs_mutex_lock(&ffs->mutex, file->f_flags & O_NONBLOCK);
 	if (ret < 0)
 		return ret;
 
-	/* Check state */
+	 
 	switch (ffs->state) {
 	case FFS_READ_DESCRIPTORS:
 	case FFS_READ_STRINGS:
-		/* Copy data */
+		 
 		if (len < 16) {
 			ret = -EINVAL;
 			break;
@@ -360,7 +293,7 @@ static ssize_t ffs_ep0_write(struct file *file, const char __user *buf,
 			break;
 		}
 
-		/* Handle data */
+		 
 		if (ffs->state == FFS_READ_DESCRIPTORS) {
 			pr_info("read descriptors\n");
 			ret = __ffs_data_got_descs(ffs, data, len);
@@ -396,10 +329,7 @@ static ssize_t ffs_ep0_write(struct file *file, const char __user *buf,
 
 	case FFS_ACTIVE:
 		data = NULL;
-		/*
-		 * We're called from user space, we can use _irq
-		 * rather then _irqsave
-		 */
+		 
 		spin_lock_irq(&ffs->ev.waitq.lock);
 		switch (ffs_setup_state_clear_cancelled(ffs)) {
 		case FFS_SETUP_CANCELLED:
@@ -414,14 +344,14 @@ static ssize_t ffs_ep0_write(struct file *file, const char __user *buf,
 			break;
 		}
 
-		/* FFS_SETUP_PENDING */
+		 
 		if (!(ffs->ev.setup.bRequestType & USB_DIR_IN)) {
 			spin_unlock_irq(&ffs->ev.waitq.lock);
 			ret = __ffs_ep0_stall(ffs);
 			break;
 		}
 
-		/* FFS_SETUP_PENDING and not stall */
+		 
 		len = min(len, (size_t)le16_to_cpu(ffs->ev.setup.wLength));
 
 		spin_unlock_irq(&ffs->ev.waitq.lock);
@@ -434,25 +364,14 @@ static ssize_t ffs_ep0_write(struct file *file, const char __user *buf,
 
 		spin_lock_irq(&ffs->ev.waitq.lock);
 
-		/*
-		 * We are guaranteed to be still in FFS_ACTIVE state
-		 * but the state of setup could have changed from
-		 * FFS_SETUP_PENDING to FFS_SETUP_CANCELLED so we need
-		 * to check for that.  If that happened we copied data
-		 * from user space in vain but it's unlikely.
-		 *
-		 * For sure we are not in FFS_NO_SETUP since this is
-		 * the only place FFS_SETUP_PENDING -> FFS_NO_SETUP
-		 * transition can be performed and it's protected by
-		 * mutex.
-		 */
+		 
 		if (ffs_setup_state_clear_cancelled(ffs) ==
 		    FFS_SETUP_CANCELLED) {
 			ret = -EIDRM;
 done_spin:
 			spin_unlock_irq(&ffs->ev.waitq.lock);
 		} else {
-			/* unlocks spinlock */
+			 
 			ret = __ffs_ep0_queue_wait(ffs, data, len);
 		}
 		kfree(data);
@@ -467,16 +386,12 @@ done_spin:
 	return ret;
 }
 
-/* Called with ffs->ev.waitq.lock and ffs->mutex held, both released on exit. */
+ 
 static ssize_t __ffs_ep0_read_events(struct ffs_data *ffs, char __user *buf,
 				     size_t n)
 	__releases(&ffs->ev.waitq.lock)
 {
-	/*
-	 * n cannot be bigger than ffs->ev.count, which cannot be bigger than
-	 * size of ffs->ev.types array (which is four) so that's how much space
-	 * we reserve.
-	 */
+	 
 	struct usb_functionfs_event events[ARRAY_SIZE(ffs->ev.types)];
 	const size_t size = n * sizeof *events;
 	unsigned i = 0;
@@ -510,25 +425,22 @@ static ssize_t ffs_ep0_read(struct file *file, char __user *buf,
 	size_t n;
 	int ret;
 
-	/* Fast check if setup was canceled */
+	 
 	if (ffs_setup_state_clear_cancelled(ffs) == FFS_SETUP_CANCELLED)
 		return -EIDRM;
 
-	/* Acquire mutex */
+	 
 	ret = ffs_mutex_lock(&ffs->mutex, file->f_flags & O_NONBLOCK);
 	if (ret < 0)
 		return ret;
 
-	/* Check state */
+	 
 	if (ffs->state != FFS_ACTIVE) {
 		ret = -EBADFD;
 		goto done_mutex;
 	}
 
-	/*
-	 * We're called from user space, we can use _irq rather then
-	 * _irqsave
-	 */
+	 
 	spin_lock_irq(&ffs->ev.waitq.lock);
 
 	switch (ffs_setup_state_clear_cancelled(ffs)) {
@@ -554,7 +466,7 @@ static ssize_t ffs_ep0_read(struct file *file, char __user *buf,
 			break;
 		}
 
-		/* unlocks spinlock */
+		 
 		return __ffs_ep0_read_events(ffs, buf,
 					     min(n, (size_t)ffs->ev.count));
 
@@ -579,14 +491,14 @@ static ssize_t ffs_ep0_read(struct file *file, char __user *buf,
 
 		spin_lock_irq(&ffs->ev.waitq.lock);
 
-		/* See ffs_ep0_write() */
+		 
 		if (ffs_setup_state_clear_cancelled(ffs) ==
 		    FFS_SETUP_CANCELLED) {
 			ret = -EIDRM;
 			break;
 		}
 
-		/* unlocks spinlock */
+		 
 		ret = __ffs_ep0_queue_wait(ffs, data, len);
 		if ((ret > 0) && (copy_to_user(buf, data, len)))
 			ret = -EFAULT;
@@ -699,7 +611,7 @@ static const struct file_operations ffs_ep0_operations = {
 };
 
 
-/* "Normal" endpoints operations ********************************************/
+ 
 
 static void ffs_epfile_io_complete(struct usb_ep *_ep, struct usb_request *req)
 {
@@ -722,33 +634,7 @@ static ssize_t ffs_copy_to_iter(void *data, int data_len, struct iov_iter *iter)
 	if (iov_iter_count(iter))
 		return -EFAULT;
 
-	/*
-	 * Dear user space developer!
-	 *
-	 * TL;DR: To stop getting below error message in your kernel log, change
-	 * user space code using functionfs to align read buffers to a max
-	 * packet size.
-	 *
-	 * Some UDCs (e.g. dwc3) require request sizes to be a multiple of a max
-	 * packet size.  When unaligned buffer is passed to functionfs, it
-	 * internally uses a larger, aligned buffer so that such UDCs are happy.
-	 *
-	 * Unfortunately, this means that host may send more data than was
-	 * requested in read(2) system call.  f_fs doesn’t know what to do with
-	 * that excess data so it simply drops it.
-	 *
-	 * Was the buffer aligned in the first place, no such problem would
-	 * happen.
-	 *
-	 * Data may be dropped only in AIO reads.  Synchronous reads are handled
-	 * by splitting a request into multiple parts.  This splitting may still
-	 * be a problem though so it’s likely best to align the buffer
-	 * regardless of it being AIO or not..
-	 *
-	 * This only affects OUT endpoints, i.e. reading data with a read(2),
-	 * aio_read(2) etc. system calls.  Writing data to an IN endpoint is not
-	 * affected.
-	 */
+	 
 	pr_err("functionfs read size %d > requested size %zd, dropping excess data. "
 	       "Align read buffer size to max packet size to avoid the problem.\n",
 	       data_len, ret);
@@ -756,11 +642,7 @@ static ssize_t ffs_copy_to_iter(void *data, int data_len, struct iov_iter *iter)
 	return ret;
 }
 
-/*
- * allocate a virtually contiguous buffer and create a scatterlist describing it
- * @sg_table	- pointer to a place to be filled with sg_table contents
- * @size	- required buffer size
- */
+ 
 static void *ffs_build_sg_list(struct sg_table *sgt, size_t sz)
 {
 	struct page **pages;
@@ -854,24 +736,17 @@ static void ffs_epfile_async_io_complete(struct usb_ep *_ep,
 
 static void __ffs_epfile_read_buffer_free(struct ffs_epfile *epfile)
 {
-	/*
-	 * See comment in struct ffs_epfile for full read_buffer pointer
-	 * synchronisation story.
-	 */
+	 
 	struct ffs_buffer *buf = xchg(&epfile->read_buffer, READ_BUFFER_DROP);
 	if (buf && buf != READ_BUFFER_DROP)
 		kfree(buf);
 }
 
-/* Assumes epfile->mutex is held. */
+ 
 static ssize_t __ffs_epfile_read_buffered(struct ffs_epfile *epfile,
 					  struct iov_iter *iter)
 {
-	/*
-	 * Null out epfile->read_buffer so ffs_func_eps_disable does not free
-	 * the buffer while we are using it.  See comment in struct ffs_epfile
-	 * for full read_buffer pointer synchronisation story.
-	 */
+	 
 	struct ffs_buffer *buf = xchg(&epfile->read_buffer, NULL);
 	ssize_t ret;
 	if (!buf || buf == READ_BUFFER_DROP)
@@ -896,7 +771,7 @@ static ssize_t __ffs_epfile_read_buffered(struct ffs_epfile *epfile,
 	return ret;
 }
 
-/* Assumes epfile->mutex is held. */
+ 
 static ssize_t __ffs_epfile_read_data(struct ffs_epfile *epfile,
 				      void *data, int data_len,
 				      struct iov_iter *iter)
@@ -910,7 +785,7 @@ static ssize_t __ffs_epfile_read_data(struct ffs_epfile *epfile,
 	if (iov_iter_count(iter))
 		return -EFAULT;
 
-	/* See ffs_copy_to_iter for more context. */
+	 
 	pr_warn("functionfs read size %d > requested size %zd, splitting request into multiple reads.",
 		data_len, ret);
 
@@ -922,12 +797,7 @@ static ssize_t __ffs_epfile_read_data(struct ffs_epfile *epfile,
 	buf->data = buf->storage;
 	memcpy(buf->storage, data + ret, flex_array_size(buf, storage, data_len));
 
-	/*
-	 * At this point read_buffer is NULL or READ_BUFFER_DROP (if
-	 * ffs_func_eps_disable has been called in the meanwhile).  See comment
-	 * in struct ffs_epfile for full read_buffer pointer synchronisation
-	 * story.
-	 */
+	 
 	if (cmpxchg(&epfile->read_buffer, NULL, buf))
 		kfree(buf);
 
@@ -943,11 +813,11 @@ static ssize_t ffs_epfile_io(struct file *file, struct ffs_io_data *io_data)
 	ssize_t ret, data_len = -EINVAL;
 	int halt;
 
-	/* Are we still active? */
+	 
 	if (WARN_ON(epfile->ffs->state != FFS_ACTIVE))
 		return -ENODEV;
 
-	/* Wait for endpoint to be enabled */
+	 
 	ep = epfile->ep;
 	if (!ep) {
 		if (file->f_flags & O_NONBLOCK)
@@ -959,51 +829,38 @@ static ssize_t ffs_epfile_io(struct file *file, struct ffs_io_data *io_data)
 			return -EINTR;
 	}
 
-	/* Do we halt? */
+	 
 	halt = (!io_data->read == !epfile->in);
 	if (halt && epfile->isoc)
 		return -EINVAL;
 
-	/* We will be using request and read_buffer */
+	 
 	ret = ffs_mutex_lock(&epfile->mutex, file->f_flags & O_NONBLOCK);
 	if (ret)
 		goto error;
 
-	/* Allocate & copy */
+	 
 	if (!halt) {
 		struct usb_gadget *gadget;
 
-		/*
-		 * Do we have buffered data from previous partial read?  Check
-		 * that for synchronous case only because we do not have
-		 * facility to ‘wake up’ a pending asynchronous read and push
-		 * buffered data to it which we would need to make things behave
-		 * consistently.
-		 */
+		 
 		if (!io_data->aio && io_data->read) {
 			ret = __ffs_epfile_read_buffered(epfile, &io_data->data);
 			if (ret)
 				goto error_mutex;
 		}
 
-		/*
-		 * if we _do_ wait above, the epfile->ffs->gadget might be NULL
-		 * before the waiting completes, so do not assign to 'gadget'
-		 * earlier
-		 */
+		 
 		gadget = epfile->ffs->gadget;
 
 		spin_lock_irq(&epfile->ffs->eps_lock);
-		/* In the meantime, endpoint got disabled or changed. */
+		 
 		if (epfile->ep != ep) {
 			ret = -ESHUTDOWN;
 			goto error_lock;
 		}
 		data_len = iov_iter_count(&io_data->data);
-		/*
-		 * Controller may require buffer size to be aligned to
-		 * maxpacketsize of an out endpoint.
-		 */
+		 
 		if (io_data->read)
 			data_len = usb_ep_align_maybe(gadget, ep->ep, data_len);
 
@@ -1025,24 +882,14 @@ static ssize_t ffs_epfile_io(struct file *file, struct ffs_io_data *io_data)
 	spin_lock_irq(&epfile->ffs->eps_lock);
 
 	if (epfile->ep != ep) {
-		/* In the meantime, endpoint got disabled or changed. */
+		 
 		ret = -ESHUTDOWN;
 	} else if (halt) {
 		ret = usb_ep_set_halt(ep->ep);
 		if (!ret)
 			ret = -EBADMSG;
 	} else if (data_len == -EINVAL) {
-		/*
-		 * Sanity Check: even though data_len can't be used
-		 * uninitialized at the time I write this comment, some
-		 * compilers complain about this situation.
-		 * In order to keep the code clean from warnings, data_len is
-		 * being initialized to -EINVAL during its declaration, which
-		 * means we can't rely on compiler anymore to warn no future
-		 * changes won't result in data_len being used uninitialized.
-		 * For such reason, we're adding this redundant sanity check
-		 * here.
-		 */
+		 
 		WARN(1, "%s: data_len == -EINVAL\n", __func__);
 		ret = -EINVAL;
 	} else if (!io_data->aio) {
@@ -1077,12 +924,7 @@ static ssize_t ffs_epfile_io(struct file *file, struct ffs_io_data *io_data)
 				ret = -ESHUTDOWN;
 				goto error_lock;
 			}
-			/*
-			 * To avoid race condition with ffs_epfile_io_complete,
-			 * dequeue the request first then check
-			 * status. usb_ep_dequeue API should guarantee no race
-			 * condition with req->complete callback.
-			 */
+			 
 			usb_ep_dequeue(ep->ep, req);
 			spin_unlock_irq(&epfile->ffs->eps_lock);
 			wait_for_completion(&io_data->done);
@@ -1126,10 +968,7 @@ static ssize_t ffs_epfile_io(struct file *file, struct ffs_io_data *io_data)
 		}
 
 		ret = -EIOCBQUEUED;
-		/*
-		 * Do not kfree the buffer in this function.  It will be freed
-		 * by ffs_user_copy_worker.
-		 */
+		 
 		data = NULL;
 	}
 
@@ -1138,7 +977,7 @@ error_lock:
 error_mutex:
 	mutex_unlock(&epfile->mutex);
 error:
-	if (ret != -EIOCBQUEUED) /* don't free if there is iocb queued */
+	if (ret != -EIOCBQUEUED)  
 		ffs_free_buffer(io_data);
 	return ret;
 }
@@ -1279,7 +1118,7 @@ static long ffs_epfile_ioctl(struct file *file, unsigned code,
 	if (WARN_ON(epfile->ffs->state != FFS_ACTIVE))
 		return -ENODEV;
 
-	/* Wait for endpoint to be enabled */
+	 
 	ep = epfile->ep;
 	if (!ep) {
 		if (file->f_flags & O_NONBLOCK)
@@ -1293,7 +1132,7 @@ static long ffs_epfile_ioctl(struct file *file, unsigned code,
 
 	spin_lock_irq(&epfile->ffs->eps_lock);
 
-	/* In the meantime, endpoint got disabled or changed. */
+	 
 	if (epfile->ep != ep) {
 		spin_unlock_irq(&epfile->ffs->eps_lock);
 		return -ESHUTDOWN;
@@ -1359,12 +1198,9 @@ static const struct file_operations ffs_epfile_operations = {
 };
 
 
-/* File system and super block operations ***********************************/
+ 
 
-/*
- * Mounting the file system creates a controller file, used first for
- * function configuration then later for event monitoring.
- */
+ 
 
 static struct inode *__must_check
 ffs_sb_make_inode(struct super_block *sb, void *data,
@@ -1395,7 +1231,7 @@ ffs_sb_make_inode(struct super_block *sb, void *data,
 	return inode;
 }
 
-/* Create "regular" file */
+ 
 static struct dentry *ffs_sb_create_file(struct super_block *sb,
 					const char *name, void *data,
 					const struct file_operations *fops)
@@ -1418,7 +1254,7 @@ static struct dentry *ffs_sb_create_file(struct super_block *sb,
 	return dentry;
 }
 
-/* Super block */
+ 
 static const struct super_operations ffs_sb_operations = {
 	.statfs =	simple_statfs,
 	.drop_inode =	generic_delete_inode,
@@ -1447,7 +1283,7 @@ static int ffs_sb_fill(struct super_block *sb, struct fs_context *fc)
 	sb->s_op             = &ffs_sb_operations;
 	sb->s_time_gran      = 1;
 
-	/* Root inode */
+	 
 	data->perms.mode = data->root_mode;
 	inode = ffs_sb_make_inode(sb, NULL,
 				  &simple_dir_operations,
@@ -1457,7 +1293,7 @@ static int ffs_sb_fill(struct super_block *sb, struct fs_context *fc)
 	if (!sb->s_root)
 		return -ENOMEM;
 
-	/* EP0 file */
+	 
 	if (!ffs_sb_create_file(sb, "ep0", ffs, &ffs_ep0_operations))
 		return -ENOMEM;
 
@@ -1529,9 +1365,7 @@ unmapped_value:
 	return invalf(fc, "%s: unmapped value: %u", param->key, result.uint_32);
 }
 
-/*
- * Set up the superblock for a mount.
- */
+ 
 static int ffs_fs_get_tree(struct fs_context *fc)
 {
 	struct ffs_sb_fill_data *ctx = fc->fs_private;
@@ -1619,7 +1453,7 @@ static struct file_system_type ffs_fs_type = {
 MODULE_ALIAS_FS("functionfs");
 
 
-/* Driver's main init/cleanup functions *************************************/
+ 
 
 static int functionfs_init(void)
 {
@@ -1641,7 +1475,7 @@ static void functionfs_cleanup(void)
 }
 
 
-/* ffs_data and ffs_function construction and destruction code **************/
+ 
 
 static void ffs_data_clear(struct ffs_data *ffs);
 static void ffs_data_reset(struct ffs_data *ffs);
@@ -1730,7 +1564,7 @@ static struct ffs_data *ffs_data_new(const char *dev_name)
 	init_waitqueue_head(&ffs->wait);
 	init_completion(&ffs->ep0req_completion);
 
-	/* XXX REVISIT need to update it in some places, or do we? */
+	 
 	ffs->ev.can_stall = 1;
 
 	return ffs;
@@ -1750,11 +1584,7 @@ static void ffs_data_clear(struct ffs_data *ffs)
 	ffs->epfiles = NULL;
 	spin_unlock_irqrestore(&ffs->eps_lock, flags);
 
-	/*
-	 * potential race possible between ffs_func_eps_disable
-	 * & ffs_epfile_release therefore maintaining a local
-	 * copy of epfile will save us from use-after-free.
-	 */
+	 
 	if (epfiles) {
 		ffs_epfiles_destroy(epfiles, ffs->eps_count);
 		ffs->epfiles = NULL;
@@ -1837,7 +1667,7 @@ static int functionfs_bind(struct ffs_data *ffs, struct usb_composite_dev *cdev)
 static void functionfs_unbind(struct ffs_data *ffs)
 {
 	if (!WARN_ON(!ffs->gadget)) {
-		/* dequeue before freeing ep0req */
+		 
 		usb_ep_dequeue(ffs->gadget->ep0, ffs->ep0req);
 		mutex_lock(&ffs->mutex);
 		usb_ep_free_request(ffs->gadget->ep0, ffs->ep0req);
@@ -1908,7 +1738,7 @@ static void ffs_func_eps_disable(struct ffs_function *func)
 	epfile = func->ffs->epfiles;
 	ep = func->eps;
 	while (count--) {
-		/* pending requests get nuked */
+		 
 		if (ep->ep)
 			usb_ep_disable(ep->ep);
 		++ep;
@@ -1966,14 +1796,9 @@ static int ffs_func_eps_enable(struct ffs_function *func)
 }
 
 
-/* Parsing and building descriptors and strings *****************************/
+ 
 
-/*
- * This validates if data pointed by data is a valid USB descriptor as
- * well as record how many interfaces, endpoints and strings are
- * required by given configuration.  Returns address after the
- * descriptor or NULL if data is invalid.
- */
+ 
 
 enum ffs_entity_type {
 	FFS_DESCRIPTOR, FFS_INTERFACE, FFS_STRING, FFS_ENDPOINT
@@ -2000,13 +1825,13 @@ static int __must_check ffs_do_single_desc(char *data, unsigned len,
 	u8 length;
 	int ret;
 
-	/* At least two bytes are required: length and type */
+	 
 	if (len < 2) {
 		pr_vdebug("descriptor too short\n");
 		return -EINVAL;
 	}
 
-	/* If we have at least as many bytes as the descriptor takes? */
+	 
 	length = _ds->bLength;
 	if (len < length) {
 		pr_vdebug("descriptor longer then available data\n");
@@ -2030,13 +1855,13 @@ static int __must_check ffs_do_single_desc(char *data, unsigned len,
 		}							\
 	} while (0)
 
-	/* Parse descriptor depending on type. */
+	 
 	switch (_ds->bDescriptorType) {
 	case USB_DT_DEVICE:
 	case USB_DT_CONFIG:
 	case USB_DT_STRING:
 	case USB_DT_DEVICE_QUALIFIER:
-		/* function can't have any of those */
+		 
 		pr_vdebug("descriptor reserved for gadget: %d\n",
 		      _ds->bDescriptorType);
 		return -EINVAL;
@@ -2107,12 +1932,12 @@ static int __must_check ffs_do_single_desc(char *data, unsigned len,
 	case USB_DT_DEBUG:
 	case USB_DT_SECURITY:
 	case USB_DT_CS_RADIO_CONTROL:
-		/* TODO */
+		 
 		pr_vdebug("unimplemented descriptor: %d\n", _ds->bDescriptorType);
 		return -EINVAL;
 
 	default:
-		/* We should never be here */
+		 
 		pr_vdebug("unknown descriptor: %d\n", _ds->bDescriptorType);
 		return -EINVAL;
 
@@ -2144,7 +1969,7 @@ static int __must_check ffs_do_descs(unsigned count, char *data, unsigned len,
 		if (num == count)
 			data = NULL;
 
-		/* Record "descriptor" entity */
+		 
 		ret = entity(FFS_DESCRIPTOR, (u8 *)num, (void *)data, priv);
 		if (ret < 0) {
 			pr_debug("entity DESCRIPTOR(%02lx); ret = %d\n",
@@ -2180,20 +2005,13 @@ static int __ffs_data_do_entity(enum ffs_entity_type type,
 		break;
 
 	case FFS_INTERFACE:
-		/*
-		 * Interfaces are indexed from zero so if we
-		 * encountered interface "n" then there are at least
-		 * "n+1" interfaces.
-		 */
+		 
 		if (*valuep >= helper->interfaces_count)
 			helper->interfaces_count = *valuep + 1;
 		break;
 
 	case FFS_STRING:
-		/*
-		 * Strings are indexed from 1 (0 is reserved
-		 * for languages list)
-		 */
+		 
 		if (*valuep > helper->ffs->strings_count)
 			helper->ffs->strings_count = *valuep;
 		break;
@@ -2203,7 +2021,7 @@ static int __ffs_data_do_entity(enum ffs_entity_type type,
 		helper->eps_count++;
 		if (helper->eps_count >= FFS_MAX_EPS_COUNT)
 			return -EINVAL;
-		/* Check if descriptors for any speed were already parsed */
+		 
 		if (!helper->ffs->eps_count && !helper->ffs->interfaces_count)
 			helper->ffs->eps_addrmap[helper->eps_count] =
 				d->bEndpointAddress;
@@ -2245,10 +2063,7 @@ static int __ffs_do_os_desc_header(enum ffs_os_desc_type *next_type,
 	return sizeof(*desc);
 }
 
-/*
- * Process all extended compatibility/extended property descriptors
- * of a feature descriptor
- */
+ 
 static int __must_check ffs_do_single_os_desc(char *data, unsigned len,
 					      enum ffs_os_desc_type type,
 					      u16 feature_count,
@@ -2259,7 +2074,7 @@ static int __must_check ffs_do_single_os_desc(char *data, unsigned len,
 	int ret;
 	const unsigned _len = len;
 
-	/* loop over all ext compat/ext prop descriptors */
+	 
 	while (feature_count--) {
 		ret = entity(type, h, data, len, priv);
 		if (ret < 0) {
@@ -2272,7 +2087,7 @@ static int __must_check ffs_do_single_os_desc(char *data, unsigned len,
 	return _len - len;
 }
 
-/* Process a number of complete Feature Descriptors (Ext Compat or Ext Prop) */
+ 
 static int __must_check ffs_do_os_descs(unsigned count,
 					char *data, unsigned len,
 					ffs_os_desc_callback entity, void *priv)
@@ -2289,13 +2104,7 @@ static int __must_check ffs_do_os_descs(unsigned count,
 		if (len < sizeof(*desc))
 			return -EINVAL;
 
-		/*
-		 * Record "descriptor" entity.
-		 * Process dwLength, bcdVersion, wIndex, get b/wCount.
-		 * Move the data pointer to the beginning of extended
-		 * compatibilities proper or extended properties proper
-		 * portions of the data
-		 */
+		 
 		if (le32_to_cpu(desc->dwLength) > len)
 			return -EINVAL;
 
@@ -2305,9 +2114,7 @@ static int __must_check ffs_do_os_descs(unsigned count,
 				 num, ret);
 			return ret;
 		}
-		/*
-		 * 16-bit hex "?? 00" Little Endian looks like 8-bit hex "??"
-		 */
+		 
 		feature_count = le16_to_cpu(desc->wCount);
 		if (type == FFS_OS_DESC_EXT_COMPAT &&
 		    (feature_count > 255 || desc->Reserved))
@@ -2315,10 +2122,7 @@ static int __must_check ffs_do_os_descs(unsigned count,
 		len -= ret;
 		data += ret;
 
-		/*
-		 * Process all function/property descriptors
-		 * of this Feature Descriptor
-		 */
+		 
 		ret = ffs_do_single_os_desc(data, len, type,
 					    feature_count, entity, priv, desc);
 		if (ret < 0) {
@@ -2332,9 +2136,7 @@ static int __must_check ffs_do_os_descs(unsigned count,
 	return _len - len;
 }
 
-/*
- * Validate contents of the buffer from userspace related to OS descriptors.
- */
+ 
 static int __ffs_data_do_os_desc(enum ffs_os_desc_type type,
 				 struct usb_os_desc_header *h, void *data,
 				 unsigned len, void *priv)
@@ -2351,12 +2153,7 @@ static int __ffs_data_do_os_desc(enum ffs_os_desc_type type,
 		    d->bFirstInterfaceNumber >= ffs->interfaces_count)
 			return -EINVAL;
 		if (d->Reserved1 != 1) {
-			/*
-			 * According to the spec, Reserved1 must be set to 1
-			 * but older kernels incorrectly rejected non-zero
-			 * values.  We fix it here to avoid returning EINVAL
-			 * in response to values we used to accept.
-			 */
+			 
 			pr_debug("usb_ext_compat_desc::Reserved1 forced to 1\n");
 			d->Reserved1 = 1;
 		}
@@ -2397,7 +2194,7 @@ static int __ffs_data_do_os_desc(enum ffs_os_desc_type type,
 			return -EINVAL;
 		}
 		++ffs->ms_os_descs_ext_prop_count;
-		/* property name reported to the host as "WCHAR"s */
+		 
 		ffs->ms_os_descs_ext_prop_name_len += pnl * 2;
 		ffs->ms_os_descs_ext_prop_data_len += pdl;
 	}
@@ -2461,7 +2258,7 @@ static int __ffs_data_got_descs(struct ffs_data *ffs,
 		len  -= 4;
 	}
 
-	/* Read fs_count, hs_count and ss_count (if present) */
+	 
 	for (i = 0; i < 3; ++i) {
 		if (!(flags & (1 << i))) {
 			counts[i] = 0;
@@ -2482,7 +2279,7 @@ static int __ffs_data_got_descs(struct ffs_data *ffs,
 		len -= 4;
 	}
 
-	/* Read descriptors */
+	 
 	raw_descs = data;
 	helper.ffs = ffs;
 	for (i = 0; i < 3; ++i) {
@@ -2554,25 +2351,22 @@ static int __ffs_data_got_strings(struct ffs_data *ffs,
 	str_count  = get_unaligned_le32(data + 8);
 	lang_count = get_unaligned_le32(data + 12);
 
-	/* if one is zero the other must be zero */
+	 
 	if (!str_count != !lang_count)
 		goto error;
 
-	/* Do we have at least as many strings as descriptors need? */
+	 
 	needed_count = ffs->strings_count;
 	if (str_count < needed_count)
 		goto error;
 
-	/*
-	 * If we don't need any strings just return and free all
-	 * memory.
-	 */
+	 
 	if (!needed_count) {
 		kfree(_data);
 		return 0;
 	}
 
-	/* Allocate everything in one chunk so there's less maintenance. */
+	 
 	{
 		unsigned i = 0;
 		vla_group(d);
@@ -2589,7 +2383,7 @@ static int __ffs_data_got_strings(struct ffs_data *ffs,
 			return -ENOMEM;
 		}
 
-		/* Initialize the VLA pointers */
+		 
 		stringtabs = vla_ptr(vlabuf, d, stringtabs);
 		t = vla_ptr(vlabuf, d, stringtab);
 		i = lang_count;
@@ -2598,17 +2392,17 @@ static int __ffs_data_got_strings(struct ffs_data *ffs,
 		} while (--i);
 		*stringtabs = NULL;
 
-		/* stringtabs = vlabuf = d_stringtabs for later kfree */
+		 
 		stringtabs = vla_ptr(vlabuf, d, stringtabs);
 		t = vla_ptr(vlabuf, d, stringtab);
 		s = vla_ptr(vlabuf, d, strings);
 	}
 
-	/* For each language */
+	 
 	data += 16;
 	len -= 16;
 
-	do { /* lang_count > 0 so we can use do-while */
+	do {  
 		unsigned needed = needed_count;
 		u32 str_per_lang = str_count;
 
@@ -2621,24 +2415,16 @@ static int __ffs_data_got_strings(struct ffs_data *ffs,
 		data += 2;
 		len -= 2;
 
-		/* For each string */
-		do { /* str_count > 0 so we can use do-while */
+		 
+		do {  
 			size_t length = strnlen(data, len);
 
 			if (length == len)
 				goto error_free;
 
-			/*
-			 * User may provide more strings then we need,
-			 * if that's the case we simply ignore the
-			 * rest
-			 */
+			 
 			if (needed) {
-				/*
-				 * s->id will be set while adding
-				 * function to configuration so for
-				 * now just leave garbage here.
-				 */
+				 
 				s->s = data;
 				--needed;
 				++s;
@@ -2648,17 +2434,17 @@ static int __ffs_data_got_strings(struct ffs_data *ffs,
 			len -= length + 1;
 		} while (--str_per_lang);
 
-		s->id = 0;   /* terminator */
+		s->id = 0;    
 		s->s = NULL;
 		++s;
 
 	} while (--lang_count);
 
-	/* Some garbage left? */
+	 
 	if (len)
 		goto error_free;
 
-	/* Done! */
+	 
 	ffs->stringtabs = stringtabs;
 	ffs->raw_strings = _data;
 
@@ -2672,7 +2458,7 @@ error:
 }
 
 
-/* Events handling and management *******************************************/
+ 
 
 static void __ffs_event_add(struct ffs_data *ffs,
 			    enum usb_functionfs_event_type type)
@@ -2680,24 +2466,11 @@ static void __ffs_event_add(struct ffs_data *ffs,
 	enum usb_functionfs_event_type rem_type1, rem_type2 = type;
 	int neg = 0;
 
-	/*
-	 * Abort any unhandled setup
-	 *
-	 * We do not need to worry about some cmpxchg() changing value
-	 * of ffs->setup_state without holding the lock because when
-	 * state is FFS_SETUP_PENDING cmpxchg() in several places in
-	 * the source does nothing.
-	 */
+	 
 	if (ffs->setup_state == FFS_SETUP_PENDING)
 		ffs->setup_state = FFS_SETUP_CANCELLED;
 
-	/*
-	 * Logic of this function guarantees that there are at most four pending
-	 * evens on ffs->ev.types queue.  This is important because the queue
-	 * has space for four elements only and __ffs_ep0_read_events function
-	 * depends on that limit as well.  If more event types are added, those
-	 * limits have to be revisited or guaranteed to still hold.
-	 */
+	 
 	switch (type) {
 	case FUNCTIONFS_RESUME:
 		rem_type2 = FUNCTIONFS_SUSPEND;
@@ -2705,14 +2478,14 @@ static void __ffs_event_add(struct ffs_data *ffs,
 	case FUNCTIONFS_SUSPEND:
 	case FUNCTIONFS_SETUP:
 		rem_type1 = type;
-		/* Discard all similar events */
+		 
 		break;
 
 	case FUNCTIONFS_BIND:
 	case FUNCTIONFS_UNBIND:
 	case FUNCTIONFS_DISABLE:
 	case FUNCTIONFS_ENABLE:
-		/* Discard everything other then power management. */
+		 
 		rem_type1 = FUNCTIONFS_SUSPEND;
 		rem_type2 = FUNCTIONFS_RESUME;
 		neg = 1;
@@ -2750,7 +2523,7 @@ static void ffs_event_add(struct ffs_data *ffs,
 	spin_unlock_irqrestore(&ffs->ev.waitq.lock, flags);
 }
 
-/* Bind/unbind USB function hooks *******************************************/
+ 
 
 static int ffs_ep_addr2idx(struct ffs_data *ffs, u8 endpoint_address)
 {
@@ -2776,12 +2549,7 @@ static int __ffs_func_bind_do_descs(enum ffs_entity_type type, u8 *valuep,
 	if (type != FFS_DESCRIPTOR)
 		return 0;
 
-	/*
-	 * If ss_descriptors is not NULL, we are reading super speed
-	 * descriptors; if hs_descriptors is not NULL, we are reading high
-	 * speed descriptors; otherwise, we are reading full speed
-	 * descriptors.
-	 */
+	 
 	if (func->function.ss_descriptors) {
 		ep_desc_id = 2;
 		func->function.ss_descriptors[(long)valuep] = desc;
@@ -2821,15 +2589,9 @@ static int __ffs_func_bind_do_descs(enum ffs_entity_type type, u8 *valuep,
 		u8 bEndpointAddress;
 		u16 wMaxPacketSize;
 
-		/*
-		 * We back up bEndpointAddress because autoconfig overwrites
-		 * it with physical endpoint address.
-		 */
+		 
 		bEndpointAddress = ds->bEndpointAddress;
-		/*
-		 * We back up wMaxPacketSize because autoconfig treats
-		 * endpoint descriptors as if they were full speed.
-		 */
+		 
 		wMaxPacketSize = ds->wMaxPacketSize;
 		pr_vdebug("autoconfig\n");
 		ep = usb_ep_autoconfig(func->gadget, ds);
@@ -2845,16 +2607,10 @@ static int __ffs_func_bind_do_descs(enum ffs_entity_type type, u8 *valuep,
 		ffs_ep->req = req;
 		func->eps_revmap[ds->bEndpointAddress &
 				 USB_ENDPOINT_NUMBER_MASK] = idx + 1;
-		/*
-		 * If we use virtual address mapping, we restore
-		 * original bEndpointAddress value.
-		 */
+		 
 		if (func->ffs->user_flags & FUNCTIONFS_VIRTUAL_ADDR)
 			ds->bEndpointAddress = bEndpointAddress;
-		/*
-		 * Restore wMaxPacketSize which was potentially
-		 * overwritten by autoconfig.
-		 */
+		 
 		ds->wMaxPacketSize = wMaxPacketSize;
 	}
 	ffs_dump_mem(": Rewritten ep desc", ds, ds->bLength);
@@ -2873,7 +2629,7 @@ static int __ffs_func_bind_do_nums(enum ffs_entity_type type, u8 *valuep,
 	switch (type) {
 	default:
 	case FFS_DESCRIPTOR:
-		/* Handled in previous pass by __ffs_func_bind_do_descs() */
+		 
 		return 0;
 
 	case FFS_INTERFACE:
@@ -2888,15 +2644,12 @@ static int __ffs_func_bind_do_nums(enum ffs_entity_type type, u8 *valuep,
 		break;
 
 	case FFS_STRING:
-		/* String' IDs are allocated when fsf_data is bound to cdev */
+		 
 		newValue = func->ffs->stringtabs[0]->strings[*valuep - 1].id;
 		break;
 
 	case FFS_ENDPOINT:
-		/*
-		 * USB_DT_ENDPOINT are handled in
-		 * __ffs_func_bind_do_descs().
-		 */
+		 
 		if (desc->bDescriptorType == USB_DT_ENDPOINT)
 			return 0;
 
@@ -2966,7 +2719,7 @@ static int __ffs_func_bind_do_os_desc(enum ffs_os_desc_type type,
 		memcpy(ext_prop_data,
 		       usb_ext_prop_data_ptr(data, ext_prop->name_len),
 		       ext_prop->data_len);
-		/* unicode data reported to the host as "WCHAR"s */
+		 
 		switch (ext_prop->type) {
 		case USB_EXT_PROP_UNICODE:
 		case USB_EXT_PROP_UNICODE_ENV:
@@ -2979,7 +2732,7 @@ static int __ffs_func_bind_do_os_desc(enum ffs_os_desc_type type,
 
 		memcpy(ext_prop_name, usb_ext_prop_name_ptr(data),
 		       ext_prop->name_len);
-		/* property name reported to the host as "WCHAR"s */
+		 
 		ext_prop->name_len *= 2;
 		ext_prop->name = ext_prop_name;
 
@@ -3005,13 +2758,7 @@ static inline struct f_fs_opts *ffs_do_functionfs_bind(struct usb_function *f,
 	struct ffs_data *ffs_data;
 	int ret;
 
-	/*
-	 * Legacy gadget triggers binding in functionfs_ready_callback,
-	 * which already uses locking; taking the same lock here would
-	 * cause a deadlock.
-	 *
-	 * Configfs-enabled gadgets however do need ffs_dev_lock.
-	 */
+	 
 	if (!ffs_opts->no_configfs)
 		ffs_dev_lock();
 	ret = ffs_opts->dev->desc_ready ? 0 : -ENODEV;
@@ -3025,13 +2772,7 @@ static inline struct f_fs_opts *ffs_do_functionfs_bind(struct usb_function *f,
 	func->conf = c;
 	func->gadget = c->cdev->gadget;
 
-	/*
-	 * in drivers/usb/gadget/configfs.c:configfs_composite_bind()
-	 * configurations are bound in sequence with list_for_each_entry,
-	 * in each configuration its functions are bound in sequence
-	 * with list_for_each_entry, so we assume no race condition
-	 * with regard to ffs_opts->bound access
-	 */
+	 
 	if (!ffs_opts->refcnt) {
 		ret = functionfs_bind(func->ffs, c->cdev);
 		if (ret)
@@ -3056,7 +2797,7 @@ static int _ffs_func_bind(struct usb_configuration *c,
 	int fs_len, hs_len, ss_len, ret, i;
 	struct ffs_ep *eps_ptr;
 
-	/* Make it a single chunk, less management later on */
+	 
 	vla_group(d);
 	vla_item_with_sz(d, struct ffs_ep, eps, ffs->eps_count);
 	vla_item_with_sz(d, struct usb_descriptor_header *, fs_descs,
@@ -3081,11 +2822,11 @@ static int _ffs_func_bind(struct usb_configuration *c,
 	vla_item_with_sz(d, char, raw_descs, ffs->raw_descs_length);
 	char *vlabuf;
 
-	/* Has descriptors only for speeds gadget does not support */
+	 
 	if (!(full | high | super))
 		return -ENOTSUPP;
 
-	/* Allocate a single chunk, less management later on */
+	 
 	vlabuf = kzalloc(vla_group_size(d), GFP_KERNEL);
 	if (!vlabuf)
 		return -ENOMEM;
@@ -3096,7 +2837,7 @@ static int _ffs_func_bind(struct usb_configuration *c,
 	ffs->ms_os_descs_ext_prop_data_avail =
 		vla_ptr(vlabuf, d, ext_prop_data);
 
-	/* Copy descriptors  */
+	 
 	memcpy(vla_ptr(vlabuf, d, raw_descs), ffs->raw_descs,
 	       ffs->raw_descs_length);
 
@@ -3105,17 +2846,11 @@ static int _ffs_func_bind(struct usb_configuration *c,
 	for (i = 0; i < ffs->eps_count; i++)
 		eps_ptr[i].num = -1;
 
-	/* Save pointers
-	 * d_eps == vlabuf, func->eps used to kfree vlabuf later
-	*/
+	 
 	func->eps             = vla_ptr(vlabuf, d, eps);
 	func->interfaces_nums = vla_ptr(vlabuf, d, inums);
 
-	/*
-	 * Go through all the endpoint descriptors and allocate
-	 * endpoints first, so that later we can rewrite the endpoint
-	 * numbers without worrying that it may be described later on.
-	 */
+	 
 	if (full) {
 		func->function.fs_descriptors = vla_ptr(vlabuf, d, fs_descs);
 		fs_len = ffs_do_descs(ffs->fs_descs_count,
@@ -3159,11 +2894,7 @@ static int _ffs_func_bind(struct usb_configuration *c,
 		ss_len = 0;
 	}
 
-	/*
-	 * Now handle interface numbers allocation and interface and
-	 * endpoint numbers rewriting.  We can do that in one go
-	 * now.
-	 */
+	 
 	ret = ffs_do_descs(ffs->fs_descs_count +
 			   (high ? ffs->hs_descs_count : 0) +
 			   (super ? ffs->ss_descs_count : 0),
@@ -3196,12 +2927,12 @@ static int _ffs_func_bind(struct usb_configuration *c,
 	func->function.os_desc_n =
 		c->cdev->use_os_string ? ffs->interfaces_count : 0;
 
-	/* And we're done */
+	 
 	ffs_event_add(ffs, FUNCTIONFS_BIND);
 	return 0;
 
 error:
-	/* XXX Do we need to release all claimed endpoints here? */
+	 
 	return ret;
 }
 
@@ -3223,7 +2954,7 @@ static int ffs_func_bind(struct usb_configuration *c,
 }
 
 
-/* Other USB function hooks *************************************************/
+ 
 
 static void ffs_reset_work(struct work_struct *work)
 {
@@ -3290,16 +3021,7 @@ static int ffs_func_setup(struct usb_function *f,
 	pr_vdebug("creq->wIndex       = %04x\n", le16_to_cpu(creq->wIndex));
 	pr_vdebug("creq->wLength      = %04x\n", le16_to_cpu(creq->wLength));
 
-	/*
-	 * Most requests directed to interface go through here
-	 * (notable exceptions are set/get interface) so we need to
-	 * handle them.  All other either handled by composite or
-	 * passed to usb_configuration->setup() (if one is set).  No
-	 * matter, we will handle requests directed to endpoint here
-	 * as well (as it's straightforward).  Other request recipient
-	 * types are only handled when the user flag FUNCTIONFS_ALL_CTRL_RECIP
-	 * is being used.
-	 */
+	 
 	if (ffs->state != FFS_ACTIVE)
 		return -ENODEV;
 
@@ -3367,7 +3089,7 @@ static void ffs_func_resume(struct usb_function *f)
 }
 
 
-/* Endpoint and interface numbers reverse mapping ***************************/
+ 
 
 static int ffs_func_revmap_ep(struct ffs_function *func, u8 num)
 {
@@ -3389,7 +3111,7 @@ static int ffs_func_revmap_intf(struct ffs_function *func, u8 intf)
 }
 
 
-/* Devices management *******************************************************/
+ 
 
 static LIST_HEAD(ffs_devices);
 
@@ -3408,9 +3130,7 @@ static struct ffs_dev *_ffs_do_find_dev(const char *name)
 	return NULL;
 }
 
-/*
- * ffs_lock must be taken by the caller of this function
- */
+ 
 static struct ffs_dev *_ffs_get_single_dev(void)
 {
 	struct ffs_dev *dev;
@@ -3424,9 +3144,7 @@ static struct ffs_dev *_ffs_get_single_dev(void)
 	return NULL;
 }
 
-/*
- * ffs_lock must be taken by the caller of this function
- */
+ 
 static struct ffs_dev *_ffs_find_dev(const char *name)
 {
 	struct ffs_dev *dev;
@@ -3438,7 +3156,7 @@ static struct ffs_dev *_ffs_find_dev(const char *name)
 	return _ffs_do_find_dev(name);
 }
 
-/* Configfs support *********************************************************/
+ 
 
 static inline struct f_fs_opts *to_ffs_opts(struct config_item *item)
 {
@@ -3463,7 +3181,7 @@ static const struct config_item_type ffs_func_type = {
 };
 
 
-/* Function registration interface ******************************************/
+ 
 
 static void ffs_free_inst(struct usb_function_instance *f)
 {
@@ -3531,14 +3249,14 @@ static void ffs_func_unbind(struct usb_configuration *c,
 		ffs->func = NULL;
 	}
 
-	/* Drain any pending AIO completions */
+	 
 	drain_workqueue(ffs->io_completion_wq);
 
 	ffs_event_add(ffs, FUNCTIONFS_UNBIND);
 	if (!--opts->refcnt)
 		functionfs_unbind(ffs);
 
-	/* cleanup after autoconfig */
+	 
 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
 	while (count--) {
 		if (ep->ep && ep->req)
@@ -3549,10 +3267,7 @@ static void ffs_func_unbind(struct usb_configuration *c,
 	spin_unlock_irqrestore(&func->ffs->eps_lock, flags);
 	kfree(func->eps);
 	func->eps = NULL;
-	/*
-	 * eps, descriptors and interfaces_nums are allocated in the
-	 * same chunk so only one free is required.
-	 */
+	 
 	func->function.fs_descriptors = NULL;
 	func->function.hs_descriptors = NULL;
 	func->function.ss_descriptors = NULL;
@@ -3584,9 +3299,7 @@ static struct usb_function *ffs_alloc(struct usb_function_instance *fi)
 	return &func->function;
 }
 
-/*
- * ffs_lock must be taken by the caller of this function
- */
+ 
 static struct ffs_dev *_ffs_alloc_dev(void)
 {
 	struct ffs_dev *dev;
@@ -3648,9 +3361,7 @@ int ffs_single_dev(struct ffs_dev *dev)
 }
 EXPORT_SYMBOL_GPL(ffs_single_dev);
 
-/*
- * ffs_lock must be taken by the caller of this function
- */
+ 
 static void _ffs_free_dev(struct ffs_dev *dev)
 {
 	list_del(&dev->entry);
@@ -3771,7 +3482,7 @@ done:
 	ffs_dev_unlock();
 }
 
-/* Misc helper functions ****************************************************/
+ 
 
 static int ffs_mutex_lock(struct mutex *mutex, unsigned nonblock)
 {

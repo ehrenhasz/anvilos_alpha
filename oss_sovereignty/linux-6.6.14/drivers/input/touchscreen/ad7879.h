@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AD7879/AD7889 touchscreen (bus interfaces)
- *
- * Copyright (C) 2008-2010 Michael Hennerich, Analog Devices Inc.
- */
+ 
+ 
 
 #ifndef _AD7879_H_
 #define _AD7879_H_

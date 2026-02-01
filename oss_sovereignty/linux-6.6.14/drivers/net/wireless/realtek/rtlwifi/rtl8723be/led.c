@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -48,7 +48,7 @@ void rtl8723be_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin)
 	case LED_PIN_LED0:
 		ledcfg &= 0xf0;
 		if (rtlpriv->ledctl.led_opendrain) {
-			ledcfg &= 0x90; /* Set to software control. */
+			ledcfg &= 0x90;  
 			rtl_write_byte(rtlpriv, REG_LEDCFG2, (ledcfg|BIT(3)));
 			ledcfg = rtl_read_byte(rtlpriv, REG_MAC_PINMUX_CFG);
 			ledcfg &= 0xFE;
@@ -61,7 +61,7 @@ void rtl8723be_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin)
 		break;
 	case LED_PIN_LED1:
 		ledcfg = rtl_read_byte(rtlpriv, REG_LEDCFG1);
-		ledcfg &= 0x10; /* Set to software control. */
+		ledcfg &= 0x10;  
 		rtl_write_byte(rtlpriv, REG_LEDCFG1, ledcfg|BIT(3));
 
 		break;

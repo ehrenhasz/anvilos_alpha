@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Process version 2 NFS requests.
- *
- * Copyright (C) 1995-1997 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/namei.h>
 
@@ -19,10 +15,7 @@ nfsd_proc_null(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Get a file's attributes
- * N.B. After this call resp->fh needs an fh_put
- */
+ 
 static __be32
 nfsd_proc_getattr(struct svc_rqst *rqstp)
 {
@@ -41,10 +34,7 @@ out:
 	return rpc_success;
 }
 
-/*
- * Set a file's attributes
- * N.B. After this call resp->fh needs an fh_put
- */
+ 
 static __be32
 nfsd_proc_setattr(struct svc_rqst *rqstp)
 {
@@ -62,28 +52,12 @@ nfsd_proc_setattr(struct svc_rqst *rqstp)
 
 	fhp = fh_copy(&resp->fh, &argp->fh);
 
-	/*
-	 * NFSv2 does not differentiate between "set-[ac]time-to-now"
-	 * which only requires access, and "set-[ac]time-to-X" which
-	 * requires ownership.
-	 * So if it looks like it might be "set both to the same time which
-	 * is close to now", and if setattr_prepare fails, then we
-	 * convert to "set to now" instead of "set to explicit time"
-	 *
-	 * We only call setattr_prepare as the last test as technically
-	 * it is not an interface that we should be using.
-	 */
+	 
 #define BOTH_TIME_SET (ATTR_ATIME_SET | ATTR_MTIME_SET)
 #define	MAX_TOUCH_TIME_ERROR (30*60)
 	if ((iap->ia_valid & BOTH_TIME_SET) == BOTH_TIME_SET &&
 	    iap->ia_mtime.tv_sec == iap->ia_atime.tv_sec) {
-		/*
-		 * Looks probable.
-		 *
-		 * Now just make sure time is in the right ballpark.
-		 * Solaris, at least, doesn't seem to care what the time
-		 * request is.  We require it be within 30 minutes of now.
-		 */
+		 
 		time64_t delta = iap->ia_atime.tv_sec - ktime_get_real_seconds();
 
 		resp->status = fh_verify(rqstp, fhp, 0, NFSD_MAY_NOP);
@@ -94,11 +68,7 @@ nfsd_proc_setattr(struct svc_rqst *rqstp)
 			delta = -delta;
 		if (delta < MAX_TOUCH_TIME_ERROR &&
 		    setattr_prepare(&nop_mnt_idmap, fhp->fh_dentry, iap) != 0) {
-			/*
-			 * Turn off ATTR_[AM]TIME_SET but leave ATTR_[AM]TIME.
-			 * This will cause notify_change to set these times
-			 * to "now"
-			 */
+			 
 			iap->ia_valid &= ~BOTH_TIME_SET;
 		}
 	}
@@ -112,19 +82,14 @@ out:
 	return rpc_success;
 }
 
-/* Obsolete, replaced by MNTPROC_MNT. */
+ 
 static __be32
 nfsd_proc_root(struct svc_rqst *rqstp)
 {
 	return rpc_success;
 }
 
-/*
- * Look up a path name component
- * Note: the dentry in the resp->fh may be negative if the file
- * doesn't exist yet.
- * N.B. After this call resp->fh needs an fh_put
- */
+ 
 static __be32
 nfsd_proc_lookup(struct svc_rqst *rqstp)
 {
@@ -146,9 +111,7 @@ out:
 	return rpc_success;
 }
 
-/*
- * Read a symlink.
- */
+ 
 static __be32
 nfsd_proc_readlink(struct svc_rqst *rqstp)
 {
@@ -157,7 +120,7 @@ nfsd_proc_readlink(struct svc_rqst *rqstp)
 
 	dprintk("nfsd: READLINK %s\n", SVCFH_fmt(&argp->fh));
 
-	/* Read the symlink. */
+	 
 	resp->len = NFS_MAXPATHLEN;
 	resp->page = *(rqstp->rq_next_page++);
 	resp->status = nfsd_readlink(rqstp, &argp->fh,
@@ -167,10 +130,7 @@ nfsd_proc_readlink(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Read a portion of a file.
- * N.B. After this call resp->fh needs an fh_put
- */
+ 
 static __be32
 nfsd_proc_read(struct svc_rqst *rqstp)
 {
@@ -187,9 +147,7 @@ nfsd_proc_read(struct svc_rqst *rqstp)
 
 	resp->pages = rqstp->rq_next_page;
 
-	/* Obtain buffer pointer for payload. 19 is 1 word for
-	 * status, 17 words for fattr, and 1 word for the byte count.
-	 */
+	 
 	svc_reserve_auth(rqstp, (19<<2) + argp->count + 4);
 
 	resp->count = argp->count;
@@ -203,17 +161,14 @@ nfsd_proc_read(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/* Reserved */
+ 
 static __be32
 nfsd_proc_writecache(struct svc_rqst *rqstp)
 {
 	return rpc_success;
 }
 
-/*
- * Write data to a file
- * N.B. After this call resp->fh needs an fh_put
- */
+ 
 static __be32
 nfsd_proc_write(struct svc_rqst *rqstp)
 {
@@ -238,12 +193,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * CREATE processing is complicated. The keyword here is `overloaded.'
- * The parent directory is kept locked between the check for existence
- * and the actual create() call in compliance with VFS protocols.
- * N.B. After this call _both_ argp->fh and resp->fh need an fh_put
- */
+ 
 static __be32
 nfsd_proc_create(struct svc_rqst *rqstp)
 {
@@ -264,12 +214,12 @@ nfsd_proc_create(struct svc_rqst *rqstp)
 	dprintk("nfsd: CREATE   %s %.*s\n",
 		SVCFH_fmt(dirfhp), argp->len, argp->name);
 
-	/* First verify the parent file handle */
+	 
 	resp->status = fh_verify(rqstp, dirfhp, S_IFDIR, NFSD_MAY_EXEC);
 	if (resp->status != nfs_ok)
-		goto done; /* must fh_put dirfhp even on error */
+		goto done;  
 
-	/* Check for NFSD_MAY_WRITE in nfsd_create if necessary */
+	 
 
 	resp->status = nfserr_exist;
 	if (isdotent(argp->name, argp->len))
@@ -294,10 +244,7 @@ nfsd_proc_create(struct svc_rqst *rqstp)
 	if (resp->status) {
 		if (resp->status != nfserr_noent)
 			goto out_unlock;
-		/*
-		 * If the new file handle wasn't verified, we can't tell
-		 * whether the file exists or not. Time to bail ...
-		 */
+		 
 		resp->status = nfserr_acces;
 		if (!newfhp->fh_dentry) {
 			printk(KERN_WARNING 
@@ -308,29 +255,24 @@ nfsd_proc_create(struct svc_rqst *rqstp)
 
 	inode = d_inode(newfhp->fh_dentry);
 
-	/* Unfudge the mode bits */
+	 
 	if (attr->ia_valid & ATTR_MODE) {
 		type = attr->ia_mode & S_IFMT;
 		mode = attr->ia_mode & ~S_IFMT;
 		if (!type) {
-			/* no type, so if target exists, assume same as that,
-			 * else assume a file */
+			 
 			if (inode) {
 				type = inode->i_mode & S_IFMT;
 				switch(type) {
 				case S_IFCHR:
 				case S_IFBLK:
-					/* reserve rdev for later checking */
+					 
 					rdev = inode->i_rdev;
 					attr->ia_valid |= ATTR_SIZE;
 
 					fallthrough;
 				case S_IFIFO:
-					/* this is probably a permission check..
-					 * at least IRIX implements perm checking on
-					 *   echo thing > device-special-file-or-pipe
-					 * by doing a CREATE with type==0
-					 */
+					 
 					resp->status = nfsd_permission(rqstp,
 								 newfhp->fh_export,
 								 newfhp->fh_dentry,
@@ -346,31 +288,29 @@ nfsd_proc_create(struct svc_rqst *rqstp)
 		mode = inode->i_mode & ~S_IFMT;
 	} else {
 		type = S_IFREG;
-		mode = 0;	/* ??? */
+		mode = 0;	 
 	}
 
 	attr->ia_valid |= ATTR_MODE;
 	attr->ia_mode = mode;
 
-	/* Special treatment for non-regular files according to the
-	 * gospel of sun micro
-	 */
+	 
 	if (type != S_IFREG) {
 		if (type != S_IFBLK && type != S_IFCHR) {
 			rdev = 0;
 		} else if (type == S_IFCHR && !(attr->ia_valid & ATTR_SIZE)) {
-			/* If you think you've seen the worst, grok this. */
+			 
 			type = S_IFIFO;
 		} else {
-			/* Okay, char or block special */
+			 
 			if (!rdev)
 				rdev = wanted;
 		}
 
-		/* we've used the SIZE information, so discard it */
+		 
 		attr->ia_valid &= ~ATTR_SIZE;
 
-		/* Make sure the type and device matches */
+		 
 		resp->status = nfserr_exist;
 		if (inode && inode_wrong_type(inode, type))
 			goto out_unlock;
@@ -378,16 +318,13 @@ nfsd_proc_create(struct svc_rqst *rqstp)
 
 	resp->status = nfs_ok;
 	if (!inode) {
-		/* File doesn't exist. Create it and set attrs */
+		 
 		resp->status = nfsd_create_locked(rqstp, dirfhp, &attrs, type,
 						  rdev, newfhp);
 	} else if (type == S_IFREG) {
 		dprintk("nfsd:   existing %s, valid=%x, size=%ld\n",
 			argp->name, attr->ia_valid, (long) attr->ia_size);
-		/* File already exists. We ignore all attributes except
-		 * size, so that creat() behaves exactly like
-		 * open(..., O_CREAT|O_TRUNC|O_WRONLY).
-		 */
+		 
 		attr->ia_valid &= ATTR_SIZE;
 		if (attr->ia_valid)
 			resp->status = nfsd_setattr(rqstp, newfhp, &attrs, 0,
@@ -415,7 +352,7 @@ nfsd_proc_remove(struct svc_rqst *rqstp)
 	dprintk("nfsd: REMOVE   %s %.*s\n", SVCFH_fmt(&argp->fh),
 		argp->len, argp->name);
 
-	/* Unlink. -SIFDIR means file must not be a directory */
+	 
 	resp->status = nfsd_unlink(rqstp, &argp->fh, -S_IFDIR,
 				   argp->name, argp->len);
 	fh_put(&argp->fh);
@@ -498,10 +435,7 @@ out:
 	return rpc_success;
 }
 
-/*
- * Make directory. This operation is not idempotent.
- * N.B. After this call resp->fh needs an fh_put
- */
+ 
 static __be32
 nfsd_proc_mkdir(struct svc_rqst *rqstp)
 {
@@ -531,9 +465,7 @@ out:
 	return rpc_success;
 }
 
-/*
- * Remove a directory
- */
+ 
 static __be32
 nfsd_proc_rmdir(struct svc_rqst *rqstp)
 {
@@ -557,7 +489,7 @@ static void nfsd_init_dirlist_pages(struct svc_rqst *rqstp,
 
 	memset(buf, 0, sizeof(*buf));
 
-	/* Reserve room for the NULL ptr & eof flag (-2 words) */
+	 
 	buf->buflen = clamp(count, (u32)(XDR_UNIT * 2), (u32)PAGE_SIZE);
 	buf->buflen -= XDR_UNIT * 2;
 	buf->pages = rqstp->rq_next_page;
@@ -566,9 +498,7 @@ static void nfsd_init_dirlist_pages(struct svc_rqst *rqstp,
 	xdr_init_encode_pages(xdr, buf, buf->pages,  NULL);
 }
 
-/*
- * Read a portion of a directory.
- */
+ 
 static __be32
 nfsd_proc_readdir(struct svc_rqst *rqstp)
 {
@@ -593,9 +523,7 @@ nfsd_proc_readdir(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * Get file system info
- */
+ 
 static __be32
 nfsd_proc_statfs(struct svc_rqst *rqstp)
 {
@@ -610,14 +538,11 @@ nfsd_proc_statfs(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-/*
- * NFSv2 Server procedures.
- * Only the results of non-idempotent operations are cached.
- */
+ 
 
-#define ST 1		/* status */
-#define FH 8		/* filehandle */
-#define	AT 18		/* attributes */
+#define ST 1		 
+#define FH 8		 
+#define	AT 18		 
 
 static const struct svc_procedure nfsd_procedures2[18] = {
 	[NFSPROC_NULL] = {

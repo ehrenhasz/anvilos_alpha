@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  drivers/cpufreq/cpufreq_conservative.c
- *
- *  Copyright (C)  2001 Russell King
- *            (C)  2003 Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>.
- *                      Jun Nakajima <jun.nakajima@intel.com>
- *            (C)  2009 Alexander Clouter <alex@digriz.org.uk>
- */
+
+ 
 
 #include <linux/slab.h>
 #include "cpufreq_governor.h"
@@ -27,7 +20,7 @@ struct cs_dbs_tuners {
 	unsigned int freq_step;
 };
 
-/* Conservative governor macros */
+ 
 #define DEF_FREQUENCY_UP_THRESHOLD		(80)
 #define DEF_FREQUENCY_DOWN_THRESHOLD		(20)
 #define DEF_FREQUENCY_STEP			(5)
@@ -39,22 +32,14 @@ static inline unsigned int get_freq_step(struct cs_dbs_tuners *cs_tuners,
 {
 	unsigned int freq_step = (cs_tuners->freq_step * policy->max) / 100;
 
-	/* max freq cannot be less than 100. But who knows... */
+	 
 	if (unlikely(freq_step == 0))
 		freq_step = DEF_FREQUENCY_STEP;
 
 	return freq_step;
 }
 
-/*
- * Every sampling_rate, we check, if current idle time is less than 20%
- * (default), then we try to increase frequency. Every sampling_rate *
- * sampling_down_factor, we check, if current idle time is more than 80%
- * (default), then we try to decrease frequency
- *
- * Frequency updates happen at minimum steps of 5% (default) of maximum
- * frequency
- */
+ 
 static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
 {
 	struct policy_dbs_info *policy_dbs = policy->governor_data;
@@ -65,18 +50,11 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
 	unsigned int load = dbs_update(policy);
 	unsigned int freq_step;
 
-	/*
-	 * break out if we 'cannot' reduce the speed as the user might
-	 * want freq_step to be zero
-	 */
+	 
 	if (cs_tuners->freq_step == 0)
 		goto out;
 
-	/*
-	 * If requested_freq is out of range, it is likely that the limits
-	 * changed in the meantime, so fall back to current frequency in that
-	 * case.
-	 */
+	 
 	if (requested_freq > policy->max || requested_freq < policy->min) {
 		requested_freq = policy->cur;
 		dbs_info->requested_freq = requested_freq;
@@ -84,10 +62,7 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
 
 	freq_step = get_freq_step(cs_tuners, policy);
 
-	/*
-	 * Decrease requested_freq one freq_step for each idle period that
-	 * we didn't update the frequency.
-	 */
+	 
 	if (policy_dbs->idle_periods < UINT_MAX) {
 		unsigned int freq_steps = policy_dbs->idle_periods * freq_step;
 
@@ -99,11 +74,11 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
 		policy_dbs->idle_periods = UINT_MAX;
 	}
 
-	/* Check for frequency increase */
+	 
 	if (load > dbs_data->up_threshold) {
 		dbs_info->down_skip = 0;
 
-		/* if we are already at full speed then break out early */
+		 
 		if (requested_freq == policy->max)
 			goto out;
 
@@ -117,16 +92,14 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
 		goto out;
 	}
 
-	/* if sampling_down_factor is active break out early */
+	 
 	if (++dbs_info->down_skip < dbs_data->sampling_down_factor)
 		goto out;
 	dbs_info->down_skip = 0;
 
-	/* Check for frequency decrease */
+	 
 	if (load < cs_tuners->down_threshold) {
-		/*
-		 * if we cannot reduce the frequency anymore, break out early
-		 */
+		 
 		if (requested_freq == policy->min)
 			goto out;
 
@@ -144,7 +117,7 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
 	return dbs_data->sampling_rate;
 }
 
-/************************** sysfs interface ************************/
+ 
 
 static ssize_t sampling_down_factor_store(struct gov_attr_set *attr_set,
 					  const char *buf, size_t count)
@@ -186,7 +159,7 @@ static ssize_t down_threshold_store(struct gov_attr_set *attr_set,
 	int ret;
 	ret = sscanf(buf, "%u", &input);
 
-	/* cannot be lower than 1 otherwise freq will not fall */
+	 
 	if (ret != 1 || input < 1 || input > 100 ||
 			input >= dbs_data->up_threshold)
 		return -EINVAL;
@@ -209,12 +182,12 @@ static ssize_t ignore_nice_load_store(struct gov_attr_set *attr_set,
 	if (input > 1)
 		input = 1;
 
-	if (input == dbs_data->ignore_nice_load) /* nothing to do */
+	if (input == dbs_data->ignore_nice_load)  
 		return count;
 
 	dbs_data->ignore_nice_load = input;
 
-	/* we need to re-evaluate prev_cpu_idle */
+	 
 	gov_update_cpu_data(dbs_data);
 
 	return count;
@@ -235,10 +208,7 @@ static ssize_t freq_step_store(struct gov_attr_set *attr_set, const char *buf,
 	if (input > 100)
 		input = 100;
 
-	/*
-	 * no need to test here if freq_step is zero as the user might actually
-	 * want this, they would be crazy though :)
-	 */
+	 
 	cs_tuners->freq_step = input;
 	return count;
 }
@@ -268,7 +238,7 @@ static struct attribute *cs_attrs[] = {
 };
 ATTRIBUTE_GROUPS(cs);
 
-/************************** sysfs end ************************/
+ 
 
 static struct policy_dbs_info *cs_alloc(void)
 {

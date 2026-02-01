@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "head.h"
 #include "atom.h"
 #include "core.h"
@@ -35,9 +15,7 @@ headc37d_or(struct nv50_head *head, struct nv50_head_atom *asyh)
 	u8 depth;
 	int ret;
 
-	/*XXX: This is a dirty hack until OR depth handling is
-	 *     improved later for deep colour etc.
-	 */
+	 
 	switch (asyh->or.depth) {
 	case 6: depth = 5; break;
 	case 5: depth = 4; break;
@@ -233,7 +211,7 @@ headc37d_mode(struct nv50_head *head, struct nv50_head_atom *asyh)
 		  NVVAL(NVC37D, HEAD_SET_RASTER_BLANK_START, X, m->h.blanks) |
 		  NVVAL(NVC37D, HEAD_SET_RASTER_BLANK_START, Y, m->v.blanks));
 
-	//XXX:
+	
 	PUSH_NVSQ(push, NVC37D, 0x2074 + (i * 0x400), m->v.blank2e << 16 | m->v.blank2s);
 	PUSH_NVSQ(push, NVC37D, 0x2008 + (i * 0x400), m->interlace);
 
@@ -243,7 +221,7 @@ headc37d_mode(struct nv50_head *head, struct nv50_head_atom *asyh)
 	PUSH_MTHD(push, NVC37D, HEAD_SET_PIXEL_CLOCK_FREQUENCY_MAX(i),
 		  NVVAL(NVC37D, HEAD_SET_PIXEL_CLOCK_FREQUENCY_MAX, HERTZ, m->clock * 1000));
 
-	/*XXX: HEAD_USAGE_BOUNDS, doesn't belong here. */
+	 
 	PUSH_MTHD(push, NVC37D, HEAD_SET_HEAD_USAGE_BOUNDS(i),
 		  NVDEF(NVC37D, HEAD_SET_HEAD_USAGE_BOUNDS, CURSOR, USAGE_W256_H256) |
 		  NVDEF(NVC37D, HEAD_SET_HEAD_USAGE_BOUNDS, OUTPUT_LUT, USAGE_1025) |

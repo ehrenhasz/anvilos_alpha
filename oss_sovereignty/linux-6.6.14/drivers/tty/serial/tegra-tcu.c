@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/mailbox_client.h>
@@ -195,7 +193,7 @@ static int tegra_tcu_probe(struct platform_device *pdev)
 	}
 
 #if IS_ENABLED(CONFIG_SERIAL_TEGRA_TCU_CONSOLE)
-	/* setup the console */
+	 
 	strcpy(tcu->console.name, "ttyTCU");
 	tcu->console.device = uart_console_device;
 	tcu->console.flags = CON_PRINTBUFFER | CON_ANYTIME;
@@ -205,7 +203,7 @@ static int tegra_tcu_probe(struct platform_device *pdev)
 	tcu->console.data = &tcu->driver;
 #endif
 
-	/* setup the driver */
+	 
 	tcu->driver.owner = THIS_MODULE;
 	tcu->driver.driver_name = "tegra-tcu";
 	tcu->driver.dev_name = "ttyTCU";
@@ -221,7 +219,7 @@ static int tegra_tcu_probe(struct platform_device *pdev)
 		goto free_tx;
 	}
 
-	/* setup the port */
+	 
 	port = &tcu->port;
 	spin_lock_init(&port->lock);
 	port->dev = &pdev->dev;
@@ -238,10 +236,7 @@ static int tegra_tcu_probe(struct platform_device *pdev)
 		goto unregister_uart;
 	}
 
-	/*
-	 * Request RX channel after creating port to ensure tcu->port
-	 * is ready for any immediate incoming bytes.
-	 */
+	 
 	tcu->rx = mbox_request_channel_byname(&tcu->rx_client, "rx");
 	if (IS_ERR(tcu->rx)) {
 		err = PTR_ERR(tcu->rx);

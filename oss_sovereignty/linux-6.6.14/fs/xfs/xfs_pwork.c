@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2019 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -15,25 +12,9 @@
 #include "xfs_pwork.h"
 #include <linux/nmi.h>
 
-/*
- * Parallel Work Queue
- * ===================
- *
- * Abstract away the details of running a large and "obviously" parallelizable
- * task across multiple CPUs.  Callers initialize the pwork control object with
- * a desired level of parallelization and a work function.  Next, they embed
- * struct xfs_pwork in whatever structure they use to pass work context to a
- * worker thread and queue that pwork.  The work function will be passed the
- * pwork item when it is run (from process context) and any returned error will
- * be recorded in xfs_pwork_ctl.error.  Work functions should check for errors
- * and abort if necessary; the non-zeroness of xfs_pwork_ctl.error does not
- * stop workqueue item processing.
- *
- * This is the rough equivalent of the xfsprogs workqueue code, though we can't
- * reuse that name here.
- */
+ 
 
-/* Invoke our caller's function. */
+ 
 static void
 xfs_pwork_work(
 	struct work_struct	*work)
@@ -51,11 +32,7 @@ xfs_pwork_work(
 		wake_up(&pctl->poll_wait);
 }
 
-/*
- * Set up control data for parallel work.  @work_fn is the function that will
- * be called.  @tag will be written into the kernel threads.  @nr_threads is
- * the level of parallelism desired, or 0 for no limit.
- */
+ 
 int
 xfs_pwork_init(
 	struct xfs_mount	*mp,
@@ -85,7 +62,7 @@ xfs_pwork_init(
 	return 0;
 }
 
-/* Queue some parallel work. */
+ 
 void
 xfs_pwork_queue(
 	struct xfs_pwork_ctl	*pctl,
@@ -97,7 +74,7 @@ xfs_pwork_queue(
 	queue_work(pctl->wq, &pwork->work);
 }
 
-/* Wait for the work to finish and tear down the control structure. */
+ 
 int
 xfs_pwork_destroy(
 	struct xfs_pwork_ctl	*pctl)
@@ -107,10 +84,7 @@ xfs_pwork_destroy(
 	return pctl->error;
 }
 
-/*
- * Wait for the work to finish by polling completion status and touch the soft
- * lockup watchdog.  This is for callers such as mount which hold locks.
- */
+ 
 void
 xfs_pwork_poll(
 	struct xfs_pwork_ctl	*pctl)

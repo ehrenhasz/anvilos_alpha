@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 Fujitsu.  All Rights Reserved.
- */
+
+ 
 
 #include "xfs.h"
 #include "xfs_shared.h"
@@ -81,10 +79,10 @@ xfs_dax_failure_fn(
 		return 0;
 	}
 
-	/* Get files that incore, filter out others that are not in use. */
+	 
 	error = xfs_iget(mp, cur->bc_tp, rec->rm_owner, XFS_IGET_INCORE,
 			 0, &ip);
-	/* Continue the rmap query if the inode isn't incore */
+	 
 	if (error == -ENODATA)
 		return 0;
 	if (error) {
@@ -138,10 +136,7 @@ xfs_dax_notify_ddev_failure(
 
 		cur = xfs_rmapbt_init_cursor(mp, tp, agf_bp, pag);
 
-		/*
-		 * Set the rmap range from ri_low to ri_high, which represents
-		 * a [start, end] where we looking for the files or metadata.
-		 */
+		 
 		memset(&ri_high, 0xFF, sizeof(ri_high));
 		ri_low.rm_startblock = XFS_FSB_TO_AGBNO(mp, fsbno);
 		if (agno == end_agno)
@@ -210,13 +205,13 @@ xfs_dax_notify_failure(
 	ddev_start = mp->m_ddev_targp->bt_dax_part_off;
 	ddev_end = ddev_start + bdev_nr_bytes(mp->m_ddev_targp->bt_bdev) - 1;
 
-	/* Ignore the range out of filesystem area */
+	 
 	if (offset + len - 1 < ddev_start)
 		return -ENXIO;
 	if (offset > ddev_end)
 		return -ENXIO;
 
-	/* Calculate the real range when it touches the boundary */
+	 
 	if (offset > ddev_start)
 		offset -= ddev_start;
 	else {

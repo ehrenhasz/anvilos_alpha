@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linux-DVB Driver for DiBcom's second generation DiB7000P (PC).
- *
- * Copyright (C) 2005-7 DiBcom (http://www.dibcom.fr/)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -70,7 +66,7 @@ struct dib7000p_state {
 	u16 tuner_enable;
 	struct i2c_adapter dib7090_tuner_adap;
 
-	/* for the I2C transfer */
+	 
 	struct i2c_msg msg[2];
 	u8 i2c_write_buffer[4];
 	u8 i2c_read_buffer[2];
@@ -78,7 +74,7 @@ struct dib7000p_state {
 
 	u8 input_mode_mpeg;
 
-	/* for DVBv5 stats */
+	 
 	s64 old_ucb;
 	unsigned long per_jiffies_stats;
 	unsigned long ber_jiffies_stats;
@@ -91,7 +87,7 @@ enum dib7000p_power_mode {
 	DIB7000P_POWER_INTERFACE_ONLY,
 };
 
-/* dib7090 specific functions */
+ 
 static int dib7090_set_output_mode(struct dvb_frontend *fe, int mode);
 static int dib7090_set_diversity_in(struct dvb_frontend *fe, int onoff);
 static void dib7090_setDibTxMux(struct dib7000p_state *state, int mode);
@@ -182,17 +178,17 @@ static int dib7000p_set_output_mode(struct dib7000p_state *state, int mode)
 
 	switch (mode) {
 	case OUTMODE_MPEG2_PAR_GATED_CLK:
-		outreg = (1 << 10);	/* 0x0400 */
+		outreg = (1 << 10);	 
 		break;
 	case OUTMODE_MPEG2_PAR_CONT_CLK:
-		outreg = (1 << 10) | (1 << 6);	/* 0x0440 */
+		outreg = (1 << 10) | (1 << 6);	 
 		break;
 	case OUTMODE_MPEG2_SERIAL:
-		outreg = (1 << 10) | (2 << 6) | (0 << 1);	/* 0x0480 */
+		outreg = (1 << 10) | (2 << 6) | (0 << 1);	 
 		break;
 	case OUTMODE_DIVERSITY:
 		if (state->cfg.hostbus_diversity)
-			outreg = (1 << 10) | (4 << 6);	/* 0x0500 */
+			outreg = (1 << 10) | (4 << 6);	 
 		else
 			outreg = (1 << 11);
 		break;
@@ -216,9 +212,9 @@ static int dib7000p_set_output_mode(struct dib7000p_state *state, int mode)
 		smo_mode |= (1 << 5);
 
 	ret |= dib7000p_write_word(state, 235, smo_mode);
-	ret |= dib7000p_write_word(state, 236, fifo_threshold);	/* synchronous fread */
+	ret |= dib7000p_write_word(state, 236, fifo_threshold);	 
 	if (state->version != SOC7090)
-		ret |= dib7000p_write_word(state, 1286, outreg);	/* P_Div_active */
+		ret |= dib7000p_write_word(state, 1286, outreg);	 
 
 	return ret;
 }
@@ -239,7 +235,7 @@ static int dib7000p_set_diversity_in(struct dvb_frontend *demod, int onoff)
 	if (onoff) {
 		dib7000p_write_word(state, 204, 6);
 		dib7000p_write_word(state, 205, 16);
-		/* P_dvsy_sync_mode = 0, P_dvsy_sync_enable=1, P_dvcb_comb_mode=2 */
+		 
 	} else {
 		dib7000p_write_word(state, 204, 1);
 		dib7000p_write_word(state, 205, 0);
@@ -250,12 +246,12 @@ static int dib7000p_set_diversity_in(struct dvb_frontend *demod, int onoff)
 
 static int dib7000p_set_power_mode(struct dib7000p_state *state, enum dib7000p_power_mode mode)
 {
-	/* by default everything is powered off */
+	 
 	u16 reg_774 = 0x3fff, reg_775 = 0xffff, reg_776 = 0x0007, reg_899 = 0x0003, reg_1280 = (0xfe00) | (dib7000p_read_word(state, 1280) & 0x01ff);
 
-	/* now, depending on the requested mode, we power on */
+	 
 	switch (mode) {
-		/* power up everything in the demod */
+		 
 	case DIB7000P_POWER_ALL:
 		reg_774 = 0x0000;
 		reg_775 = 0x0000;
@@ -268,25 +264,25 @@ static int dib7000p_set_power_mode(struct dib7000p_state *state, enum dib7000p_p
 		break;
 
 	case DIB7000P_POWER_ANALOG_ADC:
-		/* dem, cfg, iqc, sad, agc */
+		 
 		reg_774 &= ~((1 << 15) | (1 << 14) | (1 << 11) | (1 << 10) | (1 << 9));
-		/* nud */
+		 
 		reg_776 &= ~((1 << 0));
-		/* Dout */
+		 
 		if (state->version != SOC7090)
 			reg_1280 &= ~((1 << 11));
 		reg_1280 &= ~(1 << 6);
 		fallthrough;
 	case DIB7000P_POWER_INTERFACE_ONLY:
-		/* just leave power on the control-interfaces: GPIO and (I2C or SDIO) */
-		/* TODO power up either SDIO or I2C */
+		 
+		 
 		if (state->version == SOC7090)
 			reg_1280 &= ~((1 << 7) | (1 << 5));
 		else
 			reg_1280 &= ~((1 << 14) | (1 << 13) | (1 << 12) | (1 << 10));
 		break;
 
-/* TODO following stuff is just converted from the dib7000-driver - check when is used what */
+ 
 	}
 
 	dib7000p_write_word(state, 774, reg_774);
@@ -314,14 +310,14 @@ static void dib7000p_set_adc_state(struct dib7000p_state *state, enum dibx000_ad
 		if (state->version == SOC7090) {
 			reg = dib7000p_read_word(state, 1925);
 
-			dib7000p_write_word(state, 1925, reg | (1 << 4) | (1 << 2));	/* en_slowAdc = 1 & reset_sladc = 1 */
+			dib7000p_write_word(state, 1925, reg | (1 << 4) | (1 << 2));	 
 
-			reg = dib7000p_read_word(state, 1925);	/* read access to make it works... strange ... */
+			reg = dib7000p_read_word(state, 1925);	 
 			msleep(200);
-			dib7000p_write_word(state, 1925, reg & ~(1 << 4));	/* en_slowAdc = 1 & reset_sladc = 0 */
+			dib7000p_write_word(state, 1925, reg & ~(1 << 4));	 
 
 			reg = dib7000p_read_word(state, 72) & ~((0x3 << 14) | (0x3 << 12));
-			dib7000p_write_word(state, 72, reg | (1 << 14) | (3 << 12) | 524);	/* ref = Vin1 => Vbg ; sel = Vin0 or Vin3 ; (Vin2 = Vcm) */
+			dib7000p_write_word(state, 72, reg | (1 << 14) | (3 << 12) | 524);	 
 		} else {
 			reg_909 |= (1 << 1) | (1 << 0);
 			dib7000p_write_word(state, 909, reg_909);
@@ -332,7 +328,7 @@ static void dib7000p_set_adc_state(struct dib7000p_state *state, enum dibx000_ad
 	case DIBX000_SLOW_ADC_OFF:
 		if (state->version == SOC7090) {
 			reg = dib7000p_read_word(state, 1925);
-			dib7000p_write_word(state, 1925, (reg & ~(1 << 2)) | (1 << 4));	/* reset_sladc = 1 en_slowAdc = 0 */
+			dib7000p_write_word(state, 1925, (reg & ~(1 << 2)) | (1 << 4));	 
 		} else
 			reg_909 |= (1 << 1) | (1 << 0);
 		break;
@@ -359,7 +355,7 @@ static void dib7000p_set_adc_state(struct dib7000p_state *state, enum dibx000_ad
 		break;
 	}
 
-//	dprintk( "908: %x, 909: %x\n", reg_908, reg_909);
+
 
 	reg_909 |= (state->cfg.disable_sample_and_hold & 1) << 4;
 	reg_908 |= (state->cfg.enable_current_mirror & 1) << 7;
@@ -374,7 +370,7 @@ static int dib7000p_set_bandwidth(struct dib7000p_state *state, u32 bw)
 {
 	u32 timf;
 
-	// store the current bandwidth for later use
+	
 	state->current_bandwidth = bw;
 
 	if (state->timf == 0) {
@@ -395,7 +391,7 @@ static int dib7000p_set_bandwidth(struct dib7000p_state *state, u32 bw)
 
 static int dib7000p_sad_calib(struct dib7000p_state *state)
 {
-/* internal */
+ 
 	dib7000p_write_word(state, 73, (0 << 1) | (0 << 0));
 
 	if (state->version == SOC7090)
@@ -403,7 +399,7 @@ static int dib7000p_sad_calib(struct dib7000p_state *state)
 	else
 		dib7000p_write_word(state, 74, 776);
 
-	/* do the calibration */
+	 
 	dib7000p_write_word(state, 73, (1 << 0));
 	dib7000p_write_word(state, 73, (0 << 0));
 
@@ -457,13 +453,13 @@ static void dib7000p_reset_pll(struct dib7000p_state *state)
 
 		dib7000p_write_word(state, 1857, dib7000p_read_word(state, 1857) | (!bw->pll_bypass << 15));
 	} else {
-		/* force PLL bypass */
+		 
 		clk_cfg0 = (1 << 15) | ((bw->pll_ratio & 0x3f) << 9) |
 			(bw->modulo << 7) | (bw->ADClkSrc << 6) | (bw->IO_CLK_en_core << 5) | (bw->bypclk_div << 2) | (bw->enable_refdiv << 1) | (0 << 0);
 
 		dib7000p_write_word(state, 900, clk_cfg0);
 
-		/* P_pll_cfg */
+		 
 		dib7000p_write_word(state, 903, (bw->pll_prediv << 5) | (((bw->pll_ratio >> 6) & 0x3) << 3) | (bw->pll_range << 1) | bw->pll_reset);
 		clk_cfg0 = (bw->pll_bypass << 15) | (clk_cfg0 & 0x7fff);
 		dib7000p_write_word(state, 900, clk_cfg0);
@@ -493,7 +489,7 @@ static int dib7000p_update_pll(struct dvb_frontend *fe, struct dibx000_bandwidth
 	u8 loopdiv, prediv;
 	u32 internal, xtal;
 
-	/* get back old values */
+	 
 	prediv = reg_1856 & 0x3f;
 	loopdiv = (reg_1856 >> 6) & 0x3f;
 
@@ -505,10 +501,10 @@ static int dib7000p_update_pll(struct dvb_frontend *fe, struct dibx000_bandwidth
 
 		dib7000p_write_word(state, 1856, reg_1856 | ((bw->pll_ratio & 0x3f) << 6) | (bw->pll_prediv & 0x3f));
 
-		/* write new system clk into P_sec_len */
+		 
 		internal = dib7000p_get_internal_freq(state);
 		xtal = (internal / loopdiv) * prediv;
-		internal = 1000 * (xtal / bw->pll_prediv) * bw->pll_ratio;	/* new internal */
+		internal = 1000 * (xtal / bw->pll_prediv) * bw->pll_ratio;	 
 		dib7000p_write_word(state, 18, (u16) ((internal >> 16) & 0xffff));
 		dib7000p_write_word(state, 19, (u16) (internal & 0xffff));
 
@@ -524,13 +520,13 @@ static int dib7000p_update_pll(struct dvb_frontend *fe, struct dibx000_bandwidth
 
 static int dib7000p_reset_gpio(struct dib7000p_state *st)
 {
-	/* reset the GPIOs */
+	 
 	dprintk("gpio dir: %x: val: %x, pwm_pos: %x\n", st->gpio_dir, st->gpio_val, st->cfg.gpio_pwm_pos);
 
 	dib7000p_write_word(st, 1029, st->gpio_dir);
 	dib7000p_write_word(st, 1030, st->gpio_val);
 
-	/* TODO 1031 is P_gpio_od */
+	 
 
 	dib7000p_write_word(st, 1032, st->cfg.gpio_pwm_pos);
 
@@ -541,13 +537,13 @@ static int dib7000p_reset_gpio(struct dib7000p_state *st)
 static int dib7000p_cfg_gpio(struct dib7000p_state *st, u8 num, u8 dir, u8 val)
 {
 	st->gpio_dir = dib7000p_read_word(st, 1029);
-	st->gpio_dir &= ~(1 << num);	/* reset the direction bit */
-	st->gpio_dir |= (dir & 0x1) << num;	/* set the new direction */
+	st->gpio_dir &= ~(1 << num);	 
+	st->gpio_dir |= (dir & 0x1) << num;	 
 	dib7000p_write_word(st, 1029, st->gpio_dir);
 
 	st->gpio_val = dib7000p_read_word(st, 1030);
-	st->gpio_val &= ~(1 << num);	/* reset the direction bit */
-	st->gpio_val |= (val & 0x01) << num;	/* set the new value */
+	st->gpio_val &= ~(1 << num);	 
+	st->gpio_val |= (val & 0x01) << num;	 
 	dib7000p_write_word(st, 1030, st->gpio_val);
 
 	return 0;
@@ -560,11 +556,11 @@ static int dib7000p_set_gpio(struct dvb_frontend *demod, u8 num, u8 dir, u8 val)
 }
 
 static u16 dib7000p_defaults[] = {
-	// auto search configuration
+	
 	3, 2,
 	0x0004,
 	(1<<3)|(1<<11)|(1<<12)|(1<<13),
-	0x0814,			/* Equal Lock */
+	0x0814,			 
 
 	12, 6,
 	0x001b,
@@ -583,7 +579,7 @@ static u16 dib7000p_defaults[] = {
 	1, 26,
 	0x6680,
 
-	/* set ADC level to -16 */
+	 
 	11, 79,
 	(1 << 13) - 825 - 117,
 	(1 << 13) - 837 - 117,
@@ -600,7 +596,7 @@ static u16 dib7000p_defaults[] = {
 	1, 142,
 	0x0410,
 
-	/* disable power smoothing */
+	 
 	8, 145,
 	0,
 	0,
@@ -653,7 +649,7 @@ static int dib7000p_demod_reset(struct dib7000p_state *state)
 
 	dib7000p_set_adc_state(state, DIBX000_VBG_ENABLE);
 
-	/* restart all parts */
+	 
 	dib7000p_write_word(state, 770, 0xffff);
 	dib7000p_write_word(state, 771, 0xffff);
 	dib7000p_write_word(state, 772, 0x001f);
@@ -669,7 +665,7 @@ static int dib7000p_demod_reset(struct dib7000p_state *state)
 		dib7000p_write_word(state,  898, 0);
 	}
 
-	/* default */
+	 
 	dib7000p_reset_pll(state);
 
 	if (dib7000p_reset_gpio(state) != 0)
@@ -678,10 +674,10 @@ static int dib7000p_demod_reset(struct dib7000p_state *state)
 	if (state->version == SOC7090) {
 		dib7000p_write_word(state, 899, 0);
 
-		/* impulse noise */
-		dib7000p_write_word(state, 42, (1<<5) | 3); /* P_iqc_thsat_ipc = 1 ; P_iqc_win2 = 3 */
-		dib7000p_write_word(state, 43, 0x2d4); /*-300 fag P_iqc_dect_min = -280 */
-		dib7000p_write_word(state, 44, 300); /* 300 fag P_iqc_dect_min = +280 */
+		 
+		dib7000p_write_word(state, 42, (1<<5) | 3);  
+		dib7000p_write_word(state, 43, 0x2d4);  
+		dib7000p_write_word(state, 44, 300);  
 		dib7000p_write_word(state, 273, (0<<6) | 30);
 	}
 	if (dib7000p_set_output_mode(state, OUTMODE_HIGH_Z) != 0)
@@ -691,13 +687,13 @@ static int dib7000p_demod_reset(struct dib7000p_state *state)
 	dib7000p_sad_calib(state);
 	dib7000p_set_adc_state(state, DIBX000_SLOW_ADC_OFF);
 
-	/* unforce divstr regardless whether i2c enumeration was done or not */
+	 
 	dib7000p_write_word(state, 1285, dib7000p_read_word(state, 1285) & ~(1 << 1));
 
 	dib7000p_set_bandwidth(state, 8000);
 
 	if (state->version == SOC7090) {
-		dib7000p_write_word(state, 36, 0x0755);/* P_iqc_impnc_on =1 & P_iqc_corr_inh = 1 for impulsive noise */
+		dib7000p_write_word(state, 36, 0x0755); 
 	} else {
 		if (state->cfg.tuner_is_baseband)
 			dib7000p_write_word(state, 36, 0x0755);
@@ -728,7 +724,7 @@ static void dib7000p_pll_clk_cfg(struct dib7000p_state *state)
 
 static void dib7000p_restart_agc(struct dib7000p_state *state)
 {
-	// P_restart_iqc & P_restart_agc
+	
 	dib7000p_write_word(state, 770, (1 << 11) | (1 << 9));
 	dib7000p_write_word(state, 770, 0x0000);
 }
@@ -769,17 +765,17 @@ static int dib7000p_set_agc_config(struct dib7000p_state *state, u8 band)
 
 	state->current_agc = agc;
 
-	/* AGC */
+	 
 	dib7000p_write_word(state, 75, agc->setup);
 	dib7000p_write_word(state, 76, agc->inv_gain);
 	dib7000p_write_word(state, 77, agc->time_stabiliz);
 	dib7000p_write_word(state, 100, (agc->alpha_level << 12) | agc->thlock);
 
-	// Demod AGC loop configuration
+	
 	dib7000p_write_word(state, 101, (agc->alpha_mant << 5) | agc->alpha_exp);
 	dib7000p_write_word(state, 102, (agc->beta_mant << 6) | agc->beta_exp);
 
-	/* AGC continued */
+	 
 	dprintk("WBD: ref: %d, sel: %d, active: %d, alpha: %d\n",
 		state->wbd_ref != 0 ? state->wbd_ref : agc->wbd_ref, agc->wbd_sel, !agc->perform_agc_softsplit, agc->wbd_sel);
 
@@ -813,7 +809,7 @@ static int dib7000p_set_dds(struct dib7000p_state *state, s32 offset_khz)
 		pr_warn("DIB7000P: dib7000p_get_internal_freq returned 0\n");
 		return -1;
 	}
-	/* 2**26 / Fsampling is the unit 1KHz offset */
+	 
 	unit_khz_dds_val = 67108864 / (internal);
 
 	dprintk("setting a frequency offset of %dkHz internal freq = %d invert = %d\n", offset_khz, internal, invert);
@@ -821,13 +817,13 @@ static int dib7000p_set_dds(struct dib7000p_state *state, s32 offset_khz)
 	if (offset_khz < 0)
 		unit_khz_dds_val *= -1;
 
-	/* IF tuner */
+	 
 	if (invert)
-		dds -= (abs_offset_khz * unit_khz_dds_val);	/* /100 because of /100 on the unit_khz_dds_val line calc for better accuracy */
+		dds -= (abs_offset_khz * unit_khz_dds_val);	 
 	else
 		dds += (abs_offset_khz * unit_khz_dds_val);
 
-	if (abs_offset_khz <= (internal / 2)) {	/* Max dds offset is the half of the demod freq */
+	if (abs_offset_khz <= (internal / 2)) {	 
 		dib7000p_write_word(state, 21, (u16) (((dds >> 16) & 0x1ff) | (0 << 10) | (invert << 9)));
 		dib7000p_write_word(state, 22, (u16) (dds & 0xffff));
 	}
@@ -850,10 +846,10 @@ static int dib7000p_agc_startup(struct dvb_frontend *demod)
 		dib7000p_set_power_mode(state, DIB7000P_POWER_ALL);
 		if (state->version == SOC7090) {
 			reg = dib7000p_read_word(state, 0x79b) & 0xff00;
-			dib7000p_write_word(state, 0x79a, upd_demod_gain_period & 0xFFFF);	/* lsb */
+			dib7000p_write_word(state, 0x79a, upd_demod_gain_period & 0xFFFF);	 
 			dib7000p_write_word(state, 0x79b, reg | (1 << 14) | ((upd_demod_gain_period >> 16) & 0xFF));
 
-			/* enable adc i & q */
+			 
 			reg = dib7000p_read_word(state, 0x780);
 			dib7000p_write_word(state, 0x780, (reg | (0x3)) & (~(1 << 7)));
 		} else {
@@ -884,34 +880,34 @@ static int dib7000p_agc_startup(struct dvb_frontend *demod)
 
 		dib7000p_write_word(state, 78, 32768);
 		if (!state->current_agc->perform_agc_softsplit) {
-			/* we are using the wbd - so slow AGC startup */
-			/* force 0 split on WBD and restart AGC */
+			 
+			 
 			dib7000p_write_word(state, 106, (state->current_agc->wbd_sel << 13) | (state->current_agc->wbd_alpha << 9) | (1 << 8));
 			(*agc_state)++;
 			ret = 5;
 		} else {
-			/* default AGC startup */
+			 
 			(*agc_state) = 4;
-			/* wait AGC rough lock time */
+			 
 			ret = 7;
 		}
 
 		dib7000p_restart_agc(state);
 		break;
 
-	case 2:		/* fast split search path after 5sec */
-		dib7000p_write_word(state, 75, state->current_agc->setup | (1 << 4));	/* freeze AGC loop */
-		dib7000p_write_word(state, 106, (state->current_agc->wbd_sel << 13) | (2 << 9) | (0 << 8));	/* fast split search 0.25kHz */
+	case 2:		 
+		dib7000p_write_word(state, 75, state->current_agc->setup | (1 << 4));	 
+		dib7000p_write_word(state, 106, (state->current_agc->wbd_sel << 13) | (2 << 9) | (0 << 8));	 
 		(*agc_state)++;
 		ret = 14;
 		break;
 
-	case 3:		/* split search ended */
-		agc_split = (u8) dib7000p_read_word(state, 396);	/* store the split value for the next time */
-		dib7000p_write_word(state, 78, dib7000p_read_word(state, 394));	/* set AGC gain start value */
+	case 3:		 
+		agc_split = (u8) dib7000p_read_word(state, 396);	 
+		dib7000p_write_word(state, 78, dib7000p_read_word(state, 394));	 
 
-		dib7000p_write_word(state, 75, state->current_agc->setup);	/* std AGC loop */
-		dib7000p_write_word(state, 106, (state->current_agc->wbd_sel << 13) | (state->current_agc->wbd_alpha << 9) | agc_split);	/* standard split search */
+		dib7000p_write_word(state, 75, state->current_agc->setup);	 
+		dib7000p_write_word(state, 106, (state->current_agc->wbd_sel << 13) | (state->current_agc->wbd_alpha << 9) | agc_split);	 
 
 		dib7000p_restart_agc(state);
 
@@ -921,7 +917,7 @@ static int dib7000p_agc_startup(struct dvb_frontend *demod)
 		ret = 5;
 		break;
 
-	case 4:		/* LNA startup */
+	case 4:		 
 		ret = 7;
 
 		if (dib7000p_update_lna(state))
@@ -975,7 +971,7 @@ static void dib7000p_set_channel(struct dib7000p_state *state,
 
 	dib7000p_set_bandwidth(state, BANDWIDTH_TO_KHZ(ch->bandwidth_hz));
 
-	/* nfft, guard, qam, alpha */
+	 
 	value = 0;
 	switch (ch->transmission_mode) {
 	case TRANSMISSION_MODE_2K:
@@ -1029,9 +1025,9 @@ static void dib7000p_set_channel(struct dib7000p_state *state,
 		break;
 	}
 	dib7000p_write_word(state, 0, value);
-	dib7000p_write_word(state, 5, (seq << 4) | 1);	/* do not force tps, search list 0 */
+	dib7000p_write_word(state, 5, (seq << 4) | 1);	 
 
-	/* P_dintl_native, P_dintlv_inv, P_hrch, P_code_rate, P_select_hp */
+	 
 	value = 0;
 	if (1 != 0)
 		value |= (1 << 6);
@@ -1059,13 +1055,13 @@ static void dib7000p_set_channel(struct dib7000p_state *state,
 	}
 	dib7000p_write_word(state, 208, value);
 
-	/* offset loop parameters */
+	 
 	dib7000p_write_word(state, 26, 0x6680);
 	dib7000p_write_word(state, 32, 0x0003);
 	dib7000p_write_word(state, 29, 0x1273);
 	dib7000p_write_word(state, 33, 0x0005);
 
-	/* P_dvsy_sync_wait */
+	 
 	switch (ch->transmission_mode) {
 	case TRANSMISSION_MODE_8K:
 		value = 256;
@@ -1098,29 +1094,29 @@ static void dib7000p_set_channel(struct dib7000p_state *state,
 	else
 		state->div_sync_wait = (value * 3) / 2 + state->cfg.diversity_delay;
 
-	/* deactivate the possibility of diversity reception if extended interleaver */
+	 
 	state->div_force_off = !1 && ch->transmission_mode != TRANSMISSION_MODE_8K;
 	dib7000p_set_diversity_in(&state->demod, state->div_state);
 
-	/* channel estimation fine configuration */
+	 
 	switch (ch->modulation) {
 	case QAM_64:
-		est[0] = 0x0148;	/* P_adp_regul_cnt 0.04 */
-		est[1] = 0xfff0;	/* P_adp_noise_cnt -0.002 */
-		est[2] = 0x00a4;	/* P_adp_regul_ext 0.02 */
-		est[3] = 0xfff8;	/* P_adp_noise_ext -0.001 */
+		est[0] = 0x0148;	 
+		est[1] = 0xfff0;	 
+		est[2] = 0x00a4;	 
+		est[3] = 0xfff8;	 
 		break;
 	case QAM_16:
-		est[0] = 0x023d;	/* P_adp_regul_cnt 0.07 */
-		est[1] = 0xffdf;	/* P_adp_noise_cnt -0.004 */
-		est[2] = 0x00a4;	/* P_adp_regul_ext 0.02 */
-		est[3] = 0xfff0;	/* P_adp_noise_ext -0.002 */
+		est[0] = 0x023d;	 
+		est[1] = 0xffdf;	 
+		est[2] = 0x00a4;	 
+		est[3] = 0xfff0;	 
 		break;
 	default:
-		est[0] = 0x099a;	/* P_adp_regul_cnt 0.3 */
-		est[1] = 0xffae;	/* P_adp_noise_cnt -0.01 */
-		est[2] = 0x0333;	/* P_adp_regul_ext 0.1 */
-		est[3] = 0xfff8;	/* P_adp_noise_ext -0.002 */
+		est[0] = 0x099a;	 
+		est[1] = 0xffae;	 
+		est[2] = 0x0333;	 
+		est[3] = 0xfff8;	 
 		break;
 	}
 	for (value = 0; value < 4; value++)
@@ -1285,12 +1281,12 @@ static int dib7000p_tune(struct dvb_frontend *demod)
 	else
 		return -EINVAL;
 
-	// restart demod
+	
 	dib7000p_write_word(state, 770, 0x4000);
 	dib7000p_write_word(state, 770, 0x0000);
 	msleep(45);
 
-	/* P_ctrl_inh_cor=0, P_ctrl_alpha_cor=4, P_ctrl_inh_isi=0, P_ctrl_alpha_isi=3, P_ctrl_inh_cor4=1, P_ctrl_alpha_cor4=3 */
+	 
 	tmp = (0 << 14) | (4 << 10) | (0 << 9) | (3 << 5) | (1 << 4) | (0x3);
 	if (state->sfn_workaround_active) {
 		dprintk("SFN workaround is active\n");
@@ -1301,13 +1297,13 @@ static int dib7000p_tune(struct dvb_frontend *demod)
 	}
 	dib7000p_write_word(state, 29, tmp);
 
-	// never achieved a lock with that bandwidth so far - wait for osc-freq to update
+	
 	if (state->timf == 0)
 		msleep(200);
 
-	/* offset loop parameters */
+	 
 
-	/* P_timf_alpha, P_corm_alpha=6, P_corm_thres=0x80 */
+	 
 	tmp = (6 << 8) | 0x80;
 	switch (ch->transmission_mode) {
 	case TRANSMISSION_MODE_2K:
@@ -1321,9 +1317,9 @@ static int dib7000p_tune(struct dvb_frontend *demod)
 		tmp |= (4 << 12);
 		break;
 	}
-	dib7000p_write_word(state, 26, tmp);	/* timf_a(6xxx) */
+	dib7000p_write_word(state, 26, tmp);	 
 
-	/* P_ctrl_freeze_pha_shift=0, P_ctrl_pha_off_max */
+	 
 	tmp = (0 << 4);
 	switch (ch->transmission_mode) {
 	case TRANSMISSION_MODE_2K:
@@ -1339,7 +1335,7 @@ static int dib7000p_tune(struct dvb_frontend *demod)
 	}
 	dib7000p_write_word(state, 32, tmp);
 
-	/* P_ctrl_sfreq_inh=0, P_ctrl_sfreq_step */
+	 
 	tmp = (0 << 4);
 	switch (ch->transmission_mode) {
 	case TRANSMISSION_MODE_2K:
@@ -1357,17 +1353,17 @@ static int dib7000p_tune(struct dvb_frontend *demod)
 
 	tmp = dib7000p_read_word(state, 509);
 	if (!((tmp >> 6) & 0x1)) {
-		/* restart the fec */
+		 
 		tmp = dib7000p_read_word(state, 771);
 		dib7000p_write_word(state, 771, tmp | (1 << 1));
 		dib7000p_write_word(state, 771, tmp);
 		msleep(40);
 		tmp = dib7000p_read_word(state, 509);
 	}
-	// we achieved a lock - it's time to update the osc freq
+	
 	if ((tmp >> 6) & 0x1) {
 		dib7000p_update_timf(state);
-		/* P_timf_alpha += 2 */
+		 
 		tmp = dib7000p_read_word(state, 26);
 		dib7000p_write_word(state, 26, (tmp & ~(0xf << 12)) | ((((tmp >> 12) & 0xf) + 5) << 12));
 	}
@@ -1435,7 +1431,7 @@ static int dib7000p_get_frontend(struct dvb_frontend *fe,
 	case 1:
 		fep->transmission_mode = TRANSMISSION_MODE_8K;
 		break;
-	/* case 2: fep->transmission_mode = TRANSMISSION_MODE_4K; break; */
+	 
 	}
 
 	switch (tps & 0x3) {
@@ -1466,8 +1462,8 @@ static int dib7000p_get_frontend(struct dvb_frontend *fe,
 		break;
 	}
 
-	/* as long as the frontend_param structure is fixed for hierarchical transmission I refuse to use it */
-	/* (tps >> 13) & 0x1 == hrch is used, (tps >> 10) & 0x7 == alpha */
+	 
+	 
 
 	fep->hierarchy = HIERARCHY_NONE;
 	switch ((tps >> 5) & 0x7) {
@@ -1509,7 +1505,7 @@ static int dib7000p_get_frontend(struct dvb_frontend *fe,
 		break;
 	}
 
-	/* native interleaver: (dib7000p_read_word(state, 464) >>  5) & 0x1 */
+	 
 
 	return 0;
 }
@@ -1525,13 +1521,13 @@ static int dib7000p_set_frontend(struct dvb_frontend *fe)
 	else
 		dib7000p_set_output_mode(state, OUTMODE_HIGH_Z);
 
-	/* maybe the parameter has been changed */
+	 
 	state->sfn_workaround_active = buggy_sfn_workaround;
 
 	if (fe->ops.tuner_ops.set_params)
 		fe->ops.tuner_ops.set_params(fe);
 
-	/* start up the AGC */
+	 
 	state->agc_state = 0;
 	do {
 		time = dib7000p_agc_startup(fe);
@@ -1558,7 +1554,7 @@ static int dib7000p_set_frontend(struct dvb_frontend *fe)
 
 	ret = dib7000p_tune(fe);
 
-	/* make this a config parameter */
+	 
 	if (state->version == SOC7090) {
 		dib7090_set_output_mode(fe, state->cfg.output_mode);
 		if (state->cfg.enMpegOutput == 0) {
@@ -1701,25 +1697,7 @@ struct linear_segments {
 	signed y;
 };
 
-/*
- * Table to estimate signal strength in dBm.
- * This table should be empirically determinated by measuring the signal
- * strength generated by a RF generator directly connected into
- * a device.
- * This table was determinated by measuring the signal strength generated
- * by a DTA-2111 RF generator directly connected into a dib7000p device
- * (a Hauppauge Nova-TD stick), using a good quality 3 meters length
- * RC6 cable and good RC6 connectors, connected directly to antenna 1.
- * As the minimum output power of DTA-2111 is -31dBm, a 16 dBm attenuator
- * were used, for the lower power values.
- * The real value can actually be on other devices, or even at the
- * second antena input, depending on several factors, like if LNA
- * is enabled or not, if diversity is enabled, type of connectors, etc.
- * Yet, it is better to use this measure in dB than a random non-linear
- * percentage value, especially for antenna adjustments.
- * On my tests, the precision of the measure using this table is about
- * 0.5 dB, with sounds reasonable enough to adjust antennas.
- */
+ 
 #define DB_OFFSET 131000
 
 static struct linear_segments strength_to_db_table[] = {
@@ -1773,14 +1751,14 @@ static u32 interpolate_value(u32 value, struct linear_segments *segments,
 		return segments[len-1].y;
 
 	for (i = 1; i < len - 1; i++) {
-		/* If value is identical, no need to interpolate */
+		 
 		if (value == segments[i].x)
 			return segments[i].y;
 		if (value > segments[i].x)
 			break;
 	}
 
-	/* Linear interpolation between the two (x,y) points */
+	 
 	dy = segments[i - 1].y - segments[i].y;
 	dx = segments[i - 1].x - segments[i].x;
 
@@ -1792,7 +1770,7 @@ static u32 interpolate_value(u32 value, struct linear_segments *segments,
 	return ret;
 }
 
-/* FIXME: may require changes - this one was borrowed from dib8000 */
+ 
 static u32 dib7000p_get_time_us(struct dvb_frontend *demod)
 {
 	struct dtv_frontend_properties *c = &demod->dtv_property_cache;
@@ -1870,16 +1848,13 @@ static u32 dib7000p_get_time_us(struct dvb_frontend *demod)
 
 	denom = bits_per_symbol * rate_num * fft_div * 384;
 
-	/*
-	 * FIXME: check if the math makes sense. If so, fill the
-	 * interleaving var.
-	 */
+	 
 
-	/* If calculus gets wrong, wait for 1s for the next stats */
+	 
 	if (!denom)
 		return 0;
 
-	/* Estimate the period for the total bit rate */
+	 
 	time_us = rate_denum * (1008 * 1562500L);
 	tmp64 = time_us;
 	do_div(tmp64, guard);
@@ -1903,7 +1878,7 @@ static int dib7000p_get_stats(struct dvb_frontend *demod, enum fe_status stat)
 	s32 db;
 	u16 strength;
 
-	/* Get Signal strength */
+	 
 	dib7000p_read_signal_strength(demod, &strength);
 	val = strength;
 	db = interpolate_value(val,
@@ -1911,7 +1886,7 @@ static int dib7000p_get_stats(struct dvb_frontend *demod, enum fe_status stat)
 			       ARRAY_SIZE(strength_to_db_table)) - DB_OFFSET;
 	c->strength.stat[0].svalue = db;
 
-	/* UCB/BER/CNR measures require lock */
+	 
 	if (!(stat & FE_HAS_LOCK)) {
 		c->cnr.len = 1;
 		c->block_count.len = 1;
@@ -1926,11 +1901,11 @@ static int dib7000p_get_stats(struct dvb_frontend *demod, enum fe_status stat)
 		return 0;
 	}
 
-	/* Check if time for stats was elapsed */
+	 
 	if (time_after(jiffies, state->per_jiffies_stats)) {
 		state->per_jiffies_stats = jiffies + msecs_to_jiffies(1000);
 
-		/* Get SNR */
+		 
 		snr = dib7000p_get_snr(demod);
 		if (snr)
 			snr = (1000L * snr) >> 24;
@@ -1939,7 +1914,7 @@ static int dib7000p_get_stats(struct dvb_frontend *demod, enum fe_status stat)
 		c->cnr.stat[0].svalue = snr;
 		c->cnr.stat[0].scale = FE_SCALE_DECIBEL;
 
-		/* Get UCB measures */
+		 
 		dib7000p_read_unc_blocks(demod, &val);
 		ucb = val - state->old_ucb;
 		if (val < state->old_ucb)
@@ -1948,7 +1923,7 @@ static int dib7000p_get_stats(struct dvb_frontend *demod, enum fe_status stat)
 		c->block_error.stat[0].scale = FE_SCALE_COUNTER;
 		c->block_error.stat[0].uvalue = ucb;
 
-		/* Estimate the number of packets based on bitrate */
+		 
 		if (!time_us)
 			time_us = dib7000p_get_time_us(demod);
 
@@ -1962,7 +1937,7 @@ static int dib7000p_get_stats(struct dvb_frontend *demod, enum fe_status stat)
 		show_per_stats = 1;
 	}
 
-	/* Get post-BER measures */
+	 
 	if (time_after(jiffies, state->ber_jiffies_stats)) {
 		time_us = dib7000p_get_time_us(demod);
 		state->ber_jiffies_stats = jiffies + msecs_to_jiffies((time_us + 500) / 1000);
@@ -1977,7 +1952,7 @@ static int dib7000p_get_stats(struct dvb_frontend *demod, enum fe_status stat)
 		c->post_bit_count.stat[0].uvalue += 100000000;
 	}
 
-	/* Get PER measures */
+	 
 	if (show_per_stats) {
 		dib7000p_read_unc_blocks(demod, &val);
 
@@ -2096,16 +2071,16 @@ static int dib7000p_i2c_enumeration(struct i2c_adapter *i2c, int no_of_demods, u
 	for (k = no_of_demods - 1; k >= 0; k--) {
 		dpst->cfg = cfg[k];
 
-		/* designated i2c address */
+		 
 		if (cfg[k].default_i2c_addr != 0)
 			new_addr = cfg[k].default_i2c_addr + (k << 1);
 		else
 			new_addr = (0x40 + k) << 1;
 		dpst->i2c_addr = new_addr;
-		dib7000p_write_word(dpst, 1287, 0x0003);	/* sram lead in, rdy */
+		dib7000p_write_word(dpst, 1287, 0x0003);	 
 		if (dib7000p_identify(dpst) != 0) {
 			dpst->i2c_addr = default_addr;
-			dib7000p_write_word(dpst, 1287, 0x0003);	/* sram lead in, rdy */
+			dib7000p_write_word(dpst, 1287, 0x0003);	 
 			if (dib7000p_identify(dpst) != 0) {
 				dprintk("DiB7000P #%d: not identified\n", k);
 				kfree(dpst);
@@ -2113,10 +2088,10 @@ static int dib7000p_i2c_enumeration(struct i2c_adapter *i2c, int no_of_demods, u
 			}
 		}
 
-		/* start diversity to pull_down div_str - just for i2c-enumeration */
+		 
 		dib7000p_set_output_mode(dpst, OUTMODE_DIVERSITY);
 
-		/* set new i2c address and force divstart */
+		 
 		dib7000p_write_word(dpst, 1285, (new_addr << 2) | 0x2);
 
 		dprintk("IC %d initialized (to i2c_address 0x%x)\n", k, new_addr);
@@ -2129,10 +2104,10 @@ static int dib7000p_i2c_enumeration(struct i2c_adapter *i2c, int no_of_demods, u
 		else
 			dpst->i2c_addr = (0x40 + k) << 1;
 
-		// unforce divstr
+		
 		dib7000p_write_word(dpst, 1285, dpst->i2c_addr << 2);
 
-		/* deactivate div - it was just for i2c-enumeration */
+		 
 		dib7000p_set_output_mode(dpst, OUTMODE_HIGH_Z);
 	}
 
@@ -2164,7 +2139,7 @@ static s32 dib7000p_get_adc_power(struct dvb_frontend *fe)
 	mant = (pow_i * 1000 / (1 << exp));
 	dprintk(" mant = %d exp = %d\n", mant / 1000, exp);
 
-	ix = (u8) ((mant - 1000) / 100);	/* index of the LUT */
+	ix = (u8) ((mant - 1000) / 100);	 
 	dprintk(" ix = %d\n", ix);
 
 	pow_i = (lut_1000ln_mant[ix] + 693 * (exp - 20) - 6908);
@@ -2244,10 +2219,10 @@ static int w7090p_tuner_read_serpar(struct i2c_adapter *i2c_adap, struct i2c_msg
 
 static int w7090p_tuner_rw_serpar(struct i2c_adapter *i2c_adap, struct i2c_msg msg[], int num)
 {
-	if (map_addr_to_serpar_number(&msg[0]) == 0) {	/* else = Tuner regs to ignore : DIG_CFG, CTRL_RF_LT, PLL_CFG, PWM1_REG, ADCCLK, DIG_CFG_3; SLEEP_EN... */
-		if (num == 1) {	/* write */
+	if (map_addr_to_serpar_number(&msg[0]) == 0) {	 
+		if (num == 1) {	 
 			return w7090p_tuner_write_serpar(i2c_adap, msg, 1);
-		} else {	/* read */
+		} else {	 
 			return w7090p_tuner_read_serpar(i2c_adap, msg, 2);
 		}
 	}
@@ -2260,7 +2235,7 @@ static int dib7090p_rw_on_apb(struct i2c_adapter *i2c_adap,
 	struct dib7000p_state *state = i2c_get_adapdata(i2c_adap);
 	u16 word;
 
-	if (num == 1) {		/* write */
+	if (num == 1) {		 
 		dib7000p_write_word(state, apb_address, ((msg[0].buf[1] << 8) | (msg[0].buf[2])));
 	} else {
 		word = dib7000p_read_word(state, apb_address);
@@ -2369,18 +2344,18 @@ static int dib7090_tuner_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg msg[]
 		msg[1].buf[1] = (word) & 0xff;
 		return num;
 	case 0x1f:
-		if (num == 1) {	/* write */
+		if (num == 1) {	 
 			word = (u16) ((msg[0].buf[1] << 8) | msg[0].buf[2]);
 			word &= 0x3;
 			word = (dib7000p_read_word(state, 72) & ~(3 << 12)) | (word << 12);
-			dib7000p_write_word(state, 72, word);	/* Set the proper input */
+			dib7000p_write_word(state, 72, word);	 
 			return num;
 		}
 	}
 
-	if (apb_address != 0)	/* R/W access via APB */
+	if (apb_address != 0)	 
 		return dib7090p_rw_on_apb(i2c_adap, msg, num, apb_address);
-	else			/* R/W access via SERPAR  */
+	else			 
 		return w7090p_tuner_rw_serpar(i2c_adap, msg, num);
 
 	return 0;
@@ -2406,27 +2381,27 @@ static int dib7090_host_bus_drive(struct dib7000p_state *state, u8 drive)
 {
 	u16 reg;
 
-	/* drive host bus 2, 3, 4 */
+	 
 	reg = dib7000p_read_word(state, 1798) & ~((0x7) | (0x7 << 6) | (0x7 << 12));
 	reg |= (drive << 12) | (drive << 6) | drive;
 	dib7000p_write_word(state, 1798, reg);
 
-	/* drive host bus 5,6 */
+	 
 	reg = dib7000p_read_word(state, 1799) & ~((0x7 << 2) | (0x7 << 8));
 	reg |= (drive << 8) | (drive << 2);
 	dib7000p_write_word(state, 1799, reg);
 
-	/* drive host bus 7, 8, 9 */
+	 
 	reg = dib7000p_read_word(state, 1800) & ~((0x7) | (0x7 << 6) | (0x7 << 12));
 	reg |= (drive << 12) | (drive << 6) | drive;
 	dib7000p_write_word(state, 1800, reg);
 
-	/* drive host bus 10, 11 */
+	 
 	reg = dib7000p_read_word(state, 1801) & ~((0x7 << 2) | (0x7 << 8));
 	reg |= (drive << 8) | (drive << 2);
 	dib7000p_write_word(state, 1801, reg);
 
-	/* drive host bus 12, 13, 14 */
+	 
 	reg = dib7000p_read_word(state, 1802) & ~((0x7) | (0x7 << 6) | (0x7 << 12));
 	reg |= (drive << 12) | (drive << 6) | drive;
 	dib7000p_write_word(state, 1802, reg);
@@ -2515,7 +2490,7 @@ static void dib7090_configMpegMux(struct dib7000p_state *state,
 
 	dib7090_enMpegMux(state, 0);
 
-	/* If the input mode is MPEG do not divide the serial clock */
+	 
 	if ((enSerialMode == 1) && (state->input_mode_mpeg == 1))
 		enSerialClkDiv2 = 0;
 
@@ -2583,23 +2558,23 @@ static int dib7090_set_diversity_in(struct dvb_frontend *fe, int onoff)
 	u16 reg_1287;
 
 	switch (onoff) {
-	case 0: /* only use the internal way - not the diversity input */
+	case 0:  
 			dprintk("%s mode OFF : by default Enable Mpeg INPUT\n", __func__);
 			dib7090_cfg_DibRx(state, 8, 5, 0, 0, 0, 8, 0);
 
-			/* Do not divide the serial clock of MPEG MUX */
-			/* in SERIAL MODE in case input mode MPEG is used */
+			 
+			 
 			reg_1287 = dib7000p_read_word(state, 1287);
-			/* enSerialClkDiv2 == 1 ? */
+			 
 			if ((reg_1287 & 0x1) == 1) {
-				/* force enSerialClkDiv2 = 0 */
+				 
 				reg_1287 &= ~0x1;
 				dib7000p_write_word(state, 1287, reg_1287);
 			}
 			state->input_mode_mpeg = 1;
 			break;
-	case 1: /* both ways */
-	case 2: /* only the diversity input */
+	case 1:  
+	case 2:  
 			dprintk("%s ON : Enable diversity INPUT\n", __func__);
 			dib7090_cfg_DibRx(state, 5, 5, 0, 0, 0, 0, 0);
 			state->input_mode_mpeg = 0;
@@ -2634,7 +2609,7 @@ static int dib7090_set_output_mode(struct dvb_frontend *fe, int mode)
 			dprintk("setting output mode TS_SERIAL using Mpeg Mux\n");
 			dib7090_configMpegMux(state, 3, 1, 1);
 			dib7090_setHostBusMux(state, MPEG_ON_HOSTBUS);
-		} else {/* Use Smooth block */
+		} else { 
 			dprintk("setting output mode TS_SERIAL using Smooth bloc\n");
 			dib7090_setHostBusMux(state, DEMOUT_ON_HOSTBUS);
 			outreg |= (2<<6) | (0 << 1);
@@ -2646,20 +2621,20 @@ static int dib7090_set_output_mode(struct dvb_frontend *fe, int mode)
 			dprintk("setting output mode TS_PARALLEL_GATED using Mpeg Mux\n");
 			dib7090_configMpegMux(state, 2, 0, 0);
 			dib7090_setHostBusMux(state, MPEG_ON_HOSTBUS);
-		} else { /* Use Smooth block */
+		} else {  
 			dprintk("setting output mode TS_PARALLEL_GATED using Smooth block\n");
 			dib7090_setHostBusMux(state, DEMOUT_ON_HOSTBUS);
 			outreg |= (0<<6);
 		}
 		break;
 
-	case OUTMODE_MPEG2_PAR_CONT_CLK:	/* Using Smooth block only */
+	case OUTMODE_MPEG2_PAR_CONT_CLK:	 
 		dprintk("setting output mode TS_PARALLEL_CONT using Smooth block\n");
 		dib7090_setHostBusMux(state, DEMOUT_ON_HOSTBUS);
 		outreg |= (1<<6);
 		break;
 
-	case OUTMODE_MPEG2_FIFO:	/* Using Smooth block because not supported by new Mpeg Mux bloc */
+	case OUTMODE_MPEG2_FIFO:	 
 		dprintk("setting output mode TS_FIFO using Smooth block\n");
 		dib7090_setHostBusMux(state, DEMOUT_ON_HOSTBUS);
 		outreg |= (5<<6);
@@ -2686,7 +2661,7 @@ static int dib7090_set_output_mode(struct dvb_frontend *fe, int mode)
 		smo_mode |= (1 << 5);
 
 	ret |= dib7000p_write_word(state, 235, smo_mode);
-	ret |= dib7000p_write_word(state, 236, fifo_threshold);	/* synchronous fread */
+	ret |= dib7000p_write_word(state, 236, fifo_threshold);	 
 	ret |= dib7000p_write_word(state, 1286, outreg);
 
 	return ret;
@@ -2748,9 +2723,7 @@ static struct dvb_frontend *dib7000p_init(struct i2c_adapter *i2c_adap, u8 i2c_a
 	st->gpio_val = cfg->gpio_val;
 	st->gpio_dir = cfg->gpio_dir;
 
-	/* Ensure the output mode remains at the previous default if it's
-	 * not specifically set by the caller.
-	 */
+	 
 	if ((st->cfg.output_mode != OUTMODE_MPEG2_SERIAL) && (st->cfg.output_mode != OUTMODE_MPEG2_PAR_GATED_CLK))
 		st->cfg.output_mode = OUTMODE_MPEG2_FIFO;
 
@@ -2759,21 +2732,19 @@ static struct dvb_frontend *dib7000p_init(struct i2c_adapter *i2c_adap, u8 i2c_a
 	memcpy(&st->demod.ops, &dib7000p_ops, sizeof(struct dvb_frontend_ops));
 	mutex_init(&st->i2c_buffer_lock);
 
-	dib7000p_write_word(st, 1287, 0x0003);	/* sram lead in, rdy */
+	dib7000p_write_word(st, 1287, 0x0003);	 
 
 	if (dib7000p_identify(st) != 0)
 		goto error;
 
 	st->version = dib7000p_read_word(st, 897);
 
-	/* FIXME: make sure the dev.parent field is initialized, or else
-	   request_firmware() will hit an OOPS (this should be moved somewhere
-	   more common) */
+	 
 	st->i2c_master.gated_tuner_i2c_adap.dev.parent = i2c_adap->dev.parent;
 
 	dibx000_init_i2c_master(&st->i2c_master, DIB7000P, st->i2c_adap, st->i2c_addr);
 
-	/* init 7090 tuner adapter */
+	 
 	strscpy(st->dib7090_tuner_adap.name, "DiB7090 tuner interface",
 		sizeof(st->dib7090_tuner_adap.name));
 	st->dib7090_tuner_adap.algo = &dib7090_tuner_xfer_algo;

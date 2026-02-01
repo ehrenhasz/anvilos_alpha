@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra 124 cpufreq driver
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -133,11 +131,7 @@ static int __maybe_unused tegra124_cpufreq_suspend(struct device *dev)
 	struct tegra124_cpufreq_priv *priv = dev_get_drvdata(dev);
 	int err;
 
-	/*
-	 * PLLP rate 408Mhz is below the CPU Fmax at Vmin and is safe to
-	 * use during suspend and resume. So, switch the CPU clock source
-	 * to PLLP and disable DFLL.
-	 */
+	 
 	err = clk_set_parent(priv->cpu_clk, priv->pllp_clk);
 	if (err < 0) {
 		dev_err(dev, "failed to reparent to PLLP: %d\n", err);
@@ -154,10 +148,7 @@ static int __maybe_unused tegra124_cpufreq_resume(struct device *dev)
 	struct tegra124_cpufreq_priv *priv = dev_get_drvdata(dev);
 	int err;
 
-	/*
-	 * Warmboot code powers up the CPU with PLLP clock source.
-	 * Enable DFLL clock and switch CPU clock source back to DFLL.
-	 */
+	 
 	err = clk_prepare_enable(priv->dfll_clk);
 	if (err < 0) {
 		dev_err(dev, "failed to enable DFLL clock for CPU: %d\n", err);
@@ -200,10 +191,7 @@ static int __init tegra_cpufreq_init(void)
 		of_machine_is_compatible("nvidia,tegra210")))
 		return -ENODEV;
 
-	/*
-	 * Platform driver+device required for handling EPROBE_DEFER with
-	 * the regulator and the DFLL clock
-	 */
+	 
 	ret = platform_driver_register(&tegra124_cpufreq_platdrv);
 	if (ret)
 		return ret;

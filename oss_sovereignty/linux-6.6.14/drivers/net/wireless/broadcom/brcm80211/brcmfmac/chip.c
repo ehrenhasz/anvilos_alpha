@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/list.h>
@@ -17,11 +15,11 @@
 #include "debug.h"
 #include "chip.h"
 
-/* SOC Interconnect types (aka chip types) */
+ 
 #define SOCI_SB		0
 #define SOCI_AI		1
 
-/* PL-368 DMP definitions */
+ 
 #define DMP_DESC_TYPE_MSK	0x0000000F
 #define  DMP_DESC_EMPTY		0x00000000
 #define  DMP_DESC_VALID		0x00000001
@@ -70,27 +68,27 @@
 #define  DMP_SLAVE_SIZE_16K	2
 #define  DMP_SLAVE_SIZE_DESC	3
 
-/* EROM CompIdentB */
+ 
 #define CIB_REV_MASK		0xff000000
 #define CIB_REV_SHIFT		24
 
-/* ARM CR4 core specific control flag bits */
+ 
 #define ARMCR4_BCMA_IOCTL_CPUHALT	0x0020
 
-/* D11 core specific control flag bits */
+ 
 #define D11_BCMA_IOCTL_PHYCLOCKEN	0x0004
 #define D11_BCMA_IOCTL_PHYRESET		0x0008
 
-/* chip core base & ramsize */
-/* bcm4329 */
-/* SDIO device core, ID 0x829 */
+ 
+ 
+ 
 #define BCM4329_CORE_BUS_BASE		0x18011000
-/* internal memory core, ID 0x80e */
+ 
 #define BCM4329_CORE_SOCRAM_BASE	0x18003000
-/* ARM Cortex M3 core, ID 0x82a */
+ 
 #define BCM4329_CORE_ARM_BASE		0x18002000
 
-/* Max possibly supported memory size (limited by IO mapped memory) */
+ 
 #define BRCMF_CHIP_MAX_MEMSIZE		(4 * 1024 * 1024)
 
 #define CORE_SB(base, field) \
@@ -101,53 +99,53 @@
 
 struct sbconfig {
 	u32 PAD[2];
-	u32 sbipsflag;	/* initiator port ocp slave flag */
+	u32 sbipsflag;	 
 	u32 PAD[3];
-	u32 sbtpsflag;	/* target port ocp slave flag */
+	u32 sbtpsflag;	 
 	u32 PAD[11];
-	u32 sbtmerrloga;	/* (sonics >= 2.3) */
+	u32 sbtmerrloga;	 
 	u32 PAD;
-	u32 sbtmerrlog;	/* (sonics >= 2.3) */
+	u32 sbtmerrlog;	 
 	u32 PAD[3];
-	u32 sbadmatch3;	/* address match3 */
+	u32 sbadmatch3;	 
 	u32 PAD;
-	u32 sbadmatch2;	/* address match2 */
+	u32 sbadmatch2;	 
 	u32 PAD;
-	u32 sbadmatch1;	/* address match1 */
+	u32 sbadmatch1;	 
 	u32 PAD[7];
-	u32 sbimstate;	/* initiator agent state */
-	u32 sbintvec;	/* interrupt mask */
-	u32 sbtmstatelow;	/* target state */
-	u32 sbtmstatehigh;	/* target state */
-	u32 sbbwa0;		/* bandwidth allocation table0 */
+	u32 sbimstate;	 
+	u32 sbintvec;	 
+	u32 sbtmstatelow;	 
+	u32 sbtmstatehigh;	 
+	u32 sbbwa0;		 
 	u32 PAD;
-	u32 sbimconfiglow;	/* initiator configuration */
-	u32 sbimconfighigh;	/* initiator configuration */
-	u32 sbadmatch0;	/* address match0 */
+	u32 sbimconfiglow;	 
+	u32 sbimconfighigh;	 
+	u32 sbadmatch0;	 
 	u32 PAD;
-	u32 sbtmconfiglow;	/* target configuration */
-	u32 sbtmconfighigh;	/* target configuration */
-	u32 sbbconfig;	/* broadcast configuration */
+	u32 sbtmconfiglow;	 
+	u32 sbtmconfighigh;	 
+	u32 sbbconfig;	 
 	u32 PAD;
-	u32 sbbstate;	/* broadcast state */
+	u32 sbbstate;	 
 	u32 PAD[3];
-	u32 sbactcnfg;	/* activate configuration */
+	u32 sbactcnfg;	 
 	u32 PAD[3];
-	u32 sbflagst;	/* current sbflags */
+	u32 sbflagst;	 
 	u32 PAD[3];
-	u32 sbidlow;		/* identification */
-	u32 sbidhigh;	/* identification */
+	u32 sbidlow;		 
+	u32 sbidhigh;	 
 };
 
 #define INVALID_RAMBASE			((u32)(~0))
 
-/* bankidx and bankinfo reg defines corerev >= 8 */
+ 
 #define SOCRAM_BANKINFO_RETNTRAM_MASK	0x00010000
 #define SOCRAM_BANKINFO_SZMASK		0x0000007f
 #define SOCRAM_BANKIDX_ROM_MASK		0x00000100
 
 #define SOCRAM_BANKIDX_MEMTYPE_SHIFT	8
-/* socram bankinfo memtype */
+ 
 #define SOCRAM_MEMTYPE_RAM		0
 #define SOCRAM_MEMTYPE_R0M		1
 #define SOCRAM_MEMTYPE_DEVRAM		2
@@ -170,9 +168,9 @@ struct sbsocramregs {
 	u32 bankidx;
 	u32 standbyctrl;
 
-	u32 errlogstatus;	/* rev 6 */
-	u32 errlogaddr;	/* rev 6 */
-	/* used for patching rev 3 & 5 */
+	u32 errlogstatus;	 
+	u32 errlogaddr;	 
+	 
 	u32 cambankidx;
 	u32 cambankstandbyctrl;
 	u32 cambankpatchctrl;
@@ -181,7 +179,7 @@ struct sbsocramregs {
 	u32 cambankdatareg;
 	u32 cambankmaskreg;
 	u32 PAD[1];
-	u32 bankinfo;	/* corev 8 */
+	u32 bankinfo;	 
 	u32 bankpda;
 	u32 PAD[14];
 	u32 extmemconfig;
@@ -191,12 +189,12 @@ struct sbsocramregs {
 	u32 extmemwrctrlandsize;
 	u32 PAD[84];
 	u32 workaround;
-	u32 pwrctl;		/* corerev >= 2 */
+	u32 pwrctl;		 
 	u32 PAD[133];
-	u32 sr_control;     /* corerev >= 15 */
-	u32 sr_status;      /* corerev >= 15 */
-	u32 sr_address;     /* corerev >= 15 */
-	u32 sr_data;        /* corerev >= 15 */
+	u32 sr_control;      
+	u32 sr_status;       
+	u32 sr_address;      
+	u32 sr_data;         
 };
 
 #define SOCRAMREGOFFS(_f)	offsetof(struct sbsocramregs, _f)
@@ -227,7 +225,7 @@ struct brcmf_chip_priv {
 	struct brcmf_chip pub;
 	const struct brcmf_buscore_ops *ops;
 	void *ctx;
-	/* assured first core is chipcommon, second core is buscore */
+	 
 	struct list_head cores;
 	u16 num_cores;
 
@@ -291,10 +289,7 @@ static void brcmf_chip_sb_coredisable(struct brcmf_core_priv *core,
 
 	val = ci->ops->read32(ci->ctx, CORE_SB(base, sbtmstatelow));
 	if ((val & SSB_TMSLOW_CLOCK) != 0) {
-		/*
-		 * set target reject and spin until busy is clear
-		 * (preserve core-specific bits)
-		 */
+		 
 		val = ci->ops->read32(ci->ctx, CORE_SB(base, sbtmstatelow));
 		ci->ops->write32(ci->ctx, CORE_SB(base, sbtmstatelow),
 					 val | SSB_TMSLOW_REJECT);
@@ -323,14 +318,14 @@ static void brcmf_chip_sb_coredisable(struct brcmf_core_priv *core,
 				  SSB_IMSTATE_BUSY), 100000);
 		}
 
-		/* set reset and reject while enabling the clocks */
+		 
 		val = SSB_TMSLOW_FGC | SSB_TMSLOW_CLOCK |
 		      SSB_TMSLOW_REJECT | SSB_TMSLOW_RESET;
 		ci->ops->write32(ci->ctx, CORE_SB(base, sbtmstatelow), val);
 		val = ci->ops->read32(ci->ctx, CORE_SB(base, sbtmstatelow));
 		udelay(10);
 
-		/* clear the initiator reject bit */
+		 
 		val = ci->ops->read32(ci->ctx, CORE_SB(base, sbidlow));
 		if (val & SSB_IDLOW_INITIATOR) {
 			val = ci->ops->read32(ci->ctx,
@@ -341,7 +336,7 @@ static void brcmf_chip_sb_coredisable(struct brcmf_core_priv *core,
 		}
 	}
 
-	/* leave reset and reject asserted */
+	 
 	ci->ops->write32(ci->ctx, CORE_SB(base, sbtmstatelow),
 			 (SSB_TMSLOW_REJECT | SSB_TMSLOW_RESET));
 	udelay(1);
@@ -355,27 +350,27 @@ static void brcmf_chip_ai_coredisable(struct brcmf_core_priv *core,
 
 	ci = core->chip;
 
-	/* if core is already in reset, skip reset */
+	 
 	regdata = ci->ops->read32(ci->ctx, core->wrapbase + BCMA_RESET_CTL);
 	if ((regdata & BCMA_RESET_CTL_RESET) != 0)
 		goto in_reset_configure;
 
-	/* configure reset */
+	 
 	ci->ops->write32(ci->ctx, core->wrapbase + BCMA_IOCTL,
 			 prereset | BCMA_IOCTL_FGC | BCMA_IOCTL_CLK);
 	ci->ops->read32(ci->ctx, core->wrapbase + BCMA_IOCTL);
 
-	/* put in reset */
+	 
 	ci->ops->write32(ci->ctx, core->wrapbase + BCMA_RESET_CTL,
 			 BCMA_RESET_CTL_RESET);
 	usleep_range(10, 20);
 
-	/* wait till reset is 1 */
+	 
 	SPINWAIT(ci->ops->read32(ci->ctx, core->wrapbase + BCMA_RESET_CTL) !=
 		 BCMA_RESET_CTL_RESET, 300);
 
 in_reset_configure:
-	/* in-reset configure */
+	 
 	ci->ops->write32(ci->ctx, core->wrapbase + BCMA_IOCTL,
 			 reset | BCMA_IOCTL_FGC | BCMA_IOCTL_CLK);
 	ci->ops->read32(ci->ctx, core->wrapbase + BCMA_IOCTL);
@@ -390,24 +385,17 @@ static void brcmf_chip_sb_resetcore(struct brcmf_core_priv *core, u32 prereset,
 
 	ci = core->chip;
 	base = core->pub.base;
-	/*
-	 * Must do the disable sequence first to work for
-	 * arbitrary current core state.
-	 */
+	 
 	brcmf_chip_sb_coredisable(core, 0, 0);
 
-	/*
-	 * Now do the initialization sequence.
-	 * set reset while enabling the clock and
-	 * forcing them on throughout the core
-	 */
+	 
 	ci->ops->write32(ci->ctx, CORE_SB(base, sbtmstatelow),
 			 SSB_TMSLOW_FGC | SSB_TMSLOW_CLOCK |
 			 SSB_TMSLOW_RESET);
 	regdata = ci->ops->read32(ci->ctx, CORE_SB(base, sbtmstatelow));
 	udelay(1);
 
-	/* clear any serror */
+	 
 	regdata = ci->ops->read32(ci->ctx, CORE_SB(base, sbtmstatehigh));
 	if (regdata & SSB_TMSHIGH_SERR)
 		ci->ops->write32(ci->ctx, CORE_SB(base, sbtmstatehigh), 0);
@@ -418,13 +406,13 @@ static void brcmf_chip_sb_resetcore(struct brcmf_core_priv *core, u32 prereset,
 		ci->ops->write32(ci->ctx, CORE_SB(base, sbimstate), regdata);
 	}
 
-	/* clear reset and allow it to propagate throughout the core */
+	 
 	ci->ops->write32(ci->ctx, CORE_SB(base, sbtmstatelow),
 			 SSB_TMSLOW_FGC | SSB_TMSLOW_CLOCK);
 	regdata = ci->ops->read32(ci->ctx, CORE_SB(base, sbtmstatelow));
 	udelay(1);
 
-	/* leave clock enabled */
+	 
 	ci->ops->write32(ci->ctx, CORE_SB(base, sbtmstatelow),
 			 SSB_TMSLOW_CLOCK);
 	regdata = ci->ops->read32(ci->ctx, CORE_SB(base, sbtmstatelow));
@@ -441,7 +429,7 @@ static void brcmf_chip_ai_resetcore(struct brcmf_core_priv *core, u32 prereset,
 
 	ci = core->chip;
 
-	/* special handle two D11 cores reset */
+	 
 	if (core->pub.id == BCMA_CORE_80211) {
 		d11core2 = brcmf_chip_get_d11core(&ci->pub, 1);
 		if (d11core2) {
@@ -451,7 +439,7 @@ static void brcmf_chip_ai_resetcore(struct brcmf_core_priv *core, u32 prereset,
 		}
 	}
 
-	/* must disable first to work for arbitrary current core state */
+	 
 	brcmf_chip_ai_coredisable(core, prereset, reset);
 	if (d11priv2)
 		brcmf_chip_ai_coredisable(d11priv2, prereset, reset);
@@ -520,7 +508,7 @@ static struct brcmf_core *brcmf_chip_add_core(struct brcmf_chip_priv *ci,
 	return &core->pub;
 }
 
-/* safety check for chipinfo */
+ 
 static int brcmf_chip_cores_check(struct brcmf_chip_priv *ci)
 {
 	struct brcmf_core_priv *core;
@@ -557,7 +545,7 @@ static int brcmf_chip_cores_check(struct brcmf_chip_priv *ci)
 		brcmf_err("CPU core not detected\n");
 		return -ENXIO;
 	}
-	/* check RAM core presence for ARM CM3 core */
+	 
 	if (need_socram && !has_socram) {
 		brcmf_err("RAM core not provided with ARM CM3 core\n");
 		return -ENODEV;
@@ -607,7 +595,7 @@ static void brcmf_chip_socram_ramsize(struct brcmf_core_priv *sr, u32 *ramsize,
 	if (!brcmf_chip_iscoreup(&sr->pub))
 		brcmf_chip_resetcore(&sr->pub, 0, 0, 0);
 
-	/* Get info for determining size */
+	 
 	coreinfo = brcmf_chip_core_read32(sr, SOCRAMREGOFFS(coreinfo));
 	nb = (coreinfo & SRCI_SRNB_MASK) >> SRCI_SRNB_SHIFT;
 
@@ -620,7 +608,7 @@ static void brcmf_chip_socram_ramsize(struct brcmf_core_priv *sr, u32 *ramsize,
 		if (lss != 0)
 			*ramsize += (1 << ((lss - 1) + SR_BSZ_BASE));
 	} else {
-		/* length of SRAM Banks increased for corerev greater than 23 */
+		 
 		if (sr->pub.rev >= 23) {
 			nb = (coreinfo & (SRCI_SRNB_MASK | SRCI_SRNB_MASK_EXT))
 				>> SRCI_SRNB_SHIFT;
@@ -635,7 +623,7 @@ static void brcmf_chip_socram_ramsize(struct brcmf_core_priv *sr, u32 *ramsize,
 		}
 	}
 
-	/* hardcoded save&restore memory sizes */
+	 
 	switch (sr->chip->pub.chip) {
 	case BRCM_CC_4334_CHIP_ID:
 		if (sr->chip->pub.chiprev < 2)
@@ -643,9 +631,7 @@ static void brcmf_chip_socram_ramsize(struct brcmf_core_priv *sr, u32 *ramsize,
 		break;
 	case BRCM_CC_43430_CHIP_ID:
 	case CY_CC_43439_CHIP_ID:
-		/* assume sr for now as we can not check
-		 * firmware sr capability at this point.
-		 */
+		 
 		*srsize = (64 * 1024);
 		break;
 	default:
@@ -653,7 +639,7 @@ static void brcmf_chip_socram_ramsize(struct brcmf_core_priv *sr, u32 *ramsize,
 	}
 }
 
-/** Return the SYS MEM size */
+ 
 static u32 brcmf_chip_sysmem_ramsize(struct brcmf_core_priv *sysmem)
 {
 	u32 memsize = 0;
@@ -676,7 +662,7 @@ static u32 brcmf_chip_sysmem_ramsize(struct brcmf_core_priv *sysmem)
 	return memsize;
 }
 
-/** Return the TCM-RAM size of the ARMCR4 core. */
+ 
 static u32 brcmf_chip_tcm_ramsize(struct brcmf_core_priv *cr4)
 {
 	u32 corecap;
@@ -814,14 +800,14 @@ static u32 brcmf_chip_dmp_get_desc(struct brcmf_chip_priv *ci, u32 *eromaddr,
 {
 	u32 val;
 
-	/* read next descriptor */
+	 
 	val = ci->ops->read32(ci->ctx, *eromaddr);
 	*eromaddr += 4;
 
 	if (!type)
 		return val;
 
-	/* determine descriptor type */
+	 
 	*type = (val & DMP_DESC_TYPE_MSK);
 	if ((*type & ~DMP_DESC_ADDRSIZE_GT32) == DMP_DESC_ADDRESS)
 		*type = DMP_DESC_ADDRESS;
@@ -843,7 +829,7 @@ static int brcmf_chip_dmp_get_regaddr(struct brcmf_chip_priv *ci, u32 *eromaddr,
 	if (desc == DMP_DESC_MASTER_PORT) {
 		wraptype = DMP_SLAVE_TYPE_MWRAP;
 	} else if (desc == DMP_DESC_ADDRESS) {
-		/* revert erom address */
+		 
 		*eromaddr -= 4;
 		wraptype = DMP_SLAVE_TYPE_SWRAP;
 	} else {
@@ -852,10 +838,10 @@ static int brcmf_chip_dmp_get_regaddr(struct brcmf_chip_priv *ci, u32 *eromaddr,
 	}
 
 	do {
-		/* locate address descriptor */
+		 
 		do {
 			val = brcmf_chip_dmp_get_desc(ci, eromaddr, &desc);
-			/* unexpected table end */
+			 
 			if (desc == DMP_DESC_EOT) {
 				*eromaddr -= 4;
 				return -EFAULT;
@@ -863,34 +849,34 @@ static int brcmf_chip_dmp_get_regaddr(struct brcmf_chip_priv *ci, u32 *eromaddr,
 		} while (desc != DMP_DESC_ADDRESS &&
 			 desc != DMP_DESC_COMPONENT);
 
-		/* stop if we crossed current component border */
+		 
 		if (desc == DMP_DESC_COMPONENT) {
 			*eromaddr -= 4;
 			return 0;
 		}
 
-		/* skip upper 32-bit address descriptor */
+		 
 		if (val & DMP_DESC_ADDRSIZE_GT32)
 			brcmf_chip_dmp_get_desc(ci, eromaddr, NULL);
 
 		sztype = (val & DMP_SLAVE_SIZE_TYPE) >> DMP_SLAVE_SIZE_TYPE_S;
 
-		/* next size descriptor can be skipped */
+		 
 		if (sztype == DMP_SLAVE_SIZE_DESC) {
 			szdesc = brcmf_chip_dmp_get_desc(ci, eromaddr, NULL);
-			/* skip upper size descriptor if present */
+			 
 			if (szdesc & DMP_DESC_ADDRSIZE_GT32)
 				brcmf_chip_dmp_get_desc(ci, eromaddr, NULL);
 		}
 
-		/* look for 4K or 8K register regions */
+		 
 		if (sztype != DMP_SLAVE_SIZE_4K &&
 		    sztype != DMP_SLAVE_SIZE_8K)
 			continue;
 
 		stype = (val & DMP_SLAVE_TYPE) >> DMP_SLAVE_TYPE_S;
 
-		/* only regular slave and wrapper */
+		 
 		if (*regbase == 0 && stype == DMP_SLAVE_TYPE_SLAVE)
 			*regbase = val & DMP_SLAVE_ADDR_BASE;
 		if (*wrapbase == 0 && stype == wraptype)
@@ -923,34 +909,34 @@ int brcmf_chip_dmp_erom_scan(struct brcmf_chip_priv *ci)
 		if (desc_type == DMP_DESC_EMPTY)
 			continue;
 
-		/* need a component descriptor */
+		 
 		if (desc_type != DMP_DESC_COMPONENT)
 			continue;
 
 		id = (val & DMP_COMP_PARTNUM) >> DMP_COMP_PARTNUM_S;
 
-		/* next descriptor must be component as well */
+		 
 		val = brcmf_chip_dmp_get_desc(ci, &eromaddr, &desc_type);
 		if (WARN_ON((val & DMP_DESC_TYPE_MSK) != DMP_DESC_COMPONENT))
 			return -EFAULT;
 
-		/* only look at cores with master port(s) */
+		 
 		nmw = (val & DMP_COMP_NUM_MWRAP) >> DMP_COMP_NUM_MWRAP_S;
 		nsw = (val & DMP_COMP_NUM_SWRAP) >> DMP_COMP_NUM_SWRAP_S;
 		rev = (val & DMP_COMP_REVISION) >> DMP_COMP_REVISION_S;
 
-		/* need core with ports */
+		 
 		if (nmw + nsw == 0 &&
 		    id != BCMA_CORE_PMU &&
 		    id != BCMA_CORE_GCI)
 			continue;
 
-		/* try to obtain register address info */
+		 
 		err = brcmf_chip_dmp_get_regaddr(ci, &eromaddr, &base, &wrap);
 		if (err)
 			continue;
 
-		/* finally a core to be added */
+		 
 		core = brcmf_chip_add_core(ci, id, base, wrap);
 		if (IS_ERR(core))
 			return PTR_ERR(core);
@@ -974,11 +960,7 @@ static int brcmf_chip_recognition(struct brcmf_chip_priv *ci)
 	int ret;
 	const u32 READ_FAILED = 0xFFFFFFFF;
 
-	/* Get CC core rev
-	 * Chipid is assume to be at offset 0 from SI_ENUM_BASE
-	 * For different chiptypes or old sdio hosts w/o chipcommon,
-	 * other ways of recognition should be added here.
-	 */
+	 
 	regdata = ci->ops->read32(ci->ctx,
 				  CORE_CC_REG(ci->pub.enum_base, chipid));
 	if (regdata == READ_FAILED) {
@@ -1035,12 +1017,10 @@ static int brcmf_chip_recognition(struct brcmf_chip_priv *ci)
 	if (ret)
 		return ret;
 
-	/* assure chip is passive for core access */
+	 
 	brcmf_chip_set_passive(&ci->pub);
 
-	/* Call bus specific reset function now. Cores have been determined
-	 * but further access may require a chip specific reset at this point.
-	 */
+	 
 	if (ci->ops->reset) {
 		ci->ops->reset(ci->ctx, &ci->pub);
 		brcmf_chip_set_passive(&ci->pub);
@@ -1068,7 +1048,7 @@ static void brcmf_chip_disable_arm(struct brcmf_chip_priv *chip, u16 id)
 	case BCMA_CORE_ARM_CA7:
 		cpu = container_of(core, struct brcmf_core_priv, pub);
 
-		/* clear all IOCTL bits except HALT bit */
+		 
 		val = chip->ops->read32(chip->ctx, cpu->wrapbase + BCMA_IOCTL);
 		val &= ARMCR4_BCMA_IOCTL_CPUHALT;
 		brcmf_chip_resetcore(core, val, ARMCR4_BCMA_IOCTL_CPUHALT,
@@ -1093,15 +1073,15 @@ static int brcmf_chip_setup(struct brcmf_chip_priv *chip)
 	cc = list_first_entry(&chip->cores, struct brcmf_core_priv, list);
 	base = cc->pub.base;
 
-	/* get chipcommon capabilites */
+	 
 	pub->cc_caps = chip->ops->read32(chip->ctx,
 					 CORE_CC_REG(base, capabilities));
 	pub->cc_caps_ext = chip->ops->read32(chip->ctx,
 					     CORE_CC_REG(base,
 							 capabilities_ext));
 
-	/* get pmu caps & rev */
-	pmu = brcmf_chip_get_pmu(pub); /* after reading cc_caps_ext */
+	 
+	pmu = brcmf_chip_get_pmu(pub);  
 	if (pub->cc_caps & CC_CAP_PMU) {
 		val = chip->ops->read32(chip->ctx,
 					CORE_CC_REG(pmu->base, pmucapabilities));
@@ -1112,7 +1092,7 @@ static int brcmf_chip_setup(struct brcmf_chip_priv *chip)
 	brcmf_dbg(INFO, "ccrev=%d, pmurev=%d, pmucaps=0x%x\n",
 		  cc->pub.rev, pub->pmurev, pub->pmucaps);
 
-	/* execute bus core specific setup */
+	 
 	if (chip->ops->setup)
 		ret = chip->ops->setup(chip->ctx, pub);
 
@@ -1224,7 +1204,7 @@ struct brcmf_core *brcmf_chip_get_pmu(struct brcmf_chip *pub)
 	struct brcmf_core *cc = brcmf_chip_get_chipcommon(pub);
 	struct brcmf_core *pmu;
 
-	/* See if there is separated PMU core available */
+	 
 	if (cc->rev >= 35 &&
 	    pub->cc_caps_ext & BCMA_CC_CAP_EXT_AOB_PRESENT) {
 		pmu = brcmf_chip_get_core(pub, BCMA_CORE_PMU);
@@ -1232,7 +1212,7 @@ struct brcmf_core *brcmf_chip_get_pmu(struct brcmf_chip *pub)
 			return pmu;
 	}
 
-	/* Fallback to ChipCommon core for older hardware */
+	 
 	return cc;
 }
 
@@ -1276,7 +1256,7 @@ brcmf_chip_cm3_set_passive(struct brcmf_chip_priv *chip)
 	core = brcmf_chip_get_core(&chip->pub, BCMA_CORE_INTERNAL_MEM);
 	brcmf_chip_resetcore(core, 0, 0, 0);
 
-	/* disable bank #3 remap for this device */
+	 
 	if (chip->pub.chip == BRCM_CC_43430_CHIP_ID ||
 	    chip->pub.chip == CY_CC_43439_CHIP_ID) {
 		sr = container_of(core, struct brcmf_core_priv, pub);
@@ -1311,9 +1291,7 @@ brcmf_chip_cr4_set_passive(struct brcmf_chip_priv *chip)
 
 	brcmf_chip_disable_arm(chip, BCMA_CORE_ARM_CR4);
 
-	/* Disable the cores only and let the firmware enable them.
-	 * Releasing reset ourselves breaks BCM4387 in weird ways.
-	 */
+	 
 	for (i = 0; (core = brcmf_chip_get_d11core(&chip->pub, i)); i++)
 		brcmf_chip_coredisable(core, D11_BCMA_IOCTL_PHYRESET |
 				       D11_BCMA_IOCTL_PHYCLOCKEN,
@@ -1326,7 +1304,7 @@ static bool brcmf_chip_cr4_set_active(struct brcmf_chip_priv *chip, u32 rstvec)
 
 	chip->ops->activate(chip->ctx, &chip->pub, rstvec);
 
-	/* restore ARM */
+	 
 	core = brcmf_chip_get_core(&chip->pub, BCMA_CORE_ARM_CR4);
 	brcmf_chip_resetcore(core, ARMCR4_BCMA_IOCTL_CPUHALT, 0, 0);
 
@@ -1353,7 +1331,7 @@ static bool brcmf_chip_ca7_set_active(struct brcmf_chip_priv *chip, u32 rstvec)
 
 	chip->ops->activate(chip->ctx, &chip->pub, rstvec);
 
-	/* restore ARM */
+	 
 	core = brcmf_chip_get_core(&chip->pub, BCMA_CORE_ARM_CA7);
 	brcmf_chip_resetcore(core, ARMCR4_BCMA_IOCTL_CPUHALT, 0, 0);
 
@@ -1414,7 +1392,7 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
 
 	brcmf_dbg(TRACE, "Enter\n");
 
-	/* old chips with PMU version less than 17 don't support save restore */
+	 
 	if (pub->pmurev < 17)
 		return false;
 
@@ -1426,13 +1404,13 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
 	case BRCM_CC_4356_CHIP_ID:
 	case BRCM_CC_4345_CHIP_ID:
 	case BRCM_CC_43454_CHIP_ID:
-		/* explicitly check SR engine enable bit */
+		 
 		pmu_cc3_mask = BIT(2);
 		fallthrough;
 	case BRCM_CC_43241_CHIP_ID:
 	case BRCM_CC_4335_CHIP_ID:
 	case BRCM_CC_4339_CHIP_ID:
-		/* read PMU chipcontrol register 3 */
+		 
 		addr = CORE_CC_REG(pmu->base, chipcontrol_addr);
 		chip->ops->write32(chip->ctx, addr, 3);
 		addr = CORE_CC_REG(pmu->base, chipcontrol_data);
@@ -1445,7 +1423,7 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
 		return reg != 0;
 	case BRCM_CC_4355_CHIP_ID:
 	case CY_CC_4373_CHIP_ID:
-		/* explicitly check SR engine enable bit */
+		 
 		addr = CORE_CC_REG(base, sr_control0);
 		reg = chip->ops->read32(chip->ctx, addr);
 		return (reg & CC_SR_CTL0_ENABLE_MASK) != 0;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD7606 SPI ADC driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -28,10 +24,7 @@
 
 #include "ad7606.h"
 
-/*
- * Scales are computed as 5000/32768 and 10000/32768 respectively,
- * so that when applied to the raw values they provide mV values
- */
+ 
 static const unsigned int ad7606_scale_avail[2] = {
 	152588, 305176
 };
@@ -53,7 +46,7 @@ static int ad7606_reset(struct ad7606_state *st)
 {
 	if (st->gpio_reset) {
 		gpiod_set_value(st->gpio_reset, 1);
-		ndelay(100); /* t_reset >= 100ns */
+		ndelay(100);  
 		gpiod_set_value(st->gpio_reset, 0);
 		return 0;
 	}
@@ -90,15 +83,7 @@ static int ad7606_read_samples(struct ad7606_state *st)
 	u16 *data = st->data;
 	int ret;
 
-	/*
-	 * The frstdata signal is set to high while and after reading the sample
-	 * of the first channel and low for all other channels. This can be used
-	 * to check that the incoming data is correctly aligned. During normal
-	 * operation the data should never become unaligned, but some glitch or
-	 * electrostatic discharge might cause an extra read or clock cycle.
-	 * Monitoring the frstdata signal allows to recover from such failure
-	 * situations.
-	 */
+	 
 
 	if (st->gpio_frstdata) {
 		ret = st->bops->read_block(st->dev, 1, data);
@@ -132,7 +117,7 @@ static irqreturn_t ad7606_trigger_handler(int irq, void *p)
 						   iio_get_time_ns(indio_dev));
 
 	iio_trigger_notify_done(indio_dev->trig);
-	/* The rising edge of the CONVST signal starts a new conversion. */
+	 
 	gpiod_set_value(st->gpio_convst, 1);
 
 	mutex_unlock(&st->lock);
@@ -244,7 +229,7 @@ static int ad7606_write_os_hw(struct iio_dev *indio_dev, int val)
 	gpiod_set_array_value(ARRAY_SIZE(values), st->gpio_os->desc,
 			      st->gpio_os->info, values);
 
-	/* AD7616 requires a reset to update value */
+	 
 	if (st->chip_info->os_req_reset)
 		ad7606_reset(st);
 
@@ -357,16 +342,7 @@ static const struct iio_chan_spec ad7606_channels[] = {
 	AD7606_CHANNEL(7),
 };
 
-/*
- * The current assumption that this driver makes for AD7616, is that it's
- * working in Hardware Mode with Serial, Burst and Sequencer modes activated.
- * To activate them, following pins must be pulled high:
- *	-SER/PAR
- *	-SEQEN
- * And following pins must be pulled low:
- *	-WR/BURST
- *	-DB4/SER1W
- */
+ 
 static const struct iio_chan_spec ad7616_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(16),
 	AD7606_CHANNEL(0),
@@ -388,7 +364,7 @@ static const struct iio_chan_spec ad7616_channels[] = {
 };
 
 static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
-	/* More devices added in future */
+	 
 	[ID_AD7605_4] = {
 		.channels = ad7605_channels,
 		.num_channels = 5,
@@ -464,12 +440,7 @@ static int ad7606_request_gpios(struct ad7606_state *st)
 	return PTR_ERR_OR_ZERO(st->gpio_os);
 }
 
-/*
- * The BUSY signal indicates when conversions are in progress, so when a rising
- * edge of CONVST is applied, BUSY goes logic high and transitions low at the
- * end of the entire conversion process. The falling edge of the BUSY signal
- * triggers this interrupt.
- */
+ 
 static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
 {
 	struct iio_dev *indio_dev = dev_id;
@@ -576,7 +547,7 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
 	mutex_init(&st->lock);
 	st->bops = bops;
 	st->base_address = base_address;
-	/* tied to logic low, analog input range is +/- 5V */
+	 
 	st->range[0] = 0;
 	st->oversampling = 1;
 	st->scale_avail = ad7606_scale_avail;
@@ -620,7 +591,7 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
 	if (ret)
 		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
 
-	/* AD7616 requires al least 15ms to reconfigure after a reset */
+	 
 	if (st->chip_info->init_delay_ms) {
 		if (msleep_interruptible(st->chip_info->init_delay_ms))
 			return -ERESTARTSYS;
@@ -634,11 +605,11 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
 							 "adi,sw-mode");
 
 	if (st->sw_mode_en) {
-		/* Scale of 0.076293 is only available in sw mode */
+		 
 		st->scale_avail = ad7616_sw_scale_avail;
 		st->num_scales = ARRAY_SIZE(ad7616_sw_scale_avail);
 
-		/* After reset, in software mode, ±10 V is set by default */
+		 
 		memset32(st->range, 2, ARRAY_SIZE(st->range));
 		indio_dev->info = &ad7606_info_os_range_and_debug;
 

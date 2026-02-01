@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Alexandre Pereira da Silva <aletes.xgr@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -35,7 +33,7 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	u32 val;
 	c = clk_get_rate(lpc32xx->clk);
 
-	/* The highest acceptable divisor is 256, which is represented by 0 */
+	 
 	period_cycles = div64_u64(c * period_ns,
 			       (unsigned long long)NSEC_PER_SEC * 256);
 	if (!period_cycles || period_cycles > 256)
@@ -43,7 +41,7 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (period_cycles == 256)
 		period_cycles = 0;
 
-	/* Compute 256 x #duty/period value and care for corner cases */
+	 
 	duty_cycles = div64_u64((unsigned long long)(period_ns - duty_ns) * 256,
 				period_ns);
 	if (!duty_cycles)
@@ -140,7 +138,7 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
 	lpc32xx->chip.ops = &lpc32xx_pwm_ops;
 	lpc32xx->chip.npwm = 1;
 
-	/* If PWM is disabled, configure the output to the default value */
+	 
 	val = readl(lpc32xx->base);
 	val &= ~PWM_PIN_LEVEL;
 	writel(val, lpc32xx->base);
@@ -156,7 +154,7 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
 
 static const struct of_device_id lpc32xx_pwm_dt_ids[] = {
 	{ .compatible = "nxp,lpc3220-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, lpc32xx_pwm_dt_ids);
 

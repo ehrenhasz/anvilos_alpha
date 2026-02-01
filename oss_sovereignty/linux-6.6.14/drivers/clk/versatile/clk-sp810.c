@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2013 ARM Limited
- */
+
+ 
 
 #include <linux/amba/sp810.h>
 #include <linux/slab.h>
@@ -119,12 +116,7 @@ static void __init clk_sp810_of_setup(struct device_node *node)
 		sp810->timerclken[i].channel = i;
 		sp810->timerclken[i].hw.init = &init;
 
-		/*
-		 * If DT isn't setting the parent, force it to be
-		 * the 1 MHz clock without going through the framework.
-		 * We do this before clk_register() so that it can determine
-		 * the parent and setup the tree properly.
-		 */
+		 
 		if (deprecated)
 			init.ops->set_parent(&sp810->timerclken[i].hw, 1);
 

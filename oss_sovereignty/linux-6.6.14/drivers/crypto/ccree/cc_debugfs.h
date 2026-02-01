@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+ 
+ 
 
 #ifndef __CC_DEBUGFS_H__
 #define __CC_DEBUGFS_H__
@@ -25,4 +25,4 @@ static inline void cc_debugfs_fini(struct cc_drvdata *drvdata) {}
 
 #endif
 
-#endif /*__CC_SYSFS_H__*/
+#endif  

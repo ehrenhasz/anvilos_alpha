@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/highmem.h>
 #include <linux/moduleparam.h>
@@ -129,7 +127,7 @@ void ivpu_pm_schedule_recovery(struct ivpu_device *vdev)
 		return;
 	}
 
-	/* Schedule recovery if it's not in progress */
+	 
 	if (atomic_cmpxchg(&pm->in_reset, 0, 1) == 0) {
 		ivpu_hw_irq_disable(vdev);
 		queue_work(system_long_wq, &pm->recovery_work);

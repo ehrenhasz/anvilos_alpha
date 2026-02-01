@@ -1,97 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	captoinfo.c
- *
- *	Provide conversion in both directions between termcap and terminfo.
- *
- * cap-to-info --- conversion between termcap and terminfo formats
- *
- *	The captoinfo() code was swiped from Ross Ridge's mytinfo package,
- *	adapted to fit ncurses by Eric S. Raymond <esr@snark.thyrsus.com>.
- *
- *	It has just one entry point:
- *
- *	char *_nc_captoinfo(n, s, parameterized)
- *
- *	Convert value s for termcap string capability named n into terminfo
- *	format.
- *
- *	This code recognizes all the standard 4.4BSD %-escapes:
- *
- *	%%       output `%'
- *	%d       output value as in printf %d
- *	%2       output value as in printf %2d
- *	%3       output value as in printf %3d
- *	%.       output value as in printf %c
- *	%+x      add x to value, then do %.
- *	%>xy     if value > x then add y, no output
- *	%r       reverse order of two parameters, no output
- *	%i       increment by one, no output
- *	%n       exclusive-or all parameters with 0140 (Datamedia 2500)
- *	%B       BCD (16*(value/10)) + (value%10), no output
- *	%D       Reverse coding (value - 2*(value%16)), no output (Delta Data).
- *
- *	Also, %02 and %03 are accepted as synonyms for %2 and %3.
- *
- *	Besides all the standard termcap escapes, this translator understands
- *	the following extended escapes:
- *
- *	used by GNU Emacs termcap libraries
- *		%a[+*-/=][cp]x	GNU arithmetic.
- *		%m		xor the first two parameters by 0177
- *		%b		backup to previous parameter
- *		%f		skip this parameter
- *
- *	used by the University of Waterloo (MFCF) termcap libraries
- *		%-x	 subtract parameter FROM char x and output it as a char
- *		%ax	 add the character x to parameter
- *
- *	If #define WATERLOO is on, also enable these translations:
- *
- *		%sx	 subtract parameter FROM the character x
- *
- *	By default, this Waterloo translations are not compiled in, because
- *	the Waterloo %s conflicts with the way terminfo uses %s in strings for
- *	function programming.
- *
- *	Note the two definitions of %a: the GNU definition is translated if the
- *	characters after the 'a' are valid for it, otherwise the UW definition
- *	is translated.
- */
+ 
 
 #include <curses.priv.h>
 
@@ -103,26 +14,26 @@ MODULE_ID("$Id: captoinfo.c,v 1.102 2021/09/04 10:29:15 tom Exp $")
 #if 0
 #define DEBUG_THIS(p) DEBUG(9, p)
 #else
-#define DEBUG_THIS(p)		/* nothing */
+#define DEBUG_THIS(p)		 
 #endif
 
-#define MAX_PUSHED	16	/* max # args we can push onto the stack */
+#define MAX_PUSHED	16	 
 
-static int stack[MAX_PUSHED];	/* the stack */
-static int stackptr;		/* the next empty place on the stack */
-static int onstack;		/* the top of stack */
-static int seenm;		/* seen a %m */
-static int seenn;		/* seen a %n */
-static int seenr;		/* seen a %r */
-static int param;		/* current parameter */
-static char *dp;		/* pointer to end of the converted string */
+static int stack[MAX_PUSHED];	 
+static int stackptr;		 
+static int onstack;		 
+static int seenm;		 
+static int seenn;		 
+static int seenr;		 
+static int param;		 
+static char *dp;		 
 
 static char *my_string;
 static size_t my_length;
 
 static char *
 init_string(void)
-/* initialize 'my_string', 'my_length' */
+ 
 {
     if (my_string == 0)
 	TYPE_MALLOC(char, my_length = 256, my_string);
@@ -156,7 +67,7 @@ save_char(char *s, int c)
 
 static void
 push(void)
-/* push onstack on to the stack */
+ 
 {
     if (stackptr >= MAX_PUSHED)
 	_nc_warning("string too complex to convert");
@@ -166,7 +77,7 @@ push(void)
 
 static void
 pop(void)
-/* pop the top of the stack into onstack */
+ 
 {
     if (stackptr == 0) {
 	if (onstack == 0)
@@ -180,7 +91,7 @@ pop(void)
 
 static int
 cvtchar(register const char *sp)
-/* convert a character to a terminfo push */
+ 
 {
     unsigned char c = 0;
     int len;
@@ -248,7 +159,7 @@ cvtchar(register const char *sp)
 
 static void
 getparm(int parm, int n)
-/* push n copies of param on the terminfo stack if not already there */
+ 
 {
     int nn;
 
@@ -288,14 +199,7 @@ getparm(int parm, int n)
     }
 }
 
-/*
- * Convert a termcap string to terminfo format.
- * 'cap' is the relevant terminfo capability index.
- * 's' is the string value of the capability.
- * 'parameterized' tells what type of translations to do:
- *	% translations if 1
- *	pad translations if >=0
- */
+ 
 NCURSES_EXPORT(char *)
 _nc_captoinfo(const char *cap, const char *s, int const parameterized)
 {
@@ -312,7 +216,7 @@ _nc_captoinfo(const char *cap, const char *s, int const parameterized)
 
     dp = init_string();
 
-    /* skip the initial padding (if we haven't been told not to) */
+     
     capstart = 0;
     if (s == 0)
 	s = "";
@@ -364,7 +268,7 @@ _nc_captoinfo(const char *cap, const char *s, int const parameterized)
 		dp = save_string(dp, "%{2}%*%-");
 		break;
 	    case '>':
-		/* %?%{x}%>%t%{y}%+%; */
+		 
 		if (s[0] && s[1]) {
 		    getparm(param, 2);
 		    dp = save_string(dp, "%?");
@@ -442,7 +346,7 @@ _nc_captoinfo(const char *cap, const char *s, int const parameterized)
 		getparm(param, 1);
 		dp = save_string(dp, "%s");
 		pop();
-#endif /* WATERLOO */
+#endif  
 		break;
 	    case '-':
 		s += cvtchar(s);
@@ -455,7 +359,7 @@ _nc_captoinfo(const char *cap, const char *s, int const parameterized)
 		dp = save_string(dp, "%c");
 		pop();
 		break;
-	    case '0':		/* not clear any of the historical termcaps did this */
+	    case '0':		 
 		if (*s == '3') {
 		    ++s;
 		    goto see03;
@@ -507,10 +411,7 @@ _nc_captoinfo(const char *cap, const char *s, int const parameterized)
 	}
     }
 
-    /*
-     * Now, if we stripped off some leading padding, add it at the end
-     * of the string as mandatory padding.
-     */
+     
     if (capstart) {
 	dp = save_string(dp, "$<");
 	for (s = capstart; *s != '\0'; s++)
@@ -528,14 +429,11 @@ _nc_captoinfo(const char *cap, const char *s, int const parameterized)
     return (my_string);
 }
 
-/*
- * Check for an expression that corresponds to "%B" (BCD):
- *	(parameter / 10) * 16 + (parameter % 10)
- */
+ 
 static int
 bcd_expression(const char *str)
 {
-    /* leave this non-const for HPUX */
+     
     static char fmt[] = "%%p%c%%{10}%%/%%{16}%%*%%p%c%%{10}%%m%%+";
     int len = 0;
     char ch1, ch2;
@@ -568,7 +466,7 @@ save_tc_char(char *bufptr, int c1)
     } else {
 	char temp[80];
 
-	if (c1 == (c1 & 0x1f)) {	/* iscntrl() returns T on 255 */
+	if (c1 == (c1 & 0x1f)) {	 
 	    _nc_SPRINTF(temp, _nc_SLIMIT(sizeof(temp))
 			"%.20s", unctrl((chtype) c1));
 	} else {
@@ -589,32 +487,11 @@ save_tc_inequality(char *bufptr, int c1, int c2)
     return bufptr;
 }
 
-/*
- * info-to-cap --- conversion between terminfo and termcap formats
- *
- * Here are the capabilities infotocap assumes it can translate to:
- *
- *     %%       output `%'
- *     %d       output value as in printf %d
- *     %2       output value as in printf %2d
- *     %3       output value as in printf %3d
- *     %.       output value as in printf %c
- *     %+c      add character c to value, then do %.
- *     %>xy     if value > x then add y, no output
- *     %r       reverse order of two parameters, no output
- *     %i       increment by one, no output
- *     %n       exclusive-or all parameters with 0140 (Datamedia 2500)
- *     %B       BCD (16*(value/10)) + (value%10), no output
- *     %D       Reverse coding (value - 2*(value%16)), no output (Delta Data).
- *     %m       exclusive-or all parameters with 0177 (not in 4.4BSD)
- */
+ 
 
 #define octal_fixup(n, c) fixups[n].ch = ((fixups[n].ch << 3) | ((c) - '0'))
 
-/*
- * Convert a terminfo string to termcap format.  Parameters are as in
- * _nc_captoinfo().
- */
+ 
 NCURSES_EXPORT(char *)
 _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameterized)
 {
@@ -639,7 +516,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		parameterized,
 		_nc_visbuf(str)));
 
-    /* we may have to move some trailing mandatory padding up front */
+     
     padding = str + strlen(str) - 1;
     if (padding > str && *padding == '>') {
 	if (padding > (str + 1) && *--padding == '/')
@@ -665,11 +542,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		bufptr = save_string(bufptr, "\\136");
 		++str;
 	    } else if (str[1] == '?') {
-		/*
-		 * Although the 4.3BSD termcap file has an instance of "kb=^?",
-		 * that appears to be just cut/paste since neither 4.3BSD nor
-		 * 4.4BSD termcap interprets "^?" as DEL.
-		 */
+		 
 		bufptr = save_string(bufptr, "\\177");
 		++str;
 	    } else {
@@ -707,17 +580,14 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 			else if (str[1] && !isoctal(UChar(str[2])))
 			    pad = 1;
 
-			/*
-			 * Test for "\0", "\00" or "\000" and transform those
-			 * into "\200".
-			 */
+			 
 			if (xx1 == '0'
 			    && ((pad == 2) || (str[1] == '0'))
 			    && ((pad >= 1) || (str[2] == '0'))) {
 			    xx2 = '2';
 			} else {
 			    xx2 = '0';
-			    pad = 0;	/* FIXME - optionally pad to 3 digits */
+			    pad = 0;	 
 			}
 			if (myfix < MAX_TC_FIXUPS) {
 			    fix = 3 - pad;
@@ -758,19 +628,13 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 			    xx1 = '0';
 			    break;
 			case ':':
-			    /*
-			     * Note: termcap documentation claims that ":"
-			     * must be escaped as "\072", however the
-			     * documentation is incorrect - read the code.
-			     * The replacement does not work reliably,
-			     * so the advice is not helpful.
-			     */
+			     
 			    bufptr = save_char(bufptr, '0');
 			    bufptr = save_char(bufptr, '7');
 			    xx1 = '2';
 			    break;
 			default:
-			    /* should not happen, but handle this anyway */
+			     
 			    _nc_SPRINTF(octal, _nc_SLIMIT(sizeof(octal))
 					"%03o", UChar(xx1));
 			    bufptr = save_char(bufptr, octal[0]);
@@ -800,7 +664,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		}
 		bufptr = save_char(bufptr, xx1);
 	    }
-	} else if (str[0] == '$' && str[1] == '<') {	/* discard padding */
+	} else if (str[0] == '$' && str[1] == '<') {	 
 	    str += 2;
 	    while (isdigit(UChar(*str))
 		   || *str == '.'
@@ -814,16 +678,16 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 			  &in0, &in1, &in2) == 3
 		   && ((in0 == 4 && in1 == 10 && in2 == 48)
 		       || (in0 == 3 && in1 == 9 && in2 == 38))) {
-	    /* dumb-down an optimized case from xterm-256color for termcap */
+	     
 	    if ((str = strstr(str, ";m")) == 0)
-		break;		/* cannot happen */
+		break;		 
 	    ++str;
 	    if (in2 == 48) {
 		bufptr = save_string(bufptr, "[48;5;%dm");
 	    } else {
 		bufptr = save_string(bufptr, "[38;5;%dm");
 	    }
-	} else if (str[0] == '%' && str[1] == '%') {	/* escaped '%' */
+	} else if (str[0] == '%' && str[1] == '%') {	 
 	    bufptr = save_string(bufptr, "%%");
 	    ++str;
 	} else if (*str != '%' || (parameterized < 1)) {
@@ -854,7 +718,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		c1 = ch1;
 	    bufptr = save_tc_char(bufptr, c1);
 	}
-	/* FIXME: this "works" for 'delta' */
+	 
 	else if (strncmp(str, "%{2}%*%-", (size_t) 8) == 0) {
 	    str += 7;
 	    bufptr = save_string(bufptr, "%D");
@@ -868,7 +732,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 	    if (saw_n++ == 0) {
 		bufptr = save_string(bufptr, "%m");
 	    }
-	} else {		/* cm-style format element */
+	} else {		 
 	    str++;
 	    switch (*str) {
 	    case '%':
@@ -910,9 +774,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		}
 		if (syntax_error)
 		    break;
-		/*
-		 * Convert %02 to %2 and %03 to %3
-		 */
+		 
 		if (ch2 == '0' && !_nc_strict_bsd) {
 		    ch2 = 0;
 		    bufptr[-2] = bufptr[-1];
@@ -927,7 +789,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		    bufptr = save_char(bufptr, ch1);
 		}
 		if (strchr("oxX.", *str)) {
-		    syntax_error = TRUE;	/* termcap doesn't have octal, hex */
+		    syntax_error = TRUE;	 
 		}
 		break;
 
@@ -939,11 +801,7 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		bufptr = save_string(bufptr, "%.");
 		break;
 
-		/*
-		 * %s isn't in termcap, but it is convenient to pass it through
-		 * so we can represent things like terminfo pfkey strings in
-		 * termcap notation.
-		 */
+		 
 	    case 's':
 		if (_nc_strict_bsd) {
 		    syntax_error = TRUE;
@@ -974,18 +832,15 @@ _nc_infotocap(const char *cap GCC_UNUSED, const char *str, int const parameteriz
 		bufptr = save_char(bufptr, *str);
 		syntax_error = TRUE;
 		break;
-	    }			/* endswitch (*str) */
-	}			/* endelse (*str == '%') */
+	    }			 
+	}			 
 
-	/*
-	 * 'str' always points to the end of what was scanned in this step,
-	 * but that may not be the end of the string.
-	 */
+	 
 	assert(str != 0);
 	if (str == 0 || *str == '\0')
 	    break;
 
-    }				/* endwhile (*str) */
+    }				 
 
     if (!syntax_error &&
 	myfix > 0 &&
@@ -1045,7 +900,7 @@ main(int argc, char *argv[])
     }
     return (0);
 }
-#endif /* MAIN */
+#endif  
 
 #if NO_LEAKS
 NCURSES_EXPORT(void)

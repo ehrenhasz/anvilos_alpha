@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt8188-afe-clk.c  --  MediaTek 8188 afe clock ctrl
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- *         Chun-Chia Chiu <chun-chia.chiu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 
@@ -16,14 +9,14 @@
 #include "mt8188-reg.h"
 
 static const char *aud_clks[MT8188_CLK_NUM] = {
-	/* xtal */
+	 
 	[MT8188_CLK_XTAL_26M] = "clk26m",
 
-	/* pll */
+	 
 	[MT8188_CLK_APMIXED_APLL1] = "apll1",
 	[MT8188_CLK_APMIXED_APLL2] = "apll2",
 
-	/* divider */
+	 
 	[MT8188_CLK_TOP_APLL1_D4] = "apll1_d4",
 	[MT8188_CLK_TOP_APLL2_D4] = "apll2_d4",
 	[MT8188_CLK_TOP_APLL12_DIV0] = "apll12_div0",
@@ -33,7 +26,7 @@ static const char *aud_clks[MT8188_CLK_NUM] = {
 	[MT8188_CLK_TOP_APLL12_DIV4] = "apll12_div4",
 	[MT8188_CLK_TOP_APLL12_DIV9] = "apll12_div9",
 
-	/* mux */
+	 
 	[MT8188_CLK_TOP_A1SYS_HP_SEL] = "top_a1sys_hp",
 	[MT8188_CLK_TOP_A2SYS_SEL] = "top_a2sys",
 	[MT8188_CLK_TOP_AUD_IEC_SEL] = "top_aud_iec",
@@ -46,9 +39,9 @@ static const char *aud_clks[MT8188_CLK_NUM] = {
 	[MT8188_CLK_TOP_I2SI1_M_SEL] = "top_i2si1",
 	[MT8188_CLK_TOP_I2SI2_M_SEL] = "top_i2si2",
 
-	/* clock gate */
+	 
 	[MT8188_CLK_ADSP_AUDIO_26M] = "adsp_audio_26m",
-	/* afe clock gate */
+	 
 	[MT8188_CLK_AUD_AFE] = "aud_afe",
 	[MT8188_CLK_AUD_APLL1_TUNER] = "aud_apll1_tuner",
 	[MT8188_CLK_AUD_APLL2_TUNER] = "aud_apll2_tuner",
@@ -104,7 +97,7 @@ struct mt8188_afe_tuner_cfg {
 	unsigned int upper_bound_shift;
 	unsigned int upper_bound_maskbit;
 	unsigned int upper_bound_default;
-	spinlock_t ctrl_lock; /* lock for apll tuner ctrl*/
+	spinlock_t ctrl_lock;  
 	int ref_cnt;
 };
 
@@ -423,7 +416,7 @@ int mt8188_afe_init_clock(struct mtk_base_afe *afe)
 		}
 	}
 
-	/* initial tuner */
+	 
 	for (i = 0; i < MT8188_AUD_PLL_NUM; i++) {
 		ret = mt8188_afe_init_apll_tuner(i);
 		if (ret) {
@@ -573,16 +566,16 @@ int mt8188_afe_enable_reg_rw_clk(struct mtk_base_afe *afe)
 {
 	struct mt8188_afe_private *afe_priv = afe->platform_priv;
 
-	/* bus clock for AFE external access, like DRAM */
+	 
 	mt8188_afe_enable_clk(afe, afe_priv->clk[MT8188_CLK_TOP_AUDIO_LOCAL_BUS_SEL]);
 
-	/* bus clock for AFE internal access, like AFE SRAM */
+	 
 	mt8188_afe_enable_clk(afe, afe_priv->clk[MT8188_CLK_TOP_AUD_INTBUS_SEL]);
 
-	/* audio 26m clock source */
+	 
 	mt8188_afe_enable_clk(afe, afe_priv->clk[MT8188_CLK_ADSP_AUDIO_26M]);
 
-	/* AFE hw clock */
+	 
 	mt8188_afe_enable_clk(afe, afe_priv->clk[MT8188_CLK_AUD_AFE]);
 	mt8188_afe_enable_clk(afe, afe_priv->clk[MT8188_CLK_AUD_A1SYS_HP]);
 	mt8188_afe_enable_clk(afe, afe_priv->clk[MT8188_CLK_AUD_A1SYS]);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /* Asymmetric algorithms supported by virtio crypto device
-  *
-  * Authors: zhenwei pi <pizhenwei@bytedance.com>
-  *          lei he <helei.sig11@bytedance.com>
-  *
-  * Copyright 2022 Bytedance CO., LTD.
-  */
+
+  
 
 #include <crypto/engine.h>
 #include <crypto/internal/akcipher.h>
@@ -95,7 +89,7 @@ static void virtio_crypto_dataq_akcipher_callback(struct virtio_crypto_request *
 
 	akcipher_req = vc_akcipher_req->akcipher_req;
 	if (vc_akcipher_req->opcode != VIRTIO_CRYPTO_AKCIPHER_VERIFY) {
-		/* actuall length maybe less than dst buffer */
+		 
 		akcipher_req->dst_len = len - sizeof(vc_req->status);
 		sg_copy_from_buffer(akcipher_req->dst, sg_nents(akcipher_req->dst),
 				    vc_akcipher_req->dst_buf, akcipher_req->dst_len);
@@ -232,17 +226,17 @@ static int __virtio_crypto_akcipher_do_req(struct virtio_crypto_akcipher_request
 	bool verify = vc_akcipher_req->opcode == VIRTIO_CRYPTO_AKCIPHER_VERIFY;
 	unsigned int src_len = verify ? req->src_len + req->dst_len : req->src_len;
 
-	/* out header */
+	 
 	sg_init_one(&outhdr_sg, req_data, sizeof(*req_data));
 	sgs[num_out++] = &outhdr_sg;
 
-	/* src data */
+	 
 	src_buf = kcalloc_node(src_len, 1, GFP_KERNEL, node);
 	if (!src_buf)
 		goto err;
 
 	if (verify) {
-		/* for verify operation, both src and dst data work as OUT direction */
+		 
 		sg_copy_to_buffer(req->src, sg_nents(req->src), src_buf, src_len);
 		sg_init_one(&srcdata_sg, src_buf, src_len);
 		sgs[num_out++] = &srcdata_sg;
@@ -251,7 +245,7 @@ static int __virtio_crypto_akcipher_do_req(struct virtio_crypto_akcipher_request
 		sg_init_one(&srcdata_sg, src_buf, src_len);
 		sgs[num_out++] = &srcdata_sg;
 
-		/* dst data */
+		 
 		dst_buf = kcalloc_node(req->dst_len, 1, GFP_KERNEL, node);
 		if (!dst_buf)
 			goto err;
@@ -263,7 +257,7 @@ static int __virtio_crypto_akcipher_do_req(struct virtio_crypto_akcipher_request
 	vc_akcipher_req->src_buf = src_buf;
 	vc_akcipher_req->dst_buf = dst_buf;
 
-	/* in header */
+	 
 	sg_init_one(&inhdr_sg, &vc_req->status, sizeof(vc_req->status));
 	sgs[num_out + num_in++] = &inhdr_sg;
 
@@ -301,13 +295,13 @@ static int virtio_crypto_rsa_do_req(struct crypto_engine *engine, void *vreq)
 	if (!vc_req->req_data)
 		return -ENOMEM;
 
-	/* build request header */
+	 
 	header = &vc_req->req_data->header;
 	header->opcode = cpu_to_le32(vc_akcipher_req->opcode);
 	header->algo = cpu_to_le32(VIRTIO_CRYPTO_AKCIPHER_RSA);
 	header->session_id = cpu_to_le64(ctx->session_id);
 
-	/* build request akcipher data */
+	 
 	akcipher_req = &vc_req->req_data->u.akcipher_req;
 	akcipher_req->para.src_data_len = cpu_to_le32(req->src_len);
 	akcipher_req->para.dst_data_len = cpu_to_le32(req->dst_len);
@@ -329,7 +323,7 @@ static int virtio_crypto_rsa_req(struct akcipher_request *req, uint32_t opcode)
 	struct virtio_crypto_akcipher_request *vc_akcipher_req = akcipher_request_ctx(req);
 	struct virtio_crypto_request *vc_req = &vc_akcipher_req->base;
 	struct virtio_crypto *vcrypto = ctx->vcrypto;
-	/* Use the first data virtqueue as default */
+	 
 	struct data_queue *data_vq = &vcrypto->data_vq[0];
 
 	vc_req->dataq = data_vq;
@@ -378,7 +372,7 @@ static int virtio_crypto_rsa_set_key(struct crypto_akcipher *tfm,
 	uint32_t keytype;
 	int ret;
 
-	/* mpi_free will test n, just free it. */
+	 
 	mpi_free(rsa_ctx->n);
 	rsa_ctx->n = NULL;
 
@@ -410,12 +404,12 @@ static int virtio_crypto_rsa_set_key(struct crypto_akcipher *tfm,
 		virtio_crypto_alg_akcipher_close_session(ctx);
 	}
 
-	/* set ctrl header */
+	 
 	header.opcode =	cpu_to_le32(VIRTIO_CRYPTO_AKCIPHER_CREATE_SESSION);
 	header.algo = cpu_to_le32(VIRTIO_CRYPTO_AKCIPHER_RSA);
 	header.queue_id = 0;
 
-	/* set RSA para */
+	 
 	para.algo = cpu_to_le32(VIRTIO_CRYPTO_AKCIPHER_RSA);
 	para.keytype = cpu_to_le32(keytype);
 	para.keylen = cpu_to_le32(keylen);

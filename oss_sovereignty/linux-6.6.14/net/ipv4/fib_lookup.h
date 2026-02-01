@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _FIB_LOOKUP_H
 #define _FIB_LOOKUP_H
 
@@ -25,14 +25,14 @@ struct fib_alias {
 
 #define FA_S_ACCESSED	0x01
 
-/* Don't write on fa_state unless needed, to keep it shared on all cpus */
+ 
 static inline void fib_alias_accessed(struct fib_alias *fa)
 {
 	if (!(fa->fa_state & FA_S_ACCESSED))
 		fa->fa_state |= FA_S_ACCESSED;
 }
 
-/* Exported by fib_semantics.c */
+ 
 void fib_release_info(struct fib_info *);
 struct fib_info *fib_create_info(struct fib_config *cfg,
 				 struct netlink_ext_ack *extack);
@@ -48,7 +48,7 @@ size_t fib_nlmsg_size(struct fib_info *fi);
 static inline void fib_result_assign(struct fib_result *res,
 				     struct fib_info *fi)
 {
-	/* we used to play games with refcounts, but we now use RCU */
+	 
 	res->fi = fi;
 	res->nhc = fib_info_nhc(fi, 0);
 }
@@ -60,4 +60,4 @@ struct fib_prop {
 
 extern const struct fib_prop fib_props[RTN_MAX + 1];
 
-#endif /* _FIB_LOOKUP_H */
+#endif  

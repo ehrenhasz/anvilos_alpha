@@ -1,21 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header File to describe the DMA descriptors and related definitions specific
- * for DesignWare databook 4.xx.
- *
- * Copyright (C) 2015  STMicroelectronics Ltd
- *
- * Author: Alexandre Torgue <alexandre.torgue@st.com>
- */
+ 
+ 
 
 #ifndef __DWMAC4_DESCS_H__
 #define __DWMAC4_DESCS_H__
 
 #include <linux/bitops.h>
 
-/* Normal transmit descriptor defines (without split feature) */
+ 
 
-/* TDES2 (read format) */
+ 
 #define TDES2_BUFFER1_SIZE_MASK		GENMASK(13, 0)
 #define TDES2_VLAN_TAG_MASK		GENMASK(15, 14)
 #define TDES2_VLAN_TAG_SHIFT		14
@@ -29,7 +22,7 @@
 #define TDES2_IVT_SHIFT			16
 #define TDES2_INTERRUPT_ON_COMPLETION	BIT(31)
 
-/* TDES3 (read format) */
+ 
 #define TDES3_PACKET_SIZE_MASK		GENMASK(14, 0)
 #define TDES3_VLAN_TAG			GENMASK(15, 0)
 #define TDES3_VLTV			BIT(16)
@@ -43,7 +36,7 @@
 #define TDES3_SA_INSERT_CTRL_SHIFT	23
 #define TDES3_CRC_PAD_CTRL_MASK		GENMASK(27, 26)
 
-/* TDES3 (write back format) */
+ 
 #define TDES3_IP_HDR_ERROR		BIT(0)
 #define TDES3_DEFERRED			BIT(1)
 #define TDES3_UNDERFLOW_ERROR		BIT(2)
@@ -61,10 +54,10 @@
 #define TDES3_TIMESTAMP_STATUS		BIT(17)
 #define TDES3_TIMESTAMP_STATUS_SHIFT	17
 
-/* TDES3 context */
+ 
 #define TDES3_CTXT_TCMSSV		BIT(26)
 
-/* TDES3 Common */
+ 
 #define	TDES3_RS1V			BIT(26)
 #define	TDES3_RS1V_SHIFT		26
 #define TDES3_LAST_DESCRIPTOR		BIT(28)
@@ -73,23 +66,23 @@
 #define TDES3_CONTEXT_TYPE		BIT(30)
 #define	TDES3_CONTEXT_TYPE_SHIFT	30
 
-/* TDES4 */
+ 
 #define TDES4_LTV			BIT(31)
 #define TDES4_LT			GENMASK(7, 0)
 
-/* TDES5 */
+ 
 #define TDES5_LT			GENMASK(31, 8)
 
-/* TDS3 use for both format (read and write back) */
+ 
 #define TDES3_OWN			BIT(31)
 #define TDES3_OWN_SHIFT			31
 
-/* Normal receive descriptor defines (without split feature) */
+ 
 
-/* RDES0 (write back format) */
+ 
 #define RDES0_VLAN_TAG_MASK		GENMASK(15, 0)
 
-/* RDES1 (write back format) */
+ 
 #define RDES1_IP_PAYLOAD_TYPE_MASK	GENMASK(2, 0)
 #define RDES1_IP_HDR_ERROR		BIT(3)
 #define RDES1_IPV4_HEADER		BIT(4)
@@ -104,7 +97,7 @@
 #define RDES1_TIMESTAMP_DROPPED		BIT(15)
 #define RDES1_IP_TYPE1_CSUM_MASK	GENMASK(31, 16)
 
-/* RDES2 (write back format) */
+ 
 #define RDES2_L3_L4_HEADER_SIZE_MASK	GENMASK(9, 0)
 #define RDES2_VLAN_FILTER_STATUS	BIT(15)
 #define RDES2_SA_FILTER_FAIL		BIT(16)
@@ -118,7 +111,7 @@
 #define RDES2_L3_L4_FILT_NB_MATCH_SHIFT	26
 #define RDES2_HL			GENMASK(9, 0)
 
-/* RDES3 (write back format) */
+ 
 #define RDES3_PACKET_SIZE_MASK		GENMASK(14, 0)
 #define RDES3_ERROR_SUMMARY		BIT(15)
 #define RDES3_PACKET_LEN_TYPE_MASK	GENMASK(18, 16)
@@ -136,12 +129,12 @@
 #define RDES3_CONTEXT_DESCRIPTOR	BIT(30)
 #define RDES3_CONTEXT_DESCRIPTOR_SHIFT	30
 
-/* RDES3 (read format) */
+ 
 #define RDES3_BUFFER1_VALID_ADDR	BIT(24)
 #define RDES3_BUFFER2_VALID_ADDR	BIT(25)
 #define RDES3_INT_ON_COMPLETION_EN	BIT(30)
 
-/* TDS3 use for both format (read and write back) */
+ 
 #define RDES3_OWN			BIT(31)
 
-#endif /* __DWMAC4_DESCS_H__ */
+#endif  

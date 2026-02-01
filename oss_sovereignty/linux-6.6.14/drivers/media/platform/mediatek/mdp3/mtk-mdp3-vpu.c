@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/remoteproc.h>
 #include <linux/remoteproc/mtk_scp.h>
@@ -206,7 +203,7 @@ int mdp_vpu_dev_init(struct mdp_vpu_dev *vpu, struct mtk_scp *scp,
 	err = mdp_vpu_sendmsg(vpu, SCP_IPI_MDP_INIT, &msg, sizeof(msg));
 	if (err)
 		goto err_work_size;
-	/* vpu work_size was set in mdp_vpu_ipi_handle_init_ack */
+	 
 
 	mutex_lock(vpu->lock);
 	vpu->work_size = ALIGN(vpu->work_size, 64);
@@ -239,7 +236,7 @@ err_work_size:
 		err = -EBUSY;
 		break;
 	case -MDP_IPI_ENOMEM:
-		err = -ENOSPC;	/* -ENOMEM */
+		err = -ENOSPC;	 
 		break;
 	}
 	return err;

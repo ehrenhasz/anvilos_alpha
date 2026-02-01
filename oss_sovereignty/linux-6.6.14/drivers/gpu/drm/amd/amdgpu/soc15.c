@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/firmware.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -87,7 +66,7 @@
 
 static const struct amd_ip_funcs soc15_common_ip_funcs;
 
-/* Vega, Raven, Arcturus */
+ 
 static const struct amdgpu_video_codec_info vega_video_codecs_encode_array[] =
 {
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC, 4096, 2304, 0)},
@@ -100,7 +79,7 @@ static const struct amdgpu_video_codecs vega_video_codecs_encode =
 	.codec_array = vega_video_codecs_encode_array,
 };
 
-/* Vega */
+ 
 static const struct amdgpu_video_codec_info vega_video_codecs_decode_array[] =
 {
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG2, 4096, 4096, 3)},
@@ -117,7 +96,7 @@ static const struct amdgpu_video_codecs vega_video_codecs_decode =
 	.codec_array = vega_video_codecs_decode_array,
 };
 
-/* Raven */
+ 
 static const struct amdgpu_video_codec_info rv_video_codecs_decode_array[] =
 {
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG2, 4096, 4096, 3)},
@@ -135,7 +114,7 @@ static const struct amdgpu_video_codecs rv_video_codecs_decode =
 	.codec_array = rv_video_codecs_decode_array,
 };
 
-/* Renoir, Arcturus */
+ 
 static const struct amdgpu_video_codec_info rn_video_codecs_decode_array[] =
 {
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG2, 4096, 4096, 3)},
@@ -350,7 +329,7 @@ void soc15_grbm_select(struct amdgpu_device *adev,
 
 static bool soc15_read_disabled_bios(struct amdgpu_device *adev)
 {
-	/* todo */
+	 
 	return false;
 }
 
@@ -433,16 +412,7 @@ static int soc15_read_register(struct amdgpu_device *adev, u32 se_num,
 }
 
 
-/**
- * soc15_program_register_sequence - program an array of registers.
- *
- * @adev: amdgpu_device pointer
- * @regs: pointer to the register array
- * @array_size: size of the register array
- *
- * Programs an array or registers with and and or masks.
- * This is a helper for setting golden registers.
- */
+ 
 
 void soc15_program_register_sequence(struct amdgpu_device *adev,
 					     const struct soc15_reg_golden *regs,
@@ -484,7 +454,7 @@ static int soc15_asic_baco_reset(struct amdgpu_device *adev)
 	struct amdgpu_ras *ras = amdgpu_ras_get_context(adev);
 	int ret = 0;
 
-	/* avoid NBIF got stuck when do RAS recovery in BACO reset */
+	 
 	if (ras && adev->ras_enabled)
 		adev->nbio.funcs->enable_doorbell_interrupt(adev, false);
 
@@ -492,7 +462,7 @@ static int soc15_asic_baco_reset(struct amdgpu_device *adev)
 	if (ret)
 		return ret;
 
-	/* re-enable doorbell interrupt after BACO exit */
+	 
 	if (ras && adev->ras_enabled)
 		adev->nbio.funcs->enable_doorbell_interrupt(adev, true);
 
@@ -513,7 +483,7 @@ soc15_asic_reset_method(struct amdgpu_device *adev)
 	    amdgpu_reset_method == AMD_RESET_METHOD_MODE2 ||
 	    amdgpu_reset_method == AMD_RESET_METHOD_BACO ||
 	    amdgpu_reset_method == AMD_RESET_METHOD_PCI) {
-		/* If connected to cpu, driver only support mode2 */
+		 
                 if (connected_to_cpu)
                         return AMD_RESET_METHOD_MODE2;
                 return amdgpu_reset_method;
@@ -534,10 +504,7 @@ soc15_asic_reset_method(struct amdgpu_device *adev)
 		if (adev->asic_type == CHIP_VEGA20) {
 			if (adev->psp.sos.fw_version >= 0x80067)
 				baco_reset = amdgpu_dpm_is_baco_supported(adev);
-			/*
-			 * 1. PMFW version > 0x284300: all cases use baco
-			 * 2. PMFW version <= 0x284300: only sGPU w/o RAS use baco
-			 */
+			 
 			if (ras && adev->ras_enabled &&
 			    adev->pm.fw_version <= 0x283400)
 				baco_reset = false;
@@ -546,18 +513,12 @@ soc15_asic_reset_method(struct amdgpu_device *adev)
 		}
 		break;
 	case IP_VERSION(13, 0, 2):
-		 /*
-		 * 1.connected to cpu: driver issue mode2 reset
-		 * 2.discret gpu: driver issue mode1 reset
-		 */
+		  
 		if (connected_to_cpu)
 			return AMD_RESET_METHOD_MODE2;
 		break;
 	case IP_VERSION(13, 0, 6):
-		/* Use gpu_recovery param to target a reset method.
-		 * Enable triggering of GPU reset only if specified
-		 * by module parameter.
-		 */
+		 
 		if (amdgpu_gpu_recovery == 4 || amdgpu_gpu_recovery == 5)
 			return AMD_RESET_METHOD_MODE2;
 		else if (!(adev->flags & AMD_IS_APU))
@@ -576,7 +537,7 @@ soc15_asic_reset_method(struct amdgpu_device *adev)
 
 static int soc15_asic_reset(struct amdgpu_device *adev)
 {
-	/* original raven doesn't have full asic reset */
+	 
 	if ((adev->apu_flags & AMD_APU_IS_RAVEN) ||
 	    (adev->apu_flags & AMD_APU_IS_RAVEN2))
 		return 0;
@@ -615,28 +576,17 @@ static bool soc15_supports_baco(struct amdgpu_device *adev)
 	}
 }
 
-/*static int soc15_set_uvd_clock(struct amdgpu_device *adev, u32 clock,
-			u32 cntl_reg, u32 status_reg)
-{
-	return 0;
-}*/
+ 
 
 static int soc15_set_uvd_clocks(struct amdgpu_device *adev, u32 vclk, u32 dclk)
 {
-	/*int r;
-
-	r = soc15_set_uvd_clock(adev, vclk, ixCG_VCLK_CNTL, ixCG_VCLK_STATUS);
-	if (r)
-		return r;
-
-	r = soc15_set_uvd_clock(adev, dclk, ixCG_DCLK_CNTL, ixCG_DCLK_STATUS);
-	*/
+	 
 	return 0;
 }
 
 static int soc15_set_vce_clocks(struct amdgpu_device *adev, u32 evclk, u32 ecclk)
 {
-	/* todo */
+	 
 
 	return 0;
 }
@@ -662,7 +612,7 @@ const struct amdgpu_ip_block_version vega10_common_ip_block =
 
 static void soc15_reg_base_init(struct amdgpu_device *adev)
 {
-	/* Set IP register base before any HW register access */
+	 
 	switch (adev->asic_type) {
 	case CHIP_VEGA10:
 	case CHIP_VEGA12:
@@ -689,15 +639,13 @@ void soc15_set_virt_ops(struct amdgpu_device *adev)
 {
 	adev->virt.ops = &xgpu_ai_virt_ops;
 
-	/* init soc15 reg base early enough so we can
-	 * request request full access for sriov before
-	 * set_ip_blocks. */
+	 
 	soc15_reg_base_init(adev);
 }
 
 static bool soc15_need_full_reset(struct amdgpu_device *adev)
 {
-	/* change this when we implement soft reset */
+	 
 	return true;
 }
 
@@ -708,42 +656,32 @@ static void soc15_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count0,
 	uint64_t cnt0_of, cnt1_of;
 	int tmp;
 
-	/* This reports 0 on APUs, so return to avoid writing/reading registers
-	 * that may or may not be different from their GPU counterparts
-	 */
+	 
 	if (adev->flags & AMD_IS_APU)
 		return;
 
-	/* Set the 2 events that we wish to watch, defined above */
-	/* Reg 40 is # received msgs */
-	/* Reg 104 is # of posted requests sent */
+	 
+	 
+	 
 	perfctr = REG_SET_FIELD(perfctr, PCIE_PERF_CNTL_TXCLK, EVENT0_SEL, 40);
 	perfctr = REG_SET_FIELD(perfctr, PCIE_PERF_CNTL_TXCLK, EVENT1_SEL, 104);
 
-	/* Write to enable desired perf counters */
+	 
 	WREG32_PCIE(smnPCIE_PERF_CNTL_TXCLK, perfctr);
-	/* Zero out and enable the perf counters
-	 * Write 0x5:
-	 * Bit 0 = Start all counters(1)
-	 * Bit 2 = Global counter reset enable(1)
-	 */
+	 
 	WREG32_PCIE(smnPCIE_PERF_COUNT_CNTL, 0x00000005);
 
 	msleep(1000);
 
-	/* Load the shadow and disable the perf counters
-	 * Write 0x2:
-	 * Bit 0 = Stop counters(0)
-	 * Bit 1 = Load the shadow counters(1)
-	 */
+	 
 	WREG32_PCIE(smnPCIE_PERF_COUNT_CNTL, 0x00000002);
 
-	/* Read register values to get any >32bit overflow */
+	 
 	tmp = RREG32_PCIE(smnPCIE_PERF_CNTL_TXCLK);
 	cnt0_of = REG_GET_FIELD(tmp, PCIE_PERF_CNTL_TXCLK, COUNTER0_UPPER);
 	cnt1_of = REG_GET_FIELD(tmp, PCIE_PERF_CNTL_TXCLK, COUNTER1_UPPER);
 
-	/* Get the values and add the overflow */
+	 
 	*count0 = RREG32_PCIE(smnPCIE_PERF_COUNT0_TXCLK) | (cnt0_of << 32);
 	*count1 = RREG32_PCIE(smnPCIE_PERF_COUNT1_TXCLK) | (cnt1_of << 32);
 }
@@ -755,44 +693,34 @@ static void vega20_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count0,
 	uint64_t cnt0_of, cnt1_of;
 	int tmp;
 
-	/* This reports 0 on APUs, so return to avoid writing/reading registers
-	 * that may or may not be different from their GPU counterparts
-	 */
+	 
 	if (adev->flags & AMD_IS_APU)
 		return;
 
-	/* Set the 2 events that we wish to watch, defined above */
-	/* Reg 40 is # received msgs */
-	/* Reg 108 is # of posted requests sent on VG20 */
+	 
+	 
+	 
 	perfctr = REG_SET_FIELD(perfctr, PCIE_PERF_CNTL_TXCLK3,
 				EVENT0_SEL, 40);
 	perfctr = REG_SET_FIELD(perfctr, PCIE_PERF_CNTL_TXCLK3,
 				EVENT1_SEL, 108);
 
-	/* Write to enable desired perf counters */
+	 
 	WREG32_PCIE(smnPCIE_PERF_CNTL_TXCLK3, perfctr);
-	/* Zero out and enable the perf counters
-	 * Write 0x5:
-	 * Bit 0 = Start all counters(1)
-	 * Bit 2 = Global counter reset enable(1)
-	 */
+	 
 	WREG32_PCIE(smnPCIE_PERF_COUNT_CNTL, 0x00000005);
 
 	msleep(1000);
 
-	/* Load the shadow and disable the perf counters
-	 * Write 0x2:
-	 * Bit 0 = Stop counters(0)
-	 * Bit 1 = Load the shadow counters(1)
-	 */
+	 
 	WREG32_PCIE(smnPCIE_PERF_COUNT_CNTL, 0x00000002);
 
-	/* Read register values to get any >32bit overflow */
+	 
 	tmp = RREG32_PCIE(smnPCIE_PERF_CNTL_TXCLK3);
 	cnt0_of = REG_GET_FIELD(tmp, PCIE_PERF_CNTL_TXCLK3, COUNTER0_UPPER);
 	cnt1_of = REG_GET_FIELD(tmp, PCIE_PERF_CNTL_TXCLK3, COUNTER1_UPPER);
 
-	/* Get the values and add the overflow */
+	 
 	*count0 = RREG32_PCIE(smnPCIE_PERF_COUNT0_TXCLK3) | (cnt0_of << 32);
 	*count1 = RREG32_PCIE(smnPCIE_PERF_COUNT1_TXCLK3) | (cnt1_of << 32);
 }
@@ -801,22 +729,18 @@ static bool soc15_need_reset_on_init(struct amdgpu_device *adev)
 {
 	u32 sol_reg;
 
-	/* CP hangs in IGT reloading test on RN, reset to WA */
+	 
 	if (adev->asic_type == CHIP_RENOIR)
 		return true;
 
-	/* Just return false for soc15 GPUs.  Reset does not seem to
-	 * be necessary.
-	 */
+	 
 	if (!amdgpu_passthrough(adev))
 		return false;
 
 	if (adev->flags & AMD_IS_APU)
 		return false;
 
-	/* Check sOS sign of life register to confirm sys driver and sOS
-	 * are already been loaded.
-	 */
+	 
 	sol_reg = RREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_81);
 	if (sol_reg)
 		return true;
@@ -828,11 +752,11 @@ static uint64_t soc15_get_pcie_replay_count(struct amdgpu_device *adev)
 {
 	uint64_t nak_r, nak_g;
 
-	/* Get the number of NAKs received and generated */
+	 
 	nak_r = RREG32_PCIE(smnPCIE_RX_NUM_NAK);
 	nak_g = RREG32_PCIE(smnPCIE_RX_NUM_NAK_GENERATED);
 
-	/* Add the total number of NAKs, i.e the number of replays */
+	 
 	return (nak_r + nak_g);
 }
 
@@ -933,9 +857,7 @@ static int soc15_common_early_init(void *handle)
 
 	adev->rev_id = amdgpu_device_get_rev_id(adev);
 	adev->external_rev_id = 0xFF;
-	/* TODO: split the GC and PG flags based on the relevant IP version for which
-	 * they are relevant.
-	 */
+	 
 	switch (adev->ip_versions[GC_HWIP][0]) {
 	case IP_VERSION(9, 0, 1):
 		adev->asic_funcs = &soc15_asic_funcs;
@@ -1055,10 +977,7 @@ static int soc15_common_early_init(void *handle)
 				AMD_CG_SUPPORT_SDMA_LS |
 				AMD_CG_SUPPORT_VCN_MGCG;
 
-			/*
-			 * MMHUB PG needs to be disabled for Picasso for
-			 * stability reasons.
-			 */
+			 
 			adev->pg_flags = AMD_PG_SUPPORT_SDMA |
 				AMD_PG_SUPPORT_VCN;
 		} else {
@@ -1160,14 +1079,14 @@ static int soc15_common_early_init(void *handle)
 			AMD_PG_SUPPORT_VCN_DPG |
 			AMD_PG_SUPPORT_JPEG;
 		adev->external_rev_id = adev->rev_id + 0x46;
-		/* GC 9.4.3 uses MMIO register region hole at a different offset */
+		 
 		if (!amdgpu_sriov_vf(adev)) {
 			adev->rmmio_remap.reg_offset = 0x1A000;
 			adev->rmmio_remap.bus_addr = adev->rmmio_base + 0x1A000;
 		}
 		break;
 	default:
-		/* FIXME: not supported yet */
+		 
 		return -EINVAL;
 	}
 
@@ -1186,9 +1105,7 @@ static int soc15_common_late_init(void *handle)
 	if (amdgpu_sriov_vf(adev))
 		xgpu_ai_mailbox_get_irq(adev);
 
-	/* Enable selfring doorbell aperture late because doorbell BAR
-	 * aperture will change if resize BAR successfully in gmc sw_init.
-	 */
+	 
 	adev->nbio.funcs->enable_doorbell_selfring_aperture(adev, true);
 
 	return 0;
@@ -1222,7 +1139,7 @@ static void soc15_sdma_doorbell_range_init(struct amdgpu_device *adev)
 {
 	int i;
 
-	/* sdma doorbell range is programed by hypervisor */
+	 
 	if (!amdgpu_sriov_vf(adev)) {
 		for (i = 0; i < adev->sdma.num_instances; i++) {
 			adev->nbio.funcs->sdma_doorbell_range(adev, i,
@@ -1236,26 +1153,18 @@ static int soc15_common_hw_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* enable aspm */
+	 
 	soc15_program_aspm(adev);
-	/* setup nbio registers */
+	 
 	adev->nbio.funcs->init_registers(adev);
-	/* remap HDP registers to a hole in mmio space,
-	 * for the purpose of expose those registers
-	 * to process space
-	 */
+	 
 	if (adev->nbio.funcs->remap_hdp_registers && !amdgpu_sriov_vf(adev))
 		adev->nbio.funcs->remap_hdp_registers(adev);
 
-	/* enable the doorbell aperture */
+	 
 	adev->nbio.funcs->enable_doorbell_aperture(adev, true);
 
-	/* HW doorbell routing policy: doorbell writing not
-	 * in SDMA/IH/MM/ACV range will be routed to CP. So
-	 * we need to init SDMA doorbell range prior
-	 * to CP ip block init and ring test.  IH already
-	 * happens before CP.
-	 */
+	 
 	soc15_sdma_doorbell_range_init(adev);
 
 	return 0;
@@ -1265,11 +1174,7 @@ static int soc15_common_hw_fini(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* Disable the doorbell aperture and selfring doorbell aperture
-	 * separately in hw_fini because soc15_enable_doorbell_aperture
-	 * has been removed and there is no need to delay disabling
-	 * selfring doorbell.
-	 */
+	 
 	adev->nbio.funcs->enable_doorbell_aperture(adev, false);
 	adev->nbio.funcs->enable_doorbell_selfring_aperture(adev, false);
 
@@ -1430,18 +1335,18 @@ static void soc15_common_get_clockgating_state(void *handle, u64 *flags)
 
 	if (adev->ip_versions[MP0_HWIP][0] != IP_VERSION(13, 0, 2)) {
 
-		/* AMD_CG_SUPPORT_DRM_MGCG */
+		 
 		data = RREG32(SOC15_REG_OFFSET(MP0, 0, mmMP0_MISC_CGTT_CTRL0));
 		if (!(data & 0x01000000))
 			*flags |= AMD_CG_SUPPORT_DRM_MGCG;
 
-		/* AMD_CG_SUPPORT_DRM_LS */
+		 
 		data = RREG32(SOC15_REG_OFFSET(MP0, 0, mmMP0_MISC_LIGHT_SLEEP_CTRL));
 		if (data & 0x1)
 			*flags |= AMD_CG_SUPPORT_DRM_LS;
 	}
 
-	/* AMD_CG_SUPPORT_ROM_MGCG */
+	 
 	if (adev->smuio.funcs && adev->smuio.funcs->get_clock_gating_state)
 		adev->smuio.funcs->get_clock_gating_state(adev, flags);
 
@@ -1452,7 +1357,7 @@ static void soc15_common_get_clockgating_state(void *handle, u64 *flags)
 static int soc15_common_set_powergating_state(void *handle,
 					    enum amd_powergating_state state)
 {
-	/* todo */
+	 
 	return 0;
 }
 

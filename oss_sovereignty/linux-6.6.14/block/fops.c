@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 1991, 1992  Linus Torvalds
- * Copyright (C) 2001  Andrea Arcangeli <andrea@suse.de> SuSE
- * Copyright (C) 2016 - 2020 Christoph Hellwig
- */
+
+ 
 #include <linux/init.h>
 #include <linux/mm.h>
 #include <linux/blkdev.h>
@@ -28,7 +24,7 @@ static blk_opf_t dio_bio_write_op(struct kiocb *iocb)
 {
 	blk_opf_t opf = REQ_OP_WRITE | REQ_SYNC | REQ_IDLE;
 
-	/* avoid the need for a I/O completion work item */
+	 
 	if (iocb_is_dsync(iocb))
 		opf |= REQ_FUA;
 	return opf;
@@ -180,10 +176,7 @@ static ssize_t __blkdev_direct_IO(struct kiocb *iocb, struct iov_iter *iter,
 			       &blkdev_dio_pool);
 	dio = container_of(bio, struct blkdev_dio, bio);
 	atomic_set(&dio->ref, 1);
-	/*
-	 * Grab an extra reference to ensure the dio structure which is embedded
-	 * into the first bio stays around.
-	 */
+	 
 	bio_get(bio);
 
 	is_sync = is_sync_kiocb(iocb);
@@ -214,14 +207,7 @@ static ssize_t __blkdev_direct_IO(struct kiocb *iocb, struct iov_iter *iter,
 			break;
 		}
 		if (iocb->ki_flags & IOCB_NOWAIT) {
-			/*
-			 * This is nonblocking IO, and we need to allocate
-			 * another bio if we have data left to map. As we
-			 * cannot guarantee that one of the sub bios will not
-			 * fail getting issued FOR NOWAIT and as error results
-			 * are coalesced across all of them, be safe and ask for
-			 * a retry of this from blocking context.
-			 */
+			 
 			if (unlikely(iov_iter_count(iter))) {
 				bio_release_pages(bio, false);
 				bio_clear_flag(bio, BIO_REFFED);
@@ -325,12 +311,7 @@ static ssize_t __blkdev_direct_IO_async(struct kiocb *iocb,
 	bio->bi_ioprio = iocb->ki_ioprio;
 
 	if (iov_iter_is_bvec(iter)) {
-		/*
-		 * Users don't rely on the iterator being in any particular
-		 * state for async I/O returning -EIOCBQUEUED, hence we can
-		 * avoid expensive iov_iter_advance(). Bypass
-		 * bio_iov_iter_get_pages() and set the bvec directly.
-		 */
+		 
 		bio_iov_bvec_set(bio, iter);
 	} else {
 		ret = bio_iov_iter_get_pages(bio, iter);
@@ -392,7 +373,7 @@ static int blkdev_iomap_begin(struct inode *inode, loff_t offset, loff_t length,
 	iomap->type = IOMAP_MAPPED;
 	iomap->addr = iomap->offset;
 	iomap->length = isize - iomap->offset;
-	iomap->flags |= IOMAP_F_BUFFER_HEAD; /* noop for !CONFIG_BUFFER_HEAD */
+	iomap->flags |= IOMAP_F_BUFFER_HEAD;  
 	return 0;
 }
 
@@ -455,7 +436,7 @@ const struct address_space_operations def_blk_aops = {
 	.migrate_folio	= buffer_migrate_folio_norefs,
 	.is_dirty_writeback = buffer_check_dirty_writeback,
 };
-#else /* CONFIG_BUFFER_HEAD */
+#else  
 static int blkdev_read_folio(struct file *file, struct folio *folio)
 {
 	return iomap_read_folio(folio, &blkdev_iomap_ops);
@@ -503,12 +484,9 @@ const struct address_space_operations def_blk_aops = {
 	.error_remove_page	= generic_error_remove_page,
 	.migrate_folio		= filemap_migrate_folio,
 };
-#endif /* CONFIG_BUFFER_HEAD */
+#endif  
 
-/*
- * for a block special file file_inode(file)->i_size is zero
- * so we compute the size by hand (just as in block_read/write above)
- */
+ 
 static loff_t blkdev_llseek(struct file *file, loff_t offset, int whence)
 {
 	struct inode *bd_inode = bdev_file_inode(file);
@@ -530,11 +508,7 @@ static int blkdev_fsync(struct file *filp, loff_t start, loff_t end,
 	if (error)
 		return error;
 
-	/*
-	 * There is no need to serialise calls to blkdev_issue_flush with
-	 * i_mutex and doing so causes performance issues with concurrent
-	 * O_SYNC writers to a block device.
-	 */
+	 
 	error = blkdev_issue_flush(bdev);
 	if (error == -EOPNOTSUPP)
 		error = 0;
@@ -555,11 +529,7 @@ blk_mode_t file_to_blk_mode(struct file *file)
 	if (file->f_flags & O_NDELAY)
 		mode |= BLK_OPEN_NDELAY;
 
-	/*
-	 * If all bits in O_ACCMODE set (aka O_RDWR | O_WRONLY), the floppy
-	 * driver has historically allowed ioctls as if the file was opened for
-	 * writing, but does not allow and actual reads or writes.
-	 */
+	 
 	if ((file->f_flags & O_ACCMODE) == (O_RDWR | O_WRONLY))
 		mode |= BLK_OPEN_WRITE_IOCTL;
 
@@ -570,19 +540,11 @@ static int blkdev_open(struct inode *inode, struct file *filp)
 {
 	struct block_device *bdev;
 
-	/*
-	 * Preserve backwards compatibility and allow large file access
-	 * even if userspace doesn't ask for it explicitly. Some mkfs
-	 * binary needs it. We might want to drop this workaround
-	 * during an unstable branch.
-	 */
+	 
 	filp->f_flags |= O_LARGEFILE;
 	filp->f_mode |= FMODE_BUF_RASYNC | FMODE_CAN_ODIRECT;
 
-	/*
-	 * Use the file private data to store the holder for exclusive openes.
-	 * file_to_blk_mode relies on it being present to set BLK_OPEN_EXCL.
-	 */
+	 
 	if (filp->f_flags & O_EXCL)
 		filp->private_data = filp;
 
@@ -634,13 +596,7 @@ static ssize_t blkdev_buffered_write(struct kiocb *iocb, struct iov_iter *from)
 	return iomap_file_buffered_write(iocb, from, &blkdev_iomap_ops);
 }
 
-/*
- * Write data to the block device.  Only intended for the block device itself
- * and the raw driver which basically is a fake block device.
- *
- * Does not take i_mutex for the write and thus is not for general purpose
- * use.
- */
+ 
 static ssize_t blkdev_write_iter(struct kiocb *iocb, struct iov_iter *from)
 {
 	struct file *file = iocb->ki_filp;
@@ -709,7 +665,7 @@ static ssize_t blkdev_read_iter(struct kiocb *iocb, struct iov_iter *to)
 
 	count = iov_iter_count(to);
 	if (!count)
-		goto reexpand; /* skip atime */
+		goto reexpand;  
 
 	if (iocb->ki_flags & IOCB_DIRECT) {
 		ret = kiocb_write_and_wait(iocb, count);
@@ -748,11 +704,11 @@ static long blkdev_fallocate(struct file *file, int mode, loff_t start,
 	loff_t isize;
 	int error;
 
-	/* Fail if we don't recognize the flags. */
+	 
 	if (mode & ~BLKDEV_FALLOC_FL_SUPPORTED)
 		return -EOPNOTSUPP;
 
-	/* Don't go off the end of the device. */
+	 
 	isize = bdev_nr_bytes(bdev);
 	if (start >= isize)
 		return -EINVAL;
@@ -764,18 +720,13 @@ static long blkdev_fallocate(struct file *file, int mode, loff_t start,
 			return -EINVAL;
 	}
 
-	/*
-	 * Don't allow IO that isn't aligned to logical block size.
-	 */
+	 
 	if ((start | len) & (bdev_logical_block_size(bdev) - 1))
 		return -EINVAL;
 
 	filemap_invalidate_lock(inode->i_mapping);
 
-	/*
-	 * Invalidate the page cache, including dirty pages, for valid
-	 * de-allocate mode calls to fallocate().
-	 */
+	 
 	switch (mode) {
 	case FALLOC_FL_ZERO_RANGE:
 	case FALLOC_FL_ZERO_RANGE | FALLOC_FL_KEEP_SIZE:

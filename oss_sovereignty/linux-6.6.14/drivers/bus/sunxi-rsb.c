@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RSB (Reduced Serial Bus) driver.
- *
- * Author: Chen-Yu Tsai <wens@csie.org>
- *
- * The RSB controller looks like an SMBus controller which only supports
- * byte and word data transfers. But, it differs from standard SMBus
- * protocol on several aspects:
- * - it uses addresses set at runtime to address slaves. Runtime addresses
- *   are sent to slaves using their 12bit hardware addresses. Up to 15
- *   runtime addresses are available.
- * - it adds a parity bit every 8bits of data and address for read and
- *   write accesses; this replaces the ack bit
- * - only one read access is required to read a byte (instead of a write
- *   followed by a read access in standard SMBus protocol)
- * - there's no Ack bit after each read access
- *
- * This means this bus cannot be used to interface with standard SMBus
- * devices. Devices known to support this interface include the AXP223,
- * AXP809, and AXP806 PMICs, and the AC100 audio codec, all from X-Powers.
- *
- * A description of the operation and wire protocol can be found in the
- * RSB section of Allwinner's A80 user manual, which can be found at
- *
- *     https://github.com/allwinner-zh/documents/tree/master/A80
- *
- * This document is officially released by Allwinner.
- *
- * This driver is based on i2c-sun6i-p2wi.c, the P2WI bus driver.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk/clk-conf.h>
@@ -49,30 +20,30 @@
 #include <linux/sunxi-rsb.h>
 #include <linux/types.h>
 
-/* RSB registers */
-#define RSB_CTRL	0x0	/* Global control */
-#define RSB_CCR		0x4	/* Clock control */
-#define RSB_INTE	0x8	/* Interrupt controls */
-#define RSB_INTS	0xc	/* Interrupt status */
-#define RSB_ADDR	0x10	/* Address to send with read/write command */
-#define RSB_DATA	0x1c	/* Data to read/write */
-#define RSB_LCR		0x24	/* Line control */
-#define RSB_DMCR	0x28	/* Device mode (init) control */
-#define RSB_CMD		0x2c	/* RSB Command */
-#define RSB_DAR		0x30	/* Device address / runtime address */
+ 
+#define RSB_CTRL	0x0	 
+#define RSB_CCR		0x4	 
+#define RSB_INTE	0x8	 
+#define RSB_INTS	0xc	 
+#define RSB_ADDR	0x10	 
+#define RSB_DATA	0x1c	 
+#define RSB_LCR		0x24	 
+#define RSB_DMCR	0x28	 
+#define RSB_CMD		0x2c	 
+#define RSB_DAR		0x30	 
 
-/* CTRL fields */
+ 
 #define RSB_CTRL_START_TRANS		BIT(7)
 #define RSB_CTRL_ABORT_TRANS		BIT(6)
 #define RSB_CTRL_GLOBAL_INT_ENB		BIT(1)
 #define RSB_CTRL_SOFT_RST		BIT(0)
 
-/* CLK CTRL fields */
+ 
 #define RSB_CCR_SDA_OUT_DELAY(v)	(((v) & 0x7) << 8)
 #define RSB_CCR_MAX_CLK_DIV		0xff
 #define RSB_CCR_CLK_DIV(v)		((v) & RSB_CCR_MAX_CLK_DIV)
 
-/* STATUS fields */
+ 
 #define RSB_INTS_TRANS_ERR_ACK		BIT(16)
 #define RSB_INTS_TRANS_ERR_DATA_BIT(v)	(((v) >> 8) & 0xf)
 #define RSB_INTS_TRANS_ERR_DATA		GENMASK(11, 8)
@@ -80,7 +51,7 @@
 #define RSB_INTS_TRANS_ERR		BIT(1)
 #define RSB_INTS_TRANS_OVER		BIT(0)
 
-/* LINE CTRL fields*/
+ 
 #define RSB_LCR_SCL_STATE		BIT(5)
 #define RSB_LCR_SDA_STATE		BIT(4)
 #define RSB_LCR_SCL_CTL			BIT(3)
@@ -88,13 +59,13 @@
 #define RSB_LCR_SDA_CTL			BIT(1)
 #define RSB_LCR_SDA_CTL_EN		BIT(0)
 
-/* DEVICE MODE CTRL field values */
+ 
 #define RSB_DMCR_DEVICE_START		BIT(31)
 #define RSB_DMCR_MODE_DATA		(0x7c << 16)
 #define RSB_DMCR_MODE_REG		(0x3e << 8)
 #define RSB_DMCR_DEV_ADDR		0x00
 
-/* CMD values */
+ 
 #define RSB_CMD_RD8			0x8b
 #define RSB_CMD_RD16			0x9c
 #define RSB_CMD_RD32			0xa6
@@ -103,7 +74,7 @@
 #define RSB_CMD_WR32			0x63
 #define RSB_CMD_STRA			0xe8
 
-/* DAR fields */
+ 
 #define RSB_DAR_RTA(v)			(((v) & 0xff) << 16)
 #define RSB_DAR_DA(v)			((v) & 0xffff)
 
@@ -127,7 +98,7 @@ struct sunxi_rsb {
 	u32 clk_freq;
 };
 
-/* bus / slave device related functions */
+ 
 static struct bus_type sunxi_rsb_bus;
 
 static int sunxi_rsb_device_match(struct device *dev, struct device_driver *drv)
@@ -192,13 +163,7 @@ static void sunxi_rsb_dev_release(struct device *dev)
 	kfree(rdev);
 }
 
-/**
- * sunxi_rsb_device_create() - allocate and add an RSB device
- * @rsb:	RSB controller
- * @node:	RSB slave device node
- * @hwaddr:	RSB slave hardware address
- * @rtaddr:	RSB slave runtime address
- */
+ 
 static struct sunxi_rsb_device *sunxi_rsb_device_create(struct sunxi_rsb *rsb,
 		struct device_node *node, u16 hwaddr, u8 rtaddr)
 {
@@ -236,10 +201,7 @@ err_device_add:
 	return ERR_PTR(err);
 }
 
-/**
- * sunxi_rsb_device_unregister(): unregister an RSB device
- * @rdev:	rsb_device to be removed
- */
+ 
 static void sunxi_rsb_device_unregister(struct sunxi_rsb_device *rdev)
 {
 	device_unregister(&rdev->dev);
@@ -255,13 +217,7 @@ static int sunxi_rsb_remove_devices(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * sunxi_rsb_driver_register() - Register device driver with RSB core
- * @rdrv:	device driver to be associated with slave-device.
- *
- * This API will register the client driver with the RSB framework.
- * It is typically called from the driver's module-init function.
- */
+ 
 int sunxi_rsb_driver_register(struct sunxi_rsb_driver *rdrv)
 {
 	rdrv->driver.bus = &sunxi_rsb_bus;
@@ -269,7 +225,7 @@ int sunxi_rsb_driver_register(struct sunxi_rsb_driver *rdrv)
 }
 EXPORT_SYMBOL_GPL(sunxi_rsb_driver_register);
 
-/* common code that starts a transfer */
+ 
 static int _sunxi_rsb_run_xfer(struct sunxi_rsb *rsb)
 {
 	u32 int_mask, status;
@@ -301,10 +257,10 @@ static int _sunxi_rsb_run_xfer(struct sunxi_rsb *rsb)
 	if (timeout) {
 		dev_dbg(rsb->dev, "RSB timeout\n");
 
-		/* abort the transfer */
+		 
 		writel(RSB_CTRL_ABORT_TRANS, rsb->regs + RSB_CTRL);
 
-		/* clear any interrupt flags */
+		 
 		writel(readl(rsb->regs + RSB_INTS), rsb->regs + RSB_INTS);
 
 		return -ETIMEDOUT;
@@ -423,7 +379,7 @@ static int sunxi_rsb_write(struct sunxi_rsb *rsb, u8 rtaddr, u8 addr,
 	return ret;
 }
 
-/* RSB regmap functions */
+ 
 struct sunxi_rsb_ctx {
 	struct sunxi_rsb_device *rdev;
 	int size;
@@ -504,7 +460,7 @@ struct regmap *__devm_regmap_init_sunxi_rsb(struct sunxi_rsb_device *rdev,
 }
 EXPORT_SYMBOL_GPL(__devm_regmap_init_sunxi_rsb);
 
-/* RSB controller driver functions */
+ 
 static irqreturn_t sunxi_rsb_irq(int irq, void *dev_id)
 {
 	struct sunxi_rsb *rsb = dev_id;
@@ -513,7 +469,7 @@ static irqreturn_t sunxi_rsb_irq(int irq, void *dev_id)
 	status = readl(rsb->regs + RSB_INTS);
 	rsb->status = status;
 
-	/* Clear interrupts */
+	 
 	status &= (RSB_INTS_LOAD_BSY | RSB_INTS_TRANS_ERR |
 		   RSB_INTS_TRANS_OVER);
 	writel(status, rsb->regs + RSB_INTS);
@@ -528,7 +484,7 @@ static int sunxi_rsb_init_device_mode(struct sunxi_rsb *rsb)
 	int ret = 0;
 	u32 reg;
 
-	/* send init sequence */
+	 
 	writel(RSB_DMCR_DEVICE_START | RSB_DMCR_MODE_DATA |
 	       RSB_DMCR_MODE_REG | RSB_DMCR_DEV_ADDR, rsb->regs + RSB_DMCR);
 
@@ -537,33 +493,18 @@ static int sunxi_rsb_init_device_mode(struct sunxi_rsb *rsb)
 	if (reg & RSB_DMCR_DEVICE_START)
 		ret = -ETIMEDOUT;
 
-	/* clear interrupt status bits */
+	 
 	writel(readl(rsb->regs + RSB_INTS), rsb->regs + RSB_INTS);
 
 	return ret;
 }
 
-/*
- * There are 15 valid runtime addresses, though Allwinner typically
- * skips the first, for unknown reasons, and uses the following three.
- *
- * 0x17, 0x2d, 0x3a, 0x4e, 0x59, 0x63, 0x74, 0x8b,
- * 0x9c, 0xa6, 0xb1, 0xc5, 0xd2, 0xe8, 0xff
- *
- * No designs with 2 RSB slave devices sharing identical hardware
- * addresses on the same bus have been seen in the wild. All designs
- * use 0x2d for the primary PMIC, 0x3a for the secondary PMIC if
- * there is one, and 0x45 for peripheral ICs.
- *
- * The hardware does not seem to support re-setting runtime addresses.
- * Attempts to do so result in the slave devices returning a NACK.
- * Hence we just hardcode the mapping here, like Allwinner does.
- */
+ 
 
 static const struct sunxi_rsb_addr_map sunxi_rsb_addr_maps[] = {
-	{ 0x3a3, 0x2d }, /* Primary PMIC: AXP223, AXP809, AXP81X, ... */
-	{ 0x745, 0x3a }, /* Secondary PMIC: AXP806, ... */
-	{ 0xe89, 0x4e }, /* Peripheral IC: AC100, ... */
+	{ 0x3a3, 0x2d },  
+	{ 0x745, 0x3a },  
+	{ 0xe89, 0x4e },  
 };
 
 static u8 sunxi_rsb_get_rtaddr(u16 hwaddr)
@@ -574,7 +515,7 @@ static u8 sunxi_rsb_get_rtaddr(u16 hwaddr)
 		if (hwaddr == sunxi_rsb_addr_maps[i].hwaddr)
 			return sunxi_rsb_addr_maps[i].rtaddr;
 
-	return 0; /* 0 is an invalid runtime address */
+	return 0;  
 }
 
 static int of_rsb_register_devices(struct sunxi_rsb *rsb)
@@ -588,7 +529,7 @@ static int of_rsb_register_devices(struct sunxi_rsb *rsb)
 	if (!np)
 		return -EINVAL;
 
-	/* Runtime addresses for all slaves should be set first */
+	 
 	for_each_available_child_of_node(np, child) {
 		dev_dbg(dev, "setting child %pOF runtime address\n",
 			child);
@@ -607,24 +548,21 @@ static int of_rsb_register_devices(struct sunxi_rsb *rsb)
 			continue;
 		}
 
-		/*
-		 * Since no devices have been registered yet, we are the
-		 * only ones using the bus, we can skip locking the bus.
-		 */
+		 
 
-		/* setup command parameters */
+		 
 		writel(RSB_CMD_STRA, rsb->regs + RSB_CMD);
 		writel(RSB_DAR_RTA(rtaddr) | RSB_DAR_DA(hwaddr),
 		       rsb->regs + RSB_DAR);
 
-		/* send command */
+		 
 		ret = _sunxi_rsb_run_xfer(rsb);
 		if (ret)
 			dev_warn(dev, "%pOF: set runtime address failed: %d\n",
 				 child, ret);
 	}
 
-	/* Then we start adding devices and probing them */
+	 
 	for_each_available_child_of_node(np, child) {
 		struct sunxi_rsb_device *rdev;
 
@@ -666,18 +604,12 @@ static int sunxi_rsb_hw_init(struct sunxi_rsb *rsb)
 		goto err_clk_disable;
 	}
 
-	/* reset the controller */
+	 
 	writel(RSB_CTRL_SOFT_RST, rsb->regs + RSB_CTRL);
 	readl_poll_timeout(rsb->regs + RSB_CTRL, reg,
 			   !(reg & RSB_CTRL_SOFT_RST), 1000, 100000);
 
-	/*
-	 * Clock frequency and delay calculation code is from
-	 * Allwinner U-boot sources.
-	 *
-	 * From A83 user manual:
-	 * bus clock frequency = parent clock frequency / (2 * (divider + 1))
-	 */
+	 
 	p_clk_freq = clk_get_rate(rsb->clk);
 	clk_div = p_clk_freq / rsb->clk_freq / 2;
 	if (!clk_div)
@@ -705,7 +637,7 @@ static void sunxi_rsb_hw_exit(struct sunxi_rsb *rsb)
 {
 	reset_control_assert(rsb->rstc);
 
-	/* Keep the clock and PM reference counts consistent. */
+	 
 	if (!pm_runtime_status_suspended(rsb->dev))
 		clk_disable_unprepare(rsb->clk);
 }
@@ -801,7 +733,7 @@ static int sunxi_rsb_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* initialize all devices on the bus into RSB mode */
+	 
 	ret = sunxi_rsb_init_device_mode(rsb);
 	if (ret)
 		dev_warn(dev, "Initialize device mode failed: %d\n", ret);

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-*/
+ 
+ 
 
 #ifndef __TDA8290_H__
 #define __TDA8290_H__
@@ -51,4 +50,4 @@ static inline struct dvb_frontend *tda829x_attach(struct dvb_frontend *fe,
 }
 #endif
 
-#endif /* __TDA8290_H__ */
+#endif  

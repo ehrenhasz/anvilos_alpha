@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __TDO24M_H__
 #define __TDO24M_H__
 
@@ -11,4 +11,4 @@ struct tdo24m_platform_data {
 	enum tdo24m_model model;
 };
 
-#endif /* __TDO24M_H__ */
+#endif  

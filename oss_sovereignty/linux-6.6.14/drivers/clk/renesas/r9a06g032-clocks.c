@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R9A06G032 clock driver
- *
- * Copyright (C) 2018 Renesas Electronics Europe Limited
- *
- * Michel Pollet <michel.pollet@bp.renesas.com>, <buserror@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -29,24 +23,7 @@
 #define R9A06G032_SYSCTRL_USB_H2MODE  (1<<1)
 #define R9A06G032_SYSCTRL_DMAMUX 0xA0
 
-/**
- * struct regbit - describe one bit in a register
- * @reg: offset of register relative to base address,
- *          expressed in units of 32-bit words (not bytes),
- * @bit: which bit (0 to 31) in the register
- *
- * This structure is used to compactly encode the location
- * of a single bit in a register. Five bits are needed to
- * encode the bit number. With uint16_t data type, this
- * leaves 11 bits to encode a register offset up to 2047.
- *
- * Since registers are aligned on 32-bit boundaries, the
- * offset will be specified in 32-bit words rather than bytes.
- * This allows encoding an offset up to 0x1FFC (8188) bytes.
- *
- * Helper macro RB() takes care of converting the register
- * offset from bytes to 32-bit words.
- */
+ 
 struct regbit {
 	u16 bit:5;
 	u16 reg:11;
@@ -57,88 +34,41 @@ struct regbit {
 	.bit = (_bit) \
 })
 
-/**
- * struct r9a06g032_gate - clock-related control bits
- * @gate:   clock enable/disable
- * @reset:  clock module reset (active low)
- * @ready:  enables NoC forwarding of read/write requests to device,
- *          (eg. device is ready to handle read/write requests)
- * @midle:  request to idle the NoC interconnect
- *
- * Each of these fields describes a single bit in a register,
- * which controls some aspect of clock gating. The @gate field
- * is mandatory, this one enables/disables the clock. The
- * other fields are optional, with zero indicating "not used".
- *
- * In most cases there is a @reset bit which needs to be
- * de-asserted to bring the module out of reset.
- *
- * Modules may also need to signal when they are @ready to
- * handle requests (read/writes) from the NoC interconnect.
- *
- * Similarly, the @midle bit is used to idle the master.
- */
+ 
 struct r9a06g032_gate {
 	struct regbit gate, reset, ready, midle;
-	/* Unused fields omitted to save space */
-	/* struct regbit scon, mirack, mistat */;
+	 
+	 ;
 };
 
 enum gate_type {
-	K_GATE = 0,	/* gate which enable/disable */
-	K_FFC,		/* fixed factor clock */
-	K_DIV,		/* divisor */
-	K_BITSEL,	/* special for UARTs */
-	K_DUALGATE	/* special for UARTs */
+	K_GATE = 0,	 
+	K_FFC,		 
+	K_DIV,		 
+	K_BITSEL,	 
+	K_DUALGATE	 
 };
 
-/**
- * struct r9a06g032_clkdesc - describe a single clock
- * @name:      string describing this clock
- * @managed:   boolean indicating if this clock should be
- *             started/stopped as part of power management
- * @type:      see enum @gate_type
- * @index:     the ID of this clock element
- * @source:    the ID+1 of the parent clock element.
- *             Root clock uses ID of ~0 (PARENT_ID);
- * @gate:      clock enable/disable
- * @div_min:   smallest permitted clock divider
- * @div_max:   largest permitted clock divider
- * @reg:       clock divider register offset, in 32-bit words
- * @div_table: optional list of fixed clock divider values;
- *             must be in ascending order, zero for unused
- * @div:       divisor for fixed-factor clock
- * @mul:       multiplier for fixed-factor clock
- * @group:     UART group, 0=UART0/1/2, 1=UART3/4/5/6/7
- * @sel:       select either g1/r1 or g2/r2 as clock source
- * @g1:        1st source gate (clock enable/disable)
- * @r1:        1st source reset (module reset)
- * @g2:        2nd source gate (clock enable/disable)
- * @r2:        2nd source reset (module reset)
- *
- * Describes a single element in the clock tree hierarchy.
- * As there are quite a large number of clock elements, this
- * structure is packed tightly to conserve space.
- */
+ 
 struct r9a06g032_clkdesc {
 	const char *name;
 	uint32_t managed:1;
 	enum gate_type type:3;
 	uint32_t index:8;
-	uint32_t source:8; /* source index + 1 (0 == none) */
+	uint32_t source:8;  
 	union {
-		/* type = K_GATE */
+		 
 		struct r9a06g032_gate gate;
-		/* type = K_DIV  */
+		 
 		struct {
 			unsigned int div_min:10, div_max:10, reg:10;
 			u16 div_table[4];
 		};
-		/* type = K_FFC */
+		 
 		struct {
 			u16 div, mul;
 		};
-		/* type = K_DUALGATE */
+		 
 		struct {
 			uint16_t group:1;
 			struct regbit sel, g1, r1, g2, r2;
@@ -146,18 +76,15 @@ struct r9a06g032_clkdesc {
 	};
 };
 
-/*
- * The last three arguments are not currently used,
- * but are kept in the r9a06g032_clocks table below.
- */
+ 
 #define I_GATE(_clk, _rst, _rdy, _midle, _scon, _mirack, _mistat) { \
 	.gate = _clk, \
 	.reset = _rst, \
 	.ready = _rdy, \
 	.midle = _midle, \
-	/* .scon = _scon, */ \
-	/* .mirack = _mirack, */ \
-	/* .mistat = _mistat */ \
+	  \
+	  \
+	  \
 }
 #define D_GATE(_idx, _n, _src, ...) { \
 	.type = K_GATE, \
@@ -213,7 +140,7 @@ struct r9a06g032_clkdesc {
 	}, \
 }
 
-/* Internal clock IDs */
+ 
 #define R9A06G032_CLKOUT		0
 #define R9A06G032_CLKOUT_D10		2
 #define R9A06G032_CLKOUT_D16		3
@@ -622,17 +549,13 @@ static const struct r9a06g032_clkdesc r9a06g032_clocks[] = {
 	D_MODULE(HCLK_UART7, "hclk_uart7", CLK_REF_SYNC_D4, RB(0x44, 6),
 		 RB(0x44, 7), RB(0x44, 8), RB(0x00, 0),
 		 RB(0x00, 0), RB(0x00, 0), RB(0x00, 0)),
-	/*
-	 * These are not hardware clocks, but are needed to handle the special
-	 * case where we have a 'selector bit' that doesn't just change the
-	 * parent for a clock, but also the gate it's supposed to use.
-	 */
+	 
 	{
 		.index = R9A06G032_UART_GROUP_012,
 		.name = "uart_group_012",
 		.type = K_BITSEL,
 		.source = 1 + R9A06G032_DIV_UART,
-		/* R9A06G032_SYSCTRL_REG_PWRCTRL_PG0_0 */
+		 
 		.dual.sel = RB(0x34, 30),
 		.dual.group = 0,
 	},
@@ -641,7 +564,7 @@ static const struct r9a06g032_clkdesc r9a06g032_clocks[] = {
 		.name = "uart_group_34567",
 		.type = K_BITSEL,
 		.source = 1 + R9A06G032_DIV_P2_PG,
-		/* R9A06G032_SYSCTRL_REG_PWRCTRL_PG1_PR2 */
+		 
 		.dual.sel = RB(0xec, 24),
 		.dual.group = 1,
 	},
@@ -665,13 +588,13 @@ static const struct r9a06g032_clkdesc r9a06g032_clocks[] = {
 
 struct r9a06g032_priv {
 	struct clk_onecell_data data;
-	spinlock_t lock; /* protects concurrent access to gates */
+	spinlock_t lock;  
 	void __iomem *reg;
 };
 
 static struct r9a06g032_priv *sysctrl_priv;
 
-/* Exported helper to access the DMAMUX register */
+ 
 int r9a06g032_sysctrl_set_dmamux(u32 mask, u32 val)
 {
 	unsigned long flags;
@@ -715,11 +638,7 @@ static int clk_rdesc_get(struct r9a06g032_priv *clocks, struct regbit rb)
 	return !!(val & BIT(rb.bit));
 }
 
-/*
- * This implements the R9A06G032 clock gate 'driver'. We cannot use the system's
- * clock gate framework as the gates on the R9A06G032 have a special enabling
- * sequence, therefore we use this little proxy.
- */
+ 
 struct r9a06g032_clk_gate {
 	struct clk_hw hw;
 	struct r9a06g032_priv *clocks;
@@ -818,24 +737,21 @@ r9a06g032_clk_gate_set(struct r9a06g032_priv *clocks,
 
 	spin_lock_irqsave(&clocks->lock, flags);
 	clk_rdesc_set(clocks, g->gate, on);
-	/* De-assert reset */
+	 
 	clk_rdesc_set(clocks, g->reset, 1);
 	spin_unlock_irqrestore(&clocks->lock, flags);
 
-	/* Hardware manual recommends 5us delay after enabling clock & reset */
+	 
 	udelay(5);
 
-	/* If the peripheral is memory mapped (i.e. an AXI slave), there is an
-	 * associated SLVRDY bit in the System Controller that needs to be set
-	 * so that the FlexWAY bus fabric passes on the read/write requests.
-	 */
+	 
 	spin_lock_irqsave(&clocks->lock, flags);
 	clk_rdesc_set(clocks, g->ready, on);
-	/* Clear 'Master Idle Request' bit */
+	 
 	clk_rdesc_set(clocks, g->midle, !on);
 	spin_unlock_irqrestore(&clocks->lock, flags);
 
-	/* Note: We don't wait for FlexWAY Socket Connection signal */
+	 
 }
 
 static int r9a06g032_clk_gate_enable(struct clk_hw *hw)
@@ -857,7 +773,7 @@ static int r9a06g032_clk_gate_is_enabled(struct clk_hw *hw)
 {
 	struct r9a06g032_clk_gate *g = to_r9a06g032_gate(hw);
 
-	/* if clock is in reset, the gate might be on, and still not 'be' on */
+	 
 	if (g->gate.reset.reg && !clk_rdesc_get(g->clocks, g->gate.reset))
 		return 0;
 
@@ -894,11 +810,7 @@ r9a06g032_register_gate(struct r9a06g032_priv *clocks,
 	g->gate = desc->gate;
 	g->hw.init = &init;
 
-	/*
-	 * important here, some clocks are already in use by the CM3, we
-	 * have to assume they are not Linux's to play with and try to disable
-	 * at the end of the boot!
-	 */
+	 
 	if (r9a06g032_clk_gate_is_enabled(&g->hw)) {
 		init.flags |= CLK_IS_CRITICAL;
 		pr_debug("%s was enabled, making read-only\n", desc->name);
@@ -919,7 +831,7 @@ struct r9a06g032_clk_div {
 	u16 reg;
 	u16 min, max;
 	u8 table_size;
-	u16 table[8];	/* we know there are no more than 8 */
+	u16 table[8];	 
 };
 
 #define to_r9a06g032_div(_hw) \
@@ -940,17 +852,12 @@ r9a06g032_div_recalc_rate(struct clk_hw *hw,
 	return DIV_ROUND_UP(parent_rate, div);
 }
 
-/*
- * Attempts to find a value that is in range of min,max,
- * and if a table of set dividers was specified for this
- * register, try to find the fixed divider that is the closest
- * to the target frequency
- */
+ 
 static long
 r9a06g032_div_clamp_div(struct r9a06g032_clk_div *clk,
 			unsigned long rate, unsigned long prate)
 {
-	/* + 1 to cope with rates that have the remainder dropped */
+	 
 	u32 div = DIV_ROUND_UP(prate, rate + 1);
 	int i;
 
@@ -966,10 +873,7 @@ r9a06g032_div_clamp_div(struct r9a06g032_clk_div *clk,
 			unsigned long p =
 				DIV_ROUND_UP(prate, clk->table[i + 1]) -
 				rate;
-			/*
-			 * select the divider that generates
-			 * the value closest to the ideal frequency
-			 */
+			 
 			div = p >= m ? clk->table[i] : clk->table[i + 1];
 			return div;
 		}
@@ -990,15 +894,7 @@ r9a06g032_div_determine_rate(struct clk_hw *hw, struct clk_rate_request *req)
 		 clk->max, DIV_ROUND_UP(req->best_parent_rate, clk->max));
 
 	div = r9a06g032_div_clamp_div(clk, req->rate, req->best_parent_rate);
-	/*
-	 * this is a hack. Currently the serial driver asks for a clock rate
-	 * that is 16 times the baud rate -- and that is wildly outside the
-	 * range of the UART divider, somehow there is no provision for that
-	 * case of 'let the divider as is if outside range'.
-	 * The serial driver *shouldn't* play with these clocks anyway, there's
-	 * several uarts attached to this divider, and changing this impacts
-	 * everyone.
-	 */
+	 
 	if (clk->index == R9A06G032_DIV_UART ||
 	    clk->index == R9A06G032_DIV_P2_PG) {
 		pr_devel("%s div uart hack!\n", __func__);
@@ -1016,20 +912,14 @@ r9a06g032_div_set_rate(struct clk_hw *hw,
 		       unsigned long rate, unsigned long parent_rate)
 {
 	struct r9a06g032_clk_div *clk = to_r9a06g032_div(hw);
-	/* + 1 to cope with rates that have the remainder dropped */
+	 
 	u32 div = DIV_ROUND_UP(parent_rate, rate + 1);
 	u32 __iomem *reg = clk->clocks->reg + (4 * clk->reg);
 
 	pr_devel("%s %pC rate %ld parent %ld div %d\n", __func__, hw->clk,
 		 rate, parent_rate, div);
 
-	/*
-	 * Need to write the bit 31 with the divider value to
-	 * latch it. Technically we should wait until it has been
-	 * cleared too.
-	 * TODO: Find whether this callback is sleepable, in case
-	 * the hardware /does/ require some sort of spinloop here.
-	 */
+	 
 	writel(div | BIT(31), reg);
 
 	return 0;
@@ -1067,7 +957,7 @@ r9a06g032_register_div(struct r9a06g032_priv *clocks,
 	div->hw.init = &init;
 	div->min = desc->div_min;
 	div->max = desc->div_max;
-	/* populate (optional) divider table fixed values */
+	 
 	for (i = 0; i < ARRAY_SIZE(div->table) &&
 	     i < ARRAY_SIZE(desc->div_table) && desc->div_table[i]; i++) {
 		div->table[div->table_size++] = desc->div_table[i];
@@ -1081,23 +971,12 @@ r9a06g032_register_div(struct r9a06g032_priv *clocks,
 	return clk;
 }
 
-/*
- * This clock provider handles the case of the R9A06G032 where you have
- * peripherals that have two potential clock source and two gates, one for
- * each of the clock source - the used clock source (for all sub clocks)
- * is selected by a single bit.
- * That single bit affects all sub-clocks, and therefore needs to change the
- * active gate (and turn the others off) and force a recalculation of the rates.
- *
- * This implements two clock providers, one 'bitselect' that
- * handles the switch between both parents, and another 'dualgate'
- * that knows which gate to poke at, depending on the parent's bit position.
- */
+ 
 struct r9a06g032_clk_bitsel {
 	struct clk_hw	hw;
 	struct r9a06g032_priv *clocks;
 	u16 index;
-	struct regbit selector;		/* selector register + bit */
+	struct regbit selector;		 
 };
 
 #define to_clk_bitselect(_hw) \
@@ -1114,7 +993,7 @@ static int r9a06g032_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 {
 	struct r9a06g032_clk_bitsel *set = to_clk_bitselect(hw);
 
-	/* a single bit in the register selects one of two parent clocks */
+	 
 	clk_rdesc_set(set->clocks, set->selector, !!index);
 
 	return 0;
@@ -1136,7 +1015,7 @@ r9a06g032_register_bitsel(struct r9a06g032_priv *clocks,
 	struct clk_init_data init = {};
 	const char *names[2];
 
-	/* allocate the gate */
+	 
 	g = kzalloc(sizeof(*g), GFP_KERNEL);
 	if (!g)
 		return NULL;
@@ -1167,7 +1046,7 @@ struct r9a06g032_clk_dualgate {
 	struct clk_hw	hw;
 	struct r9a06g032_priv *clocks;
 	u16 index;
-	struct regbit selector;		/* selector register + bit */
+	struct regbit selector;		 
 	struct r9a06g032_gate gate[2];
 };
 
@@ -1179,7 +1058,7 @@ r9a06g032_clk_dualgate_setenable(struct r9a06g032_clk_dualgate *g, int enable)
 {
 	u8 sel_bit = clk_rdesc_get(g->clocks, g->selector);
 
-	/* we always turn off the 'other' gate, regardless */
+	 
 	r9a06g032_clk_gate_set(g->clocks, &g->gate[!sel_bit], 0);
 	r9a06g032_clk_gate_set(g->clocks, &g->gate[sel_bit], enable);
 
@@ -1226,7 +1105,7 @@ r9a06g032_register_dualgate(struct r9a06g032_priv *clocks,
 	struct clk *clk;
 	struct clk_init_data init = {};
 
-	/* allocate the gate */
+	 
 	g = kzalloc(sizeof(*g), GFP_KERNEL);
 	if (!g)
 		return NULL;
@@ -1244,11 +1123,7 @@ r9a06g032_register_dualgate(struct r9a06g032_priv *clocks,
 	init.parent_names = &parent_name;
 	init.num_parents = 1;
 	g->hw.init = &init;
-	/*
-	 * important here, some clocks are already in use by the CM3, we
-	 * have to assume they are not Linux's to play with and try to disable
-	 * at the end of the boot!
-	 */
+	 
 	if (r9a06g032_clk_dualgate_is_enabled(&g->hw)) {
 		init.flags |= CLK_IS_CRITICAL;
 		pr_debug("%s was enabled, making read-only\n", desc->name);
@@ -1280,11 +1155,11 @@ static void __init r9a06g032_init_h2mode(struct r9a06g032_priv *clocks)
 
 	usb = readl(clocks->reg + R9A06G032_SYSCTRL_USB);
 	if (usbf_np) {
-		/* 1 host and 1 device mode */
+		 
 		usb &= ~R9A06G032_SYSCTRL_USB_H2MODE;
 		of_node_put(usbf_np);
 	} else {
-		/* 2 hosts mode */
+		 
 		usb |= R9A06G032_SYSCTRL_USB_H2MODE;
 	}
 	writel(usb, clocks->reg + R9A06G032_SYSCTRL_USB);
@@ -1342,7 +1217,7 @@ static int __init r9a06g032_clocks_probe(struct platform_device *pdev)
 			clk = r9a06g032_register_div(clocks, parent_name, d);
 			break;
 		case K_BITSEL:
-			/* keep that selector register around */
+			 
 			uart_group_sel[d->dual.group] = d->dual.sel;
 			clk = r9a06g032_register_bitsel(clocks, parent_name, d);
 			break;

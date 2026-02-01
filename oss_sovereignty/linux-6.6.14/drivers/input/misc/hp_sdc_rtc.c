@@ -1,37 +1,4 @@
-/*
- * HP i8042 SDC + MSM-58321 BBRTC driver.
- *
- * Copyright (c) 2001 Brian S. Julin
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL").
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- *
- * References:
- * System Device Controller Microprocessor Firmware Theory of Operation
- *      for Part Number 1820-4784 Revision B.  Dwg No. A-1820-4784-2
- * efirtc.c by Stephane Eranian/Hewlett Packard
- *
- */
+ 
 
 #include <linux/hp_sdc.h>
 #include <linux/errno.h>
@@ -74,12 +41,12 @@ static int hp_sdc_rtc_do_read_bbrtc (struct rtc_time *rtctm)
 	while (i < 91) {
 		tseq[i++] = HP_SDC_ACT_DATAREG |
 			HP_SDC_ACT_POSTCMD | HP_SDC_ACT_DATAIN;
-		tseq[i++] = 0x01;			/* write i8042[0x70] */
-	  	tseq[i]   = i / 7;			/* BBRTC reg address */
+		tseq[i++] = 0x01;			 
+	  	tseq[i]   = i / 7;			 
 		i++;
-		tseq[i++] = HP_SDC_CMD_DO_RTCR;		/* Trigger command   */
-		tseq[i++] = 2;		/* expect 1 stat/dat pair back.   */
-		i++; i++;               /* buffer for stat/dat pair       */
+		tseq[i++] = HP_SDC_CMD_DO_RTCR;		 
+		tseq[i++] = 2;		 
+		i++; i++;                
 	}
 	tseq[84] |= HP_SDC_ACT_SEMAPHORE;
 	t.endidx =		91;
@@ -89,11 +56,11 @@ static int hp_sdc_rtc_do_read_bbrtc (struct rtc_time *rtctm)
 	
 	if (hp_sdc_enqueue_transaction(&t)) return -1;
 	
-	/* Put ourselves to sleep for results. */
+	 
 	if (WARN_ON(down_interruptible(&tsem)))
 		return -1;
 	
-	/* Check for nonpresence of BBRTC */
+	 
 	if (!((tseq[83] | tseq[90] | tseq[69] | tseq[76] |
 	       tseq[55] | tseq[62] | tseq[34] | tseq[41] |
 	       tseq[20] | tseq[27] | tseq[6]  | tseq[13]) & 0x0f))
@@ -116,7 +83,7 @@ static int hp_sdc_rtc_read_bbrtc (struct rtc_time *rtctm)
 	struct rtc_time tm, tm_last;
 	int i = 0;
 
-	/* MSM-58321 has no read latch, so must read twice and compare. */
+	 
 
 	if (hp_sdc_rtc_do_read_bbrtc(&tm_last)) return -1;
 	if (hp_sdc_rtc_do_read_bbrtc(&tm)) return -1;
@@ -153,12 +120,12 @@ static int64_t hp_sdc_rtc_read_i8042timer (uint8_t loadcmd, int numreg)
 	t.endidx = numreg * 5;
 
 	tseq[1] = loadcmd;
-	tseq[t.endidx - 4] |= HP_SDC_ACT_SEMAPHORE; /* numreg assumed > 1 */
+	tseq[t.endidx - 4] |= HP_SDC_ACT_SEMAPHORE;  
 
 	t.seq =			tseq;
 	t.act.semaphore =	&i8042tregs;
 
-	/* Sleep if output regs in use. */
+	 
 	if (WARN_ON(down_interruptible(&i8042tregs)))
 		return -1;
 
@@ -167,7 +134,7 @@ static int64_t hp_sdc_rtc_read_i8042timer (uint8_t loadcmd, int numreg)
 		return -1;
 	}
 	
-	/* Sleep until results come back. */
+	 
 	if (WARN_ON(down_interruptible(&i8042tregs)))
 		return -1;
 
@@ -179,7 +146,7 @@ static int64_t hp_sdc_rtc_read_i8042timer (uint8_t loadcmd, int numreg)
 }
 
 
-/* Read the i8042 real-time clock */
+ 
 static inline int hp_sdc_rtc_read_rt(struct timespec64 *res) {
 	int64_t raw;
 	uint32_t tenms; 
@@ -198,7 +165,7 @@ static inline int hp_sdc_rtc_read_rt(struct timespec64 *res) {
 }
 
 
-/* Read the i8042 fast handshake timer */
+ 
 static inline int hp_sdc_rtc_read_fhs(struct timespec64 *res) {
 	int64_t raw;
 	unsigned int tenms;
@@ -215,7 +182,7 @@ static inline int hp_sdc_rtc_read_fhs(struct timespec64 *res) {
 }
 
 
-/* Read the i8042 match timer (a.k.a. alarm) */
+ 
 static inline int hp_sdc_rtc_read_mt(struct timespec64 *res) {
 	int64_t raw;	
 	uint32_t tenms; 
@@ -232,7 +199,7 @@ static inline int hp_sdc_rtc_read_mt(struct timespec64 *res) {
 }
 
 
-/* Read the i8042 delay timer */
+ 
 static inline int hp_sdc_rtc_read_dt(struct timespec64 *res) {
 	int64_t raw;
 	uint32_t tenms;
@@ -249,7 +216,7 @@ static inline int hp_sdc_rtc_read_dt(struct timespec64 *res) {
 }
 
 
-/* Read the i8042 cycle timer (a.k.a. periodic) */
+ 
 static inline int hp_sdc_rtc_read_ct(struct timespec64 *res) {
 	int64_t raw;
 	uint32_t tenms;

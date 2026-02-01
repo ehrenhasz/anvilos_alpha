@@ -91,7 +91,7 @@
 	},
 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
 	.result = ACCEPT,
-	.retval = 42 /* ultimate return value */,
+	.retval = 42  ,
 },
 {
 	"ld_abs: invalid op 1",

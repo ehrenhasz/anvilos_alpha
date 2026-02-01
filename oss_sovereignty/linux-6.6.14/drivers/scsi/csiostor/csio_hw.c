@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/pci_regs.h>
@@ -50,16 +18,16 @@
 int csio_dbg_level = 0xFEFF;
 unsigned int csio_port_mask = 0xf;
 
-/* Default FW event queue entries. */
+ 
 static uint32_t csio_evtq_sz = CSIO_EVTQ_SIZE;
 
-/* Default MSI param level */
+ 
 int csio_msi = 2;
 
-/* FCoE function instances */
+ 
 static int dev_num;
 
-/* FCoE Adapter types & its description */
+ 
 static const struct csio_adap_desc csio_t5_fcoe_adapters[] = {
 	{"T580-Dbg 10G", "Chelsio T580-Dbg 10G [FCoE]"},
 	{"T520-CR 10G", "Chelsio T520-CR 10G [FCoE]"},
@@ -88,7 +56,7 @@ static const struct csio_adap_desc csio_t5_fcoe_adapters[] = {
 static void csio_mgmtm_cleanup(struct csio_mgmtm *);
 static void csio_hw_mbm_cleanup(struct csio_hw *);
 
-/* State machine forward declarations */
+ 
 static void csio_hws_uninit(struct csio_hw *, enum csio_hw_ev);
 static void csio_hws_configuring(struct csio_hw *, enum csio_hw_ev);
 static void csio_hws_initializing(struct csio_hw *, enum csio_hw_ev);
@@ -114,21 +82,7 @@ int csio_is_hw_removing(struct csio_hw *hw)
 }
 
 
-/*
- *	csio_hw_wait_op_done_val - wait until an operation is completed
- *	@hw: the HW module
- *	@reg: the register to check for completion
- *	@mask: a single-bit field within @reg that indicates completion
- *	@polarity: the value of the field when the operation is completed
- *	@attempts: number of check iterations
- *	@delay: delay in usecs between iterations
- *	@valp: where to store the value of the register at completion time
- *
- *	Wait until an operation is completed by checking a bit in a register
- *	up to @attempts times.  If @valp is not NULL the value of the register
- *	at the time it indicated completion is stored there.  Returns 0 if the
- *	operation completes and	-EAGAIN	otherwise.
- */
+ 
 int
 csio_hw_wait_op_done_val(struct csio_hw *hw, int reg, uint32_t mask,
 			 int polarity, int attempts, int delay, uint32_t *valp)
@@ -150,15 +104,7 @@ csio_hw_wait_op_done_val(struct csio_hw *hw, int reg, uint32_t mask,
 	}
 }
 
-/*
- *	csio_hw_tp_wr_bits_indirect - set/clear bits in an indirect TP register
- *	@hw: the adapter
- *	@addr: the indirect TP register address
- *	@mask: specifies the field within the register to modify
- *	@val: new value for the field
- *
- *	Sets a field of an indirect TP register to the given value.
- */
+ 
 void
 csio_hw_tp_wr_bits_indirect(struct csio_hw *hw, unsigned int addr,
 			unsigned int mask, unsigned int val)
@@ -175,7 +121,7 @@ csio_set_reg_field(struct csio_hw *hw, uint32_t reg, uint32_t mask,
 	uint32_t val = csio_rd_reg32(hw, reg) & ~mask;
 
 	csio_wr_reg32(hw, val | value, reg);
-	/* Flush */
+	 
 	csio_rd_reg32(hw, reg);
 
 }
@@ -187,9 +133,7 @@ csio_memory_write(struct csio_hw *hw, int mtype, u32 addr, u32 len, u32 *buf)
 					    addr, len, buf, 0);
 }
 
-/*
- * EEPROM reads take a few tens of us while writes can take a bit over 5 ms.
- */
+ 
 #define EEPROM_MAX_RD_POLL	40
 #define EEPROM_MAX_WR_POLL	6
 #define EEPROM_STAT_ADDR	0x7bfc
@@ -198,16 +142,7 @@ csio_memory_write(struct csio_hw *hw, int mtype, u32 addr, u32 len, u32 *buf)
 #define VPD_LEN			1024
 #define VPD_INFO_FLD_HDR_SIZE	3
 
-/*
- *	csio_hw_seeprom_read - read a serial EEPROM location
- *	@hw: hw to read
- *	@addr: EEPROM virtual address
- *	@data: where to store the read data
- *
- *	Read a 32-bit word from a location in serial EEPROM using the card's PCI
- *	VPD capability.  Note that this function must be called with a virtual
- *	address.
- */
+ 
 static int
 csio_hw_seeprom_read(struct csio_hw *hw, uint32_t addr, uint32_t *data)
 {
@@ -236,10 +171,7 @@ csio_hw_seeprom_read(struct csio_hw *hw, uint32_t addr, uint32_t *data)
 	return 0;
 }
 
-/*
- * Partial EEPROM Vital Product Data structure.  Includes only the ID and
- * VPD-R sections.
- */
+ 
 struct t4_vpd_hdr {
 	u8  id_tag;
 	u8  id_len[2];
@@ -248,15 +180,7 @@ struct t4_vpd_hdr {
 	u8  vpdr_len[2];
 };
 
-/*
- *	csio_hw_get_vpd_keyword_val - Locates an information field keyword in
- *				      the VPD
- *	@v: Pointer to buffered vpd data structure
- *	@kw: The keyword to search for
- *
- *	Returns the value of the information field keyword or
- *	-EINVAL otherwise.
- */
+ 
 static int
 csio_hw_get_vpd_keyword_val(const struct t4_vpd_hdr *v, const char *kw)
 {
@@ -292,20 +216,14 @@ csio_pci_capability(struct pci_dev *pdev, int cap, int *pos)
 	return -1;
 }
 
-/*
- *	csio_hw_get_vpd_params - read VPD parameters from VPD EEPROM
- *	@hw: HW module
- *	@p: where to store the parameters
- *
- *	Reads card parameters stored in VPD EEPROM.
- */
+ 
 static int
 csio_hw_get_vpd_params(struct csio_hw *hw, struct csio_vpd *p)
 {
 	int i, ret, ec, sn, addr;
 	uint8_t *vpd, csum;
 	const struct t4_vpd_hdr *v;
-	/* To get around compilation warning from strstrip */
+	 
 	char __always_unused *s;
 
 	if (csio_is_valid_vpd(hw))
@@ -320,10 +238,7 @@ csio_hw_get_vpd_params(struct csio_hw *hw, struct csio_vpd *p)
 	if (vpd == NULL)
 		return -ENOMEM;
 
-	/*
-	 * Card information normally starts at VPD_BASE but early cards had
-	 * it at 0.
-	 */
+	 
 	ret = csio_hw_seeprom_read(hw, VPD_BASE, (uint32_t *)(vpd));
 	addr = *vpd == 0x82 ? VPD_BASE : VPD_BASE_OLD;
 
@@ -335,7 +250,7 @@ csio_hw_get_vpd_params(struct csio_hw *hw, struct csio_vpd *p)
 		}
 	}
 
-	/* Reset the VPD flag! */
+	 
 	hw->flags &= (~CSIO_HWF_VPD_VALID);
 
 	v = (const struct t4_vpd_hdr *)vpd;
@@ -376,18 +291,7 @@ csio_hw_get_vpd_params(struct csio_hw *hw, struct csio_vpd *p)
 	return 0;
 }
 
-/*
- *	csio_hw_sf1_read - read data from the serial flash
- *	@hw: the HW module
- *	@byte_cnt: number of bytes to read
- *	@cont: whether another operation will be chained
- *      @lock: whether to lock SF for PL access only
- *	@valp: where to store the read data
- *
- *	Reads up to 4 bytes of data from the serial flash.  The location of
- *	the read needs to be specified prior to calling this by issuing the
- *	appropriate commands to the serial flash.
- */
+ 
 static int
 csio_hw_sf1_read(struct csio_hw *hw, uint32_t byte_cnt, int32_t cont,
 		 int32_t lock, uint32_t *valp)
@@ -408,18 +312,7 @@ csio_hw_sf1_read(struct csio_hw *hw, uint32_t byte_cnt, int32_t cont,
 	return ret;
 }
 
-/*
- *	csio_hw_sf1_write - write data to the serial flash
- *	@hw: the HW module
- *	@byte_cnt: number of bytes to write
- *	@cont: whether another operation will be chained
- *      @lock: whether to lock SF for PL access only
- *	@val: value to write
- *
- *	Writes up to 4 bytes of data to the serial flash.  The location of
- *	the write needs to be specified prior to calling this by issuing the
- *	appropriate commands to the serial flash.
- */
+ 
 static int
 csio_hw_sf1_write(struct csio_hw *hw, uint32_t byte_cnt, uint32_t cont,
 		  int32_t lock, uint32_t val)
@@ -437,14 +330,7 @@ csio_hw_sf1_write(struct csio_hw *hw, uint32_t byte_cnt, uint32_t cont,
 					10, NULL);
 }
 
-/*
- *	csio_hw_flash_wait_op - wait for a flash operation to complete
- *	@hw: the HW module
- *	@attempts: max number of polls of the status register
- *	@delay: delay between polls in ms
- *
- *	Wait for a flash operation to complete by polling the status register.
- */
+ 
 static int
 csio_hw_flash_wait_op(struct csio_hw *hw, int32_t attempts, int32_t delay)
 {
@@ -469,19 +355,7 @@ csio_hw_flash_wait_op(struct csio_hw *hw, int32_t attempts, int32_t delay)
 	}
 }
 
-/*
- *	csio_hw_read_flash - read words from serial flash
- *	@hw: the HW module
- *	@addr: the start address for the read
- *	@nwords: how many 32-bit words to read
- *	@data: where to store the read data
- *	@byte_oriented: whether to store data as bytes or as words
- *
- *	Read the specified number of 32-bit words from the serial flash.
- *	If @byte_oriented is set the read data is stored as a byte array
- *	(i.e., big-endian), otherwise as 32-bit words in the platform's
- *	natural endianess.
- */
+ 
 static int
 csio_hw_read_flash(struct csio_hw *hw, uint32_t addr, uint32_t nwords,
 		  uint32_t *data, int32_t byte_oriented)
@@ -504,7 +378,7 @@ csio_hw_read_flash(struct csio_hw *hw, uint32_t addr, uint32_t nwords,
 	for ( ; nwords; nwords--, data++) {
 		ret = csio_hw_sf1_read(hw, 4, nwords > 1, nwords == 1, data);
 		if (nwords == 1)
-			csio_wr_reg32(hw, 0, SF_OP_A);    /* unlock SF */
+			csio_wr_reg32(hw, 0, SF_OP_A);     
 		if (ret)
 			return ret;
 		if (byte_oriented)
@@ -513,16 +387,7 @@ csio_hw_read_flash(struct csio_hw *hw, uint32_t addr, uint32_t nwords,
 	return 0;
 }
 
-/*
- *	csio_hw_write_flash - write up to a page of data to the serial flash
- *	@hw: the hw
- *	@addr: the start address to write
- *	@n: length of data to write in bytes
- *	@data: the data to write
- *
- *	Writes up to a page of data (256 bytes) to the serial flash starting
- *	at the given address.  All the data must be written to the same page.
- */
+ 
 static int
 csio_hw_write_flash(struct csio_hw *hw, uint32_t addr,
 		    uint32_t n, const uint8_t *data)
@@ -557,9 +422,9 @@ csio_hw_write_flash(struct csio_hw *hw, uint32_t addr,
 	if (ret)
 		goto unlock;
 
-	csio_wr_reg32(hw, 0, SF_OP_A);    /* unlock SF */
+	csio_wr_reg32(hw, 0, SF_OP_A);     
 
-	/* Read the page to verify the write succeeded */
+	 
 	ret = csio_hw_read_flash(hw, addr & ~0xff, ARRAY_SIZE(buf), buf, 1);
 	if (ret)
 		return ret;
@@ -574,18 +439,11 @@ csio_hw_write_flash(struct csio_hw *hw, uint32_t addr,
 	return 0;
 
 unlock:
-	csio_wr_reg32(hw, 0, SF_OP_A);    /* unlock SF */
+	csio_wr_reg32(hw, 0, SF_OP_A);     
 	return ret;
 }
 
-/*
- *	csio_hw_flash_erase_sectors - erase a range of flash sectors
- *	@hw: the HW module
- *	@start: the first sector to erase
- *	@end: the last sector to erase
- *
- *	Erases the sectors in the given inclusive range.
- */
+ 
 static int
 csio_hw_flash_erase_sectors(struct csio_hw *hw, int32_t start, int32_t end)
 {
@@ -612,7 +470,7 @@ out:
 	if (ret)
 		csio_err(hw, "erase of flash sector %d failed, error %d\n",
 			 start, ret);
-	csio_wr_reg32(hw, 0, SF_OP_A);    /* unlock SF */
+	csio_wr_reg32(hw, 0, SF_OP_A);     
 	return 0;
 }
 
@@ -626,13 +484,7 @@ csio_hw_print_fw_version(struct csio_hw *hw, char *str)
 		    FW_HDR_FW_VER_BUILD_G(hw->fwrev));
 }
 
-/*
- * csio_hw_get_fw_version - read the firmware version
- * @hw: HW module
- * @vers: where to place the version
- *
- * Reads the FW version from flash.
- */
+ 
 static int
 csio_hw_get_fw_version(struct csio_hw *hw, uint32_t *vers)
 {
@@ -641,13 +493,7 @@ csio_hw_get_fw_version(struct csio_hw *hw, uint32_t *vers)
 				  vers, 0);
 }
 
-/*
- *	csio_hw_get_tp_version - read the TP microcode version
- *	@hw: HW module
- *	@vers: where to place the version
- *
- *	Reads the TP microcode version from flash.
- */
+ 
 static int
 csio_hw_get_tp_version(struct csio_hw *hw, u32 *vers)
 {
@@ -656,14 +502,7 @@ csio_hw_get_tp_version(struct csio_hw *hw, u32 *vers)
 			vers, 0);
 }
 
-/*
- * csio_hw_fw_dload - download firmware.
- * @hw: HW module
- * @fw_data: firmware image to write.
- * @size: image size
- *
- * Write the supplied firmware image to the card's serial flash.
- */
+ 
 static int
 csio_hw_fw_dload(struct csio_hw *hw, uint8_t *fw_data, uint32_t size)
 {
@@ -711,7 +550,7 @@ csio_hw_fw_dload(struct csio_hw *hw, uint8_t *fw_data, uint32_t size)
 	}
 
 	sf_sec_size = hw->params.sf_size / hw->params.sf_nsec;
-	i = DIV_ROUND_UP(size, sf_sec_size);        /* # of sectors spanned */
+	i = DIV_ROUND_UP(size, sf_sec_size);         
 
 	csio_dbg(hw, "Erasing sectors... start:%d end:%d\n",
 			  FLASH_FW_START_SEC, FLASH_FW_START_SEC + i - 1);
@@ -723,11 +562,7 @@ csio_hw_fw_dload(struct csio_hw *hw, uint8_t *fw_data, uint32_t size)
 		goto out;
 	}
 
-	/*
-	 * We write the correct version at the end so the driver can see a bad
-	 * version if the FW write fails.  Start by writing a copy of the
-	 * first page with a bad version.
-	 */
+	 
 	memcpy(first_page, fw_data, SF_PAGE_SIZE);
 	((struct fw_hdr *)first_page)->fw_ver = htonl(0xffffffff);
 	ret = csio_hw_write_flash(hw, FLASH_FW_START, SF_PAGE_SIZE, first_page);
@@ -761,14 +596,12 @@ out:
 static int
 csio_hw_get_flash_params(struct csio_hw *hw)
 {
-	/* Table for non-Numonix supported flash parts.  Numonix parts are left
-	 * to the preexisting code.  All flash parts have 64KB sectors.
-	 */
+	 
 	static struct flash_desc {
 		u32 vendor_and_model_id;
 		u32 size_mb;
 	} supported_flash[] = {
-		{ 0x150201, 4 << 20 },       /* Spansion 4MB S25FL032P */
+		{ 0x150201, 4 << 20 },        
 	};
 
 	u32 part, manufacturer;
@@ -779,12 +612,11 @@ csio_hw_get_flash_params(struct csio_hw *hw)
 	ret = csio_hw_sf1_write(hw, 1, 1, 0, SF_RD_ID);
 	if (!ret)
 		ret = csio_hw_sf1_read(hw, 3, 0, 1, &flashid);
-	csio_wr_reg32(hw, 0, SF_OP_A);    /* unlock SF */
+	csio_wr_reg32(hw, 0, SF_OP_A);     
 	if (ret)
 		return ret;
 
-	/* Check to see if it's one of our non-standard supported Flash parts.
-	 */
+	 
 	for (part = 0; part < ARRAY_SIZE(supported_flash); part++)
 		if (supported_flash[part].vendor_and_model_id == flashid) {
 			hw->params.sf_size = supported_flash[part].size_mb;
@@ -793,77 +625,59 @@ csio_hw_get_flash_params(struct csio_hw *hw)
 			goto found;
 		}
 
-	/* Decode Flash part size.  The code below looks repetitive with
-	 * common encodings, but that's not guaranteed in the JEDEC
-	 * specification for the Read JEDEC ID command.  The only thing that
-	 * we're guaranteed by the JEDEC specification is where the
-	 * Manufacturer ID is in the returned result.  After that each
-	 * Manufacturer ~could~ encode things completely differently.
-	 * Note, all Flash parts must have 64KB sectors.
-	 */
+	 
 	manufacturer = flashid & 0xff;
 	switch (manufacturer) {
-	case 0x20: { /* Micron/Numonix */
-		/* This Density -> Size decoding table is taken from Micron
-		 * Data Sheets.
-		 */
+	case 0x20: {  
+		 
 		density = (flashid >> 16) & 0xff;
 		switch (density) {
-		case 0x14 ... 0x19: /* 1MB - 32MB */
+		case 0x14 ... 0x19:  
 			size = 1 << density;
 			break;
-		case 0x20: /* 64MB */
+		case 0x20:  
 			size = 1 << 26;
 			break;
-		case 0x21: /* 128MB */
+		case 0x21:  
 			size = 1 << 27;
 			break;
-		case 0x22: /* 256MB */
+		case 0x22:  
 			size = 1 << 28;
 		}
 		break;
 	}
-	case 0x9d: { /* ISSI -- Integrated Silicon Solution, Inc. */
-		/* This Density -> Size decoding table is taken from ISSI
-		 * Data Sheets.
-		 */
+	case 0x9d: {  
+		 
 		density = (flashid >> 16) & 0xff;
 		switch (density) {
-		case 0x16: /* 32 MB */
+		case 0x16:  
 			size = 1 << 25;
 			break;
-		case 0x17: /* 64MB */
+		case 0x17:  
 			size = 1 << 26;
 		}
 		break;
 	}
-	case 0xc2: /* Macronix */
-	case 0xef: /* Winbond */ {
-		/* This Density -> Size decoding table is taken from
-		 * Macronix and Winbond Data Sheets.
-		 */
+	case 0xc2:  
+	case 0xef:   {
+		 
 		density = (flashid >> 16) & 0xff;
 		switch (density) {
-		case 0x17: /* 8MB */
-		case 0x18: /* 16MB */
+		case 0x17:  
+		case 0x18:  
 			size = 1 << density;
 		}
 	}
 	}
 
-	/* If we didn't recognize the FLASH part, that's no real issue: the
-	 * Hardware/Software contract says that Hardware will _*ALWAYS*_
-	 * use a FLASH part which is at least 4MB in size and has 64KB
-	 * sectors.  The unrecognized FLASH part is likely to be much larger
-	 * than 4MB, but that's all we really need.
-	 */
+	 
 	if (size == 0) {
 		csio_warn(hw, "Unknown Flash Part, ID = %#x, assuming 4MB\n",
 			  flashid);
 		size = 1 << 22;
 	}
 
-	/* Store decoded Flash size */
+	 
 	hw->params.sf_size = size;
 	hw->params.sf_nsec = size / SF_SEC_SIZE;
 
@@ -874,9 +688,9 @@ found:
 	return 0;
 }
 
-/*****************************************************************************/
-/* HW State machine assists                                                  */
-/*****************************************************************************/
+ 
+ 
+ 
 
 static int
 csio_hw_dev_ready(struct csio_hw *hw)
@@ -905,13 +719,7 @@ csio_hw_dev_ready(struct csio_hw *hw)
 	return 0;
 }
 
-/*
- * csio_do_hello - Perform the HELLO FW Mailbox command and process response.
- * @hw: HW module
- * @state: Device state
- *
- * FW_HELLO_CMD has to be polled for completion.
- */
+ 
 static int
 csio_do_hello(struct csio_hw *hw, enum csio_dev_state *state)
 {
@@ -948,32 +756,15 @@ retry:
 		goto out_free_mb;
 	}
 
-	/* Firmware has designated us to be master */
+	 
 	if (hw->pfn == mpfn) {
 		hw->flags |= CSIO_HWF_MASTER;
 	} else if (*state == CSIO_DEV_STATE_UNINIT) {
-		/*
-		 * If we're not the Master PF then we need to wait around for
-		 * the Master PF Driver to finish setting up the adapter.
-		 *
-		 * Note that we also do this wait if we're a non-Master-capable
-		 * PF and there is no current Master PF; a Master PF may show up
-		 * momentarily and we wouldn't want to fail pointlessly.  (This
-		 * can happen when an OS loads lots of different drivers rapidly
-		 * at the same time). In this case, the Master PF returned by
-		 * the firmware will be PCIE_FW_MASTER_MASK so the test below
-		 * will work ...
-		 */
+		 
 
 		int waiting = FW_CMD_HELLO_TIMEOUT;
 
-		/*
-		 * Wait for the firmware to either indicate an error or
-		 * initialized state.  If we see either of these we bail out
-		 * and report the issue to the caller.  If we exhaust the
-		 * "hello timeout" and we haven't exhausted our retries, try
-		 * again.  Otherwise bail with a timeout error.
-		 */
+		 
 		for (;;) {
 			uint32_t pcie_fw;
 
@@ -982,12 +773,7 @@ retry:
 			spin_lock_irq(&hw->lock);
 			waiting -= 50;
 
-			/*
-			 * If neither Error nor Initialized are indicated
-			 * by the firmware keep waiting till we exhaust our
-			 * timeout ... and then retry if we haven't exhausted
-			 * our retries ...
-			 */
+			 
 			pcie_fw = csio_rd_reg32(hw, PCIE_FW_A);
 			if (!(pcie_fw & (PCIE_FW_ERR_F|PCIE_FW_INIT_F))) {
 				if (waiting <= 0) {
@@ -1000,10 +786,7 @@ retry:
 				continue;
 			}
 
-			/*
-			 * We either have an Error or Initialized condition
-			 * report errors preferentially.
-			 */
+			 
 			if (state) {
 				if (pcie_fw & PCIE_FW_ERR_F) {
 					*state = CSIO_DEV_STATE_ERR;
@@ -1012,11 +795,7 @@ retry:
 					*state = CSIO_DEV_STATE_INIT;
 			}
 
-			/*
-			 * If we arrived before a Master PF was selected and
-			 * there's not a valid Master PF, grab its identity
-			 * for our caller.
-			 */
+			 
 			if (mpfn == PCIE_FW_MASTER_M &&
 			    (pcie_fw & PCIE_FW_MASTER_VLD_F))
 				mpfn = PCIE_FW_MASTER_G(pcie_fw);
@@ -1054,11 +833,7 @@ out:
 	return rv;
 }
 
-/*
- * csio_do_bye - Perform the BYE FW Mailbox command and process response.
- * @hw: HW module
- *
- */
+ 
 static int
 csio_do_bye(struct csio_hw *hw)
 {
@@ -1090,15 +865,7 @@ csio_do_bye(struct csio_hw *hw)
 	return 0;
 }
 
-/*
- * csio_do_reset- Perform the device reset.
- * @hw: HW module
- * @fw_rst: FW reset
- *
- * If fw_rst is set, issues FW reset mbox cmd otherwise
- * does PIO reset.
- * Performs reset of the function.
- */
+ 
 static int
 csio_do_reset(struct csio_hw *hw, bool fw_rst)
 {
@@ -1106,7 +873,7 @@ csio_do_reset(struct csio_hw *hw, bool fw_rst)
 	enum fw_retval retval;
 
 	if (!fw_rst) {
-		/* PIO reset */
+		 
 		csio_wr_reg32(hw, PIORSTMODE_F | PIORST_F, PL_RST_A);
 		mdelay(2000);
 		return 0;
@@ -1160,31 +927,13 @@ csio_hw_validate_caps(struct csio_hw *hw, struct csio_mb *mbp)
 	return 0;
 }
 
-/*
- *	csio_hw_fw_halt - issue a reset/halt to FW and put uP into RESET
- *	@hw: the HW module
- *	@mbox: mailbox to use for the FW RESET command (if desired)
- *	@force: force uP into RESET even if FW RESET command fails
- *
- *	Issues a RESET command to firmware (if desired) with a HALT indication
- *	and then puts the microprocessor into RESET state.  The RESET command
- *	will only be issued if a legitimate mailbox is provided (mbox <=
- *	PCIE_FW_MASTER_MASK).
- *
- *	This is generally used in order for the host to safely manipulate the
- *	adapter without fear of conflicting with whatever the firmware might
- *	be doing.  The only way out of this state is to RESTART the firmware
- *	...
- */
+ 
 static int
 csio_hw_fw_halt(struct csio_hw *hw, uint32_t mbox, int32_t force)
 {
 	enum fw_retval retval = 0;
 
-	/*
-	 * If a legitimate mailbox is provided, issue a RESET command
-	 * with a HALT indication.
-	 */
+	 
 	if (mbox <= PCIE_FW_MASTER_M) {
 		struct csio_mb	*mbp;
 
@@ -1208,71 +957,26 @@ csio_hw_fw_halt(struct csio_hw *hw, uint32_t mbox, int32_t force)
 		mempool_free(mbp, hw->mb_mempool);
 	}
 
-	/*
-	 * Normally we won't complete the operation if the firmware RESET
-	 * command fails but if our caller insists we'll go ahead and put the
-	 * uP into RESET.  This can be useful if the firmware is hung or even
-	 * missing ...  We'll have to take the risk of putting the uP into
-	 * RESET without the cooperation of firmware in that case.
-	 *
-	 * We also force the firmware's HALT flag to be on in case we bypassed
-	 * the firmware RESET command above or we're dealing with old firmware
-	 * which doesn't have the HALT capability.  This will serve as a flag
-	 * for the incoming firmware to know that it's coming out of a HALT
-	 * rather than a RESET ... if it's new enough to understand that ...
-	 */
+	 
 	if (retval == 0 || force) {
 		csio_set_reg_field(hw, CIM_BOOT_CFG_A, UPCRST_F, UPCRST_F);
 		csio_set_reg_field(hw, PCIE_FW_A, PCIE_FW_HALT_F,
 				   PCIE_FW_HALT_F);
 	}
 
-	/*
-	 * And we always return the result of the firmware RESET command
-	 * even when we force the uP into RESET ...
-	 */
+	 
 	return retval ? -EINVAL : 0;
 }
 
-/*
- *	csio_hw_fw_restart - restart the firmware by taking the uP out of RESET
- *	@hw: the HW module
- *	@reset: if we want to do a RESET to restart things
- *
- *	Restart firmware previously halted by csio_hw_fw_halt().  On successful
- *	return the previous PF Master remains as the new PF Master and there
- *	is no need to issue a new HELLO command, etc.
- *
- *	We do this in two ways:
- *
- *	 1. If we're dealing with newer firmware we'll simply want to take
- *	    the chip's microprocessor out of RESET.  This will cause the
- *	    firmware to start up from its start vector.  And then we'll loop
- *	    until the firmware indicates it's started again (PCIE_FW.HALT
- *	    reset to 0) or we timeout.
- *
- *	 2. If we're dealing with older firmware then we'll need to RESET
- *	    the chip since older firmware won't recognize the PCIE_FW.HALT
- *	    flag and automatically RESET itself on startup.
- */
+ 
 static int
 csio_hw_fw_restart(struct csio_hw *hw, uint32_t mbox, int32_t reset)
 {
 	if (reset) {
-		/*
-		 * Since we're directing the RESET instead of the firmware
-		 * doing it automatically, we need to clear the PCIE_FW.HALT
-		 * bit.
-		 */
+		 
 		csio_set_reg_field(hw, PCIE_FW_A, PCIE_FW_HALT_F, 0);
 
-		/*
-		 * If we've been given a valid mailbox, first try to get the
-		 * firmware to do the RESET.  If that works, great and we can
-		 * return success.  Otherwise, if we haven't been given a
-		 * valid mailbox or the RESET command failed, fall back to
-		 * hitting the chip with a hammer.
-		 */
+		 
 		if (mbox <= PCIE_FW_MASTER_M) {
 			csio_set_reg_field(hw, CIM_BOOT_CFG_A, UPCRST_F, 0);
 			msleep(100);
@@ -1297,27 +1001,7 @@ csio_hw_fw_restart(struct csio_hw *hw, uint32_t mbox, int32_t reset)
 	return 0;
 }
 
-/*
- *	csio_hw_fw_upgrade - perform all of the steps necessary to upgrade FW
- *	@hw: the HW module
- *	@mbox: mailbox to use for the FW RESET command (if desired)
- *	@fw_data: the firmware image to write
- *	@size: image size
- *	@force: force upgrade even if firmware doesn't cooperate
- *
- *	Perform all of the steps necessary for upgrading an adapter's
- *	firmware image.  Normally this requires the cooperation of the
- *	existing firmware in order to halt all existing activities
- *	but if an invalid mailbox token is passed in we skip that step
- *	(though we'll still put the adapter microprocessor into RESET in
- *	that case).
- *
- *	On successful return the new firmware will have been loaded and
- *	the adapter will have been fully RESET losing all previous setup
- *	state.  On unsuccessful return the adapter may be completely hosed ...
- *	positive errno indicates that the adapter is ~probably~ intact, a
- *	negative errno indicates that things are looking bad ...
- */
+ 
 static int
 csio_hw_fw_upgrade(struct csio_hw *hw, uint32_t mbox,
 		  const u8 *fw_data, uint32_t size, int32_t force)
@@ -1333,23 +1017,12 @@ csio_hw_fw_upgrade(struct csio_hw *hw, uint32_t mbox,
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * Older versions of the firmware don't understand the new
-	 * PCIE_FW.HALT flag and so won't know to perform a RESET when they
-	 * restart.  So for newly loaded older firmware we'll have to do the
-	 * RESET for it so it starts up on a clean slate.  We can tell if
-	 * the newly loaded firmware will handle this right by checking
-	 * its header flags to see if it advertises the capability.
-	 */
+	 
 	reset = ((ntohl(fw_hdr->flags) & FW_HDR_FLAGS_RESET_HALT) == 0);
 	return csio_hw_fw_restart(hw, mbox, reset);
 }
 
-/*
- * csio_get_device_params - Get device parameters.
- * @hw: HW module
- *
- */
+ 
 static int
 csio_get_device_params(struct csio_hw *hw)
 {
@@ -1359,7 +1032,7 @@ csio_get_device_params(struct csio_hw *hw)
 	u32 param[6];
 	int i, j = 0;
 
-	/* Initialize portids to -1 */
+	 
 	for (i = 0; i < CSIO_MAX_PPORTS; i++)
 		hw->pport[i].portid = -1;
 
@@ -1369,17 +1042,17 @@ csio_get_device_params(struct csio_hw *hw)
 		return -ENOMEM;
 	}
 
-	/* Get port vec information. */
+	 
 	param[0] = FW_PARAM_DEV(PORTVEC);
 
-	/* Get Core clock. */
+	 
 	param[1] = FW_PARAM_DEV(CCLK);
 
-	/* Get EQ id start and end. */
+	 
 	param[2] = FW_PARAM_PFVF(EQ_START);
 	param[3] = FW_PARAM_PFVF(EQ_END);
 
-	/* Get IQ id start and end. */
+	 
 	param[4] = FW_PARAM_PFVF(IQFLINT_START);
 	param[5] = FW_PARAM_PFVF(IQFLINT_END);
 
@@ -1400,13 +1073,13 @@ csio_get_device_params(struct csio_hw *hw)
 		return -EINVAL;
 	}
 
-	/* cache the information. */
+	 
 	hw->port_vec = param[0];
 	hw->vpd.cclk = param[1];
 	wrm->fw_eq_start = param[2];
 	wrm->fw_iq_start = param[4];
 
-	/* Using FW configured max iqs & eqs */
+	 
 	if ((hw->flags & CSIO_HWF_USING_SOFT_PARAMS) ||
 		!csio_is_hw_master(hw)) {
 		hw->cfg_niq = param[5] - param[4] + 1;
@@ -1434,11 +1107,7 @@ csio_get_device_params(struct csio_hw *hw)
 }
 
 
-/*
- * csio_config_device_caps - Get and set device capabilities.
- * @hw: HW module
- *
- */
+ 
 static int
 csio_config_device_caps(struct csio_hw *hw)
 {
@@ -1452,7 +1121,7 @@ csio_config_device_caps(struct csio_hw *hw)
 		return -ENOMEM;
 	}
 
-	/* Get device capabilities */
+	 
 	csio_mb_caps_config(hw, mbp, CSIO_MB_DEFAULT_TMO, 0, 0, 0, 0, NULL);
 
 	if (csio_mb_issue(hw, mbp)) {
@@ -1466,18 +1135,18 @@ csio_config_device_caps(struct csio_hw *hw)
 		goto out;
 	}
 
-	/* Validate device capabilities */
+	 
 	rv = csio_hw_validate_caps(hw, mbp);
 	if (rv != 0)
 		goto out;
 
-	/* Don't config device capabilities if already configured */
+	 
 	if (hw->fw_state == CSIO_DEV_STATE_INIT) {
 		rv = 0;
 		goto out;
 	}
 
-	/* Write back desired device capabilities */
+	 
 	csio_mb_caps_config(hw, mbp, CSIO_MB_DEFAULT_TMO, true, true,
 			    false, true, NULL);
 
@@ -1534,13 +1203,7 @@ static inline fw_port_cap32_t cc_to_fwcap_fec(enum cc_fec cc_fec)
 	return fw_fec;
 }
 
-/**
- * fwcap_to_fwspeed - return highest speed in Port Capabilities
- * @acaps: advertised Port Capabilities
- *
- * Get the highest speed for the port from the advertised Port
- * Capabilities.
- */
+ 
 fw_port_cap32_t fwcap_to_fwspeed(fw_port_cap32_t acaps)
 {
 	#define TEST_SPEED_RETURN(__caps_speed) \
@@ -1564,12 +1227,7 @@ fw_port_cap32_t fwcap_to_fwspeed(fw_port_cap32_t acaps)
 	return 0;
 }
 
-/**
- *      fwcaps16_to_caps32 - convert 16-bit Port Capabilities to 32-bits
- *      @caps16: a 16-bit Port Capabilities value
- *
- *      Returns the equivalent 32-bit Port Capabilities value.
- */
+ 
 fw_port_cap32_t fwcaps16_to_caps32(fw_port_cap16_t caps16)
 {
 	fw_port_cap32_t caps32 = 0;
@@ -1601,14 +1259,7 @@ fw_port_cap32_t fwcaps16_to_caps32(fw_port_cap16_t caps16)
 	return caps32;
 }
 
-/**
- *	fwcaps32_to_caps16 - convert 32-bit Port Capabilities to 16-bits
- *	@caps32: a 32-bit Port Capabilities value
- *
- *	Returns the equivalent 16-bit Port Capabilities value.  Note that
- *	not all 32-bit Port Capabilities can be represented in the 16-bit
- *	Port Capabilities and some fields/values may not make it.
- */
+ 
 fw_port_cap16_t fwcaps32_to_caps16(fw_port_cap32_t caps32)
 {
 	fw_port_cap16_t caps16 = 0;
@@ -1641,21 +1292,12 @@ fw_port_cap16_t fwcaps32_to_caps16(fw_port_cap32_t caps32)
 	return caps16;
 }
 
-/**
- *      lstatus_to_fwcap - translate old lstatus to 32-bit Port Capabilities
- *      @lstatus: old FW_PORT_ACTION_GET_PORT_INFO lstatus value
- *
- *      Translates old FW_PORT_ACTION_GET_PORT_INFO lstatus field into new
- *      32-bit Port Capabilities value.
- */
+ 
 fw_port_cap32_t lstatus_to_fwcap(u32 lstatus)
 {
 	fw_port_cap32_t linkattr = 0;
 
-	/* The format of the Link Status in the old
-	 * 16-bit Port Information message isn't the same as the
-	 * 16-bit Port Capabilities bitfield used everywhere else.
-	 */
+	 
 	if (lstatus & FW_PORT_CMD_RXPAUSE_F)
 		linkattr |= FW_PORT_CAP32_FC_RX;
 	if (lstatus & FW_PORT_CMD_TXPAUSE_F)
@@ -1676,15 +1318,7 @@ fw_port_cap32_t lstatus_to_fwcap(u32 lstatus)
 	return linkattr;
 }
 
-/**
- *      csio_init_link_config - initialize a link's SW state
- *      @lc: pointer to structure holding the link state
- *      @pcaps: link Port Capabilities
- *      @acaps: link current Advertised Port Capabilities
- *
- *      Initializes the SW state maintained for each link, including the link's
- *      capabilities and default speed/flow-control/autonegotiation settings.
- */
+ 
 static void csio_init_link_config(struct link_config *lc, fw_port_cap32_t pcaps,
 				  fw_port_cap32_t acaps)
 {
@@ -1696,20 +1330,11 @@ static void csio_init_link_config(struct link_config *lc, fw_port_cap32_t pcaps,
 	lc->requested_fc = PAUSE_RX | PAUSE_TX;
 	lc->fc = lc->requested_fc;
 
-	/*
-	 * For Forward Error Control, we default to whatever the Firmware
-	 * tells us the Link is currently advertising.
-	 */
+	 
 	lc->requested_fec = FEC_AUTO;
 	lc->fec = fwcap_to_cc_fec(lc->def_acaps);
 
-	/* If the Port is capable of Auto-Negtotiation, initialize it as
-	 * "enabled" and copy over all of the Physical Port Capabilities
-	 * to the Advertised Port Capabilities.  Otherwise mark it as
-	 * Auto-Negotiate disabled and select the highest supported speed
-	 * for the link.  Note parallel structure in t4_link_l1cfg_core()
-	 * and t4_handle_get_port_info().
-	 */
+	 
 	if (lc->pcaps & FW_PORT_CAP32_ANEG) {
 		lc->acaps = lc->pcaps & ADVERT_MASK;
 		lc->autoneg = AUTONEG_ENABLE;
@@ -1728,30 +1353,17 @@ static void csio_link_l1cfg(struct link_config *lc, uint16_t fw_caps,
 
 	lc->link_ok = 0;
 
-	/*
-	 * Convert driver coding of Pause Frame Flow Control settings into the
-	 * Firmware's API.
-	 */
+	 
 	fw_fc = cc_to_fwcap_pause(lc->requested_fc);
 
-	/*
-	 * Convert Common Code Forward Error Control settings into the
-	 * Firmware's API.  If the current Requested FEC has "Automatic"
-	 * (IEEE 802.3) specified, then we use whatever the Firmware
-	 * sent us as part of it's IEEE 802.3-based interpretation of
-	 * the Transceiver Module EPROM FEC parameters.  Otherwise we
-	 * use whatever is in the current Requested FEC settings.
-	 */
+	 
 	if (lc->requested_fec & FEC_AUTO)
 		cc_fec = fwcap_to_cc_fec(lc->def_acaps);
 	else
 		cc_fec = lc->requested_fec;
 	fw_fec = cc_to_fwcap_fec(cc_fec);
 
-	/* Figure out what our Requested Port Capabilities are going to be.
-	 * Note parallel structure in t4_handle_get_port_info() and
-	 * init_link_config().
-	 */
+	 
 	if (!(lc->pcaps & FW_PORT_CAP32_ANEG)) {
 		lrcap = (lc->pcaps & ADVERT_MASK) | fw_fc | fw_fec;
 		lc->fc = lc->requested_fc & ~PAUSE_AUTONEG;
@@ -1767,11 +1379,7 @@ static void csio_link_l1cfg(struct link_config *lc, uint16_t fw_caps,
 	*rcaps = lrcap;
 }
 
-/*
- * csio_enable_ports - Bring up all available ports.
- * @hw: HW module.
- *
- */
+ 
 static int
 csio_enable_ports(struct csio_hw *hw)
 {
@@ -1814,7 +1422,7 @@ csio_enable_ports(struct csio_hw *hw)
 			fw_caps = retval ? FW_CAPS16 : FW_CAPS32;
 		}
 
-		/* Read PORT information */
+		 
 		csio_mb_port(hw, mbp, CSIO_MB_DEFAULT_TMO, portid,
 			     false, 0, fw_caps, NULL);
 
@@ -1838,7 +1446,7 @@ csio_enable_ports(struct csio_hw *hw)
 
 		csio_link_l1cfg(&hw->pport[i].link_cfg, fw_caps, &rcaps);
 
-		/* Write back PORT information */
+		 
 		csio_mb_port(hw, mbp, CSIO_MB_DEFAULT_TMO, portid,
 			     true, rcaps, fw_caps, NULL);
 
@@ -1857,18 +1465,14 @@ csio_enable_ports(struct csio_hw *hw)
 			return -EINVAL;
 		}
 
-	} /* For all ports */
+	}  
 
 	mempool_free(mbp, hw->mb_mempool);
 
 	return 0;
 }
 
-/*
- * csio_get_fcoe_resinfo - Read fcoe fw resource info.
- * @hw: HW module
- * Issued with lock held.
- */
+ 
 static int
 csio_get_fcoe_resinfo(struct csio_hw *hw)
 {
@@ -1883,7 +1487,7 @@ csio_get_fcoe_resinfo(struct csio_hw *hw)
 		return -ENOMEM;
 	}
 
-	/* Get FCoE FW resource information */
+	 
 	csio_fcoe_read_res_info_init_mb(hw, mbp, CSIO_MB_DEFAULT_TMO, NULL);
 
 	if (csio_mb_issue(hw, mbp)) {
@@ -1934,10 +1538,7 @@ csio_hw_check_fwconfig(struct csio_hw *hw, u32 *param)
 		return -ENOMEM;
 	}
 
-	/*
-	 * Find out whether we're dealing with a version of
-	 * the firmware which has configuration file support.
-	 */
+	 
 	_param[0] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
 		     FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_CF));
 
@@ -2032,22 +1633,9 @@ leave:
 	return ret;
 }
 
-/*
- * HW initialization: contact FW, obtain config, perform basic init.
- *
- * If the firmware we're dealing with has Configuration File support, then
- * we use that to perform all configuration -- either using the configuration
- * file stored in flash on the adapter or using a filesystem-local file
- * if available.
- *
- * If we don't have configuration file support in the firmware, then we'll
- * have to set things up the old fashioned way with hard-coded register
- * writes and firmware commands ...
- */
+ 
 
-/*
- * Attempt to initialize the HW via a Firmware Configuration File.
- */
+ 
 static int
 csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 {
@@ -2059,28 +1647,19 @@ csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 	char path[64];
 	char *config_name = NULL;
 
-	/*
-	 * Reset device if necessary
-	 */
+	 
 	if (reset) {
 		rv = csio_do_reset(hw, true);
 		if (rv != 0)
 			goto bye;
 	}
 
-	/*
-	 * If we have a configuration file in host ,
-	 * then use that.  Otherwise, use the configuration file stored
-	 * in the HW flash ...
-	 */
+	 
 	spin_unlock_irq(&hw->lock);
 	rv = csio_hw_flash_config(hw, fw_cfg_param, path);
 	spin_lock_irq(&hw->lock);
 	if (rv != 0) {
-		/*
-		 * config file was not found. Use default
-		 * config file from flash.
-		 */
+		 
 		config_name = "On FLASH";
 		mtype = FW_MEMTYPE_CF_FLASH;
 		maddr = hw->chip_ops->chip_flash_cfg_addr(hw);
@@ -2095,12 +1674,7 @@ csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 		CSIO_INC_STATS(hw, n_err_nomem);
 		return -ENOMEM;
 	}
-	/*
-	 * Tell the firmware to process the indicated Configuration File.
-	 * If there are no errors and the caller has provided return value
-	 * pointers for the [fini] section version, checksum and computed
-	 * checksum, pass those back to the caller.
-	 */
+	 
 	caps_cmd = (struct fw_caps_config_cmd *)(mbp->mb);
 	CSIO_INIT_MBP(mbp, caps_cmd, CSIO_MB_DEFAULT_TMO, hw, NULL, 1);
 	caps_cmd->op_to_write =
@@ -2119,12 +1693,7 @@ csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 	}
 
 	rv = csio_mb_fw_retval(mbp);
-	 /* If the CAPS_CONFIG failed with an ENOENT (for a Firmware
-	  * Configuration File in FLASH), our last gasp effort is to use the
-	  * Firmware Configuration File which is embedded in the
-	  * firmware.  A very few early versions of the firmware didn't
-	  * have one embedded but we can ignore those.
-	  */
+	  
 	if (rv == ENOENT) {
 		CSIO_INIT_MBP(mbp, caps_cmd, CSIO_MB_DEFAULT_TMO, hw, NULL, 1);
 		caps_cmd->op_to_write = htonl(FW_CMD_OP_V(FW_CAPS_CONFIG_CMD) |
@@ -2147,9 +1716,7 @@ csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 	finicsum = ntohl(caps_cmd->finicsum);
 	cfcsum = ntohl(caps_cmd->cfcsum);
 
-	/*
-	 * And now tell the firmware to use the configuration we just loaded.
-	 */
+	 
 	caps_cmd->op_to_write =
 		htonl(FW_CMD_OP_V(FW_CAPS_CONFIG_CMD) |
 		      FW_CMD_REQUEST_F |
@@ -2173,7 +1740,7 @@ csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 		      finicsum, cfcsum);
 	}
 
-	/* Validate device capabilities */
+	 
 	rv = csio_hw_validate_caps(hw, mbp);
 	if (rv != 0)
 		goto bye;
@@ -2181,26 +1748,19 @@ csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 	mempool_free(mbp, hw->mb_mempool);
 	mbp = NULL;
 
-	/*
-	 * Note that we're operating with parameters
-	 * not supplied by the driver, rather than from hard-wired
-	 * initialization constants buried in the driver.
-	 */
+	 
 	hw->flags |= CSIO_HWF_USING_SOFT_PARAMS;
 
-	/* device parameters */
+	 
 	rv = csio_get_device_params(hw);
 	if (rv != 0)
 		goto bye;
 
-	/* Configure SGE */
+	 
 	csio_wr_sge_init(hw);
 
-	/*
-	 * And finally tell the firmware to initialize itself using the
-	 * parameters from the Configuration File.
-	 */
-	/* Post event to notify completion of configuration */
+	 
+	 
 	csio_post_event(&hw->sm, CSIO_HWE_INIT);
 
 	csio_info(hw, "Successfully configure using Firmware "
@@ -2208,9 +1768,7 @@ csio_hw_use_fwconfig(struct csio_hw *hw, int reset, u32 *fw_cfg_param)
 		  config_name, finiver, cfcsum);
 	return 0;
 
-	/*
-	 * Something bad happened.  Return the error ...
-	 */
+	 
 bye:
 	if (mbp)
 		mempool_free(mbp, hw->mb_mempool);
@@ -2219,13 +1777,11 @@ bye:
 	return rv;
 }
 
-/* Is the given firmware API compatible with the one the driver was compiled
- * with?
- */
+ 
 static int fw_compatible(const struct fw_hdr *hdr1, const struct fw_hdr *hdr2)
 {
 
-	/* short circuit if it's the exact same firmware version */
+	 
 	if (hdr1->chip == hdr2->chip && hdr1->fw_ver == hdr2->fw_ver)
 		return 1;
 
@@ -2238,10 +1794,7 @@ static int fw_compatible(const struct fw_hdr *hdr1, const struct fw_hdr *hdr2)
 	return 0;
 }
 
-/* The firmware in the filesystem is usable, but should it be installed?
- * This routine explains itself in detail if it indicates the filesystem
- * firmware should be installed.
- */
+ 
 static int csio_should_install_fs_fw(struct csio_hw *hw, int card_fw_usable,
 				int k, int c)
 {
@@ -2322,7 +1875,7 @@ static int csio_hw_prep_fw(struct csio_hw *hw, struct fw_info *fw_info,
 
 	drv_fw = &fw_info->fw_hdr;
 
-	/* Read the header of the firmware on the card */
+	 
 	ret = csio_hw_read_flash(hw, FLASH_FW_START,
 			    sizeof(*card_fw) / sizeof(uint32_t),
 			    (uint32_t *)card_fw, 1);
@@ -2344,10 +1897,7 @@ static int csio_hw_prep_fw(struct csio_hw *hw, struct fw_info *fw_info,
 
 	if (card_fw_usable && card_fw->fw_ver == drv_fw->fw_ver &&
 	    (!fs_fw_usable || fs_fw->fw_ver == drv_fw->fw_ver)) {
-		/* Common case: the firmware on the card is an exact match and
-		 * the filesystem one is an exact match too, or the filesystem
-		 * one is absent/incompatible.
-		 */
+		 
 	} else if (fs_fw_usable && state == CSIO_DEV_STATE_UNINIT &&
 		   csio_should_install_fs_fw(hw, card_fw_usable,
 					be32_to_cpu(fs_fw->fw_ver),
@@ -2360,10 +1910,10 @@ static int csio_hw_prep_fw(struct csio_hw *hw, struct fw_info *fw_info,
 			goto bye;
 		}
 
-		/* Installed successfully, update the cached header too. */
+		 
 		memcpy(card_fw, fs_fw, sizeof(*card_fw));
 		card_fw_usable = 1;
-		*reset = 0;	/* already reset as part of load_fw */
+		*reset = 0;	 
 	}
 
 	if (!card_fw_usable) {
@@ -2388,7 +1938,7 @@ static int csio_hw_prep_fw(struct csio_hw *hw, struct fw_info *fw_info,
 		goto bye;
 	}
 
-	/* We're using whatever's on the card and it's known to be good. */
+	 
 	hw->fwrev = be32_to_cpu(card_fw->fw_ver);
 	hw->tp_vers = be32_to_cpu(card_fw->tp_microcode_ver);
 
@@ -2396,12 +1946,7 @@ bye:
 	return ret;
 }
 
-/*
- * Returns -EINVAL if attempts to flash the firmware failed,
- * -ENOMEM if memory allocation failed else returns 0,
- * if flashing was not attempted because the card had the
- * latest firmware ECANCELED is returned
- */
+ 
 static int
 csio_hw_flash_fw(struct csio_hw *hw, int *reset)
 {
@@ -2415,9 +1960,7 @@ csio_hw_flash_fw(struct csio_hw *hw, int *reset)
 	unsigned int fw_size = 0;
 	const char *fw_bin_file;
 
-	/* This is the firmware whose headers the driver was compiled
-	 * against
-	 */
+	 
 	fw_info = find_fw_info(CHELSIO_CHIP_VERSION(hw->chip_id));
 	if (fw_info == NULL) {
 		csio_err(hw,
@@ -2426,9 +1969,7 @@ csio_hw_flash_fw(struct csio_hw *hw, int *reset)
 		return -EINVAL;
 	}
 
-	/* allocate memory to read the header of the firmware on the
-	 * card
-	 */
+	 
 	card_fw = kmalloc(sizeof(*card_fw), GFP_KERNEL);
 	if (!card_fw)
 		return -ENOMEM;
@@ -2446,11 +1987,11 @@ csio_hw_flash_fw(struct csio_hw *hw, int *reset)
 		fw_size = fw->size;
 	}
 
-	/* upgrade FW logic */
+	 
 	ret = csio_hw_prep_fw(hw, fw_info, fw_data, fw_size, card_fw,
 			 hw->fw_state, reset);
 
-	/* Cleaning up */
+	 
 	if (fw != NULL)
 		release_firmware(fw);
 	kfree(card_fw);
@@ -2468,11 +2009,7 @@ static int csio_hw_check_fwver(struct csio_hw *hw)
 	return 0;
 }
 
-/*
- * csio_hw_configure - Configure HW
- * @hw - HW module
- *
- */
+ 
 static void
 csio_hw_configure(struct csio_hw *hw)
 {
@@ -2487,10 +2024,10 @@ csio_hw_configure(struct csio_hw *hw)
 		goto out;
 	}
 
-	/* HW version */
+	 
 	hw->chip_ver = (char)csio_rd_reg32(hw, PL_REV_A);
 
-	/* Needed for FW download */
+	 
 	rv = csio_hw_get_flash_params(hw);
 	if (rv != 0) {
 		csio_err(hw, "Failed to get serial flash params rv:%d\n", rv);
@@ -2498,7 +2035,7 @@ csio_hw_configure(struct csio_hw *hw)
 		goto out;
 	}
 
-	/* Set PCIe completion timeout to 4 seconds */
+	 
 	if (pci_is_pcie(hw->pdev))
 		pcie_capability_clear_and_set_word(hw->pdev, PCI_EXP_DEVCTL2,
 				PCI_EXP_DEVCTL2_COMP_TIMEOUT, 0xd);
@@ -2518,7 +2055,7 @@ csio_hw_configure(struct csio_hw *hw)
 		goto out;
 	}
 
-	/* Read vpd */
+	 
 	rv = csio_hw_get_vpd_params(hw, &hw->vpd);
 	if (rv != 0)
 		goto out;
@@ -2527,7 +2064,7 @@ csio_hw_configure(struct csio_hw *hw)
 	csio_hw_get_tp_version(hw, &hw->tp_vers);
 	if (csio_is_hw_master(hw) && hw->fw_state != CSIO_DEV_STATE_INIT) {
 
-			/* Do firmware update */
+			 
 		spin_unlock_irq(&hw->lock);
 		rv = csio_hw_flash_fw(hw, &reset);
 		spin_lock_irq(&hw->lock);
@@ -2539,9 +2076,7 @@ csio_hw_configure(struct csio_hw *hw)
 		if (rv < 0)
 			goto out;
 
-		/* If the firmware doesn't support Configuration Files,
-		 * return an error.
-		 */
+		 
 		rv = csio_hw_check_fwconfig(hw, param);
 		if (rv != 0) {
 			csio_info(hw, "Firmware doesn't support "
@@ -2549,10 +2084,7 @@ csio_hw_configure(struct csio_hw *hw)
 			goto out;
 		}
 
-		/* The firmware provides us with a memory buffer where we can
-		 * load a Configuration File from the host if we want to
-		 * override the Configuration File in flash.
-		 */
+		 
 		rv = csio_hw_use_fwconfig(hw, reset, param);
 		if (rv == -ENOENT) {
 			csio_info(hw, "Could not initialize "
@@ -2574,34 +2106,30 @@ csio_hw_configure(struct csio_hw *hw)
 
 			hw->flags |= CSIO_HWF_USING_SOFT_PARAMS;
 
-			/* device parameters */
+			 
 			rv = csio_get_device_params(hw);
 			if (rv != 0)
 				goto out;
 
-			/* Get device capabilities */
+			 
 			rv = csio_config_device_caps(hw);
 			if (rv != 0)
 				goto out;
 
-			/* Configure SGE */
+			 
 			csio_wr_sge_init(hw);
 
-			/* Post event to notify completion of configuration */
+			 
 			csio_post_event(&hw->sm, CSIO_HWE_INIT);
 			goto out;
 		}
-	} /* if not master */
+	}  
 
 out:
 	return;
 }
 
-/*
- * csio_hw_initialize - Initialize HW
- * @hw - HW module
- *
- */
+ 
 static void
 csio_hw_initialize(struct csio_hw *hw)
 {
@@ -2669,12 +2197,7 @@ out:
 
 #define PF_INTR_MASK (PFSW_F | PFCIM_F)
 
-/*
- * csio_hw_intr_enable - Enable HW interrupts
- * @hw: Pointer to HW module.
- *
- * Enable interrupts in HW registers.
- */
+ 
 static void
 csio_hw_intr_enable(struct csio_hw *hw)
 {
@@ -2687,10 +2210,7 @@ csio_hw_intr_enable(struct csio_hw *hw)
 	else
 		pf = T6_SOURCEPF_G(csio_rd_reg32(hw, PL_WHOAMI_A));
 
-	/*
-	 * Set aivec for MSI/MSIX. PCIE_PF_CFG.INTXType is set up
-	 * by FW, so do nothing for INTX.
-	 */
+	 
 	if (hw->intr_mode == CSIO_IM_MSIX)
 		csio_set_reg_field(hw, MYPF_REG(PCIE_PF_CFG_A),
 				   AIVEC_V(AIVEC_M), vec);
@@ -2700,14 +2220,12 @@ csio_hw_intr_enable(struct csio_hw *hw)
 
 	csio_wr_reg32(hw, PF_INTR_MASK, MYPF_REG(PL_PF_INT_ENABLE_A));
 
-	/* Turn on MB interrupts - this will internally flush PIO as well */
+	 
 	csio_mb_intr_enable(hw);
 
-	/* These are common registers - only a master can modify them */
+	 
 	if (csio_is_hw_master(hw)) {
-		/*
-		 * Disable the Serial FLASH interrupt, if enabled!
-		 */
+		 
 		pl &= (~SF_F);
 		csio_wr_reg32(hw, pl, PL_INT_ENABLE_A);
 
@@ -2727,12 +2245,7 @@ csio_hw_intr_enable(struct csio_hw *hw)
 
 }
 
-/*
- * csio_hw_intr_disable - Disable HW interrupts
- * @hw: Pointer to HW module.
- *
- * Turn off Mailbox and PCI_PF_CFG interrupts.
- */
+ 
 void
 csio_hw_intr_disable(struct csio_hw *hw)
 {
@@ -2752,7 +2265,7 @@ csio_hw_intr_disable(struct csio_hw *hw)
 	if (csio_is_hw_master(hw))
 		csio_set_reg_field(hw, PL_INT_MAP0_A, 1 << pf, 0);
 
-	/* Turn off MB interrupts */
+	 
 	csio_mb_intr_disable(hw);
 
 }
@@ -2763,19 +2276,14 @@ csio_hw_fatal_err(struct csio_hw *hw)
 	csio_set_reg_field(hw, SGE_CONTROL_A, GLOBALENABLE_F, 0);
 	csio_hw_intr_disable(hw);
 
-	/* Do not reset HW, we may need FW state for debugging */
+	 
 	csio_fatal(hw, "HW Fatal error encountered!\n");
 }
 
-/*****************************************************************************/
-/* START: HW SM                                                              */
-/*****************************************************************************/
-/*
- * csio_hws_uninit - Uninit state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
+ 
+ 
+ 
 static void
 csio_hws_uninit(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -2795,12 +2303,7 @@ csio_hws_uninit(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_configuring - Configuring state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_configuring(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -2816,7 +2319,7 @@ csio_hws_configuring(struct csio_hw *hw, enum csio_hw_ev evt)
 
 	case CSIO_HWE_INIT_DONE:
 		csio_set_state(&hw->sm, csio_hws_ready);
-		/* Fan out event to all lnode SMs */
+		 
 		csio_notify_lnodes(hw, CSIO_LN_NOTIFY_HWREADY);
 		break;
 
@@ -2833,12 +2336,7 @@ csio_hws_configuring(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_initializing - Initializing state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_initializing(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -2850,10 +2348,10 @@ csio_hws_initializing(struct csio_hw *hw, enum csio_hw_ev evt)
 	case CSIO_HWE_INIT_DONE:
 		csio_set_state(&hw->sm, csio_hws_ready);
 
-		/* Fan out event to all lnode SMs */
+		 
 		csio_notify_lnodes(hw, CSIO_LN_NOTIFY_HWREADY);
 
-		/* Enable interrupts */
+		 
 		csio_hw_intr_enable(hw);
 		break;
 
@@ -2871,16 +2369,11 @@ csio_hws_initializing(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_ready - Ready state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_ready(struct csio_hw *hw, enum csio_hw_ev evt)
 {
-	/* Remember the event */
+	 
 	hw->evtflag = evt;
 
 	hw->prev_evt = hw->cur_evt;
@@ -2894,7 +2387,7 @@ csio_hws_ready(struct csio_hw *hw, enum csio_hw_ev evt)
 	case CSIO_HWE_PCI_REMOVE:
 	case CSIO_HWE_PCIERR_DETECTED:
 		csio_set_state(&hw->sm, csio_hws_quiescing);
-		/* cleanup all outstanding cmds */
+		 
 		if (evt == CSIO_HWE_HBA_RESET ||
 		    evt == CSIO_HWE_PCIERR_DETECTED)
 			csio_scsim_cleanup_io(csio_hw_to_scsim(hw), false);
@@ -2920,12 +2413,7 @@ csio_hws_ready(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_quiescing - Quiescing state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_quiescing(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -2938,12 +2426,12 @@ csio_hws_quiescing(struct csio_hw *hw, enum csio_hw_ev evt)
 		switch (hw->evtflag) {
 		case CSIO_HWE_FW_DLOAD:
 			csio_set_state(&hw->sm, csio_hws_resetting);
-			/* Download firmware */
+			 
 			fallthrough;
 
 		case CSIO_HWE_HBA_RESET:
 			csio_set_state(&hw->sm, csio_hws_resetting);
-			/* Start reset of the HBA */
+			 
 			csio_notify_lnodes(hw, CSIO_LN_NOTIFY_HWRESET);
 			csio_wr_destroy_queues(hw, false);
 			csio_do_reset(hw, false);
@@ -2954,7 +2442,7 @@ csio_hws_quiescing(struct csio_hw *hw, enum csio_hw_ev evt)
 			csio_set_state(&hw->sm, csio_hws_removing);
 			csio_notify_lnodes(hw, CSIO_LN_NOTIFY_HWREMOVE);
 			csio_wr_destroy_queues(hw, true);
-			/* Now send the bye command */
+			 
 			csio_do_bye(hw);
 			break;
 
@@ -2980,12 +2468,7 @@ csio_hws_quiescing(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_quiesced - Quiesced state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_quiesced(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -3005,12 +2488,7 @@ csio_hws_quiesced(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_resetting - HW Resetting state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_resetting(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -3031,12 +2509,7 @@ csio_hws_resetting(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_removing - PCI Hotplug removing state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_removing(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -3048,17 +2521,13 @@ csio_hws_removing(struct csio_hw *hw, enum csio_hw_ev evt)
 	case CSIO_HWE_HBA_RESET:
 		if (!csio_is_hw_master(hw))
 			break;
-		/*
-		 * The BYE should have already been issued, so we can't
-		 * use the mailbox interface. Hence we use the PL_RST
-		 * register directly.
-		 */
+		 
 		csio_err(hw, "Resetting HW and waiting 2 seconds...\n");
 		csio_wr_reg32(hw, PIORSTMODE_F | PIORST_F, PL_RST_A);
 		mdelay(2000);
 		break;
 
-	/* Should never receive any new events */
+	 
 	default:
 		CSIO_INC_STATS(hw, n_evt_unexp);
 		break;
@@ -3066,12 +2535,7 @@ csio_hws_removing(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*
- * csio_hws_pcierr - PCI Error state
- * @hw - HW module
- * @evt - Event
- *
- */
+ 
 static void
 csio_hws_pcierr(struct csio_hw *hw, enum csio_hw_ev evt)
 {
@@ -3092,23 +2556,11 @@ csio_hws_pcierr(struct csio_hw *hw, enum csio_hw_ev evt)
 	}
 }
 
-/*****************************************************************************/
-/* END: HW SM                                                                */
-/*****************************************************************************/
+ 
+ 
+ 
 
-/*
- *	csio_handle_intr_status - table driven interrupt handler
- *	@hw: HW instance
- *	@reg: the interrupt status register to process
- *	@acts: table of interrupt actions
- *
- *	A table driven interrupt handler that applies a set of masks to an
- *	interrupt status word and performs the corresponding actions if the
- *	interrupts described by the mask have occurred.  The actions include
- *	optionally emitting a warning or alert message. The table is terminated
- *	by an entry specifying mask 0.  Returns the number of fatal interrupt
- *	conditions.
- */
+ 
 int
 csio_handle_intr_status(struct csio_hw *hw, unsigned int reg,
 				 const struct intr_info *acts)
@@ -3130,14 +2582,12 @@ csio_handle_intr_status(struct csio_hw *hw, unsigned int reg,
 		mask |= acts->mask;
 	}
 	status &= mask;
-	if (status)                           /* clear processed interrupts */
+	if (status)                            
 		csio_wr_reg32(hw, status, reg);
 	return fatal;
 }
 
-/*
- * TP interrupt handler.
- */
+ 
 static void csio_tp_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info tp_intr_info[] = {
@@ -3150,9 +2600,7 @@ static void csio_tp_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * SGE interrupt handler.
- */
+ 
 static void csio_sge_intr_handler(struct csio_hw *hw)
 {
 	uint64_t v;
@@ -3205,9 +2653,7 @@ static void csio_sge_intr_handler(struct csio_hw *hw)
 #define CIM_IBQ_INTR (IBQTP0PARERR_F | IBQTP1PARERR_F | IBQULPPARERR_F |\
 		      IBQSGEHIPARERR_F | IBQSGELOPARERR_F | IBQNCSIPARERR_F)
 
-/*
- * CIM interrupt handler.
- */
+ 
 static void csio_cim_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info cim_intr_info[] = {
@@ -3262,9 +2708,7 @@ static void csio_cim_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * ULP RX interrupt handler.
- */
+ 
 static void csio_ulprx_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info ulprx_intr_info[] = {
@@ -3277,9 +2721,7 @@ static void csio_ulprx_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * ULP TX interrupt handler.
- */
+ 
 static void csio_ulptx_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info ulptx_intr_info[] = {
@@ -3299,9 +2741,7 @@ static void csio_ulptx_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * PM TX interrupt handler.
- */
+ 
 static void csio_pmtx_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info pmtx_intr_info[] = {
@@ -3322,9 +2762,7 @@ static void csio_pmtx_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * PM RX interrupt handler.
- */
+ 
 static void csio_pmrx_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info pmrx_intr_info[] = {
@@ -3342,9 +2780,7 @@ static void csio_pmrx_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * CPL switch interrupt handler.
- */
+ 
 static void csio_cplsw_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info cplsw_intr_info[] = {
@@ -3361,9 +2797,7 @@ static void csio_cplsw_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * LE interrupt handler.
- */
+ 
 static void csio_le_intr_handler(struct csio_hw *hw)
 {
 	enum chip_type chip = CHELSIO_CHIP_VERSION(hw->chip_id);
@@ -3392,9 +2826,7 @@ static void csio_le_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * MPS interrupt handler.
- */
+ 
 static void csio_mps_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info mps_rx_intr_info[] = {
@@ -3457,7 +2889,7 @@ static void csio_mps_intr_handler(struct csio_hw *hw)
 				      mps_cls_intr_info);
 
 	csio_wr_reg32(hw, 0, MPS_INT_CAUSE_A);
-	csio_rd_reg32(hw, MPS_INT_CAUSE_A);                    /* flush */
+	csio_rd_reg32(hw, MPS_INT_CAUSE_A);                     
 	if (fat)
 		csio_hw_fatal_err(hw);
 }
@@ -3465,9 +2897,7 @@ static void csio_mps_intr_handler(struct csio_hw *hw)
 #define MEM_INT_MASK (PERR_INT_CAUSE_F | ECC_CE_INT_CAUSE_F | \
 		      ECC_UE_INT_CAUSE_F)
 
-/*
- * EDC/MC interrupt handler.
- */
+ 
 static void csio_mem_intr_handler(struct csio_hw *hw, int idx)
 {
 	static const char name[3][5] = { "EDC0", "EDC1", "MC" };
@@ -3500,9 +2930,7 @@ static void csio_mem_intr_handler(struct csio_hw *hw, int idx)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * MA interrupt handler.
- */
+ 
 static void csio_ma_intr_handler(struct csio_hw *hw)
 {
 	uint32_t v, status = csio_rd_reg32(hw, MA_INT_CAUSE_A);
@@ -3520,9 +2948,7 @@ static void csio_ma_intr_handler(struct csio_hw *hw)
 	csio_hw_fatal_err(hw);
 }
 
-/*
- * SMB interrupt handler.
- */
+ 
 static void csio_smb_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info smb_intr_info[] = {
@@ -3536,9 +2962,7 @@ static void csio_smb_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * NC-SI interrupt handler.
- */
+ 
 static void csio_ncsi_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info ncsi_intr_info[] = {
@@ -3553,9 +2977,7 @@ static void csio_ncsi_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- * XGMAC interrupt handler.
- */
+ 
 static void csio_xgmac_intr_handler(struct csio_hw *hw, int port)
 {
 	uint32_t v = csio_rd_reg32(hw, T5_PORT_REG(port, MAC_PORT_INT_CAUSE_A));
@@ -3572,9 +2994,7 @@ static void csio_xgmac_intr_handler(struct csio_hw *hw, int port)
 	csio_hw_fatal_err(hw);
 }
 
-/*
- * PL interrupt handler.
- */
+ 
 static void csio_pl_intr_handler(struct csio_hw *hw)
 {
 	static struct intr_info pl_intr_info[] = {
@@ -3587,14 +3007,7 @@ static void csio_pl_intr_handler(struct csio_hw *hw)
 		csio_hw_fatal_err(hw);
 }
 
-/*
- *	csio_hw_slow_intr_handler - control path interrupt handler
- *	@hw: HW module
- *
- *	Interrupt handler for non-data global interrupt events, e.g., errors.
- *	The designation 'slow' is because it involves register reads, while
- *	data interrupts typically don't involve any MMIOs.
- */
+ 
 int
 csio_hw_slow_intr_handler(struct csio_hw *hw)
 {
@@ -3675,23 +3088,15 @@ csio_hw_slow_intr_handler(struct csio_hw *hw)
 	if (cause & ULP_TX_F)
 		csio_ulptx_intr_handler(hw);
 
-	/* Clear the interrupts just processed for which we are the master. */
+	 
 	csio_wr_reg32(hw, cause & CSIO_GLBL_INTR_MASK, PL_INT_CAUSE_A);
-	csio_rd_reg32(hw, PL_INT_CAUSE_A); /* flush */
+	csio_rd_reg32(hw, PL_INT_CAUSE_A);  
 
 	return 1;
 }
 
-/*****************************************************************************
- * HW <--> mailbox interfacing routines.
- ****************************************************************************/
-/*
- * csio_mberr_worker - Worker thread (dpc) for mailbox/error completions
- *
- * @data: Private data pointer.
- *
- * Called from worker thread context.
- */
+ 
+ 
 static void
 csio_mberr_worker(void *data)
 {
@@ -3712,7 +3117,7 @@ csio_mberr_worker(void *data)
 	list_splice_tail_init(&mbm->cbfn_q, &cbfn_q);
 	mbm->stats.n_cbfnq = 0;
 
-	/* Try to start waiting mailboxes */
+	 
 	if (!list_empty(&mbm->req_q)) {
 		mbp_next = list_first_entry(&mbm->req_q, struct csio_mb, list);
 		list_del_init(&mbp_next->list);
@@ -3725,16 +3130,11 @@ csio_mberr_worker(void *data)
 	}
 	spin_unlock_irq(&hw->lock);
 
-	/* Now callback completions */
+	 
 	csio_mb_completions(hw, &cbfn_q);
 }
 
-/*
- * csio_hw_mb_timer - Top-level Mailbox timeout handler.
- *
- * @data: private data pointer
- *
- **/
+ 
 static void
 csio_hw_mb_timer(struct timer_list *t)
 {
@@ -3746,21 +3146,13 @@ csio_hw_mb_timer(struct timer_list *t)
 	mbp = csio_mb_tmo_handler(hw);
 	spin_unlock_irq(&hw->lock);
 
-	/* Call back the function for the timed-out Mailbox */
+	 
 	if (mbp)
 		mbp->mb_cbfn(hw, mbp);
 
 }
 
-/*
- * csio_hw_mbm_cleanup - Cleanup Mailbox module.
- * @hw: HW module
- *
- * Called with lock held, should exit with lock held.
- * Cancels outstanding mailboxes (waiting, in-flight) and gathers them
- * into a local queue. Drops lock and calls the completions. Holds
- * lock and returns.
- */
+ 
 static void
 csio_hw_mbm_cleanup(struct csio_hw *hw)
 {
@@ -3773,9 +3165,7 @@ csio_hw_mbm_cleanup(struct csio_hw *hw)
 	spin_lock_irq(&hw->lock);
 }
 
-/*****************************************************************************
- * Event handling
- ****************************************************************************/
+ 
 int
 csio_enqueue_evt(struct csio_hw *hw, enum csio_evt type, void *evt_msg,
 			uint16_t len)
@@ -3801,7 +3191,7 @@ csio_enqueue_evt(struct csio_hw *hw, enum csio_evt type, void *evt_msg,
 				     struct csio_evt_msg, list);
 	list_del_init(&evt_entry->list);
 
-	/* copy event msg and queue the event */
+	 
 	evt_entry->type = type;
 	memcpy((void *)evt_entry->data, evt_msg, len);
 	list_add_tail(&evt_entry->list, &hw->evt_active_q);
@@ -3845,10 +3235,10 @@ csio_enqueue_evt_lock(struct csio_hw *hw, enum csio_evt type, void *evt_msg,
 				     struct csio_evt_msg, list);
 	list_del_init(&evt_entry->list);
 
-	/* copy event msg and queue the event */
+	 
 	evt_entry->type = type;
 
-	/* If Payload in SG list*/
+	 
 	if (msg_sg) {
 		fl_sg = (struct csio_fl_dma_buf *) evt_msg;
 		for (n = 0; (n < CSIO_MAX_FLBUF_PER_IQWR && off < len); n++) {
@@ -3912,14 +3302,14 @@ csio_evtq_cleanup(struct csio_hw *hw)
 {
 	struct list_head *evt_entry, *next_entry;
 
-	/* Release outstanding events from activeq to freeq*/
+	 
 	if (!list_empty(&hw->evt_active_q))
 		list_splice_tail_init(&hw->evt_active_q, &hw->evt_free_q);
 
 	hw->stats.n_evt_activeq = 0;
 	hw->flags &= ~CSIO_HWF_FWEVT_PENDING;
 
-	/* Freeup event entry */
+	 
 	list_for_each_safe(evt_entry, next_entry, &hw->evt_free_q) {
 		kfree(evt_entry);
 		CSIO_DEC_STATS(hw, n_evt_freeq);
@@ -3952,7 +3342,7 @@ csio_process_fwevtq_entry(struct csio_hw *hw, void *wr, uint32_t len,
 	} else if (op == CPL_FW6_MSG || op == CPL_FW4_MSG) {
 
 		CSIO_INC_STATS(hw, n_cpl_fw6_msg);
-		/* skip RSS header */
+		 
 		msg = (void *)((uintptr_t)wr + sizeof(__be64));
 		msg_len = (op == CPL_FW6_MSG) ? sizeof(struct cpl_fw6_msg) :
 			   sizeof(struct cpl_fw4_msg);
@@ -3962,10 +3352,7 @@ csio_process_fwevtq_entry(struct csio_hw *hw, void *wr, uint32_t len,
 		return;
 	}
 
-	/*
-	 * Enqueue event to EventQ. Events processing happens
-	 * in Event worker thread context
-	 */
+	 
 	if (csio_enqueue_evt_lock(hw, CSIO_EVT_FW, msg,
 				  (uint16_t)msg_len, msg_sg))
 		CSIO_INC_STATS(hw, n_evt_drop);
@@ -3994,7 +3381,7 @@ csio_evtq_worker(struct work_struct *work)
 		list_for_each_safe(evt_entry, next_entry, &evt_q) {
 			evt_msg = (struct csio_evt_msg *) evt_entry;
 
-			/* Drop events if queue is STOPPED */
+			 
 			spin_lock_irq(&hw->lock);
 			if (hw->flags & CSIO_HWF_FWEVT_STOP)
 				evtq_stop = 1;
@@ -4015,7 +3402,7 @@ csio_evtq_worker(struct work_struct *work)
 								msg->data);
 					if (!rv)
 						break;
-					/* Handle any remaining fw events */
+					 
 					csio_fcoe_fwevt_handler(hw,
 							msg->opcode, msg->data);
 				} else if (msg->opcode == CPL_FW6_PLD) {
@@ -4070,25 +3457,16 @@ csio_fwevtq_handler(struct csio_hw *hw)
 	return rv;
 }
 
-/****************************************************************************
- * Entry points
- ****************************************************************************/
+ 
 
-/* Management module */
-/*
- * csio_mgmt_req_lookup - Lookup the given IO req exist in Active Q.
- * mgmt - mgmt module
- * @io_req - io request
- *
- * Return - 0:if given IO Req exists in active Q.
- *          -EINVAL  :if lookup fails.
- */
+ 
+ 
 int
 csio_mgmt_req_lookup(struct csio_mgmtm *mgmtm, struct csio_ioreq *io_req)
 {
 	struct list_head *tmp;
 
-	/* Lookup ioreq in the ACTIVEQ */
+	 
 	list_for_each(tmp, &mgmtm->active_q) {
 		if (io_req == (struct csio_ioreq *)tmp)
 			return 0;
@@ -4096,14 +3474,9 @@ csio_mgmt_req_lookup(struct csio_mgmtm *mgmtm, struct csio_ioreq *io_req)
 	return -EINVAL;
 }
 
-#define	ECM_MIN_TMO	1000	/* Minimum timeout value for req */
+#define	ECM_MIN_TMO	1000	 
 
-/*
- * csio_mgmts_tmo_handler - MGMT IO Timeout handler.
- * @data - Event data.
- *
- * Return - none.
- */
+ 
 static void
 csio_mgmt_tmo_handler(struct timer_list *t)
 {
@@ -4120,11 +3493,11 @@ csio_mgmt_tmo_handler(struct timer_list *t)
 		io_req->tmo -= min_t(uint32_t, io_req->tmo, ECM_MIN_TMO);
 
 		if (!io_req->tmo) {
-			/* Dequeue the request from retry Q. */
+			 
 			tmp = csio_list_prev(tmp);
 			list_del_init(&io_req->sm.sm_list);
 			if (io_req->io_cbfn) {
-				/* io_req will be freed by completion handler */
+				 
 				io_req->wr_status = -ETIMEDOUT;
 				io_req->io_cbfn(mgmtm->hw, io_req);
 			} else {
@@ -4133,7 +3506,7 @@ csio_mgmt_tmo_handler(struct timer_list *t)
 		}
 	}
 
-	/* If retry queue is not empty, re-arm timer */
+	 
 	if (!list_empty(&mgmtm->active_q))
 		mod_timer(&mgmtm->mgmt_timer,
 			  jiffies + msecs_to_jiffies(ECM_MIN_TMO));
@@ -4149,41 +3522,28 @@ csio_mgmtm_cleanup(struct csio_mgmtm *mgmtm)
 	uint32_t count;
 
 	count = 30;
-	/* Wait for all outstanding req to complete gracefully */
+	 
 	while ((!list_empty(&mgmtm->active_q)) && count--) {
 		spin_unlock_irq(&hw->lock);
 		msleep(2000);
 		spin_lock_irq(&hw->lock);
 	}
 
-	/* release outstanding req from ACTIVEQ */
+	 
 	list_for_each(tmp, &mgmtm->active_q) {
 		io_req = (struct csio_ioreq *) tmp;
 		tmp = csio_list_prev(tmp);
 		list_del_init(&io_req->sm.sm_list);
 		mgmtm->stats.n_active--;
 		if (io_req->io_cbfn) {
-			/* io_req will be freed by completion handler */
+			 
 			io_req->wr_status = -ETIMEDOUT;
 			io_req->io_cbfn(mgmtm->hw, io_req);
 		}
 	}
 }
 
-/*
- * csio_mgmt_init - Mgmt module init entry point
- * @mgmtsm - mgmt module
- * @hw	 - HW module
- *
- * Initialize mgmt timer, resource wait queue, active queue,
- * completion q. Allocate Egress and Ingress
- * WR queues and save off the queue index returned by the WR
- * module for future use. Allocate and save off mgmt reqs in the
- * mgmt_req_freelist for future use. Make sure their SM is initialized
- * to uninit state.
- * Returns: 0 - on success
- *          -ENOMEM   - on error.
- */
+ 
 static int
 csio_mgmtm_init(struct csio_mgmtm *mgmtm, struct csio_hw *hw)
 {
@@ -4193,20 +3553,12 @@ csio_mgmtm_init(struct csio_mgmtm *mgmtm, struct csio_hw *hw)
 	INIT_LIST_HEAD(&mgmtm->cbfn_q);
 
 	mgmtm->hw = hw;
-	/*mgmtm->iq_idx = hw->fwevt_iq_idx;*/
+	 
 
 	return 0;
 }
 
-/*
- * csio_mgmtm_exit - MGMT module exit entry point
- * @mgmtsm - mgmt module
- *
- * This function called during MGMT module uninit.
- * Stop timers, free ioreqs allocated.
- * Returns: None
- *
- */
+ 
 static void
 csio_mgmtm_exit(struct csio_mgmtm *mgmtm)
 {
@@ -4214,14 +3566,7 @@ csio_mgmtm_exit(struct csio_mgmtm *mgmtm)
 }
 
 
-/**
- * csio_hw_start - Kicks off the HW State machine
- * @hw:		Pointer to HW module.
- *
- * It is assumed that the initialization is a synchronous operation.
- * So when we return after posting the event, the HW SM should be in
- * the ready state, if there were no errors during init.
- */
+ 
 int
 csio_hw_start(struct csio_hw *hw)
 {
@@ -4248,15 +3593,10 @@ csio_hw_stop(struct csio_hw *hw)
 		return -EINVAL;
 }
 
-/* Max reset retries */
+ 
 #define CSIO_MAX_RESET_RETRIES	3
 
-/**
- * csio_hw_reset - Reset the hardware
- * @hw:		HW module.
- *
- * Caller should hold lock across this function.
- */
+ 
 int
 csio_hw_reset(struct csio_hw *hw)
 {
@@ -4279,18 +3619,15 @@ csio_hw_reset(struct csio_hw *hw)
 		return -EINVAL;
 }
 
-/*
- * csio_hw_get_device_id - Caches the Adapter's vendor & device id.
- * @hw: HW module.
- */
+ 
 static void
 csio_hw_get_device_id(struct csio_hw *hw)
 {
-	/* Is the adapter device id cached already ?*/
+	 
 	if (csio_is_dev_id_cached(hw))
 		return;
 
-	/* Get the PCI vendor & device id */
+	 
 	pci_read_config_word(hw->pdev, PCI_VENDOR_ID,
 			     &hw->params.pci.vendor_id);
 	pci_read_config_word(hw->pdev, PCI_DEVICE_ID,
@@ -4299,14 +3636,9 @@ csio_hw_get_device_id(struct csio_hw *hw)
 	csio_dev_id_cached(hw);
 	hw->chip_id = (hw->params.pci.device_id & CSIO_HW_CHIP_MASK);
 
-} /* csio_hw_get_device_id */
+}  
 
-/*
- * csio_hw_set_description - Set the model, description of the hw.
- * @hw: HW module.
- * @ven_id: PCI Vendor ID
- * @dev_id: PCI Device ID
- */
+ 
 static void
 csio_hw_set_description(struct csio_hw *hw, uint16_t ven_id, uint16_t dev_id)
 {
@@ -4327,14 +3659,9 @@ csio_hw_set_description(struct csio_hw *hw, uint16_t ven_id, uint16_t dev_id)
 			memcpy(hw->model_desc, tempName, 32);
 		}
 	}
-} /* csio_hw_set_description */
+}  
 
-/**
- * csio_hw_init - Initialize HW module.
- * @hw:		Pointer to HW module.
- *
- * Initialize the members of the HW module.
- */
+ 
 int
 csio_hw_init(struct csio_hw *hw)
 {
@@ -4348,28 +3675,28 @@ csio_hw_init(struct csio_hw *hw)
 	spin_lock_init(&hw->lock);
 	INIT_LIST_HEAD(&hw->sln_head);
 
-	/* Get the PCI vendor & device id */
+	 
 	csio_hw_get_device_id(hw);
 
 	strcpy(hw->name, CSIO_HW_NAME);
 
-	/* Initialize the HW chip ops T5 specific ops */
+	 
 	hw->chip_ops = &t5_ops;
 
-	/* Set the model & its description */
+	 
 
 	ven_id = hw->params.pci.vendor_id;
 	dev_id = hw->params.pci.device_id;
 
 	csio_hw_set_description(hw, ven_id, dev_id);
 
-	/* Initialize default log level */
+	 
 	hw->params.log_level = (uint32_t) csio_dbg_level;
 
 	csio_set_fwevt_intr_idx(hw, -1);
 	csio_set_nondata_intr_idx(hw, -1);
 
-	/* Init all the modules: Mailbox, WorkRequest and Transport */
+	 
 	if (csio_mbm_init(csio_hw_to_mbm(hw), hw, csio_hw_mb_timer))
 		goto err;
 
@@ -4384,7 +3711,7 @@ csio_hw_init(struct csio_hw *hw)
 	rv = csio_mgmtm_init(csio_hw_to_mgmtm(hw), hw);
 	if (rv)
 		goto err_scsim_exit;
-	/* Pre-allocate evtq and initialize them */
+	 
 	INIT_LIST_HEAD(&hw->evt_active_q);
 	INIT_LIST_HEAD(&hw->evt_free_q);
 	for (i = 0; i < csio_evtq_sz; i++) {
@@ -4418,11 +3745,7 @@ err:
 	return rv;
 }
 
-/**
- * csio_hw_exit - Un-initialize HW module.
- * @hw:		Pointer to HW module.
- *
- */
+ 
 void
 csio_hw_exit(struct csio_hw *hw)
 {

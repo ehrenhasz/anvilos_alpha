@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clk driver for NXP LPC18xx/43xx Configuration Registers (CREG)
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -51,10 +47,7 @@ static int clk_creg_32k_prepare(struct clk_hw *hw)
 				 LPC18XX_CREG_CREG0_PD32KHZ |
 				 LPC18XX_CREG_CREG0_RESET32KHZ, 0);
 
-	/*
-	 * Powering up the 32k oscillator takes a long while
-	 * and sadly there aren't any status bit to poll.
-	 */
+	 
 	msleep(2500);
 
 	return ret;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BMI160 - Bosch IMU, SPI bits
- *
- * Copyright (c) 2016, Intel Corporation.
- *
- */
+
+ 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/regmap.h>

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * filecheck.c
- *
- * Code which implements online file check.
- *
- * Copyright (C) 2016 SuSE.  All rights reserved.
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/spinlock.h>
@@ -26,9 +20,7 @@
 #include "filecheck.h"
 
 
-/* File check error strings,
- * must correspond with error number in header file.
- */
+ 
 static const char * const ocfs2_filecheck_errs[] = {
 	"SUCCESS",
 	"FAILED",
@@ -154,7 +146,7 @@ ocfs2_filecheck_sysfs_free(struct ocfs2_filecheck_sysfs_entry *entry)
 		p = list_first_entry(&entry->fs_fcheck->fc_head,
 				     struct ocfs2_filecheck_entry, fe_list);
 		list_del(&p->fe_list);
-		BUG_ON(!p->fe_done); /* To free a undone file check entry */
+		BUG_ON(!p->fe_done);  
 		kfree(p);
 	}
 	spin_unlock(&entry->fs_fcheck->fc_lock);
@@ -274,7 +266,7 @@ ocfs2_filecheck_args_parse(const char *name, const char *buf, size_t count,
 	unsigned long val = 0;
 	unsigned int type;
 
-	/* too short/long args length */
+	 
 	if ((count < 1) || (count >= OCFS2_FILECHECK_ARGS_LEN))
 		return 1;
 
@@ -328,7 +320,7 @@ static ssize_t ocfs2_filecheck_attr_show(struct kobject *kobj,
 			       p->fe_ino, p->fe_done,
 			       ocfs2_filecheck_error(p->fe_status));
 		if (ret >= remain) {
-			/* snprintf() didn't fit */
+			 
 			total = -E2BIG;
 			break;
 		}
@@ -485,10 +477,7 @@ static ssize_t ocfs2_filecheck_attr_store(struct kobject *kobj,
 	} else {
 		if ((ent->fs_fcheck->fc_size >= ent->fs_fcheck->fc_max) &&
 		    (ent->fs_fcheck->fc_done > 0)) {
-			/* Delete the oldest entry which was done,
-			 * make sure the entry size in list does
-			 * not exceed maximum value
-			 */
+			 
 			BUG_ON(!ocfs2_filecheck_erase_entry(ent));
 		}
 

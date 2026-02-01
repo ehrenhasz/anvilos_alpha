@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2022 Intel Corporation. All rights reserved.
- *
- * Author: Noah Klayman <noah.klayman@intel.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sof
@@ -115,7 +111,7 @@ TRACE_EVENT(sof_ipc4_fw_config,
 		  __get_str(device_name), __get_str(key), __entry->value)
 );
 
-#endif /* _TRACE_SOF_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

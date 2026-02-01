@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Yunfei Dong <yunfei.dong@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -17,27 +14,13 @@
 #include "../vdec_vpu_if.h"
 #include "vdec_h264_req_common.h"
 
-/**
- * enum vdec_h264_core_dec_err_type  - core decode error type
- *
- * @TRANS_BUFFER_FULL: trans buffer is full
- * @SLICE_HEADER_FULL: slice header buffer is full
- */
+ 
 enum vdec_h264_core_dec_err_type {
 	TRANS_BUFFER_FULL = 1,
 	SLICE_HEADER_FULL,
 };
 
-/**
- * struct vdec_h264_slice_lat_dec_param  - parameters for decode current frame
- *
- * @sps:		h264 sps syntax parameters
- * @pps:		h264 pps syntax parameters
- * @slice_header:	h264 slice header syntax parameters
- * @scaling_matrix:	h264 scaling list parameters
- * @decode_params:	decoder parameters of each frame used for hardware decode
- * @h264_dpb_info:	dpb reference list
- */
+ 
 struct vdec_h264_slice_lat_dec_param {
 	struct mtk_h264_sps_param sps;
 	struct mtk_h264_pps_param pps;
@@ -47,18 +30,7 @@ struct vdec_h264_slice_lat_dec_param {
 	struct mtk_h264_dpb_info h264_dpb_info[V4L2_H264_NUM_DPB_ENTRIES];
 };
 
-/**
- * struct vdec_h264_slice_info - decode information
- *
- * @nal_info:		nal info of current picture
- * @timeout:		Decode timeout: 1 timeout, 0 no timeount
- * @bs_buf_size:	bitstream size
- * @bs_buf_addr:	bitstream buffer dma address
- * @y_fb_dma:		Y frame buffer dma address
- * @c_fb_dma:		C frame buffer dma address
- * @vdec_fb_va:	VDEC frame buffer struct virtual address
- * @crc:		Used to check whether hardware's status is right
- */
+ 
 struct vdec_h264_slice_info {
 	u16 nal_info;
 	u16 timeout;
@@ -70,28 +42,9 @@ struct vdec_h264_slice_info {
 	u32 crc[8];
 };
 
-/**
- * struct vdec_h264_slice_vsi - shared memory for decode information exchange
- *        between SCP and Host.
- *
- * @wdma_err_addr:		wdma error dma address
- * @wdma_start_addr:		wdma start dma address
- * @wdma_end_addr:		wdma end dma address
- * @slice_bc_start_addr:	slice bc start dma address
- * @slice_bc_end_addr:		slice bc end dma address
- * @row_info_start_addr:	row info start dma address
- * @row_info_end_addr:		row info end dma address
- * @trans_start:		trans start dma address
- * @trans_end:			trans end dma address
- * @wdma_end_addr_offset:	wdma end address offset
- *
- * @mv_buf_dma:		HW working motion vector buffer
- *				dma address (AP-W, VPU-R)
- * @dec:			decode information (AP-R, VPU-W)
- * @h264_slice_params:		decode parameters for hw used
- */
+ 
 struct vdec_h264_slice_vsi {
-	/* LAT dec addr */
+	 
 	u64 wdma_err_addr;
 	u64 wdma_start_addr;
 	u64 wdma_end_addr;
@@ -108,17 +61,7 @@ struct vdec_h264_slice_vsi {
 	struct vdec_h264_slice_lat_dec_param h264_slice_params;
 };
 
-/**
- * struct vdec_h264_slice_share_info - shared information used to exchange
- *                                     message between lat and core
- *
- * @sps:		sequence header information from user space
- * @dec_params:	decoder params from user space
- * @h264_slice_params:	decoder params used for hardware
- * @trans_start:	trans start dma address
- * @trans_end:		trans end dma address
- * @nal_info:		nal info of current picture
- */
+ 
 struct vdec_h264_slice_share_info {
 	struct v4l2_ctrl_h264_sps sps;
 	struct v4l2_ctrl_h264_decode_params dec_params;
@@ -128,28 +71,7 @@ struct vdec_h264_slice_share_info {
 	u16 nal_info;
 };
 
-/**
- * struct vdec_h264_slice_inst - h264 decoder instance
- *
- * @slice_dec_num:	how many picture be decoded
- * @ctx:		point to mtk_vcodec_dec_ctx
- * @pred_buf:		HW working predication buffer
- * @mv_buf:		HW working motion vector buffer
- * @vpu:		VPU instance
- * @vsi:		vsi used for lat
- * @vsi_core:		vsi used for core
- *
- * @vsi_ctx:		Local VSI data for this decoding context
- * @h264_slice_param:	the parameters that hardware use to decode
- *
- * @resolution_changed:resolution changed
- * @realloc_mv_buf:	reallocate mv buffer
- * @cap_num_planes:	number of capture queue plane
- *
- * @dpb:		decoded picture buffer used to store reference
- *			buffer information
- *@is_field_bitstream:	is field bitstream
- */
+ 
 struct vdec_h264_slice_inst {
 	unsigned int slice_dec_num;
 	struct mtk_vcodec_dec_ctx *ctx;
@@ -256,12 +178,12 @@ static int get_vdec_sig_decode_parameters(struct vdec_h264_slice_inst *inst)
 	mtk_vdec_h264_fill_dpb_info(inst->ctx, &slice_param->decode_params,
 				    slice_param->h264_dpb_info);
 
-	/* Build the reference lists */
+	 
 	v4l2_h264_init_reflist_builder(&reflist_builder, dec_params, sps, inst->dpb);
 	v4l2_h264_build_p_ref_list(&reflist_builder, v4l2_p0_reflist);
 	v4l2_h264_build_b_ref_lists(&reflist_builder, v4l2_b0_reflist, v4l2_b1_reflist);
 
-	/* Adapt the built lists to the firmware's expectations */
+	 
 	mtk_vdec_h264_get_ref_list(p0_reflist, v4l2_p0_reflist, reflist_builder.num_valid);
 	mtk_vdec_h264_get_ref_list(b0_reflist, v4l2_b0_reflist, reflist_builder.num_valid);
 	mtk_vdec_h264_get_ref_list(b1_reflist, v4l2_b1_reflist, reflist_builder.num_valid);
@@ -294,13 +216,13 @@ static void vdec_h264_slice_fill_decode_reflist(struct vdec_h264_slice_inst *ins
 				    slice_param->h264_dpb_info);
 
 	mtk_v4l2_vdec_dbg(3, inst->ctx, "cur poc = %d\n", dec_params->bottom_field_order_cnt);
-	/* Build the reference lists */
+	 
 	v4l2_h264_init_reflist_builder(&reflist_builder, dec_params, sps,
 				       inst->dpb);
 	v4l2_h264_build_p_ref_list(&reflist_builder, v4l2_p0_reflist);
 	v4l2_h264_build_b_ref_lists(&reflist_builder, v4l2_b0_reflist, v4l2_b1_reflist);
 
-	/* Adapt the built lists to the firmware's expectations */
+	 
 	mtk_vdec_h264_get_ref_list(p0_reflist, v4l2_p0_reflist, reflist_builder.num_valid);
 	mtk_vdec_h264_get_ref_list(b0_reflist, v4l2_b0_reflist, reflist_builder.num_valid);
 	mtk_vdec_h264_get_ref_list(b1_reflist, v4l2_b1_reflist, reflist_builder.num_valid);
@@ -516,7 +438,7 @@ static int vdec_h264_slice_core_decode(struct vdec_lat_buf *lat_buf)
 		goto vdec_dec_end;
 	}
 
-	/* wait decoder done interrupt */
+	 
 	timeout = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
 					       WAIT_INTR_TIMEOUT_MS, MTK_VDEC_CORE);
 	if (timeout)
@@ -544,12 +466,7 @@ static void vdec_h264_insert_startcode(struct mtk_vcodec_dec_dev *vcodec_dev, un
 {
 	struct device *dev = &vcodec_dev->plat_dev->dev;
 
-	/* Need to add pending data at the end of bitstream when bs_sz is small than
-	 * 20 bytes for cavlc bitstream, or lat will decode fail. This pending data is
-	 * useful for mt8192 and mt8195 platform.
-	 *
-	 * cavlc bitstream when entropy_coding_mode_flag is false.
-	 */
+	 
 	if (pps->entropy_coding_mode_flag || *bs_size > 20 ||
 	    !(of_device_is_compatible(dev->of_node, "mediatek,mt8192-vcodec-dec") ||
 	    of_device_is_compatible(dev->of_node, "mediatek,mt8195-vcodec-dec")))
@@ -580,7 +497,7 @@ static int vdec_h264_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 				sizeof(*share_info)))
 		return -ENOMEM;
 
-	/* bs NULL means flush decoder */
+	 
 	if (!bs) {
 		vdec_msg_queue_wait_lat_buf_full(&inst->ctx->msg_queue);
 		return vpu_dec_reset(vpu);
@@ -670,7 +587,7 @@ static int vdec_h264_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		vdec_msg_queue_qbuf(&inst->ctx->msg_queue.core_ctx, lat_buf);
 	}
 
-	/* wait decoder done interrupt */
+	 
 	timeout = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
 					       WAIT_INTR_TIMEOUT_MS, MTK_VDEC_LAT0);
 	if (timeout)
@@ -719,7 +636,7 @@ static int vdec_h264_slice_single_decode(void *h_vdec, struct mtk_vcodec_mem *bs
 	struct mtk_vcodec_mem *mem;
 	int err, nal_start_idx;
 
-	/* bs NULL means flush decoder */
+	 
 	if (!bs)
 		return vpu_dec_reset(vpu);
 
@@ -774,7 +691,7 @@ static int vdec_h264_slice_single_decode(void *h_vdec, struct mtk_vcodec_mem *bs
 	if (err)
 		goto err_free_fb_out;
 
-	/* wait decoder done interrupt */
+	 
 	err = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
 					   WAIT_INTR_TIMEOUT_MS, MTK_VDEC_CORE);
 	if (err)

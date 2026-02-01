@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * seqiv: Sequence Number IV Generator
- *
- * This generator generates an IV based on a sequence number by xoring it
- * with a salt.  This algorithm is mainly useful for CTR and similar modes.
- *
- * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/geniv.h>
 #include <crypto/scatterwalk.h>

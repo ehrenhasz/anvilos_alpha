@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Camera protocol driver.
- *
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/fs.h>
@@ -37,16 +32,7 @@ enum gb_camera_state {
 	GB_CAMERA_STATE_CONFIGURED,
 };
 
-/**
- * struct gb_camera - A Greybus Camera Device
- * @connection: the greybus connection for camera management
- * @data_connection: the greybus connection for camera data
- * @data_cport_id: the data CPort ID on the module side
- * @mutex: protects the connection and state fields
- * @state: the current module state
- * @debugfs: debugfs entries for camera protocol operations testing
- * @module: Greybus camera module registered to HOST processor.
- */
+ 
 struct gb_camera {
 	struct gb_bundle *bundle;
 	struct gb_connection *connection;
@@ -79,7 +65,7 @@ struct gb_camera_fmt_info {
 	unsigned int bpp;
 };
 
-/* GB format to media code map */
+ 
 static const struct gb_camera_fmt_info gb_fmt_info[] = {
 	{
 		.mbus_code = V4L2_MBUS_FMT_UYVY8_1X16,
@@ -263,10 +249,7 @@ static int gb_camera_get_max_pkt_size(struct gb_camera *gcam,
 	return max_pkt_size;
 }
 
-/*
- * Validate the stream configuration response verifying padding is correctly
- * set and the returned number of streams is supported
- */
+ 
 static const int gb_camera_configure_streams_validate_response(
 		struct gb_camera *gcam,
 		struct gb_camera_configure_streams_response *resp,
@@ -274,7 +257,7 @@ static const int gb_camera_configure_streams_validate_response(
 {
 	unsigned int i;
 
-	/* Validate the returned response structure */
+	 
 	if (resp->padding[0] || resp->padding[1]) {
 		gcam_err(gcam, "response padding != 0\n");
 		return -EIO;
@@ -298,9 +281,7 @@ static const int gb_camera_configure_streams_validate_response(
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware Configuration
- */
+ 
 
 static int gb_camera_set_intf_power_mode(struct gb_camera *gcam, u8 intf_id,
 					 bool hs)
@@ -367,10 +348,7 @@ struct ap_csi_config_request {
 	__le32 max_pkt_size;
 } __packed;
 
-/*
- * TODO: Compute the number of lanes dynamically based on bandwidth
- * requirements.
- */
+ 
 #define GB_CAMERA_CSI_NUM_DATA_LANES		4
 
 #define GB_CAMERA_CSI_CLK_FREQ_MAX		999000000U
@@ -386,10 +364,7 @@ static int gb_camera_setup_data_connection(struct gb_camera *gcam,
 	unsigned int clk_freq;
 	int ret;
 
-	/*
-	 * Create the data connection between the camera module data CPort and
-	 * APB CDSI1. The CDSI1 CPort ID is hardcoded by the ES2 bridge.
-	 */
+	 
 	conn = gb_connection_create_offloaded(gcam->bundle, gcam->data_cport_id,
 					      GB_CONNECTION_FLAG_NO_FLOWCTRL |
 					      GB_CONNECTION_FLAG_CDSI1);
@@ -403,17 +378,12 @@ static int gb_camera_setup_data_connection(struct gb_camera *gcam,
 	if (ret)
 		goto error_conn_destroy;
 
-	/* Set the UniPro link to high speed mode. */
+	 
 	ret = gb_camera_set_power_mode(gcam, true);
 	if (ret < 0)
 		goto error_conn_disable;
 
-	/*
-	 * Configure the APB-A CSI-2 transmitter.
-	 *
-	 * Hardcode the number of lanes to 4 and compute the bus clock frequency
-	 * based on the module bandwidth requirements with a safety margin.
-	 */
+	 
 	memset(&csi_cfg, 0, sizeof(csi_cfg));
 	csi_cfg.csi_id = 1;
 	csi_cfg.flags = 0;
@@ -462,7 +432,7 @@ static void gb_camera_teardown_data_connection(struct gb_camera *gcam)
 	struct ap_csi_config_request csi_cfg;
 	int ret;
 
-	/* Stop the APB1 CSI transmitter. */
+	 
 	memset(&csi_cfg, 0, sizeof(csi_cfg));
 	csi_cfg.csi_id = 1;
 
@@ -473,18 +443,16 @@ static void gb_camera_teardown_data_connection(struct gb_camera *gcam)
 	if (ret < 0)
 		gcam_err(gcam, "failed to stop the CSI transmitter\n");
 
-	/* Set the UniPro link to low speed mode. */
+	 
 	gb_camera_set_power_mode(gcam, false);
 
-	/* Destroy the data connection. */
+	 
 	gb_connection_disable(gcam->data_connection);
 	gb_connection_destroy(gcam->data_connection);
 	gcam->data_connection = NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Camera Protocol Operations
- */
+ 
 
 static int gb_camera_capabilities(struct gb_camera *gcam,
 				  u8 *capabilities, size_t *size)
@@ -606,26 +574,17 @@ static int gb_camera_configure_streams(struct gb_camera *gcam,
 		gb_camera_teardown_data_connection(gcam);
 		gcam->state = GB_CAMERA_STATE_UNCONFIGURED;
 
-		/*
-		 * When unconfiguring streams release the PM runtime reference
-		 * that was acquired when streams were configured. The bundle
-		 * won't be suspended until the PM runtime reference acquired at
-		 * the beginning of this function gets released right before
-		 * returning.
-		 */
+		 
 		gb_pm_runtime_put_noidle(gcam->bundle);
 	}
 
 	if (resp->num_streams == 0)
 		goto done;
 
-	/*
-	 * Make sure the bundle won't be suspended until streams get
-	 * unconfigured after the stream is configured successfully
-	 */
+	 
 	gb_pm_runtime_get_noresume(gcam->bundle);
 
-	/* Setup CSI-2 connection from APB-A to AP */
+	 
 	ret = gb_camera_setup_data_connection(gcam, resp, csi_params);
 	if (ret < 0) {
 		memset(req, 0, sizeof(*req));
@@ -744,9 +703,7 @@ static int gb_camera_request_handler(struct gb_operation *op)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Interface with HOST gmp camera.
- */
+ 
 static unsigned int gb_camera_mbus_to_gb(enum v4l2_mbus_pixelcode mbus_code)
 {
 	unsigned int i;
@@ -864,9 +821,7 @@ static const struct gb_camera_ops gb_cam_ops = {
 	.flush = gb_camera_op_flush,
 };
 
-/* -----------------------------------------------------------------------------
- * DebugFS
- */
+ 
 
 static ssize_t gb_camera_debugfs_capabilities(struct gb_camera *gcam,
 					      char *buf, size_t len)
@@ -886,10 +841,7 @@ static ssize_t gb_camera_debugfs_capabilities(struct gb_camera *gcam,
 	if (ret < 0)
 		goto done;
 
-	/*
-	 * hex_dump_to_buffer() doesn't return the number of bytes dumped prior
-	 * to v4.0, we need our own implementation :-(
-	 */
+	 
 	buffer->length = 0;
 
 	for (i = 0; i < size; i += 16) {
@@ -916,7 +868,7 @@ static ssize_t gb_camera_debugfs_configure_streams(struct gb_camera *gcam,
 	char *token;
 	int ret;
 
-	/* Retrieve number of streams to configure */
+	 
 	token = strsep(&buf, ";");
 	if (!token)
 		return -EINVAL;
@@ -936,7 +888,7 @@ static ssize_t gb_camera_debugfs_configure_streams(struct gb_camera *gcam,
 	if (ret < 0)
 		return ret;
 
-	/* For each stream to configure parse width, height and format */
+	 
 	streams = kcalloc(nstreams, sizeof(*streams), GFP_KERNEL);
 	if (!streams)
 		return -ENOMEM;
@@ -944,7 +896,7 @@ static ssize_t gb_camera_debugfs_configure_streams(struct gb_camera *gcam,
 	for (i = 0; i < nstreams; ++i) {
 		struct gb_camera_stream_config *stream = &streams[i];
 
-		/* width */
+		 
 		token = strsep(&buf, ";");
 		if (!token) {
 			ret = -EINVAL;
@@ -954,7 +906,7 @@ static ssize_t gb_camera_debugfs_configure_streams(struct gb_camera *gcam,
 		if (ret < 0)
 			goto done;
 
-		/* height */
+		 
 		token = strsep(&buf, ";");
 		if (!token)
 			goto done;
@@ -963,7 +915,7 @@ static ssize_t gb_camera_debugfs_configure_streams(struct gb_camera *gcam,
 		if (ret < 0)
 			goto done;
 
-		/* Image format code */
+		 
 		token = strsep(&buf, ";");
 		if (!token)
 			goto done;
@@ -1007,7 +959,7 @@ static ssize_t gb_camera_debugfs_capture(struct gb_camera *gcam,
 	char *token;
 	int ret;
 
-	/* Request id */
+	 
 	token = strsep(&buf, ";");
 	if (!token)
 		return -EINVAL;
@@ -1015,7 +967,7 @@ static ssize_t gb_camera_debugfs_capture(struct gb_camera *gcam,
 	if (ret < 0)
 		return ret;
 
-	/* Stream mask */
+	 
 	token = strsep(&buf, ";");
 	if (!token)
 		return -EINVAL;
@@ -1023,7 +975,7 @@ static ssize_t gb_camera_debugfs_capture(struct gb_camera *gcam,
 	if (ret < 0)
 		return ret;
 
-	/* number of frames */
+	 
 	token = strsep(&buf, ";");
 	if (!token)
 		return -EINVAL;
@@ -1095,7 +1047,7 @@ static ssize_t gb_camera_debugfs_read(struct file *file, char __user *buf,
 	struct gb_camera_debugfs_buffer *buffer;
 	ssize_t ret;
 
-	/* For read-only entries the operation is triggered by a read. */
+	 
 	if (!(op->mask & 0222)) {
 		ret = op->execute(gcam, NULL, 0);
 		if (ret < 0)
@@ -1160,9 +1112,7 @@ static int gb_camera_debugfs_init(struct gb_camera *gcam)
 	char dirname[27];
 	unsigned int i;
 
-	/*
-	 * Create root debugfs entry and a file entry for each camera operation.
-	 */
+	 
 	snprintf(dirname, 27, "camera-%u.%u", connection->intf->interface_id,
 		 gcam->bundle->id);
 
@@ -1195,9 +1145,7 @@ static void gb_camera_debugfs_cleanup(struct gb_camera *gcam)
 	vfree(gcam->debugfs.buffers);
 }
 
-/* -----------------------------------------------------------------------------
- * Init & Cleanup
- */
+ 
 
 static void gb_camera_cleanup(struct gb_camera *gcam)
 {
@@ -1235,10 +1183,7 @@ static int gb_camera_probe(struct gb_bundle *bundle,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * The camera bundle must contain exactly two CPorts, one for the
-	 * camera management protocol and one for the camera data protocol.
-	 */
+	 
 	if (bundle->num_cports != 2)
 		return -ENODEV;
 

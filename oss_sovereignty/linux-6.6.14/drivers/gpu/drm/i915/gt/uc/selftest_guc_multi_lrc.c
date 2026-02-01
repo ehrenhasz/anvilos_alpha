@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright �� 2019 Intel Corporation
- */
+
+ 
 
 #include "gt/intel_gt_print.h"
 #include "selftests/igt_spinner.h"
@@ -66,10 +64,7 @@ static void multi_lrc_context_put(struct intel_context *ce)
 {
 	GEM_BUG_ON(!intel_context_is_parent(ce));
 
-	/*
-	 * Only the parent gets the creation ref put in the uAPI, the parent
-	 * itself is responsible for creation ref put on the children.
-	 */
+	 
 	intel_context_put(ce);
 }
 
@@ -155,7 +150,7 @@ static int intel_guc_multi_lrc_basic(void *arg)
 	int ret;
 
 	for (class = 0; class < MAX_ENGINE_CLASS + 1; ++class) {
-		/* We don't support breadcrumb handshake on these classes */
+		 
 		if (class == COMPUTE_CLASS || class == RENDER_CLASS)
 			continue;
 

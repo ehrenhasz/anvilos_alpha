@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Jesper Dangaard Brouer */
 
-#include <linux/if_link.h> /* before test_progs.h, avoid bpf_util.h redefines */
+ 
+
+#include <linux/if_link.h>  
 #include <test_progs.h>
 #include "test_check_mtu.skel.h"
 #include "network_helpers.h"
@@ -11,7 +11,7 @@
 
 #define IFINDEX_LO 1
 
-static __u32 duration; /* Hint: needed for CHECK macro */
+static __u32 duration;  
 
 static int read_mtu_device_lo(void)
 {
@@ -48,7 +48,7 @@ static void test_check_mtu_xdp_attach(void)
 
 	skel = test_check_mtu__open_and_load();
 	if (CHECK(!skel, "open and load skel", "failed"))
-		return; /* Exit if e.g. helper unknown to kernel */
+		return;  
 
 	prog = skel->progs.xdp_use_helper_basic;
 
@@ -95,7 +95,7 @@ static void test_check_mtu_run_xdp(struct test_check_mtu *skel,
 	ASSERT_OK(err, "test_run");
 	ASSERT_EQ(topts.retval, retval_expect, "retval");
 
-	/* Extract MTU that BPF-prog got */
+	 
 	mtu_result = skel->bss->global_bpf_mtu_xdp;
 	ASSERT_EQ(mtu_result, mtu_expect, "MTU-compare-user");
 }
@@ -110,7 +110,7 @@ static void test_check_mtu_xdp(__u32 mtu, __u32 ifindex)
 	if (CHECK(!skel, "skel_open", "failed"))
 		return;
 
-	/* Update "constants" in BPF-prog *BEFORE* libbpf load */
+	 
 	skel->rodata->GLOBAL_USER_MTU = mtu;
 	skel->rodata->GLOBAL_USER_IFINDEX = ifindex;
 
@@ -148,7 +148,7 @@ static void test_check_mtu_run_tc(struct test_check_mtu *skel,
 	ASSERT_OK(err, "test_run");
 	ASSERT_EQ(topts.retval, retval_expect, "retval");
 
-	/* Extract MTU that BPF-prog got */
+	 
 	mtu_result = skel->bss->global_bpf_mtu_tc;
 	ASSERT_EQ(mtu_result, mtu_expect, "MTU-compare-user");
 }
@@ -163,7 +163,7 @@ static void test_check_mtu_tc(__u32 mtu, __u32 ifindex)
 	if (CHECK(!skel, "skel_open", "failed"))
 		return;
 
-	/* Update "constants" in BPF-prog *BEFORE* libbpf load */
+	 
 	skel->rodata->GLOBAL_USER_MTU = mtu;
 	skel->rodata->GLOBAL_USER_IFINDEX = ifindex;
 

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright(c) 2010 Intel Corporation. All rights reserved.
- *
- *  Contact Information:
- *    Intel Corporation
- *    2200 Mission College Blvd.
- *    Santa Clara, CA  97052
- *
- * This provides access methods for PCI registers that mis-behave on
- * the CE4100. Each register can be assigned a private init, read and
- * write routine. The exception to this is the bridge device.  The
- * bridge device is the only device on bus zero (0) that requires any
- * fixup so it is a special case ATM
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -49,9 +36,7 @@ struct sim_reg_op {
 { PCI_DEVFN(device, func), offset, init_op, read_op, write_op,\
 	{0, SIZE_TO_MASK(size)} },
 
-/*
- * All read/write functions are called with pci_config_lock held.
- */
+ 
 static void reg_init(struct sim_dev_reg *reg)
 {
 	pci_direct_conf1.read(0, 1, reg->dev_func, reg->reg, 4,
@@ -96,7 +81,7 @@ static void sata_revid_read(struct sim_dev_reg *reg, u32 *value)
 
 static void reg_noirq_read(struct sim_dev_reg *reg, u32 *value)
 {
-	/* force interrupt pin value to 0 */
+	 
 	*value = reg->sim_reg.value & 0xfff00ff;
 }
 
@@ -178,7 +163,7 @@ static int bridge_read(unsigned int devfn, int reg, int len, u32 *value)
 	int retval = 0;
 
 	switch (reg) {
-	/* Make BARs appear to not request any memory. */
+	 
 	case PCI_BASE_ADDRESS_0:
 	case PCI_BASE_ADDRESS_0 + 1:
 	case PCI_BASE_ADDRESS_0 + 2:
@@ -186,9 +171,7 @@ static int bridge_read(unsigned int devfn, int reg, int len, u32 *value)
 		*value = 0;
 		break;
 
-		/* Since subordinate bus number register is hardwired
-		 * to zero and read only, so do the simulation.
-		 */
+		 
 	case PCI_PRIMARY_BUS:
 		if (len == 4)
 			*value = 0x00010100;
@@ -200,7 +183,7 @@ static int bridge_read(unsigned int devfn, int reg, int len, u32 *value)
 
 	case PCI_MEMORY_BASE:
 	case PCI_MEMORY_LIMIT:
-		/* Get the A/V bridge base address. */
+		 
 		pci_direct_conf1.read(0, 0, devfn,
 				PCI_BASE_ADDRESS_0, 4, &av_bridge_base);
 
@@ -218,16 +201,14 @@ static int bridge_read(unsigned int devfn, int reg, int len, u32 *value)
 		else
 			*value = (av_bridge_limit << 16) | av_bridge_base;
 		break;
-		/* Make prefetchable memory limit smaller than prefetchable
-		 * memory base, so not claim prefetchable memory space.
-		 */
+		 
 	case PCI_PREF_MEMORY_BASE:
 		*value = 0xFFF0;
 		break;
 	case PCI_PREF_MEMORY_LIMIT:
 		*value = 0x0;
 		break;
-		/* Make IO limit smaller than IO base, so not claim IO space. */
+		 
 	case PCI_IO_BASE:
 		*value = 0xF0;
 		break;
@@ -302,7 +283,7 @@ static int ce4100_conf_write(unsigned int seg, unsigned int bus,
 	if (bus == 1 && !ce4100_bus1_write(devfn, reg, len, value))
 		return 0;
 
-	/* Discard writes to A/V bridge BAR. */
+	 
 	if (bus == 0 && PCI_DEVFN(1, 0) == devfn &&
 	    ((reg & ~3) == PCI_BASE_ADDRESS_0))
 		return 0;
@@ -319,6 +300,6 @@ int __init ce4100_pci_init(void)
 {
 	init_sim_regs();
 	raw_pci_ops = &ce4100_pci_conf;
-	/* Indicate caller that it should invoke pci_legacy_init() */
+	 
 	return 1;
 }

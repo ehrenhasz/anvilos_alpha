@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92E__FW__H__
 #define __RTL92E__FW__H__
@@ -29,21 +29,17 @@
 #define H2C_92E_AOAC_GLOBAL_INFO_LEN		2
 #define H2C_92E_AOAC_RSVDPAGE_LOC_LEN		7
 
-/* Fw PS state for RPWM.
-*BIT[2:0] = HW state
-*BIT[3] = Protocol PS state,  1: register active state, 0: register sleep state
-*BIT[4] = sub-state
-*/
+ 
 #define	FW_PS_RF_ON		BIT(2)
 #define	FW_PS_REGISTER_ACTIVE	BIT(3)
 
 #define	FW_PS_ACK		BIT(6)
 #define	FW_PS_TOGGLE		BIT(7)
 
- /* 92E RPWM value*/
- /* BIT[0] = 1: 32k, 0: 40M*/
-#define	FW_PS_CLOCK_OFF		BIT(0)		/* 32k */
-#define	FW_PS_CLOCK_ON		0		/* 40M */
+  
+  
+#define	FW_PS_CLOCK_OFF		BIT(0)		 
+#define	FW_PS_CLOCK_ON		0		 
 
 #define	FW_PS_STATE_MASK		(0x0F)
 #define	FW_PS_STATE_HW_MASK		(0x07)
@@ -56,7 +52,7 @@
 #define	FW_PS_STATE_RF_OFF_92E		(FW_PS_CLOCK_ON)
 #define	FW_PS_STATE_RF_OFF_LOW_PWR	(FW_PS_CLOCK_OFF)
 
-/* For 92E H2C PwrMode Cmd ID 5.*/
+ 
 #define	FW_PWR_STATE_ACTIVE	((FW_PS_RF_ON) | (FW_PS_REGISTER_ACTIVE))
 #define	FW_PWR_STATE_RF_OFF	0
 
@@ -102,7 +98,7 @@ enum rtl8192e_h2c_cmd {
 	H2C_92E_SELECTIVE_SUSPEND_ROF_CMD,
 	H2C_92E_P2P_PS_MODE,
 	H2C_92E_PSD_RESULT,
-	/*Not defined CTW CMD for P2P yet*/
+	 
 	H2C_92E_P2P_PS_CTW_CMD,
 	MAX_92E_H2CCMD
 };
@@ -136,7 +132,7 @@ enum rtl8192e_h2c_cmd {
 #define SET_H2CCMD_RSVDPAGE_LOC_BT_QOS_NULL_DATA(__ph2ccmd, __val)	\
 	*(u8 *)(__ph2ccmd + 4) = __val;
 
-/* _MEDIA_STATUS_RPT_PARM_CMD1 */
+ 
 #define SET_H2CCMD_MSRRPT_PARM_OPMODE(__cmd, __val)		\
 	u8p_replace_bits(__cmd, __val, BIT(0))
 #define SET_H2CCMD_MSRRPT_PARM_MACID_IND(__cmd, __val)		\

@@ -1,29 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Implement functions to access baseband
- *
- * Author: Jerry Chen
- *
- * Date: Jun. 5, 2002
- *
- */
+ 
+ 
 
 #ifndef __BASEBAND_H__
 #define __BASEBAND_H__
 
 #include "device.h"
 
-/*
- * Registers in the BASEBAND
- */
+ 
 #define BB_MAX_CONTEXT_SIZE 256
 
-/*
- * Baseband RF pair definition in eeprom (Bits 6..0)
- */
+ 
 
 #define PREAMBLE_LONG   0
 #define PREAMBLE_SHORT  1
@@ -60,7 +46,7 @@ bool bb_write_embedded(struct vnt_private *priv, unsigned char by_bb_addr,
 void bb_set_short_slot_time(struct vnt_private *priv);
 void bb_set_vga_gain_offset(struct vnt_private *priv, unsigned char by_data);
 
-/* VT3253 Baseband */
+ 
 bool bb_vt3253_init(struct vnt_private *priv);
 void bb_software_reset(struct vnt_private *priv);
 void bb_set_tx_antenna_mode(struct vnt_private *priv,
@@ -69,4 +55,4 @@ void bb_set_rx_antenna_mode(struct vnt_private *priv,
 			    unsigned char by_antenna_mode);
 void bb_set_deep_sleep(struct vnt_private *priv, unsigned char by_local_id);
 
-#endif /* __BASEBAND_H__ */
+#endif  

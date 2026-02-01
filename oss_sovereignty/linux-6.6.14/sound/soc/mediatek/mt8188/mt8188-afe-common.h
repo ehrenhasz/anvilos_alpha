@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8188-afe-common.h  --  MediaTek 8188 audio driver definitions
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- *         Chun-Chia Chiu <chun-chia.chiu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT_8188_AFE_COMMON_H_
 #define _MT_8188_AFE_COMMON_H_
@@ -126,16 +119,16 @@ struct mt8188_afe_private {
 	struct clk_lookup **lookup;
 	struct regmap *topckgen;
 	int pm_runtime_bypass_reg_ctl;
-	spinlock_t afe_ctrl_lock; /* Lock for afe control */
+	spinlock_t afe_ctrl_lock;  
 	struct mtk_dai_memif_irq_priv irq_priv[MT8188_AFE_IRQ_NUM];
 	struct mtkaif_param mtkaif_params;
 
-	/* dai */
+	 
 	void *dai_priv[MT8188_DAI_NUM];
 };
 
 int mt8188_afe_fs_timing(unsigned int rate);
-/* dai register */
+ 
 int mt8188_dai_adda_register(struct mtk_base_afe *afe);
 int mt8188_dai_etdm_register(struct mtk_base_afe *afe);
 int mt8188_dai_pcm_register(struct mtk_base_afe *afe);

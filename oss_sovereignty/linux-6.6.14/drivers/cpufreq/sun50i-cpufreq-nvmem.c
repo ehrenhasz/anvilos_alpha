@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner CPUFreq nvmem based driver
- *
- * The sun50i-cpufreq-nvmem driver reads the efuse value from the SoC to
- * provide the OPP framework with required information.
- *
- * Copyright (C) 2019 Yangtao Li <tiny.windzz@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,12 +18,7 @@
 
 static struct platform_device *cpufreq_dt_pdev, *sun50i_cpufreq_pdev;
 
-/**
- * sun50i_cpufreq_get_efuse() - Determine speed grade from efuse value
- * @versions: Set to the value parsed from efuse
- *
- * Returns 0 if success.
- */
+ 
 static int sun50i_cpufreq_get_efuse(u32 *versions)
 {
 	struct nvmem_cell *speedbin_nvmem;
@@ -68,11 +56,7 @@ static int sun50i_cpufreq_get_efuse(u32 *versions)
 
 	efuse_value = (*speedbin >> NVMEM_SHIFT) & NVMEM_MASK;
 
-	/*
-	 * We treat unexpected efuse values as if the SoC was from
-	 * the slowest bin. Expected efuse values are 1-3, slowest
-	 * to fastest.
-	 */
+	 
 	if (efuse_value >= 1 && efuse_value <= 3)
 		*versions = efuse_value - 1;
 	else
@@ -176,11 +160,7 @@ static const struct of_device_id *sun50i_cpufreq_match_node(void)
 	return match;
 }
 
-/*
- * Since the driver depends on nvmem drivers, which may return EPROBE_DEFER,
- * all the real activity is done in the probe, which may be defered as well.
- * The init here is only registering the driver and the platform device.
- */
+ 
 static int __init sun50i_cpufreq_init(void)
 {
 	const struct of_device_id *match;

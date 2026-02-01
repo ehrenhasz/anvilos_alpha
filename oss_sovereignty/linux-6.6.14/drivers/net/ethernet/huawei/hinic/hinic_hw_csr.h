@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef HINIC_HW_CSR_H
 #define HINIC_HW_CSR_H
 
-/* HW interface registers */
+ 
 #define HINIC_CSR_FUNC_ATTR0_ADDR                       0x0
 #define HINIC_CSR_FUNC_ATTR1_ADDR                       0x4
 #define HINIC_CSR_FUNC_ATTR2_ADDR			0x8
@@ -26,7 +23,7 @@
 #define HINIC_CSR_PPF_ELECTION_ADDR(idx)                \
 	(HINIC_ELECTION_BASE +  (idx) * HINIC_PPF_ELECTION_STRIDE)
 
-/* API CMD registers */
+ 
 #define HINIC_CSR_API_CMD_BASE                          0xF000
 
 #define HINIC_CSR_API_CMD_STRIDE                        0x100
@@ -58,7 +55,7 @@
 #define HINIC_CSR_API_CMD_STATUS_ADDR(idx)              \
 	(HINIC_CSR_API_CMD_BASE + 0x30 + (idx) * HINIC_CSR_API_CMD_STRIDE)
 
-/* MSI-X registers */
+ 
 #define HINIC_CSR_MSIX_CTRL_BASE                        0x2000
 #define HINIC_CSR_MSIX_CNT_BASE                         0x2004
 
@@ -70,7 +67,7 @@
 #define HINIC_CSR_MSIX_CNT_ADDR(idx)                    \
 	(HINIC_CSR_MSIX_CNT_BASE + (idx) * HINIC_CSR_MSIX_STRIDE)
 
-/* EQ registers */
+ 
 #define HINIC_AEQ_MTT_OFF_BASE_ADDR                     0x200
 #define HINIC_CEQ_MTT_OFF_BASE_ADDR                     0x400
 

@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
+ 
 
 #ifndef __QPLIB_TLV_H__
 #define __QPLIB_TLV_H__
 
 struct roce_tlv {
 	struct tlv tlv;
-	u8 total_size; // in units of 16 byte chunks
-	u8 unused[7];  // for 16 byte alignment
+	u8 total_size; 
+	u8 unused[7];  
 };
 
 #define CHUNK_SIZE 16
@@ -33,13 +33,9 @@ static inline void __roce_ext_tlv_prep(struct roce_tlv *rtlv, u16 tlv_type,
 	rtlv->tlv.flags |= flags ? TLV_FLAGS_REQUIRED : 0;
 }
 
-/*
- * TLV size in units of 16 byte chunks
- */
+ 
 #define TLV_SIZE ((sizeof(struct roce_tlv) + 15) / 16)
-/*
- * TLV length in bytes
- */
+ 
 #define TLV_BYTES (TLV_SIZE * 16)
 
 #define HAS_TLV_HEADER(msg) (le16_to_cpu(((struct tlv *)(msg))->cmd_discr) == CMD_DISCR_TLV_ENCAP)
@@ -159,4 +155,4 @@ struct bnxt_qplib_tlv_query_rcc_sb {
 	struct creq_query_roce_cc_resp_sb		base_sb;
 	struct creq_query_roce_cc_gen1_resp_sb_tlv	gen1_sb;
 };
-#endif /* __QPLIB_TLV_H__ */
+#endif  

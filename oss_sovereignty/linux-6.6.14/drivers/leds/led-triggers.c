@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED Triggers Core
- *
- * Copyright 2005-2007 Openedhand Ltd.
- *
- * Author: Richard Purdie <rpurdie@openedhand.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/kernel.h>
@@ -19,13 +13,11 @@
 #include <linux/mm.h>
 #include "leds.h"
 
-/*
- * Nests outside led_cdev->trigger_lock
- */
+ 
 static DECLARE_RWSEM(triggers_list_lock);
 LIST_HEAD(trigger_list);
 
- /* Used by LED Class */
+  
 
 static inline bool
 trigger_relevant(struct led_classdev *led_cdev, struct led_trigger *trig)
@@ -65,7 +57,7 @@ ssize_t led_trigger_write(struct file *filp, struct kobject *kobj,
 			goto unlock;
 		}
 	}
-	/* we come here only if buf matches no trigger */
+	 
 	ret = -EINVAL;
 	up_read(&triggers_list_lock);
 
@@ -116,12 +108,7 @@ static int led_trigger_format(char *buf, size_t size,
 	return len;
 }
 
-/*
- * It was stupid to create 10000 cpu triggers, but we are stuck with it now.
- * Don't make that mistake again. We work around it here by creating binary
- * attribute, which is not limited by length. This is _not_ good design, do not
- * copy it.
- */
+ 
 ssize_t led_trigger_read(struct file *filp, struct kobject *kobj,
 			struct bin_attribute *attr, char *buf,
 			loff_t pos, size_t count)
@@ -154,7 +141,7 @@ ssize_t led_trigger_read(struct file *filp, struct kobject *kobj,
 }
 EXPORT_SYMBOL_GPL(led_trigger_read);
 
-/* Caller must ensure led_cdev->trigger_lock held */
+ 
 int led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
 {
 	char *event = NULL;
@@ -168,13 +155,13 @@ int led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
 	name = trig ? trig->name : "none";
 	event = kasprintf(GFP_KERNEL, "TRIGGER=%s", name);
 
-	/* Remove any existing trigger */
+	 
 	if (led_cdev->trigger) {
 		spin_lock(&led_cdev->trigger->leddev_list_lock);
 		list_del_rcu(&led_cdev->trig_list);
 		spin_unlock(&led_cdev->trigger->leddev_list_lock);
 
-		/* ensure it's no longer visible on the led_cdevs list */
+		 
 		synchronize_rcu();
 
 		cancel_work_sync(&led_cdev->set_brightness_work);
@@ -271,18 +258,17 @@ EXPORT_SYMBOL_GPL(led_trigger_set_default);
 
 void led_trigger_rename_static(const char *name, struct led_trigger *trig)
 {
-	/* new name must be on a temporary string to prevent races */
+	 
 	BUG_ON(name == trig->name);
 
 	down_write(&triggers_list_lock);
-	/* this assumes that trig->name was originaly allocated to
-	 * non constant storage */
+	 
 	strcpy((char *)trig->name, name);
 	up_write(&triggers_list_lock);
 }
 EXPORT_SYMBOL_GPL(led_trigger_rename_static);
 
-/* LED Trigger Interface */
+ 
 
 int led_trigger_register(struct led_trigger *trig)
 {
@@ -293,7 +279,7 @@ int led_trigger_register(struct led_trigger *trig)
 	INIT_LIST_HEAD(&trig->led_cdevs);
 
 	down_write(&triggers_list_lock);
-	/* Make sure the trigger's name isn't already in use */
+	 
 	list_for_each_entry(_trig, &trigger_list, next_trig) {
 		if (!strcmp(_trig->name, trig->name) &&
 		    (trig->trigger_type == _trig->trigger_type ||
@@ -302,11 +288,11 @@ int led_trigger_register(struct led_trigger *trig)
 			return -EEXIST;
 		}
 	}
-	/* Add to the list of led triggers */
+	 
 	list_add_tail(&trig->next_trig, &trigger_list);
 	up_write(&triggers_list_lock);
 
-	/* Register with any LEDs that have this as a default trigger */
+	 
 	down_read(&leds_list_lock);
 	list_for_each_entry(led_cdev, &leds_list, node) {
 		down_write(&led_cdev->trigger_lock);
@@ -331,12 +317,12 @@ void led_trigger_unregister(struct led_trigger *trig)
 	if (list_empty_careful(&trig->next_trig))
 		return;
 
-	/* Remove from the list of led triggers */
+	 
 	down_write(&triggers_list_lock);
 	list_del_init(&trig->next_trig);
 	up_write(&triggers_list_lock);
 
-	/* Remove anyone actively using this trigger */
+	 
 	down_read(&leds_list_lock);
 	list_for_each_entry(led_cdev, &leds_list, node) {
 		down_write(&led_cdev->trigger_lock);
@@ -376,7 +362,7 @@ int devm_led_trigger_register(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_led_trigger_register);
 
-/* Simple LED Trigger Interface */
+ 
 
 void led_trigger_event(struct led_trigger *trig,
 			enum led_brightness brightness)

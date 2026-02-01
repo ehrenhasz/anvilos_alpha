@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for NVIDIA Generic Memory Interface
- *
- * Copyright (C) 2016 Host Mobility AB. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -80,7 +76,7 @@ static void tegra_gmi_disable(struct tegra_gmi *gmi)
 {
 	u32 config;
 
-	/* stop GMI operation */
+	 
 	config = readl(gmi->base + TEGRA_GMI_CONFIG);
 	config &= ~TEGRA_GMI_CONFIG_GO;
 	writel(config, gmi->base + TEGRA_GMI_CONFIG);
@@ -103,11 +99,7 @@ static int tegra_gmi_parse_dt(struct tegra_gmi *gmi)
 		return -ENODEV;
 	}
 
-	/*
-	 * We currently only support one child device due to lack of
-	 * chip-select address decoding. Which means that we only have one
-	 * chip-select line from the GMI controller.
-	 */
+	 
 	if (of_get_child_count(gmi->dev->of_node) > 1)
 		dev_warn(gmi->dev, "only one child device is supported.");
 
@@ -132,21 +124,17 @@ static int tegra_gmi_parse_dt(struct tegra_gmi *gmi)
 	if (of_property_read_bool(child, "nvidia,snor-cs-active-high"))
 		gmi->snor_config |= TEGRA_GMI_CS_ACTIVE_HIGH;
 
-	/* Decode the CS# */
+	 
 	err = of_property_read_u32_array(child, "ranges", ranges, 4);
 	if (err < 0) {
-		/* Invalid binding */
+		 
 		if (err == -EOVERFLOW) {
 			dev_err(gmi->dev,
 				"failed to decode CS: invalid ranges length\n");
 			goto error_cs;
 		}
 
-		/*
-		 * If we reach here it means that the child node has an empty
-		 * ranges or it does not exist at all. Attempt to decode the
-		 * CS# from the reg property instead.
-		 */
+		 
 		err = of_property_read_u32(child, "reg", &property);
 		if (err < 0) {
 			dev_err(gmi->dev,
@@ -157,7 +145,7 @@ static int tegra_gmi_parse_dt(struct tegra_gmi *gmi)
 		property = ranges[1];
 	}
 
-	/* Valid chip selects are CS0-CS7 */
+	 
 	if (property >= TEGRA_GMI_MAX_CHIP_SELECT) {
 		dev_err(gmi->dev, "invalid chip select: %d", property);
 		err = -EINVAL;
@@ -166,7 +154,7 @@ static int tegra_gmi_parse_dt(struct tegra_gmi *gmi)
 
 	gmi->snor_config |= TEGRA_GMI_CS_SELECT(property);
 
-	/* The default values that are provided below are reset values */
+	 
 	if (!of_property_read_u32(child, "nvidia,snor-muxed-width", &property))
 		gmi->snor_timing0 |= TEGRA_GMI_MUXED_WIDTH(property);
 	else

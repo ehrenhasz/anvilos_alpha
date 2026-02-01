@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dsp_hwec.c:
- * builtin mISDN dsp pipeline element for enabling the hw echocanceller
- *
- * Copyright (C) 2007, Nadi Sarrar
- *
- * Nadi Sarrar <nadi@beronet.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>

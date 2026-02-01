@@ -1,26 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <net/pkt_cls.h>
 
 #include "sparx5_main.h"
 #include "sparx5_qos.h"
 
-/* Calculate new base_time based on cycle_time.
- *
- * The hardware requires a base_time that is always in the future.
- * We define threshold_time as current_time + (2 * cycle_time).
- * If base_time is below threshold_time this function recalculates it to be in
- * the interval:
- * threshold_time <= base_time < (threshold_time + cycle_time)
- *
- * A very simple algorithm could be like this:
- * new_base_time = org_base_time + N * cycle_time
- * using the lowest N so (new_base_time >= threshold_time
- */
+ 
 void sparx5_new_base_time(struct sparx5 *sparx5, const u32 cycle_time,
 			  const ktime_t org_base_time, ktime_t *new_base_time)
 {
@@ -37,22 +23,18 @@ void sparx5_new_base_time(struct sparx5 *sparx5, const u32 cycle_time,
 	threshold_time = current_time + (2 * cycle_time);
 	diff_time = threshold_time - new_time;
 	nr_of_cycles = div_u64(diff_time, cycle_time);
-	nr_of_cycles_p2 = 1; /* Use 2^0 as start value */
+	nr_of_cycles_p2 = 1;  
 
 	if (new_time >= threshold_time) {
 		*new_base_time = new_time;
 		return;
 	}
 
-	/* Calculate the smallest power of 2 (nr_of_cycles_p2)
-	 * that is larger than nr_of_cycles.
-	 */
+	 
 	while (nr_of_cycles_p2 < nr_of_cycles)
-		nr_of_cycles_p2 <<= 1; /* Next (higher) power of 2 */
+		nr_of_cycles_p2 <<= 1;  
 
-	/* Add as big chunks (power of 2 * cycle_time)
-	 * as possible for each power of 2
-	 */
+	 
 	while (nr_of_cycles_p2) {
 		if (new_time < threshold_time) {
 			new_time += cycle_time * nr_of_cycles_p2;
@@ -60,18 +42,18 @@ void sparx5_new_base_time(struct sparx5 *sparx5, const u32 cycle_time,
 				new_time += cycle_time * nr_of_cycles_p2;
 			new_time -= cycle_time * nr_of_cycles_p2;
 		}
-		nr_of_cycles_p2 >>= 1; /* Next (lower) power of 2 */
+		nr_of_cycles_p2 >>= 1;  
 	}
 	new_time += cycle_time;
 	*new_base_time = new_time;
 }
 
-/* Max rates for leak groups */
+ 
 static const u32 spx5_hsch_max_group_rate[SPX5_HSCH_LEAK_GRP_CNT] = {
-	1048568, /*  1.049 Gbps */
-	2621420, /*  2.621 Gbps */
-	10485680, /* 10.486 Gbps */
-	26214200 /* 26.214 Gbps */
+	1048568,  
+	2621420,  
+	10485680,  
+	26214200  
 };
 
 static struct sparx5_layer layers[SPX5_HSCH_LAYER_CNT];
@@ -178,10 +160,10 @@ static int sparx5_lg_get_group_by_index(struct sparx5 *sparx5, u32 layer,
 
 			if (itr == idx) {
 				*group = i;
-				return 0; /* Found it */
+				return 0;  
 			}
 			if (itr == next)
-				break; /* Was not found */
+				break;  
 
 			itr = next;
 		}
@@ -221,10 +203,10 @@ static int sparx5_lg_get_adjacent(struct sparx5 *sparx5, u32 layer, u32 group,
 		*next = sparx5_lg_get_next(sparx5, layer, group, itr);
 
 		if (itr == idx)
-			return 0; /* Found it */
+			return 0;  
 
 		if (itr == *next)
-			return -1; /* Was not found */
+			return -1;  
 
 		*prev = itr;
 		itr = *next;
@@ -238,26 +220,26 @@ static int sparx5_lg_conf_set(struct sparx5 *sparx5, u32 layer, u32 group,
 {
 	u32 leak_time = layers[layer].leak_groups[group].leak_time;
 
-	/* Stop leaking */
+	 
 	sparx5_lg_disable(sparx5, layer, group);
 
 	if (empty)
 		return 0;
 
-	/* Select layer */
+	 
 	spx5_rmw(HSCH_HSCH_CFG_CFG_HSCH_LAYER_SET(layer),
 		 HSCH_HSCH_CFG_CFG_HSCH_LAYER, sparx5, HSCH_HSCH_CFG_CFG);
 
-	/* Link elements */
+	 
 	spx5_wr(HSCH_SE_CONNECT_SE_LEAK_LINK_SET(idx_next), sparx5,
 		HSCH_SE_CONNECT(idx));
 
-	/* Set the first element. */
+	 
 	spx5_rmw(HSCH_HSCH_LEAK_CFG_LEAK_FIRST_SET(se_first),
 		 HSCH_HSCH_LEAK_CFG_LEAK_FIRST, sparx5,
 		 HSCH_HSCH_LEAK_CFG(layer, group));
 
-	/* Start leaking */
+	 
 	sparx5_lg_enable(sparx5, layer, group, leak_time);
 
 	return 0;
@@ -268,22 +250,22 @@ static int sparx5_lg_del(struct sparx5 *sparx5, u32 layer, u32 group, u32 idx)
 	u32 first, next, prev;
 	bool empty = false;
 
-	/* idx *must* be present in the leak group */
+	 
 	WARN_ON(sparx5_lg_get_adjacent(sparx5, layer, group, idx, &prev, &next,
 				       &first) < 0);
 
 	if (sparx5_lg_is_singular(sparx5, layer, group)) {
 		empty = true;
 	} else if (sparx5_lg_is_last(sparx5, layer, group, idx)) {
-		/* idx is removed, prev is now last */
+		 
 		idx = prev;
 		next = prev;
 	} else if (sparx5_lg_is_first(sparx5, layer, group, idx)) {
-		/* idx is removed and points to itself, first is next */
+		 
 		first = next;
 		next = idx;
 	} else {
-		/* Next is not touched */
+		 
 		idx = prev;
 	}
 
@@ -299,18 +281,18 @@ static int sparx5_lg_add(struct sparx5 *sparx5, u32 layer, u32 new_group,
 	pr_debug("ADD: layer: %d, new_group: %d, idx: %d", layer, new_group,
 		 idx);
 
-	/* Is this SE already shaping ? */
+	 
 	if (sparx5_lg_get_group_by_index(sparx5, layer, idx, &old_group) >= 0) {
 		if (old_group != new_group) {
-			/* Delete from old group */
+			 
 			sparx5_lg_del(sparx5, layer, old_group, idx);
 		} else {
-			/* Nothing to do here */
+			 
 			return 0;
 		}
 	}
 
-	/* We always add to head of the list */
+	 
 	first = idx;
 
 	if (sparx5_lg_is_empty(sparx5, layer, new_group))
@@ -334,20 +316,20 @@ static int sparx5_shaper_conf_set(struct sparx5_port *port,
 	else
 		sparx5_lg_action = &sparx5_lg_add;
 
-	/* Select layer */
+	 
 	spx5_rmw(HSCH_HSCH_CFG_CFG_HSCH_LAYER_SET(layer),
 		 HSCH_HSCH_CFG_CFG_HSCH_LAYER, sparx5, HSCH_HSCH_CFG_CFG);
 
-	/* Set frame mode */
+	 
 	spx5_rmw(HSCH_SE_CFG_SE_FRM_MODE_SET(sh->mode), HSCH_SE_CFG_SE_FRM_MODE,
 		 sparx5, HSCH_SE_CFG(idx));
 
-	/* Set committed rate and burst */
+	 
 	spx5_wr(HSCH_CIR_CFG_CIR_RATE_SET(sh->rate) |
 			HSCH_CIR_CFG_CIR_BURST_SET(sh->burst),
 		sparx5, HSCH_CIR_CFG(idx));
 
-	/* This has to be done after the shaper configuration has been set */
+	 
 	sparx5_lg_action(sparx5, layer, group, idx);
 
 	return 0;
@@ -369,7 +351,7 @@ static int sparx5_dwrr_conf_set(struct sparx5_port *port,
 		 HSCH_HSCH_CFG_CFG_HSCH_LAYER | HSCH_HSCH_CFG_CFG_CFG_SE_IDX,
 		 port->sparx5, HSCH_HSCH_CFG_CFG);
 
-	/* Number of *lower* indexes that are arbitrated dwrr */
+	 
 	spx5_rmw(HSCH_SE_CFG_SE_DWRR_CNT_SET(dwrr->count),
 		 HSCH_SE_CFG_SE_DWRR_CNT, port->sparx5,
 		 HSCH_SE_CFG(port->portno));
@@ -399,38 +381,21 @@ static int sparx5_leak_groups_init(struct sparx5 *sparx5)
 			lg = &layer->leak_groups[ii];
 			lg->max_rate = spx5_hsch_max_group_rate[ii];
 
-			/* Calculate the leak time in us, to serve a maximum
-			 * rate of 'max_rate' for this group
-			 */
+			 
 			leak_time_us = (SPX5_SE_RATE_MAX * 1000) / lg->max_rate;
 
-			/* Hardware wants leak time in ns */
+			 
 			lg->leak_time = 1000 * leak_time_us;
 
-			/* Calculate resolution */
+			 
 			lg->resolution = 1000 / leak_time_us;
 
-			/* Maximum number of shapers that can be served by
-			 * this leak group
-			 */
+			 
 			lg->max_ses = (1000 * leak_time_us) / sys_clk_per_100ps;
 
-			/* Example:
-			 * Wanted bandwidth is 100Mbit:
-			 *
-			 * 100 mbps can be served by leak group zero.
-			 *
-			 * leak_time is 125000 ns.
-			 * resolution is: 8
-			 *
-			 * cir          = 100000 / 8 = 12500
-			 * leaks_pr_sec = 125000 / 10^9 = 8000
-			 * bw           = 12500 * 8000 = 10^8 (100 Mbit)
-			 */
+			 
 
-			/* Disable by default - this also indicates an empty
-			 * leak group
-			 */
+			 
 			sparx5_lg_disable(sparx5, i, ii);
 		}
 	}
@@ -498,7 +463,7 @@ int sparx5_tc_tbf_add(struct sparx5_port *port,
 	struct sparx5_lg *lg;
 	u32 group;
 
-	/* Find suitable group for this se */
+	 
 	if (sparx5_lg_get_group_by_rate(layer, sh.rate, &group) < 0) {
 		pr_debug("Could not find leak group for se with rate: %d",
 			 sh.rate);
@@ -512,7 +477,7 @@ int sparx5_tc_tbf_add(struct sparx5_port *port,
 	if (sh.rate < SPX5_SE_RATE_MIN || sh.burst < SPX5_SE_BURST_MIN)
 		return -EINVAL;
 
-	/* Calculate committed rate and burst */
+	 
 	sh.rate = DIV_ROUND_UP(sh.rate, lg->resolution);
 	sh.burst = DIV_ROUND_UP(sh.burst, SPX5_SE_BURST_UNIT);
 
@@ -536,11 +501,11 @@ int sparx5_tc_ets_add(struct sparx5_port *port,
 		      struct tc_ets_qopt_offload_replace_params *params)
 {
 	struct sparx5_dwrr dwrr = {0};
-	/* Minimum weight for each iteration */
+	 
 	unsigned int w_min = 100;
 	int i;
 
-	/* Find minimum weight for all dwrr bands */
+	 
 	for (i = 0; i < SPX5_PRIOS; i++) {
 		if (params->quanta[i] == 0)
 			continue;
@@ -548,19 +513,13 @@ int sparx5_tc_ets_add(struct sparx5_port *port,
 	}
 
 	for (i = 0; i < SPX5_PRIOS; i++) {
-		/* Strict band; skip */
+		 
 		if (params->quanta[i] == 0)
 			continue;
 
 		dwrr.count++;
 
-		/* On the sparx5, bands with higher indexes are preferred and
-		 * arbitrated strict. Strict bands are put in the lower indexes,
-		 * by tc, so we reverse the bands here.
-		 *
-		 * Also convert the weight to something the hardware
-		 * understands.
-		 */
+		 
 		dwrr.cost[SPX5_PRIOS - i - 1] =
 			sparx5_weight_to_hw_cost(w_min, params->weights[i]);
 	}

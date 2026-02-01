@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_MDP3_VPU_H__
 #define __MTK_MDP3_VPU_H__
@@ -27,8 +24,8 @@ enum mdp_ipi_result {
 struct mdp_ipi_init_msg {
 	u32	status;
 	u64	drv_data;
-	u32	work_addr;	/* [in] working buffer address */
-	u32	work_size;	/* [in] working buffer size */
+	u32	work_addr;	 
+	u32	work_size;	 
 } __packed;
 
 struct mdp_ipi_deinit_msg {
@@ -38,7 +35,7 @@ struct mdp_ipi_deinit_msg {
 } __packed;
 
 struct mdp_vpu_dev {
-	/* synchronization protect for accessing vpu working buffer info */
+	 
 	struct mutex		*lock;
 	struct mtk_scp		*scp;
 	struct completion	ipi_acked;
@@ -56,8 +53,8 @@ struct mdp_vpu_dev {
 
 void mdp_vpu_shared_mem_free(struct mdp_vpu_dev *vpu);
 int mdp_vpu_dev_init(struct mdp_vpu_dev *vpu, struct mtk_scp *scp,
-		     struct mutex *lock /* for sync */);
+		     struct mutex *lock  );
 int mdp_vpu_dev_deinit(struct mdp_vpu_dev *vpu);
 int mdp_vpu_process(struct mdp_vpu_dev *vpu, struct img_ipi_frameparam *param);
 
-#endif  /* __MTK_MDP3_VPU_H__ */
+#endif   

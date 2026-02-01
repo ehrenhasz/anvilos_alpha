@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xfrm4_policy.c
- *
- * Changes:
- *	Kazunori MIYAZAWA @USAGI
- * 	YOSHIFUJI Hideaki @USAGI
- *		Split up af-specific portion
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -77,8 +69,7 @@ static int xfrm4_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 	xdst->u.dst.dev = dev;
 	netdev_hold(dev, &xdst->u.dst.dev_tracker, GFP_ATOMIC);
 
-	/* Sheit... I remember I did this right. Apparently,
-	 * it was magically lost, so this code needs audit */
+	 
 	xdst->u.rt.rt_is_input = rt->rt_is_input;
 	xdst->u.rt.rt_flags = rt->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST |
 					      RTCF_LOCAL);
@@ -196,7 +187,7 @@ static __net_exit void xfrm4_net_sysctl_exit(struct net *net)
 	if (!net_eq(net, &init_net))
 		kfree(table);
 }
-#else /* CONFIG_SYSCTL */
+#else  
 static inline int xfrm4_net_sysctl_init(struct net *net)
 {
 	return 0;

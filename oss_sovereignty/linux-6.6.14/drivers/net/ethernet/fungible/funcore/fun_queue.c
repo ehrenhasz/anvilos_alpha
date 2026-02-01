@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+
 
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
@@ -11,11 +11,7 @@
 #include "fun_dev.h"
 #include "fun_queue.h"
 
-/* Allocate memory for a queue. This includes the memory for the HW descriptor
- * ring, an optional 64b HW write-back area, and an optional SW state ring.
- * Returns the virtual and DMA addresses of the HW ring, the VA of the SW ring,
- * and the VA of the write-back area.
- */
+ 
 void *fun_alloc_ring_mem(struct device *dma_dev, size_t depth,
 			 size_t hw_desc_sz, size_t sw_desc_sz, bool wb,
 			 int numa_node, dma_addr_t *dma_addr, void **sw_va,
@@ -28,7 +24,7 @@ void *fun_alloc_ring_mem(struct device *dma_dev, size_t depth,
 	if (numa_node == NUMA_NO_NODE)
 		numa_node = dev_node;
 
-	/* Place optional write-back area at end of descriptor ring. */
+	 
 	dma_sz = hw_desc_sz * depth;
 	if (wb)
 		dma_sz += sizeof(u64);
@@ -68,10 +64,7 @@ void fun_free_ring_mem(struct device *dma_dev, size_t depth, size_t hw_desc_sz,
 }
 EXPORT_SYMBOL_GPL(fun_free_ring_mem);
 
-/* Prepare and issue an admin command to create an SQ on the device with the
- * provided parameters. If the queue ID is auto-allocated by the device it is
- * returned in *sqidp.
- */
+ 
 int fun_sq_create(struct fun_dev *fdev, u16 flags, u32 sqid, u32 cqid,
 		  u8 sqe_size_log2, u32 sq_depth, dma_addr_t dma_addr,
 		  u8 coal_nentries, u8 coal_usec, u32 irq_num,
@@ -118,10 +111,7 @@ int fun_sq_create(struct fun_dev *fdev, u16 flags, u32 sqid, u32 cqid,
 }
 EXPORT_SYMBOL_GPL(fun_sq_create);
 
-/* Prepare and issue an admin command to create a CQ on the device with the
- * provided parameters. If the queue ID is auto-allocated by the device it is
- * returned in *cqidp.
- */
+ 
 int fun_cq_create(struct fun_dev *fdev, u16 flags, u32 cqid, u32 rqid,
 		  u8 cqe_size_log2, u32 cq_depth, dma_addr_t dma_addr,
 		  u16 headroom, u16 tailroom, u8 coal_nentries, u8 coal_usec,
@@ -225,11 +215,7 @@ static void fun_rq_update_pos(struct fun_queue *funq, int buf_offset)
 	funq->rq_buf_offset = buf_offset;
 }
 
-/* Given a command response with data scattered across >= 1 RQ buffers return
- * a pointer to a contiguous buffer containing all the data. If the data is in
- * one RQ buffer the start address within that buffer is returned, otherwise a
- * new buffer is allocated and the data is gathered into it.
- */
+ 
 static void *fun_data_from_rq(struct fun_queue *funq,
 			      const struct fun_rsp_common *rsp, bool *need_free)
 {
@@ -254,12 +240,10 @@ static void *fun_data_from_rq(struct fun_queue *funq,
 		return page_address(rqinfo->page) + bufoff;
 	}
 
-	/* For scattered completions gather the fragments into one buffer. */
+	 
 
 	data = kmalloc(total_len, GFP_ATOMIC);
-	/* NULL is OK here. In case of failure we still need to consume the data
-	 * for proper buffer accounting but indicate an error in the response.
-	 */
+	 
 	if (likely(data))
 		*need_free = true;
 
@@ -299,7 +283,7 @@ unsigned int __fun_process_cq(struct fun_queue *funq, unsigned int max)
 		if ((sf_p & 1) != funq->cq_phase)
 			break;
 
-		/* ensure the phase tag is read before other CQE fields */
+		 
 		dma_rmb();
 
 		if (++funq->cq_head == funq->cq_depth) {
@@ -380,7 +364,7 @@ static int fun_alloc_rqes(struct fun_queue *funq)
 	return funq->rqes ? 0 : -ENOMEM;
 }
 
-/* Free a queue's structures. */
+ 
 void fun_free_queue(struct fun_queue *funq)
 {
 	struct device *dev = funq->fdev->dev;
@@ -401,7 +385,7 @@ void fun_free_queue(struct fun_queue *funq)
 	kfree(funq);
 }
 
-/* Allocate and initialize a funq's structures. */
+ 
 struct fun_queue *fun_alloc_queue(struct fun_dev *fdev, int qid,
 				  const struct fun_queue_alloc_req *req)
 {
@@ -415,15 +399,15 @@ struct fun_queue *fun_alloc_queue(struct fun_dev *fdev, int qid,
 
 	funq->qid = qid;
 
-	/* Initial CQ/SQ/RQ ids */
+	 
 	if (req->rq_depth) {
 		funq->cqid = 2 * qid;
 		if (funq->qid) {
-			/* I/O Q: use rqid = cqid, sqid = +1 */
+			 
 			funq->rqid = funq->cqid;
 			funq->sqid = funq->rqid + 1;
 		} else {
-			/* Admin Q: sqid is always 0, use ID 1 for RQ */
+			 
 			funq->sqid = 0;
 			funq->rqid = 1;
 		}
@@ -467,9 +451,7 @@ struct fun_queue *fun_alloc_queue(struct fun_dev *fdev, int qid,
 	funq->cq_vector = -1;
 	funq->cqe_info_offset = (1 << funq->cqe_size_log2) - sizeof(struct fun_cqe_info);
 
-	/* SQ/CQ 0 are implicitly created, assign their doorbells now.
-	 * Other queues are assigned doorbells at their explicit creation.
-	 */
+	 
 	if (funq->sqid == 0)
 		funq->sq_db = fun_sq_db_addr(fdev, 0);
 	if (funq->cqid == 0)
@@ -482,7 +464,7 @@ free_funq:
 	return NULL;
 }
 
-/* Create a funq's CQ on the device. */
+ 
 static int fun_create_cq(struct fun_queue *funq)
 {
 	struct fun_dev *fdev = funq->fdev;
@@ -502,7 +484,7 @@ static int fun_create_cq(struct fun_queue *funq)
 	return rc;
 }
 
-/* Create a funq's SQ on the device. */
+ 
 static int fun_create_sq(struct fun_queue *funq)
 {
 	struct fun_dev *fdev = funq->fdev;
@@ -519,7 +501,7 @@ static int fun_create_sq(struct fun_queue *funq)
 	return rc;
 }
 
-/* Create a funq's RQ on the device. */
+ 
 int fun_create_rq(struct fun_queue *funq)
 {
 	struct fun_dev *fdev = funq->fdev;
@@ -561,7 +543,7 @@ int fun_request_irq(struct fun_queue *funq, const char *devname,
 	return rc;
 }
 
-/* Create all component queues of a funq  on the device. */
+ 
 int fun_create_queue(struct fun_queue *funq)
 {
 	int rc;

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2014 Mahesh Bandewar <maheshb@google.com>
- */
+
+ 
 
 #include "ipvlan.h"
 
@@ -180,7 +179,7 @@ void *ipvlan_get_L3_hdr(struct ipvl_port *port, struct sk_buff *skb, int *type)
 
 		*type = IPVL_IPV6;
 		lyr3h = ip6h;
-		/* Only Neighbour Solicitation pkts need different treatment */
+		 
 		if (ipv6_addr_any(&ip6h->saddr) &&
 		    ip6h->nexthdr == NEXTHDR_ICMP) {
 			struct icmp6hdr	*icmph;
@@ -192,7 +191,7 @@ void *ipvlan_get_L3_hdr(struct ipvl_port *port, struct sk_buff *skb, int *type)
 			icmph = (struct icmp6hdr *)(ip6h + 1);
 
 			if (icmph->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
-				/* Need to access the ipv6 address in body */
+				 
 				if (unlikely(!pskb_may_pull(skb, sizeof(*ip6h) + sizeof(*icmph)
 						+ sizeof(struct in6_addr))))
 					return NULL;
@@ -281,7 +280,7 @@ void ipvlan_process_multicast(struct work_struct *work)
 		rcu_read_unlock();
 
 		if (tx_pkt) {
-			/* If the packet originated here, send it out. */
+			 
 			skb->dev = port->dev;
 			skb->pkt_type = pkt_type;
 			dev_queue_xmit(skb);
@@ -319,9 +318,7 @@ static int ipvlan_rcv_frame(struct ipvl_addr *addr, struct sk_buff **pskb,
 	struct sk_buff *skb = *pskb;
 
 	len = skb->len + ETH_HLEN;
-	/* Only packets exchanged between two local slaves need to have
-	 * device-up check as well as skb-share check.
-	 */
+	 
 	if (local) {
 		if (unlikely(!(dev->flags & IFF_UP))) {
 			kfree_skb(skb);
@@ -370,9 +367,7 @@ struct ipvl_addr *ipvlan_addr_lookup(struct ipvl_port *port, void *lyr3h,
 		struct nd_msg *ndmh;
 		struct in6_addr *i6addr;
 
-		/* Make sure that the NeighborSolicitation ICMPv6 packets
-		 * are handled to avoid DAD issue.
-		 */
+		 
 		ndmh = (struct nd_msg *)lyr3h;
 		if (ndmh->icmph.icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
 			i6addr = &ndmh->target;
@@ -512,13 +507,9 @@ static int ipvlan_process_outbound(struct sk_buff *skb)
 {
 	int ret = NET_XMIT_DROP;
 
-	/* The ipvlan is a pseudo-L2 device, so the packets that we receive
-	 * will have L2; which need to discarded and processed further
-	 * in the net-ns of the main-device.
-	 */
+	 
 	if (skb_mac_header_was_set(skb)) {
-		/* In this mode we dont care about
-		 * multicast and broadcast traffic */
+		 
 		struct ethhdr *ethh = eth_hdr(skb);
 
 		if (is_multicast_ether_addr(ethh->h_dest)) {
@@ -555,11 +546,7 @@ static void ipvlan_multicast_enqueue(struct ipvl_port *port,
 		return;
 	}
 
-	/* Record that the deferred packet is from TX or RX path. By
-	 * looking at mac-addresses on packet will lead to erronus decisions.
-	 * (This would be true for a loopback-mode on master device or a
-	 * hair-pin mode of the switch.)
-	 */
+	 
 	IPVL_SKB_CB(skb)->tx_pkt = tx_pkt;
 
 	spin_lock(&port->backlog.lock);
@@ -628,11 +615,7 @@ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
 		if (!skb)
 			return NET_XMIT_DROP;
 
-		/* Packet definitely does not belong to any of the
-		 * virtual devices, but the dest is local. So forward
-		 * the skb for the main-dev. At the RX side we just return
-		 * RX_PASS for it to be processed further on the stack.
-		 */
+		 
 		dev_forward_skb(ipvlan->phy_dev, skb);
 		return NET_XMIT_SUCCESS;
 
@@ -668,7 +651,7 @@ int ipvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
 		return ipvlan_xmit_mode_l3(skb, dev);
 	}
 
-	/* Should not reach here */
+	 
 	WARN_ONCE(true, "%s called for mode = [%x]\n", __func__, port->mode);
 out:
 	kfree_skb(skb);
@@ -727,19 +710,14 @@ static rx_handler_result_t ipvlan_handle_mode_l2(struct sk_buff **pskb,
 		if (ipvlan_external_frame(skb, port)) {
 			struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
 
-			/* External frames are queued for device local
-			 * distribution, but a copy is given to master
-			 * straight away to avoid sending duplicates later
-			 * when work-queue processes this frame. This is
-			 * achieved by returning RX_HANDLER_PASS.
-			 */
+			 
 			if (nskb) {
 				ipvlan_skb_crossing_ns(nskb, NULL);
 				ipvlan_multicast_enqueue(port, nskb, false);
 			}
 		}
 	} else {
-		/* Perform like l3 mode for non-multicast packet */
+		 
 		ret = ipvlan_handle_mode_l3(pskb, port);
 	}
 
@@ -765,7 +743,7 @@ rx_handler_result_t ipvlan_handle_frame(struct sk_buff **pskb)
 #endif
 	}
 
-	/* Should not reach here */
+	 
 	WARN_ONCE(true, "%s called for mode = [%x]\n", __func__, port->mode);
 	kfree_skb(skb);
 	return RX_HANDLER_CONSUMED;

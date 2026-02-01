@@ -1,30 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*---------------------------------------------------------------------------+
- |  reg_divide.c                                                             |
- |                                                                           |
- | Divide one FPU_REG by another and put the result in a destination FPU_REG.|
- |                                                                           |
- | Copyright (C) 1996                                                        |
- |                  W. Metzenthen, 22 Parker St, Ormond, Vic 3163, Australia |
- |                  E-mail   billm@jacobi.maths.monash.edu.au                |
- |                                                                           |
- |    Return value is the tag of the answer, or-ed with FPU_Exception if     |
- |    one was raised, or -1 on internal error.                               |
- |                                                                           |
- +---------------------------------------------------------------------------*/
 
-/*---------------------------------------------------------------------------+
- | The destination may be any FPU_REG, including one of the source FPU_REGs. |
- +---------------------------------------------------------------------------*/
+ 
+
+ 
 
 #include "exception.h"
 #include "reg_constant.h"
 #include "fpu_emu.h"
 #include "fpu_system.h"
 
-/*
-  Divide one register by another and put the result into a third register.
-  */
+ 
 int FPU_div(int flags, int rm, int control_w)
 {
 	FPU_REG x, y;
@@ -73,7 +57,7 @@ int FPU_div(int flags, int rm, int control_w)
 	saved_sign = getsign(dest);
 
 	if (!(taga | tagb)) {
-		/* Both regs Valid, this should be the most common case. */
+		 
 		reg_copy(a, &x);
 		reg_copy(b, &y);
 		setpositive(&x);
@@ -108,26 +92,26 @@ int FPU_div(int flags, int rm, int control_w)
 		return tag;
 	} else if ((taga <= TW_Denormal) && (tagb <= TW_Denormal)) {
 		if (tagb != TAG_Zero) {
-			/* Want to find Zero/Valid */
+			 
 			if (tagb == TW_Denormal) {
 				if (denormal_operand() < 0)
 					return FPU_Exception;
 			}
 
-			/* The result is zero. */
+			 
 			FPU_copy_to_regi(&CONST_Z, TAG_Zero, deststnr);
 			setsign(dest, sign);
 			return TAG_Zero;
 		}
-		/* We have an exception condition, either 0/0 or Valid/Zero. */
+		 
 		if (taga == TAG_Zero) {
-			/* 0/0 */
+			 
 			return arith_invalid(deststnr);
 		}
-		/* Valid/Zero */
+		 
 		return FPU_divide_by_zero(deststnr, sign);
 	}
-	/* Must have infinities, NaNs, etc */
+	 
 	else if ((taga == TW_NaN) || (tagb == TW_NaN)) {
 		if (flags & LOADED)
 			return real_2op_NaN((FPU_REG *) rm, flags & 0x0f, 0,
@@ -150,15 +134,14 @@ int FPU_div(int flags, int rm, int control_w)
 		}
 	} else if (taga == TW_Infinity) {
 		if (tagb == TW_Infinity) {
-			/* infinity/infinity */
+			 
 			return arith_invalid(deststnr);
 		} else {
-			/* tagb must be Valid or Zero */
+			 
 			if ((tagb == TW_Denormal) && (denormal_operand() < 0))
 				return FPU_Exception;
 
-			/* Infinity divided by Zero or Valid does
-			   not raise and exception, but returns Infinity */
+			 
 			FPU_copy_to_regi(a, TAG_Special, deststnr);
 			setsign(dest, sign);
 			return taga;
@@ -167,7 +150,7 @@ int FPU_div(int flags, int rm, int control_w)
 		if ((taga == TW_Denormal) && (denormal_operand() < 0))
 			return FPU_Exception;
 
-		/* The result is zero. */
+		 
 		FPU_copy_to_regi(&CONST_Z, TAG_Zero, deststnr);
 		setsign(dest, sign);
 		return TAG_Zero;
@@ -177,7 +160,7 @@ int FPU_div(int flags, int rm, int control_w)
 		EXCEPTION(EX_INTERNAL | 0x102);
 		return FPU_Exception;
 	}
-#endif /* PARANOID */
+#endif  
 
 	return 0;
 }

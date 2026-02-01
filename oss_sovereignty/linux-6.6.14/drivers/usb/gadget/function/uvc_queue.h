@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _UVC_QUEUE_H_
 #define _UVC_QUEUE_H_
 
@@ -11,14 +11,12 @@
 struct file;
 struct mutex;
 
-/* Maximum frame size in bytes, for sanity checking. */
+ 
 #define UVC_MAX_FRAME_SIZE	(16*1024*1024)
-/* Maximum number of video buffers. */
+ 
 #define UVC_MAX_VIDEO_BUFFERS	32
 
-/* ------------------------------------------------------------------------
- * Structures.
- */
+ 
 
 enum uvc_buffer_state {
 	UVC_BUF_STATE_IDLE	= 0,
@@ -54,7 +52,7 @@ struct uvc_video_queue {
 
 	bool use_sg;
 
-	spinlock_t irqlock;	/* Protects flags and irqqueue */
+	spinlock_t irqlock;	 
 	struct list_head irqqueue;
 };
 
@@ -86,7 +84,7 @@ int uvcg_queue_mmap(struct uvc_video_queue *queue, struct vm_area_struct *vma);
 #ifndef CONFIG_MMU
 unsigned long uvcg_queue_get_unmapped_area(struct uvc_video_queue *queue,
 					   unsigned long pgoff);
-#endif /* CONFIG_MMU */
+#endif  
 
 void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect);
 
@@ -97,5 +95,5 @@ void uvcg_complete_buffer(struct uvc_video_queue *queue,
 
 struct uvc_buffer *uvcg_queue_head(struct uvc_video_queue *queue);
 
-#endif /* _UVC_QUEUE_H_ */
+#endif  
 

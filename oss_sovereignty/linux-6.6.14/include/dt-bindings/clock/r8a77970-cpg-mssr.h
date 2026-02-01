@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+
- *
- * Copyright (C) 2016 Renesas Electronics Corp.
- * Copyright (C) 2017 Cogent Embedded, Inc.
- */
+ 
 #ifndef __DT_BINDINGS_CLOCK_R8A77970_CPG_MSSR_H__
 #define __DT_BINDINGS_CLOCK_R8A77970_CPG_MSSR_H__
 
 #include <dt-bindings/clock/renesas-cpg-mssr.h>
 
-/* r8a77970 CPG Core Clocks */
+ 
 #define R8A77970_CLK_Z2			0
 #define R8A77970_CLK_ZR			1
 #define R8A77970_CLK_ZTR		2
@@ -41,4 +37,4 @@
 #define R8A77970_CLK_R			29
 #define R8A77970_CLK_OSC		30
 
-#endif /* __DT_BINDINGS_CLOCK_R8A77970_CPG_MSSR_H__ */
+#endif  

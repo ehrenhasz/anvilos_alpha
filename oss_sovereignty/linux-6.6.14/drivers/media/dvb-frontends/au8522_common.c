@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    Auvitek AU8522 QAM/8VSB demodulator driver
 
-    Copyright (C) 2008 Steven Toth <stoth@linuxtv.org>
-    Copyright (C) 2008 Devin Heitmueller <dheitmueller@linuxtv.org>
-    Copyright (C) 2005-2008 Auvitek International, Ltd.
-    Copyright (C) 2012 Michael Krufky <mkrufky@linuxtv.org>
-
-
-*/
+ 
 
 #include <linux/i2c.h>
 #include <media/dvb_frontend.h>
@@ -21,12 +12,11 @@ static int debug;
 	 printk(arg);\
   } while (0)
 
-/* Despite the name "hybrid_tuner", the framework works just as well for
-   hybrid demodulators as well... */
+ 
 static LIST_HEAD(hybrid_tuner_instance_list);
 static DEFINE_MUTEX(au8522_list_mutex);
 
-/* 16 bit registers, 8 bit values */
+ 
 int au8522_writereg(struct au8522_state *state, u16 reg, u8 data)
 {
 	int ret;
@@ -73,10 +63,7 @@ int au8522_i2c_gate_ctrl(struct dvb_frontend *fe, int enable)
 	dprintk("%s(%d)\n", __func__, enable);
 
 	if (state->operational_mode == AU8522_ANALOG_MODE) {
-		/* We're being asked to manage the gate even though we're
-		   not in digital mode.  This can occur if we get switched
-		   over to analog mode before the dvb_frontend kernel thread
-		   has completely shutdown */
+		 
 		return 0;
 	}
 
@@ -100,8 +87,7 @@ int au8522_analog_i2c_gate_ctrl(struct dvb_frontend *fe, int enable)
 }
 EXPORT_SYMBOL(au8522_analog_i2c_gate_ctrl);
 
-/* Reset the demod hardware and reset all of the configuration registers
-   to a default state. */
+ 
 int au8522_get_state(struct au8522_state **state, struct i2c_adapter *i2c,
 		     u8 client_address)
 {
@@ -131,7 +117,7 @@ static int au8522_led_gpio_enable(struct au8522_state *state, int onoff)
 	struct au8522_led_config *led_config = state->config.led_cfg;
 	u8 val;
 
-	/* bail out if we can't control an LED */
+	 
 	if (!led_config || !led_config->gpio_output ||
 	    !led_config->gpio_output_enable || !led_config->gpio_output_disable)
 		return 0;
@@ -139,11 +125,11 @@ static int au8522_led_gpio_enable(struct au8522_state *state, int onoff)
 	val = au8522_readreg(state, 0x4000 |
 			     (led_config->gpio_output & ~0xc000));
 	if (onoff) {
-		/* enable GPIO output */
+		 
 		val &= ~((led_config->gpio_output_enable >> 8) & 0xff);
 		val |=  (led_config->gpio_output_enable & 0xff);
 	} else {
-		/* disable GPIO output */
+		 
 		val &= ~((led_config->gpio_output_disable >> 8) & 0xff);
 		val |=  (led_config->gpio_output_disable & 0xff);
 	}
@@ -151,30 +137,26 @@ static int au8522_led_gpio_enable(struct au8522_state *state, int onoff)
 			       (led_config->gpio_output & ~0xc000), val);
 }
 
-/* led = 0 | off
- * led = 1 | signal ok
- * led = 2 | signal strong
- * led < 0 | only light led if leds are currently off
- */
+ 
 int au8522_led_ctrl(struct au8522_state *state, int led)
 {
 	struct au8522_led_config *led_config = state->config.led_cfg;
 	int i, ret = 0;
 
-	/* bail out if we can't control an LED */
+	 
 	if (!led_config || !led_config->gpio_leds ||
 	    !led_config->num_led_states || !led_config->led_states)
 		return 0;
 
 	if (led < 0) {
-		/* if LED is already lit, then leave it as-is */
+		 
 		if (state->led_state)
 			return 0;
 		else
 			led *= -1;
 	}
 
-	/* toggle LED if changing state */
+	 
 	if (state->led_state != led) {
 		u8 val;
 
@@ -185,11 +167,11 @@ int au8522_led_ctrl(struct au8522_state *state, int led)
 		val = au8522_readreg(state, 0x4000 |
 				     (led_config->gpio_leds & ~0xc000));
 
-		/* start with all leds off */
+		 
 		for (i = 0; i < led_config->num_led_states; i++)
 			val &= ~led_config->led_states[i];
 
-		/* set selected LED state */
+		 
 		if (led < led_config->num_led_states)
 			val |= led_config->led_states[led];
 		else if (led_config->num_led_states)
@@ -218,9 +200,7 @@ int au8522_init(struct dvb_frontend *fe)
 
 	state->operational_mode = AU8522_DIGITAL_MODE;
 
-	/* Clear out any state associated with the digital side of the
-	   chip, so that when it gets powered back up it won't think
-	   that it is already tuned */
+	 
 	state->current_frequency = 0;
 	state->current_modulation = VSB_8;
 
@@ -237,19 +217,16 @@ int au8522_sleep(struct dvb_frontend *fe)
 	struct au8522_state *state = fe->demodulator_priv;
 	dprintk("%s()\n", __func__);
 
-	/* Only power down if the digital side is currently using the chip */
+	 
 	if (state->operational_mode == AU8522_ANALOG_MODE) {
-		/* We're not in one of the expected power modes, which means
-		   that the DVB thread is probably telling us to go to sleep
-		   even though the analog frontend has already started using
-		   the chip.  So ignore the request */
+		 
 		return 0;
 	}
 
-	/* turn off led */
+	 
 	au8522_led_ctrl(state, 0);
 
-	/* Power down the chip */
+	 
 	au8522_writereg(state, 0xa4, 1 << 5);
 
 	state->current_frequency = 0;

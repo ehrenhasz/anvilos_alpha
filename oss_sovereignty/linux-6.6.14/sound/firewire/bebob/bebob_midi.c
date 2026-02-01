@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bebob_midi.c - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "bebob.h"
 
@@ -106,7 +102,7 @@ int snd_bebob_create_midi_devices(struct snd_bebob *bebob)
 	struct snd_rawmidi_str *str;
 	int err;
 
-	/* create midi ports */
+	 
 	err = snd_rawmidi_new(bebob->card, bebob->card->driver, 0,
 			      bebob->midi_output_ports, bebob->midi_input_ports,
 			      &rmidi);

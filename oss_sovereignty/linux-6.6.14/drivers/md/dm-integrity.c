@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016-2017 Red Hat, Inc. All rights reserved.
- * Copyright (C) 2016-2017 Milan Broz
- * Copyright (C) 2016-2017 Mikulas Patocka
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-bio-record.h"
 
@@ -40,21 +34,16 @@
 #define METADATA_WORKQUEUE_MAX_ACTIVE	16
 #define RECALC_SECTORS			(IS_ENABLED(CONFIG_64BIT) ? 32768 : 2048)
 #define RECALC_WRITE_SUPER		16
-#define BITMAP_BLOCK_SIZE		4096	/* don't change it */
+#define BITMAP_BLOCK_SIZE		4096	 
 #define BITMAP_FLUSH_INTERVAL		(10 * HZ)
 #define DISCARD_FILLER			0xf6
 #define SALT_SIZE			16
 
-/*
- * Warning - DEBUG_PRINT prints security-sensitive data to the log,
- * so it should not be enabled in the official kernel
- */
-//#define DEBUG_PRINT
-//#define INTERNAL_VERIFY
+ 
 
-/*
- * On disk structures
- */
+
+
+ 
 
 #define SB_MAGIC			"integrt"
 #define SB_VERSION_1			1
@@ -71,7 +60,7 @@ struct superblock {
 	__u8 log2_interleave_sectors;
 	__le16 integrity_tag_size;
 	__le32 journal_sections;
-	__le64 provided_data_sectors;	/* userspace uses this value */
+	__le64 provided_data_sectors;	 
 	__le32 flags;
 	__u8 log2_sectors_per_block;
 	__u8 log2_blocks_per_bitmap_bit;
@@ -101,7 +90,7 @@ struct journal_entry {
 		__le64 sector;
 	} u;
 	commit_id_t last_bytes[];
-	/* __u8 tag[0]; */
+	 
 };
 
 #define journal_entry_tag(ic, je)		((__u8 *)&(je)->last_bytes[(ic)->sectors_per_block])
@@ -145,9 +134,7 @@ static unsigned char next_commit_seq(unsigned char seq)
 	return (seq + 1) % N_COMMIT_IDS;
 }
 
-/*
- * In-memory structures
- */
+ 
 
 struct journal_node {
 	struct rb_node node;
@@ -221,7 +208,7 @@ struct dm_integrity_c {
 
 	struct dm_target *ti;
 
-	/* these variables are locked with endio_wait.lock */
+	 
 	struct rb_root in_progress;
 	struct list_head wait_list;
 	wait_queue_head_t endio_wait;
@@ -356,9 +343,7 @@ static void dm_integrity_complete(struct request *rq, unsigned int nr_bytes)
 {
 }
 
-/*
- * DM Integrity profile, protection is performed layer above (dm-crypt)
- */
+ 
 static const struct blk_integrity_profile dm_integrity_profile = {
 	.name			= "DM-DIF-EXT-TAG",
 	.generate_fn		= NULL,
@@ -398,10 +383,7 @@ static bool dm_integrity_disable_recalculate(struct dm_integrity_c *ic)
 static commit_id_t dm_integrity_commit_id(struct dm_integrity_c *ic, unsigned int i,
 					  unsigned int j, unsigned char seq)
 {
-	/*
-	 * Xor the number with section and sector, so that if a piece of
-	 * journal is written at wrong place, it is detected.
-	 */
+	 
 	return ic->commit_ids[seq] ^ cpu_to_le64(((__u64)i << 32) ^ j);
 }
 
@@ -1442,7 +1424,7 @@ static int dm_integrity_rw_tag(struct dm_integrity_c *ic, unsigned char *tag, se
 				dm_bufio_mark_partial_buffer_dirty(b, *metadata_offset, *metadata_offset + to_copy);
 			}
 		} else {
-			/* e.g.: op == TAG_CMP */
+			 
 
 			if (likely(is_power_of_2(ic->tag_size))) {
 				if (unlikely(memcmp(dp, tag, to_copy)))
@@ -1695,7 +1677,7 @@ static void integrity_sector_checksum(struct dm_integrity_c *ic, sector_t sector
 	return;
 
 failed:
-	/* this shouldn't happen anyway, the hash functions have no reason to fail */
+	 
 	get_random_bytes(result, ic->tag_size);
 }
 
@@ -1884,10 +1866,7 @@ static int dm_integrity_map(struct dm_target *ti, struct bio *bio)
 	dio->range.logical_sector = dm_target_offset(ti, bio->bi_iter.bi_sector);
 	dio->fua = dio->op == REQ_OP_WRITE && bio->bi_opf & REQ_FUA;
 	if (unlikely(dio->fua)) {
-		/*
-		 * Don't pass down the FUA flag because we have to flush
-		 * disk cache anyway.
-		 */
+		 
 		bio->bi_opf &= ~REQ_FUA;
 	}
 	if (unlikely(dio->range.logical_sector + bio_sectors(bio) > ic->provided_data_sectors)) {
@@ -2201,11 +2180,7 @@ retry:
 		}
 	}
 	if (unlikely(!add_new_range(ic, &dio->range, true))) {
-		/*
-		 * We must not sleep in the request routine because it could
-		 * stall bios on current->bio_list.
-		 * So, we offload the bio to a workqueue if we have to sleep.
-		 */
+		 
 		if (from_map) {
 offload_to_thread:
 			spin_unlock_irq(&ic->endio_wait.lock);
@@ -2216,11 +2191,7 @@ offload_to_thread:
 		if (journal_read_pos != NOT_FOUND)
 			dio->range.n_sectors = ic->sectors_per_block;
 		wait_and_add_new_range(ic, &dio->range);
-		/*
-		 * wait_and_add_new_range drops the spinlock, so the journal
-		 * may have been changed arbitrarily. We need to recheck.
-		 * To simplify the code, we restrict I/O size to just one block.
-		 */
+		 
 		if (journal_read_pos != NOT_FOUND) {
 			sector_t next_sector;
 			unsigned int new_pos;
@@ -2524,7 +2495,7 @@ static void do_journal_write(struct dm_integrity_c *ic, unsigned int write_start
 			if (likely(!from_replay)) {
 				struct journal_node *section_node = &ic->journal_tree[i * ic->journal_section_entries];
 
-				/* don't write if there is newer committed sector */
+				 
 				while (j < k && find_newer_committed_node(ic, &section_node[j])) {
 					struct journal_entry *je2 = access_journal_entry(ic, i, j);
 
@@ -2881,7 +2852,7 @@ static void bitmap_flush_work(struct work_struct *work)
 			>> (ic->sb->log2_sectors_per_block + ic->log2_blocks_per_bitmap_bit)
 			<< (ic->sb->log2_sectors_per_block + ic->log2_blocks_per_bitmap_bit);
 	}
-	/*DEBUG_print("zeroing journal\n");*/
+	 
 	block_bitmap_op(ic, ic->journal, 0, limit, BITMAP_OP_CLEAR);
 	block_bitmap_op(ic, ic->may_write_bitmap, 0, limit, BITMAP_OP_CLEAR);
 
@@ -3038,11 +3009,7 @@ static void replay_journal(struct dm_integrity_c *ic)
 			struct journal_sector *js = access_journal(ic, i, j);
 
 			if (js->commit_id != dm_integrity_commit_id(ic, i, j, want_commit_seq)) {
-				/*
-				 * This could be caused by crash during writing.
-				 * We won't replay the inconsistent part of the
-				 * journal.
-				 */
+				 
 				DEBUG_print("commit id mismatch at position (%u, %u): %d != %d\n",
 					    i, j, find_commit_seq(ic, i, j, js->commit_id), want_commit_seq);
 				goto brk;
@@ -3163,7 +3130,7 @@ static void dm_integrity_postsuspend(struct dm_target *ti)
 	if (ic->mode == 'B') {
 		dm_integrity_flush_buffers(ic, true);
 #if 1
-		/* set to 0 to test bitmap replay code */
+		 
 		init_journal(ic, 0, ic->journal_sections, 0);
 		ic->sb->flags &= ~cpu_to_le32(SB_FLAG_DIRTY_BITMAP);
 		r = sync_rw_sb(ic, REQ_OP_WRITE | REQ_FUA);
@@ -3290,11 +3257,11 @@ static void dm_integrity_resume(struct dm_target *ti)
 
 	ic->reboot_notifier.notifier_call = dm_integrity_reboot;
 	ic->reboot_notifier.next = NULL;
-	ic->reboot_notifier.priority = INT_MAX - 1;	/* be notified after md and before hardware drivers */
+	ic->reboot_notifier.priority = INT_MAX - 1;	 
 	WARN_ON(register_reboot_notifier(&ic->reboot_notifier));
 
 #if 0
-	/* set to 1 to stress test synchronous mode */
+	 
 	dm_integrity_enter_synchronous_mode(ic);
 #endif
 }
@@ -3460,7 +3427,7 @@ static int calculate_device_limits(struct dm_integrity_c *ic)
 	if (!ic->meta_dev) {
 		sector_t last_sector, last_area, last_offset;
 
-		/* we have to maintain excessive padding for compatibility with existing volumes */
+		 
 		__u64 metadata_run_padding =
 			ic->sb->flags & cpu_to_le32(SB_FLAG_FIXED_PADDING) ?
 			(__u64)(METADATA_PADDING_SECTORS << SECTOR_SHIFT) :
@@ -4002,30 +3969,7 @@ bad:
 	return r;
 }
 
-/*
- * Construct a integrity mapping
- *
- * Arguments:
- *	device
- *	offset from the start of the device
- *	tag size
- *	D - direct writes, J - journal writes, B - bitmap mode, R - recovery mode
- *	number of optional arguments
- *	optional arguments:
- *		journal_sectors
- *		interleave_sectors
- *		buffer_sectors
- *		journal_watermark
- *		commit_time
- *		meta_device
- *		block_size
- *		sectors_per_bit
- *		bitmap_flush_interval
- *		internal_hash
- *		journal_crypt
- *		journal_mac
- *		recalculate
- */
+ 
 static int dm_integrity_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct dm_integrity_c *ic;
@@ -4279,10 +4223,7 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned int argc, char **argv
 		goto bad;
 	}
 
-	/*
-	 * If this workqueue weren't ordered, it would cause bio reordering
-	 * and reduced performance.
-	 */
+	 
 	ic->wait_wq = alloc_ordered_workqueue("dm-integrity-wait", WQ_MEM_RECLAIM);
 	if (!ic->wait_wq) {
 		ti->error = "Cannot allocate workqueue";
@@ -4367,7 +4308,7 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned int argc, char **argv
 		ti->error = "Corrupted superblock, journal_sections is 0";
 		goto bad;
 	}
-	/* make sure that ti->max_io_len doesn't overflow */
+	 
 	if (!ic->meta_dev) {
 		if (ic->sb->log2_interleave_sectors < MIN_LOG2_INTERLEAVE_SECTORS ||
 		    ic->sb->log2_interleave_sectors > MAX_LOG2_INTERLEAVE_SECTORS) {

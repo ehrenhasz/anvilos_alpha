@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-btree.h"
 #include "dm-btree-internal.h"
@@ -14,49 +10,9 @@
 
 #define DM_MSG_PREFIX "btree"
 
-/*
- * Removing an entry from a btree
- * ==============================
- *
- * A very important constraint for our btree is that no node, except the
- * root, may have fewer than a certain number of entries.
- * (MIN_ENTRIES <= nr_entries <= MAX_ENTRIES).
- *
- * Ensuring this is complicated by the way we want to only ever hold the
- * locks on 2 nodes concurrently, and only change nodes in a top to bottom
- * fashion.
- *
- * Each node may have a left or right sibling.  When decending the spine,
- * if a node contains only MIN_ENTRIES then we try and increase this to at
- * least MIN_ENTRIES + 1.  We do this in the following ways:
- *
- * [A] No siblings => this can only happen if the node is the root, in which
- *     case we copy the childs contents over the root.
- *
- * [B] No left sibling
- *     ==> rebalance(node, right sibling)
- *
- * [C] No right sibling
- *     ==> rebalance(left sibling, node)
- *
- * [D] Both siblings, total_entries(left, node, right) <= DEL_THRESHOLD
- *     ==> delete node adding it's contents to left and right
- *
- * [E] Both siblings, total_entries(left, node, right) > DEL_THRESHOLD
- *     ==> rebalance(left, node, right)
- *
- * After these operations it's possible that the our original node no
- * longer contains the desired sub tree.  For this reason this rebalancing
- * is performed on the children of the current node.  This also avoids
- * having a special case for the root.
- *
- * Once this rebalancing has occurred we can then step into the child node
- * for internal nodes.  Or delete the entry for leaf nodes.
- */
+ 
 
-/*
- * Some little utilities for moving node data around.
- */
+ 
 static void node_shift(struct btree_node *n, int shift)
 {
 	uint32_t nr_entries = le32_to_cpu(n->header.nr_entries);
@@ -123,9 +79,7 @@ static int node_copy(struct btree_node *left, struct btree_node *right, int shif
 	return 0;
 }
 
-/*
- * Delete a specific entry from a leaf node.
- */
+ 
 static void delete_at(struct btree_node *n, unsigned int index)
 {
 	unsigned int nr_entries = le32_to_cpu(n->header.nr_entries);
@@ -241,31 +195,19 @@ static int __rebalance2(struct dm_btree_info *info, struct btree_node *parent,
 	struct btree_node *right = r->n;
 	uint32_t nr_left = le32_to_cpu(left->header.nr_entries);
 	uint32_t nr_right = le32_to_cpu(right->header.nr_entries);
-	/*
-	 * Ensure the number of entries in each child will be greater
-	 * than or equal to (max_entries / 3 + 1), so no matter which
-	 * child is used for removal, the number will still be not
-	 * less than (max_entries / 3).
-	 */
+	 
 	unsigned int threshold = 2 * (merge_threshold(left) + 1);
 
 	if (nr_left + nr_right < threshold) {
-		/*
-		 * Merge
-		 */
+		 
 		node_copy(left, right, -nr_right);
 		left->header.nr_entries = cpu_to_le32(nr_left + nr_right);
 		delete_at(parent, r->index);
 
-		/*
-		 * We need to decrement the right block, but not it's
-		 * children, since they're still referenced by left.
-		 */
+		 
 		dm_tm_dec(info->tm, dm_block_location(r->block));
 	} else {
-		/*
-		 * Rebalance.
-		 */
+		 
 		unsigned int target_left = (nr_left + nr_right) / 2;
 
 		ret = shift(left, right, nr_left - target_left);
@@ -303,11 +245,7 @@ static int rebalance2(struct shadow_spine *s, struct dm_btree_info *info,
 	return r;
 }
 
-/*
- * We dump as many entries from center as possible into left, then the rest
- * in right, then rebalance2.  This wastes some cpu, but I want something
- * simple atm.
- */
+ 
 static int delete_center_node(struct dm_btree_info *info, struct btree_node *parent,
 			      struct child *l, struct child *c, struct child *r,
 			      struct btree_node *left, struct btree_node *center, struct btree_node *right,
@@ -345,9 +283,7 @@ static int delete_center_node(struct dm_btree_info *info, struct btree_node *par
 	return __rebalance2(info, parent, l, r);
 }
 
-/*
- * Redistributes entries among 3 sibling nodes.
- */
+ 
 static int redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 			 struct child *l, struct child *c, struct child *r,
 			 struct btree_node *left, struct btree_node *center, struct btree_node *right,
@@ -367,7 +303,7 @@ static int redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 		s = nr_left - target_left;
 
 		if (s < 0 && nr_center < -s) {
-			/* not enough in central node */
+			 
 			ret = shift(left, center, -nr_center);
 			if (ret)
 				return ret;
@@ -390,7 +326,7 @@ static int redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 	} else {
 		s = target_right - nr_right;
 		if (s > 0 && nr_center < s) {
-			/* not enough in central node */
+			 
 			ret = shift(center, right, nr_center);
 			if (ret)
 				return ret;
@@ -450,9 +386,7 @@ static int rebalance3(struct shadow_spine *s, struct dm_btree_info *info,
 	struct btree_node *parent = dm_block_data(shadow_current(s));
 	struct child left, center, right;
 
-	/*
-	 * FIXME: fill out an array?
-	 */
+	 
 	r = init_child(info, vt, parent, left_index, &left);
 	if (r)
 		return r;
@@ -537,10 +471,7 @@ static int do_leaf(struct btree_node *n, uint64_t key, unsigned int *index)
 	return 0;
 }
 
-/*
- * Prepares for removal from one level of the hierarchy.  The caller must
- * call delete_at() to remove the entry at index.
- */
+ 
 static int remove_raw(struct shadow_spine *s, struct dm_btree_info *info,
 		      struct dm_btree_value_type *vt, dm_block_t root,
 		      uint64_t key, unsigned int *index)
@@ -553,11 +484,7 @@ static int remove_raw(struct shadow_spine *s, struct dm_btree_info *info,
 		if (r < 0)
 			break;
 
-		/*
-		 * We have to patch up the parent node, ugly, but I don't
-		 * see a way to do this automatically as part of the spine
-		 * op.
-		 */
+		 
 		if (shadow_has_parent(s)) {
 			__le64 location = cpu_to_le64(dm_block_location(shadow_current(s)));
 
@@ -580,11 +507,7 @@ static int remove_raw(struct shadow_spine *s, struct dm_btree_info *info,
 
 		i = lower_bound(n, key);
 
-		/*
-		 * We know the key is present, or else
-		 * rebalance_children would have returned
-		 * -ENODATA
-		 */
+		 
 		root = value64(n, i);
 	}
 
@@ -633,7 +556,7 @@ int dm_btree_remove(struct dm_btree_info *info, dm_block_t root,
 }
 EXPORT_SYMBOL_GPL(dm_btree_remove);
 
-/*----------------------------------------------------------------*/
+ 
 
 static int remove_nearest(struct shadow_spine *s, struct dm_btree_info *info,
 			  struct dm_btree_value_type *vt, dm_block_t root,
@@ -647,11 +570,7 @@ static int remove_nearest(struct shadow_spine *s, struct dm_btree_info *info,
 		if (r < 0)
 			break;
 
-		/*
-		 * We have to patch up the parent node, ugly, but I don't
-		 * see a way to do this automatically as part of the spine
-		 * op.
-		 */
+		 
 		if (shadow_has_parent(s)) {
 			__le64 location = cpu_to_le64(dm_block_location(shadow_current(s)));
 
@@ -678,11 +597,7 @@ static int remove_nearest(struct shadow_spine *s, struct dm_btree_info *info,
 
 		i = lower_bound(n, key);
 
-		/*
-		 * We know the key is present, or else
-		 * rebalance_children would have returned
-		 * -ENODATA
-		 */
+		 
 		root = value64(n, i);
 	}
 

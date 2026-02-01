@@ -1,19 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+ 
+ 
 
 #include "qla_target.h"
-/**
- * qla24xx_calc_iocbs() - Determine number of Command Type 3 and
- * Continuation Type 1 IOCBs to allocate.
- *
- * @vha: HA context
- * @dsds: number of data segment descriptors needed
- *
- * Returns the number of IOCB entries needed to store @dsds.
- */
+ 
 static inline uint16_t
 qla24xx_calc_iocbs(scsi_qla_host_t *vha, uint16_t dsds)
 {
@@ -28,16 +17,7 @@ qla24xx_calc_iocbs(scsi_qla_host_t *vha, uint16_t dsds)
 	return iocbs;
 }
 
-/*
- * qla2x00_debounce_register
- *      Debounce register.
- *
- * Input:
- *      port = register address.
- *
- * Returns:
- *      register value.
- */
+ 
 static __inline__ uint16_t
 qla2x00_debounce_register(volatile __le16 __iomem *addr)
 {
@@ -94,7 +74,7 @@ qla2x00_clean_dsd_pool(struct qla_hw_data *ha, struct crc_context *ctx)
 {
 	struct dsd_dma *dsd, *tdsd;
 
-	/* clean up allocated prev pool */
+	 
 	list_for_each_entry_safe(dsd, tdsd, &ctx->dsd_list, list) {
 		dma_pool_free(ha->dl_dma_pool, dsd->dsd_addr,
 		    dsd->dsd_list_dma);
@@ -111,7 +91,7 @@ qla2x00_set_fcport_disc_state(fc_port_t *fcport, int state)
 	uint8_t shiftbits, mask;
 	uint8_t port_dstate_str_sz;
 
-	/* This will have to change when the max no. of states > 16 */
+	 
 	shiftbits = 4;
 	mask = (1 << shiftbits) - 1;
 
@@ -134,13 +114,7 @@ qla2x00_set_fcport_disc_state(fc_port_t *fcport, int state)
 static inline int
 qla2x00_hba_err_chk_enabled(srb_t *sp)
 {
-	/*
-	 * Uncomment when corresponding SCSI changes are done.
-	 *
-	if (!sp->cmd->prot_chk)
-		return 0;
-	 *
-	 */
+	 
 	switch (scsi_get_prot_op(GET_CMD_SP(sp))) {
 	case SCSI_PROT_READ_STRIP:
 	case SCSI_PROT_WRITE_INSERT:
@@ -164,7 +138,7 @@ qla2x00_reset_active(scsi_qla_host_t *vha)
 {
 	scsi_qla_host_t *base_vha = pci_get_drvdata(vha->hw->pdev);
 
-	/* Test appropriate base-vha and vha flags. */
+	 
 	return test_bit(ISP_ABORT_NEEDED, &base_vha->dpc_flags) ||
 	    test_bit(ABORT_ISP_ACTIVE, &base_vha->dpc_flags) ||
 	    test_bit(ISP_ABORT_RETRY, &base_vha->dpc_flags) ||
@@ -187,7 +161,7 @@ static void qla2xxx_init_sp(srb_t *sp, scsi_qla_host_t *vha,
 	sp->vha = vha;
 	sp->qpair = qpair;
 	sp->cmd_type = TYPE_SRB;
-	/* ref : INIT - normal flow */
+	 
 	kref_init(&sp->cmd_kref);
 	INIT_LIST_HEAD(&sp->elem);
 }
@@ -277,22 +251,22 @@ qla2x00_set_retry_delay_timestamp(fc_port_t *fcport, uint16_t sts_qual)
 {
 	u8 scope;
 	u16 qual;
-#define SQ_SCOPE_MASK		0xc000 /* SAM-6 rev5 5.3.2 */
+#define SQ_SCOPE_MASK		0xc000  
 #define SQ_SCOPE_SHIFT		14
 #define SQ_QUAL_MASK		0x3fff
 
-#define SQ_MAX_WAIT_SEC		60 /* Max I/O hold off time in seconds. */
-#define SQ_MAX_WAIT_TIME	(SQ_MAX_WAIT_SEC * 10) /* in 100ms. */
+#define SQ_MAX_WAIT_SEC		60  
+#define SQ_MAX_WAIT_TIME	(SQ_MAX_WAIT_SEC * 10)  
 
-	if (!sts_qual) /* Common case. */
+	if (!sts_qual)  
 		return;
 
 	scope = (sts_qual & SQ_SCOPE_MASK) >> SQ_SCOPE_SHIFT;
-	/* Handle only scope 1 or 2, which is for I-T nexus. */
+	 
 	if (scope != 1 && scope != 2)
 		return;
 
-	/* Skip processing, if retry delay timer is already in effect. */
+	 
 	if (fcport->retry_delay_timestamp &&
 	    time_before(jiffies, fcport->retry_delay_timestamp))
 		return;
@@ -302,7 +276,7 @@ qla2x00_set_retry_delay_timestamp(fc_port_t *fcport, uint16_t sts_qual)
 		return;
 	qual = min(qual, (u16)SQ_MAX_WAIT_TIME);
 
-	/* qual is expressed in 100ms increments. */
+	 
 	fcport->retry_delay_timestamp = jiffies + (qual * HZ / 10);
 
 	ql_log(ql_log_warn, fcport->vha, 0x5101,
@@ -384,7 +358,7 @@ qla2xxx_get_fc4_priority(struct scsi_qla_host *vha)
 enum {
 	RESOURCE_NONE,
 	RESOURCE_IOCB = BIT_0,
-	RESOURCE_EXCH = BIT_1,  /* exchange */
+	RESOURCE_EXCH = BIT_1,   
 	RESOURCE_FORCE = BIT_2,
 	RESOURCE_HA = BIT_3,
 };
@@ -404,7 +378,7 @@ qla_get_fw_resources(struct qla_qpair *qp, struct iocb_resource *iores)
 		goto force;
 
 	if ((iores->iocb_cnt + qp->fwres.iocbs_used) >= qp->fwres.iocbs_qp_limit) {
-		/* no need to acquire qpair lock. It's just rough calculation */
+		 
 		iocbs_used = ha->base_qpair->fwres.iocbs_used;
 		for (i = 0; i < ha->max_qpairs; i++) {
 			if (ha->queue_pair_map[i])
@@ -457,11 +431,7 @@ force:
 	return 0;
 }
 
-/*
- * decrement to zero.  This routine will not decrement below zero
- * @v:  pointer of type atomic_t
- * @amount: amount to decrement from v
- */
+ 
 static void qla_atomic_dtz(atomic_t *v, int amount)
 {
 	int c, old, dec;
@@ -496,7 +466,7 @@ qla_put_fw_resources(struct qla_qpair *qp, struct iocb_resource *iores)
 		if (qp->fwres.iocbs_used >= iores->iocb_cnt) {
 			qp->fwres.iocbs_used -= iores->iocb_cnt;
 		} else {
-			/* should not happen */
+			 
 			qp->fwres.iocbs_used = 0;
 		}
 	}
@@ -505,7 +475,7 @@ qla_put_fw_resources(struct qla_qpair *qp, struct iocb_resource *iores)
 		if (qp->fwres.exch_used >= iores->exch_cnt) {
 			qp->fwres.exch_used -= iores->exch_cnt;
 		} else {
-			/* should not happen */
+			 
 			qp->fwres.exch_used = 0;
 		}
 	}
@@ -513,21 +483,7 @@ qla_put_fw_resources(struct qla_qpair *qp, struct iocb_resource *iores)
 }
 
 #define ISP_REG_DISCONNECT 0xffffffffU
-/**************************************************************************
- * qla2x00_isp_reg_stat
- *
- * Description:
- *        Read the host status register of ISP before aborting the command.
- *
- * Input:
- *       ha = pointer to host adapter structure.
- *
- *
- * Returns:
- *       Either true or false.
- *
- * Note: Return true if there is register disconnect.
- **************************************************************************/
+ 
 static inline
 uint32_t qla2x00_isp_reg_stat(struct qla_hw_data *ha)
 {

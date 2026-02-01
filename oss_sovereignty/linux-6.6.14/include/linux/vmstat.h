@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_VMSTAT_H
 #define _LINUX_VMSTAT_H
 
@@ -41,15 +41,7 @@ enum writeback_stat_item {
 };
 
 #ifdef CONFIG_VM_EVENT_COUNTERS
-/*
- * Light weight per cpu counter implementation.
- *
- * Counters should only be incremented and no critical kernel component
- * should rely on the counter values.
- *
- * Counters are handled completely inline. On many platforms the code
- * generated will simply be the increment of a global address.
- */
+ 
 
 struct vm_event_state {
 	unsigned long event[NR_VM_EVENT_ITEMS];
@@ -57,10 +49,7 @@ struct vm_event_state {
 
 DECLARE_PER_CPU(struct vm_event_state, vm_event_states);
 
-/*
- * vm counters are allowed to be racy. Use raw_cpu_ops to avoid the
- * local_irq_disable overhead.
- */
+ 
 static inline void __count_vm_event(enum vm_event_item item)
 {
 	raw_cpu_inc(vm_event_states.event[item]);
@@ -87,7 +76,7 @@ extern void vm_events_fold_cpu(int cpu);
 
 #else
 
-/* Disable counters */
+ 
 static inline void count_vm_event(enum vm_event_item item)
 {
 }
@@ -107,7 +96,7 @@ static inline void vm_events_fold_cpu(int cpu)
 {
 }
 
-#endif /* CONFIG_VM_EVENT_COUNTERS */
+#endif  
 
 #ifdef CONFIG_NUMA_BALANCING
 #define count_vm_numa_event(x)     count_vm_event(x)
@@ -115,7 +104,7 @@ static inline void vm_events_fold_cpu(int cpu)
 #else
 #define count_vm_numa_event(x) do {} while (0)
 #define count_vm_numa_events(x, y) do { (void)(y); } while (0)
-#endif /* CONFIG_NUMA_BALANCING */
+#endif  
 
 #ifdef CONFIG_DEBUG_TLBFLUSH
 #define count_vm_tlb_event(x)	   count_vm_event(x)
@@ -134,9 +123,7 @@ static inline void vm_events_fold_cpu(int cpu)
 #define __count_zid_vm_events(item, zid, delta) \
 	__count_vm_events(item##_NORMAL - ZONE_NORMAL + zid, delta)
 
-/*
- * Zone and node-based page accounting with per cpu differentials.
- */
+ 
 extern atomic_long_t vm_zone_stat[NR_VM_ZONE_STAT_ITEMS];
 extern atomic_long_t vm_node_stat[NR_VM_NODE_STAT_ITEMS];
 extern atomic_long_t vm_numa_event[NR_VM_NUMA_EVENT_ITEMS];
@@ -160,7 +147,7 @@ global_numa_event_state(enum numa_stat_item item)
 {
 	return atomic_long_read(&vm_numa_event[item]);
 }
-#endif /* CONFIG_NUMA */
+#endif  
 
 static inline void zone_page_state_add(long x, struct zone *zone,
 				 enum zone_stat_item item)
@@ -215,12 +202,7 @@ static inline unsigned long zone_page_state(struct zone *zone,
 	return x;
 }
 
-/*
- * More accurate version that also considers the currently pending
- * deltas. For that we need to loop over all cpus to find the current
- * deltas. There is no synchronization so the result cannot be
- * exactly accurate either.
- */
+ 
 static inline unsigned long zone_page_state_snapshot(struct zone *zone,
 					enum zone_stat_item item)
 {
@@ -238,7 +220,7 @@ static inline unsigned long zone_page_state_snapshot(struct zone *zone,
 }
 
 #ifdef CONFIG_NUMA
-/* See __count_vm_event comment on why raw_cpu_inc is used. */
+ 
 static inline void
 __count_numa_event(struct zone *zone, enum numa_stat_item item)
 {
@@ -270,7 +252,7 @@ extern void fold_vm_numa_events(void);
 static inline void fold_vm_numa_events(void)
 {
 }
-#endif /* CONFIG_NUMA */
+#endif  
 
 #ifdef CONFIG_SMP
 void __mod_zone_page_state(struct zone *, enum zone_stat_item item, long);
@@ -310,12 +292,9 @@ int calculate_pressure_threshold(struct zone *zone);
 int calculate_normal_threshold(struct zone *zone);
 void set_pgdat_percpu_threshold(pg_data_t *pgdat,
 				int (*calculate_pressure)(struct zone *));
-#else /* CONFIG_SMP */
+#else  
 
-/*
- * We do not maintain differentials in a single processor configuration.
- * The functions directly modify the zone and global counters.
- */
+ 
 static inline void __mod_zone_page_state(struct zone *zone,
 			enum zone_stat_item item, long delta)
 {
@@ -326,12 +305,7 @@ static inline void __mod_node_page_state(struct pglist_data *pgdat,
 			enum node_stat_item item, int delta)
 {
 	if (vmstat_item_in_bytes(item)) {
-		/*
-		 * Only cgroups use subpage accounting right now; at
-		 * the global level, these items still change in
-		 * multiples of whole pages. Store them as pages
-		 * internally to keep the per-cpu counters compact.
-		 */
+		 
 		VM_WARN_ON_ONCE(delta & (PAGE_SIZE - 1));
 		delta >>= PAGE_SHIFT;
 	}
@@ -389,10 +363,7 @@ static inline void __dec_node_page_state(struct page *page,
 }
 
 
-/*
- * We only use atomic operations to update counters. So there is no need to
- * disable interrupts.
- */
+ 
 #define inc_zone_page_state __inc_zone_page_state
 #define dec_zone_page_state __dec_zone_page_state
 #define mod_zone_page_state __mod_zone_page_state
@@ -413,7 +384,7 @@ static inline void quiet_vmstat(void) { }
 
 static inline void drain_zonestat(struct zone *zone,
 			struct per_cpu_zonestat *pzstats) { }
-#endif		/* CONFIG_SMP */
+#endif		 
 
 static inline void __zone_stat_mod_folio(struct folio *folio,
 		enum zone_stat_item item, long nr)
@@ -508,7 +479,7 @@ static inline const char *numa_stat_name(enum numa_stat_item item)
 	return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
 			   item];
 }
-#endif /* CONFIG_NUMA */
+#endif  
 
 static inline const char *node_stat_name(enum node_stat_item item)
 {
@@ -519,7 +490,7 @@ static inline const char *node_stat_name(enum node_stat_item item)
 
 static inline const char *lru_list_name(enum lru_list lru)
 {
-	return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
+	return node_stat_name(NR_LRU_BASE + lru) + 3; 
 }
 
 static inline const char *writeback_stat_name(enum writeback_stat_item item)
@@ -539,7 +510,7 @@ static inline const char *vm_event_name(enum vm_event_item item)
 			   NR_VM_WRITEBACK_STAT_ITEMS +
 			   item];
 }
-#endif /* CONFIG_VM_EVENT_COUNTERS || CONFIG_MEMCG */
+#endif  
 
 #ifdef CONFIG_MEMCG
 
@@ -595,7 +566,7 @@ static inline void mod_lruvec_page_state(struct page *page,
 	mod_node_page_state(page_pgdat(page), idx, val);
 }
 
-#endif /* CONFIG_MEMCG */
+#endif  
 
 static inline void __inc_lruvec_page_state(struct page *page,
 					   enum node_stat_item idx)
@@ -656,4 +627,4 @@ static inline void lruvec_stat_sub_folio(struct folio *folio,
 {
 	lruvec_stat_mod_folio(folio, idx, -folio_nr_pages(folio));
 }
-#endif /* _LINUX_VMSTAT_H */
+#endif  

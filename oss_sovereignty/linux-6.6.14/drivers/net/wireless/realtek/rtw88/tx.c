@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "tx.h"
@@ -92,10 +91,7 @@ static u8 get_tx_ampdu_factor(struct ieee80211_sta *sta)
 {
 	u8 exp = sta->deflink.ht_cap.ampdu_factor;
 
-	/* the least ampdu factor is 8K, and the value in the tx desc is the
-	 * max aggregation num, which represents val * 2 packets can be
-	 * aggregated in an AMPDU, so here we should use 8/2=4 as the base
-	 */
+	 
 	return (BIT(2) << exp) - 1;
 }
 
@@ -163,10 +159,7 @@ static void rtw_tx_report_enable(struct rtw_dev *rtwdev,
 {
 	struct rtw_tx_report *tx_report = &rtwdev->tx_report;
 
-	/* [11:8], reserved, fills with zero
-	 * [7:2],  tx report sequence number
-	 * [1:0],  firmware use, fills with zero
-	 */
+	 
 	pkt_info->sn = (atomic_inc_return(&tx_report->sn) << 2) & 0xfc;
 	pkt_info->report = true;
 }
@@ -193,7 +186,7 @@ void rtw_tx_report_enqueue(struct rtw_dev *rtwdev, struct sk_buff *skb, u8 sn)
 	unsigned long flags;
 	u8 *drv_data;
 
-	/* pass sn to tx report handler through driver data */
+	 
 	drv_data = (u8 *)IEEE80211_SKB_CB(skb)->status.status_driver_data;
 	*drv_data = sn;
 
@@ -319,7 +312,7 @@ static void rtw_tx_mgmt_pkt_info_update(struct rtw_dev *rtwdev,
 	pkt_info->dis_qselseq = true;
 	pkt_info->en_hwseq = true;
 	pkt_info->hw_ssn_sel = 0;
-	/* TODO: need to change hw port and hw ssn sel for multiple vifs */
+	 
 }
 
 static void rtw_tx_data_pkt_info_update(struct rtw_dev *rtwdev,
@@ -345,7 +338,7 @@ static void rtw_tx_data_pkt_info_update(struct rtw_dev *rtwdev,
 
 	seq = (le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_SEQ) >> 4;
 
-	/* for broadcast/multicast, use default values */
+	 
 	if (!sta)
 		goto out;
 
@@ -429,7 +422,7 @@ void rtw_tx_pkt_info_update(struct rtw_dev *rtwdev,
 	pkt_info->qsel = skb->priority;
 	pkt_info->ls = true;
 
-	/* maybe merge with tx status ? */
+	 
 	rtw_tx_stats(rtwdev, vif, skb);
 }
 
@@ -442,9 +435,7 @@ void rtw_tx_rsvd_page_pkt_info_update(struct rtw_dev *rtwdev,
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
 	bool bmc;
 
-	/* A beacon or dummy reserved page packet indicates that it is the first
-	 * reserved page, and the qsel of it will be set in each hci.
-	 */
+	 
 	if (type != RSVD_BEACON && type != RSVD_DUMMY)
 		pkt_info->qsel = TX_DESC_QSEL_MGMT;
 
@@ -481,7 +472,7 @@ void rtw_tx_rsvd_page_pkt_info_update(struct rtw_dev *rtwdev,
 
 	rtw_tx_pkt_info_update_sec(rtwdev, pkt_info, skb);
 
-	/* TODO: need to change hw port and hw ssn sel for multiple vifs */
+	 
 }
 
 struct sk_buff *

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Simon Wunderlich
- */
+ 
+ 
 
 #ifndef _NET_BATMAN_ADV_TVLV_H_
 #define _NET_BATMAN_ADV_TVLV_H_
@@ -49,4 +46,4 @@ void batadv_tvlv_unicast_send(struct batadv_priv *bat_priv, const u8 *src,
 			      const u8 *dst, u8 type, u8 version,
 			      void *tvlv_value, u16 tvlv_value_len);
 
-#endif /* _NET_BATMAN_ADV_TVLV_H_ */
+#endif  

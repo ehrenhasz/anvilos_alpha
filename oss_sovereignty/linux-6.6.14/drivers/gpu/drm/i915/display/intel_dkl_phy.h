@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DKL_PHY_H__
 #define __INTEL_DKL_PHY_H__
@@ -22,4 +20,4 @@ intel_dkl_phy_rmw(struct drm_i915_private *i915, struct intel_dkl_phy_reg reg, u
 void
 intel_dkl_phy_posting_read(struct drm_i915_private *i915, struct intel_dkl_phy_reg reg);
 
-#endif /* __INTEL_DKL_PHY_H__ */
+#endif  

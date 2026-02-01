@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Manage a cache of file names' existence */
+
+ 
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -50,7 +50,7 @@ static void update_fncache(const char *name, bool res)
 	hlist_add_head(&n->nd, &fncache_hash[h]);
 }
 
-/* No LRU, only use when bounded in some other way. */
+ 
 bool file_available(const char *name)
 {
 	bool res;

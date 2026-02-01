@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #include <linux/list.h>
 #include <linux/errno.h>
@@ -36,12 +36,7 @@ static struct i40e_ops i40e_lan_ops = {
 	.update_vsi_ctxt = i40e_client_update_vsi_ctxt,
 };
 
-/**
- * i40e_client_get_params - Get the params that can change at runtime
- * @vsi: the VSI with the message
- * @params: client param struct
- *
- **/
+ 
 static
 int i40e_client_get_params(struct i40e_vsi *vsi, struct i40e_params *params)
 {
@@ -52,7 +47,7 @@ int i40e_client_get_params(struct i40e_vsi *vsi, struct i40e_params *params)
 		u8 tc = dcb_cfg->etscfg.prioritytable[i];
 		u16 qs_handle;
 
-		/* If TC is not enabled for VSI use TC0 for UP */
+		 
 		if (!(vsi->tc_config.enabled_tc & BIT(tc)))
 			tc = 0;
 
@@ -70,15 +65,7 @@ int i40e_client_get_params(struct i40e_vsi *vsi, struct i40e_params *params)
 	return 0;
 }
 
-/**
- * i40e_notify_client_of_vf_msg - call the client vf message callback
- * @vsi: the VSI with the message
- * @vf_id: the absolute VF id that sent the message
- * @msg: message buffer
- * @len: length of the message
- *
- * If there is a client to this VSI, call the client
- **/
+ 
 void
 i40e_notify_client_of_vf_msg(struct i40e_vsi *vsi, u32 vf_id, u8 *msg, u16 len)
 {
@@ -100,12 +87,7 @@ i40e_notify_client_of_vf_msg(struct i40e_vsi *vsi, u32 vf_id, u8 *msg, u16 len)
 					    vf_id, msg, len);
 }
 
-/**
- * i40e_notify_client_of_l2_param_changes - call the client notify callback
- * @vsi: the VSI with l2 param changes
- *
- * If there is a client to this VSI, call the client
- **/
+ 
 void i40e_notify_client_of_l2_param_changes(struct i40e_vsi *vsi)
 {
 	struct i40e_pf *pf = vsi->back;
@@ -130,11 +112,7 @@ void i40e_notify_client_of_l2_param_changes(struct i40e_vsi *vsi)
 					   &params);
 }
 
-/**
- * i40e_client_release_qvlist - release MSI-X vector mapping for client
- * @ldev: pointer to L2 context.
- *
- **/
+ 
 static void i40e_client_release_qvlist(struct i40e_info *ldev)
 {
 	struct i40e_qvlist_info *qvlist_info = ldev->qvlist_info;
@@ -158,13 +136,7 @@ static void i40e_client_release_qvlist(struct i40e_info *ldev)
 	ldev->qvlist_info = NULL;
 }
 
-/**
- * i40e_notify_client_of_netdev_close - call the client close callback
- * @vsi: the VSI with netdev closed
- * @reset: true when close called due to a reset pending
- *
- * If there is a client to this netdev, call the client with close
- **/
+ 
 void i40e_notify_client_of_netdev_close(struct i40e_vsi *vsi, bool reset)
 {
 	struct i40e_pf *pf = vsi->back;
@@ -186,13 +158,7 @@ void i40e_notify_client_of_netdev_close(struct i40e_vsi *vsi, bool reset)
 	i40e_client_release_qvlist(&cdev->lan_info);
 }
 
-/**
- * i40e_notify_client_of_vf_reset - call the client vf reset callback
- * @pf: PF device pointer
- * @vf_id: asolute id of VF being reset
- *
- * If there is a client attached to this PF, notify when a VF is reset
- **/
+ 
 void i40e_notify_client_of_vf_reset(struct i40e_pf *pf, u32 vf_id)
 {
 	struct i40e_client_instance *cdev = pf->cinst;
@@ -211,13 +177,7 @@ void i40e_notify_client_of_vf_reset(struct i40e_pf *pf, u32 vf_id)
 	cdev->client->ops->vf_reset(&cdev->lan_info, cdev->client, vf_id);
 }
 
-/**
- * i40e_notify_client_of_vf_enable - call the client vf notification callback
- * @pf: PF device pointer
- * @num_vfs: the number of VFs currently enabled, 0 for disable
- *
- * If there is a client attached to this PF, call its VF notification routine
- **/
+ 
 void i40e_notify_client_of_vf_enable(struct i40e_pf *pf, u32 num_vfs)
 {
 	struct i40e_client_instance *cdev = pf->cinst;
@@ -237,14 +197,7 @@ void i40e_notify_client_of_vf_enable(struct i40e_pf *pf, u32 num_vfs)
 	cdev->client->ops->vf_enable(&cdev->lan_info, cdev->client, num_vfs);
 }
 
-/**
- * i40e_vf_client_capable - ask the client if it likes the specified VF
- * @pf: PF device pointer
- * @vf_id: the VF in question
- *
- * If there is a client of the specified type attached to this PF, call
- * its vf_capable routine
- **/
+ 
 int i40e_vf_client_capable(struct i40e_pf *pf, u32 vf_id)
 {
 	struct i40e_client_instance *cdev = pf->cinst;
@@ -329,11 +282,7 @@ static int i40e_register_auxiliary_dev(struct i40e_info *ldev, const char *name)
 	return ret;
 }
 
-/**
- * i40e_client_add_instance - add a client instance struct to the instance list
- * @pf: pointer to the board struct
- *
- **/
+ 
 static void i40e_client_add_instance(struct i40e_pf *pf)
 {
 	struct i40e_client_instance *cdev = NULL;
@@ -384,11 +333,7 @@ free_cdev:
 	pf->cinst = NULL;
 }
 
-/**
- * i40e_client_del_instance - removes a client instance from the list
- * @pf: pointer to the board struct
- *
- **/
+ 
 static
 void i40e_client_del_instance(struct i40e_pf *pf)
 {
@@ -396,10 +341,7 @@ void i40e_client_del_instance(struct i40e_pf *pf)
 	pf->cinst = NULL;
 }
 
-/**
- * i40e_client_subtask - client maintenance work
- * @pf: board private structure
- **/
+ 
 void i40e_client_subtask(struct i40e_pf *pf)
 {
 	struct i40e_client *client;
@@ -411,7 +353,7 @@ void i40e_client_subtask(struct i40e_pf *pf)
 		return;
 	cdev = pf->cinst;
 
-	/* If we're down or resetting, just bail */
+	 
 	if (test_bit(__I40E_DOWN, pf->state) ||
 	    test_bit(__I40E_CONFIG_BUSY, pf->state))
 		return;
@@ -421,16 +363,14 @@ void i40e_client_subtask(struct i40e_pf *pf)
 
 	client = cdev->client;
 
-	/* Here we handle client opens. If the client is down, and
-	 * the netdev is registered, then open the client.
-	 */
+	 
 	if (!test_bit(__I40E_CLIENT_INSTANCE_OPENED, &cdev->state)) {
 		if (vsi->netdev_registered &&
 		    client->ops && client->ops->open) {
 			set_bit(__I40E_CLIENT_INSTANCE_OPENED, &cdev->state);
 			ret = client->ops->open(&cdev->lan_info, client);
 			if (ret) {
-				/* Remove failed client instance */
+				 
 				clear_bit(__I40E_CLIENT_INSTANCE_OPENED,
 					  &cdev->state);
 				return;
@@ -438,8 +378,7 @@ void i40e_client_subtask(struct i40e_pf *pf)
 		}
 	}
 
-	/* enable/disable PE TCP_ENA flag based on netdev down/up
-	 */
+	 
 	if (test_bit(__I40E_VSI_DOWN, vsi->state))
 		i40e_client_update_vsi_ctxt(&cdev->lan_info, client,
 					    0, 0, 0,
@@ -451,12 +390,7 @@ void i40e_client_subtask(struct i40e_pf *pf)
 					    I40E_CLIENT_VSI_FLAG_TCP_ENABLE);
 }
 
-/**
- * i40e_lan_add_device - add a lan device struct to the list of lan devices
- * @pf: pointer to the board struct
- *
- * Returns 0 on success or none 0 on error
- **/
+ 
 int i40e_lan_add_device(struct i40e_pf *pf)
 {
 	struct i40e_device *ldev;
@@ -491,12 +425,7 @@ out:
 	return ret;
 }
 
-/**
- * i40e_lan_del_device - removes a lan device from the device list
- * @pf: pointer to the board struct
- *
- * Returns 0 on success or non-0 on error
- **/
+ 
 int i40e_lan_del_device(struct i40e_pf *pf)
 {
 	struct auxiliary_device *aux_dev = pf->cinst->lan_info.aux_dev;
@@ -506,7 +435,7 @@ int i40e_lan_del_device(struct i40e_pf *pf)
 	auxiliary_device_delete(aux_dev);
 	auxiliary_device_uninit(aux_dev);
 
-	/* First, remove any client instance. */
+	 
 	i40e_client_del_instance(pf);
 
 	mutex_lock(&i40e_device_mutex);
@@ -525,16 +454,7 @@ int i40e_lan_del_device(struct i40e_pf *pf)
 	return ret;
 }
 
-/**
- * i40e_client_virtchnl_send - TBD
- * @ldev: pointer to L2 context
- * @client: Client pointer
- * @vf_id: absolute VF identifier
- * @msg: message buffer
- * @len: length of message buffer
- *
- * Return 0 on success or < 0 on error
- **/
+ 
 static int i40e_client_virtchnl_send(struct i40e_info *ldev,
 				     struct i40e_client *client,
 				     u32 vf_id, u8 *msg, u16 len)
@@ -552,14 +472,7 @@ static int i40e_client_virtchnl_send(struct i40e_info *ldev,
 	return err;
 }
 
-/**
- * i40e_client_setup_qvlist
- * @ldev: pointer to L2 context.
- * @client: Client pointer.
- * @qvlist_info: queue and vector list
- *
- * Return 0 on success or < 0 on error
- **/
+ 
 static int i40e_client_setup_qvlist(struct i40e_info *ldev,
 				    struct i40e_client *client,
 				    struct i40e_qvlist_info *qvlist_info)
@@ -581,7 +494,7 @@ static int i40e_client_setup_qvlist(struct i40e_info *ldev,
 			continue;
 		v_idx = qv_info->v_idx;
 
-		/* Validate vector id belongs to this client */
+		 
 		if ((v_idx >= (pf->iwarp_base_vector + pf->num_iwarp_msix)) ||
 		    (v_idx < pf->iwarp_base_vector))
 			goto err;
@@ -590,7 +503,7 @@ static int i40e_client_setup_qvlist(struct i40e_info *ldev,
 		reg_idx = I40E_PFINT_LNKLSTN(v_idx - 1);
 
 		if (qv_info->ceq_idx == I40E_QUEUE_INVALID_IDX) {
-			/* Special case - No CEQ mapped on this vector */
+			 
 			wr32(hw, reg_idx, I40E_PFINT_LNKLSTN_FIRSTQ_INDX_MASK);
 		} else {
 			reg = (qv_info->ceq_idx &
@@ -616,7 +529,7 @@ static int i40e_client_setup_qvlist(struct i40e_info *ldev,
 			wr32(hw, I40E_PFINT_AEQCTL, reg);
 		}
 	}
-	/* Mitigate sync problems with iwarp VF driver */
+	 
 	i40e_flush(hw);
 	return 0;
 err:
@@ -625,12 +538,7 @@ err:
 	return -EINVAL;
 }
 
-/**
- * i40e_client_request_reset
- * @ldev: pointer to L2 context.
- * @client: Client pointer.
- * @reset_level: reset level
- **/
+ 
 static void i40e_client_request_reset(struct i40e_info *ldev,
 				      struct i40e_client *client,
 				      u32 reset_level)
@@ -654,17 +562,7 @@ static void i40e_client_request_reset(struct i40e_info *ldev,
 	i40e_service_event_schedule(pf);
 }
 
-/**
- * i40e_client_update_vsi_ctxt
- * @ldev: pointer to L2 context.
- * @client: Client pointer.
- * @is_vf: if this for the VF
- * @vf_id: if is_vf true this carries the vf_id
- * @flag: Any device level setting that needs to be done for PE
- * @valid_flag: Bits in this match up and enable changing of flag bits
- *
- * Return 0 on success or < 0 on error
- **/
+ 
 static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
 				       struct i40e_client *client,
 				       bool is_vf, u32 vf_id,
@@ -676,7 +574,7 @@ static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
 	bool update = true;
 	int err;
 
-	/* TODO: for now do not allow setting VF's VSI setting */
+	 
 	if (is_vf)
 		return -EINVAL;
 

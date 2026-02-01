@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include "tir.h"
 #include "params.h"
@@ -7,7 +7,7 @@
 
 #define MLX5E_PARAMS_DEFAULT_LRO_WQE_SZ (64 * 1024)
 
-/* max() doesn't work inside square brackets. */
+ 
 #define MLX5E_TIR_CMD_IN_SZ_DW ( \
 	MLX5_ST_SZ_DW(create_tir_in) > MLX5_ST_SZ_DW(modify_tir_in) ? \
 	MLX5_ST_SZ_DW(create_tir_in) : MLX5_ST_SZ_DW(modify_tir_in) \
@@ -183,11 +183,7 @@ void mlx5e_tir_destroy(struct mlx5e_tir *tir)
 {
 	struct mlx5e_hw_objs *res = &tir->mdev->mlx5e_res.hw_objs;
 
-	/* Skip mutex if list_del is no-op (the TIR wasn't registered in the
-	 * list). list_empty will never return true for an item of tirs_list,
-	 * and READ_ONCE/WRITE_ONCE in list_empty/list_del guarantee consistency
-	 * of the list->next value.
-	 */
+	 
 	if (!list_empty(&tir->list)) {
 		mutex_lock(&res->td.list_lock);
 		list_del(&tir->list);

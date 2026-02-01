@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
-// Generic debug routines used to export DSP MMIO and memories to userspace
-// for firmware debugging.
-//
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/io.h>
@@ -50,22 +50,22 @@ static ssize_t sof_dfsentry_read(struct file *file, char __user *buffer,
 
 	size = dfse->size;
 
-	/* validate position & count */
+	 
 	if (pos < 0)
 		return -EINVAL;
 	if (pos >= size || !count)
 		return 0;
-	/* find the minimum. min() is not used since it adds sparse warnings */
+	 
 	if (count > size - pos)
 		count = size - pos;
 
-	/* align io read start to u32 multiple */
+	 
 	pos = ALIGN_DOWN(pos, 4);
 
-	/* intermediate buffer size must be u32 multiple */
+	 
 	size = ALIGN(count, 4);
 
-	/* if start position is unaligned, read extra u32 */
+	 
 	if (unlikely(pos != *ppos)) {
 		skip = *ppos - pos;
 		if (pos + size + 4 < dfse->size)
@@ -78,12 +78,7 @@ static ssize_t sof_dfsentry_read(struct file *file, char __user *buffer,
 
 	if (dfse->type == SOF_DFSENTRY_TYPE_IOMEM) {
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_ENABLE_DEBUGFS_CACHE)
-		/*
-		 * If the DSP is active: copy from IO.
-		 * If the DSP is suspended:
-		 *	- Copy from IO if the memory is always accessible.
-		 *	- Otherwise, copy from cached buffer.
-		 */
+		 
 		if (pm_runtime_active(sdev->dev) ||
 		    dfse->access_type == SOF_DEBUGFS_ACCESS_ALWAYS) {
 			memcpy_fromio(buf, dfse->io_mem + pos, size);
@@ -93,7 +88,7 @@ static ssize_t sof_dfsentry_read(struct file *file, char __user *buffer,
 			memcpy(buf, dfse->cache_buf + pos, size);
 		}
 #else
-		/* if the DSP is in D3 */
+		 
 		if (!pm_runtime_active(sdev->dev) &&
 		    dfse->access_type == SOF_DEBUGFS_ACCESS_D0_ONLY) {
 			dev_err(sdev->dev,
@@ -108,12 +103,12 @@ static ssize_t sof_dfsentry_read(struct file *file, char __user *buffer,
 		memcpy(buf, ((u8 *)(dfse->buf) + pos), size);
 	}
 
-	/* copy to userspace */
+	 
 	size_ret = copy_to_user(buffer, buf + skip, count);
 
 	kfree(buf);
 
-	/* update count & position if copy succeeded */
+	 
 	if (size_ret)
 		return -EFAULT;
 
@@ -129,7 +124,7 @@ static const struct file_operations sof_dfs_fops = {
 	.write = sof_dfsentry_write,
 };
 
-/* create FS entry for debug files that can expose DSP memories, registers */
+ 
 static int snd_sof_debugfs_io_item(struct snd_sof_dev *sdev,
 				   void __iomem *base, size_t size,
 				   const char *name,
@@ -151,10 +146,7 @@ static int snd_sof_debugfs_io_item(struct snd_sof_dev *sdev,
 	dfse->access_type = access_type;
 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_ENABLE_DEBUGFS_CACHE)
-	/*
-	 * allocate cache buffer that will be used to save the mem window
-	 * contents prior to suspend
-	 */
+	 
 	if (access_type == SOF_DEBUGFS_ACCESS_D0_ONLY) {
 		dfse->cache_buf = devm_kzalloc(sdev->dev, size, GFP_KERNEL);
 		if (!dfse->cache_buf)
@@ -165,7 +157,7 @@ static int snd_sof_debugfs_io_item(struct snd_sof_dev *sdev,
 	debugfs_create_file(name, 0444, sdev->debugfs_root, dfse,
 			    &sof_dfs_fops);
 
-	/* add to dfsentry list */
+	 
 	list_add(&dfse->list, &sdev->dfsentry_list);
 
 	return 0;
@@ -186,7 +178,7 @@ int snd_sof_debugfs_add_region_item_iomem(struct snd_sof_dev *sdev,
 }
 EXPORT_SYMBOL_GPL(snd_sof_debugfs_add_region_item_iomem);
 
-/* create FS entry for debug files to expose kernel memory */
+ 
 int snd_sof_debugfs_buf_item(struct snd_sof_dev *sdev,
 			     void *base, size_t size,
 			     const char *name, mode_t mode)
@@ -207,7 +199,7 @@ int snd_sof_debugfs_buf_item(struct snd_sof_dev *sdev,
 
 	debugfs_create_file(name, mode, sdev->debugfs_root, dfse,
 			    &sof_dfs_fops);
-	/* add to dfsentry list */
+	 
 	list_add(&dfse->list, &sdev->dfsentry_list);
 
 	return 0;
@@ -272,7 +264,7 @@ static ssize_t memory_info_read(struct file *file, char __user *to, size_t count
 	struct snd_sof_dev *sdev = dfse->sdev;
 	int data_length;
 
-	/* read memory info from FW only once for each file read */
+	 
 	if (!*ppos) {
 		dfse->buf_data_size = 0;
 		data_length = memory_info_update(sdev, dfse->buf, dfse->size);
@@ -291,7 +283,7 @@ static int memory_info_open(struct inode *inode, struct file *file)
 
 	file->private_data = dfse;
 
-	/* allocate buffer memory only in first open run, to save memory when unused */
+	 
 	if (!dfse->buf) {
 		dfse->buf = devm_kmalloc(sdev->dev, PAGE_SIZE, GFP_KERNEL);
 		if (!dfse->buf)
@@ -316,13 +308,13 @@ int snd_sof_dbg_memory_info_init(struct snd_sof_dev *sdev)
 	if (!dfse)
 		return -ENOMEM;
 
-	/* don't allocate buffer before first usage, to save memory when unused */
+	 
 	dfse->type = SOF_DFSENTRY_TYPE_BUF;
 	dfse->sdev = sdev;
 
 	debugfs_create_file("memory_info", 0444, sdev->debugfs_root, dfse, &memory_info_fops);
 
-	/* add to dfsentry list */
+	 
 	list_add(&dfse->list, &sdev->dfsentry_list);
 	return 0;
 }
@@ -335,20 +327,20 @@ int snd_sof_dbg_init(struct snd_sof_dev *sdev)
 	int i;
 	int err;
 
-	/* use "sof" as top level debugFS dir */
+	 
 	sdev->debugfs_root = debugfs_create_dir("sof", NULL);
 
-	/* init dfsentry list */
+	 
 	INIT_LIST_HEAD(&sdev->dfsentry_list);
 
-	/* create debugFS files for platform specific MMIO/DSP memories */
+	 
 	for (i = 0; i < ops->debug_map_count; i++) {
 		map = &ops->debug_map[i];
 
 		err = snd_sof_debugfs_io_item(sdev, sdev->bar[map->bar] +
 					      map->offset, map->size,
 					      map->name, map->access_type);
-		/* errors are only due to memory allocation, not debugfs */
+		 
 		if (err < 0)
 			return err;
 	}
@@ -435,14 +427,14 @@ void snd_sof_handle_fw_exception(struct snd_sof_dev *sdev, const char *msg)
 {
 	if (IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_RETAIN_DSP_CONTEXT) ||
 	    sof_debug_check_flag(SOF_DBG_RETAIN_CTX)) {
-		/* should we prevent DSP entering D3 ? */
+		 
 		if (!sdev->ipc_dump_printed)
 			dev_info(sdev->dev,
 				 "Attempting to prevent DSP from entering D3 state to preserve context\n");
 		pm_runtime_get_if_in_use(sdev->dev);
 	}
 
-	/* dump vital information to the logs */
+	 
 	snd_sof_ipc_dump(sdev);
 	snd_sof_dsp_dbg_dump(sdev, msg, SOF_DBG_DUMP_REGS | SOF_DBG_DUMP_MBOX);
 	sof_fw_trace_fw_crashed(sdev);

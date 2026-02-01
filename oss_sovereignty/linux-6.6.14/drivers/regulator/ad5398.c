@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Voltage and current regulation for AD5398 and AD5821
- *
- * Copyright 2010 Analog Devices Inc.
- *
- * Enter bugs at http://blackfin.uclinux.org/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -106,16 +100,16 @@ static int ad5398_set_current_limit(struct regulator_dev *rdev, int min_uA, int 
 	dev_dbg(&client->dev, "changing current %duA\n",
 		ad5398_calc_current(chip, selector));
 
-	/* read chip enable bit */
+	 
 	ret = ad5398_read_reg(client, &data);
 	if (ret < 0)
 		return ret;
 
-	/* prepare register data */
+	 
 	selector = (selector << chip->current_offset) & chip->current_mask;
 	data = (unsigned short)selector | (data & AD5398_CURRENT_EN_MASK);
 
-	/* write the new current value back as well as enable bit */
+	 
 	ret = ad5398_write_reg(client, data);
 
 	return ret;

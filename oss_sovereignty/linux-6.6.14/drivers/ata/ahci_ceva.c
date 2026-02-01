@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Xilinx, Inc.
- * CEVA AHCI SATA platform driver
- *
- * based on the AHCI SATA platform driver by Jeff Garzik and Anton Vorontsov
- */
+
+ 
 
 #include <linux/ahci_platform.h>
 #include <linux/kernel.h>
@@ -15,7 +10,7 @@
 #include <linux/reset.h>
 #include "ahci.h"
 
-/* Vendor Specific Register Offsets */
+ 
 #define AHCI_VEND_PCFG  0xA4
 #define AHCI_VEND_PPCFG 0xA8
 #define AHCI_VEND_PP2C  0xAC
@@ -26,7 +21,7 @@
 #define AHCI_VEND_PAXIC 0xC0
 #define AHCI_VEND_PTC   0xC8
 
-/* Vendor Specific Register bit definitions */
+ 
 #define PAXIC_ADBW_BW64 0x1
 #define PAXIC_MAWID(i)	(((i) * 2) << 4)
 #define PAXIC_MARID(i)	(((i) * 2) << 12)
@@ -34,7 +29,7 @@
 #define PAXIC_MAWIDD(i)	((((i) * 2) + 1) << 8)
 #define PAXIC_OTL	(0x4 << 20)
 
-/* Register bit definitions for cache control */
+ 
 #define AXICC_ARCA_VAL  (0xF << 0)
 #define AXICC_ARCF_VAL  (0xF << 4)
 #define AXICC_ARCH_VAL  (0xF << 8)
@@ -61,7 +56,7 @@
 #define PORT0_BASE	0x100
 #define PORT1_BASE	0x180
 
-/* Port Control Register Bit Definitions */
+ 
 #define PORT_SCTL_SPD_GEN3	(0x3 << 4)
 #define PORT_SCTL_SPD_GEN2	(0x2 << 4)
 #define PORT_SCTL_SPD_GEN1	(0x1 << 4)
@@ -79,12 +74,12 @@ MODULE_PARM_DESC(rx_watermark, "RxWaterMark value (0 - 0x80)");
 
 struct ceva_ahci_priv {
 	struct platform_device *ahci_pdev;
-	/* Port Phy2Cfg Register */
+	 
 	u32 pp2c[NR_PORTS];
 	u32 pp3c[NR_PORTS];
 	u32 pp4c[NR_PORTS];
 	u32 pp5c[NR_PORTS];
-	/* Axi Cache Control Register */
+	 
 	u32 axicc;
 	bool is_cci_enabled;
 	int flags;
@@ -99,10 +94,7 @@ static unsigned int ceva_ahci_read_id(struct ata_device *dev,
 	err_mask = ata_do_dev_read_id(dev, tf, id);
 	if (err_mask)
 		return err_mask;
-	/*
-	 * Since CEVA controller does not support device sleep feature, we
-	 * need to clear DEVSLP (bit 8) in word78 of the IDENTIFY DEVICE data.
-	 */
+	 
 	id[ATA_ID_FEATURE_SUPP] &= cpu_to_le16(~(1 << 8));
 
 	return 0;
@@ -127,27 +119,22 @@ static void ahci_ceva_setup(struct ahci_host_priv *hpriv)
 	u32 tmp;
 	int i;
 
-	/* Set AHCI Enable */
+	 
 	tmp = readl(mmio + HOST_CTL);
 	tmp |= HOST_AHCI_EN;
 	writel(tmp, mmio + HOST_CTL);
 
 	for (i = 0; i < NR_PORTS; i++) {
-		/* TPSS TPRS scalars, CISE and Port Addr */
+		 
 		tmp = PCFG_TPSS_VAL | PCFG_TPRS_VAL | (PCFG_PAD_VAL + i);
 		writel(tmp, mmio + AHCI_VEND_PCFG);
 
-		/*
-		 * AXI Data bus width to 64
-		 * Set Mem Addr Read, Write ID for data transfers
-		 * Set Mem Addr Read ID, Write ID for non-data transfers
-		 * Transfer limit to 72 DWord
-		 */
+		 
 		tmp = PAXIC_ADBW_BW64 | PAXIC_MAWIDD(i) | PAXIC_MARIDD(i) |
 			PAXIC_MAWID(i) | PAXIC_MARID(i) | PAXIC_OTL;
 		writel(tmp, mmio + AHCI_VEND_PAXIC);
 
-		/* Set AXI cache control register if CCi is enabled */
+		 
 		if (cevapriv->is_cci_enabled) {
 			tmp = readl(mmio + AHCI_VEND_AXICC);
 			tmp |= AXICC_ARCA_VAL | AXICC_ARCF_VAL |
@@ -157,27 +144,27 @@ static void ahci_ceva_setup(struct ahci_host_priv *hpriv)
 			writel(tmp, mmio + AHCI_VEND_AXICC);
 		}
 
-		/* Port Phy Cfg register enables */
+		 
 		tmp = PPCFG_TTA | PPCFG_PSS_EN | PPCFG_ESDF_EN;
 		writel(tmp, mmio + AHCI_VEND_PPCFG);
 
-		/* Phy Control OOB timing parameters COMINIT */
+		 
 		writel(cevapriv->pp2c[i], mmio + AHCI_VEND_PP2C);
 
-		/* Phy Control OOB timing parameters COMWAKE */
+		 
 		writel(cevapriv->pp3c[i], mmio + AHCI_VEND_PP3C);
 
-		/* Phy Control Burst timing setting */
+		 
 		writel(cevapriv->pp4c[i], mmio + AHCI_VEND_PP4C);
 
-		/* Rate Change Timer and Retry Interval Timer setting */
+		 
 		writel(cevapriv->pp5c[i], mmio + AHCI_VEND_PP5C);
 
-		/* Rx Watermark setting  */
+		 
 		tmp = rx_watermark | PTC_RSVD;
 		writel(tmp, mmio + AHCI_VEND_PTC);
 
-		/* Default to Gen 3 Speed and Gen 1 if Gen2 is broken */
+		 
 		tmp = PORT_SCTL_SPD_GEN3 | PORT_SCTL_IPM;
 		if (cevapriv->flags & CEVA_FLAG_BROKEN_GEN2)
 			tmp = PORT_SCTL_SPD_GEN1 | PORT_SCTL_IPM;
@@ -224,7 +211,7 @@ static int ceva_ahci_probe(struct platform_device *pdev)
 		rc = ahci_platform_enable_clks(hpriv);
 		if (rc)
 			return rc;
-		/* Assert the controller reset */
+		 
 		reset_control_assert(cevapriv->rst);
 
 		for (i = 0; i < hpriv->nports; i++) {
@@ -233,7 +220,7 @@ static int ceva_ahci_probe(struct platform_device *pdev)
 				return rc;
 		}
 
-		/* De-assert the controller reset */
+		 
 		reset_control_deassert(cevapriv->rst);
 
 		for (i = 0; i < hpriv->nports; i++) {
@@ -248,7 +235,7 @@ static int ceva_ahci_probe(struct platform_device *pdev)
 	if (of_property_read_bool(np, "ceva,broken-gen2"))
 		cevapriv->flags = CEVA_FLAG_BROKEN_GEN2;
 
-	/* Read OOB timing value for COMINIT from device-tree */
+	 
 	if (of_property_read_u8_array(np, "ceva,p0-cominit-params",
 					(u8 *)&cevapriv->pp2c[0], 4) < 0) {
 		dev_warn(dev, "ceva,p0-cominit-params property not defined\n");
@@ -261,7 +248,7 @@ static int ceva_ahci_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Read OOB timing value for COMWAKE from device-tree*/
+	 
 	if (of_property_read_u8_array(np, "ceva,p0-comwake-params",
 					(u8 *)&cevapriv->pp3c[0], 4) < 0) {
 		dev_warn(dev, "ceva,p0-comwake-params property not defined\n");
@@ -274,7 +261,7 @@ static int ceva_ahci_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Read phy BURST timing value from device-tree */
+	 
 	if (of_property_read_u8_array(np, "ceva,p0-burst-params",
 					(u8 *)&cevapriv->pp4c[0], 4) < 0) {
 		dev_warn(dev, "ceva,p0-burst-params property not defined\n");
@@ -287,7 +274,7 @@ static int ceva_ahci_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Read phy RETRY interval timing value from device-tree */
+	 
 	if (of_property_read_u16_array(np, "ceva,p0-retry-params",
 					(u16 *)&cevapriv->pp5c[0], 2) < 0) {
 		dev_warn(dev, "ceva,p0-retry-params property not defined\n");
@@ -300,16 +287,13 @@ static int ceva_ahci_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Check if CCI is enabled for SATA. The DEV_DMA_COHERENT is returned
-	 * if CCI is enabled, so check for DEV_DMA_COHERENT.
-	 */
+	 
 	attr = device_get_dma_attr(dev);
 	cevapriv->is_cci_enabled = (attr == DEV_DMA_COHERENT);
 
 	hpriv->plat_data = cevapriv;
 
-	/* CEVA specific initialization */
+	 
 	ahci_ceva_setup(hpriv);
 
 	rc = ahci_platform_init_host(pdev, hpriv, &ahci_ceva_port_info,
@@ -339,14 +323,14 @@ static int __maybe_unused ceva_ahci_resume(struct device *dev)
 	if (rc)
 		return rc;
 
-	/* Configure CEVA specific config before resuming HBA */
+	 
 	ahci_ceva_setup(hpriv);
 
 	rc = ahci_platform_resume_host(dev);
 	if (rc)
 		goto disable_resources;
 
-	/* We resumed so update PM runtime state */
+	 
 	pm_runtime_disable(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
@@ -363,7 +347,7 @@ static SIMPLE_DEV_PM_OPS(ahci_ceva_pm_ops, ceva_ahci_suspend, ceva_ahci_resume);
 
 static const struct of_device_id ceva_ahci_of_match[] = {
 	{ .compatible = "ceva,ahci-1v84" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ceva_ahci_of_match);
 

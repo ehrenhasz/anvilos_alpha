@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * gpio-regulator.c
- *
- * Copyright 2011 Heiko Stuebner <heiko@sntech.de>
- *
- * based on fixed.c
- *
- * Copyright 2008 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * Copyright (c) 2009 Nokia Corporation
- * Roger Quadros <ext-roger.quadros@nokia.com>
- *
- * This is useful for systems with mixed controllable and
- * non-controllable regulators, as well as for allowing testing on
- * systems with no controllable regulators.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mutex.h>
@@ -151,16 +134,13 @@ of_get_gpio_regulator_config(struct device *dev, struct device_node *np,
 	if (config->init_data->constraints.boot_on)
 		config->enabled_at_boot = true;
 
-	/*
-	 * Do not use: undocumented device tree property.
-	 * This is kept around solely for device tree ABI stability.
-	 */
+	 
 	if (of_property_read_bool(np, "enable-at-boot"))
 		config->enabled_at_boot = true;
 
 	of_property_read_u32(np, "startup-delay-us", &config->startup_delay);
 
-	/* Fetch GPIO init levels */
+	 
 	ngpios = gpiod_count(dev, NULL);
 	if (ngpios > 0) {
 		config->gflags = devm_kzalloc(dev,
@@ -176,7 +156,7 @@ of_get_gpio_regulator_config(struct device *dev, struct device_node *np,
 			ret = of_property_read_u32_index(np, "gpios-states", i,
 							 &val);
 
-			/* Default to high per specification */
+			 
 			if (ret)
 				config->gflags[i] = GPIOD_OUT_HIGH;
 			else
@@ -186,7 +166,7 @@ of_get_gpio_regulator_config(struct device *dev, struct device_node *np,
 	}
 	config->ngpios = ngpios;
 
-	/* Fetch states. */
+	 
 	proplen = of_property_count_u32_elems(np, "states");
 	if (proplen < 0) {
 		dev_err(dev, "No 'states' property found\n");
@@ -283,7 +263,7 @@ static int gpio_regulator_probe(struct platform_device *pdev)
 							  config->gflags[i]);
 		if (IS_ERR(drvdata->gpiods[i]))
 			return PTR_ERR(drvdata->gpiods[i]);
-		/* This is good to know */
+		 
 		gpiod_set_consumer_name(drvdata->gpiods[i], drvdata->desc.name);
 	}
 	drvdata->nr_gpios = config->ngpios;
@@ -302,7 +282,7 @@ static int gpio_regulator_probe(struct platform_device *pdev)
 	drvdata->desc.owner = THIS_MODULE;
 	drvdata->desc.enable_time = config->startup_delay;
 
-	/* handle regulator type*/
+	 
 	switch (config->type) {
 	case REGULATOR_VOLTAGE:
 		drvdata->desc.type = REGULATOR_VOLTAGE;
@@ -318,7 +298,7 @@ static int gpio_regulator_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* build initial state from gpio init data. */
+	 
 	state = 0;
 	for (ptr = 0; ptr < drvdata->nr_gpios; ptr++) {
 		if (config->gflags[ptr] == GPIOD_OUT_HIGH)
@@ -331,10 +311,7 @@ static int gpio_regulator_probe(struct platform_device *pdev)
 	cfg.driver_data = drvdata;
 	cfg.of_node = np;
 
-	/*
-	 * The signal will be inverted by the GPIO core if flagged so in the
-	 * descriptor.
-	 */
+	 
 	if (config->enabled_at_boot)
 		gflags = GPIOD_OUT_HIGH | GPIOD_FLAGS_BIT_NONEXCLUSIVE;
 	else

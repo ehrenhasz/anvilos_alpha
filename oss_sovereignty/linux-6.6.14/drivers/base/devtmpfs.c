@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * devtmpfs - kernel-maintained tmpfs-based /dev
- *
- * Copyright (C) 2009, Kay Sievers <kay.sievers@vrfy.org>
- *
- * During bootup, before any driver core device is registered,
- * devtmpfs, a tmpfs-based filesystem is created. Every driver-core
- * device which requests a device node, will add a node in this
- * filesystem.
- * By default, all devices are named after the name of the device,
- * owned by root and have a default mode of 0600. Subsystems can
- * overwrite the default setting if needed.
- */
+
+ 
 
 #define pr_fmt(fmt) "devtmpfs: " fmt
 
@@ -48,7 +36,7 @@ static struct req {
 	struct completion done;
 	int err;
 	const char *name;
-	umode_t mode;	/* 0 => delete */
+	umode_t mode;	 
 	kuid_t uid;
 	kgid_t gid;
 	struct device *dev;
@@ -168,7 +156,7 @@ static int dev_mkdir(const char *name, umode_t mode)
 
 	err = vfs_mkdir(&nop_mnt_idmap, d_inode(path.dentry), dentry, mode);
 	if (!err)
-		/* mark as kernel-created inode */
+		 
 		d_inode(dentry)->i_private = &thread;
 	done_path_create(&path, dentry);
 	return err;
@@ -180,7 +168,7 @@ static int create_path(const char *nodepath)
 	char *s;
 	int err = 0;
 
-	/* parent directories do not exist, create them */
+	 
 	path = kstrdup(nodepath, GFP_KERNEL);
 	if (!path)
 		return -ENOMEM;
@@ -229,7 +217,7 @@ static int handle_create(const char *nodename, umode_t mode, kuid_t uid,
 		notify_change(&nop_mnt_idmap, dentry, &newattrs, NULL);
 		inode_unlock(d_inode(dentry));
 
-		/* mark as kernel-created inode */
+		 
 		d_inode(dentry)->i_private = &thread;
 	}
 	done_path_create(&path, dentry);
@@ -287,11 +275,11 @@ static int delete_path(const char *nodepath)
 
 static int dev_mynode(struct device *dev, struct inode *inode, struct kstat *stat)
 {
-	/* did we create it */
+	 
 	if (inode->i_private != &thread)
 		return 0;
 
-	/* does the dev_t match */
+	 
 	if (is_blockdev(dev)) {
 		if (!S_ISBLK(stat->mode))
 			return 0;
@@ -302,7 +290,7 @@ static int dev_mynode(struct device *dev, struct inode *inode, struct kstat *sta
 	if (stat->rdev != dev->devt)
 		return 0;
 
-	/* ours */
+	 
 	return 1;
 }
 
@@ -324,10 +312,7 @@ static int handle_remove(const char *nodename, struct device *dev)
 				  AT_STATX_SYNC_AS_STAT);
 		if (!err && dev_mynode(dev, d_inode(dentry), &stat)) {
 			struct iattr newattrs;
-			/*
-			 * before unlinking this node, reset permissions
-			 * of possible references like hardlinks
-			 */
+			 
 			newattrs.ia_uid = GLOBAL_ROOT_UID;
 			newattrs.ia_gid = GLOBAL_ROOT_GID;
 			newattrs.ia_mode = stat.mode & ~0777;
@@ -353,10 +338,7 @@ static int handle_remove(const char *nodename, struct device *dev)
 	return err;
 }
 
-/*
- * If configured, or requested by the commandline, devtmpfs will be
- * auto-mounted after the kernel mounted the root filesystem.
- */
+ 
 int __init devtmpfs_mount(void)
 {
 	int err;
@@ -419,18 +401,14 @@ static noinline int __init devtmpfs_setup(void *p)
 	err = init_mount("devtmpfs", "/", "devtmpfs", DEVTMPFS_MFLAGS, NULL);
 	if (err)
 		goto out;
-	init_chdir("/.."); /* will traverse into overmounted root */
+	init_chdir("/..");  
 	init_chroot(".");
 out:
 	*(int *)p = err;
 	return err;
 }
 
-/*
- * The __ref is because devtmpfs_setup needs to be __init for the routines it
- * calls.  That call is done while devtmpfs_init, which is marked __init,
- * synchronously waits for it to complete.
- */
+ 
 static int __ref devtmpfsd(void *p)
 {
 	int err = devtmpfs_setup(p);
@@ -442,10 +420,7 @@ static int __ref devtmpfsd(void *p)
 	return 0;
 }
 
-/*
- * Create devtmpfs instance, driver-core devices will add their device
- * nodes here.
- */
+ 
 int __init devtmpfs_init(void)
 {
 	char opts[] = "mode=0755";

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell OcteonTX CPT driver
- *
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 
 #include "otx_cpt_common.h"
 #include "otx_cptpf.h"
@@ -16,13 +9,13 @@
 
 static void otx_cpt_disable_mbox_interrupts(struct otx_cpt_device *cpt)
 {
-	/* Disable mbox(0) interrupts for all VFs */
+	 
 	writeq(~0ull, cpt->reg_base + OTX_CPT_PF_MBOX_ENA_W1CX(0));
 }
 
 static void otx_cpt_enable_mbox_interrupts(struct otx_cpt_device *cpt)
 {
-	/* Enable mbox(0) interrupts for all VFs */
+	 
 	writeq(~0ull, cpt->reg_base + OTX_CPT_PF_MBOX_ENA_W1SX(0));
 }
 
@@ -70,13 +63,13 @@ static int otx_cpt_device_init(struct otx_cpt_device *cpt)
 	u16 sdevid;
 	u64 bist;
 
-	/* Reset the PF when probed first */
+	 
 	otx_cpt_reset(cpt);
 	mdelay(100);
 
 	pci_read_config_word(cpt->pdev, PCI_SUBSYSTEM_ID, &sdevid);
 
-	/* Check BIST status */
+	 
 	bist = (u64)otx_cpt_check_bist_status(cpt);
 	if (bist) {
 		dev_err(dev, "RAM BIST failed with code 0x%llx\n", bist);
@@ -89,7 +82,7 @@ static int otx_cpt_device_init(struct otx_cpt_device *cpt)
 		return -ENODEV;
 	}
 
-	/* Get max enabled cores */
+	 
 	otx_cpt_find_max_enabled_cores(cpt);
 
 	if ((sdevid == OTX_CPT_PCI_PF_SUBSYS_ID) &&
@@ -100,10 +93,10 @@ static int otx_cpt_device_init(struct otx_cpt_device *cpt)
 		cpt->pf_type = OTX_CPT_SE;
 	}
 
-	/* Get max VQs/VFs supported by the device */
+	 
 	cpt->max_vfs = pci_sriov_get_totalvfs(cpt->pdev);
 
-	/* Disable all cores */
+	 
 	otx_cpt_disable_all_cores(cpt);
 
 	return 0;
@@ -116,7 +109,7 @@ static int otx_cpt_register_interrupts(struct otx_cpt_device *cpt)
 	u32 num_vec = OTX_CPT_PF_MSIX_VECTORS;
 	int ret;
 
-	/* Enable MSI-X */
+	 
 	ret = pci_alloc_irq_vectors(cpt->pdev, num_vec, num_vec, PCI_IRQ_MSIX);
 	if (ret < 0) {
 		dev_err(&cpt->pdev->dev,
@@ -125,7 +118,7 @@ static int otx_cpt_register_interrupts(struct otx_cpt_device *cpt)
 		return ret;
 	}
 
-	/* Register mailbox interrupt handlers */
+	 
 	ret = request_irq(pci_irq_vector(cpt->pdev,
 				OTX_CPT_PF_INT_VEC_E_MBOXX(mbox_int_idx, 0)),
 				otx_cpt_mbx0_intr_handler, 0, "CPT Mbox0", cpt);
@@ -134,7 +127,7 @@ static int otx_cpt_register_interrupts(struct otx_cpt_device *cpt)
 		pci_free_irq_vectors(cpt->pdev);
 		return ret;
 	}
-	/* Enable mailbox interrupt */
+	 
 	otx_cpt_enable_mbox_interrupts(cpt);
 	return 0;
 }
@@ -218,7 +211,7 @@ static int otx_cpt_probe(struct pci_dev *pdev,
 		goto err_release_regions;
 	}
 
-	/* MAP PF's configuration registers */
+	 
 	cpt->reg_base = pci_iomap(pdev, OTX_CPT_PF_PCI_CFG_BAR, 0);
 	if (!cpt->reg_base) {
 		dev_err(dev, "Cannot map config register space, aborting\n");
@@ -226,17 +219,17 @@ static int otx_cpt_probe(struct pci_dev *pdev,
 		goto err_release_regions;
 	}
 
-	/* CPT device HW initialization */
+	 
 	err = otx_cpt_device_init(cpt);
 	if (err)
 		goto err_unmap_region;
 
-	/* Register interrupts */
+	 
 	err = otx_cpt_register_interrupts(cpt);
 	if (err)
 		goto err_unmap_region;
 
-	/* Initialize engine groups */
+	 
 	err = otx_cpt_init_eng_grps(pdev, &cpt->eng_grps, cpt->pf_type);
 	if (err)
 		goto err_unregister_interrupts;
@@ -264,13 +257,13 @@ static void otx_cpt_remove(struct pci_dev *pdev)
 	if (!cpt)
 		return;
 
-	/* Disable VFs */
+	 
 	pci_disable_sriov(pdev);
-	/* Cleanup engine groups */
+	 
 	otx_cpt_cleanup_eng_grps(pdev, &cpt->eng_grps);
-	/* Disable CPT PF interrupts */
+	 
 	otx_cpt_unregister_interrupts(cpt);
-	/* Disengage SE and AE cores from all groups */
+	 
 	otx_cpt_disable_all_cores(cpt);
 	pci_iounmap(pdev, cpt->reg_base);
 	pci_release_regions(pdev);
@@ -278,10 +271,10 @@ static void otx_cpt_remove(struct pci_dev *pdev)
 	pci_set_drvdata(pdev, NULL);
 }
 
-/* Supported devices */
+ 
 static const struct pci_device_id otx_cpt_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, OTX_CPT_PCI_PF_DEVICE_ID) },
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 static struct pci_driver otx_cpt_pci_driver = {

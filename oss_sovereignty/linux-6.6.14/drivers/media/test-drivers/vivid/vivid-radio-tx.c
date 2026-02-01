@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-radio-tx.c - radio transmitter support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -51,12 +47,7 @@ retry:
 	if (blk - VIVID_RDS_GEN_BLOCKS >= dev->radio_tx_rds_last_block)
 		dev->radio_tx_rds_last_block = blk - VIVID_RDS_GEN_BLOCKS + 1;
 
-	/*
-	 * No data is available if there hasn't been time to get new data,
-	 * or if the RDS receiver has been disabled, or if we use the data
-	 * from the RDS transmitter and that RDS transmitter has been disabled,
-	 * or if the signal quality is too weak.
-	 */
+	 
 	if (blk == dev->radio_tx_rds_last_block ||
 	    !(dev->radio_tx_subchans & V4L2_TUNER_SUB_RDS)) {
 		mutex_unlock(&dev->mutex);

@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/ni_labpc_pci.c
- * Driver for National Instruments Lab-PC PCI-1200
- * Copyright (C) 2001, 2002, 2003 Frank Mori Hess <fmhess@users.sourceforge.net>
- */
 
-/*
- * Driver: ni_labpc_pci
- * Description: National Instruments Lab-PC PCI-1200
- * Devices: [National Instruments] PCI-1200 (ni_pci-1200)
- * Author: Frank Mori Hess <fmhess@users.sourceforge.net>
- * Status: works
- *
- * This is the PCI-specific support split off from the ni_labpc driver.
- *
- * Configuration Options: not applicable, uses PCI auto config
- *
- * NI manuals:
- * 340914a (pci-1200)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -40,25 +23,25 @@ static const struct labpc_boardinfo labpc_pci_boards[] = {
 	},
 };
 
-/* ripped from mite.h and mite_setup2() to avoid mite dependency */
-#define MITE_IODWBSR	0xc0	/* IO Device Window Base Size Register */
-#define WENAB		BIT(7)	/* window enable */
+ 
+#define MITE_IODWBSR	0xc0	 
+#define WENAB		BIT(7)	 
 
 static int labpc_pci_mite_init(struct pci_dev *pcidev)
 {
 	void __iomem *mite_base;
 	u32 main_phys_addr;
 
-	/* ioremap the MITE registers (BAR 0) temporarily */
+	 
 	mite_base = pci_ioremap_bar(pcidev, 0);
 	if (!mite_base)
 		return -ENOMEM;
 
-	/* set data window to main registers (BAR 1) */
+	 
 	main_phys_addr = pci_resource_start(pcidev, 1);
 	writel(main_phys_addr | WENAB, mite_base + MITE_IODWBSR);
 
-	/* finished with MITE registers */
+	 
 	iounmap(mite_base);
 	return 0;
 }

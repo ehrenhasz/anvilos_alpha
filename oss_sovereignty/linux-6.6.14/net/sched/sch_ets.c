@@ -1,33 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sched/sch_ets.c         Enhanced Transmission Selection scheduler
- *
- * Description
- * -----------
- *
- * The Enhanced Transmission Selection scheduler is a classful queuing
- * discipline that merges functionality of PRIO and DRR qdiscs in one scheduler.
- * ETS makes it easy to configure a set of strict and bandwidth-sharing bands to
- * implement the transmission selection described in 802.1Qaz.
- *
- * Although ETS is technically classful, it's not possible to add and remove
- * classes at will. Instead one specifies number of classes, how many are
- * PRIO-like and how many DRR-like, and quanta for the latter.
- *
- * Algorithm
- * ---------
- *
- * The strict classes, if any, are tried for traffic first: first band 0, if it
- * has no traffic then band 1, etc.
- *
- * When there is no traffic in any of the strict queues, the bandwidth-sharing
- * ones are tried next. Each band is assigned a deficit counter, initialized to
- * "quantum" of that band. ETS maintains a list of active bandwidth-sharing
- * bands whose qdiscs are non-empty. A packet is dequeued from the band at the
- * head of the list if the packet size is smaller or equal to the deficit
- * counter. If the counter is too small, it is increased by "quantum" and the
- * scheduler moves on to the next band in the active list.
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/gen_stats.h>
@@ -37,7 +9,7 @@
 #include <net/sch_generic.h>
 
 struct ets_class {
-	struct list_head alist; /* In struct ets_sched.active. */
+	struct list_head alist;  
 	struct Qdisc *qdisc;
 	u32 quantum;
 	u32 deficit;
@@ -205,9 +177,7 @@ static int ets_class_change(struct Qdisc *sch, u32 classid, u32 parentid,
 	unsigned int quantum;
 	int err;
 
-	/* Classes can be added and removed only through Qdisc_ops.change
-	 * interface.
-	 */
+	 
 	if (!cl) {
 		NL_SET_ERR_MSG(extack, "Fine-grained class addition and removal is not supported");
 		return -EOPNOTSUPP;
@@ -223,7 +193,7 @@ static int ets_class_change(struct Qdisc *sch, u32 classid, u32 parentid,
 		return err;
 
 	if (!tb[TCA_ETS_QUANTA_BAND])
-		/* Nothing to configure. */
+		 
 		return 0;
 
 	if (ets_class_is_strict(q, cl)) {
@@ -286,10 +256,7 @@ static void ets_class_qlen_notify(struct Qdisc *sch, unsigned long arg)
 	struct ets_class *cl = ets_class_from_arg(sch, arg);
 	struct ets_sched *q = qdisc_priv(sch);
 
-	/* We get notified about zero-length child Qdiscs as well if they are
-	 * offloaded. Those aren't on the active list though, so don't attempt
-	 * to remove them.
-	 */
+	 
 	if (!ets_class_is_strict(q, cl) && sch->q.qlen)
 		list_del(&cl->alist);
 }
@@ -528,7 +495,7 @@ static int ets_qdisc_priomap_parse(struct nlattr *priomap_attr,
 			priomap[prio++] = band;
 			break;
 		default:
-			WARN_ON_ONCE(1); /* Validate should have caught this. */
+			WARN_ON_ONCE(1);  
 			return -EINVAL;
 		}
 	}
@@ -565,7 +532,7 @@ static int ets_qdisc_quanta_parse(struct Qdisc *sch, struct nlattr *quanta_attr,
 				return err;
 			break;
 		default:
-			WARN_ON_ONCE(1); /* Validate should have caught this. */
+			WARN_ON_ONCE(1);  
 			return -EINVAL;
 		}
 	}
@@ -600,7 +567,7 @@ static int ets_qdisc_change(struct Qdisc *sch, struct nlattr *opt,
 		NL_SET_ERR_MSG_MOD(extack, "Invalid number of bands");
 		return -EINVAL;
 	}
-	/* Unless overridden, traffic goes to the last band. */
+	 
 	memset(priomap, nbands - 1, sizeof(priomap));
 
 	if (tb[TCA_ETS_NSTRICT]) {
@@ -624,15 +591,13 @@ static int ets_qdisc_change(struct Qdisc *sch, struct nlattr *opt,
 		if (err)
 			return err;
 	}
-	/* If there are more bands than strict + quanta provided, the remaining
-	 * ones are ETS with quantum of MTU. Initialize the missing values here.
-	 */
+	 
 	for (i = nstrict; i < nbands; i++) {
 		if (!quanta[i])
 			quanta[i] = psched_mtu(qdisc_dev(sch));
 	}
 
-	/* Before commit, make sure we can allocate all new qdiscs */
+	 
 	for (i = oldbands; i < nbands; i++) {
 		queues[i] = qdisc_create_dflt(sch->dev_queue, &pfifo_qdisc_ops,
 					      ets_class_id(sch, &q->classes[i]),

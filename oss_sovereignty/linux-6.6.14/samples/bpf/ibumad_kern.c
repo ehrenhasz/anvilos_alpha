@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
 
-/*
- * ibumad BPF sample kernel side
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * Copyright(c) 2018 Ira Weiny, Intel Corporation
- */
+
+ 
 
 #define KBUILD_MODNAME "ibumad_count_pkts_by_class"
 #include <uapi/linux/bpf.h>
@@ -18,16 +10,16 @@
 
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
-	__type(key, u32); /* class; u32 required */
-	__type(value, u64); /* count of mads read */
-	__uint(max_entries, 256); /* Room for all Classes */
+	__type(key, u32);  
+	__type(value, u64);  
+	__uint(max_entries, 256);  
 } read_count SEC(".maps");
 
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
-	__type(key, u32); /* class; u32 required */
-	__type(value, u64); /* count of mads written */
-	__uint(max_entries, 256); /* Room for all Classes */
+	__type(key, u32);  
+	__type(value, u64);  
+	__uint(max_entries, 256);  
 } write_count SEC(".maps");
 
 #undef DEBUG
@@ -36,12 +28,7 @@ struct {
 #define bpf_printk(fmt, ...)
 #endif
 
-/* Taken from the current format defined in
- * include/trace/events/ib_umad.h
- * and
- * /sys/kernel/tracing/events/ib_umad/ib_umad_read/format
- * /sys/kernel/tracing/events/ib_umad/ib_umad_write/format
- */
+ 
 struct ib_umad_rw_args {
 	u64 pad;
 	u8 port_num;

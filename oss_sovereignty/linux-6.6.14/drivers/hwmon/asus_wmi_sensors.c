@@ -1,44 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HWMON driver for ASUS motherboards that provides sensor readouts via WMI
- * interface present in the UEFI of the X370/X470/B450/X399 Ryzen motherboards.
- *
- * Copyright (C) 2018-2019 Ed Brindley <kernel@maidavale.org>
- *
- * WMI interface provides:
- * - CPU Core Voltage,
- * - CPU SOC Voltage,
- * - DRAM Voltage,
- * - VDDP Voltage,
- * - 1.8V PLL Voltage,
- * - +12V Voltage,
- * - +5V Voltage,
- * - 3VSB Voltage,
- * - VBAT Voltage,
- * - AVCC3 Voltage,
- * - SB 1.05V Voltage,
- * - CPU Core Voltage,
- * - CPU SOC Voltage,
- * - DRAM Voltage,
- * - CPU Fan RPM,
- * - Chassis Fan 1 RPM,
- * - Chassis Fan 2 RPM,
- * - Chassis Fan 3 RPM,
- * - HAMP Fan RPM,
- * - Water Pump RPM,
- * - CPU OPT RPM,
- * - Water Flow RPM,
- * - AIO Pump RPM,
- * - CPU Temperature,
- * - CPU Socket Temperature,
- * - Motherboard Temperature,
- * - Chipset Temperature,
- * - Tsensor 1 Temperature,
- * - CPU VRM Temperature,
- * - Water In,
- * - Water Out,
- * - CPU VRM Output Current.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -52,11 +13,11 @@
 #include <linux/wmi.h>
 
 #define ASUSWMI_MONITORING_GUID		"466747A0-70EC-11DE-8A39-0800200C9A66"
-#define ASUSWMI_METHODID_GET_VALUE	0x52574543 /* RWEC */
-#define ASUSWMI_METHODID_UPDATE_BUFFER	0x51574543 /* QWEC */
-#define ASUSWMI_METHODID_GET_INFO	0x50574543 /* PWEC */
-#define ASUSWMI_METHODID_GET_NUMBER	0x50574572 /* PWEr */
-#define ASUSWMI_METHODID_GET_VERSION	0x50574574 /* PWEt */
+#define ASUSWMI_METHODID_GET_VALUE	0x52574543  
+#define ASUSWMI_METHODID_UPDATE_BUFFER	0x51574543  
+#define ASUSWMI_METHODID_GET_INFO	0x50574543  
+#define ASUSWMI_METHODID_GET_NUMBER	0x50574572  
+#define ASUSWMI_METHODID_GET_VERSION	0x50574574  
 
 #define ASUS_WMI_MAX_STR_SIZE		32
 
@@ -134,16 +95,7 @@ static u32 hwmon_attributes[hwmon_max] = {
 	[hwmon_fan]	= HWMON_F_INPUT | HWMON_F_LABEL,
 };
 
-/**
- * struct asus_wmi_sensor_info - sensor info.
- * @id: sensor id.
- * @data_type: sensor class e.g. voltage, temp etc.
- * @location: sensor location.
- * @name: sensor name.
- * @source: sensor source.
- * @type: sensor type signed, unsigned etc.
- * @cached_value: cached sensor value.
- */
+ 
 struct asus_wmi_sensor_info {
 	u32 id;
 	int data_type;
@@ -155,7 +107,7 @@ struct asus_wmi_sensor_info {
 };
 
 struct asus_wmi_wmi_info {
-	unsigned long source_last_updated[3];	/* in jiffies */
+	unsigned long source_last_updated[3];	 
 	int sensor_count;
 
 	const struct asus_wmi_sensor_info **info[hwmon_max];
@@ -164,13 +116,11 @@ struct asus_wmi_wmi_info {
 
 struct asus_wmi_sensors {
 	struct asus_wmi_wmi_info wmi;
-	/* lock access to internal cache */
+	 
 	struct mutex lock;
 };
 
-/*
- * Universal method for calling WMI method
- */
+ 
 static int asus_wmi_call_method(u32 method_id, u32 *args, struct acpi_buffer *output)
 {
 	struct acpi_buffer input = {(acpi_size) sizeof(*args), args };
@@ -184,9 +134,7 @@ static int asus_wmi_call_method(u32 method_id, u32 *args, struct acpi_buffer *ou
 	return 0;
 }
 
-/*
- * Gets the version of the ASUS sensors interface implemented
- */
+ 
 static int asus_wmi_get_version(u32 *version)
 {
 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -215,9 +163,7 @@ out_free_obj:
 	return err;
 }
 
-/*
- * Gets the number of sensor items
- */
+ 
 static int asus_wmi_get_item_count(u32 *count)
 {
 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -263,9 +209,7 @@ static int asus_wmi_hwmon_add_chan_info(struct hwmon_channel_info *asus_wmi_hwmo
 	return 0;
 }
 
-/*
- * For a given sensor item returns details e.g. type (voltage/temperature/fan speed etc), bank etc
- */
+ 
 static int asus_wmi_sensor_info(int index, struct asus_wmi_sensor_info *s)
 {
 	union acpi_object name_obj, data_type_obj, location_obj, source_obj, type_obj;
@@ -399,16 +343,16 @@ static int asus_wmi_update_values_for_source(u8 source, struct asus_wmi_sensors 
 
 static int asus_wmi_scale_sensor_value(u32 value, int data_type)
 {
-	/* FAN_RPM and WATER_FLOW don't need scaling */
+	 
 	switch (data_type) {
 	case VOLTAGE:
-		/* value in microVolts */
+		 
 		return DIV_ROUND_CLOSEST(value,  KILO);
 	case TEMPERATURE_C:
-		/* value in Celsius */
+		 
 		return value * MILLIDEGREE_PER_DEGREE;
 	case CURRENT:
-		/* value in Amperes */
+		 
 		return value * MILLI;
 	}
 	return value;
@@ -442,7 +386,7 @@ unlock:
 	return ret;
 }
 
-/* Now follow the functions that implement the hwmon interface */
+ 
 static int asus_wmi_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 			       u32 attr, int channel, long *val)
 {

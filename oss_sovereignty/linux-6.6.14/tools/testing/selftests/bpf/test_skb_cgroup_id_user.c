@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
+
+
 
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +20,7 @@
 #define CGROUP_PATH		"/skb_cgroup_test"
 #define NUM_CGROUP_LEVELS	4
 
-/* RFC 4291, Section 2.7.1 */
+ 
 #define LINKLOCAL_MULTICAST	"ff02::1"
 
 static int mk_dst_addr(const char *ip, const char *iface,
@@ -119,10 +119,10 @@ int check_ancestor_cgroup_ids(int prog_id)
 	int err = 0;
 	int map_fd;
 
-	expected_ids[0] = get_cgroup_id("/..");	/* root cgroup */
+	expected_ids[0] = get_cgroup_id("/..");	 
 	expected_ids[1] = get_cgroup_id("");
 	expected_ids[2] = get_cgroup_id(CGROUP_PATH);
-	expected_ids[3] = 0; /* non-existent cgroup */
+	expected_ids[3] = 0;  
 
 	map_fd = get_map_fd_by_prog_id(prog_id);
 	if (map_fd < 0)
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	cgfd = cgroup_setup_and_join(CGROUP_PATH);

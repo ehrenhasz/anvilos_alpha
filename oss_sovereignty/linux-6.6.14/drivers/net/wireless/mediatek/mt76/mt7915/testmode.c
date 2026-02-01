@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include "mt7915.h"
 #include "mac.h"
@@ -10,7 +10,7 @@ enum {
 	TM_CHANGED_TXPOWER,
 	TM_CHANGED_FREQ_OFFSET,
 
-	/* must be last */
+	 
 	NUM_TM_CHANGED
 };
 
@@ -46,7 +46,7 @@ mt7915_tm_set_tx_power(struct mt7915_phy *phy)
 		u8 format_id;
 		u8 band_idx;
 		s8 tx_power;
-		u8 ant_idx;	/* Only 0 is valid */
+		u8 ant_idx;	 
 		u8 center_chan;
 		u8 rsv[3];
 	} __packed req = {
@@ -59,7 +59,7 @@ mt7915_tm_set_tx_power(struct mt7915_phy *phy)
 	if (phy->mt76->test.state != MT76_TM_STATE_OFF)
 		tx_power = phy->mt76->test.tx_power;
 
-	/* Tx power of the other antennas are the same as antenna 0 */
+	 
 	if (tx_power && tx_power[0])
 		req.tx_power = tx_power[0];
 
@@ -235,7 +235,7 @@ mt7915_tm_set_ipg_params(struct mt7915_phy *phy, u32 ipg, u8 mode)
 done:
 	txv_time = mt76_get_field(dev, MT_TMAC_ATCR(band),
 				  MT_TMAC_ATCR_TXV_TOUT);
-	txv_time *= 50;	/* normal clock time */
+	txv_time *= 50;	 
 
 	i2t_time = (slot_time * 1000 - txv_time - BBP_PROC_TIME) / 50;
 	tr2t_time = (sifs * 1000 - txv_time - BBP_PROC_TIME) / 50;
@@ -395,7 +395,7 @@ mt7915_tm_reg_backup_restore(struct mt7915_phy *phy)
 	mt76_wr(dev, MT_TMAC_TFCR0(band), 0);
 	mt76_clear(dev, MT_TMAC_TCR0(band), MT_TMAC_TCR0_TBTT_STOP_CTRL);
 
-	/* config rx filter for testmode rx */
+	 
 	mt76_wr(dev, MT_WF_RFCR(band), 0xcf70a);
 	mt76_wr(dev, MT_WF_RFCR1(band), 0);
 }
@@ -456,7 +456,7 @@ mt7915_tm_set_tx_frames(struct mt7915_phy *phy, bool en)
 	mt7915_tm_set_tam_arb(phy, en,
 			      td->tx_rate_mode == MT76_TM_TX_MODE_HE_MU);
 
-	/* if all three params are set, duty_cycle will be ignored */
+	 
 	if (duty_cycle && tx_time && !ipg) {
 		ipg = tx_time * 100 / duty_cycle - tx_time;
 	} else if (duty_cycle && !tx_time && ipg) {
@@ -489,7 +489,7 @@ mt7915_tm_set_rx_frames(struct mt7915_phy *phy, bool en)
 
 		mt7915_tm_update_channel(phy);
 
-		/* read-clear */
+		 
 		mt76_rr(dev, MT_MIB_SDR3(phy->mt76->band_idx));
 		mt7915_tm_set_trx(phy, TM_MAC_RX_RXV, en);
 	}

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fs/nfs/nfs4session.c
- *
- * Copyright (c) 2012 Trond Myklebust <Trond.Myklebust@netapp.com>
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/string.h>
@@ -33,9 +28,7 @@ static void nfs4_init_slot_table(struct nfs4_slot_table *tbl, const char *queue)
 	init_completion(&tbl->complete);
 }
 
-/*
- * nfs4_shrink_slot_table - free retired slots from the slot table
- */
+ 
 static void nfs4_shrink_slot_table(struct nfs4_slot_table  *tbl, u32 newsize)
 {
 	struct nfs4_slot **p;
@@ -54,40 +47,22 @@ static void nfs4_shrink_slot_table(struct nfs4_slot_table  *tbl, u32 newsize)
 	}
 }
 
-/**
- * nfs4_slot_tbl_drain_complete - wake waiters when drain is complete
- * @tbl: controlling slot table
- *
- */
+ 
 void nfs4_slot_tbl_drain_complete(struct nfs4_slot_table *tbl)
 {
 	if (nfs4_slot_tbl_draining(tbl))
 		complete(&tbl->complete);
 }
 
-/*
- * nfs4_free_slot - free a slot and efficiently update slot table.
- *
- * freeing a slot is trivially done by clearing its respective bit
- * in the bitmap.
- * If the freed slotid equals highest_used_slotid we want to update it
- * so that the server would be able to size down the slot table if needed,
- * otherwise we know that the highest_used_slotid is still in use.
- * When updating highest_used_slotid there may be "holes" in the bitmap
- * so we need to scan down from highest_used_slotid to 0 looking for the now
- * highest slotid in use.
- * If none found, highest_used_slotid is set to NFS4_NO_SLOT.
- *
- * Must be called while holding tbl->slot_tbl_lock
- */
+ 
 void nfs4_free_slot(struct nfs4_slot_table *tbl, struct nfs4_slot *slot)
 {
 	u32 slotid = slot->slot_nr;
 
-	/* clear used bit in bitmap */
+	 
 	__clear_bit(slotid, tbl->used_slots);
 
-	/* update highest_used_slotid when it is freed */
+	 
 	if (slotid == tbl->highest_used_slotid) {
 		u32 new_max = find_last_bit(tbl->used_slots, slotid);
 		if (new_max < slotid)
@@ -151,11 +126,7 @@ static void nfs4_lock_slot(struct nfs4_slot_table *tbl,
 	slot->generation = tbl->generation;
 }
 
-/*
- * nfs4_try_to_lock_slot - Given a slot try to allocate it
- *
- * Note: must be called with the slot_tbl_lock held.
- */
+ 
 bool nfs4_try_to_lock_slot(struct nfs4_slot_table *tbl, struct nfs4_slot *slot)
 {
 	if (nfs4_test_locked_slot(tbl, slot->slot_nr))
@@ -164,11 +135,7 @@ bool nfs4_try_to_lock_slot(struct nfs4_slot_table *tbl, struct nfs4_slot *slot)
 	return true;
 }
 
-/*
- * nfs4_lookup_slot - Find a slot but don't allocate it
- *
- * Note: must be called with the slot_tbl_lock held.
- */
+ 
 struct nfs4_slot *nfs4_lookup_slot(struct nfs4_slot_table *tbl, u32 slotid)
 {
 	if (slotid <= tbl->max_slotid)
@@ -191,13 +158,7 @@ static int nfs4_slot_get_seqid(struct nfs4_slot_table  *tbl, u32 slotid,
 	return ret;
 }
 
-/*
- * nfs4_slot_seqid_in_use - test if a slot sequence id is still in use
- *
- * Given a slot table, slot id and sequence number, determine if the
- * RPC call in question is still in flight. This function is mainly
- * intended for use by the callback channel.
- */
+ 
 static bool nfs4_slot_seqid_in_use(struct nfs4_slot_table *tbl,
 		u32 slotid, u32 seq_nr)
 {
@@ -212,13 +173,7 @@ static bool nfs4_slot_seqid_in_use(struct nfs4_slot_table *tbl,
 	return ret;
 }
 
-/*
- * nfs4_slot_wait_on_seqid - wait until a slot sequence id is complete
- *
- * Given a slot table, slot id and sequence number, wait until the
- * corresponding RPC call completes. This function is mainly
- * intended for use by the callback channel.
- */
+ 
 int nfs4_slot_wait_on_seqid(struct nfs4_slot_table *tbl,
 		u32 slotid, u32 seq_nr,
 		unsigned long timeout)
@@ -230,15 +185,7 @@ int nfs4_slot_wait_on_seqid(struct nfs4_slot_table *tbl,
 	return 0;
 }
 
-/*
- * nfs4_alloc_slot - efficiently look for a free slot
- *
- * nfs4_alloc_slot looks for an unset bit in the used_slots bitmap.
- * If found, we mark the slot as used, update the highest_used_slotid,
- * and respectively set up the sequence operation args.
- *
- * Note: must be called with under the slot_tbl_lock.
- */
+ 
 struct nfs4_slot *nfs4_alloc_slot(struct nfs4_slot_table *tbl)
 {
 	struct nfs4_slot *ret = ERR_PTR(-EBUSY);
@@ -291,9 +238,7 @@ static void nfs4_reset_slot_table(struct nfs4_slot_table *tbl,
 	tbl->max_slotid = server_highest_slotid;
 }
 
-/*
- * (re)Initialise a slot table
- */
+ 
 static int nfs4_realloc_slot_table(struct nfs4_slot_table *tbl,
 		u32 max_reqs, u32 ivalue)
 {
@@ -320,33 +265,20 @@ out:
 	return ret;
 }
 
-/*
- * nfs4_release_slot_table - release all slot table entries
- */
+ 
 static void nfs4_release_slot_table(struct nfs4_slot_table *tbl)
 {
 	nfs4_shrink_slot_table(tbl, 0);
 }
 
-/**
- * nfs4_shutdown_slot_table - release resources attached to a slot table
- * @tbl: slot table to shut down
- *
- */
+ 
 void nfs4_shutdown_slot_table(struct nfs4_slot_table *tbl)
 {
 	nfs4_release_slot_table(tbl);
 	rpc_destroy_wait_queue(&tbl->slot_tbl_waitq);
 }
 
-/**
- * nfs4_setup_slot_table - prepare a stand-alone slot table for use
- * @tbl: slot table to set up
- * @max_reqs: maximum number of requests allowed
- * @queue: name to give RPC wait queue
- *
- * Returns zero on success, or a negative errno.
- */
+ 
 int nfs4_setup_slot_table(struct nfs4_slot_table *tbl, unsigned int max_reqs,
 		const char *queue)
 {
@@ -424,7 +356,7 @@ static void nfs41_set_max_slotid_locked(struct nfs4_slot_table *tbl,
 	nfs41_wake_slot_table(tbl);
 }
 
-/* Update the client's idea of target_highest_slotid */
+ 
 static void nfs41_set_target_slotid_locked(struct nfs4_slot_table *tbl,
 		u32 target_highest_slotid)
 {
@@ -452,7 +384,7 @@ static void nfs41_set_server_slotid_locked(struct nfs4_slot_table *tbl,
 		return;
 	if (tbl->highest_used_slotid > highest_slotid)
 		return;
-	/* Deallocate slots */
+	 
 	nfs4_shrink_slot_table(tbl, highest_slotid + 1);
 	tbl->server_highest_slotid = highest_slotid;
 }
@@ -483,9 +415,7 @@ static bool nfs41_same_sign_or_zero_s32(s32 s1, s32 s2)
 	return nfs41_sign_s32(s1) == nfs41_sign_s32(s2);
 }
 
-/* Try to eliminate outliers by checking for sharp changes in the
- * derivatives and second derivatives
- */
+ 
 static bool nfs41_is_outlier_target_slotid(struct nfs4_slot_table *tbl,
 		u32 new_target)
 {
@@ -496,10 +426,10 @@ static bool nfs41_is_outlier_target_slotid(struct nfs4_slot_table *tbl,
 			tbl->target_highest_slotid);
 	d2_target = nfs41_derivative_target_slotid(d_target,
 			tbl->d_target_highest_slotid);
-	/* Is first derivative same sign? */
+	 
 	if (nfs41_same_sign_or_zero_s32(d_target, tbl->d_target_highest_slotid))
 		ret = false;
-	/* Is second derivative same sign? */
+	 
 	if (nfs41_same_sign_or_zero_s32(d2_target, tbl->d2_target_highest_slotid))
 		ret = false;
 	tbl->d_target_highest_slotid = d_target;
@@ -530,28 +460,25 @@ static void nfs4_release_session_slot_tables(struct nfs4_session *session)
 	nfs4_release_slot_table(&session->bc_slot_table);
 }
 
-/*
- * Initialize or reset the forechannel and backchannel tables
- */
+ 
 int nfs4_setup_session_slot_tables(struct nfs4_session *ses)
 {
 	struct nfs4_slot_table *tbl;
 	int status;
 
 	dprintk("--> %s\n", __func__);
-	/* Fore channel */
+	 
 	tbl = &ses->fc_slot_table;
 	tbl->session = ses;
 	status = nfs4_realloc_slot_table(tbl, ses->fc_attrs.max_reqs, 1);
-	if (status || !(ses->flags & SESSION4_BACK_CHAN)) /* -ENOMEM */
+	if (status || !(ses->flags & SESSION4_BACK_CHAN))  
 		return status;
-	/* Back channel */
+	 
 	tbl = &ses->bc_slot_table;
 	tbl->session = ses;
 	status = nfs4_realloc_slot_table(tbl, ses->bc_attrs.max_reqs, 0);
 	if (status && tbl->slots == NULL)
-		/* Fore and back channel share a connection so get
-		 * both slot tables or neither */
+		 
 		nfs4_release_session_slot_tables(ses);
 	return status;
 }
@@ -597,13 +524,7 @@ void nfs4_destroy_session(struct nfs4_session *session)
 	kfree(session);
 }
 
-/*
- * With sessions, the client is not marked ready until after a
- * successful EXCHANGE_ID and CREATE_SESSION.
- *
- * Map errors cl_cons_state errors to EPROTONOSUPPORT to indicate
- * other versions of NFS can be tried.
- */
+ 
 static int nfs41_check_session_ready(struct nfs_client *clp)
 {
 	int ret;
@@ -635,10 +556,7 @@ int nfs4_init_ds_session(struct nfs_client *clp, unsigned long lease_time)
 
 	spin_lock(&clp->cl_lock);
 	if (test_and_clear_bit(NFS4_SESSION_INITING, &session->session_state)) {
-		/*
-		 * Do not set NFS_CS_CHECK_LEASE_TIME instead set the
-		 * DS lease to be equal to the MDS lease.
-		 */
+		 
 		clp->cl_lease_time = lease_time;
 		clp->cl_last_renewal = jiffies;
 	}
@@ -647,11 +565,11 @@ int nfs4_init_ds_session(struct nfs_client *clp, unsigned long lease_time)
 	ret = nfs41_check_session_ready(clp);
 	if (ret)
 		return ret;
-	/* Test for the DS role */
+	 
 	if (!is_ds_client(clp))
 		return -ENODEV;
 	return 0;
 }
 EXPORT_SYMBOL_GPL(nfs4_init_ds_session);
 
-#endif	/* defined(CONFIG_NFS_V4_1) */
+#endif	 

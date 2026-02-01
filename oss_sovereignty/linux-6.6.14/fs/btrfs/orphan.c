@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2008 Red Hat.  All rights reserved.
- */
+
+ 
 
 #include "ctree.h"
 #include "disk-io.h"
@@ -46,7 +44,7 @@ int btrfs_del_orphan_item(struct btrfs_trans_handle *trans,
 	ret = btrfs_search_slot(trans, root, &key, path, -1, 1);
 	if (ret < 0)
 		goto out;
-	if (ret) { /* JDM: Really? */
+	if (ret) {  
 		ret = -ENOENT;
 		goto out;
 	}

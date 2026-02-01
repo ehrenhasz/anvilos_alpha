@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * clock framework for AMD FCH controller block
- *
- * Copyright 2018 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -12,13 +8,13 @@
 #include <linux/platform_data/clk-fch.h>
 #include <linux/platform_device.h>
 
-/* Clock Driving Strength 2 register */
+ 
 #define CLKDRVSTR2	0x28
-/* Clock Control 1 register */
+ 
 #define MISCCLKCNTL1	0x40
-/* Auxiliary clock1 enable bit */
+ 
 #define OSCCLKENB	2
-/* 25Mhz auxiliary output clock freq bit */
+ 
 #define OSCOUT1CLK25MHZ	16
 
 #define ST_CLK_48M	0
@@ -31,7 +27,7 @@
 #define CLK_GATE_FIXED	1
 #define CLK_MAX_FIXED	2
 
-/* List of supported CPU ids for clk mux with 25Mhz clk support */
+ 
 #define AMD_CPU_ID_ST                  0x1576
 
 static const char * const clk_oscout1_parents[] = { "clk48MHz", "clk25MHz" };

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale LINFlexD UART serial port driver
- *
- * Copyright 2012-2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2019 NXP
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/io.h>
@@ -17,34 +12,32 @@
 #include <linux/tty_flip.h>
 #include <linux/delay.h>
 
-/* All registers are 32-bit width */
+ 
 
-#define LINCR1	0x0000	/* LIN control register				*/
-#define LINIER	0x0004	/* LIN interrupt enable register		*/
-#define LINSR	0x0008	/* LIN status register				*/
-#define LINESR	0x000C	/* LIN error status register			*/
-#define UARTCR	0x0010	/* UART mode control register			*/
-#define UARTSR	0x0014	/* UART mode status register			*/
-#define LINTCSR	0x0018	/* LIN timeout control status register		*/
-#define LINOCR	0x001C	/* LIN output compare register			*/
-#define LINTOCR	0x0020	/* LIN timeout control register			*/
-#define LINFBRR	0x0024	/* LIN fractional baud rate register		*/
-#define LINIBRR	0x0028	/* LIN integer baud rate register		*/
-#define LINCFR	0x002C	/* LIN checksum field register			*/
-#define LINCR2	0x0030	/* LIN control register 2			*/
-#define BIDR	0x0034	/* Buffer identifier register			*/
-#define BDRL	0x0038	/* Buffer data register least significant	*/
-#define BDRM	0x003C	/* Buffer data register most significant	*/
-#define IFER	0x0040	/* Identifier filter enable register		*/
-#define IFMI	0x0044	/* Identifier filter match index		*/
-#define IFMR	0x0048	/* Identifier filter mode register		*/
-#define GCR	0x004C	/* Global control register			*/
-#define UARTPTO	0x0050	/* UART preset timeout register			*/
-#define UARTCTO	0x0054	/* UART current timeout register		*/
+#define LINCR1	0x0000	 
+#define LINIER	0x0004	 
+#define LINSR	0x0008	 
+#define LINESR	0x000C	 
+#define UARTCR	0x0010	 
+#define UARTSR	0x0014	 
+#define LINTCSR	0x0018	 
+#define LINOCR	0x001C	 
+#define LINTOCR	0x0020	 
+#define LINFBRR	0x0024	 
+#define LINIBRR	0x0028	 
+#define LINCFR	0x002C	 
+#define LINCR2	0x0030	 
+#define BIDR	0x0034	 
+#define BDRL	0x0038	 
+#define BDRM	0x003C	 
+#define IFER	0x0040	 
+#define IFMI	0x0044	 
+#define IFMR	0x0048	 
+#define GCR	0x004C	 
+#define UARTPTO	0x0050	 
+#define UARTCTO	0x0054	 
 
-/*
- * Register field definitions
- */
+ 
 
 #define LINFLEXD_LINCR1_INIT		BIT(0)
 #define LINFLEXD_LINCR1_MME		BIT(4)
@@ -118,13 +111,13 @@
 
 #define EARLYCON_BUFFER_INITIAL_CAP	8
 
-#define PREINIT_DELAY			2000 /* us */
+#define PREINIT_DELAY			2000  
 
 static const struct of_device_id linflex_dt_ids[] = {
 	{
 		.compatible = "fsl,s32v234-linflexuart",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, linflex_dt_ids);
 
@@ -163,7 +156,7 @@ static void linflex_put_char(struct uart_port *sport, unsigned char c)
 
 	writeb(c, sport->membase + BDRL);
 
-	/* Waiting for data transmission completed. */
+	 
 	while (((status = readl(sport->membase + UARTSR)) &
 				LINFLEXD_UARTSR_DTFTFF) !=
 				LINFLEXD_UARTSR_DTFTFF)
@@ -288,7 +281,7 @@ static irqreturn_t linflex_int(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* return TIOCSER_TEMT when transmitter is not busy */
+ 
 static unsigned int linflex_tx_empty(struct uart_port *port)
 {
 	unsigned long status;
@@ -315,7 +308,7 @@ static void linflex_setup_watermark(struct uart_port *sport)
 {
 	unsigned long cr, ier, cr1;
 
-	/* Disable transmission/reception */
+	 
 	ier = readl(sport->membase + LINIER);
 	ier &= ~(LINFLEXD_LINIER_DRIE | LINFLEXD_LINIER_DTIE);
 	writel(ier, sport->membase + LINIER);
@@ -324,28 +317,22 @@ static void linflex_setup_watermark(struct uart_port *sport)
 	cr &= ~(LINFLEXD_UARTCR_RXEN | LINFLEXD_UARTCR_TXEN);
 	writel(cr, sport->membase + UARTCR);
 
-	/* Enter initialization mode by setting INIT bit */
+	 
 
-	/* set the Linflex in master mode and activate by-pass filter */
+	 
 	cr1 = LINFLEXD_LINCR1_BF | LINFLEXD_LINCR1_MME
 	      | LINFLEXD_LINCR1_INIT;
 	writel(cr1, sport->membase + LINCR1);
 
-	/* wait for init mode entry */
+	 
 	while ((readl(sport->membase + LINSR)
 		& LINFLEXD_LINSR_LINS_MASK)
 		!= LINFLEXD_LINSR_LINS_INITMODE)
 		;
 
-	/*
-	 *	UART = 0x1;		- Linflex working in UART mode
-	 *	TXEN = 0x1;		- Enable transmission of data now
-	 *	RXEn = 0x1;		- Receiver enabled
-	 *	WL0 = 0x1;		- 8 bit data
-	 *	PCE = 0x0;		- No parity
-	 */
+	 
 
-	/* set UART bit to allow writing other bits */
+	 
 	writel(LINFLEXD_UARTCR_UART, sport->membase + UARTCR);
 
 	cr = (LINFLEXD_UARTCR_RXEN | LINFLEXD_UARTCR_TXEN |
@@ -388,7 +375,7 @@ static void linflex_shutdown(struct uart_port *port)
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* disable interrupts */
+	 
 	ier = readl(port->membase + LINIER);
 	ier &= ~(LINFLEXD_LINIER_DRIE | LINFLEXD_LINIER_DTIE);
 	writel(ier, port->membase + LINIER);
@@ -409,25 +396,19 @@ linflex_set_termios(struct uart_port *port, struct ktermios *termios,
 	cr = readl(port->membase + UARTCR);
 	old_cr = cr;
 
-	/* Enter initialization mode by setting INIT bit */
+	 
 	cr1 = readl(port->membase + LINCR1);
 	cr1 |= LINFLEXD_LINCR1_INIT;
 	writel(cr1, port->membase + LINCR1);
 
-	/* wait for init mode entry */
+	 
 	while ((readl(port->membase + LINSR)
 		& LINFLEXD_LINSR_LINS_MASK)
 		!= LINFLEXD_LINSR_LINS_INITMODE)
 		;
 
-	/*
-	 * only support CS8 and CS7, and for CS7 must enable PE.
-	 * supported mode:
-	 *	- (7,e/o,1)
-	 *	- (8,n,1)
-	 *	- (8,e/o,1)
-	 */
-	/* enter the UART into configuration mode */
+	 
+	 
 
 	while ((termios->c_cflag & CSIZE) != CS8 &&
 	       (termios->c_cflag & CSIZE) != CS7) {
@@ -437,12 +418,12 @@ linflex_set_termios(struct uart_port *port, struct ktermios *termios,
 	}
 
 	if ((termios->c_cflag & CSIZE) == CS7) {
-		/* Word length: WL1WL0:00 */
+		 
 		cr = old_cr & ~LINFLEXD_UARTCR_WL1 & ~LINFLEXD_UARTCR_WL0;
 	}
 
 	if ((termios->c_cflag & CSIZE) == CS8) {
-		/* Word length: WL1WL0:01 */
+		 
 		cr = (old_cr | LINFLEXD_UARTCR_WL0) & ~LINFLEXD_UARTCR_WL1;
 	}
 
@@ -451,14 +432,14 @@ linflex_set_termios(struct uart_port *port, struct ktermios *termios,
 			termios->c_cflag &= ~CSIZE;
 			termios->c_cflag |= CS8;
 		}
-		/* has a space/sticky bit */
+		 
 		cr |= LINFLEXD_UARTCR_WL0;
 	}
 
 	if (termios->c_cflag & CSTOPB)
 		termios->c_cflag &= ~CSTOPB;
 
-	/* parity must be enabled when CS7 to match 8-bits format */
+	 
 	if ((termios->c_cflag & CSIZE) == CS7)
 		termios->c_cflag |= PARENB;
 
@@ -487,16 +468,13 @@ linflex_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		port->read_status_mask |= LINFLEXD_UARTSR_FEF;
 
-	/* characters to ignore */
+	 
 	port->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		port->ignore_status_mask |= LINFLEXD_UARTSR_PE;
 	if (termios->c_iflag & IGNBRK) {
 		port->ignore_status_mask |= LINFLEXD_UARTSR_PE;
-		/*
-		 * if we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			port->ignore_status_mask |= LINFLEXD_UARTSR_BOF;
 	}
@@ -517,7 +495,7 @@ static const char *linflex_type(struct uart_port *port)
 
 static void linflex_release_port(struct uart_port *port)
 {
-	/* nothing to do */
+	 
 }
 
 static int linflex_request_port(struct uart_port *port)
@@ -525,7 +503,7 @@ static int linflex_request_port(struct uart_port *port)
 	return 0;
 }
 
-/* configure/auto-configure the port */
+ 
 static void linflex_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE)
@@ -656,10 +634,7 @@ linflex_console_write(struct console *co, const char *s, unsigned int count)
 		spin_unlock_irqrestore(&sport->lock, flags);
 }
 
-/*
- * if the port was already initialised (eg, by a boot loader),
- * try to determine the current setup.
- */
+ 
 static void __init
 linflex_console_get_options(struct uart_port *sport, int *parity, int *bits)
 {
@@ -671,7 +646,7 @@ linflex_console_get_options(struct uart_port *sport, int *parity, int *bits)
 	if (!cr)
 		return;
 
-	/* ok, the port was enabled */
+	 
 
 	*parity = 'n';
 	if (cr & LINFLEXD_UARTCR_PCE) {
@@ -699,11 +674,7 @@ static int __init linflex_console_setup(struct console *co, char *options)
 	int ret;
 	int i;
 	unsigned long flags;
-	/*
-	 * check whether an invalid uart number has been specified, and
-	 * if so, search for the first available port that does have
-	 * console support.
-	 */
+	 
 	if (co->index == -1 || co->index >= ARRAY_SIZE(linflex_ports))
 		co->index = 0;
 
@@ -723,10 +694,7 @@ static int __init linflex_console_setup(struct console *co, char *options)
 		during_init = true;
 		spin_unlock_irqrestore(&init_lock, flags);
 
-		/* Workaround for character loss or output of many invalid
-		 * characters, when INIT mode is entered shortly after a
-		 * character has just been printed.
-		 */
+		 
 		udelay(PREINIT_DELAY);
 	}
 
@@ -739,7 +707,7 @@ static int __init linflex_console_setup(struct console *co, char *options)
 
 	spin_lock_irqsave(&init_lock, flags);
 
-	/* Emptying buffer */
+	 
 	if (earlycon_buf.len) {
 		for (i = 0; i < earlycon_buf.len; i++)
 			linflex_console_putchar(earlycon_port,

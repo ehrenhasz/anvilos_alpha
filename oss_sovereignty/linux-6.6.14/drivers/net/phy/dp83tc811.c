@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Texas Instruments DP83TC811 PHY
- *
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
- *
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/etherdevice.h>
@@ -27,7 +22,7 @@
 #define DP83811_HW_RESET	BIT(15)
 #define DP83811_SW_RESET	BIT(14)
 
-/* INT_STAT1 bits */
+ 
 #define DP83811_RX_ERR_HF_INT_EN	BIT(0)
 #define DP83811_MS_TRAINING_INT_EN	BIT(1)
 #define DP83811_ANEG_COMPLETE_INT_EN	BIT(2)
@@ -37,7 +32,7 @@
 #define DP83811_ENERGY_DET_INT_EN	BIT(6)
 #define DP83811_LINK_QUAL_INT_EN	BIT(7)
 
-/* INT_STAT2 bits */
+ 
 #define DP83811_JABBER_DET_INT_EN	BIT(0)
 #define DP83811_POLARITY_INT_EN		BIT(1)
 #define DP83811_SLEEP_MODE_INT_EN	BIT(2)
@@ -45,7 +40,7 @@
 #define DP83811_OVERVOLTAGE_INT_EN	BIT(6)
 #define DP83811_UNDERVOLTAGE_INT_EN	BIT(7)
 
-/* INT_STAT3 bits */
+ 
 #define DP83811_LPS_INT_EN	BIT(0)
 #define DP83811_NO_FRAME_INT_EN	BIT(3)
 #define DP83811_POR_DONE_INT_EN	BIT(4)
@@ -54,21 +49,21 @@
 #define MII_DP83811_RXSOP2	0x04a6
 #define MII_DP83811_RXSOP3	0x04a7
 
-/* WoL Registers */
+ 
 #define MII_DP83811_WOL_CFG	0x04a0
 #define MII_DP83811_WOL_STAT	0x04a1
 #define MII_DP83811_WOL_DA1	0x04a2
 #define MII_DP83811_WOL_DA2	0x04a3
 #define MII_DP83811_WOL_DA3	0x04a4
 
-/* WoL bits */
+ 
 #define DP83811_WOL_MAGIC_EN	BIT(0)
 #define DP83811_WOL_SECURE_ON	BIT(5)
 #define DP83811_WOL_EN		BIT(7)
 #define DP83811_WOL_INDICATION_SEL BIT(8)
 #define DP83811_WOL_CLR_INDICATION BIT(11)
 
-/* SGMII CTRL bits */
+ 
 #define DP83811_TDR_AUTO		BIT(8)
 #define DP83811_SGMII_EN		BIT(12)
 #define DP83811_SGMII_AUTO_NEG_EN	BIT(13)
@@ -107,9 +102,7 @@ static int dp83811_set_wol(struct phy_device *phydev,
 		if (!is_valid_ether_addr(mac))
 			return -EINVAL;
 
-		/* MAC addresses start with byte 5, but stored in mac[0].
-		 * 811 PHYs store bytes 4|5, 2|3, 0|1
-		 */
+		 
 		phy_write_mmd(phydev, DP83811_DEVADDR, MII_DP83811_WOL_DA1,
 			      (mac[1] << 8) | mac[0]);
 		phy_write_mmd(phydev, DP83811_DEVADDR, MII_DP83811_WOL_DA2,
@@ -139,7 +132,7 @@ static int dp83811_set_wol(struct phy_device *phydev,
 			value &= ~DP83811_WOL_SECURE_ON;
 		}
 
-		/* Clear any pending WoL interrupt */
+		 
 		phy_read(phydev, MII_DP83811_INT_STAT1);
 
 		value |= DP83811_WOL_EN | DP83811_WOL_INDICATION_SEL |
@@ -187,7 +180,7 @@ static void dp83811_get_wol(struct phy_device *phydev,
 		wol->wolopts |= WAKE_MAGICSECURE;
 	}
 
-	/* WoL is not enabled so set wolopts to 0 */
+	 
 	if (!(value & DP83811_WOL_EN))
 		wol->wolopts = 0;
 }
@@ -267,13 +260,7 @@ static irqreturn_t dp83811_handle_interrupt(struct phy_device *phydev)
 	bool trigger_machine = false;
 	int irq_status;
 
-	/* The INT_STAT registers 1, 2 and 3 are holding the interrupt status
-	 * in the upper half (15:8), while the lower half (7:0) is used for
-	 * controlling the interrupt enable state of those individual interrupt
-	 * sources. To determine the possible interrupt sources, just read the
-	 * INT_STAT* register and use it directly to know which interrupts have
-	 * been enabled previously or not.
-	 */
+	 
 	irq_status = phy_read(phydev, MII_DP83811_INT_STAT1);
 	if (irq_status < 0) {
 		phy_error(phydev);
@@ -389,7 +376,7 @@ static struct phy_driver dp83811_driver[] = {
 		.phy_id = DP83TC811_PHY_ID,
 		.phy_id_mask = 0xfffffff0,
 		.name = "TI DP83TC811",
-		/* PHY_BASIC_FEATURES */
+		 
 		.config_init = dp83811_config_init,
 		.config_aneg = dp83811_config_aneg,
 		.soft_reset = dp83811_phy_reset,

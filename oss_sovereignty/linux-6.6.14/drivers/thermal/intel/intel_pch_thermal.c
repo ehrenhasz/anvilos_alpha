@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* intel_pch_thermal.c - Intel PCH Thermal driver
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * Authors:
- *     Tushar Dave <tushar.n.dave@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -18,62 +12,62 @@
 #include <linux/types.h>
 #include <linux/units.h>
 
-/* Intel PCH thermal Device IDs */
-#define PCH_THERMAL_DID_HSW_1	0x9C24 /* Haswell PCH */
-#define PCH_THERMAL_DID_HSW_2	0x8C24 /* Haswell PCH */
-#define PCH_THERMAL_DID_WPT	0x9CA4 /* Wildcat Point */
-#define PCH_THERMAL_DID_SKL	0x9D31 /* Skylake PCH */
-#define PCH_THERMAL_DID_SKL_H	0xA131 /* Skylake PCH 100 series */
-#define PCH_THERMAL_DID_CNL	0x9Df9 /* CNL PCH */
-#define PCH_THERMAL_DID_CNL_H	0xA379 /* CNL-H PCH */
-#define PCH_THERMAL_DID_CNL_LP	0x02F9 /* CNL-LP PCH */
-#define PCH_THERMAL_DID_CML_H	0X06F9 /* CML-H PCH */
-#define PCH_THERMAL_DID_LWB	0xA1B1 /* Lewisburg PCH */
-#define PCH_THERMAL_DID_WBG	0x8D24 /* Wellsburg PCH */
+ 
+#define PCH_THERMAL_DID_HSW_1	0x9C24  
+#define PCH_THERMAL_DID_HSW_2	0x8C24  
+#define PCH_THERMAL_DID_WPT	0x9CA4  
+#define PCH_THERMAL_DID_SKL	0x9D31  
+#define PCH_THERMAL_DID_SKL_H	0xA131  
+#define PCH_THERMAL_DID_CNL	0x9Df9  
+#define PCH_THERMAL_DID_CNL_H	0xA379  
+#define PCH_THERMAL_DID_CNL_LP	0x02F9  
+#define PCH_THERMAL_DID_CML_H	0X06F9  
+#define PCH_THERMAL_DID_LWB	0xA1B1  
+#define PCH_THERMAL_DID_WBG	0x8D24  
 
-/* Wildcat Point-LP  PCH Thermal registers */
-#define WPT_TEMP	0x0000	/* Temperature */
-#define WPT_TSC	0x04	/* Thermal Sensor Control */
-#define WPT_TSS	0x06	/* Thermal Sensor Status */
-#define WPT_TSEL	0x08	/* Thermal Sensor Enable and Lock */
-#define WPT_TSREL	0x0A	/* Thermal Sensor Report Enable and Lock */
-#define WPT_TSMIC	0x0C	/* Thermal Sensor SMI Control */
-#define WPT_CTT	0x0010	/* Catastrophic Trip Point */
-#define WPT_TSPM	0x001C	/* Thermal Sensor Power Management */
-#define WPT_TAHV	0x0014	/* Thermal Alert High Value */
-#define WPT_TALV	0x0018	/* Thermal Alert Low Value */
-#define WPT_TL		0x00000040	/* Throttle Value */
-#define WPT_PHL	0x0060	/* PCH Hot Level */
-#define WPT_PHLC	0x62	/* PHL Control */
-#define WPT_TAS	0x80	/* Thermal Alert Status */
-#define WPT_TSPIEN	0x82	/* PCI Interrupt Event Enables */
-#define WPT_TSGPEN	0x84	/* General Purpose Event Enables */
+ 
+#define WPT_TEMP	0x0000	 
+#define WPT_TSC	0x04	 
+#define WPT_TSS	0x06	 
+#define WPT_TSEL	0x08	 
+#define WPT_TSREL	0x0A	 
+#define WPT_TSMIC	0x0C	 
+#define WPT_CTT	0x0010	 
+#define WPT_TSPM	0x001C	 
+#define WPT_TAHV	0x0014	 
+#define WPT_TALV	0x0018	 
+#define WPT_TL		0x00000040	 
+#define WPT_PHL	0x0060	 
+#define WPT_PHLC	0x62	 
+#define WPT_TAS	0x80	 
+#define WPT_TSPIEN	0x82	 
+#define WPT_TSGPEN	0x84	 
 
-/*  Wildcat Point-LP  PCH Thermal Register bit definitions */
-#define WPT_TEMP_TSR	0x01ff	/* Temp TS Reading */
-#define WPT_TSC_CPDE	0x01	/* Catastrophic Power-Down Enable */
-#define WPT_TSS_TSDSS	0x10	/* Thermal Sensor Dynamic Shutdown Status */
-#define WPT_TSS_GPES	0x08	/* GPE status */
-#define WPT_TSEL_ETS	0x01    /* Enable TS */
-#define WPT_TSEL_PLDB	0x80	/* TSEL Policy Lock-Down Bit */
-#define WPT_TL_TOL	0x000001FF	/* T0 Level */
-#define WPT_TL_T1L	0x1ff00000	/* T1 Level */
-#define WPT_TL_TTEN	0x20000000	/* TT Enable */
+ 
+#define WPT_TEMP_TSR	0x01ff	 
+#define WPT_TSC_CPDE	0x01	 
+#define WPT_TSS_TSDSS	0x10	 
+#define WPT_TSS_GPES	0x08	 
+#define WPT_TSEL_ETS	0x01     
+#define WPT_TSEL_PLDB	0x80	 
+#define WPT_TL_TOL	0x000001FF	 
+#define WPT_TL_T1L	0x1ff00000	 
+#define WPT_TL_TTEN	0x20000000	 
 
-/* Resolution of 1/2 degree C and an offset of -50C */
+ 
 #define PCH_TEMP_OFFSET	(-50)
 #define GET_WPT_TEMP(x)	((x) * MILLIDEGREE_PER_DEGREE / 2 + WPT_TEMP_OFFSET)
 #define WPT_TEMP_OFFSET	(PCH_TEMP_OFFSET * MILLIDEGREE_PER_DEGREE)
 #define GET_PCH_TEMP(x)	(((x) / 2) + PCH_TEMP_OFFSET)
 
-#define PCH_MAX_TRIPS 3 /* critical, hot, passive */
+#define PCH_MAX_TRIPS 3  
 
-/* Amount of time for each cooling delay, 100ms by default for now */
+ 
 static unsigned int delay_timeout = 100;
 module_param(delay_timeout, int, 0644);
 MODULE_PARM_DESC(delay_timeout, "amount of time delay for each iteration.");
 
-/* Number of iterations for cooling delay, 600 counts by default for now */
+ 
 static unsigned int delay_cnt = 600;
 module_param(delay_cnt, int, 0644);
 MODULE_PARM_DESC(delay_cnt, "total number of iterations for time delay.");
@@ -89,11 +83,7 @@ struct pch_thermal_device {
 };
 
 #ifdef CONFIG_ACPI
-/*
- * On some platforms, there is a companion ACPI device, which adds
- * passive trip temperature using _PSV method. There is no specific
- * passive temperature setting in MMIO interface of this PCI device.
- */
+ 
 static int pch_wpt_add_acpi_psv_trip(struct pch_thermal_device *ptd, int trip)
 {
 	struct acpi_device *adev;
@@ -192,17 +182,14 @@ static int intel_pch_thermal_probe(struct pci_dev *pdev,
 		goto error_release;
 	}
 
-	/* Check if BIOS has already enabled thermal sensor */
+	 
 	if (WPT_TSEL_ETS & readb(ptd->hw_base + WPT_TSEL)) {
 		ptd->bios_enabled = true;
 		goto read_trips;
 	}
 
 	tsel = readb(ptd->hw_base + WPT_TSEL);
-	/*
-	 * When TSEL's Policy Lock-Down bit is 1, TSEL become RO.
-	 * If so, thermal sensor cannot enable. Bail out.
-	 */
+	 
 	if (tsel & WPT_TSEL_PLDB) {
 		dev_err(&ptd->pdev->dev, "Sensor can't be enabled\n");
 		err = -ENODEV;
@@ -279,31 +266,24 @@ static int intel_pch_thermal_suspend_noirq(struct device *device)
 	int pch_delay_cnt = 0;
 	u8 tsel;
 
-	/* Shutdown the thermal sensor if it is not enabled by BIOS */
+	 
 	if (!ptd->bios_enabled) {
 		tsel = readb(ptd->hw_base + WPT_TSEL);
 		writeb(tsel & 0xFE, ptd->hw_base + WPT_TSEL);
 		return 0;
 	}
 
-	/* Do not check temperature if it is not s2idle */
+	 
 	if (pm_suspend_via_firmware())
 		return 0;
 
-	/* Get the PCH temperature threshold value */
+	 
 	pch_thr_temp = GET_PCH_TEMP(WPT_TEMP_TSR & readw(ptd->hw_base + WPT_TSPM));
 
-	/* Get the PCH current temperature value */
+	 
 	pch_cur_temp = GET_PCH_TEMP(WPT_TEMP_TSR & readw(ptd->hw_base + WPT_TEMP));
 
-	/*
-	 * If current PCH temperature is higher than configured PCH threshold
-	 * value, run some delay loop with sleep to let the current temperature
-	 * go down below the threshold value which helps to allow system enter
-	 * lower power S0ix suspend state. Even after delay loop if PCH current
-	 * temperature stays above threshold, notify the warning message
-	 * which helps to indentify the reason why S0ix entry was rejected.
-	 */
+	 
 	while (pch_delay_cnt < delay_cnt) {
 		if (pch_cur_temp < pch_thr_temp)
 			break;
@@ -318,7 +298,7 @@ static int intel_pch_thermal_suspend_noirq(struct device *device)
 			"CPU-PCH current temp [%dC] higher than the threshold temp [%dC], sleep %d times for %d ms duration\n",
 			pch_cur_temp, pch_thr_temp, pch_delay_cnt, delay_timeout);
 		msleep(delay_timeout);
-		/* Read the PCH current temperature for next cycle. */
+		 
 		pch_cur_temp = GET_PCH_TEMP(WPT_TEMP_TSR & readw(ptd->hw_base + WPT_TEMP));
 	}
 

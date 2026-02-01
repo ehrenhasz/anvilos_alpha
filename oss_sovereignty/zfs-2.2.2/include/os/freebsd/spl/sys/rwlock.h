@@ -1,30 +1,4 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $FreeBSD$
- */
+ 
 
 #ifndef _OPENSOLARIS_SYS_RWLOCK_H_
 #define	_OPENSOLARIS_SYS_RWLOCK_H_
@@ -35,7 +9,7 @@
 #include <sys/sx.h>
 
 typedef enum {
-	RW_DEFAULT = 4		/* kernel default rwlock */
+	RW_DEFAULT = 4		 
 } krw_type_t;
 
 
@@ -72,7 +46,7 @@ typedef	struct sx	krwlock_t;
 #define	rw_enter(lock, how)	do {					\
 	if ((how) == RW_READER)						\
 		sx_slock(lock);						\
-	else /* if ((how) == RW_WRITER) */				\
+	else  				\
 		sx_xlock(lock);						\
 	} while (0)
 
@@ -89,4 +63,4 @@ typedef	struct sx	krwlock_t;
 #define	rw_iswriter(lock)	sx_xlocked(lock)
 #define	rw_owner(lock)		sx_xholder(lock)
 
-#endif	/* _OPENSOLARIS_SYS_RWLOCK_H_ */
+#endif	 

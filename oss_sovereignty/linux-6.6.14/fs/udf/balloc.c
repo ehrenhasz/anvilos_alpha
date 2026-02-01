@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * balloc.c
- *
- * PURPOSE
- *	Block allocation handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1999-2001 Ben Fennema
- *  (C) 1999 Stelias Computing Inc
- *
- * HISTORY
- *
- *  02/24/99 blf  Created.
- *
- */
+
+ 
 
 #include "udfdecl.h"
 
@@ -44,16 +30,13 @@ static int read_block_bitmap(struct super_block *sb,
 	if (!bh)
 		return -EIO;
 
-	/* Check consistency of Space Bitmap buffer. */
+	 
 	max_bits = sb->s_blocksize * 8;
 	if (!bitmap_nr) {
 		off = sizeof(struct spaceBitmapDesc) << 3;
 		count = min(max_bits - off, bitmap->s_nr_groups);
 	} else {
-		/*
-		 * Rough check if bitmap number is too big to have any bitmap
- 		 * blocks reserved.
-		 */
+		 
 		if (bitmap_nr >
 		    (bitmap->s_nr_groups >> (sb->s_blocksize_bits + 3)) + 2)
 			return 0;
@@ -156,9 +139,7 @@ static void udf_bitmap_free_blocks(struct super_block *sb,
 		block_group = block >> (sb->s_blocksize_bits + 3);
 		bit = block % (sb->s_blocksize << 3);
 
-		/*
-		* Check to see if we are freeing blocks across a group boundary.
-		*/
+		 
 		if (bit + count > (sb->s_blocksize << 3)) {
 			overflow = bit + count - (sb->s_blocksize << 3);
 			count -= overflow;
@@ -345,10 +326,7 @@ got_block:
 		(sizeof(struct spaceBitmapDesc) << 3);
 
 	if (newblock >= sbi->s_partmaps[partition].s_partition_len) {
-		/*
-		 * Ran off the end of the bitmap, and bits following are
-		 * non-compliant (not all zero)
-		 */
+		 
 		udf_err(sb, "bitmap for partition %d corrupted (block %u marked"
 			" as free, partition length is %u)\n", partition,
 			newblock, sbi->s_partmaps[partition].s_partition_len);
@@ -463,18 +441,7 @@ static void udf_table_free_blocks(struct super_block *sb,
 	}
 
 	if (count) {
-		/*
-		 * NOTE: we CANNOT use udf_add_aext here, as it can try to
-		 * allocate a new block, and since we hold the super block
-		 * lock already very bad things would happen :)
-		 *
-		 * We copy the behavior of udf_add_aext, but instead of
-		 * trying to allocate a new block close to the existing one,
-		 * we just steal a block from the extent we are trying to add.
-		 *
-		 * It would be nice if the blocks were close together, but it
-		 * isn't required.
-		 */
+		 
 
 		int adsize;
 
@@ -493,7 +460,7 @@ static void udf_table_free_blocks(struct super_block *sb,
 		}
 
 		if (epos.offset + (2 * adsize) > sb->s_blocksize) {
-			/* Steal a block from the extent being free'd */
+			 
 			udf_setup_indirect_aext(table, eloc.logicalBlockNum,
 						&epos);
 
@@ -501,7 +468,7 @@ static void udf_table_free_blocks(struct super_block *sb,
 			elen -= sb->s_blocksize;
 		}
 
-		/* It's possible that stealing the block emptied the extent */
+		 
 		if (elen)
 			__udf_add_aext(table, &epos, &eloc, elen, 1);
 	}
@@ -547,7 +514,7 @@ static int udf_table_prealloc_blocks(struct super_block *sb,
 	       (etype = udf_next_aext(table, &epos, &eloc, &elen, 1)) != -1) {
 		udf_debug("eloc=%u, elen=%u, first_block=%u\n",
 			  eloc.logicalBlockNum, elen, first_block);
-		; /* empty loop body */
+		;  
 	}
 
 	if (first_block == eloc.logicalBlockNum) {
@@ -601,11 +568,7 @@ static udf_pblk_t udf_table_new_block(struct super_block *sb,
 	if (goal >= sbi->s_partmaps[partition].s_partition_len)
 		goal = 0;
 
-	/* We search for the closest matching block to goal. If we find
-	   a exact hit, we stop. Otherwise we keep going till we run out
-	   of extents. We store the buffer_head, bloc, and extoffset
-	   of the current closest match and use that when we are done.
-	 */
+	 
 	epos.offset = sizeof(struct unallocSpaceEntry);
 	epos.block = iinfo->i_location;
 	epos.bh = goal_epos.bh = NULL;
@@ -645,10 +608,8 @@ static udf_pblk_t udf_table_new_block(struct super_block *sb,
 		return 0;
 	}
 
-	/* Only allocate blocks from the beginning of the extent.
-	   That way, we only delete (empty) extents, never have to insert an
-	   extent because of splitting */
-	/* This works, but very poorly.... */
+	 
+	 
 
 	newblock = goal_eloc.logicalBlockNum;
 	goal_eloc.logicalBlockNum++;

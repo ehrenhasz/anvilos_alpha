@@ -1,30 +1,4 @@
-/*
- * Copyright 2006 Dave Airlie <airlied@linux.ie>
- * Copyright © 2006-2007 Intel Corporation
- *   Jesse Barnes <jesse.barnes@intel.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -74,89 +48,67 @@ struct psb_intel_sdvo {
 
 	struct i2c_adapter ddc;
 
-	/* Register for the SDVO device: SDVOB or SDVOC */
+	 
 	int sdvo_reg;
 
-	/* Active outputs controlled by this SDVO output */
+	 
 	uint16_t controlled_output;
 
-	/*
-	 * Capabilities of the SDVO device returned by
-	 * i830_sdvo_get_capabilities()
-	 */
+	 
 	struct psb_intel_sdvo_caps caps;
 
-	/* Pixel clock limitations reported by the SDVO device, in kHz */
+	 
 	int pixel_clock_min, pixel_clock_max;
 
-	/*
-	* For multiple function SDVO device,
-	* this is for current attached outputs.
-	*/
+	 
 	uint16_t attached_output;
 
-	/**
-	 * This is used to select the color range of RBG outputs in HDMI mode.
-	 * It is only valid when using TMDS encoding and 8 bit per color mode.
-	 */
+	 
 	uint32_t color_range;
 
-	/**
-	 * This is set if we're going to treat the device as TV-out.
-	 *
-	 * While we have these nice friendly flags for output types that ought
-	 * to decide this for us, the S-Video output on our HDMI+S-Video card
-	 * shows up as RGB1 (VGA).
-	 */
+	 
 	bool is_tv;
 
-	/* This is for current tv format name */
+	 
 	int tv_format_index;
 
-	/**
-	 * This is set if we treat the device as HDMI, instead of DVI.
-	 */
+	 
 	bool is_hdmi;
 	bool has_hdmi_monitor;
 	bool has_hdmi_audio;
 
-	/**
-	 * This is set if we detect output of sdvo device as LVDS and
-	 * have a valid fixed mode to use with the panel.
-	 */
+	 
 	bool is_lvds;
 
-	/**
-	 * This is sdvo fixed panel mode pointer
-	 */
+	 
 	struct drm_display_mode *sdvo_lvds_fixed_mode;
 
-	/* DDC bus used by this SDVO encoder */
+	 
 	uint8_t ddc_bus;
 
 	u8 pixel_multiplier;
 
-	/* Input timings for adjusted_mode */
+	 
 	struct psb_intel_sdvo_dtd input_dtd;
 
-	/* Saved SDVO output states */
-	uint32_t saveSDVO; /* Can be SDVOB or SDVOC depending on sdvo_reg */
+	 
+	uint32_t saveSDVO;  
 };
 
 struct psb_intel_sdvo_connector {
 	struct gma_connector base;
 
-	/* Mark the type of connector */
+	 
 	uint16_t output_flag;
 
 	int force_audio;
 
-	/* This contains all current supported TV format */
+	 
 	u8 tv_format_supported[ARRAY_SIZE(tv_format_names)];
 	int   format_supported_num;
 	struct drm_property *tv_format;
 
-	/* add the property for the SDVO-TV */
+	 
 	struct drm_property *left;
 	struct drm_property *right;
 	struct drm_property *top;
@@ -174,13 +126,13 @@ struct psb_intel_sdvo_connector {
 	struct drm_property *tv_luma_filter;
 	struct drm_property *dot_crawl;
 
-	/* add the property for the SDVO-TV/LVDS */
+	 
 	struct drm_property *brightness;
 
-	/* Add variable to record current setting for the above property */
+	 
 	u32	left_margin, right_margin, top_margin, bottom_margin;
 
-	/* this is to get the range of margin.*/
+	 
 	u32	max_hscan,  max_vscan;
 	u32	max_hpos, cur_hpos;
 	u32	max_vpos, cur_vpos;
@@ -223,11 +175,7 @@ static bool
 psb_intel_sdvo_create_enhance_property(struct psb_intel_sdvo *psb_intel_sdvo,
 				   struct psb_intel_sdvo_connector *psb_intel_sdvo_connector);
 
-/*
- * Writes the SDVOB or SDVOC with the given value, but always writes both
- * SDVOB and SDVOC to work around apparent hardware issues (according to
- * comments in the BIOS).
- */
+ 
 static void psb_intel_sdvo_write_sdvox(struct psb_intel_sdvo *psb_intel_sdvo, u32 val)
 {
 	struct drm_device *dev = psb_intel_sdvo->base.base.dev;
@@ -241,11 +189,7 @@ static void psb_intel_sdvo_write_sdvox(struct psb_intel_sdvo *psb_intel_sdvo, u3
 		else
 			bval = REG_READ_WITH_AUX(SDVOB, j);
 
-		/*
-		* Write the registers twice for luck. Sometimes,
-		* writing them only once doesn't appear to 'stick'.
-		* The BIOS does this too. Yay, magic
-		*/
+		 
 		for (i = 0; i < 2; i++) {
 			REG_WRITE_WITH_AUX(SDVOB, bval, j);
 			REG_READ_WITH_AUX(SDVOB, j);
@@ -281,7 +225,7 @@ static bool psb_intel_sdvo_read_byte(struct psb_intel_sdvo *psb_intel_sdvo, u8 a
 }
 
 #define SDVO_CMD_NAME_ENTRY(cmd) {cmd, #cmd}
-/** Mapping of command numbers to names, for debug output */
+ 
 static const struct _sdvo_cmd_name {
 	u8 cmd;
 	const char *name;
@@ -330,7 +274,7 @@ static const struct _sdvo_cmd_name {
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_GET_SCALED_HDTV_RESOLUTION_SUPPORT),
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_GET_SUPPORTED_ENHANCEMENTS),
 
-    /* Add the op code for SDVO enhancements */
+     
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_GET_MAX_HPOS),
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_GET_HPOS),
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_SET_HPOS),
@@ -376,7 +320,7 @@ static const struct _sdvo_cmd_name {
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_GET_TV_LUMA_FILTER),
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_SET_TV_LUMA_FILTER),
 
-    /* HDMI op code */
+     
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_GET_SUPP_ENCODE),
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_GET_ENCODE),
     SDVO_CMD_NAME_ENTRY(SDVO_CMD_SET_ENCODE),
@@ -477,7 +421,7 @@ static bool psb_intel_sdvo_write_cmd(struct psb_intel_sdvo *psb_intel_sdvo, u8 c
 	buf[2*i + 0] = SDVO_I2C_OPCODE;
 	buf[2*i + 1] = cmd;
 
-	/* the following two are to read the response */
+	 
 	status = SDVO_I2C_CMD_STATUS;
 	msgs[i+1].addr = psb_intel_sdvo->slave_addr;
 	msgs[i+1].flags = 0;
@@ -495,7 +439,7 @@ static bool psb_intel_sdvo_write_cmd(struct psb_intel_sdvo *psb_intel_sdvo, u8 c
 		return false;
 	}
 	if (ret != i+3) {
-		/* failure in I2C transfer */
+		 
 		DRM_DEBUG_KMS("I2c transfer returned %d/%d\n", ret, i+3);
 		return false;
 	}
@@ -512,14 +456,7 @@ static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
 	u8 retry = 5;
 	u8 status;
 
-	/*
-	 * The documentation states that all commands will be
-	 * processed within 15µs, and that we need only poll
-	 * the status byte a maximum of 3 times in order for the
-	 * command to be complete.
-	 *
-	 * Check 5 times in case the hardware failed to read the docs.
-	 */
+	 
 	if (!psb_intel_sdvo_read_byte(psb_intel_sdvo,
 				  SDVO_I2C_CMD_STATUS,
 				  &status))
@@ -545,7 +482,7 @@ static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
 	if (status != SDVO_CMD_STATUS_SUCCESS)
 		goto log_fail;
 
-	/* Read the command response */
+	 
 	for (i = 0; i < response_len; i++) {
 		if (!psb_intel_sdvo_read_byte(psb_intel_sdvo,
 					  SDVO_I2C_RETURN_0 + i,
@@ -579,7 +516,7 @@ static int psb_intel_sdvo_get_pixel_multiplier(struct drm_display_mode *mode)
 static bool psb_intel_sdvo_set_control_bus_switch(struct psb_intel_sdvo *psb_intel_sdvo,
 					      u8 ddc_bus)
 {
-	/* This must be the immediately preceding write before the i2c xfer */
+	 
 	return psb_intel_sdvo_write_cmd(psb_intel_sdvo,
 				    SDVO_CMD_SET_CONTROL_BUS_SWITCH,
 				    &ddc_bus, 1);
@@ -610,12 +547,7 @@ static bool psb_intel_sdvo_set_target_input(struct psb_intel_sdvo *psb_intel_sdv
 				    &targets, sizeof(targets));
 }
 
-/*
- * Return whether each input is trained.
- *
- * This function is making an assumption about the layout of the response,
- * which should be checked against the docs.
- */
+ 
 static bool psb_intel_sdvo_get_trained_inputs(struct psb_intel_sdvo *psb_intel_sdvo, bool *input_1, bool *input_2)
 {
 	struct psb_intel_sdvo_get_trained_inputs_response response;
@@ -674,7 +606,7 @@ static bool psb_intel_sdvo_get_input_pixel_clock_range(struct psb_intel_sdvo *ps
 				  &clocks, sizeof(clocks)))
 		return false;
 
-	/* Convert the values from units of 10 kHz to kHz. */
+	 
 	*clock_min = clocks.min * 10;
 	*clock_max = clocks.max * 10;
 	return true;
@@ -759,7 +691,7 @@ static void psb_intel_sdvo_get_dtd_from_mode(struct psb_intel_sdvo_dtd *dtd,
 	width = mode->crtc_hdisplay;
 	height = mode->crtc_vdisplay;
 
-	/* do some mode translations */
+	 
 	h_blank_len = mode->crtc_hblank_end - mode->crtc_hblank_start;
 	h_sync_len = mode->crtc_hsync_end - mode->crtc_hsync_start;
 
@@ -927,7 +859,7 @@ psb_intel_sdvo_set_input_timings_for_mode(struct psb_intel_sdvo *psb_intel_sdvo,
 					const struct drm_display_mode *mode,
 					struct drm_display_mode *adjusted_mode)
 {
-	/* Reset the input timing to the screen. Assume always input 0. */
+	 
 	if (!psb_intel_sdvo_set_target_input(psb_intel_sdvo))
 		return false;
 
@@ -953,11 +885,7 @@ static bool psb_intel_sdvo_mode_fixup(struct drm_encoder *encoder,
 {
 	struct psb_intel_sdvo *psb_intel_sdvo = to_psb_intel_sdvo(encoder);
 
-	/* We need to construct preferred input timings based on our
-	 * output timings.  To do that, we have to set the output
-	 * timings, even though this isn't really the right place in
-	 * the sequence to do it. Oh well.
-	 */
+	 
 	if (psb_intel_sdvo->is_tv) {
 		if (!psb_intel_sdvo_set_output_timings_from_mode(psb_intel_sdvo, mode))
 			return false;
@@ -975,9 +903,7 @@ static bool psb_intel_sdvo_mode_fixup(struct drm_encoder *encoder,
 							     adjusted_mode);
 	}
 
-	/* Make the CRTC code factor in the SDVO pixel multiplier.  The
-	 * SDVO device will factor out the multiplier during mode_set.
-	 */
+	 
 	psb_intel_sdvo->pixel_multiplier =
 		psb_intel_sdvo_get_pixel_multiplier(adjusted_mode);
 	adjusted_mode->clock *= psb_intel_sdvo->pixel_multiplier;
@@ -1002,12 +928,7 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 	if (!mode)
 		return;
 
-	/* First, set the input mapping for the first input to our controlled
-	 * output. This is only correct if we're a single-input device, in
-	 * which case the first input is the output from the appropriate SDVO
-	 * channel on the motherboard.  In a two-input device, the first input
-	 * will be SDVOB and the second SDVOC.
-	 */
+	 
 	in_out.in0 = psb_intel_sdvo->attached_output;
 	in_out.in1 = 0;
 
@@ -1015,18 +936,16 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 			     SDVO_CMD_SET_IN_OUT_MAP,
 			     &in_out, sizeof(in_out));
 
-	/* Set the output timings to the screen */
+	 
 	if (!psb_intel_sdvo_set_target_output(psb_intel_sdvo,
 					  psb_intel_sdvo->attached_output))
 		return;
 
-	/* We have tried to get input timing in mode_fixup, and filled into
-	 * adjusted_mode.
-	 */
+	 
 	if (psb_intel_sdvo->is_tv || psb_intel_sdvo->is_lvds) {
 		input_dtd = psb_intel_sdvo->input_dtd;
 	} else {
-		/* Set the output timing to the screen */
+		 
 		if (!psb_intel_sdvo_set_target_output(psb_intel_sdvo,
 						  psb_intel_sdvo->attached_output))
 			return;
@@ -1035,7 +954,7 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 		(void) psb_intel_sdvo_set_output_timing(psb_intel_sdvo, &input_dtd);
 	}
 
-	/* Set the input timing to the screen. Assume always input 0. */
+	 
 	if (!psb_intel_sdvo_set_target_input(psb_intel_sdvo))
 		return;
 
@@ -1062,7 +981,7 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 	if (!psb_intel_sdvo_set_clock_rate_mult(psb_intel_sdvo, rate))
 		return;
 
-	/* Set the SDVO control regs. */
+	 
 	if (need_aux)
 		sdvox = REG_READ_AUX(psb_intel_sdvo->sdvo_reg);
 	else
@@ -1083,9 +1002,7 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 	if (psb_intel_sdvo->has_hdmi_audio)
 		sdvox |= SDVO_AUDIO_ENABLE;
 
-	/* FIXME: Check if this is needed for PSB
-	sdvox |= (pixel_multiplier - 1) << SDVO_PORT_MULTIPLY_SHIFT;
-	*/
+	 
 
 	if (input_dtd.part2.sdvo_flags & SDVO_NEED_TO_STALL)
 		sdvox |= SDVO_STALL_SELECT;
@@ -1142,10 +1059,7 @@ static void psb_intel_sdvo_dpms(struct drm_encoder *encoder, int mode)
 			gma_wait_for_vblank(dev);
 
 		status = psb_intel_sdvo_get_trained_inputs(psb_intel_sdvo, &input1, &input2);
-		/* Warn if the device reported failure to sync.
-		 * A lot of SDVO devices fail to notify of sync, but it's
-		 * a given it the status is a success, we succeeded.
-		 */
+		 
 		if (status == SDVO_CMD_STATUS_SUCCESS && !input1) {
 			DRM_DEBUG_KMS("First %s output reported failure to "
 					"sync\n", SDVO_NAME(psb_intel_sdvo));
@@ -1223,7 +1137,7 @@ static bool psb_intel_sdvo_get_capabilities(struct psb_intel_sdvo *psb_intel_sdv
 static bool
 psb_intel_sdvo_multifunc_encoder(struct psb_intel_sdvo *psb_intel_sdvo)
 {
-	/* Is there more than one type of output? */
+	 
 	int caps = psb_intel_sdvo->caps.output_flags & 0xf;
 	return caps & -caps;
 }
@@ -1235,7 +1149,7 @@ psb_intel_sdvo_get_edid(struct drm_connector *connector)
 	return drm_get_edid(connector, &sdvo->ddc);
 }
 
-/* Mac mini hack -- use the same DDC as the analog connector */
+ 
 static struct edid *
 psb_intel_sdvo_get_analog_edid(struct drm_connector *connector)
 {
@@ -1257,34 +1171,25 @@ psb_intel_sdvo_hdmi_sink_detect(struct drm_connector *connector)
 	if (edid == NULL && psb_intel_sdvo_multifunc_encoder(psb_intel_sdvo)) {
 		u8 ddc, saved_ddc = psb_intel_sdvo->ddc_bus;
 
-		/*
-		 * Don't use the 1 as the argument of DDC bus switch to get
-		 * the EDID. It is used for SDVO SPD ROM.
-		 */
+		 
 		for (ddc = psb_intel_sdvo->ddc_bus >> 1; ddc > 1; ddc >>= 1) {
 			psb_intel_sdvo->ddc_bus = ddc;
 			edid = psb_intel_sdvo_get_edid(connector);
 			if (edid)
 				break;
 		}
-		/*
-		 * If we found the EDID on the other bus,
-		 * assume that is the correct DDC bus.
-		 */
+		 
 		if (edid == NULL)
 			psb_intel_sdvo->ddc_bus = saved_ddc;
 	}
 
-	/*
-	 * When there is no edid and no monitor is connected with VGA
-	 * port, try to use the CRT ddc to read the EDID for DVI-connector.
-	 */
+	 
 	if (edid == NULL)
 		edid = psb_intel_sdvo_get_analog_edid(connector);
 
 	status = connector_status_unknown;
 	if (edid != NULL) {
-		/* DDC bus is shared, match EDID to connector type */
+		 
 		if (edid->input & DRM_EDID_INPUT_DIGITAL) {
 			status = connector_status_connected;
 			if (psb_intel_sdvo->is_hdmi) {
@@ -1317,7 +1222,7 @@ psb_intel_sdvo_detect(struct drm_connector *connector, bool force)
 				  SDVO_CMD_GET_ATTACHED_DISPLAYS, NULL, 0))
 		return connector_status_unknown;
 
-	/* add 30ms delay when the output type might be TV */
+	 
 	if (psb_intel_sdvo->caps.output_flags &
 	    (SDVO_OUTPUT_SVID0 | SDVO_OUTPUT_CVBS0))
 		mdelay(30);
@@ -1344,7 +1249,7 @@ psb_intel_sdvo_detect(struct drm_connector *connector, bool force)
 	else {
 		struct edid *edid;
 
-		/* if we have an edid check it matches the connection */
+		 
 		edid = psb_intel_sdvo_get_edid(connector);
 		if (edid == NULL)
 			edid = psb_intel_sdvo_get_analog_edid(connector);
@@ -1358,7 +1263,7 @@ psb_intel_sdvo_detect(struct drm_connector *connector, bool force)
 			ret = connector_status_connected;
 	}
 
-	/* May update encoder flag for like clock for SDVO TV, etc.*/
+	 
 	if (ret == connector_status_connected) {
 		psb_intel_sdvo->is_tv = false;
 		psb_intel_sdvo->is_lvds = false;
@@ -1379,15 +1284,10 @@ static void psb_intel_sdvo_get_ddc_modes(struct drm_connector *connector)
 {
 	struct edid *edid;
 
-	/* set the bus switch and get the modes */
+	 
 	edid = psb_intel_sdvo_get_edid(connector);
 
-	/*
-	 * Mac mini hack.  On this device, the DVI-I connector shares one DDC
-	 * link between analog and digital outputs. So, if the regular SDVO
-	 * DDC fails, check to see if the analog output is disconnected, in
-	 * which case we'll look there for the digital DDC data.
-	 */
+	 
 	if (edid == NULL)
 		edid = psb_intel_sdvo_get_analog_edid(connector);
 
@@ -1405,11 +1305,7 @@ static void psb_intel_sdvo_get_ddc_modes(struct drm_connector *connector)
 	}
 }
 
-/*
- * Set of SDVO TV modes.
- * Note!  This is in reply order (see loop in get_tv_modes).
- * XXX: all 60Hz refresh?
- */
+ 
 static const struct drm_display_mode sdvo_tv_modes[] = {
 	{ DRM_MODE("320x200", DRM_MODE_TYPE_DRIVER, 5815, 320, 321, 384,
 		   416, 0, 200, 201, 232, 233, 0,
@@ -1477,9 +1373,7 @@ static void psb_intel_sdvo_get_tv_modes(struct drm_connector *connector)
 	uint32_t reply = 0, format_map = 0;
 	int i;
 
-	/* Read the list of supported input resolutions for the selected TV
-	 * format.
-	 */
+	 
 	format_map = 1 << psb_intel_sdvo->tv_format_index;
 	memcpy(&tv_res, &format_map,
 	       min(sizeof(format_map), sizeof(struct psb_intel_sdvo_sdtv_resolution_request)));
@@ -1511,21 +1405,17 @@ static void psb_intel_sdvo_get_lvds_modes(struct drm_connector *connector)
 	struct drm_psb_private *dev_priv = to_drm_psb_private(connector->dev);
 	struct drm_display_mode *newmode;
 
-	/*
-	 * Attempt to get the mode list from DDC.
-	 * Assume that the preferred modes are
-	 * arranged in priority order.
-	 */
+	 
 	psb_intel_ddc_get_modes(connector, psb_intel_sdvo->i2c);
 	if (list_empty(&connector->probed_modes) == false)
 		goto end;
 
-	/* Fetch modes from VBT */
+	 
 	if (dev_priv->sdvo_lvds_vbt_mode != NULL) {
 		newmode = drm_mode_duplicate(connector->dev,
 					     dev_priv->sdvo_lvds_vbt_mode);
 		if (newmode != NULL) {
-			/* Guarantee the mode is preferred */
+			 
 			newmode->type = (DRM_MODE_TYPE_PREFERRED |
 					 DRM_MODE_TYPE_DRIVER);
 			drm_mode_probed_add(connector, newmode);
@@ -1716,7 +1606,7 @@ psb_intel_sdvo_set_property(struct drm_connector *connector,
 		CHECK_PROPERTY(dot_crawl, DOT_CRAWL)
 	}
 
-	return -EINVAL; /* unknown property */
+	return -EINVAL;  
 
 set_value:
 	if (!psb_intel_sdvo_set_value(psb_intel_sdvo, cmd, &temp_value, 2))
@@ -1752,8 +1642,7 @@ static void psb_intel_sdvo_restore(struct drm_connector *connector)
 
 	REG_WRITE(sdvo->sdvo_reg, sdvo->saveSDVO);
 
-	/* Force a full mode set on the crtc. We're supposed to have the
-	   mode_config lock already. */
+	 
 	if (connector->status == connector_status_connected)
 		drm_crtc_helper_set_mode(crtc, &crtc->mode, crtc->x, crtc->y,
 					 NULL);
@@ -1800,19 +1689,14 @@ static const struct drm_encoder_funcs psb_intel_sdvo_enc_funcs = {
 static void
 psb_intel_sdvo_guess_ddc_bus(struct psb_intel_sdvo *sdvo)
 {
-	/* FIXME: At the moment, ddc_bus = 2 is the only thing that works.
-	 * We need to figure out if this is true for all available poulsbo
-	 * hardware, or if we need to fiddle with the guessing code above.
-	 * The problem might go away if we can parse sdvo mappings from bios */
+	 
 	sdvo->ddc_bus = 2;
 
 #if 0
 	uint16_t mask = 0;
 	unsigned int num_bits;
 
-	/* Make a mask of outputs less than or equal to our own priority in the
-	 * list.
-	 */
+	 
 	switch (sdvo->controlled_output) {
 	case SDVO_OUTPUT_LVDS1:
 		mask |= SDVO_OUTPUT_LVDS1;
@@ -1829,25 +1713,19 @@ psb_intel_sdvo_guess_ddc_bus(struct psb_intel_sdvo *sdvo)
 		break;
 	}
 
-	/* Count bits to find what number we are in the priority list. */
+	 
 	mask &= sdvo->caps.output_flags;
 	num_bits = hweight16(mask);
-	/* If more than 3 outputs, default to DDC bus 3 for now. */
+	 
 	if (num_bits > 3)
 		num_bits = 3;
 
-	/* Corresponds to SDVO_CONTROL_BUS_DDCx */
+	 
 	sdvo->ddc_bus = 1 << num_bits;
 #endif
 }
 
-/*
- * Choose the appropriate DDC bus for control bus switch command for this
- * SDVO output based on the controlled output.
- *
- * DDC bus number assignment is in a priority order of RGB outputs, then TMDS
- * outputs, then LVDS outputs.
- */
+ 
 static void
 psb_intel_sdvo_select_ddc_bus(struct drm_psb_private *dev_priv,
 			  struct psb_intel_sdvo *sdvo, u32 reg)
@@ -1912,13 +1790,11 @@ psb_intel_sdvo_get_slave_addr(struct drm_device *dev, int sdvo_reg)
 		other_mapping = &dev_priv->sdvo_mappings[0];
 	}
 
-	/* If the BIOS described our SDVO device, take advantage of it. */
+	 
 	if (my_mapping->slave_addr)
 		return my_mapping->slave_addr;
 
-	/* If the BIOS only described a different SDVO device, use the
-	 * address that it isn't using.
-	 */
+	 
 	if (other_mapping->slave_addr) {
 		if (other_mapping->slave_addr == 0x70)
 			return 0x72;
@@ -1926,9 +1802,7 @@ psb_intel_sdvo_get_slave_addr(struct drm_device *dev, int sdvo_reg)
 			return 0x70;
 	}
 
-	/* No SDVO device info is found for another DVO port,
-	 * so use mapping assumption we had before BIOS parsing.
-	 */
+	 
 	if (IS_SDVOB(sdvo_reg))
 		return 0x70;
 	else
@@ -1960,12 +1834,7 @@ psb_intel_sdvo_connector_init(struct psb_intel_sdvo_connector *connector,
 static void
 psb_intel_sdvo_add_hdmi_properties(struct psb_intel_sdvo_connector *connector)
 {
-	/* FIXME: We don't support HDMI at the moment
-	struct drm_device *dev = connector->base.base.dev;
-
-	intel_attach_force_audio_property(&connector->base.base);
-	intel_attach_broadcast_rgb_property(&connector->base.base);
-	*/
+	 
 }
 
 static bool
@@ -1990,7 +1859,7 @@ psb_intel_sdvo_dvi_init(struct psb_intel_sdvo *psb_intel_sdvo, int device)
 
 	intel_connector = &psb_intel_sdvo_connector->base;
 	connector = &intel_connector->base;
-	// connector->polled = DRM_CONNECTOR_POLL_CONNECT | DRM_CONNECTOR_POLL_DISCONNECT;
+	
 	encoder->encoder_type = DRM_MODE_ENCODER_TMDS;
 	connector->connector_type = DRM_MODE_CONNECTOR_DVID;
 
@@ -2127,7 +1996,7 @@ psb_intel_sdvo_output_setup(struct psb_intel_sdvo *psb_intel_sdvo, uint16_t flag
 	psb_intel_sdvo->base.needs_tv_clock = false;
 	psb_intel_sdvo->is_lvds = false;
 
-	/* SDVO requires XXX1 function may not exist unless it has XXX0 function.*/
+	 
 
 	if (flags & SDVO_OUTPUT_TMDS0)
 		if (!psb_intel_sdvo_dvi_init(psb_intel_sdvo, 0))
@@ -2137,7 +2006,7 @@ psb_intel_sdvo_output_setup(struct psb_intel_sdvo *psb_intel_sdvo, uint16_t flag
 		if (!psb_intel_sdvo_dvi_init(psb_intel_sdvo, 1))
 			return false;
 
-	/* TV has no XXX1 function block */
+	 
 	if (flags & SDVO_OUTPUT_SVID0)
 		if (!psb_intel_sdvo_tv_init(psb_intel_sdvo, SDVO_OUTPUT_SVID0))
 			return false;
@@ -2250,7 +2119,7 @@ psb_intel_sdvo_create_enhance_property_tv(struct psb_intel_sdvo *psb_intel_sdvo,
 	struct drm_connector *connector = &psb_intel_sdvo_connector->base.base;
 	uint16_t response, data_value[2];
 
-	/* when horizontal overscan is supported, Add the left/right  property */
+	 
 	if (enhancements.overscan_h) {
 		if (!psb_intel_sdvo_get_value(psb_intel_sdvo,
 					  SDVO_CMD_GET_MAX_OVERSCAN_H,
@@ -2454,13 +2323,13 @@ bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 		return false;
 	}
 
-	/* encoder type will be decided later */
+	 
 	gma_encoder = &psb_intel_sdvo->base;
 	gma_encoder->type = INTEL_OUTPUT_SDVO;
 	drm_encoder_init(dev, &gma_encoder->base, &psb_intel_sdvo_enc_funcs,
 			 0, NULL);
 
-	/* Read the regs to test if we can talk to the device */
+	 
 	for (i = 0; i < 0x40; i++) {
 		u8 byte;
 
@@ -2478,7 +2347,7 @@ bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 
 	drm_encoder_helper_add(&gma_encoder->base, &psb_intel_sdvo_helper_funcs);
 
-	/* In default case sdvo lvds is false */
+	 
 	if (!psb_intel_sdvo_get_capabilities(psb_intel_sdvo, &psb_intel_sdvo->caps))
 		goto err;
 
@@ -2491,7 +2360,7 @@ bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 
 	psb_intel_sdvo_select_ddc_bus(dev_priv, psb_intel_sdvo, sdvo_reg);
 
-	/* Set the input timing to the screen. Assume always input 0. */
+	 
 	if (!psb_intel_sdvo_set_target_input(psb_intel_sdvo))
 		goto err;
 
@@ -2511,7 +2380,7 @@ bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 			psb_intel_sdvo->pixel_clock_max / 1000,
 			(psb_intel_sdvo->caps.sdvo_inputs_mask & 0x1) ? 'Y' : 'N',
 			(psb_intel_sdvo->caps.sdvo_inputs_mask & 0x2) ? 'Y' : 'N',
-			/* check currently supported outputs */
+			 
 			psb_intel_sdvo->caps.output_flags &
 			(SDVO_OUTPUT_TMDS0 | SDVO_OUTPUT_RGB0) ? 'Y' : 'N',
 			psb_intel_sdvo->caps.output_flags &

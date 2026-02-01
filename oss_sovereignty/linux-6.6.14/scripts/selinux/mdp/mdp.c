@@ -1,18 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * mdp - make dummy policy
- *
- * When pointed at a kernel tree, builds a dummy policy for that kernel
- * with exactly one type with full rights to itself.
- *
- * Copyright (C) IBM Corporation, 2006
- *
- * Authors: Serge E. Hallyn <serue@us.ibm.com>
- */
+
+ 
 
 
-/* NOTE: we really do want to use the kernel headers here */
+ 
 #define __EXPORTED_HEADERS__
 
 #include <stdio.h>
@@ -27,7 +17,7 @@ static void usage(char *name)
 	exit(1);
 }
 
-/* Class/perm mapping support */
+ 
 struct security_class_mapping {
 	const char *name;
 	const char *perms[sizeof(unsigned) * 8 + 1];
@@ -63,13 +53,13 @@ int main(int argc, char *argv[])
 		usage(argv[0]);
 	}
 
-	/* print out the classes */
+	 
 	for (i = 0; secclass_map[i].name; i++)
 		fprintf(fout, "class %s\n", secclass_map[i].name);
 	fprintf(fout, "\n");
 
 	initial_sid_to_string_len = sizeof(initial_sid_to_string) / sizeof (char *);
-	/* print out the sids */
+	 
 	for (i = 1; i < initial_sid_to_string_len; i++) {
 		const char *name = initial_sid_to_string[i];
 
@@ -80,7 +70,7 @@ int main(int argc, char *argv[])
 	}
 	fprintf(fout, "\n");
 
-	/* print out the class permissions */
+	 
 	for (i = 0; secclass_map[i].name; i++) {
 		const struct security_class_mapping *map = &secclass_map[i];
 		fprintf(fout, "class %s\n", map->name);
@@ -91,7 +81,7 @@ int main(int argc, char *argv[])
 	}
 	fprintf(fout, "\n");
 
-	/* print out mls declarations and constraints */
+	 
 	if (mls) {
 		fprintf(fout, "sensitivity s0;\n");
 		fprintf(fout, "sensitivity s1;\n");
@@ -108,21 +98,16 @@ int main(int argc, char *argv[])
 			fprintf(fout, "mlsconstrain %s {\n", map->name);
 			for (j = 0; map->perms[j]; j++)
 				fprintf(fout, "\t%s\n", map->perms[j]);
-			/*
-			 * This requires all subjects and objects to be
-			 * single-level (l2 eq h2), and that the subject
-			 * level dominate the object level (h1 dom h2)
-			 * in order to have any permissions to it.
-			 */
+			 
 			fprintf(fout, "} (l2 eq h2 and h1 dom h2);\n\n");
 		}
 	}
 
-	/* enable all policy capabilities */
+	 
 	for (i = 0; i < ARRAY_SIZE(selinux_policycap_names); i++)
 		fprintf(fout, "policycap %s;\n", selinux_policycap_names[i]);
 
-	/* types, roles, and allows */
+	 
 	fprintf(fout, "type base_t;\n");
 	fprintf(fout, "role base_r;\n");
 	fprintf(fout, "role base_r types { base_t };\n");
@@ -138,7 +123,7 @@ int main(int argc, char *argv[])
 #define SUBJUSERROLETYPE "user_u:base_r:base_t"
 #define OBJUSERROLETYPE "user_u:object_r:base_t"
 
-	/* default sids */
+	 
 	for (i = 1; i < initial_sid_to_string_len; i++) {
 		const char *name = initial_sid_to_string[i];
 
@@ -155,9 +140,7 @@ int main(int argc, char *argv[])
 	fprintf(fout, "fs_use_%s %s " OBJUSERROLETYPE "%s;\n", \
 		behavior, fstype, mls ? ":" SYSTEMLOW : "")
 
-	/*
-	 * Filesystems whose inode labels can be fetched via getxattr.
-	 */
+	 
 #ifdef CONFIG_EXT2_FS_SECURITY
 	FS_USE("xattr", "ext2");
 #endif
@@ -199,16 +182,11 @@ int main(int argc, char *argv[])
 	FS_USE("xattr", "squashfs");
 #endif
 
-	/*
-	 * Filesystems whose inodes are labeled from allocating task.
-	 */
+	 
 	FS_USE("task", "pipefs");
 	FS_USE("task", "sockfs");
 
-	/*
-	 * Filesystems whose inode labels are computed from both
-	 * the allocating task and the superblock label.
-	 */
+	 
 #ifdef CONFIG_UNIX98_PTYS
 	FS_USE("trans", "devpts");
 #endif
@@ -229,14 +207,7 @@ int main(int argc, char *argv[])
 	fprintf(fout, "genfscon %s %s " OBJUSERROLETYPE "%s\n", \
 		fstype, prefix, mls ? ":" SYSTEMLOW : "")
 
-	/*
-	 * Filesystems whose inodes are labeled from path prefix match
-	 * relative to the filesystem root.  Depending on the filesystem,
-	 * only a single label for all inodes may be supported.  Here
-	 * we list the filesystem types for which per-file labeling is
-	 * supported using genfscon; any other filesystem type can also
-	 * be added by only with a single entry for all of its inodes.
-	 */
+	 
 #ifdef CONFIG_PROC_FS
 	GENFSCON("proc", "/");
 #endif

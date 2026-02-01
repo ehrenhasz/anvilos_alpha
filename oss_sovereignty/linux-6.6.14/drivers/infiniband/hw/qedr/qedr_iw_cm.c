@@ -1,34 +1,4 @@
-/* QLogic qedr NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and /or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <net/ip.h>
 #include <net/ipv6.h>
 #include <net/udp.h>
@@ -150,11 +120,7 @@ qedr_iw_issue_event(void *context,
 	if (params->cm_info) {
 		event.ird = params->cm_info->ird;
 		event.ord = params->cm_info->ord;
-		/* Only connect_request and reply have valid private data
-		 * the rest of the events this may be left overs from
-		 * connection establishment. CONNECT_REQUEST is issued via
-		 * qedr_iw_mpa_request
-		 */
+		 
 		if (event_type == IW_CM_EVENT_CONNECT_REPLY) {
 			event.private_data_len =
 				params->cm_info->private_data_len;
@@ -215,10 +181,7 @@ static void qedr_iw_disconnect_worker(struct work_struct *work)
 	struct qedr_qp *qp = ep->qp;
 	struct iw_cm_event event;
 
-	/* The qp won't be released until we release the ep.
-	 * the ep's refcnt was increased before calling this
-	 * function, therefore it is safe to access qp
-	 */
+	 
 	if (test_and_set_bit(QEDR_IWARP_CM_WAIT_FOR_DISCONNECT,
 			     &qp->iwarp_cm_flags))
 		goto out;
@@ -227,9 +190,7 @@ static void qedr_iw_disconnect_worker(struct work_struct *work)
 	event.status = dwork->status;
 	event.event = IW_CM_EVENT_DISCONNECT;
 
-	/* Success means graceful disconnect was requested. modifying
-	 * to SQD is translated to graceful disconnect. O/w reset is sent
-	 */
+	 
 	if (dwork->status)
 		qp_params.new_state = QED_ROCE_QP_STATE_ERR;
 	else
@@ -262,10 +223,7 @@ qedr_iw_disconnect_event(void *context,
 	if (!work)
 		return;
 
-	/* We can't get a close event before disconnect, but since
-	 * we're scheduling a work queue we need to make sure close
-	 * won't delete the ep, so we increase the refcnt
-	 */
+	 
 	kref_get(&ep->refcnt);
 
 	work->ep = ep;
@@ -283,9 +241,7 @@ qedr_iw_passive_complete(void *context,
 	struct qedr_iw_ep *ep = (struct qedr_iw_ep *)context;
 	struct qedr_dev *dev = ep->dev;
 
-	/* We will only reach the following state if MPA_REJECT was called on
-	 * passive. In this case there will be no associated QP.
-	 */
+	 
 	if ((params->status == -ECONNREFUSED) && (!ep->qp)) {
 		DP_DEBUG(dev, QEDR_MSG_IWARP,
 			 "PASSIVE connection refused releasing ep...\n");
@@ -638,7 +594,7 @@ int qedr_iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	if (test_and_set_bit(QEDR_IWARP_CM_WAIT_FOR_CONNECT,
 			     &qp->iwarp_cm_flags)) {
 		rc = -ENODEV;
-		goto err; /* QP already being destroyed */
+		goto err;  
 	}
 
 	rc = dev->ops->iwarp_connect(dev->rdma_ctx, &in_params, &out_params);
@@ -764,7 +720,7 @@ int qedr_iw_accept(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	if (test_and_set_bit(QEDR_IWARP_CM_WAIT_FOR_CONNECT,
 			     &qp->iwarp_cm_flags)) {
 		rc = -EINVAL;
-		goto err; /* QP already destroyed */
+		goto err;  
 	}
 
 	rc = dev->ops->iwarp_accept(dev->rdma_ctx, &params);

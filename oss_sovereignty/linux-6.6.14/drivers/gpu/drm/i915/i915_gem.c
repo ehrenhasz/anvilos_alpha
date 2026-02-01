@@ -1,29 +1,4 @@
-/*
- * Copyright © 2008-2015 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *
- */
+ 
 
 #include <linux/dma-fence-array.h>
 #include <linux/kthread.h>
@@ -129,12 +104,7 @@ int i915_gem_object_unbind(struct drm_i915_gem_object *obj,
 	if (list_empty(&obj->vma.list))
 		return 0;
 
-	/*
-	 * As some machines use ACPI to handle runtime-resume callbacks, and
-	 * ACPI is quite kmalloc happy, we cannot resume beneath the vm->mutex
-	 * as they are required by the shrinker. Ergo, we wake the device up
-	 * first just in case.
-	 */
+	 
 	wakeref = intel_runtime_pm_get(rpm);
 
 try_again:
@@ -152,24 +122,14 @@ try_again:
 			break;
 		}
 
-		/*
-		 * Requiring the vm destructor to take the object lock
-		 * before destroying a vma would help us eliminate the
-		 * i915_vm_tryget() here, AND thus also the barrier stuff
-		 * at the end. That's an easy fix, but sleeping locks in
-		 * a kthread should generally be avoided.
-		 */
+		 
 		ret = -EAGAIN;
 		if (!i915_vm_tryget(vma->vm))
 			break;
 
 		spin_unlock(&obj->vma.lock);
 
-		/*
-		 * Since i915_vma_parked() takes the object lock
-		 * before vma destruction, it won't race us here,
-		 * and destroy the vma from under us.
-		 */
+		 
 
 		ret = -EBUSY;
 		if (flags & I915_GEM_OBJECT_UNBIND_ASYNC) {
@@ -196,7 +156,7 @@ try_again:
 	spin_unlock(&obj->vma.lock);
 
 	if (ret == -EAGAIN && flags & I915_GEM_OBJECT_UNBIND_BARRIER) {
-		rcu_barrier(); /* flush the i915_vm_release() */
+		rcu_barrier();  
 		goto try_again;
 	}
 
@@ -285,7 +245,7 @@ gtt_user_read(struct io_mapping *mapping,
 	void __iomem *vaddr;
 	unsigned long unwritten;
 
-	/* We can use the cpu mem copy function because this is X86. */
+	 
 	vaddr = io_mapping_map_atomic_wc(mapping, base);
 	unwritten = __copy_to_user_inatomic(user_data,
 					    (void __force *)vaddr + offset,
@@ -325,7 +285,7 @@ retry:
 	if (!i915_gem_object_is_tiled(obj))
 		vma = i915_gem_object_ggtt_pin_ww(obj, &ww, NULL, 0, 0,
 						  PIN_MAPPABLE |
-						  PIN_NONBLOCK /* NOWARN */ |
+						  PIN_NONBLOCK   |
 						  PIN_NOEVICT);
 	if (vma == ERR_PTR(-EDEADLK)) {
 		ret = -EDEADLK;
@@ -408,12 +368,7 @@ i915_gem_gtt_pread(struct drm_i915_gem_object *obj,
 	offset = args->offset;
 
 	while (remain > 0) {
-		/* Operation in this page
-		 *
-		 * page_base = page offset within aperture
-		 * page_offset = offset within page
-		 * page_length = bytes to copy for this page
-		 */
+		 
 		u32 page_base = node.start;
 		unsigned page_offset = offset_in_page(offset);
 		unsigned page_length = PAGE_SIZE - page_offset;
@@ -446,14 +401,7 @@ out_rpm:
 	return ret;
 }
 
-/**
- * i915_gem_pread_ioctl - Reads data from the object referenced by handle.
- * @dev: drm device pointer
- * @data: ioctl data blob
- * @file: drm file pointer
- *
- * On error, the contents of *data are undefined.
- */
+ 
 int
 i915_gem_pread_ioctl(struct drm_device *dev, void *data,
 		     struct drm_file *file)
@@ -463,9 +411,7 @@ i915_gem_pread_ioctl(struct drm_device *dev, void *data,
 	struct drm_i915_gem_object *obj;
 	int ret;
 
-	/* PREAD is disallowed for all platforms after TGL-LP.  This also
-	 * covers all platforms with local memory.
-	 */
+	 
 	if (GRAPHICS_VER(i915) >= 12 && !IS_TIGERLAKE(i915))
 		return -EOPNOTSUPP;
 
@@ -480,7 +426,7 @@ i915_gem_pread_ioctl(struct drm_device *dev, void *data,
 	if (!obj)
 		return -ENOENT;
 
-	/* Bounds check source.  */
+	 
 	if (range_overflows_t(u64, args->offset, args->size, obj->base.size)) {
 		ret = -EINVAL;
 		goto out;
@@ -508,9 +454,7 @@ out:
 	return ret;
 }
 
-/* This is the fast write path which cannot handle
- * page faults in the source data
- */
+ 
 
 static inline bool
 ggtt_write(struct io_mapping *mapping,
@@ -520,7 +464,7 @@ ggtt_write(struct io_mapping *mapping,
 	void __iomem *vaddr;
 	unsigned long unwritten;
 
-	/* We can use the cpu mem copy function because this is X86. */
+	 
 	vaddr = io_mapping_map_atomic_wc(mapping, base);
 	unwritten = __copy_from_user_inatomic_nocache((void __force *)vaddr + offset,
 						      user_data, length);
@@ -535,12 +479,7 @@ ggtt_write(struct io_mapping *mapping,
 	return unwritten;
 }
 
-/**
- * i915_gem_gtt_pwrite_fast - This is the fast pwrite path, where we copy the data directly from the
- * user into the GTT, uncached.
- * @obj: i915 GEM object
- * @args: pwrite arguments structure
- */
+ 
 static int
 i915_gem_gtt_pwrite_fast(struct drm_i915_gem_object *obj,
 			 const struct drm_i915_gem_pwrite *args)
@@ -560,18 +499,12 @@ i915_gem_gtt_pwrite_fast(struct drm_i915_gem_object *obj,
 		return -EINVAL;
 
 	if (i915_gem_object_has_struct_page(obj)) {
-		/*
-		 * Avoid waking the device up if we can fallback, as
-		 * waking/resuming is very slow (worst-case 10-100 ms
-		 * depending on PCI sleeps and our own resume time).
-		 * This easily dwarfs any performance advantage from
-		 * using the cache bypass of indirect GGTT access.
-		 */
+		 
 		wakeref = intel_runtime_pm_get_if_in_use(rpm);
 		if (!wakeref)
 			return -EFAULT;
 	} else {
-		/* No backing pages, no fallback, we must force GGTT access */
+		 
 		wakeref = intel_runtime_pm_get(rpm);
 	}
 
@@ -587,18 +520,13 @@ i915_gem_gtt_pwrite_fast(struct drm_i915_gem_object *obj,
 	offset = args->offset;
 	remain = args->size;
 	while (remain) {
-		/* Operation in this page
-		 *
-		 * page_base = page offset within aperture
-		 * page_offset = offset within page
-		 * page_length = bytes to copy for this page
-		 */
+		 
 		u32 page_base = node.start;
 		unsigned int page_offset = offset_in_page(offset);
 		unsigned int page_length = PAGE_SIZE - page_offset;
 		page_length = remain < page_length ? remain : page_length;
 		if (drm_mm_node_allocated(&node)) {
-			/* flush the write before we modify the GGTT */
+			 
 			intel_gt_flush_ggtt_writes(ggtt->vm.gt);
 			ggtt->vm.insert_page(&ggtt->vm,
 					     i915_gem_object_get_dma_address(obj,
@@ -606,16 +534,11 @@ i915_gem_gtt_pwrite_fast(struct drm_i915_gem_object *obj,
 					     node.start,
 					     i915_gem_get_pat_index(i915,
 								    I915_CACHE_NONE), 0);
-			wmb(); /* flush modifications to the GGTT (insert_page) */
+			wmb();  
 		} else {
 			page_base += offset & PAGE_MASK;
 		}
-		/* If we get a fault while copying data, then (presumably) our
-		 * source page isn't available.  Return the error and we'll
-		 * retry in the slow path.
-		 * If the object is non-shmem backed, we retry again with the
-		 * path that handles page fault.
-		 */
+		 
 		if (ggtt_write(&ggtt->iomap, page_base, page_offset,
 			       user_data, page_length)) {
 			ret = -EFAULT;
@@ -636,11 +559,7 @@ out_rpm:
 	return ret;
 }
 
-/* Per-page copy function for the shmem pwrite fastpath.
- * Flushes invalid cachelines before writing to the target if
- * needs_clflush_before is set and flushes out any written cachelines after
- * writing if needs_clflush is set.
- */
+ 
 static int
 shmem_pwrite(struct page *page, int offset, int len, char __user *user_data,
 	     bool needs_clflush_before,
@@ -690,10 +609,7 @@ i915_gem_shmem_pwrite(struct drm_i915_gem_object *obj,
 	i915_gem_object_finish_access(obj);
 	i915_gem_object_unlock(obj);
 
-	/* If we don't overwrite a cacheline completely we need to be
-	 * careful to have up-to-date data by first clflushing. Don't
-	 * overcomplicate things and flush the entire patch.
-	 */
+	 
 	partial_cacheline_write = 0;
 	if (needs_clflush & CLFLUSH_BEFORE)
 		partial_cacheline_write = boot_cpu_data.x86_clflush_size - 1;
@@ -728,14 +644,7 @@ err_unlock:
 	return ret;
 }
 
-/**
- * i915_gem_pwrite_ioctl - Writes data to the object referenced by handle.
- * @dev: drm device
- * @data: ioctl data blob
- * @file: drm file
- *
- * On error, the contents of the buffer that were to be modified are undefined.
- */
+ 
 int
 i915_gem_pwrite_ioctl(struct drm_device *dev, void *data,
 		      struct drm_file *file)
@@ -745,9 +654,7 @@ i915_gem_pwrite_ioctl(struct drm_device *dev, void *data,
 	struct drm_i915_gem_object *obj;
 	int ret;
 
-	/* PWRITE is disallowed for all platforms after TGL-LP.  This also
-	 * covers all platforms with local memory.
-	 */
+	 
 	if (GRAPHICS_VER(i915) >= 12 && !IS_TIGERLAKE(i915))
 		return -EOPNOTSUPP;
 
@@ -761,13 +668,13 @@ i915_gem_pwrite_ioctl(struct drm_device *dev, void *data,
 	if (!obj)
 		return -ENOENT;
 
-	/* Bounds check destination. */
+	 
 	if (range_overflows_t(u64, args->offset, args->size, obj->base.size)) {
 		ret = -EINVAL;
 		goto err;
 	}
 
-	/* Writes not allowed into this read-only object */
+	 
 	if (i915_gem_object_is_readonly(obj)) {
 		ret = -EINVAL;
 		goto err;
@@ -789,18 +696,10 @@ i915_gem_pwrite_ioctl(struct drm_device *dev, void *data,
 		goto err;
 
 	ret = -EFAULT;
-	/* We can only do the GTT pwrite on untiled buffers, as otherwise
-	 * it would end up going through the fenced access, and we'll get
-	 * different detiling behavior between reading and writing.
-	 * pread/pwrite currently are reading and writing from the CPU
-	 * perspective, requiring manual detiling by the client.
-	 */
+	 
 	if (!i915_gem_object_has_struct_page(obj) ||
 	    i915_gem_cpu_write_needs_clflush(obj))
-		/* Note that the gtt paths might fail with non-page-backed user
-		 * pointers (e.g. gtt mappings when moving data between
-		 * textures). Fallback to the shmem path in that case.
-		 */
+		 
 		ret = i915_gem_gtt_pwrite_fast(obj, args);
 
 	if (ret == -EFAULT || ret == -ENOSPC) {
@@ -813,12 +712,7 @@ err:
 	return ret;
 }
 
-/**
- * i915_gem_sw_finish_ioctl - Called when user space has done writes to this buffer
- * @dev: drm device
- * @data: ioctl data blob
- * @file: drm file
- */
+ 
 int
 i915_gem_sw_finish_ioctl(struct drm_device *dev, void *data,
 			 struct drm_file *file)
@@ -830,12 +724,9 @@ i915_gem_sw_finish_ioctl(struct drm_device *dev, void *data,
 	if (!obj)
 		return -ENOENT;
 
-	/*
-	 * Proxy objects are barred from CPU access, so there is no
-	 * need to ban sw_finish as it is a nop.
-	 */
+	 
 
-	/* Pinned buffers may be scanout, so flush the cache */
+	 
 	i915_gem_object_flush_if_display(obj);
 	i915_gem_object_put(obj);
 
@@ -847,12 +738,7 @@ void i915_gem_runtime_suspend(struct drm_i915_private *i915)
 	struct drm_i915_gem_object *obj, *on;
 	int i;
 
-	/*
-	 * Only called during RPM suspend. All users of the userfault_list
-	 * must be holding an RPM wakeref to ensure that this can not
-	 * run concurrently with themselves (and use the struct_mutex for
-	 * protection between themselves).
-	 */
+	 
 
 	list_for_each_entry_safe(obj, on,
 				 &to_gt(i915)->ggtt->userfault_list, userfault_link)
@@ -862,25 +748,11 @@ void i915_gem_runtime_suspend(struct drm_i915_private *i915)
 				 &i915->runtime_pm.lmem_userfault_list, userfault_link)
 		i915_gem_object_runtime_pm_release_mmap_offset(obj);
 
-	/*
-	 * The fence will be lost when the device powers down. If any were
-	 * in use by hardware (i.e. they are pinned), we should not be powering
-	 * down! All other fences will be reacquired by the user upon waking.
-	 */
+	 
 	for (i = 0; i < to_gt(i915)->ggtt->num_fences; i++) {
 		struct i915_fence_reg *reg = &to_gt(i915)->ggtt->fence_regs[i];
 
-		/*
-		 * Ideally we want to assert that the fence register is not
-		 * live at this point (i.e. that no piece of code will be
-		 * trying to write through fence + GTT, as that both violates
-		 * our tracking of activity and associated locking/barriers,
-		 * but also is illegal given that the hw is powered down).
-		 *
-		 * Previously we used reg->pin_count as a "liveness" indicator.
-		 * That is not sufficient, and we need a more fine-grained
-		 * tool if we want to have a sanity check here.
-		 */
+		 
 
 		if (!reg->vma)
 			continue;
@@ -917,33 +789,11 @@ i915_gem_object_ggtt_pin_ww(struct drm_i915_gem_object *obj,
 
 	if (flags & PIN_MAPPABLE &&
 	    (!view || view->type == I915_GTT_VIEW_NORMAL)) {
-		/*
-		 * If the required space is larger than the available
-		 * aperture, we will not able to find a slot for the
-		 * object and unbinding the object now will be in
-		 * vain. Worse, doing so may cause us to ping-pong
-		 * the object in and out of the Global GTT and
-		 * waste a lot of cycles under the mutex.
-		 */
+		 
 		if (obj->base.size > ggtt->mappable_end)
 			return ERR_PTR(-E2BIG);
 
-		/*
-		 * If NONBLOCK is set the caller is optimistically
-		 * trying to cache the full object within the mappable
-		 * aperture, and *must* have a fallback in place for
-		 * situations where we cannot bind the object. We
-		 * can be a little more lax here and use the fallback
-		 * more often to avoid costly migrations of ourselves
-		 * and other objects within the aperture.
-		 *
-		 * Half-the-aperture is used as a simple heuristic.
-		 * More interesting would to do search for a free
-		 * block prior to making the commitment to unbind.
-		 * That caters for the self-harm case, and with a
-		 * little more heuristics (e.g. NOFAULT, NOEVICT)
-		 * we could try to minimise harm to others.
-		 */
+		 
 		if (flags & PIN_NONBLOCK &&
 		    obj->base.size > ggtt->mappable_end / 2)
 			return ERR_PTR(-ENOSPC);
@@ -959,16 +809,7 @@ new_vma:
 			if (i915_vma_is_pinned(vma) || i915_vma_is_active(vma))
 				return ERR_PTR(-ENOSPC);
 
-			/*
-			 * If this misplaced vma is too big (i.e, at-least
-			 * half the size of aperture) or hasn't been pinned
-			 * mappable before, we ignore the misplacement when
-			 * PIN_NONBLOCK is set in order to avoid the ping-pong
-			 * issue described above. In other words, we try to
-			 * avoid the costly operation of unbinding this vma
-			 * from the GGTT and rebinding it back because there
-			 * may not be enough space for this vma in the aperture.
-			 */
+			 
 			if (flags & PIN_MAPPABLE &&
 			    (vma->fence_size > ggtt->mappable_end / 2 ||
 			    !i915_vma_is_map_and_fenceable(vma)))
@@ -1092,7 +933,7 @@ i915_gem_madvise_ioctl(struct drm_device *dev, void *data,
 		spin_unlock_irqrestore(&i915->mm.obj_lock, flags);
 	}
 
-	/* if the object is no longer attached, discard its backing storage */
+	 
 	if (obj->mm.madv == I915_MADV_DONTNEED &&
 	    !i915_gem_object_has_pages(obj))
 		i915_gem_object_truncate(obj);
@@ -1105,12 +946,7 @@ out:
 	return err;
 }
 
-/*
- * A single pass should suffice to release all the freed objects (along most
- * call paths), but be a little more paranoid in that freeing the objects does
- * take a little amount of time, during which the rcu callbacks could have added
- * new objects into the freed list, and armed the work again.
- */
+ 
 void i915_gem_drain_freed_objects(struct drm_i915_private *i915)
 {
 	while (atomic_read(&i915->mm.free_count)) {
@@ -1120,15 +956,7 @@ void i915_gem_drain_freed_objects(struct drm_i915_private *i915)
 	}
 }
 
-/*
- * Similar to objects above (see i915_gem_drain_freed-objects), in general we
- * have workers that are armed by RCU and then rearm themselves in their
- * callbacks. To be paranoid, we need to drain the workqueue a second time after
- * waiting for the RCU grace period so that we catch work queued via RCU from
- * the first pass. As neither drain_workqueue() nor flush_workqueue() report a
- * result, we make an assumption that we only don't require more than 3 passes
- * to catch all _recursive_ RCU delayed work.
- */
+ 
 void i915_gem_drain_workqueue(struct drm_i915_private *i915)
 {
 	int i;
@@ -1148,20 +976,14 @@ int i915_gem_init(struct drm_i915_private *dev_priv)
 	unsigned int i;
 	int ret;
 
-	/*
-	 * In the proccess of replacing cache_level with pat_index a tricky
-	 * dependency is created on the definition of the enum i915_cache_level.
-	 * in case this enum is changed, PTE encode would be broken.
-	 * Add a WARNING here. And remove when we completely quit using this
-	 * enum
-	 */
+	 
 	BUILD_BUG_ON(I915_CACHE_NONE != 0 ||
 		     I915_CACHE_LLC != 1 ||
 		     I915_CACHE_L3_LLC != 2 ||
 		     I915_CACHE_WT != 3 ||
 		     I915_MAX_CACHE_LEVEL != 4);
 
-	/* We need to fallback to 4K pages if host doesn't support huge gtt. */
+	 
 	if (intel_vgpu_active(dev_priv) && !intel_vgpu_has_huge_gtt(dev_priv))
 		RUNTIME_INFO(dev_priv)->page_sizes = I915_GTT_PAGE_SIZE_4K;
 
@@ -1182,15 +1004,7 @@ int i915_gem_init(struct drm_i915_private *dev_priv)
 		goto err_unlock;
 	}
 
-	/*
-	 * Despite its name intel_clock_gating_init applies both display
-	 * clock gating workarounds; GT mmio workarounds and the occasional
-	 * GT power context workaround. Worse, sometimes it includes a context
-	 * register workaround which we need to apply before we record the
-	 * default HW state for all contexts.
-	 *
-	 * FIXME: break up the workarounds and apply them at the right time!
-	 */
+	 
 	intel_clock_gating_init(dev_priv);
 
 	for_each_gt(gt, dev_priv, i) {
@@ -1199,21 +1013,12 @@ int i915_gem_init(struct drm_i915_private *dev_priv)
 			goto err_unlock;
 	}
 
-	/*
-	 * Register engines early to ensure the engine list is in its final
-	 * rb-tree form, lowering the amount of code that has to deal with
-	 * the intermediate llist state.
-	 */
+	 
 	intel_engines_driver_register(dev_priv);
 
 	return 0;
 
-	/*
-	 * Unwinding is complicated by that we want to handle -EIO to mean
-	 * disable GPU submission but keep KMS alive. We want to mark the
-	 * HW as irrevisibly wedged, but keep enough state around that the
-	 * driver doesn't explode during runtime.
-	 */
+	 
 err_unlock:
 	i915_gem_drain_workqueue(dev_priv);
 
@@ -1226,11 +1031,7 @@ err_unlock:
 	}
 
 	if (ret == -EIO) {
-		/*
-		 * Allow engines or uC initialisation to fail by marking the GPU
-		 * as wedged. But we only want to do this when the GPU is angry,
-		 * for all other failure, such as an allocation failure, bail.
-		 */
+		 
 		for_each_gt(gt, dev_priv, i) {
 			if (!intel_gt_is_wedged(gt)) {
 				i915_probe_error(dev_priv,
@@ -1239,7 +1040,7 @@ err_unlock:
 			}
 		}
 
-		/* Minimal basic recovery for KMS */
+		 
 		ret = i915_ggtt_enable_hw(dev_priv);
 		i915_ggtt_resume(to_gt(dev_priv)->ggtt);
 		intel_clock_gating_init(dev_priv);
@@ -1270,7 +1071,7 @@ void i915_gem_driver_remove(struct drm_i915_private *dev_priv)
 		intel_gt_driver_remove(gt);
 	dev_priv->uabi_engines = RB_ROOT;
 
-	/* Flush any outstanding unpin_work. */
+	 
 	i915_gem_drain_workqueue(dev_priv);
 }
 
@@ -1284,7 +1085,7 @@ void i915_gem_driver_release(struct drm_i915_private *dev_priv)
 		intel_uc_cleanup_firmwares(&gt->uc);
 	}
 
-	/* Flush any outstanding work, including i915_gem_context.release_work. */
+	 
 	i915_gem_drain_workqueue(dev_priv);
 
 	drm_WARN_ON(&dev_priv->drm, !list_empty(&dev_priv->gem.contexts.list));

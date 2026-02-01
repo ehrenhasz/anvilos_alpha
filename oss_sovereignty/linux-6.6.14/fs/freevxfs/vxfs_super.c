@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2000-2001 Christoph Hellwig.
- * Copyright (c) 2016 Krzysztof Blaszkowski
- */
 
-/*
- * Veritas filesystem driver - superblock related routines.
- */
+ 
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 
@@ -31,14 +26,7 @@ MODULE_LICENSE("Dual BSD/GPL");
 
 static struct kmem_cache *vxfs_inode_cachep;
 
-/**
- * vxfs_put_super - free superblock resources
- * @sbp:	VFS superblock.
- *
- * Description:
- *   vxfs_put_super frees all resources allocated for @sbp
- *   after the last instance of the filesystem is unmounted.
- */
+ 
 
 static void
 vxfs_put_super(struct super_block *sbp)
@@ -53,24 +41,7 @@ vxfs_put_super(struct super_block *sbp)
 	kfree(infp);
 }
 
-/**
- * vxfs_statfs - get filesystem information
- * @dentry:	VFS dentry to locate superblock
- * @bufp:	output buffer
- *
- * Description:
- *   vxfs_statfs fills the statfs buffer @bufp with information
- *   about the filesystem described by @dentry.
- *
- * Returns:
- *   Zero.
- *
- * Locking:
- *   No locks held.
- *
- * Notes:
- *   This is everything but complete...
- */
+ 
 static int
 vxfs_statfs(struct dentry *dentry, struct kstatfs *bufp)
 {
@@ -164,22 +135,7 @@ static int vxfs_try_sb_magic(struct super_block *sbp, int silent,
 	return rc;
 }
 
-/**
- * vxfs_fill_super - read superblock into memory and initialize filesystem
- * @sbp:		VFS superblock (to fill)
- * @dp:			fs private mount data
- * @silent:		do not complain loudly when sth is wrong
- *
- * Description:
- *   We are called on the first mount of a filesystem to read the
- *   superblock into memory and do some basic setup.
- *
- * Returns:
- *   The superblock on success, else %NULL.
- *
- * Locking:
- *   We are under @sbp->s_lock.
- */
+ 
 static int vxfs_fill_super(struct super_block *sbp, void *dp, int silent)
 {
 	struct vxfs_sb_info	*infp;
@@ -210,11 +166,11 @@ static int vxfs_fill_super(struct super_block *sbp, void *dp, int silent)
 
 	if (!vxfs_try_sb_magic(sbp, silent, 1,
 			(__force __fs32)cpu_to_le32(VXFS_SUPER_MAGIC))) {
-		/* Unixware, x86 */
+		 
 		infp->byte_order = VXFS_BO_LE;
 	} else if (!vxfs_try_sb_magic(sbp, silent, 8,
 			(__force __fs32)cpu_to_be32(VXFS_SUPER_MAGIC))) {
-		/* HP-UX, parisc */
+		 
 		infp->byte_order = VXFS_BO_BE;
 	} else {
 		if (!silent)
@@ -279,9 +235,7 @@ out:
 	return ret;
 }
 
-/*
- * The usual module blurb.
- */
+ 
 static struct dentry *vxfs_mount(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
@@ -295,7 +249,7 @@ static struct file_system_type vxfs_fs_type = {
 	.kill_sb	= kill_block_super,
 	.fs_flags	= FS_REQUIRES_DEV,
 };
-MODULE_ALIAS_FS("vxfs"); /* makes mount -t vxfs autoload the module */
+MODULE_ALIAS_FS("vxfs");  
 MODULE_ALIAS("vxfs");
 
 static int __init
@@ -322,10 +276,7 @@ static void __exit
 vxfs_cleanup(void)
 {
 	unregister_filesystem(&vxfs_fs_type);
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(vxfs_inode_cachep);
 }

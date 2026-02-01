@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * ACPI support for platform bus type.
- *
- * Copyright (C) 2015, Linaro Ltd
- * Author: Graeme Gregory <graeme.gregory@linaro.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/amba/bus.h>
@@ -20,16 +15,16 @@
 #include "init.h"
 
 static const struct acpi_device_id amba_id_list[] = {
-	{"ARMH0061", 0}, /* PL061 GPIO Device */
-	{"ARMH0330", 0}, /* ARM DMA Controller DMA-330 */
-	{"ARMHC501", 0}, /* ARM CoreSight ETR */
-	{"ARMHC502", 0}, /* ARM CoreSight STM */
-	{"ARMHC503", 0}, /* ARM CoreSight Debug */
-	{"ARMHC979", 0}, /* ARM CoreSight TPIU */
-	{"ARMHC97C", 0}, /* ARM CoreSight SoC-400 TMC, SoC-600 ETF/ETB */
-	{"ARMHC98D", 0}, /* ARM CoreSight Dynamic Replicator */
-	{"ARMHC9CA", 0}, /* ARM CoreSight CATU */
-	{"ARMHC9FF", 0}, /* ARM CoreSight Dynamic Funnel */
+	{"ARMH0061", 0},  
+	{"ARMH0330", 0},  
+	{"ARMHC501", 0},  
+	{"ARMHC502", 0},  
+	{"ARMHC503", 0},  
+	{"ARMHC979", 0},  
+	{"ARMHC97C", 0},  
+	{"ARMHC98D", 0},  
+	{"ARMHC9CA", 0},  
+	{"ARMHC9FF", 0},  
 	{"", 0},
 };
 
@@ -37,7 +32,7 @@ static void amba_register_dummy_clk(void)
 {
 	static struct clk *amba_dummy_clk;
 
-	/* If clock already registered */
+	 
 	if (amba_dummy_clk)
 		return;
 
@@ -56,7 +51,7 @@ static int amba_handler_attach(struct acpi_device *adev,
 	int irq_no = 0;
 	int ret;
 
-	/* If the ACPI node already has a physical device attached, skip it. */
+	 
 	if (adev->physical_node_count)
 		return 0;
 
@@ -93,11 +88,7 @@ static int amba_handler_attach(struct acpi_device *adev,
 
 	acpi_dev_free_resource_list(&resource_list);
 
-	/*
-	 * If the ACPI node has a parent and that parent has a physical device
-	 * attached to it, that physical device should be the parent of
-	 * the amba device we are about to create.
-	 */
+	 
 	if (parent)
 		dev->dev.parent = acpi_get_first_physical_node(parent);
 

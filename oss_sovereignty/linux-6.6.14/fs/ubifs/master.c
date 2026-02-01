@@ -1,45 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2006-2008 Nokia Corporation.
- *
- * Authors: Artem Bityutskiy (Битюцкий Артём)
- *          Adrian Hunter
- */
 
-/* This file implements reading and writing the master node */
+ 
+
+ 
 
 #include "ubifs.h"
 
-/**
- * ubifs_compare_master_node - compare two UBIFS master nodes
- * @c: UBIFS file-system description object
- * @m1: the first node
- * @m2: the second node
- *
- * This function compares two UBIFS master nodes. Returns 0 if they are equal
- * and nonzero if not.
- */
+ 
 int ubifs_compare_master_node(struct ubifs_info *c, void *m1, void *m2)
 {
 	int ret;
 	int behind;
 	int hmac_offs = offsetof(struct ubifs_mst_node, hmac);
 
-	/*
-	 * Do not compare the common node header since the sequence number and
-	 * hence the CRC are different.
-	 */
+	 
 	ret = memcmp(m1 + UBIFS_CH_SZ, m2 + UBIFS_CH_SZ,
 		     hmac_offs - UBIFS_CH_SZ);
 	if (ret)
 		return ret;
 
-	/*
-	 * Do not compare the embedded HMAC as well which also must be different
-	 * due to the different common node header.
-	 */
+	 
 	behind = hmac_offs + UBIFS_MAX_HMAC_LEN;
 
 	if (UBIFS_MST_NODE_SZ > behind)
@@ -48,19 +27,7 @@ int ubifs_compare_master_node(struct ubifs_info *c, void *m1, void *m2)
 	return 0;
 }
 
-/* mst_node_check_hash - Check hash of a master node
- * @c: UBIFS file-system description object
- * @mst: The master node
- * @expected: The expected hash of the master node
- *
- * This checks the hash of a master node against a given expected hash.
- * Note that we have two master nodes on a UBIFS image which have different
- * sequence numbers and consequently different CRCs. To be able to match
- * both master nodes we exclude the common node header containing the sequence
- * number and CRC from the hash.
- *
- * Returns 0 if the hashes are equal, a negative error code otherwise.
- */
+ 
 static int mst_node_check_hash(const struct ubifs_info *c,
 			       const struct ubifs_mst_node *mst,
 			       const u8 *expected)
@@ -78,15 +45,7 @@ static int mst_node_check_hash(const struct ubifs_info *c,
 	return 0;
 }
 
-/**
- * scan_for_master - search the valid master node.
- * @c: UBIFS file-system description object
- *
- * This function scans the master node LEBs and search for the latest master
- * node. Returns zero in case of success, %-EUCLEAN if there master area is
- * corrupted and requires recovery, and a negative error code in case of
- * failure.
- */
+ 
 static int scan_for_master(struct ubifs_info *c)
 {
 	struct ubifs_scan_leb *sleb;
@@ -161,13 +120,7 @@ out_dump:
 	return -EINVAL;
 }
 
-/**
- * validate_master - validate master node.
- * @c: UBIFS file-system description object
- *
- * This function validates data which was read from master node. Returns zero
- * if the data is all right and %-EINVAL if not.
- */
+ 
 static int validate_master(const struct ubifs_info *c)
 {
 	long long main_sz;
@@ -318,14 +271,7 @@ out:
 	return -EINVAL;
 }
 
-/**
- * ubifs_read_master - read master node.
- * @c: UBIFS file-system description object
- *
- * This function finds and reads the master node during file-system mount. If
- * the flash is empty, it creates default master node as well. Returns zero in
- * case of success and a negative error code in case of failure.
- */
+ 
 int ubifs_read_master(struct ubifs_info *c)
 {
 	int err, old_leb_cnt;
@@ -339,14 +285,11 @@ int ubifs_read_master(struct ubifs_info *c)
 		if (err == -EUCLEAN)
 			err = ubifs_recover_master_node(c);
 		if (err)
-			/*
-			 * Note, we do not free 'c->mst_node' here because the
-			 * unmount routine will take care of this.
-			 */
+			 
 			return err;
 	}
 
-	/* Make sure that the recovery flag is clear */
+	 
 	c->mst_node->flags &= cpu_to_le32(~UBIFS_MST_RCVRY);
 
 	c->max_sqnum       = le64_to_cpu(c->mst_node->ch.sqnum);
@@ -386,7 +329,7 @@ int ubifs_read_master(struct ubifs_info *c)
 		c->no_orphs = 1;
 
 	if (old_leb_cnt != c->leb_cnt) {
-		/* The file system has been resized */
+		 
 		int growth = c->leb_cnt - old_leb_cnt;
 
 		if (c->leb_cnt < old_leb_cnt ||
@@ -402,12 +345,7 @@ int ubifs_read_master(struct ubifs_info *c)
 		c->lst.total_free += growth * (long long)c->leb_size;
 		c->lst.total_dark += growth * (long long)c->dark_wm;
 
-		/*
-		 * Reflect changes back onto the master node. N.B. the master
-		 * node gets written immediately whenever mounting (or
-		 * remounting) in read-write mode, so we do not need to write it
-		 * here.
-		 */
+		 
 		c->mst_node->leb_cnt = cpu_to_le32(c->leb_cnt);
 		c->mst_node->empty_lebs = cpu_to_le32(c->lst.empty_lebs);
 		c->mst_node->total_free = cpu_to_le64(c->lst.total_free);
@@ -423,14 +361,7 @@ int ubifs_read_master(struct ubifs_info *c)
 	return err;
 }
 
-/**
- * ubifs_write_master - write master node.
- * @c: UBIFS file-system description object
- *
- * This function writes the master node. Returns zero in case of success and a
- * negative error code in case of failure. The master node is written twice to
- * enable recovery.
- */
+ 
 int ubifs_write_master(struct ubifs_info *c)
 {
 	int err, lnum, offs, len;

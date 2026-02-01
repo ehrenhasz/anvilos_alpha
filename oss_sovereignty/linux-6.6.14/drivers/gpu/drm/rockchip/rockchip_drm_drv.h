@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- *
- * based on exynos_drm_drv.h
- */
+ 
+ 
 
 #ifndef _ROCKCHIP_DRM_DRV_H
 #define _ROCKCHIP_DRM_DRV_H
@@ -38,13 +33,7 @@ struct rockchip_crtc_state {
 #define to_rockchip_crtc_state(s) \
 		container_of(s, struct rockchip_crtc_state, base)
 
-/*
- * Rockchip drm private structure.
- *
- * @crtc: array of enabled CRTCs, used to map from "pipe" to drm_crtc.
- * @num_pipe: number of pipes for this device.
- * @mm_lock: protect drm_mm on multi-threads.
- */
+ 
 struct rockchip_drm_private {
 	struct iommu_domain *domain;
 	struct device *iommu_dev;
@@ -82,4 +71,4 @@ static inline struct rockchip_encoder *to_rockchip_encoder(struct drm_encoder *e
 	return container_of(encoder, struct rockchip_encoder, encoder);
 }
 
-#endif /* _ROCKCHIP_DRM_DRV_H_ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/dma-mapping.h>
@@ -103,7 +103,7 @@ int lima_vm_bo_add(struct lima_vm *vm, struct lima_bo *bo, bool create)
 		return 0;
 	}
 
-	/* should not create new bo_va if not asked by caller */
+	 
 	if (!create) {
 		mutex_unlock(&bo->lock);
 		return -ENOENT;

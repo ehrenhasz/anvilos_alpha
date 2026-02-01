@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	uvc_queue.c  --  USB Video Class driver - Buffers management
- *
- *	Copyright (C) 2005-2010
- *	    Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/kernel.h>
@@ -22,21 +17,9 @@
 
 #include "uvc.h"
 
-/* ------------------------------------------------------------------------
- * Video buffers queue management.
- *
- * Video queues is initialized by uvcg_queue_init(). The function performs
- * basic initialization of the uvc_video_queue struct and never fails.
- *
- * Video buffers are managed by videobuf2. The driver uses a mutex to protect
- * the videobuf2 queue operations by serializing calls to videobuf2 and a
- * spinlock to protect the IRQ queue that holds the buffers to be processed by
- * the driver.
- */
+ 
 
-/* -----------------------------------------------------------------------------
- * videobuf2 queue operations
- */
+ 
 
 static int uvc_queue_setup(struct vb2_queue *vq,
 			   unsigned int *nbuffers, unsigned int *nplanes,
@@ -58,9 +41,7 @@ static int uvc_queue_setup(struct vb2_queue *vq,
 		 * max_t(unsigned int, video->ep->maxburst, 1)
 		 * (video->ep->mult);
 
-	/* We divide by two, to increase the chance to run
-	 * into fewer requests for smaller framesizes.
-	 */
+	 
 	nreq = DIV_ROUND_UP(DIV_ROUND_UP(sizes[0], 2), req_size);
 	nreq = clamp(nreq, 4U, 64U);
 	video->uvc_num_requests = nreq;
@@ -111,10 +92,7 @@ static void uvc_buffer_queue(struct vb2_buffer *vb)
 	if (likely(!(queue->flags & UVC_QUEUE_DISCONNECTED))) {
 		list_add_tail(&buf->queue, &queue->irqqueue);
 	} else {
-		/*
-		 * If the device is disconnected return the buffer to userspace
-		 * directly. The next QBUF call will fail with -ENODEV.
-		 */
+		 
 		buf->state = UVC_BUF_STATE_ERROR;
 		vb2_buffer_done(vb, VB2_BUF_STATE_ERROR);
 	}
@@ -165,17 +143,13 @@ int uvcg_queue_init(struct uvc_video_queue *queue, struct device *dev, enum v4l2
 	return 0;
 }
 
-/*
- * Free the video buffers.
- */
+ 
 void uvcg_free_buffers(struct uvc_video_queue *queue)
 {
 	vb2_queue_release(&queue->queue);
 }
 
-/*
- * Allocate the video buffers.
- */
+ 
 int uvcg_alloc_buffers(struct uvc_video_queue *queue,
 			      struct v4l2_requestbuffers *rb)
 {
@@ -196,22 +170,14 @@ int uvcg_queue_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf)
 	return vb2_qbuf(&queue->queue, NULL, buf);
 }
 
-/*
- * Dequeue a video buffer. If nonblocking is false, block until a buffer is
- * available.
- */
+ 
 int uvcg_dequeue_buffer(struct uvc_video_queue *queue, struct v4l2_buffer *buf,
 			int nonblocking)
 {
 	return vb2_dqbuf(&queue->queue, buf, nonblocking);
 }
 
-/*
- * Poll the video queue.
- *
- * This function implements video queue polling and is intended to be used by
- * the device poll handler.
- */
+ 
 __poll_t uvcg_queue_poll(struct uvc_video_queue *queue, struct file *file,
 			     poll_table *wait)
 {
@@ -224,11 +190,7 @@ int uvcg_queue_mmap(struct uvc_video_queue *queue, struct vm_area_struct *vma)
 }
 
 #ifndef CONFIG_MMU
-/*
- * Get unmapped area.
- *
- * NO-MMU arch need this function to make mmap() work correctly.
- */
+ 
 unsigned long uvcg_queue_get_unmapped_area(struct uvc_video_queue *queue,
 					   unsigned long pgoff)
 {
@@ -236,18 +198,7 @@ unsigned long uvcg_queue_get_unmapped_area(struct uvc_video_queue *queue,
 }
 #endif
 
-/*
- * Cancel the video buffers queue.
- *
- * Cancelling the queue marks all buffers on the irq queue as erroneous,
- * wakes them up and removes them from the queue.
- *
- * If the disconnect parameter is set, further calls to uvc_queue_buffer will
- * fail with -ENODEV.
- *
- * This function acquires the irq spinlock and can be called from interrupt
- * context.
- */
+ 
 void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
 {
 	struct uvc_buffer *buf;
@@ -263,35 +214,13 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
 	}
 	queue->buf_used = 0;
 
-	/*
-	 * This must be protected by the irqlock spinlock to avoid race
-	 * conditions between uvc_queue_buffer and the disconnection event that
-	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
-	 * blindly replace this logic by checking for the UVC_DEV_DISCONNECTED
-	 * state outside the queue code.
-	 */
+	 
 	if (disconnect)
 		queue->flags |= UVC_QUEUE_DISCONNECTED;
 	spin_unlock_irqrestore(&queue->irqlock, flags);
 }
 
-/*
- * Enable or disable the video buffers queue.
- *
- * The queue must be enabled before starting video acquisition and must be
- * disabled after stopping it. This ensures that the video buffers queue
- * state can be properly initialized before buffers are accessed from the
- * interrupt handler.
- *
- * Enabling the video queue initializes parameters (such as sequence number,
- * sync pattern, ...). If the queue is already enabled, return -EBUSY.
- *
- * Disabling the video queue cancels the queue and removes all buffers from
- * the main queue.
- *
- * This function can't be called from interrupt context. Use
- * uvcg_queue_cancel() instead.
- */
+ 
 int uvcg_queue_enable(struct uvc_video_queue *queue, int enable)
 {
 	unsigned long flags;
@@ -313,12 +242,7 @@ int uvcg_queue_enable(struct uvc_video_queue *queue, int enable)
 		spin_lock_irqsave(&queue->irqlock, flags);
 		INIT_LIST_HEAD(&queue->irqqueue);
 
-		/*
-		 * FIXME: We need to clear the DISCONNECTED flag to ensure that
-		 * applications will be able to queue buffers for the next
-		 * streaming run. However, clearing it here doesn't guarantee
-		 * that the device will be reconnected in the meantime.
-		 */
+		 
 		queue->flags &= ~UVC_QUEUE_DISCONNECTED;
 		spin_unlock_irqrestore(&queue->irqlock, flags);
 	}
@@ -326,7 +250,7 @@ int uvcg_queue_enable(struct uvc_video_queue *queue, int enable)
 	return ret;
 }
 
-/* called with &queue_irqlock held.. */
+ 
 void uvcg_complete_buffer(struct uvc_video_queue *queue,
 					  struct uvc_buffer *buf)
 {

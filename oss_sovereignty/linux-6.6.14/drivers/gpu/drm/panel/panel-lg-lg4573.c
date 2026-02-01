@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Heiko Schocher <hs@denx.de>
- *
- * from:
- * drivers/gpu/drm/panel/panel-ld9040.c
- * ld9040 AMOLED LCD drm_panel driver.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- * Derived from drivers/video/backlight/ld9040.c
- *
- * Andrzej Hajda <a.hajda@samsung.com>
-*/
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>

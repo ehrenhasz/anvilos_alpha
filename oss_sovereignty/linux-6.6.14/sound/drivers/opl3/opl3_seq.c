@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Uros Bizjak <uros@kss-loka.si>
- *
- *  Midi Sequencer interface routines for OPL2/OPL3/OPL4 FM
- *
- *  OPL2/3 FM instrument loader:
- *   alsa-tools/seq/sbiload/
- */
+
+ 
 
 #include "opl3_voice.h"
 #include <linux/init.h>
@@ -58,7 +51,7 @@ int snd_opl3_synth_setup(struct snd_opl3 * opl3)
 	opl3->use_time = 0;
 	opl3->connection_reg = 0x00;
 	if (opl3->hardware >= OPL3_HW_OPL3) {
-		/* Clear 4-op connections */
+		 
 		opl3->command(opl3, OPL3_RIGHT | OPL3_REG_CONNECTION_SELECT,
 				 opl3->connection_reg);
 		opl3->max_voices = MAX_OPL3_VOICES;
@@ -71,7 +64,7 @@ void snd_opl3_synth_cleanup(struct snd_opl3 * opl3)
 	unsigned long flags;
 	struct snd_hwdep *hwdep;
 
-	/* Stop system timer */
+	 
 	spin_lock_irqsave(&opl3->sys_timer_lock, flags);
 	if (opl3->sys_timer_status) {
 		del_timer(&opl3->tlist);
@@ -97,7 +90,7 @@ static int snd_opl3_synth_use(void *private_data, struct snd_seq_port_subscribe 
 		return err;
 
 	if (use_internal_drums) {
-		/* Percussion mode */
+		 
 		opl3->voices[6].state = opl3->voices[7].state = 
 			opl3->voices[8].state = SNDRV_OPL3_ST_NOT_AVAIL;
 		snd_opl3_load_drums(opl3);
@@ -127,9 +120,7 @@ static int snd_opl3_synth_unuse(void *private_data, struct snd_seq_port_subscrib
 	return 0;
 }
 
-/*
- * MIDI emulation operators
- */
+ 
 const struct snd_midi_op opl3_ops = {
 	.note_on =		snd_opl3_note_on,
 	.note_off =		snd_opl3_note_off,
@@ -149,7 +140,7 @@ static int snd_opl3_synth_event_input(struct snd_seq_event * ev, int direct,
 	return 0;
 }
 
-/* ------------------------------ */
+ 
 
 static void snd_opl3_synth_free_port(void *private_data)
 {
@@ -202,7 +193,7 @@ static int snd_opl3_synth_create_port(struct snd_opl3 * opl3)
 	return 0;
 }
 
-/* ------------------------------ */
+ 
 
 static int snd_opl3_seq_probe(struct device *_dev)
 {
@@ -220,7 +211,7 @@ static int snd_opl3_seq_probe(struct device *_dev)
 
 	opl3->seq_client = -1;
 
-	/* allocate new client */
+	 
 	opl_ver = (opl3->hardware & OPL3_HW_MASK) >> 8;
 	sprintf(name, "OPL%i FM synth", opl_ver);
 	client = opl3->seq_client =
@@ -236,7 +227,7 @@ static int snd_opl3_seq_probe(struct device *_dev)
 		return err;
 	}
 
-	/* setup system timer */
+	 
 	timer_setup(&opl3->tlist, snd_opl3_timer_func, 0);
 	spin_lock_init(&opl3->sys_timer_lock);
 	opl3->sys_timer_status = 0;

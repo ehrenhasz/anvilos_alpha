@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2018 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_WORKAROUNDS_TYPES_H__
 #define __INTEL_WORKAROUNDS_TYPES_H__
@@ -34,4 +32,4 @@ struct i915_wa_list {
 	unsigned int	wa_count;
 };
 
-#endif /* __INTEL_WORKAROUNDS_TYPES_H__ */
+#endif  

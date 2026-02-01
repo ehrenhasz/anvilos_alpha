@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2021, Michael Srba
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -14,7 +14,7 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 
-/* AXI Halt Register Offsets */
+ 
 #define AXI_HALTREQ_REG			0x0
 #define AXI_HALTACK_REG			0x4
 #define AXI_IDLE_REG			0x8
@@ -83,13 +83,10 @@ static int qcom_ssc_block_bus_init(struct device *dev)
 		goto err_gcc_im_sleep_clk;
 	}
 
-	/*
-	 * We need to intervene here because the HW logic driving these signals cannot handle
-	 * initialization after power collapse by itself.
-	 */
+	 
 	reg32_clear_bits(data->reg_mpm_sscaon_config0,
 			 SSCAON_CONFIG0_CLAMP_EN_OVRD | SSCAON_CONFIG0_CLAMP_EN_OVRD_VAL);
-	/* override few_ack/rest_ack */
+	 
 	reg32_clear_bits(data->reg_mpm_sscaon_config1, BIT(31));
 
 	ret = clk_prepare_enable(data->aggre2_north_clk);
@@ -267,7 +264,7 @@ static int qcom_ssc_block_bus_probe(struct platform_device *pdev)
 	data->pd_names = qcom_ssc_block_pd_names;
 	data->num_pds = ARRAY_SIZE(qcom_ssc_block_pd_names);
 
-	/* power domains */
+	 
 	ret = qcom_ssc_block_bus_pds_attach(&pdev->dev, data->pds, data->pd_names, data->num_pds);
 	if (ret < 0)
 		return dev_err_probe(&pdev->dev, ret, "error when attaching power domains\n");
@@ -276,7 +273,7 @@ static int qcom_ssc_block_bus_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return dev_err_probe(&pdev->dev, ret, "error when enabling power domains\n");
 
-	/* low level overrides for when the HW logic doesn't "just work" */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mpm_sscaon_config0");
 	data->reg_mpm_sscaon_config0 = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(data->reg_mpm_sscaon_config0))
@@ -289,7 +286,7 @@ static int qcom_ssc_block_bus_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(data->reg_mpm_sscaon_config1),
 				     "Failed to ioremap mpm_sscaon_config1\n");
 
-	/* resets */
+	 
 	data->ssc_bcr = devm_reset_control_get_exclusive(&pdev->dev, "ssc_bcr");
 	if (IS_ERR(data->ssc_bcr))
 		return dev_err_probe(&pdev->dev, PTR_ERR(data->ssc_bcr),
@@ -300,7 +297,7 @@ static int qcom_ssc_block_bus_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(data->ssc_reset),
 				     "Failed to acquire reset: ssc_reset:\n");
 
-	/* clocks */
+	 
 	data->xo_clk = devm_clk_get(&pdev->dev, "xo");
 	if (IS_ERR(data->xo_clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(data->xo_clk),
@@ -369,7 +366,7 @@ static int qcom_ssc_block_bus_remove(struct platform_device *pdev)
 
 static const struct of_device_id qcom_ssc_block_bus_of_match[] = {
 	{ .compatible = "qcom,ssc-block-bus", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, qcom_ssc_block_bus_of_match);
 

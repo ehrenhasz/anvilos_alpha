@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DMA driver for NVIDIA Tegra GPC DMA controller.
- *
- * Copyright (c) 2014-2022, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/dmaengine.h>
@@ -21,7 +17,7 @@
 #include <dt-bindings/memory/tegra186-mc.h>
 #include "virt-dma.h"
 
-/* CSR register */
+ 
 #define TEGRA_GPCDMA_CHAN_CSR			0x00
 #define TEGRA_GPCDMA_CSR_ENB			BIT(31)
 #define TEGRA_GPCDMA_CSR_IE_EOC			BIT(30)
@@ -57,7 +53,7 @@
 #define TEGRA_GPCDMA_CSR_IRQ_MASK		BIT(15)
 #define TEGRA_GPCDMA_CSR_WEIGHT			GENMASK(13, 10)
 
-/* STATUS register */
+ 
 #define TEGRA_GPCDMA_CHAN_STATUS		0x004
 #define TEGRA_GPCDMA_STATUS_BUSY		BIT(31)
 #define TEGRA_GPCDMA_STATUS_ISE_EOC		BIT(30)
@@ -73,18 +69,18 @@
 #define TEGRA_GPCDMA_CHAN_CSRE			0x008
 #define TEGRA_GPCDMA_CHAN_CSRE_PAUSE		BIT(31)
 
-/* Source address */
+ 
 #define TEGRA_GPCDMA_CHAN_SRC_PTR		0x00C
 
-/* Destination address */
+ 
 #define TEGRA_GPCDMA_CHAN_DST_PTR		0x010
 
-/* High address pointer */
+ 
 #define TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR		0x014
 #define TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR		GENMASK(7, 0)
 #define TEGRA_GPCDMA_HIGH_ADDR_DST_PTR		GENMASK(23, 16)
 
-/* MC sequence register */
+ 
 #define TEGRA_GPCDMA_CHAN_MCSEQ			0x18
 #define TEGRA_GPCDMA_MCSEQ_DATA_SWAP		BIT(31)
 #define TEGRA_GPCDMA_MCSEQ_REQ_COUNT		GENMASK(30, 25)
@@ -100,7 +96,7 @@
 #define TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK	GENMASK(13, 7)
 #define TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK	GENMASK(6, 0)
 
-/* MMIO sequence register */
+ 
 #define TEGRA_GPCDMA_CHAN_MMIOSEQ			0x01c
 #define TEGRA_GPCDMA_MMIOSEQ_DBL_BUF		BIT(31)
 #define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH		GENMASK(30, 28)
@@ -120,16 +116,16 @@
 #define TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD		GENMASK(18, 16)
 #define TEGRA_GPCDMA_MMIOSEQ_MMIO_PROT		GENMASK(8, 7)
 
-/* Channel WCOUNT */
+ 
 #define TEGRA_GPCDMA_CHAN_WCOUNT		0x20
 
-/* Transfer count */
+ 
 #define TEGRA_GPCDMA_CHAN_XFER_COUNT		0x24
 
-/* DMA byte count status */
+ 
 #define TEGRA_GPCDMA_CHAN_DMA_BYTE_STATUS	0x28
 
-/* Error Status Register */
+ 
 #define TEGRA_GPCDMA_CHAN_ERR_STATUS		0x30
 #define TEGRA_GPCDMA_CHAN_ERR_TYPE_SHIFT	8
 #define TEGRA_GPCDMA_CHAN_ERR_TYPE_MASK	0xF
@@ -143,7 +139,7 @@
 #define TEGRA_DMA_MC_SLAVE_ERR			0xB
 #define TEGRA_DMA_MMIO_SLAVE_ERR		0xA
 
-/* Fixed Pattern */
+ 
 #define TEGRA_GPCDMA_CHAN_FIXED_PATTERN		0x34
 
 #define TEGRA_GPCDMA_CHAN_TZ			0x38
@@ -153,29 +149,20 @@
 #define TEGRA_GPCDMA_CHAN_SPARE			0x3c
 #define TEGRA_GPCDMA_CHAN_SPARE_EN_LEGACY_FC	BIT(16)
 
-/*
- * If any burst is in flight and DMA paused then this is the time to complete
- * on-flight burst and update DMA status register.
- */
+ 
 #define TEGRA_GPCDMA_BURST_COMPLETE_TIME	10
-#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	5000 /* 5 msec */
+#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	5000  
 
-/* Channel base address offset from GPCDMA base address */
+ 
 #define TEGRA_GPCDMA_CHANNEL_BASE_ADDR_OFFSET	0x10000
 
-/* Default channel mask reserving channel0 */
+ 
 #define TEGRA_GPCDMA_DEFAULT_CHANNEL_MASK	0xfffffffe
 
 struct tegra_dma;
 struct tegra_dma_channel;
 
-/*
- * tegra_dma_chip_data Tegra chip specific DMA data
- * @nr_channels: Number of channels available in the controller.
- * @channel_reg_size: Channel register size.
- * @max_dma_count: Maximum DMA transfer count supported by DMA controller.
- * @hw_support_pause: DMA HW engine support pause of the channel.
- */
+ 
 struct tegra_dma_chip_data {
 	bool hw_support_pause;
 	unsigned int nr_channels;
@@ -184,7 +171,7 @@ struct tegra_dma_chip_data {
 	int (*terminate)(struct tegra_dma_channel *tdc);
 };
 
-/* DMA channel registers */
+ 
 struct tegra_dma_channel_regs {
 	u32 csr;
 	u32 src_ptr;
@@ -196,23 +183,13 @@ struct tegra_dma_channel_regs {
 	u32 fixed_pattern;
 };
 
-/*
- * tegra_dma_sg_req: DMA request details to configure hardware. This
- * contains the details for one transfer to configure DMA hw.
- * The client's request for data transfer can be broken into multiple
- * sub-transfer as per requester details and hw support. This sub transfer
- * get added as an array in Tegra DMA desc which manages the transfer details.
- */
+ 
 struct tegra_dma_sg_req {
 	unsigned int len;
 	struct tegra_dma_channel_regs ch_regs;
 };
 
-/*
- * tegra_dma_desc: Tegra DMA descriptors which uses virt_dma_desc to
- * manage client request and keep track of transfer status, callbacks
- * and request counts etc.
- */
+ 
 struct tegra_dma_desc {
 	bool cyclic;
 	unsigned int bytes_req;
@@ -224,9 +201,7 @@ struct tegra_dma_desc {
 	struct tegra_dma_sg_req sg_req[];
 };
 
-/*
- * tegra_dma_channel: Channel specific information
- */
+ 
 struct tegra_dma_channel {
 	bool config_init;
 	char name[30];
@@ -242,9 +217,7 @@ struct tegra_dma_channel {
 	unsigned long chan_base_offset;
 };
 
-/*
- * tegra_dma: Tegra DMA specific information
- */
+ 
 struct tegra_dma {
 	const struct tegra_dma_chip_data *chip_data;
 	unsigned long sid_m2d_reserved;
@@ -380,7 +353,7 @@ static int tegra_dma_pause(struct tegra_dma_channel *tdc)
 	val |= TEGRA_GPCDMA_CHAN_CSRE_PAUSE;
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSRE, val);
 
-	/* Wait until busy bit is de-asserted */
+	 
 	ret = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
 			tdc->chan_base_offset + TEGRA_GPCDMA_CHAN_STATUS,
 			val,
@@ -438,10 +411,7 @@ static int tegra_dma_device_resume(struct dma_chan *dc)
 
 static inline int tegra_dma_pause_noerr(struct tegra_dma_channel *tdc)
 {
-	/* Return 0 irrespective of PAUSE status.
-	 * This is useful to recover channels that can exit out of flush
-	 * state when the channel is disabled.
-	 */
+	 
 
 	tegra_dma_pause(tdc);
 	return 0;
@@ -453,14 +423,14 @@ static void tegra_dma_disable(struct tegra_dma_channel *tdc)
 
 	csr = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR);
 
-	/* Disable interrupts */
+	 
 	csr &= ~TEGRA_GPCDMA_CSR_IE_EOC;
 
-	/* Disable DMA */
+	 
 	csr &= ~TEGRA_GPCDMA_CSR_ENB;
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, csr);
 
-	/* Clear interrupt status if it is there */
+	 
 	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
 	if (status & TEGRA_GPCDMA_STATUS_ISE_EOC) {
 		dev_dbg(tdc2dev(tdc), "%s():clearing interrupt\n", __func__);
@@ -477,11 +447,11 @@ static void tegra_dma_configure_next_sg(struct tegra_dma_channel *tdc)
 
 	dma_desc->sg_idx++;
 
-	/* Reset the sg index for cyclic transfers */
+	 
 	if (dma_desc->sg_idx == dma_desc->sg_count)
 		dma_desc->sg_idx = 0;
 
-	/* Configure next transfer immediately after DMA is busy */
+	 
 	ret = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
 			tdc->chan_base_offset + TEGRA_GPCDMA_CHAN_STATUS,
 			val,
@@ -497,7 +467,7 @@ static void tegra_dma_configure_next_sg(struct tegra_dma_channel *tdc)
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_DST_PTR, ch_regs->dst_ptr);
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR, ch_regs->high_addr_ptr);
 
-	/* Start DMA */
+	 
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR,
 		  ch_regs->csr | TEGRA_GPCDMA_CSR_ENB);
 }
@@ -533,7 +503,7 @@ static void tegra_dma_start(struct tegra_dma_channel *tdc)
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MCSEQ, ch_regs->mc_seq);
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, ch_regs->csr);
 
-	/* Start DMA */
+	 
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR,
 		  ch_regs->csr | TEGRA_GPCDMA_CSR_ENB);
 }
@@ -594,7 +564,7 @@ static irqreturn_t tegra_dma_isr(int irq, void *dev_id)
 	struct tegra_dma_sg_req *sg_req;
 	u32 status;
 
-	/* Check channel error status register */
+	 
 	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_ERR_STATUS);
 	if (status) {
 		tegra_dma_chan_decode_error(tdc, status);
@@ -644,13 +614,7 @@ static void tegra_dma_issue_pending(struct dma_chan *dc)
 	if (vchan_issue_pending(&tdc->vc))
 		tegra_dma_start(tdc);
 
-	/*
-	 * For cyclic DMA transfers, program the second
-	 * transfer parameters as soon as the first DMA
-	 * transfer is started inorder for the DMA
-	 * controller to trigger the second transfer
-	 * with the correct parameters.
-	 */
+	 
 	if (tdc->dma_desc && tdc->dma_desc->cyclic)
 		tegra_dma_configure_next_sg(tdc);
 
@@ -662,22 +626,16 @@ static int tegra_dma_stop_client(struct tegra_dma_channel *tdc)
 	int ret;
 	u32 status, csr;
 
-	/*
-	 * Change the client associated with the DMA channel
-	 * to stop DMA engine from starting any more bursts for
-	 * the given client and wait for in flight bursts to complete
-	 */
+	 
 	csr = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR);
 	csr &= ~(TEGRA_GPCDMA_CSR_REQ_SEL_MASK);
 	csr |= TEGRA_GPCDMA_CSR_REQ_SEL_UNUSED;
 	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, csr);
 
-	/* Wait for in flight data transfer to finish */
+	 
 	udelay(TEGRA_GPCDMA_BURST_COMPLETE_TIME);
 
-	/* If TX/RX path is still active wait till it becomes
-	 * inactive
-	 */
+	 
 
 	ret = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
 				tdc->chan_base_offset +
@@ -734,11 +692,7 @@ static int tegra_dma_get_residual(struct tegra_dma_channel *tdc)
 
 	wcount = tdc_read(tdc, TEGRA_GPCDMA_CHAN_XFER_COUNT);
 
-	/*
-	 * Set wcount = 0 if EOC bit is set. The transfer would have
-	 * already completed and the CHAN_XFER_COUNT could have updated
-	 * for the next transfer, specifically in case of cyclic transfers.
-	 */
+	 
 	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
 	if (status & TEGRA_GPCDMA_STATUS_ISE_EOC)
 		wcount = 0;
@@ -805,12 +759,7 @@ static unsigned int get_burst_size(struct tegra_dma_channel *tdc,
 {
 	unsigned int burst_mmio_width, burst_byte;
 
-	/*
-	 * burst_size from client is in terms of the bus_width.
-	 * convert that into words.
-	 * If burst_size is not specified from client, then use
-	 * len to calculate the optimum burst size
-	 */
+	 
 	burst_byte = burst_size ? burst_size * slave_bw : len;
 	burst_mmio_width = burst_byte / 4;
 
@@ -868,31 +817,31 @@ tegra_dma_prep_dma_memset(struct dma_chan *dc, dma_addr_t dest, int value,
 		return NULL;
 	}
 
-	/* Set DMA mode to fixed pattern */
+	 
 	csr = TEGRA_GPCDMA_CSR_DMA_FIXED_PAT;
-	/* Enable once or continuous mode */
+	 
 	csr |= TEGRA_GPCDMA_CSR_ONCE;
-	/* Enable IRQ mask */
+	 
 	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-	/* Enable the DMA interrupt */
+	 
 	if (flags & DMA_PREP_INTERRUPT)
 		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
-	/* Configure default priority weight for the channel */
+	 
 	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
 
 	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-	/* retain stream-id and clean rest */
+	 
 	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
 
-	/* Set the address wrapping */
+	 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
 						TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
 						TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
 
-	/* Program outstanding MC requests */
+	 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
-	/* Set burst size */
+	 
 	mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
 
 	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
@@ -908,7 +857,7 @@ tegra_dma_prep_dma_memset(struct dma_chan *dc, dma_addr_t dest, int value,
 	sg_req[0].ch_regs.high_addr_ptr =
 			FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (dest >> 32));
 	sg_req[0].ch_regs.fixed_pattern = value;
-	/* Word count reg takes value as (N +1) words */
+	 
 	sg_req[0].ch_regs.wcount = ((len - 4) >> 2);
 	sg_req[0].ch_regs.csr = csr;
 	sg_req[0].ch_regs.mmio_seq = 0;
@@ -936,32 +885,32 @@ tegra_dma_prep_dma_memcpy(struct dma_chan *dc, dma_addr_t dest,
 		return NULL;
 	}
 
-	/* Set DMA mode to memory to memory transfer */
+	 
 	csr = TEGRA_GPCDMA_CSR_DMA_MEM2MEM;
-	/* Enable once or continuous mode */
+	 
 	csr |= TEGRA_GPCDMA_CSR_ONCE;
-	/* Enable IRQ mask */
+	 
 	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-	/* Enable the DMA interrupt */
+	 
 	if (flags & DMA_PREP_INTERRUPT)
 		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
-	/* Configure default priority weight for the channel */
+	 
 	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
 
 	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-	/* retain stream-id and clean rest */
+	 
 	mc_seq &= (TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK) |
 		  (TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK);
 
-	/* Set the address wrapping */
+	 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
 			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
 			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
 
-	/* Program outstanding MC requests */
+	 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
-	/* Set burst size */
+	 
 	mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
 
 	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
@@ -978,7 +927,7 @@ tegra_dma_prep_dma_memcpy(struct dma_chan *dc, dma_addr_t dest,
 		FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR, (src >> 32));
 	sg_req[0].ch_regs.high_addr_ptr |=
 		FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (dest >> 32));
-	/* Word count reg takes value as (N +1) words */
+	 
 	sg_req[0].ch_regs.wcount = ((len - 4) >> 2);
 	sg_req[0].ch_regs.csr = csr;
 	sg_req[0].ch_regs.mmio_seq = 0;
@@ -1023,24 +972,24 @@ tegra_dma_prep_slave_sg(struct dma_chan *dc, struct scatterlist *sgl,
 	if (ret < 0)
 		return NULL;
 
-	/* Enable once or continuous mode */
+	 
 	csr |= TEGRA_GPCDMA_CSR_ONCE;
-	/* Program the slave id in requestor select */
+	 
 	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, tdc->slave_id);
-	/* Enable IRQ mask */
+	 
 	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-	/* Configure default priority weight for the channel*/
+	 
 	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
 
-	/* Enable the DMA interrupt */
+	 
 	if (flags & DMA_PREP_INTERRUPT)
 		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
 
 	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-	/* retain stream-id and clean rest */
+	 
 	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
 
-	/* Set the address wrapping on both MC and MMIO side */
+	 
 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
 			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
@@ -1048,10 +997,10 @@ tegra_dma_prep_slave_sg(struct dma_chan *dc, struct scatterlist *sgl,
 			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
 	mmio_seq |= FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD, 1);
 
-	/* Program 2 MC outstanding requests by default. */
+	 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
 
-	/* Setting MC burst size depending on MMIO burst size */
+	 
 	if (burst_size == 64)
 		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
 	else
@@ -1064,7 +1013,7 @@ tegra_dma_prep_slave_sg(struct dma_chan *dc, struct scatterlist *sgl,
 	dma_desc->sg_count = sg_len;
 	sg_req = dma_desc->sg_req;
 
-	/* Make transfer requests */
+	 
 	for_each_sg(sgl, sg, sg_len, i) {
 		u32 len;
 		dma_addr_t mem;
@@ -1094,10 +1043,7 @@ tegra_dma_prep_slave_sg(struct dma_chan *dc, struct scatterlist *sgl,
 				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (mem >> 32));
 		}
 
-		/*
-		 * Word count register takes input in words. Writing a value
-		 * of N into word count register means a req of (N+1) words.
-		 */
+		 
 		sg_req[i].ch_regs.wcount = ((len - 4) >> 2);
 		sg_req[i].ch_regs.csr = csr;
 		sg_req[i].ch_regs.mmio_seq = mmio_seq;
@@ -1137,10 +1083,7 @@ tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr, size_t buf_l
 	if (ret)
 		return NULL;
 
-	/*
-	 * We only support cycle transfer when buf_len is multiple of
-	 * period_len.
-	 */
+	 
 	if (buf_len % period_len) {
 		dev_err(tdc2dev(tdc), "buf_len is not multiple of period_len\n");
 		return NULL;
@@ -1158,34 +1101,34 @@ tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr, size_t buf_l
 	if (ret < 0)
 		return NULL;
 
-	/* Enable once or continuous mode */
+	 
 	csr &= ~TEGRA_GPCDMA_CSR_ONCE;
-	/* Program the slave id in requestor select */
+	 
 	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, tdc->slave_id);
-	/* Enable IRQ mask */
+	 
 	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-	/* Configure default priority weight for the channel*/
+	 
 	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
 
-	/* Enable the DMA interrupt */
+	 
 	if (flags & DMA_PREP_INTERRUPT)
 		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
 
 	mmio_seq |= FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD, 1);
 
 	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-	/* retain stream-id and clean rest */
+	 
 	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
 
-	/* Set the address wrapping on both MC and MMIO side */
+	 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
 			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
 			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
 
-	/* Program 2 MC outstanding requests by default. */
+	 
 	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
-	/* Setting MC burst size depending on MMIO burst size */
+	 
 	if (burst_size == 64)
 		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
 	else
@@ -1201,7 +1144,7 @@ tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr, size_t buf_l
 	dma_desc->sg_count = period_count;
 	sg_req = dma_desc->sg_req;
 
-	/* Split transfer equal to period size */
+	 
 	for (i = 0; i < period_count; i++) {
 		mmio_seq |= get_burst_size(tdc, burst_size, slave_bw, len);
 		if (direction == DMA_MEM_TO_DEV) {
@@ -1215,10 +1158,7 @@ tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr, size_t buf_l
 			sg_req[i].ch_regs.high_addr_ptr =
 				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (mem >> 32));
 		}
-		/*
-		 * Word count register takes input in words. Writing a value
-		 * of N into word count register means a req of (N+1) words.
-		 */
+		 
 		sg_req[i].ch_regs.wcount = ((len - 4) >> 2);
 		sg_req[i].ch_regs.csr = csr;
 		sg_req[i].ch_regs.mmio_seq = mmio_seq;
@@ -1398,7 +1338,7 @@ static int tegra_dma_probe(struct platform_device *pdev)
 	for (i = 0; i < cdata->nr_channels; i++) {
 		struct tegra_dma_channel *tdc = &tdma->channels[i];
 
-		/* Check for channel mask */
+		 
 		if (!(tdma->chan_mask & BIT(i)))
 			continue;
 
@@ -1416,7 +1356,7 @@ static int tegra_dma_probe(struct platform_device *pdev)
 		vchan_init(&tdc->vc, &tdma->dma_dev);
 		tdc->vc.desc_free = tegra_dma_desc_free;
 
-		/* program stream-id for this channel */
+		 
 		tegra_dma_program_sid(tdc, stream_id);
 		tdc->stream_id = stream_id;
 	}
@@ -1427,10 +1367,7 @@ static int tegra_dma_probe(struct platform_device *pdev)
 	dma_cap_set(DMA_MEMSET, tdma->dma_dev.cap_mask);
 	dma_cap_set(DMA_CYCLIC, tdma->dma_dev.cap_mask);
 
-	/*
-	 * Only word aligned transfers are supported. Set the copy
-	 * alignment shift.
-	 */
+	 
 	tdma->dma_dev.copy_align = 2;
 	tdma->dma_dev.fill_align = 2;
 	tdma->dma_dev.device_alloc_chan_resources =

@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- * Copyright 2018 Omnibond Systems, L.L.C.
- *
- * See COPYING in top-level directory.
- */
 
-/*
- *  Linux VFS extended attribute operations.
- */
+ 
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
@@ -20,14 +13,7 @@
 #define SYSTEM_ORANGEFS_KEY "system.pvfs2."
 #define SYSTEM_ORANGEFS_KEY_LEN 13
 
-/*
- * this function returns
- *   0 if the key corresponding to name is not meant to be printed as part
- *     of a listxattr.
- *   1 if the key corresponding to name is meant to be returned as part of
- *     a listxattr.
- * The ones that start SYSTEM_ORANGEFS_KEY are the ones to avoid printing.
- */
+ 
 static int is_reserved_key(const char *key, size_t size)
 {
 
@@ -42,10 +28,10 @@ static inline int convert_to_internal_xattr_flags(int setxattr_flags)
 	int internal_flag = 0;
 
 	if (setxattr_flags & XATTR_REPLACE) {
-		/* Attribute must exist! */
+		 
 		internal_flag = ORANGEFS_XATTR_REPLACE;
 	} else if (setxattr_flags & XATTR_CREATE) {
-		/* Attribute must not exist */
+		 
 		internal_flag = ORANGEFS_XATTR_CREATE;
 	}
 	return internal_flag;
@@ -70,26 +56,14 @@ static struct orangefs_cached_xattr *find_cached_xattr(struct inode *inode,
 	if (hlist_empty(h))
 		return NULL;
 	hlist_for_each_entry_safe(cx, tmp, h, node) {
-/*		if (!time_before(jiffies, cx->timeout)) {
-			hlist_del(&cx->node);
-			kfree(cx);
-			continue;
-		}*/
+ 
 		if (!strcmp(cx->key, key))
 			return cx;
 	}
 	return NULL;
 }
 
-/*
- * Tries to get a specified key's attributes of a given
- * file into a user-specified buffer. Note that the getxattr
- * interface allows for the users to probe the size of an
- * extended attribute by passing in a value of 0 to size.
- * Thus our return value is always the size of the attribute
- * unless the key does not exist for the file and/or if
- * there were errors in fetching the attribute value.
- */
+ 
 ssize_t orangefs_inode_getxattr(struct inode *inode, const char *name,
 				void *buffer, size_t size)
 {
@@ -152,11 +126,7 @@ ssize_t orangefs_inode_getxattr(struct inode *inode, const char *name,
 	new_op->upcall.req.getxattr.refn = orangefs_inode->refn;
 	strcpy(new_op->upcall.req.getxattr.key, name);
 
-	/*
-	 * NOTE: Although keys are meant to be NULL terminated textual
-	 * strings, I am going to explicitly pass the length just in case
-	 * we change this later on...
-	 */
+	 
 	new_op->upcall.req.getxattr.key_sz = strlen(name) + 1;
 
 	ret = service_operation(new_op, "orangefs_inode_getxattr",
@@ -182,22 +152,16 @@ ssize_t orangefs_inode_getxattr(struct inode *inode, const char *name,
 		goto out_release_op;
 	}
 
-	/*
-	 * Length returned includes null terminator.
-	 */
+	 
 	length = new_op->downcall.resp.getxattr.val_sz;
 
-	/*
-	 * Just return the length of the queried attribute.
-	 */
+	 
 	if (size == 0) {
 		ret = length;
 		goto out_release_op;
 	}
 
-	/*
-	 * Check to see if key length is > provided buffer size.
-	 */
+	 
 	if (length > size) {
 		ret = -ERANGE;
 		goto out_release_op;
@@ -260,11 +224,7 @@ static int orangefs_inode_removexattr(struct inode *inode, const char *name,
 		goto out_unlock;
 
 	new_op->upcall.req.removexattr.refn = orangefs_inode->refn;
-	/*
-	 * NOTE: Although keys are meant to be NULL terminated
-	 * textual strings, I am going to explicitly pass the
-	 * length just in case we change this later on...
-	 */
+	 
 	strcpy(new_op->upcall.req.removexattr.key, name);
 	new_op->upcall.req.removexattr.key_sz = strlen(name) + 1;
 
@@ -277,9 +237,7 @@ static int orangefs_inode_removexattr(struct inode *inode, const char *name,
 				"orangefs_inode_removexattr",
 				get_interruptible_flag(inode));
 	if (ret == -ENOENT) {
-		/*
-		 * Request to replace a non-existent attribute is an error.
-		 */
+		 
 		if (flags & XATTR_REPLACE)
 			ret = -ENODATA;
 		else
@@ -305,12 +263,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * Tries to set an attribute for a given key on a file.
- *
- * Returns a -ve number on error and 0 on success.  Key is text, but value
- * can be binary!
- */
+ 
 int orangefs_inode_setxattr(struct inode *inode, const char *name,
 			    const void *value, size_t size, int flags)
 {
@@ -333,7 +286,7 @@ int orangefs_inode_setxattr(struct inode *inode, const char *name,
 
 	internal_flag = convert_to_internal_xattr_flags(flags);
 
-	/* This is equivalent to a removexattr */
+	 
 	if (size == 0 && !value) {
 		gossip_debug(GOSSIP_XATTR_DEBUG,
 			     "removing xattr (%s)\n",
@@ -354,11 +307,7 @@ int orangefs_inode_setxattr(struct inode *inode, const char *name,
 
 	new_op->upcall.req.setxattr.refn = orangefs_inode->refn;
 	new_op->upcall.req.setxattr.flags = internal_flag;
-	/*
-	 * NOTE: Although keys are meant to be NULL terminated textual
-	 * strings, I am going to explicitly pass the length just in
-	 * case we change this later on...
-	 */
+	 
 	strcpy(new_op->upcall.req.setxattr.keyval.key, name);
 	new_op->upcall.req.setxattr.keyval.key_sz = strlen(name) + 1;
 	memcpy(new_op->upcall.req.setxattr.keyval.val, value, size);
@@ -379,7 +328,7 @@ int orangefs_inode_setxattr(struct inode *inode, const char *name,
 		     "orangefs_inode_setxattr: returning %d\n",
 		     ret);
 
-	/* when request is serviced properly, free req op struct */
+	 
 	op_release(new_op);
 
 	h = &orangefs_inode->xattr_cache[xattr_key(name)];
@@ -396,13 +345,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * Tries to get a specified object's keys into a user-specified buffer of a
- * given size.  Note that like the previous instances of xattr routines, this
- * also allows you to pass in a NULL pointer and 0 size to probe the size for
- * subsequent memory allocations. Thus our return value is always the size of
- * all the keys unless there were errors in fetching the keys!
- */
+ 
 ssize_t orangefs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 {
 	struct inode *inode = dentry->d_inode;
@@ -441,11 +384,7 @@ try_again:
 		goto done;
 
 	if (size == 0) {
-		/*
-		 * This is a bit of a big upper limit, but I did not want to
-		 * spend too much time getting this correct, since users end
-		 * up allocating memory rather than us...
-		 */
+		 
 		total = new_op->downcall.resp.listxattr.returned_count *
 			ORANGEFS_MAX_XATTR_NAMELEN;
 		goto done;
@@ -461,9 +400,7 @@ try_again:
 		goto done;
 	}
 
-	/*
-	 * Check to see how much can be fit in the buffer. Fit only whole keys.
-	 */
+	 
 	for (i = 0; i < returned_count; i++) {
 		if (new_op->downcall.resp.listxattr.lengths[i] < 0 ||
 		    new_op->downcall.resp.listxattr.lengths[i] >
@@ -477,11 +414,7 @@ try_again:
 		if (total + new_op->downcall.resp.listxattr.lengths[i] > size)
 			goto done;
 
-		/*
-		 * Since many dumb programs try to setxattr() on our reserved
-		 * xattrs this is a feeble attempt at defeating those by not
-		 * listing them in the output of listxattr.. sigh
-		 */
+		 
 		if (is_reserved_key(new_op->downcall.resp.listxattr.key +
 				    key_size,
 				    new_op->downcall.resp.
@@ -502,10 +435,7 @@ try_again:
 		key_size += new_op->downcall.resp.listxattr.lengths[i];
 	}
 
-	/*
-	 * Since the buffer was large enough, we might have to continue
-	 * fetching more keys!
-	 */
+	 
 	token = new_op->downcall.resp.listxattr.token;
 	if (token != ORANGEFS_ITERATE_END)
 		goto try_again;
@@ -549,7 +479,7 @@ static int orangefs_xattr_get_default(const struct xattr_handler *handler,
 }
 
 static const struct xattr_handler orangefs_xattr_default_handler = {
-	.prefix = "",  /* match any name => handlers called with full name */
+	.prefix = "",   
 	.get = orangefs_xattr_get_default,
 	.set = orangefs_xattr_set_default,
 };

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * twl_core.c - driver for TWL4030/TWL5030/TWL60X0/TPS659x0 PM
- * and audio CODEC devices
- *
- * Copyright (C) 2005-2006 Texas Instruments, Inc.
- *
- * Modifications to defer interrupt handling to a kernel thread:
- * Copyright (C) 2006 MontaVista Software, Inc.
- *
- * Based on tlv320aic23.c:
- * Copyright (c) by Kai Svahn <kai.svahn@nokia.com>
- *
- * Code cleanup and modifications to IRQ handler.
- * by syed khasim <x0khasim@ti.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/mutex.h>
@@ -33,41 +19,30 @@
 #include <linux/i2c.h>
 #include <linux/mfd/twl.h>
 
-/* Register descriptions for audio */
+ 
 #include <linux/mfd/twl4030-audio.h>
 
 #include "twl-core.h"
 
-/*
- * The TWL4030 "Triton 2" is one of a family of a multi-function "Power
- * Management and System Companion Device" chips originally designed for
- * use in OMAP2 and OMAP 3 based systems.  Its control interfaces use I2C,
- * often at around 3 Mbit/sec, including for interrupt handling.
- *
- * This driver core provides genirq support for the interrupts emitted,
- * by the various modules, and exports register access primitives.
- *
- * FIXME this driver currently requires use of the first interrupt line
- * (and associated registers).
- */
+ 
 
 #define DRIVER_NAME			"twl"
 
-/* Triton Core internal information (BEGIN) */
+ 
 
-/* Base Address defns for twl4030_map[] */
+ 
 
-/* subchip/slave 0 - USB ID */
+ 
 #define TWL4030_BASEADD_USB		0x0000
 
-/* subchip/slave 1 - AUD ID */
+ 
 #define TWL4030_BASEADD_AUDIO_VOICE	0x0000
 #define TWL4030_BASEADD_GPIO		0x0098
 #define TWL4030_BASEADD_INTBR		0x0085
 #define TWL4030_BASEADD_PIH		0x0080
 #define TWL4030_BASEADD_TEST		0x004C
 
-/* subchip/slave 2 - AUX ID */
+ 
 #define TWL4030_BASEADD_INTERRUPTS	0x00B9
 #define TWL4030_BASEADD_LED		0x00EE
 #define TWL4030_BASEADD_MADC		0x0000
@@ -76,11 +51,10 @@
 #define TWL4030_BASEADD_PWM		0x00F8
 #define TWL4030_BASEADD_KEYPAD		0x00D2
 
-#define TWL5031_BASEADD_ACCESSORY	0x0074 /* Replaces Main Charge */
-#define TWL5031_BASEADD_INTERRUPTS	0x00B9 /* Different than TWL4030's
-						  one */
+#define TWL5031_BASEADD_ACCESSORY	0x0074  
+#define TWL5031_BASEADD_INTERRUPTS	0x00B9  
 
-/* subchip/slave 3 - POWER ID */
+ 
 #define TWL4030_BASEADD_BACKUP		0x0014
 #define TWL4030_BASEADD_INT		0x002E
 #define TWL4030_BASEADD_PM_MASTER	0x0036
@@ -92,18 +66,18 @@
 #define TWL4030_BASEADD_RTC		0x001C
 #define TWL4030_BASEADD_SECURED_REG	0x0000
 
-/* Triton Core internal information (END) */
+ 
 
 
-/* subchip/slave 0 0x48 - POWER */
+ 
 #define TWL6030_BASEADD_RTC		0x0000
 #define TWL6030_BASEADD_SECURED_REG	0x0017
 #define TWL6030_BASEADD_PM_MASTER	0x001F
-#define TWL6030_BASEADD_PM_SLAVE_MISC	0x0030 /* PM_RECEIVER */
+#define TWL6030_BASEADD_PM_SLAVE_MISC	0x0030  
 #define TWL6030_BASEADD_PM_MISC		0x00E2
 #define TWL6030_BASEADD_PM_PUPD		0x00F0
 
-/* subchip/slave 1 0x49 - FEATURE */
+ 
 #define TWL6030_BASEADD_USB		0x0000
 #define TWL6030_BASEADD_GPADC_CTRL	0x002E
 #define TWL6030_BASEADD_AUX		0x0090
@@ -114,41 +88,41 @@
 #define TWL6030_BASEADD_CHARGER		0x00E0
 #define TWL6030_BASEADD_LED		0x00F4
 
-/* subchip/slave 2 0x4A - DFT */
+ 
 #define TWL6030_BASEADD_DIEID		0x00C0
 
-/* subchip/slave 3 0x4B - AUDIO */
+ 
 #define TWL6030_BASEADD_AUDIO		0x0000
 #define TWL6030_BASEADD_RSV		0x0000
 #define TWL6030_BASEADD_ZERO		0x0000
 
-/* Few power values */
+ 
 #define R_CFG_BOOT			0x05
 
-/* some fields in R_CFG_BOOT */
+ 
 #define HFCLK_FREQ_19p2_MHZ		(1 << 0)
 #define HFCLK_FREQ_26_MHZ		(2 << 0)
 #define HFCLK_FREQ_38p4_MHZ		(3 << 0)
 #define HIGH_PERF_SQ			(1 << 3)
 #define CK32K_LOWPWR_EN			(1 << 7)
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* Structure for each TWL4030/TWL6030 Slave */
+ 
 struct twl_client {
 	struct i2c_client *client;
 	struct regmap *regmap;
 };
 
-/* mapping the module id to slave id and base address */
+ 
 struct twl_mapping {
-	unsigned char sid;	/* Slave ID */
-	unsigned char base;	/* base address */
+	unsigned char sid;	 
+	unsigned char base;	 
 };
 
 struct twl_private {
-	bool ready; /* The core driver is ready to be used */
-	u32 twl_idcode; /* TWL IDCODE Register value */
+	bool ready;  
+	u32 twl_idcode;  
 	unsigned int twl_id;
 
 	struct twl_mapping *twl_map;
@@ -158,13 +132,9 @@ struct twl_private {
 static struct twl_private *twl_priv;
 
 static struct twl_mapping twl4030_map[] = {
-	/*
-	 * NOTE:  don't change this table without updating the
-	 * <linux/mfd/twl.h> defines for TWL4030_MODULE_*
-	 * so they continue to match the order in this table.
-	 */
+	 
 
-	/* Common IPs */
+	 
 	{ 0, TWL4030_BASEADD_USB },
 	{ 1, TWL4030_BASEADD_PIH },
 	{ 2, TWL4030_BASEADD_MAIN_CHARGE },
@@ -176,7 +146,7 @@ static struct twl_mapping twl4030_map[] = {
 	{ 2, TWL4030_BASEADD_LED },
 	{ 3, TWL4030_BASEADD_SECURED_REG },
 
-	/* TWL4030 specific IPs */
+	 
 	{ 1, TWL4030_BASEADD_AUDIO_VOICE },
 	{ 1, TWL4030_BASEADD_GPIO },
 	{ 1, TWL4030_BASEADD_INTBR },
@@ -194,79 +164,79 @@ static struct twl_mapping twl4030_map[] = {
 };
 
 static const struct reg_default twl4030_49_defaults[] = {
-	/* Audio Registers */
-	{ 0x01, 0x00}, /* CODEC_MODE	*/
-	{ 0x02, 0x00}, /* OPTION	*/
-	/* 0x03  Unused	*/
-	{ 0x04, 0x00}, /* MICBIAS_CTL	*/
-	{ 0x05, 0x00}, /* ANAMICL	*/
-	{ 0x06, 0x00}, /* ANAMICR	*/
-	{ 0x07, 0x00}, /* AVADC_CTL	*/
-	{ 0x08, 0x00}, /* ADCMICSEL	*/
-	{ 0x09, 0x00}, /* DIGMIXING	*/
-	{ 0x0a, 0x0f}, /* ATXL1PGA	*/
-	{ 0x0b, 0x0f}, /* ATXR1PGA	*/
-	{ 0x0c, 0x0f}, /* AVTXL2PGA	*/
-	{ 0x0d, 0x0f}, /* AVTXR2PGA	*/
-	{ 0x0e, 0x00}, /* AUDIO_IF	*/
-	{ 0x0f, 0x00}, /* VOICE_IF	*/
-	{ 0x10, 0x3f}, /* ARXR1PGA	*/
-	{ 0x11, 0x3f}, /* ARXL1PGA	*/
-	{ 0x12, 0x3f}, /* ARXR2PGA	*/
-	{ 0x13, 0x3f}, /* ARXL2PGA	*/
-	{ 0x14, 0x25}, /* VRXPGA	*/
-	{ 0x15, 0x00}, /* VSTPGA	*/
-	{ 0x16, 0x00}, /* VRX2ARXPGA	*/
-	{ 0x17, 0x00}, /* AVDAC_CTL	*/
-	{ 0x18, 0x00}, /* ARX2VTXPGA	*/
-	{ 0x19, 0x32}, /* ARXL1_APGA_CTL*/
-	{ 0x1a, 0x32}, /* ARXR1_APGA_CTL*/
-	{ 0x1b, 0x32}, /* ARXL2_APGA_CTL*/
-	{ 0x1c, 0x32}, /* ARXR2_APGA_CTL*/
-	{ 0x1d, 0x00}, /* ATX2ARXPGA	*/
-	{ 0x1e, 0x00}, /* BT_IF		*/
-	{ 0x1f, 0x55}, /* BTPGA		*/
-	{ 0x20, 0x00}, /* BTSTPGA	*/
-	{ 0x21, 0x00}, /* EAR_CTL	*/
-	{ 0x22, 0x00}, /* HS_SEL	*/
-	{ 0x23, 0x00}, /* HS_GAIN_SET	*/
-	{ 0x24, 0x00}, /* HS_POPN_SET	*/
-	{ 0x25, 0x00}, /* PREDL_CTL	*/
-	{ 0x26, 0x00}, /* PREDR_CTL	*/
-	{ 0x27, 0x00}, /* PRECKL_CTL	*/
-	{ 0x28, 0x00}, /* PRECKR_CTL	*/
-	{ 0x29, 0x00}, /* HFL_CTL	*/
-	{ 0x2a, 0x00}, /* HFR_CTL	*/
-	{ 0x2b, 0x05}, /* ALC_CTL	*/
-	{ 0x2c, 0x00}, /* ALC_SET1	*/
-	{ 0x2d, 0x00}, /* ALC_SET2	*/
-	{ 0x2e, 0x00}, /* BOOST_CTL	*/
-	{ 0x2f, 0x00}, /* SOFTVOL_CTL	*/
-	{ 0x30, 0x13}, /* DTMF_FREQSEL	*/
-	{ 0x31, 0x00}, /* DTMF_TONEXT1H	*/
-	{ 0x32, 0x00}, /* DTMF_TONEXT1L	*/
-	{ 0x33, 0x00}, /* DTMF_TONEXT2H	*/
-	{ 0x34, 0x00}, /* DTMF_TONEXT2L	*/
-	{ 0x35, 0x79}, /* DTMF_TONOFF	*/
-	{ 0x36, 0x11}, /* DTMF_WANONOFF	*/
-	{ 0x37, 0x00}, /* I2S_RX_SCRAMBLE_H */
-	{ 0x38, 0x00}, /* I2S_RX_SCRAMBLE_M */
-	{ 0x39, 0x00}, /* I2S_RX_SCRAMBLE_L */
-	{ 0x3a, 0x06}, /* APLL_CTL */
-	{ 0x3b, 0x00}, /* DTMF_CTL */
-	{ 0x3c, 0x44}, /* DTMF_PGA_CTL2	(0x3C) */
-	{ 0x3d, 0x69}, /* DTMF_PGA_CTL1	(0x3D) */
-	{ 0x3e, 0x00}, /* MISC_SET_1 */
-	{ 0x3f, 0x00}, /* PCMBTMUX */
-	/* 0x40 - 0x42  Unused */
-	{ 0x43, 0x00}, /* RX_PATH_SEL */
-	{ 0x44, 0x32}, /* VDL_APGA_CTL */
-	{ 0x45, 0x00}, /* VIBRA_CTL */
-	{ 0x46, 0x00}, /* VIBRA_SET */
-	{ 0x47, 0x00}, /* VIBRA_PWM_SET	*/
-	{ 0x48, 0x00}, /* ANAMIC_GAIN	*/
-	{ 0x49, 0x00}, /* MISC_SET_2	*/
-	/* End of Audio Registers */
+	 
+	{ 0x01, 0x00},  
+	{ 0x02, 0x00},  
+	 
+	{ 0x04, 0x00},  
+	{ 0x05, 0x00},  
+	{ 0x06, 0x00},  
+	{ 0x07, 0x00},  
+	{ 0x08, 0x00},  
+	{ 0x09, 0x00},  
+	{ 0x0a, 0x0f},  
+	{ 0x0b, 0x0f},  
+	{ 0x0c, 0x0f},  
+	{ 0x0d, 0x0f},  
+	{ 0x0e, 0x00},  
+	{ 0x0f, 0x00},  
+	{ 0x10, 0x3f},  
+	{ 0x11, 0x3f},  
+	{ 0x12, 0x3f},  
+	{ 0x13, 0x3f},  
+	{ 0x14, 0x25},  
+	{ 0x15, 0x00},  
+	{ 0x16, 0x00},  
+	{ 0x17, 0x00},  
+	{ 0x18, 0x00},  
+	{ 0x19, 0x32},  
+	{ 0x1a, 0x32},  
+	{ 0x1b, 0x32},  
+	{ 0x1c, 0x32},  
+	{ 0x1d, 0x00},  
+	{ 0x1e, 0x00},  
+	{ 0x1f, 0x55},  
+	{ 0x20, 0x00},  
+	{ 0x21, 0x00},  
+	{ 0x22, 0x00},  
+	{ 0x23, 0x00},  
+	{ 0x24, 0x00},  
+	{ 0x25, 0x00},  
+	{ 0x26, 0x00},  
+	{ 0x27, 0x00},  
+	{ 0x28, 0x00},  
+	{ 0x29, 0x00},  
+	{ 0x2a, 0x00},  
+	{ 0x2b, 0x05},  
+	{ 0x2c, 0x00},  
+	{ 0x2d, 0x00},  
+	{ 0x2e, 0x00},  
+	{ 0x2f, 0x00},  
+	{ 0x30, 0x13},  
+	{ 0x31, 0x00},  
+	{ 0x32, 0x00},  
+	{ 0x33, 0x00},  
+	{ 0x34, 0x00},  
+	{ 0x35, 0x79},  
+	{ 0x36, 0x11},  
+	{ 0x37, 0x00},  
+	{ 0x38, 0x00},  
+	{ 0x39, 0x00},  
+	{ 0x3a, 0x06},  
+	{ 0x3b, 0x00},  
+	{ 0x3c, 0x44},  
+	{ 0x3d, 0x69},  
+	{ 0x3e, 0x00},  
+	{ 0x3f, 0x00},  
+	 
+	{ 0x43, 0x00},  
+	{ 0x44, 0x32},  
+	{ 0x45, 0x00},  
+	{ 0x46, 0x00},  
+	{ 0x47, 0x00},  
+	{ 0x48, 0x00},  
+	{ 0x49, 0x00},  
+	 
 };
 
 static bool twl4030_49_nop_reg(struct device *dev, unsigned int reg)
@@ -294,13 +264,13 @@ static const struct regmap_access_table twl4030_49_volatile_table = {
 
 static const struct regmap_config twl4030_regmap_config[4] = {
 	{
-		/* Address 0x48 */
+		 
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = 0xff,
 	},
 	{
-		/* Address 0x49 */
+		 
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = 0xff,
@@ -315,13 +285,13 @@ static const struct regmap_config twl4030_regmap_config[4] = {
 		.cache_type = REGCACHE_RBTREE,
 	},
 	{
-		/* Address 0x4a */
+		 
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = 0xff,
 	},
 	{
-		/* Address 0x4b */
+		 
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = 0xff,
@@ -329,13 +299,9 @@ static const struct regmap_config twl4030_regmap_config[4] = {
 };
 
 static struct twl_mapping twl6030_map[] = {
-	/*
-	 * NOTE:  don't change this table without updating the
-	 * <linux/mfd/twl.h> defines for TWL4030_MODULE_*
-	 * so they continue to match the order in this table.
-	 */
+	 
 
-	/* Common IPs */
+	 
 	{ 1, TWL6030_BASEADD_USB },
 	{ 1, TWL6030_BASEADD_PIH },
 	{ 1, TWL6030_BASEADD_CHARGER },
@@ -347,46 +313,46 @@ static struct twl_mapping twl6030_map[] = {
 	{ 1, TWL6030_BASEADD_LED },
 	{ 0, TWL6030_BASEADD_SECURED_REG },
 
-	/* TWL6030 specific IPs */
+	 
 	{ 0, TWL6030_BASEADD_ZERO },
 	{ 1, TWL6030_BASEADD_ZERO },
 	{ 2, TWL6030_BASEADD_ZERO },
 	{ 1, TWL6030_BASEADD_GPADC_CTRL },
 	{ 1, TWL6030_BASEADD_GASGAUGE },
 
-	/* TWL6032 specific charger registers */
+	 
 	{ 1, TWL6032_BASEADD_CHARGER },
 };
 
 static const struct regmap_config twl6030_regmap_config[3] = {
 	{
-		/* Address 0x48 */
+		 
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = 0xff,
 	},
 	{
-		/* Address 0x49 */
+		 
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = 0xff,
 	},
 	{
-		/* Address 0x4a */
+		 
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = 0xff,
 	},
 };
 
-/*----------------------------------------------------------------------*/
+ 
 
 static inline int twl_get_num_slaves(void)
 {
 	if (twl_class_is_4030())
-		return 4; /* TWL4030 class have four slave address */
+		return 4;  
 	else
-		return 3; /* TWL6030 class have three slave address */
+		return 3;  
 }
 
 static inline int twl_get_last_module(void)
@@ -397,7 +363,7 @@ static inline int twl_get_last_module(void)
 		return TWL6030_MODULE_LAST;
 }
 
-/* Exported Functions */
+ 
 
 unsigned int twl_rev(void)
 {
@@ -405,12 +371,7 @@ unsigned int twl_rev(void)
 }
 EXPORT_SYMBOL(twl_rev);
 
-/**
- * twl_get_regmap - Get the regmap associated with the given module
- * @mod_no: module number
- *
- * Returns the regmap pointer or NULL in case of failure.
- */
+ 
 static struct regmap *twl_get_regmap(u8 mod_no)
 {
 	int sid;
@@ -431,15 +392,7 @@ static struct regmap *twl_get_regmap(u8 mod_no)
 	return twl->regmap;
 }
 
-/**
- * twl_i2c_write - Writes a n bit register in TWL4030/TWL5030/TWL60X0
- * @mod_no: module number
- * @value: an array of num_bytes+1 containing data to write
- * @reg: register address (just offset will do)
- * @num_bytes: number of bytes to transfer
- *
- * Returns 0 on success or else a negative error code.
- */
+ 
 int twl_i2c_write(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 {
 	struct regmap *regmap = twl_get_regmap(mod_no);
@@ -459,15 +412,7 @@ int twl_i2c_write(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 }
 EXPORT_SYMBOL(twl_i2c_write);
 
-/**
- * twl_i2c_read - Reads a n bit register in TWL4030/TWL5030/TWL60X0
- * @mod_no: module number
- * @value: an array of num_bytes containing data to be read
- * @reg: register address (just offset will do)
- * @num_bytes: number of bytes to transfer
- *
- * Returns 0 on success or else a negative error code.
- */
+ 
 int twl_i2c_read(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 {
 	struct regmap *regmap = twl_get_regmap(mod_no);
@@ -487,14 +432,7 @@ int twl_i2c_read(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 }
 EXPORT_SYMBOL(twl_i2c_read);
 
-/**
- * twl_set_regcache_bypass - Configure the regcache bypass for the regmap associated
- *			 with the module
- * @mod_no: module number
- * @enable: Regcache bypass state
- *
- * Returns 0 else failure.
- */
+ 
 int twl_set_regcache_bypass(u8 mod_no, bool enable)
 {
 	struct regmap *regmap = twl_get_regmap(mod_no);
@@ -508,13 +446,9 @@ int twl_set_regcache_bypass(u8 mod_no, bool enable)
 }
 EXPORT_SYMBOL(twl_set_regcache_bypass);
 
-/*----------------------------------------------------------------------*/
+ 
 
-/**
- * twl_read_idcode_register - API to read the IDCODE register.
- *
- * Unlocks the IDCODE register and read the 32 bit value.
- */
+ 
 static int twl_read_idcode_register(void)
 {
 	int err;
@@ -540,33 +474,21 @@ fail:
 	return err;
 }
 
-/**
- * twl_get_type - API to get TWL Si type.
- *
- * Api to get the TWL Si type from IDCODE value.
- */
+ 
 int twl_get_type(void)
 {
 	return TWL_SIL_TYPE(twl_priv->twl_idcode);
 }
 EXPORT_SYMBOL_GPL(twl_get_type);
 
-/**
- * twl_get_version - API to get TWL Si version.
- *
- * Api to get the TWL Si version from IDCODE value.
- */
+ 
 int twl_get_version(void)
 {
 	return TWL_SIL_REV(twl_priv->twl_idcode);
 }
 EXPORT_SYMBOL_GPL(twl_get_version);
 
-/**
- * twl_get_hfclk_rate - API to get TWL external HFCLK clock rate.
- *
- * Api to get the TWL HFCLK rate based on BOOT_CFG register.
- */
+ 
 int twl_get_hfclk_rate(void)
 {
 	u8 ctrl;
@@ -594,13 +516,9 @@ int twl_get_hfclk_rate(void)
 }
 EXPORT_SYMBOL_GPL(twl_get_hfclk_rate);
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * These three functions initialize the on-chip clock framework,
- * letting it generate the right frequencies for USB, MADC, and
- * other purposes.
- */
+ 
 static inline int protect_pm_master(void)
 {
 	int e = 0;
@@ -654,7 +572,7 @@ static void clocks_init(struct device *dev)
 	ctrl |= HIGH_PERF_SQ;
 
 	e |= unprotect_pm_master();
-	/* effect->MADC+USB ck en */
+	 
 	e |= twl_i2c_write_u8(TWL_MODULE_PM_MASTER, ctrl, R_CFG_BOOT);
 	e |= protect_pm_master();
 
@@ -662,7 +580,7 @@ static void clocks_init(struct device *dev)
 		pr_err("%s: clock init err [%d]\n", DRIVER_NAME, e);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 
 static void twl_remove(struct i2c_client *client)
@@ -687,10 +605,10 @@ static void twl_remove(struct i2c_client *client)
 
 static struct of_dev_auxdata twl_auxdata_lookup[] = {
 	OF_DEV_AUXDATA("ti,twl4030-gpio", 0, "twl4030-gpio", NULL),
-	{ /* sentinel */ },
+	{   },
 };
 
-/* NOTE: This driver only handles a single twl4030/tps659x0 chip */
+ 
 static int
 twl_probe(struct i2c_client *client)
 {
@@ -787,16 +705,16 @@ twl_probe(struct i2c_client *client)
 
 	twl_priv->ready = true;
 
-	/* setup clock framework */
+	 
 	clocks_init(&client->dev);
 
-	/* read TWL IDCODE Register */
+	 
 	if (twl_class_is_4030()) {
 		status = twl_read_idcode_register();
 		WARN(status < 0, "Error: reading twl_idcode register value\n");
 	}
 
-	/* Maybe init the T2 Interrupt subsystem */
+	 
 	if (client->irq) {
 		if (twl_class_is_4030()) {
 			twl4030_init_chip_irq(id->name);
@@ -811,16 +729,7 @@ twl_probe(struct i2c_client *client)
 		}
 	}
 
-	/*
-	 * Disable TWL4030/TWL5030 I2C Pull-up on I2C1 and I2C4(SR) interface.
-	 * Program I2C_SCL_CTRL_PU(bit 0)=0, I2C_SDA_CTRL_PU (bit 2)=0,
-	 * SR_I2C_SCL_CTRL_PU(bit 4)=0 and SR_I2C_SDA_CTRL_PU(bit 6)=0.
-	 *
-	 * Also, always enable SmartReflex bit as that's needed for omaps to
-	 * do anything over I2C4 for voltage scaling even if SmartReflex
-	 * is disabled. Without the SmartReflex bit omap sys_clkreq idle
-	 * signal will never trigger for retention idle.
-	 */
+	 
 	if (twl_class_is_4030()) {
 		u8 temp;
 
@@ -872,20 +781,19 @@ static int __maybe_unused twl_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(twl_dev_pm_ops, twl_suspend, twl_resume);
 
 static const struct i2c_device_id twl_ids[] = {
-	{ "twl4030", TWL4030_VAUX2 },	/* "Triton 2" */
-	{ "twl5030", 0 },		/* T2 updated */
-	{ "twl5031", TWL5031 },		/* TWL5030 updated */
-	{ "tps65950", 0 },		/* catalog version of twl5030 */
-	{ "tps65930", TPS_SUBSET },	/* fewer LDOs and DACs; no charger */
-	{ "tps65920", TPS_SUBSET },	/* fewer LDOs; no codec or charger */
-	{ "tps65921", TPS_SUBSET },	/* fewer LDOs; no codec, no LED
-					   and vibrator. Charger in USB module*/
-	{ "twl6030", TWL6030_CLASS },	/* "Phoenix power chip" */
-	{ "twl6032", TWL6030_CLASS | TWL6032_SUBCLASS }, /* "Phoenix lite" */
-	{ /* end of list */ },
+	{ "twl4030", TWL4030_VAUX2 },	 
+	{ "twl5030", 0 },		 
+	{ "twl5031", TWL5031 },		 
+	{ "tps65950", 0 },		 
+	{ "tps65930", TPS_SUBSET },	 
+	{ "tps65920", TPS_SUBSET },	 
+	{ "tps65921", TPS_SUBSET },	 
+	{ "twl6030", TWL6030_CLASS },	 
+	{ "twl6032", TWL6030_CLASS | TWL6032_SUBCLASS },  
+	{   },
 };
 
-/* One Client Driver , 4 Clients */
+ 
 static struct i2c_driver twl_driver = {
 	.driver.name	= DRIVER_NAME,
 	.driver.pm	= &twl_dev_pm_ops,

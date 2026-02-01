@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car V4H System Controller
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk/renesas.h>

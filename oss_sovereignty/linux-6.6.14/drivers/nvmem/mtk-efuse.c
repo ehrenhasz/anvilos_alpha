@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -51,11 +48,7 @@ static void mtk_efuse_fixup_cell_info(struct nvmem_device *nvmem,
 {
 	size_t sz = strlen(cell->name);
 
-	/*
-	 * On some SoCs, the GPU speedbin is not read as bitmask but as
-	 * a number with range [0-7] (max 3 bits): post process to use
-	 * it in OPP tables to describe supported-hw.
-	 */
+	 
 	if (cell->nbits <= 3 &&
 	    strncmp(cell->name, "gpu-speedbin", min(sz, strlen("gpu-speedbin"))) == 0)
 		cell->read_post_process = mtk_efuse_gpu_speedbin_pp;
@@ -108,7 +101,7 @@ static const struct of_device_id mtk_efuse_of_match[] = {
 	{ .compatible = "mediatek,mt8173-efuse", .data = &mtk_efuse_pdata },
 	{ .compatible = "mediatek,mt8186-efuse", .data = &mtk_mt8186_efuse_pdata },
 	{ .compatible = "mediatek,efuse", .data = &mtk_efuse_pdata },
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, mtk_efuse_of_match);
 

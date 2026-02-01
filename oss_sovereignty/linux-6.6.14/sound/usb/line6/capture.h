@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- */
+ 
+ 
 
 #ifndef CAPTURE_H
 #define CAPTURE_H

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, Linaro Ltd */
+
+ 
 
 #include <linux/miscdevice.h>
 #include <linux/module.h>
@@ -22,7 +22,7 @@ static int qrtr_tun_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
 
 	skb_queue_tail(&tun->queue, skb);
 
-	/* wake up any blocking processes, waiting for new data */
+	 
 	wake_up_interruptible(&tun->readq);
 
 	return 0;
@@ -67,7 +67,7 @@ static ssize_t qrtr_tun_read_iter(struct kiocb *iocb, struct iov_iter *to)
 		if (filp->f_flags & O_NONBLOCK)
 			return -EAGAIN;
 
-		/* Wait until we get data or the endpoint goes away */
+		 
 		if (wait_event_interruptible(tun->readq,
 					     !skb_queue_empty(&tun->queue)))
 			return -ERESTARTSYS;
@@ -130,7 +130,7 @@ static int qrtr_tun_release(struct inode *inode, struct file *filp)
 
 	qrtr_endpoint_unregister(&tun->ep);
 
-	/* Discard all SKBs */
+	 
 	skb_queue_purge(&tun->queue);
 
 	kfree(tun);

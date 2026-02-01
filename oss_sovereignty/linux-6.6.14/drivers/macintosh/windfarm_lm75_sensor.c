@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control. LM75 sensor
- *
- * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
- *                    <benh@kernel.crashing.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -48,25 +43,23 @@ static int wf_lm75_get(struct wf_sensor *sr, s32 *value)
 	if (lm->i2c == NULL)
 		return -ENODEV;
 
-	/* Init chip if necessary */
+	 
 	if (!lm->inited) {
 		u8 cfg_new, cfg = (u8)i2c_smbus_read_byte_data(lm->i2c, 1);
 
 		DBG("wf_lm75: Initializing %s, cfg was: %02x\n",
 		    sr->name, cfg);
 
-		/* clear shutdown bit, keep other settings as left by
-		 * the firmware for now
-		 */
+		 
 		cfg_new = cfg & ~0x01;
 		i2c_smbus_write_byte_data(lm->i2c, 1, cfg_new);
 		lm->inited = 1;
 
-		/* If we just powered it up, let's wait 200 ms */
+		 
 		msleep(200);
 	}
 
-	/* Read temperature register */
+	 
 	data = (s32)le16_to_cpu(i2c_smbus_read_word_data(lm->i2c, 0));
 	data <<= 8;
 	*value = data;
@@ -108,10 +101,7 @@ static int wf_lm75_probe(struct i2c_client *client)
 		return -ENXIO;
 	}
 
-	/* Usual rant about sensor names not beeing very consistent in
-	 * the device-tree, oh well ...
-	 * Add more entries below as you deal with more setups
-	 */
+	 
 	if (!strcmp(loc, "Hard drive") || !strcmp(loc, "DRIVE BAY"))
 		name = "hd-temp";
 	else if (!strcmp(loc, "Incoming Air Temp"))
@@ -151,10 +141,10 @@ static void wf_lm75_remove(struct i2c_client *client)
 {
 	struct wf_lm75_sensor *lm = i2c_get_clientdata(client);
 
-	/* Mark client detached */
+	 
 	lm->i2c = NULL;
 
-	/* release sensor */
+	 
 	wf_unregister_sensor(&lm->sens);
 }
 

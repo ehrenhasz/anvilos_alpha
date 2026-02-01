@@ -1,50 +1,34 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ads7871 - driver for TI ADS7871 A/D converter
- *
- *  Copyright (c) 2010 Paul Thomas <pthomas8589@gmail.com>
- *
- *	You need to have something like this in struct spi_board_info
- *	{
- *		.modalias	= "ads7871",
- *		.max_speed_hz	= 2*1000*1000,
- *		.chip_select	= 0,
- *		.bus_num	= 1,
- *	},
- */
 
-/*From figure 18 in the datasheet*/
-/*Register addresses*/
-#define REG_LS_BYTE	0 /*A/D Output Data, LS Byte*/
-#define REG_MS_BYTE	1 /*A/D Output Data, MS Byte*/
-#define REG_PGA_VALID	2 /*PGA Valid Register*/
-#define REG_AD_CONTROL	3 /*A/D Control Register*/
-#define REG_GAIN_MUX	4 /*Gain/Mux Register*/
-#define REG_IO_STATE	5 /*Digital I/O State Register*/
-#define REG_IO_CONTROL	6 /*Digital I/O Control Register*/
-#define REG_OSC_CONTROL	7 /*Rev/Oscillator Control Register*/
-#define REG_SER_CONTROL 24 /*Serial Interface Control Register*/
-#define REG_ID		31 /*ID Register*/
+ 
 
-/*
- * From figure 17 in the datasheet
- * These bits get ORed with the address to form
- * the instruction byte
- */
-/*Instruction Bit masks*/
+ 
+ 
+#define REG_LS_BYTE	0  
+#define REG_MS_BYTE	1  
+#define REG_PGA_VALID	2  
+#define REG_AD_CONTROL	3  
+#define REG_GAIN_MUX	4  
+#define REG_IO_STATE	5  
+#define REG_IO_CONTROL	6  
+#define REG_OSC_CONTROL	7  
+#define REG_SER_CONTROL 24  
+#define REG_ID		31  
+
+ 
+ 
 #define INST_MODE_BM	(1 << 7)
 #define INST_READ_BM	(1 << 6)
 #define INST_16BIT_BM	(1 << 5)
 
-/*From figure 18 in the datasheet*/
-/*bit masks for Rev/Oscillator Control Register*/
+ 
+ 
 #define MUX_CNV_BV	7
 #define MUX_CNV_BM	(1 << MUX_CNV_BV)
-#define MUX_M3_BM	(1 << 3) /*M3 selects single ended*/
-#define MUX_G_BV	4 /*allows for reg = (gain << MUX_G_BV) | ...*/
+#define MUX_M3_BM	(1 << 3)  
+#define MUX_G_BV	4  
 
-/*From figure 18 in the datasheet*/
-/*bit masks for Rev/Oscillator Control Register*/
+ 
+ 
 #define OSC_OSCR_BM	(1 << 5)
 #define OSC_OSCE_BM	(1 << 4)
 #define OSC_REFE_BM	(1 << 3)
@@ -98,21 +82,15 @@ static ssize_t voltage_show(struct device *dev, struct device_attribute *da,
 	uint8_t channel, mux_cnv;
 
 	channel = attr->index;
-	/*
-	 * TODO: add support for conversions
-	 * other than single ended with a gain of 1
-	 */
-	/*MUX_M3_BM forces single ended*/
-	/*This is also where the gain of the PGA would be set*/
+	 
+	 
+	 
 	ads7871_write_reg8(spi, REG_GAIN_MUX,
 		(MUX_CNV_BM | MUX_M3_BM | channel));
 
 	ret = ads7871_read_reg8(spi, REG_GAIN_MUX);
 	mux_cnv = ((ret & MUX_CNV_BM) >> MUX_CNV_BV);
-	/*
-	 * on 400MHz arm9 platform the conversion
-	 * is already done when we do this test
-	 */
+	 
 	while ((i < 2) && mux_cnv) {
 		i++;
 		ret = ads7871_read_reg8(spi, REG_GAIN_MUX);
@@ -122,7 +100,7 @@ static ssize_t voltage_show(struct device *dev, struct device_attribute *da,
 
 	if (mux_cnv == 0) {
 		val = ads7871_read_reg16(spi, REG_LS_BYTE);
-		/*result in volts*10000 = (val/8192)*2.5*10000*/
+		 
 		val = ((val >> 2) * 25000) / 8192;
 		return sprintf(buf, "%d\n", val);
 	} else {
@@ -161,7 +139,7 @@ static int ads7871_probe(struct spi_device *spi)
 	struct ads7871_data *pdata;
 	struct device *hwmon_dev;
 
-	/* Configure the SPI bus */
+	 
 	spi->mode = (SPI_MODE_0);
 	spi->bits_per_word = 8;
 	spi_setup(spi);
@@ -174,10 +152,7 @@ static int ads7871_probe(struct spi_device *spi)
 	ret = ads7871_read_reg8(spi, REG_OSC_CONTROL);
 
 	dev_dbg(dev, "REG_OSC_CONTROL write:%x, read:%x\n", val, ret);
-	/*
-	 * because there is no other error checking on an SPI bus
-	 * we need to make sure we really have a chip
-	 */
+	 
 	if (val != ret)
 		return -ENODEV;
 

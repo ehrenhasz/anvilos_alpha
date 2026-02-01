@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for atomisp driver sysfs interface
- *
- * Copyright (c) 2014 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -27,14 +12,7 @@
 #include "hmm/hmm.h"
 #include "ia_css_debug.h"
 
-/*
- * _iunit_debug:
- * dbglvl: iunit css driver trace level
- * dbgopt: iunit debug option:
- *        bit 0: binary list
- *        bit 1: running binary
- *        bit 2: memory statistic
-*/
+ 
 struct _iunit_debug {
 	struct device_driver	*drv;
 	struct atomisp_device	*isp;

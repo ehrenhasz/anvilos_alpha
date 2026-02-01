@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014-2017 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include "testmode.h"
 
@@ -25,9 +23,7 @@ static const struct nla_policy ath10k_tm_policy[ATH10K_TM_ATTR_MAX + 1] = {
 	[ATH10K_TM_ATTR_VERSION_MINOR]	= { .type = NLA_U32 },
 };
 
-/* Returns true if callee consumes the skb and the skb should be discarded.
- * Returns false if skb is not used. Does not sleep.
- */
+ 
 bool ath10k_tm_event_wmi(struct ath10k *ar, u32 cmd_id, struct sk_buff *skb)
 {
 	struct sk_buff *nl_skb;
@@ -47,10 +43,7 @@ bool ath10k_tm_event_wmi(struct ath10k *ar, u32 cmd_id, struct sk_buff *skb)
 		goto out;
 	}
 
-	/* Only testmode.c should be handling events from utf firmware,
-	 * otherwise all sort of problems will arise as mac80211 operations
-	 * are not initialised.
-	 */
+	 
 	consumed = true;
 
 	nl_skb = cfg80211_testmode_alloc_event_skb(ar->hw->wiphy,
@@ -145,7 +138,7 @@ static int ath10k_tm_fetch_utf_firmware_api_1(struct ath10k *ar,
 	snprintf(filename, sizeof(filename), "%s/%s",
 		 ar->hw_params.fw.dir, ATH10K_FW_UTF_FILE);
 
-	/* load utf firmware image */
+	 
 	ret = firmware_request_nowarn(&fw_file->firmware, filename, ar->dev);
 	ath10k_dbg(ar, ATH10K_DBG_TESTMODE, "testmode fw request '%s': %d\n",
 		   filename, ret);
@@ -156,11 +149,7 @@ static int ath10k_tm_fetch_utf_firmware_api_1(struct ath10k *ar,
 		return ret;
 	}
 
-	/* We didn't find FW UTF API 1 ("utf.bin") does not advertise
-	 * firmware features. Do an ugly hack where we force the firmware
-	 * features to match with 10.1 branch so that wmi.c will use the
-	 * correct WMI interface.
-	 */
+	 
 
 	fw_file->wmi_op_version = ATH10K_FW_WMI_OP_VERSION_10_1;
 	fw_file->htt_op_version = ATH10K_FW_HTT_OP_VERSION_10_1;
@@ -208,9 +197,7 @@ static int ath10k_tm_fetch_firmware(struct ath10k *ar)
 out:
 	utf_mode_fw = &ar->testmode.utf_mode_fw;
 
-	/* Use the same board data file as the normal firmware uses (but
-	 * it's still "owned" by normal_mode_fw so we shouldn't free it.
-	 */
+	 
 	utf_mode_fw->board_data = ar->normal_mode_fw.board_data;
 	utf_mode_fw->board_len = ar->normal_mode_fw.board_len;
 
@@ -237,14 +224,14 @@ static int ath10k_tm_cmd_utf_start(struct ath10k *ar, struct nlattr *tb[])
 		goto err;
 	}
 
-	/* start utf only when the driver is not in use  */
+	 
 	if (ar->state != ATH10K_STATE_OFF) {
 		ret = -EBUSY;
 		goto err;
 	}
 
 	if (WARN_ON(ar->testmode.utf_mode_fw.fw_file.firmware != NULL)) {
-		/* utf image is already downloaded, it shouldn't be */
+		 
 		ret = -EEXIST;
 		goto err;
 	}
@@ -458,7 +445,7 @@ void ath10k_testmode_destroy(struct ath10k *ar)
 	mutex_lock(&ar->conf_mutex);
 
 	if (ar->state != ATH10K_STATE_UTF) {
-		/* utf firmware is not running, nothing to do */
+		 
 		goto out;
 	}
 

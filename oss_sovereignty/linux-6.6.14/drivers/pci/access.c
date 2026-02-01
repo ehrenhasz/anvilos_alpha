@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/pci.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -7,18 +7,11 @@
 
 #include "pci.h"
 
-/*
- * This interrupt-safe spinlock protects all accesses to PCI
- * configuration space.
- */
+ 
 
 DEFINE_RAW_SPINLOCK(pci_lock);
 
-/*
- * Wrappers for all PCI configuration access functions.  They just check
- * alignment, do locking and call the low-level functions pointed to
- * by pci_dev->ops.
- */
+ 
 
 #define PCI_byte_BAD 0
 #define PCI_word_BAD (pos & 1)
@@ -150,15 +143,7 @@ int pci_generic_config_write32(struct pci_bus *bus, unsigned int devfn,
 		return PCIBIOS_SUCCESSFUL;
 	}
 
-	/*
-	 * In general, hardware that supports only 32-bit writes on PCI is
-	 * not spec-compliant.  For example, software may perform a 16-bit
-	 * write.  If the hardware only supports 32-bit accesses, we must
-	 * do a 32-bit read, merge in the 16 bits we intend to write,
-	 * followed by a 32-bit write.  If the 16 bits we *don't* intend to
-	 * write happen to have any RW1C (write-one-to-clear) bits set, we
-	 * just inadvertently cleared something we shouldn't have.
-	 */
+	 
 	if (!bus->unsafe_warn) {
 		dev_warn(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
 			 size, pci_domain_nr(bus), bus->number,
@@ -175,13 +160,7 @@ int pci_generic_config_write32(struct pci_bus *bus, unsigned int devfn,
 }
 EXPORT_SYMBOL_GPL(pci_generic_config_write32);
 
-/**
- * pci_bus_set_ops - Set raw operations of pci bus
- * @bus:	pci bus struct
- * @ops:	new raw operations
- *
- * Return previous raw operations
- */
+ 
 struct pci_ops *pci_bus_set_ops(struct pci_bus *bus, struct pci_ops *ops)
 {
 	struct pci_ops *old_ops;
@@ -195,14 +174,7 @@ struct pci_ops *pci_bus_set_ops(struct pci_bus *bus, struct pci_ops *ops)
 }
 EXPORT_SYMBOL(pci_bus_set_ops);
 
-/*
- * The following routines are to prevent the user from accessing PCI config
- * space when it's unsafe to do so.  Some devices require this during BIST and
- * we're required to prevent it during D-state transitions.
- *
- * We have a bit per device to indicate it's blocked and a global wait queue
- * for callers to sleep on until devices are unblocked.
- */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(pci_cfg_wait);
 
 static noinline void pci_wait_cfg(struct pci_dev *dev)
@@ -215,7 +187,7 @@ static noinline void pci_wait_cfg(struct pci_dev *dev)
 	} while (dev->block_cfg_access);
 }
 
-/* Returns 0 on success, negative values indicate error. */
+ 
 #define PCI_USER_READ_CONFIG(size, type)					\
 int pci_user_read_config_##size						\
 	(struct pci_dev *dev, int pos, type *val)			\
@@ -238,7 +210,7 @@ int pci_user_read_config_##size						\
 }									\
 EXPORT_SYMBOL_GPL(pci_user_read_config_##size);
 
-/* Returns 0 on success, negative values indicate error. */
+ 
 #define PCI_USER_WRITE_CONFIG(size, type)				\
 int pci_user_write_config_##size					\
 	(struct pci_dev *dev, int pos, type val)			\
@@ -263,14 +235,7 @@ PCI_USER_WRITE_CONFIG(byte, u8)
 PCI_USER_WRITE_CONFIG(word, u16)
 PCI_USER_WRITE_CONFIG(dword, u32)
 
-/**
- * pci_cfg_access_lock - Lock PCI config reads/writes
- * @dev:	pci device struct
- *
- * When access is locked, any userspace reads or writes to config
- * space and concurrent lock requests will sleep until access is
- * allowed via pci_cfg_access_unlock() again.
- */
+ 
 void pci_cfg_access_lock(struct pci_dev *dev)
 {
 	might_sleep();
@@ -283,14 +248,7 @@ void pci_cfg_access_lock(struct pci_dev *dev)
 }
 EXPORT_SYMBOL_GPL(pci_cfg_access_lock);
 
-/**
- * pci_cfg_access_trylock - try to lock PCI config reads/writes
- * @dev:	pci device struct
- *
- * Same as pci_cfg_access_lock, but will return 0 if access is
- * already locked, 1 otherwise. This function can be used from
- * atomic contexts.
- */
+ 
 bool pci_cfg_access_trylock(struct pci_dev *dev)
 {
 	unsigned long flags;
@@ -307,22 +265,14 @@ bool pci_cfg_access_trylock(struct pci_dev *dev)
 }
 EXPORT_SYMBOL_GPL(pci_cfg_access_trylock);
 
-/**
- * pci_cfg_access_unlock - Unlock PCI config reads/writes
- * @dev:	pci device struct
- *
- * This function allows PCI config accesses to resume.
- */
+ 
 void pci_cfg_access_unlock(struct pci_dev *dev)
 {
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&pci_lock, flags);
 
-	/*
-	 * This indicates a problem in the caller, but we don't need
-	 * to kill them, unlike a double-block above.
-	 */
+	 
 	WARN_ON(!dev->block_cfg_access);
 
 	dev->block_cfg_access = 0;
@@ -405,11 +355,7 @@ static bool pcie_capability_reg_implemented(struct pci_dev *dev, int pos)
 	}
 }
 
-/*
- * Note that these accessor functions are only for the "PCI Express
- * Capability" (see PCIe spec r3.0, sec 7.8).  They do not apply to the
- * other "PCI Express Extended Capabilities" (AER, VC, ACS, MFVC, etc.)
- */
+ 
 int pcie_capability_read_word(struct pci_dev *dev, int pos, u16 *val)
 {
 	int ret;
@@ -420,23 +366,13 @@ int pcie_capability_read_word(struct pci_dev *dev, int pos, u16 *val)
 
 	if (pcie_capability_reg_implemented(dev, pos)) {
 		ret = pci_read_config_word(dev, pci_pcie_cap(dev) + pos, val);
-		/*
-		 * Reset *val to 0 if pci_read_config_word() fails; it may
-		 * have been written as 0xFFFF (PCI_ERROR_RESPONSE) if the
-		 * config read failed on PCI.
-		 */
+		 
 		if (ret)
 			*val = 0;
 		return ret;
 	}
 
-	/*
-	 * For Functions that do not implement the Slot Capabilities,
-	 * Slot Status, and Slot Control registers, these spaces must
-	 * be hardwired to 0b, with the exception of the Presence Detect
-	 * State bit in the Slot Status register of Downstream Ports,
-	 * which must be hardwired to 1b.  (PCIe Base Spec 3.0, sec 7.8)
-	 */
+	 
 	if (pci_is_pcie(dev) && pcie_downstream_port(dev) &&
 	    pos == PCI_EXP_SLTSTA)
 		*val = PCI_EXP_SLTSTA_PDS;
@@ -455,11 +391,7 @@ int pcie_capability_read_dword(struct pci_dev *dev, int pos, u32 *val)
 
 	if (pcie_capability_reg_implemented(dev, pos)) {
 		ret = pci_read_config_dword(dev, pci_pcie_cap(dev) + pos, val);
-		/*
-		 * Reset *val to 0 if pci_read_config_dword() fails; it may
-		 * have been written as 0xFFFFFFFF (PCI_ERROR_RESPONSE) if
-		 * the config read failed on PCI.
-		 */
+		 
 		if (ret)
 			*val = 0;
 		return ret;

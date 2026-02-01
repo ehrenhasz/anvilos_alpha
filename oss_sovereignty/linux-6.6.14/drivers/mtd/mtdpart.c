@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Simple MTD partitioning layer
- *
- * Copyright © 2000 Nicolas Pitre <nico@fluxnic.net>
- * Copyright © 2002 Thomas Gleixner <gleixner@linutronix.de>
- * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -21,10 +15,7 @@
 
 #include "mtdcore.h"
 
-/*
- * MTD methods which simply translate the effective address and pass through
- * to the _real_ device.
- */
+ 
 
 static inline void free_partition(struct mtd_info *mtd)
 {
@@ -52,7 +43,7 @@ static struct mtd_info *allocate_partition(struct mtd_info *parent,
 	char *name;
 	u64 tmp;
 
-	/* allocate the partition structure */
+	 
 	child = kzalloc(sizeof(*child), GFP_KERNEL);
 	name = kstrdup(part->name, GFP_KERNEL);
 	if (!name || !child) {
@@ -63,7 +54,7 @@ static struct mtd_info *allocate_partition(struct mtd_info *parent,
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* set up the MTD object for this partition */
+	 
 	child->type = parent->type;
 	child->part.flags = parent->flags & ~part->mask_flags;
 	child->part.flags |= part->add_flags;
@@ -78,14 +69,7 @@ static struct mtd_info *allocate_partition(struct mtd_info *parent,
 	child->name = name;
 	child->owner = parent->owner;
 
-	/* NOTE: Historically, we didn't arrange MTDs as a tree out of
-	 * concern for showing the same data in multiple partitions.
-	 * However, it is very useful to have the master node present,
-	 * so the MTD_PARTITIONED_MASTER option allows that. The master
-	 * will have device nodes etc only if this is set, so make the
-	 * parent conditional on that option. Note, this is a way to
-	 * distinguish between the parent and its partitions in sysfs.
-	 */
+	 
 	child->dev.parent = IS_ENABLED(CONFIG_MTD_PARTITIONED_MASTER) || mtd_is_partition(parent) ?
 			    &parent->dev : parent->dev.parent;
 	child->dev.of_node = part->of_node;
@@ -116,7 +100,7 @@ static struct mtd_info *allocate_partition(struct mtd_info *parent,
 			printk(KERN_ERR "mtd partition \"%s\" doesn't have enough space: %#llx < %#llx, disabled\n",
 				part->name, parent_size - child->part.offset,
 				child->part.size);
-			/* register to preserve ordering */
+			 
 			goto out_register;
 		}
 	}
@@ -127,13 +111,13 @@ static struct mtd_info *allocate_partition(struct mtd_info *parent,
 	       child->part.offset, child->part.offset + child->part.size,
 	       child->name);
 
-	/* let's do some sanity checks */
+	 
 	if (child->part.offset >= parent_size) {
-		/* let's register it anyway to preserve ordering */
+		 
 		child->part.offset = 0;
 		child->part.size = 0;
 
-		/* Initialize ->erasesize to make add_mtd_device() happy. */
+		 
 		child->erasesize = parent->erasesize;
 		printk(KERN_ERR"mtd: partition \"%s\" is out of reach -- disabled\n",
 			part->name);
@@ -146,45 +130,39 @@ static struct mtd_info *allocate_partition(struct mtd_info *parent,
 	}
 
 	if (parent->numeraseregions > 1) {
-		/* Deal with variable erase size stuff */
+		 
 		int i, max = parent->numeraseregions;
 		u64 end = child->part.offset + child->part.size;
 		struct mtd_erase_region_info *regions = parent->eraseregions;
 
-		/* Find the first erase regions which is part of this
-		 * partition. */
+		 
 		for (i = 0; i < max && regions[i].offset <= child->part.offset;
 		     i++)
 			;
-		/* The loop searched for the region _behind_ the first one */
+		 
 		if (i > 0)
 			i--;
 
-		/* Pick biggest erasesize */
+		 
 		for (; i < max && regions[i].offset < end; i++) {
 			if (child->erasesize < regions[i].erasesize)
 				child->erasesize = regions[i].erasesize;
 		}
 		BUG_ON(child->erasesize == 0);
 	} else {
-		/* Single erase size */
+		 
 		child->erasesize = master->erasesize;
 	}
 
-	/*
-	 * Child erasesize might differ from the parent one if the parent
-	 * exposes several regions with different erasesize. Adjust
-	 * wr_alignment accordingly.
-	 */
+	 
 	if (!(child->flags & MTD_NO_ERASE))
 		wr_alignment = child->erasesize;
 
 	tmp = mtd_get_master_ofs(child, 0);
 	remainder = do_div(tmp, wr_alignment);
 	if ((child->flags & MTD_WRITEABLE) && remainder) {
-		/* Doesn't start on a boundary of major erase size */
-		/* FIXME: Let it be writable if it is on a boundary of
-		 * _minor_ erase size though */
+		 
+		 
 		child->flags &= ~MTD_WRITEABLE;
 		printk(KERN_WARNING"mtd: partition \"%s\" doesn't start on an erase/write block boundary -- force read-only\n",
 			part->name);
@@ -226,7 +204,7 @@ static ssize_t offset_show(struct device *dev,
 
 	return sysfs_emit(buf, "%lld\n", mtd->part.offset);
 }
-static DEVICE_ATTR_RO(offset);	/* mtd partition offset */
+static DEVICE_ATTR_RO(offset);	 
 
 static const struct attribute *mtd_partition_attrs[] = {
 	&dev_attr_offset.attr,
@@ -252,7 +230,7 @@ int mtd_add_partition(struct mtd_info *parent, const char *name,
 	struct mtd_info *child;
 	int ret = 0;
 
-	/* the direct offset is expected */
+	 
 	if (offset == MTDPART_OFS_APPEND ||
 	    offset == MTDPART_OFS_NXTBLK)
 		return -EINVAL;
@@ -295,13 +273,7 @@ err_remove_part:
 }
 EXPORT_SYMBOL_GPL(mtd_add_partition);
 
-/**
- * __mtd_del_partition - delete MTD partition
- *
- * @mtd: MTD structure to be deleted
- *
- * This function must be called with the partitions mutex locked.
- */
+ 
 static int __mtd_del_partition(struct mtd_info *mtd)
 {
 	struct mtd_info *child, *next;
@@ -323,10 +295,7 @@ static int __mtd_del_partition(struct mtd_info *mtd)
 	return 0;
 }
 
-/*
- * This function unregisters and destroy all slave MTD objects which are
- * attached to the given MTD object, recursively.
- */
+ 
 static int __del_mtd_partitions(struct mtd_info *mtd)
 {
 	struct mtd_info *child, *next;
@@ -382,14 +351,7 @@ int mtd_del_partition(struct mtd_info *mtd, int partno)
 }
 EXPORT_SYMBOL_GPL(mtd_del_partition);
 
-/*
- * This function, given a parent MTD object and a partition table, creates
- * and registers the child MTD objects which are bound to the parent according
- * to the partition definitions.
- *
- * For historical reasons, this function's caller only registers the parent
- * if the MTD_PARTITIONED_MASTER config option is set.
- */
+ 
 
 int add_mtd_partitions(struct mtd_info *parent,
 		       const struct mtd_partition *parts,
@@ -425,7 +387,7 @@ int add_mtd_partitions(struct mtd_info *parent,
 
 		mtd_add_partition_attrs(child);
 
-		/* Look for subpartitions */
+		 
 		parse_mtd_partitions(child, parts[i].types, NULL);
 
 		cur_offset = child->part.offset + child->part.size;
@@ -464,10 +426,7 @@ static inline void mtd_part_parser_put(const struct mtd_part_parser *p)
 	module_put(p->owner);
 }
 
-/*
- * Many partition parsers just expected the core to kfree() all their data in
- * one chunk. Do that by default.
- */
+ 
 static void mtd_part_parser_cleanup_default(const struct mtd_partition *pparts,
 					    int nr_parts)
 {
@@ -497,17 +456,14 @@ void deregister_mtd_parser(struct mtd_part_parser *p)
 }
 EXPORT_SYMBOL_GPL(deregister_mtd_parser);
 
-/*
- * Do not forget to update 'parse_mtd_partitions()' kerneldoc comment if you
- * are changing this array!
- */
+ 
 static const char * const default_mtd_part_types[] = {
 	"cmdlinepart",
 	"ofpart",
 	NULL
 };
 
-/* Check DT only when looking for subpartitions. */
+ 
 static const char * const default_subpartition_types[] = {
 	"ofpart",
 	NULL
@@ -534,15 +490,7 @@ static int mtd_part_do_parse(struct mtd_part_parser *parser,
 	return ret;
 }
 
-/**
- * mtd_part_get_compatible_parser - find MTD parser by a compatible string
- *
- * @compat: compatible string describing partitions in a device tree
- *
- * MTD parsers can specify supported partitions by providing a table of
- * compatibility strings. This function finds a parser that advertises support
- * for a passed value of "compatible".
- */
+ 
 static struct mtd_part_parser *mtd_part_get_compatible_parser(const char *compat)
 {
 	struct mtd_part_parser *p, *ret = NULL;
@@ -586,7 +534,7 @@ static int mtd_part_of_parse(struct mtd_info *master,
 	int ret, err = 0;
 
 	dev = &master->dev;
-	/* Use parent device (controller) if the top level MTD is not registered */
+	 
 	if (!IS_ENABLED(CONFIG_MTD_PARTITIONED_MASTER) && !mtd_is_partition(master))
 		dev = master->dev.parent;
 
@@ -596,11 +544,7 @@ static int mtd_part_of_parse(struct mtd_info *master,
 	else
 		np = of_get_child_by_name(np, "partitions");
 
-	/*
-	 * Don't create devices that are added to a bus but will never get
-	 * probed. That'll cause fw_devlink to block probing of consumers of
-	 * this partition until the partition device is probed.
-	 */
+	 
 	for_each_child_of_node(np, child)
 		if (of_device_is_compatible(child, "nvmem-cells"))
 			of_node_set_flag(child, OF_POPULATED);
@@ -622,12 +566,7 @@ static int mtd_part_of_parse(struct mtd_info *master,
 	of_platform_populate(np, NULL, NULL, dev);
 	of_node_put(np);
 
-	/*
-	 * For backward compatibility we have to try the "fixed-partitions"
-	 * parser. It supports old DT format with partitions specified as a
-	 * direct subnodes of a flash device DT node without any compatibility
-	 * specified we could match.
-	 */
+	 
 	parser = mtd_part_parser_get(fixed);
 	if (!parser && !request_module("%s", fixed))
 		parser = mtd_part_parser_get(fixed);
@@ -643,24 +582,7 @@ static int mtd_part_of_parse(struct mtd_info *master,
 	return err;
 }
 
-/**
- * parse_mtd_partitions - parse and register MTD partitions
- *
- * @master: the master partition (describes whole MTD device)
- * @types: names of partition parsers to try or %NULL
- * @data: MTD partition parser-specific data
- *
- * This function tries to find & register partitions on MTD device @master. It
- * uses MTD partition parsers, specified in @types. However, if @types is %NULL,
- * then the default list of parsers is used. The default list contains only the
- * "cmdlinepart" and "ofpart" parsers ATM.
- * Note: If there are more then one parser in @types, the kernel only takes the
- * partitions parsed out by the first parser.
- *
- * This function may return:
- * o a negative error code in case of failure
- * o number of found partitions otherwise
- */
+ 
 int parse_mtd_partitions(struct mtd_info *master, const char *const *types,
 			 struct mtd_part_parser_data *data)
 {
@@ -673,11 +595,7 @@ int parse_mtd_partitions(struct mtd_info *master, const char *const *types,
 			default_mtd_part_types;
 
 	for ( ; *types; types++) {
-		/*
-		 * ofpart is a special type that means OF partitioning info
-		 * should be used. It requires a bit different logic so it is
-		 * handled in a separated function.
-		 */
+		 
 		if (!strcmp(*types, "ofpart")) {
 			ret = mtd_part_of_parse(master, &pparts);
 		} else {
@@ -694,17 +612,14 @@ int parse_mtd_partitions(struct mtd_info *master, const char *const *types,
 			if (ret <= 0)
 				mtd_part_parser_put(parser);
 		}
-		/* Found partitions! */
+		 
 		if (ret > 0) {
 			err = add_mtd_partitions(master, pparts.parts,
 						 pparts.nr_parts);
 			mtd_part_parser_cleanup(&pparts);
 			return err ? err : pparts.nr_parts;
 		}
-		/*
-		 * Stash the first error we see; only report it if no parser
-		 * succeeds
-		 */
+		 
 		if (ret < 0 && !err)
 			err = ret;
 	}
@@ -727,7 +642,7 @@ void mtd_part_parser_cleanup(struct mtd_partitions *parts)
 	}
 }
 
-/* Returns the size of the entire flash chip */
+ 
 uint64_t mtd_get_device_size(const struct mtd_info *mtd)
 {
 	struct mtd_info *master = mtd_get_master((struct mtd_info *)mtd);

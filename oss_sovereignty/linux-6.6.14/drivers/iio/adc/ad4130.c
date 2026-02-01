@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2022 Analog Devices, Inc.
- * Author: Cosmin Tanislav <cosmin.tanislav@analog.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -267,10 +264,7 @@ struct ad4130_state {
 	u32				irq_trigger;
 	u32				inv_irq_trigger;
 
-	/*
-	 * Synchronize access to members the of driver state, and ensure
-	 * atomicity of consecutive regmap operations.
-	 */
+	 
 	struct mutex			lock;
 	struct completion		completion;
 
@@ -297,12 +291,7 @@ struct ad4130_state {
 	struct spi_message	fifo_msg;
 	struct spi_transfer	fifo_xfer[2];
 
-	/*
-	 * DMA (thus cache coherency maintenance) requires any transfer
-	 * buffers to live in their own cache lines. As the use of these
-	 * buffers is synchronous, all of the buffers used for DMA in this
-	 * driver may share a cache line.
-	 */
+	 
 	u8			reset_buf[AD4130_RESET_BUF_SIZE] __aligned(IIO_DMA_MINALIGN);
 	u8			reg_write_tx_buf[4];
 	u8			reg_read_tx_buf[1];
@@ -498,10 +487,7 @@ static int ad4130_gpio_init_valid_mask(struct gpio_chip *gc,
 	struct ad4130_state *st = gpiochip_get_data(gc);
 	unsigned int i;
 
-	/*
-	 * Output-only GPIO functionality is available on pins AIN2 through
-	 * AIN5. If these pins are used for anything else, do not expose them.
-	 */
+	 
 	for (i = 0; i < ngpios; i++) {
 		unsigned int pin = i + AD4130_AIN2_P1;
 		bool valid = st->pins_fn[pin] == AD4130_PIN_FN_NONE;
@@ -603,18 +589,18 @@ static int ad4130_find_slot(struct ad4130_state *st,
 	for (i = 0; i < AD4130_MAX_SETUPS; i++) {
 		struct ad4130_slot_info *slot_info = &st->slots_info[i];
 
-		/* Immediately accept a matching setup info. */
+		 
 		if (!memcmp(target_setup_info, &slot_info->setup,
 			    sizeof(*target_setup_info))) {
 			*slot = i;
 			return 0;
 		}
 
-		/* Ignore all setups which are used by enabled channels. */
+		 
 		if (slot_info->enabled_channels)
 			continue;
 
-		/* Find the least used slot. */
+		 
 		if (*slot == AD4130_INVALID_SLOT ||
 		    slot_info->channels < st->slots_info[*slot].channels)
 			*slot = i;
@@ -712,50 +698,28 @@ static int ad4130_write_channel_setup(struct ad4130_state *st,
 	int slot;
 	int ret;
 
-	/*
-	 * The following cases need to be handled.
-	 *
-	 * 1. Enabled and linked channel with setup changes:
-	 *    - Find a slot. If not possible, return error.
-	 *    - Unlink channel from current slot.
-	 *    - If the slot has channels linked to it, unlink all channels, and
-	 *      write the new setup to it.
-	 *    - Link channel to new slot.
-	 *
-	 * 2. Soon to be enabled and unlinked channel:
-	 *    - Find a slot. If not possible, return error.
-	 *    - If the slot has channels linked to it, unlink all channels, and
-	 *      write the new setup to it.
-	 *    - Link channel to the slot.
-	 *
-	 * 3. Disabled and linked channel with setup changes:
-	 *    - Unlink channel from current slot.
-	 *
-	 * 4. Soon to be enabled and linked channel:
-	 * 5. Disabled and unlinked channel with setup changes:
-	 *    - Do nothing.
-	 */
+	 
 
-	/* Case 4 */
+	 
 	if (on_enable && chan_info->slot != AD4130_INVALID_SLOT)
 		return 0;
 
 	if (!on_enable && !chan_info->enabled) {
 		if (chan_info->slot != AD4130_INVALID_SLOT)
-			/* Case 3 */
+			 
 			ad4130_unlink_channel(st, channel);
 
-		/* Cases 3 & 5 */
+		 
 		return 0;
 	}
 
-	/* Cases 1 & 2 */
+	 
 	ret = ad4130_find_slot(st, setup_info, &slot, &overwrite);
 	if (ret)
 		return ret;
 
 	if (chan_info->slot != AD4130_INVALID_SLOT)
-		/* Case 1 */
+		 
 		ad4130_unlink_channel(st, channel);
 
 	if (overwrite) {
@@ -801,39 +765,7 @@ static int ad4130_set_channel_enable(struct ad4130_state *st,
 	return 0;
 }
 
-/*
- * Table 58. FILTER_MODE_n bits and Filter Types of the datasheet describes
- * the relation between filter mode, ODR and FS.
- *
- * Notice that the max ODR of each filter mode is not necessarily the
- * absolute max ODR supported by the chip.
- *
- * The ODR divider is not explicitly specified, but it can be deduced based
- * on the ODR range of each filter mode.
- *
- * For example, for Sinc4+Sinc1, max ODR is 218.18. That means that the
- * absolute max ODR is divided by 11 to achieve the max ODR of this filter
- * mode.
- *
- * The formulas for converting between ODR and FS for a specific filter
- * mode can be deduced from the same table.
- *
- * Notice that FS = 1 actually means max ODR, and that ODR decreases by
- * (maximum ODR / maximum FS) for each increment of FS.
- *
- * odr = MAX_ODR / odr_div * (1 - (fs - 1) / fs_max) <=>
- * odr = MAX_ODR * (1 - (fs - 1) / fs_max) / odr_div <=>
- * odr = MAX_ODR * (1 - (fs - 1) / fs_max) / odr_div <=>
- * odr = MAX_ODR * (fs_max - fs + 1) / (fs_max * odr_div)
- * (used in ad4130_fs_to_freq)
- *
- * For the opposite formula, FS can be extracted from the last one.
- *
- * MAX_ODR * (fs_max - fs + 1) = fs_max * odr_div * odr <=>
- * fs_max - fs + 1 = fs_max * odr_div * odr / MAX_ODR <=>
- * fs = 1 + fs_max - fs_max * odr_div * odr / MAX_ODR
- * (used in ad4130_fs_to_freq)
- */
+ 
 
 static void ad4130_freq_to_fs(enum ad4130_filter_mode filter_mode,
 			      int val, int val2, unsigned int *fs)
@@ -894,12 +826,7 @@ static int ad4130_set_filter_mode(struct iio_dev *indio_dev,
 	old_fs = setup_info->fs;
 	old_filter_mode = setup_info->filter_mode;
 
-	/*
-	 * When switching between filter modes, try to match the ODR as
-	 * close as possible. To do this, convert the current FS into ODR
-	 * using the old filter mode, then convert it back into FS using
-	 * the new filter mode.
-	 */
+	 
 	ad4130_fs_to_freq(setup_info->filter_mode, setup_info->fs,
 			  &freq_val, &freq_val2);
 
@@ -1226,10 +1153,7 @@ static int ad4130_set_fifo_watermark(struct iio_dev *indio_dev, unsigned int val
 
 	eff = val * st->num_enabled_channels;
 	if (eff > AD4130_FIFO_SIZE)
-		/*
-		 * Always set watermark to a multiple of the number of
-		 * enabled channels to avoid making the FIFO unaligned.
-		 */
+		 
 		eff = rounddown(AD4130_FIFO_SIZE, st->num_enabled_channels);
 
 	mutex_lock(&st->lock);
@@ -1311,10 +1235,7 @@ static int ad4130_buffer_predisable(struct iio_dev *indio_dev)
 	if (ret)
 		goto out;
 
-	/*
-	 * update_scan_mode() is not called in the disable path, disable all
-	 * channels here.
-	 */
+	 
 	for (i = 0; i < indio_dev->num_channels; i++) {
 		ret = ad4130_set_channel_enable(st, i, false);
 		if (ret)
@@ -1698,11 +1619,7 @@ static int ad4310_parse_fw(struct iio_dev *indio_dev)
 
 	st->int_ref_uv = AD4130_INT_REF_2_5V;
 
-	/*
-	 * When the AVDD supply is set to below 2.5V the internal reference of
-	 * 1.25V should be selected.
-	 * See datasheet page 37, section ADC REFERENCE.
-	 */
+	 
 	avdd_uv = regulator_get_voltage(st->regulators[0].consumer);
 	if (avdd_uv > 0 && avdd_uv < AD4130_INT_REF_2_5V)
 		st->int_ref_uv = AD4130_INT_REF_1_25V;
@@ -1887,7 +1804,7 @@ static int ad4130_setup(struct iio_dev *indio_dev)
 	else
 		int_ref_val = AD4130_INT_REF_VAL_1_25V;
 
-	/* Switch to SPI 4-wire mode. */
+	 
 	val =  FIELD_PREP(AD4130_ADC_CONTROL_CSB_EN_MASK, 1);
 	val |= FIELD_PREP(AD4130_ADC_CONTROL_BIPOLAR_MASK, st->bipolar);
 	val |= FIELD_PREP(AD4130_ADC_CONTROL_INT_REF_EN_MASK, st->int_ref_en);
@@ -1899,10 +1816,7 @@ static int ad4130_setup(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Configure all GPIOs for output. If configured, the interrupt function
-	 * of P2 takes priority over the GPIO out function.
-	 */
+	 
 	val =  AD4130_IO_CONTROL_GPIO_CTRL_MASK;
 	val |= FIELD_PREP(AD4130_IO_CONTROL_INT_PIN_SEL_MASK, st->int_pin_sel);
 
@@ -1923,12 +1837,12 @@ static int ad4130_setup(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
-	/* FIFO watermark interrupt starts out as enabled, disable it. */
+	 
 	ret = ad4130_set_watermark_interrupt_en(st, false);
 	if (ret)
 		return ret;
 
-	/* Setup channels. */
+	 
 	for (i = 0; i < indio_dev->num_channels; i++) {
 		struct ad4130_chan_info *chan_info = &st->chans_info[i];
 		struct iio_chan_spec *chan = &st->chans[i];
@@ -1985,11 +1899,7 @@ static int ad4130_probe(struct spi_device *spi)
 	mutex_init(&st->lock);
 	st->spi = spi;
 
-	/*
-	 * Xfer:   [ XFR1 ] [         XFR2         ]
-	 * Master:  0x7D N   ......................
-	 * Slave:   ......   DATA1 DATA2 ... DATAN
-	 */
+	 
 	st->fifo_tx_buf[0] = AD4130_COMMS_READ_MASK | AD4130_FIFO_DATA_REG;
 	st->fifo_xfer[0].tx_buf = st->fifo_tx_buf;
 	st->fifo_xfer[0].len = sizeof(st->fifo_tx_buf);
@@ -2068,14 +1978,7 @@ static int ad4130_probe(struct spi_device *spi)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to request irq\n");
 
-	/*
-	 * When the chip enters FIFO mode, IRQ polarity is inverted.
-	 * When the chip exits FIFO mode, IRQ polarity returns to normal.
-	 * See datasheet pages: 65, FIFO Watermark Interrupt section,
-	 * and 71, Bit Descriptions for STATUS Register, RDYB.
-	 * Cache the normal and inverted IRQ triggers to set them when
-	 * entering and exiting FIFO mode.
-	 */
+	 
 	st->irq_trigger = irq_get_trigger_type(spi->irq);
 	if (st->irq_trigger & IRQF_TRIGGER_RISING)
 		st->inv_irq_trigger = IRQF_TRIGGER_FALLING;

@@ -1,35 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Broadcom
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
 
-/**
- * DOC: VC4 Falcon HDMI module
- *
- * The HDMI core has a state machine and a PHY.  On BCM2835, most of
- * the unit operates off of the HSM clock from CPRMAN.  It also
- * internally uses the PLLH_PIX clock for the PHY.
- *
- * HDMI infoframes are kept within a small packet ram, where each
- * packet can be individually enabled for including in a frame.
- *
- * HDMI audio is implemented entirely within the HDMI IP block.  A
- * register in the HDMI encoder takes SPDIF frames from the DMA engine
- * and transfers them over an internal MAI (multi-channel audio
- * interconnect) bus to the encoder side for insertion into the video
- * blank regions.
- *
- * The driver's HDMI encoder does not yet support power management.
- * The HDMI encoder's power domain and the HSM/pixel clocks are kept
- * continuously running, and only the HDMI logic and packet ram are
- * powered off/on at disable/enable time.
- *
- * The driver does not yet support CEC control, though the HDMI
- * encoder block has CEC support.
- */
+ 
+
+ 
 
 #include <drm/display/drm_hdmi_helper.h>
 #include <drm/display/drm_scdc_helper.h>
@@ -199,10 +171,7 @@ static void vc4_hdmi_reset(struct vc4_hdmi *vc4_hdmi)
 	unsigned long flags;
 	int idx;
 
-	/*
-	 * We can be called by our bind callback, when the
-	 * connector->dev pointer might not be initialised yet.
-	 */
+	 
 	if (drm && !drm_dev_enter(drm, &idx))
 		return;
 
@@ -232,10 +201,7 @@ static void vc5_hdmi_reset(struct vc4_hdmi *vc4_hdmi)
 	unsigned long flags;
 	int idx;
 
-	/*
-	 * We can be called by our bind callback, when the
-	 * connector->dev pointer might not be initialised yet.
-	 */
+	 
 	if (drm && !drm_dev_enter(drm, &idx))
 		return;
 
@@ -264,12 +230,7 @@ static void vc4_hdmi_cec_update_clk_div(struct vc4_hdmi *vc4_hdmi)
 	u32 value;
 	int idx;
 
-	/*
-	 * This function is called by our runtime_resume implementation
-	 * and thus at bind time, when we haven't registered our
-	 * connector yet and thus don't have a pointer to the DRM
-	 * device.
-	 */
+	 
 	if (drm && !drm_dev_enter(drm, &idx))
 		return;
 
@@ -280,10 +241,7 @@ static void vc4_hdmi_cec_update_clk_div(struct vc4_hdmi *vc4_hdmi)
 	value = HDMI_READ(HDMI_CEC_CNTRL_1);
 	value &= ~VC4_HDMI_CEC_DIV_CLK_CNT_MASK;
 
-	/*
-	 * Set the clock divider: the hsm_clock rate and this divider
-	 * setting will give a 40 kHz CEC clock.
-	 */
+	 
 	clk_cnt = cec_rate / CEC_CLOCK_FREQ;
 	value |= clk_cnt << VC4_HDMI_CEC_DIV_CLK_CNT_SHIFT;
 	HDMI_WRITE(HDMI_CEC_CNTRL_1, value);
@@ -394,15 +352,7 @@ static int vc4_hdmi_reset_link(struct drm_connector *connector,
 
 	mutex_unlock(&vc4_hdmi->mutex);
 
-	/*
-	 * HDMI 2.0 says that one should not send scrambled data
-	 * prior to configuring the sink scrambling, and that
-	 * TMDS clock/data transmission should be suspended when
-	 * changing the TMDS clock rate in the sink. So let's
-	 * just do a full modeset here, even though some sinks
-	 * would be perfectly happy if were to just reconfigure
-	 * the SCDC settings on the fly.
-	 */
+	 
 	return reset_pipe(crtc, ctx);
 }
 
@@ -414,20 +364,7 @@ static void vc4_hdmi_handle_hotplug(struct vc4_hdmi *vc4_hdmi,
 	struct edid *edid;
 	int ret;
 
-	/*
-	 * NOTE: This function should really be called with
-	 * vc4_hdmi->mutex held, but doing so results in reentrancy
-	 * issues since cec_s_phys_addr_from_edid might call
-	 * .adap_enable, which leads to that funtion being called with
-	 * our mutex held.
-	 *
-	 * A similar situation occurs with vc4_hdmi_reset_link() that
-	 * will call into our KMS hooks if the scrambling was enabled.
-	 *
-	 * Concurrency isn't an issue at the moment since we don't share
-	 * any state with any of the other frameworks so we can ignore
-	 * the lock for now.
-	 */
+	 
 
 	if (status == connector_status_disconnected) {
 		cec_phys_addr_invalidate(vc4_hdmi->cec_adap);
@@ -459,16 +396,7 @@ static int vc4_hdmi_connector_detect_ctx(struct drm_connector *connector,
 	struct vc4_hdmi *vc4_hdmi = connector_to_vc4_hdmi(connector);
 	enum drm_connector_status status = connector_status_disconnected;
 
-	/*
-	 * NOTE: This function should really take vc4_hdmi->mutex, but
-	 * doing so results in reentrancy issues since
-	 * vc4_hdmi_handle_hotplug() can call into other functions that
-	 * would take the mutex while it's held here.
-	 *
-	 * Concurrency isn't an issue at the moment since we don't share
-	 * any state with any of the other frameworks so we can ignore
-	 * the lock for now.
-	 */
+	 
 
 	WARN_ON(pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev));
 
@@ -494,16 +422,7 @@ static int vc4_hdmi_connector_get_modes(struct drm_connector *connector)
 	int ret = 0;
 	struct edid *edid;
 
-	/*
-	 * NOTE: This function should really take vc4_hdmi->mutex, but
-	 * doing so results in reentrancy issues since
-	 * cec_s_phys_addr_from_edid might call .adap_enable, which
-	 * leads to that funtion being called with our mutex held.
-	 *
-	 * Concurrency isn't an issue at the moment since we don't share
-	 * any state with any of the other frameworks so we can ignore
-	 * the lock for now.
-	 */
+	 
 
 	edid = drm_get_edid(connector, vc4_hdmi->ddc);
 	cec_s_phys_addr_from_edid(vc4_hdmi->cec_adap, edid);
@@ -556,16 +475,7 @@ static int vc4_hdmi_connector_atomic_check(struct drm_connector *connector,
 		if (IS_ERR(crtc_state))
 			return PTR_ERR(crtc_state);
 
-		/*
-		 * Strictly speaking, we should be calling
-		 * drm_atomic_helper_check_planes() after our call to
-		 * drm_atomic_add_affected_planes(). However, the
-		 * connector atomic_check is called as part of
-		 * drm_atomic_helper_check_modeset() that already
-		 * happens before a call to
-		 * drm_atomic_helper_check_planes() in
-		 * drm_atomic_helper_check().
-		 */
+		 
 		ret = drm_atomic_add_affected_planes(state, crtc);
 		if (ret)
 			return ret;
@@ -730,14 +640,11 @@ static int vc4_hdmi_connector_init(struct drm_device *dev,
 
 	drm_connector_helper_add(connector, &vc4_hdmi_connector_helper_funcs);
 
-	/*
-	 * Some of the properties below require access to state, like bpc.
-	 * Allocate some default initial connector state with our reset helper.
-	 */
+	 
 	if (connector->funcs->reset)
 		connector->funcs->reset(connector);
 
-	/* Create and attach TV margin props to this connector. */
+	 
 	ret = drm_mode_create_tv_margin_properties(dev);
 	if (ret)
 		return ret;
@@ -848,10 +755,7 @@ static void vc4_hdmi_write_infoframe(struct drm_encoder *encoder,
 		packet_reg += 4;
 	}
 
-	/*
-	 * clear remainder of packet ram as it's included in the
-	 * infoframe and triggers a checksum error on hdmi analyser
-	 */
+	 
 	for (; packet_reg < packet_reg_next; packet_reg += 4)
 		writel(0, base + packet_reg);
 
@@ -983,10 +887,7 @@ static void vc4_hdmi_set_infoframes(struct drm_encoder *encoder)
 
 	vc4_hdmi_set_avi_infoframe(encoder);
 	vc4_hdmi_set_spd_infoframe(encoder);
-	/*
-	 * If audio was streaming, then we need to reenabled the audio
-	 * infoframe here during encoder_enable.
-	 */
+	 
 	if (vc4_hdmi->audio.streaming)
 		vc4_hdmi_set_audio_infoframe(encoder);
 
@@ -1175,16 +1076,7 @@ static void vc4_hdmi_csc_setup(struct vc4_hdmi *vc4_hdmi,
 				VC4_HD_CSC_CTL_ORDER);
 
 	if (!vc4_hdmi_is_full_range(vc4_hdmi, vc4_state)) {
-		/* CEA VICs other than #1 requre limited range RGB
-		 * output unless overridden by an AVI infoframe.
-		 * Apply a colorspace conversion to squash 0-255 down
-		 * to 16-235.  The matrix here is:
-		 *
-		 * [ 0      0      0.8594 16]
-		 * [ 0      0.8594 0      16]
-		 * [ 0.8594 0      0      16]
-		 * [ 0      0      0       1]
-		 */
+		 
 		csc_ctl |= VC4_HD_CSC_CTL_ENABLE;
 		csc_ctl |= VC4_HD_CSC_CTL_RGB2YCC;
 		csc_ctl |= VC4_SET_FIELD(VC4_HD_CSC_CTL_MODE_CUSTOM,
@@ -1198,7 +1090,7 @@ static void vc4_hdmi_csc_setup(struct vc4_hdmi *vc4_hdmi,
 		HDMI_WRITE(HDMI_CSC_34_33, (0x100 << 16) | 0x000);
 	}
 
-	/* The RGB order applies even when CSC is disabled. */
+	 
 	HDMI_WRITE(HDMI_CSC_CTL, csc_ctl);
 
 	spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
@@ -1206,131 +1098,64 @@ static void vc4_hdmi_csc_setup(struct vc4_hdmi *vc4_hdmi,
 	drm_dev_exit(idx);
 }
 
-/*
- * Matrices for (internal) RGB to RGB output.
- *
- * Matrices are signed 2p13 fixed point, with signed 9p6 offsets
- */
+ 
 static const u16 vc5_hdmi_csc_full_rgb_to_rgb[2][3][4] = {
 	{
-		/*
-		 * Full range - unity
-		 *
-		 * [ 1      0      0      0]
-		 * [ 0      1      0      0]
-		 * [ 0      0      1      0]
-		 */
+		 
 		{ 0x2000, 0x0000, 0x0000, 0x0000 },
 		{ 0x0000, 0x2000, 0x0000, 0x0000 },
 		{ 0x0000, 0x0000, 0x2000, 0x0000 },
 	},
 	{
-		/*
-		 * Limited range
-		 *
-		 * CEA VICs other than #1 require limited range RGB
-		 * output unless overridden by an AVI infoframe. Apply a
-		 * colorspace conversion to squash 0-255 down to 16-235.
-		 * The matrix here is:
-		 *
-		 * [ 0.8594 0      0      16]
-		 * [ 0      0.8594 0      16]
-		 * [ 0      0      0.8594 16]
-		 */
+		 
 		{ 0x1b80, 0x0000, 0x0000, 0x0400 },
 		{ 0x0000, 0x1b80, 0x0000, 0x0400 },
 		{ 0x0000, 0x0000, 0x1b80, 0x0400 },
 	},
 };
 
-/*
- * Conversion between Full Range RGB and YUV using the BT.601 Colorspace
- *
- * Matrices are signed 2p13 fixed point, with signed 9p6 offsets
- */
+ 
 static const u16 vc5_hdmi_csc_full_rgb_to_yuv_bt601[2][3][4] = {
 	{
-		/*
-		 * Full Range
-		 *
-		 * [  0.299000  0.587000  0.114000  0   ]
-		 * [ -0.168736 -0.331264  0.500000  128 ]
-		 * [  0.500000 -0.418688 -0.081312  128 ]
-		 */
+		 
 		{ 0x0991, 0x12c9, 0x03a6, 0x0000 },
 		{ 0xfa9b, 0xf567, 0x1000, 0x2000 },
 		{ 0x1000, 0xf29b, 0xfd67, 0x2000 },
 	},
 	{
-		/* Limited Range
-		 *
-		 * [  0.255785  0.502160  0.097523  16  ]
-		 * [ -0.147644 -0.289856  0.437500  128 ]
-		 * [  0.437500 -0.366352 -0.071148  128 ]
-		 */
+		 
 		{ 0x082f, 0x1012, 0x031f, 0x0400 },
 		{ 0xfb48, 0xf6ba, 0x0e00, 0x2000 },
 		{ 0x0e00, 0xf448, 0xfdba, 0x2000 },
 	},
 };
 
-/*
- * Conversion between Full Range RGB and YUV using the BT.709 Colorspace
- *
- * Matrices are signed 2p13 fixed point, with signed 9p6 offsets
- */
+ 
 static const u16 vc5_hdmi_csc_full_rgb_to_yuv_bt709[2][3][4] = {
 	{
-		/*
-		 * Full Range
-		 *
-		 * [  0.212600  0.715200  0.072200  0   ]
-		 * [ -0.114572 -0.385428  0.500000  128 ]
-		 * [  0.500000 -0.454153 -0.045847  128 ]
-		 */
+		 
 		{ 0x06ce, 0x16e3, 0x024f, 0x0000 },
 		{ 0xfc56, 0xf3ac, 0x1000, 0x2000 },
 		{ 0x1000, 0xf179, 0xfe89, 0x2000 },
 	},
 	{
-		/*
-		 * Limited Range
-		 *
-		 * [  0.181906  0.611804  0.061758  16  ]
-		 * [ -0.100268 -0.337232  0.437500  128 ]
-		 * [  0.437500 -0.397386 -0.040114  128 ]
-		 */
+		 
 		{ 0x05d2, 0x1394, 0x01fa, 0x0400 },
 		{ 0xfccc, 0xf536, 0x0e00, 0x2000 },
 		{ 0x0e00, 0xf34a, 0xfeb8, 0x2000 },
 	},
 };
 
-/*
- * Conversion between Full Range RGB and YUV using the BT.2020 Colorspace
- *
- * Matrices are signed 2p13 fixed point, with signed 9p6 offsets
- */
+ 
 static const u16 vc5_hdmi_csc_full_rgb_to_yuv_bt2020[2][3][4] = {
 	{
-		/*
-		 * Full Range
-		 *
-		 * [  0.262700  0.678000  0.059300  0   ]
-		 * [ -0.139630 -0.360370  0.500000  128 ]
-		 * [  0.500000 -0.459786 -0.040214  128 ]
-		 */
+		 
 		{ 0x0868, 0x15b2, 0x01e6, 0x0000 },
 		{ 0xfb89, 0xf479, 0x1000, 0x2000 },
 		{ 0x1000, 0xf14a, 0xfeb8, 0x2000 },
 	},
 	{
-		/* Limited Range
-		 *
-		 * [  0.224732  0.580008  0.050729  16  ]
-		 * [ -0.122176 -0.315324  0.437500  128 ]
-		 * [  0.437500 -0.402312 -0.035188  128 ]
-		 */
+		 
 		{ 0x082f, 0x1012, 0x031f, 0x0400 },
 		{ 0xfb48, 0xf6ba, 0x0e00, 0x2000 },
 		{ 0x0e00, 0xf448, 0xfdba, 0x2000 },
@@ -1355,7 +1180,7 @@ static void vc5_hdmi_set_csc_coeffs_swap(struct vc4_hdmi *vc4_hdmi,
 {
 	lockdep_assert_held(&vc4_hdmi->hw_lock);
 
-	/* YUV444 needs the CSC matrices using the channels in a different order */
+	 
 	HDMI_WRITE(HDMI_CSC_12_11, (coeffs[1][1] << 16) | coeffs[1][0]);
 	HDMI_WRITE(HDMI_CSC_14_13, (coeffs[1][3] << 16) | coeffs[1][2]);
 	HDMI_WRITE(HDMI_CSC_22_21, (coeffs[2][1] << 16) | coeffs[2][0]);
@@ -1593,10 +1418,7 @@ static void vc5_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
 		break;
 	}
 
-	/*
-	 * YCC422 is always 36-bit and not considered deep colour so
-	 * doesn't signal in GCP.
-	 */
+	 
 	if (vc4_state->output_format == VC4_HDMI_OUTPUT_YUV422) {
 		gcp = 0;
 	}
@@ -1701,22 +1523,7 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
 		goto err_dev_exit;
 	}
 
-	/*
-	 * As stated in RPi's vc4 firmware "HDMI state machine (HSM) clock must
-	 * be faster than pixel clock, infinitesimally faster, tested in
-	 * simulation. Otherwise, exact value is unimportant for HDMI
-	 * operation." This conflicts with bcm2835's vc4 documentation, which
-	 * states HSM's clock has to be at least 108% of the pixel clock.
-	 *
-	 * Real life tests reveal that vc4's firmware statement holds up, and
-	 * users are able to use pixel clocks closer to HSM's, namely for
-	 * 1920x1200@60Hz. So it was decided to have leave a 1% margin between
-	 * both clocks. Which, for RPi0-3 implies a maximum pixel clock of
-	 * 162MHz.
-	 *
-	 * Additionally, the AXI clock needs to be at least 25% of
-	 * pixel clock, but HSM ends up being the limiting factor.
-	 */
+	 
 	hsm_rate = max_t(unsigned long,
 			 HSM_MIN_CLOCK_FREQ,
 			 (tmds_char_rate / 100) * 101);
@@ -2019,7 +1826,7 @@ vc4_hdmi_encoder_clock_valid(const struct vc4_hdmi *vc4_hdmi,
 	if (!vc4->hvs->vc5_hdmi_enable_hdmi_20 && clock > HDMI_14_MAX_TMDS_CLK)
 		return MODE_CLOCK_HIGH;
 
-	/* 4096x2160@60 is not reliable without overclocking core */
+	 
 	if (!vc4->hvs->vc5_hdmi_enable_4096by2160 &&
 	    mode->hdisplay > 3840 && mode->vdisplay >= 2160 &&
 	    drm_mode_vrefresh(mode) >= 50)
@@ -2166,30 +1973,20 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
 
 	if (vc4_hdmi->variant->unsupported_odd_h_timings) {
 		if (mode->flags & DRM_MODE_FLAG_DBLCLK) {
-			/* Only try to fixup DBLCLK modes to get 480i and 576i
-			 * working.
-			 * A generic solution for all modes with odd horizontal
-			 * timing values seems impossible based on trying to
-			 * solve it for 1366x768 monitors.
-			 */
+			 
 			if ((mode->hsync_start - mode->hdisplay) & 1)
 				mode->hsync_start--;
 			if ((mode->hsync_end - mode->hsync_start) & 1)
 				mode->hsync_end--;
 		}
 
-		/* Now check whether we still have odd values remaining */
+		 
 		if ((mode->hdisplay % 2) || (mode->hsync_start % 2) ||
 		    (mode->hsync_end % 2) || (mode->htotal % 2))
 			return -EINVAL;
 	}
 
-	/*
-	 * The 1440p@60 pixel rate is in the same range than the first
-	 * WiFi channel (between 2.4GHz and 2.422GHz with 22MHz
-	 * bandwidth). Slightly lower the frequency to bring it out of
-	 * the WiFi range.
-	 */
+	 
 	tmds_bit_rate = tmds_char_rate * 10;
 	if (vc4_hdmi->disable_wifi_frequencies &&
 	    (tmds_bit_rate >= WIFI_2_4GHz_CH1_MIN_FREQ &&
@@ -2202,7 +1999,7 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
 	if (ret)
 		return ret;
 
-	/* vc4_hdmi_encoder_compute_config may have changed output_bpc and/or output_format */
+	 
 	if (vc4_state->output_bpc != old_vc4_state->output_bpc ||
 	    vc4_state->output_format != old_vc4_state->output_format)
 		crtc_state->mode_changed = true;
@@ -2290,7 +2087,7 @@ static bool vc5_hdmi_hp_detect(struct vc4_hdmi *vc4_hdmi)
 	return !!(hotplug & VC4_HDMI_HOTPLUG_CONNECTED);
 }
 
-/* HDMI audio codec callbacks */
+ 
 static void vc4_hdmi_audio_set_mai_clock(struct vc4_hdmi *vc4_hdmi,
 					 unsigned int samplerate)
 {
@@ -2338,11 +2135,7 @@ static void vc4_hdmi_set_n_cts(struct vc4_hdmi *vc4_hdmi, unsigned int samplerat
 		   VC4_HDMI_CRP_CFG_EXTERNAL_CTS_EN |
 		   VC4_SET_FIELD(n, VC4_HDMI_CRP_CFG_N));
 
-	/*
-	 * We could get slightly more accurate clocks in some cases by
-	 * providing a CTS_1 value.  The two CTS values are alternated
-	 * between based on the period fields
-	 */
+	 
 	HDMI_WRITE(HDMI_CTS_0, cts);
 	HDMI_WRITE(HDMI_CTS_1, cts);
 }
@@ -2360,10 +2153,7 @@ static bool vc4_hdmi_audio_can_stream(struct vc4_hdmi *vc4_hdmi)
 
 	lockdep_assert_held(&vc4_hdmi->mutex);
 
-	/*
-	 * If the encoder is currently in DVI mode, treat the codec DAI
-	 * as missing.
-	 */
+	 
 	if (!display->is_hdmi)
 		return false;
 
@@ -2506,7 +2296,7 @@ static int sample_rate_to_mai_fmt(int samplerate)
 	}
 }
 
-/* HDMI audio codec callbacks */
+ 
 static int vc4_hdmi_audio_prepare(struct device *dev, void *data,
 				  struct hdmi_codec_daifmt *daifmt,
 				  struct hdmi_codec_params *params)
@@ -2560,7 +2350,7 @@ static int vc4_hdmi_audio_prepare(struct device *dev, void *data,
 		   VC4_SET_FIELD(mai_audio_format,
 				 VC4_HDMI_MAI_FORMAT_AUDIO_FORMAT));
 
-	/* The B frame identifier should match the value used by alsa-lib (8) */
+	 
 	audio_packet_config =
 		VC4_HDMI_AUDIO_PACKET_ZERO_DATA_ON_SAMPLE_FLAT |
 		VC4_HDMI_AUDIO_PACKET_ZERO_DATA_ON_INACTIVE_CHANNELS |
@@ -2570,7 +2360,7 @@ static int vc4_hdmi_audio_prepare(struct device *dev, void *data,
 	audio_packet_config |= VC4_SET_FIELD(channel_mask,
 					     VC4_HDMI_AUDIO_PACKET_CEA_MASK);
 
-	/* Set the MAI threshold */
+	 
 	HDMI_WRITE(HDMI_MAI_THR,
 		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICHIGH) |
 		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICLOW) |
@@ -2685,23 +2475,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
 	int index, len;
 	int ret;
 
-	/*
-	 * ASoC makes it a bit hard to retrieve a pointer to the
-	 * vc4_hdmi structure. Registering the card will overwrite our
-	 * device drvdata with a pointer to the snd_soc_card structure,
-	 * which can then be used to retrieve whatever drvdata we want
-	 * to associate.
-	 *
-	 * However, that doesn't fly in the case where we wouldn't
-	 * register an ASoC card (because of an old DT that is missing
-	 * the dmas properties for example), then the card isn't
-	 * registered and the device drvdata wouldn't be set.
-	 *
-	 * We can deal with both cases by making sure a snd_soc_card
-	 * pointer and a vc4_hdmi structure are pointing to the same
-	 * memory address, so we can treat them indistinctly without any
-	 * issue.
-	 */
+	 
 	BUILD_BUG_ON(offsetof(struct vc4_hdmi_audio, card) != 0);
 	BUILD_BUG_ON(offsetof(struct vc4_hdmi, audio) != 0);
 
@@ -2716,15 +2490,9 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
 		return -EINVAL;
 	}
 
-	/*
-	 * Get the physical address of VC4_HD_MAI_DATA. We need to retrieve
-	 * the bus address specified in the DT, because the physical address
-	 * (the one returned by platform_get_resource()) is not appropriate
-	 * for DMA transfers.
-	 * This VC/MMU should probably be exposed to avoid this kind of hacks.
-	 */
+	 
 	index = of_property_match_string(dev->of_node, "reg-names", "hd");
-	/* Before BCM2711, we don't have a named register range */
+	 
 	if (index < 0)
 		index = 1;
 
@@ -2734,30 +2502,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
 	vc4_hdmi->audio.dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	vc4_hdmi->audio.dma_data.maxburst = 2;
 
-	/*
-	 * NOTE: Strictly speaking, we should probably use a DRM-managed
-	 * registration there to avoid removing all the audio components
-	 * by the time the driver doesn't have any user anymore.
-	 *
-	 * However, the ASoC core uses a number of devm_kzalloc calls
-	 * when registering, even when using non-device-managed
-	 * functions (such as in snd_soc_register_component()).
-	 *
-	 * If we call snd_soc_unregister_component() in a DRM-managed
-	 * action, the device-managed actions have already been executed
-	 * and thus we would access memory that has been freed.
-	 *
-	 * Using device-managed hooks here probably leaves us open to a
-	 * bunch of issues if userspace still has a handle on the ALSA
-	 * device when the device is removed. However, this is mitigated
-	 * by the use of drm_dev_enter()/drm_dev_exit() in the audio
-	 * path to prevent the access to the device resources if it
-	 * isn't there anymore.
-	 *
-	 * Then, the vc4_hdmi structure is DRM-managed and thus only
-	 * freed whenever the last user has closed the DRM device file.
-	 * It should thus outlive ALSA in most situations.
-	 */
+	 
 	ret = devm_snd_dmaengine_pcm_register(dev, &pcm_conf, 0);
 	if (ret) {
 		dev_err(dev, "Could not register PCM component: %d\n", ret);
@@ -2807,13 +2552,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
 	card->dev = dev;
 	card->owner = THIS_MODULE;
 
-	/*
-	 * Be careful, snd_soc_register_card() calls dev_set_drvdata() and
-	 * stores a pointer to the snd card object in dev->driver_data. This
-	 * means we cannot use it for something else. The hdmi back-pointer is
-	 * now stored in card->drvdata and should be retrieved with
-	 * snd_soc_card_get_drvdata() if needed.
-	 */
+	 
 	snd_soc_card_set_drvdata(card, vc4_hdmi);
 	ret = devm_snd_soc_register_card(dev, card);
 	if (ret)
@@ -2885,10 +2624,7 @@ static irqreturn_t vc4_cec_irq_handler_tx_thread(int irq, void *priv)
 		cec_transmit_done(vc4_hdmi->cec_adap, CEC_TX_STATUS_OK,
 				  0, 0, 0, 0);
 	} else {
-		/*
-		 * This CEC implementation makes 1 retry, so if we
-		 * get a NACK, then that means it made 2 attempts.
-		 */
+		 
 		cec_transmit_done(vc4_hdmi->cec_adap, CEC_TX_STATUS_NACK,
 				  0, 2, 0, 0);
 	}
@@ -2938,16 +2674,7 @@ static irqreturn_t vc4_cec_irq_handler_tx_bare_locked(struct vc4_hdmi *vc4_hdmi)
 {
 	u32 cntrl1;
 
-	/*
-	 * We don't need to protect the register access using
-	 * drm_dev_enter() there because the interrupt handler lifetime
-	 * is tied to the device itself, and not to the DRM device.
-	 *
-	 * So when the device will be gone, one of the first thing we
-	 * will be doing will be to unregister the interrupt handler,
-	 * and then unregister the DRM device. drm_dev_enter() would
-	 * thus always succeed if we are here.
-	 */
+	 
 
 	lockdep_assert_held(&vc4_hdmi->hw_lock);
 
@@ -2977,16 +2704,7 @@ static irqreturn_t vc4_cec_irq_handler_rx_bare_locked(struct vc4_hdmi *vc4_hdmi)
 
 	lockdep_assert_held(&vc4_hdmi->hw_lock);
 
-	/*
-	 * We don't need to protect the register access using
-	 * drm_dev_enter() there because the interrupt handler lifetime
-	 * is tied to the device itself, and not to the DRM device.
-	 *
-	 * So when the device will be gone, one of the first thing we
-	 * will be doing will be to unregister the interrupt handler,
-	 * and then unregister the DRM device. drm_dev_enter() would
-	 * thus always succeed if we are here.
-	 */
+	 
 
 	vc4_hdmi->cec_rx_msg.len = 0;
 	cntrl1 = HDMI_READ(HDMI_CEC_CNTRL_1);
@@ -3019,16 +2737,7 @@ static irqreturn_t vc4_cec_irq_handler(int irq, void *priv)
 	irqreturn_t ret;
 	u32 cntrl5;
 
-	/*
-	 * We don't need to protect the register access using
-	 * drm_dev_enter() there because the interrupt handler lifetime
-	 * is tied to the device itself, and not to the DRM device.
-	 *
-	 * So when the device will be gone, one of the first thing we
-	 * will be doing will be to unregister the interrupt handler,
-	 * and then unregister the DRM device. drm_dev_enter() would
-	 * thus always succeed if we are here.
-	 */
+	 
 
 	if (!(stat & VC4_HDMI_CPU_CEC))
 		return IRQ_NONE;
@@ -3051,7 +2760,7 @@ static int vc4_hdmi_cec_enable(struct cec_adapter *adap)
 {
 	struct vc4_hdmi *vc4_hdmi = cec_get_drvdata(adap);
 	struct drm_device *drm = vc4_hdmi->connector.dev;
-	/* clock period in microseconds */
+	 
 	const u32 usecs = 1000000 / CEC_CLOCK_FREQ;
 	unsigned long flags;
 	u32 val;
@@ -3059,11 +2768,7 @@ static int vc4_hdmi_cec_enable(struct cec_adapter *adap)
 	int idx;
 
 	if (!drm_dev_enter(drm, &idx))
-		/*
-		 * We can't return an error code, because the CEC
-		 * framework will emit WARN_ON messages at unbind
-		 * otherwise.
-		 */
+		 
 		return 0;
 
 	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
@@ -3122,11 +2827,7 @@ static int vc4_hdmi_cec_disable(struct cec_adapter *adap)
 	int idx;
 
 	if (!drm_dev_enter(drm, &idx))
-		/*
-		 * We can't return an error code, because the CEC
-		 * framework will emit WARN_ON messages at unbind
-		 * otherwise.
-		 */
+		 
 		return 0;
 
 	mutex_lock(&vc4_hdmi->mutex);
@@ -3166,11 +2867,7 @@ static int vc4_hdmi_cec_adap_log_addr(struct cec_adapter *adap, u8 log_addr)
 	int idx;
 
 	if (!drm_dev_enter(drm, &idx))
-		/*
-		 * We can't return an error code, because the CEC
-		 * framework will emit WARN_ON messages at unbind
-		 * otherwise.
-		 */
+		 
 		return 0;
 
 	mutex_lock(&vc4_hdmi->mutex);
@@ -3297,29 +2994,7 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
 	if (ret < 0)
 		goto err_delete_cec_adap;
 
-	/*
-	 * NOTE: Strictly speaking, we should probably use a DRM-managed
-	 * registration there to avoid removing the CEC adapter by the
-	 * time the DRM driver doesn't have any user anymore.
-	 *
-	 * However, the CEC framework already cleans up the CEC adapter
-	 * only when the last user has closed its file descriptor, so we
-	 * don't need to handle it in DRM.
-	 *
-	 * By the time the device-managed hook is executed, we will give
-	 * up our reference to the CEC adapter and therefore don't
-	 * really care when it's actually freed.
-	 *
-	 * There's still a problematic sequence: if we unregister our
-	 * CEC adapter, but the userspace keeps a handle on the CEC
-	 * adapter but not the DRM device for some reason. In such a
-	 * case, our vc4_hdmi structure will be freed, but the
-	 * cec_adapter structure will have a dangling pointer to what
-	 * used to be our HDMI controller. If we get a CEC call at that
-	 * moment, we could end up with a use-after-free. Fortunately,
-	 * the CEC framework already handles this too, by calling
-	 * cec_is_registered() in cec_ioctl() and cec_poll().
-	 */
+	 
 	ret = devm_add_action_or_reset(dev, vc4_hdmi_cec_release, vc4_hdmi);
 	if (ret)
 		return ret;
@@ -3588,15 +3263,7 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Whenever the RaspberryPi boots without an HDMI monitor
-	 * plugged in, the firmware won't have initialized the HSM clock
-	 * rate and it will be reported as 0.
-	 *
-	 * If we try to access a register of the controller in such a
-	 * case, it will lead to a silent CPU stall. Let's make sure we
-	 * prevent such a case.
-	 */
+	 
 	rate = clk_get_rate(vc4_hdmi->hsm_clock);
 	if (!rate) {
 		ret = -EINVAL;
@@ -3609,7 +3276,7 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
 #ifdef CONFIG_DRM_VC4_HDMI_CEC
 	spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
 	value = HDMI_READ(HDMI_CEC_CNTRL_1);
-	/* Set the logical address to Unregistered */
+	 
 	value |= VC4_HDMI_CEC_ADDR_MASK;
 	HDMI_WRITE(HDMI_CEC_CNTRL_1, value);
 	spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
@@ -3669,12 +3336,7 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
 	vc4_hdmi->pdev = pdev;
 	vc4_hdmi->variant = variant;
 
-	/*
-	 * Since we don't know the state of the controller and its
-	 * display (if any), let's assume it's always enabled.
-	 * vc4_hdmi_disable_scrambling() will thus run at boot, make
-	 * sure it's disabled, and avoid any inconsistency.
-	 */
+	 
 	if (variant->max_pixel_clock > HDMI_14_MAX_TMDS_CLK)
 		vc4_hdmi->scdc_enabled = true;
 
@@ -3699,9 +3361,7 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
 	if (ret)
 		return ret;
 
-	/* Only use the GPIO HPD pin if present in the DT, otherwise
-	 * we'll use the HDMI core's register.
-	 */
+	 
 	vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
 	if (IS_ERR(vc4_hdmi->hpd_gpio)) {
 		return PTR_ERR(vc4_hdmi->hpd_gpio);
@@ -3714,10 +3374,7 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
 	if (ret)
 		return ret;
 
-	/*
-	 *  We need to have the device powered up at this point to call
-	 *  our reset hook and for the CEC init.
-	 */
+	 
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret)
 		return ret;

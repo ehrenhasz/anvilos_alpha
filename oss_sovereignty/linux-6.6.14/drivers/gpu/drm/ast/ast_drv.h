@@ -1,30 +1,5 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/*
- * Authors: Dave Airlie <airlied@redhat.com>
- */
+ 
+ 
 #ifndef __AST_DRV_H__
 #define __AST_DRV_H__
 
@@ -55,31 +30,31 @@
 #define __AST_CHIP(__gen, __index)	((__gen) << 16 | (__index))
 
 enum ast_chip {
-	/* 1st gen */
-	AST1000 = __AST_CHIP(1, 0), // unused
+	 
+	AST1000 = __AST_CHIP(1, 0), 
 	AST2000 = __AST_CHIP(1, 1),
-	/* 2nd gen */
+	 
 	AST1100 = __AST_CHIP(2, 0),
 	AST2100 = __AST_CHIP(2, 1),
-	AST2050 = __AST_CHIP(2, 2), // unused
-	/* 3rd gen */
+	AST2050 = __AST_CHIP(2, 2), 
+	 
 	AST2200 = __AST_CHIP(3, 0),
 	AST2150 = __AST_CHIP(3, 1),
-	/* 4th gen */
+	 
 	AST2300 = __AST_CHIP(4, 0),
 	AST1300 = __AST_CHIP(4, 1),
-	AST1050 = __AST_CHIP(4, 2), // unused
-	/* 5th gen */
+	AST1050 = __AST_CHIP(4, 2), 
+	 
 	AST2400 = __AST_CHIP(5, 0),
 	AST1400 = __AST_CHIP(5, 1),
-	AST1250 = __AST_CHIP(5, 2), // unused
-	/* 6th gen */
+	AST1250 = __AST_CHIP(5, 2), 
+	 
 	AST2500 = __AST_CHIP(6, 0),
 	AST2510 = __AST_CHIP(6, 1),
-	AST2520 = __AST_CHIP(6, 2), // unused
-	/* 7th gen */
+	AST2520 = __AST_CHIP(6, 2), 
+	 
 	AST2600 = __AST_CHIP(7, 0),
-	AST2620 = __AST_CHIP(7, 1), // unused
+	AST2620 = __AST_CHIP(7, 1), 
 };
 
 #define __AST_CHIP_GEN(__chip)	(((unsigned long)(__chip)) >> 16)
@@ -104,9 +79,7 @@ enum ast_tx_chip {
 #define AST_DRAM_4Gx16   7
 #define AST_DRAM_8Gx16   8
 
-/*
- * Hardware cursor
- */
+ 
 
 #define AST_MAX_HWC_WIDTH	64
 #define AST_MAX_HWC_HEIGHT	64
@@ -114,7 +87,7 @@ enum ast_tx_chip {
 #define AST_HWC_SIZE		(AST_MAX_HWC_WIDTH * AST_MAX_HWC_HEIGHT * 2)
 #define AST_HWC_SIGNATURE_SIZE	32
 
-/* define for signature structure */
+ 
 #define AST_HWC_SIGNATURE_CHECKSUM	0x00
 #define AST_HWC_SIGNATURE_SizeX		0x04
 #define AST_HWC_SIGNATURE_SizeY		0x08
@@ -123,9 +96,7 @@ enum ast_tx_chip {
 #define AST_HWC_SIGNATURE_HOTSPOTX	0x14
 #define AST_HWC_SIGNATURE_HOTSPOTY	0x18
 
-/*
- * Planes
- */
+ 
 
 struct ast_plane {
 	struct drm_plane base;
@@ -140,9 +111,7 @@ static inline struct ast_plane *to_ast_plane(struct drm_plane *plane)
 	return container_of(plane, struct ast_plane, base);
 }
 
-/*
- * Connector with i2c channel
- */
+ 
 
 struct ast_i2c_chan {
 	struct i2c_adapter adapter;
@@ -183,14 +152,12 @@ to_ast_bmc_connector(struct drm_connector *connector)
 	return container_of(connector, struct ast_bmc_connector, base);
 }
 
-/*
- * Device
- */
+ 
 
 struct ast_device {
 	struct drm_device base;
 
-	struct mutex ioregs_lock; /* Protects access to I/O registers in ioregs */
+	struct mutex ioregs_lock;  
 	void __iomem *regs;
 	void __iomem *ioregs;
 	void __iomem *dp501_fw_buf;
@@ -238,9 +205,9 @@ struct ast_device {
 		ast_use_defaults
 	} config_mode;
 
-	unsigned long tx_chip_types;		/* bitfield of enum ast_chip_type */
+	unsigned long tx_chip_types;		 
 	u8 *dp501_fw_addr;
-	const struct firmware *dp501_fw;	/* dp501 fw */
+	const struct firmware *dp501_fw;	 
 };
 
 static inline struct ast_device *to_ast_device(struct drm_device *dev)
@@ -287,7 +254,7 @@ static inline bool __ast_gen_is_eq(struct ast_device *ast, unsigned long gen)
 #define AST_IO_VGAIR1_VREFRESH		BIT(3)
 
 #define AST_IO_VGACRCB_HWC_ENABLED     BIT(1)
-#define AST_IO_VGACRCB_HWC_16BPP       BIT(0) /* set: ARGB4444, cleared: 2bpp palette */
+#define AST_IO_VGACRCB_HWC_16BPP       BIT(0)  
 
 static inline u32 ast_read32(struct ast_device *ast, u32 reg)
 {
@@ -386,7 +353,7 @@ struct ast_vbios_mode_info {
 struct ast_crtc_state {
 	struct drm_crtc_state base;
 
-	/* Last known format of primary plane */
+	 
 	const struct drm_format_info *format;
 
 	struct ast_vbios_mode_info vbios_mode_info;
@@ -410,9 +377,7 @@ int ast_mode_config_init(struct ast_device *ast);
 #define AST_DP501_LINKRATE	0xf014
 #define AST_DP501_EDID_DATA	0xf020
 
-/*
- * Display Transmitter Type:
- */
+ 
 #define TX_TYPE_MASK				GENMASK(3, 1)
 #define NO_TX						(0 << 1)
 #define ITE66121_VBIOS_TX			(1 << 1)
@@ -424,64 +389,40 @@ int ast_mode_config_init(struct ast_device *ast);
 #define ASTDP_DPMCU_TX				(7 << 1)
 
 #define AST_VRAM_INIT_STATUS_MASK	GENMASK(7, 6)
-//#define AST_VRAM_INIT_BY_BMC		BIT(7)
-//#define AST_VRAM_INIT_READY		BIT(6)
 
-/* Define for Soc scratched reg used on ASTDP */
+
+
+ 
 #define AST_DP_PHY_SLEEP			BIT(4)
 #define AST_DP_VIDEO_ENABLE		BIT(0)
 
 #define AST_DP_POWER_ON			true
 #define AST_DP_POWER_OFF			false
 
-/*
- * CRD1[b5]: DP MCU FW is executing
- * CRDC[b0]: DP link success
- * CRDF[b0]: DP HPD
- * CRE5[b0]: Host reading EDID process is done
- */
+ 
 #define ASTDP_MCU_FW_EXECUTING			BIT(5)
 #define ASTDP_LINK_SUCCESS				BIT(0)
 #define ASTDP_HPD						BIT(0)
 #define ASTDP_HOST_EDID_READ_DONE		BIT(0)
 #define ASTDP_HOST_EDID_READ_DONE_MASK	GENMASK(0, 0)
 
-/*
- * CRB8[b1]: Enable VSYNC off
- * CRB8[b0]: Enable HSYNC off
- */
+ 
 #define AST_DPMS_VSYNC_OFF				BIT(1)
 #define AST_DPMS_HSYNC_OFF				BIT(0)
 
-/*
- * CRDF[b4]: Mirror of AST_DP_VIDEO_ENABLE
- * Precondition:	A. ~AST_DP_PHY_SLEEP  &&
- *			B. DP_HPD &&
- *			C. DP_LINK_SUCCESS
- */
+ 
 #define ASTDP_MIRROR_VIDEO_ENABLE		BIT(4)
 
 #define ASTDP_EDID_READ_POINTER_MASK	GENMASK(7, 0)
 #define ASTDP_EDID_VALID_FLAG_MASK		GENMASK(0, 0)
 #define ASTDP_EDID_READ_DATA_MASK		GENMASK(7, 0)
 
-/*
- * ASTDP setmode registers:
- * CRE0[7:0]: MISC0 ((0x00: 18-bpp) or (0x20: 24-bpp)
- * CRE1[7:0]: MISC1 (default: 0x00)
- * CRE2[7:0]: video format index (0x00 ~ 0x20 or 0x40 ~ 0x50)
- */
+ 
 #define ASTDP_MISC0_24bpp			BIT(5)
 #define ASTDP_MISC1				0
 #define ASTDP_AND_CLEAR_MASK		0x00
 
-/*
- * ASTDP resoultion table:
- * EX:	ASTDP_A_B_C:
- *		A: Resolution
- *		B: Refresh Rate
- *		C: Misc information, such as CVT, Reduce Blanked
- */
+ 
 #define ASTDP_640x480_60		0x00
 #define ASTDP_640x480_72		0x01
 #define ASTDP_640x480_75		0x02
@@ -517,12 +458,12 @@ int ast_mode_config_init(struct ast_device *ast);
 
 int ast_mm_init(struct ast_device *ast);
 
-/* ast post */
+ 
 void ast_post_gpu(struct drm_device *dev);
 u32 ast_mindwm(struct ast_device *ast, u32 r);
 void ast_moutdwm(struct ast_device *ast, u32 r, u32 v);
 void ast_patch_ahb_2500(struct ast_device *ast);
-/* ast dp501 */
+ 
 void ast_set_dp501_video_output(struct drm_device *dev, u8 mode);
 bool ast_backup_fw(struct drm_device *dev, u8 *addr, u32 size);
 bool ast_dp501_is_connected(struct ast_device *ast);
@@ -530,10 +471,10 @@ bool ast_dp501_read_edid(struct drm_device *dev, u8 *ediddata);
 u8 ast_get_dp501_max_clk(struct drm_device *dev);
 void ast_init_3rdtx(struct drm_device *dev);
 
-/* ast_i2c.c */
+ 
 struct ast_i2c_chan *ast_i2c_create(struct drm_device *dev);
 
-/* aspeed DP */
+ 
 bool ast_astdp_is_connected(struct ast_device *ast);
 int ast_astdp_read_edid(struct drm_device *dev, u8 *ediddata);
 void ast_dp_launch(struct drm_device *dev);

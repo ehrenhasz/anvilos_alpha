@@ -1,29 +1,9 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "rsi_debugfs.h"
 #include "rsi_sdio.h"
 
-/**
- * rsi_sdio_stats_read() - This function returns the sdio status of the driver.
- * @seq: Pointer to the sequence file structure.
- * @data: Pointer to the data.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_sdio_stats_read(struct seq_file *seq, void *data)
 {
 	struct rsi_common *common = seq->private;
@@ -40,7 +20,7 @@ static int rsi_sdio_stats_read(struct seq_file *seq, void *data)
 		   dev->rx_info.buf_semi_full_counter);
 	seq_printf(seq, "sdio_unknown_intr_count: %d\n",
 		   dev->rx_info.total_sdio_unknown_intr);
-	/* RX Path Stats */
+	 
 	seq_printf(seq, "BUFFER FULL STATUS  : %d\n",
 		   dev->rx_info.buffer_full);
 	seq_printf(seq, "SEMI BUFFER FULL STATUS  : %d\n",
@@ -57,27 +37,14 @@ static int rsi_sdio_stats_read(struct seq_file *seq, void *data)
 	return 0;
 }
 
-/**
- * rsi_sdio_stats_open() - This function calls single open function of seq_file
- *			   to open file and read contents from it.
- * @inode: Pointer to the inode structure.
- * @file: Pointer to the file structure.
- *
- * Return: Pointer to the opened file status: 0 on success, ENOMEM on failure.
- */
+ 
 static int rsi_sdio_stats_open(struct inode *inode,
 			       struct file *file)
 {
 	return single_open(file, rsi_sdio_stats_read, inode->i_private);
 }
 
-/**
- * rsi_version_read() - This function gives driver and firmware version number.
- * @seq: Pointer to the sequence file structure.
- * @data: Pointer to the data.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_version_read(struct seq_file *seq, void *data)
 {
 	struct rsi_common *common = seq->private;
@@ -91,27 +58,14 @@ static int rsi_version_read(struct seq_file *seq, void *data)
 	return 0;
 }
 
-/**
- * rsi_version_open() - This function calls single open function of seq_file to
- *			open file and read contents from it.
- * @inode: Pointer to the inode structure.
- * @file: Pointer to the file structure.
- *
- * Return: Pointer to the opened file status: 0 on success, ENOMEM on failure.
- */
+ 
 static int rsi_version_open(struct inode *inode,
 				 struct file *file)
 {
 	return single_open(file, rsi_version_read, inode->i_private);
 }
 
-/**
- * rsi_stats_read() - This function return the status of the driver.
- * @seq: Pointer to the sequence file structure.
- * @data: Pointer to the data.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_stats_read(struct seq_file *seq, void *data)
 {
 	struct rsi_common *common = seq->private;
@@ -138,7 +92,7 @@ static int rsi_stats_read(struct seq_file *seq, void *data)
 
 	seq_printf(seq, "(%d)\n\n", common->fsm_state);
 
-	/* Mgmt TX Path Stats */
+	 
 	seq_printf(seq, "total_mgmt_pkt_send : %d\n",
 		   common->tx_stats.total_tx_pkt_send[MGMT_SOFT_Q]);
 	seq_printf(seq, "total_mgmt_pkt_queued : %d\n",
@@ -146,7 +100,7 @@ static int rsi_stats_read(struct seq_file *seq, void *data)
 	seq_printf(seq, "total_mgmt_pkt_freed  : %d\n",
 		   common->tx_stats.total_tx_pkt_freed[MGMT_SOFT_Q]);
 
-	/* Data TX Path Stats */
+	 
 	seq_printf(seq, "total_data_vo_pkt_send: %8d\t",
 		   common->tx_stats.total_tx_pkt_send[VO_Q]);
 	seq_printf(seq, "total_data_vo_pkt_queued:  %8d\t",
@@ -176,27 +130,14 @@ static int rsi_stats_read(struct seq_file *seq, void *data)
 	return 0;
 }
 
-/**
- * rsi_stats_open() - This function calls single open function of seq_file to
- *		      open file and read contents from it.
- * @inode: Pointer to the inode structure.
- * @file: Pointer to the file structure.
- *
- * Return: Pointer to the opened file status: 0 on success, ENOMEM on failure.
- */
+ 
 static int rsi_stats_open(struct inode *inode,
 			  struct file *file)
 {
 	return single_open(file, rsi_stats_read, inode->i_private);
 }
 
-/**
- * rsi_debug_zone_read() - This function display the currently enabled debug zones.
- * @seq: Pointer to the sequence file structure.
- * @data: Pointer to the data.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_debug_zone_read(struct seq_file *seq, void *data)
 {
 	rsi_dbg(FSM_ZONE, "%x: rsi_enabled zone", rsi_zone_enabled);
@@ -205,30 +146,14 @@ static int rsi_debug_zone_read(struct seq_file *seq, void *data)
 	return 0;
 }
 
-/**
- * rsi_debug_read() - This function calls single open function of seq_file to
- *		      open file and read contents from it.
- * @inode: Pointer to the inode structure.
- * @file: Pointer to the file structure.
- *
- * Return: Pointer to the opened file status: 0 on success, ENOMEM on failure.
- */
+ 
 static int rsi_debug_read(struct inode *inode,
 			  struct file *file)
 {
 	return single_open(file, rsi_debug_zone_read, inode->i_private);
 }
 
-/**
- * rsi_debug_zone_write() - This function writes into hal queues as per user
- *			    requirement.
- * @filp: Pointer to the file structure.
- * @buff: Pointer to the character buffer.
- * @len: Length of the data to be written into buffer.
- * @data: Pointer to the data.
- *
- * Return: len: Number of bytes read.
- */
+ 
 static ssize_t rsi_debug_zone_write(struct file *filp,
 				    const char __user *buff,
 				    size_t len,
@@ -271,12 +196,7 @@ static const struct rsi_dbg_files dev_debugfs_files[] = {
 	{"sdio_stats", 0644, FOPS(rsi_sdio_stats_open),},
 };
 
-/**
- * rsi_init_dbgfs() - This function initializes the dbgfs entry.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 int rsi_init_dbgfs(struct rsi_hw *adapter)
 {
 	struct rsi_common *common = adapter->priv;
@@ -309,13 +229,7 @@ int rsi_init_dbgfs(struct rsi_hw *adapter)
 }
 EXPORT_SYMBOL_GPL(rsi_init_dbgfs);
 
-/**
- * rsi_remove_dbgfs() - Removes the previously created dbgfs file entries
- *			in the reverse order of creation.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: None.
- */
+ 
 void rsi_remove_dbgfs(struct rsi_hw *adapter)
 {
 	struct rsi_debugfs *dev_dbgfs = adapter->dfsentry;

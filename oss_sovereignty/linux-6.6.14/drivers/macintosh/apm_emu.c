@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * APM emulation for PMU-based machines
- *
- * Copyright 2001 Benjamin Herrenschmidt (benh@kernel.crashing.org)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

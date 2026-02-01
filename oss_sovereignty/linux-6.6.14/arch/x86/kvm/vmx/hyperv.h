@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __KVM_X86_VMX_HYPERV_H
 #define __KVM_X86_VMX_HYPERV_H
 
@@ -39,11 +39,7 @@ static __always_inline int evmcs_field_offset(unsigned long field,
 
 	evmcs_field = &vmcs_field_to_evmcs_1[index];
 
-	/*
-	 * Use offset=0 to detect holes in eVMCS. This offset belongs to
-	 * 'revision_id' but this field has no encoding and is supposed to
-	 * be accessed directly.
-	 */
+	 
 	if (unlikely(!evmcs_field->offset))
 		return -ENOENT;
 
@@ -56,12 +52,7 @@ static __always_inline int evmcs_field_offset(unsigned long field,
 static inline u64 evmcs_read_any(struct hv_enlightened_vmcs *evmcs,
 				 unsigned long field, u16 offset)
 {
-	/*
-	 * vmcs12_read_any() doesn't care whether the supplied structure
-	 * is 'struct vmcs12' or 'struct hv_enlightened_vmcs' as it takes
-	 * the exact offset of the required field, use it for convenience
-	 * here.
-	 */
+	 
 	return vmcs12_read_any((void *)evmcs, field, offset);
 }
 
@@ -162,7 +153,7 @@ static inline void evmcs_load(u64 phys_addr)
 }
 
 void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf);
-#else /* !IS_ENABLED(CONFIG_HYPERV) */
+#else  
 static __always_inline bool kvm_is_using_evmcs(void) { return false; }
 static __always_inline void evmcs_write64(unsigned long field, u64 value) {}
 static __always_inline void evmcs_write32(unsigned long field, u32 value) {}
@@ -171,7 +162,7 @@ static __always_inline u64 evmcs_read64(unsigned long field) { return 0; }
 static __always_inline u32 evmcs_read32(unsigned long field) { return 0; }
 static __always_inline u16 evmcs_read16(unsigned long field) { return 0; }
 static inline void evmcs_load(u64 phys_addr) {}
-#endif /* IS_ENABLED(CONFIG_HYPERV) */
+#endif  
 
 #define EVMPTR_INVALID (-1ULL)
 #define EVMPTR_MAP_PENDING (-2ULL)
@@ -197,4 +188,4 @@ int nested_evmcs_check_controls(struct vmcs12 *vmcs12);
 bool nested_evmcs_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu);
 void vmx_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
 
-#endif /* __KVM_X86_VMX_HYPERV_H */
+#endif  

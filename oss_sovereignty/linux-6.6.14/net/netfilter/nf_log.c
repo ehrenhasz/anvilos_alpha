@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -11,8 +11,7 @@
 
 #include "nf_internals.h"
 
-/* Internal logging interface, which relies on the real
-   LOG target modules */
+ 
 
 #define NFLOGGER_NAME_LEN		64
 
@@ -75,7 +74,7 @@ void nf_log_unset(struct net *net, const struct nf_logger *logger)
 }
 EXPORT_SYMBOL(nf_log_unset);
 
-/* return EEXIST if the same logger is registered, 0 on success. */
+ 
 int nf_log_register(u_int8_t pf, struct nf_logger *logger)
 {
 	int i;
@@ -385,7 +384,7 @@ static const struct seq_operations nflog_seq_ops = {
 	.stop	= seq_stop,
 	.show	= seq_show,
 };
-#endif /* PROC_FS */
+#endif  
 
 #ifdef CONFIG_SYSCTL
 static char nf_log_sysctl_fnames[NFPROTO_NUMPROTO-NFPROTO_UNSPEC][3];
@@ -415,9 +414,7 @@ static int nf_log_proc_dostring(struct ctl_table *table, int write,
 	if (write) {
 		struct ctl_table tmp = *table;
 
-		/* proc_dostring() can append to existing strings, so we need to
-		 * initialize it as an empty string.
-		 */
+		 
 		buf[0] = '\0';
 		tmp.data = buf;
 		r = proc_dostring(&tmp, write, buffer, lenp, ppos);
@@ -526,7 +523,7 @@ static int netfilter_log_sysctl_init(struct net *net)
 static void netfilter_log_sysctl_exit(struct net *net)
 {
 }
-#endif /* CONFIG_SYSCTL */
+#endif  
 
 static int __net_init nf_log_net_init(struct net *net)
 {

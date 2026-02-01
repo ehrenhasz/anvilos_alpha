@@ -1,26 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Purpose:	PCI Express Port Bus Driver's Internal Data Structures
- *
- * Copyright (C) 2004 Intel
- * Copyright (C) Tom Long Nguyen (tom.l.nguyen@intel.com)
- */
+ 
+ 
 
 #ifndef _PORTDRV_H_
 #define _PORTDRV_H_
 
 #include <linux/compiler.h>
 
-/* Service Type */
-#define PCIE_PORT_SERVICE_PME_SHIFT	0	/* Power Management Event */
+ 
+#define PCIE_PORT_SERVICE_PME_SHIFT	0	 
 #define PCIE_PORT_SERVICE_PME		(1 << PCIE_PORT_SERVICE_PME_SHIFT)
-#define PCIE_PORT_SERVICE_AER_SHIFT	1	/* Advanced Error Reporting */
+#define PCIE_PORT_SERVICE_AER_SHIFT	1	 
 #define PCIE_PORT_SERVICE_AER		(1 << PCIE_PORT_SERVICE_AER_SHIFT)
-#define PCIE_PORT_SERVICE_HP_SHIFT	2	/* Native Hotplug */
+#define PCIE_PORT_SERVICE_HP_SHIFT	2	 
 #define PCIE_PORT_SERVICE_HP		(1 << PCIE_PORT_SERVICE_HP_SHIFT)
-#define PCIE_PORT_SERVICE_DPC_SHIFT	3	/* Downstream Port Containment */
+#define PCIE_PORT_SERVICE_DPC_SHIFT	3	 
 #define PCIE_PORT_SERVICE_DPC		(1 << PCIE_PORT_SERVICE_DPC_SHIFT)
-#define PCIE_PORT_SERVICE_BWNOTIF_SHIFT	4	/* Bandwidth notification */
+#define PCIE_PORT_SERVICE_BWNOTIF_SHIFT	4	 
 #define PCIE_PORT_SERVICE_BWNOTIF	(1 << PCIE_PORT_SERVICE_BWNOTIF_SHIFT)
 
 #define PCIE_PORT_DEVICE_MAXSERVICES   5
@@ -51,15 +46,15 @@ int pcie_dpc_init(void);
 static inline int pcie_dpc_init(void) { return 0; }
 #endif
 
-/* Port Type */
+ 
 #define PCIE_ANY_PORT			(~0)
 
 struct pcie_device {
-	int		irq;	    /* Service IRQ/MSI/MSI-X Vector */
-	struct pci_dev *port;	    /* Root/Upstream/Downstream Port */
-	u32		service;    /* Port service this device represents */
-	void		*priv_data; /* Service Private Data */
-	struct device	device;     /* Generic Device Interface */
+	int		irq;	     
+	struct pci_dev *port;	     
+	u32		service;     
+	void		*priv_data;  
+	struct device	device;      
 };
 #define to_pcie_device(d) container_of(d, struct pcie_device, device)
 
@@ -85,8 +80,8 @@ struct pcie_port_service_driver {
 
 	int (*slot_reset)(struct pcie_device *dev);
 
-	int port_type;  /* Type of the port this driver can handle */
-	u32 service;    /* Port service this device represents */
+	int port_type;   
+	u32 service;     
 
 	struct device_driver driver;
 };
@@ -114,11 +109,11 @@ static inline bool pcie_pme_no_msi(void)
 }
 
 void pcie_pme_interrupt_enable(struct pci_dev *dev, bool enable);
-#else /* !CONFIG_PCIE_PME */
+#else  
 static inline void pcie_pme_disable_msi(void) {}
 static inline bool pcie_pme_no_msi(void) { return false; }
 static inline void pcie_pme_interrupt_enable(struct pci_dev *dev, bool en) {}
-#endif /* !CONFIG_PCIE_PME */
+#endif  
 
 struct device *pcie_port_find_device(struct pci_dev *dev, u32 service);
-#endif /* _PORTDRV_H_ */
+#endif  

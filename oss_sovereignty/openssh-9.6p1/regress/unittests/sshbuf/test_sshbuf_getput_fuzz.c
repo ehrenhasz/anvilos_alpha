@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_sshbuf_getput_fuzz.c,v 1.5 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for sshbuf.h buffer API
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -37,8 +33,8 @@ attempt_parse_blob(u_char *blob, size_t len)
 	BIGNUM *bn;
 #if defined(OPENSSL_HAS_ECC) && defined(OPENSSL_HAS_NISTP256)
 	EC_KEY *eck;
-#endif /* defined(OPENSSL_HAS_ECC) && defined(OPENSSL_HAS_NISTP256) */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	u_char *s;
 	size_t l;
 	u_int8_t u8;
@@ -66,8 +62,8 @@ attempt_parse_blob(u_char *blob, size_t len)
 	ASSERT_PTR_NE(eck, NULL);
 	sshbuf_get_eckey(p1, eck);
 	EC_KEY_free(eck);
-#endif /* defined(OPENSSL_HAS_ECC) && defined(OPENSSL_HAS_NISTP256) */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	sshbuf_free(p1);
 }
 
@@ -83,24 +79,24 @@ void
 sshbuf_getput_fuzz_tests(void)
 {
 	u_char blob[] = {
-		/* u8 */
+		 
 		0xd0,
-		/* u16 */
+		 
 		0xc0, 0xde,
-		/* u32 */
+		 
 		0xfa, 0xce, 0xde, 0xad,
-		/* u64 */
+		 
 		0xfe, 0xed, 0xac, 0x1d, 0x1f, 0x1c, 0xbe, 0xef,
-		/* string */
+		 
 		0x00, 0x00, 0x00, 0x09,
 		'O', ' ', 'G', 'o', 'r', 'g', 'o', 'n', '!',
-		/* bignum2 */
+		 
 		0x00, 0x00, 0x00, 0x14,
 		0x00,
 		0xf0, 0xe0, 0xd0, 0xc0, 0xb0, 0xa0, 0x90, 0x80,
 		0x70, 0x60, 0x50, 0x40, 0x30, 0x20, 0x10, 0x00,
 		0x7f, 0xff, 0x11,
-		/* EC point (NIST-256 curve) */
+		 
 		0x00, 0x00, 0x00, 0x41,
 		0x04,
 		0x0c, 0x82, 0x80, 0x04, 0x83, 0x9d, 0x01, 0x06,

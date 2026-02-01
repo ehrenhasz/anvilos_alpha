@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Filesystem parameter description and parser
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 
 #ifndef _LINUX_FS_PARSER_H
 #define _LINUX_FS_PARSER_H
@@ -23,40 +19,31 @@ typedef int fs_param_type(struct p_log *,
 			  const struct fs_parameter_spec *,
 			  struct fs_parameter *,
 			  struct fs_parse_result *);
-/*
- * The type of parameter expected.
- */
+ 
 fs_param_type fs_param_is_bool, fs_param_is_u32, fs_param_is_s32, fs_param_is_u64,
 	fs_param_is_enum, fs_param_is_string, fs_param_is_blob, fs_param_is_blockdev,
 	fs_param_is_path, fs_param_is_fd;
 
-/*
- * Specification of the type of value a parameter wants.
- *
- * Note that the fsparam_flag(), fsparam_string(), fsparam_u32(), ... macros
- * should be used to generate elements of this type.
- */
+ 
 struct fs_parameter_spec {
 	const char		*name;
-	fs_param_type		*type;	/* The desired parameter type */
-	u8			opt;	/* Option number (returned by fs_parse()) */
+	fs_param_type		*type;	 
+	u8			opt;	 
 	unsigned short		flags;
-#define fs_param_neg_with_no	0x0002	/* "noxxx" is negative param */
-#define fs_param_can_be_empty	0x0004	/* "xxx=" is allowed */
-#define fs_param_deprecated	0x0008	/* The param is deprecated */
+#define fs_param_neg_with_no	0x0002	 
+#define fs_param_can_be_empty	0x0004	 
+#define fs_param_deprecated	0x0008	 
 	const void		*data;
 };
 
-/*
- * Result of parse.
- */
+ 
 struct fs_parse_result {
-	bool			negated;	/* T if param was "noxxx" */
+	bool			negated;	 
 	union {
-		bool		boolean;	/* For spec_bool */
-		int		int_32;		/* For spec_s32/spec_enum */
-		unsigned int	uint_32;	/* For spec_u32{,_octal,_hex}/spec_enum */
-		u64		uint_64;	/* For spec_u64 */
+		bool		boolean;	 
+		int		int_32;		 
+		unsigned int	uint_32;	 
+		u64		uint_64;	 
 	};
 };
 
@@ -95,15 +82,7 @@ static inline bool fs_validate_description(const char *name,
 { return true; }
 #endif
 
-/*
- * Parameter type, name, index and flags element constructors.  Use as:
- *
- *  fsparam_xxxx("foo", Opt_foo)
- *
- * If existing helpers are not enough, direct use of __fsparam() would
- * work, but any such case is probably a sign that new helper is needed.
- * Helpers will remain stable; low-level implementation may change.
- */
+ 
 #define __fsparam(TYPE, NAME, OPT, FLAGS, DATA) \
 	{ \
 		.name = NAME, \
@@ -132,4 +111,4 @@ static inline bool fs_validate_description(const char *name,
 #define fsparam_path(NAME, OPT)	__fsparam(fs_param_is_path, NAME, OPT, 0, NULL)
 #define fsparam_fd(NAME, OPT)	__fsparam(fs_param_is_fd, NAME, OPT, 0, NULL)
 
-#endif /* _LINUX_FS_PARSER_H */
+#endif  

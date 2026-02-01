@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+ 
+ 
 
 #ifndef __MT76_MAC_H
 #define __MT76_MAC_H
@@ -19,10 +16,7 @@ struct mt76_tx_status {
 	u16 rate;
 } __packed __aligned(2);
 
-/* Note: values in original "RSSI" and "SNR" fields are not actually what they
- *	 are called for MT7601U, names used by this driver are educated guesses
- *	 (see vendor mac/ral_omac.c).
- */
+ 
 struct mt7601u_rxwi {
 	__le32 rxinfo;
 

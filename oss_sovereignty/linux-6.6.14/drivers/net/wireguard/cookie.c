@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "cookie.h"
 #include "peer.h"
@@ -41,7 +39,7 @@ static void precompute_key(u8 key[NOISE_SYMMETRIC_KEY_LEN],
 	blake2s_final(&blake, key);
 }
 
-/* Must hold peer->handshake.static_identity->lock */
+ 
 void wg_cookie_checker_precompute_device_keys(struct cookie_checker *checker)
 {
 	if (likely(checker->device->static_identity.has_identity)) {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Texas Instruments
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -62,10 +59,7 @@ static int tfp410_get_modes(struct drm_connector *connector)
 	}
 
 	if (!edid) {
-		/*
-		 * No EDID, fallback on the XGA standard modes and prefer a mode
-		 * pretty much anything can handle.
-		 */
+		 
 		ret = drm_add_modes_noedid(connector, 1920, 1200);
 		drm_set_preferred_mode(connector, 1024, 768);
 		return ret;
@@ -235,10 +229,7 @@ static int tfp410_atomic_check(struct drm_bridge *bridge,
 {
 	struct tfp410 *dvi = drm_bridge_to_tfp410(bridge);
 
-	/*
-	 * There might be flags negotiation supported in future.
-	 * Set the bus flags in atomic_check statically for now.
-	 */
+	 
 	bridge_state->input_bus_cfg.flags = dvi->timings.input_bus_flags;
 
 	return 0;
@@ -272,27 +263,19 @@ static int tfp410_parse_timings(struct tfp410 *dvi, bool i2c)
 	u32 bus_width = 24;
 	u32 deskew = 0;
 
-	/* Start with defaults. */
+	 
 	*timings = tfp410_default_timings;
 
 	if (i2c)
-		/*
-		 * In I2C mode timings are configured through the I2C interface.
-		 * As the driver doesn't support I2C configuration yet, we just
-		 * go with the defaults (BSEL=1, DSEL=1, DKEN=0, EDGE=1).
-		 */
+		 
 		return 0;
 
-	/*
-	 * In non-I2C mode, timings are configured through the BSEL, DSEL, DKEN
-	 * and EDGE pins. They are specified in DT through endpoint properties
-	 * and vendor-specific properties.
-	 */
+	 
 	ep = of_graph_get_endpoint_by_regs(dvi->dev->of_node, 0, 0);
 	if (!ep)
 		return -EINVAL;
 
-	/* Get the sampling edge from the endpoint. */
+	 
 	of_property_read_u32(ep, "pclk-sample", &pclk_sample);
 	of_property_read_u32(ep, "bus-width", &bus_width);
 	of_node_put(ep);
@@ -323,7 +306,7 @@ static int tfp410_parse_timings(struct tfp410 *dvi, bool i2c)
 		return -EINVAL;
 	}
 
-	/* Get the setup and hold time from vendor-specific properties. */
+	 
 	of_property_read_u32(dvi->dev->of_node, "ti,deskew", &deskew);
 	if (deskew > 7)
 		return -EINVAL;
@@ -361,7 +344,7 @@ static int tfp410_init(struct device *dev, bool i2c)
 	if (ret)
 		return ret;
 
-	/* Get the next bridge, connected to port@1. */
+	 
 	node = of_graph_get_remote_node(dev->of_node, 1, -1);
 	if (!node)
 		return -ENODEV;
@@ -372,7 +355,7 @@ static int tfp410_init(struct device *dev, bool i2c)
 	if (!dvi->next_bridge)
 		return -EPROBE_DEFER;
 
-	/* Get the powerdown GPIO. */
+	 
 	dvi->powerdown = devm_gpiod_get_optional(dev, "powerdown",
 						 GPIOD_OUT_HIGH);
 	if (IS_ERR(dvi->powerdown)) {
@@ -380,7 +363,7 @@ static int tfp410_init(struct device *dev, bool i2c)
 		return PTR_ERR(dvi->powerdown);
 	}
 
-	/*  Register the DRM bridge. */
+	 
 	drm_bridge_add(&dvi->bridge);
 
 	return 0;
@@ -419,7 +402,7 @@ static struct platform_driver tfp410_platform_driver = {
 };
 
 #if IS_ENABLED(CONFIG_I2C)
-/* There is currently no i2c functionality. */
+ 
 static int tfp410_i2c_probe(struct i2c_client *client)
 {
 	int reg;
@@ -454,7 +437,7 @@ static struct i2c_driver tfp410_i2c_driver = {
 	.probe		= tfp410_i2c_probe,
 	.remove		= tfp410_i2c_remove,
 };
-#endif /* IS_ENABLED(CONFIG_I2C) */
+#endif  
 
 static struct {
 	uint i2c:1;

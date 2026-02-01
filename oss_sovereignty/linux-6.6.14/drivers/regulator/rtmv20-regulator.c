@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -74,10 +74,10 @@ static int rtmv20_lsw_enable(struct regulator_dev *rdev)
 
 	gpiod_set_value(priv->enable_gpio, 1);
 
-	/* Wait for I2C can be accessed */
+	 
 	usleep_range(RTMV20_I2CRDY_TIMEUS, RTMV20_I2CRDY_TIMEUS + 100);
 
-	/* HW re-enable, disable cache only and sync regcache here */
+	 
 	regcache_cache_only(priv->regmap, false);
 	ret = regcache_sync(priv->regmap);
 	if (ret)
@@ -95,7 +95,7 @@ static int rtmv20_lsw_disable(struct regulator_dev *rdev)
 	if (ret)
 		return ret;
 
-	/* Mark the regcache as dirty and cache only before HW disabled */
+	 
 	regcache_cache_only(priv->regmap, true);
 	regcache_mark_dirty(priv->regmap);
 
@@ -117,7 +117,7 @@ static int rtmv20_lsw_set_current_limit(struct regulator_dev *rdev, int min_uA,
 
 	sel = (max_uA - RTMV20_LSW_MINUA) / RTMV20_LSW_STEPUA;
 
-	/* Ensure the selected setting is still in range */
+	 
 	if ((sel * RTMV20_LSW_STEPUA + RTMV20_LSW_MINUA) < min_uA)
 		return -EINVAL;
 
@@ -250,7 +250,7 @@ static int rtmv20_properties_init(struct rtmv20_priv *priv)
 
 		temp = clamp_to_selector(temp, props[i].min, props[i].max, props[i].step);
 
-		/* If significant bit is over 8, two byte access, others one */
+		 
 		if (significant_bit > 8) {
 			ret = regmap_raw_read(priv->regmap, props[i].addr, &bval16, sizeof(bval16));
 			if (ret)
@@ -333,14 +333,14 @@ static int rtmv20_probe(struct i2c_client *i2c)
 
 	priv->dev = &i2c->dev;
 
-	/* Before regmap register, configure HW enable to make I2C accessible */
+	 
 	priv->enable_gpio = devm_gpiod_get(&i2c->dev, "enable", GPIOD_OUT_HIGH);
 	if (IS_ERR(priv->enable_gpio)) {
 		dev_err(&i2c->dev, "Failed to get enable gpio\n");
 		return PTR_ERR(priv->enable_gpio);
 	}
 
-	/* Wait for I2C can be accessed */
+	 
 	usleep_range(RTMV20_I2CRDY_TIMEUS, RTMV20_I2CRDY_TIMEUS + 100);
 
 	priv->regmap = devm_regmap_init_i2c(i2c, &rtmv20_regmap_config);
@@ -361,10 +361,7 @@ static int rtmv20_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/*
-	 * keep in shutdown mode to minimize the current consumption
-	 * and also mark regcache as dirty
-	 */
+	 
 	regcache_cache_only(priv->regmap, true);
 	regcache_mark_dirty(priv->regmap);
 	gpiod_set_value(priv->enable_gpio, 0);
@@ -378,7 +375,7 @@ static int rtmv20_probe(struct i2c_client *i2c)
 		return PTR_ERR(priv->rdev);
 	}
 
-	/* Unmask all events before IRQ registered */
+	 
 	ret = regmap_write(priv->regmap, RTMV20_REG_LDMASK, 0);
 	if (ret)
 		return ret;
@@ -391,10 +388,7 @@ static int __maybe_unused rtmv20_suspend(struct device *dev)
 {
 	struct i2c_client *i2c = to_i2c_client(dev);
 
-	/*
-	 * When system suspend, disable irq to prevent interrupt trigger
-	 * during I2C bus suspend
-	 */
+	 
 	disable_irq(i2c->irq);
 	if (device_may_wakeup(dev))
 		enable_irq_wake(i2c->irq);
@@ -406,7 +400,7 @@ static int __maybe_unused rtmv20_resume(struct device *dev)
 {
 	struct i2c_client *i2c = to_i2c_client(dev);
 
-	/* Enable irq after I2C bus already resume */
+	 
 	enable_irq(i2c->irq);
 	if (device_may_wakeup(dev))
 		disable_irq_wake(i2c->irq);

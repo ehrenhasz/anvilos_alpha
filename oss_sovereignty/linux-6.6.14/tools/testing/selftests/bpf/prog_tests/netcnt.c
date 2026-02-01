@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <sys/sysinfo.h>
 #include <test_progs.h>
@@ -54,9 +54,7 @@ void serial_test_netcnt(void)
 		       "bpf_map_lookup_elem(percpu_netcnt)"))
 		goto err;
 
-	/* Some packets can be still in per-cpu cache, but not more than
-	 * MAX_PERCPU_PACKETS.
-	 */
+	 
 	packets = netcnt.packets;
 	bytes = netcnt.bytes;
 	for (cpu = 0; cpu < nproc; cpu++) {
@@ -66,12 +64,10 @@ void serial_test_netcnt(void)
 		bytes += percpu_netcnt[cpu].bytes;
 	}
 
-	/* No packets should be lost */
+	 
 	ASSERT_GE(packets, 10000, "packets");
 
-	/* Let's check that bytes counter matches the number of packets
-	 * multiplied by the size of ipv6 ICMP packet.
-	 */
+	 
 	ASSERT_GE(bytes, packets * 104, "bytes");
 
 err:

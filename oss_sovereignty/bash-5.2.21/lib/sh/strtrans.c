@@ -1,22 +1,6 @@
-/* strtrans.c - Translate and untranslate strings with ANSI-C escape sequences. */
+ 
 
-/* Copyright (C) 2000-2015 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -36,17 +20,9 @@
 #ifdef ESC
 #undef ESC
 #endif
-#define ESC '\033'	/* ASCII */
+#define ESC '\033'	 
 
-/* Convert STRING by expanding the escape sequences specified by the
-   ANSI C standard.  If SAWC is non-null, recognize `\c' and use that
-   as a string terminator.  If we see \c, set *SAWC to 1 before
-   returning.  LEN is the length of STRING.  If (FLAGS&1) is non-zero,
-   that we're translating a string for `echo -e', and therefore should not
-   treat a single quote as a character that may be escaped with a backslash.
-   If (FLAGS&2) is non-zero, we're expanding for the parser and want to
-   quote CTLESC and CTLNUL with CTLESC.  If (flags&4) is non-zero, we want
-   to remove the backslash before any unrecognized escape sequence. */
+ 
 char *
 ansicstr (string, len, flags, sawc, rlen)
      char *string;
@@ -68,10 +44,10 @@ ansicstr (string, len, flags, sawc, rlen)
 #if defined (HANDLE_MULTIBYTE)
   temp = 4*len + 4;
   if (temp < 12)
-    temp = 12;				/* ensure enough for eventual u32cesc */
+    temp = 12;				 
   ret = (char *)xmalloc (temp);
 #else
-  ret = (char *)xmalloc (2*len + 1);	/* 2*len for possible CTLESC */
+  ret = (char *)xmalloc (2*len + 1);	 
 #endif
   for (r = ret, s = string; s && *s; )
     {
@@ -104,7 +80,7 @@ ansicstr (string, len, flags, sawc, rlen)
 	    case 'v': c = (int) 0x0B; break;
 #endif
 	    case 'b': c = '\b'; break;
-	    case 'e': case 'E':		/* ESC -- non-ANSI */
+	    case 'e': case 'E':		 
 	      c = ESC; break;
 	    case 'f': c = '\f'; break;
 	    case 'n': c = '\n'; break;
@@ -119,30 +95,25 @@ ansicstr (string, len, flags, sawc, rlen)
 		  *r++ = '\\';
 		  break;
 		}
-	    /*FALLTHROUGH*/
+	     
 #endif
 	    case '0':
-	      /* If (FLAGS & 1), we're translating a string for echo -e (or
-		 the equivalent xpg_echo option), so we obey the SUSv3/
-		 POSIX-2001 requirement and accept 0-3 octal digits after
-		 a leading `0'. */
+	       
 	      temp = 2 + ((flags & 1) && (c == '0'));
 	      for (c -= '0'; ISOCTAL (*s) && temp--; s++)
 		c = (c * 8) + OCTVALUE (*s);
 	      c &= 0xFF;
 	      break;
-	    case 'x':			/* Hex digit -- non-ANSI */
+	    case 'x':			 
 	      if ((flags & 2) && *s == '{')
 		{
-		  flags |= 16;		/* internal flag value */
+		  flags |= 16;		 
 		  s++;
 		}
-	      /* Consume at least two hex characters */
+	       
 	      for (temp = 2, c = 0; ISXDIGIT ((unsigned char)*s) && temp--; s++)
 		c = (c * 16) + HEXVALUE (*s);
-	      /* DGK says that after a `\x{' ksh93 consumes ISXDIGIT chars
-		 until a non-xdigit or `}', so potentially more than two
-		 chars are consumed. */
+	       
 	      if (flags & 16)
 		{
 		  for ( ; ISXDIGIT ((unsigned char)*s); s++)
@@ -151,7 +122,7 @@ ansicstr (string, len, flags, sawc, rlen)
 		  if (*s == '}')
 		    s++;
 	        }
-	      /* \x followed by non-hex digits is passed through unchanged */
+	       
 	      else if (temp == 2)
 		{
 		  *r++ = '\\';
@@ -162,15 +133,15 @@ ansicstr (string, len, flags, sawc, rlen)
 #if defined (HANDLE_MULTIBYTE)
 	    case 'u':
 	    case 'U':
-	      temp = (c == 'u') ? 4 : 8;	/* \uNNNN \UNNNNNNNN */
+	      temp = (c == 'u') ? 4 : 8;	 
 	      for (v = 0; ISXDIGIT ((unsigned char)*s) && temp--; s++)
 		v = (v * 16) + HEXVALUE (*s);
 	      if (temp == ((c == 'u') ? 4 : 8))
 		{
-		  *r++ = '\\';	/* c remains unchanged */
+		  *r++ = '\\';	 
 		  break;
 		}
-	      else if (v <= 0x7f)	/* <= 0x7f translates directly */
+	      else if (v <= 0x7f)	 
 		{
 		  c = v;
 		  break;
@@ -198,16 +169,16 @@ ansicstr (string, len, flags, sawc, rlen)
 		  return ret;
 		}
 	      else if ((flags & 1) == 0 && *s == 0)
-		;		/* pass \c through */
+		;		 
 	      else if ((flags & 1) == 0 && (c = *s))
 		{
 		  s++;
 		  if ((flags & 2) && c == '\\' && c == *s)
-		    s++;	/* Posix requires $'\c\\' do backslash escaping */
+		    s++;	 
 		  c = TOCTRL(c);
 		  break;
 		}
-		/*FALLTHROUGH*/
+		 
 	    default:
 		if ((flags & 4) == 0)
 		  *r++ = '\\';
@@ -224,8 +195,7 @@ ansicstr (string, len, flags, sawc, rlen)
   return ret;
 }
 
-/* Take a string STR, possibly containing non-printing characters, and turn it
-   into a $'...' ANSI-C style quoted string.  Returns a new string. */
+ 
 char *
 ansic_quote (str, flags, rlen)
      char *str;
@@ -252,7 +222,7 @@ ansic_quote (str, flags, rlen)
 
   for (s = str; c = *s; s++)
     {
-      b = l = 1;		/* 1 == add backslash; 0 == no backslash */
+      b = l = 1;		 
       clen = 1;
 
       switch (c)
@@ -277,7 +247,7 @@ ansic_quote (str, flags, rlen)
 	default:
 #if defined (HANDLE_MULTIBYTE)
 	  b = is_basic (c);
-	  /* XXX - clen comparison to 0 is dicey */
+	   
 	  if ((b == 0 && ((clen = mbrtowc (&wc, s, MB_CUR_MAX, 0)) < 0 || MB_INVALIDCH (clen) || iswprint (wc) == 0)) ||
 	      (b == 1 && ISPRINT (c) == 0))
 #else
@@ -305,7 +275,7 @@ ansic_quote (str, flags, rlen)
 	{
 	  for (b = 0; b < (int)clen; b++)
 	    *r++ = (unsigned char)s[b];
-	  s += clen - 1;	/* -1 because of the increment above */
+	  s += clen - 1;	 
 	}
     }
 
@@ -346,7 +316,7 @@ ansic_wshouldquote (string)
 }
 #endif
 
-/* return 1 if we need to quote with $'...' because of non-printing chars. */
+ 
 int
 ansic_shouldquote (string)
      const char *string;
@@ -370,8 +340,7 @@ ansic_shouldquote (string)
   return 0;
 }
 
-/* $'...' ANSI-C expand the portion of STRING between START and END and
-   return the result.  The result cannot be longer than the input string. */
+ 
 char *
 ansiexpand (string, start, end, lenp)
      char *string;

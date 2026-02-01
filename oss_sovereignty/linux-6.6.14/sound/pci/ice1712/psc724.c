@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   ALSA driver for ICEnsemble VT1724 (Envy24HT)
- *
- *   Lowlevel functions for Philips PSC724 Ultimate Edge
- *
- *	Copyright (c) 2012 Ondrej Zary <linux@rainbow-software.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -27,66 +21,12 @@ struct psc724_spec {
 	bool hp_connected;
 };
 
-/****************************************************************************/
-/*  PHILIPS PSC724 ULTIMATE EDGE                                            */
-/****************************************************************************/
-/*
- *  VT1722 (Envy24GT) - 6 outputs, 4 inputs (only 2 used), 24-bit/96kHz
- *
- *  system configuration ICE_EEP2_SYSCONF=0x42
- *    XIN1 49.152MHz
- *    no MPU401
- *    one stereo ADC, no S/PDIF receiver
- *    three stereo DACs (FRONT, REAR, CENTER+LFE)
- *
- *  AC-Link configuration ICE_EEP2_ACLINK=0x80
- *    use I2S, not AC97
- *
- *  I2S converters feature ICE_EEP2_I2S=0x30
- *    I2S codec has no volume/mute control feature (bug!)
- *    I2S codec does not support 96KHz or 192KHz (bug!)
- *    I2S codec 24bits
- *
- *  S/PDIF configuration ICE_EEP2_SPDIF=0xc1
- *    Enable integrated S/PDIF transmitter
- *    internal S/PDIF out implemented
- *    No S/PDIF input
- *    External S/PDIF out implemented
- *
- *
- * ** connected chips **
- *
- *  WM8776
- *     2-channel DAC used for main output and stereo ADC (with 10-channel MUX)
- *     AIN1: LINE IN, AIN2: CD/VIDEO, AIN3: AUX, AIN4: Front MIC, AIN5: Rear MIC
- *     Controlled by I2C using VT1722 I2C interface:
- *          MODE (pin16) -- GND
- *          CE   (pin17) -- GND  I2C mode (address=0x34)
- *          DI   (pin18) -- SDA  (VT1722 pin70)
- *          CL   (pin19) -- SCLK (VT1722 pin71)
- *
- *  WM8766
- *      6-channel DAC used for rear & center/LFE outputs (only 4 channels used)
- *      Controlled by SPI using VT1722 GPIO pins:
- *          MODE   (pin 1) -- GPIO19 (VT1722 pin99)
- *          ML/I2S (pin11) -- GPIO18 (VT1722 pin98)
- *          MC/IWL (pin12) -- GPIO17 (VT1722 pin97)
- *          MD/DM  (pin13) -- GPIO16 (VT1722 pin96)
- *          MUTE   (pin14) -- GPIO20 (VT1722 pin101)
- *
- *  GPIO14 is used as input for headphone jack detection (1 = connected)
- *  GPIO22 is used as MUTE ALL output, grounding all 6 channels
- *
- * ** output pins and device names **
- *
- *   5.1ch name -- output connector color -- device (-D option)
- *
- *      FRONT 2ch                  -- green  -- plughw:0,0
- *      CENTER(Lch) SUBWOOFER(Rch) -- orange -- plughw:0,2,0
- *      REAR 2ch                   -- black  -- plughw:0,2,1
- */
+ 
+ 
+ 
+ 
 
-/* codec access low-level functions */
+ 
 
 #define GPIO_HP_JACK	(1 << 14)
 #define GPIO_MUTE_SUR	(1 << 20)
@@ -119,23 +59,23 @@ static void psc724_wm8766_write(struct snd_wm8766 *wm, u16 addr, u16 data)
 	for (i = 0; i < 16; i++) {
 		udelay(PSC724_SPI_DELAY);
 		bits &= ~PSC724_SPI_CLK;
-		/* MSB first */
+		 
 		st <<= 1;
 		if (st & 0x10000)
 			bits |= PSC724_SPI_DATA;
 		else
 			bits &= ~PSC724_SPI_DATA;
 		snd_ice1712_gpio_write(ice, bits);
-		/* CLOCK high */
+		 
 		udelay(PSC724_SPI_DELAY);
 		bits |= PSC724_SPI_CLK;
 		snd_ice1712_gpio_write(ice, bits);
 	}
-	/* LOAD high */
+	 
 	udelay(PSC724_SPI_DELAY);
 	bits |= PSC724_SPI_LOAD;
 	snd_ice1712_gpio_write(ice, bits);
-	/* LOAD low, DATA and CLOCK high */
+	 
 	udelay(PSC724_SPI_DELAY);
 	bits |= (PSC724_SPI_DATA | PSC724_SPI_CLK);
 	snd_ice1712_gpio_write(ice, bits);
@@ -150,7 +90,7 @@ static void psc724_wm8776_write(struct snd_wm8776 *wm, u8 addr, u8 data)
 	snd_vt1724_write_i2c(spec->ice, 0x34, addr, data);
 }
 
-/* mute all */
+ 
 
 static void psc724_set_master_switch(struct snd_ice1712 *ice, bool on)
 {
@@ -172,7 +112,7 @@ static bool psc724_get_master_switch(struct snd_ice1712 *ice)
 	return !spec->mute_all;
 }
 
-/* jack detection */
+ 
 
 static void psc724_set_jack_state(struct snd_ice1712 *ice, bool hp_connected)
 {
@@ -185,12 +125,12 @@ static void psc724_set_jack_state(struct snd_ice1712 *ice, bool hp_connected)
 		power |= WM8776_PWR_HPPD;
 	snd_wm8776_set_power(&spec->wm8776, power);
 	spec->hp_connected = hp_connected;
-	/* notify about master speaker mute change */
+	 
 	kctl = snd_ctl_find_id_mixer(ice->card,
 				     "Master Speakers Playback Switch");
 	if (kctl)
 		snd_ctl_notify(ice->card, SNDRV_CTL_EVENT_MASK_VALUE, &kctl->id);
-	/* and headphone mute change */
+	 
 	kctl = snd_ctl_find_id_mixer(ice->card,
 				     spec->wm8776.ctl[WM8776_CTL_HP_SW].name);
 	if (kctl)
@@ -234,7 +174,7 @@ static bool psc724_get_jack_detection(struct snd_ice1712 *ice)
 	return spec->jack_detect;
 }
 
-/* mixer controls */
+ 
 
 struct psc724_control {
 	const char *name;
@@ -358,12 +298,12 @@ static int psc724_add_controls(struct snd_ice1712 *ice)
 static void psc724_set_pro_rate(struct snd_ice1712 *ice, unsigned int rate)
 {
 	struct psc724_spec *spec = ice->spec;
-	/* restore codec volume settings after rate change (PMCLK stop) */
+	 
 	snd_wm8776_volume_restore(&spec->wm8776);
 	snd_wm8766_volume_restore(&spec->wm8766);
 }
 
-/* power management */
+ 
 
 #ifdef CONFIG_PM_SLEEP
 static int psc724_resume(struct snd_ice1712 *ice)
@@ -377,7 +317,7 @@ static int psc724_resume(struct snd_ice1712 *ice)
 }
 #endif
 
-/* init */
+ 
 
 static int psc724_init(struct snd_ice1712 *ice)
 {
@@ -416,20 +356,20 @@ static void psc724_exit(struct snd_ice1712 *ice)
 	cancel_delayed_work_sync(&spec->hp_work);
 }
 
-/* PSC724 has buggy EEPROM (no 96&192kHz, all FFh GPIOs), so override it here */
+ 
 static const unsigned char psc724_eeprom[] = {
-	[ICE_EEP2_SYSCONF]	= 0x42,	/* 49.152MHz, 1 ADC, 3 DACs */
-	[ICE_EEP2_ACLINK]	= 0x80,	/* I2S */
-	[ICE_EEP2_I2S]		= 0xf0,	/* I2S volume, 96kHz, 24bit */
-	[ICE_EEP2_SPDIF]	= 0xc1,	/* spdif out-en, out-int, no input */
-	/* GPIO outputs */
-	[ICE_EEP2_GPIO_DIR2]	= 0x5f, /* MUTE_ALL,WM8766 MUTE/MODE/ML/MC/MD */
-	/* GPIO write enable */
-	[ICE_EEP2_GPIO_MASK]	= 0xff, /* read-only */
-	[ICE_EEP2_GPIO_MASK1]	= 0xff, /* read-only */
-	[ICE_EEP2_GPIO_MASK2]	= 0xa0, /* MUTE_ALL,WM8766 MUTE/MODE/ML/MC/MD */
-	/* GPIO initial state */
-	[ICE_EEP2_GPIO_STATE2]	= 0x20,	/* unmuted, all WM8766 pins low */
+	[ICE_EEP2_SYSCONF]	= 0x42,	 
+	[ICE_EEP2_ACLINK]	= 0x80,	 
+	[ICE_EEP2_I2S]		= 0xf0,	 
+	[ICE_EEP2_SPDIF]	= 0xc1,	 
+	 
+	[ICE_EEP2_GPIO_DIR2]	= 0x5f,  
+	 
+	[ICE_EEP2_GPIO_MASK]	= 0xff,  
+	[ICE_EEP2_GPIO_MASK1]	= 0xff,  
+	[ICE_EEP2_GPIO_MASK2]	= 0xa0,  
+	 
+	[ICE_EEP2_GPIO_STATE2]	= 0x20,	 
 };
 
 struct snd_ice1712_card_info snd_vt1724_psc724_cards[] = {
@@ -443,5 +383,5 @@ struct snd_ice1712_card_info snd_vt1724_psc724_cards[] = {
 		.eeprom_size = sizeof(psc724_eeprom),
 		.eeprom_data = psc724_eeprom,
 	},
-	{} /*terminator*/
+	{}  
 };

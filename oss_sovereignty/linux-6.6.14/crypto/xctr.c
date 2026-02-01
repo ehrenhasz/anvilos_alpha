@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * XCTR: XOR Counter mode - Adapted from ctr.c
- *
- * (C) Copyright IBM Corp. 2007 - Joy Latten <latten@us.ibm.com>
- * Copyright 2021 Google LLC
- */
 
-/*
- * XCTR mode is a blockcipher mode of operation used to implement HCTR2. XCTR is
- * closely related to the CTR mode of operation; the main difference is that CTR
- * generates the keystream using E(CTR + IV) whereas XCTR generates the
- * keystream using E(CTR ^ IV). This allows implementations to avoid dealing
- * with multi-limb integers (as is required in CTR mode). XCTR is also specified
- * using little-endian arithmetic which makes it slightly faster on LE machines.
- *
- * See the HCTR2 paper for more details:
- *	Length-preserving encryption with HCTR2
- *      (https://eprint.iacr.org/2021/1441.pdf)
- */
+ 
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/cipher.h>
@@ -28,7 +12,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
-/* For now this implementation is limited to 16-byte blocks for simplicity */
+ 
 #define XCTR_BLOCKSIZE 16
 
 static void crypto_xctr_crypt_final(struct skcipher_walk *walk,
@@ -140,18 +124,15 @@ static int crypto_xctr_create(struct crypto_template *tmpl, struct rtattr **tb)
 
 	alg = skcipher_ialg_simple(inst);
 
-	/* Block size must be 16 bytes. */
+	 
 	err = -EINVAL;
 	if (alg->cra_blocksize != XCTR_BLOCKSIZE)
 		goto out_free_inst;
 
-	/* XCTR mode is a stream cipher. */
+	 
 	inst->alg.base.cra_blocksize = 1;
 
-	/*
-	 * To simplify the implementation, configure the skcipher walk to only
-	 * give a partial block at the very end, never earlier.
-	 */
+	 
 	inst->alg.chunksize = alg->cra_blocksize;
 
 	inst->alg.encrypt = crypto_xctr_crypt;

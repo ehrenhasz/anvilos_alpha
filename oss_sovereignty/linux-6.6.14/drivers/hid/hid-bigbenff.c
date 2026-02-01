@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- *  LED & force feedback support for BigBen Interactive
- *
- *  0x146b:0x0902 "Bigben Interactive Bigben Game Pad"
- *  "Kid-friendly Wired Controller" PS3OFMINIPAD SONY
- *  sold for use with the PS3
- *
- *  Copyright (c) 2018 Hanno Zulla <kontakt@hanno.de>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -19,154 +11,79 @@
 #include "hid-ids.h"
 
 
-/*
- * The original descriptor for 0x146b:0x0902
- *
- *   0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
- *   0x09, 0x05,        // Usage (Game Pad)
- *   0xA1, 0x01,        // Collection (Application)
- *   0x15, 0x00,        //   Logical Minimum (0)
- *   0x25, 0x01,        //   Logical Maximum (1)
- *   0x35, 0x00,        //   Physical Minimum (0)
- *   0x45, 0x01,        //   Physical Maximum (1)
- *   0x75, 0x01,        //   Report Size (1)
- *   0x95, 0x0D,        //   Report Count (13)
- *   0x05, 0x09,        //   Usage Page (Button)
- *   0x19, 0x01,        //   Usage Minimum (0x01)
- *   0x29, 0x0D,        //   Usage Maximum (0x0D)
- *   0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
- *   0x95, 0x03,        //   Report Count (3)
- *   0x81, 0x01,        //   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
- *   0x05, 0x01,        //   Usage Page (Generic Desktop Ctrls)
- *   0x25, 0x07,        //   Logical Maximum (7)
- *   0x46, 0x3B, 0x01,  //   Physical Maximum (315)
- *   0x75, 0x04,        //   Report Size (4)
- *   0x95, 0x01,        //   Report Count (1)
- *   0x65, 0x14,        //   Unit (System: English Rotation, Length: Centimeter)
- *   0x09, 0x39,        //   Usage (Hat switch)
- *   0x81, 0x42,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,Null State)
- *   0x65, 0x00,        //   Unit (None)
- *   0x95, 0x01,        //   Report Count (1)
- *   0x81, 0x01,        //   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
- *   0x26, 0xFF, 0x00,  //   Logical Maximum (255)
- *   0x46, 0xFF, 0x00,  //   Physical Maximum (255)
- *   0x09, 0x30,        //   Usage (X)
- *   0x09, 0x31,        //   Usage (Y)
- *   0x09, 0x32,        //   Usage (Z)
- *   0x09, 0x35,        //   Usage (Rz)
- *   0x75, 0x08,        //   Report Size (8)
- *   0x95, 0x04,        //   Report Count (4)
- *   0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
- *   0x06, 0x00, 0xFF,  //   Usage Page (Vendor Defined 0xFF00)
- *   0x09, 0x20,        //   Usage (0x20)
- *   0x09, 0x21,        //   Usage (0x21)
- *   0x09, 0x22,        //   Usage (0x22)
- *   0x09, 0x23,        //   Usage (0x23)
- *   0x09, 0x24,        //   Usage (0x24)
- *   0x09, 0x25,        //   Usage (0x25)
- *   0x09, 0x26,        //   Usage (0x26)
- *   0x09, 0x27,        //   Usage (0x27)
- *   0x09, 0x28,        //   Usage (0x28)
- *   0x09, 0x29,        //   Usage (0x29)
- *   0x09, 0x2A,        //   Usage (0x2A)
- *   0x09, 0x2B,        //   Usage (0x2B)
- *   0x95, 0x0C,        //   Report Count (12)
- *   0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
- *   0x0A, 0x21, 0x26,  //   Usage (0x2621)
- *   0x95, 0x08,        //   Report Count (8)
- *   0xB1, 0x02,        //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
- *   0x0A, 0x21, 0x26,  //   Usage (0x2621)
- *   0x91, 0x02,        //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
- *   0x26, 0xFF, 0x03,  //   Logical Maximum (1023)
- *   0x46, 0xFF, 0x03,  //   Physical Maximum (1023)
- *   0x09, 0x2C,        //   Usage (0x2C)
- *   0x09, 0x2D,        //   Usage (0x2D)
- *   0x09, 0x2E,        //   Usage (0x2E)
- *   0x09, 0x2F,        //   Usage (0x2F)
- *   0x75, 0x10,        //   Report Size (16)
- *   0x95, 0x04,        //   Report Count (4)
- *   0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
- *   0xC0,              // End Collection
- */
+ 
 
 #define PID0902_RDESC_ORIG_SIZE 137
 
-/*
- * The fixed descriptor for 0x146b:0x0902
- *
- * - map buttons according to gamepad.rst
- * - assign right stick from Z/Rz to Rx/Ry
- * - map previously unused analog trigger data to Z/RZ
- * - simplify feature and output descriptor
- */
+ 
 static __u8 pid0902_rdesc_fixed[] = {
-	0x05, 0x01,        /* Usage Page (Generic Desktop Ctrls) */
-	0x09, 0x05,        /* Usage (Game Pad) */
-	0xA1, 0x01,        /* Collection (Application) */
-	0x15, 0x00,        /*   Logical Minimum (0) */
-	0x25, 0x01,        /*   Logical Maximum (1) */
-	0x35, 0x00,        /*   Physical Minimum (0) */
-	0x45, 0x01,        /*   Physical Maximum (1) */
-	0x75, 0x01,        /*   Report Size (1) */
-	0x95, 0x0D,        /*   Report Count (13) */
-	0x05, 0x09,        /*   Usage Page (Button) */
-	0x09, 0x05,        /*   Usage (BTN_WEST) */
-	0x09, 0x01,        /*   Usage (BTN_SOUTH) */
-	0x09, 0x02,        /*   Usage (BTN_EAST) */
-	0x09, 0x04,        /*   Usage (BTN_NORTH) */
-	0x09, 0x07,        /*   Usage (BTN_TL) */
-	0x09, 0x08,        /*   Usage (BTN_TR) */
-	0x09, 0x09,        /*   Usage (BTN_TL2) */
-	0x09, 0x0A,        /*   Usage (BTN_TR2) */
-	0x09, 0x0B,        /*   Usage (BTN_SELECT) */
-	0x09, 0x0C,        /*   Usage (BTN_START) */
-	0x09, 0x0E,        /*   Usage (BTN_THUMBL) */
-	0x09, 0x0F,        /*   Usage (BTN_THUMBR) */
-	0x09, 0x0D,        /*   Usage (BTN_MODE) */
-	0x81, 0x02,        /*   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x75, 0x01,        /*   Report Size (1) */
-	0x95, 0x03,        /*   Report Count (3) */
-	0x81, 0x01,        /*   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x05, 0x01,        /*   Usage Page (Generic Desktop Ctrls) */
-	0x25, 0x07,        /*   Logical Maximum (7) */
-	0x46, 0x3B, 0x01,  /*   Physical Maximum (315) */
-	0x75, 0x04,        /*   Report Size (4) */
-	0x95, 0x01,        /*   Report Count (1) */
-	0x65, 0x14,        /*   Unit (System: English Rotation, Length: Centimeter) */
-	0x09, 0x39,        /*   Usage (Hat switch) */
-	0x81, 0x42,        /*   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,Null State) */
-	0x65, 0x00,        /*   Unit (None) */
-	0x95, 0x01,        /*   Report Count (1) */
-	0x81, 0x01,        /*   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x26, 0xFF, 0x00,  /*   Logical Maximum (255) */
-	0x46, 0xFF, 0x00,  /*   Physical Maximum (255) */
-	0x09, 0x30,        /*   Usage (X) */
-	0x09, 0x31,        /*   Usage (Y) */
-	0x09, 0x33,        /*   Usage (Rx) */
-	0x09, 0x34,        /*   Usage (Ry) */
-	0x75, 0x08,        /*   Report Size (8) */
-	0x95, 0x04,        /*   Report Count (4) */
-	0x81, 0x02,        /*   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x95, 0x0A,        /*   Report Count (10) */
-	0x81, 0x01,        /*   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x05, 0x01,        /*   Usage Page (Generic Desktop Ctrls) */
-	0x26, 0xFF, 0x00,  /*   Logical Maximum (255) */
-	0x46, 0xFF, 0x00,  /*   Physical Maximum (255) */
-	0x09, 0x32,        /*   Usage (Z) */
-	0x09, 0x35,        /*   Usage (Rz) */
-	0x95, 0x02,        /*   Report Count (2) */
-	0x81, 0x02,        /*   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x95, 0x08,        /*   Report Count (8) */
-	0x81, 0x01,        /*   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x06, 0x00, 0xFF,  /*   Usage Page (Vendor Defined 0xFF00) */
-	0xB1, 0x02,        /*   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile) */
-	0x0A, 0x21, 0x26,  /*   Usage (0x2621) */
-	0x95, 0x08,        /*   Report Count (8) */
-	0x91, 0x02,        /*   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile) */
-	0x0A, 0x21, 0x26,  /*   Usage (0x2621) */
-	0x95, 0x08,        /*   Report Count (8) */
-	0x81, 0x02,        /*   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0xC0,              /* End Collection */
+	0x05, 0x01,         
+	0x09, 0x05,         
+	0xA1, 0x01,         
+	0x15, 0x00,         
+	0x25, 0x01,         
+	0x35, 0x00,         
+	0x45, 0x01,         
+	0x75, 0x01,         
+	0x95, 0x0D,         
+	0x05, 0x09,         
+	0x09, 0x05,         
+	0x09, 0x01,         
+	0x09, 0x02,         
+	0x09, 0x04,         
+	0x09, 0x07,         
+	0x09, 0x08,         
+	0x09, 0x09,         
+	0x09, 0x0A,         
+	0x09, 0x0B,         
+	0x09, 0x0C,         
+	0x09, 0x0E,         
+	0x09, 0x0F,         
+	0x09, 0x0D,         
+	0x81, 0x02,         
+	0x75, 0x01,         
+	0x95, 0x03,         
+	0x81, 0x01,         
+	0x05, 0x01,         
+	0x25, 0x07,         
+	0x46, 0x3B, 0x01,   
+	0x75, 0x04,         
+	0x95, 0x01,         
+	0x65, 0x14,         
+	0x09, 0x39,         
+	0x81, 0x42,         
+	0x65, 0x00,         
+	0x95, 0x01,         
+	0x81, 0x01,         
+	0x26, 0xFF, 0x00,   
+	0x46, 0xFF, 0x00,   
+	0x09, 0x30,         
+	0x09, 0x31,         
+	0x09, 0x33,         
+	0x09, 0x34,         
+	0x75, 0x08,         
+	0x95, 0x04,         
+	0x81, 0x02,         
+	0x95, 0x0A,         
+	0x81, 0x01,         
+	0x05, 0x01,         
+	0x26, 0xFF, 0x00,   
+	0x46, 0xFF, 0x00,   
+	0x09, 0x32,         
+	0x09, 0x35,         
+	0x95, 0x02,         
+	0x81, 0x02,         
+	0x95, 0x08,         
+	0x81, 0x01,         
+	0x06, 0x00, 0xFF,   
+	0xB1, 0x02,         
+	0x0A, 0x21, 0x26,   
+	0x95, 0x08,         
+	0x91, 0x02,         
+	0x0A, 0x21, 0x26,   
+	0x95, 0x08,         
+	0x81, 0x02,         
+	0xC0,               
 };
 
 #define NUM_LEDS 4
@@ -176,9 +93,9 @@ struct bigben_device {
 	struct hid_report *report;
 	spinlock_t lock;
 	bool removed;
-	u8 led_state;         /* LED1 = 1 .. LED4 = 8 */
-	u8 right_motor_on;    /* right motor off/on 0/1 */
-	u8 left_motor_force;  /* left motor force 0-255 */
+	u8 led_state;          
+	u8 right_motor_on;     
+	u8 left_motor_force;   
 	struct led_classdev *leds[NUM_LEDS];
 	bool work_led;
 	bool work_ff;
@@ -212,20 +129,20 @@ static void bigben_worker(struct work_struct *work)
 
 	len = hid_report_len(bigben->report);
 
-	/* LED work */
+	 
 	spin_lock_irqsave(&bigben->lock, flags);
 
 	if (bigben->work_led) {
 		bigben->work_led = false;
 		do_work_led = true;
-		report_field->value[0] = 0x01; /* 1 = led message */
-		report_field->value[1] = 0x08; /* reserved value, always 8 */
+		report_field->value[0] = 0x01;  
+		report_field->value[1] = 0x08;  
 		report_field->value[2] = bigben->led_state;
-		report_field->value[3] = 0x00; /* padding */
-		report_field->value[4] = 0x00; /* padding */
-		report_field->value[5] = 0x00; /* padding */
-		report_field->value[6] = 0x00; /* padding */
-		report_field->value[7] = 0x00; /* padding */
+		report_field->value[3] = 0x00;  
+		report_field->value[4] = 0x00;  
+		report_field->value[5] = 0x00;  
+		report_field->value[6] = 0x00;  
+		report_field->value[7] = 0x00;  
 		hid_output_report(bigben->report, buf);
 	}
 
@@ -236,20 +153,20 @@ static void bigben_worker(struct work_struct *work)
 				   bigben->report->type, HID_REQ_SET_REPORT);
 	}
 
-	/* FF work */
+	 
 	spin_lock_irqsave(&bigben->lock, flags);
 
 	if (bigben->work_ff) {
 		bigben->work_ff = false;
 		do_work_ff = true;
-		report_field->value[0] = 0x02; /* 2 = rumble effect message */
-		report_field->value[1] = 0x08; /* reserved value, always 8 */
+		report_field->value[0] = 0x02;  
+		report_field->value[1] = 0x08;  
 		report_field->value[2] = bigben->right_motor_on;
 		report_field->value[3] = bigben->left_motor_force;
-		report_field->value[4] = 0xff; /* duration 0-254 (255 = nonstop) */
-		report_field->value[5] = 0x00; /* padding */
-		report_field->value[6] = 0x00; /* padding */
-		report_field->value[7] = 0x00; /* padding */
+		report_field->value[4] = 0xff;  
+		report_field->value[5] = 0x00;  
+		report_field->value[6] = 0x00;  
+		report_field->value[7] = 0x00;  
 		hid_output_report(bigben->report, buf);
 	}
 
@@ -447,7 +364,7 @@ static int bigben_probe(struct hid_device *hid,
 			goto error_hw_stop;
 	}
 
-	/* initial state: LED1 is on, no rumble effect */
+	 
 	bigben->led_state = BIT(0);
 	bigben->right_motor_on = 0;
 	bigben->left_motor_force = 0;

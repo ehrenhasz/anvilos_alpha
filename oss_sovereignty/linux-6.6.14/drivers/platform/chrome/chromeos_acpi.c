@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ChromeOS specific ACPI extensions
- *
- * Copyright 2022 Google LLC
- *
- * This driver attaches to the ChromeOS ACPI device and then exports the
- * values reported by the ACPI in a sysfs directory. All values are
- * presented in the string form (numbers as decimal values) and can be
- * accessed as the contents of the appropriate read only files in the
- * sysfs directory tree.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/platform_device.h>
 #include <linux/kernel.h>
@@ -66,7 +56,7 @@
 
 static unsigned int chromeos_acpi_gpio_groups;
 
-/* Parse the ACPI package and return the data related to that attribute */
+ 
 static int chromeos_acpi_handle_package(struct device *dev, union acpi_object *obj,
 					int pkg_num, int sub_pkg_num, char *name, char *buf)
 {
@@ -79,7 +69,7 @@ static int chromeos_acpi_handle_package(struct device *dev, union acpi_object *o
 	if (element->type == ACPI_TYPE_PACKAGE) {
 		if (sub_pkg_num >= element->package.count)
 			return -EINVAL;
-		/* select sub element inside this package */
+		 
 		element = element->package.elements;
 		element += sub_pkg_num;
 	}
@@ -223,11 +213,7 @@ static const struct attribute_group first_level_attr_group = {
 	.attrs = first_level_attrs,
 };
 
-/*
- * Every platform can have a different number of GPIO attribute groups.
- * Define upper limit groups. At run time, the platform decides to show
- * the present number of groups only, others are hidden.
- */
+ 
 GPIO_ATTR_GROUP(gpio0, "GPIO.0", 0)
 GPIO_ATTR_GROUP(gpio1, "GPIO.1", 1)
 GPIO_ATTR_GROUP(gpio2, "GPIO.2", 2)
@@ -254,10 +240,7 @@ static int chromeos_acpi_device_probe(struct platform_device *pdev)
 {
 	chromeos_acpi_gpio_groups = get_gpio_pkg_num(&pdev->dev);
 
-	/*
-	 * If the platform has more GPIO attribute groups than the number of
-	 * groups this driver supports, give out a warning message.
-	 */
+	 
 	if (chromeos_acpi_gpio_groups > ARRAY_SIZE(chromeos_acpi_all_groups) - 2)
 		dev_warn(&pdev->dev, "Only %zu GPIO attr groups supported by the driver out of total %u.\n",
 			 ARRAY_SIZE(chromeos_acpi_all_groups) - 2, chromeos_acpi_gpio_groups);

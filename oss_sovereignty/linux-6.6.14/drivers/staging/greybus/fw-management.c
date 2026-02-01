@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Firmware Management Protocol Driver.
- *
- * Copyright 2016 Google Inc.
- * Copyright 2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/completion.h>
@@ -26,7 +21,7 @@ struct fw_mgmt {
 	struct kref		kref;
 	struct list_head	node;
 
-	/* Common id-map for interface and backend firmware requests */
+	 
 	struct ida		id_map;
 	struct mutex		mutex;
 	struct completion	completion;
@@ -34,9 +29,9 @@ struct fw_mgmt {
 	struct device		*class_device;
 	dev_t			dev_num;
 	unsigned int		timeout_jiffies;
-	bool			disabled; /* connection getting disabled */
+	bool			disabled;  
 
-	/* Interface Firmware specific fields */
+	 
 	bool			mode_switch_started;
 	bool			intf_fw_loaded;
 	u8			intf_fw_request_id;
@@ -44,15 +39,12 @@ struct fw_mgmt {
 	u16			intf_fw_major;
 	u16			intf_fw_minor;
 
-	/* Backend Firmware specific fields */
+	 
 	u8			backend_fw_request_id;
 	u8			backend_fw_status;
 };
 
-/*
- * Number of minor devices this driver supports.
- * There will be exactly one required per Interface.
- */
+ 
 #define NUM_MINORS		U8_MAX
 
 static struct class *fw_mgmt_class;
@@ -69,17 +61,13 @@ static void fw_mgmt_kref_release(struct kref *kref)
 	kfree(fw_mgmt);
 }
 
-/*
- * All users of fw_mgmt take a reference (from within list_mutex lock), before
- * they get a pointer to play with. And the structure will be freed only after
- * the last user has put the reference to it.
- */
+ 
 static void put_fw_mgmt(struct fw_mgmt *fw_mgmt)
 {
 	kref_put(&fw_mgmt->kref, fw_mgmt_kref_release);
 }
 
-/* Caller must call put_fw_mgmt() after using struct fw_mgmt */
+ 
 static struct fw_mgmt *get_fw_mgmt(struct cdev *cdev)
 {
 	struct fw_mgmt *fw_mgmt;
@@ -123,10 +111,7 @@ static int fw_mgmt_interface_fw_version_operation(struct fw_mgmt *fw_mgmt,
 	strncpy(fw_info->firmware_tag, response.firmware_tag,
 		GB_FIRMWARE_TAG_MAX_SIZE);
 
-	/*
-	 * The firmware-tag should be NULL terminated, otherwise throw error but
-	 * don't fail.
-	 */
+	 
 	if (fw_info->firmware_tag[GB_FIRMWARE_TAG_MAX_SIZE - 1] != '\0') {
 		dev_err(fw_mgmt->parent,
 			"fw-version: firmware-tag is not NULL terminated\n");
@@ -152,16 +137,13 @@ static int fw_mgmt_load_and_validate_operation(struct fw_mgmt *fw_mgmt,
 	request.load_method = load_method;
 	strncpy(request.firmware_tag, tag, GB_FIRMWARE_TAG_MAX_SIZE);
 
-	/*
-	 * The firmware-tag should be NULL terminated, otherwise throw error and
-	 * fail.
-	 */
+	 
 	if (request.firmware_tag[GB_FIRMWARE_TAG_MAX_SIZE - 1] != '\0') {
 		dev_err(fw_mgmt->parent, "load-and-validate: firmware-tag is not NULL terminated\n");
 		return -EINVAL;
 	}
 
-	/* Allocate ids from 1 to 255 (u8-max), 0 is an invalid id */
+	 
 	ret = ida_simple_get(&fw_mgmt->id_map, 1, 256, GFP_KERNEL);
 	if (ret < 0) {
 		dev_err(fw_mgmt->parent, "failed to allocate request id (%d)\n",
@@ -195,7 +177,7 @@ static int fw_mgmt_interface_fw_loaded_operation(struct gb_operation *op)
 	struct fw_mgmt *fw_mgmt = gb_connection_get_data(connection);
 	struct gb_fw_mgmt_loaded_fw_request *request;
 
-	/* No pending load and validate request ? */
+	 
 	if (!fw_mgmt->intf_fw_request_id) {
 		dev_err(fw_mgmt->parent,
 			"unexpected firmware loaded request received\n");
@@ -210,7 +192,7 @@ static int fw_mgmt_interface_fw_loaded_operation(struct gb_operation *op)
 
 	request = op->request->payload;
 
-	/* Invalid request-id ? */
+	 
 	if (request->request_id != fw_mgmt->intf_fw_request_id) {
 		dev_err(fw_mgmt->parent, "invalid request id for firmware loaded request (%02u != %02u)\n",
 			fw_mgmt->intf_fw_request_id, request->request_id);
@@ -250,10 +232,7 @@ static int fw_mgmt_backend_fw_version_operation(struct fw_mgmt *fw_mgmt,
 	strncpy(request.firmware_tag, fw_info->firmware_tag,
 		GB_FIRMWARE_TAG_MAX_SIZE);
 
-	/*
-	 * The firmware-tag should be NULL terminated, otherwise throw error and
-	 * fail.
-	 */
+	 
 	if (request.firmware_tag[GB_FIRMWARE_TAG_MAX_SIZE - 1] != '\0') {
 		dev_err(fw_mgmt->parent, "backend-version: firmware-tag is not NULL terminated\n");
 		return -EINVAL;
@@ -270,7 +249,7 @@ static int fw_mgmt_backend_fw_version_operation(struct fw_mgmt *fw_mgmt,
 
 	fw_info->status = response.status;
 
-	/* Reset version as that should be non-zero only for success case */
+	 
 	fw_info->major = 0;
 	fw_info->minor = 0;
 
@@ -303,16 +282,13 @@ static int fw_mgmt_backend_fw_update_operation(struct fw_mgmt *fw_mgmt,
 
 	strncpy(request.firmware_tag, tag, GB_FIRMWARE_TAG_MAX_SIZE);
 
-	/*
-	 * The firmware-tag should be NULL terminated, otherwise throw error and
-	 * fail.
-	 */
+	 
 	if (request.firmware_tag[GB_FIRMWARE_TAG_MAX_SIZE - 1] != '\0') {
 		dev_err(fw_mgmt->parent, "backend-update: firmware-tag is not NULL terminated\n");
 		return -EINVAL;
 	}
 
-	/* Allocate ids from 1 to 255 (u8-max), 0 is an invalid id */
+	 
 	ret = ida_simple_get(&fw_mgmt->id_map, 1, 256, GFP_KERNEL);
 	if (ret < 0) {
 		dev_err(fw_mgmt->parent, "failed to allocate request id (%d)\n",
@@ -345,7 +321,7 @@ static int fw_mgmt_backend_fw_updated_operation(struct gb_operation *op)
 	struct fw_mgmt *fw_mgmt = gb_connection_get_data(connection);
 	struct gb_fw_mgmt_backend_fw_updated_request *request;
 
-	/* No pending load and validate request ? */
+	 
 	if (!fw_mgmt->backend_fw_request_id) {
 		dev_err(fw_mgmt->parent, "unexpected backend firmware updated request received\n");
 		return -ENODEV;
@@ -359,7 +335,7 @@ static int fw_mgmt_backend_fw_updated_operation(struct gb_operation *op)
 
 	request = op->request->payload;
 
-	/* Invalid request-id ? */
+	 
 	if (request->request_id != fw_mgmt->backend_fw_request_id) {
 		dev_err(fw_mgmt->parent, "invalid request id for backend firmware updated request (%02u != %02u)\n",
 			fw_mgmt->backend_fw_request_id, request->request_id);
@@ -381,13 +357,13 @@ static int fw_mgmt_backend_fw_updated_operation(struct gb_operation *op)
 	return 0;
 }
 
-/* Char device fops */
+ 
 
 static int fw_mgmt_open(struct inode *inode, struct file *file)
 {
 	struct fw_mgmt *fw_mgmt = get_fw_mgmt(inode->i_cdev);
 
-	/* fw_mgmt structure can't get freed until file descriptor is closed */
+	 
 	if (fw_mgmt) {
 		file->private_data = fw_mgmt;
 		return 0;
@@ -414,7 +390,7 @@ static int fw_mgmt_ioctl(struct fw_mgmt *fw_mgmt, unsigned int cmd,
 	unsigned int timeout;
 	int ret;
 
-	/* Reject any operations after mode-switch has started */
+	 
 	if (fw_mgmt->mode_switch_started)
 		return -EBUSY;
 
@@ -508,11 +484,7 @@ static int fw_mgmt_ioctl(struct fw_mgmt *fw_mgmt, unsigned int cmd,
 			return -EPERM;
 		}
 
-		/*
-		 * Disallow new ioctls as the fw-core bundle driver is going to
-		 * get disconnected soon and the character device will get
-		 * removed.
-		 */
+		 
 		fw_mgmt->mode_switch_started = true;
 
 		ret = gb_interface_request_mode_switch(fw_mgmt->connection->intf);
@@ -536,18 +508,7 @@ static long fw_mgmt_ioctl_unlocked(struct file *file, unsigned int cmd,
 	struct gb_bundle *bundle = fw_mgmt->connection->bundle;
 	int ret = -ENODEV;
 
-	/*
-	 * Serialize ioctls.
-	 *
-	 * We don't want the user to do few operations in parallel. For example,
-	 * updating Interface firmware in parallel for the same Interface. There
-	 * is no need to do things in parallel for speed and we can avoid having
-	 * complicated code for now.
-	 *
-	 * This is also used to protect ->disabled, which is used to check if
-	 * the connection is getting disconnected, so that we don't start any
-	 * new operations.
-	 */
+	 
 	mutex_lock(&fw_mgmt->mutex);
 	if (!fw_mgmt->disabled) {
 		ret = gb_pm_runtime_get_sync(bundle);
@@ -620,7 +581,7 @@ int gb_fw_mgmt_connection_init(struct gb_connection *connection)
 		goto err_connection_disable;
 	}
 
-	/* Add a char device to allow userspace to interact with fw-mgmt */
+	 
 	fw_mgmt->dev_num = MKDEV(MAJOR(fw_mgmt_dev_num), minor);
 	cdev_init(&fw_mgmt->cdev, &fw_mgmt_fops);
 
@@ -628,7 +589,7 @@ int gb_fw_mgmt_connection_init(struct gb_connection *connection)
 	if (ret)
 		goto err_remove_ida;
 
-	/* Add a soft link to the previously added char-dev within the bundle */
+	 
 	fw_mgmt->class_device = device_create(fw_mgmt_class, fw_mgmt->parent,
 					      fw_mgmt->dev_num, NULL,
 					      "gb-fw-mgmt-%d", minor);
@@ -668,27 +629,20 @@ void gb_fw_mgmt_connection_exit(struct gb_connection *connection)
 	cdev_del(&fw_mgmt->cdev);
 	ida_simple_remove(&fw_mgmt_minors_map, MINOR(fw_mgmt->dev_num));
 
-	/*
-	 * Disallow any new ioctl operations on the char device and wait for
-	 * existing ones to finish.
-	 */
+	 
 	mutex_lock(&fw_mgmt->mutex);
 	fw_mgmt->disabled = true;
 	mutex_unlock(&fw_mgmt->mutex);
 
-	/* All pending greybus operations should have finished by now */
+	 
 	gb_connection_disable(fw_mgmt->connection);
 
-	/* Disallow new users to get access to the fw_mgmt structure */
+	 
 	mutex_lock(&list_mutex);
 	list_del(&fw_mgmt->node);
 	mutex_unlock(&list_mutex);
 
-	/*
-	 * All current users of fw_mgmt would have taken a reference to it by
-	 * now, we can drop our reference and wait the last user will get
-	 * fw_mgmt freed.
-	 */
+	 
 	put_fw_mgmt(fw_mgmt);
 }
 

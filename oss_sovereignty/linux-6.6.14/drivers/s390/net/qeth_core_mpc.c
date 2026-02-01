@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2007
- *    Author(s): Frank Pavlic <fpavlic@de.ibm.com>,
- *		 Thomas Spatzier <tspat@de.ibm.com>,
- *		 Frank Blaschka <frank.blaschka@de.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <asm/cio.h>
@@ -201,7 +196,7 @@ static const struct ipa_rc_msg qeth_ipa_rc_msg[] = {
 	{IPA_RC_LAN_OFFLINE,		"STRTLAN_LAN_DISABLED - LAN offline"},
 	{IPA_RC_VEPA_TO_VEB_TRANSITION,	"Adj. switch disabled port mode RR"},
 	{IPA_RC_INVALID_IP_VERSION2,	"Invalid IP version"},
-	/* default for qeth_get_ipa_msg(): */
+	 
 	{IPA_RC_FFFF,			"Unknown Error"}
 };
 

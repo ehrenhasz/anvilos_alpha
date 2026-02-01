@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STRATO AG 2013.  All rights reserved.
- */
+
+ 
 
 #include <linux/uuid.h>
 #include <asm/unaligned.h>
@@ -21,7 +19,7 @@ static void btrfs_uuid_to_key(u8 *uuid, u8 type, struct btrfs_key *key)
 	key->offset = get_unaligned_le64(uuid + sizeof(u64));
 }
 
-/* return -ENOENT for !found, < 0 for errors, or 0 if an item was found */
+ 
 static int btrfs_uuid_tree_lookup(struct btrfs_root *uuid_root, u8 *uuid,
 				  u8 type, u64 subid)
 {
@@ -115,15 +113,12 @@ int btrfs_uuid_tree_add(struct btrfs_trans_handle *trans, u8 *uuid, u8 type,
 	ret = btrfs_insert_empty_item(trans, uuid_root, path, &key,
 				      sizeof(subid_le));
 	if (ret >= 0) {
-		/* Add an item for the type for the first time */
+		 
 		eb = path->nodes[0];
 		slot = path->slots[0];
 		offset = btrfs_item_ptr_offset(eb, slot);
 	} else if (ret == -EEXIST) {
-		/*
-		 * An item with that type already exists.
-		 * Extend the item and store the new subid at the end.
-		 */
+		 
 		btrfs_extend_item(trans, path, sizeof(subid_le));
 		eb = path->nodes[0];
 		slot = path->slots[0];
@@ -234,7 +229,7 @@ static int btrfs_uuid_iter_rem(struct btrfs_root *uuid_root, u8 *uuid, u8 type,
 	struct btrfs_trans_handle *trans;
 	int ret;
 
-	/* 1 - for the uuid item */
+	 
 	trans = btrfs_start_transaction(uuid_root, 1);
 	if (IS_ERR(trans)) {
 		ret = PTR_ERR(trans);
@@ -248,14 +243,7 @@ out:
 	return ret;
 }
 
-/*
- * Check if there's an matching subvolume for given UUID
- *
- * Return:
- * 0	check succeeded, the entry is not outdated
- * > 0	if the check failed, the caller should remove the entry
- * < 0	if an error occurred
- */
+ 
 static int btrfs_check_uuid_tree_entry(struct btrfs_fs_info *fs_info,
 				       u8 *uuid, u8 type, u64 subvolid)
 {
@@ -360,13 +348,7 @@ again_search_slot:
 				ret = btrfs_uuid_iter_rem(root, uuid, key.type,
 							  subid_cpu);
 				if (ret == 0) {
-					/*
-					 * this might look inefficient, but the
-					 * justification is that it is an
-					 * exception that check_func returns 1,
-					 * and that in the regular case only one
-					 * entry per UUID exists.
-					 */
+					 
 					goto again_search_slot;
 				}
 				if (ret < 0 && ret != -ENOENT)

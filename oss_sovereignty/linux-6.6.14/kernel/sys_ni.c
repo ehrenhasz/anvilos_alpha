@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/linkage.h>
 #include <linux/errno.h>
@@ -6,17 +6,14 @@
 #include <asm/unistd.h>
 
 #ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
-/* Architectures may override COND_SYSCALL and COND_SYSCALL_COMPAT */
+ 
 #include <asm/syscall_wrapper.h>
-#endif /* CONFIG_ARCH_HAS_SYSCALL_WRAPPER */
+#endif  
 
-/*  we can't #include <linux/syscalls.h> here,
-    but tell gcc to not warn with -Wmissing-prototypes  */
+ 
 asmlinkage long sys_ni_syscall(void);
 
-/*
- * Non-implemented system calls get redirected here.
- */
+ 
 asmlinkage long sys_ni_syscall(void)
 {
 	return -ENOSYS;
@@ -24,17 +21,13 @@ asmlinkage long sys_ni_syscall(void)
 
 #ifndef COND_SYSCALL
 #define COND_SYSCALL(name) cond_syscall(sys_##name)
-#endif /* COND_SYSCALL */
+#endif  
 
 #ifndef COND_SYSCALL_COMPAT
 #define COND_SYSCALL_COMPAT(name) cond_syscall(compat_sys_##name)
-#endif /* COND_SYSCALL_COMPAT */
+#endif  
 
-/*
- * This list is kept in the same order as include/uapi/asm-generic/unistd.h.
- * Architecture specific entries go below, followed by deprecated or obsolete
- * system calls.
- */
+ 
 
 COND_SYSCALL(io_setup);
 COND_SYSCALL_COMPAT(io_setup);
@@ -78,7 +71,7 @@ COND_SYSCALL(timerfd_gettime32);
 COND_SYSCALL(acct);
 COND_SYSCALL(capget);
 COND_SYSCALL(capset);
-/* __ARCH_WANT_SYS_CLONE3 */
+ 
 COND_SYSCALL(clone3);
 COND_SYSCALL(futex);
 COND_SYSCALL(futex_time32);
@@ -171,7 +164,7 @@ COND_SYSCALL(landlock_restrict_self);
 COND_SYSCALL(fadvise64_64);
 COND_SYSCALL_COMPAT(fadvise64_64);
 
-/* CONFIG_MMU only */
+ 
 COND_SYSCALL(swapon);
 COND_SYSCALL(swapoff);
 COND_SYSCALL(mprotect);
@@ -200,7 +193,7 @@ COND_SYSCALL(recvmmsg_time32);
 COND_SYSCALL_COMPAT(recvmmsg_time32);
 COND_SYSCALL_COMPAT(recvmmsg_time64);
 
-/* Posix timer syscalls may be configured out */
+ 
 COND_SYSCALL(timer_create);
 COND_SYSCALL(timer_gettime);
 COND_SYSCALL(timer_getoverrun);
@@ -214,15 +207,13 @@ COND_SYSCALL_COMPAT(timer_create);
 COND_SYSCALL_COMPAT(getitimer);
 COND_SYSCALL_COMPAT(setitimer);
 
-/*
- * Architecture specific syscalls: see further below
- */
+ 
 
-/* fanotify */
+ 
 COND_SYSCALL(fanotify_init);
 COND_SYSCALL(fanotify_mark);
 
-/* open by handle */
+ 
 COND_SYSCALL(name_to_handle_at);
 COND_SYSCALL(open_by_handle_at);
 COND_SYSCALL_COMPAT(open_by_handle_at);
@@ -234,98 +225,93 @@ COND_SYSCALL_COMPAT(process_vm_readv);
 COND_SYSCALL(process_vm_writev);
 COND_SYSCALL_COMPAT(process_vm_writev);
 
-/* compare kernel pointers */
+ 
 COND_SYSCALL(kcmp);
 
 COND_SYSCALL(finit_module);
 
-/* operate on Secure Computing state */
+ 
 COND_SYSCALL(seccomp);
 
 COND_SYSCALL(memfd_create);
 
-/* access BPF programs and maps */
+ 
 COND_SYSCALL(bpf);
 
-/* execveat */
+ 
 COND_SYSCALL(execveat);
 
 COND_SYSCALL(userfaultfd);
 
-/* membarrier */
+ 
 COND_SYSCALL(membarrier);
 
 COND_SYSCALL(mlock2);
 
 COND_SYSCALL(copy_file_range);
 
-/* memory protection keys */
+ 
 COND_SYSCALL(pkey_mprotect);
 COND_SYSCALL(pkey_alloc);
 COND_SYSCALL(pkey_free);
 
-/* memfd_secret */
+ 
 COND_SYSCALL(memfd_secret);
 
-/*
- * Architecture specific weak syscall entries.
- */
+ 
 
-/* pciconfig: alpha, arm, arm64, ia64, sparc */
+ 
 COND_SYSCALL(pciconfig_read);
 COND_SYSCALL(pciconfig_write);
 COND_SYSCALL(pciconfig_iobase);
 
-/* sys_socketcall: arm, mips, x86, ... */
+ 
 COND_SYSCALL(socketcall);
 COND_SYSCALL_COMPAT(socketcall);
 
-/* compat syscalls for arm64, x86, ... */
+ 
 COND_SYSCALL_COMPAT(fanotify_mark);
 
-/* x86 */
+ 
 COND_SYSCALL(vm86old);
 COND_SYSCALL(modify_ldt);
 COND_SYSCALL(vm86);
 COND_SYSCALL(kexec_file_load);
 COND_SYSCALL(map_shadow_stack);
 
-/* s390 */
+ 
 COND_SYSCALL(s390_pci_mmio_read);
 COND_SYSCALL(s390_pci_mmio_write);
 COND_SYSCALL(s390_ipc);
 COND_SYSCALL_COMPAT(s390_ipc);
 
-/* powerpc */
+ 
 COND_SYSCALL(rtas);
 COND_SYSCALL(spu_run);
 COND_SYSCALL(spu_create);
 COND_SYSCALL(subpage_prot);
 
 
-/*
- * Deprecated system calls which are still defined in
- * include/uapi/asm-generic/unistd.h and wanted by >= 1 arch
- */
+ 
 
-/* __ARCH_WANT_SYSCALL_NO_FLAGS */
+ 
 COND_SYSCALL(epoll_create);
 COND_SYSCALL(inotify_init);
 COND_SYSCALL(eventfd);
 COND_SYSCALL(signalfd);
 COND_SYSCALL_COMPAT(signalfd);
 
-/* __ARCH_WANT_SYSCALL_OFF_T */
+ 
 COND_SYSCALL(fadvise64);
 
-/* __ARCH_WANT_SYSCALL_DEPRECATED */
+ 
 COND_SYSCALL(epoll_wait);
 COND_SYSCALL(recv);
 COND_SYSCALL_COMPAT(recv);
 COND_SYSCALL(send);
 COND_SYSCALL(uselib);
 
-/* optional: time32 */
+ 
 COND_SYSCALL(time32);
 COND_SYSCALL(stime32);
 COND_SYSCALL(utime32);
@@ -349,22 +335,20 @@ COND_SYSCALL_COMPAT(ppoll_time32);
 COND_SYSCALL(utimensat_time32);
 COND_SYSCALL(clock_adjtime32);
 
-/*
- * The syscalls below are not found in include/uapi/asm-generic/unistd.h
- */
+ 
 
-/* obsolete: SGETMASK_SYSCALL */
+ 
 COND_SYSCALL(sgetmask);
 COND_SYSCALL(ssetmask);
 
-/* obsolete: SYSFS_SYSCALL */
+ 
 COND_SYSCALL(sysfs);
 
-/* obsolete: __ARCH_WANT_SYS_IPC */
+ 
 COND_SYSCALL(ipc);
 COND_SYSCALL_COMPAT(ipc);
 
-/* obsolete: UID16 */
+ 
 COND_SYSCALL(chown16);
 COND_SYSCALL(fchown16);
 COND_SYSCALL(getegid16);
@@ -385,5 +369,5 @@ COND_SYSCALL(setresuid16);
 COND_SYSCALL(setreuid16);
 COND_SYSCALL(setuid16);
 
-/* restartable sequence */
+ 
 COND_SYSCALL(rseq);

@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __AMDGPU_MES_H__
 #define __AMDGPU_MES_H__
@@ -50,8 +29,8 @@ enum amdgpu_mes_priority_level {
 	AMDGPU_MES_PRIORITY_NUM_LEVELS
 };
 
-#define AMDGPU_MES_PROC_CTX_SIZE 0x1000 /* one page area */
-#define AMDGPU_MES_GANG_CTX_SIZE 0x1000 /* one page area */
+#define AMDGPU_MES_PROC_CTX_SIZE 0x1000  
+#define AMDGPU_MES_GANG_CTX_SIZE 0x1000  
 
 struct amdgpu_mes_funcs;
 
@@ -87,19 +66,19 @@ struct amdgpu_mes {
 
 	const struct firmware           *fw[AMDGPU_MAX_MES_PIPES];
 
-	/* mes ucode */
+	 
 	struct amdgpu_bo		*ucode_fw_obj[AMDGPU_MAX_MES_PIPES];
 	uint64_t			ucode_fw_gpu_addr[AMDGPU_MAX_MES_PIPES];
 	uint32_t			*ucode_fw_ptr[AMDGPU_MAX_MES_PIPES];
 	uint64_t                        uc_start_addr[AMDGPU_MAX_MES_PIPES];
 
-	/* mes ucode data */
+	 
 	struct amdgpu_bo		*data_fw_obj[AMDGPU_MAX_MES_PIPES];
 	uint64_t			data_fw_gpu_addr[AMDGPU_MAX_MES_PIPES];
 	uint32_t			*data_fw_ptr[AMDGPU_MAX_MES_PIPES];
 	uint64_t                        data_start_addr[AMDGPU_MAX_MES_PIPES];
 
-	/* eop gpu obj */
+	 
 	struct amdgpu_bo		*eop_gpu_obj[AMDGPU_MAX_MES_PIPES];
 	uint64_t                        eop_gpu_addr[AMDGPU_MAX_MES_PIPES];
 
@@ -124,16 +103,16 @@ struct amdgpu_mes {
 
 	uint32_t			saved_flags;
 
-	/* initialize kiq pipe */
+	 
 	int                             (*kiq_hw_init)(struct amdgpu_device *adev);
 	int                             (*kiq_hw_fini)(struct amdgpu_device *adev);
 
-	/* MES doorbells */
+	 
 	uint32_t			db_start_dw_offset;
 	uint32_t			num_mes_dbs;
 	unsigned long			*doorbell_bitmap;
 
-	/* ip specific functions */
+	 
 	const struct amdgpu_mes_funcs   *funcs;
 };
 
@@ -190,7 +169,7 @@ struct amdgpu_mes_queue_properties {
 	uint32_t                hqd_queue_priority;
 	bool 			paging;
 	struct amdgpu_ring 	*ring;
-	/* out */
+	 
 	uint64_t       		doorbell_off;
 };
 
@@ -393,52 +372,7 @@ int amdgpu_mes_self_test(struct amdgpu_device *adev);
 
 int amdgpu_mes_doorbell_process_slice(struct amdgpu_device *adev);
 
-/*
- * MES lock can be taken in MMU notifiers.
- *
- * A bit more detail about why to set no-FS reclaim with MES lock:
- *
- * The purpose of the MMU notifier is to stop GPU access to memory so
- * that the Linux VM subsystem can move pages around safely. This is
- * done by preempting user mode queues for the affected process. When
- * MES is used, MES lock needs to be taken to preempt the queues.
- *
- * The MMU notifier callback entry point in the driver is
- * amdgpu_mn_invalidate_range_start_hsa. The relevant call chain from
- * there is:
- * amdgpu_amdkfd_evict_userptr -> kgd2kfd_quiesce_mm ->
- * kfd_process_evict_queues -> pdd->dev->dqm->ops.evict_process_queues
- *
- * The last part of the chain is a function pointer where we take the
- * MES lock.
- *
- * The problem with taking locks in the MMU notifier is, that MMU
- * notifiers can be called in reclaim-FS context. That's where the
- * kernel frees up pages to make room for new page allocations under
- * memory pressure. While we are running in reclaim-FS context, we must
- * not trigger another memory reclaim operation because that would
- * recursively reenter the reclaim code and cause a deadlock. The
- * memalloc_nofs_save/restore calls guarantee that.
- *
- * In addition we also need to avoid lock dependencies on other locks taken
- * under the MES lock, for example reservation locks. Here is a possible
- * scenario of a deadlock:
- * Thread A: takes and holds reservation lock | triggers reclaim-FS |
- * MMU notifier | blocks trying to take MES lock
- * Thread B: takes and holds MES lock | blocks trying to take reservation lock
- *
- * In this scenario Thread B gets involved in a deadlock even without
- * triggering a reclaim-FS operation itself.
- * To fix this and break the lock dependency chain you'd need to either:
- * 1. protect reservation locks with memalloc_nofs_save/restore, or
- * 2. avoid taking reservation locks under the MES lock.
- *
- * Reservation locks are taken all over the kernel in different subsystems, we
- * have no control over them and their lock dependencies.So the only workable
- * solution is to avoid taking other locks under the MES lock.
- * As a result, make sure no reclaim-FS happens while holding this lock anywhere
- * to prevent deadlocks when an MMU notifier runs in reclaim-FS context.
- */
+ 
 static inline void amdgpu_mes_lock(struct amdgpu_mes *mes)
 {
 	mutex_lock(&mes->mutex_hidden);
@@ -450,4 +384,4 @@ static inline void amdgpu_mes_unlock(struct amdgpu_mes *mes)
 	memalloc_noreclaim_restore(mes->saved_flags);
 	mutex_unlock(&mes->mutex_hidden);
 }
-#endif /* __AMDGPU_MES_H__ */
+#endif  

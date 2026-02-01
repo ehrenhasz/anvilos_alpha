@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Lakefield PCH pinctrl/GPIO driver
- *
- * Copyright (C) 2020, Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -31,9 +26,9 @@
 #define LKF_COMMUNITY(b, s, e, g)			\
 	INTEL_COMMUNITY_GPPS(b, s, e, g, LKF)
 
-/* Lakefield */
+ 
 static const struct pinctrl_pin_desc lkf_pins[] = {
-	/* EAST */
+	 
 	PINCTRL_PIN(0, "MDSI_A_TE0"),
 	PINCTRL_PIN(1, "MDSI_A_TE1"),
 	PINCTRL_PIN(2, "PANEL0_AVDD_EN"),
@@ -94,7 +89,7 @@ static const struct pinctrl_pin_desc lkf_pins[] = {
 	PINCTRL_PIN(57, "ISH_GP_21"),
 	PINCTRL_PIN(58, "ISH_GP_22"),
 	PINCTRL_PIN(59, "ISH_GP_23"),
-	/* NORTHWEST */
+	 
 	PINCTRL_PIN(60, "MCSI_GPIO_0"),
 	PINCTRL_PIN(61, "MCSI_GPIO_1"),
 	PINCTRL_PIN(62, "MCSI_GPIO_2"),
@@ -184,7 +179,7 @@ static const struct pinctrl_pin_desc lkf_pins[] = {
 	PINCTRL_PIN(146, "VISA_PTI_CH1_D6_internal"),
 	PINCTRL_PIN(147, "VISA_PTI_CH1_D7_internal"),
 	PINCTRL_PIN(148, "VISA_PTI_CH1_CLK_internal"),
-	/* WEST */
+	 
 	PINCTRL_PIN(149, "LPSS_UART0_TXD"),
 	PINCTRL_PIN(150, "LPSS_UART0_RXD"),
 	PINCTRL_PIN(151, "LPSS_UART0_RTS_B"),
@@ -274,7 +269,7 @@ static const struct pinctrl_pin_desc lkf_pins[] = {
 	PINCTRL_PIN(235, "GMBUS_1_SDA"),
 	PINCTRL_PIN(236, "GMBUS_0_SCL"),
 	PINCTRL_PIN(237, "GMBUS_0_SDA"),
-	/* SOUTHEAST */
+	 
 	PINCTRL_PIN(238, "COMPUTE_PMIC_SVID_DATA"),
 	PINCTRL_PIN(239, "COMPUTE_PMIC_SVID_CLK"),
 	PINCTRL_PIN(240, "COMPUTE_PMIC_SVID_ALERT_B"),
@@ -307,31 +302,31 @@ static const struct pinctrl_pin_desc lkf_pins[] = {
 };
 
 static const struct intel_padgroup lkf_community0_gpps[] = {
-	LKF_GPP(0, 0, 31, 0),		/* EAST_0 */
-	LKF_GPP(1, 32, 59, 32),		/* EAST_1 */
+	LKF_GPP(0, 0, 31, 0),		 
+	LKF_GPP(1, 32, 59, 32),		 
 };
 
 static const struct intel_padgroup lkf_community1_gpps[] = {
-	LKF_GPP(0, 60, 91, 64),		/* NORTHWEST_0 */
-	LKF_GPP(1, 92, 123, 96),	/* NORTHWEST_1 */
-	LKF_GPP(2, 124, 148, 128),	/* NORTHWEST_2 */
+	LKF_GPP(0, 60, 91, 64),		 
+	LKF_GPP(1, 92, 123, 96),	 
+	LKF_GPP(2, 124, 148, 128),	 
 };
 
 static const struct intel_padgroup lkf_community2_gpps[] = {
-	LKF_GPP(0, 149, 180, 160),	/* WEST_0 */
-	LKF_GPP(1, 181, 212, 192),	/* WEST_1 */
-	LKF_GPP(2, 213, 237, 224),	/* WEST_2 */
+	LKF_GPP(0, 149, 180, 160),	 
+	LKF_GPP(1, 181, 212, 192),	 
+	LKF_GPP(2, 213, 237, 224),	 
 };
 
 static const struct intel_padgroup lkf_community3_gpps[] = {
-	LKF_GPP(0, 238, 266, 256),	/* SOUTHEAST */
+	LKF_GPP(0, 238, 266, 256),	 
 };
 
 static const struct intel_community lkf_communities[] = {
-	LKF_COMMUNITY(0, 0, 59, lkf_community0_gpps),		/* EAST */
-	LKF_COMMUNITY(1, 60, 148, lkf_community1_gpps),		/* NORTHWEST */
-	LKF_COMMUNITY(2, 149, 237, lkf_community2_gpps),	/* WEST */
-	LKF_COMMUNITY(3, 238, 266, lkf_community3_gpps),	/* SOUTHEAST */
+	LKF_COMMUNITY(0, 0, 59, lkf_community0_gpps),		 
+	LKF_COMMUNITY(1, 60, 148, lkf_community1_gpps),		 
+	LKF_COMMUNITY(2, 149, 237, lkf_community2_gpps),	 
+	LKF_COMMUNITY(3, 238, 266, lkf_community3_gpps),	 
 };
 
 static const struct intel_pinctrl_soc_data lkf_soc_data = {

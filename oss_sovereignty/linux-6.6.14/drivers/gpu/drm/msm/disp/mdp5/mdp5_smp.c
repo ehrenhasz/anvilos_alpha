@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 #include <drm/drm_util.h>
@@ -15,12 +11,12 @@
 struct mdp5_smp {
 	struct drm_device *dev;
 
-	uint8_t reserved[MAX_CLIENTS]; /* fixed MMBs allocation per client */
+	uint8_t reserved[MAX_CLIENTS];  
 
 	int blk_cnt;
 	int blk_size;
 
-	/* register cache */
+	 
 	u32 alloc_w[22];
 	u32 alloc_r[22];
 	u32 pipe_reqprio_fifo_wm0[SSPP_MAX];
@@ -43,22 +39,12 @@ static inline u32 pipe2client(enum mdp5_pipe pipe, int plane)
 	if (WARN_ON(plane >= pipe2nclients(pipe)))
 		return CID_UNUSED;
 
-	/*
-	 * Note on SMP clients:
-	 * For ViG pipes, fetch Y/Cr/Cb-components clients are always
-	 * consecutive, and in that order.
-	 *
-	 * e.g.:
-	 * if mdp5_cfg->smp.clients[SSPP_VIG0] = N,
-	 *	Y  plane's client ID is N
-	 *	Cr plane's client ID is N + 1
-	 *	Cb plane's client ID is N + 2
-	 */
+	 
 
 	return mdp5_cfg->smp.clients[pipe] + plane;
 }
 
-/* allocate blocks for the specified request: */
+ 
 static int smp_request_block(struct mdp5_smp *smp,
 		struct mdp5_smp_state *state,
 		u32 cid, int nblks)
@@ -67,7 +53,7 @@ static int smp_request_block(struct mdp5_smp *smp,
 	int i, avail, cnt = smp->blk_cnt;
 	uint8_t reserved;
 
-	/* we shouldn't be requesting blocks for an in-use client: */
+	 
 	WARN_ON(!bitmap_empty(cs, cnt));
 
 	reserved = smp->reserved[cid];
@@ -99,7 +85,7 @@ static void set_fifo_thresholds(struct mdp5_smp *smp,
 	u32 smp_entries_per_blk = smp->blk_size / (128 / BITS_PER_BYTE);
 	u32 val;
 
-	/* 1/4 of SMP pool that is being fetched */
+	 
 	val = (nblks * smp_entries_per_blk) / 4;
 
 	smp->pipe_reqprio_fifo_wm0[pipe] = val * 1;
@@ -107,12 +93,7 @@ static void set_fifo_thresholds(struct mdp5_smp *smp,
 	smp->pipe_reqprio_fifo_wm2[pipe] = val * 3;
 }
 
-/*
- * NOTE: looks like if horizontal decimation is used (if we supported that)
- * then the width used to calculate SMP block requirements is the post-
- * decimated width.  Ie. SMP buffering sits downstream of decimation (which
- * presumably happens during the dma from scanout buffer).
- */
+ 
 uint32_t mdp5_smp_calculate(struct mdp5_smp *smp,
 		const struct mdp_format *format,
 		u32 width, bool hdecim)
@@ -126,19 +107,14 @@ uint32_t mdp5_smp_calculate(struct mdp5_smp *smp,
 	nplanes = info->num_planes;
 	hsub = info->hsub;
 
-	/* different if BWC (compressed framebuffer?) enabled: */
+	 
 	nlines = 2;
 
-	/* Newer MDPs have split/packing logic, which fetches sub-sampled
-	 * U and V components (splits them from Y if necessary) and packs
-	 * them together, writes to SMP using a single client.
-	 */
+	 
 	if ((rev > 0) && (format->chroma_sample > CHROMA_FULL)) {
 		nplanes = 2;
 
-		/* if decimation is enabled, HW decimates less on the
-		 * sub sampled chroma components
-		 */
+		 
 		if (hdecim && (hsub > 1))
 			hsub = 1;
 	}
@@ -151,7 +127,7 @@ uint32_t mdp5_smp_calculate(struct mdp5_smp *smp,
 
 		n = DIV_ROUND_UP(fetch_stride * nlines, smp->blk_size);
 
-		/* for hw rev v1.00 */
+		 
 		if (rev == 0)
 			n = roundup_pow_of_two(n);
 
@@ -191,7 +167,7 @@ int mdp5_smp_assign(struct mdp5_smp *smp, struct mdp5_smp_state *state,
 	return 0;
 }
 
-/* Release SMP blocks for all clients of the pipe */
+ 
 void mdp5_smp_release(struct mdp5_smp *smp, struct mdp5_smp_state *state,
 		enum mdp5_pipe pipe)
 {
@@ -202,19 +178,17 @@ void mdp5_smp_release(struct mdp5_smp *smp, struct mdp5_smp_state *state,
 		u32 cid = pipe2client(pipe, i);
 		void *cs = state->client_state[cid];
 
-		/* update global state: */
+		 
 		bitmap_andnot(state->state, state->state, cs, cnt);
 
-		/* clear client's state */
+		 
 		bitmap_zero(cs, cnt);
 	}
 
 	state->released |= (1 << pipe);
 }
 
-/* NOTE: SMP_ALLOC_* regs are *not* double buffered, so release has to
- * happen after scanout completes.
- */
+ 
 static unsigned update_smp_state(struct mdp5_smp *smp,
 		u32 cid, mdp5_smp_state_t *assigned)
 {
@@ -341,7 +315,7 @@ void mdp5_smp_dump(struct mdp5_smp *smp, struct drm_printer *p)
 
 	global_state = mdp5_get_existing_global_state(mdp5_kms);
 
-	/* grab these *after* we hold the state_lock */
+	 
 	hwpstate = &global_state->hwpipe;
 	state = &global_state->smp;
 
@@ -395,7 +369,7 @@ struct mdp5_smp *mdp5_smp_init(struct mdp5_kms *mdp5_kms, const struct mdp5_smp_
 	global_state = mdp5_get_existing_global_state(mdp5_kms);
 	state = &global_state->smp;
 
-	/* statically tied MMBs cannot be re-allocated: */
+	 
 	bitmap_copy(state->state, cfg->reserved_state, smp->blk_cnt);
 	memcpy(smp->reserved, cfg->reserved, sizeof(smp->reserved));
 

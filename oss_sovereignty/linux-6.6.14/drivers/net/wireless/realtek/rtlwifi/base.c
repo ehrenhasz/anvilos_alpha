@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "wifi.h"
 #include "rc.h"
@@ -13,31 +13,9 @@
 #include <linux/module.h>
 #include <linux/udp.h>
 
-/*
- *NOTICE!!!: This file will be very big, we should
- *keep it clear under following roles:
- *
- *This file include following parts, so, if you add new
- *functions into this file, please check which part it
- *should includes. or check if you should add new part
- *for this file:
- *
- *1) mac80211 init functions
- *2) tx information functions
- *3) functions called by core.c
- *4) wq & timer callback functions
- *5) frame process functions
- *6) IOT functions
- *7) sysfs functions
- *8) vif functions
- *9) ...
- */
+ 
 
-/*********************************************************
- *
- * mac80211 init functions
- *
- *********************************************************/
+ 
 static struct ieee80211_channel rtl_channeltable_2g[] = {
 	{.center_freq = 2412, .hw_value = 1,},
 	{.center_freq = 2417, .hw_value = 2,},
@@ -133,14 +111,14 @@ static struct ieee80211_supported_band rtl_band_5ghz = {
 };
 
 static const u8 tid_to_ac[] = {
-	2, /* IEEE80211_AC_BE */
-	3, /* IEEE80211_AC_BK */
-	3, /* IEEE80211_AC_BK */
-	2, /* IEEE80211_AC_BE */
-	1, /* IEEE80211_AC_VI */
-	1, /* IEEE80211_AC_VI */
-	0, /* IEEE80211_AC_VO */
-	0, /* IEEE80211_AC_VO */
+	2,  
+	3,  
+	3,  
+	2,  
+	1,  
+	1,  
+	0,  
+	0,  
 };
 
 u8 rtl_tid_to_ac(u8 tid)
@@ -164,26 +142,15 @@ static void _rtl_init_hw_ht_capab(struct ieee80211_hw *hw,
 	if (rtlpriv->rtlhal.disable_amsdu_8k)
 		ht_cap->cap &= ~IEEE80211_HT_CAP_MAX_AMSDU;
 
-	/*
-	 *Maximum length of AMPDU that the STA can receive.
-	 *Length = 2 ^ (13 + max_ampdu_length_exp) - 1 (octets)
-	 */
+	 
 	ht_cap->ampdu_factor = IEEE80211_HT_MAX_AMPDU_64K;
 
-	/*Minimum MPDU start spacing , */
+	 
 	ht_cap->ampdu_density = IEEE80211_HT_MPDU_DENSITY_16;
 
 	ht_cap->mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
 
-	/*hw->wiphy->bands[NL80211_BAND_2GHZ]
-	 *base on ant_num
-	 *rx_mask: RX mask
-	 *if rx_ant = 1 rx_mask[0]= 0xff;==>MCS0-MCS7
-	 *if rx_ant = 2 rx_mask[1]= 0xff;==>MCS8-MCS15
-	 *if rx_ant >= 3 rx_mask[2]= 0xff;
-	 *if BW_40 rx_mask[4]= 0x01;
-	 *highest supported RX rate
-	 */
+	 
 	if (rtlpriv->dm.supp_phymode_switch) {
 		pr_info("Support phy mode switch\n");
 
@@ -303,74 +270,70 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 
 	if (rtlhal->macphymode == SINGLEMAC_SINGLEPHY &&
 	    rtlhal->bandset == BAND_ON_BOTH) {
-		/* 1: 2.4 G bands */
-		/* <1> use  mac->bands as mem for hw->wiphy->bands */
+		 
+		 
 		sband = &(rtlmac->bands[NL80211_BAND_2GHZ]);
 
-		/* <2> set hw->wiphy->bands[NL80211_BAND_2GHZ]
-		 * to default value(1T1R) */
+		 
 		memcpy(&(rtlmac->bands[NL80211_BAND_2GHZ]), &rtl_band_2ghz,
 				sizeof(struct ieee80211_supported_band));
 
-		/* <3> init ht cap base on ant_num */
+		 
 		_rtl_init_hw_ht_capab(hw, &sband->ht_cap);
 
-		/* <4> set mac->sband to wiphy->sband */
+		 
 		hw->wiphy->bands[NL80211_BAND_2GHZ] = sband;
 
-		/* 2: 5 G bands */
-		/* <1> use  mac->bands as mem for hw->wiphy->bands */
+		 
+		 
 		sband = &(rtlmac->bands[NL80211_BAND_5GHZ]);
 
-		/* <2> set hw->wiphy->bands[NL80211_BAND_5GHZ]
-		 * to default value(1T1R) */
+		 
 		memcpy(&(rtlmac->bands[NL80211_BAND_5GHZ]), &rtl_band_5ghz,
 				sizeof(struct ieee80211_supported_band));
 
-		/* <3> init ht cap base on ant_num */
+		 
 		_rtl_init_hw_ht_capab(hw, &sband->ht_cap);
 
 		_rtl_init_hw_vht_capab(hw, &sband->vht_cap);
-		/* <4> set mac->sband to wiphy->sband */
+		 
 		hw->wiphy->bands[NL80211_BAND_5GHZ] = sband;
 	} else {
 		if (rtlhal->current_bandtype == BAND_ON_2_4G) {
-			/* <1> use  mac->bands as mem for hw->wiphy->bands */
+			 
 			sband = &(rtlmac->bands[NL80211_BAND_2GHZ]);
 
-			/* <2> set hw->wiphy->bands[NL80211_BAND_2GHZ]
-			 * to default value(1T1R) */
+			 
 			memcpy(&(rtlmac->bands[NL80211_BAND_2GHZ]),
 			       &rtl_band_2ghz,
 			       sizeof(struct ieee80211_supported_band));
 
-			/* <3> init ht cap base on ant_num */
+			 
 			_rtl_init_hw_ht_capab(hw, &sband->ht_cap);
 
-			/* <4> set mac->sband to wiphy->sband */
+			 
 			hw->wiphy->bands[NL80211_BAND_2GHZ] = sband;
 		} else if (rtlhal->current_bandtype == BAND_ON_5G) {
-			/* <1> use  mac->bands as mem for hw->wiphy->bands */
+			 
 			sband = &(rtlmac->bands[NL80211_BAND_5GHZ]);
 
-			/* <2> set hw->wiphy->bands[NL80211_BAND_5GHZ]
-			 * to default value(1T1R) */
+			 
 			memcpy(&(rtlmac->bands[NL80211_BAND_5GHZ]),
 			       &rtl_band_5ghz,
 			       sizeof(struct ieee80211_supported_band));
 
-			/* <3> init ht cap base on ant_num */
+			 
 			_rtl_init_hw_ht_capab(hw, &sband->ht_cap);
 
 			_rtl_init_hw_vht_capab(hw, &sband->vht_cap);
-			/* <4> set mac->sband to wiphy->sband */
+			 
 			hw->wiphy->bands[NL80211_BAND_5GHZ] = sband;
 		} else {
 			pr_err("Err BAND %d\n",
 			       rtlhal->current_bandtype);
 		}
 	}
-	/* <5> set hw caps */
+	 
 	ieee80211_hw_set(hw, SIGNAL_DBM);
 	ieee80211_hw_set(hw, RX_INCLUDES_FCS);
 	ieee80211_hw_set(hw, AMPDU_AGGREGATION);
@@ -379,7 +342,7 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 	ieee80211_hw_set(hw, SUPPORTS_AMSDU_IN_AMPDU);
 	ieee80211_hw_set(hw, SUPPORT_FAST_XMIT);
 
-	/* swlps or hwlps has been set in diff chip in init_sw_vars */
+	 
 	if (rtlpriv->psc.swctrl_lps) {
 		ieee80211_hw_set(hw, SUPPORTS_PS);
 		ieee80211_hw_set(hw, PS_NULLFUNC_STACK);
@@ -404,13 +367,13 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 	hw->queues = AC_MAX;
 	hw->extra_tx_headroom = RTL_TX_HEADER_SIZE;
 
-	/* TODO: Correct this value for our hw */
+	 
 	hw->max_listen_interval = MAX_LISTEN_INTERVAL;
 	hw->max_rate_tries = MAX_RATE_TRIES;
-	/* hw->max_rates = 1; */
+	 
 	hw->sta_data_size = sizeof(struct rtl_sta_info);
 
-/* wowlan is not supported by kernel if CONFIG_PM is not defined */
+ 
 #ifdef CONFIG_PM
 	if (rtlpriv->psc.wo_wlan_mode) {
 		if (rtlpriv->psc.wo_wlan_mode & WAKE_ON_MAGIC_PACKET)
@@ -425,7 +388,7 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 	}
 #endif
 
-	/* <6> mac address */
+	 
 	if (is_valid_ether_addr(rtlefuse->dev_addr)) {
 		SET_IEEE80211_PERM_ADDR(hw, rtlefuse->dev_addr);
 	} else {
@@ -449,11 +412,11 @@ static int _rtl_init_deferred_work(struct ieee80211_hw *hw)
 	if (!wq)
 		return -ENOMEM;
 
-	/* <1> timer */
+	 
 	timer_setup(&rtlpriv->works.watchdog_timer,
 		    rtl_watch_dog_timer_callback, 0);
 
-	/* <2> work queue */
+	 
 	rtlpriv->works.hw = hw;
 	rtlpriv->works.rtl_wq = wq;
 
@@ -495,7 +458,7 @@ void rtl_init_rfkill(struct ieee80211_hw *hw)
 	bool blocked;
 	u8 valid = 0;
 
-	/*set init state to on */
+	 
 	rtlpriv->rfkill.rfkill_state = true;
 	wiphy_rfkill_set_hw_state(hw->wiphy, 0);
 
@@ -526,23 +489,20 @@ int rtl_init_core(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_mac *rtlmac = rtl_mac(rtl_priv(hw));
 
-	/* <1> init mac80211 */
+	 
 	_rtl_init_mac80211(hw);
 	rtlmac->hw = hw;
 
-	/* <2> rate control register */
+	 
 	hw->rate_control_algorithm = "rtl_rc";
 
-	/*
-	 * <3> init CRDA must come after init
-	 * mac80211 hw  in _rtl_init_mac80211.
-	 */
+	 
 	if (rtl_regd_init(hw, rtl_reg_notifier)) {
 		pr_err("REGD init failed\n");
 		return 1;
 	}
 
-	/* <4> locks */
+	 
 	mutex_init(&rtlpriv->locks.conf_mutex);
 	mutex_init(&rtlpriv->locks.ips_mutex);
 	mutex_init(&rtlpriv->locks.lps_mutex);
@@ -556,7 +516,7 @@ int rtl_init_core(struct ieee80211_hw *hw)
 	spin_lock_init(&rtlpriv->locks.cck_and_rw_pagea_lock);
 	spin_lock_init(&rtlpriv->locks.fw_ps_lock);
 	spin_lock_init(&rtlpriv->locks.iqk_lock);
-	/* <5> init list */
+	 
 	INIT_LIST_HEAD(&rtlpriv->entry_list);
 	INIT_LIST_HEAD(&rtlpriv->scan_list.list);
 	skb_queue_head_init(&rtlpriv->tx_report.queue);
@@ -564,7 +524,7 @@ int rtl_init_core(struct ieee80211_hw *hw)
 
 	rtlmac->link_state = MAC80211_NOLINK;
 
-	/* <6> init deferred work */
+	 
 	return _rtl_init_deferred_work(hw);
 }
 EXPORT_SYMBOL_GPL(rtl_init_core);
@@ -590,11 +550,7 @@ void rtl_init_rx_config(struct ieee80211_hw *hw)
 }
 EXPORT_SYMBOL_GPL(rtl_init_rx_config);
 
-/*********************************************************
- *
- * tx information functions
- *
- *********************************************************/
+ 
 static void _rtl_qurey_shortpreamble_mode(struct ieee80211_hw *hw,
 					  struct rtl_tcb_desc *tcb_desc,
 					  struct ieee80211_tx_info *info)
@@ -604,7 +560,7 @@ static void _rtl_qurey_shortpreamble_mode(struct ieee80211_hw *hw,
 
 	tcb_desc->use_shortpreamble = false;
 
-	/* 1M can only use Long Preamble. 11B spec */
+	 
 	if (tcb_desc->hw_rate == rtlpriv->cfg->maps[RTL_RC_CCK_RATE1M])
 		return;
 	else if (rate_flag & IEEE80211_TX_RC_USE_SHORT_PREAMBLE)
@@ -672,7 +628,7 @@ static void _rtl_query_protection_mode(struct ieee80211_hw *hw,
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	u8 rate_flag = info->control.rates[0].flags;
 
-	/* Common Settings */
+	 
 	tcb_desc->rts_stbc = false;
 	tcb_desc->cts_enable = false;
 	tcb_desc->rts_sc = 0;
@@ -681,12 +637,12 @@ static void _rtl_query_protection_mode(struct ieee80211_hw *hw,
 	tcb_desc->rts_use_shortgi = false;
 
 	if (rate_flag & IEEE80211_TX_RC_USE_CTS_PROTECT) {
-		/* Use CTS-to-SELF in protection mode. */
+		 
 		tcb_desc->rts_enable = true;
 		tcb_desc->cts_enable = true;
 		tcb_desc->rts_rate = rtlpriv->cfg->maps[RTL_RC_OFDM_RATE24M];
 	} else if (rate_flag & IEEE80211_TX_RC_USE_RTS_CTS) {
-		/* Use RTS-CTS in protection mode. */
+		 
 		tcb_desc->rts_enable = true;
 		tcb_desc->rts_rate = rtlpriv->cfg->maps[RTL_RC_OFDM_RATE24M];
 	}
@@ -806,14 +762,14 @@ static void _rtl_txrate_selectmode(struct ieee80211_hw *hw,
 
 	if (rtlpriv->dm.useramask) {
 		tcb_desc->ratr_index = ratr_index;
-		/* TODO we will differentiate adhoc and station future  */
+		 
 		if (mac->opmode == NL80211_IFTYPE_STATION ||
 		    mac->opmode == NL80211_IFTYPE_MESH_POINT) {
 			tcb_desc->mac_id = 0;
 
 			if (sta &&
 			    (rtlpriv->cfg->spec_ver & RTL_SPEC_NEW_RATEID))
-				;	/* use sta_entry->ratr_index */
+				;	 
 			else if (mac->mode == WIRELESS_MODE_AC_5G)
 				tcb_desc->ratr_index =
 					SET_RATE_ID(RATR_INX_WIRELESS_AC_5N);
@@ -874,7 +830,7 @@ static void _rtl_query_bandwidth_mode(struct ieee80211_hw *hw,
 	if (tcb_desc->multicast || tcb_desc->broadcast)
 		return;
 
-	/*use legency rate, shall use 20MHz */
+	 
 	if (tcb_desc->hw_rate <= rtlpriv->cfg->maps[RTL_RC_OFDM_RATE54M])
 		return;
 
@@ -952,31 +908,7 @@ static u8 _rtl_get_highest_n_rate(struct ieee80211_hw *hw,
 	return hw_rate;
 }
 
-/* mac80211's rate_idx is like this:
- *
- * 2.4G band:rx_status->band == NL80211_BAND_2GHZ
- *
- * B/G rate:
- * (rx_status->flag & RX_FLAG_HT) = 0,
- * DESC_RATE1M-->DESC_RATE54M ==> idx is 0-->11,
- *
- * N rate:
- * (rx_status->flag & RX_FLAG_HT) = 1,
- * DESC_RATEMCS0-->DESC_RATEMCS15 ==> idx is 0-->15
- *
- * 5G band:rx_status->band == NL80211_BAND_5GHZ
- * A rate:
- * (rx_status->flag & RX_FLAG_HT) = 0,
- * DESC_RATE6M-->DESC_RATE54M ==> idx is 0-->7,
- *
- * N rate:
- * (rx_status->flag & RX_FLAG_HT) = 1,
- * DESC_RATEMCS0-->DESC_RATEMCS15 ==> idx is 0-->15
- *
- * VHT rates:
- * DESC_RATEVHT1SS_MCS0-->DESC_RATEVHT1SS_MCS9 ==> idx is 0-->9
- * DESC_RATEVHT2SS_MCS0-->DESC_RATEVHT2SS_MCS9 ==> idx is 0-->9
- */
+ 
 int rtlwifi_rate_mapping(struct ieee80211_hw *hw, bool isht, bool isvht,
 			 u8 desc_rate)
 {
@@ -1192,11 +1124,11 @@ static u8 _rtl_get_tx_hw_rate(struct ieee80211_hw *hw,
 	u8 hw_value = 0x0;
 
 	if (r->flags & IEEE80211_TX_RC_MCS) {
-		/* HT MCS0-15 */
+		 
 		hw_value = rtlpriv->cfg->maps[RTL_RC_HT_RATEMCS15] - 15 +
 			   r->idx;
 	} else if (r->flags & IEEE80211_TX_RC_VHT_MCS) {
-		/* VHT MCS0-9, NSS */
+		 
 		if (ieee80211_rate_get_vht_nss(r) == 2)
 			hw_value = rtlpriv->cfg->maps[RTL_RC_VHT_RATE_2SS_MCS9];
 		else
@@ -1204,14 +1136,14 @@ static u8 _rtl_get_tx_hw_rate(struct ieee80211_hw *hw,
 
 		hw_value = hw_value - 9 + ieee80211_rate_get_vht_mcs(r);
 	} else {
-		/* legacy */
+		 
 		txrate = ieee80211_get_tx_rate(hw, info);
 
 		if (txrate)
 			hw_value = txrate->hw_value;
 	}
 
-	/* check 5G band */
+	 
 	if (rtlpriv->rtlhal.current_bandtype == BAND_ON_5G &&
 	    hw_value < rtlpriv->cfg->maps[RTL_RC_OFDM_RATE6M])
 		hw_value = rtlpriv->cfg->maps[RTL_RC_OFDM_RATE6M];
@@ -1246,16 +1178,9 @@ void rtl_get_tcb_desc(struct ieee80211_hw *hw,
 		tcb_desc->use_spe_rpt = 1;
 
 	if (ieee80211_is_data(fc)) {
-		/*
-		 *we set data rate INX 0
-		 *in rtl_rc.c   if skb is special data or
-		 *mgt which need low data rate.
-		 */
+		 
 
-		/*
-		 *So tcb_desc->hw_rate is just used for
-		 *special data and mgt frames
-		 */
+		 
 		if (info->control.rates[0].idx == 0 ||
 				ieee80211_is_nullfunc(fc)) {
 			tcb_desc->use_driver_rate = true;
@@ -1264,13 +1189,7 @@ void rtl_get_tcb_desc(struct ieee80211_hw *hw,
 
 			tcb_desc->disable_ratefallback = 1;
 		} else {
-			/*
-			 *because hw will nerver use hw_rate
-			 *when tcb_desc->use_driver_rate = false
-			 *so we never set highest N rate here,
-			 *and N rate will all be controlled by FW
-			 *when tcb_desc->use_driver_rate = false
-			 */
+			 
 			if (sta && sta->deflink.vht_cap.vht_supported) {
 				tcb_desc->hw_rate =
 				_rtl_get_vht_highest_n_rate(hw, sta);
@@ -1327,7 +1246,7 @@ bool rtl_tx_mgmt_proc(struct ieee80211_hw *hw, struct sk_buff *skb)
 		rtl_dbg(rtlpriv, COMP_SEND, DBG_DMESG, "MAC80211_LINKING\n");
 
 		mac->link_state = MAC80211_LINKING;
-		/* Dul mac */
+		 
 		rtlpriv->phy.need_iqk = true;
 
 	}
@@ -1470,13 +1389,13 @@ static const u8 *rtl_skb_ether_type_ptr(struct ieee80211_hw *hw,
 	switch (rtlpriv->sec.pairwise_enc_algorithm) {
 	case WEP40_ENCRYPTION:
 	case WEP104_ENCRYPTION:
-		encrypt_header_len = 4;/*WEP_IV_LEN*/
+		encrypt_header_len = 4; 
 		break;
 	case TKIP_ENCRYPTION:
-		encrypt_header_len = 8;/*TKIP_IV_LEN*/
+		encrypt_header_len = 8; 
 		break;
 	case AESCCMP_ENCRYPTION:
-		encrypt_header_len = 8;/*CCMP_HDR_LEN;*/
+		encrypt_header_len = 8; 
 		break;
 	default:
 		break;
@@ -1489,7 +1408,7 @@ static const u8 *rtl_skb_ether_type_ptr(struct ieee80211_hw *hw,
 	return skb->data + offset;
 }
 
-/*should call before software enc*/
+ 
 u8 rtl_is_special_data(struct ieee80211_hw *hw, struct sk_buff *skb, u8 is_tx,
 		       bool is_enc)
 {
@@ -1516,9 +1435,7 @@ u8 rtl_is_special_data(struct ieee80211_hw *hw, struct sk_buff *skb, u8 is_tx,
 			     (((u8 *)udp)[3] == 67)) ||
 			    ((((u8 *)udp)[1] == 67) &&
 			     (((u8 *)udp)[3] == 68))) {
-				/* 68 : UDP BOOTP client
-				 * 67 : UDP BOOTP server
-				 */
+				 
 				rtl_dbg(rtlpriv, (COMP_SEND | COMP_RECV),
 					DBG_DMESG, "dhcp %s !!\n",
 					(is_tx) ? "Tx" : "Rx");
@@ -1536,7 +1453,7 @@ u8 rtl_is_special_data(struct ieee80211_hw *hw, struct sk_buff *skb, u8 is_tx,
 
 		return true;
 	} else if (ETH_P_PAE == ether_type) {
-		/* EAPOL is seens as in-4way */
+		 
 		rtlpriv->btcoexist.btc_info.in_4way = true;
 		rtlpriv->btcoexist.btc_info.in_4way_ts = jiffies;
 
@@ -1553,9 +1470,7 @@ u8 rtl_is_special_data(struct ieee80211_hw *hw, struct sk_buff *skb, u8 is_tx,
 
 		return true;
 	} else if (ETH_P_IPV6 == ether_type) {
-		/* TODO: Handle any IPv6 cases that need special handling.
-		 * For now, always return false
-		 */
+		 
 		goto end;
 	}
 
@@ -1616,10 +1531,7 @@ static u16 rtl_get_tx_report_sn(struct ieee80211_hw *hw,
 	struct rtl_tx_report *tx_report = &rtlpriv->tx_report;
 	u16 sn;
 
-	/* SW_DEFINE[11:8] are reserved (driver fills zeros)
-	 * SW_DEFINE[7:2] are used by driver
-	 * SW_DEFINE[1:0] are reserved for firmware (driver fills zeros)
-	 */
+	 
 	sn = (atomic_inc_return(&tx_report->sn) & 0x003F) << 2;
 
 	tx_report->last_sent_sn = sn;
@@ -1692,7 +1604,7 @@ bool rtl_check_tx_report_acked(struct ieee80211_hw *hw)
 		rtl_dbg(rtlpriv, COMP_TX_REPORT, DBG_WARNING,
 			"Check TX-Report timeout!! s_sn=0x%X r_sn=0x%X\n",
 			tx_report->last_sent_sn, tx_report->last_recv_sn);
-		return true;	/* 3 sec. (timeout) seen as acked */
+		return true;	 
 	}
 
 	return false;
@@ -1721,7 +1633,7 @@ u32 rtl_get_hal_edca_param(struct ieee80211_hw *hw,
 	u8 sifstime = 10;
 	u8 slottime = 20;
 
-	/* AIFS = AIFSN * slot time + SIFS */
+	 
 	switch (wirelessmode) {
 	case WIRELESS_MODE_A:
 	case WIRELESS_MODE_N_24G:
@@ -1747,11 +1659,7 @@ u32 rtl_get_hal_edca_param(struct ieee80211_hw *hw,
 }
 EXPORT_SYMBOL_GPL(rtl_get_hal_edca_param);
 
-/*********************************************************
- *
- * functions called by core.c
- *
- *********************************************************/
+ 
 int rtl_tx_agg_start(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		     struct ieee80211_sta *sta, u16 tid, u16 *ssn)
 {
@@ -1895,12 +1803,8 @@ void rtl_rx_ampdu_apply(struct rtl_priv *rtlpriv)
 }
 EXPORT_SYMBOL(rtl_rx_ampdu_apply);
 
-/*********************************************************
- *
- * wq & timer callback functions
- *
- *********************************************************/
-/* this function is used for roaming */
+ 
+ 
 void rtl_beacon_statistic(struct ieee80211_hw *hw, struct sk_buff *skb)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
@@ -1912,16 +1816,16 @@ void rtl_beacon_statistic(struct ieee80211_hw *hw, struct sk_buff *skb)
 	if (rtlpriv->mac80211.link_state < MAC80211_LINKED)
 		return;
 
-	/* check if this really is a beacon */
+	 
 	if (!ieee80211_is_beacon(hdr->frame_control) &&
 	    !ieee80211_is_probe_resp(hdr->frame_control))
 		return;
 
-	/* min. beacon length + FCS_LEN */
+	 
 	if (skb->len <= 40 + FCS_LEN)
 		return;
 
-	/* and only beacons from the associated BSSID, please */
+	 
 	if (!ether_addr_equal(hdr->addr3, rtlpriv->mac80211.bssid))
 		return;
 
@@ -1969,7 +1873,7 @@ void rtl_scan_list_expire(struct ieee80211_hw *hw)
 	spin_lock_irqsave(&rtlpriv->locks.scan_list_lock, flags);
 
 	list_for_each_entry_safe(entry, next, &rtlpriv->scan_list.list, list) {
-		/* 180 seconds */
+		 
 		if (jiffies_to_msecs(jiffies - entry->age) < 180000)
 			continue;
 
@@ -1996,11 +1900,11 @@ void rtl_collect_scan_list(struct ieee80211_hw *hw, struct sk_buff *skb)
 
 	struct rtl_bssid_entry *entry = NULL, *iter;
 
-	/* check if it is scanning */
+	 
 	if (!mac->act_scanning)
 		return;
 
-	/* check if this really is a beacon */
+	 
 	if (!ieee80211_is_beacon(hdr->frame_control) &&
 	    !ieee80211_is_probe_resp(hdr->frame_control))
 		return;
@@ -2065,7 +1969,7 @@ static void rtl_watchdog_wq_callback(struct work_struct *work)
 	if (is_hal_stop(rtlhal))
 		return;
 
-	/* <1> Determine if action frame is allowed */
+	 
 	if (mac->link_state > MAC80211_NOLINK) {
 		if (mac->cnt_after_linked < 20)
 			mac->cnt_after_linked++;
@@ -2073,11 +1977,9 @@ static void rtl_watchdog_wq_callback(struct work_struct *work)
 		mac->cnt_after_linked = 0;
 	}
 
-	/* <2> to check if traffic busy, if
-	 * busytraffic we don't change channel
-	 */
+	 
 	if (mac->link_state >= MAC80211_LINKED) {
-		/* (1) get aver_rx_cnt_inperiod & aver_tx_cnt_inperiod */
+		 
 		for (idx = 0; idx <= 2; idx++) {
 			rtlpriv->link_info.num_rx_in4period[idx] =
 			    rtlpriv->link_info.num_rx_in4period[idx + 1];
@@ -2097,7 +1999,7 @@ static void rtl_watchdog_wq_callback(struct work_struct *work)
 		aver_rx_cnt_inperiod = rx_cnt_inp4eriod / 4;
 		aver_tx_cnt_inperiod = tx_cnt_inp4eriod / 4;
 
-		/* (2) check traffic busy */
+		 
 		if (aver_rx_cnt_inperiod > 100 || aver_tx_cnt_inperiod > 100) {
 			busytraffic = true;
 			if (aver_rx_cnt_inperiod > aver_tx_cnt_inperiod)
@@ -2106,17 +2008,17 @@ static void rtl_watchdog_wq_callback(struct work_struct *work)
 				tx_busy_traffic = false;
 		}
 
-		/* Higher Tx/Rx data. */
+		 
 		if (aver_rx_cnt_inperiod > 4000 ||
 		    aver_tx_cnt_inperiod > 4000) {
 			higher_busytraffic = true;
 
-			/* Extremely high Rx data. */
+			 
 			if (aver_rx_cnt_inperiod > 5000)
 				higher_busyrxtraffic = true;
 		}
 
-		/* check every tid's tx traffic */
+		 
 		for (tid = 0; tid <= 7; tid++) {
 			for (idx = 0; idx <= 2; idx++)
 				rtlpriv->link_info.tidtx_in4period[tid][idx] =
@@ -2137,7 +2039,7 @@ static void rtl_watchdog_wq_callback(struct work_struct *work)
 									false;
 		}
 
-		/* PS is controlled by coex. */
+		 
 		if (rtlpriv->cfg->ops->get_btc_status() &&
 		    rtlpriv->btcoexist.btc_ops->btc_is_bt_ctrl_lps(rtlpriv))
 			goto label_lps_done;
@@ -2178,11 +2080,11 @@ label_lps_done:
 		(u32)(rtlpriv->stats.rxbytesunicast_inperiod * 8 / 2 /
 		1024 / 1024);
 
-	/* <3> DM */
+	 
 	if (!rtlpriv->cfg->mod_params->disable_watchdog)
 		rtlpriv->cfg->ops->dm_watchdog(hw);
 
-	/* <4> roaming */
+	 
 	if (mac->link_state == MAC80211_LINKED &&
 	    mac->opmode == NL80211_IFTYPE_STATION) {
 		if ((rtlpriv->link_info.bcn_rx_inperiod +
@@ -2192,9 +2094,7 @@ label_lps_done:
 				"AP off for %d s\n",
 				(rtlpriv->link_info.roam_times * 2));
 
-			/* if we can't recv beacon for 10s,
-			 * we should reconnect this AP
-			 */
+			 
 			if (rtlpriv->link_info.roam_times >= 5) {
 				pr_err("AP off, try to reconnect now\n");
 				rtlpriv->link_info.roam_times = 0;
@@ -2219,10 +2119,10 @@ label_lps_done:
 	rtlpriv->link_info.num_tx_inperiod = 0;
 	rtlpriv->link_info.bcn_rx_inperiod = 0;
 
-	/* <6> scan list */
+	 
 	rtl_scan_list_expire(hw);
 
-	/* <7> check ack queue */
+	 
 	rtl_free_entries_from_ack_queue(hw, true);
 }
 
@@ -2274,10 +2174,10 @@ void rtl_c2hcmd_enqueue(struct ieee80211_hw *hw, struct sk_buff *skb)
 		return;
 	}
 
-	/* enqueue */
+	 
 	skb_queue_tail(&rtlpriv->c2hcmd_queue, skb);
 
-	/* wake up wq */
+	 
 	queue_delayed_work(rtlpriv->works.rtl_wq, &rtlpriv->works.c2hcmd_wq, 0);
 }
 EXPORT_SYMBOL(rtl_c2hcmd_enqueue);
@@ -2336,10 +2236,10 @@ void rtl_c2hcmd_launcher(struct ieee80211_hw *hw, int exec)
 	int i;
 
 	for (i = 0; i < 200; i++) {
-		/* dequeue a task */
+		 
 		skb = skb_dequeue(&rtlpriv->c2hcmd_queue);
 
-		/* do it */
+		 
 		if (!skb)
 			break;
 
@@ -2351,7 +2251,7 @@ void rtl_c2hcmd_launcher(struct ieee80211_hw *hw, int exec)
 		if (exec)
 			rtl_c2h_content_parsing(hw, skb);
 
-		/* free */
+		 
 		dev_kfree_skb_any(skb);
 	}
 }
@@ -2365,11 +2265,7 @@ static void rtl_c2hcmd_wq_callback(struct work_struct *work)
 	rtl_c2hcmd_launcher(hw, 1);
 }
 
-/*********************************************************
- *
- * frame process functions
- *
- *********************************************************/
+ 
 u8 *rtl_find_ie(u8 *data, unsigned int len, u8 ie)
 {
 	struct ieee80211_mgmt *mgmt = (void *)data;
@@ -2389,8 +2285,8 @@ u8 *rtl_find_ie(u8 *data, unsigned int len, u8 ie)
 	return NULL;
 }
 
-/* when we use 2 rx ants we send IEEE80211_SMPS_OFF */
-/* when we use 1 rx ant we send IEEE80211_SMPS_STATIC */
+ 
+ 
 static struct sk_buff *rtl_make_smps_action(struct ieee80211_hw *hw,
 				     enum ieee80211_smps_mode smps,
 				     u8 *da, u8 *bssid)
@@ -2399,7 +2295,7 @@ static struct sk_buff *rtl_make_smps_action(struct ieee80211_hw *hw,
 	struct sk_buff *skb;
 	struct ieee80211_mgmt *action_frame;
 
-	/* 27 = header + category + action + smps mode */
+	 
 	skb = dev_alloc_skb(27 + hw->extra_tx_headroom);
 	if (!skb)
 		return NULL;
@@ -2414,21 +2310,21 @@ static struct sk_buff *rtl_make_smps_action(struct ieee80211_hw *hw,
 	action_frame->u.action.category = WLAN_CATEGORY_HT;
 	action_frame->u.action.u.ht_smps.action = WLAN_HT_ACTION_SMPS;
 	switch (smps) {
-	case IEEE80211_SMPS_AUTOMATIC:/* 0 */
-	case IEEE80211_SMPS_NUM_MODES:/* 4 */
+	case IEEE80211_SMPS_AUTOMATIC: 
+	case IEEE80211_SMPS_NUM_MODES: 
 		WARN_ON(1);
 		fallthrough;
-	case IEEE80211_SMPS_OFF:/* 1 */ /*MIMO_PS_NOLIMIT*/
+	case IEEE80211_SMPS_OFF:   
 		action_frame->u.action.u.ht_smps.smps_control =
-				WLAN_HT_SMPS_CONTROL_DISABLED;/* 0 */
+				WLAN_HT_SMPS_CONTROL_DISABLED; 
 		break;
-	case IEEE80211_SMPS_STATIC:/* 2 */ /*MIMO_PS_STATIC*/
+	case IEEE80211_SMPS_STATIC:   
 		action_frame->u.action.u.ht_smps.smps_control =
-				WLAN_HT_SMPS_CONTROL_STATIC;/* 1 */
+				WLAN_HT_SMPS_CONTROL_STATIC; 
 		break;
-	case IEEE80211_SMPS_DYNAMIC:/* 3 */ /*MIMO_PS_DYNAMIC*/
+	case IEEE80211_SMPS_DYNAMIC:   
 		action_frame->u.action.u.ht_smps.smps_control =
-				WLAN_HT_SMPS_CONTROL_DYNAMIC;/* 3 */
+				WLAN_HT_SMPS_CONTROL_DYNAMIC; 
 		break;
 	}
 
@@ -2466,13 +2362,13 @@ int rtl_send_smps_action(struct ieee80211_hw *hw,
 		memcpy(bssid, rtlpriv->mac80211.bssid, ETH_ALEN);
 
 	skb = rtl_make_smps_action(hw, smps, sta->addr, bssid);
-	/* this is a type = mgmt * stype = action frame */
+	 
 	if (skb) {
 		struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
 		struct rtl_sta_info *sta_entry =
 			(struct rtl_sta_info *) sta->drv_priv;
 		sta_entry->mimo_ps = smps;
-		/* rtlpriv->cfg->ops->update_rate_tbl(hw, sta, 0, true); */
+		 
 
 		info->control.rates[0].idx = 0;
 		info->band = hw->conf.chandef.chan->band;
@@ -2513,11 +2409,7 @@ void rtl_phy_scan_operation_backup(struct ieee80211_hw *hw, u8 operation)
 }
 EXPORT_SYMBOL(rtl_phy_scan_operation_backup);
 
-/* because mac80211 have issues when can receive del ba
- * so here we just make a fake del_ba if we receive a ba_req
- * but rx_agg was opened to let mac80211 release some ba
- * related resources, so please this del_ba for tx
- */
+ 
 struct sk_buff *rtl_make_del_ba(struct ieee80211_hw *hw,
 				u8 *sa, u8 *bssid, u16 tid)
 {
@@ -2526,7 +2418,7 @@ struct sk_buff *rtl_make_del_ba(struct ieee80211_hw *hw,
 	struct ieee80211_mgmt *action_frame;
 	u16 params;
 
-	/* 27 = header + category + action + smps mode */
+	 
 	skb = dev_alloc_skb(34 + hw->extra_tx_headroom);
 	if (!skb)
 		return NULL;
@@ -2540,8 +2432,8 @@ struct sk_buff *rtl_make_del_ba(struct ieee80211_hw *hw,
 						  IEEE80211_STYPE_ACTION);
 	action_frame->u.action.category = WLAN_CATEGORY_BACK;
 	action_frame->u.action.u.delba.action_code = WLAN_ACTION_DELBA;
-	params = (u16)(1 << 11);	/* bit 11 initiator */
-	params |= (u16)(tid << 12);	/* bit 15:12 TID number */
+	params = (u16)(1 << 11);	 
+	params |= (u16)(tid << 12);	 
 
 	action_frame->u.action.u.delba.params = cpu_to_le16(params);
 	action_frame->u.action.u.delba.reason_code =
@@ -2550,11 +2442,7 @@ struct sk_buff *rtl_make_del_ba(struct ieee80211_hw *hw,
 	return skb;
 }
 
-/*********************************************************
- *
- * IOT functions
- *
- *********************************************************/
+ 
 static bool rtl_chk_vendor_ouisub(struct ieee80211_hw *hw,
 				  struct octet_string vendor_ie)
 {
@@ -2652,15 +2540,15 @@ void rtl_recognize_peer(struct ieee80211_hw *hw, u8 *data, unsigned int len)
 	if (mac->cnt_after_linked > 2)
 		return;
 
-	/* check if this really is a beacon */
+	 
 	if (!ieee80211_is_beacon(hdr->frame_control))
 		return;
 
-	/* min. beacon length + FCS_LEN */
+	 
 	if (len <= 40 + FCS_LEN)
 		return;
 
-	/* and only beacons from the associated BSSID, please */
+	 
 	if (!ether_addr_equal_64bits(hdr->addr3, rtlpriv->mac80211.bssid))
 		return;
 
@@ -2723,10 +2611,10 @@ static int __init rtl_core_module_init(void)
 	if (rtl_rate_control_register())
 		pr_err("rtl: Unable to register rtl_rc, use default RC !!\n");
 
-	/* add debugfs */
+	 
 	rtl_debugfs_add_topdir();
 
-	/* init some global vars */
+	 
 	INIT_LIST_HEAD(&rtl_global_var.glb_priv_list);
 	spin_lock_init(&rtl_global_var.glb_list_lock);
 
@@ -2735,10 +2623,10 @@ static int __init rtl_core_module_init(void)
 
 static void __exit rtl_core_module_exit(void)
 {
-	/*RC*/
+	 
 	rtl_rate_control_unregister();
 
-	/* remove debugfs */
+	 
 	rtl_debugfs_remove_topdir();
 }
 

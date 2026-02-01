@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2006 Chad Mynhier.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "config.h"
 #include "includes.h"
@@ -41,7 +27,7 @@
 
 static int tmpl_fd = -1;
 
-/* Lookup the latest process contract */
+ 
 static ctid_t
 get_active_process_contract_id(void)
 {
@@ -83,7 +69,7 @@ solaris_contract_pre_fork(void)
 	debug2("%s: setting up process contract template on fd %d",
 	    __func__, tmpl_fd);
 
-	/* First we set the template parameters and event sets. */
+	 
 	if (ct_pr_tmpl_set_param(tmpl_fd, CT_PR_PGRPONLY) != 0) {
 		error("%s: Error setting process contract parameter set "
 		    "(pgrponly): %s", __func__, strerror(errno));
@@ -105,7 +91,7 @@ solaris_contract_pre_fork(void)
 		goto fail;
 	}
 
-	/* Now make this the active template for this process. */
+	 
 	if (ct_tmpl_activate(tmpl_fd) != 0) {
 		error("%s: Error activating process contract "
 		    "template: %s", __func__, strerror(errno));
@@ -126,7 +112,7 @@ solaris_contract_post_fork_child()
 	debug2("%s: clearing process contract template on fd %d",
 	    __func__, tmpl_fd);
 
-	/* Clear the active template. */
+	 
 	if (ct_tmpl_clear(tmpl_fd) != 0)
 		error("%s: Error clearing active process contract "
 		    "template: %s", __func__, strerror(errno));
@@ -147,7 +133,7 @@ solaris_contract_post_fork_parent(pid_t pid)
 	if (tmpl_fd == -1)
 		return;
 
-	/* First clear the active template. */
+	 
 	if ((r = ct_tmpl_clear(tmpl_fd)) != 0)
 		error("%s: Error clearing active process contract "
 		    "template: %s", __func__, strerror(errno));
@@ -155,15 +141,11 @@ solaris_contract_post_fork_parent(pid_t pid)
 	close(tmpl_fd);
 	tmpl_fd = -1;
 
-	/*
-	 * If either the fork didn't succeed (pid < 0), or clearing
-	 * th active contract failed (r != 0), then we have nothing
-	 * more do.
-	 */
+	 
 	if (r != 0 || pid <= 0)
 		return;
 
-	/* Now lookup and abandon the contract we've created. */
+	 
 	ctid = get_active_process_contract_id();
 
 	debug2("%s: abandoning contract id %ld", __func__, ctid);
@@ -199,10 +181,7 @@ solaris_contract_post_fork_parent(pid_t pid)
 #include <sys/task.h>
 #include <project.h>
 
-/*
- * Get/set solaris default project.
- * If we fail, just run along gracefully.
- */
+ 
 void
 solaris_set_default_project(struct passwd *pw)
 {
@@ -210,20 +189,20 @@ solaris_set_default_project(struct passwd *pw)
 	struct project   tempproject;
 	char buf[1024];
 
-	/* get default project, if we fail just return gracefully  */
+	 
 	if ((defaultproject = getdefaultproj(pw->pw_name, &tempproject, &buf,
 	    sizeof(buf))) != NULL) {
-		/* set default project */
+		 
 		if (setproject(defaultproject->pj_name, pw->pw_name,
 		    TASK_NORMAL) != 0)
 			debug("setproject(%s): %s", defaultproject->pj_name,
 			    strerror(errno));
 	} else {
-		/* debug on getdefaultproj() error */
+		 
 		debug("getdefaultproj(%s): %s", pw->pw_name, strerror(errno));
 	}
 }
-#endif /* USE_SOLARIS_PROJECTS */
+#endif  
 
 #ifdef USE_SOLARIS_PRIVS
 # ifdef HAVE_PRIV_H
@@ -255,21 +234,7 @@ solaris_drop_privs_pinfo_net_fork_exec(void)
 {
 	priv_set_t *pset = NULL, *npset = NULL;
 
-	/*
-	 * Note: this variant avoids dropping DAC filesystem rights, in case
-	 * the process calling it is running as root and should have the
-	 * ability to read/write/chown any file on the system.
-	 *
-	 * We start with the basic set, then *add* the DAC rights to it while
-	 * taking away other parts of BASIC we don't need. Then we intersect
-	 * this with our existing PERMITTED set. In this way we keep any
-	 * DAC rights we had before, while otherwise reducing ourselves to
-	 * the minimum set of privileges we need to proceed.
-	 *
-	 * This also means we drop any other parts of "root" that we don't
-	 * need (e.g. the ability to kill any process, create new device nodes
-	 * etc etc).
-	 */
+	 
 
 	if ((pset = priv_allocset()) == NULL)
 		fatal("priv_allocset: %s", strerror(errno));
@@ -293,13 +258,7 @@ solaris_drop_privs_pinfo_net_fork_exec(void)
 		fatal("priv_delset: %s", strerror(errno));
 
 #ifdef PRIV_XPOLICY
-	/*
-	 * It is possible that the user has an extended policy
-	 * in place; the LIMIT set restricts the extended policy
-	 * and so should not be restricted.
-	 * PRIV_XPOLICY is newly defined in Solaris 11 though the extended
-	 * policy was not implemented until Solaris 11.1.
-	 */
+	 
 	if (getpflags(PRIV_XPOLICY) == 1) {
 		if (getppriv(PRIV_LIMIT, pset) != 0)
 			fatal("getppriv: %s", strerror(errno));
@@ -309,7 +268,7 @@ solaris_drop_privs_pinfo_net_fork_exec(void)
 	} else
 #endif
 	{
-		/* Cannot exec, so we can kill the limit set. */
+		 
 		priv_emptyset(pset);
 		if (setppriv(PRIV_SET, PRIV_LIMIT, pset) != 0)
 			fatal("setppriv: %s", strerror(errno));
@@ -333,7 +292,7 @@ solaris_drop_privs_root_pinfo_net(void)
 {
 	priv_set_t *pset = NULL;
 
-	/* Start with "basic" and drop everything we don't need. */
+	 
 	if ((pset = solaris_basic_privset()) == NULL)
 		fatal("solaris_basic_privset: %s", strerror(errno));
 
@@ -359,7 +318,7 @@ solaris_drop_privs_root_pinfo_net_exec(void)
 	priv_set_t *pset = NULL;
 
 
-	/* Start with "basic" and drop everything we don't need. */
+	 
 	if ((pset = solaris_basic_privset()) == NULL)
 		fatal("solaris_basic_privset: %s", strerror(errno));
 

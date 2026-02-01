@@ -1,89 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Linux NET3:	IP/IP protocol decoder.
- *
- *	Authors:
- *		Sam Lantinga (slouken@cs.ucdavis.edu)  02/01/95
- *
- *	Fixes:
- *		Alan Cox	:	Merged and made usable non modular (its so tiny its silly as
- *					a module taking up 2 pages).
- *		Alan Cox	: 	Fixed bug with 1.3.18 and IPIP not working (now needs to set skb->h.iph)
- *					to keep ip_forward happy.
- *		Alan Cox	:	More fixes for 1.3.21, and firewall fix. Maybe this will work soon 8).
- *		Kai Schulte	:	Fixed #defines for IP_FIREWALL->FIREWALL
- *              David Woodhouse :       Perform some basic ICMP handling.
- *                                      IPIP Routing without decapsulation.
- *              Carlos Picoto   :       GRE over IP support
- *		Alexey Kuznetsov:	Reworked. Really, now it is truncated version of ipv4/ip_gre.c.
- *					I do not want to merge them together.
- */
 
-/* tunnel.c: an IP tunnel driver
+ 
 
-	The purpose of this driver is to provide an IP tunnel through
-	which you can tunnel network traffic transparently across subnets.
+ 
 
-	This was written by looking at Nick Holloway's dummy driver
-	Thanks for the great code!
+ 
 
-		-Sam Lantinga	(slouken@cs.ucdavis.edu)  02/01/95
-
-	Minor tweaks:
-		Cleaned up the code a little and added some pre-1.3.0 tweaks.
-		dev->hard_header/hard_header_len changed to use no headers.
-		Comments/bracketing tweaked.
-		Made the tunnels use dev->name not tunnel: when error reporting.
-		Added tx_dropped stat
-
-		-Alan Cox	(alan@lxorguk.ukuu.org.uk) 21 March 95
-
-	Reworked:
-		Changed to tunnel to destination gateway in addition to the
-			tunnel's pointopoint address
-		Almost completely rewritten
-		Note:  There is currently no firewall or ICMP handling done.
-
-		-Sam Lantinga	(slouken@cs.ucdavis.edu) 02/13/96
-
-*/
-
-/* Things I wish I had known when writing the tunnel driver:
-
-	When the tunnel_xmit() function is called, the skb contains the
-	packet to be sent (plus a great deal of extra info), and dev
-	contains the tunnel device that _we_ are.
-
-	When we are passed a packet, we are expected to fill in the
-	source address with our source IP address.
-
-	What is the proper way to allocate, copy and free a buffer?
-	After you allocate it, it is a "0 length" chunk of memory
-	starting at zero.  If you want to add headers to the buffer
-	later, you'll have to call "skb_reserve(skb, amount)" with
-	the amount of memory you want reserved.  Then, you call
-	"skb_put(skb, amount)" with the amount of space you want in
-	the buffer.  skb_put() returns a pointer to the top (#0) of
-	that buffer.  skb->len is set to the amount of space you have
-	"allocated" with skb_put().  You can then write up to skb->len
-	bytes to that buffer.  If you need more, you can call skb_put()
-	again with the additional amount of space you need.  You can
-	find out how much more space you can allocate by calling
-	"skb_tailroom(skb)".
-	Now, to add header space, call "skb_push(skb, header_len)".
-	This creates space at the beginning of the buffer and returns
-	a pointer to this new space.  If later you need to strip a
-	header from a buffer, call "skb_pull(skb, header_len)".
-	skb_headroom() will return how much space is left at the top
-	of the buffer (before the main data).  Remember, this headroom
-	space must be reserved before the skb_put() function is called.
-	*/
-
-/*
-   This version of net/ipv4/ipip.c is cloned of net/ipv4/ip_gre.c
-
-   For comments look at net/ipv4/ip_gre.c --ANK
- */
+ 
 
 
 #include <linux/capability.h>
@@ -123,10 +45,7 @@ static struct rtnl_link_ops ipip_link_ops __read_mostly;
 
 static int ipip_err(struct sk_buff *skb, u32 info)
 {
-	/* All the routers (except for Linux) return only
-	 * 8 bytes of packet payload. It means, that precise relaying of
-	 * ICMP in the real Internet is absolutely infeasible.
-	 */
+	 
 	struct net *net = dev_net(skb->dev);
 	struct ip_tunnel_net *itn = net_generic(net, ipip_net_id);
 	const struct iphdr *iph = (const struct iphdr *)skb->data;
@@ -146,13 +65,10 @@ static int ipip_err(struct sk_buff *skb, u32 info)
 	case ICMP_DEST_UNREACH:
 		switch (code) {
 		case ICMP_SR_FAILED:
-			/* Impossible event. */
+			 
 			goto out;
 		default:
-			/* All others are translated to HOST_UNREACH.
-			 * rfc2003 contains "deep thoughts" about NET_UNREACH,
-			 * I believe they are just ether pollution. --ANK
-			 */
+			 
 			break;
 		}
 		break;
@@ -198,13 +114,13 @@ out:
 }
 
 static const struct tnl_ptk_info ipip_tpi = {
-	/* no tunnel info required for ipip. */
+	 
 	.proto = htons(ETH_P_IP),
 };
 
 #if IS_ENABLED(CONFIG_MPLS)
 static const struct tnl_ptk_info mplsip_tpi = {
-	/* no tunnel info required for mplsip. */
+	 
 	.proto = htons(ETH_P_MPLS_UC),
 };
 #endif
@@ -267,10 +183,7 @@ static int mplsip_rcv(struct sk_buff *skb)
 }
 #endif
 
-/*
- *	This function assumes it is being called from dev_queue_xmit()
- *	and that skb is filled properly by that function.
- */
+ 
 static netdev_tx_t ipip_tunnel_xmit(struct sk_buff *skb,
 				    struct net_device *dev)
 {
@@ -478,31 +391,31 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
 static size_t ipip_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_IPTUN_LINK */
+		 
 		nla_total_size(4) +
-		/* IFLA_IPTUN_LOCAL */
+		 
 		nla_total_size(4) +
-		/* IFLA_IPTUN_REMOTE */
+		 
 		nla_total_size(4) +
-		/* IFLA_IPTUN_TTL */
+		 
 		nla_total_size(1) +
-		/* IFLA_IPTUN_TOS */
+		 
 		nla_total_size(1) +
-		/* IFLA_IPTUN_PROTO */
+		 
 		nla_total_size(1) +
-		/* IFLA_IPTUN_PMTUDISC */
+		 
 		nla_total_size(1) +
-		/* IFLA_IPTUN_ENCAP_TYPE */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_ENCAP_FLAGS */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_ENCAP_SPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_ENCAP_DPORT */
+		 
 		nla_total_size(2) +
-		/* IFLA_IPTUN_COLLECT_METADATA */
+		 
 		nla_total_size(0) +
-		/* IFLA_IPTUN_FWMARK */
+		 
 		nla_total_size(4) +
 		0;
 }

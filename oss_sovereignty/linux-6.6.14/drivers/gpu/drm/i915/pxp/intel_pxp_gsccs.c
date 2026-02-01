@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright(c) 2023 Intel Corporation.
- */
+
+ 
 
 #include "gem/i915_gem_internal.h"
 
@@ -84,14 +82,14 @@ gsccs_send_message(struct intel_pxp *pxp,
 					      msg_in_size + sizeof(*header),
 					      exec_res->host_session_handle);
 
-	/* check if this is a host-session-handle cleanup call (empty packet) */
+	 
 	if (!msg_in && !msg_out)
 		header->flags |= GSC_INFLAG_MSG_CLEANUP;
 
-	/* copy caller provided gsc message handle if this is polling for a prior msg completion */
+	 
 	header->gsc_message_handle = *gsc_msg_handle_retry;
 
-	/* NOTE: zero size packets are used for session-cleanups */
+	 
 	if (msg_in && msg_in_size)
 		memcpy(exec_res->pkt_vaddr + sizeof(*header), msg_in, msg_in_size);
 
@@ -102,10 +100,7 @@ gsccs_send_message(struct intel_pxp *pxp,
 	pkt.heci_pkt_vma = exec_res->pkt_vma;
 	pkt.bb_vma = exec_res->bb_vma;
 
-	/*
-	 * Before submitting, let's clear-out the validity marker on the reply offset.
-	 * We use offset PXP43_MAX_HECI_INOUT_SIZE for reply location so point header there.
-	 */
+	 
 	header = exec_res->pkt_vaddr + PXP43_MAX_HECI_INOUT_SIZE;
 	header->validity_marker = 0;
 
@@ -117,7 +112,7 @@ gsccs_send_message(struct intel_pxp *pxp,
 		goto unlock;
 	}
 
-	/* Response validity marker, status and busyness */
+	 
 	if (header->validity_marker != GSC_HECI_VALIDITY_MARKER) {
 		drm_err(&i915->drm, "gsc PXP reply with invalid validity marker\n");
 		ret = -EINVAL;
@@ -131,12 +126,7 @@ gsccs_send_message(struct intel_pxp *pxp,
 	}
 	if (header->flags & GSC_OUTFLAG_MSG_PENDING) {
 		drm_dbg(&i915->drm, "gsc PXP reply is busy\n");
-		/*
-		 * When the GSC firmware replies with pending bit, it means that the requested
-		 * operation has begun but the completion is pending and the caller needs
-		 * to re-request with the gsc_message_handle that was returned by the firmware.
-		 * until the pending bit is turned off.
-		 */
+		 
 		*gsc_msg_handle_retry = header->gsc_message_handle;
 		ret = -EAGAIN;
 		goto unlock;
@@ -169,15 +159,11 @@ gsccs_send_message_retry_complete(struct intel_pxp *pxp,
 	u64 gsc_session_retry = 0;
 	int ret, tries = 0;
 
-	/*
-	 * Keep sending request if GSC firmware was busy. Based on fw specs +
-	 * sw overhead (and testing) we expect a worst case pending-bit delay of
-	 * GSC_PENDING_RETRY_MAXCOUNT x GSC_PENDING_RETRY_PAUSE_MS millisecs.
-	 */
+	 
 	do {
 		ret = gsccs_send_message(pxp, msg_in, msg_in_size, msg_out, msg_out_size_max,
 					 msg_out_len, &gsc_session_retry);
-		/* Only try again if gsc says so */
+		 
 		if (ret != -EAGAIN)
 			break;
 
@@ -189,14 +175,7 @@ gsccs_send_message_retry_complete(struct intel_pxp *pxp,
 
 bool intel_pxp_gsccs_is_ready_for_sessions(struct intel_pxp *pxp)
 {
-	/*
-	 * GSC-fw loading, HuC-fw loading, HuC-fw authentication and
-	 * GSC-proxy init flow (requiring an mei component driver)
-	 * must all occur first before we can start requesting for PXP
-	 * sessions. Checking for completion on HuC authentication and
-	 * gsc-proxy init flow (the last set of dependencies that
-	 * are out of order) will suffice.
-	 */
+	 
 	if (intel_huc_is_authenticated(&pxp->ctrl_gt->uc.huc, INTEL_HUC_AUTH_BY_GSC) &&
 	    intel_gsc_uc_fw_proxy_init_done(&pxp->ctrl_gt->uc.gsc, true))
 		return true;
@@ -250,10 +229,7 @@ void intel_pxp_gsccs_end_arb_fw_session(struct intel_pxp *pxp, u32 session_id)
 	struct pxp42_inv_stream_key_out msg_out = {0};
 	int ret = 0;
 
-	/*
-	 * Stream key invalidation reuses the same version 4.2 input/output
-	 * command format but firmware requires 4.3 API interaction
-	 */
+	 
 	msg_in.header.api_version = PXP_APIVER(4, 3);
 	msg_in.header.command_id = PXP42_CMDID_INVALIDATE_STREAM_KEY;
 	msg_in.header.buffer_len = sizeof(msg_in) - sizeof(msg_in.header);
@@ -336,7 +312,7 @@ gsccs_create_buffer(struct intel_gt *gt,
 		goto out_put;
 	}
 
-	/* return a virtual pointer */
+	 
 	*map = i915_gem_object_pin_map_unlocked(obj, intel_gt_coherent_map_type(gt, obj, true));
 	if (IS_ERR(*map)) {
 		drm_err(&i915->drm, "Failed to map gsccs backend %s.\n", bufname);
@@ -344,7 +320,7 @@ gsccs_create_buffer(struct intel_gt *gt,
 		goto out_put;
 	}
 
-	/* all PXP sessions commands are treated as non-privileged */
+	 
 	err = i915_vma_pin(*vma, 0, 0, PIN_USER);
 	if (err) {
 		drm_err(&i915->drm, "Failed to vma-pin gsccs backend %s.\n", bufname);
@@ -373,18 +349,11 @@ gsccs_allocate_execution_resource(struct intel_pxp *pxp)
 	struct intel_context *ce;
 	int err = 0;
 
-	/*
-	 * First, ensure the GSC engine is present.
-	 * NOTE: Backend would only be called with the correct gt.
-	 */
+	 
 	if (!engine)
 		return -ENODEV;
 
-	/*
-	 * Now, allocate, pin and map two objects, one for the heci message packet
-	 * and another for the batch buffer we submit into GSC engine (that includes the packet).
-	 * NOTE: GSC-CS backend is currently only supported on MTL, so we allocate shmem.
-	 */
+	 
 	err = gsccs_create_buffer(pxp->ctrl_gt, "Heci Packet",
 				  2 * PXP43_MAX_HECI_INOUT_SIZE,
 				  &exec_res->pkt_vma, &exec_res->pkt_vaddr);
@@ -396,7 +365,7 @@ gsccs_allocate_execution_resource(struct intel_pxp *pxp)
 	if (err)
 		goto free_pkt;
 
-	/* Finally, create an intel_context to be used during the submission */
+	 
 	ce = intel_context_create(engine);
 	if (IS_ERR(ce)) {
 		drm_err(&gt->i915->drm, "Failed creating gsccs backend ctx\n");
@@ -408,7 +377,7 @@ gsccs_allocate_execution_resource(struct intel_pxp *pxp)
 	ce->vm = i915_vm_get(pxp->ctrl_gt->vm);
 	exec_res->ce = ce;
 
-	/* initialize host-session-handle (for all i915-to-gsc-firmware PXP cmds) */
+	 
 	get_random_bytes(&exec_res->host_session_handle, sizeof(exec_res->host_session_handle));
 
 	return 0;

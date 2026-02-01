@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dm_services.h"
@@ -75,7 +52,7 @@
 #include "dcn30/dcn30_dwb.h"
 #include "dcn30/dcn30_mmhubbub.h"
 
-// TODO: change include headers /amd/include/asic_reg after upstream
+
 #include "yellow_carp_offset.h"
 #include "dcn/dcn_3_1_2_offset.h"
 #include "dcn/dcn_3_1_2_sh_mask.h"
@@ -115,11 +92,9 @@ enum dcn31_clk_src_array_id {
 	DCN30_CLK_SRC_TOTAL
 };
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file
- */
+ 
 
-/* DCN */
+ 
 #define BASE_INNER(seg) DCN_BASE__INST0_SEG ## seg
 
 #define BASE(seg) BASE_INNER(seg)
@@ -163,7 +138,7 @@ enum dcn31_clk_src_array_id {
 	.reg_name[id] = BASE(reg ## reg_name ## _ ## block ## id ## _BASE_IDX) + \
 					reg ## reg_name ## _ ## block ## id
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) \
 	NBIO_BASE__INST0_SEG ## seg
 
@@ -174,7 +149,7 @@ enum dcn31_clk_src_array_id {
 		.reg_name = NBIO_BASE(regBIF_BX1_ ## reg_name ## _BASE_IDX) + \
 					regBIF_BX1_ ## reg_name
 
-/* MMHUB */
+ 
 #define MMHUB_BASE_INNER(seg) \
 	MMHUB_BASE__INST0_SEG ## seg
 
@@ -185,7 +160,7 @@ enum dcn31_clk_src_array_id {
 		.reg_name = MMHUB_BASE(mm ## reg_name ## _BASE_IDX) + \
 					mm ## reg_name
 
-/* CLOCK */
+ 
 #define CLK_BASE_INNER(seg) \
 	CLK_BASE__INST0_SEG ## seg
 
@@ -214,7 +189,7 @@ static const struct dce110_clk_src_regs clk_src_regs[] = {
 	clk_src_regs(3, D),
 	clk_src_regs(4, E)
 };
-/*pll_id being rempped in dmub, in driver it is logical instance*/
+ 
 static const struct dce110_clk_src_regs clk_src_regs_b0[] = {
 	clk_src_regs(0, A),
 	clk_src_regs(1, B),
@@ -352,7 +327,7 @@ static const struct dcn31_apg_mask apg_mask = {
 	SE_DCN3_REG_LIST(id)\
 }
 
-/* Some encoders won't be initialized here - but they're logical, not physical. */
+ 
 static const struct dcn10_stream_enc_registers stream_enc_regs[ENGINE_ID_COUNT] = {
 	stream_enc_regs(0),
 	stream_enc_regs(1),
@@ -593,7 +568,7 @@ static const struct dcn30_mpc_registers mpc_regs = {
 		MPC_RMU_GLOBAL_REG_LIST_DCN3AG,
 		MPC_RMU_REG_LIST_DCN3AG(0),
 		MPC_RMU_REG_LIST_DCN3AG(1),
-		//MPC_RMU_REG_LIST_DCN3AG(2),
+		
 		MPC_DWB_MUX_REG_LIST_DCN3_0(0),
 };
 
@@ -844,7 +819,7 @@ static const struct dc_plane_cap plane_cap = {
 			.fp16 = 16000
 	},
 
-	// 6:1 downscaling ratio: 1000/6 = 166.666
+	
 	.max_downscale_factor = {
 			.argb8888 = 167,
 			.nv12 = 167,
@@ -865,12 +840,12 @@ static const struct dc_debug_options debug_defaults_drv = {
 	.disable_dcc = DCC_ENABLE,
 	.vsr_support = true,
 	.performance_trace = false,
-	.max_downscale_src_width = 4096,/*upto true 4K*/
+	.max_downscale_src_width = 4096, 
 	.disable_pplib_wm_range = false,
 	.scl_reset_length10 = true,
 	.sanity_checks = true,
 	.underflow_assert_delay_us = 0xFFFFFFFF,
-	.dwb_fi_phase = -1, // -1 = disable,
+	.dwb_fi_phase = -1, 
 	.dmub_command_table = true,
 	.pstate_enabled = true,
 	.use_max_lb = true,
@@ -878,7 +853,7 @@ static const struct dc_debug_options debug_defaults_drv = {
 		.bits = {
 			.vga = true,
 			.i2c = true,
-			.dmcu = false, // This is previously known to cause hang on S3 cycles if enabled
+			.dmcu = false, 
 			.dscl = true,
 			.cm = true,
 			.mpc = true,
@@ -889,7 +864,7 @@ static const struct dc_debug_options debug_defaults_drv = {
 	},
 	.disable_z10 = true,
 	.enable_legacy_fast_update = true,
-	.enable_z9_disable_interface = true, /* Allow support for the PMFW interface for disable Z9*/
+	.enable_z9_disable_interface = true,  
 	.dml_hostvm_override = DML_HOSTVM_OVERRIDE_FALSE,
 };
 
@@ -1106,10 +1081,7 @@ static struct link_encoder *dcn31_link_encoder_create(
 	return &enc20->enc10.base;
 }
 
-/* Create a minimal link encoder object not associated with a particular
- * physical connector.
- * resource_funcs.link_enc_create_minimal
- */
+ 
 static struct link_encoder *dcn31_link_enc_create_minimal(
 		struct dc_context *ctx, enum engine_id eng_id)
 {
@@ -1192,7 +1164,7 @@ static struct afmt *dcn31_afmt_create(
 			&afmt_shift,
 			&afmt_mask);
 
-	// Light sleep by default, no need to power down here
+	
 
 	return &afmt31->base;
 }
@@ -1224,7 +1196,7 @@ static struct stream_encoder *dcn31_stream_encoder_create(
 	int vpg_inst;
 	int afmt_inst;
 
-	/* Mapping of VPG, AFMT, DME register blocks to DIO block instance */
+	 
 	if (eng_id <= ENGINE_ID_DIGF) {
 		vpg_inst = eng_id;
 		afmt_inst = eng_id;
@@ -1264,23 +1236,13 @@ static struct hpo_dp_stream_encoder *dcn31_hpo_dp_stream_encoder_create(
 	ASSERT((eng_id >= ENGINE_ID_HPO_DP_0) && (eng_id <= ENGINE_ID_HPO_DP_3));
 	hpo_dp_inst = eng_id - ENGINE_ID_HPO_DP_0;
 
-	/* Mapping of VPG register blocks to HPO DP block instance:
-	 * VPG[6] -> HPO_DP[0]
-	 * VPG[7] -> HPO_DP[1]
-	 * VPG[8] -> HPO_DP[2]
-	 * VPG[9] -> HPO_DP[3]
-	 */
+	 
 	vpg_inst = hpo_dp_inst + 6;
 
-	/* Mapping of APG register blocks to HPO DP block instance:
-	 * APG[0] -> HPO_DP[0]
-	 * APG[1] -> HPO_DP[1]
-	 * APG[2] -> HPO_DP[2]
-	 * APG[3] -> HPO_DP[3]
-	 */
+	 
 	apg_inst = hpo_dp_inst;
 
-	/* allocate HPO stream encoder and create VPG sub-block */
+	 
 	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_stream_encoder), GFP_KERNEL);
 	vpg = dcn31_vpg_create(ctx, vpg_inst);
 	apg = dcn31_apg_create(ctx, apg_inst);
@@ -1306,7 +1268,7 @@ static struct hpo_dp_link_encoder *dcn31_hpo_dp_link_encoder_create(
 {
 	struct dcn31_hpo_dp_link_encoder *hpo_dp_enc31;
 
-	/* allocate HPO link encoder */
+	 
 	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_link_encoder), GFP_KERNEL);
 
 	hpo_dp_link_encoder31_construct(hpo_dp_enc31, ctx, inst,
@@ -1625,7 +1587,7 @@ int dcn31x_populate_dml_pipes_from_context(struct dc *dc,
 	for (i = 0; i < pipe_cnt; i++) {
 		pipes[i].pipe.src.gpuvm = 1;
 		if (dc->debug.dml_hostvm_override == DML_HOSTVM_NO_OVERRIDE) {
-			//pipes[pipe_cnt].pipe.src.hostvm = dc->res_pool->hubbub->riommu_active;
+			
 			pipes[i].pipe.src.hostvm = dc->vm_pa_config.is_hvm_enabled;
 		} else if (dc->debug.dml_hostvm_override == DML_HOSTVM_OVERRIDE_FALSE)
 			pipes[i].pipe.src.hostvm = false;
@@ -1661,11 +1623,7 @@ int dcn31_populate_dml_pipes_from_context(
 				pipe->plane_state->src_rect.width < pipe->plane_state->dst_rect.width))
 			upscaled = true;
 
-		/*
-		 * Immediate flip can be set dynamically after enabling the plane.
-		 * We need to require support for immediate flip or underflow can be
-		 * intermittently experienced depending on peak b/w requirements.
-		 */
+		 
 		pipes[pipe_cnt].pipe.src.immediate_flip = true;
 		pipes[pipe_cnt].pipe.src.unbounded_req_mode = false;
 		pipes[pipe_cnt].pipe.src.gpuvm = true;
@@ -1703,7 +1661,7 @@ int dcn31_populate_dml_pipes_from_context(
 				&& pipe->plane_state->src_rect.width <= 1920 && pipe->plane_state->src_rect.height <= 1080) {
 			dc->config.enable_4to1MPC = true;
 		} else if (!is_dual_plane(pipe->plane_state->format) && pipe->plane_state->src_rect.width <= 5120) {
-			/* Limit to 5k max to avoid forced pipe split when there is not enough detile for swath */
+			 
 			context->bw_ctx.dml.ip.det_buffer_size_kbytes = 192;
 			pipes[0].pipe.src.unbounded_req_mode = true;
 		}
@@ -1768,7 +1726,7 @@ bool dcn31_validate_bandwidth(struct dc *dc,
 	out = dcn30_internal_validate_bw(dc, context, pipes, &pipe_cnt, &vlevel, fast_validate, true);
 	DC_FP_END();
 
-	// Disable fast_validate to set min dcfclk in alculate_wm_and_dlg
+	
 	if (pipe_cnt == 0)
 		fast_validate = false;
 
@@ -1875,15 +1833,13 @@ static bool dcn31_resource_construct(
 
 	pool->base.funcs = &dcn31_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 	pool->base.pipe_count = pool->base.res_cap->num_timing_generator;
 	pool->base.mpcc_count = pool->base.res_cap->num_timing_generator;
 	dc->caps.max_downscale_ratio = 600;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 5; /*1.4 w/a applied by default*/
+	dc->caps.i2c_speed_in_khz_hdcp = 5;  
 	dc->caps.max_cursor_size = 256;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dmdata_alloc_size = 2048;
@@ -1903,11 +1859,11 @@ static bool dcn31_resource_construct(
 	dc->caps.is_apu = true;
 	dc->caps.zstate_support = true;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 0;
 	dc->caps.color.dpp.icsc = 1;
-	dc->caps.color.dpp.dgam_ram = 0; // must use gamma_corr
+	dc->caps.color.dpp.dgam_ram = 0; 
 	dc->caps.color.dpp.dgam_rom_caps.srgb = 1;
 	dc->caps.color.dpp.dgam_rom_caps.bt2020 = 1;
 	dc->caps.color.dpp.dgam_rom_caps.gamma2_2 = 1;
@@ -1919,7 +1875,7 @@ static bool dcn31_resource_construct(
 
 	dc->caps.color.dpp.hw_3d_lut = 1;
 	dc->caps.color.dpp.ogam_ram = 1;
-	// no OGAM ROM on DCN301
+	
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 0;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 0;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -1928,7 +1884,7 @@ static bool dcn31_resource_construct(
 	dc->caps.color.dpp.ocsc = 0;
 
 	dc->caps.color.mpc.gamut_remap = 1;
-	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; //2
+	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; 
 	dc->caps.color.mpc.ogam_ram = 1;
 	dc->caps.color.mpc.ogam_rom_caps.srgb = 0;
 	dc->caps.color.mpc.ogam_rom_caps.bt2020 = 0;
@@ -1939,10 +1895,10 @@ static bool dcn31_resource_construct(
 
 	dc->config.use_old_fixed_vs_sequence = true;
 
-	/* Use pipe context based otg sync logic */
+	 
 	dc->config.use_pipe_ctx_sync_logic = true;
 
-	/* read VBIOS LTTPR caps */
+	 
 	{
 		if (ctx->dc_bios->funcs->get_lttpr_caps) {
 			enum bp_result bp_query_result;
@@ -1952,7 +1908,7 @@ static bool dcn31_resource_construct(
 			dc->caps.vbios_lttpr_enable = (bp_query_result == BP_RESULT_OK) && !!is_vbios_lttpr_enable;
 		}
 
-		/* interop bit is implicit */
+		 
 		{
 			dc->caps.vbios_lttpr_aware = true;
 		}
@@ -1961,15 +1917,13 @@ static bool dcn31_resource_construct(
 	if (dc->ctx->dce_environment == DCE_ENV_PRODUCTION_DRV)
 		dc->debug = debug_defaults_drv;
 
-	// Init the vm_helper
+	
 	if (dc->vm_helper)
 		vm_helper_init(dc->vm_helper, 16);
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
-	/* Clock Sources for Pixel Clock*/
+	 
 	pool->base.clock_sources[DCN31_CLK_SRC_PLL0] =
 			dcn30_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_COMBO_PHY_PLL0,
@@ -1978,7 +1932,7 @@ static bool dcn31_resource_construct(
 			dcn30_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_COMBO_PHY_PLL1,
 				&clk_src_regs[1], false);
-	/*move phypllx_pixclk_resync to dmub next*/
+	 
 	if (dc->ctx->asic_id.hw_internal_rev == YELLOW_CARP_B0) {
 		pool->base.clock_sources[DCN31_CLK_SRC_PLL2] =
 			dcn30_clock_source_create(ctx, ctx->dc_bios,
@@ -2006,7 +1960,7 @@ static bool dcn31_resource_construct(
 
 	pool->base.clk_src_count = DCN30_CLK_SRC_TOTAL;
 
-	/* todo: not reuse phy_pll registers */
+	 
 	pool->base.dp_clock_source =
 			dcn31_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_ID_DP_DTO,
@@ -2020,7 +1974,7 @@ static bool dcn31_resource_construct(
 		}
 	}
 
-	/* TODO: DCCG */
+	 
 	pool->base.dccg = dccg31_create(ctx, &dccg_regs, &dccg_shift, &dccg_mask);
 	if (pool->base.dccg == NULL) {
 		dm_error("DC: failed to create dccg!\n");
@@ -2028,13 +1982,13 @@ static bool dcn31_resource_construct(
 		goto create_fail;
 	}
 
-	/* TODO: IRQ */
+	 
 	init_data.ctx = dc->ctx;
 	pool->base.irqs = dal_irq_service_dcn31_create(&init_data);
 	if (!pool->base.irqs)
 		goto create_fail;
 
-	/* HUBBUB */
+	 
 	pool->base.hubbub = dcn31_hubbub_create(ctx);
 	if (pool->base.hubbub == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -2042,7 +1996,7 @@ static bool dcn31_resource_construct(
 		goto create_fail;
 	}
 
-	/* HUBPs, DPPs, OPPs and TGs */
+	 
 	for (i = 0; i < pool->base.pipe_count; i++) {
 		pool->base.hubps[i] = dcn31_hubp_create(ctx, i);
 		if (pool->base.hubps[i] == NULL) {
@@ -2082,7 +2036,7 @@ static bool dcn31_resource_construct(
 	}
 	pool->base.timing_generator_count = i;
 
-	/* PSR */
+	 
 	pool->base.psr = dmub_psr_create(ctx);
 	if (pool->base.psr == NULL) {
 		dm_error("DC: failed to create psr obj!\n");
@@ -2090,7 +2044,7 @@ static bool dcn31_resource_construct(
 		goto create_fail;
 	}
 
-	/* Replay */
+	 
 	pool->base.replay = dmub_replay_create(ctx);
 	if (pool->base.replay == NULL) {
 		dm_error("DC: failed to create replay obj!\n");
@@ -2098,7 +2052,7 @@ static bool dcn31_resource_construct(
 		goto create_fail;
 	}
 
-	/* ABM */
+	 
 	for (i = 0; i < pool->base.res_cap->num_timing_generator; i++) {
 		pool->base.multiple_abms[i] = dmub_abm_create(ctx,
 				&abm_regs[i],
@@ -2111,7 +2065,7 @@ static bool dcn31_resource_construct(
 		}
 	}
 
-	/* MPC and DSC */
+	 
 	pool->base.mpc = dcn31_mpc_create(ctx, pool->base.mpcc_count, pool->base.res_cap->num_mpc_3dlut);
 	if (pool->base.mpc == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -2128,7 +2082,7 @@ static bool dcn31_resource_construct(
 		}
 	}
 
-	/* DWB and MMHUBBUB */
+	 
 	if (!dcn31_dwbc_create(ctx, &pool->base)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create dwbc!\n");
@@ -2141,7 +2095,7 @@ static bool dcn31_resource_construct(
 		goto create_fail;
 	}
 
-	/* AUX and I2C */
+	 
 	for (i = 0; i < pool->base.res_cap->num_ddc; i++) {
 		pool->base.engines[i] = dcn31_aux_engine_create(ctx, i);
 		if (pool->base.engines[i] == NULL) {
@@ -2163,19 +2117,19 @@ static bool dcn31_resource_construct(
 	if (dc->ctx->asic_id.chip_family == FAMILY_YELLOW_CARP &&
 	    dc->ctx->asic_id.hw_internal_rev == YELLOW_CARP_B0 &&
 	    !dc->debug.dpia_debug.bits.disable_dpia) {
-		/* YELLOW CARP B0 has 4 DPIA's */
+		 
 		pool->base.usb4_dpia_count = 4;
 	}
 
 	if (dc->ctx->asic_id.chip_family == AMDGPU_FAMILY_GC_11_0_1)
 		pool->base.usb4_dpia_count = 4;
 
-	/* Audio, Stream Encoders including HPO and virtual, MPC 3D LUTs */
+	 
 	if (!resource_construct(num_virtual_links, dc, &pool->base,
 			&res_create_funcs))
 		goto create_fail;
 
-	/* HW Sequencer and Plane caps */
+	 
 	dcn31_hw_sequencer_construct(dc);
 
 	dc->caps.max_planes =  pool->base.pipe_count;

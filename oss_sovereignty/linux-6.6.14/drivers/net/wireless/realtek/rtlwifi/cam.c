@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "wifi.h"
 #include "cam.h"
@@ -29,7 +29,7 @@ static void rtl_cam_program_entry(struct ieee80211_hw *hw, u32 entry_no,
 	RT_PRINT_DATA(rtlpriv, COMP_SEC, DBG_DMESG, "Key content :",
 		      key_cont_128, 16);
 
-	/* 0-1 config + mac, 2-5 fill 128key,6-7 are reserved */
+	 
 	for (entry_i = CAM_CONTENT_COUNT - 1; entry_i >= 0; entry_i--) {
 		target_command = entry_i + CAM_CONTENT_COUNT * entry_no;
 		target_command = target_command | BIT(31) | BIT(16);
@@ -265,13 +265,13 @@ u8 rtl_cam_get_free_entry(struct ieee80211_hw *hw, u8 *sta_addr)
 		pr_err("sta_addr is NULL.\n");
 		return TOTAL_CAM_ENTRY;
 	}
-	/* Does STA already exist? */
+	 
 	for (i = 4; i < TOTAL_CAM_ENTRY; i++) {
 		addr = rtlpriv->sec.hwsec_cam_sta_addr[i];
 		if (ether_addr_equal_unaligned(addr, sta_addr))
 			return i;
 	}
-	/* Get a free CAM entry. */
+	 
 	for (entry_idx = 4; entry_idx < TOTAL_CAM_ENTRY; entry_idx++) {
 		if ((bitmap & BIT(0)) == 0) {
 			pr_err("-----hwsec_cam_bitmap: 0x%x entry_idx=%d\n",
@@ -302,13 +302,13 @@ void rtl_cam_del_entry(struct ieee80211_hw *hw, u8 *sta_addr)
 		pr_err("sta_addr is %pM\n", sta_addr);
 		return;
 	}
-	/* Does STA already exist? */
+	 
 	for (i = 4; i < TOTAL_CAM_ENTRY; i++) {
 		addr = rtlpriv->sec.hwsec_cam_sta_addr[i];
 		bitmap = (rtlpriv->sec.hwsec_cam_bitmap) >> i;
 		if (((bitmap & BIT(0)) == BIT(0)) &&
 		    (ether_addr_equal_unaligned(addr, sta_addr))) {
-			/* Remove from HW Security CAM */
+			 
 			eth_zero_addr(rtlpriv->sec.hwsec_cam_sta_addr[i]);
 			rtlpriv->sec.hwsec_cam_bitmap &= ~(BIT(0) << i);
 			rtl_dbg(rtlpriv, COMP_SEC, DBG_DMESG,

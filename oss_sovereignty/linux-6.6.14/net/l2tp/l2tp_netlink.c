@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* L2TP netlink layer, for management
- *
- * Copyright (c) 2008,2009,2010 Katalix Systems Ltd
- *
- * Partly based on the IrDA nelink implementation
- * (see net/irda/irnetlink.c) which is:
- * Copyright (c) 2007 Samuel Ortiz <samuel@sortiz.org>
- * which is in turn partly based on the wireless netlink code:
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -40,7 +31,7 @@ static int l2tp_nl_session_send(struct sk_buff *skb, u32 portid, u32 seq,
 				int flags, struct l2tp_session *session,
 				u8 cmd);
 
-/* Accessed under genl lock */
+ 
 static const struct l2tp_nl_cmd_ops *l2tp_nl_cmd_ops[__L2TP_PWTYPE_MAX];
 
 static struct l2tp_session *l2tp_nl_session_get(struct genl_info *info)
@@ -116,7 +107,7 @@ static int l2tp_tunnel_notify(struct genl_family *family,
 
 	if (ret >= 0) {
 		ret = genlmsg_multicast_allns(family, msg, 0, 0, GFP_ATOMIC);
-		/* We don't care if no one is listening */
+		 
 		if (ret == -ESRCH)
 			ret = 0;
 		return ret;
@@ -144,7 +135,7 @@ static int l2tp_session_notify(struct genl_family *family,
 
 	if (ret >= 0) {
 		ret = genlmsg_multicast_allns(family, msg, 0, 0, GFP_ATOMIC);
-		/* We don't care if no one is listening */
+		 
 		if (ret == -ESRCH)
 			ret = 0;
 		return ret;
@@ -163,7 +154,7 @@ static int l2tp_nl_cmd_tunnel_create_get_addr(struct nlattr **attrs, struct l2tp
 		cfg->peer_udp_port = nla_get_u16(attrs[L2TP_ATTR_UDP_DPORT]);
 	cfg->use_udp_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_CSUM]);
 
-	/* Must have either AF_INET or AF_INET6 address for source and destination */
+	 
 #if IS_ENABLED(CONFIG_IPV6)
 	if (attrs[L2TP_ATTR_IP6_SADDR] && attrs[L2TP_ATTR_IP6_DADDR]) {
 		cfg->local_ip6 = nla_data(attrs[L2TP_ATTR_IP6_SADDR]);
@@ -217,10 +208,7 @@ static int l2tp_nl_cmd_tunnel_create(struct sk_buff *skb, struct genl_info *info
 	}
 	cfg.encap = nla_get_u16(attrs[L2TP_ATTR_ENCAP_TYPE]);
 
-	/* Managed tunnels take the tunnel socket from userspace.
-	 * Unmanaged tunnels must call out the source and destination addresses
-	 * for the kernel to create the tunnel socket itself.
-	 */
+	 
 	if (attrs[L2TP_ATTR_FD]) {
 		fd = nla_get_u32(attrs[L2TP_ATTR_FD]);
 	} else {
@@ -364,9 +352,7 @@ static int l2tp_nl_tunnel_send_addr4(struct sk_buff *skb, struct sock *sk,
 	return 0;
 }
 
-/* Append attributes for the tunnel address, handling the different attribute types
- * used for different tunnel encapsulation and AF_INET v.s. AF_INET6.
- */
+ 
 static int l2tp_nl_tunnel_send_addr(struct sk_buff *skb, struct l2tp_tunnel *tunnel)
 {
 	struct sock *sk = tunnel->sock;
@@ -563,7 +549,7 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 		goto out_tunnel;
 	}
 
-	/* L2TPv2 only accepts PPP pseudo-wires */
+	 
 	if (tunnel->version == 2 && cfg.pw_type != L2TP_PWTYPE_PPP) {
 		ret = -EPROTONOSUPPORT;
 		goto out_tunnel;
@@ -925,7 +911,7 @@ static const struct genl_small_ops l2tp_nl_ops[] = {
 		.cmd = L2TP_CMD_NOOP,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 		.doit = l2tp_nl_cmd_noop,
-		/* can be retrieved by unprivileged users */
+		 
 	},
 	{
 		.cmd = L2TP_CMD_TUNNEL_CREATE,

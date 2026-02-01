@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Based on the same principle as kgdboe using the NETPOLL api, this
- * driver uses a console polling api to implement a gdb serial inteface
- * which is multiplexed on a console port.
- *
- * Maintainer: Jason Wessel <jason.wessel@windriver.com>
- *
- * 2007-2008 (c) Jason Wessel - Wind River Systems, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -27,7 +19,7 @@
 
 static struct kgdb_io		kgdboc_io_ops;
 
-/* -1 = init not run yet, 0 = unconfigured, 1 = configured. */
+ 
 static int configured		= -1;
 static DEFINE_MUTEX(config_mutex);
 
@@ -37,7 +29,7 @@ static struct kparam_string kps = {
 	.maxlen			= MAX_CONFIG_LEN,
 };
 
-static int kgdboc_use_kms;  /* 1 if we use kernel mode switching */
+static int kgdboc_use_kms;   
 static struct tty_driver	*kgdb_tty_driver;
 static int			kgdb_tty_line;
 
@@ -46,7 +38,7 @@ static struct platform_device *kgdboc_pdev;
 #if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
 static struct kgdb_io		kgdboc_earlycon_io_ops;
 static int                      (*earlycon_orig_exit)(struct console *con);
-#endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+#endif  
 
 #ifdef CONFIG_KDB_KEYBOARD
 static int kgdboc_reset_connect(struct input_handler *handler,
@@ -55,13 +47,13 @@ static int kgdboc_reset_connect(struct input_handler *handler,
 {
 	input_reset_device(dev);
 
-	/* Return an error - we do not want to bind, just to reset */
+	 
 	return -ENODEV;
 }
 
 static void kgdboc_reset_disconnect(struct input_handle *handle)
 {
-	/* We do not expect anyone to actually bind to us */
+	 
 	BUG();
 }
 
@@ -84,11 +76,7 @@ static DEFINE_MUTEX(kgdboc_reset_mutex);
 
 static void kgdboc_restore_input_helper(struct work_struct *dummy)
 {
-	/*
-	 * We need to take a mutex to prevent several instances of
-	 * this work running on different CPUs so they don't try
-	 * to register again already registered handler.
-	 */
+	 
 	mutex_lock(&kgdboc_reset_mutex);
 
 	if (input_register_handler(&kgdboc_reset_handler) == 0)
@@ -135,11 +123,11 @@ static void kgdboc_unregister_kbd(void)
 	}
 	flush_work(&kgdboc_restore_input_work);
 }
-#else /* ! CONFIG_KDB_KEYBOARD */
+#else  
 #define kgdboc_register_kbd(x) 0
 #define kgdboc_unregister_kbd()
 #define kgdboc_restore_input()
-#endif /* ! CONFIG_KDB_KEYBOARD */
+#endif  
 
 #if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
 static void cleanup_earlycon(void)
@@ -147,9 +135,9 @@ static void cleanup_earlycon(void)
 	if (kgdboc_earlycon_io_ops.cons)
 		kgdb_unregister_io_module(&kgdboc_earlycon_io_ops);
 }
-#else /* !IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+#else  
 static inline void cleanup_earlycon(void) { }
-#endif /* !IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+#endif  
 
 static void cleanup_kgdboc(void)
 {
@@ -194,11 +182,7 @@ static int configure_kgdboc(void)
 	if (!p)
 		goto noconfig;
 
-	/*
-	 * Take console_lock to serialize device() callback with
-	 * other console operations. For example, fg_console is
-	 * modified under console_lock when switching vt.
-	 */
+	 
 	console_lock();
 
 	cookie = console_srcu_read_lock();
@@ -247,7 +231,7 @@ static int kgdboc_probe(struct platform_device *pdev)
 	if (configured != 1) {
 		ret = configure_kgdboc();
 
-		/* Convert "no device" to "defer" so we'll keep trying */
+		 
 		if (ret == -ENODEV)
 			ret = -EPROBE_DEFER;
 	}
@@ -268,16 +252,7 @@ static int __init init_kgdboc(void)
 {
 	int ret;
 
-	/*
-	 * kgdboc is a little bit of an odd "platform_driver".  It can be
-	 * up and running long before the platform_driver object is
-	 * created and thus doesn't actually store anything in it.  There's
-	 * only one instance of kgdb so anything is stored as global state.
-	 * The platform_driver is only created so that we can leverage the
-	 * kernel's mechanisms (like -EPROBE_DEFER) to call us when our
-	 * underlying tty is ready.  Here we init our platform driver and
-	 * then create the single kgdboc instance.
-	 */
+	 
 	ret = platform_driver_register(&kgdboc_platform_driver);
 	if (ret)
 		return ret;
@@ -344,31 +319,18 @@ static int param_set_kgdboc_var(const char *kmessage,
 	mutex_lock(&config_mutex);
 
 	strcpy(config, kmessage);
-	/* Chop out \n char as a result of echo */
+	 
 	if (len && config[len - 1] == '\n')
 		config[len - 1] = '\0';
 
 	if (configured == 1)
 		cleanup_kgdboc();
 
-	/*
-	 * Configure with the new params as long as init already ran.
-	 * Note that we can get called before init if someone loads us
-	 * with "modprobe kgdboc kgdboc=..." or if they happen to use
-	 * the odd syntax of "kgdboc.kgdboc=..." on the kernel command.
-	 */
+	 
 	if (configured >= 0)
 		ret = configure_kgdboc();
 
-	/*
-	 * If we couldn't configure then clear out the config.  Note that
-	 * specifying an invalid config on the kernel command line vs.
-	 * through sysfs have slightly different behaviors.  If we fail
-	 * to configure what was specified on the kernel command line
-	 * we'll leave it in the 'config' and return -EPROBE_DEFER from
-	 * our probe.  When specified through sysfs userspace is
-	 * responsible for loading the tty driver before setting up.
-	 */
+	 
 	if (ret)
 		config[0] = '\0';
 
@@ -385,14 +347,14 @@ static void kgdboc_pre_exp_handler(void)
 		dbg_restore_graphics = 1;
 		con_debug_enter(vc_cons[fg_console].d);
 	}
-	/* Increment the module count when the debugger is active */
+	 
 	if (!kgdb_connected)
 		try_module_get(THIS_MODULE);
 }
 
 static void kgdboc_post_exp_handler(void)
 {
-	/* decrement the module count when the debugger detaches */
+	 
 	if (!kgdb_connected)
 		module_put(THIS_MODULE);
 	if (kgdboc_use_kms && dbg_restore_graphics) {
@@ -430,7 +392,7 @@ static int kgdboc_option_setup(char *opt)
 __setup("kgdboc=", kgdboc_option_setup);
 
 
-/* This is only available if kgdboc is a built in for early debugging */
+ 
 static int __init kgdboc_early_init(char *opt)
 {
 	kgdboc_option_setup(opt);
@@ -466,14 +428,7 @@ static void kgdboc_earlycon_pre_exp_handler(void)
 	if (already_warned)
 		return;
 
-	/*
-	 * When the first normal console comes up the kernel will take all
-	 * the boot consoles out of the list.  Really, we should stop using
-	 * the boot console when it does that but until a TTY is registered
-	 * we have no other choice so we keep using it.  Since not all
-	 * serial drivers might be OK with this, print a warning once per
-	 * boot if we detect this case.
-	 */
+	 
 	cookie = console_srcu_read_lock();
 	for_each_console_srcu(con) {
 		if (con == kgdboc_earlycon_io_ops.cons)
@@ -489,13 +444,7 @@ static void kgdboc_earlycon_pre_exp_handler(void)
 
 static int kgdboc_earlycon_deferred_exit(struct console *con)
 {
-	/*
-	 * If we get here it means the boot console is going away but we
-	 * don't yet have a suitable replacement.  Don't pass through to
-	 * the original exit routine.  We'll call it later in our deinit()
-	 * function.  For now, restore the original exit() function pointer
-	 * as a sentinal that we've hit this point.
-	 */
+	 
 	con->exit = earlycon_orig_exit;
 
 	return 0;
@@ -507,18 +456,10 @@ static void kgdboc_earlycon_deinit(void)
 		return;
 
 	if (kgdboc_earlycon_io_ops.cons->exit == kgdboc_earlycon_deferred_exit)
-		/*
-		 * kgdboc_earlycon is exiting but original boot console exit
-		 * was never called (AKA kgdboc_earlycon_deferred_exit()
-		 * didn't ever run).  Undo our trap.
-		 */
+		 
 		kgdboc_earlycon_io_ops.cons->exit = earlycon_orig_exit;
 	else if (kgdboc_earlycon_io_ops.cons->exit)
-		/*
-		 * We skipped calling the exit() routine so we could try to
-		 * keep using the boot console even after it went away.  We're
-		 * finally done so call the function now.
-		 */
+		 
 		kgdboc_earlycon_io_ops.cons->exit(kgdboc_earlycon_io_ops.cons);
 
 	kgdboc_earlycon_io_ops.cons = NULL;
@@ -542,18 +483,9 @@ static int __init kgdboc_earlycon_init(char *opt)
 
 	kdb_init(KDB_INIT_EARLY);
 
-	/*
-	 * Look for a matching console, or if the name was left blank just
-	 * pick the first one we find.
-	 */
+	 
 
-	/*
-	 * Hold the console_list_lock to guarantee that no consoles are
-	 * unregistered until the kgdboc_earlycon setup is complete.
-	 * Trapping the exit() callback relies on exit() not being
-	 * called until the trap is setup. This also allows safe
-	 * traversal of the console list and race-free reading of @flags.
-	 */
+	 
 	console_list_lock();
 	for_each_console(con) {
 		if (con->write && con->read &&
@@ -563,15 +495,7 @@ static int __init kgdboc_earlycon_init(char *opt)
 	}
 
 	if (!con) {
-		/*
-		 * Both earlycon and kgdboc_earlycon are initialized during
-		 * early parameter parsing. We cannot guarantee earlycon gets
-		 * in first and, in any case, on ACPI systems earlycon may
-		 * defer its own initialization (usually to somewhere within
-		 * setup_arch() ). To cope with either of these situations
-		 * we can defer our own initialization to a little later in
-		 * the boot.
-		 */
+		 
 		if (!kgdboc_earlycon_late_enable) {
 			pr_info("No suitable earlycon yet, will try later\n");
 			if (opt)
@@ -590,7 +514,7 @@ static int __init kgdboc_earlycon_init(char *opt)
 		kgdboc_earlycon_io_ops.cons = NULL;
 		pr_info("Failed to register kgdb with earlycon\n");
 	} else {
-		/* Trap exit so we can keep earlycon longer if needed. */
+		 
 		earlycon_orig_exit = con->exit;
 		con->exit = kgdboc_earlycon_deferred_exit;
 	}
@@ -598,20 +522,13 @@ static int __init kgdboc_earlycon_init(char *opt)
 unlock:
 	console_list_unlock();
 
-	/* Non-zero means malformed option so we always return zero */
+	 
 	return 0;
 }
 
 early_param("kgdboc_earlycon", kgdboc_earlycon_init);
 
-/*
- * This is only intended for the late adoption of an early console.
- *
- * It is not a reliable way to adopt regular consoles because we can not
- * control what order console initcalls are made and, in any case, many
- * regular consoles are registered much later in the boot process than
- * the console initcalls!
- */
+ 
 static int __init kgdboc_earlycon_late_init(void)
 {
 	if (kgdboc_earlycon_late_enable)
@@ -620,7 +537,7 @@ static int __init kgdboc_earlycon_late_init(void)
 }
 console_initcall(kgdboc_earlycon_late_init);
 
-#endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+#endif  
 
 module_init(init_kgdboc);
 module_exit(exit_kgdboc);

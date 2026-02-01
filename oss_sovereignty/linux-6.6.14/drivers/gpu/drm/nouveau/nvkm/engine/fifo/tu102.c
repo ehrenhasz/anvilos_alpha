@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "priv.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -71,7 +51,7 @@ tu102_runl_commit(struct nvkm_runl *runl, struct nvkm_memory *memory, u32 start,
 {
 	struct nvkm_device *device = runl->fifo->engine.subdev.device;
 	u64 addr = nvkm_memory_addr(memory) + start;
-	/*XXX: target? */
+	 
 
 	nvkm_wr32(device, 0x002b00 + (runl->id * 0x10), lower_32_bits(addr));
 	nvkm_wr32(device, 0x002b04 + (runl->id * 0x10), upper_32_bits(addr));
@@ -139,18 +119,18 @@ tu102_fifo_intr_ctxsw_timeout_info(struct nvkm_engn *engn, u32 info)
 	struct nvkm_cgrp *cgrp;
 	unsigned long flags;
 
-	/* Check that engine hasn't become unstuck since timeout raised. */
+	 
 	ENGN_DEBUG(engn, "CTXSW_TIMEOUT %08x", info);
 	if (info & 0xc0000000)
 		return;
 
-	/* Determine channel group the engine is stuck on, and schedule recovery. */
+	 
 	switch (info & 0x0000c000) {
-	case 0x00004000: /* LOAD */
+	case 0x00004000:  
 		cgrp = nvkm_runl_cgrp_get_cgid(runl, info & 0x3fff0000, &flags);
 		break;
-	case 0x00008000: /* SAVE */
-	case 0x0000c000: /* SWITCH */
+	case 0x00008000:  
+	case 0x0000c000:  
 		cgrp = nvkm_runl_cgrp_get_cgid(runl, info & 0x00003fff, &flags);
 		break;
 	default:
@@ -255,7 +235,7 @@ tu102_fifo_intr(struct nvkm_inth *inth)
 static void
 tu102_fifo_init_pbdmas(struct nvkm_fifo *fifo, u32 mask)
 {
-	/* Not directly related to PBDMAs, but, enables doorbell to function. */
+	 
 	nvkm_mask(fifo->engine.subdev.device, 0xb65000, 0x80000000, 0x80000000);
 }
 

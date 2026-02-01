@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * composite.c - infrastructure for Composite USB Gadgets
- *
- * Copyright (C) 2006-2008 David Brownell
- */
 
-/* #define VERBOSE_DEBUG */
+ 
+
+ 
 
 #include <linux/kallsyms.h>
 #include <linux/kernel.h>
@@ -23,14 +19,7 @@
 
 #include "u_os_desc.h"
 
-/**
- * struct usb_os_string - represents OS String to be reported by a gadget
- * @bLength: total length of the entire descritor, always 0x12
- * @bDescriptorType: USB_DT_STRING
- * @qwSignature: the OS String proper
- * @bMS_VendorCode: code used by the host for subsequent requests
- * @bPad: not used, must be zero
- */
+ 
 struct usb_os_string {
 	__u8	bLength;
 	__u8	bDescriptorType;
@@ -39,12 +28,7 @@ struct usb_os_string {
 	__u8	bPad;
 } __packed;
 
-/*
- * The code in this file is utility code, used to build a gadget driver
- * from one or more "function" drivers, one or more "configuration"
- * objects, and a "usb_composite_driver" by gluing them together along
- * with the relevant device-wide data.
- */
+ 
 
 static struct usb_gadget_strings **get_containers_gs(
 		struct usb_gadget_string_container *uc)
@@ -52,23 +36,14 @@ static struct usb_gadget_strings **get_containers_gs(
 	return (struct usb_gadget_strings **)uc->stash;
 }
 
-/**
- * function_descriptors() - get function descriptors for speed
- * @f: the function
- * @speed: the speed
- *
- * Returns the descriptors or NULL if not set.
- */
+ 
 static struct usb_descriptor_header **
 function_descriptors(struct usb_function *f,
 		     enum usb_device_speed speed)
 {
 	struct usb_descriptor_header **descriptors;
 
-	/*
-	 * NOTE: we try to help gadget drivers which might not be setting
-	 * max_speed appropriately.
-	 */
+	 
 
 	switch (speed) {
 	case USB_SPEED_SUPER_PLUS:
@@ -90,24 +65,12 @@ function_descriptors(struct usb_function *f,
 		descriptors = f->fs_descriptors;
 	}
 
-	/*
-	 * if we can't find any descriptors at all, then this gadget deserves to
-	 * Oops with a NULL pointer dereference
-	 */
+	 
 
 	return descriptors;
 }
 
-/**
- * next_desc() - advance to the next desc_type descriptor
- * @t: currect pointer within descriptor array
- * @desc_type: descriptor type
- *
- * Return: next desc_type descriptor or NULL
- *
- * Iterate over @t until either desc_type descriptor found or
- * NULL (that indicates end of list) encountered
- */
+ 
 static struct usb_descriptor_header**
 next_desc(struct usb_descriptor_header **t, u8 desc_type)
 {
@@ -118,36 +81,12 @@ next_desc(struct usb_descriptor_header **t, u8 desc_type)
 	return NULL;
 }
 
-/*
- * for_each_desc() - iterate over desc_type descriptors in the
- * descriptors list
- * @start: pointer within descriptor array.
- * @iter_desc: desc_type descriptor to use as the loop cursor
- * @desc_type: wanted descriptr type
- */
+ 
 #define for_each_desc(start, iter_desc, desc_type) \
 	for (iter_desc = next_desc(start, desc_type); \
 	     iter_desc; iter_desc = next_desc(iter_desc + 1, desc_type))
 
-/**
- * config_ep_by_speed_and_alt() - configures the given endpoint
- * according to gadget speed.
- * @g: pointer to the gadget
- * @f: usb function
- * @_ep: the endpoint to configure
- * @alt: alternate setting number
- *
- * Return: error code, 0 on success
- *
- * This function chooses the right descriptors for a given
- * endpoint according to gadget speed and saves it in the
- * endpoint desc field. If the endpoint already has a descriptor
- * assigned to it - overwrites it with currently corresponding
- * descriptor. The endpoint maxpacket field is updated according
- * to the chosen descriptor.
- * Note: the supplied function should hold all the descriptors
- * for supported speeds
- */
+ 
 int config_ep_by_speed_and_alt(struct usb_gadget *g,
 				struct usb_function *f,
 				struct usb_ep *_ep,
@@ -160,14 +99,14 @@ int config_ep_by_speed_and_alt(struct usb_gadget *g,
 	struct usb_ss_ep_comp_descriptor *comp_desc = NULL;
 	int want_comp_desc = 0;
 
-	struct usb_descriptor_header **d_spd; /* cursor for speed desc */
+	struct usb_descriptor_header **d_spd;  
 	struct usb_composite_dev *cdev;
 	bool incomplete_desc = false;
 
 	if (!g || !f || !_ep)
 		return -EIO;
 
-	/* select desired speed */
+	 
 	switch (g->speed) {
 	case USB_SPEED_SUPER_PLUS:
 		if (f->ssp_descriptors) {
@@ -202,7 +141,7 @@ int config_ep_by_speed_and_alt(struct usb_gadget *g,
 			"%s doesn't hold the descriptors for current speed\n",
 			f->name);
 
-	/* find correct alternate setting descriptor */
+	 
 	for_each_desc(speed_desc, d_spd, USB_DT_INTERFACE) {
 		int_desc = (struct usb_interface_descriptor *)*d_spd;
 
@@ -214,7 +153,7 @@ int config_ep_by_speed_and_alt(struct usb_gadget *g,
 	return -EIO;
 
 intf_found:
-	/* find descriptors */
+	 
 	for_each_desc(speed_desc, d_spd, USB_DT_ENDPOINT) {
 		chosen_desc = (struct usb_endpoint_descriptor *)*d_spd;
 		if (chosen_desc->bEndpointAddress == _ep->address)
@@ -223,7 +162,7 @@ intf_found:
 	return -EIO;
 
 ep_found:
-	/* commit results */
+	 
 	_ep->maxpacket = usb_endpoint_maxp(chosen_desc);
 	_ep->desc = chosen_desc;
 	_ep->comp_desc = NULL;
@@ -237,10 +176,7 @@ ep_found:
 	if (!want_comp_desc)
 		return 0;
 
-	/*
-	 * Companion descriptor should follow EP descriptor
-	 * USB 3.0 spec, #9.6.7
-	 */
+	 
 	comp_desc = (struct usb_ss_ep_comp_descriptor *)*(++d_spd);
 	if (!comp_desc ||
 	    (comp_desc->bDescriptorType != USB_DT_SS_ENDPOINT_COMP))
@@ -249,7 +185,7 @@ ep_found:
 	if (g->speed >= USB_SPEED_SUPER) {
 		switch (usb_endpoint_type(_ep->desc)) {
 		case USB_ENDPOINT_XFER_ISOC:
-			/* mult: bits 1:0 of bmAttributes */
+			 
 			_ep->mult = (comp_desc->bmAttributes & 0x3) + 1;
 			fallthrough;
 		case USB_ENDPOINT_XFER_BULK:
@@ -267,24 +203,7 @@ ep_found:
 }
 EXPORT_SYMBOL_GPL(config_ep_by_speed_and_alt);
 
-/**
- * config_ep_by_speed() - configures the given endpoint
- * according to gadget speed.
- * @g: pointer to the gadget
- * @f: usb function
- * @_ep: the endpoint to configure
- *
- * Return: error code, 0 on success
- *
- * This function chooses the right descriptors for a given
- * endpoint according to gadget speed and saves it in the
- * endpoint desc field. If the endpoint already has a descriptor
- * assigned to it - overwrites it with currently corresponding
- * descriptor. The endpoint maxpacket field is updated according
- * to the chosen descriptor.
- * Note: the supplied function should hold all the descriptors
- * for supported speeds
- */
+ 
 int config_ep_by_speed(struct usb_gadget *g,
 			struct usb_function *f,
 			struct usb_ep *_ep)
@@ -293,20 +212,7 @@ int config_ep_by_speed(struct usb_gadget *g,
 }
 EXPORT_SYMBOL_GPL(config_ep_by_speed);
 
-/**
- * usb_add_function() - add a function to a configuration
- * @config: the configuration
- * @function: the function being added
- * Context: single threaded during gadget setup
- *
- * After initialization, each configuration must have one or more
- * functions added to it.  Adding a function involves calling its @bind()
- * method to allocate resources such as interface and string identifiers
- * and endpoints.
- *
- * This function returns the value of the function's bind(), which is
- * zero for success else a negative errno value.
- */
+ 
 int usb_add_function(struct usb_configuration *config,
 		struct usb_function *function)
 {
@@ -328,7 +234,7 @@ int usb_add_function(struct usb_configuration *config,
 			goto done;
 	}
 
-	/* REVISIT *require* function->bind? */
+	 
 	if (function->bind) {
 		value = function->bind(config, function);
 		if (value < 0) {
@@ -338,11 +244,7 @@ int usb_add_function(struct usb_configuration *config,
 	} else
 		value = 0;
 
-	/* We allow configurations that don't work at both speeds.
-	 * If we run into a lowspeed Linux system, treat it the same
-	 * as full speed ... it's the function drivers that will need
-	 * to avoid bulk and ISO transfers.
-	 */
+	 
 	if (!config->fullspeed && function->fs_descriptors)
 		config->fullspeed = true;
 	if (!config->highspeed && function->hs_descriptors)
@@ -375,25 +277,7 @@ void usb_remove_function(struct usb_configuration *c, struct usb_function *f)
 }
 EXPORT_SYMBOL_GPL(usb_remove_function);
 
-/**
- * usb_function_deactivate - prevent function and gadget enumeration
- * @function: the function that isn't yet ready to respond
- *
- * Blocks response of the gadget driver to host enumeration by
- * preventing the data line pullup from being activated.  This is
- * normally called during @bind() processing to change from the
- * initial "ready to respond" state, or when a required resource
- * becomes available.
- *
- * For example, drivers that serve as a passthrough to a userspace
- * daemon can block enumeration unless that daemon (such as an OBEX,
- * MTP, or print server) is ready to handle host requests.
- *
- * Not all systems support software control of their USB peripheral
- * data pullups.
- *
- * Returns zero on success, else negative errno.
- */
+ 
 int usb_function_deactivate(struct usb_function *function)
 {
 	struct usb_composite_dev	*cdev = function->config->cdev;
@@ -415,16 +299,7 @@ int usb_function_deactivate(struct usb_function *function)
 }
 EXPORT_SYMBOL_GPL(usb_function_deactivate);
 
-/**
- * usb_function_activate - allow function and gadget enumeration
- * @function: function on which usb_function_activate() was called
- *
- * Reverses effect of usb_function_deactivate().  If no more functions
- * are delaying their activation, the gadget driver will respond to
- * host enumeration procedures.
- *
- * Returns zero on success, else negative errno.
- */
+ 
 int usb_function_activate(struct usb_function *function)
 {
 	struct usb_composite_dev	*cdev = function->config->cdev;
@@ -449,29 +324,7 @@ int usb_function_activate(struct usb_function *function)
 }
 EXPORT_SYMBOL_GPL(usb_function_activate);
 
-/**
- * usb_interface_id() - allocate an unused interface ID
- * @config: configuration associated with the interface
- * @function: function handling the interface
- * Context: single threaded during gadget setup
- *
- * usb_interface_id() is called from usb_function.bind() callbacks to
- * allocate new interface IDs.  The function driver will then store that
- * ID in interface, association, CDC union, and other descriptors.  It
- * will also handle any control requests targeted at that interface,
- * particularly changing its altsetting via set_alt().  There may
- * also be class-specific or vendor-specific requests to handle.
- *
- * All interface identifier should be allocated using this routine, to
- * ensure that for example different functions don't wrongly assign
- * different meanings to the same identifier.  Note that since interface
- * identifiers are configuration-specific, functions used in more than
- * one configuration (or more than once in a given configuration) need
- * multiple versions of the relevant descriptors.
- *
- * Returns the interface ID which was allocated; or -ENODEV if no
- * more interface IDs can be allocated.
- */
+ 
 int usb_interface_id(struct usb_configuration *config,
 		struct usb_function *function)
 {
@@ -486,20 +339,7 @@ int usb_interface_id(struct usb_configuration *config,
 }
 EXPORT_SYMBOL_GPL(usb_interface_id);
 
-/**
- * usb_func_wakeup - sends function wake notification to the host.
- * @func: function that sends the remote wakeup notification.
- *
- * Applicable to devices operating at enhanced superspeed when usb
- * functions are put in function suspend state and armed for function
- * remote wakeup. On completion, function wake notification is sent. If
- * the device is in low power state it tries to bring the device to active
- * state before sending the wake notification. Since it is a synchronous
- * call, caller must take care of not calling it in interrupt context.
- * For devices operating at lower speeds  returns negative errno.
- *
- * Returns zero on success, else negative errno.
- */
+ 
 int usb_func_wakeup(struct usb_function *func)
 {
 	struct usb_gadget	*gadget = func->config->cdev->gadget;
@@ -540,10 +380,7 @@ static u8 encode_bMaxPower(enum usb_device_speed speed,
 	if (speed < USB_SPEED_SUPER)
 		return min(val, 500U) / 2;
 	else
-		/*
-		 * USB 3.x supports up to 900mA, but since 900 isn't divisible
-		 * by 8 the integral division will effectively cap to 896mA.
-		 */
+		 
 		return min(val, 900U) / 8;
 }
 
@@ -551,7 +388,7 @@ void check_remote_wakeup_config(struct usb_gadget *g,
 				struct usb_configuration *c)
 {
 	if (USB_CONFIG_ATT_WAKEUP & c->bmAttributes) {
-		/* Reset the rw bit if gadget is not capable of it */
+		 
 		if (!g->wakeup_capable && g->ops->set_remote_wakeup) {
 			WARN(c->cdev, "Clearing wakeup bit for config c.%d\n",
 			     c->bConfigurationValue);
@@ -570,18 +407,18 @@ static int config_buf(struct usb_configuration *config,
 	int				status;
 
 	len = USB_COMP_EP0_BUFSIZ - USB_DT_CONFIG_SIZE;
-	/* write the config descriptor */
+	 
 	c = buf;
 	c->bLength = USB_DT_CONFIG_SIZE;
 	c->bDescriptorType = type;
-	/* wTotalLength is written later */
+	 
 	c->bNumInterfaces = config->next_interface_id;
 	c->bConfigurationValue = config->bConfigurationValue;
 	c->iConfiguration = config->iConfiguration;
 	c->bmAttributes = USB_CONFIG_ATT_ONE | config->bmAttributes;
 	c->bMaxPower = encode_bMaxPower(speed, config);
 
-	/* There may be e.g. OTG descriptors */
+	 
 	if (config->descriptors) {
 		status = usb_descriptor_fillbuf(next, len,
 				config->descriptors);
@@ -591,7 +428,7 @@ static int config_buf(struct usb_configuration *config,
 		next += status;
 	}
 
-	/* add each function's descriptors */
+	 
 	list_for_each_entry(f, &config->functions, list) {
 		struct usb_descriptor_header **descriptors;
 
@@ -632,7 +469,7 @@ static int config_desc(struct usb_composite_dev *cdev, unsigned w_value)
 
 	}
 
-	/* This is a lookup by config *INDEX* */
+	 
 	w_value &= 0xff;
 
 	pos = &cdev->configs;
@@ -643,12 +480,12 @@ static int config_desc(struct usb_composite_dev *cdev, unsigned w_value)
 	while ((pos = pos->next) !=  &cdev->configs) {
 		c = list_entry(pos, typeof(*c), list);
 
-		/* skip OS Descriptors config which is handled separately */
+		 
 		if (c == cdev->os_desc_config)
 			continue;
 
 check_config:
-		/* ignore configs that won't work at this speed */
+		 
 		switch (speed) {
 		case USB_SPEED_SUPER_PLUS:
 			if (!c->superspeed_plus)
@@ -694,7 +531,7 @@ static int count_configs(struct usb_composite_dev *cdev, unsigned type)
 			hs = !hs;
 	}
 	list_for_each_entry(c, &cdev->configs, list) {
-		/* ignore configs that won't work at this speed */
+		 
 		if (ssp) {
 			if (!c->superspeed_plus)
 				continue;
@@ -713,15 +550,7 @@ static int count_configs(struct usb_composite_dev *cdev, unsigned type)
 	return count;
 }
 
-/**
- * bos_desc() - prepares the BOS descriptor.
- * @cdev: pointer to usb_composite device to generate the bos
- *	descriptor for
- *
- * This function generates the BOS (Binary Device Object)
- * descriptor and its device capabilities descriptors. The BOS
- * descriptor should be supported by a SuperSpeed device.
- */
+ 
 static int bos_desc(struct usb_composite_dev *cdev)
 {
 	struct usb_ext_cap_descriptor	*usb_ext;
@@ -735,7 +564,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 	bos->wTotalLength = cpu_to_le16(USB_DT_BOS_SIZE);
 	bos->bNumDeviceCaps = 0;
 
-	/* Get Controller configuration */
+	 
 	if (cdev->gadget->ops->get_config_params) {
 		cdev->gadget->ops->get_config_params(cdev->gadget,
 						     &dcd_config_params);
@@ -758,10 +587,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 		besl |= USB_BESL_DEEP_VALID |
 			USB_SET_BESL_DEEP(dcd_config_params.besl_deep);
 
-	/*
-	 * A SuperSpeed device shall include the USB2.0 extension descriptor
-	 * and shall support LPM when operating in USB2.0 HS mode.
-	 */
+	 
 	if (cdev->gadget->lpm_capable) {
 		usb_ext = cdev->req->buf + le16_to_cpu(bos->wTotalLength);
 		bos->bNumDeviceCaps++;
@@ -773,10 +599,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 							USB_BESL_SUPPORT | besl);
 	}
 
-	/*
-	 * The Superspeed USB Capability descriptor shall be implemented by all
-	 * SuperSpeed devices.
-	 */
+	 
 	if (gadget_is_superspeed(cdev->gadget)) {
 		struct usb_ss_cap_descriptor *ss_cap;
 
@@ -786,7 +609,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 		ss_cap->bLength = USB_DT_USB_SS_CAP_SIZE;
 		ss_cap->bDescriptorType = USB_DT_DEVICE_CAPABILITY;
 		ss_cap->bDevCapabilityType = USB_SS_CAP_TYPE;
-		ss_cap->bmAttributes = 0; /* LTM is not supported yet */
+		ss_cap->bmAttributes = 0;  
 		ss_cap->wSpeedSupported = cpu_to_le16(USB_LOW_SPEED_OPERATION |
 						      USB_FULL_SPEED_OPERATION |
 						      USB_HIGH_SPEED_OPERATION |
@@ -796,7 +619,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 		ss_cap->bU2DevExitLat = dcd_config_params.bU2DevExitLat;
 	}
 
-	/* The SuperSpeedPlus USB Device Capability descriptor */
+	 
 	if (gadget_is_superspeed_plus(cdev->gadget)) {
 		struct usb_ssp_cap_descriptor *ssp_cap;
 		u8 ssac = 1;
@@ -806,10 +629,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 		if (cdev->gadget->max_ssp_rate == USB_SSP_GEN_2x2)
 			ssac = 3;
 
-		/*
-		 * Paired RX and TX sublink speed attributes share
-		 * the same SSID.
-		 */
+		 
 		ssic = (ssac + 1) / 2 - 1;
 
 		ssp_cap = cdev->req->buf + le16_to_cpu(bos->wTotalLength);
@@ -831,18 +651,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 				    FIELD_PREP(USB_SSP_MIN_RX_LANE_COUNT, 1) |
 				    FIELD_PREP(USB_SSP_MIN_TX_LANE_COUNT, 1));
 
-		/*
-		 * Use 1 SSID if the gadget supports up to gen2x1 or not
-		 * specified:
-		 * - SSID 0 for symmetric RX/TX sublink speed of 10 Gbps.
-		 *
-		 * Use 1 SSID if the gadget supports up to gen1x2:
-		 * - SSID 0 for symmetric RX/TX sublink speed of 5 Gbps.
-		 *
-		 * Use 2 SSIDs if the gadget supports up to gen2x2:
-		 * - SSID 0 for symmetric RX/TX sublink speed of 5 Gbps.
-		 * - SSID 1 for symmetric RX/TX sublink speed of 10 Gbps.
-		 */
+		 
 		for (i = 0; i < ssac + 1; i++) {
 			u8 ssid;
 			u8 mantissa;
@@ -872,7 +681,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 		}
 	}
 
-	/* The WebUSB Platform Capability descriptor */
+	 
 	if (cdev->use_webusb) {
 		struct usb_plat_dev_cap_descriptor *webusb_cap;
 		struct usb_webusb_cap_data *webusb_cap_data;
@@ -912,18 +721,18 @@ static void device_qual(struct usb_composite_dev *cdev)
 
 	qual->bLength = sizeof(*qual);
 	qual->bDescriptorType = USB_DT_DEVICE_QUALIFIER;
-	/* POLICY: same bcdUSB and device type info at both speeds */
+	 
 	qual->bcdUSB = cdev->desc.bcdUSB;
 	qual->bDeviceClass = cdev->desc.bDeviceClass;
 	qual->bDeviceSubClass = cdev->desc.bDeviceSubClass;
 	qual->bDeviceProtocol = cdev->desc.bDeviceProtocol;
-	/* ASSUME same EP0 fifo size at both speeds */
+	 
 	qual->bMaxPacketSize0 = cdev->gadget->ep0->maxpacket;
 	qual->bNumConfigurations = count_configs(cdev, USB_DT_DEVICE_QUALIFIER);
 	qual->bRESERVED = 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void reset_config(struct usb_composite_dev *cdev)
 {
@@ -935,7 +744,7 @@ static void reset_config(struct usb_composite_dev *cdev)
 		if (f->disable)
 			f->disable(f);
 
-		/* Section 9.1.1.6, disable remote wakeup when device is reset */
+		 
 		f->func_wakeup_armed = false;
 
 		bitmap_zero(f->endpoints, 32);
@@ -957,11 +766,7 @@ static int set_config(struct usb_composite_dev *cdev,
 		list_for_each_entry(iter, &cdev->configs, list) {
 			if (iter->bConfigurationValue != number)
 				continue;
-			/*
-			 * We disable the FDs of the previous
-			 * configuration only if the new configuration
-			 * is a valid one
-			 */
+			 
 			if (cdev->config)
 				reset_config(cdev);
 			c = iter;
@@ -970,7 +775,7 @@ static int set_config(struct usb_composite_dev *cdev,
 		}
 		if (result < 0)
 			goto done;
-	} else { /* Zero configuration value - need to reset the config */
+	} else {  
 		if (cdev->config)
 			reset_config(cdev);
 		result = 0;
@@ -986,7 +791,7 @@ static int set_config(struct usb_composite_dev *cdev,
 	usb_gadget_set_state(gadget, USB_STATE_CONFIGURED);
 	cdev->config = c;
 
-	/* Initialize all interfaces by setting them to altsetting zero. */
+	 
 	for (tmp = 0; tmp < MAX_CONFIG_INTERFACES; tmp++) {
 		struct usb_function	*f = c->interface[tmp];
 		struct usb_descriptor_header **descriptors;
@@ -994,12 +799,7 @@ static int set_config(struct usb_composite_dev *cdev,
 		if (!f)
 			break;
 
-		/*
-		 * Record which endpoints are used by the function. This is used
-		 * to dispatch control requests targeted at that endpoint to the
-		 * function's setup callback instead of the current
-		 * configuration's setup callback.
-		 */
+		 
 		descriptors = function_descriptors(f, gadget->speed);
 
 		for (; *descriptors; ++descriptors) {
@@ -1034,7 +834,7 @@ static int set_config(struct usb_composite_dev *cdev,
 		}
 	}
 
-	/* when we return, be sure our power usage is valid */
+	 
 	if (c->MaxPower || (c->bmAttributes & USB_CONFIG_ATT_SELFPOWER))
 		power = c->MaxPower;
 	else
@@ -1069,7 +869,7 @@ int usb_add_config_only(struct usb_composite_dev *cdev,
 	if (!config->bConfigurationValue)
 		return -EINVAL;
 
-	/* Prevent duplicate configuration identifiers */
+	 
 	list_for_each_entry(c, &cdev->configs, list) {
 		if (c->bConfigurationValue == config->bConfigurationValue)
 			return -EBUSY;
@@ -1086,21 +886,7 @@ int usb_add_config_only(struct usb_composite_dev *cdev,
 }
 EXPORT_SYMBOL_GPL(usb_add_config_only);
 
-/**
- * usb_add_config() - add a configuration to a device.
- * @cdev: wraps the USB gadget
- * @config: the configuration, with bConfigurationValue assigned
- * @bind: the configuration's bind function
- * Context: single threaded during gadget setup
- *
- * One of the main tasks of a composite @bind() routine is to
- * add each of the configurations it supports, using this routine.
- *
- * This function returns the value of the configuration's @bind(), which
- * is zero for success else a negative errno value.  Binding configurations
- * assigns global resources including string IDs, and per-configuration
- * resources such as interface IDs and endpoints.
- */
+ 
 int usb_add_config(struct usb_composite_dev *cdev,
 		struct usb_configuration *config,
 		int (*bind)(struct usb_configuration *))
@@ -1134,7 +920,7 @@ int usb_add_config(struct usb_composite_dev *cdev,
 				DBG(cdev, "unbind function '%s'/%p\n",
 					f->name, f);
 				f->unbind(config, f);
-				/* may free memory for "f" */
+				 
 			}
 		}
 		list_del(&config->list);
@@ -1163,7 +949,7 @@ int usb_add_config(struct usb_composite_dev *cdev,
 		}
 	}
 
-	/* set_alt(), or next bind(), sets up ep->claimed as needed */
+	 
 	usb_ep_autoconfig_reset(cdev->gadget);
 
 done:
@@ -1189,19 +975,11 @@ static void remove_config(struct usb_composite_dev *cdev,
 	if (config->unbind) {
 		DBG(cdev, "unbind config '%s'/%p\n", config->label, config);
 		config->unbind(config);
-			/* may free memory for "c" */
+			 
 	}
 }
 
-/**
- * usb_remove_config() - remove a configuration from a device.
- * @cdev: wraps the USB gadget
- * @config: the configuration
- *
- * Drivers must call usb_gadget_disconnect before calling this function
- * to disconnect the device from the host and make sure the host will not
- * try to enumerate the device while we are changing the config list.
- */
+ 
 void usb_remove_config(struct usb_composite_dev *cdev,
 		      struct usb_configuration *config)
 {
@@ -1217,13 +995,9 @@ void usb_remove_config(struct usb_composite_dev *cdev,
 	remove_config(cdev, config);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* We support strings in multiple languages ... string descriptor zero
- * says which languages are supported.  The typical case will be that
- * only one language (probably English) is used, with i18n handled on
- * the host side.
- */
+ 
 
 static void collect_langs(struct usb_gadget_strings **sp, __le16 *buf)
 {
@@ -1274,12 +1048,9 @@ static int get_string(struct usb_composite_dev *cdev,
 	struct usb_function		*f;
 	int				len;
 
-	/* Yes, not only is USB's i18n support probably more than most
-	 * folk will ever care about ... also, it's all supported here.
-	 * (Except for UTF8 support for Unicode's "Astral Planes".)
-	 */
+	 
 
-	/* 0 == report all available language codes */
+	 
 	if (id == 0) {
 		struct usb_string_descriptor	*s = buf;
 		struct usb_gadget_strings	**sp;
@@ -1340,10 +1111,7 @@ static int get_string(struct usb_composite_dev *cdev,
 			return len;
 	}
 
-	/* String IDs are device-scoped, so we look up each string
-	 * table we're told about.  These lookups are infrequent;
-	 * simpler-is-better here.
-	 */
+	 
 	if (composite->strings) {
 		len = lookup_string(composite->strings, buf, language, id);
 		if (len > 0)
@@ -1366,26 +1134,12 @@ static int get_string(struct usb_composite_dev *cdev,
 	return -EINVAL;
 }
 
-/**
- * usb_string_id() - allocate an unused string ID
- * @cdev: the device whose string descriptor IDs are being allocated
- * Context: single threaded during gadget setup
- *
- * @usb_string_id() is called from bind() callbacks to allocate
- * string IDs.  Drivers for functions, configurations, or gadgets will
- * then store that ID in the appropriate descriptors and string table.
- *
- * All string identifier should be allocated using this,
- * @usb_string_ids_tab() or @usb_string_ids_n() routine, to ensure
- * that for example different functions don't wrongly assign different
- * meanings to the same identifier.
- */
+ 
 int usb_string_id(struct usb_composite_dev *cdev)
 {
 	if (cdev->next_string_id < 254) {
-		/* string id 0 is reserved by USB spec for list of
-		 * supported languages */
-		/* 255 reserved as well? -- mina86 */
+		 
+		 
 		cdev->next_string_id++;
 		return cdev->next_string_id;
 	}
@@ -1393,22 +1147,7 @@ int usb_string_id(struct usb_composite_dev *cdev)
 }
 EXPORT_SYMBOL_GPL(usb_string_id);
 
-/**
- * usb_string_ids_tab() - allocate unused string IDs in batch
- * @cdev: the device whose string descriptor IDs are being allocated
- * @str: an array of usb_string objects to assign numbers to
- * Context: single threaded during gadget setup
- *
- * @usb_string_ids() is called from bind() callbacks to allocate
- * string IDs.  Drivers for functions, configurations, or gadgets will
- * then copy IDs from the string table to the appropriate descriptors
- * and string table for other languages.
- *
- * All string identifier should be allocated using this,
- * @usb_string_id() or @usb_string_ids_n() routine, to ensure that for
- * example different functions don't wrongly assign different meanings
- * to the same identifier.
- */
+ 
 int usb_string_ids_tab(struct usb_composite_dev *cdev, struct usb_string *str)
 {
 	int next = cdev->next_string_id;
@@ -1476,23 +1215,7 @@ static struct usb_gadget_string_container *copy_gadget_strings(
 	return uc;
 }
 
-/**
- * usb_gstrings_attach() - attach gadget strings to a cdev and assign ids
- * @cdev: the device whose string descriptor IDs are being allocated
- * and attached.
- * @sp: an array of usb_gadget_strings to attach.
- * @n_strings: number of entries in each usb_strings array (sp[]->strings)
- *
- * This function will create a deep copy of usb_gadget_strings and usb_string
- * and attach it to the cdev. The actual string (usb_string.s) will not be
- * copied but only a referenced will be made. The struct usb_gadget_strings
- * array may contain multiple languages and should be NULL terminated.
- * The ->language pointer of each struct usb_gadget_strings has to contain the
- * same amount of entries.
- * For instance: sp[0] is en-US, sp[1] is es-ES. It is expected that the first
- * usb_string entry of es-ES contains the translation of the first usb_string
- * entry of en-US. Therefore both entries become the same id assign.
- */
+ 
 struct usb_string *usb_gstrings_attach(struct usb_composite_dev *cdev,
 		struct usb_gadget_strings **sp, unsigned n_strings)
 {
@@ -1538,25 +1261,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(usb_gstrings_attach);
 
-/**
- * usb_string_ids_n() - allocate unused string IDs in batch
- * @c: the device whose string descriptor IDs are being allocated
- * @n: number of string IDs to allocate
- * Context: single threaded during gadget setup
- *
- * Returns the first requested ID.  This ID and next @n-1 IDs are now
- * valid IDs.  At least provided that @n is non-zero because if it
- * is, returns last requested ID which is now very useful information.
- *
- * @usb_string_ids_n() is called from bind() callbacks to allocate
- * string IDs.  Drivers for functions, configurations, or gadgets will
- * then store that ID in the appropriate descriptors and string table.
- *
- * All string identifier should be allocated using this,
- * @usb_string_id() or @usb_string_ids_n() routine, to ensure that for
- * example different functions don't wrongly assign different meanings
- * to the same identifier.
- */
+ 
 int usb_string_ids_n(struct usb_composite_dev *c, unsigned n)
 {
 	unsigned next = c->next_string_id;
@@ -1567,7 +1272,7 @@ int usb_string_ids_n(struct usb_composite_dev *c, unsigned n)
 }
 EXPORT_SYMBOL_GPL(usb_string_ids_n);
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void composite_setup_complete(struct usb_ep *ep, struct usb_request *req)
 {
@@ -1578,13 +1283,7 @@ static void composite_setup_complete(struct usb_ep *ep, struct usb_request *req)
 				"setup complete --> %d, %d/%d\n",
 				req->status, req->actual, req->length);
 
-	/*
-	 * REVIST The same ep0 requests are shared with function drivers
-	 * so they don't have to maintain the same ->complete() stubs.
-	 *
-	 * Because of that, we need to check for the validity of ->context
-	 * here, even though we know we've set it to something useful.
-	 */
+	 
 	if (!req->context)
 		return;
 
@@ -1700,7 +1399,7 @@ static int len_ext_prop(struct usb_configuration *c, int interface)
 	struct usb_os_desc *d;
 	int j, res;
 
-	res = 10; /* header length */
+	res = 10;  
 	f = c->interface[interface];
 	for (j = 0; j < f->os_desc_n; ++j) {
 		if (interface != f->os_desc_table[j].if_id)
@@ -1720,7 +1419,7 @@ static int fill_ext_prop(struct usb_configuration *c, int interface, u8 *buf)
 	int j, count, n, ret;
 
 	f = c->interface[interface];
-	count = 10; /* header length */
+	count = 10;  
 	buf += 10;
 	for (j = 0; j < f->os_desc_n; ++j) {
 		if (interface != f->os_desc_table[j].if_id)
@@ -1752,9 +1451,9 @@ static int fill_ext_prop(struct usb_configuration *c, int interface, u8 *buf)
 							ext_prop->data_len);
 					break;
 				case USB_EXT_PROP_LE32:
-					/* not implemented */
+					 
 				case USB_EXT_PROP_BE32:
-					/* not implemented */
+					 
 				default:
 					return -EINVAL;
 				}
@@ -1766,13 +1465,7 @@ static int fill_ext_prop(struct usb_configuration *c, int interface, u8 *buf)
 	return count;
 }
 
-/*
- * The setup() callback implements all the ep0 functionality that's
- * not handled lower down, in hardware or the hardware driver(like
- * device and endpoint feature flags, and their status).  It's all
- * housekeeping for the gadget function we're implementing.  Most of
- * the work is in config and function specific setup.
- */
+ 
 int
 composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 {
@@ -1790,7 +1483,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 
 	if (w_length > USB_COMP_EP0_BUFSIZ) {
 		if (ctrl->bRequestType & USB_DIR_IN) {
-			/* Cast away the const, we are going to overwrite on purpose. */
+			 
 			__le16 *temp = (__le16 *)&ctrl->wLength;
 
 			*temp = cpu_to_le16(USB_COMP_EP0_BUFSIZ);
@@ -1800,26 +1493,20 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		}
 	}
 
-	/* partial re-init of the response message; the function or the
-	 * gadget might need to intercept e.g. a control-OUT completion
-	 * when we delegate to it.
-	 */
+	 
 	req->zero = 0;
 	req->context = cdev;
 	req->complete = composite_setup_complete;
 	req->length = 0;
 	gadget->ep0->driver_data = cdev;
 
-	/*
-	 * Don't let non-standard requests match any of the cases below
-	 * by accident.
-	 */
+	 
 	if ((ctrl->bRequestType & USB_TYPE_MASK) != USB_TYPE_STANDARD)
 		goto unknown;
 
 	switch (ctrl->bRequest) {
 
-	/* we handle all standard USB descriptors */
+	 
 	case USB_REQ_GET_DESCRIPTOR:
 		if (ctrl->bRequestType != USB_DIR_IN)
 			goto unknown;
@@ -1907,7 +1594,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		}
 		break;
 
-	/* any number of configs can work */
+	 
 	case USB_REQ_SET_CONFIGURATION:
 		if (ctrl->bRequestType != 0)
 			goto unknown;
@@ -1933,7 +1620,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		value = min(w_length, (u16) 1);
 		break;
 
-	/* function drivers must handle get/set altsetting */
+	 
 	case USB_REQ_SET_INTERFACE:
 		if (ctrl->bRequestType != USB_RECIP_INTERFACE)
 			goto unknown;
@@ -1943,11 +1630,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		if (!f)
 			break;
 
-		/*
-		 * If there's no get_alt() method, we know only altsetting zero
-		 * works. There is no need to check if set_alt() is not NULL
-		 * as we check this in usb_add_function().
-		 */
+		 
 		if (w_value && !f->get_alt)
 			break;
 
@@ -1971,7 +1654,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		f = cdev->config->interface[intf];
 		if (!f)
 			break;
-		/* lots of interfaces only need altsetting zero... */
+		 
 		value = f->get_alt ? f->get_alt(f, w_index) : 0;
 		if (value < 0)
 			break;
@@ -1989,18 +1672,12 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			break;
 		}
 
-		/*
-		 * USB 3.0 additions:
-		 * Function driver should handle get_status request. If such cb
-		 * wasn't supplied we respond with default value = 0
-		 * Note: function driver should supply such cb only for the
-		 * first interface of the function
-		 */
+		 
 		if (!gadget_is_superspeed(gadget))
 			goto unknown;
 		if (ctrl->bRequestType != (USB_DIR_IN | USB_RECIP_INTERFACE))
 			goto unknown;
-		value = 2;	/* This is the length of the get_status reply */
+		value = 2;	 
 		put_unaligned_le16(0, req->buf);
 		if (!cdev->config || intf >= MAX_CONFIG_INTERFACES)
 			break;
@@ -2013,7 +1690,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			if (status < 0)
 				break;
 		} else {
-			/* Set D0 and D1 bits based on func wakeup capability */
+			 
 			if (f->config->bmAttributes & USB_CONFIG_ATT_WAKEUP) {
 				status |= USB_INTRF_STAT_FUNC_RW_CAP;
 				if (f->func_wakeup_armed)
@@ -2023,11 +1700,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 
 		put_unaligned_le16(status & 0x0000ffff, req->buf);
 		break;
-	/*
-	 * Function drivers should handle SetFeature/ClearFeature
-	 * (FUNCTION_SUSPEND) request. function_suspend cb should be supplied
-	 * only for the first interface of the function
-	 */
+	 
 	case USB_REQ_CLEAR_FEATURE:
 	case USB_REQ_SET_FEATURE:
 		if (!gadget_is_superspeed(gadget))
@@ -2044,7 +1717,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			value = 0;
 			if (f->func_suspend) {
 				value = f->func_suspend(f, w_index >> 8);
-			/* SetFeature(FUNCTION_SUSPEND) */
+			 
 			} else if (ctrl->bRequest == USB_REQ_SET_FEATURE) {
 				if (!(f->config->bmAttributes &
 				      USB_CONFIG_ATT_WAKEUP) &&
@@ -2059,18 +1732,14 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 						f->suspend(f);
 						f->func_suspended = true;
 					}
-				/*
-				 * Handle cases where host sends function resume
-				 * through SetFeature(FUNCTION_SUSPEND) but low power
-				 * bit reset
-				 */
+				 
 				} else {
 					if (f->resume && f->func_suspended) {
 						f->resume(f);
 						f->func_suspended = false;
 					}
 				}
-			/* ClearFeature(FUNCTION_SUSPEND) */
+			 
 			} else if (ctrl->bRequest == USB_REQ_CLEAR_FEATURE) {
 				f->func_wakeup_armed = false;
 
@@ -2091,9 +1760,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		break;
 	default:
 unknown:
-		/*
-		 * OS descriptors handling
-		 */
+		 
 		if (cdev->use_os_string && cdev->os_desc_config &&
 		    (ctrl->bRequestType & USB_TYPE_VENDOR) &&
 		    ctrl->bRequest == cdev->b_vendor_code) {
@@ -2115,11 +1782,11 @@ unknown:
 				if (w_index != 0x4 || (w_value >> 8))
 					break;
 				buf[6] = w_index;
-				/* Number of ext compat interfaces */
+				 
 				count = count_ext_compat(os_desc_cfg);
 				buf[8] = count;
-				count *= 24; /* 24 B/ext compat desc */
-				count += 16; /* header */
+				count *= 24;  
+				count += 16;  
 				put_unaligned_le32(count, buf);
 				value = w_length;
 				if (w_length > 0x10) {
@@ -2154,10 +1821,7 @@ unknown:
 			goto check_value;
 		}
 
-		/*
-		 * WebUSB URL descriptor handling, following:
-		 * https://wicg.github.io/webusb/#device-requests
-		 */
+		 
 		if (cdev->use_webusb &&
 		    ctrl->bRequestType == (USB_DIR_IN | USB_TYPE_VENDOR) &&
 		    w_index == WEBUSB_GET_URL &&
@@ -2205,10 +1869,7 @@ unknown:
 			ctrl->bRequestType, ctrl->bRequest,
 			w_value, w_index, w_length);
 
-		/* functions always handle their interfaces and endpoints...
-		 * punt other recipients (other, WUSB, ...) to the current
-		 * configuration code.
-		 */
+		 
 		if (cdev->config) {
 			list_for_each_entry(f, &cdev->config->functions, list)
 				if (f->req_match &&
@@ -2253,13 +1914,13 @@ try_fun_setup:
 			if (!c)
 				goto done;
 
-			/* try current config's setup */
+			 
 			if (c->setup) {
 				value = c->setup(c, ctrl);
 				goto done;
 			}
 
-			/* try the only function in the current config */
+			 
 			if (!list_is_singular(&c->functions))
 				goto done;
 			f = list_first_entry(&c->functions, struct usb_function,
@@ -2272,7 +1933,7 @@ try_fun_setup:
 	}
 
 check_value:
-	/* respond with data transfer before status phase? */
+	 
 	if (value >= 0 && value != USB_GADGET_DELAYED_STATUS) {
 		req->length = value;
 		req->context = cdev;
@@ -2290,7 +1951,7 @@ check_value:
 	}
 
 done:
-	/* device either stalls (value < 0) or reports success */
+	 
 	return value;
 }
 
@@ -2299,9 +1960,7 @@ static void __composite_disconnect(struct usb_gadget *gadget)
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
 	unsigned long			flags;
 
-	/* REVISIT:  should we have config and device level
-	 * disconnect callbacks?
-	 */
+	 
 	spin_lock_irqsave(&cdev->lock, flags);
 	cdev->suspended = 0;
 	if (cdev->config)
@@ -2319,16 +1978,12 @@ void composite_disconnect(struct usb_gadget *gadget)
 
 void composite_reset(struct usb_gadget *gadget)
 {
-	/*
-	 * Section 1.4.13 Standard Downstream Port of the USB battery charging
-	 * specification v1.2 states that a device connected on a SDP shall only
-	 * draw at max 100mA while in a connected, but unconfigured state.
-	 */
+	 
 	usb_gadget_vbus_draw(gadget, 100);
 	__composite_disconnect(gadget);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static ssize_t suspended_show(struct device *dev, struct device_attribute *attr,
 			      char *buf)
@@ -2346,11 +2001,7 @@ static void __composite_unbind(struct usb_gadget *gadget, bool unbind_driver)
 	struct usb_gadget_strings	*gstr = cdev->driver->strings[0];
 	struct usb_string		*dev_str = gstr->strings;
 
-	/* composite_disconnect() must already have been called
-	 * by the underlying peripheral controller driver!
-	 * so there's no i/o concurrency that could affect the
-	 * state protected by cdev->lock.
-	 */
+	 
 	WARN_ON(cdev->config);
 
 	while (!list_empty(&cdev->configs)) {
@@ -2387,10 +2038,7 @@ static void update_unchanged_dev_desc(struct usb_device_descriptor *new,
 	u8 iManufacturer;
 	u8 iProduct;
 
-	/*
-	 * these variables may have been set in
-	 * usb_composite_overwrite_options()
-	 */
+	 
 	idVendor = new->idVendor;
 	idProduct = new->idProduct;
 	bcdDevice = new->bcdDevice;
@@ -2421,7 +2069,7 @@ int composite_dev_prepare(struct usb_composite_driver *composite,
 	struct usb_gadget *gadget = cdev->gadget;
 	int ret = -ENOMEM;
 
-	/* preallocate control response and buffer */
+	 
 	cdev->req = usb_ep_alloc_request(gadget->ep0, GFP_KERNEL);
 	if (!cdev->req)
 		return -ENOMEM;
@@ -2440,18 +2088,11 @@ int composite_dev_prepare(struct usb_composite_driver *composite,
 
 	cdev->driver = composite;
 
-	/*
-	 * As per USB compliance update, a device that is actively drawing
-	 * more than 100mA from USB must report itself as bus-powered in
-	 * the GetStatus(DEVICE) call.
-	 */
+	 
 	if (CONFIG_USB_GADGET_VBUS_DRAW <= USB_SELF_POWER_VBUS_MAX_DRAW)
 		usb_gadget_set_selfpowered(gadget);
 
-	/* interface and string IDs start at zero via kzalloc.
-	 * we force endpoints to start unassigned; few controller
-	 * drivers will zero ep->driver_data.
-	 */
+	 
 	usb_ep_autoconfig_reset(gadget);
 	return 0;
 fail_dev:
@@ -2516,15 +2157,7 @@ void composite_dev_cleanup(struct usb_composite_dev *cdev)
 	cdev->next_string_id = 0;
 	device_remove_file(&cdev->gadget->dev, &dev_attr_suspended);
 
-	/*
-	 * Some UDC backends have a dynamic EP allocation scheme.
-	 *
-	 * In that case, the dispose() callback is used to notify the
-	 * backend that the EPs are no longer in use.
-	 *
-	 * Note: The UDC backend can remove the EP from the ep_list as
-	 *	 a result, so we need to use the _safe list iterator.
-	 */
+	 
 	list_for_each_entry_safe(ep, tmp_ep,
 				 &cdev->gadget->ep_list, ep_list) {
 		if (ep->ops->dispose)
@@ -2553,10 +2186,7 @@ static int composite_bind(struct usb_gadget *gadget,
 	if (status)
 		goto fail;
 
-	/* composite gadget needs to assign strings for whole device (like
-	 * serial number), register function drivers, potentially update
-	 * power state and consumption, etc
-	 */
+	 
 	status = composite->bind(cdev);
 	if (status < 0)
 		goto fail;
@@ -2569,7 +2199,7 @@ static int composite_bind(struct usb_gadget *gadget,
 
 	update_unchanged_dev_desc(&cdev->desc, composite->dev);
 
-	/* has userspace failed to provide a serial number? */
+	 
 	if (composite->needs_serial && !cdev->desc.iSerialNumber)
 		WARNING(cdev, "userspace failed to provide iSerialNumber\n");
 
@@ -2581,16 +2211,14 @@ fail:
 	return status;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 void composite_suspend(struct usb_gadget *gadget)
 {
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
 	struct usb_function		*f;
 
-	/* REVISIT:  should we have config level
-	 * suspend/resume callbacks?
-	 */
+	 
 	DBG(cdev, "suspend\n");
 	if (cdev->config) {
 		list_for_each_entry(f, &cdev->config->functions, list) {
@@ -2613,19 +2241,13 @@ void composite_resume(struct usb_gadget *gadget)
 	struct usb_function		*f;
 	unsigned			maxpower;
 
-	/* REVISIT:  should we have config level
-	 * suspend/resume callbacks?
-	 */
+	 
 	DBG(cdev, "resume\n");
 	if (cdev->driver->resume)
 		cdev->driver->resume(cdev);
 	if (cdev->config) {
 		list_for_each_entry(f, &cdev->config->functions, list) {
-			/*
-			 * Check for func_suspended flag to see if the function is
-			 * in USB3 FUNCTION_SUSPEND state. In this case resume is
-			 * done via FUNCTION_SUSPEND feature selector.
-			 */
+			 
 			if (f->resume && !f->func_suspended)
 				f->resume(f);
 		}
@@ -2650,7 +2272,7 @@ void composite_resume(struct usb_gadget *gadget)
 	cdev->suspended = 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static const struct usb_gadget_driver composite_driver_template = {
 	.bind		= composite_bind,
@@ -2668,22 +2290,7 @@ static const struct usb_gadget_driver composite_driver_template = {
 	},
 };
 
-/**
- * usb_composite_probe() - register a composite driver
- * @driver: the driver to register
- *
- * Context: single threaded during gadget setup
- *
- * This function is used to register drivers using the composite driver
- * framework.  The return value is zero, or a negative errno value.
- * Those values normally come from the driver's @bind method, which does
- * all the work of setting up the driver to match the hardware.
- *
- * On successful return, the gadget is ready to respond to requests from
- * the host, unless one of its components invokes usb_gadget_disconnect()
- * while it was binding.  That would usually be done in order to wait for
- * some userspace participation.
- */
+ 
 int usb_composite_probe(struct usb_composite_driver *driver)
 {
 	struct usb_gadget_driver *gadget_driver;
@@ -2705,29 +2312,14 @@ int usb_composite_probe(struct usb_composite_driver *driver)
 }
 EXPORT_SYMBOL_GPL(usb_composite_probe);
 
-/**
- * usb_composite_unregister() - unregister a composite driver
- * @driver: the driver to unregister
- *
- * This function is used to unregister drivers using the composite
- * driver framework.
- */
+ 
 void usb_composite_unregister(struct usb_composite_driver *driver)
 {
 	usb_gadget_unregister_driver(&driver->gadget_driver);
 }
 EXPORT_SYMBOL_GPL(usb_composite_unregister);
 
-/**
- * usb_composite_setup_continue() - Continue with the control transfer
- * @cdev: the composite device who's control transfer was kept waiting
- *
- * This function must be called by the USB function driver to continue
- * with the control transfer's data/status stage in case it had requested to
- * delay the data/status stages. A USB function's setup handler (e.g. set_alt())
- * can request the composite framework to delay the setup request's data/status
- * stages by returning USB_GADGET_DELAYED_STATUS.
- */
+ 
 void usb_composite_setup_continue(struct usb_composite_dev *cdev)
 {
 	int			value;

@@ -1,8 +1,4 @@
-/*
-** $Id: lstring.h,v 1.49.1.1 2013/04/12 18:48:47 roberto Exp $
-** String table (keep all strings handled by Lua)
-** See Copyright Notice in lua.h
-*/
+ 
 
 #ifndef lstring_h
 #define lstring_h
@@ -22,15 +18,11 @@
 #define luaS_fix(s)	l_setbit((s)->tsv.marked, FIXEDBIT)
 
 
-/*
-** test whether a string is a reserved word
-*/
+ 
 #define isreserved(s)	((s)->tsv.tt == LUA_TSHRSTR && (s)->tsv.extra > 0)
 
 
-/*
-** equality for short strings, which are always internalized
-*/
+ 
 #define eqshrstr(a,b)	check_exp((a)->tsv.tt == LUA_TSHRSTR, (a) == (b))
 
 

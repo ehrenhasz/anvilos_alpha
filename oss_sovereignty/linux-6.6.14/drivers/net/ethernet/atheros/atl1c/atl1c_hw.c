@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright(c) 2007 Atheros Corporation. All rights reserved.
- *
- * Derived from Intel e1000 driver
- * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <linux/mii.h>
@@ -12,10 +7,7 @@
 
 #include "atl1c.h"
 
-/*
- * check_eeprom_exist
- * return 1 if eeprom exist
- */
+ 
 int atl1c_check_eeprom_exist(struct atl1c_hw *hw)
 {
 	u32 data;
@@ -33,23 +25,19 @@ int atl1c_check_eeprom_exist(struct atl1c_hw *hw)
 void atl1c_hw_set_mac_addr(struct atl1c_hw *hw, u8 *mac_addr)
 {
 	u32 value;
-	/*
-	 * 00-0B-6A-F6-00-DC
-	 * 0:  6AF600DC 1: 000B
-	 * low dword
-	 */
+	 
 	value = mac_addr[2] << 24 |
 		mac_addr[3] << 16 |
 		mac_addr[4] << 8  |
 		mac_addr[5];
 	AT_WRITE_REG_ARRAY(hw, REG_MAC_STA_ADDR, 0, value);
-	/* hight dword */
+	 
 	value = mac_addr[0] << 8 |
 		mac_addr[1];
 	AT_WRITE_REG_ARRAY(hw, REG_MAC_STA_ADDR, 1, value);
 }
 
-/* read mac address from hardware register */
+ 
 static bool atl1c_read_current_addr(struct atl1c_hw *hw, u8 *eth_addr)
 {
 	u32 addr[2];
@@ -63,10 +51,7 @@ static bool atl1c_read_current_addr(struct atl1c_hw *hw, u8 *eth_addr)
 	return is_valid_ether_addr(eth_addr);
 }
 
-/*
- * atl1c_get_permanent_address
- * return 0 if get valid mac address,
- */
+ 
 static int atl1c_get_permanent_address(struct atl1c_hw *hw)
 {
 	u32 i;
@@ -75,15 +60,15 @@ static int atl1c_get_permanent_address(struct atl1c_hw *hw)
 	u16 phy_data;
 	bool raise_vol = false;
 
-	/* MAC-address from BIOS is the 1st priority */
+	 
 	if (atl1c_read_current_addr(hw, hw->perm_mac_addr))
 		return 0;
 
-	/* init */
+	 
 	AT_READ_REG(hw, REG_OTP_CTRL, &otp_ctrl_data);
 	if (atl1c_check_eeprom_exist(hw)) {
 		if (hw->nic_type == athr_l1c || hw->nic_type == athr_l2c) {
-			/* Enable OTP CLK */
+			 
 			if (!(otp_ctrl_data & OTP_CTRL_CLK_EN)) {
 				otp_ctrl_data |= OTP_CTRL_CLK_EN;
 				AT_WRITE_REG(hw, REG_OTP_CTRL, otp_ctrl_data);
@@ -91,7 +76,7 @@ static int atl1c_get_permanent_address(struct atl1c_hw *hw)
 				msleep(1);
 			}
 		}
-		/* raise voltage temporally for l2cb */
+		 
 		if (hw->nic_type == athr_l2c_b || hw->nic_type == athr_l2c_b2) {
 			atl1c_read_phy_dbg(hw, MIIDBG_ANACTRL, &phy_data);
 			phy_data &= ~ANACTRL_HB_EN;
@@ -115,7 +100,7 @@ static int atl1c_get_permanent_address(struct atl1c_hw *hw)
 		if (i >= AT_TWSI_EEPROM_TIMEOUT)
 			return -1;
 	}
-	/* Disable OTP_CLK */
+	 
 	if ((hw->nic_type == athr_l1c || hw->nic_type == athr_l2c)) {
 		otp_ctrl_data &= ~OTP_CTRL_CLK_EN;
 		AT_WRITE_REG(hw, REG_OTP_CTRL, otp_ctrl_data);
@@ -146,7 +131,7 @@ bool atl1c_read_eeprom(struct atl1c_hw *hw, u32 offset, u32 *p_value)
 	u32 data;
 
 	if (offset & 3)
-		return ret; /* address do not align */
+		return ret;  
 
 	AT_READ_REG(hw, REG_OTP_CTRL, &otp_ctrl_data);
 	if (!(otp_ctrl_data & OTP_CTRL_CLK_EN))
@@ -175,11 +160,7 @@ bool atl1c_read_eeprom(struct atl1c_hw *hw, u32 offset, u32 *p_value)
 
 	return ret;
 }
-/*
- * Reads the adapter's MAC address from the EEPROM
- *
- * hw - Struct containing variables accessed by shared code
- */
+ 
 int atl1c_read_mac_addr(struct atl1c_hw *hw)
 {
 	int err = 0;
@@ -192,14 +173,7 @@ int atl1c_read_mac_addr(struct atl1c_hw *hw)
 	return err;
 }
 
-/*
- * atl1c_hash_mc_addr
- *  purpose
- *      set hash value for a multicast address
- *      hash calcu processing :
- *          1. calcu 32bit CRC for multicast address
- *          2. reverse crc with MSB to LSB
- */
+ 
 u32 atl1c_hash_mc_addr(struct atl1c_hw *hw, u8 *mc_addr)
 {
 	u32 crc32;
@@ -213,25 +187,13 @@ u32 atl1c_hash_mc_addr(struct atl1c_hw *hw, u8 *mc_addr)
 	return value;
 }
 
-/*
- * Sets the bit in the multicast table corresponding to the hash value.
- * hw - Struct containing variables accessed by shared code
- * hash_value - Multicast address hash value
- */
+ 
 void atl1c_hash_set(struct atl1c_hw *hw, u32 hash_value)
 {
 	u32 hash_bit, hash_reg;
 	u32 mta;
 
-	/*
-	 * The HASH Table  is a register array of 2 32-bit registers.
-	 * It is treated like an array of 64 bits.  We want to set
-	 * bit BitArray[hash_value]. So we figure out what register
-	 * the bit is in, read it, OR in the new bit, then write
-	 * back the new value.  The register is determined by the
-	 * upper bit of the hash value and the bit within that
-	 * register are determined by the lower 5 bits of the value.
-	 */
+	 
 	hash_reg = (hash_value >> 31) & 0x1;
 	hash_bit = (hash_value >> 26) & 0x1F;
 
@@ -242,11 +204,7 @@ void atl1c_hash_set(struct atl1c_hw *hw, u32 hash_value)
 	AT_WRITE_REG_ARRAY(hw, REG_RX_HASH_TABLE, hash_reg, mta);
 }
 
-/*
- * wait mdio module be idle
- * return true: idle
- *        false: still busy
- */
+ 
 bool atl1c_wait_mdio_idle(struct atl1c_hw *hw)
 {
 	u32 val;
@@ -292,13 +250,7 @@ void atl1c_start_phy_polling(struct atl1c_hw *hw, u16 clk_sel)
 }
 
 
-/*
- * atl1c_read_phy_core
- * core function to read register in PHY via MDIO control register.
- * ext: extension register (see IEEE 802.3)
- * dev: device address (see IEEE 802.3 DEVAD, PRTAD is fixed to 0)
- * reg: reg to read
- */
+ 
 int atl1c_read_phy_core(struct atl1c_hw *hw, bool ext, u8 dev,
 			u16 reg, u16 *phy_data)
 {
@@ -309,7 +261,7 @@ int atl1c_read_phy_core(struct atl1c_hw *hw, bool ext, u8 dev,
 
 	*phy_data = 0;
 
-	/* only l2c_b2 & l1d_2 could use slow clock */
+	 
 	if ((hw->nic_type == athr_l2c_b2 || hw->nic_type == athr_l1d_2) &&
 		hw->hibernate)
 		clk_sel = MDIO_CTRL_CLK_25_128;
@@ -341,13 +293,7 @@ int atl1c_read_phy_core(struct atl1c_hw *hw, bool ext, u8 dev,
 	return 0;
 }
 
-/*
- * atl1c_write_phy_core
- * core function to write to register in PHY via MDIO control register.
- * ext: extension register (see IEEE 802.3)
- * dev: device address (see IEEE 802.3 DEVAD, PRTAD is fixed to 0)
- * reg: reg to write
- */
+ 
 int atl1c_write_phy_core(struct atl1c_hw *hw, bool ext, u8 dev,
 			u16 reg, u16 phy_data)
 {
@@ -357,7 +303,7 @@ int atl1c_write_phy_core(struct atl1c_hw *hw, bool ext, u8 dev,
 	atl1c_stop_phy_polling(hw);
 
 
-	/* only l2c_b2 & l1d_2 could use slow clock */
+	 
 	if ((hw->nic_type == athr_l2c_b2 || hw->nic_type == athr_l1d_2) &&
 		hw->hibernate)
 		clk_sel = MDIO_CTRL_CLK_25_128;
@@ -387,35 +333,26 @@ int atl1c_write_phy_core(struct atl1c_hw *hw, bool ext, u8 dev,
 	return 0;
 }
 
-/*
- * Reads the value from a PHY register
- * hw - Struct containing variables accessed by shared code
- * reg_addr - address of the PHY register to read
- */
+ 
 int atl1c_read_phy_reg(struct atl1c_hw *hw, u16 reg_addr, u16 *phy_data)
 {
 	return atl1c_read_phy_core(hw, false, 0, reg_addr, phy_data);
 }
 
-/*
- * Writes a value to a PHY register
- * hw - Struct containing variables accessed by shared code
- * reg_addr - address of the PHY register to write
- * data - data to write to the PHY
- */
+ 
 int atl1c_write_phy_reg(struct atl1c_hw *hw, u32 reg_addr, u16 phy_data)
 {
 	return atl1c_write_phy_core(hw, false, 0, reg_addr, phy_data);
 }
 
-/* read from PHY extension register */
+ 
 int atl1c_read_phy_ext(struct atl1c_hw *hw, u8 dev_addr,
 			u16 reg_addr, u16 *phy_data)
 {
 	return atl1c_read_phy_core(hw, true, dev_addr, reg_addr, phy_data);
 }
 
-/* write to PHY extension register */
+ 
 int atl1c_write_phy_ext(struct atl1c_hw *hw, u8 dev_addr,
 			u16 reg_addr, u16 phy_data)
 {
@@ -448,11 +385,7 @@ int atl1c_write_phy_dbg(struct atl1c_hw *hw, u16 reg_addr, u16 phy_data)
 	return err;
 }
 
-/*
- * Configures PHY autoneg and flow control advertisement settings
- *
- * hw - Struct containing variables accessed by shared code
- */
+ 
 static int atl1c_phy_setup_adv(struct atl1c_hw *hw)
 {
 	u16 mii_adv_data = ADVERTISE_DEFAULT_CAP & ~ADVERTISE_ALL;
@@ -502,7 +435,7 @@ int atl1c_phy_reset(struct atl1c_hw *hw)
 	u32 phy_ctrl_data, lpi_ctrl;
 	int err;
 
-	/* reset PHY core */
+	 
 	AT_READ_REG(hw, REG_GPHY_CTRL, &phy_ctrl_data);
 	phy_ctrl_data &= ~(GPHY_CTRL_EXT_RESET | GPHY_CTRL_PHY_IDDQ |
 		GPHY_CTRL_GATE_25M_EN | GPHY_CTRL_PWDOWN_HW | GPHY_CTRL_CLS);
@@ -516,48 +449,48 @@ int atl1c_phy_reset(struct atl1c_hw *hw)
 	udelay(10);
 	AT_WRITE_REG(hw, REG_GPHY_CTRL, phy_ctrl_data | GPHY_CTRL_EXT_RESET);
 	AT_WRITE_FLUSH(hw);
-	udelay(10 * GPHY_CTRL_EXT_RST_TO);	/* delay 800us */
+	udelay(10 * GPHY_CTRL_EXT_RST_TO);	 
 
-	/* switch clock */
+	 
 	if (hw->nic_type == athr_l2c_b) {
 		atl1c_read_phy_dbg(hw, MIIDBG_CFGLPSPD, &phy_data);
 		atl1c_write_phy_dbg(hw, MIIDBG_CFGLPSPD,
 			phy_data & ~CFGLPSPD_RSTCNT_CLK125SW);
 	}
 
-	/* tx-half amplitude issue fix */
+	 
 	if (hw->nic_type == athr_l2c_b || hw->nic_type == athr_l2c_b2) {
 		atl1c_read_phy_dbg(hw, MIIDBG_CABLE1TH_DET, &phy_data);
 		phy_data |= CABLE1TH_DET_EN;
 		atl1c_write_phy_dbg(hw, MIIDBG_CABLE1TH_DET, phy_data);
 	}
 
-	/* clear bit3 of dbgport 3B to lower voltage */
+	 
 	if (!(hw->ctrl_flags & ATL1C_HIB_DISABLE)) {
 		if (hw->nic_type == athr_l2c_b || hw->nic_type == athr_l2c_b2) {
 			atl1c_read_phy_dbg(hw, MIIDBG_VOLT_CTRL, &phy_data);
 			phy_data &= ~VOLT_CTRL_SWLOWEST;
 			atl1c_write_phy_dbg(hw, MIIDBG_VOLT_CTRL, phy_data);
 		}
-		/* power saving config */
+		 
 		phy_data =
 			hw->nic_type == athr_l1d || hw->nic_type == athr_l1d_2 ?
 			L1D_LEGCYPS_DEF : L1C_LEGCYPS_DEF;
 		atl1c_write_phy_dbg(hw, MIIDBG_LEGCYPS, phy_data);
-		/* hib */
+		 
 		atl1c_write_phy_dbg(hw, MIIDBG_SYSMODCTRL,
 			SYSMODCTRL_IECHOADJ_DEF);
 	} else {
-		/* disable pws */
+		 
 		atl1c_read_phy_dbg(hw, MIIDBG_LEGCYPS, &phy_data);
 		atl1c_write_phy_dbg(hw, MIIDBG_LEGCYPS,
 			phy_data & ~LEGCYPS_EN);
-		/* disable hibernate */
+		 
 		atl1c_read_phy_dbg(hw, MIIDBG_HIBNEG, &phy_data);
 		atl1c_write_phy_dbg(hw, MIIDBG_HIBNEG,
 			phy_data & HIBNEG_PSHIB_EN);
 	}
-	/* disable AZ(EEE) by default */
+	 
 	if (hw->nic_type == athr_l1d || hw->nic_type == athr_l1d_2 ||
 	    hw->nic_type == athr_l2c_b2) {
 		AT_READ_REG(hw, REG_LPI_CTRL, &lpi_ctrl);
@@ -567,15 +500,15 @@ int atl1c_phy_reset(struct atl1c_hw *hw)
 			L2CB_CLDCTRL3);
 	}
 
-	/* other debug port to set */
+	 
 	atl1c_write_phy_dbg(hw, MIIDBG_ANACTRL, ANACTRL_DEF);
 	atl1c_write_phy_dbg(hw, MIIDBG_SRDSYSMOD, SRDSYSMOD_DEF);
 	atl1c_write_phy_dbg(hw, MIIDBG_TST10BTCFG, TST10BTCFG_DEF);
-	/* UNH-IOL test issue, set bit7 */
+	 
 	atl1c_write_phy_dbg(hw, MIIDBG_TST100BTCFG,
 		TST100BTCFG_DEF | TST100BTCFG_LITCH_EN);
 
-	/* set phy interrupt mask */
+	 
 	phy_data = IER_LINK_UP | IER_LINK_DOWN;
 	err = atl1c_write_phy_reg(hw, MII_IER, phy_data);
 	if (err) {
@@ -652,19 +585,13 @@ bool atl1c_get_link_status(struct atl1c_hw *hw)
 		return !!spd;
 	}
 
-	/* MII_BMSR must be read twice */
+	 
 	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
 	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
 	return !!(phy_data & BMSR_LSTATUS);
 }
 
-/*
- * Detects the current speed and duplex settings of the hardware.
- *
- * hw - Struct containing variables accessed by shared code
- * speed - Speed of the connection
- * duplex - Duplex setting of the connection
- */
+ 
 int atl1c_get_speed_and_duplex(struct atl1c_hw *hw, u16 *speed, u16 *duplex)
 {
 	int err;
@@ -679,7 +606,7 @@ int atl1c_get_speed_and_duplex(struct atl1c_hw *hw, u16 *speed, u16 *duplex)
 		return 0;
 	}
 
-	/* Read   PHY Specific Status Register (17) */
+	 
 	err = atl1c_read_phy_reg(hw, MII_GIGA_PSSR, &phy_data);
 	if (err)
 		return err;
@@ -709,7 +636,7 @@ int atl1c_get_speed_and_duplex(struct atl1c_hw *hw, u16 *speed, u16 *duplex)
 	return 0;
 }
 
-/* select one link mode to get lower power consumption */
+ 
 int atl1c_phy_to_ps_link(struct atl1c_hw *hw)
 {
 	struct atl1c_adapter *adapter = hw->adapter;
@@ -801,14 +728,14 @@ int atl1c_power_saving(struct atl1c_hw *hw, u32 wufc)
 	phy_ctrl &= ~(GPHY_CTRL_EXT_RESET | GPHY_CTRL_CLS);
 	phy_ctrl |= GPHY_CTRL_SEL_ANA_RST | GPHY_CTRL_HIB_PULSE |
 		GPHY_CTRL_HIB_EN;
-	if (!wufc) { /* without WoL */
+	if (!wufc) {  
 		master_ctrl |= MASTER_CTRL_CLK_SEL_DIS;
 		phy_ctrl |= GPHY_CTRL_PHY_IDDQ | GPHY_CTRL_PWDOWN_HW;
 		AT_WRITE_REG(hw, REG_MASTER_CTRL, master_ctrl);
 		AT_WRITE_REG(hw, REG_MAC_CTRL, mac_ctrl);
 		AT_WRITE_REG(hw, REG_GPHY_CTRL, phy_ctrl);
 		AT_WRITE_REG(hw, REG_WOL_CTRL, 0);
-		hw->phy_configured = false; /* re-init PHY when resume */
+		hw->phy_configured = false;  
 		return 0;
 	}
 	phy_ctrl |= GPHY_CTRL_EXT_RESET;
@@ -825,7 +752,7 @@ int atl1c_power_saving(struct atl1c_hw *hw, u32 wufc)
 				atl1c_driver_name);
 		}
 	}
-	/* clear PHY interrupt */
+	 
 	atl1c_read_phy_reg(hw, MII_ISR, &phy_data);
 
 	dev_dbg(&pdev->dev, "%s: suspend MAC=%x,MASTER=%x,PHY=0x%x,WOL=%x\n",
@@ -839,7 +766,7 @@ int atl1c_power_saving(struct atl1c_hw *hw, u32 wufc)
 }
 
 
-/* configure phy after Link change Event */
+ 
 void atl1c_post_phy_linkchg(struct atl1c_hw *hw, u16 link_speed)
 {
 	u16 phy_val;
@@ -849,8 +776,8 @@ void atl1c_post_phy_linkchg(struct atl1c_hw *hw, u16 link_speed)
 	    hw->nic_type == athr_l1d || hw->nic_type == athr_l1d_2)
 		adj_thresh = true;
 
-	if (link_speed != SPEED_0) { /* link up */
-		/* az with brcm, half-amp */
+	if (link_speed != SPEED_0) {  
+		 
 		if (hw->nic_type == athr_l1d_2) {
 			atl1c_read_phy_ext(hw, MIIEXT_PCS, MIIEXT_CLDCTRL6,
 				&phy_val);
@@ -859,13 +786,13 @@ void atl1c_post_phy_linkchg(struct atl1c_hw *hw, u16 link_speed)
 				AZ_ANADECT_LONG : AZ_ANADECT_DEF;
 			atl1c_write_phy_dbg(hw, MIIDBG_AZ_ANADECT, phy_val);
 		}
-		/* threshold adjust */
+		 
 		if (adj_thresh && link_speed == SPEED_100 && hw->msi_lnkpatch) {
 			atl1c_write_phy_dbg(hw, MIIDBG_MSE16DB, L1D_MSE16DB_UP);
 			atl1c_write_phy_dbg(hw, MIIDBG_SYSMODCTRL,
 				L1D_SYSMODCTRL_IECHOADJ_DEF);
 		}
-	} else { /* link down */
+	} else {  
 		if (adj_thresh && hw->msi_lnkpatch) {
 			atl1c_write_phy_dbg(hw, MIIDBG_SYSMODCTRL,
 				SYSMODCTRL_IECHOADJ_DEF);

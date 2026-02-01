@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  drivers/cpufreq/cpufreq_stats.c
- *
- *  Copyright (C) 2003-2004 Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>.
- *  (C) 2004 Zou Nan hai <nanhai.zou@intel.com>.
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/cpufreq.h>
@@ -22,7 +17,7 @@ struct cpufreq_stats {
 	unsigned int *freq_table;
 	unsigned int *trans_table;
 
-	/* Deferred reset */
+	 
 	unsigned int reset_pending;
 	unsigned long long reset_time;
 };
@@ -45,12 +40,9 @@ static void cpufreq_stats_reset_table(struct cpufreq_stats *stats)
 	stats->last_time = local_clock();
 	stats->total_trans = 0;
 
-	/* Adjust for the time elapsed since reset was requested */
+	 
 	WRITE_ONCE(stats->reset_pending, 0);
-	/*
-	 * Prevent the reset_time read from being reordered before the
-	 * reset_pending accesses in cpufreq_stats_record_transition().
-	 */
+	 
 	smp_rmb();
 	cpufreq_stats_update(stats, READ_ONCE(stats->reset_time));
 }
@@ -77,10 +69,7 @@ static ssize_t show_time_in_state(struct cpufreq_policy *policy, char *buf)
 	for (i = 0; i < stats->state_num; i++) {
 		if (pending) {
 			if (i == stats->last_index) {
-				/*
-				 * Prevent the reset_time read from occurring
-				 * before the reset_pending read above.
-				 */
+				 
 				smp_rmb();
 				time = local_clock() - READ_ONCE(stats->reset_time);
 			} else {
@@ -99,21 +88,15 @@ static ssize_t show_time_in_state(struct cpufreq_policy *policy, char *buf)
 }
 cpufreq_freq_attr_ro(time_in_state);
 
-/* We don't care what is written to the attribute */
+ 
 static ssize_t store_reset(struct cpufreq_policy *policy, const char *buf,
 			   size_t count)
 {
 	struct cpufreq_stats *stats = policy->stats;
 
-	/*
-	 * Defer resetting of stats to cpufreq_stats_record_transition() to
-	 * avoid races.
-	 */
+	 
 	WRITE_ONCE(stats->reset_time, local_clock());
-	/*
-	 * The memory barrier below is to prevent the readers of reset_time from
-	 * seeing a stale or partially updated value.
-	 */
+	 
 	smp_wmb();
 	WRITE_ONCE(stats->reset_pending, 1);
 
@@ -195,7 +178,7 @@ void cpufreq_stats_free_table(struct cpufreq_policy *policy)
 {
 	struct cpufreq_stats *stats = policy->stats;
 
-	/* Already freed */
+	 
 	if (!stats)
 		return;
 
@@ -218,7 +201,7 @@ void cpufreq_stats_create_table(struct cpufreq_policy *policy)
 	if (!count)
 		return;
 
-	/* stats already initialized */
+	 
 	if (policy->stats)
 		return;
 
@@ -230,7 +213,7 @@ void cpufreq_stats_create_table(struct cpufreq_policy *policy)
 
 	alloc_size += count * count * sizeof(int);
 
-	/* Allocate memory for time_in_state/freq_table/trans_table in one go */
+	 
 	stats->time_in_state = kzalloc(alloc_size, GFP_KERNEL);
 	if (!stats->time_in_state)
 		goto free_stat;
@@ -241,7 +224,7 @@ void cpufreq_stats_create_table(struct cpufreq_policy *policy)
 
 	stats->max_state = count;
 
-	/* Find valid-unique entries */
+	 
 	cpufreq_for_each_valid_entry(pos, policy->freq_table)
 		if (policy->freq_table_sorted != CPUFREQ_TABLE_UNSORTED ||
 		    freq_table_get_index(stats, pos->frequency) == -1)
@@ -255,7 +238,7 @@ void cpufreq_stats_create_table(struct cpufreq_policy *policy)
 	if (!sysfs_create_group(&policy->kobj, &stats_attr_group))
 		return;
 
-	/* We failed, release resources */
+	 
 	policy->stats = NULL;
 	kfree(stats->time_in_state);
 free_stat:
@@ -277,7 +260,7 @@ void cpufreq_stats_record_transition(struct cpufreq_policy *policy,
 	old_index = stats->last_index;
 	new_index = freq_table_get_index(stats, new_freq);
 
-	/* We can't do stats->time_in_state[-1]= .. */
+	 
 	if (unlikely(old_index == -1 || new_index == -1 || old_index == new_index))
 		return;
 

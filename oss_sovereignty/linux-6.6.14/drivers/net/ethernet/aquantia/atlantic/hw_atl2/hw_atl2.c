@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+ 
 
 #include "aq_hw.h"
 #include "aq_hw_utils.h"
@@ -167,11 +165,11 @@ static int hw_atl2_hw_qos_set(struct aq_hw_s *self)
 	unsigned int prio = 0U;
 	u32 tc = 0U;
 
-	/* TPS Descriptor rate init */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_rate_curr_time_res_set(self, 0x0U);
 	hw_atl_tps_tx_pkt_shed_desc_rate_lim_set(self, 0xA);
 
-	/* TPS VM init */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_vm_arb_mode_set(self, 0U);
 
 	tx_buff_size /= cfg->tcs;
@@ -179,7 +177,7 @@ static int hw_atl2_hw_qos_set(struct aq_hw_s *self)
 	for (tc = 0; tc < cfg->tcs; tc++) {
 		u32 threshold = 0U;
 
-		/* Tx buf size TC0 */
+		 
 		hw_atl_tpb_tx_pkt_buff_size_per_tc_set(self, tx_buff_size, tc);
 
 		threshold = (tx_buff_size * (1024 / 32U) * 66U) / 100U;
@@ -188,7 +186,7 @@ static int hw_atl2_hw_qos_set(struct aq_hw_s *self)
 		threshold = (tx_buff_size * (1024 / 32U) * 50U) / 100U;
 		hw_atl_tpb_tx_buff_lo_threshold_per_tc_set(self, threshold, tc);
 
-		/* QoS Rx buf size per TC */
+		 
 		hw_atl_rpb_rx_pkt_buff_size_per_tc_set(self, rx_buff_size, tc);
 
 		threshold = (rx_buff_size * (1024U / 32U) * 66U) / 100U;
@@ -200,12 +198,12 @@ static int hw_atl2_hw_qos_set(struct aq_hw_s *self)
 		hw_atl_b0_set_fc(self, self->aq_nic_cfg->fc.req, tc);
 	}
 
-	/* QoS 802.1p priority -> TC mapping */
+	 
 	for (prio = 0; prio < 8; ++prio)
 		hw_atl_rpf_rpb_user_priority_tc_map_set(self, prio,
 							cfg->prio_tc_map[prio]);
 
-	/* ATL2 Apply ring to TC mapping */
+	 
 	hw_atl2_hw_queue_to_tc_map_set(self);
 
 	return aq_hw_err_from_flags(self);
@@ -239,7 +237,7 @@ static int hw_atl2_hw_rss_set(struct aq_hw_s *self,
 static int hw_atl2_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 {
 	static const u32 max_weight = BIT(HW_ATL2_TPS_DATA_TCTWEIGHT_WIDTH) - 1;
-	/* Scale factor is based on the number of bits in fractional portion */
+	 
 	static const u32 scale = BIT(HW_ATL_TPS_DESC_RATE_Y_WIDTH);
 	static const u32 frac_msk = HW_ATL_TPS_DESC_RATE_Y_MSK >>
 				    HW_ATL_TPS_DESC_RATE_Y_SHIFT;
@@ -253,9 +251,9 @@ static int hw_atl2_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 	u32 sum_weight = 0;
 	int tc;
 
-	/* By default max_credit is based upon MTU (in unit of 64b) */
+	 
 	fixed_max_credit = nic_cfg->aq_hw_caps->mtu / 64;
-	/* in unit of 4b */
+	 
 	fixed_max_credit_4b = nic_cfg->aq_hw_caps->mtu / 4;
 
 	if (link_speed) {
@@ -264,7 +262,7 @@ static int hw_atl2_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 		num_min_rated_tcs = hweight8(min_rate_msk);
 	}
 
-	/* First, calculate weights where min_rate is specified */
+	 
 	if (num_min_rated_tcs) {
 		for (tc = 0; tc != nic_cfg->tcs; tc++) {
 			if (!nic_cfg->tc_min_rate[tc]) {
@@ -281,13 +279,9 @@ static int hw_atl2_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 		}
 	}
 
-	/* WSP, if min_rate is set for at least one TC.
-	 * RR otherwise.
-	 */
+	 
 	hw_atl2_tps_tx_pkt_shed_data_arb_mode_set(self, min_rate_msk ? 1U : 0U);
-	/* Data TC Arbiter takes precedence over Descriptor TC Arbiter,
-	 * leave Descriptor TC Arbiter as RR.
-	 */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_tc_arb_mode_set(self, 0U);
 
 	hw_atl_tps_tx_desc_rate_mode_set(self, nic_cfg->is_qos ? 1U : 0U);
@@ -323,7 +317,7 @@ static int hw_atl2_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 		hw_atl_tps_tx_desc_rate_en_set(self, desc, en);
 
 		if (en) {
-			/* Nominal rate is always 10G */
+			 
 			const u32 rate = 10000U * scale /
 					 nic_cfg->tc_max_rate[tc];
 			const u32 rate_int = rate >>
@@ -333,9 +327,7 @@ static int hw_atl2_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 			hw_atl_tps_tx_desc_rate_x_set(self, desc, rate_int);
 			hw_atl_tps_tx_desc_rate_y_set(self, desc, rate_frac);
 		} else {
-			/* A value of 1 indicates the queue is not
-			 * rate controlled.
-			 */
+			 
 			hw_atl_tps_tx_desc_rate_x_set(self, desc, 1U);
 			hw_atl_tps_tx_desc_rate_y_set(self, desc, 0U);
 		}
@@ -355,17 +347,17 @@ static int hw_atl2_hw_init_tx_path(struct aq_hw_s *self)
 {
 	struct aq_nic_cfg_s *nic_cfg = self->aq_nic_cfg;
 
-	/* Tx TC/RSS number config */
+	 
 	hw_atl_tpb_tps_tx_tc_mode_set(self, nic_cfg->tc_mode);
 
 	hw_atl_thm_lso_tcp_flag_of_first_pkt_set(self, 0x0FF6U);
 	hw_atl_thm_lso_tcp_flag_of_middle_pkt_set(self, 0x0FF6U);
 	hw_atl_thm_lso_tcp_flag_of_last_pkt_set(self, 0x0F7FU);
 
-	/* Tx interrupts */
+	 
 	hw_atl_tdm_tx_desc_wr_wb_irq_en_set(self, 1U);
 
-	/* misc */
+	 
 	hw_atl_tdm_tx_dca_en_set(self, 0U);
 	hw_atl_tdm_tx_dca_mode_set(self, 0U);
 
@@ -384,24 +376,13 @@ static void hw_atl2_hw_init_new_rx_filters(struct aq_hw_s *self)
 	u8 index;
 	int i;
 
-	/* Action Resolver Table (ART) is used by RPF to decide which action
-	 * to take with a packet based upon input tag and tag mask, where:
-	 *  - input tag is a combination of 3-bit VLan Prio (PTP) and
-	 *    29-bit concatenation of all tags from filter block;
-	 *  - tag mask is a mask used for matching against input tag.
-	 * The input_tag is compared with the all the Requested_tags in the
-	 * Record table to find a match. Action field of the selected matched
-	 * REC entry is used for further processing. If multiple entries match,
-	 * the lowest REC entry, Action field will be selected.
-	 */
+	 
 	hw_atl2_rpf_act_rslvr_section_en_set(self, 0xFFFF);
 	hw_atl2_rpfl2_uc_flr_tag_set(self, HW_ATL2_RPF_TAG_BASE_UC,
 				     HW_ATL2_MAC_UC);
 	hw_atl2_rpfl2_bc_flr_tag_set(self, HW_ATL2_RPF_TAG_BASE_UC);
 
-	/* FW reserves the beginning of ART, thus all driver entries must
-	 * start from the offset specified in FW caps.
-	 */
+	 
 	index = priv->art_base_index + HW_ATL2_RPF_L2_PROMISC_OFF_INDEX;
 	hw_atl2_act_rslvr_table_set(self, index, 0,
 				    HW_ATL2_RPF_TAG_UC_MASK |
@@ -414,9 +395,7 @@ static void hw_atl2_hw_init_new_rx_filters(struct aq_hw_s *self)
 					HW_ATL2_RPF_TAG_UNTAG_MASK,
 				    HW_ATL2_ACTION_DROP);
 
-	/* Configure ART to map given VLan Prio (PCP) to the TC index for
-	 * RSS redirection table.
-	 */
+	 
 	for (i = 0; i < 8; i++) {
 		action = HW_ATL2_ACTION_ASSIGN_TC(prio_tc_map[i]);
 
@@ -455,7 +434,7 @@ static void hw_atl2_hw_new_rx_filter_promisc(struct aq_hw_s *self, bool promisc)
 				    HW_ATL2_RPF_TAG_ALLMC_MASK,
 				    off_action);
 
-	/* turn VLAN promisc mode too */
+	 
 	vlan_promisc_enable = hw_atl_rpf_vlan_prom_mode_en_get(self);
 	hw_atl2_hw_new_rx_filter_vlan_promisc(self, promisc |
 					      vlan_promisc_enable);
@@ -486,18 +465,18 @@ static int hw_atl2_hw_init_rx_path(struct aq_hw_s *self)
 	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
 	int i;
 
-	/* Rx TC/RSS number config */
+	 
 	hw_atl_rpb_rpf_rx_traf_class_mode_set(self, cfg->tc_mode);
 
-	/* Rx flow control */
+	 
 	hw_atl_rpb_rx_flow_ctl_mode_set(self, 1U);
 
 	hw_atl2_rpf_rss_hash_type_set(self, HW_ATL2_RPF_RSS_HASH_TYPE_ALL);
 
-	/* RSS Ring selection */
+	 
 	hw_atl_b0_hw_init_rx_rss_ctrl1(self);
 
-	/* Multicast filters */
+	 
 	for (i = HW_ATL2_MAC_MAX; i--;) {
 		hw_atl_rpfl2_uc_flr_en_set(self, (i == 0U) ? 1U : 0U, i);
 		hw_atl_rpfl2unicast_flr_act_set(self, 1U, i);
@@ -506,19 +485,19 @@ static int hw_atl2_hw_init_rx_path(struct aq_hw_s *self)
 	hw_atl_reg_rx_flr_mcst_flr_msk_set(self, 0x00000000U);
 	hw_atl_reg_rx_flr_mcst_flr_set(self, HW_ATL_MCAST_FLT_ANY_TO_HOST, 0U);
 
-	/* Vlan filters */
+	 
 	hw_atl_rpf_vlan_outer_etht_set(self, ETH_P_8021AD);
 	hw_atl_rpf_vlan_inner_etht_set(self, ETH_P_8021Q);
 
 	hw_atl_rpf_vlan_prom_mode_en_set(self, 1);
 
-	/* Always accept untagged packets */
+	 
 	hw_atl_rpf_vlan_accept_untagged_packets_set(self, 1U);
 	hw_atl_rpf_vlan_untagged_act_set(self, 1U);
 
 	hw_atl2_hw_init_new_rx_filters(self);
 
-	/* Rx Interrupts */
+	 
 	hw_atl_rdm_rx_desc_wr_wb_irq_en_set(self, 1U);
 
 	hw_atl_rpfl2broadcast_flr_act_set(self, 1U);
@@ -567,7 +546,7 @@ static int hw_atl2_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 
 	hw_atl2_rpf_new_enable_set(self, 1);
 
-	/* Reset link status and read out initial hardware counters */
+	 
 	self->aq_link_status.mbps = 0;
 	self->aq_fw_ops->update_stats(self);
 
@@ -575,7 +554,7 @@ static int hw_atl2_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 	if (err < 0)
 		goto err_exit;
 
-	/* Interrupts */
+	 
 	hw_atl_reg_irq_glb_ctl_set(self,
 				   aq_hw_atl2_igcr_table_[aq_nic_cfg->irq_type]
 						 [(aq_nic_cfg->vecs > 1U) ?
@@ -583,7 +562,7 @@ static int hw_atl2_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 
 	hw_atl_itr_irq_auto_masklsw_set(self, aq_nic_cfg->aq_hw_caps->irq_mask);
 
-	/* Interrupts */
+	 
 	hw_atl_reg_gen_irq_map_set(self,
 				   ((HW_ATL2_ERR_INT << 0x18) |
 				    (1U << 0x1F)) |
@@ -678,7 +657,7 @@ static int hw_atl2_hw_interrupt_moderation_set(struct aq_hw_s *self)
 		hw_atl_rdm_rdm_intr_moder_en_set(self, 1U);
 
 		if (self->aq_nic_cfg->itr == AQ_CFG_INTERRUPT_MODERATION_ON) {
-			/* HW timers are in 2us units */
+			 
 			int tx_max_timer = self->aq_nic_cfg->tx_itr / 2;
 			int tx_min_timer = tx_max_timer / 2;
 
@@ -700,27 +679,27 @@ static int hw_atl2_hw_interrupt_moderation_set(struct aq_hw_s *self)
 			itr_rx |= rx_max_timer << 0x10U;
 		} else {
 			static unsigned int hw_atl2_timers_table_tx_[][2] = {
-				{0xfU, 0xffU}, /* 10Gbit */
-				{0xfU, 0x1ffU}, /* 5Gbit */
-				{0xfU, 0x1ffU}, /* 5Gbit 5GS */
-				{0xfU, 0x1ffU}, /* 2.5Gbit */
-				{0xfU, 0x1ffU}, /* 1Gbit */
-				{0xfU, 0x1ffU}, /* 100Mbit */
+				{0xfU, 0xffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
 			};
 			static unsigned int hw_atl2_timers_table_rx_[][2] = {
-				{0x6U, 0x38U},/* 10Gbit */
-				{0xCU, 0x70U},/* 5Gbit */
-				{0xCU, 0x70U},/* 5Gbit 5GS */
-				{0x18U, 0xE0U},/* 2.5Gbit */
-				{0x30U, 0x80U},/* 1Gbit */
-				{0x4U, 0x50U},/* 100Mbit */
+				{0x6U, 0x38U}, 
+				{0xCU, 0x70U}, 
+				{0xCU, 0x70U}, 
+				{0x18U, 0xE0U}, 
+				{0x30U, 0x80U}, 
+				{0x4U, 0x50U}, 
 			};
 			unsigned int mbps = self->aq_link_status.mbps;
 			unsigned int speed_index;
 
 			speed_index = hw_atl_utils_mbps_2_speed_index(mbps);
 
-			/* Update user visible ITR settings */
+			 
 			self->aq_nic_cfg->tx_itr = hw_atl2_timers_table_tx_
 							[speed_index][1] * 2;
 			self->aq_nic_cfg->rx_itr = hw_atl2_timers_table_rx_
@@ -815,7 +794,7 @@ static int hw_atl2_hw_vlan_set(struct aq_hw_s *self,
 
 static int hw_atl2_hw_vlan_ctrl(struct aq_hw_s *self, bool enable)
 {
-	/* set promisc in case of disabing the vlan filter */
+	 
 	hw_atl_rpf_vlan_prom_mode_en_set(self, !enable);
 	hw_atl2_hw_new_rx_filter_vlan_promisc(self, !enable);
 

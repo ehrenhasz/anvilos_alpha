@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2013-2021 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_iosf_mbi.h"
@@ -11,18 +9,15 @@
 #include "display/intel_dpio_phy.h"
 #include "display/intel_display_types.h"
 
-/*
- * IOSF sideband, see VLV2_SidebandMsg_HAS.docx and
- * VLV_VLV2_PUNIT_HAS_0.8.docx
- */
+ 
 
-/* Standard MMIO read, non-posted */
+ 
 #define SB_MRD_NP	0x00
-/* Standard MMIO write, non-posted */
+ 
 #define SB_MWR_NP	0x01
-/* Private register read, double-word addressing, non-posted */
+ 
 #define SB_CRRDDA_NP	0x06
-/* Private register write, double-word addressing, non-posted */
+ 
 #define SB_CRWRDA_NP	0x07
 
 static void ping(void *info)
@@ -33,16 +28,7 @@ static void __vlv_punit_get(struct drm_i915_private *i915)
 {
 	iosf_mbi_punit_acquire();
 
-	/*
-	 * Prevent the cpu from sleeping while we use this sideband, otherwise
-	 * the punit may cause a machine hang. The issue appears to be isolated
-	 * with changing the power state of the CPU package while changing
-	 * the power state via the punit, and we have only observed it
-	 * reliably on 4-core Baytail systems suggesting the issue is in the
-	 * power delivery mechanism and likely to be board/function
-	 * specific. Hence we presume the workaround needs only be applied
-	 * to the Valleyview P-unit and not all sideband communications.
-	 */
+	 
 	if (IS_VALLEYVIEW(i915)) {
 		cpu_latency_qos_update_request(&i915->sb_qos, 0);
 		on_each_cpu(ping, NULL, 1);
@@ -86,7 +72,7 @@ static int vlv_sideband_rw(struct drm_i915_private *i915,
 	if (port == IOSF_PORT_PUNIT)
 		iosf_mbi_assert_punit_acquired();
 
-	/* Flush the previous comms, just in case it failed last time. */
+	 
 	if (intel_wait_for_register(uncore,
 				    VLV_IOSF_DOORBELL_REQ, IOSF_SB_BUSY, 0,
 				    5)) {
@@ -217,10 +203,7 @@ void vlv_ccu_write(struct drm_i915_private *i915, u32 reg, u32 val)
 
 static u32 vlv_dpio_phy_iosf_port(struct drm_i915_private *i915, enum dpio_phy phy)
 {
-	/*
-	 * IOSF_PORT_DPIO: VLV x2 PHY (DP/HDMI B and C), CHV x1 PHY (DP/HDMI D)
-	 * IOSF_PORT_DPIO_2: CHV x2 PHY (DP/HDMI B and C)
-	 */
+	 
 	if (IS_CHERRYVIEW(i915))
 		return phy == DPIO_PHY0 ? IOSF_PORT_DPIO_2 : IOSF_PORT_DPIO;
 	else
@@ -234,10 +217,7 @@ u32 vlv_dpio_read(struct drm_i915_private *i915, enum pipe pipe, int reg)
 
 	vlv_sideband_rw(i915, DPIO_DEVFN, port, SB_MRD_NP, reg, &val);
 
-	/*
-	 * FIXME: There might be some registers where all 1's is a valid value,
-	 * so ideally we should check the register offset instead...
-	 */
+	 
 	drm_WARN(&i915->drm, val == 0xffffffff,
 		 "DPIO read pipe %c reg 0x%x == 0x%x\n",
 		 pipe_name(pipe), reg, val);

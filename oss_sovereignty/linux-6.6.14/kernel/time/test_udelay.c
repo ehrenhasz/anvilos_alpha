@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * udelay() test kernel module
- *
- * Test is executed by writing and reading to /sys/kernel/debug/udelay_test
- * Tests are configured by writing: USECS ITERATIONS
- * Tests are executed by reading from the same file.
- * Specifying usecs of 0 or negative values will run multiples tests.
- *
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -30,7 +21,7 @@ static int udelay_test_single(struct seq_file *s, int usecs, uint32_t iters)
 	uint64_t sum = 0;
 	uint64_t avg;
 	int i;
-	/* Allow udelay to be up to 0.5% fast */
+	 
 	int allowed_error_ns = usecs * 5;
 
 	for (i = 0; i < iters; ++i) {

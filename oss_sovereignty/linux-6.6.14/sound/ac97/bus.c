@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Robert Jarzmik <robert.jarzmik@free.fr>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/bitops.h>
@@ -21,9 +19,7 @@
 
 #include "ac97_core.h"
 
-/*
- * Protects ac97_controllers and each ac97_controller structure.
- */
+ 
 static DEFINE_MUTEX(ac97_controllers_mutex);
 static DEFINE_IDR(ac97_adapter_idr);
 static LIST_HEAD(ac97_controllers);
@@ -179,15 +175,7 @@ static int ac97_bus_reset(struct ac97_controller *ac97_ctrl)
 	return 0;
 }
 
-/**
- * snd_ac97_codec_driver_register - register an AC97 codec driver
- * @dev: AC97 driver codec to register
- *
- * Register an AC97 codec driver to the ac97 bus driver, aka. the AC97 digital
- * controller.
- *
- * Returns 0 on success or error code
- */
+ 
 int snd_ac97_codec_driver_register(struct ac97_codec_driver *drv)
 {
 	drv->driver.bus = &ac97_bus_type;
@@ -195,28 +183,14 @@ int snd_ac97_codec_driver_register(struct ac97_codec_driver *drv)
 }
 EXPORT_SYMBOL_GPL(snd_ac97_codec_driver_register);
 
-/**
- * snd_ac97_codec_driver_unregister - unregister an AC97 codec driver
- * @dev: AC97 codec driver to unregister
- *
- * Unregister a previously registered ac97 codec driver.
- */
+ 
 void snd_ac97_codec_driver_unregister(struct ac97_codec_driver *drv)
 {
 	driver_unregister(&drv->driver);
 }
 EXPORT_SYMBOL_GPL(snd_ac97_codec_driver_unregister);
 
-/**
- * snd_ac97_codec_get_platdata - get platform_data
- * @adev: the ac97 codec device
- *
- * For legacy platforms, in order to have platform_data in codec drivers
- * available, while ac97 device are auto-created upon probe, this retrieves the
- * platdata which was setup on ac97 controller registration.
- *
- * Returns the platform data pointer
- */
+ 
 void *snd_ac97_codec_get_platdata(const struct ac97_codec_device *adev)
 {
 	struct ac97_controller *ac97_ctrl = adev->ac97_ctrl;
@@ -333,18 +307,7 @@ static int ac97_add_adapter(struct ac97_controller *ac97_ctrl)
 	return ret;
 }
 
-/**
- * snd_ac97_controller_register - register an ac97 controller
- * @ops: the ac97 bus operations
- * @dev: the device providing the ac97 DC function
- * @slots_available: mask of the ac97 codecs that can be scanned and probed
- *                   bit0 => codec 0, bit1 => codec 1 ... bit 3 => codec 3
- *
- * Register a digital controller which can control up to 4 ac97 codecs. This is
- * the controller side of the AC97 AC-link, while the slave side are the codecs.
- *
- * Returns a valid controller upon success, negative pointer value upon error
- */
+ 
 struct ac97_controller *snd_ac97_controller_register(
 	const struct ac97_controller_ops *ops, struct device *dev,
 	unsigned short slots_available, void **codecs_pdata)
@@ -376,11 +339,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(snd_ac97_controller_register);
 
-/**
- * snd_ac97_controller_unregister - unregister an ac97 controller
- * @ac97_ctrl: the device previously provided to ac97_controller_register()
- *
- */
+ 
 void snd_ac97_controller_unregister(struct ac97_controller *ac97_ctrl)
 {
 	ac97_del_adapter(ac97_ctrl);
@@ -419,7 +378,7 @@ static int ac97_pm_runtime_resume(struct device *dev)
 
 	return pm_generic_runtime_resume(dev);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops ac97_pm = {
 	.suspend	= pm_generic_suspend,

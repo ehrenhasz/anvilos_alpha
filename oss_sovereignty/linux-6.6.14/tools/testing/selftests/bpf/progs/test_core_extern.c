@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -7,12 +7,12 @@
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
-/* non-existing BPF helper, to test dead code elimination */
+ 
 static int (*bpf_missing_helper)(const void *arg1, int arg2) = (void *) 999;
 
 extern int LINUX_KERNEL_VERSION __kconfig;
 extern int LINUX_UNKNOWN_VIRTUAL_EXTERN __kconfig __weak;
-extern bool CONFIG_BPF_SYSCALL __kconfig; /* strong */
+extern bool CONFIG_BPF_SYSCALL __kconfig;  
 extern enum libbpf_tristate CONFIG_TRISTATE __kconfig __weak;
 extern bool CONFIG_BOOL __kconfig __weak;
 extern char CONFIG_CHAR __kconfig __weak;
@@ -54,7 +54,7 @@ int handle_sys_enter(struct pt_regs *ctx)
 	}
 
 	if (CONFIG_MISSING)
-		/* invalid, but dead code - never executed */
+		 
 		missing_val = bpf_missing_helper(ctx, 123);
 	else
 		missing_val = 0xDEADC0DE;

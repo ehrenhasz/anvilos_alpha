@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/mod_devicetable.h>
@@ -456,10 +453,7 @@ static const struct vop_win_data rk3066_vop_win_data[] = {
 };
 
 static const int rk3066_vop_intrs[] = {
-	/*
-	 * hs_start interrupt fires at frame-start, so serves
-	 * the same purpose as dsp_hold in the driver.
-	 */
+	 
 	DSP_HOLD_VALID_INTR,
 	FS_INTR,
 	LINE_FLAG_INTR,
@@ -520,7 +514,7 @@ static const struct vop_win_phy rk3188_win1_data = {
 	.enable = VOP_REG(RK3188_SYS_CTRL, 0x1, 1),
 	.format = VOP_REG(RK3188_SYS_CTRL, 0x7, 6),
 	.rb_swap = VOP_REG(RK3188_SYS_CTRL, 0x1, 19),
-	/* no act_info on window1 */
+	 
 	.dsp_info = VOP_REG(RK3188_WIN1_DSP_INFO, 0x07ff07ff, 0),
 	.dsp_st = VOP_REG(RK3188_WIN1_DSP_ST, 0x0fff0fff, 0),
 	.yrgb_mst = VOP_REG(RK3188_WIN1_MST, 0xffffffff, 0),
@@ -563,10 +557,7 @@ static const struct vop_win_data rk3188_vop_win_data[] = {
 };
 
 static const int rk3188_vop_intrs[] = {
-	/*
-	 * hs_start interrupt fires at frame-start, so serves
-	 * the same purpose as dsp_hold in the driver.
-	 */
+	 
 	DSP_HOLD_VALID_INTR,
 	FS_INTR,
 	LINE_FLAG_INTR,
@@ -695,12 +686,7 @@ static const struct vop_common rk3288_common = {
 	.cfg_done = VOP_REG_SYNC(RK3288_REG_CFG_DONE, 0x1, 0),
 };
 
-/*
- * Note: rk3288 has a dedicated 'cursor' window, however, that window requires
- * special support to get alpha blending working.  For now, just use overlay
- * window 3 for the drm cursor.
- *
- */
+ 
 static const struct vop_win_data rk3288_vop_win_data[] = {
 	{ .base = 0x00, .phy = &rk3288_win01_data,
 	  .type = DRM_PLANE_TYPE_PRIMARY },
@@ -738,11 +724,7 @@ static const struct vop_data rk3288_vop = {
 	.win = rk3288_vop_win_data,
 	.win_size = ARRAY_SIZE(rk3288_vop_win_data),
 	.lut_size = 1024,
-	/*
-	 * This is the maximum resolution for the VOPB, the VOPL can only do
-	 * 2560x1600, but we can't distinguish them as they have the same
-	 * compatible.
-	 */
+	 
 	.max_output = { 3840, 2160 },
 };
 
@@ -959,11 +941,7 @@ static const struct vop_win_phy rk3399_win01_data = {
 	.channel = VOP_REG(RK3288_WIN0_CTRL2, 0xff, 0),
 };
 
-/*
- * rk3399 vop big windows register layout is same as rk3288, but we
- * have a separate rk3399 win data array here so that we can advertise
- * AFBC on the primary plane.
- */
+ 
 static const struct vop_win_data rk3399_vop_win_data[] = {
 	{ .base = 0x00, .phy = &rk3399_win01_data,
 	  .type = DRM_PLANE_TYPE_PRIMARY },

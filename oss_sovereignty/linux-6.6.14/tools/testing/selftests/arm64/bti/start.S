@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019  Arm Limited
- * Original author: Dave Martin <Dave.Martin@arm.com>
- */
+ 
+ 
 
 #include "assembler.h"
 

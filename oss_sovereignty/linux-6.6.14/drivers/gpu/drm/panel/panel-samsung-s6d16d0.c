@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * MIPI-DSI Samsung s6d16d0 panel driver. This is a 864x480
- * AMOLED panel with a command-only DSI interface.
- */
+
+ 
 
 #include <drm/drm_modes.h>
 #include <drm/drm_mipi_dsi.h>
@@ -21,12 +18,9 @@ struct s6d16d0 {
 	struct gpio_desc *reset_gpio;
 };
 
-/*
- * The timings are not very helpful as the display is used in
- * command mode.
- */
+ 
 static const struct drm_display_mode samsung_s6d16d0_mode = {
-	/* HS clock, (htotal*vtotal*vrefresh)/1000 */
+	 
 	.clock = 420160,
 	.hdisplay = 864,
 	.hsync_start = 864 + 154,
@@ -51,14 +45,14 @@ static int s6d16d0_unprepare(struct drm_panel *panel)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(s6->dev);
 	int ret;
 
-	/* Enter sleep mode */
+	 
 	ret = mipi_dsi_dcs_enter_sleep_mode(dsi);
 	if (ret) {
 		dev_err(s6->dev, "failed to enter sleep mode (%d)\n", ret);
 		return ret;
 	}
 
-	/* Assert RESET */
+	 
 	gpiod_set_value_cansleep(s6->reset_gpio, 1);
 	regulator_disable(s6->supply);
 
@@ -77,21 +71,21 @@ static int s6d16d0_prepare(struct drm_panel *panel)
 		return ret;
 	}
 
-	/* Assert RESET */
+	 
 	gpiod_set_value_cansleep(s6->reset_gpio, 1);
 	udelay(10);
-	/* De-assert RESET */
+	 
 	gpiod_set_value_cansleep(s6->reset_gpio, 0);
 	msleep(120);
 
-	/* Enabe tearing mode: send TE (tearing effect) at VBLANK */
+	 
 	ret = mipi_dsi_dcs_set_tear_on(dsi,
 				       MIPI_DSI_DCS_TEAR_MODE_VBLANK);
 	if (ret) {
 		dev_err(s6->dev, "failed to enable vblank TE (%d)\n", ret);
 		return ret;
 	}
-	/* Exit sleep mode and power on */
+	 
 	ret = mipi_dsi_dcs_exit_sleep_mode(dsi);
 	if (ret) {
 		dev_err(s6->dev, "failed to exit sleep mode (%d)\n", ret);
@@ -149,7 +143,7 @@ static int s6d16d0_get_modes(struct drm_panel *panel,
 
 	drm_mode_probed_add(connector, mode);
 
-	return 1; /* Number of modes */
+	return 1;  
 }
 
 static const struct drm_panel_funcs s6d16d0_drm_funcs = {
@@ -177,20 +171,14 @@ static int s6d16d0_probe(struct mipi_dsi_device *dsi)
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->hs_rate = 420160000;
 	dsi->lp_rate = 19200000;
-	/*
-	 * This display uses command mode so no MIPI_DSI_MODE_VIDEO
-	 * or MIPI_DSI_MODE_VIDEO_SYNC_PULSE
-	 *
-	 * As we only send commands we do not need to be continuously
-	 * clocked.
-	 */
+	 
 	dsi->mode_flags = MIPI_DSI_CLOCK_NON_CONTINUOUS;
 
 	s6->supply = devm_regulator_get(dev, "vdd1");
 	if (IS_ERR(s6->supply))
 		return PTR_ERR(s6->supply);
 
-	/* This asserts RESET by default */
+	 
 	s6->reset_gpio = devm_gpiod_get_optional(dev, "reset",
 						 GPIOD_OUT_HIGH);
 	if (IS_ERR(s6->reset_gpio)) {

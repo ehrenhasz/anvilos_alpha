@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Allwinner sun9i USB phy driver
- *
- * Copyright (C) 2014-2015 Chen-Yu Tsai <wens@csie.org>
- *
- * Based on phy-sun4i-usb.c from
- * Hans de Goede <hdegoede@redhat.com>
- *
- * and code from
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -26,7 +16,7 @@
 #define SUNXI_AHB_INCRX_ALIGN_EN	BIT(8)
 #define SUNXI_ULPI_BYPASS_EN		BIT(0)
 
-/* usb1 HSIC specific bits */
+ 
 #define SUNXI_EHCI_HS_FORCE		BIT(20)
 #define SUNXI_HSIC_CONNECT_DET		BIT(17)
 #define SUNXI_HSIC_CONNECT_INT		BIT(16)

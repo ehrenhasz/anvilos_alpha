@@ -1,41 +1,11 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dml1_display_rq_dlg_calc.h"
 #include "display_mode_lib.h"
 
 #include "dml_inline_defs.h"
 
-/*
- * NOTE:
- *   This file is gcc-parseable HW gospel, coming straight from HW engineers.
- *
- * It doesn't adhere to Linux kernel style and sometimes will do things in odd
- * ways. Unless there is something clearly wrong with it the code should
- * remain as-is as it provides us with a guarantee from HW that it is correct.
- */
+ 
 
 static unsigned int get_bytes_per_element(enum source_format_class source_format, bool is_chroma)
 {
@@ -182,12 +152,12 @@ static void get_swath_need(
 
 	ASSERT(prefill > 0.0 && prefill <= 8.0);
 
-	*max_num_sw = (unsigned int) (dml_ceil((prefill - 1.0) / (double) swath_height, 1) + 1.0); /* prefill has to be >= 1 */
+	*max_num_sw = (unsigned int) (dml_ceil((prefill - 1.0) / (double) swath_height, 1) + 1.0);  
 	max_partial_sw_int =
 			(prefill == 1) ?
 					(swath_height - 1) :
 					((unsigned int) (prefill - 2.0) % swath_height);
-	*max_partial_sw = (max_partial_sw_int < 1) ? 1 : max_partial_sw_int; /* ensure minimum of 1 is used */
+	*max_partial_sw = (max_partial_sw_int < 1) ? 1 : max_partial_sw_int;  
 
 	DTRACE("DLG: %s: max_num_sw        = %0d", __func__, *max_num_sw);
 	DTRACE("DLG: %s: max_partial_sw    = %0d", __func__, *max_partial_sw);
@@ -243,10 +213,8 @@ void dml1_extract_rq_regs(
 	rq_regs->rq_regs_l.swath_height = dml_log2(rq_param->dlg.rq_l.swath_height);
 	rq_regs->rq_regs_c.swath_height = dml_log2(rq_param->dlg.rq_c.swath_height);
 
-	/* TODO: take the max between luma, chroma chunk size?
-	 * okay for now, as we are setting chunk_bytes to 8kb anyways
-	 */
-	if (rq_param->sizing.rq_l.chunk_bytes >= 32 * 1024) { /*32kb */
+	 
+	if (rq_param->sizing.rq_l.chunk_bytes >= 32 * 1024) {  
 		rq_regs->drq_expansion_mode = 0;
 	} else {
 		rq_regs->drq_expansion_mode = 2;
@@ -258,12 +226,12 @@ void dml1_extract_rq_regs(
 	if (rq_param->yuv420) {
 		if ((double) rq_param->misc.rq_l.stored_swath_bytes
 				/ (double) rq_param->misc.rq_c.stored_swath_bytes <= 1.5) {
-			detile_buf_plane1_addr = (detile_buf_size_in_bytes / 2.0 / 64.0); /* half to chroma */
+			detile_buf_plane1_addr = (detile_buf_size_in_bytes / 2.0 / 64.0);  
 		} else {
 			detile_buf_plane1_addr = dml_round_to_multiple(
 					(unsigned int) ((2.0 * detile_buf_size_in_bytes) / 3.0),
 					256,
-					0) / 64.0; /* 2/3 to chroma */
+					0) / 64.0;  
 		}
 	}
 	rq_regs->plane1_base_address = detile_buf_plane1_addr;
@@ -304,29 +272,25 @@ static void handle_det_buf_split(
 	if (rq_param->yuv420) {
 		total_swath_bytes = 2 * full_swath_bytes_packed_l + 2 * full_swath_bytes_packed_c;
 
-		if (total_swath_bytes <= detile_buf_size_in_bytes) { /*full 256b request */
+		if (total_swath_bytes <= detile_buf_size_in_bytes) {  
 			req128_l = 0;
 			req128_c = 0;
 			swath_bytes_l = full_swath_bytes_packed_l;
 			swath_bytes_c = full_swath_bytes_packed_c;
-		} else { /*128b request (for luma only for yuv420 8bpc) */
+		} else {  
 			req128_l = 1;
 			req128_c = 0;
 			swath_bytes_l = full_swath_bytes_packed_l / 2;
 			swath_bytes_c = full_swath_bytes_packed_c;
 		}
 
-		/* Bug workaround, luma and chroma req size needs to be the same. (see: DEGVIDCN10-137)
-		 * TODO: Remove after rtl fix
-		 */
+		 
 		if (req128_l == 1) {
 			req128_c = 1;
 			DTRACE("DLG: %s: bug workaround DEGVIDCN10-137", __func__);
 		}
 
-		/* Note: assumption, the config that pass in will fit into
-		 *       the detiled buffer.
-		 */
+		 
 	} else {
 		total_swath_bytes = 2 * full_swath_bytes_packed_l;
 
@@ -378,7 +342,7 @@ static void handle_det_buf_split(
 	DTRACE("DLG: %s: full_swath_bytes_packed_c = %0d", __func__, full_swath_bytes_packed_c);
 }
 
-/* Need refactor. */
+ 
 static void dml1_rq_dlg_get_row_heights(
 		struct display_mode_lib *mode_lib,
 		unsigned int *o_dpte_row_height,
@@ -436,36 +400,27 @@ static void dml1_rq_dlg_get_row_heights(
 	log2_blk_height = 0;
 	log2_blk_width = 0;
 
-	/* remember log rule
-	 * "+" in log is multiply
-	 * "-" in log is divide
-	 * "/2" is like square root
-	 * blk is vertical biased
-	 */
+	 
 	if (tiling != dm_sw_linear)
 		log2_blk_height = log2_blk256_height
 				+ dml_ceil((double) (log2_blk_bytes - 8) / 2.0, 1);
 	else
-		log2_blk_height = 0; /* blk height of 1 */
+		log2_blk_height = 0;  
 
 	log2_blk_width = log2_blk_bytes - log2_bytes_per_element - log2_blk_height;
 
-	/* ------- */
-	/* meta    */
-	/* ------- */
-	log2_meta_req_bytes = 6; /* meta request is 64b and is 8x8byte meta element */
+	 
+	 
+	 
+	log2_meta_req_bytes = 6;  
 
-	/* each 64b meta request for dcn is 8x8 meta elements and
-	 * a meta element covers one 256b block of the data surface.
-	 */
-	log2_meta_req_height = log2_blk256_height + 3; /* meta req is 8x8 */
+	 
+	log2_meta_req_height = log2_blk256_height + 3;  
 	log2_meta_req_width = log2_meta_req_bytes + 8 - log2_bytes_per_element
 			- log2_meta_req_height;
 	log2_meta_row_height = 0;
 
-	/* the dimensions of a meta row are meta_row_width x meta_row_height in elements.
-	 * calculate upper bound of the meta_row_width
-	 */
+	 
 	if (!surf_vert)
 		log2_meta_row_height = log2_meta_req_height;
 	else
@@ -473,9 +428,9 @@ static void dml1_rq_dlg_get_row_heights(
 
 	*o_meta_row_height = 1 << log2_meta_row_height;
 
-	/* ------ */
-	/* dpte   */
-	/* ------ */
+	 
+	 
+	 
 	log2_vmpg_bytes = dml_log2(mode_lib->soc.vmm_page_size_bytes);
 	dpte_buf_in_pte_reqs = mode_lib->ip.dpte_buffer_size_in_pte_reqs_luma;
 
@@ -487,15 +442,15 @@ static void dml1_rq_dlg_get_row_heights(
 	log2_dpte_req_width = 0;
 	log2_dpte_row_height_linear = 0;
 	log2_dpte_row_height = 0;
-	dpte_req_width = 0; /* 64b dpte req width in data element */
+	dpte_req_width = 0;  
 
 	if (surf_linear)
-		log2_vmpg_height = 0; /* one line high */
+		log2_vmpg_height = 0;  
 	else
 		log2_vmpg_height = (log2_vmpg_bytes - 8) / 2 + log2_blk256_height;
 	log2_vmpg_width = log2_vmpg_bytes - log2_bytes_per_element - log2_vmpg_height;
 
-	/* only 3 possible shapes for dpte request in dimensions of ptes: 8x1, 4x2, 2x4. */
+	 
 	if (log2_blk_bytes <= log2_vmpg_bytes)
 		log2_dpte_req_height_ptes = 0;
 	else if (log2_blk_height - log2_vmpg_height >= 2)
@@ -504,20 +459,16 @@ static void dml1_rq_dlg_get_row_heights(
 		log2_dpte_req_height_ptes = log2_blk_height - log2_vmpg_height;
 	log2_dpte_req_width_ptes = 3 - log2_dpte_req_height_ptes;
 
-	ASSERT((log2_dpte_req_width_ptes == 3 && log2_dpte_req_height_ptes == 0) || /* 8x1 */
-			(log2_dpte_req_width_ptes == 2 && log2_dpte_req_height_ptes == 1) || /* 4x2 */
-			(log2_dpte_req_width_ptes == 1 && log2_dpte_req_height_ptes == 2)); /* 2x4 */
+	ASSERT((log2_dpte_req_width_ptes == 3 && log2_dpte_req_height_ptes == 0) ||  
+			(log2_dpte_req_width_ptes == 2 && log2_dpte_req_height_ptes == 1) ||  
+			(log2_dpte_req_width_ptes == 1 && log2_dpte_req_height_ptes == 2));  
 
-	/* the dpte request dimensions in data elements is dpte_req_width x dpte_req_height
-	 * log2_wmpg_width is how much 1 pte represent, now trying to calculate how much 64b pte req represent
-	 */
+	 
 	log2_dpte_req_height = log2_vmpg_height + log2_dpte_req_height_ptes;
 	log2_dpte_req_width = log2_vmpg_width + log2_dpte_req_width_ptes;
 	dpte_req_width = 1 << log2_dpte_req_width;
 
-	/* calculate pitch dpte row buffer can hold
-	 * round the result down to a power of two.
-	 */
+	 
 	if (surf_linear) {
 		log2_dpte_row_height_linear = dml_floor(
 				dml_log2(dpte_buf_in_pte_reqs * dpte_req_width / data_pitch),
@@ -530,7 +481,7 @@ static void dml1_rq_dlg_get_row_heights(
 
 		log2_dpte_row_height = log2_dpte_row_height_linear;
 	} else {
-		/* the upper bound of the dpte_row_width without dependency on viewport position follows.  */
+		 
 		if (!surf_vert)
 			log2_dpte_row_height = log2_dpte_req_height;
 		else
@@ -539,14 +490,10 @@ static void dml1_rq_dlg_get_row_heights(
 							log2_blk_width : log2_dpte_req_width;
 	}
 
-	/* From programming guide:
-	 * There is a special case of saving only half of ptes returned due to buffer space limits.
-	 * this case applies to 4 and 8bpe in horizontal access of a vp_width greater than 2560+16
-	 * when the pte request is 2x4 ptes (which happens when vmpg_bytes =4kb and tile blk_bytes >=64kb).
-	 */
+	 
 	if (!surf_vert && vp_width > (2560 + 16) && bytes_per_element >= 4 && log2_vmpg_bytes == 12
 			&& log2_blk_bytes >= 16)
-		log2_dpte_row_height = log2_dpte_row_height - 1; /*half of the full height */
+		log2_dpte_row_height = log2_dpte_row_height - 1;  
 
 	*o_dpte_row_height = 1 << log2_dpte_row_height;
 }
@@ -620,7 +567,7 @@ static void get_surf_rq_param(
 	unsigned int log2_dpte_group_length;
 	unsigned int func_meta_row_height, func_dpte_row_height;
 
-	/* TODO check if ppe apply for both luma and chroma in 422 case */
+	 
 	if (is_chroma) {
 		vp_width = pipe_src_param->viewport_width_c / ppe;
 		vp_height = pipe_src_param->viewport_height_c;
@@ -676,17 +623,12 @@ static void get_surf_rq_param(
 	log2_blk_height = 0;
 	log2_blk_width = 0;
 
-	/* remember log rule
-	 * "+" in log is multiply
-	 * "-" in log is divide
-	 * "/2" is like square root
-	 * blk is vertical biased
-	 */
+	 
 	if (pipe_src_param->sw_mode != dm_sw_linear)
 		log2_blk_height = log2_blk256_height
 				+ dml_ceil((double) (log2_blk_bytes - 8) / 2.0, 1);
 	else
-		log2_blk_height = 0; /* blk height of 1 */
+		log2_blk_height = 0;  
 
 	log2_blk_width = log2_blk_bytes - log2_bytes_per_element - log2_blk_height;
 
@@ -712,15 +654,13 @@ static void get_surf_rq_param(
 	rq_misc_param->blk256_height = blk256_height;
 	rq_misc_param->blk256_width = blk256_width;
 
-	/* -------  */
-	/* meta     */
-	/* -------  */
-	log2_meta_req_bytes = 6; /* meta request is 64b and is 8x8byte meta element */
+	 
+	 
+	 
+	log2_meta_req_bytes = 6;  
 
-	/* each 64b meta request for dcn is 8x8 meta elements and
-	 * a meta element covers one 256b block of the data surface.
-	 */
-	log2_meta_req_height = log2_blk256_height + 3; /* meta req is 8x8 byte, each byte represent 1 blk256 */
+	 
+	log2_meta_req_height = log2_blk256_height + 3;  
 	log2_meta_req_width = log2_meta_req_bytes + 8 - log2_bytes_per_element
 			- log2_meta_req_height;
 	meta_req_width = 1 << log2_meta_req_width;
@@ -728,9 +668,7 @@ static void get_surf_rq_param(
 	log2_meta_row_height = 0;
 	meta_row_width_ub = 0;
 
-	/* the dimensions of a meta row are meta_row_width x meta_row_height in elements.
-	 * calculate upper bound of the meta_row_width
-	 */
+	 
 	if (!surf_vert) {
 		log2_meta_row_height = log2_meta_req_height;
 		meta_row_width_ub = dml_round_to_multiple(vp_width - 1, meta_req_width, 1)
@@ -747,7 +685,7 @@ static void get_surf_rq_param(
 	log2_meta_chunk_bytes = dml_log2(rq_sizing_param->meta_chunk_bytes);
 	log2_meta_chunk_height = log2_meta_row_height;
 
-	/*full sized meta chunk width in unit of data elements */
+	 
 	log2_meta_chunk_width = log2_meta_chunk_bytes + 8 - log2_bytes_per_element
 			- log2_meta_chunk_height;
 	log2_min_meta_chunk_bytes = dml_log2(rq_sizing_param->min_meta_chunk_bytes);
@@ -769,7 +707,7 @@ static void get_surf_rq_param(
 			meta_surface_bytes - vmpg_bytes,
 			8 * vmpg_bytes,
 			1) + 8 * vmpg_bytes) / (8 * vmpg_bytes);
-	meta_pte_bytes_per_frame_ub = meta_pte_req_per_frame_ub * 64; /*64B mpte request */
+	meta_pte_bytes_per_frame_ub = meta_pte_req_per_frame_ub * 64;  
 	rq_dlg_param->meta_pte_bytes_per_frame_ub = meta_pte_bytes_per_frame_ub;
 
 	DTRACE("DLG: %s: meta_blk_height             = %d", __func__, meta_blk_height);
@@ -790,9 +728,9 @@ static void get_surf_rq_param(
 
 	rq_dlg_param->meta_row_height = 1 << log2_meta_row_height;
 
-	/* ------ */
-	/* dpte   */
-	/* ------ */
+	 
+	 
+	 
 	log2_vmpg_bytes = dml_log2(mode_lib->soc.vmm_page_size_bytes);
 	dpte_buf_in_pte_reqs = mode_lib->ip.dpte_buffer_size_in_pte_reqs_luma;
 
@@ -807,19 +745,19 @@ static void get_surf_rq_param(
 	log2_dpte_group_width = 0;
 	dpte_row_width_ub = 0;
 	dpte_row_height = 0;
-	dpte_req_height = 0; /* 64b dpte req height in data element */
-	dpte_req_width = 0; /* 64b dpte req width in data element */
+	dpte_req_height = 0;  
+	dpte_req_width = 0;  
 	dpte_group_width = 0;
 	log2_dpte_group_bytes = 0;
 	log2_dpte_group_length = 0;
 
 	if (surf_linear)
-		log2_vmpg_height = 0; /* one line high */
+		log2_vmpg_height = 0;  
 	else
 		log2_vmpg_height = (log2_vmpg_bytes - 8) / 2 + log2_blk256_height;
 	log2_vmpg_width = log2_vmpg_bytes - log2_bytes_per_element - log2_vmpg_height;
 
-	/* only 3 possible shapes for dpte request in dimensions of ptes: 8x1, 4x2, 2x4. */
+	 
 	if (log2_blk_bytes <= log2_vmpg_bytes)
 		log2_dpte_req_height_ptes = 0;
 	else if (log2_blk_height - log2_vmpg_height >= 2)
@@ -828,23 +766,18 @@ static void get_surf_rq_param(
 		log2_dpte_req_height_ptes = log2_blk_height - log2_vmpg_height;
 	log2_dpte_req_width_ptes = 3 - log2_dpte_req_height_ptes;
 
-	/* Ensure we only have the 3 shapes */
-	ASSERT((log2_dpte_req_width_ptes == 3 && log2_dpte_req_height_ptes == 0) || /* 8x1 */
-			(log2_dpte_req_width_ptes == 2 && log2_dpte_req_height_ptes == 1) || /* 4x2 */
-			(log2_dpte_req_width_ptes == 1 && log2_dpte_req_height_ptes == 2)); /* 2x4 */
+	 
+	ASSERT((log2_dpte_req_width_ptes == 3 && log2_dpte_req_height_ptes == 0) ||  
+			(log2_dpte_req_width_ptes == 2 && log2_dpte_req_height_ptes == 1) ||  
+			(log2_dpte_req_width_ptes == 1 && log2_dpte_req_height_ptes == 2));  
 
-	/* The dpte request dimensions in data elements is dpte_req_width x dpte_req_height
-	 * log2_vmpg_width is how much 1 pte represent, now calculating how much a 64b pte req represent
-	 * That depends on the pte shape (i.e. 8x1, 4x2, 2x4)
-	 */
+	 
 	log2_dpte_req_height = log2_vmpg_height + log2_dpte_req_height_ptes;
 	log2_dpte_req_width = log2_vmpg_width + log2_dpte_req_width_ptes;
 	dpte_req_height = 1 << log2_dpte_req_height;
 	dpte_req_width = 1 << log2_dpte_req_width;
 
-	/* calculate pitch dpte row buffer can hold
-	 * round the result down to a power of two.
-	 */
+	 
 	if (surf_linear) {
 		log2_dpte_row_height_linear = dml_floor(
 				dml_log2(dpte_buf_in_pte_reqs * dpte_req_width / data_pitch),
@@ -858,16 +791,14 @@ static void get_surf_rq_param(
 		log2_dpte_row_height = log2_dpte_row_height_linear;
 		rq_dlg_param->dpte_row_height = 1 << log2_dpte_row_height;
 
-		/* For linear, the dpte row is pitch dependent and the pte requests wrap at the pitch boundary.
-		 * the dpte_row_width_ub is the upper bound of data_pitch*dpte_row_height in elements with this unique buffering.
-		 */
+		 
 		dpte_row_width_ub = dml_round_to_multiple(
 				data_pitch * dpte_row_height - 1,
 				dpte_req_width,
 				1) + dpte_req_width;
 		rq_dlg_param->dpte_req_per_row_ub = dpte_row_width_ub / dpte_req_width;
 	} else {
-		/* for tiled mode, row height is the same as req height and row store up to vp size upper bound */
+		 
 		if (!surf_vert) {
 			log2_dpte_row_height = log2_dpte_req_height;
 			dpte_row_width_ub = dml_round_to_multiple(vp_width - 1, dpte_req_width, 1)
@@ -885,31 +816,25 @@ static void get_surf_rq_param(
 	}
 	rq_dlg_param->dpte_bytes_per_row_ub = rq_dlg_param->dpte_req_per_row_ub * 64;
 
-	/* From programming guide:
-	 * There is a special case of saving only half of ptes returned due to buffer space limits.
-	 * this case applies to 4 and 8bpe in horizontal access of a vp_width greater than 2560+16
-	 * when the pte request is 2x4 ptes (which happens when vmpg_bytes =4kb and tile blk_bytes >=64kb).
-	 */
+	 
 	if (!surf_vert && vp_width > (2560 + 16) && bytes_per_element >= 4 && log2_vmpg_bytes == 12
 			&& log2_blk_bytes >= 16) {
-		log2_dpte_row_height = log2_dpte_row_height - 1; /*half of the full height */
+		log2_dpte_row_height = log2_dpte_row_height - 1;  
 		rq_dlg_param->dpte_row_height = 1 << log2_dpte_row_height;
 	}
 
-	/* the dpte_group_bytes is reduced for the specific case of vertical
-	 * access of a tile surface that has dpte request of 8x1 ptes.
-	 */
-	if (!surf_linear && (log2_dpte_req_height_ptes == 0) && surf_vert) /*reduced, in this case, will have page fault within a group */
+	 
+	if (!surf_linear && (log2_dpte_req_height_ptes == 0) && surf_vert)  
 		rq_sizing_param->dpte_group_bytes = 512;
 	else
-		/*full size */
+		 
 		rq_sizing_param->dpte_group_bytes = 2048;
 
-	/*since pte request size is 64byte, the number of data pte requests per full sized group is as follows.  */
+	 
 	log2_dpte_group_bytes = dml_log2(rq_sizing_param->dpte_group_bytes);
-	log2_dpte_group_length = log2_dpte_group_bytes - 6; /*length in 64b requests  */
+	log2_dpte_group_length = log2_dpte_group_bytes - 6;  
 
-	/* full sized data pte group width in elements */
+	 
 	if (!surf_vert)
 		log2_dpte_group_width = log2_dpte_group_length + log2_dpte_req_width;
 	else
@@ -917,9 +842,7 @@ static void get_surf_rq_param(
 
 	dpte_group_width = 1 << log2_dpte_group_width;
 
-	/* since dpte groups are only aligned to dpte_req_width and not dpte_group_width,
-	 * the upper bound for the dpte groups per row is as follows.
-	 */
+	 
 	rq_dlg_param->dpte_groups_per_row_ub = dml_ceil(
 			(double) dpte_row_width_ub / dpte_group_width,
 			1);
@@ -936,10 +859,7 @@ static void get_surf_rq_param(
 			pipe_src_param->source_scan,
 			is_chroma);
 
-	/* Just a check to make sure this function and the new one give the same
-	 * result. The standalone get_row_heights() function is based off of the
-	 * code in this function so the same changes need to be made to both.
-	 */
+	 
 	if (rq_dlg_param->meta_row_height != func_meta_row_height) {
 		DTRACE(
 				"MISMATCH: rq_dlg_param->meta_row_height = %d",
@@ -962,7 +882,7 @@ void dml1_rq_dlg_get_rq_params(
 		struct _vcs_dpi_display_rq_params_st *rq_param,
 		const struct _vcs_dpi_display_pipe_source_params_st *pipe_src_param)
 {
-	/* get param for luma surface */
+	 
 	rq_param->yuv420 = pipe_src_param->source_format == dm_420_8
 			|| pipe_src_param->source_format == dm_420_10;
 	rq_param->yuv420_10bpc = pipe_src_param->source_format == dm_420_10;
@@ -976,7 +896,7 @@ void dml1_rq_dlg_get_rq_params(
 			0);
 
 	if (is_dual_plane((enum source_format_class) pipe_src_param->source_format)) {
-		/* get param for chroma surface */
+		 
 		get_surf_rq_param(
 				mode_lib,
 				&(rq_param->sizing.rq_c),
@@ -986,14 +906,12 @@ void dml1_rq_dlg_get_rq_params(
 				1);
 	}
 
-	/* calculate how to split the det buffer space between luma and chroma */
+	 
 	handle_det_buf_split(mode_lib, rq_param, pipe_src_param);
 	print__rq_params_st(mode_lib, rq_param);
 }
 
-/* Note: currently taken in as is.
- * Nice to decouple code from hw register implement and extract code that are repeated for luma and chroma.
- */
+ 
 void dml1_rq_dlg_get_dlg_params(
 		struct display_mode_lib *mode_lib,
 		struct _vcs_dpi_display_dlg_regs_st *disp_dlg_regs,
@@ -1006,7 +924,7 @@ void dml1_rq_dlg_get_dlg_params(
 		const bool vm_en,
 		const bool iflip_en)
 {
-	/* Timing */
+	 
 	unsigned int htotal = e2e_pipe_param->pipe.dest.htotal;
 	unsigned int hblank_end = e2e_pipe_param->pipe.dest.hblank_end;
 	unsigned int vblank_start = e2e_pipe_param->pipe.dest.vblank_start;
@@ -1139,9 +1057,9 @@ void dml1_rq_dlg_get_dlg_params(
 	DTRACE("DLG: %s: vm_en     = %d", __func__, vm_en);
 	DTRACE("DLG: %s: iflip_en  = %d", __func__, iflip_en);
 
-	/* ------------------------- */
-	/* Section 1.5.2.1: OTG dependent Params */
-	/* ------------------------- */
+	 
+	 
+	 
 	DTRACE("DLG: %s: dppclk_freq_in_mhz     = %3.2f", __func__, dppclk_freq_in_mhz);
 	DTRACE("DLG: %s: dispclk_freq_in_mhz    = %3.2f", __func__, dispclk_freq_in_mhz);
 	DTRACE("DLG: %s: refclk_freq_in_mhz     = %3.2f", __func__, refclk_freq_in_mhz);
@@ -1157,9 +1075,9 @@ void dml1_rq_dlg_get_dlg_params(
 	disp_dlg_regs->refcyc_h_blank_end = (unsigned int) ((double) hblank_end
 			* (double) ref_freq_to_pix_freq);
 	ASSERT(disp_dlg_regs->refcyc_h_blank_end < (unsigned int) dml_pow(2, 13));
-	disp_dlg_regs->dlg_vblank_end = interlaced ? (vblank_end / 2) : vblank_end; /* 15 bits */
+	disp_dlg_regs->dlg_vblank_end = interlaced ? (vblank_end / 2) : vblank_end;  
 
-	prefetch_xy_calc_in_dcfclk = 24.0; /* TODO: ip_param */
+	prefetch_xy_calc_in_dcfclk = 24.0;  
 	min_dcfclk_mhz = dlg_sys_param->deepsleep_dcfclk_mhz;
 	t_calc_us = prefetch_xy_calc_in_dcfclk / min_dcfclk_mhz;
 	min_ttu_vblank = dlg_sys_param->t_urg_wm_us;
@@ -1192,16 +1110,16 @@ void dml1_rq_dlg_get_dlg_params(
 			__func__,
 			ref_freq_to_pix_freq);
 
-	/* ------------------------- */
-	/* Section 1.5.2.2: Prefetch, Active and TTU  */
-	/* ------------------------- */
-	/* Prefetch Calc */
-	/* Source */
+	 
+	 
+	 
+	 
+	 
 	dcc_en = e2e_pipe_param->pipe.src.dcc;
 	dual_plane = is_dual_plane(
 			(enum source_format_class) e2e_pipe_param->pipe.src.source_format);
-	mode_422 = 0; /* TODO */
-	access_dir = (e2e_pipe_param->pipe.src.source_scan == dm_vert); /* vp access direction: horizontal or vertical accessed */
+	mode_422 = 0;  
+	access_dir = (e2e_pipe_param->pipe.src.source_scan == dm_vert);  
 	bytes_per_element_l = get_bytes_per_element(
 			(enum source_format_class) e2e_pipe_param->pipe.src.source_format,
 			0);
@@ -1213,7 +1131,7 @@ void dml1_rq_dlg_get_dlg_params(
 	vp_height_c = e2e_pipe_param->pipe.src.viewport_height_c;
 	vp_width_c = e2e_pipe_param->pipe.src.viewport_width_c;
 
-	/* Scaling */
+	 
 	htaps_l = e2e_pipe_param->pipe.scale_taps.htaps;
 	htaps_c = e2e_pipe_param->pipe.scale_taps.htaps_c;
 	hratios_l = e2e_pipe_param->pipe.scale_ratio_depth.hscl_ratio;
@@ -1436,8 +1354,8 @@ void dml1_rq_dlg_get_dlg_params(
 		}
 	}
 
-	disp_dlg_regs->dst_y_after_scaler = dst_y_after_scaler; /* in terms of line */
-	disp_dlg_regs->refcyc_x_after_scaler = dst_x_after_scaler * ref_freq_to_pix_freq; /* in terms of refclk */
+	disp_dlg_regs->dst_y_after_scaler = dst_y_after_scaler;  
+	disp_dlg_regs->refcyc_x_after_scaler = dst_x_after_scaler * ref_freq_to_pix_freq;  
 	ASSERT(disp_dlg_regs->refcyc_x_after_scaler < (unsigned int) dml_pow(2, 13));
 	DTRACE(
 			"DLG: %s: disp_dlg_regs->dst_y_after_scaler      = 0x%0x",
@@ -1543,9 +1461,9 @@ void dml1_rq_dlg_get_dlg_params(
 	ASSERT(disp_dlg_regs->refcyc_per_meta_chunk_vblank_l < (unsigned int) dml_pow(2, 13));
 
 	disp_dlg_regs->refcyc_per_meta_chunk_vblank_c =
-			disp_dlg_regs->refcyc_per_meta_chunk_vblank_l;/* dcc for 4:2:0 is not supported in dcn1.0.  assigned to be the same as _l for now */
+			disp_dlg_regs->refcyc_per_meta_chunk_vblank_l; 
 
-	/* Active */
+	 
 	req_per_swath_ub_l = rq_dlg_param->rq_l.req_per_swath_ub;
 	req_per_swath_ub_c = rq_dlg_param->rq_c.req_per_swath_ub;
 	meta_row_height_l = rq_dlg_param->rq_l.meta_row_height;
@@ -1568,7 +1486,7 @@ void dml1_rq_dlg_get_dlg_params(
 			/ (double) vratio_l * dml_pow(2, 2));
 	ASSERT(disp_dlg_regs->dst_y_per_meta_row_nom_l < (unsigned int) dml_pow(2, 17));
 
-	disp_dlg_regs->dst_y_per_meta_row_nom_c = disp_dlg_regs->dst_y_per_meta_row_nom_l; /* dcc for 4:2:0 is not supported in dcn1.0.  assigned to be the same as _l for now */
+	disp_dlg_regs->dst_y_per_meta_row_nom_c = disp_dlg_regs->dst_y_per_meta_row_nom_l;  
 
 	disp_dlg_regs->refcyc_per_pte_group_nom_l = (unsigned int) ((double) dpte_row_height_l
 			/ (double) vratio_l * (double) htotal * ref_freq_to_pix_freq
@@ -1589,7 +1507,7 @@ void dml1_rq_dlg_get_dlg_params(
 		disp_dlg_regs->refcyc_per_meta_chunk_nom_l = dml_pow(2, 23) - 1;
 
 	if (mode_422) {
-		swath_width_pixels_ub_l = swath_width_ub_l * 2; /* *2 for 2 pixel per element */
+		swath_width_pixels_ub_l = swath_width_ub_l * 2;  
 		swath_width_pixels_ub_c = swath_width_ub_c * 2;
 	} else {
 		swath_width_pixels_ub_l = swath_width_ub_l * 1;
@@ -1649,7 +1567,7 @@ void dml1_rq_dlg_get_dlg_params(
 	if (e2e_pipe_param->pipe.src.is_hsplit) {
 		if (e2e_pipe_param->pipe.dest.full_recout_width == 0) {
 			DTRACE("DLG: %s: Warningfull_recout_width not set in hsplit mode", __func__);
-			full_recout_width = e2e_pipe_param->pipe.dest.recout_width * 2; /* assume half split for dcn1 */
+			full_recout_width = e2e_pipe_param->pipe.dest.recout_width * 2;  
 		} else
 			full_recout_width = e2e_pipe_param->pipe.dest.full_recout_width;
 	} else
@@ -1663,7 +1581,7 @@ void dml1_rq_dlg_get_dlg_params(
 			vratio_pre_l,
 			hscale_pixel_rate_l,
 			swath_width_pixels_ub_l,
-			1); /* per line */
+			1);  
 
 	refcyc_per_line_delivery_l = get_refcyc_per_delivery(
 			mode_lib,
@@ -1673,7 +1591,7 @@ void dml1_rq_dlg_get_dlg_params(
 			vratio_l,
 			hscale_pixel_rate_l,
 			swath_width_pixels_ub_l,
-			1); /* per line */
+			1);  
 
 	DTRACE("DLG: %s: full_recout_width              = %d", __func__, full_recout_width);
 	DTRACE("DLG: %s: hscale_pixel_rate_l            = %3.2f", __func__, hscale_pixel_rate_l);
@@ -1704,7 +1622,7 @@ void dml1_rq_dlg_get_dlg_params(
 				vratio_pre_c,
 				hscale_pixel_rate_c,
 				swath_width_pixels_ub_c,
-				1); /* per line */
+				1);  
 
 		refcyc_per_line_delivery_c = get_refcyc_per_delivery(
 				mode_lib,
@@ -1714,7 +1632,7 @@ void dml1_rq_dlg_get_dlg_params(
 				vratio_c,
 				hscale_pixel_rate_c,
 				swath_width_pixels_ub_c,
-				1); /* per line */
+				1);  
 
 		DTRACE(
 				"DLG: %s: refcyc_per_line_delivery_pre_c = %3.2f",
@@ -1736,8 +1654,8 @@ void dml1_rq_dlg_get_dlg_params(
 	}
 	disp_dlg_regs->chunk_hdl_adjust_cur0 = 3;
 
-	/* TTU - Luma / Chroma */
-	if (access_dir) { /* vertical access */
+	 
+	if (access_dir) {  
 		scaler_rec_in_width_l = vp_height_l;
 		scaler_rec_in_width_c = vp_height_c;
 	} else {
@@ -1753,7 +1671,7 @@ void dml1_rq_dlg_get_dlg_params(
 			vratio_pre_l,
 			hscale_pixel_rate_l,
 			scaler_rec_in_width_l,
-			req_per_swath_ub_l); /* per req */
+			req_per_swath_ub_l);  
 	refcyc_per_req_delivery_l = get_refcyc_per_delivery(
 			mode_lib,
 			refclk_freq_in_mhz,
@@ -1762,7 +1680,7 @@ void dml1_rq_dlg_get_dlg_params(
 			vratio_l,
 			hscale_pixel_rate_l,
 			scaler_rec_in_width_l,
-			req_per_swath_ub_l); /* per req */
+			req_per_swath_ub_l);  
 
 	DTRACE(
 			"DLG: %s: refcyc_per_req_delivery_pre_l = %3.2f",
@@ -1790,7 +1708,7 @@ void dml1_rq_dlg_get_dlg_params(
 				vratio_pre_c,
 				hscale_pixel_rate_c,
 				scaler_rec_in_width_c,
-				req_per_swath_ub_c); /* per req  */
+				req_per_swath_ub_c);  
 		refcyc_per_req_delivery_c = get_refcyc_per_delivery(
 				mode_lib,
 				refclk_freq_in_mhz,
@@ -1799,7 +1717,7 @@ void dml1_rq_dlg_get_dlg_params(
 				vratio_c,
 				hscale_pixel_rate_c,
 				scaler_rec_in_width_c,
-				req_per_swath_ub_c); /* per req */
+				req_per_swath_ub_c);  
 
 		DTRACE(
 				"DLG: %s: refcyc_per_req_delivery_pre_c = %3.2f",
@@ -1819,9 +1737,9 @@ void dml1_rq_dlg_get_dlg_params(
 		ASSERT(refcyc_per_req_delivery_c < dml_pow(2, 13));
 	}
 
-	/* TTU - Cursor */
+	 
 	hratios_cur0 = e2e_pipe_param->pipe.scale_ratio_depth.hscl_ratio;
-	cur0_src_width = e2e_pipe_param->pipe.src.cur0_src_width; /* cursor source width */
+	cur0_src_width = e2e_pipe_param->pipe.src.cur0_src_width;  
 	cur0_bpp = (enum cursor_bpp) e2e_pipe_param->pipe.src.cur0_bpp;
 	cur0_req_size = 0;
 	cur0_req_width = 0;
@@ -1835,9 +1753,9 @@ void dml1_rq_dlg_get_dlg_params(
 		unsigned int cur0_bit_per_pixel = 0;
 
 		if (cur0_bpp == dm_cur_2bit) {
-			cur0_req_size = 64; /* byte */
+			cur0_req_size = 64;  
 			cur0_bit_per_pixel = 2;
-		} else { /* 32bit */
+		} else {  
 			cur0_bit_per_pixel = 32;
 			if (cur0_src_width >= 1 && cur0_src_width <= 16)
 				cur0_req_size = 64;
@@ -1851,7 +1769,7 @@ void dml1_rq_dlg_get_dlg_params(
 		cur0_width_ub = dml_ceil((double) cur0_src_width / (double) cur0_req_width, 1)
 				* (double) cur0_req_width;
 		cur0_req_per_width = cur0_width_ub / (double) cur0_req_width;
-		hactive_cur0 = (double) cur0_src_width / hratios_cur0; /* TODO: oswin to think about what to do for cursor */
+		hactive_cur0 = (double) cur0_src_width / hratios_cur0;  
 
 		if (vratio_pre_l <= 1.0) {
 			refcyc_per_req_delivery_pre_cur0 = hactive_cur0 * ref_freq_to_pix_freq
@@ -1905,7 +1823,7 @@ void dml1_rq_dlg_get_dlg_params(
 		disp_ttu_regs->refcyc_per_req_delivery_cur0 = 0;
 	}
 
-	/* TTU - Misc */
+	 
 	disp_ttu_regs->qos_level_low_wm = 0;
 	ASSERT(disp_ttu_regs->qos_level_low_wm < dml_pow(2, 14));
 	disp_ttu_regs->qos_level_high_wm = (unsigned int) (4.0 * (double) htotal

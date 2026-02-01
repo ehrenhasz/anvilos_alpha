@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/ethtool.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -9,7 +9,7 @@
 #include <uapi/linux/vsockmon.h>
 #include <linux/virtio_vsock.h>
 
-/* Virtio transport max packet size plus header */
+ 
 #define DEFAULT_MTU (VIRTIO_VSOCK_MAX_PKT_BUF_SIZE + \
 		     sizeof(struct af_vsockmon_hdr))
 

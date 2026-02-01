@@ -1,34 +1,10 @@
-/*
- * Copyright 2016 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "gf100.h"
 #include "ctxgf100.h"
 
 #include <nvif/class.h>
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 void
 gp100_gr_zbc_clear_color(struct gf100_gr *gr, int zbc)
 {
@@ -94,10 +70,10 @@ void
 gp100_gr_init_rop_active_fbps(struct gf100_gr *gr)
 {
 	struct nvkm_device *device = gr->base.engine.subdev.device;
-	/*XXX: otherwise identical to gm200 aside from mask.. do everywhere? */
+	 
 	const u32 fbp_count = nvkm_rd32(device, 0x12006c) & 0x0000000f;
-	nvkm_mask(device, 0x408850, 0x0000000f, fbp_count); /* zrop */
-	nvkm_mask(device, 0x408958, 0x0000000f, fbp_count); /* crop */
+	nvkm_mask(device, 0x408850, 0x0000000f, fbp_count);  
+	nvkm_mask(device, 0x408958, 0x0000000f, fbp_count);  
 }
 
 static const struct gf100_gr_func

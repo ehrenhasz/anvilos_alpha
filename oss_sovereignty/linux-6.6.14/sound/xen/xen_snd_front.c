@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- * Xen para-virtual sound device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -215,7 +209,7 @@ static int sndback_initwait(struct xen_snd_front_info *front_info)
 	if (ret < 0)
 		return ret;
 
-	/* create event channels for all streams and publish */
+	 
 	ret = xen_snd_front_evtchnl_create_all(front_info, num_streams);
 	if (ret < 0)
 		return ret;
@@ -251,12 +245,12 @@ static void sndback_changed(struct xenbus_device *xb_dev,
 		break;
 
 	case XenbusStateInitialising:
-		/* Recovering after backend unexpected closure. */
+		 
 		sndback_disconnect(front_info);
 		break;
 
 	case XenbusStateInitWait:
-		/* Recovering after backend unexpected closure. */
+		 
 		sndback_disconnect(front_info);
 
 		ret = sndback_initwait(front_info);
@@ -278,11 +272,7 @@ static void sndback_changed(struct xenbus_device *xb_dev,
 		break;
 
 	case XenbusStateClosing:
-		/*
-		 * In this state backend starts freeing resources,
-		 * so let it go into closed state first, so we can also
-		 * remove ours.
-		 */
+		 
 		break;
 
 	case XenbusStateUnknown:
@@ -318,17 +308,7 @@ static void xen_drv_remove(struct xenbus_device *dev)
 
 	xenbus_switch_state(dev, XenbusStateClosing);
 
-	/*
-	 * On driver removal it is disconnected from XenBus,
-	 * so no backend state change events come via .otherend_changed
-	 * callback. This prevents us from exiting gracefully, e.g.
-	 * signaling the backend to free event channels, waiting for its
-	 * state to change to XenbusStateClosed and cleaning at our end.
-	 * Normally when front driver removed backend will finally go into
-	 * XenbusStateInitWait state.
-	 *
-	 * Workaround: read backend's state manually and wait with time-out.
-	 */
+	 
 	while ((xenbus_read_unsigned(front_info->xb_dev->otherend, "state",
 				     XenbusStateUnknown) != XenbusStateInitWait) &&
 	       --to)
@@ -368,7 +348,7 @@ static int __init xen_drv_init(void)
 	if (!xen_has_pv_devices())
 		return -ENODEV;
 
-	/* At the moment we only support case with XEN_PAGE_SIZE == PAGE_SIZE */
+	 
 	if (XEN_PAGE_SIZE != PAGE_SIZE) {
 		pr_err(XENSND_DRIVER_NAME ": different kernel and Xen page sizes are not supported: XEN_PAGE_SIZE (%lu) != PAGE_SIZE (%lu)\n",
 		       XEN_PAGE_SIZE, PAGE_SIZE);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013, Sony Mobile Communications AB.
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -37,27 +34,7 @@
 #define MAX_NR_TILES 4
 #define PS_HOLD_OFFSET 0x820
 
-/**
- * struct msm_pinctrl - state for a pinctrl-msm device
- * @dev:            device handle.
- * @pctrl:          pinctrl handle.
- * @chip:           gpiochip handle.
- * @desc:           pin controller descriptor
- * @restart_nb:     restart notifier block.
- * @irq:            parent irq for the TLMM irq_chip.
- * @intr_target_use_scm: route irq to application cpu using scm calls
- * @lock:           Spinlock to protect register resources as well
- *                  as msm_pinctrl data structures.
- * @enabled_irqs:   Bitmap of currently enabled irqs.
- * @dual_edge_irqs: Bitmap of irqs that need sw emulated dual edge
- *                  detection.
- * @skip_wake_irqs: Skip IRQs that are handled by wakeup interrupt controller
- * @disabled_for_mux: These IRQs were disabled because we muxed away.
- * @ever_gpio:      This bit is set the first time we mux a pin to gpio_func.
- * @soc:            Reference to soc_data of platform specific data.
- * @regs:           Base addresses for the TLMM tiles.
- * @phys_base:      Physical base address
- */
+ 
 struct msm_pinctrl {
 	struct device *dev;
 	struct pinctrl_dev *pctrl;
@@ -204,16 +181,7 @@ static int msm_pinmux_set_mux(struct pinctrl_dev *pctldev,
 	if (WARN_ON(i == g->nfuncs))
 		return -EINVAL;
 
-	/*
-	 * If an GPIO interrupt is setup on this pin then we need special
-	 * handling.  Specifically interrupt detection logic will still see
-	 * the pin twiddle even when we're muxed away.
-	 *
-	 * When we see a pin with an interrupt setup on it then we'll disable
-	 * (mask) interrupts on it when we mux away until we mux back.  Note
-	 * that disable_irq() refcounts and interrupts are disabled as long as
-	 * at least one disable_irq() has been called.
-	 */
+	 
 	if (d && i != gpio_func &&
 	    !test_and_set_bit(d->hwirq, pctrl->disabled_for_mux))
 		disable_irq(irq);
@@ -222,12 +190,7 @@ static int msm_pinmux_set_mux(struct pinctrl_dev *pctldev,
 
 	val = msm_readl_ctl(pctrl, g);
 
-	/*
-	 * If this is the first time muxing to GPIO and the direction is
-	 * output, make sure that we're not going to be glitching the pin
-	 * by reading the current state of the pin and setting it as the
-	 * output.
-	 */
+	 
 	if (i == gpio_func && (val & BIT(g->oe_bit)) &&
 	    !test_and_set_bit(group, pctrl->ever_gpio)) {
 		u32 io_val = msm_readl_io(pctrl, g);
@@ -247,7 +210,7 @@ static int msm_pinmux_set_mux(struct pinctrl_dev *pctldev,
 	} else {
 		val &= ~mask;
 		val |= i << g->mux_bit;
-		/* Claim ownership of pin if egpio capable */
+		 
 		if (egpio_func && val & BIT(g->egpio_present))
 			val |= BIT(g->egpio_enable);
 	}
@@ -258,10 +221,7 @@ static int msm_pinmux_set_mux(struct pinctrl_dev *pctldev,
 
 	if (d && i == gpio_func &&
 	    test_and_clear_bit(d->hwirq, pctrl->disabled_for_mux)) {
-		/*
-		 * Clear interrupts detected while not GPIO since we only
-		 * masked things.
-		 */
+		 
 		if (d->parent_data && test_bit(d->hwirq, pctrl->skip_wake_irqs))
 			irq_chip_set_parent_state(d, IRQCHIP_STATE_PENDING, false);
 		else
@@ -280,7 +240,7 @@ static int msm_pinmux_request_gpio(struct pinctrl_dev *pctldev,
 	struct msm_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
 	const struct msm_pingroup *g = &pctrl->soc->groups[offset];
 
-	/* No funcs? Probably ACPI so can't do anything here */
+	 
 	if (!g->nfuncs)
 		return 0;
 
@@ -367,7 +327,7 @@ static int msm_config_group_get(struct pinctrl_dev *pctldev,
 	val = msm_readl_ctl(pctrl, g);
 	arg = (val >> bit) & mask;
 
-	/* Convert register value to pinconf value */
+	 
 	switch (param) {
 	case PIN_CONFIG_BIAS_DISABLE:
 		if (arg != MSM_NO_PULL)
@@ -398,7 +358,7 @@ static int msm_config_group_get(struct pinctrl_dev *pctldev,
 			return -EINVAL;
 		break;
 	case PIN_CONFIG_DRIVE_OPEN_DRAIN:
-		/* Pin is not open-drain */
+		 
 		if (!arg)
 			return -EINVAL;
 		arg = 1;
@@ -407,7 +367,7 @@ static int msm_config_group_get(struct pinctrl_dev *pctldev,
 		arg = msm_regval_to_drive(arg);
 		break;
 	case PIN_CONFIG_OUTPUT:
-		/* Pin is not output */
+		 
 		if (!arg)
 			return -EINVAL;
 
@@ -453,7 +413,7 @@ static int msm_config_group_set(struct pinctrl_dev *pctldev,
 		if (ret < 0)
 			return ret;
 
-		/* Convert pinconf values to register values */
+		 
 		switch (param) {
 		case PIN_CONFIG_BIAS_DISABLE:
 			arg = MSM_NO_PULL;
@@ -479,14 +439,14 @@ static int msm_config_group_set(struct pinctrl_dev *pctldev,
 			arg = 1;
 			break;
 		case PIN_CONFIG_DRIVE_STRENGTH:
-			/* Check for invalid values */
+			 
 			if (arg > 16 || arg < 2 || (arg % 2) != 0)
 				arg = -1;
 			else
 				arg = (arg / 2) - 1;
 			break;
 		case PIN_CONFIG_OUTPUT:
-			/* set output value */
+			 
 			raw_spin_lock_irqsave(&pctrl->lock, flags);
 			val = msm_readl_io(pctrl, g);
 			if (arg)
@@ -496,35 +456,11 @@ static int msm_config_group_set(struct pinctrl_dev *pctldev,
 			msm_writel_io(val, pctrl, g);
 			raw_spin_unlock_irqrestore(&pctrl->lock, flags);
 
-			/* enable output */
+			 
 			arg = 1;
 			break;
 		case PIN_CONFIG_INPUT_ENABLE:
-			/*
-			 * According to pinctrl documentation this should
-			 * actually be a no-op.
-			 *
-			 * The docs are explicit that "this does not affect
-			 * the pin's ability to drive output" but what we do
-			 * here is to modify the output enable bit. Thus, to
-			 * follow the docs we should remove that.
-			 *
-			 * The docs say that we should enable any relevant
-			 * input buffer, but TLMM there is no input buffer that
-			 * can be enabled/disabled. It's always on.
-			 *
-			 * The points above, explain why this _should_ be a
-			 * no-op. However, for historical reasons and to
-			 * support old device trees, we'll violate the docs
-			 * and still affect the output.
-			 *
-			 * It should further be noted that this old historical
-			 * behavior actually overrides arg to 0. That means
-			 * that "input-enable" and "input-disable" in a device
-			 * tree would _both_ disable the output. We'll
-			 * continue to preserve this behavior as well since
-			 * we have no other use for this attribute.
-			 */
+			 
 			arg = 0;
 			break;
 		case PIN_CONFIG_OUTPUT_ENABLE:
@@ -536,7 +472,7 @@ static int msm_config_group_set(struct pinctrl_dev *pctldev,
 			return -EINVAL;
 		}
 
-		/* Range-check user-supplied value */
+		 
 		if (arg & ~mask) {
 			dev_err(pctrl->dev, "config %x: %x is invalid\n", param, arg);
 			return -EINVAL;
@@ -742,7 +678,7 @@ static int msm_gpio_init_valid_mask(struct gpio_chip *gc,
 	const int *reserved = pctrl->soc->reserved_gpios;
 	u16 *tmp;
 
-	/* Remove driver-provided reserved GPIOs from valid_mask */
+	 
 	if (reserved) {
 		for (i = 0; reserved[i] >= 0; i++) {
 			if (i >= ngpios || reserved[i] >= ngpios) {
@@ -755,7 +691,7 @@ static int msm_gpio_init_valid_mask(struct gpio_chip *gc,
 		return 0;
 	}
 
-	/* The number of GPIOs in the ACPI tables */
+	 
 	len = ret = device_property_count_u16(pctrl->dev, "gpios");
 	if (ret < 0)
 		return 0;
@@ -793,26 +729,7 @@ static const struct gpio_chip msm_gpio_template = {
 	.dbg_show         = msm_gpio_dbg_show,
 };
 
-/* For dual-edge interrupts in software, since some hardware has no
- * such support:
- *
- * At appropriate moments, this function may be called to flip the polarity
- * settings of both-edge irq lines to try and catch the next edge.
- *
- * The attempt is considered successful if:
- * - the status bit goes high, indicating that an edge was caught, or
- * - the input value of the gpio doesn't change during the attempt.
- * If the value changes twice during the process, that would cause the first
- * test to fail but would force the second, as two opposite
- * transitions would cause a detection no matter the polarity setting.
- *
- * The do-loop tries to sledge-hammer closed the timing hole between
- * the initial value-read and the polarity-write - if the line value changes
- * during that window, an interrupt is lost, the new polarity setting is
- * incorrect, and the first success test will fail, causing a retry.
- *
- * Algorithm comes from Google's msmgpio driver.
- */
+ 
 static void msm_gpio_update_dual_edge_pos(struct msm_pinctrl *pctrl,
 					  const struct msm_pingroup *g,
 					  struct irq_data *d)
@@ -856,26 +773,7 @@ static void msm_gpio_irq_mask(struct irq_data *d)
 	raw_spin_lock_irqsave(&pctrl->lock, flags);
 
 	val = msm_readl_intr_cfg(pctrl, g);
-	/*
-	 * There are two bits that control interrupt forwarding to the CPU. The
-	 * RAW_STATUS_EN bit causes the level or edge sensed on the line to be
-	 * latched into the interrupt status register when the hardware detects
-	 * an irq that it's configured for (either edge for edge type or level
-	 * for level type irq). The 'non-raw' status enable bit causes the
-	 * hardware to assert the summary interrupt to the CPU if the latched
-	 * status bit is set. There's a bug though, the edge detection logic
-	 * seems to have a problem where toggling the RAW_STATUS_EN bit may
-	 * cause the status bit to latch spuriously when there isn't any edge
-	 * so we can't touch that bit for edge type irqs and we have to keep
-	 * the bit set anyway so that edges are latched while the line is masked.
-	 *
-	 * To make matters more complicated, leaving the RAW_STATUS_EN bit
-	 * enabled all the time causes level interrupts to re-latch into the
-	 * status register because the level is still present on the line after
-	 * we ack it. We clear the raw status enable bit during mask here and
-	 * set the bit on unmask so the interrupt can't latch into the hardware
-	 * while it's masked.
-	 */
+	 
 	if (irqd_get_trigger_type(d) & IRQ_TYPE_LEVEL_MASK)
 		val &= ~BIT(g->intr_raw_status_bit);
 
@@ -943,15 +841,7 @@ static void msm_gpio_irq_disable(struct irq_data *d)
 	gpiochip_disable_irq(gc, d->hwirq);
 }
 
-/**
- * msm_gpio_update_dual_edge_parent() - Prime next edge for IRQs handled by parent.
- * @d: The irq dta.
- *
- * This is much like msm_gpio_update_dual_edge_pos() but for IRQs that are
- * normally handled by the parent irqchip.  The logic here is slightly
- * different due to what's easy to do with our parent, but in principle it's
- * the same.
- */
+ 
 static void msm_gpio_update_dual_edge_parent(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
@@ -961,20 +851,15 @@ static void msm_gpio_update_dual_edge_parent(struct irq_data *d)
 	unsigned int val;
 	unsigned int type;
 
-	/* Read the value and make a guess about what edge we need to catch */
+	 
 	val = msm_readl_io(pctrl, g) & BIT(g->in_bit);
 	type = val ? IRQ_TYPE_EDGE_FALLING : IRQ_TYPE_EDGE_RISING;
 
 	do {
-		/* Set the parent to catch the next edge */
+		 
 		irq_chip_set_type_parent(d, type);
 
-		/*
-		 * Possibly the line changed between when we last read "val"
-		 * (and decided what edge we needed) and when set the edge.
-		 * If the value didn't change (or changed and then changed
-		 * back) then we're done.
-		 */
+		 
 		val = msm_readl_io(pctrl, g) & BIT(g->in_bit);
 		if (type == IRQ_TYPE_EDGE_RISING) {
 			if (!val)
@@ -1063,18 +948,13 @@ static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 
 	raw_spin_lock_irqsave(&pctrl->lock, flags);
 
-	/*
-	 * For hw without possibility of detecting both edges
-	 */
+	 
 	if (g->intr_detection_width == 1 && type == IRQ_TYPE_EDGE_BOTH)
 		set_bit(d->hwirq, pctrl->dual_edge_irqs);
 	else
 		clear_bit(d->hwirq, pctrl->dual_edge_irqs);
 
-	/* Route interrupts to application cpu.
-	 * With intr_target_use_scm interrupts are routed to
-	 * application cpu using scm calls.
-	 */
+	 
 	if (g->intr_target_width)
 		intr_target_mask = GENMASK(g->intr_target_width - 1, 0);
 
@@ -1098,11 +978,7 @@ static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 		msm_writel_intr_target(val, pctrl, g);
 	}
 
-	/* Update configuration for gpio.
-	 * RAW_STATUS_EN is left on for all gpio irqs. Due to the
-	 * internal circuitry of TLMM, toggling the RAW_STATUS
-	 * could cause the INTR_STATUS to be set for EDGE interrupts.
-	 */
+	 
 	val = msm_readl_intr_cfg(pctrl, g);
 	was_enabled = val & BIT(g->intr_raw_status_bit);
 	val |= BIT(g->intr_raw_status_bit);
@@ -1154,11 +1030,7 @@ static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 	}
 	msm_writel_intr_cfg(val, pctrl, g);
 
-	/*
-	 * The first time we set RAW_STATUS_EN it could trigger an interrupt.
-	 * Clear the interrupt.  This is safe because we have
-	 * IRQCHIP_SET_TYPE_MASKED.
-	 */
+	 
 	if (!was_enabled)
 		msm_ack_intr_status(pctrl, g);
 
@@ -1180,12 +1052,7 @@ static int msm_gpio_irq_set_wake(struct irq_data *d, unsigned int on)
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct msm_pinctrl *pctrl = gpiochip_get_data(gc);
 
-	/*
-	 * While they may not wake up when the TLMM is powered off,
-	 * some GPIOs would like to wakeup the system from suspend
-	 * when TLMM is powered on. To allow that, enable the GPIO
-	 * summary line to be wakeup capable at GIC.
-	 */
+	 
 	if (d->parent_data && test_bit(d->hwirq, pctrl->skip_wake_irqs))
 		return irq_chip_set_wake_parent(d, on);
 
@@ -1214,11 +1081,7 @@ static int msm_gpio_irq_reqres(struct irq_data *d)
 		goto out;
 	}
 
-	/*
-	 * The disable / clear-enable workaround we do in msm_pinmux_set_mux()
-	 * only works if disable is not lazy since we only clear any bogus
-	 * interrupt in hardware. Explicitly mark the interrupt as UNLAZY.
-	 */
+	 
 	irq_set_status_flags(d->irq, IRQ_DISABLE_UNLAZY);
 
 	return 0;
@@ -1270,10 +1133,7 @@ static void msm_gpio_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(chip, desc);
 
-	/*
-	 * Each pin has it's own IRQ status register, so use
-	 * enabled_irq bitmap to limit the number of reads.
-	 */
+	 
 	for_each_set_bit(i, pctrl->enabled_irqs, pctrl->chip.ngpio) {
 		g = &pctrl->soc->groups[i];
 		val = msm_readl_intr_status(pctrl, g);
@@ -1283,7 +1143,7 @@ static void msm_gpio_irq_handler(struct irq_desc *desc)
 		}
 	}
 
-	/* No interrupts were flagged */
+	 
 	if (handled == 0)
 		handle_bad_irq(desc);
 
@@ -1371,10 +1231,7 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
 		if (!chip->irq.parent_domain)
 			return -EPROBE_DEFER;
 		chip->irq.child_to_parent_hwirq = msm_gpio_wakeirq;
-		/*
-		 * Let's skip handling the GPIOs, if the parent irqchip
-		 * is handling the direct connect IRQ of the GPIO.
-		 */
+		 
 		skip = irq_domain_qcom_handle_wakeup(chip->irq.parent_domain);
 		for (i = 0; skip && i < pctrl->soc->nwakeirq_map; i++) {
 			gpio = pctrl->soc->wakeirq_map[i].gpio;
@@ -1401,16 +1258,7 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
 		return ret;
 	}
 
-	/*
-	 * For DeviceTree-supported systems, the gpio core checks the
-	 * pinctrl's device node for the "gpio-ranges" property.
-	 * If it is present, it takes care of adding the pin ranges
-	 * for the driver. In this case the driver can skip ahead.
-	 *
-	 * In order to remain compatible with older, existing DeviceTree
-	 * files which don't set the "gpio-ranges" property or systems that
-	 * utilize ACPI the driver has to call gpiochip_add_pin_range().
-	 */
+	 
 	if (!of_property_read_bool(pctrl->dev->of_node, "gpio-ranges")) {
 		ret = gpiochip_add_pin_range(&pctrl->chip,
 			dev_name(pctrl->dev), 0, 0, chip->ngpio);

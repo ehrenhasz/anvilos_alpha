@@ -1,27 +1,4 @@
-/*
-* Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dc.h"
@@ -95,10 +72,9 @@ enum dcn10_clk_src_array_id {
 	DCN101_CLK_SRC_TOTAL = DCN10_CLK_SRC_PLL3
 };
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file */
+ 
 
-/* DCN */
+ 
 #define BASE_INNER(seg) \
 	DCE_BASE__INST0_SEG ## seg
 
@@ -122,11 +98,11 @@ enum dcn10_clk_src_array_id {
 	.reg_name[id] = BASE(mm ## reg_name ## 0 ## _ ## block ## id ## _BASE_IDX) + \
 					mm ## reg_name ## 0 ## _ ## block ## id
 
-/* set field/register/bitfield name */
+ 
 #define SFRB(field_name, reg_name, bitfield, post_fix)\
 	.field_name = reg_name ## __ ## bitfield ## post_fix
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) \
 	NBIF_BASE__INST0_SEG ## seg
 
@@ -137,7 +113,7 @@ enum dcn10_clk_src_array_id {
 		.reg_name = NBIO_BASE(mm ## reg_name ## _BASE_IDX) +  \
 					mm ## reg_name
 
-/* MMHUB */
+ 
 #define MMHUB_BASE_INNER(seg) \
 	MMHUB_BASE__INST0_SEG ## seg
 
@@ -148,8 +124,7 @@ enum dcn10_clk_src_array_id {
 		.reg_name = MMHUB_BASE(mm ## reg_name ## _BASE_IDX) +  \
 					mm ## reg_name
 
-/* macros to expend register list macro defined in HW object header file
- * end *********************/
+ 
 
 
 static const struct dce_dmcu_registers dmcu_regs = {
@@ -533,10 +508,7 @@ static const struct dc_debug_options debug_defaults_drv = {
 		.timing_trace = false,
 		.clock_trace = true,
 
-		/* raven smu dones't allow 0 disp clk,
-		 * smu min disp clk limit is 50Mhz
-		 * keep min disp clk 100Mhz avoid smu hang
-		 */
+		 
 		.min_disp_clk_khz = 100000,
 
 		.disable_pplib_clock_request = false,
@@ -550,7 +522,7 @@ static const struct dc_debug_options debug_defaults_drv = {
 		.vsr_support = true,
 		.performance_trace = false,
 		.az_endpoint_mute_only = true,
-		.recovery_enabled = false, /*enable this by default after testing.*/
+		.recovery_enabled = false,  
 		.max_downscale_src_width = 3840,
 		.underflow_assert_delay_us = 0xFFFFFFFF,
 		.enable_legacy_fast_update = true,
@@ -1007,7 +979,7 @@ static void get_pixel_clock_parameters(
 	pixel_clk_params->encoder_object_id = stream->link->link_enc->id;
 	pixel_clk_params->signal_type = pipe_ctx->stream->signal;
 	pixel_clk_params->controller_id = pipe_ctx->stream_res.tg->inst + 1;
-	/* TODO: un-hardcode*/
+	 
 	pixel_clk_params->requested_sym_clk = LINK_RATE_LOW *
 		LINK_RATE_REF_FREQ_IN_KHZ;
 	pixel_clk_params->flags.ENABLE_SS = 0;
@@ -1199,15 +1171,11 @@ static enum dc_status dcn10_validate_global(struct dc *dc, struct dc_state *cont
 		}
 	}
 
-	/* Disable MPO in multi-display configurations. */
+	 
 	if (context->stream_count > 1 && mpo_enabled)
 		return DC_FAIL_UNSUPPORTED_1;
 
-	/*
-	 * Workaround: On DCN10 there is UMC issue that causes underflow when
-	 * playing 4k video on 4k desktop with video downscaled and single channel
-	 * memory
-	 */
+	 
 	if (video_large && desktop_large && video_down_scaled && dcc_disabled &&
 			dc->dcn_soc->number_of_channels == 1)
 		return DC_FAIL_SURFACE_VALIDATE;
@@ -1243,9 +1211,7 @@ struct stream_encoder *dcn10_find_first_free_match_stream_enc_for_link(
 	for (i = 0; i < pool->stream_enc_count; i++) {
 		if (!res_ctx->is_stream_enc_acquired[i] &&
 				pool->stream_enc[i]) {
-			/* Store first available for MST second display
-			 * in daisy chain use case
-			 */
+			 
 			j = i;
 			if (link->ep_type == DISPLAY_ENDPOINT_PHY && pool->stream_enc[i]->id ==
 					link->link_enc->preferred_engine)
@@ -1253,9 +1219,7 @@ struct stream_encoder *dcn10_find_first_free_match_stream_enc_for_link(
 		}
 	}
 
-	/*
-	 * For CZ and later, we can allow DIG FE and BE to differ for all display types
-	 */
+	 
 
 	if (j >= 0)
 		return pool->stream_enc[j];
@@ -1283,7 +1247,7 @@ static const struct resource_funcs dcn10_res_pool_funcs = {
 static uint32_t read_pipe_fuses(struct dc_context *ctx)
 {
 	uint32_t value = dm_read_reg_soc15(ctx, mmCC_DC_PIPE_DIS, 0);
-	/* RV1 support max 4 pipes */
+	 
 	value = value & 0xf;
 	return value;
 }
@@ -1296,7 +1260,7 @@ static bool verify_clock_values(struct dm_pp_clock_levels_with_voltage *clks)
 		return false;
 
 	for (i = 0; i < clks->num_levels; i++)
-		/* Ensure that the result is sane */
+		 
 		if (clks->data[i].clocks_in_khz == 0)
 			return false;
 
@@ -1324,17 +1288,12 @@ static bool dcn10_resource_construct(
 		pool->base.res_cap = &res_cap;
 	pool->base.funcs = &dcn10_res_pool_funcs;
 
-	/*
-	 * TODO fill in from actual raven resource when we create
-	 * more than virtual encoder
-	 */
+	 
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 
-	/* max pipe num for ASIC before check pipe fuses */
+	 
 	pool->base.pipe_count = pool->base.res_cap->num_timing_generator;
 
 	if (dc->ctx->dce_version == DCN_VERSION_1_01)
@@ -1342,7 +1301,7 @@ static bool dcn10_resource_construct(
 	dc->caps.max_video_width = 3840;
 	dc->caps.max_downscale_ratio = 200;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 100; /*1.4 w/a not applied by default*/
+	dc->caps.i2c_speed_in_khz_hdcp = 100;  
 	dc->caps.max_cursor_size = 256;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.max_slave_planes = 1;
@@ -1352,10 +1311,10 @@ static bool dcn10_resource_construct(
 	dc->caps.post_blend_color_processing = false;
 	dc->caps.extended_aux_timeout_support = false;
 
-	/* Raven DP PHY HBR2 eye diagram pattern is not stable. Use TP4 */
+	 
 	dc->caps.force_dp_tps4_for_cp2520 = true;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 1;
 	dc->caps.color.dpp.icsc = 1;
@@ -1370,7 +1329,7 @@ static bool dcn10_resource_construct(
 	dc->caps.color.dpp.dgam_rom_for_yuv = 1;
 
 	dc->caps.color.dpp.hw_3d_lut = 0;
-	dc->caps.color.dpp.ogam_ram = 1; // RGAM on DCN1
+	dc->caps.color.dpp.ogam_ram = 1; 
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 1;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 1;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -1378,7 +1337,7 @@ static bool dcn10_resource_construct(
 	dc->caps.color.dpp.ogam_rom_caps.hlg = 0;
 	dc->caps.color.dpp.ocsc = 1;
 
-	/* no post-blend color operations */
+	 
 	dc->caps.color.mpc.gamut_remap = 0;
 	dc->caps.color.mpc.num_3dluts = 0;
 	dc->caps.color.mpc.shared_3d_lut = 0;
@@ -1395,9 +1354,7 @@ static bool dcn10_resource_construct(
 	else
 		dc->debug = debug_defaults_diags;
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
 	pool->base.clock_sources[DCN10_CLK_SRC_PLL0] =
 			dcn10_clock_source_create(ctx, ctx->dc_bios,
@@ -1427,7 +1384,7 @@ static bool dcn10_resource_construct(
 	pool->base.dp_clock_source =
 			dcn10_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_ID_DP_DTO,
-				/* todo: not reuse phy_pll registers */
+				 
 				&clk_src_regs[0], true);
 
 	for (i = 0; i < pool->base.clk_src_count; i++) {
@@ -1486,20 +1443,14 @@ static bool dcn10_resource_construct(
 
 	pool->base.pp_smu = dcn10_pp_smu_create(ctx);
 
-	/*
-	 * Right now SMU/PPLIB and DAL all have the AZ D3 force PME notification *
-	 * implemented. So AZ D3 should work.For issue 197007.                   *
-	 */
+	 
 	if (pool->base.pp_smu != NULL
 			&& pool->base.pp_smu->rv_funcs.set_pme_wa_enable != NULL)
 		dc->debug.az_endpoint_mute_only = false;
 
 
 	if (!dc->debug.disable_pplib_clock_request) {
-		/*
-		 * TODO: This is not the proper way to obtain
-		 * fabric_and_dram_bandwidth, should be min(fclk, memclk).
-		 */
+		 
 		res = dm_pp_get_clock_levels_by_type_with_voltage(
 				ctx, DM_PP_CLOCK_TYPE_FCLK, &fclks);
 
@@ -1550,13 +1501,11 @@ static bool dcn10_resource_construct(
 			goto fail;
 	}
 
-	/* index to valid pipe resource  */
+	 
 	j = 0;
-	/* mem input -> ipp -> dpp -> opp -> TG */
+	 
 	for (i = 0; i < pool->base.pipe_count; i++) {
-		/* if pipe is disabled, skip instance of HW pipe,
-		 * i.e, skip ASIC register instance
-		 */
+		 
 		if ((pipe_fuses & (1 << i)) != 0)
 			continue;
 
@@ -1599,7 +1548,7 @@ static bool dcn10_resource_construct(
 			dm_error("DC: failed to create tg!\n");
 			goto fail;
 		}
-		/* check next valid pipe */
+		 
 		j++;
 	}
 
@@ -1621,13 +1570,11 @@ static bool dcn10_resource_construct(
 		pool->base.sw_i2cs[i] = NULL;
 	}
 
-	/* valid pipe num */
+	 
 	pool->base.pipe_count = j;
 	pool->base.timing_generator_count = j;
 
-	/* within dml lib, it is hard code to 4. If ASIC pipe is fused,
-	 * the value may be changed
-	 */
+	 
 	dc->dml.ip.max_num_dpp = pool->base.pipe_count;
 	dc->dcn_ip->max_num_dpp = pool->base.pipe_count;
 

@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dm_helpers.h"
@@ -48,7 +25,7 @@
 #define FN(reg_name, field_name) \
 	hws->shifts->field_name, hws->masks->field_name
 
-/* Temporary read settings, future will get values from kmd directly */
+ 
 static void mmhub_update_page_table_config(struct dcn_hubbub_phys_addr_config *config,
 		struct dce_hwseq *hws)
 {
@@ -83,7 +60,7 @@ int dcn21_init_sys_ctx(struct dce_hwseq *hws, struct dc *dc, struct dc_phy_addr_
 	return dc->res_pool->hubbub->funcs->init_dchub_sys_ctx(dc->res_pool->hubbub, &config);
 }
 
-// work around for Renoir s0i3, if register is programmed, bypass golden init.
+
 
 bool dcn21_s0i3_golden_init_wa(struct dc *dc)
 {
@@ -115,17 +92,7 @@ void dcn21_optimize_pwr_state(
 			true);
 }
 
-/* If user hotplug a HDMI monitor while in monitor off,
- * OS will do a mode set (with output timing) but keep output off.
- * In this case DAL will ask vbios to power up the pll in the PHY.
- * If user unplug the monitor (while we are on monitor off) or
- * system attempt to enter modern standby (which we will disable PLL),
- * PHY will hang on the next mode set attempt.
- * if enable PLL follow by disable PLL (without executing lane enable/disable),
- * RDPCS_PHY_DP_MPLLB_STATE remains 1,
- * which indicate that PLL disable attempt actually didn't go through.
- * As a workaround, insert PHY lane enable/disable before PLL disable.
- */
+ 
 void dcn21_PLAT_58856_wa(struct dc_state *context, struct pipe_ctx *pipe_ctx)
 {
 	if (!pipe_ctx->stream->dpms_off)

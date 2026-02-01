@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Delta DPS920AB PSU
- *
- * Copyright (C) 2021 Delta Networks, Inc.
- * Copyright (C) 2021 Sartura Ltd.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/i2c.h>
@@ -19,12 +14,7 @@ struct dps920ab_data {
 
 static int dps920ab_read_word_data(struct i2c_client *client, int page, int phase, int reg)
 {
-	/*
-	 * This masks commands which are not supported.
-	 * PSU advertises that all features are supported,
-	 * in reality that unfortunately is not true.
-	 * So enable only those that the datasheet confirms.
-	 */
+	 
 	switch (reg) {
 	case PMBUS_FAN_COMMAND_1:
 	case PMBUS_IOUT_OC_WARN_LIMIT:
@@ -52,11 +42,7 @@ static int dps920ab_read_word_data(struct i2c_client *client, int page, int phas
 static int dps920ab_write_word_data(struct i2c_client *client, int page, int reg,
 				    u16 word)
 {
-	/*
-	 * This masks commands which are not supported.
-	 * PSU only has one R/W register and that is
-	 * for the fan.
-	 */
+	 
 	switch (reg) {
 	case PMBUS_FAN_COMMAND_1:
 		return pmbus_write_word_data(client, page, reg, word);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,10 +7,7 @@
 #include "ebb.h"
 
 
-/*
- * Test that PMC5 & 6 are frozen (ie. don't overflow) when they are not being
- * used. Tests the MMCR0_FC56 logic in the kernel.
- */
+ 
 
 static int pmc56_overflowed;
 
@@ -51,7 +46,7 @@ int pmc56_overflow(void)
 
 	SKIP_IF(!ebb_is_supported());
 
-	/* Use PMC2 so we set PMCjCE, which enables PMC5/6 */
+	 
 	event_init(&event, 0x2001e);
 	event_leader_ebb_init(&event);
 

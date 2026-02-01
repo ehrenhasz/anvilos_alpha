@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  qt2160.c - Atmel AT42QT2160 Touch Sense Controller
- *
- *  Copyright (C) 2009 Raphael Derosso Pereira <raphaelpereira@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/leds.h>
@@ -32,7 +28,7 @@
 
 #define QT2160_NUM_LEDS_X	8
 
-#define QT2160_CYCLE_INTERVAL	2000 /* msec - 2 sec */
+#define QT2160_CYCLE_INTERVAL	2000  
 
 static unsigned char qt2160_key2code[] = {
 	KEY_0, KEY_1, KEY_2, KEY_3,
@@ -88,10 +84,7 @@ static int qt2160_led_set(struct led_classdev *cdev,
 		qt2160_write(client, QT2160_CMD_DRIVE_X, drive);
 		qt2160_write(client, QT2160_CMD_PWMEN_X, pwmen);
 
-		/*
-		 * Changing this register will change the brightness
-		 * of every LED in the qt2160. It's a HW limitation.
-		 */
+		 
 		if (value != LED_OFF)
 			qt2160_write(client, QT2160_CMD_PWM_DUTY, value);
 
@@ -101,18 +94,14 @@ static int qt2160_led_set(struct led_classdev *cdev,
 	return 0;
 }
 
-#endif /* CONFIG_LEDS_CLASS */
+#endif  
 
 static int qt2160_read_block(struct i2c_client *client,
 			     u8 inireg, u8 *buffer, unsigned int count)
 {
 	int error, idx = 0;
 
-	/*
-	 * Can't use SMBus block data read. Check for I2C functionality to speed
-	 * things up whenever possible. Otherwise we will be forced to read
-	 * sequentially.
-	 */
+	 
 	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C))	{
 
 		error = i2c_smbus_write_byte(client, inireg + idx);
@@ -164,10 +153,7 @@ static void qt2160_get_key_matrix(struct input_dev *input)
 
 	dev_dbg(&client->dev, "requesting keys...\n");
 
-	/*
-	 * Read all registers from General Status Register
-	 * to GPIOs register
-	 */
+	 
 	ret = qt2160_read_block(client, QT2160_CMD_GSTAT, regs, 6);
 	if (ret) {
 		dev_err(&client->dev,
@@ -257,7 +243,7 @@ static int qt2160_register_leds(struct qt2160_data *qt2160)
 			return error;
 	}
 
-	/* Tur off LEDs */
+	 
 	qt2160_write(client, QT2160_CMD_DRIVE_X, 0);
 	qt2160_write(client, QT2160_CMD_PWMEN_X, 0);
 	qt2160_write(client, QT2160_CMD_PWM_DUTY, 0);
@@ -278,21 +264,21 @@ static bool qt2160_identify(struct i2c_client *client)
 {
 	int id, ver, rev;
 
-	/* Read Chid ID to check if chip is valid */
+	 
 	id = qt2160_read(client, QT2160_CMD_CHIPID);
 	if (id != QT2160_VALID_CHIPID) {
 		dev_err(&client->dev, "ID %d not supported\n", id);
 		return false;
 	}
 
-	/* Read chip firmware version */
+	 
 	ver = qt2160_read(client, QT2160_CMD_CODEVER);
 	if (ver < 0) {
 		dev_err(&client->dev, "could not get firmware version\n");
 		return false;
 	}
 
-	/* Read chip firmware revision */
+	 
 	rev = qt2160_read(client, QT2160_CMD_SUBVER);
 	if (rev < 0) {
 		dev_err(&client->dev, "could not get firmware revision\n");
@@ -321,7 +307,7 @@ static int qt2160_probe(struct i2c_client *client)
 	if (!qt2160_identify(client))
 		return -ENODEV;
 
-	/* Chip is valid and active. Allocate structure */
+	 
 	qt2160 = devm_kzalloc(&client->dev, sizeof(*qt2160), GFP_KERNEL);
 	if (!qt2160)
 		return -ENOMEM;
@@ -350,7 +336,7 @@ static int qt2160_probe(struct i2c_client *client)
 
 	input_set_drvdata(input, qt2160);
 
-	/* Calibrate device */
+	 
 	error = qt2160_write(client, QT2160_CMD_CALIBRATE, 1);
 	if (error) {
 		dev_err(&client->dev, "failed to calibrate device\n");

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM Generic Interrupt Controller (GIC) v3 host support
- */
+
+ 
 
 #include <linux/kvm.h>
 #include <linux/sizes.h>
@@ -13,23 +11,7 @@
 #include "gic.h"
 #include "gic_v3.h"
 
-/*
- * vGIC-v3 default host setup
- *
- * Input args:
- *	vm - KVM VM
- *	nr_vcpus - Number of vCPUs supported by this VM
- *	gicd_base_gpa - Guest Physical Address of the Distributor region
- *	gicr_base_gpa - Guest Physical Address of the Redistributor region
- *
- * Output args: None
- *
- * Return: GIC file-descriptor or negative error code upon failure
- *
- * The function creates a vGIC-v3 device and maps the distributor and
- * redistributor regions of the guest. Since it depends on the number of
- * vCPUs for the VM, it must be called after all the vCPUs have been created.
- */
+ 
 int vgic_v3_setup(struct kvm_vm *vm, unsigned int nr_vcpus, uint32_t nr_irqs,
 		uint64_t gicd_base_gpa, uint64_t gicr_base_gpa)
 {
@@ -40,17 +22,14 @@ int vgic_v3_setup(struct kvm_vm *vm, unsigned int nr_vcpus, uint32_t nr_irqs,
 
 	TEST_ASSERT(nr_vcpus, "Number of vCPUs cannot be empty\n");
 
-	/*
-	 * Make sure that the caller is infact calling this
-	 * function after all the vCPUs are added.
-	 */
+	 
 	list_for_each(iter, &vm->vcpus)
 		nr_vcpus_created++;
 	TEST_ASSERT(nr_vcpus == nr_vcpus_created,
 			"Number of vCPUs requested (%u) doesn't match with the ones created for the VM (%u)\n",
 			nr_vcpus, nr_vcpus_created);
 
-	/* Distributor setup */
+	 
 	gic_fd = __kvm_create_device(vm, KVM_DEV_TYPE_ARM_VGIC_V3);
 	if (gic_fd < 0)
 		return gic_fd;
@@ -65,7 +44,7 @@ int vgic_v3_setup(struct kvm_vm *vm, unsigned int nr_vcpus, uint32_t nr_irqs,
 	nr_gic_pages = vm_calc_num_guest_pages(vm->mode, KVM_VGIC_V3_DIST_SIZE);
 	virt_map(vm, gicd_base_gpa, gicd_base_gpa,  nr_gic_pages);
 
-	/* Redistributor setup */
+	 
 	redist_attr = REDIST_REGION_ATTR_ADDR(nr_vcpus, gicr_base_gpa, 0, 0);
 	kvm_device_attr_set(gic_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
 			    KVM_VGIC_V3_ADDR_TYPE_REDIST_REGION, &redist_attr);
@@ -79,7 +58,7 @@ int vgic_v3_setup(struct kvm_vm *vm, unsigned int nr_vcpus, uint32_t nr_irqs,
 	return gic_fd;
 }
 
-/* should only work for level sensitive interrupts */
+ 
 int _kvm_irq_set_level_info(int gic_fd, uint32_t intid, int level)
 {
 	uint64_t attr = 32 * (intid / 32);
@@ -140,20 +119,15 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu,
 					  : KVM_DEV_ARM_VGIC_GRP_DIST_REGS;
 
 	if (intid_is_private) {
-		/* TODO: only vcpu 0 implemented for now. */
+		 
 		assert(vcpu->id == 0);
 		attr += SZ_64K;
 	}
 
-	/* Check that the addr part of the attr is within 32 bits. */
+	 
 	assert((attr & ~KVM_DEV_ARM_VGIC_OFFSET_MASK) == 0);
 
-	/*
-	 * All calls will succeed, even with invalid intid's, as long as the
-	 * addr part of the attr is within 32 bits (checked above). An invalid
-	 * intid will just make the read/writes point to above the intended
-	 * register space (i.e., ICPENDR after ISPENDR).
-	 */
+	 
 	kvm_device_attr_get(gic_fd, group, attr, &val);
 	val |= 1ULL << index;
 	kvm_device_attr_set(gic_fd, group, attr, &val);

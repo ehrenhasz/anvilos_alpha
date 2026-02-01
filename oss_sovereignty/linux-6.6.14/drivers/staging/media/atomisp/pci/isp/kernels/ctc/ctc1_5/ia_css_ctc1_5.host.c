@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "ia_css_types.h"
 #include "sh_css_defs.h"
@@ -31,7 +19,7 @@ static void ctc_gradient(
 	int dydx_int;
 	int dydx_frc;
 	int sft;
-	/* max_dydx = the maxinum gradient = the maximum y (gain) */
+	 
 	int max_dydx = (1 << IA_CSS_CTC_COEF_SHIFT) - 1;
 
 	if (dx == 0) {
@@ -51,10 +39,7 @@ static void ctc_gradient(
 
 	ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE, "ctc_gradient() enter:\n");
 
-	/* search "sft" which meets this condition:
-		   (1 << (IA_CSS_CTC_COEF_SHIFT - 1))
-		<= (((float)dy / (float)dx) * (1 << sft))
-		<= ((1 << IA_CSS_CTC_COEF_SHIFT) - 1) */
+	 
 	for (sft = 0; sft <= IA_CSS_CTC_COEF_SHIFT; sft++) {
 		int tmp_dydx = (dydx_int << sft)
 			       + (dydx_frc >> (frc_bits - sft));

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * VirtualBox Guest Shared Folders support: Directory inode and file operations
- *
- * Copyright (C) 2006-2018 Oracle Corporation
- */
+
+ 
 
 #include <linux/namei.h>
 #include <linux/vbox_utils.h>
@@ -111,16 +107,10 @@ try_next_entry:
 			continue;
 		}
 
-		/*
-		 * Note the vboxsf_dir_info objects we are iterating over here
-		 * are variable sized, so the info pointer may end up being
-		 * unaligned. This is how we get the data from the host.
-		 * Since vboxsf is only supported on x86 machines this is not
-		 * a problem.
-		 */
+		 
 		for (i = 0, info = b->buf; i < ctx->pos - cur; i++) {
 			end = &info->name.string.utf8[info->name.size];
-			/* Only happens if the host gives us corrupt data */
+			 
 			if (WARN_ON(end > (b->buf + b->used)))
 				return false;
 			info = end;
@@ -130,13 +120,10 @@ try_next_entry:
 		if (WARN_ON(end > (b->buf + b->used)))
 			return false;
 
-		/* Info now points to the right entry, emit it. */
+		 
 		d_type = vboxsf_get_d_type(info->info.attr.mode);
 
-		/*
-		 * On 32-bit systems pos is 64-bit signed, while ino is 32-bit
-		 * unsigned so fake_ino may overflow, check for this.
-		 */
+		 
 		if ((ino_t)(ctx->pos + 1) != (u64)(ctx->pos + 1)) {
 			vbg_err("vboxsf: fake ino overflow, truncating dir\n");
 			return false;
@@ -150,7 +137,7 @@ try_next_entry:
 					    info->name.string.utf8,
 					    info->name.length);
 			if (err) {
-				/* skip erroneous entry and proceed */
+				 
 				ctx->pos += 1;
 				goto try_next_entry;
 			}
@@ -179,7 +166,7 @@ static int vboxsf_dir_iterate(struct file *dir, struct dir_context *ctx)
 	return 0;
 }
 
-WRAP_DIR_ITER(vboxsf_dir_iterate) // FIXME!
+WRAP_DIR_ITER(vboxsf_dir_iterate) 
 const struct file_operations vboxsf_dir_fops = {
 	.open = vboxsf_dir_open,
 	.iterate_shared = shared_vboxsf_dir_iterate,
@@ -188,10 +175,7 @@ const struct file_operations vboxsf_dir_fops = {
 	.llseek = generic_file_llseek,
 };
 
-/*
- * This is called during name resolution/lookup to check if the @dentry in
- * the cache is still valid. the job is handled by vboxsf_inode_revalidate.
- */
+ 
 static int vboxsf_dentry_revalidate(struct dentry *dentry, unsigned int flags)
 {
 	if (flags & LOOKUP_RCU)
@@ -207,7 +191,7 @@ const struct dentry_operations vboxsf_dentry_ops = {
 	.d_revalidate = vboxsf_dentry_revalidate
 };
 
-/* iops */
+ 
 
 static struct dentry *vboxsf_dir_lookup(struct inode *parent,
 					struct dentry *dentry,
@@ -244,7 +228,7 @@ static int vboxsf_dir_instantiate(struct inode *parent, struct dentry *dentry,
 		return PTR_ERR(inode);
 
 	sf_i = VBOXSF_I(inode);
-	/* The host may have given us different attr then requested */
+	 
 	sf_i->force_restat = 1;
 	vboxsf_init_inode(sbi, inode, info, false);
 
@@ -283,7 +267,7 @@ static int vboxsf_dir_create(struct inode *parent, struct dentry *dentry,
 	if (err)
 		goto out;
 
-	/* parent directory access/change time changed */
+	 
 	sf_parent_i->force_restat = 1;
 
 out:
@@ -327,7 +311,7 @@ static int vboxsf_dir_atomic_open(struct inode *parent, struct dentry *dentry,
 			dentry = res;
 	}
 
-	/* Only creates */
+	 
 	if (!(flags & O_CREAT) || d_really_is_positive(dentry))
 		return finish_no_open(file, res);
 
@@ -344,7 +328,7 @@ static int vboxsf_dir_atomic_open(struct inode *parent, struct dentry *dentry,
 
 	err = finish_open(file, dentry, generic_file_open);
 	if (err) {
-		/* This also closes the handle passed to vboxsf_create_sf_handle() */
+		 
 		vboxsf_release_sf_handle(d_inode(dentry), sf_handle);
 		goto out;
 	}
@@ -382,7 +366,7 @@ static int vboxsf_dir_unlink(struct inode *parent, struct dentry *dentry)
 	if (err)
 		return err;
 
-	/* parent directory access/change time changed */
+	 
 	sf_parent_i->force_restat = 1;
 
 	return 0;
@@ -420,7 +404,7 @@ static int vboxsf_dir_rename(struct mnt_idmap *idmap,
 
 	err = vboxsf_rename(sbi->root, old_path, new_path, shfl_flags);
 	if (err == 0) {
-		/* parent directories access/change time changed */
+		 
 		sf_new_parent_i->force_restat = 1;
 		sf_old_parent_i->force_restat = 1;
 	}
@@ -459,7 +443,7 @@ static int vboxsf_dir_symlink(struct mnt_idmap *idmap,
 	kfree(ssymname);
 	__putname(path);
 	if (err) {
-		/* -EROFS means symlinks are note support -> -EPERM */
+		 
 		return (err == -EROFS) ? -EPERM : err;
 	}
 
@@ -467,7 +451,7 @@ static int vboxsf_dir_symlink(struct mnt_idmap *idmap,
 	if (err)
 		return err;
 
-	/* parent directory access/change time changed */
+	 
 	sf_parent_i->force_restat = 1;
 	return 0;
 }

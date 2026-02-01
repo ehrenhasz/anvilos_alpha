@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Bluetooth support for Realtek devices
- *
- *  Copyright (C) 2015 Endless Mobile, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/firmware.h>
@@ -100,7 +96,7 @@ struct btrtl_device_info {
 };
 
 static const struct id_table ic_id_table[] = {
-	/* 8723A */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8723A, 0xb, 0x6, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = false,
@@ -108,7 +104,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = NULL,
 	  .hw_info = "rtl8723au" },
 
-	/* 8723BS */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xb, 0x6, HCI_UART),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -116,7 +112,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8723bs_config",
 	  .hw_info  = "rtl8723bs" },
 
-	/* 8723B */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xb, 0x6, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -124,7 +120,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8723b_config",
 	  .hw_info  = "rtl8723bu" },
 
-	/* 8723CS-CG */
+	 
 	{ .match_flags = IC_MATCH_FL_LMPSUBV | IC_MATCH_FL_CHIP_TYPE |
 			 IC_MATCH_FL_HCIBUS,
 	  .lmp_subver = RTL_ROM_LMP_8703B,
@@ -136,7 +132,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8723cs_cg_config",
 	  .hw_info  = "rtl8723cs-cg" },
 
-	/* 8723CS-VF */
+	 
 	{ .match_flags = IC_MATCH_FL_LMPSUBV | IC_MATCH_FL_CHIP_TYPE |
 			 IC_MATCH_FL_HCIBUS,
 	  .lmp_subver = RTL_ROM_LMP_8703B,
@@ -148,7 +144,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8723cs_vf_config",
 	  .hw_info  = "rtl8723cs-vf" },
 
-	/* 8723CS-XX */
+	 
 	{ .match_flags = IC_MATCH_FL_LMPSUBV | IC_MATCH_FL_CHIP_TYPE |
 			 IC_MATCH_FL_HCIBUS,
 	  .lmp_subver = RTL_ROM_LMP_8703B,
@@ -160,7 +156,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8723cs_xx_config",
 	  .hw_info  = "rtl8723cs" },
 
-	/* 8723D */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xd, 0x8, HCI_USB),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -168,7 +164,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8723d_config",
 	  .hw_info  = "rtl8723du" },
 
-	/* 8723DS */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xd, 0x8, HCI_UART),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -176,7 +172,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8723ds_config",
 	  .hw_info  = "rtl8723ds" },
 
-	/* 8821A */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xa, 0x6, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -184,7 +180,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8821a_config",
 	  .hw_info  = "rtl8821au" },
 
-	/* 8821C */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xc, 0x8, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -193,7 +189,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8821c_config",
 	  .hw_info  = "rtl8821cu" },
 
-	/* 8821CS */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xc, 0x8, HCI_UART),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -202,7 +198,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8821cs_config",
 	  .hw_info  = "rtl8821cs" },
 
-	/* 8761A */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8761A, 0xa, 0x6, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -210,7 +206,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8761a_config",
 	  .hw_info  = "rtl8761au" },
 
-	/* 8761B */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8761A, 0xb, 0xa, HCI_UART),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -219,7 +215,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8761b_config",
 	  .hw_info  = "rtl8761btv" },
 
-	/* 8761BU */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8761A, 0xb, 0xa, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -227,7 +223,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8761bu_config",
 	  .hw_info  = "rtl8761bu" },
 
-	/* 8822C with UART interface */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8822B, 0xc, 0x8, HCI_UART),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -236,7 +232,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8822cs_config",
 	  .hw_info  = "rtl8822cs" },
 
-	/* 8822C with UART interface */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8822B, 0xc, 0xa, HCI_UART),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -245,7 +241,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8822cs_config",
 	  .hw_info  = "rtl8822cs" },
 
-	/* 8822C with USB interface */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8822B, 0xc, 0xa, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -254,7 +250,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8822cu_config",
 	  .hw_info  = "rtl8822cu" },
 
-	/* 8822B */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8822B, 0xb, 0x7, HCI_USB),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -263,7 +259,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8822b_config",
 	  .hw_info  = "rtl8822bu" },
 
-	/* 8852A */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8852A, 0xa, 0xb, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -272,7 +268,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8852au_config",
 	  .hw_info  = "rtl8852au" },
 
-	/* 8852B with UART interface */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8852A, 0xb, 0xb, HCI_UART),
 	  .config_needed = true,
 	  .has_rom_version = true,
@@ -281,7 +277,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8852bs_config",
 	  .hw_info  = "rtl8852bs" },
 
-	/* 8852B */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8852A, 0xb, 0xb, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -290,7 +286,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8852bu_config",
 	  .hw_info  = "rtl8852bu" },
 
-	/* 8852C */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8852A, 0xc, 0xc, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -299,7 +295,7 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8852cu_config",
 	  .hw_info  = "rtl8852cu" },
 
-	/* 8851B */
+	 
 	{ IC_INFO(RTL_ROM_LMP_8851B, 0xb, 0xc, HCI_USB),
 	  .config_needed = false,
 	  .has_rom_version = true,
@@ -366,7 +362,7 @@ static int rtl_read_rom_version(struct hci_dev *hdev, u8 *version)
 	struct rtl_rom_version_evt *rom_version;
 	struct sk_buff *skb;
 
-	/* Read RTL ROM version command */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfc6d, 0, NULL, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
 		rtl_dev_err(hdev, "Read ROM version failed (%ld)",
@@ -525,7 +521,7 @@ static int rtlbt_parse_firmware_v2(struct hci_dev *hdev,
 	u8 *ptr;
 	struct rtl_iovec iov = {
 		.data = btrtl_dev->fw_data,
-		.len  = btrtl_dev->fw_len - 7, /* Cut the tail */
+		.len  = btrtl_dev->fw_len - 7,  
 	};
 
 	rc = btrtl_vendor_read_reg16(hdev, RTL_SEC_PROJ, reg_val);
@@ -564,9 +560,7 @@ static int rtlbt_parse_firmware_v2(struct hci_dev *hdev,
 						 ptr, section_len);
 			break;
 		case RTL_PATCH_SECURITY_HEADER:
-			/* If key_id from chip is zero, ignore all security
-			 * headers.
-			 */
+			 
 			if (!key_id)
 				break;
 			rc = btrtl_parse_section(hdev, btrtl_dev, opcode,
@@ -591,7 +585,7 @@ static int rtlbt_parse_firmware_v2(struct hci_dev *hdev,
 	if (!len)
 		return -ENODATA;
 
-	/* Allocate mem and copy all found subsecs. */
+	 
 	ptr = kvmalloc(len, GFP_KERNEL);
 	if (!ptr)
 		return -ENOMEM;
@@ -637,14 +631,14 @@ static int rtlbt_parse_firmware(struct hci_dev *hdev,
 		{ RTL_ROM_LMP_8761A, 3 },
 		{ RTL_ROM_LMP_8703B, 7 },
 		{ RTL_ROM_LMP_8822B, 8 },
-		{ RTL_ROM_LMP_8723B, 9 },	/* 8723D */
-		{ RTL_ROM_LMP_8821A, 10 },	/* 8821C */
-		{ RTL_ROM_LMP_8822B, 13 },	/* 8822C */
-		{ RTL_ROM_LMP_8761A, 14 },	/* 8761B */
-		{ RTL_ROM_LMP_8852A, 18 },	/* 8852A */
-		{ RTL_ROM_LMP_8852A, 20 },	/* 8852B */
-		{ RTL_ROM_LMP_8852A, 25 },	/* 8852C */
-		{ RTL_ROM_LMP_8851B, 36 },	/* 8851B */
+		{ RTL_ROM_LMP_8723B, 9 },	 
+		{ RTL_ROM_LMP_8821A, 10 },	 
+		{ RTL_ROM_LMP_8822B, 13 },	 
+		{ RTL_ROM_LMP_8761A, 14 },	 
+		{ RTL_ROM_LMP_8852A, 18 },	 
+		{ RTL_ROM_LMP_8852A, 20 },	 
+		{ RTL_ROM_LMP_8852A, 25 },	 
+		{ RTL_ROM_LMP_8851B, 36 },	 
 	};
 
 	if (btrtl_dev->fw_len <= 8)
@@ -668,12 +662,7 @@ static int rtlbt_parse_firmware(struct hci_dev *hdev,
 		return -EINVAL;
 	}
 
-	/* Loop from the end of the firmware parsing instructions, until
-	 * we find an instruction that identifies the "project ID" for the
-	 * hardware supported by this firwmare file.
-	 * Once we have that, we double-check that project_id is suitable
-	 * for the hardware we are working with.
-	 */
+	 
 	while (fwptr >= btrtl_dev->fw_data + (sizeof(*epatch_info) + 3)) {
 		opcode = *--fwptr;
 		length = *--fwptr;
@@ -681,7 +670,7 @@ static int rtlbt_parse_firmware(struct hci_dev *hdev,
 
 		BT_DBG("check op=%x len=%x data=%x", opcode, length, data);
 
-		if (opcode == 0xff) /* EOF */
+		if (opcode == 0xff)  
 			break;
 
 		if (length == 0) {
@@ -702,7 +691,7 @@ static int rtlbt_parse_firmware(struct hci_dev *hdev,
 		return -EINVAL;
 	}
 
-	/* Find project_id in table */
+	 
 	for (i = 0; i < ARRAY_SIZE(project_id_to_lmp_subver); i++) {
 		if (project_id == project_id_to_lmp_subver[i].id) {
 			btrtl_dev->project_id = project_id;
@@ -737,12 +726,7 @@ static int rtlbt_parse_firmware(struct hci_dev *hdev,
 	       le32_to_cpu(epatch_info->fw_version), num_patches);
 	coredump_info->rtl_dump.fw_version = le32_to_cpu(epatch_info->fw_version);
 
-	/* After the rtl_epatch_header there is a funky patch metadata section.
-	 * Assuming 2 patches, the layout is:
-	 * ChipID1 ChipID2 PatchLength1 PatchLength2 PatchOffset1 PatchOffset2
-	 *
-	 * Find the right patch for this chip.
-	 */
+	 
 	min_size += 8 * num_patches;
 	if (btrtl_dev->fw_len < min_size)
 		return -EINVAL;
@@ -773,9 +757,7 @@ static int rtlbt_parse_firmware(struct hci_dev *hdev,
 	if (btrtl_dev->fw_len < min_size)
 		return -EINVAL;
 
-	/* Copy the firmware into a new buffer and write the version at
-	 * the end.
-	 */
+	 
 	len = patch_length;
 	buf = kvmalloc(patch_length, GFP_KERNEL);
 	if (!buf)
@@ -812,14 +794,14 @@ static int rtl_download_firmware(struct hci_dev *hdev,
 			j = 1;
 
 		if (i == (frag_num - 1)) {
-			dl_cmd->index |= 0x80; /* data end */
+			dl_cmd->index |= 0x80;  
 			frag_len = fw_len % RTL_FRAG_LEN;
 		}
 		rtl_dev_dbg(hdev, "download fw (%d/%d). index = %d", i,
 				frag_num, dl_cmd->index);
 		memcpy(dl_cmd->data, data, frag_len);
 
-		/* Send download command */
+		 
 		skb = __hci_cmd_sync(hdev, 0xfc20, frag_len + 1, dl_cmd,
 				     HCI_INIT_TIMEOUT);
 		if (IS_ERR(skb)) {
@@ -884,9 +866,7 @@ static int btrtl_setup_rtl8723a(struct hci_dev *hdev,
 	if (btrtl_dev->fw_len < 8)
 		return -EINVAL;
 
-	/* Check that the firmware doesn't have the epatch signature
-	 * (which is only for RTL8723B and newer).
-	 */
+	 
 	if (!memcmp(btrtl_dev->fw_data, RTL_EPATCH_SIGNATURE, 8)) {
 		rtl_dev_err(hdev, "unexpected EPATCH signature!");
 		return -EINVAL;
@@ -994,7 +974,7 @@ static int rtl_read_chip_type(struct hci_dev *hdev, u8 *type)
 	struct sk_buff *skb;
 	const unsigned char cmd_buf[] = {0x00, 0x94, 0xa0, 0x00, 0xb0};
 
-	/* Read RTL chip type command */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfc61, 5, cmd_buf, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
 		rtl_dev_err(hdev, "Read chip type failed (%ld)",
@@ -1069,7 +1049,7 @@ check_version:
 			goto err_free;
 		hci_rev = get_unaligned_le16(reg_val);
 
-		/* 8822E */
+		 
 		if (hci_rev == 0x000e) {
 			hci_ver = 0x0c;
 			lmp_ver = 0x0c;
@@ -1132,9 +1112,7 @@ next:
 			goto err_free;
 		}
 
-		/* Ensure the above vendor command is sent to controller and
-		 * process has done.
-		 */
+		 
 		msleep(200);
 
 		goto check_version;
@@ -1198,9 +1176,7 @@ next:
 		}
 	}
 
-	/* The following chips supports the Microsoft vendor extension,
-	 * therefore set the corresponding VsMsftOpCode.
-	 */
+	 
 	if (btrtl_dev->ic_info->has_msft_ext)
 		hci_set_msft_opcode(hdev, 0xFCF0);
 
@@ -1221,12 +1197,7 @@ int btrtl_download_firmware(struct hci_dev *hdev,
 {
 	int err = 0;
 
-	/* Match a set of subver values that correspond to stock firmware,
-	 * which is not compatible with standard btusb.
-	 * If matched, upload an alternative firmware that does conform to
-	 * standard btusb. Once that firmware is uploaded, the subver changes
-	 * to a different value.
-	 */
+	 
 	if (!btrtl_dev->ic_info) {
 		rtl_dev_info(hdev, "assuming no firmware upload needed");
 		err = 0;
@@ -1260,15 +1231,11 @@ EXPORT_SYMBOL_GPL(btrtl_download_firmware);
 
 void btrtl_set_quirks(struct hci_dev *hdev, struct btrtl_device_info *btrtl_dev)
 {
-	/* Enable controller to do both LE scan and BR/EDR inquiry
-	 * simultaneously.
-	 */
+	 
 	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
 
-	/* Enable central-peripheral role (able to create new connections with
-	 * an existing connection in slave role).
-	 */
-	/* Enable WBS supported for the specific Realtek devices. */
+	 
+	 
 	switch (btrtl_dev->project_id) {
 	case CHIP_ID_8822C:
 	case CHIP_ID_8852A:
@@ -1278,9 +1245,7 @@ void btrtl_set_quirks(struct hci_dev *hdev, struct btrtl_device_info *btrtl_dev)
 		set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
 		set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
 
-		/* RTL8852C needs to transmit mSBC data continuously without
-		 * the zero length of USB packets for the ALT 6 supported chips
-		 */
+		 
 		if (btrtl_dev->project_id == CHIP_ID_8852C)
 			btrealtek_set_flag(hdev, REALTEK_ALT6_CONTINUOUS_TX_CHIP);
 
@@ -1301,10 +1266,7 @@ void btrtl_set_quirks(struct hci_dev *hdev, struct btrtl_device_info *btrtl_dev)
 
 	switch (btrtl_dev->ic_info->lmp_subver) {
 	case RTL_ROM_LMP_8703B:
-		/* 8723CS reports two pages for local ext features,
-		 * but it doesn't support any features from page 2 -
-		 * it either responds with garbage or with error status
-		 */
+		 
 		set_bit(HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2,
 			&hdev->quirks);
 		break;
@@ -1337,9 +1299,7 @@ int btrtl_shutdown_realtek(struct hci_dev *hdev)
 	struct sk_buff *skb;
 	int ret;
 
-	/* According to the vendor driver, BT must be reset on close to avoid
-	 * firmware crash.
-	 */
+	 
 	skb = __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
 		ret = PTR_ERR(skb);

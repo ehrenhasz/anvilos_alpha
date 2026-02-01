@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_RPS_TYPES_H
 #define INTEL_RPS_TYPES_H
@@ -37,15 +35,7 @@ enum {
 	INTEL_RPS_TIMER,
 };
 
-/**
- * struct intel_rps_freq_caps - rps freq capabilities
- * @rp0_freq: non-overclocked max frequency
- * @rp1_freq: "less than" RP0 power/freqency
- * @min_freq: aka RPn, minimum frequency
- *
- * Freq caps exposed by HW, values are in "hw units" and intel_gpu_freq()
- * should be used to convert to MHz
- */
+ 
 struct intel_rps_freq_caps {
 	u8 rp0_freq;
 	u8 rp1_freq;
@@ -53,12 +43,9 @@ struct intel_rps_freq_caps {
 };
 
 struct intel_rps {
-	struct mutex lock; /* protects enabling and the worker */
+	struct mutex lock;  
 
-	/*
-	 * work, interrupts_enabled and pm_iir are protected by
-	 * i915->irq_lock
-	 */
+	 
 	struct timer_list timer;
 	struct work_struct work;
 	unsigned long flags;
@@ -67,32 +54,23 @@ struct intel_rps {
 	u32 pm_interval;
 	u32 pm_iir;
 
-	/* PM interrupt bits that should never be masked */
+	 
 	u32 pm_intrmsk_mbz;
 	u32 pm_events;
 
-	/* Frequencies are stored in potentially platform dependent multiples.
-	 * In other words, *_freq needs to be multiplied by X to be interesting.
-	 * Soft limits are those which are used for the dynamic reclocking done
-	 * by the driver (raise frequencies under heavy loads, and lower for
-	 * lighter loads). Hard limits are those imposed by the hardware.
-	 *
-	 * A distinction is made for overclocking, which is never enabled by
-	 * default, and is considered to be above the hard limit if it's
-	 * possible at all.
-	 */
-	u8 cur_freq;		/* Current frequency (cached, may not == HW) */
-	u8 last_freq;		/* Last SWREQ frequency */
-	u8 min_freq_softlimit;	/* Minimum frequency permitted by the driver */
-	u8 max_freq_softlimit;	/* Max frequency permitted by the driver */
-	u8 max_freq;		/* Maximum frequency, RP0 if not overclocking */
-	u8 min_freq;		/* AKA RPn. Minimum frequency */
-	u8 boost_freq;		/* Frequency to request when wait boosting */
-	u8 idle_freq;		/* Frequency to request when we are idle */
-	u8 efficient_freq;	/* AKA RPe. Pre-determined balanced frequency */
-	u8 rp1_freq;		/* "less than" RP0 power/freqency */
-	u8 rp0_freq;		/* Non-overclocked max frequency. */
-	u16 gpll_ref_freq;	/* vlv/chv GPLL reference frequency */
+	 
+	u8 cur_freq;		 
+	u8 last_freq;		 
+	u8 min_freq_softlimit;	 
+	u8 max_freq_softlimit;	 
+	u8 max_freq;		 
+	u8 min_freq;		 
+	u8 boost_freq;		 
+	u8 idle_freq;		 
+	u8 efficient_freq;	 
+	u8 rp1_freq;		 
+	u8 rp0_freq;		 
+	u16 gpll_ref_freq;	 
 
 	int last_adj;
 
@@ -102,16 +80,16 @@ struct intel_rps {
 		enum { LOW_POWER, BETWEEN, HIGH_POWER } mode;
 		unsigned int interactive;
 
-		u8 up_threshold; /* Current %busy required to uplock */
-		u8 down_threshold; /* Current %busy required to downclock */
+		u8 up_threshold;  
+		u8 down_threshold;  
 	} power;
 
 	atomic_t num_waiters;
 	unsigned int boosts;
 
-	/* manual wa residency calculations */
+	 
 	struct intel_rps_ei ei;
 	struct intel_ips ips;
 };
 
-#endif /* INTEL_RPS_TYPES_H */
+#endif  

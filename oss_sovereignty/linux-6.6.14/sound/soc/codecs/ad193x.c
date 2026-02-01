@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AD193X Audio Codec driver supporting AD1936/7/8/9
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -19,16 +15,14 @@
 
 #include "ad193x.h"
 
-/* codec private data */
+ 
 struct ad193x_priv {
 	struct regmap *regmap;
 	enum ad193x_type type;
 	int sysclk;
 };
 
-/*
- * AD193X volume/mute/de-emphasis etc. controls
- */
+ 
 static const char * const ad193x_deemp[] = {"None", "48kHz", "44.1kHz", "32kHz"};
 
 static SOC_ENUM_SINGLE_DECL(ad193x_deemp_enum, AD193X_DAC_CTRL2, 1,
@@ -44,7 +38,7 @@ static struct snd_pcm_hw_constraint_list constr = {
 };
 
 static const struct snd_kcontrol_new ad193x_snd_controls[] = {
-	/* DAC volume control */
+	 
 	SOC_DOUBLE_R_TLV("DAC1 Volume", AD193X_DAC_L1_VOL,
 			AD193X_DAC_R1_VOL, 0, 0xFF, 1, adau193x_tlv),
 	SOC_DOUBLE_R_TLV("DAC2 Volume", AD193X_DAC_L2_VOL,
@@ -54,7 +48,7 @@ static const struct snd_kcontrol_new ad193x_snd_controls[] = {
 	SOC_DOUBLE_R_TLV("DAC4 Volume", AD193X_DAC_L4_VOL,
 			AD193X_DAC_R4_VOL, 0, 0xFF, 1, adau193x_tlv),
 
-	/* DAC switch control */
+	 
 	SOC_DOUBLE("DAC1 Switch", AD193X_DAC_CHNL_MUTE, AD193X_DACL1_MUTE,
 		AD193X_DACR1_MUTE, 1, 1),
 	SOC_DOUBLE("DAC2 Switch", AD193X_DAC_CHNL_MUTE, AD193X_DACL2_MUTE,
@@ -64,18 +58,18 @@ static const struct snd_kcontrol_new ad193x_snd_controls[] = {
 	SOC_DOUBLE("DAC4 Switch", AD193X_DAC_CHNL_MUTE, AD193X_DACL4_MUTE,
 		AD193X_DACR4_MUTE, 1, 1),
 
-	/* DAC de-emphasis */
+	 
 	SOC_ENUM("Playback Deemphasis", ad193x_deemp_enum),
 };
 
 static const struct snd_kcontrol_new ad193x_adc_snd_controls[] = {
-	/* ADC switch control */
+	 
 	SOC_DOUBLE("ADC1 Switch", AD193X_ADC_CTRL0, AD193X_ADCL1_MUTE,
 		AD193X_ADCR1_MUTE, 1, 1),
 	SOC_DOUBLE("ADC2 Switch", AD193X_ADC_CTRL0, AD193X_ADCL2_MUTE,
 		AD193X_ADCR2_MUTE, 1, 1),
 
-	/* ADC high-pass filter */
+	 
 	SOC_SINGLE("ADC High Pass Filter Switch", AD193X_ADC_CTRL0,
 			AD193X_ADC_HIGHPASS_FILTER, 1, 0),
 };
@@ -139,9 +133,7 @@ static inline bool ad193x_has_adc(const struct ad193x_priv *ad193x)
 	return true;
 }
 
-/*
- * DAI ops entries
- */
+ 
 
 static int ad193x_mute(struct snd_soc_dai *dai, int mute, int direction)
 {
@@ -200,10 +192,7 @@ static int ad193x_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	unsigned int adc_fmt = 0;
 	unsigned int dac_fmt = 0;
 
-	/* At present, the driver only support AUX ADC mode(SND_SOC_DAIFMT_I2S
-	 * with TDM), ADC&DAC TDM mode(SND_SOC_DAIFMT_DSP_A) and DAC I2S mode
-	 * (SND_SOC_DAIFMT_I2S)
-	 */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		adc_serfmt |= AD193X_ADC_SERFMT_TDM;
@@ -219,17 +208,17 @@ static int ad193x_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	}
 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
-	case SND_SOC_DAIFMT_NB_NF: /* normal bit clock + frame */
+	case SND_SOC_DAIFMT_NB_NF:  
 		break;
-	case SND_SOC_DAIFMT_NB_IF: /* normal bclk + invert frm */
+	case SND_SOC_DAIFMT_NB_IF:  
 		adc_fmt |= AD193X_ADC_LEFT_HIGH;
 		dac_fmt |= AD193X_DAC_LEFT_HIGH;
 		break;
-	case SND_SOC_DAIFMT_IB_NF: /* invert bclk + normal frm */
+	case SND_SOC_DAIFMT_IB_NF:  
 		adc_fmt |= AD193X_ADC_BCLK_INV;
 		dac_fmt |= AD193X_DAC_BCLK_INV;
 		break;
-	case SND_SOC_DAIFMT_IB_IF: /* invert bclk + frm */
+	case SND_SOC_DAIFMT_IB_IF:  
 		adc_fmt |= AD193X_ADC_LEFT_HIGH;
 		adc_fmt |= AD193X_ADC_BCLK_INV;
 		dac_fmt |= AD193X_DAC_LEFT_HIGH;
@@ -239,7 +228,7 @@ static int ad193x_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* For DSP_*, LRCLK's polarity must be inverted */
+	 
 	if (fmt & SND_SOC_DAIFMT_DSP_A)
 		dac_fmt ^= AD193X_DAC_LEFT_HIGH;
 
@@ -286,7 +275,7 @@ static int ad193x_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	struct ad193x_priv *ad193x = snd_soc_component_get_drvdata(component);
 
 	if (clk_id == AD193X_SYSCLK_MCLK) {
-		/* MCLK must be 512 x fs */
+		 
 		if (dir == SND_SOC_CLOCK_OUT || freq != 24576000)
 			return -EINVAL;
 
@@ -324,7 +313,7 @@ static int ad193x_hw_params(struct snd_pcm_substream *substream,
 		params_width(params), params_channels(params));
 
 
-	/* bit size */
+	 
 	switch (params_width(params)) {
 	case 16:
 		word_len = 3;
@@ -404,7 +393,7 @@ static const struct snd_soc_dai_ops ad193x_dai_ops = {
 	.no_capture_mute = 1,
 };
 
-/* codec DAI instance */
+ 
 static struct snd_soc_dai_driver ad193x_dai = {
 	.name = "ad193x-hifi",
 	.playback = {
@@ -426,7 +415,7 @@ static struct snd_soc_dai_driver ad193x_dai = {
 	.ops = &ad193x_dai_ops,
 };
 
-/* codec DAI instance for DAC only */
+ 
 static struct snd_soc_dai_driver ad193x_no_adc_dai = {
 	.name = "ad193x-hifi",
 	.playback = {
@@ -440,29 +429,29 @@ static struct snd_soc_dai_driver ad193x_no_adc_dai = {
 	.ops = &ad193x_dai_ops,
 };
 
-/* codec register values to set after reset */
+ 
 static void ad193x_reg_default_init(struct ad193x_priv *ad193x)
 {
 	static const struct reg_sequence reg_init[] = {
-		{  0, 0x99 },	/* PLL_CLK_CTRL0: pll input: mclki/xi 12.288Mhz */
-		{  1, 0x04 },	/* PLL_CLK_CTRL1: no on-chip Vref */
-		{  2, 0x40 },	/* DAC_CTRL0: TDM mode */
-		{  3, 0x00 },	/* DAC_CTRL1: reset */
-		{  4, 0x1A },	/* DAC_CTRL2: 48kHz de-emphasis, unmute dac */
-		{  5, 0x00 },	/* DAC_CHNL_MUTE: unmute DAC channels */
-		{  6, 0x00 },	/* DAC_L1_VOL: no attenuation */
-		{  7, 0x00 },	/* DAC_R1_VOL: no attenuation */
-		{  8, 0x00 },	/* DAC_L2_VOL: no attenuation */
-		{  9, 0x00 },	/* DAC_R2_VOL: no attenuation */
-		{ 10, 0x00 },	/* DAC_L3_VOL: no attenuation */
-		{ 11, 0x00 },	/* DAC_R3_VOL: no attenuation */
-		{ 12, 0x00 },	/* DAC_L4_VOL: no attenuation */
-		{ 13, 0x00 },	/* DAC_R4_VOL: no attenuation */
+		{  0, 0x99 },	 
+		{  1, 0x04 },	 
+		{  2, 0x40 },	 
+		{  3, 0x00 },	 
+		{  4, 0x1A },	 
+		{  5, 0x00 },	 
+		{  6, 0x00 },	 
+		{  7, 0x00 },	 
+		{  8, 0x00 },	 
+		{  9, 0x00 },	 
+		{ 10, 0x00 },	 
+		{ 11, 0x00 },	 
+		{ 12, 0x00 },	 
+		{ 13, 0x00 },	 
 	};
 	static const struct reg_sequence reg_adc_init[] = {
-		{ 14, 0x03 },	/* ADC_CTRL0: high-pass filter enable */
-		{ 15, 0x43 },	/* ADC_CTRL1: sata delay=1, adc aux mode */
-		{ 16, 0x00 },	/* ADC_CTRL2: reset */
+		{ 14, 0x03 },	 
+		{ 15, 0x43 },	 
+		{ 16, 0x00 },	 
 	};
 
 	regmap_multi_reg_write(ad193x->regmap, reg_init, ARRAY_SIZE(reg_init));
@@ -479,12 +468,12 @@ static int ad193x_component_probe(struct snd_soc_component *component)
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 	int num, ret;
 
-	/* default setting for ad193x */
+	 
 	ad193x_reg_default_init(ad193x);
 
-	/* adc only */
+	 
 	if (ad193x_has_adc(ad193x)) {
-		/* add adc controls */
+		 
 		num = ARRAY_SIZE(ad193x_adc_snd_controls);
 		ret = snd_soc_add_component_controls(component,
 						 ad193x_adc_snd_controls,
@@ -492,7 +481,7 @@ static int ad193x_component_probe(struct snd_soc_component *component)
 		if (ret)
 			return ret;
 
-		/* add adc widgets */
+		 
 		num = ARRAY_SIZE(ad193x_adc_widgets);
 		ret = snd_soc_dapm_new_controls(dapm,
 						ad193x_adc_widgets,
@@ -500,7 +489,7 @@ static int ad193x_component_probe(struct snd_soc_component *component)
 		if (ret)
 			return ret;
 
-		/* add adc routes */
+		 
 		num = ARRAY_SIZE(ad193x_adc_audio_paths);
 		ret = snd_soc_dapm_add_routes(dapm,
 					      ad193x_adc_audio_paths,

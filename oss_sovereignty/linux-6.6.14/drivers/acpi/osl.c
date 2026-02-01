@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  acpi_osl.c - OS-dependent functions ($Revision: 83 $)
- *
- *  Copyright (C) 2000       Andrew Henroid
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (c) 2008 Intel Corporation
- *   Author: Matthew Wilcox <willy@linux.intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: OSL: " fmt
 
@@ -38,7 +30,7 @@
 #include "acpica/accommon.h"
 #include "internal.h"
 
-/* Definitions for ACPI_DEBUG_PRINT() */
+ 
 #define _COMPONENT		ACPI_OS_SERVICES
 ACPI_MODULE_NAME("osl");
 
@@ -51,10 +43,10 @@ struct acpi_os_dpc {
 #ifdef ENABLE_DEBUGGER
 #include <linux/kdb.h>
 
-/* stuff for debugger support */
+ 
 int acpi_in_debugger;
 EXPORT_SYMBOL(acpi_in_debugger);
-#endif				/*ENABLE_DEBUGGER */
+#endif				 
 
 static int (*__acpi_os_prepare_sleep)(u8 sleep_state, u32 pm1a_ctrl,
 				      u32 pm1b_ctrl);
@@ -70,10 +62,7 @@ static bool acpi_os_initialized;
 unsigned int acpi_sci_irq = INVALID_ACPI_IRQ;
 bool acpi_permanent_mmap = false;
 
-/*
- * This list of permanent mappings is for memory that may be accessed from
- * interrupt context, where we can't do the ioremap().
- */
+ 
 struct acpi_ioremap {
 	struct list_head list;
 	void __iomem *virt;
@@ -94,12 +83,12 @@ static void __init acpi_request_region (struct acpi_generic_address *gas,
 {
 	u64 addr;
 
-	/* Handle possible alignment issues */
+	 
 	memcpy(&addr, &gas->address, sizeof(addr));
 	if (!addr || !length)
 		return;
 
-	/* Resources are never freed */
+	 
 	if (gas->space_id == ACPI_ADR_SPACE_SYSTEM_IO)
 		request_region(addr, length, desc);
 	else if (gas->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY)
@@ -126,7 +115,7 @@ static int __init acpi_reserve_resources(void)
 	acpi_request_region(&acpi_gbl_FADT.xpm2_control_block, acpi_gbl_FADT.pm2_control_length,
 		"ACPI PM2_CNT_BLK");
 
-	/* Length of GPE blocks must be a non-negative multiple of 2 */
+	 
 
 	if (!(acpi_gbl_FADT.gpe0_block_length & 0x1))
 		acpi_request_region(&acpi_gbl_FADT.xgpe0_block,
@@ -188,15 +177,7 @@ acpi_physical_address __init acpi_os_get_root_pointer(void)
 	acpi_physical_address pa;
 
 #ifdef CONFIG_KEXEC
-	/*
-	 * We may have been provided with an RSDP on the command line,
-	 * but if a malicious user has done so they may be pointing us
-	 * at modified ACPI tables that could alter kernel behaviour -
-	 * so, we check the lockdown status before making use of
-	 * it. If we trust it then also stash it in an architecture
-	 * specific location (if appropriate) so it can be carried
-	 * over further kexec()s.
-	 */
+	 
 	if (acpi_rsdp && !security_locked_down(LOCKDOWN_ACPI_TABLES)) {
 		acpi_arch_set_root_pointer(acpi_rsdp);
 		return acpi_rsdp;
@@ -219,7 +200,7 @@ acpi_physical_address __init acpi_os_get_root_pointer(void)
 	return pa;
 }
 
-/* Must be called with 'acpi_ioremap_lock' or RCU read lock held. */
+ 
 static struct acpi_ioremap *
 acpi_map_lookup(acpi_physical_address phys, acpi_size size)
 {
@@ -233,7 +214,7 @@ acpi_map_lookup(acpi_physical_address phys, acpi_size size)
 	return NULL;
 }
 
-/* Must be called with 'acpi_ioremap_lock' or RCU read lock held. */
+ 
 static void __iomem *
 acpi_map_vaddr_lookup(acpi_physical_address phys, unsigned int size)
 {
@@ -262,7 +243,7 @@ void __iomem *acpi_os_get_iomem(acpi_physical_address phys, unsigned int size)
 }
 EXPORT_SYMBOL_GPL(acpi_os_get_iomem);
 
-/* Must be called with 'acpi_ioremap_lock' or RCU read lock held. */
+ 
 static struct acpi_ioremap *
 acpi_map_lookup_virt(void __iomem *virt, acpi_size size)
 {
@@ -277,7 +258,7 @@ acpi_map_lookup_virt(void __iomem *virt, acpi_size size)
 }
 
 #if defined(CONFIG_IA64) || defined(CONFIG_ARM64) || defined(CONFIG_RISCV)
-/* ioremap will take care of cache attributes */
+ 
 #define should_use_kmap(pfn)   0
 #else
 #define should_use_kmap(pfn)   page_is_ram(pfn)
@@ -307,19 +288,7 @@ static void acpi_unmap(acpi_physical_address pg_off, void __iomem *vaddr)
 		iounmap(vaddr);
 }
 
-/**
- * acpi_os_map_iomem - Get a virtual address for a given physical address range.
- * @phys: Start of the physical address range to map.
- * @size: Size of the physical address range to map.
- *
- * Look up the given physical address range in the list of existing ACPI memory
- * mappings.  If found, get a reference to it and return a pointer to it (its
- * virtual address).  If not found, map it, add it to that list and return a
- * pointer to it.
- *
- * During early init (when acpi_permanent_mmap has not been set yet) this
- * routine simply calls __acpi_map_table() to get the job done.
- */
+ 
 void __iomem __ref
 *acpi_os_map_iomem(acpi_physical_address phys, acpi_size size)
 {
@@ -337,7 +306,7 @@ void __iomem __ref
 		return __acpi_map_table((unsigned long)phys, size);
 
 	mutex_lock(&acpi_ioremap_lock);
-	/* Check if there's a suitable mapping already. */
+	 
 	map = acpi_map_lookup(phys, size);
 	if (map) {
 		map->track.refcount++;
@@ -389,7 +358,7 @@ static void acpi_os_map_remove(struct work_struct *work)
 	kfree(map);
 }
 
-/* Must be called with mutex_lock(&acpi_ioremap_lock) */
+ 
 static void acpi_os_drop_map_ref(struct acpi_ioremap *map)
 {
 	if (--map->track.refcount)
@@ -401,20 +370,7 @@ static void acpi_os_drop_map_ref(struct acpi_ioremap *map)
 	queue_rcu_work(system_wq, &map->track.rwork);
 }
 
-/**
- * acpi_os_unmap_iomem - Drop a memory mapping reference.
- * @virt: Start of the address range to drop a reference to.
- * @size: Size of the address range to drop a reference to.
- *
- * Look up the given virtual address range in the list of existing ACPI memory
- * mappings, drop a reference to it and if there are no more active references
- * to it, queue it up for later removal.
- *
- * During early init (when acpi_permanent_mmap has not been set yet) this
- * routine simply calls __acpi_unmap_table() to get the job done.  Since
- * __acpi_unmap_table() is an __init function, the __ref annotation is needed
- * here.
- */
+ 
 void __ref acpi_os_unmap_iomem(void __iomem *virt, acpi_size size)
 {
 	struct acpi_ioremap *map;
@@ -438,11 +394,7 @@ void __ref acpi_os_unmap_iomem(void __iomem *virt, acpi_size size)
 }
 EXPORT_SYMBOL_GPL(acpi_os_unmap_iomem);
 
-/**
- * acpi_os_unmap_memory - Drop a memory mapping reference.
- * @virt: Start of the address range to drop a reference to.
- * @size: Size of the address range to drop a reference to.
- */
+ 
 void __ref acpi_os_unmap_memory(void *virt, acpi_size size)
 {
 	acpi_os_unmap_iomem((void __iomem *)virt, size);
@@ -456,7 +408,7 @@ void __iomem *acpi_os_map_generic_address(struct acpi_generic_address *gas)
 	if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
 		return NULL;
 
-	/* Handle possible alignment issues */
+	 
 	memcpy(&addr, &gas->address, sizeof(addr));
 	if (!addr || !gas->bit_width)
 		return NULL;
@@ -473,7 +425,7 @@ void acpi_os_unmap_generic_address(struct acpi_generic_address *gas)
 	if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
 		return;
 
-	/* Handle possible alignment issues */
+	 
 	memcpy(&addr, &gas->address, sizeof(addr));
 	if (!addr || !gas->bit_width)
 		return;
@@ -565,10 +517,7 @@ acpi_os_install_interrupt_handler(u32 gsi, acpi_osd_handler handler,
 
 	acpi_irq_stats_init();
 
-	/*
-	 * ACPI interrupts different from the SCI in our copy of the FADT are
-	 * not supported.
-	 */
+	 
 	if (gsi != acpi_gbl_FADT.sci_interrupt)
 		return AE_BAD_PARAMETER;
 
@@ -604,9 +553,7 @@ acpi_status acpi_os_remove_interrupt_handler(u32 gsi, acpi_osd_handler handler)
 	return AE_OK;
 }
 
-/*
- * Running in interpreter thread context, safe to sleep
- */
+ 
 
 void acpi_os_sleep(u64 ms)
 {
@@ -626,15 +573,7 @@ void acpi_os_stall(u32 us)
 	}
 }
 
-/*
- * Support ACPI 3.0 AML Timer operand. Returns a 64-bit free-running,
- * monotonically increasing timer with 100ns granularity. Do not use
- * ktime_get() to implement this function because this function may get
- * called after timekeeping has been suspended. Note: calling this function
- * after timekeeping has been suspended may lead to unexpected results
- * because when timekeeping is suspended the jiffies counter is not
- * incremented. See also timekeeping_suspend().
- */
+ 
 u64 acpi_os_get_timer(void)
 {
 	return (get_jiffies_64() - INITIAL_JIFFIES) *
@@ -1045,20 +984,7 @@ int __init acpi_debugger_init(void)
 }
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_execute
- *
- * PARAMETERS:  Type               - Type of the callback
- *              Function           - Function to be executed
- *              Context            - Function parameters
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Depending on type, either queues function for deferred execution or
- *              immediately executes function on a separate thread.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_os_execute(acpi_execute_type type,
 			    acpi_osd_exec_callback function, void *context)
@@ -1080,14 +1006,7 @@ acpi_status acpi_os_execute(acpi_execute_type type,
 		goto out_thread;
 	}
 
-	/*
-	 * Allocate/initialize DPC structure.  Note that this memory will be
-	 * freed by the callee.  The kernel handles the work_struct list  in a
-	 * way that allows us to also free its memory inside the callee.
-	 * Because we may want to schedule several tasks with different
-	 * parameters we can't use the approach some kernel code uses of
-	 * having a static work_struct.
-	 */
+	 
 
 	dpc = kzalloc(sizeof(struct acpi_os_dpc), GFP_ATOMIC);
 	if (!dpc)
@@ -1096,11 +1015,7 @@ acpi_status acpi_os_execute(acpi_execute_type type,
 	dpc->function = function;
 	dpc->context = context;
 
-	/*
-	 * To prevent lockdep from complaining unnecessarily, make sure that
-	 * there is a different static lockdep key for each workqueue by using
-	 * INIT_WORK() for each of them separately.
-	 */
+	 
 	if (type == OSL_NOTIFY_HANDLER) {
 		queue = kacpi_notify_wq;
 		INIT_WORK(&dpc->work, acpi_os_execute_deferred);
@@ -1115,13 +1030,7 @@ acpi_status acpi_os_execute(acpi_execute_type type,
 	if (ACPI_FAILURE(status))
 		goto err_workqueue;
 
-	/*
-	 * On some machines, a software-initiated SMI causes corruption unless
-	 * the SMI runs on CPU 0.  An SMI can be initiated by any AML, but
-	 * typically it's done in GPE-related methods that are run via
-	 * workqueues, so we can avoid the known corruption cases by always
-	 * queueing on CPU 0.
-	 */
+	 
 	ret = queue_work_on(0, queue, &dpc->work);
 	if (!ret) {
 		pr_err("Unable to queue work\n");
@@ -1137,10 +1046,7 @@ EXPORT_SYMBOL(acpi_os_execute);
 
 void acpi_os_wait_events_complete(void)
 {
-	/*
-	 * Make sure the GPE handler or the fixed event handler is not used
-	 * on another CPU after removal.
-	 */
+	 
 	if (acpi_sci_irq_valid())
 		synchronize_hardirq(acpi_sci_irq);
 	flush_workqueue(kacpid_wq);
@@ -1178,12 +1084,7 @@ acpi_status acpi_hotplug_schedule(struct acpi_device *adev, u32 src)
 	INIT_WORK(&hpw->work, acpi_hotplug_work_fn);
 	hpw->adev = adev;
 	hpw->src = src;
-	/*
-	 * We can't run hotplug code in kacpid_wq/kacpid_notify_wq etc., because
-	 * the hotplug code may call driver .remove() functions, which may
-	 * invoke flush_scheduled_work()/acpi_os_wait_events_complete() to flush
-	 * these workqueues.
-	 */
+	 
 	if (!queue_work(kacpi_hotplug_wq, &hpw->work)) {
 		kfree(hpw);
 		return AE_ERROR;
@@ -1215,12 +1116,7 @@ acpi_os_create_semaphore(u32 max_units, u32 initial_units, acpi_handle * handle)
 	return AE_OK;
 }
 
-/*
- * TODO: A better way to delete semaphores?  Linux doesn't have a
- * 'delete_semaphore()' function -- may result in an invalid
- * pointer dereference for non-synchronized consumers.	Should
- * we at least check for blocked threads and signal/cancel them?
- */
+ 
 
 acpi_status acpi_os_delete_semaphore(acpi_handle handle)
 {
@@ -1238,9 +1134,7 @@ acpi_status acpi_os_delete_semaphore(acpi_handle handle)
 	return AE_OK;
 }
 
-/*
- * TODO: Support for units > 1?
- */
+ 
 acpi_status acpi_os_wait_semaphore(acpi_handle handle, u32 units, u16 timeout)
 {
 	acpi_status status = AE_OK;
@@ -1283,9 +1177,7 @@ acpi_status acpi_os_wait_semaphore(acpi_handle handle, u32 units, u16 timeout)
 	return status;
 }
 
-/*
- * TODO: Support for units > 1?
- */
+ 
 acpi_status acpi_os_signal_semaphore(acpi_handle handle, u32 units)
 {
 	struct semaphore *sem = (struct semaphore *)handle;
@@ -1315,7 +1207,7 @@ acpi_status acpi_os_get_line(char *buffer, u32 buffer_length, u32 *bytes_read)
 
 		kdb_read(buffer, buffer_length);
 
-		/* remove the CR kdb includes */
+		 
 		chars = strlen(buffer) - 1;
 		buffer[chars] = '\0';
 	}
@@ -1360,14 +1252,7 @@ acpi_status acpi_os_signal(u32 function, void *info)
 		pr_err("Fatal opcode executed\n");
 		break;
 	case ACPI_SIGNAL_BREAKPOINT:
-		/*
-		 * AML Breakpoint
-		 * ACPI spec. says to treat it as a NOP unless
-		 * you are debugging.  So if/when we integrate
-		 * AML debugger into the kernel debugger its
-		 * hook will go here.  But until then it is
-		 * not useful to print anything on breakpoints.
-		 */
+		 
 		break;
 	default:
 		break;
@@ -1400,12 +1285,7 @@ static int __init acpi_os_name_setup(char *str)
 
 __setup("acpi_os_name=", acpi_os_name_setup);
 
-/*
- * Disable the auto-serialization of named objects creation methods.
- *
- * This feature is enabled by default.  It marks the AML control methods
- * that contain the opcodes to create named objects as "Serialized".
- */
+ 
 static int __init acpi_no_auto_serialize_setup(char *str)
 {
 	acpi_gbl_auto_serialize_methods = FALSE;
@@ -1416,22 +1296,7 @@ static int __init acpi_no_auto_serialize_setup(char *str)
 
 __setup("acpi_no_auto_serialize", acpi_no_auto_serialize_setup);
 
-/* Check of resource interference between native drivers and ACPI
- * OperationRegions (SystemIO and System Memory only).
- * IO ports and memory declared in ACPI might be used by the ACPI subsystem
- * in arbitrary AML code and can interfere with legacy drivers.
- * acpi_enforce_resources= can be set to:
- *
- *   - strict (default) (2)
- *     -> further driver trying to access the resources will not load
- *   - lax              (1)
- *     -> further driver trying to access the resources will load, but you
- *     get a system message that something might go wrong...
- *
- *   - no               (0)
- *     -> ACPI Operation Region resources will not be registered
- *
- */
+ 
 #define ENFORCE_RESOURCES_STRICT 2
 #define ENFORCE_RESOURCES_LAX    1
 #define ENFORCE_RESOURCES_NO     0
@@ -1455,8 +1320,7 @@ static int __init acpi_enforce_resources_setup(char *str)
 
 __setup("acpi_enforce_resources=", acpi_enforce_resources_setup);
 
-/* Check for resource conflicts between ACPI OperationRegions and native
- * drivers */
+ 
 int acpi_check_resource_conflict(const struct resource *res)
 {
 	acpi_adr_space_type space_id;
@@ -1495,28 +1359,20 @@ int acpi_check_region(resource_size_t start, resource_size_t n,
 }
 EXPORT_SYMBOL(acpi_check_region);
 
-/*
- * Let drivers know whether the resource checks are effective
- */
+ 
 int acpi_resources_are_enforced(void)
 {
 	return acpi_enforce_resources == ENFORCE_RESOURCES_STRICT;
 }
 EXPORT_SYMBOL(acpi_resources_are_enforced);
 
-/*
- * Deallocate the memory for a spinlock.
- */
+ 
 void acpi_os_delete_lock(acpi_spinlock handle)
 {
 	ACPI_FREE(handle);
 }
 
-/*
- * Acquire a spinlock.
- *
- * handle is a pointer to the spinlock_t.
- */
+ 
 
 acpi_cpu_flags acpi_os_acquire_lock(acpi_spinlock lockp)
 	__acquires(lockp)
@@ -1526,9 +1382,7 @@ acpi_cpu_flags acpi_os_acquire_lock(acpi_spinlock lockp)
 	return flags;
 }
 
-/*
- * Release a spinlock. See above.
- */
+ 
 
 void acpi_os_release_lock(acpi_spinlock lockp, acpi_cpu_flags flags)
 	__releases(lockp)
@@ -1538,20 +1392,7 @@ void acpi_os_release_lock(acpi_spinlock lockp, acpi_cpu_flags flags)
 
 #ifndef ACPI_USE_LOCAL_CACHE
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_create_cache
- *
- * PARAMETERS:  name      - Ascii name for the cache
- *              size      - Size of each cached object
- *              depth     - Maximum depth of the cache (in objects) <ignored>
- *              cache     - Where the new cache object is returned
- *
- * RETURN:      status
- *
- * DESCRIPTION: Create a cache object
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_os_create_cache(char *name, u16 size, u16 depth, acpi_cache_t ** cache)
@@ -1563,17 +1404,7 @@ acpi_os_create_cache(char *name, u16 size, u16 depth, acpi_cache_t ** cache)
 		return AE_OK;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_purge_cache
- *
- * PARAMETERS:  Cache           - Handle to cache object
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Free all objects within the requested cache.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_os_purge_cache(acpi_cache_t * cache)
 {
@@ -1581,18 +1412,7 @@ acpi_status acpi_os_purge_cache(acpi_cache_t * cache)
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_delete_cache
- *
- * PARAMETERS:  Cache           - Handle to cache object
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Free all objects within the requested cache and delete the
- *              cache object.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_os_delete_cache(acpi_cache_t * cache)
 {
@@ -1600,19 +1420,7 @@ acpi_status acpi_os_delete_cache(acpi_cache_t * cache)
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_release_object
- *
- * PARAMETERS:  Cache       - Handle to cache object
- *              Object      - The object to be released
- *
- * RETURN:      None
- *
- * DESCRIPTION: Release an object to the specified cache.  If cache is full,
- *              the object is deleted.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_os_release_object(acpi_cache_t * cache, void *object)
 {
@@ -1652,10 +1460,7 @@ acpi_status __init acpi_os_initialize(void)
 		(unsigned long)acpi_os_map_generic_address(&acpi_gbl_FADT.xgpe1_block);
 
 	if (acpi_gbl_FADT.flags & ACPI_FADT_RESET_REGISTER) {
-		/*
-		 * Use acpi_os_map_generic_address to pre-map the reset
-		 * register if it's in system memory.
-		 */
+		 
 		void *rv;
 
 		rv = acpi_os_map_generic_address(&acpi_gbl_FADT.reset_register);

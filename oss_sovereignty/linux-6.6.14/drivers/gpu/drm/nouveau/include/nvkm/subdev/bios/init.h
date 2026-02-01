@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVBIOS_INIT_H__
 #define __NVBIOS_INIT_H__
 
@@ -11,7 +11,7 @@ struct nvbios_init {
 	int link;
 	int head;
 
-	/* internal state used during parsing */
+	 
 	u8 execute;
 	u32 nested;
 	u32 repeat;

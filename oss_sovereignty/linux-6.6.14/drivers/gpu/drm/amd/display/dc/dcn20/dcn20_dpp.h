@@ -1,26 +1,4 @@
-/* Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DCN20_DPP_H__
 #define __DCN20_DPP_H__
@@ -582,12 +560,7 @@
 	TF_SF(DSCL0_OBUF_MEM_PWR_CTRL, OBUF_MEM_PWR_FORCE, mask_sh),\
 	TF_SF(DSCL0_DSCL_MEM_PWR_CTRL, LUT_MEM_PWR_FORCE, mask_sh)
 
-/* DPP CM debug status register:
- *
- *		Status index including current ICSC, Gamut Remap Mode is 9
- *			ICSC Mode: [4..3]
- *			Gamut Remap Mode: [10..9]
- */
+ 
 #define CM_TEST_DEBUG_DATA_STATUS_IDX 9
 
 #define TF_DEBUG_REG_LIST_SH_DCN20 \
@@ -775,4 +748,4 @@ bool dpp2_construct(struct dcn20_dpp *dpp2,
 void dpp2_power_on_obuf(
 		struct dpp *dpp_base,
 	bool power_on);
-#endif /* __DC_HWSS_DCN20_H__ */
+#endif  

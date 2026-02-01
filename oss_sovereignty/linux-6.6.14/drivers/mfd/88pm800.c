@@ -1,24 +1,4 @@
-/*
- * Base driver for Marvell 88PM800
- *
- * Copyright (C) 2012 Marvell International Ltd.
- * Haojian Zhuang <haojian.zhuang@marvell.com>
- * Joseph(Yossi) Hanin <yhanin@marvell.com>
- * Qiao Zhou <zhouqiao@marvell.com>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,7 +8,7 @@
 #include <linux/mfd/88pm80x.h>
 #include <linux/slab.h>
 
-/* Interrupt Registers */
+ 
 #define PM800_INT_STATUS1		(0x05)
 #define PM800_ONKEY_INT_STS1		(1 << 0)
 #define PM800_EXTON_INT_STS1		(1 << 1)
@@ -84,40 +64,32 @@
 #define PM800_GPIO3_INT_ENA4		(1 << 3)
 #define PM800_GPIO4_INT_ENA4		(1 << 4)
 
-/* number of INT_ENA & INT_STATUS regs */
+ 
 #define PM800_INT_REG_NUM			(4)
 
-/* Interrupt Number in 88PM800 */
+ 
 enum {
-	PM800_IRQ_ONKEY,	/*EN1b0 *//*0 */
-	PM800_IRQ_EXTON,	/*EN1b1 */
-	PM800_IRQ_CHG,		/*EN1b2 */
-	PM800_IRQ_BAT,		/*EN1b3 */
-	PM800_IRQ_RTC,		/*EN1b4 */
-	PM800_IRQ_CLASSD,	/*EN1b5 *//*5 */
-	PM800_IRQ_VBAT,		/*EN2b0 */
-	PM800_IRQ_VSYS,		/*EN2b1 */
-	PM800_IRQ_VCHG,		/*EN2b2 */
-	PM800_IRQ_TINT,		/*EN2b3 */
-	PM800_IRQ_GPADC0,	/*EN3b0 *//*10 */
-	PM800_IRQ_GPADC1,	/*EN3b1 */
-	PM800_IRQ_GPADC2,	/*EN3b2 */
-	PM800_IRQ_GPADC3,	/*EN3b3 */
-	PM800_IRQ_GPADC4,	/*EN3b4 */
-	PM800_IRQ_GPIO0,	/*EN4b0 *//*15 */
-	PM800_IRQ_GPIO1,	/*EN4b1 */
-	PM800_IRQ_GPIO2,	/*EN4b2 */
-	PM800_IRQ_GPIO3,	/*EN4b3 */
-	PM800_IRQ_GPIO4,	/*EN4b4 *//*19 */
-	PM800_MAX_IRQ,
-};
-
-/* PM800: generation identification number */
+	PM800_IRQ_ONKEY,	 
+	PM800_IRQ_CHG,		 
+	PM800_IRQ_BAT,		 
+	PM800_IRQ_RTC,		 
+	PM800_IRQ_CLASSD,	 
+	PM800_IRQ_VSYS,		 
+	PM800_IRQ_VCHG,		 
+	PM800_IRQ_TINT,		 
+	PM800_IRQ_GPADC0,	 
+	PM800_IRQ_GPADC2,	 
+	PM800_IRQ_GPADC3,	 
+	PM800_IRQ_GPADC4,	 
+	PM800_IRQ_GPIO0,	 
+	PM800_IRQ_GPIO2,	 
+	PM800_IRQ_GPIO3,	 
+	PM800_IRQ_GPIO4,	 
 #define PM800_CHIP_GEN_ID_NUM	0x3
 
 static const struct i2c_device_id pm80x_id_table[] = {
 	{"88PM800", 0},
-	{} /* NULL terminated */
+	{}  
 };
 MODULE_DEVICE_TABLE(i2c, pm80x_id_table);
 
@@ -155,7 +127,7 @@ static const struct mfd_cell regulator_devs[] = {
 };
 
 static const struct regmap_irq pm800_irqs[] = {
-	/* INT0 */
+	 
 	[PM800_IRQ_ONKEY] = {
 		.mask = PM800_ONKEY_INT_ENA1,
 	},
@@ -174,7 +146,7 @@ static const struct regmap_irq pm800_irqs[] = {
 	[PM800_IRQ_CLASSD] = {
 		.mask = PM800_CLASSD_OC_INT_ENA1,
 	},
-	/* INT1 */
+	 
 	[PM800_IRQ_VBAT] = {
 		.reg_offset = 1,
 		.mask = PM800_VBAT_INT_ENA2,
@@ -191,7 +163,7 @@ static const struct regmap_irq pm800_irqs[] = {
 		.reg_offset = 1,
 		.mask = PM800_TINT_INT_ENA2,
 	},
-	/* INT2 */
+	 
 	[PM800_IRQ_GPADC0] = {
 		.reg_offset = 2,
 		.mask = PM800_GPADC0_INT_ENA3,
@@ -212,7 +184,7 @@ static const struct regmap_irq pm800_irqs[] = {
 		.reg_offset = 2,
 		.mask = PM800_GPADC4_INT_ENA3,
 	},
-	/* INT3 */
+	 
 	[PM800_IRQ_GPIO0] = {
 		.reg_offset = 3,
 		.mask = PM800_GPIO0_INT_ENA4,
@@ -247,23 +219,14 @@ static int device_gpadc_init(struct pm80x_chip *chip,
 			 "Warning: gpadc regmap is not available!\n");
 		return -EINVAL;
 	}
-	/*
-	 * initialize GPADC without activating it turn on GPADC
-	 * measurments
-	 */
+	 
 	ret = regmap_update_bits(map,
 				 PM800_GPADC_MISC_CONFIG2,
 				 PM800_GPADC_MISC_GPFSM_EN,
 				 PM800_GPADC_MISC_GPFSM_EN);
 	if (ret < 0)
 		goto out;
-	/*
-	 * This function configures the ADC as requires for
-	 * CP implementation.CP does not "own" the ADC configuration
-	 * registers and relies on AP.
-	 * Reason: enable automatic ADC measurements needed
-	 * for CP to get VBAT and RF temperature readings.
-	 */
+	 
 	ret = regmap_update_bits(map, PM800_GPADC_MEAS_EN1,
 				 PM800_MEAS_EN1_VBAT, PM800_MEAS_EN1_VBAT);
 	if (ret < 0)
@@ -274,12 +237,7 @@ static int device_gpadc_init(struct pm80x_chip *chip,
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * the defult of PM800 is GPADC operates at 100Ks/s rate
-	 * and Number of GPADC slots with active current bias prior
-	 * to GPADC sampling = 1 slot for all GPADCs set for
-	 * Temprature mesurmants
-	 */
+	 
 	mask = (PM800_GPADC_GP_BIAS_EN0 | PM800_GPADC_GP_BIAS_EN1 |
 		PM800_GPADC_GP_BIAS_EN2 | PM800_GPADC_GP_BIAS_EN3);
 
@@ -364,10 +322,7 @@ static int device_irq_init_800(struct pm80x_chip *chip)
 		return -EINVAL;
 	}
 
-	/*
-	 * irq_mode defines the way of clearing interrupt. it's read-clear by
-	 * default.
-	 */
+	 
 	mask =
 	    PM800_WAKEUP2_INV_INT | PM800_WAKEUP2_INT_CLEAR |
 	    PM800_WAKEUP2_INT_MASK;
@@ -413,7 +368,7 @@ static int pm800_pages_init(struct pm80x_chip *chip)
 	if (!subchip || !subchip->power_page_addr || !subchip->gpadc_page_addr)
 		return -ENODEV;
 
-	/* PM800 block power page */
+	 
 	subchip->power_page = i2c_new_dummy_device(client->adapter,
 					    subchip->power_page_addr);
 	if (IS_ERR(subchip->power_page)) {
@@ -432,7 +387,7 @@ static int pm800_pages_init(struct pm80x_chip *chip)
 
 	i2c_set_clientdata(subchip->power_page, chip);
 
-	/* PM800 block GPADC */
+	 
 	subchip->gpadc_page = i2c_new_dummy_device(client->adapter,
 					    subchip->gpadc_page_addr);
 	if (IS_ERR(subchip->gpadc_page)) {
@@ -473,10 +428,7 @@ static int device_800_init(struct pm80x_chip *chip,
 	int ret;
 	unsigned int val;
 
-	/*
-	 * alarm wake up bit will be clear in device_irq_init(),
-	 * read before that
-	 */
+	 
 	ret = regmap_read(chip->regmap, PM800_RTC_CONTROL, &val);
 	if (ret < 0) {
 		dev_err(chip->dev, "Failed to read RTC register: %d\n", ret);
@@ -542,7 +494,7 @@ static int pm800_probe(struct i2c_client *client)
 
 	chip = i2c_get_clientdata(client);
 
-	/* init subchip for PM800 */
+	 
 	subchip =
 	    devm_kzalloc(&client->dev, sizeof(struct pm80x_subchip),
 			 GFP_KERNEL);
@@ -551,7 +503,7 @@ static int pm800_probe(struct i2c_client *client)
 		goto err_subchip_alloc;
 	}
 
-	/* pm800 has 2 addtional pages to support power and gpadc. */
+	 
 	subchip->power_page_addr = client->addr + 1;
 	subchip->gpadc_page_addr = client->addr + 2;
 	chip->subchip = subchip;

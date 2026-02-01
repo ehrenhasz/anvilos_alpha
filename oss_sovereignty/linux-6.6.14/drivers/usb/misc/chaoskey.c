@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * chaoskey - driver for ChaosKey device from Altus Metrum.
- *
- * This device provides true random numbers using a noise source based
- * on a reverse-biased p-n junction in avalanche breakdown. More
- * details can be found at http://chaoskey.org
- *
- * The driver connects to the kernel hardware RNG interface to provide
- * entropy for /dev/random and other kernel activities. It also offers
- * a separate /dev/ entry to allow for direct access to the random
- * bit stream.
- *
- * Copyright © 2015 Keith Packard <keithp@keithp.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -33,7 +20,7 @@ static int chaoskey_rng_read(struct hwrng *rng, void *data,
 #define usb_err(usb_if, format, arg...) \
 	dev_err(&(usb_if)->dev, format, ## arg)
 
-/* Version Information */
+ 
 #define DRIVER_AUTHOR	"Keith Packard, keithp@keithp.com"
 #define DRIVER_DESC	"Altus Metrum ChaosKey driver"
 #define DRIVER_SHORT	"chaoskey"
@@ -42,22 +29,22 @@ MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
-#define CHAOSKEY_VENDOR_ID	0x1d50	/* OpenMoko */
-#define CHAOSKEY_PRODUCT_ID	0x60c6	/* ChaosKey */
+#define CHAOSKEY_VENDOR_ID	0x1d50	 
+#define CHAOSKEY_PRODUCT_ID	0x60c6	 
 
-#define ALEA_VENDOR_ID		0x12d8	/* Araneus */
-#define ALEA_PRODUCT_ID		0x0001	/* Alea I */
+#define ALEA_VENDOR_ID		0x12d8	 
+#define ALEA_PRODUCT_ID		0x0001	 
 
-#define CHAOSKEY_BUF_LEN	64	/* max size of USB full speed packet */
+#define CHAOSKEY_BUF_LEN	64	 
 
-#define NAK_TIMEOUT (HZ)		/* normal stall/wait timeout */
-#define ALEA_FIRST_TIMEOUT (HZ*3)	/* first stall/wait timeout for Alea */
+#define NAK_TIMEOUT (HZ)		 
+#define ALEA_FIRST_TIMEOUT (HZ*3)	 
 
 #ifdef CONFIG_USB_DYNAMIC_MINORS
 #define USB_CHAOSKEY_MINOR_BASE 0
 #else
 
-/* IOWARRIOR_MINOR_BASE + 16, not official yet */
+ 
 #define USB_CHAOSKEY_MINOR_BASE 224
 #endif
 
@@ -70,24 +57,24 @@ MODULE_DEVICE_TABLE(usb, chaoskey_table);
 
 static void chaos_read_callback(struct urb *urb);
 
-/* Driver-local specific stuff */
+ 
 struct chaoskey {
 	struct usb_interface *interface;
 	char in_ep;
 	struct mutex lock;
 	struct mutex rng_lock;
-	int open;			/* open count */
-	bool present;			/* device not disconnected */
-	bool reading;			/* ongoing IO */
-	bool reads_started;		/* track first read for Alea */
-	int size;			/* size of buf */
-	int valid;			/* bytes of buf read */
-	int used;			/* bytes of buf consumed */
-	char *name;			/* product + serial */
-	struct hwrng hwrng;		/* Embedded struct for hwrng */
-	int hwrng_registered;		/* registered with hwrng API */
-	wait_queue_head_t wait_q;	/* for timeouts */
-	struct urb *urb;		/* for performing IO */
+	int open;			 
+	bool present;			 
+	bool reading;			 
+	bool reads_started;		 
+	int size;			 
+	int valid;			 
+	int used;			 
+	char *name;			 
+	struct hwrng hwrng;		 
+	int hwrng_registered;		 
+	wait_queue_head_t wait_q;	 
+	struct urb *urb;		 
 	char *buf;
 };
 
@@ -117,7 +104,7 @@ static int chaoskey_probe(struct usb_interface *interface,
 
 	usb_dbg(interface, "probe %s-%s", udev->product, udev->serial);
 
-	/* Find the first bulk IN endpoint and its packet size */
+	 
 	res = usb_find_bulk_in_endpoint(altsetting, &epd);
 	if (res) {
 		usb_dbg(interface, "no IN endpoint found");
@@ -127,7 +114,7 @@ static int chaoskey_probe(struct usb_interface *interface,
 	in_ep = usb_endpoint_num(epd);
 	size = usb_endpoint_maxp(epd);
 
-	/* Validate endpoint and size */
+	 
 	if (size <= 0) {
 		usb_dbg(interface, "invalid size (%d)", size);
 		return -ENODEV;
@@ -139,7 +126,7 @@ static int chaoskey_probe(struct usb_interface *interface,
 		size = CHAOSKEY_BUF_LEN;
 	}
 
-	/* Looks good, allocate and initialize */
+	 
 
 	dev = kzalloc(sizeof(struct chaoskey), GFP_KERNEL);
 
@@ -166,9 +153,7 @@ static int chaoskey_probe(struct usb_interface *interface,
 		chaos_read_callback,
 		dev);
 
-	/* Construct a name using the product and serial values. Each
-	 * device needs a unique name for the hwrng code
-	 */
+	 
 
 	if (udev->product && udev->serial) {
 		dev->name = kasprintf(GFP_KERNEL, "%s-%s", udev->product,
@@ -252,7 +237,7 @@ static int chaoskey_open(struct inode *inode, struct file *file)
 	struct chaoskey *dev;
 	struct usb_interface *interface;
 
-	/* get the interface from minor number and driver information */
+	 
 	interface = usb_find_interface(&chaoskey_driver, iminor(inode));
 	if (!interface)
 		return -ENODEV;
@@ -325,15 +310,14 @@ static void chaos_read_callback(struct urb *urb)
 
 	dev->used = 0;
 
-	/* must be seen first before validity is announced */
+	 
 	smp_wmb();
 
 	dev->reading = false;
 	wake_up(&dev->wait_q);
 }
 
-/* Fill the buffer. Called with dev->lock held
- */
+ 
 static int _chaoskey_fill(struct chaoskey *dev)
 {
 	DEFINE_WAIT(wait);
@@ -342,21 +326,20 @@ static int _chaoskey_fill(struct chaoskey *dev)
 
 	usb_dbg(dev->interface, "fill");
 
-	/* Return immediately if someone called before the buffer was
-	 * empty */
+	 
 	if (dev->valid != dev->used) {
 		usb_dbg(dev->interface, "not empty yet (valid %d used %d)",
 			dev->valid, dev->used);
 		return 0;
 	}
 
-	/* Bail if the device has been removed */
+	 
 	if (!dev->present) {
 		usb_dbg(dev->interface, "device not present");
 		return -ENODEV;
 	}
 
-	/* Make sure the device is awake */
+	 
 	result = usb_autopm_get_interface(dev->interface);
 	if (result) {
 		usb_dbg(dev->interface, "wakeup failed (result %d)", result);
@@ -371,11 +354,7 @@ static int _chaoskey_fill(struct chaoskey *dev)
 		goto out;
 	}
 
-	/* The first read on the Alea takes a little under 2 seconds.
-	 * Reads after the first read take only a few microseconds
-	 * though.  Presumably the entropy-generating circuit needs
-	 * time to ramp up.  So, we wait longer on the first read.
-	 */
+	 
 	started = dev->reads_started;
 	dev->reads_started = true;
 	result = wait_event_interruptible_timeout(
@@ -395,7 +374,7 @@ static int _chaoskey_fill(struct chaoskey *dev)
 		result = dev->valid;
 	}
 out:
-	/* Let the device go back to sleep eventually */
+	 
 	usb_autopm_put_interface(dev->interface);
 
 	usb_dbg(dev->interface, "read %d bytes", dev->valid);
@@ -423,9 +402,7 @@ static ssize_t chaoskey_read(struct file *file,
 
 	while (count > 0) {
 
-		/* Grab the rng_lock briefly to ensure that the hwrng interface
-		 * gets priority over other user access
-		 */
+		 
 		result = mutex_lock_interruptible(&dev->rng_lock);
 		if (result)
 			goto bail;
@@ -450,9 +427,7 @@ static ssize_t chaoskey_read(struct file *file,
 		if (remain) {
 			result = -EFAULT;
 
-			/* Consume the bytes that were copied so we don't leak
-			 * data to user space
-			 */
+			 
 			dev->used += this_time - remain;
 			mutex_unlock(&dev->lock);
 			goto bail;
@@ -488,20 +463,14 @@ static int chaoskey_rng_read(struct hwrng *rng, void *data,
 		return 0;
 	}
 
-	/* Hold the rng_lock until we acquire the device lock so that
-	 * this operation gets priority over other user access to the
-	 * device
-	 */
+	 
 	mutex_lock(&dev->rng_lock);
 
 	mutex_lock(&dev->lock);
 
 	mutex_unlock(&dev->rng_lock);
 
-	/* Try to fill the buffer if empty. It doesn't actually matter
-	 * if _chaoskey_fill works; we'll just return zero bytes as
-	 * the buffer will still be empty
-	 */
+	 
 	if (dev->valid == dev->used)
 		(void) _chaoskey_fill(dev);
 
@@ -535,12 +504,7 @@ static int chaoskey_resume(struct usb_interface *interface)
 	usb_dbg(interface, "resume");
 	dev = usb_get_intfdata(interface);
 
-	/*
-	 * We may have lost power.
-	 * In that case the device that needs a long time
-	 * for the first requests needs an extended timeout
-	 * again
-	 */
+	 
 	if (le16_to_cpu(udev->descriptor.idVendor) == ALEA_VENDOR_ID)
 		dev->reads_started = false;
 
@@ -551,7 +515,7 @@ static int chaoskey_resume(struct usb_interface *interface)
 #define chaoskey_resume NULL
 #endif
 
-/* file operation pointers */
+ 
 static const struct file_operations chaoskey_fops = {
 	.owner = THIS_MODULE,
 	.read = chaoskey_read,
@@ -560,14 +524,14 @@ static const struct file_operations chaoskey_fops = {
 	.llseek = default_llseek,
 };
 
-/* class driver information */
+ 
 static struct usb_class_driver chaoskey_class = {
 	.name = "chaoskey%d",
 	.fops = &chaoskey_fops,
 	.minor_base = USB_CHAOSKEY_MINOR_BASE,
 };
 
-/* usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver chaoskey_driver = {
 	.name = DRIVER_SHORT,
 	.probe = chaoskey_probe,

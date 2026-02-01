@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2016 Atmel Corporation,
- *		       Songjun Wu <songjun.wu@atmel.com>,
- *                     Nicolas Ferre <nicolas.ferre@atmel.com>
- *  Copyright (C) 2017 Free Electrons,
- *		       Quentin Schulz <quentin.schulz@free-electrons.com>
- *
- * The Sama5d2 SoC has two audio PLLs (PMC and PAD) that shares the same parent
- * (FRAC). FRAC can output between 620 and 700MHz and only multiply the rate of
- * its own parent. PMC and PAD can then divide the FRAC rate to best match the
- * asked rate.
- *
- * Traits of FRAC clock:
- * enable - clk_enable writes nd, fracr parameters and enables PLL
- * rate - rate is adjustable.
- *        clk->rate = parent->rate * ((nd + 1) + (fracr / 2^22))
- * parent - fixed parent.  No clk_set_parent support
- *
- * Traits of PMC clock:
- * enable - clk_enable writes qdpmc, and enables PMC output
- * rate - rate is adjustable.
- *        clk->rate = parent->rate / (qdpmc + 1)
- * parent - fixed parent.  No clk_set_parent support
- *
- * Traits of PAD clock:
- * enable - clk_enable writes divisors and enables PAD output
- * rate - rate is adjustable.
- *        clk->rate = parent->rate / (qdaudio * div))
- * parent - fixed parent.  No clk_set_parent support
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -91,10 +62,7 @@ static int clk_audio_pll_frac_enable(struct clk_hw *hw)
 	regmap_update_bits(frac->regmap, AT91_PMC_AUDIO_PLL1,
 			   AT91_PMC_AUDIO_PLL_FRACR_MASK, frac->fracr);
 
-	/*
-	 * reset and enable have to be done in 2 separated writes
-	 * for AT91_PMC_AUDIO_PLL0
-	 */
+	 
 	regmap_update_bits(frac->regmap, AT91_PMC_AUDIO_PLL0,
 			   AT91_PMC_AUDIO_PLL_PLLEN |
 			   AT91_PMC_AUDIO_PLL_ND_MASK,
@@ -135,7 +103,7 @@ static void clk_audio_pll_frac_disable(struct clk_hw *hw)
 
 	regmap_update_bits(frac->regmap, AT91_PMC_AUDIO_PLL0,
 			   AT91_PMC_AUDIO_PLL_PLLEN, 0);
-	/* do it in 2 separated writes */
+	 
 	regmap_update_bits(frac->regmap, AT91_PMC_AUDIO_PLL0,
 			   AT91_PMC_AUDIO_PLL_RESETN, 0);
 }
@@ -235,7 +203,7 @@ static int clk_audio_pll_frac_compute_frac(unsigned long rate,
 	if (tmp > AT91_PMC_AUDIO_PLL_FRACR_MASK)
 		return -EINVAL;
 
-	/* we can cast here as we verified the bounds just above */
+	 
 	*fracr = (unsigned long)tmp;
 
 	return 0;
@@ -285,19 +253,7 @@ static long clk_audio_pll_pad_round_rate(struct clk_hw *hw, unsigned long rate,
 	pr_debug("A PLL/PAD: %s, rate = %lu (parent_rate = %lu)\n", __func__,
 		 rate, *parent_rate);
 
-	/*
-	 * Rate divisor is actually made of two different divisors, multiplied
-	 * between themselves before dividing the rate.
-	 * tmp_qd goes from 1 to 31 and div is either 2 or 3.
-	 * In order to avoid testing twice the rate divisor (e.g. divisor 12 can
-	 * be found with (tmp_qd, div) = (2, 6) or (3, 4)), we remove any loop
-	 * for a rate divisor when div is 2 and tmp_qd is a multiple of 3.
-	 * We cannot inverse it (condition div is 3 and tmp_qd is even) or we
-	 * would miss some rate divisor that aren't reachable with div being 2
-	 * (e.g. rate divisor 90 is made with div = 3 and tmp_qd = 30, thus
-	 * tmp_qd is even so we skip it because we think div 2 could make this
-	 * rate divisor which isn't possible since tmp_qd has to be <= 31).
-	 */
+	 
 	for (tmp_qd = 1; tmp_qd < AT91_PMC_AUDIO_PLL_QDPAD_EXTDIV_MAX; tmp_qd++)
 		for (div = 2; div <= 3; div++) {
 			if (div == 2 && tmp_qd % 3 == 0)
@@ -351,7 +307,7 @@ static long clk_audio_pll_pmc_round_rate(struct clk_hw *hw, unsigned long rate,
 			best_diff = tmp_diff;
 			tmp_qd = div;
 			if (!best_diff)
-				break;	/* got exact match */
+				break;	 
 		}
 	}
 

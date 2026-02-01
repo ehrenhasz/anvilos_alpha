@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* cavium_ptp.h - PTP 1588 clock on Cavium hardware
- * Copyright (c) 2003-2015, 2017 Cavium, Inc.
- */
+ 
+ 
 
 #ifndef CAVIUM_PTP_H
 #define CAVIUM_PTP_H
@@ -12,7 +10,7 @@
 struct cavium_ptp {
 	struct pci_dev *pdev;
 
-	/* Serialize access to cycle_counter, time_counter and hw_registers */
+	 
 	spinlock_t spin_lock;
 	struct cyclecounter cycle_counter;
 	struct timecounter time_counter;

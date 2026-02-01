@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device probe and register.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- * Copyright (c) 2008, Johannes Berg <johannes@sipsolutions.net>
- * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
- * Copyright (c) 2007-2009, Christian Lamparter <chunkeey@web.de>
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- * Copyright (c) 2004-2006 Jean-Baptiste Note <jbnote@gmail.com>, et al.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/of_net.h>
@@ -33,7 +23,7 @@
 #include "hif_tx_mib.h"
 #include "hif_api_cmd.h"
 
-#define WFX_PDS_TLV_TYPE 0x4450 // "PD" (Platform Data) in ascii little-endian
+#define WFX_PDS_TLV_TYPE 0x4450 
 #define WFX_PDS_MAX_CHUNK_SIZE 1500
 
 MODULE_DESCRIPTION("Silicon Labs 802.11 Wireless LAN driver for WF200");
@@ -93,14 +83,14 @@ static const struct ieee80211_supported_band wfx_band_2ghz = {
 	.bitrates = wfx_rates,
 	.n_bitrates = ARRAY_SIZE(wfx_rates),
 	.ht_cap = {
-		/* Receive caps */
+		 
 		.cap = IEEE80211_HT_CAP_GRN_FLD | IEEE80211_HT_CAP_SGI_20 |
 		       IEEE80211_HT_CAP_MAX_AMSDU | (1 << IEEE80211_HT_CAP_RX_STBC_SHIFT),
 		.ht_supported = 1,
 		.ampdu_factor = IEEE80211_HT_MAX_AMPDU_16K,
 		.ampdu_density = IEEE80211_HT_MPDU_DENSITY_NONE,
 		.mcs = {
-			.rx_mask = { 0xFF }, /* MCS0 to MCS7 */
+			.rx_mask = { 0xFF },  
 			.rx_highest = cpu_to_le16(72),
 			.tx_params = IEEE80211_HT_MCS_TX_DEFINED,
 		},
@@ -164,13 +154,7 @@ bool wfx_api_older_than(struct wfx_dev *wdev, int major, int minor)
 	return false;
 }
 
-/* The device needs data about the antenna configuration. This information in provided by PDS
- * (Platform Data Set, this is the wording used in WF200 documentation) files. For hardware
- * integrators, the full process to create PDS files is described here:
- *   https://github.com/SiliconLabs/wfx-firmware/blob/master/PDS/README.md
- *
- * The PDS file is an array of Time-Length-Value structs.
- */
+ 
 int wfx_send_pds(struct wfx_dev *wdev, u8 *buf, size_t len)
 {
 	int ret, chunk_type, chunk_len, chunk_num = 0;
@@ -277,7 +261,7 @@ struct wfx_dev *wfx_init_common(struct device *dev, const struct wfx_platform_da
 	hw->max_rates = 8;
 	hw->max_rate_tries = 8;
 	hw->extra_tx_headroom = sizeof(struct wfx_hif_msg) + sizeof(struct wfx_hif_req_tx) +
-				4 /* alignment */ + 8 /* TKIP IV */;
+				4   + 8  ;
 	hw->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION) |
 				     BIT(NL80211_IFTYPE_ADHOC) |
 				     BIT(NL80211_IFTYPE_AP);
@@ -293,7 +277,7 @@ struct wfx_dev *wfx_init_common(struct device *dev, const struct wfx_platform_da
 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
 	hw->wiphy->n_iface_combinations = ARRAY_SIZE(wfx_iface_combinations);
 	hw->wiphy->iface_combinations = wfx_iface_combinations;
-	/* FIXME: also copy wfx_rates and wfx_2ghz_chantable */
+	 
 	hw->wiphy->bands[NL80211_BAND_2GHZ] = devm_kmemdup(dev, &wfx_band_2ghz,
 							   sizeof(wfx_band_2ghz), GFP_KERNEL);
 	if (!hw->wiphy->bands[NL80211_BAND_2GHZ])
@@ -338,9 +322,7 @@ int wfx_probe(struct wfx_dev *wdev)
 	int err;
 	struct gpio_desc *gpio_saved;
 
-	/* During first part of boot, gpio_wakeup cannot yet been used. So prevent bh() to touch
-	 * it.
-	 */
+	 
 	gpio_saved = wdev->pdata.gpio_wakeup;
 	wdev->pdata.gpio_wakeup = NULL;
 	wdev->poll_irq = true;
@@ -363,7 +345,7 @@ int wfx_probe(struct wfx_dev *wdev)
 		goto bh_unregister;
 	}
 
-	/* FIXME: fill wiphy::hw_version */
+	 
 	dev_info(wdev->dev, "started firmware %d.%d.%d \"%s\" (API: %d.%d, keyset: %02X, caps: 0x%.8X)\n",
 		 wdev->hw_caps.firmware_major, wdev->hw_caps.firmware_minor,
 		 wdev->hw_caps.firmware_build, wdev->hw_caps.firmware_label,

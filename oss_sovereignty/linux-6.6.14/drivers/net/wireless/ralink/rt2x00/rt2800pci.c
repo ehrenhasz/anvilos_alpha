@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Copyright (C) 2009 - 2010 Ivo van Doorn <IvDoorn@gmail.com>
-	Copyright (C) 2009 Alban Browaeys <prahal@yahoo.com>
-	Copyright (C) 2009 Felix Fietkau <nbd@openwrt.org>
-	Copyright (C) 2009 Luis Correia <luis.f.correia@gmail.com>
-	Copyright (C) 2009 Mattias Nissler <mattias.nissler@gmx.de>
-	Copyright (C) 2009 Mark Asselstine <asselsm@gmail.com>
-	Copyright (C) 2009 Xose Vazquez Perez <xose.vazquez@gmail.com>
-	Copyright (C) 2009 Bart Zolnierkiewicz <bzolnier@gmail.com>
-	<http://rt2x00.serialmonkey.com>
 
- */
+ 
 
-/*
-	Module: rt2800pci
-	Abstract: rt2800pci device specific routines.
-	Supported chipsets: RT2800E & RT2800ED.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/etherdevice.h>
@@ -34,9 +19,7 @@
 #include "rt2800.h"
 #include "rt2800pci.h"
 
-/*
- * Allow hardware encryption to be disabled.
- */
+ 
 static bool modparam_nohwcrypt = false;
 module_param_named(nohwcrypt, modparam_nohwcrypt, bool, 0444);
 MODULE_PARM_DESC(nohwcrypt, "Disable hardware encryption.");
@@ -51,9 +34,7 @@ static void rt2800pci_mcu_status(struct rt2x00_dev *rt2x00dev, const u8 token)
 	unsigned int i;
 	u32 reg;
 
-	/*
-	 * SOC devices don't support MCU requests.
-	 */
+	 
 	if (rt2x00_is_soc(rt2x00dev))
 		return;
 
@@ -149,14 +130,10 @@ static inline int rt2800pci_read_eeprom_efuse(struct rt2x00_dev *rt2x00dev)
 	return rt2800_read_eeprom_efuse(rt2x00dev);
 }
 
-/*
- * Firmware functions
- */
+ 
 static char *rt2800pci_get_firmware_name(struct rt2x00_dev *rt2x00dev)
 {
-	/*
-	 * Chip rt3290 use specific 4KB firmware named rt3290.bin.
-	 */
+	 
 	if (rt2x00_rt(rt2x00dev, RT3290))
 		return FIRMWARE_RT3290;
 	else
@@ -168,16 +145,12 @@ static int rt2800pci_write_firmware(struct rt2x00_dev *rt2x00dev,
 {
 	u32 reg;
 
-	/*
-	 * enable Host program ram write selection
-	 */
+	 
 	reg = 0;
 	rt2x00_set_field32(&reg, PBF_SYS_CTRL_HOST_RAM_WRITE, 1);
 	rt2x00mmio_register_write(rt2x00dev, PBF_SYS_CTRL, reg);
 
-	/*
-	 * Write firmware to device.
-	 */
+	 
 	rt2x00mmio_register_multiwrite(rt2x00dev, FIRMWARE_IMAGE_BASE,
 				       data, len);
 
@@ -190,9 +163,7 @@ static int rt2800pci_write_firmware(struct rt2x00_dev *rt2x00dev,
 	return 0;
 }
 
-/*
- * Device state switch handlers.
- */
+ 
 static int rt2800pci_enable_radio(struct rt2x00_dev *rt2x00dev)
 {
 	int retval;
@@ -201,7 +172,7 @@ static int rt2800pci_enable_radio(struct rt2x00_dev *rt2x00dev)
 	if (retval)
 		return retval;
 
-	/* After resume MCU_BOOT_SIGNAL will trash these. */
+	 
 	rt2x00mmio_register_write(rt2x00dev, H2M_MAILBOX_STATUS, ~0);
 	rt2x00mmio_register_write(rt2x00dev, H2M_MAILBOX_CID, ~0);
 
@@ -243,10 +214,7 @@ static int rt2800pci_set_device_state(struct rt2x00_dev *rt2x00dev,
 		retval = rt2800pci_enable_radio(rt2x00dev);
 		break;
 	case STATE_RADIO_OFF:
-		/*
-		 * After the radio has been disabled, the device should
-		 * be put to sleep for powersaving.
-		 */
+		 
 		rt2800pci_set_state(rt2x00dev, STATE_SLEEP);
 		break;
 	case STATE_RADIO_IRQ_ON:
@@ -271,9 +239,7 @@ static int rt2800pci_set_device_state(struct rt2x00_dev *rt2x00dev,
 	return retval;
 }
 
-/*
- * Device probe functions.
- */
+ 
 static int rt2800pci_read_eeprom(struct rt2x00_dev *rt2x00dev)
 {
 	int retval;
@@ -317,9 +283,9 @@ static const struct ieee80211_ops rt2800pci_mac80211_ops = {
 
 static const struct rt2800_ops rt2800pci_rt2800_ops = {
 	.register_read		= rt2x00mmio_register_read,
-	.register_read_lock	= rt2x00mmio_register_read, /* same for PCI */
+	.register_read_lock	= rt2x00mmio_register_read,  
 	.register_write		= rt2x00mmio_register_write,
-	.register_write_lock	= rt2x00mmio_register_write, /* same for PCI */
+	.register_write_lock	= rt2x00mmio_register_write,  
 	.register_multiread	= rt2x00mmio_register_multiread,
 	.register_multiwrite	= rt2x00mmio_register_multiwrite,
 	.regbusy_read		= rt2x00mmio_regbusy_read,
@@ -386,12 +352,10 @@ static const struct rt2x00_ops rt2800pci_ops = {
 	.hw			= &rt2800pci_mac80211_ops,
 #ifdef CONFIG_RT2X00_LIB_DEBUGFS
 	.debugfs		= &rt2800_rt2x00debug,
-#endif /* CONFIG_RT2X00_LIB_DEBUGFS */
+#endif  
 };
 
-/*
- * RT2800pci module information.
- */
+ 
 static const struct pci_device_id rt2800pci_device_table[] = {
 	{ PCI_DEVICE(0x1814, 0x0601) },
 	{ PCI_DEVICE(0x1814, 0x0681) },

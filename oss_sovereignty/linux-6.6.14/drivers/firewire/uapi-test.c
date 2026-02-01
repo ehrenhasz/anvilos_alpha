@@ -1,21 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// uapi_test.c - An application of Kunit to check layout of structures exposed to user space for
-//		 FireWire subsystem.
-//
-// Copyright (c) 2023 Takashi Sakamoto
+
+
+
+
+
+
 
 #include <kunit/test.h>
 #include <linux/firewire-cdev.h>
 
-// Known issue added at v2.6.27 kernel.
+
 static void structure_layout_event_response(struct kunit *test)
 {
 #if defined(CONFIG_X86_32)
-	// 4 bytes alignment for aggregate type including 8 bytes storage types.
+	
 	KUNIT_EXPECT_EQ(test, 20, sizeof(struct fw_cdev_event_response));
 #else
-	// 8 bytes alignment for aggregate type including 8 bytes storage types.
+	
 	KUNIT_EXPECT_EQ(test, 24, sizeof(struct fw_cdev_event_response));
 #endif
 
@@ -26,7 +26,7 @@ static void structure_layout_event_response(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 20, offsetof(struct fw_cdev_event_response, data));
 }
 
-// Added at v6.5.
+
 static void structure_layout_event_request3(struct kunit *test)
 {
 	KUNIT_EXPECT_EQ(test, 56, sizeof(struct fw_cdev_event_request3));
@@ -45,7 +45,7 @@ static void structure_layout_event_request3(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 56, offsetof(struct fw_cdev_event_request3, data));
 }
 
-// Added at v6.5.
+
 static void structure_layout_event_response2(struct kunit *test)
 {
 	KUNIT_EXPECT_EQ(test, 32, sizeof(struct fw_cdev_event_response2));
@@ -59,7 +59,7 @@ static void structure_layout_event_response2(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 32, offsetof(struct fw_cdev_event_response2, data));
 }
 
-// Added at v6.5.
+
 static void structure_layout_event_phy_packet2(struct kunit *test)
 {
 	KUNIT_EXPECT_EQ(test, 24, sizeof(struct fw_cdev_event_phy_packet2));

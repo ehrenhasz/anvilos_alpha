@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test cases for KFENCE memory safety error detector. Since the interface with
- * which KFENCE's reports are obtained is via the console, this is the output we
- * should verify. For each test case checks the presence (or absence) of
- * generated reports. Relies on 'console' tracepoint to capture reports as they
- * appear in the kernel log.
- *
- * Copyright (C) 2020, Google LLC.
- * Author: Alexander Potapenko <glider@google.com>
- *         Marco Elver <elver@google.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/jiffies.h>
@@ -27,7 +17,7 @@
 
 #include "kfence.h"
 
-/* May be overridden by <asm/kfence.h>. */
+ 
 #ifndef arch_kfence_test_address
 #define arch_kfence_test_address(addr) (addr)
 #endif
@@ -37,7 +27,7 @@
 		kunit_skip((test), "Test requires: " #cond);	\
 } while (0)
 
-/* Report as observed from console. */
+ 
 static struct {
 	spinlock_t lock;
 	int nlines;
@@ -46,7 +36,7 @@ static struct {
 	.lock = __SPIN_LOCK_UNLOCKED(observed.lock),
 };
 
-/* Probe for console output: obtains observed lines of interest. */
+ 
 static void probe_console(void *ignore, const char *buf, size_t len)
 {
 	unsigned long flags;
@@ -56,34 +46,29 @@ static void probe_console(void *ignore, const char *buf, size_t len)
 	nlines = observed.nlines;
 
 	if (strnstr(buf, "BUG: KFENCE: ", len) && strnstr(buf, "test_", len)) {
-		/*
-		 * KFENCE report and related to the test.
-		 *
-		 * The provided @buf is not NUL-terminated; copy no more than
-		 * @len bytes and let strscpy() add the missing NUL-terminator.
-		 */
+		 
 		strscpy(observed.lines[0], buf, min(len + 1, sizeof(observed.lines[0])));
 		nlines = 1;
 	} else if (nlines == 1 && (strnstr(buf, "at 0x", len) || strnstr(buf, "of 0x", len))) {
 		strscpy(observed.lines[nlines++], buf, min(len + 1, sizeof(observed.lines[0])));
 	}
 
-	WRITE_ONCE(observed.nlines, nlines); /* Publish new nlines. */
+	WRITE_ONCE(observed.nlines, nlines);  
 	spin_unlock_irqrestore(&observed.lock, flags);
 }
 
-/* Check if a report related to the test exists. */
+ 
 static bool report_available(void)
 {
 	return READ_ONCE(observed.nlines) == ARRAY_SIZE(observed.lines);
 }
 
-/* Information we expect in a report. */
+ 
 struct expect_report {
-	enum kfence_error_type type; /* The type or error. */
-	void *fn; /* Function pointer to expected function where access occurred. */
-	char *addr; /* Address at which the bad access occurred. */
-	bool is_write; /* Is access a write. */
+	enum kfence_error_type type;  
+	void *fn;  
+	char *addr;  
+	bool is_write;  
 };
 
 static const char *get_access_type(const struct expect_report *r)
@@ -91,7 +76,7 @@ static const char *get_access_type(const struct expect_report *r)
 	return r->is_write ? "write" : "read";
 }
 
-/* Check observed report matches information in @r. */
+ 
 static bool report_matches(const struct expect_report *r)
 {
 	unsigned long addr = (unsigned long)r->addr;
@@ -101,13 +86,13 @@ static bool report_matches(const struct expect_report *r)
 	const char *end;
 	char *cur;
 
-	/* Doubled-checked locking. */
+	 
 	if (!report_available())
 		return false;
 
-	/* Generate expected report contents. */
+	 
 
-	/* Title */
+	 
 	cur = expect[0];
 	end = &expect[0][sizeof(expect[0]) - 1];
 	switch (r->type) {
@@ -132,12 +117,12 @@ static bool report_matches(const struct expect_report *r)
 	}
 
 	scnprintf(cur, end - cur, " in %pS", r->fn);
-	/* The exact offset won't match, remove it; also strip module name. */
+	 
 	cur = strchr(expect[0], '+');
 	if (cur)
 		*cur = '\0';
 
-	/* Access information */
+	 
 	cur = expect[1];
 	end = &expect[1][sizeof(expect[1]) - 1];
 
@@ -166,20 +151,20 @@ static bool report_matches(const struct expect_report *r)
 
 	spin_lock_irqsave(&observed.lock, flags);
 	if (!report_available())
-		goto out; /* A new report is being captured. */
+		goto out;  
 
-	/* Finally match expected output to what we actually observed. */
+	 
 	ret = strstr(observed.lines[0], expect[0]) && strstr(observed.lines[1], expect[1]);
 out:
 	spin_unlock_irqrestore(&observed.lock, flags);
 	return ret;
 }
 
-/* ===== Test cases ===== */
+ 
 
 #define TEST_PRIV_WANT_MEMCACHE ((void *)1)
 
-/* Cache used by tests; if NULL, allocate from kmalloc instead. */
+ 
 static struct kmem_cache *test_cache;
 
 static size_t setup_test_cache(struct kunit *test, size_t size, slab_flags_t flags,
@@ -190,10 +175,7 @@ static size_t setup_test_cache(struct kunit *test, size_t size, slab_flags_t fla
 
 	kunit_info(test, "%s: size=%zu, ctor=%ps\n", __func__, size, ctor);
 
-	/*
-	 * Use SLAB_NO_MERGE to prevent merging with existing caches.
-	 * Use SLAB_ACCOUNT to allocate via memcg, if enabled.
-	 */
+	 
 	flags |= SLAB_NO_MERGE | SLAB_ACCOUNT;
 	test_cache = kmem_cache_create("test", size, 1, flags, ctor);
 	KUNIT_ASSERT_TRUE_MSG(test, test_cache, "could not create cache");
@@ -212,12 +194,12 @@ static void test_cache_destroy(void)
 
 static inline size_t kmalloc_cache_alignment(size_t size)
 {
-	/* just to get ->align so no need to pass in the real caller */
+	 
 	enum kmalloc_cache_type type = kmalloc_type(GFP_KERNEL, 0);
 	return kmalloc_caches[type][__kmalloc_index(size, false)]->align;
 }
 
-/* Must always inline to match stack trace against caller. */
+ 
 static __always_inline void test_free(void *ptr)
 {
 	if (test_cache)
@@ -226,21 +208,15 @@ static __always_inline void test_free(void *ptr)
 		kfree(ptr);
 }
 
-/*
- * If this should be a KFENCE allocation, and on which side the allocation and
- * the closest guard page should be.
- */
+ 
 enum allocation_policy {
-	ALLOCATE_ANY, /* KFENCE, any side. */
-	ALLOCATE_LEFT, /* KFENCE, left side of page. */
-	ALLOCATE_RIGHT, /* KFENCE, right side of page. */
-	ALLOCATE_NONE, /* No KFENCE allocation. */
+	ALLOCATE_ANY,  
+	ALLOCATE_LEFT,  
+	ALLOCATE_RIGHT,  
+	ALLOCATE_NONE,  
 };
 
-/*
- * Try to get a guarded allocation from KFENCE. Uses either kmalloc() or the
- * current test_cache if set up.
- */
+ 
 static void *test_alloc(struct kunit *test, size_t size, gfp_t gfp, enum allocation_policy policy)
 {
 	void *alloc;
@@ -265,16 +241,9 @@ static void *test_alloc(struct kunit *test, size_t size, gfp_t gfp, enum allocat
 	kunit_info(test, "%s: size=%zu, gfp=%x, policy=%s, cache=%i\n", __func__, size, gfp,
 		   policy_name, !!test_cache);
 
-	/*
-	 * 100x the sample interval should be more than enough to ensure we get
-	 * a KFENCE allocation eventually.
-	 */
+	 
 	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
-	/*
-	 * Especially for non-preemption kernels, ensure the allocation-gate
-	 * timer can catch up: after @resched_after, every failed allocation
-	 * attempt yields, to ensure the allocation-gate timer is scheduled.
-	 */
+	 
 	resched_after = jiffies + msecs_to_jiffies(kfence_sample_interval);
 	do {
 		if (test_cache)
@@ -288,11 +257,7 @@ static void *test_alloc(struct kunit *test, size_t size, gfp_t gfp, enum allocat
 			struct kmem_cache *s = test_cache ?:
 					kmalloc_caches[type][__kmalloc_index(size, false)];
 
-			/*
-			 * Verify that various helpers return the right values
-			 * even for KFENCE objects; these are required so that
-			 * memcg accounting works correctly.
-			 */
+			 
 			KUNIT_EXPECT_EQ(test, obj_to_index(s, slab, alloc), 0U);
 			KUNIT_EXPECT_EQ(test, objs_per_slab(s, slab), 1);
 
@@ -312,7 +277,7 @@ static void *test_alloc(struct kunit *test, size_t size, gfp_t gfp, enum allocat
 	} while (time_before(jiffies, timeout));
 
 	KUNIT_ASSERT_TRUE_MSG(test, false, "failed to allocate from KFENCE");
-	return NULL; /* Unreachable. */
+	return NULL;  
 }
 
 static void test_out_of_bounds_read(struct kunit *test)
@@ -327,14 +292,11 @@ static void test_out_of_bounds_read(struct kunit *test)
 
 	setup_test_cache(test, size, 0, NULL);
 
-	/*
-	 * If we don't have our own cache, adjust based on alignment, so that we
-	 * actually access guard pages on either side.
-	 */
+	 
 	if (!test_cache)
 		size = kmalloc_cache_alignment(size);
 
-	/* Test both sides. */
+	 
 
 	buf = test_alloc(test, size, GFP_KERNEL, ALLOCATE_LEFT);
 	expect.addr = buf - 1;
@@ -394,7 +356,7 @@ static void test_double_free(struct kunit *test)
 	setup_test_cache(test, size, 0, NULL);
 	expect.addr = test_alloc(test, size, GFP_KERNEL, ALLOCATE_ANY);
 	test_free(expect.addr);
-	test_free(expect.addr); /* Double-free. */
+	test_free(expect.addr);  
 	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
 }
 
@@ -409,9 +371,9 @@ static void test_invalid_addr_free(struct kunit *test)
 
 	setup_test_cache(test, size, 0, NULL);
 	buf = test_alloc(test, size, GFP_KERNEL, ALLOCATE_ANY);
-	expect.addr = buf + 1; /* Free on invalid address. */
-	test_free(expect.addr); /* Invalid address free. */
-	test_free(buf); /* No error. */
+	expect.addr = buf + 1;  
+	test_free(expect.addr);  
+	test_free(buf);  
 	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
 }
 
@@ -426,7 +388,7 @@ static void test_corruption(struct kunit *test)
 
 	setup_test_cache(test, size, 0, NULL);
 
-	/* Test both sides. */
+	 
 
 	buf = test_alloc(test, size, GFP_KERNEL, ALLOCATE_LEFT);
 	expect.addr = buf + size;
@@ -441,16 +403,7 @@ static void test_corruption(struct kunit *test)
 	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
 }
 
-/*
- * KFENCE is unable to detect an OOB if the allocation's alignment requirements
- * leave a gap between the object and the guard page. Specifically, an
- * allocation of e.g. 73 bytes is aligned on 8 and 128 bytes for SLUB or SLAB
- * respectively. Therefore it is impossible for the allocated object to
- * contiguously line up with the right guard page.
- *
- * However, we test that an access to memory beyond the gap results in KFENCE
- * detecting an OOB access.
- */
+ 
 static void test_kmalloc_aligned_oob_read(struct kunit *test)
 {
 	const size_t size = 73;
@@ -464,21 +417,15 @@ static void test_kmalloc_aligned_oob_read(struct kunit *test)
 
 	buf = test_alloc(test, size, GFP_KERNEL, ALLOCATE_RIGHT);
 
-	/*
-	 * The object is offset to the right, so there won't be an OOB to the
-	 * left of it.
-	 */
+	 
 	READ_ONCE(*(buf - 1));
 	KUNIT_EXPECT_FALSE(test, report_available());
 
-	/*
-	 * @buf must be aligned on @align, therefore buf + size belongs to the
-	 * same page -> no OOB.
-	 */
+	 
 	READ_ONCE(*(buf + size));
 	KUNIT_EXPECT_FALSE(test, report_available());
 
-	/* Overflowing by @align bytes will result in an OOB. */
+	 
 	expect.addr = buf + size + align;
 	READ_ONCE(*expect.addr);
 	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
@@ -496,10 +443,7 @@ static void test_kmalloc_aligned_oob_write(struct kunit *test)
 	char *buf;
 
 	buf = test_alloc(test, size, GFP_KERNEL, ALLOCATE_RIGHT);
-	/*
-	 * The object is offset to the right, so we won't get a page
-	 * fault immediately after it.
-	 */
+	 
 	expect.addr = buf + size;
 	WRITE_ONCE(*expect.addr, READ_ONCE(*expect.addr) + 1);
 	KUNIT_EXPECT_FALSE(test, report_available());
@@ -507,7 +451,7 @@ static void test_kmalloc_aligned_oob_write(struct kunit *test)
 	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
 }
 
-/* Test cache shrinking and destroying with KFENCE. */
+ 
 static void test_shrink_memcache(struct kunit *test)
 {
 	const size_t size = 32;
@@ -524,11 +468,11 @@ static void test_shrink_memcache(struct kunit *test)
 
 static void ctor_set_x(void *obj)
 {
-	/* Every object has at least 8 bytes. */
+	 
 	memset(obj, 'x', 8);
 }
 
-/* Ensure that SL*B does not modify KFENCE objects on bulk free. */
+ 
 static void test_free_bulk(struct kunit *test)
 {
 	int iter;
@@ -550,7 +494,7 @@ static void test_free_bulk(struct kunit *test)
 	}
 }
 
-/* Test init-on-free works. */
+ 
 static void test_init_on_free(struct kunit *test)
 {
 	const size_t size = 32;
@@ -562,7 +506,7 @@ static void test_init_on_free(struct kunit *test)
 	int i;
 
 	KFENCE_TEST_REQUIRES(test, IS_ENABLED(CONFIG_INIT_ON_FREE_DEFAULT_ON));
-	/* Assume it hasn't been disabled on command line. */
+	 
 
 	setup_test_cache(test, size, 0, NULL);
 	expect.addr = test_alloc(test, size, GFP_KERNEL, ALLOCATE_ANY);
@@ -571,19 +515,15 @@ static void test_init_on_free(struct kunit *test)
 	test_free(expect.addr);
 
 	for (i = 0; i < size; i++) {
-		/*
-		 * This may fail if the page was recycled by KFENCE and then
-		 * written to again -- this however, is near impossible with a
-		 * default config.
-		 */
+		 
 		KUNIT_EXPECT_EQ(test, expect.addr[i], (char)0);
 
-		if (!i) /* Only check first access to not fail test if page is ever re-protected. */
+		if (!i)  
 			KUNIT_EXPECT_TRUE(test, report_matches(&expect));
 	}
 }
 
-/* Ensure that constructors work properly. */
+ 
 static void test_memcache_ctor(struct kunit *test)
 {
 	const size_t size = 32;
@@ -601,14 +541,14 @@ static void test_memcache_ctor(struct kunit *test)
 	KUNIT_EXPECT_FALSE(test, report_available());
 }
 
-/* Test that memory is zeroed if requested. */
+ 
 static void test_gfpzero(struct kunit *test)
 {
-	const size_t size = PAGE_SIZE; /* PAGE_SIZE so we can use ALLOCATE_ANY. */
+	const size_t size = PAGE_SIZE;  
 	char *buf1, *buf2;
 	int i;
 
-	/* Skip if we think it'd take too long. */
+	 
 	KFENCE_TEST_REQUIRES(test, kfence_sample_interval <= 100);
 
 	setup_test_cache(test, size, 0, NULL);
@@ -617,7 +557,7 @@ static void test_gfpzero(struct kunit *test)
 		buf1[i] = i + 1;
 	test_free(buf1);
 
-	/* Try to get same address again -- this can take a while. */
+	 
 	for (i = 0;; i++) {
 		buf2 = test_alloc(test, size, GFP_KERNEL | __GFP_ZERO, ALLOCATE_ANY);
 		if (buf1 == buf2)
@@ -652,7 +592,7 @@ static void test_invalid_access(struct kunit *test)
 	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
 }
 
-/* Test SLAB_TYPESAFE_BY_RCU works. */
+ 
 static void test_memcache_typesafe_by_rcu(struct kunit *test)
 {
 	const size_t size = 32;
@@ -663,7 +603,7 @@ static void test_memcache_typesafe_by_rcu(struct kunit *test)
 	};
 
 	setup_test_cache(test, size, SLAB_TYPESAFE_BY_RCU, NULL);
-	KUNIT_EXPECT_TRUE(test, test_cache); /* Want memcache. */
+	KUNIT_EXPECT_TRUE(test, test_cache);  
 
 	expect.addr = test_alloc(test, size, GFP_KERNEL, ALLOCATE_ANY);
 	*expect.addr = 42;
@@ -671,24 +611,21 @@ static void test_memcache_typesafe_by_rcu(struct kunit *test)
 	rcu_read_lock();
 	test_free(expect.addr);
 	KUNIT_EXPECT_EQ(test, *expect.addr, (char)42);
-	/*
-	 * Up to this point, memory should not have been freed yet, and
-	 * therefore there should be no KFENCE report from the above access.
-	 */
+	 
 	rcu_read_unlock();
 
-	/* Above access to @expect.addr should not have generated a report! */
+	 
 	KUNIT_EXPECT_FALSE(test, report_available());
 
-	/* Only after rcu_barrier() is the memory guaranteed to be freed. */
+	 
 	rcu_barrier();
 
-	/* Expect use-after-free. */
+	 
 	KUNIT_EXPECT_EQ(test, *expect.addr, (char)42);
 	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
 }
 
-/* Test krealloc(). */
+ 
 static void test_krealloc(struct kunit *test)
 {
 	const size_t size = 32;
@@ -702,33 +639,33 @@ static void test_krealloc(struct kunit *test)
 	int i;
 
 	KUNIT_EXPECT_FALSE(test, test_cache);
-	KUNIT_EXPECT_EQ(test, ksize(buf), size); /* Precise size match after KFENCE alloc. */
+	KUNIT_EXPECT_EQ(test, ksize(buf), size);  
 	for (i = 0; i < size; i++)
 		buf[i] = i + 1;
 
-	/* Check that we successfully change the size. */
-	buf = krealloc(buf, size * 3, GFP_KERNEL); /* Grow. */
-	/* Note: Might no longer be a KFENCE alloc. */
+	 
+	buf = krealloc(buf, size * 3, GFP_KERNEL);  
+	 
 	KUNIT_EXPECT_GE(test, ksize(buf), size * 3);
 	for (i = 0; i < size; i++)
 		KUNIT_EXPECT_EQ(test, buf[i], (char)(i + 1));
-	for (; i < size * 3; i++) /* Fill to extra bytes. */
+	for (; i < size * 3; i++)  
 		buf[i] = i + 1;
 
-	buf = krealloc(buf, size * 2, GFP_KERNEL); /* Shrink. */
+	buf = krealloc(buf, size * 2, GFP_KERNEL);  
 	KUNIT_EXPECT_GE(test, ksize(buf), size * 2);
 	for (i = 0; i < size * 2; i++)
 		KUNIT_EXPECT_EQ(test, buf[i], (char)(i + 1));
 
-	buf = krealloc(buf, 0, GFP_KERNEL); /* Free. */
+	buf = krealloc(buf, 0, GFP_KERNEL);  
 	KUNIT_EXPECT_EQ(test, (unsigned long)buf, (unsigned long)ZERO_SIZE_PTR);
-	KUNIT_ASSERT_FALSE(test, report_available()); /* No reports yet! */
+	KUNIT_ASSERT_FALSE(test, report_available());  
 
-	READ_ONCE(*expect.addr); /* Ensure krealloc() actually freed earlier KFENCE object. */
+	READ_ONCE(*expect.addr);  
 	KUNIT_ASSERT_TRUE(test, report_matches(&expect));
 }
 
-/* Test that some objects from a bulk allocation belong to KFENCE pool. */
+ 
 static void test_memcache_alloc_bulk(struct kunit *test)
 {
 	const size_t size = 32;
@@ -736,11 +673,8 @@ static void test_memcache_alloc_bulk(struct kunit *test)
 	unsigned long timeout;
 
 	setup_test_cache(test, size, 0, NULL);
-	KUNIT_EXPECT_TRUE(test, test_cache); /* Want memcache. */
-	/*
-	 * 100x the sample interval should be more than enough to ensure we get
-	 * a KFENCE allocation eventually.
-	 */
+	KUNIT_EXPECT_TRUE(test, test_cache);  
+	 
 	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
 	do {
 		void *objects[100];
@@ -755,11 +689,7 @@ static void test_memcache_alloc_bulk(struct kunit *test)
 			}
 		}
 		kmem_cache_free_bulk(test_cache, num, objects);
-		/*
-		 * kmem_cache_alloc_bulk() disables interrupts, and calling it
-		 * in a tight loop may not give KFENCE a chance to switch the
-		 * static branch. Call cond_resched() to let KFENCE chime in.
-		 */
+		 
 		cond_resched();
 	} while (!pass && time_before(jiffies, timeout));
 
@@ -767,11 +697,7 @@ static void test_memcache_alloc_bulk(struct kunit *test)
 	KUNIT_EXPECT_FALSE(test, report_available());
 }
 
-/*
- * KUnit does not provide a way to provide arguments to tests, and we encode
- * additional info in the name. Set up 2 tests per test case, one using the
- * default allocator, and another using a custom memcache (suffix '-memcache').
- */
+ 
 #define KFENCE_KUNIT_CASE(test_name)						\
 	{ .run_case = test_name, .name = #test_name },				\
 	{ .run_case = test_name, .name = #test_name "-memcache" }
@@ -797,7 +723,7 @@ static struct kunit_case kfence_test_cases[] = {
 	{},
 };
 
-/* ===== End test cases ===== */
+ 
 
 static int test_init(struct kunit *test)
 {
@@ -813,7 +739,7 @@ static int test_init(struct kunit *test)
 	observed.nlines = 0;
 	spin_unlock_irqrestore(&observed.lock, flags);
 
-	/* Any test with 'memcache' in its name will want a memcache. */
+	 
 	if (strstr(test->name, "memcache"))
 		test->priv = TEST_PRIV_WANT_MEMCACHE;
 	else

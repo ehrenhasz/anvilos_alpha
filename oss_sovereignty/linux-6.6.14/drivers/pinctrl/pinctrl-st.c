@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
- * Authors:
- *	Srinivas Kandagatla <srinivas.kandagatla@st.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -27,43 +23,39 @@
 
 #include "core.h"
 
-/* PIO Block registers */
-/* PIO output */
+ 
+ 
 #define REG_PIO_POUT			0x00
-/* Set bits of POUT */
+ 
 #define REG_PIO_SET_POUT		0x04
-/* Clear bits of POUT */
+ 
 #define REG_PIO_CLR_POUT		0x08
-/* PIO input */
+ 
 #define REG_PIO_PIN			0x10
-/* PIO configuration */
+ 
 #define REG_PIO_PC(n)			(0x20 + (n) * 0x10)
-/* Set bits of PC[2:0] */
+ 
 #define REG_PIO_SET_PC(n)		(0x24 + (n) * 0x10)
-/* Clear bits of PC[2:0] */
+ 
 #define REG_PIO_CLR_PC(n)		(0x28 + (n) * 0x10)
-/* PIO input comparison */
+ 
 #define REG_PIO_PCOMP			0x50
-/* Set bits of PCOMP */
+ 
 #define REG_PIO_SET_PCOMP		0x54
-/* Clear bits of PCOMP */
+ 
 #define REG_PIO_CLR_PCOMP		0x58
-/* PIO input comparison mask */
+ 
 #define REG_PIO_PMASK			0x60
-/* Set bits of PMASK */
+ 
 #define REG_PIO_SET_PMASK		0x64
-/* Clear bits of PMASK */
+ 
 #define REG_PIO_CLR_PMASK		0x68
 
 #define ST_GPIO_DIRECTION_BIDIR	0x1
 #define ST_GPIO_DIRECTION_OUT	0x2
 #define ST_GPIO_DIRECTION_IN	0x4
 
-/*
- *  Packed style retime configuration.
- *  There are two registers cfg0 and cfg1 in this style for each bank.
- *  Each field in this register is 8 bit corresponding to 8 pins in the bank.
- */
+ 
 #define RT_P_CFGS_PER_BANK			2
 #define RT_P_CFG0_CLK1NOTCLK0_FIELD(reg)	REG_FIELD(reg, 0, 7)
 #define RT_P_CFG0_DELAY_0_FIELD(reg)		REG_FIELD(reg, 16, 23)
@@ -73,10 +65,7 @@
 #define RT_P_CFG1_CLKNOTDATA_FIELD(reg)		REG_FIELD(reg, 16, 23)
 #define RT_P_CFG1_DOUBLE_EDGE_FIELD(reg)	REG_FIELD(reg, 24, 31)
 
-/*
- * Dedicated style retime Configuration register
- * each register is dedicated per pin.
- */
+ 
 #define RT_D_CFGS_PER_BANK		8
 #define RT_D_CFG_CLK_SHIFT		0
 #define RT_D_CFG_CLK_MASK		(0x3 << 0)
@@ -93,38 +82,7 @@
 #define RT_D_CFG_RETIME_SHIFT		10
 #define RT_D_CFG_RETIME_MASK		BIT(10)
 
-/*
- * Pinconf is represented in an opaque unsigned long variable.
- * Below is the bit allocation details for each possible configuration.
- * All the bit fields can be encapsulated into four variables
- * (direction, retime-type, retime-clk, retime-delay)
- *
- *	 +----------------+
- *[31:28]| reserved-3     |
- *	 +----------------+-------------
- *[27]   |	oe	  |		|
- *	 +----------------+		v
- *[26]   |	pu	  |	[Direction	]
- *	 +----------------+		^
- *[25]   |	od	  |		|
- *	 +----------------+-------------
- *[24]   | reserved-2     |
- *	 +----------------+-------------
- *[23]   |    retime      |		|
- *	 +----------------+		|
- *[22]   | retime-invclk  |		|
- *	 +----------------+		v
- *[21]   |retime-clknotdat|	[Retime-type	]
- *	 +----------------+		^
- *[20]   | retime-de      |		|
- *	 +----------------+-------------
- *[19:18]| retime-clk     |------>[Retime-Clk	]
- *	 +----------------+
- *[17:16]|  reserved-1    |
- *	 +----------------+
- *[15..0]| retime-delay   |------>[Retime Delay]
- *	 +----------------+
- */
+ 
 
 #define ST_PINCONF_UNPACK(conf, param)\
 				((conf >> ST_PINCONF_ ##param ##_SHIFT) \
@@ -134,21 +92,21 @@
 				((val & ST_PINCONF_ ##param ##_MASK) << \
 					ST_PINCONF_ ##param ##_SHIFT))
 
-/* Output enable */
+ 
 #define ST_PINCONF_OE_MASK		0x1
 #define ST_PINCONF_OE_SHIFT		27
 #define ST_PINCONF_OE			BIT(27)
 #define ST_PINCONF_UNPACK_OE(conf)	ST_PINCONF_UNPACK(conf, OE)
 #define ST_PINCONF_PACK_OE(conf)	ST_PINCONF_PACK(conf, 1, OE)
 
-/* Pull Up */
+ 
 #define ST_PINCONF_PU_MASK		0x1
 #define ST_PINCONF_PU_SHIFT		26
 #define ST_PINCONF_PU			BIT(26)
 #define ST_PINCONF_UNPACK_PU(conf)	ST_PINCONF_UNPACK(conf, PU)
 #define ST_PINCONF_PACK_PU(conf)	ST_PINCONF_PACK(conf, 1, PU)
 
-/* Open Drain */
+ 
 #define ST_PINCONF_OD_MASK		0x1
 #define ST_PINCONF_OD_SHIFT		25
 #define ST_PINCONF_OD			BIT(25)
@@ -191,7 +149,7 @@
 #define ST_PINCONF_UNPACK_RT_CLK(conf)	ST_PINCONF_UNPACK(conf, RT_CLK)
 #define ST_PINCONF_PACK_RT_CLK(conf, val) ST_PINCONF_PACK(conf, val, RT_CLK)
 
-/* RETIME_DELAY in Pico Secs */
+ 
 #define ST_PINCONF_RT_DELAY_MASK	0xffff
 #define ST_PINCONF_RT_DELAY_SHIFT	0
 #define ST_PINCONF_UNPACK_RT_DELAY(conf) ST_PINCONF_UNPACK(conf, RT_DELAY)
@@ -231,7 +189,7 @@ struct st_retime_packed {
 struct st_pio_control {
 	u32 rt_pin_mask;
 	struct regmap_field *alt, *oe, *pu, *od;
-	/* retiming */
+	 
 	union {
 		struct st_retime_packed		rt_p;
 		struct st_retime_dedicated	rt_d;
@@ -244,7 +202,7 @@ struct st_pctl_data {
 	const int			ninput_delays;
 	const unsigned int		*output_delays;
 	const int			noutput_delays;
-	/* register offset information */
+	 
 	const int alt, oe, pu, od, rt;
 };
 
@@ -268,32 +226,7 @@ struct st_pctl_group {
 	struct st_pinconf	*pin_conf;
 };
 
-/*
- * Edge triggers are not supported at hardware level, it is supported by
- * software by exploiting the level trigger support in hardware.
- * Software uses a virtual register (EDGE_CONF) for edge trigger configuration
- * of each gpio pin in a GPIO bank.
- *
- * Each bank has a 32 bit EDGE_CONF register which is divided in to 8 parts of
- * 4-bits. Each 4-bit space is allocated for each pin in a gpio bank.
- *
- * bit allocation per pin is:
- * Bits:  [0 - 3] | [4 - 7]  [8 - 11] ... ... ... ...  [ 28 - 31]
- *       --------------------------------------------------------
- *       |  pin-0  |  pin-2 | pin-3  | ... ... ... ... | pin -7 |
- *       --------------------------------------------------------
- *
- *  A pin can have one of following the values in its edge configuration field.
- *
- *	-------   ----------------------------
- *	[0-3]	- Description
- *	-------   ----------------------------
- *	0000	- No edge IRQ.
- *	0001	- Falling edge IRQ.
- *	0010	- Rising edge IRQ.
- *	0011	- Rising and Falling edge IRQ.
- *	-------   ----------------------------
- */
+ 
 
 #define ST_IRQ_EDGE_CONF_BITS_PER_PIN	4
 #define ST_IRQ_EDGE_MASK		0xf
@@ -336,7 +269,7 @@ struct st_pinctrl {
 	void __iomem			*irqmux_base;
 };
 
-/* SOC specific data */
+ 
 
 static const unsigned int stih407_delays[] = {0, 300, 500, 750, 1000, 1250,
 			1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250 };
@@ -357,8 +290,8 @@ static const struct st_pctl_data stih407_flashdata = {
 	.output_delays	= stih407_delays,
 	.noutput_delays = ARRAY_SIZE(stih407_delays),
 	.alt = 0,
-	.oe = -1, /* Not Available */
-	.pu = -1, /* Not Available */
+	.oe = -1,  
+	.pu = -1,  
 	.od = 60,
 	.rt = 100,
 };
@@ -373,7 +306,7 @@ static struct st_pio_control *st_get_pio_control(
 	return &bank->pc;
 }
 
-/* Low level functions.. */
+ 
 static inline int st_gpio_bank(int gpio)
 {
 	return gpio/ST_GPIO_PINS_PER_BANK;
@@ -541,9 +474,9 @@ static void st_pinconf_set_retime_packed(struct st_pinctrl *info,
 
 	delay = st_pinconf_delay_to_bit(ST_PINCONF_UNPACK_RT_DELAY(config),
 					data, config);
-	/* 2 bit delay, lsb */
+	 
 	st_regmap_field_bit_set_clear_pin(rt_p->delay_0, delay & 0x1, pin);
-	/* 2 bit delay, msb */
+	 
 	st_regmap_field_bit_set_clear_pin(rt_p->delay_1, delay & 0x2, pin);
 }
 
@@ -663,7 +596,7 @@ static int st_pinconf_get_retime_dedicated(struct st_pinctrl *info,
 	return 0;
 }
 
-/* GPIO related functions */
+ 
 
 static inline void __st_gpio_set(struct st_gpio_bank *bank,
 	unsigned offset, int value)
@@ -679,23 +612,7 @@ static void st_gpio_direction(struct st_gpio_bank *bank,
 {
 	int offset = st_gpio_pin(gpio);
 	int i = 0;
-	/**
-	 * There are three configuration registers (PIOn_PC0, PIOn_PC1
-	 * and PIOn_PC2) for each port. These are used to configure the
-	 * PIO port pins. Each pin can be configured as an input, output,
-	 * bidirectional, or alternative function pin. Three bits, one bit
-	 * from each of the three registers, configure the corresponding bit of
-	 * the port. Valid bit settings is:
-	 *
-	 * PC2		PC1		PC0	Direction.
-	 * 0		0		0	[Input Weak pull-up]
-	 * 0		0 or 1		1	[Bidirection]
-	 * 0		1		0	[Output]
-	 * 1		0		0	[Input]
-	 *
-	 * PIOn_SET_PC and PIOn_CLR_PC registers are used to set and clear bits
-	 * individually.
-	 */
+	 
 	for (i = 0; i <= 2; i++) {
 		if (direction & BIT(i))
 			writel(BIT(offset), bank->base + REG_PIO_SET_PC(i));
@@ -745,7 +662,7 @@ static int st_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
 	unsigned int value;
 	int i = 0;
 
-	/* Alternate function direction is handled by Pinctrl */
+	 
 	function = st_pctl_get_pin_function(&pc, offset);
 	if (function) {
 		st_pinconf_get_direction(&pc, offset, &config);
@@ -755,10 +672,7 @@ static int st_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
 		return GPIO_LINE_DIRECTION_IN;
 	}
 
-	/*
-	 * GPIO direction is handled differently
-	 * - See st_gpio_direction() above for an explanation
-	 */
+	 
 	for (i = 0; i <= 2; i++) {
 		value = readl(bank->base + REG_PIO_PC(i));
 		direction |= ((value >> offset) & 0x1) << i;
@@ -770,7 +684,7 @@ static int st_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
 	return GPIO_LINE_DIRECTION_OUT;
 }
 
-/* Pinctrl Groups */
+ 
 static int st_pctl_get_groups_count(struct pinctrl_dev *pctldev)
 {
 	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
@@ -847,7 +761,7 @@ static int st_pctl_dt_node_to_map(struct pinctrl_dev *pctldev,
 	new_map[0].data.mux.group = np->name;
 	of_node_put(parent);
 
-	/* create config map per pin */
+	 
 	new_map++;
 	for (i = 0; i < grp->npins; i++) {
 		new_map[i].type = PIN_MAP_TYPE_CONFIGS_PIN;
@@ -875,7 +789,7 @@ static const struct pinctrl_ops st_pctlops = {
 	.dt_free_map		= st_pctl_dt_free_map,
 };
 
-/* Pinmux */
+ 
 static int st_pmx_get_funcs_count(struct pinctrl_dev *pctldev)
 {
 	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
@@ -922,11 +836,7 @@ static int st_pmx_set_gpio_direction(struct pinctrl_dev *pctldev,
 			bool input)
 {
 	struct st_gpio_bank *bank = gpio_range_to_bank(range);
-	/*
-	 * When a PIO bank is used in its primary function mode (altfunc = 0)
-	 * Output Enable (OE), Open Drain(OD), and Pull Up (PU)
-	 * for the primary PIO functions are driven by the related PIO block
-	 */
+	 
 	st_pctl_set_function(&bank->pc, gpio, 0);
 	st_gpio_direction(bank, gpio, input ?
 		ST_GPIO_DIRECTION_IN : ST_GPIO_DIRECTION_OUT);
@@ -943,7 +853,7 @@ static const struct pinmux_ops st_pmxops = {
 	.strict			= true,
 };
 
-/* Pinconf  */
+ 
 static void st_pinconf_get_retime(struct st_pinctrl *info,
 	struct st_pio_control *pc, int pin, unsigned long *config)
 {
@@ -977,7 +887,7 @@ static int st_pinconf_set(struct pinctrl_dev *pctldev, unsigned pin_id,
 	for (i = 0; i < num_configs; i++) {
 		st_pinconf_set_config(pc, pin, configs[i]);
 		st_pinconf_set_retime(info, pc, pin, configs[i]);
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -1059,14 +969,14 @@ static int st_pctl_dt_setup_retime_packed(struct st_pinctrl *info,
 	struct device *dev = info->dev;
 	struct regmap *rm = info->regmap;
 	const struct st_pctl_data *data = info->data;
-	/* 2 registers per bank */
+	 
 	int reg = (data->rt + bank * RT_P_CFGS_PER_BANK) * 4;
 	struct st_retime_packed *rt_p = &pc->rt.rt_p;
-	/* cfg0 */
+	 
 	struct reg_field clk1notclk0 = RT_P_CFG0_CLK1NOTCLK0_FIELD(reg);
 	struct reg_field delay_0 = RT_P_CFG0_DELAY_0_FIELD(reg);
 	struct reg_field delay_1 = RT_P_CFG0_DELAY_1_FIELD(reg);
-	/* cfg1 */
+	 
 	struct reg_field invertclk = RT_P_CFG1_INVERTCLK_FIELD(reg + 4);
 	struct reg_field retime = RT_P_CFG1_RETIME_FIELD(reg + 4);
 	struct reg_field clknotdata = RT_P_CFG1_CLKNOTDATA_FIELD(reg + 4);
@@ -1095,7 +1005,7 @@ static int st_pctl_dt_setup_retime_dedicated(struct st_pinctrl *info,
 	struct device *dev = info->dev;
 	struct regmap *rm = info->regmap;
 	const struct st_pctl_data *data = info->data;
-	/* 8 registers per bank */
+	 
 	int reg_offset = (data->rt + bank * RT_D_CFGS_PER_BANK) * 4;
 	struct st_retime_dedicated *rt_d = &pc->rt.rt_d;
 	unsigned int j;
@@ -1142,11 +1052,7 @@ static void st_parse_syscfgs(struct st_pinctrl *info, int bank,
 			     struct device_node *np)
 {
 	const struct st_pctl_data *data = info->data;
-	/**
-	 * For a given shared register like OE/PU/OD, there are 8 bits per bank
-	 * 0:7 belongs to bank0, 8:15 belongs to bank1 ...
-	 * So each register is shared across 4 banks.
-	 */
+	 
 	int lsb = (bank%4) * ST_GPIO_PINS_PER_BANK;
 	int msb = lsb + ST_GPIO_PINS_PER_BANK - 1;
 	struct st_pio_control *pc = &info->banks[bank].pc;
@@ -1158,7 +1064,7 @@ static void st_parse_syscfgs(struct st_pinctrl *info, int bank,
 	pc->pu = st_pc_get_value(dev, regmap, bank/4, data->pu, lsb, msb);
 	pc->od = st_pc_get_value(dev, regmap, bank/4, data->od, lsb, msb);
 
-	/* retime avaiable for all pins by default */
+	 
 	pc->rt_pin_mask = 0xff;
 	of_property_read_u32(np, "st,retime-pin-mask", &pc->rt_pin_mask);
 	st_pctl_dt_setup_retime(info, bank, pc);
@@ -1191,14 +1097,11 @@ static int st_pctl_dt_calculate_pin(struct st_pinctrl *info,
 	return retval;
 }
 
-/*
- * Each pin is represented in of the below forms.
- * <bank offset mux direction rt_type rt_delay rt_clk>
- */
+ 
 static int st_pctl_dt_parse_groups(struct device_node *np,
 	struct st_pctl_group *grp, struct st_pinctrl *info, int idx)
 {
-	/* bank pad direction val altfunction */
+	 
 	const __be32 *list;
 	struct property *pp;
 	struct device *dev = info->dev;
@@ -1213,7 +1116,7 @@ static int st_pctl_dt_parse_groups(struct device_node *np,
 		return -ENODATA;
 
 	for_each_property_of_node(pins, pp) {
-		/* Skip those we do not want to proceed */
+		 
 		if (!strcmp(pp->name, "name"))
 			continue;
 
@@ -1236,7 +1139,7 @@ static int st_pctl_dt_parse_groups(struct device_node *np,
 		goto out_put_node;
 	}
 
-	/* <bank offset mux direction rt_type rt_delay rt_clk> */
+	 
 	for_each_property_of_node(pins, pp) {
 		if (!strcmp(pp->name, "name"))
 			continue;
@@ -1244,24 +1147,24 @@ static int st_pctl_dt_parse_groups(struct device_node *np,
 		list = pp->value;
 		conf = &grp->pin_conf[i];
 
-		/* bank & offset */
+		 
 		bank = be32_to_cpup(list++);
 		offset = be32_to_cpup(list++);
 		conf->pin = st_pctl_dt_calculate_pin(info, bank, offset);
 		conf->name = pp->name;
 		grp->pins[i] = conf->pin;
-		/* mux */
+		 
 		conf->altfunc = be32_to_cpup(list++);
 		conf->config = 0;
-		/* direction */
+		 
 		conf->config |= be32_to_cpup(list++);
-		/* rt_type rt_delay rt_clk */
+		 
 		if (nr_props >= OF_GPIO_ARGS_MIN + OF_RT_ARGS_MIN) {
-			/* rt_type */
+			 
 			conf->config |= be32_to_cpup(list++);
-			/* rt_delay */
+			 
 			conf->config |= be32_to_cpup(list++);
-			/* rt_clk */
+			 
 			if (nr_props > OF_GPIO_ARGS_MIN + OF_RT_ARGS_MIN)
 				conf->config |= be32_to_cpup(list++);
 		}
@@ -1388,30 +1291,7 @@ static int st_gpio_irq_set_type(struct irq_data *d, unsigned type)
 	return 0;
 }
 
-/*
- * As edge triggers are not supported at hardware level, it is supported by
- * software by exploiting the level trigger support in hardware.
- *
- * Steps for detection raising edge interrupt in software.
- *
- * Step 1: CONFIGURE pin to detect level LOW interrupts.
- *
- * Step 2: DETECT level LOW interrupt and in irqmux/gpio bank interrupt handler,
- * if the value of pin is low, then CONFIGURE pin for level HIGH interrupt.
- * IGNORE calling the actual interrupt handler for the pin at this stage.
- *
- * Step 3: DETECT level HIGH interrupt and in irqmux/gpio-bank interrupt handler
- * if the value of pin is HIGH, CONFIGURE pin for level LOW interrupt and then
- * DISPATCH the interrupt to the interrupt handler of the pin.
- *
- *		 step-1  ________     __________
- *				|     | step - 3
- *			        |     |
- *			step -2 |_____|
- *
- * falling edge is also detected int the same way.
- *
- */
+ 
 static void __gpio_irq_handler(struct st_gpio_bank *bank)
 {
 	unsigned long port_in, port_mask, port_comp, active_irqs;
@@ -1433,11 +1313,11 @@ static void __gpio_irq_handler(struct st_gpio_bank *bank)
 			break;
 
 		for_each_set_bit(n, &active_irqs, BITS_PER_LONG) {
-			/* check if we are detecting fake edges ... */
+			 
 			ecfg = ST_IRQ_EDGE_CONF(bank_edge_mask, n);
 
 			if (ecfg) {
-				/* edge detection. */
+				 
 				val = st_gpio_get(&bank->gpio_chip, n);
 
 				writel(BIT(n),
@@ -1456,7 +1336,7 @@ static void __gpio_irq_handler(struct st_gpio_bank *bank)
 
 static void st_gpio_irq_handler(struct irq_desc *desc)
 {
-	/* interrupt dedicated per bank */
+	 
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct gpio_chip *gc = irq_desc_get_handler_data(desc);
 	struct st_gpio_bank *bank = gpiochip_get_data(gc);
@@ -1537,35 +1417,18 @@ static int st_gpiolib_register_bank(struct st_pinctrl *info,
 	range->npins = bank->gpio_chip.ngpio;
 	range->gc = &bank->gpio_chip;
 
-	/**
-	 * GPIO bank can have one of the two possible types of
-	 * interrupt-wirings.
-	 *
-	 * First type is via irqmux, single interrupt is used by multiple
-	 * gpio banks. This reduces number of overall interrupts numbers
-	 * required. All these banks belong to a single pincontroller.
-	 *		  _________
-	 *		 |	   |----> [gpio-bank (n)    ]
-	 *		 |	   |----> [gpio-bank (n + 1)]
-	 *	[irqN]-- | irq-mux |----> [gpio-bank (n + 2)]
-	 *		 |	   |----> [gpio-bank (...  )]
-	 *		 |_________|----> [gpio-bank (n + 7)]
-	 *
-	 * Second type has a dedicated interrupt per each gpio bank.
-	 *
-	 *	[irqN]----> [gpio-bank (n)]
-	 */
+	 
 
 	if (of_irq_to_resource(np, 0, &irq_res) > 0) {
 		struct gpio_irq_chip *girq;
 		int gpio_irq = irq_res.start;
 
-		/* This is not a valid IRQ */
+		 
 		if (gpio_irq <= 0) {
 			dev_err(dev, "invalid IRQ for %pOF bank\n", np);
 			goto skip_irq;
 		}
-		/* We need to have a mux as well */
+		 
 		if (!info->irqmux_base) {
 			dev_err(dev, "no irqmux for %pOF bank\n", np);
 			goto skip_irq;
@@ -1598,7 +1461,7 @@ static const struct of_device_id st_pctl_of_match[] = {
 	{ .compatible = "st,stih407-front-pinctrl", .data = &stih407_data},
 	{ .compatible = "st,stih407-rear-pinctrl", .data = &stih407_data},
 	{ .compatible = "st,stih407-flash-pinctrl", .data = &stih407_flashdata},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int st_pctl_probe_dt(struct platform_device *pdev,

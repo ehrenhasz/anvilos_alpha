@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * SSH packet transport layer.
- *
- * Copyright (C) 2019-2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+ 
+ 
 
 #ifndef _SURFACE_AGGREGATOR_SSH_PACKET_LAYER_H
 #define _SURFACE_AGGREGATOR_SSH_PACKET_LAYER_H
@@ -21,59 +17,17 @@
 #include <linux/surface_aggregator/serial_hub.h>
 #include "ssh_parser.h"
 
-/**
- * enum ssh_ptl_state_flags - State-flags for &struct ssh_ptl.
- *
- * @SSH_PTL_SF_SHUTDOWN_BIT:
- *	Indicates that the packet transport layer has been shut down or is
- *	being shut down and should not accept any new packets/data.
- */
+ 
 enum ssh_ptl_state_flags {
 	SSH_PTL_SF_SHUTDOWN_BIT,
 };
 
-/**
- * struct ssh_ptl_ops - Callback operations for packet transport layer.
- * @data_received: Function called when a data-packet has been received. Both,
- *                 the packet layer on which the packet has been received and
- *                 the packet's payload data are provided to this function.
- */
+ 
 struct ssh_ptl_ops {
 	void (*data_received)(struct ssh_ptl *p, const struct ssam_span *data);
 };
 
-/**
- * struct ssh_ptl - SSH packet transport layer.
- * @serdev:        Serial device providing the underlying data transport.
- * @state:         State(-flags) of the transport layer.
- * @queue:         Packet submission queue.
- * @queue.lock:    Lock for modifying the packet submission queue.
- * @queue.head:    List-head of the packet submission queue.
- * @pending:       Set/list of pending packets.
- * @pending.lock:  Lock for modifying the pending set.
- * @pending.head:  List-head of the pending set/list.
- * @pending.count: Number of currently pending packets.
- * @tx:            Transmitter subsystem.
- * @tx.running:    Flag indicating (desired) transmitter thread state.
- * @tx.thread:     Transmitter thread.
- * @tx.thread_cplt_tx:  Completion for transmitter thread waiting on transfer.
- * @tx.thread_cplt_pkt: Completion for transmitter thread waiting on packets.
- * @tx.packet_wq:  Waitqueue-head for packet transmit completion.
- * @rx:            Receiver subsystem.
- * @rx.thread:     Receiver thread.
- * @rx.wq:         Waitqueue-head for receiver thread.
- * @rx.fifo:       Buffer for receiving data/pushing data to receiver thread.
- * @rx.buf:        Buffer for evaluating data on receiver thread.
- * @rx.blocked:    List of recent/blocked sequence IDs to detect retransmission.
- * @rx.blocked.seqs:   Array of blocked sequence IDs.
- * @rx.blocked.offset: Offset indicating where a new ID should be inserted.
- * @rtx_timeout:   Retransmission timeout subsystem.
- * @rtx_timeout.lock:    Lock for modifying the retransmission timeout reaper.
- * @rtx_timeout.timeout: Timeout interval for retransmission.
- * @rtx_timeout.expires: Time specifying when the reaper work is next scheduled.
- * @rtx_timeout.reaper:  Work performing timeout checks and subsequent actions.
- * @ops:           Packet layer operations.
- */
+ 
 struct ssh_ptl {
 	struct serdev_device *serdev;
 	unsigned long state;
@@ -141,13 +95,7 @@ int ssh_ptl_init(struct ssh_ptl *ptl, struct serdev_device *serdev,
 
 void ssh_ptl_destroy(struct ssh_ptl *ptl);
 
-/**
- * ssh_ptl_get_device() - Get device associated with packet transport layer.
- * @ptl: The packet transport layer.
- *
- * Return: Returns the device on which the given packet transport layer builds
- * upon.
- */
+ 
 static inline struct device *ssh_ptl_get_device(struct ssh_ptl *ptl)
 {
 	return ptl->serdev ? &ptl->serdev->dev : NULL;
@@ -164,15 +112,7 @@ void ssh_ptl_cancel(struct ssh_packet *p);
 
 int ssh_ptl_rx_rcvbuf(struct ssh_ptl *ptl, const u8 *buf, size_t n);
 
-/**
- * ssh_ptl_tx_wakeup_transfer() - Wake up packet transmitter thread for
- * transfer.
- * @ptl: The packet transport layer.
- *
- * Wakes up the packet transmitter thread, notifying it that the underlying
- * transport has more space for data to be transmitted. If the packet
- * transport layer has been shut down, calls to this function will be ignored.
- */
+ 
 static inline void ssh_ptl_tx_wakeup_transfer(struct ssh_ptl *ptl)
 {
 	if (test_bit(SSH_PTL_SF_SHUTDOWN_BIT, &ptl->state))
@@ -187,4 +127,4 @@ void ssh_packet_init(struct ssh_packet *packet, unsigned long type,
 int ssh_ctrl_packet_cache_init(void);
 void ssh_ctrl_packet_cache_destroy(void);
 
-#endif /* _SURFACE_AGGREGATOR_SSH_PACKET_LAYER_H */
+#endif  

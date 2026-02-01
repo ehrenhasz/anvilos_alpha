@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- * (C) Copyright 1999 Roman Weissgaerber <weissg@vienna.at>
- * (C) Copyright 2000-2002 David Brownell <dbrownell@users.sourceforge.net>
- * (C) Copyright 2002 Hewlett-Packard Company
- *
- * SA1111 Bus Glue
- *
- * Written by Christopher Hoover <ch@hpl.hp.com>
- * Based on fragments of previous driver by Russell King et al.
- *
- * This file is licenced under the GPL.
- */
+
+ 
 
 #include <asm/mach-types.h>
 #include <asm/hardware/sa1111.h>
@@ -80,35 +67,25 @@ static const struct hc_driver ohci_sa1111_hc_driver = {
 	.product_desc =		"SA-1111 OHCI",
 	.hcd_priv_size =	sizeof(struct ohci_hcd),
 
-	/*
-	 * generic hardware linkage
-	 */
+	 
 	.irq =			ohci_irq,
 	.flags =		HCD_USB11 | HCD_DMA | HCD_MEMORY,
 
-	/*
-	 * basic lifecycle operations
-	 */
+	 
 	.reset =		ohci_sa1111_reset,
 	.start =		ohci_sa1111_start,
 	.stop =			ohci_stop,
 	.shutdown =		ohci_shutdown,
 
-	/*
-	 * managing i/o requests and associated device resources
-	 */
+	 
 	.urb_enqueue =		ohci_urb_enqueue,
 	.urb_dequeue =		ohci_urb_dequeue,
 	.endpoint_disable =	ohci_endpoint_disable,
 
-	/*
-	 * scheduling support
-	 */
+	 
 	.get_frame_number =	ohci_get_frame,
 
-	/*
-	 * root hub support
-	 */
+	 
 	.hub_status_data =	ohci_hub_status_data,
 	.hub_control =		ohci_hub_control,
 #ifdef	CONFIG_PM
@@ -128,17 +105,11 @@ static int sa1111_start_hc(struct sa1111_dev *dev)
 	if (machine_is_assabet())
 		usb_rst = USB_RESET_PWRSENSELOW | USB_RESET_PWRCTRLLOW;
 
-	/*
-	 * Configure the power sense and control lines.  Place the USB
-	 * host controller in reset.
-	 */
+	 
 	writel_relaxed(usb_rst | USB_RESET_FORCEIFRESET | USB_RESET_FORCEHCRESET,
 		      dev->mapbase + USB_RESET);
 
-	/*
-	 * Now, carefully enable the USB clock, and take
-	 * the USB host controller out of reset.
-	 */
+	 
 	ret = sa1111_enable_device(dev);
 	if (ret == 0) {
 		udelay(11);
@@ -154,25 +125,16 @@ static void sa1111_stop_hc(struct sa1111_dev *dev)
 
 	dev_dbg(&dev->dev, "stopping SA-1111 OHCI USB Controller\n");
 
-	/*
-	 * Put the USB host controller into reset.
-	 */
+	 
 	usb_rst = readl_relaxed(dev->mapbase + USB_RESET);
 	writel_relaxed(usb_rst | USB_RESET_FORCEIFRESET | USB_RESET_FORCEHCRESET,
 		      dev->mapbase + USB_RESET);
 
-	/*
-	 * Stop the USB clock.
-	 */
+	 
 	sa1111_disable_device(dev);
 }
 
-/**
- * ohci_hcd_sa1111_probe - initialize SA-1111-based HCDs
- *
- * Allocates basic resources for this USB host controller, and
- * then invokes the start() method for the HCD associated with it.
- */
+ 
 static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 {
 	struct usb_hcd *hcd;
@@ -181,11 +143,7 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 	if (usb_disabled())
 		return -ENODEV;
 
-	/*
-	 * We don't call dma_set_mask_and_coherent() here because the
-	 * DMA mask has already been appropraitely setup by the core
-	 * SA-1111 bus code (which includes bug workarounds.)
-	 */
+	 
 
 	hcd = usb_create_hcd(&ohci_sa1111_hc_driver, &dev->dev, "sa1111");
 	if (!hcd)
@@ -200,27 +158,7 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 		goto err1;
 	}
 
-	/*
-	 * According to the "Intel StrongARM SA-1111 Microprocessor Companion
-	 * Chip Specification Update" (June 2000), erratum #7, there is a
-	 * significant bug in the SA1111 SDRAM shared memory controller.  If
-	 * an access to a region of memory above 1MB relative to the bank base,
-	 * it is important that address bit 10 _NOT_ be asserted. Depending
-	 * on the configuration of the RAM, bit 10 may correspond to one
-	 * of several different (processor-relative) address bits.
-	 *
-	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
-	 * User's Guide" mentions that jumpers R51 and R52 control the
-	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
-	 * SDRAM bank 1 on Neponset). The default configuration selects
-	 * Assabet, so any address in bank 1 is necessarily invalid.
-	 *
-	 * As a workaround, use a bounce buffer in addressable memory
-	 * as local_mem, relying on ZONE_DMA to provide an area that
-	 * fits within the above constraints.
-	 *
-	 * SZ_64K is an estimate for what size this might need.
-	 */
+	 
 	ret = usb_hcd_setup_local_mem(hcd, 0, 0, SZ_64K);
 	if (ret)
 		goto err1;
@@ -251,13 +189,7 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 	return ret;
 }
 
-/**
- * ohci_hcd_sa1111_remove - shutdown processing for SA-1111-based HCDs
- * @dev: USB Host Controller being removed
- *
- * Reverses the effect of ohci_hcd_sa1111_probe(), first invoking
- * the HCD's stop() method.
- */
+ 
 static void ohci_hcd_sa1111_remove(struct sa1111_dev *dev)
 {
 	struct usb_hcd *hcd = sa1111_get_drvdata(dev);

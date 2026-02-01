@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Realtek PCI-Express Memstick Card Interface driver
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/highmem.h>
@@ -49,7 +43,7 @@ static void ms_print_debug_regs(struct realtek_pci_ms *host)
 	u16 i;
 	u8 *ptr;
 
-	/* Print MS host internal registers */
+	 
 	rtsx_pci_init_cmd(pcr);
 	for (i = 0xFD40; i <= 0xFD44; i++)
 		rtsx_pci_add_cmd(pcr, READ_REG_CMD, i, 0, 0);
@@ -93,7 +87,7 @@ static int ms_power_on(struct realtek_pci_ms *host)
 	if (err < 0)
 		return err;
 
-	/* Wait ms power stable */
+	 
 	msleep(150);
 
 	err = rtsx_pci_write_register(pcr, CARD_OE,
@@ -514,12 +508,12 @@ static int rtsx_pci_ms_resume(struct platform_device *pdev)
 	return 0;
 }
 
-#else /* CONFIG_PM */
+#else  
 
 #define rtsx_pci_ms_suspend NULL
 #define rtsx_pci_ms_resume NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 static void rtsx_pci_ms_card_event(struct platform_device *pdev)
 {
@@ -621,7 +615,7 @@ static struct platform_device_id rtsx_pci_ms_ids[] = {
 	{
 		.name = DRV_NAME_RTSX_PCI_MS,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(platform, rtsx_pci_ms_ids);

@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// S3C64xx specific support for pinctrl-samsung driver.
-//
-// Copyright (c) 2013 Tomasz Figa <tomasz.figa@gmail.com>
-//
-// Based on pinctrl-exynos.c, please see the file for original copyrights.
-//
-// This file contains the Samsung S3C64xx specific information required by the
-// the Samsung pinctrl/gpiolib driver. It also includes the implementation of
-// external gpio and wakeup interrupt support.
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/device.h>
@@ -28,7 +28,7 @@
 #define EINT_MAX_PER_REG	16
 #define EINT_MAX_PER_GROUP	16
 
-/* External GPIO and wakeup interrupt related definitions */
+ 
 #define SVC_GROUP_SHIFT		4
 #define SVC_GROUP_MASK		0xf
 #define SVC_NUM_MASK		0xf
@@ -54,7 +54,7 @@
 #define EINT0MASK_REG		0x920
 #define EINT0PEND_REG		0x924
 
-/* S3C64xx specific external interrupt trigger types */
+ 
 #define EINT_LEVEL_LOW		0
 #define EINT_LEVEL_HIGH		1
 #define EINT_EDGE_FALLING	2
@@ -192,41 +192,26 @@ static const struct samsung_pin_bank_type bank_type_2bit_alive = {
 		.name		= id			\
 	}
 
-/**
- * struct s3c64xx_eint0_data - EINT0 common data
- * @drvdata: pin controller driver data
- * @domains: IRQ domains of particular EINT0 interrupts
- * @pins: pin offsets inside of banks of particular EINT0 interrupts
- */
+ 
 struct s3c64xx_eint0_data {
 	struct samsung_pinctrl_drv_data *drvdata;
 	struct irq_domain *domains[NUM_EINT0];
 	u8 pins[NUM_EINT0];
 };
 
-/**
- * struct s3c64xx_eint0_domain_data - EINT0 per-domain data
- * @bank: pin bank related to the domain
- * @eints: EINT0 interrupts related to the domain
- */
+ 
 struct s3c64xx_eint0_domain_data {
 	struct samsung_pin_bank *bank;
 	u8 eints[];
 };
 
-/**
- * struct s3c64xx_eint_gpio_data - GPIO EINT data
- * @drvdata: pin controller driver data
- * @domains: array of domains related to EINT interrupt groups
- */
+ 
 struct s3c64xx_eint_gpio_data {
 	struct samsung_pinctrl_drv_data *drvdata;
 	struct irq_domain *domains[];
 };
 
-/*
- * Common functions for S3C64xx EINT configuration
- */
+ 
 
 static int s3c64xx_irq_get_trigger(unsigned int type)
 {
@@ -257,7 +242,7 @@ static int s3c64xx_irq_get_trigger(unsigned int type)
 
 static void s3c64xx_irq_set_handler(struct irq_data *d, unsigned int type)
 {
-	/* Edge- and level-triggered interrupts need different handlers */
+	 
 	if (type & IRQ_TYPE_EDGE_BOTH)
 		irq_set_handler_locked(d, handle_edge_irq);
 	else
@@ -274,11 +259,11 @@ static void s3c64xx_irq_set_function(struct samsung_pinctrl_drv_data *d,
 	u32 mask;
 	u32 val;
 
-	/* Make sure that pin is configured as interrupt */
+	 
 	reg = d->virt_base + bank->pctl_offset;
 	shift = pin;
 	if (bank_type->fld_width[PINCFG_TYPE_FUNC] * shift >= 32) {
-		/* 4-bit bank type with 2 con regs */
+		 
 		reg += 4;
 		shift -= 8;
 	}
@@ -296,9 +281,7 @@ static void s3c64xx_irq_set_function(struct samsung_pinctrl_drv_data *d,
 	raw_spin_unlock_irqrestore(&bank->slock, flags);
 }
 
-/*
- * Functions for EINT GPIO configuration (EINT groups 1-9)
- */
+ 
 
 static inline void s3c64xx_gpio_irq_set_mask(struct irq_data *irqd, bool mask)
 {
@@ -353,10 +336,10 @@ static int s3c64xx_gpio_irq_set_type(struct irq_data *irqd, unsigned int type)
 
 	s3c64xx_irq_set_handler(irqd, type);
 
-	/* Set up interrupt trigger */
+	 
 	reg = d->virt_base + EINTCON_REG(bank->eint_offset);
 	shift = EINT_OFFS(bank->eint_offset) + irqd->hwirq;
-	shift = 4 * (shift / 4); /* 4 EINTs per trigger selector */
+	shift = 4 * (shift / 4);  
 
 	val = readl(reg);
 	val &= ~(EINT_CON_MASK << shift);
@@ -368,9 +351,7 @@ static int s3c64xx_gpio_irq_set_type(struct irq_data *irqd, unsigned int type)
 	return 0;
 }
 
-/*
- * irq_chip for gpio interrupts.
- */
+ 
 static struct irq_chip s3c64xx_gpio_irq_chip = {
 	.name		= "GPIO",
 	.irq_unmask	= s3c64xx_gpio_irq_unmask,
@@ -394,9 +375,7 @@ static int s3c64xx_gpio_irq_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
-/*
- * irq domain callbacks for external gpio interrupt controller.
- */
+ 
 static const struct irq_domain_ops s3c64xx_gpio_irqd_ops = {
 	.map	= s3c64xx_gpio_irq_map,
 	.xlate	= irq_domain_xlate_twocell,
@@ -423,7 +402,7 @@ static void s3c64xx_eint_gpio_irq(struct irq_desc *desc)
 		if (!group)
 			break;
 
-		/* Group 1 is used for two pin banks */
+		 
 		if (group == 1) {
 			if (pin < 8)
 				group = 0;
@@ -432,20 +411,14 @@ static void s3c64xx_eint_gpio_irq(struct irq_desc *desc)
 		}
 
 		ret = generic_handle_domain_irq(data->domains[group], pin);
-		/*
-		 * Something must be really wrong if an unmapped EINT
-		 * was unmasked...
-		 */
+		 
 		BUG_ON(ret);
 	} while (1);
 
 	chained_irq_exit(chip, desc);
 }
 
-/**
- * s3c64xx_eint_gpio_init() - setup handling of external gpio interrupts.
- * @d: driver data of samsung pinctrl driver.
- */
+ 
 static int s3c64xx_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
 {
 	struct s3c64xx_eint_gpio_data *data;
@@ -501,9 +474,7 @@ static int s3c64xx_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
 	return 0;
 }
 
-/*
- * Functions for configuration of EINT0 wake-up interrupts
- */
+ 
 
 static inline void s3c64xx_eint0_irq_set_mask(struct irq_data *irqd, bool mask)
 {
@@ -559,7 +530,7 @@ static int s3c64xx_eint0_irq_set_type(struct irq_data *irqd, unsigned int type)
 
 	s3c64xx_irq_set_handler(irqd, type);
 
-	/* Set up interrupt trigger */
+	 
 	reg = d->virt_base + EINT0CON0_REG;
 	shift = ddata->eints[irqd->hwirq];
 	if (shift >= EINT_MAX_PER_REG) {
@@ -578,9 +549,7 @@ static int s3c64xx_eint0_irq_set_type(struct irq_data *irqd, unsigned int type)
 	return 0;
 }
 
-/*
- * irq_chip for wakeup interrupts
- */
+ 
 static struct irq_chip s3c64xx_eint0_irq_chip = {
 	.name		= "EINT0",
 	.irq_unmask	= s3c64xx_eint0_irq_unmask,
@@ -611,10 +580,7 @@ static inline void s3c64xx_irq_demux_eint(struct irq_desc *desc, u32 range)
 		irq = fls(pend) - 1;
 		pend &= ~(1 << irq);
 		ret = generic_handle_domain_irq(data->domains[irq], data->pins[irq]);
-		/*
-		 * Something must be really wrong if an unmapped EINT
-		 * was unmasked...
-		 */
+		 
 		BUG_ON(ret);
 	}
 
@@ -664,24 +630,19 @@ static int s3c64xx_eint0_irq_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
-/*
- * irq domain callbacks for external wakeup interrupt controller.
- */
+ 
 static const struct irq_domain_ops s3c64xx_eint0_irqd_ops = {
 	.map	= s3c64xx_eint0_irq_map,
 	.xlate	= irq_domain_xlate_twocell,
 };
 
-/* list of external wakeup controllers supported */
+ 
 static const struct of_device_id s3c64xx_eint0_irq_ids[] = {
 	{ .compatible = "samsung,s3c64xx-wakeup-eint", },
 	{ }
 };
 
-/**
- * s3c64xx_eint_eint0_init() - setup handling of external wakeup interrupts.
- * @d: driver data of samsung pinctrl driver.
- */
+ 
 static int s3c64xx_eint_eint0_init(struct samsung_pinctrl_drv_data *d)
 {
 	struct device *dev = d->dev;
@@ -765,7 +726,7 @@ static int s3c64xx_eint_eint0_init(struct samsung_pinctrl_drv_data *d)
 	return 0;
 }
 
-/* pin banks of s3c64xx pin-controller 0 */
+ 
 static const struct samsung_pin_bank_data s3c64xx_pin_banks0[] __initconst = {
 	PIN_BANK_4BIT_EINTG(8, 0x000, "gpa", 0),
 	PIN_BANK_4BIT_EINTG(7, 0x020, "gpb", 8),
@@ -786,13 +747,10 @@ static const struct samsung_pin_bank_data s3c64xx_pin_banks0[] __initconst = {
 	PIN_BANK_2BIT_EINTG(9, 0x180, "gpq", 128, 0x1ff),
 };
 
-/*
- * Samsung pinctrl driver data for S3C64xx SoC. S3C64xx SoC includes
- * one gpio/pin-mux/pinconfig controller.
- */
+ 
 static const struct samsung_pin_ctrl s3c64xx_pin_ctrl[] __initconst = {
 	{
-		/* pin-controller instance 1 data */
+		 
 		.pin_banks	= s3c64xx_pin_banks0,
 		.nr_banks	= ARRAY_SIZE(s3c64xx_pin_banks0),
 		.eint_gpio_init = s3c64xx_eint_gpio_init,

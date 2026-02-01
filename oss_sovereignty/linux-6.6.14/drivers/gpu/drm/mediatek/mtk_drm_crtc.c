@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -25,19 +23,7 @@
 #include "mtk_drm_gem.h"
 #include "mtk_drm_plane.h"
 
-/*
- * struct mtk_drm_crtc - MediaTek specific crtc structure.
- * @base: crtc object.
- * @enabled: records whether crtc_enable succeeded
- * @planes: array of 4 drm_plane structures, one for each overlay plane
- * @pending_planes: whether any plane has pending changes to be applied
- * @mmsys_dev: pointer to the mmsys device for configuration registers
- * @mutex: handle to one of the ten disp_mutex streams
- * @ddp_comp_nr: number of components in ddp_comp
- * @ddp_comp: array of pointers the mtk_ddp_comp structures used by this crtc
- *
- * TODO: Needs update: this header is missing a bunch of member descriptions.
- */
+ 
 struct mtk_drm_crtc {
 	struct drm_crtc			base;
 	bool				enabled;
@@ -64,7 +50,7 @@ struct mtk_drm_crtc {
 	unsigned int			ddp_comp_nr;
 	struct mtk_ddp_comp		**ddp_comp;
 
-	/* lock for display hardware access */
+	 
 	struct mutex			hw_lock;
 	bool				config_updating;
 };
@@ -215,7 +201,7 @@ static bool mtk_drm_crtc_mode_fixup(struct drm_crtc *crtc,
 				    const struct drm_display_mode *mode,
 				    struct drm_display_mode *adjusted_mode)
 {
-	/* Nothing to do here, but this callback is mandatory. */
+	 
 	return true;
 }
 
@@ -226,7 +212,7 @@ static void mtk_drm_crtc_mode_set_nofb(struct drm_crtc *crtc)
 	state->pending_width = crtc->mode.hdisplay;
 	state->pending_height = crtc->mode.vdisplay;
 	state->pending_vrefresh = drm_mode_vrefresh(&crtc->mode);
-	wmb();	/* Make sure the above parameters are set before update */
+	wmb();	 
 	state->pending_config = true;
 }
 
@@ -400,7 +386,7 @@ static int mtk_crtc_ddp_hw_init(struct mtk_drm_crtc *mtk_crtc)
 		mtk_ddp_comp_start(comp);
 	}
 
-	/* Initially configure all planes */
+	 
 	for (i = 0; i < mtk_crtc->layer_nr; i++) {
 		struct drm_plane *plane = &mtk_crtc->planes[i];
 		struct mtk_plane_state *plane_state;
@@ -409,7 +395,7 @@ static int mtk_crtc_ddp_hw_init(struct mtk_drm_crtc *mtk_crtc)
 
 		plane_state = to_mtk_plane_state(plane->state);
 
-		/* should not enable layer before crtc enabled */
+		 
 		plane_state->pending.enable = false;
 		comp = mtk_drm_ddp_comp_for_plane(crtc, plane, &local_layer);
 		if (comp)
@@ -477,11 +463,7 @@ static void mtk_crtc_ddp_config(struct drm_crtc *crtc,
 	unsigned int i;
 	unsigned int local_layer;
 
-	/*
-	 * TODO: instead of updating the registers here, we should prepare
-	 * working registers in atomic_commit and let the hardware command
-	 * queue update module registers on vblank.
-	 */
+	 
 	if (state->pending_config) {
 		mtk_ddp_comp_config(comp, state->pending_width,
 				    state->pending_height,
@@ -596,13 +578,7 @@ static void mtk_drm_crtc_update_config(struct mtk_drm_crtc *mtk_crtc,
 					   cmdq_handle->pa_base,
 					   cmdq_handle->cmd_buf_size,
 					   DMA_TO_DEVICE);
-		/*
-		 * CMDQ command should execute in next 3 vblank.
-		 * One vblank interrupt before send message (occasionally)
-		 * and one vblank interrupt after cmdq done,
-		 * so it's timeout after 3 vblank interrupt.
-		 * If it fail to execute in next 3 vblank, timeout happen.
-		 */
+		 
 		mtk_crtc->cmdq_vblank_cnt = 3;
 
 		mbox_send_message(mtk_crtc->cmdq_client.chan, cmdq_handle);
@@ -709,7 +685,7 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
 	if (!mtk_crtc->enabled)
 		return;
 
-	/* Set all pending plane state to disabled */
+	 
 	for (i = 0; i < mtk_crtc->layer_nr; i++) {
 		struct drm_plane *plane = &mtk_crtc->planes[i];
 		struct mtk_plane_state *plane_state;
@@ -722,13 +698,13 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	mtk_drm_crtc_update_config(mtk_crtc, false);
 #if IS_REACHABLE(CONFIG_MTK_CMDQ)
-	/* Wait for planes to be disabled by cmdq */
+	 
 	if (mtk_crtc->cmdq_client.chan)
 		wait_event_timeout(mtk_crtc->cb_blocking_queue,
 				   mtk_crtc->cmdq_vblank_cnt == 0,
 				   msecs_to_jiffies(500));
 #endif
-	/* Wait for planes to be disabled */
+	 
 	drm_crtc_wait_one_vblank(crtc);
 
 	drm_crtc_vblank_off(crtc);
@@ -928,9 +904,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
 		node = priv->comp_node[comp_id];
 		comp = &priv->ddp_comp[comp_id];
 
-		/* Not all drm components have a DTS device node, such as ovl_adaptor,
-		 * which is the drm bring up sub driver
-		 */
+		 
 		if (!node && comp_id != DDP_COMPONENT_DRM_OVL_ADAPTOR) {
 			dev_info(dev,
 				"Not creating crtc %d because component %d is disabled or missing\n",
@@ -997,11 +971,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
 			return ret;
 	}
 
-	/*
-	 * Default to use the first component as the dma dev.
-	 * In the case of ovl_adaptor sub driver, it needs to use the
-	 * dma_dev_get function to get representative dma dev.
-	 */
+	 
 	mtk_crtc->dma_dev = mtk_ddp_comp_dma_dev_get(&priv->ddp_comp[path[0]]);
 
 	ret = mtk_drm_crtc_init(drm_dev, mtk_crtc, crtc_i);
@@ -1049,7 +1019,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
 			}
 		}
 
-		/* for sending blocking cmd in crtc disable */
+		 
 		init_waitqueue_head(&mtk_crtc->cb_blocking_queue);
 	}
 #endif

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/rtc/rtc-rc5t619.c
- *
- * Real time clock driver for RICOH RC5T619 power management chip.
- *
- * Copyright (C) 2019 Andreas Kemnade
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -69,13 +63,13 @@ static int rc5t619_rtc_periodic_disable(struct device *dev)
 	struct rc5t619_rtc *rtc = dev_get_drvdata(dev);
 	int err;
 
-	/* disable function */
+	 
 	err = regmap_update_bits(rtc->rn5t618->regmap,
 				 RN5T618_RTC_CTRL1, CTRL1_PERIODIC_MASK, 0);
 	if (err < 0)
 		return err;
 
-	/* clear alarm flag and CTFG */
+	 
 	err = regmap_update_bits(rtc->rn5t618->regmap, RN5T618_RTC_CTRL2,
 				 CTRL2_ALARM_STATUS | CTRL2_CTFG | CTRL2_CTC,
 				 0);
@@ -85,7 +79,7 @@ static int rc5t619_rtc_periodic_disable(struct device *dev)
 	return 0;
 }
 
-/* things to be done once after power on */
+ 
 static int rc5t619_rtc_pon_setup(struct device *dev)
 {
 	struct rc5t619_rtc *rtc = dev_get_drvdata(dev);
@@ -96,14 +90,14 @@ static int rc5t619_rtc_pon_setup(struct device *dev)
 	if (err < 0)
 		return err;
 
-	/* clear VDET PON */
-	reg_data &= ~(CTRL2_PON | CTRL2_CTC | 0x4a);	/* 0101-1011 */
-	reg_data |= 0x20;	/* 0010-0000 */
+	 
+	reg_data &= ~(CTRL2_PON | CTRL2_CTC | 0x4a);	 
+	reg_data |= 0x20;	 
 	err = regmap_write(rtc->rn5t618->regmap, RN5T618_RTC_CTRL2, reg_data);
 	if (err < 0)
 		return err;
 
-	/* clearing RTC Adjust register */
+	 
 	err = regmap_write(rtc->rn5t618->regmap, RN5T618_RTC_ADJUST, 0);
 	if (err)
 		return err;
@@ -153,7 +147,7 @@ static int rc5t619_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	tm->tm_wday = bcd2bin(buff[3]);
 	tm->tm_mday = bcd2bin(buff[4]);
-	tm->tm_mon  = bcd2bin(buff[5] & 0x1f) - 1; /* back to system 0-11 */
+	tm->tm_mon  = bcd2bin(buff[5] & 0x1f) - 1;  
 	tm->tm_year = bcd2bin(buff[6]) + 100 * cent_flag;
 
 	return 0;
@@ -194,7 +188,7 @@ static int rc5t619_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	buff[3] = bin2bcd(tm->tm_wday);
 	buff[4] = bin2bcd(tm->tm_mday);
-	buff[5] = bin2bcd(tm->tm_mon + 1);	/* system set 0-11 */
+	buff[5] = bin2bcd(tm->tm_mon + 1);	 
 	buff[6] = bin2bcd(tm->tm_year - cent_flag * 100);
 
 	if (cent_flag)
@@ -210,7 +204,7 @@ static int rc5t619_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	return 0;
 }
 
-/* 0-disable, 1-enable */
+ 
 static int rc5t619_rtc_alarm_enable(struct device *dev, unsigned int enabled)
 {
 	struct rc5t619_rtc *rtc = dev_get_drvdata(dev);
@@ -330,7 +324,7 @@ static int rc5t619_rtc_alarm_flag_clr(struct device *dev)
 {
 	struct rc5t619_rtc *rtc = dev_get_drvdata(dev);
 
-	/* clear alarm-D status bits.*/
+	 
 	return regmap_update_bits(rtc->rn5t618->regmap,
 				RN5T618_RTC_CTRL2,
 				CTRL2_ALARM_STATUS | CTRL2_CTC, 0);
@@ -375,7 +369,7 @@ static int rc5t619_rtc_probe(struct platform_device *pdev)
 	if (err < 0)
 		return err;
 
-	/* disable rtc periodic function */
+	 
 	err = rc5t619_rtc_periodic_disable(&pdev->dev);
 	if (err)
 		return err;
@@ -397,7 +391,7 @@ static int rc5t619_rtc_probe(struct platform_device *pdev)
 	rtc->rtc->range_min = RTC_TIMESTAMP_BEGIN_1900;
 	rtc->rtc->range_max = RTC_TIMESTAMP_END_2099;
 
-	/* set interrupt and enable it */
+	 
 	if (rtc->irq != -1) {
 		err = devm_request_threaded_irq(&pdev->dev, rtc->irq, NULL,
 						rc5t619_rtc_irq,
@@ -413,12 +407,12 @@ static int rc5t619_rtc_probe(struct platform_device *pdev)
 				return err;
 
 		} else {
-			/* enable wake */
+			 
 			device_init_wakeup(&pdev->dev, 1);
 			enable_irq_wake(rtc->irq);
 		}
 	} else {
-		/* system don't want to using alarm interrupt, so close it */
+		 
 		err = rc5t619_rtc_alarm_enable(&pdev->dev, 0);
 		if (err)
 			return err;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012-2017 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm.h"
 #include "dm-bio-prison-v2.h"
@@ -14,7 +10,7 @@
 #include <linux/slab.h>
 #include <linux/rwsem.h>
 
-/*----------------------------------------------------------------*/
+ 
 
 #define MIN_CELLS 1024
 
@@ -28,12 +24,9 @@ struct dm_bio_prison_v2 {
 
 static struct kmem_cache *_cell_cache;
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * @nr_cells should be the number of cells you want in use _concurrently_.
- * Don't confuse it with the number of distinct keys.
- */
+ 
 struct dm_bio_prison_v2 *dm_bio_prison_create_v2(struct workqueue_struct *wq)
 {
 	struct dm_bio_prison_v2 *prison = kzalloc(sizeof(*prison), GFP_KERNEL);
@@ -109,9 +102,7 @@ static int cmp_keys(struct dm_cell_key_v2 *lhs,
 	return 0;
 }
 
-/*
- * Returns true if node found, otherwise it inserts a new one.
- */
+ 
 static bool __find_or_insert(struct dm_bio_prison_v2 *prison,
 			     struct dm_cell_key_v2 *key,
 			     struct dm_bio_prison_cell_v2 *cell_prealloc,
@@ -193,7 +184,7 @@ static bool __put(struct dm_bio_prison_v2 *prison,
 	BUG_ON(!cell->shared_count);
 	cell->shared_count--;
 
-	// FIXME: shared locks granted above the lock level could starve this
+	 
 	if (!cell->shared_count) {
 		if (cell->exclusive_lock) {
 			if (cell->quiesce_continuation) {
@@ -239,8 +230,8 @@ static int __lock(struct dm_bio_prison_v2 *prison,
 		cell->exclusive_level = lock_level;
 		*cell_result = cell;
 
-		// FIXME: we don't yet know what level these shared locks
-		// were taken at, so have to quiesce them all.
+		 
+		
 		return cell->shared_count > 0;
 
 	} else {
@@ -347,7 +338,7 @@ bool dm_cell_unlock_v2(struct dm_bio_prison_v2 *prison,
 }
 EXPORT_SYMBOL_GPL(dm_cell_unlock_v2);
 
-/*----------------------------------------------------------------*/
+ 
 
 int __init dm_bio_prison_init_v2(void)
 {

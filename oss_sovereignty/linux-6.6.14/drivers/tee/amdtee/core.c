@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/io.h>
@@ -52,9 +50,9 @@ static void release_session(struct amdtee_session *sess)
 {
 	int i;
 
-	/* Close any open session */
+	 
 	for (i = 0; i < TEE_NUM_SESSIONS; ++i) {
-		/* Check if session entry 'i' is valid */
+		 
 		if (!test_bit(i, sess->sess_mask))
 			continue;
 
@@ -91,35 +89,21 @@ static void amdtee_release(struct tee_context *ctx)
 	ctx->data = NULL;
 }
 
-/**
- * alloc_session() - Allocate a session structure
- * @ctxdata:    TEE Context data structure
- * @session:    Session ID for which 'struct amdtee_session' structure is to be
- *              allocated.
- *
- * Scans the TEE context's session list to check if TA is already loaded in to
- * TEE. If yes, returns the 'session' structure for that TA. Else allocates,
- * initializes a new 'session' structure and adds it to context's session list.
- *
- * The caller must hold a mutex.
- *
- * Returns:
- * 'struct amdtee_session *' on success and NULL on failure.
- */
+ 
 static struct amdtee_session *alloc_session(struct amdtee_context_data *ctxdata,
 					    u32 session)
 {
 	struct amdtee_session *sess;
 	u32 ta_handle = get_ta_handle(session);
 
-	/* Scan session list to check if TA is already loaded in to TEE */
+	 
 	list_for_each_entry(sess, &ctxdata->sess_list, list_node)
 		if (sess->ta_handle == ta_handle) {
 			kref_get(&sess->refcount);
 			return sess;
 		}
 
-	/* Allocate a new session and add to list */
+	 
 	sess = kzalloc(sizeof(*sess), GFP_KERNEL);
 	if (sess) {
 		sess->ta_handle = ta_handle;
@@ -131,7 +115,7 @@ static struct amdtee_session *alloc_session(struct amdtee_context_data *ctxdata,
 	return sess;
 }
 
-/* Requires mutex to be held */
+ 
 static struct amdtee_session *find_session(struct amdtee_context_data *ctxdata,
 					   u32 session)
 {
@@ -217,7 +201,7 @@ unlock:
 	return rc;
 }
 
-/* mutex must be held by caller */
+ 
 static void destroy_session(struct kref *ref)
 {
 	struct amdtee_session *sess = container_of(ref, struct amdtee_session,
@@ -250,7 +234,7 @@ int amdtee_open_session(struct tee_context *ctx,
 		return rc;
 	}
 
-	/* Load the TA binary into TEE environment */
+	 
 	handle_load_ta(ta, ta_size, arg);
 	if (arg->ret != TEEC_SUCCESS)
 		goto out;
@@ -267,7 +251,7 @@ int amdtee_open_session(struct tee_context *ctx,
 		goto out;
 	}
 
-	/* Open session with loaded TA */
+	 
 	handle_open_session(arg, &session_info, param);
 	if (arg->ret != TEEC_SUCCESS) {
 		pr_err("open_session failed %d\n", arg->ret);
@@ -277,7 +261,7 @@ int amdtee_open_session(struct tee_context *ctx,
 		goto out;
 	}
 
-	/* Find an empty session index for the given TA */
+	 
 	spin_lock(&sess->lock);
 	i = find_first_zero_bit(sess->sess_mask, TEE_NUM_SESSIONS);
 	if (i < TEE_NUM_SESSIONS) {
@@ -310,10 +294,7 @@ int amdtee_close_session(struct tee_context *ctx, u32 session)
 
 	pr_debug("%s: sid = 0x%x\n", __func__, session);
 
-	/*
-	 * Check that the session is valid and clear the session
-	 * usage bit
-	 */
+	 
 	mutex_lock(&session_list_mutex);
 	sess = find_session(ctxdata, session);
 	if (sess) {
@@ -329,7 +310,7 @@ int amdtee_close_session(struct tee_context *ctx, u32 session)
 	if (!sess)
 		return -EINVAL;
 
-	/* Close the session */
+	 
 	handle_close_session(ta_handle, session_info);
 	handle_unload_ta(ta_handle);
 
@@ -357,10 +338,7 @@ int amdtee_map_shmem(struct tee_shm *shm)
 	shmem.kaddr = shm->kaddr;
 	shmem.size = shm->size;
 
-	/*
-	 * Send a MAP command to TEE and get the corresponding
-	 * buffer Id
-	 */
+	 
 	rc = handle_map_shmem(count, &shmem, &buf_id);
 	if (rc) {
 		pr_err("map_shmem failed: ret = %d\n", rc);
@@ -390,7 +368,7 @@ void amdtee_unmap_shmem(struct tee_shm *shm)
 		return;
 
 	buf_id = get_buffer_id(shm);
-	/* Unmap the shared memory from TEE */
+	 
 	handle_unmap_shmem(buf_id);
 
 	ctxdata = shm->ctx->data;
@@ -412,7 +390,7 @@ int amdtee_invoke_func(struct tee_context *ctx,
 	struct amdtee_session *sess;
 	u32 i, session_info;
 
-	/* Check that the session is valid */
+	 
 	mutex_lock(&session_list_mutex);
 	sess = find_session(ctxdata, arg->session);
 	if (sess) {

@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <drm/display/drm_dp_helper.h>
 #include <drm/display/drm_dp_mst_helper.h>
@@ -74,11 +51,7 @@ static ssize_t dm_dp_aux_transfer(struct drm_dp_aux *aux,
 	result = dc_link_aux_transfer_raw(TO_DM_AUX(aux)->ddc_service, &payload,
 				      &operation_result);
 
-	/*
-	 * w/a on certain intel platform where hpd is unexpected to pull low during
-	 * 1st sideband message transaction by return AUX_RET_ERROR_HPD_DISCON
-	 * aux transaction is succuess in such case, therefore bypass the error
-	 */
+	 
 	ddc = TO_DM_AUX(aux)->ddc_service;
 	adev = ddc->ctx->driver_context;
 	if (adev->dm.aux_hpd_discon_quirk) {
@@ -164,10 +137,7 @@ amdgpu_dm_mst_connector_early_unregister(struct drm_connector *connector)
 
 	drm_dp_mst_connector_early_unregister(connector, port);
 
-	/*
-	 * Release dc_sink for connector which its attached port is
-	 * no longer in the mst topology
-	 */
+	 
 	drm_modeset_lock(&root->mst_mgr.base.lock, NULL);
 	if (dc_sink) {
 		if (dc_link->sink_count)
@@ -209,7 +179,7 @@ bool needs_dsc_aux_workaround(struct dc_link *link)
 
 static bool is_synaptics_cascaded_panamera(struct dc_link *link, struct drm_dp_mst_port *port)
 {
-	u8 branch_vendor_data[4] = { 0 }; // Vendor data 0x50C ~ 0x50F
+	u8 branch_vendor_data[4] = { 0 }; 
 
 	if (drm_dp_dpcd_read(port->mgr->aux, DP_BRANCH_VENDOR_SPECIFIC_START, &branch_vendor_data, 4) == 4) {
 		if (link->dpcd_caps.branch_dev_id == DP_BRANCH_DEVICE_ID_90CC24 &&
@@ -227,25 +197,17 @@ static bool validate_dsc_caps_on_connector(struct amdgpu_dm_connector *aconnecto
 	struct dc_sink *dc_sink = aconnector->dc_sink;
 	struct drm_dp_mst_port *port = aconnector->mst_output_port;
 	u8 dsc_caps[16] = { 0 };
-	u8 dsc_branch_dec_caps_raw[3] = { 0 };	// DSC branch decoder caps 0xA0 ~ 0xA2
+	u8 dsc_branch_dec_caps_raw[3] = { 0 };	
 	u8 *dsc_branch_dec_caps = NULL;
 
 	aconnector->dsc_aux = drm_dp_mst_dsc_aux_for_port(port);
 
-	/*
-	 * drm_dp_mst_dsc_aux_for_port() will return NULL for certain configs
-	 * because it only check the dsc/fec caps of the "port variable" and not the dock
-	 *
-	 * This case will return NULL: DSC capabe MST dock connected to a non fec/dsc capable display
-	 *
-	 * Workaround: explicitly check the use case above and use the mst dock's aux as dsc_aux
-	 *
-	 */
+	 
 	if (!aconnector->dsc_aux && !port->parent->port_parent &&
 	    needs_dsc_aux_workaround(aconnector->dc_link))
 		aconnector->dsc_aux = &aconnector->mst_root->dm_dp_aux.aux;
 
-	/* synaptics cascaded MST hub case */
+	 
 	if (!aconnector->dsc_aux && is_synaptics_cascaded_panamera(aconnector->dc_link, port))
 		aconnector->dsc_aux = port->mgr->aux;
 
@@ -365,17 +327,10 @@ static int dm_dp_mst_get_modes(struct drm_connector *connector)
 			dc_sink, aconnector->dc_link->sink_count);
 
 		dc_sink->priv = aconnector;
-		/* dc_link_add_remote_sink returns a new reference */
+		 
 		aconnector->dc_sink = dc_sink;
 
-		/* when display is unplugged from mst hub, connctor will be
-		 * destroyed within dm_dp_mst_connector_destroy. connector
-		 * hdcp perperties, like type, undesired, desired, enabled,
-		 * will be lost. So, save hdcp properties into hdcp_work within
-		 * amdgpu_dm_atomic_commit_tail. if the same display is
-		 * plugged back with same display index, its hdcp properties
-		 * will be retrieved from hdcp_work within dm_dp_mst_get_modes
-		 */
+		 
 		if (aconnector->dc_sink && connector->state) {
 			struct drm_device *dev = connector->dev;
 			struct amdgpu_device *adev = drm_to_adev(dev);
@@ -451,7 +406,7 @@ dm_dp_mst_detect(struct drm_connector *connector,
 		if (ret == 1) {
 			port->dpcd_rev = dpcd_rev;
 
-			/* Could be DP1.2 DP Rx case*/
+			 
 			if (!dpcd_rev) {
 				ret = drm_dp_dpcd_readb(&port->aux, DP_DPCD_REV, &dpcd_rev);
 
@@ -463,20 +418,14 @@ dm_dp_mst_detect(struct drm_connector *connector,
 				DRM_DEBUG_KMS("Can't decide DPCD revision number!");
 		}
 
-		/*
-		 * Could be legacy sink, logical port etc on DP1.2.
-		 * Will get Nack under these cases when issue remote
-		 * DPCD read.
-		 */
+		 
 		if (ret != 1)
 			DRM_DEBUG_KMS("Can't access DPCD");
 	} else if (port->pdt == DP_PEER_DEVICE_NONE) {
 		port->dpcd_rev = 0;
 	}
 
-	/*
-	 * Release dc_sink for connector which unplug event is notified by CSN msg
-	 */
+	 
 	if (connection_status == connector_status_disconnected && aconnector->dc_sink) {
 		if (aconnector->dc_link->sink_count)
 			dc_link_remove_remote_sink(aconnector->dc_link, aconnector->dc_sink);
@@ -609,10 +558,7 @@ dm_dp_add_mst_connector(struct drm_dp_mst_topology_mgr *mgr,
 
 	drm_connector_set_path_property(connector, pathprop);
 
-	/*
-	 * Initialize connector state before adding the connectror to drm and
-	 * framebuffer lists
-	 */
+	 
 	amdgpu_dm_connector_funcs_reset(connector);
 
 	drm_dp_mst_get_port_malloc(port);
@@ -640,11 +586,11 @@ void dm_handle_mst_sideband_msg_ready_event(
 
 	if (link_status->dpcd_caps->dpcd_rev.raw < 0x12) {
 		dpcd_bytes_to_read = DP_LANE0_1_STATUS - DP_SINK_COUNT;
-		/* DPCD 0x200 - 0x201 for downstream IRQ */
+		 
 		dpcd_addr = DP_SINK_COUNT;
 	} else {
 		dpcd_bytes_to_read = DP_PSR_ERROR_STATUS - DP_SINK_COUNT_ESI;
-		/* DPCD 0x2002 - 0x2005 for downstream IRQ */
+		 
 		dpcd_addr = DP_SINK_COUNT_ESI;
 	}
 
@@ -670,15 +616,15 @@ void dm_handle_mst_sideband_msg_ready_event(
 
 		switch (msg_rdy_type) {
 		case DOWN_REP_MSG_RDY_EVENT:
-			/* Only handle DOWN_REP_MSG_RDY case*/
+			 
 			esi[1] &= DP_DOWN_REP_MSG_RDY;
 			break;
 		case UP_REQ_MSG_RDY_EVENT:
-			/* Only handle UP_REQ_MSG_RDY case*/
+			 
 			esi[1] &= DP_UP_REQ_MSG_RDY;
 			break;
 		default:
-			/* Handle both cases*/
+			 
 			esi[1] &= (DP_DOWN_REP_MSG_RDY | DP_UP_REQ_MSG_RDY);
 			break;
 		}
@@ -686,7 +632,7 @@ void dm_handle_mst_sideband_msg_ready_event(
 		if (!esi[1])
 			break;
 
-		/* handle MST irq */
+		 
 		if (aconnector->mst_mgr.mst_state)
 			drm_dp_mst_hpd_irq_handle_event(&aconnector->mst_mgr,
 						 esi,
@@ -694,7 +640,7 @@ void dm_handle_mst_sideband_msg_ready_event(
 						 &new_irq_handled);
 
 		if (new_irq_handled) {
-			/* ACK at DPCD to notify down stream */
+			 
 			for (retry = 0; retry < 3; retry++) {
 				ssize_t wret;
 
@@ -1083,7 +1029,7 @@ static int compute_mst_dsc_configs_for_link(struct drm_atomic_state *state,
 	if (IS_ERR(mst_state))
 		return PTR_ERR(mst_state);
 
-	/* Set up params */
+	 
 	for (i = 0; i < dc_state->stream_count; i++) {
 		struct dc_dsc_policy dsc_policy = {0};
 
@@ -1133,12 +1079,12 @@ static int compute_mst_dsc_configs_for_link(struct drm_atomic_state *state,
 		return 0;
 	}
 
-	/* k is start index of vars for current phy link used by mst hub */
+	 
 	k = *link_vars_start_index;
-	/* set vars start index for next mst hub phy link */
+	 
 	*link_vars_start_index += count;
 
-	/* Try no compression */
+	 
 	for (i = 0; i < count; i++) {
 		vars[i + k].aconnector = params[i].aconnector;
 		vars[i + k].pbn = kbps_to_peak_pbn(params[i].bw_range.stream_kbps, fec_overhead_multiplier_x1000);
@@ -1157,7 +1103,7 @@ static int compute_mst_dsc_configs_for_link(struct drm_atomic_state *state,
 		return ret;
 	}
 
-	/* Try max compression */
+	 
 	for (i = 0; i < count; i++) {
 		if (params[i].compression_possible && params[i].clock_force_enable != DSC_CLK_FORCE_DISABLE) {
 			vars[i + k].pbn = kbps_to_peak_pbn(params[i].bw_range.min_kbps, fec_overhead_multiplier_x1000);
@@ -1181,7 +1127,7 @@ static int compute_mst_dsc_configs_for_link(struct drm_atomic_state *state,
 	if (ret != 0)
 		return ret;
 
-	/* Optimize degree of compression */
+	 
 	ret = increase_dsc_bpp(state, mst_state, dc_link, params, vars, count, k);
 	if (ret < 0)
 		return ret;
@@ -1208,7 +1154,7 @@ static bool is_dsc_need_re_compute(
 	struct dc_stream_state *stream;
 	const struct dc *dc = dc_link->dc;
 
-	/* only check phy used by dsc mst branch */
+	 
 	if (dc_link->type != dc_connection_mst_branch)
 		return false;
 
@@ -1219,7 +1165,7 @@ static bool is_dsc_need_re_compute(
 	for (i = 0; i < MAX_PIPES; i++)
 		stream_on_link[i] = NULL;
 
-	/* check if there is mode change in new request */
+	 
 	for (i = 0; i < dc_state->stream_count; i++) {
 		struct drm_crtc_state *new_crtc_state;
 		struct drm_connector_state *new_conn_state;
@@ -1228,7 +1174,7 @@ static bool is_dsc_need_re_compute(
 		if (!stream)
 			continue;
 
-		/* check if stream using the same link for mst */
+		 
 		if (stream->link != dc_link)
 			continue;
 
@@ -1263,12 +1209,10 @@ static bool is_dsc_need_re_compute(
 		}
 	}
 
-	/* check current_state if there stream on link but it is not in
-	 * new request state
-	 */
+	 
 	for (i = 0; i < dc->current_state->stream_count; i++) {
 		stream = dc->current_state->streams[i];
-		/* only check stream on the mst hub */
+		 
 		if (stream->link != dc_link)
 			continue;
 
@@ -1284,7 +1228,7 @@ static bool is_dsc_need_re_compute(
 		}
 
 		if (j == new_stream_on_link_num) {
-			/* not in new state */
+			 
 			is_dsc_need_re_compute = true;
 			break;
 		}
@@ -1428,7 +1372,7 @@ static bool is_link_to_dschub(struct dc_link *dc_link)
 	union dpcd_dsc_basic_capabilities *dsc_caps =
 			&dc_link->dpcd_caps.dsc_caps.dsc_basic_caps;
 
-	/* only check phy used by dsc mst branch */
+	 
 	if (dc_link->type != dc_connection_mst_branch)
 		return false;
 
@@ -1479,11 +1423,7 @@ int pre_validate_dsc(struct drm_atomic_state *state,
 	}
 	dm_state = *dm_state_ptr;
 
-	/*
-	 * create local vailable for dc_state. copy content of streams of dm_state->context
-	 * to local variable. make sure stream pointer of local variable not the same as stream
-	 * from dm_state->context.
-	 */
+	 
 
 	local_dc_state = kmemdup(dm_state->context, sizeof(struct dc_state), GFP_KERNEL);
 	if (!local_dc_state)
@@ -1530,10 +1470,7 @@ int pre_validate_dsc(struct drm_atomic_state *state,
 		goto clean_exit;
 	}
 
-	/*
-	 * compare local_streams -> timing  with dm_state->context,
-	 * if the same set crtc_state->mode-change = 0;
-	 */
+	 
 	for (i = 0; i < local_dc_state->stream_count; i++) {
 		struct dc_stream_state *stream = dm_state->context->streams[i];
 
@@ -1600,16 +1537,7 @@ enum dc_status dm_dp_mst_is_port_support_mode(
 	struct dc_dsc_bw_range bw_range = {0};
 	uint16_t full_pbn = aconnector->mst_output_port->full_pbn;
 
-	/*
-	 * Consider the case with the depth of the mst topology tree is equal or less than 2
-	 * A. When dsc bitstream can be transmitted along the entire path
-	 *    1. dsc is possible between source and branch/leaf device (common dsc params is possible), AND
-	 *    2. dsc passthrough supported at MST branch, or
-	 *    3. dsc decoding supported at leaf MST device
-	 *    Use maximum dsc compression as bw constraint
-	 * B. When dsc bitstream cannot be transmitted along the entire path
-	 *    Use native bw as bw constraint
-	 */
+	 
 	if (is_dsc_common_config_possible(stream, &bw_range) &&
 	   (aconnector->mst_output_port->passthrough_aux ||
 	    aconnector->dsc_aux == &aconnector->mst_output_port->aux)) {
@@ -1619,14 +1547,11 @@ enum dc_status dm_dp_mst_is_port_support_mode(
 							       &cur_link_settings);
 		down_link_bw_in_kbps = kbps_from_pbn(full_pbn);
 
-		/* pick the bottleneck */
+		 
 		end_to_end_bw_in_kbps = min(upper_link_bw_in_kbps,
 					    down_link_bw_in_kbps);
 
-		/*
-		 * use the maximum dsc compression bandwidth as the required
-		 * bandwidth for the mode
-		 */
+		 
 		max_compressed_bw_in_kbps = bw_range.min_kbps;
 
 		if (end_to_end_bw_in_kbps < max_compressed_bw_in_kbps) {
@@ -1634,14 +1559,14 @@ enum dc_status dm_dp_mst_is_port_support_mode(
 			return DC_FAIL_BANDWIDTH_VALIDATE;
 		}
 	} else {
-		/* check if mode could be supported within full_pbn */
+		 
 		bpp = convert_dc_color_depth_into_bpc(stream->timing.display_color_depth) * 3;
 		pbn = drm_dp_calc_pbn_mode(stream->timing.pix_clk_100hz / 10, bpp << 4);
 		if (pbn > full_pbn)
 			return DC_FAIL_BANDWIDTH_VALIDATE;
 	}
 
-	/* check is mst dsc output bandwidth branch_overall_throughput_0_mps */
+	 
 	switch (stream->timing.pixel_encoding) {
 	case PIXEL_ENCODING_RGB:
 	case PIXEL_ENCODING_YCBCR444:

@@ -1,9 +1,4 @@
-/*
- * Broadcom specific AMBA
- * System on Chip (SoC) Host
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include "scan.h"
@@ -133,7 +128,7 @@ static void bcma_host_soc_block_write(struct bcma_device *core,
 		WARN_ON(1);
 	}
 }
-#endif /* CONFIG_BCMA_BLOCKIO */
+#endif  
 
 static u32 bcma_host_soc_aread32(struct bcma_device *core, u16 offset)
 {
@@ -169,18 +164,16 @@ int __init bcma_host_soc_register(struct bcma_soc *soc)
 {
 	struct bcma_bus *bus = &soc->bus;
 
-	/* iomap only first core. We have to read some register on this core
-	 * to scan the bus.
-	 */
+	 
 	bus->mmio = ioremap(BCMA_ADDR_BASE, BCMA_CORE_SIZE * 1);
 	if (!bus->mmio)
 		return -ENOMEM;
 
-	/* Host specific */
+	 
 	bus->hosttype = BCMA_HOSTTYPE_SOC;
 	bus->ops = &bcma_host_soc_ops;
 
-	/* Initialize struct, detect chip */
+	 
 	bcma_init_bus(bus);
 
 	return 0;
@@ -191,7 +184,7 @@ int __init bcma_host_soc_init(struct bcma_soc *soc)
 	struct bcma_bus *bus = &soc->bus;
 	int err;
 
-	/* Scan bus and initialize it */
+	 
 	err = bcma_bus_early_register(bus);
 	if (err)
 		iounmap(bus->mmio);
@@ -207,26 +200,26 @@ static int bcma_host_soc_probe(struct platform_device *pdev)
 	struct bcma_bus *bus;
 	int err;
 
-	/* Alloc */
+	 
 	bus = devm_kzalloc(dev, sizeof(*bus), GFP_KERNEL);
 	if (!bus)
 		return -ENOMEM;
 
 	bus->dev = dev;
 
-	/* Map MMIO */
+	 
 	bus->mmio = of_iomap(np, 0);
 	if (!bus->mmio)
 		return -ENOMEM;
 
-	/* Host specific */
+	 
 	bus->hosttype = BCMA_HOSTTYPE_SOC;
 	bus->ops = &bcma_host_soc_ops;
 
-	/* Initialize struct, detect chip */
+	 
 	bcma_init_bus(bus);
 
-	/* Register */
+	 
 	err = bcma_bus_register(bus);
 	if (err)
 		goto err_unmap_mmio;
@@ -275,4 +268,4 @@ void __exit bcma_host_soc_unregister_driver(void)
 {
 	platform_driver_unregister(&bcma_host_soc_driver);
 }
-#endif /* CONFIG_OF */
+#endif  

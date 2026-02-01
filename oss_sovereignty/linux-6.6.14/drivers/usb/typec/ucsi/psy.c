@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power Supply for UCSI
- *
- * Copyright (C) 2020, Intel Corporation
- * Author: K V, Abhilash <abhilash.k.v@intel.com>
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/property.h>
 #include <linux/usb/pd.h>
 
 #include "ucsi.h"
 
-/* Power Supply access to expose source power information */
+ 
 enum ucsi_psy_online_states {
 	UCSI_PSY_OFFLINE = 0,
 	UCSI_PSY_FIXED_ONLINE,
@@ -161,7 +155,7 @@ static int ucsi_psy_get_current_max(struct ucsi_connector *con,
 		break;
 	case UCSI_CONSTAT_PWR_OPMODE_BC:
 	case UCSI_CONSTAT_PWR_OPMODE_DEFAULT:
-	/* UCSI can't tell b/w DCP/CDP or USB2/3x1/3x2 SDP chargers */
+	 
 	default:
 		val->intval = 0;
 		break;

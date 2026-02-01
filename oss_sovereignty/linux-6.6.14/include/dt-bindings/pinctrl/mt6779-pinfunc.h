@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 MediaTek Inc.
- * Author: Andy Teng <andy.teng@mediatek.com>
- *
- */
+ 
+ 
 
 #ifndef __MT6779_PINFUNC_H
 #define __MT6779_PINFUNC_H
@@ -1239,4 +1235,4 @@
 
 #define PINMUX_GPIO209__FUNC_GPIO209 (MTK_PIN_NO(209) | 0)
 
-#endif /* __MT6779-PINFUNC_H */
+#endif  

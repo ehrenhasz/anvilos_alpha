@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - Base driver
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on Rockchip ISP1 driver by Rockchip Electronics Co., Ltd.
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -30,7 +23,7 @@ struct rkisp1_debug_register {
 	RKISP1_CIF_##name, RKISP1_CIF_##name##_SHD, #name \
 }
 
-/* Keep this up-to-date when adding new registers. */
+ 
 #define RKISP1_MAX_REG_LENGTH		21
 
 static int rkisp1_debug_dump_regs(struct rkisp1_device *rkisp1,
@@ -76,7 +69,7 @@ static int rkisp1_debug_dump_core_regs_show(struct seq_file *m, void *p)
 		RKISP1_DEBUG_REG(MI_STATUS),
 		RKISP1_DEBUG_REG(MI_DMA_CTRL),
 		RKISP1_DEBUG_REG(MI_DMA_STATUS),
-		{ /* Sentinel */ },
+		{   },
 	};
 	struct rkisp1_device *rkisp1 = m->private;
 
@@ -92,7 +85,7 @@ static int rkisp1_debug_dump_isp_regs_show(struct seq_file *m, void *p)
 		RKISP1_DEBUG_REG(ISP_FLAGS_SHD),
 		RKISP1_DEBUG_REG(ISP_RIS),
 		RKISP1_DEBUG_REG(ISP_ERR),
-		{ /* Sentinel */ },
+		{   },
 	};
 	struct rkisp1_device *rkisp1 = m->private;
 
@@ -113,7 +106,7 @@ static int rkisp1_debug_dump_rsz_regs_show(struct seq_file *m, void *p)
 		RKISP1_DEBUG_SHD_REG(RSZ_PHASE_HC),
 		RKISP1_DEBUG_SHD_REG(RSZ_PHASE_VY),
 		RKISP1_DEBUG_SHD_REG(RSZ_PHASE_VC),
-		{ /* Sentinel */ },
+		{   },
 	};
 	struct rkisp1_resizer *rsz = m->private;
 
@@ -131,7 +124,7 @@ static int rkisp1_debug_dump_mi_mp_show(struct seq_file *m, void *p)
 		RKISP1_DEBUG_REG(MI_MP_Y_SIZE_INIT),
 		RKISP1_DEBUG_REG(MI_MP_Y_SIZE_SHD),
 		RKISP1_DEBUG_REG(MI_MP_Y_OFFS_CNT_SHD),
-		{ /* Sentinel */ },
+		{   },
 	};
 	struct rkisp1_device *rkisp1 = m->private;
 
@@ -157,7 +150,7 @@ static int rkisp1_debug_input_status_show(struct seq_file *m, void *p)
 	if (ret <= 0)
 		return ret ? : -ENODATA;
 
-	/* Sample the ISP input port status 10000 times with a 1µs interval. */
+	 
 	for (i = 0; i < 10000; ++i) {
 		val = rkisp1_read(rkisp1, RKISP1_CIF_ISP_FLAGS_SHD);
 

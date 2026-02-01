@@ -1,13 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2012 Cavium, Inc.
- *
- * Copyright (C) 2009 Wind River Systems,
- *   written by Ralf Baechle <ralf@linux-mips.org>
- */
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -136,7 +127,7 @@ static int octeon_l2c_probe(struct platform_device *pdev)
 
 	int num_tads = OCTEON_IS_MODEL(OCTEON_CN68XX) ? 4 : 1;
 
-	/* 'Tags' are block 0, 'Data' is block 1*/
+	 
 	l2c = edac_device_alloc_ctl_info(0, "l2c", num_tads, "l2c", 2, 0,
 					 NULL, 0, edac_device_alloc_index());
 	if (!l2c)
@@ -155,18 +146,18 @@ static int octeon_l2c_probe(struct platform_device *pdev)
 		union cvmx_l2d_err l2d_err;
 
 		l2t_err.u64 = cvmx_read_csr(CVMX_L2T_ERR);
-		l2t_err.s.sec_intena = 0;	/* We poll */
+		l2t_err.s.sec_intena = 0;	 
 		l2t_err.s.ded_intena = 0;
 		cvmx_write_csr(CVMX_L2T_ERR, l2t_err.u64);
 
 		l2d_err.u64 = cvmx_read_csr(CVMX_L2D_ERR);
-		l2d_err.s.sec_intena = 0;	/* We poll */
+		l2d_err.s.sec_intena = 0;	 
 		l2d_err.s.ded_intena = 0;
 		cvmx_write_csr(CVMX_L2T_ERR, l2d_err.u64);
 
 		l2c->edac_check = octeon_l2c_poll_oct1;
 	} else {
-		/* OCTEON II */
+		 
 		l2c->edac_check = octeon_l2c_poll_oct2;
 	}
 

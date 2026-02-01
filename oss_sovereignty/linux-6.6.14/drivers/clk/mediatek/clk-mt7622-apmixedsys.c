@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Copyright (c) 2023 Collabora, Ltd.
- *               AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt7622-clk.h>
 #include <linux/clk.h>
@@ -132,7 +128,7 @@ static void clk_mt7622_apmixed_remove(struct platform_device *pdev)
 
 static const struct of_device_id of_match_clk_mt7622_apmixed[] = {
 	{ .compatible = "mediatek,mt7622-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7622_apmixed);
 

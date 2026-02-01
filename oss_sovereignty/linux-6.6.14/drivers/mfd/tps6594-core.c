@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Core functions for TI TPS6594/TPS6593/LP8764 PMICs
- *
- * Copyright (C) 2023 BayLibre Incorporated - https://www.baylibre.com/
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -16,7 +12,7 @@
 
 #define TPS6594_CRC_SYNC_TIMEOUT_MS 150
 
-/* Completion to synchronize CRC feature enabling on all PMICs */
+ 
 static DECLARE_COMPLETION(tps6594_crc_comp);
 
 static const struct resource tps6594_regulator_resources[] = {
@@ -135,7 +131,7 @@ static const struct mfd_cell tps6594_rtc_cells[] = {
 };
 
 static const struct regmap_irq tps6594_irqs[] = {
-	/* INT_BUCK1_2 register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK1_OV, 0, TPS6594_BIT_BUCKX_OV_INT(0)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK1_UV, 0, TPS6594_BIT_BUCKX_UV_INT(0)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK1_SC, 0, TPS6594_BIT_BUCKX_SC_INT(0)),
@@ -145,7 +141,7 @@ static const struct regmap_irq tps6594_irqs[] = {
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK2_SC, 0, TPS6594_BIT_BUCKX_SC_INT(1)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK2_ILIM, 0, TPS6594_BIT_BUCKX_ILIM_INT(1)),
 
-	/* INT_BUCK3_4 register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK3_OV, 1, TPS6594_BIT_BUCKX_OV_INT(2)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK3_UV, 1, TPS6594_BIT_BUCKX_UV_INT(2)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK3_SC, 1, TPS6594_BIT_BUCKX_SC_INT(2)),
@@ -155,13 +151,13 @@ static const struct regmap_irq tps6594_irqs[] = {
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK4_SC, 1, TPS6594_BIT_BUCKX_SC_INT(3)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK4_ILIM, 1, TPS6594_BIT_BUCKX_ILIM_INT(3)),
 
-	/* INT_BUCK5 register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK5_OV, 2, TPS6594_BIT_BUCKX_OV_INT(4)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK5_UV, 2, TPS6594_BIT_BUCKX_UV_INT(4)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK5_SC, 2, TPS6594_BIT_BUCKX_SC_INT(4)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BUCK5_ILIM, 2, TPS6594_BIT_BUCKX_ILIM_INT(4)),
 
-	/* INT_LDO1_2 register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO1_OV, 3, TPS6594_BIT_LDOX_OV_INT(0)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO1_UV, 3, TPS6594_BIT_LDOX_UV_INT(0)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO1_SC, 3, TPS6594_BIT_LDOX_SC_INT(0)),
@@ -171,7 +167,7 @@ static const struct regmap_irq tps6594_irqs[] = {
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO2_SC, 3, TPS6594_BIT_LDOX_SC_INT(1)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO2_ILIM, 3, TPS6594_BIT_LDOX_ILIM_INT(1)),
 
-	/* INT_LDO3_4 register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO3_OV, 4, TPS6594_BIT_LDOX_OV_INT(2)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO3_UV, 4, TPS6594_BIT_LDOX_UV_INT(2)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO3_SC, 4, TPS6594_BIT_LDOX_SC_INT(2)),
@@ -181,7 +177,7 @@ static const struct regmap_irq tps6594_irqs[] = {
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO4_SC, 4, TPS6594_BIT_LDOX_SC_INT(3)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_LDO4_ILIM, 4, TPS6594_BIT_LDOX_ILIM_INT(3)),
 
-	/* INT_VMON register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_VCCA_OV, 5, TPS6594_BIT_VCCA_OV_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_VCCA_UV, 5, TPS6594_BIT_VCCA_UV_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_VMON1_OV, 5, TPS6594_BIT_VMON1_OV_INT),
@@ -191,12 +187,12 @@ static const struct regmap_irq tps6594_irqs[] = {
 	REGMAP_IRQ_REG(TPS6594_IRQ_VMON2_UV, 5, TPS6594_BIT_VMON2_UV_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_VMON2_RV, 5, TPS6594_BIT_VMON2_RV_INT),
 
-	/* INT_GPIO register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO9, 6, TPS6594_BIT_GPIO9_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO10, 6, TPS6594_BIT_GPIO10_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO11, 6, TPS6594_BIT_GPIO11_INT),
 
-	/* INT_GPIO1_8 register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO1, 7, TPS6594_BIT_GPIOX_INT(0)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO2, 7, TPS6594_BIT_GPIOX_INT(1)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO3, 7, TPS6594_BIT_GPIOX_INT(2)),
@@ -206,18 +202,18 @@ static const struct regmap_irq tps6594_irqs[] = {
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO7, 7, TPS6594_BIT_GPIOX_INT(6)),
 	REGMAP_IRQ_REG(TPS6594_IRQ_GPIO8, 7, TPS6594_BIT_GPIOX_INT(7)),
 
-	/* INT_STARTUP register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_NPWRON_START, 8, TPS6594_BIT_NPWRON_START_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_ENABLE, 8, TPS6594_BIT_ENABLE_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_FSD, 8, TPS6594_BIT_FSD_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_SOFT_REBOOT, 8, TPS6594_BIT_SOFT_REBOOT_INT),
 
-	/* INT_MISC register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_BIST_PASS, 9, TPS6594_BIT_BIST_PASS_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_EXT_CLK, 9, TPS6594_BIT_EXT_CLK_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_TWARN, 9, TPS6594_BIT_TWARN_INT),
 
-	/* INT_MODERATE_ERR register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_TSD_ORD, 10, TPS6594_BIT_TSD_ORD_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_BIST_FAIL, 10, TPS6594_BIT_BIST_FAIL_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_REG_CRC_ERR, 10, TPS6594_BIT_REG_CRC_ERR_INT),
@@ -227,32 +223,32 @@ static const struct regmap_irq tps6594_irqs[] = {
 	REGMAP_IRQ_REG(TPS6594_IRQ_NINT_READBACK, 10, TPS6594_BIT_NINT_READBACK_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_NRSTOUT_READBACK, 10, TPS6594_BIT_NRSTOUT_READBACK_INT),
 
-	/* INT_SEVERE_ERR register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_TSD_IMM, 11, TPS6594_BIT_TSD_IMM_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_VCCA_OVP, 11, TPS6594_BIT_VCCA_OVP_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_PFSM_ERR, 11, TPS6594_BIT_PFSM_ERR_INT),
 
-	/* INT_FSM_ERR register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_IMM_SHUTDOWN, 12, TPS6594_BIT_IMM_SHUTDOWN_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_ORD_SHUTDOWN, 12, TPS6594_BIT_ORD_SHUTDOWN_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_MCU_PWR_ERR, 12, TPS6594_BIT_MCU_PWR_ERR_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_SOC_PWR_ERR, 12, TPS6594_BIT_SOC_PWR_ERR_INT),
 
-	/* INT_COMM_ERR register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_COMM_FRM_ERR, 13, TPS6594_BIT_COMM_FRM_ERR_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_COMM_CRC_ERR, 13, TPS6594_BIT_COMM_CRC_ERR_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_COMM_ADR_ERR, 13, TPS6594_BIT_COMM_ADR_ERR_INT),
 
-	/* INT_READBACK_ERR register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_EN_DRV_READBACK, 14, TPS6594_BIT_EN_DRV_READBACK_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_NRSTOUT_SOC_READBACK, 14, TPS6594_BIT_NRSTOUT_SOC_READBACK_INT),
 
-	/* INT_ESM register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_ESM_SOC_PIN, 15, TPS6594_BIT_ESM_SOC_PIN_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_ESM_SOC_FAIL, 15, TPS6594_BIT_ESM_SOC_FAIL_INT),
 	REGMAP_IRQ_REG(TPS6594_IRQ_ESM_SOC_RST, 15, TPS6594_BIT_ESM_SOC_RST_INT),
 
-	/* RTC_STATUS register */
+	 
 	REGMAP_IRQ_REG(TPS6594_IRQ_TIMER, 16, TPS6594_BIT_TIMER),
 	REGMAP_IRQ_REG(TPS6594_IRQ_ALARM, 16, TPS6594_BIT_ALARM),
 	REGMAP_IRQ_REG(TPS6594_IRQ_POWER_UP, 16, TPS6594_BIT_POWER_UP),
@@ -289,16 +285,7 @@ static int tps6594_handle_post_irq(void *irq_drv_data)
 	struct tps6594 *tps = irq_drv_data;
 	int ret = 0;
 
-	/*
-	 * When CRC is enabled, writing to a read-only bit triggers an error,
-	 * and COMM_ADR_ERR_INT bit is set. Besides, bits indicating interrupts
-	 * (that must be cleared) and read-only bits are sometimes grouped in
-	 * the same register.
-	 * Since regmap clears interrupts by doing a write per register, clearing
-	 * an interrupt bit in a register containing also a read-only bit makes
-	 * COMM_ADR_ERR_INT bit set. Clear immediately this bit to avoid raising
-	 * a new interrupt.
-	 */
+	 
 	if (tps->use_crc)
 		ret = regmap_write_bits(tps->regmap, TPS6594_REG_INT_COMM_ERR,
 					TPS6594_BIT_COMM_ADR_ERR_INT,
@@ -330,10 +317,7 @@ static int tps6594_check_crc_mode(struct tps6594 *tps, bool primary_pmic)
 {
 	int ret;
 
-	/*
-	 * Check if CRC is enabled.
-	 * Once CRC is enabled, it can't be disabled until next power cycle.
-	 */
+	 
 	tps->use_crc = true;
 	ret = regmap_test_bits(tps->regmap, TPS6594_REG_SERIAL_IF_CONFIG,
 			       TPS6594_BIT_I2C1_SPI_CRC_EN);
@@ -354,21 +338,14 @@ static int tps6594_set_crc_feature(struct tps6594 *tps)
 
 	ret = tps6594_check_crc_mode(tps, true);
 	if (ret) {
-		/*
-		 * If CRC is not already enabled, force PFSM I2C_2 trigger to enable it
-		 * on primary PMIC.
-		 */
+		 
 		tps->use_crc = false;
 		ret = regmap_write_bits(tps->regmap, TPS6594_REG_FSM_I2C_TRIGGERS,
 					TPS6594_BIT_TRIGGER_I2C(2), TPS6594_BIT_TRIGGER_I2C(2));
 		if (ret)
 			return ret;
 
-		/*
-		 * Wait for PFSM to process trigger.
-		 * The datasheet indicates 2 ms, and clock specification is +/-5%.
-		 * 4 ms should provide sufficient margin.
-		 */
+		 
 		usleep_range(4000, 5000);
 
 		ret = tps6594_check_crc_mode(tps, true);
@@ -384,24 +361,18 @@ static int tps6594_enable_crc(struct tps6594 *tps)
 	unsigned long timeout = msecs_to_jiffies(TPS6594_CRC_SYNC_TIMEOUT_MS);
 	int ret;
 
-	/*
-	 * CRC mode can be used with I2C or SPI protocols.
-	 * If this mode is specified for primary PMIC, it will also be applied to secondary PMICs
-	 * through SPMI serial interface.
-	 * In this multi-PMIC synchronization scheme, the primary PMIC is the controller device
-	 * on the SPMI bus, and the secondary PMICs are the target devices on the SPMI bus.
-	 */
+	 
 	is_primary = of_property_read_bool(dev->of_node, "ti,primary-pmic");
 	if (is_primary) {
-		/* Enable CRC feature on primary PMIC */
+		 
 		ret = tps6594_set_crc_feature(tps);
 		if (ret)
 			return ret;
 
-		/* Notify secondary PMICs that CRC feature is enabled */
+		 
 		complete_all(&tps6594_crc_comp);
 	} else {
-		/* Wait for CRC feature enabling event from primary PMIC */
+		 
 		ret = wait_for_completion_interruptible_timeout(&tps6594_crc_comp, timeout);
 		if (ret == 0)
 			ret = -ETIMEDOUT;
@@ -423,7 +394,7 @@ int tps6594_device_init(struct tps6594 *tps, bool enable_crc)
 			return dev_err_probe(dev, ret, "Failed to enable CRC\n");
 	}
 
-	/* Keep PMIC in ACTIVE state */
+	 
 	ret = regmap_set_bits(tps->regmap, TPS6594_REG_FSM_NSLEEP_TRIGGERS,
 			      TPS6594_BIT_NSLEEP1B | TPS6594_BIT_NSLEEP2B);
 	if (ret)
@@ -447,7 +418,7 @@ int tps6594_device_init(struct tps6594 *tps, bool enable_crc)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to add common child devices\n");
 
-	/* No RTC for LP8764 */
+	 
 	if (tps->chip_id != LP8764) {
 		ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, tps6594_rtc_cells,
 					   ARRAY_SIZE(tps6594_rtc_cells), NULL, 0,

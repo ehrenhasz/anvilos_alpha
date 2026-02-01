@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Microsemi Switchtec PCIe Driver
- * Copyright (c) 2017, Microsemi Corporation
- */
+ 
+ 
 
 #ifndef _SWITCHTEC_H
 #define _SWITCHTEC_H
@@ -492,10 +489,7 @@ struct switchtec_dev {
 	struct part_cfg_regs __iomem *mmio_part_cfg_all;
 	struct pff_csr_regs __iomem *mmio_pff_csr;
 
-	/*
-	 * The mrpc mutex must be held when accessing the other
-	 * mrpc_ fields, alive flag and stuser->state field
-	 */
+	 
 	struct mutex mrpc_mutex;
 	struct list_head mrpc_queue;
 	int mrpc_busy;

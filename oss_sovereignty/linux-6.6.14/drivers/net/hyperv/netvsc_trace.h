@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #if !defined(_NETVSC_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _NETVSC_TRACE_H
@@ -174,9 +174,9 @@ TRACE_EVENT(nvsp_recv,
 		  show_nvsp_type(__entry->msg_type))
 );
 
-#endif /* _NETVSC_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/net/hyperv
 #include <trace/define_trace.h>

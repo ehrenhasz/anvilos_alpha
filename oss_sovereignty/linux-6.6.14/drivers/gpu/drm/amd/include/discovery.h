@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _DISCOVERY_H_
 #define _DISCOVERY_H_
@@ -47,42 +26,42 @@ typedef enum
 
 typedef struct table_info
 {
-	uint16_t offset;   /* Byte offset */
-	uint16_t checksum; /* Byte sum of the table */
-	uint16_t size;     /* Table size */
+	uint16_t offset;    
+	uint16_t checksum;  
+	uint16_t size;      
 	uint16_t padding;
 } table_info;
 
 typedef struct binary_header
 {
-	/* psp structure should go at the top of this structure */
-	uint32_t binary_signature; /* 0x7, 0x14, 0x21, 0x28 */
+	 
+	uint32_t binary_signature;  
 	uint16_t version_major;
 	uint16_t version_minor;
-	uint16_t binary_checksum;  /* Byte sum of the binary after this field */
-	uint16_t binary_size;      /* Binary Size*/
+	uint16_t binary_checksum;   
+	uint16_t binary_size;       
 	table_info table_list[TOTAL_TABLES];
 } binary_header;
 
 typedef struct die_info
 {
 	uint16_t die_id;
-	uint16_t die_offset; /* Points to the corresponding die_header structure */
+	uint16_t die_offset;  
 } die_info;
 
 
 typedef struct ip_discovery_header
 {
-	uint32_t signature;    /* Table Signature */
-	uint16_t version;      /* Table Version */
-	uint16_t size;         /* Table Size */
-	uint32_t id;           /* Table ID */
-	uint16_t num_dies;     /* Number of Dies */
-	die_info die_info[16]; /* list die information for up to 16 dies */
+	uint32_t signature;     
+	uint16_t version;       
+	uint16_t size;          
+	uint32_t id;            
+	uint16_t num_dies;      
+	die_info die_info[16];  
 	union {
-		uint16_t padding[1];	/* version <= 3 */
-		struct {		/* version == 4 */
-			uint8_t base_addr_64_bit : 1; /* ip structures are using 64 bit base address */
+		uint16_t padding[1];	 
+		struct {		 
+			uint8_t base_addr_64_bit : 1;  
 			uint8_t reserved : 7;
 			uint8_t reserved2;
 		};
@@ -91,57 +70,57 @@ typedef struct ip_discovery_header
 
 typedef struct ip
 {
-	uint16_t hw_id;           /* Hardware ID */
-	uint8_t number_instance;  /* instance of the IP */
-	uint8_t num_base_address; /* Number of Base Addresses */
-	uint8_t major;            /* HCID Major */
-	uint8_t minor;            /* HCID Minor */
-	uint8_t revision;         /* HCID Revision */
+	uint16_t hw_id;            
+	uint8_t number_instance;   
+	uint8_t num_base_address;  
+	uint8_t major;             
+	uint8_t minor;             
+	uint8_t revision;          
 #if defined(__BIG_ENDIAN)
-	uint8_t reserved : 4;     /* Placeholder field */
-	uint8_t harvest : 4;      /* Harvest */
+	uint8_t reserved : 4;      
+	uint8_t harvest : 4;       
 #else
-	uint8_t harvest : 4;      /* Harvest */
-	uint8_t reserved : 4;     /* Placeholder field */
+	uint8_t harvest : 4;       
+	uint8_t reserved : 4;      
 #endif
-	uint32_t base_address[]; /* variable number of Addresses */
+	uint32_t base_address[];  
 } ip;
 
 typedef struct ip_v3
 {
-	uint16_t hw_id;                         /* Hardware ID */
-	uint8_t instance_number;                /* Instance number for the IP */
-	uint8_t num_base_address;               /* Number of base addresses*/
-	uint8_t major;                          /* Hardware ID.major version */
-	uint8_t minor;                          /* Hardware ID.minor version */
-	uint8_t revision;                       /* Hardware ID.revision version */
+	uint16_t hw_id;                          
+	uint8_t instance_number;                 
+	uint8_t num_base_address;                
+	uint8_t major;                           
+	uint8_t minor;                           
+	uint8_t revision;                        
 #if defined(__BIG_ENDIAN)
-	uint8_t variant : 4;                    /* HW variant */
-	uint8_t sub_revision : 4;               /* HCID Sub-Revision */
+	uint8_t variant : 4;                     
+	uint8_t sub_revision : 4;                
 #else
-	uint8_t sub_revision : 4;               /* HCID Sub-Revision */
-	uint8_t variant : 4;                    /* HW variant */
+	uint8_t sub_revision : 4;                
+	uint8_t variant : 4;                     
 #endif
-	uint32_t base_address[];		/* Base Address list. Corresponds to the num_base_address field*/
+	uint32_t base_address[];		 
 } ip_v3;
 
 typedef struct ip_v4 {
-	uint16_t hw_id;                         /* Hardware ID */
-	uint8_t instance_number;                /* Instance number for the IP */
-	uint8_t num_base_address;               /* Number of base addresses*/
-	uint8_t major;                          /* Hardware ID.major version */
-	uint8_t minor;                          /* Hardware ID.minor version */
-	uint8_t revision;                       /* Hardware ID.revision version */
+	uint16_t hw_id;                          
+	uint8_t instance_number;                 
+	uint8_t num_base_address;                
+	uint8_t major;                           
+	uint8_t minor;                           
+	uint8_t revision;                        
 #if defined(LITTLEENDIAN_CPU)
-	uint8_t sub_revision : 4;               /* HCID Sub-Revision */
-	uint8_t variant : 4;                    /* HW variant */
+	uint8_t sub_revision : 4;                
+	uint8_t variant : 4;                     
 #elif defined(BIGENDIAN_CPU)
-	uint8_t variant : 4;                    /* HW variant */
-	uint8_t sub_revision : 4;               /* HCID Sub-Revision */
+	uint8_t variant : 4;                     
+	uint8_t sub_revision : 4;                
 #endif
 	union {
-		DECLARE_FLEX_ARRAY(uint32_t, base_address);	/* 32-bit Base Address list. Corresponds to the num_base_address field*/
-		DECLARE_FLEX_ARRAY(uint64_t, base_address_64);	/* 64-bit Base Address list. Corresponds to the num_base_address field*/
+		DECLARE_FLEX_ARRAY(uint32_t, base_address);	 
+		DECLARE_FLEX_ARRAY(uint64_t, base_address_64);	 
 	} __packed;
 } ip_v4;
 
@@ -162,15 +141,15 @@ typedef struct ip_structure
 			ip *ip_list;
 			ip_v3 *ip_v3_list;
 			ip_v4 *ip_v4_list;
-		};                                  /* IP list. Variable size*/
+		};                                   
 	} die;
 } ip_structure;
 
 struct gpu_info_header {
-	uint32_t table_id;      /* table ID */
-	uint16_t version_major; /* table version */
-	uint16_t version_minor; /* table version */
-	uint32_t size;          /* size of the entire header+data in bytes */
+	uint32_t table_id;       
+	uint16_t version_major;  
+	uint16_t version_minor;  
+	uint32_t size;           
 };
 
 struct gc_info_v1_0 {
@@ -300,7 +279,7 @@ struct gc_info_v2_1 {
 	uint32_t gc_lds_size;
 	uint32_t gc_num_sc_per_se;
 	uint32_t gc_num_packer_per_sc;
-	/* new for v2_1 */
+	 
 	uint32_t gc_num_tcp_per_sh;
 	uint32_t gc_tcp_size_per_cu;
 	uint32_t gc_num_sdp_interface;
@@ -311,14 +290,14 @@ struct gc_info_v2_1 {
 };
 
 typedef struct harvest_info_header {
-	uint32_t signature; /* Table Signature */
-	uint32_t version;   /* Table Version */
+	uint32_t signature;  
+	uint32_t version;    
 } harvest_info_header;
 
 typedef struct harvest_info {
-	uint16_t hw_id;          /* Hardware ID */
-	uint8_t number_instance; /* Instance of the IP */
-	uint8_t reserved;        /* Reserved for alignment */
+	uint16_t hw_id;           
+	uint8_t number_instance;  
+	uint8_t reserved;         
 } harvest_info;
 
 typedef struct harvest_table {
@@ -327,10 +306,10 @@ typedef struct harvest_table {
 } harvest_table;
 
 struct mall_info_header {
-	uint32_t table_id; /* table ID */
-	uint16_t version_major; /* table version */
-	uint16_t version_minor; /* table version */
-	uint32_t size_bytes; /* size of the entire header+data in bytes */
+	uint32_t table_id;  
+	uint16_t version_major;  
+	uint16_t version_minor;  
+	uint32_t size_bytes;  
 };
 
 struct mall_info_v1_0 {
@@ -351,15 +330,15 @@ struct mall_info_v2_0 {
 #define VCN_INFO_TABLE_MAX_NUM_INSTANCES 4
 
 struct vcn_info_header {
-    uint32_t table_id; /* table ID */
-    uint16_t version_major; /* table version */
-    uint16_t version_minor; /* table version */
-    uint32_t size_bytes; /* size of the entire header+data in bytes */
+    uint32_t table_id;  
+    uint16_t version_major;  
+    uint16_t version_minor;  
+    uint32_t size_bytes;  
 };
 
 struct vcn_instance_info_v1_0
 {
-	uint32_t instance_num; /* VCN IP instance number. 0 - VCN0; 1 - VCN1 etc*/
+	uint32_t instance_num;  
 	union _fuse_data {
 		struct {
 			uint32_t av1_disabled : 1;
@@ -375,7 +354,7 @@ struct vcn_instance_info_v1_0
 
 struct vcn_info_v1_0 {
 	struct vcn_info_header header;
-	uint32_t num_of_instances; /* number of entries used in instance_info below*/
+	uint32_t num_of_instances;  
 	struct vcn_instance_info_v1_0 instance_info[VCN_INFO_TABLE_MAX_NUM_INSTANCES];
 	uint32_t reserved[4];
 };

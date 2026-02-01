@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Software async crypto daemon.
- *
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- *
- * Added AEAD support to cryptd.
- *    Authors: Tadeusz Struk (tadeusz.struk@intel.com)
- *             Adrian Hoban <adrian.hoban@intel.com>
- *             Gabriele Paoloni <gabriele.paoloni@intel.com>
- *             Aidan O'Mahony (aidan.o.mahony@intel.com)
- *    Copyright (c) 2010, Intel Corporation.
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <crypto/internal/aead.h>
@@ -39,10 +28,7 @@ struct cryptd_cpu_queue {
 };
 
 struct cryptd_queue {
-	/*
-	 * Protected by disabling BH to allow enqueueing from softinterrupt and
-	 * dequeuing from kworker (cryptd_queue_worker()).
-	 */
+	 
 	struct cryptd_cpu_queue __percpu *cpu_queue;
 };
 
@@ -156,18 +142,14 @@ out:
 	return err;
 }
 
-/* Called in workqueue context, do one real cryption work (via
- * req->complete) and reschedule itself if there are more work to
- * do. */
+ 
 static void cryptd_queue_worker(struct work_struct *work)
 {
 	struct cryptd_cpu_queue *cpu_queue;
 	struct crypto_async_request *req, *backlog;
 
 	cpu_queue = container_of(work, struct cryptd_cpu_queue, work);
-	/*
-	 * Only handle one request at a time to avoid hogging crypto workqueue.
-	 */
+	 
 	local_bh_disable();
 	backlog = crypto_get_backlog(&cpu_queue->queue);
 	req = crypto_dequeue_request(&cpu_queue->queue);
@@ -194,14 +176,11 @@ static inline struct cryptd_queue *cryptd_get_queue(struct crypto_tfm *tfm)
 static void cryptd_type_and_mask(struct crypto_attr_type *algt,
 				 u32 *type, u32 *mask)
 {
-	/*
-	 * cryptd is allowed to wrap internal algorithms, but in that case the
-	 * resulting cryptd instance will be marked as internal as well.
-	 */
+	 
 	*type = algt->type & CRYPTO_ALG_INTERNAL;
 	*mask = algt->mask & CRYPTO_ALG_INTERNAL;
 
-	/* No point in cryptd wrapping an algorithm that's already async. */
+	 
 	*mask |= CRYPTO_ALG_ASYNC;
 
 	*mask |= crypto_algt_inherited_mask(algt);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra20_spdif.c - Tegra20 SPDIF driver
- *
- * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (C) 2011-2012 - NVIDIA, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -94,10 +89,7 @@ static int tegra20_spdif_hw_params(struct snd_pcm_substream *substream,
 
 	regmap_update_bits(spdif->regmap, TEGRA20_SPDIF_CTRL, mask, val);
 
-	/*
-	 * FIFO trigger level must be bigger than DMA burst or equal to it,
-	 * otherwise data is discarded on overflow.
-	 */
+	 
 	regmap_update_bits(spdif->regmap, TEGRA20_SPDIF_DATA_FIFO_CSR,
 			   TEGRA20_SPDIF_DATA_FIFO_CSR_TX_ATN_LVL_MASK,
 			   TEGRA20_SPDIF_DATA_FIFO_CSR_TX_ATN_LVL_TU4_WORD_FULL);
@@ -200,10 +192,7 @@ static int tegra20_spdif_filter_rates(struct snd_pcm_hw_params *params,
 			valid_rates |= BIT(i);
 	}
 
-	/*
-	 * At least one rate must be valid, otherwise the parent clock isn't
-	 * audio PLL. Nothing should be filtered in this case.
-	 */
+	 
 	if (!valid_rates)
 		valid_rates = BIT(ARRAY_SIZE(rates)) - 1;
 
@@ -216,15 +205,7 @@ static int tegra20_spdif_startup(struct snd_pcm_substream *substream,
 	if (!device_property_read_bool(dai->dev, "nvidia,fixed-parent-rate"))
 		return 0;
 
-	/*
-	 * SPDIF and I2S share audio PLL. HDMI takes audio packets from SPDIF
-	 * and audio may not work on some TVs if clock rate isn't precise.
-	 *
-	 * PLL rate is controlled by I2S side. Filter out audio rates that
-	 * don't match PLL rate at the start of stream to allow both SPDIF
-	 * and I2S work simultaneously, assuming that PLL rate won't be
-	 * changed later on.
-	 */
+	 
 	return snd_pcm_hw_rule_add(substream->runtime, 0,
 				   SNDRV_PCM_HW_PARAM_RATE,
 				   tegra20_spdif_filter_rates, dai,

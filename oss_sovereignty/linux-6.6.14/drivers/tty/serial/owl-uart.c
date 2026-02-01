@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Actions Semi Owl family serial console
- *
- * Copyright 2013 Actions Semi Inc.
- * Author: Actions Semi, Inc.
- *
- * Copyright (c) 2016-2017 Andreas Färber
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/console.h>
@@ -204,7 +197,7 @@ static void owl_uart_receive_chars(struct uart_port *port)
 			port->icount.overrun++;
 
 		if (stat & OWL_UART_STAT_RXST) {
-			/* We are not able to distinguish the error type. */
+			 
 			port->icount.brk++;
 			port->icount.frame++;
 
@@ -361,7 +354,7 @@ static void owl_uart_set_termios(struct uart_port *port,
 	baud = uart_get_baud_rate(port, termios, old, 9600, 3200000);
 	owl_uart_change_baudrate(owl_port, baud);
 
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 
@@ -454,7 +447,7 @@ static void owl_uart_poll_put_char(struct uart_port *port, unsigned char ch)
 	u32 reg;
 	int ret;
 
-	/* Wait while FIFO is full or timeout */
+	 
 	ret = readl_poll_timeout_atomic(port->membase + OWL_UART_STAT, reg,
 					!(reg & OWL_UART_STAT_TFFU),
 					OWL_UART_POLL_USEC,
@@ -467,7 +460,7 @@ static void owl_uart_poll_put_char(struct uart_port *port, unsigned char ch)
 	owl_uart_write(port, ch, OWL_UART_TXDAT);
 }
 
-#endif /* CONFIG_CONSOLE_POLL */
+#endif  
 
 static const struct uart_ops owl_uart_ops = {
 	.set_mctrl = owl_uart_set_mctrl,
@@ -523,17 +516,17 @@ static void owl_uart_port_write(struct uart_port *port, const char *s,
 
 	old_ctl = owl_uart_read(port, OWL_UART_CTL);
 	val = old_ctl | OWL_UART_CTL_TRFS_TX;
-	/* disable IRQ */
+	 
 	val &= ~(OWL_UART_CTL_RXIE | OWL_UART_CTL_TXIE);
 	owl_uart_write(port, val, OWL_UART_CTL);
 
 	uart_console_write(port, s, count, owl_console_putchar);
 
-	/* wait until all contents have been sent out */
+	 
 	while (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TRFL_MASK)
 		cpu_relax();
 
-	/* clear IRQ pending */
+	 
 	val = owl_uart_read(port, OWL_UART_STAT);
 	val |= OWL_UART_STAT_TIP | OWL_UART_STAT_RIP;
 	owl_uart_write(port, val, OWL_UART_STAT);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include "vmlinux.h"
 
 #include <bpf/bpf_helpers.h>
@@ -63,11 +63,11 @@ int BPF_PROG(fexit_eth_type_trans, struct sk_buff *skb,
 
 volatile const int never;
 
-struct __sk_bUfF /* it will not exist in vmlinux */ {
+struct __sk_bUfF   {
 	int len;
 } __attribute__((preserve_access_index));
 
-struct bpf_testmod_test_read_ctx /* it exists in bpf_testmod */ {
+struct bpf_testmod_test_read_ctx   {
 	size_t len;
 } __attribute__((preserve_access_index));
 
@@ -81,23 +81,21 @@ int balancer_ingress(struct __sk_buff *ctx)
 
 	nh_off = 14;
 
-	/* pragma unroll doesn't work on large loops */
+	 
 #define C do { \
 	ptr = data + i; \
 	if (ptr + nh_off > data_end) \
 		break; \
 	ctx->tc_index = jhash(ptr, nh_off, ctx->cb[0] + i++); \
 	if (never) { \
-		/* below is a dead code with unresolvable CO-RE relo */ \
+		  \
 		i += ((struct __sk_bUfF *)ctx)->len; \
-		/* this CO-RE relo may or may not resolve
-		 * depending on whether bpf_testmod is loaded.
-		 */ \
+		  \
 		i += ((struct bpf_testmod_test_read_ctx *)ctx)->len; \
 	} \
 	} while (0);
 #define C30 C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;
-	C30;C30;C30; /* 90 calls */
+	C30;C30;C30;  
 	return 0;
 }
 

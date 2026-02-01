@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/etherdevice.h>
@@ -29,12 +27,12 @@
 #define ENET_DMA_INT_DEFAULTS			(ENET_DMA_CH_CFG_INT_DONE | \
 						 ENET_DMA_CH_CFG_INT_NO_DESC | \
 						 ENET_DMA_CH_CFG_INT_BUFF_DONE)
-#define ENET_DMA_MAX_BURST_LEN			8 /* in 64 bit words */
+#define ENET_DMA_MAX_BURST_LEN			8  
 
-#define ENET_MTU_MAX				ETH_DATA_LEN /* Is it possible to support 2044? */
+#define ENET_MTU_MAX				ETH_DATA_LEN  
 #define BRCM_MAX_TAG_LEN			6
 #define ENET_MAX_ETH_OVERHEAD			(ETH_HLEN + BRCM_MAX_TAG_LEN + VLAN_HLEN + \
-						 ETH_FCS_LEN + 4) /* 32 */
+						 ETH_FCS_LEN + 4)  
 
 #define ENET_RX_SKB_BUF_SIZE			(NET_SKB_PAD + NET_IP_ALIGN + \
 						 ETH_HLEN + BRCM_MAX_TAG_LEN + VLAN_HLEN + \
@@ -51,8 +49,8 @@ struct bcm4908_enet_dma_ring_bd {
 
 struct bcm4908_enet_dma_ring_slot {
 	union {
-		void *buf;			/* RX */
-		struct sk_buff *skb;		/* TX */
+		void *buf;			 
+		struct sk_buff *skb;		 
 	};
 	unsigned int len;
 	dma_addr_t dma_addr;
@@ -86,9 +84,7 @@ struct bcm4908_enet {
 	struct bcm4908_enet_dma_ring rx_ring;
 };
 
-/***
- * R/W ops
- */
+ 
 
 static u32 enet_read(struct bcm4908_enet *enet, u16 offset)
 {
@@ -131,18 +127,14 @@ static void enet_umac_set(struct bcm4908_enet *enet, u16 offset, u32 set)
 	enet_set(enet, ENET_UNIMAC + offset, set);
 }
 
-/***
- * Helpers
- */
+ 
 
 static void bcm4908_enet_set_mtu(struct bcm4908_enet *enet, int mtu)
 {
 	enet_umac_write(enet, UMAC_MAX_FRAME_LEN, mtu + ENET_MAX_ETH_OVERHEAD);
 }
 
-/***
- * DMA ring ops
- */
+ 
 
 static void bcm4908_enet_dma_ring_intrs_on(struct bcm4908_enet *enet,
 					   struct bcm4908_enet_dma_ring *ring)
@@ -162,9 +154,7 @@ static void bcm4908_enet_dma_ring_intrs_ack(struct bcm4908_enet *enet,
 	enet_write(enet, ring->cfg_block + ENET_DMA_CH_CFG_INT_STAT, ENET_DMA_INT_DEFAULTS);
 }
 
-/***
- * DMA
- */
+ 
 
 static int bcm4908_dma_alloc_buf_descs(struct bcm4908_enet *enet,
 				       struct bcm4908_enet_dma_ring *ring)
@@ -247,12 +237,12 @@ static void bcm4908_enet_dma_reset(struct bcm4908_enet *enet)
 	struct bcm4908_enet_dma_ring *rings[] = { &enet->rx_ring, &enet->tx_ring };
 	int i;
 
-	/* Disable the DMA controller and channel */
+	 
 	for (i = 0; i < ARRAY_SIZE(rings); i++)
 		enet_write(enet, rings[i]->cfg_block + ENET_DMA_CH_CFG, 0);
 	enet_maskset(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_MASTER_EN, 0);
 
-	/* Reset channels state */
+	 
 	for (i = 0; i < ARRAY_SIZE(rings); i++) {
 		struct bcm4908_enet_dma_ring *ring = rings[i];
 
@@ -298,10 +288,10 @@ static int bcm4908_enet_dma_alloc_rx_buf(struct bcm4908_enet *enet, unsigned int
 static void bcm4908_enet_dma_ring_init(struct bcm4908_enet *enet,
 				       struct bcm4908_enet_dma_ring *ring)
 {
-	int reset_channel = 0; /* We support only 1 main channel (with TX and RX) */
+	int reset_channel = 0;  
 	int reset_subch = ring->is_tx ? 1 : 0;
 
-	/* Reset the DMA channel */
+	 
 	enet_write(enet, ENET_DMA_CTRL_CHANNEL_RESET, BIT(reset_channel * 2 + reset_subch));
 	enet_write(enet, ENET_DMA_CTRL_CHANNEL_RESET, 0);
 
@@ -393,9 +383,7 @@ static void bcm4908_enet_dma_rx_ring_disable(struct bcm4908_enet *enet,
 	dev_warn(enet->dev, "Timeout waiting for DMA TX stop\n");
 }
 
-/***
- * Ethernet driver
- */
+ 
 
 static void bcm4908_enet_gmac_init(struct bcm4908_enet *enet)
 {
@@ -528,12 +516,12 @@ static netdev_tx_t bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_devic
 	int free_buf_descs;
 	u32 tmp;
 
-	/* Free transmitted skbs */
+	 
 	if (enet->irq_tx < 0 &&
 	    !(le32_to_cpu(ring->buf_desc[ring->read_idx].ctl) & DMA_CTL_STATUS_OWN))
 		napi_schedule(&enet->tx_ring.napi);
 
-	/* Don't use the last empty buf descriptor */
+	 
 	if (ring->read_idx <= ring->write_idx)
 		free_buf_descs = ring->read_idx - ring->write_idx + ring->length;
 	else
@@ -543,7 +531,7 @@ static netdev_tx_t bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_devic
 		return NETDEV_TX_BUSY;
 	}
 
-	/* Hardware removes OWN bit after sending data */
+	 
 	buf_desc = &ring->buf_desc[ring->write_idx];
 	if (unlikely(le32_to_cpu(buf_desc->ctl) & DMA_CTL_STATUS_OWN)) {
 		netif_stop_queue(netdev);
@@ -600,7 +588,7 @@ static int bcm4908_enet_poll_rx(struct napi_struct *napi, int weight)
 
 		slot = enet->rx_ring.slots[enet->rx_ring.read_idx];
 
-		/* Provide new buffer before unpinning the old one */
+		 
 		err = bcm4908_enet_dma_alloc_rx_buf(enet, enet->rx_ring.read_idx);
 		if (err)
 			break;
@@ -642,7 +630,7 @@ static int bcm4908_enet_poll_rx(struct napi_struct *napi, int weight)
 		bcm4908_enet_dma_ring_intrs_on(enet, rx_ring);
 	}
 
-	/* Hardware could disable ring if it run out of descriptors */
+	 
 	bcm4908_enet_dma_rx_ring_enable(enet, &enet->rx_ring);
 
 	return handled;

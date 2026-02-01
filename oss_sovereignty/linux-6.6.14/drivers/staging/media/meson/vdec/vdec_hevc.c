@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Maxime Jourdan <maxi.jourdan@wanadoo.fr>
- *
- * VDEC_HEVC is a video decoding block that allows decoding of
- * HEVC, VP9
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/clk.h>
@@ -15,7 +10,7 @@
 #include "hevc_regs.h"
 #include "dos_regs.h"
 
-/* AO Registers */
+ 
 #define AO_RTI_GEN_PWR_SLEEP0	0xe8
 #define AO_RTI_GEN_PWR_ISO0	0xec
 	#define GEN_PWR_VDEC_HEVC (BIT(7) | BIT(6))
@@ -90,12 +85,12 @@ static void vdec_hevc_stbuf_init(struct amvdec_session *sess)
 	amvdec_write_dos(core, HEVC_STREAM_WR_PTR, sess->vififo_paddr);
 }
 
-/* VDEC_HEVC specific ESPARSER configuration */
+ 
 static void vdec_hevc_conf_esparser(struct amvdec_session *sess)
 {
 	struct amvdec_core *core = sess->core;
 
-	/* set vififo_vbuf_rp_sel=>vdec_hevc */
+	 
 	amvdec_write_dos(core, DOS_GEN_CTRL0, 3 << 1);
 	amvdec_write_dos(core, HEVC_STREAM_CONTROL,
 			 amvdec_read_dos(core, HEVC_STREAM_CONTROL) | BIT(3));
@@ -115,15 +110,15 @@ static int vdec_hevc_stop(struct amvdec_session *sess)
 	struct amvdec_core *core = sess->core;
 	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
 
-	/* Disable interrupt */
+	 
 	amvdec_write_dos(core, HEVC_ASSIST_MBOX1_MASK, 0);
-	/* Disable firmware processor */
+	 
 	amvdec_write_dos(core, HEVC_MPSR, 0);
 
 	if (sess->priv)
 		codec_ops->stop(sess);
 
-	/* Enable VDEC_HEVC Isolation */
+	 
 	if (core->platform->revision == VDEC_REVISION_SM1)
 		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
 				   GEN_PWR_VDEC_HEVC_SM1,
@@ -132,7 +127,7 @@ static int vdec_hevc_stop(struct amvdec_session *sess)
 		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
 				   0xc00, 0xc00);
 
-	/* VDEC_HEVC Memories */
+	 
 	amvdec_write_dos(core, DOS_MEM_PD_HEVC, 0xffffffffUL);
 
 	if (core->platform->revision == VDEC_REVISION_SM1)
@@ -182,16 +177,16 @@ static int vdec_hevc_start(struct amvdec_session *sess)
 				   GEN_PWR_VDEC_HEVC, 0);
 	usleep_range(10, 20);
 
-	/* Reset VDEC_HEVC*/
+	 
 	amvdec_write_dos(core, DOS_SW_RESET3, 0xffffffff);
 	amvdec_write_dos(core, DOS_SW_RESET3, 0x00000000);
 
 	amvdec_write_dos(core, DOS_GCLK_EN3, 0xffffffff);
 
-	/* VDEC_HEVC Memories */
+	 
 	amvdec_write_dos(core, DOS_MEM_PD_HEVC, 0x00000000);
 
-	/* Remove VDEC_HEVC Isolation */
+	 
 	if (core->platform->revision == VDEC_REVISION_SM1)
 		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
 				   GEN_PWR_VDEC_HEVC_SM1, 0);
@@ -217,7 +212,7 @@ static int vdec_hevc_start(struct amvdec_session *sess)
 	amvdec_read_dos(core, DOS_SW_RESET3);
 
 	amvdec_write_dos(core, HEVC_MPSR, 1);
-	/* Let the firmware settle */
+	 
 	usleep_range(10, 20);
 
 	return 0;

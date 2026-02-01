@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_FUTEX_H
 #define _ASM_X86_FUTEX_H
 
@@ -100,4 +100,4 @@ static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 }
 
 #endif
-#endif /* _ASM_X86_FUTEX_H */
+#endif  

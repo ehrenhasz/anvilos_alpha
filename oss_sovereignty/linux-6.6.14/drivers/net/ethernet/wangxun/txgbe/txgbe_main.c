@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -21,18 +21,11 @@
 
 char txgbe_driver_name[] = "txgbe";
 
-/* txgbe_pci_tbl - PCI Device ID Table
- *
- * Wildcard entries (PCI_ANY_ID) should come last
- * Last entry must be all 0s
- *
- * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
- *   Class, Class Mask, private data (not used) }
- */
+ 
 static const struct pci_device_id txgbe_pci_tbl[] = {
 	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_SP1000), 0},
 	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_WX1820), 0},
-	/* required last entry */
+	 
 	{ .device = 0 }
 };
 
@@ -46,26 +39,14 @@ static void txgbe_check_minimum_link(struct wx *wx)
 	pcie_print_link_status(pdev);
 }
 
-/**
- * txgbe_enumerate_functions - Get the number of ports this device has
- * @wx: wx structure
- *
- * This function enumerates the phsyical functions co-located on a single slot,
- * in order to determine how many ports a device has. This is most useful in
- * determining the required GT/s of PCIe bandwidth necessary for optimal
- * performance.
- **/
+ 
 static int txgbe_enumerate_functions(struct wx *wx)
 {
 	struct pci_dev *entry, *pdev = wx->pdev;
 	int physfns = 0;
 
 	list_for_each_entry(entry, &pdev->bus->devices, bus_list) {
-		/* When the devices on the bus don't all match our device ID,
-		 * we can't reliably determine the correct number of
-		 * functions. This can occur if a function has been direct
-		 * attached to a virtual machine using VT-d.
-		 */
+		 
 		if (entry->vendor != pdev->vendor ||
 		    entry->device != pdev->device)
 			return -EINVAL;
@@ -76,26 +57,18 @@ static int txgbe_enumerate_functions(struct wx *wx)
 	return physfns;
 }
 
-/**
- * txgbe_irq_enable - Enable default interrupt generation settings
- * @wx: pointer to private structure
- * @queues: enable irqs for queues
- **/
+ 
 static void txgbe_irq_enable(struct wx *wx, bool queues)
 {
 	wr32(wx, WX_PX_MISC_IEN, TXGBE_PX_MISC_IEN_MASK);
 
-	/* unmask interrupt */
+	 
 	wx_intr_enable(wx, TXGBE_INTR_MISC(wx));
 	if (queues)
 		wx_intr_enable(wx, TXGBE_INTR_QALL(wx));
 }
 
-/**
- * txgbe_intr - msi/legacy mode Interrupt Handler
- * @irq: interrupt number
- * @data: pointer to a network interface device structure
- **/
+ 
 static irqreturn_t txgbe_intr(int __always_unused irq, void *data)
 {
 	struct wx_q_vector *q_vector;
@@ -108,36 +81,27 @@ static irqreturn_t txgbe_intr(int __always_unused irq, void *data)
 
 	eicr = wx_misc_isb(wx, WX_ISB_VEC0);
 	if (!eicr) {
-		/* shared interrupt alert!
-		 * the interrupt that we masked before the ICR read.
-		 */
+		 
 		if (netif_running(wx->netdev))
 			txgbe_irq_enable(wx, true);
-		return IRQ_NONE;        /* Not our interrupt */
+		return IRQ_NONE;         
 	}
 	wx->isb_mem[WX_ISB_VEC0] = 0;
 	if (!(pdev->msi_enabled))
 		wr32(wx, WX_PX_INTA, 1);
 
 	wx->isb_mem[WX_ISB_MISC] = 0;
-	/* would disable interrupts here but it is auto disabled */
+	 
 	napi_schedule_irqoff(&q_vector->napi);
 
-	/* re-enable link(maybe) and non-queue interrupts, no flush.
-	 * txgbe_poll will re-enable the queue interrupts
-	 */
+	 
 	if (netif_running(wx->netdev))
 		txgbe_irq_enable(wx, false);
 
 	return IRQ_HANDLED;
 }
 
-/**
- * txgbe_request_msix_irqs - Initialize MSI-X interrupts
- * @wx: board private structure
- *
- * Allocate MSI-X vectors and request interrupts from the kernel.
- **/
+ 
 static int txgbe_request_msix_irqs(struct wx *wx)
 {
 	struct net_device *netdev = wx->netdev;
@@ -151,7 +115,7 @@ static int txgbe_request_msix_irqs(struct wx *wx)
 			snprintf(q_vector->name, sizeof(q_vector->name) - 1,
 				 "%s-TxRx-%d", netdev->name, entry->entry);
 		else
-			/* skip this unused q_vector */
+			 
 			continue;
 
 		err = request_irq(entry->vector, wx_msix_clean_rings, 0,
@@ -175,13 +139,7 @@ free_queue_irqs:
 	return err;
 }
 
-/**
- * txgbe_request_irq - initialize interrupts
- * @wx: board private structure
- *
- * Attempt to configure interrupts using the best available
- * capabilities of the hardware and kernel.
- **/
+ 
 static int txgbe_request_irq(struct wx *wx)
 {
 	struct net_device *netdev = wx->netdev;
@@ -211,20 +169,20 @@ static void txgbe_up_complete(struct wx *wx)
 	wx_control_hw(wx, true);
 	wx_configure_vectors(wx);
 
-	/* make sure to complete pre-operations */
+	 
 	smp_mb__before_atomic();
 	wx_napi_enable_all(wx);
 
 	txgbe = netdev_to_txgbe(netdev);
 	phylink_start(txgbe->phylink);
 
-	/* clear any pending interrupts, may auto mask */
+	 
 	rd32(wx, WX_PX_IC(0));
 	rd32(wx, WX_PX_IC(1));
 	rd32(wx, WX_PX_MISC_IC);
 	txgbe_irq_enable(wx, true);
 
-	/* enable transmits */
+	 
 	netif_tx_start_all_queues(netdev);
 }
 
@@ -239,7 +197,7 @@ static void txgbe_reset(struct wx *wx)
 		wx_err(wx, "Hardware Error: %d\n", err);
 
 	wx_start_hw(wx);
-	/* do not flush user set addresses */
+	 
 	memcpy(old_addr, &wx->mac_table[0].addr, netdev->addr_len);
 	wx_flush_sw_mac_table(wx);
 	wx_mac_set_default_filter(wx, old_addr);
@@ -251,12 +209,12 @@ static void txgbe_disable_device(struct wx *wx)
 	u32 i;
 
 	wx_disable_pcie_master(wx);
-	/* disable receives */
+	 
 	wx_disable_rx(wx);
 
-	/* disable all enabled rx queues */
+	 
 	for (i = 0; i < wx->num_rx_queues; i++)
-		/* this call also flushes the previous write */
+		 
 		wx_disable_rx_queue(wx, wx->rx_ring[i]);
 
 	netif_tx_stop_all_queues(netdev);
@@ -273,18 +231,18 @@ static void txgbe_disable_device(struct wx *wx)
 
 	if (!(((wx->subsystem_device_id & WX_NCSI_MASK) == WX_NCSI_SUP) ||
 	      ((wx->subsystem_device_id & WX_WOL_MASK) == WX_WOL_SUP))) {
-		/* disable mac transmiter */
+		 
 		wr32m(wx, WX_MAC_TX_CFG, WX_MAC_TX_CFG_TE, 0);
 	}
 
-	/* disable transmits in the hardware now that interrupts are off */
+	 
 	for (i = 0; i < wx->num_tx_queues; i++) {
 		u8 reg_idx = wx->tx_ring[i]->reg_idx;
 
 		wr32(wx, WX_PX_TR_CFG(reg_idx), WX_PX_TR_CFG_SWFLSH);
 	}
 
-	/* Disable the Tx DMA engine */
+	 
 	wr32m(wx, WX_TDM_CTL, WX_TDM_CTL_TE, 0);
 }
 
@@ -300,10 +258,7 @@ static void txgbe_down(struct wx *wx)
 	wx_clean_all_rx_rings(wx);
 }
 
-/**
- *  txgbe_init_type_code - Initialize the shared code
- *  @wx: pointer to hardware structure
- **/
+ 
 static void txgbe_init_type_code(struct wx *wx)
 {
 	u8 device_type = wx->subsystem_device_id & 0xF0;
@@ -343,10 +298,7 @@ static void txgbe_init_type_code(struct wx *wx)
 	}
 }
 
-/**
- * txgbe_sw_init - Initialize general software structures (struct wx)
- * @wx: board private structure to initialize
- **/
+ 
 static int txgbe_sw_init(struct wx *wx)
 {
 	u16 msix_count = 0;
@@ -360,44 +312,36 @@ static int txgbe_sw_init(struct wx *wx)
 	wx->mac.rx_pb_size = TXGBE_SP_RX_PB_SIZE;
 	wx->mac.tx_pb_size = TXGBE_SP_TDB_PB_SZ;
 
-	/* PCI config space info */
+	 
 	err = wx_sw_init(wx);
 	if (err < 0)
 		return err;
 
 	txgbe_init_type_code(wx);
 
-	/* Set common capability flags and settings */
+	 
 	wx->max_q_vectors = TXGBE_MAX_MSIX_VECTORS;
 	err = wx_get_pcie_msix_counts(wx, &msix_count, TXGBE_MAX_MSIX_VECTORS);
 	if (err)
 		wx_err(wx, "Do not support MSI-X\n");
 	wx->mac.max_msix_vectors = msix_count;
 
-	/* enable itr by default in dynamic mode */
+	 
 	wx->rx_itr_setting = 1;
 	wx->tx_itr_setting = 1;
 
-	/* set default ring sizes */
+	 
 	wx->tx_ring_count = TXGBE_DEFAULT_TXD;
 	wx->rx_ring_count = TXGBE_DEFAULT_RXD;
 
-	/* set default work limits */
+	 
 	wx->tx_work_limit = TXGBE_DEFAULT_TX_WORK;
 	wx->rx_work_limit = TXGBE_DEFAULT_RX_WORK;
 
 	return 0;
 }
 
-/**
- * txgbe_open - Called when a network interface is made active
- * @netdev: network interface device structure
- *
- * Returns 0 on success, negative value on failure
- *
- * The open entry point is called when a network interface is made
- * active by the system (IFF_UP).
- **/
+ 
 static int txgbe_open(struct net_device *netdev)
 {
 	struct wx *wx = netdev_priv(netdev);
@@ -413,7 +357,7 @@ static int txgbe_open(struct net_device *netdev)
 	if (err)
 		goto err_free_isb;
 
-	/* Notify the stack of the actual queue counts. */
+	 
 	err = netif_set_real_num_tx_queues(netdev, wx->num_tx_queues);
 	if (err)
 		goto err_free_irq;
@@ -436,30 +380,14 @@ err_reset:
 	return err;
 }
 
-/**
- * txgbe_close_suspend - actions necessary to both suspend and close flows
- * @wx: the private wx struct
- *
- * This function should contain the necessary work common to both suspending
- * and closing of the device.
- */
+ 
 static void txgbe_close_suspend(struct wx *wx)
 {
 	txgbe_disable_device(wx);
 	wx_free_resources(wx);
 }
 
-/**
- * txgbe_close - Disables a network interface
- * @netdev: network interface device structure
- *
- * Returns 0, this is not allowed to fail
- *
- * The close entry point is called when an interface is de-activated
- * by the OS.  The hardware is still under the drivers control, but
- * needs to be disabled.  A global MAC reset is issued to stop the
- * hardware, and all transmit and receive resources are freed.
- **/
+ 
 static int txgbe_close(struct net_device *netdev)
 {
 	struct wx *wx = netdev_priv(netdev);
@@ -514,17 +442,7 @@ static const struct net_device_ops txgbe_netdev_ops = {
 	.ndo_vlan_rx_kill_vid   = wx_vlan_rx_kill_vid,
 };
 
-/**
- * txgbe_probe - Device Initialization Routine
- * @pdev: PCI device information struct
- * @ent: entry in txgbe_pci_tbl
- *
- * Returns 0 on success, negative on failure
- *
- * txgbe_probe initializes an adapter identified by a pci_dev structure.
- * The OS initialization, configuring of the wx private structure,
- * and a hardware reset occur.
- **/
+ 
 static int txgbe_probe(struct pci_dev *pdev,
 		       const struct pci_device_id __always_unused *ent)
 {
@@ -590,12 +508,12 @@ static int txgbe_probe(struct pci_dev *pdev,
 	txgbe_set_ethtool_ops(netdev);
 	netdev->netdev_ops = &txgbe_netdev_ops;
 
-	/* setup the private structure */
+	 
 	err = txgbe_sw_init(wx);
 	if (err)
 		goto err_free_mac_table;
 
-	/* check if flash load is done after hw power up */
+	 
 	err = wx_check_flash_load(wx, TXGBE_SPI_ILDR_STATUS_PERST);
 	if (err)
 		goto err_free_mac_table;
@@ -628,7 +546,7 @@ static int txgbe_probe(struct pci_dev *pdev,
 	netdev->vlan_features |= netdev->features | NETIF_F_TSO_MANGLEID;
 	netdev->hw_enc_features |= netdev->vlan_features;
 	netdev->features |= NETIF_F_VLAN_FEATURES;
-	/* copy netdev features into list of user selectable features */
+	 
 	netdev->hw_features |= netdev->features | NETIF_F_RXALL;
 	netdev->hw_features |= NETIF_F_NTUPLE | NETIF_F_HW_TC;
 	netdev->features |= NETIF_F_HIGHDMA;
@@ -642,7 +560,7 @@ static int txgbe_probe(struct pci_dev *pdev,
 	netdev->max_mtu = WX_MAX_JUMBO_FRAME_SIZE -
 			  (ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
 
-	/* make sure the EEPROM is good */
+	 
 	err = txgbe_validate_eeprom_checksum(wx, NULL);
 	if (err != 0) {
 		dev_err(&pdev->dev, "The EEPROM Checksum Is Not Valid\n");
@@ -658,9 +576,7 @@ static int txgbe_probe(struct pci_dev *pdev,
 	if (err)
 		goto err_free_mac_table;
 
-	/* Save off EEPROM version number and Option Rom version which
-	 * together make a unique identify for the eeprom
-	 */
+	 
 	wx_read_ee_hostif(wx,
 			  wx->eeprom.sw_region_offset + TXGBE_EEPROM_VERSION_H,
 			  &eeprom_verh);
@@ -673,12 +589,12 @@ static int txgbe_probe(struct pci_dev *pdev,
 			  wx->eeprom.sw_region_offset + TXGBE_ISCSI_BOOT_CONFIG,
 			  &offset);
 
-	/* Make sure offset to SCSI block is valid */
+	 
 	if (!(offset == 0x0) && !(offset == 0xffff)) {
 		wx_read_ee_hostif(wx, offset + 0x84, &eeprom_cfg_blkh);
 		wx_read_ee_hostif(wx, offset + 0x83, &eeprom_cfg_blkl);
 
-		/* Only display Option Rom if exist */
+		 
 		if (eeprom_cfg_blkl && eeprom_cfg_blkh) {
 			major = eeprom_cfg_blkl >> 8;
 			build = (eeprom_cfg_blkl << 8) | (eeprom_cfg_blkh >> 8);
@@ -720,21 +636,16 @@ static int txgbe_probe(struct pci_dev *pdev,
 
 	netif_tx_stop_all_queues(netdev);
 
-	/* calculate the expected PCIe bandwidth required for optimal
-	 * performance. Note that some older parts will never have enough
-	 * bandwidth due to being older generation PCIe parts. We clamp these
-	 * parts to ensure that no warning is displayed, as this could confuse
-	 * users otherwise.
-	 */
+	 
 	expected_gts = txgbe_enumerate_functions(wx) * 10;
 
-	/* don't check link if we failed to enumerate functions */
+	 
 	if (expected_gts > 0)
 		txgbe_check_minimum_link(wx);
 	else
 		dev_warn(&pdev->dev, "Failed to enumerate PF devices.\n");
 
-	/* First try to read PBA as a string */
+	 
 	err = txgbe_read_pba_string(wx, part_str, TXGBE_PBANUM_LENGTH);
 	if (err)
 		strncpy(part_str, "Unknown", TXGBE_PBANUM_LENGTH);
@@ -758,15 +669,7 @@ err_pci_disable_dev:
 	return err;
 }
 
-/**
- * txgbe_remove - Device Removal Routine
- * @pdev: PCI device information struct
- *
- * txgbe_remove is called by the PCI subsystem to alert the driver
- * that it should release a PCI device.  The could be caused by a
- * Hot-Plug event, or because the driver is going to be removed from
- * memory.
- **/
+ 
 static void txgbe_remove(struct pci_dev *pdev)
 {
 	struct wx *wx = pci_get_drvdata(pdev);

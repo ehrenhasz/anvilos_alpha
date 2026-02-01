@@ -33,7 +33,7 @@ struct nv50_core_func {
 	const struct nv50_outp_func {
 		int (*ctrl)(struct nv50_core *, int or, u32 ctrl,
 			     struct nv50_head_atom *);
-		/* XXX: Only used by SORs and PIORs for now */
+		 
 		void (*get_caps)(struct nv50_disp *,
 				 struct nouveau_encoder *, int or);
 	} *dac, *pior, *sor;

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2003 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2018 - 2021 Intel Corporation
- *
- * Portions of this file are derived from the ipw3945 project.
- *****************************************************************************/
+ 
+ 
 
 #ifndef __iwl_debug_h__
 #define __iwl_debug_h__
@@ -36,10 +30,10 @@ void __iwl_warn(struct device *dev, const char *fmt, ...) __printf(2, 3);
 void __iwl_info(struct device *dev, const char *fmt, ...) __printf(2, 3);
 void __iwl_crit(struct device *dev, const char *fmt, ...) __printf(2, 3);
 
-/* not all compilers can evaluate strlen() at compile time, so use sizeof() */
+ 
 #define CHECK_FOR_NEWLINE(f) BUILD_BUG_ON(f[sizeof(f) - 2] != '\n')
 
-/* No matter what is m (priv, bus, trans), this will work */
+ 
 #define __IWL_ERR_DEV(d, mode, f, a...)					\
 	do {								\
 		CHECK_FOR_NEWLINE(f);					\
@@ -106,67 +100,45 @@ do {                                            			\
 } while (0)
 #else
 #define iwl_print_hex_dump(m, level, p, len)
-#endif				/* CONFIG_IWLWIFI_DEBUG */
+#endif				 
 
-/*
- * To use the debug system:
- *
- * If you are defining a new debug classification, simply add it to the #define
- * list here in the form of
- *
- * #define IWL_DL_xxxx VALUE
- *
- * where xxxx should be the name of the classification (for example, WEP).
- *
- * You then need to either add a IWL_xxxx_DEBUG() macro definition for your
- * classification, or use IWL_DEBUG(IWL_DL_xxxx, ...) whenever you want
- * to send output to that classification.
- *
- * The active debug levels can be accessed via files
- *
- *	/sys/module/iwlwifi/parameters/debug
- * when CONFIG_IWLWIFI_DEBUG=y.
- *
- *	/sys/kernel/debug/phy0/iwlwifi/debug/debug_level
- * when CONFIG_IWLWIFI_DEBUGFS=y.
- *
- */
+ 
 
-/* 0x0000000F - 0x00000001 */
+ 
 #define IWL_DL_INFO		0x00000001
 #define IWL_DL_MAC80211		0x00000002
 #define IWL_DL_HCMD		0x00000004
 #define IWL_DL_TDLS		0x00000008
-/* 0x000000F0 - 0x00000010 */
+ 
 #define IWL_DL_QUOTA		0x00000010
 #define IWL_DL_TE		0x00000020
 #define IWL_DL_EEPROM		0x00000040
 #define IWL_DL_RADIO		0x00000080
-/* 0x00000F00 - 0x00000100 */
+ 
 #define IWL_DL_POWER		0x00000100
 #define IWL_DL_TEMP		0x00000200
 #define IWL_DL_WOWLAN		0x00000400
 #define IWL_DL_SCAN		0x00000800
-/* 0x0000F000 - 0x00001000 */
+ 
 #define IWL_DL_ASSOC		0x00001000
 #define IWL_DL_DROP		0x00002000
 #define IWL_DL_LAR		0x00004000
 #define IWL_DL_COEX		0x00008000
-/* 0x000F0000 - 0x00010000 */
+ 
 #define IWL_DL_FW		0x00010000
 #define IWL_DL_RF_KILL		0x00020000
 #define IWL_DL_TPT		0x00040000
-/* 0x00F00000 - 0x00100000 */
+ 
 #define IWL_DL_RATE		0x00100000
 #define IWL_DL_CALIB		0x00200000
 #define IWL_DL_WEP		0x00400000
 #define IWL_DL_TX		0x00800000
-/* 0x0F000000 - 0x01000000 */
+ 
 #define IWL_DL_RX		0x01000000
 #define IWL_DL_ISR		0x02000000
 #define IWL_DL_HT		0x04000000
 #define IWL_DL_EXTERNAL		0x08000000
-/* 0xF0000000 - 0x10000000 */
+ 
 #define IWL_DL_11H		0x10000000
 #define IWL_DL_STATS		0x20000000
 #define IWL_DL_TX_REPLY		0x40000000

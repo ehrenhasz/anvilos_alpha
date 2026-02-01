@@ -1,41 +1,4 @@
-/*
- * Broadcom NetXtreme-E RoCE driver.
- *
- * Copyright (c) 2016 - 2017, Broadcom. All rights reserved.  The term
- * Broadcom refers to Broadcom Limited and/or its subsidiaries.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Description: Slow Path Operators (header)
- *
- */
+ 
 
 #ifndef __BNXT_QPLIB_SP_H__
 #define __BNXT_QPLIB_SP_H__
@@ -93,7 +56,7 @@ struct bnxt_qplib_ah {
 	struct bnxt_qplib_pd		*pd;
 	u32				id;
 	u8				sgid_index;
-	/* For Query AH if the hw table and SW table are differnt */
+	 
 	u8				host_sgid_index;
 	u8				traffic_class;
 	u32				flow_label;
@@ -135,90 +98,90 @@ struct bnxt_qplib_frpl {
 struct bnxt_qplib_roce_stats {
 	u64 to_retransmits;
 	u64 seq_err_naks_rcvd;
-	/* seq_err_naks_rcvd is 64 b */
+	 
 	u64 max_retry_exceeded;
-	/* max_retry_exceeded is 64 b */
+	 
 	u64 rnr_naks_rcvd;
-	/* rnr_naks_rcvd is 64 b */
+	 
 	u64 missing_resp;
 	u64 unrecoverable_err;
-	/* unrecoverable_err is 64 b */
+	 
 	u64 bad_resp_err;
-	/* bad_resp_err is 64 b */
+	 
 	u64 local_qp_op_err;
-	/* local_qp_op_err is 64 b */
+	 
 	u64 local_protection_err;
-	/* local_protection_err is 64 b */
+	 
 	u64 mem_mgmt_op_err;
-	/* mem_mgmt_op_err is 64 b */
+	 
 	u64 remote_invalid_req_err;
-	/* remote_invalid_req_err is 64 b */
+	 
 	u64 remote_access_err;
-	/* remote_access_err is 64 b */
+	 
 	u64 remote_op_err;
-	/* remote_op_err is 64 b */
+	 
 	u64 dup_req;
-	/* dup_req is 64 b */
+	 
 	u64 res_exceed_max;
-	/* res_exceed_max is 64 b */
+	 
 	u64 res_length_mismatch;
-	/* res_length_mismatch is 64 b */
+	 
 	u64 res_exceeds_wqe;
-	/* res_exceeds_wqe is 64 b */
+	 
 	u64 res_opcode_err;
-	/* res_opcode_err is 64 b */
+	 
 	u64 res_rx_invalid_rkey;
-	/* res_rx_invalid_rkey is 64 b */
+	 
 	u64 res_rx_domain_err;
-	/* res_rx_domain_err is 64 b */
+	 
 	u64 res_rx_no_perm;
-	/* res_rx_no_perm is 64 b */
+	 
 	u64 res_rx_range_err;
-	/* res_rx_range_err is 64 b */
+	 
 	u64 res_tx_invalid_rkey;
-	/* res_tx_invalid_rkey is 64 b */
+	 
 	u64 res_tx_domain_err;
-	/* res_tx_domain_err is 64 b */
+	 
 	u64 res_tx_no_perm;
-	/* res_tx_no_perm is 64 b */
+	 
 	u64 res_tx_range_err;
-	/* res_tx_range_err is 64 b */
+	 
 	u64 res_irrq_oflow;
-	/* res_irrq_oflow is 64 b */
+	 
 	u64 res_unsup_opcode;
-	/* res_unsup_opcode is 64 b */
+	 
 	u64 res_unaligned_atomic;
-	/* res_unaligned_atomic is 64 b */
+	 
 	u64 res_rem_inv_err;
-	/* res_rem_inv_err is 64 b */
+	 
 	u64 res_mem_error;
-	/* res_mem_error is 64 b */
+	 
 	u64 res_srq_err;
-	/* res_srq_err is 64 b */
+	 
 	u64 res_cmp_err;
-	/* res_cmp_err is 64 b */
+	 
 	u64 res_invalid_dup_rkey;
-	/* res_invalid_dup_rkey is 64 b */
+	 
 	u64 res_wqe_format_err;
-	/* res_wqe_format_err is 64 b */
+	 
 	u64 res_cq_load_err;
-	/* res_cq_load_err is 64 b */
+	 
 	u64 res_srq_load_err;
-	/* res_srq_load_err is 64 b */
+	 
 	u64 res_tx_pci_err;
-	/* res_tx_pci_err is 64 b */
+	 
 	u64 res_rx_pci_err;
-	/* res_rx_pci_err is 64 b */
+	 
 	u64 res_oos_drop_count;
-	/* res_oos_drop_count */
+	 
 	u64     active_qp_count_p0;
-	/* port 0 active qps */
+	 
 	u64     active_qp_count_p1;
-	/* port 1 active qps */
+	 
 	u64     active_qp_count_p2;
-	/* port 2 active qps */
+	 
 	u64     active_qp_count_p3;
-	/* port 3 active qps */
+	 
 };
 
 struct bnxt_qplib_ext_stat {
@@ -283,8 +246,8 @@ struct bnxt_qplib_cc_param_ext {
 	u16 ai_rtt_th1;
 	u16 ai_rtt_th2;
 	u16 cf_rtt_th;
-	u16 sc_cr_th1; /* severe congestion cr threshold 1 */
-	u16 sc_cr_th2; /* severe congestion cr threshold 2 */
+	u16 sc_cr_th1;  
+	u16 sc_cr_th2;  
 	u32 l64B_per_rtt;
 	u8 cc_ack_bytes;
 	u16 reduce_cf_rtt_th;
@@ -350,4 +313,4 @@ int bnxt_qplib_qext_stat(struct bnxt_qplib_rcfw *rcfw, u32 fid,
 int bnxt_qplib_modify_cc(struct bnxt_qplib_res *res,
 			 struct bnxt_qplib_cc_param *cc_param);
 
-#endif /* __BNXT_QPLIB_SP_H__*/
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2011-2015 John Crispin <blogic@phrozen.org>
- *  Copyright (C) 2015 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- *  Copyright (C) 2017 Hauke Mehrtens <hauke@hauke-m.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -37,7 +32,7 @@ static int ltq_fpi_probe(struct platform_device *pdev)
 	if (IS_ERR(xbar_membase))
 		return PTR_ERR(xbar_membase);
 
-	/* RCU configuration is optional */
+	 
 	rcu_regmap = syscon_regmap_lookup_by_phandle(np, "lantiq,rcu");
 	if (IS_ERR(rcu_regmap))
 		return PTR_ERR(rcu_regmap);
@@ -57,7 +52,7 @@ static int ltq_fpi_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* disable fpi burst */
+	 
 	ltq_w32_mask(XBAR_FPI_BURST_EN, 0, xbar_membase + XBAR_ALWAYS_LAST);
 
 	return of_platform_populate(dev->of_node, NULL, NULL, dev);

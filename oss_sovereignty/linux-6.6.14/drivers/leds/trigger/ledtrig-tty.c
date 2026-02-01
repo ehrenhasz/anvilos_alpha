@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/delay.h>
 #include <linux/leds.h>
@@ -88,12 +88,12 @@ static void ledtrig_tty_work(struct work_struct *work)
 	mutex_lock(&trigger_data->mutex);
 
 	if (!trigger_data->ttyname) {
-		/* exit without rescheduling */
+		 
 		mutex_unlock(&trigger_data->mutex);
 		return;
 	}
 
-	/* try to get the tty corresponding to $ttyname */
+	 
 	if (!trigger_data->tty) {
 		dev_t devno;
 		struct tty_struct *tty;
@@ -101,15 +101,12 @@ static void ledtrig_tty_work(struct work_struct *work)
 
 		ret = tty_dev_name_to_number(trigger_data->ttyname, &devno);
 		if (ret < 0)
-			/*
-			 * A device with this name might appear later, so keep
-			 * retrying.
-			 */
+			 
 			goto out;
 
 		tty = tty_kopen_shared(devno);
 		if (IS_ERR(tty) || !tty)
-			/* What to do? retry or abort */
+			 
 			goto out;
 
 		trigger_data->tty = tty;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "nci_spi: %s: " fmt, __func__
 
@@ -34,12 +32,12 @@ static int __nci_spi_send(struct nci_spi *nspi, const struct sk_buff *skb,
 	struct spi_transfer t;
 
 	memset(&t, 0, sizeof(struct spi_transfer));
-	/* a NULL skb means we just want the SPI chip select line to raise */
+	 
 	if (skb) {
 		t.tx_buf = skb->data;
 		t.len = skb->len;
 	} else {
-		/* still set tx_buf non NULL to make the driver happy */
+		 
 		t.tx_buf = &t;
 		t.len = 0;
 	}
@@ -63,7 +61,7 @@ int nci_spi_send(struct nci_spi *nspi,
 	int ret;
 	long completion_rc;
 
-	/* add the NCI SPI header to the start of the buffer */
+	 
 	hdr = skb_push(skb, NCI_SPI_HDR_LEN);
 	hdr[0] = NCI_SPI_DIRECT_WRITE;
 	hdr[1] = nspi->acknowledge_mode;
@@ -79,12 +77,12 @@ int nci_spi_send(struct nci_spi *nspi,
 	}
 
 	if (write_handshake_completion)	{
-		/* Trick SPI driver to raise chip select */
+		 
 		ret = __nci_spi_send(nspi, NULL, 1);
 		if (ret)
 			goto done;
 
-		/* wait for NFC chip hardware handshake to complete */
+		 
 		if (wait_for_completion_timeout(write_handshake_completion,
 						msecs_to_jiffies(1000)) == 0) {
 			ret = -ETIME;
@@ -111,16 +109,9 @@ done:
 }
 EXPORT_SYMBOL_GPL(nci_spi_send);
 
-/* ---- Interface to NCI SPI drivers ---- */
+ 
 
-/**
- * nci_spi_allocate_spi - allocate a new nci spi
- *
- * @spi: SPI device
- * @acknowledge_mode: Acknowledge mode used by the NFC device
- * @delay: delay between transactions in us
- * @ndev: nci dev to send incoming nci frames to
- */
+ 
 struct nci_spi *nci_spi_allocate_spi(struct spi_device *spi,
 				     u8 acknowledge_mode, unsigned int delay,
 				     struct nci_dev *ndev)
@@ -133,7 +124,7 @@ struct nci_spi *nci_spi_allocate_spi(struct spi_device *spi,
 
 	nspi->acknowledge_mode = acknowledge_mode;
 	nspi->xfer_udelay = delay;
-	/* Use controller max SPI speed by default */
+	 
 	nspi->xfer_speed_hz = 0;
 	nspi->spi = spi;
 	nspi->ndev = ndev;
@@ -154,7 +145,7 @@ static int send_acknowledge(struct nci_spi *nspi, u8 acknowledge)
 	if (!skb)
 		return -ENOMEM;
 
-	/* add the NCI SPI header to the start of the buffer */
+	 
 	hdr = skb_push(skb, NCI_SPI_HDR_LEN);
 	hdr[0] = NCI_SPI_DIRECT_WRITE;
 	hdr[1] = NCI_SPI_CRC_ENABLED;
@@ -261,28 +252,18 @@ static u8 nci_spi_get_ack(struct sk_buff *skb)
 
 	ret = skb->data[0] >> NCI_SPI_ACK_SHIFT;
 
-	/* Remove NFCC part of the header: ACK, NACK and MSB payload len */
+	 
 	skb_pull(skb, 2);
 
 	return ret;
 }
 
-/**
- * nci_spi_read - read frame from NCI SPI drivers
- *
- * @nspi: The nci spi
- * Context: can sleep
- *
- * This call may only be used from a context that may sleep.  The sleep
- * is non-interruptible, and has no timeout.
- *
- * It returns an allocated skb containing the frame on success, or NULL.
- */
+ 
 struct sk_buff *nci_spi_read(struct nci_spi *nspi)
 {
 	struct sk_buff *skb;
 
-	/* Retrieve frame from SPI */
+	 
 	skb = __nci_spi_read(nspi);
 	if (!skb)
 		goto done;
@@ -293,17 +274,13 @@ struct sk_buff *nci_spi_read(struct nci_spi *nspi)
 			goto done;
 		}
 
-		/* In case of acknowledged mode: if ACK or NACK received,
-		 * unblock completion of latest frame sent.
-		 */
+		 
 		nspi->req_result = nci_spi_get_ack(skb);
 		if (nspi->req_result)
 			complete(&nspi->req_completion);
 	}
 
-	/* If there is no payload (ACK/NACK only frame),
-	 * free the socket buffer
-	 */
+	 
 	if (!skb->len) {
 		kfree_skb(skb);
 		skb = NULL;

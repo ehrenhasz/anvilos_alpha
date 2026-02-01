@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2018 Marty E. Plummer <hanetzer@startmail.com> */
-/* Copyright 2019 Linaro, Ltd., Rob Herring <robh@kernel.org> */
-/* Copyright 2019 Collabora ltd. */
+
+ 
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -89,7 +89,7 @@ static int panfrost_ioctl_create_bo(struct drm_device *dev, void *data,
 	    (args->flags & ~(PANFROST_BO_NOEXEC | PANFROST_BO_HEAP)))
 		return -EINVAL;
 
-	/* Heaps should never be executable */
+	 
 	if ((args->flags & PANFROST_BO_HEAP) &&
 	    !(args->flags & PANFROST_BO_NOEXEC))
 		return -EINVAL;
@@ -107,10 +107,7 @@ static int panfrost_ioctl_create_bo(struct drm_device *dev, void *data,
 		args->offset = mapping->mmnode.start << PAGE_SHIFT;
 		panfrost_gem_mapping_put(mapping);
 	} else {
-		/* This can only happen if the handle from
-		 * drm_gem_handle_create() has already been guessed and freed
-		 * by user space
-		 */
+		 
 		ret = -EINVAL;
 	}
 
@@ -119,19 +116,7 @@ out:
 	return ret;
 }
 
-/**
- * panfrost_lookup_bos() - Sets up job->bo[] with the GEM objects
- * referenced by the job.
- * @dev: DRM device
- * @file_priv: DRM file for this fd
- * @args: IOCTL args
- * @job: job being set up
- *
- * Resolve handles from userspace to BOs and attach them to job.
- *
- * Note that this function doesn't need to unreference the BOs on
- * failure, because that will happen at panfrost_job_cleanup() time.
- */
+ 
 static int
 panfrost_lookup_bos(struct drm_device *dev,
 		  struct drm_file *file_priv,
@@ -177,19 +162,7 @@ panfrost_lookup_bos(struct drm_device *dev,
 	return ret;
 }
 
-/**
- * panfrost_copy_in_sync() - Sets up job->deps with the sync objects
- * referenced by the job.
- * @dev: DRM device
- * @file_priv: DRM file for this fd
- * @args: IOCTL args
- * @job: job being set up
- *
- * Resolve syncobjs from userspace to fences and attach them to job.
- *
- * Note that this function doesn't need to unreference the fences on
- * failure, because that will happen at panfrost_job_cleanup() time.
- */
+ 
 static int
 panfrost_copy_in_sync(struct drm_device *dev,
 		  struct drm_file *file_priv,
@@ -288,7 +261,7 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
 	if (ret)
 		goto out_cleanup_job;
 
-	/* Update the return sync object for the job */
+	 
 	if (sync_out)
 		drm_syncobj_replace_fence(sync_out, job->render_done_fence);
 
@@ -348,7 +321,7 @@ static int panfrost_ioctl_mmap_bo(struct drm_device *dev, void *data,
 		return -ENOENT;
 	}
 
-	/* Don't allow mmapping of heap objects as pages are not pinned. */
+	 
 	if (to_panfrost_bo(gem_obj)->is_heap) {
 		ret = -EINVAL;
 		goto out;
@@ -421,14 +394,7 @@ static int panfrost_ioctl_madvise(struct drm_device *dev, void *data,
 					 struct panfrost_gem_mapping,
 					 node);
 
-		/*
-		 * If we want to mark the BO purgeable, there must be only one
-		 * user: the caller FD.
-		 * We could do something smarter and mark the BO purgeable only
-		 * when all its users have marked it purgeable, but globally
-		 * visible/shared BOs are likely to never be marked purgeable
-		 * anyway, so let's not bother.
-		 */
+		 
 		if (!list_is_singular(&bo->mappings.list) ||
 		    WARN_ON_ONCE(first->mmu != priv->mmu)) {
 			ret = -EINVAL;
@@ -525,12 +491,7 @@ static const struct drm_ioctl_desc panfrost_drm_driver_ioctls[] = {
 
 DEFINE_DRM_GEM_FOPS(panfrost_drm_driver_fops);
 
-/*
- * Panfrost driver version:
- * - 1.0 - initial interface
- * - 1.1 - adds HEAP and NOEXEC flags for CREATE_BO
- * - 1.2 - adds AFBC_FEATURES query
- */
+ 
 static const struct drm_driver panfrost_drm_driver = {
 	.driver_features	= DRIVER_RENDER | DRIVER_GEM | DRIVER_SYNCOBJ,
 	.open			= panfrost_open,
@@ -569,7 +530,7 @@ static int panfrost_probe(struct platform_device *pdev)
 
 	pfdev->coherent = device_get_dma_attr(&pdev->dev) == DEV_DMA_COHERENT;
 
-	/* Allocate and initialize the DRM device. */
+	 
 	ddev = drm_dev_alloc(&panfrost_drm_driver, &pdev->dev);
 	if (IS_ERR(ddev))
 		return PTR_ERR(ddev);
@@ -590,13 +551,10 @@ static int panfrost_probe(struct platform_device *pdev)
 	pm_runtime_set_active(pfdev->dev);
 	pm_runtime_mark_last_busy(pfdev->dev);
 	pm_runtime_enable(pfdev->dev);
-	pm_runtime_set_autosuspend_delay(pfdev->dev, 50); /* ~3 frames */
+	pm_runtime_set_autosuspend_delay(pfdev->dev, 50);  
 	pm_runtime_use_autosuspend(pfdev->dev);
 
-	/*
-	 * Register the DRM device with the core and the connectors with
-	 * sysfs
-	 */
+	 
 	err = drm_dev_register(ddev, 0);
 	if (err < 0)
 		goto err_out1;
@@ -630,16 +588,12 @@ static void panfrost_remove(struct platform_device *pdev)
 	drm_dev_put(ddev);
 }
 
-/*
- * The OPP core wants the supply names to be NULL terminated, but we need the
- * correct num_supplies value for regulator core. Hence, we NULL terminate here
- * and then initialize num_supplies with ARRAY_SIZE - 1.
- */
+ 
 static const char * const default_supplies[] = { "mali", NULL };
 static const struct panfrost_compatible default_data = {
 	.num_supplies = ARRAY_SIZE(default_supplies) - 1,
 	.supply_names = default_supplies,
-	.num_pm_domains = 1, /* optional */
+	.num_pm_domains = 1,  
 	.pm_domain_names = NULL,
 };
 
@@ -649,14 +603,7 @@ static const struct panfrost_compatible amlogic_data = {
 	.vendor_quirk = panfrost_gpu_amlogic_quirk,
 };
 
-/*
- * The old data with two power supplies for MT8183 is here only to
- * keep retro-compatibility with older devicetrees, as DVFS will
- * not work with this one.
- *
- * On new devicetrees please use the _b variant with a single and
- * coupled regulators instead.
- */
+ 
 static const char * const mediatek_mt8183_supplies[] = { "mali", "sram", NULL };
 static const char * const mediatek_mt8183_pm_domains[] = { "core0", "core1", "core2" };
 static const struct panfrost_compatible mediatek_mt8183_data = {
@@ -693,7 +640,7 @@ static const struct panfrost_compatible mediatek_mt8192_data = {
 };
 
 static const struct of_device_id dt_match[] = {
-	/* Set first to probe before the generic compatibles */
+	 
 	{ .compatible = "amlogic,meson-gxm-mali",
 	  .data = &amlogic_data, },
 	{ .compatible = "amlogic,meson-g12a-mali",

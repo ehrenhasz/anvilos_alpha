@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012 Broadcom Corporation
- */
+
+ 
 #ifndef WL_CFGP2P_H_
 #define WL_CFGP2P_H_
 
@@ -9,51 +7,22 @@
 
 struct brcmf_cfg80211_info;
 
-/**
- * enum p2p_bss_type - different type of BSS configurations.
- *
- * @P2PAPI_BSSCFG_PRIMARY: maps to driver's primary bsscfg.
- * @P2PAPI_BSSCFG_DEVICE: maps to driver's P2P device discovery bsscfg.
- * @P2PAPI_BSSCFG_CONNECTION: maps to driver's 1st P2P connection bsscfg.
- * @P2PAPI_BSSCFG_CONNECTION2: maps to driver's 2nd P2P connection bsscfg.
- * @P2PAPI_BSSCFG_MAX: used for range checking.
- */
+ 
 enum p2p_bss_type {
-	P2PAPI_BSSCFG_PRIMARY, /* maps to driver's primary bsscfg */
-	P2PAPI_BSSCFG_DEVICE, /* maps to driver's P2P device discovery bsscfg */
-	P2PAPI_BSSCFG_CONNECTION, /* driver's 1st P2P connection bsscfg */
-	P2PAPI_BSSCFG_CONNECTION2, /* driver's 2nd P2P connection bsscfg */
+	P2PAPI_BSSCFG_PRIMARY,  
+	P2PAPI_BSSCFG_DEVICE,  
+	P2PAPI_BSSCFG_CONNECTION,  
+	P2PAPI_BSSCFG_CONNECTION2,  
 	P2PAPI_BSSCFG_MAX
 };
 
-/**
- * struct p2p_bss - peer-to-peer bss related information.
- *
- * @vif: virtual interface of this P2P bss.
- * @private_data: TBD
- */
+ 
 struct p2p_bss {
 	struct brcmf_cfg80211_vif *vif;
 	void *private_data;
 };
 
-/**
- * enum brcmf_p2p_status - P2P specific dongle status.
- *
- * @BRCMF_P2P_STATUS_IF_ADD: peer-to-peer vif add sent to dongle.
- * @BRCMF_P2P_STATUS_IF_DEL: NOT-USED?
- * @BRCMF_P2P_STATUS_IF_DELETING: peer-to-peer vif delete sent to dongle.
- * @BRCMF_P2P_STATUS_IF_CHANGING: peer-to-peer vif change sent to dongle.
- * @BRCMF_P2P_STATUS_IF_CHANGED: peer-to-peer vif change completed on dongle.
- * @BRCMF_P2P_STATUS_ACTION_TX_COMPLETED: action frame tx completed.
- * @BRCMF_P2P_STATUS_ACTION_TX_NOACK: action frame tx not acked.
- * @BRCMF_P2P_STATUS_GO_NEG_PHASE: P2P GO negotiation ongoing.
- * @BRCMF_P2P_STATUS_DISCOVER_LISTEN: P2P listen, remaining on channel.
- * @BRCMF_P2P_STATUS_SENDING_ACT_FRAME: In the process of sending action frame.
- * @BRCMF_P2P_STATUS_WAITING_NEXT_AF_LISTEN: extra listen time for af tx.
- * @BRCMF_P2P_STATUS_WAITING_NEXT_ACT_FRAME: waiting for action frame response.
- * @BRCMF_P2P_STATUS_FINDING_COMMON_CHANNEL: search channel for AF active.
- */
+ 
 enum brcmf_p2p_status {
 	BRCMF_P2P_STATUS_ENABLED,
 	BRCMF_P2P_STATUS_IF_ADD,
@@ -71,18 +40,7 @@ enum brcmf_p2p_status {
 	BRCMF_P2P_STATUS_FINDING_COMMON_CHANNEL
 };
 
-/**
- * struct afx_hdl - action frame off channel storage.
- *
- * @afx_work: worker thread for searching channel
- * @act_frm_scan: thread synchronizing struct.
- * @is_active: channel searching active.
- * @peer_chan: current channel.
- * @is_listen: sets mode for afx worker.
- * @my_listen_chan: this peers listen channel.
- * @peer_listen_chan: remote peers listen channel.
- * @tx_dst_addr: mac address where tx af should be sent to.
- */
+ 
 struct afx_hdl {
 	struct work_struct afx_work;
 	struct completion act_frm_scan;
@@ -94,29 +52,7 @@ struct afx_hdl {
 	u8 tx_dst_addr[ETH_ALEN];
 };
 
-/**
- * struct brcmf_p2p_info - p2p specific driver information.
- *
- * @cfg: driver private data for cfg80211 interface.
- * @status: status of P2P (see enum brcmf_p2p_status).
- * @dev_addr: P2P device address.
- * @int_addr: P2P interface address.
- * @bss_idx: informate for P2P bss types.
- * @listen_timer: timer for @WL_P2P_DISC_ST_LISTEN discover state.
- * @listen_channel: channel for @WL_P2P_DISC_ST_LISTEN discover state.
- * @remain_on_channel: contains copy of struct used by cfg80211.
- * @remain_on_channel_cookie: cookie counter for remain on channel cmd
- * @next_af_subtype: expected action frame subtype.
- * @send_af_done: indication that action frame tx is complete.
- * @afx_hdl: action frame search handler info.
- * @af_sent_channel: channel action frame is sent.
- * @af_tx_sent_jiffies: jiffies time when af tx was transmitted.
- * @wait_next_af: thread synchronizing struct.
- * @gon_req_action: about to send go negotiation requets frame.
- * @block_gon_req_tx: drop tx go negotiation requets frame.
- * @p2pdev_dynamically: is p2p device if created by module param or supplicant.
- * @wait_for_offchan_complete: wait for off-channel tx completion event.
- */
+ 
 struct brcmf_p2p_info {
 	struct brcmf_cfg80211_info *cfg;
 	unsigned long status;
@@ -176,4 +112,4 @@ bool brcmf_p2p_scan_finding_common_channel(struct brcmf_cfg80211_info *cfg,
 s32 brcmf_p2p_notify_rx_mgmt_p2p_probereq(struct brcmf_if *ifp,
 					  const struct brcmf_event_msg *e,
 					  void *data);
-#endif /* WL_CFGP2P_H_ */
+#endif  

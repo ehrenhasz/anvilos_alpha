@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __HID_ROCCAT_ISKU_H
 #define __HID_ROCCAT_ISKU_H
 
-/*
- * Copyright (c) 2011 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
+ 
 
-/*
- */
+ 
 
 #include <linux/types.h>
 
@@ -35,8 +32,8 @@ enum {
 };
 
 struct isku_actual_profile {
-	uint8_t command; /* ISKU_COMMAND_ACTUAL_PROFILE */
-	uint8_t size; /* always 3 */
+	uint8_t command;  
+	uint8_t size;  
 	uint8_t actual_profile;
 } __packed;
 
@@ -63,7 +60,7 @@ enum isku_commands {
 };
 
 struct isku_report_button {
-	uint8_t number; /* ISKU_REPORT_NUMBER_BUTTON */
+	uint8_t number;  
 	uint8_t zero;
 	uint8_t event;
 	uint8_t data1;

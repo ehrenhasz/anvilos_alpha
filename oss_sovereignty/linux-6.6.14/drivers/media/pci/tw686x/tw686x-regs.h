@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* DMA controller registers */
+ 
+ 
 #define REG8_1(a0) ((const u16[8]) { a0, a0 + 1, a0 + 2, a0 + 3, \
 				     a0 + 4, a0 + 5, a0 + 6, a0 + 7})
 #define REG8_2(a0) ((const u16[8]) { a0, a0 + 2, a0 + 4, a0 + 6,	\
@@ -42,7 +42,7 @@
 #define MD_CONF			REG8_1(0x60)
 #define MD_INIT			REG8_1(0x68)
 #define MD_MAP0			REG8_1(0x70)
-#define VDMA_P_ADDR		REG8_8(0x80) /* not used in DMA SG mode */
+#define VDMA_P_ADDR		REG8_8(0x80)  
 #define VDMA_WHP		REG8_8(0x81)
 #define VDMA_B_ADDR		REG8_8(0x82)
 #define VDMA_F2_P_ADDR		REG8_8(0x84)
@@ -51,7 +51,7 @@
 #define EP_REG_ADDR		0xfe
 #define EP_REG_DATA		0xff
 
-/* Video decoder registers */
+ 
 #define VDREG8(a0) ((const u16[8]) { \
 	a0 + 0x000, a0 + 0x010, a0 + 0x020, a0 + 0x030,	\
 	a0 + 0x100, a0 + 0x110, a0 + 0x120, a0 + 0x130})
@@ -126,7 +126,7 @@
 
 #define TW686X_FIELD_MODE	0x3
 #define TW686X_FRAME_MODE	0x2
-/* 0x1 is reserved */
+ 
 #define TW686X_SG_MODE		0x0
 
 #define TW686X_FIFO_ERROR(x)	(x & ~(0xff))

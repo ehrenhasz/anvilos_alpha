@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Chen-Yu Tsai
- * Author: Chen-Yu Tsai <wens@csie.org>
- *
- * Allwinner A23 APB0 clock driver
- *
- * Based on clk-sun6i-apb0.c
- * Allwinner A31 APB0 clock driver
- *
- * Copyright (C) 2014 Free Electrons
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -33,7 +22,7 @@ static struct clk *sun8i_a23_apb0_register(struct device_node *node,
 
 	of_property_read_string(node, "clock-output-names", &clk_name);
 
-	/* The A23 APB0 clock is a standard 2 bit wide divider clock */
+	 
 	clk = clk_register_divider(NULL, clk_name, clk_parent, 0, reg,
 				   0, 2, 0, NULL);
 	if (IS_ERR(clk))
@@ -59,11 +48,7 @@ static void sun8i_a23_apb0_setup(struct device_node *node)
 
 	reg = of_io_request_and_map(node, 0, of_node_full_name(node));
 	if (IS_ERR(reg)) {
-		/*
-		 * This happens with clk nodes instantiated through mfd,
-		 * as those do not have their resources assigned in the
-		 * device tree. Do not print an error in this case.
-		 */
+		 
 		if (PTR_ERR(reg) != -EINVAL)
 			pr_err("Could not get registers for a23-apb0-clk\n");
 
@@ -100,7 +85,7 @@ static int sun8i_a23_apb0_clk_probe(struct platform_device *pdev)
 
 static const struct of_device_id sun8i_a23_apb0_clk_dt_ids[] = {
 	{ .compatible = "allwinner,sun8i-a23-apb0-clk" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sun8i_a23_apb0_clk_driver = {

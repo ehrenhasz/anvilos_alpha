@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * adv7180.c Analog Devices ADV7180 video decoder driver
- * Copyright (c) 2009 Intel Corporation
- * Copyright (C) 2013 Cogent Embedded, Inc.
- * Copyright (C) 2013 Renesas Solutions Corp.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -51,18 +46,18 @@
 
 #define ADV7180_REG_AUTODETECT_ENABLE			0x0007
 #define ADV7180_AUTODETECT_DEFAULT			0x7f
-/* Contrast */
-#define ADV7180_REG_CON		0x0008	/*Unsigned */
+ 
+#define ADV7180_REG_CON		0x0008	 
 #define ADV7180_CON_MIN		0
 #define ADV7180_CON_DEF		128
 #define ADV7180_CON_MAX		255
-/* Brightness*/
-#define ADV7180_REG_BRI		0x000a	/*Signed */
+ 
+#define ADV7180_REG_BRI		0x000a	 
 #define ADV7180_BRI_MIN		-128
 #define ADV7180_BRI_DEF		0
 #define ADV7180_BRI_MAX		127
-/* Hue */
-#define ADV7180_REG_HUE		0x000b	/*Signed, inverted */
+ 
+#define ADV7180_REG_HUE		0x000b	 
 #define ADV7180_HUE_MIN		-127
 #define ADV7180_HUE_DEF		0
 #define ADV7180_HUE_MAX		128
@@ -112,9 +107,9 @@
 #define ADV7180_ICONF1_ACTIVE_LOW	0x01
 #define ADV7180_ICONF1_PSYNC_ONLY	0x10
 #define ADV7180_ICONF1_ACTIVE_TO_CLR	0xC0
-/* Saturation */
-#define ADV7180_REG_SD_SAT_CB	0x00e3	/*Unsigned */
-#define ADV7180_REG_SD_SAT_CR	0x00e4	/*Unsigned */
+ 
+#define ADV7180_REG_SD_SAT_CB	0x00e3	 
+#define ADV7180_REG_SD_SAT_CR	0x00e4	 
 #define ADV7180_SAT_MIN		0
 #define ADV7180_SAT_DEF		128
 #define ADV7180_SAT_MAX		255
@@ -185,7 +180,7 @@
 
 #define V4L2_CID_ADV_FAST_SWITCH	(V4L2_CID_USER_ADV7180_BASE + 0x00)
 
-/* Initial number of frames to skip to avoid possible garbage */
+ 
 #define ADV7180_NUM_OF_SKIP_FRAMES       2
 
 struct adv7180_state;
@@ -207,7 +202,7 @@ struct adv7180_state {
 	struct v4l2_ctrl_handler ctrl_hdl;
 	struct v4l2_subdev	sd;
 	struct media_pad	pad;
-	struct mutex		mutex; /* mutual excl. when accessing chip */
+	struct mutex		mutex;  
 	int			irq;
 	struct gpio_desc	*pwdn_gpio;
 	struct gpio_desc	*rst_gpio;
@@ -274,7 +269,7 @@ static int adv7180_vpp_write(struct adv7180_state *state, unsigned int reg,
 
 static v4l2_std_id adv7180_std_to_v4l2(u8 status1)
 {
-	/* in case V4L2_IN_ST_NO_SIGNAL */
+	 
 	if (!(status1 & ADV7180_STATUS1_IN_LOCK))
 		return V4L2_STD_UNKNOWN;
 
@@ -440,7 +435,7 @@ static int adv7180_s_std(struct v4l2_subdev *sd, v4l2_std_id std)
 	if (ret)
 		return ret;
 
-	/* Make sure we can support this std */
+	 
 	ret = v4l2_std_to_adv7180(std);
 	if (ret < 0)
 		goto out;
@@ -565,7 +560,7 @@ static int adv7180_test_pattern(struct adv7180_state *state, int value)
 {
 	unsigned int reg = 0;
 
-	/* Map menu value into register value */
+	 
 	if (value < 3)
 		reg = value;
 	if (value == 3)
@@ -602,17 +597,14 @@ static int adv7180_s_ctrl(struct v4l2_ctrl *ctrl)
 		ret = adv7180_write(state, ADV7180_REG_BRI, val);
 		break;
 	case V4L2_CID_HUE:
-		/*Hue is inverted according to HSL chart */
+		 
 		ret = adv7180_write(state, ADV7180_REG_HUE, -val);
 		break;
 	case V4L2_CID_CONTRAST:
 		ret = adv7180_write(state, ADV7180_REG_CON, val);
 		break;
 	case V4L2_CID_SATURATION:
-		/*
-		 *This could be V4L2_CID_BLUE_BALANCE/V4L2_CID_RED_BALANCE
-		 *Let's not confuse the user, everybody understands saturation
-		 */
+		 
 		ret = adv7180_write(state, ADV7180_REG_SD_SAT_CB, val);
 		if (ret < 0)
 			break;
@@ -620,12 +612,12 @@ static int adv7180_s_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	case V4L2_CID_ADV_FAST_SWITCH:
 		if (ctrl->val) {
-			/* ADI required write */
+			 
 			adv7180_write(state, 0x80d9, 0x44);
 			adv7180_write(state, ADV7180_REG_FLCONTROL,
 				ADV7180_FLCONTROL_FL_ENABLE);
 		} else {
-			/* ADI required write */
+			 
 			adv7180_write(state, 0x80d9, 0xc4);
 			adv7180_write(state, ADV7180_REG_FLCONTROL, 0x00);
 		}
@@ -834,10 +826,7 @@ static int adv7180_get_mbus_config(struct v4l2_subdev *sd,
 		cfg->bus.mipi_csi2.num_data_lanes = 1;
 		cfg->bus.mipi_csi2.flags = 0;
 	} else {
-		/*
-		 * The ADV7180 sensor supports BT.601/656 output modes.
-		 * The BT.656 is default and not yet configurable by s/w.
-		 */
+		 
 		cfg->bus.parallel.flags = V4L2_MBUS_MASTER |
 					  V4L2_MBUS_PCLK_SAMPLE_RISING |
 					  V4L2_MBUS_DATA_ACTIVE_HIGH;
@@ -880,13 +869,13 @@ static int adv7180_s_stream(struct v4l2_subdev *sd, int enable)
 	struct adv7180_state *state = to_state(sd);
 	int ret;
 
-	/* It's always safe to stop streaming, no need to take the lock */
+	 
 	if (!enable) {
 		state->streaming = enable;
 		return 0;
 	}
 
-	/* Must wait until querystd released the lock */
+	 
 	ret = mutex_lock_interruptible(&state->mutex);
 	if (ret)
 		return ret;
@@ -953,7 +942,7 @@ static irqreturn_t adv7180_irq(int irq, void *devid)
 
 	mutex_lock(&state->mutex);
 	isr3 = adv7180_read(state, ADV7180_REG_ISR3);
-	/* clear */
+	 
 	adv7180_write(state, ADV7180_REG_ICR3, isr3);
 
 	if (isr3 & ADV7180_IRQ3_AD_CHANGE) {
@@ -973,13 +962,13 @@ static int adv7180_init(struct adv7180_state *state)
 {
 	int ret;
 
-	/* ITU-R BT.656-4 compatible */
+	 
 	ret = adv7180_write(state, ADV7180_REG_EXTENDED_OUTPUT_CONTROL,
 			ADV7180_EXTENDED_OUTPUT_CONTROL_NTSCDIS);
 	if (ret < 0)
 		return ret;
 
-	/* Manually set V bit end position in NTSC mode */
+	 
 	return adv7180_write(state, ADV7180_REG_NTSC_V_BIT_END,
 					ADV7180_NTSC_V_BIT_END_MANUAL_NVEND);
 }
@@ -1014,13 +1003,13 @@ static int adv7182_init(struct adv7180_state *state)
 			ADV7180_DEFAULT_VPP_I2C_ADDR << 1);
 
 	if (state->chip_info->flags & ADV7180_FLAG_V2) {
-		/* ADI recommended writes for improved video quality */
+		 
 		adv7180_write(state, 0x0080, 0x51);
 		adv7180_write(state, 0x0081, 0x51);
 		adv7180_write(state, 0x0082, 0x68);
 	}
 
-	/* ADI required writes */
+	 
 	if (state->chip_info->flags & ADV7180_FLAG_MIPI_CSI2) {
 		adv7180_write(state, ADV7180_REG_OUTPUT_CONTROL, 0x4e);
 		adv7180_write(state, ADV7180_REG_EXTENDED_OUTPUT_CONTROL, 0x57);
@@ -1028,15 +1017,15 @@ static int adv7182_init(struct adv7180_state *state)
 	} else {
 		if (state->chip_info->flags & ADV7180_FLAG_V2) {
 			if (state->force_bt656_4) {
-				/* ITU-R BT.656-4 compatible */
+				 
 				adv7180_write(state,
 					      ADV7180_REG_EXTENDED_OUTPUT_CONTROL,
 					      ADV7180_EXTENDED_OUTPUT_CONTROL_NTSCDIS);
-				/* Manually set NEWAVMODE */
+				 
 				adv7180_write(state,
 					      ADV7180_REG_VSYNC_FIELD_CTL_1,
 					      ADV7180_VSYNC_FIELD_CTL_1_NEWAV);
-				/* Manually set V bit end position in NTSC mode */
+				 
 				adv7180_write(state,
 					      ADV7180_REG_NTSC_V_BIT_END,
 					      ADV7180_NTSC_V_BIT_END_MANUAL_NVEND);
@@ -1061,7 +1050,7 @@ static int adv7182_init(struct adv7180_state *state)
 
 static int adv7182_set_std(struct adv7180_state *state, unsigned int std)
 {
-	/* Failing to set the reserved bit can result in increased video noise */
+	 
 	return adv7180_write(state, ADV7182_REG_INPUT_VIDSEL,
 			     (std << 4) | ADV7182_REG_INPUT_RESERVED);
 }
@@ -1098,12 +1087,12 @@ static enum adv7182_input_type adv7182_get_input_type(unsigned int input)
 	case ADV7182_INPUT_DIFF_CVBS_AIN5_AIN6:
 	case ADV7182_INPUT_DIFF_CVBS_AIN7_AIN8:
 		return ADV7182_INPUT_TYPE_DIFF_CVBS;
-	default: /* Will never happen */
+	default:  
 		return 0;
 	}
 }
 
-/* ADI recommended writes to registers 0x52, 0x53, 0x54 */
+ 
 static unsigned int adv7182_lbias_settings[][3] = {
 	[ADV7182_INPUT_TYPE_CVBS] = { 0xCB, 0x4E, 0x80 },
 	[ADV7182_INPUT_TYPE_DIFF_CVBS] = { 0xC0, 0x4E, 0x80 },
@@ -1129,7 +1118,7 @@ static int adv7182_select_input(struct adv7180_state *state, unsigned int input)
 	if (ret)
 		return ret;
 
-	/* Reset clamp circuitry - ADI recommended writes */
+	 
 	adv7180_write(state, ADV7180_REG_RST_CLAMP, 0x00);
 	adv7180_write(state, ADV7180_REG_RST_CLAMP, 0xff);
 
@@ -1138,7 +1127,7 @@ static int adv7182_select_input(struct adv7180_state *state, unsigned int input)
 	switch (input_type) {
 	case ADV7182_INPUT_TYPE_CVBS:
 	case ADV7182_INPUT_TYPE_DIFF_CVBS:
-		/* ADI recommends to use the SH1 filter */
+		 
 		adv7180_write(state, ADV7180_REG_SHAP_FILTER_CTL_1, 0x41);
 		break;
 	default:
@@ -1155,7 +1144,7 @@ static int adv7182_select_input(struct adv7180_state *state, unsigned int input)
 		adv7180_write(state, ADV7180_REG_CVBS_TRIM + i, lbias[i]);
 
 	if (input_type == ADV7182_INPUT_TYPE_DIFF_CVBS) {
-		/* ADI required writes to make differential CVBS work */
+		 
 		adv7180_write(state, ADV7180_REG_RES_CIR, 0xa8);
 		adv7180_write(state, ADV7180_REG_CLAMP_ADJ, 0x90);
 		adv7180_write(state, ADV7180_REG_DIFF_MODE, 0xb0);
@@ -1174,9 +1163,7 @@ static int adv7182_select_input(struct adv7180_state *state, unsigned int input)
 
 static const struct adv7180_chip_info adv7180_info = {
 	.flags = ADV7180_FLAG_RESET_POWERED,
-	/* We cannot discriminate between LQFP and 40-pin LFCSP, so accept
-	 * all inputs and let the card driver take care of validation
-	 */
+	 
 	.valid_input_mask = BIT(ADV7180_INPUT_CVBS_AIN1) |
 		BIT(ADV7180_INPUT_CVBS_AIN2) |
 		BIT(ADV7180_INPUT_CVBS_AIN3) |
@@ -1359,9 +1346,9 @@ static int init_device(struct adv7180_state *state)
 
 	adv7180_set_field_mode(state);
 
-	/* register for interrupts */
+	 
 	if (state->irq > 0) {
-		/* config the Interrupt pin to be active low */
+		 
 		ret = adv7180_write(state, ADV7180_REG_ICONF1,
 						ADV7180_ICONF1_ACTIVE_LOW |
 						ADV7180_ICONF1_PSYNC_ONLY);
@@ -1376,7 +1363,7 @@ static int init_device(struct adv7180_state *state)
 		if (ret < 0)
 			goto out_unlock;
 
-		/* enable AD change interrupts interrupts */
+		 
 		ret = adv7180_write(state, ADV7180_REG_IMR3,
 						ADV7180_IRQ3_AD_CHANGE);
 		if (ret < 0)
@@ -1401,7 +1388,7 @@ static int adv7180_probe(struct i2c_client *client)
 	struct v4l2_subdev *sd;
 	int ret;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 

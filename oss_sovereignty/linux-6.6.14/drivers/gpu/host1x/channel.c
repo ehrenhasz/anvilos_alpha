@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x Channel
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -12,7 +8,7 @@
 #include "dev.h"
 #include "job.h"
 
-/* Constructor for the host1x device list */
+ 
 int host1x_channel_list_init(struct host1x_channel_list *chlist,
 			     unsigned int num_channels)
 {
@@ -52,14 +48,7 @@ struct host1x_channel *host1x_channel_get(struct host1x_channel *channel)
 }
 EXPORT_SYMBOL(host1x_channel_get);
 
-/**
- * host1x_channel_get_index() - Attempt to get channel reference by index
- * @host: Host1x device object
- * @index: Index of channel
- *
- * If channel number @index is currently allocated, increase its refcount
- * and return a pointer to it. Otherwise, return NULL.
- */
+ 
 struct host1x_channel *host1x_channel_get_index(struct host1x *host,
 						unsigned int index)
 {
@@ -117,13 +106,7 @@ static struct host1x_channel *acquire_unused_channel(struct host1x *host)
 	return &chlist->channels[index];
 }
 
-/**
- * host1x_channel_request() - Allocate a channel
- * @client: Host1x client this channel will be used to send commands to
- *
- * Allocates a new host1x channel for @client. May return NULL if CDMA
- * initialization fails.
- */
+ 
 struct host1x_channel *host1x_channel_request(struct host1x_client *client)
 {
 	struct host1x *host = dev_get_drvdata(client->dev->parent);

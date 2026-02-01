@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+
 
 #include <linux/types.h>
 #include <linux/kernel.h>
 
 #include "lan966x_vcap_ag_api.h"
 
-/* keyfields */
+ 
 static const struct vcap_field is1_normal_keyfield[] = {
 	[VCAP_KF_TYPE] = {
 		.type = VCAP_FIELD_BIT,
@@ -2184,7 +2184,7 @@ static const struct vcap_field es0_vid_keyfield[] = {
 	},
 };
 
-/* keyfield_set */
+ 
 static const struct vcap_set is1_keyfield_set[] = {
 	[VCAP_KFS_NORMAL] = {
 		.type_id = 0,
@@ -2299,7 +2299,7 @@ static const struct vcap_set es0_keyfield_set[] = {
 	},
 };
 
-/* keyfield_set map */
+ 
 static const struct vcap_field *is1_keyfield_set_map[] = {
 	[VCAP_KFS_NORMAL] = is1_normal_keyfield,
 	[VCAP_KFS_5TUPLE_IP4] = is1_5tuple_ip4_keyfield,
@@ -2330,7 +2330,7 @@ static const struct vcap_field *es0_keyfield_set_map[] = {
 	[VCAP_KFS_VID] = es0_vid_keyfield,
 };
 
-/* keyfield_set map sizes */
+ 
 static int is1_keyfield_set_map_size[] = {
 	[VCAP_KFS_NORMAL] = ARRAY_SIZE(is1_normal_keyfield),
 	[VCAP_KFS_5TUPLE_IP4] = ARRAY_SIZE(is1_5tuple_ip4_keyfield),
@@ -2361,7 +2361,7 @@ static int es0_keyfield_set_map_size[] = {
 	[VCAP_KFS_VID] = ARRAY_SIZE(es0_vid_keyfield),
 };
 
-/* actionfields */
+ 
 static const struct vcap_field is1_s1_actionfield[] = {
 	[VCAP_AF_TYPE] = {
 		.type = VCAP_FIELD_BIT,
@@ -2689,7 +2689,7 @@ static const struct vcap_field es0_vid_actionfield[] = {
 	},
 };
 
-/* actionfield_set */
+ 
 static const struct vcap_set is1_actionfield_set[] = {
 	[VCAP_AFS_S1] = {
 		.type_id = 0,
@@ -2719,7 +2719,7 @@ static const struct vcap_set es0_actionfield_set[] = {
 	},
 };
 
-/* actionfield_set map */
+ 
 static const struct vcap_field *is1_actionfield_set_map[] = {
 	[VCAP_AFS_S1] = is1_s1_actionfield,
 };
@@ -2733,7 +2733,7 @@ static const struct vcap_field *es0_actionfield_set_map[] = {
 	[VCAP_AFS_VID] = es0_vid_actionfield,
 };
 
-/* actionfield_set map size */
+ 
 static int is1_actionfield_set_map_size[] = {
 	[VCAP_AFS_S1] = ARRAY_SIZE(is1_s1_actionfield),
 };
@@ -2747,7 +2747,7 @@ static int es0_actionfield_set_map_size[] = {
 	[VCAP_AFS_VID] = ARRAY_SIZE(es0_vid_actionfield),
 };
 
-/* Type Groups */
+ 
 static const struct vcap_typegroup is1_x4_keyfield_set_typegroups[] = {
 	{
 		.offset = 0,
@@ -2912,7 +2912,7 @@ static const struct vcap_typegroup *es0_actionfield_set_typegroups[] = {
 	[2] = NULL,
 };
 
-/* Keyfieldset names */
+ 
 static const char * const vcap_keyfield_set_names[] = {
 	[VCAP_KFS_NO_VALUE]                      =  "(None)",
 	[VCAP_KFS_5TUPLE_IP4]                    =  "VCAP_KFS_5TUPLE_IP4",
@@ -2947,7 +2947,7 @@ static const char * const vcap_keyfield_set_names[] = {
 	[VCAP_KFS_VID]                           =  "VCAP_KFS_VID",
 };
 
-/* Actionfieldset names */
+ 
 static const char * const vcap_actionfield_set_names[] = {
 	[VCAP_AFS_NO_VALUE]                      =  "(None)",
 	[VCAP_AFS_BASE_TYPE]                     =  "VCAP_AFS_BASE_TYPE",
@@ -2960,7 +2960,7 @@ static const char * const vcap_actionfield_set_names[] = {
 	[VCAP_AFS_VID]                           =  "VCAP_AFS_VID",
 };
 
-/* Keyfield names */
+ 
 static const char * const vcap_keyfield_names[] = {
 	[VCAP_KF_NO_VALUE]                       =  "(None)",
 	[VCAP_KF_8021BR_ECID_BASE]               =  "8021BR_ECID_BASE",
@@ -3090,7 +3090,7 @@ static const char * const vcap_keyfield_names[] = {
 	[VCAP_KF_TYPE]                           =  "TYPE",
 };
 
-/* Actionfield names */
+ 
 static const char * const vcap_actionfield_names[] = {
 	[VCAP_AF_NO_VALUE]                       =  "(None)",
 	[VCAP_AF_ACL_ID]                         =  "ACL_ID",
@@ -3193,7 +3193,7 @@ static const char * const vcap_actionfield_names[] = {
 	[VCAP_AF_VLAN_POP_CNT_ENA]               =  "VLAN_POP_CNT_ENA",
 };
 
-/* VCAPs */
+ 
 const struct vcap_info lan966x_vcaps[] = {
 	[VCAP_TYPE_IS1] = {
 		.name = "is1",

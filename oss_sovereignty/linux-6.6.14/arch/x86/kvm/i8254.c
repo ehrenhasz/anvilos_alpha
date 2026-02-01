@@ -1,34 +1,4 @@
-/*
- * 8253/8254 interval timer emulation
- *
- * Copyright (c) 2003-2004 Fabrice Bellard
- * Copyright (c) 2006 Intel Corporation
- * Copyright (c) 2007 Keir Fraser, XenSource Inc
- * Copyright (c) 2008 Intel Corporation
- * Copyright 2009 Red Hat, Inc. and/or its affiliates.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * Authors:
- *   Sheng Yang <sheng.yang@intel.com>
- *   Based on QEMU and Xen.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -59,13 +29,13 @@ static void pit_set_gate(struct kvm_pit *pit, int channel, u32 val)
 	default:
 	case 0:
 	case 4:
-		/* XXX: just disable/enable counting */
+		 
 		break;
 	case 1:
 	case 2:
 	case 3:
 	case 5:
-		/* Restart counting on rising edge. */
+		 
 		if (c->gate < val)
 			c->count_load_time = ktime_get();
 		break;
@@ -88,15 +58,7 @@ static s64 __kpit_elapsed(struct kvm_pit *pit)
 	if (!ps->period)
 		return 0;
 
-	/*
-	 * The Counter does not stop when it reaches zero. In
-	 * Modes 0, 1, 4, and 5 the Counter ``wraps around'' to
-	 * the highest count, either FFFF hex for binary counting
-	 * or 9999 for BCD counting, and continues counting.
-	 * Modes 2 and 3 are periodic; the Counter reloads
-	 * itself with the initial count and continues counting
-	 * from there.
-	 */
+	 
 	remaining = hrtimer_get_remaining(&ps->timer);
 	elapsed = ps->period - ktime_to_ns(remaining);
 
@@ -129,7 +91,7 @@ static int pit_get_count(struct kvm_pit *pit, int channel)
 		counter = (c->count - d) & 0xffff;
 		break;
 	case 3:
-		/* XXX: may be incorrect for odd counts */
+		 
 		counter = c->count - (mod_64((2 * d), c->count));
 		break;
 	default:
@@ -186,7 +148,7 @@ static void pit_latch_status(struct kvm_pit *pit, int channel)
 	struct kvm_kpit_channel_state *c = &pit->pit_state.channels[channel];
 
 	if (!c->status_latched) {
-		/* TODO: Return NULL COUNT (bit 6). */
+		 
 		c->status = ((pit_get_out(pit, channel) << 7) |
 				(c->rw_mode << 4) |
 				(c->mode << 1) |
@@ -207,9 +169,7 @@ static void kvm_pit_ack_irq(struct kvm_irq_ack_notifier *kian)
 	struct kvm_pit *pit = pit_state_to_pit(ps);
 
 	atomic_set(&ps->irq_ack, 1);
-	/* irq_ack should be set before pending is read.  Order accesses with
-	 * inc(pending) in pit_timer_fn and xchg(irq_ack, 0) in pit_do_work.
-	 */
+	 
 	smp_mb();
 	if (atomic_dec_if_positive(&ps->pending) > 0)
 		kthread_queue_work(pit->worker, &pit->expired);
@@ -220,7 +180,7 @@ void __kvm_migrate_pit_timer(struct kvm_vcpu *vcpu)
 	struct kvm_pit *pit = vcpu->kvm->arch.vpit;
 	struct hrtimer *timer;
 
-	/* Somewhat arbitrarily make vcpu0 the owner of the PIT. */
+	 
 	if (vcpu->vcpu_id || !pit)
 		return;
 
@@ -251,15 +211,7 @@ static void pit_do_work(struct kthread_work *work)
 	kvm_set_irq(kvm, pit->irq_source_id, 0, 1, false);
 	kvm_set_irq(kvm, pit->irq_source_id, 0, 0, false);
 
-	/*
-	 * Provides NMI watchdog support via Virtual Wire mode.
-	 * The route is: PIT -> LVT0 in NMI mode.
-	 *
-	 * Note: Our Virtual Wire implementation does not follow
-	 * the MP specification.  We propagate a PIT interrupt to all
-	 * VCPUs and only when LVT0 is in NMI mode.  The interrupt can
-	 * also be simultaneously delivered through PIC and IOAPIC.
-	 */
+	 
 	if (atomic_read(&kvm->arch.vapics_in_nmi_mode) > 0)
 		kvm_for_each_vcpu(i, vcpu, kvm)
 			kvm_apic_nmi_wd_deliver(vcpu);
@@ -296,17 +248,10 @@ void kvm_pit_set_reinject(struct kvm_pit *pit, bool reinject)
 	if (atomic_read(&ps->reinject) == reinject)
 		return;
 
-	/*
-	 * AMD SVM AVIC accelerates EOI write and does not trap.
-	 * This cause in-kernel PIT re-inject mode to fail
-	 * since it checks ps->irq_ack before kvm_set_irq()
-	 * and relies on the ack notifier to timely queue
-	 * the pt->worker work iterm and reinject the missed tick.
-	 * So, deactivate APICv when PIT is in reinject mode.
-	 */
+	 
 	if (reinject) {
 		kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_PIT_REINJ);
-		/* The initial state is preserved while ps->reinject == 0. */
+		 
 		kvm_pit_reset_reinject(pit);
 		kvm_register_irq_ack_notifier(kvm, &ps->irq_ack_notifier);
 		kvm_register_irq_mask_notifier(kvm, 0, &pit->mask_notifier);
@@ -333,7 +278,7 @@ static void create_pit_timer(struct kvm_pit *pit, u32 val, int is_period)
 
 	pr_debug("create pit timer, interval is %llu nsec\n", interval);
 
-	/* TODO The new value only affected after the retriggered */
+	 
 	hrtimer_cancel(&ps->timer);
 	kthread_flush_work(&pit->expired);
 	ps->period = interval;
@@ -341,11 +286,7 @@ static void create_pit_timer(struct kvm_pit *pit, u32 val, int is_period)
 
 	kvm_pit_reset_reinject(pit);
 
-	/*
-	 * Do not allow the guest to program periodic timers with small
-	 * interval, since the hrtimers are not throttled by the host
-	 * scheduler.
-	 */
+	 
 	if (ps->is_periodic) {
 		s64 min_period = min_timer_period_us * 1000LL;
 
@@ -368,10 +309,7 @@ static void pit_load_count(struct kvm_pit *pit, int channel, u32 val)
 
 	pr_debug("load_count val is %u, channel is %d\n", val, channel);
 
-	/*
-	 * The largest possible initial count is 0; this is equivalent
-	 * to 216 for binary counting and 104 for BCD counting.
-	 */
+	 
 	if (val == 0)
 		val = 0x10000;
 
@@ -382,12 +320,11 @@ static void pit_load_count(struct kvm_pit *pit, int channel, u32 val)
 		return;
 	}
 
-	/* Two types of timer
-	 * mode 1 is one shot, mode 2 is period, otherwise del timer */
+	 
 	switch (ps->channels[0].mode) {
 	case 0:
 	case 1:
-        /* FIXME: enhance mode 4 precision */
+         
 	case 4:
 		create_pit_timer(pit, val, 0);
 		break;
@@ -408,10 +345,10 @@ void kvm_pit_load_count(struct kvm_pit *pit, int channel, u32 val,
 	WARN_ON_ONCE(!mutex_is_locked(&pit->pit_state.lock));
 
 	if (hpet_legacy_start) {
-		/* save existing mode for later reenablement */
+		 
 		WARN_ON(channel != 0);
 		saved_mode = pit->pit_state.channels[0].mode;
-		pit->pit_state.channels[0].mode = 0xff; /* disable timer */
+		pit->pit_state.channels[0].mode = 0xff;  
 		pit_load_count(pit, channel, val);
 		pit->pit_state.channels[0].mode = saved_mode;
 	} else {
@@ -459,7 +396,7 @@ static int pit_ioport_write(struct kvm_vcpu *vcpu,
 	if (addr == 3) {
 		channel = val >> 6;
 		if (channel == 3) {
-			/* Read-Back Command. */
+			 
 			for (channel = 0; channel < 3; channel++) {
 				if (val & (2 << channel)) {
 					if (!(val & 0x20))
@@ -469,7 +406,7 @@ static int pit_ioport_write(struct kvm_vcpu *vcpu,
 				}
 			}
 		} else {
-			/* Select Counter <channel>. */
+			 
 			s = &pit_state->channels[channel];
 			access = (val >> 4) & KVM_PIT_CHANNEL_MASK;
 			if (access == 0) {
@@ -485,7 +422,7 @@ static int pit_ioport_write(struct kvm_vcpu *vcpu,
 			}
 		}
 	} else {
-		/* Write Count. */
+		 
 		s = &pit_state->channels[addr];
 		switch (s->write_state) {
 		default:
@@ -611,7 +548,7 @@ static int speaker_ioport_read(struct kvm_vcpu *vcpu,
 	if (addr != KVM_SPEAKER_BASE_ADDRESS)
 		return -EOPNOTSUPP;
 
-	/* Refresh clock toggles at about 15us. We approximate as 2^14ns. */
+	 
 	refresh_clock = ((unsigned int)ktime_to_ns(ktime_get()) >> 14) & 1;
 
 	mutex_lock(&pit_state->lock);

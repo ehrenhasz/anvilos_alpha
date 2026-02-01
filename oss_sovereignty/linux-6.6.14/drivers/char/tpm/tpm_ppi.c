@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012-2014 Intel Corporation
- *
- * Authors:
- * Xiaoyan Zhang <xiaoyan.zhang@intel.com>
- * Jiang Liu <jiang.liu@linux.intel.com>
- * Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * This file contains implementation of the sysfs interface for PPI.
- */
+
+ 
 
 
 #include <linux/acpi.h>
@@ -25,7 +14,7 @@
 #define TPM_PPI_FN_GETRSP	5
 #define TPM_PPI_FN_SUBREQ2	7
 #define TPM_PPI_FN_GETOPR	8
-#define PPI_TPM_REQ_MAX		101 /* PPI 1.3 for TPM 2 */
+#define PPI_TPM_REQ_MAX		101  
 #define PPI_VS_REQ_START	128
 #define PPI_VS_REQ_END		255
 
@@ -72,12 +61,7 @@ static ssize_t tpm_show_ppi_request(struct device *dev,
 	if (!obj)
 		return -ENXIO;
 
-	/*
-	 * output.pointer should be of package type, including two integers.
-	 * The first is function return code, 0 means success and 1 means
-	 * error. The second is pending TPM operation requested by the OS, 0
-	 * means none and >0 means operation value.
-	 */
+	 
 	if (obj->package.count == 3 &&
 	    obj->package.elements[0].type == ACPI_TYPE_INTEGER &&
 	    obj->package.elements[1].type == ACPI_TYPE_INTEGER &&
@@ -121,21 +105,12 @@ static ssize_t tpm_store_ppi_request(struct device *dev,
 	struct tpm_chip *chip = to_tpm_chip(dev);
 	u64 rev = TPM_PPI_REVISION_ID_1;
 
-	/*
-	 * the function to submit TPM operation request to pre-os environment
-	 * is updated with function index from SUBREQ to SUBREQ2 since PPI
-	 * version 1.1
-	 */
+	 
 	if (acpi_check_dsm(chip->acpi_dev_handle, &tpm_ppi_guid,
 			   TPM_PPI_REVISION_ID_1, 1 << TPM_PPI_FN_SUBREQ2))
 		func = TPM_PPI_FN_SUBREQ2;
 
-	/*
-	 * PPI spec defines params[3].type as ACPI_TYPE_PACKAGE. Some BIOS
-	 * accept buffer/string/integer type, but some BIOS accept buffer/
-	 * string/package type. For PPI version 1.0 and 1.1, use buffer type
-	 * for compatibility, and use package type since 1.2 according to spec.
-	 */
+	 
 	if (strcmp(chip->ppi_version, "1.3") == 0) {
 		if (sscanf(buf, "%llu %llu", &tmp[0].integer.value,
 			   &tmp[1].integer.value) != 2)
@@ -194,11 +169,7 @@ static ssize_t tpm_show_ppi_transition_action(struct device *dev,
 		"Error",
 	};
 
-	/*
-	 * PPI spec defines params[3].type as empty package, but some platforms
-	 * (e.g. Capella with PPI 1.0) need integer/string/buffer type, so for
-	 * compatibility, define params[3].type as buffer, if PPI version < 1.2
-	 */
+	 
 	if (strcmp(chip->ppi_version, "1.2") < 0)
 		obj = &tmp;
 	obj = tpm_eval_dsm(chip->acpi_dev_handle, TPM_PPI_FN_GETACT,
@@ -232,13 +203,7 @@ static ssize_t tpm_show_ppi_response(struct device *dev,
 	if (!obj)
 		return -ENXIO;
 
-	/*
-	 * parameter output.pointer should be of package type, including
-	 * 3 integers. The first means function return code, the second means
-	 * most recent TPM operation request, and the last means response to
-	 * the most recent TPM operation request. Only if the first is 0, and
-	 * the second integer is not 0, the response makes sense.
-	 */
+	 
 	ret_obj = obj->package.elements;
 	if (obj->package.count < 3 ||
 	    ret_obj[0].type != ACPI_TYPE_INTEGER ||
@@ -374,7 +339,7 @@ void tpm_add_ppi(struct tpm_chip *chip)
 			    TPM_PPI_REVISION_ID_1, 1 << TPM_PPI_FN_VERSION))
 		return;
 
-	/* Cache PPI version string. */
+	 
 	obj = acpi_evaluate_dsm_typed(chip->acpi_dev_handle, &tpm_ppi_guid,
 				      TPM_PPI_REVISION_ID_1,
 				      TPM_PPI_FN_VERSION,

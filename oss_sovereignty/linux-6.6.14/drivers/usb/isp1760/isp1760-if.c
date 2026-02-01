@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Glue code for the ISP1760 driver and bus
- * Currently there is support for
- * - OpenFirmware
- * - PCI
- * - PDEV (generic platform device centralized driver model)
- *
- * (c) 2007 Sebastian Siewior <bigeasy@linutronix.de>
- * Copyright 2021 Linaro, Rui Miguel Silva <rui.silva@linaro.org>
- *
- */
+
+ 
 
 #include <linux/usb.h>
 #include <linux/io.h>
@@ -38,7 +28,7 @@ static int isp1761_pci_init(struct pci_dev *dev)
 	int retry_count;
 	u32 reg_data;
 
-	/* Grab the PLX PCI shared memory of the ISP 1761 we need  */
+	 
 	mem_start = pci_resource_start(dev, 3);
 	mem_length = pci_resource_len(dev, 3);
 	if (mem_length < 0xffff) {
@@ -51,7 +41,7 @@ static int isp1761_pci_init(struct pci_dev *dev)
 		return -EBUSY;
 	}
 
-	/* map available memory */
+	 
 	iobase = ioremap(mem_start, mem_length);
 	if (!iobase) {
 		printk(KERN_ERR "Error ioremap failed\n");
@@ -59,7 +49,7 @@ static int isp1761_pci_init(struct pci_dev *dev)
 		return -ENOMEM;
 	}
 
-	/* bad pci latencies can contribute to overruns */
+	 
 	pci_read_config_byte(dev, PCI_LATENCY_TIMER, &latency);
 	if (latency) {
 		pci_read_config_byte(dev, PCI_MAX_LAT, &limit);
@@ -67,16 +57,11 @@ static int isp1761_pci_init(struct pci_dev *dev)
 			pci_write_config_byte(dev, PCI_LATENCY_TIMER, limit);
 	}
 
-	/* Try to check whether we can access Scratch Register of
-	 * Host Controller or not. The initial PCI access is retried until
-	 * local init for the PCI bridge is completed
-	 */
+	 
 	retry_count = 20;
 	reg_data = 0;
 	while ((reg_data != 0xFACE) && retry_count) {
-		/*by default host is in 16bit mode, so
-		 * io operations at this stage must be 16 bit
-		 * */
+		 
 		writel(0xface, iobase + ISP176x_HC_SCRATCH);
 		udelay(100);
 		reg_data = readl(iobase + ISP176x_HC_SCRATCH) & 0x0000ffff;
@@ -86,15 +71,13 @@ static int isp1761_pci_init(struct pci_dev *dev)
 	iounmap(iobase);
 	release_mem_region(mem_start, mem_length);
 
-	/* Host Controller presence is detected by writing to scratch register
-	 * and reading back and checking the contents are same or not
-	 */
+	 
 	if (reg_data != 0xFACE) {
 		dev_err(&dev->dev, "scratch register mismatch %x\n", reg_data);
 		return -ENOMEM;
 	}
 
-	/* Grab the PLX PCI mem maped port start address we need  */
+	 
 	mem_start = pci_resource_start(dev, 0);
 	mem_length = pci_resource_len(dev, 0);
 
@@ -110,13 +93,13 @@ static int isp1761_pci_init(struct pci_dev *dev)
 		return -ENOMEM;
 	}
 
-	/* configure PLX PCI chip to pass interrupts */
+	 
 #define PLX_INT_CSR_REG 0x68
 	reg_data = readl(iobase + PLX_INT_CSR_REG);
 	reg_data |= 0x900;
 	writel(reg_data, iobase + PLX_INT_CSR_REG);
 
-	/* done with PLX IO access */
+	 
 	iounmap(iobase);
 	release_mem_region(mem_start, mem_length);
 
@@ -212,10 +195,7 @@ static int isp1760_plat_probe(struct platform_device *pdev)
 		if (of_device_is_compatible(dp, "nxp,usb-isp1763"))
 			devflags |= ISP1760_FLAG_ISP1763;
 
-		/*
-		 * Some systems wire up only 8 of 16 data lines or
-		 * 16 of the 32 data lines
-		 */
+		 
 		of_property_read_u32(dp, "bus-width", &bus_width);
 		if (bus_width == 16)
 			devflags |= ISP1760_FLAG_BUS_WIDTH_16;

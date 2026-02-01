@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  IPv6 IOAM implementation
- *
- *  Author:
- *  Justin Iurman <justin.iurman@uliege.be>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -646,7 +641,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 
 	data = trace->data + trace->remlen * 4 - trace->nodelen * 4 - sclen * 4;
 
-	/* hop_lim and node_id */
+	 
 	if (trace->type.bit0) {
 		byte = ipv6_hdr(skb)->hop_limit;
 		if (is_input)
@@ -658,7 +653,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 		data += sizeof(__be32);
 	}
 
-	/* ingress_if_id and egress_if_id */
+	 
 	if (trace->type.bit1) {
 		if (!skb->dev)
 			raw16 = IOAM6_U16_UNAVAILABLE;
@@ -677,7 +672,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 		data += sizeof(__be16);
 	}
 
-	/* timestamp seconds */
+	 
 	if (trace->type.bit2) {
 		if (!skb->dev) {
 			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
@@ -690,7 +685,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 		data += sizeof(__be32);
 	}
 
-	/* timestamp subseconds */
+	 
 	if (trace->type.bit3) {
 		if (!skb->dev) {
 			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
@@ -705,19 +700,19 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 		data += sizeof(__be32);
 	}
 
-	/* transit delay */
+	 
 	if (trace->type.bit4) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* namespace data */
+	 
 	if (trace->type.bit5) {
 		*(__be32 *)data = ns->data;
 		data += sizeof(__be32);
 	}
 
-	/* queue depth */
+	 
 	if (trace->type.bit6) {
 		struct netdev_queue *queue;
 		struct Qdisc *qdisc;
@@ -735,13 +730,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 		data += sizeof(__be32);
 	}
 
-	/* checksum complement */
+	 
 	if (trace->type.bit7) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* hop_lim and node_id (wide) */
+	 
 	if (trace->type.bit8) {
 		byte = ipv6_hdr(skb)->hop_limit;
 		if (is_input)
@@ -753,7 +748,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 		data += sizeof(__be64);
 	}
 
-	/* ingress_if_id and egress_if_id (wide) */
+	 
 	if (trace->type.bit9) {
 		if (!skb->dev)
 			raw32 = IOAM6_U32_UNAVAILABLE;
@@ -772,79 +767,79 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 		data += sizeof(__be32);
 	}
 
-	/* namespace data (wide) */
+	 
 	if (trace->type.bit10) {
 		*(__be64 *)data = ns->data_wide;
 		data += sizeof(__be64);
 	}
 
-	/* buffer occupancy */
+	 
 	if (trace->type.bit11) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit12 undefined: filled with empty value */
+	 
 	if (trace->type.bit12) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit13 undefined: filled with empty value */
+	 
 	if (trace->type.bit13) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit14 undefined: filled with empty value */
+	 
 	if (trace->type.bit14) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit15 undefined: filled with empty value */
+	 
 	if (trace->type.bit15) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit16 undefined: filled with empty value */
+	 
 	if (trace->type.bit16) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit17 undefined: filled with empty value */
+	 
 	if (trace->type.bit17) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit18 undefined: filled with empty value */
+	 
 	if (trace->type.bit18) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit19 undefined: filled with empty value */
+	 
 	if (trace->type.bit19) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit20 undefined: filled with empty value */
+	 
 	if (trace->type.bit20) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* bit21 undefined: filled with empty value */
+	 
 	if (trace->type.bit21) {
 		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
 		data += sizeof(__be32);
 	}
 
-	/* opaque state snapshot */
+	 
 	if (trace->type.bit22) {
 		if (!sc) {
 			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE >> 8);
@@ -857,7 +852,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
 	}
 }
 
-/* called with rcu_read_lock() */
+ 
 void ioam6_fill_trace_data(struct sk_buff *skb,
 			   struct ioam6_namespace *ns,
 			   struct ioam6_trace_hdr *trace,
@@ -866,15 +861,11 @@ void ioam6_fill_trace_data(struct sk_buff *skb,
 	struct ioam6_schema *sc;
 	u8 sclen = 0;
 
-	/* Skip if Overflow flag is set
-	 */
+	 
 	if (trace->overflow)
 		return;
 
-	/* NodeLen does not include Opaque State Snapshot length. We need to
-	 * take it into account if the corresponding bit is set (bit 22) and
-	 * if the current IOAM namespace has an active schema attached to it
-	 */
+	 
 	sc = rcu_dereference(ns->schema);
 	if (trace->type.bit22) {
 		sclen = sizeof_field(struct ioam6_schema, hdr) / 4;
@@ -883,9 +874,7 @@ void ioam6_fill_trace_data(struct sk_buff *skb,
 			sclen += sc->len / 4;
 	}
 
-	/* If there is no space remaining, we set the Overflow flag and we
-	 * skip without filling the trace
-	 */
+	 
 	if (!trace->remlen || trace->remlen < trace->nodelen + sclen) {
 		trace->overflow = 1;
 		return;

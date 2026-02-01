@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis PCI bridge driver
 
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
@@ -54,7 +49,7 @@ static void mantis_uart_read(struct mantis_pci *mantis)
 	struct mantis_hwconfig *config = mantis->hwconfig;
 	int i, scancode = 0, err = 0;
 
-	/* get data */
+	 
 	dprintk(MANTIS_DEBUG, 1, "UART Reading ...");
 	for (i = 0; i < (config->bytes + 1); i++) {
 		int data = mmread(MANTIS_UART_RXD);
@@ -87,12 +82,9 @@ static void mantis_uart_work(struct work_struct *work)
 	if (stat & MANTIS_UART_RXFIFO_FULL)
 		dprintk(MANTIS_ERROR, 1, "RX Fifo FULL");
 
-	/*
-	 * MANTIS_UART_RXFIFO_DATA is only set if at least
-	 * config->bytes + 1 bytes are in the FIFO.
-	 */
+	 
 
-	/* FIXME: is 10ms good enough ? */
+	 
 	timeout = jiffies +  msecs_to_jiffies(10);
 	while (stat & MANTIS_UART_RXFIFO_DATA) {
 		mantis_uart_read(mantis);
@@ -102,7 +94,7 @@ static void mantis_uart_work(struct work_struct *work)
 			break;
 	}
 
-	/* re-enable UART (RX) interrupt */
+	 
 	mantis_unmask_ints(mantis, MANTIS_INT_IRQ1);
 }
 
@@ -145,7 +137,7 @@ int mantis_uart_init(struct mantis_pci *mantis)
 	struct mantis_hwconfig *config = mantis->hwconfig;
 	struct mantis_uart_params params;
 
-	/* default parity: */
+	 
 	params.baud_rate = config->baud_rate;
 	params.parity = config->parity;
 	dprintk(MANTIS_INFO, 1, "Initializing UART @ %sbps parity:%s",
@@ -154,18 +146,18 @@ int mantis_uart_init(struct mantis_pci *mantis)
 
 	INIT_WORK(&mantis->uart_work, mantis_uart_work);
 
-	/* disable interrupt */
+	 
 	mmwrite(mmread(MANTIS_UART_CTL) & 0xffef, MANTIS_UART_CTL);
 
 	mantis_uart_setup(mantis, &params);
 
-	/* default 1 byte */
+	 
 	mmwrite((mmread(MANTIS_UART_BAUD) | (config->bytes << 8)), MANTIS_UART_BAUD);
 
-	/* flush buffer */
+	 
 	mmwrite((mmread(MANTIS_UART_CTL) | MANTIS_UART_RXFLUSH), MANTIS_UART_CTL);
 
-	/* enable interrupt */
+	 
 	mmwrite(mmread(MANTIS_UART_CTL) | MANTIS_UART_RXINT, MANTIS_UART_CTL);
 	mantis_unmask_ints(mantis, MANTIS_INT_IRQ1);
 
@@ -178,7 +170,7 @@ EXPORT_SYMBOL_GPL(mantis_uart_init);
 
 void mantis_uart_exit(struct mantis_pci *mantis)
 {
-	/* disable interrupt */
+	 
 	mantis_mask_ints(mantis, MANTIS_INT_IRQ1);
 	mmwrite(mmread(MANTIS_UART_CTL) & 0xffef, MANTIS_UART_CTL);
 	flush_work(&mantis->uart_work);

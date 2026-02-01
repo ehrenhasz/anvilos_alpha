@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C bus driver for Amlogic Meson SoCs
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -18,7 +14,7 @@
 #include <linux/platform_device.h>
 #include <linux/types.h>
 
-/* Meson I2C register map */
+ 
 #define REG_CTRL		0x00
 #define REG_SLAVE_ADDR		0x04
 #define REG_TOK_LIST0		0x08
@@ -28,7 +24,7 @@
 #define REG_TOK_RDATA0		0x18
 #define REG_TOK_RDATA1		0x1c
 
-/* Control register fields */
+ 
 #define REG_CTRL_START			BIT(0)
 #define REG_CTRL_ACK_IGNORE		BIT(1)
 #define REG_CTRL_STATUS			BIT(2)
@@ -64,25 +60,7 @@ enum {
 	STATE_WRITE,
 };
 
-/**
- * struct meson_i2c - Meson I2C device private data
- *
- * @adap:	I2C adapter instance
- * @dev:	Pointer to device structure
- * @regs:	Base address of the device memory mapped registers
- * @clk:	Pointer to clock structure
- * @msg:	Pointer to the current I2C message
- * @state:	Current state in the driver state machine
- * @last:	Flag set for the last message in the transfer
- * @count:	Number of bytes to be sent/received in current transfer
- * @pos:	Current position in the send/receive buffer
- * @error:	Flag set when an error is received
- * @lock:	To avoid race conditions between irq handler and xfer code
- * @done:	Completion used to wait for transfer termination
- * @tokens:	Sequence of tokens to be written to the device
- * @num_tokens:	Number of tokens
- * @data:	Pointer to the controller's platform data
- */
+ 
 struct meson_i2c {
 	struct i2c_adapter	adap;
 	struct device		*dev;
@@ -141,13 +119,7 @@ static void meson_gxbb_axg_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int f
 	unsigned long clk_rate = clk_get_rate(i2c->clk);
 	unsigned int div_h, div_l;
 
-	/* According to I2C-BUS Spec 2.1, in FAST-MODE, the minimum LOW period is 1.3uS, and
-	 * minimum HIGH is least 0.6us.
-	 * For 400000 freq, the period is 2.5us. To keep within the specs, give 40% of period to
-	 * HIGH and 60% to LOW. This means HIGH at 1.0us and LOW 1.5us.
-	 * The same applies for Fast-mode plus, where LOW is 0.5us and HIGH is 0.26us.
-	 * Duty = H/(H + L) = 2/5
-	 */
+	 
 	if (freq <= I2C_MAX_STANDARD_MODE_FREQ) {
 		div_h = DIV_ROUND_UP(clk_rate, freq);
 		div_l = DIV_ROUND_UP(div_h, 4);
@@ -157,7 +129,7 @@ static void meson_gxbb_axg_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int f
 		div_l = DIV_ROUND_UP(clk_rate * 3, freq * 5 * 2);
 	}
 
-	/* clock divider has 12 bits */
+	 
 	if (div_h > GENMASK(11, 0)) {
 		dev_err(i2c->dev, "requested bus frequency too low\n");
 		div_h = GENMASK(11, 0);
@@ -173,11 +145,11 @@ static void meson_gxbb_axg_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int f
 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIVEXT_MASK,
 			   FIELD_PREP(REG_CTRL_CLKDIVEXT_MASK, div_h >> 10));
 
-	/* set SCL low delay */
+	 
 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_SCL_LOW_MASK,
 			   FIELD_PREP(REG_SLV_SCL_LOW_MASK, div_l));
 
-	/* Enable HIGH/LOW mode */
+	 
 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_SCL_LOW_EN, REG_SLV_SCL_LOW_EN);
 
 	dev_dbg(i2c->dev, "%s: clk %lu, freq %u, divh %u, divl %u\n", __func__,
@@ -193,7 +165,7 @@ static void meson6_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int freq)
 	div -= FILTER_DELAY;
 	div = DIV_ROUND_UP(div, 4);
 
-	/* clock divider has 12 bits */
+	 
 	if (div > GENMASK(11, 0)) {
 		dev_err(i2c->dev, "requested bus frequency too low\n");
 		div = GENMASK(11, 0);
@@ -205,7 +177,7 @@ static void meson6_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int freq)
 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIVEXT_MASK,
 			   FIELD_PREP(REG_CTRL_CLKDIVEXT_MASK, div >> 10));
 
-	/* Disable HIGH/LOW mode */
+	 
 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_SCL_LOW_EN, 0);
 
 	dev_dbg(i2c->dev, "%s: clk %lu, freq %u, div %u\n", __func__,
@@ -278,12 +250,7 @@ static void meson_i2c_prepare_xfer(struct meson_i2c *i2c)
 static void meson_i2c_transfer_complete(struct meson_i2c *i2c, u32 ctrl)
 {
 	if (ctrl & REG_CTRL_ERROR) {
-		/*
-		 * The bit is set when the IGNORE_NAK bit is cleared
-		 * and the device didn't respond. In this case, the
-		 * I2C controller automatically generates a STOP
-		 * condition.
-		 */
+		 
 		dev_dbg(i2c->dev, "error bit set\n");
 		i2c->error = -ENXIO;
 		i2c->state = STATE_IDLE;
@@ -325,7 +292,7 @@ static irqreturn_t meson_i2c_irq(int irqno, void *dev_id)
 		goto out;
 	}
 
-	/* Restart the processing */
+	 
 	meson_i2c_prepare_xfer(i2c);
 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_START, REG_CTRL_START);
 out:
@@ -376,7 +343,7 @@ static int meson_i2c_xfer_msg(struct meson_i2c *i2c, struct i2c_msg *msg,
 	if (!atomic)
 		reinit_completion(&i2c->done);
 
-	/* Start the transfer */
+	 
 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_START, REG_CTRL_START);
 
 	if (atomic) {
@@ -391,17 +358,13 @@ static int meson_i2c_xfer_msg(struct meson_i2c *i2c, struct i2c_msg *msg,
 			ret = -ETIMEDOUT;
 	}
 
-	/*
-	 * Protect access to i2c struct and registers from interrupt
-	 * handlers triggered by a transfer terminated after the
-	 * timeout period
-	 */
+	 
 	spin_lock_irqsave(&i2c->lock, flags);
 
 	if (atomic && !ret)
 		meson_i2c_transfer_complete(i2c, ctrl);
 
-	/* Abort any active operation */
+	 
 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_START, 0);
 
 	if (ret)
@@ -509,13 +472,10 @@ static int meson_i2c_probe(struct platform_device *pdev)
 	i2c->adap.dev.of_node = np;
 	i2c->adap.algo_data = i2c;
 
-	/*
-	 * A transfer is triggered when START bit changes from 0 to 1.
-	 * Ensure that the bit is set to 0 after probe
-	 */
+	 
 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_START, 0);
 
-	/* Disable filtering */
+	 
 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
 			   REG_SLV_SDA_FILTER_MASK | REG_SLV_SCL_FILTER_MASK, 0);
 

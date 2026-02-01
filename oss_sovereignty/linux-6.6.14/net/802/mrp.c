@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	IEEE 802.1Q Multiple Registration Protocol (MRP)
- *
- *	Copyright (c) 2012 Massachusetts Institute of Technology
- *
- *	Adapted from code in net/802/garp.c
- *	Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/timer.h>
 #include <linux/skbuff.h>
@@ -216,9 +209,7 @@ static void mrp_attrvalue_inc(void *value, u8 len)
 {
 	u8 *v = (u8 *)value;
 
-	/* Add 1 to the last byte. If it becomes zero,
-	 * go to the previous byte and repeat.
-	 */
+	 
 	while (len > 0 && !++v[--len])
 		;
 }
@@ -269,7 +260,7 @@ static struct mrp_attr *mrp_attr_create(struct mrp_applicant *app,
 		else if (d < 0)
 			p = &parent->rb_right;
 		else {
-			/* The attribute already exists; re-use it. */
+			 
 			return attr;
 		}
 	}
@@ -414,10 +405,7 @@ again:
 			return err;
 	}
 
-	/* If there is no Message header in the PDU, or the Message header is
-	 * for a different attribute type, add an EndMark (if necessary) and a
-	 * new Message header to the PDU.
-	 */
+	 
 	if (!mrp_cb(app->pdu)->mh ||
 	    mrp_cb(app->pdu)->mh->attrtype != attr->type ||
 	    mrp_cb(app->pdu)->mh->attrlen != attr->len) {
@@ -425,10 +413,7 @@ again:
 			goto queue;
 	}
 
-	/* If there is no VectorAttribute header for this Message in the PDU,
-	 * or this attribute's value does not sequentially follow the previous
-	 * attribute's value, add a new VectorAttribute header to the PDU.
-	 */
+	 
 	if (!mrp_cb(app->pdu)->vah ||
 	    memcmp(mrp_cb(app->pdu)->attrvalue, attr->value, attr->len)) {
 		if (mrp_pdu_append_vecattr_hdr(app, attr->value, attr->len) < 0)
@@ -438,9 +423,7 @@ again:
 	len = be16_to_cpu(get_unaligned(&mrp_cb(app->pdu)->vah->lenflags));
 	pos = len % 3;
 
-	/* Events are packed into Vectors in the PDU, three to a byte. Add a
-	 * byte to the end of the Vector if necessary.
-	 */
+	 
 	if (!pos) {
 		if (skb_tailroom(app->pdu) < sizeof(u8))
 			goto queue;
@@ -464,9 +447,7 @@ again:
 		WARN_ON(1);
 	}
 
-	/* Increment the length of the VectorAttribute in the PDU, as well as
-	 * the value of the next attribute that would continue its Vector.
-	 */
+	 
 	put_unaligned(cpu_to_be16(++len), &mrp_cb(app->pdu)->vah->lenflags);
 	mrp_attrvalue_inc(mrp_cb(app->pdu)->attrvalue, attr->len);
 
@@ -489,9 +470,7 @@ static void mrp_attr_event(struct mrp_applicant *app,
 	}
 
 	if (event == MRP_EVENT_TX) {
-		/* When appending the attribute fails, don't update its state
-		 * in order to retry at the next TX event.
-		 */
+		 
 
 		switch (mrp_tx_action_table[attr->state]) {
 		case MRP_TX_ACTION_NONE:
@@ -512,10 +491,7 @@ static void mrp_attr_event(struct mrp_applicant *app,
 			if (mrp_pdu_append_vecattr_event(
 				    app, attr, MRP_VECATTR_EVENT_LV) < 0)
 				return;
-			/* As a pure applicant, sending a leave message
-			 * implies that the attribute was unregistered and
-			 * can be destroyed.
-			 */
+			 
 			mrp_attr_destroy(app, attr);
 			return;
 		default:
@@ -702,12 +678,7 @@ static int mrp_pdu_parse_vecattr(struct mrp_applicant *app,
 	valen = be16_to_cpu(get_unaligned(&mrp_cb(skb)->vah->lenflags) &
 			    MRP_VECATTR_HDR_LEN_MASK);
 
-	/* The VectorAttribute structure in a PDU carries event information
-	 * about one or more attributes having consecutive values. Only the
-	 * value for the first attribute is contained in the structure. So
-	 * we make a copy of that value, and then increment it each time we
-	 * advance to the next event in its Vector.
-	 */
+	 
 	if (sizeof(struct mrp_skb_cb) + mrp_cb(skb)->mh->attrlen >
 	    sizeof_field(struct sk_buff, cb))
 		return -1;
@@ -716,25 +687,23 @@ static int mrp_pdu_parse_vecattr(struct mrp_applicant *app,
 		return -1;
 	*offset += mrp_cb(skb)->mh->attrlen;
 
-	/* In a VectorAttribute, the Vector contains events which are packed
-	 * three to a byte. We process one byte of the Vector at a time.
-	 */
+	 
 	while (valen > 0) {
 		if (skb_copy_bits(skb, *offset, &vaevents,
 				  sizeof(vaevents)) < 0)
 			return -1;
 		*offset += sizeof(vaevents);
 
-		/* Extract and process the first event. */
+		 
 		vaevent = vaevents / (__MRP_VECATTR_EVENT_MAX *
 				      __MRP_VECATTR_EVENT_MAX);
 		if (vaevent >= __MRP_VECATTR_EVENT_MAX) {
-			/* The byte is malformed; stop processing. */
+			 
 			return -1;
 		}
 		mrp_pdu_parse_vecattr_event(app, skb, vaevent);
 
-		/* If present, extract and process the second event. */
+		 
 		if (!--valen)
 			break;
 		mrp_attrvalue_inc(mrp_cb(skb)->attrvalue,
@@ -744,7 +713,7 @@ static int mrp_pdu_parse_vecattr(struct mrp_applicant *app,
 		vaevent = vaevents / __MRP_VECATTR_EVENT_MAX;
 		mrp_pdu_parse_vecattr_event(app, skb, vaevent);
 
-		/* If present, extract and process the third event. */
+		 
 		if (!--valen)
 			break;
 		mrp_attrvalue_inc(mrp_cb(skb)->attrvalue,
@@ -791,9 +760,7 @@ static int mrp_rcv(struct sk_buff *skb, struct net_device *dev,
 	const struct mrp_pdu_hdr *ph;
 	int offset = skb_network_offset(skb);
 
-	/* If the interface is in promiscuous mode, drop the packet if
-	 * it was unicast to another host.
-	 */
+	 
 	if (unlikely(skb->pkt_type == PACKET_OTHERHOST))
 		goto out;
 	skb = skb_share_check(skb, GFP_ATOMIC);
@@ -908,9 +875,7 @@ void mrp_uninit_applicant(struct net_device *dev, struct mrp_application *appl)
 	spin_lock_bh(&app->lock);
 	app->active = false;
 	spin_unlock_bh(&app->lock);
-	/* Delete timer and generate a final TX event to flush out
-	 * all pending messages before the applicant is gone.
-	 */
+	 
 	timer_shutdown_sync(&app->join_timer);
 	timer_shutdown_sync(&app->periodic_timer);
 

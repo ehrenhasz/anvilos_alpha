@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * AMD Trusted Execution Environment (TEE) interface
- *
- * Author: Rijo Thomas <Rijo-john.Thomas@amd.com>
- * Author: Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>
- *
- * Copyright (C) 2019,2021 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/types.h>
@@ -30,9 +23,7 @@ static int tee_alloc_ring(struct psp_tee_device *tee, int ring_size)
 	if (!ring_size)
 		return -EINVAL;
 
-	/* We need actual physical address instead of DMA address, since
-	 * Trusted OS running on AMD Secure Processor will map this region
-	 */
+	 
 	start_addr = (void *)__get_free_pages(GFP_KERNEL, get_order(ring_size));
 	if (!start_addr)
 		return -ENOMEM;
@@ -65,7 +56,7 @@ static void tee_free_ring(struct psp_tee_device *tee)
 static int tee_wait_cmd_poll(struct psp_tee_device *tee, unsigned int timeout,
 			     unsigned int *reg)
 {
-	/* ~10ms sleep per loop => nloop = timeout * 100 */
+	 
 	int nloop = timeout * 100;
 
 	while (--nloop) {
@@ -132,9 +123,7 @@ static int tee_init_ring(struct psp_tee_device *tee)
 
 	cmd_buffer = __psp_pa((void *)cmd);
 
-	/* Send command buffer details to Trusted OS by writing to
-	 * CPU-PSP message registers
-	 */
+	 
 
 	iowrite32(lower_32_bits(cmd_buffer),
 		  tee->io_regs + tee->vdata->cmdbuff_addr_lo_reg);
@@ -253,17 +242,15 @@ static int tee_submit_cmd(struct psp_tee_device *tee, enum tee_cmd_id cmd_id,
 
 	mutex_lock(&tee->rb_mgr.mutex);
 
-	/* Loop until empty entry found in ring buffer */
+	 
 	do {
-		/* Get pointer to ring buffer command entry */
+		 
 		cmd = (struct tee_ring_cmd *)
 			(tee->rb_mgr.ring_start + tee->rb_mgr.wptr);
 
 		rptr = ioread32(tee->io_regs + tee->vdata->ring_rptr_reg);
 
-		/* Check if ring buffer is full or command entry is waiting
-		 * for response from TEE
-		 */
+		 
 		if (!(tee->rb_mgr.wptr + sizeof(struct tee_ring_cmd) == rptr ||
 		      cmd->flag == CMD_WAITING_FOR_RESPONSE))
 			break;
@@ -271,7 +258,7 @@ static int tee_submit_cmd(struct psp_tee_device *tee, enum tee_cmd_id cmd_id,
 		dev_dbg(tee->dev, "tee: ring buffer full. rptr = %u wptr = %u\n",
 			rptr, tee->rb_mgr.wptr);
 
-		/* Wait if ring buffer is full or TEE is processing data */
+		 
 		mutex_unlock(&tee->rb_mgr.mutex);
 		schedule_timeout_interruptible(msecs_to_jiffies(10));
 		mutex_lock(&tee->rb_mgr.mutex);
@@ -287,34 +274,30 @@ static int tee_submit_cmd(struct psp_tee_device *tee, enum tee_cmd_id cmd_id,
 		goto unlock;
 	}
 
-	/* Do not submit command if PSP got disabled while processing any
-	 * command in another thread
-	 */
+	 
 	if (psp_dead) {
 		ret = -EBUSY;
 		goto unlock;
 	}
 
-	/* Write command data into ring buffer */
+	 
 	cmd->cmd_id = cmd_id;
 	cmd->cmd_state = TEE_CMD_STATE_INIT;
 	memset(&cmd->buf[0], 0, sizeof(cmd->buf));
 	memcpy(&cmd->buf[0], buf, len);
 
-	/* Indicate driver is waiting for response */
+	 
 	cmd->flag = CMD_WAITING_FOR_RESPONSE;
 
-	/* Update local copy of write pointer */
+	 
 	tee->rb_mgr.wptr += sizeof(struct tee_ring_cmd);
 	if (tee->rb_mgr.wptr >= tee->rb_mgr.ring_size)
 		tee->rb_mgr.wptr = 0;
 
-	/* Trigger interrupt to Trusted OS */
+	 
 	iowrite32(tee->rb_mgr.wptr, tee->io_regs + tee->vdata->ring_wptr_reg);
 
-	/* The response is provided by Trusted OS in same
-	 * location as submitted data entry within ring buffer.
-	 */
+	 
 	*resp = cmd;
 
 unlock:
@@ -327,7 +310,7 @@ static int tee_wait_cmd_completion(struct psp_tee_device *tee,
 				   struct tee_ring_cmd *resp,
 				   unsigned int timeout)
 {
-	/* ~1ms sleep per loop => nloop = timeout * 1000 */
+	 
 	int nloop = timeout * 1000;
 
 	while (--nloop) {

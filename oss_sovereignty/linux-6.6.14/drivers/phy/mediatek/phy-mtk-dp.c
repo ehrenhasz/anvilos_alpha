@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek DisplayPort PHY driver
- *
- * Copyright (c) 2022, BayLibre Inc.
- * Copyright (c) 2022, MediaTek Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>

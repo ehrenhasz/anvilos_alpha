@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/iio/light/tsl2563.c
- *
- * Copyright (C) 2008 Nokia Corporation
- *
- * Written by Timo O. Karjalainen <timo.o.karjalainen@nokia.com>
- * Contact: Amit Kucheria <amit.kucheria@verdurent.com>
- *
- * Converted to IIO driver
- * Amit Kucheria <amit.kucheria@verdurent.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -30,15 +20,15 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* Use this many bits for fraction part. */
+ 
 #define ADC_FRAC_BITS		14
 
-/* Given number of 1/10000's in ADC_FRAC_BITS precision. */
+ 
 #define FRAC10K(f)		(((f) * BIT(ADC_FRAC_BITS)) / (10000))
 
-/* Bits used for fraction in calibration coefficients.*/
+ 
 #define CALIB_FRAC_BITS		10
-/* Decimal 10^(digits in sysfs presentation) */
+ 
 #define CALIB_BASE_SYSFS	1000
 
 #define TSL2563_CMD		BIT(7)
@@ -46,12 +36,12 @@
 
 #define TSL2563_REG_CTRL	0x00
 #define TSL2563_REG_TIMING	0x01
-#define TSL2563_REG_LOW		0x02 /* data0 low threshold, 2 bytes */
-#define TSL2563_REG_HIGH	0x04 /* data0 high threshold, 2 bytes */
+#define TSL2563_REG_LOW		0x02  
+#define TSL2563_REG_HIGH	0x04  
 #define TSL2563_REG_INT		0x06
 #define TSL2563_REG_ID		0x0a
-#define TSL2563_REG_DATA0	0x0c /* broadband sensor value, 2 bytes */
-#define TSL2563_REG_DATA1	0x0e /* infrared sensor value, 2 bytes */
+#define TSL2563_REG_DATA0	0x0c  
+#define TSL2563_REG_DATA1	0x0e  
 
 #define TSL2563_CMD_POWER_ON	0x03
 #define TSL2563_CMD_POWER_OFF	0x00
@@ -100,7 +90,7 @@ struct tsl2563_chip {
 	struct i2c_client	*client;
 	struct delayed_work	poweroff_work;
 
-	/* Remember state for suspend and resume functions */
+	 
 	bool suspended;
 
 	struct tsl2563_gainlevel_coeff const *gainlevel;
@@ -110,12 +100,12 @@ struct tsl2563_chip {
 	u8			intr;
 	bool			int_enabled;
 
-	/* Calibration coefficients */
+	 
 	u32			calib0;
 	u32			calib1;
 	int			cover_comp_gain;
 
-	/* Cache current values, to be returned while suspended */
+	 
 	u32			data0;
 	u32			data1;
 };
@@ -130,10 +120,7 @@ static int tsl2563_set_power(struct tsl2563_chip *chip, int on)
 					 TSL2563_CMD | TSL2563_REG_CTRL, cmd);
 }
 
-/*
- * Return value is 0 for off, 1 for on, or a negative error
- * code if reading failed.
- */
+ 
 static int tsl2563_get_power(struct tsl2563_chip *chip)
 {
 	struct i2c_client *client = chip->client;
@@ -165,10 +152,7 @@ static int tsl2563_configure(struct tsl2563_chip *chip)
 			chip->low_thres);
 	if (ret)
 		goto error_ret;
-/*
- * Interrupt register is automatically written anyway if it is relevant
- * so is not here.
- */
+ 
 error_ret:
 	return ret;
 }
@@ -227,12 +211,7 @@ static int tsl2563_configure_irq(struct tsl2563_chip *chip, bool enable)
 	return 0;
 }
 
-/*
- * "Normalized" ADC value is one obtained with 400ms of integration time and
- * 16x gain. This function returns the number of bits of shift needed to
- * convert between normalized values and HW values obtained using given
- * timing and gain settings.
- */
+ 
 static int tsl2563_adc_shiftbits(u8 timing)
 {
 	int shift = 0;
@@ -245,7 +224,7 @@ static int tsl2563_adc_shiftbits(u8 timing)
 		shift += 2;
 		break;
 	case TSL2563_TIMING_400MS:
-		/* no-op */
+		 
 		break;
 	}
 
@@ -255,7 +234,7 @@ static int tsl2563_adc_shiftbits(u8 timing)
 	return shift;
 }
 
-/* Convert a HW ADC value to normalized scale. */
+ 
 static u32 tsl2563_normalize_adc(u16 adc, u8 timing)
 {
 	return adc << tsl2563_adc_shiftbits(timing);
@@ -275,10 +254,7 @@ static void tsl2563_wait_adc(struct tsl2563_chip *chip)
 	default:
 		delay = 402;
 	}
-	/*
-	 * TODO: Make sure that we wait at least required delay but why we
-	 * have to extend it one tick more?
-	 */
+	 
 	schedule_timeout_interruptible(msecs_to_jiffies(delay) + 2);
 }
 
@@ -361,20 +337,11 @@ static inline int tsl2563_calib_to_sysfs(u32 calib)
 
 static inline u32 tsl2563_calib_from_sysfs(int value)
 {
-	/* Make a fraction from a number n that was multiplied with b. */
+	 
 	return (((u32) value) << CALIB_FRAC_BITS) / CALIB_BASE_SYSFS;
 }
 
-/*
- * Conversions between lux and ADC values.
- *
- * The basic formula is lux = c0 * adc0 - c1 * adc1, where c0 and c1 are
- * appropriate constants. Different constants are needed for different
- * kinds of light, determined by the ratio adc1/adc0 (basically the ratio
- * of the intensities in infrared and visible wavelengths). lux_table below
- * lists the upper threshold of the adc1/adc0 ratio and the corresponding
- * constants.
- */
+ 
 
 struct tsl2563_lux_coeff {
 	unsigned long ch_ratio;
@@ -418,7 +385,7 @@ static const struct tsl2563_lux_coeff lux_table[] = {
 	},
 };
 
-/* Convert normalized, scaled ADC values to lux. */
+ 
 static unsigned int tsl2563_adc_to_lux(u32 adc0, u32 adc1)
 {
 	const struct tsl2563_lux_coeff *lp = lux_table;
@@ -434,7 +401,7 @@ static unsigned int tsl2563_adc_to_lux(u32 adc0, u32 adc1)
 	return (unsigned int) (lux >> ADC_FRAC_BITS);
 }
 
-/* Apply calibration coefficient to ADC count. */
+ 
 static u32 tsl2563_calib_adc(u32 adc, u32 calib)
 {
 	unsigned long scaled = adc;
@@ -623,7 +590,7 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
 					    IIO_EV_DIR_EITHER),
 		       iio_get_time_ns(dev_info));
 
-	/* clear the interrupt and push the event */
+	 
 	i2c_smbus_write_byte(chip->client, TSL2563_CMD | TSL2563_CLEARINT);
 	return IRQ_HANDLED;
 }
@@ -637,7 +604,7 @@ static int tsl2563_write_interrupt_config(struct iio_dev *indio_dev,
 
 	mutex_lock(&chip->lock);
 	if (state && !(chip->intr & TSL2563_INT_MASK)) {
-		/* ensure the chip is actually on */
+		 
 		cancel_delayed_work_sync(&chip->poweroff_work);
 		if (!tsl2563_get_power(chip)) {
 			ret = tsl2563_set_power(chip, 1);
@@ -652,7 +619,7 @@ static int tsl2563_write_interrupt_config(struct iio_dev *indio_dev,
 
 	if (!state && (chip->intr & TSL2563_INT_MASK)) {
 		ret = tsl2563_configure_irq(chip, false);
-		/* now the interrupt is not enabled, we can go to sleep */
+		 
 		schedule_delayed_work(&chip->poweroff_work, 5 * HZ);
 	}
 out:
@@ -720,7 +687,7 @@ static int tsl2563_probe(struct i2c_client *client)
 
 	mutex_init(&chip->lock);
 
-	/* Default values used until userspace says otherwise */
+	 
 	chip->low_thres = 0x0;
 	chip->high_thres = 0xffff;
 	chip->gainlevel = tsl2563_gainlevel_table;
@@ -764,7 +731,7 @@ static int tsl2563_probe(struct i2c_client *client)
 
 	INIT_DELAYED_WORK(&chip->poweroff_work, tsl2563_poweroff_work);
 
-	/* The interrupt cannot yet be enabled so this is fine without lock */
+	 
 	schedule_delayed_work(&chip->poweroff_work, 5 * HZ);
 
 	err = iio_device_register(indio_dev);
@@ -788,7 +755,7 @@ static void tsl2563_remove(struct i2c_client *client)
 	iio_device_unregister(indio_dev);
 	if (!chip->int_enabled)
 		cancel_delayed_work_sync(&chip->poweroff_work);
-	/* Ensure that interrupts are disabled - then flush any bottom halves */
+	 
 	tsl2563_configure_irq(chip, false);
 	tsl2563_set_power(chip, 0);
 }

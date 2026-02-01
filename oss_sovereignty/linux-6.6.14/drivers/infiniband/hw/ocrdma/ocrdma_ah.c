@@ -1,44 +1,4 @@
-/* This file is part of the Emulex RoCE Device Driver for
- * RoCE (RDMA over Converged Ethernet) adapters.
- * Copyright (C) 2012-2015 Emulex. All rights reserved.
- * EMULEX and SLI are trademarks of Emulex.
- * www.emulex.com
- *
- * This software is available to you under a choice of one of two licenses.
- * You may choose to be licensed under the terms of the GNU General Public
- * License (GPL) Version 2, available from the file COPYING in the main
- * directory of this source tree, or the BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+ 
 
 #include <net/neighbour.h>
 #include <net/netevent.h>
@@ -90,12 +50,12 @@ static inline int set_av_attr(struct ocrdma_dev *dev, struct ocrdma_ah *ah,
 	memset(&eth, 0, sizeof(eth));
 	memset(&grh, 0, sizeof(grh));
 
-	/* Protocol Number */
+	 
 	proto_num = ocrdma_hdr_type_to_proto_num(dev->id, ah->hdr_type);
 	if (!proto_num)
 		return -EINVAL;
 	nxthdr = (proto_num == ETH_P_IBOE) ? 0x1b : 0x11;
-	/* VLAN */
+	 
 	if (!vlan_tag || (vlan_tag > 0xFFF))
 		vlan_tag = dev->pvid;
 	if (vlan_tag || dev->pfc_state) {
@@ -115,14 +75,14 @@ static inline int set_av_attr(struct ocrdma_dev *dev, struct ocrdma_ah *ah,
 		eth.eth_type = cpu_to_be16(proto_num);
 		eth_sz = sizeof(struct ocrdma_eth_basic);
 	}
-	/* MAC */
+	 
 	memcpy(&eth.smac[0], &dev->nic_info.mac_addr[0], ETH_ALEN);
 	status = ocrdma_resolve_dmac(dev, attr, &eth.dmac[0]);
 	if (status)
 		return status;
 	ib_grh = rdma_ah_read_grh(attr);
 	ah->sgid_index = ib_grh->sgid_index;
-	/* Eth HDR */
+	 
 	memcpy(&ah->av->eth_hdr, &eth, eth_sz);
 	if (ah->hdr_type == RDMA_NETWORK_IPV4) {
 		*((__be16 *)&ipv4) = htons((4 << 12) | (5 << 8) |
@@ -184,7 +144,7 @@ int ocrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
 	if (status)
 		goto av_err;
 
-	/* Get network header type for this GID */
+	 
 	ah->hdr_type = rdma_gid_attr_network_type(sgid_attr);
 
 	status = set_av_attr(dev, ah, attr, &sgid_attr->gid, pd->id,
@@ -192,7 +152,7 @@ int ocrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
 	if (status)
 		goto av_conf_err;
 
-	/* if pd is for the user process, pass the ah_id to user space */
+	 
 	if ((pd->uctx) && (pd->uctx->ah_tbl.va)) {
 		ahid_addr = pd->uctx->ah_tbl.va + rdma_ah_get_dlid(attr);
 		*ahid_addr = 0;

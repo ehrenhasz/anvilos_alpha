@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8804-spi.c  --  WM8804 S/PDIF transceiver driver - SPI
- *
- * Copyright 2015 Cirrus Logic Inc
- *
- * Author: Charles Keepax <ckeepax@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

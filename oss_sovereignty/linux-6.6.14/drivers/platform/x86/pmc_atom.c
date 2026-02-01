@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Atom SoC Power Management Controller Driver
- * Copyright (c) 2014-2015,2017,2022 Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -42,7 +39,7 @@ struct pmc_dev {
 	const struct pmc_reg_map *map;
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *dbgfs_dir;
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 	bool init;
 };
 
@@ -241,14 +238,7 @@ static void pmc_power_off(void)
 
 static void pmc_hw_reg_setup(struct pmc_dev *pmc)
 {
-	/*
-	 * Disable PMC S0IX_WAKE_EN events coming from:
-	 * - LPC clock run
-	 * - GPIO_SUS ored dedicated IRQs
-	 * - GPIO_SCORE ored dedicated IRQs
-	 * - GPIO_SUS shared IRQ
-	 * - GPIO_SCORE shared IRQ
-	 */
+	 
 	pmc_reg_write(pmc, PMC_S0IX_WAKE_EN, (u32)PMC_WAKE_EN_SETTING);
 }
 
@@ -280,10 +270,10 @@ static int pmc_dev_state_show(struct seq_file *s, void *unused)
 	d3_sts_0 = pmc_reg_read(pmc, PMC_D3_STS_0);
 	d3_sts_1 = pmc_reg_read(pmc, PMC_D3_STS_1);
 
-	/* Low part */
+	 
 	pmc_dev_state_print(s, 0, d3_sts_0, m->d3_sts_0, func_dis, m->func_dis);
 
-	/* High part */
+	 
 	pmc_dev_state_print(s, 1, d3_sts_1, m->d3_sts_1, func_dis_2, m->func_dis_2);
 
 	return 0;
@@ -348,7 +338,7 @@ static void pmc_dbgfs_register(struct pmc_dev *pmc)
 static void pmc_dbgfs_register(struct pmc_dev *pmc)
 {
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static bool pmc_clk_is_critical = true;
 
@@ -374,13 +364,10 @@ out:
 	return 1;
 }
 
-/*
- * Some systems need one or more of their pmc_plt_clks to be
- * marked as critical.
- */
+ 
 static const struct dmi_system_id critclk_systems[] = {
 	{
-		/* pmc_plt_clk0 is used for an external HSIC USB HUB */
+		 
 		.ident = "MPL CEC1x",
 		.callback = dmi_callback,
 		.matches = {
@@ -389,12 +376,7 @@ static const struct dmi_system_id critclk_systems[] = {
 		},
 	},
 	{
-		/*
-		 * Lex System / Lex Computech Co. makes a lot of Bay Trail
-		 * based embedded boards which often come with multiple
-		 * ethernet controllers using multiple pmc_plt_clks. See:
-		 * https://www.lex.com.tw/products/embedded-ipc-board/
-		 */
+		 
 		.ident = "Lex BayTrail",
 		.callback = dmi_callback,
 		.matches = {
@@ -402,7 +384,7 @@ static const struct dmi_system_id critclk_systems[] = {
 		},
 	},
 	{
-		/* pmc_plt_clk* - are used for ethernet controllers */
+		 
 		.ident = "Beckhoff Baytrail",
 		.callback = dmi_callback,
 		.matches = {
@@ -430,7 +412,7 @@ static int pmc_setup_clks(struct pci_dev *pdev, void __iomem *pmc_regmap,
 	if (!clk_data)
 		return -ENOMEM;
 
-	clk_data->base = pmc_regmap; /* offset is added by client */
+	clk_data->base = pmc_regmap;  
 	clk_data->clks = pmc_data->clks;
 	if (dmi_check_system(critclk_systems))
 		clk_data->critical = pmc_clk_is_critical;
@@ -455,11 +437,11 @@ static int pmc_setup_dev(struct pci_dev *pdev, const struct pci_device_id *ent)
 	const struct pmc_reg_map *map = data->map;
 	int ret;
 
-	/* Obtain ACPI base address */
+	 
 	pci_read_config_dword(pdev, ACPI_BASE_ADDR_OFFSET, &acpi_base_addr);
 	acpi_base_addr &= ACPI_BASE_ADDR_MASK;
 
-	/* Install power off function */
+	 
 	if (acpi_base_addr != 0 && pm_power_off == NULL)
 		pm_power_off = pmc_power_off;
 
@@ -474,12 +456,12 @@ static int pmc_setup_dev(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pmc->map = map;
 
-	/* PMC hardware registers setup */
+	 
 	pmc_hw_reg_setup(pmc);
 
 	pmc_dbgfs_register(pmc);
 
-	/* Register platform clocks - PMC_PLT_CLK [0..5] */
+	 
 	ret = pmc_setup_clks(pdev, pmc->regmap, data);
 	if (ret)
 		dev_warn(&pdev->dev, "platform clocks register failed: %d\n",
@@ -489,7 +471,7 @@ static int pmc_setup_dev(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return ret;
 }
 
-/* Data for PCI driver interface used by pci_match_id() call below */
+ 
 static const struct pci_device_id pmc_pci_ids[] = {
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_VLV_PMC), (kernel_ulong_t)&byt_data },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_CHT_PMC), (kernel_ulong_t)&cht_data },
@@ -501,28 +483,16 @@ static int __init pmc_atom_init(void)
 	struct pci_dev *pdev = NULL;
 	const struct pci_device_id *ent;
 
-	/*
-	 * We look for our device - PCU PMC.
-	 * We assume that there is maximum one device.
-	 *
-	 * We can't use plain pci_driver mechanism,
-	 * as the device is really a multiple function device,
-	 * main driver that binds to the pci_device is lpc_ich
-	 * and have to find & bind to the device this way.
-	 */
+	 
 	for_each_pci_dev(pdev) {
 		ent = pci_match_id(pmc_pci_ids, pdev);
 		if (ent)
 			return pmc_setup_dev(pdev, ent);
 	}
-	/* Device not found */
+	 
 	return -ENODEV;
 }
 
 device_initcall(pmc_atom_init);
 
-/*
-MODULE_AUTHOR("Aubrey Li <aubrey.li@linux.intel.com>");
-MODULE_DESCRIPTION("Intel Atom SoC Power Management Controller Interface");
-MODULE_LICENSE("GPL v2");
-*/
+ 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson AB 2013
- * Authors: Vicram Arv
- *	    Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- *	    Sjur Brendeland
- */
+
+ 
 #include <linux/module.h>
 #include <linux/if_arp.h>
 #include <linux/virtio.h>
@@ -27,39 +22,24 @@ MODULE_AUTHOR("Vicram Arv");
 MODULE_AUTHOR("Sjur Brendeland");
 MODULE_DESCRIPTION("Virtio CAIF Driver");
 
-/* NAPI schedule quota */
+ 
 #define CFV_DEFAULT_QUOTA 32
 
-/* Defaults used if virtio config space is unavailable */
+ 
 #define CFV_DEF_MTU_SIZE 4096
 #define CFV_DEF_HEADROOM 32
 #define CFV_DEF_TAILROOM 32
 
-/* Required IP header alignment */
+ 
 #define IP_HDR_ALIGN 4
 
-/* struct cfv_napi_contxt - NAPI context info
- * @riov: IOV holding data read from the ring. Note that riov may
- *	  still hold data when cfv_rx_poll() returns.
- * @head: Last descriptor ID we received from vringh_getdesc_kern.
- *	  We use this to put descriptor back on the used ring. USHRT_MAX is
- *	  used to indicate invalid head-id.
- */
+ 
 struct cfv_napi_context {
 	struct vringh_kiov riov;
 	unsigned short head;
 };
 
-/* struct cfv_stats - statistics for debugfs
- * @rx_napi_complete:	Number of NAPI completions (RX)
- * @rx_napi_resched:	Number of calls where the full quota was used (RX)
- * @rx_nomem:		Number of SKB alloc failures (RX)
- * @rx_kicks:		Number of RX kicks
- * @tx_full_ring:	Number times TX ring was full
- * @tx_no_mem:		Number of times TX went out of memory
- * @tx_flow_on:		Number of flow on (TX)
- * @tx_kicks:		Number of TX kicks
- */
+ 
 struct cfv_stats {
 	u32 rx_napi_complete;
 	u32 rx_napi_resched;
@@ -71,33 +51,7 @@ struct cfv_stats {
 	u32 tx_kicks;
 };
 
-/* struct cfv_info - Caif Virtio control structure
- * @cfdev:	caif common header
- * @vdev:	Associated virtio device
- * @vr_rx:	rx/downlink host vring
- * @vq_tx:	tx/uplink virtqueue
- * @ndev:	CAIF link layer device
- * @watermark_tx: indicates number of free descriptors we need
- *		to reopen the tx-queues after overload.
- * @tx_lock:	protects vq_tx from concurrent use
- * @tx_release_tasklet: Tasklet for freeing consumed TX buffers
- * @napi:       Napi context used in cfv_rx_poll()
- * @ctx:        Context data used in cfv_rx_poll()
- * @tx_hr:	transmit headroom
- * @rx_hr:	receive headroom
- * @tx_tr:	transmit tail room
- * @rx_tr:	receive tail room
- * @mtu:	transmit max size
- * @mru:	receive max size
- * @allocsz:    size of dma memory reserved for TX buffers
- * @alloc_addr: virtual address to dma memory for TX buffers
- * @alloc_dma:  dma address to dma memory for TX buffers
- * @genpool:    Gen Pool used for allocating TX buffers
- * @reserved_mem: Pointer to memory reserve allocated from genpool
- * @reserved_size: Size of memory reserve allocated from genpool
- * @stats:       Statistics exposed in sysfs
- * @debugfs:    Debugfs dentry for statistic counters
- */
+ 
 struct cfv_info {
 	struct caif_dev_common cfdev;
 	struct virtio_device *vdev;
@@ -105,7 +59,7 @@ struct cfv_info {
 	struct virtqueue *vq_tx;
 	struct net_device *ndev;
 	unsigned int watermark_tx;
-	/* Protect access to vq_tx */
+	 
 	spinlock_t tx_lock;
 	struct tasklet_struct tx_release_tasklet;
 	struct napi_struct napi;
@@ -126,17 +80,13 @@ struct cfv_info {
 	struct dentry *debugfs;
 };
 
-/* struct buf_info - maintains transmit buffer data handle
- * @size:	size of transmit buffer
- * @dma_handle: handle to allocated dma device memory area
- * @vaddr:	virtual address mapping to allocated memory area
- */
+ 
 struct buf_info {
 	size_t size;
 	u8 *vaddr;
 };
 
-/* Called from virtio device, in IRQ context */
+ 
 static void cfv_release_cb(struct virtqueue *vq_tx)
 {
 	struct cfv_info *cfv = vq_tx->vdev->priv;
@@ -154,9 +104,7 @@ static void free_buf_info(struct cfv_info *cfv, struct buf_info *buf_info)
 	kfree(buf_info);
 }
 
-/* This is invoked whenever the remote processor completed processing
- * a TX msg we just sent, and the buffer is put back to the used ring.
- */
+ 
 static void cfv_release_used_buf(struct virtqueue *vq_tx)
 {
 	struct cfv_info *cfv = vq_tx->vdev->priv;
@@ -168,42 +116,37 @@ static void cfv_release_used_buf(struct virtqueue *vq_tx)
 		unsigned int len;
 		struct buf_info *buf_info;
 
-		/* Get used buffer from used ring to recycle used descriptors */
+		 
 		spin_lock_irqsave(&cfv->tx_lock, flags);
 		buf_info = virtqueue_get_buf(vq_tx, &len);
 		spin_unlock_irqrestore(&cfv->tx_lock, flags);
 
-		/* Stop looping if there are no more buffers to free */
+		 
 		if (!buf_info)
 			break;
 
 		free_buf_info(cfv, buf_info);
 
-		/* watermark_tx indicates if we previously stopped the tx
-		 * queues. If we have enough free stots in the virtio ring,
-		 * re-establish memory reserved and open up tx queues.
-		 */
+		 
 		if (cfv->vq_tx->num_free <= cfv->watermark_tx)
 			continue;
 
-		/* Re-establish memory reserve */
+		 
 		if (cfv->reserved_mem == 0 && cfv->genpool)
 			cfv->reserved_mem =
 				gen_pool_alloc(cfv->genpool,
 					       cfv->reserved_size);
 
-		/* Open up the tx queues */
+		 
 		if (cfv->reserved_mem) {
 			cfv->watermark_tx =
 				virtqueue_get_vring_size(cfv->vq_tx);
 			netif_tx_wake_all_queues(cfv->ndev);
-			/* Buffers are recycled in cfv_netdev_tx, so
-			 * disable notifications when queues are opened.
-			 */
+			 
 			virtqueue_disable_cb(cfv->vq_tx);
 			++cfv->stats.tx_flow_on;
 		} else {
-			/* if no memory reserve, wait for more free slots */
+			 
 			WARN_ON(cfv->watermark_tx >
 			       virtqueue_get_vring_size(cfv->vq_tx));
 			cfv->watermark_tx +=
@@ -212,7 +155,7 @@ static void cfv_release_used_buf(struct virtqueue *vq_tx)
 	}
 }
 
-/* Allocate a SKB and copy packet data to it */
+ 
 static struct sk_buff *cfv_alloc_and_copy_skb(int *err,
 					      struct cfv_info *cfv,
 					      u8 *frm, u32 frm_len)
@@ -221,7 +164,7 @@ static struct sk_buff *cfv_alloc_and_copy_skb(int *err,
 	u32 cfpkt_len, pad_len;
 
 	*err = 0;
-	/* Verify that packet size with down-link header and mtu size */
+	 
 	if (frm_len > cfv->mru || frm_len <= cfv->rx_hr + cfv->rx_tr) {
 		netdev_err(cfv->ndev,
 			   "Invalid frmlen:%u  mtu:%u hr:%d tr:%d\n",
@@ -246,7 +189,7 @@ static struct sk_buff *cfv_alloc_and_copy_skb(int *err,
 	return skb;
 }
 
-/* Get packets from the host vring */
+ 
 static int cfv_rx_poll(struct napi_struct *napi, int quota)
 {
 	struct cfv_info *cfv = container_of(napi, struct cfv_info, napi);
@@ -260,9 +203,7 @@ static int cfv_rx_poll(struct napi_struct *napi, int quota)
 	do {
 		skb = NULL;
 
-		/* Put the previous iovec back on the used ring and
-		 * fetch a new iovec if we have processed all elements.
-		 */
+		 
 		if (riov->i == riov->used) {
 			if (cfv->ctx.head != USHRT_MAX) {
 				vringh_complete_kern(cfv->vr_rx,
@@ -283,14 +224,14 @@ static int cfv_rx_poll(struct napi_struct *napi, int quota)
 		}
 
 		buf = phys_to_virt((unsigned long) riov->iov[riov->i].iov_base);
-		/* TODO: Add check on valid buffer address */
+		 
 
 		skb = cfv_alloc_and_copy_skb(&err, cfv, buf,
 					     riov->iov[riov->i].iov_len);
 		if (unlikely(err))
 			goto exit;
 
-		/* Push received packet up the stack. */
+		 
 		skb_len = skb->len;
 		skb->protocol = htons(ETH_P_CAIF);
 		skb_reset_mac_header(skb);
@@ -315,7 +256,7 @@ exit:
 	case 0:
 		++cfv->stats.rx_napi_complete;
 
-		/* Really out of packets? (stolen from virtio_net)*/
+		 
 		napi_complete(napi);
 		if (unlikely(!vringh_notify_enable_kern(cfv->vr_rx)) &&
 		    napi_schedule_prep(napi)) {
@@ -327,13 +268,13 @@ exit:
 	case -ENOMEM:
 		++cfv->stats.rx_nomem;
 		dev_kfree_skb(skb);
-		/* Stop NAPI poll on OOM, we hope to be polled later */
+		 
 		napi_complete(napi);
 		vringh_notify_enable_kern(cfv->vr_rx);
 		break;
 
 	default:
-		/* We're doomed, any modem fault is fatal */
+		 
 		netdev_warn(cfv->ndev, "Bad ring, disable device\n");
 		cfv->ndev->stats.rx_dropped = riov->used - riov->i;
 		napi_complete(napi);
@@ -375,11 +316,7 @@ static int cfv_create_genpool(struct cfv_info *cfv)
 {
 	int err;
 
-	/* dma_alloc can only allocate whole pages, and we need a more
-	 * fine graned allocation so we use genpool. We ask for space needed
-	 * by IP and a full ring. If the dma allcoation fails we retry with a
-	 * smaller allocation size.
-	 */
+	 
 	err = -ENOMEM;
 	cfv->allocsz = (virtqueue_get_vring_size(cfv->vq_tx) *
 			(ETH_DATA_LEN + cfv->tx_hr + cfv->tx_tr) * 11)/10;
@@ -405,7 +342,7 @@ static int cfv_create_genpool(struct cfv_info *cfv)
 	netdev_dbg(cfv->ndev, "Allocated %zd bytes from dma-memory\n",
 		   cfv->allocsz);
 
-	/* Allocate on 128 bytes boundaries (1 << 7)*/
+	 
 	cfv->genpool = gen_pool_create(7, -1);
 	if (!cfv->genpool)
 		goto err;
@@ -416,9 +353,7 @@ static int cfv_create_genpool(struct cfv_info *cfv)
 	if (err)
 		goto err;
 
-	/* Reserve some memory for low memory situations. If we hit the roof
-	 * in the memory pool, we stop TX flow and release the reserve.
-	 */
+	 
 	cfv->reserved_size = num_possible_cpus() * cfv->ndev->mtu;
 	cfv->reserved_mem = gen_pool_alloc(cfv->genpool,
 					   cfv->reserved_size);
@@ -434,7 +369,7 @@ err:
 	return err;
 }
 
-/* Enable the CAIF interface and allocate the memory-pool */
+ 
 static int cfv_netdev_open(struct net_device *netdev)
 {
 	struct cfv_info *cfv = netdev_priv(netdev);
@@ -445,37 +380,37 @@ static int cfv_netdev_open(struct net_device *netdev)
 	netif_carrier_on(netdev);
 	napi_enable(&cfv->napi);
 
-	/* Schedule NAPI to read any pending packets */
+	 
 	napi_schedule(&cfv->napi);
 	return 0;
 }
 
-/* Disable the CAIF interface and free the memory-pool */
+ 
 static int cfv_netdev_close(struct net_device *netdev)
 {
 	struct cfv_info *cfv = netdev_priv(netdev);
 	unsigned long flags;
 	struct buf_info *buf_info;
 
-	/* Disable interrupts, queues and NAPI polling */
+	 
 	netif_carrier_off(netdev);
 	virtqueue_disable_cb(cfv->vq_tx);
 	vringh_notify_disable_kern(cfv->vr_rx);
 	napi_disable(&cfv->napi);
 
-	/* Release any TX buffers on both used and available rings */
+	 
 	cfv_release_used_buf(cfv->vq_tx);
 	spin_lock_irqsave(&cfv->tx_lock, flags);
 	while ((buf_info = virtqueue_detach_unused_buf(cfv->vq_tx)))
 		free_buf_info(cfv, buf_info);
 	spin_unlock_irqrestore(&cfv->tx_lock, flags);
 
-	/* Release all dma allocated memory and destroy the pool */
+	 
 	cfv_destroy_genpool(cfv);
 	return 0;
 }
 
-/* Allocate a buffer in dma-memory and copy skb to it */
+ 
 static struct buf_info *cfv_alloc_and_copy_to_shm(struct cfv_info *cfv,
 						       struct sk_buff *skb,
 						       struct scatterlist *sg)
@@ -497,17 +432,17 @@ static struct buf_info *cfv_alloc_and_copy_to_shm(struct cfv_info *cfv,
 	if (unlikely(!buf_info))
 		goto err;
 
-	/* Make the IP header aligned in the buffer */
+	 
 	hdr_ofs = cfv->tx_hr + info->hdr_len;
 	pad_len = hdr_ofs & (IP_HDR_ALIGN - 1);
 	buf_info->size = cfv->tx_hr + skb->len + cfv->tx_tr + pad_len;
 
-	/* allocate dma memory buffer */
+	 
 	buf_info->vaddr = (void *)gen_pool_alloc(cfv->genpool, buf_info->size);
 	if (unlikely(!buf_info->vaddr))
 		goto err;
 
-	/* copy skbuf contents to send buffer */
+	 
 	skb_copy_bits(skb, 0, buf_info->vaddr + cfv->tx_hr + pad_len, skb->len);
 	sg_init_one(sg, buf_info->vaddr + pad_len,
 		    skb->len + cfv->tx_hr + cfv->rx_hr);
@@ -518,7 +453,7 @@ err:
 	return NULL;
 }
 
-/* Put the CAIF packet on the virtio ring and kick the receiver */
+ 
 static netdev_tx_t cfv_netdev_tx(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct cfv_info *cfv = netdev_priv(netdev);
@@ -528,23 +463,17 @@ static netdev_tx_t cfv_netdev_tx(struct sk_buff *skb, struct net_device *netdev)
 	bool flow_off = false;
 	int ret;
 
-	/* garbage collect released buffers */
+	 
 	cfv_release_used_buf(cfv->vq_tx);
 	spin_lock_irqsave(&cfv->tx_lock, flags);
 
-	/* Flow-off check takes into account number of cpus to make sure
-	 * virtqueue will not be overfilled in any possible smp conditions.
-	 *
-	 * Flow-on is triggered when sufficient buffers are freed
-	 */
+	 
 	if (unlikely(cfv->vq_tx->num_free <= num_present_cpus())) {
 		flow_off = true;
 		cfv->stats.tx_full_ring++;
 	}
 
-	/* If we run out of memory, we release the memory reserve and retry
-	 * allocation.
-	 */
+	 
 	buf_info = cfv_alloc_and_copy_to_shm(cfv, skb, &sg);
 	if (unlikely(!buf_info)) {
 		cfv->stats.tx_no_mem++;
@@ -559,33 +488,33 @@ static netdev_tx_t cfv_netdev_tx(struct sk_buff *skb, struct net_device *netdev)
 	}
 
 	if (unlikely(flow_off)) {
-		/* Turn flow on when a 1/4 of the descriptors are released */
+		 
 		cfv->watermark_tx = virtqueue_get_vring_size(cfv->vq_tx) / 4;
-		/* Enable notifications of recycled TX buffers */
+		 
 		virtqueue_enable_cb(cfv->vq_tx);
 		netif_tx_stop_all_queues(netdev);
 	}
 
 	if (unlikely(!buf_info)) {
-		/* If the memory reserve does it's job, this shouldn't happen */
+		 
 		netdev_warn(cfv->ndev, "Out of gen_pool memory\n");
 		goto err;
 	}
 
 	ret = virtqueue_add_outbuf(cfv->vq_tx, &sg, 1, buf_info, GFP_ATOMIC);
 	if (unlikely((ret < 0))) {
-		/* If flow control works, this shouldn't happen */
+		 
 		netdev_warn(cfv->ndev, "Failed adding buffer to TX vring:%d\n",
 			    ret);
 		goto err;
 	}
 
-	/* update netdev statistics */
+	 
 	cfv->ndev->stats.tx_packets++;
 	cfv->ndev->stats.tx_bytes += skb->len;
 	spin_unlock_irqrestore(&cfv->tx_lock, flags);
 
-	/* tell the remote processor it has a pending message to read */
+	 
 	virtqueue_kick(cfv->vq_tx);
 
 	dev_kfree_skb(skb);
@@ -620,7 +549,7 @@ static void cfv_netdev_setup(struct net_device *netdev)
 	netdev->needs_free_netdev = true;
 }
 
-/* Create debugfs counters for the device */
+ 
 static inline void debugfs_init(struct cfv_info *cfv)
 {
 	cfv->debugfs = debugfs_create_dir(netdev_name(cfv->ndev), NULL);
@@ -643,7 +572,7 @@ static inline void debugfs_init(struct cfv_info *cfv)
 			   &cfv->stats.tx_flow_on);
 }
 
-/* Setup CAIF for the a virtio device */
+ 
 static int cfv_probe(struct virtio_device *vdev)
 {
 	vq_callback_t *vq_cbs = cfv_release_cb;
@@ -665,7 +594,7 @@ static int cfv_probe(struct virtio_device *vdev)
 
 	spin_lock_init(&cfv->tx_lock);
 
-	/* Get the RX virtio ring. This is a "host side vring". */
+	 
 	err = -ENODEV;
 	if (!vdev->vringh_config || !vdev->vringh_config->find_vrhs)
 		goto err;
@@ -674,12 +603,12 @@ static int cfv_probe(struct virtio_device *vdev)
 	if (err)
 		goto err;
 
-	/* Get the TX virtio ring. This is a "guest side vring". */
+	 
 	err = virtio_find_vqs(vdev, 1, &cfv->vq_tx, &vq_cbs, &names, NULL);
 	if (err)
 		goto err;
 
-	/* Get the CAIF configuration from virtio config space, if available */
+	 
 	if (vdev->config->get) {
 		virtio_cread(vdev, struct virtio_caif_transf_config, headroom,
 			     &cfv->tx_hr);
@@ -705,13 +634,13 @@ static int cfv_probe(struct virtio_device *vdev)
 	netdev->needed_headroom = cfv->tx_hr;
 	netdev->needed_tailroom = cfv->tx_tr;
 
-	/* Disable buffer release interrupts unless we have stopped TX queues */
+	 
 	virtqueue_disable_cb(cfv->vq_tx);
 
 	netdev->mtu = cfv->mtu - cfv->tx_tr;
 	vdev->priv = cfv;
 
-	/* Initialize NAPI poll context data */
+	 
 	vringh_kiov_init(&cfv->ctx.riov, NULL, 0);
 	cfv->ctx.head = USHRT_MAX;
 	netif_napi_add_weight(netdev, &cfv->napi, cfv_rx_poll,
@@ -719,13 +648,13 @@ static int cfv_probe(struct virtio_device *vdev)
 
 	tasklet_setup(&cfv->tx_release_tasklet, cfv_tx_release_tasklet);
 
-	/* Carrier is off until netdevice is opened */
+	 
 	netif_carrier_off(netdev);
 
-	/* serialize netdev register + virtio_device_ready() with ndo_open() */
+	 
 	rtnl_lock();
 
-	/* register Netdev */
+	 
 	err = register_netdevice(netdev);
 	if (err) {
 		rtnl_unlock();

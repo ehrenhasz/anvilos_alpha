@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RZ/G2L Clock Pulse Generator
- *
- * Copyright (C) 2021 Renesas Electronics Corp.
- *
- * Based on renesas-cpg-mssr.c
- *
- * Copyright (C) 2015 Glider bvba
- * Copyright (C) 2013 Ideas On Board SPRL
- * Copyright (C) 2015 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -81,22 +71,7 @@ struct rzg2l_pll5_mux_dsi_div_param {
 	u8 dsi_div_b;
 };
 
-/**
- * struct rzg2l_cpg_priv - Clock Pulse Generator Private Data
- *
- * @rcdev: Reset controller entity
- * @dev: CPG device
- * @base: CPG register block base address
- * @rmw_lock: protects register accesses
- * @clks: Array containing all Core and Module Clocks
- * @num_core_clks: Number of Core Clocks in clks[]
- * @num_mod_clks: Number of Module Clocks in clks[]
- * @num_resets: Number of Module Resets in info->resets[]
- * @last_dt_core_clk: ID of the last Core Clock exported to DT
- * @info: Pointer to platform data
- * @genpd: PM domain
- * @mux_dsi_div_params: pll5 mux and dsi div parameters
- */
+ 
 struct rzg2l_cpg_priv {
 	struct reset_controller_dev rcdev;
 	struct device *dev;
@@ -192,17 +167,7 @@ static int rzg2l_cpg_sd_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 	unsigned long flags;
 	int ret;
 
-	/*
-	 * As per the HW manual, we should not directly switch from 533 MHz to
-	 * 400 MHz and vice versa. To change the setting from 2’b01 (533 MHz)
-	 * to 2’b10 (400 MHz) or vice versa, Switch to 2’b11 (266 MHz) first,
-	 * and then switch to the target setting (2’b01 (533 MHz) or 2’b10
-	 * (400 MHz)).
-	 * Setting a value of '0' to the SEL_SDHI0_SET or SEL_SDHI1_SET clock
-	 * switching register is prohibited.
-	 * The clock mux has 3 input clocks(533 MHz, 400 MHz, and 266 MHz), and
-	 * the index to value mapping is done by adding 1 to the index.
-	 */
+	 
 	bitmask = (GENMASK(GET_WIDTH(hwdata->conf) - 1, 0) << shift) << 16;
 	msk = off ? CPG_CLKSTATUS_SELSDHI1_STS : CPG_CLKSTATUS_SELSDHI0_STS;
 	spin_lock_irqsave(&priv->rmw_lock, flags);
@@ -357,13 +322,7 @@ static int rzg2l_cpg_dsi_div_set_rate(struct clk_hw *hw,
 	struct dsi_div_hw_data *dsi_div = to_dsi_div_hw_data(hw);
 	struct rzg2l_cpg_priv *priv = dsi_div->priv;
 
-	/*
-	 * MUX -->DIV_DSI_{A,B} -->M3 -->VCLK
-	 *
-	 * Based on the dot clock, the DSI divider clock sets the divider value,
-	 * calculates the pll parameters for generating FOUTPOSTDIV and the clk
-	 * source for the MUX and propagates that info to the parents.
-	 */
+	 
 
 	if (!rate || rate > MAX_VCLK_FREQ)
 		return -EINVAL;
@@ -450,15 +409,7 @@ static int rzg2l_cpg_pll5_4_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 	struct pll5_mux_hw_data *hwdata = to_pll5_mux_hw_data(hw);
 	struct rzg2l_cpg_priv *priv = hwdata->priv;
 
-	/*
-	 * FOUTPOSTDIV--->|
-	 *  |             | -->MUX -->DIV_DSIA_B -->M3 -->VCLK
-	 *  |--FOUT1PH0-->|
-	 *
-	 * Based on the dot clock, the DSI divider clock calculates the parent
-	 * rate and clk source for the MUX. It propagates that info to
-	 * pll5_4_clk_mux which sets the clock source for DSI divider clock.
-	 */
+	 
 
 	writel(CPG_OTHERFUNC1_REG_RES0_ON_WEN | index,
 	       priv->base + CPG_OTHERFUNC1_REG);
@@ -567,17 +518,7 @@ static int rzg2l_cpg_sipll5_set_rate(struct clk_hw *hw,
 	int ret;
 	u32 val;
 
-	/*
-	 *  OSC --> PLL5 --> FOUTPOSTDIV-->|
-	 *                   |             | -->MUX -->DIV_DSIA_B -->M3 -->VCLK
-	 *                   |--FOUT1PH0-->|
-	 *
-	 * Based on the dot clock, the DSI divider clock calculates the parent
-	 * rate and the pll5 parameters for generating FOUTPOSTDIV. It propagates
-	 * that info to sipll5 which sets parameters for generating FOUTPOSTDIV.
-	 *
-	 * OSC --> PLL5 --> FOUTPOSTDIV
-	 */
+	 
 
 	if (!rate)
 		return -EINVAL;
@@ -586,7 +527,7 @@ static int rzg2l_cpg_sipll5_set_rate(struct clk_hw *hw,
 	sipll5->foutpostdiv_rate =
 		rzg2l_cpg_get_foutpostdiv_rate(&params, vclk_rate);
 
-	/* Put PLL5 into standby mode */
+	 
 	writel(CPG_SIPLL5_STBY_RESETB_WEN, priv->base + CPG_SIPLL5_STBY);
 	ret = readl_poll_timeout(priv->base + CPG_SIPLL5_MON, val,
 				 !(val & CPG_SIPLL5_MON_PLL5_LOCK), 100, 250000);
@@ -595,26 +536,26 @@ static int rzg2l_cpg_sipll5_set_rate(struct clk_hw *hw,
 		return ret;
 	}
 
-	/* Output clock setting 1 */
+	 
 	writel((params.pl5_postdiv1 << 0) | (params.pl5_postdiv2 << 4) |
 	       (params.pl5_refdiv << 8), priv->base + CPG_SIPLL5_CLK1);
 
-	/* Output clock setting, SSCG modulation value setting 3 */
+	 
 	writel((params.pl5_fracin << 8), priv->base + CPG_SIPLL5_CLK3);
 
-	/* Output clock setting 4 */
+	 
 	writel(CPG_SIPLL5_CLK4_RESV_LSB | (params.pl5_intin << 16),
 	       priv->base + CPG_SIPLL5_CLK4);
 
-	/* Output clock setting 5 */
+	 
 	writel(params.pl5_spread, priv->base + CPG_SIPLL5_CLK5);
 
-	/* PLL normal mode setting */
+	 
 	writel(CPG_SIPLL5_STBY_DOWNSPREAD_WEN | CPG_SIPLL5_STBY_SSCG_EN_WEN |
 	       CPG_SIPLL5_STBY_RESETB_WEN | CPG_SIPLL5_STBY_RESETB,
 	       priv->base + CPG_SIPLL5_STBY);
 
-	/* PLL normal mode transition, output clock stability check */
+	 
 	ret = readl_poll_timeout(priv->base + CPG_SIPLL5_MON, val,
 				 (val & CPG_SIPLL5_MON_PLL5_LOCK), 100, 250000);
 	if (ret) {
@@ -672,9 +613,9 @@ rzg2l_cpg_sipll5_register(const struct cpg_core_clk *core,
 	if (ret)
 		return ERR_PTR(ret);
 
-	priv->mux_dsi_div_params.clksrc = 1; /* Use clk src 1 for DSI */
-	priv->mux_dsi_div_params.dsi_div_a = 1; /* Divided by 2 */
-	priv->mux_dsi_div_params.dsi_div_b = 2; /* Divided by 3 */
+	priv->mux_dsi_div_params.clksrc = 1;  
+	priv->mux_dsi_div_params.dsi_div_a = 1;  
+	priv->mux_dsi_div_params.dsi_div_b = 2;  
 
 	return clk_hw->clk;
 }
@@ -808,7 +749,7 @@ rzg2l_cpg_register_core_clk(const struct cpg_core_clk *core,
 	WARN_DEBUG(PTR_ERR(priv->clks[id]) != -ENOENT);
 
 	if (!core->name) {
-		/* Skip NULLified clock */
+		 
 		return;
 	}
 
@@ -868,16 +809,7 @@ fail:
 		core->name, PTR_ERR(clk));
 }
 
-/**
- * struct mstp_clock - MSTP gating clock
- *
- * @hw: handle between common and hardware-specific interfaces
- * @off: register offset
- * @bit: ON/MON bit
- * @enabled: soft state of the clock, if it is coupled with another clock
- * @priv: CPG/MSTP private data
- * @sibling: pointer to the other coupled clock
- */
+ 
 struct mstp_clock {
 	struct clk_hw hw;
 	u16 off;
@@ -1042,7 +974,7 @@ rzg2l_cpg_register_mod_clk(const struct rzg2l_mod_clk *mod,
 	WARN_DEBUG(PTR_ERR(priv->clks[id]) != -ENOENT);
 
 	if (!mod->name) {
-		/* Skip NULLified clock */
+		 
 		return;
 	}
 
@@ -1125,7 +1057,7 @@ static int rzg2l_cpg_assert(struct reset_controller_dev *rcdev,
 		reg = CPG_RST_MON;
 		mask = BIT(monbit);
 	} else {
-		/* Wait for at least one cycle of the RCLK clock (@ ca. 32 kHz) */
+		 
 		udelay(35);
 		return 0;
 	}
@@ -1155,7 +1087,7 @@ static int rzg2l_cpg_deassert(struct reset_controller_dev *rcdev,
 		reg = CPG_RST_MON;
 		mask = BIT(monbit);
 	} else {
-		/* Wait for at least one cycle of the RCLK clock (@ ca. 32 kHz) */
+		 
 		udelay(35);
 		return 0;
 	}
@@ -1428,7 +1360,7 @@ static const struct of_device_id rzg2l_cpg_match[] = {
 		.data = &r9a09g011_cpg_info,
 	},
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver rzg2l_cpg_driver = {

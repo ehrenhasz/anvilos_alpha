@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CTF writing support via babeltrace.
- *
- * Copyright (C) 2014, Jiri Olsa <jolsa@redhat.com>
- * Copyright (C) 2014, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- */
+
+ 
 
 #include <errno.h>
 #include <inttypes.h>
@@ -60,14 +55,14 @@ struct ctf_stream {
 };
 
 struct ctf_writer {
-	/* writer primitives */
+	 
 	struct bt_ctf_writer		 *writer;
 	struct ctf_stream		**stream;
 	int				  stream_cnt;
 	struct bt_ctf_stream_class	 *stream_class;
 	struct bt_ctf_clock		 *clock;
 
-	/* data types */
+	 
 	union {
 		struct {
 			struct bt_ctf_field_type	*s64;
@@ -95,7 +90,7 @@ struct convert {
 	u64			events_count;
 	u64			non_sample_count;
 
-	/* Ordered events configured queue size. */
+	 
 	u64			queue_size;
 };
 
@@ -197,7 +192,7 @@ get_tracepoint_field_type(struct ctf_writer *cw, struct tep_format_field *field)
 		return cw->data.string;
 
 	if (!(flags & TEP_FIELD_IS_SIGNED)) {
-		/* unsigned long are mostly pointers */
+		 
 		if (flags & TEP_FIELD_IS_LONG || flags & TEP_FIELD_IS_POINTER)
 			return cw->data.u64_hex;
 	}
@@ -219,10 +214,7 @@ static unsigned long long adjust_signedness(unsigned long long value_int, int si
 {
 	unsigned long long value_mask;
 
-	/*
-	 * value_mask = (1 << (size * 8 - 1)) - 1.
-	 * Directly set value_mask for code readers.
-	 */
+	 
 	switch (size) {
 	case 1:
 		value_mask = 0x7fULL;
@@ -234,21 +226,18 @@ static unsigned long long adjust_signedness(unsigned long long value_int, int si
 		value_mask = 0x7fffffffULL;
 		break;
 	case 8:
-		/*
-		 * For 64 bit value, return it self. There is no need
-		 * to fill high bit.
-		 */
-		/* Fall through */
+		 
+		 
 	default:
-		/* BUG! */
+		 
 		return value_int;
 	}
 
-	/* If it is a positive value, don't adjust. */
+	 
 	if ((value_int & (~0ULL - value_mask)) == 0)
 		return value_int;
 
-	/* Fill upper part of value_int with 1 to make it a negative long long. */
+	 
 	return (value_int & value_mask) | ~value_mask;
 }
 
@@ -600,16 +589,7 @@ static int add_generic_values(struct ctf_writer *cw,
 	u64 type = evsel->core.attr.sample_type;
 	int ret;
 
-	/*
-	 * missing:
-	 *   PERF_SAMPLE_TIME         - not needed as we have it in
-	 *                              ctf event header
-	 *   PERF_SAMPLE_READ         - TODO
-	 *   PERF_SAMPLE_RAW          - tracepoint fields are handled separately
-	 *   PERF_SAMPLE_BRANCH_STACK - TODO
-	 *   PERF_SAMPLE_REGS_USER    - TODO
-	 *   PERF_SAMPLE_STACK_USER   - TODO
-	 */
+	 
 
 	if (type & PERF_SAMPLE_IP) {
 		ret = value_set_u64_hex(cw, event, "perf_ip", sample->ip);
@@ -781,12 +761,7 @@ static int get_sample_cpu(struct ctf_writer *cw, struct perf_sample *sample,
 
 #define STREAM_FLUSH_COUNT 100000
 
-/*
- * Currently we have no other way to determine the
- * time for the stream flush other than keep track
- * of the number of events and check it against
- * threshold.
- */
+ 
 static bool is_flush_needed(struct ctf_stream *cs)
 {
 	return cs->count >= STREAM_FLUSH_COUNT;
@@ -812,7 +787,7 @@ static int process_sample_event(struct perf_tool *tool,
 
 	event_class = priv->event_class;
 
-	/* update stats */
+	 
 	c->events_count++;
 	c->events_size += _event->header.size;
 
@@ -941,7 +916,7 @@ __FUNC_PROCESS_NON_SAMPLE(mmap2,
 #undef __NON_SAMPLE_SET_FIELD
 #undef __FUNC_PROCESS_NON_SAMPLE
 
-/* If dup < 0, add a prefix. Else, add _dupl_X suffix. */
+ 
 static char *change_name(char *name, char *orig_name, int dup)
 {
 	char *new_name = NULL;
@@ -952,11 +927,7 @@ static char *change_name(char *name, char *orig_name, int dup)
 
 	if (dup >= 10)
 		goto out;
-	/*
-	 * Add '_' prefix to potential keywork.  According to
-	 * Mathieu Desnoyers (https://lore.kernel.org/lkml/1074266107.40857.1422045946295.JavaMail.zimbra@efficios.com),
-	 * further CTF spec updating may require us to use '$'.
-	 */
+	 
 	if (dup < 0)
 		len = strlen(name) + sizeof("_");
 	else
@@ -986,14 +957,14 @@ static int event_class_add_field(struct bt_ctf_event_class *event_class,
 	int dup = 1;
 	int ret;
 
-	/* alias was already assigned */
+	 
 	if (field->alias != field->name)
 		return bt_ctf_event_class_add_field(event_class, type,
 				(char *)field->alias);
 
 	name = field->name;
 
-	/* If 'name' is a keywork, add prefix. */
+	 
 	if (bt_ctf_validate_identifier(name))
 		name = change_name(name, field->name, -1);
 
@@ -1034,11 +1005,7 @@ static int add_tracepoint_fields_types(struct ctf_writer *cw,
 		if (!type)
 			return -1;
 
-		/*
-		 * A string is an array of chars. For this we use the string
-		 * type and don't care that it is an array. What we don't
-		 * support is an array of strings.
-		 */
+		 
 		if (flags & TEP_FIELD_IS_STRING)
 			flags &= ~TEP_FIELD_IS_ARRAY;
 
@@ -1099,18 +1066,7 @@ static int add_generic_types(struct ctf_writer *cw, struct evsel *evsel,
 {
 	u64 type = evsel->core.attr.sample_type;
 
-	/*
-	 * missing:
-	 *   PERF_SAMPLE_TIME         - not needed as we have it in
-	 *                              ctf event header
-	 *   PERF_SAMPLE_READ         - TODO
-	 *   PERF_SAMPLE_CALLCHAIN    - TODO
-	 *   PERF_SAMPLE_RAW          - tracepoint fields and BPF output
-	 *                              are handled separately
-	 *   PERF_SAMPLE_BRANCH_STACK - TODO
-	 *   PERF_SAMPLE_REGS_USER    - TODO
-	 *   PERF_SAMPLE_STACK_USER   - TODO
-	 */
+	 
 
 #define ADD_FIELD(cl, t, n)						\
 	do {								\
@@ -1339,10 +1295,7 @@ static int setup_streams(struct ctf_writer *cw, struct perf_session *session)
 	struct perf_header *ph = &session->header;
 	int ncpus;
 
-	/*
-	 * Try to get the number of cpus used in the data file,
-	 * if not present fallback to the MAX_CPUS.
-	 */
+	 
 	ncpus = ph->env.nr_cpus_avail ?: MAX_CPUS;
 
 	stream = zalloc(sizeof(*stream) * ncpus);
@@ -1501,7 +1454,7 @@ static void ctf_writer__cleanup(struct ctf_writer *cw)
 	bt_ctf_stream_class_put(cw->stream_class);
 	bt_ctf_writer_put(cw->writer);
 
-	/* and NULL all the pointers */
+	 
 	memset(cw, 0, sizeof(*cw));
 }
 
@@ -1514,14 +1467,14 @@ static int ctf_writer__init(struct ctf_writer *cw, const char *path,
 	struct bt_ctf_field_type	*pkt_ctx_type;
 	int				ret;
 
-	/* CTF writer */
+	 
 	writer = bt_ctf_writer_create(path);
 	if (!writer)
 		goto err;
 
 	cw->writer = writer;
 
-	/* CTF clock */
+	 
 	clock = bt_ctf_clock_create("perf_clock");
 	if (!clock) {
 		pr("Failed to create CTF clock.\n");
@@ -1535,7 +1488,7 @@ static int ctf_writer__init(struct ctf_writer *cw, const char *path,
 		goto err_cleanup;
 	}
 
-	/* CTF stream class */
+	 
 	stream_class = bt_ctf_stream_class_create("perf_stream");
 	if (!stream_class) {
 		pr("Failed to create CTF stream class.\n");
@@ -1544,7 +1497,7 @@ static int ctf_writer__init(struct ctf_writer *cw, const char *path,
 
 	cw->stream_class = stream_class;
 
-	/* CTF clock stream setup */
+	 
 	if (bt_ctf_stream_class_set_clock(stream_class, clock)) {
 		pr("Failed to assign CTF clock to stream class.\n");
 		goto err_cleanup;
@@ -1553,7 +1506,7 @@ static int ctf_writer__init(struct ctf_writer *cw, const char *path,
 	if (ctf_writer__init_data(cw))
 		goto err_cleanup;
 
-	/* Add cpu_id for packet context */
+	 
 	pkt_ctx_type = bt_ctf_stream_class_get_packet_context_type(stream_class);
 	if (!pkt_ctx_type)
 		goto err_cleanup;
@@ -1563,7 +1516,7 @@ static int ctf_writer__init(struct ctf_writer *cw, const char *path,
 	if (ret)
 		goto err_cleanup;
 
-	/* CTF clock writer setup */
+	 
 	if (bt_ctf_writer_add_clock(writer, clock)) {
 		pr("Failed to assign CTF clock to writer.\n");
 		goto err_cleanup;
@@ -1639,12 +1592,12 @@ int bt_convert__perf2ctf(const char *input, const char *path,
 		return err;
 
 	err = -1;
-	/* perf.data session */
+	 
 	session = perf_session__new(&data, &c.tool);
 	if (IS_ERR(session))
 		return PTR_ERR(session);
 
-	/* CTF writer */
+	 
 	if (ctf_writer__init(cw, path, session, opts->tod))
 		goto free_session;
 
@@ -1653,11 +1606,11 @@ int bt_convert__perf2ctf(const char *input, const char *path,
 					       c.queue_size);
 	}
 
-	/* CTF writer env/clock setup  */
+	 
 	if (ctf_writer__setup_env(cw, session))
 		goto free_writer;
 
-	/* CTF events setup */
+	 
 	if (setup_events(cw, session))
 		goto free_writer;
 

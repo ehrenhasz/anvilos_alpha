@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -14,7 +14,7 @@
 #define OV9734_LINK_FREQ_180MHZ		180000000ULL
 #define OV9734_SCLK			36000000LL
 #define OV9734_MCLK			19200000
-/* ov9734 only support 1-lane mipi output */
+ 
 #define OV9734_DATA_LANES		1
 #define OV9734_RGB_DEPTH		10
 
@@ -25,28 +25,28 @@
 #define OV9734_MODE_STANDBY		0x00
 #define OV9734_MODE_STREAMING		0x01
 
-/* vertical-timings from sensor */
+ 
 #define OV9734_REG_VTS			0x380e
 #define OV9734_VTS_30FPS		0x0322
 #define OV9734_VTS_30FPS_MIN		0x0322
 #define OV9734_VTS_MAX			0x7fff
 
-/* horizontal-timings from sensor */
+ 
 #define OV9734_REG_HTS			0x380c
 
-/* Exposure controls from sensor */
+ 
 #define OV9734_REG_EXPOSURE		0x3500
 #define OV9734_EXPOSURE_MIN		4
 #define OV9734_EXPOSURE_MAX_MARGIN	4
 #define	OV9734_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define OV9734_REG_ANALOG_GAIN		0x350a
 #define OV9734_ANAL_GAIN_MIN		16
 #define OV9734_ANAL_GAIN_MAX		248
 #define OV9734_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define OV9734_REG_MWB_R_GAIN		0x5180
 #define OV9734_REG_MWB_G_GAIN		0x5182
 #define OV9734_REG_MWB_B_GAIN		0x5184
@@ -55,12 +55,12 @@
 #define OV9734_DGTL_GAIN_STEP		1
 #define OV9734_DGTL_GAIN_DEFAULT	256
 
-/* Test Pattern Control */
+ 
 #define OV9734_REG_TEST_PATTERN		0x5080
 #define OV9734_TEST_PATTERN_ENABLE	BIT(7)
 #define OV9734_TEST_PATTERN_BAR_SHIFT	2
 
-/* Group Access */
+ 
 #define OV9734_REG_GROUP_ACCESS		0x3208
 #define OV9734_GROUP_HOLD_START		0x0
 #define OV9734_GROUP_HOLD_END		0x10
@@ -85,25 +85,25 @@ struct ov9734_link_freq_config {
 };
 
 struct ov9734_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timining size */
+	 
 	u32 hts;
 
-	/* Default vertical timining size */
+	 
 	u32 vts_def;
 
-	/* Min vertical timining size */
+	 
 	u32 vts_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct ov9734_reg_list reg_list;
 };
 
@@ -325,20 +325,20 @@ struct ov9734 {
 	struct media_pad pad;
 	struct v4l2_ctrl_handler ctrl_handler;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov9734_mode *cur_mode;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 };
 
@@ -483,9 +483,9 @@ static int ov9734_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = ov9734->cur_mode->height + ctrl->val -
 			OV9734_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(ov9734->exposure,
@@ -494,7 +494,7 @@ static int ov9734_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -509,7 +509,7 @@ static int ov9734_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of expsoure are fractional part */
+		 
 		ret = ov9734_write_reg(ov9734, OV9734_REG_EXPOSURE,
 				       3, ctrl->val << 4);
 		break;
@@ -749,7 +749,7 @@ static int ov9734_set_format(struct v4l2_subdev *sd,
 		__v4l2_ctrl_s_ctrl_int64(ov9734->pixel_rate,
 					 to_pixel_rate(mode->link_freq_index));
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->vts_def - mode->height;
 		__v4l2_ctrl_modify_range(ov9734->vblank,
 					 mode->vts_min - mode->height,
@@ -991,10 +991,7 @@ static int ov9734_probe(struct i2c_client *client)
 		goto probe_error_media_entity_cleanup;
 	}
 
-	/*
-	 * Device is already turned on by i2c-core with ACPI domain PM.
-	 * Enable runtime PM and turn off the device.
-	 */
+	 
 	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
 	pm_runtime_idle(&client->dev);

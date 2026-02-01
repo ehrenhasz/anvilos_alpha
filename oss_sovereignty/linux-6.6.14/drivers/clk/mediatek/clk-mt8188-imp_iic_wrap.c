@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -65,7 +62,7 @@ static const struct of_device_id of_match_clk_mt8188_imp_iic_wrap[] = {
 	{ .compatible = "mediatek,mt8188-imp-iic-wrap-c", .data = &imp_iic_wrap_c_desc },
 	{ .compatible = "mediatek,mt8188-imp-iic-wrap-w", .data = &imp_iic_wrap_w_desc },
 	{ .compatible = "mediatek,mt8188-imp-iic-wrap-en", .data = &imp_iic_wrap_en_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8188_imp_iic_wrap);
 

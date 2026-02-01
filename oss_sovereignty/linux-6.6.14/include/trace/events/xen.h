@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xen
 
@@ -11,7 +11,7 @@
 
 struct multicall_entry;
 
-/* Multicalls */
+ 
 DECLARE_EVENT_CLASS(xen_mc__batch,
 	    TP_PROTO(enum xen_lazy_mode mode),
 	    TP_ARGS(mode),
@@ -66,10 +66,7 @@ TRACE_EVENT(xen_mc_callback,
 	    TP_PROTO(xen_mc_callback_fn_t fn, void *data),
 	    TP_ARGS(fn, data),
 	    TP_STRUCT__entry(
-		    /*
-		     * Use field_struct to avoid is_signed_type()
-		     * comparison of a function pointer.
-		     */
+		     
 		    __field_struct(xen_mc_callback_fn_t, fn)
 		    __field(void *, data)
 		    ),
@@ -130,7 +127,7 @@ TRACE_EVENT(xen_mc_extend_args,
 	);
 
 TRACE_DEFINE_SIZEOF(pteval_t);
-/* mmu */
+ 
 DECLARE_EVENT_CLASS(xen_mmu__set_pte,
 	    TP_PROTO(pte_t *ptep, pte_t pteval),
 	    TP_ARGS(ptep, pteval),
@@ -378,7 +375,7 @@ TRACE_EVENT(xen_mmu_write_cr3,
 	);
 
 
-/* CPU */
+ 
 TRACE_EVENT(xen_cpu_write_ldt_entry,
 	    TP_PROTO(struct desc_struct *dt, int entrynum, u64 desc),
 	    TP_ARGS(dt, entrynum, desc),
@@ -453,7 +450,7 @@ TRACE_EVENT(xen_cpu_set_ldt,
 	);
 
 
-#endif /*  _TRACE_XEN_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

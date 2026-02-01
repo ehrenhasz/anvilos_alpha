@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * debugfs interface for sunrpc
- *
- * (c) 2014 Jeff Layton <jlayton@primarydata.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/sunrpc/sched.h>
@@ -62,7 +58,7 @@ tasks_next(struct seq_file *f, void *v, loff_t *pos)
 
 	++*pos;
 
-	/* If there's another task on list, return it */
+	 
 	if (next == &clnt->cl_tasks)
 		return NULL;
 	return list_entry(next, struct rpc_task, tk_task);
@@ -120,8 +116,8 @@ static const struct file_operations tasks_fops = {
 static int do_xprt_debugfs(struct rpc_clnt *clnt, struct rpc_xprt *xprt, void *numv)
 {
 	int len;
-	char name[24]; /* enough for "../../rpc_xprt/ + 8 hex digits + NULL */
-	char link[9]; /* enough for 8 hex digits + NULL */
+	char name[24];  
+	char link[9];  
 	int *nump = numv;
 
 	if (IS_ERR_OR_NULL(xprt->debugfs))
@@ -146,17 +142,17 @@ void
 rpc_clnt_debugfs_register(struct rpc_clnt *clnt)
 {
 	int len;
-	char name[9]; /* enough for 8 hex digits + NULL */
+	char name[9];  
 	int xprtnum = 0;
 
 	len = snprintf(name, sizeof(name), "%x", clnt->cl_clid);
 	if (len >= sizeof(name))
 		return;
 
-	/* make the per-client dir */
+	 
 	clnt->cl_debugfs = debugfs_create_dir(name, rpc_clnt_dir);
 
-	/* make tasks file */
+	 
 	debugfs_create_file("tasks", S_IFREG | 0400, clnt->cl_debugfs, clnt,
 			    &tasks_fops);
 
@@ -221,7 +217,7 @@ rpc_xprt_debugfs_register(struct rpc_xprt *xprt)
 {
 	int len, id;
 	static atomic_t	cur_id;
-	char		name[9]; /* 8 hex digits + NULL term */
+	char		name[9];  
 
 	id = (unsigned int)atomic_inc_return(&cur_id);
 
@@ -229,10 +225,10 @@ rpc_xprt_debugfs_register(struct rpc_xprt *xprt)
 	if (len >= sizeof(name))
 		return;
 
-	/* make the per-client dir */
+	 
 	xprt->debugfs = debugfs_create_dir(name, rpc_xprt_dir);
 
-	/* make tasks file */
+	 
 	debugfs_create_file("info", S_IFREG | 0400, xprt->debugfs, xprt,
 			    &xprt_info_fops);
 }

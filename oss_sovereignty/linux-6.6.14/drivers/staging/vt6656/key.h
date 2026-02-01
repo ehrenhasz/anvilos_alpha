@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Implement functions for 802.11i Key management
- *
- * Author: Jerry Chen
- *
- * Date: May 29, 2003
- *
- */
+ 
+ 
 
 #ifndef __KEY_H__
 #define __KEY_H__
@@ -37,4 +27,4 @@ int vnt_key_init_table(struct vnt_private *priv);
 int vnt_set_keys(struct ieee80211_hw *hw, struct ieee80211_sta *sta,
 		 struct ieee80211_vif *vif, struct ieee80211_key_conf *key);
 
-#endif /* __KEY_H__ */
+#endif  

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+ 
+ 
 
 #ifndef __MLX5_EN_TC_PRIV_H__
 #define __MLX5_EN_TC_PRIV_H__
@@ -45,31 +45,15 @@ struct mlx5e_tc_flow_parse_attr {
 
 struct mlx5_fs_chains *mlx5e_nic_chains(struct mlx5e_tc_table *tc);
 
-/* Helper struct for accessing a struct containing list_head array.
- * Containing struct
- *   |- Helper array
- *      [0] Helper item 0
- *          |- list_head item 0
- *          |- index (0)
- *      [1] Helper item 1
- *          |- list_head item 1
- *          |- index (1)
- * To access the containing struct from one of the list_head items:
- * 1. Get the helper item from the list_head item using
- *    helper item =
- *        container_of(list_head item, helper struct type, list_head field)
- * 2. Get the contining struct from the helper item and its index in the array:
- *    containing struct =
- *        container_of(helper item, containing struct type, helper field[index])
- */
+ 
 struct encap_flow_item {
-	struct mlx5e_encap_entry *e; /* attached encap instance */
+	struct mlx5e_encap_entry *e;  
 	struct list_head list;
 	int index;
 };
 
 struct encap_route_flow_item {
-	struct mlx5e_route_entry *r; /* attached route instance */
+	struct mlx5e_route_entry *r;  
 	int index;
 };
 
@@ -80,30 +64,25 @@ struct mlx5e_tc_flow {
 	unsigned long flags;
 	struct mlx5_flow_handle *rule[MLX5E_TC_MAX_SPLITS + 1];
 
-	/* flows sharing the same reformat object - currently mpls decap */
+	 
 	struct list_head l3_to_l2_reformat;
 	struct mlx5e_decap_entry *decap_reformat;
 
-	/* flows sharing same route entry */
+	 
 	struct list_head decap_routes;
 	struct mlx5e_route_entry *decap_route;
 	struct encap_route_flow_item encap_routes[MLX5_MAX_FLOW_FWD_VPORTS];
 
-	/* Flow can be associated with multiple encap IDs.
-	 * The number of encaps is bounded by the number of supported
-	 * destinations.
-	 */
+	 
 	struct encap_flow_item encaps[MLX5_MAX_FLOW_FWD_VPORTS];
-	struct mlx5e_hairpin_entry *hpe; /* attached hairpin instance */
-	struct list_head hairpin; /* flows sharing the same hairpin */
-	struct list_head peer[MLX5_MAX_PORTS];    /* flows with peer flow */
-	struct list_head unready; /* flows not ready to be offloaded (e.g
-				   * due to missing route)
-				   */
-	struct list_head peer_flows; /* flows on peer */
-	struct net_device *orig_dev; /* netdev adding flow first */
+	struct mlx5e_hairpin_entry *hpe;  
+	struct list_head hairpin;  
+	struct list_head peer[MLX5_MAX_PORTS];     
+	struct list_head unready;  
+	struct list_head peer_flows;  
+	struct net_device *orig_dev;  
 	int tmp_entry_index;
-	struct list_head tmp_list; /* temporary flow list used by neigh update */
+	struct list_head tmp_list;  
 	refcount_t refcnt;
 	struct rcu_head rcu_head;
 	struct completion init_done;
@@ -145,7 +124,7 @@ bool mlx5e_same_hw_devs(struct mlx5e_priv *priv, struct mlx5e_priv *peer_priv);
 
 static inline void __flow_flag_set(struct mlx5e_tc_flow *flow, unsigned long flag)
 {
-	/* Complete all memory stores before setting bit. */
+	 
 	smp_mb__before_atomic();
 	set_bit(flag, &flow->flags);
 }
@@ -155,7 +134,7 @@ static inline void __flow_flag_set(struct mlx5e_tc_flow *flow, unsigned long fla
 static inline bool __flow_flag_test_and_set(struct mlx5e_tc_flow *flow,
 					    unsigned long flag)
 {
-	/* test_and_set_bit() provides all necessary barriers */
+	 
 	return test_and_set_bit(flag, &flow->flags);
 }
 
@@ -165,7 +144,7 @@ static inline bool __flow_flag_test_and_set(struct mlx5e_tc_flow *flow,
 
 static inline void __flow_flag_clear(struct mlx5e_tc_flow *flow, unsigned long flag)
 {
-	/* Complete all memory stores before clearing bit. */
+	 
 	smp_mb__before_atomic();
 	clear_bit(flag, &flow->flags);
 }
@@ -177,7 +156,7 @@ static inline bool __flow_flag_test(struct mlx5e_tc_flow *flow, unsigned long fl
 {
 	bool ret = test_bit(flag, &flow->flags);
 
-	/* Read fields of flow structure only after checking flags. */
+	 
 	smp_mb__after_atomic();
 	return ret;
 }
@@ -209,4 +188,4 @@ struct mlx5e_flow_meters *mlx5e_get_flow_meters(struct mlx5_core_dev *dev);
 void *mlx5e_get_match_headers_value(u32 flags, struct mlx5_flow_spec *spec);
 void *mlx5e_get_match_headers_criteria(u32 flags, struct mlx5_flow_spec *spec);
 
-#endif /* __MLX5_EN_TC_PRIV_H__ */
+#endif  

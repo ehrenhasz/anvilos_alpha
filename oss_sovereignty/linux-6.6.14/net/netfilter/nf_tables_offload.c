@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/netfilter.h>
@@ -499,7 +499,7 @@ static int nft_flow_offload_chain(struct nft_chain *chain, u8 *ppolicy,
 	basechain = nft_base_chain(chain);
 	policy = ppolicy ? *ppolicy : basechain->policy;
 
-	/* Only default policy to accept is supported for now. */
+	 
 	if (cmd == FLOW_BLOCK_BIND && policy == NF_DROP)
 		return -EOPNOTSUPP;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ALSA SoC Texas Instruments TAS6424 Quad-Channel Audio Amplifier
- *
- * Copyright (C) 2016-2017 Texas Instruments Incorporated - https://www.ti.com/
- *	Author: Andreas Dannenberg <dannenberg@ti.com>
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -25,13 +19,13 @@
 
 #include "tas6424.h"
 
-/* Define how often to check (and clear) the fault status register (in ms) */
+ 
 #define TAS6424_FAULT_CHECK_INTERVAL 200
 
 static const char * const tas6424_supply_names[] = {
-	"dvdd", /* Digital power supply. Connect to 3.3-V supply. */
-	"vbat", /* Supply used for higher voltage analog circuits. */
-	"pvdd", /* Class-D amp output FETs supply. */
+	"dvdd",  
+	"vbat",  
+	"pvdd",  
 };
 #define TAS6424_NUM_SUPPLIES ARRAY_SIZE(tas6424_supply_names)
 
@@ -48,11 +42,7 @@ struct tas6424_data {
 	struct gpio_desc *mute_gpio;
 };
 
-/*
- * DAC digital volumes. From -103.5 to 24 dB in 0.5 dB steps. Note that
- * setting the gain below -100 dB (register value <0x7) is effectively a MUTE
- * as per device datasheet.
- */
+ 
 static DECLARE_TLV_DB_SCALE(dac_tlv, -10350, 50, 0);
 
 static const struct snd_kcontrol_new tas6424_snd_controls[] = {
@@ -77,17 +67,17 @@ static int tas6424_dac_event(struct snd_soc_dapm_widget *w,
 	dev_dbg(component->dev, "%s() event=0x%0x\n", __func__, event);
 
 	if (event & SND_SOC_DAPM_POST_PMU) {
-		/* Observe codec shutdown-to-active time */
+		 
 		msleep(12);
 
-		/* Turn on TAS6424 periodic fault checking/handling */
+		 
 		tas6424->last_fault1 = 0;
 		tas6424->last_fault2 = 0;
 		tas6424->last_warn = 0;
 		schedule_delayed_work(&tas6424->fault_check_work,
 				      msecs_to_jiffies(TAS6424_FAULT_CHECK_INTERVAL));
 	} else if (event & SND_SOC_DAPM_PRE_PMD) {
-		/* Disable TAS6424 periodic fault checking/handling */
+		 
 		cancel_delayed_work_sync(&tas6424->fault_check_work);
 	}
 
@@ -158,7 +148,7 @@ static int tas6424_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	dev_dbg(component->dev, "%s() fmt=0x%0x\n", __func__, fmt);
 
-	/* clock masters */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBC_CFC:
 		break;
@@ -167,7 +157,7 @@ static int tas6424_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* signal polarity */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -176,7 +166,7 @@ static int tas6424_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		serial_format |= TAS6424_SAP_I2S;
@@ -185,11 +175,7 @@ static int tas6424_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		serial_format |= TAS6424_SAP_DSP;
 		break;
 	case SND_SOC_DAIFMT_DSP_B:
-		/*
-		 * We can use the fact that the TAS6424 does not care about the
-		 * LRCLK duty cycle during TDM to receive DSP_B formatted data
-		 * in LEFTJ mode (no delaying of the 1st data bit).
-		 */
+		 
 		serial_format |= TAS6424_SAP_LEFTJ;
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
@@ -218,13 +204,9 @@ static int tas6424_set_dai_tdm_slot(struct snd_soc_dai *dai,
 		tx_mask, rx_mask);
 
 	if (!tx_mask || !rx_mask)
-		return 0; /* nothing needed to disable TDM mode */
+		return 0;  
 
-	/*
-	 * Determine the first slot and last slot that is being requested so
-	 * we'll be able to more easily enforce certain constraints as the
-	 * TAS6424's TDM interface is not fully configurable.
-	 */
+	 
 	first_slot = __ffs(tx_mask);
 	last_slot = __fls(rx_mask);
 
@@ -322,21 +304,14 @@ static int tas6424_power_on(struct snd_soc_component *component)
 
 	if (tas6424->mute_gpio) {
 		gpiod_set_value_cansleep(tas6424->mute_gpio, 0);
-		/*
-		 * channels are muted via the mute pin.  Don't also mute
-		 * them via the registers so that subsequent register
-		 * access is not necessary to un-mute the channels
-		 */
+		 
 		chan_states = TAS6424_ALL_STATE_PLAY;
 	} else {
 		chan_states = TAS6424_ALL_STATE_MUTE;
 	}
 	snd_soc_component_write(component, TAS6424_CH_STATE_CTRL, chan_states);
 
-	/* any time we come out of HIZ, the output channels automatically run DC
-	 * load diagnostics if autodiagnotics are enabled. wait here until this
-	 * completes.
-	 */
+	 
 	if (!no_auto_diags)
 		msleep(230);
 
@@ -417,12 +392,7 @@ static void tas6424_fault_check_work(struct work_struct *work)
 		goto check_global_fault1_reg;
 	}
 
-	/*
-	 * Only flag errors once for a given occurrence. This is needed as
-	 * the TAS6424 will take time clearing the fault condition internally
-	 * during which we don't want to bombard the system with the same
-	 * error message over and over.
-	 */
+	 
 	if ((reg & TAS6424_FAULT_OC_CH1) && !(tas6424->last_cfault & TAS6424_FAULT_OC_CH1))
 		dev_crit(dev, "experienced a channel 1 overcurrent fault\n");
 
@@ -447,7 +417,7 @@ static void tas6424_fault_check_work(struct work_struct *work)
 	if ((reg & TAS6424_FAULT_DC_CH4) && !(tas6424->last_cfault & TAS6424_FAULT_DC_CH4))
 		dev_crit(dev, "experienced a channel 4 DC fault\n");
 
-	/* Store current fault1 value so we can detect any changes next time */
+	 
 	tas6424->last_cfault = reg;
 
 check_global_fault1_reg:
@@ -457,13 +427,7 @@ check_global_fault1_reg:
 		goto out;
 	}
 
-	/*
-	 * Ignore any clock faults as there is no clean way to check for them.
-	 * We would need to start checking for those faults *after* the SAIF
-	 * stream has been setup, and stop checking *before* the stream is
-	 * stopped to avoid any false-positives. However there are no
-	 * appropriate hooks to monitor these events.
-	 */
+	 
 	reg &= TAS6424_FAULT_PVDD_OV |
 	       TAS6424_FAULT_VBAT_OV |
 	       TAS6424_FAULT_PVDD_UV |
@@ -486,7 +450,7 @@ check_global_fault1_reg:
 	if ((reg & TAS6424_FAULT_VBAT_UV) && !(tas6424->last_fault1 & TAS6424_FAULT_VBAT_UV))
 		dev_crit(dev, "experienced a VBAT undervoltage fault\n");
 
-	/* Store current fault1 value so we can detect any changes next time */
+	 
 	tas6424->last_fault1 = reg;
 
 check_global_fault2_reg:
@@ -522,7 +486,7 @@ check_global_fault2_reg:
 	if ((reg & TAS6424_FAULT_OTSD_CH4) && !(tas6424->last_fault2 & TAS6424_FAULT_OTSD_CH4))
 		dev_crit(dev, "experienced an overtemp shutdown on CH4\n");
 
-	/* Store current fault2 value so we can detect any changes next time */
+	 
 	tas6424->last_fault2 = reg;
 
 check_warn_reg:
@@ -566,10 +530,10 @@ check_warn_reg:
 	if ((reg & TAS6424_WARN_VDD_OTW_CH4) && !(tas6424->last_warn & TAS6424_WARN_VDD_OTW_CH4))
 		dev_warn(dev, "experienced an overtemp warning on CH4\n");
 
-	/* Store current warn value so we can detect any changes next time */
+	 
 	tas6424->last_warn = reg;
 
-	/* Clear any warnings by toggling the CLEAR_FAULT control bit */
+	 
 	ret = regmap_write_bits(tas6424->regmap, TAS6424_MISC_CTRL3,
 				TAS6424_CLEAR_FAULT, TAS6424_CLEAR_FAULT);
 	if (ret < 0)
@@ -581,7 +545,7 @@ check_warn_reg:
 		dev_err(dev, "failed to write MISC_CTRL3 register: %d\n", ret);
 
 out:
-	/* Schedule the next fault check at the specified interval */
+	 
 	schedule_delayed_work(&tas6424->fault_check_work,
 			      msecs_to_jiffies(TAS6424_FAULT_CHECK_INTERVAL));
 }
@@ -701,12 +665,7 @@ static int tas6424_i2c_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/*
-	 * Get control of the standby pin and set it LOW to take the codec
-	 * out of the stand-by mode.
-	 * Note: The actual pin polarity is taken care of in the GPIO lib
-	 * according the polarity specified in the DTS.
-	 */
+	 
 	tas6424->standby_gpio = devm_gpiod_get_optional(dev, "standby",
 						      GPIOD_OUT_LOW);
 	if (IS_ERR(tas6424->standby_gpio)) {
@@ -717,12 +676,7 @@ static int tas6424_i2c_probe(struct i2c_client *client)
 		tas6424->standby_gpio = NULL;
 	}
 
-	/*
-	 * Get control of the mute pin and set it HIGH in order to start with
-	 * all the output muted.
-	 * Note: The actual pin polarity is taken care of in the GPIO lib
-	 * according the polarity specified in the DTS.
-	 */
+	 
 	tas6424->mute_gpio = devm_gpiod_get_optional(dev, "mute",
 						      GPIOD_OUT_HIGH);
 	if (IS_ERR(tas6424->mute_gpio)) {
@@ -749,7 +703,7 @@ static int tas6424_i2c_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Reset device to establish well-defined startup state */
+	 
 	ret = regmap_update_bits(tas6424->regmap, TAS6424_MODE_CTRL,
 				 TAS6424_RESET, TAS6424_RESET);
 	if (ret) {
@@ -781,7 +735,7 @@ static void tas6424_i2c_remove(struct i2c_client *client)
 
 	cancel_delayed_work_sync(&tas6424->fault_check_work);
 
-	/* put the codec in stand-by */
+	 
 	if (tas6424->standby_gpio)
 		gpiod_set_value_cansleep(tas6424->standby_gpio, 1);
 

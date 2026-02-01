@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header declares the utility functions used by "Gadget Zero", plus
- * interfaces to its two single-configuration function drivers.
- */
+ 
+ 
 
 #ifndef __G_ZERO_H
 #define __G_ZERO_H
@@ -37,12 +34,7 @@ struct f_ss_opts {
 	unsigned bulk_qlen;
 	unsigned iso_qlen;
 
-	/*
-	 * Read/write access to configfs attributes is handled by configfs.
-	 *
-	 * This is to protect the data from concurrent access by read/write
-	 * and create symlink/remove symlink.
-	 */
+	 
 	struct mutex			lock;
 	int				refcnt;
 };
@@ -52,12 +44,7 @@ struct f_lb_opts {
 	unsigned bulk_buflen;
 	unsigned qlen;
 
-	/*
-	 * Read/write access to configfs attributes is handled by configfs.
-	 *
-	 * This is to protect the data from concurrent access by read/write
-	 * and create symlink/remove symlink.
-	 */
+	 
 	struct mutex			lock;
 	int				refcnt;
 };
@@ -65,9 +52,9 @@ struct f_lb_opts {
 void lb_modexit(void);
 int lb_modinit(void);
 
-/* common utilities */
+ 
 void disable_endpoints(struct usb_composite_dev *cdev,
 		struct usb_ep *in, struct usb_ep *out,
 		struct usb_ep *iso_in, struct usb_ep *iso_out);
 
-#endif /* __G_ZERO_H */
+#endif  

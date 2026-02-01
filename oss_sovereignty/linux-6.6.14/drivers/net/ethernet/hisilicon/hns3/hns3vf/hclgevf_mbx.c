@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include "hclge_mbx.h"
 #include "hclgevf_main.h"
@@ -16,27 +16,18 @@ static int hclgevf_resp_to_errno(u16 resp_code)
 #define HCLGEVF_MBX_MATCH_ID_START	1
 static void hclgevf_reset_mbx_resp_status(struct hclgevf_dev *hdev)
 {
-	/* this function should be called with mbx_resp.mbx_mutex held
-	 * to protect the received_response from race condition
-	 */
+	 
 	hdev->mbx_resp.received_resp  = false;
 	hdev->mbx_resp.origin_mbx_msg = 0;
 	hdev->mbx_resp.resp_status    = 0;
 	hdev->mbx_resp.match_id++;
-	/* Update match_id and ensure the value of match_id is not zero */
+	 
 	if (hdev->mbx_resp.match_id == 0)
 		hdev->mbx_resp.match_id = HCLGEVF_MBX_MATCH_ID_START;
 	memset(hdev->mbx_resp.additional_info, 0, HCLGE_MBX_MAX_RESP_DATA_SIZE);
 }
 
-/* hclgevf_get_mbx_resp: used to get a response from PF after VF sends a mailbox
- * message to PF.
- * @hdev: pointer to struct hclgevf_dev
- * @code0: the message opcode VF send to PF.
- * @code1: the message sub-opcode VF send to PF.
- * @resp_data: pointer to store response data from PF to VF.
- * @resp_len: the length of resp_data from PF to VF.
- */
+ 
 static int hclgevf_get_mbx_resp(struct hclgevf_dev *hdev, u16 code0, u16 code1,
 				u8 *resp_data, u16 resp_len)
 {
@@ -63,7 +54,7 @@ static int hclgevf_get_mbx_resp(struct hclgevf_dev *hdev, u16 code0, u16 code1,
 		i++;
 	}
 
-	/* ensure additional_info will be seen after received_resp */
+	 
 	smp_rmb();
 
 	if (i >= HCLGEVF_MAX_TRY_TIMES) {
@@ -123,7 +114,7 @@ int hclgevf_send_mbx_msg(struct hclgevf_dev *hdev,
 	if (test_bit(HCLGEVF_STATE_NIC_REGISTERED, &hdev->state))
 		trace_hclge_vf_mbx_send(hdev, req);
 
-	/* synchronous send */
+	 
 	if (need_resp) {
 		mutex_lock(&hdev->mbx_resp.mbx_mutex);
 		hclgevf_reset_mbx_resp_status(hdev);
@@ -142,7 +133,7 @@ int hclgevf_send_mbx_msg(struct hclgevf_dev *hdev,
 					      resp_len);
 		mutex_unlock(&hdev->mbx_resp.mbx_mutex);
 	} else {
-		/* asynchronous send */
+		 
 		status = hclgevf_cmd_send(&hdev->hw, &desc, 1);
 		if (status) {
 			dev_err(&hdev->pdev->dev,
@@ -182,15 +173,11 @@ static void hclgevf_handle_mbx_response(struct hclgevf_dev *hdev,
 	memcpy(resp->additional_info, req->msg.resp_data,
 	       HCLGE_MBX_MAX_RESP_DATA_SIZE * sizeof(u8));
 
-	/* ensure additional_info will be seen before setting received_resp */
+	 
 	smp_wmb();
 
 	if (match_id) {
-		/* If match_id is not zero, it means PF support match_id.
-		 * if the match_id is right, VF get the right response, or
-		 * ignore the response. and driver will clear hdev->mbx_resp
-		 * when send next message which need response.
-		 */
+		 
 		if (match_id == resp->match_id)
 			resp->received_resp = true;
 	} else {
@@ -201,9 +188,7 @@ static void hclgevf_handle_mbx_response(struct hclgevf_dev *hdev,
 static void hclgevf_handle_mbx_msg(struct hclgevf_dev *hdev,
 				   struct hclge_mbx_pf_to_vf_cmd *req)
 {
-	/* we will drop the async msg if we find ARQ as full
-	 * and continue with next message
-	 */
+	 
 	if (atomic_read(&hdev->arq.count) >=
 	    HCLGE_MBX_MAX_ARQ_MSG_NUM) {
 		dev_warn(&hdev->pdev->dev,
@@ -212,7 +197,7 @@ static void hclgevf_handle_mbx_msg(struct hclgevf_dev *hdev,
 		return;
 	}
 
-	/* tail the async message in arq */
+	 
 	memcpy(hdev->arq.msg_q[hdev->arq.tail], &req->msg,
 	       HCLGE_MBX_MAX_ARQ_MSG_SIZE * sizeof(u16));
 	hclge_mbx_tail_ptr_move_arq(hdev->arq);
@@ -248,7 +233,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
 				 "dropped invalid mailbox message, code = %u\n",
 				 code);
 
-			/* dropping/not processing this invalid message */
+			 
 			crq->desc[crq->next_to_use].flag = 0;
 			hclge_mbx_ring_ptr_move_crq(crq);
 			continue;
@@ -256,12 +241,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
 
 		trace_hclge_vf_mbx_get(hdev, req);
 
-		/* synchronous messages are time critical and need preferential
-		 * treatment. Therefore, we need to acknowledge all the sync
-		 * responses as quickly as possible so that waiting tasks do not
-		 * timeout and simultaneously queue the async messages for later
-		 * prcessing in context of mailbox task i.e. the slow path.
-		 */
+		 
 		switch (code) {
 		case HCLGE_MBX_PF_VF_RESP:
 			hclgevf_handle_mbx_response(hdev, req);
@@ -283,7 +263,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
 		hclge_mbx_ring_ptr_move_crq(crq);
 	}
 
-	/* Write back CMDQ_RQ header pointer, M7 need this pointer */
+	 
 	hclgevf_write_dev(&hdev->hw, HCLGE_COMM_NIC_CRQ_HEAD_REG,
 			  crq->next_to_use);
 }
@@ -313,7 +293,7 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
 
 	tail = hdev->arq.tail;
 
-	/* process all the async queue messages */
+	 
 	while (tail != hdev->arq.head) {
 		if (test_bit(HCLGE_COMM_STATE_CMD_DISABLE,
 			     &hdev->hw.hw.comm_state)) {
@@ -332,7 +312,7 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
 			duplex = (u8)le16_to_cpu(link_info->duplex);
 			flag = link_info->flag;
 
-			/* update upper layer with new link link status */
+			 
 			hclgevf_update_speed_duplex(hdev, speed, duplex);
 			hclgevf_update_link_status(hdev, link_status);
 
@@ -352,11 +332,7 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
 					le64_to_cpu(link_mode->link_mode);
 			break;
 		case HCLGE_MBX_ASSERTING_RESET:
-			/* PF has asserted reset hence VF should go in pending
-			 * state and poll for the hardware reset status till it
-			 * has been completely reset. After this stack should
-			 * eventually be re-initialized.
-			 */
+			 
 			reset_type =
 				(enum hnae3_reset_type)le16_to_cpu(msg_q[1]);
 			set_bit(reset_type, &hdev->reset_pending);

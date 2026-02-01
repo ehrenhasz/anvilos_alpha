@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) IBM Corporation, 2009
- */
+
+ 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,13 +14,7 @@
 #include <inat.c>
 #include <insn.c>
 
-/*
- * Test of instruction analysis in general and insn_get_length() in
- * particular.  See if insn_get_length() and the disassembler agree
- * on the length of each instruction in an elf disassembly.
- *
- * Usage: objdump -d a.out | awk -f objdump_reformat.awk | ./insn_decoder_test
- */
+ 
 
 const char *prog;
 static int verbose;
@@ -124,7 +115,7 @@ int main(int argc, char **argv)
 		unsigned int b;
 
 		if (line[0] == '<') {
-			/* Symbol line */
+			 
 			strcpy(sym, line);
 			continue;
 		}
@@ -140,7 +131,7 @@ int main(int argc, char **argv)
 		tab2 = strchr(s, '\t');
 		if (!tab2)
 			malformed_line(line, insns);
-		*tab2 = '\0';	/* Characters beyond tab2 aren't examined */
+		*tab2 = '\0';	 
 		while (s < tab2) {
 			if (sscanf(s, "%x", &b) == 1) {
 				insn_buff[nb++] = (unsigned char) b;
@@ -149,7 +140,7 @@ int main(int argc, char **argv)
 				break;
 		}
 
-		/* Decode an instruction */
+		 
 		ret = insn_decode(&insn, insn_buff, sizeof(insn_buff),
 				  x86_64 ? INSN_MODE_64 : INSN_MODE_32);
 

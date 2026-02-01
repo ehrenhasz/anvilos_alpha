@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  USB Wacom tablet support - system specific code
- */
+
+ 
 
 #include "wacom_wac.h"
 #include "wacom.h"
@@ -95,7 +93,7 @@ static int wacom_wac_pen_serial_enforce(struct hid_device *hdev,
 	if (wacom_wac->serial[0] || !(features->quirks & WACOM_QUIRK_TOOLSERIAL))
 		return 0;
 
-	/* Queue events which have invalid tool type or serial number */
+	 
 	for (i = 0; i < report->maxfield; i++) {
 		for (j = 0; j < report->field[i]->maxusage; j++) {
 			struct hid_field *field = report->field[i];
@@ -115,7 +113,7 @@ static int wacom_wac_pen_serial_enforce(struct hid_device *hdev,
 			size = field->report_size;
 			value = hid_field_extract(hdev, raw_data+1, offset + j * size, size);
 
-			/* If we go out of range, we need to flush the queue ASAP */
+			 
 			if (equivalent_usage == HID_DG_INRANGE)
 				value = !value;
 
@@ -182,17 +180,12 @@ static void wacom_close(struct input_dev *dev)
 {
 	struct wacom *wacom = input_get_drvdata(dev);
 
-	/*
-	 * wacom->hdev should never be null, but surprisingly, I had the case
-	 * once while unplugging the Wacom Wireless Receiver.
-	 */
+	 
 	if (wacom->hdev)
 		hid_hw_close(wacom->hdev);
 }
 
-/*
- * Calculate the resolution of the X or Y axis using hidinput_calc_abs_res.
- */
+ 
 static int wacom_calc_hid_res(int logical_extents, int physical_extents,
 			       unsigned unit, int exponent)
 {
@@ -213,10 +206,7 @@ static void wacom_hid_usage_quirk(struct hid_device *hdev,
 	struct wacom_features *features = &wacom->wacom_wac.features;
 	unsigned int equivalent_usage = wacom_equivalent_usage(usage->hid);
 
-	/*
-	 * The Dell Canvas 27 needs to be switched to its vendor-defined
-	 * report to provide the best resolution.
-	 */
+	 
 	if (hdev->vendor == USB_VENDOR_ID_WACOM &&
 	    hdev->product == 0x4200 &&
 	    field->application == HID_UP_MSVENDOR) {
@@ -224,14 +214,7 @@ static void wacom_hid_usage_quirk(struct hid_device *hdev,
 		wacom->wacom_wac.mode_value = 2;
 	}
 
-	/*
-	 * ISDv4 devices which predate HID's adoption of the
-	 * HID_DG_BARELSWITCH2 usage use 0x000D0000 in its
-	 * position instead. We can accurately detect if a
-	 * usage with that value should be HID_DG_BARRELSWITCH2
-	 * based on the surrounding usages, which have remained
-	 * constant across generations.
-	 */
+	 
 	if (features->type == HID_GENERIC &&
 	    usage->hid == 0x000D0000 &&
 	    field->application == HID_DG_PEN &&
@@ -248,14 +231,7 @@ static void wacom_hid_usage_quirk(struct hid_device *hdev,
 		}
 	}
 
-	/*
-	 * Wacom's AES devices use different vendor-defined usages to
-	 * report serial number information compared to their branded
-	 * hardware. The usages are also sometimes ill-defined and do
-	 * not have the correct logical min/max values set. Lets patch
-	 * the descriptor to use the branded usage convention and fix
-	 * the errors.
-	 */
+	 
 	if (usage->hid == WACOM_HID_WT_SERIALNUMBER &&
 	    field->report_size == 16 &&
 	    field->index + 2 < field->report->maxfield) {
@@ -280,7 +256,7 @@ static void wacom_hid_usage_quirk(struct hid_device *hdev,
 		}
 	}
 
-	/* 2nd-generation Intuos Pro Large has incorrect Y maximum */
+	 
 	if (hdev->vendor == USB_VENDOR_ID_WACOM &&
 	    hdev->product == 0x0358 &&
 	    WACOM_PEN_FIELD(field) &&
@@ -307,9 +283,9 @@ static void wacom_feature_mapping(struct hid_device *hdev,
 		wacom->generic_has_leds = true;
 		break;
 	case HID_DG_CONTACTMAX:
-		/* leave touch_max as is if predefined */
+		 
 		if (!features->touch_max) {
-			/* read manually */
+			 
 			n = hid_report_len(field->report);
 			data = hid_alloc_report_buf(field->report, GFP_KERNEL);
 			if (!data)
@@ -333,7 +309,7 @@ static void wacom_feature_mapping(struct hid_device *hdev,
 		}
 		break;
 	case HID_DG_INPUTMODE:
-		/* Ignore if value index is out of bounds. */
+		 
 		if (usage->usage_index >= field->report_count) {
 			dev_err(&hdev->dev, "HID_DG_INPUTMODE out of range\n");
 			break;
@@ -370,7 +346,7 @@ static void wacom_feature_mapping(struct hid_device *hdev,
 	case WACOM_HID_WD_OFFSETTOP:
 	case WACOM_HID_WD_OFFSETRIGHT:
 	case WACOM_HID_WD_OFFSETBOTTOM:
-		/* read manually */
+		 
 		n = hid_report_len(field->report);
 		data = hid_alloc_report_buf(field->report, GFP_KERNEL);
 		if (!data)
@@ -390,38 +366,7 @@ static void wacom_feature_mapping(struct hid_device *hdev,
 	}
 }
 
-/*
- * Interface Descriptor of wacom devices can be incomplete and
- * inconsistent so wacom_features table is used to store stylus
- * device's packet lengths, various maximum values, and tablet
- * resolution based on product ID's.
- *
- * For devices that contain 2 interfaces, wacom_features table is
- * inaccurate for the touch interface.  Since the Interface Descriptor
- * for touch interfaces has pretty complete data, this function exists
- * to query tablet for this missing information instead of hard coding in
- * an additional table.
- *
- * A typical Interface Descriptor for a stylus will contain a
- * boot mouse application collection that is not of interest and this
- * function will ignore it.
- *
- * It also contains a digitizer application collection that also is not
- * of interest since any information it contains would be duplicate
- * of what is in wacom_features. Usually it defines a report of an array
- * of bytes that could be used as max length of the stylus packet returned.
- * If it happens to define a Digitizer-Stylus Physical Collection then
- * the X and Y logical values contain valid data but it is ignored.
- *
- * A typical Interface Descriptor for a touch interface will contain a
- * Digitizer-Finger Physical Collection which will define both logical
- * X/Y maximum as well as the physical size of tablet. Since touch
- * interfaces haven't supported pressure or distance, this is enough
- * information to override invalid values in the wacom_features table.
- *
- * Intuos5 touch interface and 3rd gen Bamboo Touch do not contain useful
- * data. We deal with them after returning from this function.
- */
+ 
 static void wacom_usage_mapping(struct hid_device *hdev,
 		struct hid_field *field, struct hid_usage *usage)
 {
@@ -431,11 +376,7 @@ static void wacom_usage_mapping(struct hid_device *hdev,
 	bool pen = WACOM_PEN_FIELD(field);
 	unsigned equivalent_usage = wacom_equivalent_usage(usage->hid);
 
-	/*
-	* Requiring Stylus Usage will ignore boot mouse
-	* X/Y values and some cases of invalid Digitizer X/Y
-	* values commonly reported.
-	*/
+	 
 	if (pen)
 		features->device_type |= WACOM_DEVICETYPE_PEN;
 	else if (finger)
@@ -485,7 +426,7 @@ static void wacom_post_parse_hid(struct hid_device *hdev,
 	struct wacom_wac *wacom_wac = &wacom->wacom_wac;
 
 	if (features->type == HID_GENERIC) {
-		/* Any last-minute generic device setup */
+		 
 		if (wacom_wac->has_mode_change) {
 			if (wacom_wac->is_direct_mode)
 				features->device_type |= WACOM_DEVICETYPE_DIRECT;
@@ -513,11 +454,11 @@ static void wacom_parse_hid(struct hid_device *hdev,
 	struct hid_report *hreport;
 	int i, j;
 
-	/* check features first */
+	 
 	rep_enum = &hdev->report_enum[HID_FEATURE_REPORT];
 	list_for_each_entry(hreport, &rep_enum->report_list, list) {
 		for (i = 0; i < hreport->maxfield; i++) {
-			/* Ignore if report count is out of bounds. */
+			 
 			if (hreport->field[i]->report_count < 1)
 				continue;
 
@@ -528,7 +469,7 @@ static void wacom_parse_hid(struct hid_device *hdev,
 		}
 	}
 
-	/* now check the input usages */
+	 
 	rep_enum = &hdev->report_enum[HID_INPUT_REPORT];
 	list_for_each_entry(hreport, &rep_enum->report_list, list) {
 
@@ -631,10 +572,7 @@ static int wacom_bt_query_tablet_data(struct hid_device *hdev, u8 speed,
 			}
 		}
 
-		/*
-		 * Note that if the raw queries fail, it's not a hard failure
-		 * and it is safe to continue
-		 */
+		 
 		hid_warn(hdev, "failed to poke device, command %d, err %d\n",
 			 rep_data[0], ret);
 		break;
@@ -657,13 +595,7 @@ static int wacom_bt_query_tablet_data(struct hid_device *hdev, u8 speed,
 	return 0;
 }
 
-/*
- * Switch the tablet into its most-capable mode. Wacom tablets are
- * typically configured to power-up in a mode which sends mouse-like
- * reports to the OS. To get absolute position, pressure data, etc.
- * from the tablet, it is necessary to switch the tablet out of this
- * mode and into one which sends the full range of tablet data.
- */
+ 
 static int _wacom_query_tablet_data(struct wacom *wacom)
 {
 	struct hid_device *hdev = wacom->hdev;
@@ -676,7 +608,7 @@ static int _wacom_query_tablet_data(struct wacom *wacom)
 	if (features->type != HID_GENERIC) {
 		if (features->device_type & WACOM_DEVICETYPE_TOUCH) {
 			if (features->type > TABLETPC) {
-				/* MT Tablet PC touch */
+				 
 				wacom_wac->mode_report = 3;
 				wacom_wac->mode_value = 4;
 			} else if (features->type == WACOM_24HDT) {
@@ -711,19 +643,14 @@ static void wacom_retrieve_hid_descriptor(struct hid_device *hdev,
 	struct wacom *wacom = hid_get_drvdata(hdev);
 	struct usb_interface *intf = wacom->intf;
 
-	/* default features */
+	 
 	features->x_fuzz = 4;
 	features->y_fuzz = 4;
 	features->pressure_fuzz = 0;
 	features->distance_fuzz = 1;
 	features->tilt_fuzz = 1;
 
-	/*
-	 * The wireless device HID is basic and layout conflicts with
-	 * other tablets (monitor and touch interface can look like pen).
-	 * Skip the query for this type and modify defaults based on
-	 * interface number.
-	 */
+	 
 	if (features->type == WIRELESS && intf) {
 		if (intf->cur_altsetting->desc.bInterfaceNumber == 0)
 			features->device_type = WACOM_DEVICETYPE_WL_MONITOR;
@@ -755,17 +682,13 @@ static bool wacom_are_sibling(struct hid_device *hdev,
 	__u32 oVid = features->oVid ? features->oVid : hdev->vendor;
 	__u32 oPid = features->oPid ? features->oPid : hdev->product;
 
-	/* The defined oVid/oPid must match that of the sibling */
+	 
 	if (features->oVid != HID_ANY_ID && sibling->vendor != oVid)
 		return false;
 	if (features->oPid != HID_ANY_ID && sibling->product != oPid)
 		return false;
 
-	/*
-	 * Devices with the same VID/PID must share the same physical
-	 * device path, while those with different VID/PID must share
-	 * the same physical parent device path.
-	 */
+	 
 	if (hdev->vendor == sibling->vendor && hdev->product == sibling->product) {
 		if (!hid_compare_device_paths(hdev, sibling, '/'))
 			return false;
@@ -774,40 +697,31 @@ static bool wacom_are_sibling(struct hid_device *hdev,
 			return false;
 	}
 
-	/* Skip the remaining heuristics unless you are a HID_GENERIC device */
+	 
 	if (features->type != HID_GENERIC)
 		return true;
 
-	/*
-	 * Direct-input devices may not be siblings of indirect-input
-	 * devices.
-	 */
+	 
 	if ((features->device_type & WACOM_DEVICETYPE_DIRECT) &&
 	    !(sibling_features->device_type & WACOM_DEVICETYPE_DIRECT))
 		return false;
 
-	/*
-	 * Indirect-input devices may not be siblings of direct-input
-	 * devices.
-	 */
+	 
 	if (!(features->device_type & WACOM_DEVICETYPE_DIRECT) &&
 	    (sibling_features->device_type & WACOM_DEVICETYPE_DIRECT))
 		return false;
 
-	/* Pen devices may only be siblings of touch devices */
+	 
 	if ((features->device_type & WACOM_DEVICETYPE_PEN) &&
 	    !(sibling_features->device_type & WACOM_DEVICETYPE_TOUCH))
 		return false;
 
-	/* Touch devices may only be siblings of pen devices */
+	 
 	if ((features->device_type & WACOM_DEVICETYPE_TOUCH) &&
 	    !(sibling_features->device_type & WACOM_DEVICETYPE_PEN))
 		return false;
 
-	/*
-	 * No reason could be found for these two devices to NOT be
-	 * siblings, so there's a good chance they ARE siblings
-	 */
+	 
 	return true;
 }
 
@@ -815,7 +729,7 @@ static struct wacom_hdev_data *wacom_get_hdev_data(struct hid_device *hdev)
 {
 	struct wacom_hdev_data *data;
 
-	/* Try to find an already-probed interface from the same device */
+	 
 	list_for_each_entry(data, &wacom_udev_list, list) {
 		if (hid_compare_device_paths(hdev, data->dev, '/')) {
 			kref_get(&data->kref);
@@ -823,7 +737,7 @@ static struct wacom_hdev_data *wacom_get_hdev_data(struct hid_device *hdev)
 		}
 	}
 
-	/* Fallback to finding devices that appear to be "siblings" */
+	 
 	list_for_each_entry(data, &wacom_udev_list, list) {
 		if (wacom_are_sibling(hdev, data->dev)) {
 			kref_get(&data->kref);
@@ -917,7 +831,7 @@ static int wacom_led_control(struct wacom *wacom)
 	if (wacom->wacom_wac.features.type == REMOTE)
 		return -ENOTSUPP;
 
-	if (wacom->wacom_wac.pid) { /* wireless connected */
+	if (wacom->wacom_wac.pid) {  
 		report_id = WAC_CMD_WL_LED_CONTROL;
 		buf_size = 13;
 	}
@@ -936,11 +850,7 @@ static int wacom_led_control(struct wacom *wacom)
 
 	} else if ((wacom->wacom_wac.features.type >= INTUOS5S &&
 	    wacom->wacom_wac.features.type <= INTUOSPL)) {
-		/*
-		 * Touch Ring and crop mark LED luminance may take on
-		 * one of four values:
-		 *    0 = Low; 1 = Medium; 2 = High; 3 = Off
-		 */
+		 
 		int ring_led = wacom->led.groups[0].select & 0x03;
 		int ring_lum = (((wacom->led.llv & 0x60) >> 5) - 1) & 0x03;
 		int crop_lum = 0;
@@ -957,11 +867,11 @@ static int wacom_led_control(struct wacom *wacom)
 	}
 	else if (wacom->wacom_wac.features.type == INTUOSP2_BT) {
 		buf[0] = report_id;
-		buf[4] = 100; // Power Connection LED (ORANGE)
-		buf[5] = 100; // BT Connection LED (BLUE)
-		buf[6] = 100; // Paper Mode (RED?)
-		buf[7] = 100; // Paper Mode (GREEN?)
-		buf[8] = 100; // Paper Mode (BLUE?)
+		buf[4] = 100;  
+		buf[5] = 100;  
+		buf[6] = 100;  
+		buf[7] = 100;  
+		buf[8] = 100;  
 		buf[9] = wacom->led.llv;
 		buf[10] = wacom->led.groups[0].select & 0x03;
 	}
@@ -991,13 +901,13 @@ static int wacom_led_putimage(struct wacom *wacom, int button_id, u8 xfer_id,
 {
 	unsigned char *buf;
 	int i, retval;
-	const unsigned chunk_len = len / 4; /* 4 chunks are needed to be sent */
+	const unsigned chunk_len = len / 4;  
 
 	buf = kzalloc(chunk_len + 3 , GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
-	/* Send 'start' command */
+	 
 	buf[0] = WAC_CMD_ICON_START;
 	buf[1] = 1;
 	retval = wacom_set_report(wacom->hdev, HID_FEATURE_REPORT, buf, 2,
@@ -1017,7 +927,7 @@ static int wacom_led_putimage(struct wacom *wacom, int button_id, u8 xfer_id,
 			break;
 	}
 
-	/* Send 'stop' */
+	 
 	buf[0] = WAC_CMD_ICON_START;
 	buf[1] = 0;
 	wacom_set_report(wacom->hdev, HID_FEATURE_REPORT, buf, 2,
@@ -1307,7 +1217,7 @@ enum led_brightness wacom_leds_brightness_get(struct wacom_led *led)
 	if (wacom->led.max_llv)
 		return led->llv * LED_FULL / wacom->led.max_llv;
 
-	/* device doesn't support brightness tuning */
+	 
 	return LED_FULL;
 }
 
@@ -1450,15 +1360,7 @@ static int wacom_led_groups_alloc_and_register_one(struct device *dev,
 
 	devres_close_group(dev, &wacom->led.groups[group_id]);
 
-	/*
-	 * There is a bug (?) in devm_led_classdev_register() in which its
-	 * increments the refcount of the parent. If the parent is an input
-	 * device, that means the ref count never reaches 0 when
-	 * devm_input_device_release() gets called.
-	 * This means that the LEDs are still there after disconnect.
-	 * Manually force the release of the group so that the leds are released
-	 * once we are done using them.
-	 */
+	 
 	error = devm_add_action_or_reset(&wacom->hdev->dev,
 					 wacom_led_groups_release_one,
 					 &wacom->led.groups[group_id]);
@@ -1490,12 +1392,7 @@ struct wacom_led *wacom_led_find(struct wacom *wacom, unsigned int group_id,
 	return &group->leds[id];
 }
 
-/*
- * wacom_led_next: gives the next available led with a wacom trigger.
- *
- * returns the next available struct wacom_led which has its default trigger
- * or the current one if none is available.
- */
+ 
 struct wacom_led *wacom_led_next(struct wacom *wacom, struct wacom_led *cur)
 {
 	struct wacom_led *next_led;
@@ -1578,7 +1475,7 @@ int wacom_initialize_leds(struct wacom *wacom)
 	if (!(wacom->wacom_wac.features.device_type & WACOM_DEVICETYPE_PAD))
 		return 0;
 
-	/* Initialize default values */
+	 
 	switch (wacom->wacom_wac.features.type) {
 	case HID_GENERIC:
 		if (!wacom->generic_has_leds)
@@ -2095,7 +1992,7 @@ static int wacom_register_inputs(struct wacom *wacom)
 
 	error = wacom_setup_pen_input_capabilities(pen_input_dev, wacom_wac);
 	if (error) {
-		/* no pen in use on this interface */
+		 
 		input_free_device(pen_input_dev);
 		wacom_wac->pen_input = NULL;
 		pen_input_dev = NULL;
@@ -2107,7 +2004,7 @@ static int wacom_register_inputs(struct wacom *wacom)
 
 	error = wacom_setup_touch_input_capabilities(touch_input_dev, wacom_wac);
 	if (error) {
-		/* no touch in use on this interface */
+		 
 		input_free_device(touch_input_dev);
 		wacom_wac->touch_input = NULL;
 		touch_input_dev = NULL;
@@ -2119,7 +2016,7 @@ static int wacom_register_inputs(struct wacom *wacom)
 
 	error = wacom_setup_pad_input_capabilities(pad_input_dev, wacom_wac);
 	if (error) {
-		/* no pad events using this interface */
+		 
 		input_free_device(pad_input_dev);
 		wacom_wac->pad_input = NULL;
 		pad_input_dev = NULL;
@@ -2138,11 +2035,7 @@ fail:
 	return error;
 }
 
-/*
- * Not all devices report physical dimensions from HID.
- * Compute the default from hardcoded logical dimension
- * and resolution before driver overwrites them.
- */
+ 
 static void wacom_set_default_phy(struct wacom_features *features)
 {
 	if (features->x_resolution) {
@@ -2155,7 +2048,7 @@ static void wacom_set_default_phy(struct wacom_features *features)
 
 static void wacom_calculate_res(struct wacom_features *features)
 {
-	/* set unit to "100th of a mm" for devices not reported by HID */
+	 
 	if (!features->unit) {
 		features->unit = 0x11;
 		features->unitExpo = -3;
@@ -2206,9 +2099,9 @@ static void wacom_update_name(struct wacom *wacom, const char *suffix)
 {
 	struct wacom_wac *wacom_wac = &wacom->wacom_wac;
 	struct wacom_features *features = &wacom_wac->features;
-	char name[WACOM_NAME_MAX - 20]; /* Leave some room for suffixes */
+	char name[WACOM_NAME_MAX - 20];  
 
-	/* Generic devices name unspecified */
+	 
 	if ((features->type == HID_GENERIC) && !strcmp("Wacom HID", features->name)) {
 		char *product_name = wacom->hdev->name;
 
@@ -2231,16 +2124,16 @@ static void wacom_update_name(struct wacom *wacom, const char *suffix)
 			snprintf(name, sizeof(name), "Wacom %s", product_name);
 		}
 
-		/* strip out excess whitespaces */
+		 
 		while (1) {
 			char *gap = strstr(name, "  ");
 			if (gap == NULL)
 				break;
-			/* shift everything including the terminator */
+			 
 			memmove(gap, gap+1, strlen(gap));
 		}
 
-		/* get rid of trailing whitespace */
+		 
 		if (name[strlen(name)-1] == ' ')
 			name[strlen(name)-1] = '\0';
 	} else {
@@ -2252,7 +2145,7 @@ static void wacom_update_name(struct wacom *wacom, const char *suffix)
 	snprintf(wacom_wac->name, sizeof(wacom_wac->name), "%s%s",
 		 name, suffix);
 
-	/* Append the device type to the name */
+	 
 	snprintf(wacom_wac->pen_name, sizeof(wacom_wac->pen_name),
 		"%s%s Pen", name, suffix);
 	snprintf(wacom_wac->touch_name, sizeof(wacom_wac->touch_name),
@@ -2286,11 +2179,7 @@ static void wacom_set_shared_values(struct wacom_wac *wacom_wac)
 
 	if (wacom_wac->has_mute_touch_switch) {
 		wacom_wac->shared->has_mute_touch_switch = true;
-		/* Hardware touch switch may be off. Wait until
-		 * we know the switch state to decide is_touch_on.
-		 * Softkey state should be initialized to "on" to
-		 * match historic default.
-		 */
+		 
 		if (wacom_wac->is_soft_touch_switch)
 			wacom_wac->shared->is_touch_on = true;
 	}
@@ -2324,11 +2213,7 @@ static int wacom_parse_and_register(struct wacom *wacom, bool wireless)
 	if (error)
 		goto fail;
 
-	/*
-	 * Bamboo Pad has a generic hid handling for the Pen, and we switch it
-	 * into debug mode for the touch part.
-	 * We ignore the other interfaces.
-	 */
+	 
 	if (features->type == BAMBOO_PAD) {
 		if (features->pktlen == WACOM_PKGLEN_PENABLED) {
 			features->type = HID_GENERIC;
@@ -2339,10 +2224,10 @@ static int wacom_parse_and_register(struct wacom *wacom, bool wireless)
 		}
 	}
 
-	/* set the default size in case we do not get them from hid */
+	 
 	wacom_set_default_phy(features);
 
-	/* Retrieve the physical and logical size for touch devices */
+	 
 	wacom_retrieve_hid_descriptor(hdev, features);
 	wacom_setup_device_quirks(wacom);
 
@@ -2364,7 +2249,7 @@ static int wacom_parse_and_register(struct wacom *wacom, bool wireless)
 
 	wacom_update_name(wacom, wireless ? " (WL)" : "");
 
-	/* pen only Bamboo neither support touch nor pad */
+	 
 	if ((features->type == BAMBOO_PEN) &&
 	    ((features->device_type & WACOM_DEVICETYPE_TOUCH) ||
 	    (features->device_type & WACOM_DEVICETYPE_PAD))) {
@@ -2393,7 +2278,7 @@ static int wacom_parse_and_register(struct wacom *wacom, bool wireless)
 	if (features->type == HID_GENERIC)
 		connect_mask |= HID_CONNECT_DRIVER;
 
-	/* Regular HID work starts now */
+	 
 	error = hid_hw_start(hdev, connect_mask);
 	if (error) {
 		hid_err(hdev, "hw start failed\n");
@@ -2401,11 +2286,11 @@ static int wacom_parse_and_register(struct wacom *wacom, bool wireless)
 	}
 
 	if (!wireless) {
-		/* Note that if query fails it is not a hard failure */
+		 
 		wacom_query_tablet_data(wacom);
 	}
 
-	/* touch only Bamboo doesn't support pen */
+	 
 	if ((features->type == BAMBOO_TOUCH) &&
 	    (features->device_type & WACOM_DEVICETYPE_PEN)) {
 		cancel_delayed_work_sync(&wacom->init_work);
@@ -2444,23 +2329,20 @@ static void wacom_wireless_work(struct work_struct *work)
 	struct wacom_wac *wacom_wac1, *wacom_wac2;
 	int error;
 
-	/*
-	 * Regardless if this is a disconnect or a new tablet,
-	 * remove any existing input and battery devices.
-	 */
+	 
 
 	wacom_destroy_battery(wacom);
 
 	if (!usbdev)
 		return;
 
-	/* Stylus interface */
+	 
 	hdev1 = usb_get_intfdata(usbdev->config->interface[1]);
 	wacom1 = hid_get_drvdata(hdev1);
 	wacom_wac1 = &(wacom1->wacom_wac);
 	wacom_release_resources(wacom1);
 
-	/* Touch interface */
+	 
 	hdev2 = usb_get_intfdata(usbdev->config->interface[2]);
 	wacom2 = hid_get_drvdata(hdev2);
 	wacom_wac2 = &(wacom2->wacom_wac);
@@ -2486,7 +2368,7 @@ static void wacom_wireless_work(struct work_struct *work)
 			return;
 		}
 
-		/* Stylus interface */
+		 
 		wacom_wac1->features =
 			*((struct wacom_features *)id->driver_data);
 
@@ -2496,7 +2378,7 @@ static void wacom_wireless_work(struct work_struct *work)
 		if (error)
 			goto fail;
 
-		/* Touch interface */
+		 
 		if (wacom_wac1->features.touch_max ||
 		    (wacom_wac1->features.type >= INTUOSHT &&
 		    wacom_wac1->features.type <= BAMBOO_PT)) {
@@ -2569,9 +2451,7 @@ static int wacom_remote_create_one(struct wacom *wacom, u32 serial,
 	struct device *dev = &wacom->hdev->dev;
 	int error, k;
 
-	/* A remote can pair more than once with an EKR,
-	 * check to make sure this serial isn't already paired.
-	 */
+	 
 	for (k = 0; k < WACOM_MAX_REMOTES; k++) {
 		if (remote->remotes[k].serial == serial)
 			break;
@@ -2760,7 +2640,7 @@ static int wacom_probe(struct hid_device *hdev,
 
 	hdev->quirks |= HID_QUIRK_NO_INIT_REPORTS;
 
-	/* hid-core sets this quirk for the boot interface */
+	 
 	hdev->quirks &= ~HID_QUIRK_NOGET;
 
 	wacom = devm_kzalloc(&hdev->dev, sizeof(struct wacom), GFP_KERNEL);
@@ -2800,7 +2680,7 @@ static int wacom_probe(struct hid_device *hdev,
 	INIT_WORK(&wacom->mode_change_work, wacom_mode_change_work);
 	timer_setup(&wacom->idleprox_timer, &wacom_idleprox_timeout, TIMER_DEFERRABLE);
 
-	/* ask for the report descriptor to be loaded by HID */
+	 
 	error = hid_parse(hdev);
 	if (error) {
 		hid_err(hdev, "parse failed\n");
@@ -2848,7 +2728,7 @@ static void wacom_remove(struct hid_device *hdev)
 	if (hdev->bus == BUS_BLUETOOTH)
 		device_remove_file(&hdev->dev, &dev_attr_speed);
 
-	/* make sure we don't trigger the LEDs */
+	 
 	wacom_led_groups_release(wacom);
 
 	if (wacom->wacom_wac.features.type != REMOTE)
@@ -2862,7 +2742,7 @@ static int wacom_resume(struct hid_device *hdev)
 
 	mutex_lock(&wacom->lock);
 
-	/* switch to wacom mode first */
+	 
 	_wacom_query_tablet_data(wacom);
 	wacom_led_control(wacom);
 
@@ -2875,7 +2755,7 @@ static int wacom_reset_resume(struct hid_device *hdev)
 {
 	return wacom_resume(hdev);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static struct hid_driver wacom_driver = {
 	.name =		"wacom",

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2019 - 2021 Intel Corporation */
+ 
+ 
 #if !defined(__TRACE_CM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __TRACE_CM_H
 
@@ -451,7 +451,7 @@ DEFINE_EVENT(cm_node_ah_template, irdma_create_ah,
 	     TP_PROTO(struct irdma_cm_node *cm_node),
 	     TP_ARGS(cm_node));
 
-#endif  /* __TRACE_CM_H */
+#endif   
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

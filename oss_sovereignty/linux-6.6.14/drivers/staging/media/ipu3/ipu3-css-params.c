@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include <linux/device.h>
 
@@ -15,10 +15,10 @@
 #define IPU3_UAPI_ANR_MIN_RESET		(((-1) << 12) + 1)
 
 struct imgu_css_scaler_info {
-	unsigned int phase_step;	/* Same for luma/chroma */
+	unsigned int phase_step;	 
 	int exp_shift;
 
-	unsigned int phase_init;	/* luma/chroma dependent */
+	unsigned int phase_init;	 
 	int pad_left;
 	int pad_right;
 	int crop_left;
@@ -39,7 +39,7 @@ static unsigned int imgu_css_scaler_get_exp(unsigned int counter,
 	return i;
 }
 
-/* Set up the CSS scaler look up table */
+ 
 static void
 imgu_css_scaler_setup_lut(unsigned int taps, unsigned int input_width,
 			  unsigned int output_width, int phase_step_correction,
@@ -72,13 +72,13 @@ imgu_css_scaler_setup_lut(unsigned int taps, unsigned int input_width,
 	for (phase = 0; phase < IMGU_SCALER_PHASES; phase++) {
 		phase_taps = phase * IMGU_SCALER_FILTER_TAPS;
 		for (tap = 0; tap < taps; tap++) {
-			/* flip table to for convolution reverse indexing */
+			 
 			s64 coeff = coeffs[coeffs_size -
 				((tap * (coeffs_size / taps)) + phase) - 1];
 			coeff *= mantissa;
 			coeff = div64_long(coeff, input_width);
 
-			/* Add +"0.5" */
+			 
 			coeff += 1 << (IMGU_SCALER_COEFF_BITS - 1);
 			coeff >>= IMGU_SCALER_COEFF_BITS;
 			coeff_lut[phase_taps + tap] = coeff;
@@ -107,10 +107,7 @@ imgu_css_scaler_setup_lut(unsigned int taps, unsigned int input_width,
 	info->crop_top = taps - 1;
 }
 
-/*
- * Calculates the exact output image width/height, based on phase_step setting
- * (must be perfectly aligned with hardware).
- */
+ 
 static unsigned int
 imgu_css_scaler_calc_scaled_output(unsigned int input,
 				   struct imgu_css_scaler_info *info)
@@ -126,10 +123,7 @@ imgu_css_scaler_calc_scaled_output(unsigned int input,
 		IMGU_SCALER_FIR_PHASES) / (2 * IMGU_SCALER_FIR_PHASES)) * 2;
 }
 
-/*
- * Calculate the output width and height, given the luma
- * and chroma details of a scaler
- */
+ 
 static void
 imgu_css_scaler_calc(u32 input_width, u32 input_height, u32 target_width,
 		     u32 target_height, struct imgu_abi_osys_config *cfg,
@@ -143,11 +137,7 @@ imgu_css_scaler_calc(u32 input_width, u32 input_height, u32 target_width,
 	const unsigned int height_alignment = 2;
 	int phase_step_correction = -1;
 
-	/*
-	 * Calculate scaled output width. If the horizontal and vertical scaling
-	 * factor is different, then choose the biggest and crop off excess
-	 * lines or columns after formatting.
-	 */
+	 
 	if (target_height * input_width > target_width * input_height)
 		target_width = DIV_ROUND_UP(target_height * input_width,
 					    input_height);
@@ -190,7 +180,7 @@ imgu_css_scaler_calc(u32 input_width, u32 input_height, u32 target_width,
 	*output_height = out_height;
 }
 
-/********************** Osys routines for scaler****************************/
+ 
 
 static void imgu_css_osys_set_format(enum imgu_abi_frame_format host_format,
 				     unsigned int *osys_format,
@@ -220,15 +210,12 @@ static void imgu_css_osys_set_format(enum imgu_abi_frame_format host_format,
 		*osys_tiling = IMGU_ABI_OSYS_TILING_Y;
 		break;
 	default:
-		/* For now, assume use default values */
+		 
 		break;
 	}
 }
 
-/*
- * Function calculates input frame stripe offset, based
- * on output frame stripe offset and filter parameters.
- */
+ 
 static int imgu_css_osys_calc_stripe_offset(int stripe_offset_out,
 					    int fir_phases, int phase_init,
 					    int phase_step, int pad_left)
@@ -239,10 +226,7 @@ static int imgu_css_osys_calc_stripe_offset(int stripe_offset_out,
 	return DIV_ROUND_UP(stripe_offset_inp - phase_init, phase_step);
 }
 
-/*
- * Calculate input frame phase, given the output frame
- * stripe offset and filter parameters
- */
+ 
 static int imgu_css_osys_calc_stripe_phase_init(int stripe_offset_out,
 						int fir_phases, int phase_init,
 						int phase_step, int pad_left)
@@ -256,10 +240,7 @@ static int imgu_css_osys_calc_stripe_phase_init(int stripe_offset_out,
 		stripe_offset_out * fir_phases;
 }
 
-/*
- * This function calculates input frame stripe width,
- * based on output frame stripe offset and filter parameters
- */
+ 
 static int imgu_css_osys_calc_inp_stripe_width(int stripe_width_out,
 					       int fir_phases, int phase_init,
 					       int phase_step, int fir_taps,
@@ -273,10 +254,7 @@ static int imgu_css_osys_calc_inp_stripe_width(int stripe_width_out,
 	return stripe_width_inp - pad_left - pad_right;
 }
 
-/*
- * This function calculates output frame stripe width, basedi
- * on output frame stripe offset and filter parameters
- */
+ 
 static int imgu_css_osys_out_stripe_width(int stripe_width_inp, int fir_phases,
 					  int phase_init, int phase_step,
 					  int fir_taps, int pad_left,
@@ -305,7 +283,7 @@ struct imgu_css_reso {
 };
 
 struct imgu_css_frame_params {
-	/* Output pins */
+	 
 	unsigned int enable;
 	unsigned int format;
 	unsigned int flip;
@@ -353,10 +331,7 @@ struct imgu_css_stripe_params {
 	int output_offset[IMGU_ABI_OSYS_PINS];
 };
 
-/*
- * frame_params - size IMGU_ABI_OSYS_PINS
- * stripe_params - size IPU3_UAPI_MAX_STRIPES
- */
+ 
 static int imgu_css_osys_calc_frame_and_stripe_params(
 		struct imgu_css *css, unsigned int stripes,
 		struct imgu_abi_osys_config *osys,
@@ -377,12 +352,12 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 	target_width = css_pipe->queue[IPU3_CSS_QUEUE_VF].fmt.mpix.width;
 	target_height = css_pipe->queue[IPU3_CSS_QUEUE_VF].fmt.mpix.height;
 
-	/* Frame parameters */
+	 
 
-	/* Input width for Output System is output width of DVS (with GDC) */
+	 
 	reso.input_width = css_pipe->rect[IPU3_CSS_RECT_GDC].width;
 
-	/* Input height for Output System is output height of DVS (with GDC) */
+	 
 	reso.input_height = css_pipe->rect[IPU3_CSS_RECT_GDC].height;
 
 	reso.input_format =
@@ -406,7 +381,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 	reso.pin_format[IMGU_ABI_OSYS_PIN_VF] =
 		css_pipe->queue[IPU3_CSS_QUEUE_VF].css_fmt->frame_format;
 
-	/* Configure the frame parameters for all output pins */
+	 
 
 	frame_params[IMGU_ABI_OSYS_PIN_OUT].width =
 		css_pipe->queue[IPU3_CSS_QUEUE_OUT].fmt.mpix.width;
@@ -434,12 +409,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 				if (reso.input_width < reso.pin_width[pin] ||
 				    reso.input_height < reso.pin_height[pin])
 					return -EINVAL;
-				/*
-				 * When input and output resolution is
-				 * different instead of scaling, cropping
-				 * should happen. Determine the crop factor
-				 * to do the symmetric cropping
-				 */
+				 
 				frame_params[pin].crop_left = roundclosest_down(
 						(reso.input_width -
 						 reso.pin_width[pin]) / 2,
@@ -451,14 +421,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 			} else {
 				if (reso.pin_width[pin] != reso.input_width ||
 				    reso.pin_height[pin] != reso.input_height) {
-					/*
-					 * If resolution is different at input
-					 * and output of OSYS, scaling is
-					 * considered except when pin is MAIN.
-					 * Later it will be decide whether
-					 * scaler factor is 1 or other
-					 * and cropping has to be done or not.
-					 */
+					 
 					scaled = 1;
 				}
 			}
@@ -482,34 +445,27 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 	output_width = reso.pin_width[IMGU_ABI_OSYS_PIN_VF];
 
 	if (output_width < reso.input_width / 2) {
-		/* Scaling factor <= 0.5 */
+		 
 		reso.chunk_width = IMGU_OSYS_BLOCK_WIDTH;
 		reso.block_width = IMGU_OSYS_BLOCK_WIDTH;
-	} else { /* 0.5 <= Scaling factor <= 1.0 */
+	} else {  
 		reso.chunk_width = IMGU_OSYS_BLOCK_WIDTH / 2;
 		reso.block_width = IMGU_OSYS_BLOCK_WIDTH;
 	}
 
 	if (output_width <= reso.input_width * 7 / 8) {
-		/* Scaling factor <= 0.875 */
+		 
 		reso.chunk_height = IMGU_OSYS_BLOCK_HEIGHT;
 		reso.block_height = IMGU_OSYS_BLOCK_HEIGHT;
-	} else { /* 1.0 <= Scaling factor <= 1.75 */
+	} else {  
 		reso.chunk_height = IMGU_OSYS_BLOCK_HEIGHT / 2;
 		reso.block_height = IMGU_OSYS_BLOCK_HEIGHT;
 	}
 
-	/*
-	 * Calculate scaler configuration parameters based on input and output
-	 * resolution.
-	 */
+	 
 
 	if (frame_params[IMGU_ABI_OSYS_PIN_VF].enable) {
-		/*
-		 * When aspect ratio is different between target resolution and
-		 * required resolution, determine the crop factor to do
-		 * symmetric cropping
-		 */
+		 
 		u32 w = reso.pin_width[IMGU_ABI_OSYS_PIN_VF] -
 			frame_params[IMGU_ABI_OSYS_PIN_VF].width;
 		u32 h = reso.pin_height[IMGU_ABI_OSYS_PIN_VF] -
@@ -527,19 +483,12 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 		}
 	}
 
-	/* Stripe parameters */
+	 
 
 	if (frame_params[IMGU_ABI_OSYS_PIN_VF].enable) {
 		output_width = reso.pin_width[IMGU_ABI_OSYS_PIN_VF];
 	} else {
-		/*
-		 * in case scaler output is not enabled
-		 * take output width as input width since
-		 * there is no scaling at main pin.
-		 * Due to the fact that main pin can be different
-		 * from input resolution to osys in the case of cropping,
-		 * main pin resolution is not taken.
-		 */
+		 
 		output_width = reso.input_width;
 	}
 
@@ -570,7 +519,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 
 		if (stripes > 1) {
 			if (s > 0) {
-				/* Calculate stripe offsets */
+				 
 				stripe_offset_out_y =
 					output_width * s / stripes;
 				stripe_offset_out_y =
@@ -593,7 +542,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 						scaler_chroma->phase_step,
 						scaler_chroma->pad_left);
 
-				/* Calculate stripe phase init */
+				 
 				stripe_phase_init_y =
 					imgu_css_osys_calc_stripe_phase_init(
 						stripe_offset_out_y,
@@ -609,10 +558,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 						scaler_chroma->phase_step,
 						scaler_chroma->pad_left);
 
-				/*
-				 * Chunk boundary corner case - luma and chroma
-				 * start from different input chunks.
-				 */
+				 
 				chunk_floor_y = rounddown(stripe_offset_inp_y,
 							  reso.chunk_width);
 				chunk_floor_uv =
@@ -622,11 +568,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 
 				if (chunk_floor_y != chunk_floor_uv *
 				    IMGU_LUMA_TO_CHROMA_RATIO) {
-					/*
-					 * Match starting luma/chroma chunks.
-					 * Decrease offset for UV and add output
-					 * cropping.
-					 */
+					 
 					stripe_offset_inp_uv -= 1;
 					stripe_crop_left_uv += 1;
 					stripe_phase_init_uv -=
@@ -636,13 +578,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 							stripe_phase_init_uv +
 							IMGU_OSYS_FIR_PHASES;
 				}
-				/*
-				 * FW workaround for a HW bug: if the first
-				 * chroma pixel is generated exactly at the end
-				 * of chunck scaler HW may not output the pixel
-				 * for downscale factors smaller than 1.5
-				 * (timing issue).
-				 */
+				 
 				chunk_ceil_uv =
 					roundup(stripe_offset_inp_uv,
 						reso.chunk_width /
@@ -650,10 +586,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 
 				if (stripe_offset_inp_uv ==
 				    chunk_ceil_uv - IMGU_OSYS_TAPS_UV) {
-					/*
-					 * Decrease input offset and add
-					 * output cropping
-					 */
+					 
 					stripe_offset_inp_uv -= 1;
 					stripe_phase_init_uv -=
 						scaler_luma->phase_step;
@@ -664,10 +597,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 					}
 				}
 
-				/*
-				 * Calculate block and column offsets for the
-				 * input stripe
-				 */
+				 
 				stripe_offset_blk_y =
 					rounddown(stripe_offset_inp_y,
 						  IMGU_INPUT_BLOCK_WIDTH);
@@ -680,12 +610,12 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 				stripe_offset_col_uv = stripe_offset_inp_uv -
 							stripe_offset_blk_uv;
 
-				/* Left padding is only for the first stripe */
+				 
 				stripe_pad_left_y = 0;
 				stripe_pad_left_uv = 0;
 			}
 
-			/* Right padding is only for the last stripe */
+			 
 			if (s < stripes - 1) {
 				int next_offset;
 
@@ -701,10 +631,10 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 							stripe_offset_out_y;
 			}
 
-			/* Calculate target output stripe width */
+			 
 			stripe_output_width_uv = stripe_output_width_y /
 						IMGU_LUMA_TO_CHROMA_RATIO;
-			/* Calculate input stripe width */
+			 
 			stripe_input_width_y = stripe_offset_col_y +
 				imgu_css_osys_calc_inp_stripe_width(
 						stripe_output_width_y,
@@ -736,19 +666,10 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 			if (s >= stripes - 1) {
 				stripe_input_width_y = reso.input_width -
 					stripe_offset_blk_y;
-				/*
-				 * The scaler requires that the last stripe
-				 * spans at least two input blocks.
-				 */
+				 
 			}
 
-			/*
-			 * Spec: input stripe width must be a multiple of 8.
-			 * Increase the input width and recalculate the output
-			 * width. This may produce an extra column of junk
-			 * blocks which will be overwritten by the
-			 * next stripe.
-			 */
+			 
 			stripe_input_width_y = ALIGN(stripe_input_width_y, 8);
 			stripe_output_width_y =
 				imgu_css_osys_out_stripe_width(
@@ -765,25 +686,17 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 					rounddown(stripe_output_width_y,
 						  IMGU_LUMA_TO_CHROMA_RATIO);
 		}
-		/*
-		 * Following section executes and process parameters
-		 * for both cases - Striping or No Striping.
-		 */
+		 
 		{
 			unsigned int i;
-			/*Input resolution */
+			 
 
 			stripe_params[s].input_width = stripe_input_width_y;
 			stripe_params[s].input_height = reso.input_height;
 
 			for (i = 0; i < IMGU_ABI_OSYS_PINS; i++) {
 				if (frame_params[i].scaled) {
-					/*
-					 * Output stripe resolution and offset
-					 * as produced by the scaler; actual
-					 * output resolution may be slightly
-					 * smaller.
-					 */
+					 
 					stripe_params[s].output_width[i] =
 						stripe_output_width_y;
 					stripe_params[s].output_height[i] =
@@ -791,7 +704,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 					stripe_params[s].output_offset[i] =
 						stripe_offset_out_y;
 				} else {
-					/* Unscaled pin */
+					 
 					stripe_params[s].output_width[i] =
 						stripe_params[s].input_width;
 					stripe_params[s].output_height[i] =
@@ -801,7 +714,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 				}
 			}
 
-			/* If no pin use scale, we use BYPASS mode */
+			 
 			stripe_params[s].processing_mode = procmode;
 			stripe_params[s].phase_step = scaler_luma->phase_step;
 			stripe_params[s].exp_shift = scaler_luma->exp_shift;
@@ -838,10 +751,7 @@ static int imgu_css_osys_calc_frame_and_stripe_params(
 	return 0;
 }
 
-/*
- * This function configures the Output Formatter System, given the number of
- * stripes, scaler luma and chrome parameters
- */
+ 
 static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 			      unsigned int stripes,
 			      struct imgu_abi_osys_config *osys,
@@ -857,7 +767,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 
 	memset(osys, 0, sizeof(*osys));
 
-	/* Compute the frame and stripe params */
+	 
 	if (imgu_css_osys_calc_frame_and_stripe_params(css, stripes, osys,
 						       scaler_luma,
 						       scaler_chroma,
@@ -865,7 +775,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 						       stripe_params, pipe))
 		return -EINVAL;
 
-	/* Output formatter system parameters */
+	 
 
 	for (s = 0; s < stripes; s++) {
 		struct imgu_abi_osys_scaler_params *scaler =
@@ -873,24 +783,12 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 		int fifo_addr_fmt = IMGU_FIFO_ADDR_SCALER_TO_FMT;
 		int fifo_addr_ack = IMGU_FIFO_ADDR_SCALER_TO_SP;
 
-		/* OUTPUT 0 / PIN 0 is only Scaler output */
+		 
 		scaler->inp_buf_y_st_addr = IMGU_VMEM1_INP_BUF_ADDR;
 
-		/*
-		 * = (IMGU_OSYS_BLOCK_WIDTH / IMGU_VMEM1_ELEMS_PER_VEC)
-		 * = (2 * IPU3_UAPI_ISP_VEC_ELEMS) /
-		 *   (IMGU_HIVE_OF_SYS_OF_SYSTEM_NWAYS)
-		 * = 2 * 64 / 32 = 4
-		 */
+		 
 		scaler->inp_buf_y_line_stride = IMGU_VMEM1_Y_STRIDE;
-		/*
-		 * = (IMGU_VMEM1_V_OFFSET + VMEM1_uv_size)
-		 * = (IMGU_VMEM1_U_OFFSET + VMEM1_uv_size) +
-		 *	(VMEM1_y_size / 4)
-		 * = (VMEM1_y_size) + (VMEM1_y_size / 4) +
-		 * (IMGU_OSYS_BLOCK_HEIGHT * IMGU_VMEM1_Y_STRIDE)/4
-		 * = (IMGU_OSYS_BLOCK_HEIGHT * IMGU_VMEM1_Y_STRIDE)
-		 */
+		 
 		scaler->inp_buf_y_buffer_stride = IMGU_VMEM1_BUF_SIZE;
 		scaler->inp_buf_u_st_addr = IMGU_VMEM1_INP_BUF_ADDR +
 						IMGU_VMEM1_U_OFFSET;
@@ -901,7 +799,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 		scaler->inp_buf_chunk_width = stripe_params[s].chunk_width;
 		scaler->inp_buf_nr_buffers = IMGU_OSYS_NUM_INPUT_BUFFERS;
 
-		/* Output buffers */
+		 
 		scaler->out_buf_y_st_addr = IMGU_VMEM1_INT_BUF_ADDR;
 		scaler->out_buf_y_line_stride = stripe_params[s].block_width /
 						IMGU_VMEM1_ELEMS_PER_VEC;
@@ -915,7 +813,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 		scaler->out_buf_uv_buffer_stride = IMGU_VMEM1_BUF_SIZE;
 		scaler->out_buf_nr_buffers = IMGU_OSYS_NUM_INTERM_BUFFERS;
 
-		/* Intermediate buffers */
+		 
 		scaler->int_buf_y_st_addr = IMGU_VMEM2_BUF_Y_ADDR;
 		scaler->int_buf_y_line_stride = IMGU_VMEM2_BUF_Y_STRIDE;
 		scaler->int_buf_u_st_addr = IMGU_VMEM2_BUF_U_ADDR;
@@ -925,7 +823,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 		scaler->int_buf_chunk_width = stripe_params[s].chunk_height;
 		scaler->int_buf_chunk_height = stripe_params[s].block_width;
 
-		/* Context buffers */
+		 
 		scaler->ctx_buf_hor_y_st_addr = IMGU_VMEM3_HOR_Y_ADDR;
 		scaler->ctx_buf_hor_u_st_addr = IMGU_VMEM3_HOR_U_ADDR;
 		scaler->ctx_buf_hor_v_st_addr = IMGU_VMEM3_HOR_V_ADDR;
@@ -933,13 +831,13 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 		scaler->ctx_buf_ver_u_st_addr = IMGU_VMEM3_VER_U_ADDR;
 		scaler->ctx_buf_ver_v_st_addr = IMGU_VMEM3_VER_V_ADDR;
 
-		/* Addresses for release-input and process-output tokens */
+		 
 		scaler->release_inp_buf_addr = fifo_addr_ack;
 		scaler->release_inp_buf_en = 1;
 		scaler->release_out_buf_en = 1;
 		scaler->process_out_buf_addr = fifo_addr_fmt;
 
-		/* Settings dimensions, padding, cropping */
+		 
 		scaler->input_image_y_width = stripe_params[s].input_width;
 		scaler->input_image_y_height = stripe_params[s].input_height;
 		scaler->input_image_y_start_column =
@@ -990,7 +888,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 
 			fr_pr = &osys->frame[pin].param;
 
-			/* Frame parameters */
+			 
 			fr_pr->enable = frame_params[pin].enable;
 			fr_pr->format = frame_params[pin].format;
 			fr_pr->mirror = frame_params[pin].mirror;
@@ -1001,7 +899,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 			fr_pr->stride = frame_params[pin].stride;
 			fr_pr->scaled = frame_params[pin].scaled;
 
-			/* Stripe parameters */
+			 
 			osys->stripe[s].crop_top[pin] =
 				frame_params[pin].crop_top;
 			osys->stripe[s].input_width =
@@ -1018,17 +916,13 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 				stripe_params[s].output_height[pin];
 
 			if (s == 0) {
-				/* Only first stripe should do left cropping */
+				 
 				osys->stripe[s].crop_left[pin] =
 					frame_params[pin].crop_left;
 				osys->stripe[s].output_offset[pin] =
 					stripe_params[s].output_offset[pin];
 			} else {
-				/*
-				 * Stripe offset for other strips should be
-				 * adjusted according to the cropping done
-				 * at the first strip
-				 */
+				 
 				osys->stripe[s].crop_left[pin] = 0;
 				osys->stripe[s].output_offset[pin] =
 					(stripe_params[s].output_offset[pin] -
@@ -1038,13 +932,9 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 			if (!frame_params[pin].enable)
 				continue;
 
-			/* Formatter: configurations */
+			 
 
-			/*
-			 * Get the dimensions of the input blocks of the
-			 * formatter, which is the same as the output
-			 * blocks of the scaler.
-			 */
+			 
 			if (frame_params[pin].scaled) {
 				block_height = stripe_params[s].block_height;
 				block_width = stripe_params[s].block_width;
@@ -1054,10 +944,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 			}
 			block_width_vecs =
 					block_width / IMGU_VMEM1_ELEMS_PER_VEC;
-			/*
-			 * The input/output line stride depends on the
-			 * block size.
-			 */
+			 
 			input_buf_y_line_stride = block_width_vecs;
 			input_buf_uv_line_stride = block_width_vecs / 2;
 			output_buf_y_line_stride = block_width_vecs;
@@ -1070,14 +957,7 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 				output_buf_uv_line_stride =
 					output_buf_y_line_stride;
 
-			/*
-			 * Tiled outputs use a different output buffer
-			 * configuration. The input (= scaler output) block
-			 * width translates to a tile height, and the block
-			 * height to the tile width. The default block size of
-			 * 128x32 maps exactly onto a 4kB tile (512x8) for Y.
-			 * For UV, the tile width is always half.
-			 */
+			 
 			if (frame_params[pin].tiling) {
 				output_buf_nr_y_lines = 8;
 				output_buf_y_line_stride = 512 /
@@ -1086,30 +966,19 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 					IMGU_VMEM1_ELEMS_PER_VEC;
 			}
 
-			/*
-			 * Store the output buffer line stride. Will be
-			 * used to compute buffer offsets in boundary
-			 * conditions when output blocks are partially
-			 * outside the image.
-			 */
+			 
 			osys->stripe[s].buf_stride[pin] =
 				output_buf_y_line_stride *
 				IMGU_HIVE_OF_SYS_OF_SYSTEM_NWAYS;
 			if (frame_params[pin].scaled) {
-				/*
-				 * The input buffs are the intermediate
-				 * buffers (scalers' output)
-				 */
+				 
 				input_buf_y_st_addr = IMGU_VMEM1_INT_BUF_ADDR;
 				input_buf_u_st_addr = IMGU_VMEM1_INT_BUF_ADDR +
 							IMGU_VMEM1_U_OFFSET;
 				input_buf_v_st_addr = IMGU_VMEM1_INT_BUF_ADDR +
 							IMGU_VMEM1_V_OFFSET;
 			} else {
-				/*
-				 * The input bufferss are the buffers
-				 * filled by the SP
-				 */
+				 
 				input_buf_y_st_addr = IMGU_VMEM1_INP_BUF_ADDR;
 				input_buf_u_st_addr = IMGU_VMEM1_INP_BUF_ADDR +
 							IMGU_VMEM1_U_OFFSET;
@@ -1117,31 +986,20 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 							IMGU_VMEM1_V_OFFSET;
 			}
 
-			/*
-			 * The formatter input width must be rounded to
-			 * the block width. Otherwise the formatter will
-			 * not recognize the end of the line, resulting
-			 * in incorrect tiling (system may hang!) and
-			 * possibly other problems.
-			 */
+			 
 			input_width_s =
 				roundup(stripe_params[s].output_width[pin],
 					block_width);
 			input_width_vecs = input_width_s /
 					IMGU_VMEM1_ELEMS_PER_VEC;
 			out_fifo_addr = IMGU_FIFO_ADDR_FMT_TO_SP;
-			/*
-			 * Process-output tokens must be sent to the SP.
-			 * When scaling, the release-input tokens can be
-			 * sent directly to the scaler, otherwise the
-			 * formatter should send them to the SP.
-			 */
+			 
 			if (frame_params[pin].scaled)
 				in_fifo_addr = IMGU_FIFO_ADDR_FMT_TO_SCALER;
 			else
 				in_fifo_addr = IMGU_FIFO_ADDR_FMT_TO_SP;
 
-			/* Formatter */
+			 
 			param = &osys->formatter[s][pin].param;
 
 			param->format = frame_params[pin].format;
@@ -1205,46 +1063,9 @@ static int imgu_css_osys_calc(struct imgu_css *css, unsigned int pipe,
 	return 0;
 }
 
-/*********************** Mostly 3A operations ******************************/
+ 
 
-/*
- * This function creates a "TO-DO list" (operations) for the sp code.
- *
- * There are 2 types of operations:
- * 1. Transfer: Issue DMA transfer request for copying grid cells from DDR to
- *    accelerator space (NOTE that this space is limited) associated data:
- *    DDR address + accelerator's config set index(acc's address).
- *
- * 2. Issue "Process Lines Command" to shd accelerator
- *    associated data: #lines + which config set to use (actually, accelerator
- *    will use x AND (x+1)%num_of_sets - NOTE that this implies the restriction
- *    of not touching config sets x & (x+1)%num_of_sets when process_lines(x)
- *    is active).
- *
- * Basically there are 2 types of operations "chunks":
- * 1. "initial chunk": Initially, we do as much transfers as we can (and need)
- *    [0 - max sets(3) ] followed by 1 or 2 "process lines" operations.
- *
- * 2. "regular chunk" - 1 transfer followed by 1 process line operation.
- *    (in some cases we might need additional transfer ate the last chunk).
- *
- * for some case:
- * --> init
- *	tr (0)
- *	tr (1)
- *	tr (2)
- *	pl (0)
- *	pl (1)
- * --> ack (0)
- *	tr (3)
- *	pl (2)
- * --> ack (1)
- *	pl (3)
- * --> ack (2)
- *	do nothing
- * --> ack (3)
- *	do nothing
- */
+ 
 
 static int
 imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
@@ -1255,7 +1076,7 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 	unsigned int grid_height_per_slice = grid->grid_height_per_slice;
 	unsigned int set_height = grid_height_per_slice * block_height;
 
-	/* We currently support only abs(y_start) > grid_height_per_slice */
+	 
 	unsigned int positive_y_start = (unsigned int)-grid->y_start;
 	unsigned int first_process_lines =
 				set_height - (positive_y_start % set_height);
@@ -1269,22 +1090,15 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 	unsigned int op_idx, pl_idx, tr_idx;
 	unsigned char tr_set_num, pl_cfg_set;
 
-	/*
-	 * When the number of lines for the last process lines command
-	 * is equal to a set height, we need another line of grid cell -
-	 * additional transfer is required.
-	 */
+	 
 	unsigned char last_tr = 0;
 
-	/* Add "process lines" command to the list of operations */
+	 
 	bool add_pl;
-	/* Add DMA xfer (config set) command to the list of ops */
+	 
 	bool add_tr;
 
-	/*
-	 * Available partial grid (the part that fits into #IMGU_SHD_SETS sets)
-	 * doesn't cover whole frame - need to process in chunks
-	 */
+	 
 	if (image_height > first_process_lines) {
 		last_set_height =
 			(image_height - first_process_lines) % set_height;
@@ -1293,14 +1107,14 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 			(image_height - first_process_lines) / set_height + 1;
 		last_tr = (set_height - last_set_height <= block_height ||
 			   last_set_height == 0) ? 1 : 0;
-	} else { /* partial grid covers whole frame */
+	} else {  
 		last_set_height = 0;
 		num_of_sets = 1;
 		first_process_lines = image_height;
 		last_tr = set_height - image_height <= block_height ? 1 : 0;
 	}
 
-	/* Init operations lists and counters */
+	 
 	p_op = ops->operation_list;
 	op_idx = 0;
 	p_pl = ops->process_lines_data;
@@ -1310,20 +1124,16 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 
 	memset(ops, 0, sizeof(*ops));
 
-	/* Cyclic counters that holds config set number [0,IMGU_SHD_SETS) */
+	 
 	tr_set_num = 0;
 	pl_cfg_set = 0;
 
-	/*
-	 * Always start with a transfer - process lines command must be
-	 * initiated only after appropriate config sets are in place
-	 * (2 configuration sets per process line command, except for last one).
-	 */
+	 
 	add_pl = false;
 	add_tr = true;
 
 	while (add_pl || add_tr) {
-		/* Transfer ops */
+		 
 		if (add_tr) {
 			if (op_idx >= IMGU_ABI_SHD_MAX_OPERATIONS ||
 			    tr_idx >= IMGU_ABI_SHD_MAX_TRANSFERS)
@@ -1337,7 +1147,7 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 			tr_set_num = (tr_set_num + 1) % IMGU_SHD_SETS;
 		}
 
-		/* Process-lines ops */
+		 
 		if (add_pl) {
 			if (op_idx >= IMGU_ABI_SHD_MAX_OPERATIONS ||
 			    pl_idx >= IMGU_ABI_SHD_MAX_PROCESS_LINES)
@@ -1345,39 +1155,29 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 			p_op[op_idx].op_type =
 				IMGU_ABI_ACC_OPTYPE_PROCESS_LINES;
 
-			/*
-			 * In case we have 2 process lines commands -
-			 * don't stop after the first one
-			 */
+			 
 			if (pl_idx == 0 && num_of_sets != 1)
 				p_op[op_idx].op_indicator =
 					IMGU_ABI_ACC_OP_IDLE;
-			/*
-			 * Initiate last process lines command -
-			 * end of operation list.
-			 */
+			 
 			else if (pl_idx == num_of_sets - 1)
 				p_op[op_idx].op_indicator =
 					IMGU_ABI_ACC_OP_END_OF_OPS;
-			/*
-			 * Intermediate process line command - end of operation
-			 * "chunk" (meaning few "transfers" followed by few
-			 * "process lines" commands).
-			 */
+			 
 			else
 				p_op[op_idx].op_indicator =
 					IMGU_ABI_ACC_OP_END_OF_ACK;
 
 			op_idx++;
 
-			/* first process line operation */
+			 
 			if (pl_idx == 0)
 				p_pl[pl_idx].lines = first_process_lines;
-			/* Last process line operation */
+			 
 			else if (pl_idx == num_of_sets - 1 &&
 				 last_set_height > 0)
 				p_pl[pl_idx].lines = last_set_height;
-			else	/* "regular" process lines operation */
+			else	 
 				p_pl[pl_idx].lines = set_height;
 
 			p_pl[pl_idx].cfg_set = pl_cfg_set;
@@ -1385,27 +1185,20 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 			pl_cfg_set = (pl_cfg_set + 1) % IMGU_SHD_SETS;
 		}
 
-		/*
-		 * Initially, we always transfer
-		 * min(IMGU_SHD_SETS, num_of_sets) - after that we fill in the
-		 * corresponding process lines commands.
-		 */
+		 
 		if (tr_idx == IMGU_SHD_SETS ||
 		    tr_idx == num_of_sets + last_tr) {
 			add_tr = false;
 			add_pl = true;
 		}
 
-		/*
-		 * We have finished the "initial" operations chunk -
-		 * be ready to get more chunks.
-		 */
+		 
 		if (pl_idx == 2) {
 			add_tr = true;
 			add_pl = true;
 		}
 
-		/* Stop conditions for each operation type */
+		 
 		if (tr_idx == num_of_sets + last_tr)
 			add_tr = false;
 		if (pl_idx == num_of_sets)
@@ -1415,68 +1208,7 @@ imgu_css_shd_ops_calc(struct imgu_abi_shd_intra_frame_operations_data *ops,
 	return 0;
 }
 
-/*
- * The follow handshake procotol is the same for AF, AWB and AWB FR.
- *
- * for n sets of meta-data, the flow is:
- * --> init
- *  process-lines  (0)
- *  process-lines  (1)	 eoc
- *  --> ack (0)
- *  read-meta-data (0)
- *  process-lines  (2)	 eoc
- *  --> ack (1)
- *  read-meta-data (1)
- *  process-lines  (3)	 eoc
- *  ...
- *
- *  --> ack (n-3)
- *  read-meta-data (n-3)
- *  process-lines  (n-1) eoc
- *  --> ack (n-2)
- *  read-meta-data (n-2) eoc
- *  --> ack (n-1)
- *  read-meta-data (n-1) eof
- *
- * for 2 sets we get:
- * --> init
- * pl (0)
- * pl (1) eoc
- * --> ack (0)
- * pl (2) - rest of image, if applicable)
- * rmd (0) eoc
- * --> ack (1)
- * rmd (1) eof
- * --> (ack (2))
- * do nothing
- *
- * for only one set:
- *
- * --> init
- * pl(0)   eoc
- * --> ack (0)
- * rmd (0) eof
- *
- * grid smaller than image case
- * for example 128x128 grid (block size 8x8, 16x16 num of blocks)
- * start at (0,0)
- * 1st set holds 160 cells - 10 blocks vertical, 16 horizontal
- * => 1st process lines = 80
- * we're left with 128-80=48 lines (6 blocks vertical)
- * => 2nd process lines = 48
- * last process lines to cover the image - image_height - 128
- *
- * --> init
- * pl (0) first
- * pl (1) last-in-grid
- * --> ack (0)
- * rmd (0)
- * pl (2) after-grid
- * --> ack (1)
- * rmd (1) eof
- * --> ack (2)
- * do nothing
- */
+ 
 struct process_lines {
 	unsigned int image_height;
 	unsigned short grid_height;
@@ -1484,12 +1216,12 @@ struct process_lines {
 	unsigned short y_start;
 	unsigned char grid_height_per_slice;
 
-	unsigned short max_op; /* max operation */
-	unsigned short max_tr; /* max transaction */
+	unsigned short max_op;  
+	unsigned short max_tr;  
 	unsigned char acc_enable;
 };
 
-/* Helper to config intra_frame_operations_data. */
+ 
 static int
 imgu_css_acc_process_lines(const struct process_lines *pl,
 			   struct imgu_abi_acc_operation *p_op,
@@ -1520,7 +1252,7 @@ imgu_css_acc_process_lines(const struct process_lines *pl,
 	if (num_of_sets * pl->grid_height_per_slice < pl->grid_height)
 		num_of_sets++;
 
-	/* Account for two line delay inside the FF */
+	 
 	if (pl->max_op == IMGU_ABI_AF_MAX_OPERATIONS) {
 		first_process_lines = process_lines + pl->y_start + 2;
 		last_process_lines_in_grid =
@@ -1541,7 +1273,7 @@ imgu_css_acc_process_lines(const struct process_lines *pl,
 		num_of_process_lines++;
 
 	while (tr_idx < num_of_sets || pl_idx < num_of_process_lines) {
-		/* Read meta-data */
+		 
 		if (pl_idx >= 2 || (pl_idx == 1 && num_of_sets == 1)) {
 			if (op_idx >= pl->max_op || tr_idx >= pl->max_tr)
 				return -EINVAL;
@@ -1550,26 +1282,20 @@ imgu_css_acc_process_lines(const struct process_lines *pl,
 				IMGU_ABI_ACC_OPTYPE_TRANSFER_DATA;
 
 			if (tr_idx == num_of_sets - 1)
-				/* The last operation is always a tr */
+				 
 				p_op[op_idx].op_indicator =
 					IMGU_ABI_ACC_OP_END_OF_OPS;
 			else if (tr_idx == num_of_sets - 2)
 				if (process_lines_after_grid == 0)
-					/*
-					 * No additional pl op left -
-					 * this op is left as lats of cycle
-					 */
+					 
 					p_op[op_idx].op_indicator =
 						IMGU_ABI_ACC_OP_END_OF_ACK;
 				else
-					/*
-					 * We still have to process-lines after
-					 * the grid so have one more pl op
-					 */
+					 
 					p_op[op_idx].op_indicator =
 						IMGU_ABI_ACC_OP_IDLE;
 			else
-				/* Default - usually there's a pl after a tr */
+				 
 				p_op[op_idx].op_indicator =
 					IMGU_ABI_ACC_OP_IDLE;
 
@@ -1581,7 +1307,7 @@ imgu_css_acc_process_lines(const struct process_lines *pl,
 			tr_idx++;
 		}
 
-		/* process_lines */
+		 
 		if (pl_idx < num_of_process_lines) {
 			if (op_idx >= pl->max_op || pl_idx >= pl->max_tr)
 				return -EINVAL;
@@ -1590,31 +1316,31 @@ imgu_css_acc_process_lines(const struct process_lines *pl,
 				IMGU_ABI_ACC_OPTYPE_PROCESS_LINES;
 			if (pl_idx == 0)
 				if (num_of_process_lines == 1)
-					/* Only one pl op */
+					 
 					p_op[op_idx].op_indicator =
 						IMGU_ABI_ACC_OP_END_OF_ACK;
 				else
-					/* On init - do two pl ops */
+					 
 					p_op[op_idx].op_indicator =
 						IMGU_ABI_ACC_OP_IDLE;
 			else
-				/* Usually pl is the end of the ack cycle */
+				 
 				p_op[op_idx].op_indicator =
 					IMGU_ABI_ACC_OP_END_OF_ACK;
 
 			op_idx++;
 
 			if (pl_idx == 0)
-				/* First process line */
+				 
 				p_pl[pl_idx].lines = first_process_lines;
 			else if (pl_idx == num_of_sets - 1)
-				/* Last in grid */
+				 
 				p_pl[pl_idx].lines = last_process_lines_in_grid;
 			else if (pl_idx == num_of_process_lines - 1)
-				/* After the grid */
+				 
 				p_pl[pl_idx].lines = process_lines_after_grid;
 			else
-				/* Inside the grid */
+				 
 				p_pl[pl_idx].lines = process_lines;
 
 			if (p_tr) {
@@ -1722,7 +1448,7 @@ static void imgu_css_grid_end_calc(struct ipu3_uapi_grid_config *grid_cfg)
 					    grid_cfg->block_height_log2);
 }
 
-/****************** config computation *****************************/
+ 
 
 static int imgu_css_cfg_acc_stripe(struct imgu_css *css, unsigned int pipe,
 				   struct imgu_abi_acc_param *acc)
@@ -1737,22 +1463,15 @@ static int imgu_css_cfg_acc_stripe(struct imgu_css *css, unsigned int pipe,
 
 	memset(acc, 0, sizeof(*acc));
 
-	/* acc_param: osys_config */
+	 
 
 	if (imgu_css_osys_calc(css, pipe, stripes, &acc->osys, &scaler_luma,
 			       &scaler_chroma, acc->stripe.block_stripes))
 		return -EINVAL;
 
-	/* acc_param: stripe data */
+	 
 
-	/*
-	 * For the striped case the approach is as follows:
-	 * 1. down-scaled stripes are calculated - with 128 overlap
-	 *    (this is the main limiter therefore it's first)
-	 * 2. input stripes are derived by up-scaling the down-scaled stripes
-	 *    (there are no alignment requirements on input stripes)
-	 * 3. output stripes are derived from down-scaled stripes too
-	 */
+	 
 
 	acc->stripe.num_of_stripes = stripes;
 	acc->stripe.input_frame.width =
@@ -1770,15 +1489,11 @@ static int imgu_css_cfg_acc_stripe(struct imgu_css *css, unsigned int pipe,
 		acc->stripe.bds_out_stripes[0].width =
 			ALIGN(css_pipe->rect[IPU3_CSS_RECT_BDS].width, f);
 	} else {
-		/* Image processing is divided into two stripes */
+		 
 		acc->stripe.bds_out_stripes[0].width =
 			acc->stripe.bds_out_stripes[1].width =
 			(css_pipe->rect[IPU3_CSS_RECT_BDS].width / 2 & ~(f - 1)) + f;
-		/*
-		 * Sum of width of the two stripes should not be smaller
-		 * than output width and must be even times of overlapping
-		 * unit f.
-		 */
+		 
 		if ((css_pipe->rect[IPU3_CSS_RECT_BDS].width / f & 1) !=
 		    !!(css_pipe->rect[IPU3_CSS_RECT_BDS].width & (f - 1)))
 			acc->stripe.bds_out_stripes[0].width += f;
@@ -1787,7 +1502,7 @@ static int imgu_css_cfg_acc_stripe(struct imgu_css *css, unsigned int pipe,
 			acc->stripe.bds_out_stripes[0].width += f;
 			acc->stripe.bds_out_stripes[1].width += f;
 		}
-		/* Overlap between stripes is IPU3_UAPI_ISP_VEC_ELEMS * 4 */
+		 
 		acc->stripe.bds_out_stripes[1].offset =
 			acc->stripe.bds_out_stripes[0].width - 2 * f;
 	}
@@ -1815,7 +1530,7 @@ static int imgu_css_cfg_acc_stripe(struct imgu_css *css, unsigned int pipe,
 
 		acc->stripe.output_stripes[0].width =
 			css_pipe->queue[IPU3_CSS_QUEUE_OUT].fmt.mpix.width;
-	} else { /* Two stripes */
+	} else {  
 		bds_ds = css_pipe->rect[IPU3_CSS_RECT_EFFECTIVE].width *
 				IMGU_BDS_GRANULARITY /
 				css_pipe->rect[IPU3_CSS_RECT_BDS].width;
@@ -1903,7 +1618,7 @@ static void imgu_css_cfg_acc_dvs(struct imgu_css *css,
 	unsigned int i;
 	struct imgu_css_pipe *css_pipe = &css->pipes[pipe];
 
-	/* Disable DVS statistics */
+	 
 	acc->dvs_stat.operations_data.process_lines_data[0].lines =
 				css_pipe->rect[IPU3_CSS_RECT_BDS].height;
 	acc->dvs_stat.operations_data.process_lines_data[0].cfg_set = 0;
@@ -1934,12 +1649,7 @@ static void acc_bds_per_stripe_data(struct imgu_css *css,
 		css_pipe->rect[IPU3_CSS_RECT_BDS].height;
 }
 
-/*
- * Configure `acc' parameters. `acc_old' contains the old values (or is NULL)
- * and `acc_user' contains new prospective values. `use' contains flags
- * telling which fields to take from the old values (or generate if it is NULL)
- * and which to take from the new user values.
- */
+ 
 int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 		     struct ipu3_uapi_flags *use,
 		     struct imgu_abi_acc_param *acc,
@@ -1959,14 +1669,14 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 	struct imgu_abi_input_feeder_data *feeder_data;
 
 	unsigned int bds_ds, ofs_x, ofs_y, i, width, height;
-	u8 b_w_log2; /* Block width log2 */
+	u8 b_w_log2;  
 
-	/* Update stripe using chroma and luma */
+	 
 
 	if (imgu_css_cfg_acc_stripe(css, pipe, acc))
 		return -EINVAL;
 
-	/* acc_param: input_feeder_config */
+	 
 
 	ofs_x = ((pixm->width -
 		  css_pipe->rect[IPU3_CSS_RECT_EFFECTIVE].width) >> 1) & ~1;
@@ -1999,122 +1709,115 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 		ofs_y * acc->input_feeder.data.row_stride;
 	feeder_data->start_pixel = ofs_x % IMGU_PIXELS_PER_WORD;
 
-	/* acc_param: bnr_static_config */
+	 
 
-	/*
-	 * Originate from user or be the original default values if user has
-	 * never set them before, when user gives a new set of parameters,
-	 * for each chunk in the parameter structure there is a flag use->xxx
-	 * whether to use the user-provided parameter or not. If not, the
-	 * parameter remains unchanged in the driver:
-	 * it's value is taken from acc_old.
-	 */
+	 
 	if (use && use->acc_bnr) {
-		/* Take values from user */
+		 
 		acc->bnr = acc_user->bnr;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->bnr = acc_old->bnr;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->bnr = imgu_css_bnr_defaults;
 	}
 
 	acc->bnr.column_size = tnr_frame_width;
 
-	/* acc_param: bnr_static_config_green_disparity */
+	 
 
 	if (use && use->acc_green_disparity) {
-		/* Take values from user */
+		 
 		acc->green_disparity = acc_user->green_disparity;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->green_disparity = acc_old->green_disparity;
 	} else {
-		/* Calculate from scratch */
+		 
 		memset(&acc->green_disparity, 0, sizeof(acc->green_disparity));
 	}
 
-	/* acc_param: dm_config */
+	 
 
 	if (use && use->acc_dm) {
-		/* Take values from user */
+		 
 		acc->dm = acc_user->dm;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->dm = acc_old->dm;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->dm = imgu_css_dm_defaults;
 	}
 
 	acc->dm.frame_width = tnr_frame_width;
 
-	/* acc_param: ccm_mat_config */
+	 
 
 	if (use && use->acc_ccm) {
-		/* Take values from user */
+		 
 		acc->ccm = acc_user->ccm;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->ccm = acc_old->ccm;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->ccm = imgu_css_ccm_defaults;
 	}
 
-	/* acc_param: gamma_config */
+	 
 
 	if (use && use->acc_gamma) {
-		/* Take values from user */
+		 
 		acc->gamma = acc_user->gamma;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->gamma = acc_old->gamma;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->gamma.gc_ctrl.enable = 1;
 		acc->gamma.gc_lut = imgu_css_gamma_lut;
 	}
 
-	/* acc_param: csc_mat_config */
+	 
 
 	if (use && use->acc_csc) {
-		/* Take values from user */
+		 
 		acc->csc = acc_user->csc;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->csc = acc_old->csc;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->csc = imgu_css_csc_defaults;
 	}
 
-	/* acc_param: cds_params */
+	 
 
 	if (use && use->acc_cds) {
-		/* Take values from user */
+		 
 		acc->cds = acc_user->cds;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->cds = acc_old->cds;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->cds = imgu_css_cds_defaults;
 	}
 
-	/* acc_param: shd_config */
+	 
 
 	if (use && use->acc_shd) {
-		/* Take values from user */
+		 
 		acc->shd.shd = acc_user->shd.shd;
 		acc->shd.shd_lut = acc_user->shd.shd_lut;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->shd.shd = acc_old->shd.shd;
 		acc->shd.shd_lut = acc_old->shd.shd_lut;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->shd.shd = imgu_css_shd_defaults;
 		memset(&acc->shd.shd_lut, 0, sizeof(acc->shd.shd_lut));
 	}
@@ -2137,116 +1840,116 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 				  css_pipe->rect[IPU3_CSS_RECT_BDS].height))
 		return -EINVAL;
 
-	/* acc_param: dvs_stat_config */
+	 
 	imgu_css_cfg_acc_dvs(css, acc, pipe);
 
-	/* acc_param: yuvp1_iefd_config */
+	 
 
 	if (use && use->acc_iefd) {
-		/* Take values from user */
+		 
 		acc->iefd = acc_user->iefd;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->iefd = acc_old->iefd;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->iefd = imgu_css_iefd_defaults;
 	}
 
-	/* acc_param: yuvp1_yds_config yds_c0 */
+	 
 
 	if (use && use->acc_yds_c0) {
-		/* Take values from user */
+		 
 		acc->yds_c0 = acc_user->yds_c0;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->yds_c0 = acc_old->yds_c0;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->yds_c0 = imgu_css_yds_defaults;
 	}
 
-	/* acc_param: yuvp1_chnr_config chnr_c0 */
+	 
 
 	if (use && use->acc_chnr_c0) {
-		/* Take values from user */
+		 
 		acc->chnr_c0 = acc_user->chnr_c0;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->chnr_c0 = acc_old->chnr_c0;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->chnr_c0 = imgu_css_chnr_defaults;
 	}
 
-	/* acc_param: yuvp1_y_ee_nr_config */
+	 
 
 	if (use && use->acc_y_ee_nr) {
-		/* Take values from user */
+		 
 		acc->y_ee_nr = acc_user->y_ee_nr;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->y_ee_nr = acc_old->y_ee_nr;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->y_ee_nr = imgu_css_y_ee_nr_defaults;
 	}
 
-	/* acc_param: yuvp1_yds_config yds */
+	 
 
 	if (use && use->acc_yds) {
-		/* Take values from user */
+		 
 		acc->yds = acc_user->yds;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->yds = acc_old->yds;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->yds = imgu_css_yds_defaults;
 	}
 
-	/* acc_param: yuvp1_chnr_config chnr */
+	 
 
 	if (use && use->acc_chnr) {
-		/* Take values from user */
+		 
 		acc->chnr = acc_user->chnr;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->chnr = acc_old->chnr;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->chnr = imgu_css_chnr_defaults;
 	}
 
-	/* acc_param: yuvp2_y_tm_lut_static_config */
+	 
 
 	for (i = 0; i < IMGU_ABI_YUVP2_YTM_LUT_ENTRIES; i++)
 		acc->ytm.entries[i] = i * 32;
-	acc->ytm.enable = 0;	/* Always disabled on IPU3 */
+	acc->ytm.enable = 0;	 
 
-	/* acc_param: yuvp1_yds_config yds2 */
+	 
 
 	if (use && use->acc_yds2) {
-		/* Take values from user */
+		 
 		acc->yds2 = acc_user->yds2;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->yds2 = acc_old->yds2;
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->yds2 = imgu_css_yds_defaults;
 	}
 
-	/* acc_param: yuvp2_tcc_static_config */
+	 
 
 	if (use && use->acc_tcc) {
-		/* Take values from user */
+		 
 		acc->tcc = acc_user->tcc;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->tcc = acc_old->tcc;
 	} else {
-		/* Calculate from scratch */
+		 
 		memset(&acc->tcc, 0, sizeof(acc->tcc));
 
 		acc->tcc.gen_control.en = 1;
@@ -2270,15 +1973,15 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 		acc->tcc.r_sqr_lut = imgu_css_tcc_r_sqr_lut;
 	}
 
-	/* acc_param: dpc_config */
+	 
 
 	if (use && use->acc_dpc)
-		return -EINVAL;	/* Not supported yet */
+		return -EINVAL;	 
 
-	/* Just disable by default */
+	 
 	memset(&acc->dpc, 0, sizeof(acc->dpc));
 
-	/* acc_param: bds_config */
+	 
 
 	bds_ds = (css_pipe->rect[IPU3_CSS_RECT_EFFECTIVE].height *
 		  IMGU_BDS_GRANULARITY) / css_pipe->rect[IPU3_CSS_RECT_BDS].height;
@@ -2317,28 +2020,28 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 
 	acc->bds.enabled = cfg_bds->hor_ds_en || cfg_bds->ver_ds_en;
 
-	/* acc_param: anr_config */
+	 
 
 	if (use && use->acc_anr) {
-		/* Take values from user */
+		 
 		acc->anr.transform = acc_user->anr.transform;
 		acc->anr.stitch.anr_stitch_en =
 			acc_user->anr.stitch.anr_stitch_en;
 		memcpy(acc->anr.stitch.pyramid, acc_user->anr.stitch.pyramid,
 		       sizeof(acc->anr.stitch.pyramid));
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->anr.transform = acc_old->anr.transform;
 		acc->anr.stitch.anr_stitch_en =
 			acc_old->anr.stitch.anr_stitch_en;
 		memcpy(acc->anr.stitch.pyramid, acc_old->anr.stitch.pyramid,
 		       sizeof(acc->anr.stitch.pyramid));
 	} else {
-		/* Calculate from scratch */
+		 
 		acc->anr = imgu_css_anr_defaults;
 	}
 
-	/* Always enabled */
+	 
 	acc->anr.search.enable = 1;
 	acc->anr.transform.enable = 1;
 	acc->anr.tile2strm.enable = 1;
@@ -2363,16 +2066,16 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 	if (acc->anr.transform.yreset < IPU3_UAPI_ANR_MIN_RESET)
 		acc->anr.transform.yreset = IPU3_UAPI_ANR_MIN_RESET;
 
-	/* acc_param: awb_fr_config */
+	 
 
 	if (use && use->acc_awb_fr) {
-		/* Take values from user */
+		 
 		acc->awb_fr.config = acc_user->awb_fr;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->awb_fr.config = acc_old->awb_fr.config;
 	} else {
-		/* Set from scratch */
+		 
 		acc->awb_fr.config = imgu_css_awb_fr_defaults;
 	}
 
@@ -2390,17 +2093,17 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 
 	if (acc->awb_fr.config.grid_cfg.x_start >=
 	    acc->stripe.down_scaled_stripes[1].offset + min_overlap) {
-		/* Enable only for rightmost stripe, disable left */
+		 
 		acc->awb_fr.stripes[0].grid_cfg.y_start &=
 					~IPU3_UAPI_GRID_Y_START_EN;
 	} else if (acc->awb_fr.config.grid_cfg.x_end <=
 		   acc->stripe.bds_out_stripes[0].width - min_overlap) {
-		/* Enable only for leftmost stripe, disable right */
+		 
 		acc->awb_fr.stripes[1].grid_cfg.y_start &=
 					~IPU3_UAPI_GRID_Y_START_EN;
 	} else {
-		/* Enable for both stripes */
-		u16 end; /* width for grid end */
+		 
+		u16 end;  
 
 		acc->awb_fr.stripes[0].grid_cfg.width =
 			(acc->stripe.bds_out_stripes[0].width - min_overlap -
@@ -2426,11 +2129,7 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 					b_w_log2);
 		acc->awb_fr.stripes[1].grid_cfg.x_end = end;
 
-		/*
-		 * To reduce complexity of debubbling and loading
-		 * statistics fix grid_height_per_slice to 1 for both
-		 * stripes.
-		 */
+		 
 		for (i = 0; i < stripes; i++)
 			acc->awb_fr.stripes[i].grid_cfg.height_per_slice = 1;
 	}
@@ -2438,22 +2137,22 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 	if (imgu_css_awb_fr_ops_calc(css, pipe, &acc->awb_fr))
 		return -EINVAL;
 
-	/* acc_param: ae_config */
+	 
 
 	if (use && use->acc_ae) {
-		/* Take values from user */
+		 
 		acc->ae.grid_cfg = acc_user->ae.grid_cfg;
 		acc->ae.ae_ccm = acc_user->ae.ae_ccm;
 		for (i = 0; i < IPU3_UAPI_AE_WEIGHTS; i++)
 			acc->ae.weights[i] = acc_user->ae.weights[i];
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->ae.grid_cfg = acc_old->ae.grid_cfg;
 		acc->ae.ae_ccm = acc_old->ae.ae_ccm;
 		for (i = 0; i < IPU3_UAPI_AE_WEIGHTS; i++)
 			acc->ae.weights[i] = acc_old->ae.weights[i];
 	} else {
-		/* Set from scratch */
+		 
 		static const struct ipu3_uapi_ae_weight_elem
 			weight_def = { 1, 1, 1, 1, 1, 1, 1, 1 };
 
@@ -2477,14 +2176,14 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 
 	if (acc->ae.grid_cfg.x_start >=
 	    acc->stripe.down_scaled_stripes[1].offset) {
-		/* Enable only for rightmost stripe, disable left */
+		 
 		acc->ae.stripes[0].grid.ae_en = 0;
 	} else if (acc->ae.grid_cfg.x_end <=
 		   acc->stripe.bds_out_stripes[0].width) {
-		/* Enable only for leftmost stripe, disable right */
+		 
 		acc->ae.stripes[1].grid.ae_en = 0;
 	} else {
-		/* Enable for both stripes */
+		 
 		u8 b_w_log2;
 
 		acc->ae.stripes[0].grid.width =
@@ -2512,17 +2211,17 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 					  b_w_log2);
 	}
 
-	/* acc_param: af_config */
+	 
 
 	if (use && use->acc_af) {
-		/* Take values from user */
+		 
 		acc->af.config.filter_config = acc_user->af.filter_config;
 		acc->af.config.grid_cfg = acc_user->af.grid_cfg;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->af.config = acc_old->af.config;
 	} else {
-		/* Set from scratch */
+		 
 		acc->af.config.filter_config =
 				imgu_css_af_defaults.filter_config;
 		acc->af.config.grid_cfg = imgu_css_af_defaults.grid_cfg;
@@ -2553,7 +2252,7 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 
 	if (acc->af.config.grid_cfg.x_start >=
 	    acc->stripe.down_scaled_stripes[1].offset + min_overlap) {
-		/* Enable only for rightmost stripe, disable left */
+		 
 		acc->af.stripes[0].grid_cfg.y_start &=
 			~IPU3_UAPI_GRID_Y_START_EN;
 		acc->af.stripes[1].grid_cfg.x_start =
@@ -2567,11 +2266,11 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 					  b_w_log2);
 	} else if (acc->af.config.grid_cfg.x_end <=
 		   acc->stripe.bds_out_stripes[0].width - min_overlap) {
-		/* Enable only for leftmost stripe, disable right */
+		 
 		acc->af.stripes[1].grid_cfg.y_start &=
 			~IPU3_UAPI_GRID_Y_START_EN;
 	} else {
-		/* Enable for both stripes */
+		 
 
 		acc->af.stripes[0].grid_cfg.width =
 			(acc->stripe.bds_out_stripes[0].width - min_overlap -
@@ -2598,10 +2297,7 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 					  acc->af.stripes[1].grid_cfg.width,
 					  b_w_log2);
 
-		/*
-		 * To reduce complexity of debubbling and loading statistics
-		 * fix grid_height_per_slice to 1 for both stripes
-		 */
+		 
 		for (i = 0; i < stripes; i++)
 			acc->af.stripes[i].grid_cfg.height_per_slice = 1;
 	}
@@ -2609,16 +2305,16 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 	if (imgu_css_af_ops_calc(css, pipe, &acc->af))
 		return -EINVAL;
 
-	/* acc_param: awb_config */
+	 
 
 	if (use && use->acc_awb) {
-		/* Take values from user */
+		 
 		acc->awb.config = acc_user->awb.config;
 	} else if (acc_old) {
-		/* Use old value */
+		 
 		acc->awb.config = acc_old->awb.config;
 	} else {
-		/* Set from scratch */
+		 
 		acc->awb.config = imgu_css_awb_defaults;
 	}
 
@@ -2634,7 +2330,7 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 
 	if (acc->awb.config.grid.x_start >=
 	    acc->stripe.down_scaled_stripes[1].offset + min_overlap) {
-		/* Enable only for rightmost stripe, disable left */
+		 
 		acc->awb.stripes[0].rgbs_thr_b &= ~IPU3_UAPI_AWB_RGBS_THR_B_EN;
 
 		acc->awb.stripes[1].grid.x_start =
@@ -2649,10 +2345,10 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 					  b_w_log2);
 	} else if (acc->awb.config.grid.x_end <=
 		   acc->stripe.bds_out_stripes[0].width - min_overlap) {
-		/* Enable only for leftmost stripe, disable right */
+		 
 		acc->awb.stripes[1].rgbs_thr_b &= ~IPU3_UAPI_AWB_RGBS_THR_B_EN;
 	} else {
-		/* Enable for both stripes */
+		 
 
 		acc->awb.stripes[0].grid.width =
 			(acc->stripe.bds_out_stripes[0].width -
@@ -2678,10 +2374,7 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 					  acc->awb.stripes[1].grid.width,
 					  b_w_log2);
 
-		/*
-		 * To reduce complexity of debubbling and loading statistics
-		 * fix grid_height_per_slice to 1 for both stripes
-		 */
+		 
 		for (i = 0; i < stripes; i++)
 			acc->awb.stripes[i].grid.height_per_slice = 1;
 	}
@@ -2692,15 +2385,7 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
 	return 0;
 }
 
-/*
- * Fill the indicated structure in `new_binary_params' from the possible
- * sources based on `use_user' flag: if the flag is false, copy from
- * `old_binary_params', or if the flag is true, copy from `user_setting'
- * and return NULL (or error pointer on error).
- * If the flag is false and `old_binary_params' is NULL, return pointer
- * to the structure inside `new_binary_params'. In that case the caller
- * should calculate and fill the structure from scratch.
- */
+ 
 static void *imgu_css_cfg_copy(struct imgu_css *css,
 			       unsigned int pipe, bool use_user,
 			       void *user_setting, void *old_binary_params,
@@ -2715,13 +2400,13 @@ static void *imgu_css_cfg_copy(struct imgu_css *css,
 	new_setting = imgu_css_fw_pipeline_params(css, pipe, c, m, par,
 						  par_size, new_binary_params);
 	if (!new_setting)
-		return ERR_PTR(-EPROTO);	/* Corrupted firmware */
+		return ERR_PTR(-EPROTO);	 
 
 	if (use_user) {
-		/* Take new user parameters */
+		 
 		memcpy(new_setting, user_setting, par_size);
 	} else if (old_binary_params) {
-		/* Take previous value */
+		 
 		old_setting = imgu_css_fw_pipeline_params(css, pipe, c, m, par,
 							  par_size,
 							  old_binary_params);
@@ -2729,15 +2414,13 @@ static void *imgu_css_cfg_copy(struct imgu_css *css,
 			return ERR_PTR(-EPROTO);
 		memcpy(new_setting, old_setting, par_size);
 	} else {
-		return new_setting;	/* Need to calculate */
+		return new_setting;	 
 	}
 
-	return NULL;		/* Copied from other value */
+	return NULL;		 
 }
 
-/*
- * Configure VMEM0 parameters (late binding parameters).
- */
+ 
 int imgu_css_cfg_vmem0(struct imgu_css *css, unsigned int pipe,
 		       struct ipu3_uapi_flags *use,
 		       void *vmem0, void *vmem0_old,
@@ -2754,17 +2437,17 @@ int imgu_css_cfg_vmem0(struct imgu_css *css, unsigned int pipe,
 	const enum imgu_abi_memories m = IMGU_ABI_MEM_ISP_VMEM0;
 	unsigned int i;
 
-	/* Configure VMEM0 */
+	 
 
 	memset(vmem0, 0, bi->info.isp.sp.mem_initializers.params[c][m].size);
 
-	/* Configure Linearization VMEM0 parameters */
+	 
 
 	lin_vmem = imgu_css_cfg_copy(css, pipe, use && use->lin_vmem_params,
 				     &user->lin_vmem_params, vmem0_old, vmem0,
 				     m, &pofs->vmem.lin, sizeof(*lin_vmem));
 	if (!IS_ERR_OR_NULL(lin_vmem)) {
-		/* Generate parameter from scratch */
+		 
 		for (i = 0; i < IPU3_UAPI_LIN_LUT_SIZE; i++) {
 			lin_vmem->lin_lutlow_gr[i] = 32 * i;
 			lin_vmem->lin_lutlow_r[i] = 32 * i;
@@ -2778,7 +2461,7 @@ int imgu_css_cfg_vmem0(struct imgu_css *css, unsigned int pipe,
 		}
 	}
 
-	/* Configure TNR3 VMEM parameters */
+	 
 	if (css->pipes[pipe].pipe_id == IPU3_CSS_PIPE_ID_VIDEO) {
 		tnr_vmem = imgu_css_cfg_copy(css, pipe,
 					     use && use->tnr3_vmem_params,
@@ -2787,14 +2470,14 @@ int imgu_css_cfg_vmem0(struct imgu_css *css, unsigned int pipe,
 					     &pofs->vmem.tnr3,
 					     sizeof(*tnr_vmem));
 		if (!IS_ERR_OR_NULL(tnr_vmem)) {
-			/* Generate parameter from scratch */
+			 
 			for (i = 0; i < IPU3_UAPI_ISP_TNR3_VMEM_LEN; i++)
 				tnr_vmem->sigma[i] = 256;
 		}
 	}
 	i = IPU3_UAPI_ISP_TNR3_VMEM_LEN;
 
-	/* Configure XNR3 VMEM parameters */
+	 
 
 	xnr_vmem = imgu_css_cfg_copy(css, pipe, use && use->xnr3_vmem_params,
 				     &user->xnr3_vmem_params, vmem0_old, vmem0,
@@ -2814,9 +2497,7 @@ int imgu_css_cfg_vmem0(struct imgu_css *css, unsigned int pipe,
 		-EPROTO : 0;
 }
 
-/*
- * Configure DMEM0 parameters (late binding parameters).
- */
+ 
 int imgu_css_cfg_dmem0(struct imgu_css *css, unsigned int pipe,
 		       struct ipu3_uapi_flags *use,
 		       void *dmem0, void *dmem0_old,
@@ -2834,11 +2515,11 @@ int imgu_css_cfg_dmem0(struct imgu_css *css, unsigned int pipe,
 	const enum imgu_abi_param_class c = IMGU_ABI_PARAM_CLASS_PARAM;
 	const enum imgu_abi_memories m = IMGU_ABI_MEM_ISP_DMEM0;
 
-	/* Configure DMEM0 */
+	 
 
 	memset(dmem0, 0, bi->info.isp.sp.mem_initializers.params[c][m].size);
 
-	/* Configure TNR3 DMEM0 parameters */
+	 
 	if (css_pipe->pipe_id == IPU3_CSS_PIPE_ID_VIDEO) {
 		tnr_dmem = imgu_css_cfg_copy(css, pipe,
 					     use && use->tnr3_dmem_params,
@@ -2847,19 +2528,19 @@ int imgu_css_cfg_dmem0(struct imgu_css *css, unsigned int pipe,
 					     &pofs->dmem.tnr3,
 					     sizeof(*tnr_dmem));
 		if (!IS_ERR_OR_NULL(tnr_dmem)) {
-			/* Generate parameter from scratch */
+			 
 			tnr_dmem->knee_y1 = 768;
 			tnr_dmem->knee_y2 = 1280;
 		}
 	}
 
-	/* Configure XNR3 DMEM0 parameters */
+	 
 
 	xnr_dmem = imgu_css_cfg_copy(css, pipe, use && use->xnr3_dmem_params,
 				     &user->xnr3_dmem_params, dmem0_old, dmem0,
 				     m, &pofs->dmem.xnr3, sizeof(*xnr_dmem));
 	if (!IS_ERR_OR_NULL(xnr_dmem)) {
-		/* Generate parameter from scratch */
+		 
 		xnr_dmem->alpha.y0 = 2047;
 		xnr_dmem->alpha.u0 = 2047;
 		xnr_dmem->alpha.v0 = 2047;
@@ -2868,7 +2549,7 @@ int imgu_css_cfg_dmem0(struct imgu_css *css, unsigned int pipe,
 	return IS_ERR(tnr_dmem) || IS_ERR(xnr_dmem) ? -EPROTO : 0;
 }
 
-/* Generate unity morphing table without morphing effect */
+ 
 void imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,
 			    int frame_in_x, int frame_in_y,
 			    int frame_out_x, int frame_out_y,
@@ -2878,7 +2559,7 @@ void imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,
 	static const unsigned int XMEM_ALIGN = 1 << 4;
 	const unsigned int XMEM_ALIGN_MASK = ~(XMEM_ALIGN - 1);
 	static const unsigned int BCI_ENV = 4;
-	static const unsigned int BYP = 2;	/* Bytes per pixel */
+	static const unsigned int BYP = 2;	 
 	const unsigned int OFFSET_X = 2 * IMGU_DVS_BLOCK_W + env_w + 1;
 	const unsigned int OFFSET_Y = IMGU_DVS_BLOCK_H + env_h + 1;
 
@@ -2889,7 +2570,7 @@ void imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,
 	unsigned int blocks_y = DIV_ROUND_UP(frame_out_y, IMGU_DVS_BLOCK_H);
 	unsigned int y0, x0, x1, x, y;
 
-	/* Global luma settings */
+	 
 	gdc_luma.origin_x = 0;
 	gdc_luma.origin_y = 0;
 	gdc_luma.p0_x = (OFFSET_X - (OFFSET_X & XMEM_ALIGN_MASK)) << FRAC_BITS;
@@ -2911,7 +2592,7 @@ void imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,
 	gdc_luma.in_block_height = IMGU_DVS_BLOCK_H + BCI_ENV;
 	gdc_luma.padding = 0;
 
-	/* Global chroma settings */
+	 
 	gdc_chroma.origin_x = 0;
 	gdc_chroma.origin_y = 0;
 	gdc_chroma.p0_x = (OFFSET_X / 2 - (OFFSET_X / 2 & XMEM_ALIGN_MASK)) <<
@@ -2933,11 +2614,11 @@ void imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,
 	gdc_chroma.in_block_height = IMGU_DVS_BLOCK_H / 2 + BCI_ENV;
 	gdc_chroma.padding = 0;
 
-	/* Calculate block offsets for luma and chroma */
+	 
 	for (y0 = 0; y0 < blocks_y; y0++) {
 		for (x0 = 0; x0 < blocks_x / 2; x0++) {
 			for (x1 = 0; x1 < 2; x1++) {
-				/* Luma blocks */
+				 
 				x = (x0 * 2 + x1) * IMGU_DVS_BLOCK_W + OFFSET_X;
 				x &= XMEM_ALIGN_MASK;
 				y = y0 * IMGU_DVS_BLOCK_H + OFFSET_Y;
@@ -2947,7 +2628,7 @@ void imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,
 				gdc++;
 			}
 
-			/* Chroma block */
+			 
 			x = x0 * IMGU_DVS_BLOCK_W + OFFSET_X / 2;
 			x &= XMEM_ALIGN_MASK;
 			y = y0 * (IMGU_DVS_BLOCK_H / 2) + OFFSET_Y / 2;

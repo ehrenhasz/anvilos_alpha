@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_dmic.c - Tegra210 DMIC driver
-//
-// Copyright (c) 2020 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -23,11 +23,11 @@ static const struct reg_default tegra210_dmic_reg_defaults[] = {
 	{ TEGRA210_DMIC_TX_CIF_CTRL, 0x00007700 },
 	{ TEGRA210_DMIC_CG, 0x1 },
 	{ TEGRA210_DMIC_CTRL, 0x00000301 },
-	/* Below enables all filters - DCR, LP and SC */
+	 
 	{ TEGRA210_DMIC_DBG_CTRL, 0xe },
-	/* Below as per latest POR value */
+	 
 	{ TEGRA210_DMIC_DCR_BIQUAD_0_COEF_4, 0x0 },
-	/* LP filter is configured for pass through and used to apply gain */
+	 
 	{ TEGRA210_DMIC_LP_BIQUAD_0_COEF_0, 0x00800000 },
 	{ TEGRA210_DMIC_LP_BIQUAD_0_COEF_1, 0x0 },
 	{ TEGRA210_DMIC_LP_BIQUAD_0_COEF_2, 0x0 },
@@ -100,10 +100,7 @@ static int tegra210_dmic_hw_params(struct snd_pcm_substream *substream,
 
 	srate = params_rate(params);
 
-	/*
-	 * DMIC clock rate is a multiple of 'Over Sampling Ratio' and
-	 * 'Sample Rate'. The supported OSR values are 64, 128 and 256.
-	 */
+	 
 	clk_rate = (DMIC_OSR_FACTOR << dmic->osr_val) * srate;
 
 	err = clk_set_rate(dmic->clk_dmic, clk_rate);
@@ -114,21 +111,18 @@ static int tegra210_dmic_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	regmap_update_bits(dmic->regmap,
-			   /* Reg */
+			    
 			   TEGRA210_DMIC_CTRL,
-			   /* Mask */
+			    
 			   TEGRA210_DMIC_CTRL_LRSEL_POLARITY_MASK |
 			   TEGRA210_DMIC_CTRL_OSR_MASK |
 			   TEGRA210_DMIC_CTRL_CHANNEL_SELECT_MASK,
-			   /* Value */
+			    
 			   (dmic->lrsel << LRSEL_POL_SHIFT) |
 			   (dmic->osr_val << OSR_SHIFT) |
 			   ((dmic->ch_select + 1) << CH_SEL_SHIFT));
 
-	/*
-	 * Use LP filter gain register to apply boost.
-	 * Boost Gain Volume control has 100x factor.
-	 */
+	 
 	if (dmic->boost_gain)
 		gain_q23 = div_u64(gain_q23 * dmic->boost_gain, 100);
 
@@ -498,7 +492,7 @@ static int tegra210_dmic_probe(struct platform_device *pdev)
 	dmic->ch_select = DMIC_CH_SELECT_STEREO;
 	dmic->lrsel = DMIC_LRSEL_LEFT;
 	dmic->boost_gain = 0;
-	dmic->stereo_to_mono = 0; /* "CH0" */
+	dmic->stereo_to_mono = 0;  
 
 	dev_set_drvdata(dev, dmic);
 

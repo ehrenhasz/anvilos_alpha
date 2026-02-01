@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define pr_fmt(fmt)     "DMAR-IR: " fmt
 
@@ -32,8 +32,8 @@ enum irq_mode {
 struct ioapic_scope {
 	struct intel_iommu *iommu;
 	unsigned int id;
-	unsigned int bus;	/* PCI bus number */
-	unsigned int devfn;	/* PCI devfn number */
+	unsigned int bus;	 
+	unsigned int devfn;	 
 };
 
 struct hpet_scope {
@@ -66,17 +66,7 @@ static int __read_mostly eim_mode;
 static struct ioapic_scope ir_ioapic[MAX_IO_APICS];
 static struct hpet_scope ir_hpet[MAX_HPET_TBS];
 
-/*
- * Lock ordering:
- * ->dmar_global_lock
- *	->irq_2_ir_lock
- *		->qi->q_lock
- *	->iommu->register_lock
- * Note:
- * intel_irq_remap_ops.{supported,prepare,enable,disable,reenable} are called
- * in single-threaded environment with interrupt disabled, so no need to tabke
- * the dmar_global_lock.
- */
+ 
 DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
 static const struct irq_domain_ops intel_ir_domain_ops;
 
@@ -175,12 +165,7 @@ static int modify_irte(struct irq_2_iommu *irq_iommu,
 	irte = &iommu->ir_table->base[index];
 
 	if ((irte->pst == 1) || (irte_modified->pst == 1)) {
-		/*
-		 * We use cmpxchg16 to atomically update the 128-bit IRTE,
-		 * and it cannot be updated by the hardware or other processors
-		 * behind us, so the return value of cmpxchg16 should be the
-		 * same as the old value.
-		 */
+		 
 		u128 old = irte->irte;
 		WARN_ON(!try_cmpxchg128(&irte->irte, &old, irte_modified->irte));
 	} else {
@@ -191,7 +176,7 @@ static int modify_irte(struct irq_2_iommu *irq_iommu,
 
 	rc = qi_flush_iec(iommu, index, 0);
 
-	/* Update iommu mode according to the IRTE mode */
+	 
 	irq_iommu->mode = irte->pst ? IRQ_POSTING : IRQ_REMAPPING;
 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
 
@@ -252,31 +237,18 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
 	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
 }
 
-/*
- * source validation type
- */
-#define SVT_NO_VERIFY		0x0  /* no verification is required */
-#define SVT_VERIFY_SID_SQ	0x1  /* verify using SID and SQ fields */
-#define SVT_VERIFY_BUS		0x2  /* verify bus of request-id */
+ 
+#define SVT_NO_VERIFY		0x0   
+#define SVT_VERIFY_SID_SQ	0x1   
+#define SVT_VERIFY_BUS		0x2   
 
-/*
- * source-id qualifier
- */
-#define SQ_ALL_16	0x0  /* verify all 16 bits of request-id */
-#define SQ_13_IGNORE_1	0x1  /* verify most significant 13 bits, ignore
-			      * the third least significant bit
-			      */
-#define SQ_13_IGNORE_2	0x2  /* verify most significant 13 bits, ignore
-			      * the second and third least significant bits
-			      */
-#define SQ_13_IGNORE_3	0x3  /* verify most significant 13 bits, ignore
-			      * the least three significant bits
-			      */
+ 
+#define SQ_ALL_16	0x0   
+#define SQ_13_IGNORE_1	0x1   
+#define SQ_13_IGNORE_2	0x2   
+#define SQ_13_IGNORE_3	0x3   
 
-/*
- * set SVT, SQ and SID fields of irte to verify
- * source ids of interrupt requests
- */
+ 
 static void set_irte_sid(struct irte *irte, unsigned int svt,
 			 unsigned int sq, unsigned int sid)
 {
@@ -287,11 +259,7 @@ static void set_irte_sid(struct irte *irte, unsigned int svt,
 	irte->sid = sid;
 }
 
-/*
- * Set an IRTE to match only the bus number. Interrupt requests that reference
- * this IRTE must have a requester-id whose bus number is between or equal
- * to the start_bus and end_bus arguments.
- */
+ 
 static void set_irte_verify_bus(struct irte *irte, unsigned int start_bus,
 				unsigned int end_bus)
 {
@@ -344,11 +312,7 @@ static int set_hpet_sid(struct irte *irte, u8 id)
 		return -1;
 	}
 
-	/*
-	 * Should really use SQ_ALL_16. Some platforms are broken.
-	 * While we figure out the right quirks for these broken platforms, use
-	 * SQ_13_IGNORE_3 for now.
-	 */
+	 
 	set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_13_IGNORE_3, sid);
 
 	return 0;
@@ -386,24 +350,7 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
 	data.busmatch_count = 0;
 	pci_for_each_dma_alias(dev, set_msi_sid_cb, &data);
 
-	/*
-	 * DMA alias provides us with a PCI device and alias.  The only case
-	 * where the it will return an alias on a different bus than the
-	 * device is the case of a PCIe-to-PCI bridge, where the alias is for
-	 * the subordinate bus.  In this case we can only verify the bus.
-	 *
-	 * If there are multiple aliases, all with the same bus number,
-	 * then all we can do is verify the bus. This is typical in NTB
-	 * hardware which use proxy IDs where the device will generate traffic
-	 * from multiple devfn numbers on the same bus.
-	 *
-	 * If the alias device is on a different bus than our source device
-	 * then we have a topology based alias, use it.
-	 *
-	 * Otherwise, the alias is for a device DMA quirk and we cannot
-	 * assume that MSI uses the same requester ID.  Therefore use the
-	 * original device.
-	 */
+	 
 	if (PCI_BUS_NUM(data.alias) != data.pdev->bus->number)
 		set_irte_verify_bus(irte, PCI_BUS_NUM(data.alias),
 				    dev->bus->number);
@@ -426,7 +373,7 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
 	size_t size;
 	u64 irta;
 
-	/* Check whether the old ir-table has the same size as ours */
+	 
 	irta = dmar_readq(iommu->reg + DMAR_IRTA_REG);
 	if ((irta & INTR_REMAP_TABLE_REG_SIZE_MASK)
 	     != INTR_REMAP_TABLE_REG_SIZE)
@@ -435,20 +382,17 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
 	irt_phys = irta & VTD_PAGE_MASK;
 	size     = INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte);
 
-	/* Map the old IR table */
+	 
 	old_ir_table = memremap(irt_phys, size, MEMREMAP_WB);
 	if (!old_ir_table)
 		return -ENOMEM;
 
-	/* Copy data over */
+	 
 	memcpy(iommu->ir_table->base, old_ir_table, size);
 
 	__iommu_flush_cache(iommu, iommu->ir_table->base, size);
 
-	/*
-	 * Now check the table for used entries and mark those as
-	 * allocated in the bitmap
-	 */
+	 
 	for (i = 0; i < INTR_REMAP_TABLE_ENTRIES; i++) {
 		if (iommu->ir_table->base[i].present)
 			bitmap_set(iommu->ir_table->bitmap, i, 1);
@@ -473,17 +417,14 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
 	dmar_writeq(iommu->reg + DMAR_IRTA_REG,
 		    (addr) | IR_X2APIC_MODE(mode) | INTR_REMAP_TABLE_REG_SIZE);
 
-	/* Set interrupt-remapping table pointer */
+	 
 	writel(iommu->gcmd | DMA_GCMD_SIRTP, iommu->reg + DMAR_GCMD_REG);
 
 	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
 		      readl, (sts & DMA_GSTS_IRTPS), sts);
 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
 
-	/*
-	 * Global invalidation of interrupt entry cache to make sure the
-	 * hardware uses the new irq remapping table.
-	 */
+	 
 	if (!cap_esirtps(iommu->cap))
 		qi_global_iec(iommu);
 }
@@ -495,13 +436,13 @@ static void iommu_enable_irq_remapping(struct intel_iommu *iommu)
 
 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
 
-	/* Enable interrupt-remapping */
+	 
 	iommu->gcmd |= DMA_GCMD_IRE;
 	writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
 	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
 		      readl, (sts & DMA_GSTS_IRES), sts);
 
-	/* Block compatibility-format MSIs */
+	 
 	if (sts & DMA_GSTS_CFIS) {
 		iommu->gcmd &= ~DMA_GCMD_CFI;
 		writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
@@ -509,11 +450,7 @@ static void iommu_enable_irq_remapping(struct intel_iommu *iommu)
 			      readl, !(sts & DMA_GSTS_CFIS), sts);
 	}
 
-	/*
-	 * With CFI clear in the Global Command register, we should be
-	 * protected from dangerous (i.e. compatibility) interrupts
-	 * regardless of x2apic status.  Check just to be sure.
-	 */
+	 
 	if (sts & DMA_GSTS_CFIS)
 		WARN(1, KERN_WARNING
 			"Compatibility-format IRQs enabled despite intr remapping;\n"
@@ -577,14 +514,9 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
 	ir_table->bitmap = bitmap;
 	iommu->ir_table = ir_table;
 
-	/*
-	 * If the queued invalidation is already initialized,
-	 * shouldn't disable it.
-	 */
+	 
 	if (!iommu->qi) {
-		/*
-		 * Clear previous faults.
-		 */
+		 
 		dmar_fault(-1, iommu);
 		dmar_disable_qi(iommu);
 
@@ -651,9 +583,7 @@ static void intel_teardown_irq_remapping(struct intel_iommu *iommu)
 	}
 }
 
-/*
- * Disable Interrupt Remapping.
- */
+ 
 static void iommu_disable_irq_remapping(struct intel_iommu *iommu)
 {
 	unsigned long flags;
@@ -662,10 +592,7 @@ static void iommu_disable_irq_remapping(struct intel_iommu *iommu)
 	if (!ecap_ir_support(iommu->ecap))
 		return;
 
-	/*
-	 * global invalidation of interrupt entry cache before disabling
-	 * interrupt-remapping.
-	 */
+	 
 	if (!cap_esirtps(iommu->cap))
 		qi_global_iec(iommu);
 
@@ -740,12 +667,12 @@ static int __init intel_prepare_irq_remapping(void)
 		goto error;
 	}
 
-	/* First make sure all IOMMUs support IRQ remapping */
+	 
 	for_each_iommu(iommu, drhd)
 		if (!ecap_ir_support(iommu->ecap))
 			goto error;
 
-	/* Detect remapping mode: lapic or x2apic */
+	 
 	if (x2apic_supported()) {
 		eim = !dmar_x2apic_optout();
 		if (!eim) {
@@ -765,7 +692,7 @@ static int __init intel_prepare_irq_remapping(void)
 	if (eim)
 		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
 
-	/* Do the initializations early */
+	 
 	for_each_iommu(iommu, drhd) {
 		if (intel_setup_irq_remapping(iommu)) {
 			pr_err("Failed to setup irq remapping for %s\n",
@@ -781,23 +708,14 @@ error:
 	return -ENODEV;
 }
 
-/*
- * Set Posted-Interrupts capability.
- */
+ 
 static inline void set_irq_posting_cap(void)
 {
 	struct dmar_drhd_unit *drhd;
 	struct intel_iommu *iommu;
 
 	if (!disable_irq_post) {
-		/*
-		 * If IRTE is in posted format, the 'pda' field goes across the
-		 * 64-bit boundary, we need use cmpxchg16b to atomically update
-		 * it. We only expose posted-interrupt when X86_FEATURE_CX16
-		 * is supported. Actually, hardware platforms supporting PI
-		 * should have X86_FEATURE_CX16 support, this has been confirmed
-		 * with Intel hardware guys.
-		 */
+		 
 		if (boot_cpu_has(X86_FEATURE_CX16))
 			intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
 
@@ -816,9 +734,7 @@ static int __init intel_enable_irq_remapping(void)
 	struct intel_iommu *iommu;
 	bool setup = false;
 
-	/*
-	 * Setup Interrupt-remapping for all the DRHD's now.
-	 */
+	 
 	for_each_iommu(iommu, drhd) {
 		if (!ir_pre_enabled(iommu))
 			iommu_enable_irq_remapping(iommu);
@@ -855,10 +771,7 @@ static int ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
 		/ sizeof(struct acpi_dmar_pci_path);
 
 	while (--count > 0) {
-		/*
-		 * Access PCI directly due to the PCI
-		 * subsystem isn't initialized yet.
-		 */
+		 
 		bus = read_pci_config_byte(bus, path->device, path->function,
 					   PCI_SECONDARY_BUS);
 		path++;
@@ -900,10 +813,7 @@ static int ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
 		/ sizeof(struct acpi_dmar_pci_path);
 
 	while (--count > 0) {
-		/*
-		 * Access PCI directly due to the PCI
-		 * subsystem isn't initialized yet.
-		 */
+		 
 		bus = read_pci_config_byte(bus, path->device, path->function,
 					   PCI_SECONDARY_BUS);
 		path++;
@@ -968,10 +878,7 @@ static void ir_remove_ioapic_hpet_scope(struct intel_iommu *iommu)
 			ir_ioapic[i].iommu = NULL;
 }
 
-/*
- * Finds the assocaition between IOAPIC's and its Interrupt-remapping
- * hardware unit.
- */
+ 
 static int __init parse_ioapics_under_ir(void)
 {
 	struct dmar_drhd_unit *drhd;
@@ -1028,9 +935,7 @@ static void disable_irq_remapping(void)
 	struct dmar_drhd_unit *drhd;
 	struct intel_iommu *iommu = NULL;
 
-	/*
-	 * Disable Interrupt-remapping for all the DRHD's now.
-	 */
+	 
 	for_each_iommu(iommu, drhd) {
 		if (!ecap_ir_support(iommu->ecap))
 			continue;
@@ -1038,9 +943,7 @@ static void disable_irq_remapping(void)
 		iommu_disable_irq_remapping(iommu);
 	}
 
-	/*
-	 * Clear Posted-Interrupts capability.
-	 */
+	 
 	if (!disable_irq_post)
 		intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
 }
@@ -1055,14 +958,12 @@ static int reenable_irq_remapping(int eim)
 		if (iommu->qi)
 			dmar_reenable_qi(iommu);
 
-	/*
-	 * Setup Interrupt-remapping for all the DRHD's now.
-	 */
+	 
 	for_each_iommu(iommu, drhd) {
 		if (!ecap_ir_support(iommu->ecap))
 			continue;
 
-		/* Set up interrupt remapping for iommu.*/
+		 
 		iommu_set_irq_remapping(iommu, eim);
 		iommu_enable_irq_remapping(iommu);
 		setup = true;
@@ -1076,20 +977,11 @@ static int reenable_irq_remapping(int eim)
 	return 0;
 
 error:
-	/*
-	 * handle error condition gracefully here!
-	 */
+	 
 	return -1;
 }
 
-/*
- * Store the MSI remapping domain pointer in the device if enabled.
- *
- * This is called from dmar_pci_bus_add_dev() so it works even when DMA
- * remapping is disabled. Only update the pointer if the device is not
- * already handled by a non default PCI/MSI interrupt domain. This protects
- * e.g. VMD devices.
- */
+ 
 void intel_irq_remap_add_device(struct dmar_pci_notify_info *info)
 {
 	if (!irq_remapping_enabled || !pci_dev_has_default_msi_parent_domain(info->dev))
@@ -1104,13 +996,7 @@ static void prepare_irte(struct irte *irte, int vector, unsigned int dest)
 
 	irte->present = 1;
 	irte->dst_mode = apic->dest_mode_logical;
-	/*
-	 * Trigger mode in the IRTE will always be edge, and for IO-APIC, the
-	 * actual level or edge trigger will be setup in the IO-APIC
-	 * RTE. This will help simplify level triggered irq migration.
-	 * For more details, see the comments (in io_apic.c) explainig IO-APIC
-	 * irq migration in the presence of interrupt-remapping.
-	*/
+	 
 	irte->trigger_mode = 0;
 	irte->dlvry_mode = apic->delivery_mode;
 	irte->vector = vector;
@@ -1132,32 +1018,16 @@ static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
 	struct irte *irte = &ir_data->irte_entry;
 	struct irq_cfg *cfg = irqd_cfg(irqd);
 
-	/*
-	 * Atomically updates the IRTE with the new destination, vector
-	 * and flushes the interrupt entry cache.
-	 */
+	 
 	irte->vector = cfg->vector;
 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
 
-	/* Update the hardware only if the interrupt is in remapped mode. */
+	 
 	if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
 		modify_irte(&ir_data->irq_2_iommu, irte);
 }
 
-/*
- * Migrate the IO-APIC irq in the presence of intr-remapping.
- *
- * For both level and edge triggered, irq migration is a simple atomic
- * update(of vector and cpu destination) of IRTE and flush the hardware cache.
- *
- * For level triggered, we eliminate the io-apic RTE modification (with the
- * updated vector information), by using a virtual vector (io-apic pin number).
- * Real vector that is used for interrupting cpu will be coming from
- * the interrupt-remapping table entry.
- *
- * As the migration is a simple atomic update of IRTE, the same mechanism
- * is used to migrate MSI irq's in the presence of interrupt-remapping.
- */
+ 
 static int
 intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
 		      bool force)
@@ -1171,11 +1041,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
 		return ret;
 
 	intel_ir_reconfigure_irte(data, false);
-	/*
-	 * After this point, all the interrupts will start arriving
-	 * at the new destination. So, time to cleanup the previous
-	 * vector allocation.
-	 */
+	 
 	vector_schedule_cleanup(cfg);
 
 	return IRQ_SET_MASK_OK_DONE;
@@ -1194,23 +1060,17 @@ static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *info)
 	struct intel_ir_data *ir_data = data->chip_data;
 	struct vcpu_data *vcpu_pi_info = info;
 
-	/* stop posting interrupts, back to remapping mode */
+	 
 	if (!vcpu_pi_info) {
 		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
 	} else {
 		struct irte irte_pi;
 
-		/*
-		 * We are not caching the posted interrupt entry. We
-		 * copy the data from the remapped entry and modify
-		 * the fields which are relevant for posted mode. The
-		 * cached remapped entry is used for switching back to
-		 * remapped mode.
-		 */
+		 
 		memset(&irte_pi, 0, sizeof(irte_pi));
 		dmar_copy_shared_irte(&irte_pi, &ir_data->irte_entry);
 
-		/* Update the posted mode fields */
+		 
 		irte_pi.p_pst = 1;
 		irte_pi.p_urgent = 0;
 		irte_pi.p_vector = vcpu_pi_info->vector;
@@ -1259,7 +1119,7 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
 
 	switch (info->type) {
 	case X86_IRQ_ALLOC_TYPE_IOAPIC:
-		/* Set source-id of interrupt request */
+		 
 		set_ioapic_sid(irte, info->devid);
 		apic_printk(APIC_VERBOSE, KERN_DEBUG "IOAPIC[%d]: Set IRTE entry (P:%d FPD:%d Dst_Mode:%d Redir_hint:%d Trig_Mode:%d Dlvry_Mode:%X Avail:%X Vector:%02X Dest:%08X SID:%04X SQ:%X SVT:%X)\n",
 			info->devid, irte->present, irte->fpd,
@@ -1352,7 +1212,7 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
 			ird = kzalloc(sizeof(*ird), GFP_KERNEL);
 			if (!ird)
 				goto out_free_data;
-			/* Initialize the common data */
+			 
 			ird->irq_2_iommu = data->irq_2_iommu;
 			ird->irq_2_iommu.sub_handle = i;
 		} else {
@@ -1435,9 +1295,7 @@ static const struct msi_parent_ops virt_dmar_msi_parent_ops = {
 	.init_dev_msi_info	= msi_parent_init_dev_msi_info,
 };
 
-/*
- * Support of Interrupt Remapping Unit Hotplug
- */
+ 
 static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
 {
 	int ret;
@@ -1459,9 +1317,9 @@ static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
 		return -ENODEV;
 	}
 
-	/* TODO: check all IOAPICs are covered by IOMMU */
+	 
 
-	/* Setup Interrupt-remapping now. */
+	 
 	ret = intel_setup_irq_remapping(iommu);
 	if (ret) {
 		pr_err("Failed to setup irq remapping for %s\n",

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/range.h>
@@ -41,7 +41,7 @@ void x86_pci_root_bus_resources(int bus, struct list_head *resources)
 	printk(KERN_DEBUG "PCI: root bus %02x: hardware-probed resources\n",
 	       bus);
 
-	/* already added by acpi ? */
+	 
 	resource_list_for_each_entry(window, resources)
 		if (window->res->flags & IORESOURCE_BUS) {
 			found = true;
@@ -57,11 +57,7 @@ void x86_pci_root_bus_resources(int bus, struct list_head *resources)
 	return;
 
 default_resources:
-	/*
-	 * We don't have any host bridge aperture information from the
-	 * "native host bridge drivers," e.g., amd_bus or broadcom_bus,
-	 * so fall back to the defaults historically used by pci_create_bus().
-	 */
+	 
 	printk(KERN_DEBUG "PCI: root bus %02x: using default resources\n", bus);
 	pci_add_resource(resources, &ioport_resource);
 	pci_add_resource(resources, &iomem_resource);
@@ -107,7 +103,7 @@ void update_res(struct pci_root_info *info, resource_size_t start,
 	if (!merge)
 		goto addit;
 
-	/* try to merge it with old one */
+	 
 	list_for_each_entry(root_res, &info->resources, list) {
 		resource_size_t final_start, final_end;
 		resource_size_t common_start, common_end;
@@ -131,7 +127,7 @@ void update_res(struct pci_root_info *info, resource_size_t start,
 
 addit:
 
-	/* need to add that */
+	 
 	root_res = kzalloc(sizeof(*root_res), GFP_KERNEL);
 	if (!root_res)
 		return;

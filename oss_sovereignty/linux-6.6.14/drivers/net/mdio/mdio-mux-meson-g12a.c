@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Baylibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -84,19 +82,15 @@ static int g12a_ephy_pll_enable(struct clk_hw *hw)
 	struct g12a_ephy_pll *pll = g12a_ephy_pll_to_dev(hw);
 	u32 val = readl(pll->base + ETH_PLL_CTL0);
 
-	/* Apply both enable an reset */
+	 
 	val |= PLL_CTL0_RST | PLL_CTL0_EN;
 	writel(val, pll->base + ETH_PLL_CTL0);
 
-	/* Clear the reset to let PLL lock */
+	 
 	val &= ~PLL_CTL0_RST;
 	writel(val, pll->base + ETH_PLL_CTL0);
 
-	/* Poll on the digital lock instead of the usual analog lock
-	 * This is done because bit 31 is unreliable on some SoC. Bit
-	 * 31 may indicate that the PLL is not lock even though the clock
-	 * is actually running
-	 */
+	 
 	return readl_poll_timeout(pll->base + ETH_PLL_CTL0, val,
 				  val & PLL_CTL0_LOCK_DIG, 0, PLL_LOCK_TIMEOUT);
 }
@@ -126,7 +120,7 @@ static int g12a_ephy_pll_init(struct clk_hw *hw)
 {
 	struct g12a_ephy_pll *pll = g12a_ephy_pll_to_dev(hw);
 
-	/* Apply PLL HW settings */
+	 
 	writel(0x29c0040a, pll->base + ETH_PLL_CTL0);
 	writel(0x927e0000, pll->base + ETH_PLL_CTL1);
 	writel(0xac5f49e5, pll->base + ETH_PLL_CTL2);
@@ -152,17 +146,17 @@ static int g12a_enable_internal_mdio(struct g12a_mdio_mux *priv)
 	u32 value;
 	int ret;
 
-	/* Enable the phy clock */
+	 
 	if (!__clk_is_enabled(priv->pll)) {
 		ret = clk_prepare_enable(priv->pll);
 		if (ret)
 			return ret;
 	}
 
-	/* Initialize ephy control */
+	 
 	writel(EPHY_G12A_ID, priv->regs + ETH_PHY_CNTL0);
 
-	/* Make sure we get a 0 -> 1 transition on the enable bit */
+	 
 	value = FIELD_PREP(PHY_CNTL1_ST_MODE, 3) |
 		FIELD_PREP(PHY_CNTL1_ST_PHYADD, EPHY_DFLT_ADD) |
 		FIELD_PREP(PHY_CNTL1_MII_MODE, EPHY_MODE_RMII) |
@@ -177,7 +171,7 @@ static int g12a_enable_internal_mdio(struct g12a_mdio_mux *priv)
 	value |= PHY_CNTL1_PHY_ENB;
 	writel(value, priv->regs + ETH_PHY_CNTL1);
 
-	/* The phy needs a bit of time to power up */
+	 
 	mdelay(10);
 
 	return 0;
@@ -185,10 +179,10 @@ static int g12a_enable_internal_mdio(struct g12a_mdio_mux *priv)
 
 static int g12a_enable_external_mdio(struct g12a_mdio_mux *priv)
 {
-	/* Reset the mdio bus mux */
+	 
 	writel_relaxed(0x0, priv->regs + ETH_PHY_CNTL2);
 
-	/* Disable the phy clock if enabled */
+	 
 	if (__clk_is_enabled(priv->pll))
 		clk_disable_unprepare(priv->pll);
 
@@ -230,7 +224,7 @@ static int g12a_ephy_glue_clk_register(struct device *dev)
 	char *name;
 	int i;
 
-	/* get the mux parents */
+	 
 	for (i = 0; i < PLL_MUX_NUM_PARENT; i++) {
 		char in_name[8];
 
@@ -243,7 +237,7 @@ static int g12a_ephy_glue_clk_register(struct device *dev)
 		parent_names[i] = __clk_get_name(clk);
 	}
 
-	/* create the input mux */
+	 
 	mux = devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
 	if (!mux)
 		return -ENOMEM;
@@ -270,7 +264,7 @@ static int g12a_ephy_glue_clk_register(struct device *dev)
 		return PTR_ERR(clk);
 	}
 
-	/* create the pll */
+	 
 	pll = devm_kzalloc(dev, sizeof(*pll), GFP_KERNEL);
 	if (!pll)
 		return -ENOMEM;
@@ -323,7 +317,7 @@ static int g12a_mdio_mux_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(pclk),
 				     "failed to get peripheral clock\n");
 
-	/* Register PLL in CCF */
+	 
 	ret = g12a_ephy_glue_clk_register(dev);
 	if (ret)
 		return ret;

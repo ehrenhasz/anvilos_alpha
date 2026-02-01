@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013, Sony Mobile Communications AB.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -418,10 +416,7 @@ static const unsigned int hsic_data_pins[] = { 153 };
 		.intr_detection_width = -1,		\
 	}
 
-/*
- * TODO: Add the rest of the possible functions and fill out
- * the pingroup table below.
- */
+ 
 enum msm8x74_functions {
 	msm_mux_gpio,
 	msm_mux_cci_i2c0,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -68,7 +68,7 @@ bool write_exactly(int fd, size_t filesize)
 		cursor += read_len;
 	}
 
-	/* write random data to fd */
+	 
 	remained = filesize;
 	cursor = data;
 	while (remained) {
@@ -93,10 +93,7 @@ out:
 	return ret;
 }
 
-/*
- * fsync() is implemented via noop_fsync() on tmpfs. This makes the fsync()
- * test fail below, so we need to check for test file living on a tmpfs.
- */
+ 
 static bool is_on_tmpfs(int fd)
 {
 	struct statfs statfs_buf;
@@ -107,13 +104,7 @@ static bool is_on_tmpfs(int fd)
 	return statfs_buf.f_type == TMPFS_MAGIC;
 }
 
-/*
- * Open/create the file at filename, (optionally) write random data to it
- * (exactly num_pages), then test the cachestat syscall on this file.
- *
- * If test_fsync == true, fsync the file, then check the number of dirty
- * pages.
- */
+ 
 static int test_cachestat(const char *filename, bool write_random, bool create,
 			  bool test_fsync, unsigned long num_pages,
 			  int open_flags, mode_t open_mode)
@@ -204,7 +195,7 @@ out:
 bool test_cachestat_shmem(void)
 {
 	size_t PS = sysconf(_SC_PAGESIZE);
-	size_t filesize = PS * 512 * 2; /* 2 2MB huge pages */
+	size_t filesize = PS * 512 * 2;  
 	int syscall_ret;
 	size_t compute_len = PS * 512;
 	struct cachestat_range cs_range = { PS, compute_len };

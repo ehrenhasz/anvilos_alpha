@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
+
+
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -19,13 +19,7 @@
 
 #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
 
-/**
- * enum rpmh_regulator_type - supported RPMh accelerator types
- * @VRM:	RPMh VRM accelerator which supports voting on enable, voltage,
- *		and mode of LDO, SMPS, and BOB type PMIC regulators.
- * @XOB:	RPMh XOB accelerator which supports voting on the enable state
- *		of PMIC regulators.
- */
+ 
 enum rpmh_regulator_type {
 	VRM,
 	XOB,
@@ -63,25 +57,7 @@ enum rpmh_regulator_type {
 #define PMIC5_BOB_MODE_AUTO			6
 #define PMIC5_BOB_MODE_PWM			7
 
-/**
- * struct rpmh_vreg_hw_data - RPMh regulator hardware configurations
- * @regulator_type:		RPMh accelerator type used to manage this
- *				regulator
- * @ops:			Pointer to regulator ops callback structure
- * @voltage_range:		The single range of voltages supported by this
- *				PMIC regulator type
- * @n_voltages:			The number of unique voltage set points defined
- *				by voltage_range
- * @hpm_min_load_uA:		Minimum load current in microamps that requires
- *				high power mode (HPM) operation.  This is used
- *				for LDO hardware type regulators only.
- * @pmic_mode_map:		Array indexed by regulator framework mode
- *				containing PMIC hardware modes.  Must be large
- *				enough to index all framework modes supported
- *				by this regulator hardware type.
- * @of_map_mode:		Maps an RPMH_REGULATOR_MODE_* mode value defined
- *				in device tree to a regulator framework mode
- */
+ 
 struct rpmh_vreg_hw_data {
 	enum rpmh_regulator_type		regulator_type;
 	const struct regulator_ops		*ops;
@@ -92,30 +68,7 @@ struct rpmh_vreg_hw_data {
 	unsigned int			      (*of_map_mode)(unsigned int mode);
 };
 
-/**
- * struct rpmh_vreg - individual RPMh regulator data structure encapsulating a
- *		single regulator device
- * @dev:			Device pointer for the top-level PMIC RPMh
- *				regulator parent device.  This is used as a
- *				handle in RPMh write requests.
- * @addr:			Base address of the regulator resource within
- *				an RPMh accelerator
- * @rdesc:			Regulator descriptor
- * @hw_data:			PMIC regulator configuration data for this RPMh
- *				regulator
- * @always_wait_for_ack:	Boolean flag indicating if a request must always
- *				wait for an ACK from RPMh before continuing even
- *				if it corresponds to a strictly lower power
- *				state (e.g. enabled --> disabled).
- * @enabled:			Flag indicating if the regulator is enabled or
- *				not
- * @bypassed:			Boolean indicating if the regulator is in
- *				bypass (pass-through) mode or not.  This is
- *				only used by BOB rpmh-regulator resources.
- * @voltage_selector:		Selector used for get_voltage_sel() and
- *				set_voltage_sel() callbacks
- * @mode:			RPMh VRM regulator current framework mode
- */
+ 
 struct rpmh_vreg {
 	struct device			*dev;
 	u32				addr;
@@ -129,18 +82,7 @@ struct rpmh_vreg {
 	unsigned int			mode;
 };
 
-/**
- * struct rpmh_vreg_init_data - initialization data for an RPMh regulator
- * @name:			Name for the regulator which also corresponds
- *				to the device tree subnode name of the regulator
- * @resource_name:		RPMh regulator resource name format string.
- *				This must include exactly one field: '%s' which
- *				is filled at run-time with the PMIC ID provided
- *				by device tree property qcom,pmic-id.  Example:
- *				"ldo%s1" for RPMh resource "ldoa1".
- * @supply_name:		Parent supply regulator name
- * @hw_data:			Configuration data for this PMIC regulator type
- */
+ 
 struct rpmh_vreg_init_data {
 	const char			*name;
 	const char			*resource_name;
@@ -148,15 +90,7 @@ struct rpmh_vreg_init_data {
 	const struct rpmh_vreg_hw_data	*hw_data;
 };
 
-/**
- * rpmh_regulator_send_request() - send the request to RPMh
- * @vreg:		Pointer to the RPMh regulator
- * @cmd:		Pointer to the RPMh command to send
- * @wait_for_ack:	Boolean indicating if execution must wait until the
- *			request has been acknowledged as complete
- *
- * Return: 0 on success, errno on failure
- */
+ 
 static int rpmh_regulator_send_request(struct rpmh_vreg *vreg,
 			struct tcs_cmd *cmd, bool wait_for_ack)
 {
@@ -180,7 +114,7 @@ static int _rpmh_regulator_vrm_set_voltage_sel(struct regulator_dev *rdev,
 	};
 	int ret;
 
-	/* VRM voltage control register is set with voltage in millivolts. */
+	 
 	cmd.data = DIV_ROUND_UP(regulator_list_voltage_linear_range(rdev,
 							selector), 1000);
 
@@ -197,10 +131,7 @@ static int rpmh_regulator_vrm_set_voltage_sel(struct regulator_dev *rdev,
 	struct rpmh_vreg *vreg = rdev_get_drvdata(rdev);
 
 	if (vreg->enabled == -EINVAL) {
-		/*
-		 * Cache the voltage and send it later when the regulator is
-		 * enabled or disabled.
-		 */
+		 
 		vreg->voltage_selector = selector;
 		return 0;
 	}
@@ -304,18 +235,7 @@ static unsigned int rpmh_regulator_vrm_get_mode(struct regulator_dev *rdev)
 	return vreg->mode;
 }
 
-/**
- * rpmh_regulator_vrm_get_optimum_mode() - get the mode based on the  load
- * @rdev:		Regulator device pointer for the rpmh-regulator
- * @input_uV:		Input voltage
- * @output_uV:		Output voltage
- * @load_uA:		Aggregated load current in microamps
- *
- * This function is used in the regulator_ops for VRM type RPMh regulator
- * devices.
- *
- * Return: 0 on success, errno on failure
- */
+ 
 static unsigned int rpmh_regulator_vrm_get_optimum_mode(
 	struct regulator_dev *rdev, int input_uV, int output_uV, int load_uA)
 {
@@ -395,19 +315,7 @@ static const struct regulator_ops rpmh_regulator_xob_ops = {
 	.is_enabled		= rpmh_regulator_is_enabled,
 };
 
-/**
- * rpmh_regulator_init_vreg() - initialize all attributes of an rpmh-regulator
- * @vreg:		Pointer to the individual rpmh-regulator resource
- * @dev:			Pointer to the top level rpmh-regulator PMIC device
- * @node:		Pointer to the individual rpmh-regulator resource
- *			device node
- * @pmic_id:		String used to identify the top level rpmh-regulator
- *			PMIC device on the board
- * @pmic_rpmh_data:	Pointer to a null-terminated array of rpmh-regulator
- *			resources defined for the top level PMIC device
- *
- * Return: 0 on success, errno on failure
- */
+ 
 static int rpmh_regulator_init_vreg(struct rpmh_vreg *vreg, struct device *dev,
 			struct device_node *node, const char *pmic_id,
 			const struct rpmh_vreg_init_data *pmic_rpmh_data)
@@ -670,7 +578,7 @@ static const struct rpmh_vreg_hw_data pmic4_bob = {
 static const struct rpmh_vreg_hw_data pmic4_lvs = {
 	.regulator_type = XOB,
 	.ops = &rpmh_regulator_xob_ops,
-	/* LVS hardware does not support voltage or mode configuration. */
+	 
 };
 
 static const struct rpmh_vreg_hw_data pmic5_pldo = {
@@ -1187,7 +1095,7 @@ static const struct rpmh_vreg_init_data pm6150l_vreg_data[] = {
 static const struct rpmh_vreg_init_data pm6350_vreg_data[] = {
 	RPMH_VREG("smps1",  "smp%s1",  &pmic5_ftsmps510, NULL),
 	RPMH_VREG("smps2",  "smp%s2",  &pmic5_hfsmps510, NULL),
-	/* smps3 - smps5 not configured */
+	 
 	RPMH_VREG("ldo1",   "ldo%s1",  &pmic5_nldo,      NULL),
 	RPMH_VREG("ldo2",   "ldo%s2",  &pmic5_pldo,      NULL),
 	RPMH_VREG("ldo3",   "ldo%s3",  &pmic5_pldo,      NULL),
@@ -1204,7 +1112,7 @@ static const struct rpmh_vreg_init_data pm6350_vreg_data[] = {
 	RPMH_VREG("ldo14",  "ldo%s14", &pmic5_pldo,      NULL),
 	RPMH_VREG("ldo15",  "ldo%s15", &pmic5_nldo,      NULL),
 	RPMH_VREG("ldo16",  "ldo%s16", &pmic5_nldo,      NULL),
-	/* ldo17 not configured */
+	 
 	RPMH_VREG("ldo18",  "ldo%s18", &pmic5_nldo,      NULL),
 	RPMH_VREG("ldo19",  "ldo%s19", &pmic5_nldo,      NULL),
 	RPMH_VREG("ldo20",  "ldo%s20", &pmic5_nldo,      NULL),
@@ -1265,7 +1173,7 @@ static const struct rpmh_vreg_init_data pmx65_vreg_data[] = {
 	RPMH_VREG("ldo15",   "ldo%s15",   &pmic5_nldo,      "vdd-l15"),
 	RPMH_VREG("ldo16",   "ldo%s16",   &pmic5_pldo,      "vdd-l5-l6-l16"),
 	RPMH_VREG("ldo17",   "ldo%s17",   &pmic5_nldo,      "vdd-l17"),
-	/* ldo18 not configured */
+	 
 	RPMH_VREG("ldo19",   "ldo%s19",   &pmic5_nldo,      "vdd-l19"),
 	RPMH_VREG("ldo20",   "ldo%s20",   &pmic5_nldo,      "vdd-l20"),
 	RPMH_VREG("ldo21",   "ldo%s21",   &pmic5_nldo,      "vdd-l21"),
@@ -1300,7 +1208,7 @@ static const struct rpmh_vreg_init_data pmx75_vreg_data[] = {
 	RPMH_VREG("ldo15",   "ldo%s15",   &pmic5_nldo515,   "vdd-l15"),
 	RPMH_VREG("ldo16",   "ldo%s16",   &pmic5_nldo515,   "vdd-l4-l16"),
 	RPMH_VREG("ldo17",   "ldo%s17",   &pmic5_nldo515,   "vdd-l17"),
-	/* ldo18 not configured */
+	 
 	RPMH_VREG("ldo19",   "ldo%s19",   &pmic5_nldo515,   "vdd-l19"),
 	RPMH_VREG("ldo20",   "ldo%s20",   &pmic5_nldo515,   "vdd-l20-l21"),
 	RPMH_VREG("ldo21",   "ldo%s21",   &pmic5_nldo515,   "vdd-l20-l21"),
@@ -1361,7 +1269,7 @@ static const struct rpmh_vreg_init_data pm660_vreg_data[] = {
 	RPMH_VREG("ldo1",   "ldo%s1",  &pmic4_nldo,      "vdd-l1-l6-l7"),
 	RPMH_VREG("ldo2",   "ldo%s2",  &pmic4_nldo,      "vdd-l2-l3"),
 	RPMH_VREG("ldo3",   "ldo%s3",  &pmic4_nldo,      "vdd-l2-l3"),
-	/* ldo4 is inaccessible on PM660 */
+	 
 	RPMH_VREG("ldo5",   "ldo%s5",  &pmic4_nldo,      "vdd-l5"),
 	RPMH_VREG("ldo6",   "ldo%s6",  &pmic4_nldo,      "vdd-l1-l6-l7"),
 	RPMH_VREG("ldo7",   "ldo%s7",  &pmic4_nldo,      "vdd-l1-l6-l7"),

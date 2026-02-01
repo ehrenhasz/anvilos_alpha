@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <linux/string.h>
@@ -132,21 +132,12 @@ static size_t __callchain__fprintf_graph(FILE *fp, struct rb_root *root,
 		remaining -= cumul;
 		cumul_count += callchain_cumul_counts(child);
 
-		/*
-		 * The depth mask manages the output of pipes that show
-		 * the depth. We don't want to keep the pipes of the current
-		 * level for the last child of this depth.
-		 * Except if we have remaining filtered hits. They will
-		 * supersede the last child
-		 */
+		 
 		next = rb_next(node);
 		if (!next && (callchain_param.mode != CHAIN_GRAPH_REL || !remaining))
 			new_depth_mask &= ~(1 << (depth - 1));
 
-		/*
-		 * But we keep the older depth mask for the line separator
-		 * to keep the level link until we reach the last child
-		 */
+		 
 		ret += ipchain__fprintf_graph_line(fp, depth, depth_mask,
 						   left_margin);
 		i = 0;
@@ -195,14 +186,7 @@ static size_t __callchain__fprintf_graph(FILE *fp, struct rb_root *root,
 	return ret;
 }
 
-/*
- * If have one single callchain root, don't bother printing
- * its percentage (100 % in fractal mode and the same percentage
- * than the hist in graph mode). This also avoid one level of column.
- *
- * However when percent-limit applied, it's possible that single callchain
- * node have different (non-100% in fractal mode) percentage.
- */
+ 
 static bool need_percent_display(struct rb_node *node, u64 parent_samples)
 {
 	struct callchain_node *cnode;
@@ -231,11 +215,7 @@ static size_t callchain__fprintf_graph(FILE *fp, struct rb_root *root,
 	if (node && !need_percent_display(node, parent_samples)) {
 		cnode = rb_entry(node, struct callchain_node, rb_node);
 		list_for_each_entry(chain, &cnode->val, list) {
-			/*
-			 * If we sort by symbol, the first entry is the same than
-			 * the symbol. No need to print it otherwise it appears as
-			 * displayed twice.
-			 */
+			 
 			if (!i++ && field_order == NULL &&
 			    sort_order && strstarts(sort_order, "sym"))
 				continue;
@@ -272,7 +252,7 @@ static size_t callchain__fprintf_graph(FILE *fp, struct rb_root *root,
 	ret += __callchain__fprintf_graph(fp, root, total_samples,
 					  1, 1, left_margin);
 	if (ret) {
-		/* do not add a blank line if it printed nothing */
+		 
 		ret += fprintf(fp, "\n");
 	}
 
@@ -427,10 +407,7 @@ int __hist_entry__snprintf(struct hist_entry *he, struct perf_hpp *hpp,
 		if (perf_hpp__should_skip(fmt, he->hists))
 			continue;
 
-		/*
-		 * If there's no field_sep, we still need
-		 * to display initial '  '.
-		 */
+		 
 		if (!sep || !first) {
 			ret = scnprintf(hpp->buf, hpp->size, "%s", sep ?: "  ");
 			advance_hpp(hpp, ret);
@@ -473,14 +450,11 @@ static int hist_entry__hierarchy_fprintf(struct hist_entry *he,
 	ret = scnprintf(hpp->buf, hpp->size, "%*s", he->depth * HIERARCHY_INDENT, "");
 	advance_hpp(hpp, ret);
 
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 	perf_hpp_list__for_each_format(&fmt_node->hpp, fmt) {
-		/*
-		 * If there's no field_sep, we still need
-		 * to display initial '  '.
-		 */
+		 
 		if (!sep || !first) {
 			ret = scnprintf(hpp->buf, hpp->size, "%s", sep ?: "  ");
 			advance_hpp(hpp, ret);
@@ -507,19 +481,13 @@ static int hist_entry__hierarchy_fprintf(struct hist_entry *he,
 		hpp->buf  = buf;
 		hpp->size = size;
 
-		/*
-		 * No need to call hist_entry__snprintf_alignment() since this
-		 * fmt is always the last column in the hierarchy mode.
-		 */
+		 
 		if (perf_hpp__use_color() && fmt->color)
 			fmt->color(fmt, hpp, he);
 		else
 			fmt->entry(fmt, hpp, he);
 
-		/*
-		 * dynamic entries are right-aligned but we want left-aligned
-		 * in the hierarchy mode
-		 */
+		 
 		printed += fprintf(fp, "%s%s", sep ?: "  ", skip_spaces(buf));
 	}
 	printed += putc('\n', fp);
@@ -643,10 +611,10 @@ static int hists__fprintf_hierarchy_headers(struct hists *hists,
 
 	indent = hists->nr_hpp_node;
 
-	/* preserve max indent depth for column headers */
+	 
 	print_hierarchy_indent(sep, indent, " ", fp);
 
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 
@@ -655,7 +623,7 @@ static int hists__fprintf_hierarchy_headers(struct hists *hists,
 		fprintf(fp, "%s%s", hpp->buf, sep ?: "  ");
 	}
 
-	/* combine sort headers with ' / ' */
+	 
 	first_node = true;
 	list_for_each_entry_continue(fmt_node, &hists->hpp_formats, list) {
 		if (!first_node)
@@ -679,10 +647,10 @@ static int hists__fprintf_hierarchy_headers(struct hists *hists,
 
 	fprintf(fp, "\n# ");
 
-	/* preserve max indent depth for initial dots */
+	 
 	print_hierarchy_indent(sep, indent, dots, fp);
 
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 
@@ -706,7 +674,7 @@ static int hists__fprintf_hierarchy_headers(struct hists *hists,
 				continue;
 
 			if (!first_col)
-				width++;  /* for '+' sign between column header */
+				width++;   
 			first_col = false;
 
 			width += fmt->width(fmt, hpp, hists);
@@ -762,7 +730,7 @@ hists__fprintf_standard_headers(struct hists *hists,
 	int line;
 
 	for (line = 0; line < hpp_list->nr_header_lines; line++) {
-		/* first # is displayed one level up */
+		 
 		if (line)
 			fprintf(fp, "# ");
 		fprintf_line(hists, hpp, line, fp);
@@ -870,10 +838,7 @@ size_t hists__fprintf(struct hists *hists, bool show_header, int max_rows,
 		if (max_rows && ++nr_rows >= max_rows)
 			break;
 
-		/*
-		 * If all children are filtered out or percent-limited,
-		 * display "no entry >= x.xx%" message.
-		 */
+		 
 		if (!h->leaf && !hist_entry__has_hierarchy_children(h, min_pcnt)) {
 			int depth = hists->nr_hpp_node + h->depth + 1;
 

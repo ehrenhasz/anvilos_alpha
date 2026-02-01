@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 #include <linux/ip.h>
 #include <linux/udp.h>
 
@@ -211,7 +210,7 @@ static const struct ieee80211_supported_band rtw89_sband_5ghz = {
 	.channels	= rtw89_channels_5ghz,
 	.n_channels	= ARRAY_SIZE(rtw89_channels_5ghz),
 
-	/* 5G has no CCK rates, 1M/2M/5.5M/11M */
+	 
 	.bitrates	= rtw89_bitrates + 4,
 	.n_bitrates	= ARRAY_SIZE(rtw89_bitrates) - 4,
 	.ht_cap		= {0},
@@ -223,7 +222,7 @@ static const struct ieee80211_supported_band rtw89_sband_6ghz = {
 	.channels	= rtw89_channels_6ghz,
 	.n_channels	= ARRAY_SIZE(rtw89_channels_6ghz),
 
-	/* 6G has no CCK rates, 1M/2M/5.5M/11M */
+	 
 	.bitrates	= rtw89_bitrates + 4,
 	.n_bitrates	= ARRAY_SIZE(rtw89_bitrates) - 4,
 };
@@ -545,7 +544,7 @@ rtw89_core_tx_update_sec_key(struct rtw89_dev *rtwdev,
 	desc_info->sec_seq[3] = pn64 >> 24;
 	desc_info->sec_seq[4] = pn64 >> 32;
 	desc_info->sec_seq[5] = pn64 >> 40;
-	desc_info->wp_offset = 1; /* in unit of 8 bytes for security header */
+	desc_info->wp_offset = 1;  
 }
 
 static u16 rtw89_core_get_mgmt_rate(struct rtw89_dev *rtwdev,
@@ -607,7 +606,7 @@ rtw89_core_tx_update_mgmt_info(struct rtw89_dev *rtwdev,
 	desc_info->hw_ssn_sel = RTW89_MGMT_HW_SSN_SEL;
 	desc_info->hw_seq_mode = RTW89_MGMT_HW_SEQ_MODE;
 
-	/* fixed data rate for mgmt frames */
+	 
 	desc_info->en_wd_info = true;
 	desc_info->use_rate = true;
 	desc_info->dis_data_fb = true;
@@ -673,7 +672,7 @@ __rtw89_core_tx_check_he_qos_htc(struct rtw89_dev *rtwdev,
 	struct ieee80211_hdr *hdr = (void *)skb->data;
 	__le16 fc = hdr->frame_control;
 
-	/* AP IOT issue with EAPoL, ARP and DHCP */
+	 
 	if (pkt_type < PACKET_MAX)
 		return false;
 
@@ -798,7 +797,7 @@ rtw89_core_tx_update_data_info(struct rtw89_dev *rtwdev,
 	desc_info->port = desc_info->hiq ? rtwvif->port : 0;
 	desc_info->er_cap = rtwsta ? rtwsta->er_cap : false;
 
-	/* enable wd_info for AMPDU */
+	 
 	desc_info->en_wd_info = true;
 
 	if (IEEE80211_SKB_CB(skb)->control.hw_key)
@@ -852,7 +851,7 @@ static void rtw89_core_tx_update_llc_hdr(struct rtw89_dev *rtwdev,
 	__le16 fc = hdr->frame_control;
 
 	desc_info->hdr_llc_len = ieee80211_hdrlen(fc);
-	desc_info->hdr_llc_len >>= 1; /* in unit of 2 bytes */
+	desc_info->hdr_llc_len >>= 1;  
 }
 
 static void
@@ -1255,7 +1254,7 @@ static int rtw89_core_rx_process_mac_ppdu(struct rtw89_dev *rtwdev,
 
 	phy_sts = skb->data + RTW89_PPDU_MAC_INFO_SIZE;
 	phy_sts += usr_num * RTW89_PPDU_MAC_INFO_USR_SIZE;
-	/* 8-byte alignment */
+	 
 	if (usr_num & BIT(0))
 		phy_sts += RTW89_PPDU_MAC_INFO_USR_SIZE;
 	if (rx_cnt_valid)
@@ -1346,7 +1345,7 @@ static void rtw89_core_parse_phy_status_ie01(struct rtw89_dev *rtwdev,
 	phy_ppdu->ofdm.evm_min = le32_get_bits(ie->w2, RTW89_PHY_STS_IE01_W2_EVM_MIN);
 	phy_ppdu->ofdm.has = true;
 
-	/* sign conversion for S(12,2) */
+	 
 	if (rtwdev->chip->cfo_src_fd) {
 		t = le32_get_bits(ie->w1, RTW89_PHY_STS_IE01_W1_FD_CFO);
 		cfo = sign_extend32(t, 11);
@@ -1413,7 +1412,7 @@ static int rtw89_core_rx_parse_phy_sts(struct rtw89_dev *rtwdev,
 	u16 ie_len;
 	void *pos, *end;
 
-	/* mark invalid reports and bypass them */
+	 
 	if (phy_ppdu->ie < RTW89_CCK_PKT)
 		return -EINVAL;
 
@@ -1486,7 +1485,7 @@ static bool rtw89_core_rx_ppdu_match(struct rtw89_dev *rtwdev,
 	data_rate_mode = rtw89_get_data_rate_mode(rtwdev, data_rate);
 	if (data_rate_mode == DATA_RATE_MODE_NON_HT) {
 		rate_idx = rtw89_get_data_not_ht_idx(rtwdev, data_rate);
-		/* rate_idx is still hardware value here */
+		 
 	} else if (data_rate_mode == DATA_RATE_MODE_HT) {
 		rate_idx = rtw89_get_data_ht_mcs(rtwdev, data_rate);
 	} else if (data_rate_mode == DATA_RATE_MODE_VHT) {
@@ -1574,10 +1573,7 @@ static void rtw89_cancel_6ghz_probe_work(struct work_struct *work)
 
 		rtw89_fw_h2c_del_pkt_offload(rtwdev, info->id);
 
-		/* Don't delete/free info from pkt_list at this moment. Let it
-		 * be deleted/freed in rtw89_release_pkt_list() after scanning,
-		 * since if during scanning, pkt_list is accessed in bottom half.
-		 */
+		 
 	}
 
 out:
@@ -1702,15 +1698,13 @@ static void rtw89_core_hw_to_sband_rate(struct ieee80211_rx_status *rx_status)
 	    rx_status->encoding != RX_ENC_LEGACY)
 		return;
 
-	/* Some control frames' freq(ACKs in this case) are reported wrong due
-	 * to FW notify timing, set to lowest rate to prevent overflow.
-	 */
+	 
 	if (rx_status->rate_idx < RTW89_HW_RATE_OFDM6) {
 		rx_status->rate_idx = 0;
 		return;
 	}
 
-	/* No 4 CCK rates for non-2G */
+	 
 	rx_status->rate_idx -= 4;
 }
 
@@ -1743,14 +1737,14 @@ static void rtw89_core_rx_to_mac80211(struct rtw89_dev *rtwdev,
 {
 	struct napi_struct *napi = &rtwdev->napi;
 
-	/* In low power mode, napi isn't scheduled. Receive it to netif. */
+	 
 	if (unlikely(!test_bit(NAPI_STATE_SCHED, &napi->state)))
 		napi = NULL;
 
 	rtw89_core_hw_to_sband_rate(rx_status);
 	rtw89_core_rx_stats(rtwdev, phy_ppdu, desc_info, skb_ppdu);
 	rtw89_core_update_radiotap(rtwdev, skb_ppdu, rx_status);
-	/* In low power mode, it does RX in thread context. */
+	 
 	local_bh_disable();
 	ieee80211_rx_napi(rtwdev->hw, NULL, skb_ppdu, napi);
 	local_bh_enable();
@@ -1853,8 +1847,8 @@ void rtw89_core_query_rxdesc(struct rtw89_dev *rtwdev,
 	desc_info->sw_dec = le32_get_bits(rxd_s->dword3, AX_RXD_SW_DEC);
 	desc_info->addr1_match = le32_get_bits(rxd_s->dword3, AX_RXD_A1_MATCH);
 
-	shift_len = desc_info->shift << 1; /* 2-byte unit */
-	drv_info_len = desc_info->drv_info_size << 3; /* 8-byte unit */
+	shift_len = desc_info->shift << 1;  
+	drv_info_len = desc_info->drv_info_size << 3;  
 	desc_info->offset = data_offset + shift_len + drv_info_len;
 	if (desc_info->long_rxdesc)
 		desc_info->rxd_len = sizeof(struct rtw89_rxdesc_long);
@@ -1929,7 +1923,7 @@ static void rtw89_core_update_rx_status(struct rtw89_dev *rtwdev,
 	u16 data_rate;
 	u8 data_rate_mode;
 
-	/* currently using single PHY */
+	 
 	rx_status->freq = chandef->chan->center_freq;
 	rx_status->band = chandef->chan->band;
 
@@ -1959,7 +1953,7 @@ static void rtw89_core_update_rx_status(struct rtw89_dev *rtwdev,
 	if (data_rate_mode == DATA_RATE_MODE_NON_HT) {
 		rx_status->encoding = RX_ENC_LEGACY;
 		rx_status->rate_idx = rtw89_get_data_not_ht_idx(rtwdev, data_rate);
-		/* convert rate_idx after we get the correct band */
+		 
 	} else if (data_rate_mode == DATA_RATE_MODE_HT) {
 		rx_status->encoding = RX_ENC_HT;
 		rx_status->rate_idx = rtw89_get_data_ht_mcs(rtwdev, data_rate);
@@ -1979,7 +1973,7 @@ static void rtw89_core_update_rx_status(struct rtw89_dev *rtwdev,
 		rtw89_warn(rtwdev, "invalid RX rate mode %d\n", data_rate_mode);
 	}
 
-	/* he_gi is used to match ppdu, so we always fill it. */
+	 
 	rx_status->he_gi = rtw89_rxdesc_to_nl_he_gi(rtwdev, desc_info, true);
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 	rx_status->mactime = desc_info->free_run_cnt;
@@ -2339,7 +2333,7 @@ static void rtw89_core_txq_schedule(struct rtw89_dev *rtwdev, u8 ac, bool *reinv
 		if (frame_cnt != 0)
 			rtw89_core_tx_kick_off(rtwdev, rtw89_core_get_qsel(rtwdev, txq->tid));
 
-		/* bound of tx_resource could get stuck due to burst traffic */
+		 
 		if (frame_cnt == tx_resource)
 			*reinvoke = true;
 	}
@@ -2365,7 +2359,7 @@ static void rtw89_core_txq_work(struct work_struct *w)
 		rtw89_core_txq_schedule(rtwdev, ac, &reinvoke);
 
 	if (reinvoke) {
-		/* reinvoke to process the last frame */
+		 
 		mod_delayed_work(rtwdev->txq_wq, &rtwdev->txq_reinvoke_work, 1);
 	}
 }
@@ -2753,10 +2747,7 @@ int rtw89_core_acquire_sta_ba_entry(struct rtw89_dev *rtwdev,
 
 	idx = rtw89_core_acquire_bit_map(cam_info->ba_cam_map, chip->bacam_num);
 	if (idx == chip->bacam_num) {
-		/* allocate a static BA CAM to tid=0/5, so replace the existing
-		 * one if BA CAM is full. Hardware will process the original tid
-		 * automatically.
-		 */
+		 
 		if (tid != 0 && tid != 5)
 			return -ENOSPC;
 
@@ -2896,9 +2887,9 @@ int rtw89_core_sta_add(struct rtw89_dev *rtwdev,
 	}
 
 	if (vif->type == NL80211_IFTYPE_STATION && !sta->tdls) {
-		/* for station mode, assign the mac_id from itself */
+		 
 		rtwsta->mac_id = rtwvif->mac_id;
-		/* must do rtw89_reg_6ghz_power_recalc() before rfk channel */
+		 
 		rtw89_reg_6ghz_power_recalc(rtwdev, rtwvif, true);
 		rtw89_btc_ntfy_role_info(rtwdev, rtwvif, rtwsta,
 					 BTC_ROLE_MSTS_STA_CONN_START);
@@ -2982,7 +2973,7 @@ int rtw89_core_sta_disconnect(struct rtw89_dev *rtwdev,
 		return ret;
 	}
 
-	/* update cam aid mac_id net_type */
+	 
 	ret = rtw89_fw_h2c_cam(rtwdev, rtwvif, rtwsta, NULL);
 	if (ret) {
 		rtw89_warn(rtwdev, "failed to send h2c cam\n");
@@ -3031,7 +3022,7 @@ int rtw89_core_sta_assoc(struct rtw89_dev *rtwdev,
 		return ret;
 	}
 
-	/* update cam aid mac_id net_type */
+	 
 	ret = rtw89_fw_h2c_cam(rtwdev, rtwvif, rtwsta, NULL);
 	if (ret) {
 		rtw89_warn(rtwdev, "failed to send h2c cam\n");
@@ -3528,9 +3519,9 @@ int rtw89_core_start(struct rtw89_dev *rtwdev)
 
 	rtw89_btc_ntfy_poweron(rtwdev);
 
-	/* efuse process */
+	 
 
-	/* pre-config BB/RF, BB reset/RFC reset */
+	 
 	ret = rtw89_chip_disable_bb_rf(rtwdev);
 	if (ret)
 		return ret;
@@ -3572,7 +3563,7 @@ void rtw89_core_stop(struct rtw89_dev *rtwdev)
 {
 	struct rtw89_btc *btc = &rtwdev->btc;
 
-	/* Prvent to stop twice; enter_ips and ops_stop */
+	 
 	if (!test_bit(RTW89_FLAG_RUNNING, rtwdev->flags))
 		return;
 

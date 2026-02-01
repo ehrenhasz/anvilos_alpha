@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_HOTPLUG_IRQ_H__
 #define __INTEL_HOTPLUG_IRQ_H__
@@ -32,4 +30,4 @@ void intel_hpd_irq_setup(struct drm_i915_private *i915);
 
 void intel_hotplug_irq_init(struct drm_i915_private *i915);
 
-#endif /* __INTEL_HOTPLUG_IRQ_H__ */
+#endif  

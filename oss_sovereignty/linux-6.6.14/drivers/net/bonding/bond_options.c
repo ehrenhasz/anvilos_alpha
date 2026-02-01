@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/bond/bond_options.c - bonding options
- * Copyright (c) 2013 Jiri Pirko <jiri@resnulli.us>
- * Copyright (c) 2013 Scott Feldman <sfeldma@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/if.h>
@@ -499,7 +495,7 @@ static const struct bond_option bond_opts[BOND_OPT_LAST] = {
 	}
 };
 
-/* Searches for an option by name */
+ 
 const struct bond_option *bond_opt_get_by_name(const char *name)
 {
 	const struct bond_option *opt;
@@ -514,7 +510,7 @@ const struct bond_option *bond_opt_get_by_name(const char *name)
 	return NULL;
 }
 
-/* Searches for a value in opt's values[] table */
+ 
 const struct bond_opt_value *bond_opt_get_val(unsigned int option, u64 val)
 {
 	const struct bond_option *opt;
@@ -530,7 +526,7 @@ const struct bond_opt_value *bond_opt_get_val(unsigned int option, u64 val)
 	return NULL;
 }
 
-/* Searches for a value in opt's values[] table which matches the flagmask */
+ 
 static const struct bond_opt_value *bond_opt_get_flags(const struct bond_option *opt,
 						       u32 flagmask)
 {
@@ -543,9 +539,7 @@ static const struct bond_opt_value *bond_opt_get_flags(const struct bond_option 
 	return NULL;
 }
 
-/* If maxval is missing then there's no range to check. In case minval is
- * missing then it's considered to be 0.
- */
+ 
 static bool bond_opt_check_range(const struct bond_option *opt, u64 val)
 {
 	const struct bond_opt_value *minval, *maxval;
@@ -558,16 +552,7 @@ static bool bond_opt_check_range(const struct bond_option *opt, u64 val)
 	return true;
 }
 
-/**
- * bond_opt_parse - parse option value
- * @opt: the option to parse against
- * @val: value to parse
- *
- * This function tries to extract the value from @val and check if it's
- * a possible match for the option and returns NULL if a match isn't found,
- * or the struct_opt_value that matched. It also strips the new line from
- * @val->string if it's present.
- */
+ 
 const struct bond_opt_value *bond_opt_parse(const struct bond_option *opt,
 					    struct bond_opt_value *val)
 {
@@ -577,7 +562,7 @@ const struct bond_opt_value *bond_opt_parse(const struct bond_option *opt,
 	bool checkval;
 	int i, rv;
 
-	/* No parsing if the option wants a raw val */
+	 
 	if (opt->flags & BOND_OPTFLAG_RAWVAL)
 		return val;
 
@@ -585,7 +570,7 @@ const struct bond_opt_value *bond_opt_parse(const struct bond_option *opt,
 	if (!tbl)
 		goto out;
 
-	/* ULLONG_MAX is used to bypass string processing */
+	 
 	checkval = val->value != ULLONG_MAX;
 	if (!checkval) {
 		if (!val->string)
@@ -596,9 +581,7 @@ const struct bond_opt_value *bond_opt_parse(const struct bond_option *opt,
 		for (p = val->string; *p; p++)
 			if (!(isdigit(*p) || isspace(*p)))
 				break;
-		/* The following code extracts the string to match or the value
-		 * and sets checkval appropriately
-		 */
+		 
 		if (*p) {
 			rv = sscanf(val->string, "%32s", valstr);
 		} else {
@@ -610,7 +593,7 @@ const struct bond_opt_value *bond_opt_parse(const struct bond_option *opt,
 	}
 
 	for (i = 0; tbl[i].string; i++) {
-		/* Check for exact match */
+		 
 		if (checkval) {
 			if (val->value == tbl[i].value)
 				ret = &tbl[i];
@@ -622,18 +605,18 @@ const struct bond_opt_value *bond_opt_parse(const struct bond_option *opt,
 			if (!strcmp(valstr, tbl[i].string))
 				ret = &tbl[i];
 		}
-		/* Found an exact match */
+		 
 		if (ret)
 			goto out;
 	}
-	/* Possible range match */
+	 
 	if (checkval && bond_opt_check_range(opt, val->value))
 		ret = val;
 out:
 	return ret;
 }
 
-/* Check opt's dependencies against bond mode and currently set options */
+ 
 static int bond_opt_check_deps(struct bonding *bond,
 			       const struct bond_option *opt)
 {
@@ -681,7 +664,7 @@ static void bond_opt_error_interpret(struct bonding *bond,
 		NL_SET_ERR_MSG_ATTR(extack, bad_attr, "invalid option value");
 		if (val) {
 			if (val->string) {
-				/* sometimes RAWVAL opts may have new lines */
+				 
 				p = strchr(val->string, '\n');
 				if (p)
 					*p = '\0';
@@ -730,19 +713,7 @@ static void bond_opt_error_interpret(struct bonding *bond,
 	}
 }
 
-/**
- * __bond_opt_set - set a bonding option
- * @bond: target bond device
- * @option: option to set
- * @val: value to set it to
- * @bad_attr: netlink attribue that caused the error
- * @extack: extended netlink error structure, used when an error message
- *          needs to be returned to the caller via netlink
- *
- * This function is used to change the bond's option value, it can be
- * used for both enabling/changing an option and for disabling it. RTNL lock
- * must be obtained before calling this function.
- */
+ 
 int __bond_opt_set(struct bonding *bond,
 		   unsigned int option, struct bond_opt_value *val,
 		   struct nlattr *bad_attr, struct netlink_ext_ack *extack)
@@ -771,17 +742,7 @@ out:
 
 	return ret;
 }
-/**
- * __bond_opt_set_notify - set a bonding option
- * @bond: target bond device
- * @option: option to set
- * @val: value to set it to
- *
- * This function is used to change the bond's option value and trigger
- * a notification to user sapce. It can be used for both enabling/changing
- * an option and for disabling it. RTNL lock must be obtained before calling
- * this function.
- */
+ 
 int __bond_opt_set_notify(struct bonding *bond,
 			  unsigned int option, struct bond_opt_value *val)
 {
@@ -797,15 +758,7 @@ int __bond_opt_set_notify(struct bonding *bond,
 	return ret;
 }
 
-/**
- * bond_opt_tryset_rtnl - try to acquire rtnl and call __bond_opt_set
- * @bond: target bond device
- * @option: option to set
- * @buf: value to set it to
- *
- * This function tries to acquire RTNL without blocking and if successful
- * calls __bond_opt_set. It is mainly used for sysfs option manipulation.
- */
+ 
 int bond_opt_tryset_rtnl(struct bonding *bond, unsigned int option, char *buf)
 {
 	struct bond_opt_value optval;
@@ -820,13 +773,7 @@ int bond_opt_tryset_rtnl(struct bonding *bond, unsigned int option, char *buf)
 	return ret;
 }
 
-/**
- * bond_opt_get - get a pointer to an option
- * @option: option for which to return a pointer
- *
- * This function checks if option is valid and if so returns a pointer
- * to its entry in the bond_opts[] option array.
- */
+ 
 const struct bond_option *bond_opt_get(unsigned int option)
 {
 	if (!BOND_OPT_VALID(option))
@@ -855,12 +802,12 @@ static int bond_option_mode_set(struct bonding *bond,
 		if (bond->params.arp_interval) {
 			netdev_dbg(bond->dev, "%s mode is incompatible with arp monitoring, start mii monitoring\n",
 				   newval->string);
-			/* disable arp monitoring */
+			 
 			bond->params.arp_interval = 0;
 		}
 
 		if (!bond->params.miimon) {
-			/* set miimon to default value */
+			 
 			bond->params.miimon = BOND_DEFAULT_MIIMON;
 			netdev_dbg(bond->dev, "Setting MII monitoring interval to %d\n",
 				   bond->params.miimon);
@@ -870,7 +817,7 @@ static int bond_option_mode_set(struct bonding *bond,
 	if (newval->value == BOND_MODE_ALB)
 		bond->params.tlb_dynamic_lb = 1;
 
-	/* don't cache arp_validate between modes */
+	 
 	bond->params.arp_validate = BOND_ARP_VALIDATE_NONE;
 	bond->params.mode = newval->value;
 
@@ -895,7 +842,7 @@ static int bond_option_active_slave_set(struct bonding *bond,
 	struct net_device *slave_dev;
 	int ret = 0;
 
-	sscanf(newval->string, "%15s", ifname); /* IFNAMSIZ */
+	sscanf(newval->string, "%15s", ifname);  
 	if (!strlen(ifname) || newval->string[0] == '\n') {
 		slave_dev = NULL;
 	} else {
@@ -917,7 +864,7 @@ static int bond_option_active_slave_set(struct bonding *bond,
 	}
 
 	block_netpoll_tx();
-	/* check to see if we are clearing active */
+	 
 	if (!slave_dev) {
 		netdev_dbg(bond->dev, "Clearing current active slave\n");
 		RCU_INIT_POINTER(bond->curr_active_slave, NULL);
@@ -929,7 +876,7 @@ static int bond_option_active_slave_set(struct bonding *bond,
 		BUG_ON(!new_active);
 
 		if (new_active == old_active) {
-			/* do nothing */
+			 
 			slave_dbg(bond->dev, new_active->dev, "is already the current active slave\n");
 		} else {
 			if (old_active && (new_active->link == BOND_LINK_UP) &&
@@ -948,10 +895,7 @@ static int bond_option_active_slave_set(struct bonding *bond,
 	return ret;
 }
 
-/* There are two tricky bits here.  First, if MII monitoring is activated, then
- * we must disable ARP monitoring.  Second, if the timer isn't running, we must
- * start it.
- */
+ 
 static int bond_option_miimon_set(struct bonding *bond,
 				  const struct bond_opt_value *newval)
 {
@@ -974,11 +918,7 @@ static int bond_option_miimon_set(struct bonding *bond,
 			bond->params.arp_validate = BOND_ARP_VALIDATE_NONE;
 	}
 	if (bond->dev->flags & IFF_UP) {
-		/* If the interface is up, we may need to fire off
-		 * the MII timer. If the interface is down, the
-		 * timer will get fired off when the open function
-		 * is called.
-		 */
+		 
 		if (!newval->value) {
 			cancel_delayed_work_sync(&bond->mii_work);
 		} else {
@@ -990,10 +930,7 @@ static int bond_option_miimon_set(struct bonding *bond,
 	return 0;
 }
 
-/* Set up, down and peer notification delays. These must be multiples
- * of the MII monitoring value, and are stored internally as the
- * multiplier. Thus, we must translate to MS for the real world.
- */
+ 
 static int _bond_option_delay_set(struct bonding *bond,
 				  const struct bond_opt_value *newval,
 				  const char *name,
@@ -1055,10 +992,7 @@ static int bond_option_use_carrier_set(struct bonding *bond,
 	return 0;
 }
 
-/* There are two tricky bits here.  First, if ARP monitoring is activated, then
- * we must disable MII monitoring.  Second, if the ARP timer isn't running,
- * we must start it.
- */
+ 
 static int bond_option_arp_interval_set(struct bonding *bond,
 					const struct bond_opt_value *newval)
 {
@@ -1074,17 +1008,13 @@ static int bond_option_arp_interval_set(struct bonding *bond,
 			netdev_dbg(bond->dev, "ARP monitoring has been set up, but no ARP targets have been specified\n");
 	}
 	if (bond->dev->flags & IFF_UP) {
-		/* If the interface is up, we may need to fire off
-		 * the ARP timer.  If the interface is down, the
-		 * timer will get fired off when the open function
-		 * is called.
-		 */
+		 
 		if (!newval->value) {
 			if (bond->params.arp_validate)
 				bond->recv_probe = NULL;
 			cancel_delayed_work_sync(&bond->arp_work);
 		} else {
-			/* arp_validate can be set only in active-backup mode */
+			 
 			bond->recv_probe = bond_rcv_validate;
 			cancel_delayed_work_sync(&bond->mii_work);
 			queue_delayed_work(bond->wq, &bond->arp_work, 0);
@@ -1120,13 +1050,13 @@ static int _bond_option_arp_ip_target_add(struct bonding *bond, __be32 target)
 		return -EINVAL;
 	}
 
-	if (bond_get_targets_ip(targets, target) != -1) { /* dup */
+	if (bond_get_targets_ip(targets, target) != -1) {  
 		netdev_err(bond->dev, "ARP target %pI4 is already present\n",
 			   &target);
 		return -EINVAL;
 	}
 
-	ind = bond_get_targets_ip(targets, 0); /* first free slot */
+	ind = bond_get_targets_ip(targets, 0);  
 	if (ind == -1) {
 		netdev_err(bond->dev, "ARP target table is full!\n");
 		return -EINVAL;
@@ -1256,13 +1186,13 @@ static int bond_option_ns_ip6_targets_set(struct bonding *bond,
 		return -EINVAL;
 	}
 
-	if (bond_get_targets_ip6(targets, target) != -1) { /* dup */
+	if (bond_get_targets_ip6(targets, target) != -1) {  
 		netdev_err(bond->dev, "NS target %pI6c is already present\n",
 			   target);
 		return -EINVAL;
 	}
 
-	index = bond_get_targets_ip6(targets, &addr_any); /* first free slot */
+	index = bond_get_targets_ip6(targets, &addr_any);  
 	if (index == -1) {
 		netdev_err(bond->dev, "NS target table is full!\n");
 		return -EINVAL;
@@ -1345,7 +1275,7 @@ static int bond_option_primary_set(struct bonding *bond,
 	p = strchr(primary, '\n');
 	if (p)
 		*p = '\0';
-	/* check to see if we are clearing primary */
+	 
 	if (!strlen(primary)) {
 		netdev_dbg(bond->dev, "Setting primary slave to None\n");
 		RCU_INIT_POINTER(bond->primary_slave, NULL);
@@ -1483,9 +1413,7 @@ static int bond_option_pps_set(struct bonding *bond,
 		bond->params.reciprocal_packets_per_slave =
 			reciprocal_value(newval->value);
 	} else {
-		/* reciprocal_packets_per_slave is unused if
-		 * packets_per_slave is 0 or 1, just initialize it
-		 */
+		 
 		bond->params.reciprocal_packets_per_slave =
 			(struct reciprocal_value) { 0 };
 	}
@@ -1534,35 +1462,31 @@ static int bond_option_queue_id_set(struct bonding *bond,
 	int ret = 0;
 	u16 qid;
 
-	/* delim will point to queue id if successful */
+	 
 	delim = strchr(newval->string, ':');
 	if (!delim)
 		goto err_no_cmd;
 
-	/* Terminate string that points to device name and bump it
-	 * up one, so we can read the queue id there.
-	 */
+	 
 	*delim = '\0';
 	if (sscanf(++delim, "%hd\n", &qid) != 1)
 		goto err_no_cmd;
 
-	/* Check buffer length, valid ifname and queue id */
+	 
 	if (!dev_valid_name(newval->string) ||
 	    qid > bond->dev->real_num_tx_queues)
 		goto err_no_cmd;
 
-	/* Get the pointer to that interface if it exists */
+	 
 	sdev = __dev_get_by_name(dev_net(bond->dev), newval->string);
 	if (!sdev)
 		goto err_no_cmd;
 
-	/* Search for thes slave and check for duplicate qids */
+	 
 	update_slave = NULL;
 	bond_for_each_slave(bond, slave, iter) {
 		if (sdev == slave->dev)
-			/* We don't need to check the matching
-			 * slave for dups, since we're overwriting it
-			 */
+			 
 			update_slave = slave;
 		else if (qid && qid == slave->queue_id) {
 			goto err_no_cmd;
@@ -1572,7 +1496,7 @@ static int bond_option_queue_id_set(struct bonding *bond,
 	if (!update_slave)
 		goto err_no_cmd;
 
-	/* Actually set the qids for the slave */
+	 
 	update_slave->queue_id = qid;
 
 out:
@@ -1593,7 +1517,7 @@ static int bond_option_slaves_set(struct bonding *bond,
 	char *ifname;
 	int ret;
 
-	sscanf(newval->string, "%16s", command); /* IFNAMSIZ*/
+	sscanf(newval->string, "%16s", command);  
 	ifname = command + 1;
 	if ((strlen(command) <= 1) ||
 	    (command[0] != '+' && command[0] != '-') ||
@@ -1620,7 +1544,7 @@ static int bond_option_slaves_set(struct bonding *bond,
 		break;
 
 	default:
-		/* should not run here. */
+		 
 		goto err_no_cmd;
 	}
 

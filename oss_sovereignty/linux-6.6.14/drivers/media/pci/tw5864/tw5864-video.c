@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  TW5864 driver - video encoding functions
- *
- *  Copyright (C) 2016 Bluecherry, LLC <maintainers@bluecherrydvr.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/v4l2-common.h>
@@ -246,7 +242,7 @@ static int tw5864_enable_input(struct tw5864_input *input)
 	input->reg_dsp_i4x4_weight = intra4x4_lambda3[input->qp];
 	input->reg_emu = TW5864_EMU_EN_LPF | TW5864_EMU_EN_BHOST
 		| TW5864_EMU_EN_SEN | TW5864_EMU_EN_ME | TW5864_EMU_EN_DDR;
-	input->reg_dsp = nr /* channel id */
+	input->reg_dsp = nr  
 		| TW5864_DSP_CHROM_SW
 		| ((0xa << 8) & TW5864_DSP_MB_DELAY)
 		;
@@ -313,18 +309,15 @@ static int tw5864_enable_input(struct tw5864_input *input)
 		break;
 	}
 
-	/* analog input width / 4 */
+	 
 	tw_indir_writeb(TW5864_INDIR_IN_PIC_WIDTH(nr), d1_width / 4);
 	tw_indir_writeb(TW5864_INDIR_IN_PIC_HEIGHT(nr), d1_height / 4);
 
-	/* output width / 4 */
+	 
 	tw_indir_writeb(TW5864_INDIR_OUT_PIC_WIDTH(nr), input->width / 4);
 	tw_indir_writeb(TW5864_INDIR_OUT_PIC_HEIGHT(nr), input->height / 4);
 
-	/*
-	 * Crop width from 720 to 704.
-	 * Above register settings need value 720 involved.
-	 */
+	 
 	input->width = 704;
 	tw_indir_writeb(TW5864_INDIR_CROP_ETC,
 			tw_indir_readb(TW5864_INDIR_CROP_ETC) |
@@ -385,14 +378,14 @@ void tw5864_request_encoded_frame(struct tw5864_input *input)
 			     TW5864_DSP_INTRA_MODE_16x16);
 
 	if (input->frame_gop_seqno == 0) {
-		/* Produce I-frame */
+		 
 		tw_writel(TW5864_MOTION_SEARCH_ETC, TW5864_INTRA_EN);
 		input->h264_idr_pic_id++;
 		input->h264_idr_pic_id &= TW5864_DSP_REF_FRM;
 	} else {
-		/* Produce P-frame */
+		 
 		tw_writel(TW5864_MOTION_SEARCH_ETC, TW5864_INTRA_EN |
-			  TW5864_ME_EN | BIT(5) /* SRCH_OPT default */);
+			  TW5864_ME_EN | BIT(5)  );
 	}
 	tw5864_prepare_frame_headers(input);
 	tw_writel(TW5864_VLC,
@@ -518,7 +511,7 @@ static int tw5864_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_DETECT_MD_MODE:
 		return 0;
 	case V4L2_CID_DETECT_MD_THRESHOLD_GRID:
-		/* input->md_threshold_grid_ctrl->p_new.p_u16 contains data */
+		 
 		memcpy(input->md_threshold_grid_values,
 		       input->md_threshold_grid_ctrl->p_new.p_u16,
 		       sizeof(input->md_threshold_grid_values));
@@ -656,9 +649,7 @@ static int tw5864_subscribe_event(struct v4l2_fh *fh,
 {
 	switch (sub->type) {
 	case V4L2_EVENT_MOTION_DET:
-		/*
-		 * Allow for up to 30 events (1 second for NTSC) to be stored.
-		 */
+		 
 		return v4l2_event_subscribe(fh, sub, 30, NULL);
 	default:
 		return v4l2_ctrl_subscribe_event(fh, sub);
@@ -667,29 +658,7 @@ static int tw5864_subscribe_event(struct v4l2_fh *fh,
 
 static void tw5864_frame_interval_set(struct tw5864_input *input)
 {
-	/*
-	 * This register value seems to follow such approach: In each second
-	 * interval, when processing Nth frame, it checks Nth bit of register
-	 * value and, if the bit is 1, it processes the frame, otherwise the
-	 * frame is discarded.
-	 * So unary representation would work, but more or less equal gaps
-	 * between the frames should be preserved.
-	 *
-	 * For 1 FPS - 0x00000001
-	 * 00000000 00000000 00000000 00000001
-	 *
-	 * For max FPS - set all 25/30 lower bits:
-	 * 00111111 11111111 11111111 11111111 (NTSC)
-	 * 00000001 11111111 11111111 11111111 (PAL)
-	 *
-	 * For half of max FPS - use such pattern:
-	 * 00010101 01010101 01010101 01010101 (NTSC)
-	 * 00000001 01010101 01010101 01010101 (PAL)
-	 *
-	 * Et cetera.
-	 *
-	 * The value supplied to hardware is capped by mask of 25/30 lower bits.
-	 */
+	 
 	struct tw5864_dev *dev = input->root;
 	u32 unary_framerate = 0;
 	int shift = 0;
@@ -929,13 +898,13 @@ static const struct video_device tw5864_video_template = {
 		V4L2_CAP_STREAMING,
 };
 
-/* Motion Detection Threshold matrix */
+ 
 static const struct v4l2_ctrl_config tw5864_md_thresholds = {
 	.ops = &tw5864_ctrl_ops,
 	.id = V4L2_CID_DETECT_MD_THRESHOLD_GRID,
 	.dims = {MD_CELLS_HOR, MD_CELLS_VERT},
 	.def = 14,
-	/* See tw5864_md_metric_from_mvd() */
+	 
 	.max = 2 * 0x0f,
 	.step = 1,
 };
@@ -980,8 +949,8 @@ int tw5864_video_init(struct tw5864_dev *dev, int *video_nr)
 
 	tw5864_encoder_tables_upload(dev);
 
-	/* Picture is distorted without this block */
-	/* use falling edge to sample 54M to 108M */
+	 
+	 
 	tw_indir_writeb(TW5864_INDIR_VD_108_POL, TW5864_INDIR_VD_108_POL_BOTH);
 	tw_indir_writeb(TW5864_INDIR_CLK0_SEL, 0x00);
 
@@ -992,19 +961,13 @@ int tw5864_video_init(struct tw5864_dev *dev, int *video_nr)
 	tw_indir_writeb(TW5864_INDIR_DDRB_DLL_DQS_SEL1, 0x02);
 	tw_indir_writeb(TW5864_INDIR_DDRB_DLL_CLK90_SEL, 0x02);
 
-	/* video input reset */
+	 
 	tw_indir_writeb(TW5864_INDIR_RESET, 0);
 	tw_indir_writeb(TW5864_INDIR_RESET, TW5864_INDIR_RESET_VD |
 			TW5864_INDIR_RESET_DLL | TW5864_INDIR_RESET_MUX_CORE);
 	msleep(20);
 
-	/*
-	 * Select Part A mode for all channels.
-	 * tw_setl instead of tw_clearl for Part B mode.
-	 *
-	 * I guess "Part B" is primarily for downscaled version of same channel
-	 * which goes in Part A of same bus
-	 */
+	 
 	tw_writel(TW5864_FULL_HALF_MODE_SEL, 0);
 
 	tw_indir_writeb(TW5864_INDIR_PV_VD_CK_POL,
@@ -1031,25 +994,7 @@ int tw5864_video_init(struct tw5864_dev *dev, int *video_nr)
 	tw_writel(TW5864_H264EN_BUS2_MAP, 0x00002222);
 	tw_writel(TW5864_H264EN_BUS3_MAP, 0x00003333);
 
-	/*
-	 * Quote from Intersil (manufacturer):
-	 * 0x0038 is managed by HW, and by default it won't pass the pointer set
-	 * at 0x0010. So if you don't do encoding, 0x0038 should stay at '3'
-	 * (with 4 frames in buffer). If you encode one frame and then move
-	 * 0x0010 to '1' for example, HW will take one more frame and set it to
-	 * buffer #0, and then you should see 0x0038 is set to '0'.  There is
-	 * only one HW encoder engine, so 4 channels cannot get encoded
-	 * simultaneously. But each channel does have its own buffer (for
-	 * original frames and reconstructed frames). So there is no problem to
-	 * manage encoding for 4 channels at same time and no need to force
-	 * I-frames in switching channels.
-	 * End of quote.
-	 *
-	 * If we set 0x0010 (TW5864_ENC_BUF_PTR_REC1) to 0 (for any channel), we
-	 * have no "rolling" (until we change this value).
-	 * If we set 0x0010 (TW5864_ENC_BUF_PTR_REC1) to 0x3, it starts to roll
-	 * continuously together with 0x0038.
-	 */
+	 
 	tw_writel(TW5864_ENC_BUF_PTR_REC1, 0x00ff);
 	tw_writel(TW5864_PCI_INTTM_SCALE, 0);
 
@@ -1103,7 +1048,7 @@ static int tw5864_video_input_init(struct tw5864_input *input, int video_nr)
 	mutex_init(&input->lock);
 	spin_lock_init(&input->slock);
 
-	/* setup video buffers queue */
+	 
 	INIT_LIST_HEAD(&input->active);
 	input->vidq.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	input->vidq.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
@@ -1126,7 +1071,7 @@ static int tw5864_video_input_init(struct tw5864_input *input, int video_nr)
 	input->vdev.queue = &input->vidq;
 	video_set_drvdata(&input->vdev, input);
 
-	/* Initialize the device control structures */
+	 
 	v4l2_ctrl_handler_init(hdl, 6);
 	v4l2_ctrl_new_std(hdl, &tw5864_ctrl_ops,
 			  V4L2_CID_BRIGHTNESS, -128, 127, 1, 0);
@@ -1167,15 +1112,12 @@ static int tw5864_video_input_init(struct tw5864_input *input, int video_nr)
 	dev_info(&input->root->pci->dev, "Registered video device %s\n",
 		 video_device_node_name(&input->vdev));
 
-	/*
-	 * Set default video standard. Doesn't matter which, the detected value
-	 * will be found out by VIDIOC_QUERYSTD handler.
-	 */
+	 
 	input->v4l2_std = V4L2_STD_NTSC_M;
 	input->std = STD_NTSC;
 
 	tw_indir_writeb(TW5864_INDIR_VIN_E(video_nr), 0x07);
-	/* to initiate auto format recognition */
+	 
 	tw_indir_writeb(TW5864_INDIR_VIN_F(video_nr), 0xff);
 
 	return 0;
@@ -1235,26 +1177,16 @@ void tw5864_prepare_frame_headers(struct tw5864_input *input)
 	dst = vb2_plane_vaddr(&vb->vb.vb2_buf, 0);
 	dst_space = vb2_plane_size(&vb->vb.vb2_buf, 0);
 
-	/*
-	 * Low-level bitstream writing functions don't have a fine way to say
-	 * correctly that supplied buffer is too small. So we just check there
-	 * and warn, and don't care at lower level.
-	 * Currently all headers take below 32 bytes.
-	 * The buffer is supposed to have plenty of free space at this point,
-	 * anyway.
-	 */
+	 
 	if (WARN_ON_ONCE(dst_space < 128))
 		return;
 
-	/*
-	 * Generate H264 headers:
-	 * If this is first frame, put SPS and PPS
-	 */
+	 
 	if (input->frame_gop_seqno == 0)
 		tw5864_h264_put_stream_header(&dst, &dst_space, input->qp,
 					      input->width, input->height);
 
-	/* Put slice header */
+	 
 	tw5864_h264_put_slice_header(&dst, &dst_space, input->h264_idr_pic_id,
 				     input->frame_gop_seqno,
 				     &input->tail_nb_bits, &input->tail);
@@ -1263,32 +1195,14 @@ void tw5864_prepare_frame_headers(struct tw5864_input *input)
 	input->buf_cur_space_left = dst_space;
 }
 
-/*
- * Returns heuristic motion detection metric value from known components of
- * hardware-provided Motion Vector Data.
- */
+ 
 static unsigned int tw5864_md_metric_from_mvd(u32 mvd)
 {
-	/*
-	 * Format of motion vector data exposed by tw5864, according to
-	 * manufacturer:
-	 * mv_x 10 bits
-	 * mv_y 10 bits
-	 * non_zero_members 8 bits
-	 * mb_type 3 bits
-	 * reserved 1 bit
-	 *
-	 * non_zero_members: number of non-zero residuals in each macro block
-	 * after quantization
-	 *
-	 * unsigned int reserved = mvd >> 31;
-	 * unsigned int mb_type = (mvd >> 28) & 0x7;
-	 * unsigned int non_zero_members = (mvd >> 20) & 0xff;
-	 */
+	 
 	unsigned int mv_y = (mvd >> 10) & 0x3ff;
 	unsigned int mv_x = mvd & 0x3ff;
 
-	/* heuristic: */
+	 
 	mv_x &= 0x0f;
 	mv_y &= 0x0f;
 
@@ -1388,17 +1302,14 @@ static void tw5864_handle_frame(struct tw5864_h264_frame *frame)
 	input->vb = NULL;
 	spin_unlock_irqrestore(&input->slock, flags);
 
-	if (!vb) { /* Gone because of disabling */
+	if (!vb) {  
 		dev_dbg(&dev->pci->dev, "vb is empty, dropping frame\n");
 		return;
 	}
 
 	v4l2_buf = to_vb2_v4l2_buffer(&vb->vb.vb2_buf);
 
-	/*
-	 * Check for space.
-	 * Mind the overhead of startcode emulation prevention.
-	 */
+	 
 	if (input->buf_cur_space_left < frame_len * 5 / 4) {
 		dev_err_once(&dev->pci->dev,
 			     "Left space in vb2 buffer, %d bytes, is less than considered safely enough to put frame of length %d. Dropping this frame.\n",
@@ -1414,7 +1325,7 @@ static void tw5864_handle_frame(struct tw5864_h264_frame *frame)
 	frame_len--;
 	dst++;
 
-	/* H.264 startcode emulation prevention */
+	 
 	src = frame->vlc.addr + SKIP_VLCBUF_BYTES + 1;
 	src_end = src + frame_len;
 	zero_run = 0;
@@ -1439,8 +1350,8 @@ static void tw5864_handle_frame(struct tw5864_h264_frame *frame)
 	v4l2_buf->field = V4L2_FIELD_INTERLACED;
 	v4l2_buf->sequence = frame->seqno;
 
-	/* Check for motion flags */
-	if (frame->gop_seqno /* P-frame */ &&
+	 
+	if (frame->gop_seqno   &&
 	    tw5864_is_motion_triggered(frame)) {
 		struct v4l2_event ev = {
 			.type = V4L2_EVENT_MOTION_DET,

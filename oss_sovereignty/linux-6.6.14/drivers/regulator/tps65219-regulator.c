@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// tps65219-regulator.c
-//
-// Regulator driver for TPS65219 PMIC
-//
-// Copyright (C) 2022 BayLibre Incorporated - https://www.baylibre.com/
-//
-// This implementation derived from tps65218 authored by
-// "J Keerthy <j-keerthy@ti.com>"
-//
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -173,7 +173,7 @@ static unsigned int tps65219_get_mode(struct regulator_dev *dev)
 		return REGULATOR_MODE_NORMAL;
 }
 
-/* Operations permitted on BUCK1/2/3 */
+ 
 static const struct regulator_ops tps65219_bucks_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -188,7 +188,7 @@ static const struct regulator_ops tps65219_bucks_ops = {
 
 };
 
-/* Operations permitted on LDO1/2 */
+ 
 static const struct regulator_ops tps65219_ldos_1_2_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -203,7 +203,7 @@ static const struct regulator_ops tps65219_ldos_1_2_ops = {
 	.get_bypass		= regulator_get_bypass_regmap,
 };
 
-/* Operations permitted on LDO3/4 */
+ 
 static const struct regulator_ops tps65219_ldos_3_4_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -273,7 +273,7 @@ static irqreturn_t tps65219_regulator_irq_handler(int irq, void *data)
 	struct tps65219_regulator_irq_data *irq_data = data;
 
 	if (irq_data->type->event_name[0] == '\0') {
-		/* This is the timeout interrupt no specific regulator */
+		 
 		dev_err(irq_data->dev,
 			"System was put in shutdown due to timeout during an active or standby transition.\n");
 		return IRQ_HANDLED;
@@ -373,7 +373,7 @@ static int tps65219_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id tps65219_regulator_id_table[] = {
 	{ "tps65219-regulator", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65219_regulator_id_table);
 

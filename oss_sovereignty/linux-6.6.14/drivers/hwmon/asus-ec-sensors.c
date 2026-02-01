@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * HWMON driver for ASUS motherboards that publish some sensor values
- * via the embedded controller registers.
- *
- * Copyright (C) 2021 Eugene Shalygin <eugene.shalygin@gmail.com>
 
- * EC provides:
- * - Chipset temperature
- * - CPU temperature
- * - Motherboard temperature
- * - T_Sensor temperature
- * - VRM temperature
- * - Water In temperature
- * - Water Out temperature
- * - CPU Optional fan RPM
- * - Chipset fan RPM
- * - VRM Heat Sink fan RPM
- * - Water Flow fan RPM
- * - CPU current
- * - CPU core voltage
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -38,20 +18,16 @@
 
 static char *mutex_path_override;
 
-/* Writing to this EC register switches EC bank */
+ 
 #define ASUS_EC_BANK_REGISTER	0xff
 #define SENSOR_LABEL_LEN	16
 
-/*
- * Arbitrary set max. allowed bank number. Required for sorting banks and
- * currently is overkill with just 2 banks used at max, but for the sake
- * of alignment let's set it to a higher value.
- */
+ 
 #define ASUS_EC_MAX_BANK	3
 
 #define ACPI_LOCK_DELAY_MS	500
 
-/* ACPI mutex for locking access to the EC for the firmware */
+ 
 #define ASUS_HW_ACCESS_MUTEX_ASMX	"\\AMW0.ASMX"
 
 #define ASUS_HW_ACCESS_MUTEX_RMTW_ASMX	"\\RMTW.ASMX"
@@ -60,7 +36,7 @@ static char *mutex_path_override;
 
 #define MAX_IDENTICAL_BOARD_VARIATIONS	3
 
-/* Moniker for the ACPI global lock (':' is not allowed in ASL identifiers) */
+ 
 #define ACPI_GLOBAL_LOCK_PSEUDO_PATH	":GLOBAL_LOCK"
 
 typedef union {
@@ -97,45 +73,45 @@ struct ec_sensor_info {
 	}
 
 enum ec_sensors {
-	/* chipset temperature [℃] */
+	 
 	ec_sensor_temp_chipset,
-	/* CPU temperature [℃] */
+	 
 	ec_sensor_temp_cpu,
-	/* CPU package temperature [℃] */
+	 
 	ec_sensor_temp_cpu_package,
-	/* motherboard temperature [℃] */
+	 
 	ec_sensor_temp_mb,
-	/* "T_Sensor" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_t_sensor,
-	/* VRM temperature [℃] */
+	 
 	ec_sensor_temp_vrm,
-	/* CPU Core voltage [mV] */
+	 
 	ec_sensor_in_cpu_core,
-	/* CPU_Opt fan [RPM] */
+	 
 	ec_sensor_fan_cpu_opt,
-	/* VRM heat sink fan [RPM] */
+	 
 	ec_sensor_fan_vrm_hs,
-	/* Chipset fan [RPM] */
+	 
 	ec_sensor_fan_chipset,
-	/* Water flow sensor reading [RPM] */
+	 
 	ec_sensor_fan_water_flow,
-	/* CPU current [A] */
+	 
 	ec_sensor_curr_cpu,
-	/* "Water_In" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_water_in,
-	/* "Water_Out" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_water_out,
-	/* "Water_Block_In" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_water_block_in,
-	/* "Water_Block_Out" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_water_block_out,
-	/* "T_sensor_2" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_t_sensor_2,
-	/* "Extra_1" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_sensor_extra_1,
-	/* "Extra_2" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_sensor_extra_2,
-	/* "Extra_3" temperature sensor reading [℃] */
+	 
 	ec_sensor_temp_sensor_extra_3,
 };
 
@@ -169,7 +145,7 @@ enum board_family {
 	family_intel_600_series
 };
 
-/* All the known sensors for ASUS EC controllers */
+ 
 static const struct ec_sensor_info sensors_family_amd_400[] = {
 	[ec_sensor_temp_chipset] =
 		EC_SENSOR("Chipset", hwmon_temp, 1, 0x00, 0x3a),
@@ -188,7 +164,7 @@ static const struct ec_sensor_info sensors_family_amd_400[] = {
 	[ec_sensor_fan_vrm_hs] =
 		EC_SENSOR("VRM HS", hwmon_fan, 2, 0x00, 0xb2),
 	[ec_sensor_fan_chipset] =
-		/* no chipset fans in this generation */
+		 
 		EC_SENSOR("Chipset", hwmon_fan, 0, 0x00, 0x00),
 	[ec_sensor_fan_water_flow] =
 		EC_SENSOR("Water_Flow", hwmon_fan, 2, 0x00, 0xb4),
@@ -276,7 +252,7 @@ static const struct ec_sensor_info sensors_family_intel_600[] = {
 	[ec_sensor_temp_vrm] = EC_SENSOR("VRM", hwmon_temp, 1, 0x00, 0x3e),
 };
 
-/* Shortcuts for common combinations */
+ 
 #define SENSOR_SET_TEMP_CHIPSET_CPU_MB                                         \
 	(SENSOR_TEMP_CHIPSET | SENSOR_TEMP_CPU | SENSOR_TEMP_MB)
 #define SENSOR_SET_TEMP_WATER (SENSOR_TEMP_WATER_IN | SENSOR_TEMP_WATER_OUT)
@@ -285,13 +261,7 @@ static const struct ec_sensor_info sensors_family_intel_600[] = {
 
 struct ec_board_info {
 	unsigned long sensors;
-	/*
-	 * Defines which mutex to use for guarding access to the state and the
-	 * hardware. Can be either a full path to an AML mutex or the
-	 * pseudo-path ACPI_GLOBAL_LOCK_PSEUDO_PATH to use the global ACPI lock,
-	 * or left empty to use a regular mutex object, in which case access to
-	 * the hardware is not guarded.
-	 */
+	 
 	const char *mutex_path;
 	enum board_family family;
 };
@@ -527,23 +497,17 @@ struct ec_sensor {
 struct lock_data {
 	union {
 		acpi_handle aml;
-		/* global lock handle */
+		 
 		u32 glk;
 	} mutex;
 	bool (*lock)(struct lock_data *data);
 	bool (*unlock)(struct lock_data *data);
 };
 
-/*
- * The next function pairs implement options for locking access to the
- * state and the EC
- */
+ 
 static bool lock_via_acpi_mutex(struct lock_data *data)
 {
-	/*
-	 * ASUS DSDT does not specify that access to the EC has to be guarded,
-	 * but firmware does access it via ACPI
-	 */
+	 
 	return ACPI_SUCCESS(acpi_acquire_mutex(data->mutex.aml,
 					       NULL, ACPI_LOCK_DELAY_MS));
 }
@@ -568,22 +532,19 @@ struct ec_sensors_data {
 	const struct ec_board_info *board_info;
 	const struct ec_sensor_info *sensors_info;
 	struct ec_sensor *sensors;
-	/* EC registers to read from */
+	 
 	u16 *registers;
 	u8 *read_buffer;
-	/* sorted list of unique register banks */
+	 
 	u8 banks[ASUS_EC_MAX_BANK + 1];
-	/* in jiffies */
+	 
 	unsigned long last_updated;
 	struct lock_data lock_data;
-	/* number of board EC sensors */
+	 
 	u8 nr_sensors;
-	/*
-	 * number of EC registers to read
-	 * (sensor might span more than 1 register)
-	 */
+	 
 	u8 nr_registers;
-	/* number of unique register banks */
+	 
 	u8 nr_banks;
 };
 
@@ -599,10 +560,7 @@ static u8 register_index(u16 reg)
 
 static bool is_sensor_data_signed(const struct ec_sensor_info *si)
 {
-	/*
-	 * guessed from WMI functions in DSDT code for boards
-	 * of the X470 generation
-	 */
+	 
 	return si->type == hwmon_temp;
 }
 
@@ -737,12 +695,12 @@ static int asus_ec_block_read(const struct device *dev,
 	}
 
 	if (prev_bank) {
-		/* oops... somebody else is working with the EC too */
+		 
 		dev_warn(dev,
 			"Concurrent access to the ACPI EC detected.\nRace condition possible.");
 	}
 
-	/* read registers minimizing bank switches. */
+	 
 	for (ibank = 0; ibank < ec->nr_banks; ibank++) {
 		if (bank != ec->banks[ibank]) {
 			bank = ec->banks[ibank];
@@ -856,9 +814,7 @@ static int get_cached_value_or_update(const struct device *dev,
 	return 0;
 }
 
-/*
- * Now follow the functions that implement the hwmon interface
- */
+ 
 
 static int asus_ec_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 			      u32 attr, int channel, long *val)

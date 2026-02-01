@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FPGA Manager Driver for FPGA Management Engine (FME)
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Kang Luwei <luwei.kang@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Wu Hao <hao.wu@intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Christopher Rauer <christopher.rauer@intel.com>
- *   Henry Mitchel <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -24,7 +9,7 @@
 
 #include "dfl-fme-pr.h"
 
-/* FME Partial Reconfiguration Sub Feature Register Set */
+ 
 #define FME_PR_DFH		0x0
 #define FME_PR_CTRL		0x8
 #define FME_PR_STS		0x10
@@ -33,35 +18,35 @@
 #define FME_PR_INTFC_ID_L	0xA8
 #define FME_PR_INTFC_ID_H	0xB0
 
-/* FME PR Control Register Bitfield */
-#define FME_PR_CTRL_PR_RST	BIT_ULL(0)  /* Reset PR engine */
-#define FME_PR_CTRL_PR_RSTACK	BIT_ULL(4)  /* Ack for PR engine reset */
-#define FME_PR_CTRL_PR_RGN_ID	GENMASK_ULL(9, 7)       /* PR Region ID */
-#define FME_PR_CTRL_PR_START	BIT_ULL(12) /* Start to request PR service */
-#define FME_PR_CTRL_PR_COMPLETE	BIT_ULL(13) /* PR data push completion */
+ 
+#define FME_PR_CTRL_PR_RST	BIT_ULL(0)   
+#define FME_PR_CTRL_PR_RSTACK	BIT_ULL(4)   
+#define FME_PR_CTRL_PR_RGN_ID	GENMASK_ULL(9, 7)        
+#define FME_PR_CTRL_PR_START	BIT_ULL(12)  
+#define FME_PR_CTRL_PR_COMPLETE	BIT_ULL(13)  
 
-/* FME PR Status Register Bitfield */
-/* Number of available entries in HW queue inside the PR engine. */
+ 
+ 
 #define FME_PR_STS_PR_CREDIT	GENMASK_ULL(8, 0)
-#define FME_PR_STS_PR_STS	BIT_ULL(16) /* PR operation status */
+#define FME_PR_STS_PR_STS	BIT_ULL(16)  
 #define FME_PR_STS_PR_STS_IDLE	0
-#define FME_PR_STS_PR_CTRLR_STS	GENMASK_ULL(22, 20)     /* Controller status */
-#define FME_PR_STS_PR_HOST_STS	GENMASK_ULL(27, 24)     /* PR host status */
+#define FME_PR_STS_PR_CTRLR_STS	GENMASK_ULL(22, 20)      
+#define FME_PR_STS_PR_HOST_STS	GENMASK_ULL(27, 24)      
 
-/* FME PR Data Register Bitfield */
-/* PR data from the raw-binary file. */
+ 
+ 
 #define FME_PR_DATA_PR_DATA_RAW	GENMASK_ULL(32, 0)
 
-/* FME PR Error Register */
-/* PR Operation errors detected. */
+ 
+ 
 #define FME_PR_ERR_OPERATION_ERR	BIT_ULL(0)
-/* CRC error detected. */
+ 
 #define FME_PR_ERR_CRC_ERR		BIT_ULL(1)
-/* Incompatible PR bitstream detected. */
+ 
 #define FME_PR_ERR_INCOMPATIBLE_BS	BIT_ULL(2)
-/* PR data push protocol violated. */
+ 
 #define FME_PR_ERR_PROTOCOL_ERR		BIT_ULL(3)
-/* PR data fifo overflow error detected */
+ 
 #define FME_PR_ERR_FIFO_OVERFLOW	BIT_ULL(4)
 
 #define PR_WAIT_TIMEOUT   8000000
@@ -179,12 +164,7 @@ static int fme_mgr_write(struct fpga_manager *mgr,
 
 	dev_dbg(dev, "pushing data from bitstream to HW\n");
 
-	/*
-	 * driver can push data to PR hardware using PR_DATA register once HW
-	 * has enough pr_credit (> 1), pr_credit reduces one for every 32bit
-	 * pr data write to PR_DATA register. If pr_credit <= 1, driver needs
-	 * to wait for enough pr_credit from hardware by polling.
-	 */
+	 
 	pr_status = readq(fme_pr + FME_PR_STS);
 	pr_credit = FIELD_GET(FME_PR_STS_PR_CREDIT, pr_status);
 

@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
@@ -17,7 +14,7 @@ int hl_asid_init(struct hl_device *hdev)
 
 	mutex_init(&hdev->asid_mutex);
 
-	/* ASID 0 is reserved for the kernel driver and device CPU */
+	 
 	set_bit(0, hdev->asid_bitmap);
 
 	return 0;

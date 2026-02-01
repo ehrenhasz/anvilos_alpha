@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CAN driver for "8 devices" USB2CAN converter
- *
- * Copyright (C) 2012 Bernd Krumboeck (krumboeck@universalnet.at)
- *
- * This driver is inspired by the 3.2.0 version of drivers/net/can/usb/ems_usb.c
- * and drivers/net/can/usb/esd_usb2.c
- *
- * Many thanks to Gerhard Bertelsmann (info@gerhard-bertelsmann.de)
- * for testing and fixing this driver. Also many thanks to "8 devices",
- * who were very cooperative and answered my questions.
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/signal.h>
@@ -23,16 +12,16 @@
 #include <linux/can/dev.h>
 #include <linux/can/error.h>
 
-/* driver constants */
+ 
 #define MAX_RX_URBS			20
 #define MAX_TX_URBS			20
 #define RX_BUFFER_SIZE			64
 
-/* vendor and product id */
+ 
 #define USB_8DEV_VENDOR_ID		0x0483
 #define USB_8DEV_PRODUCT_ID		0x1234
 
-/* endpoints */
+ 
 enum usb_8dev_endpoint {
 	USB_8DEV_ENDP_DATA_RX = 1,
 	USB_8DEV_ENDP_DATA_TX,
@@ -40,16 +29,16 @@ enum usb_8dev_endpoint {
 	USB_8DEV_ENDP_CMD_TX
 };
 
-/* device CAN clock */
+ 
 #define USB_8DEV_ABP_CLOCK		32000000
 
-/* setup flags */
+ 
 #define USB_8DEV_SILENT			0x01
 #define USB_8DEV_LOOPBACK		0x02
 #define USB_8DEV_DISABLE_AUTO_RESTRANS	0x04
 #define USB_8DEV_STATUS_FRAME		0x08
 
-/* commands */
+ 
 enum usb_8dev_cmd {
 	USB_8DEV_RESET = 1,
 	USB_8DEV_OPEN,
@@ -65,7 +54,7 @@ enum usb_8dev_cmd {
 	USB_8DEV_GET_SOFTW_HARDW_VER
 };
 
-/* command options */
+ 
 #define USB_8DEV_BAUD_MANUAL		0x09
 #define USB_8DEV_CMD_START		0x11
 #define USB_8DEV_CMD_END		0x22
@@ -75,7 +64,7 @@ enum usb_8dev_cmd {
 
 #define USB_8DEV_CMD_TIMEOUT		1000
 
-/* frames */
+ 
 #define USB_8DEV_DATA_START		0x55
 #define USB_8DEV_DATA_END		0xAA
 
@@ -86,26 +75,26 @@ enum usb_8dev_cmd {
 #define USB_8DEV_RTR			0x02
 #define USB_8DEV_ERR_FLAG		0x04
 
-/* status */
-#define USB_8DEV_STATUSMSG_OK		0x00  /* Normal condition. */
-#define USB_8DEV_STATUSMSG_OVERRUN	0x01  /* Overrun occurred when sending */
-#define USB_8DEV_STATUSMSG_BUSLIGHT	0x02  /* Error counter has reached 96 */
-#define USB_8DEV_STATUSMSG_BUSHEAVY	0x03  /* Error count. has reached 128 */
-#define USB_8DEV_STATUSMSG_BUSOFF	0x04  /* Device is in BUSOFF */
-#define USB_8DEV_STATUSMSG_STUFF	0x20  /* Stuff Error */
-#define USB_8DEV_STATUSMSG_FORM		0x21  /* Form Error */
-#define USB_8DEV_STATUSMSG_ACK		0x23  /* Ack Error */
-#define USB_8DEV_STATUSMSG_BIT0		0x24  /* Bit1 Error */
-#define USB_8DEV_STATUSMSG_BIT1		0x25  /* Bit0 Error */
-#define USB_8DEV_STATUSMSG_CRC		0x27  /* CRC Error */
+ 
+#define USB_8DEV_STATUSMSG_OK		0x00   
+#define USB_8DEV_STATUSMSG_OVERRUN	0x01   
+#define USB_8DEV_STATUSMSG_BUSLIGHT	0x02   
+#define USB_8DEV_STATUSMSG_BUSHEAVY	0x03   
+#define USB_8DEV_STATUSMSG_BUSOFF	0x04   
+#define USB_8DEV_STATUSMSG_STUFF	0x20   
+#define USB_8DEV_STATUSMSG_FORM		0x21   
+#define USB_8DEV_STATUSMSG_ACK		0x23   
+#define USB_8DEV_STATUSMSG_BIT0		0x24   
+#define USB_8DEV_STATUSMSG_BIT1		0x25   
+#define USB_8DEV_STATUSMSG_CRC		0x27   
 
-#define USB_8DEV_RP_MASK		0x7F  /* Mask for Receive Error Bit */
+#define USB_8DEV_RP_MASK		0x7F   
 
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id usb_8dev_table[] = {
 	{ USB_DEVICE(USB_8DEV_VENDOR_ID, USB_8DEV_PRODUCT_ID) },
-	{ }					/* Terminating entry */
+	{ }					 
 };
 
 MODULE_DEVICE_TABLE(usb, usb_8dev_table);
@@ -116,9 +105,9 @@ struct usb_8dev_tx_urb_context {
 	u32 echo_index;
 };
 
-/* Structure to hold all of our device specific stuff */
+ 
 struct usb_8dev_priv {
-	struct can_priv can; /* must be the first member */
+	struct can_priv can;  
 
 	struct usb_device *udev;
 	struct net_device *netdev;
@@ -138,36 +127,36 @@ struct usb_8dev_priv {
 	dma_addr_t rxbuf_dma[MAX_RX_URBS];
 };
 
-/* tx frame */
+ 
 struct __packed usb_8dev_tx_msg {
 	u8 begin;
-	u8 flags;	/* RTR and EXT_ID flag */
-	__be32 id;	/* upper 3 bits not used */
-	u8 dlc;		/* data length code 0-8 bytes */
-	u8 data[8];	/* 64-bit data */
+	u8 flags;	 
+	__be32 id;	 
+	u8 dlc;		 
+	u8 data[8];	 
 	u8 end;
 };
 
-/* rx frame */
+ 
 struct __packed usb_8dev_rx_msg {
 	u8 begin;
-	u8 type;		/* frame type */
-	u8 flags;		/* RTR and EXT_ID flag */
-	__be32 id;		/* upper 3 bits not used */
-	u8 dlc;			/* data length code 0-8 bytes */
-	u8 data[8];		/* 64-bit data */
-	__be32 timestamp;	/* 32-bit timestamp */
+	u8 type;		 
+	u8 flags;		 
+	__be32 id;		 
+	u8 dlc;			 
+	u8 data[8];		 
+	__be32 timestamp;	 
 	u8 end;
 };
 
-/* command frame */
+ 
 struct __packed usb_8dev_cmd_msg {
 	u8 begin;
-	u8 channel;	/* unknown - always 0 */
-	u8 command;	/* command to execute */
-	u8 opt1;	/* optional parameter / return value */
-	u8 opt2;	/* optional parameter 2 */
-	u8 data[10];	/* optional parameter and data */
+	u8 channel;	 
+	u8 command;	 
+	u8 opt1;	 
+	u8 opt2;	 
+	u8 data[10];	 
 	u8 end;
 };
 
@@ -188,9 +177,7 @@ static int usb_8dev_wait_cmd_msg(struct usb_8dev_priv *priv, u8 *msg, int size,
 			    msg, size, actual_length, USB_8DEV_CMD_TIMEOUT);
 }
 
-/* Send command to device and receive result.
- * Command was successful when opt1 = 0.
- */
+ 
 static int usb_8dev_send_cmd(struct usb_8dev_priv *priv,
 			     struct usb_8dev_cmd_msg *out,
 			     struct usb_8dev_cmd_msg *in)
@@ -235,7 +222,7 @@ failed:
 	return err;
 }
 
-/* Send open command to device */
+ 
 static int usb_8dev_cmd_open(struct usb_8dev_priv *priv)
 {
 	struct can_bittiming *bt = &priv->can.bittiming;
@@ -253,11 +240,11 @@ static int usb_8dev_cmd_open(struct usb_8dev_priv *priv)
 	outmsg.data[1] = bt->phase_seg2;
 	outmsg.data[2] = bt->sjw;
 
-	/* BRP */
+	 
 	bebrp = cpu_to_be16((u16)bt->brp);
 	memcpy(&outmsg.data[3], &bebrp, sizeof(bebrp));
 
-	/* flags */
+	 
 	if (ctrlmode & CAN_CTRLMODE_LOOPBACK)
 		flags |= USB_8DEV_LOOPBACK;
 	if (ctrlmode & CAN_CTRLMODE_LISTENONLY)
@@ -271,7 +258,7 @@ static int usb_8dev_cmd_open(struct usb_8dev_priv *priv)
 	return usb_8dev_send_cmd(priv, &outmsg, &inmsg);
 }
 
-/* Send close command to device */
+ 
 static int usb_8dev_cmd_close(struct usb_8dev_priv *priv)
 {
 	struct usb_8dev_cmd_msg inmsg;
@@ -285,7 +272,7 @@ static int usb_8dev_cmd_close(struct usb_8dev_priv *priv)
 	return usb_8dev_send_cmd(priv, &outmsg, &inmsg);
 }
 
-/* Get firmware and hardware version */
+ 
 static int usb_8dev_cmd_version(struct usb_8dev_priv *priv, u32 *res)
 {
 	struct usb_8dev_cmd_msg	inmsg;
@@ -305,11 +292,7 @@ static int usb_8dev_cmd_version(struct usb_8dev_priv *priv, u32 *res)
 	return err;
 }
 
-/* Set network device mode
- *
- * Maybe we should leave this function empty, because the device
- * set mode variable with open command.
- */
+ 
 static int usb_8dev_set_mode(struct net_device *netdev, enum can_mode mode)
 {
 	struct usb_8dev_priv *priv = netdev_priv(netdev);
@@ -329,7 +312,7 @@ static int usb_8dev_set_mode(struct net_device *netdev, enum can_mode mode)
 	return err;
 }
 
-/* Read error/status frames */
+ 
 static void usb_8dev_rx_err_msg(struct usb_8dev_priv *priv,
 				struct usb_8dev_rx_msg *msg)
 {
@@ -337,13 +320,7 @@ static void usb_8dev_rx_err_msg(struct usb_8dev_priv *priv,
 	struct sk_buff *skb;
 	struct net_device_stats *stats = &priv->netdev->stats;
 
-	/* Error message:
-	 * byte 0: Status
-	 * byte 1: bit   7: Receive Passive
-	 * byte 1: bit 0-6: Receive Error Counter
-	 * byte 2: Transmit Error Counter
-	 * byte 3: Always 0 (maybe reserved for future use)
-	 */
+	 
 
 	u8 state = msg->data[0];
 	u8 rxerr = msg->data[1] & USB_8DEV_RP_MASK;
@@ -451,7 +428,7 @@ static void usb_8dev_rx_err_msg(struct usb_8dev_priv *priv,
 	netif_rx(skb);
 }
 
-/* Read data and status frames */
+ 
 static void usb_8dev_rx_can_msg(struct usb_8dev_priv *priv,
 				struct usb_8dev_rx_msg *msg)
 {
@@ -489,10 +466,7 @@ static void usb_8dev_rx_can_msg(struct usb_8dev_priv *priv,
 
 }
 
-/* Callback for reading data from device
- *
- * Check urb status, call read function and resubmit urb read operation.
- */
+ 
 static void usb_8dev_read_bulk_callback(struct urb *urb)
 {
 	struct usb_8dev_priv *priv = urb->context;
@@ -506,7 +480,7 @@ static void usb_8dev_read_bulk_callback(struct urb *urb)
 		return;
 
 	switch (urb->status) {
-	case 0: /* success */
+	case 0:  
 		break;
 
 	case -ENOENT:
@@ -550,11 +524,7 @@ resubmit_urb:
 			"failed resubmitting read bulk urb: %d\n", retval);
 }
 
-/* Callback handler for write operations
- *
- * Free allocated buffers, check transmit status and
- * calculate statistic.
- */
+ 
 static void usb_8dev_write_bulk_callback(struct urb *urb)
 {
 	struct usb_8dev_tx_urb_context *context = urb->context;
@@ -566,7 +536,7 @@ static void usb_8dev_write_bulk_callback(struct urb *urb)
 	priv = context->priv;
 	netdev = priv->netdev;
 
-	/* free up our allocated buffer */
+	 
 	usb_free_coherent(urb->dev, urb->transfer_buffer_length,
 			  urb->transfer_buffer, urb->transfer_dma);
 
@@ -582,13 +552,13 @@ static void usb_8dev_write_bulk_callback(struct urb *urb)
 	netdev->stats.tx_packets++;
 	netdev->stats.tx_bytes += can_get_echo_skb(netdev, context->echo_index, NULL);
 
-	/* Release context */
+	 
 	context->echo_index = MAX_TX_URBS;
 
 	netif_wake_queue(netdev);
 }
 
-/* Send data to device */
+ 
 static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
 				      struct net_device *netdev)
 {
@@ -605,7 +575,7 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
 	if (can_dev_dropped_skb(netdev, skb))
 		return NETDEV_TX_OK;
 
-	/* create a URB, and a buffer for it, and copy the data to the URB */
+	 
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb)
 		goto nomem;
@@ -641,9 +611,7 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
 		}
 	}
 
-	/* May never happen! When this happens we'd more URBs in flight as
-	 * allowed (MAX_TX_URBS).
-	 */
+	 
 	if (!context)
 		goto nofreecontext;
 
@@ -675,12 +643,10 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
 			netdev_warn(netdev, "failed tx_urb %d\n", err);
 		stats->tx_dropped++;
 	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
-		/* Slow down tx path */
+		 
 		netif_stop_queue(netdev);
 
-	/* Release our reference to this URB, the USB core will eventually free
-	 * it entirely.
-	 */
+	 
 	usb_free_urb(urb);
 
 	return NETDEV_TX_OK;
@@ -714,7 +680,7 @@ static int usb_8dev_get_berr_counter(const struct net_device *netdev,
 	return 0;
 }
 
-/* Start USB device */
+ 
 static int usb_8dev_start(struct usb_8dev_priv *priv)
 {
 	struct net_device *netdev = priv->netdev;
@@ -725,7 +691,7 @@ static int usb_8dev_start(struct usb_8dev_priv *priv)
 		u8 *buf;
 		dma_addr_t buf_dma;
 
-		/* create a URB, and a buffer for it */
+		 
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
 			err = -ENOMEM;
@@ -763,17 +729,17 @@ static int usb_8dev_start(struct usb_8dev_priv *priv)
 		priv->rxbuf[i] = buf;
 		priv->rxbuf_dma[i] = buf_dma;
 
-		/* Drop reference, USB core will take care of freeing it */
+		 
 		usb_free_urb(urb);
 	}
 
-	/* Did we submit any URBs */
+	 
 	if (i == 0) {
 		netdev_warn(netdev, "couldn't setup read URBs\n");
 		return err;
 	}
 
-	/* Warn if we've couldn't transmit all the URBs */
+	 
 	if (i < MAX_RX_URBS)
 		netdev_warn(netdev, "rx performance may be slow\n");
 
@@ -794,18 +760,18 @@ failed:
 	return err;
 }
 
-/* Open USB device */
+ 
 static int usb_8dev_open(struct net_device *netdev)
 {
 	struct usb_8dev_priv *priv = netdev_priv(netdev);
 	int err;
 
-	/* common open */
+	 
 	err = open_candev(netdev);
 	if (err)
 		return err;
 
-	/* finally start device */
+	 
 	err = usb_8dev_start(priv);
 	if (err) {
 		if (err == -ENODEV)
@@ -841,13 +807,13 @@ static void unlink_all_urbs(struct usb_8dev_priv *priv)
 		priv->tx_contexts[i].echo_index = MAX_TX_URBS;
 }
 
-/* Close USB device */
+ 
 static int usb_8dev_close(struct net_device *netdev)
 {
 	struct usb_8dev_priv *priv = netdev_priv(netdev);
 	int err = 0;
 
-	/* Send CLOSE command to CAN controller */
+	 
 	err = usb_8dev_cmd_close(priv);
 	if (err)
 		netdev_warn(netdev, "couldn't stop device");
@@ -856,7 +822,7 @@ static int usb_8dev_close(struct net_device *netdev)
 
 	netif_stop_queue(netdev);
 
-	/* Stop polling */
+	 
 	unlink_all_urbs(priv);
 
 	close_candev(netdev);
@@ -887,12 +853,7 @@ static const struct can_bittiming_const usb_8dev_bittiming_const = {
 	.brp_inc = 1,
 };
 
-/* Probe USB device
- *
- * Check device and firmware.
- * Set supported modes and bittiming constants.
- * Allocate some memory.
- */
+ 
 static int usb_8dev_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -903,7 +864,7 @@ static int usb_8dev_probe(struct usb_interface *intf,
 	char buf[18];
 	struct usb_device *usbdev = interface_to_usbdev(intf);
 
-	/* product id looks strange, better we also check iProduct string */
+	 
 	if (usb_string(usbdev, usbdev->descriptor.iProduct, buf,
 		       sizeof(buf)) > 0 && strcmp(buf, "USB2CAN converter")) {
 		dev_info(&usbdev->dev, "ignoring: not an USB2CAN converter\n");
@@ -934,7 +895,7 @@ static int usb_8dev_probe(struct usb_interface *intf,
 	netdev->netdev_ops = &usb_8dev_netdev_ops;
 	netdev->ethtool_ops = &usb_8dev_ethtool_ops;
 
-	netdev->flags |= IFF_ECHO; /* we support local echo */
+	netdev->flags |= IFF_ECHO;  
 
 	init_usb_anchor(&priv->rx_submitted);
 
@@ -985,7 +946,7 @@ cleanup_candev:
 
 }
 
-/* Called by the usb core when driver is unloaded or device is removed */
+ 
 static void usb_8dev_disconnect(struct usb_interface *intf)
 {
 	struct usb_8dev_priv *priv = usb_get_intfdata(intf);

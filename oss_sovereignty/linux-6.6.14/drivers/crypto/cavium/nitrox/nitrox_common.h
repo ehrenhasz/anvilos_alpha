@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NITROX_COMMON_H
 #define __NITROX_COMMON_H
 
@@ -27,4 +27,4 @@ int nitrox_process_se_request(struct nitrox_device *ndev,
 void backlog_qflush_work(struct work_struct *work);
 
 
-#endif /* __NITROX_COMMON_H */
+#endif  

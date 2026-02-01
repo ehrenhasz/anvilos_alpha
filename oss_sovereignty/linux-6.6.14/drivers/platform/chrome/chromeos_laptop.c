@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Driver to instantiate Chromebook i2c/smbus devices.
-//
-// Copyright (C) 2012 Google, Inc.
-// Author: Benson Leung <bleung@chromium.org>
+
+
+
+
+
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -33,7 +33,7 @@ static const char *i2c_adapter_names[] = {
 	"Synopsys DesignWare I2C adapter",
 };
 
-/* Keep this enum consistent with i2c_adapter_names */
+ 
 enum i2c_adapter_type {
 	I2C_ADAPTER_SMBUS = 0,
 	I2C_ADAPTER_VGADDC,
@@ -64,10 +64,7 @@ struct acpi_peripheral {
 };
 
 struct chromeos_laptop {
-	/*
-	 * Note that we can't mark this pointer as const because
-	 * i2c_new_scanned_device() changes passed in I2C board info, so.
-	 */
+	 
 	struct i2c_peripheral *i2c_peripherals;
 	unsigned int num_i2c_peripherals;
 
@@ -85,11 +82,7 @@ chromes_laptop_instantiate_i2c_device(struct i2c_adapter *adapter,
 	const unsigned short addr_list[] = { info->addr, I2C_CLIENT_END };
 	struct i2c_client *client;
 
-	/*
-	 * Add the i2c device. If we can't detect it at the primary
-	 * address we scan secondary addresses. In any case the client
-	 * structure gets assigned primary address.
-	 */
+	 
 	client = i2c_new_scanned_device(adapter, info, addr_list, NULL);
 	if (IS_ERR(client) && alt_addr) {
 		struct i2c_board_info dummy_info = {
@@ -141,7 +134,7 @@ static void chromeos_laptop_check_adapter(struct i2c_adapter *adapter)
 	for (i = 0; i < cros_laptop->num_i2c_peripherals; i++) {
 		i2c_dev = &cros_laptop->i2c_peripherals[i];
 
-		/* Skip devices already created */
+		 
 		if (i2c_dev->client)
 			continue;
 
@@ -260,7 +253,7 @@ static const struct chromeos_laptop _name __initconst = {		\
 }
 
 static struct i2c_peripheral samsung_series_5_550_peripherals[] __initdata = {
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("cyapa", CYAPA_TP_I2C_ADDR),
@@ -269,7 +262,7 @@ static struct i2c_peripheral samsung_series_5_550_peripherals[] __initdata = {
 		.dmi_name	= "trackpad",
 		.type		= I2C_ADAPTER_SMBUS,
 	},
-	/* Light Sensor. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("isl29018", ISL_ALS_I2C_ADDR),
@@ -281,7 +274,7 @@ static struct i2c_peripheral samsung_series_5_550_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(samsung_series_5_550);
 
 static struct i2c_peripheral samsung_series_5_peripherals[] __initdata = {
-	/* Light Sensor. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("tsl2583", TAOS_ALS_I2C_ADDR),
@@ -314,7 +307,7 @@ chromebook_atmel_touchscreen_props[] __initconst = {
 };
 
 static struct i2c_peripheral chromebook_pixel_peripherals[] __initdata = {
-	/* Touch Screen. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("atmel_mxt_ts",
@@ -327,7 +320,7 @@ static struct i2c_peripheral chromebook_pixel_peripherals[] __initdata = {
 		.alt_addr	= ATMEL_TS_I2C_BL_ADDR,
 		.properties	= chromebook_atmel_touchscreen_props,
 	},
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("atmel_mxt_tp",
@@ -340,7 +333,7 @@ static struct i2c_peripheral chromebook_pixel_peripherals[] __initdata = {
 		.alt_addr	= ATMEL_TP_I2C_BL_ADDR,
 		.properties	= chromebook_pixel_trackpad_props,
 	},
-	/* Light Sensor. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("isl29018", ISL_ALS_I2C_ADDR),
@@ -352,7 +345,7 @@ static struct i2c_peripheral chromebook_pixel_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(chromebook_pixel);
 
 static struct i2c_peripheral hp_chromebook_14_peripherals[] __initdata = {
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("cyapa", CYAPA_TP_I2C_ADDR),
@@ -365,7 +358,7 @@ static struct i2c_peripheral hp_chromebook_14_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(hp_chromebook_14);
 
 static struct i2c_peripheral dell_chromebook_11_peripherals[] __initdata = {
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("cyapa", CYAPA_TP_I2C_ADDR),
@@ -374,7 +367,7 @@ static struct i2c_peripheral dell_chromebook_11_peripherals[] __initdata = {
 		.dmi_name	= "trackpad",
 		.type		= I2C_ADAPTER_DESIGNWARE,
 	},
-	/* Elan Touchpad option. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("elan_i2c", ELAN_TP_I2C_ADDR),
@@ -387,7 +380,7 @@ static struct i2c_peripheral dell_chromebook_11_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(dell_chromebook_11);
 
 static struct i2c_peripheral toshiba_cb35_peripherals[] __initdata = {
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("cyapa", CYAPA_TP_I2C_ADDR),
@@ -400,7 +393,7 @@ static struct i2c_peripheral toshiba_cb35_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(toshiba_cb35);
 
 static struct i2c_peripheral acer_c7_chromebook_peripherals[] __initdata = {
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("cyapa", CYAPA_TP_I2C_ADDR),
@@ -413,7 +406,7 @@ static struct i2c_peripheral acer_c7_chromebook_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(acer_c7_chromebook);
 
 static struct i2c_peripheral acer_ac700_peripherals[] __initdata = {
-	/* Light Sensor. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("tsl2583", TAOS_ALS_I2C_ADDR),
@@ -424,7 +417,7 @@ static struct i2c_peripheral acer_ac700_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(acer_ac700);
 
 static struct i2c_peripheral acer_c720_peripherals[] __initdata = {
-	/* Touchscreen. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("atmel_mxt_ts",
@@ -438,7 +431,7 @@ static struct i2c_peripheral acer_c720_peripherals[] __initdata = {
 		.alt_addr	= ATMEL_TS_I2C_BL_ADDR,
 		.properties	= chromebook_atmel_touchscreen_props,
 	},
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("cyapa", CYAPA_TP_I2C_ADDR),
@@ -448,7 +441,7 @@ static struct i2c_peripheral acer_c720_peripherals[] __initdata = {
 		.type		= I2C_ADAPTER_DESIGNWARE,
 		.pci_devid	= PCI_DEVID(0, PCI_DEVFN(0x15, 0x1)),
 	},
-	/* Elan Touchpad option. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("elan_i2c", ELAN_TP_I2C_ADDR),
@@ -458,7 +451,7 @@ static struct i2c_peripheral acer_c720_peripherals[] __initdata = {
 		.type		= I2C_ADAPTER_DESIGNWARE,
 		.pci_devid	= PCI_DEVID(0, PCI_DEVFN(0x15, 0x1)),
 	},
-	/* Light Sensor. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("isl29018", ISL_ALS_I2C_ADDR),
@@ -472,7 +465,7 @@ DECLARE_CROS_LAPTOP(acer_c720);
 
 static struct i2c_peripheral
 hp_pavilion_14_chromebook_peripherals[] __initdata = {
-	/* Touchpad. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("cyapa", CYAPA_TP_I2C_ADDR),
@@ -485,7 +478,7 @@ hp_pavilion_14_chromebook_peripherals[] __initdata = {
 DECLARE_CROS_LAPTOP(hp_pavilion_14_chromebook);
 
 static struct i2c_peripheral cr48_peripherals[] __initdata = {
-	/* Light Sensor. */
+	 
 	{
 		.board_info	= {
 			I2C_BOARD_INFO("tsl2563", TAOS_ALS_I2C_ADDR),
@@ -509,14 +502,14 @@ static const struct property_entry samus_trackpad_props[] __initconst = {
 };
 
 static struct acpi_peripheral samus_peripherals[] __initdata = {
-	/* Touchpad */
+	 
 	{
 		.hid		= "ATML0000",
 		.swnode		= {
 			.properties = samus_trackpad_props,
 		},
 	},
-	/* Touchsceen */
+	 
 	{
 		.hid		= "ATML0001",
 		.swnode		= {
@@ -527,14 +520,14 @@ static struct acpi_peripheral samus_peripherals[] __initdata = {
 DECLARE_ACPI_CROS_LAPTOP(samus);
 
 static struct acpi_peripheral generic_atmel_peripherals[] __initdata = {
-	/* Touchpad */
+	 
 	{
 		.hid		= "ATML0000",
 		.swnode		= {
 			.properties = chromebook_pixel_trackpad_props,
 		},
 	},
-	/* Touchsceen */
+	 
 	{
 		.hid		= "ATML0001",
 		.swnode		= {
@@ -627,7 +620,7 @@ static const struct dmi_system_id chromeos_laptop_dmi_table[] __initconst = {
 		},
 		.driver_data = (void *)&cr48,
 	},
-	/* Devices with peripherals incompletely described in ACPI */
+	 
 	{
 		.ident = "Chromebook Pro",
 		.matches = {
@@ -653,18 +646,10 @@ static const struct dmi_system_id chromeos_laptop_dmi_table[] __initconst = {
 		.driver_data = (void *)&samus,
 	},
 	{
-		/*
-		 * Other Chromebooks with Atmel touch controllers:
-		 * - Winky (touchpad)
-		 * - Clapper, Expresso, Rambi, Glimmer (touchscreen)
-		 */
+		 
 		.ident = "Other Chromebook",
 		.matches = {
-			/*
-			 * This will match all Google devices, not only devices
-			 * with Atmel, but we will validate that the device
-			 * actually has matching peripherals.
-			 */
+			 
 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
 		},
 		.driver_data = (void *)&generic_atmel,
@@ -681,11 +666,7 @@ static int __init chromeos_laptop_scan_peripherals(struct device *dev, void *dat
 		chromeos_laptop_check_adapter(to_i2c_adapter(dev));
 	} else if (dev->type == &i2c_client_type) {
 		if (chromeos_laptop_adjust_client(to_i2c_client(dev))) {
-			/*
-			 * Now that we have needed properties re-trigger
-			 * driver probe in case driver was initialized
-			 * earlier and probe failed.
-			 */
+			 
 			error = device_attach(dev);
 			if (error < 0)
 				dev_warn(dev,
@@ -764,7 +745,7 @@ chromeos_laptop_prepare_i2c_peripherals(struct chromeos_laptop *cros_laptop,
 		if (error)
 			goto err_out;
 
-		/* Create primary fwnode for the device - copies everything */
+		 
 		if (i2c_dev->properties) {
 			info->fwnode = fwnode_create_software_node(i2c_dev->properties, NULL);
 			if (IS_ERR(info->fwnode)) {
@@ -823,7 +804,7 @@ chromeos_laptop_prepare_acpi_peripherals(struct chromeos_laptop *cros_laptop,
 
 		*acpi_dev = *src_dev;
 
-		/* We need to deep-copy properties */
+		 
 		if (src_dev->swnode.properties) {
 			acpi_dev->swnode.properties =
 				property_entries_dup(src_dev->swnode.properties);
@@ -932,11 +913,7 @@ static int __init chromeos_laptop_init(void)
 		goto err_destroy_cros_laptop;
 	}
 
-	/*
-	 * Scan adapters that have been registered and clients that have
-	 * been created before we installed the notifier to make sure
-	 * we do not miss any devices.
-	 */
+	 
 	i2c_for_each_dev(NULL, chromeos_laptop_scan_peripherals);
 
 	return 0;

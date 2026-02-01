@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -47,11 +26,7 @@
 #include "smu_cmn.h"
 #include "mp/mp_13_0_2_offset.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -71,27 +46,18 @@
 			  FEATURE_MASK(FEATURE_DPM_XGMI_BIT)	| \
 			  FEATURE_MASK(FEATURE_DPM_VCN_BIT))
 
-/* possible frequency drift (1Mhz) */
+ 
 #define EPSILON				1
 
 #define smnPCIE_ESM_CTRL			0x111003D0
 
-/*
- * SMU support ECCTABLE since version 68.42.0,
- * use this to check ECCTALE feature whether support
- */
+ 
 #define SUPPORT_ECCTABLE_SMU_VERSION 0x00442a00
 
-/*
- * SMU support mca_ceumc_addr in ECCTABLE since version 68.55.0,
- * use this to check mca_ceumc_addr record whether support
- */
+ 
 #define SUPPORT_ECCTABLE_V2_SMU_VERSION 0x00443700
 
-/*
- * SMU support BAD CHENNEL info MSG since version 68.51.00,
- * use this to check ECCTALE feature whether support
- */
+ 
 #define SUPPORT_BAD_CHANNEL_INFO_MSG_VERSION 0x00443300
 
 static const struct smu_temperature_range smu13_thermal_policy[] = {
@@ -300,7 +266,7 @@ static int aldebaran_get_allowed_feature_mask(struct smu_context *smu,
 	if (num > 2)
 		return -EINVAL;
 
-	/* pptable will handle the features to enable */
+	 
 	memset(feature_mask, 0xFF, sizeof(uint32_t) * num);
 
 	return 0;
@@ -313,7 +279,7 @@ static int aldebaran_set_default_dpm_table(struct smu_context *smu)
 	PPTable_t *pptable = smu->smu_table.driver_pptable;
 	int ret = 0;
 
-	/* socclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.soc_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_SOCCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -329,10 +295,10 @@ static int aldebaran_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* gfxclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.gfx_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT)) {
-		/* in the case of gfxclk, only fine-grained dpm is honored */
+		 
 		dpm_table->count = 2;
 		dpm_table->dpm_levels[0].value = pptable->GfxclkFmin;
 		dpm_table->dpm_levels[0].enabled = true;
@@ -348,7 +314,7 @@ static int aldebaran_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* memclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.uclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_UCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -364,7 +330,7 @@ static int aldebaran_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* fclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.fclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_FCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -436,7 +402,7 @@ static int aldebaran_setup_pptable(struct smu_context *smu)
 {
 	int ret = 0;
 
-	/* VBIOS pptable is the first choice */
+	 
 	smu->smu_table.boot_values.pp_table_id = 0;
 
 	ret = smu_v13_0_setup_pptable(smu);
@@ -627,7 +593,7 @@ static int aldebaran_get_smu_metrics_data(struct smu_context *smu,
 		*value = metrics->AverageUclkActivity;
 		break;
 	case METRICS_AVERAGE_SOCKETPOWER:
-		/* Valid power data is available only from primary die */
+		 
 		if (aldebaran_is_primary(smu))
 			*value = metrics->AverageSocketPower << 8;
 		else
@@ -692,12 +658,7 @@ static int aldebaran_get_current_clk_freq_by_table(struct smu_context *smu,
 
 	switch (clk_id) {
 	case PPCLK_GFXCLK:
-		/*
-		 * CurrClock[clk_id] can provide accurate
-		 *   output only when the dpm feature is enabled.
-		 * We can use Average_* for dpm disabled case.
-		 *   But this is available for gfxclk/uclk/socclk/vclk/dclk.
-		 */
+		 
 		if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT))
 			member_type = METRICS_CURR_GFXCLK;
 		else
@@ -789,7 +750,7 @@ static int aldebaran_print_clk_levels(struct smu_context *smu,
 		freq_values[0] = min_clk;
 		freq_values[1] = max_clk;
 
-		/* fine-grained dpm has only 2 levels */
+		 
 		if (now > min_clk && now < max_clk) {
 			display_levels++;
 			freq_values[2] = max_clk;
@@ -1030,10 +991,7 @@ static int aldebaran_force_clk_levels(struct smu_context *smu,
 	case SMU_MCLK:
 	case SMU_SOCCLK:
 	case SMU_FCLK:
-		/*
-		 * Should not arrive here since aldebaran does not
-		 * support mclk/socclk/fclk softmin/softmax settings
-		 */
+		 
 		ret = -EINVAL;
 		break;
 
@@ -1166,7 +1124,7 @@ static int aldebaran_read_sensor(struct smu_context *smu,
 		break;
 	case AMDGPU_PP_SENSOR_GFX_MCLK:
 		ret = aldebaran_get_current_clk_freq_by_table(smu, SMU_UCLK, (uint32_t *)data);
-		/* the output clock frequency in 10K unit */
+		 
 		*(uint32_t *)data *= 100;
 		*size = 4;
 		break;
@@ -1211,15 +1169,13 @@ static int aldebaran_get_power_limit(struct smu_context *smu,
 		return 0;
 	}
 
-	/* Valid power data is available only from primary die.
-	 * For secondary die show the value as 0.
-	 */
+	 
 	if (aldebaran_is_primary(smu)) {
 		ret = smu_cmn_send_smc_msg(smu, SMU_MSG_GetPptLimit,
 					   &power_limit);
 
 		if (ret) {
-			/* the last hope to figure out the ppt limit */
+			 
 			if (!pptable) {
 				dev_err(smu->adev->dev,
 					"Cannot get PPT limit due to pptable missing!");
@@ -1246,7 +1202,7 @@ static int aldebaran_set_power_limit(struct smu_context *smu,
 				     enum smu_ppt_limit_type limit_type,
 				     uint32_t limit)
 {
-	/* Power limit can be set only through primary die */
+	 
 	if (aldebaran_is_primary(smu))
 		return smu_v13_0_set_power_limit(smu, limit_type, limit);
 
@@ -1273,7 +1229,7 @@ static int aldebaran_set_performance_level(struct smu_context *smu,
 		&dpm_context->dpm_tables.gfx_table;
 	struct smu_umd_pstate_table *pstate_table = &smu->pstate_table;
 
-	/* Disable determinism if switching to another mode */
+	 
 	if ((smu_dpm->dpm_level == AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM) &&
 	    (level != AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM)) {
 		smu_cmn_send_smc_msg(smu, SMU_MSG_DisableDeterminism, NULL);
@@ -1347,7 +1303,7 @@ static int aldebaran_set_soft_freq_limited_range(struct smu_context *smu,
 			return -EINVAL;
 		}
 
-		/* Restore default min/max clocks and enable determinism */
+		 
 		min_clk = dpm_context->dpm_tables.gfx_table.min;
 		max_clk = dpm_context->dpm_tables.gfx_table.max;
 		ret = smu_v13_0_set_soft_freq_limited_range(smu, SMU_GFXCLK, min_clk, max_clk);
@@ -1379,7 +1335,7 @@ static int aldebaran_usr_edit_dpm_table(struct smu_context *smu, enum PP_OD_DPM_
 	uint32_t max_clk;
 	int ret = 0;
 
-	/* Only allowed in manual or determinism mode */
+	 
 	if ((smu_dpm->dpm_level != AMD_DPM_FORCED_LEVEL_MANUAL)
 			&& (smu_dpm->dpm_level != AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM))
 		return -EINVAL;
@@ -1420,7 +1376,7 @@ static int aldebaran_usr_edit_dpm_table(struct smu_context *smu, enum PP_OD_DPM_
 			dev_err(smu->adev->dev, "Input parameter number not correct\n");
 			return -EINVAL;
 		} else {
-			/* Use the default frequencies for manual and determinism mode */
+			 
 			min_clk = dpm_context->dpm_tables.gfx_table.min;
 			max_clk = dpm_context->dpm_tables.gfx_table.max;
 
@@ -1485,7 +1441,7 @@ static int aldebaran_i2c_xfer(struct i2c_adapter *i2c_adap,
 
 	req->I2CcontrollerPort = smu_i2c->port;
 	req->I2CSpeed = I2C_SPEED_FAST_400K;
-	req->SlaveAddress = msg[0].addr << 1; /* wants an 8-bit address */
+	req->SlaveAddress = msg[0].addr << 1;  
 	dir = msg[0].flags & I2C_M_RD;
 
 	for (c = i = 0; i < num_msgs; i++) {
@@ -1493,25 +1449,20 @@ static int aldebaran_i2c_xfer(struct i2c_adapter *i2c_adap,
 			SwI2cCmd_t *cmd = &req->SwI2cCmds[c];
 
 			if (!(msg[i].flags & I2C_M_RD)) {
-				/* write */
+				 
 				cmd->CmdConfig |= CMDCONFIG_READWRITE_MASK;
 				cmd->ReadWriteData = msg[i].buf[j];
 			}
 
 			if ((dir ^ msg[i].flags) & I2C_M_RD) {
-				/* The direction changes.
-				 */
+				 
 				dir = msg[i].flags & I2C_M_RD;
 				cmd->CmdConfig |= CMDCONFIG_RESTART_MASK;
 			}
 
 			req->NumCmds++;
 
-			/*
-			 * Insert STOP if we are at the last byte of either last
-			 * message for the transaction or the client explicitly
-			 * requires a STOP at this particular message.
-			 */
+			 
 			if ((j == msg[i].len - 1) &&
 			    ((i == num_msgs - 1) || (msg[i].flags & I2C_M_STOP))) {
 				cmd->CmdConfig &= ~CMDCONFIG_RESTART_MASK;
@@ -1628,7 +1579,7 @@ out:
 
 static bool aldebaran_is_baco_supported(struct smu_context *smu)
 {
-	/* aldebaran is not support baco */
+	 
 
 	return false;
 }
@@ -1638,10 +1589,7 @@ static int aldebaran_set_df_cstate(struct smu_context *smu,
 {
 	struct amdgpu_device *adev = smu->adev;
 
-	/*
-	 * Aldebaran does not need the cstate disablement
-	 * prerequisite for gpu reset.
-	 */
+	 
 	if (amdgpu_in_reset(adev) || adev->in_suspend)
 		return 0;
 
@@ -1652,8 +1600,7 @@ static int aldebaran_allow_xgmi_power_down(struct smu_context *smu, bool en)
 {
 	struct amdgpu_device *adev = smu->adev;
 
-	/* The message only works on master die and NACK will be sent
-	   back for other dies, only send it on master die */
+	 
 	if (!adev->smuio.funcs->get_socket_id(adev) &&
 	    !adev->smuio.funcs->get_die_id(adev))
 		return smu_cmn_send_smc_msg_with_param(smu,
@@ -1718,7 +1665,7 @@ static int aldebaran_get_current_pcie_link_speed(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 	uint32_t esm_ctrl;
 
-	/* TODO: confirm this on real target */
+	 
 	esm_ctrl = RREG32_PCIE(smnPCIE_ESM_CTRL);
 	if ((esm_ctrl >> 15) & 0x1FFFF)
 		return (((esm_ctrl >> 8) & 0x3F) + 128);
@@ -1754,7 +1701,7 @@ static ssize_t aldebaran_get_gpu_metrics(struct smu_context *smu,
 	gpu_metrics->average_umc_activity = metrics.AverageUclkActivity;
 	gpu_metrics->average_mm_activity = 0;
 
-	/* Valid power data is available only from primary die */
+	 
 	if (aldebaran_is_primary(smu)) {
 		gpu_metrics->average_socket_power = metrics.AverageSocketPower;
 		gpu_metrics->energy_accumulator =
@@ -1813,7 +1760,7 @@ static int aldebaran_check_ecc_table_support(struct smu_context *smu,
 
 	ret = smu_cmn_get_smc_version(smu, &if_version, &smu_version);
 	if (ret) {
-		/* return not support if failed get smu_version */
+		 
 		ret = -EOPNOTSUPP;
 	}
 
@@ -1896,15 +1843,12 @@ static int aldebaran_mode1_reset(struct smu_context *smu)
 	fatal_err = 0;
 	param = SMU_RESET_MODE_1;
 
-	/*
-	* PM FW support SMU_MSG_GfxDeviceDriverReset from 68.07
-	*/
+	 
 	smu_cmn_get_smc_version(smu, NULL, &smu_version);
 	if (smu_version < 0x00440700) {
 		ret = smu_cmn_send_smc_msg(smu, SMU_MSG_Mode1Reset, NULL);
 	} else {
-		/* fatal error triggered by ras, PMFW supports the flag
-		   from 68.44.0 */
+		 
 		if ((smu_version >= 0x00442c00) && ras &&
 		    atomic_read(&ras->in_recovery))
 			fatal_err = 1;
@@ -1935,16 +1879,16 @@ static int aldebaran_mode2_reset(struct smu_context *smu)
 	mutex_lock(&smu->message_lock);
 	if (smu_version >= 0x00441400) {
 		ret = smu_cmn_send_msg_without_waiting(smu, (uint16_t)index, SMU_RESET_MODE_2);
-		/* This is similar to FLR, wait till max FLR timeout */
+		 
 		msleep(100);
 		dev_dbg(smu->adev->dev, "restore config space...\n");
-		/* Restore the config space saved during init */
+		 
 		amdgpu_device_load_pci_state(adev->pdev);
 
 		dev_dbg(smu->adev->dev, "wait for reset ack\n");
 		while (ret == -ETIME && timeout)  {
 			ret = smu_cmn_wait_for_response(smu);
-			/* Wait a bit more time for getting ACK */
+			 
 			if (ret == -ETIME) {
 				--timeout;
 				usleep_range(500, 1000);
@@ -1985,16 +1929,11 @@ static bool aldebaran_is_mode1_reset_supported(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 	u32 smu_version;
 	uint32_t val;
-	/**
-	 * PM FW version support mode1 reset from 68.07
-	 */
+	 
 	smu_cmn_get_smc_version(smu, NULL, &smu_version);
 	if ((smu_version < 0x00440700))
 		return false;
-	/**
-	 * mode1 reset relies on PSP, so we should check if
-	 * PSP is alive.
-	 */
+	 
 	val = RREG32_SOC15(MP0, 0, regMP0_SMN_C2PMSG_81);
 
 	return val != 0x0;
@@ -2023,7 +1962,7 @@ static int aldebaran_smu_send_hbm_bad_page_num(struct smu_context *smu,
 {
 	int ret = 0;
 
-	/* message SMU to update the bad page number on SMUBUS */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetNumBadHbmPagesRetired, size, NULL);
 	if (ret)
 		dev_err(smu->adev->dev, "[%s] failed to message SMU to update HBM bad pages number\n",
@@ -2039,7 +1978,7 @@ static int aldebaran_check_bad_channel_info_support(struct smu_context *smu)
 
 	ret = smu_cmn_get_smc_version(smu, &if_version, &smu_version);
 	if (ret) {
-		/* return not support if failed get smu_version */
+		 
 		ret = -EOPNOTSUPP;
 	}
 
@@ -2058,7 +1997,7 @@ static int aldebaran_send_hbm_bad_channel_flag(struct smu_context *smu,
 	if (ret)
 		return ret;
 
-	/* message SMU to update the bad channel info on SMUBUS */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetBadHBMPagesRetiredFlagsPerChannel, size, NULL);
 	if (ret)
 		dev_err(smu->adev->dev, "[%s] failed to message SMU to update HBM bad channel info\n",
@@ -2068,9 +2007,9 @@ static int aldebaran_send_hbm_bad_channel_flag(struct smu_context *smu,
 }
 
 static const struct pptable_funcs aldebaran_ppt_funcs = {
-	/* init dpm */
+	 
 	.get_allowed_feature_mask = aldebaran_get_allowed_feature_mask,
-	/* dpm/clk tables */
+	 
 	.set_default_dpm_table = aldebaran_set_default_dpm_table,
 	.populate_umd_state_clk = aldebaran_populate_umd_state_clk,
 	.get_thermal_temperature_range = aldebaran_get_thermal_temperature_range,
@@ -2089,7 +2028,7 @@ static const struct pptable_funcs aldebaran_ppt_funcs = {
 	.init_power = smu_v13_0_init_power,
 	.fini_power = smu_v13_0_fini_power,
 	.check_fw_status = smu_v13_0_check_fw_status,
-	/* pptable related */
+	 
 	.setup_pptable = aldebaran_setup_pptable,
 	.get_vbios_bootup_values = smu_v13_0_get_vbios_bootup_values,
 	.check_fw_version = smu_v13_0_check_fw_version,

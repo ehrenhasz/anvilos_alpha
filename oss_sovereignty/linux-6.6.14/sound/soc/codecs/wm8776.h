@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8776.h  --  WM8776 ASoC driver
- *
- * Copyright 2009 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _WM8776_H
 #define _WM8776_H
 
-/* Registers */
+ 
 
 #define WM8776_HPLVOL    0x00
 #define WM8776_HPRVOL    0x01

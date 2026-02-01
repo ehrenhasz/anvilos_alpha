@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef _DCN32_RESOURCE_H_
 #define _DCN32_RESOURCE_H_
@@ -33,11 +10,11 @@
 #define DCN3_2_MIN_DET_SIZE 128
 #define DCN3_2_MIN_COMPBUF_SIZE_KB 128
 #define DCN3_2_DET_SEG_SIZE 64
-#define DCN3_2_MALL_MBLK_SIZE_BYTES 65536 // 64 * 1024
+#define DCN3_2_MALL_MBLK_SIZE_BYTES 65536 
 #define DCN3_2_MBLK_WIDTH 128
 #define DCN3_2_MBLK_HEIGHT_4BPE 128
 #define DCN3_2_MBLK_HEIGHT_8BPE 64
-#define DCN3_2_DCFCLK_DS_INIT_KHZ 10000 // Choose 10Mhz for init DCFCLK DS freq
+#define DCN3_2_DCFCLK_DS_INIT_KHZ 10000 
 #define SUBVP_HIGH_REFRESH_LIST_LEN 3
 #define DCN3_2_MAX_SUBVP_PIXEL_RATE_MHZ 1800
 #define DCN3_2_VMIN_DISPCLK_HZ 717000000
@@ -173,9 +150,9 @@ bool dcn32_subvp_drr_admissable(struct dc *dc, struct dc_state *context);
 
 bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int vlevel);
 
-/* definitions for run time init of reg offsets */
+ 
 
-/* CLK SRC */
+ 
 #define CS_COMMON_REG_LIST_DCN3_0_RI(index, pllid)                             \
   (                                                                            \
   SRI_ARR_ALPHABET(PIXCLK_RESYNC_CNTL, PHYPLL, index, pllid),                  \
@@ -193,7 +170,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRII_ARR_2(PIXEL_RATE_CNTL, OTG, 3, index)                               \
   )
 
-/* ABM */
+ 
 #define ABM_DCN32_REG_LIST_RI(id)                                              \
   ( \
   SRI_ARR(DC_ABM1_HG_SAMPLE_RATE, ABM, id),                                    \
@@ -210,7 +187,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(DC_ABM1_ACE_THRES_12, ABM, id), NBIO_SR_ARR(BIOS_SCRATCH_2, id)  \
   )
 
-/* Audio */
+ 
 #define AUD_COMMON_REG_LIST_RI(id)                                             \
   ( \
   SRI_ARR(AZALIA_F0_CODEC_ENDPOINT_INDEX, AZF0ENDPOINT, id),                   \
@@ -223,7 +200,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SR_ARR(DCCG_AUDIO_DTO1_PHASE, id)                                        \
   )
 
-/* VPG */
+ 
 
 #define VPG_DCN3_REG_LIST_RI(id)                                               \
   ( \
@@ -234,7 +211,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG, id)                          \
   )
 
-/* AFMT */
+ 
 #define AFMT_DCN3_REG_LIST_RI(id)                                              \
   ( \
   SRI_ARR(AFMT_INFOFRAME_CONTROL0, AFMT, id),                                  \
@@ -246,14 +223,14 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(AFMT_60958_2, AFMT, id), SRI_ARR(AFMT_MEM_PWR, AFMT, id)         \
   )
 
-/* APG */
+ 
 #define APG_DCN31_REG_LIST_RI(id)                                              \
   (\
   SRI_ARR(APG_CONTROL, APG, id), SRI_ARR(APG_CONTROL2, APG, id),               \
       SRI_ARR(APG_MEM_PWR, APG, id), SRI_ARR(APG_DBG_GEN_CONTROL, APG, id)     \
   )
 
-/* Stream encoder */
+ 
 #define SE_DCN32_REG_LIST_RI(id)                                               \
   ( \
   SRI_ARR(AFMT_CNTL, DIG, id), SRI_ARR(DIG_FE_CNTL, DIG, id),                  \
@@ -302,7 +279,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(DIG_FIFO_CTRL0, DIG, id)                                         \
   )
 
-/* Aux regs */
+ 
 
 #define AUX_REG_LIST_RI(id)                                                    \
   ( \
@@ -315,10 +292,10 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
   AUX_REG_LIST_RI(id), SRI_ARR(AUX_DPHY_TX_CONTROL, DP_AUX, id)                \
   )
 
-/* HDP */
+ 
 #define HPD_REG_LIST_RI(id) SRI_ARR(DC_HPD_CONTROL, HPD, id)
 
-/* Link encoder */
+ 
 #define LE_DCN3_REG_LIST_RI(id)                                                \
   ( \
   SRI_ARR(DIG_BE_CNTL, DIG, id), SRI_ARR(DIG_BE_EN_CNTL, DIG, id),             \
@@ -351,7 +328,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR_ALPHABET(CHANNEL_XBAR_CNTL, UNIPHY, id, phyid)                   \
   )
 
-/* HPO DP stream encoder */
+ 
 #define DCN3_1_HPO_DP_STREAM_ENC_REG_LIST_RI(id)                               \
   ( \
   SR_ARR(DP_STREAM_MAPPER_CONTROL0, id),                                       \
@@ -391,7 +368,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(DP_SYM32_ENC_HBLANK_CONTROL, DP_SYM32_ENC, id)                   \
   )
 
-/* HPO DP link encoder regs */
+ 
 #define DCN3_1_HPO_DP_LINK_ENC_REG_LIST_RI(id)                                 \
   ( \
   SRI_ARR(DP_LINK_ENC_CLOCK_CONTROL, DP_LINK_ENC, id),                         \
@@ -425,7 +402,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(DP_DPHY_SYM32_SAT_UPDATE, DP_DPHY_SYM32, id)                     \
   )
 
-/* DPP */
+ 
 #define DPP_REG_LIST_DCN30_COMMON_RI(id)                                       \
   ( \
   SRI_ARR(CM_DEALPHA, CM, id), SRI_ARR(CM_MEM_PWR_STATUS, CM, id),             \
@@ -545,7 +522,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(DSCL_MEM_PWR_CTRL, DSCL, id)                                     \
   )
 
-/* OPP */
+ 
 #define OPP_REG_LIST_DCN_RI(id)                                                \
   ( \
   SRI_ARR(FMT_BIT_DEPTH_CONTROL, FMT, id), SRI_ARR(FMT_CONTROL, FMT, id),      \
@@ -577,7 +554,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(FMT_422_CONTROL, FMT, id)                                        \
   )
 
-/* Aux engine regs */
+ 
 #define AUX_COMMON_REG_LIST0_RI(id)                                            \
   ( \
   SRI_ARR(AUX_CONTROL, DP_AUX, id), SRI_ARR(AUX_ARB_CONTROL, DP_AUX, id),      \
@@ -587,7 +564,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(AUX_SW_STATUS, DP_AUX, id)                                       \
   )
 
-/* DWBC */
+ 
 #define DWBC_COMMON_REG_LIST_DCN30_RI(id)                                      \
   ( \
   SR_ARR(DWB_ENABLE_CLK_CTRL, id), SR_ARR(DWB_MEM_PWR_CTRL, id),               \
@@ -686,7 +663,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SR_ARR(DWB_OGAM_RAMB_REGION_32_33, id)                                   \
   )
 
-/* MCIF */
+ 
 
 #define MCIF_WB_COMMON_REG_LIST_DCN32_RI(inst)                                 \
   ( \
@@ -742,7 +719,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI2_ARR(MMHUBBUB_WARMUP_CONTROL_STATUS, MMHUBBUB, inst)                 \
   )
 
-/* DSC */
+ 
 
 #define DSC_REG_LIST_DCN20_RI(id)                                              \
   ( \
@@ -796,7 +773,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(DSCRM_DSC_FORWARD_CONFIG, DSCRM, id)                             \
   )
 
-/* MPC */
+ 
 
 #define MPC_DWB_MUX_REG_LIST_DCN3_0_RI(inst)                                   \
   SRII_DWB(DWB_MUX, MUX, MPC_DWB, inst)
@@ -942,7 +919,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
 	SRII(MPCC_MCM_SHAPER_RAMB_REGION_28_29, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_SHAPER_RAMB_REGION_30_31, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_SHAPER_RAMB_REGION_32_33, MPCC_MCM, inst),\
-	SRII(MPCC_MCM_3DLUT_MODE, MPCC_MCM, inst), /*TODO: may need to add other 3DLUT regs*/\
+	SRII(MPCC_MCM_3DLUT_MODE, MPCC_MCM, inst),  \
 	SRII(MPCC_MCM_3DLUT_INDEX, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_3DLUT_DATA, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_3DLUT_DATA_30BIT, MPCC_MCM, inst),\
@@ -1027,7 +1004,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
 	SRII(MPCC_MCM_1DLUT_RAMB_REGION_32_33, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_MEM_PWR_CTRL, MPCC_MCM, inst)
 
-/* OPTC */
+ 
 
 #define OPTC_COMMON_REG_LIST_DCN3_2_RI(inst)                                   \
   ( \
@@ -1095,7 +1072,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(OTG_DRR_CONTROL, OTG, inst)                                      \
   )
 
-/* HUBP */
+ 
 
 #define HUBP_REG_LIST_DCN_VM_RI(id)                                            \
   ( \
@@ -1234,7 +1211,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(UCLK_PSTATE_FORCE, HUBPREQ, id)                                  \
   )
 
-/* HUBBUB */
+ 
 
 #define HUBBUB_REG_LIST_DCN32_RI(id)                                           \
   ( \
@@ -1280,7 +1257,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SR(SDPIF_REQUEST_RATE_LIMIT)                                             \
   )
 
-/* DCCG */
+ 
 
 #define DCCG_REG_LIST_DCN32_RI()                                               \
   ( \
@@ -1302,7 +1279,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SR(DCCG_AUDIO_DTO_SOURCE), SR(DENTIST_DISPCLK_CNTL)                      \
   )
 
-/* VMID */
+ 
 #define DCN20_VMID_REG_LIST_RI(id)                                             \
   ( \
   SRI_ARR(CNTL, DCN_VM_CONTEXT, id),                                           \
@@ -1314,7 +1291,7 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SRI_ARR(PAGE_TABLE_END_ADDR_LO32, DCN_VM_CONTEXT, id)                    \
   )
 
-/* I2C HW */
+ 
 
 #define I2C_HW_ENGINE_COMMON_REG_LIST_RI(id)                                   \
   ( \
@@ -1333,4 +1310,4 @@ bool dcn32_subvp_vblank_admissable(struct dc *dc, struct dc_state *context, int 
       SR_ARR_I2C(DIO_MEM_PWR_STATUS, id)                                           \
   )
 
-#endif /* _DCN32_RESOURCE_H_ */
+#endif  

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Applied Micro X-Gene SoC MDIO Driver
- *
- * Copyright (c) 2016, Applied Micro Circuits Corporation
- * Author: Iyappan Subramanian <isubramanian@apm.com>
- */
+ 
+ 
 
 #ifndef __MDIO_XGENE_H__
 #define __MDIO_XGENE_H__
@@ -94,12 +90,10 @@ struct xgene_mdio_pdata {
 	void __iomem *mdio_csr_addr;
 	struct mii_bus *mdio_bus;
 	int mdio_id;
-	spinlock_t mac_lock; /* mac lock */
+	spinlock_t mac_lock;  
 };
 
-/* Set the specified value into a bit-field defined by its starting position
- * and length within a single u64.
- */
+ 
 static inline u64 xgene_enet_set_field_value(int pos, int len, u64 val)
 {
 	return (val & ((1ULL << len) - 1)) << pos;
@@ -111,9 +105,7 @@ static inline u64 xgene_enet_set_field_value(int pos, int len, u64 val)
 #define SET_BIT(field) \
 		xgene_enet_set_field_value(field ## _POS, 1, 1)
 
-/* Get the value from a bit-field defined by its starting position
- * and length within the specified u64.
- */
+ 
 static inline u64 xgene_enet_get_field_value(int pos, int len, u64 src)
 {
 	return (src >> pos) & ((1ULL << len) - 1);
@@ -131,4 +123,4 @@ int xgene_mdio_rgmii_read(struct mii_bus *bus, int phy_id, int reg);
 int xgene_mdio_rgmii_write(struct mii_bus *bus, int phy_id, int reg, u16 data);
 struct phy_device *xgene_enet_phy_register(struct mii_bus *bus, int phy_addr);
 
-#endif  /* __MDIO_XGENE_H__ */
+#endif   

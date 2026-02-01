@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/affs/dir.c
- *
- *  (c) 1996  Hans-Joachim Widmaier - Rewritten
- *
- *  (C) 1993  Ray Burr - Modified for Amiga FFS filesystem.
- *
- *  (C) 1992  Eric Youngdale Modified for ISO 9660 filesystem.
- *
- *  (C) 1991  Linus Torvalds - minix filesystem
- *
- *  affs directory handling functions
- *
- */
+
+ 
 
 #include <linux/iversion.h>
 #include "affs.h"
@@ -26,9 +13,7 @@ const struct file_operations affs_dir_operations = {
 	.fsync		= affs_file_fsync,
 };
 
-/*
- * directories can handle most operations...
- */
+ 
 const struct inode_operations affs_dir_inode_operations = {
 	.create		= affs_create,
 	.lookup		= affs_lookup,
@@ -77,9 +62,7 @@ affs_readdir(struct file *file, struct dir_context *ctx)
 	if (!dir_bh)
 		goto out_unlock_dir;
 
-	/* If the directory hasn't changed since the last call to readdir(),
-	 * we can jump directly to where we left off.
-	 */
+	 
 	ino = (u32)(long)file->private_data;
 	if (ino && inode_eq_iversion(inode, file->f_version)) {
 		pr_debug("readdir() left off=%d\n", ino);

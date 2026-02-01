@@ -1,46 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	comp_parse.c -- parser driver loop and use handling.
- *
- *	Use this code by calling _nc_read_entry_source() on as many source
- *	files as you like (either terminfo or termcap syntax).  If you
- *	want use-resolution, call _nc_resolve_uses2().  To free the list
- *	storage, do _nc_free_entries().
- */
+ 
 
 #include <curses.priv.h>
 
@@ -57,7 +19,7 @@ static void fixup_acsc(TERMTYPE2 *, int);
 
 static void
 enqueue(ENTRY * ep)
-/* add an entry to the in-core list */
+ 
 {
     ENTRY *newp;
 
@@ -158,10 +120,7 @@ name_ending(char *name)
     return name;
 }
 
-/*
- * Essentially, find the conflict reported in check_collisions() and remove
- * it from the second name, unless that happens to be the last alias.
- */
+ 
 static bool
 remove_collision(char *n1, char *n2)
 {
@@ -198,24 +157,20 @@ remove_collision(char *n1, char *n2)
     return removed;
 }
 
-/* do any of the aliases in a pair of terminal names match? */
+ 
 NCURSES_EXPORT(bool)
 _nc_entry_match(char *n1, char *n2)
 {
     return check_collisions(n1, n2, 0);
 }
 
-/****************************************************************************
- *
- * Entry compiler and resolution logic
- *
- ****************************************************************************/
+ 
 
 NCURSES_EXPORT(void)
 _nc_read_entry_source(FILE *fp, char *buf,
 		      int literal, bool silent,
 		      bool(*hook) (ENTRY *))
-/* slurp all entries in the given file into core */
+ 
 {
     ENTRY thisentry;
     bool oldsuppress = _nc_suppress_warnings;
@@ -228,7 +183,7 @@ _nc_read_entry_source(FILE *fp, char *buf,
 	   (void *) fp, buf, literal, silent, (intptr_t) hook));
 
     if (silent)
-	_nc_suppress_warnings = TRUE;	/* shut the lexer up, too */
+	_nc_suppress_warnings = TRUE;	 
 
     _nc_reset_input(fp, buf);
     for (;;) {
@@ -238,19 +193,12 @@ _nc_read_entry_source(FILE *fp, char *buf,
 	if (!isalnum(UChar(thisentry.tterm.term_names[0])))
 	    _nc_err_abort("terminal names must start with letter or digit");
 
-	/*
-	 * This can be used for immediate compilation of entries with no "use="
-	 * references to disk.  That avoids consuming a lot of memory when the
-	 * resolution code could fetch entries off disk.
-	 */
+	 
 	if (hook != NULLHOOK && (*hook) (&thisentry)) {
 	    immediate++;
 	} else {
 	    enqueue(&thisentry);
-	    /*
-	     * The enqueued entry is copied with _nc_copy_termtype(), so we can
-	     * free some of the data from thisentry, i.e., the arrays.
-	     */
+	     
 	    FreeIfNeeded(thisentry.tterm.Booleans);
 	    FreeIfNeeded(thisentry.tterm.Numbers);
 	    FreeIfNeeded(thisentry.tterm.Strings);
@@ -263,7 +211,7 @@ _nc_read_entry_source(FILE *fp, char *buf,
     }
 
     if (_nc_tail) {
-	/* set up the head pointer */
+	 
 	for (_nc_head = _nc_tail; _nc_head->last; _nc_head = _nc_head->last)
 	    continue;
 
@@ -345,10 +293,7 @@ name_of_captype(int which)
 	 (p)->term_names != 0 && \
 	 (p)->ext_Names != 0)
 
-/*
- * Disallow changing the type of an extended capability when doing a "use"
- * if one or the other is a string.
- */
+ 
 static int
 invalid_merge(TERMTYPE2 *to, TERMTYPE2 *from)
 {
@@ -393,12 +338,12 @@ invalid_merge(TERMTYPE2 *to, TERMTYPE2 *from)
 	if (invalid_merge(&((p)->tterm), &((q)->tterm))) \
 		return FALSE
 #else
-#define validate_merge(p, q)	/* nothing */
+#define validate_merge(p, q)	 
 #endif
 
 NCURSES_EXPORT(int)
 _nc_resolve_uses2(bool fullresolve, bool literal)
-/* try to resolve all use capabilities */
+ 
 {
     ENTRY *qp, *rp, *lastread = 0;
     bool keepgoing;
@@ -407,9 +352,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 
     DEBUG(2, (T_CALLED("_nc_resolve_uses2")));
 
-    /*
-     * Check for multiple occurrences of the same name.
-     */
+     
     multiples = 0;
     for_entry_list(qp) {
 	int matchcount = 0;
@@ -437,9 +380,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 
     DEBUG(2, ("NO MULTIPLE NAME OCCURRENCES"));
 
-    /*
-     * First resolution stage: compute link pointers corresponding to names.
-     */
+     
     total_unresolved = 0;
     _nc_curr_col = -1;
     for_entry_list(qp) {
@@ -457,7 +398,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 
 	    _nc_set_type(child);
 
-	    /* first, try to resolve from in-core records */
+	     
 	    for_entry_list(rp) {
 		if (rp != qp
 		    && _nc_name_match(rp->tterm.term_names, lookfor, "|")) {
@@ -467,7 +408,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 		    qp->uses[i].link = rp;
 		    foundit = TRUE;
 
-		    /* verify that there are no earlier uses */
+		     
 		    for (j = 0; j < i; ++j) {
 			if (qp->uses[j].link != NULL
 			    && !strcmp(qp->uses[j].link->tterm.term_names,
@@ -479,7 +420,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 		}
 	    }
 
-	    /* if that didn't work, try to merge in a compiled entry */
+	     
 	    if (!foundit) {
 		TERMTYPE2 thisterm;
 		char filename[PATH_MAX];
@@ -498,7 +439,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 		    qp->uses[i].link = rp;
 		    foundit = TRUE;
 
-		    /* verify that there are no earlier uses */
+		     
 		    for (j = 0; j < i; ++j) {
 			if (qp->uses[j].link != NULL
 			    && !strcmp(qp->uses[j].link->tterm.term_names,
@@ -510,7 +451,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 		}
 	    }
 
-	    /* no good, mark this one unresolvable and complain */
+	     
 	    if (!foundit) {
 		unresolved++;
 		total_unresolved++;
@@ -522,7 +463,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 	}
     }
     if (total_unresolved) {
-	/* free entries read in off disk */
+	 
 	_nc_free_entries(lastread);
 	DEBUG(2, (T_RETURN("false")));
 	return (FALSE);
@@ -530,11 +471,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 
     DEBUG(2, ("NAME RESOLUTION COMPLETED OK"));
 
-    /*
-     * OK, at this point all (char *) references in `name' members
-     * have been successfully converted to (ENTRY *) pointers in
-     * `link' members.  Time to do the actual merges.
-     */
+     
     if (fullresolve) {
 	do {
 	    ENTRY merged;
@@ -546,11 +483,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 		    DEBUG(2, ("%s: attempting merge of %d entries",
 			      _nc_first_name(qp->tterm.term_names),
 			      qp->nuses));
-		    /*
-		     * If any of the use entries we're looking for is
-		     * incomplete, punt.  We'll catch this entry on a
-		     * subsequent pass.
-		     */
+		     
 		    for (i = 0; i < qp->nuses; i++) {
 			if (qp->uses[i].link
 			    && qp->uses[i].link->nuses) {
@@ -560,18 +493,10 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 			}
 		    }
 
-		    /*
-		     * First, make sure there is no garbage in the
-		     * merge block.  As a side effect, copy into
-		     * the merged entry the name field and string
-		     * table pointer.
-		     */
+		     
 		    _nc_copy_termtype2(&(merged.tterm), &(qp->tterm));
 
-		    /*
-		     * Now merge in each use entry in the proper
-		     * (reverse) order.
-		     */
+		     
 		    for (; qp->nuses; qp->nuses--) {
 			int n = (int) (qp->nuses - 1);
 			validate_merge(&merged, qp->uses[n].link);
@@ -579,15 +504,11 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 			free(qp->uses[n].name);
 		    }
 
-		    /*
-		     * Now merge in the original entry.
-		     */
+		     
 		    validate_merge(&merged, qp);
 		    _nc_merge_entry(&merged, qp);
 
-		    /*
-		     * Replace the original entry with the merged one.
-		     */
+		     
 		    FreeIfNeeded(qp->tterm.Booleans);
 		    FreeIfNeeded(qp->tterm.Numbers);
 		    FreeIfNeeded(qp->tterm.Strings);
@@ -599,11 +520,8 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 		    qp->tterm = merged.tterm;
 		    _nc_wrap_entry(qp, TRUE);
 
-		    /*
-		     * We know every entry is resolvable because name resolution
-		     * didn't bomb.  So go back for another pass.
-		     */
-		    /* FALLTHRU */
+		     
+		     
 		  incomplete:
 		    keepgoing = TRUE;
 		}
@@ -621,20 +539,14 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 	for_entry_list(qp) {
 	    _nc_curr_line = (int) qp->startline;
 	    _nc_set_type(_nc_first_name(qp->tterm.term_names));
-	    /*
-	     * tic overrides this function pointer to provide more verbose
-	     * checking.
-	     */
+	     
 	    if (_nc_check_termtype2 != sanity_check2) {
 		SCREEN *save_SP = SP;
 		SCREEN fake_sp;
 		TERMINAL fake_tm;
 		TERMINAL *save_tm = cur_term;
 
-		/*
-		 * Setup so that tic can use ordinary terminfo interface to
-		 * obtain capability information.
-		 */
+		 
 		memset(&fake_sp, 0, sizeof(fake_sp));
 		memset(&fake_tm, 0, sizeof(fake_tm));
 		fake_sp._term = &fake_tm;
@@ -644,9 +556,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
 
 		_nc_check_termtype2(&qp->tterm, literal);
 
-		/*
-		 * Checking calls tparm, which can allocate memory.  Fix leaks.
-		 */
+		 
 #define TPS(name) fake_tm.tparm_state.name
 		FreeAndNull(TPS(out_buff));
 		FreeAndNull(TPS(fmt_buff));
@@ -665,11 +575,7 @@ _nc_resolve_uses2(bool fullresolve, bool literal)
     return (TRUE);
 }
 
-/*
- * This bit of legerdemain turns all the terminfo variable names into
- * references to locations in the arrays Booleans, Numbers, and Strings ---
- * precisely what's needed.
- */
+ 
 
 #undef CUR
 #define CUR tp->
@@ -689,7 +595,7 @@ static void
 sanity_check2(TERMTYPE2 *tp, bool literal)
 {
     if (!PRESENT(exit_attribute_mode)) {
-#ifdef __UNUSED__		/* this casts too wide a net */
+#ifdef __UNUSED__		 
 	bool terminal_entry = !strchr(tp->term_names, '+');
 	if (terminal_entry &&
 	    (PRESENT(set_attributes)
@@ -702,7 +608,7 @@ sanity_check2(TERMTYPE2 *tp, bool literal)
 	     || PRESENT(enter_protected_mode)
 	     || PRESENT(enter_reverse_mode)))
 	    _nc_warning("no exit_attribute_mode");
-#endif /* __UNUSED__ */
+#endif  
 	PAIRED(enter_standout_mode, exit_standout_mode);
 	PAIRED(enter_underline_mode, exit_underline_mode);
 #if defined(enter_italics_mode) && defined(exit_italics_mode)
@@ -710,16 +616,14 @@ sanity_check2(TERMTYPE2 *tp, bool literal)
 #endif
     }
 
-    /* we do this check/fix in postprocess_termcap(), but some packagers
-     * prefer to bypass it...
-     */
+     
     if (!literal) {
 	fixup_acsc(tp, literal);
 	ANDMISSING(enter_alt_charset_mode, acs_chars);
 	ANDMISSING(exit_alt_charset_mode, acs_chars);
     }
 
-    /* listed in structure-member order of first argument */
+     
     PAIRED(enter_alt_charset_mode, exit_alt_charset_mode);
     ANDMISSING(enter_blink_mode, exit_attribute_mode);
     ANDMISSING(enter_bold_mode, exit_attribute_mode);

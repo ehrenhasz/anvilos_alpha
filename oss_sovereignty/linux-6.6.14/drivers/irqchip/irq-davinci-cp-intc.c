@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Author: Steve Chen <schen@mvista.com>
-// Copyright (C) 2008-2009, MontaVista Software, Inc. <source@mvista.com>
-// Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-// Copyright (C) 2019, Texas Instruments
-//
-// TI Common Platform Interrupt Controller (cp_intc) driver
+
+
+
+
+
+
+
+
 
 #include <linux/export.h>
 #include <linux/init.h>
@@ -59,7 +59,7 @@ static void davinci_cp_intc_ack_irq(struct irq_data *d)
 
 static void davinci_cp_intc_mask_irq(struct irq_data *d)
 {
-	/* XXX don't know why we need to disable nIRQ here... */
+	 
 	davinci_cp_intc_write(1, DAVINCI_CP_INTC_HOST_ENABLE_IDX_CLR);
 	davinci_cp_intc_write(d->hwirq, DAVINCI_CP_INTC_SYS_ENABLE_IDX_CLR);
 	davinci_cp_intc_write(1, DAVINCI_CP_INTC_HOST_ENABLE_IDX_SET);
@@ -121,10 +121,7 @@ davinci_cp_intc_handle_irq(struct pt_regs *regs)
 {
 	int gpir, irqnr, none;
 
-	/*
-	 * The interrupt number is in first ten bits. The NONE field set to 1
-	 * indicates a spurious irq.
-	 */
+	 
 
 	gpir = davinci_cp_intc_read(DAVINCI_CP_INTC_PRIO_IDX);
 	irqnr = gpir & DAVINCI_CP_INTC_PRI_INDX_MASK;
@@ -180,28 +177,28 @@ davinci_cp_intc_do_init(const struct davinci_cp_intc_config *config,
 
 	davinci_cp_intc_write(0, DAVINCI_CP_INTC_GLOBAL_ENABLE);
 
-	/* Disable all host interrupts */
+	 
 	davinci_cp_intc_write(0, DAVINCI_CP_INTC_HOST_ENABLE(0));
 
-	/* Disable system interrupts */
+	 
 	for (offset = 0; offset < num_regs; offset++)
 		davinci_cp_intc_write(~0,
 			DAVINCI_CP_INTC_SYS_ENABLE_CLR(offset));
 
-	/* Set to normal mode, no nesting, no priority hold */
+	 
 	davinci_cp_intc_write(0, DAVINCI_CP_INTC_CTRL);
 	davinci_cp_intc_write(0, DAVINCI_CP_INTC_HOST_CTRL);
 
-	/* Clear system interrupt status */
+	 
 	for (offset = 0; offset < num_regs; offset++)
 		davinci_cp_intc_write(~0,
 			DAVINCI_CP_INTC_SYS_STAT_CLR(offset));
 
-	/* Enable nIRQ (what about nFIQ?) */
+	 
 	davinci_cp_intc_write(1, DAVINCI_CP_INTC_HOST_ENABLE_IDX_SET);
 
-	/* Default all priorities to channel 7. */
-	num_regs = (config->num_irqs + 3) >> 2;	/* 4 channels per register */
+	 
+	num_regs = (config->num_irqs + 3) >> 2;	 
 	for (offset = 0; offset < num_regs; offset++)
 		davinci_cp_intc_write(0x07070707,
 			DAVINCI_CP_INTC_CHAN_MAP(offset));
@@ -224,7 +221,7 @@ davinci_cp_intc_do_init(const struct davinci_cp_intc_config *config,
 
 	set_handle_irq(davinci_cp_intc_handle_irq);
 
-	/* Enable global interrupt */
+	 
 	davinci_cp_intc_write(1, DAVINCI_CP_INTC_GLOBAL_ENABLE);
 
 	return 0;

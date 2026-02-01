@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -14,11 +14,7 @@
 
 #include "clk.h"
 
-/*
- * This driver manages performance state of the core power domain for the
- * independent PLLs and system clocks.  We created a virtual clock device
- * for such clocks, see tegra_clk_dev_register().
- */
+ 
 
 struct tegra_clk_device {
 	struct notifier_block clk_nb;
@@ -36,14 +32,7 @@ static int tegra_clock_set_pd_state(struct tegra_clk_device *clk_dev,
 
 	opp = dev_pm_opp_find_freq_ceil(dev, &rate);
 	if (opp == ERR_PTR(-ERANGE)) {
-		/*
-		 * Some clocks may be unused by a particular board and they
-		 * may have uninitiated clock rate that is overly high.  In
-		 * this case clock is expected to be disabled, but still we
-		 * need to set up performance state of the power domain and
-		 * not error out clk initialization.  A typical example is
-		 * a PCIe clock on Android tablets.
-		 */
+		 
 		dev_dbg(dev, "failed to find ceil OPP for %luHz\n", rate);
 		opp = dev_pm_opp_find_freq_floor(dev, &rate);
 	}
@@ -133,13 +122,7 @@ static int tegra_clock_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, clk_dev);
 
-	/*
-	 * Runtime PM was already enabled for this device by the parent clk
-	 * driver and power domain state should be synced under clk_dev lock,
-	 * hence we don't use the common OPP helper that initializes OPP
-	 * state. For some clocks common OPP helper may fail to find ceil
-	 * rate, it's handled by this driver.
-	 */
+	 
 	err = devm_tegra_core_dev_init_opp_table(dev, &opp_params);
 	if (err)
 		return err;
@@ -150,11 +133,7 @@ static int tegra_clock_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/*
-	 * The driver is attaching to a potentially active/resumed clock, hence
-	 * we need to sync the power domain performance state in a accordance to
-	 * the clock rate if clock is resumed.
-	 */
+	 
 	err = tegra_clock_sync_pd_state(clk_dev);
 	if (err)
 		goto unreg_clk;
@@ -167,13 +146,7 @@ unreg_clk:
 	return err;
 }
 
-/*
- * Tegra GENPD driver enables clocks during NOIRQ phase. It can't be done
- * for clocks served by this driver because runtime PM is unavailable in
- * NOIRQ phase. We will keep clocks resumed during suspend to mitigate this
- * problem. In practice this makes no difference from a power management
- * perspective since voltage is kept at a nominal level during suspend anyways.
- */
+ 
 static const struct dev_pm_ops tegra_clock_pm = {
 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_resume_and_get, pm_runtime_put)
 };

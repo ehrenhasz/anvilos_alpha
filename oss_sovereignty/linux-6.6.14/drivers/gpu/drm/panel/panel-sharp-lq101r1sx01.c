@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -18,7 +16,7 @@
 
 struct sharp_panel {
 	struct drm_panel base;
-	/* the datasheet refers to them as DSI-LINK1 and DSI-LINK2 */
+	 
 	struct mipi_dsi_device *link1;
 	struct mipi_dsi_device *link2;
 
@@ -171,12 +169,7 @@ static int sharp_panel_prepare(struct drm_panel *panel)
 	if (err < 0)
 		return err;
 
-	/*
-	 * According to the datasheet, the panel needs around 10 ms to fully
-	 * power up. At least another 120 ms is required before exiting sleep
-	 * mode to make sure the panel is ready. Throw in another 20 ms for
-	 * good measure.
-	 */
+	 
 	msleep(150);
 
 	err = mipi_dsi_dcs_exit_sleep_mode(sharp->link1);
@@ -185,23 +178,17 @@ static int sharp_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/*
-	 * The MIPI DCS specification mandates this delay only between the
-	 * exit_sleep_mode and enter_sleep_mode commands, so it isn't strictly
-	 * necessary here.
-	 */
-	/*
-	msleep(120);
-	*/
+	 
+	 
 
-	/* set left-right mode */
+	 
 	err = sharp_panel_write(sharp, 0x1000, 0x2a);
 	if (err < 0) {
 		dev_err(panel->dev, "failed to set left-right mode: %d\n", err);
 		goto poweroff;
 	}
 
-	/* enable command mode */
+	 
 	err = sharp_panel_write(sharp, 0x1001, 0x01);
 	if (err < 0) {
 		dev_err(panel->dev, "failed to enable command mode: %d\n", err);
@@ -214,13 +201,7 @@ static int sharp_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/*
-	 * TODO: The device supports both left-right and even-odd split
-	 * configurations, but this driver currently supports only the left-
-	 * right split. To support a different mode a mechanism needs to be
-	 * put in place to communicate the configuration back to the DSI host
-	 * controller.
-	 */
+	 
 	err = sharp_setup_symmetrical_split(sharp->link1, sharp->link2,
 					    sharp->mode);
 	if (err < 0) {
@@ -237,7 +218,7 @@ static int sharp_panel_prepare(struct drm_panel *panel)
 
 	sharp->prepared = true;
 
-	/* wait for 6 frames before continuing */
+	 
 	sharp_wait_frames(sharp, 6);
 
 	return 0;
@@ -350,7 +331,7 @@ static int sharp_panel_probe(struct mipi_dsi_device *dsi)
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->mode_flags = MIPI_DSI_MODE_LPM;
 
-	/* Find DSI-LINK1 */
+	 
 	np = of_parse_phandle(dsi->dev.of_node, "link2", 0);
 	if (np) {
 		secondary = of_find_mipi_dsi_device_by_node(np);
@@ -360,7 +341,7 @@ static int sharp_panel_probe(struct mipi_dsi_device *dsi)
 			return -EPROBE_DEFER;
 	}
 
-	/* register a panel for only the DSI-LINK1 interface */
+	 
 	if (secondary) {
 		sharp = devm_kzalloc(&dsi->dev, sizeof(*sharp), GFP_KERNEL);
 		if (!sharp) {
@@ -396,7 +377,7 @@ static void sharp_panel_remove(struct mipi_dsi_device *dsi)
 	struct sharp_panel *sharp = mipi_dsi_get_drvdata(dsi);
 	int err;
 
-	/* only detach from host for the DSI-LINK2 interface */
+	 
 	if (!sharp) {
 		mipi_dsi_detach(dsi);
 		return;
@@ -417,7 +398,7 @@ static void sharp_panel_shutdown(struct mipi_dsi_device *dsi)
 {
 	struct sharp_panel *sharp = mipi_dsi_get_drvdata(dsi);
 
-	/* nothing to do for DSI-LINK2 */
+	 
 	if (!sharp)
 		return;
 

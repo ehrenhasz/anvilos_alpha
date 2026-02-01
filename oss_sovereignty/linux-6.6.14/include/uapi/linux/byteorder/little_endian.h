@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H
 #define _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H
 
@@ -104,4 +104,4 @@ static __always_inline __u16 __be16_to_cpup(const __be16 *p)
 #define __be16_to_cpus(x) __swab16s((x))
 
 
-#endif /* _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H */
+#endif  

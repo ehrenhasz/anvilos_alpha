@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_PANEL_H__
 #define __INTEL_PANEL_H__
@@ -53,4 +51,4 @@ void intel_panel_add_vbt_sdvo_fixed_mode(struct intel_connector *connector);
 void intel_panel_add_encoder_fixed_mode(struct intel_connector *connector,
 					struct intel_encoder *encoder);
 
-#endif /* __INTEL_PANEL_H__ */
+#endif  

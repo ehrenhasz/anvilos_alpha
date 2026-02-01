@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2011-2012 Calxeda, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -153,7 +151,7 @@ static int clk_pll_set_rate(struct clk_hw *hwclk, unsigned long rate,
 
 	reg = readl(hbclk->reg);
 	if (divf != ((reg & HB_PLL_DIVF_MASK) >> HB_PLL_DIVF_SHIFT)) {
-		/* Need to re-lock PLL, so put it into bypass mode */
+		 
 		reg |= HB_PLL_EXT_BYPASS;
 		writel(reg | HB_PLL_EXT_BYPASS, hbclk->reg);
 
@@ -278,7 +276,7 @@ static void __init hb_clk_init(struct device_node *node, const struct clk_ops *o
 	if (WARN_ON(!hb_clk))
 		return;
 
-	/* Map system registers */
+	 
 	srnp = of_find_compatible_node(NULL, NULL, "calxeda,hb-sregs");
 	hb_clk->reg = of_iomap(srnp, 0);
 	of_node_put(srnp);

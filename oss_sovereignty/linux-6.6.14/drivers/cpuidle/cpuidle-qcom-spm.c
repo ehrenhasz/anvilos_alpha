@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
- * Copyright (c) 2014,2015, Linaro Ltd.
- *
- * SAW power controller driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -33,10 +28,7 @@ static int qcom_pm_collapse(unsigned long int unused)
 {
 	qcom_scm_cpu_power_down(QCOM_SCM_CPU_PWR_DOWN_L2_ON);
 
-	/*
-	 * Returns here only if there was a pending interrupt and we did not
-	 * power down as a result.
-	 */
+	 
 	return -1;
 }
 
@@ -46,12 +38,7 @@ static int qcom_cpu_spc(struct spm_driver_data *drv)
 
 	spm_set_low_power_mode(drv, PM_SLEEP_MODE_SPC);
 	ret = cpu_suspend(0, qcom_pm_collapse);
-	/*
-	 * ARM common code executes WFI without calling into our driver and
-	 * if the SPM mode is not reset, then we may accidently power down the
-	 * cpu when we intended only to gate the cpu clock.
-	 * Ensure the state is set to standby before returning.
-	 */
+	 
 	spm_set_low_power_mode(drv, PM_SLEEP_MODE_STBY);
 
 	return ret;
@@ -179,7 +166,7 @@ static int __init qcom_spm_cpuidle_init(void)
 	if (ret)
 		return ret;
 
-	/* Make sure there is actually any CPU managed by the SPM */
+	 
 	if (!qcom_spm_find_any_cpu())
 		return 0;
 

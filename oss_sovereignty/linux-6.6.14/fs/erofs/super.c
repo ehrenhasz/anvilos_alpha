@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2018 HUAWEI, Inc.
- *             https://www.huawei.com/
- * Copyright (C) 2021, Alibaba Cloud
- */
+
+ 
 #include <linux/module.h>
 #include <linux/statfs.h>
 #include <linux/parser.h>
@@ -63,7 +59,7 @@ static int erofs_superblock_csum_verify(struct super_block *sb, void *sbdata)
 
 	expected_crc = le32_to_cpu(dsb->checksum);
 	dsb->checksum = 0;
-	/* to allow for x86 boot sectors and other oddities. */
+	 
 	crc = crc32c(~0, dsb, len);
 	kfree(dsb);
 
@@ -90,7 +86,7 @@ static struct inode *erofs_alloc_inode(struct super_block *sb)
 	if (!vi)
 		return NULL;
 
-	/* zero out everything except vfs_inode */
+	 
 	memset(vi, 0, offsetof(struct erofs_inode, vfs_inode));
 	return &vi->vfs_inode;
 }
@@ -112,7 +108,7 @@ static bool check_layout_compatibility(struct super_block *sb,
 
 	EROFS_SB(sb)->feature_incompat = feature;
 
-	/* check if current kernel meets all mandatory requirements */
+	 
 	if (feature & (~EROFS_ALL_FEATURE_INCOMPAT)) {
 		erofs_err(sb, "unidentified incompatible feature %x, please upgrade kernel",
 			   feature & ~EROFS_ALL_FEATURE_INCOMPAT);
@@ -121,7 +117,7 @@ static bool check_layout_compatibility(struct super_block *sb,
 	return true;
 }
 
-/* read variable-sized metadata, offset will be aligned by 4-byte */
+ 
 void *erofs_read_metadata(struct super_block *sb, struct erofs_buf *buf,
 			  erofs_off_t *offset, int *lengthp)
 {
@@ -346,18 +342,18 @@ static int erofs_read_superblock(struct super_block *sb)
 
 	ret = strscpy(sbi->volume_name, dsb->volume_name,
 		      sizeof(dsb->volume_name));
-	if (ret < 0) {	/* -E2BIG */
+	if (ret < 0) {	 
 		erofs_err(sb, "bad volume name without NIL terminator");
 		ret = -EFSCORRUPTED;
 		goto out;
 	}
 
-	/* parse on-disk compression configurations */
+	 
 	ret = z_erofs_parse_cfgs(sb, dsb);
 	if (ret < 0)
 		goto out;
 
-	/* handle multiple devices */
+	 
 	ret = erofs_scan_devices(sb, dsb);
 
 	if (erofs_is_fscache_mode(sb))
@@ -793,7 +789,7 @@ static int erofs_init_fs_context(struct fs_context *fc)
 {
 	struct erofs_fs_context *ctx;
 
-	/* pseudo mount for anon inodes */
+	 
 	if (fc->sb_flags & SB_KERNMOUNT) {
 		fc->ops = &erofs_anon_context_ops;
 		return 0;
@@ -820,7 +816,7 @@ static void erofs_kill_sb(struct super_block *sb)
 {
 	struct erofs_sb_info *sbi;
 
-	/* pseudo mount for anon inodes */
+	 
 	if (sb->s_flags & SB_KERNMOUNT) {
 		kill_anon_super(sb);
 		return;
@@ -932,7 +928,7 @@ static void __exit erofs_module_exit(void)
 {
 	unregister_filesystem(&erofs_fs_type);
 
-	/* Ensure all RCU free inodes / pclusters are safe to be destroyed. */
+	 
 	rcu_barrier();
 
 	erofs_exit_sysfs();

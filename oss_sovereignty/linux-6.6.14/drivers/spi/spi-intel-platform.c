@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel PCH/PCU SPI flash platform driver.
- *
- * Copyright (C) 2016 - 2022, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright © 2022 Advanced Micro Devices, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef __DAL_CURSOR_CACHE_H__
 #define __DAL_CURSOR_CACHE_H__

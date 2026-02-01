@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -79,7 +79,7 @@ static const struct clk_bcm63xx_table_entry bcm3368_clocks[] = {
 		.name = "ephy",
 		.bit = BCM3368_CLK_EPHY,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -159,7 +159,7 @@ static const struct clk_bcm63xx_table_entry bcm6318_clocks[] = {
 		.name = "qproc",
 		.bit = BCM6318_CLK_QPROC,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -198,7 +198,7 @@ static const struct clk_bcm63xx_table_entry bcm6318_ubus_clocks[] = {
 		.name = "usb-ubus",
 		.bit = BCM6318_UCLK_USB,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -241,7 +241,7 @@ static const struct clk_bcm63xx_table_entry bcm6328_clocks[] = {
 		.name = "robosw",
 		.bit = BCM6328_CLK_ROBOSW,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -280,7 +280,7 @@ static const struct clk_bcm63xx_table_entry bcm6358_clocks[] = {
 		.name = "ephy",
 		.bit = BCM6358_CLK_EPHY,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -344,7 +344,7 @@ static const struct clk_bcm63xx_table_entry bcm6362_clocks[] = {
 		.name = "nand",
 		.bit = BCM6362_CLK_NAND,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -401,7 +401,7 @@ static const struct clk_bcm63xx_table_entry bcm6368_clocks[] = {
 		.name = "ipsec",
 		.bit = BCM6368_CLK_IPSEC,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -477,7 +477,7 @@ static const struct clk_bcm63xx_table_entry bcm63268_clocks[] = {
 		.name = "robosw250",
 		.bit = BCM63268_CLK_ROBOSW250,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 

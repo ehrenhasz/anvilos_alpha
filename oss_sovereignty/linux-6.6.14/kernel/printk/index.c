@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Userspace indexing of printk formats
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -14,7 +12,7 @@
 extern struct pi_entry *__start_printk_index[];
 extern struct pi_entry *__stop_printk_index[];
 
-/* The base dir for module formats, typically debugfs/printk/index/ */
+ 
 static struct dentry *dfs_index;
 
 static struct pi_entry *pi_get_entry(const struct module *mod, loff_t pos)
@@ -29,7 +27,7 @@ static struct pi_entry *pi_get_entry(const struct module *mod, loff_t pos)
 	} else
 #endif
 	{
-		/* vmlinux, comes from linker symbols */
+		 
 		entries = __start_printk_index;
 		nr_entries = __stop_printk_index - __start_printk_index;
 	}
@@ -52,21 +50,14 @@ static void *pi_next(struct seq_file *s, void *v, loff_t *pos)
 
 static void *pi_start(struct seq_file *s, loff_t *pos)
 {
-	/*
-	 * Make show() print the header line. Do not update *pos because
-	 * pi_next() still has to return the entry at index 0 later.
-	 */
+	 
 	if (*pos == 0)
 		return SEQ_START_TOKEN;
 
 	return pi_next(s, NULL, pos);
 }
 
-/*
- * We need both ESCAPE_ANY and explicit characters from ESCAPE_SPECIAL in @only
- * because otherwise ESCAPE_NAP will cause double quotes and backslashes to be
- * ignored for quoting.
- */
+ 
 #define seq_escape_printf_format(s, src) \
 	seq_escape_str(s, src, ESCAPE_ANY | ESCAPE_NAP | ESCAPE_APPEND, "\"\\")
 
@@ -92,11 +83,7 @@ static int pi_show(struct seq_file *s, void *v)
 
 
 	if (flags & LOG_CONT) {
-		/*
-		 * LOGLEVEL_DEFAULT here means "use the same level as the
-		 * message we're continuing from", not the default message
-		 * loglevel, so don't display it as such.
-		 */
+		 
 		if (level == LOGLEVEL_DEFAULT)
 			seq_puts(s, "<c>");
 		else
@@ -160,7 +147,7 @@ static int pi_module_notify(struct notifier_block *nb, unsigned long op,
 	case MODULE_STATE_GOING:
 		pi_remove_file(mod);
 		break;
-	default: /* we don't care about other module states */
+	default:  
 		break;
 	}
 
@@ -190,5 +177,5 @@ static int __init pi_init(void)
 	return 0;
 }
 
-/* debugfs comes up on core and must be initialised first */
+ 
 postcore_initcall(pi_init);

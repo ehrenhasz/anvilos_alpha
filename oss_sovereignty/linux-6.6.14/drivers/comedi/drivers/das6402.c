@@ -1,35 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * das6402.c
- * Comedi driver for DAS6402 compatible boards
- * Copyright(c) 2014 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * Rewrite of an experimental driver by:
- * Copyright (C) 1999 Oystein Svendsen <svendsen@pvv.org>
- */
 
-/*
- * Driver: das6402
- * Description: Keithley Metrabyte DAS6402 (& compatibles)
- * Devices: [Keithley Metrabyte] DAS6402-12 (das6402-12),
- *   DAS6402-16 (das6402-16)
- * Author: H Hartley Sweeten <hsweeten@visionengravers.com>
- * Updated: Fri, 14 Mar 2014 10:18:43 -0700
- * Status: unknown
- *
- * Configuration Options:
- *   [0] - I/O base address
- *   [1] - IRQ (optional, needed for async command support)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/comedi/comedidev.h>
 #include <linux/comedi/comedi_8254.h>
 
-/*
- * Register I/O map
- */
+ 
 #define DAS6402_AI_DATA_REG		0x00
 #define DAS6402_AI_MUX_REG		0x02
 #define DAS6402_AI_MUX_LO(x)		(((x) & 0x3f) << 0)
@@ -98,11 +77,7 @@ static const struct comedi_lrange das6402_ai_ranges = {
 	}
 };
 
-/*
- * Analog output ranges are programmable on the DAS6402/12.
- * For the DAS6402/16 the range bits have no function, the
- * DAC ranges are selected by switches on the board.
- */
+ 
 static const struct comedi_lrange das6402_ao_ranges = {
 	4, {
 		BIP_RANGE(5),
@@ -228,14 +203,14 @@ static int das6402_ai_cmd(struct comedi_device *dev,
 
 	das6402_ai_set_mode(dev, s, cmd->chanlist[0], DAS6402_MODE_FIFONEPTY);
 
-	/* load the mux for chanlist conversion */
+	 
 	outw(DAS6402_AI_MUX_HI(chan_hi) | DAS6402_AI_MUX_LO(chan_lo),
 	     dev->iobase + DAS6402_AI_MUX_REG);
 
 	comedi_8254_update_divisors(dev->pacer);
 	comedi_8254_pacer_enable(dev->pacer, 1, 2, true);
 
-	/* enable interrupt and pacer trigger */
+	 
 	outb(DAS6402_CTRL_INTE |
 	     DAS6402_CTRL_IRQ(devpriv->irq) |
 	     DAS6402_CTRL_PACER_TRIG, dev->iobase + DAS6402_CTRL_REG);
@@ -291,7 +266,7 @@ static int das6402_ai_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int arg;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
@@ -302,16 +277,16 @@ static int das6402_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -322,13 +297,13 @@ static int das6402_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	arg = cmd->convert_arg;
 	comedi_8254_cascade_ns_to_timer(dev->pacer, &arg, cmd->flags);
@@ -337,7 +312,7 @@ static int das6402_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 4;
 
-	/* Step 5: check channel list if it exists */
+	 
 	if (cmd->chanlist && cmd->chanlist_len > 0)
 		err |= das6402_ai_check_chanlist(dev, s, cmd);
 
@@ -386,12 +361,12 @@ static int das6402_ai_insn_read(struct comedi_device *dev,
 	if (aref == AREF_DIFF && chan > (s->n_chan / 2))
 		return -EINVAL;
 
-	/* enable software conversion trigger */
+	 
 	outb(DAS6402_CTRL_SOFT_TRIG, dev->iobase + DAS6402_CTRL_REG);
 
 	das6402_ai_set_mode(dev, s, insn->chanspec, DAS6402_MODE_POLLED);
 
-	/* load the mux for single channel conversion */
+	 
 	outw(DAS6402_AI_MUX_HI(chan) | DAS6402_AI_MUX_LO(chan),
 	     dev->iobase + DAS6402_AI_MUX_REG);
 
@@ -422,7 +397,7 @@ static int das6402_ao_insn_write(struct comedi_device *dev,
 	unsigned int val;
 	int i;
 
-	/* set the range for this channel */
+	 
 	val = devpriv->ao_range;
 	val &= ~DAS6402_AO_RANGE_MASK(chan);
 	val |= DAS6402_AO_RANGE(chan, range);
@@ -431,36 +406,18 @@ static int das6402_ao_insn_write(struct comedi_device *dev,
 		outb(val, dev->iobase + DAS6402_TRIG_REG);
 	}
 
-	/*
-	 * The DAS6402/16 has a jumper to select either individual
-	 * update (UPDATE) or simultaneous updating (XFER) of both
-	 * DAC's. In UPDATE mode, when the MSB is written, that DAC
-	 * is updated. In XFER mode, after both DAC's are loaded,
-	 * a read cycle of any DAC register will update both DAC's
-	 * simultaneously.
-	 *
-	 * If you have XFER mode enabled a (*insn_read) will need
-	 * to be performed in order to update the DAC's with the
-	 * last value written.
-	 */
+	 
 	for (i = 0; i < insn->n; i++) {
 		val = data[i];
 
 		s->readback[chan] = val;
 
 		if (s->maxdata == 0x0fff) {
-			/*
-			 * DAS6402/12 has the two 8-bit DAC registers, left
-			 * justified (the 4 LSB bits are don't care). Data
-			 * can be written as one word.
-			 */
+			 
 			val <<= 4;
 			outw(val, dev->iobase + DAS6402_AO_DATA_REG(chan));
 		} else {
-			/*
-			 * DAS6402/16 uses both 8-bit DAC registers and needs
-			 * to be written LSB then MSB.
-			 */
+			 
 			outb(val & 0xff,
 			     dev->iobase + DAS6402_AO_LSB_REG(chan));
 			outb((val >> 8) & 0xff,
@@ -478,10 +435,7 @@ static int das6402_ao_insn_read(struct comedi_device *dev,
 {
 	unsigned int chan = CR_CHAN(insn->chanspec);
 
-	/*
-	 * If XFER mode is enabled, reading any DAC register
-	 * will update both DAC's simultaneously.
-	 */
+	 
 	inw(dev->iobase + DAS6402_AO_LSB_REG(chan));
 
 	return comedi_readback_insn_read(dev, s, insn, data);
@@ -514,35 +468,35 @@ static void das6402_reset(struct comedi_device *dev)
 {
 	struct das6402_private *devpriv = dev->private;
 
-	/* enable "Enhanced" mode */
+	 
 	outb(DAS6402_MODE_ENHANCED, dev->iobase + DAS6402_MODE_REG);
 
-	/* enable 10MHz pacer clock */
+	 
 	das6402_set_extended(dev, DAS6402_STATUS_W_10MHZ);
 
-	/* enable software conversion trigger */
+	 
 	outb(DAS6402_CTRL_SOFT_TRIG, dev->iobase + DAS6402_CTRL_REG);
 
-	/* default ADC to single-ended unipolar 10V inputs */
+	 
 	das6402_set_mode(dev, DAS6402_MODE_RANGE(0) |
 			      DAS6402_MODE_POLLED |
 			      DAS6402_MODE_SE |
 			      DAS6402_MODE_UNI);
 
-	/* default mux for single channel conversion (channel 0) */
+	 
 	outw(DAS6402_AI_MUX_HI(0) | DAS6402_AI_MUX_LO(0),
 	     dev->iobase + DAS6402_AI_MUX_REG);
 
-	/* set both DAC's for unipolar 5V output range */
+	 
 	devpriv->ao_range = DAS6402_AO_RANGE(0, 2) | DAS6402_AO_RANGE(1, 2);
 	outb(devpriv->ao_range, dev->iobase + DAS6402_TRIG_REG);
 
-	/* set both DAC's to 0V */
+	 
 	outw(0, dev->iobase + DAS6402_AO_DATA_REG(0));
 	outw(0, dev->iobase + DAS6402_AO_DATA_REG(0));
 	inw(dev->iobase + DAS6402_AO_LSB_REG(0));
 
-	/* set all digital outputs low */
+	 
 	outb(0, dev->iobase + DAS6402_DI_DO_REG);
 
 	das6402_clear_all_interrupts(dev);
@@ -566,7 +520,7 @@ static int das6402_attach(struct comedi_device *dev,
 
 	das6402_reset(dev);
 
-	/* IRQs 2,3,5,6,7, 10,11,15 are valid for "enhanced" mode */
+	 
 	if ((1 << it->options[1]) & 0x8cec) {
 		ret = request_irq(it->options[1], das6402_interrupt, 0,
 				  dev->board_name, dev);
@@ -599,7 +553,7 @@ static int das6402_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND | SDF_DIFF;
@@ -616,7 +570,7 @@ static int das6402_attach(struct comedi_device *dev,
 		s->cancel	= das6402_ai_cancel;
 	}
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -630,7 +584,7 @@ static int das6402_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -639,7 +593,7 @@ static int das6402_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= das6402_di_insn_bits;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) ST-Ericsson SA 2012
- *
- * Author: Ola Lilja <ola.o.lilja@stericsson.com>
- *         for ST-Ericsson.
- */
+ 
+ 
 
 #ifndef MOP500_AB8500_H
 #define MOP500_AB8500_H

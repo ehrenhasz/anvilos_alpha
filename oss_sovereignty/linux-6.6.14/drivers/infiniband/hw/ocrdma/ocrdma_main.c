@@ -1,44 +1,4 @@
-/* This file is part of the Emulex RoCE Device Driver for
- * RoCE (RDMA over Converged Ethernet) adapters.
- * Copyright (C) 2012-2015 Emulex. All rights reserved.
- * EMULEX and SLI are trademarks of Emulex.
- * www.emulex.com
- *
- * This software is available to you under a choice of one of two licenses.
- * You may choose to be licensed under the terms of the GNU General Public
- * License (GPL) Version 2, available from the file COPYING in the main
- * directory of this source tree, or the BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+ 
 
 #include <linux/module.h>
 #include <linux/idr.h>
@@ -98,7 +58,7 @@ static void get_dev_fw_str(struct ib_device *device, char *str)
 	snprintf(str, IB_FW_VERSION_NAME_MAX, "%s", &dev->attr.fw_ver[0]);
 }
 
-/* OCRDMA sysfs interface */
+ 
 static ssize_t hw_rev_show(struct device *device,
 			   struct device_attribute *attr, char *buf)
 {
@@ -199,7 +159,7 @@ static int ocrdma_register_device(struct ocrdma_dev *dev)
 	dev->ibdev.phys_port_cnt = 1;
 	dev->ibdev.num_comp_vectors = dev->eq_cnt;
 
-	/* mandatory to support user space verbs consumer. */
+	 
 	dev->ibdev.dev.parent = &dev->nic_info.pdev->dev;
 
 	ib_set_device_ops(&dev->ibdev, &ocrdma_dev_ops);
@@ -290,14 +250,14 @@ static struct ocrdma_dev *ocrdma_add(struct be_dev_info *dev_info)
 	if (status)
 		goto alloc_err;
 
-	/* Query Link state and update */
+	 
 	status = ocrdma_mbx_get_link_speed(dev, NULL, &lstate);
 	if (!status)
 		ocrdma_update_link_state(dev, lstate);
 
-	/* Init stats */
+	 
 	ocrdma_add_port_stats(dev);
-	/* Interrupt Moderation */
+	 
 	INIT_DELAYED_WORK(&dev->eqd_work, ocrdma_eqd_set_task);
 	schedule_delayed_work(&dev->eqd_work, msecs_to_jiffies(1000));
 
@@ -328,9 +288,7 @@ static void ocrdma_remove_free(struct ocrdma_dev *dev)
 
 static void ocrdma_remove(struct ocrdma_dev *dev)
 {
-	/* first unregister with stack to stop all the active traffic
-	 * of the registered clients.
-	 */
+	 
 	cancel_delayed_work_sync(&dev->eqd_work);
 	ib_unregister_device(&dev->ibdev);
 
@@ -368,10 +326,7 @@ static void ocrdma_shutdown(struct ocrdma_dev *dev)
 	ocrdma_remove(dev);
 }
 
-/* event handling via NIC driver ensures that all the NIC specific
- * initialization done before RoCE driver notifies
- * event to stack.
- */
+ 
 static void ocrdma_event_handler(struct ocrdma_dev *dev, u32 event)
 {
 	switch (event) {

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2022  Realtek Corporation
- */
+
+ 
 
 #include "coex.h"
 #include "debug.h"
@@ -312,7 +311,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 
 	rtw89_rfk_parser(rtwdev, &rtw8852c_dack_reload_defs_tbl);
 
-	/* msbk_d: 15/14/13/12 */
+	 
 	val32 = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		val32 |= dack->msbk_d[path][index][i + 12] << (i * 8);
@@ -321,7 +320,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", addr,
 		    rtw89_phy_read32_mask(rtwdev, addr, MASKDWORD));
 
-	/* msbk_d: 11/10/9/8 */
+	 
 	val32 = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		val32 |= dack->msbk_d[path][index][i + 8] << (i * 8);
@@ -330,7 +329,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", addr,
 		    rtw89_phy_read32_mask(rtwdev, addr, MASKDWORD));
 
-	/* msbk_d: 7/6/5/4 */
+	 
 	val32 = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		val32 |= dack->msbk_d[path][index][i + 4] << (i * 8);
@@ -339,7 +338,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", addr,
 		    rtw89_phy_read32_mask(rtwdev, addr, MASKDWORD));
 
-	/* msbk_d: 3/2/1/0 */
+	 
 	val32 = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		val32 |= dack->msbk_d[path][index][i] << (i * 8);
@@ -348,7 +347,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", addr,
 		    rtw89_phy_read32_mask(rtwdev, addr, MASKDWORD));
 
-	/* dadak_d/biask_d */
+	 
 	val32 = (dack->biask_d[path][index] << 22) |
 		(dack->dadck_d[path][index] << 14);
 	addr = 0xc210 + offset;
@@ -370,7 +369,7 @@ static void _addck(struct rtw89_dev *rtwdev)
 	u32 val;
 	int ret;
 
-	/* S0 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0, B_ADDCK0_RST, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0, B_ADDCK0_EN, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0, B_ADDCK0_EN, 0x0);
@@ -386,7 +385,7 @@ static void _addck(struct rtw89_dev *rtwdev)
 
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0, B_ADDCK0_RST, 0x0);
 
-	/* S1 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK1, B_ADDCK1_RST, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK1, B_ADDCK1_EN, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK1, B_ADDCK1_EN, 0x0);
@@ -1106,10 +1105,10 @@ static bool _iqk_lok(struct rtw89_dev *rtwdev,
 	bool fail = false;
 	bool tmp = false;
 
-	/* Step 0: Init RF gain & tone idx= 8.25Mhz */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_IQK_DIF4, B_IQK_DIF4_TXT, IQK_DF4_TXT_8_25MHZ);
 
-	/* Step 1  START: _lok_coarse_fine_wi_swap */
+	 
 	switch (iqk_info->iqk_band[path]) {
 	case RTW89_BAND_2G:
 		rtw89_write_rf(rtwdev, path, RR_TXIG, RR_TXIG_TG, 0x6);
@@ -1135,7 +1134,7 @@ static bool _iqk_lok(struct rtw89_dev *rtwdev,
 	tmp = _iqk_one_shot(rtwdev, phy_idx, path, tmp_id);
 	iqk_info->lok_cor_fail[0][path] = tmp;
 
-	/* Step 2 */
+	 
 	switch (iqk_info->iqk_band[path]) {
 	case RTW89_BAND_2G:
 		rtw89_write_rf(rtwdev, path, RR_TXIG, RR_TXIG_TG, 0x12);
@@ -1157,7 +1156,7 @@ static bool _iqk_lok(struct rtw89_dev *rtwdev,
 	}
 	tmp = _iqk_one_shot(rtwdev, phy_idx, path, ID_FLOK_VBUFFER);
 
-	/* Step 3 */
+	 
 	switch (iqk_info->iqk_band[path]) {
 	case RTW89_BAND_2G:
 		rtw89_write_rf(rtwdev, path, RR_TXIG, RR_TXIG_TG, 0x6);
@@ -1183,7 +1182,7 @@ static bool _iqk_lok(struct rtw89_dev *rtwdev,
 	tmp = _iqk_one_shot(rtwdev, phy_idx, path, tmp_id);
 	iqk_info->lok_fin_fail[0][path] = tmp;
 
-	/* Step 4 large rf gain */
+	 
 	switch (iqk_info->iqk_band[path]) {
 	case RTW89_BAND_2G:
 	default:
@@ -1420,14 +1419,14 @@ static void _iqk_macbb_setting(struct rtw89_dev *rtwdev,
 {
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[IQK]===> %s\n", __func__);
 
-	/* 01_BB_AFE_for DPK_S0_20210820 */
+	 
 	rtw89_write_rf(rtwdev,  path, RR_BBDC, RR_BBDC_SEL, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A0 << path, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A1 << path, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A2 << path, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A3 << path, 0x0);
 
-	/* disable rxgac */
+	 
 	rtw8852c_disable_rxagc(rtwdev, path, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_UPD_CLK | (path << 13), MASKDWORD, 0xf801fffd);
 	rtw89_phy_write32_mask(rtwdev, R_UPD_CLK | (path << 13), B_DPD_DIS, 0x1);
@@ -1464,7 +1463,7 @@ static void _rck(struct rtw89_dev *rtwdev, enum rtw89_rf_path path)
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[RCK] RF0x00 = 0x%x\n",
 		    rtw89_read_rf(rtwdev, path, RR_MOD, RFREG_MASK));
 
-	/* RCK trigger */
+	 
 	rtw89_write_rf(rtwdev, path, RR_RCKC, RFREG_MASK, 0x00240);
 
 	ret = read_poll_timeout_atomic(rtw89_read_rf, val, val, 2, 20,
@@ -1569,7 +1568,7 @@ static void _rx_dck_value_rewrite(struct rtw89_dev *rtwdev, u8 path, u8 addr,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK,
 		    "[RX_DCK] rewrite val_i = 0x%x, val_q = 0x%x\n", val_i, val_q);
 
-	/* val_i and val_q are 7 bits, and target is 6 bits. */
+	 
 	ofst_val = u32_encode_bits(val_q >> 1, RR_LUTWD0_MB) |
 		   u32_encode_bits(val_i >> 1, RR_LUTWD0_LB);
 
@@ -1927,19 +1926,19 @@ static void _dpk_bb_afe_setting(struct rtw89_dev *rtwdev,
 				enum rtw89_phy_idx phy,
 				enum rtw89_rf_path path, u8 kpath)
 {
-	/*1. Keep ADC_fifo reset*/
+	 
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A0 << path, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A1 << path, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A2 << path, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A3 << path, 0x0);
 
-	/*2. BB for IQK DBG mode*/
+	 
 	rtw89_phy_write32_mask(rtwdev, R_UPD_CLK + (path << 13), MASKDWORD, 0xd801dffd);
 
-	/*3.Set DAC clk*/
+	 
 	rtw8852c_txck_force(rtwdev, path, true, DAC_960M);
 
-	/*4. Set ADC clk*/
+	 
 	rtw8852c_rxck_force(rtwdev, path, true, ADC_1920M);
 	rtw89_phy_write32_mask(rtwdev, R_P0_NRBW + (path << 13),
 			       B_P0_NRBW_DBG, 0x1);
@@ -1948,7 +1947,7 @@ static void _dpk_bb_afe_setting(struct rtw89_dev *rtwdev,
 	rtw89_phy_write32_mask(rtwdev, R_ANAPAR, MASKHWORD, 0x0001);
 	rtw89_phy_write32_mask(rtwdev, R_ANAPAR, MASKHWORD, 0x0041);
 
-	/*5. ADDA fifo rst*/
+	 
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A1 << path, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ADC_FIFO, B_ADC_FIFO_A3 << path, 0x1);
 
@@ -2010,7 +2009,7 @@ static void _dpk_lbk_rxiqk(struct rtw89_dev *rtwdev,
 			   enum rtw89_phy_idx phy,
 			   enum rtw89_rf_path path)
 {
-#define RX_TONE_IDX 0x00250025 /* Q.2 9.25MHz */
+#define RX_TONE_IDX 0x00250025  
 	u8 cur_rxbb;
 	u32 rf_11, reg_81cc;
 
@@ -2844,7 +2843,7 @@ static void _dpk_track(struct rtw89_dev *rtwdev)
 		txagc_bb_tp =
 			rtw89_phy_read32_mask(rtwdev, R_TXAGC_BTP + (path << 13), B_TXAGC_BTP);
 
-		/* report from KIP */
+		 
 		rtw89_phy_write32_mask(rtwdev, R_KIP_RPT + (path << 8), B_KIP_RPT_SEL, 0xf);
 		cur_ther =
 			rtw89_phy_read32_mask(rtwdev, R_RPT_PER + (path << 8), B_RPT_PER_TH);
@@ -4130,9 +4129,7 @@ static void _rx_dck(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy,
 		for (rek_cnt = 0; rek_cnt < retry_limit; rek_cnt++) {
 			_set_rx_dck(rtwdev, phy, path, is_afe);
 
-			/* To reduce IO of dck_rek_check(), the last try is seen
-			 * as failure always, and then do recovery procedure.
-			 */
+			 
 			if (rek_cnt == retry_limit - 1) {
 				_rx_dck_recover(rtwdev, path);
 				break;
@@ -4316,7 +4313,7 @@ static void rtw8852c_tssi_default_txagc(struct rtw89_dev *rtwdev,
 		return;
 
 	if (enable) {
-		/* SCAN_START */
+		 
 		if (rtw89_phy_read32_mask(rtwdev, R_TXAGC_BB, B_TXAGC_BB_OFT) != 0xc000 &&
 		    rtw89_phy_read32_mask(rtwdev, R_TXAGC_BB, B_TXAGC_BB_OFT) != 0x0) {
 			for (i = 0; i < 6; i++) {
@@ -4339,7 +4336,7 @@ static void rtw8852c_tssi_default_txagc(struct rtw89_dev *rtwdev,
 			}
 		}
 	} else {
-		/* SCAN_END */
+		 
 		rtw89_phy_write32_mask(rtwdev, R_P0_TSSI_TRK, B_P0_TSSI_OFT,
 				       tssi_info->default_txagc_offset[RF_PATH_A]);
 		rtw89_phy_write32_mask(rtwdev, R_P1_TSSI_TRK, B_P1_TSSI_OFT,

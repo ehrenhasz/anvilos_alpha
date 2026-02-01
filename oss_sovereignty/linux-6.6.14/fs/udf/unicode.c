@@ -1,23 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * unicode.c
- *
- * PURPOSE
- *	Routines for converting between UTF-8 and OSTA Compressed Unicode.
- *      Also handles filename mangling
- *
- * DESCRIPTION
- *	OSTA Compressed Unicode is explained in the OSTA UDF specification.
- *		http://www.osta.org/
- *	UTF-8 is explained in the IETF RFC XXXX.
- *		ftp://ftp.internic.net/rfc/rfcxxxx.txt
- *
- */
+
+ 
 
 #include "udfdecl.h"
 
 #include <linux/kernel.h>
-#include <linux/string.h>	/* for memset */
+#include <linux/string.h>	 
 #include <linux/nls.h>
 #include <linux/crc-itu-t.h>
 #include <linux/slab.h>
@@ -36,7 +23,7 @@
 #define EXT_MARK		'.'
 #define CRC_MARK		'#'
 #define EXT_SIZE		5
-/* Number of chars we need to store generated CRC to make filename unique */
+ 
 #define CRC_LEN			5
 
 static unicode_t get_utf16_char(const uint8_t *str_i, int str_i_max_len,
@@ -45,20 +32,20 @@ static unicode_t get_utf16_char(const uint8_t *str_i, int str_i_max_len,
 	unicode_t c;
 	int start_idx = str_i_idx;
 
-	/* Expand OSTA compressed Unicode to Unicode */
+	 
 	c = str_i[str_i_idx++];
 	if (u_ch > 1)
 		c = (c << 8) | str_i[str_i_idx++];
 	if ((c & SURROGATE_MASK) == SURROGATE_PAIR) {
 		unicode_t next;
 
-		/* Trailing surrogate char */
+		 
 		if (str_i_idx >= str_i_max_len) {
 			c = UNICODE_MAX + 1;
 			goto out;
 		}
 
-		/* Low surrogate must follow the high one... */
+		 
 		if (c & SURROGATE_LOW) {
 			c = UNICODE_MAX + 1;
 			goto out;
@@ -103,7 +90,7 @@ static int udf_name_conv_char(uint8_t *str_o, int str_o_max_len,
 
 		len = get_utf16_char(str_i, str_i_max_len, *str_i_idx, u_ch,
 				     &c);
-		/* These chars cannot be converted. Replace them. */
+		 
 		if (c == 0 || c > UNICODE_MAX || (conv_f && c > MAX_WCHAR_T) ||
 		    (translate && c == '/')) {
 			illChar = 1;
@@ -130,7 +117,7 @@ static int udf_name_conv_char(uint8_t *str_o, int str_o_max_len,
 			if (len < 0)
 				len = -ENAMETOOLONG;
 		}
-		/* Valid character? */
+		 
 		if (len >= 0)
 			*str_o_idx += len;
 		else if (len == -ENAMETOOLONG) {
@@ -155,11 +142,11 @@ static int udf_name_from_CS0(struct super_block *sb,
 	int u_ch;
 	int needsCRC = 0;
 	int ext_i_len, ext_max_len;
-	int str_o_len = 0;	/* Length of resulting output */
-	int ext_o_len = 0;	/* Extension output length */
-	int ext_crc_len = 0;	/* Extension output length if used with CRC */
-	int i_ext = -1;		/* Extension position in input buffer */
-	int o_crc = 0;		/* Rightmost possible output pos for CRC+ext */
+	int str_o_len = 0;	 
+	int ext_o_len = 0;	 
+	int ext_crc_len = 0;	 
+	int i_ext = -1;		 
+	int o_crc = 0;		 
 	unsigned short valueCRC;
 	uint8_t ext[EXT_SIZE * NLS_MAX_CHARSET_SIZE + 1];
 	uint8_t crc[CRC_LEN];
@@ -195,7 +182,7 @@ static int udf_name_from_CS0(struct super_block *sb,
 	}
 
 	if (translate) {
-		/* Look for extension */
+		 
 		for (idx = ocu_len - u_ch, ext_i_len = 0;
 		     (idx >= 0) && (ext_i_len < EXT_SIZE);
 		     idx -= u_ch, ext_i_len++) {
@@ -210,7 +197,7 @@ static int udf_name_from_CS0(struct super_block *sb,
 			}
 		}
 		if (i_ext >= 0) {
-			/* Convert extension */
+			 
 			ext_max_len = min_t(int, sizeof(ext), str_max_len);
 			ext[ext_o_len++] = EXT_MARK;
 			idx = i_ext + u_ch;
@@ -294,7 +281,7 @@ static int udf_name_to_CS0(struct super_block *sb,
 try_again:
 	u_len = 1;
 	for (i = 0; i < str_len; i += len) {
-		/* Name didn't fit? */
+		 
 		if (u_len + u_ch > ocu_max_len)
 			return 0;
 		if (conv_f) {
@@ -307,7 +294,7 @@ try_again:
 			len = utf8_to_utf32(&str_i[i], str_len - i,
 					    &uni_char);
 		}
-		/* Invalid character, deal with it */
+		 
 		if (len <= 0 || uni_char > UNICODE_MAX) {
 			len = 1;
 			uni_char = '?';
@@ -322,10 +309,7 @@ try_again:
 				u_ch = 2;
 				goto try_again;
 			}
-			/*
-			 * Use UTF-16 encoding for chars outside we
-			 * cannot encode directly.
-			 */
+			 
 			if (u_len + 2 * u_ch > ocu_max_len)
 				return 0;
 
@@ -347,11 +331,7 @@ try_again:
 	return u_len;
 }
 
-/*
- * Convert CS0 dstring to output charset. Warning: This function may truncate
- * input string if it is too long as it is used for informational strings only
- * and it is better to truncate the string than to refuse mounting a media.
- */
+ 
 int udf_dstrCS0toChar(struct super_block *sb, uint8_t *utf_o, int o_len,
 		      const uint8_t *ocu_i, int i_len)
 {
@@ -363,7 +343,7 @@ int udf_dstrCS0toChar(struct super_block *sb, uint8_t *utf_o, int o_len,
 			pr_warn("incorrect dstring lengths (%d/%d),"
 				" truncating\n", s_len, i_len);
 			s_len = i_len - 1;
-			/* 2-byte encoding? Need to round properly... */
+			 
 			if (ocu_i[0] == 16)
 				s_len -= (s_len - 1) & 2;
 		}
@@ -384,7 +364,7 @@ int udf_get_filename(struct super_block *sb, const uint8_t *sname, int slen,
 		return 0;
 
 	ret = udf_name_from_CS0(sb, dname, dlen, sname, slen, 1);
-	/* Zero length filename isn't valid... */
+	 
 	if (ret == 0)
 		ret = -EINVAL;
 	return ret;

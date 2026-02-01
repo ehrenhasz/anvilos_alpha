@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __SSP_IIO_SENSOR_H__
 #define __SSP_IIO_SENSOR_H__
 
@@ -18,7 +18,7 @@
 		},\
 }
 
-/* It is defined here as it is a mixed timestamp */
+ 
 #define SSP_CHAN_TIMESTAMP(_si) {					\
 	.type = IIO_TIMESTAMP,						\
 	.channel = -1,							\
@@ -43,7 +43,7 @@ int ssp_common_buffer_postdisable(struct iio_dev *indio_dev);
 int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
 			    unsigned int len, int64_t timestamp);
 
-/* Converts time in ms to frequency */
+ 
 static inline void ssp_convert_to_freq(u32 time, int *integer_part,
 				       int *fractional)
 {
@@ -58,7 +58,7 @@ static inline void ssp_convert_to_freq(u32 time, int *integer_part,
 	*integer_part = *integer_part / SSP_INVERTED_SCALING_FACTOR;
 }
 
-/* Converts frequency to time in ms */
+ 
 static inline int ssp_convert_to_time(int integer_part, int fractional)
 {
 	u64 value;
@@ -69,4 +69,4 @@ static inline int ssp_convert_to_time(int integer_part, int fractional)
 
 	return div64_u64((u64)SSP_FACTOR_WITH_MS, value);
 }
-#endif /* __SSP_IIO_SENSOR_H__ */
+#endif  

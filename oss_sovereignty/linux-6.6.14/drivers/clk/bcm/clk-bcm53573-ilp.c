@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -49,30 +47,26 @@ static unsigned long bcm53573_ilp_recalc_rate(struct clk_hw *hw,
 	int sum = 0, num = 0, loop_num = 0;
 	int avg;
 
-	/* Enable measurement */
+	 
 	regmap_write(regmap, PMU_XTAL_FREQ_RATIO, XTAL_CTL_EN);
 
-	/* Read initial value */
+	 
 	regmap_read(regmap, PMU_XTAL_FREQ_RATIO, &last_val);
 	last_val &= XTAL_ALP_PER_4ILP;
 
-	/*
-	 * At minimum we should loop for a bit to let hardware do the
-	 * measurement. This isn't very accurate however, so for a better
-	 * precision lets try getting 20 different values for and use average.
-	 */
+	 
 	while (num < 20) {
 		regmap_read(regmap, PMU_XTAL_FREQ_RATIO, &cur_val);
 		cur_val &= XTAL_ALP_PER_4ILP;
 
 		if (cur_val != last_val) {
-			/* Got different value, use it */
+			 
 			sum += cur_val;
 			num++;
 			loop_num = 0;
 			last_val = cur_val;
 		} else if (++loop_num > 5000) {
-			/* Same value over and over, give up */
+			 
 			sum += cur_val;
 			num++;
 			break;
@@ -81,7 +75,7 @@ static unsigned long bcm53573_ilp_recalc_rate(struct clk_hw *hw,
 		cpu_relax();
 	}
 
-	/* Disable measurement to save power */
+	 
 	regmap_write(regmap, PMU_XTAL_FREQ_RATIO, 0x0);
 
 	avg = sum / num;
@@ -141,5 +135,5 @@ err_free_ilp:
 	pr_err("Failed to init ILP clock: %d\n", err);
 }
 
-/* We need it very early for arch code, before device model gets ready */
+ 
 CLK_OF_DECLARE(bcm53573_ilp_clk, "brcm,bcm53573-ilp", bcm53573_ilp_init);

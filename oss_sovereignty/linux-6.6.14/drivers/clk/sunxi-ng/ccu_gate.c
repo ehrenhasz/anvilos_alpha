@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -110,11 +107,7 @@ static long ccu_gate_round_rate(struct clk_hw *hw, unsigned long rate,
 static int ccu_gate_set_rate(struct clk_hw *hw, unsigned long rate,
 			     unsigned long parent_rate)
 {
-	/*
-	 * We must report success but we can do so unconditionally because
-	 * clk_factor_round_rate returns values that ensure this call is a
-	 * nop.
-	 */
+	 
 
 	return 0;
 }

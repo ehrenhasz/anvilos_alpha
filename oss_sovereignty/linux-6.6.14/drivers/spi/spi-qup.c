@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2014, The Linux foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -38,14 +36,14 @@
 #define SPI_ERROR_FLAGS			0x0308
 #define SPI_ERROR_FLAGS_EN		0x030c
 
-/* QUP_CONFIG fields */
+ 
 #define QUP_CONFIG_SPI_MODE		(1 << 8)
 #define QUP_CONFIG_CLOCK_AUTO_GATE	BIT(13)
 #define QUP_CONFIG_NO_INPUT		BIT(7)
 #define QUP_CONFIG_NO_OUTPUT		BIT(6)
 #define QUP_CONFIG_N			0x001f
 
-/* QUP_STATE fields */
+ 
 #define QUP_STATE_VALID			BIT(2)
 #define QUP_STATE_RESET			0
 #define QUP_STATE_RUN			1
@@ -55,7 +53,7 @@
 
 #define QUP_HW_VERSION_2_1_1		0x20010001
 
-/* QUP_IO_M_MODES fields */
+ 
 #define QUP_IO_M_PACK_EN		BIT(15)
 #define QUP_IO_M_UNPACK_EN		BIT(14)
 #define QUP_IO_M_INPUT_MODE_MASK_SHIFT	12
@@ -73,7 +71,7 @@
 #define QUP_IO_M_MODE_DMOV		2
 #define QUP_IO_M_MODE_BAM		3
 
-/* QUP_OPERATIONAL fields */
+ 
 #define QUP_OP_IN_BLOCK_READ_REQ	BIT(13)
 #define QUP_OP_OUT_BLOCK_WRITE_REQ	BIT(12)
 #define QUP_OP_MAX_INPUT_DONE_FLAG	BIT(11)
@@ -85,18 +83,18 @@
 #define QUP_OP_IN_FIFO_NOT_EMPTY	BIT(5)
 #define QUP_OP_OUT_FIFO_NOT_EMPTY	BIT(4)
 
-/* QUP_ERROR_FLAGS and QUP_ERROR_FLAGS_EN fields */
+ 
 #define QUP_ERROR_OUTPUT_OVER_RUN	BIT(5)
 #define QUP_ERROR_INPUT_UNDER_RUN	BIT(4)
 #define QUP_ERROR_OUTPUT_UNDER_RUN	BIT(3)
 #define QUP_ERROR_INPUT_OVER_RUN	BIT(2)
 
-/* SPI_CONFIG fields */
+ 
 #define SPI_CONFIG_HS_MODE		BIT(10)
 #define SPI_CONFIG_INPUT_FIRST		BIT(9)
 #define SPI_CONFIG_LOOPBACK		BIT(8)
 
-/* SPI_IO_CONTROL fields */
+ 
 #define SPI_IO_C_FORCE_CS		BIT(11)
 #define SPI_IO_C_CLK_IDLE_HIGH		BIT(10)
 #define SPI_IO_C_MX_CS_MODE		BIT(8)
@@ -106,7 +104,7 @@
 #define SPI_IO_C_TRISTATE_CS		BIT(1)
 #define SPI_IO_C_NO_TRI_STATE		BIT(0)
 
-/* SPI_ERROR_FLAGS and SPI_ERROR_FLAGS_EN fields */
+ 
 #define SPI_ERROR_CLK_OVER_RUN		BIT(1)
 #define SPI_ERROR_CLK_UNDER_RUN		BIT(0)
 
@@ -114,7 +112,7 @@
 
 #define SPI_MAX_XFER			(SZ_64K - 64)
 
-/* high speed mode is when bus rate is greater then 26MHz */
+ 
 #define SPI_HS_MIN_RATE			26000000
 #define SPI_MAX_RATE			50000000
 
@@ -124,8 +122,8 @@
 struct spi_qup {
 	void __iomem		*base;
 	struct device		*dev;
-	struct clk		*cclk;	/* core clock */
-	struct clk		*iclk;	/* interface clock */
+	struct clk		*cclk;	 
+	struct clk		*iclk;	 
 	int			irq;
 	spinlock_t		lock;
 
@@ -137,7 +135,7 @@ struct spi_qup {
 	struct spi_transfer	*xfer;
 	struct completion	done;
 	int			error;
-	int			w_size;	/* bytes per SPI word */
+	int			w_size;	 
 	int			n_words;
 	int			tx_bytes;
 	int			rx_bytes;
@@ -167,7 +165,7 @@ static inline bool spi_qup_is_dma_xfer(int mode)
 	return false;
 }
 
-/* get's the transaction size length */
+ 
 static inline unsigned int spi_qup_len(struct spi_qup *controller)
 {
 	return controller->n_words * controller->w_size;
@@ -199,10 +197,7 @@ static int spi_qup_set_state(struct spi_qup *controller, u32 state)
 			loop, state);
 
 	cur_state = readl_relaxed(controller->base + QUP_STATE);
-	/*
-	 * Per spec: for PAUSE_STATE to RESET_STATE, two writes
-	 * of (b10) are required
-	 */
+	 
 	if (((cur_state & QUP_STATE_MASK) == QUP_STATE_PAUSE) &&
 	    (state == QUP_STATE_RESET)) {
 		writel_relaxed(QUP_STATE_CLEAR, controller->base + QUP_STATE);
@@ -245,12 +240,7 @@ static void spi_qup_read_from_fifo(struct spi_qup *controller, u32 num_words)
 		}
 
 		for (i = 0; i < num_bytes; i++, controller->rx_bytes++) {
-			/*
-			 * The data format depends on bytes per SPI word:
-			 *  4 bytes: 0x12345678
-			 *  2 bytes: 0x00001234
-			 *  1 byte : 0x00000012
-			 */
+			 
 			shift = BITS_PER_BYTE;
 			shift *= (controller->w_size - i - 1);
 			rx_buf[controller->rx_bytes] = word >> shift;
@@ -268,7 +258,7 @@ static void spi_qup_read(struct spi_qup *controller, u32 *opflags)
 	words_per_block = controller->in_blk_sz >> 2;
 
 	do {
-		/* ACK by clearing service flag */
+		 
 		writel_relaxed(QUP_OP_IN_SERVICE_FLAG,
 			       controller->base + QUP_OPERATIONAL);
 
@@ -286,24 +276,19 @@ static void spi_qup_read(struct spi_qup *controller, u32 *opflags)
 			num_words = 1;
 		}
 
-		/* read up to the maximum transfer size available */
+		 
 		spi_qup_read_from_fifo(controller, num_words);
 
 		remainder -= num_words;
 
-		/* if block mode, check to see if next block is available */
+		 
 		if (is_block_mode && !spi_qup_is_flag_set(controller,
 					QUP_OP_IN_BLOCK_READ_REQ))
 			break;
 
 	} while (remainder);
 
-	/*
-	 * Due to extra stickiness of the QUP_OP_IN_SERVICE_FLAG during block
-	 * reads, it has to be cleared again at the very end.  However, be sure
-	 * to refresh opflags value because MAX_INPUT_DONE_FLAG may now be
-	 * present and this is used to determine if transaction is complete
-	 */
+	 
 exit:
 	if (!remainder) {
 		*opflags = readl_relaxed(controller->base + QUP_OPERATIONAL);
@@ -354,11 +339,11 @@ static void spi_qup_write(struct spi_qup *controller)
 	words_per_block = controller->out_blk_sz >> 2;
 
 	do {
-		/* ACK by clearing service flag */
+		 
 		writel_relaxed(QUP_OP_OUT_SERVICE_FLAG,
 			       controller->base + QUP_OPERATIONAL);
 
-		/* make sure the interrupt is valid */
+		 
 		if (!remainder)
 			return;
 
@@ -377,7 +362,7 @@ static void spi_qup_write(struct spi_qup *controller)
 
 		remainder -= num_words;
 
-		/* if block mode, check to see if next block is available */
+		 
 		if (is_block_mode && !spi_qup_is_flag_set(controller,
 					QUP_OP_OUT_BLOCK_WRITE_REQ))
 			break;
@@ -430,7 +415,7 @@ static u32 spi_qup_sgl_get_nents_len(struct scatterlist *sgl, u32 max,
 	for (sg = sgl; sg; sg = sg_next(sg)) {
 		unsigned int len = sg_dma_len(sg);
 
-		/* check for overflow as well as limit */
+		 
 		if (((total + len) < total) || ((total + len) > max))
 			break;
 
@@ -474,7 +459,7 @@ static int spi_qup_do_dma(struct spi_device *spi, struct spi_transfer *xfer,
 		if (ret)
 			return ret;
 
-		/* before issuing the descriptors, set the QUP to run */
+		 
 		ret = spi_qup_set_state(qup, QUP_STATE_RUN);
 		if (ret) {
 			dev_warn(qup->dev, "cannot set RUN state\n");
@@ -518,7 +503,7 @@ static int spi_qup_do_pio(struct spi_device *spi, struct spi_transfer *xfer,
 	int ret, n_words, iterations, offset = 0;
 
 	n_words = qup->n_words;
-	iterations = n_words / SPI_MAX_XFER; /* round down */
+	iterations = n_words / SPI_MAX_XFER;  
 	qup->rx_buf = xfer->rx_buf;
 	qup->tx_buf = xfer->tx_buf;
 
@@ -534,10 +519,7 @@ static int spi_qup_do_pio(struct spi_device *spi, struct spi_transfer *xfer,
 		if (qup->rx_buf && offset)
 			qup->rx_buf = xfer->rx_buf + offset * SPI_MAX_XFER;
 
-		/*
-		 * if the transaction is small enough, we need
-		 * to fallback to FIFO mode
-		 */
+		 
 		if (qup->n_words <= (qup->in_fifo_sz / sizeof(u32)))
 			qup->mode = QUP_IO_M_MODE_FIFO;
 
@@ -655,7 +637,7 @@ static irqreturn_t spi_qup_qup_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* set clock freq ... bits per word, determine mode */
+ 
 static int spi_qup_io_prep(struct spi_device *spi, struct spi_transfer *xfer)
 {
 	struct spi_qup *controller = spi_controller_get_devdata(spi->controller);
@@ -689,7 +671,7 @@ static int spi_qup_io_prep(struct spi_device *spi, struct spi_transfer *xfer)
 	return 0;
 }
 
-/* prep qup for another spi transaction of specific type */
+ 
 static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 {
 	struct spi_qup *controller = spi_controller_get_devdata(spi->controller);
@@ -715,7 +697,7 @@ static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 			       controller->base + QUP_MX_READ_CNT);
 		writel_relaxed(controller->n_words,
 			       controller->base + QUP_MX_WRITE_CNT);
-		/* must be zero for FIFO */
+		 
 		writel_relaxed(0, controller->base + QUP_MX_INPUT_CNT);
 		writel_relaxed(0, controller->base + QUP_MX_OUTPUT_CNT);
 		break;
@@ -724,7 +706,7 @@ static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 			       controller->base + QUP_MX_INPUT_CNT);
 		writel_relaxed(controller->n_words,
 			       controller->base + QUP_MX_OUTPUT_CNT);
-		/* must be zero for BLOCK and BAM */
+		 
 		writel_relaxed(0, controller->base + QUP_MX_READ_CNT);
 		writel_relaxed(0, controller->base + QUP_MX_WRITE_CNT);
 
@@ -732,12 +714,7 @@ static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 			void __iomem *input_cnt;
 
 			input_cnt = controller->base + QUP_MX_INPUT_CNT;
-			/*
-			 * for DMA transfers, both QUP_MX_INPUT_CNT and
-			 * QUP_MX_OUTPUT_CNT must be zero to all cases but one.
-			 * That case is a non-balanced transfer when there is
-			 * only a rx_buf.
-			 */
+			 
 			if (xfer->tx_buf)
 				writel_relaxed(0, input_cnt);
 			else
@@ -752,7 +729,7 @@ static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 			       controller->base + QUP_MX_INPUT_CNT);
 		writel_relaxed(controller->n_words,
 			       controller->base + QUP_MX_OUTPUT_CNT);
-		/* must be zero for BLOCK and BAM */
+		 
 		writel_relaxed(0, controller->base + QUP_MX_READ_CNT);
 		writel_relaxed(0, controller->base + QUP_MX_WRITE_CNT);
 		break;
@@ -763,7 +740,7 @@ static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 	}
 
 	iomode = readl_relaxed(controller->base + QUP_IO_M_MODES);
-	/* Set input and output transfer mode */
+	 
 	iomode &= ~(QUP_IO_M_INPUT_MODE_MASK | QUP_IO_M_OUTPUT_MODE_MASK);
 
 	if (!spi_qup_is_dma_xfer(controller->mode))
@@ -797,10 +774,7 @@ static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 	else
 		config |= SPI_CONFIG_INPUT_FIRST;
 
-	/*
-	 * HS_MODE improves signal stability for spi-clk high rates,
-	 * but is invalid in loop back mode.
-	 */
+	 
 	if ((xfer->speed_hz >= SPI_HS_MIN_RATE) && !(spi->mode & SPI_LOOP))
 		config |= SPI_CONFIG_HS_MODE;
 	else
@@ -822,14 +796,11 @@ static int spi_qup_io_config(struct spi_device *spi, struct spi_transfer *xfer)
 
 	writel_relaxed(config, controller->base + QUP_CONFIG);
 
-	/* only write to OPERATIONAL_MASK when register is present */
+	 
 	if (!controller->qup_v1) {
 		u32 mask = 0;
 
-		/*
-		 * mask INPUT and OUTPUT service flags to prevent IRQs on FIFO
-		 * status change in BAM mode
-		 */
+		 
 
 		if (spi_qup_is_dma_xfer(controller->mode))
 			mask = QUP_OP_IN_SERVICE_FLAG | QUP_OP_OUT_SERVICE_FLAG;
@@ -929,7 +900,7 @@ static int spi_qup_init_dma(struct spi_controller *host, resource_size_t base)
 	struct device *dev = spi->dev;
 	int ret;
 
-	/* allocate dma resources, if available */
+	 
 	host->dma_rx = dma_request_chan(dev, "rx");
 	if (IS_ERR(host->dma_rx))
 		return PTR_ERR(host->dma_rx);
@@ -940,7 +911,7 @@ static int spi_qup_init_dma(struct spi_controller *host, resource_size_t base)
 		goto err_tx;
 	}
 
-	/* set DMA parameters */
+	 
 	rx_conf->direction = DMA_DEV_TO_MEM;
 	rx_conf->device_fc = 1;
 	rx_conf->src_addr = base + QUP_INPUT_FIFO;
@@ -1018,7 +989,7 @@ static int spi_qup_probe(struct platform_device *pdev)
 	if (IS_ERR(iclk))
 		return PTR_ERR(iclk);
 
-	/* This is optional parameter */
+	 
 	if (of_property_read_u32(dev->of_node, "spi-max-frequency", &max_freq))
 		max_freq = SPI_MAX_RATE;
 
@@ -1033,7 +1004,7 @@ static int spi_qup_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	/* use num-cs unless not present or out of range */
+	 
 	if (of_property_read_u32(dev->of_node, "num-cs", &num_cs) ||
 	    num_cs > SPI_NUM_CHIPSELECTS)
 		host->num_chipselect = SPI_NUM_CHIPSELECTS;
@@ -1130,7 +1101,7 @@ static int spi_qup_probe(struct platform_device *pdev)
 	writel_relaxed(SPI_ERROR_CLK_UNDER_RUN | SPI_ERROR_CLK_OVER_RUN,
 		       base + SPI_ERROR_FLAGS_EN);
 
-	/* if earlier version of the QUP, disable INPUT_OVERRUN */
+	 
 	if (controller->qup_v1)
 		writel_relaxed(QUP_ERROR_OUTPUT_OVER_RUN |
 			QUP_ERROR_INPUT_UNDER_RUN | QUP_ERROR_OUTPUT_UNDER_RUN,
@@ -1174,7 +1145,7 @@ static int spi_qup_pm_suspend_runtime(struct device *device)
 	struct spi_qup *controller = spi_controller_get_devdata(host);
 	u32 config;
 
-	/* Enable clocks auto gaiting */
+	 
 	config = readl(controller->base + QUP_CONFIG);
 	config |= QUP_CONFIG_CLOCK_AUTO_GATE;
 	writel_relaxed(config, controller->base + QUP_CONFIG);
@@ -1202,13 +1173,13 @@ static int spi_qup_pm_resume_runtime(struct device *device)
 		return ret;
 	}
 
-	/* Disable clocks auto gaiting */
+	 
 	config = readl_relaxed(controller->base + QUP_CONFIG);
 	config &= ~QUP_CONFIG_CLOCK_AUTO_GATE;
 	writel_relaxed(config, controller->base + QUP_CONFIG);
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 #ifdef CONFIG_PM_SLEEP
 static int spi_qup_suspend(struct device *device)
@@ -1266,7 +1237,7 @@ disable_clk:
 	clk_disable_unprepare(controller->iclk);
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static void spi_qup_remove(struct platform_device *pdev)
 {

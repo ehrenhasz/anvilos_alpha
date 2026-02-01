@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * MaxLinear/Exar USB to Serial driver
- *
- * Copyright (c) 2020 Manivannan Sadhasivam <mani@kernel.org>
- * Copyright (c) 2021 Johan Hovold <johan@kernel.org>
- *
- * Based on the initial driver written by Patong Yang:
- *
- *   https://lore.kernel.org/r/20180404070634.nhspvmxcjwfgjkcv@advantechmxl-desktop
- *
- *   Copyright (c) 2018 Patong Yang <patong.mxl@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -30,12 +19,12 @@ struct xr_txrx_clk_mask {
 #define XR21V141X_MIN_SPEED		46U
 #define XR21V141X_MAX_SPEED		XR_INT_OSC_HZ
 
-/* XR21V141X register blocks */
+ 
 #define XR21V141X_UART_REG_BLOCK	0
 #define XR21V141X_UM_REG_BLOCK		4
 #define XR21V141X_UART_CUSTOM_BLOCK	0x66
 
-/* XR21V141X UART registers */
+ 
 #define XR21V141X_CLOCK_DIVISOR_0	0x04
 #define XR21V141X_CLOCK_DIVISOR_1	0x05
 #define XR21V141X_CLOCK_DIVISOR_2	0x06
@@ -45,7 +34,7 @@ struct xr_txrx_clk_mask {
 #define XR21V141X_RX_CLOCK_MASK_1	0x0a
 #define XR21V141X_REG_FORMAT		0x0b
 
-/* XR21V141X UART Manager registers */
+ 
 #define XR21V141X_UM_FIFO_ENABLE_REG	0x10
 #define XR21V141X_UM_ENABLE_TX_FIFO	0x01
 #define XR21V141X_UM_ENABLE_RX_FIFO	0x02
@@ -237,7 +226,7 @@ static const struct xr_type xr_types[] = {
 
 struct xr_data {
 	const struct xr_type *type;
-	u8 channel;			/* zero-based index or interface number */
+	u8 channel;			 
 	struct serial_rs485 rs485;
 };
 
@@ -339,14 +328,7 @@ static int __xr_uart_disable(struct usb_serial_port *port)
 	return xr_set_reg_uart(port, data->type->uart_enable, 0);
 }
 
-/*
- * According to datasheet, below is the recommended sequence for enabling UART
- * module in XR21V141X:
- *
- * Enable Tx FIFO
- * Enable Tx and Rx
- * Enable Rx FIFO
- */
+ 
 static int xr21v141x_uart_enable(struct usb_serial_port *port)
 {
 	int ret;
@@ -446,10 +428,7 @@ static int xr_tiocmget(struct tty_struct *tty)
 	if (ret)
 		return ret;
 
-	/*
-	 * Modem control pins are active low, so reading '0' means it is active
-	 * and '1' means not active.
-	 */
+	 
 	ret = ((status & XR_GPIO_DTR) ? 0 : TIOCM_DTR) |
 	      ((status & XR_GPIO_RTS) ? 0 : TIOCM_RTS) |
 	      ((status & XR_GPIO_CTS) ? 0 : TIOCM_CTS) |
@@ -469,7 +448,7 @@ static int xr_tiocmset_port(struct usb_serial_port *port,
 	u16 gpio_clr = 0;
 	int ret = 0;
 
-	/* Modem control pins are active low, so set & clr are swapped */
+	 
 	if (set & TIOCM_RTS)
 		gpio_clr |= XR_GPIO_RTS;
 	if (set & TIOCM_DTR)
@@ -479,7 +458,7 @@ static int xr_tiocmset_port(struct usb_serial_port *port,
 	if (clear & TIOCM_DTR)
 		gpio_set |= XR_GPIO_DTR;
 
-	/* Writing '0' to gpio_{set/clr} bits has no effect, so no need to do */
+	 
 	if (gpio_clr)
 		ret = xr_set_reg_uart(port, type->gpio_clear, gpio_clr);
 
@@ -522,7 +501,7 @@ static int xr_break_ctl(struct tty_struct *tty, int break_state)
 	return xr_set_reg_uart(port, type->tx_break, state);
 }
 
-/* Tx and Rx clock mask values obtained from section 3.3.4 of datasheet */
+ 
 static const struct xr_txrx_clk_mask xr21v141x_txrx_clk_masks[] = {
 	{ 0x000, 0x000, 0x000 },
 	{ 0x000, 0x000, 0x000 },
@@ -579,11 +558,7 @@ static int xr21v141x_set_baudrate(struct tty_struct *tty, struct usb_serial_port
 		rx_mask = xr21v141x_txrx_clk_masks[idx].rx0;
 
 	dev_dbg(&port->dev, "Setting baud rate: %u\n", baud);
-	/*
-	 * XR21V141X uses fractional baud rate generator with 48MHz internal
-	 * oscillator and 19-bit programmable divisor. So theoretically it can
-	 * generate most commonly used baud rates with high accuracy.
-	 */
+	 
 	ret = xr_set_reg_uart(port, XR21V141X_CLOCK_DIVISOR_0,
 			      divisor & 0xff);
 	if (ret)
@@ -638,14 +613,10 @@ static void xr_set_flow_mode(struct tty_struct *tty,
 	if (ret)
 		return;
 
-	/*
-	 * According to the datasheets, the UART needs to be disabled while
-	 * writing to the FLOW_CONTROL register (XR21V141X), or any register
-	 * but GPIO_SET, GPIO_CLEAR, TX_BREAK and ERROR_STATUS (XR21B142X).
-	 */
+	 
 	xr_uart_disable(port);
 
-	/* Set GPIO mode for controlling the pins manually by default. */
+	 
 	gpio_mode &= ~XR_GPIO_MODE_SEL_MASK;
 
 	rs485_enabled = !!(data->rs485.flags & SER_RS485_ENABLED);
@@ -701,7 +672,7 @@ static void xr21v141x_set_line_settings(struct tty_struct *tty,
 	switch (C_CSIZE(tty)) {
 	case CS5:
 	case CS6:
-		/* CS5 and CS6 are not supported, so just restore old setting */
+		 
 		termios->c_cflag &= ~CSIZE;
 		if (old_termios)
 			termios->c_cflag |= old_termios->c_cflag & CSIZE;
@@ -829,13 +800,13 @@ static void xr_sanitize_serial_rs485(struct serial_rs485 *rs485)
 		return;
 	}
 
-	/* RTS always toggles after TX */
+	 
 	if (rs485->flags & SER_RS485_RTS_ON_SEND)
 		rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
 	else
 		rs485->flags |= SER_RS485_RTS_AFTER_SEND;
 
-	/* Only the flags are implemented at the moment */
+	 
 	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
 			SER_RS485_RTS_AFTER_SEND;
 	rs485->delay_rts_before_send = 0;
@@ -901,10 +872,7 @@ static void xr_set_termios(struct tty_struct *tty,
 {
 	struct xr_data *data = usb_get_serial_port_data(port);
 
-	/*
-	 * XR21V141X does not have a CUSTOM_DRIVER flag and always enters CDC
-	 * mode upon receiving CDC requests.
-	 */
+	 
 	if (data->type->set_line_settings)
 		data->type->set_line_settings(tty, port, old_termios);
 	else
@@ -927,7 +895,7 @@ static int xr_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return ret;
 	}
 
-	/* Setup termios */
+	 
 	if (tty)
 		xr_set_termios(tty, port, NULL);
 
@@ -982,9 +950,7 @@ static int xr_gpio_init(struct usb_serial_port *port, const struct xr_type *type
 	u16 mask, mode;
 	int ret;
 
-	/*
-	 * Configure all pins as GPIO except for Receive and Transmit Toggle.
-	 */
+	 
 	mode = 0;
 	if (type->have_xmit_toggle)
 		mode |= XR_GPIO_MODE_RX_TOGGLE | XR_GPIO_MODE_TX_TOGGLE;
@@ -993,10 +959,7 @@ static int xr_gpio_init(struct usb_serial_port *port, const struct xr_type *type
 	if (ret)
 		return ret;
 
-	/*
-	 * Configure DTR and RTS as outputs and make sure they are deasserted
-	 * (active low), and configure RI, CD, DSR and CTS as inputs.
-	 */
+	 
 	mask = XR_GPIO_DTR | XR_GPIO_RTS;
 	ret = xr_set_reg_uart(port, type->gpio_direction, mask);
 	if (ret)

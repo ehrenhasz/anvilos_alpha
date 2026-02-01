@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <linux/compat.h>
 #include <linux/dma-mapping.h>
 #include <linux/iommu.h>
@@ -11,10 +11,7 @@ static struct class *uacce_class;
 static dev_t uacce_devt;
 static DEFINE_XARRAY_ALLOC(uacce_xa);
 
-/*
- * If the parent driver or the device disappears, the queue state is invalid and
- * ops are not usable anymore.
- */
+ 
 static bool uacce_queue_is_valid(struct uacce_queue *q)
 {
 	return q->state == UACCE_Q_INIT || q->state == UACCE_Q_STARTED;
@@ -60,14 +57,7 @@ static long uacce_fops_unl_ioctl(struct file *filep,
 	struct uacce_device *uacce = q->uacce;
 	long ret = -ENXIO;
 
-	/*
-	 * uacce->ops->ioctl() may take the mmap_lock when copying arg to/from
-	 * user. Avoid a circular lock dependency with uacce_fops_mmap(), which
-	 * gets called with mmap_lock held, by taking uacce->mutex instead of
-	 * q->mutex. Doing this in uacce_fops_mmap() is not possible because
-	 * uacce_fops_open() calls iommu_sva_bind_device(), which takes
-	 * mmap_lock, while holding uacce->mutex.
-	 */
+	 
 	mutex_lock(&uacce->mutex);
 	if (!uacce_queue_is_valid(q))
 		goto out_unlock;
@@ -496,14 +486,7 @@ static void uacce_disable_sva(struct uacce_device *uacce)
 	iommu_dev_disable_feature(uacce->parent, IOMMU_DEV_FEAT_IOPF);
 }
 
-/**
- * uacce_alloc() - alloc an accelerator
- * @parent: pointer of uacce parent device
- * @interface: pointer of uacce_interface for register
- *
- * Returns uacce pointer if success and ERR_PTR if not
- * Need check returned negotiated uacce->flags
- */
+ 
 struct uacce_device *uacce_alloc(struct device *parent,
 				 struct uacce_interface *interface)
 {
@@ -545,12 +528,7 @@ err_with_uacce:
 }
 EXPORT_SYMBOL_GPL(uacce_alloc);
 
-/**
- * uacce_register() - add the accelerator to cdev and export to user space
- * @uacce: The initialized uacce device
- *
- * Return 0 if register succeeded, or an error.
- */
+ 
 int uacce_register(struct uacce_device *uacce)
 {
 	if (!uacce)
@@ -567,10 +545,7 @@ int uacce_register(struct uacce_device *uacce)
 }
 EXPORT_SYMBOL_GPL(uacce_register);
 
-/**
- * uacce_remove() - remove the accelerator
- * @uacce: the accelerator to remove
- */
+ 
 void uacce_remove(struct uacce_device *uacce)
 {
 	struct uacce_queue *q, *next_q;
@@ -578,40 +553,27 @@ void uacce_remove(struct uacce_device *uacce)
 	if (!uacce)
 		return;
 
-	/*
-	 * uacce_fops_open() may be running concurrently, even after we remove
-	 * the cdev. Holding uacce->mutex ensures that open() does not obtain a
-	 * removed uacce device.
-	 */
+	 
 	mutex_lock(&uacce->mutex);
-	/* ensure no open queue remains */
+	 
 	list_for_each_entry_safe(q, next_q, &uacce->queues, list) {
-		/*
-		 * Taking q->mutex ensures that fops do not use the defunct
-		 * uacce->ops after the queue is disabled.
-		 */
+		 
 		mutex_lock(&q->mutex);
 		uacce_put_queue(q);
 		mutex_unlock(&q->mutex);
 		uacce_unbind_queue(q);
 
-		/*
-		 * unmap remaining mapping from user space, preventing user still
-		 * access the mmaped area while parent device is already removed
-		 */
+		 
 		unmap_mapping_range(q->mapping, 0, 0, 1);
 	}
 
-	/* disable sva now since no opened queues */
+	 
 	uacce_disable_sva(uacce);
 
 	if (uacce->cdev)
 		cdev_device_del(uacce->cdev, &uacce->dev);
 	xa_erase(&uacce_xa, uacce->dev_id);
-	/*
-	 * uacce exists as long as there are open fds, but ops will be freed
-	 * now. Ensure that bugs cause NULL deref rather than use-after-free.
-	 */
+	 
 	uacce->ops = NULL;
 	uacce->parent = NULL;
 	mutex_unlock(&uacce->mutex);

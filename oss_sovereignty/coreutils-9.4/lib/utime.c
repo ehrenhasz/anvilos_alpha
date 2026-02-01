@@ -1,24 +1,8 @@
-/* Work around platform bugs in utime.
-   Copyright (C) 2017-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <utime.h>
 
 #if defined _WIN32 && ! defined __CYGWIN__
@@ -28,7 +12,7 @@
 # include "filename.h"
 # include "malloca.h"
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef CreateFile
 # define CreateFile CreateFileA
 # undef GetFileAttributes
@@ -37,9 +21,7 @@
 int
 _gl_utimens_windows (const char *name, struct timespec ts[2])
 {
-  /* POSIX <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_13>
-     specifies: "More than two leading <slash> characters shall be treated as
-     a single <slash> character."  */
+   
   if (ISSLASH (name[0]) && ISSLASH (name[1]) && ISSLASH (name[2]))
     {
       name += 2;
@@ -50,8 +32,7 @@ _gl_utimens_windows (const char *name, struct timespec ts[2])
   size_t len = strlen (name);
   size_t drive_prefix_len = (HAS_DEVICE (name) ? 2 : 0);
 
-  /* Remove trailing slashes (except the very first one, at position
-     drive_prefix_len), but remember their presence.  */
+   
   size_t rlen;
   bool check_dir = false;
 
@@ -86,20 +67,15 @@ _gl_utimens_windows (const char *name, struct timespec ts[2])
 
   DWORD error;
 
-  /* Open a handle to the file.
-     CreateFile
-     <https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/nf-fileapi-createfilea>
-     <https://docs.microsoft.com/en-us/windows/desktop/FileIO/creating-and-opening-files>  */
+   
   HANDLE handle =
     CreateFile (rname,
                 FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES,
                 FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                 NULL,
                 OPEN_EXISTING,
-                /* FILE_FLAG_POSIX_SEMANTICS (treat file names that differ only
-                   in case as different) makes sense only when applied to *all*
-                   filesystem operations.  */
-                FILE_FLAG_BACKUP_SEMANTICS /* | FILE_FLAG_POSIX_SEMANTICS */,
+                 
+                FILE_FLAG_BACKUP_SEMANTICS  ,
                 NULL);
   if (handle == INVALID_HANDLE_VALUE)
     {
@@ -109,8 +85,7 @@ _gl_utimens_windows (const char *name, struct timespec ts[2])
 
   if (check_dir)
     {
-      /* GetFileAttributes
-         <https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/nf-fileapi-getfileattributesa>  */
+       
       DWORD attributes = GetFileAttributes (rname);
       if (attributes == INVALID_FILE_ATTRIBUTES)
         {
@@ -129,19 +104,12 @@ _gl_utimens_windows (const char *name, struct timespec ts[2])
     }
 
   {
-    /* Use SetFileTime(). See
-       <https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/nf-fileapi-setfiletime>
-       <https://docs.microsoft.com/en-us/windows/desktop/api/minwinbase/ns-minwinbase-filetime>  */
+     
     FILETIME last_access_time;
     FILETIME last_write_time;
     if (ts == NULL)
       {
-        /* GetSystemTimeAsFileTime is the same as
-           GetSystemTime followed by SystemTimeToFileTime.
-           <https://docs.microsoft.com/en-us/windows/desktop/api/sysinfoapi/nf-sysinfoapi-getsystemtimeasfiletime>.
-           It would be overkill to use
-           GetSystemTimePreciseAsFileTime
-           <https://docs.microsoft.com/en-us/windows/desktop/api/sysinfoapi/nf-sysinfoapi-getsystemtimepreciseasfiletime>.  */
+         
         FILETIME current_time;
         GetSystemTimeAsFileTime (&current_time);
         last_access_time = current_time;
@@ -193,20 +161,19 @@ _gl_utimens_windows (const char *name, struct timespec ts[2])
 
     switch (error)
       {
-      /* Some of these errors probably cannot happen with the specific flags
-         that we pass to CreateFile.  But who knows...  */
-      case ERROR_FILE_NOT_FOUND: /* The last component of rname does not exist.  */
-      case ERROR_PATH_NOT_FOUND: /* Some directory component in rname does not exist.  */
-      case ERROR_BAD_PATHNAME:   /* rname is such as '\\server'.  */
-      case ERROR_BAD_NETPATH:    /* rname is such as '\\nonexistentserver\share'.  */
-      case ERROR_BAD_NET_NAME:   /* rname is such as '\\server\nonexistentshare'.  */
-      case ERROR_INVALID_NAME:   /* rname contains wildcards, misplaced colon, etc.  */
+       
+      case ERROR_FILE_NOT_FOUND:  
+      case ERROR_PATH_NOT_FOUND:  
+      case ERROR_BAD_PATHNAME:    
+      case ERROR_BAD_NETPATH:     
+      case ERROR_BAD_NET_NAME:    
+      case ERROR_INVALID_NAME:    
       case ERROR_DIRECTORY:
         errno = ENOENT;
         break;
 
-      case ERROR_ACCESS_DENIED:  /* rname is such as 'C:\System Volume Information\foo'.  */
-      case ERROR_SHARING_VIOLATION: /* rname is such as 'C:\pagefile.sys'.  */
+      case ERROR_ACCESS_DENIED:   
+      case ERROR_SHARING_VIOLATION:  
         errno = (ts != NULL ? EPERM : EACCES);
         break;
 
@@ -229,7 +196,7 @@ _gl_utimens_windows (const char *name, struct timespec ts[2])
         errno = ENAMETOOLONG;
         break;
 
-      case ERROR_DELETE_PENDING: /* XXX map to EACCES or EPERM? */
+      case ERROR_DELETE_PENDING:  
         errno = EPERM;
         break;
 
@@ -269,8 +236,7 @@ utime (const char *name, const struct utimbuf *ts)
 #undef utime
 {
 # if REPLACE_FUNC_UTIME_FILE
-  /* macOS 10.13 mistakenly succeeds when given a symbolic link to a
-     non-directory with a trailing slash.  */
+   
   size_t len = strlen (name);
   if (len > 0 && ISSLASH (name[len - 1]))
     {
@@ -279,7 +245,7 @@ utime (const char *name, const struct utimbuf *ts)
       if (stat (name, &buf) == -1 && errno != EOVERFLOW)
         return -1;
     }
-# endif /* REPLACE_FUNC_UTIME_FILE */
+# endif  
 
   return utime (name, ts);
 }

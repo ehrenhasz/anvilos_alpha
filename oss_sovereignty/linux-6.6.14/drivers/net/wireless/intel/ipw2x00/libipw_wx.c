@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
 
-  Copyright(c) 2004-2005 Intel Corporation. All rights reserved.
-
-  Portions of this file are based on the WEP enablement code provided by the
-  Host AP project hostap-drivers v0.1.3
-  Copyright (c) 2001-2002, SSH Communications Security Corp and Jouni Malinen
-  <j@w1.fi>
-  Copyright (c) 2002-2003, Jouni Malinen <j@w1.fi>
-
-
-  Contact Information:
-  Intel Linux Wireless <ilw@linux.intel.com>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-******************************************************************************/
+ 
 
 #include <linux/hardirq.h>
 #include <linux/kmod.h>
@@ -51,31 +36,31 @@ static char *libipw_translate_scan(struct libipw_device *ieee,
 	char *p;
 	struct iw_event iwe;
 	int i, j;
-	char *current_val;	/* For rates */
+	char *current_val;	 
 	u8 rate;
 
-	/* First entry *MUST* be the AP MAC address */
+	 
 	iwe.cmd = SIOCGIWAP;
 	iwe.u.ap_addr.sa_family = ARPHRD_ETHER;
 	memcpy(iwe.u.ap_addr.sa_data, network->bssid, ETH_ALEN);
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_ADDR_LEN);
 
-	/* Remaining entries will be displayed in the order we provide them */
+	 
 
-	/* Add the ESSID */
+	 
 	iwe.cmd = SIOCGIWESSID;
 	iwe.u.data.flags = 1;
 	iwe.u.data.length = min(network->ssid_len, (u8) 32);
 	start = iwe_stream_add_point(info, start, stop,
 				     &iwe, network->ssid);
 
-	/* Add the protocol name */
+	 
 	iwe.cmd = SIOCGIWNAME;
 	snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11%s",
 		 libipw_modes[network->mode]);
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_CHAR_LEN);
 
-	/* Add mode */
+	 
 	iwe.cmd = SIOCGIWMODE;
 	if (network->capability & (WLAN_CAPABILITY_ESS | WLAN_CAPABILITY_IBSS)) {
 		if (network->capability & WLAN_CAPABILITY_ESS)
@@ -87,15 +72,15 @@ static char *libipw_translate_scan(struct libipw_device *ieee,
 					     &iwe, IW_EV_UINT_LEN);
 	}
 
-	/* Add channel and frequency */
-	/* Note : userspace automatically computes channel using iwrange */
+	 
+	 
 	iwe.cmd = SIOCGIWFREQ;
 	iwe.u.freq.m = libipw_channel_to_freq(ieee, network->channel);
 	iwe.u.freq.e = 6;
 	iwe.u.freq.i = 0;
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_FREQ_LEN);
 
-	/* Add encryption capability */
+	 
 	iwe.cmd = SIOCGIWENCODE;
 	if (network->capability & WLAN_CAPABILITY_PRIVACY)
 		iwe.u.data.flags = IW_ENCODE_ENABLED | IW_ENCODE_NOKEY;
@@ -105,12 +90,11 @@ static char *libipw_translate_scan(struct libipw_device *ieee,
 	start = iwe_stream_add_point(info, start, stop,
 				     &iwe, network->ssid);
 
-	/* Add basic and extended rates */
-	/* Rate : stuffing multiple values in a single event require a bit
-	 * more of magic - Jean II */
+	 
+	 
 	current_val = start + iwe_stream_lcp_len(info);
 	iwe.cmd = SIOCGIWRATE;
-	/* Those two flags are ignored... */
+	 
 	iwe.u.bitrate.fixed = iwe.u.bitrate.disabled = 0;
 
 	for (i = 0, j = 0; i < network->rates_len;) {
@@ -120,25 +104,25 @@ static char *libipw_translate_scan(struct libipw_device *ieee,
 			rate = network->rates_ex[j++] & 0x7F;
 		else
 			rate = network->rates[i++] & 0x7F;
-		/* Bit rate given in 500 kb/s units (+ 0x80) */
+		 
 		iwe.u.bitrate.value = ((rate & 0x7f) * 500000);
-		/* Add new value to event */
+		 
 		current_val = iwe_stream_add_value(info, start, current_val,
 						   stop, &iwe, IW_EV_PARAM_LEN);
 	}
 	for (; j < network->rates_ex_len; j++) {
 		rate = network->rates_ex[j] & 0x7F;
-		/* Bit rate given in 500 kb/s units (+ 0x80) */
+		 
 		iwe.u.bitrate.value = ((rate & 0x7f) * 500000);
-		/* Add new value to event */
+		 
 		current_val = iwe_stream_add_value(info, start, current_val,
 						   stop, &iwe, IW_EV_PARAM_LEN);
 	}
-	/* Check if we added any rate */
+	 
 	if ((current_val - start) > iwe_stream_lcp_len(info))
 		start = current_val;
 
-	/* Add quality statistics */
+	 
 	iwe.cmd = IWEVQUAL;
 	iwe.u.qual.updated = IW_QUAL_QUAL_UPDATED | IW_QUAL_LEVEL_UPDATED |
 	    IW_QUAL_NOISE_UPDATED;
@@ -209,8 +193,7 @@ static char *libipw_translate_scan(struct libipw_device *ieee,
 		start = iwe_stream_add_point(info, start, stop, &iwe, buf);
 	}
 
-	/* Add EXTRA: Age to display seconds since last beacon/probe response
-	 * for given network. */
+	 
 	iwe.cmd = IWEVCUSTOM;
 	p = custom;
 	p += scnprintf(p, MAX_CUSTOM_LEN - (p - custom),
@@ -220,7 +203,7 @@ static char *libipw_translate_scan(struct libipw_device *ieee,
 	if (iwe.u.data.length)
 		start = iwe_stream_add_point(info, start, stop, &iwe, custom);
 
-	/* Add spectrum management information */
+	 
 	iwe.cmd = -1;
 	p = custom;
 	p += scnprintf(p, MAX_CUSTOM_LEN - (p - custom), " Channel flags: ");
@@ -332,8 +315,7 @@ int libipw_wx_set_encode(struct libipw_device *ieee,
 		} else
 			LIBIPW_DEBUG_WX("Disabling encryption.\n");
 
-		/* Check all the keys to see if any are still configured,
-		 * and if no key index was provided, de-init them all */
+		 
 		for (i = 0; i < WEP_KEYS; i++) {
 			if (ieee->crypt_info.crypt[i] != NULL) {
 				if (key_provided)
@@ -359,15 +341,14 @@ int libipw_wx_set_encode(struct libipw_device *ieee,
 
 	if (*crypt != NULL && (*crypt)->ops != NULL &&
 	    strcmp((*crypt)->ops->name, "WEP") != 0) {
-		/* changing to use WEP; deinit previously used algorithm
-		 * on this key */
+		 
 		lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
 	}
 
 	if (*crypt == NULL && host_crypto) {
 		struct lib80211_crypt_data *new_crypt;
 
-		/* take WEP into use */
+		 
 		new_crypt = kzalloc(sizeof(struct lib80211_crypt_data),
 				    GFP_KERNEL);
 		if (new_crypt == NULL)
@@ -392,7 +373,7 @@ int libipw_wx_set_encode(struct libipw_device *ieee,
 		*crypt = new_crypt;
 	}
 
-	/* If a new key was provided, set it up */
+	 
 	if (erq->length > 0) {
 		len = erq->length <= 5 ? 5 : 13;
 		memcpy(sec.keys[key], keybuf, erq->length);
@@ -407,8 +388,7 @@ int libipw_wx_set_encode(struct libipw_device *ieee,
 			(*crypt)->ops->set_key(sec.keys[key], len, NULL,
 					       (*crypt)->priv);
 		sec.flags |= (1 << key);
-		/* This ensures a key will be activated if no key is
-		 * explicitly set */
+		 
 		if (key == sec.active_key)
 			sec.flags |= SEC_ACTIVE_KEY;
 
@@ -417,7 +397,7 @@ int libipw_wx_set_encode(struct libipw_device *ieee,
 			len = (*crypt)->ops->get_key(sec.keys[key], WEP_KEY_LEN,
 						     NULL, (*crypt)->priv);
 			if (len == 0) {
-				/* Set a default key of all 0 */
+				 
 				LIBIPW_DEBUG_WX("Setting key %d to all "
 						   "zero.\n", key);
 				memset(sec.keys[key], 0, 13);
@@ -427,7 +407,7 @@ int libipw_wx_set_encode(struct libipw_device *ieee,
 				sec.flags |= (1 << key);
 			}
 		}
-		/* No key data - just set the default TX key index */
+		 
 		if (key_provided) {
 			LIBIPW_DEBUG_WX("Setting key %d to default Tx "
 					   "key.\n", key);
@@ -446,10 +426,9 @@ int libipw_wx_set_encode(struct libipw_device *ieee,
 				   "OPEN" : "SHARED KEY");
 	}
 
-	/* For now we just support WEP, so only set that security level...
-	 * TODO: When WPA is added this is one place that needs to change */
+	 
 	sec.flags |= SEC_LEVEL;
-	sec.level = SEC_LEVEL_1;	/* 40 and 104 bit WEP */
+	sec.level = SEC_LEVEL_1;	 
 	sec.encode_alg[key] = SEC_ALG_WEP;
 
       done:
@@ -528,7 +507,7 @@ int libipw_wx_set_encodeext(struct libipw_device *ieee,
 		crypt = &ieee->crypt_info.crypt[idx];
 		group_key = 1;
 	} else {
-		/* some Cisco APs use idx>0 for unicast in dynamic WEP */
+		 
 		if (idx != 0 && ext->alg != IW_ENCODE_ALG_WEP)
 			return -EINVAL;
 		if (ieee->iw_mode == IW_MODE_INFRA)
@@ -651,7 +630,7 @@ int libipw_wx_set_encodeext(struct libipw_device *ieee,
 			sec.flags |= SEC_LEVEL;
 			sec.level = SEC_LEVEL_3;
 		}
-		/* Don't set sec level for group keys. */
+		 
 		if (group_key)
 			sec.flags &= ~SEC_LEVEL;
 	}

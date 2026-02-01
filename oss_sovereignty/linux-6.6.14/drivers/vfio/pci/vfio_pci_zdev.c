@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO ZPCI devices support
- *
- * Copyright (C) IBM Corp. 2020.  All rights reserved.
- *	Author(s): Pierre Morel <pmorel@linux.ibm.com>
- *                 Matthew Rosato <mjrosato@linux.ibm.com>
- */
+
+ 
 #include <linux/io.h>
 #include <linux/pci.h>
 #include <linux/uaccess.h>
@@ -17,9 +11,7 @@
 
 #include "vfio_pci_priv.h"
 
-/*
- * Add the Base PCI Function information to the device info region.
- */
+ 
 static int zpci_base_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 {
 	struct vfio_device_info_cap_zpci_base cap = {
@@ -38,9 +30,7 @@ static int zpci_base_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
 }
 
-/*
- * Add the Base PCI Function Group information to the device info region.
- */
+ 
 static int zpci_group_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 {
 	struct vfio_device_info_cap_zpci_group cap = {
@@ -60,9 +50,7 @@ static int zpci_group_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
 }
 
-/*
- * Add the device utility string to the device info region.
- */
+ 
 static int zpci_util_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 {
 	struct vfio_device_info_cap_zpci_util *cap;
@@ -85,9 +73,7 @@ static int zpci_util_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 	return ret;
 }
 
-/*
- * Add the function path string to the device info region.
- */
+ 
 static int zpci_pfip_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 {
 	struct vfio_device_info_cap_zpci_pfip *cap;
@@ -110,9 +96,7 @@ static int zpci_pfip_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
 	return ret;
 }
 
-/*
- * Add all supported capabilities to the VFIO_DEVICE_GET_INFO capability chain.
- */
+ 
 int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
 				struct vfio_info_cap *caps)
 {

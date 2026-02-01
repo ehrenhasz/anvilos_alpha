@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <stdlib.h>
 #include <bpf/bpf.h>
@@ -42,7 +42,7 @@ static int machine__process_bpf_event_load(struct machine *machine,
 	int id = event->bpf.id;
 	unsigned int i;
 
-	/* perf-record, no need to handle bpf-event */
+	 
 	if (env == NULL)
 		return 0;
 
@@ -79,11 +79,7 @@ int machine__process_bpf(struct machine *machine, union perf_event *event,
 		return machine__process_bpf_event_load(machine, event, sample);
 
 	case PERF_BPF_EVENT_PROG_UNLOAD:
-		/*
-		 * Do not free bpf_prog_info and btf of the program here,
-		 * as annotation still need them. They will be freed at
-		 * the end of the session.
-		 */
+		 
 		break;
 	default:
 		pr_debug("unexpected bpf event type of %d\n", event->bpf.type);
@@ -111,7 +107,7 @@ static int perf_env__fetch_btf(struct perf_env *env,
 	memcpy(node->data, data, data_size);
 
 	if (!perf_env__insert_btf(env, node)) {
-		/* Insertion failed because of a duplicate. */
+		 
 		free(node);
 		return -1;
 	}
@@ -139,7 +135,7 @@ static int synthesize_bpf_prog_name(char *buf, int size,
 		t = btf__type_by_id(btf, finfo->type_id);
 		short_name = btf__name_by_offset(btf, t->name_off);
 	} else if (sub_id == 0 && sub_prog_cnt == 1) {
-		/* no subprog */
+		 
 		if (info->name[0])
 			short_name = info->name;
 	} else
@@ -150,16 +146,7 @@ static int synthesize_bpf_prog_name(char *buf, int size,
 	return name_len;
 }
 
-/*
- * Synthesize PERF_RECORD_KSYMBOL and PERF_RECORD_BPF_EVENT for one bpf
- * program. One PERF_RECORD_BPF_EVENT is generated for the program. And
- * one PERF_RECORD_KSYMBOL is generated for each sub program.
- *
- * Returns:
- *    0 for success;
- *   -1 for failures;
- *   -2 for lack of kernel support.
- */
+ 
 static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 					       perf_event__handler_t process,
 					       struct machine *machine,
@@ -179,10 +166,7 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 	int err = 0;
 	u64 arrays;
 
-	/*
-	 * for perf-record and perf-report use header.env;
-	 * otherwise, use global perf_env.
-	 */
+	 
 	env = session->data ? &session->header.env : &perf_env;
 
 	arrays = 1UL << PERF_BPIL_JITED_KSYMS;
@@ -212,7 +196,7 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 		return -1;
 	}
 
-	/* number of ksyms, func_lengths, and tags should match */
+	 
 	sub_prog_cnt = info->nr_jited_ksyms;
 	if (sub_prog_cnt != info->nr_prog_tags ||
 	    sub_prog_cnt != info->nr_jited_func_lens) {
@@ -220,9 +204,9 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 		return -1;
 	}
 
-	/* check BTF func info support */
+	 
 	if (info->btf_id && info->nr_func_info && info->func_info_rec_size) {
-		/* btf func info number should be same as sub_prog_cnt */
+		 
 		if (sub_prog_cnt != info->nr_func_info) {
 			pr_debug("%s: mismatch in BPF sub program count and BTF function info count, aborting\n", __func__);
 			free(info_linear);
@@ -237,7 +221,7 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 		perf_env__fetch_btf(env, info->btf_id, btf);
 	}
 
-	/* Synthesize PERF_RECORD_KSYMBOL */
+	 
 	for (i = 0; i < sub_prog_cnt; i++) {
 		__u32 *prog_lens = (__u32 *)(uintptr_t)(info->jited_func_lens);
 		__u64 *prog_addrs = (__u64 *)(uintptr_t)(info->jited_ksyms);
@@ -266,7 +250,7 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 	}
 
 	if (!opts->no_bpf_event) {
-		/* Synthesize PERF_RECORD_BPF_EVENT */
+		 
 		*bpf_event = (struct perf_record_bpf_event) {
 			.header = {
 				.type = PERF_RECORD_BPF_EVENT,
@@ -280,7 +264,7 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 		memset((void *)event + event->header.size, 0, machine->id_hdr_size);
 		event->header.size += machine->id_hdr_size;
 
-		/* save bpf_prog_info to env */
+		 
 		info_node = malloc(sizeof(struct bpf_prog_info_node));
 		if (!info_node) {
 			err = -1;
@@ -291,10 +275,7 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
 		perf_env__insert_bpf_prog_info(env, info_node);
 		info_linear = NULL;
 
-		/*
-		 * process after saving bpf_prog_info to env, so that
-		 * required information is ready for look up
-		 */
+		 
 		err = perf_tool__process_synth_event(tool, event,
 						     machine, process);
 	}
@@ -355,7 +336,7 @@ kallsyms_process_symbol(void *data, const char *_name,
 	if (!module)
 		return 0;
 
-	/* We are going after [bpf] module ... */
+	 
 	if (strcmp(module + 1, "[bpf]"))
 		return 0;
 
@@ -365,7 +346,7 @@ kallsyms_process_symbol(void *data, const char *_name,
 
 	name[module - _name] = 0;
 
-	/* .. and only for trampolines and dispatchers */
+	 
 	if ((sscanf(name, "bpf_trampoline_%lu", &id) == 1) ||
 	    (sscanf(name, "bpf_dispatcher_%s", disp) == 1))
 		err = process_bpf_image(name, start, data);
@@ -390,7 +371,7 @@ int perf_event__synthesize_bpf_events(struct perf_session *session,
 	if (!event)
 		return -1;
 
-	/* Synthesize all the bpf programs in system. */
+	 
 	while (true) {
 		err = bpf_prog_get_next_id(id, &id);
 		if (err) {
@@ -401,7 +382,7 @@ int perf_event__synthesize_bpf_events(struct perf_session *session,
 			pr_debug("%s: can't get next program: %s%s\n",
 				 __func__, strerror(errno),
 				 errno == EINVAL ? " -- kernel too old?" : "");
-			/* don't report error on old kernel or EPERM  */
+			 
 			err = (errno == EINVAL || errno == EPERM) ? 0 : -1;
 			break;
 		}
@@ -417,14 +398,14 @@ int perf_event__synthesize_bpf_events(struct perf_session *session,
 							  event, opts);
 		close(fd);
 		if (err) {
-			/* do not return error for old kernel */
+			 
 			if (err == -2)
 				err = 0;
 			break;
 		}
 	}
 
-	/* Synthesize all the bpf images - trampolines/dispatchers. */
+	 
 	if (symbol_conf.kallsyms_name != NULL)
 		kallsyms_filename = symbol_conf.kallsyms_name;
 
@@ -508,11 +489,7 @@ static int bpf_event__sb_cb(union perf_event *event, void *data)
 		perf_env__add_bpf_info(env, event->bpf.id);
 
 	case PERF_BPF_EVENT_PROG_UNLOAD:
-		/*
-		 * Do not free bpf_prog_info and btf of the program here,
-		 * as annotation still need them. They will be freed at
-		 * the end of the session.
-		 */
+		 
 		break;
 	default:
 		pr_debug("unexpected bpf event type of %d\n", event->bpf.type);
@@ -530,13 +507,10 @@ int evlist__add_bpf_sb_event(struct evlist *evlist, struct perf_env *env)
 		.sample_id_all    = 1,
 		.watermark        = 1,
 		.bpf_event        = 1,
-		.size	   = sizeof(attr), /* to capture ABI version */
+		.size	   = sizeof(attr),  
 	};
 
-	/*
-	 * Older gcc versions don't support designated initializers, like above,
-	 * for unnamed union members, such as the following:
-	 */
+	 
 	attr.wakeup_watermark = 1;
 
 	return evlist__add_sb_event(evlist, &attr, bpf_event__sb_cb, env);

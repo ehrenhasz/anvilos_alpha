@@ -1,9 +1,7 @@
 #ifndef IOU_ALLOC_CACHE_H
 #define IOU_ALLOC_CACHE_H
 
-/*
- * Don't allow the cache to grow beyond this size.
- */
+ 
 #define IO_ALLOC_CACHE_MAX	512
 
 struct io_cache_entry {
@@ -16,7 +14,7 @@ static inline bool io_alloc_cache_put(struct io_alloc_cache *cache,
 	if (cache->nr_cached < cache->max_cached) {
 		cache->nr_cached++;
 		wq_stack_add_head(&entry->node, &cache->list);
-		/* KASAN poisons object */
+		 
 		kasan_slab_free_mempool(entry);
 		return true;
 	}

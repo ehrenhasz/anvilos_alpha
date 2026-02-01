@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "llcp: %s: " fmt, __func__
 
@@ -17,15 +15,15 @@
 
 static const u8 llcp_tlv_length[LLCP_TLV_MAX] = {
 	0,
-	1, /* VERSION */
-	2, /* MIUX */
-	2, /* WKS */
-	1, /* LTO */
-	1, /* RW */
-	0, /* SN */
-	1, /* OPT */
-	0, /* SDREQ */
-	2, /* SDRES */
+	1,  
+	2,  
+	2,  
+	1,  
+	1,  
+	0,  
+	1,  
+	0,  
+	2,  
 
 };
 
@@ -137,7 +135,7 @@ struct nfc_llcp_sdp_tlv *nfc_llcp_build_sdreq_tlv(u8 tid, const char *uri,
 
 	pr_debug("uri: %s, len: %zu\n", uri, uri_len);
 
-	/* sdreq->tlv_len is u8, takes uri_len, + 3 for header, + 1 for NULL */
+	 
 	if (WARN_ON_ONCE(uri_len > U8_MAX - 4))
 		return NULL;
 
@@ -300,7 +298,7 @@ static struct sk_buff *llcp_add_header(struct sk_buff *pdu,
 static struct sk_buff *llcp_add_tlv(struct sk_buff *pdu, const u8 *tlv,
 				    u8 tlv_length)
 {
-	/* XXX Add an skb length check */
+	 
 
 	if (tlv == NULL)
 		return NULL;
@@ -418,7 +416,7 @@ int nfc_llcp_send_connect(struct nfc_llcp_sock *sock)
 		size += service_name_tlv_length;
 	}
 
-	/* If the socket parameters are not set, use the local ones */
+	 
 	miux = be16_to_cpu(sock->miux) > LLCP_MAX_MIUX ?
 		local->miux : sock->miux;
 	rw = sock->rw > LLCP_MAX_RW ? local->rw : sock->rw;
@@ -480,7 +478,7 @@ int nfc_llcp_send_cc(struct nfc_llcp_sock *sock)
 	if (local == NULL)
 		return -ENODEV;
 
-	/* If the socket parameters are not set, use the local ones */
+	 
 	miux = be16_to_cpu(sock->miux) > LLCP_MAX_MIUX ?
 		local->miux : sock->miux;
 	rw = sock->rw > LLCP_MAX_RW ? local->rw : sock->rw;
@@ -614,7 +612,7 @@ int nfc_llcp_send_dm(struct nfc_llcp_local *local, u8 ssap, u8 dsap, u8 reason)
 {
 	struct sk_buff *skb;
 	struct nfc_dev *dev;
-	u16 size = 1; /* Reason code */
+	u16 size = 1;  
 
 	pr_debug("Sending DM reason 0x%x\n", reason);
 
@@ -659,7 +657,7 @@ int nfc_llcp_send_i_frame(struct nfc_llcp_sock *sock,
 	if (local == NULL)
 		return -ENODEV;
 
-	/* Remote is ready but has not acknowledged our frames */
+	 
 	if((sock->remote_ready &&
 	    skb_queue_len(&sock->tx_pending_queue) >= sock->remote_rw &&
 	    skb_queue_len(&sock->tx_queue) >= 2 * sock->remote_rw)) {
@@ -668,7 +666,7 @@ int nfc_llcp_send_i_frame(struct nfc_llcp_sock *sock,
 		return -ENOBUFS;
 	}
 
-	/* Remote is not ready and we've been queueing enough frames */
+	 
 	if ((!sock->remote_ready &&
 	     skb_queue_len(&sock->tx_queue) >= 2 * sock->remote_rw)) {
 		pr_err("Tx queue is full %d frames\n",
@@ -778,7 +776,7 @@ int nfc_llcp_send_ui_frame(struct nfc_llcp_sock *sock, u8 ssap, u8 dsap,
 		if (likely(frag_len > 0))
 			skb_put_data(pdu, msg_ptr, frag_len);
 
-		/* No need to check for the peer RW for UI frames */
+		 
 		skb_queue_tail(&local->tx_queue, pdu);
 
 		remaining_len -= frag_len;

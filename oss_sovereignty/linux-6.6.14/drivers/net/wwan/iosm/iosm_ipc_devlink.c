@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2021 Intel Corporation.
- */
+
+ 
 #include <linux/vmalloc.h>
 
 #include "iosm_ipc_chnl_cfg.h"
@@ -9,7 +7,7 @@
 #include "iosm_ipc_devlink.h"
 #include "iosm_ipc_flash.h"
 
-/* Coredump list */
+ 
 static struct iosm_coredump_file_info list[IOSM_NOF_CD_REGION] = {
 	{"report.json", REPORT_JSON_SIZE,},
 	{"coredump.fcd", COREDUMP_FCD_SIZE,},
@@ -19,7 +17,7 @@ static struct iosm_coredump_file_info list[IOSM_NOF_CD_REGION] = {
 	{"bootcore_prev_trace.bin", BOOTCORE_PREV_TRC_BIN_SIZE,},
 };
 
-/* Get the param values for the specific param ID's */
+ 
 static int ipc_devlink_get_param(struct devlink *dl, u32 id,
 				 struct devlink_param_gset_ctx *ctx)
 {
@@ -31,7 +29,7 @@ static int ipc_devlink_get_param(struct devlink *dl, u32 id,
 	return 0;
 }
 
-/* Set the param values for the specific param ID's */
+ 
 static int ipc_devlink_set_param(struct devlink *dl, u32 id,
 				 struct devlink_param_gset_ctx *ctx)
 {
@@ -43,7 +41,7 @@ static int ipc_devlink_set_param(struct devlink *dl, u32 id,
 	return 0;
 }
 
-/* Devlink param structure array */
+ 
 static const struct devlink_param iosm_devlink_params[] = {
 	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH,
 			     "erase_full_flash", DEVLINK_PARAM_TYPE_BOOL,
@@ -52,7 +50,7 @@ static const struct devlink_param iosm_devlink_params[] = {
 			     NULL),
 };
 
-/* Get devlink flash component type */
+ 
 static enum iosm_flash_comp_type
 ipc_devlink_get_flash_comp_type(const char comp_str[], u32 len)
 {
@@ -70,10 +68,7 @@ ipc_devlink_get_flash_comp_type(const char comp_str[], u32 len)
 	return fls_type;
 }
 
-/* Function triggered on devlink flash command
- * Flash update function which calls multiple functions based on
- * component type specified in the flash command
- */
+ 
 static int ipc_devlink_flash_update(struct devlink *devlink,
 				    struct devlink_flash_update_params *params,
 				    struct netlink_ext_ack *extack)
@@ -131,19 +126,12 @@ static int ipc_devlink_flash_update(struct devlink *devlink,
 	return rc;
 }
 
-/* Call back function for devlink ops */
+ 
 static const struct devlink_ops devlink_flash_ops = {
 	.flash_update = ipc_devlink_flash_update,
 };
 
-/**
- * ipc_devlink_send_cmd - Send command to Modem
- * @ipc_devlink: Pointer to struct iosm_devlink
- * @cmd:         Command to be sent to modem
- * @entry:       Command entry number
- *
- * Returns:      0 on success and failure value on error
- */
+ 
 int ipc_devlink_send_cmd(struct iosm_devlink *ipc_devlink, u16 cmd, u32 entry)
 {
 	struct iosm_rpsi_cmd rpsi_cmd;
@@ -157,7 +145,7 @@ int ipc_devlink_send_cmd(struct iosm_devlink *ipc_devlink, u16 cmd, u32 entry)
 					  sizeof(rpsi_cmd));
 }
 
-/* Function to create snapshot */
+ 
 static int ipc_devlink_coredump_snapshot(struct devlink *dl,
 					 const struct devlink_region_ops *ops,
 					 struct netlink_ext_ack *extack,
@@ -178,7 +166,7 @@ static int ipc_devlink_coredump_snapshot(struct devlink *dl,
 		goto coredump_collect_err;
 	}
 
-	/* Send coredump end cmd indicating end of coredump collection */
+	 
 	if (cd_list->entry == (IOSM_NOF_CD_REGION - 1))
 		ipc_coredump_get_list(ipc_devlink, rpsi_cmd_coredump_end);
 
@@ -189,7 +177,7 @@ coredump_collect_err:
 	return rc;
 }
 
-/* To create regions for coredump files */
+ 
 static int ipc_devlink_create_region(struct iosm_devlink *devlink)
 {
 	struct devlink_region_ops *mdm_coredump;
@@ -209,7 +197,7 @@ static int ipc_devlink_create_region(struct iosm_devlink *devlink)
 		if (IS_ERR(devlink->cd_regions[i])) {
 			rc = PTR_ERR(devlink->cd_regions[i]);
 			dev_err(devlink->dev, "Devlink region fail,err %d", rc);
-			/* Delete previously created regions */
+			 
 			for ( ; i >= 0; i--)
 				devlink_region_destroy(devlink->cd_regions[i]);
 			goto region_create_fail;
@@ -221,7 +209,7 @@ region_create_fail:
 	return rc;
 }
 
-/* To Destroy devlink regions */
+ 
 static void ipc_devlink_destroy_region(struct iosm_devlink *ipc_devlink)
 {
 	u8 i;
@@ -230,12 +218,7 @@ static void ipc_devlink_destroy_region(struct iosm_devlink *ipc_devlink)
 		devlink_region_destroy(ipc_devlink->cd_regions[i]);
 }
 
-/**
- * ipc_devlink_init - Initialize/register devlink to IOSM driver
- * @ipc_imem:   Pointer to struct iosm_imem
- *
- * Returns:     Pointer to iosm_devlink on success and NULL on failure
- */
+ 
 struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
 {
 	struct ipc_chnl_cfg chnl_cfg_flash = { 0 };
@@ -298,10 +281,7 @@ devlink_alloc_fail:
 	return NULL;
 }
 
-/**
- * ipc_devlink_deinit - To unintialize the devlink from IOSM driver.
- * @ipc_devlink:        Devlink instance
- */
+ 
 void ipc_devlink_deinit(struct iosm_devlink *ipc_devlink)
 {
 	struct devlink *devlink_ctx = ipc_devlink->devlink_ctx;

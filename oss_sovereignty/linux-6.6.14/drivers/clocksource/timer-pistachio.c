@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pistachio clocksource based on general-purpose timers
- *
- * Copyright (C) 2015 Imagination Technologies
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -22,12 +18,12 @@
 #include <linux/sched_clock.h>
 #include <linux/time.h>
 
-/* Top level reg */
+ 
 #define CR_TIMER_CTRL_CFG		0x00
 #define TIMER_ME_GLOBAL			BIT(0)
 #define CR_TIMER_REV			0x10
 
-/* Timer specific registers */
+ 
 #define TIMER_CFG			0x20
 #define TIMER_ME_LOCAL			BIT(0)
 #define TIMER_RELOAD_VALUE		0x24
@@ -39,7 +35,7 @@
 
 #define PERIP_TIMER_CONTROL		0x90
 
-/* Timer specific configuration Values */
+ 
 #define RELOAD_VALUE			0xffffffff
 
 struct pistachio_clocksource {
@@ -72,10 +68,7 @@ pistachio_clocksource_read_cycles(struct clocksource *cs)
 	u32 counter;
 	unsigned long flags;
 
-	/*
-	 * The counter value is only refreshed after the overflow value is read.
-	 * And they must be read in strict order, hence raw spin lock added.
-	 */
+	 
 
 	raw_spin_lock_irqsave(&pcs->lock, flags);
 	overflow = gpt_readl(pcs->base, TIMER_CURRENT_OVERFLOW_VALUE, 0);
@@ -109,7 +102,7 @@ static void pistachio_clksrc_enable(struct clocksource *cs, int timeridx)
 {
 	struct pistachio_clocksource *pcs = to_pistachio_clocksource(cs);
 
-	/* Disable GPT local before loading reload value */
+	 
 	pistachio_clksrc_set_mode(cs, timeridx, false);
 	gpt_writel(pcs->base, RELOAD_VALUE, TIMER_RELOAD_VALUE, timeridx);
 	pistachio_clksrc_set_mode(cs, timeridx, true);
@@ -117,7 +110,7 @@ static void pistachio_clksrc_enable(struct clocksource *cs, int timeridx)
 
 static void pistachio_clksrc_disable(struct clocksource *cs, int timeridx)
 {
-	/* Disable GPT local */
+	 
 	pistachio_clksrc_set_mode(cs, timeridx, false);
 }
 
@@ -132,7 +125,7 @@ static void pistachio_clocksource_disable(struct clocksource *cs)
 	pistachio_clksrc_disable(cs, 0);
 }
 
-/* Desirable clock source for pistachio platform */
+ 
 static struct pistachio_clocksource pcs_gpt = {
 	.cs =	{
 		.name		= "gptimer",
@@ -166,7 +159,7 @@ static int __init pistachio_clksrc_of_init(struct device_node *node)
 		return PTR_ERR(periph_regs);
 	}
 
-	/* Switch to using the fast counter clock */
+	 
 	ret = regmap_update_bits(periph_regs, PERIP_TIMER_CONTROL,
 				 0xf, 0x0);
 	if (ret)
@@ -199,13 +192,13 @@ static int __init pistachio_clksrc_of_init(struct device_node *node)
 
 	rate = clk_get_rate(fast_clk);
 
-	/* Disable irq's for clocksource usage */
+	 
 	gpt_writel(pcs_gpt.base, 0, TIMER_IRQ_MASK, 0);
 	gpt_writel(pcs_gpt.base, 0, TIMER_IRQ_MASK, 1);
 	gpt_writel(pcs_gpt.base, 0, TIMER_IRQ_MASK, 2);
 	gpt_writel(pcs_gpt.base, 0, TIMER_IRQ_MASK, 3);
 
-	/* Enable timer block */
+	 
 	writel(TIMER_ME_GLOBAL, pcs_gpt.base);
 
 	raw_spin_lock_init(&pcs_gpt.lock);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DISPLAY_RPS_H__
 #define __INTEL_DISPLAY_RPS_H__
@@ -19,4 +17,4 @@ void intel_display_rps_mark_interactive(struct drm_i915_private *i915,
 					struct intel_atomic_state *state,
 					bool interactive);
 
-#endif /* __INTEL_DISPLAY_RPS_H__ */
+#endif  

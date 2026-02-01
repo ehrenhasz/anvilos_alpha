@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <sched.h>
 #include <signal.h>
@@ -12,11 +10,7 @@
 #include "ebb.h"
 
 
-/*
- * Test that tries to trigger CPU_FTR_PMAO_BUG. Which is a hardware defect
- * where an exception triggers but we context switch before it is delivered and
- * lose the exception.
- */
+ 
 
 static int test_body(void)
 {
@@ -25,7 +19,7 @@ static int test_body(void)
 
 	SKIP_IF(!ebb_is_supported());
 
-	/* We use PMC4 to make sure the kernel switches all counters correctly */
+	 
 	event_init_named(&event, 0x40002, "instructions");
 	event_leader_ebb_init(&event);
 
@@ -40,29 +34,18 @@ static int test_body(void)
 	ebb_global_enable();
 	FAIL_IF(ebb_event_enable(&event));
 
-	/*
-	 * We want a low sample period, but we also want to get out of the EBB
-	 * handler without tripping up again.
-	 *
-	 * This value picked after much experimentation.
-	 */
+	 
 	orig_period = max_period = sample_period = 400;
 
 	mtspr(SPRN_PMC4, pmc_sample_period(sample_period));
 
 	while (ebb_state.stats.ebb_count < 1000000) {
-		/*
-		 * We are trying to get the EBB exception to race exactly with
-		 * us entering the kernel to do the syscall. We then need the
-		 * kernel to decide our timeslice is up and context switch to
-		 * the other thread. When we come back our EBB will have been
-		 * lost and we'll spin in this while loop forever.
-		 */
+		 
 
 		for (i = 0; i < 100000; i++)
 			sched_yield();
 
-		/* Change the sample period slightly to try and hit the race */
+		 
 		if (sample_period >= (orig_period + 200))
 			sample_period = orig_period;
 		else
@@ -84,7 +67,7 @@ static int test_body(void)
 
 	FAIL_IF(ebb_state.stats.ebb_count == 0);
 
-	/* We vary our sample period so we need extra fudge here */
+	 
 	FAIL_IF(!ebb_check_count(4, orig_period, 2 * (max_period - orig_period)));
 
 	return 0;

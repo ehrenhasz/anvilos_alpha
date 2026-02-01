@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88395_lib.c  -- ACF bin parsing and check library file for aw88395
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-//
+
+
+
+
+
+
+
+
 
 #include <linux/crc8.h>
 #include <linux/i2c.h>
@@ -1085,7 +1085,7 @@ static int aw_dev_check_cfg_by_hdr(struct aw_device *aw_dev, struct aw_container
 	u8 act_crc8;
 
 	cfg_hdr = (struct aw_cfg_hdr *)aw_cfg->data;
-	/* check file type id is awinic acf file */
+	 
 	if (cfg_hdr->id != ACF_FILE_ID) {
 		dev_err(aw_dev->dev, "not acf type file");
 		return -EINVAL;
@@ -1098,7 +1098,7 @@ static int aw_dev_check_cfg_by_hdr(struct aw_device *aw_dev, struct aw_container
 		return -EINVAL;
 	}
 
-	/* check data size */
+	 
 	cfg_dde = (struct aw_cfg_dde *)((char *)aw_cfg->data + cfg_hdr->hdr_offset);
 	act_data += hdr_ddt_len;
 	for (i = 0; i < cfg_hdr->ddt_num; i++)
@@ -1111,7 +1111,7 @@ static int aw_dev_check_cfg_by_hdr(struct aw_device *aw_dev, struct aw_container
 	}
 
 	for (i = 0; i < cfg_hdr->ddt_num; i++) {
-		/* data check */
+		 
 		end_data_offset = cfg_dde[i].data_offset + cfg_dde[i].data_size;
 		if (end_data_offset > aw_cfg->len) {
 			dev_err(aw_dev->dev, "ddt_num[%d] end_data_offset[%d] overflow size[%d]",
@@ -1119,7 +1119,7 @@ static int aw_dev_check_cfg_by_hdr(struct aw_device *aw_dev, struct aw_container
 			return -EINVAL;
 		}
 
-		/* crc check */
+		 
 		act_crc8 = crc8(aw_crc8_table, aw_cfg->data + cfg_dde[i].data_offset,
 							cfg_dde[i].data_size, 0);
 		if (act_crc8 != cfg_dde[i].data_crc) {
@@ -1144,7 +1144,7 @@ static int aw_dev_check_acf_by_hdr_v1(struct aw_device *aw_dev, struct aw_contai
 
 	cfg_hdr = (struct aw_cfg_hdr *)aw_cfg->data;
 
-	/* check file type id is awinic acf file */
+	 
 	if (cfg_hdr->id != ACF_FILE_ID) {
 		dev_err(aw_dev->dev, "not acf type file");
 		return -EINVAL;
@@ -1157,7 +1157,7 @@ static int aw_dev_check_acf_by_hdr_v1(struct aw_device *aw_dev, struct aw_contai
 		return -EINVAL;
 	}
 
-	/* check data size */
+	 
 	cfg_dde = (struct aw_cfg_dde_v1 *)((char *)aw_cfg->data + cfg_hdr->hdr_offset);
 	act_data += hdr_ddt_len;
 	for (i = 0; i < cfg_hdr->ddt_num; i++)
@@ -1170,7 +1170,7 @@ static int aw_dev_check_acf_by_hdr_v1(struct aw_device *aw_dev, struct aw_contai
 	}
 
 	for (i = 0; i < cfg_hdr->ddt_num; i++) {
-		/* data check */
+		 
 		end_data_offset = cfg_dde[i].data_offset + cfg_dde[i].data_size;
 		if (end_data_offset > aw_cfg->len) {
 			dev_err(aw_dev->dev, "ddt_num[%d] end_data_offset[%d] overflow size[%d]",
@@ -1178,7 +1178,7 @@ static int aw_dev_check_acf_by_hdr_v1(struct aw_device *aw_dev, struct aw_contai
 			return -EINVAL;
 		}
 
-		/* crc check */
+		 
 		act_crc8 = crc8(aw_crc8_table, aw_cfg->data + cfg_dde[i].data_offset,
 									cfg_dde[i].data_size, 0);
 		if (act_crc8 != cfg_dde[i].data_crc) {

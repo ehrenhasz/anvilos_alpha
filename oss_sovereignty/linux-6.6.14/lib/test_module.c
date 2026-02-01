@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This module emits "Hello, world" on printk when loaded.
- *
- * It is designed to be used for basic evaluation of the module loading
- * subsystem (for example when validating module signing/verification). It
- * lacks any extra dependencies, and will not normally be loaded by the
- * system unless explicitly requested by name.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

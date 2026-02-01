@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI__LINUX_KVM_PARA_H
 #define _UAPI__LINUX_KVM_PARA_H
 
-/*
- * This header file provides a method for making a hypercall to the host
- * Architectures should define:
- * - kvm_hypercall0, kvm_hypercall1...
- * - kvm_arch_para_features
- * - kvm_para_available
- */
+ 
 
-/* Return values for hypercalls */
+ 
 #define KVM_ENOSYS		1000
 #define KVM_EFAULT		EFAULT
 #define KVM_EINVAL		EINVAL
@@ -31,9 +25,7 @@
 #define KVM_HC_SCHED_YIELD		11
 #define KVM_HC_MAP_GPA_RANGE		12
 
-/*
- * hypercalls use architecture specific
- */
+ 
 #include <asm/kvm_para.h>
 
-#endif /* _UAPI__LINUX_KVM_PARA_H */
+#endif  

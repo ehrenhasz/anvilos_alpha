@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Sanechips Technology Co., Ltd.
- * Copyright 2017 Linaro Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/rc-map.h>
@@ -19,7 +16,7 @@ static struct rc_map_table zx_irdec_table[] = {
 	{ 0x09, KEY_NUMERIC_9 },
 	{ 0x31, KEY_NUMERIC_0 },
 	{ 0x16, KEY_DELETE },
-	{ 0x0a, KEY_MODE },		/* Input method */
+	{ 0x0a, KEY_MODE },		 
 	{ 0x0c, KEY_VOLUMEUP },
 	{ 0x18, KEY_VOLUMEDOWN },
 	{ 0x0b, KEY_CHANNELUP },
@@ -36,7 +33,7 @@ static struct rc_map_table zx_irdec_table[] = {
 	{ 0x48, KEY_LEFT },
 	{ 0x4a, KEY_RIGHT },
 	{ 0x4d, KEY_MENU },
-	{ 0x56, KEY_APPSELECT },	/* Application */
+	{ 0x56, KEY_APPSELECT },	 
 	{ 0x4c, KEY_BACK },
 	{ 0x1e, KEY_INFO },
 	{ 0x4e, KEY_F1 },
@@ -45,7 +42,7 @@ static struct rc_map_table zx_irdec_table[] = {
 	{ 0x51, KEY_F4 },
 	{ 0x1c, KEY_AUDIO },
 	{ 0x12, KEY_MUTE },
-	{ 0x11, KEY_DOT },		/* Location */
+	{ 0x11, KEY_DOT },		 
 	{ 0x1d, KEY_SETUP },
 	{ 0x40, KEY_POWER },
 };

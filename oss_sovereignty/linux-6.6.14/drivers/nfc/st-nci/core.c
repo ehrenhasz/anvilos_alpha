@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NCI based Driver for STMicroelectronics NFC Chip
- *
- * Copyright (C) 2014-2015  STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/nfc.h>

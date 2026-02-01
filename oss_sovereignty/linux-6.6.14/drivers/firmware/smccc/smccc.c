@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 Arm Limited
- */
+
+ 
 
 #define pr_fmt(fmt) "smccc: " fmt
 

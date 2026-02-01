@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mac80211 debugfs for wireless PHYs
- *
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright (C) 2018 - 2019, 2021-2022 Intel Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/rtnetlink.h>
@@ -293,7 +287,7 @@ static ssize_t aql_txq_limit_write(struct file *file,
 
 	mutex_lock(&local->sta_mtx);
 	list_for_each_entry(sta, &local->sta_list, list) {
-		/* If a sta has customized queue limits, keep it */
+		 
 		if (sta->airtime[ac].aql_limit_low == q_limit_low_old &&
 		    sta->airtime[ac].aql_limit_high == q_limit_high_old) {
 			sta->airtime[ac].aql_limit_low = q_limit_low;
@@ -512,9 +506,7 @@ static ssize_t hwflags_read(struct file *file, char __user *user_buf,
 	if (!buf)
 		return -ENOMEM;
 
-	/* fail compilation if somebody adds or removes
-	 * a flag without updating the name array above
-	 */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(hw_flag_names) != NUM_IEEE80211_HW_FLAGS);
 
 	for (i = 0; i < NUM_IEEE80211_HW_FLAGS; i++) {
@@ -532,7 +524,7 @@ static ssize_t misc_read(struct file *file, char __user *user_buf,
 			 size_t count, loff_t *ppos)
 {
 	struct ieee80211_local *local = file->private_data;
-	/* Max len of each line is 16 characters, plus 9 for 'pending:\n' */
+	 
 	size_t bufsz = IEEE80211_MAX_QUEUES * 16 + 9;
 	char *buf;
 	char *pos, *end;
@@ -582,7 +574,7 @@ DEBUGFS_READONLY_FILE_OPS(hwflags);
 DEBUGFS_READONLY_FILE_OPS(queues);
 DEBUGFS_READONLY_FILE_OPS(misc);
 
-/* statistics stuff */
+ 
 
 static ssize_t format_devstat_counter(struct ieee80211_local *local,
 	char __user *userbuf,

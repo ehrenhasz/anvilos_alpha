@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * 8250_dma.c - DMA Engine API support for 8250.c
- *
- * Copyright (C) 2013 Intel Corporation
- */
+
+ 
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/serial_reg.h>
@@ -46,11 +42,7 @@ static void __dma_rx_complete(struct uart_8250_port *p)
 	enum dma_status		dma_status;
 	int			count;
 
-	/*
-	 * New DMA Rx can be started during the completion handler before it
-	 * could acquire port's lock and it might still be ongoing. Don't to
-	 * anything in such case.
-	 */
+	 
 	dma_status = dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
 	if (dma_status == DMA_IN_PROGRESS)
 		return;
@@ -74,10 +66,7 @@ static void dma_rx_complete(void *param)
 	if (dma->rx_running)
 		__dma_rx_complete(p);
 
-	/*
-	 * Cannot be combined with the previous check because __dma_rx_complete()
-	 * changes dma->rx_running.
-	 */
+	 
 	if (!dma->rx_running && (serial_lsr_in(p) & UART_LSR_DR))
 		p->dma->rx_dma(p);
 	spin_unlock_irqrestore(&p->port.lock, flags);
@@ -103,7 +92,7 @@ int serial8250_tx_dma(struct uart_8250_port *p)
 	}
 
 	if (uart_tx_stopped(&p->port) || uart_circ_empty(xmit)) {
-		/* We have been called from __dma_tx_complete() */
+		 
 		return 0;
 	}
 
@@ -189,7 +178,7 @@ int serial8250_request_dma(struct uart_8250_port *p)
 	struct dma_slave_caps	caps;
 	int			ret;
 
-	/* Default slave configuration parameters */
+	 
 	dma->rxconf.direction		= DMA_DEV_TO_MEM;
 	dma->rxconf.src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
 	dma->rxconf.src_addr		= rx_dma_addr + UART_RX;
@@ -201,14 +190,14 @@ int serial8250_request_dma(struct uart_8250_port *p)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
-	/* Get a channel for RX */
+	 
 	dma->rxchan = dma_request_slave_channel_compat(mask,
 						       dma->fn, dma->rx_param,
 						       p->port.dev, "rx");
 	if (!dma->rxchan)
 		return -ENODEV;
 
-	/* 8250 rx dma requires dmaengine driver to support pause/terminate */
+	 
 	ret = dma_get_slave_caps(dma->rxchan, &caps);
 	if (ret)
 		goto release_rx;
@@ -220,7 +209,7 @@ int serial8250_request_dma(struct uart_8250_port *p)
 
 	dmaengine_slave_config(dma->rxchan, &dma->rxconf);
 
-	/* Get a channel for TX */
+	 
 	dma->txchan = dma_request_slave_channel_compat(mask,
 						       dma->fn, dma->tx_param,
 						       p->port.dev, "tx");
@@ -229,7 +218,7 @@ int serial8250_request_dma(struct uart_8250_port *p)
 		goto release_rx;
 	}
 
-	/* 8250 tx dma requires dmaengine driver to support terminate */
+	 
 	ret = dma_get_slave_caps(dma->txchan, &caps);
 	if (ret)
 		goto err;
@@ -240,7 +229,7 @@ int serial8250_request_dma(struct uart_8250_port *p)
 
 	dmaengine_slave_config(dma->txchan, &dma->txconf);
 
-	/* RX buffer */
+	 
 	if (!dma->rx_size)
 		dma->rx_size = PAGE_SIZE;
 
@@ -251,7 +240,7 @@ int serial8250_request_dma(struct uart_8250_port *p)
 		goto err;
 	}
 
-	/* TX buffer */
+	 
 	dma->tx_addr = dma_map_single(dma->txchan->device->dev,
 					p->port.state->xmit.buf,
 					UART_XMIT_SIZE,
@@ -281,14 +270,14 @@ void serial8250_release_dma(struct uart_8250_port *p)
 	if (!dma)
 		return;
 
-	/* Release RX resources */
+	 
 	dmaengine_terminate_sync(dma->rxchan);
 	dma_free_coherent(dma->rxchan->device->dev, dma->rx_size, dma->rx_buf,
 			  dma->rx_addr);
 	dma_release_channel(dma->rxchan);
 	dma->rxchan = NULL;
 
-	/* Release TX resources */
+	 
 	dmaengine_terminate_sync(dma->txchan);
 	dma_unmap_single(dma->txchan->device->dev, dma->tx_addr,
 			 UART_XMIT_SIZE, DMA_TO_DEVICE);

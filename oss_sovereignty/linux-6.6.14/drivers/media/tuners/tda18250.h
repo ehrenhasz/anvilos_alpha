@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NXP TDA18250BHN silicon tuner driver
- *
- * Copyright (C) 2017 Olli Salonen <olli.salonen@iki.fi>
- */
+ 
+ 
 
 #ifndef TDA18250_H
 #define TDA18250_H
@@ -29,9 +25,7 @@ struct tda18250_config {
 	u8 xtal_freq;
 	bool loopthrough;
 
-	/*
-	 * frontend
-	 */
+	 
 	struct dvb_frontend *fe;
 
 #if defined(CONFIG_MEDIA_CONTROLLER)

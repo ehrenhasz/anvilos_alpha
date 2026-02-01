@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _NF_CONNTRACK_LABELS_H
 #define _NF_CONNTRACK_LABELS_H
@@ -17,9 +17,7 @@ struct nf_conn_labels {
 	unsigned long bits[NF_CT_LABELS_MAX_SIZE / sizeof(long)];
 };
 
-/* Can't use nf_ct_ext_find(), flow dissector cannot use symbols
- * exported by nf_conntrack module.
- */
+ 
 static inline struct nf_conn_labels *nf_ct_labels_find(const struct nf_conn *ct)
 {
 #ifdef CONFIG_NF_CONNTRACK_LABELS
@@ -59,4 +57,4 @@ static inline int nf_connlabels_get(struct net *net, unsigned int bit) { return 
 static inline void nf_connlabels_put(struct net *net) {}
 #endif
 
-#endif /* _NF_CONNTRACK_LABELS_H */
+#endif  

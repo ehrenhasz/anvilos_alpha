@@ -1,16 +1,4 @@
-/*
- * net/ife/ife.c - Inter-FE protocol based on ForCES WG InterFE LFB
- * Copyright (c) 2015 Jamal Hadi Salim <jhs@mojatatu.com>
- * Copyright (c) 2017 Yotam Gigi <yotamg@mellanox.com>
- *
- * Refer to: draft-ietf-forces-interfelfb-03 and netdev01 paper:
- * "Distributing Linux Traffic Control Classifier-Action Subsystem"
- * Authors: Jamal Hadi Salim and Damascene M. Joachimpillai
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -33,13 +21,11 @@ struct ifeheadr {
 
 void *ife_encode(struct sk_buff *skb, u16 metalen)
 {
-	/* OUTERHDR:TOTMETALEN:{TLVHDR:Metadatum:TLVHDR..}:ORIGDATA
-	 * where ORIGDATA = original ethernet header ...
-	 */
+	 
 	int hdrm = metalen + IFE_METAHDRLEN;
 	int total_push = hdrm + skb->dev->hard_header_len;
 	struct ifeheadr *ifehdr;
-	struct ethhdr *iethh;	/* inner ether header */
+	struct ethhdr *iethh;	 
 	int skboff = 0;
 	int err;
 
@@ -54,7 +40,7 @@ void *ife_encode(struct sk_buff *skb, u16 metalen)
 	skb_reset_mac_header(skb);
 	skboff += skb->dev->hard_header_len;
 
-	/* total metadata length */
+	 
 	ifehdr = (struct ifeheadr *) (skb->data + skboff);
 	metalen += IFE_METAHDRLEN;
 	ifehdr->metalen = htons(metalen);
@@ -108,11 +94,11 @@ static bool __ife_tlv_meta_valid(const unsigned char *skbdata,
 	tlv = (const struct meta_tlvhdr *)skbdata;
 	tlvlen = ntohs(tlv->len);
 
-	/* tlv length field is inc header, check on minimum */
+	 
 	if (tlvlen < NLA_HDRLEN)
 		return false;
 
-	/* overflow by NLA_ALIGN check */
+	 
 	if (NLA_ALIGN(tlvlen) < tlvlen)
 		return false;
 
@@ -122,8 +108,7 @@ static bool __ife_tlv_meta_valid(const unsigned char *skbdata,
 	return true;
 }
 
-/* Caller takes care of presenting data in network order
- */
+ 
 void *ife_tlv_meta_decode(void *skbdata, const void *ifehdr_end, u16 *attrtype,
 			  u16 *dlen, u16 *totlen)
 {
@@ -154,12 +139,11 @@ void *ife_tlv_meta_next(void *skbdata)
 }
 EXPORT_SYMBOL_GPL(ife_tlv_meta_next);
 
-/* Caller takes care of presenting data in network order
- */
+ 
 int ife_tlv_meta_encode(void *skbdata, u16 attrtype, u16 dlen, const void *dval)
 {
 	__be32 *tlv = (__be32 *) (skbdata);
-	u16 totlen = nla_total_size(dlen);	/*alignment + hdr */
+	u16 totlen = nla_total_size(dlen);	 
 	char *dptr = (char *) tlv + NLA_HDRLEN;
 	u32 htlv = attrtype << 16 | (dlen + NLA_HDRLEN);
 

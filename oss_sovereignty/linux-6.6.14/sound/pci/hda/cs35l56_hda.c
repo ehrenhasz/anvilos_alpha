@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// HDA audio driver for Cirrus Logic CS35L56 smart amp
-//
-// Copyright (C) 2023 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
-//
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/debugfs.h>
@@ -21,15 +21,7 @@
 #include "hda_cs_dsp_ctl.h"
 #include "hda_generic.h"
 
- /*
-  * The cs35l56_hda_dai_config[] reg sequence configures the device as
-  *  ASP1_BCLK_FREQ = 3.072 MHz
-  *  ASP1_RX_WIDTH = 32 cycles per slot, ASP1_TX_WIDTH = 32 cycles per slot, ASP1_FMT = I2S
-  *  ASP1_DOUT_HIZ_CONTROL = Hi-Z during unused timeslots
-  *  ASP1_RX_WL = 24 bits per sample
-  *  ASP1_TX_WL = 24 bits per sample
-  *  ASP1_RXn_EN 1..3 and ASP1_TXn_EN 1..4 disabled
-  */
+  
 static const struct reg_sequence cs35l56_hda_dai_config[] = {
 	{ CS35L56_ASP1_CONTROL1,	0x00000021 },
 	{ CS35L56_ASP1_CONTROL2,	0x20200200 },
@@ -47,7 +39,7 @@ static void cs35l56_hda_play(struct cs35l56_hda *cs35l56)
 	pm_runtime_get_sync(cs35l56->base.dev);
 	ret = cs35l56_mbox_send(&cs35l56->base, CS35L56_MBOX_CMD_AUDIO_PLAY);
 	if (ret == 0) {
-		/* Wait for firmware to enter PS0 power state */
+		 
 		ret = regmap_read_poll_timeout(cs35l56->base.regmap,
 					       CS35L56_TRANSDUCER_ACTUAL_PS,
 					       val, (val == CS35L56_PS0),
@@ -86,7 +78,7 @@ static void cs35l56_hda_playback_hook(struct device *dev, int action)
 		if (cs35l56->playing)
 			break;
 
-		/* If we're suspended: flag that resume should start playback */
+		 
 		if (cs35l56->suspended) {
 			cs35l56->playing = true;
 			break;
@@ -336,7 +328,7 @@ static void cs35l56_hda_create_controls(struct cs35l56_hda *cs35l56)
 	if (snd_ctl_add(cs35l56->codec->card, cs35l56->posture_ctl))
 		dev_err(cs35l56->base.dev, "Failed to add KControl: %s\n", ctl_template.name);
 
-	/* Mixer controls */
+	 
 	ctl_template.info = cs35l56_hda_mixer_info;
 	ctl_template.get = cs35l56_hda_mixer_get;
 	ctl_template.put = cs35l56_hda_mixer_put;
@@ -406,11 +398,7 @@ static int cs35l56_hda_request_firmware_file(struct cs35l56_hda *cs35l56,
 	if (!*filename)
 		return -ENOMEM;
 
-	/*
-	 * Make sure that filename is lower-case and any non alpha-numeric
-	 * characters except full stop and forward slash are replaced with
-	 * hyphens.
-	 */
+	 
 	s = *filename;
 	while (*s) {
 		c = *s;
@@ -479,7 +467,7 @@ static void cs35l56_hda_request_firmware_files(struct cs35l56_hda *cs35l56,
 		return;
 	}
 
-	/* When a firmware file is not found must still search for the coeff files */
+	 
 	if (system_name) {
 		if (amp_name)
 			cs35l56_hda_request_firmware_file(cs35l56, coeff_firmware, coeff_filename,
@@ -528,7 +516,7 @@ static int cs35l56_hda_fw_load(struct cs35l56_hda *cs35l56)
 	unsigned int firmware_missing;
 	int ret = 0;
 
-	/* Prepare for a new DSP power-up */
+	 
 	if (cs35l56->base.fw_patched)
 		cs_dsp_power_down(&cs35l56->cs_dsp);
 
@@ -544,21 +532,13 @@ static int cs35l56_hda_fw_load(struct cs35l56_hda *cs35l56)
 
 	firmware_missing &= CS35L56_FIRMWARE_MISSING;
 
-	/*
-	 * Firmware can only be downloaded if the CS35L56 is secured or is
-	 * running from the built-in ROM. If it is secured the BIOS will have
-	 * downloaded firmware, and the wmfw/bin files will only contain
-	 * tunings that are safe to download with the firmware running.
-	 */
+	 
 	if (cs35l56->base.secured || firmware_missing) {
 		cs35l56_hda_request_firmware_files(cs35l56, &wmfw_firmware, &wmfw_filename,
 						   &coeff_firmware, &coeff_filename);
 	}
 
-	/*
-	 * If the BIOS didn't patch the firmware a bin file is mandatory to
-	 * enable the ASP·
-	 */
+	 
 	if (!coeff_firmware && firmware_missing) {
 		dev_err(cs35l56->base.dev, ".bin file required but not found\n");
 		ret = -ENOENT;
@@ -567,12 +547,7 @@ static int cs35l56_hda_fw_load(struct cs35l56_hda *cs35l56)
 
 	mutex_lock(&cs35l56->base.irq_lock);
 
-	/*
-	 * When the device is running in secure mode the firmware files can
-	 * only contain insecure tunings and therefore we do not need to
-	 * shutdown the firmware to apply them and can use the lower cost
-	 * reinit sequence instead.
-	 */
+	 
 	if (!cs35l56->base.secured && (wmfw_firmware || coeff_firmware)) {
 		ret = cs35l56_firmware_shutdown(&cs35l56->base);
 		if (ret)
@@ -597,7 +572,7 @@ static int cs35l56_hda_fw_load(struct cs35l56_hda *cs35l56)
 		if (ret)
 			goto err_powered_up;
 	} else if (wmfw_firmware || coeff_firmware) {
-		/* If we downloaded firmware, reset the device and wait for it to boot */
+		 
 		cs35l56_system_reset(&cs35l56->base, false);
 		regcache_mark_dirty(cs35l56->base.regmap);
 		ret = cs35l56_wait_for_firmware_boot(&cs35l56->base);
@@ -605,7 +580,7 @@ static int cs35l56_hda_fw_load(struct cs35l56_hda *cs35l56)
 			goto err_powered_up;
 	}
 
-	/* Disable auto-hibernate so that runtime_pm has control */
+	 
 	ret = cs35l56_mbox_send(&cs35l56->base, CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE);
 	if (ret)
 		goto err_powered_up;
@@ -706,12 +681,7 @@ static int cs35l56_hda_system_suspend(struct device *dev)
 
 	cs35l56->suspended = true;
 
-	/*
-	 * The interrupt line is normally shared, but after we start suspending
-	 * we can't check if our device is the source of an interrupt, and can't
-	 * clear it. Prevent this race by temporarily disabling the parent irq
-	 * until we reach _no_irq.
-	 */
+	 
 	if (cs35l56->base.irq)
 		disable_irq(cs35l56->base.irq);
 
@@ -722,10 +692,7 @@ static int cs35l56_hda_system_suspend_late(struct device *dev)
 {
 	struct cs35l56_hda *cs35l56 = dev_get_drvdata(dev);
 
-	/*
-	 * RESET is usually shared by all amps so it must not be asserted until
-	 * all driver instances have done their suspend() stage.
-	 */
+	 
 	if (cs35l56->base.reset_gpio) {
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 0);
 		cs35l56_wait_min_reset_pulse();
@@ -738,7 +705,7 @@ static int cs35l56_hda_system_suspend_no_irq(struct device *dev)
 {
 	struct cs35l56_hda *cs35l56 = dev_get_drvdata(dev);
 
-	/* Handlers are now disabled so the parent IRQ can safely be re-enabled. */
+	 
 	if (cs35l56->base.irq)
 		enable_irq(cs35l56->base.irq);
 
@@ -749,13 +716,7 @@ static int cs35l56_hda_system_resume_no_irq(struct device *dev)
 {
 	struct cs35l56_hda *cs35l56 = dev_get_drvdata(dev);
 
-	/*
-	 * WAKE interrupts unmask if the CS35L56 hibernates, which can cause
-	 * spurious interrupts, and the interrupt line is normally shared.
-	 * We can't check if our device is the source of an interrupt, and can't
-	 * clear it, until it has fully resumed. Prevent this race by temporarily
-	 * disabling the parent irq until we complete resume().
-	 */
+	 
 	if (cs35l56->base.irq)
 		disable_irq(cs35l56->base.irq);
 
@@ -766,12 +727,12 @@ static int cs35l56_hda_system_resume_early(struct device *dev)
 {
 	struct cs35l56_hda *cs35l56 = dev_get_drvdata(dev);
 
-	/* Ensure a spec-compliant RESET pulse. */
+	 
 	if (cs35l56->base.reset_gpio) {
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 0);
 		cs35l56_wait_min_reset_pulse();
 
-		/* Release shared RESET before drivers start resume(). */
+		 
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 1);
 		cs35l56_wait_control_port_ready();
 	}
@@ -784,7 +745,7 @@ static int cs35l56_hda_system_resume(struct device *dev)
 	struct cs35l56_hda *cs35l56 = dev_get_drvdata(dev);
 	int ret;
 
-	/* Undo pm_runtime_force_suspend() before re-enabling the irq */
+	 
 	ret = pm_runtime_force_resume(dev);
 	if (cs35l56->base.irq)
 		enable_irq(cs35l56->base.irq);
@@ -816,10 +777,7 @@ static int cs35l56_hda_read_acpi(struct cs35l56_hda *cs35l56, int id)
 	size_t nval;
 	int i, ret;
 
-	/*
-	 * ACPI_COMPANION isn't available when this driver was instantiated by
-	 * the serial-multi-instantiate driver, so lookup the node by HID
-	 */
+	 
 	if (!ACPI_COMPANION(cs35l56->base.dev)) {
 		adev = acpi_dev_get_first_match_dev("CSC3556", NULL, -1);
 		if (!adev) {
@@ -852,10 +810,7 @@ static int cs35l56_hda_read_acpi(struct cs35l56_hda *cs35l56, int id)
 			break;
 		}
 	}
-	/*
-	 * It's not an error for the ID to be missing: for I2C there can be
-	 * an alias address that is not a real device. So reject silently.
-	 */
+	 
 	if (cs35l56->index == -1) {
 		dev_dbg(cs35l56->base.dev, "No index found in %s\n", property);
 		ret = -ENODEV;
@@ -879,10 +834,7 @@ static int cs35l56_hda_read_acpi(struct cs35l56_hda *cs35l56, int id)
 	if (IS_ERR(cs35l56->base.reset_gpio)) {
 		ret = PTR_ERR(cs35l56->base.reset_gpio);
 
-		/*
-		 * If RESET is shared the first amp to probe will grab the reset
-		 * line and reset all the amps
-		 */
+		 
 		if (ret != -EBUSY)
 			return dev_err_probe(cs35l56->base.dev, ret, "Failed to get reset GPIO\n");
 
@@ -923,10 +875,7 @@ int cs35l56_hda_common_probe(struct cs35l56_hda *cs35l56, int id)
 	if (cs35l56->base.reset_gpio) {
 		dev_dbg(cs35l56->base.dev, "Hard reset\n");
 
-		/*
-		 * The GPIOD_OUT_LOW to *_gpiod_get_*() will be ignored if the
-		 * ACPI defines a different default state. So explicitly set low.
-		 */
+		 
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 0);
 		cs35l56_wait_min_reset_pulse();
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 1);
@@ -936,7 +885,7 @@ int cs35l56_hda_common_probe(struct cs35l56_hda *cs35l56, int id)
 	if (ret < 0)
 		goto err;
 
-	/* Reset the device and wait for it to boot */
+	 
 	cs35l56_system_reset(&cs35l56->base, false);
 	ret = cs35l56_wait_for_firmware_boot(&cs35l56->base);
 	if (ret)
@@ -949,7 +898,7 @@ int cs35l56_hda_common_probe(struct cs35l56_hda *cs35l56, int id)
 	regcache_mark_dirty(cs35l56->base.regmap);
 	regcache_sync(cs35l56->base.regmap);
 
-	/* Disable auto-hibernate so that runtime_pm has control */
+	 
 	ret = cs35l56_mbox_send(&cs35l56->base, CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE);
 	if (ret)
 		goto err;
@@ -966,10 +915,7 @@ int cs35l56_hda_common_probe(struct cs35l56_hda *cs35l56, int id)
 	regmap_multi_reg_write(cs35l56->base.regmap, cs35l56_hda_dai_config,
 			       ARRAY_SIZE(cs35l56_hda_dai_config));
 
-	/*
-	 * By default only enable one ASP1TXn, where n=amplifier index,
-	 * This prevents multiple amps trying to drive the same slot.
-	 */
+	 
 	cs35l56->asp_tx_mask = BIT(cs35l56->index);
 
 	pm_runtime_set_autosuspend_delay(cs35l56->base.dev, 3000);

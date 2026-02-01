@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2020 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 #ifndef _ATH11K_PCI_H
 #define _ATH11K_PCI_H
 
@@ -19,10 +16,10 @@
 #define PCIE_Q6_COOKIE_ADDR			0x01f80500
 #define PCIE_Q6_COOKIE_DATA			0xc0000000
 
-/* register to wake the UMAC from power collapse */
+ 
 #define PCIE_SCRATCH_0_SOC_PCIE_REG		0x4040
 
-/* register used for handshake mechanism to validate UMAC is awake */
+ 
 #define PCIE_SOC_WAKE_PCIE_LOCAL_REG		0x3004
 
 #define PCIE_PCIE_PARF_LTSSM			0x1e081b0
@@ -66,10 +63,10 @@ struct ath11k_pci {
 	const struct ath11k_msi_config *msi_config;
 	u32 register_window;
 
-	/* protects register_window above */
+	 
 	spinlock_t window_lock;
 
-	/* enum ath11k_pci_flags */
+	 
 	unsigned long flags;
 	u16 link_ctl;
 };

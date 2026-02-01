@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2019 Spreadtrum Communications Inc.
+
+
 
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
@@ -256,10 +256,7 @@ static int sprd_pcm_hw_params(struct snd_soc_component *component,
 				i * dma_private->dma_addr_offset + sg_len * j;
 		}
 
-		/*
-		 * Configure the link-list address for the DMA engine link-list
-		 * mode.
-		 */
+		 
 		link.virt_addr = (unsigned long)data->virt;
 		link.phy_addr = data->phys;
 
@@ -270,10 +267,7 @@ static int sprd_pcm_hw_params(struct snd_soc_component *component,
 			goto config_err;
 		}
 
-		/*
-		 * We configure the DMA request mode, interrupt mode, channel
-		 * mode and channel trigger mode by the flags.
-		 */
+		 
 		flags = SPRD_DMA_FLAGS(SPRD_DMA_CHN_MODE_NONE, SPRD_DMA_NO_TRG,
 				       SPRD_DMA_FRAG_REQ, SPRD_DMA_TRANS_INT);
 		data->desc = chan->device->device_prep_slave_sg(chan, sg,
@@ -398,10 +392,7 @@ static snd_pcm_uframes_t sprd_pcm_pointer(struct snd_soc_component *component,
 			return 0;
 		}
 
-		/*
-		 * We just get current transfer address from the DMA engine, so
-		 * we need convert to current pointer.
-		 */
+		 
 		pointer[i] = state.residue - runtime->dma_addr -
 			i * dma_private->dma_addr_offset;
 

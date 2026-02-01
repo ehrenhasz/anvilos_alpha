@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sched/em_ipset.c	ipset ematch
- *
- * Copyright (c) 2012 Florian Westphal <fw@strlen.de>
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/module.h>
@@ -70,7 +66,7 @@ static int em_ipset_match(struct sk_buff *skb, struct tcf_ematch *em,
 		state.pf = NFPROTO_IPV6;
 		if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
 			return 0;
-		/* doesn't call ipv6_find_hdr() because ipset doesn't use thoff, yet */
+		 
 		acpar.thoff = sizeof(struct ipv6hdr);
 		break;
 	default:

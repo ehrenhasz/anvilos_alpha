@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Loongson PCI Host Controller Driver
- *
- * Copyright (C) 2020 Jiaxun Yang <jiaxun.yang@flygoat.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/of_pci.h>
@@ -14,7 +10,7 @@
 
 #include "../pci.h"
 
-/* Device IDs */
+ 
 #define DEV_LS2K_PCIE_PORT0	0x1a05
 #define DEV_LS7A_PCIE_PORT0	0x7a09
 #define DEV_LS7A_PCIE_PORT1	0x7a19
@@ -52,7 +48,7 @@ struct loongson_pci {
 	const struct loongson_pci_data *data;
 };
 
-/* Fixup wrong class code in PCIe bridges */
+ 
 static void bridge_class_quirk(struct pci_dev *dev)
 {
 	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
@@ -66,10 +62,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_LOONGSON,
 
 static void system_bus_quirk(struct pci_dev *pdev)
 {
-	/*
-	 * The address space consumed by these devices is outside the
-	 * resources of the host bridge.
-	 */
+	 
 	pdev->mmio_always_on = 1;
 	pdev->non_compliant_bars = 1;
 }
@@ -80,13 +73,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_LOONGSON,
 DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_LOONGSON,
 			DEV_LS7A_LPC, system_bus_quirk);
 
-/*
- * Some Loongson PCIe ports have hardware limitations on their Maximum Read
- * Request Size. They can't handle anything larger than this.  Sane
- * firmware will set proper MRRS at boot, so we only need no_inc_mrrs for
- * bridges. However, some MIPS Loongson firmware doesn't set MRRS properly,
- * so we have to enforce maximum safe MRRS, which is 256 bytes.
- */
+ 
 #ifdef CONFIG_MIPS
 static void loongson_set_min_mrrs_quirk(struct pci_dev *pdev)
 {
@@ -104,7 +91,7 @@ static void loongson_set_min_mrrs_quirk(struct pci_dev *pdev)
 		{ 0, },
 	};
 
-	/* look for the matching bridge */
+	 
 	while (!pci_is_root_bus(bus)) {
 		bridge = bus->self;
 		bus = bus->parent;
@@ -181,7 +168,7 @@ static void __iomem *cfg0_map(struct loongson_pci *priv, struct pci_bus *bus,
 	unsigned char busnum = bus->number;
 
 	if (!pci_is_root_bus(bus)) {
-		addroff |= BIT(24); /* Type 1 Access */
+		addroff |= BIT(24);  
 		addroff |= (busnum << 16);
 	}
 	addroff |= (devfn << 8) | where;
@@ -195,7 +182,7 @@ static void __iomem *cfg1_map(struct loongson_pci *priv, struct pci_bus *bus,
 	unsigned char busnum = bus->number;
 
 	if (!pci_is_root_bus(bus)) {
-		addroff |= BIT(28); /* Type 1 Access */
+		addroff |= BIT(28);  
 		addroff |= (busnum << 16);
 	}
 	addroff |= (devfn << 8) | (where & 0xff) | ((where & 0xf00) << 16);
@@ -216,26 +203,23 @@ static void __iomem *pci_loongson_map_bus(struct pci_bus *bus,
 	unsigned int function = PCI_FUNC(devfn);
 	struct loongson_pci *priv = pci_bus_to_loongson_pci(bus);
 
-	/*
-	 * Do not read more than one device on the bus other than
-	 * the host bus.
-	 */
+	 
 	if ((priv->data->flags & FLAG_DEV_FIX) && bus->self) {
 		if (!pci_is_root_bus(bus) && (device > 0))
 			return NULL;
 	}
 
-	/* Don't access non-existent devices */
+	 
 	if (priv->data->flags & FLAG_DEV_HIDDEN) {
 		if (!pdev_may_exist(bus, device, function))
 			return NULL;
 	}
 
-	/* CFG0 can only access standard space */
+	 
 	if (where < PCI_CFG_SPACE_SIZE && priv->cfg0_base)
 		return cfg0_map(priv, bus, devfn, where);
 
-	/* CFG1 can access extended space */
+	 
 	if (where < PCI_CFG_SPACE_EXP_SIZE && priv->cfg1_base)
 		return cfg1_map(priv, bus, devfn, where);
 
@@ -253,23 +237,23 @@ static int loongson_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	if (irq > 0)
 		return irq;
 
-	/* Care i8259 legacy systems */
+	 
 	pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &val);
-	/* i8259 only have 15 IRQs */
+	 
 	if (val > 15)
 		return 0;
 
 	return val;
 }
 
-/* LS2K/LS7A accept 8/16/32-bit PCI config operations */
+ 
 static struct pci_ops loongson_pci_ops = {
 	.map_bus = pci_loongson_map_bus,
 	.read	= pci_generic_config_read,
 	.write	= pci_generic_config_write,
 };
 
-/* RS780/SR5690 only accept 32-bit PCI config operations */
+ 
 static struct pci_ops loongson_pci_ops32 = {
 	.map_bus = pci_loongson_map_bus,
 	.read	= pci_generic_config_read32,

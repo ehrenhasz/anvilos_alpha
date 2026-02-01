@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021 NXP
- */
+
+ 
 #include "netlink.h"
 #include "common.h"
 

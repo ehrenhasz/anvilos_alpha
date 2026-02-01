@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 pureLiFi
- */
+ 
+ 
 
 #ifndef PLFXLC_MAC_H
 #define PLFXLC_MAC_H
@@ -71,7 +69,7 @@ enum {
 #define PURELIFI_MAC_MAX_ACK_WAITERS 50
 
 struct plfxlc_ctrlset {
-	/* id should be plf_usb_req_enum */
+	 
 	__be32		id;
 	__be32		len;
 	u8		modulation;
@@ -85,7 +83,7 @@ struct plfxlc_ctrlset {
 	__be32		payload_len_nw;
 } __packed;
 
-/* overlay */
+ 
 struct plfxlc_header {
 	struct plfxlc_ctrlset plf_ctrl;
 	u32    frametype;
@@ -126,7 +124,7 @@ struct plfxlc_mac {
 	struct ieee80211_rate rates[12];
 	struct ieee80211_supported_band band;
 	struct plfxlc_chip chip;
-	spinlock_t lock; /* lock for mac data */
+	spinlock_t lock;  
 	u8 intr_buffer[USB_MAX_EP_INT_BUFFER];
 	char serial_number[PURELIFI_SERIAL_LEN];
 	unsigned char hw_address[ETH_ALEN];
@@ -181,4 +179,4 @@ int plfxlc_op_start(struct ieee80211_hw *hw);
 void plfxlc_op_stop(struct ieee80211_hw *hw);
 int plfxlc_restore_settings(struct plfxlc_mac *mac);
 
-#endif /* PLFXLC_MAC_H */
+#endif  

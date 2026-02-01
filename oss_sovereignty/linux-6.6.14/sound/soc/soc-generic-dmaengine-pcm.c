@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-//  Copyright (C) 2013, Analog Devices Inc.
-//	Author: Lars-Peter Clausen <lars@metafoo.de>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -19,10 +19,7 @@ static unsigned int prealloc_buffer_size_kbytes = 512;
 module_param(prealloc_buffer_size_kbytes, uint, 0444);
 MODULE_PARM_DESC(prealloc_buffer_size_kbytes, "Preallocate DMA buffer size (KB).");
 
-/*
- * The platforms dmaengine driver does not support reporting the amount of
- * bytes that are still left to transfer.
- */
+ 
 #define SND_DMAENGINE_PCM_FLAG_NO_RESIDUE BIT(31)
 
 static struct device *dmaengine_dma_dev(struct dmaengine_pcm *pcm,
@@ -34,19 +31,7 @@ static struct device *dmaengine_dma_dev(struct dmaengine_pcm *pcm,
 	return pcm->chan[substream->stream]->device->dev;
 }
 
-/**
- * snd_dmaengine_pcm_prepare_slave_config() - Generic prepare_slave_config callback
- * @substream: PCM substream
- * @params: hw_params
- * @slave_config: DMA slave config to prepare
- *
- * This function can be used as a generic prepare_slave_config callback for
- * platforms which make use of the snd_dmaengine_dai_dma_data struct for their
- * DAI DMA data. Internally the function will first call
- * snd_hwparams_to_dma_slave_config to fill in the slave config based on the
- * hw_params, followed by snd_dmaengine_pcm_set_config_from_dai_data to fill in
- * the remaining fields based on the DAI DMA data.
- */
+ 
 int snd_dmaengine_pcm_prepare_slave_config(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params, struct dma_slave_config *slave_config)
 {
@@ -132,11 +117,7 @@ dmaengine_pcm_set_runtime_hwparams(struct snd_soc_component *component,
 	if (pcm->flags & SND_DMAENGINE_PCM_FLAG_NO_RESIDUE)
 		hw.info |= SNDRV_PCM_INFO_BATCH;
 
-	/**
-	 * FIXME: Remove the return value check to align with the code
-	 * before adding snd_dmaengine_pcm_refine_runtime_hwparams
-	 * function.
-	 */
+	 
 	snd_dmaengine_pcm_refine_runtime_hwparams(substream,
 						  dma_data,
 						  &hw,
@@ -358,12 +339,7 @@ static int dmaengine_pcm_request_chan_of(struct dmaengine_pcm *pcm,
 		return 0;
 
 	if (config->dma_dev) {
-		/*
-		 * If this warning is seen, it probably means that your Linux
-		 * device structure does not match your HW device structure.
-		 * It would be best to refactor the Linux device structure to
-		 * correctly match the HW structure.
-		 */
+		 
 		dev_warn(dev, "DMA channels sourced from device %s",
 			 dev_name(config->dma_dev));
 		dev = config->dma_dev;
@@ -378,11 +354,7 @@ static int dmaengine_pcm_request_chan_of(struct dmaengine_pcm *pcm,
 			name = config->chan_names[i];
 		chan = dma_request_chan(dev, name);
 		if (IS_ERR(chan)) {
-			/*
-			 * Only report probe deferral errors, channels
-			 * might not be present for devices that
-			 * support only TX or only RX.
-			 */
+			 
 			if (PTR_ERR(chan) == -EPROBE_DEFER)
 				return -EPROBE_DEFER;
 			pcm->chan[i] = NULL;
@@ -416,12 +388,7 @@ static const struct snd_dmaengine_pcm_config snd_dmaengine_pcm_default_config = 
 	.prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config,
 };
 
-/**
- * snd_dmaengine_pcm_register - Register a dmaengine based PCM device
- * @dev: The parent device for the PCM device
- * @config: Platform specific PCM configuration
- * @flags: Platform specific quirks
- */
+ 
 int snd_dmaengine_pcm_register(struct device *dev,
 	const struct snd_dmaengine_pcm_config *config, unsigned int flags)
 {
@@ -467,13 +434,7 @@ err_free_dma:
 }
 EXPORT_SYMBOL_GPL(snd_dmaengine_pcm_register);
 
-/**
- * snd_dmaengine_pcm_unregister - Removes a dmaengine based PCM device
- * @dev: Parent device the PCM was register with
- *
- * Removes a dmaengine based PCM device previously registered with
- * snd_dmaengine_pcm_register.
- */
+ 
 void snd_dmaengine_pcm_unregister(struct device *dev)
 {
 	struct snd_soc_component *component;

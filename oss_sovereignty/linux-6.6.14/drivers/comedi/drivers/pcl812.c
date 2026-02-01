@@ -1,113 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * comedi/drivers/pcl812.c
- *
- * Author: Michal Dobes <dobes@tesnet.cz>
- *
- * hardware driver for Advantech cards
- *  card:   PCL-812, PCL-812PG, PCL-813, PCL-813B
- *  driver: pcl812,  pcl812pg,  pcl813,  pcl813b
- * and for ADlink cards
- *  card:   ACL-8112DG, ACL-8112HG, ACL-8112PG, ACL-8113, ACL-8216
- *  driver: acl8112dg,  acl8112hg,  acl8112pg,  acl8113,  acl8216
- * and for ICP DAS cards
- *  card:   ISO-813, A-821PGH, A-821PGL, A-821PGL-NDA, A-822PGH, A-822PGL,
- *  driver: iso813,  a821pgh,  a-821pgl, a-821pglnda,  a822pgh,  a822pgl,
- *  card:   A-823PGH, A-823PGL, A-826PG
- * driver:  a823pgh,  a823pgl,  a826pg
- */
 
-/*
- * Driver: pcl812
- * Description: Advantech PCL-812/PG, PCL-813/B,
- *	     ADLink ACL-8112DG/HG/PG, ACL-8113, ACL-8216,
- *	     ICP DAS A-821PGH/PGL/PGL-NDA, A-822PGH/PGL, A-823PGH/PGL, A-826PG,
- *	     ICP DAS ISO-813
- * Author: Michal Dobes <dobes@tesnet.cz>
- * Devices: [Advantech] PCL-812 (pcl812), PCL-812PG (pcl812pg),
- *	PCL-813 (pcl813), PCL-813B (pcl813b), [ADLink] ACL-8112DG (acl8112dg),
- *	ACL-8112HG (acl8112hg), ACL-8113 (acl-8113), ACL-8216 (acl8216),
- *	[ICP] ISO-813 (iso813), A-821PGH (a821pgh), A-821PGL (a821pgl),
- *	A-821PGL-NDA (a821pclnda), A-822PGH (a822pgh), A-822PGL (a822pgl),
- *	A-823PGH (a823pgh), A-823PGL (a823pgl), A-826PG (a826pg)
- * Updated: Mon, 06 Aug 2007 12:03:15 +0100
- * Status: works (I hope. My board fire up under my hands
- *	       and I cann't test all features.)
- *
- * This driver supports insn and cmd interfaces. Some boards support only insn
- * because their hardware don't allow more (PCL-813/B, ACL-8113, ISO-813).
- * Data transfer over DMA is supported only when you measure only one
- * channel, this is too hardware limitation of these boards.
- *
- * Options for PCL-812:
- *   [0] - IO Base
- *   [1] - IRQ  (0=disable, 2, 3, 4, 5, 6, 7; 10, 11, 12, 14, 15)
- *   [2] - DMA  (0=disable, 1, 3)
- *   [3] - 0=trigger source is internal 8253 with 2MHz clock
- *         1=trigger source is external
- *   [4] - 0=A/D input range is +/-10V
- *	   1=A/D input range is +/-5V
- *	   2=A/D input range is +/-2.5V
- *	   3=A/D input range is +/-1.25V
- *	   4=A/D input range is +/-0.625V
- *	   5=A/D input range is +/-0.3125V
- *   [5] - 0=D/A outputs 0-5V  (internal reference -5V)
- *	   1=D/A outputs 0-10V (internal reference -10V)
- *	   2=D/A outputs unknown (external reference)
- *
- * Options for PCL-812PG, ACL-8112PG:
- *   [0] - IO Base
- *   [1] - IRQ  (0=disable, 2, 3, 4, 5, 6, 7; 10, 11, 12, 14, 15)
- *   [2] - DMA  (0=disable, 1, 3)
- *   [3] - 0=trigger source is internal 8253 with 2MHz clock
- *	   1=trigger source is external
- *   [4] - 0=A/D have max +/-5V input
- *	   1=A/D have max +/-10V input
- *   [5] - 0=D/A outputs 0-5V  (internal reference -5V)
- *	   1=D/A outputs 0-10V (internal reference -10V)
- *	   2=D/A outputs unknown (external reference)
- *
- * Options for ACL-8112DG/HG, A-822PGL/PGH, A-823PGL/PGH, ACL-8216, A-826PG:
- *   [0] - IO Base
- *   [1] - IRQ  (0=disable, 2, 3, 4, 5, 6, 7; 10, 11, 12, 14, 15)
- *   [2] - DMA  (0=disable, 1, 3)
- *   [3] - 0=trigger source is internal 8253 with 2MHz clock
- *	   1=trigger source is external
- *   [4] - 0=A/D channels are S.E.
- *	   1=A/D channels are DIFF
- *   [5] - 0=D/A outputs 0-5V  (internal reference -5V)
- *	   1=D/A outputs 0-10V (internal reference -10V)
- *	   2=D/A outputs unknown (external reference)
- *
- * Options for A-821PGL/PGH:
- *   [0] - IO Base
- *   [1] - IRQ  (0=disable, 2, 3, 4, 5, 6, 7)
- *   [2] - 0=A/D channels are S.E.
- *	   1=A/D channels are DIFF
- *   [3] - 0=D/A output 0-5V  (internal reference -5V)
- *	   1=D/A output 0-10V (internal reference -10V)
- *
- * Options for A-821PGL-NDA:
- *   [0] - IO Base
- *   [1] - IRQ  (0=disable, 2, 3, 4, 5, 6, 7)
- *   [2] - 0=A/D channels are S.E.
- *	   1=A/D channels are DIFF
- *
- * Options for PCL-813:
- *   [0] - IO Base
- *
- * Options for PCL-813B:
- *   [0] - IO Base
- *   [1] - 0= bipolar inputs
- *	   1= unipolar inputs
- *
- * Options for ACL-8113, ISO-813:
- *   [0] - IO Base
- *   [1] - 0= 10V bipolar inputs
- *	   1= 10V unipolar inputs
- *	   2= 20V bipolar inputs
- *	   3= 20V unipolar inputs
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -118,9 +12,7 @@
 #include <linux/comedi/comedi_8254.h>
 #include <linux/comedi/comedi_isadma.h>
 
-/*
- * Register I/O map
- */
+ 
 #define PCL812_TIMER_BASE			0x00
 #define PCL812_AI_LSB_REG			0x04
 #define PCL812_AI_MSB_REG			0x05
@@ -146,7 +38,7 @@
 #define PCL812_DO_LSB_REG			0x0d
 #define PCL812_DO_MSB_REG			0x0e
 
-#define MAX_CHANLIST_LEN    256	/* length of scan list */
+#define MAX_CHANLIST_LEN    256	 
 
 static const struct comedi_lrange range_pcl812pg_ai = {
 	5, {
@@ -317,15 +209,15 @@ static const struct comedi_lrange range_a821pgh_ai = {
 };
 
 enum pcl812_boardtype {
-	BOARD_PCL812PG	= 0,	/* and ACL-8112PG */
+	BOARD_PCL812PG	= 0,	 
 	BOARD_PCL813B	= 1,
 	BOARD_PCL812	= 2,
 	BOARD_PCL813	= 3,
 	BOARD_ISO813	= 5,
 	BOARD_ACL8113	= 6,
-	BOARD_ACL8112	= 7,	/* ACL-8112DG/HG, A-822PGL/PGH, A-823PGL/PGH */
-	BOARD_ACL8216	= 8,	/* and ICP DAS A-826PG */
-	BOARD_A821	= 9,	/* PGH, PGL, PGL/NDA versions */
+	BOARD_ACL8112	= 7,	 
+	BOARD_ACL8216	= 8,	 
+	BOARD_A821	= 9,	 
 };
 
 struct pcl812_board {
@@ -376,7 +268,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "acl8112dg",
 		.board_type	= BOARD_ACL8112,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112dg_ai,
@@ -387,7 +279,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "acl8112hg",
 		.board_type	= BOARD_ACL8112,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112hg_ai,
@@ -398,7 +290,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a821pgl",
 		.board_type	= BOARD_A821,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 1,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl813b_ai,
@@ -407,14 +299,14 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a821pglnda",
 		.board_type	= BOARD_A821,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl813b_ai,
 		.irq_bits	= 0x000c,
 	}, {
 		.name		= "a821pgh",
 		.board_type	= BOARD_A821,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 1,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_a821pgh_ai,
@@ -423,7 +315,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a822pgl",
 		.board_type	= BOARD_ACL8112,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112dg_ai,
@@ -433,7 +325,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a822pgh",
 		.board_type	= BOARD_ACL8112,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_acl8112hg_ai,
@@ -443,7 +335,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a823pgl",
 		.board_type	= BOARD_ACL8112,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 8000,
 		.rangelist_ai	= &range_acl8112dg_ai,
@@ -453,7 +345,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a823pgh",
 		.board_type	= BOARD_ACL8112,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 8000,
 		.rangelist_ai	= &range_acl8112hg_ai,
@@ -483,7 +375,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "acl8216",
 		.board_type	= BOARD_ACL8216,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl813b2_ai,
@@ -495,7 +387,7 @@ static const struct pcl812_board boardtypes[] = {
 	}, {
 		.name		= "a826pg",
 		.board_type	= BOARD_ACL8216,
-		.n_aichan	= 16,	/* 8 differential */
+		.n_aichan	= 16,	 
 		.n_aochan	= 2,
 		.ai_ns_min	= 10000,
 		.rangelist_ai	= &range_pcl813b2_ai,
@@ -508,11 +400,11 @@ static const struct pcl812_board boardtypes[] = {
 
 struct pcl812_private {
 	struct comedi_isadma *dma;
-	unsigned char range_correction;	/* =1 we must add 1 to range number */
+	unsigned char range_correction;	 
 	unsigned int last_ai_chanspec;
-	unsigned char mode_reg_int; /* stored INT number for some cards */
-	unsigned int ai_poll_ptr; /* how many samples transfer poll */
-	unsigned int max_812_ai_mode0_rangewait; /* settling time for gain */
+	unsigned char mode_reg_int;  
+	unsigned int ai_poll_ptr;  
+	unsigned int max_812_ai_mode0_rangewait;  
 	unsigned int use_diff:1;
 	unsigned int use_mpc508:1;
 	unsigned int use_ext_trg:1;
@@ -533,14 +425,11 @@ static void pcl812_ai_setup_dma(struct comedi_device *dev,
 
 	comedi_isadma_disable(dma->chan);
 
-	/* if using EOS, adapt DMA buffer to one scan */
+	 
 	bytes = devpriv->ai_eos ? comedi_bytes_per_scan(s) : desc->maxsize;
 	max_samples = comedi_bytes_to_samples(s, bytes);
 
-	/*
-	 * Determine dma size based on the buffer size plus the number of
-	 * unread samples and the number of samples remaining in the command.
-	 */
+	 
 	nsamples = comedi_nsamples_left(s, max_samples + unread_samples);
 	if (nsamples > unread_samples) {
 		nsamples -= unread_samples;
@@ -577,22 +466,19 @@ static void pcl812_ai_set_chan_range(struct comedi_device *dev,
 	outb(range + devpriv->range_correction, dev->iobase + PCL812_RANGE_REG);
 
 	if (wait)
-		/*
-		 * XXX this depends on selected range and can be very long for
-		 * some high gain ranges!
-		 */
+		 
 		udelay(devpriv->max_812_ai_mode0_rangewait);
 }
 
 static void pcl812_ai_clear_eoc(struct comedi_device *dev)
 {
-	/* writing any value clears the interrupt request */
+	 
 	outb(0, dev->iobase + PCL812_STATUS_REG);
 }
 
 static void pcl812_ai_soft_trig(struct comedi_device *dev)
 {
-	/* writing any value triggers a software conversion */
+	 
 	outb(255, dev->iobase + PCL812_SOFTTRIG_REG);
 }
 
@@ -634,7 +520,7 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int flags;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_FOLLOW);
@@ -651,16 +537,16 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -668,7 +554,7 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 	if (cmd->convert_src == TRIG_TIMER) {
 		err |= comedi_check_trigger_arg_min(&cmd->convert_arg,
 						    board->ai_ns_min);
-	} else {	/* TRIG_EXT */
+	} else {	 
 		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, 0);
 	}
 
@@ -678,13 +564,13 @@ static int pcl812_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	if (cmd->convert_src == TRIG_TIMER) {
 		unsigned int arg = cmd->convert_arg;
@@ -709,11 +595,11 @@ static int pcl812_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 
 	pcl812_ai_set_chan_range(dev, cmd->chanlist[0], 1);
 
-	if (dma) {	/*  check if we can use DMA transfer */
+	if (dma) {	 
 		devpriv->ai_dma = 1;
 		for (i = 1; i < cmd->chanlist_len; i++)
 			if (cmd->chanlist[0] != cmd->chanlist[i]) {
-				/*  we cann't use DMA :-( */
+				 
 				devpriv->ai_dma = 0;
 				break;
 			}
@@ -723,17 +609,17 @@ static int pcl812_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 
 	devpriv->ai_poll_ptr = 0;
 
-	/*  don't we want wake up every scan? */
+	 
 	if (cmd->flags & CMDF_WAKE_EOS) {
 		devpriv->ai_eos = 1;
 
-		/*  DMA is useless for this situation */
+		 
 		if (cmd->chanlist_len == 1)
 			devpriv->ai_dma = 0;
 	}
 
 	if (devpriv->ai_dma) {
-		/* setup and enable dma for the first buffer */
+		 
 		dma->cur_dma = 0;
 		pcl812_ai_setup_dma(dev, s, 0);
 	}
@@ -785,7 +671,7 @@ static void pcl812_handle_eoc(struct comedi_device *dev,
 	val = pcl812_ai_get_sample(dev, s);
 	comedi_buf_write_samples(s, &val, 1);
 
-	/* Set up next channel. Added by abbotti 2010-01-20, but untested. */
+	 
 	next_chan = s->async->cur_chan;
 	if (cmd->chanlist[chan] != cmd->chanlist[next_chan])
 		pcl812_ai_set_chan_range(dev, cmd->chanlist[next_chan], 0);
@@ -824,7 +710,7 @@ static void pcl812_handle_dma(struct comedi_device *dev,
 	bufptr = devpriv->ai_poll_ptr;
 	devpriv->ai_poll_ptr = 0;
 
-	/* restart dma with the next buffer */
+	 
 	dma->cur_dma = 1 - dma->cur_dma;
 	pcl812_ai_setup_dma(dev, s, nsamples);
 
@@ -862,7 +748,7 @@ static int pcl812_ai_poll(struct comedi_device *dev, struct comedi_subdevice *s)
 	unsigned int poll;
 	int ret;
 
-	/* poll is valid only for DMA transfer */
+	 
 	if (!devpriv->ai_dma)
 		return 0;
 
@@ -875,12 +761,12 @@ static int pcl812_ai_poll(struct comedi_device *dev, struct comedi_subdevice *s)
 		transfer_from_dma_buf(dev, s, desc->virt_addr,
 				      devpriv->ai_poll_ptr,
 				      poll - devpriv->ai_poll_ptr);
-		/* new buffer position */
+		 
 		devpriv->ai_poll_ptr = poll;
 
 		ret = comedi_buf_n_bytes_ready(s);
 	} else {
-		/* no new samples */
+		 
 		ret = 0;
 	}
 
@@ -986,25 +872,22 @@ static void pcl812_reset(struct comedi_device *dev)
 	struct pcl812_private *devpriv = dev->private;
 	unsigned int chan;
 
-	/* disable analog input trigger */
+	 
 	outb(devpriv->mode_reg_int | PCL812_CTRL_DISABLE_TRIG,
 	     dev->iobase + PCL812_CTRL_REG);
 	pcl812_ai_clear_eoc(dev);
 
-	/*
-	 * Invalidate last_ai_chanspec then set analog input to
-	 * known channel/range.
-	 */
+	 
 	devpriv->last_ai_chanspec = CR_PACK(16, 0, 0);
 	pcl812_ai_set_chan_range(dev, CR_PACK(0, 0, 0), 0);
 
-	/* set analog output channels to 0V */
+	 
 	for (chan = 0; chan < board->n_aochan; chan++) {
 		outb(0, dev->iobase + PCL812_AO_LSB_REG(chan));
 		outb(0, dev->iobase + PCL812_AO_MSB_REG(chan));
 	}
 
-	/* set all digital outputs low */
+	 
 	if (board->has_dio) {
 		outb(0, dev->iobase + PCL812_DO_MSB_REG);
 		outb(0, dev->iobase + PCL812_DO_LSB_REG);
@@ -1108,11 +991,11 @@ static void pcl812_alloc_dma(struct comedi_device *dev, unsigned int dma_chan)
 {
 	struct pcl812_private *devpriv = dev->private;
 
-	/* only DMA channels 3 and 1 are valid */
+	 
 	if (!(dma_chan == 3 || dma_chan == 1))
 		return;
 
-	/* DMA uses two 8K buffers */
+	 
 	devpriv->dma = comedi_isadma_alloc(dev, 2, dma_chan, dma_chan,
 					   PAGE_SIZE * 2, COMEDI_ISADMA_READ);
 }
@@ -1157,11 +1040,11 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		}
 	}
 
-	/* we need an IRQ to do DMA on channel 3 or 1 */
+	 
 	if (dev->irq && board->has_dma)
 		pcl812_alloc_dma(dev, it->options[2]);
 
-	/* differential analog inputs? */
+	 
 	switch (board->board_type) {
 	case BOARD_A821:
 		if (it->options[2] == 1)
@@ -1176,7 +1059,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		break;
 	}
 
-	n_subdevices = 1;		/* all boardtypes have analog inputs */
+	n_subdevices = 1;		 
 	if (board->n_aochan > 0)
 		n_subdevices++;
 	if (board->has_dio)
@@ -1188,7 +1071,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	subdev = 0;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[subdev];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE;
@@ -1219,7 +1102,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	subdev++;
 
-	/* analog output */
+	 
 	if (board->n_aochan > 0) {
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_AO;
@@ -1263,7 +1146,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	}
 
 	if (board->has_dio) {
-		/* Digital Input subdevice */
+		 
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_DI;
 		s->subdev_flags	= SDF_READABLE;
@@ -1273,7 +1156,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->insn_bits	= pcl812_di_insn_bits;
 		subdev++;
 
-		/* Digital Output subdevice */
+		 
 		s = &dev->subdevices[subdev];
 		s->type		= COMEDI_SUBD_DO;
 		s->subdev_flags	= SDF_WRITABLE;
@@ -1291,7 +1174,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	case BOARD_ACL8112:
 		devpriv->max_812_ai_mode0_rangewait = 1;
 		if (it->options[3] > 0)
-						/*  we use external trigger */
+						 
 			devpriv->use_ext_trg = 1;
 		break;
 	case BOARD_A821:
@@ -1302,7 +1185,7 @@ static int pcl812_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	case BOARD_PCL813:
 	case BOARD_ISO813:
 	case BOARD_ACL8113:
-		/* maybe there must by greatest timeout */
+		 
 		devpriv->max_812_ai_mode0_rangewait = 5;
 		break;
 	}

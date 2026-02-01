@@ -1,36 +1,7 @@
-// * this is for making emacs happy: -*-Mode: C++;-*-
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2011,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
 
-/****************************************************************************
- *   Author: Juergen Pfeifer, 1997                                          *
- ****************************************************************************/
+ 
+
+ 
 
 #include "internal.h"
 #include "cursesm.h"
@@ -63,11 +34,7 @@ NCursesMenuCallbackItem::action()
     return FALSE;
 }
 
-/* Internal hook functions. They will route the hook
- * calls to virtual methods of the NCursesMenu class,
- * so in C++ providing a hook is done simply by
- * implementing a virtual method in a derived class
- */
+ 
 void
 _nc_xx_mnu_init(MENU *m)
 {
@@ -94,9 +61,7 @@ _nc_xx_itm_term(MENU *m)
   M->On_Item_Termination (*(M->current_item ()));
 }
 
-/* Construct an ITEM* array from an array of NCursesMenuItem
- * objects.
- */
+ 
 ITEM**
 NCursesMenu::mapItems(NCursesMenuItem* nitems[])
 {
@@ -199,7 +164,7 @@ NCursesMenu::~NCursesMenu() THROWS(NCursesException)
     }
 
     ::free_menu(menu);
-    // It's essential to do this after free_menu()
+    
     delete[] itms;
   }
 }
@@ -232,7 +197,7 @@ NCursesMenu::set_pattern (const char *pat)
   return TRUE;
 }
 
-// call the menu driver and do basic error checking.
+
 int
 NCursesMenu::driver (int c)
 {
@@ -252,28 +217,28 @@ NCursesMenu::driver (int c)
 
 static const int CMD_QUIT   = MAX_COMMAND + 1;
 static const int CMD_ACTION = MAX_COMMAND + 2;
-//
-// -------------------------------------------------------------------------
-// Provide a default key virtualization. Translate the keyboard
-// code c into a menu request code.
-// The default implementation provides a hopefully straightforward
-// mapping for the most common keystrokes and menu requests.
-// -------------------------------------------------------------------------
+
+
+
+
+
+
+
 int
 NCursesMenu::virtualize(int c)
 {
   switch(c) {
-  case CTRL('X')     : return(CMD_QUIT);              // eXit
+  case CTRL('X')     : return(CMD_QUIT);              
 
   case KEY_DOWN      : return(REQ_DOWN_ITEM);
-  case CTRL('N')     : return(REQ_NEXT_ITEM);         // Next
+  case CTRL('N')     : return(REQ_NEXT_ITEM);         
   case KEY_UP        : return(REQ_UP_ITEM);
-  case CTRL('P')     : return(REQ_PREV_ITEM);         // Previous
+  case CTRL('P')     : return(REQ_PREV_ITEM);         
 
-  case CTRL('U')     : return(REQ_SCR_ULINE);         // Up
-  case CTRL('D')     : return(REQ_SCR_DLINE);         // Down
-  case CTRL('F')     : return(REQ_SCR_DPAGE);         // Forward
-  case CTRL('B')     : return(REQ_SCR_UPAGE);         // Backward
+  case CTRL('U')     : return(REQ_SCR_ULINE);         
+  case CTRL('D')     : return(REQ_SCR_DLINE);         
+  case CTRL('F')     : return(REQ_SCR_DPAGE);         
+  case CTRL('B')     : return(REQ_SCR_UPAGE);         
 
   case CTRL('Y')     : return(REQ_CLEAR_PATTERN);
   case CTRL('H')     : return(REQ_BACK_PATTERN);

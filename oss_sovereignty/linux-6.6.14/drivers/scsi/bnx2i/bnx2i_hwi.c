@@ -1,18 +1,4 @@
-/* bnx2i_hwi.c: QLogic NetXtreme II iSCSI driver.
- *
- * Copyright (c) 2006 - 2013 Broadcom Corporation
- * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
- * Copyright (c) 2007, 2008 Mike Christie
- * Copyright (c) 2014, QLogic Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
- * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
- * Maintained by: QLogic-Storage-Upstream@qlogic.com
- */
+ 
 
 #include <linux/gfp.h>
 #include <scsi/scsi_tcq.h>
@@ -21,12 +7,7 @@
 
 DECLARE_PER_CPU(struct bnx2i_percpu_s, bnx2i_percpu);
 
-/**
- * bnx2i_get_cid_num - get cid from ep
- * @ep: 	endpoint pointer
- *
- * Only applicable to 57710 family of devices
- */
+ 
 static u32 bnx2i_get_cid_num(struct bnx2i_endpoint *ep)
 {
 	u32 cid;
@@ -39,12 +20,7 @@ static u32 bnx2i_get_cid_num(struct bnx2i_endpoint *ep)
 }
 
 
-/**
- * bnx2i_adjust_qp_size - Adjust SQ/RQ/CQ size for 57710 device type
- * @hba: 		Adapter for which adjustments is to be made
- *
- * Only applicable to 57710 family of devices
- */
+ 
 static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 {
 	u32 num_elements_per_pg;
@@ -59,10 +35,8 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 			hba->max_rqes = rounddown_pow_of_two(hba->max_rqes);
 	}
 
-	/* Adjust each queue size if the user selection does not
-	 * yield integral num of page buffers
-	 */
-	/* adjust SQ */
+	 
+	 
 	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
 	if (hba->max_sqes < num_elements_per_pg)
 		hba->max_sqes = num_elements_per_pg;
@@ -70,7 +44,7 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 		hba->max_sqes = (hba->max_sqes + num_elements_per_pg - 1) &
 				 ~(num_elements_per_pg - 1);
 
-	/* adjust CQ */
+	 
 	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_CQE_SIZE;
 	if (hba->max_cqes < num_elements_per_pg)
 		hba->max_cqes = num_elements_per_pg;
@@ -78,7 +52,7 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 		hba->max_cqes = (hba->max_cqes + num_elements_per_pg - 1) &
 				 ~(num_elements_per_pg - 1);
 
-	/* adjust RQ */
+	 
 	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_RQ_WQE_SIZE;
 	if (hba->max_rqes < num_elements_per_pg)
 		hba->max_rqes = num_elements_per_pg;
@@ -88,12 +62,7 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 }
 
 
-/**
- * bnx2i_get_link_state - get network interface link state
- * @hba:	adapter instance pointer
- *
- * updates adapter structure flag based on netdev state
- */
+ 
 static void bnx2i_get_link_state(struct bnx2i_hba *hba)
 {
 	if (test_bit(__LINK_STATE_NOCARRIER, &hba->netdev->state))
@@ -103,22 +72,15 @@ static void bnx2i_get_link_state(struct bnx2i_hba *hba)
 }
 
 
-/**
- * bnx2i_iscsi_license_error - displays iscsi license related error message
- * @hba:		adapter instance pointer
- * @error_code:		error classification
- *
- * Puts out an error log when driver is unable to offload iscsi connection
- *	due to license restrictions
- */
+ 
 static void bnx2i_iscsi_license_error(struct bnx2i_hba *hba, u32 error_code)
 {
 	if (error_code == ISCSI_KCQE_COMPLETION_STATUS_ISCSI_NOT_SUPPORTED)
-		/* iSCSI offload not supported on this device */
+		 
 		printk(KERN_ERR "bnx2i: iSCSI not supported, dev=%s\n",
 				hba->netdev->name);
 	if (error_code == ISCSI_KCQE_COMPLETION_STATUS_LOM_ISCSI_NOT_ENABLED)
-		/* iSCSI offload not supported on this LOM device */
+		 
 		printk(KERN_ERR "bnx2i: LOM is not enable to "
 				"offload iSCSI connections, dev=%s\n",
 				hba->netdev->name);
@@ -126,15 +88,7 @@ static void bnx2i_iscsi_license_error(struct bnx2i_hba *hba, u32 error_code)
 }
 
 
-/**
- * bnx2i_arm_cq_event_coalescing - arms CQ to enable EQ notification
- * @ep:		endpoint (transport identifier) structure
- * @action:	action, ARM or DISARM. For now only ARM_CQE is used
- *
- * Arm'ing CQ will enable chip to generate global EQ events inorder to interrupt
- *	the driver. EQ event is generated CQ index is hit or at least 1 CQ is
- *	outstanding and on chip timer expires
- */
+ 
 int bnx2i_arm_cq_event_coalescing(struct bnx2i_endpoint *ep, u8 action)
 {
 	struct bnx2i_5771x_cq_db *cq_db;
@@ -142,14 +96,11 @@ int bnx2i_arm_cq_event_coalescing(struct bnx2i_endpoint *ep, u8 action)
 	u16 next_index = 0;
 	u32 num_active_cmds;
 
-	/* Coalesce CQ entries only on 10G devices */
+	 
 	if (!test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type))
 		return 0;
 
-	/* Do not update CQ DB multiple times before firmware writes
-	 * '0xFFFF' to CQDB->SQN field. Deviation may cause spurious
-	 * interrupts and other unwanted results
-	 */
+	 
 	cq_db = (struct bnx2i_5771x_cq_db *) ep->qp.cq_pgtbl_virt;
 
 	if (action != CNIC_ARM_CQE_FP)
@@ -179,17 +130,7 @@ int bnx2i_arm_cq_event_coalescing(struct bnx2i_endpoint *ep, u8 action)
 }
 
 
-/**
- * bnx2i_get_rq_buf - copy RQ buffer contents to driver buffer
- * @bnx2i_conn:		iscsi connection on which RQ event occurred
- * @ptr:		driver buffer to which RQ buffer contents is to
- *			be copied
- * @len:		length of valid data inside RQ buf
- *
- * Copies RQ buffer contents from shared (DMA'able) memory region to
- *	driver buffer. RQ is used to DMA unsolicitated iscsi pdu's and
- *	scsi sense info
- */
+ 
 void bnx2i_get_rq_buf(struct bnx2i_conn *bnx2i_conn, char *ptr, int len)
 {
 	if (!bnx2i_conn->ep->qp.rqe_left)
@@ -216,18 +157,12 @@ static void bnx2i_ring_577xx_doorbell(struct bnx2i_conn *conn)
 	dbell.dbell.header = (B577XX_ISCSI_CONNECTION_TYPE <<
 			      B577XX_DOORBELL_HDR_CONN_TYPE_SHIFT);
 	msg = *((u32 *)&dbell);
-	/* TODO : get doorbell register mapping */
+	 
 	writel(cpu_to_le32(msg), conn->ep->qp.ctx_base);
 }
 
 
-/**
- * bnx2i_put_rq_buf - Replenish RQ buffer, if required ring on chip doorbell
- * @bnx2i_conn:	iscsi connection on which event to post
- * @count:	number of RQ buffer being posted to chip
- *
- * No need to ring hardware doorbell for 57710 family of devices
- */
+ 
 void bnx2i_put_rq_buf(struct bnx2i_conn *bnx2i_conn, int count)
 {
 	struct bnx2i_5771x_sq_rq_db *rq_db;
@@ -248,7 +183,7 @@ void bnx2i_put_rq_buf(struct bnx2i_conn *bnx2i_conn, int count)
 	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type)) {
 		rq_db = (struct bnx2i_5771x_sq_rq_db *) ep->qp.rq_pgtbl_virt;
 		rq_db->prod_idx = ep->qp.rq_prod_idx;
-		/* no need to ring hardware doorbell for 57710 */
+		 
 	} else {
 		writew(ep->qp.rq_prod_idx,
 		       ep->qp.ctx_base + CNIC_RECV_DOORBELL);
@@ -256,22 +191,14 @@ void bnx2i_put_rq_buf(struct bnx2i_conn *bnx2i_conn, int count)
 }
 
 
-/**
- * bnx2i_ring_sq_dbell - Ring SQ doorbell to wake-up the processing engine
- * @bnx2i_conn:		iscsi connection to which new SQ entries belong
- * @count: 		number of SQ WQEs to post
- *
- * SQ DB is updated in host memory and TX Doorbell is rung for 57710 family
- *	of devices. For 5706/5708/5709 new SQ WQE count is written into the
- *	doorbell register
- */
+ 
 static void bnx2i_ring_sq_dbell(struct bnx2i_conn *bnx2i_conn, int count)
 {
 	struct bnx2i_5771x_sq_rq_db *sq_db;
 	struct bnx2i_endpoint *ep = bnx2i_conn->ep;
 
 	atomic_inc(&ep->num_active_cmds);
-	wmb();	/* flush SQ WQE memory before the doorbell is rung */
+	wmb();	 
 	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type)) {
 		sq_db = (struct bnx2i_5771x_sq_rq_db *) ep->qp.sq_pgtbl_virt;
 		sq_db->prod_idx = ep->qp.sq_prod_idx;
@@ -281,13 +208,7 @@ static void bnx2i_ring_sq_dbell(struct bnx2i_conn *bnx2i_conn, int count)
 }
 
 
-/**
- * bnx2i_ring_dbell_update_sq_params - update SQ driver parameters
- * @bnx2i_conn:	iscsi connection to which new SQ entries belong
- * @count:	number of SQ WQEs to post
- *
- * this routine will update SQ driver parameters and ring the doorbell
- */
+ 
 static void bnx2i_ring_dbell_update_sq_params(struct bnx2i_conn *bnx2i_conn,
 					      int count)
 {
@@ -313,19 +234,12 @@ static void bnx2i_ring_dbell_update_sq_params(struct bnx2i_conn *bnx2i_conn,
 		}
 	}
 	bnx2i_conn->ep->qp.sq_prod_idx += count;
-	/* Ring the doorbell */
+	 
 	bnx2i_ring_sq_dbell(bnx2i_conn, bnx2i_conn->ep->qp.sq_prod_idx);
 }
 
 
-/**
- * bnx2i_send_iscsi_login - post iSCSI login request MP WQE to hardware
- * @bnx2i_conn:	iscsi connection
- * @task: transport layer's command structure pointer which is requesting
- *	  a WQE to sent to chip for further processing
- *
- * prepare and post an iSCSI Login request WQE to CNIC firmware
- */
+ 
 int bnx2i_send_iscsi_login(struct bnx2i_conn *bnx2i_conn,
 			   struct iscsi_task *task)
 {
@@ -365,20 +279,13 @@ int bnx2i_send_iscsi_login(struct bnx2i_conn *bnx2i_conn,
 	login_wqe->bd_list_addr_hi =
 		(u32) ((u64) bnx2i_conn->gen_pdu.req_bd_dma >> 32);
 	login_wqe->num_bds = 1;
-	login_wqe->cq_index = 0; /* CQ# used for completion, 5771x only */
+	login_wqe->cq_index = 0;  
 
 	bnx2i_ring_dbell_update_sq_params(bnx2i_conn, 1);
 	return 0;
 }
 
-/**
- * bnx2i_send_iscsi_tmf - post iSCSI task management request MP WQE to hardware
- * @bnx2i_conn:	iscsi connection
- * @mtask:	driver command structure which is requesting
- *		a WQE to sent to chip for further processing
- *
- * prepare and post an iSCSI Login request WQE to CNIC firmware
- */
+ 
 int bnx2i_send_iscsi_tmf(struct bnx2i_conn *bnx2i_conn,
 			 struct iscsi_task *mtask)
 {
@@ -406,14 +313,7 @@ int bnx2i_send_iscsi_tmf(struct bnx2i_conn *bnx2i_conn,
 	case ISCSI_TM_FUNC_TASK_REASSIGN:
 		ctask = iscsi_itt_to_task(conn, tmfabort_hdr->rtt);
 		if (!ctask || !ctask->sc)
-			/*
-			 * the iscsi layer must have completed the cmd while
-			 * was starting up.
-			 *
-			 * Note: In the case of a SCSI cmd timeout, the task's
-			 *       sc is still active; hence ctask->sc != 0
-			 *       In this case, the task must be aborted
-			 */
+			 
 			return 0;
 
 		ref_sc = ctask->sc;
@@ -439,20 +339,13 @@ int bnx2i_send_iscsi_tmf(struct bnx2i_conn *bnx2i_conn,
 	tmfabort_wqe->bd_list_addr_hi = (u32)
 				((u64) bnx2i_conn->hba->mp_bd_dma >> 32);
 	tmfabort_wqe->num_bds = 1;
-	tmfabort_wqe->cq_index = 0; /* CQ# used for completion, 5771x only */
+	tmfabort_wqe->cq_index = 0;  
 
 	bnx2i_ring_dbell_update_sq_params(bnx2i_conn, 1);
 	return 0;
 }
 
-/**
- * bnx2i_send_iscsi_text - post iSCSI text WQE to hardware
- * @bnx2i_conn:	iscsi connection
- * @mtask:	driver command structure which is requesting
- *		a WQE to sent to chip for further processing
- *
- * prepare and post an iSCSI Text request WQE to CNIC firmware
- */
+ 
 int bnx2i_send_iscsi_text(struct bnx2i_conn *bnx2i_conn,
 			  struct iscsi_task *mtask)
 {
@@ -486,21 +379,14 @@ int bnx2i_send_iscsi_text(struct bnx2i_conn *bnx2i_conn,
 	text_wqe->bd_list_addr_hi =
 			(u32) ((u64) bnx2i_conn->gen_pdu.req_bd_dma >> 32);
 	text_wqe->num_bds = 1;
-	text_wqe->cq_index = 0; /* CQ# used for completion, 5771x only */
+	text_wqe->cq_index = 0;  
 
 	bnx2i_ring_dbell_update_sq_params(bnx2i_conn, 1);
 	return 0;
 }
 
 
-/**
- * bnx2i_send_iscsi_scsicmd - post iSCSI scsicmd request WQE to hardware
- * @bnx2i_conn:	iscsi connection
- * @cmd:	driver command structure which is requesting
- *		a WQE to sent to chip for further processing
- *
- * prepare and post an iSCSI SCSI-CMD request WQE to CNIC firmware
- */
+ 
 int bnx2i_send_iscsi_scsicmd(struct bnx2i_conn *bnx2i_conn,
 			     struct bnx2i_cmd *cmd)
 {
@@ -509,24 +395,13 @@ int bnx2i_send_iscsi_scsicmd(struct bnx2i_conn *bnx2i_conn,
 	scsi_cmd_wqe = (struct bnx2i_cmd_request *)
 						bnx2i_conn->ep->qp.sq_prod_qe;
 	memcpy(scsi_cmd_wqe, &cmd->req, sizeof(struct bnx2i_cmd_request));
-	scsi_cmd_wqe->cq_index = 0; /* CQ# used for completion, 5771x only */
+	scsi_cmd_wqe->cq_index = 0;  
 
 	bnx2i_ring_dbell_update_sq_params(bnx2i_conn, 1);
 	return 0;
 }
 
-/**
- * bnx2i_send_iscsi_nopout - post iSCSI NOPOUT request WQE to hardware
- * @bnx2i_conn:		iscsi connection
- * @task:		transport layer's command structure pointer which is
- *                      requesting a WQE to sent to chip for further processing
- * @datap:		payload buffer pointer
- * @data_len:		payload data length
- * @unsol:		indicated whether nopout pdu is unsolicited pdu or
- *			in response to target's NOPIN w/ TTT != FFFFFFFF
- *
- * prepare and post a nopout request WQE to CNIC firmware
- */
+ 
 int bnx2i_send_iscsi_nopout(struct bnx2i_conn *bnx2i_conn,
 			    struct iscsi_task *task,
 			    char *datap, int data_len, int unsol)
@@ -544,7 +419,7 @@ int bnx2i_send_iscsi_nopout(struct bnx2i_conn *bnx2i_conn,
 	nopout_wqe->op_attr = ISCSI_FLAG_CMD_FINAL;
 	memcpy(nopout_wqe->lun, &nopout_hdr->lun, 8);
 
-	/* 57710 requires LUN field to be swapped */
+	 
 	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type))
 		swap(nopout_wqe->lun[0], nopout_wqe->lun[1]);
 
@@ -561,7 +436,7 @@ int bnx2i_send_iscsi_nopout(struct bnx2i_conn *bnx2i_conn,
 	nopout_wqe->cmd_sn = be32_to_cpu(nopout_hdr->cmdsn);
 	nopout_wqe->data_length = data_len;
 	if (data_len) {
-		/* handle payload data, not required in first release */
+		 
 		printk(KERN_ALERT "NOPOUT: WARNING!! payload len != 0\n");
 	} else {
 		nopout_wqe->bd_list_addr_lo = (u32)
@@ -570,21 +445,14 @@ int bnx2i_send_iscsi_nopout(struct bnx2i_conn *bnx2i_conn,
 			(u32) ((u64) bnx2i_conn->hba->mp_bd_dma >> 32);
 		nopout_wqe->num_bds = 1;
 	}
-	nopout_wqe->cq_index = 0; /* CQ# used for completion, 5771x only */
+	nopout_wqe->cq_index = 0;  
 
 	bnx2i_ring_dbell_update_sq_params(bnx2i_conn, 1);
 	return 0;
 }
 
 
-/**
- * bnx2i_send_iscsi_logout - post iSCSI logout request WQE to hardware
- * @bnx2i_conn:	iscsi connection
- * @task:	transport layer's command structure pointer which is
- *		requesting a WQE to sent to chip for further processing
- *
- * prepare and post logout request WQE to CNIC firmware
- */
+ 
 int bnx2i_send_iscsi_logout(struct bnx2i_conn *bnx2i_conn,
 			    struct iscsi_task *task)
 {
@@ -611,7 +479,7 @@ int bnx2i_send_iscsi_logout(struct bnx2i_conn *bnx2i_conn,
 	logout_wqe->bd_list_addr_hi = (u32)
 				((u64) bnx2i_conn->hba->mp_bd_dma >> 32);
 	logout_wqe->num_bds = 1;
-	logout_wqe->cq_index = 0; /* CQ# used for completion, 5771x only */
+	logout_wqe->cq_index = 0;  
 
 	bnx2i_conn->ep->state = EP_STATE_LOGOUT_SENT;
 
@@ -620,12 +488,7 @@ int bnx2i_send_iscsi_logout(struct bnx2i_conn *bnx2i_conn,
 }
 
 
-/**
- * bnx2i_update_iscsi_conn - post iSCSI logout request WQE to hardware
- * @conn:	iscsi connection which requires iscsi parameter update
- *
- * sends down iSCSI Conn Update request to move iSCSI conn to FFP
- */
+ 
 void bnx2i_update_iscsi_conn(struct iscsi_conn *conn)
 {
 	struct bnx2i_conn *bnx2i_conn = conn->dd_data;
@@ -640,7 +503,7 @@ void bnx2i_update_iscsi_conn(struct iscsi_conn *conn)
 	update_wqe->hdr.flags =
 		(ISCSI_KWQE_LAYER_CODE << ISCSI_KWQE_HEADER_LAYER_CODE_SHIFT);
 
-	/* 5771x requires conn context id to be passed as is */
+	 
 	if (test_bit(BNX2I_NX2_DEV_57710, &bnx2i_conn->ep->hba->cnic_dev_type))
 		update_wqe->context_id = bnx2i_conn->ep->ep_cid;
 	else
@@ -676,13 +539,7 @@ void bnx2i_update_iscsi_conn(struct iscsi_conn *conn)
 }
 
 
-/**
- * bnx2i_ep_ofld_timer - post iSCSI logout request WQE to hardware
- * @t:	timer context used to fetch the endpoint (transport
- *	handle) structure pointer
- *
- * routine to handle connection offload/destroy request timeout
- */
+ 
 void bnx2i_ep_ofld_timer(struct timer_list *t)
 {
 	struct bnx2i_endpoint *ep = from_timer(ep, t, ofld_timer);
@@ -716,14 +573,7 @@ static int bnx2i_power_of2(u32 val)
 }
 
 
-/**
- * bnx2i_send_cmd_cleanup_req - send iscsi cmd context clean-up request
- * @hba:	adapter structure pointer
- * @cmd:	driver command structure which is requesting
- *		a WQE to sent to chip for further processing
- *
- * prepares and posts CONN_OFLD_REQ1/2 KWQE
- */
+ 
 void bnx2i_send_cmd_cleanup_req(struct bnx2i_hba *hba, struct bnx2i_cmd *cmd)
 {
 	struct bnx2i_cleanup_request *cmd_cleanup;
@@ -734,20 +584,13 @@ void bnx2i_send_cmd_cleanup_req(struct bnx2i_hba *hba, struct bnx2i_cmd *cmd)
 
 	cmd_cleanup->op_code = ISCSI_OPCODE_CLEANUP_REQUEST;
 	cmd_cleanup->itt = cmd->req.itt;
-	cmd_cleanup->cq_index = 0; /* CQ# used for completion, 5771x only */
+	cmd_cleanup->cq_index = 0;  
 
 	bnx2i_ring_dbell_update_sq_params(cmd->conn, 1);
 }
 
 
-/**
- * bnx2i_send_conn_destroy - initiates iscsi connection teardown process
- * @hba:	adapter structure pointer
- * @ep:		endpoint (transport identifier) structure
- *
- * this routine prepares and posts CONN_OFLD_REQ1/2 KWQE to initiate
- * 	iscsi connection context clean-up process
- */
+ 
 int bnx2i_send_conn_destroy(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 {
 	struct kwqe *kwqe_arr[2];
@@ -759,7 +602,7 @@ int bnx2i_send_conn_destroy(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	conn_cleanup.hdr.op_code = ISCSI_KWQE_OPCODE_DESTROY_CONN;
 	conn_cleanup.hdr.flags =
 		(ISCSI_KWQE_LAYER_CODE << ISCSI_KWQE_HEADER_LAYER_CODE_SHIFT);
-	/* 5771x requires conn context id to be passed as is */
+	 
 	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type))
 		conn_cleanup.context_id = ep->ep_cid;
 	else
@@ -775,13 +618,7 @@ int bnx2i_send_conn_destroy(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 }
 
 
-/**
- * bnx2i_570x_send_conn_ofld_req - initiates iscsi conn context setup process
- * @hba: 		adapter structure pointer
- * @ep: 		endpoint (transport identifier) structure
- *
- * 5706/5708/5709 specific - prepares and posts CONN_OFLD_REQ1/2 KWQE
- */
+ 
 static int bnx2i_570x_send_conn_ofld_req(struct bnx2i_hba *hba,
 					 struct bnx2i_endpoint *ep)
 {
@@ -835,13 +672,7 @@ static int bnx2i_570x_send_conn_ofld_req(struct bnx2i_hba *hba,
 }
 
 
-/**
- * bnx2i_5771x_send_conn_ofld_req - initiates iscsi connection context creation
- * @hba: 		adapter structure pointer
- * @ep: 		endpoint (transport identifier) structure
- *
- * 57710 specific - prepares and posts CONN_OFLD_REQ1/2 KWQE
- */
+ 
 static int bnx2i_5771x_send_conn_ofld_req(struct bnx2i_hba *hba,
 					  struct bnx2i_endpoint *ep)
 {
@@ -894,7 +725,7 @@ static int bnx2i_5771x_send_conn_ofld_req(struct bnx2i_hba *hba,
 	ofld_req3[0].qp_first_pte[0].lo = *ptbl;
 
 	kwqe_arr[2] = (struct kwqe *) ofld_req3;
-	/* need if we decide to go with multiple KCQE's per conn */
+	 
 	num_kwqes += 1;
 
 	if (hba->cnic && hba->cnic->submit_kwqes)
@@ -903,14 +734,7 @@ static int bnx2i_5771x_send_conn_ofld_req(struct bnx2i_hba *hba,
 	return rc;
 }
 
-/**
- * bnx2i_send_conn_ofld_req - initiates iscsi connection context setup process
- *
- * @hba: 		adapter structure pointer
- * @ep: 		endpoint (transport identifier) structure
- *
- * this routine prepares and posts CONN_OFLD_REQ1/2 KWQE
- */
+ 
 int bnx2i_send_conn_ofld_req(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 {
 	int rc;
@@ -924,14 +748,7 @@ int bnx2i_send_conn_ofld_req(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 }
 
 
-/**
- * setup_qp_page_tables - iscsi QP page table setup function
- * @ep:		endpoint (transport identifier) structure
- *
- * Sets up page tables for SQ/RQ/CQ, 1G/sec (5706/5708/5709) devices requires
- * 	64-bit address in big endian format. Whereas 10G/sec (57710) requires
- * 	PT in little endian format
- */
+ 
 static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 {
 	int num_pages;
@@ -944,7 +761,7 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 	else
 		cnic_dev_10g = 0;
 
-	/* SQ page table */
+	 
 	memset(ep->qp.sq_pgtbl_virt, 0, ep->qp.sq_pgtbl_size);
 	num_pages = ep->qp.sq_mem_size / CNIC_PAGE_SIZE;
 	page = ep->qp.sq_phys;
@@ -955,15 +772,14 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 		ptbl = (u32 *) ep->qp.sq_pgtbl_virt;
 	while (num_pages--) {
 		if (cnic_dev_10g) {
-			/* PTE is written in little endian format for 57710 */
+			 
 			*ptbl = (u32) page;
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
 			page += CNIC_PAGE_SIZE;
 		} else {
-			/* PTE is written in big endian format for
-			 * 5706/5708/5709 devices */
+			 
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
 			*ptbl = (u32) page;
@@ -972,7 +788,7 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 		}
 	}
 
-	/* RQ page table */
+	 
 	memset(ep->qp.rq_pgtbl_virt, 0, ep->qp.rq_pgtbl_size);
 	num_pages = ep->qp.rq_mem_size / CNIC_PAGE_SIZE;
 	page = ep->qp.rq_phys;
@@ -983,15 +799,14 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 		ptbl = (u32 *) ep->qp.rq_pgtbl_virt;
 	while (num_pages--) {
 		if (cnic_dev_10g) {
-			/* PTE is written in little endian format for 57710 */
+			 
 			*ptbl = (u32) page;
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
 			page += CNIC_PAGE_SIZE;
 		} else {
-			/* PTE is written in big endian format for
-			 * 5706/5708/5709 devices */
+			 
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
 			*ptbl = (u32) page;
@@ -1000,7 +815,7 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 		}
 	}
 
-	/* CQ page table */
+	 
 	memset(ep->qp.cq_pgtbl_virt, 0, ep->qp.cq_pgtbl_size);
 	num_pages = ep->qp.cq_mem_size / CNIC_PAGE_SIZE;
 	page = ep->qp.cq_phys;
@@ -1011,15 +826,14 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 		ptbl = (u32 *) ep->qp.cq_pgtbl_virt;
 	while (num_pages--) {
 		if (cnic_dev_10g) {
-			/* PTE is written in little endian format for 57710 */
+			 
 			*ptbl = (u32) page;
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
 			page += CNIC_PAGE_SIZE;
 		} else {
-			/* PTE is written in big endian format for
-			 * 5706/5708/5709 devices */
+			 
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
 			*ptbl = (u32) page;
@@ -1030,16 +844,7 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 }
 
 
-/**
- * bnx2i_alloc_qp_resc - allocates required resources for QP.
- * @hba:	adapter structure pointer
- * @ep:		endpoint (transport identifier) structure
- *
- * Allocate QP (transport layer for iSCSI connection) resources, DMA'able
- *	memory for SQ/RQ/CQ and page tables. EP structure elements such
- *	as producer/consumer indexes/pointers, queue sizes and page table
- *	contents are setup
- */
+ 
 int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 {
 	struct bnx2i_5771x_cq_db *cq_db;
@@ -1048,7 +853,7 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	ep->conn = NULL;
 	ep->ep_cid = ep->ep_iscsi_cid = ep->ep_pg_cid = 0;
 
-	/* Allocate page table memory for SQ which is page aligned */
+	 
 	ep->qp.sq_mem_size = hba->max_sqes * BNX2I_SQ_WQE_SIZE;
 	ep->qp.sq_mem_size =
 		(ep->qp.sq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
@@ -1066,7 +871,7 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 		goto mem_alloc_err;
 	}
 
-	/* Allocate memory area for actual SQ element */
+	 
 	ep->qp.sq_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.sq_mem_size,
 				   &ep->qp.sq_phys, GFP_KERNEL);
@@ -1084,7 +889,7 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	ep->qp.sq_cons_idx = 0;
 	ep->qp.sqe_left = hba->max_sqes;
 
-	/* Allocate page table memory for CQ which is page aligned */
+	 
 	ep->qp.cq_mem_size = hba->max_cqes * BNX2I_CQE_SIZE;
 	ep->qp.cq_mem_size =
 		(ep->qp.cq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
@@ -1102,7 +907,7 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 		goto mem_alloc_err;
 	}
 
-	/* Allocate memory area for actual CQ element */
+	 
 	ep->qp.cq_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.cq_mem_size,
 				   &ep->qp.cq_phys, GFP_KERNEL);
@@ -1122,11 +927,11 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	ep->qp.cqe_exp_seq_sn = ISCSI_INITIAL_SN;
 	ep->qp.cqe_size = hba->max_cqes;
 
-	/* Invalidate all EQ CQE index, req only for 57710 */
+	 
 	cq_db = (struct bnx2i_5771x_cq_db *) ep->qp.cq_pgtbl_virt;
 	memset(cq_db->sqn, 0xFF, sizeof(cq_db->sqn[0]) * BNX2X_MAX_CQS);
 
-	/* Allocate page table memory for RQ which is page aligned */
+	 
 	ep->qp.rq_mem_size = hba->max_rqes * BNX2I_RQ_WQE_SIZE;
 	ep->qp.rq_mem_size =
 		(ep->qp.rq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
@@ -1144,7 +949,7 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 		goto mem_alloc_err;
 	}
 
-	/* Allocate memory area for actual RQ element */
+	 
 	ep->qp.rq_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.rq_mem_size,
 				   &ep->qp.rq_phys, GFP_KERNEL);
@@ -1173,20 +978,14 @@ mem_alloc_err:
 
 
 
-/**
- * bnx2i_free_qp_resc - free memory resources held by QP
- * @hba:	adapter structure pointer
- * @ep:	endpoint (transport identifier) structure
- *
- * Free QP resources - SQ/RQ/CQ memory and page tables.
- */
+ 
 void bnx2i_free_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 {
 	if (ep->qp.ctx_base) {
 		iounmap(ep->qp.ctx_base);
 		ep->qp.ctx_base = NULL;
 	}
-	/* Free SQ mem */
+	 
 	if (ep->qp.sq_pgtbl_virt) {
 		dma_free_coherent(&hba->pcidev->dev, ep->qp.sq_pgtbl_size,
 				  ep->qp.sq_pgtbl_virt, ep->qp.sq_pgtbl_phys);
@@ -1200,7 +999,7 @@ void bnx2i_free_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 		ep->qp.sq_phys = 0;
 	}
 
-	/* Free RQ mem */
+	 
 	if (ep->qp.rq_pgtbl_virt) {
 		dma_free_coherent(&hba->pcidev->dev, ep->qp.rq_pgtbl_size,
 				  ep->qp.rq_pgtbl_virt, ep->qp.rq_pgtbl_phys);
@@ -1214,7 +1013,7 @@ void bnx2i_free_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 		ep->qp.rq_phys = 0;
 	}
 
-	/* Free CQ mem */
+	 
 	if (ep->qp.cq_pgtbl_virt) {
 		dma_free_coherent(&hba->pcidev->dev, ep->qp.cq_pgtbl_size,
 				  ep->qp.cq_pgtbl_virt, ep->qp.cq_pgtbl_phys);
@@ -1230,17 +1029,7 @@ void bnx2i_free_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 }
 
 
-/**
- * bnx2i_send_fw_iscsi_init_msg - initiates initial handshake with iscsi f/w
- * @hba:	adapter structure pointer
- *
- * Send down iscsi_init KWQEs which initiates the initial handshake with the f/w
- * 	This results in iSCSi support validation and on-chip context manager
- * 	initialization.  Firmware completes this handshake with a CQE carrying
- * 	the result of iscsi support validation. Parameter carried by
- * 	iscsi init request determines the number of offloaded connection and
- * 	tolerance level for iscsi protocol violation this hba/chip can support
- */
+ 
 int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 {
 	struct kwqe *kwqe_arr[3];
@@ -1292,13 +1081,13 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 	iscsi_init2.max_cq_sqn = hba->max_cqes * 2 + 1;
 	mask64 = 0x0ULL;
 	mask64 |= (
-		/* CISCO MDS */
+		 
 		(1UL <<
 		  ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_TTT_NOT_RSRV) |
-		/* HP MSA1510i */
+		 
 		(1UL <<
 		  ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_EXP_DATASN) |
-		/* EMC */
+		 
 		(1ULL << ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_LUN));
 	if (error_mask1) {
 		iscsi_init2.error_bit_map[0] = error_mask1;
@@ -1325,14 +1114,7 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 }
 
 
-/**
- * bnx2i_process_scsi_cmd_resp - this function handles scsi cmd completion.
- * @session:	iscsi session
- * @bnx2i_conn:	bnx2i connection
- * @cqe:	pointer to newly DMA'ed CQE entry for processing
- *
- * process SCSI CMD Response CQE & complete the request to SCSI-ML
- */
+ 
 int bnx2i_process_scsi_cmd_resp(struct iscsi_session *session,
 				struct bnx2i_conn *bnx2i_conn,
 				struct cqe *cqe)
@@ -1422,14 +1204,7 @@ fail:
 }
 
 
-/**
- * bnx2i_process_login_resp - this function handles iscsi login response
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process Login Response CQE & complete it to open-iscsi user daemon
- */
+ 
 static int bnx2i_process_login_resp(struct iscsi_session *session,
 				    struct bnx2i_conn *bnx2i_conn,
 				    struct cqe *cqe)
@@ -1490,14 +1265,7 @@ done:
 }
 
 
-/**
- * bnx2i_process_text_resp - this function handles iscsi text response
- * @session:	iscsi session pointer
- * @bnx2i_conn:	iscsi connection pointer
- * @cqe:	pointer to newly DMA'ed CQE entry for processing
- *
- * process iSCSI Text Response CQE&  complete it to open-iscsi user daemon
- */
+ 
 static int bnx2i_process_text_resp(struct iscsi_session *session,
 				   struct bnx2i_conn *bnx2i_conn,
 				   struct cqe *cqe)
@@ -1551,14 +1319,7 @@ done:
 }
 
 
-/**
- * bnx2i_process_tmf_resp - this function handles iscsi TMF response
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process iSCSI TMF Response CQE and wake up the driver eh thread.
- */
+ 
 static int bnx2i_process_tmf_resp(struct iscsi_session *session,
 				  struct bnx2i_conn *bnx2i_conn,
 				  struct cqe *cqe)
@@ -1589,15 +1350,7 @@ done:
 	return 0;
 }
 
-/**
- * bnx2i_process_logout_resp - this function handles iscsi logout response
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process iSCSI Logout Response CQE & make function call to
- * notify the user daemon.
- */
+ 
 static int bnx2i_process_logout_resp(struct iscsi_session *session,
 				     struct bnx2i_conn *bnx2i_conn,
 				     struct cqe *cqe)
@@ -1636,14 +1389,7 @@ done:
 	return 0;
 }
 
-/**
- * bnx2i_process_nopin_local_cmpl - this function handles iscsi nopin CQE
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process iSCSI NOPIN local completion CQE, frees IIT and command structures
- */
+ 
 static void bnx2i_process_nopin_local_cmpl(struct iscsi_session *session,
 					   struct bnx2i_conn *bnx2i_conn,
 					   struct cqe *cqe)
@@ -1661,14 +1407,7 @@ static void bnx2i_process_nopin_local_cmpl(struct iscsi_session *session,
 	spin_unlock(&session->back_lock);
 }
 
-/**
- * bnx2i_unsol_pdu_adjust_rq - makes adjustments to RQ after unsol pdu is recvd
- * @bnx2i_conn:	iscsi connection
- *
- * Firmware advances RQ producer index for every unsolicited PDU even if
- *	payload data length is '0'. This function makes corresponding
- *	adjustments on the driver side to match this f/w behavior
- */
+ 
 static void bnx2i_unsol_pdu_adjust_rq(struct bnx2i_conn *bnx2i_conn)
 {
 	char dummy_rq_data[2];
@@ -1677,14 +1416,7 @@ static void bnx2i_unsol_pdu_adjust_rq(struct bnx2i_conn *bnx2i_conn)
 }
 
 
-/**
- * bnx2i_process_nopin_mesg - this function handles iscsi nopin CQE
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process iSCSI target's proactive iSCSI NOPIN request
- */
+ 
 static int bnx2i_process_nopin_mesg(struct iscsi_session *session,
 				     struct bnx2i_conn *bnx2i_conn,
 				     struct cqe *cqe)
@@ -1712,7 +1444,7 @@ static int bnx2i_process_nopin_mesg(struct iscsi_session *session,
 		goto done;
 	}
 
-	/* this is a response to one of our nop-outs */
+	 
 	task = iscsi_itt_to_task(conn,
 			 (itt_t) (nop_in->itt & ISCSI_NOP_IN_MSG_INDEX));
 	if (task) {
@@ -1729,14 +1461,7 @@ done:
 }
 
 
-/**
- * bnx2i_process_async_mesg - this function handles iscsi async message
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process iSCSI ASYNC Message
- */
+ 
 static void bnx2i_process_async_mesg(struct iscsi_session *session,
 				     struct bnx2i_conn *bnx2i_conn,
 				     struct cqe *cqe)
@@ -1779,14 +1504,7 @@ static void bnx2i_process_async_mesg(struct iscsi_session *session,
 }
 
 
-/**
- * bnx2i_process_reject_mesg - process iscsi reject pdu
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process iSCSI REJECT message
- */
+ 
 static void bnx2i_process_reject_mesg(struct iscsi_session *session,
 				      struct bnx2i_conn *bnx2i_conn,
 				      struct cqe *cqe)
@@ -1816,14 +1534,7 @@ static void bnx2i_process_reject_mesg(struct iscsi_session *session,
 	spin_unlock(&session->back_lock);
 }
 
-/**
- * bnx2i_process_cmd_cleanup_resp - process scsi command clean-up completion
- * @session:		iscsi session pointer
- * @bnx2i_conn:		iscsi connection pointer
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * process command cleanup response CQE during conn shutdown or error recovery
- */
+ 
 static void bnx2i_process_cmd_cleanup_resp(struct iscsi_session *session,
 					   struct bnx2i_conn *bnx2i_conn,
 					   struct cqe *cqe)
@@ -1844,11 +1555,7 @@ static void bnx2i_process_cmd_cleanup_resp(struct iscsi_session *session,
 }
 
 
-/**
- * bnx2i_percpu_io_thread - thread per cpu for ios
- *
- * @arg:	ptr to bnx2i_percpu_info structure
- */
+ 
 int bnx2i_percpu_io_thread(void *arg)
 {
 	struct bnx2i_percpu_s *p = arg;
@@ -1865,7 +1572,7 @@ int bnx2i_percpu_io_thread(void *arg)
 
 			list_for_each_entry_safe(work, tmp, &work_list, list) {
 				list_del_init(&work->list);
-				/* work allocated in the bh, freed here */
+				 
 				bnx2i_process_scsi_cmd_resp(work->session,
 							    work->bnx2i_conn,
 							    &work->cqe);
@@ -1884,19 +1591,7 @@ int bnx2i_percpu_io_thread(void *arg)
 }
 
 
-/**
- * bnx2i_queue_scsi_cmd_resp - queue cmd completion to the percpu thread
- * @session:		iscsi session
- * @bnx2i_conn:		bnx2i connection
- * @cqe:		pointer to newly DMA'ed CQE entry for processing
- *
- * this function is called by generic KCQ handler to queue all pending cmd
- * completion CQEs
- *
- * The implementation is to queue the cmd response based on the
- * last recorded command for the given connection.  The
- * cpu_id gets recorded upon task_xmit.  No out-of-order completion!
- */
+ 
 static int bnx2i_queue_scsi_cmd_resp(struct iscsi_session *session,
 				     struct bnx2i_conn *bnx2i_conn,
 				     struct bnx2i_nop_in_msg *cqe)
@@ -1924,7 +1619,7 @@ static int bnx2i_queue_scsi_cmd_resp(struct iscsi_session *session,
 		rc = -EINVAL;
 		goto err;
 	}
-	/* Alloc and copy to the cqe */
+	 
 	bnx2i_work = kzalloc(sizeof(struct bnx2i_work), GFP_ATOMIC);
 	if (bnx2i_work) {
 		INIT_LIST_HEAD(&bnx2i_work->list);
@@ -1946,12 +1641,7 @@ done:
 }
 
 
-/**
- * bnx2i_process_new_cqes - process newly DMA'ed CQE's
- * @bnx2i_conn:		bnx2i connection
- *
- * this function is called by generic KCQ handler to process all pending CQE's
- */
+ 
 static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 {
 	struct iscsi_conn *conn = bnx2i_conn->cls_conn->dd_data;
@@ -1994,8 +1684,7 @@ static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 		switch (nopin->op_code) {
 		case ISCSI_OP_SCSI_CMD_RSP:
 		case ISCSI_OP_SCSI_DATA_IN:
-			/* Run the kthread engine only for data cmds
-			   All other cmds will be completed in this bh! */
+			 
 			bnx2i_queue_scsi_cmd_resp(session, bnx2i_conn, nopin);
 			goto done;
 		case ISCSI_OP_LOGIN_RSP:
@@ -2054,10 +1743,7 @@ done:
 				atomic_dec(&bnx2i_conn->ep->num_active_cmds);
 		}
 cqe_out:
-		/* clear out in production version only, till beta keep opcode
-		 * field intact, will be helpful in debugging (context dump)
-		 * nopin->op_code = 0;
-		 */
+		 
 		cqe_cnt++;
 		qp->cqe_exp_seq_sn++;
 		if (qp->cqe_exp_seq_sn == (qp->cqe_size * 2 + 1))
@@ -2075,14 +1761,7 @@ out:
 	return cqe_cnt;
 }
 
-/**
- * bnx2i_fastpath_notification - process global event queue (KCQ)
- * @hba:		adapter structure pointer
- * @new_cqe_kcqe:	pointer to newly DMA'ed KCQE entry
- *
- * Fast path event notification handler, KCQ entry carries context id
- *	of the connection that has 1 or more pending CQ entries
- */
+ 
 static void bnx2i_fastpath_notification(struct bnx2i_hba *hba,
 					struct iscsi_kcqe *new_cqe_kcqe)
 {
@@ -2110,13 +1789,7 @@ static void bnx2i_fastpath_notification(struct bnx2i_hba *hba,
 }
 
 
-/**
- * bnx2i_process_update_conn_cmpl - process iscsi conn update completion KCQE
- * @hba:		adapter structure pointer
- * @update_kcqe:	kcqe pointer
- *
- * CONN_UPDATE completion handler, this completes iSCSI connection FFP migration
- */
+ 
 static void bnx2i_process_update_conn_cmpl(struct bnx2i_hba *hba,
 					   struct iscsi_kcqe *update_kcqe)
 {
@@ -2145,13 +1818,7 @@ static void bnx2i_process_update_conn_cmpl(struct bnx2i_hba *hba,
 }
 
 
-/**
- * bnx2i_recovery_que_add_conn - add connection to recovery queue
- * @hba:		adapter structure pointer
- * @bnx2i_conn:		iscsi connection
- *
- * Add connection to recovery queue and schedule adapter eh worker
- */
+ 
 static void bnx2i_recovery_que_add_conn(struct bnx2i_hba *hba,
 					struct bnx2i_conn *bnx2i_conn)
 {
@@ -2160,14 +1827,7 @@ static void bnx2i_recovery_que_add_conn(struct bnx2i_hba *hba,
 }
 
 
-/**
- * bnx2i_process_tcp_error - process error notification on a given connection
- *
- * @hba: 		adapter structure pointer
- * @tcp_err: 		tcp error kcqe pointer
- *
- * handles tcp level error notifications from FW.
- */
+ 
 static void bnx2i_process_tcp_error(struct bnx2i_hba *hba,
 				    struct iscsi_kcqe *tcp_err)
 {
@@ -2188,19 +1848,7 @@ static void bnx2i_process_tcp_error(struct bnx2i_hba *hba,
 }
 
 
-/**
- * bnx2i_process_iscsi_error - process error notification on a given connection
- * @hba:		adapter structure pointer
- * @iscsi_err:		iscsi error kcqe pointer
- *
- * handles iscsi error notifications from the FW. Firmware based in initial
- *	handshake classifies iscsi protocol / TCP rfc violation into either
- *	warning or error indications. If indication is of "Error" type, driver
- *	will initiate session recovery for that connection/session. For
- *	"Warning" type indication, driver will put out a system log message
- *	(there will be only one message for each type for the life of the
- *	session, this is to avoid un-necessarily overloading the system)
- */
+ 
 static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 				      struct iscsi_kcqe *iscsi_err)
 {
@@ -2378,13 +2026,7 @@ static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 }
 
 
-/**
- * bnx2i_process_conn_destroy_cmpl - process iscsi conn destroy completion
- * @hba:		adapter structure pointer
- * @conn_destroy:	conn destroy kcqe pointer
- *
- * handles connection destroy completion request.
- */
+ 
 static void bnx2i_process_conn_destroy_cmpl(struct bnx2i_hba *hba,
 					    struct iscsi_kcqe *conn_destroy)
 {
@@ -2411,14 +2053,7 @@ static void bnx2i_process_conn_destroy_cmpl(struct bnx2i_hba *hba,
 }
 
 
-/**
- * bnx2i_process_ofld_cmpl - process initial iscsi conn offload completion
- * @hba:		adapter structure pointer
- * @ofld_kcqe:		conn offload kcqe pointer
- *
- * handles initial connection offload completion, ep_connect() thread is
- *	woken-up to continue with LLP connect process
- */
+ 
 static void bnx2i_process_ofld_cmpl(struct bnx2i_hba *hba,
 				    struct iscsi_kcqe *ofld_kcqe)
 {
@@ -2449,7 +2084,7 @@ static void bnx2i_process_ofld_cmpl(struct bnx2i_hba *hba,
 				"opcode\n", hba->netdev->name);
 		else if (ofld_kcqe->completion_status ==
 			 ISCSI_KCQE_COMPLETION_STATUS_CID_BUSY)
-			/* error status code valid only for 5771x chipset */
+			 
 			ep->state = EP_STATE_OFLD_FAILED_CID_BUSY;
 		else
 			printk(KERN_ALERT "bnx2i (%s): ofld1 cmpl - invalid "
@@ -2464,14 +2099,7 @@ static void bnx2i_process_ofld_cmpl(struct bnx2i_hba *hba,
 	wake_up_interruptible(&ep->ofld_wait);
 }
 
-/**
- * bnx2i_indicate_kcqe - process iscsi conn update completion KCQE
- * @context:		adapter structure pointer
- * @kcqe:		kcqe pointer
- * @num_cqe:		number of kcqes to process
- *
- * Generic KCQ event handler/dispatcher
- */
+ 
 static void bnx2i_indicate_kcqe(void *context, struct kcqe *kcqe[],
 				u32 num_cqe)
 {
@@ -2518,21 +2146,13 @@ static void bnx2i_indicate_kcqe(void *context, struct kcqe *kcqe[],
 }
 
 
-/**
- * bnx2i_indicate_netevent - Generic netdev event handler
- * @context:	adapter structure pointer
- * @event:	event type
- * @vlan_id:	vlans id - associated vlan id with this event
- *
- * Handles four netdev events, NETDEV_UP, NETDEV_DOWN,
- *	NETDEV_GOING_DOWN and NETDEV_CHANGE
- */
+ 
 static void bnx2i_indicate_netevent(void *context, unsigned long event,
 				    u16 vlan_id)
 {
 	struct bnx2i_hba *hba = context;
 
-	/* Ignore all netevent coming from vlans */
+	 
 	if (vlan_id != 0)
 		return;
 
@@ -2559,13 +2179,7 @@ static void bnx2i_indicate_netevent(void *context, unsigned long event,
 }
 
 
-/**
- * bnx2i_cm_connect_cmpl - process iscsi conn establishment completion
- * @cm_sk: 		cnic sock structure pointer
- *
- * function callback exported via bnx2i - cnic driver interface to
- *	indicate completion of option-2 TCP connect request.
- */
+ 
 static void bnx2i_cm_connect_cmpl(struct cnic_sock *cm_sk)
 {
 	struct bnx2i_endpoint *ep = (struct bnx2i_endpoint *) cm_sk->context;
@@ -2581,13 +2195,7 @@ static void bnx2i_cm_connect_cmpl(struct cnic_sock *cm_sk)
 }
 
 
-/**
- * bnx2i_cm_close_cmpl - process tcp conn close completion
- * @cm_sk:	cnic sock structure pointer
- *
- * function callback exported via bnx2i - cnic driver interface to
- *	indicate completion of option-2 graceful TCP connect shutdown
- */
+ 
 static void bnx2i_cm_close_cmpl(struct cnic_sock *cm_sk)
 {
 	struct bnx2i_endpoint *ep = (struct bnx2i_endpoint *) cm_sk->context;
@@ -2597,13 +2205,7 @@ static void bnx2i_cm_close_cmpl(struct cnic_sock *cm_sk)
 }
 
 
-/**
- * bnx2i_cm_abort_cmpl - process abortive tcp conn teardown completion
- * @cm_sk:	cnic sock structure pointer
- *
- * function callback exported via bnx2i - cnic driver interface to
- *	indicate completion of option-2 abortive TCP connect termination
- */
+ 
 static void bnx2i_cm_abort_cmpl(struct cnic_sock *cm_sk)
 {
 	struct bnx2i_endpoint *ep = (struct bnx2i_endpoint *) cm_sk->context;
@@ -2613,13 +2215,7 @@ static void bnx2i_cm_abort_cmpl(struct cnic_sock *cm_sk)
 }
 
 
-/**
- * bnx2i_cm_remote_close - process received TCP FIN
- * @cm_sk:	cnic sock structure pointer
- *
- * function callback exported via bnx2i - cnic driver interface to indicate
- *	async TCP events such as FIN
- */
+ 
 static void bnx2i_cm_remote_close(struct cnic_sock *cm_sk)
 {
 	struct bnx2i_endpoint *ep = (struct bnx2i_endpoint *) cm_sk->context;
@@ -2629,13 +2225,7 @@ static void bnx2i_cm_remote_close(struct cnic_sock *cm_sk)
 		bnx2i_recovery_que_add_conn(ep->hba, ep->conn);
 }
 
-/**
- * bnx2i_cm_remote_abort - process TCP RST and start conn cleanup
- * @cm_sk:	cnic sock structure pointer
- *
- * function callback exported via bnx2i - cnic driver interface to
- *	indicate async TCP events (RST) sent by the peer.
- */
+ 
 static void bnx2i_cm_remote_abort(struct cnic_sock *cm_sk)
 {
 	struct bnx2i_endpoint *ep = (struct bnx2i_endpoint *) cm_sk->context;
@@ -2668,10 +2258,7 @@ static int bnx2i_send_nl_mesg(void *context, u32 msg_type,
 }
 
 
-/*
- * bnx2i_cnic_cb - global template of bnx2i - cnic driver interface structure
- *			carrying callback function pointers
- */
+ 
 struct cnic_ulp_ops bnx2i_cnic_cb = {
 	.cnic_init = bnx2i_ulp_init,
 	.cnic_exit = bnx2i_ulp_exit,
@@ -2690,14 +2277,7 @@ struct cnic_ulp_ops bnx2i_cnic_cb = {
 };
 
 
-/**
- * bnx2i_map_ep_dbell_regs - map connection doorbell registers
- * @ep: bnx2i endpoint
- *
- * maps connection's SQ and RQ doorbell registers, 5706/5708/5709 hosts these
- *	register in BAR #0. Whereas in 57710 these register are accessed by
- *	mapping BAR #1
- */
+ 
 int bnx2i_map_ep_dbell_regs(struct bnx2i_endpoint *ep)
 {
 	u32 cid_num;
@@ -2731,7 +2311,7 @@ int bnx2i_map_ep_dbell_regs(struct bnx2i_endpoint *ep)
 		else
 			reg_off = CTX_OFFSET + (MB_KERNEL_CTX_SIZE * cid_num);
 	} else
-		/* 5709 device in normal node and 5706/5708 devices */
+		 
 		reg_off = CTX_OFFSET + (MB_KERNEL_CTX_SIZE * cid_num);
 
 	ep->qp.ctx_base = ioremap(ep->hba->reg_base + reg_off,

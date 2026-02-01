@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* AFS tracepoints
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM afs
 
@@ -12,9 +8,7 @@
 
 #include <linux/tracepoint.h>
 
-/*
- * Define enums for tracing information.
- */
+ 
 #ifndef __AFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
 #define __AFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
 
@@ -110,95 +104,95 @@ enum afs_cell_trace {
 };
 
 enum afs_fs_operation {
-	afs_FS_FetchData		= 130,	/* AFS Fetch file data */
-	afs_FS_FetchACL			= 131,	/* AFS Fetch file ACL */
-	afs_FS_FetchStatus		= 132,	/* AFS Fetch file status */
-	afs_FS_StoreData		= 133,	/* AFS Store file data */
-	afs_FS_StoreACL			= 134,	/* AFS Store file ACL */
-	afs_FS_StoreStatus		= 135,	/* AFS Store file status */
-	afs_FS_RemoveFile		= 136,	/* AFS Remove a file */
-	afs_FS_CreateFile		= 137,	/* AFS Create a file */
-	afs_FS_Rename			= 138,	/* AFS Rename or move a file or directory */
-	afs_FS_Symlink			= 139,	/* AFS Create a symbolic link */
-	afs_FS_Link			= 140,	/* AFS Create a hard link */
-	afs_FS_MakeDir			= 141,	/* AFS Create a directory */
-	afs_FS_RemoveDir		= 142,	/* AFS Remove a directory */
-	afs_FS_GetVolumeInfo		= 148,	/* AFS Get information about a volume */
-	afs_FS_GetVolumeStatus		= 149,	/* AFS Get volume status information */
-	afs_FS_GetRootVolume		= 151,	/* AFS Get root volume name */
-	afs_FS_SetLock			= 156,	/* AFS Request a file lock */
-	afs_FS_ExtendLock		= 157,	/* AFS Extend a file lock */
-	afs_FS_ReleaseLock		= 158,	/* AFS Release a file lock */
-	afs_FS_Lookup			= 161,	/* AFS lookup file in directory */
-	afs_FS_InlineBulkStatus		= 65536, /* AFS Fetch multiple file statuses with errors */
-	afs_FS_FetchData64		= 65537, /* AFS Fetch file data */
-	afs_FS_StoreData64		= 65538, /* AFS Store file data */
-	afs_FS_GiveUpAllCallBacks	= 65539, /* AFS Give up all our callbacks on a server */
-	afs_FS_GetCapabilities		= 65540, /* AFS Get FS server capabilities */
+	afs_FS_FetchData		= 130,	 
+	afs_FS_FetchACL			= 131,	 
+	afs_FS_FetchStatus		= 132,	 
+	afs_FS_StoreData		= 133,	 
+	afs_FS_StoreACL			= 134,	 
+	afs_FS_StoreStatus		= 135,	 
+	afs_FS_RemoveFile		= 136,	 
+	afs_FS_CreateFile		= 137,	 
+	afs_FS_Rename			= 138,	 
+	afs_FS_Symlink			= 139,	 
+	afs_FS_Link			= 140,	 
+	afs_FS_MakeDir			= 141,	 
+	afs_FS_RemoveDir		= 142,	 
+	afs_FS_GetVolumeInfo		= 148,	 
+	afs_FS_GetVolumeStatus		= 149,	 
+	afs_FS_GetRootVolume		= 151,	 
+	afs_FS_SetLock			= 156,	 
+	afs_FS_ExtendLock		= 157,	 
+	afs_FS_ReleaseLock		= 158,	 
+	afs_FS_Lookup			= 161,	 
+	afs_FS_InlineBulkStatus		= 65536,  
+	afs_FS_FetchData64		= 65537,  
+	afs_FS_StoreData64		= 65538,  
+	afs_FS_GiveUpAllCallBacks	= 65539,  
+	afs_FS_GetCapabilities		= 65540,  
 
-	yfs_FS_FetchData		= 130,	 /* YFS Fetch file data */
-	yfs_FS_FetchACL			= 64131, /* YFS Fetch file ACL */
-	yfs_FS_FetchStatus		= 64132, /* YFS Fetch file status */
-	yfs_FS_StoreACL			= 64134, /* YFS Store file ACL */
-	yfs_FS_StoreStatus		= 64135, /* YFS Store file status */
-	yfs_FS_RemoveFile		= 64136, /* YFS Remove a file */
-	yfs_FS_CreateFile		= 64137, /* YFS Create a file */
-	yfs_FS_Rename			= 64138, /* YFS Rename or move a file or directory */
-	yfs_FS_Symlink			= 64139, /* YFS Create a symbolic link */
-	yfs_FS_Link			= 64140, /* YFS Create a hard link */
-	yfs_FS_MakeDir			= 64141, /* YFS Create a directory */
-	yfs_FS_RemoveDir		= 64142, /* YFS Remove a directory */
-	yfs_FS_GetVolumeStatus		= 64149, /* YFS Get volume status information */
-	yfs_FS_SetVolumeStatus		= 64150, /* YFS Set volume status information */
-	yfs_FS_SetLock			= 64156, /* YFS Request a file lock */
-	yfs_FS_ExtendLock		= 64157, /* YFS Extend a file lock */
-	yfs_FS_ReleaseLock		= 64158, /* YFS Release a file lock */
-	yfs_FS_Lookup			= 64161, /* YFS lookup file in directory */
+	yfs_FS_FetchData		= 130,	  
+	yfs_FS_FetchACL			= 64131,  
+	yfs_FS_FetchStatus		= 64132,  
+	yfs_FS_StoreACL			= 64134,  
+	yfs_FS_StoreStatus		= 64135,  
+	yfs_FS_RemoveFile		= 64136,  
+	yfs_FS_CreateFile		= 64137,  
+	yfs_FS_Rename			= 64138,  
+	yfs_FS_Symlink			= 64139,  
+	yfs_FS_Link			= 64140,  
+	yfs_FS_MakeDir			= 64141,  
+	yfs_FS_RemoveDir		= 64142,  
+	yfs_FS_GetVolumeStatus		= 64149,  
+	yfs_FS_SetVolumeStatus		= 64150,  
+	yfs_FS_SetLock			= 64156,  
+	yfs_FS_ExtendLock		= 64157,  
+	yfs_FS_ReleaseLock		= 64158,  
+	yfs_FS_Lookup			= 64161,  
 	yfs_FS_FlushCPS			= 64165,
 	yfs_FS_FetchOpaqueACL		= 64168,
 	yfs_FS_WhoAmI			= 64170,
 	yfs_FS_RemoveACL		= 64171,
 	yfs_FS_RemoveFile2		= 64173,
 	yfs_FS_StoreOpaqueACL2		= 64174,
-	yfs_FS_InlineBulkStatus		= 64536, /* YFS Fetch multiple file statuses with errors */
-	yfs_FS_FetchData64		= 64537, /* YFS Fetch file data */
-	yfs_FS_StoreData64		= 64538, /* YFS Store file data */
+	yfs_FS_InlineBulkStatus		= 64536,  
+	yfs_FS_FetchData64		= 64537,  
+	yfs_FS_StoreData64		= 64538,  
 	yfs_FS_UpdateSymlink		= 64540,
 };
 
 enum afs_vl_operation {
-	afs_VL_GetEntryByNameU	= 527,		/* AFS Get Vol Entry By Name operation ID */
-	afs_VL_GetAddrsU	= 533,		/* AFS Get FS server addresses */
-	afs_YFSVL_GetEndpoints	= 64002,	/* YFS Get FS & Vol server addresses */
-	afs_YFSVL_GetCellName	= 64014,	/* YFS Get actual cell name */
-	afs_VL_GetCapabilities	= 65537,	/* AFS Get VL server capabilities */
+	afs_VL_GetEntryByNameU	= 527,		 
+	afs_VL_GetAddrsU	= 533,		 
+	afs_YFSVL_GetEndpoints	= 64002,	 
+	afs_YFSVL_GetCellName	= 64014,	 
+	afs_VL_GetCapabilities	= 65537,	 
 };
 
 enum afs_cm_operation {
-	afs_CB_CallBack			= 204,	/* AFS break callback promises */
-	afs_CB_InitCallBackState	= 205,	/* AFS initialise callback state */
-	afs_CB_Probe			= 206,	/* AFS probe client */
-	afs_CB_GetLock			= 207,	/* AFS get contents of CM lock table */
-	afs_CB_GetCE			= 208,	/* AFS get cache file description */
-	afs_CB_GetXStatsVersion		= 209,	/* AFS get version of extended statistics */
-	afs_CB_GetXStats		= 210,	/* AFS get contents of extended statistics data */
-	afs_CB_InitCallBackState3	= 213,	/* AFS initialise callback state, version 3 */
-	afs_CB_ProbeUuid		= 214,	/* AFS check the client hasn't rebooted */
+	afs_CB_CallBack			= 204,	 
+	afs_CB_InitCallBackState	= 205,	 
+	afs_CB_Probe			= 206,	 
+	afs_CB_GetLock			= 207,	 
+	afs_CB_GetCE			= 208,	 
+	afs_CB_GetXStatsVersion		= 209,	 
+	afs_CB_GetXStats		= 210,	 
+	afs_CB_InitCallBackState3	= 213,	 
+	afs_CB_ProbeUuid		= 214,	 
 };
 
 enum yfs_cm_operation {
-	yfs_CB_Probe			= 206,	/* YFS probe client */
-	yfs_CB_GetLock			= 207,	/* YFS get contents of CM lock table */
-	yfs_CB_XStatsVersion		= 209,	/* YFS get version of extended statistics */
-	yfs_CB_GetXStats		= 210,	/* YFS get contents of extended statistics data */
-	yfs_CB_InitCallBackState3	= 213,	/* YFS initialise callback state, version 3 */
-	yfs_CB_ProbeUuid		= 214,	/* YFS check the client hasn't rebooted */
+	yfs_CB_Probe			= 206,	 
+	yfs_CB_GetLock			= 207,	 
+	yfs_CB_XStatsVersion		= 209,	 
+	yfs_CB_GetXStats		= 210,	 
+	yfs_CB_InitCallBackState3	= 213,	 
+	yfs_CB_ProbeUuid		= 214,	 
 	yfs_CB_GetServerPrefs		= 215,
 	yfs_CB_GetCellServDV		= 216,
 	yfs_CB_GetLocalCell		= 217,
 	yfs_CB_GetCacheConfig		= 218,
 	yfs_CB_GetCellByNum		= 65537,
-	yfs_CB_TellMeAboutYourself	= 65538, /* get client capabilities */
+	yfs_CB_TellMeAboutYourself	= 65538,  
 	yfs_CB_CallBack			= 64204,
 };
 
@@ -317,11 +311,9 @@ enum afs_cb_break_reason {
 	afs_cb_break_for_zap,
 };
 
-#endif /* end __AFS_DECLARE_TRACE_ENUMS_ONCE_ONLY */
+#endif  
 
-/*
- * Declare tracing information enums and their string mappings for display.
- */
+ 
 #define afs_call_traces \
 	EM(afs_call_trace_alloc,		"ALLOC") \
 	EM(afs_call_trace_free,			"FREE ") \
@@ -614,9 +606,7 @@ enum afs_cb_break_reason {
 	EM(afs_cb_break_for_volume_callback,	"break-v-cb")		\
 	E_(afs_cb_break_for_zap,		"break-zap")
 
-/*
- * Export enum symbols via userspace.
- */
+ 
 #undef EM
 #undef E_
 #define EM(a, b) TRACE_DEFINE_ENUM(a);
@@ -638,10 +628,7 @@ afs_flock_types;
 afs_flock_operations;
 afs_cb_break_reasons;
 
-/*
- * Now redefine the EM() and E_() macros to map the enums to the strings that
- * will be printed in the output.
- */
+ 
 #undef EM
 #undef E_
 #define EM(a, b)	{ a, b },
@@ -1509,7 +1496,7 @@ TRACE_EVENT(afs_cell,
 		      __entry->active)
 	    );
 
-#endif /* _TRACE_AFS_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Layer 1 defines
- *
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+ 
+ 
 
 #define FLG_L1_ACTIVATING	1
 #define FLG_L1_ACTIVATED	2

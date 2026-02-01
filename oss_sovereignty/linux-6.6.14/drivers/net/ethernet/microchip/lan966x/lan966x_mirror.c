@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 

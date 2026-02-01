@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "%s " fmt, KBUILD_MODNAME
 
@@ -63,17 +61,17 @@ enum {
 	RSC_DRV_CMD_RESP_DATA,
 };
 
-/* DRV HW Solver Configuration Information Register */
+ 
 #define DRV_HW_SOLVER_MASK		1
 #define DRV_HW_SOLVER_SHIFT		24
 
-/* DRV TCS Configuration Information Register */
+ 
 #define DRV_NUM_TCS_MASK		0x3F
 #define DRV_NUM_TCS_SHIFT		6
 #define DRV_NCPT_MASK			0x1F
 #define DRV_NCPT_SHIFT			27
 
-/* Offsets for CONTROL TCS Registers */
+ 
 #define RSC_DRV_CTL_TCS_DATA_HI		0x38
 #define RSC_DRV_CTL_TCS_DATA_HI_MASK	0xFFFFFF
 #define RSC_DRV_CTL_TCS_DATA_HI_VALID	BIT(31)
@@ -84,66 +82,14 @@ enum {
 #define TCS_AMC_MODE_ENABLE		BIT(16)
 #define TCS_AMC_MODE_TRIGGER		BIT(24)
 
-/* TCS CMD register bit mask */
+ 
 #define CMD_MSGID_LEN			8
 #define CMD_MSGID_RESP_REQ		BIT(8)
 #define CMD_MSGID_WRITE			BIT(16)
 #define CMD_STATUS_ISSUED		BIT(8)
 #define CMD_STATUS_COMPL		BIT(16)
 
-/*
- * Here's a high level overview of how all the registers in RPMH work
- * together:
- *
- * - The main rpmh-rsc address is the base of a register space that can
- *   be used to find overall configuration of the hardware
- *   (DRV_PRNT_CHLD_CONFIG). Also found within the rpmh-rsc register
- *   space are all the TCS blocks. The offset of the TCS blocks is
- *   specified in the device tree by "qcom,tcs-offset" and used to
- *   compute tcs_base.
- * - TCS blocks come one after another. Type, count, and order are
- *   specified by the device tree as "qcom,tcs-config".
- * - Each TCS block has some registers, then space for up to 16 commands.
- *   Note that though address space is reserved for 16 commands, fewer
- *   might be present. See ncpt (num cmds per TCS).
- *
- * Here's a picture:
- *
- *  +---------------------------------------------------+
- *  |RSC                                                |
- *  | ctrl                                              |
- *  |                                                   |
- *  | Drvs:                                             |
- *  | +-----------------------------------------------+ |
- *  | |DRV0                                           | |
- *  | | ctrl/config                                   | |
- *  | | IRQ                                           | |
- *  | |                                               | |
- *  | | TCSes:                                        | |
- *  | | +------------------------------------------+  | |
- *  | | |TCS0  |  |  |  |  |  |  |  |  |  |  |  |  |  | |
- *  | | | ctrl | 0| 1| 2| 3| 4| 5| .| .| .| .|14|15|  | |
- *  | | |      |  |  |  |  |  |  |  |  |  |  |  |  |  | |
- *  | | +------------------------------------------+  | |
- *  | | +------------------------------------------+  | |
- *  | | |TCS1  |  |  |  |  |  |  |  |  |  |  |  |  |  | |
- *  | | | ctrl | 0| 1| 2| 3| 4| 5| .| .| .| .|14|15|  | |
- *  | | |      |  |  |  |  |  |  |  |  |  |  |  |  |  | |
- *  | | +------------------------------------------+  | |
- *  | | +------------------------------------------+  | |
- *  | | |TCS2  |  |  |  |  |  |  |  |  |  |  |  |  |  | |
- *  | | | ctrl | 0| 1| 2| 3| 4| 5| .| .| .| .|14|15|  | |
- *  | | |      |  |  |  |  |  |  |  |  |  |  |  |  |  | |
- *  | | +------------------------------------------+  | |
- *  | |                    ......                     | |
- *  | +-----------------------------------------------+ |
- *  | +-----------------------------------------------+ |
- *  | |DRV1                                           | |
- *  | | (same as DRV0)                                | |
- *  | +-----------------------------------------------+ |
- *  |                      ......                       |
- *  +---------------------------------------------------+
- */
+ 
 
 #define USECS_TO_CYCLES(time_usecs)			\
 	xloops_to_cycles((time_usecs) * 0x10C7UL)
@@ -233,10 +179,7 @@ static void write_tcs_reg_sync(const struct rsc_drv *drv, int reg, int tcs_id,
 
 	writel(data, tcs_reg_addr(drv, reg, tcs_id));
 
-	/*
-	 * Wait until we read back the same value.  Use a counter rather than
-	 * ktime for timeout since this may be called after timekeeping stops.
-	 */
+	 
 	for (i = 0; i < USEC_PER_SEC; i++) {
 		if (readl(tcs_reg_addr(drv, reg, tcs_id)) == data)
 			return;
@@ -246,24 +189,13 @@ static void write_tcs_reg_sync(const struct rsc_drv *drv, int reg, int tcs_id,
 	       data, tcs_id, reg);
 }
 
-/**
- * tcs_invalidate() - Invalidate all TCSes of the given type (sleep or wake).
- * @drv:  The RSC controller.
- * @type: SLEEP_TCS or WAKE_TCS
- *
- * This will clear the "slots" variable of the given tcs_group and also
- * tell the hardware to forget about all entries.
- *
- * The caller must ensure that no other RPMH actions are happening when this
- * function is called, since otherwise the device may immediately become
- * used again even before this function exits.
- */
+ 
 static void tcs_invalidate(struct rsc_drv *drv, int type)
 {
 	int m;
 	struct tcs_group *tcs = &drv->tcs[type];
 
-	/* Caller ensures nobody else is running so no lock */
+	 
 	if (bitmap_empty(tcs->slots, MAX_TCS_SLOTS))
 		return;
 
@@ -273,30 +205,14 @@ static void tcs_invalidate(struct rsc_drv *drv, int type)
 	bitmap_zero(tcs->slots, MAX_TCS_SLOTS);
 }
 
-/**
- * rpmh_rsc_invalidate() - Invalidate sleep and wake TCSes.
- * @drv: The RSC controller.
- *
- * The caller must ensure that no other RPMH actions are happening when this
- * function is called, since otherwise the device may immediately become
- * used again even before this function exits.
- */
+ 
 void rpmh_rsc_invalidate(struct rsc_drv *drv)
 {
 	tcs_invalidate(drv, SLEEP_TCS);
 	tcs_invalidate(drv, WAKE_TCS);
 }
 
-/**
- * get_tcs_for_msg() - Get the tcs_group used to send the given message.
- * @drv: The RSC controller.
- * @msg: The message we want to send.
- *
- * This is normally pretty straightforward except if we are trying to send
- * an ACTIVE_ONLY message but don't have any active_only TCSes.
- *
- * Return: A pointer to a tcs_group or an ERR_PTR.
- */
+ 
 static struct tcs_group *get_tcs_for_msg(struct rsc_drv *drv,
 					 const struct tcs_request *msg)
 {
@@ -317,13 +233,7 @@ static struct tcs_group *get_tcs_for_msg(struct rsc_drv *drv,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/*
-	 * If we are making an active request on a RSC that does not have a
-	 * dedicated TCS for active state use, then re-purpose a wake TCS to
-	 * send active votes. This is safe because we ensure any active-only
-	 * transfers have finished before we use it (maybe by running from
-	 * the last CPU in PM code).
-	 */
+	 
 	tcs = &drv->tcs[type];
 	if (msg->state == RPMH_ACTIVE_ONLY_STATE && !tcs->num_tcs)
 		tcs = &drv->tcs[WAKE_TCS];
@@ -331,22 +241,7 @@ static struct tcs_group *get_tcs_for_msg(struct rsc_drv *drv,
 	return tcs;
 }
 
-/**
- * get_req_from_tcs() - Get a stashed request that was xfering on the given TCS.
- * @drv:    The RSC controller.
- * @tcs_id: The global ID of this TCS.
- *
- * For ACTIVE_ONLY transfers we want to call back into the client when the
- * transfer finishes. To do this we need the "request" that the client
- * originally provided us. This function grabs the request that we stashed
- * when we started the transfer.
- *
- * This only makes sense for ACTIVE_ONLY transfers since those are the only
- * ones we track sending (the only ones we enable interrupts for and the only
- * ones we call back to the client for).
- *
- * Return: The stashed request.
- */
+ 
 static const struct tcs_request *get_req_from_tcs(struct rsc_drv *drv,
 						  int tcs_id)
 {
@@ -362,33 +257,13 @@ static const struct tcs_request *get_req_from_tcs(struct rsc_drv *drv,
 	return NULL;
 }
 
-/**
- * __tcs_set_trigger() - Start xfer on a TCS or unset trigger on a borrowed TCS
- * @drv:     The controller.
- * @tcs_id:  The global ID of this TCS.
- * @trigger: If true then untrigger/retrigger. If false then just untrigger.
- *
- * In the normal case we only ever call with "trigger=true" to start a
- * transfer. That will un-trigger/disable the TCS from the last transfer
- * then trigger/enable for this transfer.
- *
- * If we borrowed a wake TCS for an active-only transfer we'll also call
- * this function with "trigger=false" to just do the un-trigger/disable
- * before using the TCS for wake purposes again.
- *
- * Note that the AP is only in charge of triggering active-only transfers.
- * The AP never triggers sleep/wake values using this function.
- */
+ 
 static void __tcs_set_trigger(struct rsc_drv *drv, int tcs_id, bool trigger)
 {
 	u32 enable;
 	u32 reg = drv->regs[RSC_DRV_CONTROL];
 
-	/*
-	 * HW req: Clear the DRV_CONTROL and enable TCS again
-	 * While clearing ensure that the AMC mode trigger is cleared
-	 * and then the mode enable is cleared.
-	 */
+	 
 	enable = read_tcs_reg(drv, reg, tcs_id);
 	enable &= ~TCS_AMC_MODE_TRIGGER;
 	write_tcs_reg_sync(drv, reg, tcs_id, enable);
@@ -396,7 +271,7 @@ static void __tcs_set_trigger(struct rsc_drv *drv, int tcs_id, bool trigger)
 	write_tcs_reg_sync(drv, reg, tcs_id, enable);
 
 	if (trigger) {
-		/* Enable the AMC mode on the TCS and then trigger the TCS */
+		 
 		enable = TCS_AMC_MODE_ENABLE;
 		write_tcs_reg_sync(drv, reg, tcs_id, enable);
 		enable |= TCS_AMC_MODE_TRIGGER;
@@ -404,15 +279,7 @@ static void __tcs_set_trigger(struct rsc_drv *drv, int tcs_id, bool trigger)
 	}
 }
 
-/**
- * enable_tcs_irq() - Enable or disable interrupts on the given TCS.
- * @drv:     The controller.
- * @tcs_id:  The global ID of this TCS.
- * @enable:  If true then enable; if false then disable
- *
- * We only ever call this when we borrow a wake TCS for an active-only
- * transfer. For active-only TCSes interrupts are always left enabled.
- */
+ 
 static void enable_tcs_irq(struct rsc_drv *drv, int tcs_id, bool enable)
 {
 	u32 data;
@@ -426,16 +293,7 @@ static void enable_tcs_irq(struct rsc_drv *drv, int tcs_id, bool enable)
 	writel_relaxed(data, drv->tcs_base + reg);
 }
 
-/**
- * tcs_tx_done() - TX Done interrupt handler.
- * @irq: The IRQ number (ignored).
- * @p:   Pointer to "struct rsc_drv".
- *
- * Called for ACTIVE_ONLY transfers (those are the only ones we enable the
- * IRQ for) when a transfer is done.
- *
- * Return: IRQ_HANDLED
- */
+ 
 static irqreturn_t tcs_tx_done(int irq, void *p)
 {
 	struct rsc_drv *drv = p;
@@ -452,24 +310,16 @@ static irqreturn_t tcs_tx_done(int irq, void *p)
 
 		trace_rpmh_tx_done(drv, i, req);
 
-		/*
-		 * If wake tcs was re-purposed for sending active
-		 * votes, clear AMC trigger & enable modes and
-		 * disable interrupt for this TCS
-		 */
+		 
 		if (!drv->tcs[ACTIVE_TCS].num_tcs)
 			__tcs_set_trigger(drv, i, false);
 skip:
-		/* Reclaim the TCS */
+		 
 		write_tcs_reg(drv, drv->regs[RSC_DRV_CMD_ENABLE], i, 0);
 		writel_relaxed(BIT(i), drv->tcs_base + drv->regs[RSC_DRV_IRQ_CLEAR]);
 		spin_lock(&drv->lock);
 		clear_bit(i, drv->tcs_in_use);
-		/*
-		 * Disable interrupt for WAKE TCS to avoid being
-		 * spammed with interrupts coming when the solver
-		 * sends its wake votes.
-		 */
+		 
 		if (!drv->tcs[ACTIVE_TCS].num_tcs)
 			enable_tcs_irq(drv, i, false);
 		spin_unlock(&drv->lock);
@@ -481,16 +331,7 @@ skip:
 	return IRQ_HANDLED;
 }
 
-/**
- * __tcs_buffer_write() - Write to TCS hardware from a request; don't trigger.
- * @drv:    The controller.
- * @tcs_id: The global ID of this TCS.
- * @cmd_id: The index within the TCS to start writing.
- * @msg:    The message we want to send, which will contain several addr/data
- *          pairs to program (but few enough that they all fit in one TCS).
- *
- * This is used for all types of transfers (active, sleep, and wake).
- */
+ 
 static void __tcs_buffer_write(struct rsc_drv *drv, int tcs_id, int cmd_id,
 			       const struct tcs_request *msg)
 {
@@ -500,17 +341,14 @@ static void __tcs_buffer_write(struct rsc_drv *drv, int tcs_id, int cmd_id,
 	struct tcs_cmd *cmd;
 	int i, j;
 
-	/* Convert all commands to RR when the request has wait_for_compl set */
+	 
 	cmd_msgid |= msg->wait_for_compl ? CMD_MSGID_RESP_REQ : 0;
 
 	for (i = 0, j = cmd_id; i < msg->num_cmds; i++, j++) {
 		cmd = &msg->cmds[i];
 		cmd_enable |= BIT(j);
 		msgid = cmd_msgid;
-		/*
-		 * Additionally, if the cmd->wait is set, make the command
-		 * response reqd even if the overall request was fire-n-forget.
-		 */
+		 
 		msgid |= cmd->wait ? CMD_MSGID_RESP_REQ : 0;
 
 		write_tcs_cmd(drv, drv->regs[RSC_DRV_CMD_MSGID], tcs_id, j, msgid);
@@ -523,26 +361,7 @@ static void __tcs_buffer_write(struct rsc_drv *drv, int tcs_id, int cmd_id,
 	write_tcs_reg(drv, drv->regs[RSC_DRV_CMD_ENABLE], tcs_id, cmd_enable);
 }
 
-/**
- * check_for_req_inflight() - Look to see if conflicting cmds are in flight.
- * @drv: The controller.
- * @tcs: A pointer to the tcs_group used for ACTIVE_ONLY transfers.
- * @msg: The message we want to send, which will contain several addr/data
- *       pairs to program (but few enough that they all fit in one TCS).
- *
- * This will walk through the TCSes in the group and check if any of them
- * appear to be sending to addresses referenced in the message. If it finds
- * one it'll return -EBUSY.
- *
- * Only for use for active-only transfers.
- *
- * Must be called with the drv->lock held since that protects tcs_in_use.
- *
- * Return: 0 if nothing in flight or -EBUSY if we should try again later.
- *         The caller must re-enable interrupts between tries since that's
- *         the only way tcs_in_use will ever be updated and the only way
- *         RSC_DRV_CMD_ENABLE will ever be cleared.
- */
+ 
 static int check_for_req_inflight(struct rsc_drv *drv, struct tcs_group *tcs,
 				  const struct tcs_request *msg)
 {
@@ -566,15 +385,7 @@ static int check_for_req_inflight(struct rsc_drv *drv, struct tcs_group *tcs,
 	return 0;
 }
 
-/**
- * find_free_tcs() - Find free tcs in the given tcs_group; only for active.
- * @tcs: A pointer to the active-only tcs_group (or the wake tcs_group if
- *       we borrowed it because there are zero active-only ones).
- *
- * Must be called with the drv->lock held since that protects tcs_in_use.
- *
- * Return: The first tcs that's free or -EBUSY if all in use.
- */
+ 
 static int find_free_tcs(struct tcs_group *tcs)
 {
 	const struct rsc_drv *drv = tcs->drv;
@@ -588,30 +399,13 @@ static int find_free_tcs(struct tcs_group *tcs)
 	return i;
 }
 
-/**
- * claim_tcs_for_req() - Claim a tcs in the given tcs_group; only for active.
- * @drv: The controller.
- * @tcs: The tcs_group used for ACTIVE_ONLY transfers.
- * @msg: The data to be sent.
- *
- * Claims a tcs in the given tcs_group while making sure that no existing cmd
- * is in flight that would conflict with the one in @msg.
- *
- * Context: Must be called with the drv->lock held since that protects
- * tcs_in_use.
- *
- * Return: The id of the claimed tcs or -EBUSY if a matching msg is in flight
- * or the tcs_group is full.
- */
+ 
 static int claim_tcs_for_req(struct rsc_drv *drv, struct tcs_group *tcs,
 			     const struct tcs_request *msg)
 {
 	int ret;
 
-	/*
-	 * The h/w does not like if we send a request to the same address,
-	 * when one is already in-flight or being processed.
-	 */
+	 
 	ret = check_for_req_inflight(drv, tcs, msg);
 	if (ret)
 		return ret;
@@ -619,28 +413,7 @@ static int claim_tcs_for_req(struct rsc_drv *drv, struct tcs_group *tcs,
 	return find_free_tcs(tcs);
 }
 
-/**
- * rpmh_rsc_send_data() - Write / trigger active-only message.
- * @drv: The controller.
- * @msg: The data to be sent.
- *
- * NOTES:
- * - This is only used for "ACTIVE_ONLY" since the limitations of this
- *   function don't make sense for sleep/wake cases.
- * - To do the transfer, we will grab a whole TCS for ourselves--we don't
- *   try to share. If there are none available we'll wait indefinitely
- *   for a free one.
- * - This function will not wait for the commands to be finished, only for
- *   data to be programmed into the RPMh. See rpmh_tx_done() which will
- *   be called when the transfer is fully complete.
- * - This function must be called with interrupts enabled. If the hardware
- *   is busy doing someone else's transfer we need that transfer to fully
- *   finish so that we can have the hardware, and to fully finish it needs
- *   the interrupt handler to run. If the interrupts is set to run on the
- *   active CPU this can never happen if interrupts are disabled.
- *
- * Return: 0 on success, -EINVAL on error.
- */
+ 
 int rpmh_rsc_send_data(struct rsc_drv *drv, const struct tcs_request *msg)
 {
 	struct tcs_group *tcs;
@@ -653,7 +426,7 @@ int rpmh_rsc_send_data(struct rsc_drv *drv, const struct tcs_request *msg)
 
 	spin_lock_irqsave(&drv->lock, flags);
 
-	/* Wait forever for a free tcs. It better be there eventually! */
+	 
 	wait_event_lock_irq(drv->tcs_wait,
 			    (tcs_id = claim_tcs_for_req(drv, tcs, msg)) >= 0,
 			    drv->lock);
@@ -661,52 +434,27 @@ int rpmh_rsc_send_data(struct rsc_drv *drv, const struct tcs_request *msg)
 	tcs->req[tcs_id - tcs->offset] = msg;
 	set_bit(tcs_id, drv->tcs_in_use);
 	if (msg->state == RPMH_ACTIVE_ONLY_STATE && tcs->type != ACTIVE_TCS) {
-		/*
-		 * Clear previously programmed WAKE commands in selected
-		 * repurposed TCS to avoid triggering them. tcs->slots will be
-		 * cleaned from rpmh_flush() by invoking rpmh_rsc_invalidate()
-		 */
+		 
 		write_tcs_reg_sync(drv, drv->regs[RSC_DRV_CMD_ENABLE], tcs_id, 0);
 		enable_tcs_irq(drv, tcs_id, true);
 	}
 	spin_unlock_irqrestore(&drv->lock, flags);
 
-	/*
-	 * These two can be done after the lock is released because:
-	 * - We marked "tcs_in_use" under lock.
-	 * - Once "tcs_in_use" has been marked nobody else could be writing
-	 *   to these registers until the interrupt goes off.
-	 * - The interrupt can't go off until we trigger w/ the last line
-	 *   of __tcs_set_trigger() below.
-	 */
+	 
 	__tcs_buffer_write(drv, tcs_id, 0, msg);
 	__tcs_set_trigger(drv, tcs_id, true);
 
 	return 0;
 }
 
-/**
- * find_slots() - Find a place to write the given message.
- * @tcs:    The tcs group to search.
- * @msg:    The message we want to find room for.
- * @tcs_id: If we return 0 from the function, we return the global ID of the
- *          TCS to write to here.
- * @cmd_id: If we return 0 from the function, we return the index of
- *          the command array of the returned TCS where the client should
- *          start writing the message.
- *
- * Only for use on sleep/wake TCSes since those are the only ones we maintain
- * tcs->slots for.
- *
- * Return: -ENOMEM if there was no room, else 0.
- */
+ 
 static int find_slots(struct tcs_group *tcs, const struct tcs_request *msg,
 		      int *tcs_id, int *cmd_id)
 {
 	int slot, offset;
 	int i = 0;
 
-	/* Do over, until we can fit the full payload in a single TCS */
+	 
 	do {
 		slot = bitmap_find_next_zero_area(tcs->slots, MAX_TCS_SLOTS,
 						  i, msg->num_cmds, 0);
@@ -724,19 +472,7 @@ static int find_slots(struct tcs_group *tcs, const struct tcs_request *msg,
 	return 0;
 }
 
-/**
- * rpmh_rsc_write_ctrl_data() - Write request to controller but don't trigger.
- * @drv: The controller.
- * @msg: The data to be written to the controller.
- *
- * This should only be called for sleep/wake state, never active-only
- * state.
- *
- * The caller must ensure that no other RPMH actions are happening and the
- * controller is idle when this function is called since it runs lockless.
- *
- * Return: 0 if no error; else -error.
- */
+ 
 int rpmh_rsc_write_ctrl_data(struct rsc_drv *drv, const struct tcs_request *msg)
 {
 	struct tcs_group *tcs;
@@ -747,7 +483,7 @@ int rpmh_rsc_write_ctrl_data(struct rsc_drv *drv, const struct tcs_request *msg)
 	if (IS_ERR(tcs))
 		return PTR_ERR(tcs);
 
-	/* find the TCS id and the command in the TCS to write to */
+	 
 	ret = find_slots(tcs, msg, &tcs_id, &cmd_id);
 	if (!ret)
 		__tcs_buffer_write(drv, tcs_id, cmd_id, msg);
@@ -755,33 +491,14 @@ int rpmh_rsc_write_ctrl_data(struct rsc_drv *drv, const struct tcs_request *msg)
 	return ret;
 }
 
-/**
- * rpmh_rsc_ctrlr_is_busy() - Check if any of the AMCs are busy.
- * @drv: The controller
- *
- * Checks if any of the AMCs are busy in handling ACTIVE sets.
- * This is called from the last cpu powering down before flushing
- * SLEEP and WAKE sets. If AMCs are busy, controller can not enter
- * power collapse, so deny from the last cpu's pm notification.
- *
- * Context: Must be called with the drv->lock held.
- *
- * Return:
- * * False		- AMCs are idle
- * * True		- AMCs are busy
- */
+ 
 static bool rpmh_rsc_ctrlr_is_busy(struct rsc_drv *drv)
 {
 	unsigned long set;
 	const struct tcs_group *tcs = &drv->tcs[ACTIVE_TCS];
 	unsigned long max;
 
-	/*
-	 * If we made an active request on a RSC that does not have a
-	 * dedicated TCS for active state use, then re-purposed wake TCSes
-	 * should be checked for not busy, because we used wake TCSes for
-	 * active requests in this case.
-	 */
+	 
 	if (!tcs->num_tcs)
 		tcs = &drv->tcs[WAKE_TCS];
 
@@ -791,13 +508,7 @@ static bool rpmh_rsc_ctrlr_is_busy(struct rsc_drv *drv)
 	return set < max;
 }
 
-/**
- * rpmh_rsc_write_next_wakeup() - Write next wakeup in CONTROL_TCS.
- * @drv: The controller
- *
- * Writes maximum wakeup cycles when called from suspend.
- * Writes earliest hrtimer wakeup when called from idle.
- */
+ 
 void rpmh_rsc_write_next_wakeup(struct rsc_drv *drv)
 {
 	ktime_t now, wakeup;
@@ -807,19 +518,19 @@ void rpmh_rsc_write_next_wakeup(struct rsc_drv *drv)
 	if (!drv->tcs[CONTROL_TCS].num_tcs || !drv->genpd_nb.notifier_call)
 		return;
 
-	/* Set highest time when system (timekeeping) is suspended */
+	 
 	if (system_state == SYSTEM_SUSPEND)
 		goto exit;
 
-	/* Find the earliest hrtimer wakeup from online cpus */
+	 
 	wakeup = dev_pm_genpd_get_next_hrtimer(drv->dev);
 
-	/* Find the relative wakeup in kernel time scale */
+	 
 	now = ktime_get();
 	wakeup = ktime_sub(wakeup, now);
 	wakeup_us = ktime_to_us(wakeup);
 
-	/* Convert the wakeup to arch timer scale */
+	 
 	wakeup_cycles = USECS_TO_CYCLES(wakeup_us);
 	wakeup_cycles += arch_timer_read_counter();
 
@@ -833,23 +544,7 @@ exit:
 	writel_relaxed(hi, drv->base + RSC_DRV_CTL_TCS_DATA_HI);
 }
 
-/**
- * rpmh_rsc_cpu_pm_callback() - Check if any of the AMCs are busy.
- * @nfb:    Pointer to the notifier block in struct rsc_drv.
- * @action: CPU_PM_ENTER, CPU_PM_ENTER_FAILED, or CPU_PM_EXIT.
- * @v:      Unused
- *
- * This function is given to cpu_pm_register_notifier so we can be informed
- * about when CPUs go down. When all CPUs go down we know no more active
- * transfers will be started so we write sleep/wake sets. This function gets
- * called from cpuidle code paths and also at system suspend time.
- *
- * If its last CPU going down and AMCs are not busy then writes cached sleep
- * and wake messages to TCSes. The firmware then takes care of triggering
- * them when entering deepest low power modes.
- *
- * Return: See cpu_pm_register_notifier()
- */
+ 
 static int rpmh_rsc_cpu_pm_callback(struct notifier_block *nfb,
 				    unsigned long action, void *v)
 {
@@ -860,16 +555,7 @@ static int rpmh_rsc_cpu_pm_callback(struct notifier_block *nfb,
 	switch (action) {
 	case CPU_PM_ENTER:
 		cpus_in_pm = atomic_inc_return(&drv->cpus_in_pm);
-		/*
-		 * NOTE: comments for num_online_cpus() point out that it's
-		 * only a snapshot so we need to be careful. It should be OK
-		 * for us to use, though.  It's important for us not to miss
-		 * if we're the last CPU going down so it would only be a
-		 * problem if a CPU went offline right after we did the check
-		 * AND that CPU was not idle AND that CPU was the last non-idle
-		 * CPU. That can't happen. CPUs would have to come out of idle
-		 * before the CPU could go offline.
-		 */
+		 
 		if (cpus_in_pm < num_online_cpus())
 			return NOTIFY_OK;
 		break;
@@ -881,63 +567,35 @@ static int rpmh_rsc_cpu_pm_callback(struct notifier_block *nfb,
 		return NOTIFY_DONE;
 	}
 
-	/*
-	 * It's likely we're on the last CPU. Grab the drv->lock and write
-	 * out the sleep/wake commands to RPMH hardware. Grabbing the lock
-	 * means that if we race with another CPU coming up we are still
-	 * guaranteed to be safe. If another CPU came up just after we checked
-	 * and has grabbed the lock or started an active transfer then we'll
-	 * notice we're busy and abort. If another CPU comes up after we start
-	 * flushing it will be blocked from starting an active transfer until
-	 * we're done flushing. If another CPU starts an active transfer after
-	 * we release the lock we're still OK because we're no longer the last
-	 * CPU.
-	 */
+	 
 	if (spin_trylock(&drv->lock)) {
 		if (rpmh_rsc_ctrlr_is_busy(drv) || rpmh_flush(&drv->client))
 			ret = NOTIFY_BAD;
 		spin_unlock(&drv->lock);
 	} else {
-		/* Another CPU must be up */
+		 
 		return NOTIFY_OK;
 	}
 
 	if (ret == NOTIFY_BAD) {
-		/* Double-check if we're here because someone else is up */
+		 
 		if (cpus_in_pm < num_online_cpus())
 			ret = NOTIFY_OK;
 		else
-			/* We won't be called w/ CPU_PM_ENTER_FAILED */
+			 
 			atomic_dec(&drv->cpus_in_pm);
 	}
 
 	return ret;
 }
 
-/**
- * rpmh_rsc_pd_callback() - Check if any of the AMCs are busy.
- * @nfb:    Pointer to the genpd notifier block in struct rsc_drv.
- * @action: GENPD_NOTIFY_PRE_OFF, GENPD_NOTIFY_OFF, GENPD_NOTIFY_PRE_ON or GENPD_NOTIFY_ON.
- * @v:      Unused
- *
- * This function is given to dev_pm_genpd_add_notifier() so we can be informed
- * about when cluster-pd is going down. When cluster go down we know no more active
- * transfers will be started so we write sleep/wake sets. This function gets
- * called from cpuidle code paths and also at system suspend time.
- *
- * If AMCs are not busy then writes cached sleep and wake messages to TCSes.
- * The firmware then takes care of triggering them when entering deepest low power modes.
- *
- * Return:
- * * NOTIFY_OK          - success
- * * NOTIFY_BAD         - failure
- */
+ 
 static int rpmh_rsc_pd_callback(struct notifier_block *nfb,
 				unsigned long action, void *v)
 {
 	struct rsc_drv *drv = container_of(nfb, struct rsc_drv, genpd_nb);
 
-	/* We don't need to lock as genpd on/off are serialized */
+	 
 	if ((action == GENPD_NOTIFY_PRE_OFF) &&
 	    (rpmh_rsc_ctrlr_is_busy(drv) || rpmh_flush(&drv->client)))
 		return NOTIFY_BAD;
@@ -1038,10 +696,7 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
 	u32 solver_config;
 	u32 rsc_id;
 
-	/*
-	 * Even though RPMh doesn't directly use cmd-db, all of its children
-	 * do. To avoid adding this check to our children we'll do it now.
-	 */
+	 
 	ret = cmd_db_ready();
 	if (ret) {
 		if (ret != -EPROBE_DEFER)
@@ -1096,11 +751,7 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * CPU PM/genpd notification are not required for controllers that support
-	 * 'HW solver' mode where they can be in autonomous mode executing low
-	 * power mode to power down.
-	 */
+	 
 	solver_config = readl_relaxed(drv->base + drv->regs[DRV_SOLVER_CONFIG]);
 	solver_config &= DRV_HW_SOLVER_MASK << DRV_HW_SOLVER_SHIFT;
 	solver_config = solver_config >> DRV_HW_SOLVER_SHIFT;
@@ -1115,7 +766,7 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Enable the active TCS to send requests immediately */
+	 
 	writel_relaxed(drv->tcs[ACTIVE_TCS].mask,
 		       drv->tcs_base + drv->regs[RSC_DRV_IRQ_ENABLE]);
 

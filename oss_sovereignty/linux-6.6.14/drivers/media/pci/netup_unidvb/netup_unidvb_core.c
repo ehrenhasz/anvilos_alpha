@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * netup_unidvb_core.c
- *
- * Main module for NetUP Universal Dual DVB-CI
- *
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -38,54 +30,35 @@ MODULE_LICENSE("GPL");
 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
-/* Avalon-MM PCI-E registers */
+ 
 #define	AVL_PCIE_IENR		0x50
 #define AVL_PCIE_ISR		0x40
 #define AVL_IRQ_ENABLE		0x80
 #define AVL_IRQ_ASSERTED	0x80
-/* GPIO registers */
+ 
 #define GPIO_REG_IO		0x4880
 #define GPIO_REG_IO_TOGGLE	0x4882
 #define GPIO_REG_IO_SET		0x4884
 #define GPIO_REG_IO_CLEAR	0x4886
-/* GPIO bits */
+ 
 #define GPIO_FEA_RESET		(1 << 0)
 #define GPIO_FEB_RESET		(1 << 1)
 #define GPIO_RFA_CTL		(1 << 2)
 #define GPIO_RFB_CTL		(1 << 3)
 #define GPIO_FEA_TU_RESET	(1 << 4)
 #define GPIO_FEB_TU_RESET	(1 << 5)
-/* DMA base address */
+ 
 #define NETUP_DMA0_ADDR		0x4900
 #define NETUP_DMA1_ADDR		0x4940
-/* 8 DMA blocks * 128 packets * 188 bytes*/
+ 
 #define NETUP_DMA_BLOCKS_COUNT	8
 #define NETUP_DMA_PACKETS_COUNT	128
-/* DMA status bits */
+ 
 #define BIT_DMA_RUN		1
 #define BIT_DMA_ERROR		2
 #define BIT_DMA_IRQ		0x200
 
-/**
- * struct netup_dma_regs - the map of DMA module registers
- * @ctrlstat_set:	Control register, write to set control bits
- * @ctrlstat_clear:	Control register, write to clear control bits
- * @start_addr_lo:	DMA ring buffer start address, lower part
- * @start_addr_hi:	DMA ring buffer start address, higher part
- * @size:		DMA ring buffer size register
- *			* Bits [0-7]:	DMA packet size, 188 bytes
- *			* Bits [16-23]:	packets count in block, 128 packets
- *			* Bits [24-31]:	blocks count, 8 blocks
- * @timeout:		DMA timeout in units of 8ns
- *			For example, value of 375000000 equals to 3 sec
- * @curr_addr_lo:	Current ring buffer head address, lower part
- * @curr_addr_hi:	Current ring buffer head address, higher part
- * @stat_pkt_received:	Statistic register, not tested
- * @stat_pkt_accepted:	Statistic register, not tested
- * @stat_pkt_overruns:	Statistic register, not tested
- * @stat_pkt_underruns:	Statistic register, not tested
- * @stat_fifo_overruns:	Statistic register, not tested
- */
+ 
 struct netup_dma_regs {
 	__le32	ctrlstat_set;
 	__le32	ctrlstat_clear;
@@ -153,7 +126,7 @@ static int netup_unidvb_tuner_ctrl(void *priv, int is_dvb_tc)
 	reg = readb(ndev->bmmio0 + GPIO_REG_IO);
 	mask = (dma->num == 0) ? GPIO_RFA_CTL : GPIO_RFB_CTL;
 
-	/* inverted tuner control in hw rev. 1.4 */
+	 
 	if (ndev->rev == NETUP_HW_REV_1_4)
 		is_dvb_tc = !is_dvb_tc;
 
@@ -169,9 +142,9 @@ static void netup_unidvb_dev_enable(struct netup_unidvb_dev *ndev)
 {
 	u16 gpio_reg;
 
-	/* enable PCI-E interrupts */
+	 
 	writel(AVL_IRQ_ENABLE, ndev->bmmio0 + AVL_PCIE_IENR);
-	/* unreset frontends bits[0:1] */
+	 
 	writeb(0x00, ndev->bmmio0 + GPIO_REG_IO);
 	msleep(100);
 	gpio_reg =
@@ -212,9 +185,9 @@ static irqreturn_t netup_dma_interrupt(struct netup_dma *dma)
 	spin_lock_irqsave(&dma->lock, flags);
 	addr_curr = ((u64)readl(&dma->regs->curr_addr_hi) << 32) |
 		(u64)readl(&dma->regs->curr_addr_lo) | dma->high_addr;
-	/* clear IRQ */
+	 
 	writel(BIT_DMA_IRQ, &dma->regs->ctrlstat_clear);
-	/* sanity check */
+	 
 	if (addr_curr < dma->addr_phys ||
 			addr_curr > dma->addr_phys +  dma->ring_buffer_size) {
 		if (addr_curr != 0) {
@@ -251,12 +224,12 @@ static irqreturn_t netup_unidvb_isr(int irq, void *dev_id)
 	u32 reg40, reg_isr;
 	irqreturn_t iret = IRQ_NONE;
 
-	/* disable interrupts */
+	 
 	writel(0, ndev->bmmio0 + AVL_PCIE_IENR);
-	/* check IRQ source */
+	 
 	reg40 = readl(ndev->bmmio0 + AVL_PCIE_ISR);
 	if ((reg40 & AVL_IRQ_ASSERTED) != 0) {
-		/* IRQ is being signaled */
+		 
 		reg_isr = readw(ndev->bmmio0 + REG_ISR);
 		if (reg_isr & NETUP_UNIDVB_IRQ_SPI)
 			iret = netup_spi_interrupt(ndev->spi);
@@ -281,7 +254,7 @@ err:
 				__func__, reg_isr);
 		}
 	}
-	/* re-enable interrupts */
+	 
 	writel(AVL_IRQ_ENABLE, ndev->bmmio0 + AVL_PCIE_IENR);
 	return iret;
 }
@@ -363,7 +336,7 @@ static int netup_unidvb_queue_init(struct netup_dma *dma,
 {
 	int res;
 
-	/* Init videobuf2 queue structure */
+	 
 	vb_queue->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	vb_queue->io_modes = VB2_MMAP | VB2_USERPTR | VB2_READ;
 	vb_queue->drv_priv = dma;
@@ -462,7 +435,7 @@ static int netup_unidvb_dvb_init(struct netup_unidvb_dev *ndev,
 		goto frontend_detach;
 	}
 
-	/* DVB-T/T2 frontend */
+	 
 	fes[1]->dvb.frontend = dvb_attach(cxd2841er_attach_t_c,
 		&demod_config, &ndev->i2c[num].adap);
 	if (fes[1]->dvb.frontend == NULL) {
@@ -784,7 +757,7 @@ static int netup_unidvb_initdev(struct pci_dev *pci_dev,
 
 	netup_unidvb_request_modules(&pci_dev->dev);
 
-	/* Check card revision */
+	 
 	if (pci_dev->revision != NETUP_PCI_DEV_REVISION) {
 		dev_err(&pci_dev->dev,
 			"netup_unidvb: expected card revision %d, got %d\n",
@@ -797,12 +770,12 @@ static int netup_unidvb_initdev(struct pci_dev *pci_dev,
 		spi_enable = 1;
 	}
 
-	/* allocate device context */
+	 
 	ndev = kzalloc(sizeof(*ndev), GFP_KERNEL);
 	if (!ndev)
 		goto dev_alloc_err;
 
-	/* detect hardware revision */
+	 
 	if (pci_dev->device == NETUP_HW_REV_1_3)
 		ndev->rev = NETUP_HW_REV_1_3;
 	else
@@ -825,7 +798,7 @@ static int netup_unidvb_initdev(struct pci_dev *pci_dev,
 	ndev->pci_func = PCI_FUNC(pci_dev->devfn);
 	ndev->board_num = ndev->pci_bus*10 + ndev->pci_slot;
 	pci_set_drvdata(pci_dev, ndev);
-	/* PCI init */
+	 
 	dev_info(&pci_dev->dev, "%s(): PCI device (%d). Bus:0x%x Slot:0x%x\n",
 		__func__, ndev->board_num, ndev->pci_bus, ndev->pci_slot);
 
@@ -834,7 +807,7 @@ static int netup_unidvb_initdev(struct pci_dev *pci_dev,
 			__func__);
 		goto pci_enable_err;
 	}
-	/* read PCI info */
+	 
 	pci_read_config_byte(pci_dev, PCI_CLASS_REVISION, &board_revision);
 	pci_read_config_word(pci_dev, PCI_VENDOR_ID, &board_vendor);
 	if (board_vendor != NETUP_VENDOR_ID) {
@@ -852,11 +825,11 @@ static int netup_unidvb_initdev(struct pci_dev *pci_dev,
 		goto pci_detect_err;
 	}
 	dev_info(&pci_dev->dev, "%s(): using 32bit PCI DMA\n", __func__);
-	/* Clear "no snoop" and "relaxed ordering" bits, use default MRRS. */
+	 
 	pcie_capability_clear_and_set_word(pci_dev, PCI_EXP_DEVCTL,
 		PCI_EXP_DEVCTL_READRQ | PCI_EXP_DEVCTL_RELAX_EN |
 		PCI_EXP_DEVCTL_NOSNOOP_EN, 0);
-	/* Adjust PCIe completion timeout. */
+	 
 	pcie_capability_clear_and_set_word(pci_dev,
 		PCI_EXP_DEVCTL2, PCI_EXP_DEVCTL2_COMP_TIMEOUT, 0x2);
 
@@ -912,7 +885,7 @@ static int netup_unidvb_initdev(struct pci_dev *pci_dev,
 		dev_err(&pci_dev->dev, "netup_unidvb: I2C setup failed\n");
 		goto i2c_setup_err;
 	}
-	/* enable I2C IRQs */
+	 
 	writew(NETUP_UNIDVB_IRQ_I2C0 | NETUP_UNIDVB_IRQ_I2C1,
 		ndev->bmmio0 + REG_IMASK_SET);
 	usleep_range(5000, 10000);
@@ -1011,8 +984,8 @@ static void netup_unidvb_finidev(struct pci_dev *pci_dev)
 
 
 static const struct pci_device_id netup_unidvb_pci_tbl[] = {
-	{ PCI_DEVICE(0x1b55, 0x18f6) }, /* hw rev. 1.3 */
-	{ PCI_DEVICE(0x1b55, 0x18f7) }, /* hw rev. 1.4 */
+	{ PCI_DEVICE(0x1b55, 0x18f6) },  
+	{ PCI_DEVICE(0x1b55, 0x18f7) },  
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, netup_unidvb_pci_tbl);

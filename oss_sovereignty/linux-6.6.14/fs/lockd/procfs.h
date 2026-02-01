@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Procfs support for lockd
- *
- * Copyright (c) 2014 Jeff Layton <jlayton@primarydata.com>
- */
+ 
+ 
 #ifndef _LOCKD_PROCFS_H
 #define _LOCKD_PROCFS_H
 
@@ -22,6 +18,6 @@ lockd_remove_procfs(void)
 {
 	return;
 }
-#endif /* IS_ENABLED(CONFIG_PROC_FS) */
+#endif  
 
-#endif /* _LOCKD_PROCFS_H */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -52,7 +52,7 @@ static int map_type_from_str(const char *type)
 		if (!map_type_str)
 			break;
 
-		/* Don't allow prefixing in case of possible future shadowing */
+		 
 		if (!strcmp(map_type_str, type))
 			return i;
 	}
@@ -75,7 +75,7 @@ static int do_dump_btf(const struct btf_dumper *d,
 	__u32 value_id;
 	int ret = 0;
 
-	/* start of key-value pair */
+	 
 	jsonw_start_object(d->jw);
 
 	if (map_info->btf_key_type_id) {
@@ -112,7 +112,7 @@ static int do_dump_btf(const struct btf_dumper *d,
 	}
 
 err_end_obj:
-	/* end of key-value pair */
+	 
 	jsonw_end_object(d->jw);
 
 	return ret;
@@ -213,23 +213,20 @@ print_entry_error_msg(struct bpf_map_info *info, unsigned char *key,
 static void
 print_entry_error(struct bpf_map_info *map_info, void *key, int lookup_errno)
 {
-	/* For prog_array maps or arrays of maps, failure to lookup the value
-	 * means there is no entry for that key. Do not print an error message
-	 * in that case.
-	 */
+	 
 	if ((map_is_map_of_maps(map_info->type) ||
 	     map_is_map_of_progs(map_info->type)) && lookup_errno == ENOENT)
 		return;
 
 	if (json_output) {
-		jsonw_start_object(json_wtr);	/* entry */
+		jsonw_start_object(json_wtr);	 
 		jsonw_name(json_wtr, "key");
 		print_hex_data_json(key, map_info->key_size);
 		jsonw_name(json_wtr, "value");
-		jsonw_start_object(json_wtr);	/* error */
+		jsonw_start_object(json_wtr);	 
 		jsonw_string_field(json_wtr, "error", strerror(lookup_errno));
-		jsonw_end_object(json_wtr);	/* error */
-		jsonw_end_object(json_wtr);	/* entry */
+		jsonw_end_object(json_wtr);	 
+		jsonw_end_object(json_wtr);	 
 	} else {
 		const char *msg = NULL;
 
@@ -323,7 +320,7 @@ static char **parse_bytes(char **argv, const char *name, unsigned char *val,
 	return argv + i;
 }
 
-/* on per cpu maps we must copy the provided value on all value instances */
+ 
 static void fill_per_cpu_value(struct bpf_map_info *info, void *value)
 {
 	unsigned int i, n, step;
@@ -644,7 +641,7 @@ static int do_show_subset(int argc, char **argv)
 		goto exit_free;
 
 	if (json_output && nb_fds > 1)
-		jsonw_start_array(json_wtr);	/* root array */
+		jsonw_start_array(json_wtr);	 
 	for (i = 0; i < nb_fds; i++) {
 		err = bpf_map_get_info_by_fd(fds[i], &info, &len);
 		if (err) {
@@ -663,7 +660,7 @@ static int do_show_subset(int argc, char **argv)
 		close(fds[i]);
 	}
 	if (json_output && nb_fds > 1)
-		jsonw_end_array(json_wtr);	/* root array */
+		jsonw_end_array(json_wtr);	 
 
 exit_free:
 	free(fds);
@@ -845,11 +842,11 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
 		}
 
 		if (show_header) {
-			jsonw_start_object(wtr);	/* map object */
+			jsonw_start_object(wtr);	 
 			show_map_header_json(info, wtr);
 			jsonw_name(wtr, "elements");
 		}
-		jsonw_start_array(wtr);		/* elements */
+		jsonw_start_array(wtr);		 
 	} else if (show_header) {
 		show_map_header_plain(info);
 	}
@@ -875,9 +872,9 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
 	}
 
 	if (wtr) {
-		jsonw_end_array(wtr);	/* elements */
+		jsonw_end_array(wtr);	 
 		if (show_header)
-			jsonw_end_object(wtr);	/* map object */
+			jsonw_end_object(wtr);	 
 	} else {
 		printf("Found %u element%s\n", num_elems,
 		       num_elems != 1 ? "s" : "");
@@ -931,7 +928,7 @@ static int do_dump(int argc, char **argv)
 	}
 
 	if (wtr && nb_fds > 1)
-		jsonw_start_array(wtr);	/* root array */
+		jsonw_start_array(wtr);	 
 	for (i = 0; i < nb_fds; i++) {
 		if (bpf_map_get_info_by_fd(fds[i], &info, &len)) {
 			p_err("can't get map info: %s", strerror(errno));
@@ -946,7 +943,7 @@ static int do_dump(int argc, char **argv)
 		close(fds[i]);
 	}
 	if (wtr && nb_fds > 1)
-		jsonw_end_array(wtr);	/* root array */
+		jsonw_end_array(wtr);	 
 
 	if (btf_wtr)
 		jsonw_destroy(&btf_wtr);
@@ -1040,9 +1037,7 @@ static void print_key_value(struct bpf_map_info *info, void *key,
 	if (json_output) {
 		print_entry_json(info, key, value, btf);
 	} else if (btf) {
-		/* if here json_wtr wouldn't have been initialised,
-		 * so let's create separate writer for btf
-		 */
+		 
 		btf_wtr = get_btf_writer();
 		if (!btf_wtr) {
 			p_info("failed to create json writer for btf. falling back to plain output");
@@ -1105,7 +1100,7 @@ static int do_lookup(int argc, char **argv)
 		goto exit_free;
 	}
 
-	/* here means bpf_map_lookup_elem() succeeded */
+	 
 	print_key_value(&info, key, value);
 
 exit_free:

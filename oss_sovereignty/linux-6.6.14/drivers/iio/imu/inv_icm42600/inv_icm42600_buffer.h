@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2020 Invensense, Inc.
- */
+ 
+ 
 
 #ifndef INV_ICM42600_BUFFER_H_
 #define INV_ICM42600_BUFFER_H_
@@ -15,16 +13,7 @@ struct inv_icm42600_state;
 #define INV_ICM42600_SENSOR_ACCEL	BIT(1)
 #define INV_ICM42600_SENSOR_TEMP	BIT(2)
 
-/**
- * struct inv_icm42600_fifo - FIFO state variables
- * @on:		reference counter for FIFO on.
- * @en:		bits field of INV_ICM42600_SENSOR_* for FIFO EN bits.
- * @period:	FIFO internal period.
- * @watermark:	watermark configuration values for accel and gyro.
- * @count:	number of bytes in the FIFO data buffer.
- * @nb:		gyro, accel and total samples in the FIFO data buffer.
- * @data:	FIFO data buffer aligned for DMA (2kB + 32 bytes of read cache).
- */
+ 
 struct inv_icm42600_fifo {
 	unsigned int on;
 	unsigned int en;
@@ -42,7 +31,7 @@ struct inv_icm42600_fifo {
 	uint8_t data[2080] __aligned(IIO_DMA_MINALIGN);
 };
 
-/* FIFO data packet */
+ 
 struct inv_icm42600_fifo_sensor_data {
 	__be16 x;
 	__be16 y;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - buck regulator driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -15,7 +9,7 @@
 #include <linux/mfd/lp8788.h>
 #include <linux/gpio.h>
 
-/* register address */
+ 
 #define LP8788_EN_BUCK			0x0C
 #define LP8788_BUCK_DVS_SEL		0x1D
 #define LP8788_BUCK1_VOUT0		0x1E
@@ -31,12 +25,12 @@
 #define LP8788_BUCK1_TIMESTEP		0x28
 #define LP8788_BUCK_PWM			0x2D
 
-/* mask/shift bits */
-#define LP8788_EN_BUCK1_M		BIT(0)	/* Addr 0Ch */
+ 
+#define LP8788_EN_BUCK1_M		BIT(0)	 
 #define LP8788_EN_BUCK2_M		BIT(1)
 #define LP8788_EN_BUCK3_M		BIT(2)
 #define LP8788_EN_BUCK4_M		BIT(3)
-#define LP8788_BUCK1_DVS_SEL_M		0x04	/* Addr 1Dh */
+#define LP8788_BUCK1_DVS_SEL_M		0x04	 
 #define LP8788_BUCK1_DVS_M		0x03
 #define LP8788_BUCK1_DVS_S		0
 #define LP8788_BUCK2_DVS_SEL_M		0x40
@@ -46,10 +40,10 @@
 #define LP8788_BUCK2_DVS_I2C		BIT(6)
 #define LP8788_BUCK1_DVS_PIN		(0 << 2)
 #define LP8788_BUCK2_DVS_PIN		(0 << 6)
-#define LP8788_VOUT_M			0x1F	/* Addr 1Eh ~ 27h */
-#define LP8788_STARTUP_TIME_M		0xF8	/* Addr 28h ~ 2Bh */
+#define LP8788_VOUT_M			0x1F	 
+#define LP8788_STARTUP_TIME_M		0xF8	 
 #define LP8788_STARTUP_TIME_S		3
-#define LP8788_FPWM_BUCK1_M		BIT(0)	/* Addr 2Dh */
+#define LP8788_FPWM_BUCK1_M		BIT(0)	 
 #define LP8788_FPWM_BUCK1_S		0
 #define LP8788_FPWM_BUCK2_M		BIT(1)
 #define LP8788_FPWM_BUCK2_S		1
@@ -91,7 +85,7 @@ struct lp8788_buck {
 	void *dvs;
 };
 
-/* BUCK 1 ~ 4 voltage ranges */
+ 
 static const struct linear_range buck_volt_ranges[] = {
 	REGULATOR_LINEAR_RANGE(500000, 0, 0, 0),
 	REGULATOR_LINEAR_RANGE(800000, 1, 25, 50000),
@@ -463,11 +457,11 @@ static int lp8788_init_dvs(struct platform_device *pdev,
 	u8 val[]  = { LP8788_BUCK1_DVS_PIN, LP8788_BUCK2_DVS_PIN };
 	u8 default_dvs_mode[] = { LP8788_BUCK1_DVS_I2C, LP8788_BUCK2_DVS_I2C };
 
-	/* no dvs for buck3, 4 */
+	 
 	if (id > BUCK2)
 		return 0;
 
-	/* no dvs platform data, then dvs will be selected by I2C registers */
+	 
 	if (!pdata)
 		goto set_default_dvs_mode;
 

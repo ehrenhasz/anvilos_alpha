@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5640.c  --  RT5640/RT5639 ALSA SoC audio codec driver
- *
- * Copyright 2011 Realtek Semiconductor Corp.
- * Author: Johnny Hsu <johnnyhsu@realtek.com>
- * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -343,7 +337,7 @@ static const DECLARE_TLV_DB_SCALE(in_vol_tlv, -3450, 150, 0);
 static const DECLARE_TLV_DB_MINMAX(adc_vol_tlv, -1762, 3000);
 static const DECLARE_TLV_DB_SCALE(adc_bst_tlv, 0, 1200, 0);
 
-/* {0, +20, +24, +30, +35, +40, +44, +50, +52} dB */
+ 
 static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
@@ -354,7 +348,7 @@ static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	8, 8, TLV_DB_SCALE_ITEM(5200, 0, 0)
 );
 
-/* Interface data select */
+ 
 static const char * const rt5640_data_select[] = {
 	"Normal", "Swap", "left copy to right", "right copy to left"};
 
@@ -370,7 +364,7 @@ static SOC_ENUM_SINGLE_DECL(rt5640_if2_dac_enum, RT5640_DIG_INF_DATA,
 static SOC_ENUM_SINGLE_DECL(rt5640_if2_adc_enum, RT5640_DIG_INF_DATA,
 			    RT5640_IF2_ADC_SEL_SFT, rt5640_data_select);
 
-/* Class D speaker gain ratio */
+ 
 static const char * const rt5640_clsd_spk_ratio[] = {"1.66x", "1.83x", "1.94x",
 	"2x", "2.11x", "2.22x", "2.33x", "2.44x", "2.55x", "2.66x", "2.77x"};
 
@@ -378,17 +372,17 @@ static SOC_ENUM_SINGLE_DECL(rt5640_clsd_spk_ratio_enum, RT5640_CLS_D_OUT,
 			    RT5640_CLSD_RATIO_SFT, rt5640_clsd_spk_ratio);
 
 static const struct snd_kcontrol_new rt5640_snd_controls[] = {
-	/* Speaker Output Volume */
+	 
 	SOC_DOUBLE("Speaker Channel Switch", RT5640_SPK_VOL,
 		RT5640_VOL_L_SFT, RT5640_VOL_R_SFT, 1, 1),
 	SOC_DOUBLE_TLV("Speaker Playback Volume", RT5640_SPK_VOL,
 		RT5640_L_VOL_SFT, RT5640_R_VOL_SFT, 39, 1, out_vol_tlv),
-	/* Headphone Output Volume */
+	 
 	SOC_DOUBLE("HP Channel Switch", RT5640_HP_VOL,
 		RT5640_VOL_L_SFT, RT5640_VOL_R_SFT, 1, 1),
 	SOC_DOUBLE_TLV("HP Playback Volume", RT5640_HP_VOL,
 		RT5640_L_VOL_SFT, RT5640_R_VOL_SFT, 39, 1, out_vol_tlv),
-	/* OUTPUT Control */
+	 
 	SOC_DOUBLE("OUT Playback Switch", RT5640_OUTPUT,
 		RT5640_L_MUTE_SFT, RT5640_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE("OUT Channel Switch", RT5640_OUTPUT,
@@ -396,7 +390,7 @@ static const struct snd_kcontrol_new rt5640_snd_controls[] = {
 	SOC_DOUBLE_TLV("OUT Playback Volume", RT5640_OUTPUT,
 		RT5640_L_VOL_SFT, RT5640_R_VOL_SFT, 39, 1, out_vol_tlv),
 
-	/* DAC Digital Volume */
+	 
 	SOC_DOUBLE("DAC2 Playback Switch", RT5640_DAC2_CTRL,
 		RT5640_M_DAC_L2_VOL_SFT, RT5640_M_DAC_R2_VOL_SFT, 1, 1),
 	SOC_DOUBLE_TLV("DAC2 Playback Volume", RT5640_DAC2_DIG_VOL,
@@ -405,7 +399,7 @@ static const struct snd_kcontrol_new rt5640_snd_controls[] = {
 	SOC_DOUBLE_TLV("DAC1 Playback Volume", RT5640_DAC1_DIG_VOL,
 			RT5640_L_VOL_SFT, RT5640_R_VOL_SFT,
 			175, 0, dac_vol_tlv),
-	/* IN1/IN2/IN3 Control */
+	 
 	SOC_SINGLE_TLV("IN1 Boost", RT5640_IN1_IN2,
 		RT5640_BST_SFT1, 8, 0, bst_tlv),
 	SOC_SINGLE_TLV("IN2 Boost", RT5640_IN3_IN4,
@@ -413,11 +407,11 @@ static const struct snd_kcontrol_new rt5640_snd_controls[] = {
 	SOC_SINGLE_TLV("IN3 Boost", RT5640_IN1_IN2,
 		RT5640_BST_SFT2, 8, 0, bst_tlv),
 
-	/* INL/INR Volume Control */
+	 
 	SOC_DOUBLE_TLV("IN Capture Volume", RT5640_INL_INR_VOL,
 			RT5640_INL_VOL_SFT, RT5640_INR_VOL_SFT,
 			31, 1, in_vol_tlv),
-	/* ADC Digital Volume Control */
+	 
 	SOC_DOUBLE("ADC Capture Switch", RT5640_ADC_DIG_VOL,
 		RT5640_L_MUTE_SFT, RT5640_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE_TLV("ADC Capture Volume", RT5640_ADC_DIG_VOL,
@@ -428,11 +422,11 @@ static const struct snd_kcontrol_new rt5640_snd_controls[] = {
 	SOC_DOUBLE_TLV("Mono ADC Capture Volume", RT5640_ADC_DATA,
 			RT5640_L_VOL_SFT, RT5640_R_VOL_SFT,
 			127, 0, adc_vol_tlv),
-	/* ADC Boost Volume Control */
+	 
 	SOC_DOUBLE_TLV("ADC Boost Gain", RT5640_ADC_BST_VOL,
 			RT5640_ADC_L_BST_SFT, RT5640_ADC_R_BST_SFT,
 			3, 0, adc_bst_tlv),
-	/* Class D speaker gain ratio */
+	 
 	SOC_ENUM("Class D SPK Ratio Control", rt5640_clsd_spk_ratio_enum),
 
 	SOC_ENUM("ADC IF1 Data Switch", rt5640_if1_adc_enum),
@@ -442,19 +436,12 @@ static const struct snd_kcontrol_new rt5640_snd_controls[] = {
 };
 
 static const struct snd_kcontrol_new rt5640_specific_snd_controls[] = {
-	/* MONO Output Control */
+	 
 	SOC_SINGLE("Mono Playback Switch", RT5640_MONO_OUT, RT5640_L_MUTE_SFT,
 		1, 1),
 };
 
-/**
- * set_dmic_clk - Set parameter of dmic.
- *
- * @w: DAPM widget.
- * @kcontrol: The kcontrol of this widget.
- * @event: Event id.
- *
- */
+ 
 static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
@@ -485,7 +472,7 @@ static int is_using_asrc(struct snd_soc_dapm_widget *source,
 	return 1;
 }
 
-/* Digital Mixer */
+ 
 static const struct snd_kcontrol_new rt5640_sto_adc_l_mix[] = {
 	SOC_DAPM_SINGLE("ADC1 Switch", RT5640_STO_ADC_MIXER,
 			RT5640_M_ADC_L1_SFT, 1, 1),
@@ -592,7 +579,7 @@ static const struct snd_kcontrol_new rt5640_dig_r_mix[] = {
 			RT5640_M_DAC_R2_DAC_R_SFT, 1, 1),
 };
 
-/* Analog Input Mixer */
+ 
 static const struct snd_kcontrol_new rt5640_rec_l_mix[] = {
 	SOC_DAPM_SINGLE("HPOL Switch", RT5640_REC_L2_MIXER,
 			RT5640_M_HP_L_RM_L_SFT, 1, 1),
@@ -623,7 +610,7 @@ static const struct snd_kcontrol_new rt5640_rec_r_mix[] = {
 			RT5640_M_OM_R_RM_R_SFT, 1, 1),
 };
 
-/* Analog Output Mixer */
+ 
 static const struct snd_kcontrol_new rt5640_spk_l_mix[] = {
 	SOC_DAPM_SINGLE("REC MIXL Switch", RT5640_SPK_L_MIXER,
 			RT5640_M_RM_L_SM_L_SFT, 1, 1),
@@ -788,7 +775,7 @@ static const struct snd_kcontrol_new hp_r_enable_control =
 	SOC_DAPM_SINGLE_AUTODISABLE("Switch", RT5640_HP_VOL,
 		RT5640_R_MUTE_SFT, 1, 1);
 
-/* Stereo ADC source */
+ 
 static const char * const rt5640_stereo_adc1_src[] = {
 	"DIG MIX", "ADC"
 };
@@ -809,7 +796,7 @@ static SOC_ENUM_SINGLE_DECL(rt5640_stereo_adc2_enum, RT5640_STO_ADC_MIXER,
 static const struct snd_kcontrol_new rt5640_sto_adc_2_mux =
 	SOC_DAPM_ENUM("Stereo ADC2 Mux", rt5640_stereo_adc2_enum);
 
-/* Mono ADC source */
+ 
 static const char * const rt5640_mono_adc_l1_src[] = {
 	"Mono DAC MIXL", "ADCL"
 };
@@ -850,7 +837,7 @@ static SOC_ENUM_SINGLE_DECL(rt5640_mono_adc_r2_enum, RT5640_MONO_ADC_MIXER,
 static const struct snd_kcontrol_new rt5640_mono_adc_r2_mux =
 	SOC_DAPM_ENUM("Mono ADC2 right source", rt5640_mono_adc_r2_enum);
 
-/* DAC2 channel source */
+ 
 static const char * const rt5640_dac_l2_src[] = {
 	"IF2", "Base L/R"
 };
@@ -882,7 +869,7 @@ static SOC_VALUE_ENUM_SINGLE_DECL(rt5640_dac_r2_enum,
 static const struct snd_kcontrol_new rt5640_dac_r2_mux =
 	SOC_DAPM_ENUM("DAC2 right channel source", rt5640_dac_r2_enum);
 
-/* digital interface and iis interface map */
+ 
 static const char * const rt5640_dai_iis_map[] = {
 	"1:1|2:2", "1:2|2:1", "1:1|2:1", "1:2|2:2"
 };
@@ -902,7 +889,7 @@ static SOC_VALUE_ENUM_SINGLE_DECL(rt5640_dai_iis_map_enum,
 static const struct snd_kcontrol_new rt5640_dai_mux =
 	SOC_DAPM_ENUM("DAI select", rt5640_dai_iis_map_enum);
 
-/* SDI select */
+ 
 static const char * const rt5640_sdi_sel[] = {
 	"IF1", "IF2"
 };
@@ -917,7 +904,7 @@ static void hp_amp_power_on(struct snd_soc_component *component)
 {
 	struct rt5640_priv *rt5640 = snd_soc_component_get_drvdata(component);
 
-	/* depop parameters */
+	 
 	regmap_update_bits(rt5640->regmap, RT5640_PR_BASE +
 		RT5640_CHPUMP_INT_REG1, 0x0700, 0x0200);
 	regmap_update_bits(rt5640->regmap, RT5640_DEPOP_M2,
@@ -927,7 +914,7 @@ static void hp_amp_power_on(struct snd_soc_component *component)
 		RT5640_HP_CP_PU | RT5640_HP_SG_DIS | RT5640_HP_CB_PU);
 	regmap_write(rt5640->regmap, RT5640_PR_BASE + RT5640_HP_DCC_INT1,
 			   0x9f00);
-	/* headphone amp power on */
+	 
 	regmap_update_bits(rt5640->regmap, RT5640_PWR_ANLG1,
 		RT5640_PWR_FV1 | RT5640_PWR_FV2, 0);
 	regmap_update_bits(rt5640->regmap, RT5640_PWR_ANLG1,
@@ -1054,7 +1041,7 @@ static int rt5640_hp_post_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
-	/* ASRC */
+	 
 	SND_SOC_DAPM_SUPPLY_S("Stereo Filter ASRC", 1, RT5640_ASRC_1,
 			 15, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("I2S2 Filter ASRC", 1, RT5640_ASRC_1,
@@ -1067,13 +1054,13 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 			 8, 0, NULL, 0),
 
 
-	/* Input Side */
-	/* micbias */
+	 
+	 
 	SND_SOC_DAPM_SUPPLY("LDO2", RT5640_PWR_ANLG1,
 			RT5640_PWR_LDO2_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("MICBIAS1", RT5640_PWR_ANLG2,
 			RT5640_PWR_MB1_BIT, 0, NULL, 0),
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("DMIC1"),
 	SND_SOC_DAPM_INPUT("DMIC2"),
 	SND_SOC_DAPM_INPUT("IN1P"),
@@ -1093,29 +1080,29 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 		NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DMIC2 Power", RT5640_DMIC, RT5640_DMIC_2_EN_SFT, 0,
 		NULL, 0),
-	/* Boost */
+	 
 	SND_SOC_DAPM_PGA("BST1", RT5640_PWR_ANLG2,
 		RT5640_PWR_BST1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("BST2", RT5640_PWR_ANLG2,
 		RT5640_PWR_BST4_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("BST3", RT5640_PWR_ANLG2,
 		RT5640_PWR_BST2_BIT, 0, NULL, 0),
-	/* Input Volume */
+	 
 	SND_SOC_DAPM_PGA("INL VOL", RT5640_PWR_VOL,
 		RT5640_PWR_IN_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("INR VOL", RT5640_PWR_VOL,
 		RT5640_PWR_IN_R_BIT, 0, NULL, 0),
-	/* REC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("RECMIXL", RT5640_PWR_MIXER, RT5640_PWR_RM_L_BIT, 0,
 			rt5640_rec_l_mix, ARRAY_SIZE(rt5640_rec_l_mix)),
 	SND_SOC_DAPM_MIXER("RECMIXR", RT5640_PWR_MIXER, RT5640_PWR_RM_R_BIT, 0,
 			rt5640_rec_r_mix, ARRAY_SIZE(rt5640_rec_r_mix)),
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC L", NULL, RT5640_PWR_DIG1,
 			RT5640_PWR_ADC_L_BIT, 0),
 	SND_SOC_DAPM_ADC("ADC R", NULL, RT5640_PWR_DIG1,
 			RT5640_PWR_ADC_R_BIT, 0),
-	/* ADC Mux */
+	 
 	SND_SOC_DAPM_MUX("Stereo ADC L2 Mux", SND_SOC_NOPM, 0, 0,
 				&rt5640_sto_adc_2_mux),
 	SND_SOC_DAPM_MUX("Stereo ADC R2 Mux", SND_SOC_NOPM, 0, 0,
@@ -1132,7 +1119,7 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 				&rt5640_mono_adc_r1_mux),
 	SND_SOC_DAPM_MUX("Mono ADC R2 Mux", SND_SOC_NOPM, 0, 0,
 				&rt5640_mono_adc_r2_mux),
-	/* ADC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("Stereo Filter", RT5640_PWR_DIG2,
 		RT5640_PWR_ADC_SF_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("Stereo ADC MIXL", SND_SOC_NOPM, 0, 0,
@@ -1148,7 +1135,7 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("Mono ADC MIXR", SND_SOC_NOPM, 0, 0,
 		rt5640_mono_adc_r_mix, ARRAY_SIZE(rt5640_mono_adc_r_mix)),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("I2S1", RT5640_PWR_DIG1,
 		RT5640_PWR_I2S1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 DAC", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -1165,7 +1152,7 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("IF2 ADC", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF2 ADC L", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF2 ADC R", SND_SOC_NOPM, 0, 0, NULL, 0),
-	/* Digital Interface Select */
+	 
 	SND_SOC_DAPM_MUX("DAI1 RX Mux", SND_SOC_NOPM, 0, 0, &rt5640_dai_mux),
 	SND_SOC_DAPM_MUX("DAI1 TX Mux", SND_SOC_NOPM, 0, 0, &rt5640_dai_mux),
 	SND_SOC_DAPM_MUX("DAI1 IF1 Mux", SND_SOC_NOPM, 0, 0, &rt5640_dai_mux),
@@ -1176,20 +1163,20 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("DAI2 IF1 Mux", SND_SOC_NOPM, 0, 0, &rt5640_dai_mux),
 	SND_SOC_DAPM_MUX("DAI2 IF2 Mux", SND_SOC_NOPM, 0, 0, &rt5640_dai_mux),
 	SND_SOC_DAPM_MUX("SDI2 TX Mux", SND_SOC_NOPM, 0, 0, &rt5640_sdi_mux),
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF2RX", "AIF2 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF2TX", "AIF2 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Output Side */
-	/* DAC mixer before sound effect  */
+	 
+	 
 	SND_SOC_DAPM_MIXER("DAC MIXL", SND_SOC_NOPM, 0, 0,
 		rt5640_dac_l_mix, ARRAY_SIZE(rt5640_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("DAC MIXR", SND_SOC_NOPM, 0, 0,
 		rt5640_dac_r_mix, ARRAY_SIZE(rt5640_dac_r_mix)),
 
-	/* DAC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Mono DAC MIXL", SND_SOC_NOPM, 0, 0,
 		rt5640_mono_dac_l_mix, ARRAY_SIZE(rt5640_mono_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("Mono DAC MIXR", SND_SOC_NOPM, 0, 0,
@@ -1198,7 +1185,7 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 		rt5640_dig_l_mix, ARRAY_SIZE(rt5640_dig_l_mix)),
 	SND_SOC_DAPM_MIXER("DIG MIXR", SND_SOC_NOPM, 0, 0,
 		rt5640_dig_r_mix, ARRAY_SIZE(rt5640_dig_r_mix)),
-	/* DACs */
+	 
 	SND_SOC_DAPM_DAC("DAC L1", NULL, SND_SOC_NOPM,
 			0, 0),
 	SND_SOC_DAPM_DAC("DAC R1", NULL, SND_SOC_NOPM,
@@ -1211,12 +1198,12 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 		RT5640_PWR_DAC_L2_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAC R2 Power", RT5640_PWR_DIG1,
 		RT5640_PWR_DAC_R2_BIT, 0, NULL, 0),
-	/* SPK/OUT Mixer */
+	 
 	SND_SOC_DAPM_MIXER("SPK MIXL", RT5640_PWR_MIXER, RT5640_PWR_SM_L_BIT,
 		0, rt5640_spk_l_mix, ARRAY_SIZE(rt5640_spk_l_mix)),
 	SND_SOC_DAPM_MIXER("SPK MIXR", RT5640_PWR_MIXER, RT5640_PWR_SM_R_BIT,
 		0, rt5640_spk_r_mix, ARRAY_SIZE(rt5640_spk_r_mix)),
-	/* Ouput Volume */
+	 
 	SND_SOC_DAPM_PGA("SPKVOL L", RT5640_PWR_VOL,
 		RT5640_PWR_SV_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("SPKVOL R", RT5640_PWR_VOL,
@@ -1229,7 +1216,7 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 		RT5640_PWR_HV_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("HPOVOL R", RT5640_PWR_VOL,
 		RT5640_PWR_HV_R_BIT, 0, NULL, 0),
-	/* SPO/HPO/LOUT/Mono Mixer */
+	 
 	SND_SOC_DAPM_MIXER("SPOL MIX", SND_SOC_NOPM, 0,
 		0, rt5640_spo_l_mix, ARRAY_SIZE(rt5640_spo_l_mix)),
 	SND_SOC_DAPM_MIXER("SPOR MIX", SND_SOC_NOPM, 0,
@@ -1251,7 +1238,7 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("Improve SPK Amp Drv", RT5640_PWR_DIG1,
 		RT5640_PWR_CLS_D_BIT, 0, NULL, 0),
 
-	/* Output Switch */
+	 
 	SND_SOC_DAPM_SWITCH("Speaker L Playback", SND_SOC_NOPM, 0, 0,
 			&spk_l_enable_control),
 	SND_SOC_DAPM_SWITCH("Speaker R Playback", SND_SOC_NOPM, 0, 0,
@@ -1261,7 +1248,7 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("HP R Playback", SND_SOC_NOPM, 0, 0,
 			&hp_r_enable_control),
 	SND_SOC_DAPM_POST("HP Post", rt5640_hp_post_event),
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("SPOLP"),
 	SND_SOC_DAPM_OUTPUT("SPOLN"),
 	SND_SOC_DAPM_OUTPUT("SPORP"),
@@ -1273,12 +1260,12 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_widget rt5640_specific_dapm_widgets[] = {
-	/* Audio DSP */
+	 
 	SND_SOC_DAPM_PGA("Audio DSP", SND_SOC_NOPM, 0, 0, NULL, 0),
-	/* ANC */
+	 
 	SND_SOC_DAPM_PGA("ANC", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* DAC2 channel Mux */
+	 
 	SND_SOC_DAPM_MUX("DAC L2 Mux", SND_SOC_NOPM, 0, 0, &rt5640_dac_l2_mux),
 	SND_SOC_DAPM_MUX("DAC R2 Mux", SND_SOC_NOPM, 0, 0, &rt5640_dac_r2_mux),
 
@@ -1942,13 +1929,7 @@ static int rt5640_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-		/*
-		 * SND_SOC_BIAS_PREPARE is called while preparing for a
-		 * transition to ON or away from ON. If current bias_level
-		 * is SND_SOC_BIAS_ON, then it is preparing for a transition
-		 * away from ON. Disable the clock in that case, otherwise
-		 * enable it.
-		 */
+		 
 		if (IS_ERR(rt5640->mclk))
 			break;
 
@@ -2107,7 +2088,7 @@ void rt5640_enable_micbias1_for_ovcd(struct snd_soc_component *component)
 	snd_soc_dapm_mutex_lock(dapm);
 	snd_soc_dapm_force_enable_pin_unlocked(dapm, "LDO2");
 	snd_soc_dapm_force_enable_pin_unlocked(dapm, "MICBIAS1");
-	/* OVCD is unreliable when used with RCCLK as sysclk-source */
+	 
 	if (rt5640->use_platform_clock)
 		snd_soc_dapm_force_enable_pin_unlocked(dapm, "Platform Clock");
 	snd_soc_dapm_sync_unlocked(dapm);
@@ -2182,13 +2163,13 @@ static bool rt5640_jack_inserted(struct snd_soc_component *component)
 		return (val & RT5640_JD_STATUS);
 }
 
-/* Jack detect and button-press timings */
-#define JACK_SETTLE_TIME	100 /* milli seconds */
+ 
+#define JACK_SETTLE_TIME	100  
 #define JACK_DETECT_COUNT	5
-#define JACK_DETECT_MAXCOUNT	20  /* Aprox. 2 seconds worth of tries */
-#define JACK_UNPLUG_TIME	80  /* milli seconds */
-#define BP_POLL_TIME		10  /* milli seconds */
-#define BP_POLL_MAXCOUNT	200 /* assume something is wrong after this */
+#define JACK_DETECT_MAXCOUNT	20   
+#define JACK_UNPLUG_TIME	80   
+#define BP_POLL_TIME		10   
+#define BP_POLL_MAXCOUNT	200  
 #define BP_THRESHOLD		3
 
 static void rt5640_start_button_press_work(struct snd_soc_component *component)
@@ -2210,14 +2191,14 @@ static void rt5640_button_press_work(struct work_struct *work)
 		container_of(work, struct rt5640_priv, bp_work.work);
 	struct snd_soc_component *component = rt5640->component;
 
-	/* Check the jack was not removed underneath us */
+	 
 	if (!rt5640_jack_inserted(component))
 		return;
 
 	if (rt5640_micbias1_ovcd(component)) {
 		rt5640->release_count = 0;
 		rt5640->press_count++;
-		/* Remember till after JACK_UNPLUG_TIME wait */
+		 
 		if (rt5640->press_count >= BP_THRESHOLD)
 			rt5640->pressed = true;
 		rt5640_clear_micbias1_ovcd(component);
@@ -2226,10 +2207,7 @@ static void rt5640_button_press_work(struct work_struct *work)
 		rt5640->release_count++;
 	}
 
-	/*
-	 * The pins get temporarily shorted on jack unplug, so we poll for
-	 * at least JACK_UNPLUG_TIME milli-seconds before reporting a press.
-	 */
+	 
 	rt5640->poll_count++;
 	if (rt5640->poll_count < (JACK_UNPLUG_TIME / BP_POLL_TIME)) {
 		schedule_delayed_work(&rt5640->bp_work,
@@ -2249,9 +2227,9 @@ static void rt5640_button_press_work(struct work_struct *work)
 			dev_dbg(component->dev, "headset button release\n");
 			snd_soc_jack_report(rt5640->jack, 0, SND_JACK_BTN_0);
 		}
-		/* Re-enable OVCD IRQ to detect next press */
+		 
 		rt5640_enable_micbias1_ovcd_irq(component);
-		return; /* Stop polling */
+		return;  
 	}
 
 	schedule_delayed_work(&rt5640->bp_work, msecs_to_jiffies(BP_POLL_TIME));
@@ -2261,20 +2239,14 @@ int rt5640_detect_headset(struct snd_soc_component *component, struct gpio_desc 
 {
 	int i, headset_count = 0, headphone_count = 0;
 
-	/*
-	 * We get the insertion event before the jack is fully inserted at which
-	 * point the second ring on a TRRS connector may short the 2nd ring and
-	 * sleeve contacts, also the overcurrent detection is not entirely
-	 * reliable. So we try several times with a wait in between until we
-	 * detect the same type JACK_DETECT_COUNT times in a row.
-	 */
+	 
 	for (i = 0; i < JACK_DETECT_MAXCOUNT; i++) {
-		/* Clear any previous over-current status flag */
+		 
 		rt5640_clear_micbias1_ovcd(component);
 
 		msleep(JACK_SETTLE_TIME);
 
-		/* Check the jack is still connected before checking ovcd */
+		 
 		if (hp_det_gpio) {
 			if (gpiod_get_value_cansleep(hp_det_gpio))
 				return 0;
@@ -2284,11 +2256,7 @@ int rt5640_detect_headset(struct snd_soc_component *component, struct gpio_desc 
 		}
 
 		if (rt5640_micbias1_ovcd(component)) {
-			/*
-			 * Over current detected, there is a short between the
-			 * 2nd ring contact and the ground, so a TRS connector
-			 * without a mic contact and thus plain headphones.
-			 */
+			 
 			dev_dbg(component->dev, "jack mic-gnd shorted\n");
 			headset_count = 0;
 			headphone_count++;
@@ -2318,7 +2286,7 @@ static void rt5640_jack_work(struct work_struct *work)
 	if (rt5640->jd_src == RT5640_JD_SRC_HDA_HEADER) {
 		int val, jack_type = 0, hda_mic_plugged, hda_hp_plugged;
 
-		/* mic jack */
+		 
 		val = snd_soc_component_read(component, RT5640_INT_IRQ_ST);
 		hda_mic_plugged = !(val & RT5640_JD_STATUS);
 		dev_dbg(component->dev, "mic jack status %d\n",
@@ -2330,7 +2298,7 @@ static void rt5640_jack_work(struct work_struct *work)
 		if (hda_mic_plugged)
 			jack_type |= SND_JACK_MICROPHONE;
 
-		/* headphone jack */
+		 
 		val = snd_soc_component_read(component, RT5640_DUMMY2);
 		hda_hp_plugged = !(val & (0x1 << 11));
 		dev_dbg(component->dev, "headphone jack status %d\n",
@@ -2348,7 +2316,7 @@ static void rt5640_jack_work(struct work_struct *work)
 	}
 
 	if (!rt5640_jack_inserted(component)) {
-		/* Jack removed, or spurious IRQ? */
+		 
 		if (rt5640->jack->status & SND_JACK_HEADPHONE) {
 			if (rt5640->jack->status & SND_JACK_MICROPHONE) {
 				cancel_delayed_work_sync(&rt5640->bp_work);
@@ -2360,15 +2328,15 @@ static void rt5640_jack_work(struct work_struct *work)
 			dev_dbg(component->dev, "jack unplugged\n");
 		}
 	} else if (!(rt5640->jack->status & SND_JACK_HEADPHONE)) {
-		/* Jack inserted */
+		 
 		WARN_ON(rt5640->ovcd_irq_enabled);
 		rt5640_enable_micbias1_for_ovcd(component);
 		status = rt5640_detect_headset(component, NULL);
 		if (status == SND_JACK_HEADSET) {
-			/* Enable ovcd IRQ for button press detect. */
+			 
 			rt5640_enable_micbias1_ovcd_irq(component);
 		} else {
-			/* No more need for overcurrent detect. */
+			 
 			rt5640_disable_micbias1_for_ovcd(component);
 		}
 		dev_dbg(component->dev, "detect status %#02x\n", status);
@@ -2376,24 +2344,11 @@ static void rt5640_jack_work(struct work_struct *work)
 	} else if (rt5640->ovcd_irq_enabled && rt5640_micbias1_ovcd(component)) {
 		dev_dbg(component->dev, "OVCD IRQ\n");
 
-		/*
-		 * The ovcd IRQ keeps firing while the button is pressed, so
-		 * we disable it and start polling the button until released.
-		 *
-		 * The disable will make the IRQ pin 0 again and since we get
-		 * IRQs on both edges (so as to detect both jack plugin and
-		 * unplug) this means we will immediately get another IRQ.
-		 * The ovcd_irq_enabled check above makes the 2ND IRQ a NOP.
-		 */
+		 
 		rt5640_disable_micbias1_ovcd_irq(component);
 		rt5640_start_button_press_work(component);
 
-		/*
-		 * If the jack-detect IRQ flag goes high (unplug) after our
-		 * above rt5640_jack_inserted() check and before we have
-		 * disabled the OVCD IRQ, the IRQ pin will stay high and as
-		 * we react to edges, we miss the unplug event -> recheck.
-		 */
+		 
 		queue_delayed_work(system_long_wq, &rt5640->jack_work, 0);
 	}
 }
@@ -2441,15 +2396,7 @@ void rt5640_set_ovcd_params(struct snd_soc_component *component)
 		RT5640_MIC1_OVTH_MASK | RT5640_MIC1_OVCD_MASK,
 		rt5640->ovcd_th | RT5640_MIC1_OVCD_EN);
 
-	/*
-	 * The over-current-detect is only reliable in detecting the absence
-	 * of over-current, when the mic-contact in the jack is short-circuited,
-	 * the hardware periodically retries if it can apply the bias-current
-	 * leading to the ovcd status flip-flopping 1-0-1 with it being 0 about
-	 * 10% of the time, as we poll the ovcd status bit we might hit that
-	 * 10%, so we enable sticky mode and when checking OVCD we clear the
-	 * status, msleep() a bit and then check to get a reliable reading.
-	 */
+	 
 	snd_soc_component_update_bits(component, RT5640_IRQ_CTRL2,
 		RT5640_MB1_OC_STKY_MASK, RT5640_MB1_OC_STKY_EN);
 }
@@ -2459,10 +2406,7 @@ static void rt5640_disable_jack_detect(struct snd_soc_component *component)
 {
 	struct rt5640_priv *rt5640 = snd_soc_component_get_drvdata(component);
 
-	/*
-	 * soc_remove_component() force-disables jack and thus rt5640->jack
-	 * could be NULL at the time of driver's module unloading.
-	 */
+	 
 	if (!rt5640->jack)
 		return;
 
@@ -2493,15 +2437,15 @@ static void rt5640_enable_jack_detect(struct snd_soc_component *component,
 	struct rt5640_priv *rt5640 = snd_soc_component_get_drvdata(component);
 	int ret;
 
-	/* Select JD-source */
+	 
 	snd_soc_component_update_bits(component, RT5640_JD_CTRL,
 		RT5640_JD_MASK, rt5640->jd_src << RT5640_JD_SFT);
 
-	/* Selecting GPIO01 as an interrupt */
+	 
 	snd_soc_component_update_bits(component, RT5640_GPIO_CTRL1,
 		RT5640_GP1_PIN_MASK, RT5640_GP1_PIN_IRQ);
 
-	/* Set GPIO1 output */
+	 
 	snd_soc_component_update_bits(component, RT5640_GPIO_CTRL3,
 		RT5640_GP1_PF_MASK, RT5640_GP1_PF_OUT);
 
@@ -2509,12 +2453,7 @@ static void rt5640_enable_jack_detect(struct snd_soc_component *component,
 
 	rt5640_set_ovcd_params(component);
 
-	/*
-	 * All IRQs get or-ed together, so we need the jack IRQ to report 0
-	 * when a jack is inserted so that the OVCD IRQ then toggles the IRQ
-	 * pin 0/1 instead of it being stuck to 1. So we invert the JD polarity
-	 * on systems where the hardware does not already do this.
-	 */
+	 
 	if (rt5640->jd_inverted) {
 		if (rt5640->jd_src == RT5640_JD_SRC_JD1_IN4P)
 			snd_soc_component_write(component, RT5640_IRQ_CTRL1,
@@ -2573,7 +2512,7 @@ static void rt5640_enable_jack_detect(struct snd_soc_component *component,
 	}
 	rt5640->irq_requested = true;
 
-	/* sync initial jack state */
+	 
 	queue_delayed_work(system_long_wq, &rt5640->jack_work, 0);
 }
 
@@ -2591,19 +2530,19 @@ static void rt5640_enable_hda_jack_detect(
 		snd_soc_component_get_dapm(component);
 	int ret;
 
-	/* Select JD1 for Mic */
+	 
 	snd_soc_component_update_bits(component, RT5640_JD_CTRL,
 		RT5640_JD_MASK, RT5640_JD_JD1_IN4P);
 	snd_soc_component_write(component, RT5640_IRQ_CTRL1, RT5640_IRQ_JD_NOR);
 
-	/* Select JD2 for Headphone */
+	 
 	snd_soc_component_update_bits(component, RT5640_DUMMY2, 0x1100, 0x1100);
 
-	/* Selecting GPIO01 as an interrupt */
+	 
 	snd_soc_component_update_bits(component, RT5640_GPIO_CTRL1,
 		RT5640_GP1_PIN_MASK, RT5640_GP1_PIN_IRQ);
 
-	/* Set GPIO1 output */
+	 
 	snd_soc_component_update_bits(component, RT5640_GPIO_CTRL3,
 		RT5640_GP1_PF_MASK, RT5640_GP1_PF_OUT);
 
@@ -2627,7 +2566,7 @@ static void rt5640_enable_hda_jack_detect(
 	}
 	rt5640->irq_requested = true;
 
-	/* sync initial jack state */
+	 
 	queue_delayed_work(system_long_wq, &rt5640->jack_work, 0);
 
 	snd_soc_dapm_add_routes(dapm, rt5640_hda_jack_dapm_routes,
@@ -2660,7 +2599,7 @@ static int rt5640_probe(struct snd_soc_component *component)
 	bool dmic_en = false;
 	u32 val;
 
-	/* Check if MCLK provided */
+	 
 	rt5640->mclk = devm_clk_get(component->dev, "mclk");
 	if (PTR_ERR(rt5640->mclk) == -EPROBE_DEFER)
 		return -EPROBE_DEFER;
@@ -2700,13 +2639,7 @@ static int rt5640_probe(struct snd_soc_component *component)
 		return -ENODEV;
 	}
 
-	/*
-	 * Note on some platforms the platform code may need to add device-props
-	 * rather then relying only on properties set by the firmware.
-	 * Therefor the property parsing MUST be done here, rather then from
-	 * rt5640_i2c_probe(), so that the platform-code can attach extra
-	 * properties before calling snd_soc_register_card().
-	 */
+	 
 	if (device_property_read_bool(component->dev, "realtek,in1-differential"))
 		snd_soc_component_update_bits(component, RT5640_IN1_IN2,
 					      RT5640_IN_DF1, RT5640_IN_DF1);
@@ -2750,11 +2683,7 @@ static int rt5640_probe(struct snd_soc_component *component)
 	if (!device_property_read_bool(component->dev, "realtek,jack-detect-not-inverted"))
 		rt5640->jd_inverted = true;
 
-	/*
-	 * Testing on various boards has shown that good defaults for the OVCD
-	 * threshold and scale-factor are 2000µA and 0.75. For an effective
-	 * limit of 1500µA, this seems to be more reliable then 1500µA and 1.0.
-	 */
+	 
 	rt5640->ovcd_th = RT5640_MIC1_OVTH_2000UA;
 	rt5640->ovcd_sf = RT5640_MIC_OVCD_SF_0P75;
 
@@ -2799,7 +2728,7 @@ static int rt5640_suspend(struct snd_soc_component *component)
 	struct rt5640_priv *rt5640 = snd_soc_component_get_drvdata(component);
 
 	if (rt5640->jack) {
-		/* disable jack interrupts during system suspend */
+		 
 		disable_irq(rt5640->irq);
 		rt5640_cancel_work(rt5640);
 	}
@@ -3034,7 +2963,7 @@ static int rt5640_i2c_probe(struct i2c_client *i2c)
 	INIT_DELAYED_WORK(&rt5640->bp_work, rt5640_button_press_work);
 	INIT_DELAYED_WORK(&rt5640->jack_work, rt5640_jack_work);
 
-	/* Make sure work is stopped on probe-error / remove */
+	 
 	ret = devm_add_action_or_reset(&i2c->dev, rt5640_cancel_work, rt5640);
 	if (ret)
 		return ret;

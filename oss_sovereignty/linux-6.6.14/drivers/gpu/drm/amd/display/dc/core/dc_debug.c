@@ -1,31 +1,5 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-/*
- * dc_debug.c
- *
- *  Created on: Nov 3, 2016
- *      Author: yonsun
- */
+ 
+ 
 
 #include "dm_services.h"
 
@@ -317,9 +291,7 @@ void context_timing_trace(
 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		struct pipe_ctx *pipe_ctx = &res_ctx->pipe_ctx[i];
-		/* get_position() returns CRTC vertical/horizontal counter
-		 * hence not applicable for underlay pipe
-		 */
+		 
 		if (pipe_ctx->stream == NULL || pipe_ctx->pipe_idx == underlay_idx)
 			continue;
 
@@ -364,13 +336,7 @@ void context_clock_trace(
 			context->bw_ctx.bw.dcn.clk.socclk_khz);
 }
 
-/**
- * dc_status_to_str - convert dc_status to a human readable string
- * @status: dc_status to be converted
- *
- * Return:
- * A string describing the DC status.
- */
+ 
 char *dc_status_to_str(enum dc_status status)
 {
 	switch (status) {

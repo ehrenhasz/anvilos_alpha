@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Toradex AG
- *
- * Author: Marcel Ziswiler <marcel.ziswiler@toradex.com>
- */
+
+ 
 
 #include <linux/mtd/rawnand.h>
 #include "internals.h"
@@ -15,7 +11,7 @@ static void esmt_nand_decode_id(struct nand_chip *chip)
 
 	nand_decode_ext_id(chip);
 
-	/* Extract ECC requirements from 5th id byte. */
+	 
 	if (chip->id.len >= 5 && nand_is_slc(chip)) {
 		requirements.step_size = 512;
 		switch (chip->id.data[4] & 0x3) {
@@ -41,12 +37,7 @@ static void esmt_nand_decode_id(struct nand_chip *chip)
 static int esmt_nand_init(struct nand_chip *chip)
 {
 	if (nand_is_slc(chip))
-		/*
-		 * It is known that some ESMT SLC NANDs have been shipped
-		 * with the factory bad block markers in the first or last page
-		 * of the block, instead of the first or second page. To be on
-		 * the safe side, let's check all three locations.
-		 */
+		 
 		chip->options |= NAND_BBM_FIRSTPAGE | NAND_BBM_SECONDPAGE |
 				 NAND_BBM_LASTPAGE;
 

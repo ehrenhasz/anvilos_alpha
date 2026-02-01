@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+ 
+ 
 
 #ifndef RTRS_SRV_H
 #define RTRS_SRV_H
@@ -15,9 +9,7 @@
 #include <linux/percpu.h>
 #include "rtrs-pri.h"
 
-/*
- * enum rtrs_srv_state - Server states.
- */
+ 
 enum rtrs_srv_state {
 	RTRS_SRV_CONNECTING,
 	RTRS_SRV_CONNECTED,
@@ -25,9 +17,7 @@ enum rtrs_srv_state {
 	RTRS_SRV_CLOSED,
 };
 
-/* stats for Read and write operation.
- * see Documentation/ABI/testing/sysfs-class-rtrs-server for details
- */
+ 
 struct rtrs_srv_stats_rdma_stats {
 	struct {
 		u64 cnt;
@@ -47,7 +37,7 @@ struct rtrs_srv_con {
 	spinlock_t		rsp_wr_wait_lock;
 };
 
-/* IO context in rtrs_srv, each io has one */
+ 
 struct rtrs_srv_op {
 	struct rtrs_srv_con		*con;
 	u32				msg_id;
@@ -59,17 +49,14 @@ struct rtrs_srv_op {
 	int				status;
 };
 
-/*
- * server side memory region context, when always_invalidate=Y, we need
- * queue_depth of memory region to invalidate each memory region.
- */
+ 
 struct rtrs_srv_mr {
 	struct ib_mr	*mr;
 	struct sg_table	sgt;
-	struct ib_cqe	inv_cqe;	/* only for always_invalidate=true */
-	u32		msg_id;		/* only for always_invalidate=true */
-	u32		msg_off;	/* only for always_invalidate=true */
-	struct rtrs_iu	*iu;		/* send buffer for new rkey msg */
+	struct ib_cqe	inv_cqe;	 
+	u32		msg_id;		 
+	u32		msg_off;	 
+	struct rtrs_iu	*iu;		 
 };
 
 struct rtrs_srv_path {
@@ -140,15 +127,15 @@ static inline void rtrs_srv_update_rdma_stats(struct rtrs_srv_stats *s,
 	this_cpu_add(s->rdma_stats->dir[d].size_total, size);
 }
 
-/* functions which are implemented in rtrs-srv-stats.c */
+ 
 int rtrs_srv_reset_rdma_stats(struct rtrs_srv_stats *stats, bool enable);
 ssize_t rtrs_srv_stats_rdma_to_str(struct rtrs_srv_stats *stats, char *page);
 int rtrs_srv_reset_all_stats(struct rtrs_srv_stats *stats, bool enable);
 ssize_t rtrs_srv_reset_all_help(struct rtrs_srv_stats *stats,
 				 char *page, size_t len);
 
-/* functions which are implemented in rtrs-srv-sysfs.c */
+ 
 int rtrs_srv_create_path_files(struct rtrs_srv_path *srv_path);
 void rtrs_srv_destroy_path_files(struct rtrs_srv_path *srv_path);
 
-#endif /* RTRS_SRV_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * bcache journalling code, for btree insertions
- *
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include "bcache.h"
 #include "btree.h"
@@ -12,18 +8,7 @@
 
 #include <trace/events/bcache.h>
 
-/*
- * Journal replay/recovery:
- *
- * This code is all driven from run_cache_set(); we first read the journal
- * entries, do some other stuff, then we mark all the keys in the journal
- * entries (same as garbage collection would), then we replay them - reinserting
- * them into the cache in precisely the same order as they appear in the
- * journal.
- *
- * We only journal keys that go in leaf nodes, which simplifies things quite a
- * bit.
- */
+ 
 
 static void journal_read_endio(struct bio *bio)
 {
@@ -64,11 +49,7 @@ reread:		left = ca->sb.bucket_size - offset;
 		closure_bio_submit(ca->set, bio, &cl);
 		closure_sync(&cl);
 
-		/* This function could be simpler now since we no longer write
-		 * journal entries that overlap bucket boundaries; this means
-		 * the start of a bucket will always have a valid journal entry
-		 * if it has any journal entries at all.
-		 */
+		 
 
 		j = data;
 		while (len) {
@@ -98,20 +79,9 @@ reread:		left = ca->sb.bucket_size - offset;
 
 			blocks = set_blocks(j, block_bytes(ca));
 
-			/*
-			 * Nodes in 'list' are in linear increasing order of
-			 * i->j.seq, the node on head has the smallest (oldest)
-			 * journal seq, the node on tail has the biggest
-			 * (latest) journal seq.
-			 */
+			 
 
-			/*
-			 * Check from the oldest jset for last_seq. If
-			 * i->j.seq < j->last_seq, it means the oldest jset
-			 * in list is expired and useless, remove it from
-			 * this list. Otherwise, j is a candidate jset for
-			 * further following checks.
-			 */
+			 
 			while (!list_empty(list)) {
 				i = list_first_entry(list,
 					struct journal_replay, list);
@@ -121,22 +91,16 @@ reread:		left = ca->sb.bucket_size - offset;
 				kfree(i);
 			}
 
-			/* iterate list in reverse order (from latest jset) */
+			 
 			list_for_each_entry_reverse(i, list, list) {
 				if (j->seq == i->j.seq)
 					goto next_set;
 
-				/*
-				 * if j->seq is less than any i->j.last_seq
-				 * in list, j is an expired and useless jset.
-				 */
+				 
 				if (j->seq < i->j.last_seq)
 					goto next_set;
 
-				/*
-				 * 'where' points to first jset in list which
-				 * is elder then j.
-				 */
+				 
 				if (j->seq > i->j.seq) {
 					where = &i->list;
 					goto add;
@@ -150,8 +114,8 @@ add:
 			if (!i)
 				return -ENOMEM;
 			unsafe_memcpy(&i->j, j, bytes,
-				/* "bytes" was calculated by set_bytes() above */);
-			/* Add to the location after 'where' points to */
+				 );
+			 
 			list_add(&i->list, where);
 			ret = 1;
 
@@ -188,16 +152,9 @@ int bch_journal_read(struct cache_set *c, struct list_head *list)
 	bitmap_zero(bitmap, SB_JOURNAL_BUCKETS);
 	pr_debug("%u journal buckets\n", ca->sb.njournal_buckets);
 
-	/*
-	 * Read journal buckets ordered by golden ratio hash to quickly
-	 * find a sequence of buckets with valid journal entries
-	 */
+	 
 	for (i = 0; i < ca->sb.njournal_buckets; i++) {
-		/*
-		 * We must try the index l with ZERO first for
-		 * correctness due to the scenario that the journal
-		 * bucket is circular buffer which might have wrapped
-		 */
+		 
 		l = (i * 2654435769U) % ca->sb.njournal_buckets;
 
 		if (test_bit(l, bitmap))
@@ -207,23 +164,20 @@ int bch_journal_read(struct cache_set *c, struct list_head *list)
 			goto bsearch;
 	}
 
-	/*
-	 * If that fails, check all the buckets we haven't checked
-	 * already
-	 */
+	 
 	pr_debug("falling back to linear search\n");
 
 	for_each_clear_bit(l, bitmap, ca->sb.njournal_buckets)
 		if (read_bucket(l))
 			goto bsearch;
 
-	/* no journal entries on this device? */
+	 
 	if (l == ca->sb.njournal_buckets)
 		goto out;
 bsearch:
 	BUG_ON(list_empty(list));
 
-	/* Binary search */
+	 
 	m = l;
 	r = find_next_bit(bitmap, ca->sb.njournal_buckets, l + 1);
 	pr_debug("starting binary search, l %u r %u\n", l, r);
@@ -242,10 +196,7 @@ bsearch:
 			r = m;
 	}
 
-	/*
-	 * Read buckets in reverse order until we stop finding more
-	 * journal entries
-	 */
+	 
 	pr_debug("finishing up: m %u njournal_buckets %u\n",
 		 m, ca->sb.njournal_buckets);
 	l = m;
@@ -269,11 +220,7 @@ bsearch:
 	for (i = 0; i < ca->sb.njournal_buckets; i++)
 		if (ja->seq[i] > seq) {
 			seq = ja->seq[i];
-			/*
-			 * When journal_reclaim() goes to allocate for
-			 * the first time, it'll use the bucket after
-			 * ja->cur_idx
-			 */
+			 
 			ja->cur_idx = i;
 			ja->last_idx = ja->discard_idx = (i + 1) %
 				ca->sb.njournal_buckets;
@@ -298,12 +245,7 @@ void bch_journal_mark(struct cache_set *c, struct list_head *list)
 	struct journal *j = &c->journal;
 	uint64_t last = j->seq;
 
-	/*
-	 * journal.pin should never fill up - we never write a journal
-	 * entry when it would fill up. But if for some reason it does, we
-	 * iterate over the list in reverse order so that we can just skip that
-	 * refcount instead of bugging.
-	 */
+	 
 
 	list_for_each_entry_reverse(i, list, list) {
 		BUG_ON(last < i->j.seq);
@@ -411,7 +353,7 @@ void bch_journal_space_reserve(struct journal *j)
 	j->do_reserve = true;
 }
 
-/* Journalling */
+ 
 
 static void btree_flush_write(struct cache_set *c)
 {
@@ -432,15 +374,12 @@ static void btree_flush_write(struct cache_set *c)
 	c->journal.btree_flushing = true;
 	spin_unlock(&c->journal.flush_write_lock);
 
-	/* get the oldest journal entry and check its refcount */
+	 
 	spin_lock(&c->journal.lock);
 	fifo_front_p = &fifo_front(&c->journal.pin);
 	ref_nr = atomic_read(fifo_front_p);
 	if (ref_nr <= 0) {
-		/*
-		 * do nothing if no btree node references
-		 * the oldest journal entry
-		 */
+		 
 		spin_unlock(&c->journal.lock);
 		goto out;
 	}
@@ -453,25 +392,12 @@ static void btree_flush_write(struct cache_set *c)
 
 	mutex_lock(&c->bucket_lock);
 	list_for_each_entry_safe_reverse(b, t, &c->btree_cache, list) {
-		/*
-		 * It is safe to get now_fifo_front_p without holding
-		 * c->journal.lock here, because we don't need to know
-		 * the exactly accurate value, just check whether the
-		 * front pointer of c->journal.pin is changed.
-		 */
+		 
 		now_fifo_front_p = &fifo_front(&c->journal.pin);
-		/*
-		 * If the oldest journal entry is reclaimed and front
-		 * pointer of c->journal.pin changes, it is unnecessary
-		 * to scan c->btree_cache anymore, just quit the loop and
-		 * flush out what we have already.
-		 */
+		 
 		if (now_fifo_front_p != fifo_front_p)
 			break;
-		/*
-		 * quit this loop if all matching btree nodes are
-		 * scanned and record in btree_nodes[] already.
-		 */
+		 
 		ref_nr = atomic_read(fifo_front_p);
 		if (nr >= ref_nr)
 			break;
@@ -491,19 +417,7 @@ static void btree_flush_write(struct cache_set *c)
 			continue;
 		}
 
-		/*
-		 * Only select the btree node which exactly references
-		 * the oldest journal entry.
-		 *
-		 * If the journal entry pointed by fifo_front_p is
-		 * reclaimed in parallel, don't worry:
-		 * - the list_for_each_xxx loop will quit when checking
-		 *   next now_fifo_front_p.
-		 * - If there are matched nodes recorded in btree_nodes[],
-		 *   they are clean now (this is why and how the oldest
-		 *   journal entry can be reclaimed). These selected nodes
-		 *   will be ignored and skipped in the following for-loop.
-		 */
+		 
 		if (((btree_current_write(b)->journal - fifo_front_p) &
 		     mask) != 0) {
 			mutex_unlock(&b->write_lock);
@@ -515,13 +429,7 @@ static void btree_flush_write(struct cache_set *c)
 		mutex_unlock(&b->write_lock);
 
 		btree_nodes[nr++] = b;
-		/*
-		 * To avoid holding c->bucket_lock too long time,
-		 * only scan for BTREE_FLUSH_NR matched btree nodes
-		 * at most. If there are more btree nodes reference
-		 * the oldest journal entry, try to flush them next
-		 * time when btree_flush_write() is called.
-		 */
+		 
 		if (nr == BTREE_FLUSH_NR)
 			break;
 	}
@@ -534,7 +442,7 @@ static void btree_flush_write(struct cache_set *c)
 			continue;
 		}
 
-		/* safe to check without holding b->write_lock */
+		 
 		if (!btree_node_journal_flush(b)) {
 			pr_err("BUG: bnode %p: journal_flush bit cleaned\n", b);
 			continue;
@@ -634,7 +542,7 @@ static unsigned int free_journal_buckets(struct cache_set *c)
 	struct journal_device *ja = &c->cache->journal;
 	unsigned int n;
 
-	/* In case njournal_buckets is not power of 2 */
+	 
 	if (ja->cur_idx >= ja->discard_idx)
 		n = ca->sb.njournal_buckets +  ja->discard_idx - ja->cur_idx;
 	else
@@ -661,7 +569,7 @@ static void journal_reclaim(struct cache_set *c)
 
 	last_seq = last_seq(&c->journal);
 
-	/* Update last_idx */
+	 
 
 	while (ja->last_idx != ja->cur_idx &&
 	       ja->seq[ja->last_idx] < last_seq)
@@ -699,10 +607,7 @@ void bch_journal_next(struct journal *j)
 		? &j->w[1]
 		: &j->w[0];
 
-	/*
-	 * The fifo_push() needs to happen at the same time as j->seq is
-	 * incremented for last_seq() to be calculated correctly
-	 */
+	 
 	BUG_ON(!fifo_push(&j->pin, p));
 	atomic_set(&fifo_back(&j->pin), 1);
 
@@ -808,7 +713,7 @@ static void journal_write_unlocked(struct closure *cl)
 		ca->journal.seq[ca->journal.cur_idx] = w->data->seq;
 	}
 
-	/* If KEY_PTRS(k) == 0, this jset gets lost in air */
+	 
 	BUG_ON(i == 0);
 
 	atomic_dec_bug(&fifo_back(&c->journal.pin));
@@ -878,15 +783,10 @@ static struct journal_write *journal_wait_for_write(struct cache_set *c,
 			if (wait)
 				trace_bcache_journal_entry_full(c);
 
-			/*
-			 * XXX: If we were inserting so many keys that they
-			 * won't fit in an _empty_ journal write, we'll
-			 * deadlock. For now, handle this in
-			 * bch_keylist_realloc() - but something to think about.
-			 */
+			 
 			BUG_ON(!w->data->keys);
 
-			journal_try_write(c); /* unlocks */
+			journal_try_write(c);  
 		} else {
 			if (wait)
 				trace_bcache_journal_full(c);
@@ -915,11 +815,7 @@ static void journal_write_work(struct work_struct *work)
 		spin_unlock(&c->journal.lock);
 }
 
-/*
- * Entry point to the journalling code - bio_insert() and btree_invalidate()
- * pass bch_journal() a list of keys to be journalled, and then
- * bch_journal() hands those same keys off to btree_insert_async()
- */
+ 
 
 atomic_t *bch_journal(struct cache_set *c,
 		      struct keylist *keys,
@@ -928,7 +824,7 @@ atomic_t *bch_journal(struct cache_set *c,
 	struct journal_write *w;
 	atomic_t *ret;
 
-	/* No journaling if CACHE_SET_IO_DISABLE set already */
+	 
 	if (unlikely(test_bit(CACHE_SET_IO_DISABLE, &c->flags)))
 		return NULL;
 

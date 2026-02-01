@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR MIT */
-/* Copyright 2017-2018 Qiang Yu <yuq825@gmail.com> */
+ 
+ 
 
 #ifndef __LIMA_DRM_H__
 #define __LIMA_DRM_H__
@@ -23,53 +23,43 @@ enum drm_lima_param {
 	DRM_LIMA_PARAM_PP_VERSION,
 };
 
-/**
- * get various information of the GPU
- */
+ 
 struct drm_lima_get_param {
-	__u32 param; /* in, value in enum drm_lima_param */
-	__u32 pad;   /* pad, must be zero */
-	__u64 value; /* out, parameter value */
+	__u32 param;  
+	__u32 pad;    
+	__u64 value;  
 };
 
-/*
- * heap buffer dynamically increase backup memory size when GP task fail
- * due to lack of heap memory. size field of heap buffer is an up bound of
- * the backup memory which can be set to a fairly large value.
- */
+ 
 #define LIMA_BO_FLAG_HEAP  (1 << 0)
 
-/**
- * create a buffer for used by GPU
- */
+ 
 struct drm_lima_gem_create {
-	__u32 size;    /* in, buffer size */
-	__u32 flags;   /* in, buffer flags */
-	__u32 handle;  /* out, GEM buffer handle */
-	__u32 pad;     /* pad, must be zero */
+	__u32 size;     
+	__u32 flags;    
+	__u32 handle;   
+	__u32 pad;      
 };
 
-/**
- * get information of a buffer
- */
+ 
 struct drm_lima_gem_info {
-	__u32 handle;  /* in, GEM buffer handle */
-	__u32 va;      /* out, virtual address mapped into GPU MMU */
-	__u64 offset;  /* out, used to mmap this buffer to CPU */
+	__u32 handle;   
+	__u32 va;       
+	__u64 offset;   
 };
 
 #define LIMA_SUBMIT_BO_READ   0x01
 #define LIMA_SUBMIT_BO_WRITE  0x02
 
-/* buffer information used by one task */
+ 
 struct drm_lima_gem_submit_bo {
-	__u32 handle;  /* in, GEM buffer handle */
-	__u32 flags;   /* in, buffer read/write by GPU */
+	__u32 handle;   
+	__u32 flags;    
 };
 
 #define LIMA_GP_FRAME_REG_NUM 6
 
-/* frame used to setup GP for each task */
+ 
 struct drm_lima_gp_frame {
 	__u32 frame[LIMA_GP_FRAME_REG_NUM];
 };
@@ -77,7 +67,7 @@ struct drm_lima_gp_frame {
 #define LIMA_PP_FRAME_REG_NUM 23
 #define LIMA_PP_WB_REG_NUM 12
 
-/* frame used to setup mali400 GPU PP for each task */
+ 
 struct drm_lima_m400_pp_frame {
 	__u32 frame[LIMA_PP_FRAME_REG_NUM];
 	__u32 num_pp;
@@ -86,7 +76,7 @@ struct drm_lima_m400_pp_frame {
 	__u32 fragment_stack_address[4];
 };
 
-/* frame used to setup mali450 GPU PP for each task */
+ 
 struct drm_lima_m450_pp_frame {
 	__u32 frame[LIMA_PP_FRAME_REG_NUM];
 	__u32 num_pp;
@@ -105,52 +95,39 @@ struct drm_lima_m450_pp_frame {
 
 #define LIMA_SUBMIT_FLAG_EXPLICIT_FENCE (1 << 0)
 
-/**
- * submit a task to GPU
- *
- * User can always merge multi sync_file and drm_syncobj
- * into one drm_syncobj as in_sync[0], but we reserve
- * in_sync[1] for another task's out_sync to avoid the
- * export/import/merge pass when explicit sync.
- */
+ 
 struct drm_lima_gem_submit {
-	__u32 ctx;         /* in, context handle task is submitted to */
-	__u32 pipe;        /* in, which pipe to use, GP/PP */
-	__u32 nr_bos;      /* in, array length of bos field */
-	__u32 frame_size;  /* in, size of frame field */
-	__u64 bos;         /* in, array of drm_lima_gem_submit_bo */
-	__u64 frame;       /* in, GP/PP frame */
-	__u32 flags;       /* in, submit flags */
-	__u32 out_sync;    /* in, drm_syncobj handle used to wait task finish after submission */
-	__u32 in_sync[2];  /* in, drm_syncobj handle used to wait before start this task */
+	__u32 ctx;          
+	__u32 pipe;         
+	__u32 nr_bos;       
+	__u32 frame_size;   
+	__u64 bos;          
+	__u64 frame;        
+	__u32 flags;        
+	__u32 out_sync;     
+	__u32 in_sync[2];   
 };
 
 #define LIMA_GEM_WAIT_READ   0x01
 #define LIMA_GEM_WAIT_WRITE  0x02
 
-/**
- * wait pending GPU task finish of a buffer
- */
+ 
 struct drm_lima_gem_wait {
-	__u32 handle;      /* in, GEM buffer handle */
-	__u32 op;          /* in, CPU want to read/write this buffer */
-	__s64 timeout_ns;  /* in, wait timeout in absulute time */
+	__u32 handle;       
+	__u32 op;           
+	__s64 timeout_ns;   
 };
 
-/**
- * create a context
- */
+ 
 struct drm_lima_ctx_create {
-	__u32 id;          /* out, context handle */
-	__u32 _pad;        /* pad, must be zero */
+	__u32 id;           
+	__u32 _pad;         
 };
 
-/**
- * free a context
- */
+ 
 struct drm_lima_ctx_free {
-	__u32 id;          /* in, context handle */
-	__u32 _pad;        /* pad, must be zero */
+	__u32 id;           
+	__u32 _pad;         
 };
 
 #define DRM_LIMA_GET_PARAM   0x00
@@ -173,4 +150,4 @@ struct drm_lima_ctx_free {
 }
 #endif
 
-#endif /* __LIMA_DRM_H__ */
+#endif  

@@ -35,4 +35,4 @@ static inline int off_cpu_write(struct perf_session *session __maybe_unused)
 }
 #endif
 
-#endif  /* PERF_UTIL_OFF_CPU_H */
+#endif   

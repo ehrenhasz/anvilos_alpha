@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Unix SMB/Netbios implementation.
- *  Version 1.9.
- *  RPC Pipe client / server routines
- *  Copyright (C) Luke Kenneth Casson Leighton 1997-2001.
- */
 
-/* NT error codes - see nterr.h */
+ 
+
+ 
 #include <linux/types.h>
 #include <linux/fs.h>
 #include "nterr.h"

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Midas audio support
-//
-// Copyright (C) 2018 Simon Shields <simon@lineageos.org>
-// Copyright (C) 2020 Samsung Electronics Co., Ltd.
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
@@ -20,10 +20,7 @@
 #include "i2s.h"
 #include "../codecs/wm8994.h"
 
-/*
- * The MCLK1 clock source is XCLKOUT with its mux set to the external fixed rate
- * oscillator (XXTI).
- */
+ 
 #define MCLK1_RATE 24000000U
 #define MCLK2_RATE 32768U
 #define DEFAULT_FLL1_RATE 11289600U
@@ -59,15 +56,12 @@ static int midas_start_fll1(struct snd_soc_pcm_runtime *rtd, unsigned int rate)
 
 	if (!rate)
 		rate = priv->fll1_rate;
-	/*
-	 * If no new rate is requested, set FLL1 to a sane default for jack
-	 * detection.
-	 */
+	 
 	if (!rate)
 		rate = DEFAULT_FLL1_RATE;
 
 	if (rate != priv->fll1_rate && priv->fll1_rate) {
-		/* while reconfiguring, switch to MCLK2 for SYSCLK */
+		 
 		ret = snd_soc_dai_set_sysclk(aif1_dai, WM8994_SYSCLK_MCLK2,
 					     MCLK2_RATE, SND_SOC_CLOCK_IN);
 		if (ret < 0) {
@@ -132,7 +126,7 @@ static int midas_aif1_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_pcm_runtime *rtd	= substream->private_data;
 	unsigned int pll_out;
 
-	/* AIF1CLK should be at least 3MHz for "optimal performance" */
+	 
 	if (params_rate(params) == 8000 || params_rate(params) == 11025)
 		pll_out = params_rate(params) * 512;
 	else
@@ -145,10 +139,7 @@ static const struct snd_soc_ops midas_aif1_ops = {
 	.hw_params = midas_aif1_hw_params,
 };
 
-/*
- * We only have a single external speaker, so mix stereo data
- * to a single mono stream.
- */
+ 
 static int midas_ext_spkmode(struct snd_soc_dapm_widget *w,
 			     struct snd_kcontrol *kcontrol, int event)
 {
@@ -267,7 +258,7 @@ static const struct snd_soc_dapm_widget midas_dapm_widgets[] = {
 	SND_SOC_DAPM_SPK("SPK", midas_ext_spkmode),
 	SND_SOC_DAPM_SPK("RCV", NULL),
 
-	/* FIXME: toggle MAX77693 on i9300/i9305 */
+	 
 	SND_SOC_DAPM_LINE("LINE", midas_line_set),
 	SND_SOC_DAPM_LINE("HDMI", NULL),
 	SND_SOC_DAPM_LINE("FM In", midas_fm_set),
@@ -309,7 +300,7 @@ static int midas_late_probe(struct snd_soc_card *card)
 	struct midas_priv *priv = snd_soc_card_get_drvdata(card);
 	int ret;
 
-	/* Use MCLK2 as SYSCLK for boot */
+	 
 	ret = snd_soc_dai_set_sysclk(aif1_dai, WM8994_SYSCLK_MCLK2, MCLK2_RATE,
 				     SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -478,7 +469,7 @@ static int midas_probe(struct platform_device *pdev)
 
 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
 	if (ret < 0) {
-		/* Backwards compatible way */
+		 
 		ret = snd_soc_of_parse_audio_routing(card, "samsung,audio-routing");
 		if (ret < 0) {
 			dev_err(dev, "Audio routing invalid/unspecified\n");

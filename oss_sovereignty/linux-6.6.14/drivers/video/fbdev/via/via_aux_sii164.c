@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2011 Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
- */
-/*
- * driver for Silicon Image SiI 164 PanelLink Transmitter
- */
+
+ 
+ 
 
 #include <linux/slab.h>
 #include "via_aux.h"
@@ -19,7 +15,7 @@ static void probe(struct via_aux_bus *bus, u8 addr)
 		.bus	=	bus,
 		.addr	=	addr,
 		.name	=	name};
-	/* check vendor id and device id */
+	 
 	const u8 id[] = {0x01, 0x00, 0x06, 0x00}, len = ARRAY_SIZE(id);
 	u8 tmp[ARRAY_SIZE(id)];
 

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
- /*
- *  sst-atom-controls.c - Intel MID Platform driver DPCM ALSA controls for Mrfld
- *
- *  Copyright (C) 2013-14 Intel Corp
- *  Author: Omair Mohammed Abdullah <omair.m.abdullah@intel.com>
- *	Vinod Koul <vinod.koul@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  In the dpcm driver modelling when a particular FE/BE/Mixer/Pipe is active
- *  we forward the settings and parameters, rest we keep the values  in
- *  driver and forward when DAPM enables them
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+  
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/slab.h>
@@ -59,16 +47,7 @@ static int sst_fill_and_send_cmd_unlocked(struct sst_data *drv,
 	return sst->ops->send_byte_stream(sst->dev, drv->byte_stream);
 }
 
-/**
- * sst_fill_and_send_cmd - generate the IPC message and send it to the FW
- * @drv: sst_data
- * @ipc_msg: type of IPC (CMD, SET_PARAMS, GET_PARAMS)
- * @block: block index
- * @task_id: task index
- * @pipe_id: pipe index
- * @cmd_data: the IPC payload
- * @len: length of data to be sent
- */
+ 
 static int sst_fill_and_send_cmd(struct sst_data *drv,
 				 u8 ipc_msg, u8 block, u8 task_id, u8 pipe_id,
 				 void *cmd_data, u16 len)
@@ -83,32 +62,17 @@ static int sst_fill_and_send_cmd(struct sst_data *drv,
 	return ret;
 }
 
-/*
- * tx map value is a bitfield where each bit represents a FW channel
- *
- *			3 2 1 0		# 0 = codec0, 1 = codec1
- *			RLRLRLRL	# 3, 4 = reserved
- *
- * e.g. slot 0 rx map =	00001100b -> data from slot 0 goes into codec_in1 L,R
- */
+ 
 static u8 sst_ssp_tx_map[SST_MAX_TDM_SLOTS] = {
-	0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80, /* default rx map */
+	0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80,  
 };
 
-/*
- * rx map value is a bitfield where each bit represents a slot
- *
- *			  76543210	# 0 = slot 0, 1 = slot 1
- *
- * e.g. codec1_0 tx map = 00000101b -> data from codec_out1_0 goes into slot 0, 2
- */
+ 
 static u8 sst_ssp_rx_map[SST_MAX_TDM_SLOTS] = {
-	0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80, /* default tx map */
+	0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80,  
 };
 
-/*
- * NOTE: this is invoked with lock held
- */
+ 
 static int sst_send_slot_map(struct sst_data *drv)
 {
 	struct sst_param_sba_ssp_slot_map cmd;
@@ -148,14 +112,7 @@ static int sst_slot_enum_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/**
- * sst_slot_get - get the status of the interleaver/deinterleaver control
- * @kcontrol: control pointer
- * @ucontrol: User data
- * Searches the map where the control status is stored, and gets the
- * channel/slot which is currently set for this enumerated control. Since it is
- * an enumerated control, there is only one possible value.
- */
+ 
 static int sst_slot_get(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
@@ -169,7 +126,7 @@ static int sst_slot_get(struct snd_kcontrol *kcontrol,
 
 	mutex_lock(&drv->lock);
 	val = 1 << ctl_no;
-	/* search which slot/channel has this bit set - there should be only one */
+	 
 	for (mux = e->max; mux > 0;  mux--)
 		if (map[mux - 1] & val)
 			break;
@@ -183,11 +140,7 @@ static int sst_slot_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* sst_check_and_send_slot_map - helper for checking power state and sending
- * slot map cmd
- *
- * called with lock held
- */
+ 
 static int sst_check_and_send_slot_map(struct sst_data *drv, struct snd_kcontrol *kcontrol)
 {
 	struct sst_enum *e = (void *)kcontrol->private_value;
@@ -201,20 +154,7 @@ static int sst_check_and_send_slot_map(struct sst_data *drv, struct snd_kcontrol
 	return ret;
 }
 
-/**
- * sst_slot_put - set the status of interleaver/deinterleaver control
- * @kcontrol: control pointer
- * @ucontrol: User data
- * (de)interleaver controls are defined in opposite sense to be user-friendly
- *
- * Instead of the enum value being the value written to the register, it is the
- * register address; and the kcontrol number (register num) is the value written
- * to the register. This is so that there can be only one value for each
- * slot/channel since there is only one control for each slot/channel.
- *
- * This means that whenever an enum is set, we need to clear the bit
- * for that kcontrol_no for all the interleaver OR deinterleaver registers
- */
+ 
 static int sst_slot_put(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
@@ -236,19 +176,19 @@ static int sst_slot_put(struct snd_kcontrol *kcontrol,
 		return -EINVAL;
 
 	mutex_lock(&drv->lock);
-	/* first clear all registers of this bit */
+	 
 	for (i = 0; i < e->max; i++)
 		map[i] &= ~val;
 
 	if (mux == 0) {
-		/* kctl set to 'none' and we reset the bits so send IPC */
+		 
 		ret = sst_check_and_send_slot_map(drv, kcontrol);
 
 		mutex_unlock(&drv->lock);
 		return ret;
 	}
 
-	/* offset by one to take "None" into account */
+	 
 	slot_channel_no = mux - 1;
 	map[slot_channel_no] |= val;
 
@@ -268,7 +208,7 @@ static int sst_send_algo_cmd(struct sst_data *drv,
 	int len, ret = 0;
 	struct sst_cmd_set_params *cmd;
 
-	/*bc->max includes sizeof algos + length field*/
+	 
 	len = sizeof(cmd->dst) + sizeof(cmd->command_id) + bc->max;
 
 	cmd = kzalloc(len, GFP_KERNEL);
@@ -285,15 +225,7 @@ static int sst_send_algo_cmd(struct sst_data *drv,
 	return ret;
 }
 
-/**
- * sst_find_and_send_pipe_algo - send all the algo parameters for a pipe
- * @drv: sst_data
- * @pipe: string identifier
- * @ids: list of algorithms
- * The algos which are in each pipeline are sent to the firmware one by one
- *
- * Called with lock held
- */
+ 
 static int sst_find_and_send_pipe_algo(struct sst_data *drv,
 					const char *pipe, struct sst_ids *ids)
 {
@@ -365,7 +297,7 @@ static int sst_algo_control_set(struct snd_kcontrol *kcontrol,
 				bc->type);
 		return -EINVAL;
 	}
-	/*if pipe is enabled, need to send the algo params from here*/
+	 
 	if (bc->w && bc->w->power)
 		ret = sst_send_algo_cmd(drv, bc);
 	mutex_unlock(&drv->lock);
@@ -386,24 +318,7 @@ static int sst_gain_ctl_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/**
- * sst_send_gain_cmd - send the gain algorithm IPC to the FW
- * @drv: sst_data
- * @gv:the stored value of gain (also contains rampduration)
- * @task_id: task index
- * @loc_id: location/position index
- * @module_id: module index
- * @mute: flag that indicates whether this was called from the
- *  digital_mute callback or directly. If called from the
- *  digital_mute callback, module will be muted/unmuted based on this
- *  flag. The flag is always 0 if called directly.
- *
- * Called with sst_data.lock held
- *
- * The user-set gain value is sent only if the user-controllable 'mute' control
- * is OFF (indicated by gv->mute). Otherwise, the mute value (MIN value) is
- * sent.
- */
+ 
 static int sst_send_gain_cmd(struct sst_data *drv, struct sst_gain_value *gv,
 			      u16 task_id, u16 loc_id, u16 module_id, int mute)
 {
@@ -430,7 +345,7 @@ static int sst_send_gain_cmd(struct sst_data *drv, struct sst_gain_value *gv,
 	cmd.header.length = sizeof(struct sst_cmd_set_gain_dual)
 				- sizeof(struct sst_dsp_header);
 
-	/* we are with lock held, so call the unlocked api  to send */
+	 
 	return sst_fill_and_send_cmd_unlocked(drv, SST_IPC_IA_SET_PARAMS,
 				SST_FLAG_BLOCKED, task_id, 0, &cmd,
 			      sizeof(cmd.header) + cmd.header.length);
@@ -539,7 +454,7 @@ static int sst_generic_modules_event(struct snd_soc_dapm_widget *w,
 
 static const DECLARE_TLV_DB_SCALE(sst_gain_tlv_common, SST_GAIN_MIN_VALUE * 10, 10, 0);
 
-/* Look up table to convert MIXER SW bit regs to SWM inputs */
+ 
 static const uint swm_mixer_input_ids[SST_SWM_INPUT_COUNT] = {
 	[SST_IP_MODEM]		= SST_SWM_IN_MODEM,
 	[SST_IP_CODEC0]		= SST_SWM_IN_CODEC0,
@@ -555,15 +470,7 @@ static const uint swm_mixer_input_ids[SST_SWM_INPUT_COUNT] = {
 	[SST_IP_MEDIA3]		= SST_SWM_IN_MEDIA3,
 };
 
-/**
- * fill_swm_input - fill in the SWM input ids given the register
- * @cmpnt: ASoC component
- * @swm_input: array of swm_input_ids
- * @reg: the register value is a bit-field inicated which mixer inputs are ON.
- *
- * Use the lookup table to get the input-id and fill it in the
- * structure.
- */
+ 
 static int fill_swm_input(struct snd_soc_component *cmpnt,
 		struct swm_input_ids *swm_input, unsigned int reg)
 {
@@ -593,9 +500,7 @@ static int fill_swm_input(struct snd_soc_component *cmpnt,
 }
 
 
-/*
- * called with lock held
- */
+ 
 static int sst_set_pipe_gain(struct sst_ids *ids,
 			struct sst_data *drv, int mute)
 {
@@ -632,10 +537,7 @@ static int sst_swm_mixer_event(struct snd_soc_dapm_widget *w,
 	int i = 0;
 
 	dev_dbg(cmpnt->dev, "widget = %s\n", w->name);
-	/*
-	 * Identify which mixer input is on and send the bitmap of the
-	 * inputs as an IPC to the DSP.
-	 */
+	 
 	for (i = 0; i < w->num_kcontrols; i++) {
 		if (dapm_kcontrol_get_value(w->kcontrols[i])) {
 			mc = (struct soc_mixer_control *)(w->kcontrols[i])->private_value;
@@ -667,7 +569,7 @@ static int sst_swm_mixer_event(struct snd_soc_dapm_widget *w,
 		cmd.switch_state = SST_SWM_OFF;
 
 	SST_FILL_DEFAULT_DESTINATION(cmd.header.dst);
-	/* MMX_SET_SWM == SBA_SET_SWM */
+	 
 	cmd.header.command_id = SBA_SET_SWM;
 
 	SST_FILL_DESTINATION(2, cmd.output_id,
@@ -682,7 +584,7 @@ static int sst_swm_mixer_event(struct snd_soc_dapm_widget *w,
 			      sizeof(cmd.header) + cmd.header.length);
 }
 
-/* SBA mixers - 16 inputs */
+ 
 #define SST_SBA_DECLARE_MIX_CONTROLS(kctl_name)							\
 	static const struct snd_kcontrol_new kctl_name[] = {					\
 		SOC_DAPM_SINGLE("modem_in Switch", SND_SOC_NOPM, SST_IP_MODEM, 1, 0),		\
@@ -716,7 +618,7 @@ static int sst_swm_mixer_event(struct snd_soc_dapm_widget *w,
 SST_MMX_DECLARE_MIX_CONTROLS(sst_mix_media0_controls);
 SST_MMX_DECLARE_MIX_CONTROLS(sst_mix_media1_controls);
 
-/* 18 SBA mixers */
+ 
 SST_SBA_DECLARE_MIX_CONTROLS(sst_mix_pcm0_controls);
 SST_SBA_DECLARE_MIX_CONTROLS(sst_mix_pcm1_controls);
 SST_SBA_DECLARE_MIX_CONTROLS(sst_mix_pcm2_controls);
@@ -728,17 +630,7 @@ SST_SBA_DECLARE_MIX_CONTROLS(sst_mix_codec0_controls);
 SST_SBA_DECLARE_MIX_CONTROLS(sst_mix_codec1_controls);
 SST_SBA_DECLARE_MIX_CONTROLS(sst_mix_modem_controls);
 
-/*
- * sst_handle_vb_timer - Start/Stop the DSP scheduler
- *
- * The DSP expects first cmd to be SBA_VB_START, so at first startup send
- * that.
- * DSP expects last cmd to be SBA_VB_IDLE, so at last shutdown send that.
- *
- * Do refcount internally so that we send command only at first start
- * and last end. Since SST driver does its own ref count, invoke sst's
- * power ops always!
- */
+ 
 int sst_handle_vb_timer(struct snd_soc_dai *dai, bool enable)
 {
 	int ret = 0;
@@ -767,10 +659,7 @@ int sst_handle_vb_timer(struct snd_soc_dai *dai, bool enable)
 	else
 		timer_usage--;
 
-	/*
-	 * Send the command only if this call is the first enable or last
-	 * disable
-	 */
+	 
 	if ((enable && (timer_usage == 1)) ||
 	    (!enable && (timer_usage == 0))) {
 		ret = sst_fill_and_send_cmd_unlocked(drv, SST_IPC_IA_CMD,
@@ -897,10 +786,7 @@ int sst_fill_ssp_config(struct snd_soc_dai *dai, unsigned int fmt)
 	return 0;
 }
 
-/*
- * sst_ssp_config - contains SSP configuration for media UC
- * this can be overwritten by set_dai_xxx APIs
- */
+ 
 static const struct sst_ssp_config sst_ssp_configs = {
 	.ssp_id = SSP_CODEC,
 	.bits_per_slot = 24,
@@ -1015,7 +901,7 @@ static int sst_set_media_path(struct snd_soc_dapm_widget *w,
 	SST_FILL_DESTINATION(2, cmd.header.dst,
 			     ids->location_id, SST_DEFAULT_MODULE_ID);
 
-	/* MMX_SET_MEDIA_PATH == SBA_SET_MEDIA_PATH */
+	 
 	cmd.header.command_id = MMX_SET_MEDIA_PATH;
 	cmd.header.length = sizeof(struct sst_cmd_set_media_path)
 				- sizeof(struct sst_dsp_header);
@@ -1052,11 +938,11 @@ static int sst_set_media_loop(struct snd_soc_dapm_widget *w,
 	cmd.header.command_id = SBA_SET_MEDIA_LOOP_MAP;
 	cmd.header.length = sizeof(struct sst_cmd_sba_set_media_loop_map)
 				 - sizeof(struct sst_dsp_header);
-	cmd.param.part.cfg.rate = 2; /* 48khz */
+	cmd.param.part.cfg.rate = 2;  
 
-	cmd.param.part.cfg.format = ids->format; /* stereo/Mono */
-	cmd.param.part.cfg.s_length = 1; /* 24bit left justified */
-	cmd.map = 0; /* Algo sequence: Gain - DRP - FIR - IIR */
+	cmd.param.part.cfg.format = ids->format;  
+	cmd.param.part.cfg.s_length = 1;  
+	cmd.map = 0;  
 
 	ret = sst_fill_and_send_cmd(drv, SST_IPC_IA_CMD, SST_FLAG_BLOCKED,
 			      SST_TASK_SBA, 0, &cmd,
@@ -1077,8 +963,8 @@ static const struct snd_soc_dapm_widget sst_dapm_widgets[] = {
 	SST_AIF_OUT("codec_out0", sst_set_be_modules),
 	SST_AIF_OUT("codec_out1", sst_set_be_modules),
 
-	/* Media Paths */
-	/* MediaX IN paths are set via ALLOC, so no SET_MEDIA_PATH command */
+	 
+	 
 	SST_PATH_INPUT("media0_in", SST_TASK_MMX, SST_SWM_IN_MEDIA0, sst_generic_modules_event),
 	SST_PATH_INPUT("media1_in", SST_TASK_MMX, SST_SWM_IN_MEDIA1, NULL),
 	SST_PATH_INPUT("media2_in", SST_TASK_MMX, SST_SWM_IN_MEDIA2, sst_set_media_path),
@@ -1086,14 +972,14 @@ static const struct snd_soc_dapm_widget sst_dapm_widgets[] = {
 	SST_PATH_OUTPUT("media0_out", SST_TASK_MMX, SST_SWM_OUT_MEDIA0, sst_set_media_path),
 	SST_PATH_OUTPUT("media1_out", SST_TASK_MMX, SST_SWM_OUT_MEDIA1, sst_set_media_path),
 
-	/* SBA PCM Paths */
+	 
 	SST_PATH_INPUT("pcm0_in", SST_TASK_SBA, SST_SWM_IN_PCM0, sst_set_media_path),
 	SST_PATH_INPUT("pcm1_in", SST_TASK_SBA, SST_SWM_IN_PCM1, sst_set_media_path),
 	SST_PATH_OUTPUT("pcm0_out", SST_TASK_SBA, SST_SWM_OUT_PCM0, sst_set_media_path),
 	SST_PATH_OUTPUT("pcm1_out", SST_TASK_SBA, SST_SWM_OUT_PCM1, sst_set_media_path),
 	SST_PATH_OUTPUT("pcm2_out", SST_TASK_SBA, SST_SWM_OUT_PCM2, sst_set_media_path),
 
-	/* SBA Loops */
+	 
 	SST_PATH_INPUT("sprot_loop_in", SST_TASK_SBA, SST_SWM_IN_SPROT_LOOP, NULL),
 	SST_PATH_INPUT("media_loop1_in", SST_TASK_SBA, SST_SWM_IN_MEDIA_LOOP1, NULL),
 	SST_PATH_INPUT("media_loop2_in", SST_TASK_SBA, SST_SWM_IN_MEDIA_LOOP2, NULL),
@@ -1101,13 +987,13 @@ static const struct snd_soc_dapm_widget sst_dapm_widgets[] = {
 	SST_PATH_MEDIA_LOOP_OUTPUT("media_loop1_out", SST_TASK_SBA, SST_SWM_OUT_MEDIA_LOOP1, SST_FMT_STEREO, sst_set_media_loop),
 	SST_PATH_MEDIA_LOOP_OUTPUT("media_loop2_out", SST_TASK_SBA, SST_SWM_OUT_MEDIA_LOOP2, SST_FMT_STEREO, sst_set_media_loop),
 
-	/* Media Mixers */
+	 
 	SST_SWM_MIXER("media0_out mix 0", SND_SOC_NOPM, SST_TASK_MMX, SST_SWM_OUT_MEDIA0,
 		      sst_mix_media0_controls, sst_swm_mixer_event),
 	SST_SWM_MIXER("media1_out mix 0", SND_SOC_NOPM, SST_TASK_MMX, SST_SWM_OUT_MEDIA1,
 		      sst_mix_media1_controls, sst_swm_mixer_event),
 
-	/* SBA PCM mixers */
+	 
 	SST_SWM_MIXER("pcm0_out mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_PCM0,
 		      sst_mix_pcm0_controls, sst_swm_mixer_event),
 	SST_SWM_MIXER("pcm1_out mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_PCM1,
@@ -1115,7 +1001,7 @@ static const struct snd_soc_dapm_widget sst_dapm_widgets[] = {
 	SST_SWM_MIXER("pcm2_out mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_PCM2,
 		      sst_mix_pcm2_controls, sst_swm_mixer_event),
 
-	/* SBA Loop mixers */
+	 
 	SST_SWM_MIXER("sprot_loop_out mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_SPROT_LOOP,
 		      sst_mix_sprot_l0_controls, sst_swm_mixer_event),
 	SST_SWM_MIXER("media_loop1_out mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_MEDIA_LOOP1,
@@ -1123,7 +1009,7 @@ static const struct snd_soc_dapm_widget sst_dapm_widgets[] = {
 	SST_SWM_MIXER("media_loop2_out mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_MEDIA_LOOP2,
 		      sst_mix_media_l2_controls, sst_swm_mixer_event),
 
-	/* SBA Backend mixers */
+	 
 	SST_SWM_MIXER("codec_out0 mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_CODEC0,
 		      sst_mix_codec0_controls, sst_swm_mixer_event),
 	SST_SWM_MIXER("codec_out1 mix 0", SND_SOC_NOPM, SST_TASK_SBA, SST_SWM_OUT_CODEC1,
@@ -1184,13 +1070,13 @@ static const struct snd_soc_dapm_route intercon[] = {
 static const char * const slot_names[] = {
 	"none",
 	"slot 0", "slot 1", "slot 2", "slot 3",
-	"slot 4", "slot 5", "slot 6", "slot 7", /* not supported by FW */
+	"slot 4", "slot 5", "slot 6", "slot 7",  
 };
 
 static const char * const channel_names[] = {
 	"none",
 	"codec_out0_0", "codec_out0_1", "codec_out1_0", "codec_out1_1",
-	"codec_out2_0", "codec_out2_1", "codec_out3_0", "codec_out3_1", /* not supported by FW */
+	"codec_out2_0", "codec_out2_1", "codec_out3_0", "codec_out3_1",  
 };
 
 #define SST_INTERLEAVER(xpname, slot_name, slotno) \
@@ -1212,7 +1098,7 @@ static const struct snd_kcontrol_new sst_slot_controls[] = {
 	SST_DEINTERLEAVER("codec_in", "codec_in1_1", 3),
 };
 
-/* Gain helper with min/max set */
+ 
 #define SST_GAIN(name, path_id, task_id, instance, gain_var)				\
 	SST_GAIN_KCONTROLS(name, "Gain", SST_GAIN_MIN_VALUE, SST_GAIN_MAX_VALUE,	\
 		SST_GAIN_TC_MIN, SST_GAIN_TC_MAX,					\
@@ -1254,13 +1140,7 @@ static const struct snd_kcontrol_new sst_gain_controls[] = {
 };
 
 #define SST_GAIN_NUM_CONTROLS 3
-/* the SST_GAIN macro above will create three alsa controls for each
- * instance invoked, gain, mute and ramp duration, which use the same gain
- * cell sst_gain to keep track of data
- * To calculate number of gain cell instances we need to device by 3 in
- * below caulcation for gain cell memory.
- * This gets rid of static number and issues while adding new controls
- */
+ 
 static struct sst_gain_value sst_gains[ARRAY_SIZE(sst_gain_controls)/SST_GAIN_NUM_CONTROLS];
 
 static const struct snd_kcontrol_new sst_algo_controls[] = {
@@ -1289,7 +1169,7 @@ static int sst_algo_control_init(struct device *dev)
 {
 	int i = 0;
 	struct sst_algo_control *bc;
-	/*allocate space to cache the algo parameters in the driver*/
+	 
 	for (i = 0; i < ARRAY_SIZE(sst_algo_controls); i++) {
 		bc = (struct sst_algo_control *)sst_algo_controls[i].private_value;
 		bc->params = devm_kzalloc(dev, bc->max, GFP_KERNEL);
@@ -1314,16 +1194,7 @@ static bool is_sst_dapm_widget(struct snd_soc_dapm_widget *w)
 	}
 }
 
-/**
- * sst_send_pipe_gains - send gains for the front-end DAIs
- * @dai: front-end dai
- * @stream: direction
- * @mute: boolean indicating mute status
- *
- * The gains in the pipes connected to the front-ends are muted/unmuted
- * automatically via the digital_mute() DAPM callback. This function sends the
- * gains for the front-end pipes.
- */
+ 
 int sst_send_pipe_gains(struct snd_soc_dai *dai, int stream, int mute)
 {
 	struct sst_data *drv = snd_soc_dai_get_drvdata(dai);
@@ -1369,21 +1240,7 @@ int sst_send_pipe_gains(struct snd_soc_dai *dai, int stream, int mute)
 	return 0;
 }
 
-/**
- * sst_fill_module_list - populate the list of modules/gains for a pipe
- * @kctl: kcontrol pointer
- * @w: dapm widget
- * @type: widget type
- *
- * Fills the widget pointer in the kcontrol private data, and also fills the
- * kcontrol pointer in the widget private data.
- *
- * Widget pointer is used to send the algo/gain in the .put() handler if the
- * widget is powerd on.
- *
- * Kcontrol pointer is used to send the algo/gain in the widget power ON/OFF
- * event handler. Each widget (pipe) has multiple algos stored in the algo_list.
- */
+ 
 static int sst_fill_module_list(struct snd_kcontrol *kctl,
 	 struct snd_soc_dapm_widget *w, int type)
 {
@@ -1417,15 +1274,7 @@ static int sst_fill_module_list(struct snd_kcontrol *kctl,
 	return ret;
 }
 
-/**
- * sst_fill_widget_module_info - fill list of gains/algos for the pipe
- * @w: pipe modeled as a DAPM widget
- * @component: ASoC component
- *
- * Fill the list of gains/algos for the widget by looking at all the card
- * controls and comparing the name of the widget with the first part of control
- * name. First part of control name contains the pipe name (widget name).
- */
+ 
 static int sst_fill_widget_module_info(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component)
 {
@@ -1478,11 +1327,7 @@ static int sst_fill_widget_module_info(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/**
- * sst_fill_linked_widgets - fill the parent pointer for the linked widget
- * @component: ASoC component
- * @ids: sst_ids array
- */
+ 
 static void sst_fill_linked_widgets(struct snd_soc_component *component,
 						struct sst_ids *ids)
 {
@@ -1497,10 +1342,7 @@ static void sst_fill_linked_widgets(struct snd_soc_component *component,
 	}
 }
 
-/**
- * sst_map_modules_to_pipe - fill algo/gains list for all pipes
- * @component: ASoC component
- */
+ 
 static int sst_map_modules_to_pipe(struct snd_soc_component *component)
 {
 	struct snd_soc_dapm_widget *w;
@@ -1519,7 +1361,7 @@ static int sst_map_modules_to_pipe(struct snd_soc_component *component)
 			if (ret < 0)
 				return ret;
 
-			/* fill linked widgets */
+			 
 			if (ids->parent_wname !=  NULL)
 				sst_fill_linked_widgets(component, ids);
 		}
@@ -1558,7 +1400,7 @@ int sst_dsp_init_v2_dpcm(struct snd_soc_component *component)
 	if (ret)
 		return ret;
 
-	/* Initialize algo control params */
+	 
 	ret = sst_algo_control_init(component->dev);
 	if (ret)
 		return ret;

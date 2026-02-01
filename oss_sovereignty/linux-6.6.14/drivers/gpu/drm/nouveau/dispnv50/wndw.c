@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "wndw.h"
 #include "wimm.h"
 #include "handles.h"
@@ -372,18 +352,9 @@ nv50_wndw_atomic_check_lut(struct nv50_wndw *wndw,
 {
 	struct drm_property_blob *ilut = asyh->state.degamma_lut;
 
-	/* I8 format without an input LUT makes no sense, and the
-	 * HW error-checks for this.
-	 *
-	 * In order to handle legacy gamma, when there's no input
-	 * LUT we need to steal the output LUT and use it instead.
-	 */
+	 
 	if (!ilut && asyw->state.fb->format->format == DRM_FORMAT_C8) {
-		/* This should be an error, but there's legacy clients
-		 * that do a modeset before providing a gamma table.
-		 *
-		 * We keep the window disabled to avoid angering HW.
-		 */
+		 
 		if (!(ilut = asyh->state.gamma_lut)) {
 			asyw->visible = false;
 			return 0;
@@ -402,7 +373,7 @@ nv50_wndw_atomic_check_lut(struct nv50_wndw *wndw,
 		ilut = &dummy;
 	}
 
-	/* Recalculate LUT state. */
+	 
 	memset(&asyw->xlut, 0x00, sizeof(asyw->xlut));
 	if ((asyw->ilut = wndw->func->ilut ? ilut : NULL)) {
 		wndw->func->ilut(wndw, asyw, drm_color_lut_size(ilut));
@@ -413,7 +384,7 @@ nv50_wndw_atomic_check_lut(struct nv50_wndw *wndw,
 		asyw->clr.xlut = armw->xlut.handle != 0;
 	}
 
-	/* Handle setting base SET_OUTPUT_LUT_LO_ENABLE_USE_CORE_LUT. */
+	 
 	if (wndw->func->olut_core &&
 	    (!armw->visible || (armw->xlut.handle && !asyw->xlut.handle)))
 		asyw->set.xlut = true;
@@ -428,7 +399,7 @@ nv50_wndw_atomic_check_lut(struct nv50_wndw *wndw,
 		asyw->clr.csc = armw->csc.valid;
 	}
 
-	/* Can't do an immediate flip while changing the LUT. */
+	 
 	asyh->state.async_flip = false;
 	return 0;
 }
@@ -449,9 +420,7 @@ nv50_wndw_atomic_check(struct drm_plane *plane,
 
 	NV_ATOMIC(drm, "%s atomic_check\n", plane->name);
 
-	/* Fetch the assembly state for the head the window will belong to,
-	 * and determine whether the window will be visible.
-	 */
+	 
 	if (asyw->state.crtc) {
 		asyh = nv50_head_atom_get(asyw->state.state, asyw->state.crtc);
 		if (IS_ERR(asyh))
@@ -462,14 +431,14 @@ nv50_wndw_atomic_check(struct drm_plane *plane,
 		asyw->visible = false;
 	}
 
-	/* Fetch assembly state for the head the window used to belong to. */
+	 
 	if (armw->state.crtc) {
 		harm = nv50_head_atom_get(asyw->state.state, armw->state.crtc);
 		if (IS_ERR(harm))
 			return PTR_ERR(harm);
 	}
 
-	/* LUT configuration can potentially cause the window to be disabled. */
+	 
 	if (asyw->visible && wndw->func->xlut_set &&
 	    (!armw->visible ||
 	     asyh->state.color_mgmt_changed ||
@@ -480,7 +449,7 @@ nv50_wndw_atomic_check(struct drm_plane *plane,
 			return ret;
 	}
 
-	/* Calculate new window state. */
+	 
 	if (asyw->visible) {
 		ret = nv50_wndw_atomic_check_acquire(wndw, modeset,
 						     armw, asyw, asyh);
@@ -496,10 +465,7 @@ nv50_wndw_atomic_check(struct drm_plane *plane,
 		return 0;
 	}
 
-	/* Aside from the obvious case where the window is actively being
-	 * disabled, we might also need to temporarily disable the window
-	 * when performing certain modeset operations.
-	 */
+	 
 	if (!asyw->visible || modeset) {
 		asyw->clr.ntfy = armw->ntfy.handle != 0;
 		asyw->clr.sema = armw->sema.handle != 0;
@@ -653,10 +619,7 @@ nv50_wndw_destroy(struct drm_plane *plane)
 	kfree(wndw);
 }
 
-/* This function assumes the format has already been validated against the plane
- * and the modifier was validated against the device-wides modifier list at FB
- * creation time.
- */
+ 
 static bool nv50_plane_format_mod_supported(struct drm_plane *plane,
 					    u32 format, u64 modifier)
 {

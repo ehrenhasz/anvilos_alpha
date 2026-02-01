@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2020 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/idr.h>
 #include <linux/log2.h>
@@ -13,10 +13,10 @@ struct mlxsw_sp_policer_family {
 	enum mlxsw_sp_policer_type type;
 	enum mlxsw_reg_qpcr_g qpcr_type;
 	struct mlxsw_sp *mlxsw_sp;
-	u16 start_index; /* Inclusive */
-	u16 end_index; /* Exclusive */
+	u16 start_index;  
+	u16 end_index;  
 	struct idr policer_idr;
-	struct mutex lock; /* Protects policer_idr */
+	struct mutex lock;  
 	atomic_t policers_count;
 	const struct mlxsw_sp_policer_family_ops *ops;
 };
@@ -58,9 +58,7 @@ static u64 mlxsw_sp_policer_rate_bytes_ps_kbps(u64 rate_bytes_ps)
 
 static u8 mlxsw_sp_policer_burst_bytes_hw_units(u64 burst_bytes)
 {
-	/* Provided burst size is in bytes. The ASIC burst size value is
-	 * (2 ^ bs) * 512 bits. Convert the provided size to 512-bit units.
-	 */
+	 
 	u64 bs512 = div_u64(burst_bytes, 64);
 
 	if (!bs512)
@@ -82,9 +80,7 @@ mlxsw_sp_policer_single_rate_family_init(struct mlxsw_sp_policer_family *family)
 	struct mlxsw_core *core = family->mlxsw_sp->core;
 	struct devlink *devlink;
 
-	/* CPU policers are allocated from the first N policers in the global
-	 * range, so skip them.
-	 */
+	 
 	if (!MLXSW_CORE_RES_VALID(core, MAX_GLOBAL_POLICERS) ||
 	    !MLXSW_CORE_RES_VALID(core, MAX_CPU_POLICERS))
 		return -EIO;

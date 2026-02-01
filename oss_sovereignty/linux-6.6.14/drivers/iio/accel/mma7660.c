@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Freescale MMA7660FC 3-Axis Accelerometer
- *
- * Copyright (c) 2016, Intel Corporation.
- *
- * IIO driver for Freescale MMA7660FC; 7-bit I2C address: 0x4c.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>
@@ -26,13 +20,7 @@
 
 #define MMA7660_I2C_READ_RETRIES	5
 
-/*
- * The accelerometer has one measurement range:
- *
- * -1.5g - +1.5g (6-bit, signed)
- *
- * scale = (1.5 + 1.5) * 9.81 / (2^6 - 1)	= 0.467142857
- */
+ 
 
 #define MMA7660_SCALE_AVAIL	"0.467142857"
 
@@ -114,13 +102,7 @@ static int mma7660_read_accel(struct mma7660_data *data, u8 address)
 	int ret, retries = MMA7660_I2C_READ_RETRIES;
 	struct i2c_client *client = data->client;
 
-	/*
-	 * Read data. If the Alert bit is set, the register was read at
-	 * the same time as the device was attempting to update the content.
-	 * The solution is to read the register again. Do this only
-	 * MMA7660_I2C_READ_RETRIES times to avoid spending too much time
-	 * in the kernel.
-	 */
+	 
 	do {
 		ret = i2c_smbus_read_byte_data(client, address);
 		if (ret < 0) {

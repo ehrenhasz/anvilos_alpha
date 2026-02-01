@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/dmu_objset.h>
@@ -39,7 +17,7 @@
 #include <sys/callb.h>
 #include <sys/zfeature.h>
 
-static int32_t zfs_pd_bytes_max = 50 * 1024 * 1024;	/* 50MB */
+static int32_t zfs_pd_bytes_max = 50 * 1024 * 1024;	 
 static int32_t send_holes_without_birth_time = 1;
 static uint_t zfs_traverse_indirect_prefetch_limit = 32;
 
@@ -126,10 +104,7 @@ traverse_zil(traverse_data_t *td, zil_header_t *zh)
 {
 	uint64_t claim_txg = zh->zh_claim_txg;
 
-	/*
-	 * We only want to visit blocks that have been claimed but not yet
-	 * replayed; plus blocks that are already stable in read-only mode.
-	 */
+	 
 	if (claim_txg == 0 && spa_writeable(td->td_spa))
 		return;
 
@@ -145,23 +120,13 @@ typedef enum resume_skip {
 	RESUME_SKIP_CHILDREN
 } resume_skip_t;
 
-/*
- * Returns RESUME_SKIP_ALL if td indicates that we are resuming a traversal and
- * the block indicated by zb does not need to be visited at all. Returns
- * RESUME_SKIP_CHILDREN if we are resuming a post traversal and we reach the
- * resume point. This indicates that this block should be visited but not its
- * children (since they must have been visited in a previous traversal).
- * Otherwise returns RESUME_SKIP_NONE.
- */
+ 
 static resume_skip_t
 resume_skip_check(const traverse_data_t *td, const dnode_phys_t *dnp,
     const zbookmark_phys_t *zb)
 {
 	if (td->td_resume != NULL) {
-		/*
-		 * If we already visited this bp & everything below,
-		 * don't bother doing it again.
-		 */
+		 
 		if (zbookmark_subtree_completed(dnp, zb, td->td_resume))
 			return (RESUME_SKIP_ALL);
 
@@ -173,9 +138,7 @@ resume_skip_check(const traverse_data_t *td, const dnode_phys_t *dnp,
 	return (RESUME_SKIP_NONE);
 }
 
-/*
- * Returns B_TRUE, if prefetch read is issued, otherwise B_FALSE.
- */
+ 
 static boolean_t
 traverse_prefetch_metadata(traverse_data_t *td, const dnode_phys_t *dnp,
     const blkptr_t *bp, const zbookmark_phys_t *zb)
@@ -186,10 +149,7 @@ traverse_prefetch_metadata(traverse_data_t *td, const dnode_phys_t *dnp,
 
 	if (!(td->td_flags & TRAVERSE_PREFETCH_METADATA))
 		return (B_FALSE);
-	/*
-	 * If this bp is before the resume point, it may have already been
-	 * freed.
-	 */
+	 
 	if (resume_skip_check(td, dnp, zb) != RESUME_SKIP_NONE)
 		return (B_FALSE);
 	if (BP_IS_HOLE(bp) || bp->blk_birth <= td->td_min_txg)
@@ -236,28 +196,7 @@ traverse_visitbp(traverse_data_t *td, const dnode_phys_t *dnp,
 	}
 
 	if (bp->blk_birth == 0) {
-		/*
-		 * Since this block has a birth time of 0 it must be one of
-		 * two things: a hole created before the
-		 * SPA_FEATURE_HOLE_BIRTH feature was enabled, or a hole
-		 * which has always been a hole in an object.
-		 *
-		 * If a file is written sparsely, then the unwritten parts of
-		 * the file were "always holes" -- that is, they have been
-		 * holes since this object was allocated.  However, we (and
-		 * our callers) can not necessarily tell when an object was
-		 * allocated.  Therefore, if it's possible that this object
-		 * was freed and then its object number reused, we need to
-		 * visit all the holes with birth==0.
-		 *
-		 * If it isn't possible that the object number was reused,
-		 * then if SPA_FEATURE_HOLE_BIRTH was enabled before we wrote
-		 * all the blocks we will visit as part of this traversal,
-		 * then this hole must have always existed, so we can skip
-		 * it.  We visit blocks born after (exclusive) td_min_txg.
-		 *
-		 * Note that the meta-dnode cannot be reallocated.
-		 */
+		 
 		if (!send_holes_without_birth_time &&
 		    (!td->td_realloc_possible ||
 		    zb->zb_object == DMU_META_DNODE_OBJECT) &&
@@ -310,23 +249,7 @@ traverse_visitbp(traverse_data_t *td, const dnode_phys_t *dnp,
 
 		czb = kmem_alloc(sizeof (zbookmark_phys_t), KM_SLEEP);
 
-		/*
-		 * When performing a traversal it is beneficial to
-		 * asynchronously read-ahead the upcoming indirect
-		 * blocks since they will be needed shortly. However,
-		 * since a 128k indirect (non-L0) block may contain up
-		 * to 1024 128-byte block pointers, its preferable to not
-		 * prefetch them all at once. Issuing a large number of
-		 * async reads may effect performance, and the earlier
-		 * the indirect blocks are prefetched the less likely
-		 * they are to still be resident in the ARC when needed.
-		 * Therefore, prefetching indirect blocks is limited to
-		 * zfs_traverse_indirect_prefetch_limit=32 blocks by
-		 * default.
-		 *
-		 * pidx: Index for which next prefetch to be issued.
-		 * ptidx: Index at which next prefetch to be triggered.
-		 */
+		 
 		ptidx = 0;
 		pidx = 1;
 		prefetchlimit = zfs_traverse_indirect_prefetch_limit;
@@ -349,7 +272,7 @@ traverse_visitbp(traverse_data_t *td, const dnode_phys_t *dnp,
 				}
 			}
 
-			/* recursively visitbp() blocks below this */
+			 
 			SET_BOOKMARK(czb, zb->zb_objset, zb->zb_object,
 			    zb->zb_level - 1,
 			    zb->zb_blkid * epb + i);
@@ -368,10 +291,7 @@ traverse_visitbp(traverse_data_t *td, const dnode_phys_t *dnp,
 		int32_t epb = BP_GET_LSIZE(bp) >> DNODE_SHIFT;
 		dnode_phys_t *child_dnp;
 
-		/*
-		 * dnode blocks might have their bonus buffers encrypted, so
-		 * we must be careful to honor TRAVERSE_NO_DECRYPT
-		 */
+		 
 		if ((td->td_flags & TRAVERSE_NO_DECRYPT) && BP_IS_PROTECTED(bp))
 			zio_flags |= ZIO_FLAG_RAW;
 
@@ -387,7 +307,7 @@ traverse_visitbp(traverse_data_t *td, const dnode_phys_t *dnp,
 			    zb->zb_objset, zb->zb_blkid * epb + i);
 		}
 
-		/* recursively visitbp() blocks below this */
+		 
 		for (i = 0; i < epb; i += child_dnp[i].dn_extra_slots + 1) {
 			err = traverse_dnode(td, bp, &child_dnp[i],
 			    zb->zb_objset, zb->zb_blkid * epb + i);
@@ -410,12 +330,7 @@ traverse_visitbp(traverse_data_t *td, const dnode_phys_t *dnp,
 		osp = buf->b_data;
 		prefetch_dnode_metadata(td, &osp->os_meta_dnode, zb->zb_objset,
 		    DMU_META_DNODE_OBJECT);
-		/*
-		 * See the block comment above for the goal of this variable.
-		 * If the maxblkid of the meta-dnode is 0, then we know that
-		 * we've never had more than DNODES_PER_BLOCK objects in the
-		 * dataset, which means we can't have reused any object ids.
-		 */
+		 
 		if (osp->os_meta_dnode.dn_maxblkid == 0)
 			td->td_realloc_possible = B_FALSE;
 
@@ -456,30 +371,16 @@ post:
 		err = td->td_func(td->td_spa, NULL, bp, zb, dnp, td->td_arg);
 
 	if ((td->td_flags & TRAVERSE_HARD) && (err == EIO || err == ECKSUM)) {
-		/*
-		 * Ignore this disk error as requested by the HARD flag,
-		 * and continue traversal.
-		 */
+		 
 		err = 0;
 	}
 
-	/*
-	 * If we are stopping here, set td_resume.
-	 */
+	 
 	if (td->td_resume != NULL && err != 0 && !td->td_paused) {
 		td->td_resume->zb_objset = zb->zb_objset;
 		td->td_resume->zb_object = zb->zb_object;
 		td->td_resume->zb_level = 0;
-		/*
-		 * If we have stopped on an indirect block (e.g. due to
-		 * i/o error), we have not visited anything below it.
-		 * Set the bookmark to the first level-0 block that we need
-		 * to visit.  This way, the resuming code does not need to
-		 * deal with resuming from indirect blocks.
-		 *
-		 * Note, if zb_level <= 0, dnp may be NULL, so we don't want
-		 * to dereference it.
-		 */
+		 
 		td->td_resume->zb_blkid = zb->zb_blkid;
 		if (zb->zb_level > 0) {
 			td->td_resume->zb_blkid <<= zb->zb_level *
@@ -615,10 +516,7 @@ traverse_prefetch_thread(void *arg)
 	spl_fstrans_unmark(cookie);
 }
 
-/*
- * NB: dataset must not be changing on-disk (eg, is a snapshot or we are
- * in syncing context).
- */
+ 
 static int
 traverse_impl(spa_t *spa, dsl_dataset_t *ds, uint64_t objset, blkptr_t *rootbp,
     uint64_t txg_start, zbookmark_phys_t *resume, int flags,
@@ -664,7 +562,7 @@ traverse_impl(spa_t *spa, dsl_dataset_t *ds, uint64_t objset, blkptr_t *rootbp,
 	SET_BOOKMARK(czb, td->td_objset,
 	    ZB_ROOT_OBJECT, ZB_ROOT_LEVEL, ZB_ROOT_BLKID);
 
-	/* See comment on ZIL traversal in dsl_scan_visitds. */
+	 
 	if (ds != NULL && !ds->ds_is_snapshot && !BP_IS_HOLE(rootbp)) {
 		zio_flag_t zio_flags = ZIO_FLAG_CANFAIL;
 		uint32_t flags = ARC_FLAG_WAIT;
@@ -679,11 +577,7 @@ traverse_impl(spa_t *spa, dsl_dataset_t *ds, uint64_t objset, blkptr_t *rootbp,
 		err = arc_read(NULL, td->td_spa, rootbp, arc_getbuf_func,
 		    &buf, ZIO_PRIORITY_ASYNC_READ, zio_flags, &flags, czb);
 		if (err != 0) {
-			/*
-			 * If both TRAVERSE_HARD and TRAVERSE_PRE are set,
-			 * continue to visitbp so that td_func can be called
-			 * in pre stage, and err will reset to zero.
-			 */
+			 
 			if (!(td->td_flags & TRAVERSE_HARD) ||
 			    !(td->td_flags & TRAVERSE_PRE))
 				goto out;
@@ -718,10 +612,7 @@ out:
 	return (err);
 }
 
-/*
- * NB: dataset must not be changing on-disk (eg, is a snapshot or we are
- * in syncing context).
- */
+ 
 int
 traverse_dataset_resume(dsl_dataset_t *ds, uint64_t txg_start,
     zbookmark_phys_t *resume,
@@ -747,9 +638,7 @@ traverse_dataset_destroyed(spa_t *spa, blkptr_t *blkptr,
 	    blkptr, txg_start, resume, flags, func, arg));
 }
 
-/*
- * NB: pool must not be changing on-disk (eg, from zdb or sync context).
- */
+ 
 int
 traverse_pool(spa_t *spa, uint64_t txg_start, int flags,
     blkptr_cb_t func, void *arg)
@@ -759,13 +648,13 @@ traverse_pool(spa_t *spa, uint64_t txg_start, int flags,
 	objset_t *mos = dp->dp_meta_objset;
 	boolean_t hard = (flags & TRAVERSE_HARD);
 
-	/* visit the MOS */
+	 
 	err = traverse_impl(spa, NULL, 0, spa_get_rootblkptr(spa),
 	    txg_start, NULL, flags, func, arg);
 	if (err != 0)
 		return (err);
 
-	/* visit each dataset */
+	 
 	for (uint64_t obj = 1; err == 0;
 	    err = dmu_object_next(mos, &obj, B_FALSE, txg_start)) {
 		dmu_object_info_t doi;
@@ -817,6 +706,6 @@ MODULE_PARM_DESC(ignore_hole_birth,
 	"Alias for send_holes_without_birth_time");
 #endif
 
-/* CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs, , send_holes_without_birth_time, INT, ZMOD_RW,
 	"Ignore hole_birth txg for zfs send");

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DAMON Debugfs Interface
- *
- * Author: SeongJae Park <sjpark@amazon.de>
- */
+
+ 
 
 #define pr_fmt(fmt) "damon-dbgfs: " fmt
 
@@ -28,15 +24,13 @@ static void damon_dbgfs_warn_deprecation(void)
 		     "linux-mm@kvack.org.\n");
 }
 
-/*
- * Returns non-empty string on success, negative error code otherwise.
- */
+ 
 static char *user_input_str(const char __user *buf, size_t count, loff_t *ppos)
 {
 	char *kbuf;
 	ssize_t ret;
 
-	/* We do not accept continuous write */
+	 
 	if (*ppos)
 		return ERR_PTR(-EINVAL);
 
@@ -108,11 +102,7 @@ out:
 	return ret;
 }
 
-/*
- * Return corresponding dbgfs' scheme action value (int) for the given
- * damos_action if the given damos_action value is valid and supported by
- * dbgfs, negative error code otherwise.
- */
+ 
 static int damos_action_to_dbgfs_scheme_action(enum damos_action action)
 {
 	switch (action) {
@@ -199,10 +189,7 @@ static void free_schemes_arr(struct damos **schemes, ssize_t nr_schemes)
 	kfree(schemes);
 }
 
-/*
- * Return corresponding damos_action for the given dbgfs input for a scheme
- * action if the input is valid, negative error code otherwise.
- */
+ 
 static enum damos_action dbgfs_scheme_action_to_damos_action(int dbgfs_action)
 {
 	switch (dbgfs_action) {
@@ -223,12 +210,7 @@ static enum damos_action dbgfs_scheme_action_to_damos_action(int dbgfs_action)
 	}
 }
 
-/*
- * Converts a string into an array of struct damos pointers
- *
- * Returns an array of struct damos pointers that converted if the conversion
- * success, or NULL otherwise.
- */
+ 
 static struct damos **str_to_schemes(const char *str, ssize_t len,
 				ssize_t *nr_schemes)
 {
@@ -336,10 +318,10 @@ static ssize_t sprint_target_ids(struct damon_ctx *ctx, char *buf, ssize_t len)
 
 	damon_for_each_target(t, ctx) {
 		if (damon_target_has_pid(ctx))
-			/* Show pid numbers to debugfs users */
+			 
 			id = pid_vnr(t->pid);
 		else
-			/* Show 42 for physical address space, just for fun */
+			 
 			id = 42;
 
 		rc = scnprintf(&buf[written], len - written, "%d ", id);
@@ -369,12 +351,7 @@ static ssize_t dbgfs_target_ids_read(struct file *file,
 	return simple_read_from_buffer(buf, count, ppos, ids_buf, len);
 }
 
-/*
- * Converts a string into an integers array
- *
- * Returns an array of integers array if the conversion success, or NULL
- * otherwise.
- */
+ 
 static int *str_to_ints(const char *str, ssize_t len, ssize_t *nr_ints)
 {
 	int *array;
@@ -406,12 +383,7 @@ static void dbgfs_put_pids(struct pid **pids, int nr_pids)
 		put_pid(pids[i]);
 }
 
-/*
- * Converts a string into an struct pid pointers array
- *
- * Returns an array of struct pid pointers if the conversion success, or NULL
- * otherwise.
- */
+ 
 static struct pid **str_to_pids(const char *str, ssize_t len, ssize_t *nr_pids)
 {
 	int *ints;
@@ -443,18 +415,7 @@ out:
 	return pids;
 }
 
-/*
- * dbgfs_set_targets() - Set monitoring targets.
- * @ctx:	monitoring context
- * @nr_targets:	number of targets
- * @pids:	array of target pids (size is same to @nr_targets)
- *
- * This function should not be called while the kdamond is running.  @pids is
- * ignored if the context is not configured to have pid in each target.  On
- * failure, reference counts of all pids in @pids are decremented.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 static int dbgfs_set_targets(struct damon_ctx *ctx, ssize_t nr_targets,
 		struct pid **pids)
 {
@@ -519,14 +480,14 @@ static ssize_t dbgfs_target_ids_write(struct file *file,
 		goto unlock_out;
 	}
 
-	/* remove previously set targets */
+	 
 	dbgfs_set_targets(ctx, 0, NULL);
 	if (!nr_targets) {
 		ret = count;
 		goto unlock_out;
 	}
 
-	/* Configure the context for the address space type */
+	 
 	if (id_is_pid)
 		ret = damon_select_ops(ctx, DAMON_OPS_VADDR);
 	else
@@ -804,13 +765,7 @@ static void dbgfs_destroy_ctx(struct damon_ctx *ctx)
 	damon_destroy_ctx(ctx);
 }
 
-/*
- * Make a context of @name and create a debugfs directory for it.
- *
- * This function should be called while holding damon_dbgfs_lock.
- *
- * Returns 0 on success, negative error code otherwise.
- */
+ 
 static int dbgfs_mk_context(char *name)
 {
 	struct dentry *root, **new_dirs, *new_dir;
@@ -836,7 +791,7 @@ static int dbgfs_mk_context(char *name)
 		return -ENOENT;
 
 	new_dir = debugfs_create_dir(name, root);
-	/* Below check is required for a potential duplicated name case */
+	 
 	if (IS_ERR(new_dir))
 		return PTR_ERR(new_dir);
 	dbgfs_dirs[dbgfs_nr_ctxs] = new_dir;
@@ -872,7 +827,7 @@ static ssize_t dbgfs_mk_context_write(struct file *file,
 		return -ENOMEM;
 	}
 
-	/* Trim white space */
+	 
 	if (sscanf(kbuf, "%s", ctx_name) != 1) {
 		ret = -EINVAL;
 		goto out;
@@ -890,13 +845,7 @@ out:
 	return ret;
 }
 
-/*
- * Remove a context of @name and its debugfs directory.
- *
- * This function should be called while holding damon_dbgfs_lock.
- *
- * Return 0 on success, negative error code otherwise.
- */
+ 
 static int dbgfs_rm_context(char *name)
 {
 	struct dentry *root, *dir, **new_dirs;
@@ -978,7 +927,7 @@ static ssize_t dbgfs_rm_context_write(struct file *file,
 		return -ENOMEM;
 	}
 
-	/* Trim white space */
+	 
 	if (sscanf(kbuf, "%s", ctx_name) != 1) {
 		ret = -EINVAL;
 		goto out;
@@ -1018,7 +967,7 @@ static ssize_t dbgfs_monitor_on_write(struct file *file,
 	if (IS_ERR(kbuf))
 		return PTR_ERR(kbuf);
 
-	/* Remove white space */
+	 
 	if (sscanf(kbuf, "%s", kbuf) != 1) {
 		kfree(kbuf);
 		return -EINVAL;
@@ -1097,9 +1046,7 @@ static int __init __damon_dbgfs_init(void)
 	return 0;
 }
 
-/*
- * Functions for the initialization
- */
+ 
 
 static int __init damon_dbgfs_init(void)
 {

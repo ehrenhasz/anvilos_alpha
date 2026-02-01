@@ -1,31 +1,4 @@
-/*
- * linux/drivers/video/hecubafb.c -- FB driver for Hecuba/Apollo controller
- *
- * Copyright (C) 2006, Jaya Kumar
- * This work was sponsored by CIS(M) Sdn Bhd
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of this archive for
- * more details.
- *
- * Layout is based on skeletonfb.c by James Simmons and Geert Uytterhoeven.
- * This work was possible because of apollo display code from E-Ink's website
- * http://support.eink.com/community
- * All information used to write this code is from public material made
- * available by E-Ink on its support site. Some commands such as 0xA4
- * were found by looping through cmd=0x00 thru 0xFF and supplying random
- * values. There are other commands that the display is capable of,
- * beyond the 5 used here but they are more complex.
- *
- * This driver is written to be used with the Hecuba display architecture.
- * The actual display chip is called Apollo and the interface electronics
- * it needs is called Hecuba.
- *
- * It is intended to be architecture independent. A board specific driver
- * must be used to perform all the physical IO interactions. An example
- * is provided as n411.c
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -43,7 +16,7 @@
 
 #include <video/hecubafb.h>
 
-/* Display specific information */
+ 
 #define DPY_W 600
 #define DPY_H 800
 
@@ -67,35 +40,35 @@ static const struct fb_var_screeninfo hecubafb_var = {
 	.nonstd		= 1,
 };
 
-/* main hecubafb functions */
+ 
 
 static void apollo_send_data(struct hecubafb_par *par, unsigned char data)
 {
-	/* set data */
+	 
 	par->board->set_data(par, data);
 
-	/* set DS low */
+	 
 	par->board->set_ctl(par, HCB_DS_BIT, 0);
 
-	/* wait for ack */
+	 
 	par->board->wait_for_ack(par, 0);
 
-	/* set DS hi */
+	 
 	par->board->set_ctl(par, HCB_DS_BIT, 1);
 
-	/* wait for ack to clear */
+	 
 	par->board->wait_for_ack(par, 1);
 }
 
 static void apollo_send_command(struct hecubafb_par *par, unsigned char data)
 {
-	/* command so set CD to high */
+	 
 	par->board->set_ctl(par, HCB_CD_BIT, 1);
 
-	/* actually strobe with command */
+	 
 	apollo_send_data(par, data);
 
-	/* clear CD back to low */
+	 
 	par->board->set_ctl(par, HCB_CD_BIT, 0);
 }
 
@@ -114,7 +87,7 @@ static void hecubafb_dpy_update(struct hecubafb_par *par)
 	apollo_send_command(par, APOLLO_DISPLAY_IMG);
 }
 
-/* this is called back from the deferred io workqueue */
+ 
 static void hecubafb_dpy_deferred_io(struct fb_info *info, struct list_head *pagereflist)
 {
 	hecubafb_dpy_update(info->par);
@@ -158,12 +131,12 @@ static int hecubafb_probe(struct platform_device *dev)
 	unsigned char *videomemory;
 	struct hecubafb_par *par;
 
-	/* pick up board specific routines */
+	 
 	board = dev->dev.platform_data;
 	if (!board)
 		return -EINVAL;
 
-	/* try to count device specific driver, if can't, platform recalls */
+	 
 	if (!try_module_get(board->owner))
 		return -ENODEV;
 
@@ -202,7 +175,7 @@ static int hecubafb_probe(struct platform_device *dev)
 	fb_info(info, "Hecuba frame buffer device, using %dK of video memory\n",
 		videomemorysize >> 10);
 
-	/* this inits the dpy */
+	 
 	retval = par->board->init(par);
 	if (retval < 0)
 		goto err_fbreg;

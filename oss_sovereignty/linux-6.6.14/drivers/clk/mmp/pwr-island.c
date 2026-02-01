@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MMP PMU power island support
- *
- * Copyright (C) 2020 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <linux/pm_domain.h>
 #include <linux/slab.h>
@@ -34,15 +30,15 @@ static int mmp_pm_domain_power_on(struct generic_pm_domain *genpd)
 
 	val = readl(pm_domain->reg);
 
-	/* Turn on the power island */
+	 
 	val |= pm_domain->power_on;
 	writel(val, pm_domain->reg);
 
-	/* Disable isolation */
+	 
 	val |= 0x100;
 	writel(val, pm_domain->reg);
 
-	/* Some blocks need to be reset after a power up */
+	 
 	if (pm_domain->reset || pm_domain->clock_enable) {
 		u32 after_power_on = val;
 
@@ -76,7 +72,7 @@ static int mmp_pm_domain_power_off(struct generic_pm_domain *genpd)
 	if (pm_domain->lock)
 		spin_lock_irqsave(pm_domain->lock, flags);
 
-	/* Turn off and isolate the power island. */
+	 
 	val = readl(pm_domain->reg);
 	val &= ~pm_domain->power_on;
 	val &= ~0x100;

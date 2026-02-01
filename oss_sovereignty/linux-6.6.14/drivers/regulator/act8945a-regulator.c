@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Voltage regulation driver for active-semi ACT8945A PMIC
- *
- * Copyright (C) 2015 Atmel Corporation
- *
- * Author: Wenyou Yang <wenyou.yang@atmel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -15,9 +9,7 @@
 #include <linux/regulator/machine.h>
 #include <dt-bindings/regulator/active-semi,8945a-regulator.h>
 
-/*
- * ACT8945A Global Register Map.
- */
+ 
 #define ACT8945A_SYS_MODE	0x00
 #define ACT8945A_SYS_CTRL	0x01
 #define ACT8945A_SYS_UNLK_REGS	0x0b
@@ -46,15 +38,11 @@
 #define ACT8945A_LDO4_CTRL	0x65
 #define ACT8945A_LDO4_SUS	0x66
 
-/*
- * Field Definitions.
- */
-#define ACT8945A_ENA		0x80	/* ON - [7] */
-#define ACT8945A_VSEL_MASK	0x3F	/* VSET - [5:0] */
+ 
+#define ACT8945A_ENA		0x80	 
+#define ACT8945A_VSEL_MASK	0x3F	 
 
-/*
- * ACT8945A Voltage Number
- */
+ 
 #define ACT8945A_VOLTAGE_NUM	64
 
 enum {
@@ -121,10 +109,7 @@ static int act8945a_set_suspend_state(struct regulator_dev *rdev, bool enable)
 	if (enable)
 		val |= BIT(4);
 
-	/*
-	 * Ask the PMIC to enable/disable this output when entering hibernate
-	 * mode.
-	 */
+	 
 	return regmap_write(regmap, reg, val);
 }
 
@@ -318,7 +303,7 @@ static int act8945a_pmic_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, act8945a);
 
-	/* Unlock expert registers. */
+	 
 	return regmap_write(act8945a->regmap, ACT8945A_SYS_UNLK_REGS, 0xef);
 }
 
@@ -326,10 +311,7 @@ static int __maybe_unused act8945a_suspend(struct device *pdev)
 {
 	struct act8945a_pmic *act8945a = dev_get_drvdata(pdev);
 
-	/*
-	 * Ask the PMIC to enter the suspend mode on the next PWRHLD
-	 * transition.
-	 */
+	 
 	return regmap_write(act8945a->regmap, ACT8945A_SYS_CTRL, 0x42);
 }
 
@@ -339,9 +321,7 @@ static void act8945a_pmic_shutdown(struct platform_device *pdev)
 {
 	struct act8945a_pmic *act8945a = platform_get_drvdata(pdev);
 
-	/*
-	 * Ask the PMIC to shutdown everything on the next PWRHLD transition.
-	 */
+	 
 	regmap_write(act8945a->regmap, ACT8945A_SYS_CTRL, 0x0);
 }
 

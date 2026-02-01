@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -312,7 +312,7 @@ static void fastopen_estab(void)
 
 	prepare_out();
 
-	/* Allow fastopen without fastopen cookie */
+	 
 	if (write_sysctl("/proc/sys/net/ipv4/tcp_fastopen", "1543"))
 		return;
 
@@ -351,12 +351,10 @@ static void syncookie_estab(void)
 
 	prepare_out();
 
-	/* Clear the RESEND to ensure the bpf prog can learn
-	 * want_cookie and set the RESEND by itself.
-	 */
+	 
 	skel->bss->passive_synack_out.flags &= ~OPTION_F_RESEND;
 
-	/* Enforce syncookie mode */
+	 
 	if (write_sysctl("/proc/sys/net/ipv4/tcp_syncookies", "2"))
 		return;
 
@@ -478,7 +476,7 @@ static void misc(void)
 	}
 
 	for (i = 0; i < nr_data; i++) {
-		/* MSG_EOR to ensure skb will not be combined */
+		 
 		ret = send(sk_fds.active_fd, send_msg, sizeof(send_msg),
 			   MSG_EOR);
 		if (!ASSERT_EQ(ret, sizeof(send_msg), "send(msg)"))
@@ -496,7 +494,7 @@ static void misc(void)
 
 	ASSERT_EQ(misc_skel->bss->nr_data, nr_data, "unexpected nr_data");
 
-	/* The last ACK may have been delayed, so it is either 1 or 2. */
+	 
 	CHECK(misc_skel->bss->nr_pure_ack != 1 &&
 	      misc_skel->bss->nr_pure_ack != 2,
 	      "unexpected nr_pure_ack",

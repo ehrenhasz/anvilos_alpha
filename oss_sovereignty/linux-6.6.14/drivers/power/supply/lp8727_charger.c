@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for LP8727 Micro/Mini USB IC with integrated charger
- *
- *			Copyright (C) 2011 Texas Instruments
- *			Copyright (C) 2011 National Semiconductor
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -17,7 +12,7 @@
 #define LP8788_NUM_INTREGS	2
 #define DEFAULT_DEBOUNCE_MSEC	270
 
-/* Registers */
+ 
 #define LP8727_CTRL1		0x1
 #define LP8727_CTRL2		0x2
 #define LP8727_SWCTRL		0x3
@@ -27,36 +22,36 @@
 #define LP8727_STATUS2		0x7
 #define LP8727_CHGCTRL2		0x9
 
-/* CTRL1 register */
+ 
 #define LP8727_CP_EN		BIT(0)
 #define LP8727_ADC_EN		BIT(1)
 #define LP8727_ID200_EN		BIT(4)
 
-/* CTRL2 register */
+ 
 #define LP8727_CHGDET_EN	BIT(1)
 #define LP8727_INT_EN		BIT(6)
 
-/* SWCTRL register */
+ 
 #define LP8727_SW_DM1_DM	(0x0 << 0)
 #define LP8727_SW_DM1_HiZ	(0x7 << 0)
 #define LP8727_SW_DP2_DP	(0x0 << 3)
 #define LP8727_SW_DP2_HiZ	(0x7 << 3)
 
-/* INT1 register */
+ 
 #define LP8727_IDNO		(0xF << 0)
 #define LP8727_VBUS		BIT(4)
 
-/* STATUS1 register */
+ 
 #define LP8727_CHGSTAT		(3 << 4)
 #define LP8727_CHPORT		BIT(6)
 #define LP8727_DCPORT		BIT(7)
 #define LP8727_STAT_EOC		0x30
 
-/* STATUS2 register */
+ 
 #define LP8727_TEMP_STAT	(3 << 5)
 #define LP8727_TEMP_SHIFT	5
 
-/* CHGCTRL2 register */
+ 
 #define LP8727_ICHG_SHIFT	4
 
 enum lp8727_dev_id {
@@ -88,11 +83,11 @@ struct lp8727_chg {
 	struct lp8727_psy *psy;
 	struct lp8727_platform_data *pdata;
 
-	/* Charger Data */
+	 
 	enum lp8727_dev_id devid;
 	struct lp8727_chg_param *chg_param;
 
-	/* Interrupt Handling */
+	 
 	int irq;
 	struct delayed_work work;
 	unsigned long debounce_jiffies;
@@ -141,7 +136,7 @@ static int lp8727_init_device(struct lp8727_chg *pchg)
 	int ret;
 	u8 intstat[LP8788_NUM_INTREGS];
 
-	/* clear interrupts */
+	 
 	ret = lp8727_read_bytes(pchg, LP8727_INT1, intstat, LP8788_NUM_INTREGS);
 	if (ret)
 		return ret;
@@ -401,11 +396,11 @@ static void lp8727_charger_changed(struct power_supply *psy)
 	u8 ichg;
 	u8 val;
 
-	/* skip if no charger exists */
+	 
 	if (!lp8727_is_charger_attached(psy->desc->name, pchg->devid))
 		return;
 
-	/* update charging parameters */
+	 
 	if (pchg->chg_param) {
 		eoc_level = pchg->chg_param->eoc_level;
 		ichg = pchg->chg_param->ichg;
@@ -441,7 +436,7 @@ static const struct power_supply_desc lp8727_batt_desc = {
 
 static int lp8727_register_psy(struct lp8727_chg *pchg)
 {
-	struct power_supply_config psy_cfg = {}; /* Only for ac and usb */
+	struct power_supply_config psy_cfg = {};  
 	struct lp8727_psy *psy;
 
 	psy = devm_kzalloc(pchg->dev, sizeof(*psy), GFP_KERNEL);
@@ -517,7 +512,7 @@ static struct lp8727_platform_data *lp8727_parse_dt(struct device *dev)
 
 	of_property_read_u32(np, "debounce-ms", &pdata->debounce_msec);
 
-	/* If charging parameter is not defined, just skip parsing the dt */
+	 
 	if (of_get_child_count(np) == 0)
 		return pdata;
 

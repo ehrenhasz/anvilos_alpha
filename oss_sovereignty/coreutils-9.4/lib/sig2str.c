@@ -1,21 +1,4 @@
-/* sig2str.c -- convert between signal names and numbers
-
-   Copyright (C) 2002, 2004, 2006, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #include <config.h>
 
@@ -37,11 +20,10 @@
 
 #define NUMNAME(name) { SIG##name, #name }
 
-/* Signal names and numbers.  Put the preferred name first.  */
+ 
 static struct numname { int num; char const name[8]; } numname_table[] =
   {
-    /* Signals required by POSIX 1003.1-2001 base, listed in
-       traditional numeric order where possible.  */
+     
 #ifdef SIGHUP
     NUMNAME (HUP),
 #endif
@@ -69,8 +51,7 @@ static struct numname { int num; char const name[8]; } numname_table[] =
 #ifdef SIGSEGV
     NUMNAME (SEGV),
 #endif
-    /* On Haiku, SIGSEGV == SIGBUS, but we prefer SIGSEGV to match
-       strsignal.c output, so SIGBUS must be listed second.  */
+     
 #ifdef SIGBUS
     NUMNAME (BUS),
 #endif
@@ -111,7 +92,7 @@ static struct numname { int num; char const name[8]; } numname_table[] =
     NUMNAME (TTOU),
 #endif
 
-    /* Signals required by POSIX 1003.1-2001 with the XSI extension.  */
+     
 #ifdef SIGSYS
     NUMNAME (SYS),
 #endif
@@ -131,15 +112,15 @@ static struct numname { int num; char const name[8]; } numname_table[] =
     NUMNAME (XFSZ),
 #endif
 
-    /* Unix Version 7.  */
+     
 #ifdef SIGIOT
-    NUMNAME (IOT),      /* Older name for ABRT.  */
+    NUMNAME (IOT),       
 #endif
 #ifdef SIGEMT
     NUMNAME (EMT),
 #endif
 
-    /* USG Unix.  */
+     
 #ifdef SIGPHONE
     NUMNAME (PHONE),
 #endif
@@ -147,7 +128,7 @@ static struct numname { int num; char const name[8]; } numname_table[] =
     NUMNAME (WIND),
 #endif
 
-    /* Unix System V.  */
+     
 #ifdef SIGCLD
     NUMNAME (CLD),
 #endif
@@ -155,7 +136,7 @@ static struct numname { int num; char const name[8]; } numname_table[] =
     NUMNAME (PWR),
 #endif
 
-    /* GNU/Linux 2.2 and Solaris 8.  */
+     
 #ifdef SIGCANCEL
     NUMNAME (CANCEL),
 #endif
@@ -178,7 +159,7 @@ static struct numname { int num; char const name[8]; } numname_table[] =
     NUMNAME (WINCH),
 #endif
 
-    /* GNU/Linux 2.2.  */
+     
 #ifdef SIGINFO
     NUMNAME (INFO),
 #endif
@@ -189,12 +170,12 @@ static struct numname { int num; char const name[8]; } numname_table[] =
     NUMNAME (STKFLT),
 #endif
 
-    /* AIX 7.  */
+     
 #ifdef SIGCPUFAIL
     NUMNAME (CPUFAIL),
 #endif
 
-    /* AIX 5L.  */
+     
 #ifdef SIGDANGER
     NUMNAME (DANGER),
 #endif
@@ -220,57 +201,50 @@ static struct numname { int num; char const name[8]; } numname_table[] =
     NUMNAME (SOUND),
 #endif
 
-    /* Older AIX versions.  */
+     
 #ifdef SIGALRM1
-    NUMNAME (ALRM1),    /* unknown; taken from Bash 2.05 */
+    NUMNAME (ALRM1),     
 #endif
 #ifdef SIGKAP
-    NUMNAME (KAP),      /* Older name for SIGGRANT.  */
+    NUMNAME (KAP),       
 #endif
 #ifdef SIGVIRT
-    NUMNAME (VIRT),     /* unknown; taken from Bash 2.05 */
+    NUMNAME (VIRT),      
 #endif
 #ifdef SIGWINDOW
-    NUMNAME (WINDOW),   /* Older name for SIGWINCH.  */
+    NUMNAME (WINDOW),    
 #endif
 
-    /* OpenBSD.  */
+     
 #ifdef SIGTHR
     NUMNAME (THR),
 #endif
 
-    /* BeOS, Haiku */
+     
 #ifdef SIGKILLTHR
     NUMNAME (KILLTHR),
 #endif
 
-    /* Older HP-UX versions.  */
+     
 #ifdef SIGDIL
     NUMNAME (DIL),
 #endif
 
-    /* native Windows */
+     
 #ifdef SIGBREAK
     NUMNAME (BREAK),
 #endif
 
-    /* Korn shell and Bash, of uncertain vintage.  */
+     
     { 0, "EXIT" }
   };
 
 #define NUMNAME_ENTRIES (sizeof numname_table / sizeof numname_table[0])
 
-/* ISDIGIT differs from isdigit, as follows:
-   - Its arg may be any int or unsigned int; it need not be an unsigned char
-     or EOF.
-   - It's typically faster.
-   POSIX says that only '0' through '9' are digits.  Prefer ISDIGIT to
-   isdigit unless it's important to use the locale's definition
-   of "digit" even when the host does not conform to POSIX.  */
+ 
 #define ISDIGIT(c) ((unsigned int) (c) - '0' <= 9)
 
-/* Convert the signal name SIGNAME to a signal number.  Return the
-   signal number if successful, -1 otherwise.  */
+ 
 
 static int
 str2signum (char const *signame)
@@ -312,8 +286,7 @@ str2signum (char const *signame)
   return -1;
 }
 
-/* Convert the signal name SIGNAME to the signal number *SIGNUM.
-   Return 0 if successful, -1 otherwise.  */
+ 
 
 int
 str2sig (char const *signame, int *signum)
@@ -322,9 +295,7 @@ str2sig (char const *signame, int *signum)
   return *signum < 0 ? -1 : 0;
 }
 
-/* Convert SIGNUM to a signal name in SIGNAME.  SIGNAME must point to
-   a buffer of at least SIG2STR_MAX bytes.  Return 0 if successful, -1
-   otherwise.  */
+ 
 
 int
 sig2str (int signum, char *signame)

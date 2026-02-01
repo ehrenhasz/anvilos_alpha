@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ipmi_si_hotmod.c
- *
- * Handling for dynamically adding/removing IPMI devices through
- * a module parameter (and thus sysfs).
- */
+
+ 
 
 #define pr_fmt(fmt) "ipmi_hotmod: " fmt
 
@@ -20,16 +15,7 @@ module_param_call(hotmod, hotmod_handler, NULL, NULL, 0200);
 MODULE_PARM_DESC(hotmod,
 		 "Add and remove interfaces.  See Documentation/driver-api/ipmi.rst in the kernel sources for the gory details.");
 
-/*
- * Parms come in as <op1>[:op2[:op3...]].  ops are:
- *   add|remove,kcs|bt|smic,mem|i/o,<address>[,<opt1>[,<opt2>[,...]]]
- * Options are:
- *   rsp=<regspacing>
- *   rsi=<regsize>
- *   rsh=<regshift>
- *   irq=<irq>
- *   ipmb=<ipmb addr>
- */
+ 
 enum hotmod_op { HM_ADD, HM_REMOVE };
 struct hotmod_vals {
 	const char *name;
@@ -192,7 +178,7 @@ static int hotmod_handler(const char *val, const struct kernel_param *kp)
 	if (!str)
 		return -ENOMEM;
 
-	/* Kill any trailing spaces, as we can get a "\n" from echo. */
+	 
 	for (curr = strstrip(str); curr; curr = next) {
 		enum hotmod_op op;
 

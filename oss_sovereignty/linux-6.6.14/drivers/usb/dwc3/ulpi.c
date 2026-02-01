@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ulpi.c - DesignWare USB3 Controller's ULPI PHY interface
- *
- * Copyright (C) 2015 Intel Corporation
- *
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/time64.h>
@@ -85,7 +79,7 @@ static const struct ulpi_ops dwc3_ulpi_ops = {
 
 int dwc3_ulpi_init(struct dwc3 *dwc)
 {
-	/* Register the interface */
+	 
 	dwc->ulpi = ulpi_register_interface(dwc->dev, &dwc3_ulpi_ops);
 	if (IS_ERR(dwc->ulpi)) {
 		dev_err(dwc->dev, "failed to register ULPI interface");

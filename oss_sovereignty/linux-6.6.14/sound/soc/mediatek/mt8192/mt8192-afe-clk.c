@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8192-afe-clk.c  --  Mediatek 8192 afe clock ctrl
-//
-// Copyright (c) 2020 MediaTek Inc.
-// Author: Shane Chien <shane.chien@mediatek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/arm-smccc.h>
 #include <linux/clk.h>
@@ -98,7 +98,7 @@ static int apll1_mux_setting(struct mtk_base_afe *afe, bool enable)
 			goto EXIT;
 		}
 
-		/* 180.6336 / 4 = 45.1584MHz */
+		 
 		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_ENG1]);
 		if (ret) {
 			dev_err(afe->dev, "%s clk_prepare_enable %s fail %d\n",
@@ -160,7 +160,7 @@ static int apll2_mux_setting(struct mtk_base_afe *afe, bool enable)
 			goto EXIT;
 		}
 
-		/* 196.608 / 4 = 49.152MHz */
+		 
 		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_ENG2]);
 		if (ret) {
 			dev_err(afe->dev, "%s clk_prepare_enable %s fail %d\n",
@@ -287,7 +287,7 @@ int mt8192_apll1_enable(struct mtk_base_afe *afe)
 	struct mt8192_afe_private *afe_priv = afe->platform_priv;
 	int ret;
 
-	/* setting for APLL */
+	 
 	apll1_mux_setting(afe, true);
 
 	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL22M]);
@@ -337,7 +337,7 @@ int mt8192_apll2_enable(struct mtk_base_afe *afe)
 	struct mt8192_afe_private *afe_priv = afe->platform_priv;
 	int ret;
 
-	/* setting for APLL */
+	 
 	apll2_mux_setting(afe, true);
 
 	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL24M]);
@@ -400,11 +400,11 @@ int mt8192_get_apll_by_name(struct mtk_base_afe *afe, const char *name)
 		return MT8192_APLL2;
 }
 
-/* mck */
+ 
 struct mt8192_mck_div {
 	int m_sel_id;
 	int div_clk_id;
-	/* below will be deprecated */
+	 
 	int div_pdn_reg;
 	int div_pdn_mask_sft;
 	int div_reg;
@@ -569,7 +569,7 @@ int mt8192_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate)
 	int div_clk_id = mck_div[mck_id].div_clk_id;
 	int ret;
 
-	/* select apll */
+	 
 	if (m_sel_id >= 0) {
 		ret = clk_prepare_enable(afe_priv->clk[m_sel_id]);
 		if (ret) {
@@ -587,7 +587,7 @@ int mt8192_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate)
 		}
 	}
 
-	/* enable div, set rate */
+	 
 	ret = clk_prepare_enable(afe_priv->clk[div_clk_id]);
 	if (ret) {
 		dev_err(afe->dev, "%s(), clk_prepare_enable %s fail %d\n",

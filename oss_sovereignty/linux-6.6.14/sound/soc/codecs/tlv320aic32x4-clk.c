@@ -1,11 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Clock Tree for the Texas Instruments TLV320AIC32x4
- *
- * Copyright 2019 Annaliese McDermond
- *
- * Author: Annaliese McDermond <nh6z@nh6z.net>
- */
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -22,13 +15,7 @@ struct clk_aic32x4 {
 	unsigned int reg;
 };
 
-/*
- * struct clk_aic32x4_pll_muldiv - Multiplier/divider settings
- * @p:		Divider
- * @r:		first multiplier
- * @j:		integer part of second multiplier
- * @d:		decimal part of second multiplier
- */
+ 
 struct clk_aic32x4_pll_muldiv {
 	u8 p;
 	u16 r;
@@ -77,7 +64,7 @@ static int clk_aic32x4_pll_is_prepared(struct clk_hw *hw)
 static int clk_aic32x4_pll_get_muldiv(struct clk_aic32x4 *pll,
 			struct clk_aic32x4_pll_muldiv *settings)
 {
-	/*	Change to use regmap_bulk_read? */
+	 
 	unsigned int val;
 	int ret;
 
@@ -109,7 +96,7 @@ static int clk_aic32x4_pll_set_muldiv(struct clk_aic32x4 *pll,
 			struct clk_aic32x4_pll_muldiv *settings)
 {
 	int ret;
-	/*	Change to use regmap_bulk_write for some if not all? */
+	 
 
 	ret = regmap_update_bits(pll->regmap, AIC32X4_PLLPR,
 				AIC32X4_PLL_R_MASK, settings->r);
@@ -141,10 +128,7 @@ static unsigned long clk_aic32x4_pll_calc_rate(
 			unsigned long parent_rate)
 {
 	u64 rate;
-	/*
-	 * We scale j by 10000 to account for the decimal part of P and divide
-	 * it back out later.
-	 */
+	 
 	rate = (u64) parent_rate * settings->r *
 				((settings->j * 10000) + settings->d);
 
@@ -160,30 +144,21 @@ static int clk_aic32x4_pll_calc_muldiv(struct clk_aic32x4_pll_muldiv *settings,
 	if (settings->p > 8)
 		return -1;
 
-	/*
-	 * We scale this figure by 10000 so that we can get the decimal part
-	 * of the multiplier.	This is because we can't do floating point
-	 * math in the kernel.
-	 */
+	 
 	multiplier = (u64) rate * settings->p * 10000;
 	do_div(multiplier, parent_rate);
 
-	/*
-	 * J can't be over 64, so R can scale this.
-	 * R can't be greater than 4.
-	 */
+	 
 	settings->r = ((u32) multiplier / 640000) + 1;
 	if (settings->r > 4)
 		return -1;
 	do_div(multiplier, settings->r);
 
-	/*
-	 * J can't be < 1.
-	 */
+	 
 	if (multiplier < 10000)
 		return -1;
 
-	/* Figure out the integer part, J, and the fractional part, D. */
+	 
 	settings->j = (u32) multiplier / 10000;
 	settings->d = (u32) multiplier % 10000;
 
@@ -235,7 +210,7 @@ static int clk_aic32x4_pll_set_rate(struct clk_hw *hw,
 	if (ret)
 		return ret;
 
-	/* 10ms is the delay to wait before the clocks are stable */
+	 
 	msleep(10);
 
 	return 0;
@@ -480,12 +455,7 @@ int aic32x4_register_clocks(struct device *dev, const char *mclk_name)
 {
 	int i;
 
-	/*
-	 * These lines are here to preserve the current functionality of
-	 * the driver with regard to the DT.  These should eventually be set
-	 * by DT nodes so that the connections can be set up in configuration
-	 * rather than code.
-	 */
+	 
 	aic32x4_clkdesc_array[0].parent_names =
 			(const char* []) { mclk_name, "bclk", "gpio", "din" };
 	aic32x4_clkdesc_array[1].parent_names =

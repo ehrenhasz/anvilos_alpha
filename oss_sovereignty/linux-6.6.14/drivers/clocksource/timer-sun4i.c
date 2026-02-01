@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner A1X SoCs timer handling.
- *
- * Copyright (C) 2012 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- *
- * Based on code from
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- * Benn Huang <benn@allwinnertech.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -39,12 +29,7 @@
 
 #define TIMER_SYNC_TICKS	3
 
-/*
- * When we disable a timer, we need to wait at least for 2 cycles of
- * the timer source clock. We will use for that the clocksource timer
- * that is already setup and runs at the same frequency than the other
- * timers, and we never will be disabled.
- */
+ 
 static void sun4i_clkevt_sync(void __iomem *base)
 {
 	u32 old = readl(base + TIMER_CNTVAL_REG(1));
@@ -179,10 +164,7 @@ static int __init sun4i_timer_init(struct device_node *node)
 	       TIMER_CTL_CLK_SRC(TIMER_CTL_CLK_SRC_OSC24M),
 	       timer_of_base(&to) + TIMER_CTL_REG(1));
 
-	/*
-	 * sched_clock_register does not have priorities, and on sun6i and
-	 * later there is a better sched_clock registered by arm_arch_timer.c
-	 */
+	 
 	if (of_machine_is_compatible("allwinner,sun4i-a10") ||
 	    of_machine_is_compatible("allwinner,sun5i-a13") ||
 	    of_machine_is_compatible("allwinner,sun5i-a10s") ||
@@ -201,16 +183,16 @@ static int __init sun4i_timer_init(struct device_node *node)
 	writel(TIMER_CTL_CLK_SRC(TIMER_CTL_CLK_SRC_OSC24M),
 	       timer_of_base(&to) + TIMER_CTL_REG(0));
 
-	/* Make sure timer is stopped before playing with interrupts */
+	 
 	sun4i_clkevt_time_stop(timer_of_base(&to), 0);
 
-	/* clear timer0 interrupt */
+	 
 	sun4i_timer_clear_interrupt(timer_of_base(&to));
 
 	clockevents_config_and_register(&to.clkevt, timer_of_rate(&to),
 					TIMER_SYNC_TICKS, 0xffffffff);
 
-	/* Enable timer0 interrupt */
+	 
 	val = readl(timer_of_base(&to) + TIMER_IRQ_EN_REG);
 	writel(val | TIMER_IRQ_EN(0), timer_of_base(&to) + TIMER_IRQ_EN_REG);
 

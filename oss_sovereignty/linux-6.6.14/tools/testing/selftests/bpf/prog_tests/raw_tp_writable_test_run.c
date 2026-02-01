@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 #include <linux/nbd.h>
 
-/* NOTE: conflict with other tests. */
+ 
 void serial_test_raw_tp_writable_test_run(void)
 {
 	__u32 duration = 0;

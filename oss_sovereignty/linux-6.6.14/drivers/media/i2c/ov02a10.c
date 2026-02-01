@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 MediaTek Inc.
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -21,14 +21,14 @@
 
 #define OV02A10_REG_CHIP_ID				0x02
 
-/* Bit[1] vertical upside down */
-/* Bit[0] horizontal mirror */
+ 
+ 
 #define REG_MIRROR_FLIP_CONTROL				0x3f
 
-/* Orientation */
+ 
 #define REG_MIRROR_FLIP_ENABLE				0x03
 
-/* Bit[2:0] MIPI transmission speed select */
+ 
 #define TX_SPEED_AREA_SEL				0xa1
 #define OV02A10_MIPI_TX_SPEED_DEFAULT			0x04
 
@@ -40,7 +40,7 @@
 #define SC_CTRL_MODE_STANDBY				0x00
 #define SC_CTRL_MODE_STREAMING				0x01
 
-/* Exposure control */
+ 
 #define OV02A10_EXP_SHIFT				8
 #define OV02A10_REG_EXPOSURE_H				0x03
 #define OV02A10_REG_EXPOSURE_L				0x04
@@ -48,36 +48,36 @@
 #define OV02A10_EXPOSURE_MAX_MARGIN			4
 #define	OV02A10_EXPOSURE_STEP				1
 
-/* Vblanking control */
+ 
 #define OV02A10_VTS_SHIFT				8
 #define OV02A10_REG_VTS_H				0x05
 #define OV02A10_REG_VTS_L				0x06
 #define OV02A10_VTS_MAX					0x209f
 #define OV02A10_BASE_LINES				1224
 
-/* Analog gain control */
+ 
 #define OV02A10_REG_GAIN				0x24
 #define OV02A10_GAIN_MIN				0x10
 #define OV02A10_GAIN_MAX				0xf8
 #define OV02A10_GAIN_STEP				0x01
 #define OV02A10_GAIN_DEFAULT				0x40
 
-/* Test pattern control */
+ 
 #define OV02A10_REG_TEST_PATTERN			0xb6
 
 #define OV02A10_LINK_FREQ_390MHZ			(390 * HZ_PER_MHZ)
 #define OV02A10_ECLK_FREQ				(24 * HZ_PER_MHZ)
 
-/* Number of lanes supported by this driver */
+ 
 #define OV02A10_DATA_LANES				1
 
-/* Bits per sample of sensor output */
+ 
 #define OV02A10_BITS_PER_SAMPLE				10
 
 static const char * const ov02a10_supply_names[] = {
-	"dovdd",	/* Digital I/O power */
-	"avdd",		/* Analog power */
-	"dvdd",		/* Digital core power */
+	"dovdd",	 
+	"avdd",		 
+	"dvdd",		 
 };
 
 struct ov02a10_reg {
@@ -101,7 +101,7 @@ struct ov02a10_mode {
 
 struct ov02a10 {
 	u32 eclk_freq;
-	/* Indication of MIPI transmission speed select */
+	 
 	u32 mipi_clock_voltage;
 
 	struct clk *eclk;
@@ -112,10 +112,7 @@ struct ov02a10 {
 	bool streaming;
 	bool upside_down;
 
-	/*
-	 * Serialize control access, get/set format, get selection
-	 * and start streaming.
-	 */
+	 
 	struct mutex mutex;
 	struct v4l2_subdev subdev;
 	struct media_pad pad;
@@ -131,16 +128,7 @@ static inline struct ov02a10 *to_ov02a10(struct v4l2_subdev *sd)
 	return container_of(sd, struct ov02a10, subdev);
 }
 
-/*
- * eclk 24Mhz
- * pclk 39Mhz
- * linelength 934(0x3a6)
- * framelength 1390(0x56E)
- * grabwindow_width 1600
- * grabwindow_height 1200
- * max_framerate 30fps
- * mipi_datarate per lane 780Mbps
- */
+ 
 static const struct ov02a10_reg ov02a10_1600x1200_regs[] = {
 	{0xfd, 0x01},
 	{0xac, 0x00},
@@ -310,7 +298,7 @@ static int ov02a10_set_fmt(struct v4l2_subdev *sd,
 		goto out_unlock;
 	}
 
-	/* Only one sensor mode supported */
+	 
 	mbus_fmt->code = ov02a10->fmt.code;
 	ov02a10_fill_fmt(ov02a10->cur_mode, mbus_fmt);
 
@@ -384,7 +372,7 @@ static int ov02a10_check_sensor_id(struct ov02a10 *ov02a10)
 	u16 chip_id;
 	int ret;
 
-	/* Validate the chip ID */
+	 
 	ret = i2c_smbus_read_word_swapped(client, OV02A10_REG_CHIP_ID);
 	if (ret < 0)
 		return ret;
@@ -465,18 +453,18 @@ static int __ov02a10_start_stream(struct ov02a10 *ov02a10)
 	const struct ov02a10_reg_list *reg_list;
 	int ret;
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &ov02a10->cur_mode->reg_list;
 	ret = ov02a10_write_array(ov02a10, reg_list);
 	if (ret)
 		return ret;
 
-	/* Apply customized values from user */
+	 
 	ret = __v4l2_ctrl_handler_setup(ov02a10->subdev.ctrl_handler);
 	if (ret)
 		return ret;
 
-	/* Set orientation to 180 degree */
+	 
 	if (ov02a10->upside_down) {
 		ret = i2c_smbus_write_byte_data(client, REG_MIRROR_FLIP_CONTROL,
 						REG_MIRROR_FLIP_ENABLE);
@@ -490,7 +478,7 @@ static int __ov02a10_start_stream(struct ov02a10 *ov02a10)
 			return ret;
 	}
 
-	/* Set MIPI TX speed according to DT property */
+	 
 	if (ov02a10->mipi_clock_voltage != OV02A10_MIPI_TX_SPEED_DEFAULT) {
 		ret = i2c_smbus_write_byte_data(client, TX_SPEED_AREA_SEL,
 						ov02a10->mipi_clock_voltage);
@@ -498,7 +486,7 @@ static int __ov02a10_start_stream(struct ov02a10 *ov02a10)
 			return ret;
 	}
 
-	/* Set stream on register */
+	 
 	return i2c_smbus_write_byte_data(client, REG_SC_CTRL_MODE,
 					 SC_CTRL_MODE_STREAMING);
 }
@@ -668,9 +656,9 @@ static int ov02a10_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max_expo;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max_expo = ov02a10->cur_mode->height + ctrl->val -
 			   OV02A10_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(ov02a10->exposure,
@@ -679,7 +667,7 @@ static int ov02a10_set_ctrl(struct v4l2_ctrl *ctrl)
 					 ov02a10->exposure->default_value);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -826,7 +814,7 @@ static int ov02a10_check_hwcfg(struct device *dev, struct ov02a10 *ov02a10)
 	if (ret)
 		return ret;
 
-	/* Optional indication of MIPI clock voltage unit */
+	 
 	ret = fwnode_property_read_u32(ep, "ovti,mipi-clock-voltage",
 				       &clk_volt);
 
@@ -875,7 +863,7 @@ static int ov02a10_probe(struct i2c_client *client)
 	ov02a10->mipi_clock_voltage = OV02A10_MIPI_TX_SPEED_DEFAULT;
 	ov02a10->fmt.code = MEDIA_BUS_FMT_SBGGR10_1X10;
 
-	/* Optional indication of physical rotation of sensor */
+	 
 	rotation = 0;
 	device_property_read_u32(dev, "rotation", &rotation);
 	if (rotation == 180) {
@@ -922,7 +910,7 @@ static int ov02a10_probe(struct i2c_client *client)
 
 	mutex_init(&ov02a10->mutex);
 
-	/* Set default mode */
+	 
 	ov02a10->cur_mode = &supported_modes[0];
 
 	ret = ov02a10_initialize_controls(ov02a10);
@@ -931,7 +919,7 @@ static int ov02a10_probe(struct i2c_client *client)
 		goto err_destroy_mutex;
 	}
 
-	/* Initialize subdev */
+	 
 	ov02a10->subdev.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	ov02a10->subdev.entity.ops = &ov02a10_subdev_entity_ops;
 	ov02a10->subdev.entity.function = MEDIA_ENT_F_CAM_SENSOR;

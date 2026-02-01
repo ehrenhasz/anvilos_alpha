@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KUnit tests
- *
- * Copyright (C) 2020, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/idr.h>
@@ -312,7 +307,7 @@ static struct tb_switch *alloc_dev_default(struct kunit *test,
 	if (!parent)
 		return sw;
 
-	/* Link them */
+	 
 	upstream_port = tb_upstream_port(sw);
 	port = tb_port_at(route, parent);
 	port->remote = upstream_port;
@@ -322,7 +317,7 @@ static struct tb_switch *alloc_dev_default(struct kunit *test,
 		upstream_port->dual_link_port->remote = port->dual_link_port;
 
 		if (bonded) {
-			/* Bonding is used */
+			 
 			port->bonded = true;
 			port->total_credits *= 2;
 			port->dual_link_port->bonded = true;
@@ -368,14 +363,7 @@ static struct tb_switch *alloc_dev_without_dp(struct kunit *test,
 	sw = alloc_dev_default(test, parent, route, bonded);
 	if (!sw)
 		return NULL;
-	/*
-	 * Device with:
-	 * 2x USB4 Adapters (adapters 1,2 and 3,4),
-	 * 1x PCIe Upstream (adapter 9),
-	 * 1x PCIe Downstream (adapter 10),
-	 * 1x USB3 Upstream (adapter 16),
-	 * 1x USB3 Downstream (adapter 17)
-	 */
+	 
 	for (i = 5; i <= 8; i++)
 		sw->ports[i].disabled = true;
 
@@ -443,7 +431,7 @@ static void tb_test_path_not_connected_walk(struct kunit *test)
 	struct tb_switch *host, *dev;
 
 	host = alloc_host(test);
-	/* No connection between host and dev */
+	 
 	dev = alloc_dev_default(test, NULL, 3, true);
 
 	src_port = &host->ports[12];
@@ -458,7 +446,7 @@ static void tb_test_path_not_connected_walk(struct kunit *test)
 	p = tb_next_port_on_path(src_port, dst_port, p);
 	KUNIT_EXPECT_TRUE(test, !p);
 
-	/* Other direction */
+	 
 
 	p = tb_next_port_on_path(dst_port, src_port, NULL);
 	KUNIT_EXPECT_PTR_EQ(test, p, dst_port);
@@ -478,15 +466,7 @@ struct port_expectation {
 
 static void tb_test_path_single_hop_walk(struct kunit *test)
 {
-	/*
-	 * Walks from Host PCIe downstream port to Device #1 PCIe
-	 * upstream port.
-	 *
-	 *   [Host]
-	 *   1 |
-	 *   1 |
-	 *  [Device]
-	 */
+	 
 	static const struct port_expectation test_data[] = {
 		{ .route = 0x0, .port = 8, .type = TB_TYPE_PCIE_DOWN },
 		{ .route = 0x0, .port = 1, .type = TB_TYPE_PORT },
@@ -503,7 +483,7 @@ static void tb_test_path_single_hop_walk(struct kunit *test)
 	src_port = &host->ports[8];
 	dst_port = &dev->ports[9];
 
-	/* Walk both directions */
+	 
 
 	i = 0;
 	tb_for_each_port_on_path(src_port, dst_port, p) {
@@ -532,17 +512,7 @@ static void tb_test_path_single_hop_walk(struct kunit *test)
 
 static void tb_test_path_daisy_chain_walk(struct kunit *test)
 {
-	/*
-	 * Walks from Host DP IN to Device #2 DP OUT.
-	 *
-	 *           [Host]
-	 *            1 |
-	 *            1 |
-	 *         [Device #1]
-	 *       3 /
-	 *      1 /
-	 * [Device #2]
-	 */
+	 
 	static const struct port_expectation test_data[] = {
 		{ .route = 0x0, .port = 5, .type = TB_TYPE_DP_HDMI_IN },
 		{ .route = 0x0, .port = 1, .type = TB_TYPE_PORT },
@@ -562,7 +532,7 @@ static void tb_test_path_daisy_chain_walk(struct kunit *test)
 	src_port = &host->ports[5];
 	dst_port = &dev2->ports[13];
 
-	/* Walk both directions */
+	 
 
 	i = 0;
 	tb_for_each_port_on_path(src_port, dst_port, p) {
@@ -591,19 +561,7 @@ static void tb_test_path_daisy_chain_walk(struct kunit *test)
 
 static void tb_test_path_simple_tree_walk(struct kunit *test)
 {
-	/*
-	 * Walks from Host DP IN to Device #3 DP OUT.
-	 *
-	 *           [Host]
-	 *            1 |
-	 *            1 |
-	 *         [Device #1]
-	 *       3 /   | 5  \ 7
-	 *      1 /    |     \ 1
-	 * [Device #2] |    [Device #4]
-	 *             | 1
-	 *         [Device #3]
-	 */
+	 
 	static const struct port_expectation test_data[] = {
 		{ .route = 0x0, .port = 5, .type = TB_TYPE_DP_HDMI_IN },
 		{ .route = 0x0, .port = 1, .type = TB_TYPE_PORT },
@@ -625,7 +583,7 @@ static void tb_test_path_simple_tree_walk(struct kunit *test)
 	src_port = &host->ports[5];
 	dst_port = &dev3->ports[13];
 
-	/* Walk both directions */
+	 
 
 	i = 0;
 	tb_for_each_port_on_path(src_port, dst_port, p) {
@@ -654,27 +612,7 @@ static void tb_test_path_simple_tree_walk(struct kunit *test)
 
 static void tb_test_path_complex_tree_walk(struct kunit *test)
 {
-	/*
-	 * Walks from Device #3 DP IN to Device #9 DP OUT.
-	 *
-	 *           [Host]
-	 *            1 |
-	 *            1 |
-	 *         [Device #1]
-	 *       3 /   | 5  \ 7
-	 *      1 /    |     \ 1
-	 * [Device #2] |    [Device #5]
-	 *    5 |      | 1         \ 7
-	 *    1 |  [Device #4]      \ 1
-	 * [Device #3]             [Device #6]
-	 *                       3 /
-	 *                      1 /
-	 *                    [Device #7]
-	 *                  3 /      | 5
-	 *                 1 /       |
-	 *               [Device #8] | 1
-	 *                       [Device #9]
-	 */
+	 
 	static const struct port_expectation test_data[] = {
 		{ .route = 0x50301, .port = 13, .type = TB_TYPE_DP_HDMI_IN },
 		{ .route = 0x50301, .port = 1, .type = TB_TYPE_PORT },
@@ -709,7 +647,7 @@ static void tb_test_path_complex_tree_walk(struct kunit *test)
 	src_port = &dev3->ports[13];
 	dst_port = &dev9->ports[14];
 
-	/* Walk both directions */
+	 
 
 	i = 0;
 	tb_for_each_port_on_path(src_port, dst_port, p) {
@@ -743,29 +681,7 @@ static void tb_test_path_max_length_walk(struct kunit *test)
 	struct tb_port *src_port, *dst_port, *p;
 	int i;
 
-	/*
-	 * Walks from Device #6 DP IN to Device #12 DP OUT.
-	 *
-	 *          [Host]
-	 *         1 /  \ 3
-	 *        1 /    \ 1
-	 * [Device #1]   [Device #7]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #2]   [Device #8]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #3]   [Device #9]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #4]   [Device #10]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #5]   [Device #11]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #6]   [Device #12]
-	 */
+	 
 	static const struct port_expectation test_data[] = {
 		{ .route = 0x30303030301, .port = 13, .type = TB_TYPE_DP_HDMI_IN },
 		{ .route = 0x30303030301, .port = 1, .type = TB_TYPE_PORT },
@@ -812,7 +728,7 @@ static void tb_test_path_max_length_walk(struct kunit *test)
 	src_port = &dev6->ports[13];
 	dst_port = &dev12->ports[13];
 
-	/* Walk both directions */
+	 
 
 	i = 0;
 	tb_for_each_port_on_path(src_port, dst_port, p) {
@@ -847,7 +763,7 @@ static void tb_test_path_not_connected(struct kunit *test)
 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x3, false);
-	/* Not connected to anything */
+	 
 	dev2 = alloc_dev_default(test, NULL, 0x303, false);
 
 	down = &dev1->ports[10];
@@ -869,14 +785,7 @@ struct hop_expectation {
 
 static void tb_test_path_not_bonded_lane0(struct kunit *test)
 {
-	/*
-	 * PCIe path from host to device using lane 0.
-	 *
-	 *   [Host]
-	 *   3 |: 4
-	 *   1 |: 2
-	 *  [Device]
-	 */
+	 
 	static const struct hop_expectation test_data[] = {
 		{
 			.route = 0x0,
@@ -927,18 +836,7 @@ static void tb_test_path_not_bonded_lane0(struct kunit *test)
 
 static void tb_test_path_not_bonded_lane1(struct kunit *test)
 {
-	/*
-	 * DP Video path from host to device using lane 1. Paths like
-	 * these are only used with Thunderbolt 1 devices where lane
-	 * bonding is not possible. USB4 specifically does not allow
-	 * paths like this (you either use lane 0 where lane 1 is
-	 * disabled or both lanes are bonded).
-	 *
-	 *   [Host]
-	 *   1 :| 2
-	 *   1 :| 2
-	 *  [Device]
-	 */
+	 
 	static const struct hop_expectation test_data[] = {
 		{
 			.route = 0x0,
@@ -989,20 +887,7 @@ static void tb_test_path_not_bonded_lane1(struct kunit *test)
 
 static void tb_test_path_not_bonded_lane1_chain(struct kunit *test)
 {
-	/*
-	 * DP Video path from host to device 3 using lane 1.
-	 *
-	 *    [Host]
-	 *    1 :| 2
-	 *    1 :| 2
-	 *  [Device #1]
-	 *    7 :| 8
-	 *    1 :| 2
-	 *  [Device #2]
-	 *    5 :| 6
-	 *    1 :| 2
-	 *  [Device #3]
-	 */
+	 
 	static const struct hop_expectation test_data[] = {
 		{
 			.route = 0x0,
@@ -1069,20 +954,7 @@ static void tb_test_path_not_bonded_lane1_chain(struct kunit *test)
 
 static void tb_test_path_not_bonded_lane1_chain_reverse(struct kunit *test)
 {
-	/*
-	 * DP Video path from device 3 to host using lane 1.
-	 *
-	 *    [Host]
-	 *    1 :| 2
-	 *    1 :| 2
-	 *  [Device #1]
-	 *    7 :| 8
-	 *    1 :| 2
-	 *  [Device #2]
-	 *    5 :| 6
-	 *    1 :| 2
-	 *  [Device #3]
-	 */
+	 
 	static const struct hop_expectation test_data[] = {
 		{
 			.route = 0x50701,
@@ -1149,24 +1021,7 @@ static void tb_test_path_not_bonded_lane1_chain_reverse(struct kunit *test)
 
 static void tb_test_path_mixed_chain(struct kunit *test)
 {
-	/*
-	 * DP Video path from host to device 4 where first and last link
-	 * is bonded.
-	 *
-	 *    [Host]
-	 *    1 |
-	 *    1 |
-	 *  [Device #1]
-	 *    7 :| 8
-	 *    1 :| 2
-	 *  [Device #2]
-	 *    5 :| 6
-	 *    1 :| 2
-	 *  [Device #3]
-	 *    3 |
-	 *    1 |
-	 *  [Device #4]
-	 */
+	 
 	static const struct hop_expectation test_data[] = {
 		{
 			.route = 0x0,
@@ -1241,24 +1096,7 @@ static void tb_test_path_mixed_chain(struct kunit *test)
 
 static void tb_test_path_mixed_chain_reverse(struct kunit *test)
 {
-	/*
-	 * DP Video path from device 4 to host where first and last link
-	 * is bonded.
-	 *
-	 *    [Host]
-	 *    1 |
-	 *    1 |
-	 *  [Device #1]
-	 *    7 :| 8
-	 *    1 :| 2
-	 *  [Device #2]
-	 *    5 :| 6
-	 *    1 :| 2
-	 *  [Device #3]
-	 *    3 |
-	 *    1 |
-	 *  [Device #4]
-	 */
+	 
 	static const struct hop_expectation test_data[] = {
 		{
 			.route = 0x3050701,
@@ -1337,17 +1175,7 @@ static void tb_test_tunnel_pcie(struct kunit *test)
 	struct tb_tunnel *tunnel1, *tunnel2;
 	struct tb_port *down, *up;
 
-	/*
-	 * Create PCIe tunnel between host and two devices.
-	 *
-	 *   [Host]
-	 *    1 |
-	 *    1 |
-	 *  [Device #1]
-	 *    5 |
-	 *    1 |
-	 *  [Device #2]
-	 */
+	 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x1, true);
 	dev2 = alloc_dev_default(test, dev1, 0x501, true);
@@ -1392,14 +1220,7 @@ static void tb_test_tunnel_dp(struct kunit *test)
 	struct tb_port *in, *out;
 	struct tb_tunnel *tunnel;
 
-	/*
-	 * Create DP tunnel between Host and Device
-	 *
-	 *   [Host]
-	 *   1 |
-	 *   1 |
-	 *  [Device]
-	 */
+	 
 	host = alloc_host(test);
 	dev = alloc_dev_default(test, host, 0x3, true);
 
@@ -1430,19 +1251,7 @@ static void tb_test_tunnel_dp_chain(struct kunit *test)
 	struct tb_port *in, *out;
 	struct tb_tunnel *tunnel;
 
-	/*
-	 * Create DP tunnel from Host DP IN to Device #4 DP OUT.
-	 *
-	 *           [Host]
-	 *            1 |
-	 *            1 |
-	 *         [Device #1]
-	 *       3 /   | 5  \ 7
-	 *      1 /    |     \ 1
-	 * [Device #2] |    [Device #4]
-	 *             | 1
-	 *         [Device #3]
-	 */
+	 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x1, true);
 	alloc_dev_default(test, dev1, 0x301, true);
@@ -1476,22 +1285,7 @@ static void tb_test_tunnel_dp_tree(struct kunit *test)
 	struct tb_port *in, *out;
 	struct tb_tunnel *tunnel;
 
-	/*
-	 * Create DP tunnel from Device #2 DP IN to Device #5 DP OUT.
-	 *
-	 *          [Host]
-	 *           3 |
-	 *           1 |
-	 *         [Device #1]
-	 *       3 /   | 5  \ 7
-	 *      1 /    |     \ 1
-	 * [Device #2] |    [Device #4]
-	 *             | 1
-	 *         [Device #3]
-	 *             | 5
-	 *             | 1
-	 *         [Device #5]
-	 */
+	 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x3, true);
 	dev2 = alloc_dev_with_dpin(test, dev1, 0x303, true);
@@ -1527,29 +1321,7 @@ static void tb_test_tunnel_dp_max_length(struct kunit *test)
 	struct tb_port *in, *out;
 	struct tb_tunnel *tunnel;
 
-	/*
-	 * Creates DP tunnel from Device #6 to Device #12.
-	 *
-	 *          [Host]
-	 *         1 /  \ 3
-	 *        1 /    \ 1
-	 * [Device #1]   [Device #7]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #2]   [Device #8]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #3]   [Device #9]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #4]   [Device #10]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #5]   [Device #11]
-	 *     3 |           | 3
-	 *     1 |           | 1
-	 * [Device #6]   [Device #12]
-	 */
+	 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x1, true);
 	dev2 = alloc_dev_default(test, dev1, 0x301, true);
@@ -1574,14 +1346,14 @@ static void tb_test_tunnel_dp_max_length(struct kunit *test)
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, out);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, 3);
 	KUNIT_ASSERT_EQ(test, tunnel->paths[0]->path_length, 13);
-	/* First hop */
+	 
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[0].in_port, in);
-	/* Middle */
+	 
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[6].in_port,
 			    &host->ports[1]);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[6].out_port,
 			    &host->ports[3]);
-	/* Last */
+	 
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[12].out_port, out);
 	KUNIT_ASSERT_EQ(test, tunnel->paths[1]->path_length, 13);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[1]->hops[0].in_port, in);
@@ -1606,22 +1378,7 @@ static void tb_test_tunnel_3dp(struct kunit *test)
 	struct tb_port *in1, *in2, *in3, *out1, *out2, *out3;
 	struct tb_tunnel *tunnel1, *tunnel2, *tunnel3;
 
-	/*
-	 * Create 3 DP tunnels from Host to Devices #2, #5 and #4.
-	 *
-	 *          [Host]
-	 *           3 |
-	 *           1 |
-	 *         [Device #1]
-	 *       3 /   | 5  \ 7
-	 *      1 /    |     \ 1
-	 * [Device #2] |    [Device #4]
-	 *             | 1
-	 *         [Device #3]
-	 *             | 5
-	 *             | 1
-	 *         [Device #5]
-	 */
+	 
 	host = alloc_host_br(test);
 	dev1 = alloc_dev_default(test, host, 0x3, true);
 	dev2 = alloc_dev_default(test, dev1, 0x303, true);
@@ -1671,17 +1428,7 @@ static void tb_test_tunnel_usb3(struct kunit *test)
 	struct tb_tunnel *tunnel1, *tunnel2;
 	struct tb_port *down, *up;
 
-	/*
-	 * Create USB3 tunnel between host and two devices.
-	 *
-	 *   [Host]
-	 *    1 |
-	 *    1 |
-	 *  [Device #1]
-	 *          \ 7
-	 *           \ 1
-	 *         [Device #2]
-	 */
+	 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x1, true);
 	dev2 = alloc_dev_default(test, dev1, 0x701, true);
@@ -1726,20 +1473,7 @@ static void tb_test_tunnel_port_on_path(struct kunit *test)
 	struct tb_port *in, *out, *port;
 	struct tb_tunnel *dp_tunnel;
 
-	/*
-	 *          [Host]
-	 *           3 |
-	 *           1 |
-	 *         [Device #1]
-	 *       3 /   | 5  \ 7
-	 *      1 /    |     \ 1
-	 * [Device #2] |    [Device #4]
-	 *             | 1
-	 *         [Device #3]
-	 *             | 5
-	 *             | 1
-	 *         [Device #5]
-	 */
+	 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x3, true);
 	dev2 = alloc_dev_with_dpin(test, dev1, 0x303, true);
@@ -1792,17 +1526,7 @@ static void tb_test_tunnel_dma(struct kunit *test)
 	struct tb_tunnel *tunnel;
 	struct tb_switch *host;
 
-	/*
-	 * Create DMA tunnel from NHI to port 1 and back.
-	 *
-	 *   [Host 1]
-	 *    1 ^ In HopID 1 -> Out HopID 8
-	 *      |
-	 *      v In HopID 8 -> Out HopID 1
-	 * ............ Domain border
-	 *      |
-	 *   [Host 2]
-	 */
+	 
 	host = alloc_host(test);
 	nhi = &host->ports[7];
 	port = &host->ports[1];
@@ -1813,13 +1537,13 @@ static void tb_test_tunnel_dma(struct kunit *test)
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, nhi);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, port);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, 2);
-	/* RX path */
+	 
 	KUNIT_ASSERT_EQ(test, tunnel->paths[0]->path_length, 1);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[0].in_port, port);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[0]->hops[0].in_hop_index, 8);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[0].out_port, nhi);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[0]->hops[0].next_hop_index, 1);
-	/* TX path */
+	 
 	KUNIT_ASSERT_EQ(test, tunnel->paths[1]->path_length, 1);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[1]->hops[0].in_port, nhi);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[1]->hops[0].in_hop_index, 1);
@@ -1835,17 +1559,7 @@ static void tb_test_tunnel_dma_rx(struct kunit *test)
 	struct tb_tunnel *tunnel;
 	struct tb_switch *host;
 
-	/*
-	 * Create DMA RX tunnel from port 1 to NHI.
-	 *
-	 *   [Host 1]
-	 *    1 ^
-	 *      |
-	 *      | In HopID 15 -> Out HopID 2
-	 * ............ Domain border
-	 *      |
-	 *   [Host 2]
-	 */
+	 
 	host = alloc_host(test);
 	nhi = &host->ports[7];
 	port = &host->ports[1];
@@ -1856,7 +1570,7 @@ static void tb_test_tunnel_dma_rx(struct kunit *test)
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, nhi);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, port);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, 1);
-	/* RX path */
+	 
 	KUNIT_ASSERT_EQ(test, tunnel->paths[0]->path_length, 1);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[0].in_port, port);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[0]->hops[0].in_hop_index, 15);
@@ -1872,17 +1586,7 @@ static void tb_test_tunnel_dma_tx(struct kunit *test)
 	struct tb_tunnel *tunnel;
 	struct tb_switch *host;
 
-	/*
-	 * Create DMA TX tunnel from NHI to port 1.
-	 *
-	 *   [Host 1]
-	 *    1 | In HopID 2 -> Out HopID 15
-	 *      |
-	 *      v
-	 * ............ Domain border
-	 *      |
-	 *   [Host 2]
-	 */
+	 
 	host = alloc_host(test);
 	nhi = &host->ports[7];
 	port = &host->ports[1];
@@ -1893,7 +1597,7 @@ static void tb_test_tunnel_dma_tx(struct kunit *test)
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, nhi);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, port);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, 1);
-	/* TX path */
+	 
 	KUNIT_ASSERT_EQ(test, tunnel->paths[0]->path_length, 1);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[0].in_port, nhi);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[0]->hops[0].in_hop_index, 2);
@@ -1909,24 +1613,7 @@ static void tb_test_tunnel_dma_chain(struct kunit *test)
 	struct tb_port *nhi, *port;
 	struct tb_tunnel *tunnel;
 
-	/*
-	 * Create DMA tunnel from NHI to Device #2 port 3 and back.
-	 *
-	 *   [Host 1]
-	 *    1 ^ In HopID 1 -> Out HopID x
-	 *      |
-	 *    1 | In HopID x -> Out HopID 1
-	 *  [Device #1]
-	 *         7 \
-	 *          1 \
-	 *         [Device #2]
-	 *           3 | In HopID x -> Out HopID 8
-	 *             |
-	 *             v In HopID 8 -> Out HopID x
-	 * ............ Domain border
-	 *             |
-	 *          [Host 2]
-	 */
+	 
 	host = alloc_host(test);
 	dev1 = alloc_dev_default(test, host, 0x1, true);
 	dev2 = alloc_dev_default(test, dev1, 0x701, true);
@@ -1939,7 +1626,7 @@ static void tb_test_tunnel_dma_chain(struct kunit *test)
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, nhi);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, port);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, 2);
-	/* RX path */
+	 
 	KUNIT_ASSERT_EQ(test, tunnel->paths[0]->path_length, 3);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[0].in_port, port);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[0]->hops[0].in_hop_index, 8);
@@ -1953,7 +1640,7 @@ static void tb_test_tunnel_dma_chain(struct kunit *test)
 			    &host->ports[1]);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[0]->hops[2].out_port, nhi);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[0]->hops[2].next_hop_index, 1);
-	/* TX path */
+	 
 	KUNIT_ASSERT_EQ(test, tunnel->paths[1]->path_length, 3);
 	KUNIT_EXPECT_PTR_EQ(test, tunnel->paths[1]->hops[0].in_port, nhi);
 	KUNIT_EXPECT_EQ(test, tunnel->paths[1]->hops[0].in_hop_index, 1);
@@ -2129,28 +1816,14 @@ static void tb_test_credit_alloc_without_dp(struct kunit *test)
 	host = alloc_host_usb4(test);
 	dev = alloc_dev_without_dp(test, host, 0x1, true);
 
-	/*
-	 * The device has no DP therefore baMinDPmain = baMinDPaux = 0
-	 *
-	 * Create PCIe path with buffers less than baMaxPCIe.
-	 *
-	 * For a device with buffers configurations:
-	 * baMaxUSB3 = 109
-	 * baMinDPaux = 0
-	 * baMinDPmain = 0
-	 * baMaxPCIe = 30
-	 * baMaxHI = 1
-	 * Remaining Buffers = Total - (CP + DP) = 120 - (2 + 0) = 118
-	 * PCIe Credits = Max(6, Min(baMaxPCIe, Remaining Buffers - baMaxUSB3)
-	 *		= Max(6, Min(30, 9) = 9
-	 */
+	 
 	down = &host->ports[8];
 	up = &dev->ports[9];
 	tunnel = tb_tunnel_alloc_pci(NULL, up, down);
 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)2);
 
-	/* PCIe downstream path */
+	 
 	path = tunnel->paths[0];
 	KUNIT_ASSERT_EQ(test, path->path_length, 2);
 	KUNIT_EXPECT_EQ(test, path->hops[0].nfc_credits, 0U);
@@ -2158,7 +1831,7 @@ static void tb_test_credit_alloc_without_dp(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, path->hops[1].nfc_credits, 0U);
 	KUNIT_EXPECT_EQ(test, path->hops[1].initial_credits, 9U);
 
-	/* PCIe upstream path */
+	 
 	path = tunnel->paths[1];
 	KUNIT_ASSERT_EQ(test, path->path_length, 2);
 	KUNIT_EXPECT_EQ(test, path->hops[0].nfc_credits, 0U);
@@ -2186,7 +1859,7 @@ static void tb_test_credit_alloc_dp(struct kunit *test)
 	KUNIT_ASSERT_NOT_NULL(test, tunnel);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)3);
 
-	/* Video (main) path */
+	 
 	path = tunnel->paths[0];
 	KUNIT_ASSERT_EQ(test, path->path_length, 2);
 	KUNIT_EXPECT_EQ(test, path->hops[0].nfc_credits, 12U);
@@ -2194,7 +1867,7 @@ static void tb_test_credit_alloc_dp(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, path->hops[1].nfc_credits, 18U);
 	KUNIT_EXPECT_EQ(test, path->hops[1].initial_credits, 0U);
 
-	/* AUX TX */
+	 
 	path = tunnel->paths[1];
 	KUNIT_ASSERT_EQ(test, path->path_length, 2);
 	KUNIT_EXPECT_EQ(test, path->hops[0].nfc_credits, 0U);
@@ -2202,7 +1875,7 @@ static void tb_test_credit_alloc_dp(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, path->hops[1].nfc_credits, 0U);
 	KUNIT_EXPECT_EQ(test, path->hops[1].initial_credits, 1U);
 
-	/* AUX RX */
+	 
 	path = tunnel->paths[2];
 	KUNIT_ASSERT_EQ(test, path->path_length, 2);
 	KUNIT_EXPECT_EQ(test, path->hops[0].nfc_credits, 0U);
@@ -2263,7 +1936,7 @@ static void tb_test_credit_alloc_dma(struct kunit *test)
 	KUNIT_ASSERT_NOT_NULL(test, tunnel);
 	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)2);
 
-	/* DMA RX */
+	 
 	path = tunnel->paths[0];
 	KUNIT_ASSERT_EQ(test, path->path_length, 2);
 	KUNIT_EXPECT_EQ(test, path->hops[0].nfc_credits, 0U);
@@ -2271,7 +1944,7 @@ static void tb_test_credit_alloc_dma(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, path->hops[1].nfc_credits, 0U);
 	KUNIT_EXPECT_EQ(test, path->hops[1].initial_credits, 14U);
 
-	/* DMA TX */
+	 
 	path = tunnel->paths[1];
 	KUNIT_ASSERT_EQ(test, path->path_length, 2);
 	KUNIT_EXPECT_EQ(test, path->hops[0].nfc_credits, 0U);
@@ -2295,24 +1968,7 @@ static void tb_test_credit_alloc_dma_multiple(struct kunit *test)
 	nhi = &host->ports[7];
 	port = &dev->ports[3];
 
-	/*
-	 * Create three DMA tunnels through the same ports. With the
-	 * default buffers we should be able to create two and the last
-	 * one fails.
-	 *
-	 * For default host we have following buffers for DMA:
-	 *
-	 *   120 - (2 + 2 * (1 + 0) + 32 + 64 + spare) = 20
-	 *
-	 * For device we have following:
-	 *
-	 *  120 - (2 + 2 * (1 + 18) + 14 + 32 + spare) = 34
-	 *
-	 * spare = 14 + 1 = 15
-	 *
-	 * So on host the first tunnel gets 14 and the second gets the
-	 * remaining 1 and then we run out of buffers.
-	 */
+	 
 	tunnel1 = tb_tunnel_alloc_dma(NULL, nhi, port, 8, 1, 8, 1);
 	KUNIT_ASSERT_NOT_NULL(test, tunnel1);
 	KUNIT_ASSERT_EQ(test, tunnel1->npaths, (size_t)2);
@@ -2352,10 +2008,7 @@ static void tb_test_credit_alloc_dma_multiple(struct kunit *test)
 	tunnel3 = tb_tunnel_alloc_dma(NULL, nhi, port, 10, 3, 10, 3);
 	KUNIT_ASSERT_NULL(test, tunnel3);
 
-	/*
-	 * Release the first DMA tunnel. That should make 14 buffers
-	 * available for the next tunnel.
-	 */
+	 
 	tb_tunnel_free(tunnel1);
 
 	tunnel3 = tb_tunnel_alloc_dma(NULL, nhi, port, 10, 3, 10, 3);
@@ -2579,11 +2232,7 @@ static void tb_test_credit_alloc_all(struct kunit *test)
 	struct tb_tunnel *dma_tunnel1, *dma_tunnel2;
 	struct tb_switch *host, *dev;
 
-	/*
-	 * Create PCIe, 2 x DP, USB 3.x and two DMA tunnels from host to
-	 * device. Expectation is that all these can be established with
-	 * the default credit allocation found in Intel hardware.
-	 */
+	 
 
 	host = alloc_host_usb4(test);
 	dev = alloc_dev_usb4(test, host, 0x1, true);
@@ -2604,59 +2253,59 @@ static void tb_test_credit_alloc_all(struct kunit *test)
 }
 
 static const u32 root_directory[] = {
-	0x55584401,	/* "UXD" v1 */
-	0x00000018,	/* Root directory length */
-	0x76656e64,	/* "vend" */
-	0x6f726964,	/* "orid" */
-	0x76000001,	/* "v" R 1 */
-	0x00000a27,	/* Immediate value, ! Vendor ID */
-	0x76656e64,	/* "vend" */
-	0x6f726964,	/* "orid" */
-	0x74000003,	/* "t" R 3 */
-	0x0000001a,	/* Text leaf offset, (“Apple Inc.”) */
-	0x64657669,	/* "devi" */
-	0x63656964,	/* "ceid" */
-	0x76000001,	/* "v" R 1 */
-	0x0000000a,	/* Immediate value, ! Device ID */
-	0x64657669,	/* "devi" */
-	0x63656964,	/* "ceid" */
-	0x74000003,	/* "t" R 3 */
-	0x0000001d,	/* Text leaf offset, (“Macintosh”) */
-	0x64657669,	/* "devi" */
-	0x63657276,	/* "cerv" */
-	0x76000001,	/* "v" R 1 */
-	0x80000100,	/* Immediate value, Device Revision */
-	0x6e657477,	/* "netw" */
-	0x6f726b00,	/* "ork" */
-	0x44000014,	/* "D" R 20 */
-	0x00000021,	/* Directory data offset, (Network Directory) */
-	0x4170706c,	/* "Appl" */
-	0x6520496e,	/* "e In" */
-	0x632e0000,	/* "c." ! */
-	0x4d616369,	/* "Maci" */
-	0x6e746f73,	/* "ntos" */
-	0x68000000,	/* "h" */
-	0x00000000,	/* padding */
-	0xca8961c6,	/* Directory UUID, Network Directory */
-	0x9541ce1c,	/* Directory UUID, Network Directory */
-	0x5949b8bd,	/* Directory UUID, Network Directory */
-	0x4f5a5f2e,	/* Directory UUID, Network Directory */
-	0x70727463,	/* "prtc" */
-	0x69640000,	/* "id" */
-	0x76000001,	/* "v" R 1 */
-	0x00000001,	/* Immediate value, Network Protocol ID */
-	0x70727463,	/* "prtc" */
-	0x76657273,	/* "vers" */
-	0x76000001,	/* "v" R 1 */
-	0x00000001,	/* Immediate value, Network Protocol Version */
-	0x70727463,	/* "prtc" */
-	0x72657673,	/* "revs" */
-	0x76000001,	/* "v" R 1 */
-	0x00000001,	/* Immediate value, Network Protocol Revision */
-	0x70727463,	/* "prtc" */
-	0x73746e73,	/* "stns" */
-	0x76000001,	/* "v" R 1 */
-	0x00000000,	/* Immediate value, Network Protocol Settings */
+	0x55584401,	 
+	0x00000018,	 
+	0x76656e64,	 
+	0x6f726964,	 
+	0x76000001,	 
+	0x00000a27,	 
+	0x76656e64,	 
+	0x6f726964,	 
+	0x74000003,	 
+	0x0000001a,	 
+	0x64657669,	 
+	0x63656964,	 
+	0x76000001,	 
+	0x0000000a,	 
+	0x64657669,	 
+	0x63656964,	 
+	0x74000003,	 
+	0x0000001d,	 
+	0x64657669,	 
+	0x63657276,	 
+	0x76000001,	 
+	0x80000100,	 
+	0x6e657477,	 
+	0x6f726b00,	 
+	0x44000014,	 
+	0x00000021,	 
+	0x4170706c,	 
+	0x6520496e,	 
+	0x632e0000,	 
+	0x4d616369,	 
+	0x6e746f73,	 
+	0x68000000,	 
+	0x00000000,	 
+	0xca8961c6,	 
+	0x9541ce1c,	 
+	0x5949b8bd,	 
+	0x4f5a5f2e,	 
+	0x70727463,	 
+	0x69640000,	 
+	0x76000001,	 
+	0x00000001,	 
+	0x70727463,	 
+	0x76657273,	 
+	0x76000001,	 
+	0x00000001,	 
+	0x70727463,	 
+	0x72657673,	 
+	0x76000001,	 
+	0x00000001,	 
+	0x70727463,	 
+	0x73746e73,	 
+	0x76000001,	 
+	0x00000000,	 
 };
 
 static const uuid_t network_dir_uuid =
@@ -2832,10 +2481,10 @@ static void tb_test_property_copy(struct kunit *test)
 	dst = tb_property_copy_dir(src);
 	KUNIT_ASSERT_NOT_NULL(test, dst);
 
-	/* Compare the structures */
+	 
 	compare_dirs(test, src, dst);
 
-	/* Compare the resulting property block */
+	 
 	ret = tb_property_format_dir(dst, NULL, 0);
 	KUNIT_ASSERT_EQ(test, ret, ARRAY_SIZE(root_directory));
 

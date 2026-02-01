@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
- *
- * Description: CoreSight Trace Port Interface Unit driver
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/kernel.h>
@@ -39,21 +35,17 @@
 #define TPIU_ITATBCTR1		0xef4
 #define TPIU_ITATBCTR0		0xef8
 
-/** register definition **/
-/* FFSR - 0x300 */
+ 
+ 
 #define FFSR_FT_STOPPED_BIT	1
-/* FFCR - 0x304 */
+ 
 #define FFCR_FON_MAN_BIT	6
 #define FFCR_FON_MAN		BIT(6)
 #define FFCR_STOP_FI		BIT(12)
 
 DEFINE_CORESIGHT_DEVLIST(tpiu_devs, "tpiu");
 
-/*
- * @base:	memory mapped base address for this component.
- * @atclk:	optional clock for the core parts of the TPIU.
- * @csdev:	component vitals needed by the framework.
- */
+ 
 struct tpiu_drvdata {
 	void __iomem		*base;
 	struct clk		*atclk;
@@ -64,7 +56,7 @@ static void tpiu_enable_hw(struct csdev_access *csa)
 {
 	CS_UNLOCK(csa->base);
 
-	/* TODO: fill this up */
+	 
 
 	CS_LOCK(csa->base);
 }
@@ -82,13 +74,13 @@ static void tpiu_disable_hw(struct csdev_access *csa)
 {
 	CS_UNLOCK(csa->base);
 
-	/* Clear formatter and stop on flush */
+	 
 	csdev_access_relaxed_write32(csa, FFCR_STOP_FI, TPIU_FFCR);
-	/* Generate manual flush */
+	 
 	csdev_access_relaxed_write32(csa, FFCR_STOP_FI | FFCR_FON_MAN, TPIU_FFCR);
-	/* Wait for flush to complete */
+	 
 	coresight_timeout(csa, TPIU_FFCR, FFCR_FON_MAN_BIT, 0);
-	/* Wait for formatter to stop */
+	 
 	coresight_timeout(csa, TPIU_FFSR, FFSR_FT_STOPPED_BIT, 1);
 
 	CS_LOCK(csa->base);
@@ -132,7 +124,7 @@ static int tpiu_probe(struct amba_device *adev, const struct amba_id *id)
 	if (!drvdata)
 		return -ENOMEM;
 
-	drvdata->atclk = devm_clk_get(&adev->dev, "atclk"); /* optional */
+	drvdata->atclk = devm_clk_get(&adev->dev, "atclk");  
 	if (!IS_ERR(drvdata->atclk)) {
 		ret = clk_prepare_enable(drvdata->atclk);
 		if (ret)
@@ -140,7 +132,7 @@ static int tpiu_probe(struct amba_device *adev, const struct amba_id *id)
 	}
 	dev_set_drvdata(dev, drvdata);
 
-	/* Validity for the resource is already checked by the AMBA core */
+	 
 	base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -148,7 +140,7 @@ static int tpiu_probe(struct amba_device *adev, const struct amba_id *id)
 	drvdata->base = base;
 	desc.access = CSDEV_ACCESS_IOMEM(base);
 
-	/* Disable tpiu to support older devices */
+	 
 	tpiu_disable_hw(&desc.access);
 
 	pdata = coresight_get_platform_data(dev);
@@ -214,7 +206,7 @@ static const struct amba_id tpiu_ids[] = {
 		.mask	= 0x0007ffff,
 	},
 	{
-		/* Coresight SoC-600 */
+		 
 		.id	= 0x000bb9e7,
 		.mask	= 0x000fffff,
 	},

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * test_kprobes.c - simple sanity test for *probes
- *
- * Copyright IBM Corp. 2008
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/kprobes.h>
@@ -96,7 +92,7 @@ static noinline unsigned long kprobe_stacktrace_driver(void)
 	if (stacktrace_target)
 		stacktrace_target();
 
-	/* This is for preventing inlining the function */
+	 
 	return (unsigned long)__builtin_return_address(0);
 }
 
@@ -125,7 +121,7 @@ static void test_kprobes(struct kunit *test)
 
 	current_test = test;
 
-	/* addr and flags should be cleard for reusing kprobe. */
+	 
 	kp.addr = NULL;
 	kp.flags = 0;
 
@@ -226,7 +222,7 @@ static void test_kretprobes(struct kunit *test)
 	struct kretprobe *rps[2] = {&rp, &rp2};
 
 	current_test = test;
-	/* addr and flags should be cleard for reusing kprobe. */
+	 
 	rp.kp.addr = NULL;
 	rp.kp.flags = 0;
 	KUNIT_EXPECT_EQ(test, 0, register_kretprobes(rps, 2));
@@ -253,11 +249,7 @@ static int stacktrace_return_handler(struct kretprobe_instance *ri, struct pt_re
 	KUNIT_EXPECT_FALSE(current_test, preemptible());
 	KUNIT_EXPECT_EQ(current_test, retval, target_return_address[1]);
 
-	/*
-	 * Test stacktrace inside the kretprobe handler, this will involves
-	 * kretprobe trampoline, but must include correct return address
-	 * of the target function.
-	 */
+	 
 	ret = stack_trace_save(stack_buf, STACK_BUF_SIZE, 0);
 	KUNIT_EXPECT_NE(current_test, ret, 0);
 
@@ -268,10 +260,7 @@ static int stacktrace_return_handler(struct kretprobe_instance *ri, struct pt_re
 	KUNIT_EXPECT_NE(current_test, i, ret);
 
 #if !IS_MODULE(CONFIG_KPROBES_SANITY_TEST)
-	/*
-	 * Test stacktrace from pt_regs at the return address. Thus the stack
-	 * trace must start from the target return address.
-	 */
+	 
 	ret = stack_trace_save_regs(regs, stack_buf, STACK_BUF_SIZE, 0);
 	KUNIT_EXPECT_NE(current_test, ret, 0);
 	KUNIT_EXPECT_EQ(current_test, stack_buf[0], target_return_address[1]);
@@ -293,12 +282,7 @@ static void test_stacktrace_on_kretprobe(struct kunit *test)
 	rp3.kp.addr = NULL;
 	rp3.kp.flags = 0;
 
-	/*
-	 * Run the stacktrace_driver() to record correct return address in
-	 * stacktrace_target() and ensure stacktrace_driver() call is not
-	 * inlined by checking the return address of stacktrace_driver()
-	 * and the return address of this function is different.
-	 */
+	 
 	KUNIT_ASSERT_NE(test, myretaddr, stacktrace_driver());
 
 	KUNIT_ASSERT_EQ(test, 0, register_kretprobe(&rp3));
@@ -314,11 +298,7 @@ static int stacktrace_internal_return_handler(struct kretprobe_instance *ri, str
 	KUNIT_EXPECT_FALSE(current_test, preemptible());
 	KUNIT_EXPECT_EQ(current_test, retval, target_return_address[0]);
 
-	/*
-	 * Test stacktrace inside the kretprobe handler for nested case.
-	 * The unwinder will find the kretprobe_trampoline address on the
-	 * return address, and kretprobe must solve that.
-	 */
+	 
 	ret = stack_trace_save(stack_buf, STACK_BUF_SIZE, 0);
 	KUNIT_EXPECT_NE(current_test, ret, 0);
 
@@ -331,7 +311,7 @@ static int stacktrace_internal_return_handler(struct kretprobe_instance *ri, str
 	KUNIT_EXPECT_NE(current_test, i, ret);
 
 #if !IS_MODULE(CONFIG_KPROBES_SANITY_TEST)
-	/* Ditto for the regs version. */
+	 
 	ret = stack_trace_save_regs(regs, stack_buf, STACK_BUF_SIZE, 0);
 	KUNIT_EXPECT_NE(current_test, ret, 0);
 	KUNIT_EXPECT_EQ(current_test, stack_buf[0], target_return_address[0]);
@@ -355,15 +335,15 @@ static void test_stacktrace_on_nested_kretprobe(struct kunit *test)
 	rp3.kp.addr = NULL;
 	rp3.kp.flags = 0;
 
-	//KUNIT_ASSERT_NE(test, myretaddr, stacktrace_driver());
+	
 
 	KUNIT_ASSERT_EQ(test, 0, register_kretprobes(rps, 2));
 	KUNIT_ASSERT_NE(test, myretaddr, stacktrace_driver());
 	unregister_kretprobes(rps, 2);
 }
-#endif /* CONFIG_ARCH_CORRECT_STACKTRACE_ON_KRETPROBE */
+#endif  
 
-#endif /* CONFIG_KRETPROBES */
+#endif  
 
 static int kprobes_test_init(struct kunit *test)
 {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Author: zhanghongchen <zhanghongchen@loongson.cn>
- *         Yinbo Zhu <zhuyinbo@loongson.cn>
- * Copyright (C) 2022-2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -152,7 +148,7 @@ static const struct of_device_id of_loongson2_thermal_match[] = {
 		.compatible = "loongson,ls2k1000-thermal",
 		.data = &loongson2_thermal_ls2k1000_data,
 	},
-	{ /* end */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_loongson2_thermal_match);
 

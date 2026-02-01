@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PIC32 RNG driver
- *
- * Joshua Henderson <joshua.henderson@microchip.com>
- * Copyright (C) 2016 Microchip Technology Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -30,18 +25,14 @@ struct pic32_rng {
 	struct hwrng	rng;
 };
 
-/*
- * The TRNG can generate up to 24Mbps. This is a timeout that should be safe
- * enough given the instructions in the loop and that the TRNG may not always
- * be at maximum rate.
- */
+ 
 #define RNG_TIMEOUT 500
 
 static int pic32_rng_init(struct hwrng *rng)
 {
 	struct pic32_rng *priv = container_of(rng, struct pic32_rng, rng);
 
-	/* enable TRNG in enhanced mode */
+	 
 	writel(TRNGEN | TRNGMOD, priv->base + RNGCON);
 	return 0;
 }
@@ -57,7 +48,7 @@ static int pic32_rng_read(struct hwrng *rng, void *buf, size_t max,
 	do {
 		t = readl(priv->base + RNGRCNT) & RCNT_MASK;
 		if (t == 64) {
-			/* TRNG value comes through the seed registers */
+			 
 			*data = ((u64)readl(priv->base + RNGSEED2) << 32) +
 				readl(priv->base + RNGSEED1);
 			return 8;
@@ -101,7 +92,7 @@ static int pic32_rng_probe(struct platform_device *pdev)
 
 static const struct of_device_id pic32_rng_of_match[] __maybe_unused = {
 	{ .compatible	= "microchip,pic32mzda-rng", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pic32_rng_of_match);
 

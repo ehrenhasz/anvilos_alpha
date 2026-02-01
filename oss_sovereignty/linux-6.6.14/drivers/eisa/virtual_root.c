@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Virtual EISA root driver.
- * Acts as a placeholder if we don't have a proper EISA bridge.
- *
- * (C) 2003 Marc Zyngier <maz@wild-wind.fr.eu.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -22,8 +17,7 @@
 static int force_probe = EISA_FORCE_PROBE_DEFAULT;
 static void virtual_eisa_release (struct device *);
 
-/* The default EISA device parent (virtual root device).
- * Now use a platform device, since that's the obvious choice. */
+ 
 
 static struct platform_device eisa_root_dev = {
 	.name = "eisa",
@@ -43,7 +37,7 @@ static struct eisa_root_device eisa_bus_root = {
 
 static void virtual_eisa_release (struct device *dev)
 {
-	/* nothing really to do here */
+	 
 }
 
 static int __init virtual_eisa_root_init (void)
@@ -58,8 +52,7 @@ static int __init virtual_eisa_root_init (void)
 	dev_set_drvdata(&eisa_root_dev.dev, &eisa_bus_root);
 
 	if (eisa_root_register (&eisa_bus_root)) {
-		/* A real bridge may have been registered before
-		 * us. So quietly unregister. */
+		 
 		platform_device_unregister (&eisa_root_dev);
 		return -1;
 	}

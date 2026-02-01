@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 pureLiFi
- */
+ 
+ 
 
 #ifndef PLFXLC_CHIP_H
 #define PLFXLC_CHIP_H
@@ -22,7 +20,7 @@ enum {
 
 struct plfxlc_chip {
 	struct plfxlc_usb usb;
-	struct mutex mutex; /* lock to protect chip data */
+	struct mutex mutex;  
 	enum unit_type unit_type;
 	u16 link_led;
 	u8 beacon_set;
@@ -67,4 +65,4 @@ static inline void plfxlc_mc_add_all(struct plfxlc_mc_hash *hash)
 	hash->high = 0xffffffff;
 }
 
-#endif /* PLFXLC_CHIP_H */
+#endif  

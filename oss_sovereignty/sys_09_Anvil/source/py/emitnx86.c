@@ -1,18 +1,18 @@
-// x86 specific stuff
+
 
 #include "py/mpconfig.h"
 #include "py/nativeglue.h"
 
 #if MICROPY_EMIT_X86
 
-// This is defined so that the assembler exports generic assembler API macros
+
 #define GENERIC_ASM_API (1)
 #include "py/asmx86.h"
 
-// Word indices of REG_LOCAL_x in nlr_buf_t
-#define NLR_BUF_IDX_LOCAL_1 (5) // ebx
 
-// x86 needs a table to know how many args a given function has
+#define NLR_BUF_IDX_LOCAL_1 (5) 
+
+
 static byte mp_f_n_args[MP_F_NUMBER_OF] = {
     [MP_F_CONVERT_OBJ_TO_NATIVE] = 2,
     [MP_F_CONVERT_NATIVE_TO_OBJ] = 2,

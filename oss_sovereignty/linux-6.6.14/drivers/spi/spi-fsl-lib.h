@@ -1,27 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Freescale SPI/eSPI controller driver library.
- *
- * Maintainer: Kumar Gala
- *
- * Copyright 2010 Freescale Semiconductor, Inc.
- * Copyright (C) 2006 Polycom, Inc.
- *
- * CPM SPI and QE buffer descriptors mode support:
- * Copyright (c) 2009  MontaVista Software, Inc.
- * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+ 
+ 
 #ifndef __SPI_FSL_LIB_H__
 #define __SPI_FSL_LIB_H__
 
 #include <asm/io.h>
 
-/* SPI/eSPI Controller driver's private data. */
+ 
 struct mpc8xxx_spi {
 	struct device *dev;
 	void __iomem *reg_base;
 
-	/* rx & tx bufs from the spi_transfer */
+	 
 	const void *tx;
 	void *rx;
 
@@ -34,7 +23,7 @@ struct mpc8xxx_spi {
 
 	struct spi_transfer *xfer_in_progress;
 
-	/* dma addresses for CPM transfers */
+	 
 	dma_addr_t tx_dma;
 	dma_addr_t rx_dma;
 	bool map_tx_dma;
@@ -43,18 +32,18 @@ struct mpc8xxx_spi {
 	dma_addr_t dma_dummy_tx;
 	dma_addr_t dma_dummy_rx;
 
-	/* functions to deal with different sized buffers */
+	 
 	void (*get_rx) (u32 rx_data, struct mpc8xxx_spi *);
 	u32(*get_tx) (struct mpc8xxx_spi *);
 
 	unsigned int count;
 	unsigned int irq;
 
-	unsigned nsecs;		/* (clock cycle time)/2 */
+	unsigned nsecs;		 
 
-	u32 spibrg;		/* SPIBRG input clock */
-	u32 rx_shift;		/* RX data reg shift when in qe mode */
-	u32 tx_shift;		/* TX data reg shift when in qe mode */
+	u32 spibrg;		 
+	u32 rx_shift;		 
+	u32 tx_shift;		 
 
 	unsigned int flags;
 
@@ -71,12 +60,12 @@ struct mpc8xxx_spi {
 };
 
 struct spi_mpc8xxx_cs {
-	/* functions to deal with different sized buffers */
+	 
 	void (*get_rx) (u32 rx_data, struct mpc8xxx_spi *);
 	u32 (*get_tx) (struct mpc8xxx_spi *);
-	u32 rx_shift;		/* RX data reg shift when in qe mode */
-	u32 tx_shift;		/* TX data reg shift when in qe mode */
-	u32 hw_mode;		/* Holds HW mode register settings */
+	u32 rx_shift;		 
+	u32 tx_shift;		 
+	u32 hw_mode;		 
 };
 
 static inline void mpc8xxx_spi_write_reg(__be32 __iomem *reg, u32 val)
@@ -108,4 +97,4 @@ extern void mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
 		unsigned int irq);
 extern int of_mpc8xxx_spi_probe(struct platform_device *ofdev);
 
-#endif /* __SPI_FSL_LIB_H__ */
+#endif  

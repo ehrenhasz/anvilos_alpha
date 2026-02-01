@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip Video Decoder driver
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on rkvdec driver by Google LLC. (Tomasz Figa <tfiga@chromium.org>)
- * Based on s5p-mfc driver by Samsung Electronics Co., Ltd.
- * Copyright (C) 2011 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -240,11 +232,7 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
 	const struct rkvdec_coded_fmt_desc *coded_desc;
 	unsigned int i;
 
-	/*
-	 * The codec context should point to a coded format desc, if the format
-	 * on the coded end has not been set yet, it should point to the
-	 * default value.
-	 */
+	 
 	coded_desc = ctx->coded_fmt_desc;
 	if (WARN_ON(!coded_desc))
 		return -EINVAL;
@@ -257,7 +245,7 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
 	if (i == coded_desc->num_decoded_fmts)
 		pix_mp->pixelformat = coded_desc->decoded_fmts[0];
 
-	/* Always apply the frmsize constraint of the coded end. */
+	 
 	pix_mp->width = max(pix_mp->width, ctx->coded_fmt.fmt.pix_mp.width);
 	pix_mp->height = max(pix_mp->height, ctx->coded_fmt.fmt.pix_mp.height);
 	v4l2_apply_frmsize_constraints(&pix_mp->width,
@@ -293,7 +281,7 @@ static int rkvdec_try_output_fmt(struct file *file, void *priv,
 				       &desc->frmsize);
 
 	pix_mp->field = V4L2_FIELD_NONE;
-	/* All coded formats are considered single planar for now. */
+	 
 	pix_mp->num_planes = 1;
 
 	if (desc->ops->adjust_fmt) {
@@ -314,7 +302,7 @@ static int rkvdec_s_capture_fmt(struct file *file, void *priv,
 	struct vb2_queue *vq;
 	int ret;
 
-	/* Change not allowed if queue is busy */
+	 
 	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
 			     V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 	if (vb2_is_busy(vq))
@@ -338,22 +326,14 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
 	struct vb2_queue *peer_vq, *vq;
 	int ret;
 
-	/*
-	 * In order to support dynamic resolution change, the decoder admits
-	 * a resolution change, as long as the pixelformat remains. Can't be
-	 * done if streaming.
-	 */
+	 
 	vq = v4l2_m2m_get_vq(m2m_ctx, V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 	if (vb2_is_streaming(vq) ||
 	    (vb2_is_busy(vq) &&
 	     f->fmt.pix_mp.pixelformat != ctx->coded_fmt.fmt.pix_mp.pixelformat))
 		return -EBUSY;
 
-	/*
-	 * Since format change on the OUTPUT queue will reset the CAPTURE
-	 * queue, we can't allow doing so when the CAPTURE queue has buffers
-	 * allocated.
-	 */
+	 
 	peer_vq = v4l2_m2m_get_vq(m2m_ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 	if (vb2_is_busy(peer_vq))
 		return -EBUSY;
@@ -368,25 +348,17 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
 	ctx->coded_fmt_desc = desc;
 	ctx->coded_fmt = *f;
 
-	/*
-	 * Current decoded format might have become invalid with newly
-	 * selected codec, so reset it to default just to be safe and
-	 * keep internal driver state sane. User is mandated to set
-	 * the decoded format again after we return, so we don't need
-	 * anything smarter.
-	 *
-	 * Note that this will propagates any size changes to the decoded format.
-	 */
+	 
 	rkvdec_reset_decoded_fmt(ctx);
 
-	/* Propagate colorspace information to capture. */
+	 
 	cap_fmt = &ctx->decoded_fmt;
 	cap_fmt->fmt.pix_mp.colorspace = f->fmt.pix_mp.colorspace;
 	cap_fmt->fmt.pix_mp.xfer_func = f->fmt.pix_mp.xfer_func;
 	cap_fmt->fmt.pix_mp.ycbcr_enc = f->fmt.pix_mp.ycbcr_enc;
 	cap_fmt->fmt.pix_mp.quantization = f->fmt.pix_mp.quantization;
 
-	/* Enable format specific queue features */
+	 
 	vq->subsystem_flags |= desc->subsystem_flags;
 
 	return 0;
@@ -515,11 +487,7 @@ static int rkvdec_buf_prepare(struct vb2_buffer *vb)
 			return -EINVAL;
 	}
 
-	/*
-	 * Buffer's bytesused must be written by driver for CAPTURE buffers.
-	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
-	 * it to buffer length).
-	 */
+	 
 	if (V4L2_TYPE_IS_CAPTURE(vq->type))
 		vb2_set_plane_payload(vb, 0, f->fmt.pix_mp.plane_fmt[0].sizeimage);
 
@@ -673,7 +641,7 @@ void rkvdec_run_preamble(struct rkvdec_ctx *ctx, struct rkvdec_run *run)
 	run->bufs.src = v4l2_m2m_next_src_buf(ctx->fh.m2m_ctx);
 	run->bufs.dst = v4l2_m2m_next_dst_buf(ctx->fh.m2m_ctx);
 
-	/* Apply request(s) controls if needed. */
+	 
 	src_req = run->bufs.src->vb2_buf.req_obj.req;
 	if (src_req)
 		v4l2_ctrl_request_setup(src_req, &ctx->ctrl_hdl);
@@ -728,11 +696,7 @@ static int rkvdec_queue_init(void *priv,
 	src_vq->ops = &rkvdec_queue_ops;
 	src_vq->mem_ops = &vb2_dma_contig_memops;
 
-	/*
-	 * Driver does mostly sequential access, so sacrifice TLB efficiency
-	 * for faster allocation. Also, no CPU access on the source queue,
-	 * so no kernel mapping needed.
-	 */
+	 
 	src_vq->dma_attrs = DMA_ATTR_ALLOC_SINGLE_PAGES |
 			    DMA_ATTR_NO_KERNEL_MAPPING;
 	src_vq->buf_struct_size = sizeof(struct v4l2_m2m_buffer);
@@ -989,7 +953,7 @@ static void rkvdec_watchdog_func(struct work_struct *work)
 
 static const struct of_device_id of_rkvdec_match[] = {
 	{ .compatible = "rockchip,rk3399-vdec" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_rkvdec_match);
 

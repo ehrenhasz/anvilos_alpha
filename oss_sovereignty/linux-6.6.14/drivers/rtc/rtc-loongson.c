@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Loongson RTC driver
- *
- * Maintained out-of-tree by Huacai Chen <chenhuacai@kernel.org>.
- * Rewritten for mainline by WANG Xuerui <git@xen0n.name>.
- *                           Binbin Zhou <zhoubinbin@loongson.cn>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/kernel.h>
@@ -15,26 +9,26 @@
 #include <linux/rtc.h>
 #include <linux/acpi.h>
 
-/* Time Of Year(TOY) counters registers */
-#define TOY_TRIM_REG		0x20 /* Must be initialized to 0 */
-#define TOY_WRITE0_REG		0x24 /* TOY low 32-bits value (write-only) */
-#define TOY_WRITE1_REG		0x28 /* TOY high 32-bits value (write-only) */
-#define TOY_READ0_REG		0x2c /* TOY low 32-bits value (read-only) */
-#define TOY_READ1_REG		0x30 /* TOY high 32-bits value (read-only) */
-#define TOY_MATCH0_REG		0x34 /* TOY timing interrupt 0 */
-#define TOY_MATCH1_REG		0x38 /* TOY timing interrupt 1 */
-#define TOY_MATCH2_REG		0x3c /* TOY timing interrupt 2 */
+ 
+#define TOY_TRIM_REG		0x20  
+#define TOY_WRITE0_REG		0x24  
+#define TOY_WRITE1_REG		0x28  
+#define TOY_READ0_REG		0x2c  
+#define TOY_READ1_REG		0x30  
+#define TOY_MATCH0_REG		0x34  
+#define TOY_MATCH1_REG		0x38  
+#define TOY_MATCH2_REG		0x3c  
 
-/* RTC counters registers */
-#define RTC_CTRL_REG		0x40 /* TOY and RTC control register */
-#define RTC_TRIM_REG		0x60 /* Must be initialized to 0 */
-#define RTC_WRITE0_REG		0x64 /* RTC counters value (write-only) */
-#define RTC_READ0_REG		0x68 /* RTC counters value (read-only) */
-#define RTC_MATCH0_REG		0x6c /* RTC timing interrupt 0 */
-#define RTC_MATCH1_REG		0x70 /* RTC timing interrupt 1 */
-#define RTC_MATCH2_REG		0x74 /* RTC timing interrupt 2 */
+ 
+#define RTC_CTRL_REG		0x40  
+#define RTC_TRIM_REG		0x60  
+#define RTC_WRITE0_REG		0x64  
+#define RTC_READ0_REG		0x68  
+#define RTC_MATCH0_REG		0x6c  
+#define RTC_MATCH1_REG		0x70  
+#define RTC_MATCH2_REG		0x74  
 
-/* bitmask of TOY_WRITE0_REG */
+ 
 #define TOY_MON			GENMASK(31, 26)
 #define TOY_DAY			GENMASK(25, 21)
 #define TOY_HOUR		GENMASK(20, 16)
@@ -42,7 +36,7 @@
 #define TOY_SEC			GENMASK(9, 4)
 #define TOY_MSEC		GENMASK(3, 0)
 
-/* bitmask of TOY_MATCH0/1/2_REG */
+ 
 #define TOY_MATCH_YEAR		GENMASK(31, 26)
 #define TOY_MATCH_MON		GENMASK(25, 22)
 #define TOY_MATCH_DAY		GENMASK(21, 17)
@@ -50,35 +44,32 @@
 #define TOY_MATCH_MIN		GENMASK(11, 6)
 #define TOY_MATCH_SEC		GENMASK(5, 0)
 
-/* bitmask of RTC_CTRL_REG */
-#define RTC_ENABLE		BIT(13) /* 1: RTC counters enable */
-#define TOY_ENABLE		BIT(11) /* 1: TOY counters enable */
-#define OSC_ENABLE		BIT(8) /* 1: 32.768k crystal enable */
+ 
+#define RTC_ENABLE		BIT(13)  
+#define TOY_ENABLE		BIT(11)  
+#define OSC_ENABLE		BIT(8)  
 #define TOY_ENABLE_MASK		(TOY_ENABLE | OSC_ENABLE)
 
-/* PM domain registers */
-#define PM1_STS_REG		0x0c	/* Power management 1 status register */
-#define RTC_STS			BIT(10)	/* RTC status */
-#define PM1_EN_REG		0x10	/* Power management 1 enable register */
-#define RTC_EN			BIT(10)	/* RTC event enable */
+ 
+#define PM1_STS_REG		0x0c	 
+#define RTC_STS			BIT(10)	 
+#define PM1_EN_REG		0x10	 
+#define RTC_EN			BIT(10)	 
 
-/*
- * According to the LS1C manual, RTC_CTRL and alarm-related registers are not defined.
- * Accessing the relevant registers will cause the system to hang.
- */
+ 
 #define LS1C_RTC_CTRL_WORKAROUND	BIT(0)
 
 struct loongson_rtc_config {
-	u32 pm_offset;	/* Offset of PM domain, for RTC alarm wakeup */
-	u32 flags;	/* Workaround bits */
+	u32 pm_offset;	 
+	u32 flags;	 
 };
 
 struct loongson_rtc_priv {
-	spinlock_t lock;	/* protects PM registers access */
-	u32 fix_year;		/* RTC alarm year compensation value */
+	spinlock_t lock;	 
+	u32 fix_year;		 
 	struct rtc_device *rtcdev;
 	struct regmap *regmap;
-	void __iomem *pm_base;	/* PM domain base, for RTC alarm wakeup */
+	void __iomem *pm_base;	 
 	const struct loongson_rtc_config *config;
 };
 
@@ -108,7 +99,7 @@ static const struct regmap_config loongson_rtc_regmap_config = {
 	.reg_stride = 4,
 };
 
-/* RTC alarm irq handler */
+ 
 static irqreturn_t loongson_rtc_isr(int irq, void *id)
 {
 	struct loongson_rtc_priv *priv = (struct loongson_rtc_priv *)id;
@@ -117,24 +108,21 @@ static irqreturn_t loongson_rtc_isr(int irq, void *id)
 	return IRQ_HANDLED;
 }
 
-/* For ACPI fixed event handler */
+ 
 static u32 loongson_rtc_handler(void *id)
 {
 	struct loongson_rtc_priv *priv = (struct loongson_rtc_priv *)id;
 
 	spin_lock(&priv->lock);
-	/* Disable RTC alarm wakeup and interrupt */
+	 
 	writel(readl(priv->pm_base + PM1_EN_REG) & ~RTC_EN,
 	       priv->pm_base + PM1_EN_REG);
 
-	/* Clear RTC interrupt status */
+	 
 	writel(RTC_STS, priv->pm_base + PM1_STS_REG);
 	spin_unlock(&priv->lock);
 
-	/*
-	 * The TOY_MATCH0_REG should be cleared 0 here,
-	 * otherwise the interrupt cannot be cleared.
-	 */
+	 
 	return regmap_write(priv->regmap, TOY_MATCH0_REG, 0);
 }
 
@@ -145,7 +133,7 @@ static int loongson_rtc_set_enabled(struct device *dev)
 	if (priv->config->flags & LS1C_RTC_CTRL_WORKAROUND)
 		return 0;
 
-	/* Enable RTC TOY counters and crystal */
+	 
 	return regmap_update_bits(priv->regmap, RTC_CTRL_REG, TOY_ENABLE_MASK,
 				  TOY_ENABLE_MASK);
 }
@@ -187,7 +175,7 @@ static int loongson_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_mon = FIELD_GET(TOY_MON, rtc_data[0]) - 1;
 	tm->tm_year = rtc_data[1];
 
-	/* Prepare for RTC alarm year compensation value. */
+	 
 	priv->fix_year = tm->tm_year / 64 * 64;
 	return 0;
 }
@@ -228,17 +216,7 @@ static int loongson_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	alrm->time.tm_hour = FIELD_GET(TOY_MATCH_HOUR, alarm_data);
 	alrm->time.tm_mday = FIELD_GET(TOY_MATCH_DAY, alarm_data);
 	alrm->time.tm_mon = FIELD_GET(TOY_MATCH_MON, alarm_data) - 1;
-	/*
-	 * This is a hardware bug: the year field of SYS_TOYMATCH is only 6 bits,
-	 * making it impossible to save year values larger than 64.
-	 *
-	 * SYS_TOYMATCH is used to match the alarm time value and determine if
-	 * an alarm is triggered, so we must keep the lower 6 bits of the year
-	 * value constant during the value conversion.
-	 *
-	 * In summary, we need to manually add 64(or a multiple of 64) to the
-	 * year value to avoid the invalid alarm prompt at startup.
-	 */
+	 
 	alrm->time.tm_year = FIELD_GET(TOY_MATCH_YEAR, alarm_data) + priv->fix_year;
 
 	alrm->enabled = !!(readl(priv->pm_base + PM1_EN_REG) & RTC_EN);
@@ -252,7 +230,7 @@ static int loongson_rtc_alarm_irq_enable(struct device *dev, unsigned int enable
 
 	spin_lock(&priv->lock);
 	val = readl(priv->pm_base + PM1_EN_REG);
-	/* Enable RTC alarm wakeup */
+	 
 	writel(enabled ? val | RTC_EN : val & ~RTC_EN,
 	       priv->pm_base + PM1_EN_REG);
 	spin_unlock(&priv->lock);
@@ -319,7 +297,7 @@ static int loongson_rtc_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(priv->rtcdev),
 				     "devm_rtc_allocate_device failed\n");
 
-	/* Get RTC alarm irq */
+	 
 	alarm_irq = platform_get_irq(pdev, 0);
 	if (alarm_irq > 0) {
 		ret = devm_request_irq(dev, alarm_irq, loongson_rtc_isr,
@@ -335,11 +313,11 @@ static int loongson_rtc_probe(struct platform_device *pdev)
 			acpi_install_fixed_event_handler(ACPI_EVENT_RTC,
 							 loongson_rtc_handler, priv);
 	} else {
-		/* Loongson-1C RTC does not support alarm */
+		 
 		clear_bit(RTC_FEATURE_ALARM, priv->rtcdev->features);
 	}
 
-	/* Loongson RTC does not support UIE */
+	 
 	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, priv->rtcdev->features);
 	priv->rtcdev->ops = &loongson_rtc_ops;
 	priv->rtcdev->range_min = RTC_TIMESTAMP_BEGIN_2000;
@@ -369,7 +347,7 @@ static const struct of_device_id loongson_rtc_of_match[] = {
 	{ .compatible = "loongson,ls1c-rtc", .data = &ls1c_rtc_config },
 	{ .compatible = "loongson,ls7a-rtc", .data = &generic_rtc_config },
 	{ .compatible = "loongson,ls2k1000-rtc", .data = &ls2k1000_rtc_config },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, loongson_rtc_of_match);
 

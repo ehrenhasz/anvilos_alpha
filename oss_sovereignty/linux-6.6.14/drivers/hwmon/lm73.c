@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LM73 Sensor driver
- * Based on LM75
- *
- * Copyright (C) 2007, CenoSYS (www.cenosys.com).
- * Copyright (C) 2009, Bollore telecom (www.bolloretelecom.eu).
- *
- * Guillaume Ligneul <guillaume.ligneul@gmail.com>
- * Adrien Demarez <adrien.demarez@bolloretelecom.eu>
- * Jeremy Laine <jeremy.laine@bolloretelecom.eu>
- * Chris Verges <kg4ysn@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -20,11 +9,11 @@
 #include <linux/err.h>
 
 
-/* Addresses scanned */
+ 
 static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4c,
 					0x4d, 0x4e, I2C_CLIENT_END };
 
-/* LM73 registers */
+ 
 #define LM73_REG_INPUT		0x00
 #define LM73_REG_CONF		0x01
 #define LM73_REG_MAX		0x02
@@ -32,7 +21,7 @@ static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4c,
 #define LM73_REG_CTRL		0x04
 #define LM73_REG_ID		0x07
 
-#define LM73_ID			0x9001	/* 0x0190, byte-swapped */
+#define LM73_ID			0x9001	 
 #define DRVNAME			"lm73"
 #define LM73_TEMP_MIN		(-256000 / 250)
 #define LM73_TEMP_MAX		(255750 / 250)
@@ -45,19 +34,19 @@ static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4c,
 #define LM73_CTRL_LO_SHIFT	1
 
 static const unsigned short lm73_convrates[] = {
-	14,	/* 11-bits (0.25000 C/LSB): RES1 Bit = 0, RES0 Bit = 0 */
-	28,	/* 12-bits (0.12500 C/LSB): RES1 Bit = 0, RES0 Bit = 1 */
-	56,	/* 13-bits (0.06250 C/LSB): RES1 Bit = 1, RES0 Bit = 0 */
-	112,	/* 14-bits (0.03125 C/LSB): RES1 Bit = 1, RES0 Bit = 1 */
+	14,	 
+	28,	 
+	56,	 
+	112,	 
 };
 
 struct lm73_data {
 	struct i2c_client *client;
 	struct mutex lock;
-	u8 ctrl;			/* control register value */
+	u8 ctrl;			 
 };
 
-/*-----------------------------------------------------------------------*/
+ 
 
 static ssize_t temp_store(struct device *dev, struct device_attribute *da,
 			  const char *buf, size_t count)
@@ -72,7 +61,7 @@ static ssize_t temp_store(struct device *dev, struct device_attribute *da,
 	if (status < 0)
 		return status;
 
-	/* Write value */
+	 
 	value = clamp_val(temp / 250, LM73_TEMP_MIN, LM73_TEMP_MAX) << 5;
 	err = i2c_smbus_write_word_swapped(data->client, attr->index, value);
 	return (err < 0) ? err : count;
@@ -89,8 +78,7 @@ static ssize_t temp_show(struct device *dev, struct device_attribute *da,
 	if (err < 0)
 		return err;
 
-	/* use integer division instead of equivalent right shift to
-	   guarantee arithmetic shift and preserve the sign */
+	 
 	temp = (((s16) err) * 250) / 32;
 	return sysfs_emit(buf, "%d\n", temp);
 }
@@ -107,12 +95,7 @@ static ssize_t convrate_store(struct device *dev, struct device_attribute *da,
 	if (err < 0)
 		return err;
 
-	/*
-	 * Convert the desired conversion rate into register bits.
-	 * res is already initialized, and everything past the second-to-last
-	 * value in the array is treated as belonging to the last value
-	 * in the array.
-	 */
+	 
 	while (res < (ARRAY_SIZE(lm73_convrates) - 1) &&
 			convrate > lm73_convrates[res])
 		res++;
@@ -161,9 +144,9 @@ abort:
 	return ctrl;
 }
 
-/*-----------------------------------------------------------------------*/
+ 
 
-/* sysfs attributes for hwmon */
+ 
 
 static SENSOR_DEVICE_ATTR_RW(temp1_max, temp, LM73_REG_MAX);
 static SENSOR_DEVICE_ATTR_RW(temp1_min, temp, LM73_REG_MIN);
@@ -185,9 +168,9 @@ static struct attribute *lm73_attrs[] = {
 };
 ATTRIBUTE_GROUPS(lm73);
 
-/*-----------------------------------------------------------------------*/
+ 
 
-/* device probe and removal */
+ 
 
 static int
 lm73_probe(struct i2c_client *client)
@@ -221,11 +204,11 @@ lm73_probe(struct i2c_client *client)
 
 static const struct i2c_device_id lm73_ids[] = {
 	{ "lm73", 0 },
-	{ /* LIST END */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, lm73_ids);
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int lm73_detect(struct i2c_client *new_client,
 			struct i2c_board_info *info)
 {
@@ -236,10 +219,7 @@ static int lm73_detect(struct i2c_client *new_client,
 					I2C_FUNC_SMBUS_WORD_DATA))
 		return -ENODEV;
 
-	/*
-	 * Do as much detection as possible with byte reads first, as word
-	 * reads can confuse other devices.
-	 */
+	 
 	ctrl = i2c_smbus_read_byte_data(new_client, LM73_REG_CTRL);
 	if (ctrl < 0 || (ctrl & 0x10))
 		return -ENODEV;
@@ -252,7 +232,7 @@ static int lm73_detect(struct i2c_client *new_client,
 	if (id < 0 || id != (LM73_ID & 0xff))
 		return -ENODEV;
 
-	/* Check device ID */
+	 
 	id = i2c_smbus_read_word_data(new_client, LM73_REG_ID);
 	if (id < 0 || id != LM73_ID)
 		return -ENODEV;

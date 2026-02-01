@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <sys/mman.h>
 #include <inttypes.h>
 #include <asm/bug.h>
@@ -135,9 +135,7 @@ static int overwrite_rb_find_range(void *buf, int mask, u64 *start, u64 *end)
 	return -1;
 }
 
-/*
- * Report the start and end of the available data in ringbuffer
- */
+ 
 static int __perf_mmap__read_init(struct perf_mmap *md)
 {
 	u64 head = perf_mmap__read_head(md);
@@ -161,10 +159,7 @@ static int __perf_mmap__read_init(struct perf_mmap *md)
 			return -EAGAIN;
 		}
 
-		/*
-		 * Backward ring buffer is full. We still have a chance to read
-		 * most of data from it.
-		 */
+		 
 		if (overwrite_rb_find_range(data, md->mask, &md->start, &md->end))
 			return -EINVAL;
 	}
@@ -174,33 +169,24 @@ static int __perf_mmap__read_init(struct perf_mmap *md)
 
 int perf_mmap__read_init(struct perf_mmap *map)
 {
-	/*
-	 * Check if event was unmapped due to a POLLHUP/POLLERR.
-	 */
+	 
 	if (!refcount_read(&map->refcnt))
 		return -ENOENT;
 
 	return __perf_mmap__read_init(map);
 }
 
-/*
- * Mandatory for overwrite mode
- * The direction of overwrite mode is backward.
- * The last perf_mmap__read() will set tail to map->core.prev.
- * Need to correct the map->core.prev to head which is the end of next read.
- */
+ 
 void perf_mmap__read_done(struct perf_mmap *map)
 {
-	/*
-	 * Check if event was unmapped due to a POLLHUP/POLLERR.
-	 */
+	 
 	if (!refcount_read(&map->refcnt))
 		return;
 
 	map->prev = perf_mmap__read_head(map);
 }
 
-/* When check_messup is true, 'end' must points to a good entry */
+ 
 static union perf_event *perf_mmap__read(struct perf_mmap *map,
 					 u64 *startp, u64 end)
 {
@@ -217,10 +203,7 @@ static union perf_event *perf_mmap__read(struct perf_mmap *map,
 		if (size < sizeof(event->header) || diff < (int)size)
 			return NULL;
 
-		/*
-		 * Event straddles the mmap boundary -- header should always
-		 * be inside due to u64 alignment of output.
-		 */
+		 
 		if ((*startp & map->mask) + size != ((*startp + size) & map->mask)) {
 			unsigned int offset = *startp;
 			unsigned int len = min(sizeof(*event), size), cpy;
@@ -243,29 +226,16 @@ static union perf_event *perf_mmap__read(struct perf_mmap *map,
 	return event;
 }
 
-/*
- * Read event from ring buffer one by one.
- * Return one event for each call.
- *
- * Usage:
- * perf_mmap__read_init()
- * while(event = perf_mmap__read_event()) {
- *	//process the event
- *	perf_mmap__consume()
- * }
- * perf_mmap__read_done()
- */
+ 
 union perf_event *perf_mmap__read_event(struct perf_mmap *map)
 {
 	union perf_event *event;
 
-	/*
-	 * Check if event was unmapped due to a POLLHUP/POLLERR.
-	 */
+	 
 	if (!refcount_read(&map->refcnt))
 		return NULL;
 
-	/* non-overwirte doesn't pause the ringbuffer */
+	 
 	if (!map->overwrite)
 		map->end = perf_mmap__read_head(map);
 
@@ -344,9 +314,7 @@ PMEVCNTR_READ(28);
 PMEVCNTR_READ(29);
 PMEVCNTR_READ(30);
 
-/*
- * Read a value direct from PMEVCNTR<idx>
- */
+ 
 static u64 read_perf_counter(unsigned int counter)
 {
 	static u64 (* const read_f[])(void) = {
@@ -392,10 +360,10 @@ static u64 read_perf_counter(unsigned int counter)
 
 static u64 read_timestamp(void) { return read_sysreg(cntvct_el0); }
 
-/* __riscv_xlen contains the witdh of the native base integer, here 64-bit */
+ 
 #elif defined(__riscv) && __riscv_xlen == 64
 
-/* TODO: implement rv32 support */
+ 
 
 #define CSR_CYCLE	0xc00
 #define CSR_TIME	0xc01
@@ -509,7 +477,7 @@ int perf_mmap__read_self(struct perf_mmap *map, struct perf_counts_values *count
 	if (count->ena != count->run) {
 		u64 delta;
 
-		/* Adjust for cap_usr_time_short, a nop if not */
+		 
 		cyc = time_cycles + ((cyc - time_cycles) & time_mask);
 
 		delta = time_offset + mul_u64_u32_shr(cyc, time_mult, time_shift);

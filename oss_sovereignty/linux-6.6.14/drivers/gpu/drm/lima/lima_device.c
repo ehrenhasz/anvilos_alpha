@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/regulator/consumer.h>
 #include <linux/reset.h>
@@ -512,7 +512,7 @@ int lima_device_suspend(struct device *dev)
 	struct lima_device *ldev = dev_get_drvdata(dev);
 	int i, err;
 
-	/* check any task running */
+	 
 	for (i = 0; i < lima_pipe_num; i++) {
 		if (atomic_read(&ldev->pipe[i].base.hw_rq_count))
 			return -EBUSY;

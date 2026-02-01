@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MUSB OTG driver - support for Mentor's DMA controller
- *
- * Copyright 2005 Mentor Graphics Corporation
- * Copyright (C) 2005-2007 by Texas Instruments
- */
+
+ 
 #include <linux/device.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
@@ -32,7 +27,7 @@
 	musb_writel(mbase, \
 		    MUSB_HSDMA_CHANNEL_OFFSET(bchannel, MUSB_HSDMA_COUNT), \
 		    len)
-/* control register (16-bit): */
+ 
 #define MUSB_HSDMA_ENABLE_SHIFT		0
 #define MUSB_HSDMA_TRANSMIT_SHIFT	1
 #define MUSB_HSDMA_MODE1_SHIFT		2
@@ -116,7 +111,7 @@ static struct dma_channel *dma_channel_allocate(struct dma_controller *c,
 			channel->private_data = musb_channel;
 			channel->status = MUSB_DMA_STATUS_FREE;
 			channel->max_len = 0x100000;
-			/* Tx => mode 1; Rx => mode 0 */
+			 
 			channel->desired_mode = transmit;
 			channel->actual_len = 0;
 			break;
@@ -168,11 +163,11 @@ static void configure_channel(struct dma_channel *channel,
 				? (1 << MUSB_HSDMA_TRANSMIT_SHIFT)
 				: 0);
 
-	/* address/count */
+	 
 	musb_write_hsdma_addr(mbase, bchannel, dma_addr);
 	musb_write_hsdma_count(mbase, bchannel, len);
 
-	/* control (this should start things) */
+	 
 	musb_writew(mbase,
 		MUSB_HSDMA_CHANNEL_OFFSET(bchannel, MUSB_HSDMA_CONTROL),
 		csr);
@@ -194,15 +189,7 @@ static int dma_channel_program(struct dma_channel *channel,
 	BUG_ON(channel->status == MUSB_DMA_STATUS_UNKNOWN ||
 		channel->status == MUSB_DMA_STATUS_BUSY);
 
-	/*
-	 * The DMA engine in RTL1.8 and above cannot handle
-	 * DMA addresses that are not aligned to a 4 byte boundary.
-	 * It ends up masking the last two bits of the address
-	 * programmed in DMA_ADDR.
-	 *
-	 * Fail such DMA transfers, so that the backup PIO mode
-	 * can carry out the transfer
-	 */
+	 
 	if ((musb->hwvers >= MUSB_HWVERS_1800) && (dma_addr % 4))
 		return false;
 
@@ -232,10 +219,7 @@ static int dma_channel_abort(struct dma_channel *channel)
 			offset = musb->io.ep_offset(musb_channel->epnum,
 						MUSB_TXCSR);
 
-			/*
-			 * The programming guide says that we must clear
-			 * the DMAENAB bit before the DMAMODE bit...
-			 */
+			 
 			csr = musb_readw(mbase, offset);
 			csr &= ~(MUSB_TXCSR_AUTOSET | MUSB_TXCSR_DMAENAB);
 			musb_writew(mbase, offset, csr);
@@ -336,7 +320,7 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 
 				channel->status = MUSB_DMA_STATUS_FREE;
 
-				/* completed */
+				 
 				if (musb_channel->transmit &&
 					(!channel->desired_mode ||
 					(channel->actual_len %
@@ -346,17 +330,14 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 								    MUSB_TXCSR);
 					u16 txcsr;
 
-					/*
-					 * The programming guide says that we
-					 * must clear DMAENAB before DMAMODE.
-					 */
+					 
 					musb_ep_select(mbase, epnum);
 					txcsr = musb_readw(mbase, offset);
 					if (channel->desired_mode == 1) {
 						txcsr &= ~(MUSB_TXCSR_DMAENAB
 							| MUSB_TXCSR_AUTOSET);
 						musb_writew(mbase, offset, txcsr);
-						/* Send out the packet */
+						 
 						txcsr &= ~MUSB_TXCSR_DMAMODE;
 						txcsr |= MUSB_TXCSR_DMAENAB;
 					}

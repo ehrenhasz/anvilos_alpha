@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * twl4030-vibra.c - TWL4030 Vibrator driver
- *
- * Copyright (C) 2008-2010 Nokia Corporation
- *
- * Written by Henrik Saari <henrik.saari@nokia.com>
- * Updates by Felipe Balbi <felipe.balbi@nokia.com>
- * Input by Jari Vanhala <ext-jari.vanhala@nokia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/jiffies.h>
@@ -19,11 +11,11 @@
 #include <linux/input.h>
 #include <linux/slab.h>
 
-/* MODULE ID2 */
+ 
 #define LEDEN		0x00
 
-/* ForceFeedback */
-#define EFFECT_DIR_180_DEG	0x8000 /* range is 0 - 0xFFFF */
+ 
+#define EFFECT_DIR_180_DEG	0x8000  
 
 struct vibra_info {
 	struct device		*dev;
@@ -42,20 +34,20 @@ static void vibra_disable_leds(void)
 {
 	u8 reg;
 
-	/* Disable LEDA & LEDB, cannot be used with vibra (PWM) */
+	 
 	twl_i2c_read_u8(TWL4030_MODULE_LED, &reg, LEDEN);
 	reg &= ~0x03;
 	twl_i2c_write_u8(TWL4030_MODULE_LED, LEDEN, reg);
 }
 
-/* Powers H-Bridge and enables audio clk */
+ 
 static void vibra_enable(struct vibra_info *info)
 {
 	u8 reg;
 
 	twl4030_audio_enable_resource(TWL4030_AUDIO_RES_POWER);
 
-	/* turn H-Bridge on */
+	 
 	twl_i2c_read_u8(TWL4030_MODULE_AUDIO_VOICE,
 			&reg, TWL4030_REG_VIBRA_CTL);
 	twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE,
@@ -70,7 +62,7 @@ static void vibra_disable(struct vibra_info *info)
 {
 	u8 reg;
 
-	/* Power down H-Bridge */
+	 
 	twl_i2c_read_u8(TWL4030_MODULE_AUDIO_VOICE,
 			&reg, TWL4030_REG_VIBRA_CTL);
 	twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE,
@@ -100,7 +92,7 @@ static void vibra_play_work(struct work_struct *work)
 		if (!info->enabled)
 			vibra_enable(info);
 
-		/* set vibra rotation direction */
+		 
 		twl_i2c_read_u8(TWL4030_MODULE_AUDIO_VOICE,
 				&reg, TWL4030_REG_VIBRA_CTL);
 		reg = (dir) ? (reg | TWL4030_VIBRA_DIR) :
@@ -108,7 +100,7 @@ static void vibra_play_work(struct work_struct *work)
 		twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE,
 				 reg, TWL4030_REG_VIBRA_CTL);
 
-		/* set PWM, 1 = max, 255 = min */
+		 
 		twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE,
 				 256 - pwm, TWL4030_REG_VIBRA_SET);
 	} else {
@@ -117,7 +109,7 @@ static void vibra_play_work(struct work_struct *work)
 	}
 }
 
-/*** Input/ForceFeedback ***/
+ 
 
 static int vibra_play(struct input_dev *input, void *data,
 		      struct ff_effect *effect)
@@ -142,7 +134,7 @@ static void twl4030_vibra_close(struct input_dev *input)
 		vibra_disable(info);
 }
 
-/*** Module ***/
+ 
 static int twl4030_vibra_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);

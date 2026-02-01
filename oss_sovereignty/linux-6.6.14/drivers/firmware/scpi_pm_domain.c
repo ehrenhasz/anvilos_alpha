@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SCPI Generic power domain support.
- *
- * Copyright (C) 2016 ARM Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -19,11 +15,7 @@ struct scpi_pm_domain {
 	u32 domain;
 };
 
-/*
- * These device power state values are not well-defined in the specification.
- * In case, different implementations use different values, we can make these
- * specific to compatibles rather than getting these values from device tree.
- */
+ 
 enum scpi_power_domain_state {
 	SCPI_PD_STATE_ON = 0,
 	SCPI_PD_STATE_OFF = 3,
@@ -120,12 +112,7 @@ static int scpi_pm_domain_probe(struct platform_device *pdev)
 		scpi_pd->genpd.power_off = scpi_pd_power_off;
 		scpi_pd->genpd.power_on = scpi_pd_power_on;
 
-		/*
-		 * Treat all power domains as off at boot.
-		 *
-		 * The SCP firmware itself may have switched on some domains,
-		 * but for reference counting purpose, keep it this way.
-		 */
+		 
 		pm_genpd_init(&scpi_pd->genpd, NULL, true);
 	}
 
@@ -139,7 +126,7 @@ static int scpi_pm_domain_probe(struct platform_device *pdev)
 
 static const struct of_device_id scpi_power_domain_ids[] = {
 	{ .compatible = "arm,scpi-power-domains", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, scpi_power_domain_ids);
 

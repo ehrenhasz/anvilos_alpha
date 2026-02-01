@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <errno.h>
 #include <fcntl.h>
@@ -48,7 +48,7 @@ static int test_ra_error(void)
 
 	paste_addr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0ULL);
 
-	/* The following assignment triggers exception */
+	 
 	mb();
 	*paste_addr = 1;
 	mb();

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011 Jamie Iles
- *
- * All enquiries to support@picochip.com
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -48,9 +44,9 @@
 #define DWAPB_MAX_PORTS		4
 #define DWAPB_MAX_GPIOS		32
 
-#define GPIO_EXT_PORT_STRIDE	0x04 /* register stride 32 bits */
-#define GPIO_SWPORT_DR_STRIDE	0x0c /* register stride 3*32 bits */
-#define GPIO_SWPORT_DDR_STRIDE	0x0c /* register stride 3*32 bits */
+#define GPIO_EXT_PORT_STRIDE	0x04  
+#define GPIO_SWPORT_DR_STRIDE	0x0c  
+#define GPIO_SWPORT_DDR_STRIDE	0x0c  
 
 #define GPIO_REG_OFFSET_V1	0
 #define GPIO_REG_OFFSET_V2	1
@@ -80,7 +76,7 @@ struct dwapb_platform_data {
 };
 
 #ifdef CONFIG_PM_SLEEP
-/* Store GPIO context across system-wide suspend/resume transitions */
+ 
 struct dwapb_context {
 	u32 data;
 	u32 dir;
@@ -190,7 +186,7 @@ static void dwapb_toggle_trigger(struct dwapb_gpio *gpio, unsigned int offs)
 	gc = &port->gc;
 
 	pol = dwapb_read(gpio, GPIO_INT_POLARITY);
-	/* Just read the current value right out of the data register */
+	 
 	val = gc->get(gc, offs % DWAPB_MAX_GPIOS);
 	if (val)
 		pol &= ~BIT(offs);
@@ -429,7 +425,7 @@ static int dwapb_convert_irqs(struct dwapb_gpio_port_irqchip *pirq,
 {
 	int i;
 
-	/* Group all available IRQs into an array of parental IRQs. */
+	 
 	for (i = 0; i < pp->ngpio; ++i) {
 		if (!pp->irq[i])
 			continue;
@@ -464,12 +460,7 @@ static void dwapb_configure_irqs(struct dwapb_gpio *gpio,
 
 	port->pirq = pirq;
 
-	/*
-	 * Intel ACPI-based platforms mostly have the DesignWare APB GPIO
-	 * IRQ lane shared between several devices. In that case the parental
-	 * IRQ has to be handled in the shared way so to be properly delivered
-	 * to all the connected devices.
-	 */
+	 
 	if (has_acpi_companion(gpio->dev)) {
 		girq->num_parents = 0;
 		girq->parents = NULL;
@@ -519,7 +510,7 @@ static int dwapb_gpio_add_port(struct dwapb_gpio *gpio,
 	set = gpio->regs + GPIO_SWPORTA_DR + pp->idx * GPIO_SWPORT_DR_STRIDE;
 	dirout = gpio->regs + GPIO_SWPORTA_DDR + pp->idx * GPIO_SWPORT_DDR_STRIDE;
 
-	/* This registers 32 GPIO lines per port */
+	 
 	err = bgpio_init(&port->gc, gpio->dev, 4, dat, set, NULL, dirout,
 			 NULL, 0);
 	if (err) {
@@ -532,11 +523,11 @@ static int dwapb_gpio_add_port(struct dwapb_gpio *gpio,
 	port->gc.ngpio = pp->ngpio;
 	port->gc.base = pp->gpio_base;
 
-	/* Only port A support debounce */
+	 
 	if (pp->idx == 0)
 		port->gc.set_config = dwapb_gpio_set_config;
 
-	/* Only port A can provide interrupts in all configurations of the IP */
+	 
 	if (pp->idx == 0)
 		dwapb_configure_irqs(gpio, port, pp);
 
@@ -610,14 +601,11 @@ static struct dwapb_platform_data *dwapb_gpio_get_pdata(struct device *dev)
 
 		pp->gpio_base	= -1;
 
-		/* For internal use only, new platforms mustn't exercise this */
+		 
 		if (is_software_node(fwnode))
 			fwnode_property_read_u32(fwnode, "gpio-base", &pp->gpio_base);
 
-		/*
-		 * Only port A can provide interrupts in all configurations of
-		 * the IP.
-		 */
+		 
 		if (pp->idx == 0)
 			dwapb_get_irq(dev, fwnode, pp);
 	}
@@ -661,7 +649,7 @@ static int dwapb_get_clks(struct dwapb_gpio *gpio)
 {
 	int err;
 
-	/* Optional bus and debounce clocks */
+	 
 	gpio->clks[0].id = "bus";
 	gpio->clks[1].id = "db";
 	err = devm_clk_bulk_get_optional(gpio->dev, DWAPB_NR_CLOCKS,
@@ -682,7 +670,7 @@ static int dwapb_get_clks(struct dwapb_gpio *gpio)
 static const struct of_device_id dwapb_of_match[] = {
 	{ .compatible = "snps,dw-apb-gpio", .data = (void *)GPIO_REG_OFFSET_V1},
 	{ .compatible = "apm,xgene-gpio-v2", .data = (void *)GPIO_REG_OFFSET_V2},
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dwapb_of_match);
 
@@ -766,7 +754,7 @@ static int dwapb_gpio_suspend(struct device *dev)
 		offset = GPIO_EXT_PORTA + idx * GPIO_EXT_PORT_STRIDE;
 		ctx->ext = dwapb_read(gpio, offset);
 
-		/* Only port A can provide interrupts */
+		 
 		if (idx == 0) {
 			ctx->int_mask	= dwapb_read(gpio, GPIO_INTMASK);
 			ctx->int_en	= dwapb_read(gpio, GPIO_INTEN);
@@ -774,7 +762,7 @@ static int dwapb_gpio_suspend(struct device *dev)
 			ctx->int_type	= dwapb_read(gpio, GPIO_INTTYPE_LEVEL);
 			ctx->int_deb	= dwapb_read(gpio, GPIO_PORTA_DEBOUNCE);
 
-			/* Mask out interrupts */
+			 
 			dwapb_write(gpio, GPIO_INTMASK, ~ctx->wake_en);
 		}
 	}
@@ -813,7 +801,7 @@ static int dwapb_gpio_resume(struct device *dev)
 		offset = GPIO_EXT_PORTA + idx * GPIO_EXT_PORT_STRIDE;
 		dwapb_write(gpio, offset, ctx->ext);
 
-		/* Only port A can provide interrupts */
+		 
 		if (idx == 0) {
 			dwapb_write(gpio, GPIO_INTTYPE_LEVEL, ctx->int_type);
 			dwapb_write(gpio, GPIO_INT_POLARITY, ctx->int_pol);
@@ -821,7 +809,7 @@ static int dwapb_gpio_resume(struct device *dev)
 			dwapb_write(gpio, GPIO_INTEN, ctx->int_en);
 			dwapb_write(gpio, GPIO_INTMASK, ctx->int_mask);
 
-			/* Clear out spurious interrupts */
+			 
 			dwapb_write(gpio, GPIO_PORTA_EOI, 0xffffffff);
 		}
 	}

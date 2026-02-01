@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS client file system
- *
- * Copyright (C) 2002,5 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -61,9 +57,7 @@ const char afs_init_sysname[] = "sparc_linux26";
 const char afs_init_sysname[] = "unknown_linux26";
 #endif
 
-/*
- * Initialise an AFS network namespace record.
- */
+ 
 static int __net_init afs_net_init(struct net *net_ns)
 {
 	struct afs_sysnames *sysnames;
@@ -112,17 +106,17 @@ static int __net_init afs_net_init(struct net *net_ns)
 	net->sysnames = sysnames;
 	rwlock_init(&net->sysnames_lock);
 
-	/* Register the /proc stuff */
+	 
 	ret = afs_proc_init(net);
 	if (ret < 0)
 		goto error_proc;
 
-	/* Initialise the cell DB */
+	 
 	ret = afs_cell_init(net, rootcell);
 	if (ret < 0)
 		goto error_cell_init;
 
-	/* Create the RxRPC transport */
+	 
 	ret = afs_open_socket(net);
 	if (ret < 0)
 		goto error_open_socket;
@@ -144,9 +138,7 @@ error_sysnames:
 	return ret;
 }
 
-/*
- * Clean up and destroy an AFS network namespace record.
- */
+ 
 static void __net_exit afs_net_exit(struct net *net_ns)
 {
 	struct afs_net *net = afs_net(net_ns);
@@ -167,9 +159,7 @@ static struct pernet_operations afs_net_ops = {
 	.size	= sizeof(struct afs_net),
 };
 
-/*
- * initialise the AFS client FS module
- */
+ 
 static int __init afs_init(void)
 {
 	int ret = -ENOMEM;
@@ -190,7 +180,7 @@ static int __init afs_init(void)
 	if (ret < 0)
 		goto error_net;
 
-	/* register the filesystems */
+	 
 	ret = afs_fs_init();
 	if (ret < 0)
 		goto error_fs;
@@ -219,14 +209,10 @@ error_afs_wq:
 	return ret;
 }
 
-/* XXX late_initcall is kludgy, but the only alternative seems to create
- * a transport upon the first mount, which is worse. Or is it?
- */
-late_initcall(afs_init);	/* must be called after net/ to create socket */
+ 
+late_initcall(afs_init);	 
 
-/*
- * clean up on module removal
- */
+ 
 static void __exit afs_exit(void)
 {
 	printk(KERN_INFO "kAFS: Red Hat AFS client v0.1 unregistering.\n");

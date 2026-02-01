@@ -1,16 +1,4 @@
-/* bnx2fc_io.c: QLogic Linux FCoE offload driver.
- * IO manager and SCSI IO processing.
- *
- * Copyright (c) 2008-2013 Broadcom Corporation
- * Copyright (c) 2014-2016 QLogic Corporation
- * Copyright (c) 2016-2017 Cavium Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Bhanu Prakash Gollapudi (bprakash@broadcom.com)
- */
+ 
 
 #include "bnx2fc.h"
 
@@ -51,10 +39,7 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 	spin_lock_bh(&tgt->tgt_lock);
 	if (test_and_clear_bit(BNX2FC_FLAG_ISSUE_RRQ, &io_req->req_flags)) {
 		clear_bit(BNX2FC_FLAG_RETIRE_OXID, &io_req->req_flags);
-		/*
-		 * ideally we should hold the io_req until RRQ complets,
-		 * and release io_req from timeout hold.
-		 */
+		 
 		spin_unlock_bh(&tgt->tgt_lock);
 		bnx2fc_send_rrq(io_req);
 		return;
@@ -68,20 +53,17 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 	case BNX2FC_SCSI_CMD:
 		if (test_and_clear_bit(BNX2FC_FLAG_EH_ABORT,
 							&io_req->req_flags)) {
-			/* Handle eh_abort timeout */
+			 
 			BNX2FC_IO_DBG(io_req, "eh_abort timed out\n");
 			complete(&io_req->abts_done);
 		} else if (test_bit(BNX2FC_FLAG_ISSUE_ABTS,
 				    &io_req->req_flags)) {
-			/* Handle internally generated ABTS timeout */
+			 
 			BNX2FC_IO_DBG(io_req, "ABTS timed out refcnt = %d\n",
 					kref_read(&io_req->refcount));
 			if (!(test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
 					       &io_req->req_flags))) {
-				/*
-				 * Cleanup and return original command to
-				 * mid-layer.
-				 */
+				 
 				bnx2fc_initiate_cleanup(io_req);
 				kref_put(&io_req->refcount, bnx2fc_cmd_release);
 				spin_unlock_bh(&tgt->tgt_lock);
@@ -89,7 +71,7 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 				return;
 			}
 		} else {
-			/* Hanlde IO timeout */
+			 
 			BNX2FC_IO_DBG(io_req, "IO timed out. issue ABTS\n");
 			if (test_and_set_bit(BNX2FC_FLAG_IO_COMPL,
 					     &io_req->req_flags)) {
@@ -127,18 +109,13 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 				return;
 			}
 		} else {
-			/*
-			 * Handle ELS timeout.
-			 * tgt_lock is used to sync compl path and timeout
-			 * path. If els compl path is processing this IO, we
-			 * have nothing to do here, just release the timer hold
-			 */
+			 
 			BNX2FC_IO_DBG(io_req, "ELS timed out\n");
 			if (test_and_set_bit(BNX2FC_FLAG_ELS_DONE,
 					       &io_req->req_flags))
 				goto done;
 
-			/* Indicate the cb_func that this ELS is timed out */
+			 
 			set_bit(BNX2FC_FLAG_ELS_TIMEOUT, &io_req->req_flags);
 
 			if ((io_req->cb_func) && (io_req->cb_arg)) {
@@ -154,34 +131,30 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 	}
 
 done:
-	/* release the cmd that was held when timer was set */
+	 
 	kref_put(&io_req->refcount, bnx2fc_cmd_release);
 	spin_unlock_bh(&tgt->tgt_lock);
 }
 
 static void bnx2fc_scsi_done(struct bnx2fc_cmd *io_req, int err_code)
 {
-	/* Called with host lock held */
+	 
 	struct scsi_cmnd *sc_cmd = io_req->sc_cmd;
 
-	/*
-	 * active_cmd_queue may have other command types as well,
-	 * and during flush operation,  we want to error back only
-	 * scsi commands.
-	 */
+	 
 	if (io_req->cmd_type != BNX2FC_SCSI_CMD)
 		return;
 
 	BNX2FC_IO_DBG(io_req, "scsi_done. err_code = 0x%x\n", err_code);
 	if (test_bit(BNX2FC_FLAG_CMD_LOST, &io_req->req_flags)) {
-		/* Do not call scsi done for this IO */
+		 
 		return;
 	}
 
 	bnx2fc_unmap_sg_list(io_req);
 	io_req->sc_cmd = NULL;
 
-	/* Sanity checks before returning command to mid-layer */
+	 
 	if (!sc_cmd) {
 		printk(KERN_ERR PFX "scsi_done - sc_cmd NULL. "
 				    "IO(0x%x) already cleaned up\n",
@@ -1100,10 +1073,7 @@ static int bnx2fc_abts_cleanup(struct bnx2fc_cmd *io_req)
 		BNX2FC_IO_DBG(io_req, "%s(): Wait for cleanup timed out.\n",
 			      __func__);
 
-		/*
-		 * Put the extra reference to the SCSI command since it would
-		 * not have been returned in this case.
-		 */
+		 
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 	}
 
@@ -1112,14 +1082,7 @@ static int bnx2fc_abts_cleanup(struct bnx2fc_cmd *io_req)
 	return SUCCESS;
 }
 
-/**
- * bnx2fc_eh_abort - eh_abort_handler api to abort an outstanding
- *			SCSI command
- *
- * @sc_cmd:	SCSI_ML command pointer
- *
- * SCSI abort request handler
- */
+ 
 int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 {
 	struct fc_rport *rport = starget_to_rport(scsi_target(sc_cmd->device));
@@ -1147,7 +1110,7 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	spin_lock_bh(&tgt->tgt_lock);
 	io_req = bnx2fc_priv(sc_cmd)->io_req;
 	if (!io_req) {
-		/* Command might have just completed */
+		 
 		printk(KERN_ERR PFX "eh_abort: io_req is NULL\n");
 		spin_unlock_bh(&tgt->tgt_lock);
 		return SUCCESS;
@@ -1155,17 +1118,13 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	BNX2FC_IO_DBG(io_req, "eh_abort - refcnt = %d\n",
 		      kref_read(&io_req->refcount));
 
-	/* Hold IO request across abort processing */
+	 
 	kref_get(&io_req->refcount);
 
 	BUG_ON(tgt != io_req->tgt);
 
-	/* Remove the io_req from the active_q. */
-	/*
-	 * Task Mgmt functions (LUN RESET & TGT RESET) will not
-	 * issue an ABTS on this particular IO req, as the
-	 * io_req is no longer in the active_q.
-	 */
+	 
+	 
 	if (tgt->flush_in_prog) {
 		printk(KERN_ERR PFX "eh_abort: io_req (xid = 0x%x) "
 			"flush in progress\n", io_req->xid);
@@ -1177,24 +1136,15 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	if (io_req->on_active_queue == 0) {
 		printk(KERN_ERR PFX "eh_abort: io_req (xid = 0x%x) "
 				"not on active_q\n", io_req->xid);
-		/*
-		 * The IO is still with the FW.
-		 * Return failure and let SCSI-ml retry eh_abort.
-		 */
+		 
 		spin_unlock_bh(&tgt->tgt_lock);
 		return FAILED;
 	}
 
-	/*
-	 * Only eh_abort processing will remove the IO from
-	 * active_cmd_q before processing the request. this is
-	 * done to avoid race conditions between IOs aborted
-	 * as part of task management completion and eh_abort
-	 * processing
-	 */
+	 
 	list_del_init(&io_req->link);
 	io_req->on_active_queue = 0;
-	/* Move IO req to retire queue */
+	 
 	list_add_tail(&io_req->link, &tgt->io_retire_queue);
 
 	init_completion(&io_req->abts_done);
@@ -1205,27 +1155,19 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 				"already in abts processing\n", io_req->xid);
 		if (cancel_delayed_work(&io_req->timeout_work))
 			kref_put(&io_req->refcount,
-				 bnx2fc_cmd_release); /* drop timer hold */
-		/*
-		 * We don't want to hold off the upper layer timer so simply
-		 * cleanup the command and return that I/O was successfully
-		 * aborted.
-		 */
+				 bnx2fc_cmd_release);  
+		 
 		bnx2fc_abts_cleanup(io_req);
-		/* This only occurs when an task abort was requested while ABTS
-		   is in progress.  Setting the IO_CLEANUP flag will skip the
-		   RRQ process in the case when the fw generated SCSI_CMD cmpl
-		   was a result from the ABTS request rather than the CLEANUP
-		   request */
+		 
 		set_bit(BNX2FC_FLAG_IO_CLEANUP,	&io_req->req_flags);
 		rc = FAILED;
 		goto done;
 	}
 
-	/* Cancel the current timer running on this io_req */
+	 
 	if (cancel_delayed_work(&io_req->timeout_work))
 		kref_put(&io_req->refcount,
-			 bnx2fc_cmd_release); /* drop timer hold */
+			 bnx2fc_cmd_release);  
 	set_bit(BNX2FC_FLAG_EH_ABORT, &io_req->req_flags);
 	io_req->wait_for_abts_comp = 1;
 	rc = bnx2fc_initiate_abts(io_req);
@@ -1240,7 +1182,7 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	}
 	spin_unlock_bh(&tgt->tgt_lock);
 
-	/* Wait 2 * RA_TOV + 1 to be sure timeout function hasn't fired */
+	 
 	time_left = wait_for_completion_timeout(&io_req->abts_done,
 					msecs_to_jiffies(2 * rp->r_a_tov + 1));
 	if (time_left)
@@ -1254,28 +1196,21 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		rc = SUCCESS;
 	} else if (!(test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
 				      &io_req->req_flags))) {
-		/* Let the scsi-ml try to recover this command */
+		 
 		printk(KERN_ERR PFX "abort failed, xid = 0x%x\n",
 		       io_req->xid);
-		/*
-		 * Cleanup firmware residuals before returning control back
-		 * to SCSI ML.
-		 */
+		 
 		rc = bnx2fc_abts_cleanup(io_req);
 		goto done;
 	} else {
-		/*
-		 * We come here even when there was a race condition
-		 * between timeout and abts completion, and abts
-		 * completion happens just in time.
-		 */
+		 
 		BNX2FC_IO_DBG(io_req, "abort succeeded\n");
 		rc = SUCCESS;
 		bnx2fc_scsi_done(io_req, DID_ABORT);
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 	}
 done:
-	/* release the reference taken in eh_abort */
+	 
 	kref_put(&io_req->refcount, bnx2fc_cmd_release);
 	spin_unlock_bh(&tgt->tgt_lock);
 	return rc;
@@ -1323,18 +1258,11 @@ void bnx2fc_process_cleanup_compl(struct bnx2fc_cmd *io_req,
 	BNX2FC_IO_DBG(io_req, "Entered process_cleanup_compl "
 			      "refcnt = %d, cmd_type = %d\n",
 		   kref_read(&io_req->refcount), io_req->cmd_type);
-	/*
-	 * Test whether there is a cleanup request pending. If not just
-	 * exit.
-	 */
+	 
 	if (!test_and_clear_bit(BNX2FC_FLAG_ISSUE_CLEANUP_REQ,
 				&io_req->req_flags))
 		return;
-	/*
-	 * If we receive a cleanup completion for this request then the
-	 * firmware will not give us an abort completion for this request
-	 * so clear any ABTS pending flags.
-	 */
+	 
 	if (test_bit(BNX2FC_FLAG_ISSUE_ABTS, &io_req->req_flags) &&
 	    !test_bit(BNX2FC_FLAG_ABTS_DONE, &io_req->req_flags)) {
 		set_bit(BNX2FC_FLAG_ABTS_DONE, &io_req->req_flags);
@@ -1369,40 +1297,29 @@ void bnx2fc_process_abts_compl(struct bnx2fc_cmd *io_req,
 		return;
 	}
 
-	/*
-	 * If we receive an ABTS completion here then we will not receive
-	 * a cleanup completion so clear any cleanup pending flags.
-	 */
+	 
 	if (test_bit(BNX2FC_FLAG_ISSUE_CLEANUP_REQ, &io_req->req_flags)) {
 		clear_bit(BNX2FC_FLAG_ISSUE_CLEANUP_REQ, &io_req->req_flags);
 		if (io_req->wait_for_cleanup_comp)
 			complete(&io_req->cleanup_done);
 	}
 
-	/* Do not issue RRQ as this IO is already cleanedup */
+	 
 	if (test_and_set_bit(BNX2FC_FLAG_IO_CLEANUP,
 				&io_req->req_flags))
 		goto io_compl;
 
-	/*
-	 * For ABTS issued due to SCSI eh_abort_handler, timeout
-	 * values are maintained by scsi-ml itself. Cancel timeout
-	 * in case ABTS issued as part of task management function
-	 * or due to FW error.
-	 */
+	 
 	if (test_bit(BNX2FC_FLAG_ISSUE_ABTS, &io_req->req_flags))
 		if (cancel_delayed_work(&io_req->timeout_work))
 			kref_put(&io_req->refcount,
-				 bnx2fc_cmd_release); /* drop timer hold */
+				 bnx2fc_cmd_release);  
 
 	r_ctl = (u8)task->rxwr_only.union_ctx.comp_info.abts_rsp.r_ctl;
 
 	switch (r_ctl) {
 	case FC_RCTL_BA_ACC:
-		/*
-		 * Dont release this cmd yet. It will be relesed
-		 * after we get RRQ response
-		 */
+		 
 		BNX2FC_IO_DBG(io_req, "ABTS response - ACC Send RRQ\n");
 		issue_rrq = 1;
 		break;
@@ -1428,19 +1345,12 @@ io_compl:
 				       &io_req->req_flags))
 			complete(&io_req->abts_done);
 	} else {
-		/*
-		 * We end up here when ABTS is issued as
-		 * in asynchronous context, i.e., as part
-		 * of task management completion, or
-		 * when FW error is received or when the
-		 * ABTS is issued when the IO is timed
-		 * out.
-		 */
+		 
 
 		if (io_req->on_active_queue) {
 			list_del_init(&io_req->link);
 			io_req->on_active_queue = 0;
-			/* Move IO req to retire queue */
+			 
 			list_add_tail(&io_req->link, &tgt->io_retire_queue);
 		}
 		bnx2fc_scsi_done(io_req, DID_ERROR);
@@ -1457,26 +1367,23 @@ static void bnx2fc_lun_reset_cmpl(struct bnx2fc_cmd *io_req)
 	u64 lun;
 	int rc = 0;
 
-	/* called with tgt_lock held */
+	 
 	BNX2FC_IO_DBG(io_req, "Entered bnx2fc_lun_reset_cmpl\n");
-	/*
-	 * Walk thru the active_ios queue and ABORT the IO
-	 * that matches with the LUN that was reset
-	 */
+	 
 	list_for_each_entry_safe(cmd, tmp, &tgt->active_cmd_queue, link) {
 		BNX2FC_TGT_DBG(tgt, "LUN RST cmpl: scan for pending IOs\n");
 		lun = cmd->sc_cmd->device->lun;
 		if (lun == tm_lun) {
-			/* Initiate ABTS on this cmd */
+			 
 			if (!test_and_set_bit(BNX2FC_FLAG_ISSUE_ABTS,
 					      &cmd->req_flags)) {
-				/* cancel the IO timeout */
+				 
 				if (cancel_delayed_work(&io_req->timeout_work))
 					kref_put(&io_req->refcount,
 						 bnx2fc_cmd_release);
-							/* timer hold */
+							 
 				rc = bnx2fc_initiate_abts(cmd);
-				/* abts shouldn't fail in this context */
+				 
 				WARN_ON(rc != SUCCESS);
 			} else
 				printk(KERN_ERR PFX "lun_rst: abts already in"
@@ -1492,23 +1399,20 @@ static void bnx2fc_tgt_reset_cmpl(struct bnx2fc_cmd *io_req)
 	struct bnx2fc_cmd *cmd, *tmp;
 	int rc = 0;
 
-	/* called with tgt_lock held */
+	 
 	BNX2FC_IO_DBG(io_req, "Entered bnx2fc_tgt_reset_cmpl\n");
-	/*
-	 * Walk thru the active_ios queue and ABORT the IO
-	 * that matches with the LUN that was reset
-	 */
+	 
 	list_for_each_entry_safe(cmd, tmp, &tgt->active_cmd_queue, link) {
 		BNX2FC_TGT_DBG(tgt, "TGT RST cmpl: scan for pending IOs\n");
-		/* Initiate ABTS */
+		 
 		if (!test_and_set_bit(BNX2FC_FLAG_ISSUE_ABTS,
 							&cmd->req_flags)) {
-			/* cancel the IO timeout */
+			 
 			if (cancel_delayed_work(&io_req->timeout_work))
 				kref_put(&io_req->refcount,
-					 bnx2fc_cmd_release); /* timer hold */
+					 bnx2fc_cmd_release);  
 			rc = bnx2fc_initiate_abts(cmd);
-			/* abts shouldn't fail in this context */
+			 
 			WARN_ON(rc != SUCCESS);
 
 		} else
@@ -1528,16 +1432,13 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 	u64 *temp_hdr;
 	void *rsp_buf;
 
-	/* Called with tgt_lock held */
+	 
 	BNX2FC_IO_DBG(io_req, "Entered process_tm_compl\n");
 
 	if (!(test_bit(BNX2FC_FLAG_TM_TIMEOUT, &io_req->req_flags)))
 		set_bit(BNX2FC_FLAG_TM_COMPL, &io_req->req_flags);
 	else {
-		/* TM has already timed out and we got
-		 * delayed completion. Ignore completion
-		 * processing.
-		 */
+		 
 		return;
 	}
 
@@ -1560,7 +1461,7 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 				     (struct fcoe_fcp_rsp_payload *)
 				     rsp_buf, num_rq, rq_data);
 		if (io_req->fcp_rsp_code == 0) {
-			/* TM successful */
+			 
 			if (tm_req->tm_flags & FCP_TMF_LUN_RESET)
 				bnx2fc_lun_reset_cmpl(io_req);
 			else if (tm_req->tm_flags & FCP_TMF_TGT_RESET)
@@ -1577,10 +1478,10 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 	switch (io_req->fcp_status) {
 	case FC_GOOD:
 		if (io_req->cdb_status == 0) {
-			/* Good IO completion */
+			 
 			sc_cmd->result = DID_OK << 16;
 		} else {
-			/* Transport status is good, SCSI status not good */
+			 
 			sc_cmd->result = (DID_OK << 16) | io_req->cdb_status;
 		}
 		if (io_req->fcp_resid)
@@ -1596,7 +1497,7 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 	sc_cmd = io_req->sc_cmd;
 	io_req->sc_cmd = NULL;
 
-	/* check if the io_req exists in tgt's tmf_q */
+	 
 	if (io_req->on_tmf_queue) {
 
 		list_del_init(&io_req->link);
@@ -1658,10 +1559,7 @@ static int bnx2fc_map_sg(struct bnx2fc_cmd *io_req)
 	int i;
 
 	WARN_ON(scsi_sg_count(sc) > BNX2FC_MAX_BDS_PER_CMD);
-	/*
-	 * Use dma_map_sg directly to ensure we're using the correct
-	 * dev struct off of pcidev.
-	 */
+	 
 	sg_count = dma_map_sg(&hba->pcidev->dev, scsi_sglist(sc),
 			      scsi_sg_count(sc), sc->sc_data_direction);
 	scsi_for_each_sg(sc, sg, sg_count, i) {
@@ -1705,10 +1603,7 @@ static int bnx2fc_build_bd_list_from_sg(struct bnx2fc_cmd *io_req)
 	}
 	io_req->bd_tbl->bd_valid = bd_count;
 
-	/*
-	 * Return the command to ML if BD count exceeds the max number
-	 * that can be handled by FW.
-	 */
+	 
 	if (bd_count > BNX2FC_FW_MAX_BDS_PER_CMD) {
 		pr_err("bd_count = %d exceeded FW supported max BD(255), task_id = 0x%x\n",
 		       bd_count, io_req->xid);
@@ -1724,10 +1619,7 @@ static void bnx2fc_unmap_sg_list(struct bnx2fc_cmd *io_req)
 	struct bnx2fc_interface *interface = io_req->port->priv;
 	struct bnx2fc_hba *hba = interface->hba;
 
-	/*
-	 * Use dma_unmap_sg directly to ensure we're using the correct
-	 * dev struct off of pcidev.
-	 */
+	 
 	if (io_req->bd_tbl->bd_valid && sc && scsi_sg_count(sc)) {
 		dma_unmap_sg(&hba->pcidev->dev, scsi_sglist(sc),
 		    scsi_sg_count(sc), sc->sc_data_direction);
@@ -1773,14 +1665,10 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 	io_req->scsi_comp_flags = rsp_flags;
 	io_req->cdb_status = fcp_rsp->scsi_status_code;
 
-	/* Fetch fcp_rsp_info and fcp_sns_info if available */
+	 
 	if (num_rq) {
 
-		/*
-		 * We do not anticipate num_rq >1, as the linux defined
-		 * SCSI_SENSE_BUFFERSIZE is 96 bytes + 8 bytes of FCP_RSP_INFO
-		 * 256 bytes of single rq buffer is good enough to hold this.
-		 */
+		 
 
 		if (rsp_flags &
 		    FCOE_FCP_RSP_FLAGS_FCP_RSP_LEN_VALID) {
@@ -1798,22 +1686,22 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 		io_req->fcp_sns_len = fcp_sns_len;
 
 		if (rq_buff_len > num_rq * BNX2FC_RQ_BUF_SZ) {
-			/* Invalid sense sense length. */
+			 
 			printk(KERN_ERR PFX "invalid sns length %d\n",
 				rq_buff_len);
-			/* reset rq_buff_len */
+			 
 			rq_buff_len =  num_rq * BNX2FC_RQ_BUF_SZ;
 		}
 
-		/* fetch fcp_rsp_code */
+		 
 		if ((fcp_rsp_len == 4) || (fcp_rsp_len == 8)) {
-			/* Only for task management function */
+			 
 			io_req->fcp_rsp_code = rq_data[3];
 			BNX2FC_IO_DBG(io_req, "fcp_rsp_code = %d\n",
 				io_req->fcp_rsp_code);
 		}
 
-		/* fetch sense data */
+		 
 		rq_data += fcp_rsp_len;
 
 		if (fcp_sns_len > SCSI_SENSE_BUFFERSIZE) {
@@ -1828,14 +1716,7 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 	}
 }
 
-/**
- * bnx2fc_queuecommand - Queuecommand function of the scsi template
- *
- * @host:	The Scsi_Host the command was issued to
- * @sc_cmd:	struct scsi_cmnd to be executed
- *
- * This is the IO strategy routine, called by SCSI-ML
- **/
+ 
 int bnx2fc_queuecommand(struct Scsi_Host *host,
 			struct scsi_cmnd *sc_cmd)
 {
@@ -1859,14 +1740,11 @@ int bnx2fc_queuecommand(struct Scsi_Host *host,
 		goto exit_qcmd;
 	}
 
-	/* rport and tgt are allocated together, so tgt should be non-NULL */
+	 
 	tgt = (struct bnx2fc_rport *)&rp[1];
 
 	if (!test_bit(BNX2FC_FLAG_SESSION_READY, &tgt->flags)) {
-		/*
-		 * Session is not offloaded yet. Let SCSI-ml retry
-		 * the command.
-		 */
+		 
 		rc = SCSI_MLQUEUE_TARGET_BUSY;
 		goto exit_qcmd;
 	}
@@ -1874,7 +1752,7 @@ int bnx2fc_queuecommand(struct Scsi_Host *host,
 		if (time_after(jiffies, tgt->retry_delay_timestamp)) {
 			tgt->retry_delay_timestamp = 0;
 		} else {
-			/* If retry_delay timer is active, flow off the ML */
+			 
 			rc = SCSI_MLQUEUE_TARGET_BUSY;
 			goto exit_qcmd;
 		}
@@ -1910,10 +1788,10 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 	struct scsi_cmnd *sc_cmd;
 	u16 scope = 0, qualifier = 0;
 
-	/* scsi_cmd_cmpl is called with tgt lock held */
+	 
 
 	if (test_and_set_bit(BNX2FC_FLAG_IO_COMPL, &io_req->req_flags)) {
-		/* we will not receive ABTS response for this IO */
+		 
 		BNX2FC_IO_DBG(io_req, "Timer context finished processing "
 			   "this scsi cmd\n");
 		if (test_and_clear_bit(BNX2FC_FLAG_IO_CLEANUP,
@@ -1925,10 +1803,10 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 		return;
 	}
 
-	/* Cancel the timeout_work, as we received IO completion */
+	 
 	if (cancel_delayed_work(&io_req->timeout_work))
 		kref_put(&io_req->refcount,
-			 bnx2fc_cmd_release); /* drop timer hold */
+			 bnx2fc_cmd_release);  
 
 	sc_cmd = io_req->sc_cmd;
 	if (sc_cmd == NULL) {
@@ -1936,11 +1814,11 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 		return;
 	}
 
-	/* Fetch fcp_rsp from task context and perform cmd completion */
+	 
 	fcp_rsp = (struct fcoe_fcp_rsp_payload *)
 		   &(task->rxwr_only.union_ctx.comp_info.fcp_rsp.payload);
 
-	/* parse fcp_rsp and obtain sense data from RQ if available */
+	 
 	bnx2fc_parse_fcp_rsp(io_req, fcp_rsp, num_rq, rq_data);
 
 	if (!bnx2fc_priv(sc_cmd)->io_req) {
@@ -1951,13 +1829,10 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 	if (io_req->on_active_queue) {
 		list_del_init(&io_req->link);
 		io_req->on_active_queue = 0;
-		/* Move IO req to retire queue */
+		 
 		list_add_tail(&io_req->link, &tgt->io_retire_queue);
 	} else {
-		/* This should not happen, but could have been pulled
-		 * by bnx2fc_flush_active_ios(), or during a race
-		 * between command abort and (late) completion.
-		 */
+		 
 		BNX2FC_IO_DBG(io_req, "xid not on active_cmd_queue\n");
 		if (io_req->wait_for_abts_comp)
 			if (test_and_clear_bit(BNX2FC_FLAG_EH_ABORT,
@@ -1971,10 +1846,10 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 	switch (io_req->fcp_status) {
 	case FC_GOOD:
 		if (io_req->cdb_status == 0) {
-			/* Good IO completion */
+			 
 			sc_cmd->result = DID_OK << 16;
 		} else {
-			/* Transport status is good, SCSI status not good */
+			 
 			BNX2FC_IO_DBG(io_req, "scsi_cmpl: cdb_status = %d"
 				 " fcp_resid = 0x%x\n",
 				io_req->cdb_status, io_req->fcp_resid);
@@ -1982,26 +1857,18 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 
 			if (io_req->cdb_status == SAM_STAT_TASK_SET_FULL ||
 			    io_req->cdb_status == SAM_STAT_BUSY) {
-				/* Newer array firmware with BUSY or
-				 * TASK_SET_FULL may return a status that needs
-				 * the scope bits masked.
-				 * Or a huge delay timestamp up to 27 minutes
-				 * can result.
-				 */
+				 
 				if (fcp_rsp->retry_delay_timer) {
-					/* Upper 2 bits */
+					 
 					scope = fcp_rsp->retry_delay_timer
 						& 0xC000;
-					/* Lower 14 bits */
+					 
 					qualifier = fcp_rsp->retry_delay_timer
 						& 0x3FFF;
 				}
 				if (scope > 0 && qualifier > 0 &&
 					qualifier <= 0x3FEF) {
-					/* Set the jiffies +
-					 * retry_delay_timer * 100ms
-					 * for the rport/tgt
-					 */
+					 
 					tgt->retry_delay_timestamp = jiffies +
 						(qualifier * HZ / 10);
 				}
@@ -2033,9 +1900,9 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 	int task_idx, index;
 	u16 xid;
 
-	/* bnx2fc_post_io_req() is called with the tgt_lock held */
+	 
 
-	/* Initialize rest of io_req fields */
+	 
 	io_req->cmd_type = BNX2FC_SCSI_CMD;
 	io_req->port = port;
 	io_req->tgt = tgt;
@@ -2057,7 +1924,7 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 
 	xid = io_req->xid;
 
-	/* Build buffer descriptor list for firmware from sg list */
+	 
 	if (bnx2fc_build_bd_list_from_sg(io_req)) {
 		printk(KERN_ERR PFX "BD list creation failed\n");
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
@@ -2067,7 +1934,7 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 	task_idx = xid / BNX2FC_TASKS_PER_PAGE;
 	index = xid % BNX2FC_TASKS_PER_PAGE;
 
-	/* Initialize task context for this IO request */
+	 
 	task_page = (struct fcoe_task_ctx_entry *) hba->task_ctx[task_idx];
 	task = &(task_page[index]);
 	bnx2fc_init_task(io_req, task);
@@ -2084,19 +1951,19 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 		return -EAGAIN;
 	}
 
-	/* Time IO req */
+	 
 	if (tgt->io_timeout)
 		bnx2fc_cmd_timer_set(io_req, BNX2FC_IO_TIMEOUT);
-	/* Obtain free SQ entry */
+	 
 	bnx2fc_add_2_sq(tgt, xid);
 
-	/* Enqueue the io_req to active_cmd_queue */
+	 
 
 	io_req->on_active_queue = 1;
-	/* move io_req from pending_queue to active_queue */
+	 
 	list_add_tail(&io_req->link, &tgt->active_cmd_queue);
 
-	/* Ring doorbell */
+	 
 	bnx2fc_ring_doorbell(tgt);
 	return 0;
 }

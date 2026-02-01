@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 
@@ -8,9 +8,7 @@
 #include "serialio.h"
 
 #include <linux/serial_core.h>
-/* WARNING:  Do not change this to <linux/serial.h> without testing that
- * SERIAL_PORT_DFNS does get defined to the appropriate value.
- */
+ 
 #include <asm/serial.h>
 
 #ifndef SERIAL_PORT_DFNS
@@ -59,20 +57,20 @@ const struct old_serial_port *spk_serial_init(int index)
 	}
 	ser = rs_table + index;
 
-	/*	Divisor, byte size and parity */
+	 
 	quot = ser->baud_base / baud;
 	cval = cflag & (CSIZE | CSTOPB);
 #if defined(__powerpc__) || defined(__alpha__)
 	cval >>= 8;
-#else /* !__powerpc__ && !__alpha__ */
+#else  
 	cval >>= 4;
-#endif /* !__powerpc__ && !__alpha__ */
+#endif  
 	if (cflag & PARENB)
 		cval |= UART_LCR_PARITY;
 	if (!(cflag & PARODD))
 		cval |= UART_LCR_EPAR;
 	if (synth_request_region(ser->port, 8)) {
-		/* try to take it back. */
+		 
 		pr_info("Ports not available, trying to steal them\n");
 		__release_region(&ioport_resource, ser->port, 8);
 		err = synth_request_region(ser->port, 8);
@@ -83,19 +81,17 @@ const struct old_serial_port *spk_serial_init(int index)
 		}
 	}
 
-	/*	Disable UART interrupts, set DTR and RTS high
-	 *	and set speed.
-	 */
-	outb(cval | UART_LCR_DLAB, ser->port + UART_LCR);	/* set DLAB */
-	outb(quot & 0xff, ser->port + UART_DLL);	/* LS of divisor */
-	outb(quot >> 8, ser->port + UART_DLM);		/* MS of divisor */
-	outb(cval, ser->port + UART_LCR);		/* reset DLAB */
+	 
+	outb(cval | UART_LCR_DLAB, ser->port + UART_LCR);	 
+	outb(quot & 0xff, ser->port + UART_DLL);	 
+	outb(quot >> 8, ser->port + UART_DLM);		 
+	outb(cval, ser->port + UART_LCR);		 
 
-	/* Turn off Interrupts */
+	 
 	outb(0, ser->port + UART_IER);
 	outb(UART_MCR_DTR | UART_MCR_RTS, ser->port + UART_MCR);
 
-	/* If we read 0xff from the LSR, there is no UART here. */
+	 
 	if (inb(ser->port + UART_LSR) == 0xff) {
 		synth_release_region(ser->port, 8);
 		serstate = NULL;
@@ -137,17 +133,17 @@ static void start_serial_interrupt(int irq)
 
 	if (rv)
 		pr_err("Unable to request Speakup serial I R Q\n");
-	/* Set MCR */
+	 
 	outb(UART_MCR_DTR | UART_MCR_RTS | UART_MCR_OUT2,
 	     speakup_info.port_tts + UART_MCR);
-	/* Turn on Interrupts */
+	 
 	outb(UART_IER_MSI | UART_IER_RLSI | UART_IER_RDI,
 	     speakup_info.port_tts + UART_IER);
 	inb(speakup_info.port_tts + UART_LSR);
 	inb(speakup_info.port_tts + UART_RX);
 	inb(speakup_info.port_tts + UART_IIR);
 	inb(speakup_info.port_tts + UART_MSR);
-	outb(1, speakup_info.port_tts + UART_FCR);	/* Turn FIFO On */
+	outb(1, speakup_info.port_tts + UART_FCR);	 
 }
 
 static void spk_serial_send_xchar(struct spk_synth *synth, char ch)
@@ -206,9 +202,9 @@ void spk_stop_serial_interrupt(void)
 	if (!synth->read_buff_add)
 		return;
 
-	/* Turn off interrupts */
+	 
 	outb(0, speakup_info.port_tts + UART_IER);
-	/* Free IRQ */
+	 
 	free_irq(serstate->irq, (void *)synth_readbuf_handler);
 }
 EXPORT_SYMBOL_GPL(spk_stop_serial_interrupt);
@@ -221,10 +217,7 @@ static int spk_serial_wait_for_xmitr(struct spk_synth *in_synth)
 		pr_warn("%s: too many timeouts, deactivating speakup\n",
 			in_synth->long_name);
 		in_synth->alive = 0;
-		/* No synth any more, so nobody will restart TTYs, and we thus
-		 * need to do it ourselves.  Now that there is no synth we can
-		 * let application flood anyway
-		 */
+		 
 		speakup_start_ttys();
 		timeouts = 0;
 		return 0;
@@ -240,7 +233,7 @@ static int spk_serial_wait_for_xmitr(struct spk_synth *in_synth)
 	}
 	tmout = SPK_CTS_TIMEOUT;
 	while (!((inb_p(speakup_info.port_tts + UART_MSR)) & UART_MSR_CTS)) {
-		/* CTS */
+		 
 		if (--tmout == 0) {
 			timeouts++;
 			return 0;
@@ -277,7 +270,7 @@ static unsigned char spk_serial_in_nowait(struct spk_synth *in_synth)
 
 static void spk_serial_flush_buffer(struct spk_synth *in_synth)
 {
-	/* TODO: flush the UART 16550 buffer */
+	 
 }
 
 static int spk_serial_out(struct spk_synth *in_synth, const char ch)

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+ 
+ 
 
 #ifndef _OBJTOOL_ELF_H
 #define _OBJTOOL_ELF_H
@@ -19,9 +17,7 @@
 # define elf_getshdrstrndx elf_getshstrndx
 #endif
 
-/*
- * Fallback for systems without this "read, mmaping if possible" cmd.
- */
+ 
 #ifndef ELF_C_READ_MMAP
 #define ELF_C_READ_MMAP ELF_C_READ
 #endif
@@ -143,11 +139,7 @@ struct reloc *find_reloc_by_dest_range(const struct elf *elf, struct section *se
 				     unsigned long offset, unsigned int len);
 struct symbol *find_func_containing(struct section *sec, unsigned long offset);
 
-/*
- * Try to see if it's a whole archive (vmlinux.o or module).
- *
- * Note this will miss the case where a module only has one source file.
- */
+ 
 static inline bool has_multiple_files(struct elf *elf)
 {
 	return elf->num_files > 1;
@@ -209,12 +201,7 @@ static inline void *reloc_rel(struct reloc *reloc)
 
 static inline bool is_32bit_reloc(struct reloc *reloc)
 {
-	/*
-	 * Elf32_Rel:   8 bytes
-	 * Elf32_Rela: 12 bytes
-	 * Elf64_Rel:  16 bytes
-	 * Elf64_Rela: 24 bytes
-	 */
+	 
 	return reloc->sec->sh.sh_entsize < 16;
 }
 
@@ -347,4 +334,4 @@ static inline u32 reloc_hash(struct reloc *reloc)
 	return sec_offset_hash(reloc->sec, reloc_offset(reloc));
 }
 
-#endif /* _OBJTOOL_ELF_H */
+#endif  

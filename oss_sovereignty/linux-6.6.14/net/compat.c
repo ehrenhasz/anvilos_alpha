@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 32bit Socket syscall emulation. Based on arch/sparc64/kernel/sys_sparc32.c.
- *
- * Copyright (C) 2000		VA Linux Co
- * Copyright (C) 2000		Don Dugger <n0ano@valinux.com>
- * Copyright (C) 1999 		Arun Sharma <arun.sharma@intel.com>
- * Copyright (C) 1997,1998 	Jakub Jelinek (jj@sunsite.mff.cuni.cz)
- * Copyright (C) 1997 		David S. Miller (davem@caip.rutgers.edu)
- * Copyright (C) 2000		Hewlett-Packard Co.
- * Copyright (C) 2000		David Mosberger-Tang <davidm@hpl.hp.com>
- * Copyright (C) 2000,2001	Andi Kleen, SuSE Labs
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/gfp.h>
@@ -101,7 +90,7 @@ int get_compat_msghdr(struct msghdr *kmsg,
 	return err < 0 ? err : 0;
 }
 
-/* Bleech... */
+ 
 #define CMSG_COMPAT_ALIGN(len)	ALIGN((len), sizeof(s32))
 
 #define CMSG_COMPAT_DATA(cmsg)				\
@@ -132,10 +121,7 @@ static inline struct compat_cmsghdr __user *cmsg_compat_nxthdr(struct msghdr *ms
 	return (struct compat_cmsghdr __user *)ptr;
 }
 
-/* There is a lot of hair here because the alignment rules (and
- * thus placement) of cmsg headers and length are different for
- * 32-bit apps.  -DaveM
- */
+ 
 int cmsghdr_from_user_compat_to_kern(struct msghdr *kmsg, struct sock *sk,
 			       unsigned char *stackbuf, int stackbuf_size)
 {
@@ -155,7 +141,7 @@ int cmsghdr_from_user_compat_to_kern(struct msghdr *kmsg, struct sock *sk,
 		if (get_user(ucmlen, &ucmsg->cmsg_len))
 			return -EFAULT;
 
-		/* Catch bogons. */
+		 
 		if (!CMSG_COMPAT_OK(ucmlen, ucmsg, kmsg))
 			return -EINVAL;
 
@@ -167,17 +153,13 @@ int cmsghdr_from_user_compat_to_kern(struct msghdr *kmsg, struct sock *sk,
 	if (kcmlen == 0)
 		return -EINVAL;
 
-	/* The kcmlen holds the 64-bit version of the control length.
-	 * It may not be modified as we do not stick it into the kmsg
-	 * until we have successfully copied over all of the data
-	 * from the user.
-	 */
+	 
 	if (kcmlen > stackbuf_size)
 		kcmsg_base = kcmsg = sock_kmalloc(sk, kcmlen, GFP_KERNEL);
 	if (kcmsg == NULL)
 		return -ENOMEM;
 
-	/* Now copy them over neatly. */
+	 
 	memset(kcmsg, 0, kcmlen);
 	ucmsg = CMSG_COMPAT_FIRSTHDR(kmsg);
 	while (ucmsg != NULL) {
@@ -198,19 +180,16 @@ int cmsghdr_from_user_compat_to_kern(struct msghdr *kmsg, struct sock *sk,
 				   (cmsg.cmsg_len - sizeof(*ucmsg))))
 			goto Efault;
 
-		/* Advance. */
+		 
 		kcmsg = (struct cmsghdr *)((char *)kcmsg + tmp);
 		ucmsg = cmsg_compat_nxthdr(kmsg, ucmsg, cmsg.cmsg_len);
 	}
 
-	/*
-	 * check the length of messages copied in is the same as the
-	 * what we get from the first loop
-	 */
+	 
 	if ((char *)kcmsg - (char *)kcmsg_base != kcmlen)
 		goto Einval;
 
-	/* Ok, looks like we made it.  Hook it up and return success. */
+	 
 	kmsg->msg_control_is_user = false;
 	kmsg->msg_control = kcmsg_base;
 	kmsg->msg_controllen = kcmlen;
@@ -234,7 +213,7 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
 
 	if (cm == NULL || kmsg->msg_controllen < sizeof(*cm)) {
 		kmsg->msg_flags |= MSG_CTRUNC;
-		return 0; /* XXX: return error? check spec. */
+		return 0;  
 	}
 
 	if (!COMPAT_USE_64BIT_TIME) {
@@ -322,14 +301,11 @@ void scm_detach_fds_compat(struct msghdr *msg, struct scm_cookie *scm)
 	if (i < scm->fp->count || (scm->fp->count && fdmax <= 0))
 		msg->msg_flags |= MSG_CTRUNC;
 
-	/*
-	 * All of the files that fit in the message have had their usage counts
-	 * incremented, so we just free the list.
-	 */
+	 
 	__scm_destroy(scm);
 }
 
-/* Argument list sizes for compat_sys_socketcall */
+ 
 #define AL(x) ((x) * sizeof(u32))
 static unsigned char nas[21] = {
 	AL(0), AL(3), AL(3), AL(3), AL(2), AL(3),

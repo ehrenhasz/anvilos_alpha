@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-vbi-cap.h - vbi capture support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _VIVID_VBI_CAP_H_
 #define _VIVID_VBI_CAP_H_

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CBC: Cipher Block Chaining mode
- *
- * Copyright (c) 2006-2016 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/cipher.h>
@@ -134,7 +130,7 @@ static int crypto_cbc_decrypt_inplace(struct skcipher_walk *walk,
 	tfm = crypto_cipher_tfm(cipher);
 	fn = crypto_cipher_alg(cipher)->cia_decrypt;
 
-	/* Start of the last block. */
+	 
 	src += nbytes - (nbytes & (bsize - 1)) - bsize;
 	memcpy(last_iv, src, bsize);
 

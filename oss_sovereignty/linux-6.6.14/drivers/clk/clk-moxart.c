@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MOXA ART SoCs clock driver.
- *
- * Copyright (C) 2013 Jonas Jensen
- *
- * Jonas Jensen <jonas.jensen@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>

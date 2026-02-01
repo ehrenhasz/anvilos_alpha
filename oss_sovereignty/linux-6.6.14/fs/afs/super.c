@@ -1,18 +1,4 @@
-/* AFS superblock handling
- *
- * Copyright (c) 2002, 2007, 2018 Red Hat, Inc. All rights reserved.
- *
- * This software may be freely redistributed under the terms of the
- * GNU General Public License.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * Authors: David Howells <dhowells@redhat.com>
- *          David Woodhouse <dwmw2@infradead.org>
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -90,16 +76,14 @@ static const struct fs_parameter_spec afs_fs_parameters[] = {
 	{}
 };
 
-/*
- * initialise the filesystem
- */
+ 
 int __init afs_fs_init(void)
 {
 	int ret;
 
 	_enter("");
 
-	/* create ourselves an inode cache */
+	 
 	atomic_set(&afs_count_active_inodes, 0);
 
 	ret = -ENOMEM;
@@ -113,7 +97,7 @@ int __init afs_fs_init(void)
 		return ret;
 	}
 
-	/* now export our filesystem to lesser mortals */
+	 
 	ret = register_filesystem(&afs_fs_type);
 	if (ret < 0) {
 		kmem_cache_destroy(afs_inode_cachep);
@@ -125,9 +109,7 @@ int __init afs_fs_init(void)
 	return 0;
 }
 
-/*
- * clean up the filesystem
- */
+ 
 void afs_fs_exit(void)
 {
 	_enter("");
@@ -141,18 +123,13 @@ void afs_fs_exit(void)
 		BUG();
 	}
 
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(afs_inode_cachep);
 	_leave("");
 }
 
-/*
- * Display the mount device name in /proc/mounts.
- */
+ 
 static int afs_show_devname(struct seq_file *m, struct dentry *root)
 {
 	struct afs_super_info *as = AFS_FS_S(root->d_sb);
@@ -184,9 +161,7 @@ static int afs_show_devname(struct seq_file *m, struct dentry *root)
 	return 0;
 }
 
-/*
- * Display the mount options in /proc/mounts.
- */
+ 
 static int afs_show_options(struct seq_file *m, struct dentry *root)
 {
 	struct afs_super_info *as = AFS_FS_S(root->d_sb);
@@ -209,19 +184,7 @@ static int afs_show_options(struct seq_file *m, struct dentry *root)
 	return 0;
 }
 
-/*
- * Parse the source name to get cell name, volume name, volume type and R/W
- * selector.
- *
- * This can be one of the following:
- *	"%[cell:]volume[.]"		R/W volume
- *	"#[cell:]volume[.]"		R/O or R/W volume (R/O parent),
- *					 or R/W (R/W parent) volume
- *	"%[cell:]volume.readonly"	R/O volume
- *	"#[cell:]volume.readonly"	R/O volume
- *	"%[cell:]volume.backup"		Backup volume
- *	"#[cell:]volume.backup"		Backup volume
- */
+ 
 static int afs_parse_source(struct fs_context *fc, struct fs_parameter *param)
 {
 	struct afs_fs_context *ctx = fc->fs_private;
@@ -240,7 +203,7 @@ static int afs_parse_source(struct fs_context *fc, struct fs_parameter *param)
 	}
 
 	if ((name[0] != '%' && name[0] != '#') || !name[1]) {
-		/* To use dynroot, we don't want to have to provide a source */
+		 
 		if (strcmp(name, "none") == 0) {
 			ctx->no_cell = true;
 			return 0;
@@ -249,14 +212,14 @@ static int afs_parse_source(struct fs_context *fc, struct fs_parameter *param)
 		return -EINVAL;
 	}
 
-	/* determine the type of volume we're looking for */
+	 
 	if (name[0] == '%') {
 		ctx->type = AFSVL_RWVOL;
 		ctx->force = true;
 	}
 	name++;
 
-	/* split the cell name out if there is one */
+	 
 	ctx->volname = strchr(name, ':');
 	if (ctx->volname) {
 		cellname = name;
@@ -268,7 +231,7 @@ static int afs_parse_source(struct fs_context *fc, struct fs_parameter *param)
 		cellnamesz = 0;
 	}
 
-	/* the volume type is further affected by a possible suffix */
+	 
 	suffix = strrchr(ctx->volname, '.');
 	if (suffix) {
 		if (strcmp(suffix, ".readonly") == 0) {
@@ -289,7 +252,7 @@ static int afs_parse_source(struct fs_context *fc, struct fs_parameter *param)
 	_debug("cell %*.*s [%p]",
 	       cellnamesz, cellnamesz, cellname ?: "", ctx->cell);
 
-	/* lookup the cell record */
+	 
 	if (cellname) {
 		cell = afs_lookup_cell(ctx->net, cellname, cellnamesz,
 				       NULL, false);
@@ -313,9 +276,7 @@ static int afs_parse_source(struct fs_context *fc, struct fs_parameter *param)
 	return 0;
 }
 
-/*
- * Parse a single mount parameter.
- */
+ 
 static int afs_parse_param(struct fs_context *fc, struct fs_parameter *param)
 {
 	struct fs_parse_result result;
@@ -350,9 +311,7 @@ static int afs_parse_param(struct fs_context *fc, struct fs_parameter *param)
 	return 0;
 }
 
-/*
- * Validate the options, get the cell key and look up the volume.
- */
+ 
 static int afs_validate_fc(struct fs_context *fc)
 {
 	struct afs_fs_context *ctx = fc->fs_private;
@@ -373,7 +332,7 @@ static int afs_validate_fc(struct fs_context *fc)
 		}
 
 	reget_key:
-		/* We try to do the mount securely. */
+		 
 		key = afs_request_key(ctx->cell);
 		if (IS_ERR(key))
 			return PTR_ERR(key);
@@ -414,9 +373,7 @@ static int afs_validate_fc(struct fs_context *fc)
 	return 0;
 }
 
-/*
- * check a superblock to see if it's the one we're looking for
- */
+ 
 static int afs_test_super(struct super_block *sb, struct fs_context *fc)
 {
 	struct afs_fs_context *ctx = fc->fs_private;
@@ -442,9 +399,7 @@ static int afs_set_super(struct super_block *sb, struct fs_context *fc)
 	return set_anon_super(sb, NULL);
 }
 
-/*
- * fill in the superblock
- */
+ 
 static int afs_fill_super(struct super_block *sb, struct afs_fs_context *ctx)
 {
 	struct afs_super_info *as = AFS_FS_S(sb);
@@ -453,7 +408,7 @@ static int afs_fill_super(struct super_block *sb, struct afs_fs_context *ctx)
 
 	_enter("");
 
-	/* fill in the superblock */
+	 
 	sb->s_blocksize		= PAGE_SIZE;
 	sb->s_blocksize_bits	= PAGE_SHIFT;
 	sb->s_maxbytes		= MAX_LFS_FILESIZE;
@@ -465,7 +420,7 @@ static int afs_fill_super(struct super_block *sb, struct afs_fs_context *ctx)
 	if (ret)
 		return ret;
 
-	/* allocate the root inode and dentry */
+	 
 	if (as->dyn_root) {
 		inode = afs_iget_pseudo_dir(sb, true);
 	} else {
@@ -541,9 +496,7 @@ static void afs_kill_super(struct super_block *sb)
 	if (as->dyn_root)
 		afs_dynroot_depopulate(sb);
 
-	/* Clear the callback interests (which will do ilookup5) before
-	 * deactivating the superblock.
-	 */
+	 
 	if (as->volume)
 		rcu_assign_pointer(as->volume->sb, NULL);
 	kill_anon_super(sb);
@@ -552,9 +505,7 @@ static void afs_kill_super(struct super_block *sb)
 	afs_destroy_sbi(as);
 }
 
-/*
- * Get an AFS superblock and root directory.
- */
+ 
 static int afs_get_tree(struct fs_context *fc)
 {
 	struct afs_fs_context *ctx = fc->fs_private;
@@ -568,14 +519,14 @@ static int afs_get_tree(struct fs_context *fc)
 
 	_enter("");
 
-	/* allocate a superblock info record */
+	 
 	ret = -ENOMEM;
 	as = afs_alloc_sbi(fc);
 	if (!as)
 		goto error;
 	fc->s_fs_info = as;
 
-	/* allocate a deviceless superblock */
+	 
 	sb = sget_fc(fc,
 		     as->dyn_root ? afs_dynroot_test_super : afs_test_super,
 		     afs_set_super);
@@ -585,7 +536,7 @@ static int afs_get_tree(struct fs_context *fc)
 	}
 
 	if (!sb->s_root) {
-		/* initial superblock/root creation */
+		 
 		_debug("create");
 		ret = afs_fill_super(sb, ctx);
 		if (ret < 0)
@@ -625,9 +576,7 @@ static const struct fs_context_operations afs_context_ops = {
 	.get_tree	= afs_get_tree,
 };
 
-/*
- * Set up the filesystem mount context.
- */
+ 
 static int afs_init_fs_context(struct fs_context *fc)
 {
 	struct afs_fs_context *ctx;
@@ -640,7 +589,7 @@ static int afs_init_fs_context(struct fs_context *fc)
 	ctx->type = AFSVL_ROVOL;
 	ctx->net = afs_net(fc->net_ns);
 
-	/* Default to the workstation cell. */
+	 
 	cell = afs_find_cell(ctx->net, NULL, 0, afs_cell_trace_use_fc);
 	if (IS_ERR(cell))
 		cell = NULL;
@@ -651,11 +600,7 @@ static int afs_init_fs_context(struct fs_context *fc)
 	return 0;
 }
 
-/*
- * Initialise an inode cache slab element prior to any use.  Note that
- * afs_alloc_inode() *must* reset anything that could incorrectly leak from one
- * inode to another.
- */
+ 
 static void afs_i_init_once(void *_vnode)
 {
 	struct afs_vnode *vnode = _vnode;
@@ -674,9 +619,7 @@ static void afs_i_init_once(void *_vnode)
 	seqlock_init(&vnode->cb_lock);
 }
 
-/*
- * allocate an AFS inode struct from our slab cache
- */
+ 
 static struct inode *afs_alloc_inode(struct super_block *sb)
 {
 	struct afs_vnode *vnode;
@@ -687,7 +630,7 @@ static struct inode *afs_alloc_inode(struct super_block *sb)
 
 	atomic_inc(&afs_count_active_inodes);
 
-	/* Reset anything that shouldn't leak from one inode to the next. */
+	 
 	memset(&vnode->fid, 0, sizeof(vnode->fid));
 	memset(&vnode->status, 0, sizeof(vnode->status));
 	afs_vnode_set_cache(vnode, NULL);
@@ -711,9 +654,7 @@ static void afs_free_inode(struct inode *inode)
 	kmem_cache_free(afs_inode_cachep, AFS_FS_I(inode));
 }
 
-/*
- * destroy an AFS inode struct
- */
+ 
 static void afs_destroy_inode(struct inode *inode)
 {
 	struct afs_vnode *vnode = AFS_FS_I(inode);
@@ -746,9 +687,7 @@ static const struct afs_operation_ops afs_get_volume_status_operation = {
 	.success	= afs_get_volume_status_success,
 };
 
-/*
- * return information about an AFS volume
- */
+ 
 static int afs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct afs_super_info *as = AFS_FS_S(dentry->d_sb);

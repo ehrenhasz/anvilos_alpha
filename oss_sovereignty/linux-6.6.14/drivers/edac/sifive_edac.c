@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SiFive Platform EDAC Driver
- *
- * Copyright (C) 2018-2022 SiFive, Inc.
- *
- * This driver is partially based on octeon_edac-pc.c
- *
- */
+
+ 
 #include <linux/edac.h>
 #include <linux/platform_device.h>
 #include "edac_module.h"
@@ -19,11 +12,7 @@ struct sifive_edac_priv {
 	struct edac_device_ctl_info *dci;
 };
 
-/*
- * EDAC error callback
- *
- * @event: non-zero if unrecoverable.
- */
+ 
 static
 int ecc_err_event(struct notifier_block *this, unsigned long event, void *ptr)
 {

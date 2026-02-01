@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Force feedback support for hid-compliant for some of the devices from
- * Logitech, namely:
- * - WingMan Cordless RumblePad
- * - WingMan Force 3D
- *
- *  Copyright (c) 2002-2004 Johann Deneux
- *  Copyright (c) 2006 Anssi Hannula <anssi.hannula@gmail.com>
- */
 
-/*
- *
- * Should you need to contact me, the author, you can do so by
- * e-mail - mail your message to <johann.deneux@it.uu.se>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -66,7 +54,7 @@ static int hid_lgff_play(struct input_dev *dev, void *data, struct ff_effect *ef
 
 	switch (effect->type) {
 	case FF_CONSTANT:
-		x = effect->u.ramp.start_level + 0x7f;	/* 0x7f is center */
+		x = effect->u.ramp.start_level + 0x7f;	 
 		y = effect->u.ramp.end_level + 0x7f;
 		CLAMP(x);
 		CLAMP(y);
@@ -105,8 +93,8 @@ static void hid_lgff_set_autocenter(struct input_dev *dev, u16 magnitude)
 	magnitude = (magnitude >> 12) & 0xf;
 	*value++ = 0xfe;
 	*value++ = 0x0d;
-	*value++ = magnitude;   /* clockwise strength */
-	*value++ = magnitude;   /* counter-clockwise strength */
+	*value++ = magnitude;    
+	*value++ = magnitude;    
 	*value++ = 0x80;
 	*value++ = 0x00;
 	*value = 0x00;
@@ -128,7 +116,7 @@ int lgff_init(struct hid_device* hid)
 	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
 	dev = hidinput->input;
 
-	/* Check that the report looks ok */
+	 
 	if (!hid_validate_values(hid, HID_OUTPUT_REPORT, 0, 0, 7))
 		return -ENODEV;
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- *
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/ascii85.h>
 #include <linux/interconnect.h>
@@ -65,20 +60,7 @@ static int zap_shader_load_mdt(struct msm_gpu *gpu, const char *fwname,
 
 	mem_phys = r.start;
 
-	/*
-	 * Check for a firmware-name property.  This is the new scheme
-	 * to handle firmware that may be signed with device specific
-	 * keys, allowing us to have a different zap fw path for different
-	 * devices.
-	 *
-	 * If the firmware-name property is found, we bypass the
-	 * adreno_request_fw() mechanism, because we don't need to handle
-	 * the /lib/firmware/qcom/... vs /lib/firmware/... case.
-	 *
-	 * If the firmware-name property is not found, for backwards
-	 * compatibility we fall back to the fwname from the gpulist
-	 * table.
-	 */
+	 
 	of_property_read_string_index(np, "firmware-name", 0, &signed_fwname);
 	if (signed_fwname) {
 		fwname = signed_fwname;
@@ -86,19 +68,10 @@ static int zap_shader_load_mdt(struct msm_gpu *gpu, const char *fwname,
 		if (ret)
 			fw = ERR_PTR(ret);
 	} else if (fwname) {
-		/* Request the MDT file from the default location: */
+		 
 		fw = adreno_request_fw(to_adreno_gpu(gpu), fwname);
 	} else {
-		/*
-		 * For new targets, we require the firmware-name property,
-		 * if a zap-shader is required, rather than falling back
-		 * to a firmware name specified in gpulist.
-		 *
-		 * Because the firmware is signed with a (potentially)
-		 * device specific key, having the name come from gpulist
-		 * was a bad idea, and is only provided for backwards
-		 * compatibility for older targets.
-		 */
+		 
 		return -ENODEV;
 	}
 
@@ -107,7 +80,7 @@ static int zap_shader_load_mdt(struct msm_gpu *gpu, const char *fwname,
 		return PTR_ERR(fw);
 	}
 
-	/* Figure out how much memory we need */
+	 
 	mem_size = qcom_mdt_get_size(fw);
 	if (mem_size < 0) {
 		ret = mem_size;
@@ -121,22 +94,14 @@ static int zap_shader_load_mdt(struct msm_gpu *gpu, const char *fwname,
 		goto out;
 	}
 
-	/* Allocate memory for the firmware image */
+	 
 	mem_region = memremap(mem_phys, mem_size,  MEMREMAP_WC);
 	if (!mem_region) {
 		ret = -ENOMEM;
 		goto out;
 	}
 
-	/*
-	 * Load the rest of the MDT
-	 *
-	 * Note that we could be dealing with two different paths, since
-	 * with upstream linux-firmware it would be in a qcom/ subdir..
-	 * adreno_request_fw() handles this, but qcom_mdt_load() does
-	 * not.  But since we've already gotten through adreno_request_fw()
-	 * we know which of the two cases it is:
-	 */
+	 
 	if (signed_fwname || (to_adreno_gpu(gpu)->fwloc == FW_LOCATION_LEGACY)) {
 		ret = qcom_mdt_load(dev, fw, fwname, pasid,
 				mem_region, mem_phys, mem_size, NULL);
@@ -152,13 +117,10 @@ static int zap_shader_load_mdt(struct msm_gpu *gpu, const char *fwname,
 	if (ret)
 		goto out;
 
-	/* Send the image to the secure world */
+	 
 	ret = qcom_scm_pas_auth_and_reset(pasid);
 
-	/*
-	 * If the scm call returns -EOPNOTSUPP we assume that this target
-	 * doesn't need/support the zap shader so quietly fail
-	 */
+	 
 	if (ret == -EOPNOTSUPP)
 		zap_available = false;
 	else if (ret)
@@ -178,11 +140,11 @@ int adreno_zap_shader_load(struct msm_gpu *gpu, u32 pasid)
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	struct platform_device *pdev = gpu->pdev;
 
-	/* Short cut if we determine the zap shader isn't available/needed */
+	 
 	if (!zap_available)
 		return -ENODEV;
 
-	/* We need SCM to be able to load the firmware */
+	 
 	if (!qcom_scm_is_available()) {
 		DRM_DEV_ERROR(&pdev->dev, "SCM is not available\n");
 		return -EPROBE_DEFER;
@@ -216,11 +178,7 @@ adreno_iommu_create_address_space(struct msm_gpu *gpu,
 	if (IS_ERR(geometry))
 		return ERR_CAST(geometry);
 
-	/*
-	 * Use the aperture start or SZ_16M, whichever is greater. This will
-	 * ensure that we align with the allocated pagetable range while still
-	 * allowing room in the lower 32 bits for GMEM and whatnot
-	 */
+	 
 	start = max_t(u64, SZ_16M, geometry->aperture_start);
 	size = geometry->aperture_end - start + 1;
 
@@ -257,18 +215,12 @@ int adreno_fault_handler(struct msm_gpu *gpu, unsigned long iova, int flags,
 	const char *type = "UNKNOWN";
 	bool do_devcoredump = info && !READ_ONCE(gpu->crashstate);
 
-	/*
-	 * If we aren't going to be resuming later from fault_worker, then do
-	 * it now.
-	 */
+	 
 	if (!do_devcoredump) {
 		gpu->aspace->mmu->funcs->resume_translation(gpu->aspace->mmu);
 	}
 
-	/*
-	 * Print a default message if we couldn't get the data from the
-	 * adreno-smmu-priv
-	 */
+	 
 	if (!info) {
 		pr_warn_ratelimited("*** gpu fault: iova=%.16lx flags=%d (%u,%u,%u,%u)\n",
 			iova, flags,
@@ -291,7 +243,7 @@ int adreno_fault_handler(struct msm_gpu *gpu, unsigned long iova, int flags,
 			scratch[0], scratch[1], scratch[2], scratch[3]);
 
 	if (do_devcoredump) {
-		/* Turn off the hangcheck timer to keep it from bothering us */
+		 
 		del_timer(&gpu->hangcheck_timer);
 
 		gpu->fault_info.ttbr0 = info->ttbr0;
@@ -311,7 +263,7 @@ int adreno_get_param(struct msm_gpu *gpu, struct msm_file_private *ctx,
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 
-	/* No pointer params yet */
+	 
 	if (*len != 0)
 		return -EINVAL;
 
@@ -381,9 +333,7 @@ int adreno_set_param(struct msm_gpu *gpu, struct msm_file_private *ctx,
 	switch (param) {
 	case MSM_PARAM_COMM:
 	case MSM_PARAM_CMDLINE:
-		/* kstrdup_quotable_cmdline() limits to PAGE_SIZE, so
-		 * that should be a reasonable upper bound
-		 */
+		 
 		if (len > PAGE_SIZE)
 			return -EINVAL;
 		break;
@@ -438,10 +388,7 @@ adreno_request_fw(struct adreno_gpu *adreno_gpu, const char *fwname)
 	if (!newname)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Try first to load from qcom/$fwfile using a direct load (to avoid
-	 * a potential timeout waiting for usermode helper)
-	 */
+	 
 	if ((adreno_gpu->fwloc == FW_LOCATION_UNKNOWN) ||
 	    (adreno_gpu->fwloc == FW_LOCATION_NEW)) {
 
@@ -459,9 +406,7 @@ adreno_request_fw(struct adreno_gpu *adreno_gpu, const char *fwname)
 		}
 	}
 
-	/*
-	 * Then try the legacy location without qcom/ prefix
-	 */
+	 
 	if ((adreno_gpu->fwloc == FW_LOCATION_UNKNOWN) ||
 	    (adreno_gpu->fwloc == FW_LOCATION_LEGACY)) {
 
@@ -479,10 +424,7 @@ adreno_request_fw(struct adreno_gpu *adreno_gpu, const char *fwname)
 		}
 	}
 
-	/*
-	 * Finally fall back to request_firmware() for cases where the
-	 * usermode helper is needed (I think mainly android)
-	 */
+	 
 	if ((adreno_gpu->fwloc == FW_LOCATION_UNKNOWN) ||
 	    (adreno_gpu->fwloc == FW_LOCATION_HELPER)) {
 
@@ -517,11 +459,11 @@ int adreno_load_fw(struct adreno_gpu *adreno_gpu)
 		if (!adreno_gpu->info->fw[i])
 			continue;
 
-		/* Skip loading GMU firwmare with GMU Wrapper */
+		 
 		if (adreno_has_gmu_wrapper(adreno_gpu) && i == ADRENO_FW_GMU)
 			continue;
 
-		/* Skip if the firmware has already been loaded */
+		 
 		if (adreno_gpu->fw[i])
 			continue;
 
@@ -568,10 +510,7 @@ int adreno_hw_init(struct msm_gpu *gpu)
 		ring->next = ring->start;
 		ring->memptrs->rptr = 0;
 
-		/* Detect and clean up an impossible fence, ie. if GPU managed
-		 * to scribble something invalid, we don't want that to confuse
-		 * us into mistakingly believing that submits have completed.
-		 */
+		 
 		if (fence_before(ring->fctx->last_fence, ring->memptrs->fence)) {
 			ring->memptrs->fence = ring->fctx->last_fence;
 		}
@@ -580,7 +519,7 @@ int adreno_hw_init(struct msm_gpu *gpu)
 	return 0;
 }
 
-/* Use this helper to read rptr, since a430 doesn't update rptr in memory */
+ 
 static uint32_t get_rptr(struct adreno_gpu *adreno_gpu,
 		struct msm_ringbuffer *ring)
 {
@@ -599,8 +538,8 @@ void adreno_recover(struct msm_gpu *gpu)
 	struct drm_device *dev = gpu->dev;
 	int ret;
 
-	// XXX pm-runtime??  we *need* the device to be off after this
-	// so maybe continuing to call ->pm_suspend/resume() is better?
+	
+	
 
 	gpu->funcs->pm_suspend(gpu);
 	gpu->funcs->pm_resume(gpu);
@@ -608,7 +547,7 @@ void adreno_recover(struct msm_gpu *gpu)
 	ret = msm_gpu_hw_init(gpu);
 	if (ret) {
 		DRM_DEV_ERROR(dev->dev, "gpu hw init failed: %d\n", ret);
-		/* hmm, oh well? */
+		 
 	}
 }
 
@@ -616,17 +555,13 @@ void adreno_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring, u32 reg)
 {
 	uint32_t wptr;
 
-	/* Copy the shadow to the actual register */
+	 
 	ring->cur = ring->next;
 
-	/*
-	 * Mask wptr value that we calculate to fit in the HW range. This is
-	 * to account for the possibility that the last command fit exactly into
-	 * the ringbuffer and rb->next hasn't wrapped to zero yet
-	 */
+	 
 	wptr = get_wptr(ring);
 
-	/* ensure writes to ringbuffer have hit system memory: */
+	 
 	mb();
 
 	gpu_write(gpu, reg, wptr);
@@ -637,11 +572,11 @@ bool adreno_idle(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	uint32_t wptr = get_wptr(ring);
 
-	/* wait for CP to drain ringbuffer: */
+	 
 	if (!spin_until(get_rptr(adreno_gpu, ring) == wptr))
 		return true;
 
-	/* TODO maybe we need to reset GPU here to recover from hang? */
+	 
 	DRM_ERROR("%s: timeout waiting to drain ringbuffer %d rptr/wptr = %X/%X\n",
 		gpu->name, ring->id, get_rptr(adreno_gpu, ring), wptr);
 
@@ -668,10 +603,10 @@ int adreno_gpu_state_get(struct msm_gpu *gpu, struct msm_gpu_state *state)
 		state->ring[i].rptr = get_rptr(adreno_gpu, gpu->rb[i]);
 		state->ring[i].wptr = get_wptr(gpu->rb[i]);
 
-		/* Copy at least 'wptr' dwords of the data */
+		 
 		size = state->ring[i].wptr;
 
-		/* After wptr find the last non zero dword to save space */
+		 
 		for (j = state->ring[i].wptr; j < MSM_GPU_RINGBUFFER_SZ >> 2; j++)
 			if (gpu->rb[i]->start[j])
 				size = j + 1;
@@ -685,11 +620,11 @@ int adreno_gpu_state_get(struct msm_gpu *gpu, struct msm_gpu_state *state)
 		}
 	}
 
-	/* Some targets prefer to collect their own registers */
+	 
 	if (!adreno_gpu->registers)
 		return 0;
 
-	/* Count the number of registers */
+	 
 	for (i = 0; adreno_gpu->registers[i] != ~0; i += 2)
 		count += adreno_gpu->registers[i + 1] -
 			adreno_gpu->registers[i] + 1;
@@ -763,10 +698,7 @@ static char *adreno_gpu_ascii85_encode(u32 *src, size_t len)
 
 	l = ascii85_encode_len(len);
 
-	/*
-	 * Ascii85 outputs either a 5 byte string or a 1 byte string. So we
-	 * account for the worst case of 5 bytes per dword plus the 1 for '\0'
-	 */
+	 
 	buffer_size = (l * 5) + 1;
 
 	buf = kvmalloc(buffer_size, GFP_KERNEL);
@@ -780,12 +712,7 @@ static char *adreno_gpu_ascii85_encode(u32 *src, size_t len)
 	return buf;
 }
 
-/* len is expected to be in bytes
- *
- * WARNING: *ptr should be allocated with kvmalloc or friends.  It can be free'd
- * with kvfree() and replaced with a newly kvmalloc'd buffer on the first call
- * when the unencoded raw data is encoded
- */
+ 
 void adreno_show_object(struct drm_printer *p, void **ptr, int len,
 		bool *encoded)
 {
@@ -796,19 +723,12 @@ void adreno_show_object(struct drm_printer *p, void **ptr, int len,
 		long datalen, i;
 		u32 *buf = *ptr;
 
-		/*
-		 * Only dump the non-zero part of the buffer - rarely will
-		 * any data completely fill the entire allocated size of
-		 * the buffer.
-		 */
+		 
 		for (datalen = 0, i = 0; i < len >> 2; i++)
 			if (buf[i])
 				datalen = ((i + 1) << 2);
 
-		/*
-		 * If we reach here, then the originally captured binary buffer
-		 * will be replaced with the ascii85 encoded string
-		 */
+		 
 		*ptr = adreno_gpu_ascii85_encode(buf, datalen);
 
 		kvfree(buf);
@@ -839,11 +759,7 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
 	drm_printf(p, "revision: %u (%"ADRENO_CHIPID_FMT")\n",
 			adreno_gpu->info->revn,
 			ADRENO_CHIPID_ARGS(adreno_gpu->chip_id));
-	/*
-	 * If this is state collected due to iova fault, so fault related info
-	 *
-	 * TTBR0 would not be zero, so this is a good way to distinguish
-	 */
+	 
 	if (state->fault_info.ttbr0) {
 		const struct msm_gpu_fault_info *info = &state->fault_info;
 
@@ -898,12 +814,7 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
 }
 #endif
 
-/* Dump common gpu status and scratch registers on any hang, to make
- * the hangcheck logs more useful.  The scratch registers seem always
- * safe to read when GPU has hung (unlike some other regs, depending
- * on how the GPU hung), and they are useful to match up to cmdstream
- * dumps when debugging hangs:
- */
+ 
 void adreno_dump_info(struct msm_gpu *gpu)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
@@ -925,7 +836,7 @@ void adreno_dump_info(struct msm_gpu *gpu)
 	}
 }
 
-/* would be nice to not have to duplicate the _show() stuff with printk(): */
+ 
 void adreno_dump(struct msm_gpu *gpu)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
@@ -934,7 +845,7 @@ void adreno_dump(struct msm_gpu *gpu)
 	if (!adreno_gpu->registers)
 		return;
 
-	/* dump these out in a form that can be parsed by demsm: */
+	 
 	printk("IO:region %s 00000000 00020000\n", gpu->name);
 	for (i = 0; adreno_gpu->registers[i] != ~0; i += 2) {
 		uint32_t start = adreno_gpu->registers[i];
@@ -952,7 +863,7 @@ static uint32_t ring_freewords(struct msm_ringbuffer *ring)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(ring->gpu);
 	uint32_t size = MSM_GPU_RINGBUFFER_SZ >> 2;
-	/* Use ring->next to calculate free size */
+	 
 	uint32_t wptr = ring->next - ring->start;
 	uint32_t rptr = get_rptr(adreno_gpu, ring);
 	return (rptr + (size - 1) - wptr) % size;
@@ -976,10 +887,10 @@ static int adreno_get_pwrlevels(struct device *dev,
 
 	gpu->fast_rate = 0;
 
-	/* devm_pm_opp_of_add_table may error out but will still create an OPP table */
+	 
 	ret = devm_pm_opp_of_add_table(dev);
 	if (ret == -ENODEV) {
-		/* Special cases for ancient hw with ancient DT bindings */
+		 
 		if (adreno_is_a2xx(adreno_gpu)) {
 			dev_warn(dev, "Unable to find the OPP table. Falling back to 200 MHz.\n");
 			dev_pm_opp_add(dev, 200000000, 0);
@@ -995,7 +906,7 @@ static int adreno_get_pwrlevels(struct device *dev,
 		return ret;
 	}
 
-	/* Find the fastest defined rate */
+	 
 	opp = dev_pm_opp_find_freq_floor(dev, &freq);
 	if (IS_ERR(opp))
 		return PTR_ERR(opp);
@@ -1017,11 +928,7 @@ int adreno_gpu_ocmem_init(struct device *dev, struct adreno_gpu *adreno_gpu,
 	ocmem = of_get_ocmem(dev);
 	if (IS_ERR(ocmem)) {
 		if (PTR_ERR(ocmem) == -ENODEV) {
-			/*
-			 * Return success since either the ocmem property was
-			 * not specified in device tree, or ocmem support is
-			 * not compiled into the kernel.
-			 */
+			 
 			return 0;
 		}
 
@@ -1072,19 +979,12 @@ int adreno_gpu_init(struct drm_device *drm, struct platform_device *pdev,
 
 	gpu->allow_relocs = config->info->family < ADRENO_6XX_GEN1;
 
-	/* Only handle the core clock when GMU is not in use (or is absent). */
+	 
 	if (adreno_has_gmu_wrapper(adreno_gpu) ||
 	    adreno_gpu->info->family < ADRENO_6XX_GEN1) {
-		/*
-		 * This can only be done before devm_pm_opp_of_add_table(), or
-		 * dev_pm_opp_set_config() will WARN_ON()
-		 */
+		 
 		if (IS_ERR(devm_clk_get(dev, "core"))) {
-			/*
-			 * If "core" is absent, go for the legacy clock name.
-			 * If we got this far in probing, it's a given one of
-			 * them exists.
-			 */
+			 
 			devm_pm_opp_set_clkname(dev, "core_clk");
 		} else
 			devm_pm_opp_set_clkname(dev, "core");

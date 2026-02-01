@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Provide functions to setup NIC operation mode
- * Functions:
- *      vnt_set_rspinf - Set RSPINF
- *      vnt_update_ifs - Update slotTime,SIFS,DIFS, and EIFS
- *      vnt_update_top_rates - Update BasicTopRate
- *      vnt_add_basic_rate - Add to BasicRateSet
- *      vnt_ofdm_min_rate - Check if any OFDM rate is in BasicRateSet
- *      vnt_get_tsf_offset - Calculate TSFOffset
- *      vnt_get_next_tbtt - Calculate Next Beacon TSF counter
- *      vnt_reset_next_tbtt - Set NIC Beacon time
- *      vnt_update_next_tbtt - Sync. NIC Beacon time
- *      vnt_radio_power_off - Turn Off NIC Radio Power
- *      vnt_radio_power_on - Turn On NIC Radio Power
- *
- * Revision History:
- *      06-10-2003 Bryan YC Fan:  Re-write codes to support VT3253 spec.
- *      08-26-2003 Kyle Hsu:      Modify the definition type of dwIoBase.
- *      09-01-2003 Bryan YC Fan:  Add vnt_update_ifs().
- *
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/errno.h>
@@ -36,9 +13,7 @@
 #include "key.h"
 #include "usbpipe.h"
 
-/* const u16 cw_rxbcntsf_off[MAX_RATE] =
- *   {17, 34, 96, 192, 34, 23, 17, 11, 8, 5, 4, 3};
- */
+ 
 
 static const u16 cw_rxbcntsf_off[MAX_RATE] = {
 	192, 96, 34, 17, 34, 23, 17, 11, 8, 5, 4, 3
@@ -51,10 +26,10 @@ int vnt_set_channel(struct vnt_private *priv, u32 connection_channel)
 	if (connection_channel > CB_MAX_CHANNEL || !connection_channel)
 		return -EINVAL;
 
-	/* clear NAV */
+	 
 	vnt_mac_reg_bits_on(priv, MAC_REG_MACCR, MACCR_CLRNAV);
 
-	/* Set Channel[7] = 0 to tell H/W channel is changing now. */
+	 
 	vnt_mac_reg_bits_off(priv, MAC_REG_CHANNEL,
 			     (BIT(7) | BIT(5) | BIT(4)));
 
@@ -101,7 +76,7 @@ int vnt_set_rspinf(struct vnt_private *priv, u8 bb_type)
 		len = ARRAY_SIZE(vnt_rspinf_b_long_table);
 	}
 
-	 /* RSPINF_b_1 to RSPINF_b_11 */
+	  
 	ret = vnt_control_out(priv, MESSAGE_TYPE_WRITE, MAC_REG_RSPINF_B_1,
 			      MESSAGE_REQUEST_MACREG, len, data);
 	if (ret)
@@ -115,7 +90,7 @@ int vnt_set_rspinf(struct vnt_private *priv, u8 bb_type)
 		len = ARRAY_SIZE(vnt_rspinf_gb_table);
 	}
 
-	/* RSPINF_a_6 to RSPINF_a_72 */
+	 
 	return vnt_control_out(priv, MESSAGE_TYPE_WRITE, MAC_REG_RSPINF_A_6,
 			       MESSAGE_REQUEST_MACREG, len, data);
 }
@@ -188,21 +163,7 @@ u8 vnt_get_pkt_type(struct vnt_private *priv)
 	return PK_TYPE_11GB;
 }
 
-/*
- * Description: Calculate TSF offset of two TSF input
- *              Get TSF Offset from RxBCN's TSF and local TSF
- *
- * Parameters:
- *  In:
- *      rx_rate	- rx rate.
- *      tsf1	- Rx BCN's TSF
- *      tsf2	- Local TSF
- *  Out:
- *      none
- *
- * Return Value: TSF Offset value
- *
- */
+ 
 u64 vnt_get_tsf_offset(u8 rx_rate, u64 tsf1, u64 tsf2)
 {
 	return tsf1 - tsf2 - (u64)cw_rxbcntsf_off[rx_rate % MAX_RATE];
@@ -229,17 +190,7 @@ int vnt_adjust_tsf(struct vnt_private *priv, u8 rx_rate,
 			       MESSAGE_REQUEST_TSF, 0, 8, data);
 }
 
-/*
- * Description: Clear NIC TSF counter
- *              Clear local TSF counter
- *
- * Parameters:
- *  In:
- *      priv	- The adapter to be read
- *
- * Return Value: true if success; otherwise false
- *
- */
+ 
 bool vnt_clear_current_tsf(struct vnt_private *priv)
 {
 	vnt_mac_reg_bits_on(priv, MAC_REG_TFTCTL, TFTCTL_TSFCNTRST);
@@ -249,29 +200,14 @@ bool vnt_clear_current_tsf(struct vnt_private *priv)
 	return true;
 }
 
-/*
- * Description: Read NIC TSF counter
- *              Get NEXTTBTT from adjusted TSF and Beacon Interval
- *
- * Parameters:
- *  In:
- *      tsf		- Current TSF counter
- *      beacon_interval - Beacon Interval
- *  Out:
- *      tsf		- Current TSF counter
- *
- * Return Value: TSF value of next Beacon
- *
- */
+ 
 u64 vnt_get_next_tbtt(u64 tsf, u16 beacon_interval)
 {
 	u32 beacon_int;
 
 	beacon_int = beacon_interval * 1024;
 
-	/* Next TBTT =
-	 *	((local_current_TSF / beacon_interval) + 1) * beacon_interval
-	 */
+	 
 	if (beacon_int) {
 		do_div(tsf, beacon_int);
 		tsf += 1;
@@ -329,18 +265,7 @@ int vnt_update_next_tbtt(struct vnt_private *priv, u64 tsf,
 	return 0;
 }
 
-/*
- * Description: Turn off Radio power
- *
- * Parameters:
- *  In:
- *      priv         - The adapter to be turned off
- *  Out:
- *      none
- *
- * Return Value: true if success; otherwise false
- *
- */
+ 
 int vnt_radio_power_off(struct vnt_private *priv)
 {
 	int ret = 0;
@@ -373,18 +298,7 @@ end:
 	return ret;
 }
 
-/*
- * Description: Turn on Radio power
- *
- * Parameters:
- *  In:
- *      priv         - The adapter to be turned on
- *  Out:
- *      none
- *
- * Return Value: true if success; otherwise false
- *
- */
+ 
 int vnt_radio_power_on(struct vnt_private *priv)
 {
 	int ret = 0;

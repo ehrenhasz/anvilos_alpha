@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _IPV6_FRAG_H
 #define _IPV6_FRAG_H
 #include <linux/icmpv6.h>
@@ -17,9 +17,7 @@ enum ip6_defrag_users {
 	__IP6_DEFRAG_CONNTRACK_BRIDGE_IN = IP6_DEFRAG_CONNTRACK_BRIDGE_IN + USHRT_MAX,
 };
 
-/*
- *	Equivalent of ipv4 struct ip
- */
+ 
 struct frag_queue {
 	struct inet_frag_queue	q;
 
@@ -68,7 +66,7 @@ ip6frag_expire_frag_queue(struct net *net, struct frag_queue *fq)
 	struct sk_buff *head;
 
 	rcu_read_lock();
-	/* Paired with the WRITE_ONCE() in fqdir_pre_exit(). */
+	 
 	if (READ_ONCE(fq->q.fqdir->dead))
 		goto out_rcu_unlock;
 	spin_lock(&fq->q.lock);
@@ -86,14 +84,11 @@ ip6frag_expire_frag_queue(struct net *net, struct frag_queue *fq)
 	__IP6_INC_STATS(net, __in6_dev_get(dev), IPSTATS_MIB_REASMFAILS);
 	__IP6_INC_STATS(net, __in6_dev_get(dev), IPSTATS_MIB_REASMTIMEOUT);
 
-	/* Don't send error if the first segment did not arrive. */
+	 
 	if (!(fq->q.flags & INET_FRAG_FIRST_IN))
 		goto out;
 
-	/* sk_buff::dev and sk_buff::rbnode are unionized. So we
-	 * pull the head out of the tree in order to be able to
-	 * deal with head->dev.
-	 */
+	 
 	head = inet_frag_pull_head(&fq->q);
 	if (!head)
 		goto out;
@@ -112,7 +107,7 @@ out_rcu_unlock:
 	inet_frag_put(&fq->q);
 }
 
-/* Check if the upper layer header is truncated in the first fragment. */
+ 
 static inline bool
 ipv6frag_thdr_truncated(struct sk_buff *skb, int start, u8 *nexthdrp)
 {

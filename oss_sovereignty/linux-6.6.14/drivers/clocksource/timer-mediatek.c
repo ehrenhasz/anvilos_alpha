@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Mediatek SoCs General-Purpose Timer handling.
- *
- * Copyright (C) 2014 Matthias Brugger
- *
- * Matthias Brugger <matthias.bgg@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -22,7 +16,7 @@
 
 #define TIMER_SYNC_TICKS        (3)
 
-/* gpt */
+ 
 #define GPT_IRQ_EN_REG          0x00
 #define GPT_IRQ_ENABLE(val)     BIT((val) - 1)
 #define GPT_IRQ_ACK_REG	        0x08
@@ -47,7 +41,7 @@
 #define GPT_CNT_REG(val)        (0x08 + (0x10 * (val)))
 #define GPT_CMP_REG(val)        (0x0C + (0x10 * (val)))
 
-/* system timer */
+ 
 #define SYST_BASE               (0x40)
 
 #define SYST_CON                (SYST_BASE + 0x0)
@@ -56,16 +50,7 @@
 #define SYST_CON_REG(to)        (timer_of_base(to) + SYST_CON)
 #define SYST_VAL_REG(to)        (timer_of_base(to) + SYST_VAL)
 
-/*
- * SYST_CON_EN: Clock enable. Shall be set to
- *   - Start timer countdown.
- *   - Allow timeout ticks being updated.
- *   - Allow changing interrupt status,like clear irq pending.
- *
- * SYST_CON_IRQ_EN: Set to enable interrupt.
- *
- * SYST_CON_IRQ_CLR: Set to clear interrupt.
- */
+ 
 #define SYST_CON_EN              BIT(0)
 #define SYST_CON_IRQ_EN          BIT(1)
 #define SYST_CON_IRQ_CLR         BIT(4)
@@ -74,7 +59,7 @@ static void __iomem *gpt_sched_reg __read_mostly;
 
 static void mtk_syst_ack_irq(struct timer_of *to)
 {
-	/* Clear and disable interrupt */
+	 
 	writel(SYST_CON_EN, SYST_CON_REG(to));
 	writel(SYST_CON_IRQ_CLR | SYST_CON_EN, SYST_CON_REG(to));
 }
@@ -95,16 +80,13 @@ static int mtk_syst_clkevt_next_event(unsigned long ticks,
 {
 	struct timer_of *to = to_timer_of(clkevt);
 
-	/* Enable clock to allow timeout tick update later */
+	 
 	writel(SYST_CON_EN, SYST_CON_REG(to));
 
-	/*
-	 * Write new timeout ticks. Timer shall start countdown
-	 * after timeout ticks are updated.
-	 */
+	 
 	writel(ticks, SYST_VAL_REG(to));
 
-	/* Enable interrupt */
+	 
 	writel(SYST_CON_EN | SYST_CON_IRQ_EN, SYST_CON_REG(to));
 
 	return 0;
@@ -112,10 +94,10 @@ static int mtk_syst_clkevt_next_event(unsigned long ticks,
 
 static int mtk_syst_clkevt_shutdown(struct clock_event_device *clkevt)
 {
-	/* Clear any irq */
+	 
 	mtk_syst_ack_irq(to_timer_of(clkevt));
 
-	/* Disable timer */
+	 
 	writel(0, SYST_CON_REG(to_timer_of(clkevt)));
 
 	return 0;
@@ -156,12 +138,12 @@ static void mtk_gpt_clkevt_time_start(struct timer_of *to,
 {
 	u32 val;
 
-	/* Acknowledge interrupt */
+	 
 	writel(GPT_IRQ_ACK(timer), timer_of_base(to) + GPT_IRQ_ACK_REG);
 
 	val = readl(timer_of_base(to) + GPT_CTRL_REG(timer));
 
-	/* Clear 2 bit timer operation mode field */
+	 
 	val &= ~GPT_CTRL_OP(0x3);
 
 	if (periodic)
@@ -208,7 +190,7 @@ static irqreturn_t mtk_gpt_interrupt(int irq, void *dev_id)
 	struct clock_event_device *clkevt = (struct clock_event_device *)dev_id;
 	struct timer_of *to = to_timer_of(clkevt);
 
-	/* Acknowledge timer0 irq */
+	 
 	writel(GPT_IRQ_ACK(TIMER_CLK_EVT), timer_of_base(to) + GPT_IRQ_ACK_REG);
 	clkevt->event_handler(clkevt);
 
@@ -234,10 +216,10 @@ static void mtk_gpt_enable_irq(struct timer_of *to, u8 timer)
 {
 	u32 val;
 
-	/* Disable all interrupts */
+	 
 	writel(0x0, timer_of_base(to) + GPT_IRQ_EN_REG);
 
-	/* Acknowledge all spurious pending interrupts */
+	 
 	writel(0x3f, timer_of_base(to) + GPT_IRQ_ACK_REG);
 
 	val = readl(timer_of_base(to) + GPT_IRQ_EN_REG);
@@ -256,14 +238,10 @@ static void mtk_gpt_suspend(struct clock_event_device *clk)
 {
 	struct timer_of *to = to_timer_of(clk);
 
-	/* Disable all interrupts */
+	 
 	writel(0x0, timer_of_base(to) + GPT_IRQ_EN_REG);
 
-	/*
-	 * This is called with interrupts disabled,
-	 * so we need to ack any interrupt that is pending
-	 * or for example ATF will prevent a suspend from completing.
-	 */
+	 
 	writel(0x3f, timer_of_base(to) + GPT_IRQ_ACK_REG);
 }
 
@@ -320,7 +298,7 @@ static int __init mtk_gpt_init(struct device_node *node)
 	if (ret)
 		return ret;
 
-	/* Configure clock source */
+	 
 	mtk_gpt_setup(&to, TIMER_CLK_SRC, GPT_CTRL_OP_FREERUN);
 	clocksource_mmio_init(timer_of_base(&to) + GPT_CNT_REG(TIMER_CLK_SRC),
 			      node->name, timer_of_rate(&to), 300, 32,
@@ -328,7 +306,7 @@ static int __init mtk_gpt_init(struct device_node *node)
 	gpt_sched_reg = timer_of_base(&to) + GPT_CNT_REG(TIMER_CLK_SRC);
 	sched_clock_register(mtk_gpt_read_sched_clock, 32, timer_of_rate(&to));
 
-	/* Configure clock event */
+	 
 	mtk_gpt_setup(&to, TIMER_CLK_EVT, GPT_CTRL_OP_REPEAT);
 	clockevents_config_and_register(&to.clkevt, timer_of_rate(&to),
 					TIMER_SYNC_TICKS, 0xffffffff);

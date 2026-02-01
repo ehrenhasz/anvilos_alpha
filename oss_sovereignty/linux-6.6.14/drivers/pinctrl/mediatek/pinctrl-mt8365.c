@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 MediaTek Inc.
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- */
+
+ 
 
 #include <dt-bindings/pinctrl/mt65xx.h>
 #include <linux/of.h>
@@ -15,11 +12,11 @@
 #include "pinctrl-mtk-mt8365.h"
 
 static const struct mtk_drv_group_desc mt8365_drv_grp[] = {
-	/* 0E4E8SR 4/8/12/16 */
+	 
 	MTK_DRV_GRP(4, 16, 1, 2, 4),
-	/* 0E2E4SR  2/4/6/8 */
+	 
 	MTK_DRV_GRP(2, 8, 1, 2, 2),
-	/* E8E4E2  2/4/6/8/10/12/14/16 */
+	 
 	MTK_DRV_GRP(2, 16, 0, 2, 2)
 };
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2012 ARM Limited
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/notifier.h>

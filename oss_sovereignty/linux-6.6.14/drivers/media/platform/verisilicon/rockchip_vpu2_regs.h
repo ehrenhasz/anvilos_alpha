@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- *	Alpha Lin <alpha.lin@rock-chips.com>
- */
+ 
+ 
 
 #ifndef ROCKCHIP_VPU2_REGS_H_
 #define ROCKCHIP_VPU2_REGS_H_
 
-/* Encoder registers. */
+ 
 #define VEPU_REG_VP8_QUT_1ST(i)			(0x000 + ((i) * 0x24))
 #define     VEPU_REG_VP8_QUT_DC_Y2(x)			(((x) & 0x3fff) << 16)
 #define     VEPU_REG_VP8_QUT_DC_Y1(x)			(((x) & 0x3fff) << 0)
@@ -306,8 +301,8 @@
 #define VEPU_REG_DMV_Q_PIXEL_PENALTY_TBL(i)	(0x260 + ((i) * 0x4))
 #define     VEPU_REG_DMV_Q_PIXEL_PENALTY_TABLE_BIT(x, i)	((x) << (i) * 8)
 
-/* vpu decoder register */
-#define VDPU_REG_DEC_CTRL0			0x0c8 // 50
+ 
+#define VDPU_REG_DEC_CTRL0			0x0c8 
 #define     VDPU_REG_REF_BUF_CTRL2_REFBU2_PICID(x)	(((x) & 0x1f) << 25)
 #define     VDPU_REG_REF_BUF_CTRL2_REFBU2_THR(x)	(((x) & 0xfff) << 13)
 #define     VDPU_REG_CONFIG_TILED_MODE_LSB		BIT(12)
@@ -597,4 +592,4 @@
 #define     VDPU_REG_PRED_FLT_PRED_BC_TAP_4_3(x)	(((x) & 0x3ff) << 12)
 #define     VDPU_REG_PRED_FLT_PRED_BC_TAP_5_0(x)	(((x) & 0x3ff) << 2)
 
-#endif /* ROCKCHIP_VPU2_REGS_H_ */
+#endif  

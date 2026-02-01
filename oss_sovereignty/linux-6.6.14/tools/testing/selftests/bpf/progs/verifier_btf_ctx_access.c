@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/btf_ctx_access.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -11,7 +11,7 @@ __success __retval(0)
 __naked void btf_ctx_access_accept(void)
 {
 	asm volatile ("					\
-	r2 = *(u32*)(r1 + 8);		/* load 2nd argument value (int pointer) */\
+	r2 = *(u32*)(r1 + 8);		 \
 	r0 = 0;						\
 	exit;						\
 "	::: __clobber_all);
@@ -23,7 +23,7 @@ __success __retval(0)
 __naked void ctx_access_u32_pointer_accept(void)
 {
 	asm volatile ("					\
-	r2 = *(u32*)(r1 + 0);		/* load 1nd argument value (u32 pointer) */\
+	r2 = *(u32*)(r1 + 0);		 \
 	r0 = 0;						\
 	exit;						\
 "	::: __clobber_all);

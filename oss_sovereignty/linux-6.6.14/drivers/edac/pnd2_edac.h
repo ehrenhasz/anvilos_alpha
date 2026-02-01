@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Register bitfield descriptions for Pondicherry2 memory controller.
- *
- * Copyright (c) 2016, Intel Corporation.
- */
+ 
+ 
 
 #ifndef _PND2_REGS_H
 #define _PND2_REGS_H
@@ -49,7 +45,7 @@ struct b_cr_mchbar_hi_pci {
 	u32 pad_31_7 : 25;
 };
 
-/* Symmetric region */
+ 
 struct b_cr_slice_channel_hash {
 	u64	slice_1_disabled : 1;
 	u64	hvm_mode : 1;
@@ -122,7 +118,7 @@ struct b_cr_asym_mem_region1_mchbar {
 #define b_cr_asym_mem_region1_mchbar_offset 0x6e44
 #define b_cr_asym_mem_region1_mchbar_r_opcode 0x00
 
-/* Some bit fields moved in above two structs on Denverton */
+ 
 struct b_cr_asym_mem_region_denverton {
 	u32	pad : 4;
 	u32	slice_asym_base : 8;
@@ -146,7 +142,7 @@ struct b_cr_asym_2way_mem_region_mchbar {
 #define b_cr_asym_2way_mem_region_mchbar_offset 0x6e50
 #define b_cr_asym_2way_mem_region_mchbar_r_opcode 0x00
 
-/* Apollo Lake d-unit */
+ 
 
 struct d_cr_drp0 {
 	u32	rken0 : 1;
@@ -170,7 +166,7 @@ struct d_cr_drp0 {
 #define d_cr_drp0_offset 0x1400
 #define d_cr_drp0_r_opcode 0x00
 
-/* Denverton d-unit */
+ 
 
 struct d_cr_dsch {
 	u32	ch0en : 1;
@@ -218,8 +214,8 @@ struct d_cr_drp {
 struct d_cr_dmap {
 	u32	ba0 : 5;
 	u32	ba1 : 5;
-	u32	bg0 : 5; /* if ddr3, ba2 = bg0 */
-	u32	bg1 : 5; /* if ddr3, ba3 = bg1 */
+	u32	bg0 : 5;  
+	u32	bg1 : 5;  
 	u32	rs0 : 5;
 	u32	rs1 : 5;
 	u32	rsvd : 2;
@@ -290,4 +286,4 @@ struct d_cr_dmap5 {
 #define d_cr_dmap5_offset 0x154
 #define d_cr_dmap5_r_opcode 0x0
 
-#endif /* _PND2_REGS_H */
+#endif  

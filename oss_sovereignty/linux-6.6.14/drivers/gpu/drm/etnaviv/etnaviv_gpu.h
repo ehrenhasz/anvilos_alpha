@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+ 
+ 
 
 #ifndef __ETNAVIV_GPU_H__
 #define __ETNAVIV_GPU_H__
@@ -22,10 +20,10 @@ struct etnaviv_chip_identity {
 	u32 customer_id;
 	u32 eco_id;
 
-	/* Supported feature fields. */
+	 
 	u32 features;
 
-	/* Supported minor feature fields. */
+	 
 	u32 minor_features0;
 	u32 minor_features1;
 	u32 minor_features2;
@@ -39,40 +37,40 @@ struct etnaviv_chip_identity {
 	u32 minor_features10;
 	u32 minor_features11;
 
-	/* Number of streams supported. */
+	 
 	u32 stream_count;
 
-	/* Total number of temporary registers per thread. */
+	 
 	u32 register_max;
 
-	/* Maximum number of threads. */
+	 
 	u32 thread_count;
 
-	/* Number of shader cores. */
+	 
 	u32 shader_core_count;
 
-	/* Number of Neural Network cores. */
+	 
 	u32 nn_core_count;
 
-	/* Size of the vertex cache. */
+	 
 	u32 vertex_cache_size;
 
-	/* Number of entries in the vertex output buffer. */
+	 
 	u32 vertex_output_buffer_size;
 
-	/* Number of pixel pipes. */
+	 
 	u32 pixel_pipes;
 
-	/* Number of instructions. */
+	 
 	u32 instruction_count;
 
-	/* Number of constants. */
+	 
 	u32 num_constants;
 
-	/* Buffer size */
+	 
 	u32 buffer_size;
 
-	/* Number of varyings */
+	 
 	u8 varyings_count;
 };
 
@@ -116,11 +114,11 @@ struct etnaviv_gpu {
 	struct drm_gpu_scheduler sched;
 	enum etnaviv_gpu_state state;
 
-	/* 'ring'-buffer: */
+	 
 	struct etnaviv_cmdbuf buffer;
 	int exec_state;
 
-	/* event management: */
+	 
 	DECLARE_BITMAP(event_bitmap, ETNA_NR_EVENTS);
 	struct etnaviv_event event[ETNA_NR_EVENTS];
 	struct completion event_free;
@@ -128,7 +126,7 @@ struct etnaviv_gpu {
 
 	u32 idle_mask;
 
-	/* Fencing support */
+	 
 	struct xarray user_fences;
 	u32 next_user_fence;
 	u32 next_fence;
@@ -137,11 +135,11 @@ struct etnaviv_gpu {
 	u64 fence_context;
 	spinlock_t fence_spinlock;
 
-	/* worker for handling 'sync' points: */
+	 
 	struct work_struct sync_point_work;
 	int sync_point_event;
 
-	/* hang detection */
+	 
 	u32 hangcheck_dma_addr;
 	u32 hangcheck_fence;
 
@@ -151,7 +149,7 @@ struct etnaviv_gpu {
 	struct etnaviv_iommu_context *mmu_context;
 	unsigned int flush_seq;
 
-	/* Power Control: */
+	 
 	struct clk *clk_bus;
 	struct clk *clk_reg;
 	struct clk *clk_core;
@@ -175,7 +173,7 @@ static inline u32 gpu_read(struct etnaviv_gpu *gpu, u32 reg)
 
 static inline u32 gpu_fix_power_address(struct etnaviv_gpu *gpu, u32 reg)
 {
-	/* Power registers in GC300 < 2.0 are offset by 0x100 */
+	 
 	if (gpu->identity.model == chipModel_GC300 &&
 	    gpu->identity.revision < 0x2000)
 		reg += 0x100;
@@ -217,4 +215,4 @@ void etnaviv_gpu_start_fe(struct etnaviv_gpu *gpu, u32 address, u16 prefetch);
 
 extern struct platform_driver etnaviv_gpu_driver;
 
-#endif /* __ETNAVIV_GPU_H__ */
+#endif  

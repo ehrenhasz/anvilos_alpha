@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  The NFC Controller Interface is the communication protocol between an
- *  NFC Controller (NFCC) and a Device Host (DH).
- *
- *  Copyright (C) 2011 Texas Instruments, Inc.
- *
- *  Written by Ilan Elias <ilane@ti.com>
- *
- *  Acknowledgements:
- *  This file is based on lib.c, which was written
- *  by Maxim Krasnyansky.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -20,7 +9,7 @@
 #include <net/nfc/nci.h>
 #include <net/nfc/nci_core.h>
 
-/* NCI status codes to Unix errno mapping */
+ 
 int nci_to_errno(__u8 code)
 {
 	switch (code) {

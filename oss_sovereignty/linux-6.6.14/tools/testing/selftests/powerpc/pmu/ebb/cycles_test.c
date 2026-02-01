@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,9 +7,7 @@
 #include "ebb.h"
 
 
-/*
- * Basic test that counts user cycles and takes EBBs.
- */
+ 
 int cycles(void)
 {
 	struct event event;

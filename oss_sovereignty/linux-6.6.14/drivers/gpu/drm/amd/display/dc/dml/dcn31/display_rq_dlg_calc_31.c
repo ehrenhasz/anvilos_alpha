@@ -1,27 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "../display_mode_lib.h"
 #include "../display_mode_vba.h"
@@ -126,9 +103,9 @@ static void extract_rq_regs(struct display_mode_lib *mode_lib, display_rq_regs_s
 	rq_regs->rq_regs_l.swath_height = dml_log2(rq_param->dlg.rq_l.swath_height);
 	rq_regs->rq_regs_c.swath_height = dml_log2(rq_param->dlg.rq_c.swath_height);
 
-	// FIXME: take the max between luma, chroma chunk size?
-	// okay for now, as we are setting chunk_bytes to 8kb anyways
-	if (rq_param->sizing.rq_l.chunk_bytes >= 32 * 1024 || (rq_param->yuv420 && rq_param->sizing.rq_c.chunk_bytes >= 32 * 1024)) { //32kb
+	
+	
+	if (rq_param->sizing.rq_l.chunk_bytes >= 32 * 1024 || (rq_param->yuv420 && rq_param->sizing.rq_c.chunk_bytes >= 32 * 1024)) { 
 		rq_regs->drq_expansion_mode = 0;
 	} else {
 		rq_regs->drq_expansion_mode = 2;
@@ -137,15 +114,15 @@ static void extract_rq_regs(struct display_mode_lib *mode_lib, display_rq_regs_s
 	rq_regs->mrq_expansion_mode = 1;
 	rq_regs->crq_expansion_mode = 1;
 
-	// Note: detile_buf_plane1_addr is in unit of 1KB
+	
 	if (rq_param->yuv420) {
 		if ((double) rq_param->misc.rq_l.stored_swath_bytes / (double) rq_param->misc.rq_c.stored_swath_bytes <= 1.5) {
-			detile_buf_plane1_addr = (detile_buf_size_in_bytes / 2.0 / 1024.0); // half to chroma
+			detile_buf_plane1_addr = (detile_buf_size_in_bytes / 2.0 / 1024.0); 
 #ifdef __DML_RQ_DLG_CALC_DEBUG__
 					dml_print("DML_DLG: %s: detile_buf_plane1_addr = %0d (1/2 to chroma)\n", __func__, detile_buf_plane1_addr);
 #endif
 		} else {
-			detile_buf_plane1_addr = dml_round_to_multiple((unsigned int) ((2.0 * detile_buf_size_in_bytes) / 3.0), 1024, 0) / 1024.0; // 2/3 to luma
+			detile_buf_plane1_addr = dml_round_to_multiple((unsigned int) ((2.0 * detile_buf_size_in_bytes) / 3.0), 1024, 0) / 1024.0; 
 #ifdef __DML_RQ_DLG_CALC_DEBUG__
 					dml_print("DML_DLG: %s: detile_buf_plane1_addr = %0d (1/3 chroma)\n", __func__, detile_buf_plane1_addr);
 #endif
@@ -206,7 +183,7 @@ static void handle_det_buf_split(struct display_mode_lib *mode_lib, display_rq_p
 	dml_print("DML_DLG: %s: detile_buf_size_in_bytes = %0d\n", __func__, detile_buf_size_in_bytes);
 #endif
 
-	if (total_swath_bytes <= detile_buf_size_in_bytes) { //full 256b request
+	if (total_swath_bytes <= detile_buf_size_in_bytes) { 
 		req128_l = 0;
 		req128_c = 0;
 		swath_bytes_l = full_swath_bytes_packed_l;
@@ -344,7 +321,7 @@ static void get_meta_and_pte_attr(
 	unsigned int log2_meta_chunk_bytes;
 	unsigned int log2_meta_chunk_height;
 
-	//full sized meta chunk width in unit of data elements
+	
 	unsigned int log2_meta_chunk_width;
 	unsigned int log2_min_meta_chunk_bytes;
 	unsigned int min_meta_chunk_width;
@@ -416,15 +393,15 @@ static void get_meta_and_pte_attr(
 	log2_blk_height = 0;
 	log2_blk_width = 0;
 
-	// remember log rule
-	// "+" in log is multiply
-	// "-" in log is divide
-	// "/2" is like square root
-	// blk is vertical biased
+	
+	
+	
+	
+	
 	if (tiling != dm_sw_linear)
 		log2_blk_height = log2_blk256_height + dml_ceil((double) (log2_blk_bytes - 8) / 2.0, 1);
 	else
-		log2_blk_height = 0;	// blk height of 1
+		log2_blk_height = 0;	
 
 	log2_blk_width = log2_blk_bytes - log2_bytes_per_element - log2_blk_height;
 
@@ -470,22 +447,22 @@ static void get_meta_and_pte_attr(
 	rq_misc_param->blk256_height = blk256_height;
 	rq_misc_param->blk256_width = blk256_width;
 
-	// -------
-	// meta
-	// -------
-	log2_meta_req_bytes = 6;	// meta request is 64b and is 8x8byte meta element
+	
+	
+	
+	log2_meta_req_bytes = 6;	
 
-	// each 64b meta request for dcn is 8x8 meta elements and
-	// a meta element covers one 256b block of the data surface.
-	log2_meta_req_height = log2_blk256_height + 3;	// meta req is 8x8 byte, each byte represent 1 blk256
+	
+	
+	log2_meta_req_height = log2_blk256_height + 3;	
 	log2_meta_req_width = log2_meta_req_bytes + 8 - log2_bytes_per_element - log2_meta_req_height;
 	meta_req_width = 1 << log2_meta_req_width;
 	meta_req_height = 1 << log2_meta_req_height;
 	log2_meta_row_height = 0;
 	meta_row_width_ub = 0;
 
-	// the dimensions of a meta row are meta_row_width x meta_row_height in elements.
-	// calculate upper bound of the meta_row_width
+	
+	
 	if (!surf_vert) {
 		log2_meta_row_height = log2_meta_req_height;
 		meta_row_width_ub = dml_round_to_multiple(vp_width - 1, meta_req_width, 1) + meta_req_width;
@@ -502,7 +479,7 @@ static void get_meta_and_pte_attr(
 	log2_meta_chunk_bytes = dml_log2(rq_sizing_param->meta_chunk_bytes);
 	log2_meta_chunk_height = log2_meta_row_height;
 
-	//full sized meta chunk width in unit of data elements
+	
 	log2_meta_chunk_width = log2_meta_chunk_bytes + 8 - log2_bytes_per_element - log2_meta_chunk_height;
 	log2_min_meta_chunk_bytes = dml_log2(rq_sizing_param->min_meta_chunk_bytes);
 	min_meta_chunk_width = 1 << (log2_min_meta_chunk_bytes + 8 - log2_bytes_per_element - log2_meta_chunk_height);
@@ -514,7 +491,7 @@ static void get_meta_and_pte_attr(
 	meta_surface_bytes = meta_pitch * (dml_round_to_multiple(vp_height - 1, meta_blk_height, 1) + meta_blk_height) * bytes_per_element / 256;
 	vmpg_bytes = mode_lib->soc.gpuvm_min_page_size_bytes;
 	meta_pte_req_per_frame_ub = (dml_round_to_multiple(meta_surface_bytes - vmpg_bytes, 8 * vmpg_bytes, 1) + 8 * vmpg_bytes) / (8 * vmpg_bytes);
-	meta_pte_bytes_per_frame_ub = meta_pte_req_per_frame_ub * 64;	//64B mpte request
+	meta_pte_bytes_per_frame_ub = meta_pte_req_per_frame_ub * 64;	
 	rq_dlg_param->meta_pte_bytes_per_frame_ub = meta_pte_bytes_per_frame_ub;
 
 	dml_print("DML_DLG: %s: meta_blk_height             = %d\n", __func__, meta_blk_height);
@@ -532,48 +509,48 @@ static void get_meta_and_pte_attr(
 	else
 		rq_dlg_param->meta_chunks_per_row_ub = meta_chunk_per_row_int + 2;
 
-	// ------
-	// dpte
-	// ------
+	
+	
+	
 	if (surf_linear) {
-		log2_vmpg_height = 0;   // one line high
+		log2_vmpg_height = 0;   
 	} else {
 		log2_vmpg_height = (log2_vmpg_bytes - 8) / 2 + log2_blk256_height;
 	}
 	log2_vmpg_width = log2_vmpg_bytes - log2_bytes_per_element - log2_vmpg_height;
 
-	// only 3 possible shapes for dpte request in dimensions of ptes: 8x1, 4x2, 2x4.
-	if (surf_linear) { //one 64B PTE request returns 8 PTEs
+	
+	if (surf_linear) { 
 		log2_dpte_req_height_ptes = 0;
 		log2_dpte_req_width = log2_vmpg_width + 3;
 		log2_dpte_req_height = 0;
-	} else if (log2_blk_bytes == 12) { //4KB tile means 4kB page size
-		//one 64B req gives 8x1 PTEs for 4KB tile
+	} else if (log2_blk_bytes == 12) { 
+		
 		log2_dpte_req_height_ptes = 0;
 		log2_dpte_req_width = log2_blk_width + 3;
 		log2_dpte_req_height = log2_blk_height + 0;
-	} else if ((log2_blk_bytes >= 16) && (log2_vmpg_bytes == 12)) { // tile block >= 64KB
-		//two 64B reqs of 2x4 PTEs give 16 PTEs to cover 64KB
+	} else if ((log2_blk_bytes >= 16) && (log2_vmpg_bytes == 12)) { 
+		
 		log2_dpte_req_height_ptes = 4;
-		log2_dpte_req_width = log2_blk256_width + 4;		// log2_64KB_width
-		log2_dpte_req_height = log2_blk256_height + 4;		// log2_64KB_height
-	} else { //64KB page size and must 64KB tile block
-		 //one 64B req gives 8x1 PTEs for 64KB tile
+		log2_dpte_req_width = log2_blk256_width + 4;		
+		log2_dpte_req_height = log2_blk256_height + 4;		
+	} else { 
+		 
 		log2_dpte_req_height_ptes = 0;
 		log2_dpte_req_width = log2_blk_width + 3;
 		log2_dpte_req_height = log2_blk_height + 0;
 	}
 
-	// The dpte request dimensions in data elements is dpte_req_width x dpte_req_height
-	// log2_vmpg_width is how much 1 pte represent, now calculating how much a 64b pte req represent
-	// That depends on the pte shape (i.e. 8x1, 4x2, 2x4)
-	//log2_dpte_req_height    = log2_vmpg_height + log2_dpte_req_height_ptes;
-	//log2_dpte_req_width     = log2_vmpg_width + log2_dpte_req_width_ptes;
+	
+	
+	
+	
+	
 	dpte_req_height = 1 << log2_dpte_req_height;
 	dpte_req_width = 1 << log2_dpte_req_width;
 
-	// calculate pitch dpte row buffer can hold
-	// round the result down to a power of two.
+	
+	
 	if (surf_linear) {
 		unsigned int dpte_row_height;
 
@@ -589,14 +566,14 @@ static void get_meta_and_pte_attr(
 			log2_dpte_row_height_linear = 7;
 
 		log2_dpte_row_height = log2_dpte_row_height_linear;
-		// For linear, the dpte row is pitch dependent and the pte requests wrap at the pitch boundary.
-		// the dpte_row_width_ub is the upper bound of data_pitch*dpte_row_height in elements with this unique buffering.
+		
+		
 		dpte_row_height = 1 << log2_dpte_row_height;
 		dpte_row_width_ub = dml_round_to_multiple(data_pitch * dpte_row_height - 1, dpte_req_width, 1) + dpte_req_width;
 		rq_dlg_param->dpte_req_per_row_ub = dpte_row_width_ub / dpte_req_width;
 	} else {
-		// the upper bound of the dpte_row_width without dependency on viewport position follows.
-		// for tiled mode, row height is the same as req height and row store up to vp size upper bound
+		
+		
 		if (!surf_vert) {
 			log2_dpte_row_height = log2_dpte_req_height;
 			dpte_row_width_ub = dml_round_to_multiple(vp_width - 1, dpte_req_width, 1) + dpte_req_width;
@@ -607,42 +584,42 @@ static void get_meta_and_pte_attr(
 			rq_dlg_param->dpte_req_per_row_ub = dpte_row_width_ub / dpte_req_height;
 		}
 	}
-	if (log2_blk_bytes >= 16 && log2_vmpg_bytes == 12) // tile block >= 64KB
-		rq_dlg_param->dpte_bytes_per_row_ub = rq_dlg_param->dpte_req_per_row_ub * 128; //2*64B dpte request
+	if (log2_blk_bytes >= 16 && log2_vmpg_bytes == 12) 
+		rq_dlg_param->dpte_bytes_per_row_ub = rq_dlg_param->dpte_req_per_row_ub * 128; 
 	else
-		rq_dlg_param->dpte_bytes_per_row_ub = rq_dlg_param->dpte_req_per_row_ub * 64; //64B dpte request
+		rq_dlg_param->dpte_bytes_per_row_ub = rq_dlg_param->dpte_req_per_row_ub * 64; 
 
 	rq_dlg_param->dpte_row_height = 1 << log2_dpte_row_height;
 
-	// the dpte_group_bytes is reduced for the specific case of vertical
-	// access of a tile surface that has dpte request of 8x1 ptes.
+	
+	
 	if (hostvm_enable)
 		rq_sizing_param->dpte_group_bytes = 512;
 	else {
-		if (!surf_linear & (log2_dpte_req_height_ptes == 0) & surf_vert) //reduced, in this case, will have page fault within a group
+		if (!surf_linear & (log2_dpte_req_height_ptes == 0) & surf_vert) 
 			rq_sizing_param->dpte_group_bytes = 512;
 		else
 			rq_sizing_param->dpte_group_bytes = 2048;
 	}
 
-	//since pte request size is 64byte, the number of data pte requests per full sized group is as follows.
+	
 	log2_dpte_group_bytes = dml_log2(rq_sizing_param->dpte_group_bytes);
-	log2_dpte_group_length = log2_dpte_group_bytes - 6; //length in 64b requests
+	log2_dpte_group_length = log2_dpte_group_bytes - 6; 
 
-	// full sized data pte group width in elements
+	
 	if (!surf_vert)
 		log2_dpte_group_width = log2_dpte_group_length + log2_dpte_req_width;
 	else
 		log2_dpte_group_width = log2_dpte_group_length + log2_dpte_req_height;
 
-	//But if the tile block >=64KB and the page size is 4KB, then each dPTE request is 2*64B
-	if ((log2_blk_bytes >= 16) && (log2_vmpg_bytes == 12)) // tile block >= 64KB
+	
+	if ((log2_blk_bytes >= 16) && (log2_vmpg_bytes == 12)) 
 		log2_dpte_group_width = log2_dpte_group_width - 1;
 
 	dpte_group_width = 1 << log2_dpte_group_width;
 
-	// since dpte groups are only aligned to dpte_req_width and not dpte_group_width,
-	// the upper bound for the dpte groups per row is as follows.
+	
+	
 	rq_dlg_param->dpte_groups_per_row_ub = dml_ceil((double) dpte_row_width_ub / dpte_group_width, 1);
 }
 
@@ -663,7 +640,7 @@ static void get_surf_rq_param(
 	unsigned int surface_height = 0;
 	unsigned int ppe = mode_422 ? 2 : 1;
 
-	// FIXME check if ppe apply for both luma and chroma in 422 case
+	
 	if (is_chroma | is_alpha) {
 		vp_width = pipe_param->src.viewport_width_c / ppe;
 		vp_height = pipe_param->src.viewport_height_c;
@@ -684,7 +661,7 @@ static void get_surf_rq_param(
 		unsigned int hactive_odm;
 		unsigned int src_hactive_odm;
 
-		access_dir = (pipe_param->src.source_scan == dm_vert); // vp access direction: horizontal or vertical accessed
+		access_dir = (pipe_param->src.source_scan == dm_vert); 
 		hactive_odm = pipe_param->dest.hactive / ((unsigned int) pipe_param->dest.odm_combine * 2);
 		if (is_chroma) {
 			full_src_vp_width = pipe_param->scale_ratio_depth.hscl_ratio_c * pipe_param->dest.full_recout_width;
@@ -746,7 +723,7 @@ static void get_surf_rq_param(
 
 static void dml_rq_dlg_get_rq_params(struct display_mode_lib *mode_lib, display_rq_params_st *rq_param, const display_pipe_params_st *pipe_param)
 {
-	// get param for luma surface
+	
 	rq_param->yuv420 = pipe_param->src.source_format == dm_420_8 || pipe_param->src.source_format == dm_420_10 || pipe_param->src.source_format == dm_rgbe_alpha
 			|| pipe_param->src.source_format == dm_420_12;
 
@@ -757,11 +734,11 @@ static void dml_rq_dlg_get_rq_params(struct display_mode_lib *mode_lib, display_
 	get_surf_rq_param(mode_lib, &(rq_param->sizing.rq_l), &(rq_param->dlg.rq_l), &(rq_param->misc.rq_l), pipe_param, 0, 0);
 
 	if (is_dual_plane((enum source_format_class) (pipe_param->src.source_format))) {
-		// get param for chroma surface
+		
 		get_surf_rq_param(mode_lib, &(rq_param->sizing.rq_c), &(rq_param->dlg.rq_c), &(rq_param->misc.rq_c), pipe_param, 1, rq_param->rgbe_alpha);
 	}
 
-	// calculate how to split the det buffer space between luma and chroma
+	
 	handle_det_buf_split(mode_lib, rq_param, &pipe_param->src);
 	print__rq_params_st(mode_lib, rq_param);
 }
@@ -805,9 +782,9 @@ static void calculate_ttu_cursor(
 		unsigned int cur_bit_per_pixel = 0;
 
 		if (cur_bpp == dm_cur_2bit) {
-			cur_req_size = 64; // byte
+			cur_req_size = 64; 
 			cur_bit_per_pixel = 2;
-		} else { // 32bit
+		} else { 
 			cur_bit_per_pixel = 32;
 			if (cur_src_width >= 1 && cur_src_width <= 16)
 				cur_req_size = 64;
@@ -820,7 +797,7 @@ static void calculate_ttu_cursor(
 		cur_req_width = (double) cur_req_size / ((double) cur_bit_per_pixel / 8.0);
 		cur_width_ub = dml_ceil((double) cur_src_width / (double) cur_req_width, 1) * (double) cur_req_width;
 		cur_req_per_width = cur_width_ub / (double) cur_req_width;
-		hactive_cur = (double) cur_src_width / hscl_ratio; // FIXME: oswin to think about what to do for cursor
+		hactive_cur = (double) cur_src_width / hscl_ratio; 
 
 		if (vratio_pre_l <= 1.0) {
 			*refcyc_per_req_delivery_pre_cur = hactive_cur * ref_freq_to_pix_freq / (double) cur_req_per_width;
@@ -847,8 +824,8 @@ static void calculate_ttu_cursor(
 	}
 }
 
-// Note: currently taken in as is.
-// Nice to decouple code from hw register implement and extract code that are repeated for luma and chroma.
+
+
 static void dml_rq_dlg_get_dlg_params(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *e2e_pipe_param,
@@ -871,10 +848,10 @@ static void dml_rq_dlg_get_dlg_params(
 	const scaler_taps_st *taps = &e2e_pipe_param[pipe_idx].pipe.scale_taps;
 	unsigned int pipe_index_in_combine[DC__NUM_PIPES__MAX];
 
-	// -------------------------
-	// Section 1.15.2.1: OTG dependent Params
-	// -------------------------
-	// Timing
+	
+	
+	
+	
 	unsigned int htotal = dst->htotal;
 	unsigned int hblank_end = dst->hblank_end;
 	unsigned int vblank_start = dst->vblank_start;
@@ -895,7 +872,7 @@ static void dml_rq_dlg_get_dlg_params(
 	unsigned int vp_height_c;
 	unsigned int vp_width_c;
 
-	// Scaling
+	
 	unsigned int htaps_l;
 	unsigned int htaps_c;
 	double hratio_l;
@@ -955,14 +932,14 @@ static void dml_rq_dlg_get_dlg_params(
 	double refcyc_per_req_delivery_cur0;
 	double refcyc_per_req_delivery_pre_cur1;
 	double refcyc_per_req_delivery_cur1;
-	int unsigned vba__min_dst_y_next_start = get_min_dst_y_next_start(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); // FROM VBA
-	int unsigned vba__vready_after_vcount0 = get_vready_at_or_after_vsync(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); // From VBA
+	int unsigned vba__min_dst_y_next_start = get_min_dst_y_next_start(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); 
+	int unsigned vba__vready_after_vcount0 = get_vready_at_or_after_vsync(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); 
 
-	float vba__refcyc_per_line_delivery_pre_l = get_refcyc_per_line_delivery_pre_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
-	float vba__refcyc_per_line_delivery_l = get_refcyc_per_line_delivery_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
+	float vba__refcyc_per_line_delivery_pre_l = get_refcyc_per_line_delivery_pre_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
+	float vba__refcyc_per_line_delivery_l = get_refcyc_per_line_delivery_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
 
-	float vba__refcyc_per_req_delivery_pre_l = get_refcyc_per_req_delivery_pre_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  // From VBA
-	float vba__refcyc_per_req_delivery_l = get_refcyc_per_req_delivery_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  // From VBA
+	float vba__refcyc_per_req_delivery_pre_l = get_refcyc_per_req_delivery_pre_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  
+	float vba__refcyc_per_req_delivery_l = get_refcyc_per_req_delivery_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  
 
 	memset(disp_dlg_regs, 0, sizeof(*disp_dlg_regs));
 	memset(disp_ttu_regs, 0, sizeof(*disp_ttu_regs));
@@ -980,10 +957,10 @@ static void dml_rq_dlg_get_dlg_params(
 
 	disp_dlg_regs->ref_freq_to_pix_freq = (unsigned int) (ref_freq_to_pix_freq * dml_pow(2, 19));
 	disp_dlg_regs->refcyc_per_htotal = (unsigned int) (ref_freq_to_pix_freq * (double) htotal * dml_pow(2, 8));
-	disp_dlg_regs->dlg_vblank_end = interlaced ? (vblank_end / 2) : vblank_end;	// 15 bits
+	disp_dlg_regs->dlg_vblank_end = interlaced ? (vblank_end / 2) : vblank_end;	
 
-	//set_prefetch_mode(mode_lib, cstate_en, pstate_en, ignore_viewport_pos, immediate_flip_support);
-	min_ttu_vblank = get_min_ttu_vblank_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);	// From VBA
+	
+	min_ttu_vblank = get_min_ttu_vblank_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);	
 
 	dlg_vblank_start = interlaced ? (vblank_start / 2) : vblank_start;
 	disp_dlg_regs->min_dst_y_next_start = (unsigned int) (((double) dlg_vblank_start) * dml_pow(2, 2));
@@ -996,22 +973,22 @@ static void dml_rq_dlg_get_dlg_params(
 	dml_print("DML_DLG: %s: ref_freq_to_pix_freq        = %3.2f\n", __func__, ref_freq_to_pix_freq);
 	dml_print("DML_DLG: %s: vba__min_dst_y_next_start   = 0x%0x\n", __func__, vba__min_dst_y_next_start);
 
-	//old_impl_vs_vba_impl("min_dst_y_next_start", dlg_vblank_start, vba__min_dst_y_next_start);
+	
 
-	// -------------------------
-	// Section 1.15.2.2: Prefetch, Active and TTU
-	// -------------------------
-	// Prefetch Calc
-	// Source
+	
+	
+	
+	
+	
 	dual_plane = is_dual_plane((enum source_format_class) (src->source_format));
 	mode_422 = 0;
-	access_dir = (src->source_scan == dm_vert);	// vp access direction: horizontal or vertical accessed
+	access_dir = (src->source_scan == dm_vert);	
 	vp_height_l = src->viewport_height;
 	vp_width_l = src->viewport_width;
 	vp_height_c = src->viewport_height_c;
 	vp_width_c = src->viewport_width_c;
 
-	// Scaling
+	
 	htaps_l = taps->htaps;
 	htaps_c = taps->htaps_c;
 	hratio_l = scl->hscl_ratio;
@@ -1045,21 +1022,21 @@ static void dml_rq_dlg_get_dlg_params(
 
 	dml_print("DML_DLG: %s: vready_after_vcount0 = %d\n", __func__, disp_dlg_regs->vready_after_vcount0);
 	dml_print("DML_DLG: %s: vba__vready_after_vcount0 = %d\n", __func__, vba__vready_after_vcount0);
-	//old_impl_vs_vba_impl("vready_after_vcount0", disp_dlg_regs->vready_after_vcount0, vba__vready_after_vcount0);
+	
 
 	if (interlaced)
 		vstartup_start = vstartup_start / 2;
 
-	dst_x_after_scaler = get_dst_x_after_scaler(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); // From VBA
-	dst_y_after_scaler = get_dst_y_after_scaler(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); // From VBA
+	dst_x_after_scaler = get_dst_x_after_scaler(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); 
+	dst_y_after_scaler = get_dst_y_after_scaler(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); 
 
-	// do some adjustment on the dst_after scaler to account for odm combine mode
+	
 	dml_print("DML_DLG: %s: input dst_x_after_scaler   = %d\n", __func__, dst_x_after_scaler);
 	dml_print("DML_DLG: %s: input dst_y_after_scaler   = %d\n", __func__, dst_y_after_scaler);
 
-	// need to figure out which side of odm combine we're in
+	
 	if (dst->odm_combine) {
-		// figure out which pipes go together
+		
 		bool visited[DC__NUM_PIPES__MAX];
 		unsigned int i, j, k;
 
@@ -1090,7 +1067,7 @@ static void dml_rq_dlg_get_dlg_params(
 	if (dst->odm_combine == dm_odm_combine_mode_disabled) {
 		disp_dlg_regs->refcyc_h_blank_end = (unsigned int) ((double) hblank_end * ref_freq_to_pix_freq);
 	} else {
-		unsigned int odm_combine_factor = (dst->odm_combine == dm_odm_combine_mode_2to1 ? 2 : 4); // TODO: We should really check that 4to1 is supported before setting it to 4
+		unsigned int odm_combine_factor = (dst->odm_combine == dm_odm_combine_mode_2to1 ? 2 : 4); 
 		unsigned int odm_pipe_index = pipe_index_in_combine[pipe_idx];
 		disp_dlg_regs->refcyc_h_blank_end = (unsigned int) (((double) hblank_end + odm_pipe_index * (double) dst->hactive / odm_combine_factor) * ref_freq_to_pix_freq);
 	} ASSERT(disp_dlg_regs->refcyc_h_blank_end < (unsigned int)dml_pow(2, 13));
@@ -1099,16 +1076,16 @@ static void dml_rq_dlg_get_dlg_params(
 	dml_print("DML_DLG: %s: dst_x_after_scaler[%d]     = %d\n", __func__, pipe_idx, dst_x_after_scaler);
 	dml_print("DML_DLG: %s: dst_y_after_scaler[%d]     = %d\n", __func__, pipe_idx, dst_y_after_scaler);
 
-	dst_y_prefetch = get_dst_y_prefetch(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        // From VBA
-	dst_y_per_vm_vblank = get_dst_y_per_vm_vblank(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        // From VBA
-	dst_y_per_row_vblank = get_dst_y_per_row_vblank(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        // From VBA
-	dst_y_per_vm_flip = get_dst_y_per_vm_flip(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        // From VBA
-	dst_y_per_row_flip = get_dst_y_per_row_flip(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        // From VBA
+	dst_y_prefetch = get_dst_y_prefetch(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        
+	dst_y_per_vm_vblank = get_dst_y_per_vm_vblank(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        
+	dst_y_per_row_vblank = get_dst_y_per_row_vblank(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        
+	dst_y_per_vm_flip = get_dst_y_per_vm_flip(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        
+	dst_y_per_row_flip = get_dst_y_per_row_flip(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);        
 
-	max_dst_y_per_vm_vblank = 32.0;        //U5.2
-	max_dst_y_per_row_vblank = 16.0;        //U4.2
+	max_dst_y_per_vm_vblank = 32.0;        
+	max_dst_y_per_row_vblank = 16.0;        
 
-	// magic!
+	
 	if (htotal <= 75) {
 		max_dst_y_per_vm_vblank = 100.0;
 		max_dst_y_per_row_vblank = 100.0;
@@ -1124,13 +1101,13 @@ static void dml_rq_dlg_get_dlg_params(
 
 	ASSERT(dst_y_prefetch > (dst_y_per_vm_vblank + dst_y_per_row_vblank));
 
-	vratio_pre_l = get_vratio_prefetch_l(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);    // From VBA
-	vratio_pre_c = get_vratio_prefetch_c(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);    // From VBA
+	vratio_pre_l = get_vratio_prefetch_l(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);    
+	vratio_pre_c = get_vratio_prefetch_c(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);    
 
 	dml_print("DML_DLG: %s: vratio_pre_l = %3.2f\n", __func__, vratio_pre_l);
 	dml_print("DML_DLG: %s: vratio_pre_c = %3.2f\n", __func__, vratio_pre_c);
 
-	// Active
+	
 	req_per_swath_ub_l = rq_dlg_param->rq_l.req_per_swath_ub;
 	req_per_swath_ub_c = rq_dlg_param->rq_c.req_per_swath_ub;
 	meta_row_height_l = rq_dlg_param->rq_l.meta_row_height;
@@ -1143,7 +1120,7 @@ static void dml_rq_dlg_get_dlg_params(
 	dpte_row_height_c = rq_dlg_param->rq_c.dpte_row_height;
 
 	if (mode_422) {
-		swath_width_pixels_ub_l = swath_width_ub_l * 2;  // *2 for 2 pixel per element
+		swath_width_pixels_ub_l = swath_width_ub_l * 2;  
 		swath_width_pixels_ub_c = swath_width_ub_c * 2;
 	} else {
 		swath_width_pixels_ub_l = swath_width_ub_l * 1;
@@ -1202,19 +1179,19 @@ static void dml_rq_dlg_get_dlg_params(
 	refcyc_per_req_delivery_c = 0.;
 
 	full_recout_width = 0;
-	// In ODM
+	
 	if (src->is_hsplit) {
-		// This "hack"  is only allowed (and valid) for MPC combine. In ODM
-		// combine, you MUST specify the full_recout_width...according to Oswin
+		
+		
 		if (dst->full_recout_width == 0 && !dst->odm_combine) {
 			dml_print("DML_DLG: %s: Warning: full_recout_width not set in hsplit mode\n", __func__);
-			full_recout_width = dst->recout_width * 2; // assume half split for dcn1
+			full_recout_width = dst->recout_width * 2; 
 		} else
 			full_recout_width = dst->full_recout_width;
 	} else
 		full_recout_width = dst->recout_width;
 
-	// As of DCN2, mpc_combine and odm_combine are mutually exclusive
+	
 	refcyc_per_line_delivery_pre_l = get_refcyc_per_delivery(
 			mode_lib,
 			refclk_freq_in_mhz,
@@ -1225,7 +1202,7 @@ static void dml_rq_dlg_get_dlg_params(
 			vratio_pre_l,
 			hscale_pixel_rate_l,
 			swath_width_pixels_ub_l,
-			1); // per line
+			1); 
 
 	refcyc_per_line_delivery_l = get_refcyc_per_delivery(
 			mode_lib,
@@ -1237,7 +1214,7 @@ static void dml_rq_dlg_get_dlg_params(
 			vratio_l,
 			hscale_pixel_rate_l,
 			swath_width_pixels_ub_l,
-			1); // per line
+			1); 
 
 	dml_print("DML_DLG: %s: full_recout_width              = %d\n", __func__, full_recout_width);
 	dml_print("DML_DLG: %s: hscale_pixel_rate_l            = %3.2f\n", __func__, hscale_pixel_rate_l);
@@ -1246,12 +1223,12 @@ static void dml_rq_dlg_get_dlg_params(
 	dml_print("DML_DLG: %s: vba__refcyc_per_line_delivery_pre_l = %3.2f\n", __func__, vba__refcyc_per_line_delivery_pre_l);
 	dml_print("DML_DLG: %s: vba__refcyc_per_line_delivery_l     = %3.2f\n", __func__, vba__refcyc_per_line_delivery_l);
 
-	//old_impl_vs_vba_impl("refcyc_per_line_delivery_pre_l", refcyc_per_line_delivery_pre_l, vba__refcyc_per_line_delivery_pre_l);
-	//old_impl_vs_vba_impl("refcyc_per_line_delivery_l", refcyc_per_line_delivery_l, vba__refcyc_per_line_delivery_l);
+	
+	
 
 	if (dual_plane) {
-		float vba__refcyc_per_line_delivery_pre_c = get_refcyc_per_line_delivery_pre_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
-		float vba__refcyc_per_line_delivery_c = get_refcyc_per_line_delivery_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
+		float vba__refcyc_per_line_delivery_pre_c = get_refcyc_per_line_delivery_pre_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
+		float vba__refcyc_per_line_delivery_c = get_refcyc_per_line_delivery_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
 
 		refcyc_per_line_delivery_pre_c = get_refcyc_per_delivery(
 				mode_lib,
@@ -1263,7 +1240,7 @@ static void dml_rq_dlg_get_dlg_params(
 				vratio_pre_c,
 				hscale_pixel_rate_c,
 				swath_width_pixels_ub_c,
-				1); // per line
+				1); 
 
 		refcyc_per_line_delivery_c = get_refcyc_per_delivery(
 				mode_lib,
@@ -1275,24 +1252,24 @@ static void dml_rq_dlg_get_dlg_params(
 				vratio_c,
 				hscale_pixel_rate_c,
 				swath_width_pixels_ub_c,
-				1); // per line
+				1); 
 
 		dml_print("DML_DLG: %s: refcyc_per_line_delivery_pre_c = %3.2f\n", __func__, refcyc_per_line_delivery_pre_c);
 		dml_print("DML_DLG: %s: refcyc_per_line_delivery_c     = %3.2f\n", __func__, refcyc_per_line_delivery_c);
 		dml_print("DML_DLG: %s: vba__refcyc_per_line_delivery_pre_c = %3.2f\n", __func__, vba__refcyc_per_line_delivery_pre_c);
 		dml_print("DML_DLG: %s: vba__refcyc_per_line_delivery_c     = %3.2f\n", __func__, vba__refcyc_per_line_delivery_c);
 
-		//old_impl_vs_vba_impl("refcyc_per_line_delivery_pre_c", refcyc_per_line_delivery_pre_c, vba__refcyc_per_line_delivery_pre_c);
-		//old_impl_vs_vba_impl("refcyc_per_line_delivery_c", refcyc_per_line_delivery_c, vba__refcyc_per_line_delivery_c);
+		
+		
 	}
 
 	if (src->dynamic_metadata_enable && src->gpuvm)
-		disp_dlg_regs->refcyc_per_vm_dmdata = get_refcyc_per_vm_dmdata_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
+		disp_dlg_regs->refcyc_per_vm_dmdata = get_refcyc_per_vm_dmdata_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
 
-	disp_dlg_regs->dmdata_dl_delta = get_dmdata_dl_delta_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
+	disp_dlg_regs->dmdata_dl_delta = get_dmdata_dl_delta_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
 
-	// TTU - Luma / Chroma
-	if (access_dir) {  // vertical access
+	
+	if (access_dir) {  
 		scaler_rec_in_width_l = vp_height_l;
 		scaler_rec_in_width_c = vp_height_c;
 	} else {
@@ -1310,7 +1287,7 @@ static void dml_rq_dlg_get_dlg_params(
 			vratio_pre_l,
 			hscale_pixel_rate_l,
 			scaler_rec_in_width_l,
-			req_per_swath_ub_l);  // per req
+			req_per_swath_ub_l);  
 
 	refcyc_per_req_delivery_l = get_refcyc_per_delivery(
 			mode_lib,
@@ -1322,21 +1299,21 @@ static void dml_rq_dlg_get_dlg_params(
 			vratio_l,
 			hscale_pixel_rate_l,
 			scaler_rec_in_width_l,
-			req_per_swath_ub_l);  // per req
+			req_per_swath_ub_l);  
 
 	dml_print("DML_DLG: %s: refcyc_per_req_delivery_pre_l = %3.2f\n", __func__, refcyc_per_req_delivery_pre_l);
 	dml_print("DML_DLG: %s: refcyc_per_req_delivery_l     = %3.2f\n", __func__, refcyc_per_req_delivery_l);
 	dml_print("DML_DLG: %s: vba__refcyc_per_req_delivery_pre_l = %3.2f\n", __func__, vba__refcyc_per_req_delivery_pre_l);
 	dml_print("DML_DLG: %s: vba__refcyc_per_req_delivery_l     = %3.2f\n", __func__, vba__refcyc_per_req_delivery_l);
 
-	//old_impl_vs_vba_impl("refcyc_per_req_delivery_pre_l", refcyc_per_req_delivery_pre_l, vba__refcyc_per_req_delivery_pre_l);
-	//old_impl_vs_vba_impl("refcyc_per_req_delivery_l", refcyc_per_req_delivery_l, vba__refcyc_per_req_delivery_l);
+	
+	
 
 	ASSERT(refcyc_per_req_delivery_pre_l < dml_pow(2, 13)); ASSERT(refcyc_per_req_delivery_l < dml_pow(2, 13));
 
 	if (dual_plane) {
-		float vba__refcyc_per_req_delivery_pre_c = get_refcyc_per_req_delivery_pre_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  // From VBA
-		float vba__refcyc_per_req_delivery_c = get_refcyc_per_req_delivery_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  // From VBA
+		float vba__refcyc_per_req_delivery_pre_c = get_refcyc_per_req_delivery_pre_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  
+		float vba__refcyc_per_req_delivery_c = get_refcyc_per_req_delivery_c_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  
 
 		refcyc_per_req_delivery_pre_c = get_refcyc_per_delivery(
 				mode_lib,
@@ -1348,7 +1325,7 @@ static void dml_rq_dlg_get_dlg_params(
 				vratio_pre_c,
 				hscale_pixel_rate_c,
 				scaler_rec_in_width_c,
-				req_per_swath_ub_c);  // per req
+				req_per_swath_ub_c);  
 		refcyc_per_req_delivery_c = get_refcyc_per_delivery(
 				mode_lib,
 				refclk_freq_in_mhz,
@@ -1359,20 +1336,20 @@ static void dml_rq_dlg_get_dlg_params(
 				vratio_c,
 				hscale_pixel_rate_c,
 				scaler_rec_in_width_c,
-				req_per_swath_ub_c);  // per req
+				req_per_swath_ub_c);  
 
 		dml_print("DML_DLG: %s: refcyc_per_req_delivery_pre_c = %3.2f\n", __func__, refcyc_per_req_delivery_pre_c);
 		dml_print("DML_DLG: %s: refcyc_per_req_delivery_c     = %3.2f\n", __func__, refcyc_per_req_delivery_c);
 		dml_print("DML_DLG: %s: vba__refcyc_per_req_delivery_pre_c = %3.2f\n", __func__, vba__refcyc_per_req_delivery_pre_c);
 		dml_print("DML_DLG: %s: vba__refcyc_per_req_delivery_c     = %3.2f\n", __func__, vba__refcyc_per_req_delivery_c);
 
-		//old_impl_vs_vba_impl("refcyc_per_req_delivery_pre_c", refcyc_per_req_delivery_pre_c, vba__refcyc_per_req_delivery_pre_c);
-		//old_impl_vs_vba_impl("refcyc_per_req_delivery_c", refcyc_per_req_delivery_c, vba__refcyc_per_req_delivery_c);
+		
+		
 
 		ASSERT(refcyc_per_req_delivery_pre_c < dml_pow(2, 13)); ASSERT(refcyc_per_req_delivery_c < dml_pow(2, 13));
 	}
 
-	// TTU - Cursor
+	
 	refcyc_per_req_delivery_pre_cur0 = 0.0;
 	refcyc_per_req_delivery_cur0 = 0.0;
 
@@ -1395,28 +1372,28 @@ static void dml_rq_dlg_get_dlg_params(
 				src->cur0_src_width,
 				(enum cursor_bpp) (src->cur0_bpp));
 
-		vba__refcyc_per_req_delivery_pre_cur0 = get_refcyc_per_cursor_req_delivery_pre_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
-		vba__refcyc_per_req_delivery_cur0 = get_refcyc_per_cursor_req_delivery_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; // From VBA
+		vba__refcyc_per_req_delivery_pre_cur0 = get_refcyc_per_cursor_req_delivery_pre_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
+		vba__refcyc_per_req_delivery_cur0 = get_refcyc_per_cursor_req_delivery_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz; 
 
 		dml_print("DML_DLG: %s: refcyc_per_req_delivery_pre_cur0 = %3.2f\n", __func__, refcyc_per_req_delivery_pre_cur0);
 		dml_print("DML_DLG: %s: refcyc_per_req_delivery_cur0     = %3.2f\n", __func__, refcyc_per_req_delivery_cur0);
 		dml_print("DML_DLG: %s: vba__refcyc_per_req_delivery_pre_cur0 = %3.2f\n", __func__, vba__refcyc_per_req_delivery_pre_cur0);
 		dml_print("DML_DLG: %s: vba__refcyc_per_req_delivery_cur0     = %3.2f\n", __func__, vba__refcyc_per_req_delivery_cur0);
 
-		//old_impl_vs_vba_impl("refcyc_per_req_delivery_pre_cur0", refcyc_per_req_delivery_pre_cur0, vba__refcyc_per_req_delivery_pre_cur0);
-		//old_impl_vs_vba_impl("refcyc_per_req_delivery_cur0", refcyc_per_req_delivery_cur0, vba__refcyc_per_req_delivery_cur0);
+		
+		
 	}
 
 	refcyc_per_req_delivery_pre_cur1 = 0.0;
 	refcyc_per_req_delivery_cur1 = 0.0;
 
-	// TTU - Misc
-	// all hard-coded
+	
+	
 
-	// Assignment to register structures
-	disp_dlg_regs->dst_y_after_scaler = dst_y_after_scaler;	// in terms of line
+	
+	disp_dlg_regs->dst_y_after_scaler = dst_y_after_scaler;	
 	ASSERT(disp_dlg_regs->dst_y_after_scaler < (unsigned int)8);
-	disp_dlg_regs->refcyc_x_after_scaler = dst_x_after_scaler * ref_freq_to_pix_freq;	// in terms of refclk
+	disp_dlg_regs->refcyc_x_after_scaler = dst_x_after_scaler * ref_freq_to_pix_freq;	
 	ASSERT(disp_dlg_regs->refcyc_x_after_scaler < (unsigned int)dml_pow(2, 13));
 	disp_dlg_regs->dst_y_prefetch = (unsigned int) (dst_y_prefetch * dml_pow(2, 2));
 	disp_dlg_regs->dst_y_per_vm_vblank = (unsigned int) (dst_y_per_vm_vblank * dml_pow(2, 2));
@@ -1443,7 +1420,7 @@ static void dml_rq_dlg_get_dlg_params(
 	disp_dlg_regs->refcyc_per_meta_chunk_vblank_l = (unsigned int) (dst_y_per_row_vblank * (double) htotal * ref_freq_to_pix_freq / (double) meta_chunks_per_row_ub_l);
 	ASSERT(disp_dlg_regs->refcyc_per_meta_chunk_vblank_l < (unsigned int)dml_pow(2, 13));
 
-	disp_dlg_regs->refcyc_per_meta_chunk_vblank_c = disp_dlg_regs->refcyc_per_meta_chunk_vblank_l; // dcc for 4:2:0 is not supported in dcn1.0.  assigned to be the same as _l for now
+	disp_dlg_regs->refcyc_per_meta_chunk_vblank_c = disp_dlg_regs->refcyc_per_meta_chunk_vblank_l; 
 
 	disp_dlg_regs->refcyc_per_pte_group_flip_l = (unsigned int) (dst_y_per_row_flip * htotal * ref_freq_to_pix_freq) / dpte_groups_per_row_ub_l;
 	disp_dlg_regs->refcyc_per_meta_chunk_flip_l = (unsigned int) (dst_y_per_row_flip * htotal * ref_freq_to_pix_freq) / meta_chunks_per_row_ub_l;
@@ -1453,12 +1430,12 @@ static void dml_rq_dlg_get_dlg_params(
 		disp_dlg_regs->refcyc_per_meta_chunk_flip_c = (unsigned int) (dst_y_per_row_flip * htotal * ref_freq_to_pix_freq) / meta_chunks_per_row_ub_c;
 	}
 
-	disp_dlg_regs->refcyc_per_vm_group_vblank = get_refcyc_per_vm_group_vblank_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;            // From VBA
-	disp_dlg_regs->refcyc_per_vm_group_flip = get_refcyc_per_vm_group_flip_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;            // From VBA
-	disp_dlg_regs->refcyc_per_vm_req_vblank = get_refcyc_per_vm_req_vblank_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz * dml_pow(2, 10); // From VBA
-	disp_dlg_regs->refcyc_per_vm_req_flip = get_refcyc_per_vm_req_flip_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz * dml_pow(2, 10);   // From VBA
+	disp_dlg_regs->refcyc_per_vm_group_vblank = get_refcyc_per_vm_group_vblank_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;            
+	disp_dlg_regs->refcyc_per_vm_group_flip = get_refcyc_per_vm_group_flip_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;            
+	disp_dlg_regs->refcyc_per_vm_req_vblank = get_refcyc_per_vm_req_vblank_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz * dml_pow(2, 10); 
+	disp_dlg_regs->refcyc_per_vm_req_flip = get_refcyc_per_vm_req_flip_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz * dml_pow(2, 10);   
 
-	// Clamp to max for now
+	
 	if (disp_dlg_regs->refcyc_per_vm_group_vblank >= (unsigned int) dml_pow(2, 23))
 		disp_dlg_regs->refcyc_per_vm_group_vblank = dml_pow(2, 23) - 1;
 
@@ -1505,7 +1482,7 @@ static void dml_rq_dlg_get_dlg_params(
 		if (disp_dlg_regs->refcyc_per_pte_group_nom_c >= (unsigned int) dml_pow(2, 23))
 			disp_dlg_regs->refcyc_per_pte_group_nom_c = dml_pow(2, 23) - 1;
 
-		// TODO: Is this the right calculation? Does htotal need to be halved?
+		
 		disp_dlg_regs->refcyc_per_meta_chunk_nom_c = (unsigned int) ((double) meta_row_height_c / (double) vratio_c * (double) htotal * ref_freq_to_pix_freq
 				/ (double) meta_chunks_per_row_ub_c);
 		if (disp_dlg_regs->refcyc_per_meta_chunk_nom_c >= (unsigned int) dml_pow(2, 23))
@@ -1525,7 +1502,7 @@ static void dml_rq_dlg_get_dlg_params(
 	disp_dlg_regs->chunk_hdl_adjust_cur1 = 3;
 	disp_dlg_regs->dst_y_offset_cur1 = 0;
 
-	disp_dlg_regs->dst_y_delta_drq_limit = 0x7fff; // off
+	disp_dlg_regs->dst_y_delta_drq_limit = 0x7fff; 
 
 	disp_ttu_regs->refcyc_per_req_delivery_pre_l = (unsigned int) (refcyc_per_req_delivery_pre_l * dml_pow(2, 10));
 	disp_ttu_regs->refcyc_per_req_delivery_l = (unsigned int) (refcyc_per_req_delivery_l * dml_pow(2, 10));
@@ -1573,7 +1550,7 @@ void dml31_rq_dlg_get_dlg_reg(
 	display_rq_params_st rq_param = {0};
 	display_dlg_sys_params_st dlg_sys_param = {0};
 
-	// Get watermark and Tex.
+	
 	dlg_sys_param.t_urg_wm_us = get_wm_urgent(mode_lib, e2e_pipe_param, num_pipes);
 	dlg_sys_param.deepsleep_dcfclk_mhz = get_clk_dcf_deepsleep(mode_lib, e2e_pipe_param, num_pipes);
 	dlg_sys_param.t_extra_us = get_urgent_extra_latency(mode_lib, e2e_pipe_param, num_pipes);
@@ -1585,7 +1562,7 @@ void dml31_rq_dlg_get_dlg_reg(
 
 	print__dlg_sys_params_st(mode_lib, &dlg_sys_param);
 
-	// system parameter calculation done
+	
 
 	dml_print("DML_DLG: Calculation for pipe[%d] start\n\n", pipe_idx);
 	dml_rq_dlg_get_rq_params(mode_lib, &rq_param, &e2e_pipe_param[pipe_idx].pipe);

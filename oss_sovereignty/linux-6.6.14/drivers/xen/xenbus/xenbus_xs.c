@@ -1,35 +1,4 @@
-/******************************************************************************
- * xenbus_xs.c
- *
- * This is the kernel equivalent of the "xs" library.  We don't need everything
- * and we use xenbus_comms for communication.
- *
- * Copyright (C) 2005 Rusty Russell, IBM Corporation
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -51,46 +20,34 @@
 #include <xen/xen.h>
 #include "xenbus.h"
 
-/*
- * Framework to protect suspend/resume handling against normal Xenstore
- * message handling:
- * During suspend/resume there must be no open transaction and no pending
- * Xenstore request.
- * New watch events happening in this time can be ignored by firing all watches
- * after resume.
- */
+ 
 
-/* Lock protecting enter/exit critical region. */
+ 
 static DEFINE_SPINLOCK(xs_state_lock);
-/* Number of users in critical region (protected by xs_state_lock). */
+ 
 static unsigned int xs_state_users;
-/* Suspend handler waiting or already active (protected by xs_state_lock)? */
+ 
 static int xs_suspend_active;
-/* Unique Xenstore request id (protected by xs_state_lock). */
+ 
 static uint32_t xs_request_id;
 
-/* Wait queue for all callers waiting for critical region to become usable. */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(xs_state_enter_wq);
-/* Wait queue for suspend handling waiting for critical region being empty. */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(xs_state_exit_wq);
 
-/* List of registered watches, and a lock to protect it. */
+ 
 static LIST_HEAD(watches);
 static DEFINE_SPINLOCK(watches_lock);
 
-/* List of pending watch callback events, and a lock to protect it. */
+ 
 static LIST_HEAD(watch_events);
 static DEFINE_SPINLOCK(watch_events_lock);
 
-/* Protect watch (de)register against save/restore. */
+ 
 static DECLARE_RWSEM(xs_watch_rwsem);
 
-/*
- * Details of the xenwatch callback kernel thread. The thread waits on the
- * watch_events_waitq for work to do (queued on watch_events list). When it
- * wakes up it acquires the xenwatch_mutex before reading the list and
- * carrying out work.
- */
+ 
 static pid_t xenwatch_pid;
 static DEFINE_MUTEX(xenwatch_mutex);
 static DECLARE_WAIT_QUEUE_HEAD(watch_events_waitq);
@@ -180,8 +137,7 @@ static bool xenbus_ok(void)
 		return true;
 	case XS_PV:
 	case XS_HVM:
-		/* FIXME: Could check that the remote domain is alive,
-		 * but it is normally initial domain. */
+		 
 		return true;
 	default:
 		break;
@@ -192,12 +148,12 @@ static bool xenbus_ok(void)
 static bool test_reply(struct xb_req_data *req)
 {
 	if (req->state == xb_req_state_got_reply || !xenbus_ok()) {
-		/* read req->state before all other fields */
+		 
 		virt_rmb();
 		return true;
 	}
 
-	/* Make sure to reread req->state each time. */
+	 
 	barrier();
 
 	return false;
@@ -209,12 +165,7 @@ static void *read_reply(struct xb_req_data *req)
 		wait_event(req->wq, test_reply(req));
 
 		if (!xenbus_ok())
-			/*
-			 * If we are in the process of being shut-down there is
-			 * no point of trying to contact XenBus - it is either
-			 * killed (xenstored application) or the other domain
-			 * has been killed or is unreachable.
-			 */
+			 
 			return ERR_PTR(-EIO);
 		if (req->err)
 			return ERR_PTR(req->err);
@@ -233,7 +184,7 @@ static void xs_send(struct xb_req_data *req, struct xsd_sockmsg *msg)
 	req->state = xb_req_state_queued;
 	init_waitqueue_head(&req->wq);
 
-	/* Save the caller req_id and restore it later in the reply */
+	 
 	req->caller_req_id = req->msg.req_id;
 	req->msg.req_id = xs_request_enter(req);
 
@@ -298,7 +249,7 @@ int xenbus_dev_request_and_reply(struct xsd_sockmsg *msg, void *par)
 }
 EXPORT_SYMBOL(xenbus_dev_request_and_reply);
 
-/* Send message to xs, get kmalloc'ed reply.  ERR_PTR() on error. */
+ 
 static void *xs_talkv(struct xenbus_transaction t,
 		      enum xsd_sockmsg_type type,
 		      const struct kvec *iovec,
@@ -351,7 +302,7 @@ static void *xs_talkv(struct xenbus_transaction t,
 	return ret;
 }
 
-/* Simplified version of xs_talkv: single message. */
+ 
 static void *xs_single(struct xenbus_transaction t,
 		       enum xsd_sockmsg_type type,
 		       const char *string,
@@ -364,7 +315,7 @@ static void *xs_single(struct xenbus_transaction t,
 	return xs_talkv(t, type, &iovec, 1, len);
 }
 
-/* Many commands only need an ack, don't care what it says. */
+ 
 static int xs_error(char *reply)
 {
 	if (IS_ERR(reply))
@@ -384,7 +335,7 @@ static unsigned int count_strings(const char *strings, unsigned int len)
 	return num;
 }
 
-/* Return the path to dir with /name appended. Buffer must be kfree()'ed. */
+ 
 static char *join(const char *dir, const char *name)
 {
 	char *buffer;
@@ -400,10 +351,10 @@ static char **split(char *strings, unsigned int len, unsigned int *num)
 {
 	char *p, **ret;
 
-	/* Count the strings. */
+	 
 	*num = count_strings(strings, len);
 
-	/* Transfer to one big alloc for easy freeing. */
+	 
 	ret = kmalloc(*num * sizeof(char *) + len, GFP_NOIO | __GFP_HIGH);
 	if (!ret) {
 		kfree(strings);
@@ -438,7 +389,7 @@ char **xenbus_directory(struct xenbus_transaction t,
 }
 EXPORT_SYMBOL_GPL(xenbus_directory);
 
-/* Check if a path exists. Return 1 if it does. */
+ 
 int xenbus_exists(struct xenbus_transaction t,
 		  const char *dir, const char *node)
 {
@@ -453,10 +404,7 @@ int xenbus_exists(struct xenbus_transaction t,
 }
 EXPORT_SYMBOL_GPL(xenbus_exists);
 
-/* Get the value of a single file.
- * Returns a kmalloced value: call free() on it after use.
- * len indicates length in bytes.
- */
+ 
 void *xenbus_read(struct xenbus_transaction t,
 		  const char *dir, const char *node, unsigned int *len)
 {
@@ -473,9 +421,7 @@ void *xenbus_read(struct xenbus_transaction t,
 }
 EXPORT_SYMBOL_GPL(xenbus_read);
 
-/* Write the value of a single file.
- * Returns -err on failure.
- */
+ 
 int xenbus_write(struct xenbus_transaction t,
 		 const char *dir, const char *node, const char *string)
 {
@@ -498,7 +444,7 @@ int xenbus_write(struct xenbus_transaction t,
 }
 EXPORT_SYMBOL_GPL(xenbus_write);
 
-/* Create a new directory. */
+ 
 int xenbus_mkdir(struct xenbus_transaction t,
 		 const char *dir, const char *node)
 {
@@ -515,7 +461,7 @@ int xenbus_mkdir(struct xenbus_transaction t,
 }
 EXPORT_SYMBOL_GPL(xenbus_mkdir);
 
-/* Destroy a file or directory (directories must be empty). */
+ 
 int xenbus_rm(struct xenbus_transaction t, const char *dir, const char *node)
 {
 	char *path;
@@ -531,9 +477,7 @@ int xenbus_rm(struct xenbus_transaction t, const char *dir, const char *node)
 }
 EXPORT_SYMBOL_GPL(xenbus_rm);
 
-/* Start a transaction: changes by others will not be seen during this
- * transaction, and changes will not be visible to others until end.
- */
+ 
 int xenbus_transaction_start(struct xenbus_transaction *t)
 {
 	char *id_str;
@@ -548,9 +492,7 @@ int xenbus_transaction_start(struct xenbus_transaction *t)
 }
 EXPORT_SYMBOL_GPL(xenbus_transaction_start);
 
-/* End a transaction.
- * If abandon is true, transaction is discarded instead of committed.
- */
+ 
 int xenbus_transaction_end(struct xenbus_transaction t, int abort)
 {
 	char abortstr[2];
@@ -564,7 +506,7 @@ int xenbus_transaction_end(struct xenbus_transaction t, int abort)
 }
 EXPORT_SYMBOL_GPL(xenbus_transaction_end);
 
-/* Single read and scanf: returns -errno or num scanned. */
+ 
 int xenbus_scanf(struct xenbus_transaction t,
 		 const char *dir, const char *node, const char *fmt, ...)
 {
@@ -580,14 +522,14 @@ int xenbus_scanf(struct xenbus_transaction t,
 	ret = vsscanf(val, fmt, ap);
 	va_end(ap);
 	kfree(val);
-	/* Distinctive errno. */
+	 
 	if (ret == 0)
 		return -ERANGE;
 	return ret;
 }
 EXPORT_SYMBOL_GPL(xenbus_scanf);
 
-/* Read an (optional) unsigned value. */
+ 
 unsigned int xenbus_read_unsigned(const char *dir, const char *node,
 				  unsigned int default_val)
 {
@@ -602,7 +544,7 @@ unsigned int xenbus_read_unsigned(const char *dir, const char *node,
 }
 EXPORT_SYMBOL_GPL(xenbus_read_unsigned);
 
-/* Single printf and write: returns -errno or 0. */
+ 
 int xenbus_printf(struct xenbus_transaction t,
 		  const char *dir, const char *node, const char *fmt, ...)
 {
@@ -625,7 +567,7 @@ int xenbus_printf(struct xenbus_transaction t,
 }
 EXPORT_SYMBOL_GPL(xenbus_printf);
 
-/* Takes tuples of names, scanf-style args, and void **, NULL terminated. */
+ 
 int xenbus_gather(struct xenbus_transaction t, const char *dir, ...)
 {
 	va_list ap;
@@ -721,12 +663,7 @@ int xs_watch_msg(struct xs_watch_event *event)
 	return 0;
 }
 
-/*
- * Certain older XenBus toolstack cannot handle reading values that are
- * not populated. Some Xen 3.4 installation are incapable of doing this
- * so if we are running on anything older than 4 do not attempt to read
- * control/platform-feature-xs_reset_watches.
- */
+ 
 static bool xen_strict_xenbus_quirk(void)
 {
 #ifdef CONFIG_X86
@@ -760,10 +697,10 @@ static void xs_reset_watches(void)
 		pr_warn("xs_reset_watches failed: %d\n", err);
 }
 
-/* Register callback to watch this node. */
+ 
 int register_xenbus_watch(struct xenbus_watch *watch)
 {
-	/* Pointer in ascii is the token. */
+	 
 	char token[sizeof(watch) * 2 + 1];
 	int err;
 
@@ -813,12 +750,11 @@ void unregister_xenbus_watch(struct xenbus_watch *watch)
 
 	up_read(&xs_watch_rwsem);
 
-	/* Make sure there are no callbacks running currently (unless
-	   its us) */
+	 
 	if (current->pid != xenwatch_pid)
 		mutex_lock(&xenwatch_mutex);
 
-	/* Cancel pending watch events. */
+	 
 	spin_lock(&watch_events_lock);
 	if (watch->nr_pending) {
 		list_for_each_entry_safe(event, tmp, &watch_events, list) {
@@ -855,7 +791,7 @@ void xs_resume(void)
 
 	xs_suspend_exit();
 
-	/* No need for watches_lock: the xs_watch_rwsem is sufficient. */
+	 
 	list_for_each_entry(watch, &watches, list) {
 		sprintf(token, "%lX", (long)watch);
 		xs_watch(watch->node, token);
@@ -908,13 +844,7 @@ static int xenwatch_thread(void *unused)
 	return 0;
 }
 
-/*
- * Wake up all threads waiting for a xenstore reply. In case of shutdown all
- * pending replies will be marked as "aborted" in order to let the waiters
- * return in spite of xenstore possibly no longer being able to reply. This
- * will avoid blocking shutdown by a thread waiting for xenstore but being
- * necessary for shutdown processing to proceed.
- */
+ 
 static int xs_reboot_notify(struct notifier_block *nb,
 			    unsigned long code, void *unused)
 {
@@ -940,7 +870,7 @@ int xs_init(void)
 
 	register_reboot_notifier(&xs_reboot_nb);
 
-	/* Initialize the shared memory rings to talk to xenstored */
+	 
 	err = xb_init_comms();
 	if (err)
 		return err;
@@ -949,7 +879,7 @@ int xs_init(void)
 	if (IS_ERR(task))
 		return PTR_ERR(task);
 
-	/* shutdown watches for kexec boot */
+	 
 	xs_reset_watches();
 
 	return 0;

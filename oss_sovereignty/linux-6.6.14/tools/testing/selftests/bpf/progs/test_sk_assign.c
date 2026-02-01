@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Cloudflare Ltd.
-// Copyright (c) 2020 Isovalent, Inc.
+
+
+
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -18,7 +18,7 @@
 #include "bpf_misc.h"
 
 #if defined(IPROUTE2_HAVE_LIBBPF)
-/* Use a new-style map definition. */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_SOCKMAP);
 	__type(key, int);
@@ -27,10 +27,10 @@ struct {
 	__uint(max_entries, 1);
 } server_map SEC(".maps");
 #else
-/* Pin map under /sys/fs/bpf/tc/globals/<map name> */
+ 
 #define PIN_GLOBAL_NS 2
 
-/* Must match struct bpf_elf_map layout from iproute2 */
+ 
 struct {
 	__u32 type;
 	__u32 size_key;
@@ -50,7 +50,7 @@ struct {
 
 char _license[] SEC("license") = "GPL";
 
-/* Fill 'tuple' with L3 info, and attempt to find L4. On fail, return NULL. */
+ 
 static inline struct bpf_sock_tuple *
 get_tuple(struct __sk_buff *skb, bool *ipv4, bool *tcp)
 {
@@ -71,7 +71,7 @@ get_tuple(struct __sk_buff *skb, bool *ipv4, bool *tcp)
 		if (iph + 1 > data_end)
 			return NULL;
 		if (iph->ihl != 5)
-			/* Options are not supported */
+			 
 			return NULL;
 		ihl_len = iph->ihl * 4;
 		proto = iph->protocol;
@@ -180,11 +180,7 @@ int bpf_sk_assign_test(struct __sk_buff *skb)
 	if (!tuple)
 		return TC_ACT_SHOT;
 
-	/* Note that the verifier socket return type for bpf_skc_lookup_tcp()
-	 * differs from bpf_sk_lookup_udp(), so even though the C-level type is
-	 * the same here, if we try to share the implementations they will
-	 * fail to verify because we're crossing pointer types.
-	 */
+	 
 	if (tcp)
 		ret = handle_tcp(skb, tuple, ipv4);
 	else

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
- */
+
+ 
 
 #include "mana_ib.h"
 
@@ -41,7 +39,7 @@ static int mana_ib_cfg_vport_steering(struct mana_ib_dev *dev,
 	req->default_rxobj = default_rxobj;
 	req->hdr.dev_id = mdev->dev_id;
 
-	/* If there are more than 1 entries in indirection table, enable RSS */
+	 
 	if (log_ind_tbl_size)
 		req->rss_enable = true;
 
@@ -51,10 +49,7 @@ static int mana_ib_cfg_vport_steering(struct mana_ib_dev *dev,
 	req->cqe_coalescing_enable = 1;
 
 	req_indir_tab = (mana_handle_t *)(req + 1);
-	/* The ind table passed to the hardware must have
-	 * MANA_INDIRECT_TABLE_SIZE entries. Adjust the verb
-	 * ind_table to MANA_INDIRECT_TABLE_SIZE if required
-	 */
+	 
 	ibdev_dbg(&dev->ib_dev, "ind table size %u\n", 1 << log_ind_tbl_size);
 	for (i = 0; i < MANA_INDIRECT_TABLE_SIZE; i++) {
 		req_indir_tab[i] = ind_table[i % (1 << log_ind_tbl_size)];
@@ -158,7 +153,7 @@ static int mana_ib_create_qp_rss(struct ib_qp *ibqp, struct ib_pd *pd,
 		return -EINVAL;
 	}
 
-	/* IB ports start with 1, MANA start with 0 */
+	 
 	port = ucmd.port;
 	if (port < 1 || port > mc->num_ports) {
 		ibdev_dbg(&mdev->ib_dev, "Invalid port %u in creating qp\n",
@@ -203,7 +198,7 @@ static int mana_ib_create_qp_rss(struct ib_qp *ibqp, struct ib_pd *pd,
 		if (ret)
 			goto fail;
 
-		/* The GDMA regions are now owned by the WQ object */
+		 
 		wq->gdma_region = GDMA_INVALID_DMA_REGION;
 		cq->gdma_region = GDMA_INVALID_DMA_REGION;
 
@@ -290,7 +285,7 @@ static int mana_ib_create_qp_raw(struct ib_qp *ibqp, struct ib_pd *ibpd,
 		return err;
 	}
 
-	/* IB ports start with 1, MANA Ethernet ports start with 0 */
+	 
 	port = ucmd.port;
 	if (port < 1 || port > mc->num_ports)
 		return -EINVAL;
@@ -346,7 +341,7 @@ static int mana_ib_create_qp_raw(struct ib_qp *ibqp, struct ib_pd *ibpd,
 		  "mana_ib_gd_create_dma_region ret %d gdma_region 0x%llx\n",
 		  err, qp->sq_gdma_region);
 
-	/* Create a WQ on the same port handle used by the Ethernet */
+	 
 	wq_spec.gdma_region = qp->sq_gdma_region;
 	wq_spec.queue_size = ucmd.sq_buf_size;
 
@@ -364,7 +359,7 @@ static int mana_ib_create_qp_raw(struct ib_qp *ibqp, struct ib_pd *ibpd,
 		goto err_destroy_dma_region;
 	}
 
-	/* The GDMA regions are now owned by the WQ object */
+	 
 	qp->sq_gdma_region = GDMA_INVALID_DMA_REGION;
 	send_cq->gdma_region = GDMA_INVALID_DMA_REGION;
 
@@ -409,14 +404,14 @@ int mana_ib_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attr,
 {
 	switch (attr->qp_type) {
 	case IB_QPT_RAW_PACKET:
-		/* When rwq_ind_tbl is used, it's for creating WQs for RSS */
+		 
 		if (attr->rwq_ind_tbl)
 			return mana_ib_create_qp_rss(ibqp, ibqp->pd, attr,
 						     udata);
 
 		return mana_ib_create_qp_raw(ibqp, ibqp->pd, attr, udata);
 	default:
-		/* Creating QP other than IB_QPT_RAW_PACKET is not supported */
+		 
 		ibdev_dbg(ibqp->device, "Creating QP type %u not supported\n",
 			  attr->qp_type);
 	}
@@ -427,7 +422,7 @@ int mana_ib_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attr,
 int mana_ib_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 		      int attr_mask, struct ib_udata *udata)
 {
-	/* modify_qp is not supported by this version of the driver */
+	 
 	return -EOPNOTSUPP;
 }
 

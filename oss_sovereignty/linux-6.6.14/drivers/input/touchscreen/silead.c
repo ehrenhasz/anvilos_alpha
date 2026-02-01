@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* -------------------------------------------------------------------------
- * Copyright (C) 2014-2015, Intel Corporation
- *
- * Derived from:
- *  gslX68X.c
- *  Copyright (C) 2010-2015, Shanghai Sileadinc Co.Ltd
- *
- * -------------------------------------------------------------------------
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -263,7 +255,7 @@ static void silead_ts_read_data(struct i2c_client *client)
 	}
 
 	if (silead_ts_handle_pen_data(data, buf))
-		goto sync; /* Pen is down, release all previous touches */
+		goto sync;  
 
 	touch_nr = 0;
 	bufp = buf + SILEAD_POINT_DATA_LEN;
@@ -272,21 +264,14 @@ static void silead_ts_read_data(struct i2c_client *client)
 			      SILEAD_EXTRA_DATA_MASK) >> 4;
 
 		if (softbutton) {
-			/*
-			 * For now only respond to softbutton == 0x01, some
-			 * tablets *without* a capacative button send 0x04
-			 * when crossing the edges of the screen.
-			 */
+			 
 			if (softbutton == 0x01)
 				softbutton_pressed = true;
 
 			continue;
 		}
 
-		/*
-		 * Bits 4-7 are the touch id, note not all models have
-		 * hardware touch ids so atm we don't use these.
-		 */
+		 
 		data->id[touch_nr] = (bufp[SILEAD_POINT_X_MSB_OFF] &
 				      SILEAD_EXTRA_DATA_MASK) >> 4;
 		touchscreen_set_mt_pos(&data->pos[touch_nr], &data->prop,
@@ -404,28 +389,7 @@ static int silead_ts_load_fw(struct i2c_client *client)
 
 	dev_dbg(dev, "Firmware file name: %s", data->fw_name);
 
-	/*
-	 * Unfortunately, at the time of writing this comment, we have been unable to
-	 * get permission from Silead, or from device OEMs, to distribute the necessary
-	 * Silead firmware files in linux-firmware.
-	 *
-	 * On a whole bunch of devices the UEFI BIOS code contains a touchscreen driver,
-	 * which contains an embedded copy of the firmware. The fw-loader code has a
-	 * "platform" fallback mechanism, which together with info on the firmware
-	 * from drivers/platform/x86/touchscreen_dmi.c will use the firmware from the
-	 * UEFI driver when the firmware is missing from /lib/firmware. This makes the
-	 * touchscreen work OOTB without users needing to manually download the firmware.
-	 *
-	 * The firmware bundled with the original Windows/Android is usually newer then
-	 * the firmware in the UEFI driver and it is better calibrated. This better
-	 * calibration can lead to significant differences in the reported min/max
-	 * coordinates.
-	 *
-	 * To deal with this we first try to load the firmware without "platform"
-	 * fallback. If that fails we retry with "platform" fallback and if that
-	 * succeeds we apply an (optional) set of alternative min/max values from the
-	 * "silead,efi-fw-min-max" property.
-	 */
+	 
 	error = firmware_request_nowarn(&fw, data->fw_name, dev);
 	if (error) {
 		error = firmware_request_platform(&fw, data->fw_name, dev);
@@ -440,7 +404,7 @@ static int silead_ts_load_fw(struct i2c_client *client)
 		if (!error)
 			data->efi_fw_min_max_set = true;
 
-		/* The EFI (platform) embedded fw does not have pen support */
+		 
 		if (data->pen_supported) {
 			dev_warn(dev, "Warning loading '%s' from filesystem failed, using EFI embedded copy.\n",
 				 data->fw_name);
@@ -504,24 +468,7 @@ static int silead_ts_setup(struct i2c_client *client)
 	int error;
 	u32 status;
 
-	/*
-	 * Some buggy BIOS-es bring up the chip in a stuck state where it
-	 * blocks the I2C bus. The following steps are necessary to
-	 * unstuck the chip / bus:
-	 * 1. Turn off the Silead chip.
-	 * 2. Try to do an I2C transfer with the chip, this will fail in
-	 *    response to which the I2C-bus-driver will call:
-	 *    i2c_recover_bus() which will unstuck the I2C-bus. Note the
-	 *    unstuck-ing of the I2C bus only works if we first drop the
-	 *    chip off the bus by turning it off.
-	 * 3. Turn the chip back on.
-	 *
-	 * On the x86/ACPI systems were this problem is seen, step 1. and
-	 * 3. require making ACPI calls and dealing with ACPI Power
-	 * Resources. The workaround below runtime-suspends the chip to
-	 * turn it off, leaving it up to the ACPI subsystem to deal with
-	 * this.
-	 */
+	 
 
 	if (device_property_read_bool(&client->dev,
 				      "silead,stuck-controller-bug")) {
@@ -534,7 +481,7 @@ static int silead_ts_setup(struct i2c_client *client)
 		dev_warn(&client->dev, FW_BUG "Stuck I2C bus: please ignore the next 'controller timed out' error\n");
 		silead_ts_get_id(client);
 
-		/* The forbid will also resume the device */
+		 
 		pm_runtime_forbid(&client->dev);
 		pm_runtime_disable(&client->dev);
 	}
@@ -595,7 +542,7 @@ static void silead_ts_read_props(struct i2c_client *client)
 					 &data->max_fingers);
 	if (error) {
 		dev_dbg(dev, "Max fingers read error %d\n", error);
-		data->max_fingers = 5; /* Most devices handle up-to 5 fingers */
+		data->max_fingers = 5;  
 	}
 
 	error = device_property_read_string(dev, "firmware-name", &str);
@@ -680,7 +627,7 @@ static int silead_ts_probe(struct i2c_client *client)
 
 	silead_ts_read_props(client);
 
-	/* We must have the IRQ provided by DT or ACPI subsystem */
+	 
 	if (client->irq <= 0)
 		return -ENODEV;
 
@@ -691,10 +638,7 @@ static int silead_ts_probe(struct i2c_client *client)
 	if (error)
 		return error;
 
-	/*
-	 * Enable regulators at probe and disable them at remove, we need
-	 * to keep the chip powered otherwise it forgets its firmware.
-	 */
+	 
 	error = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
 				      data->regulators);
 	if (error)
@@ -704,7 +648,7 @@ static int silead_ts_probe(struct i2c_client *client)
 	if (error)
 		return error;
 
-	/* Power GPIO pin */
+	 
 	data->gpio_power = devm_gpiod_get_optional(dev, "power", GPIOD_OUT_LOW);
 	if (IS_ERR(data->gpio_power))
 		return dev_err_probe(dev, PTR_ERR(data->gpio_power),

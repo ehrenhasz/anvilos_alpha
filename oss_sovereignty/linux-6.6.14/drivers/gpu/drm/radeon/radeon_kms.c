@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/pm_runtime.h>
@@ -47,17 +21,7 @@ bool radeon_has_atpx(void);
 static inline bool radeon_has_atpx(void) { return false; }
 #endif
 
-/**
- * radeon_driver_unload_kms - Main unload function for KMS.
- *
- * @dev: drm dev pointer
- *
- * This is the main unload function for KMS (all asics).
- * It calls radeon_modeset_fini() to tear down the
- * displays, and radeon_device_fini() to tear down
- * the rest of the device (CP, writeback, etc.).
- * Returns 0 on success.
- */
+ 
 void radeon_driver_unload_kms(struct drm_device *dev)
 {
 	struct radeon_device *rdev = dev->dev_private;
@@ -88,19 +52,7 @@ done_free:
 	dev->dev_private = NULL;
 }
 
-/**
- * radeon_driver_load_kms - Main load function for KMS.
- *
- * @dev: drm dev pointer
- * @flags: device flags
- *
- * This is the main load function for KMS (all asics).
- * It calls radeon_device_init() to set up the non-display
- * parts of the chip (asic init, CP, writeback, etc.), and
- * radeon_modeset_init() to set up the display parts
- * (crtcs, encoders, hotplug detect, etc.).
- * Returns 0 on success, error on failure.
- */
+ 
 int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags)
 {
 	struct pci_dev *pdev = to_pci_dev(dev->dev);
@@ -126,7 +78,7 @@ int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags)
 			1024 * 1024);
 	}
 
-	/* update BUS flag */
+	 
 	if (pci_find_capability(pdev, PCI_CAP_ID_AGP)) {
 		flags |= RADEON_IS_AGP;
 	} else if (pci_is_pcie(pdev)) {
@@ -141,29 +93,19 @@ int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags)
 	    !pci_is_thunderbolt_attached(pdev))
 		flags |= RADEON_IS_PX;
 
-	/* radeon_device_init should report only fatal error
-	 * like memory allocation failure or iomapping failure,
-	 * or memory manager initialization failure, it must
-	 * properly initialize the GPU MC controller and permit
-	 * VRAM allocation
-	 */
+	 
 	r = radeon_device_init(rdev, dev, pdev, flags);
 	if (r) {
 		dev_err(dev->dev, "Fatal error during GPU init\n");
 		goto out;
 	}
 
-	/* Again modeset_init should fail only on fatal error
-	 * otherwise it should provide enough functionalities
-	 * for shadowfb to run
-	 */
+	 
 	r = radeon_modeset_init(rdev);
 	if (r)
 		dev_err(dev->dev, "Fatal error during modeset init\n");
 
-	/* Call ACPI methods: require modeset init
-	 * but failure is not fatal
-	 */
+	 
 	if (!r) {
 		acpi_status = radeon_acpi_init(rdev);
 		if (acpi_status)
@@ -188,16 +130,7 @@ out:
 	return r;
 }
 
-/**
- * radeon_set_filp_rights - Set filp right.
- *
- * @dev: drm dev pointer
- * @owner: drm file
- * @applier: drm file
- * @value: value
- *
- * Sets the filp rights for the device (all asics).
- */
+ 
 static void radeon_set_filp_rights(struct drm_device *dev,
 				   struct drm_file **owner,
 				   struct drm_file *applier,
@@ -207,11 +140,11 @@ static void radeon_set_filp_rights(struct drm_device *dev,
 
 	mutex_lock(&rdev->gem.mutex);
 	if (*value == 1) {
-		/* wants rights */
+		 
 		if (!*owner)
 			*owner = applier;
 	} else if (*value == 0) {
-		/* revokes rights */
+		 
 		if (*owner == applier)
 			*owner = NULL;
 	}
@@ -219,21 +152,8 @@ static void radeon_set_filp_rights(struct drm_device *dev,
 	mutex_unlock(&rdev->gem.mutex);
 }
 
-/*
- * Userspace get information ioctl
- */
-/**
- * radeon_info_ioctl - answer a device specific request.
- *
- * @dev: drm device pointer
- * @data: request object
- * @filp: drm filp
- *
- * This function is used to pass device specific parameters to the userspace
- * drivers.  Examples include: pci device id, pipeline parms, tiling params,
- * etc. (all asics).
- * Returns 0 on success, -EINVAL on failure.
- */
+ 
+ 
 int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 {
 	struct radeon_device *rdev = dev->dev_private;
@@ -260,7 +180,7 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		*value = rdev->num_z_pipes;
 		break;
 	case RADEON_INFO_ACCEL_WORKING:
-		/* xf86-video-ati 6.13.0 relies on this being false for evergreen */
+		 
 		if ((rdev->family >= CHIP_CEDAR) && (rdev->family <= CHIP_HEMLOCK))
 			*value = false;
 		else
@@ -318,12 +238,7 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		}
 		break;
 	case RADEON_INFO_WANT_HYPERZ:
-		/* The "value" here is both an input and output parameter.
-		 * If the input value is 1, filp requests hyper-z access.
-		 * If the input value is 0, filp revokes its hyper-z access.
-		 *
-		 * When returning, the value is 1 if filp owns hyper-z access,
-		 * 0 otherwise. */
+		 
 		if (copy_from_user(value, value_ptr, sizeof(uint32_t))) {
 			DRM_ERROR("copy_from_user %s:%u\n", __func__, __LINE__);
 			return -EFAULT;
@@ -335,7 +250,7 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		radeon_set_filp_rights(dev, &rdev->hyperz_filp, filp, value);
 		break;
 	case RADEON_INFO_WANT_CMASK:
-		/* The same logic as Hyper-Z. */
+		 
 		if (copy_from_user(value, value_ptr, sizeof(uint32_t))) {
 			DRM_ERROR("copy_from_user %s:%u\n", __func__, __LINE__);
 			return -EFAULT;
@@ -347,7 +262,7 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		radeon_set_filp_rights(dev, &rdev->cmask_filp, filp, value);
 		break;
 	case RADEON_INFO_CLOCK_CRYSTAL_FREQ:
-		/* return clock value in KHz */
+		 
 		if (rdev->asic->get_xclk)
 			*value = radeon_get_xclk(rdev) * 10;
 		else
@@ -411,13 +326,13 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		}
 		break;
 	case RADEON_INFO_VA_START:
-		/* this is where we report if vm is supported or not */
+		 
 		if (rdev->family < CHIP_CAYMAN)
 			return -EINVAL;
 		*value = RADEON_VA_RESERVED_SIZE;
 		break;
 	case RADEON_INFO_IB_VM_MAX_SIZE:
-		/* this is where we report if vm is supported or not */
+		 
 		if (rdev->family < CHIP_CAYMAN)
 			return -EINVAL;
 		*value = RADEON_IB_VM_MAX_SIZE;
@@ -576,21 +491,21 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			*value = 1;
 		break;
 	case RADEON_INFO_CURRENT_GPU_TEMP:
-		/* get temperature in millidegrees C */
+		 
 		if (rdev->asic->pm.get_temperature)
 			*value = radeon_get_temperature(rdev);
 		else
 			*value = 0;
 		break;
 	case RADEON_INFO_CURRENT_GPU_SCLK:
-		/* get sclk in Mhz */
+		 
 		if (rdev->pm.dpm_enabled)
 			*value = radeon_dpm_get_current_sclk(rdev) / 100;
 		else
 			*value = rdev->pm.current_sclk / 100;
 		break;
 	case RADEON_INFO_CURRENT_GPU_MCLK:
-		/* get mclk in Mhz */
+		 
 		if (rdev->pm.dpm_enabled)
 			*value = radeon_dpm_get_current_mclk(rdev) / 100;
 		else
@@ -621,15 +536,7 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 	return 0;
 }
 
-/**
- * radeon_driver_open_kms - drm callback for open
- *
- * @dev: drm dev pointer
- * @file_priv: drm file
- *
- * On device open, init vm on cayman+ (all asics).
- * Returns 0 on success, error on failure.
- */
+ 
 int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
 {
 	struct radeon_device *rdev = dev->dev_private;
@@ -645,7 +552,7 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
 		return r;
 	}
 
-	/* new gpu have virtual address space support */
+	 
 	if (rdev->family >= CHIP_CAYMAN) {
 
 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
@@ -664,8 +571,7 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
 			if (r)
 				goto err_vm_fini;
 
-			/* map the ib pool buffer read only into
-			 * virtual address space */
+			 
 			vm->ib_bo_va = radeon_vm_bo_add(rdev, vm,
 							rdev->ring_tmp_bo.bo);
 			if (!vm->ib_bo_va) {
@@ -698,15 +604,7 @@ err_suspend:
 	return r;
 }
 
-/**
- * radeon_driver_postclose_kms - drm callback for post close
- *
- * @dev: drm dev pointer
- * @file_priv: drm file
- *
- * On device close, tear down hyperz and cmask filps on r1xx-r5xx
- * (all asics).  And tear down vm on cayman+ (all asics).
- */
+ 
 void radeon_driver_postclose_kms(struct drm_device *dev,
 				 struct drm_file *file_priv)
 {
@@ -724,7 +622,7 @@ void radeon_driver_postclose_kms(struct drm_device *dev,
 	radeon_uvd_free_handles(rdev, file_priv);
 	radeon_vce_free_handles(rdev, file_priv);
 
-	/* new gpu have virtual address space support */
+	 
 	if (rdev->family >= CHIP_CAYMAN && file_priv->driver_priv) {
 		struct radeon_fpriv *fpriv = file_priv->driver_priv;
 		struct radeon_vm *vm = &fpriv->vm;
@@ -747,17 +645,8 @@ void radeon_driver_postclose_kms(struct drm_device *dev,
 	pm_runtime_put_autosuspend(dev->dev);
 }
 
-/*
- * VBlank related functions.
- */
-/**
- * radeon_get_vblank_counter_kms - get frame count
- *
- * @crtc: crtc to get the frame count from
- *
- * Gets the frame count on the requested crtc (all asics).
- * Returns frame count on success, -EINVAL on failure.
- */
+ 
+ 
 u32 radeon_get_vblank_counter_kms(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -771,24 +660,12 @@ u32 radeon_get_vblank_counter_kms(struct drm_crtc *crtc)
 		return -EINVAL;
 	}
 
-	/* The hw increments its frame counter at start of vsync, not at start
-	 * of vblank, as is required by DRM core vblank counter handling.
-	 * Cook the hw count here to make it appear to the caller as if it
-	 * incremented at start of vblank. We measure distance to start of
-	 * vblank in vpos. vpos therefore will be >= 0 between start of vblank
-	 * and start of vsync, so vpos >= 0 means to bump the hw frame counter
-	 * result by 1 to give the proper appearance to caller.
-	 */
+	 
 	if (rdev->mode_info.crtcs[pipe]) {
-		/* Repeat readout if needed to provide stable result if
-		 * we cross start of vsync during the queries.
-		 */
+		 
 		do {
 			count = radeon_get_vblank_counter(rdev, pipe);
-			/* Ask radeon_get_crtc_scanoutpos to return vpos as
-			 * distance to start of vblank, instead of regular
-			 * vertical scanout pos.
-			 */
+			 
 			stat = radeon_get_crtc_scanoutpos(
 				dev, pipe, GET_DISTANCE_TO_VBLANKSTART,
 				&vpos, &hpos, NULL, NULL,
@@ -803,16 +680,13 @@ u32 radeon_get_vblank_counter_kms(struct drm_crtc *crtc)
 			DRM_DEBUG_VBL("crtc %u: dist from vblank start %d\n",
 				      pipe, vpos);
 
-			/* Bump counter if we are at >= leading edge of vblank,
-			 * but before vsync where vpos would turn negative and
-			 * the hw counter really increments.
-			 */
+			 
 			if (vpos >= 0)
 				count++;
 		}
 	}
 	else {
-	    /* Fallback to use value as is. */
+	     
 	    count = radeon_get_vblank_counter(rdev, pipe);
 	    DRM_DEBUG_VBL("NULL mode info! Returned count may be wrong.\n");
 	}
@@ -820,14 +694,7 @@ u32 radeon_get_vblank_counter_kms(struct drm_crtc *crtc)
 	return count;
 }
 
-/**
- * radeon_enable_vblank_kms - enable vblank interrupt
- *
- * @crtc: crtc to enable vblank interrupt for
- *
- * Enable the interrupt on the requested crtc (all asics).
- * Returns 0 on success, -EINVAL on failure.
- */
+ 
 int radeon_enable_vblank_kms(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -848,13 +715,7 @@ int radeon_enable_vblank_kms(struct drm_crtc *crtc)
 	return r;
 }
 
-/**
- * radeon_disable_vblank_kms - disable vblank interrupt
- *
- * @crtc: crtc to disable vblank interrupt for
- *
- * Disable the interrupt on the requested crtc (all asics).
- */
+ 
 void radeon_disable_vblank_kms(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;

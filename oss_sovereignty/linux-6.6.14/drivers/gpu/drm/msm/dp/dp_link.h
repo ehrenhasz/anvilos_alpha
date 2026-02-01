@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DP_LINK_H_
 #define _DP_LINK_H_
@@ -83,22 +81,10 @@ struct dp_link {
 	struct dp_link_info link_params;
 };
 
-/**
- * mdss_dp_test_bit_depth_to_bpp() - convert test bit depth to bpp
- * @tbd: test bit depth
- *
- * Returns the bits per pixel (bpp) to be used corresponding to the
- * git bit depth value. This function assumes that bit depth has
- * already been validated.
- */
+ 
 static inline u32 dp_link_bit_depth_to_bpp(u32 tbd)
 {
-	/*
-	 * Few simplistic rules and assumptions made here:
-	 *    1. Bit depth is per color component
-	 *    2. If bit depth is unknown return 0
-	 *    3. Assume 3 color components
-	 */
+	 
 	switch (tbd) {
 	case DP_TEST_BIT_DEPTH_6:
 		return 18;
@@ -112,14 +98,7 @@ static inline u32 dp_link_bit_depth_to_bpp(u32 tbd)
 	}
 }
 
-/**
- * dp_test_bit_depth_to_bpc() - convert test bit depth to bpc
- * @tbd: test bit depth
- *
- * Returns the bits per comp (bpc) to be used corresponding to the
- * bit depth value. This function assumes that bit depth has
- * already been validated.
- */
+ 
 static inline u32 dp_link_bit_depth_to_bpc(u32 tbd)
 {
 	switch (tbd) {
@@ -145,12 +124,7 @@ int dp_link_psm_config(struct dp_link *dp_link,
 		struct dp_link_info *link_info, bool enable);
 bool dp_link_send_edid_checksum(struct dp_link *dp_link, u8 checksum);
 
-/**
- * dp_link_get() - get the functionalities of dp test module
- *
- *
- * return: a pointer to dp_link struct
- */
+ 
 struct dp_link *dp_link_get(struct device *dev, struct drm_dp_aux *aux);
 
-#endif /* _DP_LINK_H_ */
+#endif  

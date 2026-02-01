@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tegra CEC register definitions
- *
- * The original 3.10 CEC driver using a custom API:
- *
- * Copyright (c) 2012-2015, NVIDIA CORPORATION.  All rights reserved.
- *
- * Conversion to the CEC framework and to the mainline kernel:
- *
- * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef TEGRA_CEC_H
 #define TEGRA_CEC_H
 
-/* CEC registers */
+ 
 #define TEGRA_CEC_SW_CONTROL	0x000
 #define TEGRA_CEC_HW_CONTROL	0x004
 #define TEGRA_CEC_INPUT_FILTER	0x008
@@ -113,4 +103,4 @@
 #define TEGRA_CEC_HW_DEBUG_TX_FORCELOOUT			BIT(25)
 #define TEGRA_CEC_HW_DEBUG_TX_TXDATABIT_SAMPLE_TIMER		BIT(26)
 
-#endif /* TEGRA_CEC_H */
+#endif  

@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "core_types.h"
@@ -32,7 +9,7 @@
 
 #define NUM_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
 
-/* used as index in array of black_color_format */
+ 
 enum black_color_format {
 	BLACK_COLOR_FORMAT_RGB_FULLRANGE = 0,
 	BLACK_COLOR_FORMAT_RGB_LIMITED,
@@ -54,17 +31,17 @@ enum dc_color_space_type {
 };
 
 static const struct tg_color black_color_format[] = {
-	/* BlackColorFormat_RGB_FullRange */
+	 
 	{0, 0, 0},
-	/* BlackColorFormat_RGB_Limited */
+	 
 	{0x40, 0x40, 0x40},
-	/* BlackColorFormat_YUV_TV */
+	 
 	{0x200, 0x40, 0x200},
-	/* BlackColorFormat_YUV_CV */
+	 
 	{0x1f4, 0x40, 0x1f4},
-	/* BlackColorFormat_YUV_SuperAA */
+	 
 	{0x1a2, 0x20, 0x1a2},
-	/* visual confirm debug */
+	 
 	{0xff, 0xff, 0},
 };
 
@@ -90,7 +67,7 @@ static const struct out_csc_color_matrix_type output_csc_matrix[] = {
 		{ 0xE04,  0xF345, 0xFEB7, 0x1004,
 		  0x5D3,  0x1399, 0x1FA,  0x201,
 		  0xFCCA, 0xF533, 0xE04,  0x1004} },
-	/* TODO: correct values below */
+	 
 	{ COLOR_SPACE_YCBCR601_LIMITED_TYPE,
 		{ 0xE00,  0xF447, 0xFDB9, 0x1000,
 		  0x991,  0x12C9, 0x3A6,  0x200,
@@ -253,11 +230,7 @@ void color_space_to_black_color(
 			black_color_format[BLACK_COLOR_FORMAT_RGB_LIMITED];
 		break;
 
-	/**
-	 * Remove default and add case for all color space
-	 * so when we forget to add new color space
-	 * compiler will give a warning
-	 */
+	 
 	case COLOR_SPACE_UNKNOWN:
 	case COLOR_SPACE_SRGB:
 	case COLOR_SPACE_XR_RGB:
@@ -272,10 +245,10 @@ void color_space_to_black_color(
 	case COLOR_SPACE_DOLBYVISION:
 	case COLOR_SPACE_APPCTRL:
 	case COLOR_SPACE_CUSTOMPOINTS:
-		/* fefault is sRGB black (full range). */
+		 
 		*black_color =
 			black_color_format[BLACK_COLOR_FORMAT_RGB_FULLRANGE];
-		/* default is sRGB black 0. */
+		 
 		break;
 	}
 }
@@ -285,7 +258,7 @@ bool hwss_wait_for_blank_complete(
 {
 	int counter;
 
-	/* Not applicable if the pipe is not primary, save 300ms of boot time */
+	 
 	if (!tg->funcs->is_blanked)
 		return true;
 	for (counter = 0; counter < 100; counter++) {
@@ -308,12 +281,12 @@ void get_mpctree_visual_confirm_color(
 		struct tg_color *color)
 {
 	const struct tg_color pipe_colors[6] = {
-			{MAX_TG_COLOR_VALUE, 0, 0}, /* red */
-			{MAX_TG_COLOR_VALUE, MAX_TG_COLOR_VALUE / 4, 0}, /* orange */
-			{MAX_TG_COLOR_VALUE, MAX_TG_COLOR_VALUE, 0}, /* yellow */
-			{0, MAX_TG_COLOR_VALUE, 0}, /* green */
-			{0, 0, MAX_TG_COLOR_VALUE}, /* blue */
-			{MAX_TG_COLOR_VALUE / 2, 0, MAX_TG_COLOR_VALUE / 2}, /* purple */
+			{MAX_TG_COLOR_VALUE, 0, 0},  
+			{MAX_TG_COLOR_VALUE, MAX_TG_COLOR_VALUE / 4, 0},  
+			{MAX_TG_COLOR_VALUE, MAX_TG_COLOR_VALUE, 0},  
+			{0, MAX_TG_COLOR_VALUE, 0},  
+			{0, 0, MAX_TG_COLOR_VALUE},  
+			{MAX_TG_COLOR_VALUE / 2, 0, MAX_TG_COLOR_VALUE / 2},  
 	};
 
 	struct pipe_ctx *top_pipe = pipe_ctx;
@@ -332,39 +305,39 @@ void get_surface_visual_confirm_color(
 
 	switch (pipe_ctx->plane_res.scl_data.format) {
 	case PIXEL_FORMAT_ARGB8888:
-		/* set border color to red */
+		 
 		color->color_r_cr = color_value;
 		if (pipe_ctx->plane_state->layer_index > 0) {
-			/* set border color to pink */
+			 
 			color->color_b_cb = color_value;
 			color->color_g_y = color_value * 0.5;
 		}
 		break;
 
 	case PIXEL_FORMAT_ARGB2101010:
-		/* set border color to blue */
+		 
 		color->color_b_cb = color_value;
 		if (pipe_ctx->plane_state->layer_index > 0) {
-			/* set border color to cyan */
+			 
 			color->color_g_y = color_value;
 		}
 		break;
 	case PIXEL_FORMAT_420BPP8:
-		/* set border color to green */
+		 
 		color->color_g_y = color_value;
 		break;
 	case PIXEL_FORMAT_420BPP10:
-		/* set border color to yellow */
+		 
 		color->color_g_y = color_value;
 		color->color_r_cr = color_value;
 		break;
 	case PIXEL_FORMAT_FP16:
-		/* set border color to white */
+		 
 		color->color_r_cr = color_value;
 		color->color_b_cb = color_value;
 		color->color_g_y = color_value;
 		if (pipe_ctx->plane_state->layer_index > 0) {
-			/* set border color to orange */
+			 
 			color->color_g_y = 0.22 * color_value;
 			color->color_b_cb = 0;
 		}
@@ -381,7 +354,7 @@ void get_hdr_visual_confirm_color(
 	uint32_t color_value = MAX_TG_COLOR_VALUE;
 	bool is_sdr = false;
 
-	/* Determine the overscan color based on the top-most (desktop) plane's context */
+	 
 	struct pipe_ctx *top_pipe_ctx  = pipe_ctx;
 
 	while (top_pipe_ctx->top_pipe != NULL)
@@ -390,10 +363,10 @@ void get_hdr_visual_confirm_color(
 	switch (top_pipe_ctx->plane_res.scl_data.format) {
 	case PIXEL_FORMAT_ARGB2101010:
 		if (top_pipe_ctx->stream->out_transfer_func->tf == TRANSFER_FUNCTION_PQ) {
-			/* HDR10, ARGB2101010 - set border color to red */
+			 
 			color->color_r_cr = color_value;
 		} else if (top_pipe_ctx->stream->out_transfer_func->tf == TRANSFER_FUNCTION_GAMMA22) {
-			/* FreeSync 2 ARGB2101010 - set border color to pink */
+			 
 			color->color_r_cr = color_value;
 			color->color_b_cb = color_value;
 		} else
@@ -401,10 +374,10 @@ void get_hdr_visual_confirm_color(
 		break;
 	case PIXEL_FORMAT_FP16:
 		if (top_pipe_ctx->stream->out_transfer_func->tf == TRANSFER_FUNCTION_PQ) {
-			/* HDR10, FP16 - set border color to blue */
+			 
 			color->color_b_cb = color_value;
 		} else if (top_pipe_ctx->stream->out_transfer_func->tf == TRANSFER_FUNCTION_GAMMA22) {
-			/* FreeSync 2 HDR - set border color to green */
+			 
 			color->color_g_y = color_value;
 		} else
 			is_sdr = true;
@@ -415,7 +388,7 @@ void get_hdr_visual_confirm_color(
 	}
 
 	if (is_sdr) {
-		/* SDR - set border color to Gray */
+		 
 		color->color_r_cr = color_value/2;
 		color->color_b_cb = color_value/2;
 		color->color_g_y = color_value/2;
@@ -440,7 +413,7 @@ void get_subvp_visual_confirm_color(
 
 		if (pipe->stream && pipe->stream->mall_stream_config.paired_stream &&
 		    pipe->stream->mall_stream_config.type == SUBVP_MAIN) {
-			/* SubVP enable - red */
+			 
 			color->color_g_y = 0;
 			color->color_b_cb = 0;
 			color->color_r_cr = color_value;
@@ -455,11 +428,11 @@ void get_subvp_visual_confirm_color(
 	if (enable_subvp && pipe_ctx->stream->mall_stream_config.type == SUBVP_NONE) {
 		color->color_r_cr = 0;
 		if (pipe_ctx->stream->allow_freesync == 1) {
-			/* SubVP enable and DRR on - green */
+			 
 			color->color_b_cb = 0;
 			color->color_g_y = color_value;
 		} else {
-			/* SubVP enable and No DRR - blue */
+			 
 			color->color_g_y = 0;
 			color->color_b_cb = color_value;
 		}
@@ -480,7 +453,7 @@ void hwss_build_fast_sequence(struct dc *dc,
 	struct pipe_ctx *current_mpc_pipe = NULL;
 	unsigned int i = 0;
 
-	*num_steps = 0; // Initialize to 0
+	*num_steps = 0;  
 
 	if (!plane || !stream)
 		return;
@@ -728,7 +701,7 @@ void hwss_setup_dpp(union block_sequence_params *params)
 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
 
 	if (dpp && dpp->funcs->dpp_setup) {
-		// program the input csc
+		 
 		dpp->funcs->dpp_setup(dpp,
 				plane_state->format,
 				EXPANSION_MODE_ZERO,
@@ -745,7 +718,7 @@ void hwss_program_bias_and_scale(union block_sequence_params *params)
 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
 	struct dc_bias_and_scale bns_params = {0};
 
-	//TODO :for CNVC set scale and bias registers if necessary
+	 
 	build_prescale_params(&bns_params, plane_state);
 	if (dpp->funcs->dpp_program_bias_and_scale)
 		dpp->funcs->dpp_program_bias_and_scale(dpp, &bns_params);
@@ -803,24 +776,24 @@ void get_mclk_switch_visual_confirm_color(
 
 	if (vba->DRAMClockChangeSupport[vba->VoltageLevel][vba->maxMpcComb] !=
 			dm_dram_clock_change_unsupported) {
-		/* MCLK switching is supported */
+		 
 		if (!pipe_ctx->has_vactive_margin) {
-			/* In Vblank - yellow */
+			 
 			color->color_r_cr = color_value;
 			color->color_g_y = color_value;
 
 			if (context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching) {
-				/* FPO + Vblank - cyan */
+				 
 				color->color_r_cr = 0;
 				color->color_g_y  = color_value;
 				color->color_b_cb = color_value;
 			}
 		} else {
-			/* In Vactive - pink */
+			 
 			color->color_r_cr = color_value;
 			color->color_b_cb = color_value;
 		}
-		/* SubVP */
+		 
 		get_subvp_visual_confirm_color(dc, context, pipe_ctx, color);
 	}
 }
@@ -830,7 +803,7 @@ void get_surface_tile_visual_confirm_color(
 		struct tg_color *color)
 {
 	uint32_t color_value = MAX_TG_COLOR_VALUE;
-	/* Determine the overscan color based on the bottom-most plane's context */
+	 
 	struct pipe_ctx *bottom_pipe_ctx  = pipe_ctx;
 
 	while (bottom_pipe_ctx->bottom_pipe != NULL)
@@ -838,7 +811,7 @@ void get_surface_tile_visual_confirm_color(
 
 	switch (bottom_pipe_ctx->plane_state->tiling_info.gfx9.swizzle) {
 	case DC_SW_LINEAR:
-		/* LINEAR Surface - set border color to red */
+		 
 		color->color_r_cr = color_value;
 		break;
 	default:

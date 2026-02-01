@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 #include "lan966x_vcap_ag_api.h"
@@ -18,13 +18,13 @@
 #define LAN966X_STAT_ESDX_YEL_PKTS 0x303
 
 static struct lan966x_vcap_inst {
-	enum vcap_type vtype; /* type of vcap */
-	int tgt_inst; /* hardware instance number */
-	int lookups; /* number of lookups in this vcap type */
-	int first_cid; /* first chain id in this vcap */
-	int last_cid; /* last chain id in this vcap */
-	int count; /* number of available addresses */
-	bool ingress; /* is vcap in the ingress path */
+	enum vcap_type vtype;  
+	int tgt_inst;  
+	int lookups;  
+	int first_cid;  
+	int last_cid;  
+	int count;  
+	bool ingress;  
 } lan966x_vcap_inst_cfg[] = {
 	{
 		.vtype = VCAP_TYPE_ES0,
@@ -35,7 +35,7 @@ static struct lan966x_vcap_inst {
 		.count = 64,
 	},
 	{
-		.vtype = VCAP_TYPE_IS1, /* IS1-0 */
+		.vtype = VCAP_TYPE_IS1,  
 		.tgt_inst = 1,
 		.lookups = LAN966X_IS1_LOOKUPS,
 		.first_cid = LAN966X_VCAP_CID_IS1_L0,
@@ -44,7 +44,7 @@ static struct lan966x_vcap_inst {
 		.ingress = true,
 	},
 	{
-		.vtype = VCAP_TYPE_IS2, /* IS2-0 */
+		.vtype = VCAP_TYPE_IS2,  
 		.tgt_inst = 2,
 		.lookups = LAN966X_IS2_LOOKUPS,
 		.first_cid = LAN966X_VCAP_CID_IS2_L0,
@@ -119,7 +119,7 @@ static int lan966x_vcap_is2_cid_to_lookup(int cid)
 	return 0;
 }
 
-/* Return the list of keysets for the vcap port configuration */
+ 
 static int
 lan966x_vcap_is1_get_port_keysets(struct net_device *ndev, int lookup,
 				  struct vcap_keyset_list *keysetlist,
@@ -131,7 +131,7 @@ lan966x_vcap_is1_get_port_keysets(struct net_device *ndev, int lookup,
 
 	val = lan_rd(lan966x, ANA_VCAP_S1_CFG(port->chip_port, lookup));
 
-	/* Collect all keysets for the port in a list */
+	 
 	if (l3_proto == ETH_P_ALL || l3_proto == ETH_P_IP) {
 		switch (ANA_VCAP_S1_CFG_KEY_IP4_CFG_GET(val)) {
 		case VCAP_IS1_PS_IPV4_7TUPLE:
@@ -192,7 +192,7 @@ lan966x_vcap_is2_get_port_keysets(struct net_device *dev, int lookup,
 
 	val = lan_rd(lan966x, ANA_VCAP_S2_CFG(port->chip_port));
 
-	/* Collect all keysets for the port in a list */
+	 
 	if (l3_proto == ETH_P_ALL)
 		vcap_keyset_list_add(keysetlist, VCAP_KFS_MAC_ETYPE);
 
@@ -304,7 +304,7 @@ lan966x_vcap_validate_keyset(struct net_device *dev,
 	if (err)
 		return VCAP_KFS_NO_VALUE;
 
-	/* Check if there is a match and return the match */
+	 
 	for (int i = 0; i < kslist->cnt; ++i)
 		for (int j = 0; j < keysetlist.cnt; ++j)
 			if (kslist->keysets[i] == keysets[j])
@@ -393,16 +393,13 @@ static void lan966x_vcap_cache_erase(struct vcap_admin *admin)
 	memset(&admin->cache.counter, 0, sizeof(admin->cache.counter));
 }
 
-/* The ESDX counter is only used/incremented if the frame has been classified
- * with an ISDX > 0 (e.g by a rule in IS0).  This is not mentioned in the
- * datasheet.
- */
+ 
 static void lan966x_es0_read_esdx_counter(struct lan966x *lan966x,
 					  struct vcap_admin *admin, u32 id)
 {
 	u32 counter;
 
-	id = id & 0xff; /* counter limit */
+	id = id & 0xff;  
 	mutex_lock(&lan966x->stats_lock);
 	lan_wr(SYS_STAT_CFG_STAT_VIEW_SET(id), lan966x, SYS_STAT_CFG);
 	counter = lan_rd(lan966x, SYS_CNT(LAN966X_STAT_ESDX_GRN_PKTS)) +
@@ -415,7 +412,7 @@ static void lan966x_es0_read_esdx_counter(struct lan966x *lan966x,
 static void lan966x_es0_write_esdx_counter(struct lan966x *lan966x,
 					   struct vcap_admin *admin, u32 id)
 {
-	id = id & 0xff; /* counter limit */
+	id = id & 0xff;  
 
 	mutex_lock(&lan966x->stats_lock);
 	lan_wr(SYS_STAT_CFG_STAT_VIEW_SET(id), lan966x, SYS_STAT_CFG);
@@ -754,7 +751,7 @@ int lan966x_vcap_init(struct lan966x *lan966x)
 		}
 	}
 
-	/* Statistics: Use ESDX from ES0 if hit, otherwise no counting */
+	 
 	lan_rmw(REW_STAT_CFG_STAT_MODE_SET(1),
 		REW_STAT_CFG_STAT_MODE, lan966x,
 		REW_STAT_CFG);

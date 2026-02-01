@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 
 
@@ -34,7 +11,7 @@
 
 #include "mp/mp_13_0_5_offset.h"
 
-/* TODO: Use the real headers when they're correct */
+ 
 #define MP1_BASE__INST0_SEG0                       0x00016000
 #define MP1_BASE__INST0_SEG1                       0x0243FC00
 #define MP1_BASE__INST0_SEG2                       0x00DC0000
@@ -65,16 +42,16 @@
 #define VBIOSSMC_MSG_GetSmuVersion                0x2
 #define VBIOSSMC_MSG_PowerUpGfx                   0x3
 #define VBIOSSMC_MSG_SetDispclkFreq               0x4
-#define VBIOSSMC_MSG_SetDprefclkFreq              0x5   //Not used. DPRef is constant
+#define VBIOSSMC_MSG_SetDprefclkFreq              0x5   
 #define VBIOSSMC_MSG_SetDppclkFreq                0x6
 #define VBIOSSMC_MSG_SetHardMinDcfclkByFreq       0x7
 #define VBIOSSMC_MSG_SetMinDeepSleepDcfclk        0x8
-#define VBIOSSMC_MSG_SetPhyclkVoltageByFreq       0x9	//Keep it in case VMIN dees not support phy clk
+#define VBIOSSMC_MSG_SetPhyclkVoltageByFreq       0x9	
 #define VBIOSSMC_MSG_GetFclkFrequency             0xA
-#define VBIOSSMC_MSG_SetDisplayCount              0xB   //Not used anymore
-#define VBIOSSMC_MSG_EnableTmdp48MHzRefclkPwrDown 0xC   //Not used anymore
+#define VBIOSSMC_MSG_SetDisplayCount              0xB   
+#define VBIOSSMC_MSG_EnableTmdp48MHzRefclkPwrDown 0xC   
 #define VBIOSSMC_MSG_UpdatePmeRestore             0xD
-#define VBIOSSMC_MSG_SetVbiosDramAddrHigh         0xE   //Used for WM table txfr
+#define VBIOSSMC_MSG_SetVbiosDramAddrHigh         0xE   
 #define VBIOSSMC_MSG_SetVbiosDramAddrLow          0xF
 #define VBIOSSMC_MSG_TransferTableSmu2Dram        0x10
 #define VBIOSSMC_MSG_TransferTableDram2Smu        0x11
@@ -93,11 +70,7 @@
 #define VBIOSSMC_Result_CmdRejectedPrereq         0xFD
 #define VBIOSSMC_Result_CmdRejectedBusy           0xFC
 
-/*
- * Function to be used instead of REG_WAIT macro because the wait ends when
- * the register is NOT EQUAL to zero, and because the translation in msg_if.h
- * won't work with REG_WAIT.
- */
+ 
 static uint32_t dcn314_smu_wait_for_response(struct clk_mgr_internal *clk_mgr, unsigned int delay_us, unsigned int max_retries)
 {
 	uint32_t res_val = VBIOSSMC_Status_BUSY;
@@ -131,13 +104,13 @@ static int dcn314_smu_send_msg_with_param(struct clk_mgr_internal *clk_mgr,
 	if (result == VBIOSSMC_Status_BUSY)
 		return -1;
 
-	/* First clear response register */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_91, VBIOSSMC_Status_BUSY);
 
-	/* Set the parameter register for the SMU message, unit is Mhz */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_83, param);
 
-	/* Trigger the message transaction by writing the message ID */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_67, msg_id);
 
 	result = dcn314_smu_wait_for_response(clk_mgr, 10, 200000);
@@ -179,7 +152,7 @@ int dcn314_smu_set_dispclk(struct clk_mgr_internal *clk_mgr, int requested_dispc
 	if (!clk_mgr->smu_present)
 		return requested_dispclk_khz;
 
-	/*  Unit of SMU msg parameter is Mhz */
+	 
 	actual_dispclk_set_mhz = dcn314_smu_send_msg_with_param(
 			clk_mgr,
 			VBIOSSMC_MSG_SetDispclkFreq,
@@ -200,7 +173,7 @@ int dcn314_smu_set_dprefclk(struct clk_mgr_internal *clk_mgr)
 			VBIOSSMC_MSG_SetDprefclkFreq,
 			khz_to_mhz_ceil(clk_mgr->base.dprefclk_khz));
 
-	/* TODO: add code for programing DP DTO, currently this is down by command table */
+	 
 
 	return actual_dprefclk_set_mhz * 1000;
 }
@@ -270,7 +243,7 @@ void dcn314_smu_set_display_idle_optimization(struct clk_mgr_internal *clk_mgr, 
 	if (!clk_mgr->smu_present)
 		return;
 
-	//TODO: Work with smu team to define optimization options.
+	
 	dcn314_smu_send_msg_with_param(
 		clk_mgr,
 		VBIOSSMC_MSG_SetDisplayIdleOptimizations,
@@ -377,7 +350,7 @@ void dcn314_smu_set_zstate_support(struct clk_mgr_internal *clk_mgr, enum dcn_zs
 		param = (1 << 8);
 		break;
 
-	default: //DCN_ZSTATE_SUPPORT_UNKNOWN
+	default: 
 		msg_id = VBIOSSMC_MSG_AllowZstatesEntry;
 		param = 0;
 		break;
@@ -391,7 +364,7 @@ void dcn314_smu_set_zstate_support(struct clk_mgr_internal *clk_mgr, enum dcn_zs
 
 }
 
-/* Arg = 1: Turn DTB on; 0: Turn DTB CLK OFF. when it is on, it is 600MHZ */
+ 
 void dcn314_smu_set_dtbclk(struct clk_mgr_internal *clk_mgr, bool enable)
 {
 	if (!clk_mgr->smu_present)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Handle vlserver selection and rotation.
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -11,9 +7,7 @@
 #include "internal.h"
 #include "afs_vl.h"
 
-/*
- * Begin an operation on a volume location server.
- */
+ 
 bool afs_begin_vlserver_operation(struct afs_vl_cursor *vc, struct afs_cell *cell,
 				  struct key *key)
 {
@@ -32,10 +26,7 @@ bool afs_begin_vlserver_operation(struct afs_vl_cursor *vc, struct afs_cell *cel
 	return true;
 }
 
-/*
- * Begin iteration through a server list, starting with the last used server if
- * possible, or the last recorded good server if not.
- */
+ 
 static bool afs_start_vl_iteration(struct afs_vl_cursor *vc)
 {
 	struct afs_cell *cell = vc->cell;
@@ -57,7 +48,7 @@ static bool afs_start_vl_iteration(struct afs_vl_cursor *vc)
 			}
 		}
 
-		/* Status load is ordered after lookup counter load */
+		 
 		if (cell->dns_status == DNS_LOOKUP_GOT_NOT_FOUND) {
 			pr_warn("No record of cell %s\n", cell->name);
 			vc->error = -ENOENT;
@@ -83,10 +74,7 @@ static bool afs_start_vl_iteration(struct afs_vl_cursor *vc)
 	return true;
 }
 
-/*
- * Select the vlserver to use.  May be called multiple times to rotate
- * through the vlservers.
- */
+ 
 bool afs_select_vlserver(struct afs_vl_cursor *vc)
 {
 	struct afs_addr_list *alist;
@@ -107,32 +95,30 @@ bool afs_select_vlserver(struct afs_vl_cursor *vc)
 
 	vc->nr_iterations++;
 
-	/* Evaluate the result of the previous operation, if there was one. */
+	 
 	switch (error) {
 	case SHRT_MAX:
 		goto start;
 
 	default:
 	case 0:
-		/* Success or local failure.  Stop. */
+		 
 		vc->error = error;
 		vc->flags |= AFS_VL_CURSOR_STOP;
 		_leave(" = f [okay/local %d]", vc->ac.error);
 		return false;
 
 	case -ECONNABORTED:
-		/* The far side rejected the operation on some grounds.  This
-		 * might involve the server being busy or the volume having been moved.
-		 */
+		 
 		switch (vc->ac.abort_code) {
 		case AFSVL_IO:
 		case AFSVL_BADVOLOPER:
 		case AFSVL_NOMEM:
-			/* The server went weird. */
+			 
 			vc->error = -EREMOTEIO;
-			//write_lock(&vc->cell->vl_servers_lock);
-			//vc->server_list->weird_mask |= 1 << vc->index;
-			//write_unlock(&vc->cell->vl_servers_lock);
+			
+			
+			
 			goto next_server;
 
 		default:
@@ -188,7 +174,7 @@ pick_server:
 	if (error < 0)
 		goto failed_set_error;
 
-	/* Pick the untried server with the lowest RTT. */
+	 
 	vc->index = vc->server_list->preferred;
 	if (test_bit(vc->index, &vc->untried))
 		goto selected_server;
@@ -214,10 +200,7 @@ selected_server:
 	_debug("use %d", vc->index);
 	__clear_bit(vc->index, &vc->untried);
 
-	/* We're starting on a different vlserver from the list.  We need to
-	 * check it, find its address list and probe its capabilities before we
-	 * use it.
-	 */
+	 
 	ASSERTCMP(vc->ac.alist, ==, NULL);
 	vlserver = vc->server_list->servers[vc->index].server;
 	vc->server = vlserver;
@@ -241,9 +224,7 @@ selected_server:
 
 iterate_address:
 	ASSERT(vc->ac.alist);
-	/* Iterate over the current server's address list to try and find an
-	 * address on which it will respond to us.
-	 */
+	 
 	if (!afs_iterate_addresses(&vc->ac))
 		goto next_server;
 
@@ -258,9 +239,7 @@ next_server:
 	goto pick_server;
 
 no_more_servers:
-	/* That's all the servers poked to no good effect.  Try again if some
-	 * of them were busy.
-	 */
+	 
 	if (vc->flags & AFS_VL_CURSOR_RETRY)
 		goto restart_from_beginning;
 
@@ -286,9 +265,7 @@ failed:
 	return false;
 }
 
-/*
- * Dump cursor state in the case of the error being EDESTADDRREQ.
- */
+ 
 static void afs_vl_dump_edestaddrreq(const struct afs_vl_cursor *vc)
 {
 	struct afs_cell *cell = vc->cell;
@@ -335,9 +312,7 @@ static void afs_vl_dump_edestaddrreq(const struct afs_vl_cursor *vc)
 	rcu_read_unlock();
 }
 
-/*
- * Tidy up a volume location server cursor and unlock the vnode.
- */
+ 
 int afs_end_vlserver_operation(struct afs_vl_cursor *vc)
 {
 	struct afs_net *net = vc->cell->net;

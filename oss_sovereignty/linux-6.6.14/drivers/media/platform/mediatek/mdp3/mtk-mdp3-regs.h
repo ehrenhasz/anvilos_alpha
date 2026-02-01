@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_MDP3_REGS_H__
 #define __MTK_MDP3_REGS_H__
@@ -11,13 +8,7 @@
 #include <media/videobuf2-core.h>
 #include "mtk-img-ipi.h"
 
-/*
- * MDP native color code
- * Plane count: 1, 2, 3
- * H-subsample: 0, 1, 2
- * V-subsample: 0, 1
- * Color group: 0-RGB, 1-YUV, 2-raw
- */
+ 
 #define MDP_COLOR(COMPRESS, PACKED, LOOSE, VIDEO, PLANE, HF, VF, BITS, GROUP, SWAP, ID)\
 	(((COMPRESS) << 29) | ((PACKED) << 27) | ((LOOSE) << 26) | ((VIDEO) << 23) |\
 	 ((PLANE) << 21) | ((HF) << 19) | ((VF) << 18) | ((BITS) << 8) |\
@@ -45,28 +36,28 @@
 enum mdp_color {
 	MDP_COLOR_UNKNOWN	= 0,
 
-	/* MDP_COLOR_FULLG8 */
+	 
 	MDP_COLOR_FULLG8_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0,  8, 2,  0, 21),
 	MDP_COLOR_FULLG8_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1,  8, 2,  0, 21),
 	MDP_COLOR_FULLG8_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0,  8, 2,  0, 21),
 	MDP_COLOR_FULLG8_BGGR	= MDP_COLOR(0, 0, 0, 0, 1, 1, 1,  8, 2,  0, 21),
 	MDP_COLOR_FULLG8	= MDP_COLOR_FULLG8_BGGR,
 
-	/* MDP_COLOR_FULLG10 */
+	 
 	MDP_COLOR_FULLG10_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 10, 2,  0, 21),
 	MDP_COLOR_FULLG10_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1, 10, 2,  0, 21),
 	MDP_COLOR_FULLG10_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0, 10, 2,  0, 21),
 	MDP_COLOR_FULLG10_BGGR	= MDP_COLOR(0, 0, 0, 0, 1, 1, 1, 10, 2,  0, 21),
 	MDP_COLOR_FULLG10	= MDP_COLOR_FULLG10_BGGR,
 
-	/* MDP_COLOR_FULLG12 */
+	 
 	MDP_COLOR_FULLG12_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 12, 2,  0, 21),
 	MDP_COLOR_FULLG12_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1, 12, 2,  0, 21),
 	MDP_COLOR_FULLG12_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0, 12, 2,  0, 21),
 	MDP_COLOR_FULLG12_BGGR	= MDP_COLOR(0, 0, 0, 0, 1, 1, 1, 12, 2,  0, 21),
 	MDP_COLOR_FULLG12	= MDP_COLOR_FULLG12_BGGR,
 
-	/* MDP_COLOR_FULLG14 */
+	 
 	MDP_COLOR_FULLG14_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 14, 2,  0, 21),
 	MDP_COLOR_FULLG14_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1, 14, 2,  0, 21),
 	MDP_COLOR_FULLG14_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0, 14, 2,  0, 21),
@@ -75,28 +66,28 @@ enum mdp_color {
 
 	MDP_COLOR_UFO10		= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 10, 2,  0, 24),
 
-	/* MDP_COLOR_BAYER8 */
+	 
 	MDP_COLOR_BAYER8_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0,  8, 2,  0, 20),
 	MDP_COLOR_BAYER8_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1,  8, 2,  0, 20),
 	MDP_COLOR_BAYER8_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0,  8, 2,  0, 20),
 	MDP_COLOR_BAYER8_BGGR	= MDP_COLOR(0, 0, 0, 0, 1, 1, 1,  8, 2,  0, 20),
 	MDP_COLOR_BAYER8	= MDP_COLOR_BAYER8_BGGR,
 
-	/* MDP_COLOR_BAYER10 */
+	 
 	MDP_COLOR_BAYER10_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 10, 2,  0, 20),
 	MDP_COLOR_BAYER10_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1, 10, 2,  0, 20),
 	MDP_COLOR_BAYER10_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0, 10, 2,  0, 20),
 	MDP_COLOR_BAYER10_BGGR	= MDP_COLOR(0, 0, 0, 0, 1, 1, 1, 10, 2,  0, 20),
 	MDP_COLOR_BAYER10	= MDP_COLOR_BAYER10_BGGR,
 
-	/* MDP_COLOR_BAYER12 */
+	 
 	MDP_COLOR_BAYER12_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 12, 2,  0, 20),
 	MDP_COLOR_BAYER12_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1, 12, 2,  0, 20),
 	MDP_COLOR_BAYER12_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0, 12, 2,  0, 20),
 	MDP_COLOR_BAYER12_BGGR	= MDP_COLOR(0, 0, 0, 0, 1, 1, 1, 12, 2,  0, 20),
 	MDP_COLOR_BAYER12	= MDP_COLOR_BAYER12_BGGR,
 
-	/* MDP_COLOR_BAYER14 */
+	 
 	MDP_COLOR_BAYER14_RGGB	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 14, 2,  0, 20),
 	MDP_COLOR_BAYER14_GRBG	= MDP_COLOR(0, 0, 0, 0, 1, 0, 1, 14, 2,  0, 20),
 	MDP_COLOR_BAYER14_GBRG	= MDP_COLOR(0, 0, 0, 0, 1, 1, 0, 14, 2,  0, 20),
@@ -104,7 +95,7 @@ enum mdp_color {
 	MDP_COLOR_BAYER14	= MDP_COLOR_BAYER14_BGGR,
 
 	MDP_COLOR_RGB48		= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 48, 0,  0, 23),
-	/* For bayer+mono raw-16 */
+	 
 	MDP_COLOR_RGB565_RAW	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 16, 2,  0, 0),
 
 	MDP_COLOR_BAYER8_UNPAK	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0,  8, 2,  0, 22),
@@ -112,7 +103,7 @@ enum mdp_color {
 	MDP_COLOR_BAYER12_UNPAK	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 12, 2,  0, 22),
 	MDP_COLOR_BAYER14_UNPAK	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 14, 2,  0, 22),
 
-	/* Unified formats */
+	 
 	MDP_COLOR_GREY		= MDP_COLOR(0, 0, 0, 0, 1, 0, 0,  8, 1,  0, 7),
 
 	MDP_COLOR_RGB565	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 16, 0,  0, 0),
@@ -143,36 +134,36 @@ enum mdp_color {
 	MDP_COLOR_NV24		= MDP_COLOR(0, 0, 0, 0, 2, 0, 0,  8, 1,  0, 14),
 	MDP_COLOR_NV42		= MDP_COLOR(0, 0, 0, 0, 2, 0, 0,  8, 1,  1, 14),
 
-	/* MediaTek proprietary formats */
-	/* UFO encoded block mode */
+	 
+	 
 	MDP_COLOR_420_BLK_UFO	= MDP_COLOR(0, 0, 0, 5, 2, 1, 1, 256, 1, 0, 12),
-	/* Block mode */
+	 
 	MDP_COLOR_420_BLK	= MDP_COLOR(0, 0, 0, 1, 2, 1, 1, 256, 1, 0, 12),
-	/* Block mode + field mode */
+	 
 	MDP_COLOR_420_BLKI	= MDP_COLOR(0, 0, 0, 3, 2, 1, 1, 256, 1, 0, 12),
-	/* Block mode */
+	 
 	MDP_COLOR_422_BLK	= MDP_COLOR(0, 0, 0, 1, 1, 1, 0, 512, 1, 0, 4),
 
 	MDP_COLOR_IYU2		= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 24,  1, 0, 25),
 	MDP_COLOR_YUV444	= MDP_COLOR(0, 0, 0, 0, 1, 0, 0, 24,  1, 0, 30),
 
-	/* Packed 10-bit formats */
+	 
 	MDP_COLOR_RGBA1010102	= MDP_COLOR(0, 1, 0, 0, 1, 0, 0, 32,  0, 1, 2),
 	MDP_COLOR_BGRA1010102	= MDP_COLOR(0, 1, 0, 0, 1, 0, 0, 32,  0, 0, 2),
-	/* Packed 10-bit UYVY */
+	 
 	MDP_COLOR_UYVY_10P	= MDP_COLOR(0, 1, 0, 0, 1, 1, 0, 20,  1, 0, 4),
-	/* Packed 10-bit NV21 */
+	 
 	MDP_COLOR_NV21_10P	= MDP_COLOR(0, 1, 0, 0, 2, 1, 1, 10,  1, 1, 12),
-	/* 10-bit block mode */
+	 
 	MDP_COLOR_420_BLK_10_H	= MDP_COLOR(0, 1, 0, 1, 2, 1, 1, 320, 1, 0, 12),
-	/* 10-bit HEVC tile mode */
+	 
 	MDP_COLOR_420_BLK_10_V	= MDP_COLOR(0, 1, 1, 1, 2, 1, 1, 320, 1, 0, 12),
-	/* UFO encoded 10-bit block mode */
+	 
 	MDP_COLOR_420_BLK_U10_H	= MDP_COLOR(0, 1, 0, 5, 2, 1, 1, 320, 1, 0, 12),
-	/* UFO encoded 10-bit HEVC tile mode */
+	 
 	MDP_COLOR_420_BLK_U10_V	= MDP_COLOR(0, 1, 1, 5, 2, 1, 1, 320, 1, 0, 12),
 
-	/* Loose 10-bit formats */
+	 
 	MDP_COLOR_UYVY_10L	= MDP_COLOR(0, 0, 1, 0, 1, 1, 0, 20,  1, 0, 4),
 	MDP_COLOR_VYUY_10L	= MDP_COLOR(0, 0, 1, 0, 1, 1, 0, 20,  1, 1, 4),
 	MDP_COLOR_YUYV_10L	= MDP_COLOR(0, 0, 1, 0, 1, 1, 0, 20,  1, 0, 5),
@@ -190,13 +181,13 @@ static inline bool MDP_COLOR_IS_UV_COPLANE(enum mdp_color c)
 	return (MDP_COLOR_GET_PLANE_COUNT(c) == 2 && MDP_COLOR_IS_YUV(c));
 }
 
-/* Minimum Y stride that is accepted by MDP HW */
+ 
 static inline u32 mdp_color_get_min_y_stride(enum mdp_color c, u32 width)
 {
 	return ((MDP_COLOR_BITS_PER_PIXEL(c) * width) + 4) >> 3;
 }
 
-/* Minimum UV stride that is accepted by MDP HW */
+ 
 static inline u32 mdp_color_get_min_uv_stride(enum mdp_color c, u32 width)
 {
 	u32 min_stride;
@@ -210,7 +201,7 @@ static inline u32 mdp_color_get_min_uv_stride(enum mdp_color c, u32 width)
 	return min_stride;
 }
 
-/* Minimum Y plane size that is necessary in buffer */
+ 
 static inline u32 mdp_color_get_min_y_size(enum mdp_color c,
 					   u32 width, u32 height)
 {
@@ -219,7 +210,7 @@ static inline u32 mdp_color_get_min_y_size(enum mdp_color c,
 	return mdp_color_get_min_y_stride(c, width) * height;
 }
 
-/* Minimum UV plane size that is necessary in buffer */
+ 
 static inline u32 mdp_color_get_min_uv_size(enum mdp_color c,
 					    u32 width, u32 height)
 {
@@ -229,22 +220,22 @@ static inline u32 mdp_color_get_min_uv_size(enum mdp_color c,
 	return mdp_color_get_min_uv_stride(c, width) * height;
 }
 
-/* Combine colorspace, xfer_func, ycbcr_encoding, and quantization */
+ 
 enum mdp_ycbcr_profile {
-	/* V4L2_YCBCR_ENC_601 and V4L2_QUANTIZATION_LIM_RANGE */
+	 
 	MDP_YCBCR_PROFILE_BT601,
-	/* V4L2_YCBCR_ENC_709 and V4L2_QUANTIZATION_LIM_RANGE */
+	 
 	MDP_YCBCR_PROFILE_BT709,
-	/* V4L2_YCBCR_ENC_601 and V4L2_QUANTIZATION_FULL_RANGE */
+	 
 	MDP_YCBCR_PROFILE_JPEG,
 	MDP_YCBCR_PROFILE_FULL_BT601 = MDP_YCBCR_PROFILE_JPEG,
 
-	/* Colorspaces not support for capture */
-	/* V4L2_YCBCR_ENC_BT2020 and V4L2_QUANTIZATION_LIM_RANGE */
+	 
+	 
 	MDP_YCBCR_PROFILE_BT2020,
-	/* V4L2_YCBCR_ENC_709 and V4L2_QUANTIZATION_FULL_RANGE */
+	 
 	MDP_YCBCR_PROFILE_FULL_BT709,
-	/* V4L2_YCBCR_ENC_BT2020 and V4L2_QUANTIZATION_FULL_RANGE */
+	 
 	MDP_YCBCR_PROFILE_FULL_BT2020,
 };
 
@@ -306,8 +297,8 @@ struct mdp_crop {
 struct mdp_frame {
 	struct v4l2_format	format;
 	const struct mdp_format	*mdp_fmt;
-	u32			ycbcr_prof;	/* enum mdp_ycbcr_profile */
-	u32			usage;		/* enum mdp_buffer_usage */
+	u32			ycbcr_prof;	 
+	u32			usage;		 
 	struct mdp_crop		crop;
 	struct v4l2_rect	compose;
 	s32			rotation;
@@ -343,7 +334,7 @@ struct mdp_frameparam {
 	struct mdp_m2m_ctx	*ctx;
 	atomic_t		state;
 	const struct mdp_limit	*limit;
-	u32			type;	/* enum mdp_stream_type */
+	u32			type;	 
 	u32			frame_no;
 	struct mdp_frame	output;
 	struct mdp_frame	captures[MDP_MAX_CAPTURES];
@@ -374,4 +365,4 @@ void mdp_set_dst_config(struct img_output *out,
 			struct mdp_frame *frame, struct vb2_buffer *vb);
 int mdp_frameparam_init(struct mdp_dev *mdp, struct mdp_frameparam *param);
 
-#endif  /* __MTK_MDP3_REGS_H__ */
+#endif   

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * IMX pinmux core definitions
- *
- * Copyright (C) 2012 Freescale Semiconductor, Inc.
- * Copyright (C) 2012 Linaro Ltd.
- *
- * Author: Dong Aisheng <dong.aisheng@linaro.org>
- */
+ 
+ 
 
 #ifndef __DRIVERS_PINCTRL_IMX_H
 #define __DRIVERS_PINCTRL_IMX_H
@@ -18,14 +11,7 @@ struct platform_device;
 extern struct pinmux_ops imx_pmx_ops;
 extern const struct dev_pm_ops imx_pinctrl_pm_ops;
 
-/**
- * struct imx_pin_mmio - MMIO pin configurations
- * @mux_mode: the mux mode for this pin.
- * @input_reg: the select input register offset for this pin if any
- *	0 if no select input setting needed.
- * @input_val: the select input value for this pin.
- * @configs: the config for this pin.
- */
+ 
 struct imx_pin_mmio {
 	unsigned int mux_mode;
 	u16 input_reg;
@@ -33,21 +19,13 @@ struct imx_pin_mmio {
 	unsigned long config;
 };
 
-/**
- * struct imx_pin_scu - SCU pin configurations
- * @mux: the mux mode for this pin.
- * @configs: the config for this pin.
- */
+ 
 struct imx_pin_scu {
 	unsigned int mux_mode;
 	unsigned long config;
 };
 
-/**
- * struct imx_pin - describes a single i.MX pin
- * @pin: the pin_id of this pin
- * @conf: config type of this pin, either mmio or scu
- */
+ 
 struct imx_pin {
 	unsigned int pin;
 	union {
@@ -56,20 +34,13 @@ struct imx_pin {
 	} conf;
 };
 
-/**
- * struct imx_pin_reg - describe a pin reg map
- * @mux_reg: mux register offset
- * @conf_reg: config register offset
- */
+ 
 struct imx_pin_reg {
 	s16 mux_reg;
 	s16 conf_reg;
 };
 
-/**
- * @dev: a pointer back to containing device
- * @base: the offset to the controller in virtual memory
- */
+ 
 struct imx_pinctrl {
 	struct device *dev;
 	struct pinctrl_dev *pctl;
@@ -87,7 +58,7 @@ struct imx_pinctrl_soc_info {
 	unsigned int flags;
 	const char *gpr_compatible;
 
-	/* MUX_MODE shift and mask in case SHARE_MUX_CONF_REG */
+	 
 	unsigned int mux_mask;
 	u8 mux_shift;
 
@@ -132,4 +103,4 @@ int imx_pinconf_set_scu(struct pinctrl_dev *pctldev, unsigned pin_id,
 void imx_pinctrl_parse_pin_scu(struct imx_pinctrl *ipctl,
 			       unsigned int *pin_id, struct imx_pin *pin,
 			       const __be32 **list_p);
-#endif /* __DRIVERS_PINCTRL_IMX_H */
+#endif  

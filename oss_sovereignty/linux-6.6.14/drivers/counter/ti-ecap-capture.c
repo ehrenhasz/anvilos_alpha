@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ECAP Capture driver
- *
- * Copyright (C) 2022 Julien Panis <jpanis@baylibre.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/clk.h>
@@ -20,7 +16,7 @@
 
 #define ECAP_DRV_NAME "ecap"
 
-/* ECAP event IDs */
+ 
 #define ECAP_CEVT1		0
 #define ECAP_CEVT2		1
 #define ECAP_CEVT3		2
@@ -33,7 +29,7 @@
 #define ECAP_EVT_LAST		ECAP_CNTOVF
 #define ECAP_NB_EVT		(ECAP_EVT_LAST + 1)
 
-/* Registers */
+ 
 #define ECAP_TSCNT_REG			0x00
 
 #define ECAP_CAP_REG(i)		(((i) << 2) + 0x08)
@@ -63,7 +59,7 @@
 
 #define ECAP_PID_REG			0x5c
 
-/* ECAP signals */
+ 
 #define ECAP_CLOCK_SIG 0
 #define ECAP_INPUT_SIG 1
 
@@ -74,17 +70,7 @@ static const struct regmap_config ecap_cnt_regmap_config = {
 	.max_register = ECAP_PID_REG,
 };
 
-/**
- * struct ecap_cnt_dev - device private data structure
- * @enabled: device state
- * @lock:    synchronization lock to prevent I/O race conditions
- * @clk:     device clock
- * @regmap:  device register map
- * @nb_ovf:  number of overflows since capture start
- * @pm_ctx:  device context for PM operations
- * @pm_ctx.ev_mode:   event mode bits
- * @pm_ctx.time_cntr: timestamp counter value
- */
+ 
 struct ecap_cnt_dev {
 	bool enabled;
 	struct mutex lock;
@@ -124,11 +110,11 @@ static void ecap_cnt_capture_enable(struct counter_device *counter)
 
 	pm_runtime_get_sync(counter->parent);
 
-	/* Enable interrupts on events */
+	 
 	regmap_update_bits(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG,
 			   ECAP_EVT_EN_MASK, ECAP_EVT_EN_MASK);
 
-	/* Run counter */
+	 
 	regmap_update_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_ECCTL_CFG_MASK,
 			   ECAP_SYNCO_DIS_MASK | ECAP_STOPVALUE_MASK | ECAP_ECCTL_EN_MASK);
 }
@@ -137,10 +123,10 @@ static void ecap_cnt_capture_disable(struct counter_device *counter)
 {
 	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
 
-	/* Stop counter */
+	 
 	regmap_update_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_ECCTL_EN_MASK, 0);
 
-	/* Disable interrupts on events */
+	 
 	regmap_update_bits(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG, ECAP_EVT_EN_MASK, 0);
 
 	pm_runtime_put_sync(counter->parent);
@@ -443,7 +429,7 @@ static irqreturn_t ecap_cnt_isr(int irq, void *dev_id)
 
 	regmap_read(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG, &flg);
 
-	/* Check capture events */
+	 
 	for (i = 0 ; i < ECAP_NB_CEVT ; i++) {
 		if (flg & ECAP_EVT_FLG_BIT(i)) {
 			counter_push_event(counter_dev, COUNTER_EVENT_CAPTURE, i);
@@ -451,7 +437,7 @@ static irqreturn_t ecap_cnt_isr(int irq, void *dev_id)
 		}
 	}
 
-	/* Check counter overflow */
+	 
 	if (flg & ECAP_EVT_FLG_BIT(ECAP_CNTOVF)) {
 		atomic_inc(&ecap_dev->nb_ovf);
 		for (i = 0 ; i < ECAP_NB_CEVT ; i++)
@@ -525,7 +511,7 @@ static int ecap_cnt_probe(struct platform_device *pdev)
 
 	pm_runtime_enable(dev);
 
-	/* Register a cleanup callback to care for disabling PM */
+	 
 	ret = devm_add_action_or_reset(dev, ecap_cnt_pm_disable, dev);
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to add pm disable action\n");
@@ -553,14 +539,9 @@ static int ecap_cnt_suspend(struct device *dev)
 	struct counter_device *counter_dev = dev_get_drvdata(dev);
 	struct ecap_cnt_dev *ecap_dev = counter_priv(counter_dev);
 
-	/* If eCAP is running, stop capture then save timestamp counter */
+	 
 	if (ecap_dev->enabled) {
-		/*
-		 * Disabling capture has the following effects:
-		 * - interrupts are disabled
-		 * - loading of capture registers is disabled
-		 * - timebase counter is stopped
-		 */
+		 
 		ecap_cnt_capture_disable(counter_dev);
 		ecap_dev->pm_ctx.time_cntr = ecap_cnt_count_get_val(counter_dev, ECAP_TSCNT_REG);
 	}
@@ -581,7 +562,7 @@ static int ecap_cnt_resume(struct device *dev)
 
 	ecap_cnt_capture_set_evmode(counter_dev, ecap_dev->pm_ctx.ev_mode);
 
-	/* If eCAP was running, restore timestamp counter then run capture */
+	 
 	if (ecap_dev->enabled) {
 		ecap_cnt_count_set_val(counter_dev, ECAP_TSCNT_REG, ecap_dev->pm_ctx.time_cntr);
 		ecap_cnt_capture_enable(counter_dev);

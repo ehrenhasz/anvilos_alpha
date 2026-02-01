@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/atomic.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -8,25 +8,25 @@
 #include <linux/io.h>
 #include <linux/kernel.h>
 
-/* Controller command patterns */
-#define SW_TWSI_V		BIT_ULL(63)	/* Valid bit */
-#define SW_TWSI_EIA		BIT_ULL(61)	/* Extended internal address */
-#define SW_TWSI_R		BIT_ULL(56)	/* Result or read bit */
-#define SW_TWSI_SOVR		BIT_ULL(55)	/* Size override */
+ 
+#define SW_TWSI_V		BIT_ULL(63)	 
+#define SW_TWSI_EIA		BIT_ULL(61)	 
+#define SW_TWSI_R		BIT_ULL(56)	 
+#define SW_TWSI_SOVR		BIT_ULL(55)	 
 #define SW_TWSI_SIZE_SHIFT	52
 #define SW_TWSI_ADDR_SHIFT	40
-#define SW_TWSI_IA_SHIFT	32		/* Internal address */
+#define SW_TWSI_IA_SHIFT	32		 
 
-/* Controller opcode word (bits 60:57) */
+ 
 #define SW_TWSI_OP_SHIFT	57
 #define SW_TWSI_OP_7		(0ULL << SW_TWSI_OP_SHIFT)
 #define SW_TWSI_OP_7_IA		(1ULL << SW_TWSI_OP_SHIFT)
 #define SW_TWSI_OP_10		(2ULL << SW_TWSI_OP_SHIFT)
 #define SW_TWSI_OP_10_IA	(3ULL << SW_TWSI_OP_SHIFT)
 #define SW_TWSI_OP_TWSI_CLK	(4ULL << SW_TWSI_OP_SHIFT)
-#define SW_TWSI_OP_EOP		(6ULL << SW_TWSI_OP_SHIFT) /* Extended opcode */
+#define SW_TWSI_OP_EOP		(6ULL << SW_TWSI_OP_SHIFT)  
 
-/* Controller extended opcode word (bits 34:32) */
+ 
 #define SW_TWSI_EOP_SHIFT	32
 #define SW_TWSI_EOP_TWSI_DATA	(SW_TWSI_OP_EOP | 1ULL << SW_TWSI_EOP_SHIFT)
 #define SW_TWSI_EOP_TWSI_CTL	(SW_TWSI_OP_EOP | 2ULL << SW_TWSI_EOP_SHIFT)
@@ -34,15 +34,15 @@
 #define SW_TWSI_EOP_TWSI_STAT	(SW_TWSI_OP_EOP | 3ULL << SW_TWSI_EOP_SHIFT)
 #define SW_TWSI_EOP_TWSI_RST	(SW_TWSI_OP_EOP | 7ULL << SW_TWSI_EOP_SHIFT)
 
-/* Controller command and status bits */
-#define TWSI_CTL_CE		0x80	/* High level controller enable */
-#define TWSI_CTL_ENAB		0x40	/* Bus enable */
-#define TWSI_CTL_STA		0x20	/* Master-mode start, HW clears when done */
-#define TWSI_CTL_STP		0x10	/* Master-mode stop, HW clears when done */
-#define TWSI_CTL_IFLG		0x08	/* HW event, SW writes 0 to ACK */
-#define TWSI_CTL_AAK		0x04	/* Assert ACK */
+ 
+#define TWSI_CTL_CE		0x80	 
+#define TWSI_CTL_ENAB		0x40	 
+#define TWSI_CTL_STA		0x20	 
+#define TWSI_CTL_STP		0x10	 
+#define TWSI_CTL_IFLG		0x08	 
+#define TWSI_CTL_AAK		0x04	 
 
-/* Status values */
+ 
 #define STAT_BUS_ERROR		0x00
 #define STAT_START		0x08
 #define STAT_REP_START		0x10
@@ -73,7 +73,7 @@
 #define STAT_AD2W_NAK		0xD8
 #define STAT_IDLE		0xF8
 
-/* TWSI_INT values */
+ 
 #define TWSI_INT_ST_INT		BIT_ULL(0)
 #define TWSI_INT_TS_INT		BIT_ULL(1)
 #define TWSI_INT_CORE_INT	BIT_ULL(2)
@@ -85,9 +85,9 @@
 #define TWSI_INT_SDA		BIT_ULL(10)
 #define TWSI_INT_SCL		BIT_ULL(11)
 
-#define I2C_OCTEON_EVENT_WAIT 80 /* microseconds */
+#define I2C_OCTEON_EVENT_WAIT 80  
 
-/* Register offsets */
+ 
 struct octeon_i2c_reg_offset {
 	unsigned int sw_twsi;
 	unsigned int twsi_int;
@@ -104,7 +104,7 @@ struct octeon_i2c {
 	struct octeon_i2c_reg_offset roff;
 	struct clk *clk;
 	int irq;
-	int hlc_irq;		/* For cn7890 only */
+	int hlc_irq;		 
 	u32 twsi_freq;
 	int sys_freq;
 	void __iomem *twsi_base;
@@ -125,17 +125,10 @@ struct octeon_i2c {
 static inline void octeon_i2c_writeq_flush(u64 val, void __iomem *addr)
 {
 	__raw_writeq(val, addr);
-	__raw_readq(addr);	/* wait for write to land */
+	__raw_readq(addr);	 
 }
 
-/**
- * octeon_i2c_reg_write - write an I2C core register
- * @i2c: The struct octeon_i2c
- * @eop_reg: Register selector
- * @data: Value to be written
- *
- * The I2C core registers are accessed indirectly via the SW_TWSI CSR.
- */
+ 
 static inline void octeon_i2c_reg_write(struct octeon_i2c *i2c, u64 eop_reg, u8 data)
 {
 	int tries = 1000;
@@ -154,15 +147,7 @@ static inline void octeon_i2c_reg_write(struct octeon_i2c *i2c, u64 eop_reg, u8 
 #define octeon_i2c_data_write(i2c, val)					\
 	octeon_i2c_reg_write(i2c, SW_TWSI_EOP_TWSI_DATA, val)
 
-/**
- * octeon_i2c_reg_read - read lower bits of an I2C core register
- * @i2c: The struct octeon_i2c
- * @eop_reg: Register selector
- *
- * Returns the data.
- *
- * The I2C core registers are accessed indirectly via the SW_TWSI CSR.
- */
+ 
 static inline int octeon_i2c_reg_read(struct octeon_i2c *i2c, u64 eop_reg,
 				      int *error)
 {
@@ -173,7 +158,7 @@ static inline int octeon_i2c_reg_read(struct octeon_i2c *i2c, u64 eop_reg,
 	do {
 		tmp = __raw_readq(i2c->twsi_base + SW_TWSI(i2c));
 		if (--tries < 0) {
-			/* signal that the returned data is invalid */
+			 
 			if (error)
 				*error = -EIO;
 			return 0;
@@ -190,28 +175,19 @@ static inline int octeon_i2c_reg_read(struct octeon_i2c *i2c, u64 eop_reg,
 #define octeon_i2c_stat_read(i2c)					\
 	octeon_i2c_reg_read(i2c, SW_TWSI_EOP_TWSI_STAT, NULL)
 
-/**
- * octeon_i2c_read_int - read the TWSI_INT register
- * @i2c: The struct octeon_i2c
- *
- * Returns the value of the register.
- */
+ 
 static inline u64 octeon_i2c_read_int(struct octeon_i2c *i2c)
 {
 	return __raw_readq(i2c->twsi_base + TWSI_INT(i2c));
 }
 
-/**
- * octeon_i2c_write_int - write the TWSI_INT register
- * @i2c: The struct octeon_i2c
- * @data: Value to be written
- */
+ 
 static inline void octeon_i2c_write_int(struct octeon_i2c *i2c, u64 data)
 {
 	octeon_i2c_writeq_flush(data, i2c->twsi_base + TWSI_INT(i2c));
 }
 
-/* Prototypes */
+ 
 irqreturn_t octeon_i2c_isr(int irq, void *dev_id);
 int octeon_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num);
 int octeon_i2c_init_lowlevel(struct octeon_i2c *i2c);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 
 #ifndef _RTW_IO_H_
 #define _RTW_IO_H_
@@ -16,7 +12,7 @@
 #define _IO_WAIT_COMPLETE   1
 #define _IO_WAIT_RSP        2
 
-/*  IO COMMAND TYPE */
+ 
 #define _IOSZ_MASK_		(0x7F)
 #define _IO_WRITE_		BIT(7)
 #define _IO_FIXED_		BIT(8)
@@ -28,14 +24,11 @@
 #define _IO_CMDMASK_	(0x1F80)
 
 
-/*
-	For prompt mode accessing, caller shall free io_req
-	Otherwise, io_handler will free io_req
-*/
+ 
 
 
 
-/*  IO STATUS TYPE */
+ 
 #define _IO_ERR_		BIT(2)
 #define _IO_SUCCESS_	BIT(1)
 #define _IO_DONE_		BIT(0)
@@ -57,20 +50,16 @@
 #define IO_WR16_ASYNC	(_IO_WRITE_ | _IO_HW_)
 #define IO_WR8_ASYNC	(_IO_WRITE_ | _IO_BYTE_)
 
-/*
-
-	Only Sync. burst accessing is provided.
-
-*/
+ 
 
 #define IO_WR_BURST(x)		(_IO_WRITE_ | _IO_SYNC_ | _IO_BURST_ | ((x) & _IOSZ_MASK_))
 #define IO_RD_BURST(x)		(_IO_SYNC_ | _IO_BURST_ | ((x) & _IOSZ_MASK_))
 
 
 
-/* below is for the intf_option bit defition... */
+ 
 
-#define _INTF_ASYNC_	BIT(0)	/* support async io */
+#define _INTF_ASYNC_	BIT(0)	 
 
 struct intf_priv;
 struct intf_hdl;
@@ -120,7 +109,7 @@ struct io_req {
 
 struct	intf_hdl {
 	struct adapter *padapter;
-	struct dvobj_priv *pintf_dev;/* 	pointer to &(padapter->dvobjpriv); */
+	struct dvobj_priv *pintf_dev; 
 
 	struct _io_ops	io_ops;
 };
@@ -131,17 +120,14 @@ struct	intf_hdl {
 int rtw_inc_and_chk_continual_io_error(struct dvobj_priv *dvobj);
 void rtw_reset_continual_io_error(struct dvobj_priv *dvobj);
 
-/*
-Below is the data structure used by _io_handler
-
-*/
+ 
 
 struct io_queue {
 	spinlock_t	lock;
 	struct list_head	free_ioreqs;
-	struct list_head		pending;		/* The io_req list that will be served in the single protocol read/write. */
+	struct list_head		pending;		 
 	struct list_head		processing;
-	u8 *free_ioreqs_buf; /*  4-byte aligned */
+	u8 *free_ioreqs_buf;  
 	u8 *pallocated_free_ioreqs_buf;
 	struct	intf_hdl	intf;
 };
@@ -180,7 +166,7 @@ extern u32 rtw_write_port(struct adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 
 extern void rtw_write_scsi(struct adapter *adapter, u32 cnt, u8 *pmem);
 
-/* ioreq */
+ 
 extern void ioreq_read8(struct adapter *adapter, u32 addr, u8 *pval);
 extern void ioreq_read16(struct adapter *adapter, u32 addr, u16 *pval);
 extern void ioreq_read32(struct adapter *adapter, u32 addr, u32 *pval);
@@ -220,4 +206,4 @@ extern void bus_sync_io(struct io_queue *pio_q);
 extern u32 _ioreq2rwmem(struct io_queue *pio_q);
 extern void dev_power_down(struct adapter *Adapter, u8 bpwrup);
 
-#endif	/* _RTL8711_IO_H_ */
+#endif	 

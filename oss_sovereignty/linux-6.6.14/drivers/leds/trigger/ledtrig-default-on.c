@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED Kernel Default ON Trigger
- *
- * Copyright 2008 Nick Forbes <nick.forbes@incepta.com>
- *
- * Based on Richard Purdie's ledtrig-timer.c.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

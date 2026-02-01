@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Header file for Analogix DP (Display Port) core interface driver.
- *
- * Copyright (C) 2012 Samsung Electronics Co., Ltd.
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+ 
+ 
 
 #ifndef _ANALOGIX_DP_CORE_H
 #define _ANALOGIX_DP_CORE_H
@@ -17,18 +12,18 @@
 #define MAX_EQ_LOOP 5
 #define MAX_PLL_LOCK_LOOP 5
 
-/* Training takes 22ms if AUX channel comm fails. Use this as retry interval */
+ 
 #define DP_TIMEOUT_TRAINING_US			22000
 #define DP_TIMEOUT_PSR_LOOP_MS			300
 
-/* DP_MAX_LANE_COUNT */
+ 
 #define DPCD_ENHANCED_FRAME_CAP(x)		(((x) >> 7) & 0x1)
 #define DPCD_MAX_LANE_COUNT(x)			((x) & 0x1f)
 
-/* DP_LANE_COUNT_SET */
+ 
 #define DPCD_LANE_COUNT_SET(x)			((x) & 0x1f)
 
-/* DP_TRAINING_LANE0_SET */
+ 
 #define DPCD_PRE_EMPHASIS_SET(x)		(((x) & 0x3) << 3)
 #define DPCD_PRE_EMPHASIS_GET(x)		(((x) >> 3) & 0x3)
 #define DPCD_VOLTAGE_SWING_SET(x)		(((x) & 0x3) << 0)
@@ -180,7 +175,7 @@ struct analogix_dp_device {
 	struct analogix_dp_plat_data *plat_data;
 };
 
-/* analogix_dp_reg.c */
+ 
 void analogix_dp_enable_video_mute(struct analogix_dp_device *dp, bool enable);
 void analogix_dp_stop_video(struct analogix_dp_device *dp);
 void analogix_dp_lane_swap(struct analogix_dp_device *dp, bool enable);
@@ -256,4 +251,4 @@ int analogix_dp_send_psr_spd(struct analogix_dp_device *dp,
 ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 			     struct drm_dp_aux_msg *msg);
 
-#endif /* _ANALOGIX_DP_CORE_H */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight driver for Maxim MAX8925
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *      Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -46,10 +41,10 @@ static int max8925_backlight_set(struct backlight_device *bl, int brightness)
 		goto out;
 
 	if (!data->current_brightness && brightness)
-		/* enable WLED output */
+		 
 		ret = max8925_set_bits(chip->i2c, data->reg_mode_cntl, 1, 1);
 	else if (!brightness)
-		/* disable WLED output */
+		 
 		ret = max8925_set_bits(chip->i2c, data->reg_mode_cntl, 1, 0);
 	if (ret < 0)
 		goto out;

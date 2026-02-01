@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2019 Lorenzo Bianconi <lorenzo@kernel.org>
- */
+ 
+ 
 
 #if !defined(__MT7615_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __MT7615_TRACE_H

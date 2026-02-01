@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -44,23 +42,14 @@ static int dsi_get_version(const void __iomem *base, u32 *major, u32 *minor)
 	if (!major || !minor)
 		return -EINVAL;
 
-	/*
-	 * From DSI6G(v3), addition of a 6G_HW_VERSION register at offset 0
-	 * makes all other registers 4-byte shifted down.
-	 *
-	 * In order to identify between DSI6G(v3) and beyond, and DSIv2 and
-	 * older, we read the DSI_VERSION register without any shift(offset
-	 * 0x1f0). In the case of DSIv2, this hast to be a non-zero value. In
-	 * the case of DSI6G, this has to be zero (the offset points to a
-	 * scratch register which we never touch)
-	 */
+	 
 
 	ver = msm_readl(base + REG_DSI_VERSION);
 	if (ver) {
-		/* older dsi host, there is no register shift */
+		 
 		ver = FIELD(ver, DSI_VERSION_MAJOR);
 		if (ver <= MSM_DSI_VER_MAJOR_V2) {
-			/* old versions */
+			 
 			*major = ver;
 			*minor = 0;
 			return 0;
@@ -68,15 +57,11 @@ static int dsi_get_version(const void __iomem *base, u32 *major, u32 *minor)
 			return -EINVAL;
 		}
 	} else {
-		/*
-		 * newer host, offset 0 has 6G_HW_VERSION, the rest of the
-		 * registers are shifted down, read DSI_VERSION again with
-		 * the shifted offset
-		 */
+		 
 		ver = msm_readl(base + DSI_6G_REG_SHIFT + REG_DSI_VERSION);
 		ver = FIELD(ver, DSI_VERSION_MAJOR);
 		if (ver == MSM_DSI_VER_MAJOR_6G) {
-			/* 6G version */
+			 
 			*major = ver;
 			*minor = msm_readl(base + REG_DSI_6G_HW_VERSION);
 			return 0;
@@ -125,7 +110,7 @@ struct msm_dsi_host {
 	unsigned long pixel_clk_rate;
 	unsigned long esc_clk_rate;
 
-	/* DSI v2 specific clocks */
+	 
 	struct clk *src_clk;
 
 	unsigned long src_clk_rate;
@@ -139,17 +124,17 @@ struct msm_dsi_host {
 	struct completion video_comp;
 	struct mutex dev_mutex;
 	struct mutex cmd_mutex;
-	spinlock_t intr_lock; /* Protect interrupt ctrl register */
+	spinlock_t intr_lock;  
 
 	u32 err_work_state;
 	struct work_struct err_work;
 	struct workqueue_struct *workqueue;
 
-	/* DSI 6G TX buffer*/
+	 
 	struct drm_gem_object *tx_gem_obj;
 	struct msm_gem_address_space *aspace;
 
-	/* DSI v2 TX buffer */
+	 
 	void *tx_buf;
 	dma_addr_t tx_buf_paddr;
 
@@ -162,17 +147,17 @@ struct msm_dsi_host {
 	struct drm_display_mode *mode;
 	struct drm_dsc_config *dsc;
 
-	/* connected device info */
+	 
 	unsigned int channel;
 	unsigned int lanes;
 	enum mipi_dsi_pixel_format format;
 	unsigned long mode_flags;
 
-	/* lane data parsed via DT */
+	 
 	int dlane_swap;
 	int num_data_lanes;
 
-	/* from phy DT */
+	 
 	bool cphy_mode;
 
 	u32 dma_cmd_ctrl_restore;
@@ -289,7 +274,7 @@ static int dsi_clk_init(struct msm_dsi_host *msm_host)
 	const struct msm_dsi_config *cfg = cfg_hnd->cfg;
 	int i, ret = 0;
 
-	/* get bus clocks */
+	 
 	for (i = 0; i < cfg->num_bus_clks; i++)
 		msm_host->bus_clks[i].id = cfg->bus_clk_names[i];
 	msm_host->num_bus_clks = cfg->num_bus_clks;
@@ -300,7 +285,7 @@ static int dsi_clk_init(struct msm_dsi_host *msm_host)
 		goto exit;
 	}
 
-	/* get link and source clocks */
+	 
 	msm_host->byte_clk = msm_clk_get(pdev, "byte");
 	if (IS_ERR(msm_host->byte_clk)) {
 		ret = PTR_ERR(msm_host->byte_clk);
@@ -513,7 +498,7 @@ error:
 
 void dsi_link_clk_disable_6g(struct msm_dsi_host *msm_host)
 {
-	/* Drop the performance state vote */
+	 
 	dev_pm_opp_set_rate(&msm_host->pdev->dev, 0);
 	clk_disable_unprepare(msm_host->esc_clk);
 	clk_disable_unprepare(msm_host->pixel_clk);
@@ -550,12 +535,7 @@ static unsigned long dsi_get_pclk_rate(const struct drm_display_mode *mode,
 	if (dsc)
 		pclk_rate = dsi_adjust_pclk_for_compression(mode, dsc);
 
-	/*
-	 * For bonded DSI mode, the current DRM mode has the complete width of the
-	 * panel. Since, the complete panel is driven by two DSI controllers,
-	 * the clock rates have to be split between the two dsi controllers.
-	 * Adjust the byte and pixel clock rates for each dsi host accordingly.
-	 */
+	 
 	if (is_bonded_dsi)
 		pclk_rate /= 2;
 
@@ -576,7 +556,7 @@ unsigned long dsi_byte_clk_get_rate(struct mipi_dsi_host *host, bool is_bonded_d
 		lanes = 1;
 	}
 
-	/* CPHY "byte_clk" is in units of 16 bits */
+	 
 	if (msm_host->cphy_mode)
 		pclk_bpp = mult_frac(pclk_rate, bpp, 16 * lanes);
 	else
@@ -618,26 +598,14 @@ int dsi_calc_clk_rate_v2(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
 
 	msm_host->src_clk_rate = mult_frac(msm_host->pixel_clk_rate, bpp, 8);
 
-	/*
-	 * esc clock is byte clock followed by a 4 bit divider,
-	 * we need to find an escape clock frequency within the
-	 * mipi DSI spec range within the maximum divider limit
-	 * We iterate here between an escape clock frequencey
-	 * between 20 Mhz to 5 Mhz and pick up the first one
-	 * that can be supported by our divider
-	 */
+	 
 
 	byte_mhz = msm_host->byte_clk_rate / 1000000;
 
 	for (esc_mhz = 20; esc_mhz >= 5; esc_mhz--) {
 		esc_div = DIV_ROUND_UP(byte_mhz, esc_mhz);
 
-		/*
-		 * TODO: Ideally, we shouldn't know what sort of divider
-		 * is available in mmss_cc, we're just assuming that
-		 * it'll always be a 4 bit divider. Need to come up with
-		 * a better way here.
-		 */
+		 
 		if (esc_div >= 1 && esc_div <= 16)
 			break;
 	}
@@ -728,9 +696,7 @@ static void dsi_ctrl_enable(struct msm_dsi_host *msm_host,
 			data |= DSI_VID_CFG0_HBP_POWER_STOP;
 		if (flags & MIPI_DSI_MODE_VIDEO_NO_HSA)
 			data |= DSI_VID_CFG0_HSA_POWER_STOP;
-		/* Always set low power stop mode for BLLP
-		 * to let command engine send packets
-		 */
+		 
 		data |= DSI_VID_CFG0_EOF_BLLP_POWER_STOP |
 			DSI_VID_CFG0_BLLP_POWER_STOP;
 		data |= DSI_VID_CFG0_TRAFFIC_MODE(dsi_get_traffic_mode(flags));
@@ -738,11 +704,11 @@ static void dsi_ctrl_enable(struct msm_dsi_host *msm_host,
 		data |= DSI_VID_CFG0_VIRT_CHANNEL(msm_host->channel);
 		dsi_write(msm_host, REG_DSI_VID_CFG0, data);
 
-		/* Do not swap RGB colors */
+		 
 		data = DSI_VID_CFG1_RGB_SWAP(SWAP_RGB);
 		dsi_write(msm_host, REG_DSI_VID_CFG1, 0);
 	} else {
-		/* Do not swap RGB colors */
+		 
 		data = DSI_CMD_CFG0_RGB_SWAP(SWAP_RGB);
 		data |= DSI_CMD_CFG0_DST_FORMAT(dsi_get_cmd_fmt(mipi_fmt));
 		dsi_write(msm_host, REG_DSI_CMD_CFG0, data);
@@ -750,7 +716,7 @@ static void dsi_ctrl_enable(struct msm_dsi_host *msm_host,
 		data = DSI_CMD_CFG1_WR_MEM_START(MIPI_DCS_WRITE_MEMORY_START) |
 			DSI_CMD_CFG1_WR_MEM_CONTINUE(
 					MIPI_DCS_WRITE_MEMORY_CONTINUE);
-		/* Always insert DCS command */
+		 
 		data |= DSI_CMD_CFG1_INSERT_DCS_COMMAND;
 		dsi_write(msm_host, REG_DSI_CMD_CFG1, data);
 
@@ -767,7 +733,7 @@ static void dsi_ctrl_enable(struct msm_dsi_host *msm_host,
 			DSI_CMD_DMA_CTRL_LOW_POWER);
 
 	data = 0;
-	/* Always assume dedicated TE pin */
+	 
 	data |= DSI_TRIG_CTRL_TE;
 	data |= DSI_TRIG_CTRL_MDP_TRIGGER(TRIGGER_NONE);
 	data |= DSI_TRIG_CTRL_DMA_TRIGGER(TRIGGER_SW);
@@ -792,7 +758,7 @@ static void dsi_ctrl_enable(struct msm_dsi_host *msm_host,
 		data |= DSI_EOT_PACKET_CTRL_TX_EOT_APPEND;
 	dsi_write(msm_host, REG_DSI_EOT_PACKET_CTRL, data);
 
-	/* allow only ack-err-status to generate interrupt */
+	 
 	dsi_write(msm_host, REG_DSI_ERR_INT_MASK0, 0x13ff3fe0);
 
 	dsi_intr_ctrl(msm_host, DSI_IRQ_MASK_ERROR, 1);
@@ -833,32 +799,22 @@ static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mod
 	u32 pkt_per_line;
 	u32 eol_byte_num;
 
-	/* first calculate dsc parameters and then program
-	 * compress mode registers
-	 */
+	 
 	slice_per_intf = msm_dsc_get_slices_per_intf(dsc, hdisplay);
 
 	total_bytes_per_intf = dsc->slice_chunk_size * slice_per_intf;
 
 	eol_byte_num = total_bytes_per_intf % 3;
 
-	/*
-	 * Typically, pkt_per_line = slice_per_intf * slice_per_pkt.
-	 *
-	 * Since the current driver only supports slice_per_pkt = 1,
-	 * pkt_per_line will be equal to slice per intf for now.
-	 */
+	 
 	pkt_per_line = slice_per_intf;
 
-	if (is_cmd_mode) /* packet data type */
+	if (is_cmd_mode)  
 		reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
 	else
 		reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
 
-	/* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
-	 * registers have similar offsets, so for below common code use
-	 * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
-	 */
+	 
 	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
 	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
 	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
@@ -883,7 +839,7 @@ static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mod
 static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
 {
 	struct drm_display_mode *mode = msm_host->mode;
-	u32 hs_start = 0, vs_start = 0; /* take sync start as 0 */
+	u32 hs_start = 0, vs_start = 0;  
 	u32 h_total = mode->htotal;
 	u32 v_total = mode->vtotal;
 	u32 hs_end = mode->hsync_end - mode->hsync_start;
@@ -898,13 +854,7 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
 
 	DBG("");
 
-	/*
-	 * For bonded DSI mode, the current DRM mode has
-	 * the complete width of the panel. Since, the complete
-	 * panel is driven by two DSI controllers, the horizontal
-	 * timings have to be split between the two dsi controllers.
-	 * Adjust the DSI host timing values accordingly.
-	 */
+	 
 	if (is_bonded_dsi) {
 		h_total /= 2;
 		hs_end /= 2;
@@ -916,7 +866,7 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
 	if (msm_host->dsc) {
 		struct drm_dsc_config *dsc = msm_host->dsc;
 
-		/* update dsc params with timing params */
+		 
 		if (!dsc || !mode->hdisplay || !mode->vdisplay) {
 			pr_err("DSI: invalid input: pic_width: %d pic_height: %d\n",
 			       mode->hdisplay, mode->vdisplay);
@@ -927,16 +877,12 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
 		dsc->pic_height = mode->vdisplay;
 		DBG("Mode %dx%d\n", dsc->pic_width, dsc->pic_height);
 
-		/* we do the calculations for dsc parameters here so that
-		 * panel can use these parameters
-		 */
+		 
 		ret = dsi_populate_dsc_params(msm_host, dsc);
 		if (ret)
 			return;
 
-		/* Divide the display by 3 but keep back/font porch and
-		 * pulse width same
-		 */
+		 
 		h_total -= hdisplay;
 		hdisplay = DIV_ROUND_UP(msm_dsc_get_bytes_per_line(msm_host->dsc), 3);
 		h_total += hdisplay;
@@ -964,21 +910,15 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
 		dsi_write(msm_host, REG_DSI_ACTIVE_VSYNC_VPOS,
 			DSI_ACTIVE_VSYNC_VPOS_START(vs_start) |
 			DSI_ACTIVE_VSYNC_VPOS_END(vs_end));
-	} else {		/* command mode */
+	} else {		 
 		if (msm_host->dsc)
 			dsi_update_dsc_timing(msm_host, true, mode->hdisplay);
 
-		/* image data and 1 byte write_memory_start cmd */
+		 
 		if (!msm_host->dsc)
 			wc = hdisplay * dsi_get_bpp(msm_host->format) / 8 + 1;
 		else
-			/*
-			 * When DSC is enabled, WC = slice_chunk_size * slice_per_pkt + 1.
-			 * Currently, the driver only supports default value of slice_per_pkt = 1
-			 *
-			 * TODO: Expand mipi_dsi_device struct to hold slice_per_pkt info
-			 *       and adjust DSC math to account for slice_per_pkt.
-			 */
+			 
 			wc = msm_host->dsc->slice_chunk_size + 1;
 
 		dsi_write(msm_host, REG_DSI_CMD_MDP_STREAM0_CTRL,
@@ -1002,25 +942,22 @@ static void dsi_sw_reset(struct msm_dsi_host *msm_host)
 
 	if (ctrl & DSI_CTRL_ENABLE) {
 		dsi_write(msm_host, REG_DSI_CTRL, ctrl & ~DSI_CTRL_ENABLE);
-		/*
-		 * dsi controller need to be disabled before
-		 * clocks turned on
-		 */
+		 
 		wmb();
 	}
 
 	dsi_write(msm_host, REG_DSI_CLK_CTRL, DSI_CLK_CTRL_ENABLE_CLKS);
-	wmb(); /* clocks need to be enabled before reset */
+	wmb();  
 
-	/* dsi controller can only be reset while clocks are running */
+	 
 	dsi_write(msm_host, REG_DSI_RESET, 1);
-	msleep(DSI_RESET_TOGGLE_DELAY_MS); /* make sure reset happen */
+	msleep(DSI_RESET_TOGGLE_DELAY_MS);  
 	dsi_write(msm_host, REG_DSI_RESET, 0);
-	wmb(); /* controller out of reset */
+	wmb();  
 
 	if (ctrl & DSI_CTRL_ENABLE) {
 		dsi_write(msm_host, REG_DSI_CTRL, ctrl);
-		wmb();	/* make sure dsi controller enabled again */
+		wmb();	 
 	}
 }
 
@@ -1039,7 +976,7 @@ static void dsi_op_mode_config(struct msm_dsi_host *msm_host,
 	} else {
 		if (video_mode) {
 			dsi_ctrl |= DSI_CTRL_VID_MODE_EN;
-		} else {		/* command mode */
+		} else {		 
 			dsi_ctrl |= DSI_CTRL_CMD_MODE_EN;
 			dsi_intr_ctrl(msm_host, DSI_IRQ_MASK_CMD_MDP_DONE, 1);
 		}
@@ -1090,17 +1027,13 @@ static void dsi_wait4video_eng_busy(struct msm_dsi_host *msm_host)
 
 	data = dsi_read(msm_host, REG_DSI_STATUS0);
 
-	/* if video mode engine is not busy, its because
-	 * either timing engine was not turned on or the
-	 * DSI controller has finished transmitting the video
-	 * data already, so no need to wait in those cases
-	 */
+	 
 	if (!(data & DSI_STATUS0_VIDEO_MODE_ENGINE_BUSY))
 		return;
 
 	if (msm_host->power_on && msm_host->enabled) {
 		dsi_wait4video_done(msm_host);
-		/* delay 4 ms to skip BLLP */
+		 
 		usleep_range(2000, 4000);
 	}
 }
@@ -1149,12 +1082,7 @@ void msm_dsi_tx_buf_free(struct mipi_dsi_host *host)
 	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
 	struct drm_device *dev = msm_host->dev;
 
-	/*
-	 * This is possible if we're tearing down before we've had a chance to
-	 * fully initialize. A very real possibility if our probe is deferred,
-	 * in which case we'll hit msm_dsi_host_destroy() without having run
-	 * through the dsi_tx_buf_alloc().
-	 */
+	 
 	if (!dev)
 		return;
 
@@ -1185,9 +1113,7 @@ void dsi_tx_buf_put_6g(struct msm_dsi_host *msm_host)
 	msm_gem_put_vaddr(msm_host->tx_gem_obj);
 }
 
-/*
- * prepare cmd buffer to be txed
- */
+ 
 static int dsi_cmd_dma_add(struct msm_dsi_host *msm_host,
 			   const struct mipi_dsi_msg *msg)
 {
@@ -1216,21 +1142,21 @@ static int dsi_cmd_dma_add(struct msm_dsi_host *msm_host,
 		return ret;
 	}
 
-	/* MSM specific command format in memory */
+	 
 	data[0] = packet.header[1];
 	data[1] = packet.header[2];
 	data[2] = packet.header[0];
-	data[3] = BIT(7); /* Last packet */
+	data[3] = BIT(7);  
 	if (mipi_dsi_packet_format_is_long(msg->type))
 		data[3] |= BIT(6);
 	if (msg->rx_buf && msg->rx_len)
 		data[3] |= BIT(5);
 
-	/* Long packet */
+	 
 	if (packet.payload && packet.payload_length)
 		memcpy(data + 4, packet.payload, packet.payload_length);
 
-	/* Append 0xff to the end */
+	 
 	if (packet.size < len)
 		memset(data + packet.size, 0xff, len - packet.size);
 
@@ -1240,14 +1166,12 @@ static int dsi_cmd_dma_add(struct msm_dsi_host *msm_host,
 	return len;
 }
 
-/*
- * dsi_short_read1_resp: 1 parameter
- */
+ 
 static int dsi_short_read1_resp(u8 *buf, const struct mipi_dsi_msg *msg)
 {
 	u8 *data = msg->rx_buf;
 	if (data && (msg->rx_len >= 1)) {
-		*data = buf[1]; /* strip out dcs type */
+		*data = buf[1];  
 		return 1;
 	} else {
 		pr_err("%s: read data does not match with rx_buf len %zu\n",
@@ -1256,14 +1180,12 @@ static int dsi_short_read1_resp(u8 *buf, const struct mipi_dsi_msg *msg)
 	}
 }
 
-/*
- * dsi_short_read2_resp: 2 parameter
- */
+ 
 static int dsi_short_read2_resp(u8 *buf, const struct mipi_dsi_msg *msg)
 {
 	u8 *data = msg->rx_buf;
 	if (data && (msg->rx_len >= 2)) {
-		data[0] = buf[1]; /* strip out dcs type */
+		data[0] = buf[1];  
 		data[1] = buf[2];
 		return 2;
 	} else {
@@ -1275,7 +1197,7 @@ static int dsi_short_read2_resp(u8 *buf, const struct mipi_dsi_msg *msg)
 
 static int dsi_long_read_resp(u8 *buf, const struct mipi_dsi_msg *msg)
 {
-	/* strip out 4 byte dcs header */
+	 
 	if (msg->rx_buf && msg->rx_len)
 		memcpy(msg->rx_buf, buf + 4, msg->rx_len);
 
@@ -1349,33 +1271,24 @@ static int dsi_cmd_dma_rx(struct msm_dsi_host *msm_host,
 	temp = (u32 *)reg;
 	cnt = (rx_byte + 3) >> 2;
 	if (cnt > 4)
-		cnt = 4; /* 4 x 32 bits registers only */
+		cnt = 4;  
 
 	if (rx_byte == 4)
 		read_cnt = 4;
 	else
 		read_cnt = pkt_size + 6;
 
-	/*
-	 * In case of multiple reads from the panel, after the first read, there
-	 * is possibility that there are some bytes in the payload repeating in
-	 * the RDBK_DATA registers. Since we read all the parameters from the
-	 * panel right from the first byte for every pass. We need to skip the
-	 * repeating bytes and then append the new parameters to the rx buffer.
-	 */
+	 
 	if (read_cnt > 16) {
 		int bytes_shifted;
-		/* Any data more than 16 bytes will be shifted out.
-		 * The temp read buffer should already contain these bytes.
-		 * The remaining bytes in read buffer are the repeated bytes.
-		 */
+		 
 		bytes_shifted = read_cnt - 16;
 		repeated_bytes = buf_offset - bytes_shifted;
 	}
 
 	for (i = cnt - 1; i >= 0; i--) {
 		data = dsi_read(msm_host, REG_DSI_RDBK_DATA(i));
-		*temp++ = ntohl(data); /* to host byte order */
+		*temp++ = ntohl(data);  
 		DBG("data = 0x%x and ntohl(data) = 0x%x", data, ntohl(data));
 	}
 
@@ -1399,15 +1312,8 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
 		return len;
 	}
 
-	/* for video mode, do not send cmds more than
-	* one pixel line, since it only transmit it
-	* during BLLP.
-	*/
-	/* TODO: if the command is sent in LP mode, the bit rate is only
-	 * half of esc clk rate. In this case, if the video is already
-	 * actively streaming, we need to check more carefully if the
-	 * command can be fit into one BLLP.
-	 */
+	 
+	 
 	if ((msm_host->mode_flags & MIPI_DSI_MODE_VIDEO) && (len > bllp_len)) {
 		pr_err("%s: cmd cannot fit into BLLP period, len=%d\n",
 			__func__, len);
@@ -1438,10 +1344,10 @@ static void dsi_err_worker(struct work_struct *work)
 	if (status & DSI_ERR_STATE_MDP_FIFO_UNDERFLOW)
 		dsi_sw_reset(msm_host);
 
-	/* It is safe to clear here because error irq is disabled. */
+	 
 	msm_host->err_work_state = 0;
 
-	/* enable dsi error interrupt */
+	 
 	dsi_intr_ctrl(msm_host, DSI_IRQ_MASK_ERROR, 1);
 }
 
@@ -1453,7 +1359,7 @@ static void dsi_ack_err_status(struct msm_dsi_host *msm_host)
 
 	if (status) {
 		dsi_write(msm_host, REG_DSI_ACK_ERR_STATUS, status);
-		/* Writing of an extra 0 needed to clear error bits */
+		 
 		dsi_write(msm_host, REG_DSI_ACK_ERR_STATUS, 0);
 		msm_host->err_work_state |= DSI_ERR_STATE_ACK;
 	}
@@ -1493,7 +1399,7 @@ static void dsi_fifo_status(struct msm_dsi_host *msm_host)
 
 	status = dsi_read(msm_host, REG_DSI_FIFO_STATUS);
 
-	/* fifo underflow, overflow */
+	 
 	if (status) {
 		dsi_write(msm_host, REG_DSI_FIFO_STATUS, status);
 		msm_host->err_work_state |= DSI_ERR_STATE_FIFO;
@@ -1530,7 +1436,7 @@ static void dsi_clk_status(struct msm_dsi_host *msm_host)
 
 static void dsi_error(struct msm_dsi_host *msm_host)
 {
-	/* disable dsi error interrupt */
+	 
 	dsi_intr_ctrl(msm_host, DSI_IRQ_MASK_ERROR, 0);
 
 	dsi_clk_status(msm_host);
@@ -1609,7 +1515,7 @@ static int dsi_host_attach(struct mipi_dsi_host *host,
 	if (dsi->dsc)
 		msm_host->dsc = dsi->dsc;
 
-	/* Some gpios defined in panel DT need to be controlled by host */
+	 
 	ret = dsi_host_init_panel_gpios(msm_host, &dsi->dev);
 	if (ret)
 		return ret;
@@ -1657,12 +1563,7 @@ static const struct mipi_dsi_host_ops dsi_host_ops = {
 	.transfer = dsi_host_transfer,
 };
 
-/*
- * List of supported physical to logical lane mappings.
- * For example, the 2nd entry represents the following mapping:
- *
- * "3012": Logic 3->Phys 0; Logic 0->Phys 1; Logic 1->Phys 2; Logic 2->Phys 3;
- */
+ 
 static const int supported_data_lane_swaps[][4] = {
 	{ 0, 1, 2, 3 },
 	{ 3, 0, 1, 2 },
@@ -1686,7 +1587,7 @@ static int dsi_host_parse_lane_data(struct msm_dsi_host *msm_host,
 	if (!prop) {
 		DRM_DEV_DEBUG(dev,
 			"failed to find data lane mapping, using default\n");
-		/* Set the number of date lanes to 4 by default. */
+		 
 		msm_host->num_data_lanes = 4;
 		return 0;
 	}
@@ -1706,21 +1607,12 @@ static int dsi_host_parse_lane_data(struct msm_dsi_host *msm_host,
 		return ret;
 	}
 
-	/*
-	 * compare DT specified physical-logical lane mappings with the ones
-	 * supported by hardware
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(supported_data_lane_swaps); i++) {
 		const int *swap = supported_data_lane_swaps[i];
 		int j;
 
-		/*
-		 * the data-lanes array we get from DT has a logical->physical
-		 * mapping. The "data lane swap" register field represents
-		 * supported configurations in a physical->logical mapping.
-		 * Translate the DT mapping to what we understand and find a
-		 * configuration that works.
-		 */
+		 
 		for (j = 0; j < num_lanes; j++) {
 			if (lane_map[j] < 0 || lane_map[j] > 3)
 				DRM_DEV_ERROR(dev, "bad physical lane entry %u\n",
@@ -1760,7 +1652,7 @@ static int dsi_populate_dsc_params(struct msm_dsi_host *msm_host, struct drm_dsc
 	drm_dsc_set_const_params(dsc);
 	drm_dsc_set_rc_buf_thresh(dsc);
 
-	/* handle only bpp = bpc = 8, pre-SCR panels */
+	 
 	ret = drm_dsc_setup_rc_params(dsc, DRM_DSC_1_1_PRE_SCR);
 	if (ret) {
 		DRM_DEV_ERROR(&msm_host->pdev->dev, "could not find DSC RC parameters\n");
@@ -1780,12 +1672,7 @@ static int dsi_host_parse_dt(struct msm_dsi_host *msm_host)
 	struct device_node *endpoint;
 	int ret = 0;
 
-	/*
-	 * Get the endpoint of the output port of the DSI host. In our case,
-	 * this is mapped to port number with reg = 1. Don't return an error if
-	 * the remote endpoint isn't defined. It's possible that there is
-	 * nothing connected to the dsi output.
-	 */
+	 
 	endpoint = of_graph_get_endpoint_by_regs(np, 1, -1);
 	if (!endpoint) {
 		DRM_DEV_DEBUG(dev, "%s: no endpoint\n", __func__);
@@ -1877,7 +1764,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
 		return msm_host->id;
 	}
 
-	/* fixup base address by io offset */
+	 
 	msm_host->ctrl_base += cfg->io_offset;
 
 	ret = devm_regulator_bulk_get_const(&pdev->dev, cfg->num_regulators,
@@ -1901,7 +1788,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
 	ret = devm_pm_opp_set_clkname(&pdev->dev, "byte");
 	if (ret)
 		return ret;
-	/* OPP table is optional */
+	 
 	ret = devm_pm_opp_of_add_table(&pdev->dev);
 	if (ret && ret != -ENODEV) {
 		dev_err(&pdev->dev, "invalid OPP table in device tree\n");
@@ -1914,7 +1801,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
 		return -EINVAL;
 	}
 
-	/* do not autoenable, will be enabled later */
+	 
 	ret = devm_request_irq(&pdev->dev, msm_host->irq, dsi_host_irq,
 			IRQF_TRIGGER_HIGH | IRQF_NO_AUTOEN,
 			"dsi_isr", msm_host);
@@ -1930,7 +1817,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
 	mutex_init(&msm_host->cmd_mutex);
 	spin_lock_init(&msm_host->intr_lock);
 
-	/* setup workqueue */
+	 
 	msm_host->workqueue = alloc_ordered_workqueue("dsi_drm_work", 0);
 	if (!msm_host->workqueue)
 		return -ENOMEM;
@@ -1982,7 +1869,7 @@ int msm_dsi_host_register(struct mipi_dsi_host *host)
 	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
 	int ret;
 
-	/* Register mipi dsi host */
+	 
 	if (!msm_host->registered) {
 		host->dev = &msm_host->pdev->dev;
 		host->ops = &dsi_host_ops;
@@ -2014,21 +1901,14 @@ int msm_dsi_host_xfer_prepare(struct mipi_dsi_host *host,
 	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
 	const struct msm_dsi_cfg_handler *cfg_hnd = msm_host->cfg_hnd;
 
-	/* TODO: make sure dsi_cmd_mdp is idle.
-	 * Since DSI6G v1.2.0, we can set DSI_TRIG_CTRL.BLOCK_DMA_WITHIN_FRAME
-	 * to ask H/W to wait until cmd mdp is idle. S/W wait is not needed.
-	 * How to handle the old versions? Wait for mdp cmd done?
-	 */
+	 
 
-	/*
-	 * mdss interrupt is generated in mdp core clock domain
-	 * mdp clock need to be enabled to receive dsi interrupt
-	 */
+	 
 	pm_runtime_get_sync(&msm_host->pdev->dev);
 	cfg_hnd->ops->link_clk_set_rate(msm_host);
 	cfg_hnd->ops->link_clk_enable(msm_host);
 
-	/* TODO: vote for bus bandwidth */
+	 
 
 	if (!(msg->flags & MIPI_DSI_MSG_USE_LPM))
 		dsi_set_tx_power_mode(0, msm_host);
@@ -2055,7 +1935,7 @@ void msm_dsi_host_xfer_restore(struct mipi_dsi_host *host,
 	if (!(msg->flags & MIPI_DSI_MSG_USE_LPM))
 		dsi_set_tx_power_mode(1, msm_host);
 
-	/* TODO: unvote for bus bandwidth */
+	 
 
 	cfg_hnd->ops->link_clk_disable(msm_host);
 	pm_runtime_put(&msm_host->pdev->dev);
@@ -2086,12 +1966,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
 		rx_byte = 4;
 	} else {
 		short_response = 0;
-		data_byte = 10;	/* first read */
+		data_byte = 10;	 
 		if (rlen < data_byte)
 			pkt_size = rlen;
 		else
 			pkt_size = data_byte;
-		rx_byte = data_byte + 6; /* 4 header + 2 crc */
+		rx_byte = data_byte + 6;  
 	}
 
 	buf = msm_host->rx_buf;
@@ -2117,12 +1997,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
 
 		if ((cfg_hnd->major == MSM_DSI_VER_MAJOR_6G) &&
 			(cfg_hnd->minor >= MSM_DSI_6G_VER_MINOR_V1_1)) {
-			/* Clear the RDBK_DATA registers */
+			 
 			dsi_write(msm_host, REG_DSI_RDBK_DATA_CTRL,
 					DSI_RDBK_DATA_CTRL_CLR);
-			wmb(); /* make sure the RDBK registers are cleared */
+			wmb();  
 			dsi_write(msm_host, REG_DSI_RDBK_DATA_CTRL, 0);
-			wmb(); /* release cleared status before transfer */
+			wmb();  
 		}
 
 		ret = dsi_cmds2buf_tx(msm_host, msg);
@@ -2134,13 +2014,7 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
 			return -ECOMM;
 		}
 
-		/*
-		 * once cmd_dma_done interrupt received,
-		 * return data from client is ready and stored
-		 * at RDBK_DATA register already
-		 * since rx fifo is 16 bytes, dcs header is kept at first loop,
-		 * after that dcs header lost during shift into registers
-		 */
+		 
 		dlen = dsi_cmd_dma_rx(msm_host, buf, rx_byte, pkt_size);
 
 		if (dlen <= 0)
@@ -2158,10 +2032,10 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
 		}
 
 		if (!end) {
-			dlen -= 2; /* 2 crc */
+			dlen -= 2;  
 			dlen -= diff;
-			buf += dlen;	/* next start position */
-			data_byte = 14;	/* NOT first read */
+			buf += dlen;	 
+			data_byte = 14;	 
 			if (rlen < data_byte)
 				pkt_size += rlen;
 			else
@@ -2170,12 +2044,7 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
 		}
 	}
 
-	/*
-	 * For single Long read, if the requested rlen < 10,
-	 * we need to shift the start position of rx
-	 * data buffer to skip the bytes which are not
-	 * updated.
-	 */
+	 
 	if (pkt_size < 10 && !short_response)
 		buf = msm_host->rx_buf + (10 - rlen);
 	else
@@ -2216,7 +2085,7 @@ void msm_dsi_host_cmd_xfer_commit(struct mipi_dsi_host *host, u32 dma_base,
 	dsi_write(msm_host, REG_DSI_DMA_LEN, len);
 	dsi_write(msm_host, REG_DSI_TRIG_DMA, 1);
 
-	/* Make sure trigger happens */
+	 
 	wmb();
 }
 
@@ -2234,7 +2103,7 @@ void msm_dsi_host_reset_phy(struct mipi_dsi_host *host)
 
 	DBG("");
 	dsi_write(msm_host, REG_DSI_PHY_RESET, DSI_PHY_RESET_RESET);
-	/* Make sure fully reset */
+	 
 	wmb();
 	udelay(1000);
 	dsi_write(msm_host, REG_DSI_PHY_RESET, 0);
@@ -2255,10 +2124,7 @@ void msm_dsi_host_get_phy_clk_req(struct mipi_dsi_host *host,
 		return;
 	}
 
-	/* CPHY transmits 16 bits over 7 clock cycles
-	 * "byte_clk" is in units of 16-bits (see dsi_calc_pclk),
-	 * so multiply by 7 to get the "bitclk rate"
-	 */
+	 
 	if (msm_host->cphy_mode)
 		clk_req->bitclk_rate = msm_host->byte_clk_rate * 7;
 	else
@@ -2287,15 +2153,8 @@ int msm_dsi_host_enable(struct mipi_dsi_host *host)
 	dsi_op_mode_config(msm_host,
 		!!(msm_host->mode_flags & MIPI_DSI_MODE_VIDEO), true);
 
-	/* TODO: clock should be turned off for command mode,
-	 * and only turned on before MDP START.
-	 * This part of code should be enabled once mdp driver support it.
-	 */
-	/* if (msm_panel->mode == MSM_DSI_CMD_MODE) {
-	 *	dsi_link_clk_disable(msm_host);
-	 *	pm_runtime_put(&msm_host->pdev->dev);
-	 * }
-	 */
+	 
+	 
 	msm_host->enabled = true;
 	return 0;
 }
@@ -2308,10 +2167,7 @@ int msm_dsi_host_disable(struct mipi_dsi_host *host)
 	dsi_op_mode_config(msm_host,
 		!!(msm_host->mode_flags & MIPI_DSI_MODE_VIDEO), false);
 
-	/* Since we have disabled INTF, the video engine won't stop so that
-	 * the cmd engine will be blocked.
-	 * Reset to disable video engine so that we can send off cmd.
-	 */
+	 
 	dsi_sw_reset(msm_host);
 
 	return 0;
@@ -2503,10 +2359,10 @@ static void msm_dsi_host_video_test_pattern_setup(struct msm_dsi_host *msm_host)
 	reg = dsi_read(msm_host, REG_DSI_TEST_PATTERN_GEN_CTRL);
 
 	dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_VIDEO_INIT_VAL, 0xff);
-	/* draw checkered rectangle pattern */
+	 
 	dsi_write(msm_host, REG_DSI_TPG_MAIN_CONTROL,
 			DSI_TPG_MAIN_CONTROL_CHECKERED_RECTANGLE_PATTERN);
-	/* use 24-bit RGB test pttern */
+	 
 	dsi_write(msm_host, REG_DSI_TPG_VIDEO_CONFIG,
 			DSI_TPG_VIDEO_CONFIG_BPP(VIDEO_CONFIG_24BPP) |
 			DSI_TPG_VIDEO_CONFIG_RGB);
@@ -2523,13 +2379,13 @@ static void msm_dsi_host_cmd_test_pattern_setup(struct msm_dsi_host *msm_host)
 
 	reg = dsi_read(msm_host, REG_DSI_TEST_PATTERN_GEN_CTRL);
 
-	/* initial value for test pattern */
+	 
 	dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_CMD_MDP_INIT_VAL0, 0xff);
 
 	reg |= DSI_TEST_PATTERN_GEN_CTRL_CMD_MDP_STREAM0_PATTERN_SEL(CMD_MDP_MDSS_GENERAL_PATTERN);
 
 	dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_CTRL, reg);
-	/* draw checkered rectangle pattern */
+	 
 	dsi_write(msm_host, REG_DSI_TPG_MAIN_CONTROL2,
 			DSI_TPG_MAIN_CONTROL2_CMD_MDP0_CHECKERED_RECTANGLE_PATTERN);
 
@@ -2548,10 +2404,10 @@ void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host)
 		msm_dsi_host_cmd_test_pattern_setup(msm_host);
 
 	reg = dsi_read(msm_host, REG_DSI_TEST_PATTERN_GEN_CTRL);
-	/* enable the test pattern generator */
+	 
 	dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_CTRL, (reg | DSI_TEST_PATTERN_GEN_CTRL_EN));
 
-	/* for command mode need to trigger one frame from tpg */
+	 
 	if (!is_video_mode)
 		dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER,
 				DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER_SW_TRIGGER);

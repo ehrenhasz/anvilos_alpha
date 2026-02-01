@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include "mt76x2.h"
 #include "eeprom.h"
@@ -25,7 +22,7 @@ int mt76x2_set_sar_specs(struct ieee80211_hw *hw,
 
 	dev->txpower_conf = mt76_get_sar_power(mphy, mphy->chandef.chan,
 					       power);
-	/* convert to per-chain power for 2x2 devices */
+	 
 	dev->txpower_conf -= 6;
 
 	if (test_bit(MT76_STATE_RUNNING, &mphy->state))
@@ -107,7 +104,7 @@ void mt76_write_mac_initvals(struct mt76x02_dev *dev)
 	 FIELD_PREP(MT_PROT_CFG_TXOP_ALLOW, 0x3f))
 
 	static const struct mt76_reg_pair vals[] = {
-		/* Copied from MediaTek reference source */
+		 
 		{ MT_PBF_SYS_CTRL,		0x00080c00 },
 		{ MT_PBF_CFG,			0x1efebcff },
 		{ MT_FCE_PSE_CTRL,		0x00000001 },
@@ -195,7 +192,7 @@ void mt76x2_init_txpower(struct mt76x02_dev *dev,
 				  txp.target_power;
 		chan->orig_mpwr = DIV_ROUND_UP(chan->orig_mpwr, 2);
 
-		/* convert to combined output power on 2x2 devices */
+		 
 		chan->orig_mpwr += 3;
 		chan->max_power = min_t(int, chan->max_reg_power,
 					chan->orig_mpwr);

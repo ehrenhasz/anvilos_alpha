@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -19,7 +19,7 @@ struct {
 	__type(value, __u32);
 } arraymap1 SEC(".maps");
 
-/* will set before prog run */
+ 
 volatile const __u32 num_cpus = 0;
 
 __u32 key_sum = 0, val_sum = 0;

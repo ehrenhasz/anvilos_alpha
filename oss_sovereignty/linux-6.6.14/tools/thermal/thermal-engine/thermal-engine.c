@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Thermal monitoring tool based on the thermal netlink events.
- *
- * Copyright (C) 2022 Linaro Ltd.
- *
- * Author: Daniel Lezcano <daniel.lezcano@kernel.org>
- */
+
+ 
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
@@ -266,7 +260,7 @@ static int options_init(int argc, char *argv[], struct options *options)
 		case 'h':
 			usage(basename(argv[0]));
 			break;
-		default: /* '?' */
+		default:  
 			return -1;
 		}
 	}

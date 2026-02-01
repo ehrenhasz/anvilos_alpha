@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common Primitives for DAMON Sysfs Interface
- *
- * Author: SeongJae Park <sj@kernel.org>
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -11,9 +7,7 @@
 
 DEFINE_MUTEX(damon_sysfs_lock);
 
-/*
- * unsigned long range directory
- */
+ 
 
 struct damon_sysfs_ul_range *damon_sysfs_ul_range_alloc(
 		unsigned long min,

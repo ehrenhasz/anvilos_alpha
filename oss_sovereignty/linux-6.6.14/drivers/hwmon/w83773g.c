@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 IBM Corp.
- *
- * Driver for the Nuvoton W83773G SMBus temperature sensor IC.
- * Supported models: W83773G
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -15,10 +10,10 @@
 #include <linux/of.h>
 #include <linux/regmap.h>
 
-/* W83773 has 3 channels */
+ 
 #define W83773_CHANNELS				3
 
-/* The W83773 registers */
+ 
 #define W83773_CONVERSION_RATE_REG_READ		0x04
 #define W83773_CONVERSION_RATE_REG_WRITE	0x0A
 #define W83773_MANUFACTURER_ID_REG		0xFE
@@ -32,7 +27,7 @@ static const u8 W83773_TEMP_MSB[2] = { 0x01, 0x24 };
 static const u8 W83773_OFFSET_LSB[2] = { 0x12, 0x16 };
 static const u8 W83773_OFFSET_MSB[2] = { 0x11, 0x15 };
 
-/* this is the number of sensors in the device */
+ 
 static const struct i2c_device_id w83773_id[] = {
 	{ "w83773g" },
 	{ }
@@ -127,7 +122,7 @@ static int set_offset(struct regmap *regmap, int index, long val)
 	u8 low_byte;
 
 	val = clamp_val(val, -127825, 127825);
-	/* offset value equals to (high_byte << 3 | low_byte >> 5) * 125 */
+	 
 	val /= 125;
 	high_byte = val >> 3;
 	low_byte = (val & 0x07) << 5;
@@ -156,14 +151,7 @@ static int set_update_interval(struct regmap *regmap, long val)
 {
 	int rate;
 
-	/*
-	 * For valid rates, interval can be calculated as
-	 *	interval = (1 << (8 - rate)) * 62.5;
-	 * Rounded rate is therefore
-	 *	rate = 8 - __fls(interval * 8 / (62.5 * 7));
-	 * Use clamp_val() to avoid overflows, and to ensure valid input
-	 * for __fls.
-	 */
+	 
 	val = clamp_val(val, 62, 16000) * 10;
 	rate = 8 - __fls((val * 8 / (625 * 7)));
 	return regmap_write(regmap, W83773_CONVERSION_RATE_REG_WRITE, rate);
@@ -272,7 +260,7 @@ static int w83773_probe(struct i2c_client *client)
 		return PTR_ERR(regmap);
 	}
 
-	/* Set the conversion rate to 2 Hz */
+	 
 	ret = regmap_write(regmap, W83773_CONVERSION_RATE_REG_WRITE, 0x05);
 	if (ret < 0) {
 		dev_err(&client->dev, "error writing config rate register\n");

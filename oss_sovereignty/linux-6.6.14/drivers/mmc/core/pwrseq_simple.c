@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2014 Linaro Ltd
- *
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- *
- *  Simple MMC power sequence management
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -104,7 +98,7 @@ static const struct mmc_pwrseq_ops mmc_pwrseq_simple_ops = {
 
 static const struct of_device_id mmc_pwrseq_simple_of_match[] = {
 	{ .compatible = "mmc-pwrseq-simple",},
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, mmc_pwrseq_simple_of_match);
 

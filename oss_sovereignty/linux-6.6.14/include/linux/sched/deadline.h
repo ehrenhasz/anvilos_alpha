@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/*
- * SCHED_DEADLINE tasks has negative priorities, reflecting
- * the fact that any of them has higher prio than RT and
- * NORMAL/BATCH tasks.
- */
+ 
 
 #include <linux/sched.h>
 
@@ -33,4 +29,4 @@ struct root_domain;
 extern void dl_add_task_root_domain(struct task_struct *p);
 extern void dl_clear_root_domain(struct root_domain *rd);
 
-#endif /* CONFIG_SMP */
+#endif  

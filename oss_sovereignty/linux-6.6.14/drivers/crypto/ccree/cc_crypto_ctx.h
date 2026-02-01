@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+ 
+ 
 
 #ifndef _CC_CRYPTO_CTX_H_
 #define _CC_CRYPTO_CTX_H_
@@ -49,7 +49,7 @@
 #define CC_SHA512_BLOCK_SIZE 128
 
 #define CC_DIGEST_SIZE_MAX CC_SHA512_DIGEST_SIZE
-#define CC_HASH_BLOCK_SIZE_MAX CC_SHA512_BLOCK_SIZE /*1024b*/
+#define CC_HASH_BLOCK_SIZE_MAX CC_SHA512_BLOCK_SIZE  
 
 #define CC_HMAC_BLOCK_SIZE_MAX CC_HASH_BLOCK_SIZE_MAX
 
@@ -139,4 +139,4 @@ enum drv_hash_hw_mode {
 	DRV_HASH_HW_RESERVE32B = S32_MAX
 };
 
-#endif /* _CC_CRYPTO_CTX_H_ */
+#endif  

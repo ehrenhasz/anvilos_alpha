@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ECB: Electronic CodeBook mode
- *
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/cipher.h>
@@ -68,7 +64,7 @@ static int crypto_ecb_create(struct crypto_template *tmpl, struct rtattr **tb)
 	if (IS_ERR(inst))
 		return PTR_ERR(inst);
 
-	inst->alg.ivsize = 0; /* ECB mode doesn't take an IV */
+	inst->alg.ivsize = 0;  
 
 	inst->alg.encrypt = crypto_ecb_encrypt;
 	inst->alg.decrypt = crypto_ecb_decrypt;

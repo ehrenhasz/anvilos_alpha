@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for some cypress "special" devices
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2006-2007 Jiri Kosina
- *  Copyright (c) 2008 Jiri Slaby
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -25,10 +16,7 @@
 
 #define VA_INVAL_LOGICAL_BOUNDARY	0x08
 
-/*
- * Some USB barcode readers from cypress have usage min and usage max in
- * the wrong order
- */
+ 
 static __u8 *cp_rdesc_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
@@ -49,11 +37,7 @@ static __u8 *cp_rdesc_fixup(struct hid_device *hdev, __u8 *rdesc,
 static __u8 *va_logical_boundary_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
-	/*
-	 * Varmilo VA104M (with VID Cypress and device ID 07B1) incorrectly
-	 * reports Logical Minimum of its Consumer Control device as 572
-	 * (0x02 0x3c). Fix this by setting its Logical Minimum to zero.
-	 */
+	 
 	if (*rsize == 25 &&
 			rdesc[0] == 0x05 && rdesc[1] == 0x0c &&
 			rdesc[2] == 0x09 && rdesc[3] == 0x01 &&

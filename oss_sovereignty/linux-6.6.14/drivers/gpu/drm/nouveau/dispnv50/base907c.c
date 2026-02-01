@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "base.h"
 
 #include <nvif/push507c.h>
@@ -118,7 +98,7 @@ base907c_ilut(struct nv50_wndw *wndw, struct nv50_wndw_atom *asyw, int size)
 static inline u32
 csc_drm_to_base(u64 in)
 {
-	/* base takes a 19-bit 2's complement value in S3.16 format */
+	 
 	bool sign = in & BIT_ULL(63);
 	u32 integer = (in >> 32) & 0x7fffffff;
 	u32 fraction = in & 0xffffffff;
@@ -142,8 +122,7 @@ base907c_csc(struct nv50_wndw *wndw, struct nv50_wndw_atom *asyw,
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 4; i++) {
 			u32 *val = &asyw->csc.matrix[j * 4 + i];
-			/* DRM does not support constant offset, while
-			 * HW CSC does. Skip it. */
+			 
 			if (i == 3) {
 				*val = 0;
 			} else {

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __CUDBG_LIB_COMMON_H__
 #define __CUDBG_LIB_COMMON_H__
 
-#define CUDBG_SIGNATURE 67856866 /* CUDB in ascii */
+#define CUDBG_SIGNATURE 67856866  
 
 enum cudbg_dump_type {
 	CUDBG_DUMP_TYPE_MINI = 1,
@@ -40,9 +38,9 @@ struct cudbg_entity_hdr {
 	u32 sys_warn;
 	u32 sys_err;
 	u8 num_pad;
-	u8 flag;             /* bit 0 is used to indicate ext data */
+	u8 flag;              
 	u8 reserved1[2];
-	u32 next_ext_offset; /* pointer to next extended entity meta data */
+	u32 next_ext_offset;  
 	u32 reserved[5];
 };
 
@@ -74,4 +72,4 @@ void cudbg_put_buff(struct cudbg_init *pdbg_init,
 		    struct cudbg_buffer *pin_buff);
 void cudbg_update_buff(struct cudbg_buffer *pin_buff,
 		       struct cudbg_buffer *pout_buff);
-#endif /* __CUDBG_LIB_COMMON_H__ */
+#endif  

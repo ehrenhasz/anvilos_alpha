@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <linux/err.h>
 #include <netinet/tcp.h>
@@ -104,7 +104,7 @@ static void do_test(const char *tcp_ca, const struct bpf_map *sk_stg_map)
 	    settimeo(lfd, 0) || settimeo(fd, 0))
 		goto done;
 
-	/* bind, listen and start server thread to accept */
+	 
 	sa6.sin6_family = AF_INET6;
 	sa6.sin6_addr = in6addr_loopback;
 	err = bind(lfd, (struct sockaddr *)&sa6, addrlen);
@@ -125,7 +125,7 @@ static void do_test(const char *tcp_ca, const struct bpf_map *sk_stg_map)
 			goto done;
 	}
 
-	/* connect to server */
+	 
 	err = connect(fd, (struct sockaddr *)&sa6, addrlen);
 	if (CHECK(err == -1, "connect", "errno:%d\n", errno))
 		goto done;
@@ -145,7 +145,7 @@ static void do_test(const char *tcp_ca, const struct bpf_map *sk_stg_map)
 	if (CHECK(err != 0, "pthread_create", "err:%d errno:%d\n", err, errno))
 		goto done;
 
-	/* recv total_bytes */
+	 
 	while (bytes < total_bytes && !READ_ONCE(stop)) {
 		nr_recv = recv(fd, &batch,
 			       MIN(total_bytes - bytes, sizeof(batch)), 0);
@@ -293,9 +293,7 @@ static void test_dctcp_fallback(void)
 		goto done;
 	ASSERT_STREQ(dctcp_skel->bss->cc_res, "cubic", "cc_res");
 	ASSERT_EQ(dctcp_skel->bss->tcp_cdg_res, -ENOTSUPP, "tcp_cdg_res");
-	/* All setsockopt(TCP_CONGESTION) in the recurred
-	 * bpf_dctcp->init() should fail with -EBUSY.
-	 */
+	 
 	ASSERT_EQ(dctcp_skel->bss->ebusy_cnt, 3, "ebusy_cnt");
 
 	err = getsockopt(srv_fd, SOL_TCP, TCP_CONGESTION, srv_cc, &cc_len);
@@ -357,9 +355,7 @@ static void test_incompl_cong_ops(void)
 	if (!ASSERT_OK_PTR(skel, "open_and_load"))
 		return;
 
-	/* That cong_avoid() and cong_control() are missing is only reported at
-	 * this point:
-	 */
+	 
 	link = bpf_map__attach_struct_ops(skel->maps.incompl_cong_ops);
 	ASSERT_ERR_PTR(link, "attach_struct_ops");
 
@@ -481,9 +477,7 @@ static void test_multi_links(void)
 	ASSERT_OK_PTR(link, "attach_struct_ops_1st");
 	bpf_link__destroy(link);
 
-	/* A map should be able to be used to create links multiple
-	 * times.
-	 */
+	 
 	link = bpf_map__attach_struct_ops(skel->maps.ca_update_1);
 	ASSERT_OK_PTR(link, "attach_struct_ops_2nd");
 	bpf_link__destroy(link);
@@ -509,11 +503,7 @@ static void test_link_replace(void)
 	link = bpf_map__attach_struct_ops(skel->maps.ca_update_2);
 	ASSERT_OK_PTR(link, "attach_struct_ops_2nd");
 
-	/* BPF_F_REPLACE with a wrong old map Fd. It should fail!
-	 *
-	 * With BPF_F_REPLACE, the link should be updated only if the
-	 * old map fd given here matches the map backing the link.
-	 */
+	 
 	opts.old_map_fd = bpf_map__fd(skel->maps.ca_update_1);
 	opts.flags = BPF_F_REPLACE;
 	err = bpf_link_update(bpf_link__fd(link),
@@ -521,7 +511,7 @@ static void test_link_replace(void)
 			      &opts);
 	ASSERT_ERR(err, "bpf_link_update_fail");
 
-	/* BPF_F_REPLACE with a correct old map Fd. It should success! */
+	 
 	opts.old_map_fd = bpf_map__fd(skel->maps.ca_update_2);
 	err = bpf_link_update(bpf_link__fd(link),
 			      bpf_map__fd(skel->maps.ca_update_1),

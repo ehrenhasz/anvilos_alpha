@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-pci.c - PCI Specific glue layer
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -63,14 +56,7 @@
 #define GP_RWREG1			0xa0
 #define GP_RWREG1_ULPI_REFCLK_DISABLE	(1 << 17)
 
-/**
- * struct dwc3_pci - Driver private structure
- * @dwc3: child dwc3 platform_device
- * @pci: our link to PCI bus
- * @guid: _DSM GUID
- * @has_dsm_for_pm: true for devices which need to run _DSM on runtime PM
- * @wakeup_work: work for asynchronous resume
- */
+ 
 struct dwc3_pci {
 	struct platform_device *dwc3;
 	struct pci_dev *pci;
@@ -110,11 +96,11 @@ static int dwc3_byt_enable_ulpi_refclock(struct pci_dev *pci)
 
 	value = readl(reg + GP_RWREG1);
 	if (!(value & GP_RWREG1_ULPI_REFCLK_DISABLE))
-		goto unmap; /* ULPI refclk already enabled */
+		goto unmap;  
 
 	value &= ~GP_RWREG1_ULPI_REFCLK_DISABLE;
 	writel(value, reg + GP_RWREG1);
-	/* This comes from the Intel Android x86 tree w/o any explanation */
+	 
 	msleep(100);
 unmap:
 	pcim_iounmap(pci, reg);
@@ -164,7 +150,7 @@ static const struct property_entry dwc3_pci_amd_properties[] = {
 	PROPERTY_ENTRY_BOOL("snps,rx_detect_poll_quirk"),
 	PROPERTY_ENTRY_BOOL("snps,tx_de_emphasis_quirk"),
 	PROPERTY_ENTRY_U8("snps,tx_de_emphasis", 1),
-	/* FIXME these quirks should be removed when AMD NL tapes out */
+	 
 	PROPERTY_ENTRY_BOOL("snps,disable_scramble_quirk"),
 	PROPERTY_ENTRY_BOOL("snps,dis_u3_susphy_quirk"),
 	PROPERTY_ENTRY_BOOL("snps,dis_u2_susphy_quirk"),
@@ -221,7 +207,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc,
 			struct gpio_desc *gpio;
 			int ret;
 
-			/* On BYT the FW does not always enable the refclock */
+			 
 			ret = dwc3_byt_enable_ulpi_refclock(pdev);
 			if (ret)
 				return ret;
@@ -231,20 +217,11 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc,
 			if (ret)
 				dev_dbg(&pdev->dev, "failed to add mapping table\n");
 
-			/*
-			 * A lot of BYT devices lack ACPI resource entries for
-			 * the GPIOs. If the ACPI entry for the GPIO controller
-			 * is present add a fallback mapping to the reference
-			 * design GPIOs which all boards seem to use.
-			 */
+			 
 			if (acpi_dev_present("INT33FC", NULL, -1))
 				gpiod_add_lookup_table(&platform_bytcr_gpios);
 
-			/*
-			 * These GPIOs will turn on the USB2 PHY. Note that we have to
-			 * put the gpio descriptors again here because the phy driver
-			 * might want to grab them, too.
-			 */
+			 
 			gpio = gpiod_get_optional(&pdev->dev, "cs", GPIOD_OUT_LOW);
 			if (IS_ERR(gpio))
 				return PTR_ERR(gpio);
@@ -262,20 +239,11 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc,
 				usleep_range(10000, 11000);
 			}
 
-			/*
-			 * Make the pdev name predictable (only 1 DWC3 on BYT)
-			 * and patch the phy dev-name into the lookup table so
-			 * that the phy-driver can get the GPIOs.
-			 */
+			 
 			dwc->dwc3->id = PLATFORM_DEVID_NONE;
 			platform_bytcr_gpios.dev_id = "dwc3.ulpi";
 
-			/*
-			 * Some Android tablets with a Crystal Cove PMIC
-			 * (INT33FD), rely on the TUSB1211 phy for charger
-			 * detection. These can be identified by them _not_
-			 * using the standard ACPI battery and ac drivers.
-			 */
+			 
 			if (acpi_dev_present("INT33FD", "1", 2) &&
 			    acpi_quirk_skip_acpi_ac_and_battery()) {
 				dev_info(&pdev->dev, "Using TUSB1211 phy for charger detection\n");
@@ -426,7 +394,7 @@ static const struct pci_device_id dwc3_pci_id_table[] = {
 	{ PCI_DEVICE_DATA(AMD, NL_USB, &dwc3_pci_amd_swnode) },
 	{ PCI_DEVICE_DATA(AMD, MR, &dwc3_pci_amd_mr_swnode) },
 
-	{  }	/* Terminating Entry */
+	{  }	 
 };
 MODULE_DEVICE_TABLE(pci, dwc3_pci_id_table);
 
@@ -454,7 +422,7 @@ static int dwc3_pci_dsm(struct dwc3_pci *dwc, int param)
 
 	return 0;
 }
-#endif /* CONFIG_PM || CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int dwc3_pci_runtime_suspend(struct device *dev)
@@ -480,7 +448,7 @@ static int dwc3_pci_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 #ifdef CONFIG_PM_SLEEP
 static int dwc3_pci_suspend(struct device *dev)
@@ -496,7 +464,7 @@ static int dwc3_pci_resume(struct device *dev)
 
 	return dwc3_pci_dsm(dwc, PCI_INTEL_BXT_STATE_D0);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops dwc3_pci_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(dwc3_pci_suspend, dwc3_pci_resume)

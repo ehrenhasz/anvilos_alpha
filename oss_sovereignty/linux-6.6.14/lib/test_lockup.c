@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test module to generate lockups
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -416,7 +414,7 @@ static bool test_kernel_ptr(unsigned long addr, int size)
 	if (!addr)
 		return false;
 
-	/* should be at least readable kernel address */
+	 
 	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
 	    (access_ok((void __user *)ptr, 1) ||
 	     access_ok((void __user *)ptr + size - 1, 1))) {

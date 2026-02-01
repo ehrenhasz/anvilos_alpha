@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * phy-can-transceiver.c - phy driver for CAN transceivers
- *
- * Copyright (C) 2021 Texas Instruments Incorporated - https://www.ti.com
- *
- */
+
+ 
 #include <linux/of.h>
 #include<linux/phy/phy.h>
 #include<linux/platform_device.h>
@@ -26,7 +21,7 @@ struct can_transceiver_phy {
 	struct mux_state *mux_state;
 };
 
-/* Power on function */
+ 
 static int can_transceiver_phy_power_on(struct phy *phy)
 {
 	struct can_transceiver_phy *can_transceiver_phy = phy_get_drvdata(phy);
@@ -47,7 +42,7 @@ static int can_transceiver_phy_power_on(struct phy *phy)
 	return 0;
 }
 
-/* Power off function */
+ 
 static int can_transceiver_phy_power_off(struct phy *phy)
 {
 	struct can_transceiver_phy *can_transceiver_phy = phy_get_drvdata(phy);

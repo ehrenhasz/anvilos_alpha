@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * platform_device probing code for ARM performance counters.
- *
- * Copyright (C) 2009 picoChip Designs, Ltd., Jamie Iles
- * Copyright (C) 2010 ARM Ltd., Will Deacon <will.deacon@arm.com>
- */
+
+ 
 #define pr_fmt(fmt) "hw perfevents: " fmt
 #define dev_fmt pr_fmt
 
@@ -67,11 +62,7 @@ static int pmu_parse_irq_affinity(struct device *dev, int i)
 	struct device_node *dn;
 	int cpu;
 
-	/*
-	 * If we don't have an interrupt-affinity property, we guess irq
-	 * affinity matches our logical CPU order, as we used to assume.
-	 * This is fragile, so we'll warn in pmu_parse_irqs().
-	 */
+	 
 	if (!pmu_has_irq_affinity(dev->of_node))
 		return i;
 
@@ -103,10 +94,7 @@ static int pmu_parse_irqs(struct arm_pmu *pmu)
 	if (num_irqs < 0)
 		return dev_err_probe(dev, num_irqs, "unable to count PMU IRQs\n");
 
-	/*
-	 * In this case we have no idea which CPUs are covered by the PMU.
-	 * To match our prior behaviour, we assume all CPUs in this case.
-	 */
+	 
 	if (num_irqs == 0) {
 		dev_warn(dev, "no irqs for PMU, sampling events not supported\n");
 		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_INTERRUPT;
@@ -207,7 +195,7 @@ int arm_pmu_device_probe(struct platform_device *pdev,
 		pmu->secure_access = of_property_read_bool(dev->of_node,
 							   "secure-reg-access");
 
-		/* arm64 systems boot only as non-secure */
+		 
 		if (IS_ENABLED(CONFIG_ARM64) && pmu->secure_access) {
 			dev_warn(dev, "ignoring \"secure-reg-access\" property for arm64\n");
 			pmu->secure_access = false;

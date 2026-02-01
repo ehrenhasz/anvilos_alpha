@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RISC-V performance counter support.
- *
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- *
- * This code is based on ARM perf event code which is in turn based on
- * sparc64 and x86 code.
- */
+
+ 
 
 #define pr_fmt(fmt) "riscv-pmu-sbi: " fmt
 
@@ -51,19 +44,16 @@ static const struct attribute_group *riscv_pmu_attr_groups[] = {
 	NULL,
 };
 
-/* Allow user mode access by default */
+ 
 static int sysctl_perf_user_access __read_mostly = SYSCTL_USER_ACCESS;
 
-/*
- * RISC-V doesn't have heterogeneous harts yet. This need to be part of
- * per_cpu in case of harts with different pmu counters
- */
+ 
 static union sbi_pmu_ctr_info *pmu_ctr_list;
 static bool riscv_pmu_use_irq;
 static unsigned int riscv_pmu_irq_num;
 static unsigned int riscv_pmu_irq;
 
-/* Cache the available counters in a bitmask */
+ 
 static unsigned long cmask;
 
 struct sbi_pmu_event_data {
@@ -281,11 +271,7 @@ static bool pmu_sbi_ctr_is_fw(int cidx)
 	return (info->type == SBI_PMU_CTR_TYPE_FW) ? true : false;
 }
 
-/*
- * Returns the counter width of a programmable counter and number of hardware
- * counters. As we don't support heterogeneous CPUs yet, it is okay to just
- * return the counter width of the first programmable counter.
- */
+ 
 int riscv_pmu_get_hpm_info(u32 *hw_ctr_width, u32 *num_hw_ctr)
 {
 	int i;
@@ -350,11 +336,7 @@ static int pmu_sbi_ctr_get_idx(struct perf_event *event)
 
 	cflags = pmu_sbi_get_filter_flags(event);
 
-	/*
-	 * In legacy mode, we have to force the fixed counters for those events
-	 * but not in the user access mode as we want to use the other counters
-	 * that support sampling/filtering.
-	 */
+	 
 	if (hwc->flags & PERF_EVENT_FLAG_LEGACY) {
 		if (event->attr.config == PERF_COUNT_HW_CPU_CYCLES) {
 			cflags |= SBI_PMU_CFG_FLAG_SKIP_MATCH;
@@ -365,7 +347,7 @@ static int pmu_sbi_ctr_get_idx(struct perf_event *event)
 		}
 	}
 
-	/* retrieve the available counter index */
+	 
 #if defined(CONFIG_32BIT)
 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase,
 			cmask, cflags, hwc->event_base, hwc->config,
@@ -384,7 +366,7 @@ static int pmu_sbi_ctr_get_idx(struct perf_event *event)
 	if (!test_bit(idx, &rvpmu->cmask) || !pmu_ctr_list[idx].value)
 		return -ENOENT;
 
-	/* Additional sanity check for the counter id */
+	 
 	if (pmu_sbi_ctr_is_fw(idx)) {
 		if (!test_and_set_bit(idx, cpuc->used_fw_ctrs))
 			return idx;
@@ -460,11 +442,7 @@ static int pmu_sbi_event_map(struct perf_event *event, u64 *econfig)
 		ret = pmu_event_find_cache(config);
 		break;
 	case PERF_TYPE_RAW:
-		/*
-		 * As per SBI specification, the upper 16 bits must be unused for
-		 * a raw event. Use the MSB (63b) to distinguish between hardware
-		 * raw event and firmware events.
-		 */
+		 
 		bSoftware = config >> 63;
 		raw_config_val = config & RISCV_PMU_RAW_EVENT_MASK;
 		if (bSoftware) {
@@ -586,7 +564,7 @@ static int pmu_sbi_get_ctrinfo(int nctr, unsigned long *mask)
 	for (i = 0; i < nctr; i++) {
 		ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_GET_INFO, i, 0, 0, 0, 0, 0);
 		if (ret.error)
-			/* The logical counter ids are not expected to be contiguous */
+			 
 			continue;
 
 		*mask |= BIT(i);
@@ -606,10 +584,7 @@ static int pmu_sbi_get_ctrinfo(int nctr, unsigned long *mask)
 
 static inline void pmu_sbi_stop_all(struct riscv_pmu *pmu)
 {
-	/*
-	 * No need to check the error because we are disabling all the counters
-	 * which may include counters that are not enabled yet.
-	 */
+	 
 	sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_STOP,
 		  0, pmu->cmask, 0, 0, 0, 0);
 }
@@ -618,17 +593,12 @@ static inline void pmu_sbi_stop_hw_ctrs(struct riscv_pmu *pmu)
 {
 	struct cpu_hw_events *cpu_hw_evt = this_cpu_ptr(pmu->hw_events);
 
-	/* No need to check the error here as we can't do anything about the error */
+	 
 	sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_STOP, 0,
 		  cpu_hw_evt->used_hw_ctrs[0], 0, 0, 0, 0);
 }
 
-/*
- * This function starts all the used counters in two step approach.
- * Any counter that did not overflow can be start in a single step
- * while the overflowed counters need to be started with updated initialization
- * value.
- */
+ 
 static inline void pmu_sbi_start_overflow_mask(struct riscv_pmu *pmu,
 					       unsigned long ctr_ovf_mask)
 {
@@ -643,11 +613,11 @@ static inline void pmu_sbi_start_overflow_mask(struct riscv_pmu *pmu,
 
 	ctr_start_mask = cpu_hw_evt->used_hw_ctrs[0] & ~ctr_ovf_mask;
 
-	/* Start all the counters that did not overflow in a single shot */
+	 
 	sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, 0, ctr_start_mask,
 		  0, 0, 0, 0);
 
-	/* Reinitialize and start all the counter that overflowed */
+	 
 	while (ctr_ovf_mask) {
 		if (ctr_ovf_mask & 0x01) {
 			event = cpu_hw_evt->events[idx];
@@ -685,7 +655,7 @@ static irqreturn_t pmu_sbi_ovf_handler(int irq, void *dev)
 	if (WARN_ON_ONCE(!cpu_hw_evt))
 		return IRQ_NONE;
 
-	/* Firmware counter don't support overflow yet */
+	 
 	fidx = find_first_bit(cpu_hw_evt->used_hw_ctrs, RISCV_MAX_COUNTERS);
 	if (fidx == RISCV_MAX_COUNTERS) {
 		csr_clear(CSR_SIP, BIT(riscv_pmu_irq_num));
@@ -701,16 +671,13 @@ static irqreturn_t pmu_sbi_ovf_handler(int irq, void *dev)
 	pmu = to_riscv_pmu(event->pmu);
 	pmu_sbi_stop_hw_ctrs(pmu);
 
-	/* Overflow status register should only be read after counter are stopped */
+	 
 	ALT_SBI_PMU_OVERFLOW(overflow);
 
-	/*
-	 * Overflow interrupt pending bit should only be cleared after stopping
-	 * all the counters to avoid any race condition.
-	 */
+	 
 	csr_clear(CSR_SIP, BIT(riscv_pmu_irq_num));
 
-	/* No overflow bit is set */
+	 
 	if (!overflow)
 		return IRQ_NONE;
 
@@ -719,38 +686,28 @@ static irqreturn_t pmu_sbi_ovf_handler(int irq, void *dev)
 	for_each_set_bit(lidx, cpu_hw_evt->used_hw_ctrs, RISCV_MAX_COUNTERS) {
 		struct perf_event *event = cpu_hw_evt->events[lidx];
 
-		/* Skip if invalid event or user did not request a sampling */
+		 
 		if (!event || !is_sampling_event(event))
 			continue;
 
 		info = &pmu_ctr_list[lidx];
-		/* Do a sanity check */
+		 
 		if (!info || info->type != SBI_PMU_CTR_TYPE_HW)
 			continue;
 
-		/* compute hardware counter index */
+		 
 		hidx = info->csr - CSR_CYCLE;
-		/* check if the corresponding bit is set in sscountovf */
+		 
 		if (!(overflow & (1 << hidx)))
 			continue;
 
-		/*
-		 * Keep a track of overflowed counters so that they can be started
-		 * with updated initial value.
-		 */
+		 
 		overflowed_ctrs |= 1 << lidx;
 		hw_evt = &event->hw;
 		riscv_pmu_event_update(event);
 		perf_sample_data_init(&data, 0, hw_evt->last_period);
 		if (riscv_pmu_event_set_period(event)) {
-			/*
-			 * Unlike other ISAs, RISC-V don't have to disable interrupts
-			 * to avoid throttling here. As per the specification, the
-			 * interrupt remains disabled until the OF bit is set.
-			 * Interrupts are enabled again only during the start.
-			 * TODO: We will need to stop the guest counters once
-			 * virtualization support is added.
-			 */
+			 
 			perf_event_overflow(event, &data, regs);
 		}
 	}
@@ -766,16 +723,13 @@ static int pmu_sbi_starting_cpu(unsigned int cpu, struct hlist_node *node)
 	struct riscv_pmu *pmu = hlist_entry_safe(node, struct riscv_pmu, node);
 	struct cpu_hw_events *cpu_hw_evt = this_cpu_ptr(pmu->hw_events);
 
-	/*
-	 * We keep enabling userspace access to CYCLE, TIME and INSTRET via the
-	 * legacy option but that will be removed in the future.
-	 */
+	 
 	if (sysctl_perf_user_access == SYSCTL_LEGACY)
 		csr_write(CSR_SCOUNTEREN, 0x7);
 	else
 		csr_write(CSR_SCOUNTEREN, 0x2);
 
-	/* Stop all the counters so that they can be enabled from perf */
+	 
 	pmu_sbi_stop_all(pmu);
 
 	if (riscv_pmu_use_irq) {
@@ -795,7 +749,7 @@ static int pmu_sbi_dying_cpu(unsigned int cpu, struct hlist_node *node)
 		csr_clear(CSR_IE, BIT(riscv_pmu_irq_num));
 	}
 
-	/* Disable all counters access for user mode now */
+	 
 	csr_write(CSR_SCOUNTEREN, 0x0);
 
 	return 0;
@@ -863,16 +817,12 @@ static int riscv_pm_pmu_notify(struct notifier_block *b, unsigned long cmd,
 
 		switch (cmd) {
 		case CPU_PM_ENTER:
-			/*
-			 * Stop and update the counter
-			 */
+			 
 			riscv_pmu_stop(event, PERF_EF_UPDATE);
 			break;
 		case CPU_PM_EXIT:
 		case CPU_PM_ENTER_FAILED:
-			/*
-			 * Restore and enable the counter.
-			 */
+			 
 			riscv_pmu_start(event, PERF_EF_RELOAD);
 			break;
 		default:
@@ -906,10 +856,7 @@ static void riscv_pmu_destroy(struct riscv_pmu *pmu)
 
 static void pmu_sbi_event_init(struct perf_event *event)
 {
-	/*
-	 * The permissions are set at event_init so that we do not depend
-	 * on the sysctl value that can change.
-	 */
+	 
 	if (sysctl_perf_user_access == SYSCTL_NO_USER_ACCESS)
 		event->hw.flags |= PERF_EVENT_FLAG_NO_USER_ACCESS;
 	else if (sysctl_perf_user_access == SYSCTL_USER_ACCESS)
@@ -930,24 +877,11 @@ static void pmu_sbi_event_mapped(struct perf_event *event, struct mm_struct *mm)
 		}
 	}
 
-	/*
-	 * The user mmapped the event to directly access it: this is where
-	 * we determine based on sysctl_perf_user_access if we grant userspace
-	 * the direct access to this event. That means that within the same
-	 * task, some events may be directly accessible and some other may not,
-	 * if the user changes the value of sysctl_perf_user_accesss in the
-	 * meantime.
-	 */
+	 
 
 	event->hw.flags |= PERF_EVENT_FLAG_USER_READ_CNT;
 
-	/*
-	 * We must enable userspace access *before* advertising in the user page
-	 * that it is possible to do so to avoid any race.
-	 * And we must notify all cpus here because threads that currently run
-	 * on other cpus will try to directly access the counter too without
-	 * calling pmu_sbi_ctr_start.
-	 */
+	 
 	if (event->hw.flags & PERF_EVENT_FLAG_USER_ACCESS)
 		on_each_cpu_mask(mm_cpumask(mm),
 				 pmu_sbi_set_scounteren, (void *)event, 1);
@@ -965,12 +899,7 @@ static void pmu_sbi_event_unmapped(struct perf_event *event, struct mm_struct *m
 		}
 	}
 
-	/*
-	 * Here we can directly remove user access since the user does not have
-	 * access to the user page anymore so we avoid the racy window where the
-	 * user could have read cap_user_rdpmc to true right before we disable
-	 * it.
-	 */
+	 
 	event->hw.flags &= ~PERF_EVENT_FLAG_USER_READ_CNT;
 
 	if (event->hw.flags & PERF_EVENT_FLAG_USER_ACCESS)
@@ -993,11 +922,7 @@ static int riscv_pmu_proc_user_access_handler(struct ctl_table *table,
 	int prev = sysctl_perf_user_access;
 	int ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
 
-	/*
-	 * Test against the previous value since we clear SCOUNTEREN when
-	 * sysctl_perf_user_access is set to SYSCTL_USER_ACCESS, but we should
-	 * not do that if that was already the case.
-	 */
+	 
 	if (ret || !write || prev == sysctl_perf_user_access)
 		return ret;
 
@@ -1036,13 +961,13 @@ static int pmu_sbi_device_probe(struct platform_device *pdev)
 		goto out_free;
 	}
 
-	/* It is possible to get from SBI more than max number of counters */
+	 
 	if (num_counters > RISCV_MAX_COUNTERS) {
 		num_counters = RISCV_MAX_COUNTERS;
 		pr_info("SBI returned more than maximum number of counters. Limiting the number of counters to %d\n", num_counters);
 	}
 
-	/* cache all the information about counters now */
+	 
 	if (pmu_sbi_get_ctrinfo(num_counters, &cmask))
 		goto out_free;
 
@@ -1127,7 +1052,7 @@ static int __init pmu_sbi_devinit(void)
 		return PTR_ERR(pdev);
 	}
 
-	/* Notify legacy implementation that SBI pmu is available*/
+	 
 	riscv_pmu_legacy_skip_init();
 
 	return ret;

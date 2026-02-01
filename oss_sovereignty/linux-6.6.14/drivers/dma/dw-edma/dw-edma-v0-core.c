@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2019 Synopsys, Inc. and/or its affiliates.
- * Synopsys DesignWare eDMA v0 core
- *
- * Author: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/irqreturn.h>
@@ -159,7 +154,7 @@ static inline u32 readl_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
 #define GET_CH_32(dw, dir, ch, name) \
 	readl_ch(dw, dir, ch, &(__dw_ch_regs(dw, dir, ch)->name))
 
-/* eDMA management callbacks */
+ 
 static void dw_edma_v0_core_off(struct dw_edma *dw)
 {
 	SET_BOTH_32(dw, int_mask,
@@ -355,7 +350,7 @@ static void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
 	dw_edma_v0_core_write_chunk(chunk);
 
 	if (first) {
-		/* Enable engine */
+		 
 		SET_RW_32(dw, chan->dir, engine_en, BIT(0));
 		if (dw->chip->mf == EDMA_MF_HDMA_COMPAT) {
 			switch (chan->id) {
@@ -393,26 +388,26 @@ static void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
 				break;
 			}
 		}
-		/* Interrupt unmask - done, abort */
+		 
 		tmp = GET_RW_32(dw, chan->dir, int_mask);
 		tmp &= ~FIELD_PREP(EDMA_V0_DONE_INT_MASK, BIT(chan->id));
 		tmp &= ~FIELD_PREP(EDMA_V0_ABORT_INT_MASK, BIT(chan->id));
 		SET_RW_32(dw, chan->dir, int_mask, tmp);
-		/* Linked list error */
+		 
 		tmp = GET_RW_32(dw, chan->dir, linked_list_err_en);
 		tmp |= FIELD_PREP(EDMA_V0_LINKED_LIST_ERR_MASK, BIT(chan->id));
 		SET_RW_32(dw, chan->dir, linked_list_err_en, tmp);
-		/* Channel control */
+		 
 		SET_CH_32(dw, chan->dir, chan->id, ch_control1,
 			  (DW_EDMA_V0_CCS | DW_EDMA_V0_LLE));
-		/* Linked list */
-		/* llp is not aligned on 64bit -> keep 32bit accesses */
+		 
+		 
 		SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
 			  lower_32_bits(chunk->ll_region.paddr));
 		SET_CH_32(dw, chan->dir, chan->id, llp.msb,
 			  upper_32_bits(chunk->ll_region.paddr));
 	}
-	/* Doorbell */
+	 
 	SET_RW_32(dw, chan->dir, doorbell,
 		  FIELD_PREP(EDMA_V0_DOORBELL_CH_MASK, chan->id));
 }
@@ -422,13 +417,13 @@ static void dw_edma_v0_core_ch_config(struct dw_edma_chan *chan)
 	struct dw_edma *dw = chan->dw;
 	u32 tmp = 0;
 
-	/* MSI done addr - low, high */
+	 
 	SET_RW_32(dw, chan->dir, done_imwr.lsb, chan->msi.address_lo);
 	SET_RW_32(dw, chan->dir, done_imwr.msb, chan->msi.address_hi);
-	/* MSI abort addr - low, high */
+	 
 	SET_RW_32(dw, chan->dir, abort_imwr.lsb, chan->msi.address_lo);
 	SET_RW_32(dw, chan->dir, abort_imwr.msb, chan->msi.address_hi);
-	/* MSI data - low, high */
+	 
 	switch (chan->id) {
 	case 0:
 	case 1:
@@ -452,12 +447,12 @@ static void dw_edma_v0_core_ch_config(struct dw_edma_chan *chan)
 	}
 
 	if (chan->id & BIT(0)) {
-		/* Channel odd {1, 3, 5, 7} */
+		 
 		tmp &= EDMA_V0_CH_EVEN_MSI_DATA_MASK;
 		tmp |= FIELD_PREP(EDMA_V0_CH_ODD_MSI_DATA_MASK,
 				  chan->msi.data);
 	} else {
-		/* Channel even {0, 2, 4, 6} */
+		 
 		tmp &= EDMA_V0_CH_ODD_MSI_DATA_MASK;
 		tmp |= FIELD_PREP(EDMA_V0_CH_EVEN_MSI_DATA_MASK,
 				  chan->msi.data);
@@ -486,7 +481,7 @@ static void dw_edma_v0_core_ch_config(struct dw_edma_chan *chan)
 	}
 }
 
-/* eDMA debugfs callbacks */
+ 
 static void dw_edma_v0_core_debugfs_on(struct dw_edma *dw)
 {
 	dw_edma_v0_debugfs_on(dw);

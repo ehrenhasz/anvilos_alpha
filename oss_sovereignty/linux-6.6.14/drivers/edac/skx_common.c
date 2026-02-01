@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * Shared code by both skx_edac and i10nm_edac. Originally split out
- * from the skx_edac driver.
- *
- * This file is linked into both skx_edac and i10nm_edac drivers. In
- * order to avoid link errors, this file must be like a pure library
- * without including symbols and defines which would otherwise conflict,
- * when linked once into a module and into a built-in object, at the
- * same time. For example, __this_module symbol references when that
- * file is being linked into a built-in object.
- *
- * Copyright (c) 2018, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -233,11 +220,7 @@ static int get_width(u32 mtr)
 	return DEV_UNKNOWN;
 }
 
-/*
- * We use the per-socket device @cfg->did to count how many sockets are present,
- * and to detemine which PCI buses are associated with each socket. Allocate
- * and build the full list of all the skx_dev structures that we need here.
- */
+ 
 int skx_get_all_bus_mappings(struct res_config *cfg, struct list_head **list)
 {
 	struct pci_dev *pdev, *prev;
@@ -363,9 +346,7 @@ int skx_get_dimm_info(u32 mtr, u32 mcmtr, u32 amap, struct dimm_info *dimm,
 		mtype = MEM_DDR4;
 	}
 
-	/*
-	 * Compute size in 8-byte (2^3) words, then shift to MiB (2^20)
-	 */
+	 
 	size = ((1ull << (rows + cols + ranks)) * banks) >> (20 - 3);
 	npages = MiB_TO_PAGES(size);
 
@@ -383,7 +364,7 @@ int skx_get_dimm_info(u32 mtr, u32 mcmtr, u32 amap, struct dimm_info *dimm,
 	dimm->grain = 32;
 	dimm->dtype = get_width(mtr);
 	dimm->mtype = mtype;
-	dimm->edac_mode = EDAC_SECDED; /* likely better than this */
+	dimm->edac_mode = EDAC_SECDED;  
 
 	if (imc->hbm_mc)
 		snprintf(dimm->label, sizeof(dimm->label), "CPU_SrcID#%u_HBMC#%u_Chan#%u",
@@ -432,7 +413,7 @@ unknown_size:
 	dimm->grain = 32;
 	dimm->dtype = DEV_UNKNOWN;
 	dimm->mtype = MEM_NVDIMM;
-	dimm->edac_mode = EDAC_SECDED; /* likely better than this */
+	dimm->edac_mode = EDAC_SECDED;  
 
 	edac_dbg(0, "mc#%d: channel %d, dimm %d, %llu MiB (%u pages)\n",
 		 imc->mc, chan, dimmno, size >> 20, dimm->nr_pages);
@@ -453,7 +434,7 @@ int skx_register_mci(struct skx_imc *imc, struct pci_dev *pdev,
 	struct skx_pvt *pvt;
 	int rc;
 
-	/* Allocate a new MC control structure */
+	 
 	layers[0].type = EDAC_MC_LAYER_CHANNEL;
 	layers[0].size = NUM_CHANNELS;
 	layers[0].is_virt_csrow = false;
@@ -468,7 +449,7 @@ int skx_register_mci(struct skx_imc *imc, struct pci_dev *pdev,
 
 	edac_dbg(0, "MC#%d: mci = %p\n", imc->mc, mci);
 
-	/* Associate skx_dev and mci for future usage */
+	 
 	imc->mci = mci;
 	pvt = mci->pvt_info;
 	pvt->imc = imc;
@@ -493,10 +474,10 @@ int skx_register_mci(struct skx_imc *imc, struct pci_dev *pdev,
 	if (rc < 0)
 		goto fail;
 
-	/* Record ptr to the generic device */
+	 
 	mci->pdev = &pdev->dev;
 
-	/* Add this new MC control structure to EDAC's list of MCs */
+	 
 	if (unlikely(edac_mc_add_mc(mci))) {
 		edac_dbg(0, "MC: failed edac_mc_add_mc()\n");
 		rc = -EINVAL;
@@ -522,7 +503,7 @@ static void skx_unregister_mci(struct skx_imc *imc)
 
 	edac_dbg(0, "MC%d: mci = %p\n", imc->mc, mci);
 
-	/* Remove MC sysfs nodes */
+	 
 	edac_mc_del_mc(mci->pdev);
 
 	edac_dbg(1, "%s: free mci struct\n", mci->ctl_name);
@@ -602,7 +583,7 @@ static void skx_mce_output_error(struct mem_ctl_info *mci,
 
 	edac_dbg(0, "%s\n", skx_msg);
 
-	/* Call the helper to output message */
+	 
 	edac_mc_handle_error(tp_event, mci, core_err_cnt,
 			     m->addr >> PAGE_SHIFT, m->addr & ~PAGE_MASK, 0,
 			     res->channel, res->dimm, -1,
@@ -641,7 +622,7 @@ int skx_mce_check_error(struct notifier_block *nb, unsigned long val,
 	if (mce->kflags & MCE_HANDLED_CEC)
 		return NOTIFY_DONE;
 
-	/* Ignore unless this is memory related with an address */
+	 
 	if (!skx_error_in_mem(mce) || !(mce->status & MCI_STATUS_ADDRV))
 		return NOTIFY_DONE;
 
@@ -649,9 +630,9 @@ int skx_mce_check_error(struct notifier_block *nb, unsigned long val,
 	res.mce  = mce;
 	res.addr = mce->addr & MCI_ADDR_PHYSADDR;
 
-	/* Try driver decoder first */
+	 
 	if (!(driver_decode && driver_decode(&res))) {
-		/* Then try firmware decoder (ACPI DSM methods) */
+		 
 		if (!(adxl_component_count && skx_adxl_decode(&res, skx_error_in_1st_level_mem(mce))))
 			return NOTIFY_DONE;
 	}

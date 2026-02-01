@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2015-18 Intel Corporation.
 
-/*
- * Common functions used in different Intel machine drivers
- */
+
+
+ 
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <sound/core.h>
@@ -78,9 +76,9 @@ SND_SOC_DAILINK_DEF(dmic16k,
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:1f.3")));
 
-/* skl_hda_digital audio interface glue - connects codec <--> CPU */
+ 
 struct snd_soc_dai_link skl_hda_be_dai_links[HDA_DSP_MAX_BE_DAI_LINKS] = {
-	/* Back End DAI links */
+	 
 	{
 		.name = "iDisp1",
 		.id = 1,

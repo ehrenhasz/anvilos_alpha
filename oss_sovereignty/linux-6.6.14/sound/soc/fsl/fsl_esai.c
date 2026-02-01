@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Freescale ESAI ALSA SoC Digital Audio Interface (DAI) driver
-//
-// Copyright (C) 2014 Freescale Semiconductor, Inc.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/dmaengine.h>
@@ -21,41 +21,12 @@
 				SNDRV_PCM_FMTBIT_S20_3LE | \
 				SNDRV_PCM_FMTBIT_S24_LE)
 
-/**
- * struct fsl_esai_soc_data - soc specific data
- * @reset_at_xrun: flags for enable reset operaton
- */
+ 
 struct fsl_esai_soc_data {
 	bool reset_at_xrun;
 };
 
-/**
- * struct fsl_esai - ESAI private data
- * @dma_params_rx: DMA parameters for receive channel
- * @dma_params_tx: DMA parameters for transmit channel
- * @pdev: platform device pointer
- * @regmap: regmap handler
- * @coreclk: clock source to access register
- * @extalclk: esai clock source to derive HCK, SCK and FS
- * @fsysclk: system clock source to derive HCK, SCK and FS
- * @spbaclk: SPBA clock (optional, depending on SoC design)
- * @work: work to handle the reset operation
- * @soc: soc specific data
- * @lock: spin lock between hw_reset() and trigger()
- * @fifo_depth: depth of tx/rx FIFO
- * @slot_width: width of each DAI slot
- * @slots: number of slots
- * @tx_mask: slot mask for TX
- * @rx_mask: slot mask for RX
- * @channels: channel num for tx or rx
- * @hck_rate: clock rate of desired HCKx clock
- * @sck_rate: clock rate of desired SCKx clock
- * @hck_dir: the direction of HCKx pads
- * @sck_div: if using PSR/PM dividers for SCKx clock
- * @consumer_mode: if fully using DAI clock consumer mode
- * @synchronous: if using tx/rx synchronous mode
- * @name: driver name
- */
+ 
 struct fsl_esai {
 	struct snd_dmaengine_dai_dma_data dma_params_rx;
 	struct snd_dmaengine_dai_dma_data dma_params_tx;
@@ -67,7 +38,7 @@ struct fsl_esai {
 	struct clk *spbaclk;
 	struct work_struct work;
 	const struct fsl_esai_soc_data *soc;
-	spinlock_t lock; /* Protect hw_reset and trigger */
+	spinlock_t lock;  
 	u32 fifo_depth;
 	u32 slot_width;
 	u32 slots;
@@ -151,17 +122,7 @@ static irqreturn_t esai_isr(int irq, void *devid)
 	return IRQ_HANDLED;
 }
 
-/**
- * fsl_esai_divisor_cal - This function is used to calculate the
- * divisors of psr, pm, fp and it is supposed to be called in
- * set_dai_sysclk() and set_bclk().
- *
- * @dai: pointer to DAI
- * @tx: current setting is for playback or capture
- * @ratio: desired overall ratio for the paticipating dividers
- * @usefp: for HCK setting, there is no need to set fp divider
- * @fp: bypass other dividers by setting fp directly if fp != 0
- */
+ 
 static int fsl_esai_divisor_cal(struct snd_soc_dai *dai, bool tx, u32 ratio,
 				bool usefp, u32 fp)
 {
@@ -186,20 +147,20 @@ static int fsl_esai_divisor_cal(struct snd_soc_dai *dai, bool tx, u32 ratio,
 
 	psr = ratio <= 256 * maxfp ? ESAI_xCCR_xPSR_BYPASS : ESAI_xCCR_xPSR_DIV8;
 
-	/* Do not loop-search if PM (1 ~ 256) alone can serve the ratio */
+	 
 	if (ratio <= 256) {
 		pm = ratio;
 		fp = 1;
 		goto out;
 	}
 
-	/* Set the max fluctuation -- 0.1% of the max devisor */
+	 
 	savesub = (psr ? 1 : 8)  * 256 * maxfp / 1000;
 
-	/* Find the best value for PM */
+	 
 	for (i = 1; i <= 256; i++) {
 		for (j = 1; j <= maxfp; j++) {
-			/* PSR (1 or 8) * PM (1 ~ 256) * FP (1 ~ 16) */
+			 
 			prod = (psr ? 1 : 8) * i * j;
 
 			if (prod == ratio)
@@ -211,7 +172,7 @@ static int fsl_esai_divisor_cal(struct snd_soc_dai *dai, bool tx, u32 ratio,
 			else
 				continue;
 
-			/* Calculate the fraction */
+			 
 			sub = sub * 1000 / ratio;
 			if (sub < savesub) {
 				savesub = sub;
@@ -219,7 +180,7 @@ static int fsl_esai_divisor_cal(struct snd_soc_dai *dai, bool tx, u32 ratio,
 				fp = j;
 			}
 
-			/* We are lucky */
+			 
 			if (savesub == 0)
 				goto out;
 		}
@@ -236,7 +197,7 @@ out:
 			   psr | ESAI_xCCR_xPM(pm));
 
 out_fp:
-	/* Bypass fp if not being required */
+	 
 	if (maxfp <= 1)
 		return 0;
 
@@ -246,16 +207,7 @@ out_fp:
 	return 0;
 }
 
-/**
- * fsl_esai_set_dai_sysclk - configure the clock frequency of MCLK (HCKT/HCKR)
- * @dai: pointer to DAI
- * @clk_id: The clock source of HCKT/HCKR
- *	  (Input from outside; output from inside, FSYS or EXTAL)
- * @freq: The required clock rate of HCKT/HCKR
- * @dir: The clock direction of HCKT/HCKR
- *
- * Note: If the direction is input, we do not care about clk_id.
- */
+ 
 static int fsl_esai_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 				   unsigned int freq, int dir)
 {
@@ -273,14 +225,14 @@ static int fsl_esai_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 		return -EINVAL;
 	}
 
-	/* Bypass divider settings if the requirement doesn't change */
+	 
 	if (freq == esai_priv->hck_rate[tx] && dir == esai_priv->hck_dir[tx])
 		return 0;
 
-	/* sck_div can be only bypassed if ETO/ERO=0 and SNC_SOC_CLOCK_OUT */
+	 
 	esai_priv->sck_div[tx] = true;
 
-	/* Set the direction of HCKT/HCKR pins */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xCCR(tx),
 			   ESAI_xCCR_xHCKD, in ? 0 : ESAI_xCCR_xHCKD);
 
@@ -317,20 +269,20 @@ static int fsl_esai_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 	else
 		ret = 0;
 
-	/* Block if clock source can not be divided into the required rate */
+	 
 	if (ret != 0 && clk_rate / ret < 1000) {
 		dev_err(dai->dev, "failed to derive required HCK%c rate\n",
 				tx ? 'T' : 'R');
 		return -EINVAL;
 	}
 
-	/* Only EXTAL source can be output directly without using PSR and PM */
+	 
 	if (ratio == 1 && clksrc == esai_priv->extalclk) {
-		/* Bypass all the dividers if not being needed */
+		 
 		ecr |= tx ? ESAI_ECR_ETO : ESAI_ECR_ERO;
 		goto out;
 	} else if (ratio < 2) {
-		/* The ratio should be no less than 2 if using other sources */
+		 
 		dev_err(dai->dev, "failed to derive required HCK%c rate\n",
 				tx ? 'T' : 'R');
 		return -EINVAL;
@@ -353,12 +305,7 @@ out:
 	return 0;
 }
 
-/**
- * fsl_esai_set_bclk - configure the related dividers according to the bclk rate
- * @dai: pointer to DAI
- * @tx: direction boolean
- * @freq: bclk freq
- */
+ 
 static int fsl_esai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
 {
 	struct fsl_esai *esai_priv = snd_soc_dai_get_drvdata(dai);
@@ -366,7 +313,7 @@ static int fsl_esai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
 	u32 sub, ratio = hck_rate / freq;
 	int ret;
 
-	/* Don't apply for fully consumer mode or unchanged bclk */
+	 
 	if (esai_priv->consumer_mode || esai_priv->sck_rate[tx] == freq)
 		return 0;
 
@@ -377,14 +324,14 @@ static int fsl_esai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
 	else
 		sub = 0;
 
-	/* Block if clock source can not be divided into the required rate */
+	 
 	if (sub != 0 && hck_rate / sub < 1000) {
 		dev_err(dai->dev, "failed to derive required SCK%c rate\n",
 				tx ? 'T' : 'R');
 		return -EINVAL;
 	}
 
-	/* The ratio should be contented by FP alone if bypassing PM and PSR */
+	 
 	if (!esai_priv->sck_div[tx] && (ratio > 16 || ratio == 0)) {
 		dev_err(dai->dev, "the ratio is out of range (1 ~ 16)\n");
 		return -EINVAL;
@@ -395,7 +342,7 @@ static int fsl_esai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
 	if (ret)
 		return ret;
 
-	/* Save current bclk rate */
+	 
 	esai_priv->sck_rate[tx] = freq;
 
 	return 0;
@@ -425,29 +372,29 @@ static int fsl_esai_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct fsl_esai *esai_priv = snd_soc_dai_get_drvdata(dai);
 	u32 xcr = 0, xccr = 0, mask;
 
-	/* DAI mode */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
-		/* Data on rising edge of bclk, frame low, 1clk before data */
+		 
 		xcr |= ESAI_xCR_xFSR;
 		xccr |= ESAI_xCCR_xFSP | ESAI_xCCR_xCKP | ESAI_xCCR_xHCKP;
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
-		/* Data on rising edge of bclk, frame high */
+		 
 		xccr |= ESAI_xCCR_xCKP | ESAI_xCCR_xHCKP;
 		break;
 	case SND_SOC_DAIFMT_RIGHT_J:
-		/* Data on rising edge of bclk, frame high, right aligned */
+		 
 		xccr |= ESAI_xCCR_xCKP | ESAI_xCCR_xHCKP;
 		xcr  |= ESAI_xCR_xWA;
 		break;
 	case SND_SOC_DAIFMT_DSP_A:
-		/* Data on rising edge of bclk, frame high, 1clk before data */
+		 
 		xcr |= ESAI_xCR_xFSL | ESAI_xCR_xFSR;
 		xccr |= ESAI_xCCR_xCKP | ESAI_xCCR_xHCKP;
 		break;
 	case SND_SOC_DAIFMT_DSP_B:
-		/* Data on rising edge of bclk, frame high */
+		 
 		xcr |= ESAI_xCR_xFSL;
 		xccr |= ESAI_xCCR_xCKP | ESAI_xCCR_xHCKP;
 		break;
@@ -455,21 +402,21 @@ static int fsl_esai_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* DAI clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
-		/* Nothing to do for both normal cases */
+		 
 		break;
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Invert bit clock */
+		 
 		xccr ^= ESAI_xCCR_xCKP | ESAI_xCCR_xHCKP;
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
-		/* Invert frame clock */
+		 
 		xccr ^= ESAI_xCCR_xFSP;
 		break;
 	case SND_SOC_DAIFMT_IB_IF:
-		/* Invert both clocks */
+		 
 		xccr ^= ESAI_xCCR_xCKP | ESAI_xCCR_xHCKP | ESAI_xCCR_xFSP;
 		break;
 	default:
@@ -478,7 +425,7 @@ static int fsl_esai_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	esai_priv->consumer_mode = false;
 
-	/* DAI clock provider masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
 		esai_priv->consumer_mode = true;
@@ -514,12 +461,12 @@ static int fsl_esai_startup(struct snd_pcm_substream *substream,
 	struct fsl_esai *esai_priv = snd_soc_dai_get_drvdata(dai);
 
 	if (!snd_soc_dai_active(dai)) {
-		/* Set synchronous mode */
+		 
 		regmap_update_bits(esai_priv->regmap, REG_ESAI_SAICR,
 				   ESAI_SAICR_SYNC, esai_priv->synchronous ?
 				   ESAI_SAICR_SYNC : 0);
 
-		/* Set slots count */
+		 
 		regmap_update_bits(esai_priv->regmap, REG_ESAI_TCCR,
 				   ESAI_xCCR_xDC_MASK,
 				   ESAI_xCCR_xDC(esai_priv->slots));
@@ -545,7 +492,7 @@ static int fsl_esai_hw_params(struct snd_pcm_substream *substream,
 	u32 bclk, mask, val;
 	int ret;
 
-	/* Override slot_width if being specifically set */
+	 
 	if (esai_priv->slot_width)
 		slot_width = esai_priv->slot_width;
 
@@ -559,11 +506,11 @@ static int fsl_esai_hw_params(struct snd_pcm_substream *substream,
 	val = ESAI_xCR_xSWS(slot_width, width);
 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xCR(tx), mask, val);
-	/* Recording in synchronous mode needs to set TCR also */
+	 
 	if (!tx && esai_priv->synchronous)
 		regmap_update_bits(esai_priv->regmap, REG_ESAI_TCR, mask, val);
 
-	/* Use Normal mode to support monaural audio */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xCR(tx),
 			   ESAI_xCR_xMOD_MASK, params_channels(params) > 1 ?
 			   ESAI_xCR_xMOD_NETWORK : 0);
@@ -582,7 +529,7 @@ static int fsl_esai_hw_params(struct snd_pcm_substream *substream,
 		regmap_update_bits(esai_priv->regmap, REG_ESAI_TCR,
 				ESAI_xCR_PADC, ESAI_xCR_PADC);
 
-	/* Remove ESAI personal reset by configuring ESAI_PCRC and ESAI_PRRC */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_PRRC,
 			   ESAI_PRRC_PDC_MASK, ESAI_PRRC_PDC(ESAI_GPIO));
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_PCRC,
@@ -595,7 +542,7 @@ static int fsl_esai_hw_init(struct fsl_esai *esai_priv)
 	struct platform_device *pdev = esai_priv->pdev;
 	int ret;
 
-	/* Reset ESAI unit */
+	 
 	ret = regmap_update_bits(esai_priv->regmap, REG_ESAI_ECR,
 				 ESAI_ECR_ESAIEN_MASK | ESAI_ECR_ERST_MASK,
 				 ESAI_ECR_ESAIEN | ESAI_ECR_ERST);
@@ -604,10 +551,7 @@ static int fsl_esai_hw_init(struct fsl_esai *esai_priv)
 		return ret;
 	}
 
-	/*
-	 * We need to enable ESAI so as to access some of its registers.
-	 * Otherwise, we would fail to dump regmap from user space.
-	 */
+	 
 	ret = regmap_update_bits(esai_priv->regmap, REG_ESAI_ECR,
 				 ESAI_ECR_ESAIEN_MASK | ESAI_ECR_ERST_MASK,
 				 ESAI_ECR_ESAIEN);
@@ -628,7 +572,7 @@ static int fsl_esai_register_restore(struct fsl_esai *esai_priv)
 {
 	int ret;
 
-	/* FIFO reset for safety */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_TFCR,
 			   ESAI_xFCR_xFR, ESAI_xFCR_xFR);
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_RFCR,
@@ -639,7 +583,7 @@ static int fsl_esai_register_restore(struct fsl_esai *esai_priv)
 	if (ret)
 		return ret;
 
-	/* FIFO reset done */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_TFCR, ESAI_xFCR_xFR, 0);
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_RFCR, ESAI_xFCR_xFR, 0);
 
@@ -655,22 +599,11 @@ static void fsl_esai_trigger_start(struct fsl_esai *esai_priv, bool tx)
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xFCR(tx),
 			   ESAI_xFCR_xFEN_MASK, ESAI_xFCR_xFEN);
 
-	/* Write initial words reqiured by ESAI as normal procedure */
+	 
 	for (i = 0; tx && i < channels; i++)
 		regmap_write(esai_priv->regmap, REG_ESAI_ETDR, 0x0);
 
-	/*
-	 * When set the TE/RE in the end of enablement flow, there
-	 * will be channel swap issue for multi data line case.
-	 * In order to workaround this issue, we switch the bit
-	 * enablement sequence to below sequence
-	 * 1) clear the xSMB & xSMA: which is done in probe and
-	 *                           stop state.
-	 * 2) set TE/RE
-	 * 3) set xSMB
-	 * 4) set xSMA:  xSMA is the last one in this flow, which
-	 *               will trigger esai to start.
-	 */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xCR(tx),
 			   tx ? ESAI_xCR_TE_MASK : ESAI_xCR_RE_MASK,
 			   tx ? ESAI_xCR_TE(pins) : ESAI_xCR_RE(pins));
@@ -681,7 +614,7 @@ static void fsl_esai_trigger_start(struct fsl_esai *esai_priv, bool tx)
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xSMA(tx),
 			   ESAI_xSMA_xS_MASK, ESAI_xSMA_xS(mask));
 
-	/* Enable Exception interrupt */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xCR(tx),
 			   ESAI_xCR_xEIE_MASK, ESAI_xCR_xEIE);
 }
@@ -698,7 +631,7 @@ static void fsl_esai_trigger_stop(struct fsl_esai *esai_priv, bool tx)
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xSMB(tx),
 			   ESAI_xSMB_xS_MASK, 0);
 
-	/* Disable and reset FIFO */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xFCR(tx),
 			   ESAI_xFCR_xFR | ESAI_xFCR_xFEN, ESAI_xFCR_xFR);
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_xFCR(tx),
@@ -713,29 +646,29 @@ static void fsl_esai_hw_reset(struct work_struct *work)
 	u32 tfcr, rfcr;
 
 	spin_lock_irqsave(&esai_priv->lock, lock_flags);
-	/* Save the registers */
+	 
 	regmap_read(esai_priv->regmap, REG_ESAI_TFCR, &tfcr);
 	regmap_read(esai_priv->regmap, REG_ESAI_RFCR, &rfcr);
 	enabled[tx] = tfcr & ESAI_xFCR_xFEN;
 	enabled[rx] = rfcr & ESAI_xFCR_xFEN;
 
-	/* Stop the tx & rx */
+	 
 	fsl_esai_trigger_stop(esai_priv, tx);
 	fsl_esai_trigger_stop(esai_priv, rx);
 
-	/* Reset the esai, and ignore return value */
+	 
 	fsl_esai_hw_init(esai_priv);
 
-	/* Enforce ESAI personal resets for both TX and RX */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_TCR,
 			   ESAI_xCR_xPR_MASK, ESAI_xCR_xPR);
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_RCR,
 			   ESAI_xCR_xPR_MASK, ESAI_xCR_xPR);
 
-	/* Restore registers by regcache_sync, and ignore return value */
+	 
 	fsl_esai_register_restore(esai_priv);
 
-	/* Remove ESAI personal resets by configuring PCRC and PRRC also */
+	 
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_TCR,
 			   ESAI_xCR_xPR_MASK, 0);
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_RCR,
@@ -745,7 +678,7 @@ static void fsl_esai_hw_reset(struct work_struct *work)
 	regmap_update_bits(esai_priv->regmap, REG_ESAI_PCRC,
 			   ESAI_PCRC_PC_MASK, ESAI_PCRC_PC(ESAI_GPIO));
 
-	/* Restart tx / rx, if they already enabled */
+	 
 	if (enabled[tx])
 		fsl_esai_trigger_start(esai_priv, tx);
 	if (enabled[rx])
@@ -969,7 +902,7 @@ static int fsl_esai_probe(struct platform_device *pdev)
 
 	esai_priv->soc = of_device_get_match_data(&pdev->dev);
 
-	/* Get the addresses and IRQ */
+	 
 	regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(regs))
 		return PTR_ERR(regs);
@@ -1014,13 +947,13 @@ static int fsl_esai_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Set a default slot number */
+	 
 	esai_priv->slots = 2;
 
-	/* Set a default clock provider state */
+	 
 	esai_priv->consumer_mode = true;
 
-	/* Determine the FIFO depth */
+	 
 	iprop = of_get_property(np, "fsl,fifo-depth", NULL);
 	if (iprop)
 		esai_priv->fifo_depth = be32_to_cpup(iprop);
@@ -1035,7 +968,7 @@ static int fsl_esai_probe(struct platform_device *pdev)
 	esai_priv->synchronous =
 		of_property_read_bool(np, "fsl,esai-synchronous");
 
-	/* Implement full symmetry for synchronous mode */
+	 
 	if (esai_priv->synchronous) {
 		fsl_esai_dai.symmetric_rate = 1;
 		fsl_esai_dai.symmetric_channels = 1;
@@ -1062,7 +995,7 @@ static int fsl_esai_probe(struct platform_device *pdev)
 	esai_priv->tx_mask = 0xFFFFFFFF;
 	esai_priv->rx_mask = 0xFFFFFFFF;
 
-	/* Clear the TSMA, TSMB, RSMA, RSMB */
+	 
 	regmap_write(esai_priv->regmap, REG_ESAI_TSMA, 0);
 	regmap_write(esai_priv->regmap, REG_ESAI_TSMB, 0);
 	regmap_write(esai_priv->regmap, REG_ESAI_RSMA, 0);
@@ -1072,10 +1005,7 @@ static int fsl_esai_probe(struct platform_device *pdev)
 	if (ret < 0 && ret != -ENOSYS)
 		goto err_pm_get_sync;
 
-	/*
-	 * Register platform component before registering cpu dai for there
-	 * is not defer probe for platform component in snd_soc_add_pcm_runtime().
-	 */
+	 
 	ret = imx_pcm_dma_init(pdev);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to init imx pcm dma: %d\n", ret);
@@ -1125,10 +1055,7 @@ static int fsl_esai_runtime_resume(struct device *dev)
 	struct fsl_esai *esai = dev_get_drvdata(dev);
 	int ret;
 
-	/*
-	 * Some platforms might use the same bit to gate all three or two of
-	 * clocks, so keep all clocks open/close at the same time for safety
-	 */
+	 
 	ret = clk_prepare_enable(esai->coreclk);
 	if (ret)
 		return ret;

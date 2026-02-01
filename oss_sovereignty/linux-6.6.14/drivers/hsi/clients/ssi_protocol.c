@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ssi_protocol.c
- *
- * Implementation of the SSI McSAAB improved protocol.
- *
- * Copyright (C) 2010 Nokia Corporation. All rights reserved.
- * Copyright (C) 2013 Sebastian Reichel <sre@kernel.org>
- *
- * Contact: Carlos Chinea <carlos.chinea@nokia.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/clk.h>
@@ -36,34 +27,32 @@
 #define SSIP_MAX_MTU		65535
 #define SSIP_DEFAULT_MTU	4000
 #define PN_MEDIA_SOS		21
-#define SSIP_MIN_PN_HDR		6	/* FIXME: Revisit */
-#define SSIP_WDTOUT		2000	/* FIXME: has to be 500 msecs */
-#define SSIP_KATOUT		15	/* 15 msecs */
-#define SSIP_MAX_CMDS		5 /* Number of pre-allocated commands buffers */
+#define SSIP_MIN_PN_HDR		6	 
+#define SSIP_WDTOUT		2000	 
+#define SSIP_KATOUT		15	 
+#define SSIP_MAX_CMDS		5  
 #define SSIP_BYTES_TO_FRAMES(x) ((((x) - 1) >> 2) + 1)
 #define SSIP_CMT_LOADER_SYNC	0x11223344
-/*
- * SSI protocol command definitions
- */
+ 
 #define SSIP_COMMAND(data)	((data) >> 28)
 #define SSIP_PAYLOAD(data)	((data) & 0xfffffff)
-/* Commands */
+ 
 #define SSIP_SW_BREAK		0
 #define SSIP_BOOTINFO_REQ	1
 #define SSIP_BOOTINFO_RESP	2
 #define SSIP_WAKETEST_RESULT	3
 #define SSIP_START_TRANS	4
 #define SSIP_READY		5
-/* Payloads */
+ 
 #define SSIP_DATA_VERSION(data)	((data) & 0xff)
 #define SSIP_LOCAL_VERID	1
 #define SSIP_WAKETEST_OK	0
 #define SSIP_WAKETEST_FAILED	1
 #define SSIP_PDU_LENGTH(data)	(((data) >> 8) & 0xffff)
 #define SSIP_MSG_ID(data)	((data) & 0xff)
-/* Generic Command */
+ 
 #define SSIP_CMD(cmd, payload)	(((cmd) << 28) | ((payload) & 0xfffffff))
-/* Commands for the control channel */
+ 
 #define SSIP_BOOTINFO_REQ_CMD(ver) \
 		SSIP_CMD(SSIP_BOOTINFO_REQ, SSIP_DATA_VERSION(ver))
 #define SSIP_BOOTINFO_RESP_CMD(ver) \
@@ -75,14 +64,14 @@
 
 #define SSIP_WAKETEST_FLAG 0
 
-/* Main state machine states */
+ 
 enum {
 	INIT,
 	HANDSHAKE,
 	ACTIVE,
 };
 
-/* Send state machine states */
+ 
 enum {
 	SEND_IDLE,
 	WAIT4READY,
@@ -91,35 +80,14 @@ enum {
 	SENDING_SWBREAK,
 };
 
-/* Receive state machine states */
+ 
 enum {
 	RECV_IDLE,
 	RECV_READY,
 	RECEIVING,
 };
 
-/**
- * struct ssi_protocol - SSI protocol (McSAAB) data
- * @main_state: Main state machine
- * @send_state: TX state machine
- * @recv_state: RX state machine
- * @flags: Flags, currently only used to follow wake line test
- * @rxid: RX data id
- * @txid: TX data id
- * @txqueue_len: TX queue length
- * @tx_wd: TX watchdog
- * @rx_wd: RX watchdog
- * @keep_alive: Workaround for SSI HW bug
- * @lock: To serialize access to this struct
- * @netdev: Phonet network device
- * @txqueue: TX data queue
- * @cmdqueue: Queue of free commands
- * @cl: HSI client own reference
- * @link: Link for ssip_list
- * @tx_usecount: Refcount to keep track the slaves that use the wake line
- * @channel_id_cmd: HSI channel id for command stream
- * @channel_id_data: HSI channel id for data stream
- */
+ 
 struct ssi_protocol {
 	unsigned int		main_state;
 	unsigned int		send_state;
@@ -130,7 +98,7 @@ struct ssi_protocol {
 	unsigned int		txqueue_len;
 	struct timer_list	tx_wd;
 	struct timer_list	rx_wd;
-	struct timer_list	keep_alive; /* wake-up workaround */
+	struct timer_list	keep_alive;  
 	spinlock_t		lock;
 	struct net_device	*netdev;
 	struct list_head	txqueue;
@@ -143,7 +111,7 @@ struct ssi_protocol {
 	int			channel_id_data;
 };
 
-/* List of ssi protocol instances */
+ 
 static LIST_HEAD(ssip_list);
 
 static void ssip_rxcmd_complete(struct hsi_msg *msg);
@@ -286,7 +254,7 @@ static void ssip_set_rxstate(struct ssi_protocol *ssi, unsigned int state)
 			del_timer(&ssi->keep_alive);
 		break;
 	case RECV_READY:
-		/* CMT speech workaround */
+		 
 		if (atomic_read(&ssi->tx_usecnt))
 			break;
 		fallthrough;
@@ -396,7 +364,7 @@ static void ssip_reset(struct hsi_client *cl)
 		hsi_stop_tx(cl);
 	spin_unlock_bh(&ssi->lock);
 	if (test_and_clear_bit(SSIP_WAKETEST_FLAG, &ssi->flags))
-		ssi_waketest(cl, 0); /* FIXME: To be removed */
+		ssi_waketest(cl, 0);  
 	spin_lock_bh(&ssi->lock);
 	del_timer(&ssi->rx_wd);
 	del_timer(&ssi->tx_wd);
@@ -465,10 +433,7 @@ static void ssip_keep_alive(struct timer_list *t)
 			if (atomic_read(&ssi->tx_usecnt) == 0)
 				break;
 			fallthrough;
-			/*
-			 * Workaround for cmt-speech in that case
-			 * we relay on audio timers.
-			 */
+			 
 		case SEND_IDLE:
 			spin_unlock(&ssi->lock);
 			return;
@@ -519,10 +484,7 @@ static void ssip_start_rx(struct hsi_client *cl)
 	dev_dbg(&cl->device, "RX start M(%d) R(%d)\n", ssi->main_state,
 						ssi->recv_state);
 	spin_lock_bh(&ssi->lock);
-	/*
-	 * We can have two UP events in a row due to a short low
-	 * high transition. Therefore we need to ignore the sencond UP event.
-	 */
+	 
 	if ((ssi->main_state != ACTIVE) || (ssi->recv_state == RECV_READY)) {
 		spin_unlock_bh(&ssi->lock);
 		return;
@@ -603,7 +565,7 @@ static int ssip_xmit(struct hsi_client *cl)
 	return hsi_async_write(cl, msg);
 }
 
-/* In soft IRQ context */
+ 
 static void ssip_pn_rx(struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
@@ -624,7 +586,7 @@ static void ssip_pn_rx(struct sk_buff *skb)
 	dev->stats.rx_packets++;
 	dev->stats.rx_bytes += skb->len;
 
-	/* length field is exchanged in network byte order */
+	 
 	((u16 *)skb->data)[2] = ntohs(((u16 *)skb->data)[2]);
 	dev_dbg(&dev->dev, "RX length fixed (%04x -> %u)\n",
 			((u16 *)skb->data)[2], ntohs(((u16 *)skb->data)[2]));
@@ -647,7 +609,7 @@ static void ssip_rx_data_complete(struct hsi_msg *msg)
 		ssip_error(cl);
 		return;
 	}
-	del_timer(&ssi->rx_wd); /* FIXME: Revisit */
+	del_timer(&ssi->rx_wd);  
 	skb = msg->context;
 	ssip_pn_rx(skb);
 	hsi_free_msg(msg);
@@ -658,7 +620,7 @@ static void ssip_rx_bootinforeq(struct hsi_client *cl, u32 cmd)
 	struct ssi_protocol *ssi = hsi_client_drvdata(cl);
 	struct hsi_msg *msg;
 
-	/* Workaroud: Ignore CMT Loader message leftover */
+	 
 	if (cmd == SSIP_CMT_LOADER_SYNC)
 		return;
 
@@ -674,10 +636,10 @@ static void ssip_rx_bootinforeq(struct hsi_client *cl, u32 cmd)
 		spin_unlock_bh(&ssi->lock);
 
 		if (!test_and_set_bit(SSIP_WAKETEST_FLAG, &ssi->flags))
-			ssi_waketest(cl, 1); /* FIXME: To be removed */
+			ssi_waketest(cl, 1);  
 
 		spin_lock_bh(&ssi->lock);
-		/* Start boot handshake watchdog */
+		 
 		mod_timer(&ssi->tx_wd, jiffies + msecs_to_jiffies(SSIP_WDTOUT));
 		spin_unlock_bh(&ssi->lock);
 		dev_dbg(&cl->device, "Send BOOTINFO_RESP\n");
@@ -703,7 +665,7 @@ static void ssip_rx_bootinforesp(struct hsi_client *cl, u32 cmd)
 
 	spin_lock_bh(&ssi->lock);
 	if (ssi->main_state != ACTIVE)
-		/* Use tx_wd as a boot watchdog in non ACTIVE state */
+		 
 		mod_timer(&ssi->tx_wd, jiffies + msecs_to_jiffies(SSIP_WDTOUT));
 	else
 		dev_dbg(&cl->device, "boot info resp ignored M(%d)\n",
@@ -726,11 +688,11 @@ static void ssip_rx_waketest(struct hsi_client *cl, u32 cmd)
 	spin_unlock_bh(&ssi->lock);
 
 	if (test_and_clear_bit(SSIP_WAKETEST_FLAG, &ssi->flags))
-		ssi_waketest(cl, 0); /* FIXME: To be removed */
+		ssi_waketest(cl, 0);  
 
 	spin_lock_bh(&ssi->lock);
 	ssi->main_state = ACTIVE;
-	del_timer(&ssi->tx_wd); /* Stop boot handshake timer */
+	del_timer(&ssi->tx_wd);  
 	spin_unlock_bh(&ssi->lock);
 
 	dev_notice(&cl->device, "WAKELINES TEST %s\n",
@@ -826,7 +788,7 @@ static void ssip_rxcmd_complete(struct hsi_msg *msg)
 	dev_dbg(&cl->device, "RX cmd: 0x%08x\n", cmd);
 	switch (cmdid) {
 	case SSIP_SW_BREAK:
-		/* Ignored */
+		 
 		break;
 	case SSIP_BOOTINFO_REQ:
 		ssip_rx_bootinforeq(cl, cmd);
@@ -935,7 +897,7 @@ static int ssip_pn_open(struct net_device *dev)
 	hsi_setup(cl);
 
 	if (!test_and_set_bit(SSIP_WAKETEST_FLAG, &ssi->flags))
-		ssi_waketest(cl, 1); /* FIXME: To be removed */
+		ssi_waketest(cl, 1);  
 
 	spin_lock_bh(&ssi->lock);
 	ssi->main_state = HANDSHAKE;
@@ -975,18 +937,15 @@ static netdev_tx_t ssip_pn_xmit(struct sk_buff *skb, struct net_device *dev)
 	if ((skb->protocol != htons(ETH_P_PHONET)) ||
 					(skb->len < SSIP_MIN_PN_HDR))
 		goto drop;
-	/* Pad to 32-bits - FIXME: Revisit*/
+	 
 	if ((skb->len & 3) && skb_pad(skb, 4 - (skb->len & 3)))
 		goto inc_dropped;
 
-	/*
-	 * Modem sends Phonet messages over SSI with its own endianness.
-	 * Assume that modem has the same endianness as we do.
-	 */
+	 
 	if (skb_cow_head(skb, 0))
 		goto drop;
 
-	/* length field is exchanged in network byte order */
+	 
 	((u16 *)skb->data)[2] = htons(((u16 *)skb->data)[2]);
 
 	msg = ssip_alloc_data(ssi, skb, GFP_ATOMIC);
@@ -1014,7 +973,7 @@ static netdev_tx_t ssip_pn_xmit(struct sk_buff *skb, struct net_device *dev)
 		dev_dbg(&cl->device, "Start TX qlen %d\n", ssi->txqueue_len);
 		hsi_start_tx(cl);
 	} else if (ssi->send_state == SEND_READY) {
-		/* Needed for cmt-speech workaround */
+		 
 		dev_dbg(&cl->device, "Start TX on SEND READY qlen %d\n",
 							ssi->txqueue_len);
 		spin_unlock_bh(&ssi->lock);
@@ -1036,7 +995,7 @@ inc_dropped:
 	return NETDEV_TX_OK;
 }
 
-/* CMT reset event handler */
+ 
 void ssip_reset_event(struct hsi_client *master)
 {
 	struct ssi_protocol *ssi = hsi_client_drvdata(master);
@@ -1118,7 +1077,7 @@ static int ssi_protocol_probe(struct device *dev)
 		goto out1;
 	}
 
-	/* MTU range: 6 - 65535 */
+	 
 	ssi->netdev->min_mtu = PHONET_MIN_MTU;
 	ssi->netdev->max_mtu = SSIP_MAX_MTU;
 

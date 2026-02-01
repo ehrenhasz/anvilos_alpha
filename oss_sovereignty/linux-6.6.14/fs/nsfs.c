@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/mount.h>
 #include <linux/pseudo_fs.h>
 #include <linux/file.h>
@@ -99,7 +99,7 @@ slow:
 	dentry->d_fsdata = (void *)ns->ops;
 	d = atomic_long_cmpxchg(&ns->stashed, 0, (unsigned long)dentry);
 	if (d) {
-		d_delete(dentry);	/* make sure ->d_prune() does nothing */
+		d_delete(dentry);	 
 		dput(dentry);
 		cpu_relax();
 		return -EAGAIN;
@@ -235,14 +235,7 @@ bool proc_ns_file(const struct file *file)
 	return file->f_op == &ns_file_operations;
 }
 
-/**
- * ns_match() - Returns true if current namespace matches dev/ino provided.
- * @ns: current namespace
- * @dev: dev_t from nsfs that will be matched against current nsfs
- * @ino: ino_t from nsfs that will be matched against current nsfs
- *
- * Return: true if dev and ino matches the current nsfs.
- */
+ 
 bool ns_match(const struct ns_common *ns, dev_t dev, ino_t ino)
 {
 	return (ns->inum == ino) && (nsfs_mnt->mnt_sb->s_dev == dev);

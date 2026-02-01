@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -183,7 +183,7 @@ static int lan966x_sd6g40_reg_cfg(struct serdes_macro *macro,
 {
 	u32 value;
 
-	/* Note: SerDes HSIO is configured in 1G_LAN mode */
+	 
 	lan_rmw(HSIO_SD_CFG_LANE_10BIT_SEL_SET(res_struct->lane_10bit_sel) |
 		HSIO_SD_CFG_RX_RATE_SET(res_struct->rx_rate) |
 		HSIO_SD_CFG_TX_RATE_SET(res_struct->tx_rate) |
@@ -262,7 +262,7 @@ static int lan966x_sd6g40_reg_cfg(struct serdes_macro *macro,
 
 	usleep_range(USEC_PER_MSEC, 2 * USEC_PER_MSEC);
 
-	/* Waiting for serdes 0 rx DPLL to lock...  */
+	 
 	value = readl(macro->ctrl->regs + lan_offset(HSIO_SD_STAT(idx)));
 	value = HSIO_SD_STAT_RX_PLL_STATE_GET(value);
 	if (value != 0x1) {
@@ -272,7 +272,7 @@ static int lan966x_sd6g40_reg_cfg(struct serdes_macro *macro,
 		return -EIO;
 	}
 
-	/* Waiting for serdes 0 tx operational...  */
+	 
 	value = readl(macro->ctrl->regs + lan_offset(HSIO_SD_STAT(idx)));
 	value = HSIO_SD_STAT_TX_STATE_GET(value);
 	if (value != 0x1) {
@@ -398,7 +398,7 @@ static int lan966x_rgmii_setup(struct serdes_macro *macro, u32 idx, int mode)
 	bool tx_delay = false;
 	bool rx_delay = false;
 
-	/* Configure RGMII */
+	 
 	lan_rmw(HSIO_RGMII_CFG_RGMII_RX_RST_SET(0) |
 		HSIO_RGMII_CFG_RGMII_TX_RST_SET(0) |
 		HSIO_RGMII_CFG_TX_CLK_CFG_SET(macro->speed == SPEED_1000 ? 1 :
@@ -417,7 +417,7 @@ static int lan966x_rgmii_setup(struct serdes_macro *macro, u32 idx, int mode)
 	    mode == PHY_INTERFACE_MODE_RGMII_RXID)
 		tx_delay = true;
 
-	/* Setup DLL configuration */
+	 
 	lan_rmw(HSIO_DLL_CFG_DLL_RST_SET(0) |
 		HSIO_DLL_CFG_DLL_ENA_SET(rx_delay),
 		HSIO_DLL_CFG_DLL_RST |
@@ -460,7 +460,7 @@ static int serdes_set_mode(struct phy *phy, enum phy_mode mode, int submode)
 	unsigned int i;
 	int val;
 
-	/* As of now only PHY_MODE_ETHERNET is supported */
+	 
 	if (mode != PHY_MODE_ETHERNET)
 		return -EOPNOTSUPP;
 

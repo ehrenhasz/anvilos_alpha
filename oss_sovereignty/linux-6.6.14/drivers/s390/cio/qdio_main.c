@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Linux for s390 qdio support, buffer handling, qdio API and module support.
- *
- * Copyright IBM Corp. 2000, 2008
- * Author(s): Utz Bacher <utz.bacher@de.ibm.com>
- *	      Jan Glauber <jang@linux.vnet.ibm.com>
- * 2.6 cio integration by Cornelia Huck <cornelia.huck@de.ibm.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -69,17 +62,7 @@ static inline int do_siga_input(unsigned long schid, unsigned long mask,
 	return cc;
 }
 
-/**
- * do_siga_output - perform SIGA-w/wt function
- * @schid: subchannel id or in case of QEBSM the subchannel token
- * @mask: which output queues to process
- * @bb: busy bit indicator, set only if SIGA-w/wt could not access a buffer
- * @fc: function code to perform
- * @aob: asynchronous operation block
- *
- * Returns condition code.
- * Note: For IQDC unicast queues only the highest priority queue is processed.
- */
+ 
 static inline int do_siga_output(unsigned long schid, unsigned long mask,
 				 unsigned int *bb, unsigned long fc,
 				 unsigned long aob)
@@ -102,17 +85,7 @@ static inline int do_siga_output(unsigned long schid, unsigned long mask,
 	return cc;
 }
 
-/**
- * qdio_do_eqbs - extract buffer states for QEBSM
- * @q: queue to manipulate
- * @state: state of the extracted buffers
- * @start: buffer number to start at
- * @count: count of buffers to examine
- * @auto_ack: automatically acknowledge buffers
- *
- * Returns the number of successfully extracted equal buffer states.
- * Stops processing if a state is different from the last buffers state.
- */
+ 
 static int qdio_do_eqbs(struct qdio_q *q, unsigned char *state,
 			int start, int count, int auto_ack)
 {
@@ -130,16 +103,16 @@ again:
 	switch (ccq) {
 	case 0:
 	case 32:
-		/* all done, or next buffer state different */
+		 
 		return count - tmp_count;
 	case 96:
-		/* not all buffers processed */
+		 
 		qperf_inc(q, eqbs_partial);
 		DBF_DEV_EVENT(DBF_INFO, q->irq_ptr, "EQBS part:%02x",
 			tmp_count);
 		return count - tmp_count;
 	case 97:
-		/* no buffer processed */
+		 
 		DBF_DEV_EVENT(DBF_WARN, q->irq_ptr, "EQBS again:%2d", ccq);
 		goto again;
 	default:
@@ -152,17 +125,7 @@ again:
 	}
 }
 
-/**
- * qdio_do_sqbs - set buffer states for QEBSM
- * @q: queue to manipulate
- * @state: new state of the buffers
- * @start: first buffer number to change
- * @count: how many buffers to change
- *
- * Returns the number of successfully changed buffers.
- * Does retrying until the specified count of buffer states is set or an
- * error occurs.
- */
+ 
 static int qdio_do_sqbs(struct qdio_q *q, unsigned char state, int start,
 			int count)
 {
@@ -180,11 +143,11 @@ again:
 	switch (ccq) {
 	case 0:
 	case 32:
-		/* all done, or active buffer adapter-owned */
+		 
 		WARN_ON_ONCE(tmp_count);
 		return count - tmp_count;
 	case 96:
-		/* not all buffers processed */
+		 
 		DBF_DEV_EVENT(DBF_INFO, q->irq_ptr, "SQBS again:%2d", ccq);
 		qperf_inc(q, sqbs_partial);
 		goto again;
@@ -198,10 +161,7 @@ again:
 	}
 }
 
-/*
- * Returns number of examined buffers and their common state in *state.
- * Requested number of buffers-to-examine must be > 0.
- */
+ 
 static inline int get_buf_states(struct qdio_q *q, unsigned int bufnr,
 				 unsigned char *state, unsigned int count,
 				 int auto_ack)
@@ -212,17 +172,17 @@ static inline int get_buf_states(struct qdio_q *q, unsigned int bufnr,
 	if (is_qebsm(q))
 		return qdio_do_eqbs(q, state, bufnr, count, auto_ack);
 
-	/* get initial state: */
+	 
 	__state = q->slsb.val[bufnr];
 
-	/* Bail out early if there is no work on the queue: */
+	 
 	if (__state & SLSB_OWNER_CU)
 		goto out;
 
 	for (; i < count; i++) {
 		bufnr = next_buf(bufnr);
 
-		/* stop if next state differs from initial state: */
+		 
 		if (q->slsb.val[bufnr] != __state)
 			break;
 	}
@@ -238,7 +198,7 @@ static inline int get_buf_state(struct qdio_q *q, unsigned int bufnr,
 	return get_buf_states(q, bufnr, state, 1, auto_ack);
 }
 
-/* wrap-around safe setting of slsb states, returns number of changed buffers */
+ 
 static inline int set_buf_states(struct qdio_q *q, int bufnr,
 				 unsigned char state, int count)
 {
@@ -247,7 +207,7 @@ static inline int set_buf_states(struct qdio_q *q, int bufnr,
 	if (is_qebsm(q))
 		return qdio_do_sqbs(q, state, bufnr, count);
 
-	/* Ensure that all preceding changes to the SBALs are visible: */
+	 
 	mb();
 
 	for (i = 0; i < count; i++) {
@@ -255,7 +215,7 @@ static inline int set_buf_states(struct qdio_q *q, int bufnr,
 		bufnr = next_buf(bufnr);
 	}
 
-	/* Make our SLSB changes visible: */
+	 
 	mb();
 
 	return count;
@@ -267,7 +227,7 @@ static inline int set_buf_state(struct qdio_q *q, int bufnr,
 	return set_buf_states(q, bufnr, state, 1);
 }
 
-/* set slsb states to initial state */
+ 
 static void qdio_init_buf_states(struct qdio_irq *irq_ptr)
 {
 	struct qdio_q *q;
@@ -342,7 +302,7 @@ static int qdio_siga_output(struct qdio_q *q, unsigned int count,
 again:
 	cc = do_siga_output(schid, q->mask, busy_bit, fc, aob);
 
-	/* hipersocket busy condition */
+	 
 	if (unlikely(*busy_bit)) {
 		retries++;
 
@@ -396,7 +356,7 @@ static inline void qdio_stop_polling(struct qdio_q *q)
 
 	qperf_inc(q, stop_polling);
 
-	/* show the card that we are not polling anymore */
+	 
 	set_buf_states(q, q->u.in.batch_start, SLSB_P_INPUT_NOT_INIT,
 		       q->u.in.batch_count);
 	q->u.in.batch_count = 0;
@@ -411,7 +371,7 @@ static inline void account_sbals(struct qdio_q *q, unsigned int count)
 static void process_buffer_error(struct qdio_q *q, unsigned int start,
 				 int count)
 {
-	/* special handling for no target buffer empty */
+	 
 	if (queue_type(q) == QDIO_IQDIO_QFMT && !q->is_input_q &&
 	    q->sbal[start]->element[15].sflags == 0x10) {
 		qperf_inc(q, target_full);
@@ -430,7 +390,7 @@ static void process_buffer_error(struct qdio_q *q, unsigned int start,
 static inline void inbound_handle_work(struct qdio_q *q, unsigned int start,
 				       int count, bool auto_ack)
 {
-	/* ACK the newest SBAL: */
+	 
 	if (!auto_ack)
 		set_buf_state(q, add_buf(start, count - 1), SLSB_P_INPUT_ACK);
 
@@ -489,7 +449,7 @@ static int get_inbound_buffer_frontier(struct qdio_q *q, unsigned int start,
 		return 0;
 	case SLSB_P_INPUT_NOT_INIT:
 	case SLSB_P_INPUT_ACK:
-		/* We should never see this state, throw a WARN: */
+		 
 	default:
 		dev_WARN_ONCE(&q->irq_ptr->cdev->dev, 1,
 			      "found state %#x at index %u on queue %u\n",
@@ -535,7 +495,7 @@ static inline int qdio_inbound_q_done(struct qdio_q *q, unsigned int start)
 	get_buf_state(q, start, &state, 0);
 
 	if (state == SLSB_P_INPUT_PRIMED || state == SLSB_P_INPUT_ERROR)
-		/* more work coming */
+		 
 		return 0;
 
 	return 1;
@@ -565,7 +525,7 @@ static int get_outbound_buffer_frontier(struct qdio_q *q, unsigned int start,
 		*error = QDIO_ERROR_SLSB_PENDING;
 		fallthrough;
 	case SLSB_P_OUTPUT_EMPTY:
-		/* the adapter got it */
+		 
 		DBF_DEV_EVENT(DBF_INFO, q->irq_ptr,
 			"out empty:%1d %02x", q->nr, count);
 
@@ -584,7 +544,7 @@ static int get_outbound_buffer_frontier(struct qdio_q *q, unsigned int start,
 			account_sbals_error(q, count);
 		return count;
 	case SLSB_CU_OUTPUT_PRIMED:
-		/* the adapter has not fetched the output yet */
+		 
 		if (q->irq_ptr->perf_stat_enabled)
 			q->q_stats.nr_sbal_nop++;
 		DBF_DEV_EVENT(DBF_INFO, q->irq_ptr, "out primed:%1d",
@@ -593,7 +553,7 @@ static int get_outbound_buffer_frontier(struct qdio_q *q, unsigned int start,
 	case SLSB_P_OUTPUT_HALTED:
 		return 0;
 	case SLSB_P_OUTPUT_NOT_INIT:
-		/* We should never see this state, throw a WARN: */
+		 
 	default:
 		dev_WARN_ONCE(&q->irq_ptr->cdev->dev, 1,
 			      "found state %#x at index %u on queue %u\n",
@@ -688,7 +648,7 @@ static void qdio_irq_check_sense(struct qdio_irq *irq_ptr, struct irb *irb)
 	}
 }
 
-/* PCI interrupt handler */
+ 
 static void qdio_int_handler_pci(struct qdio_irq *irq_ptr)
 {
 	if (unlikely(irq_ptr->state != QDIO_IRQ_STATE_ACTIVE))
@@ -708,17 +668,14 @@ static void qdio_handle_activate_check(struct qdio_irq *irq_ptr,
 	DBF_ERROR("intp :%lx", intparm);
 	DBF_ERROR("ds: %2x cs:%2x", dstat, cstat);
 
-	/* zfcp wants this: */
+	 
 	if (irq_ptr->nr_input_qs)
 		first_to_check = irq_ptr->input_qs[0]->first_to_check;
 
 	irq_ptr->error_handler(irq_ptr->cdev, QDIO_ERROR_ACTIVATE, 0,
 			       first_to_check, 0, irq_ptr->int_parm);
 	qdio_set_state(irq_ptr, QDIO_IRQ_STATE_STOPPED);
-	/*
-	 * In case of z/VM LGR (Live Guest Migration) QDIO recovery will happen.
-	 * Therefore we call the LGR detection function here.
-	 */
+	 
 	lgr_info_log();
 }
 
@@ -742,7 +699,7 @@ error:
 	qdio_set_state(irq_ptr, QDIO_IRQ_STATE_ERR);
 }
 
-/* qdio interrupt handler */
+ 
 void qdio_int_handler(struct ccw_device *cdev, unsigned long intparm,
 		      struct irb *irb)
 {
@@ -794,14 +751,7 @@ void qdio_int_handler(struct ccw_device *cdev, unsigned long intparm,
 	wake_up(&cdev->private->wait_q);
 }
 
-/**
- * qdio_get_ssqd_desc - get qdio subchannel description
- * @cdev: ccw device to get description for
- * @data: where to store the ssqd
- *
- * Returns 0 or an error code. The results of the chsc are stored in the
- * specified structure.
- */
+ 
 int qdio_get_ssqd_desc(struct ccw_device *cdev,
 		       struct qdio_ssqd_desc *data)
 {
@@ -827,7 +777,7 @@ static int qdio_cancel_ccw(struct qdio_irq *irq, int how)
 	if (how & QDIO_FLAG_CLEANUP_USING_CLEAR)
 		rc = ccw_device_clear(cdev, QDIO_DOING_CLEANUP);
 	else
-		/* default behaviour is halt */
+		 
 		rc = ccw_device_halt(cdev, QDIO_DOING_CLEANUP);
 	spin_unlock_irq(get_ccwdev_lock(cdev));
 	if (rc) {
@@ -846,11 +796,7 @@ static int qdio_cancel_ccw(struct qdio_irq *irq, int how)
 	return rc;
 }
 
-/**
- * qdio_shutdown - shut down a qdio subchannel
- * @cdev: associated ccw device
- * @how: use halt or clear to shutdown
- */
+ 
 int qdio_shutdown(struct ccw_device *cdev, int how)
 {
 	struct qdio_irq *irq_ptr = cdev->private->qdio_data;
@@ -865,18 +811,13 @@ int qdio_shutdown(struct ccw_device *cdev, int how)
 	DBF_EVENT("qshutdown:%4x", schid.sch_no);
 
 	mutex_lock(&irq_ptr->setup_mutex);
-	/*
-	 * Subchannel was already shot down. We cannot prevent being called
-	 * twice since cio may trigger a shutdown asynchronously.
-	 */
+	 
 	if (irq_ptr->state == QDIO_IRQ_STATE_INACTIVE) {
 		mutex_unlock(&irq_ptr->setup_mutex);
 		return 0;
 	}
 
-	/*
-	 * Indicate that the device is going down.
-	 */
+	 
 	qdio_set_state(irq_ptr, QDIO_IRQ_STATE_STOPPED);
 
 	qdio_shutdown_debug_entries(irq_ptr);
@@ -893,10 +834,7 @@ int qdio_shutdown(struct ccw_device *cdev, int how)
 }
 EXPORT_SYMBOL_GPL(qdio_shutdown);
 
-/**
- * qdio_free - free data structures for a qdio subchannel
- * @cdev: associated ccw device
- */
+ 
 int qdio_free(struct ccw_device *cdev)
 {
 	struct qdio_irq *irq_ptr = cdev->private->qdio_data;
@@ -923,12 +861,7 @@ int qdio_free(struct ccw_device *cdev)
 }
 EXPORT_SYMBOL_GPL(qdio_free);
 
-/**
- * qdio_allocate - allocate qdio queues and associated data
- * @cdev: associated ccw device
- * @no_input_qs: allocate this number of Input Queues
- * @no_output_qs: allocate this number of Output Queues
- */
+ 
 int qdio_allocate(struct ccw_device *cdev, unsigned int no_input_qs,
 		  unsigned int no_output_qs)
 {
@@ -951,7 +884,7 @@ int qdio_allocate(struct ccw_device *cdev, unsigned int no_input_qs,
 	if (!irq_ptr->ccw)
 		goto err_ccw;
 
-	/* kmemleak doesn't scan the page-allocated irq_ptr: */
+	 
 	kmemleak_not_leak(irq_ptr->ccw);
 
 	irq_ptr->cdev = cdev;
@@ -962,17 +895,12 @@ int qdio_allocate(struct ccw_device *cdev, unsigned int no_input_qs,
 	DBF_DEV_EVENT(DBF_ERR, irq_ptr, "alloc niq:%1u noq:%1u", no_input_qs,
 		      no_output_qs);
 
-	/*
-	 * Allocate a page for the chsc calls in qdio_establish.
-	 * Must be pre-allocated since a zfcp recovery will call
-	 * qdio_establish. In case of low memory and swap on a zfcp disk
-	 * we may not be able to allocate memory otherwise.
-	 */
+	 
 	irq_ptr->chsc_page = get_zeroed_page(GFP_KERNEL);
 	if (!irq_ptr->chsc_page)
 		goto err_chsc;
 
-	/* qdr is used in ccw1.cda which is u32 */
+	 
 	irq_ptr->qdr = (struct qdr *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
 	if (!irq_ptr->qdr)
 		goto err_qdr;
@@ -1014,11 +942,7 @@ static void qdio_trace_init_data(struct qdio_irq *irq,
 		    DBF_ERR);
 }
 
-/**
- * qdio_establish - establish queues on a qdio subchannel
- * @cdev: associated ccw device
- * @init_data: initialization data
- */
+ 
 int qdio_establish(struct ccw_device *cdev,
 		   struct qdio_initialize *init_data)
 {
@@ -1038,7 +962,7 @@ int qdio_establish(struct ccw_device *cdev,
 	    init_data->no_output_qs > irq_ptr->max_output_qs)
 		return -EINVAL;
 
-	/* Needed as error_handler: */
+	 
 	if (!init_data->input_handler)
 		return -EINVAL;
 
@@ -1066,7 +990,7 @@ int qdio_establish(struct ccw_device *cdev,
 	if (rc)
 		goto err_thinint;
 
-	/* establish q */
+	 
 	irq_ptr->ccw->cmd_code = ciw->cmd;
 	irq_ptr->ccw->flags = CCW_FLAG_SLI;
 	irq_ptr->ccw->count = ciw->count;
@@ -1098,7 +1022,7 @@ int qdio_establish(struct ccw_device *cdev,
 
 	qdio_setup_ssqd_info(irq_ptr);
 
-	/* qebsm is now setup if available, initialize buffer states */
+	 
 	qdio_init_buf_states(irq_ptr);
 
 	mutex_unlock(&irq_ptr->setup_mutex);
@@ -1119,10 +1043,7 @@ err_thinint:
 }
 EXPORT_SYMBOL_GPL(qdio_establish);
 
-/**
- * qdio_activate - activate queues on a qdio subchannel
- * @cdev: associated cdev
- */
+ 
 int qdio_activate(struct ccw_device *cdev)
 {
 	struct qdio_irq *irq_ptr = cdev->private->qdio_data;
@@ -1165,7 +1086,7 @@ int qdio_activate(struct ccw_device *cdev)
 		goto out;
 	}
 
-	/* wait for subchannel to become active */
+	 
 	msleep(5);
 
 	switch (irq_ptr->state) {
@@ -1183,19 +1104,14 @@ out:
 }
 EXPORT_SYMBOL_GPL(qdio_activate);
 
-/**
- * handle_inbound - reset processed input buffers
- * @q: queue containing the buffers
- * @bufnr: first buffer to process
- * @count: how many buffers are emptied
- */
+ 
 static int handle_inbound(struct qdio_q *q, int bufnr, int count)
 {
 	int overlap;
 
 	qperf_inc(q, inbound_call);
 
-	/* If any processed SBALs are returned to HW, adjust our tracking: */
+	 
 	overlap = min_t(int, count - sub_buf(q->u.in.batch_start, bufnr),
 			     q->u.in.batch_count);
 	if (overlap > 0) {
@@ -1212,13 +1128,7 @@ static int handle_inbound(struct qdio_q *q, int bufnr, int count)
 	return 0;
 }
 
-/**
- * qdio_add_bufs_to_input_queue - process buffers on an Input Queue
- * @cdev: associated ccw_device for the qdio subchannel
- * @q_nr: queue number
- * @bufnr: buffer number
- * @count: how many buffers to process
- */
+ 
 int qdio_add_bufs_to_input_queue(struct ccw_device *cdev, unsigned int q_nr,
 				 unsigned int bufnr, unsigned int count)
 {
@@ -1241,13 +1151,7 @@ int qdio_add_bufs_to_input_queue(struct ccw_device *cdev, unsigned int q_nr,
 }
 EXPORT_SYMBOL_GPL(qdio_add_bufs_to_input_queue);
 
-/**
- * handle_outbound - process filled outbound buffers
- * @q: queue containing the buffers
- * @bufnr: first buffer to process
- * @count: how many buffers are filled
- * @aob: asynchronous operation block
- */
+ 
 static int handle_outbound(struct qdio_q *q, unsigned int bufnr, unsigned int count,
 			   struct qaob *aob)
 {
@@ -1272,7 +1176,7 @@ static int handle_outbound(struct qdio_q *q, unsigned int bufnr, unsigned int co
 	} else if (count < QDIO_MAX_BUFFERS_PER_Q &&
 		   get_buf_state(q, prev_buf(bufnr), &state, 0) > 0 &&
 		   state == SLSB_CU_OUTPUT_PRIMED) {
-		/* The previous buffer is not processed yet, tack on. */
+		 
 		qperf_inc(q, fast_requeue);
 	} else {
 		rc = qdio_kick_outbound_q(q, count, 0);
@@ -1281,14 +1185,7 @@ static int handle_outbound(struct qdio_q *q, unsigned int bufnr, unsigned int co
 	return rc;
 }
 
-/**
- * qdio_add_bufs_to_output_queue - process buffers on an Output Queue
- * @cdev: associated ccw_device for the qdio subchannel
- * @q_nr: queue number
- * @bufnr: buffer number
- * @count: how many buffers to process
- * @aob: asynchronous operation block
- */
+ 
 int qdio_add_bufs_to_output_queue(struct ccw_device *cdev, unsigned int q_nr,
 				  unsigned int bufnr, unsigned int count,
 				  struct qaob *aob)
@@ -1312,14 +1209,7 @@ int qdio_add_bufs_to_output_queue(struct ccw_device *cdev, unsigned int q_nr,
 }
 EXPORT_SYMBOL_GPL(qdio_add_bufs_to_output_queue);
 
-/**
- * qdio_start_irq - enable interrupt processing for the device
- * @cdev: associated ccw_device for the qdio subchannel
- *
- * Return codes
- *   0 - success
- *   1 - irqs not started since new data is available
- */
+ 
 int qdio_start_irq(struct ccw_device *cdev)
 {
 	struct qdio_q *q;
@@ -1334,10 +1224,7 @@ int qdio_start_irq(struct ccw_device *cdev)
 
 	clear_bit(QDIO_IRQ_DISABLED, &irq_ptr->poll_state);
 
-	/*
-	 * We need to check again to not lose initiative after
-	 * resetting the ACK state.
-	 */
+	 
 	if (test_nonshared_ind(irq_ptr))
 		goto rescan;
 
@@ -1357,14 +1244,7 @@ rescan:
 }
 EXPORT_SYMBOL(qdio_start_irq);
 
-/**
- * qdio_stop_irq - disable interrupt processing for the device
- * @cdev: associated ccw_device for the qdio subchannel
- *
- * Return codes
- *   0 - interrupts were already disabled
- *   1 - interrupts successfully disabled
- */
+ 
 int qdio_stop_irq(struct ccw_device *cdev)
 {
 	struct qdio_irq *irq_ptr = cdev->private->qdio_data;

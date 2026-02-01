@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <sound/pcm_params.h>
@@ -38,17 +38,17 @@ static int aiu_codec_ctrl_mux_put_enum(struct snd_kcontrol *kcontrol,
 	if (!changed)
 		return 0;
 
-	/* Force disconnect of the mux while updating */
+	 
 	snd_soc_dapm_mux_update_power(dapm, kcontrol, 0, NULL, NULL);
 
-	/* Reset the source first */
+	 
 	snd_soc_component_update_bits(component, e->reg,
 				      CTRL_CLK_SEL |
 				      CTRL_DATA_SEL,
 				      FIELD_PREP(CTRL_CLK_SEL, 0) |
 				      FIELD_PREP(CTRL_DATA_SEL, 0));
 
-	/* Set the appropriate source */
+	 
 	snd_soc_component_update_bits(component, e->reg,
 				      CTRL_CLK_SEL |
 				      CTRL_DATA_SEL,

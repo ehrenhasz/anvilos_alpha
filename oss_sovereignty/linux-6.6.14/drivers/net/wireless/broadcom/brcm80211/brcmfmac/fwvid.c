@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2022 Broadcom Corporation
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/module.h>
@@ -48,7 +46,7 @@ static DEFINE_MUTEX(fwvid_list_lock);
 		.drvr_list = LIST_HEAD_INIT(fwvid_list[BRCMF_FWVENDOR_ ## _vid].drvr_list), \
 		.vops = _vid ## _VOPS \
 	}
-#endif /* IS_MODULE(CONFIG_BRCMFMAC) */
+#endif  
 
 static struct brcmf_fwvid_entry fwvid_list[BRCMF_FWVENDOR_NUM] = {
 	FWVID_ENTRY_INIT(WCC, wcc),

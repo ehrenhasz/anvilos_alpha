@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- *
- * DisplayPort support for G4x,ILK,SNB,IVB,VLV,CHV (HSW+ handled by the DDI code).
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -43,9 +39,9 @@ static const struct dpll vlv_dpll[] = {
 };
 
 static const struct dpll chv_dpll[] = {
-	/* m2 is .22 binary fixed point  */
-	{ .dot = 162000, .p1 = 4, .p2 = 2, .n = 1, .m1 = 2, .m2 = 0x819999a /* 32.4 */ },
-	{ .dot = 270000, .p1 = 4, .p2 = 1, .n = 1, .m1 = 2, .m2 = 0x6c00000 /* 27.0 */ },
+	 
+	{ .dot = 162000, .p1 = 4, .p2 = 2, .n = 1, .m1 = 2, .m2 = 0x819999a   },
+	{ .dot = 270000, .p1 = 4, .p2 = 1, .n = 1, .m1 = 2, .m2 = 0x6c00000   },
 };
 
 const struct dpll *vlv_get_dpll(struct drm_i915_private *i915)
@@ -98,32 +94,16 @@ static void intel_dp_prepare(struct intel_encoder *encoder,
 				 pipe_config->port_clock,
 				 pipe_config->lane_count);
 
-	/*
-	 * There are four kinds of DP registers:
-	 * IBX PCH
-	 * SNB CPU
-	 * IVB CPU
-	 * CPT PCH
-	 *
-	 * IBX PCH and CPU are the same for almost everything,
-	 * except that the CPU DP PLL is configured in this
-	 * register
-	 *
-	 * CPT PCH is quite different, having many bits moved
-	 * to the TRANS_DP_CTL register instead. That
-	 * configuration happens (oddly) in ilk_pch_enable
-	 */
+	 
 
-	/* Preserve the BIOS-computed detected bit. This is
-	 * supposed to be read-only.
-	 */
+	 
 	intel_dp->DP = intel_de_read(dev_priv, intel_dp->output_reg) & DP_DETECTED;
 
-	/* Handle DP bits in common between all three register formats */
+	 
 	intel_dp->DP |= DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0;
 	intel_dp->DP |= DP_PORT_WIDTH(pipe_config->lane_count);
 
-	/* Split out the IBX/CPU vs CPT settings */
+	 
 
 	if (IS_IVYBRIDGE(dev_priv) && port == PORT_A) {
 		if (adjusted_mode->flags & DRM_MODE_FLAG_PHSYNC)
@@ -211,12 +191,7 @@ static void ilk_edp_pll_on(struct intel_dp *intel_dp,
 	intel_de_posting_read(dev_priv, DP_A);
 	udelay(500);
 
-	/*
-	 * [DevILK] Work around required when enabling DP PLL
-	 * while a pipe is enabled going to FDI:
-	 * 1. Wait for the start of vertical blank on the enabled pipe going to FDI
-	 * 2. Program DP PLL enable
-	 */
+	 
 	if (IS_IRONLAKE(dev_priv))
 		intel_wait_for_vblank_if_active(dev_priv, !crtc->pipe);
 
@@ -263,7 +238,7 @@ static bool cpt_dp_port_selected(struct drm_i915_private *dev_priv,
 	drm_dbg_kms(&dev_priv->drm, "No pipe for DP port %c found\n",
 		    port_name(port));
 
-	/* must initialize pipe to something for the asserts */
+	 
 	*pipe = PIPE_A;
 
 	return false;
@@ -280,7 +255,7 @@ bool g4x_dp_port_enabled(struct drm_i915_private *dev_priv,
 
 	ret = val & DP_PORT_EN;
 
-	/* asserts want to know the pipe even if the port is disabled */
+	 
 	if (IS_IVYBRIDGE(dev_priv) && port == PORT_A)
 		*pipe = (val & DP_PIPE_SEL_MASK_IVB) >> DP_PIPE_SEL_SHIFT_IVB;
 	else if (HAS_PCH_CPT(dev_priv) && port != PORT_A)
@@ -436,20 +411,13 @@ intel_dp_link_down(struct intel_encoder *encoder,
 	intel_de_write(dev_priv, intel_dp->output_reg, intel_dp->DP);
 	intel_de_posting_read(dev_priv, intel_dp->output_reg);
 
-	/*
-	 * HW workaround for IBX, we need to move the port
-	 * to transcoder A after disabling it to allow the
-	 * matching HDMI port to be enabled on transcoder A.
-	 */
+	 
 	if (HAS_PCH_IBX(dev_priv) && crtc->pipe == PIPE_B && port != PORT_A) {
-		/*
-		 * We get CPU/PCH FIFO underruns on the other pipe when
-		 * doing the workaround. Sweep them under the rug.
-		 */
+		 
 		intel_set_cpu_fifo_underrun_reporting(dev_priv, PIPE_A, false);
 		intel_set_pch_fifo_underrun_reporting(dev_priv, PIPE_A, false);
 
-		/* always enable with pattern 1 (as per spec) */
+		 
 		intel_dp->DP &= ~(DP_PIPE_SEL_MASK | DP_LINK_TRAIN_MASK);
 		intel_dp->DP |= DP_PORT_EN | DP_PIPE_SEL(PIPE_A) |
 			DP_LINK_TRAIN_PAT_1;
@@ -486,10 +454,7 @@ static void intel_disable_dp(struct intel_atomic_state *state,
 
 	intel_audio_codec_disable(encoder, old_crtc_state, old_conn_state);
 
-	/*
-	 * Make sure the panel is off before trying to change the mode.
-	 * But also ensure that we have vdd while we switch off the panel.
-	 */
+	 
 	intel_pps_vdd_on(intel_dp);
 	intel_edp_backlight_off(old_conn_state);
 	intel_dp_set_power(intel_dp, DP_SET_POWER_D3);
@@ -520,15 +485,10 @@ static void g4x_post_disable_dp(struct intel_atomic_state *state,
 	struct intel_dp *intel_dp = enc_to_intel_dp(encoder);
 	enum port port = encoder->port;
 
-	/*
-	 * Bspec does not list a specific disable sequence for g4x DP.
-	 * Follow the ilk+ sequence (disable pipe before the port) for
-	 * g4x DP as it does not suffer from underruns like the normal
-	 * g4x modeset sequence (disable pipe after the port).
-	 */
+	 
 	intel_dp_link_down(encoder, old_crtc_state);
 
-	/* Only ilk+ has port A */
+	 
 	if (port == PORT_A)
 		ilk_edp_pll_off(intel_dp, old_crtc_state);
 }
@@ -552,7 +512,7 @@ static void chv_post_disable_dp(struct intel_atomic_state *state,
 
 	vlv_dpio_get(dev_priv);
 
-	/* Assert data lane reset */
+	 
 	chv_data_lane_soft_reset(encoder, old_crtc_state, true);
 
 	vlv_dpio_put(dev_priv);
@@ -619,17 +579,12 @@ static void intel_dp_enable_port(struct intel_dp *intel_dp,
 {
 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
 
-	/* enable with pattern 1 (as per spec) */
+	 
 
 	intel_dp_program_link_training_pattern(intel_dp, crtc_state,
 					       DP_PHY_DPRX, DP_TRAINING_PATTERN_1);
 
-	/*
-	 * Magic for VLV/CHV. We _must_ first set up the register
-	 * without actually enabling the port, and then do another
-	 * write to enable the port. Otherwise link training will
-	 * fail when the power sequencer is freshly used for this port.
-	 */
+	 
 	intel_dp->DP |= DP_PORT_EN;
 	if (crtc_state->has_audio)
 		intel_dp->DP |= DP_AUDIO_OUTPUT_ENABLE;
@@ -709,7 +664,7 @@ static void g4x_pre_enable_dp(struct intel_atomic_state *state,
 
 	intel_dp_prepare(encoder, pipe_config);
 
-	/* Only ilk+ has port A */
+	 
 	if (port == PORT_A)
 		ilk_edp_pll_on(intel_dp, pipe_config);
 }
@@ -743,7 +698,7 @@ static void chv_pre_enable_dp(struct intel_atomic_state *state,
 
 	intel_enable_dp(state, encoder, pipe_config, conn_state);
 
-	/* Second common lane will stay alive on its own now */
+	 
 	chv_phy_release_cl2_override(encoder);
 }
 
@@ -1014,7 +969,7 @@ g4x_set_signal_levels(struct intel_encoder *encoder,
 	intel_de_posting_read(dev_priv, intel_dp->output_reg);
 }
 
-/* SNB CPU eDP voltage swing and pre-emphasis control */
+ 
 static u32 snb_cpu_edp_signal_levels(u8 train_set)
 {
 	u8 signal_levels = train_set & (DP_TRAIN_VOLTAGE_SWING_MASK |
@@ -1062,7 +1017,7 @@ snb_cpu_edp_set_signal_levels(struct intel_encoder *encoder,
 	intel_de_posting_read(dev_priv, intel_dp->output_reg);
 }
 
-/* IVB CPU eDP voltage swing and pre-emphasis control */
+ 
 static u32 ivb_cpu_edp_signal_levels(u8 train_set)
 {
 	u8 signal_levels = train_set & (DP_TRAIN_VOLTAGE_SWING_MASK |
@@ -1114,18 +1069,7 @@ ivb_cpu_edp_set_signal_levels(struct intel_encoder *encoder,
 	intel_de_posting_read(dev_priv, intel_dp->output_reg);
 }
 
-/*
- * If display is now connected check links status,
- * there has been known issues of link loss triggering
- * long pulse.
- *
- * Some sinks (eg. ASUS PB287Q) seem to perform some
- * weird HPD ping pong during modesets. So we can apparently
- * end up with HPD going low during a modeset, and then
- * going back up soon after. And once that happens we must
- * retrain the link to get a picture. That's in case no
- * userspace component reacted to intermittent HPD dip.
- */
+ 
 static enum intel_hotplug_state
 intel_dp_hotplug(struct intel_encoder *encoder,
 		 struct intel_connector *connector)
@@ -1138,7 +1082,7 @@ intel_dp_hotplug(struct intel_encoder *encoder,
 	if (intel_dp->compliance.test_active &&
 	    intel_dp->compliance.test_type == DP_TEST_LINK_PHY_TEST_PATTERN) {
 		intel_dp_phy_test(encoder);
-		/* just do the PHY test and nothing else */
+		 
 		return INTEL_HOTPLUG_UNCHANGED;
 	}
 
@@ -1162,10 +1106,7 @@ intel_dp_hotplug(struct intel_encoder *encoder,
 	drm_WARN(encoder->base.dev, ret,
 		 "Acquiring modeset locks failed with %i\n", ret);
 
-	/*
-	 * Keeping it consistent with intel_ddi_hotplug() and
-	 * intel_hdmi_hotplug().
-	 */
+	 
 	if (state == INTEL_HOTPLUG_UNCHANGED && !connector->hotplug_retries)
 		state = INTEL_HOTPLUG_RETRY;
 
@@ -1270,7 +1211,7 @@ bool g4x_dp_init(struct drm_i915_private *dev_priv,
 
 	devdata = intel_bios_encoder_data_lookup(dev_priv, port);
 
-	/* FIXME bail? */
+	 
 	if (!devdata)
 		drm_dbg_kms(&dev_priv->drm, "No VBT child device for DP-%c\n",
 			    port_name(port));

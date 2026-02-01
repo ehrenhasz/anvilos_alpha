@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2021 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include "clk-mtk.h"
 #include "clk-pll.h"
@@ -18,13 +18,7 @@
 #define MT8195_PLL_EN_BIT	(0)
 #define MT8195_PCW_SHIFT	(0)
 
-/*
- * The "en_reg" and "pcw_chg_reg" fields are standard offset register compared
- * with "reg" field, so set zero to imply it.
- * No tuner control in apu pll, so set "tuner_XXX" as zero to imply it.
- * No rst or post divider enable in apu pll, so set "rst_bar_mask" and "en_mask"
- * as zero to imply it.
- */
+ 
 #define PLL(_id, _name, _reg, _pwr_reg, _pd_reg, _pcw_reg) {		\
 		.id = _id,						\
 		.name = _name,						\

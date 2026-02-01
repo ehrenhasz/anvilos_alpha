@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2004-2013 Synopsys, Inc. (www.synopsys.com)
- *
- * MDIO implementation for ARC EMAC
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/of_mdio.h>
@@ -12,15 +8,10 @@
 
 #include "emac.h"
 
-/* Number of seconds we wait for "MDIO complete" flag to appear */
+ 
 #define ARC_MDIO_COMPLETE_POLL_COUNT	1
 
-/**
- * arc_mdio_complete_wait - Waits until MDIO transaction is completed.
- * @priv:	Pointer to ARC EMAC private data structure.
- *
- * returns:	0 on success, -ETIMEDOUT on a timeout.
- */
+ 
 static int arc_mdio_complete_wait(struct arc_emac_priv *priv)
 {
 	unsigned int i;
@@ -31,7 +22,7 @@ static int arc_mdio_complete_wait(struct arc_emac_priv *priv)
 		status &= MDIO_MASK;
 
 		if (status) {
-			/* Reset "MDIO complete" flag */
+			 
 			arc_reg_set(priv, R_STATUS, status);
 			return 0;
 		}
@@ -42,17 +33,7 @@ static int arc_mdio_complete_wait(struct arc_emac_priv *priv)
 	return -ETIMEDOUT;
 }
 
-/**
- * arc_mdio_read - MDIO interface read function.
- * @bus:	Pointer to MII bus structure.
- * @phy_addr:	Address of the PHY device.
- * @reg_num:	PHY register to read.
- *
- * returns:	The register contents on success, -ETIMEDOUT on a timeout.
- *
- * Reads the contents of the requested register from the requested PHY
- * address.
- */
+ 
 static int arc_mdio_read(struct mii_bus *bus, int phy_addr, int reg_num)
 {
 	struct arc_emac_priv *priv = bus->priv;
@@ -74,17 +55,7 @@ static int arc_mdio_read(struct mii_bus *bus, int phy_addr, int reg_num)
 	return value;
 }
 
-/**
- * arc_mdio_write - MDIO interface write function.
- * @bus:	Pointer to MII bus structure.
- * @phy_addr:	Address of the PHY device.
- * @reg_num:	PHY register to write to.
- * @value:	Value to be written into the register.
- *
- * returns:	0 on success, -ETIMEDOUT on a timeout.
- *
- * Writes the value to the requested register.
- */
+ 
 static int arc_mdio_write(struct mii_bus *bus, int phy_addr,
 			  int reg_num, u16 value)
 {
@@ -100,11 +71,7 @@ static int arc_mdio_write(struct mii_bus *bus, int phy_addr,
 	return arc_mdio_complete_wait(priv);
 }
 
-/**
- * arc_mdio_reset
- * @bus: points to the mii_bus structure
- * Description: reset the MII bus
- */
+ 
 static int arc_mdio_reset(struct mii_bus *bus)
 {
 	struct arc_emac_priv *priv = bus->priv;
@@ -119,15 +86,7 @@ static int arc_mdio_reset(struct mii_bus *bus)
 	return 0;
 }
 
-/**
- * arc_mdio_probe - MDIO probe function.
- * @priv:	Pointer to ARC EMAC private data structure.
- *
- * returns:	0 on success, -ENOMEM when mdiobus_alloc
- * (to allocate memory for MII bus structure) fails.
- *
- * Sets up and registers the MDIO interface.
- */
+ 
 int arc_mdio_probe(struct arc_emac_priv *priv)
 {
 	struct arc_emac_mdio_bus_data *data = &priv->bus_data;
@@ -148,7 +107,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
 	bus->write = &arc_mdio_write;
 	bus->reset = &arc_mdio_reset;
 
-	/* optional reset-related properties */
+	 
 	data->reset_gpio = devm_gpiod_get_optional(priv->dev, "phy-reset",
 						   GPIOD_OUT_LOW);
 	if (IS_ERR(data->reset_gpio)) {
@@ -158,7 +117,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
 	}
 
 	of_property_read_u32(np, "phy-reset-duration", &data->msec);
-	/* A sane reset duration should not be longer than 1s */
+	 
 	if (data->msec > 1000)
 		data->msec = 1;
 
@@ -174,12 +133,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
 	return 0;
 }
 
-/**
- * arc_mdio_remove - MDIO remove function.
- * @priv:	Pointer to ARC EMAC private data structure.
- *
- * Unregisters the MDIO and frees any associate memory for MII bus.
- */
+ 
 int arc_mdio_remove(struct arc_emac_priv *priv)
 {
 	mdiobus_unregister(priv->bus);

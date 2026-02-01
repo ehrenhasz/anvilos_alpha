@@ -1,26 +1,4 @@
-/*
- * Copyright 2016 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "priv.h"
 
 static int
@@ -43,15 +21,15 @@ gk104_top_parse(struct nvkm_top *top)
 		data = nvkm_rd32(device, 0x022700 + (i * 0x04));
 		nvkm_trace(subdev, "%02x: %08x\n", i, data);
 		switch (data & 0x00000003) {
-		case 0x00000000: /* NOT_VALID */
+		case 0x00000000:  
 			continue;
-		case 0x00000001: /* DATA */
+		case 0x00000001:  
 			inst        = (data & 0x3c000000) >> 26;
 			info->addr  = (data & 0x00fff000);
 			if (data & 0x00000004)
 				info->fault = (data & 0x000003f8) >> 3;
 			break;
-		case 0x00000002: /* ENUM */
+		case 0x00000002:  
 			if (data & 0x00000020)
 				info->engine  = (data & 0x3c000000) >> 26;
 			if (data & 0x00000010)
@@ -61,7 +39,7 @@ gk104_top_parse(struct nvkm_top *top)
 			if (data & 0x00000004)
 				info->reset   = (data & 0x00003e00) >> 9;
 			break;
-		case 0x00000003: /* ENGINE_TYPE */
+		case 0x00000003:  
 			type = (data & 0x7ffffffc) >> 2;
 			break;
 		}
@@ -69,7 +47,7 @@ gk104_top_parse(struct nvkm_top *top)
 		if (data & 0x80000000)
 			continue;
 
-		/* Translate engine type to NVKM engine identifier. */
+		 
 #define I_(T,I) do { info->type = (T); info->inst = (I); } while(0)
 #define O_(T,I) do { WARN_ON(inst); I_(T, I); } while (0)
 		switch (type) {

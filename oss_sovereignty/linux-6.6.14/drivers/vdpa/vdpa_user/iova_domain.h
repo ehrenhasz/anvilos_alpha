@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MMU-based software IOTLB.
- *
- * Copyright (C) 2020-2021 Bytedance Inc. and/or its affiliates. All rights reserved.
- *
- * Author: Xie Yongji <xieyongji@bytedance.com>
- *
- */
+ 
+ 
 
 #ifndef _VDUSE_IOVA_DOMAIN_H
 #define _VDUSE_IOVA_DOMAIN_H
@@ -77,4 +70,4 @@ int vduse_domain_init(void);
 
 void vduse_domain_exit(void);
 
-#endif /* _VDUSE_IOVA_DOMAIN_H */
+#endif  

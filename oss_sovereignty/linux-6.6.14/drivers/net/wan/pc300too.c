@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cyclades PC300 synchronous serial card driver for Linux
- *
- * Copyright (C) 2000-2008 Krzysztof Halasa <khc@pm.waw.pl>
- *
- * For information see <https://www.kernel.org/pub/linux/utils/net/hdlc/>.
- *
- * Sources of information:
- *    Hitachi HD64572 SCA-II User's Manual
- *    Original Cyclades PC300 Linux driver
- *
- * This driver currently supports only PC300/RSV (V.24/V.35) and
- * PC300/X21 cards.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,64 +26,62 @@
 #undef DEBUG_PKT
 #define DEBUG_RINGS
 
-#define PC300_PLX_SIZE		0x80    /* PLX control window size (128 B) */
-#define PC300_SCA_SIZE		0x400   /* SCA window size (1 KB) */
+#define PC300_PLX_SIZE		0x80     
+#define PC300_SCA_SIZE		0x400    
 #define MAX_TX_BUFFERS		10
 
 static int pci_clock_freq = 33000000;
 static int use_crystal_clock;
 static unsigned int CLOCK_BASE;
 
-/* Masks to access the init_ctrl PLX register */
+ 
 #define PC300_CLKSEL_MASK	 (0x00000004UL)
 #define PC300_CHMEDIA_MASK(port) (0x00000020UL << ((port) * 3))
 #define PC300_CTYPE_MASK	 (0x00000800UL)
 
-enum { PC300_RSV = 1, PC300_X21, PC300_TE }; /* card types */
+enum { PC300_RSV = 1, PC300_X21, PC300_TE };  
 
-/*      PLX PCI9050-1 local configuration and shared runtime registers.
- *      This structure can be used to access 9050 registers (memory mapped).
- */
+ 
 typedef struct {
-	u32 loc_addr_range[4];	/* 00-0Ch : Local Address Ranges */
-	u32 loc_rom_range;	/* 10h : Local ROM Range */
-	u32 loc_addr_base[4];	/* 14-20h : Local Address Base Addrs */
-	u32 loc_rom_base;	/* 24h : Local ROM Base */
-	u32 loc_bus_descr[4];	/* 28-34h : Local Bus Descriptors */
-	u32 rom_bus_descr;	/* 38h : ROM Bus Descriptor */
-	u32 cs_base[4];		/* 3C-48h : Chip Select Base Addrs */
-	u32 intr_ctrl_stat;	/* 4Ch : Interrupt Control/Status */
-	u32 init_ctrl;		/* 50h : EEPROM ctrl, Init Ctrl, etc */
+	u32 loc_addr_range[4];	 
+	u32 loc_rom_range;	 
+	u32 loc_addr_base[4];	 
+	u32 loc_rom_base;	 
+	u32 loc_bus_descr[4];	 
+	u32 rom_bus_descr;	 
+	u32 cs_base[4];		 
+	u32 intr_ctrl_stat;	 
+	u32 init_ctrl;		 
 } plx9050;
 
 typedef struct port_s {
 	struct napi_struct napi;
 	struct net_device *netdev;
 	struct card_s *card;
-	spinlock_t lock;	/* TX lock */
+	spinlock_t lock;	 
 	sync_serial_settings settings;
-	int rxpart;		/* partial frame received, next frame invalid*/
+	int rxpart;		 
 	unsigned short encoding;
 	unsigned short parity;
 	unsigned int iface;
-	u16 rxin;		/* rx ring buffer 'in' pointer */
-	u16 txin;		/* tx ring buffer 'in' and 'last' pointers */
+	u16 rxin;		 
+	u16 txin;		 
 	u16 txlast;
-	u8 rxs, txs, tmc;	/* SCA registers */
-	u8 chan;		/* physical port # - 0 or 1 */
+	u8 rxs, txs, tmc;	 
+	u8 chan;		 
 } port_t;
 
 typedef struct card_s {
-	int type;		/* RSV, X21, etc. */
-	int n_ports;		/* 1 or 2 ports */
-	u8 __iomem *rambase;	/* buffer memory base (virtual) */
-	u8 __iomem *scabase;	/* SCA memory base (virtual) */
-	plx9050 __iomem *plxbase; /* PLX registers memory base (virtual) */
-	u32 init_ctrl_value;	/* Saved value - 9050 bug workaround */
-	u16 rx_ring_buffers;	/* number of buffers in a ring */
+	int type;		 
+	int n_ports;		 
+	u8 __iomem *rambase;	 
+	u8 __iomem *scabase;	 
+	plx9050 __iomem *plxbase;  
+	u32 init_ctrl_value;	 
+	u16 rx_ring_buffers;	 
 	u16 tx_ring_buffers;
-	u16 buff_offset;	/* offset of first buffer of first channel */
-	u8 irq;			/* interrupt request level */
+	u16 buff_offset;	 
+	u8 irq;			 
 
 	port_t ports[2];
 } card_t;
@@ -118,23 +103,23 @@ static void pc300_set_iface(port_t *port)
 		port->card);
 	switch (port->settings.clock_type) {
 	case CLOCK_INT:
-		rxs |= CLK_BRG; /* BRG output */
-		txs |= CLK_PIN_OUT | CLK_TX_RXCLK; /* RX clock */
+		rxs |= CLK_BRG;  
+		txs |= CLK_PIN_OUT | CLK_TX_RXCLK;  
 		break;
 
 	case CLOCK_TXINT:
-		rxs |= CLK_LINE; /* RXC input */
-		txs |= CLK_PIN_OUT | CLK_BRG; /* BRG output */
+		rxs |= CLK_LINE;  
+		txs |= CLK_PIN_OUT | CLK_BRG;  
 		break;
 
 	case CLOCK_TXFROMRX:
-		rxs |= CLK_LINE; /* RXC input */
-		txs |= CLK_PIN_OUT | CLK_TX_RXCLK; /* RX clock */
+		rxs |= CLK_LINE;  
+		txs |= CLK_PIN_OUT | CLK_TX_RXCLK;  
 		break;
 
-	default:		/* EXTernal clock */
-		rxs |= CLK_LINE; /* RXC input */
-		txs |= CLK_PIN_OUT | CLK_LINE; /* TXC input */
+	default:		 
+		rxs |= CLK_LINE;  
+		txs |= CLK_PIN_OUT | CLK_LINE;  
 		break;
 	}
 
@@ -197,7 +182,7 @@ static int pc300_ioctl(struct net_device *dev, struct if_settings *ifs)
 	if (ifs->type == IF_GET_IFACE) {
 		ifs->type = port->iface;
 		if (ifs->size < size) {
-			ifs->size = size; /* data size wanted */
+			ifs->size = size;  
 			return -ENOBUFS;
 		}
 		if (copy_to_user(line, &port->settings, size))
@@ -232,12 +217,12 @@ static int pc300_ioctl(struct net_device *dev, struct if_settings *ifs)
 	    new_line.clock_type != CLOCK_TXFROMRX &&
 	    new_line.clock_type != CLOCK_INT &&
 	    new_line.clock_type != CLOCK_TXINT)
-		return -EINVAL;	/* No such clock setting */
+		return -EINVAL;	 
 
 	if (new_line.loopback != 0 && new_line.loopback != 1)
 		return -EINVAL;
 
-	memcpy(&port->settings, &new_line, size); /* Update settings */
+	memcpy(&port->settings, &new_line, size);  
 	port->iface = new_type;
 	pc300_set_iface(port);
 	return 0;
@@ -286,9 +271,9 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 	u32 __iomem *p;
 	int i;
 	u32 ramsize;
-	u32 ramphys;		/* buffer memory base */
-	u32 scaphys;		/* SCA memory base */
-	u32 plxphys;		/* PLX registers memory base */
+	u32 ramphys;		 
+	u32 scaphys;		 
+	u32 plxphys;		 
 
 	i = pci_enable_device(pdev);
 	if (i)
@@ -331,14 +316,14 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 		return -ENOMEM;
 	}
 
-	/* PLX PCI 9050 workaround for local configuration register read bug */
+	 
 	pci_write_config_dword(pdev, PCI_BASE_ADDRESS_0, scaphys);
 	card->init_ctrl_value = readl(&((plx9050 __iomem *)card->scabase)->init_ctrl);
 	pci_write_config_dword(pdev, PCI_BASE_ADDRESS_0, plxphys);
 
 	if (pdev->device == PCI_DEVICE_ID_PC300_TE_1 ||
 	    pdev->device == PCI_DEVICE_ID_PC300_TE_2)
-		card->type = PC300_TE; /* not fully supported */
+		card->type = PC300_TE;  
 	else if (card->init_ctrl_value & PC300_CTYPE_MASK)
 		card->type = PC300_X21;
 	else
@@ -359,23 +344,23 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 		}
 	}
 
-	/* Reset PLX */
+	 
 	p = &card->plxbase->init_ctrl;
 	writel(card->init_ctrl_value | 0x40000000, p);
-	readl(p);		/* Flush the write - do not use sca_flush */
+	readl(p);		 
 	udelay(1);
 
 	writel(card->init_ctrl_value, p);
-	readl(p);		/* Flush the write - do not use sca_flush */
+	readl(p);		 
 	udelay(1);
 
-	/* Reload Config. Registers from EEPROM */
+	 
 	writel(card->init_ctrl_value | 0x20000000, p);
-	readl(p);		/* Flush the write - do not use sca_flush */
+	readl(p);		 
 	udelay(1);
 
 	writel(card->init_ctrl_value, p);
-	readl(p);		/* Flush the write - do not use sca_flush */
+	readl(p);		 
 	udelay(1);
 
 	ramsize = sca_detect_ram(card, card->rambase,
@@ -387,7 +372,7 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 		card->init_ctrl_value |= PC300_CLKSEL_MASK;
 
 	writel(card->init_ctrl_value, &card->plxbase->init_ctrl);
-	/* number of TX + RX buffers for one port */
+	 
 	i = ramsize / (card->n_ports * (sizeof(pkt_desc) + HDLC_MAX_MRU));
 	card->tx_ring_buffers = min(i / 2, MAX_TX_BUFFERS);
 	card->rx_ring_buffers = i - card->tx_ring_buffers;
@@ -407,10 +392,10 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 		return -EFAULT;
 	}
 
-	/* Enable interrupts on the PCI bridge, LINTi1 active low */
+	 
 	writew(0x0041, &card->plxbase->intr_ctrl_stat);
 
-	/* Allocate IRQ */
+	 
 	if (request_irq(pdev->irq, sca_intr, IRQF_SHARED, "pc300", card)) {
 		pr_warn("could not allocate IRQ%d\n", pdev->irq);
 		pc300_pci_remove_one(pdev);
@@ -420,8 +405,8 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 
 	sca_init(card, 0);
 
-	// COTE not set - allows better TX DMA settings
-	// sca_out(sca_in(PCR, card) | PCR_COTE, PCR, card);
+	
+	
 
 	sca_out(0x10, BTCR, card);
 

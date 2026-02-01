@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include "rtl_core.h"
 #include "r8192E_hw.h"
 #include "table.h"
@@ -113,7 +109,7 @@ static bool _rtl92e_fw_prepare(struct net_device *dev, struct rt_fw_blob *blob,
 
 	blob->size = round_up(fw->size, 4) + padding;
 
-	/* Swap endian - firmware is packaged in invalid endiannes*/
+	 
 	for (i = padding; i < blob->size; i += 4) {
 		u32 *data = (u32 *)(blob->data + i);
 		*data = swab32p(data);

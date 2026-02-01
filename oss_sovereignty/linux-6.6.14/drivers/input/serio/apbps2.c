@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2013 Aeroflex Gaisler
- *
- * This driver supports the APBPS2 PS/2 core available in the GRLIB
- * VHDL IP core library.
- *
- * Full documentation of the APBPS2 core can be found here:
- * http://www.gaisler.com/products/grlib/grip.pdf
- *
- * See "Documentation/devicetree/bindings/input/ps2keyb-mouse-apbps2.txt" for
- * information on open firmware properties.
- *
- * Contributors: Daniel Hellstrom <daniel@gaisler.com>
- */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/module.h>
 #include <linux/serio.h>
@@ -29,10 +16,10 @@
 #include <linux/io.h>
 
 struct apbps2_regs {
-	u32 __iomem data;	/* 0x00 */
-	u32 __iomem status;	/* 0x04 */
-	u32 __iomem ctrl;	/* 0x08 */
-	u32 __iomem reload;	/* 0x0c */
+	u32 __iomem data;	 
+	u32 __iomem status;	 
+	u32 __iomem ctrl;	 
+	u32 __iomem reload;	 
 };
 
 #define APBPS2_STATUS_DR	(1<<0)
@@ -67,7 +54,7 @@ static irqreturn_t apbps2_isr(int irq, void *dev_id)
 		rxflags = (status & APBPS2_STATUS_PE) ? SERIO_PARITY : 0;
 		rxflags |= (status & APBPS2_STATUS_FE) ? SERIO_FRAME : 0;
 
-		/* clear error bits? */
+		 
 		if (rxflags)
 			iowrite32be(0, &priv->regs->status);
 
@@ -82,9 +69,9 @@ static irqreturn_t apbps2_isr(int irq, void *dev_id)
 static int apbps2_write(struct serio *io, unsigned char val)
 {
 	struct apbps2_priv *priv = io->port_data;
-	unsigned int tleft = 10000; /* timeout in 100ms */
+	unsigned int tleft = 10000;  
 
-	/* delay until PS/2 controller has room for more chars */
+	 
 	while ((ioread32be(&priv->regs->status) & APBPS2_STATUS_TF) && tleft--)
 		udelay(10);
 
@@ -104,15 +91,15 @@ static int apbps2_open(struct serio *io)
 	struct apbps2_priv *priv = io->port_data;
 	int limit;
 
-	/* clear error flags */
+	 
 	iowrite32be(0, &priv->regs->status);
 
-	/* Clear old data if available (unlikely) */
+	 
 	limit = 1024;
 	while ((ioread32be(&priv->regs->status) & APBPS2_STATUS_DR) && --limit)
 		ioread32be(&priv->regs->data);
 
-	/* Enable reciever and it's interrupt */
+	 
 	iowrite32be(APBPS2_CTRL_RE | APBPS2_CTRL_RI, &priv->regs->ctrl);
 
 	return 0;
@@ -122,11 +109,11 @@ static void apbps2_close(struct serio *io)
 {
 	struct apbps2_priv *priv = io->port_data;
 
-	/* stop interrupts at PS/2 HW level */
+	 
 	iowrite32be(0, &priv->regs->ctrl);
 }
 
-/* Initialize one APBPS2 PS/2 core */
+ 
 static int apbps2_of_probe(struct platform_device *ofdev)
 {
 	struct apbps2_priv *priv;
@@ -139,15 +126,15 @@ static int apbps2_of_probe(struct platform_device *ofdev)
 		return -ENOMEM;
 	}
 
-	/* Find Device Address */
+	 
 	priv->regs = devm_platform_get_and_ioremap_resource(ofdev, 0, NULL);
 	if (IS_ERR(priv->regs))
 		return PTR_ERR(priv->regs);
 
-	/* Reset hardware, disable interrupt */
+	 
 	iowrite32be(0, &priv->regs->ctrl);
 
-	/* IRQ */
+	 
 	irq = irq_of_parse_and_map(ofdev->dev.of_node, 0);
 	err = devm_request_irq(&ofdev->dev, irq, apbps2_isr,
 				IRQF_SHARED, "apbps2", priv);
@@ -156,13 +143,13 @@ static int apbps2_of_probe(struct platform_device *ofdev)
 		return err;
 	}
 
-	/* Get core frequency */
+	 
 	if (of_property_read_u32(ofdev->dev.of_node, "freq", &freq_hz)) {
 		dev_err(&ofdev->dev, "unable to get core frequency\n");
 		return -EINVAL;
 	}
 
-	/* Set reload register to core freq in kHz/10 */
+	 
 	iowrite32be(freq_hz / 10000, &priv->regs->reload);
 
 	priv->io = kzalloc(sizeof(struct serio), GFP_KERNEL);

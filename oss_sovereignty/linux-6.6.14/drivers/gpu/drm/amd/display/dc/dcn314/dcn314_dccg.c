@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 #include "reg_helper.h"
 #include "core_types.h"
@@ -106,8 +83,8 @@ static void dccg314_set_pixel_rate_div(
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 	enum pixel_rate_div cur_k1 = PIXEL_RATE_DIV_NA, cur_k2 = PIXEL_RATE_DIV_NA;
 
-	// Don't program 0xF into the register field. Not valid since
-	// K1 / K2 field is only 1 / 2 bits wide
+	
+	
 	if (k1 == PIXEL_RATE_DIV_NA || k2 == PIXEL_RATE_DIV_NA) {
 		BREAK_TO_DEBUGGER();
 		return;
@@ -151,10 +128,10 @@ static void dccg314_set_dtbclk_p_src(
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	uint32_t p_src_sel = 0; /* selects dprefclk */
+	uint32_t p_src_sel = 0;  
 
 	if (src == DTBCLK0)
-		p_src_sel = 2;  /* selects dtbclk0 */
+		p_src_sel = 2;   
 
 	switch (otg_inst) {
 	case 0:
@@ -200,19 +177,19 @@ static void dccg314_set_dtbclk_p_src(
 
 }
 
-/* Controls the generation of pixel valid for OTG in (OTG -> HPO case) */
+ 
 static void dccg314_set_dtbclk_dto(
 		struct dccg *dccg,
 		const struct dtbclk_dto_params *params)
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
-	/* DTO Output Rate / Pixel Rate = 1/4 */
+	 
 	int req_dtbclk_khz = params->pixclk_khz / 4;
 
 	if (params->ref_dtbclk_khz && req_dtbclk_khz) {
 		uint32_t modulo, phase;
 
-		// phase / modulo = dtbclk / dtbclk ref
+		
 		modulo = params->ref_dtbclk_khz * 1000;
 		phase = req_dtbclk_khz * 1000;
 
@@ -226,13 +203,10 @@ static void dccg314_set_dtbclk_dto(
 				DTBCLKDTO_ENABLE_STATUS[params->otg_inst], 1,
 				1, 100);
 
-		/* program OTG_PIXEL_RATE_DIV for DIVK1 and DIVK2 fields */
+		 
 		dccg314_set_pixel_rate_div(dccg, params->otg_inst, PIXEL_RATE_DIV_BY_1, PIXEL_RATE_DIV_BY_1);
 
-		/* The recommended programming sequence to enable DTBCLK DTO to generate
-		 * valid pixel HPO DPSTREAM ENCODER, specifies that DTO source select should
-		 * be set only after DTO is enabled
-		 */
+		 
 		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
 				PIPE_DTO_SRC_SEL[params->otg_inst], 2);
 	} else {
@@ -253,10 +227,10 @@ static void dccg314_set_dpstreamclk(
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	/* set the dtbclk_p source */
+	 
 	dccg314_set_dtbclk_p_src(dccg, src, otg_inst);
 
-	/* enabled to select one of the DTBCLKs for pipe */
+	 
 	switch (dp_hpo_inst) {
 	case 0:
 		REG_UPDATE_2(DPSTREAMCLK_CNTL,
@@ -288,10 +262,7 @@ static void dccg314_init(struct dccg *dccg)
 {
 	int otg_inst;
 
-	/* Set HPO stream encoder to use refclk to avoid case where PHY is
-	 * disabled and SYMCLK32 for HPO SE is sourced from PHYD32CLK which
-	 * will cause DCN to hang.
-	 */
+	 
 	for (otg_inst = 0; otg_inst < 4; otg_inst++)
 		dccg31_disable_symclk32_se(dccg, otg_inst);
 
@@ -336,13 +307,13 @@ static void dccg314_dpp_root_clock_control(
 		return;
 
 	if (clock_on) {
-		/* turn off the DTO and leave phase/modulo at max */
+		 
 		REG_UPDATE(DPPCLK_DTO_CTRL, DPPCLK_DTO_ENABLE[dpp_inst], 0);
 		REG_SET_2(DPPCLK_DTO_PARAM[dpp_inst], 0,
 			  DPPCLK0_DTO_PHASE, 0xFF,
 			  DPPCLK0_DTO_MODULO, 0xFF);
 	} else {
-		/* turn on the DTO to generate a 0hz clock */
+		 
 		REG_UPDATE(DPPCLK_DTO_CTRL, DPPCLK_DTO_ENABLE[dpp_inst], 1);
 		REG_SET_2(DPPCLK_DTO_PARAM[dpp_inst], 0,
 			  DPPCLK0_DTO_PHASE, 0,

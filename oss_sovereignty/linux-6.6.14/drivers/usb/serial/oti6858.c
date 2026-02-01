@@ -1,38 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ours Technology Inc. OTi-6858 USB to serial adapter driver.
- *
- * Copyleft  (C) 2007 Kees Lemmens (adapted for kernel 2.6.20)
- * Copyright (C) 2006 Tomasz Michal Lukaszewski (FIXME: add e-mail)
- * Copyright (C) 2001-2004 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2003 IBM Corp.
- *
- * Many thanks to the authors of pl2303 driver: all functions in this file
- * are heavily based on pl2303 code, buffering code is a 1-to-1 copy.
- *
- * Warning! You use this driver on your own risk! The only official
- * description of this device I have is datasheet from manufacturer,
- * and it doesn't contain almost any information needed to write a driver.
- * Almost all knowlegde used while writing this driver was gathered by:
- *  - analyzing traffic between device and the M$ Windows 2000 driver,
- *  - trying different bit combinations and checking pin states
- *    with a voltmeter,
- *  - receiving malformed frames and producing buffer overflows
- *    to learn how errors are reported,
- * So, THIS CODE CAN DESTROY OTi-6858 AND ANY OTHER DEVICES, THAT ARE
- * CONNECTED TO IT!
- *
- * See Documentation/usb/usb-serial.rst for more information on using this
- * driver
- *
- * TODO:
- *  - implement correct flushing for ioctls and oti6858_close()
- *  - check how errors (rx overflow, parity error, framing error) are reported
- *  - implement oti6858_break_ctl()
- *  - implement more ioctls
- *  - test/implement flow control
- *  - allow setting custom baud rates
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -61,7 +28,7 @@ static const struct usb_device_id id_table[] = {
 
 MODULE_DEVICE_TABLE(usb, id_table);
 
-/* requests */
+ 
 #define	OTI6858_REQ_GET_STATUS		(USB_DIR_IN | USB_TYPE_VENDOR | 0x00)
 #define	OTI6858_REQ_T_GET_STATUS	0x01
 
@@ -71,14 +38,14 @@ MODULE_DEVICE_TABLE(usb, id_table);
 #define	OTI6858_REQ_CHECK_TXBUFF	(USB_DIR_IN | USB_TYPE_VENDOR | 0x01)
 #define	OTI6858_REQ_T_CHECK_TXBUFF	0x00
 
-/* format of the control packet */
+ 
 struct oti6858_control_pkt {
-	__le16	divisor;	/* baud rate = 96000000 / (16 * divisor), LE */
+	__le16	divisor;	 
 #define OTI6858_MAX_BAUD_RATE	3000000
 	u8	frame_fmt;
 #define FMT_STOP_BITS_MASK	0xc0
 #define FMT_STOP_BITS_1		0x00
-#define FMT_STOP_BITS_2		0x40	/* 1.5 stop bits if FMT_DATA_BITS_5 */
+#define FMT_STOP_BITS_2		0x40	 
 #define FMT_PARITY_MASK		0x38
 #define FMT_PARITY_NONE		0x00
 #define FMT_PARITY_ODD		0x08
@@ -90,8 +57,8 @@ struct oti6858_control_pkt {
 #define FMT_DATA_BITS_6		0x01
 #define FMT_DATA_BITS_7		0x02
 #define FMT_DATA_BITS_8		0x03
-	u8	something;	/* always equals 0x43 */
-	u8	control;	/* settings of flow control lines */
+	u8	something;	 
+	u8	control;	 
 #define CONTROL_MASK		0x0c
 #define CONTROL_DTR_HIGH	0x08
 #define CONTROL_RTS_HIGH	0x04
@@ -100,13 +67,13 @@ struct oti6858_control_pkt {
 	u8	pin_state;
 #define PIN_MASK		0x3f
 #define PIN_MSR_MASK		0x1b
-#define PIN_RTS			0x20	/* output pin */
-#define PIN_CTS			0x10	/* input pin, active low */
-#define PIN_DSR			0x08	/* input pin, active low */
-#define PIN_DTR			0x04	/* output pin */
-#define PIN_RI			0x02	/* input pin, active low */
-#define PIN_DCD			0x01	/* input pin, active low */
-	u8	rx_bytes_avail;		/* number of bytes in rx buffer */;
+#define PIN_RTS			0x20	 
+#define PIN_CTS			0x10	 
+#define PIN_DSR			0x08	 
+#define PIN_DTR			0x04	 
+#define PIN_RI			0x02	 
+#define PIN_DCD			0x01	 
+	u8	rx_bytes_avail;		 ;
 };
 
 #define OTI6858_CTRL_PKT_SIZE	sizeof(struct oti6858_control_pkt)
@@ -115,7 +82,7 @@ struct oti6858_control_pkt {
 	  && ((a)->control == (priv)->pending_setup.control) \
 	  && ((a)->frame_fmt == (priv)->pending_setup.frame_fmt))
 
-/* function prototypes */
+ 
 static int oti6858_open(struct tty_struct *tty, struct usb_serial_port *port);
 static void oti6858_close(struct usb_serial_port *port);
 static void oti6858_set_termios(struct tty_struct *tty,
@@ -135,7 +102,7 @@ static int oti6858_tiocmset(struct tty_struct *tty,
 static int oti6858_port_probe(struct usb_serial_port *port);
 static void oti6858_port_remove(struct usb_serial_port *port);
 
-/* device info */
+ 
 static struct usb_serial_driver oti6858_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
@@ -187,7 +154,7 @@ struct oti6858_private {
 	u8 setup_done;
 	struct delayed_work delayed_setup_work;
 
-	struct usb_serial_port *port;   /* USB port with which associated */
+	struct usb_serial_port *port;    
 };
 
 static void setup_line(struct work_struct *work)
@@ -201,7 +168,7 @@ static void setup_line(struct work_struct *work)
 
 	new_setup = kmalloc(OTI6858_CTRL_PKT_SIZE, GFP_KERNEL);
 	if (!new_setup) {
-		/* we will try again */
+		 
 		schedule_delayed_work(&priv->delayed_setup_work,
 						msecs_to_jiffies(2));
 		return;
@@ -218,7 +185,7 @@ static void setup_line(struct work_struct *work)
 	if (result != OTI6858_CTRL_PKT_SIZE) {
 		dev_err(&port->dev, "%s(): error reading status\n", __func__);
 		kfree(new_setup);
-		/* we will try again */
+		 
 		schedule_delayed_work(&priv->delayed_setup_work,
 							msecs_to_jiffies(2));
 		return;
@@ -340,7 +307,7 @@ static int oti6858_port_probe(struct usb_serial_port *port)
 
 	usb_set_serial_port_data(port, priv);
 
-	port->port.drain_delay = 256;	/* FIXME: check the FIFO length */
+	port->port.drain_delay = 256;	 
 
 	return 0;
 }
@@ -431,11 +398,7 @@ static void oti6858_set_termios(struct tty_struct *tty,
 		break;
 	}
 
-	/* manufacturer claims that this device can work with baud rates
-	 * up to 3 Mbps; I've tested it only on 115200 bps, so I can't
-	 * guarantee that any other baud rate will work (especially
-	 * the higher ones)
-	 */
+	 
 	br = tty_get_baud_rate(tty);
 	if (br == 0) {
 		divisor = 0;
@@ -470,22 +433,8 @@ static void oti6858_set_termios(struct tty_struct *tty,
 	if ((cflag & CRTSCTS) != 0)
 		control |= (CONTROL_DTR_HIGH | CONTROL_RTS_HIGH);
 
-	/* change control lines if we are switching to or from B0 */
-	/* FIXME:
-	spin_lock_irqsave(&priv->lock, flags);
-	control = priv->line_control;
-	if ((cflag & CBAUD) == B0)
-		priv->line_control &= ~(CONTROL_DTR | CONTROL_RTS);
-	else
-		priv->line_control |= (CONTROL_DTR | CONTROL_RTS);
-	if (control != priv->line_control) {
-		control = priv->line_control;
-		spin_unlock_irqrestore(&priv->lock, flags);
-		set_control_lines(serial->dev, control);
-	} else {
-		spin_unlock_irqrestore(&priv->lock, flags);
-	}
-	*/
+	 
+	 
 
 	spin_lock_irqsave(&priv->lock, flags);
 	if (divisor != priv->pending_setup.divisor
@@ -520,13 +469,13 @@ static int oti6858_open(struct tty_struct *tty, struct usb_serial_port *port)
 				buf, OTI6858_CTRL_PKT_SIZE,
 				100);
 	if (result != OTI6858_CTRL_PKT_SIZE) {
-		/* assume default (after power-on reset) values */
-		buf->divisor = cpu_to_le16(0x009c);	/* 38400 bps */
-		buf->frame_fmt = 0x03;	/* 8N1 */
+		 
+		buf->divisor = cpu_to_le16(0x009c);	 
+		buf->frame_fmt = 0x03;	 
 		buf->something = 0x43;
-		buf->control = 0x4c;	/* DTR, RTS */
+		buf->control = 0x4c;	 
 		buf->tx_status = 0x00;
-		buf->pin_state = 0x5b;	/* RTS, CTS, DSR, DTR, RI, DCD */
+		buf->pin_state = 0x5b;	 
 		buf->rx_bytes_avail = 0x00;
 	}
 
@@ -547,7 +496,7 @@ static int oti6858_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return result;
 	}
 
-	/* setup termios */
+	 
 	if (tty)
 		oti6858_set_termios(tty, port, NULL);
 
@@ -560,17 +509,17 @@ static void oti6858_close(struct usb_serial_port *port)
 	unsigned long flags;
 
 	spin_lock_irqsave(&port->lock, flags);
-	/* clear out any remaining data in the buffer */
+	 
 	kfifo_reset_out(&port->write_fifo);
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	dev_dbg(&port->dev, "%s(): after buf_clear()\n", __func__);
 
-	/* cancel scheduled setup */
+	 
 	cancel_delayed_work_sync(&priv->delayed_setup_work);
 	cancel_delayed_work_sync(&priv->delayed_write_work);
 
-	/* shutdown our urbs */
+	 
 	dev_dbg(&port->dev, "%s(): shutting down urbs\n", __func__);
 	usb_kill_urb(port->write_urb);
 	usb_kill_urb(port->read_urb);
@@ -588,7 +537,7 @@ static int oti6858_tiocmset(struct tty_struct *tty,
 	dev_dbg(&port->dev, "%s(set = 0x%08x, clear = 0x%08x)\n",
 		__func__, set, clear);
 
-	/* FIXME: check if this is correct (active high/low) */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 	control = priv->pending_setup.control;
 	if ((set & TIOCM_RTS) != 0)
@@ -619,7 +568,7 @@ static int oti6858_tiocmget(struct tty_struct *tty)
 	pin_state = priv->status.pin_state & PIN_MASK;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-	/* FIXME: check if this is correct (active high/low) */
+	 
 	if ((pin_state & PIN_RTS) != 0)
 		result |= TIOCM_RTS;
 	if ((pin_state & PIN_CTS) != 0)
@@ -647,12 +596,12 @@ static void oti6858_read_int_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&urb->dev->dev, "%s(): urb shutting down with status: %d\n",
 			__func__, status);
 		return;
@@ -752,7 +701,7 @@ static void oti6858_read_int_callback(struct urb *urb)
 	if (resubmit) {
 		int result;
 
-/*		dev_dbg(&urb->dev->dev, "%s(): submitting interrupt urb\n", __func__); */
+ 
 		result = usb_submit_urb(urb, GFP_ATOMIC);
 		if (result != 0) {
 			dev_err(&urb->dev->dev,
@@ -785,7 +734,7 @@ static void oti6858_read_bulk_callback(struct urb *urb)
 		tty_flip_buffer_push(&port->port);
 	}
 
-	/* schedule the interrupt urb */
+	 
 	result = usb_submit_urb(port->interrupt_in_urb, GFP_ATOMIC);
 	if (result != 0 && result != -EPERM) {
 		dev_err(&port->dev, "%s(): usb_submit_urb() failed,"
@@ -802,17 +751,17 @@ static void oti6858_write_bulk_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&urb->dev->dev, "%s(): urb shutting down with status: %d\n", __func__, status);
 		priv->flags.write_urb_in_use = 0;
 		return;
 	default:
-		/* error in the urb, so we have to resubmit it */
+		 
 		dev_dbg(&urb->dev->dev, "%s(): nonzero write bulk status received: %d\n", __func__, status);
 		dev_dbg(&urb->dev->dev, "%s(): overflow in write\n", __func__);
 
@@ -828,7 +777,7 @@ static void oti6858_write_bulk_callback(struct urb *urb)
 
 	priv->flags.write_urb_in_use = 0;
 
-	/* schedule the interrupt urb if we are still open */
+	 
 	dev_dbg(&port->dev, "%s(): submitting interrupt urb\n", __func__);
 	result = usb_submit_urb(port->interrupt_in_urb, GFP_ATOMIC);
 	if (result != 0) {

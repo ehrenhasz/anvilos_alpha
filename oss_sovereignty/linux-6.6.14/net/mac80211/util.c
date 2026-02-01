@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2005-2006, Devicescape Software, Inc.
- * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright (C) 2015-2017	Intel Deutschland GmbH
- * Copyright (C) 2018-2023 Intel Corporation
- *
- * utilities for mac80211
- */
+
+ 
 
 #include <net/mac80211.h>
 #include <linux/netdevice.h>
@@ -33,7 +23,7 @@
 #include "led.h"
 #include "wep.h"
 
-/* privid for wiphys to determine whether they belong to us or not */
+ 
 const void *const mac80211_wiphy_privid = &mac80211_wiphy_privid;
 
 struct ieee80211_hw *wiphy_to_ieee80211_hw(struct wiphy *wiphy)
@@ -51,7 +41,7 @@ u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
 	__le16 fc = hdr->frame_control;
 
 	if (ieee80211_is_data(fc)) {
-		if (len < 24) /* drop incorrect hdr len (data) */
+		if (len < 24)  
 			return NULL;
 
 		if (ieee80211_has_a4(fc))
@@ -71,7 +61,7 @@ u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
 	}
 
 	if (ieee80211_is_mgmt(fc)) {
-		if (len < 24) /* drop incorrect hdr len (mgmt) */
+		if (len < 24)  
 			return NULL;
 		return hdr->addr3;
 	}
@@ -88,7 +78,7 @@ u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
 			case NL80211_IFTYPE_AP_VLAN:
 				return hdr->addr1;
 			default:
-				break; /* fall through to the return */
+				break;  
 			}
 		}
 	}
@@ -114,59 +104,23 @@ int ieee80211_frame_duration(enum nl80211_band band, size_t len,
 {
 	int dur;
 
-	/* calculate duration (in microseconds, rounded up to next higher
-	 * integer if it includes a fractional microsecond) to send frame of
-	 * len bytes (does not include FCS) at the given rate. Duration will
-	 * also include SIFS.
-	 *
-	 * rate is in 100 kbps, so divident is multiplied by 10 in the
-	 * DIV_ROUND_UP() operations.
-	 *
-	 * shift may be 2 for 5 MHz channels or 1 for 10 MHz channels, and
-	 * is assumed to be 0 otherwise.
-	 */
+	 
 
 	if (band == NL80211_BAND_5GHZ || erp) {
-		/*
-		 * OFDM:
-		 *
-		 * N_DBPS = DATARATE x 4
-		 * N_SYM = Ceiling((16+8xLENGTH+6) / N_DBPS)
-		 *	(16 = SIGNAL time, 6 = tail bits)
-		 * TXTIME = T_PREAMBLE + T_SIGNAL + T_SYM x N_SYM + Signal Ext
-		 *
-		 * T_SYM = 4 usec
-		 * 802.11a - 18.5.2: aSIFSTime = 16 usec
-		 * 802.11g - 19.8.4: aSIFSTime = 10 usec +
-		 *	signal ext = 6 usec
-		 */
-		dur = 16; /* SIFS + signal ext */
-		dur += 16; /* IEEE 802.11-2012 18.3.2.4: T_PREAMBLE = 16 usec */
-		dur += 4; /* IEEE 802.11-2012 18.3.2.4: T_SIGNAL = 4 usec */
+		 
+		dur = 16;  
+		dur += 16;  
+		dur += 4;  
 
-		/* IEEE 802.11-2012 18.3.2.4: all values above are:
-		 *  * times 4 for 5 MHz
-		 *  * times 2 for 10 MHz
-		 */
+		 
 		dur *= 1 << shift;
 
-		/* rates should already consider the channel bandwidth,
-		 * don't apply divisor again.
-		 */
+		 
 		dur += 4 * DIV_ROUND_UP((16 + 8 * (len + 4) + 6) * 10,
-					4 * rate); /* T_SYM x N_SYM */
+					4 * rate);  
 	} else {
-		/*
-		 * 802.11b or 802.11g with 802.11b compatibility:
-		 * 18.3.4: TXTIME = PreambleLength + PLCPHeaderTime +
-		 * Ceiling(((LENGTH+PBCC)x8)/DATARATE). PBCC=0.
-		 *
-		 * 802.11 (DS): 15.3.3, 802.11b: 18.3.4
-		 * aSIFSTime = 10 usec
-		 * aPreambleLength = 144 usec or 72 usec with short preamble
-		 * aPLCPHeaderLength = 48 usec or 24 usec with short preamble
-		 */
-		dur = 10; /* aSIFSTime = 10 usec */
+		 
+		dur = 10;  
 		dur += short_preamble ? (72 + 24) : (144 + 48);
 
 		dur += DIV_ROUND_UP(8 * (len + 4) * 10, rate);
@@ -175,7 +129,7 @@ int ieee80211_frame_duration(enum nl80211_band band, size_t len,
 	return dur;
 }
 
-/* Exported duration function for driver use */
+ 
 __le16 ieee80211_generic_frame_duration(struct ieee80211_hw *hw,
 					struct ieee80211_vif *vif,
 					enum nl80211_band band,
@@ -232,13 +186,13 @@ __le16 ieee80211_rts_duration(struct ieee80211_hw *hw,
 
 	bitrate = DIV_ROUND_UP(rate->bitrate, 1 << shift);
 
-	/* CTS duration */
+	 
 	dur = ieee80211_frame_duration(sband->band, 10, bitrate,
 				       erp, short_preamble, shift);
-	/* Data frame duration */
+	 
 	dur += ieee80211_frame_duration(sband->band, frame_len, bitrate,
 					erp, short_preamble, shift);
-	/* ACK duration */
+	 
 	dur += ieee80211_frame_duration(sband->band, 10, bitrate,
 					erp, short_preamble, shift);
 
@@ -275,11 +229,11 @@ __le16 ieee80211_ctstoself_duration(struct ieee80211_hw *hw,
 
 	bitrate = DIV_ROUND_UP(rate->bitrate, 1 << shift);
 
-	/* Data frame duration */
+	 
 	dur = ieee80211_frame_duration(sband->band, frame_len, bitrate,
 				       erp, short_preamble, shift);
 	if (!(frame_txctl->flags & IEEE80211_TX_CTL_NO_ACK)) {
-		/* ACK duration */
+		 
 		dur += ieee80211_frame_duration(sband->band, 10, bitrate,
 						erp, short_preamble, shift);
 	}
@@ -306,7 +260,7 @@ static void wake_tx_push_queue(struct ieee80211_local *local,
 	}
 }
 
-/* wake_tx_queue handler for driver not implementing a custom one*/
+ 
 void ieee80211_handle_wake_tx_queue(struct ieee80211_hw *hw,
 				    struct ieee80211_txq *txq)
 {
@@ -316,7 +270,7 @@ void ieee80211_handle_wake_tx_queue(struct ieee80211_hw *hw,
 
 	spin_lock(&local->handle_wake_tx_queue_lock);
 
-	/* Use ieee80211_next_txq() for airtime fairness accounting */
+	 
 	ieee80211_txq_schedule_start(hw, txq->ac);
 	while ((queue = ieee80211_next_txq(hw, txq->ac))) {
 		wake_tx_push_queue(local, sdata, queue);
@@ -464,19 +418,13 @@ static void __ieee80211_wake_queue(struct ieee80211_hw *hw, int queue,
 		__clear_bit(reason, &local->queue_stop_reasons[queue]);
 
 	if (local->queue_stop_reasons[queue] != 0)
-		/* someone still has this queue stopped */
+		 
 		return;
 
 	if (!skb_queue_empty(&local->pending[queue]))
 		tasklet_schedule(&local->tx_pending_tasklet);
 
-	/*
-	 * Calling _ieee80211_wake_txqs here can be a problem because it may
-	 * release queue_stop_reason_lock which has been taken by
-	 * __ieee80211_wake_queue's caller. It is certainly not very nice to
-	 * release someone's lock, but it is fine because all the callers of
-	 * __ieee80211_wake_queue call it right before releasing the lock.
-	 */
+	 
 	if (reason == IEEE80211_QUEUE_STOP_REASON_DRIVER)
 		tasklet_schedule(&local->wake_txqs_tasklet);
 	else
@@ -680,7 +628,7 @@ ieee80211_get_vif_queues(struct ieee80211_local *local,
 		if (sdata->vif.cab_queue != IEEE80211_INVAL_HW_QUEUE)
 			queues |= BIT(sdata->vif.cab_queue);
 	} else {
-		/* all queues */
+		 
 		queues = BIT(local->hw.queues) - 1;
 	}
 
@@ -694,10 +642,7 @@ void __ieee80211_flush_queues(struct ieee80211_local *local,
 	if (!local->ops->flush)
 		return;
 
-	/*
-	 * If no queue was set, or if the HW doesn't support
-	 * IEEE80211_HW_QUEUE_CONTROL - flush all queues
-	 */
+	 
 	if (!queues || !ieee80211_hw_check(&local->hw, QUEUE_CONTROL))
 		queues = ieee80211_get_vif_queues(local, sdata);
 
@@ -868,15 +813,7 @@ struct wireless_dev *ieee80211_vif_to_wdev(struct ieee80211_vif *vif)
 }
 EXPORT_SYMBOL_GPL(ieee80211_vif_to_wdev);
 
-/*
- * Nothing should have been stuffed into the workqueue during
- * the suspend->resume cycle. Since we can't check each caller
- * of this function if we are already quiescing / suspended,
- * check here and don't WARN since this can actually happen when
- * the rx path (for example) is racing against __ieee80211_suspend
- * and suspending / quiescing was set after the rx path checked
- * them.
- */
+ 
 static bool ieee80211_can_queue_work(struct ieee80211_local *local)
 {
 	if (local->quiescing || (local->suspended && !local->resuming)) {
@@ -1073,10 +1010,7 @@ _ieee802_11_parse_elems_full(struct ieee80211_elems_parse_params *params,
 		case WLAN_EID_S1G_OPERATION:
 		case WLAN_EID_AID_RESPONSE:
 		case WLAN_EID_S1G_SHORT_BCN_INTERVAL:
-		/*
-		 * not listing WLAN_EID_CHANNEL_SWITCH_WRAPPER -- it seems possible
-		 * that if the content gets bigger it might be needed more than once
-		 */
+		 
 			if (test_bit(id, seen_elems)) {
 				elems->parse_error = true;
 				continue;
@@ -1132,13 +1066,13 @@ _ieee802_11_parse_elems_full(struct ieee80211_elems_parse_params *params,
 		case WLAN_EID_VENDOR_SPECIFIC:
 			if (elen >= 4 && pos[0] == 0x00 && pos[1] == 0x50 &&
 			    pos[2] == 0xf2) {
-				/* Microsoft OUI (00:50:F2) */
+				 
 
 				if (calc_crc)
 					crc = crc32_be(crc, pos - 2, elen + 2);
 
 				if (elen >= 5 && pos[3] == 2) {
-					/* OUI Type 2 - WMM IE */
+					 
 					if (pos[4] == 0) {
 						elems->wmm_info = pos;
 						elems->wmm_info_len = elen;
@@ -1277,11 +1211,7 @@ _ieee802_11_parse_elems_full(struct ieee80211_elems_parse_params *params,
 				elem_parse_failed = true;
 				break;
 			}
-			/*
-			 * This is a bit tricky, but as we only care about
-			 * the wide bandwidth channel switch element, so
-			 * just parse it out manually.
-			 */
+			 
 			ie = cfg80211_find_ie(WLAN_EID_WIDE_BW_CHANNEL_SWITCH,
 					      pos, elen);
 			if (ie) {
@@ -1304,11 +1234,7 @@ _ieee802_11_parse_elems_full(struct ieee80211_elems_parse_params *params,
 			elems->pwr_constr_elem = pos;
 			break;
 		case WLAN_EID_CISCO_VENDOR_SPECIFIC:
-			/* Lots of different options exist, but we only care
-			 * about the Dynamic Transmit Power Control element.
-			 * First check for the Cisco OUI, then for the DTPC
-			 * tag (0x00).
-			 */
+			 
 			if (elen < 4) {
 				elem_parse_failed = true;
 				break;
@@ -1429,17 +1355,13 @@ static size_t ieee802_11_find_bssid_profile(const u8 *start, size_t len,
 			const u8 *index;
 
 			if (sub->id != 0 || sub->datalen < 4) {
-				/* not a valid BSS profile */
+				 
 				continue;
 			}
 
 			if (sub->data[0] != WLAN_EID_NON_TX_BSSID_CAP ||
 			    sub->data[1] != 2) {
-				/* The first element of the
-				 * Nontransmitted BSSID Profile is not
-				 * the Nontransmitted BSSID Capability
-				 * element.
-				 */
+				 
 				continue;
 			}
 
@@ -1450,12 +1372,12 @@ static size_t ieee802_11_find_bssid_profile(const u8 *start, size_t len,
 							     nontransmitted_profile,
 							     len);
 
-			/* found a Nontransmitted BSSID Profile */
+			 
 			index = cfg80211_find_ie(WLAN_EID_MULTI_BSSID_IDX,
 						 nontransmitted_profile,
 						 profile_len);
 			if (!index || index[1] < 1 || index[2] == 0) {
-				/* Invalid MBSSID Index element */
+				 
 				continue;
 			}
 
@@ -1510,7 +1432,7 @@ static void ieee80211_mle_get_sta_prof(struct ieee802_11_elems *elems,
 		if (!(control & IEEE80211_MLE_STA_CONTROL_COMPLETE_PROFILE))
 			return;
 
-		/* the sub element can be fragmented */
+		 
 		sta_prof_len =
 			cfg80211_defragment_element(sub,
 						    (u8 *)ml, ml_len,
@@ -1568,19 +1490,14 @@ static void ieee80211_mle_parse_link(struct ieee802_11_elems *elems,
 	if (!prof)
 		return;
 
-	/* check if we have the 4 bytes for the fixed part in assoc response */
+	 
 	if (elems->sta_prof_len < sizeof(*prof) + prof->sta_info_len - 1 + 4) {
 		elems->prof = NULL;
 		elems->sta_prof_len = 0;
 		return;
 	}
 
-	/*
-	 * Skip the capability information and the status code that are expected
-	 * as part of the station profile in association response frames. Note
-	 * the -1 is because the 'sta_info_len' is accounted to as part of the
-	 * per-STA profile, but not part of the 'u8 variable[]' portion.
-	 */
+	 
 	sub.start = prof->variable + prof->sta_info_len - 1 + 4;
 	end = (const u8 *)prof + elems->sta_prof_len;
 	sub.len = end - sub.start;
@@ -1620,7 +1537,7 @@ ieee802_11_parse_elems_full(struct ieee80211_elems_parse_params *params)
 
 	elems->crc = _ieee802_11_parse_elems_full(params, elems, non_inherit);
 
-	/* Override with nontransmitted profile, if found */
+	 
 	if (nontransmitted_profile_len) {
 		struct ieee80211_elems_parse_params sub = {
 			.start = nontransmitted_profile,
@@ -1641,7 +1558,7 @@ ieee802_11_parse_elems_full(struct ieee80211_elems_parse_params *params)
 		elems->dtim_count = tim_ie->dtim_count;
 	}
 
-	/* Override DTIM period and count if needed */
+	 
 	if (elems->bssid_index &&
 	    elems->bssid_index_len >=
 	    offsetofend(struct ieee80211_bssid_index, dtim_period))
@@ -1705,7 +1622,7 @@ void ieee80211_set_wmm_default(struct ieee80211_link_data *link,
 	struct ieee80211_chanctx_conf *chanctx_conf;
 	int ac;
 	bool use_11b;
-	bool is_ocb; /* Use another EDCA parameters if dot11OCBActivated=true */
+	bool is_ocb;  
 	int aCWmin, aCWmax;
 
 	if (!local->ops->conf_tx)
@@ -1725,21 +1642,21 @@ void ieee80211_set_wmm_default(struct ieee80211_link_data *link,
 
 	is_ocb = (sdata->vif.type == NL80211_IFTYPE_OCB);
 
-	/* Set defaults according to 802.11-2007 Table 7-37 */
+	 
 	aCWmax = 1023;
 	if (use_11b)
 		aCWmin = 31;
 	else
 		aCWmin = 15;
 
-	/* Confiure old 802.11b/g medium access rules. */
+	 
 	qparam.cw_max = aCWmax;
 	qparam.cw_min = aCWmin;
 	qparam.txop = 0;
 	qparam.aifs = 2;
 
 	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
-		/* Update if QoS is enabled. */
+		 
 		if (enable_qos) {
 			switch (ac) {
 			case IEEE80211_AC_BK:
@@ -1751,7 +1668,7 @@ void ieee80211_set_wmm_default(struct ieee80211_link_data *link,
 				else
 					qparam.aifs = 7;
 				break;
-			/* never happens but let's not leave undefined */
+			 
 			default:
 			case IEEE80211_AC_BE:
 				qparam.cw_max = aCWmax;
@@ -1835,7 +1752,7 @@ void ieee80211_send_auth(struct ieee80211_sub_if_data *sdata,
 
 	memcpy(mle.basic.mld_mac_addr, sdata->vif.addr, ETH_ALEN);
 
-	/* 24 + 6 = header + auth_algo + auth_transaction + status_code */
+	 
 	skb = dev_alloc_skb(local->hw.extra_tx_headroom + IEEE80211_WEP_IV_LEN +
 			    24 + 6 + extra_len + IEEE80211_WEP_ICV_LEN +
 			    multi_link * sizeof(mle));
@@ -1881,14 +1798,14 @@ void ieee80211_send_deauth_disassoc(struct ieee80211_sub_if_data *sdata,
 	struct sk_buff *skb;
 	struct ieee80211_mgmt *mgmt = (void *)frame_buf;
 
-	/* build frame */
+	 
 	mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT | stype);
-	mgmt->duration = 0; /* initialize only */
-	mgmt->seq_ctrl = 0; /* initialize only */
+	mgmt->duration = 0;  
+	mgmt->seq_ctrl = 0;  
 	memcpy(mgmt->da, da, ETH_ALEN);
 	memcpy(mgmt->sa, sdata->vif.addr, ETH_ALEN);
 	memcpy(mgmt->bssid, bssid, ETH_ALEN);
-	/* u.deauth.reason_code == u.disassoc.reason_code */
+	 
 	mgmt->u.deauth.reason_code = cpu_to_le16(reason);
 
 	if (send_frame) {
@@ -1899,7 +1816,7 @@ void ieee80211_send_deauth_disassoc(struct ieee80211_sub_if_data *sdata,
 
 		skb_reserve(skb, local->hw.extra_tx_headroom);
 
-		/* copy in frame */
+		 
 		skb_put_data(skb, mgmt, IEEE80211_DEAUTH_FRAME_LEN);
 
 		if (sdata->vif.type != NL80211_IFTYPE_STATION ||
@@ -1955,7 +1872,7 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 	rate_flags = ieee80211_chandef_rate_flags(chandef);
 	shift = ieee80211_chandef_get_shift(chandef);
 
-	/* For direct scan add S1G IE and consider its override bits */
+	 
 	if (band == NL80211_BAND_S1GHZ) {
 		if (end - pos < 2 + sizeof(struct ieee80211_s1g_cap))
 			goto out_err;
@@ -1966,7 +1883,7 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 	num_rates = 0;
 	for (i = 0; i < sband->n_bitrates; i++) {
 		if ((BIT(i) & rate_mask) == 0)
-			continue; /* skip rate */
+			continue;  
 		if ((rate_flags & sband->bitrates[i].flags) != rate_flags)
 			continue;
 
@@ -1984,7 +1901,7 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 	memcpy(pos, rates, supp_rates_len);
 	pos += supp_rates_len;
 
-	/* insert "request information" if in custom IEs */
+	 
 	if (ie && ie_len) {
 		static const u8 before_extrates[] = {
 			WLAN_EID_SSID,
@@ -2024,13 +1941,10 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 	if (flags & IEEE80211_PROBE_FLAG_MIN_CONTENT)
 		goto done;
 
-	/* insert custom IEs that go before HT */
+	 
 	if (ie && ie_len) {
 		static const u8 before_ht[] = {
-			/*
-			 * no need to list the ones split off already
-			 * (or generated here)
-			 */
+			 
 			WLAN_EID_DS_PARAMS,
 			WLAN_EID_SUPPORTED_REGULATORY_CLASSES,
 		};
@@ -2051,20 +1965,17 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 						sband->ht_cap.cap);
 	}
 
-	/* insert custom IEs that go before VHT */
+	 
 	if (ie && ie_len) {
 		static const u8 before_vht[] = {
-			/*
-			 * no need to list the ones split off already
-			 * (or generated here)
-			 */
+			 
 			WLAN_EID_BSS_COEX_2040,
 			WLAN_EID_EXT_CAPABILITY,
 			WLAN_EID_SSID_LIST,
 			WLAN_EID_CHANNEL_USAGE,
 			WLAN_EID_INTERWORKING,
 			WLAN_EID_MESH_ID,
-			/* 60 GHz (Multi-band, DMG, MMS) can't happen */
+			 
 		};
 		noffset = ieee80211_ie_split(ie, ie_len,
 					     before_vht, ARRAY_SIZE(before_vht),
@@ -2076,7 +1987,7 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 		*offset = noffset;
 	}
 
-	/* Check if any channel in this sband supports at least 80 MHz */
+	 
 	for (i = 0; i < sband->n_channels; i++) {
 		if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |
 						IEEE80211_CHAN_NO_80MHZ))
@@ -2093,16 +2004,13 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 						 sband->vht_cap.cap);
 	}
 
-	/* insert custom IEs that go before HE */
+	 
 	if (ie && ie_len) {
 		static const u8 before_he[] = {
-			/*
-			 * no need to list the ones split off before VHT
-			 * or generated here
-			 */
+			 
 			WLAN_EID_EXTENSION, WLAN_EID_EXT_FILS_REQ_PARAMS,
 			WLAN_EID_AP_CSN,
-			/* TODO: add 11ah/11aj/11ak elements */
+			 
 		};
 		noffset = ieee80211_ie_split(ie, ie_len,
 					     before_he, ARRAY_SIZE(before_he),
@@ -2152,10 +2060,7 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
 		}
 	}
 
-	/*
-	 * If adding more here, adjust code in main.c
-	 * that calculates local->scan_ies_len.
-	 */
+	 
 
 	return pos - buffer;
  out_err:
@@ -2193,7 +2098,7 @@ int ieee80211_build_preq_ies(struct ieee80211_sub_if_data *sdata, u8 *buffer,
 		}
 	}
 
-	/* add any remaining custom IEs */
+	 
 	if (ie && ie_len) {
 		if (WARN_ONCE(buffer_len - pos < ie_len - custom_ie_offset,
 			      "not enough space for preq custom IEs\n"))
@@ -2224,11 +2129,7 @@ struct sk_buff *ieee80211_build_probe_req(struct ieee80211_sub_if_data *sdata,
 	u32 rate_masks[NUM_NL80211_BANDS] = {};
 	struct ieee80211_scan_ies dummy_ie_desc;
 
-	/*
-	 * Do not send DS Channel parameter for directed probe requests
-	 * in order to maximize the chance that we get a response.  Some
-	 * badly-behaved APs don't respond when this parameter is included.
-	 */
+	 
 	chandef.width = sdata->vif.bss_conf.chandef.width;
 	if (flags & IEEE80211_PROBE_FLAG_DIRECTED)
 		chandef.chan = NULL;
@@ -2325,19 +2226,9 @@ void ieee80211_stop_device(struct ieee80211_local *local)
 static void ieee80211_flush_completed_scan(struct ieee80211_local *local,
 					   bool aborted)
 {
-	/* It's possible that we don't handle the scan completion in
-	 * time during suspend, so if it's still marked as completed
-	 * here, queue the work and flush it to clean things up.
-	 * Instead of calling the worker function directly here, we
-	 * really queue it to avoid potential races with other flows
-	 * scheduling the same work.
-	 */
+	 
 	if (test_bit(SCAN_COMPLETED, &local->scanning)) {
-		/* If coming from reconfiguration failure, abort the scan so
-		 * we don't attempt to continue a partial HW scan - which is
-		 * possible otherwise if (e.g.) the 2.4 GHz portion was the
-		 * completed scan, and a 5 GHz portion is still pending.
-		 */
+		 
 		if (aborted)
 			set_bit(SCAN_ABORTED, &local->scanning);
 		wiphy_delayed_work_queue(local->hw.wiphy, &local->scan_work, 0);
@@ -2350,15 +2241,7 @@ static void ieee80211_handle_reconfig_failure(struct ieee80211_local *local)
 	struct ieee80211_sub_if_data *sdata;
 	struct ieee80211_chanctx *ctx;
 
-	/*
-	 * We get here if during resume the device can't be restarted properly.
-	 * We might also get here if this happens during HW reset, which is a
-	 * slightly different situation and we need to drop all connections in
-	 * the latter case.
-	 *
-	 * Ask cfg80211 to turn off all interfaces, this will result in more
-	 * warnings but at least we'll then get into a clean stopped state.
-	 */
+	 
 
 	local->resuming = false;
 	local->suspended = false;
@@ -2367,17 +2250,13 @@ static void ieee80211_handle_reconfig_failure(struct ieee80211_local *local)
 
 	ieee80211_flush_completed_scan(local, true);
 
-	/* scheduled scan clearly can't be running any more, but tell
-	 * cfg80211 and clear local state
-	 */
+	 
 	ieee80211_sched_scan_end(local);
 
 	list_for_each_entry(sdata, &local->interfaces, list)
 		sdata->flags &= ~IEEE80211_SDATA_IN_DRIVER;
 
-	/* Mark channel contexts as not being in the driver any more to avoid
-	 * removing them from the driver during the shutdown process...
-	 */
+	 
 	mutex_lock(&local->chanctx_mtx);
 	list_for_each_entry(ctx, &local->chanctx_list, list)
 		ctx->driver_present = false;
@@ -2409,7 +2288,7 @@ static void ieee80211_reconfig_stations(struct ieee80211_sub_if_data *sdata)
 	struct ieee80211_local *local = sdata->local;
 	struct sta_info *sta;
 
-	/* add STAs back */
+	 
 	mutex_lock(&local->sta_mtx);
 	list_for_each_entry(sta, &local->sta_list, list) {
 		enum ieee80211_sta_state state;
@@ -2441,10 +2320,7 @@ static int ieee80211_reconfig_nan(struct ieee80211_sub_if_data *sdata)
 	if (!funcs)
 		return -ENOMEM;
 
-	/* Add all the functions:
-	 * This is a little bit ugly. We need to call a potentially sleeping
-	 * callback for each NAN function, so we can't hold the spinlock.
-	 */
+	 
 	spin_lock_bh(&sdata->u.nan.func_lock);
 
 	idr_for_each_entry(&sdata->u.nan.function_inst_ids, func, id)
@@ -2509,7 +2385,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	bool suspended = local->suspended;
 	bool in_reconfig = false;
 
-	/* nothing to do if HW shouldn't run */
+	 
 	if (!local->open_count)
 		goto wake_up;
 
@@ -2518,12 +2394,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		local->resuming = true;
 
 	if (local->wowlan) {
-		/*
-		 * In the wowlan case, both mac80211 and the device
-		 * are functional when the resume op is called, so
-		 * clear local->suspended so the device could operate
-		 * normally (e.g. pass rx frames).
-		 */
+		 
 		local->suspended = false;
 		res = drv_resume(local);
 		local->wowlan = false;
@@ -2534,34 +2405,19 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		if (res == 0)
 			goto wake_up;
 		WARN_ON(res > 1);
-		/*
-		 * res is 1, which means the driver requested
-		 * to go through a regular reset on wakeup.
-		 * restore local->suspended in this case.
-		 */
+		 
 		reconfig_due_to_wowlan = true;
 		local->suspended = true;
 	}
 #endif
 
-	/*
-	 * In case of hw_restart during suspend (without wowlan),
-	 * cancel restart work, as we are reconfiguring the device
-	 * anyway.
-	 * Note that restart_work is scheduled on a frozen workqueue,
-	 * so we can't deadlock in this case.
-	 */
+	 
 	if (suspended && local->in_reconfig && !reconfig_due_to_wowlan)
 		cancel_work_sync(&local->restart_work);
 
 	local->started = false;
 
-	/*
-	 * Upon resume hardware can sometimes be goofy due to
-	 * various platform / driver / bus issues, so restarting
-	 * the device may at times not work immediately. Propagate
-	 * the error.
-	 */
+	 
 	res = drv_start(local);
 	if (res) {
 		if (suspended)
@@ -2572,23 +2428,23 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		return res;
 	}
 
-	/* setup fragmentation threshold */
+	 
 	drv_set_frag_threshold(local, hw->wiphy->frag_threshold);
 
-	/* setup RTS threshold */
+	 
 	drv_set_rts_threshold(local, hw->wiphy->rts_threshold);
 
-	/* reset coverage class */
+	 
 	drv_set_coverage_class(local, hw->wiphy->coverage_class);
 
 	ieee80211_led_radio(local, true);
 	ieee80211_mod_tpt_led_trig(local,
 				   IEEE80211_TPT_LEDTRIG_FL_RADIO, 0);
 
-	/* add interfaces */
+	 
 	sdata = wiphy_dereference(local->hw.wiphy, local->monitor_sdata);
 	if (sdata) {
-		/* in HW restart it exists already */
+		 
 		WARN_ON(local->resuming);
 		res = drv_add_interface(local, sdata);
 		if (WARN_ON(res)) {
@@ -2608,9 +2464,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		}
 	}
 
-	/* If adding any of the interfaces failed above, roll back and
-	 * report failure.
-	 */
+	 
 	if (res) {
 		list_for_each_entry_continue_reverse(sdata, &local->interfaces,
 						     list)
@@ -2622,7 +2476,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		return res;
 	}
 
-	/* add channel contexts */
+	 
 	if (local->use_chanctx) {
 		mutex_lock(&local->chanctx_mtx);
 		list_for_each_entry(ctx, &local->chanctx_list, list)
@@ -2637,14 +2491,14 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 			ieee80211_assign_chanctx(local, sdata, &sdata->deflink);
 	}
 
-	/* reconfigure hardware */
+	 
 	ieee80211_hw_config(local, ~0);
 
 	ieee80211_configure_filter(local);
 
-	/* Finally also reconfigure all the BSS information */
+	 
 	list_for_each_entry(sdata, &local->interfaces, list) {
-		/* common change flags for all interface types - link only */
+		 
 		u64 changed = BSS_CHANGED_ERP_CTS_PROT |
 			      BSS_CHANGED_ERP_PREAMBLE |
 			      BSS_CHANGED_ERP_SLOT |
@@ -2670,7 +2524,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 			};
 
 			if (sdata->vif.type == NL80211_IFTYPE_STATION) {
-				/* start with a single active link */
+				 
 				active_links = sdata->vif.active_links;
 				link_id = ffs(active_links) - 1;
 				sdata->vif.active_links = BIT(link_id);
@@ -2706,7 +2560,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		default:
 			ieee80211_reconfig_stations(sdata);
 			fallthrough;
-		case NL80211_IFTYPE_AP: /* AP stations are handled later */
+		case NL80211_IFTYPE_AP:  
 			for (i = 0; i < IEEE80211_NUM_ACS; i++)
 				drv_conf_tx(local, &sdata->deflink, i,
 					    &sdata->deflink.tx_conf[i]);
@@ -2726,7 +2580,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 					   BSS_CHANGED_ARP_FILTER |
 					   BSS_CHANGED_PS;
 
-				/* Re-send beacon info report to the driver */
+				 
 				if (sdata->deflink.u.mgd.have_beacon)
 					changed |= BSS_CHANGED_BEACON_INFO;
 
@@ -2803,7 +2657,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		case NL80211_IFTYPE_AP_VLAN:
 		case NL80211_IFTYPE_MONITOR:
 		case NL80211_IFTYPE_P2P_DEVICE:
-			/* nothing to do */
+			 
 			break;
 		case NL80211_IFTYPE_UNSPECIFIED:
 		case NUM_NL80211_IFTYPES:
@@ -2821,12 +2675,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 
 	ieee80211_recalc_ps(local);
 
-	/*
-	 * The sta might be in psm against the ap (e.g. because
-	 * this was the state before a hw restart), so we
-	 * explicitly send a null packet in order to make sure
-	 * it'll sync against the ap (and get out of psm).
-	 */
+	 
 	if (!(local->hw.conf.flags & IEEE80211_CONF_PS)) {
 		list_for_each_entry(sdata, &local->interfaces, list) {
 			if (sdata->vif.type != NL80211_IFTYPE_STATION)
@@ -2838,7 +2687,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		}
 	}
 
-	/* APs are now beaconing, add back stations */
+	 
 	list_for_each_entry(sdata, &local->interfaces, list) {
 		if (!ieee80211_sdata_running(sdata))
 			continue;
@@ -2855,24 +2704,18 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		sdata_unlock(sdata);
 	}
 
-	/* add back keys */
+	 
 	list_for_each_entry(sdata, &local->interfaces, list)
 		ieee80211_reenable_keys(sdata);
 
-	/* Reconfigure sched scan if it was interrupted by FW restart */
+	 
 	mutex_lock(&local->mtx);
 	sched_scan_sdata = rcu_dereference_protected(local->sched_scan_sdata,
 						lockdep_is_held(&local->mtx));
 	sched_scan_req = rcu_dereference_protected(local->sched_scan_req,
 						lockdep_is_held(&local->mtx));
 	if (sched_scan_sdata && sched_scan_req)
-		/*
-		 * Sched scan stopped, but we don't want to report it. Instead,
-		 * we're trying to reschedule. However, if more than one scan
-		 * plan was set, we cannot reschedule since we don't know which
-		 * scan plan was currently running (and some scan plans may have
-		 * already finished).
-		 */
+		 
 		if (sched_scan_req->n_scan_plans > 1 ||
 		    __ieee80211_request_sched_scan_start(sched_scan_sdata,
 							 sched_scan_req)) {
@@ -2890,16 +2733,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	if (local->monitors == local->open_count && local->monitors > 0)
 		ieee80211_add_virtual_monitor(local);
 
-	/*
-	 * Clear the WLAN_STA_BLOCK_BA flag so new aggregation
-	 * sessions can be established after a resume.
-	 *
-	 * Also tear down aggregation sessions since reconfiguring
-	 * them in a hardware restart scenario is not easily done
-	 * right now, and the hardware will have lost information
-	 * about the sessions, but we and the AP still think they
-	 * are active. This is really a workaround though.
-	 */
+	 
 	if (ieee80211_hw_check(hw, AMPDU_AGGREGATION)) {
 		mutex_lock(&local->sta_mtx);
 
@@ -2913,10 +2747,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		mutex_unlock(&local->sta_mtx);
 	}
 
-	/*
-	 * If this is for hw restart things are still running.
-	 * We may want to change that later, however.
-	 */
+	 
 	if (local->open_count && (!suspended || reconfig_due_to_wowlan))
 		drv_reconfig_complete(local, IEEE80211_RECONFIG_TYPE_RESTART);
 
@@ -2925,12 +2756,12 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		local->in_reconfig = false;
 		barrier();
 
-		/* Restart deferred ROCs */
+		 
 		mutex_lock(&local->mtx);
 		ieee80211_start_next_roc(local);
 		mutex_unlock(&local->mtx);
 
-		/* Requeue all works */
+		 
 		list_for_each_entry(sdata, &local->interfaces, list)
 			wiphy_work_queue(local->hw.wiphy, &sdata->work);
 	}
@@ -2952,7 +2783,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		return 0;
 
 #ifdef CONFIG_PM
-	/* first set suspended false, then resuming */
+	 
 	local->suspended = false;
 	mb();
 	local->resuming = false;
@@ -3032,12 +2863,7 @@ void ieee80211_recalc_smps(struct ieee80211_sub_if_data *sdata,
 	chanctx_conf = rcu_dereference_protected(link->conf->chanctx_conf,
 						 lockdep_is_held(&local->chanctx_mtx));
 
-	/*
-	 * This function can be called from a work, thus it may be possible
-	 * that the chanctx_conf is removed (due to a disconnection, for
-	 * example).
-	 * So nothing should be done in such case.
-	 */
+	 
 	if (!chanctx_conf)
 		goto unlock;
 
@@ -3072,14 +2898,7 @@ void ieee80211_recalc_min_chandef(struct ieee80211_sub_if_data *sdata,
 
 		chanctx_conf = rcu_dereference_protected(bss_conf->chanctx_conf,
 							 lockdep_is_held(&local->chanctx_mtx));
-		/*
-		 * Since we hold the chanctx_mtx (checked above)
-		 * we can take the chanctx_conf pointer out of the
-		 * RCU critical section, it cannot go away without
-		 * the mutex. Just the way we reached it could - in
-		 * theory - go away, but we don't really care and
-		 * it really shouldn't happen anyway.
-		 */
+		 
 		rcu_read_unlock();
 
 		if (!chanctx_conf)
@@ -3127,27 +2946,27 @@ u8 *ieee80211_ie_build_ht_cap(u8 *pos, struct ieee80211_sta_ht_cap *ht_cap,
 	*pos++ = sizeof(struct ieee80211_ht_cap);
 	memset(pos, 0, sizeof(struct ieee80211_ht_cap));
 
-	/* capability flags */
+	 
 	tmp = cpu_to_le16(cap);
 	memcpy(pos, &tmp, sizeof(u16));
 	pos += sizeof(u16);
 
-	/* AMPDU parameters */
+	 
 	*pos++ = ht_cap->ampdu_factor |
 		 (ht_cap->ampdu_density <<
 			IEEE80211_HT_AMPDU_PARM_DENSITY_SHIFT);
 
-	/* MCS set */
+	 
 	memcpy(pos, &ht_cap->mcs, sizeof(ht_cap->mcs));
 	pos += sizeof(ht_cap->mcs);
 
-	/* extended capabilities */
+	 
 	pos += sizeof(__le16);
 
-	/* BF capabilities */
+	 
 	pos += sizeof(__le32);
 
-	/* antenna selection */
+	 
 	pos += sizeof(u8);
 
 	return pos;
@@ -3162,12 +2981,12 @@ u8 *ieee80211_ie_build_vht_cap(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
 	*pos++ = sizeof(struct ieee80211_vht_cap);
 	memset(pos, 0, sizeof(struct ieee80211_vht_cap));
 
-	/* capability flags */
+	 
 	tmp = cpu_to_le32(cap);
 	memcpy(pos, &tmp, sizeof(u32));
 	pos += sizeof(u32);
 
-	/* VHT MCS set */
+	 
 	memcpy(pos, &vht_cap->vht_mcs, sizeof(vht_cap->vht_mcs));
 	pos += sizeof(vht_cap->vht_mcs);
 
@@ -3204,15 +3023,12 @@ u8 *ieee80211_ie_build_he_cap(ieee80211_conn_flags_t disable_flags, u8 *pos,
 	u8 ie_len;
 	u8 *orig_pos = pos;
 
-	/* Make sure we have place for the IE */
-	/*
-	 * TODO: the 1 added is because this temporarily is under the EXTENSION
-	 * IE. Get rid of it when it moves.
-	 */
+	 
+	 
 	if (!he_cap)
 		return orig_pos;
 
-	/* modify on stack first to calculate 'n' and 'ie_len' correctly */
+	 
 	elem = he_cap->he_cap_elem;
 
 	if (disable_flags & IEEE80211_CONN_DISABLE_40MHZ)
@@ -3238,38 +3054,32 @@ u8 *ieee80211_ie_build_he_cap(ieee80211_conn_flags_t disable_flags, u8 *pos,
 		return orig_pos;
 
 	*pos++ = WLAN_EID_EXTENSION;
-	pos++; /* We'll set the size later below */
+	pos++;  
 	*pos++ = WLAN_EID_EXT_HE_CAPABILITY;
 
-	/* Fixed data */
+	 
 	memcpy(pos, &elem, sizeof(elem));
 	pos += sizeof(elem);
 
 	memcpy(pos, &he_cap->he_mcs_nss_supp, n);
 	pos += n;
 
-	/* Check if PPE Threshold should be present */
+	 
 	if ((he_cap->he_cap_elem.phy_cap_info[6] &
 	     IEEE80211_HE_PHY_CAP6_PPE_THRESHOLD_PRESENT) == 0)
 		goto end;
 
-	/*
-	 * Calculate how many PPET16/PPET8 pairs are to come. Algorithm:
-	 * (NSS_M1 + 1) x (num of 1 bits in RU_INDEX_BITMASK)
-	 */
+	 
 	n = hweight8(he_cap->ppe_thres[0] &
 		     IEEE80211_PPE_THRES_RU_INDEX_BITMASK_MASK);
 	n *= (1 + ((he_cap->ppe_thres[0] & IEEE80211_PPE_THRES_NSS_MASK) >>
 		   IEEE80211_PPE_THRES_NSS_POS));
 
-	/*
-	 * Each pair is 6 bits, and we need to add the 7 "header" bits to the
-	 * total size.
-	 */
+	 
 	n = (n * IEEE80211_PPE_THRES_INFO_PPET_SIZE * 2) + 7;
 	n = DIV_ROUND_UP(n, 8);
 
-	/* Copy PPE Thresholds */
+	 
 	memcpy(pos, &he_cap->ppe_thres, n);
 	pos += n;
 
@@ -3299,7 +3109,7 @@ void ieee80211_ie_build_he_6ghz_cap(struct ieee80211_sub_if_data *sdata,
 	if (!iftd)
 		return;
 
-	/* Check for device HE 6 GHz capability before adding element */
+	 
 	if (!iftd->he_6ghz_capa.capa)
 		return;
 
@@ -3335,7 +3145,7 @@ u8 *ieee80211_ie_build_ht_oper(u8 *pos, struct ieee80211_sta_ht_cap *ht_cap,
 			       u16 prot_mode, bool rifs_mode)
 {
 	struct ieee80211_ht_operation *ht_oper;
-	/* Build HT Information */
+	 
 	*pos++ = WLAN_EID_HT_OPERATION;
 	*pos++ = sizeof(struct ieee80211_ht_operation);
 	ht_oper = (struct ieee80211_ht_operation *)pos;
@@ -3352,7 +3162,7 @@ u8 *ieee80211_ie_build_ht_oper(u8 *pos, struct ieee80211_sta_ht_cap *ht_cap,
 			ht_oper->ht_param = IEEE80211_HT_PARAM_CHA_SEC_BELOW;
 		break;
 	case NL80211_CHAN_WIDTH_320:
-		/* HT information element should not be included on 6GHz */
+		 
 		WARN_ON(1);
 		return pos;
 	default:
@@ -3370,8 +3180,7 @@ u8 *ieee80211_ie_build_ht_oper(u8 *pos, struct ieee80211_sta_ht_cap *ht_cap,
 	ht_oper->operation_mode = cpu_to_le16(prot_mode);
 	ht_oper->stbc_param = 0x0000;
 
-	/* It seems that Basic MCS set and Supported MCS set
-	   are identical for the first 10 bytes */
+	 
 	memset(&ht_oper->basic_set, 0, 16);
 	memcpy(&ht_oper->basic_set, &ht_cap->mcs, 10);
 
@@ -3381,9 +3190,9 @@ u8 *ieee80211_ie_build_ht_oper(u8 *pos, struct ieee80211_sta_ht_cap *ht_cap,
 void ieee80211_ie_build_wide_bw_cs(u8 *pos,
 				   const struct cfg80211_chan_def *chandef)
 {
-	*pos++ = WLAN_EID_WIDE_BW_CHANNEL_SWITCH;	/* EID */
-	*pos++ = 3;					/* IE length */
-	/* New channel width */
+	*pos++ = WLAN_EID_WIDE_BW_CHANNEL_SWITCH;	 
+	*pos++ = 3;					 
+	 
 	switch (chandef->width) {
 	case NL80211_CHAN_WIDTH_80:
 		*pos++ = IEEE80211_VHT_CHANWIDTH_80MHZ;
@@ -3395,16 +3204,16 @@ void ieee80211_ie_build_wide_bw_cs(u8 *pos,
 		*pos++ = IEEE80211_VHT_CHANWIDTH_80P80MHZ;
 		break;
 	case NL80211_CHAN_WIDTH_320:
-		/* The behavior is not defined for 320 MHz channels */
+		 
 		WARN_ON(1);
 		fallthrough;
 	default:
 		*pos++ = IEEE80211_VHT_CHANWIDTH_USE_HT;
 	}
 
-	/* new center frequency segment 0 */
+	 
 	*pos++ = ieee80211_frequency_to_channel(chandef->center_freq1);
-	/* new center frequency segment 1 */
+	 
 	if (chandef->center_freq2)
 		*pos++ = ieee80211_frequency_to_channel(chandef->center_freq2);
 	else
@@ -3429,10 +3238,7 @@ u8 *ieee80211_ie_build_vht_oper(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
 
 	switch (chandef->width) {
 	case NL80211_CHAN_WIDTH_160:
-		/*
-		 * Convert 160 MHz channel width to new style as interop
-		 * workaround.
-		 */
+		 
 		vht_oper->chan_width = IEEE80211_VHT_CHANWIDTH_80MHZ;
 		vht_oper->center_freq_seg1_idx = vht_oper->center_freq_seg0_idx;
 		if (chandef->chan->center_freq < chandef->center_freq1)
@@ -3441,17 +3247,14 @@ u8 *ieee80211_ie_build_vht_oper(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
 			vht_oper->center_freq_seg0_idx += 8;
 		break;
 	case NL80211_CHAN_WIDTH_80P80:
-		/*
-		 * Convert 80+80 MHz channel width to new style as interop
-		 * workaround.
-		 */
+		 
 		vht_oper->chan_width = IEEE80211_VHT_CHANWIDTH_80MHZ;
 		break;
 	case NL80211_CHAN_WIDTH_80:
 		vht_oper->chan_width = IEEE80211_VHT_CHANWIDTH_80MHZ;
 		break;
 	case NL80211_CHAN_WIDTH_320:
-		/* VHT information element should not be included on 6GHz */
+		 
 		WARN_ON(1);
 		return pos;
 	default:
@@ -3459,7 +3262,7 @@ u8 *ieee80211_ie_build_vht_oper(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
 		break;
 	}
 
-	/* don't require special VHT peer rates */
+	 
 	vht_oper->basic_mcs_set = cpu_to_le16(0xffff);
 
 	return pos + sizeof(struct ieee80211_vht_operation);
@@ -3480,7 +3283,7 @@ u8 *ieee80211_ie_build_he_oper(u8 *pos, struct cfg80211_chan_def *chandef)
 	*pos++ = WLAN_EID_EXT_HE_OPERATION;
 
 	he_oper_params = 0;
-	he_oper_params |= u32_encode_bits(1023, /* disabled */
+	he_oper_params |= u32_encode_bits(1023,  
 				IEEE80211_HE_OPERATION_RTS_THRESHOLD_MASK);
 	he_oper_params |= u32_encode_bits(1,
 				IEEE80211_HE_OPERATION_ER_SU_DISABLE);
@@ -3493,16 +3296,16 @@ u8 *ieee80211_ie_build_he_oper(u8 *pos, struct cfg80211_chan_def *chandef)
 	he_oper = (struct ieee80211_he_operation *)pos;
 	he_oper->he_oper_params = cpu_to_le32(he_oper_params);
 
-	/* don't require special HE peer rates */
+	 
 	he_oper->he_mcs_nss_set = cpu_to_le16(0xffff);
 	pos += sizeof(struct ieee80211_he_operation);
 
 	if (chandef->chan->band != NL80211_BAND_6GHZ)
 		goto out;
 
-	/* TODO add VHT operational */
+	 
 	he_6ghz_op = (struct ieee80211_he_6ghz_oper *)pos;
-	he_6ghz_op->minrate = 6; /* 6 Mbps */
+	he_6ghz_op->minrate = 6;  
 	he_6ghz_op->primary =
 		ieee80211_frequency_to_channel(chandef->chan->center_freq);
 	he_6ghz_op->ccfs0 =
@@ -3515,16 +3318,11 @@ u8 *ieee80211_ie_build_he_oper(u8 *pos, struct cfg80211_chan_def *chandef)
 
 	switch (chandef->width) {
 	case NL80211_CHAN_WIDTH_320:
-		/*
-		 * TODO: mesh operation is not defined over 6GHz 320 MHz
-		 * channels.
-		 */
+		 
 		WARN_ON(1);
 		break;
 	case NL80211_CHAN_WIDTH_160:
-		/* Convert 160 MHz channel width to new style as interop
-		 * workaround.
-		 */
+		 
 		he_6ghz_op->control =
 			IEEE80211_HE_6GHZ_OPER_CTRL_CHANWIDTH_160MHZ;
 		he_6ghz_op->ccfs1 = he_6ghz_op->ccfs0;
@@ -3623,7 +3421,7 @@ u8 *ieee80211_ie_build_eht_oper(u8 *pos, struct cfg80211_chan_def *chandef,
 	eht_oper_info->control = chan_width;
 	pos += eht_oper_info_len;
 
-	/* TODO: eht_oper_info->optional */
+	 
 
 	return pos;
 }
@@ -3691,16 +3489,11 @@ bool ieee80211_chandef_vht_oper(struct ieee80211_hw *hw, u32 vht_cap_info,
 
 	ccf0 = ccfs0;
 
-	/* if not supported, parse as though we didn't understand it */
+	 
 	if (!ieee80211_hw_check(hw, SUPPORTS_VHT_EXT_NSS_BW))
 		ext_nss_bw_supp = 0;
 
-	/*
-	 * Cf. IEEE 802.11 Table 9-250
-	 *
-	 * We really just consider that because it's inefficient to connect
-	 * at a higher bandwidth than we'll actually be able to use.
-	 */
+	 
 	switch ((supp_chwidth << 4) | ext_nss_bw_supp) {
 	default:
 	case 0x00:
@@ -3737,12 +3530,12 @@ bool ieee80211_chandef_vht_oper(struct ieee80211_hw *hw, u32 vht_cap_info,
 
 	switch (oper->chan_width) {
 	case IEEE80211_VHT_CHANWIDTH_USE_HT:
-		/* just use HT information directly */
+		 
 		break;
 	case IEEE80211_VHT_CHANWIDTH_80MHZ:
 		new.width = NL80211_CHAN_WIDTH_80;
 		new.center_freq1 = cf0;
-		/* If needed, adjust based on the newer interop workaround. */
+		 
 		if (ccf1) {
 			unsigned int diff;
 
@@ -3757,12 +3550,12 @@ bool ieee80211_chandef_vht_oper(struct ieee80211_hw *hw, u32 vht_cap_info,
 		}
 		break;
 	case IEEE80211_VHT_CHANWIDTH_160MHZ:
-		/* deprecated encoding */
+		 
 		new.width = NL80211_CHAN_WIDTH_160;
 		new.center_freq1 = cf0;
 		break;
 	case IEEE80211_VHT_CHANWIDTH_80P80MHZ:
-		/* deprecated encoding */
+		 
 		new.width = NL80211_CHAN_WIDTH_80P80;
 		new.center_freq1 = cf0;
 		new.center_freq2 = cf1;
@@ -3885,11 +3678,7 @@ bool ieee80211_chandef_he_6ghz_oper(struct ieee80211_sub_if_data *sdata,
 		return false;
 	}
 
-	/*
-	 * The EHT operation IE does not contain the primary channel so the
-	 * primary channel frequency should be taken from the 6 GHz operation
-	 * information.
-	 */
+	 
 	freq = ieee80211_channel_to_frequency(he_6ghz_oper->primary,
 					      NL80211_BAND_6GHZ);
 	he_chandef.chan = ieee80211_get_channel(sdata->local->hw.wiphy, freq);
@@ -4146,7 +3935,7 @@ u8 ieee80211_mcs_to_chains(const struct ieee80211_mcs_info *mcs)
 	if (!mcs)
 		return 1;
 
-	/* TODO: consider rx_highest */
+	 
 
 	if (mcs->rx_mask[3])
 		return 4;
@@ -4157,17 +3946,7 @@ u8 ieee80211_mcs_to_chains(const struct ieee80211_mcs_info *mcs)
 	return 1;
 }
 
-/**
- * ieee80211_calculate_rx_timestamp - calculate timestamp in frame
- * @local: mac80211 hw info struct
- * @status: RX status
- * @mpdu_len: total MPDU length (including FCS)
- * @mpdu_offset: offset into MPDU to calculate timestamp at
- *
- * This function calculates the RX timestamp at the given MPDU offset, taking
- * into account what the RX timestamp was. An offset of 0 will just normalize
- * the timestamp to TSF at beginning of MPDU reception.
- */
+ 
 u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 				     struct ieee80211_rx_status *status,
 				     unsigned int mpdu_len,
@@ -4185,7 +3964,7 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 
 	ri.bw = status->bw;
 
-	/* Fill cfg80211 rate info */
+	 
 	switch (status->encoding) {
 	case RX_ENC_EHT:
 		ri.flags |= RATE_INFO_FLAGS_EHT_MCS;
@@ -4194,7 +3973,7 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 		ri.eht_ru_alloc = status->eht.ru;
 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
-		/* TODO/FIXME: is this right? handle other PPDUs */
+		 
 		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
 			mpdu_offset += 2;
 			ts += 36;
@@ -4208,21 +3987,12 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
 
-		/*
-		 * See P802.11ax_D6.0, section 27.3.4 for
-		 * VHT PPDU format.
-		 */
+		 
 		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
 			mpdu_offset += 2;
 			ts += 36;
 
-			/*
-			 * TODO:
-			 * For HE MU PPDU, add the HE-SIG-B.
-			 * For HE ER PPDU, add 8us for the HE-SIG-A.
-			 * For HE TB PPDU, add 4us for the HE-STF.
-			 * Add the HE-LTF durations - variable.
-			 */
+			 
 		}
 
 		break;
@@ -4232,10 +4002,7 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
 
-		/*
-		 * See P802.11REVmd_D3.0, section 19.3.2 for
-		 * HT PPDU format.
-		 */
+		 
 		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
 			mpdu_offset += 2;
 			if (status->enc_flags & RX_ENC_FLAG_HT_GF)
@@ -4243,10 +4010,7 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 			else
 				ts += 32;
 
-			/*
-			 * Add Data HT-LTFs per streams
-			 * TODO: add Extension HT-LTFs, 4us per LTF
-			 */
+			 
 			n_ltf = ((ri.mcs >> 3) & 3) + 1;
 			n_ltf = n_ltf == 3 ? 4 : n_ltf;
 			ts += n_ltf * 4;
@@ -4260,17 +4024,12 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
 
-		/*
-		 * See P802.11REVmd_D3.0, section 21.3.2 for
-		 * VHT PPDU format.
-		 */
+		 
 		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
 			mpdu_offset += 2;
 			ts += 36;
 
-			/*
-			 * Add VHT-LTFs per streams
-			 */
+			 
 			n_ltf = (ri.nss != 1) && (ri.nss % 2) ?
 				ri.nss + 1 : ri.nss;
 			ts += 4 * n_ltf;
@@ -4319,7 +4078,7 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
 		      status->nss))
 		return 0;
 
-	/* rewind from end of MPDU */
+	 
 	if (status->flag & RX_FLAG_MACTIME_END)
 		ts -= mpdu_len * 8 * 10 / rate;
 
@@ -4333,15 +4092,12 @@ void ieee80211_dfs_cac_cancel(struct ieee80211_local *local)
 	struct ieee80211_sub_if_data *sdata;
 	struct cfg80211_chan_def chandef;
 
-	/* for interface list, to avoid linking iflist_mtx and chanctx_mtx */
+	 
 	lockdep_assert_wiphy(local->hw.wiphy);
 
 	mutex_lock(&local->mtx);
 	list_for_each_entry(sdata, &local->interfaces, list) {
-		/* it might be waiting for the local->mtx, but then
-		 * by the time it gets it, sdata->wdev.cac_started
-		 * will no longer be true
-		 */
+		 
 		cancel_delayed_work(&sdata->deflink.dfs_cac_timer_work);
 
 		if (sdata->wdev.cac_started) {
@@ -4378,7 +4134,7 @@ void ieee80211_dfs_radar_detected_work(struct wiphy *wiphy,
 	ieee80211_dfs_cac_cancel(local);
 
 	if (num_chanctx > 1)
-		/* XXX: multi-channel is not supported yet */
+		 
 		WARN_ON(1);
 	else
 		cfg80211_radar_event(local->hw.wiphy, &chandef, GFP_KERNEL);
@@ -4412,9 +4168,9 @@ ieee80211_conn_flags_t ieee80211_chandef_downgrade(struct cfg80211_chan_def *c)
 		break;
 	case NL80211_CHAN_WIDTH_80:
 		tmp = (30 + c->chan->center_freq - c->center_freq1)/20;
-		/* n_P40 */
+		 
 		tmp /= 2;
-		/* freq_P40 */
+		 
 		c->center_freq1 = c->center_freq1 - 20 + 40 * tmp;
 		c->width = NL80211_CHAN_WIDTH_40;
 		ret = IEEE80211_CONN_DISABLE_VHT;
@@ -4426,9 +4182,9 @@ ieee80211_conn_flags_t ieee80211_chandef_downgrade(struct cfg80211_chan_def *c)
 		      IEEE80211_CONN_DISABLE_160MHZ;
 		break;
 	case NL80211_CHAN_WIDTH_160:
-		/* n_P20 */
+		 
 		tmp = (70 + c->chan->center_freq - c->center_freq1)/20;
-		/* n_P80 */
+		 
 		tmp /= 4;
 		c->center_freq1 = c->center_freq1 - 40 + 80 * tmp;
 		c->width = NL80211_CHAN_WIDTH_80;
@@ -4436,9 +4192,9 @@ ieee80211_conn_flags_t ieee80211_chandef_downgrade(struct cfg80211_chan_def *c)
 		      IEEE80211_CONN_DISABLE_160MHZ;
 		break;
 	case NL80211_CHAN_WIDTH_320:
-		/* n_P20 */
+		 
 		tmp = (150 + c->chan->center_freq - c->center_freq1) / 20;
-		/* n_P160 */
+		 
 		tmp /= 8;
 		c->center_freq1 = c->center_freq1 - 80 + 160 * tmp;
 		c->width = NL80211_CHAN_WIDTH_160;
@@ -4458,7 +4214,7 @@ ieee80211_conn_flags_t ieee80211_chandef_downgrade(struct cfg80211_chan_def *c)
 	case NL80211_CHAN_WIDTH_5:
 	case NL80211_CHAN_WIDTH_10:
 		WARN_ON_ONCE(1);
-		/* keep c->width */
+		 
 		ret = IEEE80211_CONN_DISABLE_HT | IEEE80211_CONN_DISABLE_VHT;
 		break;
 	}
@@ -4468,10 +4224,7 @@ ieee80211_conn_flags_t ieee80211_chandef_downgrade(struct cfg80211_chan_def *c)
 	return ret;
 }
 
-/*
- * Returns true if smps_mode_new is strictly more restrictive than
- * smps_mode_old.
- */
+ 
 bool ieee80211_smps_is_restrictive(enum ieee80211_smps_mode smps_mode_old,
 				   enum ieee80211_smps_mode smps_mode_new)
 {
@@ -4509,10 +4262,10 @@ int ieee80211_send_action_csa(struct ieee80211_sub_if_data *sdata,
 		return -EOPNOTSUPP;
 
 	skb = dev_alloc_skb(local->tx_headroom + hdr_len +
-			    5 + /* channel switch announcement element */
-			    3 + /* secondary channel offset element */
-			    5 + /* wide bandwidth channel switch announcement */
-			    8); /* mesh channel switch parameters element */
+			    5 +  
+			    3 +  
+			    5 +  
+			    8);  
 	if (!skb)
 		return -ENOMEM;
 
@@ -4532,19 +4285,19 @@ int ieee80211_send_action_csa(struct ieee80211_sub_if_data *sdata,
 	mgmt->u.action.category = WLAN_CATEGORY_SPECTRUM_MGMT;
 	mgmt->u.action.u.chan_switch.action_code = WLAN_ACTION_SPCT_CHL_SWITCH;
 	pos = skb_put(skb, 5);
-	*pos++ = WLAN_EID_CHANNEL_SWITCH;			/* EID */
-	*pos++ = 3;						/* IE length */
-	*pos++ = csa_settings->block_tx ? 1 : 0;		/* CSA mode */
+	*pos++ = WLAN_EID_CHANNEL_SWITCH;			 
+	*pos++ = 3;						 
+	*pos++ = csa_settings->block_tx ? 1 : 0;		 
 	freq = csa_settings->chandef.chan->center_freq;
-	*pos++ = ieee80211_frequency_to_channel(freq);		/* channel */
-	*pos++ = csa_settings->count;				/* count */
+	*pos++ = ieee80211_frequency_to_channel(freq);		 
+	*pos++ = csa_settings->count;				 
 
 	if (csa_settings->chandef.width == NL80211_CHAN_WIDTH_40) {
 		enum nl80211_channel_type ch_type;
 
 		skb_put(skb, 3);
-		*pos++ = WLAN_EID_SECONDARY_CHANNEL_OFFSET;	/* EID */
-		*pos++ = 1;					/* IE length */
+		*pos++ = WLAN_EID_SECONDARY_CHANNEL_OFFSET;	 
+		*pos++ = 1;					 
 		ch_type = cfg80211_get_chandef_type(&csa_settings->chandef);
 		if (ch_type == NL80211_CHAN_HT40PLUS)
 			*pos++ = IEEE80211_HT_PARAM_CHA_SEC_ABOVE;
@@ -4556,16 +4309,16 @@ int ieee80211_send_action_csa(struct ieee80211_sub_if_data *sdata,
 		struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 
 		skb_put(skb, 8);
-		*pos++ = WLAN_EID_CHAN_SWITCH_PARAM;		/* EID */
-		*pos++ = 6;					/* IE length */
-		*pos++ = sdata->u.mesh.mshcfg.dot11MeshTTL;	/* Mesh TTL */
-		*pos = 0x00;	/* Mesh Flag: Tx Restrict, Initiator, Reason */
+		*pos++ = WLAN_EID_CHAN_SWITCH_PARAM;		 
+		*pos++ = 6;					 
+		*pos++ = sdata->u.mesh.mshcfg.dot11MeshTTL;	 
+		*pos = 0x00;	 
 		*pos |= WLAN_EID_CHAN_SWITCH_PARAM_INITIATOR;
 		*pos++ |= csa_settings->block_tx ?
 			  WLAN_EID_CHAN_SWITCH_PARAM_TX_RESTRICT : 0x00;
-		put_unaligned_le16(WLAN_REASON_MESH_CHAN, pos); /* Reason Cd */
+		put_unaligned_le16(WLAN_REASON_MESH_CHAN, pos);  
 		pos += 2;
-		put_unaligned_le16(ifmsh->pre_value, pos);/* Precedence Value */
+		put_unaligned_le16(ifmsh->pre_value, pos); 
 		pos += 2;
 	}
 
@@ -4589,14 +4342,14 @@ ieee80211_extend_noa_desc(struct ieee80211_noa_data *data, u32 tsf, int i)
 	if (end > 0)
 		return false;
 
-	/* One shot NOA  */
+	 
 	if (data->count[i] == 1)
 		return false;
 
 	if (data->desc[i].interval == 0)
 		return false;
 
-	/* End time is in the past, check for repetitions */
+	 
 	skip = DIV_ROUND_UP(-end, data->desc[i].interval);
 	if (data->count[i] < 255) {
 		if (data->count[i] <= skip) {
@@ -4645,10 +4398,7 @@ ieee80211_get_noa_absent_time(struct ieee80211_noa_data *data, u32 tsf)
 {
 	s32 offset = 0;
 	int tries = 0;
-	/*
-	 * arbitrary limit, used to avoid infinite loops when combined NoA
-	 * descriptors cover the full time period.
-	 */
+	 
 	int max_tries = 5;
 
 	ieee80211_extend_absent_time(data, tsf, &offset);
@@ -4752,14 +4502,10 @@ void ieee80211_recalc_dtim(struct ieee80211_local *local,
 		return;
 	}
 
-	/*
-	 * actually finds last dtim_count, mac80211 will update in
-	 * __beacon_add_tim().
-	 * dtim_count = dtim_period - (tsf / bcn_int) % dtim_period
-	 */
+	 
 	do_div(tsf, beacon_int);
 	bcns_from_dtim = do_div(tsf, dtim_period);
-	/* just had a DTIM */
+	 
 	if (!bcns_from_dtim)
 		dtim_count = 0;
 	else
@@ -4783,10 +4529,7 @@ static u8 ieee80211_chanctx_radar_detect(struct ieee80211_local *local,
 		if (link->reserved_radar_required)
 			radar_detect |= BIT(link->reserved_chandef.width);
 
-	/*
-	 * An in-place reservation context should not have any assigned vifs
-	 * until it replaces the other context.
-	 */
+	 
 	WARN_ON(ctx->replace_state == IEEE80211_CHANCTX_REPLACES_OTHER &&
 		!list_empty(&ctx->assigned_links));
 
@@ -4829,15 +4572,11 @@ int ieee80211_check_combinations(struct ieee80211_sub_if_data *sdata,
 
 	if (sdata->vif.type == NL80211_IFTYPE_AP ||
 	    sdata->vif.type == NL80211_IFTYPE_MESH_POINT) {
-		/*
-		 * always passing this is harmless, since it'll be the
-		 * same value that cfg80211 finds if it finds the same
-		 * interface ... and that's always allowed
-		 */
+		 
 		params.new_beacon_int = sdata->vif.bss_conf.beacon_int;
 	}
 
-	/* Always allow software iftypes */
+	 
 	if (cfg80211_iftype_allowed(local->hw.wiphy, iftype, 0, 1)) {
 		if (radar_detect)
 			return -EINVAL;
@@ -4947,7 +4686,7 @@ void ieee80211_add_s1g_capab_ie(struct ieee80211_sub_if_data *sdata,
 	memcpy(s1g_capab.capab_info, caps->cap, sizeof(caps->cap));
 	memcpy(s1g_capab.supp_mcs_nss, caps->nss_mcs, sizeof(caps->nss_mcs));
 
-	/* override the capability info */
+	 
 	for (i = 0; i < sizeof(ifmgd->s1g_capa.capab_info); i++) {
 		u8 mask = ifmgd->s1g_capa_mask.capab_info[i];
 
@@ -4955,7 +4694,7 @@ void ieee80211_add_s1g_capab_ie(struct ieee80211_sub_if_data *sdata,
 		s1g_capab.capab_info[i] |= ifmgd->s1g_capa.capab_info[i] & mask;
 	}
 
-	/* then MCS and NSS set */
+	 
 	for (i = 0; i < sizeof(ifmgd->s1g_capa.supp_mcs_nss); i++) {
 		u8 mask = ifmgd->s1g_capa_mask.supp_mcs_nss[i];
 
@@ -4984,14 +4723,14 @@ void ieee80211_add_aid_request_ie(struct ieee80211_sub_if_data *sdata,
 u8 *ieee80211_add_wmm_info_ie(u8 *buf, u8 qosinfo)
 {
 	*buf++ = WLAN_EID_VENDOR_SPECIFIC;
-	*buf++ = 7; /* len */
-	*buf++ = 0x00; /* Microsoft OUI 00:50:F2 */
+	*buf++ = 7;  
+	*buf++ = 0x00;  
 	*buf++ = 0x50;
 	*buf++ = 0xf2;
-	*buf++ = 2; /* WME */
-	*buf++ = 0; /* WME info */
-	*buf++ = 1; /* WME ver */
-	*buf++ = qosinfo; /* U-APSD no in use */
+	*buf++ = 2;  
+	*buf++ = 0;  
+	*buf++ = 1;  
+	*buf++ = qosinfo;  
 
 	return buf;
 }
@@ -5029,7 +4768,7 @@ u16 ieee80211_encode_usf(int listen_interval)
 	static const int listen_int_usf[] = { 1, 10, 1000, 10000 };
 	u16 ui, usf = 0;
 
-	/* find greatest USF */
+	 
 	while (usf < IEEE80211_MAX_USF) {
 		if (listen_interval % listen_int_usf[usf + 1])
 			break;
@@ -5037,7 +4776,7 @@ u16 ieee80211_encode_usf(int listen_interval)
 	}
 	ui = listen_interval / listen_int_usf[usf];
 
-	/* error if there is a remainder. Should've been checked by user */
+	 
 	WARN_ON_ONCE(ui > IEEE80211_MAX_UI);
 	listen_interval = FIELD_PREP(LISTEN_INT_USF, usf) |
 			  FIELD_PREP(LISTEN_INT_UI, ui);
@@ -5085,7 +4824,7 @@ u8 *ieee80211_ie_build_eht_cap(u8 *pos,
 	u8 ie_len;
 	u8 *orig_pos = pos;
 
-	/* Make sure we have place for the IE */
+	 
 	if (!he_cap || !eht_cap)
 		return orig_pos;
 
@@ -5103,7 +4842,7 @@ u8 *ieee80211_ie_build_eht_cap(u8 *pos,
 	*pos++ = ie_len - 2;
 	*pos++ = WLAN_EID_EXT_EHT_CAPABILITY;
 
-	/* Fixed data */
+	 
 	memcpy(pos, &eht_cap->eht_cap_elem, sizeof(eht_cap->eht_cap_elem));
 	pos += sizeof(eht_cap->eht_cap_elem);
 
@@ -5128,18 +4867,18 @@ void ieee80211_fragment_element(struct sk_buff *skb, u8 *len_pos, u8 frag_id)
 	elem_len = skb->data + skb->len - len_pos - 1;
 
 	while (elem_len > 255) {
-		/* this one is 255 */
+		 
 		*len_pos = 255;
-		/* remaining data gets smaller */
+		 
 		elem_len -= 255;
-		/* make space for the fragment ID/len in SKB */
+		 
 		skb_put(skb, 2);
-		/* shift back the remaining data to place fragment ID/len */
+		 
 		memmove(len_pos + 255 + 3, len_pos + 255 + 1, elem_len);
-		/* place the fragment ID */
+		 
 		len_pos += 255 + 1;
 		*len_pos = frag_id;
-		/* and point to fragment length to update later */
+		 
 		len_pos++;
 	}
 

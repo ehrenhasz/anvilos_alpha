@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensor driver
- *
- * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- *
- * Data sheets:
- *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1710fvc-e.pdf
- *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1715fvc-e.pdf
- *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1721fvc-e.pdf
- *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1750fvi-e.pdf
- *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1751fvi-e.pdf
- *
- * 7-bit I2C slave addresses:
- *  0x23 (ADDR pin low)
- *  0x5C (ADDR pin high)
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -24,7 +8,7 @@
 #include <linux/module.h>
 
 #define BH1750_POWER_DOWN		0x00
-#define BH1750_ONE_TIME_H_RES_MODE	0x20 /* auto-mode for BH1721 */
+#define BH1750_ONE_TIME_H_RES_MODE	0x20  
 #define BH1750_CHANGE_INT_TIME_H_BIT	0x40
 #define BH1750_CHANGE_INT_TIME_L_BIT	0x60
 
@@ -49,12 +33,7 @@ struct bh1750_chip_info {
 	int mtreg_to_usec;
 	int mtreg_to_scale;
 
-	/*
-	 * For BH1710/BH1721 all possible integration time values won't fit
-	 * into one page so displaying is limited to every second one.
-	 * Note, that user can still write proper values which were not
-	 * listed.
-	 */
+	 
 	int inc;
 
 	u16 int_time_low_mask;
@@ -109,10 +88,7 @@ static int bh1750_read(struct bh1750_data *data, int *val)
 	const struct bh1750_chip_info *chip_info = data->chip_info;
 	unsigned long delay = chip_info->mtreg_to_usec * data->mtreg;
 
-	/*
-	 * BH1721 will enter continuous mode on receiving this command.
-	 * Note, that this eliminates need for bh1750_resume().
-	 */
+	 
 	ret = i2c_smbus_write_byte(data->client, BH1750_ONE_TIME_H_RES_MODE);
 	if (ret < 0)
 		return ret;
@@ -281,10 +257,7 @@ static int bh1750_suspend(struct device *dev)
 	struct bh1750_data *data =
 		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
 
-	/*
-	 * This is mainly for BH1721 which doesn't enter power down
-	 * mode automatically.
-	 */
+	 
 	mutex_lock(&data->lock);
 	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
 	mutex_unlock(&data->lock);

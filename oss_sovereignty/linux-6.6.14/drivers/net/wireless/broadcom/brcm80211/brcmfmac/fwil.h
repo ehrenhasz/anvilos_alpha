@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012 Broadcom Corporation
- */
+
+ 
 
 #ifndef _fwil_h_
 #define _fwil_h_
 
-/*******************************************************************************
- * Dongle command codes that are interpreted by firmware
- ******************************************************************************/
+ 
 #define BRCMF_C_GET_VERSION			1
 #define BRCMF_C_UP				2
 #define BRCMF_C_DOWN				3
@@ -106,4 +102,4 @@ s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *
 s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data);
 s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data);
 
-#endif /* _fwil_h_ */
+#endif  

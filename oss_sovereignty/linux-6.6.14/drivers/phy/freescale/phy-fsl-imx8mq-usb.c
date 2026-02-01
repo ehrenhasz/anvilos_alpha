@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2017 NXP. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -195,7 +195,7 @@ static void imx8m_phy_tune(struct imx8mq_usb_phy *imx_phy)
 {
 	u32 value;
 
-	/* PHY tuning */
+	 
 	if (imx_phy->pcs_tx_deemph_3p5db != PHY_TUNE_DEFAULT) {
 		value = readl(imx_phy->base + PHY_CTRL4);
 		value &= ~PHY_CTRL4_PCS_TX_DEEMPH_3P5DB_MASK;
@@ -214,7 +214,7 @@ static void imx8m_phy_tune(struct imx8mq_usb_phy *imx_phy)
 	if ((imx_phy->tx_vref_tune & imx_phy->tx_rise_tune &
 	     imx_phy->tx_preemp_amp_tune & imx_phy->comp_dis_tune &
 	     imx_phy->tx_vboost_level) == PHY_TUNE_DEFAULT)
-		/* If all are the default values, no need update. */
+		 
 		return;
 
 	value = readl(imx_phy->base + PHY_CTRL3);
@@ -283,13 +283,13 @@ static int imx8mp_usb_phy_init(struct phy *phy)
 	struct imx8mq_usb_phy *imx_phy = phy_get_drvdata(phy);
 	u32 value;
 
-	/* USB3.0 PHY signal fsel for 24M ref */
+	 
 	value = readl(imx_phy->base + PHY_CTRL0);
 	value &= ~PHY_CTRL0_FSEL_MASK;
 	value |= FIELD_PREP(PHY_CTRL0_FSEL_MASK, PHY_CTRL0_FSEL_24M);
 	writel(value, imx_phy->base + PHY_CTRL0);
 
-	/* Disable alt_clk_en and use internal MPLL clocks */
+	 
 	value = readl(imx_phy->base + PHY_CTRL6);
 	value &= ~(PHY_CTRL6_ALT_CLK_SEL | PHY_CTRL6_ALT_CLK_EN);
 	writel(value, imx_phy->base + PHY_CTRL6);

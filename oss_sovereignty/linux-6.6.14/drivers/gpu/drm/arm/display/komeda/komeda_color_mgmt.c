@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2019 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 
 #include "komeda_color_mgmt.h"
 
-/* 10bit precision YUV2RGB matrix */
+ 
 static const s32 yuv2rgb_bt601_narrow[KOMEDA_N_YUV2RGB_COEFFS] = {
 	1192,    0, 1634,
 	1192, -401, -832,

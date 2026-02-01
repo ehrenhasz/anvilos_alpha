@@ -1,27 +1,4 @@
-/*
- * Copyright 2023 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "link_hwss_hpo_dp.h"
 #include "link_hwss_hpo_fixed_vs_pe_retimer_dp.h"
 #include "link_hwss_dio_fixed_vs_pe_retimer.h"
@@ -128,7 +105,7 @@ static bool dp_hpo_fixed_vs_pe_retimer_set_override_test_pattern(struct dc_link 
 
 	if (tp_params->dp_phy_pattern < DP_TEST_PATTERN_SQUARE_BEGIN ||
 			tp_params->dp_phy_pattern > DP_TEST_PATTERN_SQUARE_END) {
-		// Deprogram overrides from previously set square wave override
+		
 		if (link->current_test_pattern == DP_TEST_PATTERN_80BIT_CUSTOM ||
 				link->current_test_pattern == DP_TEST_PATTERN_D102)
 			link->dc->link_srv->configure_fixed_vs_pe_retimer(link->ddc,
@@ -175,8 +152,8 @@ static void set_hpo_fixed_vs_pe_retimer_dp_lane_settings(struct dc_link *link,
 			link_settings,
 			lane_settings[0].FFE_PRESET.raw);
 
-	// FFE is programmed when retimer is programmed for SQ128, but explicit
-	// programming needed here as well in case FFE-only update is requested
+	
+	
 	if (link->current_test_pattern >= DP_TEST_PATTERN_SQUARE_BEGIN &&
 			link->current_test_pattern <= DP_TEST_PATTERN_SQUARE_END)
 		dp_hpo_fixed_vs_pe_retimer_set_tx_ffe(link, &lane_settings[0]);

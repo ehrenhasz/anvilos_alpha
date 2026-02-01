@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_9607_H
 #define _DT_BINDINGS_CLK_MSM_GCC_9607_H
@@ -94,7 +92,7 @@
 #define GCC_USB_HSIC_IO_CAL_CLK_SRC		85
 #define GCC_USB_HSIC_SYSTEM_CLK_SRC		86
 
-/* Resets */
+ 
 #define USB2_HS_PHY_ONLY_BCR			0
 #define QUSB2_PHY_BCR					1
 #define GCC_MSS_RESTART					2

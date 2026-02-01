@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017-2018 NXP.
- */
+
+ 
 
 #define pr_fmt(fmt) "pll14xx: " fmt
 
@@ -106,7 +104,7 @@ static long pll14xx_calc_rate(struct clk_pll14xx *pll, int mdiv, int pdiv,
 {
 	u64 fvco = prate;
 
-	/* fvco = (m * 65536 + k) * Fin / (p * 65536) */
+	 
 	fvco *= (mdiv * 65536 + kdiv);
 	pdiv *= 65536;
 
@@ -120,7 +118,7 @@ static long pll1443x_calc_kdiv(int mdiv, int pdiv, int sdiv,
 {
 	long kdiv;
 
-	/* calc kdiv = round(rate * pdiv * 65536 * 2^sdiv / prate) - (mdiv * 65536) */
+	 
 	kdiv = ((rate * ((pdiv * 65536) << sdiv) + prate / 2) / prate) - (mdiv * 65536);
 
 	return clamp_t(short, kdiv, KDIV_MIN, KDIV_MAX);
@@ -134,18 +132,9 @@ static void imx_pll14xx_calc_settings(struct clk_pll14xx *pll, unsigned long rat
 	long fvco, rate_min, rate_max, dist, best = LONG_MAX;
 	const struct imx_pll14xx_rate_table *tt;
 
-	/*
-	 * Fractional PLL constrains:
-	 *
-	 * a) 1 <= p <= 63
-	 * b) 64 <= m <= 1023
-	 * c) 0 <= s <= 6
-	 * d) -32768 <= k <= 32767
-	 *
-	 * fvco = (m * 65536 + k) * prate / (p * 65536)
-	 */
+	 
 
-	/* First try if we can get the desired rate from one of the static entries */
+	 
 	tt = imx_get_pll_settings(pll, rate);
 	if (tt) {
 		pr_debug("%s: in=%ld, want=%ld, Using PLL setting from table\n",
@@ -164,7 +153,7 @@ static void imx_pll14xx_calc_settings(struct clk_pll14xx *pll, unsigned long rat
 	sdiv = FIELD_GET(SDIV_MASK, pll_div_ctl0);
 	pll_div_ctl1 = readl_relaxed(pll->base + DIV_CTL1);
 
-	/* Then see if we can get the desired rate by only adjusting kdiv (glitch free) */
+	 
 	rate_min = pll14xx_calc_rate(pll, mdiv, pdiv, sdiv, KDIV_MIN, prate);
 	rate_max = pll14xx_calc_rate(pll, mdiv, pdiv, sdiv, KDIV_MAX, prate);
 
@@ -182,17 +171,17 @@ static void imx_pll14xx_calc_settings(struct clk_pll14xx *pll, unsigned long rat
 		return;
 	}
 
-	/* Finally calculate best values */
+	 
 	for (pdiv = 1; pdiv <= 63; pdiv++) {
 		for (sdiv = 0; sdiv <= 6; sdiv++) {
-			/* calc mdiv = round(rate * pdiv * 2^sdiv) / prate) */
+			 
 			mdiv = DIV_ROUND_CLOSEST(rate * (pdiv << sdiv), prate);
 			mdiv = clamp(mdiv, 64, 1023);
 
 			kdiv = pll1443x_calc_kdiv(mdiv, pdiv, sdiv, rate, prate);
 			fvco = pll14xx_calc_rate(pll, mdiv, pdiv, sdiv, kdiv, prate);
 
-			/* best match */
+			 
 			dist = abs((long)rate - (long)fvco);
 			if (dist < best) {
 				best = dist;
@@ -220,12 +209,12 @@ static long clk_pll1416x_round_rate(struct clk_hw *hw, unsigned long rate,
 	const struct imx_pll14xx_rate_table *rate_table = pll->rate_table;
 	int i;
 
-	/* Assuming rate_table is in descending order */
+	 
 	for (i = 0; i < pll->rate_count; i++)
 		if (rate >= rate_table[i].rate)
 			return rate_table[i].rate;
 
-	/* return minimum supported value */
+	 
 	return rate_table[pll->rate_count - 1].rate;
 }
 
@@ -305,16 +294,16 @@ static int clk_pll1416x_set_rate(struct clk_hw *hw, unsigned long drate,
 		return 0;
 	}
 
-	/* Bypass clock and set lock to pll output lock */
+	 
 	tmp = readl_relaxed(pll->base + GNRL_CTL);
 	tmp |= LOCK_SEL_MASK;
 	writel_relaxed(tmp, pll->base + GNRL_CTL);
 
-	/* Enable RST */
+	 
 	tmp &= ~RST_MASK;
 	writel_relaxed(tmp, pll->base + GNRL_CTL);
 
-	/* Enable BYPASS */
+	 
 	tmp |= BYPASS_MASK;
 	writel(tmp, pll->base + GNRL_CTL);
 
@@ -322,24 +311,19 @@ static int clk_pll1416x_set_rate(struct clk_hw *hw, unsigned long drate,
 		FIELD_PREP(SDIV_MASK, rate->sdiv);
 	writel_relaxed(div_val, pll->base + DIV_CTL0);
 
-	/*
-	 * According to SPEC, t3 - t2 need to be greater than
-	 * 1us and 1/FREF, respectively.
-	 * FREF is FIN / Prediv, the prediv is [1, 63], so choose
-	 * 3us.
-	 */
+	 
 	udelay(3);
 
-	/* Disable RST */
+	 
 	tmp |= RST_MASK;
 	writel_relaxed(tmp, pll->base + GNRL_CTL);
 
-	/* Wait Lock */
+	 
 	ret = clk_pll14xx_wait_lock(pll);
 	if (ret)
 		return ret;
 
-	/* Bypass */
+	 
 	tmp &= ~BYPASS_MASK;
 	writel_relaxed(tmp, pll->base + GNRL_CTL);
 
@@ -359,7 +343,7 @@ static int clk_pll1443x_set_rate(struct clk_hw *hw, unsigned long drate,
 	div_ctl0 = readl_relaxed(pll->base + DIV_CTL0);
 
 	if (!clk_pll14xx_mp_change(&rate, div_ctl0)) {
-		/* only sdiv and/or kdiv changed - no need to RESET PLL */
+		 
 		div_ctl0 &= ~SDIV_MASK;
 		div_ctl0 |= FIELD_PREP(SDIV_MASK, rate.sdiv);
 		writel_relaxed(div_ctl0, pll->base + DIV_CTL0);
@@ -370,12 +354,12 @@ static int clk_pll1443x_set_rate(struct clk_hw *hw, unsigned long drate,
 		return 0;
 	}
 
-	/* Enable RST */
+	 
 	gnrl_ctl = readl_relaxed(pll->base + GNRL_CTL);
 	gnrl_ctl &= ~RST_MASK;
 	writel_relaxed(gnrl_ctl, pll->base + GNRL_CTL);
 
-	/* Enable BYPASS */
+	 
 	gnrl_ctl |= BYPASS_MASK;
 	writel_relaxed(gnrl_ctl, pll->base + GNRL_CTL);
 
@@ -386,24 +370,19 @@ static int clk_pll1443x_set_rate(struct clk_hw *hw, unsigned long drate,
 
 	writel_relaxed(FIELD_PREP(KDIV_MASK, rate.kdiv), pll->base + DIV_CTL1);
 
-	/*
-	 * According to SPEC, t3 - t2 need to be greater than
-	 * 1us and 1/FREF, respectively.
-	 * FREF is FIN / Prediv, the prediv is [1, 63], so choose
-	 * 3us.
-	 */
+	 
 	udelay(3);
 
-	/* Disable RST */
+	 
 	gnrl_ctl |= RST_MASK;
 	writel_relaxed(gnrl_ctl, pll->base + GNRL_CTL);
 
-	/* Wait Lock*/
+	 
 	ret = clk_pll14xx_wait_lock(pll);
 	if (ret)
 		return ret;
 
-	/* Bypass */
+	 
 	gnrl_ctl &= ~BYPASS_MASK;
 	writel_relaxed(gnrl_ctl, pll->base + GNRL_CTL);
 
@@ -416,10 +395,7 @@ static int clk_pll14xx_prepare(struct clk_hw *hw)
 	u32 val;
 	int ret;
 
-	/*
-	 * RESETB = 1 from 0, PLL starts its normal
-	 * operation after lock time
-	 */
+	 
 	val = readl_relaxed(pll->base + GNRL_CTL);
 	if (val & RST_MASK)
 		return 0;
@@ -453,10 +429,7 @@ static void clk_pll14xx_unprepare(struct clk_hw *hw)
 	struct clk_pll14xx *pll = to_clk_pll14xx(hw);
 	u32 val;
 
-	/*
-	 * Set RST to 0, power down mode is enabled and
-	 * every digital block is reset
-	 */
+	 
 	val = readl_relaxed(pll->base + GNRL_CTL);
 	val &= ~RST_MASK;
 	writel_relaxed(val, pll->base + GNRL_CTL);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_SELFTEST_SCHEDULER_HELPERS_H_
 #define _INTEL_SELFTEST_SCHEDULER_HELPERS_H_

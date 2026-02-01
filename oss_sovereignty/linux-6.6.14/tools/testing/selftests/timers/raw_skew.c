@@ -1,23 +1,4 @@
-/* CLOCK_MONOTONIC vs CLOCK_MONOTONIC_RAW skew test
- *		by: john stultz (johnstul@us.ibm.com)
- *		    John Stultz <john.stultz@linaro.org>
- *		(C) Copyright IBM 2012
- *		(C) Copyright Linaro Limited 2015
- *		Licensed under the GPLv2
- *
- *  To build:
- *	$ gcc raw_skew.c -o raw_skew -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -123,12 +104,12 @@ int main(int argc, char **argv)
 
 	interval = diff_timespec(start, end);
 
-	/* calculate measured ppm between MONOTONIC and MONOTONIC_RAW */
+	 
 	eppm = ((delta2-delta1)*NSEC_PER_SEC)/interval;
 	eppm = -eppm;
 	printf("%lld.%i(est)", eppm/1000, abs((int)(eppm%1000)));
 
-	/* Avg the two actual freq samples adjtimex gave us */
+	 
 	ppm = (long long)(tx1.freq + tx2.freq) * 1000 / 2;
 	ppm = shift_right(ppm, 16);
 	printf(" %lld.%i(act)", ppm/1000, abs((int)(ppm%1000)));

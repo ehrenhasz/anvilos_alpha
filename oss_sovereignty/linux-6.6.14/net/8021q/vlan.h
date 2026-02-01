@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __BEN_VLAN_802_1Q_INC__
 #define __BEN_VLAN_802_1Q_INC__
 
@@ -6,10 +6,7 @@
 #include <linux/u64_stats_sync.h>
 #include <linux/list.h>
 
-/* if this changes, algorithm will have to be reworked because this
- * depends on completely exhausting the VLAN identifier space.  Thus
- * it gives constant time look-up, but in many cases it wastes memory.
- */
+ 
 #define VLAN_GROUP_ARRAY_SPLIT_PARTS  8
 #define VLAN_GROUP_ARRAY_PART_LEN     (VLAN_N_VID/VLAN_GROUP_ARRAY_SPLIT_PARTS)
 
@@ -21,15 +18,13 @@ enum vlan_protos {
 
 struct vlan_group {
 	unsigned int		nr_vlan_devs;
-	struct hlist_node	hlist;	/* linked list */
+	struct hlist_node	hlist;	 
 	struct net_device **vlan_devices_arrays[VLAN_PROTO_NUM]
 					       [VLAN_GROUP_ARRAY_SPLIT_PARTS];
 };
 
 struct vlan_info {
-	struct net_device	*real_dev; /* The ethernet(like) device
-					    * the vlan is attached to.
-					    */
+	struct net_device	*real_dev;  
 	struct vlan_group	grp;
 	struct list_head	vid_list;
 	unsigned int		nr_vids;
@@ -58,7 +53,7 @@ static inline struct net_device *__vlan_group_get_device(struct vlan_group *vg,
 	array = vg->vlan_devices_arrays[pidx]
 				       [vlan_id / VLAN_GROUP_ARRAY_PART_LEN];
 
-	/* paired with smp_wmb() in vlan_group_prealloc_vid() */
+	 
 	smp_rmb();
 
 	return array ? array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] : NULL;
@@ -90,7 +85,7 @@ static inline void vlan_group_set_device(struct vlan_group *vg,
 	array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] = dev;
 }
 
-/* Must be invoked with rcu_read_lock or with RTNL. */
+ 
 static inline struct net_device *vlan_find_dev(struct net_device *real_dev,
 					       __be16 vlan_proto, u16 vlan_id)
 {
@@ -124,7 +119,7 @@ static inline netdev_features_t vlan_tnl_features(struct net_device *real_dev)
 int vlan_filter_push_vids(struct vlan_info *vlan_info, __be16 proto);
 void vlan_filter_drop_vids(struct vlan_info *vlan_info, __be16 proto);
 
-/* found in vlan_dev.c */
+ 
 void vlan_dev_set_ingress_priority(const struct net_device *dev,
 				   u32 skb_prio, u16 vlan_prio);
 int vlan_dev_set_egress_priority(const struct net_device *dev,
@@ -195,12 +190,12 @@ extern unsigned int vlan_net_id;
 struct proc_dir_entry;
 
 struct vlan_net {
-	/* /proc/net/vlan */
+	 
 	struct proc_dir_entry *proc_vlan_dir;
-	/* /proc/net/vlan/config */
+	 
 	struct proc_dir_entry *proc_vlan_conf;
-	/* Determines interface naming scheme. */
+	 
 	unsigned short name_type;
 };
 
-#endif /* !(__BEN_VLAN_802_1Q_INC__) */
+#endif  

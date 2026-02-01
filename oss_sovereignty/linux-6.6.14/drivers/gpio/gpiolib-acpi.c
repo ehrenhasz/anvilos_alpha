@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ACPI helpers for GPIO API
- *
- * Copyright (C) 2012, Intel Corporation
- * Authors: Mathias Nyman <mathias.nyman@linux.intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -46,19 +40,7 @@ struct acpi_gpiolib_dmi_quirk {
 	char *ignore_interrupt;
 };
 
-/**
- * struct acpi_gpio_event - ACPI GPIO event handler data
- *
- * @node:	  list-entry of the events list of the struct acpi_gpio_chip
- * @handle:	  handle of ACPI method to execute when the IRQ triggers
- * @handler:	  handler function to pass to request_irq() when requesting the IRQ
- * @pin:	  GPIO pin number on the struct gpio_chip
- * @irq:	  Linux IRQ number for the event, for request_irq() / free_irq()
- * @irqflags:	  flags to pass to request_irq() when requesting the IRQ
- * @irq_is_wake:  If the ACPI flags indicate the IRQ is a wakeup source
- * @irq_requested:True if request_irq() has been done
- * @desc:	  struct gpio_desc for the GPIO pin for this event
- */
+ 
 struct acpi_gpio_event {
 	struct list_head node;
 	acpi_handle handle;
@@ -78,11 +60,7 @@ struct acpi_gpio_connection {
 };
 
 struct acpi_gpio_chip {
-	/*
-	 * ACPICA requires that the first field of the context parameter
-	 * passed to acpi_install_address_space_handler() is large enough
-	 * to hold struct acpi_connection_info.
-	 */
+	 
 	struct acpi_connection_info conn_info;
 	struct list_head conns;
 	struct mutex conn_lock;
@@ -91,18 +69,7 @@ struct acpi_gpio_chip {
 	struct list_head deferred_req_irqs_list_entry;
 };
 
-/**
- * struct acpi_gpio_info - ACPI GPIO specific information
- * @adev: reference to ACPI device which consumes GPIO resource
- * @flags: GPIO initialization flags
- * @gpioint: if %true this GPIO is of type GpioInt otherwise type is GpioIo
- * @pin_config: pin bias as provided by ACPI
- * @polarity: interrupt polarity as provided by ACPI
- * @triggering: triggering type as provided by ACPI
- * @wake_capable: wake capability as provided by ACPI
- * @debounce: debounce timeout as provided by ACPI
- * @quirks: Linux specific quirks as provided by struct acpi_gpio_mapping
- */
+ 
 struct acpi_gpio_info {
 	struct acpi_device *adev;
 	enum gpiod_flags flags;
@@ -115,13 +82,7 @@ struct acpi_gpio_info {
 	unsigned int quirks;
 };
 
-/*
- * For GPIO chips which call acpi_gpiochip_request_interrupts() before late_init
- * (so builtin drivers) we register the ACPI GpioInt IRQ handlers from a
- * late_initcall_sync() handler, so that other builtin drivers can register their
- * OpRegions before the event handlers can run. This list contains GPIO chips
- * for which the acpi_gpiochip_request_irqs() call has been deferred.
- */
+ 
 static DEFINE_MUTEX(acpi_gpio_deferred_req_irqs_lock);
 static LIST_HEAD(acpi_gpio_deferred_req_irqs_list);
 static bool acpi_gpio_deferred_req_irqs_done;
@@ -131,16 +92,7 @@ static int acpi_gpiochip_find(struct gpio_chip *gc, void *data)
 	return device_match_acpi_handle(&gc->gpiodev->dev, data);
 }
 
-/**
- * acpi_get_gpiod() - Translate ACPI GPIO pin to GPIO descriptor usable with GPIO API
- * @path:	ACPI GPIO controller full path name, (e.g. "\\_SB.GPO1")
- * @pin:	ACPI GPIO pin number (0-based, controller-relative)
- *
- * Return: GPIO descriptor to use with Linux generic GPIO API, or ERR_PTR
- * error value. Specifically returns %-EPROBE_DEFER if the referenced GPIO
- * controller does not have GPIO chip registered at the moment. This is to
- * support probe deferral.
- */
+ 
 static struct gpio_desc *acpi_get_gpiod(char *path, unsigned int pin)
 {
 	struct gpio_chip *chip;
@@ -158,17 +110,7 @@ static struct gpio_desc *acpi_get_gpiod(char *path, unsigned int pin)
 	return gpiochip_get_desc(chip, pin);
 }
 
-/**
- * acpi_get_and_request_gpiod - Translate ACPI GPIO pin to GPIO descriptor and
- *                              hold a refcount to the GPIO device.
- * @path:      ACPI GPIO controller full path name, (e.g. "\\_SB.GPO1")
- * @pin:       ACPI GPIO pin number (0-based, controller-relative)
- * @label:     Label to pass to gpiod_request()
- *
- * This function is a simple pass-through to acpi_get_gpiod(), except that
- * as it is intended for use outside of the GPIO layer (in a similar fashion to
- * gpiod_get_index() for example) it also holds a reference to the GPIO device.
- */
+ 
 struct gpio_desc *acpi_get_and_request_gpiod(char *path, unsigned int pin, char *label)
 {
 	struct gpio_desc *gpio;
@@ -206,7 +148,7 @@ static irqreturn_t acpi_gpio_irq_handler_evt(int irq, void *data)
 
 static void acpi_gpio_chip_dh(acpi_handle handle, void *data)
 {
-	/* The address of this function is used as a key. */
+	 
 }
 
 bool acpi_gpio_get_irq_resource(struct acpi_resource *ares,
@@ -226,12 +168,7 @@ bool acpi_gpio_get_irq_resource(struct acpi_resource *ares,
 }
 EXPORT_SYMBOL_GPL(acpi_gpio_get_irq_resource);
 
-/**
- * acpi_gpio_get_io_resource - Fetch details of an ACPI resource if it is a GPIO
- *			       I/O resource or return False if not.
- * @ares:	Pointer to the ACPI resource to fetch
- * @agpio:	Pointer to a &struct acpi_resource_gpio to store the output pointer
- */
+ 
 bool acpi_gpio_get_io_resource(struct acpi_resource *ares,
 			       struct acpi_resource_gpio **agpio)
 {
@@ -267,7 +204,7 @@ static void acpi_gpiochip_request_irq(struct acpi_gpio_chip *acpi_gpio,
 
 	event->irq_requested = true;
 
-	/* Make sure we trigger the initial state of edge-triggered IRQs */
+	 
 	if (run_edge_events_on_boot &&
 	    (event->irqflags & (IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING))) {
 		value = gpiod_get_raw_value_cansleep(event->desc);
@@ -288,7 +225,7 @@ static void acpi_gpiochip_request_irqs(struct acpi_gpio_chip *acpi_gpio)
 static enum gpiod_flags
 acpi_gpio_to_gpiod_flags(const struct acpi_resource_gpio *agpio, int polarity)
 {
-	/* GpioInt() implies input configuration */
+	 
 	if (agpio->connection_type == ACPI_RESOURCE_GPIO_TYPE_INT)
 		return GPIOD_IN;
 
@@ -296,15 +233,7 @@ acpi_gpio_to_gpiod_flags(const struct acpi_resource_gpio *agpio, int polarity)
 	case ACPI_IO_RESTRICT_INPUT:
 		return GPIOD_IN;
 	case ACPI_IO_RESTRICT_OUTPUT:
-		/*
-		 * ACPI GPIO resources don't contain an initial value for the
-		 * GPIO. Therefore we deduce that value from the pull field
-		 * and the polarity instead. If the pin is pulled up we assume
-		 * default to be high, if it is pulled down we assume default
-		 * to be low, otherwise we leave pin untouched. For active low
-		 * polarity values will be switched. See also
-		 * Documentation/firmware-guide/acpi/gpio-properties.rst.
-		 */
+		 
 		switch (agpio->pin_config) {
 		case ACPI_PIN_CONFIG_PULLUP:
 			return polarity == GPIO_ACTIVE_LOW ? GPIOD_OUT_LOW : GPIOD_OUT_HIGH;
@@ -318,10 +247,7 @@ acpi_gpio_to_gpiod_flags(const struct acpi_resource_gpio *agpio, int polarity)
 		break;
 	}
 
-	/*
-	 * Assume that the BIOS has configured the direction and pull
-	 * accordingly.
-	 */
+	 
 	return GPIOD_ASIS;
 }
 
@@ -340,7 +266,7 @@ static struct gpio_desc *acpi_request_own_gpiod(struct gpio_chip *chip,
 	if (IS_ERR(desc))
 		return desc;
 
-	/* ACPI uses hundredths of milliseconds units */
+	 
 	ret = gpio_set_debounce_timeout(desc, agpio->debounce_timeout * 10);
 	if (ret)
 		dev_warn(chip->parent,
@@ -402,7 +328,7 @@ static bool acpi_gpio_irq_is_wake(struct device *parent,
 	return true;
 }
 
-/* Always returns AE_OK so that we keep looping over the resources */
+ 
 static acpi_status acpi_gpiochip_alloc_event(struct acpi_resource *ares,
 					     void *context)
 {
@@ -510,16 +436,7 @@ fail_free_desc:
 	return AE_OK;
 }
 
-/**
- * acpi_gpiochip_request_interrupts() - Register isr for gpio chip ACPI events
- * @chip:      GPIO chip
- *
- * ACPI5 platforms can use GPIO signaled ACPI events. These GPIO interrupts are
- * handled by ACPI event methods which need to be called from the GPIO
- * chip's interrupt handler. acpi_gpiochip_request_interrupts() finds out which
- * GPIO pins have ACPI event methods and assigns interrupt handlers that calls
- * the ACPI event methods for those pins.
- */
+ 
 void acpi_gpiochip_request_interrupts(struct gpio_chip *chip)
 {
 	struct acpi_gpio_chip *acpi_gpio;
@@ -558,13 +475,7 @@ void acpi_gpiochip_request_interrupts(struct gpio_chip *chip)
 }
 EXPORT_SYMBOL_GPL(acpi_gpiochip_request_interrupts);
 
-/**
- * acpi_gpiochip_free_interrupts() - Free GPIO ACPI event interrupts.
- * @chip:      GPIO chip
- *
- * Free interrupts associated with GPIO ACPI event method for the given
- * GPIO chip.
- */
+ 
 void acpi_gpiochip_free_interrupts(struct gpio_chip *chip)
 {
 	struct acpi_gpio_chip *acpi_gpio;
@@ -676,21 +587,11 @@ __acpi_gpio_update_gpiod_flags(enum gpiod_flags *flags, enum gpiod_flags update)
 		GPIOD_FLAGS_BIT_DIR_VAL;
 	int ret = 0;
 
-	/*
-	 * Check if the BIOS has IoRestriction with explicitly set direction
-	 * and update @flags accordingly. Otherwise use whatever caller asked
-	 * for.
-	 */
+	 
 	if (update & GPIOD_FLAGS_BIT_DIR_SET) {
 		enum gpiod_flags diff = *flags ^ update;
 
-		/*
-		 * Check if caller supplied incompatible GPIO initialization
-		 * flags.
-		 *
-		 * Return %-EINVAL to notify that firmware has different
-		 * settings and we are going to use them.
-		 */
+		 
 		if (((*flags & GPIOD_FLAGS_BIT_DIR_SET) && (diff & GPIOD_FLAGS_BIT_DIR_OUT)) ||
 		    ((*flags & GPIOD_FLAGS_BIT_DIR_OUT) && (diff & GPIOD_FLAGS_BIT_DIR_VAL)))
 			ret = -EINVAL;
@@ -785,13 +686,7 @@ static int acpi_populate_gpio_lookup(struct acpi_resource *ares, void *data)
 		lookup->info.gpioint = gpioint;
 		lookup->info.wake_capable = acpi_gpio_irq_is_wake(&lookup->info.adev->dev, agpio);
 
-		/*
-		 * Polarity and triggering are only specified for GpioInt
-		 * resource.
-		 * Note: we expect here:
-		 * - ACPI_ACTIVE_LOW == GPIO_ACTIVE_LOW
-		 * - ACPI_ACTIVE_HIGH == GPIO_ACTIVE_HIGH
-		 */
+		 
 		if (lookup->info.gpioint) {
 			lookup->info.polarity = agpio->polarity;
 			lookup->info.triggering = agpio->triggering;
@@ -848,10 +743,7 @@ static int acpi_gpio_property_lookup(struct fwnode_handle *fwnode,
 		if (!acpi_get_driver_gpio_data(adev, propname, index, &args, &quirks))
 			return ret;
 	}
-	/*
-	 * The property was found and resolved, so need to lookup the GPIO based
-	 * on returned args.
-	 */
+	 
 	if (!to_acpi_device_node(args.fwnode))
 		return -EINVAL;
 	if (args.nargs != 3)
@@ -867,28 +759,7 @@ static int acpi_gpio_property_lookup(struct fwnode_handle *fwnode,
 	return 0;
 }
 
-/**
- * acpi_get_gpiod_by_index() - get a GPIO descriptor from device resources
- * @adev: pointer to a ACPI device to get GPIO from
- * @propname: Property name of the GPIO (optional)
- * @index: index of GpioIo/GpioInt resource (starting from %0)
- * @info: info pointer to fill in (optional)
- *
- * Function goes through ACPI resources for @adev and based on @index looks
- * up a GpioIo/GpioInt resource, translates it to the Linux GPIO descriptor,
- * and returns it. @index matches GpioIo/GpioInt resources only so if there
- * are total %3 GPIO resources, the index goes from %0 to %2.
- *
- * If @propname is specified the GPIO is looked using device property. In
- * that case @index is used to select the GPIO entry in the property value
- * (in case of multiple).
- *
- * If the GPIO cannot be translated or there is an error, an ERR_PTR is
- * returned.
- *
- * Note: if the GPIO resource has multiple entries in the pin list, this
- * function only returns the first.
- */
+ 
 static struct gpio_desc *acpi_get_gpiod_by_index(struct acpi_device *adev,
 						 const char *propname,
 						 int index,
@@ -923,20 +794,7 @@ static struct gpio_desc *acpi_get_gpiod_by_index(struct acpi_device *adev,
 	return ret ? ERR_PTR(ret) : lookup.desc;
 }
 
-/**
- * acpi_get_gpiod_from_data() - get a GPIO descriptor from ACPI data node
- * @fwnode: pointer to an ACPI firmware node to get the GPIO information from
- * @propname: Property name of the GPIO
- * @index: index of GpioIo/GpioInt resource (starting from %0)
- * @info: info pointer to fill in (optional)
- *
- * This function uses the property-based GPIO lookup to get to the GPIO
- * resource with the relevant information from a data-only ACPI firmware node
- * and uses that to obtain the GPIO descriptor to return.
- *
- * If the GPIO cannot be translated or there is an error an ERR_PTR is
- * returned.
- */
+ 
 static struct gpio_desc *acpi_get_gpiod_from_data(struct fwnode_handle *fwnode,
 						  const char *propname,
 						  int index,
@@ -965,7 +823,7 @@ static struct gpio_desc *acpi_get_gpiod_from_data(struct fwnode_handle *fwnode,
 static bool acpi_can_fallback_to_crs(struct acpi_device *adev,
 				     const char *con_id)
 {
-	/* Never allow fallback if the device has properties */
+	 
 	if (acpi_dev_has_props(adev) || adev->driver_gpios)
 		return false;
 
@@ -984,7 +842,7 @@ struct gpio_desc *acpi_find_gpio(struct fwnode_handle *fwnode,
 	char propname[32];
 	int i;
 
-	/* Try first from _DSD */
+	 
 	for (i = 0; i < ARRAY_SIZE(gpio_suffixes); i++) {
 		if (con_id) {
 			snprintf(propname, sizeof(propname), "%s-%s",
@@ -1006,7 +864,7 @@ struct gpio_desc *acpi_find_gpio(struct fwnode_handle *fwnode,
 			return ERR_CAST(desc);
 	}
 
-	/* Then from plain _CRS GPIOs */
+	 
 	if (IS_ERR(desc)) {
 		if (!adev || !acpi_can_fallback_to_crs(adev, con_id))
 			return ERR_PTR(-ENOENT);
@@ -1027,28 +885,7 @@ struct gpio_desc *acpi_find_gpio(struct fwnode_handle *fwnode,
 	return desc;
 }
 
-/**
- * acpi_dev_gpio_irq_wake_get_by() - Find GpioInt and translate it to Linux IRQ number
- * @adev: pointer to a ACPI device to get IRQ from
- * @name: optional name of GpioInt resource
- * @index: index of GpioInt resource (starting from %0)
- * @wake_capable: Set to true if the IRQ is wake capable
- *
- * If the device has one or more GpioInt resources, this function can be
- * used to translate from the GPIO offset in the resource to the Linux IRQ
- * number.
- *
- * The function is idempotent, though each time it runs it will configure GPIO
- * pin direction according to the flags in GpioInt resource.
- *
- * The function takes optional @name parameter. If the resource has a property
- * name, then only those will be taken into account.
- *
- * The GPIO is considered wake capable if the GpioInt resource specifies
- * SharedAndWake or ExclusiveAndWake.
- *
- * Return: Linux IRQ number (> %0) on success, negative errno on failure.
- */
+ 
 int acpi_dev_gpio_irq_wake_get_by(struct acpi_device *adev, const char *name, int index,
 				  bool *wake_capable)
 {
@@ -1062,7 +899,7 @@ int acpi_dev_gpio_irq_wake_get_by(struct acpi_device *adev, const char *name, in
 
 		desc = acpi_get_gpiod_by_index(adev, name, i, &info);
 
-		/* Ignore -EPROBE_DEFER, it only matters if idx matches */
+		 
 		if (IS_ERR(desc) && PTR_ERR(desc) != -EPROBE_DEFER)
 			return PTR_ERR(desc);
 
@@ -1087,7 +924,7 @@ int acpi_dev_gpio_irq_wake_get_by(struct acpi_device *adev, const char *name, in
 			if (ret < 0)
 				return ret;
 
-			/* ACPI uses hundredths of milliseconds units */
+			 
 			ret = gpio_set_debounce_timeout(desc, info.debounce * 10);
 			if (ret)
 				return ret;
@@ -1095,10 +932,7 @@ int acpi_dev_gpio_irq_wake_get_by(struct acpi_device *adev, const char *name, in
 			irq_flags = acpi_dev_get_irq_type(info.triggering,
 							  info.polarity);
 
-			/*
-			 * If the IRQ is not already in use then set type
-			 * if specified and different than the current one.
-			 */
+			 
 			if (can_request_irq(irq, irq_flags)) {
 				if (irq_flags != IRQ_TYPE_NONE &&
 				    irq_flags != irq_get_trigger_type(irq))
@@ -1107,7 +941,7 @@ int acpi_dev_gpio_irq_wake_get_by(struct acpi_device *adev, const char *name, in
 				dev_dbg(&adev->dev, "IRQ %d already in use\n", irq);
 			}
 
-			/* avoid suspend issues with GPIOs when systems are using S3 */
+			 
 			if (wake_capable && acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0)
 				*wake_capable = info.wake_capable;
 
@@ -1169,11 +1003,7 @@ acpi_gpio_adr_space_handler(u32 function, acpi_physical_address address,
 			}
 		}
 
-		/*
-		 * The same GPIO can be shared between operation region and
-		 * event but only if the access here is ACPI_READ. In that
-		 * case we "borrow" the event GPIO instead.
-		 */
+		 
 		if (!found && agpio->shareable == ACPI_SHARED &&
 		     function == ACPI_READ) {
 			struct acpi_gpio_event *event;
@@ -1425,15 +1255,7 @@ static int acpi_find_gpio_count(struct acpi_resource *ares, void *data)
 	return 1;
 }
 
-/**
- * acpi_gpio_count - count the GPIOs associated with a device / function
- * @dev:	GPIO consumer, can be %NULL for system-global GPIOs
- * @con_id:	function within the GPIO consumer
- *
- * Return:
- * The number of GPIOs associated with a device / function or %-ENOENT,
- * if no GPIO has been assigned to the requested function.
- */
+ 
 int acpi_gpio_count(struct device *dev, const char *con_id)
 {
 	struct acpi_device *adev = ACPI_COMPANION(dev);
@@ -1444,7 +1266,7 @@ int acpi_gpio_count(struct device *dev, const char *con_id)
 	char propname[32];
 	unsigned int i;
 
-	/* Try first from _DSD */
+	 
 	for (i = 0; i < ARRAY_SIZE(gpio_suffixes); i++) {
 		if (con_id)
 			snprintf(propname, sizeof(propname), "%s-%s",
@@ -1471,7 +1293,7 @@ int acpi_gpio_count(struct device *dev, const char *con_id)
 			break;
 	}
 
-	/* Then from plain _CRS GPIOs */
+	 
 	if (count < 0) {
 		struct list_head resource_list;
 		unsigned int crs_count = 0;
@@ -1489,7 +1311,7 @@ int acpi_gpio_count(struct device *dev, const char *con_id)
 	return count ? count : -ENOENT;
 }
 
-/* Run deferred acpi_gpiochip_request_irqs() */
+ 
 static int __init acpi_gpio_handle_deferred_request_irqs(void)
 {
 	struct acpi_gpio_chip *acpi_gpio, *tmp;
@@ -1505,16 +1327,12 @@ static int __init acpi_gpio_handle_deferred_request_irqs(void)
 
 	return 0;
 }
-/* We must use _sync so that this runs after the first deferred_probe run */
+ 
 late_initcall_sync(acpi_gpio_handle_deferred_request_irqs);
 
 static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 	{
-		/*
-		 * The Minix Neo Z83-4 has a micro-USB-B id-pin handler for
-		 * a non existing micro-USB-B connector which puts the HDMI
-		 * DDC pins in GPIO mode, breaking HDMI support.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MINIX"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Z83-4"),
@@ -1524,12 +1342,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * The Terra Pad 1061 has a micro-USB-B id-pin handler, which
-		 * instead of controlling the actual micro-USB-B turns the 5V
-		 * boost for its USB-A connector off. The actual micro-USB-B
-		 * connector is wired for charging only.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Wortmann_AG"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "TERRA_PAD_1061"),
@@ -1539,11 +1352,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * The Dell Venue 10 Pro 5055, with Bay Trail SoC + TI PMIC uses an
-		 * external embedded-controller connected via I2C + an ACPI GPIO
-		 * event handler on INT33FFC:02 pin 12, causing spurious wakeups.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Venue 10 Pro 5055"),
@@ -1553,18 +1362,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * HP X2 10 models with Cherry Trail SoC + TI PMIC use an
-		 * external embedded-controller connected via I2C + an ACPI GPIO
-		 * event handler on INT33FF:01 pin 0, causing spurious wakeups.
-		 * When suspending by closing the LID, the power to the USB
-		 * keyboard is turned off, causing INT0002 ACPI events to
-		 * trigger once the XHCI controller notices the keyboard is
-		 * gone. So INT0002 events cause spurious wakeups too. Ignoring
-		 * EC wakes breaks wakeup when opening the lid, the user needs
-		 * to press the power-button to wakeup the system. The
-		 * alternative is suspend simply not working, which is worse.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP x2 Detachable 10-p0XX"),
@@ -1574,11 +1372,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * HP X2 10 models with Bay Trail SoC + AXP288 PMIC use an
-		 * external embedded-controller connected via I2C + an ACPI GPIO
-		 * event handler on INT33FC:02 pin 28, causing spurious wakeups.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pavilion x2 Detachable"),
@@ -1589,11 +1383,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * HP X2 10 models with Cherry Trail SoC + AXP288 PMIC use an
-		 * external embedded-controller connected via I2C + an ACPI GPIO
-		 * event handler on INT33FF:01 pin 0, causing spurious wakeups.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pavilion x2 Detachable"),
@@ -1604,11 +1394,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * Interrupt storm caused from edge triggered floating pin
-		 * Found in BIOS UX325UAZ.300
-		 * https://bugzilla.kernel.org/show_bug.cgi?id=216208
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "ZenBook UX325UAZ_UM325UAZ"),
@@ -1618,11 +1404,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * Spurious wakeups from TP_ATTN# pin
-		 * Found in BIOS 1.7.8
-		 * https://gitlab.freedesktop.org/drm/amd/-/issues/1722#note_1720627
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
 		},
@@ -1631,11 +1413,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * Spurious wakeups from TP_ATTN# pin
-		 * Found in BIOS 1.7.8
-		 * https://gitlab.freedesktop.org/drm/amd/-/issues/1722#note_1720627
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
 		},
@@ -1644,10 +1422,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * Spurious wakeups from TP_ATTN# pin
-		 * Found in BIOS 1.7.7
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "NH5xAx"),
 		},
@@ -1656,17 +1431,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 		},
 	},
 	{
-		/*
-		 * On the Peaq C1010 2-in-1 INT33FC:00 pin 3 is connected to
-		 * a "dolby" button. At the ACPI level an _AEI event-handler
-		 * is connected which sets an ACPI variable to 1 on both
-		 * edges. This variable can be polled + cleared to 0 using
-		 * WMI. But since the variable is set on both edges the WMI
-		 * interface is pretty useless even when polling.
-		 * So instead the x86-android-tablets code instantiates
-		 * a gpio-keys platform device for it.
-		 * Ignore the _AEI handler for the pin, so that it is not busy.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "PEAQ"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "PEAQ PMM C1010 MD99187"),
@@ -1675,7 +1440,7 @@ static const struct dmi_system_id gpiolib_acpi_quirks[] __initconst = {
 			.ignore_interrupt = "INT33FC:00@3",
 		},
 	},
-	{} /* Terminating entry */
+	{}  
 };
 
 static int __init acpi_gpio_setup_params(void)
@@ -1703,5 +1468,5 @@ static int __init acpi_gpio_setup_params(void)
 	return 0;
 }
 
-/* Directly after dmi_setup() which runs as core_initcall() */
+ 
 postcore_initcall(acpi_gpio_setup_params);

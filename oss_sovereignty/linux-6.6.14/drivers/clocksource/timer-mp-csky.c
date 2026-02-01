@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Hangzhou C-SKY Microsystems co.,ltd.
+
+
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -70,9 +70,7 @@ static irqreturn_t csky_timer_interrupt(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * clock event for percpu
- */
+ 
 static int csky_mptimer_starting_cpu(unsigned int cpu)
 {
 	struct timer_of *to = per_cpu_ptr(&csky_to, cpu);
@@ -94,9 +92,7 @@ static int csky_mptimer_dying_cpu(unsigned int cpu)
 	return 0;
 }
 
-/*
- * clock source
- */
+ 
 static u64 notrace sched_clock_read(void)
 {
 	return (u64)mfcr(PTIM_CCVR);
@@ -120,18 +116,7 @@ static int __init csky_mptimer_init(struct device_node *np)
 	int ret, cpu, cpu_rollback;
 	struct timer_of *to = NULL;
 
-	/*
-	 * Csky_mptimer is designed for C-SKY SMP multi-processors and
-	 * every core has it's own private irq and regs for clkevt and
-	 * clksrc.
-	 *
-	 * The regs is accessed by cpu instruction: mfcr/mtcr instead of
-	 * mmio map style. So we needn't mmio-address in dts, but we still
-	 * need to give clk and irq number.
-	 *
-	 * We use private irq for the mptimer and irq number is the same
-	 * for every core. So we use request_percpu_irq() in timer_of_init.
-	 */
+	 
 	csky_mptimer_irq = irq_of_parse_and_map(np, 0);
 	if (csky_mptimer_irq <= 0)
 		return -EINVAL;

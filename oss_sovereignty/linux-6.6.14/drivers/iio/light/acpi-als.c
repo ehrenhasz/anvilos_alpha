@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ACPI Ambient Light Sensor Driver
- *
- * Based on ALS driver:
- * Copyright (C) 2009 Zhang Rui <rui.zhang@intel.com>
- *
- * Rework for IIO subsystem:
- * Copyright (C) 2012-2013 Martin Liska <marxin.liska@gmail.com>
- *
- * Final cleanup and debugging:
- * Copyright (C) 2013-2014 Marek Vasut <marex@denx.de>
- * Copyright (C) 2015 Gabriele Mazzotta <gabriele.mzt@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -29,11 +17,7 @@
 #define ACPI_ALS_DEVICE_NAME		"acpi-als"
 #define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
 
-/*
- * So far, there's only one channel in here, but the specification for
- * ACPI0008 says there can be more to what the block can report. Like
- * chromaticity and such. We are ready for incoming additions!
- */
+ 
 static const struct iio_chan_spec acpi_als_channels[] = {
 	{
 		.type		= IIO_LIGHT,
@@ -42,18 +26,14 @@ static const struct iio_chan_spec acpi_als_channels[] = {
 			.realbits	= 32,
 			.storagebits	= 32,
 		},
-		/* _RAW is here for backward ABI compatibility */
+		 
 		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW) |
 					  BIT(IIO_CHAN_INFO_PROCESSED),
 	},
 	IIO_CHAN_SOFT_TIMESTAMP(1),
 };
 
-/*
- * The event buffer contains timestamp and all the data from
- * the ACPI0008 block. There are multiple, but so far we only
- * support _ALI (illuminance): One channel, padding and timestamp.
- */
+ 
 #define ACPI_ALS_EVT_BUFFER_SIZE		\
 	(sizeof(s32) + sizeof(s32) + sizeof(s64))
 
@@ -65,17 +45,7 @@ struct acpi_als {
 	s32 evt_buffer[ACPI_ALS_EVT_BUFFER_SIZE / sizeof(s32)]  __aligned(8);
 };
 
-/*
- * All types of properties the ACPI0008 block can report. The ALI, ALC, ALT
- * and ALP can all be handled by acpi_als_read_value() below, while the ALR is
- * special.
- *
- * The _ALR property returns tables that can be used to fine-tune the values
- * reported by the other props based on the particular hardware type and it's
- * location (it contains tables for "rainy", "bright inhouse lighting" etc.).
- *
- * So far, we support only ALI (illuminance).
- */
+ 
 #define ACPI_ALS_ILLUMINANCE	"_ALI"
 #define ACPI_ALS_CHROMATICITY	"_ALC"
 #define ACPI_ALS_COLOR_TEMP	"_ALT"
@@ -111,7 +81,7 @@ static void acpi_als_notify(struct acpi_device *device, u32 event)
 			iio_trigger_poll_nested(als->trig);
 			break;
 		default:
-			/* Unhandled event */
+			 
 			dev_dbg(&device->dev,
 				"Unhandled ACPI ALS event (%08x)!\n",
 				event);
@@ -130,7 +100,7 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
 	if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
 		return -EINVAL;
 
-	/* we support only illumination (_ALI) so far. */
+	 
 	if (chan->type != IIO_LIGHT)
 		return -EINVAL;
 
@@ -163,14 +133,7 @@ static irqreturn_t acpi_als_trigger_handler(int irq, void *p)
 		goto out;
 	*buffer = val;
 
-	/*
-	 * When coming from own trigger via polls, set polling function
-	 * timestamp here. Given ACPI notifier is already in a thread and call
-	 * function directly, there is no need to set the timestamp in the
-	 * notify function.
-	 *
-	 * If the timestamp was actually 0, the timestamp is set one more time.
-	 */
+	 
 	if (!pf->timestamp)
 		pf->timestamp = iio_get_time_ns(indio_dev);
 
@@ -212,10 +175,7 @@ static int acpi_als_add(struct acpi_device *device)
 	ret = devm_iio_trigger_register(dev, als->trig);
 	if (ret)
 		return ret;
-	/*
-	 * Set hardware trigger by default to let events flow when
-	 * BIOS support notification.
-	 */
+	 
 	indio_dev->trig = iio_trigger_get(als->trig);
 
 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Common/core components for the Surface System Aggregator Module (SSAM) HID
- * transport driver. Provides support for integrated HID devices on Microsoft
- * Surface models.
- *
- * Copyright (C) 2019-2021 Maximilian Luz <luzmaximilian@gmail.com>
- */
+ 
+ 
 
 #ifndef SURFACE_HID_CORE_H
 #define SURFACE_HID_CORE_H
@@ -24,13 +18,13 @@ enum surface_hid_descriptor_entry {
 };
 
 struct surface_hid_descriptor {
-	__u8 desc_len;			/* = 9 */
-	__u8 desc_type;			/* = HID_DT_HID */
+	__u8 desc_len;			 
+	__u8 desc_type;			 
 	__le16 hid_version;
 	__u8 country_code;
-	__u8 num_descriptors;		/* = 1 */
+	__u8 num_descriptors;		 
 
-	__u8 report_desc_type;		/* = HID_DT_REPORT */
+	__u8 report_desc_type;		 
 	__le16 report_desc_len;
 } __packed;
 
@@ -74,4 +68,4 @@ void surface_hid_device_destroy(struct surface_hid_device *shid);
 
 extern const struct dev_pm_ops surface_hid_pm_ops;
 
-#endif /* SURFACE_HID_CORE_H */
+#endif  

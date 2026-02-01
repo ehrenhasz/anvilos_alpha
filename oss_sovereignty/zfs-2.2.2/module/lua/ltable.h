@@ -1,8 +1,4 @@
-/*
-** $Id: ltable.h,v 2.16.1.2 2013/08/30 15:49:41 roberto Exp $
-** Lua tables (hash)
-** See Copyright Notice in lua.h
-*/
+ 
 
 #ifndef ltable_h
 #define ltable_h
@@ -17,7 +13,7 @@
 
 #define invalidateTMcache(t)	((t)->flags = 0)
 
-/* returns the key, given the value of a table entry */
+ 
 #define keyfromval(v) \
   (gkey(cast(Node *, cast(char *, (v)) - offsetof(Node, i_val))))
 

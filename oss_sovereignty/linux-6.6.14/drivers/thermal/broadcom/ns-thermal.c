@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of_address.h>
@@ -23,10 +21,10 @@ static int ns_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 
 	val = readl(pvtmon + PVTMON_CONTROL0);
 	if ((val & PVTMON_CONTROL0_SEL_MASK) != PVTMON_CONTROL0_SEL_TEMP_MONITOR) {
-		/* Clear current mode selection */
+		 
 		val &= ~PVTMON_CONTROL0_SEL_MASK;
 
-		/* Set temp monitor mode (it's the default actually) */
+		 
 		val |= PVTMON_CONTROL0_SEL_TEMP_MONITOR;
 
 		writel(val, pvtmon + PVTMON_CONTROL0);

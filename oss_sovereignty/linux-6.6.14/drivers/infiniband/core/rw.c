@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 HGST, a Western Digital Company.
- */
+
+ 
 #include <linux/memremap.h>
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
@@ -20,12 +18,7 @@ static bool rdma_rw_force_mr;
 module_param_named(force_mr, rdma_rw_force_mr, bool, 0);
 MODULE_PARM_DESC(force_mr, "Force usage of MRs for RDMA READ/WRITE operations");
 
-/*
- * Report whether memory registration should be used. Memory registration must
- * be used for iWarp devices because of iWARP-specific limitations. Memory
- * registration is also enabled if registering memory might yield better
- * performance than using multiple SGE entries, see rdma_rw_io_needs_mr()
- */
+ 
 static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u32 port_num)
 {
 	if (rdma_protocol_iwarp(dev, port_num))
@@ -37,12 +30,7 @@ static inline bool rdma_rw_can_use_mr(struct ib_device *dev, u32 port_num)
 	return false;
 }
 
-/*
- * Check if the device will use memory registration for this RW operation.
- * For RDMA READs we must use MRs on iWarp and can optionally use them as an
- * optimization otherwise.  Additionally we have a debug option to force usage
- * of MRs to help testing this code path.
- */
+ 
 static inline bool rdma_rw_io_needs_mr(struct ib_device *dev, u32 port_num,
 		enum dma_data_direction dir, int dma_nents)
 {
@@ -67,7 +55,7 @@ static inline u32 rdma_rw_fr_page_list_len(struct ib_device *dev,
 	else
 		max_pages = dev->attrs.max_fast_reg_page_list_len;
 
-	/* arbitrary limit to avoid allocating gigantic resources */
+	 
 	return min_t(u32, max_pages, 256);
 }
 
@@ -87,7 +75,7 @@ static inline int rdma_rw_inv_key(struct rdma_rw_reg_ctx *reg)
 	return count;
 }
 
-/* Caller must have zero-initialized *reg. */
+ 
 static int rdma_rw_init_one_mr(struct ib_qp *qp, u32 port_num,
 		struct rdma_rw_reg_ctx *reg, struct scatterlist *sg,
 		u32 sg_cnt, u32 offset)
@@ -274,21 +262,7 @@ static int rdma_rw_init_single_wr(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 	return 1;
 }
 
-/**
- * rdma_rw_ctx_init - initialize a RDMA READ/WRITE context
- * @ctx:	context to initialize
- * @qp:		queue pair to operate on
- * @port_num:	port num to which the connection is bound
- * @sg:		scatterlist to READ/WRITE from/to
- * @sg_cnt:	number of entries in @sg
- * @sg_offset:	current byte offset into @sg
- * @remote_addr:remote address to read/write (relative to @rkey)
- * @rkey:	remote key to operate on
- * @dir:	%DMA_TO_DEVICE for RDMA WRITE, %DMA_FROM_DEVICE for RDMA READ
- *
- * Returns the number of WQEs that will be needed on the workqueue if
- * successful, or a negative error code.
- */
+ 
 int rdma_rw_ctx_init(struct rdma_rw_ctx *ctx, struct ib_qp *qp, u32 port_num,
 		struct scatterlist *sg, u32 sg_cnt, u32 sg_offset,
 		u64 remote_addr, u32 rkey, enum dma_data_direction dir)
@@ -305,9 +279,7 @@ int rdma_rw_ctx_init(struct rdma_rw_ctx *ctx, struct ib_qp *qp, u32 port_num,
 		return ret;
 	sg_cnt = sgt.nents;
 
-	/*
-	 * Skip to the S/G entry that sg_offset falls into:
-	 */
+	 
 	for (;;) {
 		u32 len = sg_dma_len(sg);
 
@@ -344,23 +316,7 @@ out_unmap_sg:
 }
 EXPORT_SYMBOL(rdma_rw_ctx_init);
 
-/**
- * rdma_rw_ctx_signature_init - initialize a RW context with signature offload
- * @ctx:	context to initialize
- * @qp:		queue pair to operate on
- * @port_num:	port num to which the connection is bound
- * @sg:		scatterlist to READ/WRITE from/to
- * @sg_cnt:	number of entries in @sg
- * @prot_sg:	scatterlist to READ/WRITE protection information from/to
- * @prot_sg_cnt: number of entries in @prot_sg
- * @sig_attrs:	signature offloading algorithms
- * @remote_addr:remote address to read/write (relative to @rkey)
- * @rkey:	remote key to operate on
- * @dir:	%DMA_TO_DEVICE for RDMA WRITE, %DMA_FROM_DEVICE for RDMA READ
- *
- * Returns the number of WQEs that will be needed on the workqueue if
- * successful, or a negative error code.
- */
+ 
 int rdma_rw_ctx_signature_init(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 		u32 port_num, struct scatterlist *sg, u32 sg_cnt,
 		struct scatterlist *prot_sg, u32 prot_sg_cnt,
@@ -466,12 +422,7 @@ out_unmap_sg:
 }
 EXPORT_SYMBOL(rdma_rw_ctx_signature_init);
 
-/*
- * Now that we are going to post the WRs we can update the lkey and need_inval
- * state on the MRs.  If we were doing this at init time, we would get double
- * or missing invalidations if a context was initialized but not actually
- * posted.
- */
+ 
 static void rdma_rw_update_lkey(struct rdma_rw_reg_ctx *reg, bool need_inval)
 {
 	reg->mr->need_inval = need_inval;
@@ -480,20 +431,7 @@ static void rdma_rw_update_lkey(struct rdma_rw_reg_ctx *reg, bool need_inval)
 	reg->sge.lkey = reg->mr->lkey;
 }
 
-/**
- * rdma_rw_ctx_wrs - return chain of WRs for a RDMA READ or WRITE operation
- * @ctx:	context to operate on
- * @qp:		queue pair to operate on
- * @port_num:	port num to which the connection is bound
- * @cqe:	completion queue entry for the last WR
- * @chain_wr:	WR to append to the posted chain
- *
- * Return the WR chain for the set of RDMA READ/WRITE operations described by
- * @ctx, as well as any memory registration operations needed.  If @chain_wr
- * is non-NULL the WR it points to will be appended to the chain of WRs posted.
- * If @chain_wr is not set @cqe must be set so that the caller gets a
- * completion notification.
- */
+ 
 struct ib_send_wr *rdma_rw_ctx_wrs(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 		u32 port_num, struct ib_cqe *cqe, struct ib_send_wr *chain_wr)
 {
@@ -538,20 +476,7 @@ struct ib_send_wr *rdma_rw_ctx_wrs(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 }
 EXPORT_SYMBOL(rdma_rw_ctx_wrs);
 
-/**
- * rdma_rw_ctx_post - post a RDMA READ or RDMA WRITE operation
- * @ctx:	context to operate on
- * @qp:		queue pair to operate on
- * @port_num:	port num to which the connection is bound
- * @cqe:	completion queue entry for the last WR
- * @chain_wr:	WR to append to the posted chain
- *
- * Post the set of RDMA READ/WRITE operations described by @ctx, as well as
- * any memory registration operations needed.  If @chain_wr is non-NULL the
- * WR it points to will be appended to the chain of WRs posted.  If @chain_wr
- * is not set @cqe must be set so that the caller gets a completion
- * notification.
- */
+ 
 int rdma_rw_ctx_post(struct rdma_rw_ctx *ctx, struct ib_qp *qp, u32 port_num,
 		struct ib_cqe *cqe, struct ib_send_wr *chain_wr)
 {
@@ -562,15 +487,7 @@ int rdma_rw_ctx_post(struct rdma_rw_ctx *ctx, struct ib_qp *qp, u32 port_num,
 }
 EXPORT_SYMBOL(rdma_rw_ctx_post);
 
-/**
- * rdma_rw_ctx_destroy - release all resources allocated by rdma_rw_ctx_init
- * @ctx:	context to release
- * @qp:		queue pair to operate on
- * @port_num:	port num to which the connection is bound
- * @sg:		scatterlist that was used for the READ/WRITE
- * @sg_cnt:	number of entries in @sg
- * @dir:	%DMA_TO_DEVICE for RDMA WRITE, %DMA_FROM_DEVICE for RDMA READ
- */
+ 
 void rdma_rw_ctx_destroy(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 			 u32 port_num, struct scatterlist *sg, u32 sg_cnt,
 			 enum dma_data_direction dir)
@@ -598,18 +515,7 @@ void rdma_rw_ctx_destroy(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 }
 EXPORT_SYMBOL(rdma_rw_ctx_destroy);
 
-/**
- * rdma_rw_ctx_destroy_signature - release all resources allocated by
- *	rdma_rw_ctx_signature_init
- * @ctx:	context to release
- * @qp:		queue pair to operate on
- * @port_num:	port num to which the connection is bound
- * @sg:		scatterlist that was used for the READ/WRITE
- * @sg_cnt:	number of entries in @sg
- * @prot_sg:	scatterlist that was used for the READ/WRITE of the PI
- * @prot_sg_cnt: number of entries in @prot_sg
- * @dir:	%DMA_TO_DEVICE for RDMA WRITE, %DMA_FROM_DEVICE for RDMA READ
- */
+ 
 void rdma_rw_ctx_destroy_signature(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 		u32 port_num, struct scatterlist *sg, u32 sg_cnt,
 		struct scatterlist *prot_sg, u32 prot_sg_cnt,
@@ -627,17 +533,7 @@ void rdma_rw_ctx_destroy_signature(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
 }
 EXPORT_SYMBOL(rdma_rw_ctx_destroy_signature);
 
-/**
- * rdma_rw_mr_factor - return number of MRs required for a payload
- * @device:	device handling the connection
- * @port_num:	port num to which the connection is bound
- * @maxpages:	maximum payload pages per rdma_rw_ctx
- *
- * Returns the number of MRs the device requires to move @maxpayload
- * bytes. The returned value is used during transport creation to
- * compute max_rdma_ctxts and the size of the transport's Send and
- * Send Completion Queues.
- */
+ 
 unsigned int rdma_rw_mr_factor(struct ib_device *device, u32 port_num,
 			       unsigned int maxpages)
 {
@@ -657,29 +553,17 @@ void rdma_rw_init_qp(struct ib_device *dev, struct ib_qp_init_attr *attr)
 
 	WARN_ON_ONCE(attr->port_num == 0);
 
-	/*
-	 * Each context needs at least one RDMA READ or WRITE WR.
-	 *
-	 * For some hardware we might need more, eventually we should ask the
-	 * HCA driver for a multiplier here.
-	 */
+	 
 	factor = 1;
 
-	/*
-	 * If the devices needs MRs to perform RDMA READ or WRITE operations,
-	 * we'll need two additional MRs for the registrations and the
-	 * invalidation.
-	 */
+	 
 	if (attr->create_flags & IB_QP_CREATE_INTEGRITY_EN ||
 	    rdma_rw_can_use_mr(dev, attr->port_num))
-		factor += 2;	/* inv + reg */
+		factor += 2;	 
 
 	attr->cap.max_send_wr += factor * attr->cap.max_rdma_ctxs;
 
-	/*
-	 * But maybe we were just too high in the sky and the device doesn't
-	 * even support all we need, and we'll have to live with what we get..
-	 */
+	 
 	attr->cap.max_send_wr =
 		min_t(u32, attr->cap.max_send_wr, dev->attrs.max_qp_wr);
 }

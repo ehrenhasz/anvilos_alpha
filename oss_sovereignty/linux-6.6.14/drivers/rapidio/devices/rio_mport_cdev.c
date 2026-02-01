@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RapidIO mport character device
- *
- * Copyright 2014-2015 Integrated Device Technology, Inc.
- *    Alexandre Bounine <alexandre.bounine@idt.com>
- * Copyright 2014-2015 Prodrive Technologies
- *    Andre van Herk <andre.van.herk@prodrive-technologies.com>
- *    Jerry Jacobs <jerry.jacobs@prodrive-technologies.com>
- * Copyright (C) 2014 Texas Instruments Incorporated
- *    Aurelien Jacquiot <a-jacquiot@ti.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/cdev.h>
@@ -46,19 +36,19 @@
 #define DEV_NAME	"rio_mport"
 #define DRV_VERSION     "1.0.0"
 
-/* Debug output filtering masks */
+ 
 enum {
 	DBG_NONE	= 0,
-	DBG_INIT	= BIT(0), /* driver init */
-	DBG_EXIT	= BIT(1), /* driver exit */
-	DBG_MPORT	= BIT(2), /* mport add/remove */
-	DBG_RDEV	= BIT(3), /* RapidIO device add/remove */
-	DBG_DMA		= BIT(4), /* DMA transfer messages */
-	DBG_MMAP	= BIT(5), /* mapping messages */
-	DBG_IBW		= BIT(6), /* inbound window */
-	DBG_EVENT	= BIT(7), /* event handling messages */
-	DBG_OBW		= BIT(8), /* outbound window messages */
-	DBG_DBELL	= BIT(9), /* doorbell messages */
+	DBG_INIT	= BIT(0),  
+	DBG_EXIT	= BIT(1),  
+	DBG_MPORT	= BIT(2),  
+	DBG_RDEV	= BIT(3),  
+	DBG_DMA		= BIT(4),  
+	DBG_MMAP	= BIT(5),  
+	DBG_IBW		= BIT(6),  
+	DBG_EVENT	= BIT(7),  
+	DBG_OBW		= BIT(8),  
+	DBG_DBELL	= BIT(9),  
 	DBG_ALL		= ~0,
 };
 
@@ -87,7 +77,7 @@ MODULE_DESCRIPTION("RapidIO mport character device driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
 
-static int dma_timeout = 3000; /* DMA transfer timeout in msec */
+static int dma_timeout = 3000;  
 module_param(dma_timeout, int, S_IRUGO);
 MODULE_PARM_DESC(dma_timeout, "DMA Transfer Timeout in msec (default: 3000)");
 
@@ -97,9 +87,7 @@ module_param(dbg_level, uint, S_IWUSR | S_IWGRP | S_IRUGO);
 MODULE_PARM_DESC(dbg_level, "Debugging output level (default 0 = none)");
 #endif
 
-/*
- * An internal DMA coherent buffer
- */
+ 
 struct mport_dma_buf {
 	void		*ib_base;
 	dma_addr_t	ib_phys;
@@ -109,9 +97,7 @@ struct mport_dma_buf {
 	struct file	*filp;
 };
 
-/*
- * Internal memory mapping structure
- */
+ 
 enum rio_mport_map_dir {
 	MAP_INBOUND,
 	MAP_OUTBOUND,
@@ -124,10 +110,10 @@ struct rio_mport_mapping {
 	enum rio_mport_map_dir dir;
 	u16 rioid;
 	u64 rio_addr;
-	dma_addr_t phys_addr; /* for mmap */
-	void *virt_addr; /* kernel address, for dma_free_coherent */
+	dma_addr_t phys_addr;  
+	void *virt_addr;  
 	u64 size;
-	struct kref ref; /* refcount of vmas sharing the mapping */
+	struct kref ref;  
 	struct file *filp;
 };
 
@@ -141,24 +127,7 @@ struct rio_mport_dma_map {
 #define MPORT_MAX_DMA_BUFS	16
 #define MPORT_EVENT_DEPTH	10
 
-/*
- * mport_dev  driver-specific structure that represents mport device
- * @active    mport device status flag
- * @node      list node to maintain list of registered mports
- * @cdev      character device
- * @dev       associated device object
- * @mport     associated subsystem's master port device object
- * @buf_mutex lock for buffer handling
- * @file_mutex - lock for open files list
- * @file_list  - list of open files on given mport
- * @properties properties of this mport
- * @portwrites queue of inbound portwrites
- * @pw_lock    lock for port write queue
- * @mappings   queue for memory mappings
- * @dma_chan   DMA channels associated with this device
- * @dma_ref:
- * @comp:
- */
+ 
 struct mport_dev {
 	atomic_t		active;
 	struct list_head	node;
@@ -181,20 +150,7 @@ struct mport_dev {
 #endif
 };
 
-/*
- * mport_cdev_priv - data structure specific to individual file object
- *                   associated with an open device
- * @md    master port character device object
- * @async_queue - asynchronous notification queue
- * @list - file objects tracking list
- * @db_filters    inbound doorbell filters for this descriptor
- * @pw_filters    portwrite filters for this descriptor
- * @event_fifo    event fifo for this descriptor
- * @event_rx_wait wait queue for this descriptor
- * @fifo_lock     lock for event_fifo
- * @event_mask    event mask for this descriptor
- * @dmach DMA engine channel allocated for specific file object
- */
+ 
 struct mport_cdev_priv {
 	struct mport_dev	*md;
 	struct fasync_struct	*async_queue;
@@ -204,7 +160,7 @@ struct mport_cdev_priv {
 	struct kfifo            event_fifo;
 	wait_queue_head_t       event_rx_wait;
 	spinlock_t              fifo_lock;
-	u32			event_mask; /* RIO_DOORBELL, RIO_PORTWRITE */
+	u32			event_mask;  
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 	struct dma_chan		*dmach;
 	struct list_head	async_list;
@@ -215,13 +171,7 @@ struct mport_cdev_priv {
 #endif
 };
 
-/*
- * rio_mport_pw_filter - structure to describe a portwrite filter
- * md_node   node in mport device's list
- * priv_node node in private file object's list
- * priv      reference to private data
- * filter    actual portwrite filter
- */
+ 
 struct rio_mport_pw_filter {
 	struct list_head md_node;
 	struct list_head priv_node;
@@ -229,13 +179,7 @@ struct rio_mport_pw_filter {
 	struct rio_pw_filter filter;
 };
 
-/*
- * rio_mport_db_filter - structure to describe a doorbell filter
- * @data_node reference to device node
- * @priv_node node in private data
- * @priv      reference to private data
- * @filter    actual doorbell filter
- */
+ 
 struct rio_mport_db_filter {
 	struct list_head data_node;
 	struct list_head priv_node;
@@ -246,7 +190,7 @@ struct rio_mport_db_filter {
 static LIST_HEAD(mport_devs);
 static DEFINE_MUTEX(mport_devs_lock);
 
-#if (0) /* used by commented out portion of poll function : FIXME */
+#if (0)  
 static DECLARE_WAIT_QUEUE_HEAD(mport_cdev_wait);
 #endif
 
@@ -352,9 +296,7 @@ out:
 }
 
 
-/*
- * Inbound/outbound memory mapping functions
- */
+ 
 static int
 rio_mport_create_outbound_mapping(struct mport_dev *md, struct file *filp,
 				  u16 rioid, u64 raddr, u32 size,
@@ -414,7 +356,7 @@ rio_mport_get_outbound_mapping(struct mport_dev *md, struct file *filp,
 		}
 	}
 
-	/* If not found, create new */
+	 
 	if (err == -ENOMEM)
 		err = rio_mport_create_outbound_mapping(md, filp, rioid, raddr,
 						size, paddr);
@@ -450,12 +392,7 @@ static int rio_mport_obw_map(struct file *filp, void __user *arg)
 	return 0;
 }
 
-/*
- * rio_mport_obw_free() - unmap an OutBound Window from RapidIO address space
- *
- * @priv: driver private data
- * @arg:  buffer handle returned by allocation routine
- */
+ 
 static int rio_mport_obw_free(struct file *filp, void __user *arg)
 {
 	struct mport_cdev_priv *priv = filp->private_data;
@@ -487,11 +424,7 @@ static int rio_mport_obw_free(struct file *filp, void __user *arg)
 	return 0;
 }
 
-/*
- * maint_hdid_set() - Set the host Device ID
- * @priv: driver private data
- * @arg:	Device Id
- */
+ 
 static int maint_hdid_set(struct mport_cdev_priv *priv, void __user *arg)
 {
 	struct mport_dev *md = priv->md;
@@ -509,11 +442,7 @@ static int maint_hdid_set(struct mport_cdev_priv *priv, void __user *arg)
 	return 0;
 }
 
-/*
- * maint_comptag_set() - Set the host Component Tag
- * @priv: driver private data
- * @arg:	Component Tag
- */
+ 
 static int maint_comptag_set(struct mport_cdev_priv *priv, void __user *arg)
 {
 	struct mport_dev *md = priv->md;
@@ -603,13 +532,7 @@ static void dma_xfer_callback(void *param)
 	kref_put(&req->refcount, dma_req_free);
 }
 
-/*
- * prep_dma_xfer() - Configure and send request to DMAengine to prepare DMA
- *                   transfer object.
- * Returns pointer to DMA transaction descriptor allocated by DMA driver on
- * success or ERR_PTR (and/or NULL) if failed. Caller must check returned
- * non-NULL pointer using IS_ERR macro.
- */
+ 
 static struct dma_async_tx_descriptor
 *prep_dma_xfer(struct dma_chan *chan, struct rio_transfer_io *transfer,
 	struct sg_table *sgt, int nents, enum dma_transfer_direction dir,
@@ -643,18 +566,14 @@ static struct dma_async_tx_descriptor
 	return rio_dma_prep_xfer(chan, transfer->rioid, &tx_data, dir, flags);
 }
 
-/* Request DMA channel associated with this mport device.
- * Try to request DMA channel for every new process that opened given
- * mport. If a new DMA channel is not available use default channel
- * which is the first DMA channel opened on mport device.
- */
+ 
 static int get_dma_channel(struct mport_cdev_priv *priv)
 {
 	mutex_lock(&priv->dma_lock);
 	if (!priv->dmach) {
 		priv->dmach = rio_request_mport_dma(priv->md->mport);
 		if (!priv->dmach) {
-			/* Use default DMA channel if available */
+			 
 			if (priv->md->dma_chan) {
 				priv->dmach = priv->md->dma_chan;
 				kref_get(&priv->md->dma_ref);
@@ -664,7 +583,7 @@ static int get_dma_channel(struct mport_cdev_priv *priv)
 				return -ENODEV;
 			}
 		} else if (!priv->md->dma_chan) {
-			/* Register default DMA channel if we do not have one */
+			 
 			priv->md->dma_chan = priv->dmach;
 			kref_init(&priv->md->dma_ref);
 			rmcd_debug(DMA, "Register DMA_chan %d as default",
@@ -685,9 +604,7 @@ static void put_dma_channel(struct mport_cdev_priv *priv)
 	kref_put(&priv->dma_ref, mport_release_dma);
 }
 
-/*
- * DMA transfer functions
- */
+ 
 static int do_dma_request(struct mport_dma_req *req,
 			  struct rio_transfer_io *xfer,
 			  enum rio_transfer_sync sync, int nents)
@@ -713,7 +630,7 @@ static int do_dma_request(struct mport_dma_req *req,
 		   dev_name(&chan->dev->device),
 		   (dir == DMA_DEV_TO_MEM)?"READ":"WRITE");
 
-	/* Initialize DMA transaction request */
+	 
 	tx = prep_dma_xfer(chan, xfer, sgt, nents, dir,
 			   DMA_CTRL_ACK | DMA_PREP_INTERRUPT);
 
@@ -764,15 +681,13 @@ static int do_dma_request(struct mport_dma_req *req,
 	wret = wait_for_completion_interruptible_timeout(&req->req_comp, tmo);
 
 	if (wret == 0) {
-		/* Timeout on wait occurred */
+		 
 		rmcd_error("%s(%d) timed out waiting for DMA_%s %d",
 		       current->comm, task_pid_nr(current),
 		       (dir == DMA_DEV_TO_MEM)?"READ":"WRITE", cookie);
 		return -ETIMEDOUT;
 	} else if (wret == -ERESTARTSYS) {
-		/* Wait_for_completion was interrupted by a signal but DMA may
-		 * be in progress
-		 */
+		 
 		rmcd_error("%s(%d) wait for DMA_%s %d was interrupted",
 			current->comm, task_pid_nr(current),
 			(dir == DMA_DEV_TO_MEM)?"READ":"WRITE", cookie);
@@ -780,7 +695,7 @@ static int do_dma_request(struct mport_dma_req *req,
 	}
 
 	if (req->status != DMA_COMPLETE) {
-		/* DMA transaction completion was signaled with error */
+		 
 		rmcd_error("%s(%d) DMA_%s %d completed with status %d (ret=%d)",
 			current->comm, task_pid_nr(current),
 			(dir == DMA_DEV_TO_MEM)?"READ":"WRITE",
@@ -792,16 +707,7 @@ err_out:
 	return ret;
 }
 
-/*
- * rio_dma_transfer() - Perform RapidIO DMA data transfer to/from
- *                      the remote RapidIO device
- * @filp: file pointer associated with the call
- * @transfer_mode: DMA transfer mode
- * @sync: synchronization mode
- * @dir: DMA transfer direction (DMA_MEM_TO_DEV = write OR
- *                               DMA_DEV_TO_MEM = read)
- * @xfer: data transfer descriptor structure
- */
+ 
 static int
 rio_dma_transfer(struct file *filp, u32 transfer_mode,
 		 enum rio_transfer_sync sync, enum dma_data_direction dir,
@@ -837,15 +743,7 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
 	req->dmach = chan;
 	req->sync = sync;
 
-	/*
-	 * If parameter loc_addr != NULL, we are transferring data from/to
-	 * data buffer allocated in user-space: lock in memory user-space
-	 * buffer pages and build an SG table for DMA transfer request
-	 *
-	 * Otherwise (loc_addr == NULL) contiguous kernel-space buffer is
-	 * used for DMA data transfers: build single entry SG table using
-	 * offset within the internal buffer specified by handle parameter.
-	 */
+	 
 	if (xfer->loc_addr) {
 		unsigned int offset;
 		long pinned;
@@ -874,10 +772,7 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
 			} else {
 				rmcd_error("pinned %ld out of %ld pages",
 					   pinned, nr_pages);
-				/*
-				 * Set nr_pages up to mean "how many pages to unpin, in
-				 * the error handler:
-				 */
+				 
 				nr_pages = pinned;
 			}
 			ret = -EFAULT;
@@ -943,7 +838,7 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
 
 	if (ret >= 0) {
 		if (sync == RIO_TRANSFER_ASYNC)
-			return ret; /* return ASYNC cookie */
+			return ret;  
 	} else {
 		rmcd_debug(DMA, "do_dma_request failed with err=%d", ret);
 	}
@@ -970,7 +865,7 @@ static int rio_mport_transfer_ioctl(struct file *filp, void __user *arg)
 	if (unlikely(copy_from_user(&transaction, arg, sizeof(transaction))))
 		return -EFAULT;
 
-	if (transaction.count != 1) /* only single transfer for now */
+	if (transaction.count != 1)  
 		return -EINVAL;
 
 	if ((transaction.transfer_mode &
@@ -1024,7 +919,7 @@ static int rio_mport_wait_for_async_dma(struct file *filp, void __user *arg)
 	cookie = w_param.token;
 	if (w_param.timeout)
 		tmo = msecs_to_jiffies(w_param.timeout);
-	else /* Use default DMA timeout */
+	else  
 		tmo = msecs_to_jiffies(dma_timeout);
 
 	spin_lock(&priv->req_lock);
@@ -1043,16 +938,14 @@ static int rio_mport_wait_for_async_dma(struct file *filp, void __user *arg)
 	wret = wait_for_completion_interruptible_timeout(&req->req_comp, tmo);
 
 	if (wret == 0) {
-		/* Timeout on wait occurred */
+		 
 		rmcd_error("%s(%d) timed out waiting for ASYNC DMA_%s",
 		       current->comm, task_pid_nr(current),
 		       (req->dir == DMA_FROM_DEVICE)?"READ":"WRITE");
 		ret = -ETIMEDOUT;
 		goto err_tmo;
 	} else if (wret == -ERESTARTSYS) {
-		/* Wait_for_completion was interrupted by a signal but DMA may
-		 * be still in progress
-		 */
+		 
 		rmcd_error("%s(%d) wait for ASYNC DMA_%s was interrupted",
 			current->comm, task_pid_nr(current),
 			(req->dir == DMA_FROM_DEVICE)?"READ":"WRITE");
@@ -1061,7 +954,7 @@ static int rio_mport_wait_for_async_dma(struct file *filp, void __user *arg)
 	}
 
 	if (req->status != DMA_COMPLETE) {
-		/* DMA transaction completion signaled with transfer error */
+		 
 		rmcd_error("%s(%d) ASYNC DMA_%s completion with status %d",
 			current->comm, task_pid_nr(current),
 			(req->dir == DMA_FROM_DEVICE)?"READ":"WRITE",
@@ -1076,7 +969,7 @@ static int rio_mport_wait_for_async_dma(struct file *filp, void __user *arg)
 	return ret;
 
 err_tmo:
-	/* Return request back into async queue */
+	 
 	spin_lock(&priv->req_lock);
 	list_add_tail(&req->node, &priv->async_list);
 	spin_unlock(&priv->req_lock);
@@ -1189,11 +1082,9 @@ static int rio_mport_free_dma(struct file *filp, void __user *arg)
 {
 	return -ENODEV;
 }
-#endif /* CONFIG_RAPIDIO_DMA_ENGINE */
+#endif  
 
-/*
- * Inbound/outbound memory mapping functions
- */
+ 
 
 static int
 rio_mport_create_inbound_mapping(struct mport_dev *md, struct file *filp,
@@ -1204,7 +1095,7 @@ rio_mport_create_inbound_mapping(struct mport_dev *md, struct file *filp,
 	struct rio_mport_mapping *map;
 	int ret;
 
-	/* rio_map_inb_region() accepts u32 size */
+	 
 	if (size > 0xffffffff)
 		return -EINVAL;
 
@@ -1261,7 +1152,7 @@ rio_mport_get_inbound_mapping(struct mport_dev *md, struct file *filp,
 		if (map->dir != MAP_INBOUND)
 			continue;
 		if (raddr == map->rio_addr && size == map->size) {
-			/* allow exact match only */
+			 
 			*mapping = map;
 			err = 0;
 			break;
@@ -1276,7 +1167,7 @@ rio_mport_get_inbound_mapping(struct mport_dev *md, struct file *filp,
 	if (err != -ENOMEM)
 		return err;
 get_new:
-	/* not found, create new */
+	 
 	return rio_mport_create_inbound_mapping(md, filp, raddr, size, mapping);
 }
 
@@ -1304,7 +1195,7 @@ static int rio_mport_map_inbound(struct file *filp, void __user *arg)
 	map.rio_addr = mapping->rio_addr;
 
 	if (unlikely(copy_to_user(arg, &map, sizeof(map)))) {
-		/* Delete mapping if it was created by this request */
+		 
 		if (ret == 0 && mapping->filp == filp) {
 			mutex_lock(&md->buf_mutex);
 			kref_put(&mapping->ref, mport_release_mapping);
@@ -1316,12 +1207,7 @@ static int rio_mport_map_inbound(struct file *filp, void __user *arg)
 	return 0;
 }
 
-/*
- * rio_mport_inbound_free() - unmap from RapidIO address space and free
- *                    previously allocated inbound DMA coherent buffer
- * @priv: driver private data
- * @arg:  buffer handle returned by allocation routine
- */
+ 
 static int rio_mport_inbound_free(struct file *filp, void __user *arg)
 {
 	struct mport_cdev_priv *priv = filp->private_data;
@@ -1352,11 +1238,7 @@ static int rio_mport_inbound_free(struct file *filp, void __user *arg)
 	return 0;
 }
 
-/*
- * maint_port_idx_get() - Get the port index of the mport instance
- * @priv: driver private data
- * @arg:  port index
- */
+ 
 static int maint_port_idx_get(struct mport_cdev_priv *priv, void __user *arg)
 {
 	struct mport_dev *md = priv->md;
@@ -1638,13 +1520,7 @@ static int rio_mport_remove_pw_filter(struct mport_cdev_priv *priv,
 	return ret;
 }
 
-/*
- * rio_release_dev - release routine for kernel RIO device object
- * @dev: kernel device object associated with a RIO device structure
- *
- * Frees a RIO device struct associated a RIO device struct.
- * The RIO device struct is freed.
- */
+ 
 static void rio_release_dev(struct device *dev)
 {
 	struct rio_dev *rdev;
@@ -1665,14 +1541,7 @@ static void rio_release_net(struct device *dev)
 }
 
 
-/*
- * rio_mport_add_riodev - creates a kernel RIO device object
- *
- * Allocates a RIO device data structure and initializes required fields based
- * on device's configuration space contents.
- * If the device has switch capabilities, then a switch specific portion is
- * allocated and configured.
- */
+ 
 static int rio_mport_add_riodev(struct mport_cdev_priv *priv,
 				   void __user *arg)
 {
@@ -1778,7 +1647,7 @@ static int rio_mport_add_riodev(struct mport_cdev_priv *priv,
 
 	rdev->comp_tag = dev_info.comptag;
 	rdev->destid = destid;
-	/* hopcount is stored as specified by a caller, regardles of EP or SW */
+	 
 	rdev->hopcount = hopcount;
 
 	if (rdev->pef & RIO_PEF_SWITCH) {
@@ -1831,7 +1700,7 @@ static int rio_mport_del_riodev(struct mport_cdev_priv *priv, void __user *arg)
 
 	mport = priv->md->mport;
 
-	/* If device name is specified, removal by name has priority */
+	 
 	if (strlen(dev_info.name)) {
 		dev = bus_find_device_by_name(&rio_bus_type, NULL,
 					      dev_info.name);
@@ -1867,13 +1736,9 @@ static int rio_mport_del_riodev(struct mport_cdev_priv *priv, void __user *arg)
 	return 0;
 }
 
-/*
- * Mport cdev management
- */
+ 
 
-/*
- * mport_cdev_open() - Open character device (mport)
- */
+ 
 static int mport_cdev_open(struct inode *inode, struct file *filp)
 {
 	int ret;
@@ -1881,7 +1746,7 @@ static int mport_cdev_open(struct inode *inode, struct file *filp)
 	struct mport_dev *chdev;
 	struct mport_cdev_priv *priv;
 
-	/* Test for valid device */
+	 
 	if (minor >= RIO_MAX_MPORTS) {
 		rmcd_error("Invalid minor device number");
 		return -EINVAL;
@@ -2004,9 +1869,7 @@ static void mport_cdev_release_dma(struct file *filp)
 #define mport_cdev_release_dma(priv) do {} while (0)
 #endif
 
-/*
- * mport_cdev_release() - Release character device
- */
+ 
 static int mport_cdev_release(struct inode *inode, struct file *filp)
 {
 	struct mport_cdev_priv *priv = filp->private_data;
@@ -2060,9 +1923,7 @@ static int mport_cdev_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * mport_cdev_ioctl() - IOCTLs for character device
- */
+ 
 static long mport_cdev_ioctl(struct file *filp,
 		unsigned int cmd, unsigned long arg)
 {
@@ -2137,12 +1998,7 @@ static long mport_cdev_ioctl(struct file *filp,
 	return err;
 }
 
-/*
- * mport_release_mapping - free mapping resources and info structure
- * @ref: a pointer to the kref within struct rio_mport_mapping
- *
- * NOTE: Shall be called while holding buf_mutex.
- */
+ 
 static void mport_release_mapping(struct kref *ref)
 {
 	struct rio_mport_mapping *map =
@@ -2343,9 +2199,7 @@ static const struct file_operations mport_fops = {
 	.unlocked_ioctl = mport_cdev_ioctl
 };
 
-/*
- * Character device management
- */
+ 
 
 static void mport_device_release(struct device *dev)
 {
@@ -2356,10 +2210,7 @@ static void mport_device_release(struct device *dev)
 	kfree(md);
 }
 
-/*
- * mport_cdev_add() - Create mport_dev from rio_mport
- * @mport:	RapidIO master port
- */
+ 
 static struct mport_dev *mport_cdev_add(struct rio_mport *mport)
 {
 	int ret = 0;
@@ -2399,10 +2250,8 @@ static struct mport_dev *mport_cdev_add(struct rio_mport *mport)
 	md->properties.hdid = mport->host_deviceid;
 	md->properties.index = mport->index;
 
-	/* The transfer_mode property will be returned through mport query
-	 * interface
-	 */
-#ifdef CONFIG_FSL_RIO /* for now: only on Freescale's SoCs */
+	 
+#ifdef CONFIG_FSL_RIO  
 	md->properties.transfer_mode |= RIO_TRANSFER_MODE_MAPPED;
 #else
 	md->properties.transfer_mode |= RIO_TRANSFER_MODE_TRANSFER;
@@ -2443,10 +2292,7 @@ err_cdev:
 	return NULL;
 }
 
-/*
- * mport_cdev_terminate_dma() - Stop all active DMA data transfers and release
- *                              associated DMA channels.
- */
+ 
 static void mport_cdev_terminate_dma(struct mport_dev *md)
 {
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
@@ -2472,10 +2318,7 @@ static void mport_cdev_terminate_dma(struct mport_dev *md)
 }
 
 
-/*
- * mport_cdev_kill_fasync() - Send SIGIO signal to all processes with open
- *                            mport_cdev files.
- */
+ 
 static int mport_cdev_kill_fasync(struct mport_dev *md)
 {
 	unsigned int files = 0;
@@ -2491,10 +2334,7 @@ static int mport_cdev_kill_fasync(struct mport_dev *md)
 	return files;
 }
 
-/*
- * mport_cdev_remove() - Remove mport character device
- * @dev:	Mport device to remove
- */
+ 
 static void mport_cdev_remove(struct mport_dev *md)
 {
 	struct rio_mport_mapping *map, *_map;
@@ -2506,14 +2346,9 @@ static void mport_cdev_remove(struct mport_dev *md)
 	cdev_device_del(&md->cdev, &md->dev);
 	mport_cdev_kill_fasync(md);
 
-	/* TODO: do we need to give clients some time to close file
-	 * descriptors? Simple wait for XX, or kref?
-	 */
+	 
 
-	/*
-	 * Release DMA buffers allocated for the mport device.
-	 * Disable associated inbound Rapidio requests mapping if applicable.
-	 */
+	 
 	mutex_lock(&md->buf_mutex);
 	list_for_each_entry_safe(map, _map, &md->mappings, node) {
 		kref_put(&map->ref, mport_release_mapping);
@@ -2529,14 +2364,9 @@ static void mport_cdev_remove(struct mport_dev *md)
 	put_device(&md->dev);
 }
 
-/*
- * RIO rio_mport_interface driver
- */
+ 
 
-/*
- * mport_add_mport() - Add rio_mport from LDM device struct
- * @dev:		Linux device model struct
- */
+ 
 static int mport_add_mport(struct device *dev)
 {
 	struct rio_mport *mport = NULL;
@@ -2553,10 +2383,7 @@ static int mport_add_mport(struct device *dev)
 	return 0;
 }
 
-/*
- * mport_remove_mport() - Remove rio_mport from global list
- * TODO remove device from global mport_dev list
- */
+ 
 static void mport_remove_mport(struct device *dev)
 {
 	struct rio_mport *mport = NULL;
@@ -2581,25 +2408,21 @@ static void mport_remove_mport(struct device *dev)
 		mport_cdev_remove(chdev);
 }
 
-/* the rio_mport_interface is used to handle local mport devices */
+ 
 static struct class_interface rio_mport_interface __refdata = {
 	.class		= &rio_mport_class,
 	.add_dev	= mport_add_mport,
 	.remove_dev	= mport_remove_mport,
 };
 
-/*
- * Linux kernel module
- */
+ 
 
-/*
- * mport_init - Driver module loading
- */
+ 
 static int __init mport_init(void)
 {
 	int ret;
 
-	/* Create device class needed by udev */
+	 
 	dev_class = class_create(DRV_NAME);
 	if (IS_ERR(dev_class)) {
 		rmcd_error("Unable to create " DRV_NAME " class");
@@ -2612,7 +2435,7 @@ static int __init mport_init(void)
 
 	rmcd_debug(INIT, "Registered class with major=%d", MAJOR(dev_number));
 
-	/* Register to rio_mport_interface */
+	 
 	ret = class_interface_register(&rio_mport_interface);
 	if (ret) {
 		rmcd_error("class_interface_register() failed, err=%d", ret);
@@ -2628,9 +2451,7 @@ err_chr:
 	return ret;
 }
 
-/**
- * mport_exit - Driver module unloading
- */
+ 
 static void __exit mport_exit(void)
 {
 	class_interface_unregister(&rio_mport_interface);

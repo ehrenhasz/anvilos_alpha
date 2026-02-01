@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-/*
- * Copyright 2018-2023 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+ 
 
 #include "efa_com.h"
 #include "efa_com_cmd.h"
@@ -364,7 +362,7 @@ efa_com_check_supported_feature_id(struct efa_com_dev *edev,
 {
 	u32 feature_mask = 1 << feature_id;
 
-	/* Device attributes is always supported */
+	 
 	if (feature_id != EFA_ADMIN_DEVICE_ATTR &&
 	    !(edev->supported_features & feature_mask))
 		return false;

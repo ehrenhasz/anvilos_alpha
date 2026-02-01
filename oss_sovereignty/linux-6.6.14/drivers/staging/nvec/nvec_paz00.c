@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * nvec_paz00: OEM specific driver for Compal PAZ00 based devices
- *
- * Copyright (C) 2011 The AC100 Kernel Team <ac100@lists.launchpad.net>
- *
- * Authors:  Ilya Petrov <ilya.muromec@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -59,7 +53,7 @@ static int nvec_paz00_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* to expose the default value to userspace */
+	 
 	led->cdev.brightness = 0;
 
 	return 0;

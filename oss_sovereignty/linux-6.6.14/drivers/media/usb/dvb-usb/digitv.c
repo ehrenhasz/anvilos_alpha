@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant linux driver for Nebula Electronics uDigiTV DVB-T USB2.0
- * receiver
- *
- * Copyright (C) 2005 Patrick Boettcher (patrick.boettcher@posteo.de)
- *
- * partly based on the SDK published by Nebula Electronics
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include "digitv.h"
 
 #include "mt352.h"
 #include "nxt6000.h"
 
-/* debug */
+ 
 static int dvb_usb_digitv_debug;
 module_param_named(debug,dvb_usb_digitv_debug, int, 0644);
 MODULE_PARM_DESC(debug, "set debugging level (1=rc (or-able))." DVB_USB_DEBUG_STATUS);
@@ -28,7 +20,7 @@ static int digitv_ctrl_msg(struct dvb_usb_device *d,
 	struct digitv_state *st = d->priv;
 	int ret, wo;
 
-	wo = (rbuf == NULL || rlen == 0); /* write-only */
+	wo = (rbuf == NULL || rlen == 0);  
 
 	if (wlen > 4 || rlen > 4)
 		return -EIO;
@@ -50,7 +42,7 @@ static int digitv_ctrl_msg(struct dvb_usb_device *d,
 	return ret;
 }
 
-/* I2C */
+ 
 static int digitv_i2c_xfer(struct i2c_adapter *adap,struct i2c_msg msg[],int num)
 {
 	struct dvb_usb_device *d = i2c_get_adapdata(adap);
@@ -67,7 +59,7 @@ static int digitv_i2c_xfer(struct i2c_adapter *adap,struct i2c_msg msg[],int num
 			i = -EOPNOTSUPP;
 			break;
 		}
-		/* write/read request */
+		 
 		if (i+1 < num && (msg[i+1].flags & I2C_M_RD)) {
 			if (digitv_ctrl_msg(d, USB_READ_COFDM, msg[i].buf[0], NULL, 0,
 						msg[i+1].buf,msg[i+1].len) < 0)
@@ -93,7 +85,7 @@ static struct i2c_algorithm digitv_i2c_algo = {
 	.functionality = digitv_i2c_func,
 };
 
-/* Callbacks for DVB USB */
+ 
 static int digitv_identify_state(struct usb_device *udev,
 				 const struct dvb_usb_device_properties *props,
 				 const struct dvb_usb_device_description **desc,
@@ -190,11 +182,11 @@ static struct rc_map_table rc_map_digitv_table[] = {
 	{ 0xaf59, KEY_AUX },
 	{ 0x5f5a, KEY_DVD },
 	{ 0x6f5a, KEY_POWER },
-	{ 0x9f5a, KEY_CAMERA },     /* labelled 'Picture' */
+	{ 0x9f5a, KEY_CAMERA },      
 	{ 0xaf5a, KEY_AUDIO },
 	{ 0x5f65, KEY_INFO },
-	{ 0x6f65, KEY_F13 },     /* 16:9 */
-	{ 0x9f65, KEY_F14 },     /* 14:9 */
+	{ 0x6f65, KEY_F13 },      
+	{ 0x9f65, KEY_F14 },      
 	{ 0xaf65, KEY_EPG },
 	{ 0x5f66, KEY_EXIT },
 	{ 0x6f66, KEY_MENU },
@@ -212,22 +204,22 @@ static struct rc_map_table rc_map_digitv_table[] = {
 	{ 0x6f95, KEY_YELLOW },
 	{ 0x9f95, KEY_BLUE },
 	{ 0xaf95, KEY_SUBTITLE },
-	{ 0x5f96, KEY_F15 },     /* AD */
+	{ 0x5f96, KEY_F15 },      
 	{ 0x6f96, KEY_TEXT },
 	{ 0x9f96, KEY_MUTE },
 	{ 0xaf96, KEY_REWIND },
 	{ 0x5f99, KEY_STOP },
 	{ 0x6f99, KEY_PLAY },
 	{ 0x9f99, KEY_FASTFORWARD },
-	{ 0xaf99, KEY_F16 },     /* chapter */
+	{ 0xaf99, KEY_F16 },      
 	{ 0x5f9a, KEY_PAUSE },
 	{ 0x6f9a, KEY_PLAY },
 	{ 0x9f9a, KEY_RECORD },
-	{ 0xaf9a, KEY_F17 },     /* picture in picture */
-	{ 0x5fa5, KEY_KPPLUS },  /* zoom in */
-	{ 0x6fa5, KEY_KPMINUS }, /* zoom out */
-	{ 0x9fa5, KEY_F18 },     /* capture */
-	{ 0xafa5, KEY_F19 },     /* web */
+	{ 0xaf9a, KEY_F17 },      
+	{ 0x5fa5, KEY_KPPLUS },   
+	{ 0x6fa5, KEY_KPMINUS },  
+	{ 0x9fa5, KEY_F18 },      
+	{ 0xafa5, KEY_F19 },      
 	{ 0x5fa6, KEY_EMAIL },
 	{ 0x6fa6, KEY_PHONE },
 	{ 0x9fa6, KEY_PC },
@@ -247,13 +239,12 @@ static int digitv_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 	if (ret)
 		return ret;
 
-	/* Tell the device we've read the remote. Not sure how necessary
-	   this is, but the Nebula SDK does it. */
+	 
 	ret = digitv_ctrl_msg(d, USB_WRITE_REMOTE, 0, b, 4, NULL, 0);
 	if (ret)
 		return ret;
 
-	/* if something is inside the buffer, simulate key press */
+	 
 	if (key[0] != 0) {
 		for (i = 0; i < d->props.rc.legacy.rc_map_size; i++) {
 			entry = &d->props.rc.legacy.rc_map_table[i];
@@ -272,7 +263,7 @@ static int digitv_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 	return 0;
 }
 
-/* DVB USB Driver stuff */
+ 
 static struct dvb_usb_device_properties digitv_properties;
 
 static int digitv_probe(struct usb_interface *intf,
@@ -284,7 +275,7 @@ static int digitv_probe(struct usb_interface *intf,
 	if (ret == 0) {
 		u8 b[4] = { 0 };
 
-		if (d != NULL) { /* do that only when the firmware is loaded */
+		if (d != NULL) {  
 			b[0] = 1;
 			digitv_ctrl_msg(d,USB_WRITE_REMOTE_TYPE,0,b,4,NULL,0);
 
@@ -322,7 +313,7 @@ static struct dvb_usb_device_properties digitv_properties = {
 			.frontend_attach  = digitv_frontend_attach,
 			.tuner_attach     = digitv_tuner_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 7,

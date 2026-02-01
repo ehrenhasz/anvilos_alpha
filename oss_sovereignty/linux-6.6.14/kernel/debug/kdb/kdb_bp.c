@@ -1,13 +1,4 @@
-/*
- * Kernel Debugger Architecture Independent Breakpoint Handler
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (c) 1999-2004 Silicon Graphics, Inc.  All Rights Reserved.
- * Copyright (c) 2009 Wind River Systems, Inc.  All Rights Reserved.
- */
+ 
 
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -19,9 +10,7 @@
 #include <linux/interrupt.h>
 #include "kdb_private.h"
 
-/*
- * Table of kdb_breakpoints
- */
+ 
 kdb_bp_t kdb_breakpoints[KDB_MAXBPT];
 
 static void kdb_setsinglestep(struct pt_regs *regs)
@@ -110,14 +99,10 @@ static void kdb_handle_bp(struct pt_regs *regs, kdb_bp_t *bp)
 	if (KDB_DEBUG(BP))
 		kdb_printf("regs->ip = 0x%lx\n", instruction_pointer(regs));
 
-	/*
-	 * Setup single step
-	 */
+	 
 	kdb_setsinglestep(regs);
 
-	/*
-	 * Reset delay attribute
-	 */
+	 
 	bp->bp_delay = 0;
 	bp->bp_delayed = 1;
 }
@@ -125,9 +110,7 @@ static void kdb_handle_bp(struct pt_regs *regs, kdb_bp_t *bp)
 static int _kdb_bp_install(struct pt_regs *regs, kdb_bp_t *bp)
 {
 	int ret;
-	/*
-	 * Install the breakpoint, if it is not already installed.
-	 */
+	 
 
 	if (KDB_DEBUG(BP))
 		kdb_printf("%s: bp_installed %d\n",
@@ -163,14 +146,7 @@ static int _kdb_bp_install(struct pt_regs *regs, kdb_bp_t *bp)
 	return 0;
 }
 
-/*
- * kdb_bp_install
- *
- *	Install kdb_breakpoints prior to returning from the
- *	kernel debugger.  This allows the kdb_breakpoints to be set
- *	upon functions that are used internally by kdb, such as
- *	printk().  This function is only called once per kdb session.
- */
+ 
 void kdb_bp_install(struct pt_regs *regs)
 {
 	int i;
@@ -187,21 +163,7 @@ void kdb_bp_install(struct pt_regs *regs)
 	}
 }
 
-/*
- * kdb_bp_remove
- *
- *	Remove kdb_breakpoints upon entry to the kernel debugger.
- *
- * Parameters:
- *	None.
- * Outputs:
- *	None.
- * Returns:
- *	None.
- * Locking:
- *	None.
- * Remarks:
- */
+ 
 void kdb_bp_remove(void)
 {
 	int i;
@@ -219,21 +181,7 @@ void kdb_bp_remove(void)
 }
 
 
-/*
- * kdb_printbp
- *
- *	Internal function to format and print a breakpoint entry.
- *
- * Parameters:
- *	None.
- * Outputs:
- *	None.
- * Returns:
- *	None.
- * Locking:
- *	None.
- * Remarks:
- */
+ 
 
 static void kdb_printbp(kdb_bp_t *bp, int i)
 {
@@ -252,27 +200,7 @@ static void kdb_printbp(kdb_bp_t *bp, int i)
 	kdb_printf("\n");
 }
 
-/*
- * kdb_bp
- *
- *	Handle the bp commands.
- *
- *	[bp|bph] <addr-expression> [DATAR|DATAW]
- *
- * Parameters:
- *	argc	Count of arguments in argv
- *	argv	Space delimited command line arguments
- * Outputs:
- *	None.
- * Returns:
- *	Zero for success, a kdb diagnostic if failure.
- * Locking:
- *	None.
- * Remarks:
- *
- *	bp	Set breakpoint on all cpus.  Only use hardware assist if need.
- *	bph	Set breakpoint on all cpus.  Force hardware register
- */
+ 
 
 static int kdb_bp(int argc, const char **argv)
 {
@@ -285,9 +213,7 @@ static int kdb_bp(int argc, const char **argv)
 	kdb_bp_t template = {0};
 
 	if (argc == 0) {
-		/*
-		 * Display breakpoint table
-		 */
+		 
 		for (bpno = 0, bp = kdb_breakpoints; bpno < KDB_MAXBPT;
 		     bpno++, bp++) {
 			if (bp->bp_free)
@@ -306,18 +232,12 @@ static int kdb_bp(int argc, const char **argv)
 	if (!template.bp_addr)
 		return KDB_BADINT;
 
-	/*
-	 * This check is redundant (since the breakpoint machinery should
-	 * be doing the same check during kdb_bp_install) but gives the
-	 * user immediate feedback.
-	 */
+	 
 	diag = kgdb_validate_break_address(template.bp_addr);
 	if (diag)
 		return diag;
 
-	/*
-	 * Find an empty bp structure to allocate
-	 */
+	 
 	for (bpno = 0, bp = kdb_breakpoints; bpno < KDB_MAXBPT; bpno++, bp++) {
 		if (bp->bp_free)
 			break;
@@ -335,12 +255,7 @@ static int kdb_bp(int argc, const char **argv)
 		template.bp_type = BP_BREAKPOINT;
 	}
 
-	/*
-	 * Check for clashing breakpoints.
-	 *
-	 * Note, in this design we can't have hardware breakpoints
-	 * enabled for both read and write on the same address.
-	 */
+	 
 	for (i = 0, bp_check = kdb_breakpoints; i < KDB_MAXBPT;
 	     i++, bp_check++) {
 		if (!bp_check->bp_free &&
@@ -353,9 +268,7 @@ static int kdb_bp(int argc, const char **argv)
 
 	template.bp_enabled = 1;
 
-	/*
-	 * Actually allocate the breakpoint found earlier
-	 */
+	 
 	*bp = template;
 	bp->bp_free = 0;
 
@@ -364,25 +277,7 @@ static int kdb_bp(int argc, const char **argv)
 	return 0;
 }
 
-/*
- * kdb_bc
- *
- *	Handles the 'bc', 'be', and 'bd' commands
- *
- *	[bd|bc|be] <breakpoint-number>
- *	[bd|bc|be] *
- *
- * Parameters:
- *	argc	Count of arguments in argv
- *	argv	Space delimited command line arguments
- * Outputs:
- *	None.
- * Returns:
- *	Zero for success, a kdb diagnostic for failure
- * Locking:
- *	None.
- * Remarks:
- */
+ 
 static int kdb_bc(int argc, const char **argv)
 {
 	unsigned long addr;
@@ -393,7 +288,7 @@ static int kdb_bc(int argc, const char **argv)
 	int i;
 	int diag = 0;
 
-	int cmd;			/* KDBCMD_B? */
+	int cmd;			 
 #define KDBCMD_BC	0
 #define KDBCMD_BE	1
 #define KDBCMD_BD	2
@@ -416,10 +311,7 @@ static int kdb_bc(int argc, const char **argv)
 		if (diag)
 			return diag;
 
-		/*
-		 * For addresses less than the maximum breakpoint number,
-		 * assume that the breakpoint number is desired.
-		 */
+		 
 		if (addr < KDB_MAXBPT) {
 			lowbp = highbp = addr;
 			highbp++;
@@ -435,10 +327,7 @@ static int kdb_bc(int argc, const char **argv)
 		}
 	}
 
-	/*
-	 * Now operate on the set of breakpoints matching the input
-	 * criteria (either '*' for all, or an individual breakpoint).
-	 */
+	 
 	for (bp = &kdb_breakpoints[lowbp], i = lowbp;
 	    i < highbp;
 	    i++, bp++) {
@@ -489,35 +378,13 @@ static int kdb_bc(int argc, const char **argv)
 	return (!done) ? KDB_BPTNOTFOUND : 0;
 }
 
-/*
- * kdb_ss
- *
- *	Process the 'ss' (Single Step) command.
- *
- *	ss
- *
- * Parameters:
- *	argc	Argument count
- *	argv	Argument vector
- * Outputs:
- *	None.
- * Returns:
- *	KDB_CMD_SS for success, a kdb error if failure.
- * Locking:
- *	None.
- * Remarks:
- *
- *	Set the arch specific option to trigger a debug trap after the next
- *	instruction.
- */
+ 
 
 static int kdb_ss(int argc, const char **argv)
 {
 	if (argc != 0)
 		return KDB_ARGCOUNT;
-	/*
-	 * Set trace flag and go.
-	 */
+	 
 	KDB_STATE_SET(DOING_SS);
 	return KDB_CMD_SS;
 }
@@ -570,16 +437,14 @@ static kdbtab_t bphcmd = {
 	.flags = KDB_ENABLE_FLOW_CTRL | KDB_REPEAT_NO_ARGS,
 };
 
-/* Initialize the breakpoint table and register	breakpoint commands. */
+ 
 
 void __init kdb_initbptab(void)
 {
 	int i;
 	kdb_bp_t *bp;
 
-	/*
-	 * First time initialization.
-	 */
+	 
 	memset(&kdb_breakpoints, '\0', sizeof(kdb_breakpoints));
 
 	for (i = 0, bp = kdb_breakpoints; i < KDB_MAXBPT; i++, bp++)

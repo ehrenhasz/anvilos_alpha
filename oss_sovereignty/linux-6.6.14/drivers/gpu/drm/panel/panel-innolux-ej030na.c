@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Innolux/Chimei EJ030NA TFT LCD panel driver
- *
- * Copyright (C) 2020, Paul Cercueil <paul@crapouillou.net>
- * Copyright (C) 2020, Christophe Branchereau <cbranchereau@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -95,7 +90,7 @@ static int ej030na_prepare(struct drm_panel *panel)
 		return err;
 	}
 
-	/* Reset the chip */
+	 
 	gpiod_set_value_cansleep(priv->reset_gpio, 1);
 	usleep_range(50, 150);
 	gpiod_set_value_cansleep(priv->reset_gpio, 0);
@@ -129,11 +124,11 @@ static int ej030na_enable(struct drm_panel *panel)
 {
 	struct ej030na *priv = to_ej030na(panel);
 
-	/* standby off */
+	 
 	regmap_write(priv->map, 0x2b, 0x01);
 
 	if (panel->backlight) {
-		/* Wait for the picture to be ready before enabling backlight */
+		 
 		msleep(120);
 	}
 
@@ -144,7 +139,7 @@ static int ej030na_disable(struct drm_panel *panel)
 {
 	struct ej030na *priv = to_ej030na(panel);
 
-	/* standby on */
+	 
 	regmap_write(priv->map, 0x2b, 0x00);
 
 	return 0;
@@ -253,7 +248,7 @@ static void ej030na_remove(struct spi_device *spi)
 }
 
 static const struct drm_display_mode ej030na_modes[] = {
-	{ /* 60 Hz */
+	{  
 		.clock = 14400,
 		.hdisplay = 320,
 		.hsync_start = 320 + 10,
@@ -265,7 +260,7 @@ static const struct drm_display_mode ej030na_modes[] = {
 		.vtotal = 480 + 102 + 9 + 9,
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 50 Hz */
+	{  
 		.clock = 12000,
 		.hdisplay = 320,
 		.hsync_start = 320 + 10,
@@ -290,7 +285,7 @@ static const struct ej030na_info ej030na_info = {
 
 static const struct of_device_id ej030na_of_match[] = {
 	{ .compatible = "innolux,ej030na", .data = &ej030na_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ej030na_of_match);
 

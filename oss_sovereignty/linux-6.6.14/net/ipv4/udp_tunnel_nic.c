@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Facebook Inc.
+
+
 
 #include <linux/ethtool_netlink.h>
 #include <linux/netdevice.h>
@@ -25,17 +25,7 @@ struct udp_tunnel_nic_table_entry {
 	u8 hw_priv;
 };
 
-/**
- * struct udp_tunnel_nic - UDP tunnel port offload state
- * @work:	async work for talking to hardware from process context
- * @dev:	netdev pointer
- * @need_sync:	at least one port start changed
- * @need_replay: space was freed, we need a replay of all ports
- * @work_pending: @work is currently scheduled
- * @n_tables:	number of tables under @entries
- * @missed:	bitmap of tables which overflown
- * @entries:	table of tables of ports currently offloaded
- */
+ 
 struct udp_tunnel_nic {
 	struct work_struct work;
 
@@ -50,9 +40,7 @@ struct udp_tunnel_nic {
 	struct udp_tunnel_nic_table_entry **entries;
 };
 
-/* We ensure all work structs are done using driver state, but not the code.
- * We need a workqueue we can flush before module gets removed.
- */
+ 
 static struct workqueue_struct *udp_tunnel_nic_workqueue;
 
 static const char *udp_tunnel_nic_tunnel_type_name(unsigned int type)
@@ -255,7 +243,7 @@ udp_tunnel_nic_device_sync_by_table(struct net_device *dev,
 	int err;
 
 	for (i = 0; i < utn->n_tables; i++) {
-		/* Find something that needs sync in this table */
+		 
 		for (j = 0; j < info->tables[i].n_entries; j++)
 			if (udp_tunnel_nic_entry_is_queued(&utn->entries[i][j]))
 				break;
@@ -289,9 +277,7 @@ __udp_tunnel_nic_device_sync(struct net_device *dev, struct udp_tunnel_nic *utn)
 		udp_tunnel_nic_device_sync_by_port(dev, utn);
 
 	utn->need_sync = 0;
-	/* Can't replay directly here, in case we come from the tunnel driver's
-	 * notification - trying to replay may deadlock inside tunnel driver.
-	 */
+	 
 	utn->need_replay = udp_tunnel_nic_should_replay(dev, utn);
 }
 
@@ -304,9 +290,7 @@ udp_tunnel_nic_device_sync(struct net_device *dev, struct udp_tunnel_nic *utn)
 	if (!utn->need_sync)
 		return;
 
-	/* Drivers which sleep in the callback need to update from
-	 * the workqueue, if we come from the tunnel driver's notification.
-	 */
+	 
 	may_sleep = info->flags & UDP_TUNNEL_NIC_INFO_MAY_SLEEP;
 	if (!may_sleep)
 		__udp_tunnel_nic_device_sync(dev, utn);
@@ -330,7 +314,7 @@ udp_tunnel_nic_is_capable(struct net_device *dev, struct udp_tunnel_nic *utn,
 	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
 	unsigned int i;
 
-	/* Special case IPv4-only NICs */
+	 
 	if (info->flags & UDP_TUNNEL_NIC_INFO_IPV4_ONLY &&
 	    ti->sa_family != AF_INET)
 		return false;
@@ -373,17 +357,12 @@ udp_tunnel_nic_entry_adj(struct udp_tunnel_nic *utn,
 
 	WARN_ON(entry->use_cnt + (u32)use_cnt_adj > U16_MAX);
 
-	/* If not going from used to unused or vice versa - all done.
-	 * For dodgy entries make sure we try to sync again (queue the entry).
-	 */
+	 
 	entry->use_cnt += use_cnt_adj;
 	if (!dodgy && !entry->use_cnt == !(entry->use_cnt - use_cnt_adj))
 		return;
 
-	/* Cancel the op before it was sent to the device, if possible,
-	 * otherwise we'd need to take special care to issue commands
-	 * in the same order the ports arrived.
-	 */
+	 
 	if (use_cnt_adj < 0) {
 		from = UDP_TUNNEL_NIC_ENTRY_ADD;
 		to = UDP_TUNNEL_NIC_ENTRY_DEL;
@@ -420,11 +399,7 @@ udp_tunnel_nic_entry_try_adj(struct udp_tunnel_nic *utn,
 	return true;
 }
 
-/* Try to find existing matching entry and adjust its use count, instead of
- * adding a new one. Returns true if entry was found. In case of delete the
- * entry may have gotten removed in the process, in which case it will be
- * queued for removal.
- */
+ 
 static bool
 udp_tunnel_nic_try_existing(struct net_device *dev, struct udp_tunnel_nic *utn,
 			    struct udp_tunnel_info *ti, int use_cnt_adj)
@@ -487,10 +462,7 @@ udp_tunnel_nic_add_new(struct net_device *dev, struct udp_tunnel_nic *utn,
 			return true;
 		}
 
-		/* The different table may still fit this port in, but there
-		 * are no devices currently which have multiple tables accepting
-		 * the same tunnel type, and false positives are okay.
-		 */
+		 
 		__set_bit(i, &utn->missed);
 	}
 
@@ -518,10 +490,7 @@ __udp_tunnel_nic_add_port(struct net_device *dev, struct udp_tunnel_info *ti)
 	if (!udp_tunnel_nic_is_capable(dev, utn, ti))
 		return;
 
-	/* It may happen that a tunnel of one type is removed and different
-	 * tunnel type tries to reuse its port before the device was informed.
-	 * Rely on utn->missed to re-add this port later.
-	 */
+	 
 	if (udp_tunnel_nic_has_collision(dev, utn, ti))
 		return;
 
@@ -569,7 +538,7 @@ static void __udp_tunnel_nic_reset_ntf(struct net_device *dev)
 
 			entry->flags &= ~(UDP_TUNNEL_NIC_ENTRY_DEL |
 					  UDP_TUNNEL_NIC_ENTRY_OP_FAIL);
-			/* We don't release rtnl across ops */
+			 
 			WARN_ON(entry->flags & UDP_TUNNEL_NIC_ENTRY_FROZEN);
 			if (!entry->use_cnt)
 				continue;
@@ -598,9 +567,9 @@ __udp_tunnel_nic_dump_size(struct net_device *dev, unsigned int table)
 		if (!udp_tunnel_nic_entry_is_present(&utn->entries[table][j]))
 			continue;
 
-		size += nla_total_size(0) +		 /* _TABLE_ENTRY */
-			nla_total_size(sizeof(__be16)) + /* _ENTRY_PORT */
-			nla_total_size(sizeof(u32));	 /* _ENTRY_TYPE */
+		size += nla_total_size(0) +		  
+			nla_total_size(sizeof(__be16)) +  
+			nla_total_size(sizeof(u32));	  
 	}
 
 	return size;
@@ -683,9 +652,7 @@ udp_tunnel_nic_replay(struct net_device *dev, struct udp_tunnel_nic *utn)
 	struct udp_tunnel_nic_shared_node *node;
 	unsigned int i, j;
 
-	/* Freeze all the ports we are already tracking so that the replay
-	 * does not double up the refcount.
-	 */
+	 
 	for (i = 0; i < utn->n_tables; i++)
 		for (j = 0; j < info->tables[i].n_entries; j++)
 			udp_tunnel_nic_entry_freeze_used(&utn->entries[i][j]);
@@ -772,11 +739,11 @@ static int udp_tunnel_nic_register(struct net_device *dev)
 
 	BUILD_BUG_ON(sizeof(utn->missed) * BITS_PER_BYTE <
 		     UDP_TUNNEL_NIC_MAX_TABLES);
-	/* Expect use count of at most 2 (IPv4, IPv6) per device */
+	 
 	BUILD_BUG_ON(UDP_TUNNEL_NIC_USE_CNT_MAX <
 		     UDP_TUNNEL_NIC_MAX_SHARING_DEVICES * 2);
 
-	/* Check that the driver info is sane */
+	 
 	if (WARN_ON(!info->set_port != !info->unset_port) ||
 	    WARN_ON(!info->set_port == !info->sync_table) ||
 	    WARN_ON(!info->tables[0].n_entries))
@@ -796,7 +763,7 @@ static int udp_tunnel_nic_register(struct net_device *dev)
 			return -EINVAL;
 	}
 
-	/* Create UDP tunnel state structures */
+	 
 	if (info->shared) {
 		node = kzalloc(sizeof(*node), GFP_KERNEL);
 		if (!node)
@@ -839,9 +806,7 @@ udp_tunnel_nic_unregister(struct net_device *dev, struct udp_tunnel_nic *utn)
 {
 	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
 
-	/* For a shared table remove this dev from the list of sharing devices
-	 * and if there are other devices just detach.
-	 */
+	 
 	if (info->shared) {
 		struct udp_tunnel_nic_shared_node *node, *first;
 
@@ -865,14 +830,10 @@ udp_tunnel_nic_unregister(struct net_device *dev, struct udp_tunnel_nic *utn)
 		info->shared->udp_tunnel_nic_info = NULL;
 	}
 
-	/* Flush before we check work, so we don't waste time adding entries
-	 * from the work which we will boot immediately.
-	 */
+	 
 	udp_tunnel_nic_flush(dev, utn);
 
-	/* Wait for the work to be done using the state, netdev core will
-	 * retry unregister until we give up our reference on this device.
-	 */
+	 
 	if (utn->work_pending)
 		return;
 
@@ -902,7 +863,7 @@ udp_tunnel_nic_netdevice_event(struct notifier_block *unused,
 			netdev_WARN(dev, "failed to register for UDP tunnel offloads: %d", err);
 		return notifier_from_errno(err);
 	}
-	/* All other events will need the udp_tunnel_nic state */
+	 
 	utn = dev->udp_tunnel_nic;
 	if (!utn)
 		return NOTIFY_DONE;
@@ -912,7 +873,7 @@ udp_tunnel_nic_netdevice_event(struct notifier_block *unused,
 		return NOTIFY_OK;
 	}
 
-	/* All other events only matter if NIC has to be programmed open */
+	 
 	if (!(info->flags & UDP_TUNNEL_NIC_INFO_OPEN_ONLY))
 		return NOTIFY_DONE;
 

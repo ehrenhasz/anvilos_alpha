@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SHA-512 code by Jean-Luc Cooke <jlcooke@certainkey.com>
- *
- * Copyright (c) Jean-Luc Cooke <jlcooke@certainkey.com>
- * Copyright (c) Andrew McDonald <andrew@mcdonald.org.uk>
- * Copyright (c) 2003 Kyle McMartin <kyle@debian.org>
- */
+
+ 
 #include <crypto/internal/hash.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -103,17 +98,17 @@ sha512_transform(u64 *state, const u8 *input)
 	int i;
 	u64 W[16];
 
-	/* load the state into our registers */
+	 
 	a=state[0];   b=state[1];   c=state[2];   d=state[3];
 	e=state[4];   f=state[5];   g=state[6];   h=state[7];
 
-	/* now iterate */
+	 
 	for (i=0; i<80; i+=8) {
 		if (!(i & 8)) {
 			int j;
 
 			if (i < 16) {
-				/* load the input */
+				 
 				for (j = 0; j < 16; j++)
 					LOAD_OP(i + j, W, input);
 			} else {

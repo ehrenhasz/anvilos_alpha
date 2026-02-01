@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2017 Broadcom
 
-/*
- * Broadcom FlexRM Mailbox Driver
- *
- * Each Broadcom FlexSparx4 offload engine is implemented as an
- * extension to Broadcom FlexRM ring manager. The FlexRM ring
- * manager provides a set of rings which can be used to submit
- * work to a FlexSparx4 offload engine.
- *
- * This driver creates a mailbox controller using a set of FlexRM
- * rings where each mailbox channel represents a separate FlexRM ring.
- */
+
+
+ 
 
 #include <asm/barrier.h>
 #include <asm/byteorder.h>
@@ -35,9 +25,9 @@
 #include <linux/platform_device.h>
 #include <linux/spinlock.h>
 
-/* ====== FlexRM register defines ===== */
+ 
 
-/* FlexRM configuration */
+ 
 #define RING_REGS_SIZE					0x10000
 #define RING_DESC_SIZE					8
 #define RING_DESC_INDEX(offset)				\
@@ -63,7 +53,7 @@
 			(RING_CMPL_DESC_COUNT * RING_DESC_SIZE)
 #define RING_VER_MAGIC					0x76303031
 
-/* Per-Ring register offsets */
+ 
 #define RING_VER					0x000
 #define RING_BD_START_ADDR				0x004
 #define RING_BD_READ_PTR				0x008
@@ -85,7 +75,7 @@
 #define RING_BD_READ_PTR_DDR_CONTROL			0x04c
 #define RING_MSI_DATA_VALUE				0x064
 
-/* Register RING_BD_START_ADDR fields */
+ 
 #define BD_LAST_UPDATE_HW_SHIFT				28
 #define BD_LAST_UPDATE_HW_MASK				0x1
 #define BD_START_ADDR_VALUE(pa)				\
@@ -93,11 +83,11 @@
 #define BD_START_ADDR_DECODE(val)			\
 	((dma_addr_t)((val) & 0x0fffffff) << RING_BD_ALIGN_ORDER)
 
-/* Register RING_CMPL_START_ADDR fields */
+ 
 #define CMPL_START_ADDR_VALUE(pa)			\
 	((u32)((((u64)(pa)) >> RING_CMPL_ALIGN_ORDER) & 0x07ffffff))
 
-/* Register RING_CONTROL fields */
+ 
 #define CONTROL_MASK_DISABLE_CONTROL			12
 #define CONTROL_FLUSH_SHIFT				5
 #define CONTROL_ACTIVE_SHIFT				4
@@ -108,10 +98,10 @@
 #define CONTROL_RATE_SLOW				0xa
 #define CONTROL_RATE_IDLE				0xb
 
-/* Register RING_FLUSH_DONE fields */
+ 
 #define FLUSH_DONE_MASK					0x1
 
-/* Register RING_MSI_CONTROL fields */
+ 
 #define MSI_TIMER_VAL_SHIFT				16
 #define MSI_TIMER_VAL_MASK				0xffff
 #define MSI_ENABLE_SHIFT				15
@@ -119,15 +109,15 @@
 #define MSI_COUNT_SHIFT					0
 #define MSI_COUNT_MASK					0x3ff
 
-/* Register RING_BD_READ_PTR_DDR_CONTROL fields */
+ 
 #define BD_READ_PTR_DDR_TIMER_VAL_SHIFT			16
 #define BD_READ_PTR_DDR_TIMER_VAL_MASK			0xffff
 #define BD_READ_PTR_DDR_ENABLE_SHIFT			15
 #define BD_READ_PTR_DDR_ENABLE_MASK			0x1
 
-/* ====== FlexRM ring descriptor defines ===== */
+ 
 
-/* Completion descriptor format */
+ 
 #define CMPL_OPAQUE_SHIFT			0
 #define CMPL_OPAQUE_MASK			0xffff
 #define CMPL_ENGINE_STATUS_SHIFT		16
@@ -137,7 +127,7 @@
 #define CMPL_RM_STATUS_SHIFT			48
 #define CMPL_RM_STATUS_MASK			0xffff
 
-/* Completion DME status code */
+ 
 #define DME_STATUS_MEM_COR_ERR			BIT(0)
 #define DME_STATUS_MEM_UCOR_ERR			BIT(1)
 #define DME_STATUS_FIFO_UNDERFLOW		BIT(2)
@@ -151,24 +141,24 @@
 						 DME_STATUS_RRESP_ERR | \
 						 DME_STATUS_BRESP_ERR)
 
-/* Completion RM status code */
+ 
 #define RM_STATUS_CODE_SHIFT			0
 #define RM_STATUS_CODE_MASK			0x3ff
 #define RM_STATUS_CODE_GOOD			0x0
 #define RM_STATUS_CODE_AE_TIMEOUT		0x3ff
 
-/* General descriptor format */
+ 
 #define DESC_TYPE_SHIFT				60
 #define DESC_TYPE_MASK				0xf
 #define DESC_PAYLOAD_SHIFT			0
 #define DESC_PAYLOAD_MASK			0x0fffffffffffffff
 
-/* Null descriptor format  */
+ 
 #define NULL_TYPE				0
 #define NULL_TOGGLE_SHIFT			58
 #define NULL_TOGGLE_MASK			0x1
 
-/* Header descriptor format */
+ 
 #define HEADER_TYPE				1
 #define HEADER_TOGGLE_SHIFT			58
 #define HEADER_TOGGLE_MASK			0x1
@@ -184,66 +174,66 @@
 #define HEADER_OPAQUE_SHIFT			0
 #define HEADER_OPAQUE_MASK			0xffff
 
-/* Source (SRC) descriptor format */
+ 
 #define SRC_TYPE				2
 #define SRC_LENGTH_SHIFT			44
 #define SRC_LENGTH_MASK				0xffff
 #define SRC_ADDR_SHIFT				0
 #define SRC_ADDR_MASK				0x00000fffffffffff
 
-/* Destination (DST) descriptor format */
+ 
 #define DST_TYPE				3
 #define DST_LENGTH_SHIFT			44
 #define DST_LENGTH_MASK				0xffff
 #define DST_ADDR_SHIFT				0
 #define DST_ADDR_MASK				0x00000fffffffffff
 
-/* Immediate (IMM) descriptor format */
+ 
 #define IMM_TYPE				4
 #define IMM_DATA_SHIFT				0
 #define IMM_DATA_MASK				0x0fffffffffffffff
 
-/* Next pointer (NPTR) descriptor format */
+ 
 #define NPTR_TYPE				5
 #define NPTR_TOGGLE_SHIFT			58
 #define NPTR_TOGGLE_MASK			0x1
 #define NPTR_ADDR_SHIFT				0
 #define NPTR_ADDR_MASK				0x00000fffffffffff
 
-/* Mega source (MSRC) descriptor format */
+ 
 #define MSRC_TYPE				6
 #define MSRC_LENGTH_SHIFT			44
 #define MSRC_LENGTH_MASK			0xffff
 #define MSRC_ADDR_SHIFT				0
 #define MSRC_ADDR_MASK				0x00000fffffffffff
 
-/* Mega destination (MDST) descriptor format */
+ 
 #define MDST_TYPE				7
 #define MDST_LENGTH_SHIFT			44
 #define MDST_LENGTH_MASK			0xffff
 #define MDST_ADDR_SHIFT				0
 #define MDST_ADDR_MASK				0x00000fffffffffff
 
-/* Source with tlast (SRCT) descriptor format */
+ 
 #define SRCT_TYPE				8
 #define SRCT_LENGTH_SHIFT			44
 #define SRCT_LENGTH_MASK			0xffff
 #define SRCT_ADDR_SHIFT				0
 #define SRCT_ADDR_MASK				0x00000fffffffffff
 
-/* Destination with tlast (DSTT) descriptor format */
+ 
 #define DSTT_TYPE				9
 #define DSTT_LENGTH_SHIFT			44
 #define DSTT_LENGTH_MASK			0xffff
 #define DSTT_ADDR_SHIFT				0
 #define DSTT_ADDR_MASK				0x00000fffffffffff
 
-/* Immediate with tlast (IMMT) descriptor format */
+ 
 #define IMMT_TYPE				10
 #define IMMT_DATA_SHIFT				0
 #define IMMT_DATA_MASK				0x0fffffffffffffff
 
-/* Descriptor helper macros */
+ 
 #define DESC_DEC(_d, _s, _m)			(((_d) >> (_s)) & (_m))
 #define DESC_ENC(_d, _v, _s, _m)		\
 			do { \
@@ -251,10 +241,10 @@
 				(_d) |= (((u64)(_v) & (_m)) << (_s)); \
 			} while (0)
 
-/* ====== FlexRM data structures ===== */
+ 
 
 struct flexrm_ring {
-	/* Unprotected members */
+	 
 	int num;
 	struct flexrm_mbox *mbox;
 	void __iomem *regs;
@@ -269,10 +259,10 @@ struct flexrm_ring {
 	u32 bd_write_offset;
 	void *cmpl_base;
 	dma_addr_t cmpl_dma_base;
-	/* Atomic stats */
+	 
 	atomic_t msg_send_count;
 	atomic_t msg_cmpl_count;
-	/* Protected members */
+	 
 	spinlock_t lock;
 	DECLARE_BITMAP(requests_bmap, RING_MAX_REQ_COUNT);
 	u32 cmpl_read_offset;
@@ -289,7 +279,7 @@ struct flexrm_mbox {
 	struct mbox_controller controller;
 };
 
-/* ====== FlexRM ring descriptor helper routines ===== */
+ 
 
 static u64 flexrm_read_desc(void *desc_ptr)
 {
@@ -398,36 +388,14 @@ static void flexrm_enqueue_desc(u32 nhpos, u32 nhcnt, u32 reqid,
 	u64 d;
 	u32 nhavail, _toggle, _startpkt, _endpkt, _bdcount;
 
-	/* Sanity check */
+	 
 	if (nhcnt <= nhpos)
 		return;
 
-	/*
-	 * Each request or packet start with a HEADER descriptor followed
-	 * by one or more non-HEADER descriptors (SRC, SRCT, MSRC, DST,
-	 * DSTT, MDST, IMM, and IMMT). The number of non-HEADER descriptors
-	 * following a HEADER descriptor is represented by BDCOUNT field
-	 * of HEADER descriptor. The max value of BDCOUNT field is 31 which
-	 * means we can only have 31 non-HEADER descriptors following one
-	 * HEADER descriptor.
-	 *
-	 * In general use, number of non-HEADER descriptors can easily go
-	 * beyond 31. To tackle this situation, we have packet (or request)
-	 * extension bits (STARTPKT and ENDPKT) in the HEADER descriptor.
-	 *
-	 * To use packet extension, the first HEADER descriptor of request
-	 * (or packet) will have STARTPKT=1 and ENDPKT=0. The intermediate
-	 * HEADER descriptors will have STARTPKT=0 and ENDPKT=0. The last
-	 * HEADER descriptor will have STARTPKT=0 and ENDPKT=1. Also, the
-	 * TOGGLE bit of the first HEADER will be set to invalid state to
-	 * ensure that FlexRM does not start fetching descriptors till all
-	 * descriptors are enqueued. The user of this function will flip
-	 * the TOGGLE bit of first HEADER after all descriptors are
-	 * enqueued.
-	 */
+	 
 
 	if ((nhpos % HEADER_BDCOUNT_MAX == 0) && (nhcnt - nhpos)) {
-		/* Prepare the header descriptor */
+		 
 		nhavail = (nhcnt - nhpos);
 		_toggle = (nhpos == 0) ? !(*toggle) : (*toggle);
 		_startpkt = (nhpos == 0) ? 0x1 : 0x0;
@@ -441,15 +409,15 @@ static void flexrm_enqueue_desc(u32 nhpos, u32 nhcnt, u32 reqid,
 		d = flexrm_header_desc(_toggle, _startpkt, _endpkt,
 					_bdcount, 0x0, reqid);
 
-		/* Write header descriptor */
+		 
 		flexrm_write_desc(*desc_ptr, d);
 
-		/* Point to next descriptor */
+		 
 		*desc_ptr += sizeof(desc);
 		if (*desc_ptr == end_desc)
 			*desc_ptr = start_desc;
 
-		/* Skip next pointer descriptors */
+		 
 		while (flexrm_is_next_table_desc(*desc_ptr)) {
 			*toggle = (*toggle) ? 0 : 1;
 			*desc_ptr += sizeof(desc);
@@ -458,15 +426,15 @@ static void flexrm_enqueue_desc(u32 nhpos, u32 nhcnt, u32 reqid,
 		}
 	}
 
-	/* Write desired descriptor */
+	 
 	flexrm_write_desc(*desc_ptr, desc);
 
-	/* Point to next descriptor */
+	 
 	*desc_ptr += sizeof(desc);
 	if (*desc_ptr == end_desc)
 		*desc_ptr = start_desc;
 
-	/* Skip next pointer descriptors */
+	 
 	while (flexrm_is_next_table_desc(*desc_ptr)) {
 		*toggle = (*toggle) ? 0 : 1;
 		*desc_ptr += sizeof(desc);
@@ -690,13 +658,13 @@ static void *flexrm_spu_write_descs(struct brcm_message *msg, u32 nhcnt,
 		}
 	}
 
-	/* Null descriptor with invalid toggle bit */
+	 
 	flexrm_write_desc(desc_ptr, flexrm_null_desc(!toggle));
 
-	/* Ensure that descriptors have been written to memory */
+	 
 	wmb();
 
-	/* Flip toggle bit in header */
+	 
 	flexrm_flip_header_toggle(orig_desc_ptr);
 
 	return desc_ptr;
@@ -762,20 +730,20 @@ static void *flexrm_sba_write_descs(struct brcm_message *msg, u32 nhcnt,
 	struct brcm_sba_command *c;
 	void *orig_desc_ptr = desc_ptr;
 
-	/* Convert SBA commands into descriptors */
+	 
 	for (i = 0; i < msg->sba.cmds_count; i++) {
 		c = &msg->sba.cmds[i];
 
 		if ((c->flags & BRCM_SBA_CMD_HAS_RESP) &&
 		    (c->flags & BRCM_SBA_CMD_HAS_OUTPUT)) {
-			/* Destination response descriptor */
+			 
 			d = flexrm_dst_desc(c->resp, c->resp_len);
 			flexrm_enqueue_desc(nhpos, nhcnt, reqid,
 					     d, &desc_ptr, &toggle,
 					     start_desc, end_desc);
 			nhpos++;
 		} else if (c->flags & BRCM_SBA_CMD_HAS_RESP) {
-			/* Destination response with tlast descriptor */
+			 
 			d = flexrm_dstt_desc(c->resp, c->resp_len);
 			flexrm_enqueue_desc(nhpos, nhcnt, reqid,
 					     d, &desc_ptr, &toggle,
@@ -784,7 +752,7 @@ static void *flexrm_sba_write_descs(struct brcm_message *msg, u32 nhcnt,
 		}
 
 		if (c->flags & BRCM_SBA_CMD_HAS_OUTPUT) {
-			/* Destination with tlast descriptor */
+			 
 			d = flexrm_dstt_desc(c->data, c->data_len);
 			flexrm_enqueue_desc(nhpos, nhcnt, reqid,
 					     d, &desc_ptr, &toggle,
@@ -793,14 +761,14 @@ static void *flexrm_sba_write_descs(struct brcm_message *msg, u32 nhcnt,
 		}
 
 		if (c->flags & BRCM_SBA_CMD_TYPE_B) {
-			/* Command as immediate descriptor */
+			 
 			d = flexrm_imm_desc(c->cmd);
 			flexrm_enqueue_desc(nhpos, nhcnt, reqid,
 					     d, &desc_ptr, &toggle,
 					     start_desc, end_desc);
 			nhpos++;
 		} else {
-			/* Command as immediate descriptor with tlast */
+			 
 			d = flexrm_immt_desc(c->cmd);
 			flexrm_enqueue_desc(nhpos, nhcnt, reqid,
 					     d, &desc_ptr, &toggle,
@@ -810,7 +778,7 @@ static void *flexrm_sba_write_descs(struct brcm_message *msg, u32 nhcnt,
 
 		if ((c->flags & BRCM_SBA_CMD_TYPE_B) ||
 		    (c->flags & BRCM_SBA_CMD_TYPE_C)) {
-			/* Source with tlast descriptor */
+			 
 			d = flexrm_srct_desc(c->data, c->data_len);
 			flexrm_enqueue_desc(nhpos, nhcnt, reqid,
 					     d, &desc_ptr, &toggle,
@@ -819,13 +787,13 @@ static void *flexrm_sba_write_descs(struct brcm_message *msg, u32 nhcnt,
 		}
 	}
 
-	/* Null descriptor with invalid toggle bit */
+	 
 	flexrm_write_desc(desc_ptr, flexrm_null_desc(!toggle));
 
-	/* Ensure that descriptors have been written to memory */
+	 
 	wmb();
 
-	/* Flip toggle bit in header */
+	 
 	flexrm_flip_header_toggle(orig_desc_ptr);
 
 	return desc_ptr;
@@ -914,7 +882,7 @@ static void *flexrm_write_descs(struct brcm_message *msg, u32 nhcnt,
 	};
 }
 
-/* ====== FlexRM driver helper routines ===== */
+ 
 
 static void flexrm_write_config_in_seqfile(struct flexrm_mbox *mbox,
 					   struct seq_file *file)
@@ -983,12 +951,12 @@ static int flexrm_new_request(struct flexrm_ring *ring,
 	bool exit_cleanup = false;
 	int ret = 0, reqid;
 
-	/* Do sanity check on message */
+	 
 	if (!flexrm_sanity_check(msg))
 		return -EIO;
 	msg->error = 0;
 
-	/* If no requests possible then save data pointer and goto done. */
+	 
 	spin_lock_irqsave(&ring->lock, flags);
 	reqid = bitmap_find_free_region(ring->requests_bmap,
 					RING_MAX_REQ_COUNT, 0);
@@ -997,7 +965,7 @@ static int flexrm_new_request(struct flexrm_ring *ring,
 		return -ENOSPC;
 	ring->requests[reqid] = msg;
 
-	/* Do DMA mappings for the message */
+	 
 	ret = flexrm_dma_map(ring->mbox->dev, msg);
 	if (ret < 0) {
 		ring->requests[reqid] = NULL;
@@ -1007,21 +975,17 @@ static int flexrm_new_request(struct flexrm_ring *ring,
 		return ret;
 	}
 
-	/* Determine current HW BD read offset */
+	 
 	read_offset = readl_relaxed(ring->regs + RING_BD_READ_PTR);
 	val = readl_relaxed(ring->regs + RING_BD_START_ADDR);
 	read_offset *= RING_DESC_SIZE;
 	read_offset += (u32)(BD_START_ADDR_DECODE(val) - ring->bd_dma_base);
 
-	/*
-	 * Number required descriptors = number of non-header descriptors +
-	 *				 number of header descriptors +
-	 *				 1x null descriptor
-	 */
+	 
 	nhcnt = flexrm_estimate_nonheader_desc_count(msg);
 	count = flexrm_estimate_header_desc_count(nhcnt) + nhcnt + 1;
 
-	/* Check for available descriptor space. */
+	 
 	write_offset = ring->bd_write_offset;
 	while (count) {
 		if (!flexrm_is_next_table_desc(ring->bd_base + write_offset))
@@ -1038,7 +1002,7 @@ static int flexrm_new_request(struct flexrm_ring *ring,
 		goto exit;
 	}
 
-	/* Write descriptors to ring */
+	 
 	next = flexrm_write_descs(msg, nhcnt, reqid,
 			ring->bd_base + ring->bd_write_offset,
 			RING_BD_TOGGLE_VALID(ring->bd_write_offset),
@@ -1049,17 +1013,17 @@ static int flexrm_new_request(struct flexrm_ring *ring,
 		goto exit;
 	}
 
-	/* Save ring BD write offset */
+	 
 	ring->bd_write_offset = (unsigned long)(next - ring->bd_base);
 
-	/* Increment number of messages sent */
+	 
 	atomic_inc_return(&ring->msg_send_count);
 
 exit:
-	/* Update error status in message */
+	 
 	msg->error = ret;
 
-	/* Cleanup if we failed */
+	 
 	if (exit_cleanup) {
 		flexrm_dma_unmap(ring->mbox->dev, msg);
 		ring->requests[reqid] = NULL;
@@ -1082,14 +1046,7 @@ static int flexrm_process_completions(struct flexrm_ring *ring)
 
 	spin_lock_irqsave(&ring->lock, flags);
 
-	/*
-	 * Get current completion read and write offset
-	 *
-	 * Note: We should read completion write pointer at least once
-	 * after we get a MSI interrupt because HW maintains internal
-	 * MSI status which will allow next MSI interrupt only after
-	 * completion write pointer is read.
-	 */
+	 
 	cmpl_write_offset = readl_relaxed(ring->regs + RING_CMPL_WRITE_PTR);
 	cmpl_write_offset *= RING_DESC_SIZE;
 	cmpl_read_offset = ring->cmpl_read_offset;
@@ -1097,18 +1054,18 @@ static int flexrm_process_completions(struct flexrm_ring *ring)
 
 	spin_unlock_irqrestore(&ring->lock, flags);
 
-	/* For each completed request notify mailbox clients */
+	 
 	reqid = 0;
 	while (cmpl_read_offset != cmpl_write_offset) {
-		/* Dequeue next completion descriptor */
+		 
 		desc = *((u64 *)(ring->cmpl_base + cmpl_read_offset));
 
-		/* Next read offset */
+		 
 		cmpl_read_offset += RING_DESC_SIZE;
 		if (cmpl_read_offset == RING_CMPL_SIZE)
 			cmpl_read_offset = 0;
 
-		/* Decode error from completion descriptor */
+		 
 		err = flexrm_cmpl_desc_to_error(desc);
 		if (err < 0) {
 			dev_warn(ring->mbox->dev,
@@ -1116,10 +1073,10 @@ static int flexrm_process_completions(struct flexrm_ring *ring)
 			ring->num, (unsigned long)desc, err);
 		}
 
-		/* Determine request id from completion descriptor */
+		 
 		reqid = flexrm_cmpl_desc_to_reqid(desc);
 
-		/* Determine message pointer based on reqid */
+		 
 		msg = ring->requests[reqid];
 		if (!msg) {
 			dev_warn(ring->mbox->dev,
@@ -1128,20 +1085,20 @@ static int flexrm_process_completions(struct flexrm_ring *ring)
 			continue;
 		}
 
-		/* Release reqid for recycling */
+		 
 		ring->requests[reqid] = NULL;
 		spin_lock_irqsave(&ring->lock, flags);
 		bitmap_release_region(ring->requests_bmap, reqid, 0);
 		spin_unlock_irqrestore(&ring->lock, flags);
 
-		/* Unmap DMA mappings */
+		 
 		flexrm_dma_unmap(ring->mbox->dev, msg);
 
-		/* Give-back message to mailbox client */
+		 
 		msg->error = err;
 		mbox_chan_received_data(chan, msg);
 
-		/* Increment number of completions processed */
+		 
 		atomic_inc_return(&ring->msg_cmpl_count);
 		count++;
 	}
@@ -1149,13 +1106,13 @@ static int flexrm_process_completions(struct flexrm_ring *ring)
 	return count;
 }
 
-/* ====== FlexRM Debugfs callbacks ====== */
+ 
 
 static int flexrm_debugfs_conf_show(struct seq_file *file, void *offset)
 {
 	struct flexrm_mbox *mbox = dev_get_drvdata(file->private);
 
-	/* Write config in file */
+	 
 	flexrm_write_config_in_seqfile(mbox, file);
 
 	return 0;
@@ -1165,18 +1122,18 @@ static int flexrm_debugfs_stats_show(struct seq_file *file, void *offset)
 {
 	struct flexrm_mbox *mbox = dev_get_drvdata(file->private);
 
-	/* Write stats in file */
+	 
 	flexrm_write_stats_in_seqfile(mbox, file);
 
 	return 0;
 }
 
-/* ====== FlexRM interrupt handler ===== */
+ 
 
 static irqreturn_t flexrm_irq_event(int irq, void *dev_id)
 {
-	/* We only have MSI for completions so just wakeup IRQ thread */
-	/* Ring related errors will be informed via completion descriptors */
+	 
+	 
 
 	return IRQ_WAKE_THREAD;
 }
@@ -1188,7 +1145,7 @@ static irqreturn_t flexrm_irq_thread(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* ====== FlexRM mailbox callbacks ===== */
+ 
 
 static int flexrm_send_data(struct mbox_chan *chan, void *data)
 {
@@ -1228,7 +1185,7 @@ static int flexrm_startup(struct mbox_chan *chan)
 	dma_addr_t next_addr;
 	struct flexrm_ring *ring = chan->con_priv;
 
-	/* Allocate BD memory */
+	 
 	ring->bd_base = dma_pool_alloc(ring->mbox->bd_pool,
 				       GFP_KERNEL, &ring->bd_dma_base);
 	if (!ring->bd_base) {
@@ -1239,7 +1196,7 @@ static int flexrm_startup(struct mbox_chan *chan)
 		goto fail;
 	}
 
-	/* Configure next table pointer entries in BD memory */
+	 
 	for (off = 0; off < RING_BD_SIZE; off += RING_DESC_SIZE) {
 		next_addr = off + RING_DESC_SIZE;
 		if (next_addr == RING_BD_SIZE)
@@ -1253,7 +1210,7 @@ static int flexrm_startup(struct mbox_chan *chan)
 		flexrm_write_desc(ring->bd_base + off, d);
 	}
 
-	/* Allocate completion memory */
+	 
 	ring->cmpl_base = dma_pool_zalloc(ring->mbox->cmpl_pool,
 					 GFP_KERNEL, &ring->cmpl_dma_base);
 	if (!ring->cmpl_base) {
@@ -1264,7 +1221,7 @@ static int flexrm_startup(struct mbox_chan *chan)
 		goto fail_free_bd_memory;
 	}
 
-	/* Request IRQ */
+	 
 	if (ring->irq == UINT_MAX) {
 		dev_err(ring->mbox->dev,
 			"ring%d IRQ not available\n", ring->num);
@@ -1282,7 +1239,7 @@ static int flexrm_startup(struct mbox_chan *chan)
 	}
 	ring->irq_requested = true;
 
-	/* Set IRQ affinity hint */
+	 
 	ring->irq_aff_hint = CPU_MASK_NONE;
 	val = ring->mbox->num_rings;
 	val = (num_online_cpus() < val) ? val / num_online_cpus() : 1;
@@ -1296,46 +1253,46 @@ static int flexrm_startup(struct mbox_chan *chan)
 		goto fail_free_irq;
 	}
 
-	/* Disable/inactivate ring */
+	 
 	writel_relaxed(0x0, ring->regs + RING_CONTROL);
 
-	/* Program BD start address */
+	 
 	val = BD_START_ADDR_VALUE(ring->bd_dma_base);
 	writel_relaxed(val, ring->regs + RING_BD_START_ADDR);
 
-	/* BD write pointer will be same as HW write pointer */
+	 
 	ring->bd_write_offset =
 			readl_relaxed(ring->regs + RING_BD_WRITE_PTR);
 	ring->bd_write_offset *= RING_DESC_SIZE;
 
-	/* Program completion start address */
+	 
 	val = CMPL_START_ADDR_VALUE(ring->cmpl_dma_base);
 	writel_relaxed(val, ring->regs + RING_CMPL_START_ADDR);
 
-	/* Completion read pointer will be same as HW write pointer */
+	 
 	ring->cmpl_read_offset =
 			readl_relaxed(ring->regs + RING_CMPL_WRITE_PTR);
 	ring->cmpl_read_offset *= RING_DESC_SIZE;
 
-	/* Read ring Tx, Rx, and Outstanding counts to clear */
+	 
 	readl_relaxed(ring->regs + RING_NUM_REQ_RECV_LS);
 	readl_relaxed(ring->regs + RING_NUM_REQ_RECV_MS);
 	readl_relaxed(ring->regs + RING_NUM_REQ_TRANS_LS);
 	readl_relaxed(ring->regs + RING_NUM_REQ_TRANS_MS);
 	readl_relaxed(ring->regs + RING_NUM_REQ_OUTSTAND);
 
-	/* Configure RING_MSI_CONTROL */
+	 
 	val = 0;
 	val |= (ring->msi_timer_val << MSI_TIMER_VAL_SHIFT);
 	val |= BIT(MSI_ENABLE_SHIFT);
 	val |= (ring->msi_count_threshold & MSI_COUNT_MASK) << MSI_COUNT_SHIFT;
 	writel_relaxed(val, ring->regs + RING_MSI_CONTROL);
 
-	/* Enable/activate ring */
+	 
 	val = BIT(CONTROL_ACTIVE_SHIFT);
 	writel_relaxed(val, ring->regs + RING_CONTROL);
 
-	/* Reset stats to zero */
+	 
 	atomic_set(&ring->msg_send_count, 0);
 	atomic_set(&ring->msg_cmpl_count, 0);
 
@@ -1363,11 +1320,11 @@ static void flexrm_shutdown(struct mbox_chan *chan)
 	struct brcm_message *msg;
 	struct flexrm_ring *ring = chan->con_priv;
 
-	/* Disable/inactivate ring */
+	 
 	writel_relaxed(0x0, ring->regs + RING_CONTROL);
 
-	/* Set ring flush state */
-	timeout = 1000; /* timeout of 1s */
+	 
+	timeout = 1000;  
 	writel_relaxed(BIT(CONTROL_FLUSH_SHIFT),
 			ring->regs + RING_CONTROL);
 	do {
@@ -1380,8 +1337,8 @@ static void flexrm_shutdown(struct mbox_chan *chan)
 		dev_err(ring->mbox->dev,
 			"setting ring%d flush state timedout\n", ring->num);
 
-	/* Clear ring flush state */
-	timeout = 1000; /* timeout of 1s */
+	 
+	timeout = 1000;  
 	writel_relaxed(0x0, ring->regs + RING_CONTROL);
 	do {
 		if (!(readl_relaxed(ring->regs + RING_FLUSH_DONE) &
@@ -1393,41 +1350,41 @@ static void flexrm_shutdown(struct mbox_chan *chan)
 		dev_err(ring->mbox->dev,
 			"clearing ring%d flush state timedout\n", ring->num);
 
-	/* Abort all in-flight requests */
+	 
 	for (reqid = 0; reqid < RING_MAX_REQ_COUNT; reqid++) {
 		msg = ring->requests[reqid];
 		if (!msg)
 			continue;
 
-		/* Release reqid for recycling */
+		 
 		ring->requests[reqid] = NULL;
 
-		/* Unmap DMA mappings */
+		 
 		flexrm_dma_unmap(ring->mbox->dev, msg);
 
-		/* Give-back message to mailbox client */
+		 
 		msg->error = -EIO;
 		mbox_chan_received_data(chan, msg);
 	}
 
-	/* Clear requests bitmap */
+	 
 	bitmap_zero(ring->requests_bmap, RING_MAX_REQ_COUNT);
 
-	/* Release IRQ */
+	 
 	if (ring->irq_requested) {
 		irq_update_affinity_hint(ring->irq, NULL);
 		free_irq(ring->irq, ring);
 		ring->irq_requested = false;
 	}
 
-	/* Free-up completion descriptor ring */
+	 
 	if (ring->cmpl_base) {
 		dma_pool_free(ring->mbox->cmpl_pool,
 			      ring->cmpl_base, ring->cmpl_dma_base);
 		ring->cmpl_base = NULL;
 	}
 
-	/* Free-up BD descriptor ring */
+	 
 	if (ring->bd_base) {
 		dma_pool_free(ring->mbox->bd_pool,
 			      ring->bd_base, ring->bd_dma_base);
@@ -1468,7 +1425,7 @@ static struct mbox_chan *flexrm_mbox_of_xlate(struct mbox_controller *cntlr,
 	return chan;
 }
 
-/* ====== FlexRM platform driver ===== */
+ 
 
 static void flexrm_mbox_msi_write(struct msi_desc *desc, struct msi_msg *msg)
 {
@@ -1476,7 +1433,7 @@ static void flexrm_mbox_msi_write(struct msi_desc *desc, struct msi_msg *msg)
 	struct flexrm_mbox *mbox = dev_get_drvdata(dev);
 	struct flexrm_ring *ring = &mbox->rings[desc->msi_index];
 
-	/* Configure per-Ring MSI registers */
+	 
 	writel_relaxed(msg->address_lo, ring->regs + RING_MSI_ADDR_LS);
 	writel_relaxed(msg->address_hi, ring->regs + RING_MSI_ADDR_MS);
 	writel_relaxed(msg->data, ring->regs + RING_MSI_DATA_VALUE);
@@ -1492,7 +1449,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 	struct flexrm_mbox *mbox;
 	struct device *dev = &pdev->dev;
 
-	/* Allocate driver mailbox struct */
+	 
 	mbox = devm_kzalloc(dev, sizeof(*mbox), GFP_KERNEL);
 	if (!mbox) {
 		ret = -ENOMEM;
@@ -1501,7 +1458,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 	mbox->dev = dev;
 	platform_set_drvdata(pdev, mbox);
 
-	/* Get resource for registers and map registers of all rings */
+	 
 	mbox->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &iomem);
 	if (!iomem || (resource_size(iomem) < RING_REGS_SIZE)) {
 		ret = -ENODEV;
@@ -1512,7 +1469,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 	}
 	regs_end = mbox->regs + resource_size(iomem);
 
-	/* Scan and count available rings */
+	 
 	mbox->num_rings = 0;
 	for (regs = mbox->regs; regs < regs_end; regs += RING_REGS_SIZE) {
 		if (readl_relaxed(regs + RING_VER) == RING_VER_MAGIC)
@@ -1523,7 +1480,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	/* Allocate driver ring structs */
+	 
 	ring = devm_kcalloc(dev, mbox->num_rings, sizeof(*ring), GFP_KERNEL);
 	if (!ring) {
 		ret = -ENOMEM;
@@ -1531,7 +1488,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 	}
 	mbox->rings = ring;
 
-	/* Initialize members of driver ring structs */
+	 
 	regs = mbox->regs;
 	for (index = 0; index < mbox->num_rings; index++) {
 		ring = &mbox->rings[index];
@@ -1562,7 +1519,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 		ring->cmpl_read_offset = 0;
 	}
 
-	/* FlexRM is capable of 40-bit physical addresses only */
+	 
 	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
 	if (ret) {
 		ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
@@ -1570,7 +1527,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 			goto fail;
 	}
 
-	/* Create DMA pool for ring BD memory */
+	 
 	mbox->bd_pool = dma_pool_create("bd", dev, RING_BD_SIZE,
 					1 << RING_BD_ALIGN_ORDER, 0);
 	if (!mbox->bd_pool) {
@@ -1578,7 +1535,7 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	/* Create DMA pool for ring completion memory */
+	 
 	mbox->cmpl_pool = dma_pool_create("cmpl", dev, RING_CMPL_SIZE,
 					  1 << RING_CMPL_ALIGN_ORDER, 0);
 	if (!mbox->cmpl_pool) {
@@ -1586,34 +1543,34 @@ static int flexrm_mbox_probe(struct platform_device *pdev)
 		goto fail_destroy_bd_pool;
 	}
 
-	/* Allocate platform MSIs for each ring */
+	 
 	ret = platform_msi_domain_alloc_irqs(dev, mbox->num_rings,
 						flexrm_mbox_msi_write);
 	if (ret)
 		goto fail_destroy_cmpl_pool;
 
-	/* Save alloced IRQ numbers for each ring */
+	 
 	for (index = 0; index < mbox->num_rings; index++)
 		mbox->rings[index].irq = msi_get_virq(dev, index);
 
-	/* Check availability of debugfs */
+	 
 	if (!debugfs_initialized())
 		goto skip_debugfs;
 
-	/* Create debugfs root entry */
+	 
 	mbox->root = debugfs_create_dir(dev_name(mbox->dev), NULL);
 
-	/* Create debugfs config entry */
+	 
 	debugfs_create_devm_seqfile(mbox->dev, "config", mbox->root,
 				    flexrm_debugfs_conf_show);
 
-	/* Create debugfs stats entry */
+	 
 	debugfs_create_devm_seqfile(mbox->dev, "stats", mbox->root,
 				    flexrm_debugfs_stats_show);
 
 skip_debugfs:
 
-	/* Initialize mailbox controller */
+	 
 	mbox->controller.txdone_irq = false;
 	mbox->controller.txdone_poll = false;
 	mbox->controller.ops = &flexrm_mbox_chan_ops;
@@ -1629,7 +1586,7 @@ skip_debugfs:
 	for (index = 0; index < mbox->num_rings; index++)
 		mbox->controller.chans[index].con_priv = &mbox->rings[index];
 
-	/* Register mailbox controller */
+	 
 	ret = devm_mbox_controller_register(dev, &mbox->controller);
 	if (ret)
 		goto fail_free_debugfs_root;

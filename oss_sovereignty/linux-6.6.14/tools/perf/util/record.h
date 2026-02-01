@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PERF_RECORD_H
 #define _PERF_RECORD_H
 
@@ -91,4 +91,4 @@ static inline bool record_opts__no_switch_events(const struct record_opts *opts)
 	return opts->record_switch_events_set && !opts->record_switch_events;
 }
 
-#endif // _PERF_RECORD_H
+#endif 

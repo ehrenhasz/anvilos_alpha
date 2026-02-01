@@ -1,72 +1,29 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * adq12b.c
- * Driver for MicroAxial ADQ12-B data acquisition and control card
- * written by jeremy theler <thelerg@ib.cnea.gov.ar>
- *	instituto balseiro
- *	commission nacional de energia atomica
- *	universidad nacional de cuyo
- *	argentina
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: adq12b
- * Description: Driver for MicroAxial ADQ12-B data acquisition and control card
- * Devices: [MicroAxial] ADQ12-B (adq12b)
- * Author: jeremy theler <thelerg@ib.cnea.gov.ar>
- * Updated: Thu, 21 Feb 2008 02:56:27 -0300
- * Status: works
- *
- * Configuration options:
- *   [0] - I/O base address (set with hardware jumpers)
- *		address		jumper JADR
- *		0x300		1 (factory default)
- *		0x320		2
- *		0x340		3
- *		0x360		4
- *		0x380		5
- *		0x3A0		6
- *   [1] - Analog Input unipolar/bipolar selection
- *		selection	option	JUB
- *		bipolar		0	2-3 (factory default)
- *		unipolar	1	1-2
- *   [2] - Analog Input single-ended/differential selection
- *		selection	option	JCHA	JCHB
- *		single-ended	0	1-2	1-2 (factory default)
- *		differential	1	2-3	2-3
- *
- * Driver for the acquisition card ADQ12-B (without any add-on).
- *
- * - Analog input is subdevice 0 (16 channels single-ended or 8 differential)
- * - Digital input is subdevice 1 (5 channels)
- * - Digital output is subdevice 1 (8 channels)
- * - The PACER is not supported in this version
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/comedi/comedidev.h>
 
-/* address scheme (page 2.17 of the manual) */
+ 
 #define ADQ12B_CTREG		0x00
-#define ADQ12B_CTREG_MSKP	BIT(7)	/* enable pacer interrupt */
-#define ADQ12B_CTREG_GTP	BIT(6)	/* enable pacer */
+#define ADQ12B_CTREG_MSKP	BIT(7)	 
+#define ADQ12B_CTREG_GTP	BIT(6)	 
 #define ADQ12B_CTREG_RANGE(x)	((x) << 4)
 #define ADQ12B_CTREG_CHAN(x)	((x) << 0)
 #define ADQ12B_STINR		0x00
-#define ADQ12B_STINR_OUT2	BIT(7)	/* timer 2 output state */
-#define ADQ12B_STINR_OUTP	BIT(6)	/* pacer output state */
-#define ADQ12B_STINR_EOC	BIT(5)	/* A/D end-of-conversion */
+#define ADQ12B_STINR_OUT2	BIT(7)	 
+#define ADQ12B_STINR_OUTP	BIT(6)	 
+#define ADQ12B_STINR_EOC	BIT(5)	 
 #define ADQ12B_STINR_IN_MASK	(0x1f << 0)
 #define ADQ12B_OUTBR		0x04
 #define ADQ12B_ADLOW		0x08
 #define ADQ12B_ADHIG		0x09
 #define ADQ12B_TIMER_BASE	0x0c
 
-/* available ranges through the PGA gains */
+ 
 static const struct comedi_lrange range_adq12b_ai_bipolar = {
 	4, {
 		BIP_RANGE(5),
@@ -114,15 +71,15 @@ static int adq12b_ai_insn_read(struct comedi_device *dev,
 	int ret;
 	int i;
 
-	/* change channel and range only if it is different from the previous */
+	 
 	val = ADQ12B_CTREG_RANGE(range) | ADQ12B_CTREG_CHAN(chan);
 	if (val != devpriv->last_ctreg) {
 		outb(val, dev->iobase + ADQ12B_CTREG);
 		devpriv->last_ctreg = val;
-		usleep_range(50, 100);	/* wait for the mux to settle */
+		usleep_range(50, 100);	 
 	}
 
-	val = inb(dev->iobase + ADQ12B_ADLOW);	/* trigger A/D */
+	val = inb(dev->iobase + ADQ12B_ADLOW);	 
 
 	for (i = 0; i < insn->n; i++) {
 		ret = comedi_timeout(dev, s, insn, adq12b_ai_eoc, 0);
@@ -130,7 +87,7 @@ static int adq12b_ai_insn_read(struct comedi_device *dev,
 			return ret;
 
 		val = inb(dev->iobase + ADQ12B_ADHIG) << 8;
-		val |= inb(dev->iobase + ADQ12B_ADLOW);	/* retriggers A/D */
+		val |= inb(dev->iobase + ADQ12B_ADLOW);	 
 
 		data[i] = val;
 	}
@@ -142,7 +99,7 @@ static int adq12b_di_insn_bits(struct comedi_device *dev,
 			       struct comedi_subdevice *s,
 			       struct comedi_insn *insn, unsigned int *data)
 {
-	/* only bits 0-4 have information about digital inputs */
+	 
 	data[1] = (inb(dev->iobase + ADQ12B_STINR) & ADQ12B_STINR_IN_MASK);
 
 	return insn->n;
@@ -187,13 +144,13 @@ static int adq12b_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (!devpriv)
 		return -ENOMEM;
 
-	devpriv->last_ctreg = -1;	/* force ctreg update */
+	devpriv->last_ctreg = -1;	 
 
 	ret = comedi_alloc_subdevices(dev, 3);
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	if (it->options[2]) {
@@ -208,7 +165,7 @@ static int adq12b_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 					 : &range_adq12b_ai_bipolar;
 	s->insn_read	= adq12b_ai_insn_read;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -217,7 +174,7 @@ static int adq12b_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_digital;
 	s->insn_bits	= adq12b_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;

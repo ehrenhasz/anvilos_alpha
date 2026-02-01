@@ -1,27 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- */
+
+ 
 
 #include <sys/stat.h>
 
 #include "dtc.h"
 #include "srcpos.h"
 
-/*
- * Command line options
- */
-int quiet;		/* Level of quietness */
-unsigned int reservenum;/* Number of memory reservation slots */
-int minsize;		/* Minimum blob size */
-int padsize;		/* Additional padding to blob */
-int alignsize;		/* Additional padding to blob accroding to the alignsize */
-int phandle_format = PHANDLE_EPAPR;	/* Use linux,phandle or phandle properties */
-int generate_symbols;	/* enable symbols & fixup support */
-int generate_fixups;		/* suppress generation of fixups on symbol support */
-int auto_label_aliases;		/* auto generate labels -> aliases */
-int annotate;		/* Level of annotation: 1 for input source location
-			   >1 for full input source location. */
+ 
+int quiet;		 
+unsigned int reservenum; 
+int minsize;		 
+int padsize;		 
+int alignsize;		 
+int phandle_format = PHANDLE_EPAPR;	 
+int generate_symbols;	 
+int generate_fixups;		 
+int auto_label_aliases;		 
+int annotate;		 
 
 static int is_power_of_2(int x)
 {
@@ -45,7 +40,7 @@ static void fill_fullpaths(struct node *tree, const char *prefix)
 		fill_fullpaths(child, tree->fullpath);
 }
 
-/* Usage related data. */
+ 
 static const char usage_synopsis[] = "dtc [options] <input file>";
 static const char usage_short_opts[] = "qI:O:o:V:d:R:S:p:a:fb:i:H:sW:E:@AThv";
 static struct option const usage_long_opts[] = {
@@ -273,7 +268,7 @@ int main(int argc, char *argv[])
 	else
 		arg = argv[optind];
 
-	/* minsize and padsize are mutually exclusive */
+	 
 	if (minsize && padsize)
 		die("Can't set both -p and -S\n");
 
@@ -319,7 +314,7 @@ int main(int argc, char *argv[])
 
 	fill_fullpaths(dti->dt, "");
 
-	/* on a plugin, generate by default */
+	 
 	if (dti->dtsflags & DTSF_PLUGIN) {
 		generate_fixups = 1;
 	}
@@ -362,7 +357,7 @@ int main(int argc, char *argv[])
 	} else if (streq(outform, "asm")) {
 		dt_to_asm(outf, dti, outversion);
 	} else if (streq(outform, "null")) {
-		/* do nothing */
+		 
 	} else {
 		die("Unknown output format \"%s\"\n", outform);
 	}

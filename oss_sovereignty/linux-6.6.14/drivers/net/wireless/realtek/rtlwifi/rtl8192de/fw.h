@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92D__FW__H__
 #define __RTL92D__FW__H__
@@ -16,8 +16,8 @@
 		(GET_FIRMWARE_HDR_SIGNATURE(_pfwhdr) & 0xFFFF) == 0x92D2 ||  \
 		(GET_FIRMWARE_HDR_SIGNATURE(_pfwhdr) & 0xFFFF) == 0x92D3)
 
-/* Firmware Header(8-byte alinment required) */
-/* --- LONG WORD 0 ---- */
+ 
+ 
 #define GET_FIRMWARE_HDR_SIGNATURE(__fwhdr)		\
 	le32_get_bits(*(__le32 *)__fwhdr, GENMASK(15, 0))
 #define GET_FIRMWARE_HDR_VERSION(__fwhdr)		\

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+ 
+ 
 
 #ifndef __MSM_GEM_H__
 #define __MSM_GEM_H__
@@ -12,37 +9,31 @@
 #include "drm/gpu_scheduler.h"
 #include "msm_drv.h"
 
-/* Make all GEM related WARN_ON()s ratelimited.. when things go wrong they
- * tend to go wrong 1000s of times in a short timespan.
- */
+ 
 #define GEM_WARN_ON(x)  WARN_RATELIMIT(x, "%s", __stringify(x))
 
-/* Additional internal-use only BO flags: */
-#define MSM_BO_STOLEN        0x10000000    /* try to use stolen/splash memory */
-#define MSM_BO_MAP_PRIV      0x20000000    /* use IOMMU_PRIV when mapping */
+ 
+#define MSM_BO_STOLEN        0x10000000     
+#define MSM_BO_MAP_PRIV      0x20000000     
 
 struct msm_gem_address_space {
 	const char *name;
-	/* NOTE: mm managed at the page level, size is in # of pages
-	 * and position mm_node->start is in # of pages:
-	 */
+	 
 	struct drm_mm mm;
-	spinlock_t lock; /* Protects drm_mm node allocation/removal */
+	spinlock_t lock;  
 	struct msm_mmu *mmu;
 	struct kref kref;
 
-	/* For address spaces associated with a specific process, this
-	 * will be non-NULL:
-	 */
+	 
 	struct pid *pid;
 
-	/* @faults: the number of GPU hangs associated with this address space */
+	 
 	int faults;
 
-	/** @va_start: lowest possible address to allocate */
+	 
 	uint64_t va_start;
 
-	/** @va_size: the size of the address space (in bytes) */
+	 
 	uint64_t va_size;
 };
 
@@ -61,7 +52,7 @@ struct msm_gem_vma {
 	struct drm_mm_node node;
 	uint64_t iova;
 	struct msm_gem_address_space *aspace;
-	struct list_head list;    /* node in msm_gem_object::vmas */
+	struct list_head list;     
 	bool mapped;
 };
 
@@ -77,42 +68,27 @@ struct msm_gem_object {
 
 	uint32_t flags;
 
-	/**
-	 * madv: are the backing pages purgeable?
-	 *
-	 * Protected by obj lock and LRU lock
-	 */
+	 
 	uint8_t madv;
 
-	/**
-	 * count of active vmap'ing
-	 */
+	 
 	uint8_t vmap_count;
 
-	/**
-	 * Node in list of all objects (mainly for debugfs, protected by
-	 * priv->obj_lock
-	 */
+	 
 	struct list_head node;
 
 	struct page **pages;
 	struct sg_table *sgt;
 	void *vaddr;
 
-	struct list_head vmas;    /* list of msm_gem_vma */
+	struct list_head vmas;     
 
-	/* For physically contiguous buffers.  Used when we don't have
-	 * an IOMMU.  Also used for stolen/splashscreen buffer.
-	 */
+	 
 	struct drm_mm_node *vram_node;
 
-	char name[32]; /* Identifier to print for the debugfs files */
+	char name[32];  
 
-	/**
-	 * pin_count: Number of times the pages are pinned
-	 *
-	 * Protected by LRU lock.
-	 */
+	 
 	int pin_count;
 };
 #define to_msm_bo(x) container_of(x, struct msm_gem_object, base)
@@ -198,25 +174,14 @@ msm_gem_unlock(struct drm_gem_object *obj)
 static inline void
 msm_gem_assert_locked(struct drm_gem_object *obj)
 {
-	/*
-	 * Destroying the object is a special case.. msm_gem_free_object()
-	 * calls many things that WARN_ON if the obj lock is not held.  But
-	 * acquiring the obj lock in msm_gem_free_object() can cause a
-	 * locking order inversion between reservation_ww_class_mutex and
-	 * fs_reclaim.
-	 *
-	 * This deadlock is not actually possible, because no one should
-	 * be already holding the lock when msm_gem_free_object() is called.
-	 * Unfortunately lockdep is not aware of this detail.  So when the
-	 * refcount drops to zero, we pretend it is already locked.
-	 */
+	 
 	lockdep_assert_once(
 		(kref_read(&obj->refcount) == 0) ||
 		(lockdep_is_held(&obj->resv->lock.base) != LOCK_STATE_NOT_HELD)
 	);
 }
 
-/* imported/exported objects are not purgeable: */
+ 
 static inline bool is_unpurgeable(struct msm_gem_object *msm_obj)
 {
 	return msm_obj->base.import_attach || msm_obj->pin_count;
@@ -243,54 +208,47 @@ void msm_gem_purge(struct drm_gem_object *obj);
 void msm_gem_evict(struct drm_gem_object *obj);
 void msm_gem_vunmap(struct drm_gem_object *obj);
 
-/* Created per submit-ioctl, to track bo's and cmdstream bufs, etc,
- * associated with the cmdstream submission for synchronization (and
- * make it easier to unwind when things go wrong, etc).
- */
+ 
 struct msm_gem_submit {
 	struct drm_sched_job base;
 	struct kref ref;
 	struct drm_device *dev;
 	struct msm_gpu *gpu;
 	struct msm_gem_address_space *aspace;
-	struct list_head node;   /* node in ring submit list */
+	struct list_head node;    
 	struct ww_acquire_ctx ticket;
-	uint32_t seqno;		/* Sequence number of the submit on the ring */
+	uint32_t seqno;		 
 
-	/* Hw fence, which is created when the scheduler executes the job, and
-	 * is signaled when the hw finishes (via seqno write from cmdstream)
-	 */
+	 
 	struct dma_fence *hw_fence;
 
-	/* Userspace visible fence, which is signaled by the scheduler after
-	 * the hw_fence is signaled.
-	 */
+	 
 	struct dma_fence *user_fence;
 
-	int fence_id;       /* key into queue->fence_idr */
+	int fence_id;        
 	struct msm_gpu_submitqueue *queue;
-	struct pid *pid;    /* submitting process */
-	bool fault_dumped;  /* Limit devcoredump dumping to one per submit */
-	bool valid;         /* true if no cmdstream patching needed */
-	bool in_rb;         /* "sudo" mode, copy cmds into RB */
+	struct pid *pid;     
+	bool fault_dumped;   
+	bool valid;          
+	bool in_rb;          
 	struct msm_ringbuffer *ring;
 	unsigned int nr_cmds;
 	unsigned int nr_bos;
-	u32 ident;	   /* A "identifier" for the submit for logging */
+	u32 ident;	    
 	struct {
 		uint32_t type;
-		uint32_t size;  /* in dwords */
+		uint32_t size;   
 		uint64_t iova;
-		uint32_t offset;/* in dwords */
-		uint32_t idx;   /* cmdstream buffer idx in bos[] */
+		uint32_t offset; 
+		uint32_t idx;    
 		uint32_t nr_relocs;
 		struct drm_msm_gem_submit_reloc *relocs;
-	} *cmd;  /* array of size nr_cmds */
+	} *cmd;   
 	struct {
-/* make sure these don't conflict w/ MSM_SUBMIT_BO_x */
-#define BO_VALID	0x8000	/* is current addr in cmdstream correct/valid? */
-#define BO_LOCKED	0x4000	/* obj lock is held */
-#define BO_PINNED	0x2000	/* obj (pages) is pinned and on active list */
+ 
+#define BO_VALID	0x8000	 
+#define BO_LOCKED	0x4000	 
+#define BO_PINNED	0x2000	 
 		uint32_t flags;
 		union {
 			struct drm_gem_object *obj;
@@ -319,9 +277,7 @@ static inline void msm_gem_submit_put(struct msm_gem_submit *submit)
 
 void msm_submit_retire(struct msm_gem_submit *submit);
 
-/* helper to determine of a buffer in submit should be dumped, used for both
- * devcoredump and debugfs cmdstream dumping:
- */
+ 
 static inline bool
 should_dump(struct msm_gem_submit *submit, int idx)
 {
@@ -329,4 +285,4 @@ should_dump(struct msm_gem_submit *submit, int idx)
 	return rd_full || (submit->bos[idx].flags & MSM_SUBMIT_BO_DUMP);
 }
 
-#endif /* __MSM_GEM_H__ */
+#endif  

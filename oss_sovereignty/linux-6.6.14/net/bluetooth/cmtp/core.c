@@ -1,24 +1,4 @@
-/*
-   CMTP implementation for Linux Bluetooth stack (BlueZ).
-   Copyright (C) 2002-2003 Marcel Holtmann <marcel@holtmann.org>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
+ 
 
 #include <linux/module.h>
 
@@ -303,10 +283,7 @@ static int cmtp_session(void *arg)
 
 		cmtp_process_transmit(session);
 
-		/*
-		 * wait_woken() performs the necessary memory barriers
-		 * for us; see the header comment for this primitive.
-		 */
+		 
 		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
 	}
 	remove_wait_queue(sk_sleep(sk), &wait);
@@ -392,9 +369,7 @@ int cmtp_add_connection(struct cmtp_connadd_req *req, struct socket *sock)
 	if (!(session->flags & BIT(CMTP_LOOPBACK))) {
 		err = cmtp_attach_device(session);
 		if (err < 0) {
-			/* Caller will call fput in case of failure, and so
-			 * will cmtp_session kthread.
-			 */
+			 
 			get_file(session->sock->file);
 
 			atomic_inc(&session->terminate);
@@ -431,16 +406,13 @@ int cmtp_del_connection(struct cmtp_conndel_req *req)
 
 	session = __cmtp_get_session(&req->bdaddr);
 	if (session) {
-		/* Flush the transmit queue */
+		 
 		skb_queue_purge(&session->transmit);
 
-		/* Stop session thread */
+		 
 		atomic_inc(&session->terminate);
 
-		/*
-		 * See the comment preceding the call to wait_woken()
-		 * in cmtp_session().
-		 */
+		 
 		wake_up_interruptible(sk_sleep(session->sock->sk));
 	} else
 		err = -ENOENT;

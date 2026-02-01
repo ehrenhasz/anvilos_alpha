@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
-/* test_tailcall_1 checks basic functionality by patching multiple locations
- * in a single program for a single tail call slot with nop->jmp, jmp->nop
- * and jmp->jmp rewrites. Also checks for nop->nop.
- */
+ 
 static void test_tailcall_1(void)
 {
 	int err, map_fd, prog_fd, main_fd, i, j;
@@ -138,10 +135,7 @@ out:
 	bpf_object__close(obj);
 }
 
-/* test_tailcall_2 checks that patching multiple programs for a single
- * tail call slot works. It also jumps through several programs and tests
- * the tail call limit counter.
- */
+ 
 static void test_tailcall_2(void)
 {
 	int err, map_fd, prog_fd, main_fd, i;
@@ -294,26 +288,19 @@ out:
 	bpf_object__close(obj);
 }
 
-/* test_tailcall_3 checks that the count value of the tail call limit
- * enforcement matches with expectations. JIT uses direct jump.
- */
+ 
 static void test_tailcall_3(void)
 {
 	test_tailcall_count("tailcall3.bpf.o");
 }
 
-/* test_tailcall_6 checks that the count value of the tail call limit
- * enforcement matches with expectations. JIT uses indirect jump.
- */
+ 
 static void test_tailcall_6(void)
 {
 	test_tailcall_count("tailcall6.bpf.o");
 }
 
-/* test_tailcall_4 checks that the kernel properly selects indirect jump
- * for the case where the key is not known. Latter is passed via global
- * data to select different targets we can compare return value of.
- */
+ 
 static void test_tailcall_4(void)
 {
 	int err, map_fd, prog_fd, main_fd, data_fd, i;
@@ -401,9 +388,7 @@ out:
 	bpf_object__close(obj);
 }
 
-/* test_tailcall_5 probes similarly to test_tailcall_4 that the kernel generates
- * an indirect jump when the keys are const but different from different branches.
- */
+ 
 static void test_tailcall_5(void)
 {
 	int err, map_fd, prog_fd, main_fd, data_fd, i, key[] = { 1111, 1234, 5678 };
@@ -491,9 +476,7 @@ out:
 	bpf_object__close(obj);
 }
 
-/* test_tailcall_bpf2bpf_1 purpose is to make sure that tailcalls are working
- * correctly in correlation with BPF subprograms
- */
+ 
 static void test_tailcall_bpf2bpf_1(void)
 {
 	int err, map_fd, prog_fd, main_fd, i;
@@ -528,7 +511,7 @@ static void test_tailcall_bpf2bpf_1(void)
 	if (CHECK_FAIL(map_fd < 0))
 		goto out;
 
-	/* nop -> jmp */
+	 
 	for (i = 0; i < bpf_map__max_entries(prog_array); i++) {
 		snprintf(prog_name, sizeof(prog_name), "classifier_%d", i);
 
@@ -549,7 +532,7 @@ static void test_tailcall_bpf2bpf_1(void)
 	ASSERT_OK(err, "tailcall");
 	ASSERT_EQ(topts.retval, 1, "tailcall retval");
 
-	/* jmp -> nop, call subprog that will do tailcall */
+	 
 	i = 1;
 	err = bpf_map_delete_elem(map_fd, &i);
 	if (CHECK_FAIL(err))
@@ -559,9 +542,7 @@ static void test_tailcall_bpf2bpf_1(void)
 	ASSERT_OK(err, "tailcall");
 	ASSERT_OK(topts.retval, "tailcall retval");
 
-	/* make sure that subprog can access ctx and entry prog that
-	 * called this subprog can properly return
-	 */
+	 
 	i = 0;
 	err = bpf_map_delete_elem(map_fd, &i);
 	if (CHECK_FAIL(err))
@@ -574,10 +555,7 @@ out:
 	bpf_object__close(obj);
 }
 
-/* test_tailcall_bpf2bpf_2 checks that the count value of the tail call limit
- * enforcement matches with expectations when tailcall is preceded with
- * bpf2bpf call.
- */
+ 
 static void test_tailcall_bpf2bpf_2(void)
 {
 	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
@@ -654,10 +632,7 @@ out:
 	bpf_object__close(obj);
 }
 
-/* test_tailcall_bpf2bpf_3 checks that non-trivial amount of stack (up to
- * 256 bytes) can be used within bpf subprograms that have the tailcalls
- * in them
- */
+ 
 static void test_tailcall_bpf2bpf_3(void)
 {
 	int err, map_fd, prog_fd, main_fd, i;
@@ -735,23 +710,7 @@ out:
 
 #include "tailcall_bpf2bpf4.skel.h"
 
-/* test_tailcall_bpf2bpf_4 checks that tailcall counter is correctly preserved
- * across tailcalls combined with bpf2bpf calls. for making sure that tailcall
- * counter behaves correctly, bpf program will go through following flow:
- *
- * entry -> entry_subprog -> tailcall0 -> bpf_func0 -> subprog0 ->
- * -> tailcall1 -> bpf_func1 -> subprog1 -> tailcall2 -> bpf_func2 ->
- * subprog2 [here bump global counter] --------^
- *
- * We go through first two tailcalls and start counting from the subprog2 where
- * the loop begins. At the end of the test make sure that the global counter is
- * equal to 31, because tailcall counter includes the first two tailcalls
- * whereas global counter is incremented only on loop presented on flow above.
- *
- * The noise parameter is used to insert bpf_map_update calls into the logic
- * to force verifier to patch instructions. This allows us to ensure jump
- * logic remains correct with instruction movement.
- */
+ 
 static void test_tailcall_bpf2bpf_4(bool noise)
 {
 	int err, map_fd, prog_fd, main_fd, data_fd, i;
@@ -833,9 +792,7 @@ out:
 
 #include "tailcall_bpf2bpf6.skel.h"
 
-/* Tail call counting works even when there is data on stack which is
- * not aligned to 8 bytes.
- */
+ 
 static void test_tailcall_bpf2bpf_6(void)
 {
 	struct tailcall_bpf2bpf6 *obj;

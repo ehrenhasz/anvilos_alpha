@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * btree.h
- *
- */
+ 
+ 
 
 int befs_btree_find(struct super_block *sb, const befs_data_stream *ds,
 		    const char *key, befs_off_t *value);

@@ -1,23 +1,6 @@
-/* hashcmd.c - functions for managing a hash table mapping command names to
-	       full pathnames. */
+ 
 
-/* Copyright (C) 1997-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -61,7 +44,7 @@ phash_flush ()
     hash_flush (hashed_filenames, phash_freedata);
 }
 
-/* Remove FILENAME from the table of hashed commands. */
+ 
 int
 phash_remove (filename)
      const char *filename;
@@ -83,11 +66,7 @@ phash_remove (filename)
   return 1;
 }
 
-/* Place FILENAME (key) and FULL_PATH (data->path) into the
-   hash table.  CHECK_DOT if non-null is for future calls to
-   phash_search (); it means that this file was found
-   in a directory in $PATH that is not an absolute pathname.
-   FOUND is the initial value for times_found. */
+ 
 void
 phash_insert (filename, full_path, check_dot, found)
      char *filename, *full_path;
@@ -118,11 +97,7 @@ phash_insert (filename, full_path, check_dot, found)
   item->times_found = found;
 }
 
-/* Return the full pathname that FILENAME hashes to.  If FILENAME
-   is hashed, but (data->flags & HASH_CHKDOT) is non-zero, check
-   ./FILENAME and return that if it is executable.  This always
-   returns a newly-allocated string; the caller is responsible
-   for freeing it. */
+ 
 char *
 phash_search (filename)
      const char *filename;
@@ -139,14 +114,12 @@ phash_search (filename)
   if (item == NULL)
     return ((char *)NULL);
 
-  /* If this filename is hashed, but `.' comes before it in the path,
-     see if ./filename is executable.  If the hashed value is not an
-     absolute pathname, see if ./`hashed-value' exists. */
+   
   path = pathdata(item)->path;
   if (pathdata(item)->flags & (HASH_CHKDOT|HASH_RELPATH))
     {
-      tail = (pathdata(item)->flags & HASH_RELPATH) ? path : (char *)filename;	/* XXX - fix const later */
-      /* If the pathname does not start with a `./', add a `./' to it. */
+      tail = (pathdata(item)->flags & HASH_RELPATH) ? path : (char *)filename;	 
+       
       if (tail[0] != '.' || tail[1] != '/')
 	{
 	  dotted_filename = (char *)xmalloc (3 + strlen (tail));
@@ -166,15 +139,9 @@ phash_search (filename)
 	return ((char *)NULL);
 #endif
 
-      /* Watch out.  If this file was hashed to "./filename", and
-	 "./filename" is not executable, then return NULL. */
+       
 
-      /* Since we already know "./filename" is not executable, what
-	 we're really interested in is whether or not the `path'
-	 portion of the hashed filename is equivalent to the current
-	 directory, but only if it starts with a `.'.  (This catches
-	 ./. and so on.)  same_file () tests general Unix file
-	 equivalence -- same device and inode. */
+       
       if (*path == '.')
 	{
 	  same = 0;

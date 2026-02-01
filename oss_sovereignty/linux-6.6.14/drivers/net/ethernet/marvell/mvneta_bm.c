@@ -1,14 +1,4 @@
-/*
- * Driver for Marvell NETA network controller Buffer Manager.
- *
- * Copyright (C) 2015 Marvell
- *
- * Marcin Wojtas <mw@semihalf.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/genalloc.h>
@@ -45,7 +35,7 @@ static void mvneta_bm_pool_enable(struct mvneta_bm *priv, int pool_id)
 	val |= MVNETA_BM_POOL_ENABLE_MASK;
 	mvneta_bm_write(priv, MVNETA_BM_POOL_BASE_REG(pool_id), val);
 
-	/* Clear BM cause register */
+	 
 	mvneta_bm_write(priv, MVNETA_BM_INTR_CAUSE_REG, 0);
 }
 
@@ -97,10 +87,7 @@ int mvneta_bm_construct(struct hwbm_pool *hwbm_pool, void *buf)
 	struct mvneta_bm *priv = bm_pool->priv;
 	dma_addr_t phys_addr;
 
-	/* In order to update buf_cookie field of RX descriptor properly,
-	 * BM hardware expects buf virtual address to be placed in the
-	 * first four bytes of mapped buffer.
-	 */
+	 
 	*(u32 *)buf = (u32)buf;
 	phys_addr = dma_map_single(&priv->pdev->dev, buf, bm_pool->buf_size,
 				   DMA_FROM_DEVICE);
@@ -112,7 +99,7 @@ int mvneta_bm_construct(struct hwbm_pool *hwbm_pool, void *buf)
 }
 EXPORT_SYMBOL_GPL(mvneta_bm_construct);
 
-/* Create pool */
+ 
 static int mvneta_bm_pool_create(struct mvneta_bm *priv,
 				 struct mvneta_bm_pool *bm_pool)
 {
@@ -142,7 +129,7 @@ static int mvneta_bm_pool_create(struct mvneta_bm *priv,
 		return err;
 	}
 
-	/* Set pool address */
+	 
 	mvneta_bm_write(priv, MVNETA_BM_POOL_BASE_REG(bm_pool->id),
 			bm_pool->phys_addr);
 
@@ -152,9 +139,7 @@ static int mvneta_bm_pool_create(struct mvneta_bm *priv,
 	return 0;
 }
 
-/* Notify the driver that BM pool is being used as specific type and return the
- * pool pointer on success
- */
+ 
 struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
 					  enum mvneta_bm_type type, u8 port_id,
 					  int pkt_size)
@@ -178,7 +163,7 @@ struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
 	if (new_pool->pkt_size == 0 || type != MVNETA_BM_SHORT)
 		new_pool->pkt_size = pkt_size;
 
-	/* Allocate buffers in case BM pool hasn't been used yet */
+	 
 	if (new_pool->type == MVNETA_BM_FREE) {
 		struct hwbm_pool *hwbm_pool = &new_pool->hwbm_pool;
 
@@ -192,7 +177,7 @@ struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
 		hwbm_pool->priv = new_pool;
 		mutex_init(&hwbm_pool->buf_lock);
 
-		/* Create new pool */
+		 
 		err = mvneta_bm_pool_create(priv, new_pool);
 		if (err) {
 			dev_err(&priv->pdev->dev, "fail to create pool %d\n",
@@ -200,7 +185,7 @@ struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
 			return NULL;
 		}
 
-		/* Allocate buffers for this pool */
+		 
 		num = hwbm_pool_add(hwbm_pool, hwbm_pool->size);
 		if (num != hwbm_pool->size) {
 			WARN(1, "pool %d: %d of %d allocated\n",
@@ -213,7 +198,7 @@ struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
 }
 EXPORT_SYMBOL_GPL(mvneta_bm_pool_use);
 
-/* Free all buffers from the pool */
+ 
 void mvneta_bm_bufs_free(struct mvneta_bm *priv, struct mvneta_bm_pool *bm_pool,
 			 u8 port_map)
 {
@@ -229,12 +214,10 @@ void mvneta_bm_bufs_free(struct mvneta_bm *priv, struct mvneta_bm_pool *bm_pool,
 		dma_addr_t buf_phys_addr;
 		u32 *vaddr;
 
-		/* Get buffer physical address (indirect access) */
+		 
 		buf_phys_addr = mvneta_bm_pool_get_bp(priv, bm_pool);
 
-		/* Work-around to the problems when destroying the pool,
-		 * when it occurs that a read access to BPPI returns 0.
-		 */
+		 
 		if (buf_phys_addr == 0)
 			continue;
 
@@ -249,12 +232,12 @@ void mvneta_bm_bufs_free(struct mvneta_bm *priv, struct mvneta_bm_pool *bm_pool,
 
 	mvneta_bm_config_clear(priv, MVNETA_BM_EMPTY_LIMIT_MASK);
 
-	/* Update BM driver with number of buffers removed from pool */
+	 
 	bm_pool->hwbm_pool.buf_num -= i;
 }
 EXPORT_SYMBOL_GPL(mvneta_bm_bufs_free);
 
-/* Cleanup pool */
+ 
 void mvneta_bm_pool_destroy(struct mvneta_bm *priv,
 			    struct mvneta_bm_pool *bm_pool, u8 port_map)
 {
@@ -288,22 +271,22 @@ static void mvneta_bm_pools_init(struct mvneta_bm *priv)
 	u32 size;
 	int i;
 
-	/* Activate BM unit */
+	 
 	mvneta_bm_write(priv, MVNETA_BM_COMMAND_REG, MVNETA_BM_START_MASK);
 
-	/* Create all pools with maximum size */
+	 
 	for (i = 0; i < MVNETA_BM_POOLS_NUM; i++) {
 		bm_pool = &priv->bm_pools[i];
 		bm_pool->id = i;
 		bm_pool->type = MVNETA_BM_FREE;
 
-		/* Reset read pointer */
+		 
 		mvneta_bm_write(priv, MVNETA_BM_POOL_READ_PTR_REG(i), 0);
 
-		/* Reset write pointer */
+		 
 		mvneta_bm_write(priv, MVNETA_BM_POOL_WRITE_PTR_REG(i), 0);
 
-		/* Configure pool size according to DT or use default value */
+		 
 		sprintf(prop, "pool%d,capacity", i);
 		if (of_property_read_u32(dn, prop, &size)) {
 			size = MVNETA_BM_POOL_CAP_DEF;
@@ -329,7 +312,7 @@ static void mvneta_bm_pools_init(struct mvneta_bm *priv)
 		mvneta_bm_write(priv, MVNETA_BM_POOL_SIZE_REG(i),
 				bm_pool->hwbm_pool.size);
 
-		/* Obtain custom pkt_size from DT */
+		 
 		sprintf(prop, "pool%d,pkt-size", i);
 		if (of_property_read_u32(dn, prop, &bm_pool->pkt_size))
 			bm_pool->pkt_size = 0;
@@ -340,16 +323,16 @@ static void mvneta_bm_default_set(struct mvneta_bm *priv)
 {
 	u32 val;
 
-	/* Mask BM all interrupts */
+	 
 	mvneta_bm_write(priv, MVNETA_BM_INTR_MASK_REG, 0);
 
-	/* Clear BM cause register */
+	 
 	mvneta_bm_write(priv, MVNETA_BM_INTR_CAUSE_REG, 0);
 
-	/* Set BM configuration register */
+	 
 	val = mvneta_bm_read(priv, MVNETA_BM_CONFIG_REG);
 
-	/* Reduce MaxInBurstSize from 32 BPs to 16 BPs */
+	 
 	val &= ~MVNETA_BM_MAX_IN_BURST_SIZE_MASK;
 	val |= MVNETA_BM_MAX_IN_BURST_SIZE_16BP;
 	mvneta_bm_write(priv, MVNETA_BM_CONFIG_REG, val);
@@ -359,7 +342,7 @@ static int mvneta_bm_init(struct mvneta_bm *priv)
 {
 	mvneta_bm_default_set(priv);
 
-	/* Allocate and initialize BM pools structures */
+	 
 	priv->bm_pools = devm_kcalloc(&priv->pdev->dev, MVNETA_BM_POOLS_NUM,
 				      sizeof(struct mvneta_bm_pool),
 				      GFP_KERNEL);
@@ -436,7 +419,7 @@ static int mvneta_bm_probe(struct platform_device *pdev)
 
 	priv->pdev = pdev;
 
-	/* Initialize buffer manager internals */
+	 
 	err = mvneta_bm_init(priv);
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to initialize controller\n");
@@ -471,7 +454,7 @@ static int mvneta_bm_remove(struct platform_device *pdev)
 
 	mvneta_bm_put_sram(priv);
 
-	/* Dectivate BM unit */
+	 
 	mvneta_bm_write(priv, MVNETA_BM_COMMAND_REG, MVNETA_BM_STOP_MASK);
 
 	clk_disable_unprepare(priv->clk);

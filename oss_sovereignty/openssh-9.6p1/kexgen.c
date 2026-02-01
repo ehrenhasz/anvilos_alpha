@@ -1,27 +1,5 @@
-/* $OpenBSD: kexgen.c,v 1.8 2021/12/19 22:08:06 djm Exp $ */
-/*
- * Copyright (c) 2019 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -66,7 +44,7 @@ kex_gen_hash(
 		return SSH_ERR_ALLOC_FAIL;
 	if ((r = sshbuf_put_stringb(b, client_version)) != 0 ||
 	    (r = sshbuf_put_stringb(b, server_version)) != 0 ||
-	    /* kexinit messages: fake header: len+SSH2_MSG_KEXINIT */
+	     
 	    (r = sshbuf_put_u32(b, sshbuf_len(client_kexinit) + 1)) != 0 ||
 	    (r = sshbuf_put_u8(b, SSH2_MSG_KEXINIT)) != 0 ||
 	    (r = sshbuf_putb(b, client_kexinit)) != 0 ||
@@ -151,10 +129,10 @@ input_kex_gen_reply(int type, u_int32_t seq, struct ssh *ssh)
 	debug("SSH2_MSG_KEX_ECDH_REPLY received");
 	ssh_dispatch_set(ssh, SSH2_MSG_KEX_ECDH_REPLY, &kex_protocol_error);
 
-	/* hostkey */
+	 
 	if ((r = sshpkt_getb_froms(ssh, &server_host_key_blob)) != 0)
 		goto out;
-	/* sshkey_fromb() consumes its buffer, so make a copy */
+	 
 	if ((tmp = sshbuf_fromb(server_host_key_blob)) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -164,14 +142,14 @@ input_kex_gen_reply(int type, u_int32_t seq, struct ssh *ssh)
 	if ((r = kex_verify_host_key(ssh, server_host_key)) != 0)
 		goto out;
 
-	/* Q_S, server public key */
-	/* signed H */
+	 
+	 
 	if ((r = sshpkt_getb_froms(ssh, &server_blob)) != 0 ||
 	    (r = sshpkt_get_string(ssh, &signature, &slen)) != 0 ||
 	    (r = sshpkt_get_end(ssh)) != 0)
 		goto out;
 
-	/* compute shared secret */
+	 
 	switch (kex->kex_type) {
 #ifdef WITH_OPENSSL
 	case KEX_DH_GRP1_SHA1:
@@ -199,7 +177,7 @@ input_kex_gen_reply(int type, u_int32_t seq, struct ssh *ssh)
 	if (r !=0 )
 		goto out;
 
-	/* calc and verify H */
+	 
 	hashlen = sizeof(hash);
 	if ((r = kex_gen_hash(
 	    kex->hash_alg,
@@ -222,7 +200,7 @@ input_kex_gen_reply(int type, u_int32_t seq, struct ssh *ssh)
 	    (r = kex_send_newkeys(ssh)) != 0)
 		goto out;
 
-	/* save initial signature and hostkey */
+	 
 	if ((kex->flags & KEX_INITIAL) != 0) {
 		if (kex->initial_hostkey != NULL || kex->initial_sig != NULL) {
 			r = SSH_ERR_INTERNAL_ERROR;
@@ -237,7 +215,7 @@ input_kex_gen_reply(int type, u_int32_t seq, struct ssh *ssh)
 		kex->initial_hostkey = server_host_key;
 		server_host_key = NULL;
 	}
-	/* success */
+	 
 out:
 	explicit_bzero(hash, sizeof(hash));
 	explicit_bzero(kex->c25519_client_key, sizeof(kex->c25519_client_key));
@@ -286,7 +264,7 @@ input_kex_gen_init(int type, u_int32_t seq, struct ssh *ssh)
 	    (r = sshpkt_get_end(ssh)) != 0)
 		goto out;
 
-	/* compute shared secret */
+	 
 	switch (kex->kex_type) {
 #ifdef WITH_OPENSSL
 	case KEX_DH_GRP1_SHA1:
@@ -317,7 +295,7 @@ input_kex_gen_init(int type, u_int32_t seq, struct ssh *ssh)
 	if (r !=0 )
 		goto out;
 
-	/* calc H */
+	 
 	if ((server_host_key_blob = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -338,12 +316,12 @@ input_kex_gen_init(int type, u_int32_t seq, struct ssh *ssh)
 	    hash, &hashlen)) != 0)
 		goto out;
 
-	/* sign H */
+	 
 	if ((r = kex->sign(ssh, server_host_private, server_host_public,
 	    &signature, &slen, hash, hashlen, kex->hostkey_alg)) != 0)
 		goto out;
 
-	/* send server hostkey, ECDH pubkey 'Q_S' and signed H */
+	 
 	if ((r = sshpkt_start(ssh, SSH2_MSG_KEX_ECDH_REPLY)) != 0 ||
 	    (r = sshpkt_put_stringb(ssh, server_host_key_blob)) != 0 ||
 	    (r = sshpkt_put_stringb(ssh, server_pubkey)) != 0 ||
@@ -354,12 +332,12 @@ input_kex_gen_init(int type, u_int32_t seq, struct ssh *ssh)
 	if ((r = kex_derive_keys(ssh, hash, hashlen, shared_secret)) != 0 ||
 	    (r = kex_send_newkeys(ssh)) != 0)
 		goto out;
-	/* retain copy of hostkey used at initial KEX */
+	 
 	if (kex->initial_hostkey == NULL &&
 	    (r = sshkey_from_private(server_host_public,
 	    &kex->initial_hostkey)) != 0)
 		goto out;
-	/* success */
+	 
 out:
 	explicit_bzero(hash, sizeof(hash));
 	sshbuf_free(server_host_key_blob);

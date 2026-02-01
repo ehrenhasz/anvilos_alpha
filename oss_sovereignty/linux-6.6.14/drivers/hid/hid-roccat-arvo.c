@@ -1,17 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat Arvo driver for Linux
- *
- * Copyright (c) 2011 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
 
-/*
- * Roccat Arvo is a gamer keyboard with 5 macro keys that can be configured in
- * 5 profiles.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -123,7 +115,7 @@ static ssize_t arvo_sysfs_set_key_mask(struct device *dev,
 static DEVICE_ATTR(key_mask, 0660,
 		   arvo_sysfs_show_key_mask, arvo_sysfs_set_key_mask);
 
-/* retval is 1-5 on success, < 0 on error */
+ 
 static int arvo_get_actual_profile(struct usb_device *usb_dev)
 {
 	struct arvo_actual_profile temp_buf;

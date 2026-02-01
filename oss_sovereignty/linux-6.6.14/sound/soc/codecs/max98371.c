@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max98371.c -- ALSA SoC Stereo MAX98371 driver
- *
- * Copyright 2015-16 Maxim Integrated Products
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -245,7 +241,7 @@ static int max98371_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* BCLK/LRCLK ratio calculation */
+	 
 	blr_clk_ratio = channels * ch_size;
 	switch (blr_clk_ratio) {
 	case 32:
@@ -297,7 +293,7 @@ static int max98371_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* enabling both the RX channels*/
+	 
 	regmap_update_bits(max98371->regmap, MAX98371_MONOMIX_SRC,
 			MAX98371_MONOMIX_SRC_MASK, MONOMIX_RX_0_1);
 	regmap_update_bits(max98371->regmap, MAX98371_DAI_CHANNEL,

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * McBSP Sidetone support
- *
- * Copyright (C) 2004 Nokia Corporation
- * Author: Samuel Ortiz <samuel.ortiz@nokia.com>
- *
- * Contact: Jarkko Nikula <jarkko.nikula@bitmer.com>
- *          Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -23,7 +15,7 @@
 #include "omap-mcbsp.h"
 #include "omap-mcbsp-priv.h"
 
-/* OMAP3 sidetone control registers */
+ 
 #define OMAP_ST_REG_REV		0x00
 #define OMAP_ST_REG_SYSCONFIG	0x10
 #define OMAP_ST_REG_IRQSTATUS	0x18
@@ -32,20 +24,20 @@
 #define OMAP_ST_REG_SFIRCR	0x28
 #define OMAP_ST_REG_SSELCR	0x2C
 
-/********************** McBSP SSELCR bit definitions ***********************/
+ 
 #define SIDETONEEN		BIT(10)
 
-/********************** McBSP Sidetone SYSCONFIG bit definitions ***********/
+ 
 #define ST_AUTOIDLE		BIT(0)
 
-/********************** McBSP Sidetone SGAINCR bit definitions *************/
-#define ST_CH0GAIN(value)	((value) & 0xffff)	/* Bits 0:15 */
-#define ST_CH1GAIN(value)	(((value) & 0xffff) << 16) /* Bits 16:31 */
+ 
+#define ST_CH0GAIN(value)	((value) & 0xffff)	 
+#define ST_CH1GAIN(value)	(((value) & 0xffff) << 16)  
 
-/********************** McBSP Sidetone SFIRCR bit definitions **************/
-#define ST_FIRCOEFF(value)	((value) & 0xffff)	/* Bits 0:15 */
+ 
+#define ST_FIRCOEFF(value)	((value) & 0xffff)	 
 
-/********************** McBSP Sidetone SSELCR bit definitions **************/
+ 
 #define ST_SIDETONEEN		BIT(0)
 #define ST_COEFFWREN		BIT(1)
 #define ST_COEFFWRDONE		BIT(2)
@@ -55,8 +47,8 @@ struct omap_mcbsp_st_data {
 	struct clk *mcbsp_iclk;
 	bool running;
 	bool enabled;
-	s16 taps[128];	/* Sidetone filter coefficients */
-	int nr_taps;	/* Number of filter coefficients in use */
+	s16 taps[128];	 
+	int nr_taps;	 
 	s16 ch0gain;
 	s16 ch1gain;
 };
@@ -82,15 +74,15 @@ static void omap_mcbsp_st_on(struct omap_mcbsp *mcbsp)
 	if (mcbsp->pdata->force_ick_on)
 		mcbsp->pdata->force_ick_on(mcbsp->st_data->mcbsp_iclk, true);
 
-	/* Disable Sidetone clock auto-gating for normal operation */
+	 
 	w = MCBSP_ST_READ(mcbsp, SYSCONFIG);
 	MCBSP_ST_WRITE(mcbsp, SYSCONFIG, w & ~(ST_AUTOIDLE));
 
-	/* Enable McBSP Sidetone */
+	 
 	w = MCBSP_READ(mcbsp, SSELCR);
 	MCBSP_WRITE(mcbsp, SSELCR, w | SIDETONEEN);
 
-	/* Enable Sidetone from Sidetone Core */
+	 
 	w = MCBSP_ST_READ(mcbsp, SSELCR);
 	MCBSP_ST_WRITE(mcbsp, SSELCR, w | ST_SIDETONEEN);
 }
@@ -105,7 +97,7 @@ static void omap_mcbsp_st_off(struct omap_mcbsp *mcbsp)
 	w = MCBSP_READ(mcbsp, SSELCR);
 	MCBSP_WRITE(mcbsp, SSELCR, w & ~(SIDETONEEN));
 
-	/* Enable Sidetone clock auto-gating to reduce power consumption */
+	 
 	w = MCBSP_ST_READ(mcbsp, SYSCONFIG);
 	MCBSP_ST_WRITE(mcbsp, SYSCONFIG, w | ST_AUTOIDLE);
 
@@ -398,7 +390,7 @@ omap_mcbsp_set_st_ch##channel##_volume(struct snd_kcontrol *kc,		\
 	if (val < min || val > max)					\
 		return -EINVAL;						\
 									\
-	/* OMAP McBSP implementation uses index values 0..4 */		\
+	 		\
 	return omap_mcbsp_st_set_chgain(mcbsp, channel, val);		\
 }									\
 									\
@@ -484,11 +476,11 @@ int omap_mcbsp_st_add_controls(struct snd_soc_pcm_runtime *rtd, int port_id)
 	}
 
 	switch (port_id) {
-	case 2: /* McBSP 2 */
+	case 2:  
 		return snd_soc_add_dai_controls(cpu_dai,
 					omap_mcbsp2_st_controls,
 					ARRAY_SIZE(omap_mcbsp2_st_controls));
-	case 3: /* McBSP 3 */
+	case 3:  
 		return snd_soc_add_dai_controls(cpu_dai,
 					omap_mcbsp3_st_controls,
 					ARRAY_SIZE(omap_mcbsp3_st_controls));

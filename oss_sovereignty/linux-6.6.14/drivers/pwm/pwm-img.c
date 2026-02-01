@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Imagination Technologies Pulse Width Modulator driver
- *
- * Copyright (c) 2014-2015, Imagination Technologies
- *
- * Based on drivers/pwm/pwm-tegra.c, Copyright (c) 2010, NVIDIA Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -20,7 +14,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* PWM registers */
+ 
 #define PWM_CTRL_CFG				0x0000
 #define PWM_CTRL_CFG_NO_SUB_DIV			0
 #define PWM_CTRL_CFG_SUB_DIV0			1
@@ -37,19 +31,9 @@
 #define PERIP_PWM_PDM_CONTROL_CH_MASK		0x1
 #define PERIP_PWM_PDM_CONTROL_CH_SHIFT(ch)	((ch) * 4)
 
-#define IMG_PWM_PM_TIMEOUT			1000 /* ms */
+#define IMG_PWM_PM_TIMEOUT			1000  
 
-/*
- * PWM period is specified with a timebase register,
- * in number of step periods. The PWM duty cycle is also
- * specified in step periods, in the [0, $timebase] range.
- * In other words, the timebase imposes the duty cycle
- * resolution. Therefore, let's constraint the timebase to
- * a minimum value to allow a sane range of duty cycle values.
- * Imposing a minimum timebase, will impose a maximum PWM frequency.
- *
- * The value chosen is completely arbitrary.
- */
+ 
 #define MIN_TMBASE_STEPS			16
 
 #define IMG_PWM_NPWM				4
@@ -313,7 +297,7 @@ static int img_pwm_probe(struct platform_device *pdev)
 		goto err_suspend;
 	}
 
-	/* The maximum input clock divider is 512 */
+	 
 	val = (u64)NSEC_PER_SEC * 512 * imgchip->data->max_timebase;
 	do_div(val, clk_rate);
 	imgchip->max_period_ns = val;
@@ -405,7 +389,7 @@ static int img_pwm_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops img_pwm_pm_ops = {
 	SET_RUNTIME_PM_OPS(img_pwm_runtime_suspend,

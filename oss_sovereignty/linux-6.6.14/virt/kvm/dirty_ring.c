@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KVM dirty ring implementation
- *
- * Copyright 2019 Red Hat, Inc.
- */
+
+ 
 #include <linux/kvm_host.h>
 #include <linux/kvm.h>
 #include <linux/vmalloc.h>
@@ -110,7 +106,7 @@ int kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring)
 	struct kvm_dirty_gfn *entry;
 	bool first_round = true;
 
-	/* This is only needed to make compilers happy */
+	 
 	cur_slot = cur_offset = mask = 0;
 
 	while (true) {
@@ -122,15 +118,12 @@ int kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring)
 		next_slot = READ_ONCE(entry->slot);
 		next_offset = READ_ONCE(entry->offset);
 
-		/* Update the flags to reflect that this GFN is reset */
+		 
 		kvm_dirty_gfn_set_invalid(entry);
 
 		ring->reset_index++;
 		count++;
-		/*
-		 * Try to coalesce the reset operations when the guest is
-		 * scanning pages in the same slot.
-		 */
+		 
 		if (!first_round && next_slot == cur_slot) {
 			s64 delta = next_offset - cur_offset;
 
@@ -139,7 +132,7 @@ int kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring)
 				continue;
 			}
 
-			/* Backwards visit, careful about overflows!  */
+			 
 			if (delta > -BITS_PER_LONG && delta < 0 &&
 			    (mask << -delta >> -delta) == mask) {
 				cur_offset = next_offset;
@@ -156,10 +149,7 @@ int kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring)
 
 	kvm_reset_dirty_gfn(kvm, cur_slot, cur_offset, mask);
 
-	/*
-	 * The request KVM_REQ_DIRTY_RING_SOFT_FULL will be cleared
-	 * by the VCPU thread next time when it enters the guest.
-	 */
+	 
 
 	trace_kvm_dirty_ring_reset(ring);
 
@@ -171,17 +161,14 @@ void kvm_dirty_ring_push(struct kvm_vcpu *vcpu, u32 slot, u64 offset)
 	struct kvm_dirty_ring *ring = &vcpu->dirty_ring;
 	struct kvm_dirty_gfn *entry;
 
-	/* It should never get full */
+	 
 	WARN_ON_ONCE(kvm_dirty_ring_full(ring));
 
 	entry = &ring->dirty_gfns[ring->dirty_index & (ring->size - 1)];
 
 	entry->slot = slot;
 	entry->offset = offset;
-	/*
-	 * Make sure the data is filled in before we publish this to
-	 * the userspace program.  There's no paired kernel-side reader.
-	 */
+	 
 	smp_wmb();
 	kvm_dirty_gfn_set_dirtied(entry);
 	ring->dirty_index++;
@@ -193,12 +180,7 @@ void kvm_dirty_ring_push(struct kvm_vcpu *vcpu, u32 slot, u64 offset)
 
 bool kvm_dirty_ring_check_request(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * The VCPU isn't runnable when the dirty ring becomes soft full.
-	 * The KVM_REQ_DIRTY_RING_SOFT_FULL event is always set to prevent
-	 * the VCPU from running until the dirty pages are harvested and
-	 * the dirty ring is reset by userspace.
-	 */
+	 
 	if (kvm_check_request(KVM_REQ_DIRTY_RING_SOFT_FULL, vcpu) &&
 	    kvm_dirty_ring_soft_full(&vcpu->dirty_ring)) {
 		kvm_make_request(KVM_REQ_DIRTY_RING_SOFT_FULL, vcpu);

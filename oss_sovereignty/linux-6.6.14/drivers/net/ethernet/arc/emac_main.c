@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004-2013 Synopsys, Inc. (www.synopsys.com)
- *
- * Driver for the ARC EMAC 10100 (hardware revision 5)
- *
- * Contributors:
- *		Amit Bhor
- *		Sameer Dhavale
- *		Vineet Gupta
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/etherdevice.h>
@@ -25,24 +16,13 @@
 
 static void arc_emac_restart(struct net_device *ndev);
 
-/**
- * arc_emac_tx_avail - Return the number of available slots in the tx ring.
- * @priv: Pointer to ARC EMAC private data structure.
- *
- * returns: the number of slots available for transmission in tx the ring.
- */
+ 
 static inline int arc_emac_tx_avail(struct arc_emac_priv *priv)
 {
 	return (priv->txbd_dirty + TX_BD_NUM - priv->txbd_curr - 1) % TX_BD_NUM;
 }
 
-/**
- * arc_emac_adjust_link - Adjust the PHY link duplex.
- * @ndev:	Pointer to the net_device structure.
- *
- * This function is called to change the duplex setting after auto negotiation
- * is done by the PHY.
- */
+ 
 static void arc_emac_adjust_link(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -78,14 +58,7 @@ static void arc_emac_adjust_link(struct net_device *ndev)
 		phy_print_status(phy_dev);
 }
 
-/**
- * arc_emac_get_drvinfo - Get EMAC driver information.
- * @ndev:	Pointer to net_device structure.
- * @info:	Pointer to ethtool_drvinfo structure.
- *
- * This implements ethtool command for getting the driver information.
- * Issue "ethtool -i ethX" under linux prompt to execute this function.
- */
+ 
 static void arc_emac_get_drvinfo(struct net_device *ndev,
 				 struct ethtool_drvinfo *info)
 {
@@ -103,10 +76,7 @@ static const struct ethtool_ops arc_emac_ethtool_ops = {
 
 #define FIRST_OR_LAST_MASK	(FIRST_MASK | LAST_MASK)
 
-/**
- * arc_emac_tx_clean - clears processed by EMAC Tx BDs.
- * @ndev:	Pointer to the network device.
- */
+ 
 static void arc_emac_tx_clean(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -143,7 +113,7 @@ static void arc_emac_tx_clean(struct net_device *ndev)
 		dma_unmap_single(&ndev->dev, dma_unmap_addr(tx_buff, addr),
 				 dma_unmap_len(tx_buff, len), DMA_TO_DEVICE);
 
-		/* return the sk_buff to system */
+		 
 		dev_consume_skb_irq(skb);
 
 		txbd->data = 0;
@@ -153,24 +123,14 @@ static void arc_emac_tx_clean(struct net_device *ndev)
 		*txbd_dirty = (*txbd_dirty + 1) % TX_BD_NUM;
 	}
 
-	/* Ensure that txbd_dirty is visible to tx() before checking
-	 * for queue stopped.
-	 */
+	 
 	smp_mb();
 
 	if (netif_queue_stopped(ndev) && arc_emac_tx_avail(priv))
 		netif_wake_queue(ndev);
 }
 
-/**
- * arc_emac_rx - processing of Rx packets.
- * @ndev:	Pointer to the network device.
- * @budget:	How many BDs to process on 1 call.
- *
- * returns:	Number of processed BDs
- *
- * Iterate through Rx BDs and deliver received packages to upper layer.
- */
+ 
 static int arc_emac_rx(struct net_device *ndev, int budget)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -188,35 +148,28 @@ static int arc_emac_rx(struct net_device *ndev, int budget)
 		if (unlikely((info & OWN_MASK) == FOR_EMAC))
 			break;
 
-		/* Make a note that we saw a packet at this BD.
-		 * So next time, driver starts from this + 1
-		 */
+		 
 		*last_rx_bd = (*last_rx_bd + 1) % RX_BD_NUM;
 
 		if (unlikely((info & FIRST_OR_LAST_MASK) !=
 			     FIRST_OR_LAST_MASK)) {
-			/* We pre-allocate buffers of MTU size so incoming
-			 * packets won't be split/chained.
-			 */
+			 
 			if (net_ratelimit())
 				netdev_err(ndev, "incomplete packet received\n");
 
-			/* Return ownership to EMAC */
+			 
 			rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
 			stats->rx_errors++;
 			stats->rx_length_errors++;
 			continue;
 		}
 
-		/* Prepare the BD for next cycle. netif_receive_skb()
-		 * only if new skb was allocated and mapped to avoid holes
-		 * in the RX fifo.
-		 */
+		 
 		skb = netdev_alloc_skb_ip_align(ndev, EMAC_BUFFER_SIZE);
 		if (unlikely(!skb)) {
 			if (net_ratelimit())
 				netdev_err(ndev, "cannot allocate skb\n");
-			/* Return ownership to EMAC */
+			 
 			rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
 			stats->rx_errors++;
 			stats->rx_dropped++;
@@ -229,14 +182,14 @@ static int arc_emac_rx(struct net_device *ndev, int budget)
 			if (net_ratelimit())
 				netdev_err(ndev, "cannot map dma buffer\n");
 			dev_kfree_skb(skb);
-			/* Return ownership to EMAC */
+			 
 			rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
 			stats->rx_errors++;
 			stats->rx_dropped++;
 			continue;
 		}
 
-		/* unmap previosly mapped skb */
+		 
 		dma_unmap_single(&ndev->dev, dma_unmap_addr(rx_buff, addr),
 				 dma_unmap_len(rx_buff, len), DMA_FROM_DEVICE);
 
@@ -255,20 +208,17 @@ static int arc_emac_rx(struct net_device *ndev, int budget)
 
 		rxbd->data = cpu_to_le32(addr);
 
-		/* Make sure pointer to data buffer is set */
+		 
 		wmb();
 
-		/* Return ownership to EMAC */
+		 
 		rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
 	}
 
 	return work_done;
 }
 
-/**
- * arc_emac_rx_miss_handle - handle R_MISS register
- * @ndev:	Pointer to the net_device structure.
- */
+ 
 static void arc_emac_rx_miss_handle(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -283,17 +233,7 @@ static void arc_emac_rx_miss_handle(struct net_device *ndev)
 	}
 }
 
-/**
- * arc_emac_rx_stall_check - check RX stall
- * @ndev:	Pointer to the net_device structure.
- * @budget:	How many BDs requested to process on 1 call.
- * @work_done:	How many BDs processed
- *
- * Under certain conditions EMAC stop reception of incoming packets and
- * continuously increment R_MISS register instead of saving data into
- * provided buffer. This function detect that condition and restart
- * EMAC.
- */
+ 
 static void arc_emac_rx_stall_check(struct net_device *ndev,
 				    int budget, unsigned int work_done)
 {
@@ -312,13 +252,7 @@ static void arc_emac_rx_stall_check(struct net_device *ndev,
 	}
 }
 
-/**
- * arc_emac_poll - NAPI poll handler.
- * @napi:	Pointer to napi_struct structure.
- * @budget:	How many BDs to process on 1 call.
- *
- * returns:	Number of processed BDs
- */
+ 
 static int arc_emac_poll(struct napi_struct *napi, int budget)
 {
 	struct net_device *ndev = napi->dev;
@@ -339,16 +273,7 @@ static int arc_emac_poll(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-/**
- * arc_emac_intr - Global interrupt handler for EMAC.
- * @irq:		irq number.
- * @dev_instance:	device instance.
- *
- * returns: IRQ_HANDLED for all cases.
- *
- * ARC EMAC has only 1 interrupt line, and depending on bits raised in
- * STATUS register we may tell what is a reason for interrupt to fire.
- */
+ 
 static irqreturn_t arc_emac_intr(int irq, void *dev_instance)
 {
 	struct net_device *ndev = dev_instance;
@@ -359,7 +284,7 @@ static irqreturn_t arc_emac_intr(int irq, void *dev_instance)
 	status = arc_reg_get(priv, R_STATUS);
 	status &= ~MDIO_MASK;
 
-	/* Reset all flags except "MDIO complete" */
+	 
 	arc_reg_set(priv, R_STATUS, status);
 
 	if (status & (RXINT_MASK | TXINT_MASK)) {
@@ -370,9 +295,7 @@ static irqreturn_t arc_emac_intr(int irq, void *dev_instance)
 	}
 
 	if (status & ERR_MASK) {
-		/* MSER/RXCR/RXFR/RXFL interrupt fires on corresponding
-		 * 8-bit error counter overrun.
-		 */
+		 
 
 		if (status & MSER_MASK) {
 			stats->rx_missed_errors += 0x100;
@@ -409,16 +332,7 @@ static void arc_emac_poll_controller(struct net_device *dev)
 }
 #endif
 
-/**
- * arc_emac_open - Open the network device.
- * @ndev:	Pointer to the network device.
- *
- * returns: 0, on success or non-zero error value on failure.
- *
- * This function sets the MAC address, requests and enables an IRQ
- * for the EMAC device and starts the Tx queue.
- * It also connects to the phy device.
- */
+ 
 static int arc_emac_open(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -433,7 +347,7 @@ static int arc_emac_open(struct net_device *ndev)
 
 	priv->last_rx_bd = 0;
 
-	/* Allocate and set buffers for Rx BD's */
+	 
 	for (i = 0; i < RX_BD_NUM; i++) {
 		dma_addr_t addr;
 		unsigned int *last_rx_bd = &priv->last_rx_bd;
@@ -457,10 +371,10 @@ static int arc_emac_open(struct net_device *ndev)
 
 		rxbd->data = cpu_to_le32(addr);
 
-		/* Make sure pointer to data buffer is set */
+		 
 		wmb();
 
-		/* Return ownership to EMAC */
+		 
 		rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
 
 		*last_rx_bd = (*last_rx_bd + 1) % RX_BD_NUM;
@@ -469,29 +383,29 @@ static int arc_emac_open(struct net_device *ndev)
 	priv->txbd_curr = 0;
 	priv->txbd_dirty = 0;
 
-	/* Clean Tx BD's */
+	 
 	memset(priv->txbd, 0, TX_RING_SZ);
 
-	/* Initialize logical address filter */
+	 
 	arc_reg_set(priv, R_LAFL, 0);
 	arc_reg_set(priv, R_LAFH, 0);
 
-	/* Set BD ring pointers for device side */
+	 
 	arc_reg_set(priv, R_RX_RING, (unsigned int)priv->rxbd_dma);
 	arc_reg_set(priv, R_TX_RING, (unsigned int)priv->txbd_dma);
 
-	/* Enable interrupts */
+	 
 	arc_reg_set(priv, R_ENABLE, RXINT_MASK | TXINT_MASK | ERR_MASK);
 
-	/* Set CONTROL */
+	 
 	arc_reg_set(priv, R_CTRL,
-		    (RX_BD_NUM << 24) |	/* RX BD table length */
-		    (TX_BD_NUM << 16) |	/* TX BD table length */
+		    (RX_BD_NUM << 24) |	 
+		    (TX_BD_NUM << 16) |	 
 		    TXRN_MASK | RXRN_MASK);
 
 	napi_enable(&priv->napi);
 
-	/* Enable EMAC */
+	 
 	arc_reg_or(priv, R_CTRL, EN_MASK);
 
 	phy_start(ndev->phydev);
@@ -501,13 +415,7 @@ static int arc_emac_open(struct net_device *ndev)
 	return 0;
 }
 
-/**
- * arc_emac_set_rx_mode - Change the receive filtering mode.
- * @ndev:	Pointer to the network device.
- *
- * This function enables/disables promiscuous or all-multicast mode
- * and updates the multicast filtering list of the network device.
- */
+ 
 static void arc_emac_set_rx_mode(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -539,12 +447,7 @@ static void arc_emac_set_rx_mode(struct net_device *ndev)
 	}
 }
 
-/**
- * arc_free_tx_queue - free skb from tx queue
- * @ndev:	Pointer to the network device.
- *
- * This function must be called while EMAC disable
- */
+ 
 static void arc_free_tx_queue(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -560,7 +463,7 @@ static void arc_free_tx_queue(struct net_device *ndev)
 					 dma_unmap_len(tx_buff, len),
 					 DMA_TO_DEVICE);
 
-			/* return the sk_buff to system */
+			 
 			dev_kfree_skb_irq(tx_buff->skb);
 		}
 
@@ -570,12 +473,7 @@ static void arc_free_tx_queue(struct net_device *ndev)
 	}
 }
 
-/**
- * arc_free_rx_queue - free skb from rx queue
- * @ndev:	Pointer to the network device.
- *
- * This function must be called while EMAC disable
- */
+ 
 static void arc_free_rx_queue(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -591,7 +489,7 @@ static void arc_free_rx_queue(struct net_device *ndev)
 					 dma_unmap_len(rx_buff, len),
 					 DMA_FROM_DEVICE);
 
-			/* return the sk_buff to system */
+			 
 			dev_kfree_skb_irq(rx_buff->skb);
 		}
 
@@ -601,14 +499,7 @@ static void arc_free_rx_queue(struct net_device *ndev)
 	}
 }
 
-/**
- * arc_emac_stop - Close the network device.
- * @ndev:	Pointer to the network device.
- *
- * This function stops the Tx queue, disables interrupts and frees the IRQ for
- * the EMAC device.
- * It also disconnects the PHY device associated with the EMAC device.
- */
+ 
 static int arc_emac_stop(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -618,26 +509,20 @@ static int arc_emac_stop(struct net_device *ndev)
 
 	phy_stop(ndev->phydev);
 
-	/* Disable interrupts */
+	 
 	arc_reg_clr(priv, R_ENABLE, RXINT_MASK | TXINT_MASK | ERR_MASK);
 
-	/* Disable EMAC */
+	 
 	arc_reg_clr(priv, R_CTRL, EN_MASK);
 
-	/* Return the sk_buff to system */
+	 
 	arc_free_tx_queue(ndev);
 	arc_free_rx_queue(ndev);
 
 	return 0;
 }
 
-/**
- * arc_emac_stats - Get system network statistics.
- * @ndev:	Pointer to net_device structure.
- *
- * Returns the address of the device statistics structure.
- * Statistics are updated in interrupt handler.
- */
+ 
 static struct net_device_stats *arc_emac_stats(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -663,16 +548,7 @@ static struct net_device_stats *arc_emac_stats(struct net_device *ndev)
 	return stats;
 }
 
-/**
- * arc_emac_tx - Starts the data transmission.
- * @skb:	sk_buff pointer that contains data to be Transmitted.
- * @ndev:	Pointer to net_device structure.
- *
- * returns: NETDEV_TX_OK, on success
- *		NETDEV_TX_BUSY, if any of the descriptors are not free.
- *
- * This function is invoked from upper layers to initiate transmission.
- */
+ 
 static netdev_tx_t arc_emac_tx(struct sk_buff *skb, struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -706,30 +582,27 @@ static netdev_tx_t arc_emac_tx(struct sk_buff *skb, struct net_device *ndev)
 
 	priv->txbd[*txbd_curr].data = cpu_to_le32(addr);
 
-	/* Make sure pointer to data buffer is set */
+	 
 	wmb();
 
 	skb_tx_timestamp(skb);
 
 	*info = cpu_to_le32(FOR_EMAC | FIRST_OR_LAST_MASK | len);
 
-	/* Make sure info word is set */
+	 
 	wmb();
 
 	priv->tx_buff[*txbd_curr].skb = skb;
 
-	/* Increment index to point to the next BD */
+	 
 	*txbd_curr = (*txbd_curr + 1) % TX_BD_NUM;
 
-	/* Ensure that tx_clean() sees the new txbd_curr before
-	 * checking the queue status. This prevents an unneeded wake
-	 * of the queue in tx_clean().
-	 */
+	 
 	smp_mb();
 
 	if (!arc_emac_tx_avail(priv)) {
 		netif_stop_queue(ndev);
-		/* Refresh tx_dirty */
+		 
 		smp_mb();
 		if (arc_emac_tx_avail(priv))
 			netif_start_queue(ndev);
@@ -752,17 +625,7 @@ static void arc_emac_set_address_internal(struct net_device *ndev)
 	arc_reg_set(priv, R_ADDRH, addr_hi);
 }
 
-/**
- * arc_emac_set_address - Set the MAC address for this device.
- * @ndev:	Pointer to net_device structure.
- * @p:		6 byte Address to be written as MAC address.
- *
- * This function copies the HW address from the sockaddr structure to the
- * net_device structure and updates the address in HW.
- *
- * returns:	-EBUSY if the net device is busy or 0 if the address is set
- *		successfully.
- */
+ 
 static int arc_emac_set_address(struct net_device *ndev, void *p)
 {
 	struct sockaddr *addr = p;
@@ -780,13 +643,7 @@ static int arc_emac_set_address(struct net_device *ndev, void *p)
 	return 0;
 }
 
-/**
- * arc_emac_restart - Restart EMAC
- * @ndev:	Pointer to net_device structure.
- *
- * This function do hardware reset of EMAC in order to restore
- * network packets reception.
- */
+ 
 static void arc_emac_restart(struct net_device *ndev)
 {
 	struct arc_emac_priv *priv = netdev_priv(ndev);
@@ -798,16 +655,16 @@ static void arc_emac_restart(struct net_device *ndev)
 
 	netif_stop_queue(ndev);
 
-	/* Disable interrupts */
+	 
 	arc_reg_clr(priv, R_ENABLE, RXINT_MASK | TXINT_MASK | ERR_MASK);
 
-	/* Disable EMAC */
+	 
 	arc_reg_clr(priv, R_CTRL, EN_MASK);
 
-	/* Return the sk_buff to system */
+	 
 	arc_free_tx_queue(ndev);
 
-	/* Clean Tx BD's */
+	 
 	priv->txbd_curr = 0;
 	priv->txbd_dirty = 0;
 	memset(priv->txbd, 0, TX_RING_SZ);
@@ -820,18 +677,18 @@ static void arc_emac_restart(struct net_device *ndev)
 			stats->rx_errors++;
 			stats->rx_dropped++;
 		}
-		/* Return ownership to EMAC */
+		 
 		rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
 	}
 	priv->last_rx_bd = 0;
 
-	/* Make sure info is visible to EMAC before enable */
+	 
 	wmb();
 
-	/* Enable interrupts */
+	 
 	arc_reg_set(priv, R_ENABLE, RXINT_MASK | TXINT_MASK | ERR_MASK);
 
-	/* Enable EMAC */
+	 
 	arc_reg_or(priv, R_CTRL, EN_MASK);
 
 	netif_start_queue(ndev);
@@ -860,14 +717,14 @@ int arc_emac_probe(struct net_device *ndev, int interface)
 	unsigned int id, clock_frequency, irq;
 	int err;
 
-	/* Get PHY from device tree */
+	 
 	phy_node = of_parse_phandle(dev->of_node, "phy", 0);
 	if (!phy_node) {
 		dev_err(dev, "failed to retrieve phy description from device tree\n");
 		return -ENODEV;
 	}
 
-	/* Get EMAC registers base address from device tree */
+	 
 	err = of_address_to_resource(dev->of_node, 0, &res_regs);
 	if (err) {
 		dev_err(dev, "failed to retrieve registers base from device tree\n");
@@ -875,7 +732,7 @@ int arc_emac_probe(struct net_device *ndev, int interface)
 		goto out_put_node;
 	}
 
-	/* Get IRQ from device tree */
+	 
 	irq = irq_of_parse_and_map(dev->of_node, 0);
 	if (!irq) {
 		dev_err(dev, "failed to retrieve <irq> value from device tree\n");
@@ -907,7 +764,7 @@ int arc_emac_probe(struct net_device *ndev, int interface)
 
 		clock_frequency = clk_get_rate(priv->clk);
 	} else {
-		/* Get CPU clock frequency from device tree */
+		 
 		if (of_property_read_u32(dev->of_node, "clock-frequency",
 					 &clock_frequency)) {
 			dev_err(dev, "failed to retrieve <clock-frequency> from device tree\n");
@@ -918,7 +775,7 @@ int arc_emac_probe(struct net_device *ndev, int interface)
 
 	id = arc_reg_get(priv, R_ID);
 
-	/* Check for EMAC revision 5 or 7, magic number */
+	 
 	if (!(id == 0x0005fd02 || id == 0x0007fd02)) {
 		dev_err(dev, "ARC EMAC not detected, id=0x%x\n", id);
 		err = -ENODEV;
@@ -926,13 +783,13 @@ int arc_emac_probe(struct net_device *ndev, int interface)
 	}
 	dev_info(dev, "ARC EMAC detected with id: 0x%x\n", id);
 
-	/* Set poll rate so that it polls every 1 ms */
+	 
 	arc_reg_set(priv, R_POLLRATE, clock_frequency / 1000000);
 
 	ndev->irq = irq;
 	dev_info(dev, "IRQ is %d\n", ndev->irq);
 
-	/* Register interrupt handler for device */
+	 
 	err = devm_request_irq(dev, ndev->irq, arc_emac_intr, 0,
 			       ndev->name, ndev);
 	if (err) {
@@ -940,7 +797,7 @@ int arc_emac_probe(struct net_device *ndev, int interface)
 		goto out_clken;
 	}
 
-	/* Get MAC address from device tree */
+	 
 	err = of_get_ethdev_address(dev->of_node, ndev);
 	if (err)
 		eth_hw_addr_random(ndev);
@@ -948,7 +805,7 @@ int arc_emac_probe(struct net_device *ndev, int interface)
 	arc_emac_set_address_internal(ndev);
 	dev_info(dev, "MAC address is now %pM\n", ndev->dev_addr);
 
-	/* Do 1 allocation instead of 2 separate ones for Rx and Tx BD rings */
+	 
 	priv->rxbd = dmam_alloc_coherent(dev, RX_RING_SZ + TX_RING_SZ,
 					 &priv->rxbd_dma, GFP_KERNEL);
 

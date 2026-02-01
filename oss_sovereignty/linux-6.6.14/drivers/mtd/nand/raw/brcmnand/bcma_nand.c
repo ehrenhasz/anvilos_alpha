@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2021 Broadcom
- */
+
+ 
 #include <linux/bcma/bcma.h>
 #include <linux/bcma/bcma_driver_chipcommon.h>
 #include <linux/device.h>
@@ -48,7 +46,7 @@ static u32 brcmnand_bcma_read_reg(struct brcmnand_soc *soc, u32 offset)
 	struct brcmnand_bcma_soc *sc = to_bcma_soc(soc);
 	u32 val;
 
-	/* Offset into the NAND block and deal with the flash cache separately */
+	 
 	if (offset == BRCMNAND_NON_MMIO_FC_ADDR)
 		offset = BCMA_CC_NAND_CACHE_DATA;
 	else
@@ -56,7 +54,7 @@ static u32 brcmnand_bcma_read_reg(struct brcmnand_soc *soc, u32 offset)
 
 	val = bcma_cc_read32(sc->cc, offset);
 
-	/* Swap if necessary */
+	 
 	if (brcmnand_bcma_needs_swapping(offset))
 		val = be32_to_cpu((__force __be32)val);
 	return val;
@@ -67,13 +65,13 @@ static void brcmnand_bcma_write_reg(struct brcmnand_soc *soc, u32 val,
 {
 	struct brcmnand_bcma_soc *sc = to_bcma_soc(soc);
 
-	/* Offset into the NAND block */
+	 
 	if (offset == BRCMNAND_NON_MMIO_FC_ADDR)
 		offset = BCMA_CC_NAND_CACHE_DATA;
 	else
 		offset += BCMA_CC_NAND_REVISION;
 
-	/* Swap if necessary */
+	 
 	if (brcmnand_bcma_needs_swapping(offset))
 		val = (__force u32)cpu_to_be32(val);
 
@@ -90,9 +88,7 @@ static void brcmnand_bcma_prepare_data_bus(struct brcmnand_soc *soc, bool prepar
 {
 	struct brcmnand_bcma_soc *sc = to_bcma_soc(soc);
 
-	/* Reset the cache address to ensure we are already accessing the
-	 * beginning of a sub-page.
-	 */
+	 
 	bcma_cc_write32(sc->cc, BCMA_CC_NAND_CACHE_ADDR, 0);
 }
 

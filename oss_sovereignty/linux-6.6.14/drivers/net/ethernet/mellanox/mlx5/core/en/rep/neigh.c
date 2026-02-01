@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies. */
+
+ 
 
 #include <linux/refcount.h>
 #include <linux/list.h>
@@ -136,11 +136,7 @@ static void mlx5e_rep_neigh_update(struct work_struct *work)
 
 	rtnl_lock();
 
-	/* If these parameters are changed after we release the lock,
-	 * we'll receive another event letting us know about it.
-	 * We use this lock to avoid inconsistency between the neigh validity
-	 * and it's hw address.
-	 */
+	 
 	read_lock_bh(&n->lock);
 	memcpy(ha, n->ha, ETH_ALEN);
 	nud_state = n->nud_state;
@@ -155,9 +151,7 @@ static void mlx5e_rep_neigh_update(struct work_struct *work)
 	if (!same_dev)
 		goto out;
 
-	/* mlx5e_get_next_init_encap() releases previous encap before returning
-	 * the next one.
-	 */
+	 
 	while ((e = mlx5e_get_next_init_encap(nhe, e)) != NULL)
 		mlx5e_rep_update_flows(netdev_priv(e->out_dev), e, neigh_connected, ha);
 
@@ -180,9 +174,7 @@ static struct neigh_update_work *mlx5e_alloc_neigh_update_work(struct mlx5e_priv
 	m_neigh.family = n->ops->family;
 	memcpy(&m_neigh.dst_ip, n->primary_key, n->tbl->key_len);
 
-	/* Obtain reference to nhe as last step in order not to release it in
-	 * atomic context.
-	 */
+	 
 	rcu_read_lock();
 	nhe = mlx5e_rep_neigh_entry_lookup(priv, &m_neigh);
 	rcu_read_unlock();
@@ -233,10 +225,7 @@ static int mlx5e_rep_netevent_event(struct notifier_block *nb,
 	case NETEVENT_DELAY_PROBE_TIME_UPDATE:
 		p = ptr;
 
-		/* We check the device is present since we don't care about
-		 * changes in the default table, we only care about changes
-		 * done per device delay prob time parameter.
-		 */
+		 
 #if IS_ENABLED(CONFIG_IPV6)
 		if (!p->dev || (p->tbl != ipv6_stub->nd_tbl && p->tbl != &arp_tbl))
 #else
@@ -314,7 +303,7 @@ void mlx5e_rep_neigh_cleanup(struct mlx5e_rep_priv *rpriv)
 
 	unregister_netevent_notifier(&neigh_update->netevent_nb);
 
-	flush_workqueue(priv->wq); /* flush neigh update works */
+	flush_workqueue(priv->wq);  
 
 	cancel_delayed_work_sync(&rpriv->neigh_update.neigh_stats_work);
 
@@ -353,9 +342,7 @@ static void mlx5e_rep_neigh_entry_remove(struct mlx5e_neigh_hash_entry *nhe)
 	mutex_unlock(&rpriv->neigh_update.encap_lock);
 }
 
-/* This function must only be called under the representor's encap_lock or
- * inside rcu read lock section.
- */
+ 
 struct mlx5e_neigh_hash_entry *
 mlx5e_rep_neigh_entry_lookup(struct mlx5e_priv *priv,
 			     struct mlx5e_neigh *m_neigh)

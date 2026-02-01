@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef _QED_ETH_IF_H
 #define _QED_ETH_IF_H
@@ -13,16 +10,16 @@
 #include <linux/qed/qed_if.h>
 #include <linux/qed/qed_iov_if.h>
 
-/* 64 max queues * (1 rx + 4 tx-cos + 1 xdp) */
+ 
 #define QED_MIN_L2_CONS (2 + NUM_PHYS_TCS_4PORT_K2)
 #define QED_MAX_L2_CONS (64 * (QED_MIN_L2_CONS))
 
 struct qed_queue_start_common_params {
-	/* Should always be relative to entity sending this. */
+	 
 	u8 vport_id;
 	u16 queue_id;
 
-	/* Relative, but relevant only for PFs */
+	 
 	u8 stats_id;
 
 	struct qed_sb_info *p_sb;
@@ -50,27 +47,25 @@ enum qed_filter_config_mode {
 };
 
 struct qed_ntuple_filter_params {
-	/* Physically mapped address containing header of buffer to be used
-	 * as filter.
-	 */
+	 
 	dma_addr_t addr;
 
-	/* Length of header in bytes */
+	 
 	u16 length;
 
-	/* Relative queue-id to receive classified packet */
+	 
 #define QED_RFS_NTUPLE_QID_RSS ((u16)-1)
 	u16 qid;
 
-	/* Identifier can either be according to vport-id or vfid */
+	 
 	bool b_is_vf;
 	u8 vport_id;
 	u8 vf_id;
 
-	/* true iff this filter is to be added. Else to be removed */
+	 
 	bool b_is_add;
 
-	/* If flow needs to be dropped */
+	 
 	bool b_is_drop;
 };
 
@@ -84,10 +79,10 @@ struct qed_dev_eth_info {
 	u16	num_vlan_filters;
 	u16	num_mac_filters;
 
-	/* Legacy VF - this affects the datapath, so qede has to know */
+	 
 	bool is_legacy;
 
-	/* Might depend on available resources [in case of VF] */
+	 
 	bool xdp_supported;
 };
 
@@ -186,11 +181,9 @@ enum qed_ptp_hwtstamp_tx_type {
 };
 
 #ifdef CONFIG_DCB
-/* Prototype declaration of qed_eth_dcbnl_ops should match with the declaration
- * of dcbnl_rtnl_ops structure.
- */
+ 
 struct qed_eth_dcbnl_ops {
-	/* IEEE 802.1Qaz std */
+	 
 	int (*ieee_getpfc)(struct qed_dev *cdev, struct ieee_pfc *pfc);
 	int (*ieee_setpfc)(struct qed_dev *cdev, struct ieee_pfc *pfc);
 	int (*ieee_getets)(struct qed_dev *cdev, struct ieee_ets *ets);
@@ -200,7 +193,7 @@ struct qed_eth_dcbnl_ops {
 	int (*ieee_getapp)(struct qed_dev *cdev, struct dcb_app *app);
 	int (*ieee_setapp)(struct qed_dev *cdev, struct dcb_app *app);
 
-	/* CEE std */
+	 
 	u8 (*getstate)(struct qed_dev *cdev);
 	u8 (*setstate)(struct qed_dev *cdev, u8 state);
 	void (*getpgtccfgtx)(struct qed_dev *cdev, int prio, u8 *prio_type,
@@ -217,7 +210,7 @@ struct qed_eth_dcbnl_ops {
 	int (*getapp)(struct qed_dev *cdev, u8 idtype, u16 id);
 	u8 (*getfeatcfg)(struct qed_dev *cdev, int featid, u8 *flags);
 
-	/* DCBX configuration */
+	 
 	u8 (*getdcbx)(struct qed_dev *cdev);
 	void (*setpgtccfgtx)(struct qed_dev *cdev, int prio,
 			     u8 pri_type, u8 pgid, u8 bw_pct, u8 up_map);
@@ -232,13 +225,13 @@ struct qed_eth_dcbnl_ops {
 	u8 (*setdcbx)(struct qed_dev *cdev, u8 state);
 	u8 (*setfeatcfg)(struct qed_dev *cdev, int featid, u8 flags);
 
-	/* Peer apps */
+	 
 	int (*peer_getappinfo)(struct qed_dev *cdev,
 			       struct dcb_peer_app_info *info,
 			       u16 *app_count);
 	int (*peer_getapptable)(struct qed_dev *cdev, struct dcb_app *table);
 
-	/* CEE peer */
+	 
 	int (*cee_peer_getpfc)(struct qed_dev *cdev, struct cee_pfc *pfc);
 	int (*cee_peer_getpg)(struct qed_dev *cdev, struct cee_pg *pg);
 };

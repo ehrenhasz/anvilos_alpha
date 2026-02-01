@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2017 Intel Corporation
- */
+ 
 
 #include <linux/prime_numbers.h>
 
@@ -316,12 +312,7 @@ static int igt_gem_coherency(void *arg)
 	struct context ctx;
 	int err = 0;
 
-	/*
-	 * We repeatedly write, overwrite and read from a sequence of
-	 * cachelines in order to try and detect incoherency (unflushed writes
-	 * from either the CPU or GPU). Each setter/getter uses our cache
-	 * domain API which should prevent incoherency.
-	 */
+	 
 
 	offsets = kmalloc_array(ncachelines, 2*sizeof(u32), GFP_KERNEL);
 	if (!offsets)

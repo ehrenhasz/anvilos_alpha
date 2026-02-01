@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon HiP04 INTC
- *
- * Copyright (C) 2002-2014 ARM Limited.
- * Copyright (c) 2013-2014 HiSilicon Ltd.
- * Copyright (c) 2013-2014 Linaro Ltd.
- *
- * Interrupt architecture for the HIP04 INTC:
- *
- * o There is one Interrupt Distributor, which receives interrupts
- *   from system devices and sends them to the Interrupt Controllers.
- *
- * o There is one CPU Interface per CPU, which sends interrupts sent
- *   by the Distributor, and interrupts generated locally, to the
- *   associated CPU. The base address of the CPU interface is usually
- *   aliased so that the same address points to different chips depending
- *   on the CPU it is accessed from.
- *
- * Note that IRQs 0-31 are special - they are local to each CPU.
- * As such, the enable set/clear, pending set/clear and active bit
- * registers are banked per-cpu for these sources.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -58,11 +37,7 @@ struct hip04_irq_data {
 
 static DEFINE_RAW_SPINLOCK(irq_controller_lock);
 
-/*
- * The GIC mapping of CPU interfaces does not necessarily match
- * the logical CPU numbering.  Let's use a mapping as returned
- * by the GIC itself.
- */
+ 
 #define NR_HIP04_CPU_IF 16
 static u16 hip04_cpu_map[NR_HIP04_CPU_IF] __read_mostly;
 
@@ -85,9 +60,7 @@ static inline unsigned int hip04_irq(struct irq_data *d)
 	return d->hwirq;
 }
 
-/*
- * Routines to acknowledge, disable and enable interrupts
- */
+ 
 static void hip04_mask_irq(struct irq_data *d)
 {
 	u32 mask = 1 << (hip04_irq(d) % 32);
@@ -119,11 +92,11 @@ static int hip04_irq_set_type(struct irq_data *d, unsigned int type)
 	unsigned int irq = hip04_irq(d);
 	int ret;
 
-	/* Interrupt configuration for SGIs can't be changed */
+	 
 	if (irq < 16)
 		return -EINVAL;
 
-	/* SPIs have restrictions on the supported types */
+	 
 	if (irq >= 32 && type != IRQ_TYPE_LEVEL_HIGH &&
 			 type != IRQ_TYPE_EDGE_RISING)
 		return -EINVAL;
@@ -132,7 +105,7 @@ static int hip04_irq_set_type(struct irq_data *d, unsigned int type)
 
 	ret = gic_configure_irq(irq, type, base + GIC_DIST_CONFIG, NULL);
 	if (ret && irq < 32) {
-		/* Misconfigured PPIs are usually not fatal */
+		 
 		pr_warn("GIC: PPI%d is secure or misconfigured\n", irq - 16);
 		ret = 0;
 	}
@@ -179,17 +152,14 @@ static void hip04_ipi_send_mask(struct irq_data *d, const struct cpumask *mask)
 
 	raw_spin_lock_irqsave(&irq_controller_lock, flags);
 
-	/* Convert our logical CPU mask into a physical one. */
+	 
 	for_each_cpu(cpu, mask)
 		map |= hip04_cpu_map[cpu];
 
-	/*
-	 * Ensure that stores to Normal memory are visible to the
-	 * other CPUs before they observe us issuing the IPI.
-	 */
+	 
 	dmb(ishst);
 
-	/* this always happens on GIC0 */
+	 
 	writel_relaxed(map << 8 | d->hwirq, hip04_data.dist_base + GIC_DIST_SOFTINT);
 
 	raw_spin_unlock_irqrestore(&irq_controller_lock, flags);
@@ -252,9 +222,7 @@ static void __init hip04_irq_dist_init(struct hip04_irq_data *intc)
 
 	writel_relaxed(0, base + GIC_DIST_CTRL);
 
-	/*
-	 * Set all global interrupts to this CPU only.
-	 */
+	 
 	cpumask = hip04_get_cpumask(intc);
 	cpumask |= cpumask << 16;
 	for (i = 32; i < nr_irqs; i += 2)
@@ -272,17 +240,12 @@ static void hip04_irq_cpu_init(struct hip04_irq_data *intc)
 	unsigned int cpu_mask, cpu = smp_processor_id();
 	int i;
 
-	/*
-	 * Get what the GIC says our CPU mask is.
-	 */
+	 
 	BUG_ON(cpu >= NR_HIP04_CPU_IF);
 	cpu_mask = hip04_get_cpumask(intc);
 	hip04_cpu_map[cpu] = cpu_mask;
 
-	/*
-	 * Clear our mask from the other map entries in case they're
-	 * still undefined.
-	 */
+	 
 	for (i = 0; i < NR_HIP04_CPU_IF; i++)
 		if (i != cpu)
 			hip04_cpu_map[i] &= ~cpu_mask;
@@ -326,10 +289,10 @@ static int hip04_irq_domain_xlate(struct irq_domain *d,
 	if (intsize < 3)
 		return -EINVAL;
 
-	/* Get the interrupt number and add 16 to skip over SGIs */
+	 
 	*out_hwirq = intspec[1] + 16;
 
-	/* For SPIs, we need to add 16 more to get the irq ID number */
+	 
 	if (!intspec[0])
 		*out_hwirq += 16;
 
@@ -363,17 +326,11 @@ hip04_of_init(struct device_node *node, struct device_node *parent)
 	hip04_data.cpu_base = of_iomap(node, 1);
 	WARN(!hip04_data.cpu_base, "unable to map hip04 intc cpu registers\n");
 
-	/*
-	 * Initialize the CPU interface map to all CPUs.
-	 * It will be refined as each CPU probes its ID.
-	 */
+	 
 	for (i = 0; i < NR_HIP04_CPU_IF; i++)
 		hip04_cpu_map[i] = 0xffff;
 
-	/*
-	 * Find out how many interrupts are supported.
-	 * The HIP04 INTC only supports up to 510 interrupt sources.
-	 */
+	 
 	nr_irqs = readl_relaxed(hip04_data.dist_base + GIC_DIST_CTR) & 0x1f;
 	nr_irqs = (nr_irqs + 1) * 32;
 	if (nr_irqs > HIP04_MAX_IRQS)

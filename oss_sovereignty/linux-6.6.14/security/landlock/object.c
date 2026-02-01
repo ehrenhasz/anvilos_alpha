@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Landlock LSM - Object management
- *
- * Copyright © 2016-2020 Mickaël Salaün <mic@digikod.net>
- * Copyright © 2018-2020 ANSSI
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/compiler_types.h>
@@ -35,32 +30,18 @@ landlock_create_object(const struct landlock_object_underops *const underops,
 	return new_object;
 }
 
-/*
- * The caller must own the object (i.e. thanks to object->usage) to safely put
- * it.
- */
+ 
 void landlock_put_object(struct landlock_object *const object)
 {
-	/*
-	 * The call to @object->underops->release(object) might sleep, e.g.
-	 * because of iput().
-	 */
+	 
 	might_sleep();
 	if (!object)
 		return;
 
-	/*
-	 * If the @object's refcount cannot drop to zero, we can just decrement
-	 * the refcount without holding a lock. Otherwise, the decrement must
-	 * happen under @object->lock for synchronization with things like
-	 * get_inode_object().
-	 */
+	 
 	if (refcount_dec_and_lock(&object->usage, &object->lock)) {
 		__acquire(&object->lock);
-		/*
-		 * With @object->lock initially held, remove the reference from
-		 * @object->underobj to @object (if it still exists).
-		 */
+		 
 		object->underops->release(object);
 		kfree_rcu(object, rcu_free);
 	}

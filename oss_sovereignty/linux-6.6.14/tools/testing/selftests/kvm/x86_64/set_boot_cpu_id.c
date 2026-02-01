@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test that KVM_SET_BOOT_CPU_ID works as intended
- *
- * Copyright (C) 2020, Red Hat, Inc.
- */
-#define _GNU_SOURCE /* for program_invocation_name */
+
+ 
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>

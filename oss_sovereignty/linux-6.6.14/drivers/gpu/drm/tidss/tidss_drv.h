@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+ 
+ 
 
 #ifndef __TIDSS_DRV_H__
 #define __TIDSS_DRV_H__
@@ -15,8 +12,8 @@
 typedef u32 dispc_irq_t;
 
 struct tidss_device {
-	struct drm_device ddev;		/* DRM device for DSS */
-	struct device *dev;		/* Underlying DSS device */
+	struct drm_device ddev;		 
+	struct device *dev;		 
 
 	const struct dispc_features *feat;
 	struct dispc_device *dispc;
@@ -29,8 +26,8 @@ struct tidss_device {
 
 	unsigned int irq;
 
-	spinlock_t wait_lock;	/* protects the irq masks */
-	dispc_irq_t irq_mask;	/* enabled irqs in addition to wait_list */
+	spinlock_t wait_lock;	 
+	dispc_irq_t irq_mask;	 
 };
 
 #define to_tidss(__dev) container_of(__dev, struct tidss_device, ddev)

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toshiba Visconti ARM SoC reset controller
- *
- * Copyright (c) 2021 TOSHIBA CORPORATION
- * Copyright (c) 2021 Toshiba Electronic Devices & Storage Corporation
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/mfd/syscon.h>

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mediated virtual PCI serial host device driver
- *
- * Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
- *     Author: Neo Jia <cjia@nvidia.com>
- *             Kirti Wankhede <kwankhede@nvidia.com>
- *
- * Sample driver that creates mdev device that simulates serial port over PCI
- * card.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -29,9 +20,7 @@
 #include <linux/serial.h>
 #include <uapi/linux/serial_reg.h>
 #include <linux/eventfd.h>
-/*
- * #defines
- */
+ 
 
 #define VERSION_STRING  "0.1"
 #define DRIVER_AUTHOR   "NVIDIA Corporation"
@@ -62,9 +51,7 @@
 				(((u64)(1) << MTTY_VFIO_PCI_OFFSET_SHIFT) - 1)
 #define MAX_MTTYS	24
 
-/*
- * Global Structures
- */
+ 
 
 static struct mtty_dev {
 	dev_t		vd_devt;
@@ -106,7 +93,7 @@ static const char *rd_reg[] = {
 };
 #endif
 
-/* loop back buffer */
+ 
 struct rxtx {
 	u8 fifo[MAX_FIFO_SIZE];
 	u8 head, tail;
@@ -114,17 +101,17 @@ struct rxtx {
 };
 
 struct serial_port {
-	u8 uart_reg[8];         /* 8 registers */
-	struct rxtx rxtx;       /* loop back buffer */
+	u8 uart_reg[8];          
+	struct rxtx rxtx;        
 	bool dlab;
 	bool overrun;
 	u16 divisor;
-	u8 fcr;                 /* FIFO control register */
+	u8 fcr;                  
 	u8 max_fifo_size;
-	u8 intr_trigger_level;  /* interrupt trigger level */
+	u8 intr_trigger_level;   
 };
 
-/* State of each mdev device */
+ 
 struct mdev_state {
 	struct vfio_device vdev;
 	struct eventfd_ctx *intx_evtfd;
@@ -166,7 +153,7 @@ static const struct file_operations vd_fops = {
 
 static const struct vfio_device_ops mtty_dev_ops;
 
-/* Helper functions */
+ 
 
 static void dump_buffer(u8 *buf, uint32_t count)
 {
@@ -214,45 +201,45 @@ static void mtty_trigger_interrupt(struct mdev_state *mdev_state)
 
 static void mtty_create_config_space(struct mdev_state *mdev_state)
 {
-	/* PCI dev ID */
+	 
 	STORE_LE32((u32 *) &mdev_state->vconfig[0x0], 0x32534348);
 
-	/* Control: I/O+, Mem-, BusMaster- */
+	 
 	STORE_LE16((u16 *) &mdev_state->vconfig[0x4], 0x0001);
 
-	/* Status: capabilities list absent */
+	 
 	STORE_LE16((u16 *) &mdev_state->vconfig[0x6], 0x0200);
 
-	/* Rev ID */
+	 
 	mdev_state->vconfig[0x8] =  0x10;
 
-	/* programming interface class : 16550-compatible serial controller */
+	 
 	mdev_state->vconfig[0x9] =  0x02;
 
-	/* Sub class : 00 */
+	 
 	mdev_state->vconfig[0xa] =  0x00;
 
-	/* Base class : Simple Communication controllers */
+	 
 	mdev_state->vconfig[0xb] =  0x07;
 
-	/* base address registers */
-	/* BAR0: IO space */
+	 
+	 
 	STORE_LE32((u32 *) &mdev_state->vconfig[0x10], 0x000001);
 	mdev_state->bar_mask[0] = ~(MTTY_IO_BAR_SIZE) + 1;
 
 	if (mdev_state->nr_ports == 2) {
-		/* BAR1: IO space */
+		 
 		STORE_LE32((u32 *) &mdev_state->vconfig[0x14], 0x000001);
 		mdev_state->bar_mask[1] = ~(MTTY_IO_BAR_SIZE) + 1;
 	}
 
-	/* Subsystem ID */
+	 
 	STORE_LE32((u32 *) &mdev_state->vconfig[0x2c], 0x32534348);
 
-	mdev_state->vconfig[0x34] =  0x00;   /* Cap Ptr */
-	mdev_state->vconfig[0x3d] =  0x01;   /* interrupt pin (INTA#) */
+	mdev_state->vconfig[0x34] =  0x00;    
+	mdev_state->vconfig[0x3d] =  0x01;    
 
-	/* Vendor specific data */
+	 
 	mdev_state->vconfig[0x40] =  0x23;
 	mdev_state->vconfig[0x43] =  0x80;
 	mdev_state->vconfig[0x44] =  0x23;
@@ -282,21 +269,18 @@ static void handle_pci_cfg_write(struct mdev_state *mdev_state, u16 offset,
 	u32 cfg_addr, bar_mask, bar_index = 0;
 
 	switch (offset) {
-	case 0x04: /* device control */
-	case 0x06: /* device status */
-		/* do nothing */
+	case 0x04:  
+	case 0x06:  
+		 
 		break;
-	case 0x3c:  /* interrupt line */
+	case 0x3c:   
 		mdev_state->vconfig[0x3c] = buf[0];
 		break;
 	case 0x3d:
-		/*
-		 * Interrupt Pin is hardwired to INTA.
-		 * This field is write protected by hardware
-		 */
+		 
 		break;
-	case 0x10:  /* BAR0 */
-	case 0x14:  /* BAR1 */
+	case 0x10:   
+	case 0x14:   
 		if (offset == 0x10)
 			bar_index = 0;
 		else if (offset == 0x14)
@@ -318,9 +302,9 @@ static void handle_pci_cfg_write(struct mdev_state *mdev_state, u16 offset,
 		cfg_addr |= (mdev_state->vconfig[offset] & 0x3ul);
 		STORE_LE32(&mdev_state->vconfig[offset], cfg_addr);
 		break;
-	case 0x18:  /* BAR2 */
-	case 0x1c:  /* BAR3 */
-	case 0x20:  /* BAR4 */
+	case 0x18:   
+	case 0x1c:   
+	case 0x20:   
 		STORE_LE32(&mdev_state->vconfig[offset], 0);
 		break;
 	default:
@@ -335,10 +319,10 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 {
 	u8 data = *buf;
 
-	/* Handle data written by guest */
+	 
 	switch (offset) {
 	case UART_TX:
-		/* if DLAB set, data is LSB of divisor */
+		 
 		if (mdev_state->s[index].dlab) {
 			mdev_state->s[index].divisor |= data;
 			break;
@@ -346,7 +330,7 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 
 		mutex_lock(&mdev_state->rxtx_lock);
 
-		/* save in TX buffer */
+		 
 		if (mdev_state->s[index].rxtx.count <
 				mdev_state->s[index].max_fifo_size) {
 			mdev_state->s[index].rxtx.fifo[
@@ -355,15 +339,12 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 			CIRCULAR_BUF_INC_IDX(mdev_state->s[index].rxtx.head);
 			mdev_state->s[index].overrun = false;
 
-			/*
-			 * Trigger interrupt if receive data interrupt is
-			 * enabled and fifo reached trigger level
-			 */
+			 
 			if ((mdev_state->s[index].uart_reg[UART_IER] &
 						UART_IER_RDI) &&
 			   (mdev_state->s[index].rxtx.count ==
 				    mdev_state->s[index].intr_trigger_level)) {
-				/* trigger interrupt */
+				 
 #if defined(DEBUG_INTR)
 				pr_err("Serial port %d: Fifo level trigger\n",
 					index);
@@ -376,10 +357,7 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 #endif
 			mdev_state->s[index].overrun = true;
 
-			/*
-			 * Trigger interrupt if receiver line status interrupt
-			 * is enabled
-			 */
+			 
 			if (mdev_state->s[index].uart_reg[UART_IER] &
 								UART_IER_RLSI)
 				mtty_trigger_interrupt(mdev_state);
@@ -388,7 +366,7 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 		break;
 
 	case UART_IER:
-		/* if DLAB set, data is MSB of divisor */
+		 
 		if (mdev_state->s[index].dlab)
 			mdev_state->s[index].divisor |= (u16)data << 8;
 		else {
@@ -414,7 +392,7 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 
 		mutex_lock(&mdev_state->rxtx_lock);
 		if (data & (UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT)) {
-			/* clear loop back FIFO */
+			 
 			mdev_state->s[index].rxtx.count = 0;
 			mdev_state->s[index].rxtx.head = 0;
 			mdev_state->s[index].rxtx.tail = 0;
@@ -439,11 +417,7 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 			break;
 		}
 
-		/*
-		 * Set trigger level to 1 otherwise or  implement timer with
-		 * timeout of 4 characters and on expiring that timer set
-		 * Recevice data timeout in IIR register
-		 */
+		 
 		mdev_state->s[index].intr_trigger_level = 1;
 		if (data & UART_FCR_ENABLE_FIFO)
 			mdev_state->s[index].max_fifo_size = MAX_FIFO_SIZE;
@@ -486,7 +460,7 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 
 	case UART_LSR:
 	case UART_MSR:
-		/* do nothing */
+		 
 		break;
 
 	case UART_SCR:
@@ -501,17 +475,17 @@ static void handle_bar_write(unsigned int index, struct mdev_state *mdev_state,
 static void handle_bar_read(unsigned int index, struct mdev_state *mdev_state,
 			    u16 offset, u8 *buf, u32 count)
 {
-	/* Handle read requests by guest */
+	 
 	switch (offset) {
 	case UART_RX:
-		/* if DLAB set, data is LSB of divisor */
+		 
 		if (mdev_state->s[index].dlab) {
 			*buf  = (u8)mdev_state->s[index].divisor;
 			break;
 		}
 
 		mutex_lock(&mdev_state->rxtx_lock);
-		/* return data in tx buffer */
+		 
 		if (mdev_state->s[index].rxtx.head !=
 				 mdev_state->s[index].rxtx.tail) {
 			*buf = mdev_state->s[index].rxtx.fifo[
@@ -522,10 +496,7 @@ static void handle_bar_read(unsigned int index, struct mdev_state *mdev_state,
 
 		if (mdev_state->s[index].rxtx.head ==
 				mdev_state->s[index].rxtx.tail) {
-		/*
-		 *  Trigger interrupt if tx buffer empty interrupt is
-		 *  enabled and fifo is empty
-		 */
+		 
 #if defined(DEBUG_INTR)
 			pr_err("Serial port %d: Buffer Empty\n", index);
 #endif
@@ -551,33 +522,33 @@ static void handle_bar_read(unsigned int index, struct mdev_state *mdev_state,
 		*buf = 0;
 
 		mutex_lock(&mdev_state->rxtx_lock);
-		/* Interrupt priority 1: Parity, overrun, framing or break */
+		 
 		if ((ier & UART_IER_RLSI) && mdev_state->s[index].overrun)
 			*buf |= UART_IIR_RLSI;
 
-		/* Interrupt priority 2: Fifo trigger level reached */
+		 
 		if ((ier & UART_IER_RDI) &&
 		    (mdev_state->s[index].rxtx.count >=
 		      mdev_state->s[index].intr_trigger_level))
 			*buf |= UART_IIR_RDI;
 
-		/* Interrupt priotiry 3: transmitter holding register empty */
+		 
 		if ((ier & UART_IER_THRI) &&
 		    (mdev_state->s[index].rxtx.head ==
 				mdev_state->s[index].rxtx.tail))
 			*buf |= UART_IIR_THRI;
 
-		/* Interrupt priotiry 4: Modem status: CTS, DSR, RI or DCD  */
+		 
 		if ((ier & UART_IER_MSI) &&
 		    (mdev_state->s[index].uart_reg[UART_MCR] &
 				 (UART_MCR_RTS | UART_MCR_DTR)))
 			*buf |= UART_IIR_MSI;
 
-		/* bit0: 0=> interrupt pending, 1=> no interrupt is pending */
+		 
 		if (*buf == 0)
 			*buf = UART_IIR_NO_INT;
 
-		/* set bit 6 & 7 to be 16550 compatible */
+		 
 		*buf |= 0xC0;
 		mutex_unlock(&mdev_state->rxtx_lock);
 	}
@@ -593,16 +564,16 @@ static void handle_bar_read(unsigned int index, struct mdev_state *mdev_state,
 		u8 lsr = 0;
 
 		mutex_lock(&mdev_state->rxtx_lock);
-		/* atleast one char in FIFO */
+		 
 		if (mdev_state->s[index].rxtx.head !=
 				 mdev_state->s[index].rxtx.tail)
 			lsr |= UART_LSR_DR;
 
-		/* if FIFO overrun */
+		 
 		if (mdev_state->s[index].overrun)
 			lsr |= UART_LSR_OE;
 
-		/* transmit FIFO empty and tramsitter empty */
+		 
 		if (mdev_state->s[index].rxtx.head ==
 				 mdev_state->s[index].rxtx.tail)
 			lsr |= UART_LSR_TEMT | UART_LSR_THRE;
@@ -615,7 +586,7 @@ static void handle_bar_read(unsigned int index, struct mdev_state *mdev_state,
 		*buf = UART_MSR_DSR | UART_MSR_DDSR | UART_MSR_DCD;
 
 		mutex_lock(&mdev_state->rxtx_lock);
-		/* if AFE is 1 and FIFO have space, set CTS bit */
+		 
 		if (mdev_state->s[index].uart_reg[UART_MCR] &
 						 UART_MCR_AFE) {
 			if (mdev_state->s[index].rxtx.count <
@@ -661,9 +632,9 @@ static void mdev_read_base(struct mdev_state *mdev_state)
 			break;
 		case PCI_BASE_ADDRESS_MEM_TYPE_32:
 		case PCI_BASE_ADDRESS_MEM_TYPE_1M:
-			/* 1M mem BAR treated as 32-bit BAR */
+			 
 		default:
-			/* mem unknown type treated as 32-bit BAR */
+			 
 			start_hi = 0;
 			break;
 		}
@@ -990,7 +961,7 @@ static int mtty_set_irqs(struct mdev_state *mdev_state, uint32_t flags,
 				if (mask)
 					mdev_state->intx_mask = true;
 			} else if (flags &  VFIO_IRQ_SET_DATA_EVENTFD) {
-				ret = -ENOTTY; /* No support for mask fd */
+				ret = -ENOTTY;  
 			}
 			break;
 		case VFIO_IRQ_SET_ACTION_UNMASK:
@@ -1007,7 +978,7 @@ static int mtty_set_irqs(struct mdev_state *mdev_state, uint32_t flags,
 				if (mask)
 					mdev_state->intx_mask = false;
 			} else if (flags &  VFIO_IRQ_SET_DATA_EVENTFD) {
-				ret = -ENOTTY; /* No support for unmask fd */
+				ret = -ENOTTY;  
 			}
 			break;
 		case VFIO_IRQ_SET_ACTION_TRIGGER:

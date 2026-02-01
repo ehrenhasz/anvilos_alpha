@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Keytable for Xbox DVD remote
-// Copyright (c) 2018 by Benjamin Valentin <benpicco@googlemail.com>
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/* based on lircd.conf.xbox */
+ 
 static struct rc_map_table xbox_dvd[] = {
 	{0xa0b, KEY_OK},
 	{0xaa6, KEY_UP},

@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-//
 
-/*
- * Generic Hardware interface for ACP Audio I2S controller
- */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -112,7 +110,7 @@ static int acp_i2s_hwparams(struct snd_pcm_substream *substream, struct snd_pcm_
 	adata = snd_soc_dai_get_drvdata(dai);
 	rsrc = adata->rsrc;
 
-	/* These values are as per Hardware Spec */
+	 
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_U8:
 	case SNDRV_PCM_FORMAT_S8:
@@ -530,7 +528,7 @@ static int acp_i2s_startup(struct snd_pcm_substream *substream, struct snd_soc_d
 		return -EINVAL;
 	}
 
-	/* Save runtime dai configuration in stream */
+	 
 	stream->id = dai->driver->id + dir;
 	stream->dai_id = dai->driver->id;
 	stream->irq_bit = irq_bit;

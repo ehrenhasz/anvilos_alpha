@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Counter driver for the ACCES 104-QUAD-8
- * Copyright (C) 2016 William Breathitt Gray
- *
- * This driver supports the ACCES 104-QUAD-8 and ACCES 104-QUAD-4.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/counter.h>
@@ -46,17 +41,7 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
 #define QUAD8_INDEX_INPUT_LEVELS 0x16
 #define QUAD8_CABLE_STATUS 0x17
 
-/**
- * struct quad8 - device private data structure
- * @lock:		lock to prevent clobbering device states during R/W ops
- * @cmr:		array of Counter Mode Register states
- * @ior:		array of Input / Output Control Register states
- * @idr:		array of Index Control Register states
- * @fck_prescaler:	array of filter clock prescaler configurations
- * @preset:		array of preset values
- * @cable_fault_enable:	differential encoder cable status enable configurations
- * @map:		regmap for the device
- */
+ 
 struct quad8 {
 	spinlock_t lock;
 	u8 cmr[QUAD8_NUM_COUNTERS];
@@ -91,117 +76,107 @@ static const struct regmap_config quad8_regmap_config = {
 	.rd_table = &quad8_rd_table,
 };
 
-/* Error flag */
+ 
 #define FLAG_E BIT(4)
-/* Up/Down flag */
+ 
 #define FLAG_UD BIT(5)
-/* Counting up */
+ 
 #define UP 0x1
 
 #define REGISTER_SELECTION GENMASK(6, 5)
 
-/* Reset and Load Signal Decoders */
+ 
 #define SELECT_RLD u8_encode_bits(0x0, REGISTER_SELECTION)
-/* Counter Mode Register */
+ 
 #define SELECT_CMR u8_encode_bits(0x1, REGISTER_SELECTION)
-/* Input / Output Control Register */
+ 
 #define SELECT_IOR u8_encode_bits(0x2, REGISTER_SELECTION)
-/* Index Control Register */
+ 
 #define SELECT_IDR u8_encode_bits(0x3, REGISTER_SELECTION)
 
-/*
- * Reset and Load Signal Decoders
- */
+ 
 #define RESETS GENMASK(2, 1)
 #define LOADS GENMASK(4, 3)
-/* Reset Byte Pointer (three byte data pointer) */
+ 
 #define RESET_BP BIT(0)
-/* Reset Borrow Toggle, Carry toggle, Compare toggle, Sign, and Index flags */
+ 
 #define RESET_BT_CT_CPT_S_IDX u8_encode_bits(0x2, RESETS)
-/* Reset Error flag */
+ 
 #define RESET_E u8_encode_bits(0x3, RESETS)
-/* Preset Register to Counter */
+ 
 #define TRANSFER_PR_TO_CNTR u8_encode_bits(0x1, LOADS)
-/* Transfer Counter to Output Latch */
+ 
 #define TRANSFER_CNTR_TO_OL u8_encode_bits(0x2, LOADS)
-/* Transfer Preset Register LSB to FCK Prescaler */
+ 
 #define TRANSFER_PR0_TO_PSC u8_encode_bits(0x3, LOADS)
 
-/*
- * Counter Mode Registers
- */
+ 
 #define COUNT_ENCODING BIT(0)
 #define COUNT_MODE GENMASK(2, 1)
 #define QUADRATURE_MODE GENMASK(4, 3)
-/* Binary count */
+ 
 #define BINARY u8_encode_bits(0x0, COUNT_ENCODING)
-/* Normal count */
+ 
 #define NORMAL_COUNT 0x0
-/* Range Limit */
+ 
 #define RANGE_LIMIT 0x1
-/* Non-recycle count */
+ 
 #define NON_RECYCLE_COUNT 0x2
-/* Modulo-N */
+ 
 #define MODULO_N 0x3
-/* Non-quadrature */
+ 
 #define NON_QUADRATURE 0x0
-/* Quadrature X1 */
+ 
 #define QUADRATURE_X1 0x1
-/* Quadrature X2 */
+ 
 #define QUADRATURE_X2 0x2
-/* Quadrature X4 */
+ 
 #define QUADRATURE_X4 0x3
 
-/*
- * Input/Output Control Register
- */
+ 
 #define AB_GATE BIT(0)
 #define LOAD_PIN BIT(1)
 #define FLG_PINS GENMASK(4, 3)
-/* Disable inputs A and B */
+ 
 #define DISABLE_AB u8_encode_bits(0x0, AB_GATE)
-/* Load Counter input */
+ 
 #define LOAD_CNTR 0x0
-/* FLG1 = CARRY(active low); FLG2 = BORROW(active low) */
+ 
 #define FLG1_CARRY_FLG2_BORROW 0x0
-/* FLG1 = COMPARE(active low); FLG2 = BORROW(active low) */
+ 
 #define FLG1_COMPARE_FLG2_BORROW 0x1
-/* FLG1 = Carry(active low)/Borrow(active low); FLG2 = U/D(active low) flag */
+ 
 #define FLG1_CARRYBORROW_FLG2_UD 0x2
-/* FLG1 = INDX (low pulse at INDEX pin active level); FLG2 = E flag */
+ 
 #define FLG1_INDX_FLG2_E 0x3
 
-/*
- * INDEX CONTROL REGISTERS
- */
+ 
 #define INDEX_MODE BIT(0)
 #define INDEX_POLARITY BIT(1)
-/* Disable Index mode */
+ 
 #define DISABLE_INDEX_MODE 0x0
-/* Enable Index mode */
+ 
 #define ENABLE_INDEX_MODE 0x1
-/* Negative Index Polarity */
+ 
 #define NEGATIVE_INDEX_POLARITY 0x0
-/* Positive Index Polarity */
+ 
 #define POSITIVE_INDEX_POLARITY 0x1
 
-/*
- * Channel Operation Register
- */
+ 
 #define COUNTERS_OPERATION BIT(0)
 #define INTERRUPT_FUNCTION BIT(2)
-/* Enable all Counters */
+ 
 #define ENABLE_COUNTERS u8_encode_bits(0x0, COUNTERS_OPERATION)
-/* Reset all Counters */
+ 
 #define RESET_COUNTERS u8_encode_bits(0x1, COUNTERS_OPERATION)
-/* Disable the interrupt function */
+ 
 #define DISABLE_INTERRUPT_FUNCTION u8_encode_bits(0x0, INTERRUPT_FUNCTION)
-/* Enable the interrupt function */
+ 
 #define ENABLE_INTERRUPT_FUNCTION u8_encode_bits(0x1, INTERRUPT_FUNCTION)
-/* Any write to the Channel Operation register clears any pending interrupts */
+ 
 #define CLEAR_PENDING_INTERRUPTS (ENABLE_COUNTERS | ENABLE_INTERRUPT_FUNCTION)
 
-/* Each Counter is 24 bits wide */
+ 
 #define LS7267_CNTR_MAX GENMASK(23, 0)
 
 static __always_inline int quad8_control_register_update(struct regmap *const map, u8 *const buf,
@@ -219,7 +194,7 @@ static int quad8_signal_read(struct counter_device *counter,
 	const struct quad8 *const priv = counter_priv(counter);
 	int ret;
 
-	/* Only Index signal levels can be read */
+	 
 	if (signal->id < 16)
 		return -EINVAL;
 
@@ -292,7 +267,7 @@ static int quad8_count_write(struct counter_device *counter,
 
 	spin_lock_irqsave(&priv->lock, irqflags);
 
-	/* Counter can only be set via Preset Register */
+	 
 	ret = quad8_preset_register_set(priv, count->id, val);
 	if (ret)
 		goto exit_unlock;
@@ -304,7 +279,7 @@ static int quad8_count_write(struct counter_device *counter,
 	if (ret)
 		goto exit_unlock;
 
-	/* Set Preset Register back to original value */
+	 
 	ret = quad8_preset_register_set(priv, count->id, priv->preset[count->id]);
 
 exit_unlock:
@@ -337,7 +312,7 @@ static int quad8_function_get(const struct quad8 *const priv, const size_t id,
 		*function = COUNTER_FUNCTION_QUADRATURE_X4;
 		return 0;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -384,13 +359,13 @@ static int quad8_function_write(struct counter_device *counter,
 		mode_cfg = QUADRATURE_X4;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 
 	spin_lock_irqsave(&priv->lock, irqflags);
 
-	/* Synchronous function not supported in non-quadrature mode */
+	 
 	synchronous_mode = u8_get_bits(priv->idr[id], INDEX_MODE) == ENABLE_INDEX_MODE;
 	if (synchronous_mode && mode_cfg == NON_QUADRATURE) {
 		ret = quad8_control_register_update(priv->map, priv->idr, id, DISABLE_INDEX_MODE,
@@ -448,10 +423,10 @@ static int quad8_action_read(struct counter_device *counter,
 	const size_t signal_a_id = count->synapses[0].signal->id;
 	enum counter_count_direction direction;
 
-	/* Default action mode */
+	 
 	*action = COUNTER_SYNAPSE_ACTION_NONE;
 
-	/* Handle Index signals */
+	 
 	if (synapse->signal->id >= 16) {
 		if (u8_get_bits(priv->ior[count->id], LOAD_PIN) == LOAD_CNTR)
 			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
@@ -460,7 +435,7 @@ static int quad8_action_read(struct counter_device *counter,
 
 	spin_lock_irqsave(&priv->lock, irqflags);
 
-	/* Get Count function and direction atomically */
+	 
 	err = quad8_function_get(priv, count->id, &function);
 	if (err) {
 		spin_unlock_irqrestore(&priv->lock, irqflags);
@@ -474,7 +449,7 @@ static int quad8_action_read(struct counter_device *counter,
 
 	spin_unlock_irqrestore(&priv->lock, irqflags);
 
-	/* Determine action mode based on current count function mode */
+	 
 	switch (function) {
 	case COUNTER_FUNCTION_PULSE_DIRECTION:
 		if (synapse->signal->id == signal_a_id)
@@ -496,7 +471,7 @@ static int quad8_action_read(struct counter_device *counter,
 		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		return 0;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -527,19 +502,19 @@ static int quad8_events_configure(struct counter_device *counter)
 			flg_pins = FLG1_INDX_FLG2_E;
 			break;
 		default:
-			/* should never reach this path */
+			 
 			ret = -EINVAL;
 			goto exit_unlock;
 		}
 
-		/* Enable IRQ line */
+		 
 		irq_enabled |= BIT(event_node->channel);
 
-		/* Skip configuration if it is the same as previously set */
+		 
 		if (flg_pins == u8_get_bits(priv->ior[event_node->channel], FLG_PINS))
 			continue;
 
-		/* Save new IRQ function configuration */
+		 
 		ret = quad8_control_register_update(priv->map, priv->ior, event_node->channel,
 						    flg_pins, FLG_PINS);
 		if (ret)
@@ -680,7 +655,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
 
 	spin_lock_irqsave(&priv->lock, irqflags);
 
-	/* Index function must be non-synchronous in non-quadrature mode */
+	 
 	quadrature_mode = u8_get_bits(priv->idr[channel_id], QUADRATURE_MODE);
 	if (synchronous_mode && quadrature_mode == NON_QUADRATURE) {
 		ret = -EINVAL;
@@ -699,7 +674,7 @@ exit_unlock:
 static int quad8_count_floor_read(struct counter_device *counter,
 				  struct counter_count *count, u64 *floor)
 {
-	/* Only a floor of 0 is supported */
+	 
 	*floor = 0;
 
 	return 0;
@@ -752,7 +727,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
 		count_mode = MODULO_N;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 
@@ -850,7 +825,7 @@ static int quad8_count_ceiling_read(struct counter_device *counter,
 
 	spin_lock_irqsave(&priv->lock, irqflags);
 
-	/* Range Limit and Modulo-N count modes use preset value as ceiling */
+	 
 	switch (u8_get_bits(priv->cmr[count->id], COUNT_MODE)) {
 	case RANGE_LIMIT:
 	case MODULO_N:
@@ -878,7 +853,7 @@ static int quad8_count_ceiling_write(struct counter_device *counter,
 
 	spin_lock_irqsave(&priv->lock, irqflags);
 
-	/* Range Limit and Modulo-N count modes use preset value as ceiling */
+	 
 	switch (u8_get_bits(priv->cmr[count->id], COUNT_MODE)) {
 	case RANGE_LIMIT:
 	case MODULO_N:
@@ -901,7 +876,7 @@ static int quad8_count_preset_enable_read(struct counter_device *counter,
 {
 	const struct quad8 *const priv = counter_priv(counter);
 
-	/* Preset enable is active low in Input/Output Control register */
+	 
 	*preset_enable = !u8_get_bits(priv->ior[count->id], LOAD_PIN);
 
 	return 0;
@@ -917,7 +892,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
 
 	spin_lock_irqsave(&priv->lock, irqflags);
 
-	/* Preset enable is active low in Input/Output Control register */
+	 
 	ret = quad8_control_register_update(priv->map, priv->ior, count->id, !preset_enable,
 					    LOAD_PIN);
 
@@ -953,7 +928,7 @@ static int quad8_signal_cable_fault_read(struct counter_device *counter,
 
 	spin_unlock_irqrestore(&priv->lock, irqflags);
 
-	/* Logic 0 = cable fault */
+	 
 	*cable_fault = !ret;
 
 	return 0;
@@ -988,7 +963,7 @@ static int quad8_signal_cable_fault_enable_write(struct counter_device *counter,
 	else
 		priv->cable_fault_enable &= ~BIT(channel_id);
 
-	/* Enable is active low in Differential Encoder Cable Status register */
+	 
 	cable_fault_enable = ~priv->cable_fault_enable;
 
 	ret = regmap_write(priv->map, QUAD8_CABLE_STATUS, cable_fault_enable);
@@ -1222,7 +1197,7 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
 			event = COUNTER_EVENT_INDEX;
 				break;
 		default:
-			/* should never reach this path */
+			 
 			WARN_ONCE(true, "invalid interrupt trigger function %u configured for channel %lu\n",
 				  flg_pins, channel);
 			continue;
@@ -1252,21 +1227,21 @@ static int quad8_init_counter(struct quad8 *const priv, const size_t channel)
 	if (ret)
 		return ret;
 
-	/* Binary encoding; Normal count; non-quadrature mode */
+	 
 	priv->cmr[channel] = SELECT_CMR | BINARY | u8_encode_bits(NORMAL_COUNT, COUNT_MODE) |
 			     u8_encode_bits(NON_QUADRATURE, QUADRATURE_MODE);
 	ret = regmap_write(priv->map, QUAD8_CONTROL(channel), priv->cmr[channel]);
 	if (ret)
 		return ret;
 
-	/* Disable A and B inputs; preset on index; FLG1 as Carry */
+	 
 	priv->ior[channel] = SELECT_IOR | DISABLE_AB | u8_encode_bits(LOAD_CNTR, LOAD_PIN) |
 			     u8_encode_bits(FLG1_CARRY_FLG2_BORROW, FLG_PINS);
 	ret = regmap_write(priv->map, QUAD8_CONTROL(channel), priv->ior[channel]);
 	if (ret)
 		return ret;
 
-	/* Disable index function; negative index polarity */
+	 
 	priv->idr[channel] = SELECT_IDR | u8_encode_bits(DISABLE_INDEX_MODE, INDEX_MODE) |
 			     u8_encode_bits(NEGATIVE_INDEX_POLARITY, INDEX_POLARITY);
 	return regmap_write(priv->map, QUAD8_CONTROL(channel), priv->idr[channel]);
@@ -1300,7 +1275,7 @@ static int quad8_probe(struct device *dev, unsigned int id)
 		return dev_err_probe(dev, PTR_ERR(priv->map),
 				     "Unable to initialize register map\n");
 
-	/* Initialize Counter device and driver data */
+	 
 	counter->name = dev_name(dev);
 	counter->parent = dev;
 	counter->ops = &quad8_ops;
@@ -1311,26 +1286,26 @@ static int quad8_probe(struct device *dev, unsigned int id)
 
 	spin_lock_init(&priv->lock);
 
-	/* Reset Index/Interrupt Register */
+	 
 	ret = regmap_write(priv->map, QUAD8_INDEX_INTERRUPT, 0x00);
 	if (ret)
 		return ret;
-	/* Reset all counters and disable interrupt function */
+	 
 	ret = regmap_write(priv->map, QUAD8_CHANNEL_OPERATION,
 			   RESET_COUNTERS | DISABLE_INTERRUPT_FUNCTION);
 	if (ret)
 		return ret;
-	/* Set initial configuration for all counters */
+	 
 	for (i = 0; i < QUAD8_NUM_COUNTERS; i++) {
 		ret = quad8_init_counter(priv, i);
 		if (ret)
 			return ret;
 	}
-	/* Disable Differential Encoder Cable Status for all channels */
+	 
 	ret = regmap_write(priv->map, QUAD8_CABLE_STATUS, GENMASK(7, 0));
 	if (ret)
 		return ret;
-	/* Enable all counters and enable interrupt function */
+	 
 	ret = regmap_write(priv->map, QUAD8_CHANNEL_OPERATION,
 			   ENABLE_COUNTERS | ENABLE_INTERRUPT_FUNCTION);
 	if (ret)

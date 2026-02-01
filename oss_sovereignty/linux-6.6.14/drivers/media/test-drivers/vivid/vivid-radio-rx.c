@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-radio-rx.c - radio receiver support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -59,18 +55,13 @@ retry:
 	if (dev->radio_rx_rds_last_block == 0 ||
 	    dev->radio_rx_rds_use_alternates != use_alternates) {
 		dev->radio_rx_rds_use_alternates = use_alternates;
-		/* Re-init the RDS generator */
+		 
 		vivid_radio_rds_init(dev);
 	}
 	if (blk >= dev->radio_rx_rds_last_block + VIVID_RDS_GEN_BLOCKS)
 		dev->radio_rx_rds_last_block = blk - VIVID_RDS_GEN_BLOCKS + 1;
 
-	/*
-	 * No data is available if there hasn't been time to get new data,
-	 * or if the RDS receiver has been disabled, or if we use the data
-	 * from the RDS transmitter and that RDS transmitter has been disabled,
-	 * or if the signal quality is too weak.
-	 */
+	 
 	if (blk == dev->radio_rx_rds_last_block || !dev->radio_rx_rds_enabled ||
 	    (dev->radio_rds_loop && !(dev->radio_tx_subchans & V4L2_TUNER_SUB_RDS)) ||
 	    abs(dev->radio_rx_sig_qual) > 200) {
@@ -84,7 +75,7 @@ retry:
 		goto retry;
 	}
 
-	/* abs(dev->radio_rx_sig_qual) <= 200, map that to a 0-50% range */
+	 
 	perc = abs(dev->radio_rx_sig_qual) / 4;
 
 	for (i = 0; i < size && blk > dev->radio_rx_rds_last_block;
@@ -107,14 +98,10 @@ retry:
 				rds.lsb = get_random_u8();
 				rds.msb = get_random_u8();
 				break;
-			case 3: /* Skip block altogether */
+			case 3:  
 				if (i)
 					continue;
-				/*
-				 * Must make sure at least one block is
-				 * returned, otherwise the application
-				 * might think that end-of-file occurred.
-				 */
+				 
 				break;
 			}
 		}

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/firmware/imx/sci.h>
@@ -127,11 +125,11 @@ int imx_scu_soc_init(struct device *dev)
 	if (ret < 0)
 		return -EINVAL;
 
-	/* format soc_id value passed from SCU firmware */
+	 
 	val = id & 0x1f;
 	soc_dev_attr->soc_id = imx_scu_soc_name(val);
 
-	/* format revision value passed from SCU firmware */
+	 
 	val = (id >> 5) & 0xf;
 	val = (((val >> 2) + 1) << 4) | (val & 0x3);
 	soc_dev_attr->revision = devm_kasprintf(dev, GFP_KERNEL, "%d.%d",

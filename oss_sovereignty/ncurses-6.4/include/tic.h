@@ -1,89 +1,24 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2012,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey 1996 on                                        *
- ****************************************************************************/
+ 
 
-/*
- * $Id: tic.h,v 1.86 2022/09/17 16:01:45 tom Exp $
- *	tic.h - Global variables and structures for the terminfo compiler.
- */
+ 
 
 #ifndef __TIC_H
 #define __TIC_H
-/* *INDENT-OFF* */
+ 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <ncurses_cfg.h>
 
-#include <curses.h>	/* for the _tracef() prototype, ERR/OK, bool defs */
+#include <curses.h>	 
 
-/*
-** The format of SVr2 compiled terminfo files is as follows:
-**
-**		Header (12 bytes), containing information given below
-**		Names Section, containing the names of the terminal
-**		Boolean Section, containing the values of all of the
-**				boolean capabilities
-**				A null byte may be inserted here to make
-**				sure that the Number Section begins on an
-**				even word boundary.
-**		Number Section, containing the values of all of the numeric
-**				capabilities, each as a short integer
-**		String Section, containing short integer offsets into the
-**				String Table, one per string capability
-**		String Table, containing the actual characters of the string
-**				capabilities.
-**
-** In the SVr2 format, "short" means signed 16-bit numbers, which is sometimes
-** inconvenient.  The numbers are signed, to provide for absent and canceled
-** values.  ncurses6.1 introduced an extension to this compiled format, by
-** making the Number Section a list of signed 32-bit integers.
-**
-**	NOTE that all short integers in the file are stored using VAX/PDP-style
-**	byte-order, i.e., least-significant byte first.
-**
-**	There is no structure definition here because it would only confuse
-**	matters.  Terminfo format is a raw byte layout, not a structure
-**	dump.  If you happen to be on a little-endian machine with 16-bit
-**	shorts that requires no padding between short members in a struct,
-**	then there is a natural C structure that captures the header, but
-**	not very helpfully.
-*/
+ 
 
-#define MAGIC		0432	/* first two bytes of a compiled entry */
-#define MAGIC2		01036	/* first two bytes of a compiled 32-bit entry */
+#define MAGIC		0432	 
+#define MAGIC2		01036	 
 
 #undef  BYTE
 #define BYTE(p,n)	(unsigned char)((p)[n])
@@ -96,13 +31,10 @@ extern "C" {
 
 #define quick_prefix(s) (!strncmp((s), "b64:", (size_t)4) || !strncmp((s), "hex:", (size_t)4))
 
-/*
- * The "maximum" here is misleading; XSI guarantees minimum values, which a
- * given implementation may exceed.
- */
-#define MAX_NAME_SIZE	512	/* maximum legal name field size (XSI:127) */
-#define MAX_ENTRY_SIZE1	4096	/* maximum legal entry size (SVr2) */
-#define MAX_ENTRY_SIZE2	32768	/* maximum legal entry size (ncurses6.1) */
+ 
+#define MAX_NAME_SIZE	512	 
+#define MAX_ENTRY_SIZE1	4096	 
+#define MAX_ENTRY_SIZE2	32768	 
 
 #if NCURSES_EXT_COLORS && HAVE_INIT_EXTENDED_COLOR
 #define MAX_ENTRY_SIZE MAX_ENTRY_SIZE2
@@ -110,26 +42,17 @@ extern "C" {
 #define MAX_ENTRY_SIZE MAX_ENTRY_SIZE1
 #endif
 
-/*
- * The maximum size of individual name or alias is guaranteed in XSI to be at
- * least 14, since that corresponds to the older filename lengths.  Newer
- * systems allow longer aliases, though not many terminal descriptions are
- * written to use them.  The MAX_ALIAS symbol is used for warnings.
- */
+ 
 #if HAVE_LONG_FILE_NAMES
-#define MAX_ALIAS	32	/* smaller than POSIX minimum for PATH_MAX */
+#define MAX_ALIAS	32	 
 #else
-#define MAX_ALIAS	14	/* SVr3 filename length */
+#define MAX_ALIAS	14	 
 #endif
 
-/* location of user's personal info directory */
-#define PRIVATE_INFO	"%s/.terminfo"	/* plug getenv("HOME") into %s */
+ 
+#define PRIVATE_INFO	"%s/.terminfo"	 
 
-/*
- * Some traces are designed to be used via tic's verbose option (and similar in
- * infocmp and toe) rather than the 'trace()' function.  So we use the bits
- * above the normal trace() parameter as a debug-level.
- */
+ 
 
 #define MAX_DEBUG_LEVEL 15
 #define DEBUG_LEVEL(n)	((n) << TRACE_SHIFT)
@@ -141,40 +64,30 @@ extern "C" {
 #ifdef TRACE
 #define DEBUG(n, a)	if (_nc_tracing >= DEBUG_LEVEL(n)) _tracef a
 #else
-#define DEBUG(n, a)	/*nothing*/
+#define DEBUG(n, a)	 
 #endif
 
-/*
- * These are the types of tokens returned by the scanner.  The first
- * three are also used in the hash table of capability names.  The scanner
- * returns one of these values after loading the specifics into the global
- * structure curr_token.
- */
+ 
 
-#define BOOLEAN 0		/* Boolean capability */
-#define NUMBER 1		/* Numeric capability */
-#define STRING 2		/* String-valued capability */
-#define CANCEL 3		/* Capability to be cancelled in following tc's */
-#define NAMES  4		/* The names for a terminal type */
-#define UNDEF  5		/* Undefined */
+#define BOOLEAN 0		 
+#define NUMBER 1		 
+#define STRING 2		 
+#define CANCEL 3		 
+#define NAMES  4		 
+#define UNDEF  5		 
 
-#define NO_PUSHBACK	-1	/* used in pushtype to indicate no pushback */
+#define NO_PUSHBACK	-1	 
 
-/*
- * The global structure in which the specific parts of a
- * scanned token are returned.
- */
+ 
 
 struct token
 {
-	char	*tk_name;	/* name of capability */
-	int	tk_valnumber;	/* value of capability (if a number) */
-	char	*tk_valstring;	/* value of capability (if a string) */
+	char	*tk_name;	 
+	int	tk_valnumber;	 
+	char	*tk_valstring;	 
 };
 
-/*
- * Offsets to string capabilities, with the corresponding functionkey codes.
- */
+ 
 struct tinfo_fkeys {
 	unsigned offset;
 	chtype code;
@@ -182,22 +95,16 @@ struct tinfo_fkeys {
 
 typedef short HashValue;
 
-/*
- * The file comp_captab.c contains an array of these structures, one per
- * possible capability.  These are indexed by a hash table array of pointers to
- * the same structures for use by the parser.
- */
+ 
 struct name_table_entry
 {
-	const char *nte_name;	/* name to hash on */
-	int	nte_type;	/* BOOLEAN, NUMBER or STRING */
-	HashValue nte_index;	/* index of associated variable in its array */
-	HashValue nte_link;	/* index in table of next hash, or -1 */
+	const char *nte_name;	 
+	int	nte_type;	 
+	HashValue nte_index;	 
+	HashValue nte_link;	 
 };
 
-/*
- * Use this structure to hide differences between terminfo and termcap tables.
- */
+ 
 typedef struct {
 	unsigned table_size;
 	const HashValue *table_data;
@@ -214,45 +121,37 @@ struct alias
 
 #define NOTFOUND	((struct name_table_entry *) 0)
 
-/*
- * The file comp_userdefs.c contains an array of these structures, one per
- * possible capability.  These are indexed by a hash table array of pointers to
- * the same structures for use by the parser.
- */
+ 
 struct user_table_entry
 {
-	const char *ute_name;	/* name to hash on */
-	int	ute_type;	/* mask (BOOLEAN, NUMBER, STRING) */
-	unsigned ute_argc;	/* number of parameters */
-	unsigned ute_args;	/* bit-mask for string parameters */
-	HashValue ute_index;	/* index of associated variable in its array */
-	HashValue ute_link;	/* index in table of next hash, or -1 */
+	const char *ute_name;	 
+	int	ute_type;	 
+	unsigned ute_argc;	 
+	unsigned ute_args;	 
+	HashValue ute_index;	 
+	HashValue ute_link;	 
 };
 
-/*
- * The casts are required for correct sign-propagation with systems such as
- * AIX, IRIX64, Solaris which default to unsigned characters.  The C standard
- * leaves this detail unspecified.
- */
+ 
 
-/* out-of-band values for representing absent capabilities */
-#define ABSENT_BOOLEAN		((signed char)-1)	/* 255 */
+ 
+#define ABSENT_BOOLEAN		((signed char)-1)	 
 #define ABSENT_NUMERIC		(-1)
 #define ABSENT_STRING		(char *)0
 
-/* out-of-band values for representing cancels */
-#define CANCELLED_BOOLEAN	((signed char)-2)	/* 254 */
+ 
+#define CANCELLED_BOOLEAN	((signed char)-2)	 
 #define CANCELLED_NUMERIC	(-2)
 #define CANCELLED_STRING	(char *)(-1)
 
-#define VALID_BOOLEAN(s) ((unsigned char)(s) <= 1) /* reject "-1" */
+#define VALID_BOOLEAN(s) ((unsigned char)(s) <= 1)  
 #define VALID_NUMERIC(s) ((s) >= 0)
 #define VALID_STRING(s)  ((s) != CANCELLED_STRING && (s) != ABSENT_STRING)
 
-/* termcap entries longer than this may break old binaries */
+ 
 #define MAX_TERMCAP_LENGTH	1023
 
-/* this is a documented limitation of terminfo */
+ 
 #define MAX_TERMINFO_LENGTH	4096
 
 #ifndef TERMINFO
@@ -261,11 +160,9 @@ struct user_table_entry
 
 #ifdef NCURSES_TERM_ENTRY_H_incl
 
-/*
- * These entrypoints are used only by the ncurses utilities such as tic.
- */
+ 
 #ifdef NCURSES_INTERNALS
-/* access.c */
+ 
 extern NCURSES_EXPORT(unsigned) _nc_pathlast (const char *);
 extern NCURSES_EXPORT(bool) _nc_is_abs_path (const char *);
 extern NCURSES_EXPORT(bool) _nc_is_dir_path (const char *);
@@ -273,18 +170,18 @@ extern NCURSES_EXPORT(bool) _nc_is_file_path (const char *);
 extern NCURSES_EXPORT(char *) _nc_basename (char *);
 extern NCURSES_EXPORT(char *) _nc_rootname (char *);
 
-/* comp_captab.c */
+ 
 extern NCURSES_EXPORT(const struct name_table_entry *) _nc_get_table (bool);
 extern NCURSES_EXPORT(const HashData *) _nc_get_hash_info (bool);
 extern NCURSES_EXPORT(const struct alias *) _nc_get_alias_table (bool);
 
-/* comp_hash.c: name lookup */
+ 
 extern NCURSES_EXPORT(struct name_table_entry const *) _nc_find_type_entry
 	(const char *, int, bool);
 extern NCURSES_EXPORT(struct user_table_entry const *) _nc_find_user_entry
 	(const char *);
 
-/* comp_scan.c: lexical analysis */
+ 
 extern NCURSES_EXPORT(int)  _nc_get_token (bool);
 extern NCURSES_EXPORT(void) _nc_panic_mode (char);
 extern NCURSES_EXPORT(void) _nc_push_token (int);
@@ -299,7 +196,7 @@ extern NCURSES_EXPORT_VAR(long) _nc_start_line;
 #define SYN_TERMINFO	0
 #define SYN_TERMCAP	1
 
-/* comp_error.c: warning & abort messages */
+ 
 extern NCURSES_EXPORT(const char *) _nc_get_source (void);
 extern GCC_NORETURN NCURSES_EXPORT(void) _nc_err_abort (const char *const,...) GCC_PRINTFLIKE(1,2);
 extern NCURSES_EXPORT(void) _nc_get_type (char *name);
@@ -309,21 +206,21 @@ extern GCC_NORETURN NCURSES_EXPORT(void) _nc_syserr_abort (const char *const,...
 extern NCURSES_EXPORT(void) _nc_warning (const char *const,...) GCC_PRINTFLIKE(1,2);
 extern NCURSES_EXPORT_VAR(bool) _nc_suppress_warnings;
 
-/* comp_scan.c */
+ 
 extern NCURSES_EXPORT_VAR(struct token)	_nc_curr_token;
 
-/* comp_userdefs.c */
+ 
 NCURSES_EXPORT(const struct user_table_entry *) _nc_get_userdefs_table (void);
 NCURSES_EXPORT(const HashData *) _nc_get_hash_user (void);
 
-/* captoinfo.c: capability conversion */
+ 
 extern NCURSES_EXPORT(char *) _nc_captoinfo (const char *, const char *, int const);
 extern NCURSES_EXPORT(char *) _nc_infotocap (const char *, const char *, int const);
 
-/* home_terminfo.c */
+ 
 extern NCURSES_EXPORT(char *) _nc_home_terminfo (void);
 
-/* init_keytry.c */
+ 
 #if	BROKEN_LINKER
 #define	_nc_tinfo_fkeys	_nc_tinfo_fkeysf()
 extern NCURSES_EXPORT(const struct tinfo_fkeys *) _nc_tinfo_fkeysf (void);
@@ -331,7 +228,7 @@ extern NCURSES_EXPORT(const struct tinfo_fkeys *) _nc_tinfo_fkeysf (void);
 extern NCURSES_EXPORT_VAR(const struct tinfo_fkeys) _nc_tinfo_fkeys[];
 #endif
 
-/* lib_tparm.c */
+ 
 #define NUM_PARM 9
 
 extern NCURSES_EXPORT_VAR(int) _nc_tparm_err;
@@ -339,58 +236,56 @@ extern NCURSES_EXPORT_VAR(int) _nc_tparm_err;
 extern NCURSES_EXPORT(int) _nc_tparm_analyze(TERMINAL *, const char *, char **, int *);
 extern NCURSES_EXPORT(void) _nc_reset_tparm(TERMINAL *);
 
-/* lib_trace.c */
+ 
 extern NCURSES_EXPORT_VAR(unsigned) _nc_tracing;
 extern NCURSES_EXPORT(const char *) _nc_visbuf (const char *);
 extern NCURSES_EXPORT(const char *) _nc_visbuf2 (int, const char *);
 
-/* lib_tputs.c */
-extern NCURSES_EXPORT_VAR(int) _nc_nulls_sent;	/* Add one for every null sent */
+ 
+extern NCURSES_EXPORT_VAR(int) _nc_nulls_sent;	 
 
-/* comp_main.c: compiler main */
+ 
 extern const char * _nc_progname;
 
-/* db_iterator.c */
+ 
 extern NCURSES_EXPORT(const char *) _nc_next_db(DBDIRS *, int *);
 extern NCURSES_EXPORT(const char *) _nc_tic_dir (const char *);
 extern NCURSES_EXPORT(void) _nc_first_db(DBDIRS *, int *);
 extern NCURSES_EXPORT(void) _nc_last_db(void);
 
-/* write_entry.c */
+ 
 extern NCURSES_EXPORT(int) _nc_tic_written (void);
 
-#endif /* NCURSES_INTERNALS */
+#endif  
 
-/*
- * These entrypoints were used by tack before 1.08.
- */
+ 
 
 #undef  NCURSES_TACK_1_08
 #ifdef  NCURSES_INTERNALS
-#define NCURSES_TACK_1_08 /* nothing */
+#define NCURSES_TACK_1_08  
 #else
 #define NCURSES_TACK_1_08 GCC_DEPRECATED("upgrade to tack 1.08")
 #endif
 
-/* comp_hash.c: name lookup */
+ 
 extern NCURSES_EXPORT(struct name_table_entry const *) _nc_find_entry
 	(const char *, const HashValue *) NCURSES_TACK_1_08;
 extern NCURSES_EXPORT(const HashValue *) _nc_get_hash_table (bool) NCURSES_TACK_1_08;
 
-/* comp_scan.c: lexical analysis */
+ 
 extern NCURSES_EXPORT(void) _nc_reset_input (FILE *, char *) NCURSES_TACK_1_08;
 
-/* comp_expand.c: expand string into readable form */
+ 
 extern NCURSES_EXPORT(char *) _nc_tic_expand (const char *, bool, int) NCURSES_TACK_1_08;
 
-/* comp_scan.c: decode string from readable form */
+ 
 extern NCURSES_EXPORT(int) _nc_trans_string (char *, char *) NCURSES_TACK_1_08;
 
-#endif /* NCURSES_TERM_ENTRY_H_incl */
+#endif  
 
 #ifdef __cplusplus
 }
 #endif
 
-/* *INDENT-ON* */
-#endif /* __TIC_H */
+ 
+#endif  

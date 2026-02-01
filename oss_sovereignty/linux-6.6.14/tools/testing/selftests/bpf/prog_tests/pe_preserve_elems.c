@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2019 Facebook */
+
+ 
 #include <test_progs.h>
 #include <linux/bpf.h>
 #include "test_pe_preserve_elems.skel.h"
@@ -17,8 +17,8 @@ static void test_one_map(struct bpf_map *map, struct bpf_program *prog,
 		.config = PERF_COUNT_SW_CPU_CLOCK,
 	};
 
-	pfd = syscall(__NR_perf_event_open, &attr, 0 /* pid */,
-		      -1 /* cpu 0 */, -1 /* group id */, 0 /* flags */);
+	pfd = syscall(__NR_perf_event_open, &attr, 0  ,
+		      -1  , -1  , 0  );
 	if (CHECK(pfd < 0, "perf_event_open", "failed\n"))
 		return;
 
@@ -34,7 +34,7 @@ static void test_one_map(struct bpf_map *map, struct bpf_program *prog,
 		  "failed with %d\n", opts.retval))
 		return;
 
-	/* closing mfd, prog still holds a reference on map */
+	 
 	close(mfd);
 
 	err = bpf_prog_test_run_opts(bpf_program__fd(prog), &opts);

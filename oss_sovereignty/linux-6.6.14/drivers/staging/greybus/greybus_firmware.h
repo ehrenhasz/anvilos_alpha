@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/*
- * Greybus Firmware Management User Header
- *
- * Copyright(c) 2016 Google Inc. All rights reserved.
- * Copyright(c) 2016 Linaro Ltd. All rights reserved.
- */
+ 
+ 
 
 #ifndef __GREYBUS_FIRMWARE_USER_H
 #define __GREYBUS_FIRMWARE_USER_H
@@ -36,7 +31,7 @@
 #define GB_FW_U_BACKEND_VERSION_STATUS_RETRY		0x04
 #define GB_FW_U_BACKEND_VERSION_STATUS_FAIL_INT		0x05
 
-/* IOCTL support */
+ 
 struct fw_mgmt_ioc_get_intf_version {
 	__u8 firmware_tag[GB_FIRMWARE_U_TAG_MAX_SIZE];
 	__u16 major;
@@ -71,5 +66,5 @@ struct fw_mgmt_ioc_backend_fw_update {
 #define FW_MGMT_IOC_SET_TIMEOUT_MS		_IOW(FW_MGMT_IOCTL_BASE, 4, unsigned int)
 #define FW_MGMT_IOC_MODE_SWITCH			_IO(FW_MGMT_IOCTL_BASE, 5)
 
-#endif /* __GREYBUS_FIRMWARE_USER_H */
+#endif  
 

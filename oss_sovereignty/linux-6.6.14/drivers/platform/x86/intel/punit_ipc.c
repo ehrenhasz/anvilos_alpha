@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Intel P-Unit Mailbox IPC mechanism
- *
- * (C) Copyright 2015 Intel Corporation
- *
- * The heart of the P-Unit is the Foxton microcontroller and its firmware,
- * which provide mailbox interface for power management usage.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -19,10 +12,10 @@
 
 #include <asm/intel_punit_ipc.h>
 
-/* IPC Mailbox registers */
+ 
 #define OFFSET_DATA_LOW		0x0
 #define OFFSET_DATA_HIGH	0x4
-/* bit field of interface register */
+ 
 #define	CMD_RUN			BIT(31)
 #define	CMD_ERRCODE_MASK	GENMASK(7, 0)
 #define	CMD_PARA1_SHIFT		8
@@ -41,7 +34,7 @@ typedef struct {
 	struct mutex lock;
 	int irq;
 	struct completion cmd_complete;
-	/* base of interface and data registers */
+	 
 	void __iomem *base[RESERVED_IPC][BASE_MAX];
 	IPC_TYPE type;
 } IPC_DEV;
@@ -130,16 +123,7 @@ static int intel_punit_ipc_check_status(IPC_DEV *ipcdev, IPC_TYPE type)
 	return 0;
 }
 
-/**
- * intel_punit_ipc_simple_command() - Simple IPC command
- * @cmd:	IPC command code.
- * @para1:	First 8bit parameter, set 0 if not used.
- * @para2:	Second 8bit parameter, set 0 if not used.
- *
- * Send a IPC command to P-Unit when there is no data transaction
- *
- * Return:	IPC error code or 0 on success.
- */
+ 
 int intel_punit_ipc_simple_command(int cmd, int para1, int para2)
 {
 	IPC_DEV *ipcdev = punit_ipcdev;
@@ -163,18 +147,7 @@ int intel_punit_ipc_simple_command(int cmd, int para1, int para2)
 }
 EXPORT_SYMBOL(intel_punit_ipc_simple_command);
 
-/**
- * intel_punit_ipc_command() - IPC command with data and pointers
- * @cmd:	IPC command code.
- * @para1:	First 8bit parameter, set 0 if not used.
- * @para2:	Second 8bit parameter, set 0 if not used.
- * @in:		Input data, 32bit for BIOS cmd, two 32bit for GTD and ISPD.
- * @out:	Output data.
- *
- * Send a IPC command to P-Unit with data transaction
- *
- * Return:	IPC error code or 0 on success.
- */
+ 
 int intel_punit_ipc_command(u32 cmd, u32 para1, u32 para2, u32 *in, u32 *out)
 {
 	IPC_DEV *ipcdev = punit_ipcdev;
@@ -225,11 +198,7 @@ static int intel_punit_get_bars(struct platform_device *pdev)
 {
 	void __iomem *addr;
 
-	/*
-	 * The following resources are required
-	 * - BIOS_IPC BASE_DATA
-	 * - BIOS_IPC BASE_IFACE
-	 */
+	 
 	addr = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(addr))
 		return PTR_ERR(addr);
@@ -240,13 +209,7 @@ static int intel_punit_get_bars(struct platform_device *pdev)
 		return PTR_ERR(addr);
 	punit_ipcdev->base[BIOS_IPC][BASE_IFACE] = addr;
 
-	/*
-	 * The following resources are optional
-	 * - ISPDRIVER_IPC BASE_DATA
-	 * - ISPDRIVER_IPC BASE_IFACE
-	 * - GTDRIVER_IPC BASE_DATA
-	 * - GTDRIVER_IPC BASE_IFACE
-	 */
+	 
 	addr = devm_platform_ioremap_resource(pdev, 2);
 	if (!IS_ERR(addr))
 		punit_ipcdev->base[ISPDRIVER_IPC][BASE_DATA] = addr;
@@ -330,6 +293,6 @@ MODULE_AUTHOR("Zha Qipeng <qipeng.zha@intel.com>");
 MODULE_DESCRIPTION("Intel P-Unit IPC driver");
 MODULE_LICENSE("GPL v2");
 
-/* Some modules are dependent on this, so init earlier */
+ 
 fs_initcall(intel_punit_ipc_init);
 module_exit(intel_punit_ipc_exit);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR CDDL-1.0) */
-/*
- * vboxguest core guest-device handling code, VBoxGuest.cpp in upstream svn.
- *
- * Copyright (C) 2007-2016 Oracle Corporation
- */
+ 
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -17,11 +13,11 @@
 #include "vboxguest_core.h"
 #include "vboxguest_version.h"
 
-/* Get the pointer to the first HGCM parameter. */
+ 
 #define VBG_IOCTL_HGCM_CALL_PARMS(a) \
 	((struct vmmdev_hgcm_function_parameter *)( \
 		(u8 *)(a) + sizeof(struct vbg_ioctl_hgcm_call)))
-/* Get the pointer to the first HGCM parameter in a 32-bit request. */
+ 
 #define VBG_IOCTL_HGCM_CALL_PARMS32(a) \
 	((struct vmmdev_hgcm_function_parameter32 *)( \
 		(u8 *)(a) + sizeof(struct vbg_ioctl_hgcm_call)))
@@ -32,18 +28,7 @@
 	(VMMDEV_REQUESTOR_KERNEL | VMMDEV_REQUESTOR_USR_DRV | \
 	 VMMDEV_REQUESTOR_CON_DONT_KNOW | VMMDEV_REQUESTOR_TRUST_NOT_GIVEN)
 
-/**
- * Reserves memory in which the VMM can relocate any guest mappings
- * that are floating around.
- *
- * This operation is a little bit tricky since the VMM might not accept
- * just any address because of address clashes between the three contexts
- * it operates in, so we try several times.
- *
- * Failure to reserve the guest mappings is ignored.
- *
- * @gdev:		The Guest extension device.
- */
+ 
 static void vbg_guest_mappings_init(struct vbg_dev *gdev)
 {
 	struct vmmdev_hypervisorinfo *req;
@@ -52,7 +37,7 @@ static void vbg_guest_mappings_init(struct vbg_dev *gdev)
 	u32 size, hypervisor_size;
 	int i, rc;
 
-	/* Query the required space. */
+	 
 	req = vbg_req_alloc(sizeof(*req), VMMDEVREQ_GET_HYPERVISOR_INFO,
 			    VBG_KERNEL_REQUEST);
 	if (!req)
@@ -64,15 +49,12 @@ static void vbg_guest_mappings_init(struct vbg_dev *gdev)
 	if (rc < 0)
 		goto out;
 
-	/*
-	 * The VMM will report back if there is nothing it wants to map, like
-	 * for instance in VT-x and AMD-V mode.
-	 */
+	 
 	if (req->hypervisor_size == 0)
 		goto out;
 
 	hypervisor_size = req->hypervisor_size;
-	/* Add 4M so that we can align the vmap to 4MiB as the host requires. */
+	 
 	size = PAGE_ALIGN(req->hypervisor_size) + SZ_4M;
 
 	pages = kmalloc_array(size >> PAGE_SHIFT, sizeof(*pages), GFP_KERNEL);
@@ -86,10 +68,7 @@ static void vbg_guest_mappings_init(struct vbg_dev *gdev)
 	for (i = 0; i < (size >> PAGE_SHIFT); i++)
 		pages[i] = gdev->guest_mappings_dummy_page;
 
-	/*
-	 * Try several times, the VMM might not accept some addresses because
-	 * of address clashes between the three contexts.
-	 */
+	 
 	for (i = 0; i < GUEST_MAPPINGS_TRIES; i++) {
 		guest_mappings[i] = vmap(pages, (size >> PAGE_SHIFT),
 					 VM_MAP, PAGE_KERNEL_RO);
@@ -109,11 +88,11 @@ static void vbg_guest_mappings_init(struct vbg_dev *gdev)
 		}
 	}
 
-	/* Free vmap's from failed attempts. */
+	 
 	while (--i >= 0)
 		vunmap(guest_mappings[i]);
 
-	/* On failure free the dummy-page backing the vmap */
+	 
 	if (!gdev->guest_mappings) {
 		__free_page(gdev->guest_mappings_dummy_page);
 		gdev->guest_mappings_dummy_page = NULL;
@@ -124,11 +103,7 @@ out:
 	kfree(pages);
 }
 
-/**
- * Undo what vbg_guest_mappings_init did.
- *
- * @gdev:		The Guest extension device.
- */
+ 
 static void vbg_guest_mappings_exit(struct vbg_dev *gdev)
 {
 	struct vmmdev_hypervisorinfo *req;
@@ -137,10 +112,7 @@ static void vbg_guest_mappings_exit(struct vbg_dev *gdev)
 	if (!gdev->guest_mappings)
 		return;
 
-	/*
-	 * Tell the host that we're going to free the memory we reserved for
-	 * it, the free it up. (Leak the memory if anything goes wrong here.)
-	 */
+	 
 	req = vbg_req_alloc(sizeof(*req), VMMDEVREQ_SET_HYPERVISOR_INFO,
 			    VBG_KERNEL_REQUEST);
 	if (!req)
@@ -165,16 +137,10 @@ static void vbg_guest_mappings_exit(struct vbg_dev *gdev)
 	gdev->guest_mappings_dummy_page = NULL;
 }
 
-/**
- * Report the guest information to the host.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- */
+ 
 static int vbg_report_guest_info(struct vbg_dev *gdev)
 {
-	/*
-	 * Allocate and fill in the two guest info reports.
-	 */
+	 
 	struct vmmdev_guest_info *req1 = NULL;
 	struct vmmdev_guest_info2 *req2 = NULL;
 	int rc, ret = -ENOMEM;
@@ -201,14 +167,7 @@ static int vbg_report_guest_info(struct vbg_dev *gdev)
 	strscpy(req2->name, VBG_VERSION_STRING,
 		sizeof(req2->name));
 
-	/*
-	 * There are two protocols here:
-	 *      1. INFO2 + INFO1. Supported by >=3.2.51.
-	 *      2. INFO1 and optionally INFO2. The old protocol.
-	 *
-	 * We try protocol 2 first.  It will fail with VERR_NOT_SUPPORTED
-	 * if not supported by the VMMDev (message ordering requirement).
-	 */
+	 
 	rc = vbg_req_perform(gdev, req2);
 	if (rc >= 0) {
 		rc = vbg_req_perform(gdev, req1);
@@ -228,12 +187,7 @@ out_free:
 	return ret;
 }
 
-/**
- * Report the guest driver status to the host.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- * @active:		Flag whether the driver is now active or not.
- */
+ 
 static int vbg_report_driver_status(struct vbg_dev *gdev, bool active)
 {
 	struct vmmdev_guest_status *req;
@@ -252,7 +206,7 @@ static int vbg_report_driver_status(struct vbg_dev *gdev, bool active)
 	req->flags = 0;
 
 	rc = vbg_req_perform(gdev, req);
-	if (rc == VERR_NOT_IMPLEMENTED)	/* Compatibility with older hosts. */
+	if (rc == VERR_NOT_IMPLEMENTED)	 
 		rc = VINF_SUCCESS;
 
 	vbg_req_free(req, sizeof(*req));
@@ -260,12 +214,7 @@ static int vbg_report_driver_status(struct vbg_dev *gdev, bool active)
 	return vbg_status_code_to_errno(rc);
 }
 
-/**
- * Inflate the balloon by one chunk. The caller owns the balloon mutex.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- * @chunk_idx:		Index of the chunk.
- */
+ 
 static int vbg_balloon_inflate(struct vbg_dev *gdev, u32 chunk_idx)
 {
 	struct vmmdev_memballoon_change *req = gdev->mem_balloon.change_req;
@@ -311,12 +260,7 @@ out_error:
 	return ret;
 }
 
-/**
- * Deflate the balloon by one chunk. The caller owns the balloon mutex.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- * @chunk_idx:		Index of the chunk.
- */
+ 
 static int vbg_balloon_deflate(struct vbg_dev *gdev, u32 chunk_idx)
 {
 	struct vmmdev_memballoon_change *req = gdev->mem_balloon.change_req;
@@ -344,10 +288,7 @@ static int vbg_balloon_deflate(struct vbg_dev *gdev, u32 chunk_idx)
 	return 0;
 }
 
-/**
- * Respond to VMMDEV_EVENT_BALLOON_CHANGE_REQUEST events, query the size
- * the host wants the balloon to be and adjust accordingly.
- */
+ 
 static void vbg_balloon_work(struct work_struct *work)
 {
 	struct vbg_dev *gdev =
@@ -356,10 +297,7 @@ static void vbg_balloon_work(struct work_struct *work)
 	u32 i, chunks;
 	int rc, ret;
 
-	/*
-	 * Setting this bit means that we request the value from the host and
-	 * change the guest memory balloon according to the returned value.
-	 */
+	 
 	req->event_ack = VMMDEV_EVENT_BALLOON_CHANGE_REQUEST;
 	rc = vbg_req_perform(gdev, req);
 	if (rc < 0) {
@@ -367,10 +305,7 @@ static void vbg_balloon_work(struct work_struct *work)
 		return;
 	}
 
-	/*
-	 * The host always returns the same maximum amount of chunks, so
-	 * we do this once.
-	 */
+	 
 	if (!gdev->mem_balloon.max_chunks) {
 		gdev->mem_balloon.pages =
 			devm_kcalloc(gdev->dev, req->phys_mem_chunks,
@@ -389,7 +324,7 @@ static void vbg_balloon_work(struct work_struct *work)
 	}
 
 	if (chunks > gdev->mem_balloon.chunks) {
-		/* inflate */
+		 
 		for (i = gdev->mem_balloon.chunks; i < chunks; i++) {
 			ret = vbg_balloon_inflate(gdev, i);
 			if (ret < 0)
@@ -398,7 +333,7 @@ static void vbg_balloon_work(struct work_struct *work)
 			gdev->mem_balloon.chunks++;
 		}
 	} else {
-		/* deflate */
+		 
 		for (i = gdev->mem_balloon.chunks; i-- > chunks;) {
 			ret = vbg_balloon_deflate(gdev, i);
 			if (ret < 0)
@@ -409,9 +344,7 @@ static void vbg_balloon_work(struct work_struct *work)
 	}
 }
 
-/**
- * Callback for heartbeat timer.
- */
+ 
 static void vbg_heartbeat_timer(struct timer_list *t)
 {
 	struct vbg_dev *gdev = from_timer(gdev, t, heartbeat_timer);
@@ -421,13 +354,7 @@ static void vbg_heartbeat_timer(struct timer_list *t)
 		  msecs_to_jiffies(gdev->heartbeat_interval_ms));
 }
 
-/**
- * Configure the host to check guest's heartbeat
- * and get heartbeat interval from the host.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- * @enabled:		Set true to enable guest heartbeat checks on host.
- */
+ 
 static int vbg_heartbeat_host_config(struct vbg_dev *gdev, bool enabled)
 {
 	struct vmmdev_heartbeat *req;
@@ -441,23 +368,19 @@ static int vbg_heartbeat_host_config(struct vbg_dev *gdev, bool enabled)
 	req->enabled = enabled;
 	req->interval_ns = 0;
 	rc = vbg_req_perform(gdev, req);
-	do_div(req->interval_ns, 1000000); /* ns -> ms */
+	do_div(req->interval_ns, 1000000);  
 	gdev->heartbeat_interval_ms = req->interval_ns;
 	vbg_req_free(req, sizeof(*req));
 
 	return vbg_status_code_to_errno(rc);
 }
 
-/**
- * Initializes the heartbeat timer. This feature may be disabled by the host.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- */
+ 
 static int vbg_heartbeat_init(struct vbg_dev *gdev)
 {
 	int ret;
 
-	/* Make sure that heartbeat checking is disabled if we fail. */
+	 
 	ret = vbg_heartbeat_host_config(gdev, false);
 	if (ret < 0)
 		return ret;
@@ -480,10 +403,7 @@ static int vbg_heartbeat_init(struct vbg_dev *gdev)
 	return 0;
 }
 
-/**
- * Cleanup hearbeat code, stop HB timer and disable host heartbeat checking.
- * @gdev:		The Guest extension device.
- */
+ 
 static void vbg_heartbeat_exit(struct vbg_dev *gdev)
 {
 	del_timer_sync(&gdev->heartbeat_timer);
@@ -492,13 +412,7 @@ static void vbg_heartbeat_exit(struct vbg_dev *gdev)
 		     sizeof(*gdev->guest_heartbeat_req));
 }
 
-/**
- * Applies a change to the bit usage tracker.
- * Return: true if the mask changed, false if not.
- * @tracker:		The bit usage tracker.
- * @changed:		The bits to change.
- * @previous:		The previous value of the bits.
- */
+ 
 static bool vbg_track_bit_usage(struct vbg_bit_usage_tracker *tracker,
 				u32 changed, u32 previous)
 {
@@ -528,12 +442,7 @@ static bool vbg_track_bit_usage(struct vbg_bit_usage_tracker *tracker,
 	return global_change;
 }
 
-/**
- * Init and termination worker for resetting the (host) event filter on the host
- * Return: 0 or negative errno value.
- * @gdev:		   The Guest extension device.
- * @fixed_events:	   Fixed events (init time).
- */
+ 
 static int vbg_reset_host_event_filter(struct vbg_dev *gdev,
 				       u32 fixed_events)
 {
@@ -555,22 +464,7 @@ static int vbg_reset_host_event_filter(struct vbg_dev *gdev,
 	return vbg_status_code_to_errno(rc);
 }
 
-/**
- * Changes the event filter mask for the given session.
- *
- * This is called in response to VBG_IOCTL_CHANGE_FILTER_MASK as well as to
- * do session cleanup. Takes the session mutex.
- *
- * Return: 0 or negative errno value.
- * @gdev:			The Guest extension device.
- * @session:			The session.
- * @or_mask:			The events to add.
- * @not_mask:			The events to remove.
- * @session_termination:	Set if we're called by the session cleanup code.
- *				This tweaks the error handling so we perform
- *				proper session cleanup even if the host
- *				misbehaves.
- */
+ 
 static int vbg_set_session_event_filter(struct vbg_dev *gdev,
 					struct vbg_session *session,
 					u32 or_mask, u32 not_mask,
@@ -580,28 +474,24 @@ static int vbg_set_session_event_filter(struct vbg_dev *gdev,
 	u32 changed, previous;
 	int rc, ret = 0;
 
-	/*
-	 * Allocate a request buffer before taking the spinlock, when
-	 * the session is being terminated the requestor is the kernel,
-	 * as we're cleaning up.
-	 */
+	 
 	req = vbg_req_alloc(sizeof(*req), VMMDEVREQ_CTL_GUEST_FILTER_MASK,
 			    session_termination ? VBG_KERNEL_REQUEST :
 						  session->requestor);
 	if (!req) {
 		if (!session_termination)
 			return -ENOMEM;
-		/* Ignore allocation failure, we must do session cleanup. */
+		 
 	}
 
 	mutex_lock(&gdev->session_mutex);
 
-	/* Apply the changes to the session mask. */
+	 
 	previous = session->event_filter;
 	session->event_filter |= or_mask;
 	session->event_filter &= ~not_mask;
 
-	/* If anything actually changed, update the global usage counters. */
+	 
 	changed = previous ^ session->event_filter;
 	if (!changed)
 		goto out;
@@ -619,7 +509,7 @@ static int vbg_set_session_event_filter(struct vbg_dev *gdev,
 	if (rc < 0) {
 		ret = vbg_status_code_to_errno(rc);
 
-		/* Failed, roll back (unless it's session termination time). */
+		 
 		gdev->event_filter_host = U32_MAX;
 		if (session_termination)
 			goto out;
@@ -636,11 +526,7 @@ out:
 	return ret;
 }
 
-/**
- * Init and termination worker for set guest capabilities to zero on the host.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- */
+ 
 static int vbg_reset_host_capabilities(struct vbg_dev *gdev)
 {
 	struct vmmdev_mask *req;
@@ -661,14 +547,7 @@ static int vbg_reset_host_capabilities(struct vbg_dev *gdev)
 	return vbg_status_code_to_errno(rc);
 }
 
-/**
- * Set guest capabilities on the host.
- * Must be called with gdev->session_mutex hold.
- * Return: 0 or negative errno value.
- * @gdev:			The Guest extension device.
- * @session:			The session.
- * @session_termination:	Set if we're called by the session cleanup code.
- */
+ 
 static int vbg_set_host_capabilities(struct vbg_dev *gdev,
 				     struct vbg_session *session,
 				     bool session_termination)
@@ -684,7 +563,7 @@ static int vbg_set_host_capabilities(struct vbg_dev *gdev,
 	if (gdev->guest_caps_host == caps)
 		return 0;
 
-	/* On termination the requestor is the kernel, as we're cleaning up. */
+	 
 	req = vbg_req_alloc(sizeof(*req), VMMDEVREQ_SET_GUEST_CAPABILITIES,
 			    session_termination ? VBG_KERNEL_REQUEST :
 						  session->requestor);
@@ -703,20 +582,7 @@ static int vbg_set_host_capabilities(struct vbg_dev *gdev,
 	return vbg_status_code_to_errno(rc);
 }
 
-/**
- * Acquire (get exclusive access) guest capabilities for a session.
- * Takes the session mutex.
- * Return: 0 or negative errno value.
- * @gdev:			The Guest extension device.
- * @session:			The session.
- * @flags:			Flags (VBGL_IOC_AGC_FLAGS_XXX).
- * @or_mask:			The capabilities to add.
- * @not_mask:			The capabilities to remove.
- * @session_termination:	Set if we're called by the session cleanup code.
- *				This tweaks the error handling so we perform
- *				proper session cleanup even if the host
- *				misbehaves.
- */
+ 
 static int vbg_acquire_session_capabilities(struct vbg_dev *gdev,
 					    struct vbg_session *session,
 					    u32 or_mask, u32 not_mask,
@@ -735,20 +601,16 @@ static int vbg_acquire_session_capabilities(struct vbg_dev *gdev,
 		goto out;
 	}
 
-	/*
-	 * Mark any caps in the or_mask as now being in acquire-mode. Note
-	 * once caps are in acquire_mode they always stay in this mode.
-	 * This impacts event handling, so we take the event-lock.
-	 */
+	 
 	spin_lock_irqsave(&gdev->event_spinlock, irqflags);
 	gdev->acquire_mode_guest_caps |= or_mask;
 	spin_unlock_irqrestore(&gdev->event_spinlock, irqflags);
 
-	/* If we only have to switch the caps to acquire mode, we're done. */
+	 
 	if (flags & VBGL_IOC_AGC_FLAGS_CONFIG_ACQUIRE_MODE)
 		goto out;
 
-	not_mask &= ~or_mask; /* or_mask takes priority over not_mask */
+	not_mask &= ~or_mask;  
 	not_mask &= session->acquired_guest_caps;
 	or_mask &= ~session->acquired_guest_caps;
 
@@ -762,14 +624,14 @@ static int vbg_acquire_session_capabilities(struct vbg_dev *gdev,
 
 	gdev->acquired_guest_caps |= or_mask;
 	gdev->acquired_guest_caps &= ~not_mask;
-	/* session->acquired_guest_caps impacts event handling, take the lock */
+	 
 	spin_lock_irqsave(&gdev->event_spinlock, irqflags);
 	session->acquired_guest_caps |= or_mask;
 	session->acquired_guest_caps &= ~not_mask;
 	spin_unlock_irqrestore(&gdev->event_spinlock, irqflags);
 
 	ret = vbg_set_host_capabilities(gdev, session, session_termination);
-	/* Roll back on failure, unless it's session termination time. */
+	 
 	if (ret < 0 && !session_termination) {
 		gdev->acquired_guest_caps &= ~or_mask;
 		gdev->acquired_guest_caps |= not_mask;
@@ -779,15 +641,7 @@ static int vbg_acquire_session_capabilities(struct vbg_dev *gdev,
 		spin_unlock_irqrestore(&gdev->event_spinlock, irqflags);
 	}
 
-	/*
-	 * If we added a capability, check if that means some other thread in
-	 * our session should be unblocked because there are events pending
-	 * (the result of vbg_get_allowed_event_mask_for_session() may change).
-	 *
-	 * HACK ALERT! When the seamless support capability is added we generate
-	 *	a seamless change event so that the ring-3 client can sync with
-	 *	the seamless state.
-	 */
+	 
 	if (ret == 0 && or_mask != 0) {
 		spin_lock_irqsave(&gdev->event_spinlock, irqflags);
 
@@ -810,18 +664,7 @@ out:
 	return ret;
 }
 
-/**
- * Sets the guest capabilities for a session. Takes the session mutex.
- * Return: 0 or negative errno value.
- * @gdev:			The Guest extension device.
- * @session:			The session.
- * @or_mask:			The capabilities to add.
- * @not_mask:			The capabilities to remove.
- * @session_termination:	Set if we're called by the session cleanup code.
- *				This tweaks the error handling so we perform
- *				proper session cleanup even if the host
- *				misbehaves.
- */
+ 
 static int vbg_set_session_capabilities(struct vbg_dev *gdev,
 					struct vbg_session *session,
 					u32 or_mask, u32 not_mask,
@@ -839,12 +682,12 @@ static int vbg_set_session_capabilities(struct vbg_dev *gdev,
 		goto out;
 	}
 
-	/* Apply the changes to the session mask. */
+	 
 	previous = session->set_guest_caps;
 	session->set_guest_caps |= or_mask;
 	session->set_guest_caps &= ~not_mask;
 
-	/* If anything actually changed, update the global usage counters. */
+	 
 	changed = previous ^ session->set_guest_caps;
 	if (!changed)
 		goto out;
@@ -852,7 +695,7 @@ static int vbg_set_session_capabilities(struct vbg_dev *gdev,
 	vbg_track_bit_usage(&gdev->set_guest_caps_tracker, changed, previous);
 
 	ret = vbg_set_host_capabilities(gdev, session, session_termination);
-	/* Roll back on failure, unless it's session termination time. */
+	 
 	if (ret < 0 && !session_termination) {
 		vbg_track_bit_usage(&gdev->set_guest_caps_tracker, changed,
 				    session->set_guest_caps);
@@ -865,11 +708,7 @@ out:
 	return ret;
 }
 
-/**
- * vbg_query_host_version get the host feature mask and version information.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- */
+ 
 static int vbg_query_host_version(struct vbg_dev *gdev)
 {
 	struct vmmdev_host_version *req;
@@ -904,28 +743,14 @@ out:
 	return ret;
 }
 
-/**
- * Initializes the VBoxGuest device extension when the
- * device driver is loaded.
- *
- * The native code locates the VMMDev on the PCI bus and retrieve
- * the MMIO and I/O port ranges, this function will take care of
- * mapping the MMIO memory (if present). Upon successful return
- * the native code should set up the interrupt handler.
- *
- * Return: 0 or negative errno value.
- *
- * @gdev:		The Guest extension device.
- * @fixed_events:	Events that will be enabled upon init and no client
- *			will ever be allowed to mask.
- */
+ 
 int vbg_core_init(struct vbg_dev *gdev, u32 fixed_events)
 {
 	int ret = -ENOMEM;
 
 	gdev->fixed_events = fixed_events | VMMDEV_EVENT_HGCM;
-	gdev->event_filter_host = U32_MAX;	/* forces a report */
-	gdev->guest_caps_host = U32_MAX;	/* forces a report */
+	gdev->event_filter_host = U32_MAX;	 
+	gdev->guest_caps_host = U32_MAX;	 
 
 	init_waitqueue_head(&gdev->event_wq);
 	init_waitqueue_head(&gdev->hgcm_wq);
@@ -991,11 +816,11 @@ int vbg_core_init(struct vbg_dev *gdev, u32 fixed_events)
 		goto err_free_reqs;
 	}
 
-	/* These may fail without requiring the driver init to fail. */
+	 
 	vbg_guest_mappings_init(gdev);
 	vbg_heartbeat_init(gdev);
 
-	/* All Done! */
+	 
 	ret = vbg_report_driver_status(gdev, true);
 	if (ret < 0)
 		vbg_err("vboxguest: Error reporting driver status: %d\n", ret);
@@ -1016,19 +841,13 @@ err_free_reqs:
 	return ret;
 }
 
-/**
- * Call this on exit to clean-up vboxguest-core managed resources.
- *
- * The native code should call this before the driver is loaded,
- * but don't call this on shutdown.
- * @gdev:		The Guest extension device.
- */
+ 
 void vbg_core_exit(struct vbg_dev *gdev)
 {
 	vbg_heartbeat_exit(gdev);
 	vbg_guest_mappings_exit(gdev);
 
-	/* Clear the host flags (mouse status etc). */
+	 
 	vbg_reset_host_event_filter(gdev, 0);
 	vbg_reset_host_capabilities(gdev);
 	vbg_core_set_mouse_status(gdev, 0);
@@ -1045,14 +864,7 @@ void vbg_core_exit(struct vbg_dev *gdev)
 		     sizeof(*gdev->mem_balloon.get_req));
 }
 
-/**
- * Creates a VBoxGuest user session.
- *
- * vboxguest_linux.c calls this when userspace opens the char-device.
- * Return: A pointer to the new session or an ERR_PTR on error.
- * @gdev:		The Guest extension device.
- * @requestor:		VMMDEV_REQUESTOR_* flags
- */
+ 
 struct vbg_session *vbg_core_open_session(struct vbg_dev *gdev, u32 requestor)
 {
 	struct vbg_session *session;
@@ -1067,10 +879,7 @@ struct vbg_session *vbg_core_open_session(struct vbg_dev *gdev, u32 requestor)
 	return session;
 }
 
-/**
- * Closes a VBoxGuest session.
- * @session:		The session to close (and free).
- */
+ 
 void vbg_core_close_session(struct vbg_session *session)
 {
 	struct vbg_dev *gdev = session->gdev;
@@ -1084,7 +893,7 @@ void vbg_core_close_session(struct vbg_session *session)
 		if (!session->hgcm_client_ids[i])
 			continue;
 
-		/* requestor is kernel here, as we're cleaning up. */
+		 
 		vbg_hgcm_disconnect(gdev, VBG_KERNEL_REQUEST,
 				    session->hgcm_client_ids[i], &rc);
 	}
@@ -1134,7 +943,7 @@ static int vbg_ioctl_driver_version_info(
 	return 0;
 }
 
-/* Must be called with the event_lock held */
+ 
 static u32 vbg_get_allowed_event_mask_for_session(struct vbg_dev *gdev,
 						  struct vbg_session *session)
 {
@@ -1172,7 +981,7 @@ static bool vbg_wait_event_cond(struct vbg_dev *gdev,
 	return wakeup;
 }
 
-/* Must be called with the event_lock held */
+ 
 static u32 vbg_consume_events_locked(struct vbg_dev *gdev,
 				     struct vbg_session *session,
 				     u32 event_mask)
@@ -1222,10 +1031,7 @@ static int vbg_ioctl_wait_for_events(struct vbg_dev *gdev,
 
 		spin_unlock_irqrestore(&gdev->event_spinlock, flags);
 
-		/*
-		 * Someone else may have consumed the event(s) first, in
-		 * which case we go back to waiting.
-		 */
+		 
 	} while (ret == 0 && wait->u.out.events == 0);
 
 	return ret;
@@ -1249,13 +1055,7 @@ static int vbg_ioctl_interrupt_all_wait_events(struct vbg_dev *gdev,
 	return 0;
 }
 
-/**
- * Checks if the VMM request is allowed in the context of the given session.
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- * @session:		The calling session.
- * @req:		The request.
- */
+ 
 static int vbg_req_allowed(struct vbg_dev *gdev, struct vbg_session *session,
 			   const struct vmmdev_request_header *req)
 {
@@ -1263,7 +1063,7 @@ static int vbg_req_allowed(struct vbg_dev *gdev, struct vbg_session *session,
 	bool trusted_apps_only;
 
 	switch (req->request_type) {
-	/* Trusted users apps only. */
+	 
 	case VMMDEVREQ_QUERY_CREDENTIALS:
 	case VMMDEVREQ_REPORT_CREDENTIALS_JUDGEMENT:
 	case VMMDEVREQ_REGISTER_SHARED_MODULE:
@@ -1280,7 +1080,7 @@ static int vbg_req_allowed(struct vbg_dev *gdev, struct vbg_session *session,
 		trusted_apps_only = true;
 		break;
 
-	/* Anyone. */
+	 
 	case VMMDEVREQ_GET_MOUSE_STATUS:
 	case VMMDEVREQ_SET_MOUSE_STATUS:
 	case VMMDEVREQ_SET_POINTER_SHAPE:
@@ -1309,7 +1109,7 @@ static int vbg_req_allowed(struct vbg_dev *gdev, struct vbg_session *session,
 		trusted_apps_only = false;
 		break;
 
-	/* Depends on the request parameters... */
+	 
 	case VMMDEVREQ_REPORT_GUEST_CAPABILITIES:
 		guest_status = (const struct vmmdev_guest_status *)req;
 		switch (guest_status->facility) {
@@ -1330,7 +1130,7 @@ static int vbg_req_allowed(struct vbg_dev *gdev, struct vbg_session *session,
 		}
 		break;
 
-	/* Anything else is not allowed. */
+	 
 	default:
 		vbg_err("Denying userspace vmm call type %#08x\n",
 			req->request_type);
@@ -1382,7 +1182,7 @@ static int vbg_ioctl_hgcm_connect(struct vbg_dev *gdev,
 	if (vbg_ioctl_chk(&conn->hdr, sizeof(conn->u.in), sizeof(conn->u.out)))
 		return -EINVAL;
 
-	/* Find a free place in the sessions clients array and claim it */
+	 
 	mutex_lock(&gdev->session_mutex);
 	for (i = 0; i < ARRAY_SIZE(session->hgcm_client_ids); i++) {
 		if (!session->hgcm_client_ids[i]) {
@@ -1499,7 +1299,7 @@ static int vbg_ioctl_hgcm_call(struct vbg_dev *gdev,
 	}
 	call->hdr.size_out = actual_size;
 
-	/* Validate parameter types */
+	 
 	if (f32bit) {
 		struct vmmdev_hgcm_function_parameter32 *parm =
 			VBG_IOCTL_HGCM_CALL_PARMS32(call);
@@ -1516,9 +1316,7 @@ static int vbg_ioctl_hgcm_call(struct vbg_dev *gdev,
 				return -EINVAL;
 	}
 
-	/*
-	 * Validate the client id.
-	 */
+	 
 	mutex_lock(&gdev->session_mutex);
 	for (i = 0; i < ARRAY_SIZE(session->hgcm_client_ids); i++)
 		if (session->hgcm_client_ids[i] == client_id)
@@ -1542,7 +1340,7 @@ static int vbg_ioctl_hgcm_call(struct vbg_dev *gdev,
 				    call->parm_count, &call->hdr.rc);
 
 	if (ret == -E2BIG) {
-		/* E2BIG needs to be reported through the hdr.rc field. */
+		 
 		call->hdr.rc = VERR_OUT_OF_RANGE;
 		ret = 0;
 	}
@@ -1639,10 +1437,7 @@ static int vbg_ioctl_check_balloon(struct vbg_dev *gdev,
 		return -EINVAL;
 
 	balloon_info->u.out.balloon_chunks = gdev->mem_balloon.chunks;
-	/*
-	 * Under Linux we handle VMMDEV_EVENT_BALLOON_CHANGE_REQUEST
-	 * events entirely in the kernel, see vbg_core_isr().
-	 */
+	 
 	balloon_info->u.out.handle_in_r3 = false;
 
 	return 0;
@@ -1669,13 +1464,7 @@ static int vbg_ioctl_write_core_dump(struct vbg_dev *gdev,
 	return 0;
 }
 
-/**
- * Common IOCtl for user to kernel communication.
- * Return: 0 or negative errno value.
- * @session:	The client session.
- * @req:	The requested function.
- * @data:	The i/o data buffer, minimum size sizeof(struct vbg_ioctl_hdr).
- */
+ 
 int vbg_core_ioctl(struct vbg_session *session, unsigned int req, void *data)
 {
 	unsigned int req_no_size = req & ~IOCSIZE_MASK;
@@ -1687,12 +1476,9 @@ int vbg_core_ioctl(struct vbg_session *session, unsigned int req, void *data)
 	if (!hdr->size_out)
 		hdr->size_out = hdr->size_in;
 
-	/*
-	 * hdr->version and hdr->size_in / hdr->size_out minimum size are
-	 * already checked by vbg_misc_device_ioctl().
-	 */
+	 
 
-	/* For VMMDEV_REQUEST hdr->type != VBG_IOCTL_HDR_TYPE_DEFAULT */
+	 
 	if (req_no_size == VBG_IOCTL_VMMDEV_REQUEST(0) ||
 	    req == VBG_IOCTL_VMMDEV_REQUEST_BIG ||
 	    req == VBG_IOCTL_VMMDEV_REQUEST_BIG_ALT)
@@ -1701,7 +1487,7 @@ int vbg_core_ioctl(struct vbg_session *session, unsigned int req, void *data)
 	if (hdr->type != VBG_IOCTL_HDR_TYPE_DEFAULT)
 		return -EINVAL;
 
-	/* Fixed size requests. */
+	 
 	switch (req) {
 	case VBG_IOCTL_DRIVER_VERSION_INFO:
 		return vbg_ioctl_driver_version_info(data);
@@ -1725,7 +1511,7 @@ int vbg_core_ioctl(struct vbg_session *session, unsigned int req, void *data)
 		return vbg_ioctl_write_core_dump(gdev, session, data);
 	}
 
-	/* Variable sized requests. */
+	 
 	switch (req_no_size) {
 #ifdef CONFIG_COMPAT
 	case VBG_IOCTL_HGCM_CALL_32(0):
@@ -1743,13 +1529,7 @@ int vbg_core_ioctl(struct vbg_session *session, unsigned int req, void *data)
 	return -ENOTTY;
 }
 
-/**
- * Report guest supported mouse-features to the host.
- *
- * Return: 0 or negative errno value.
- * @gdev:		The Guest extension device.
- * @features:		The set of features to report to the host.
- */
+ 
 int vbg_core_set_mouse_status(struct vbg_dev *gdev, u32 features)
 {
 	struct vmmdev_mouse_status *req;
@@ -1772,7 +1552,7 @@ int vbg_core_set_mouse_status(struct vbg_dev *gdev, u32 features)
 	return vbg_status_code_to_errno(rc);
 }
 
-/** Core interrupt service routine. */
+ 
 irqreturn_t vbg_core_isr(int irq, void *dev_id)
 {
 	struct vbg_dev *gdev = dev_id;
@@ -1785,7 +1565,7 @@ irqreturn_t vbg_core_isr(int irq, void *dev_id)
 	if (!gdev->mmio->V.V1_04.have_events)
 		return IRQ_NONE;
 
-	/* Get and acknowlegde events. */
+	 
 	req->header.rc = VERR_INTERNAL_ERROR;
 	req->events = 0;
 	rc = vbg_req_perform(gdev, req);

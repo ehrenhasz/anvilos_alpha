@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Chassis LCD/LED driver for HP-PARISC workstations
- *
- *	(c) Copyright 2000 Red Hat Software
- *	(c) Copyright 2000 Helge Deller <hdeller@redhat.com>
- *	(c) Copyright 2001 Randolph Chung <tausq@debian.org>
- *	(c) Copyright 2000-2023 Helge Deller <deller@gmx.de>
- *
- *	The control of the LEDs and LCDs on PARISC machines has to be done
- *	completely in software.
- *
- *	The LEDs can be configured at runtime in /sys/class/leds/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -28,38 +16,37 @@
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/hardware.h>
-#include <asm/param.h>		/* HZ */
+#include <asm/param.h>		 
 #include <asm/led.h>
 #include <asm/pdc.h>
 
 #define LED_HAS_LCD 1
 #define LED_HAS_LED 2
 
-static unsigned char led_type;		/* bitmask of LED_HAS_XXX */
-static unsigned char lastleds;		/* LED state from most recent update */
+static unsigned char led_type;		 
+static unsigned char lastleds;		 
 static unsigned char lcd_new_text;
 static unsigned char lcd_text[20];
 static unsigned char lcd_text_default[20];
-static unsigned char lcd_no_led_support; /* KittyHawk doesn't support LED on its LCD */
+static unsigned char lcd_no_led_support;  
 
 struct lcd_block {
-	unsigned char command;	/* stores the command byte      */
-	unsigned char on;	/* value for turning LED on     */
-	unsigned char off;	/* value for turning LED off    */
+	unsigned char command;	 
+	unsigned char on;	 
+	unsigned char off;	 
 };
 
-/* Structure returned by PDC_RETURN_CHASSIS_INFO */
-/* NOTE: we use unsigned long:16 two times, since the following member
-   lcd_cmd_reg_addr needs to be 64bit aligned on 64bit PA2.0-machines */
+ 
+ 
 struct pdc_chassis_lcd_info_ret_block {
-	unsigned long model:16;		/* DISPLAY_MODEL_XXXX */
-	unsigned long lcd_width:16;	/* width of the LCD in chars (DISPLAY_MODEL_LCD only) */
-	unsigned long lcd_cmd_reg_addr;	/* ptr to LCD cmd-register & data ptr for LED */
-	unsigned long lcd_data_reg_addr; /* ptr to LCD data-register (LCD only) */
-	unsigned int min_cmd_delay;	/* delay in uS after cmd-write (LCD only) */
-	unsigned char reset_cmd1;	/* command #1 for writing LCD string (LCD only) */
-	unsigned char reset_cmd2;	/* command #2 for writing LCD string (LCD only) */
-	unsigned char act_enable;	/* 0 = no activity (LCD only) */
+	unsigned long model:16;		 
+	unsigned long lcd_width:16;	 
+	unsigned long lcd_cmd_reg_addr;	 
+	unsigned long lcd_data_reg_addr;  
+	unsigned int min_cmd_delay;	 
+	unsigned char reset_cmd1;	 
+	unsigned char reset_cmd2;	 
+	unsigned char act_enable;	 
 	struct lcd_block heartbeat;
 	struct lcd_block disk_io;
 	struct lcd_block lan_rcv;
@@ -68,12 +55,11 @@ struct pdc_chassis_lcd_info_ret_block {
 };
 
 
-/* LCD_CMD and LCD_DATA for KittyHawk machines */
+ 
 #define KITTYHAWK_LCD_CMD  F_EXTEND(0xf0190000UL)
 #define KITTYHAWK_LCD_DATA (KITTYHAWK_LCD_CMD + 1)
 
-/* lcd_info is pre-initialized to the values needed to program KittyHawk LCD's
- * HP seems to have used Sharp/Hitachi HD44780 LCDs most of the time. */
+ 
 static struct pdc_chassis_lcd_info_ret_block
 lcd_info __attribute__((aligned(8)))  =
 {
@@ -86,12 +72,12 @@ lcd_info __attribute__((aligned(8)))  =
 	.reset_cmd2 =		0xc0,
 };
 
-/* direct access to some of the lcd_info variables */
+ 
 #define LCD_CMD_REG	lcd_info.lcd_cmd_reg_addr
 #define LCD_DATA_REG	lcd_info.lcd_data_reg_addr
-#define LED_DATA_REG	lcd_info.lcd_cmd_reg_addr	/* LASI & ASP only */
+#define LED_DATA_REG	lcd_info.lcd_cmd_reg_addr	 
 
-/* ptr to LCD/LED-specific function */
+ 
 static void (*led_func_ptr) (unsigned char);
 
 
@@ -107,44 +93,34 @@ static void lcd_print_now(void)
 		return;
 	lcd_new_text = 0;
 
-	/* Set LCD Cursor to 1st character */
+	 
 	gsc_writeb(lcd_info.reset_cmd1, LCD_CMD_REG);
 	udelay(lcd_info.min_cmd_delay);
 
-	/* Print the string */
+	 
 	for (i = 0; i < lcd_info.lcd_width; i++) {
 		gsc_writeb(*str ? *str++ : ' ', LCD_DATA_REG);
 		udelay(lcd_info.min_cmd_delay);
 	}
 }
 
-/**
- *	lcd_print()
- *
- *	@str: string to show on the LCD. If NULL, print current string again.
- *
- *	Displays the given string on the LCD-Display of newer machines.
- */
+ 
 void lcd_print(const char *str)
 {
-	/* copy display string to buffer for procfs */
+	 
 	if (str)
 		strscpy(lcd_text, str, sizeof(lcd_text));
 	lcd_new_text = 1;
 
-	/* print now if LCD without any LEDs */
+	 
 	if (led_type == LED_HAS_LCD)
 		lcd_print_now();
 }
 
-#define	LED_DATA	0x01	/* data to shift (0:on 1:off) */
-#define	LED_STROBE	0x02	/* strobe to clock data */
+#define	LED_DATA	0x01	 
+#define	LED_STROBE	0x02	 
 
-/**
- *	led_ASP_driver() - LED driver for the ASP controller chip
- *
- *	@leds: bitmap representing the LED status
- */
+ 
 static void led_ASP_driver(unsigned char leds)
 {
 	int i;
@@ -159,22 +135,14 @@ static void led_ASP_driver(unsigned char leds)
 	}
 }
 
-/**
- *	led_LASI_driver() - LED driver for the LASI controller chip
- *
- *	@leds: bitmap representing the LED status
- */
+ 
 static void led_LASI_driver(unsigned char leds)
 {
 	leds = ~leds;
 	gsc_writeb( leds, LED_DATA_REG );
 }
 
-/**
- *	led_LCD_driver() - LED & LCD driver for LCD chips
- *
- *	@leds: bitmap representing the LED status
- */
+ 
 static void led_LCD_driver(unsigned char leds)
 {
 	static const unsigned char mask[4] = {
@@ -207,16 +175,7 @@ static void led_LCD_driver(unsigned char leds)
 }
 
 
-/**
- *	lcd_system_halt()
- *
- *	@nb: pointer to the notifier_block structure
- *	@event: the event (SYS_RESTART, SYS_HALT or SYS_POWER_OFF)
- *	@buf: pointer to a buffer (not used)
- *
- *	Called by the reboot notifier chain at shutdown. Stops all
- *	LED/LCD activities.
- */
+ 
 static int lcd_system_halt(struct notifier_block *nb, unsigned long event, void *buf)
 {
 	const char *txt;
@@ -385,26 +344,17 @@ static struct platform_device platform_leds = {
 	.name = "platform-leds",
 };
 
-/**
- *	register_led_driver()
- *
- *	@model: model type, one of the DISPLAY_MODEL_XXXX values
- *	@cmd_reg: physical address of cmd register for the LED/LCD
- *	@data_reg: physical address of data register for the LED/LCD
- *
- *	Registers a chassis LED or LCD which should be driven by this driver.
- *	Only PDC-based, LASI- or ASP-style LEDs and LCDs are supported.
- */
+ 
 int __init register_led_driver(int model, unsigned long cmd_reg, unsigned long data_reg)
 {
 	if (led_func_ptr || !data_reg)
 		return 1;
 
-	/* No LEDs when running in QEMU */
+	 
 	if (running_on_qemu)
 		return 1;
 
-	lcd_info.model = model;		/* store the values */
+	lcd_info.model = model;		 
 	LCD_CMD_REG = (cmd_reg == LED_CMD_REG_NONE) ? 0 : cmd_reg;
 
 	switch (lcd_info.model) {
@@ -444,15 +394,7 @@ int __init register_led_driver(int model, unsigned long cmd_reg, unsigned long d
 	return register_reboot_notifier(&lcd_system_halt_notifier);
 }
 
-/**
- *	early_led_init()
- *
- *	early_led_init() is called early in the bootup-process and asks the
- *	PDC for an usable chassis LCD or LED. If the PDC doesn't return any
- *	info, then a LED might be detected by the LASI or ASP drivers later.
- *	KittyHawk machines have often a buggy PDC, so that we explicitly check
- *	for those machines here.
- */
+ 
 static int __init early_led_init(void)
 {
 	struct pdc_chassis_info chassis_info;
@@ -463,21 +405,21 @@ static int __init early_led_init(void)
 	strcpy(lcd_text, lcd_text_default);
 	lcd_new_text = 1;
 
-	/* Work around the buggy PDC of KittyHawk-machines */
+	 
 	switch (CPU_HVERSION) {
-	case 0x580:		/* KittyHawk DC2-100 (K100) */
-	case 0x581:		/* KittyHawk DC3-120 (K210) */
-	case 0x582:		/* KittyHawk DC3 100 (K400) */
-	case 0x583:		/* KittyHawk DC3 120 (K410) */
-	case 0x58B:		/* KittyHawk DC2 100 (K200) */
+	case 0x580:		 
+	case 0x581:		 
+	case 0x582:		 
+	case 0x583:		 
+	case 0x58B:		 
 		pr_info("LCD on KittyHawk-Machine found.\n");
 		lcd_info.model = DISPLAY_MODEL_LCD;
-		/* KittyHawk has no LED support on its LCD, so skip LED detection */
+		 
 		lcd_no_led_support = 1;
-		goto found;	/* use the preinitialized values of lcd_info */
+		goto found;	 
 	}
 
-	/* initialize the struct, so that we can check for valid return values */
+	 
 	chassis_info.actcnt = chassis_info.maxcnt = 0;
 
 	ret = pdc_chassis_info(&chassis_info, &lcd_info, sizeof(lcd_info));
@@ -487,25 +429,25 @@ not_found:
 		return 1;
 	}
 
-	/* check the results. Some machines have a buggy PDC */
+	 
 	if (chassis_info.actcnt <= 0 || chassis_info.actcnt != chassis_info.maxcnt)
 		goto not_found;
 
 	switch (lcd_info.model) {
-	case DISPLAY_MODEL_LCD:		/* LCD display */
+	case DISPLAY_MODEL_LCD:		 
 		if (chassis_info.actcnt <
 			offsetof(struct pdc_chassis_lcd_info_ret_block, _pad)-1)
 			goto not_found;
 		if (!lcd_info.act_enable) {
-			/* PDC tells LCD should not be used. */
+			 
 			goto not_found;
 		}
 		break;
 
-	case DISPLAY_MODEL_NONE:	/* no LED or LCD available */
+	case DISPLAY_MODEL_NONE:	 
 		goto not_found;
 
-	case DISPLAY_MODEL_LASI:	/* Lasi style 8 bit LED display */
+	case DISPLAY_MODEL_LASI:	 
 		if (chassis_info.actcnt != 8 && chassis_info.actcnt != 32)
 			goto not_found;
 		break;
@@ -517,20 +459,12 @@ not_found:
 	}
 
 found:
-	/* register the LCD/LED driver */
+	 
 	return register_led_driver(lcd_info.model, LCD_CMD_REG, LCD_DATA_REG);
 }
 arch_initcall(early_led_init);
 
-/**
- *	register_led_regions()
- *
- *	Register_led_regions() registers the LCD/LED regions for /procfs.
- *	At bootup - where the initialisation of the LCD/LED often happens
- *	not all internal structures of request_region() are properly set up,
- *	so that we delay the led-registration until after busdevices_init()
- *	has been executed.
- */
+ 
 static void __init register_led_regions(void)
 {
 	switch (lcd_info.model) {

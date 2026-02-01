@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * APEI Error INJection support
- *
- * EINJ provides a hardware error injection mechanism, this is useful
- * for debugging and testing of other APEI and RAS features.
- *
- * For more information about EINJ, please refer to ACPI Specification
- * version 4.0, section 17.5.
- *
- * Copyright 2009-2010 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,18 +17,16 @@
 #undef pr_fmt
 #define pr_fmt(fmt) "EINJ: " fmt
 
-#define SLEEP_UNIT_MIN		1000			/* 1ms */
-#define SLEEP_UNIT_MAX		5000			/* 5ms */
-/* Firmware should respond within 1 seconds */
+#define SLEEP_UNIT_MIN		1000			 
+#define SLEEP_UNIT_MAX		5000			 
+ 
 #define FIRMWARE_TIMEOUT	(1 * USEC_PER_SEC)
 #define ACPI5_VENDOR_BIT	BIT(31)
 #define MEM_ERROR_MASK		(ACPI_EINJ_MEMORY_CORRECTABLE | \
 				ACPI_EINJ_MEMORY_UNCORRECTABLE | \
 				ACPI_EINJ_MEMORY_FATAL)
 
-/*
- * ACPI version 5 provides a SET_ERROR_TYPE_WITH_ADDRESS action.
- */
+ 
 static int acpi5;
 
 struct set_error_type_with_address {
@@ -57,9 +44,7 @@ enum {
 	SETWA_FLAGS_PCIE_SBDF = 4,
 };
 
-/*
- * Vendor extensions for platform specific operations
- */
+ 
 struct vendor_error_type_extension {
 	u32	length;
 	u32	pcie_sbdf;
@@ -75,13 +60,7 @@ static u32 vendor_flags;
 static struct debugfs_blob_wrapper vendor_blob;
 static char vendor_dev[64];
 
-/*
- * Some BIOSes allow parameters to the SET_ERROR_TYPE entries in the
- * EINJ table through an unpublished extension. Use with caution as
- * most will ignore the parameter and make their own choice of address
- * for error injection.  This extension is used only if
- * param_extension module parameter is specified.
- */
+ 
 struct einj_parameter {
 	u64 type;
 	u64 reserved1;
@@ -129,11 +108,7 @@ static struct apei_exec_ins_type einj_ins_type[] = {
 	},
 };
 
-/*
- * Prevent EINJ interpreter to run simultaneously, because the
- * corresponding firmware implementation may not work properly when
- * invoked simultaneously.
- */
+ 
 static DEFINE_MUTEX(einj_mutex);
 
 static void *einj_param;
@@ -158,7 +133,7 @@ static int __einj_get_available_error_type(u32 *type)
 	return 0;
 }
 
-/* Get error injection capabilities of the platform */
+ 
 static int einj_get_available_error_type(u32 *type)
 {
 	int rc;
@@ -248,7 +223,7 @@ static void *einj_get_parameter_address(void)
 	return NULL;
 }
 
-/* do sanity check to trigger table */
+ 
 static int einj_check_trigger_header(struct acpi_einj_trigger *trigger_tab)
 {
 	if (trigger_tab->header_size != sizeof(struct acpi_einj_trigger))
@@ -284,7 +259,7 @@ static struct acpi_generic_address *einj_get_trigger_parameter_region(
 
 	return NULL;
 }
-/* Execute instructions in trigger error action table */
+ 
 static int __einj_error_trigger(u64 trigger_paddr, u32 type,
 				u64 param1, u64 param2)
 {
@@ -317,7 +292,7 @@ static int __einj_error_trigger(u64 trigger_paddr, u32 type,
 		goto out_rel_header;
 	}
 
-	/* No action structures in the TRIGGER_ERROR table, nothing to do */
+	 
 	if (!trigger_tab->entry_count)
 		goto out_rel_header;
 
@@ -350,12 +325,7 @@ static int __einj_error_trigger(u64 trigger_paddr, u32 type,
 	rc = apei_resources_sub(&trigger_resources, &einj_resources);
 	if (rc)
 		goto out_fini;
-	/*
-	 * Some firmware will access target address specified in
-	 * param1 to trigger the error when injecting memory error.
-	 * This will cause resource conflict with regular memory.  So
-	 * remove it from trigger table resources.
-	 */
+	 
 	if ((param_extension || acpi5) && (type & MEM_ERROR_MASK) && param2) {
 		struct apei_resources addr_resources;
 
@@ -494,10 +464,7 @@ static int __einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
 	else if (val == EINJ_STATUS_INVAL)
 		return -EINVAL;
 
-	/*
-	 * The error is injected into the platform successfully, then it needs
-	 * to trigger the error.
-	 */
+	 
 	rc = apei_exec_run(&ctx, ACPI_EINJ_GET_TRIGGER_TABLE);
 	if (rc)
 		return rc;
@@ -512,40 +479,32 @@ static int __einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
 	return rc;
 }
 
-/* Inject the specified hardware error */
+ 
 static int einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
 			     u64 param3, u64 param4)
 {
 	int rc;
 	u64 base_addr, size;
 
-	/* If user manually set "flags", make sure it is legal */
+	 
 	if (flags && (flags &
 		~(SETWA_FLAGS_APICID|SETWA_FLAGS_MEM|SETWA_FLAGS_PCIE_SBDF)))
 		return -EINVAL;
 
-	/*
-	 * We need extra sanity checks for memory errors.
-	 * Other types leap directly to injection.
-	 */
+	 
 
-	/* ensure param1/param2 existed */
+	 
 	if (!(param_extension || acpi5))
 		goto inject;
 
-	/* ensure injection is memory related */
+	 
 	if (type & ACPI5_VENDOR_BIT) {
 		if (vendor_flags != SETWA_FLAGS_MEM)
 			goto inject;
 	} else if (!(type & MEM_ERROR_MASK) && !(flags & SETWA_FLAGS_MEM))
 		goto inject;
 
-	/*
-	 * Disallow crazy address masks that give BIOS leeway to pick
-	 * injection address almost anywhere. Insist on page or
-	 * better granularity and that target address is normal RAM or
-	 * NVDIMM.
-	 */
+	 
 	base_addr = param1 & param2;
 	size = ~param2 + 1;
 
@@ -628,18 +587,15 @@ static int error_type_set(void *data, u64 val)
 	u32 available_error_type = 0;
 	u32 tval, vendor;
 
-	/* Only low 32 bits for error type are valid */
+	 
 	if (val & GENMASK_ULL(63, 32))
 		return -EINVAL;
 
-	/*
-	 * Vendor defined types have 0x80000000 bit set, and
-	 * are not enumerated by ACPI_EINJ_GET_ERROR_TYPE
-	 */
+	 
 	vendor = val & ACPI5_VENDOR_BIT;
 	tval = val & 0x7fffffff;
 
-	/* Only one error type can be specified */
+	 
 	if (tval & (tval - 1))
 		return -EINVAL;
 	if (!vendor) {

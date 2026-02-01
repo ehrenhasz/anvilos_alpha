@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Atmel Atmegaxx Capacitive Touch Button Driver
- *
- * Copyright (C) 2016 Google, inc.
- */
 
-/*
- * It's irrelevant that the HW used to develop captouch driver is based
- * on Atmega88PA part and uses QtouchADC parts for sensing touch.
- * Calling this driver "captouch" is an arbitrary way to distinguish
- * the protocol this driver supported by other atmel/qtouch drivers.
- *
- * Captouch driver supports a newer/different version of the I2C
- * registers/commands than the qt1070.c driver.
- * Don't let the similarity of the general driver structure fool you.
- *
- * For raw i2c access from userspace, use i2cset/i2cget
- * to poke at /dev/i2c-N devices.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -28,10 +12,10 @@
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 
-/* Maximum number of buttons supported */
+ 
 #define MAX_NUM_OF_BUTTONS		8
 
-/* Registers */
+ 
 #define REG_KEY1_THRESHOLD		0x02
 #define REG_KEY2_THRESHOLD		0x03
 #define REG_KEY3_THRESHOLD		0x04
@@ -57,14 +41,7 @@
 
 #define REG_KEY_STATE			0x3C
 
-/*
- * @i2c_client: I2C slave device client pointer
- * @input: Input device pointer
- * @num_btn: Number of buttons
- * @keycodes: map of button# to KeyCode
- * @prev_btn: Previous key state to detect button "press" or "release"
- * @xfer_buf: I2C transfer buffer
- */
+ 
 struct atmel_captouch_device {
 	struct i2c_client *client;
 	struct input_dev *input;
@@ -74,12 +51,7 @@ struct atmel_captouch_device {
 	u8 xfer_buf[8] ____cacheline_aligned;
 };
 
-/*
- * Read from I2C slave device
- * The protocol is that the client has to provide both the register address
- * and the length, and while reading back the device would prepend the data
- * with address and length for verification.
- */
+ 
 static int atmel_read(struct atmel_captouch_device *capdev,
 			 u8 reg, u8 *data, size_t len)
 {
@@ -120,11 +92,7 @@ static int atmel_read(struct atmel_captouch_device *capdev,
 	return 0;
 }
 
-/*
- * Handle interrupt and report the key changes to the input system.
- * Multi-touch can be supported; however, it really depends on whether
- * the device can multi-touch.
- */
+ 
 static irqreturn_t atmel_captouch_isr(int irq, void *data)
 {
 	struct atmel_captouch_device *capdev = data;
@@ -158,9 +126,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/*
- * Probe function to setup the device, input system and interrupt
- */
+ 
 static int atmel_captouch_probe(struct i2c_client *client)
 {
 	struct atmel_captouch_device *capdev;
@@ -252,7 +218,7 @@ static const struct of_device_id atmel_captouch_of_id[] = {
 	{
 		.compatible = "atmel,captouch",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atmel_captouch_of_id);
 
@@ -272,7 +238,7 @@ static struct i2c_driver atmel_captouch_driver = {
 };
 module_i2c_driver(atmel_captouch_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Hung-yu Wu <hywu@google.com>");
 MODULE_DESCRIPTION("Atmel ATmegaXX Capacitance Touch Sensor I2C Driver");
 MODULE_LICENSE("GPL v2");

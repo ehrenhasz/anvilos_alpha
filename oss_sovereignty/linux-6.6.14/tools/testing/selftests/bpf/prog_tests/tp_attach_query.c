@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 void serial_test_tp_attach_query(void)
@@ -57,9 +57,9 @@ void serial_test_tp_attach_query(void)
 			goto cleanup1;
 		saved_prog_ids[i] = prog_info.id;
 
-		pmu_fd[i] = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
-				    0 /* cpu 0 */, -1 /* group id */,
-				    0 /* flags */);
+		pmu_fd[i] = syscall(__NR_perf_event_open, &attr, -1  ,
+				    0  , -1  ,
+				    0  );
 		if (CHECK(pmu_fd[i] < 0, "perf_event_open", "err %d errno %d\n",
 			  pmu_fd[i], errno))
 			goto cleanup2;
@@ -69,7 +69,7 @@ void serial_test_tp_attach_query(void)
 			goto cleanup3;
 
 		if (i == 0) {
-			/* check NULL prog array query */
+			 
 			query->ids_len = num_progs;
 			err = ioctl(pmu_fd[i], PERF_EVENT_IOC_QUERY_BPF, query);
 			if (CHECK(err || query->prog_cnt != 0,
@@ -85,7 +85,7 @@ void serial_test_tp_attach_query(void)
 			goto cleanup3;
 
 		if (i == 1) {
-			/* try to get # of programs only */
+			 
 			query->ids_len = 0;
 			err = ioctl(pmu_fd[i], PERF_EVENT_IOC_QUERY_BPF, query);
 			if (CHECK(err || query->prog_cnt != 2,
@@ -94,8 +94,8 @@ void serial_test_tp_attach_query(void)
 				  err, errno, query->prog_cnt))
 				goto cleanup3;
 
-			/* try a few negative tests */
-			/* invalid query pointer */
+			 
+			 
 			err = ioctl(pmu_fd[i], PERF_EVENT_IOC_QUERY_BPF,
 				    (struct perf_event_query_bpf *)0x1);
 			if (CHECK(!err || errno != EFAULT,
@@ -103,7 +103,7 @@ void serial_test_tp_attach_query(void)
 				  "err %d errno %d\n", err, errno))
 				goto cleanup3;
 
-			/* no enough space */
+			 
 			query->ids_len = 1;
 			err = ioctl(pmu_fd[i], PERF_EVENT_IOC_QUERY_BPF, query);
 			if (CHECK(!err || errno != ENOSPC || query->prog_cnt != 2,

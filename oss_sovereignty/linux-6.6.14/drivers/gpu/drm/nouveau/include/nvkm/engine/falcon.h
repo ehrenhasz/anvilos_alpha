@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_FLCNEN_H__
 #define __NVKM_FLCNEN_H__
 #define nvkm_falcon(p) container_of((p), struct nvkm_falcon, engine)

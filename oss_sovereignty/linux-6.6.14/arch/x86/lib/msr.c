@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/export.h>
 #include <linux/percpu.h>
 #include <linux/preempt.h>
@@ -26,16 +26,7 @@ void msrs_free(struct msr *msrs)
 }
 EXPORT_SYMBOL(msrs_free);
 
-/**
- * msr_read - Read an MSR with error handling
- * @msr: MSR to read
- * @m: value to read into
- *
- * It returns read data only on success, otherwise it doesn't change the output
- * argument @m.
- *
- * Return: %0 for success, otherwise an error code
- */
+ 
 static int msr_read(u32 msr, struct msr *m)
 {
 	int err;
@@ -48,14 +39,7 @@ static int msr_read(u32 msr, struct msr *m)
 	return err;
 }
 
-/**
- * msr_write - Write an MSR with error handling
- *
- * @msr: MSR to write
- * @m: value to write
- *
- * Return: %0 for success, otherwise an error code
- */
+ 
 static int msr_write(u32 msr, struct msr *m)
 {
 	return wrmsrl_safe(msr, m->q);
@@ -89,31 +73,13 @@ static inline int __flip_bit(u32 msr, u8 bit, bool set)
 	return 1;
 }
 
-/**
- * msr_set_bit - Set @bit in a MSR @msr.
- * @msr: MSR to write
- * @bit: bit number to set
- *
- * Return:
- * * < 0: An error was encountered.
- * * = 0: Bit was already set.
- * * > 0: Hardware accepted the MSR write.
- */
+ 
 int msr_set_bit(u32 msr, u8 bit)
 {
 	return __flip_bit(msr, bit, true);
 }
 
-/**
- * msr_clear_bit - Clear @bit in a MSR @msr.
- * @msr: MSR to write
- * @bit: bit number to clear
- *
- * Return:
- * * < 0: An error was encountered.
- * * = 0: Bit was already cleared.
- * * > 0: Hardware accepted the MSR write.
- */
+ 
 int msr_clear_bit(u32 msr, u8 bit)
 {
 	return __flip_bit(msr, bit, false);

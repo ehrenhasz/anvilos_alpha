@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI TDM Control
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <sound/pcm_params.h>
@@ -19,12 +19,12 @@
 
 struct mtk_afe_tdm_priv {
 	unsigned int id;
-	unsigned int rate; /* for determine which apll to use */
+	unsigned int rate;  
 	unsigned int bck_invert;
 	unsigned int lck_invert;
 	unsigned int lrck_width;
 	unsigned int mclk_id;
-	unsigned int mclk_multiple; /* according to sample rate */
+	unsigned int mclk_multiple;  
 	unsigned int mclk_rate;
 	unsigned int mclk_apll;
 	unsigned int tdm_mode;
@@ -151,8 +151,8 @@ static int mtk_tdm_mck_en_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* dai component */
-/* tdm virtual mux to output widget */
+ 
+ 
 static const char * const tdm_mux_map[] = {
 	"Normal", "Dummy_Widget",
 };
@@ -178,7 +178,7 @@ static const struct snd_soc_dapm_widget mtk_dai_tdm_widgets[] = {
 			      ETDM_IN1_CON0, ETDM_IN1_CON0_REG_ETDM_IN_EN_SFT,
 			      0, mtk_tdm_en_event,
 			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-	/* tdm hd en */
+	 
 	SND_SOC_DAPM_SUPPLY_S(TDM_HD_EN_W_NAME, SUPPLY_SEQ_TDM_HD_EN,
 			      ETDM_IN1_CON2, ETDM_IN1_CON2_REG_CLOCK_SOURCE_SEL_SFT,
 			      0, NULL,
@@ -219,7 +219,7 @@ static int mtk_afe_tdm_mclk_apll_connect(struct snd_soc_dapm_widget *source,
 	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
 	int cur_apll;
 
-	/* which apll */
+	 
 	cur_apll = mt8186_get_apll_by_name(afe, source->name);
 
 	return (tdm_priv->mclk_apll == cur_apll) ? 1 : 0;
@@ -250,16 +250,16 @@ static int mtk_afe_tdm_apll_connect(struct snd_soc_dapm_widget *source,
 	int cur_apll;
 	int tdm_need_apll;
 
-	/* which apll */
+	 
 	cur_apll = mt8186_get_apll_by_name(afe, source->name);
 
-	/* choose APLL from tdm rate */
+	 
 	tdm_need_apll = mt8186_get_apll_by_rate(afe, tdm_priv->rate);
 
 	return (tdm_need_apll == cur_apll) ? 1 : 0;
 }
 
-/* low jitter control */
+ 
 static const char * const mt8186_tdm_hd_str[] = {
 	"Normal", "Low_Jitter"
 };
@@ -326,12 +326,12 @@ static const struct snd_soc_dapm_route mtk_dai_tdm_routes[] = {
 	{TDM_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_tdm_mclk_apll_connect},
 	{TDM_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_tdm_mclk_apll_connect},
 
-	/* allow tdm on without codec on */
+	 
 	{"TDM IN", NULL, "TDM_In_Mux"},
 	{"TDM_In_Mux", "Dummy_Widget", "TDM_DUMMY_IN"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_tdm_cal_mclk(struct mtk_base_afe *afe,
 				struct mtk_afe_tdm_priv *tdm_priv,
 				int freq)
@@ -390,37 +390,37 @@ static int mtk_dai_tdm_hw_params(struct snd_pcm_substream *substream,
 	tran_rate = mt8186_rate_transform(afe->dev, rate, dai->id);
 	tran_relatch_rate = mt8186_tdm_relatch_rate_transform(afe->dev, rate);
 
-	/* calculate mclk_rate, if not set explicitly */
+	 
 	if (!tdm_priv->mclk_rate) {
 		tdm_priv->mclk_rate = rate * tdm_priv->mclk_multiple;
 		mtk_dai_tdm_cal_mclk(afe, tdm_priv, tdm_priv->mclk_rate);
 	}
 
-	/* ETDM_IN1_CON0 */
+	 
 	tdm_con |= slave_mode << ETDM_IN1_CON0_REG_SLAVE_MODE_SFT;
 	tdm_con |= tdm_mode << ETDM_IN1_CON0_REG_FMT_SFT;
 	tdm_con |= (bit_width - 1) << ETDM_IN1_CON0_REG_BIT_LENGTH_SFT;
 	tdm_con |= (bit_width - 1) << ETDM_IN1_CON0_REG_WORD_LENGTH_SFT;
 	tdm_con |= (tdm_channels - 1) << ETDM_IN1_CON0_REG_CH_NUM_SFT;
-	/* need to disable sync mode otherwise this may cause latch data error */
+	 
 	tdm_con |= 0 << ETDM_IN1_CON0_REG_SYNC_MODE_SFT;
-	/* relatch 1x en clock fix to h26m */
+	 
 	tdm_con |= 0 << ETDM_IN1_CON0_REG_RELATCH_1X_EN_SEL_DOMAIN_SFT;
 	regmap_update_bits(afe->regmap, ETDM_IN1_CON0, ETDM_IN_CON0_CTRL_MASK, tdm_con);
 
-	/* ETDM_IN1_CON1 */
+	 
 	tdm_con = 0;
 	tdm_con |= 0 << ETDM_IN1_CON1_REG_LRCK_AUTO_MODE_SFT;
 	tdm_con |= 1 << ETDM_IN1_CON1_PINMUX_MCLK_CTRL_OE_SFT;
 	tdm_con |= (lrck_width - 1) << ETDM_IN1_CON1_REG_LRCK_WIDTH_SFT;
 	regmap_update_bits(afe->regmap, ETDM_IN1_CON1, ETDM_IN_CON1_CTRL_MASK, tdm_con);
 
-	/* ETDM_IN1_CON3 */
+	 
 	tdm_con = 0;
 	tdm_con = ETDM_IN_CON3_FS(tran_rate);
 	regmap_update_bits(afe->regmap, ETDM_IN1_CON3, ETDM_IN_CON3_CTRL_MASK, tdm_con);
 
-	/* ETDM_IN1_CON4 */
+	 
 	tdm_con = 0;
 	tdm_con = ETDM_IN_CON4_FS(tran_relatch_rate);
 	if (slave_mode) {
@@ -436,7 +436,7 @@ static int mtk_dai_tdm_hw_params(struct snd_pcm_substream *substream,
 	}
 	regmap_update_bits(afe->regmap, ETDM_IN1_CON4, ETDM_IN_CON4_CTRL_MASK, tdm_con);
 
-	/* ETDM_IN1_CON2 */
+	 
 	tdm_con = 0;
 	if (data_mode == TDM_DATA_MULTI_PIN) {
 		tdm_con |= ETDM_IN_CON2_MULTI_IP_2CH_MODE;
@@ -444,7 +444,7 @@ static int mtk_dai_tdm_hw_params(struct snd_pcm_substream *substream,
 	}
 	regmap_update_bits(afe->regmap, ETDM_IN1_CON2, ETDM_IN_CON2_CTRL_MASK, tdm_con);
 
-	/* ETDM_IN1_CON8 */
+	 
 	tdm_con = 0;
 	if (slave_mode) {
 		tdm_con |= 1 << ETDM_IN1_CON8_REG_ETDM_USE_AFIFO_SFT;
@@ -481,7 +481,7 @@ static int mtk_dai_tdm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct mt8186_afe_private *afe_priv = afe->platform_priv;
 	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai->id];
 
-	/* DAI mode*/
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		tdm_priv->tdm_mode = TDM_IN_I2S;
@@ -508,7 +508,7 @@ static int mtk_dai_tdm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* DAI clock inversion*/
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		tdm_priv->bck_invert = TDM_BCK_NON_INV;
@@ -571,7 +571,7 @@ static const struct snd_soc_dai_ops mtk_dai_tdm_ops = {
 	.set_tdm_slot = mtk_dai_tdm_set_tdm_slot,
 };
 
-/* dai driver */
+ 
 #define MTK_TDM_RATES (SNDRV_PCM_RATE_8000_48000 |\
 		       SNDRV_PCM_RATE_88200 |\
 		       SNDRV_PCM_RATE_96000 |\

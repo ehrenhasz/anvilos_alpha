@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive Public Key Algo acceleration driver
- *
- * Copyright (c) 2022 StarFive Technology
- */
+
+ 
 
 #include <linux/crypto.h>
 #include <linux/delay.h>
@@ -28,13 +24,13 @@
 #define STARFIVE_PKA_CAER_OFFSET	(STARFIVE_PKA_REGS_OFFSET + 0x108)
 #define STARFIVE_PKA_CANR_OFFSET	(STARFIVE_PKA_REGS_OFFSET + 0x208)
 
-// R^2 mod N and N0'
+
 #define CRYPTO_CMD_PRE			0x0
-// A * R mod N   ==> A
+
 #define CRYPTO_CMD_ARN			0x5
-// A * E * R mod N ==> A
+
 #define CRYPTO_CMD_AERN			0x6
-// A * A * R mod N ==> A
+
 #define CRYPTO_CMD_AARN			0x7
 
 #define STARFIVE_RSA_MAX_KEYSZ		256
@@ -160,7 +156,7 @@ static int starfive_rsa_montgomery_form(struct starfive_cryp_ctx *ctx,
 		for (loop = 0; loop <= count; loop++)
 			writel(in[count - loop], cryp->base + STARFIVE_PKA_CAER_OFFSET + loop * 4);
 
-		/*pad with 0 up to opsize*/
+		 
 		for (loop = count + 1; loop <= opsize; loop++)
 			writel(0, cryp->base + STARFIVE_PKA_CAER_OFFSET + loop * 4);
 
@@ -380,7 +376,7 @@ static int starfive_rsa_set_n(struct starfive_rsa_key *rsa_key,
 	rsa_key->key_sz = vlen;
 	bitslen = rsa_key->key_sz << 3;
 
-	/* check valid key size */
+	 
 	if (bitslen & 0x1f)
 		return -EINVAL;
 
@@ -486,7 +482,7 @@ static int starfive_rsa_setkey(struct crypto_akcipher *tfm, const void *key,
 
 	starfive_rsa_free_key(rsa_key);
 
-	/* Use fallback for mod > 256 + 1 byte prefix */
+	 
 	if (raw_key.n_sz > STARFIVE_RSA_MAX_KEYSZ + 1)
 		return 0;
 

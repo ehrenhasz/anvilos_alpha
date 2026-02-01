@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface(SCMI) based hwmon sensor driver
- *
- * Copyright (C) 2018-2021 ARM Ltd.
- * Sudeep Holla <sudeep.holla@arm.com>
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/module.h>
@@ -203,11 +198,7 @@ static int scmi_thermal_sensor_register(struct device *dev,
 	th_sensor->ph = ph;
 	th_sensor->info = sensor;
 
-	/*
-	 * Try to register a temperature sensor with the Thermal Framework:
-	 * skip sensors not defined as part of any thermal zone (-ENODEV) but
-	 * report any other errors related to misconfigured zones/sensors.
-	 */
+	 
 	tzd = devm_thermal_of_zone_register(dev, th_sensor->info->id, th_sensor,
 					    &scmi_hwmon_thermal_ops);
 	if (IS_ERR(tzd)) {
@@ -339,10 +330,7 @@ static int scmi_hwmon_probe(struct scmi_device *sdev)
 		if (!sensor)
 			continue;
 
-		/*
-		 * Warn on any misconfiguration related to thermal zones but
-		 * bail out of probing only on memory errors.
-		 */
+		 
 		ret = scmi_thermal_sensor_register(dev, ph, sensor);
 		if (ret) {
 			if (ret == -ENOMEM)

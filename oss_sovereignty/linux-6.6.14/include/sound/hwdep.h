@@ -1,18 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __SOUND_HWDEP_H
 #define __SOUND_HWDEP_H
 
-/*
- *  Hardware dependent layer 
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+ 
 
 #include <sound/asound.h>
 #include <linux/poll.h>
 
 struct snd_hwdep;
 
-/* hwdep file ops; all ops can be NULL */
+ 
 struct snd_hwdep_ops {
 	long long (*llseek)(struct snd_hwdep *hw, struct file *file,
 			    long long offset, int orig);
@@ -56,12 +53,12 @@ struct snd_hwdep {
 	struct device *dev;
 
 	struct mutex open_mutex;
-	int used;			/* reference counter */
-	unsigned int dsp_loaded;	/* bit fields of loaded dsp indices */
-	unsigned int exclusive:1;	/* exclusive access mode */
+	int used;			 
+	unsigned int dsp_loaded;	 
+	unsigned int exclusive:1;	 
 };
 
 extern int snd_hwdep_new(struct snd_card *card, char *id, int device,
 			 struct snd_hwdep **rhwdep);
 
-#endif /* __SOUND_HWDEP_H */
+#endif  

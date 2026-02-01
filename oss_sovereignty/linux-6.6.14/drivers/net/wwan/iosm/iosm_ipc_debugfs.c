@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2021 Intel Corporation.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/wwan.h>

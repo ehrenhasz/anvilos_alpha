@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the TI TMAG5273 Low-Power Linear 3D Hall-Effect Sensor
- *
- * Copyright (C) 2022 WolfVision GmbH
- *
- * Author: Gerald Loacker <gerald.loacker@wolfvision.net>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -52,13 +46,10 @@
 #define TMAG5273_AUTOSLEEP_DELAY_MS	 5000
 #define TMAG5273_MAX_AVERAGE             32
 
-/*
- * bits in the TMAG5273_MANUFACTURER_ID_LSB / MSB register
- * 16-bit unique manufacturer ID 0x49 / 0x54 = "TI"
- */
+ 
 #define TMAG5273_MANUFACTURER_ID	 0x5449
 
-/* bits in the TMAG5273_DEVICE_CONFIG_1 register */
+ 
 #define TMAG5273_AVG_MODE_MASK		 GENMASK(4, 2)
 #define TMAG5273_AVG_1_MODE		 FIELD_PREP(TMAG5273_AVG_MODE_MASK, 0)
 #define TMAG5273_AVG_2_MODE		 FIELD_PREP(TMAG5273_AVG_MODE_MASK, 1)
@@ -67,18 +58,18 @@
 #define TMAG5273_AVG_16_MODE		 FIELD_PREP(TMAG5273_AVG_MODE_MASK, 4)
 #define TMAG5273_AVG_32_MODE		 FIELD_PREP(TMAG5273_AVG_MODE_MASK, 5)
 
-/* bits in the TMAG5273_DEVICE_CONFIG_2 register */
+ 
 #define TMAG5273_OP_MODE_MASK		 GENMASK(1, 0)
 #define TMAG5273_OP_MODE_STANDBY	 FIELD_PREP(TMAG5273_OP_MODE_MASK, 0)
 #define TMAG5273_OP_MODE_SLEEP		 FIELD_PREP(TMAG5273_OP_MODE_MASK, 1)
 #define TMAG5273_OP_MODE_CONT		 FIELD_PREP(TMAG5273_OP_MODE_MASK, 2)
 #define TMAG5273_OP_MODE_WAKEUP		 FIELD_PREP(TMAG5273_OP_MODE_MASK, 3)
 
-/* bits in the TMAG5273_SENSOR_CONFIG_1 register */
+ 
 #define TMAG5273_MAG_CH_EN_MASK		 GENMASK(7, 4)
 #define TMAG5273_MAG_CH_EN_X_Y_Z	 7
 
-/* bits in the TMAG5273_SENSOR_CONFIG_2 register */
+ 
 #define TMAG5273_Z_RANGE_MASK		 BIT(0)
 #define TMAG5273_X_Y_RANGE_MASK		 BIT(1)
 #define TMAG5273_ANGLE_EN_MASK		 GENMASK(3, 2)
@@ -87,13 +78,13 @@
 #define TMAG5273_ANGLE_EN_Y_Z		 2
 #define TMAG5273_ANGLE_EN_X_Z		 3
 
-/* bits in the TMAG5273_T_CONFIG register */
+ 
 #define TMAG5273_T_CH_EN		 BIT(0)
 
-/* bits in the TMAG5273_DEVICE_ID register */
+ 
 #define TMAG5273_VERSION_MASK		 GENMASK(1, 0)
 
-/* bits in the TMAG5273_CONV_STATUS register */
+ 
 #define TMAG5273_CONV_STATUS_COMPLETE	 BIT(0)
 
 enum tmag5273_channels {
@@ -111,7 +102,7 @@ enum tmag5273_scale_index {
 	MAGN_RANGE_NUM
 };
 
-/* state container for the TMAG5273 driver */
+ 
 struct tmag5273_data {
 	struct device *dev;
 	unsigned int devid;
@@ -124,30 +115,18 @@ struct tmag5273_data {
 	struct regmap *map;
 	struct regulator *vcc;
 
-	/*
-	 * Locks the sensor for exclusive use during a measurement (which
-	 * involves several register transactions so the regmap lock is not
-	 * enough) so that measurements get serialized in a
-	 * first-come-first-serve manner.
-	 */
+	 
 	struct mutex lock;
 };
 
 static const char *const tmag5273_angle_names[] = { "off", "x-y", "y-z", "x-z" };
 
-/*
- * Averaging enables additional sampling of the sensor data to reduce the noise
- * effect, but also increases conversion time.
- */
+ 
 static const unsigned int tmag5273_avg_table[] = {
 	1, 2, 4, 8, 16, 32,
 };
 
-/*
- * Magnetic resolution in Gauss for different TMAG5273 versions.
- * Scale[Gauss] = Range[mT] * 1000 / 2^15 * 10, (1 mT = 10 Gauss)
- * Only version 1 and 2 are valid, version 0 and 3 are reserved.
- */
+ 
 static const struct iio_val_int_plus_micro tmag5273_scale[][MAGN_RANGE_NUM] = {
 	{ { 0,     0 }, { 0,     0 } },
 	{ { 0, 12200 }, { 0, 24400 } },
@@ -164,12 +143,7 @@ static int tmag5273_get_measure(struct tmag5273_data *data, s16 *t, s16 *x,
 
 	mutex_lock(&data->lock);
 
-	/*
-	 * Max. conversion time is 2425 us in 32x averaging mode for all three
-	 * channels. Since we are in continuous measurement mode, a measurement
-	 * may already be there, so poll for completed measurement with
-	 * timeout.
-	 */
+	 
 	ret = regmap_read_poll_timeout(data->map, TMAG5273_CONV_STATUS, status,
 				       status & TMAG5273_CONV_STATUS_COMPLETE,
 				       100, 10000);
@@ -191,11 +165,7 @@ static int tmag5273_get_measure(struct tmag5273_data *data, s16 *t, s16 *x,
 			       &reg_data[0], sizeof(reg_data[0]));
 	if (ret)
 		goto out_unlock;
-	/*
-	 * angle has 9 bits integer value and 4 bits fractional part
-	 * 15 14 13 12 11 10 9  8  7  6  5  4  3  2  1  0
-	 * 0  0  0  a  a  a  a  a  a  a  a  a  f  f  f  f
-	 */
+	 
 	*angle = be16_to_cpu(reg_data[0]);
 
 	ret = regmap_read(data->map, TMAG5273_MAGNITUDE_RESULT, &val);
@@ -328,25 +298,18 @@ static int tmag5273_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_TEMP:
-			/*
-			 * Convert device specific value to millicelsius.
-			 * Resolution from the sensor is 60.1 LSB/celsius and
-			 * the reference value at 25 celsius is 17508 LSBs.
-			 */
+			 
 			*val = 10000;
 			*val2 = 601;
 			return IIO_VAL_FRACTIONAL;
 		case IIO_MAGN:
-			/* Magnetic resolution in uT */
+			 
 			*val = 0;
 			*val2 = tmag5273_scale[data->version]
 					      [data->scale_index].micro;
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_ANGL:
-			/*
-			 * Angle is in degrees and has four fractional bits,
-			 * therefore use 1/16 * pi/180 to convert to radians.
-			 */
+			 
 			*val = 1000;
 			*val2 = 916732;
 			return IIO_VAL_FRACTIONAL;
@@ -516,12 +479,9 @@ static void tmag5273_wake_up(struct tmag5273_data *data)
 {
 	int val;
 
-	/* Wake up the chip by sending a dummy I2C command */
+	 
 	regmap_read(data->map, TMAG5273_DEVICE_ID, &val);
-	/*
-	 * Time to go to stand-by mode from sleep mode is 50us
-	 * typically, during this time no I2C access is possible.
-	 */
+	 
 	usleep_range(80, 200);
 }
 
@@ -574,21 +534,13 @@ static int tmag5273_check_device_id(struct tmag5273_data *data)
 
 	switch (data->devid) {
 	case TMAG5273_MANUFACTURER_ID:
-		/*
-		 * The device name matches the orderable part number. 'x' stands
-		 * for A, B, C or D devices, which have different I2C addresses.
-		 * Versions 1 or 2 (0 and 3 is reserved) stands for different
-		 * magnetic strengths.
-		 */
+		 
 		snprintf(data->name, sizeof(data->name), "tmag5273x%1u", data->version);
 		if (data->version < 1 || data->version > 2)
 			dev_warn(data->dev, "Unsupported device %s\n", data->name);
 		return 0;
 	default:
-		/*
-		 * Only print warning in case of unknown device ID to allow
-		 * fallback compatible in device tree.
-		 */
+		 
 		dev_warn(data->dev, "Unknown device ID 0x%x\n", data->devid);
 		return 0;
 	}
@@ -635,17 +587,7 @@ static int tmag5273_probe(struct i2c_client *i2c)
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to power on device\n");
 
-	/*
-	 * Register powerdown deferred callback which suspends the chip
-	 * after module unloaded.
-	 *
-	 * TMAG5273 should be in SUSPEND mode in the two cases:
-	 * 1) When driver is loaded, but we do not have any data or
-	 *    configuration requests to it (we are solving it using
-	 *    autosuspend feature).
-	 * 2) When driver is unloaded and device is not used (devm action is
-	 *    used in this case).
-	 */
+	 
 	ret = devm_add_action_or_reset(dev, tmag5273_power_down, data);
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to add powerdown action\n");
@@ -718,13 +660,13 @@ static DEFINE_RUNTIME_DEV_PM_OPS(tmag5273_pm_ops,
 
 static const struct i2c_device_id tmag5273_id[] = {
 	{ "tmag5273" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, tmag5273_id);
 
 static const struct of_device_id tmag5273_of_match[] = {
 	{ .compatible = "ti,tmag5273" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tmag5273_of_match);
 

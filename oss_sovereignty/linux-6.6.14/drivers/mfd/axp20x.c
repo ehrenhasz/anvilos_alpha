@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MFD core driver for the X-Powers' Power Management ICs
- *
- * AXP20x typically comprises an adaptive USB-Compatible PWM charger, BUCK DC-DC
- * converters, LDOs, multiple 12-bit ADCs of voltage, current and temperature
- * as well as configurable GPIOs.
- *
- * This file contains the interface independent core functions.
- *
- * Copyright (C) 2014 Carlo Caione
- *
- * Author: Carlo Caione <carlo@caione.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -124,7 +112,7 @@ static const struct regmap_access_table axp192_volatile_table = {
 	.n_yes_ranges	= ARRAY_SIZE(axp192_volatile_ranges),
 };
 
-/* AXP22x ranges are shared with the AXP809, as they cover the same range */
+ 
 static const struct regmap_range axp22x_writeable_ranges[] = {
 	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ5_STATE),
 	regmap_reg_range(AXP20X_CHRG_CTRL1, AXP22X_CHRG_CTRL3),
@@ -149,7 +137,7 @@ static const struct regmap_access_table axp22x_volatile_table = {
 	.n_yes_ranges	= ARRAY_SIZE(axp22x_volatile_ranges),
 };
 
-/* AXP288 ranges are shared with the AXP803, as they cover the same range */
+ 
 static const struct regmap_range axp288_writeable_ranges[] = {
 	regmap_reg_range(AXP288_POWER_REASON, AXP288_POWER_REASON),
 	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ6_STATE),
@@ -286,7 +274,7 @@ static const struct resource axp22x_usb_power_supply_resources[] = {
 	DEFINE_RES_IRQ_NAMED(AXP22X_IRQ_VBUS_REMOVAL, "VBUS_REMOVAL"),
 };
 
-/* AXP803 and AXP813/AXP818 share the same interrupts */
+ 
 static const struct resource axp803_usb_power_supply_resources[] = {
 	DEFINE_RES_IRQ_NAMED(AXP803_IRQ_VBUS_PLUGIN, "VBUS_PLUGIN"),
 	DEFINE_RES_IRQ_NAMED(AXP803_IRQ_VBUS_REMOVAL, "VBUS_REMOVAL"),
@@ -535,7 +523,7 @@ static const struct regmap_irq axp22x_regmap_irqs[] = {
 	INIT_REGMAP_IRQ(AXP22X, GPIO0_INPUT,		4, 0),
 };
 
-/* some IRQs are compatible with axp20x models */
+ 
 static const struct regmap_irq axp288_regmap_irqs[] = {
 	INIT_REGMAP_IRQ(AXP288, VBUS_FALL,              0, 2),
 	INIT_REGMAP_IRQ(AXP288, VBUS_RISE,              0, 3),
@@ -706,11 +694,11 @@ static const struct regmap_irq_chip axp152_regmap_irq_chip = {
 static unsigned int axp192_get_irq_reg(struct regmap_irq_chip_data *data,
 				       unsigned int base, int index)
 {
-	/* linear mapping for IRQ1 to IRQ4 */
+	 
 	if (index < 4)
 		return base + index;
 
-	/* handle IRQ5 separately */
+	 
 	if (base == AXP192_IRQ1_EN)
 		return AXP192_IRQ5_EN;
 
@@ -1099,7 +1087,7 @@ static const struct mfd_cell axp15060_cells[] = {
 	},
 };
 
-/* For boards that don't have IRQ line connected to SOC. */
+ 
 static const struct mfd_cell axp_regulator_only_cells[] = {
 	{
 		.name		= "axp20x-regulator",
@@ -1122,7 +1110,7 @@ static int axp20x_power_off(struct sys_off_data *data)
 
 	regmap_write(axp20x->regmap, shutdown_reg, AXP20X_OFF);
 
-	/* Give capacitors etc. time to drain to avoid kernel panic msg. */
+	 
 	mdelay(500);
 
 	return NOTIFY_DONE;
@@ -1202,10 +1190,7 @@ int axp20x_match_device(struct axp20x_dev *axp20x)
 		axp20x->regmap_irq_chip = &axp803_regmap_irq_chip;
 		break;
 	case AXP806_ID:
-		/*
-		 * Don't register the power key part if in slave mode or
-		 * if there is no interrupt line.
-		 */
+		 
 		if (of_property_read_bool(axp20x->dev->of_node,
 					  "x-powers,self-working-mode") &&
 		    axp20x->irq > 0) {
@@ -1228,27 +1213,11 @@ int axp20x_match_device(struct axp20x_dev *axp20x)
 		axp20x->nr_cells = ARRAY_SIZE(axp813_cells);
 		axp20x->cells = axp813_cells;
 		axp20x->regmap_cfg = &axp288_regmap_config;
-		/*
-		 * The IRQ table given in the datasheet is incorrect.
-		 * In IRQ enable/status registers 1, there are separate
-		 * IRQs for ACIN and VBUS, instead of bits [7:5] being
-		 * the same as bits [4:2]. So it shares the same IRQs
-		 * as the AXP803, rather than the AXP288.
-		 */
+		 
 		axp20x->regmap_irq_chip = &axp803_regmap_irq_chip;
 		break;
 	case AXP15060_ID:
-		/*
-		 * Don't register the power key part if there is no interrupt
-		 * line.
-		 *
-		 * Since most use cases of AXP PMICs are Allwinner SOCs, board
-		 * designers follow Allwinner's reference design and connects
-		 * IRQ line to SOC, there's no need for those variants to deal
-		 * with cases that IRQ isn't connected. However, AXP15660 is
-		 * used by some other vendors' SOCs that didn't connect IRQ
-		 * line, we need to deal with this case.
-		 */
+		 
 		if (axp20x->irq > 0) {
 			axp20x->nr_cells = ARRAY_SIZE(axp15060_cells);
 			axp20x->cells = axp15060_cells;
@@ -1274,24 +1243,7 @@ int axp20x_device_probe(struct axp20x_dev *axp20x)
 {
 	int ret;
 
-	/*
-	 * The AXP806 supports either master/standalone or slave mode.
-	 * Slave mode allows sharing the serial bus, even with multiple
-	 * AXP806 which all have the same hardware address.
-	 *
-	 * This is done with extra "serial interface address extension",
-	 * or AXP806_BUS_ADDR_EXT, and "register address extension", or
-	 * AXP806_REG_ADDR_EXT, registers. The former is read-only, with
-	 * 1 bit customizable at the factory, and 1 bit depending on the
-	 * state of an external pin. The latter is writable. The device
-	 * will only respond to operations to its other registers when
-	 * the these device addressing bits (in the upper 4 bits of the
-	 * registers) match.
-	 *
-	 * By default we support an AXP806 chained to an AXP809 in slave
-	 * mode. Boards which use an AXP806 in master mode can set the
-	 * property "x-powers,master-mode" to override the default.
-	 */
+	 
 	if (axp20x->variant == AXP806_ID) {
 		if (of_property_read_bool(axp20x->dev->of_node,
 					  "x-powers,master-mode") ||
@@ -1304,7 +1256,7 @@ int axp20x_device_probe(struct axp20x_dev *axp20x)
 				     AXP806_REG_ADDR_EXT_ADDR_SLAVE_MODE);
 	}
 
-	/* Only if there is an interrupt line connected towards the CPU. */
+	 
 	if (axp20x->irq > 0) {
 		ret = regmap_add_irq_chip(axp20x->regmap, axp20x->irq,
 				IRQF_ONESHOT | IRQF_SHARED | axp20x->irq_flags,

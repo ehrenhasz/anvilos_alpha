@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * configfs.c - Implementation of configfs interface to the driver stack
- *
- * Copyright (C) 2013-2015 Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>

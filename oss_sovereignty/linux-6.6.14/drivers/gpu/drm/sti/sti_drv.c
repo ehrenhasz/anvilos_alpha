@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/dma-mapping.h>
@@ -116,11 +113,7 @@ static void sti_mode_config_init(struct drm_device *dev)
 	dev->mode_config.min_width = 0;
 	dev->mode_config.min_height = 0;
 
-	/*
-	 * set max width and height as default value.
-	 * this value would be used to check framebuffer size limitation
-	 * at drm_mode_addfb().
-	 */
+	 
 	dev->mode_config.max_width = STI_MAX_FB_WIDTH;
 	dev->mode_config.max_height = STI_MAX_FB_HEIGHT;
 
@@ -255,7 +248,7 @@ static void sti_platform_remove(struct platform_device *pdev)
 
 static const struct of_device_id sti_dt_ids[] = {
 	{ .compatible = "st,sti-display-subsystem", },
-	{ /* end node */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, sti_dt_ids);
 

@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #ifndef BRCMFMAC_CFG80211_H
 #define BRCMFMAC_CFG80211_H
 
-/* for brcmu_d11inf */
+ 
 #include <brcmu_d11.h>
 
 #include "core.h"
@@ -18,16 +16,16 @@
 #define WL_NUM_SCAN_MAX			10
 #define WL_TLV_INFO_MAX			1024
 #define WL_BSS_INFO_MAX			2048
-#define WL_ASSOC_INFO_MAX		512	/* assoc related fil max buf */
+#define WL_ASSOC_INFO_MAX		512	 
 #define WL_EXTRA_BUF_MAX		2048
 #define WL_ROAM_TRIGGER_LEVEL		-75
 #define WL_ROAM_DELTA			20
 
-/* WME Access Category Indices (ACIs) */
-#define AC_BE			0	/* Best Effort */
-#define AC_BK			1	/* Background */
-#define AC_VI			2	/* Video */
-#define AC_VO			3	/* Voice */
+ 
+#define AC_BE			0	 
+#define AC_BK			1	 
+#define AC_VI			2	 
+#define AC_VO			3	 
 #define EDCF_AC_COUNT		4
 #define MAX_8021D_PRIO		8
 
@@ -40,38 +38,36 @@
 #define EDCF_AIFSN_MAX			15
 #define EDCF_ECWMAX_MASK		0xf0
 
-/* Keep BRCMF_ESCAN_BUF_SIZE below 64K (65536). Allocing over 64K can be
- * problematic on some systems and should be avoided.
- */
+ 
 #define BRCMF_ESCAN_BUF_SIZE		65000
-#define BRCMF_ESCAN_TIMER_INTERVAL_MS	10000	/* E-Scan timeout */
+#define BRCMF_ESCAN_TIMER_INTERVAL_MS	10000	 
 
 #define WL_ESCAN_ACTION_START		1
 #define WL_ESCAN_ACTION_CONTINUE	2
 #define WL_ESCAN_ACTION_ABORT		3
 
-#define WL_AUTH_SHARED_KEY		1	/* d11 shared authentication */
+#define WL_AUTH_SHARED_KEY		1	 
 #define IE_MAX_LEN			512
 
-/* IE TLV processing */
-#define TLV_LEN_OFF			1	/* length offset */
-#define TLV_HDR_LEN			2	/* header length */
-#define TLV_BODY_OFF			2	/* body offset */
-#define TLV_OUI_LEN			3	/* oui id length */
+ 
+#define TLV_LEN_OFF			1	 
+#define TLV_HDR_LEN			2	 
+#define TLV_BODY_OFF			2	 
+#define TLV_OUI_LEN			3	 
 
-/* 802.11 Mgmt Packet flags */
+ 
 #define BRCMF_VNDR_IE_BEACON_FLAG	0x1
 #define BRCMF_VNDR_IE_PRBRSP_FLAG	0x2
 #define BRCMF_VNDR_IE_ASSOCRSP_FLAG	0x4
 #define BRCMF_VNDR_IE_AUTHRSP_FLAG	0x8
 #define BRCMF_VNDR_IE_PRBREQ_FLAG	0x10
 #define BRCMF_VNDR_IE_ASSOCREQ_FLAG	0x20
-/* vendor IE in IW advertisement protocol ID field */
+ 
 #define BRCMF_VNDR_IE_IWAPID_FLAG	0x40
-/* allow custom IE id */
+ 
 #define BRCMF_VNDR_IE_CUSTOM_FLAG	0x100
 
-/* P2P Action Frames flags (spec ordered) */
+ 
 #define BRCMF_VNDR_IE_GONREQ_FLAG     0x001000
 #define BRCMF_VNDR_IE_GONRSP_FLAG     0x002000
 #define BRCMF_VNDR_IE_GONCFM_FLAG     0x004000
@@ -86,26 +82,20 @@
 
 #define BRCMF_MAX_DEFAULT_KEYS		6
 
-/* beacon loss timeout defaults */
+ 
 #define BRCMF_DEFAULT_BCN_TIMEOUT_ROAM_ON	2
 #define BRCMF_DEFAULT_BCN_TIMEOUT_ROAM_OFF	4
 
 #define BRCMF_VIF_EVENT_TIMEOUT		msecs_to_jiffies(1500)
 
-/**
- * enum brcmf_scan_status - scan engine status
- *
- * @BRCMF_SCAN_STATUS_BUSY: scanning in progress on dongle.
- * @BRCMF_SCAN_STATUS_ABORT: scan being aborted on dongle.
- * @BRCMF_SCAN_STATUS_SUPPRESS: scanning is suppressed in driver.
- */
+ 
 enum brcmf_scan_status {
 	BRCMF_SCAN_STATUS_BUSY,
 	BRCMF_SCAN_STATUS_ABORT,
 	BRCMF_SCAN_STATUS_SUPPRESS,
 };
 
-/* dongle configuration */
+ 
 struct brcmf_cfg80211_conf {
 	u32 frag_threshold;
 	u32 rts_threshold;
@@ -113,7 +103,7 @@ struct brcmf_cfg80211_conf {
 	u32 retry_long;
 };
 
-/* security information with currently associated ap */
+ 
 struct brcmf_cfg80211_security {
 	u32 wpa_versions;
 	u32 auth_type;
@@ -128,26 +118,14 @@ enum brcmf_profile_fwsup {
 	BRCMF_PROFILE_FWSUP_SAE
 };
 
-/**
- * enum brcmf_profile_fwauth - firmware authenticator profile
- *
- * @BRCMF_PROFILE_FWAUTH_NONE: no firmware authenticator
- * @BRCMF_PROFILE_FWAUTH_PSK: authenticator for WPA/WPA2-PSK
- * @BRCMF_PROFILE_FWAUTH_SAE: authenticator for SAE
- */
+ 
 enum brcmf_profile_fwauth {
 	BRCMF_PROFILE_FWAUTH_NONE,
 	BRCMF_PROFILE_FWAUTH_PSK,
 	BRCMF_PROFILE_FWAUTH_SAE
 };
 
-/**
- * struct brcmf_cfg80211_profile - profile information.
- *
- * @bssid: bssid of joined/joining ibss.
- * @sec: security information.
- * @key: key information
- */
+ 
 struct brcmf_cfg80211_profile {
 	u8 bssid[ETH_ALEN];
 	struct brcmf_cfg80211_security sec;
@@ -157,17 +135,7 @@ struct brcmf_cfg80211_profile {
 	bool is_ft;
 };
 
-/**
- * enum brcmf_vif_status - bit indices for vif status.
- *
- * @BRCMF_VIF_STATUS_READY: ready for operation.
- * @BRCMF_VIF_STATUS_CONNECTING: connect/join in progress.
- * @BRCMF_VIF_STATUS_CONNECTED: connected/joined successfully.
- * @BRCMF_VIF_STATUS_DISCONNECTING: disconnect/disable in progress.
- * @BRCMF_VIF_STATUS_AP_CREATED: AP operation started.
- * @BRCMF_VIF_STATUS_EAP_SUCCUSS: EAPOL handshake successful.
- * @BRCMF_VIF_STATUS_ASSOC_SUCCESS: successful SET_SSID received.
- */
+ 
 enum brcmf_vif_status {
 	BRCMF_VIF_STATUS_READY,
 	BRCMF_VIF_STATUS_CONNECTING,
@@ -178,18 +146,7 @@ enum brcmf_vif_status {
 	BRCMF_VIF_STATUS_ASSOC_SUCCESS,
 };
 
-/**
- * struct vif_saved_ie - holds saved IEs for a virtual interface.
- *
- * @probe_req_ie: IE info for probe request.
- * @probe_res_ie: IE info for probe response.
- * @beacon_ie: IE info for beacon frame.
- * @assoc_res_ie: IE info for association response frame.
- * @probe_req_ie_len: IE info length for probe request.
- * @probe_res_ie_len: IE info length for probe response.
- * @beacon_ie_len: IE info length for beacon frame.
- * @assoc_res_ie_len: IE info length for association response frame.
- */
+ 
 struct vif_saved_ie {
 	u8  probe_req_ie[IE_MAX_LEN];
 	u8  probe_res_ie[IE_MAX_LEN];
@@ -203,20 +160,7 @@ struct vif_saved_ie {
 	u32 assoc_res_ie_len;
 };
 
-/**
- * struct brcmf_cfg80211_vif - virtual interface specific information.
- *
- * @ifp: lower layer interface pointer
- * @wdev: wireless device.
- * @profile: profile information.
- * @sme_state: SME state using enum brcmf_vif_status bits.
- * @list: linked list.
- * @mgmt_rx_reg: registered rx mgmt frame types.
- * @mbss: Multiple BSS type, set if not first AP (not relevant for P2P).
- * @cqm_rssi_low: Lower RSSI limit for CQM monitoring
- * @cqm_rssi_high: Upper RSSI limit for CQM monitoring
- * @cqm_rssi_last: Last RSSI reading for CQM monitoring
- */
+ 
 struct brcmf_cfg80211_vif {
 	struct brcmf_if *ifp;
 	struct wireless_dev wdev;
@@ -232,7 +176,7 @@ struct brcmf_cfg80211_vif {
 	s32 cqm_rssi_last;
 };
 
-/* association inform */
+ 
 struct brcmf_cfg80211_connect_info {
 	u8 *req_ie;
 	s32 req_ie_len;
@@ -240,7 +184,7 @@ struct brcmf_cfg80211_connect_info {
 	s32 resp_ie_len;
 };
 
-/* assoc ie length */
+ 
 struct brcmf_cfg80211_assoc_ielen_le {
 	__le32 req_len;
 	__le32 resp_len;
@@ -249,10 +193,10 @@ struct brcmf_cfg80211_assoc_ielen_le {
 struct brcmf_cfg80211_edcf_acparam {
 	u8 ACI;
 	u8 ECW;
-	u16 TXOP;        /* stored in network order (ls octet first) */
+	u16 TXOP;         
 };
 
-/* dongle escan state */
+ 
 enum wl_escan_state {
 	WL_ESCAN_STATE_IDLE,
 	WL_ESCAN_STATE_SCANNING
@@ -267,15 +211,7 @@ struct escan_info {
 		   struct cfg80211_scan_request *request);
 };
 
-/**
- * struct brcmf_cfg80211_vif_event - virtual interface event information.
- *
- * @vif_wq: waitqueue awaiting interface event from firmware.
- * @vif_event_lock: protects other members in this structure.
- * @vif_complete: completion for net attach.
- * @action: either add, change, or delete.
- * @vif: virtual interface object related to the event.
- */
+ 
 struct brcmf_cfg80211_vif_event {
 	wait_queue_head_t vif_wq;
 	spinlock_t vif_event_lock;
@@ -283,17 +219,7 @@ struct brcmf_cfg80211_vif_event {
 	struct brcmf_cfg80211_vif *vif;
 };
 
-/**
- * struct brcmf_cfg80211_wowl - wowl related information.
- *
- * @active: set on suspend, cleared on resume.
- * @pre_pmmode: firmware PM mode at entering suspend.
- * @nd: net dectect data.
- * @nd_info: helper struct to pass to cfg80211.
- * @nd_data_wait: wait queue to sync net detect data.
- * @nd_data_completed: completion for net detect data.
- * @nd_enabled: net detect enabled.
- */
+ 
 struct brcmf_cfg80211_wowl {
 	bool active;
 	u32 pre_pmmode;
@@ -304,41 +230,7 @@ struct brcmf_cfg80211_wowl {
 	bool nd_enabled;
 };
 
-/**
- * struct brcmf_cfg80211_info - dongle private data of cfg80211 interface
- *
- * @wiphy: wiphy object for cfg80211 interface.
- * @ops: pointer to copy of ops as registered with wiphy object.
- * @conf: dongle configuration.
- * @p2p: peer-to-peer specific information.
- * @btcoex: Bluetooth coexistence information.
- * @scan_request: cfg80211 scan request object.
- * @usr_sync: mainly for dongle up/down synchronization.
- * @bss_list: bss_list holding scanned ap information.
- * @bss_info: bss information for cfg80211 layer.
- * @conn_info: association info.
- * @pmk_list: wpa2 pmk list.
- * @scan_status: scan activity on the dongle.
- * @pub: common driver information.
- * @channel: current channel.
- * @int_escan_map: bucket map for which internal e-scan is done.
- * @ibss_starter: indicates this sta is ibss starter.
- * @pwr_save: indicate whether dongle to support power save mode.
- * @dongle_up: indicate whether dongle up or not.
- * @roam_on: on/off switch for dongle self-roaming.
- * @scan_tried: indicates if first scan attempted.
- * @dcmd_buf: dcmd buffer.
- * @extra_buf: mainly to grab assoc information.
- * @debugfsdir: debugfs folder for this device.
- * @escan_info: escan information.
- * @escan_timeout: Timer for catch scan timeout.
- * @escan_timeout_work: scan timeout worker.
- * @vif_list: linked list of vif instances.
- * @vif_cnt: number of vif instances.
- * @vif_event: vif event signalling.
- * @wowl: wowl related information.
- * @pno: information of pno module.
- */
+ 
 struct brcmf_cfg80211_info {
 	struct wiphy *wiphy;
 	struct brcmf_cfg80211_conf *conf;
@@ -373,13 +265,7 @@ struct brcmf_cfg80211_info {
 	u8 ac_priority[MAX_8021D_PRIO];
 };
 
-/**
- * struct brcmf_tlv - tag_ID/length/value_buffer tuple.
- *
- * @id: tag identifier.
- * @len: number of bytes in value buffer.
- * @data: value buffer.
- */
+ 
 struct brcmf_tlv {
 	u8 id;
 	u8 len;
@@ -468,4 +354,4 @@ void brcmf_set_mpc(struct brcmf_if *ndev, int mpc);
 void brcmf_abort_scanning(struct brcmf_cfg80211_info *cfg);
 void brcmf_cfg80211_free_netdev(struct net_device *ndev);
 
-#endif /* BRCMFMAC_CFG80211_H */
+#endif  

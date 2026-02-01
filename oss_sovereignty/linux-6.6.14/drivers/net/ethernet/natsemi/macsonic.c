@@ -1,36 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * macsonic.c
- *
- * (C) 2005 Finn Thain
- *
- * Converted to DMA API, converted to unified driver model, made it work as
- * a module again, and from the mac68k project, introduced more 32-bit cards
- * and dhd's support for 16-bit cards.
- *
- * (C) 1998 Alan Cox
- *
- * Debugging Andreas Ehliar, Michael Schmitz
- *
- * Based on code
- * (C) 1996 by Thomas Bogendoerfer (tsbogend@bigbug.franken.de)
- *
- * This driver is based on work from Andreas Busse, but most of
- * the code is rewritten.
- *
- * (C) 1995 by Andreas Busse (andy@waldorf-gmbh.de)
- *
- * A driver for the Mac onboard Sonic ethernet chip.
- *
- * 98/12/21 MSch: judged from tests on Q800, it's basically working,
- *		  but eating up both receive and transmit resources
- *		  and duplicating packets. Needs more testing.
- *
- * 99/01/03 MSch: upgraded to version 0.92 of the core driver, fixed.
- *
- * 00/10/31 sammy@oh.verio.com: Updated driver for 2.4 kernels, fixed problems
- *          on centris.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -62,15 +31,13 @@
 
 #include "sonic.h"
 
-/* These should basically be bus-size and endian independent (since
-   the SONIC is at least smart enough that it uses the same endianness
-   as the host, unlike certain less enlightened Macintosh NICs) */
+ 
 #define SONIC_READ(reg) (nubus_readw(dev->base_addr + (reg * 4) \
 	      + lp->reg_offset))
 #define SONIC_WRITE(reg,val) (nubus_writew(val, dev->base_addr + (reg * 4) \
 	      + lp->reg_offset))
 
-/* For onboard SONIC */
+ 
 #define ONBOARD_SONIC_REGISTERS	0x50F0A000
 #define ONBOARD_SONIC_PROM_BASE	0x50f08000
 
@@ -82,29 +49,25 @@ enum macsonic_type {
 	MACSONIC_DAYNALINK
 };
 
-/* For the built-in SONIC in the Duo Dock */
+ 
 #define DUODOCK_SONIC_REGISTERS 0xe10000
 #define DUODOCK_SONIC_PROM_BASE 0xe12000
 
-/* For Apple-style NuBus SONIC */
+ 
 #define APPLE_SONIC_REGISTERS	0
 #define APPLE_SONIC_PROM_BASE	0x40000
 
-/* Daynalink LC SONIC */
+ 
 #define DAYNALINK_PROM_BASE 0x400000
 
-/* For Dayna-style NuBus SONIC (haven't seen one yet) */
+ 
 #define DAYNA_SONIC_REGISTERS   0x180000
-/* This is what OpenBSD says.  However, this is definitely in NuBus
-   ROM space so we should be able to get it by walking the NuBus
-   resource directories */
+ 
 #define DAYNA_SONIC_MAC_ADDR	0xffe004
 
 #define SONIC_READ_PROM(addr) nubus_readb(prom_addr+addr)
 
-/*
- * For reversing the PROM address
- */
+ 
 
 static inline void bit_reverse_addr(unsigned char addr[6])
 {
@@ -124,10 +87,7 @@ static int macsonic_open(struct net_device* dev)
 				dev->name, dev->irq);
 		goto err;
 	}
-	/* Under the A/UX interrupt scheme, the onboard SONIC interrupt gets
-	 * moved from level 2 to level 3. Unfortunately we still get some
-	 * level 2 interrupts so register the handler for both.
-	 */
+	 
 	if (dev->irq == IRQ_AUTO_3) {
 		retval = request_irq(IRQ_NUBUS_9, sonic_interrupt, 0,
 				     "sonic", dev);
@@ -183,9 +143,7 @@ static int macsonic_init(struct net_device *dev)
 	dev->netdev_ops = &macsonic_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
 
-	/*
-	 * clear tally counter
-	 */
+	 
 	SONIC_WRITE(SONIC_CRCT, 0xffff);
 	SONIC_WRITE(SONIC_FAET, 0xffff);
 	SONIC_WRITE(SONIC_MPT, 0xffff);
@@ -205,11 +163,7 @@ static void mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 	unsigned short val;
 	u8 addr[ETH_ALEN];
 
-	/*
-	 * On NuBus boards we can sometimes look in the ROM resources.
-	 * No such luck for comm-slot/onboard.
-	 * On the PowerBook 520, the PROM base address is a mystery.
-	 */
+	 
 	if (hwreg_present((void *)prom_addr)) {
 		int i;
 
@@ -219,20 +173,13 @@ static void mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 		if (!INVALID_MAC(dev->dev_addr))
 			return;
 
-		/*
-		 * Most of the time, the address is bit-reversed. The NetBSD
-		 * source has a rather long and detailed historical account of
-		 * why this is so.
-		 */
+		 
 		bit_reverse_addr(addr);
 		eth_hw_addr_set(dev, addr);
 		if (!INVALID_MAC(dev->dev_addr))
 			return;
 
-		/*
-		 * If we still have what seems to be a bogus address, we'll
-		 * look in the CAM. The top entry should be ours.
-		 */
+		 
 		printk(KERN_WARNING "macsonic: MAC address in PROM seems "
 		                    "to be invalid, trying CAM\n");
 	} else {
@@ -240,7 +187,7 @@ static void mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 		                    "PROM, trying CAM\n");
 	}
 
-	/* This only works if MacOS has already initialized the card. */
+	 
 
 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
 	SONIC_WRITE(SONIC_CEP, 15);
@@ -259,7 +206,7 @@ static void mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 	if (!INVALID_MAC(dev->dev_addr))
 		return;
 
-	/* Still nonsense ... messed up someplace! */
+	 
 
 	printk(KERN_WARNING "macsonic: MAC address in CAM entry 15 "
 	                    "seems invalid, will use a random MAC\n");
@@ -272,10 +219,7 @@ static int mac_onboard_sonic_probe(struct net_device *dev)
 	int sr;
 	bool commslot = macintosh_config->expansion_type == MAC_EXP_PDS_COMM;
 
-	/* Bogus probing, on the models which may or may not have
-	   Ethernet (BTW, the Ethernet *is* always at the same
-	   address, and nothing else lives there, at least if Apple's
-	   documentation is to be believed) */
+	 
 	if (commslot || macintosh_config->ident == MAC_MODEL_C610) {
 		int card_present;
 
@@ -286,37 +230,32 @@ static int mac_onboard_sonic_probe(struct net_device *dev)
 		}
 	}
 
-	/* Danger!  My arms are flailing wildly!  You *must* set lp->reg_offset
-	 * and dev->base_addr before using SONIC_READ() or SONIC_WRITE() */
+	 
 	dev->base_addr = ONBOARD_SONIC_REGISTERS;
 	if (via_alt_mapping)
 		dev->irq = IRQ_AUTO_3;
 	else
 		dev->irq = IRQ_NUBUS_9;
 
-	/* The PowerBook's SONIC is 16 bit always. */
+	 
 	if (macintosh_config->ident == MAC_MODEL_PB520) {
 		lp->reg_offset = 0;
 		lp->dma_bitmode = SONIC_BITMODE16;
 	} else if (commslot) {
-		/* Some of the comm-slot cards are 16 bit.  But some
-		   of them are not.  The 32-bit cards use offset 2 and
-		   have known revisions, we try reading the revision
-		   register at offset 2, if we don't get a known revision
-		   we assume 16 bit at offset 0.  */
+		 
 		lp->reg_offset = 2;
 		lp->dma_bitmode = SONIC_BITMODE16;
 
 		sr = SONIC_READ(SONIC_SR);
 		if (sr == 0x0004 || sr == 0x0006 || sr == 0x0100 || sr == 0x0101)
-			/* 83932 is 0x0004 or 0x0006, 83934 is 0x0100 or 0x0101 */
+			 
 			lp->dma_bitmode = SONIC_BITMODE32;
 		else {
 			lp->dma_bitmode = SONIC_BITMODE16;
 			lp->reg_offset = 0;
 		}
 	} else {
-		/* All onboard cards are at offset 2 with 32 bit DMA. */
+		 
 		lp->reg_offset = 2;
 		lp->dma_bitmode = SONIC_BITMODE32;
 	}
@@ -325,34 +264,32 @@ static int mac_onboard_sonic_probe(struct net_device *dev)
 		SONIC_READ(SONIC_SR), lp->dma_bitmode ? 32 : 16,
 		lp->reg_offset);
 
-	/* This is sometimes useful to find out how MacOS configured the card */
+	 
 	pr_debug("%s: DCR=0x%04x, DCR2=0x%04x\n", __func__,
 		 SONIC_READ(SONIC_DCR) & 0xffff,
 		 SONIC_READ(SONIC_DCR2) & 0xffff);
 
-	/* Software reset, then initialize control registers. */
+	 
 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
 
 	SONIC_WRITE(SONIC_DCR, SONIC_DCR_EXBUS | SONIC_DCR_BMS |
 	                       SONIC_DCR_RFT1  | SONIC_DCR_TFT0 |
 	                       (lp->dma_bitmode ? SONIC_DCR_DW : 0));
 
-	/* This *must* be written back to in order to restore the
-	 * extended programmable output bits, as it may not have been
-	 * initialised since the hardware reset. */
+	 
 	SONIC_WRITE(SONIC_DCR2, 0);
 
-	/* Clear *and* disable interrupts to be on the safe side */
+	 
 	SONIC_WRITE(SONIC_IMR, 0);
 	SONIC_WRITE(SONIC_ISR, 0x7fff);
 
-	/* Now look for the MAC address. */
+	 
 	mac_onboard_sonic_ethernet_addr(dev);
 
 	pr_info("SONIC ethernet @%08lx, MAC %pM, IRQ %d\n",
 		dev->base_addr, dev->dev_addr, dev->irq);
 
-	/* Shared init code */
+	 
 	return macsonic_init(dev);
 }
 
@@ -365,7 +302,7 @@ static int mac_sonic_nubus_ethernet_addr(struct net_device *dev,
 	for(i = 0; i < 6; i++)
 		addr[i] = SONIC_READ_PROM(i);
 
-	/* Some of the addresses are bit-reversed */
+	 
 	if (id != MACSONIC_DAYNA)
 		bit_reverse_addr(addr);
 	eth_hw_addr_set(dev, addr);
@@ -380,7 +317,7 @@ static int macsonic_ident(struct nubus_rsrc *fres)
 		return MACSONIC_DAYNALINK;
 	if (fres->dr_hw == NUBUS_DRHW_SONIC &&
 	    fres->dr_sw == NUBUS_DRSW_APPLE) {
-		/* There has to be a better way to do this... */
+		 
 		if (strstr(fres->board->name, "DuoDock"))
 			return MACSONIC_DUODOCK;
 		else
@@ -392,7 +329,7 @@ static int macsonic_ident(struct nubus_rsrc *fres)
 		return MACSONIC_DAYNA;
 
 	if (fres->dr_hw == NUBUS_DRHW_APPLE_SONIC_LC &&
-	    fres->dr_sw == 0) { /* huh? */
+	    fres->dr_sw == 0) {  
 		return MACSONIC_APPLE16;
 	}
 	return -1;
@@ -451,8 +388,7 @@ static int mac_sonic_nubus_probe_board(struct nubus_board *board, int id,
 		return -ENODEV;
 	}
 
-	/* Danger!  My arms are flailing wildly!  You *must* set lp->reg_offset
-	 * and dev->base_addr before using SONIC_READ() or SONIC_WRITE() */
+	 
 	dev->base_addr = base_addr;
 	lp->reg_offset = reg_offset;
 	lp->dma_bitmode = dma_bitmode;
@@ -462,31 +398,29 @@ static int mac_sonic_nubus_probe_board(struct nubus_board *board, int id,
 		 board->name, SONIC_READ(SONIC_SR),
 		 lp->dma_bitmode ? 32 : 16, lp->reg_offset);
 
-	/* This is sometimes useful to find out how MacOS configured the card */
+	 
 	dev_dbg(&board->dev, "%s: DCR=0x%04x, DCR2=0x%04x\n", __func__,
 		SONIC_READ(SONIC_DCR) & 0xffff,
 		SONIC_READ(SONIC_DCR2) & 0xffff);
 
-	/* Software reset, then initialize control registers. */
+	 
 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
 	SONIC_WRITE(SONIC_DCR, sonic_dcr | (dma_bitmode ? SONIC_DCR_DW : 0));
-	/* This *must* be written back to in order to restore the
-	 * extended programmable output bits, since it may not have been
-	 * initialised since the hardware reset. */
+	 
 	SONIC_WRITE(SONIC_DCR2, 0);
 
-	/* Clear *and* disable interrupts to be on the safe side */
+	 
 	SONIC_WRITE(SONIC_IMR, 0);
 	SONIC_WRITE(SONIC_ISR, 0x7fff);
 
-	/* Now look for the MAC address. */
+	 
 	if (mac_sonic_nubus_ethernet_addr(dev, prom_addr, id) != 0)
 		return -ENODEV;
 
 	dev_info(&board->dev, "SONIC ethernet @%08lx, MAC %pM, IRQ %d\n",
 		 dev->base_addr, dev->dev_addr, dev->irq);
 
-	/* Shared init code */
+	 
 	return macsonic_init(dev);
 }
 
@@ -561,9 +495,7 @@ static int mac_sonic_nubus_probe(struct nubus_board *board)
 	int id = -1;
 	int err;
 
-	/* The platform driver will handle a PDS or Comm Slot card (even if
-	 * it has a pseudoslot declaration ROM).
-	 */
+	 
 	if (macintosh_config->expansion_type == MAC_EXP_PDS_COMM)
 		return -ENODEV;
 

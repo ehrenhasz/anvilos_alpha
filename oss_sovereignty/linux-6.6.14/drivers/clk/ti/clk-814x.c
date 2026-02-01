@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/kernel.h>
 #include <linux/clk.h>
@@ -78,8 +78,8 @@ static int __init dm814x_adpll_early_init(void)
 core_initcall(dm814x_adpll_early_init);
 
 static const char * const init_clocks[] = {
-	"pll040clkout",		/* MPU 481c5040.adpll.clkout */
-	"pll290clkout",		/* DDR 481c5290.adpll.clkout */
+	"pll040clkout",		 
+	"pll290clkout",		 
 };
 
 static int __init dm814x_adpll_enable_init_clocks(void)

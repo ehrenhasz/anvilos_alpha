@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vDPA bridge driver for Alibaba ENI(Elastic Network Interface)
- *
- * Copyright (c) 2021, Alibaba Inc. All rights reserved.
- * Author: Wu Zongyong <wuzongyong@linux.alibaba.com>
- *
- */
+
+ 
 
 #include "linux/bits.h"
 #include <linux/interrupt.h>
@@ -266,10 +260,7 @@ static int eni_vdpa_set_vq_state(struct vdpa_device *vdpa, u16 qid,
 	struct virtio_pci_legacy_device *ldev = vdpa_to_ldev(vdpa);
 	const struct vdpa_vq_state_split *split = &state->split;
 
-	/* ENI is build upon virtio-pci specfication which not support
-	 * to set state of virtqueue. But if the state is equal to the
-	 * device initial state by chance, we can let it go.
-	 */
+	 
 	if (!vp_legacy_get_queue_enable(ldev, qid)
 	    && split->avail_index == 0)
 		return 0;
@@ -291,10 +282,7 @@ static void eni_vdpa_set_vq_ready(struct vdpa_device *vdpa, u16 qid,
 {
 	struct virtio_pci_legacy_device *ldev = vdpa_to_ldev(vdpa);
 
-	/* ENI is a legacy virtio-pci device. This is not supported
-	 * by specification. But we can disable virtqueue by setting
-	 * address to 0.
-	 */
+	 
 	if (!ready)
 		vp_legacy_set_queue_address(ldev, qid, 0);
 }
@@ -313,10 +301,7 @@ static void eni_vdpa_set_vq_num(struct vdpa_device *vdpa, u16 qid,
 	struct pci_dev *pdev = ldev->pci_dev;
 	u16 n = vp_legacy_get_queue_size(ldev, qid);
 
-	/* ENI is a legacy virtio-pci device which not allow to change
-	 * virtqueue size. Just report a error if someone tries to
-	 * change it.
-	 */
+	 
 	if (num != n)
 		ENI_ERR(pdev,
 			"not support to set vq %u fixed num %u to %u\n",

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Emil Renner Berthing
- */
+
+ 
 
 #include <linux/mfd/tps65086.h>
 #include <linux/mod_devicetable.h>
@@ -29,7 +27,7 @@ static int tps65086_restart_notify(struct notifier_block *this,
 		return NOTIFY_DONE;
 	}
 
-	/* give it a little time */
+	 
 	mdelay(200);
 
 	WARN_ON(1);
@@ -79,7 +77,7 @@ static int tps65086_restart_remove(struct platform_device *pdev)
 
 static const struct platform_device_id tps65086_restart_id_table[] = {
 	{ "tps65086-reset", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65086_restart_id_table);
 

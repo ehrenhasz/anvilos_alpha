@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <errno.h>
@@ -17,13 +17,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-/*
- * NOTES about this test:
- * - requries libcap-dev to be installed on test system
- * - requires securityfs to me mounted at /sys/kernel/security, e.g.:
- * mount -n -t securityfs -o nodev,noexec,nosuid securityfs /sys/kernel/security
- * - needs CONFIG_SECURITYFS and CONFIG_SAFESETID to be enabled
- */
+ 
 
 #ifndef CLONE_NEWUSER
 # define CLONE_NEWUSER 0x10000000
@@ -165,7 +159,7 @@ static void ensure_securityfs_mounted(void)
 	int fd = open(add_uid_whitelist_policy_file, O_WRONLY);
 	if (fd < 0) {
 		if (errno == ENOENT) {
-			// Need to mount securityfs
+			
 			if (mount("securityfs", "/sys/kernel/security",
 						"securityfs", 0, NULL) < 0)
 				die("mounting securityfs failed\n");
@@ -246,11 +240,11 @@ static bool test_userns(bool expect_success)
 	    return false;
 	}
 
-	if (cpid == 0) {	/* Code executed by child */
-		// Give parent 1 second to write map file
+	if (cpid == 0) {	 
+		
 		sleep(1);
 		exit(EXIT_SUCCESS);
-	} else {		/* Code executed by parent */
+	} else {		 
 		if(snprintf(map_file_name, sz, "/proc/%d/uid_map", cpid) < 0) {
 			printf("preparing file name string failed");
 			return false;
@@ -273,14 +267,14 @@ static void test_setuid(uid_t child_uid, bool expect_success)
 		die("fork\n");
 	}
 
-	if (cpid == 0) {	    /* Code executed by child */
+	if (cpid == 0) {	     
 		if (setuid(child_uid) < 0)
 			exit(EXIT_FAILURE);
 		if (getuid() == child_uid)
 			exit(EXIT_SUCCESS);
 		else
 			exit(EXIT_FAILURE);
-	} else {		 /* Code executed by parent */
+	} else {		  
 		do {
 			w = waitpid(cpid, &wstatus, WUNTRACED | WCONTINUED);
 			if (w == -1) {
@@ -329,14 +323,14 @@ static void test_setgid(gid_t child_gid, bool expect_success)
 		die("fork\n");
 	}
 
-	if (cpid == 0) {	    /* Code executed by child */
+	if (cpid == 0) {	     
 		if (setgid(child_gid) < 0)
 			exit(EXIT_FAILURE);
 		if (getgid() == child_gid)
 			exit(EXIT_SUCCESS);
 		else
 			exit(EXIT_FAILURE);
-	} else {		 /* Code executed by parent */
+	} else {		  
 		do {
 			w = waitpid(cpid, &wstatus, WUNTRACED | WCONTINUED);
 			if (w == -1) {
@@ -387,7 +381,7 @@ static void test_setgroups(gid_t* child_groups, size_t len, bool expect_success)
 		die("fork\n");
 	}
 
-	if (cpid == 0) {	    /* Code executed by child */
+	if (cpid == 0) {	     
 		if (setgroups(len, child_groups) != 0)
 			exit(EXIT_FAILURE);
 		if (getgroups(len, groupset) != len)
@@ -401,7 +395,7 @@ static void test_setgroups(gid_t* child_groups, size_t len, bool expect_success)
 			}
 		}
 		exit(EXIT_SUCCESS);
-	} else {		 /* Code executed by parent */
+	} else {		  
 		do {
 			w = waitpid(cpid, &wstatus, WUNTRACED | WCONTINUED);
 			if (w == -1) {
@@ -484,24 +478,24 @@ int main(int argc, char **argv)
 	if (prctl(PR_SET_KEEPCAPS, 1L))
 		die("Error with set keepcaps\n");
 
-	// First test to make sure we can write userns mappings from a non-root
-	// user that doesn't have any restrictions (as long as it has
-	// CAP_SETUID);
+	
+	
+	
 	if (setgid(NO_POLICY_UGID) < 0)
 		die("Error with set gid(%d)\n", NO_POLICY_UGID);
 	if (setuid(NO_POLICY_UGID) < 0)
 		die("Error with set uid(%d)\n", NO_POLICY_UGID);
-	// Take away all but setid caps
+	
 	drop_caps(true);
-	// Need PR_SET_DUMPABLE flag set so we can write /proc/[pid]/uid_map
-	// from non-root parent process.
+	
+	
 	if (prctl(PR_SET_DUMPABLE, 1, 0, 0, 0))
 		die("Error with set dumpable\n");
 	if (!test_userns(true)) {
 		die("test_userns failed when it should work\n");
 	}
 
-	// Now switch to a user/group with restrictions
+	
 	if (setgid(RESTRICTED_PARENT_UGID) < 0)
 		die("Error with set gid(%d)\n", RESTRICTED_PARENT_UGID);
 	if (setuid(RESTRICTED_PARENT_UGID) < 0)
@@ -526,7 +520,7 @@ int main(int argc, char **argv)
 		die("test_userns worked when it should fail\n");
 	}
 
-	// Now take away all caps
+	
 	drop_caps(false);
 	test_setuid(2, false);
 	test_setuid(3, false);
@@ -535,8 +529,8 @@ int main(int argc, char **argv)
 	test_setgid(3, false);
 	test_setgid(4, false);
 
-	// NOTE: this test doesn't clean up users that were created in
-	// /etc/passwd or flush policies that were added to the LSM.
+	
+	
 	printf("test successful!\n");
 	return EXIT_SUCCESS;
 }

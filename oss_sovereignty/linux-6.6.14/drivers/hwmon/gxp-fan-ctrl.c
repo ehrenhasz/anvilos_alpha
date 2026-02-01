@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P. */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>
@@ -9,9 +9,9 @@
 #include <linux/mod_devicetable.h>
 #include <linux/platform_device.h>
 
-#define OFS_FAN_INST	0 /* Is 0 because plreg base will be set at INST */
-#define OFS_FAN_FAIL	2 /* Is 2 bytes after base */
-#define OFS_SEVSTAT	0 /* Is 0 because fn2 base will be set at SEVSTAT */
+#define OFS_FAN_INST	0  
+#define OFS_FAN_FAIL	2  
+#define OFS_SEVSTAT	0  
 #define POWER_BIT	24
 
 struct gxp_fan_ctrl_drvdata {
@@ -45,11 +45,7 @@ static long fan_enabled(struct device *dev, int fan)
 	struct gxp_fan_ctrl_drvdata *drvdata = dev_get_drvdata(dev);
 	u32 val;
 
-	/*
-	 * Check the power status as if the platform is off the value
-	 * reported for the PWM will be incorrect. Report fan as
-	 * disabled.
-	 */
+	 
 	val = readl(drvdata->fn2 + OFS_SEVSTAT);
 
 	return !!((val & BIT(POWER_BIT)) && fan_installed(dev, fan));
@@ -100,11 +96,7 @@ static int gxp_pwm_read(struct device *dev, u32 attr, int channel, long *val)
 	struct gxp_fan_ctrl_drvdata *drvdata = dev_get_drvdata(dev);
 	u32 reg;
 
-	/*
-	 * Check the power status of the platform. If the platform is off
-	 * the value reported for the PWM will be incorrect. In this case
-	 * report a PWM of zero.
-	 */
+	 
 
 	reg = readl(drvdata->fn2 + OFS_SEVSTAT);
 

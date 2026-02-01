@@ -1,29 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2016 by Delphix. All rights reserved.
- * Copyright 2017 Jason King
- * Copyright (c) 2017, Intel Corporation.
- */
+ 
+ 
 
 #include <assert.h>
 #include <sys/zfs_context.h>
@@ -38,9 +14,7 @@
 #include <dlfcn.h>
 #include <libzutil.h>
 
-/*
- * Routines needed by more than one client of libzpool.
- */
+ 
 
 static void
 show_vdev_stats(const char *desc, const char *ctype, nvlist_t *nv, int indent)
@@ -150,7 +124,7 @@ show_pool_stats(spa_t *spa)
 	nvlist_free(config);
 }
 
-/* *k_out must be freed by the caller */
+ 
 static int
 set_global_var_parse_kv(const char *arg, char **k_out, u_longlong_t *v_out)
 {
@@ -186,10 +160,7 @@ err_free:
 	return (err);
 }
 
-/*
- * Sets given global variable in libzpool to given unsigned 32-bit value.
- * arg: "<variable>=<value>"
- */
+ 
 int
 set_global_var(char const *arg)
 {
@@ -199,11 +170,7 @@ set_global_var(char const *arg)
 	int ret;
 
 #ifndef _ZFS_LITTLE_ENDIAN
-	/*
-	 * On big endian systems changing a 64-bit variable would set the high
-	 * 32 bits instead of the low 32 bits, which could cause unexpected
-	 * results.
-	 */
+	 
 	fprintf(stderr, "Setting global variables is only supported on "
 	    "little-endian systems\n");
 	ret = ENOTSUP;
@@ -272,12 +239,7 @@ pool_active(void *unused, const char *name, uint64_t guid, boolean_t *isactive)
 	if (fd < 0)
 		return (-1);
 
-	/*
-	 * Use ZFS_IOC_POOL_STATS to check if the pool is active.  We want to
-	 * avoid adding a dependency on libzfs_core solely for this ioctl(),
-	 * therefore we manually craft the stats command.  Note that the command
-	 * ID is identical between the openzfs and legacy ioctl() formats.
-	 */
+	 
 	int ver = ZFS_IOCVER_NONE;
 	size_t ver_size = sizeof (ver);
 
@@ -337,9 +299,7 @@ pool_active(void *unused, const char *name, uint64_t guid,
 	if (fd < 0)
 		return (-1);
 
-	/*
-	 * Use ZFS_IOC_POOL_STATS to check if a pool is active.
-	 */
+	 
 	zfs_cmd_t *zcp = umem_zalloc(sizeof (zfs_cmd_t), UMEM_NOFAIL);
 	(void) strlcpy(zcp->zc_name, name, sizeof (zcp->zc_name));
 

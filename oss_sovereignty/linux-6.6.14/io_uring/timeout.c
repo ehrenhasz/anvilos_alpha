@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -19,9 +19,9 @@ struct io_timeout {
 	u32				target_seq;
 	u32				repeats;
 	struct list_head		list;
-	/* head of the link, used by linked timeouts only */
+	 
 	struct io_kiocb			*head;
-	/* for linked completions */
+	 
 	struct io_kiocb			*prev;
 };
 
@@ -29,7 +29,7 @@ struct io_timeout_rem {
 	struct file			*file;
 	u64				addr;
 
-	/* timeout update */
+	 
 	struct timespec64		ts;
 	u32				flags;
 	bool				ltimeout;
@@ -76,7 +76,7 @@ static void io_timeout_complete(struct io_kiocb *req, struct io_tw_state *ts)
 		filled = io_fill_cqe_req_aux(req, ts->locked, -ETIME,
 					     IORING_CQE_F_MORE);
 		if (filled) {
-			/* re-arm timer */
+			 
 			spin_lock_irq(&ctx->timeout_lock);
 			list_add(&timeout->list, ctx->timeout_list.prev);
 			data->timer.function = io_timeout_fn;
@@ -123,13 +123,7 @@ __cold void io_flush_timeouts(struct io_ring_ctx *ctx)
 		if (io_is_timeout_noseq(req))
 			break;
 
-		/*
-		 * Since seq can easily wrap around over time, subtract
-		 * the last seq at which timeouts were flushed before comparing.
-		 * Assuming not more than 2^31-1 events have happened since,
-		 * these subtractions won't have wrapped, so we can check if
-		 * target is in [last_seq, current_seq] by comparing the two.
-		 */
+		 
 		events_needed = timeout->target_seq - ctx->cq_last_tm_flush;
 		events_got = seq - ctx->cq_last_tm_flush;
 		if (events_got < events_needed)
@@ -337,10 +331,7 @@ static enum hrtimer_restart io_link_timeout_fn(struct hrtimer *timer)
 	prev = timeout->head;
 	timeout->head = NULL;
 
-	/*
-	 * We don't expect the list to be empty, that will only happen if we
-	 * race with the completion of the linked work.
-	 */
+	 
 	if (prev) {
 		io_remove_next_linked(prev);
 		if (!req_ref_inc_not_zero(prev))
@@ -363,7 +354,7 @@ static clockid_t io_timeout_get_clock(struct io_timeout_data *data)
 	case IORING_TIMEOUT_REALTIME:
 		return CLOCK_REALTIME;
 	default:
-		/* can't happen, vetted at prep time */
+		 
 		WARN_ON_ONCE(1);
 		fallthrough;
 	case 0:
@@ -411,7 +402,7 @@ static int io_timeout_update(struct io_ring_ctx *ctx, __u64 user_data,
 	if (IS_ERR(req))
 		return PTR_ERR(req);
 
-	timeout->off = 0; /* noseq */
+	timeout->off = 0;  
 	data = req->async_data;
 	list_add_tail(&timeout->list, &ctx->timeout_list);
 	hrtimer_init(&data->timer, io_timeout_get_clock(data), mode);
@@ -444,7 +435,7 @@ int io_timeout_remove_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
 		if (tr->ts.tv_sec < 0 || tr->ts.tv_nsec < 0)
 			return -EINVAL;
 	} else if (tr->flags) {
-		/* timeout removal doesn't support flags */
+		 
 		return -EINVAL;
 	}
 
@@ -457,9 +448,7 @@ static inline enum hrtimer_mode io_translate_timeout_mode(unsigned int flags)
 					    : HRTIMER_MODE_REL;
 }
 
-/*
- * Remove or update an existing timeout command
- */
+ 
 int io_timeout_remove(struct io_kiocb *req, unsigned int issue_flags)
 {
 	struct io_timeout_rem *tr = io_kiocb_to_cmd(req, struct io_timeout_rem);
@@ -507,10 +496,10 @@ static int __io_timeout_prep(struct io_kiocb *req,
 		      IORING_TIMEOUT_ETIME_SUCCESS |
 		      IORING_TIMEOUT_MULTISHOT))
 		return -EINVAL;
-	/* more than one clock specified is invalid, obviously */
+	 
 	if (hweight32(flags & IORING_TIMEOUT_CLOCK_MASK) > 1)
 		return -EINVAL;
-	/* multishot requests only make sense with rel values */
+	 
 	if (!(~flags & (IORING_TIMEOUT_MULTISHOT | IORING_TIMEOUT_ABS)))
 		return -EINVAL;
 
@@ -518,10 +507,7 @@ static int __io_timeout_prep(struct io_kiocb *req,
 	timeout->off = off;
 	if (unlikely(off && !req->ctx->off_timeout_used))
 		req->ctx->off_timeout_used = true;
-	/*
-	 * for multishot reqs w/ fixed nr of repeats, repeats tracks the
-	 * remaining nr
-	 */
+	 
 	timeout->repeats = 0;
 	if ((flags & IORING_TIMEOUT_MULTISHOT) && off > 0)
 		timeout->repeats = off;
@@ -578,11 +564,7 @@ int io_timeout(struct io_kiocb *req, unsigned int issue_flags)
 
 	spin_lock_irq(&ctx->timeout_lock);
 
-	/*
-	 * sqe->off holds how many events that need to occur for this
-	 * timeout event to be satisfied. If it isn't set, then this is
-	 * a pure timeout request, sequence isn't used.
-	 */
+	 
 	if (io_is_timeout_noseq(req)) {
 		entry = ctx->timeout_list.prev;
 		goto add;
@@ -591,23 +573,17 @@ int io_timeout(struct io_kiocb *req, unsigned int issue_flags)
 	tail = data_race(ctx->cached_cq_tail) - atomic_read(&ctx->cq_timeouts);
 	timeout->target_seq = tail + off;
 
-	/* Update the last seq here in case io_flush_timeouts() hasn't.
-	 * This is safe because ->completion_lock is held, and submissions
-	 * and completions are never mixed in the same ->completion_lock section.
-	 */
+	 
 	ctx->cq_last_tm_flush = tail;
 
-	/*
-	 * Insertion sort, ensuring the first entry in the list is always
-	 * the one we need first.
-	 */
+	 
 	list_for_each_prev(entry, &ctx->timeout_list) {
 		struct io_timeout *nextt = list_entry(entry, struct io_timeout, list);
 		struct io_kiocb *nxt = cmd_to_io_kiocb(nextt);
 
 		if (io_is_timeout_noseq(nxt))
 			continue;
-		/* nxt.seq is behind @tail, otherwise would've been completed */
+		 
 		if (off >= nextt->target_seq - tail)
 			break;
 	}
@@ -625,10 +601,7 @@ void io_queue_linked_timeout(struct io_kiocb *req)
 	struct io_ring_ctx *ctx = req->ctx;
 
 	spin_lock_irq(&ctx->timeout_lock);
-	/*
-	 * If the back reference is NULL, then our linked request finished
-	 * before we got a chance to setup the timer
-	 */
+	 
 	if (timeout->head) {
 		struct io_timeout_data *data = req->async_data;
 
@@ -638,7 +611,7 @@ void io_queue_linked_timeout(struct io_kiocb *req)
 		list_add_tail(&timeout->list, &ctx->ltimeout_list);
 	}
 	spin_unlock_irq(&ctx->timeout_lock);
-	/* drop submission reference */
+	 
 	io_put_req(req);
 }
 
@@ -660,17 +633,14 @@ static bool io_match_task(struct io_kiocb *head, struct task_struct *task,
 	return false;
 }
 
-/* Returns true if we found and killed one or more timeouts */
+ 
 __cold bool io_kill_timeouts(struct io_ring_ctx *ctx, struct task_struct *tsk,
 			     bool cancel_all)
 {
 	struct io_timeout *timeout, *tmp;
 	int canceled = 0;
 
-	/*
-	 * completion_lock is needed for io_match_task(). Take it before
-	 * timeout_lockfirst to keep locking ordering.
-	 */
+	 
 	spin_lock(&ctx->completion_lock);
 	spin_lock_irq(&ctx->timeout_lock);
 	list_for_each_entry_safe(timeout, tmp, &ctx->timeout_list, list) {

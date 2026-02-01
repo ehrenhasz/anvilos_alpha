@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* -*- linux-c -*- ------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007 rPath, Inc. - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * Check for obligatory CPU features and abort if the features are not
- * present.  This code should be compilable as 16-, 32- or 64-bit
- * code, so be very careful with types and inline assembly.
- *
- * This code should not contain any messages; that requires an
- * additional wrapper.
- *
- * As written, this code is not safe for inclusion into the kernel
- * proper (after FPU initialization, in particular).
- */
+ 
+
+ 
 
 #ifdef _SETUP
 # include "boot.h"
@@ -37,20 +22,20 @@ static const u32 req_flags[NCAPINTS] =
 {
 	REQUIRED_MASK0,
 	REQUIRED_MASK1,
-	0, /* REQUIRED_MASK2 not implemented in this file */
-	0, /* REQUIRED_MASK3 not implemented in this file */
+	0,  
+	0,  
 	REQUIRED_MASK4,
-	0, /* REQUIRED_MASK5 not implemented in this file */
+	0,  
 	REQUIRED_MASK6,
-	0, /* REQUIRED_MASK7 not implemented in this file */
-	0, /* REQUIRED_MASK8 not implemented in this file */
-	0, /* REQUIRED_MASK9 not implemented in this file */
-	0, /* REQUIRED_MASK10 not implemented in this file */
-	0, /* REQUIRED_MASK11 not implemented in this file */
-	0, /* REQUIRED_MASK12 not implemented in this file */
-	0, /* REQUIRED_MASK13 not implemented in this file */
-	0, /* REQUIRED_MASK14 not implemented in this file */
-	0, /* REQUIRED_MASK15 not implemented in this file */
+	0,  
+	0,  
+	0,  
+	0,  
+	0,  
+	0,  
+	0,  
+	0,  
+	0,  
 	REQUIRED_MASK16,
 };
 
@@ -84,7 +69,7 @@ static int is_intel(void)
 	       cpu_vendor[2] == A32('n', 't', 'e', 'l');
 }
 
-/* Returns a bitmask of which words we have error bits in */
+ 
 static int check_cpuflags(void)
 {
 	u32 err;
@@ -100,14 +85,7 @@ static int check_cpuflags(void)
 	return err;
 }
 
-/*
- * Returns -1 on error.
- *
- * *cpu_level is set to the current CPU level; *req_level to the required
- * level.  x86-64 is considered level 64 for this purpose.
- *
- * *err_flags_ptr is set to the flags error array if there are flags missing.
- */
+ 
 int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 {
 	int err;
@@ -128,8 +106,7 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 	    !(err_flags[0] &
 	      ~((1 << X86_FEATURE_XMM)|(1 << X86_FEATURE_XMM2))) &&
 	    is_amd()) {
-		/* If this is an AMD and we're only missing SSE+SSE2, try to
-		   turn them on */
+		 
 
 		struct msr m;
 
@@ -137,13 +114,12 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 		m.l &= ~(1 << 15);
 		boot_wrmsr(MSR_K7_HWCR, &m);
 
-		get_cpuflags();	/* Make sure it really did something */
+		get_cpuflags();	 
 		err = check_cpuflags();
 	} else if (err == 0x01 &&
 		   !(err_flags[0] & ~(1 << X86_FEATURE_CX8)) &&
 		   is_centaur() && cpu.model >= 6) {
-		/* If this is a VIA C3, we might have to enable CX8
-		   explicitly */
+		 
 
 		struct msr m;
 
@@ -154,7 +130,7 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 		set_bit(X86_FEATURE_CX8, cpu.flags);
 		err = check_cpuflags();
 	} else if (err == 0x01 && is_transmeta()) {
-		/* Transmeta might have masked feature bits in word 0 */
+		 
 
 		struct msr m, m_tmp;
 		u32 level = 1;
@@ -173,7 +149,7 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 		   !(err_flags[0] & ~(1 << X86_FEATURE_PAE)) &&
 		   is_intel() && cpu.level == 6 &&
 		   (cpu.model == 9 || cpu.model == 13)) {
-		/* PAE is disabled on this Pentium M but can be forced */
+		 
 		if (cmdline_find_option_bool("forcepae")) {
 			puts("WARNING: Forcing PAE in CPU flags\n");
 			set_bit(X86_FEATURE_PAE, cpu.flags);
@@ -198,22 +174,13 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 
 int check_knl_erratum(void)
 {
-	/*
-	 * First check for the affected model/family:
-	 */
+	 
 	if (!is_intel() ||
 	    cpu.family != 6 ||
 	    cpu.model != INTEL_FAM6_XEON_PHI_KNL)
 		return 0;
 
-	/*
-	 * This erratum affects the Accessed/Dirty bits, and can
-	 * cause stray bits to be set in !Present PTEs.  We have
-	 * enough bits in our 64-bit PTEs (which we have on real
-	 * 64-bit mode or PAE) to avoid using these troublesome
-	 * bits.  But, we do not have enough space in our 32-bit
-	 * PTEs.  So, refuse to run on 32-bit non-PAE kernels.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_X86_64) || IS_ENABLED(CONFIG_X86_PAE))
 		return 0;
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/seq_file.h>
 
@@ -32,7 +32,7 @@ nfp_nfdk_tx_ring_reset(struct nfp_net_dp *dp, struct nfp_net_tx_ring *tx_ring)
 		nr_frags = skb_shinfo(skb)->nr_frags;
 		txbuf++;
 
-		/* Unmap head */
+		 
 		size = skb_headlen(skb);
 		dma_unmap_single(dev, txbuf->dma_addr, size, DMA_TO_DEVICE);
 		n_descs += nfp_nfdk_headlen_to_segs(size);

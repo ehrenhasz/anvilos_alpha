@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * adm1031.c - Part of lm_sensors, Linux kernel modules for hardware
- *	       monitoring
- * Based on lm75.c and lm85.c
- * Supports adm1030 / adm1031
- * Copyright (C) 2004 Alexandre d'Alton <alex@alexdalton.org>
- * Reworked by Jean Delvare <jdelvare@suse.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -18,7 +11,7 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 
-/* Following macros takes channel parameter starting from 0 to 2 */
+ 
 #define ADM1031_REG_FAN_SPEED(nr)	(0x08 + (nr))
 #define ADM1031_REG_FAN_DIV(nr)		(0x20 + (nr))
 #define ADM1031_REG_PWM			(0x22)
@@ -39,9 +32,9 @@
 #define ADM1031_REG_CONF2		0x01
 #define ADM1031_REG_EXT_TEMP		0x06
 
-#define ADM1031_CONF1_MONITOR_ENABLE	0x01	/* Monitoring enable */
-#define ADM1031_CONF1_PWM_INVERT	0x08	/* PWM Invert */
-#define ADM1031_CONF1_AUTO_MODE		0x80	/* Auto FAN */
+#define ADM1031_CONF1_MONITOR_ENABLE	0x01	 
+#define ADM1031_CONF1_PWM_INVERT	0x08	 
+#define ADM1031_CONF1_AUTO_MODE		0x80	 
 
 #define ADM1031_CONF2_PWM1_ENABLE	0x01
 #define ADM1031_CONF2_PWM2_ENABLE	0x02
@@ -52,26 +45,23 @@
 #define ADM1031_UPDATE_RATE_MASK	0x1c
 #define ADM1031_UPDATE_RATE_SHIFT	2
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, I2C_CLIENT_END };
 
 enum chips { adm1030, adm1031 };
 
 typedef u8 auto_chan_table_t[8][2];
 
-/* Each client has this additional data */
+ 
 struct adm1031_data {
 	struct i2c_client *client;
 	const struct attribute_group *groups[3];
 	struct mutex update_lock;
 	int chip_type;
-	bool valid;		/* true if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
-	unsigned int update_interval;	/* In milliseconds */
-	/*
-	 * The chan_select_table contains the possible configurations for
-	 * auto fan control.
-	 */
+	bool valid;		 
+	unsigned long last_updated;	 
+	unsigned int update_interval;	 
+	 
 	const auto_chan_table_t *chan_select_table;
 	u16 alarm;
 	u8 conf1;
@@ -137,7 +127,7 @@ static struct adm1031_data *adm1031_update_device(struct device *dev)
 				    adm1031_read_value(client,
 						       ADM1031_REG_TEMP(chan));
 
-				/* oldh is actually newer */
+				 
 				if (newh != oldh)
 					dev_warn(&client->dev,
 					  "Remote temperature may be wrong.\n");
@@ -251,36 +241,28 @@ static int AUTO_TEMP_MAX_TO_REG(int val, int reg, int pwm)
 	return ret;
 }
 
-/* FAN auto control */
+ 
 #define GET_FAN_AUTO_BITFIELD(data, idx)	\
 	(*(data)->chan_select_table)[FAN_CHAN_FROM_REG((data)->conf1)][idx % 2]
 
-/*
- * The tables below contains the possible values for the auto fan
- * control bitfields. the index in the table is the register value.
- * MSb is the auto fan control enable bit, so the four first entries
- * in the table disables auto fan control when both bitfields are zero.
- */
+ 
 static const auto_chan_table_t auto_channel_select_table_adm1031 = {
 	{ 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
-	{ 2 /* 0b010 */ , 4 /* 0b100 */ },
-	{ 2 /* 0b010 */ , 2 /* 0b010 */ },
-	{ 4 /* 0b100 */ , 4 /* 0b100 */ },
-	{ 7 /* 0b111 */ , 7 /* 0b111 */ },
+	{ 2   , 4   },
+	{ 2   , 2   },
+	{ 4   , 4   },
+	{ 7   , 7   },
 };
 
 static const auto_chan_table_t auto_channel_select_table_adm1030 = {
 	{ 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
-	{ 2 /* 0b10 */		, 0 },
-	{ 0xff /* invalid */	, 0 },
-	{ 0xff /* invalid */	, 0 },
-	{ 3 /* 0b11 */		, 0 },
+	{ 2  		, 0 },
+	{ 0xff  	, 0 },
+	{ 0xff  	, 0 },
+	{ 3  		, 0 },
 };
 
-/*
- * That function checks if a bitfield is valid and returns the other bitfield
- * nearest match if no exact match where found.
- */
+ 
 static int
 get_fan_auto_nearest(struct adm1031_data *data, int chan, u8 val, u8 reg)
 {
@@ -296,15 +278,12 @@ get_fan_auto_nearest(struct adm1031_data *data, int chan, u8 val, u8 reg)
 		if ((val == (*data->chan_select_table)[i][chan]) &&
 		    ((*data->chan_select_table)[i][chan ? 0 : 1] ==
 		     other_reg_val)) {
-			/* We found an exact match */
+			 
 			exact_match = i;
 			break;
 		} else if (val == (*data->chan_select_table)[i][chan] &&
 			   first_match == -1) {
-			/*
-			 * Save the first match in case of an exact match has
-			 * not been found
-			 */
+			 
 			first_match = i;
 		}
 	}
@@ -355,19 +334,15 @@ fan_auto_channel_store(struct device *dev, struct device_attribute *attr,
 	if ((data->conf1 & ADM1031_CONF1_AUTO_MODE) ^
 	    (old_fan_mode & ADM1031_CONF1_AUTO_MODE)) {
 		if (data->conf1 & ADM1031_CONF1_AUTO_MODE) {
-			/*
-			 * Switch to Auto Fan Mode
-			 * Save PWM registers
-			 * Set PWM registers to 33% Both
-			 */
+			 
 			data->old_pwm[0] = data->pwm[0];
 			data->old_pwm[1] = data->pwm[1];
 			adm1031_write_value(client, ADM1031_REG_PWM, 0x55);
 		} else {
-			/* Switch to Manual Mode */
+			 
 			data->pwm[0] = data->old_pwm[0];
 			data->pwm[1] = data->old_pwm[1];
-			/* Restore PWM registers */
+			 
 			adm1031_write_value(client, ADM1031_REG_PWM,
 					    data->pwm[0] | (data->pwm[1] << 4));
 		}
@@ -381,7 +356,7 @@ fan_auto_channel_store(struct device *dev, struct device_attribute *attr,
 static SENSOR_DEVICE_ATTR_RW(auto_fan1_channel, fan_auto_channel, 0);
 static SENSOR_DEVICE_ATTR_RW(auto_fan2_channel, fan_auto_channel, 1);
 
-/* Auto Temps */
+ 
 static ssize_t auto_temp_off_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
@@ -462,7 +437,7 @@ static SENSOR_DEVICE_ATTR_RO(auto_temp3_off, auto_temp_off, 2);
 static SENSOR_DEVICE_ATTR_RW(auto_temp3_min, auto_temp_min, 2);
 static SENSOR_DEVICE_ATTR_RW(auto_temp3_max, auto_temp_max, 2);
 
-/* pwm */
+ 
 static ssize_t pwm_show(struct device *dev, struct device_attribute *attr,
 			char *buf)
 {
@@ -486,7 +461,7 @@ static ssize_t pwm_store(struct device *dev, struct device_attribute *attr,
 	mutex_lock(&data->update_lock);
 	if ((data->conf1 & ADM1031_CONF1_AUTO_MODE) &&
 	    (((val>>4) & 0xf) != 5)) {
-		/* In automatic mode, the only PWM accepted is 33% */
+		 
 		mutex_unlock(&data->update_lock);
 		return -EINVAL;
 	}
@@ -504,13 +479,9 @@ static SENSOR_DEVICE_ATTR_RW(pwm2, pwm, 1);
 static SENSOR_DEVICE_ATTR_RW(auto_fan1_min_pwm, pwm, 0);
 static SENSOR_DEVICE_ATTR_RW(auto_fan2_min_pwm, pwm, 1);
 
-/* Fans */
+ 
 
-/*
- * That function checks the cases where the fan reading is not
- * relevant.  It is used to provide 0 as fan reading when the fan is
- * not supposed to run
- */
+ 
 static int trust_fan_readings(struct adm1031_data *data, int chan)
 {
 	int res = 0;
@@ -518,24 +489,21 @@ static int trust_fan_readings(struct adm1031_data *data, int chan)
 	if (data->conf1 & ADM1031_CONF1_AUTO_MODE) {
 		switch (data->conf1 & 0x60) {
 		case 0x00:
-			/*
-			 * remote temp1 controls fan1,
-			 * remote temp2 controls fan2
-			 */
+			 
 			res = data->temp[chan+1] >=
 			    AUTO_TEMP_MIN_FROM_REG_DEG(data->auto_temp[chan+1]);
 			break;
-		case 0x20:	/* remote temp1 controls both fans */
+		case 0x20:	 
 			res =
 			    data->temp[1] >=
 			    AUTO_TEMP_MIN_FROM_REG_DEG(data->auto_temp[1]);
 			break;
-		case 0x40:	/* remote temp2 controls both fans */
+		case 0x40:	 
 			res =
 			    data->temp[2] >=
 			    AUTO_TEMP_MIN_FROM_REG_DEG(data->auto_temp[2]);
 			break;
-		case 0x60:	/* max controls both fans */
+		case 0x60:	 
 			res =
 			    data->temp[0] >=
 			    AUTO_TEMP_MIN_FROM_REG_DEG(data->auto_temp[0])
@@ -631,13 +599,13 @@ static ssize_t fan_div_store(struct device *dev,
 		return -EINVAL;
 
 	mutex_lock(&data->update_lock);
-	/* Get fresh readings */
+	 
 	data->fan_div[nr] = adm1031_read_value(client,
 					       ADM1031_REG_FAN_DIV(nr));
 	data->fan_min[nr] = adm1031_read_value(client,
 					       ADM1031_REG_FAN_MIN(nr));
 
-	/* Write the new clock divider and fan min */
+	 
 	old_div = FAN_DIV_FROM_REG(data->fan_div[nr]);
 	data->fan_div[nr] = tmp | (0x3f & data->fan_div[nr]);
 	new_min = data->fan_min[nr] * old_div / val;
@@ -648,7 +616,7 @@ static ssize_t fan_div_store(struct device *dev,
 	adm1031_write_value(client, ADM1031_REG_FAN_MIN(nr),
 			    data->fan_min[nr]);
 
-	/* Invalidate the cache: fan speed is no longer valid */
+	 
 	data->valid = false;
 	mutex_unlock(&data->update_lock);
 	return count;
@@ -661,7 +629,7 @@ static SENSOR_DEVICE_ATTR_RO(fan2_input, fan, 1);
 static SENSOR_DEVICE_ATTR_RW(fan2_min, fan_min, 1);
 static SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
 
-/* Temps */
+ 
 static ssize_t temp_show(struct device *dev, struct device_attribute *attr,
 			 char *buf)
 {
@@ -807,7 +775,7 @@ static SENSOR_DEVICE_ATTR_RW(temp3_min, temp_min, 2);
 static SENSOR_DEVICE_ATTR_RW(temp3_max, temp_max, 2);
 static SENSOR_DEVICE_ATTR_RW(temp3_crit, temp_crit, 2);
 
-/* Alarms */
+ 
 static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
 			   char *buf)
 {
@@ -841,7 +809,7 @@ static SENSOR_DEVICE_ATTR_RO(temp3_crit_alarm, alarm, 12);
 static SENSOR_DEVICE_ATTR_RO(temp3_fault, alarm, 13);
 static SENSOR_DEVICE_ATTR_RO(temp1_crit_alarm, alarm, 14);
 
-/* Update Interval */
+ 
 static const unsigned int update_intervals[] = {
 	16000, 8000, 4000, 2000, 1000, 500, 250, 125,
 };
@@ -868,17 +836,14 @@ static ssize_t update_interval_store(struct device *dev,
 	if (err)
 		return err;
 
-	/*
-	 * Find the nearest update interval from the table.
-	 * Use it to determine the matching update rate.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(update_intervals) - 1; i++) {
 		if (val >= update_intervals[i])
 			break;
 	}
-	/* if not found, we point to the last entry (lowest update interval) */
+	 
 
-	/* set the new update rate while preserving other settings */
+	 
 	reg = adm1031_read_value(client, ADM1031_REG_FAN_FILTER);
 	reg &= ~ADM1031_UPDATE_RATE_MASK;
 	reg |= i << ADM1031_UPDATE_RATE_SHIFT;
@@ -967,7 +932,7 @@ static const struct attribute_group adm1031_group_opt = {
 	.attrs = adm1031_attributes_opt,
 };
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int adm1031_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -1002,7 +967,7 @@ static void adm1031_init_client(struct i2c_client *client)
 		mask |= (ADM1031_CONF2_PWM2_ENABLE |
 			ADM1031_CONF2_TACH2_ENABLE);
 	}
-	/* Initialize the ADM1031 chip (enables fan speed reading ) */
+	 
 	read_val = adm1031_read_value(client, ADM1031_REG_CONF2);
 	if ((read_val | mask) != read_val)
 		adm1031_write_value(client, ADM1031_REG_CONF2, read_val | mask);
@@ -1013,11 +978,11 @@ static void adm1031_init_client(struct i2c_client *client)
 				    read_val | ADM1031_CONF1_MONITOR_ENABLE);
 	}
 
-	/* Read the chip's update rate */
+	 
 	mask = ADM1031_UPDATE_RATE_MASK;
 	read_val = adm1031_read_value(client, ADM1031_REG_FAN_FILTER);
 	i = (read_val & mask) >> ADM1031_UPDATE_RATE_SHIFT;
-	/* Save it as update interval */
+	 
 	data->update_interval = update_intervals[i];
 }
 
@@ -1043,10 +1008,10 @@ static int adm1031_probe(struct i2c_client *client)
 	else
 		data->chan_select_table = &auto_channel_select_table_adm1031;
 
-	/* Initialize the ADM1031 chip */
+	 
 	adm1031_init_client(client);
 
-	/* sysfs hooks */
+	 
 	data->groups[0] = &adm1031_group;
 	if (data->chip_type == adm1031)
 		data->groups[1] = &adm1031_group_opt;

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Driver for Microsemi VSC85xx PHYs
- *
- * Copyright (c) 2021 Microsemi Corporation
- */
+ 
+ 
 
 #ifndef _MSCC_SERDES_PHY_H_
 #define _MSCC_SERDES_PHY_H_
@@ -28,4 +24,4 @@
 
 int vsc85xx_sd6g_config_v2(struct phy_device *phydev);
 
-#endif /* _MSCC_PHY_SERDES_H_ */
+#endif  

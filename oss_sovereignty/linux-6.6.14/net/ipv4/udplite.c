@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  UDPLITE     An implementation of the UDP-Lite protocol (RFC 3828).
- *
- *  Authors:    Gerrit Renker       <gerrit@erg.abdn.ac.uk>
- *
- *  Changes:
- *  Fixes:
- */
+
+ 
 
 #define pr_fmt(fmt) "UDPLite: " fmt
 
@@ -17,7 +10,7 @@
 struct udp_table 	udplite_table __read_mostly;
 EXPORT_SYMBOL(udplite_table);
 
-/* Designate sk as UDP-Lite socket */
+ 
 static int udplite_sk_init(struct sock *sk)
 {
 	udp_init_sock(sk);

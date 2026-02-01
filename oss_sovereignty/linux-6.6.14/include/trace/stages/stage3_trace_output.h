@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/* Stage 3 definitions for creating trace events */
+ 
 
 #undef __entry
 #define __entry field

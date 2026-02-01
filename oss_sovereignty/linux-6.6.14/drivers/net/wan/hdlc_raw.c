@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic HDLC support routines for Linux
- * HDLC support
- *
- * Copyright (C) 1999 - 2006 Krzysztof Halasa <khc@pm.waw.pl>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/hdlc.h>
@@ -47,7 +42,7 @@ static int raw_ioctl(struct net_device *dev, struct if_settings *ifs)
 			return -EINVAL;
 		ifs->type = IF_PROTO_HDLC;
 		if (ifs->size < size) {
-			ifs->size = size; /* data size wanted */
+			ifs->size = size;  
 			return -ENOBUFS;
 		}
 		if (copy_to_user(raw_s, hdlc->state, size))

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt8195-mt6359.c  --
- *	MT8195-MT6359 ALSA SoC machine driver code
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Trevor Wu <trevor.wu@mediatek.com>
- *	   YC Hung <yc.hung@mediatek.com>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -37,8 +30,8 @@
 #define RT1019_DEV0_NAME	"rt1019p"
 
 #define MAX98390_CODEC_DAI	"max98390-aif1"
-#define MAX98390_DEV0_NAME	"max98390.2-0038" /* right */
-#define MAX98390_DEV1_NAME	"max98390.2-0039" /* left */
+#define MAX98390_DEV0_NAME	"max98390.2-0038"  
+#define MAX98390_DEV1_NAME	"max98390.2-0039"  
 
 #define RT5682_CODEC_DAI	"rt5682-aif1"
 #define RT5682_DEV0_NAME	"rt5682.2-001a"
@@ -63,7 +56,7 @@ struct mt8195_mt6359_priv {
 	struct clk *i2so1_mclk;
 };
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin mt8195_jack_pins[] = {
 	{
 		.pin = "Headphone",
@@ -85,16 +78,16 @@ static const struct snd_soc_dapm_widget mt8195_mt6359_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route mt8195_mt6359_routes[] = {
-	/* headset */
+	 
 	{ "Headphone", NULL, "HPOL" },
 	{ "Headphone", NULL, "HPOR" },
 	{ "IN1P", NULL, "Headset Mic" },
-	/* SOF Uplink */
+	 
 	{SOF_DMA_UL4, NULL, "O034"},
 	{SOF_DMA_UL4, NULL, "O035"},
 	{SOF_DMA_UL5, NULL, "O036"},
 	{SOF_DMA_UL5, NULL, "O037"},
-	/* SOF Downlink */
+	 
 	{"I070", NULL, SOF_DMA_DL2},
 	{"I071", NULL, SOF_DMA_DL2},
 	{"I020", NULL, SOF_DMA_DL3},
@@ -182,10 +175,10 @@ static int mt8195_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
 	pm_runtime_get_sync(afe->dev);
 	mt6359_mtkaif_calibration_enable(cmpnt_codec);
 
-	/* set test type to synchronizer pulse */
+	 
 	regmap_update_bits(afe_priv->topckgen,
 			   CKSYS_AUD_TOP_CFG, 0xffff, 0x4);
-	mtkaif_calibration_num_phase = 42;	/* mt6359: 0 ~ 42 */
+	mtkaif_calibration_num_phase = 42;	 
 	mtkaif_calibration_ok = true;
 
 	for (phase = 0;
@@ -219,7 +212,7 @@ static int mt8195_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
 			if (test_done_3 == 1)
 				cycle_3 = (monitor >> 8) & 0xf;
 
-			/* handle if never test done */
+			 
 			if (++counter > 10000) {
 				dev_info(afe->dev, "%s(), test fail, cycle_1 %d, cycle_2 %d, cycle_3 %d, monitor 0x%x\n",
 					 __func__,
@@ -309,11 +302,11 @@ static int mt8195_mt6359_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_component *cmpnt_codec =
 		asoc_rtd_to_codec(rtd, 0)->component;
 
-	/* set mtkaif protocol */
+	 
 	mt6359_set_mtkaif_protocol(cmpnt_codec,
 				   MT6359_MTKAIF_PROTOCOL_2_CLK_P2);
 
-	/* mtkaif calibration */
+	 
 	mt8195_mt6359_mtkaif_calibration(rtd);
 
 	return 0;
@@ -414,7 +407,7 @@ static int mt8195_hdmi_codec_init(struct snd_soc_pcm_runtime *rtd)
 static int mt8195_dptx_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 				       struct snd_pcm_hw_params *params)
 {
-	/* fix BE i2s format to S24_LE, clean param mask first */
+	 
 	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
 
@@ -640,7 +633,7 @@ static int mt8195_sof_be_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_component *cmpnt_afe = NULL;
 	struct snd_soc_pcm_runtime *runtime;
 
-	/* find afe component */
+	 
 	for_each_card_rtds(rtd->card, runtime) {
 		cmpnt_afe = snd_soc_rtdcom_lookup(runtime, AFE_PCM_NAME);
 		if (cmpnt_afe)
@@ -668,7 +661,7 @@ static int mt8195_rt1011_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(mt8195_dual_speaker_widgets));
 	if (ret) {
 		dev_err(rtd->dev, "unable to add dapm controls, ret %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -696,7 +689,7 @@ static int mt8195_rt1019_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(mt8195_speaker_widgets));
 	if (ret) {
 		dev_err(rtd->dev, "unable to add dapm controls, ret %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -724,7 +717,7 @@ static int mt8195_max98390_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(mt8195_dual_speaker_widgets));
 	if (ret) {
 		dev_err(rtd->dev, "unable to add dapm controls, ret %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -746,7 +739,7 @@ static int mt8195_max98390_init(struct snd_soc_pcm_runtime *rtd)
 static int mt8195_etdm_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 				       struct snd_pcm_hw_params *params)
 {
-	/* fix BE i2s format to S24_LE, clean param mask first */
+	 
 	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
 
@@ -763,11 +756,7 @@ static int mt8195_set_bias_level_post(struct snd_soc_card *card,
 	struct mt8195_mt6359_priv *priv = soc_card_data->mach_priv;
 	int ret;
 
-	/*
-	 * It's required to control mclk directly in the set_bias_level_post
-	 * function for rt5682 and rt5682s codec, or the unexpected pop happens
-	 * at the end of playback.
-	 */
+	 
 	if (!component ||
 	    (strcmp(component->name, RT5682_DEV0_NAME) &&
 	    strcmp(component->name, RT5682S_DEV0_NAME)))
@@ -834,7 +823,7 @@ enum {
 
 #define	DAI_LINK_REGULAR_NUM	(DAI_LINK_REGULAR_LAST + 1)
 
-/* FE */
+ 
 SND_SOC_DAILINK_DEFS(DL2_FE,
 		     DAILINK_COMP_ARRAY(COMP_CPU("DL2")),
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -915,7 +904,7 @@ SND_SOC_DAILINK_DEFS(UL10_FE,
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* BE */
+ 
 SND_SOC_DAILINK_DEFS(DL_SRC_BE,
 		     DAILINK_COMP_ARRAY(COMP_CPU("DL_SRC")),
 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
@@ -991,7 +980,7 @@ SND_SOC_DAILINK_DEFS(AFE_SOF_UL5,
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* codec */
+ 
 SND_SOC_DAILINK_DEF(rt1019_comps,
 		    DAILINK_COMP_ARRAY(COMP_CODEC(RT1019_DEV0_NAME,
 						  RT1019_CODEC_DAI)));
@@ -1016,7 +1005,7 @@ static const struct sof_conn_stream g_sof_conn_streams[] = {
 };
 
 static struct snd_soc_dai_link mt8195_mt6359_dai_links[] = {
-	/* FE */
+	 
 	[DAI_LINK_DL2_FE] = {
 		.name = "DL2_FE",
 		.stream_name = "DL2 Playback",
@@ -1206,7 +1195,7 @@ static struct snd_soc_dai_link mt8195_mt6359_dai_links[] = {
 		.ops = &mt8195_capture_ops,
 		SND_SOC_DAILINK_REG(UL10_FE),
 	},
-	/* BE */
+	 
 	[DAI_LINK_DL_SRC_BE] = {
 		.name = "DL_SRC_BE",
 		.no_pcm = 1,
@@ -1293,7 +1282,7 @@ static struct snd_soc_dai_link mt8195_mt6359_dai_links[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(UL_SRC2_BE),
 	},
-	/* SOF BE */
+	 
 	[DAI_LINK_SOF_DL2_BE] = {
 		.name = "AFE_SOF_DL2",
 		.no_pcm = 1,
@@ -1359,7 +1348,7 @@ static struct snd_soc_card mt8195_mt6359_soc_card = {
 	.set_bias_level_post = mt8195_set_bias_level_post,
 };
 
-/* fixup the BE DAI link to match any values from topology */
+ 
 static int mt8195_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 				 struct snd_pcm_hw_params *params)
 {
@@ -1587,7 +1576,7 @@ static struct platform_driver mt8195_mt6359_driver = {
 
 module_platform_driver(mt8195_mt6359_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8195-MT6359 ALSA SoC machine driver");
 MODULE_AUTHOR("Trevor Wu <trevor.wu@mediatek.com>");
 MODULE_AUTHOR("YC Hung <yc.hung@mediatek.com>");

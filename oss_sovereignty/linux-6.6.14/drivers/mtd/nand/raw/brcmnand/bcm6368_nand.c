@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015 Simon Arlott
- *
- * Derived from bcm63138_nand.c:
- * Copyright © 2015 Broadcom Corporation
- *
- * Derived from bcm963xx_4.12L.06B_consumer/shared/opensource/include/bcm963xx/63268_map_part.h:
- * Copyright 2000-2010 Broadcom Corporation
- *
- * Derived from bcm963xx_4.12L.06B_consumer/shared/opensource/flash/nandflash.c:
- * Copyright 2000-2010 Broadcom Corporation
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -55,7 +44,7 @@ static bool bcm6368_nand_intc_ack(struct brcmnand_soc *soc)
 	u32 val = brcmnand_readl(mmio);
 
 	if (val & (BCM6368_CTRL_READY << BCM6368_NAND_STATUS_SHIFT)) {
-		/* Ack interrupt */
+		 
 		val &= ~BCM6368_NAND_STATUS_MASK;
 		val |= BCM6368_CTRL_READY << BCM6368_NAND_STATUS_SHIFT;
 		brcmnand_writel(val, mmio);
@@ -72,7 +61,7 @@ static void bcm6368_nand_intc_set(struct brcmnand_soc *soc, bool en)
 	void __iomem *mmio = priv->base + BCM6368_NAND_INT;
 	u32 val = brcmnand_readl(mmio);
 
-	/* Don't ack any interrupts */
+	 
 	val &= ~BCM6368_NAND_STATUS_MASK;
 
 	if (en)
@@ -101,7 +90,7 @@ static int bcm6368_nand_probe(struct platform_device *pdev)
 	soc->ctlrdy_ack = bcm6368_nand_intc_ack;
 	soc->ctlrdy_set_enabled = bcm6368_nand_intc_set;
 
-	/* Disable and ack all interrupts  */
+	 
 	brcmnand_writel(0, priv->base + BCM6368_NAND_INT);
 	brcmnand_writel(BCM6368_NAND_STATUS_MASK,
 			priv->base + BCM6368_NAND_INT);

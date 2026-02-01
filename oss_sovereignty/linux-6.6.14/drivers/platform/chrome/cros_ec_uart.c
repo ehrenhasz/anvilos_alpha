@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UART interface for ChromeOS Embedded Controller
- *
- * Copyright 2020-2022 Google LLC.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -19,41 +15,10 @@
 
 #include "cros_ec.h"
 
-/*
- * EC sends contiguous bytes of response packet on UART AP RX.
- * TTY driver in AP accumulates incoming bytes and calls the registered callback
- * function. Byte count can range from 1 to MAX bytes supported by EC.
- * This driver should wait for long time for all callbacks to be processed.
- * Considering the worst case scenario, wait for 500 msec. This timeout should
- * account for max latency and some additional guard time.
- * Best case: Entire packet is received in ~200 ms, wait queue will be released
- * and packet will be processed.
- * Worst case: TTY driver sends bytes in multiple callbacks. In this case this
- * driver will wait for ~1 sec beyond which it will timeout.
- * This timeout value should not exceed ~500 msec because in case if
- * EC_CMD_REBOOT_EC sent, high level driver should be able to intercept EC
- * in RO.
- */
+ 
 #define EC_MSG_DEADLINE_MS		500
 
-/**
- * struct response_info - Encapsulate EC response related
- *			information for passing between function
- *			cros_ec_uart_pkt_xfer() and cros_ec_uart_rx_bytes()
- *			callback.
- * @data:		Copy the data received from EC here.
- * @max_size:		Max size allocated for the @data buffer. If the
- *			received data exceeds this value, we log an error.
- * @size:		Actual size of data received from EC. This is also
- *			used to accumulate byte count with response is received
- *			in dma chunks.
- * @exp_len:		Expected bytes of response from EC including header.
- * @status:		Re-init to 0 before sending a cmd. Updated to 1 when
- *			a response is successfully received, or an error number
- *			on failure.
- * @wait_queue:	Wait queue EC response where the cros_ec sends request
- *			to EC and waits
- */
+ 
 struct response_info {
 	void *data;
 	size_t max_size;
@@ -63,16 +28,7 @@ struct response_info {
 	wait_queue_head_t wait_queue;
 };
 
-/**
- * struct cros_ec_uart - information about a uart-connected EC
- *
- * @serdev:		serdev uart device we are connected to.
- * @baudrate:		UART baudrate of attached EC device.
- * @flowcontrol:	UART flowcontrol of attached device.
- * @irq:		Linux IRQ number of associated serial device.
- * @response:		Response info passing between cros_ec_uart_pkt_xfer()
- *			and cros_ec_uart_rx_bytes()
- */
+ 
 struct cros_ec_uart {
 	struct serdev_device *serdev;
 	u32 baudrate;
@@ -90,18 +46,14 @@ static int cros_ec_uart_rx_bytes(struct serdev_device *serdev,
 	struct cros_ec_uart *ec_uart = ec_dev->priv;
 	struct response_info *resp = &ec_uart->response;
 
-	/* Check if bytes were sent out of band */
+	 
 	if (!resp->data) {
-		/* Discard all bytes */
+		 
 		dev_warn(ec_dev->dev, "Bytes received out of band, dropping them.\n");
 		return count;
 	}
 
-	/*
-	 * Check if incoming bytes + resp->size is greater than allocated
-	 * buffer in din by cros_ec. This will ensure that if EC sends more
-	 * bytes than max_size, waiting process will be notified with an error.
-	 */
+	 
 	if (resp->size + count > resp->max_size) {
 		resp->status = -EMSGSIZE;
 		wake_up(&resp->wait_queue);
@@ -112,13 +64,13 @@ static int cros_ec_uart_rx_bytes(struct serdev_device *serdev,
 
 	resp->size += count;
 
-	/* Read data_len if we received response header and if exp_len was not read before. */
+	 
 	if (resp->size >= sizeof(*host_response) && resp->exp_len == 0) {
 		host_response = (struct ec_host_response *)resp->data;
 		resp->exp_len = host_response->data_len + sizeof(*host_response);
 	}
 
-	/* If driver received response header and payload from EC, wake up the wait queue. */
+	 
 	if (resp->size >= sizeof(*host_response) && resp->size == resp->exp_len) {
 		resp->status = 1;
 		wake_up(&resp->wait_queue);
@@ -141,7 +93,7 @@ static int cros_ec_uart_pkt_xfer(struct cros_ec_device *ec_dev,
 	len = cros_ec_prepare_tx(ec_dev, ec_msg);
 	dev_dbg(ec_dev->dev, "Prepared len=%d\n", len);
 
-	/* Setup for incoming response */
+	 
 	resp->data = ec_dev->din;
 	resp->max_size = ec_dev->din_size;
 	resp->size = 0;
@@ -180,7 +132,7 @@ static int cros_ec_uart_pkt_xfer(struct cros_ec_device *ec_dev,
 		goto exit;
 	}
 
-	/* Validate checksum */
+	 
 	sum = 0;
 	for (i = 0; i < sizeof(*host_response) + host_response->data_len; i++)
 		sum += ec_dev->din[i];
@@ -196,7 +148,7 @@ static int cros_ec_uart_pkt_xfer(struct cros_ec_device *ec_dev,
 	ret = host_response->data_len;
 
 exit:
-	/* Invalidate response buffer to guard against out of band rx data */
+	 
 	resp->data = NULL;
 
 	if (ec_msg->command == EC_CMD_REBOOT_EC)
@@ -234,7 +186,7 @@ static int cros_ec_uart_acpi_probe(struct cros_ec_uart *ec_uart)
 
 	acpi_dev_free_resource_list(&resources);
 
-	/* Retrieve GpioInt and translate it to Linux IRQ number */
+	 
 	ret = acpi_dev_gpio_irq_get(adev, 0);
 	if (ret < 0)
 		return ret;
@@ -289,7 +241,7 @@ static int cros_ec_uart_probe(struct serdev_device *serdev)
 
 	serdev_device_set_flow_control(serdev, ec_uart->flowcontrol);
 
-	/* Initialize ec_dev for cros_ec  */
+	 
 	ec_dev->phys_name = dev_name(dev);
 	ec_dev->dev = dev;
 	ec_dev->priv = ec_uart;

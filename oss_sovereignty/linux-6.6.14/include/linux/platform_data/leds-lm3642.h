@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-* Copyright (C) 2012 Texas Instruments
-*
-* Simple driver for Texas Instruments LM3642 LED driver chip
-*
-* Author: G.Shark Jeong <gshark.jeong@gmail.com>
-*         Daniel Jeong <daniel.jeong@ti.com>
-*/
+ 
+ 
 
 #ifndef __LINUX_LM3642_H
 #define __LINUX_LM3642_H
@@ -34,4 +27,4 @@ struct lm3642_platform_data {
 	enum lm3642_tx_pin_enable tx_pin;
 };
 
-#endif /* __LINUX_LM3642_H */
+#endif  

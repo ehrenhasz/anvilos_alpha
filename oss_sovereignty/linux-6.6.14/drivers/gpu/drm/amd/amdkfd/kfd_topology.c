@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -42,7 +22,7 @@
 #include "amdgpu_ras.h"
 #include "amdgpu.h"
 
-/* topology_device_list - Master list of all topology devices */
+ 
 static struct list_head topology_device_list;
 static struct kfd_system_properties sys_props;
 
@@ -125,7 +105,7 @@ struct kfd_node *kfd_device_by_pci_dev(const struct pci_dev *pdev)
 	return device;
 }
 
-/* Called with write topology_lock acquired */
+ 
 static void kfd_release_topology_device(struct kfd_topology_device *dev)
 {
 	struct kfd_mem_properties *mem;
@@ -231,7 +211,7 @@ static ssize_t sysprops_show(struct kobject *kobj, struct attribute *attr,
 {
 	int offs = 0;
 
-	/* Making sure that the buffer is an empty string */
+	 
 	buffer[0] = 0;
 
 	if (attr == &sys_props.attr_genid) {
@@ -271,7 +251,7 @@ static ssize_t iolink_show(struct kobject *kobj, struct attribute *attr,
 	int offs = 0;
 	struct kfd_iolink_properties *iolink;
 
-	/* Making sure that the buffer is an empty string */
+	 
 	buffer[0] = 0;
 
 	iolink = container_of(attr, struct kfd_iolink_properties, attr);
@@ -311,7 +291,7 @@ static ssize_t mem_show(struct kobject *kobj, struct attribute *attr,
 	int offs = 0;
 	struct kfd_mem_properties *mem;
 
-	/* Making sure that the buffer is an empty string */
+	 
 	buffer[0] = 0;
 
 	mem = container_of(attr, struct kfd_mem_properties, attr);
@@ -344,7 +324,7 @@ static ssize_t kfd_cache_show(struct kobject *kobj, struct attribute *attr,
 	uint32_t i, j;
 	struct kfd_cache_properties *cache;
 
-	/* Making sure that the buffer is an empty string */
+	 
 	buffer[0] = 0;
 	cache = container_of(attr, struct kfd_cache_properties, attr);
 	if (cache->gpu && kfd_devcgroup_check_permission(cache->gpu))
@@ -364,11 +344,11 @@ static ssize_t kfd_cache_show(struct kobject *kobj, struct attribute *attr,
 	offs += snprintf(buffer+offs, PAGE_SIZE-offs, "sibling_map ");
 	for (i = 0; i < cache->sibling_map_size; i++)
 		for (j = 0; j < sizeof(cache->sibling_map[0])*8; j++)
-			/* Check each bit */
+			 
 			offs += snprintf(buffer+offs, PAGE_SIZE-offs, "%d,",
 						(cache->sibling_map[i] >> j) & 1);
 
-	/* Replace the last "," with end of line */
+	 
 	buffer[offs-1] = '\n';
 	return offs;
 }
@@ -382,7 +362,7 @@ static const struct kobj_type cache_type = {
 	.sysfs_ops = &cache_ops,
 };
 
-/****** Sysfs of Performance Counters ******/
+ 
 
 struct kfd_perf_attr {
 	struct kobj_attribute attr;
@@ -397,7 +377,7 @@ static ssize_t perf_show(struct kobject *kobj, struct kobj_attribute *attrs,
 
 	buf[0] = 0;
 	attr = container_of(attrs, struct kfd_perf_attr, attr);
-	if (!attr->data) /* invalid data for PMC */
+	if (!attr->data)  
 		return 0;
 	else
 		return sysfs_show_32bit_val(buf, offs, attr->data);
@@ -414,7 +394,7 @@ static struct kfd_perf_attr perf_attr_iommu[] = {
 	KFD_PERF_DESC(num_counters, 0),
 	KFD_PERF_DESC(counter_ids, 0),
 };
-/****************************************/
+ 
 
 static ssize_t node_show(struct kobject *kobj, struct attribute *attr,
 		char *buffer)
@@ -423,7 +403,7 @@ static ssize_t node_show(struct kobject *kobj, struct attribute *attr,
 	struct kfd_topology_device *dev;
 	uint32_t log_max_watch_addr;
 
-	/* Making sure that the buffer is an empty string */
+	 
 	buffer[0] = 0;
 
 	if (strcmp(attr->name, "gpu_id") == 0) {
@@ -654,9 +634,7 @@ static int kfd_build_sysfs_node_entry(struct kfd_topology_device *dev,
 	if (WARN_ON(dev->kobj_node))
 		return -EEXIST;
 
-	/*
-	 * Creating the sysfs folders
-	 */
+	 
 	dev->kobj_node = kfd_alloc_struct(dev->kobj_node);
 	if (!dev->kobj_node)
 		return -ENOMEM;
@@ -688,9 +666,7 @@ static int kfd_build_sysfs_node_entry(struct kfd_topology_device *dev,
 	if (!dev->kobj_perf)
 		return -ENOMEM;
 
-	/*
-	 * Creating sysfs files for node properties
-	 */
+	 
 	dev->attr_gpuid.name = "gpu_id";
 	dev->attr_gpuid.mode = KFD_SYSFS_FILE_MODE;
 	sysfs_attr_init(&dev->attr_gpuid);
@@ -794,7 +770,7 @@ static int kfd_build_sysfs_node_entry(struct kfd_topology_device *dev,
 		i++;
 	}
 
-	/* All hardware blocks have the same number of attributes. */
+	 
 	num_attrs = ARRAY_SIZE(perf_attr_iommu);
 	list_for_each_entry(perf, &dev->perf_props, list) {
 		perf->attr_group = kzalloc(sizeof(struct kfd_perf_attr)
@@ -805,10 +781,7 @@ static int kfd_build_sysfs_node_entry(struct kfd_topology_device *dev,
 
 		attrs = (struct attribute **)(perf->attr_group + 1);
 		if (!strcmp(perf->block_name, "iommu")) {
-		/* Information of IOMMU's num_counters and counter_ids is shown
-		 * under /sys/bus/event_source/devices/amd_iommu. We don't
-		 * duplicate here.
-		 */
+		 
 			perf_attr_iommu[0].data = perf->max_concurrent;
 			for (i = 0; i < num_attrs; i++)
 				attrs[i] = &perf_attr_iommu[i].attr.attr;
@@ -823,7 +796,7 @@ static int kfd_build_sysfs_node_entry(struct kfd_topology_device *dev,
 	return 0;
 }
 
-/* Called with write topology lock acquired */
+ 
 static int kfd_build_sysfs_node_tree(void)
 {
 	struct kfd_topology_device *dev;
@@ -840,7 +813,7 @@ static int kfd_build_sysfs_node_tree(void)
 	return 0;
 }
 
-/* Called with write topology lock acquired */
+ 
 static void kfd_remove_sysfs_node_tree(void)
 {
 	struct kfd_topology_device *dev;
@@ -913,7 +886,7 @@ static void kfd_topology_release_sysfs(void)
 	}
 }
 
-/* Called with write topology_lock acquired */
+ 
 static void kfd_topology_update_device_list(struct list_head *temp_list,
 					struct list_head *master_list)
 {
@@ -947,9 +920,7 @@ static void kfd_debug_print_topology(void)
 	up_read(&topology_lock);
 }
 
-/* Helper function for intializing platform_xx members of
- * kfd_system_properties. Uses OEM info from the last CPU/APU node.
- */
+ 
 static void kfd_update_system_properties(void)
 {
 	struct kfd_topology_device *dev;
@@ -987,18 +958,15 @@ static void find_system_memory(const struct dmi_header *dm,
 	}
 }
 
-/* kfd_add_non_crat_information - Add information that is not currently
- *	defined in CRAT but is necessary for KFD topology
- * @dev - topology device to which addition info is added
- */
+ 
 static void kfd_add_non_crat_information(struct kfd_topology_device *kdev)
 {
-	/* Check if CPU only node. */
+	 
 	if (!kdev->gpu) {
-		/* Add system memory information */
+		 
 		dmi_walk(find_system_memory, kdev);
 	}
-	/* TODO: For GPU node, rearrange code from kfd_topology_add_device */
+	 
 }
 
 int kfd_topology_init(void)
@@ -1011,24 +979,16 @@ int kfd_topology_init(void)
 	struct kfd_topology_device *kdev;
 	int proximity_domain;
 
-	/* topology_device_list - Master list of all topology devices
-	 * temp_topology_device_list - temporary list created while parsing CRAT
-	 * or VCRAT. Once parsing is complete the contents of list is moved to
-	 * topology_device_list
-	 */
+	 
 
-	/* Initialize the head for the both the lists */
+	 
 	INIT_LIST_HEAD(&topology_device_list);
 	INIT_LIST_HEAD(&temp_topology_device_list);
 	init_rwsem(&topology_lock);
 
 	memset(&sys_props, 0, sizeof(sys_props));
 
-	/* Proximity domains in ACPI CRAT tables start counting at
-	 * 0. The same should be true for virtual CRAT tables created
-	 * at this stage. GPUs added later in kfd_topology_add_device
-	 * use a counter.
-	 */
+	 
 	proximity_domain = 0;
 
 	ret = kfd_create_crat_image_virtual(&crat_image, &image_size,
@@ -1065,11 +1025,9 @@ int kfd_topology_init(void)
 	} else
 		pr_err("Failed to update topology in sysfs ret=%d\n", ret);
 
-	/* For nodes with GPU, this information gets added
-	 * when GPU is detected (kfd_topology_add_device).
-	 */
+	 
 	if (cpu_only_node) {
-		/* Add additional information to CPU only node created above */
+		 
 		down_write(&topology_lock);
 		kdev = list_first_entry(&topology_device_list,
 				struct kfd_topology_device, list);
@@ -1117,11 +1075,7 @@ static uint32_t kfd_generate_gpu_id(struct kfd_node *gpu)
 
 	return hashout;
 }
-/* kfd_assign_gpu - Attach @gpu to the correct kfd topology device. If
- *		the GPU device is not already present in the topology device
- *		list then return NULL. This means a new topology device has to
- *		be created for this GPU.
- */
+ 
 static struct kfd_topology_device *kfd_assign_gpu(struct kfd_node *gpu)
 {
 	struct kfd_topology_device *dev;
@@ -1132,9 +1086,7 @@ static struct kfd_topology_device *kfd_assign_gpu(struct kfd_node *gpu)
 	struct kfd_iolink_properties *p2plink;
 
 	list_for_each_entry(dev, &topology_device_list, list) {
-		/* Discrete GPUs need their own topology device list
-		 * entries. Don't assign them to CPU/APU nodes.
-		 */
+		 
 		if (dev->node_props.cpu_cores_count)
 			continue;
 
@@ -1158,15 +1110,10 @@ static struct kfd_topology_device *kfd_assign_gpu(struct kfd_node *gpu)
 
 static void kfd_notify_gpu_change(uint32_t gpu_id, int arrival)
 {
-	/*
-	 * TODO: Generate an event for thunk about the arrival/removal
-	 * of the GPU
-	 */
+	 
 }
 
-/* kfd_fill_mem_clk_max_info - Since CRAT doesn't have memory clock info,
- *		patch this after CRAT parsing.
- */
+ 
 static void kfd_fill_mem_clk_max_info(struct kfd_topology_device *dev)
 {
 	struct kfd_mem_properties *mem;
@@ -1175,12 +1122,7 @@ static void kfd_fill_mem_clk_max_info(struct kfd_topology_device *dev)
 	if (!dev)
 		return;
 
-	/* Currently, amdgpu driver (amdgpu_mc) deals only with GPUs with
-	 * single bank of VRAM local memory.
-	 * for dGPUs - VCRAT reports only one bank of Local Memory
-	 * for APUs - If CRAT from ACPI reports more than one bank, then
-	 *	all the banks will report the same mem_clk_max information
-	 */
+	 
 	amdgpu_amdkfd_get_local_mem_info(dev->gpu->adev, &local_mem_info,
 					 dev->gpu->xcp);
 
@@ -1192,11 +1134,11 @@ static void kfd_set_iolink_no_atomics(struct kfd_topology_device *dev,
 					struct kfd_topology_device *target_gpu_dev,
 					struct kfd_iolink_properties *link)
 {
-	/* xgmi always supports atomics between links. */
+	 
 	if (link->iolink_type == CRAT_IOLINK_TYPE_XGMI)
 		return;
 
-	/* check pcie support to set cpu(dev) flags for target_gpu_dev link. */
+	 
 	if (target_gpu_dev) {
 		uint32_t cap;
 
@@ -1207,7 +1149,7 @@ static void kfd_set_iolink_no_atomics(struct kfd_topology_device *dev,
 			     PCI_EXP_DEVCAP2_ATOMIC_COMP64)))
 			link->flags |= CRAT_IOLINK_FLAGS_NO_ATOMICS_32_BIT |
 				CRAT_IOLINK_FLAGS_NO_ATOMICS_64_BIT;
-	/* set gpu (dev) flags. */
+	 
 	} else {
 		if (!dev->gpu->kfd->pci_atomic_requested ||
 				dev->gpu->adev->asic_type == CHIP_HAWAII)
@@ -1220,15 +1162,13 @@ static void kfd_set_iolink_non_coherent(struct kfd_topology_device *to_dev,
 		struct kfd_iolink_properties *outbound_link,
 		struct kfd_iolink_properties *inbound_link)
 {
-	/* CPU -> GPU with PCIe */
+	 
 	if (!to_dev->gpu &&
 	    inbound_link->iolink_type == CRAT_IOLINK_TYPE_PCIEXPRESS)
 		inbound_link->flags |= CRAT_IOLINK_FLAGS_NON_COHERENT;
 
 	if (to_dev->gpu) {
-		/* GPU <-> GPU with PCIe and
-		 * Vega20 with XGMI
-		 */
+		 
 		if (inbound_link->iolink_type == CRAT_IOLINK_TYPE_PCIEXPRESS ||
 		    (inbound_link->iolink_type == CRAT_IOLINK_TYPE_XGMI &&
 		    KFD_GC_VERSION(to_dev->gpu) == IP_VERSION(9, 4, 0))) {
@@ -1246,7 +1186,7 @@ static void kfd_fill_iolink_non_crat_info(struct kfd_topology_device *dev)
 	if (!dev || !dev->gpu)
 		return;
 
-	/* GPU only creates direct links so apply flags setting to all */
+	 
 	list_for_each_entry(link, &dev->io_link_props, list) {
 		link->flags = CRAT_IOLINK_FLAGS_ENABLED;
 		kfd_set_iolink_no_atomics(dev, NULL, link);
@@ -1256,13 +1196,10 @@ static void kfd_fill_iolink_non_crat_info(struct kfd_topology_device *dev)
 		if (!peer_dev)
 			continue;
 
-		/* Include the CPU peer in GPU hive if connected over xGMI. */
+		 
 		if (!peer_dev->gpu &&
 		    link->iolink_type == CRAT_IOLINK_TYPE_XGMI) {
-			/*
-			 * If the GPU is not part of a GPU hive, use its pci
-			 * device location as the hive ID to bind with the CPU.
-			 */
+			 
 			if (!dev->node_props.hive_id)
 				dev->node_props.hive_id = pci_dev_id(dev->gpu->adev->pdev);
 			peer_dev->node_props.hive_id = dev->node_props.hive_id;
@@ -1279,7 +1216,7 @@ static void kfd_fill_iolink_non_crat_info(struct kfd_topology_device *dev)
 		}
 	}
 
-	/* Create indirect links so apply flags setting to all */
+	 
 	list_for_each_entry(link, &dev->p2p_link_props, list) {
 		link->flags = CRAT_IOLINK_FLAGS_ENABLED;
 		kfd_set_iolink_no_atomics(dev, NULL, link);
@@ -1349,11 +1286,11 @@ static int kfd_create_indirect_link_prop(struct kfd_topology_device *kdev, int g
 				    struct kfd_iolink_properties, list);
 
 	for (i = 0; i < num_cpu; i++) {
-		/* CPU <--> GPU */
+		 
 		if (gpu_link->node_to == i)
 			continue;
 
-		/* find CPU <-->  CPU links */
+		 
 		cpu_link = NULL;
 		cpu_dev = kfd_topology_device_by_proximity_domain(i);
 		if (cpu_dev) {
@@ -1369,7 +1306,7 @@ static int kfd_create_indirect_link_prop(struct kfd_topology_device *kdev, int g
 		if (!cpu_link)
 			return -ENOMEM;
 
-		/* CPU <--> CPU <--> GPU, GPU node*/
+		 
 		props = kfd_alloc_struct(props);
 		if (!props)
 			return -ENOMEM;
@@ -1389,9 +1326,9 @@ static int kfd_create_indirect_link_prop(struct kfd_topology_device *kdev, int g
 		if (ret < 0)
 			return ret;
 
-		/* for small Bar, no CPU --> GPU in-direct links */
+		 
 		if (kfd_dev_is_large_bar(kdev->gpu)) {
-			/* CPU <--> CPU <--> GPU, CPU node*/
+			 
 			props2 = kfd_alloc_struct(props2);
 			if (!props2)
 				return -ENOMEM;
@@ -1449,7 +1386,7 @@ static int kfd_add_peer_prop(struct kfd_topology_device *kdev,
 	props->max_bandwidth = min(iolink2->max_bandwidth, iolink2->max_bandwidth);
 
 	if (iolink1->node_to != iolink2->node_to) {
-		/* CPU->CPU  link*/
+		 
 		cpu_dev = kfd_topology_device_by_proximity_domain(iolink1->node_to);
 		if (cpu_dev) {
 			list_for_each_entry(iolink3, &cpu_dev->io_link_props, list)
@@ -1500,12 +1437,12 @@ static int kfd_dev_create_p2p_links(void)
 
 	k--;
 
-	/* create in-direct links */
+	 
 	ret = kfd_create_indirect_link_prop(new_dev, k);
 	if (ret < 0)
 		goto out;
 
-	/* create p2p links */
+	 
 #if defined(CONFIG_HSA_AMD_P2P)
 	i = 0;
 	list_for_each_entry(dev, &topology_device_list, list) {
@@ -1516,7 +1453,7 @@ static int kfd_dev_create_p2p_links(void)
 		     dev->gpu->kfd->hive_id == new_dev->gpu->kfd->hive_id))
 			goto next;
 
-		/* check if node(s) is/are peer accessible in one direction or bi-direction */
+		 
 		ret = kfd_add_peer_prop(new_dev, dev, i, k);
 		if (ret < 0)
 			goto out;
@@ -1533,7 +1470,7 @@ out:
 	return ret;
 }
 
-/* Helper function. See kfd_fill_gpu_cache_info for parameter description */
+ 
 static int fill_in_l1_pcache(struct kfd_cache_properties **props_ext,
 				struct kfd_gpu_cache_info *pcache_info,
 				struct kfd_cu_info *cu_info,
@@ -1550,10 +1487,7 @@ static int fill_in_l1_pcache(struct kfd_cache_properties **props_ext,
 	cu_sibling_map_mask &= ((1 << pcache_info[cache_type].num_cu_shared) - 1);
 	first_active_cu = ffs(cu_sibling_map_mask);
 
-	/* CU could be inactive. In case of shared cache find the first active
-	 * CU. and incase of non-shared cache check if the CU is inactive. If
-	 * inactive active skip it
-	 */
+	 
 	if (first_active_cu) {
 		pcache = kfd_alloc_struct(pcache);
 		if (!pcache)
@@ -1573,9 +1507,7 @@ static int fill_in_l1_pcache(struct kfd_cache_properties **props_ext,
 		if (pcache_info[cache_type].flags & CRAT_CACHE_FLAGS_SIMD_CACHE)
 			pcache->cache_type |= HSA_CACHE_TYPE_HSACU;
 
-		/* Sibling map is w.r.t processor_id_low, so shift out
-		 * inactive CU
-		 */
+		 
 		cu_sibling_map_mask =
 			cu_sibling_map_mask >> (first_active_cu - 1);
 
@@ -1595,7 +1527,7 @@ static int fill_in_l1_pcache(struct kfd_cache_properties **props_ext,
 	return 1;
 }
 
-/* Helper function. See kfd_fill_gpu_cache_info for parameter description */
+ 
 static int fill_in_l2_l3_pcache(struct kfd_cache_properties **props_ext,
 				struct kfd_gpu_cache_info *pcache_info,
 				struct kfd_cu_info *cu_info,
@@ -1614,10 +1546,7 @@ static int fill_in_l2_l3_pcache(struct kfd_cache_properties **props_ext,
 		((1 << pcache_info[cache_type].num_cu_shared) - 1);
 	first_active_cu = ffs(cu_sibling_map_mask);
 
-	/* CU could be inactive. In case of shared cache find the first active
-	 * CU. and incase of non-shared cache check if the CU is inactive. If
-	 * inactive active skip it
-	 */
+	 
 	if (first_active_cu) {
 		pcache = kfd_alloc_struct(pcache);
 		if (!pcache)
@@ -1638,9 +1567,7 @@ static int fill_in_l2_l3_pcache(struct kfd_cache_properties **props_ext,
 		if (pcache_info[cache_type].flags & CRAT_CACHE_FLAGS_SIMD_CACHE)
 			pcache->cache_type |= HSA_CACHE_TYPE_HSACU;
 
-		/* Sibling map is w.r.t processor_id_low, so shift out
-		 * inactive CU
-		 */
+		 
 		cu_sibling_map_mask = cu_sibling_map_mask >> (first_active_cu - 1);
 		k = 0;
 
@@ -1667,9 +1594,7 @@ static int fill_in_l2_l3_pcache(struct kfd_cache_properties **props_ext,
 
 #define KFD_MAX_CACHE_TYPES 6
 
-/* kfd_fill_cache_non_crat_info - Fill GPU cache info using kfd_gpu_cache_info
- * tables
- */
+ 
 static void kfd_fill_cache_non_crat_info(struct kfd_topology_device *dev, struct kfd_node *kdev)
 {
 	struct kfd_gpu_cache_info *pcache_info = NULL;
@@ -1698,15 +1623,7 @@ static void kfd_fill_cache_non_crat_info(struct kfd_topology_device *dev, struct
 		return;
 	}
 
-	/* For each type of cache listed in the kfd_gpu_cache_info table,
-	 * go through all available Compute Units.
-	 * The [i,j,k] loop will
-	 *		if kfd_gpu_cache_info.num_cu_shared = 1
-	 *			will parse through all available CU
-	 *		If (kfd_gpu_cache_info.num_cu_shared != 1)
-	 *			then it will consider only one CU from
-	 *			the shared unit
-	 */
+	 
 	start = ffs(kdev->xcc_mask) - 1;
 	end = start + NUM_XCC(kdev->xcc_mask);
 
@@ -1730,7 +1647,7 @@ static void kfd_fill_cache_non_crat_info(struct kfd_topology_device *dev, struct
 								list_add_tail(&props_ext->list, &dev->cache_props);
 							}
 
-							/* Move to next CU block */
+							 
 							num_cu_shared = ((k + pcache_info[ct].num_cu_shared) <=
 								pcu_info->num_cu_per_sh) ?
 								pcache_info[ct].num_cu_shared :
@@ -1797,14 +1714,10 @@ static int kfd_topology_add_device_locked(struct kfd_node *gpu, uint32_t gpu_id,
 		goto err;
 	}
 
-	/* Fill the cache affinity information here for the GPUs
-	 * using VCRAT
-	 */
+	 
 	kfd_fill_cache_non_crat_info(*dev, gpu);
 
-	/* Update the SYSFS tree, since we added another topology
-	 * device
-	 */
+	 
 	res = kfd_topology_update_sysfs();
 	if (!res)
 		sys_props.generation_count++;
@@ -1833,10 +1746,7 @@ static void kfd_topology_set_dbg_firmware_support(struct kfd_topology_device *de
 		goto out;
 	}
 
-	/*
-	 * Note: Any unlisted devices here are assumed to support exception handling.
-	 * Add additional checks here as needed.
-	 */
+	 
 	switch (KFD_GC_VERSION(dev->gpu)) {
 	case IP_VERSION(9, 0, 1):
 		firmware_supported = dev->gpu->kfd->mec_fw_version >= 459 + 32768;
@@ -1936,12 +1846,7 @@ int kfd_topology_add_device(struct kfd_node *gpu)
 		pr_debug("Adding new GPU (ID: 0x%x) to topology\n", gpu_id);
 	}
 
-	/* Check to see if this gpu device exists in the topology_device_list.
-	 * If so, assign the gpu to that device,
-	 * else create a Virtual CRAT for this gpu device and then parse that
-	 * CRAT to create a new topology device. Once created assign the gpu to
-	 * that topology device
-	 */
+	 
 	down_write(&topology_lock);
 	dev = kfd_assign_gpu(gpu);
 	if (!dev)
@@ -1955,13 +1860,9 @@ int kfd_topology_add_device(struct kfd_node *gpu)
 
 	kfd_dev_create_p2p_links();
 
-	/* TODO: Move the following lines to function
-	 *	kfd_add_non_crat_information
-	 */
+	 
 
-	/* Fill-in additional information that is not available in CRAT but
-	 * needed for the topology
-	 */
+	 
 
 	amdgpu_amdkfd_get_cu_info(dev->gpu->adev, &cu_info);
 
@@ -2041,24 +1942,17 @@ int kfd_topology_add_device(struct kfd_node *gpu)
 			kfd_topology_set_capabilities(dev);
 	}
 
-	/*
-	 * Overwrite ATS capability according to needs_iommu_device to fix
-	 * potential missing corresponding bit in CRAT of BIOS.
-	 */
+	 
 	dev->node_props.capability &= ~HSA_CAP_ATS_PRESENT;
 
-	/* Fix errors in CZ CRAT.
-	 * simd_count: Carrizo CRAT reports wrong simd_count, probably
-	 *		because it doesn't consider masked out CUs
-	 * max_waves_per_simd: Carrizo reports wrong max_waves_per_simd
-	 */
+	 
 	if (dev->gpu->adev->asic_type == CHIP_CARRIZO) {
 		dev->node_props.simd_count =
 			cu_info.simd_per_cu * cu_info.cu_active_number;
 		dev->node_props.max_waves_per_simd = 10;
 	}
 
-	/* kfd only concerns sram ecc on GFX and HBM ecc on UMC */
+	 
 	dev->node_props.capability |=
 		((dev->gpu->adev->ras_enabled & BIT(AMDGPU_RAS_BLOCK__GFX)) != 0) ?
 		HSA_CAP_SRAM_EDCSUPPORTED : 0;
@@ -2084,25 +1978,7 @@ int kfd_topology_add_device(struct kfd_node *gpu)
 	return 0;
 }
 
-/**
- * kfd_topology_update_io_links() - Update IO links after device removal.
- * @proximity_domain: Proximity domain value of the dev being removed.
- *
- * The topology list currently is arranged in increasing order of
- * proximity domain.
- *
- * Two things need to be done when a device is removed:
- * 1. All the IO links to this device need to be removed.
- * 2. All nodes after the current device node need to move
- *    up once this device node is removed from the topology
- *    list. As a result, the proximity domain values for
- *    all nodes after the node being deleted reduce by 1.
- *    This would also cause the proximity domain values for
- *    io links to be updated based on new proximity domain
- *    values.
- *
- * Context: The caller must hold write topology_lock.
- */
+ 
 static void kfd_topology_update_io_links(int proximity_domain)
 {
 	struct kfd_topology_device *dev;
@@ -2113,10 +1989,7 @@ static void kfd_topology_update_io_links(int proximity_domain)
 			dev->proximity_domain--;
 
 		list_for_each_entry_safe(iolink, tmp, &dev->io_link_props, list) {
-			/*
-			 * If there is an io link to the dev being deleted
-			 * then remove that IO link also.
-			 */
+			 
 			if (iolink->node_to == proximity_domain) {
 				list_del(&iolink->list);
 				dev->node_props.io_links_count--;
@@ -2129,10 +2002,7 @@ static void kfd_topology_update_io_links(int proximity_domain)
 		}
 
 		list_for_each_entry_safe(p2plink, tmp, &dev->p2p_link_props, list) {
-			/*
-			 * If there is a p2p link to the dev being deleted
-			 * then remove that p2p link also.
-			 */
+			 
 			if (p2plink->node_to == proximity_domain) {
 				list_del(&p2plink->list);
 				dev->node_props.p2p_links_count--;
@@ -2180,12 +2050,7 @@ int kfd_topology_remove_device(struct kfd_node *gpu)
 	return res;
 }
 
-/* kfd_topology_enum_kfd_devices - Enumerate through all devices in KFD
- *	topology. If GPU device is found @idx, then valid kfd_dev pointer is
- *	returned through @kdev
- * Return -	0: On success (@kdev will be NULL for non GPU nodes)
- *		-1: If end of list
- */
+ 
 int kfd_topology_enum_kfd_devices(uint8_t idx, struct kfd_node **kdev)
 {
 
@@ -2227,10 +2092,7 @@ static int kfd_cpumask_to_apic_id(const struct cpumask *cpumask)
 #endif
 }
 
-/* kfd_numa_node_to_apic_id - Returns the APIC ID of the first logical processor
- *	of the given NUMA node (numa_node_id)
- * Return -1 on failure
- */
+ 
 int kfd_numa_node_to_apic_id(int numa_node_id)
 {
 	if (numa_node_id == -1) {

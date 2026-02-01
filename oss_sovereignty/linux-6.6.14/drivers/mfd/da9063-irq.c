@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Interrupt support for Dialog DA9063
- *
- * Copyright 2012 Dialog Semiconductor Ltd.
- * Copyright 2013 Philipp Zabel, Pengutronix
- *
- * Author: Michal Hajduk, Dialog Semiconductor
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,7 +15,7 @@
 #define	DA9063_REG_EVENT_D_OFFSET	3
 
 static const struct regmap_irq da9063_irqs[] = {
-	/* DA9063 event A register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_ONKEY,
 		       DA9063_REG_EVENT_A_OFFSET, DA9063_M_ONKEY),
 	REGMAP_IRQ_REG(DA9063_IRQ_ALARM,
@@ -32,7 +26,7 @@ static const struct regmap_irq da9063_irqs[] = {
 		       DA9063_REG_EVENT_A_OFFSET, DA9063_M_ADC_RDY),
 	REGMAP_IRQ_REG(DA9063_IRQ_SEQ_RDY,
 		       DA9063_REG_EVENT_A_OFFSET, DA9063_M_SEQ_RDY),
-	/* DA9063 event B register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_WAKE,
 		       DA9063_REG_EVENT_B_OFFSET, DA9063_M_WAKE),
 	REGMAP_IRQ_REG(DA9063_IRQ_TEMP,
@@ -49,7 +43,7 @@ static const struct regmap_irq da9063_irqs[] = {
 		       DA9063_REG_EVENT_B_OFFSET, DA9063_M_VDD_MON),
 	REGMAP_IRQ_REG(DA9063_IRQ_WARN,
 		       DA9063_REG_EVENT_B_OFFSET, DA9063_M_VDD_WARN),
-	/* DA9063 event C register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI0,
 		       DA9063_REG_EVENT_C_OFFSET, DA9063_M_GPI0),
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI1,
@@ -66,7 +60,7 @@ static const struct regmap_irq da9063_irqs[] = {
 		       DA9063_REG_EVENT_C_OFFSET, DA9063_M_GPI6),
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI7,
 		       DA9063_REG_EVENT_C_OFFSET, DA9063_M_GPI7),
-	/* DA9063 event D register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI8,
 		       DA9063_REG_EVENT_D_OFFSET, DA9063_M_GPI8),
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI9,
@@ -97,14 +91,14 @@ static const struct regmap_irq_chip da9063_irq_chip = {
 };
 
 static const struct regmap_irq da9063l_irqs[] = {
-	/* DA9063 event A register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_ONKEY,
 		       DA9063_REG_EVENT_A_OFFSET, DA9063_M_ONKEY),
 	REGMAP_IRQ_REG(DA9063_IRQ_ADC_RDY,
 		       DA9063_REG_EVENT_A_OFFSET, DA9063_M_ADC_RDY),
 	REGMAP_IRQ_REG(DA9063_IRQ_SEQ_RDY,
 		       DA9063_REG_EVENT_A_OFFSET, DA9063_M_SEQ_RDY),
-	/* DA9063 event B register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_WAKE,
 		       DA9063_REG_EVENT_B_OFFSET, DA9063_M_WAKE),
 	REGMAP_IRQ_REG(DA9063_IRQ_TEMP,
@@ -121,7 +115,7 @@ static const struct regmap_irq da9063l_irqs[] = {
 		       DA9063_REG_EVENT_B_OFFSET, DA9063_M_VDD_MON),
 	REGMAP_IRQ_REG(DA9063_IRQ_WARN,
 		       DA9063_REG_EVENT_B_OFFSET, DA9063_M_VDD_WARN),
-	/* DA9063 event C register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI0,
 		       DA9063_REG_EVENT_C_OFFSET, DA9063_M_GPI0),
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI1,
@@ -138,7 +132,7 @@ static const struct regmap_irq da9063l_irqs[] = {
 		       DA9063_REG_EVENT_C_OFFSET, DA9063_M_GPI6),
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI7,
 		       DA9063_REG_EVENT_C_OFFSET, DA9063_M_GPI7),
-	/* DA9063 event D register */
+	 
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI8,
 		       DA9063_REG_EVENT_D_OFFSET, DA9063_M_GPI8),
 	REGMAP_IRQ_REG(DA9063_IRQ_GPI9,

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * Event handling for HSR and PRP devices.
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <net/rtnetlink.h>
@@ -42,11 +36,11 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
 	port = hsr_port_get_rtnl(dev);
 	if (!port) {
 		if (!is_hsr_master(dev))
-			return NOTIFY_DONE;	/* Not an HSR device */
+			return NOTIFY_DONE;	 
 		hsr = netdev_priv(dev);
 		port = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
 		if (!port) {
-			/* Resend of notification concerning removed device? */
+			 
 			return NOTIFY_DONE;
 		}
 	} else {
@@ -54,9 +48,9 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
 	}
 
 	switch (event) {
-	case NETDEV_UP:		/* Administrative state DOWN */
-	case NETDEV_DOWN:	/* Administrative state UP */
-	case NETDEV_CHANGE:	/* Link (carrier) state changes */
+	case NETDEV_UP:		 
+	case NETDEV_DOWN:	 
+	case NETDEV_CHANGE:	 
 		hsr_check_carrier_and_operstate(hsr);
 		break;
 	case NETDEV_CHANGENAME:
@@ -65,10 +59,7 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
 		break;
 	case NETDEV_CHANGEADDR:
 		if (port->type == HSR_PT_MASTER) {
-			/* This should not happen since there's no
-			 * ndo_set_mac_address() for HSR devices - i.e. not
-			 * supported.
-			 */
+			 
 			break;
 		}
 
@@ -80,7 +71,7 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
 						 master->dev);
 		}
 
-		/* Make sure we recognize frames from ourselves in hsr_rcv() */
+		 
 		port = hsr_port_get_hsr(hsr, HSR_PT_SLAVE_B);
 		res = hsr_create_self_node(hsr,
 					   master->dev->dev_addr,
@@ -93,7 +84,7 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
 		break;
 	case NETDEV_CHANGEMTU:
 		if (port->type == HSR_PT_MASTER)
-			break; /* Handled in ndo_change_mtu() */
+			break;  
 		mtu_max = hsr_get_max_mtu(port->hsr);
 		master = hsr_port_get_hsr(port->hsr, HSR_PT_MASTER);
 		master->dev->mtu = mtu_max;
@@ -112,9 +103,7 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
 		}
 		break;
 	case NETDEV_PRE_TYPE_CHANGE:
-		/* HSR works only on Ethernet devices. Refuse slave to change
-		 * its type.
-		 */
+		 
 		return NOTIFY_BAD;
 	}
 
@@ -143,7 +132,7 @@ int hsr_get_version(struct net_device *dev, enum hsr_version *ver)
 EXPORT_SYMBOL(hsr_get_version);
 
 static struct notifier_block hsr_nb = {
-	.notifier_call = hsr_netdev_notify,	/* Slave event notifications */
+	.notifier_call = hsr_netdev_notify,	 
 };
 
 static int __init hsr_init(void)

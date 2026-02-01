@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Linaro Limited
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -117,10 +114,7 @@ static int clk_rpm_handoff(struct clk_rpm *r)
 	int ret;
 	u32 value = INT_MAX;
 
-	/*
-	 * The vendor tree simply reads the status for this
-	 * RPM clock.
-	 */
+	 
 	if (r->rpm_clk_id == QCOM_RPM_PLL_4 ||
 		r->rpm_clk_id == QCOM_RPM_CXO_BUFFERS)
 		return 0;
@@ -139,7 +133,7 @@ static int clk_rpm_handoff(struct clk_rpm *r)
 
 static int clk_rpm_set_rate_active(struct clk_rpm *r, unsigned long rate)
 {
-	u32 value = DIV_ROUND_UP(rate, 1000); /* to kHz */
+	u32 value = DIV_ROUND_UP(rate, 1000);  
 
 	return qcom_rpm_write(r->rpm, QCOM_RPM_ACTIVE_STATE,
 			      r->rpm_clk_id, &value, 1);
@@ -147,7 +141,7 @@ static int clk_rpm_set_rate_active(struct clk_rpm *r, unsigned long rate)
 
 static int clk_rpm_set_rate_sleep(struct clk_rpm *r, unsigned long rate)
 {
-	u32 value = DIV_ROUND_UP(rate, 1000); /* to kHz */
+	u32 value = DIV_ROUND_UP(rate, 1000);  
 
 	return qcom_rpm_write(r->rpm, QCOM_RPM_SLEEP_STATE,
 			      r->rpm_clk_id, &value, 1);
@@ -158,10 +152,7 @@ static void to_active_sleep(struct clk_rpm *r, unsigned long rate,
 {
 	*active = rate;
 
-	/*
-	 * Active-only clocks don't care what the rate is during sleep. So,
-	 * they vote for zero.
-	 */
+	 
 	if (r->active_only)
 		*sleep = 0;
 	else
@@ -179,13 +170,13 @@ static int clk_rpm_prepare(struct clk_hw *hw)
 
 	mutex_lock(&rpm_clk_lock);
 
-	/* Don't send requests to the RPM if the rate has not been set. */
+	 
 	if (!r->rate)
 		goto out;
 
 	to_active_sleep(r, r->rate, &this_rate, &this_sleep_rate);
 
-	/* Take peer clock's rate into account only if it's enabled. */
+	 
 	if (peer->enabled)
 		to_active_sleep(peer, peer->rate,
 				&peer_rate, &peer_sleep_rate);
@@ -205,7 +196,7 @@ static int clk_rpm_prepare(struct clk_hw *hw)
 
 	ret = clk_rpm_set_rate_sleep(r, sleep_rate);
 	if (ret)
-		/* Undo the active set vote and restore it */
+		 
 		ret = clk_rpm_set_rate_active(r, peer_rate);
 
 out:
@@ -230,7 +221,7 @@ static void clk_rpm_unprepare(struct clk_hw *hw)
 	if (!r->rate)
 		goto out;
 
-	/* Take peer clock's rate into account only if it's enabled. */
+	 
 	if (peer->enabled)
 		to_active_sleep(peer, peer->rate, &peer_rate,
 				&peer_sleep_rate);
@@ -334,7 +325,7 @@ static int clk_rpm_set_rate(struct clk_hw *hw,
 
 	to_active_sleep(r, rate, &this_rate, &this_sleep_rate);
 
-	/* Take peer clock's rate into account only if it's enabled. */
+	 
 	if (peer->enabled)
 		to_active_sleep(peer, peer->rate,
 				&peer_rate, &peer_sleep_rate);
@@ -360,11 +351,7 @@ out:
 static long clk_rpm_round_rate(struct clk_hw *hw, unsigned long rate,
 			       unsigned long *parent_rate)
 {
-	/*
-	 * RPM handles rate rounding and we don't have a way to
-	 * know what the rate will be, so just return whatever
-	 * rate is requested.
-	 */
+	 
 	return rate;
 }
 
@@ -373,11 +360,7 @@ static unsigned long clk_rpm_recalc_rate(struct clk_hw *hw,
 {
 	struct clk_rpm *r = to_clk_rpm(hw);
 
-	/*
-	 * RPM handles rate rounding and we don't have a way to
-	 * know what the rate will be, so just return whatever
-	 * rate was set.
-	 */
+	 
 	return r->rate;
 }
 

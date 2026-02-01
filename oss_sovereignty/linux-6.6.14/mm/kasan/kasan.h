@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __MM_KASAN_KASAN_H
 #define __MM_KASAN_KASAN_H
 
@@ -19,14 +19,14 @@ static inline bool kasan_stack_collection_enabled(void)
 	return static_branch_unlikely(&kasan_flag_stacktrace);
 }
 
-#else /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
+#else  
 
 static inline bool kasan_stack_collection_enabled(void)
 {
 	return true;
 }
 
-#endif /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
+#endif  
 
 #ifdef CONFIG_KASAN_HW_TAGS
 
@@ -63,7 +63,7 @@ static inline bool kasan_sync_fault_possible(void)
 
 static inline bool kasan_sample_page_alloc(unsigned int order)
 {
-	/* Fast-path for when sampling is disabled. */
+	 
 	if (kasan_page_alloc_sample == 1)
 		return true;
 
@@ -79,7 +79,7 @@ static inline bool kasan_sample_page_alloc(unsigned int order)
 	return false;
 }
 
-#else /* CONFIG_KASAN_HW_TAGS */
+#else  
 
 static inline bool kasan_async_fault_possible(void)
 {
@@ -96,31 +96,26 @@ static inline bool kasan_sample_page_alloc(unsigned int order)
 	return true;
 }
 
-#endif /* CONFIG_KASAN_HW_TAGS */
+#endif  
 
 #ifdef CONFIG_KASAN_GENERIC
 
-/* Generic KASAN uses per-object metadata to store stack traces. */
+ 
 static inline bool kasan_requires_meta(void)
 {
-	/*
-	 * Technically, Generic KASAN always collects stack traces right now.
-	 * However, let's use kasan_stack_collection_enabled() in case the
-	 * kasan.stacktrace command-line argument is changed to affect
-	 * Generic KASAN.
-	 */
+	 
 	return kasan_stack_collection_enabled();
 }
 
-#else /* CONFIG_KASAN_GENERIC */
+#else  
 
-/* Tag-based KASAN modes do not use per-object metadata. */
+ 
 static inline bool kasan_requires_meta(void)
 {
 	return false;
 }
 
-#endif /* CONFIG_KASAN_GENERIC */
+#endif  
 
 #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
 #define KASAN_GRANULE_SIZE	(1UL << KASAN_SHADOW_SCALE_SHIFT)
@@ -134,48 +129,48 @@ static inline bool kasan_requires_meta(void)
 #define KASAN_MEMORY_PER_SHADOW_PAGE	(KASAN_GRANULE_SIZE << PAGE_SHIFT)
 
 #ifdef CONFIG_KASAN_GENERIC
-#define KASAN_PAGE_FREE		0xFF  /* freed page */
-#define KASAN_PAGE_REDZONE	0xFE  /* redzone for kmalloc_large allocation */
-#define KASAN_SLAB_REDZONE	0xFC  /* redzone for slab object */
-#define KASAN_SLAB_FREE		0xFB  /* freed slab object */
-#define KASAN_VMALLOC_INVALID	0xF8  /* inaccessible space in vmap area */
+#define KASAN_PAGE_FREE		0xFF   
+#define KASAN_PAGE_REDZONE	0xFE   
+#define KASAN_SLAB_REDZONE	0xFC   
+#define KASAN_SLAB_FREE		0xFB   
+#define KASAN_VMALLOC_INVALID	0xF8   
 #else
 #define KASAN_PAGE_FREE		KASAN_TAG_INVALID
 #define KASAN_PAGE_REDZONE	KASAN_TAG_INVALID
 #define KASAN_SLAB_REDZONE	KASAN_TAG_INVALID
 #define KASAN_SLAB_FREE		KASAN_TAG_INVALID
-#define KASAN_VMALLOC_INVALID	KASAN_TAG_INVALID /* only used for SW_TAGS */
+#define KASAN_VMALLOC_INVALID	KASAN_TAG_INVALID  
 #endif
 
 #ifdef CONFIG_KASAN_GENERIC
 
-#define KASAN_SLAB_FREETRACK	0xFA  /* freed slab object with free track */
-#define KASAN_GLOBAL_REDZONE	0xF9  /* redzone for global variable */
+#define KASAN_SLAB_FREETRACK	0xFA   
+#define KASAN_GLOBAL_REDZONE	0xF9   
 
-/* Stack redzone shadow values. Compiler ABI, do not change. */
+ 
 #define KASAN_STACK_LEFT	0xF1
 #define KASAN_STACK_MID		0xF2
 #define KASAN_STACK_RIGHT	0xF3
 #define KASAN_STACK_PARTIAL	0xF4
 
-/* alloca redzone shadow values. */
+ 
 #define KASAN_ALLOCA_LEFT	0xCA
 #define KASAN_ALLOCA_RIGHT	0xCB
 
-/* alloca redzone size. Compiler ABI, do not change. */
+ 
 #define KASAN_ALLOCA_REDZONE_SIZE	32
 
-/* Stack frame marker. Compiler ABI, do not change. */
+ 
 #define KASAN_CURRENT_STACK_FRAME_MAGIC 0x41B58AB3
 
-/* Dummy value to avoid breaking randconfig/all*config builds. */
+ 
 #ifndef KASAN_ABI_VERSION
 #define KASAN_ABI_VERSION 1
 #endif
 
-#endif /* CONFIG_KASAN_GENERIC */
+#endif  
 
-/* Metadata layout customization. */
+ 
 #define META_BYTES_PER_BLOCK 1
 #define META_BLOCKS_PER_ROW 16
 #define META_BYTES_PER_ROW (META_BLOCKS_PER_ROW * META_BYTES_PER_BLOCK)
@@ -196,40 +191,40 @@ enum kasan_report_type {
 };
 
 struct kasan_report_info {
-	/* Filled in by kasan_report_*(). */
+	 
 	enum kasan_report_type type;
 	const void *access_addr;
 	size_t access_size;
 	bool is_write;
 	unsigned long ip;
 
-	/* Filled in by the common reporting code. */
+	 
 	const void *first_bad_addr;
 	struct kmem_cache *cache;
 	void *object;
 	size_t alloc_size;
 
-	/* Filled in by the mode-specific reporting code. */
+	 
 	const char *bug_type;
 	struct kasan_track alloc_track;
 	struct kasan_track free_track;
 };
 
-/* Do not change the struct layout: compiler ABI. */
+ 
 struct kasan_source_location {
 	const char *filename;
 	int line_no;
 	int column_no;
 };
 
-/* Do not change the struct layout: compiler ABI. */
+ 
 struct kasan_global {
-	const void *beg;		/* Address of the beginning of the global variable. */
-	size_t size;			/* Size of the global variable. */
-	size_t size_with_redzone;	/* Size of the variable + size of the redzone. 32 bytes aligned. */
+	const void *beg;		 
+	size_t size;			 
+	size_t size_with_redzone;	 
 	const void *name;
-	const void *module_name;	/* Name of the module where the global variable is declared. */
-	unsigned long has_dynamic_init;	/* This is needed for C++. */
+	const void *module_name;	 
+	unsigned long has_dynamic_init;	 
 #if KASAN_ABI_VERSION >= 4
 	struct kasan_source_location *location;
 #endif
@@ -238,13 +233,13 @@ struct kasan_global {
 #endif
 };
 
-/* Structures for keeping alloc and free meta. */
+ 
 
 #ifdef CONFIG_KASAN_GENERIC
 
 struct kasan_alloc_meta {
 	struct kasan_track alloc_track;
-	/* Free track is stored in kasan_free_meta. */
+	 
 	depot_stack_handle_t aux_stack[2];
 };
 
@@ -252,23 +247,16 @@ struct qlist_node {
 	struct qlist_node *next;
 };
 
-/*
- * Free meta is stored either in the object itself or in the redzone after the
- * object. In the former case, free meta offset is 0. In the latter case, the
- * offset is between 0 and INT_MAX. INT_MAX marks that free meta is not present.
- */
+ 
 #define KASAN_NO_FREE_META INT_MAX
 
-/*
- * Free meta is only used by Generic mode while the object is in quarantine.
- * After that, slab allocator stores the freelist pointer in the object.
- */
+ 
 struct kasan_free_meta {
 	struct qlist_node quarantine_link;
 	struct kasan_track free_track;
 };
 
-#endif /* CONFIG_KASAN_GENERIC */
+#endif  
 
 #if defined(CONFIG_KASAN_SW_TAGS) || defined(CONFIG_KASAN_HW_TAGS)
 
@@ -287,7 +275,7 @@ struct kasan_stack_ring {
 	struct kasan_stack_ring_entry *entries;
 };
 
-#endif /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
+#endif  
 
 #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
 
@@ -307,25 +295,18 @@ static __always_inline bool addr_has_metadata(const void *addr)
 }
 #endif
 
-/**
- * kasan_check_range - Check memory region, and report if invalid access.
- * @addr: the accessed address
- * @size: the accessed size
- * @write: true if access is a write access
- * @ret_ip: return address
- * @return: true if access was valid, false if invalid
- */
+ 
 bool kasan_check_range(const void *addr, size_t size, bool write,
 				unsigned long ret_ip);
 
-#else /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#else  
 
 static __always_inline bool addr_has_metadata(const void *addr)
 {
 	return (is_vmalloc_addr(addr) || virt_addr_valid(addr));
 }
 
-#endif /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#endif  
 
 const void *kasan_find_first_bad_addr(const void *addr, size_t size);
 size_t kasan_get_alloc_size(void *object, struct kmem_cache *cache);
@@ -412,25 +393,25 @@ static inline const void *arch_kasan_set_tag(const void *addr, u8 tag)
 
 void kasan_enable_hw_tags(void);
 
-#else /* CONFIG_KASAN_HW_TAGS */
+#else  
 
 static inline void kasan_enable_hw_tags(void) { }
 
-#endif /* CONFIG_KASAN_HW_TAGS */
+#endif  
 
 #if defined(CONFIG_KASAN_SW_TAGS) || defined(CONFIG_KASAN_HW_TAGS)
 void __init kasan_init_tags(void);
-#endif /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
+#endif  
 
 #if defined(CONFIG_KASAN_HW_TAGS) && IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
 
 void kasan_force_async_fault(void);
 
-#else /* CONFIG_KASAN_HW_TAGS && CONFIG_KASAN_KUNIT_TEST */
+#else  
 
 static inline void kasan_force_async_fault(void) { }
 
-#endif /* CONFIG_KASAN_HW_TAGS && CONFIG_KASAN_KUNIT_TEST */
+#endif  
 
 #ifdef CONFIG_KASAN_SW_TAGS
 u8 kasan_random_tag(void);
@@ -446,7 +427,7 @@ static inline void kasan_poison(const void *addr, size_t size, u8 value, bool in
 {
 	addr = kasan_reset_tag(addr);
 
-	/* Skip KFENCE memory if called explicitly outside of sl*b. */
+	 
 	if (is_kfence_address(addr))
 		return;
 
@@ -464,7 +445,7 @@ static inline void kasan_unpoison(const void *addr, size_t size, bool init)
 
 	addr = kasan_reset_tag(addr);
 
-	/* Skip KFENCE memory if called explicitly outside of sl*b. */
+	 
 	if (is_kfence_address(addr))
 		return;
 
@@ -483,54 +464,28 @@ static inline bool kasan_byte_accessible(const void *addr)
 	return ptr_tag == KASAN_TAG_KERNEL || ptr_tag == mem_tag;
 }
 
-#else /* CONFIG_KASAN_HW_TAGS */
+#else  
 
-/**
- * kasan_poison - mark the memory range as inaccessible
- * @addr - range start address, must be aligned to KASAN_GRANULE_SIZE
- * @size - range size, must be aligned to KASAN_GRANULE_SIZE
- * @value - value that's written to metadata for the range
- * @init - whether to initialize the memory range (only for hardware tag-based)
- *
- * The size gets aligned to KASAN_GRANULE_SIZE before marking the range.
- */
+ 
 void kasan_poison(const void *addr, size_t size, u8 value, bool init);
 
-/**
- * kasan_unpoison - mark the memory range as accessible
- * @addr - range start address, must be aligned to KASAN_GRANULE_SIZE
- * @size - range size, can be unaligned
- * @init - whether to initialize the memory range (only for hardware tag-based)
- *
- * For the tag-based modes, the @size gets aligned to KASAN_GRANULE_SIZE before
- * marking the range.
- * For the generic mode, the last granule of the memory range gets partially
- * unpoisoned based on the @size.
- */
+ 
 void kasan_unpoison(const void *addr, size_t size, bool init);
 
 bool kasan_byte_accessible(const void *addr);
 
-#endif /* CONFIG_KASAN_HW_TAGS */
+#endif  
 
 #ifdef CONFIG_KASAN_GENERIC
 
-/**
- * kasan_poison_last_granule - mark the last granule of the memory range as
- * inaccessible
- * @addr - range start address, must be aligned to KASAN_GRANULE_SIZE
- * @size - range size
- *
- * This function is only available for the generic mode, as it's the only mode
- * that has partially poisoned memory granules.
- */
+ 
 void kasan_poison_last_granule(const void *address, size_t size);
 
-#else /* CONFIG_KASAN_GENERIC */
+#else  
 
 static inline void kasan_poison_last_granule(const void *address, size_t size) { }
 
-#endif /* CONFIG_KASAN_GENERIC */
+#endif  
 
 #ifndef kasan_arch_is_ready
 static inline bool kasan_arch_is_ready(void)	{ return true; }
@@ -543,12 +498,12 @@ static inline bool kasan_arch_is_ready(void)	{ return true; }
 void kasan_kunit_test_suite_start(void);
 void kasan_kunit_test_suite_end(void);
 
-#else /* CONFIG_KASAN_KUNIT_TEST */
+#else  
 
 static inline void kasan_kunit_test_suite_start(void) { }
 static inline void kasan_kunit_test_suite_end(void) { }
 
-#endif /* CONFIG_KASAN_KUNIT_TEST */
+#endif  
 
 #if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST) || IS_ENABLED(CONFIG_KASAN_MODULE_TEST)
 
@@ -557,10 +512,7 @@ void kasan_restore_multi_shot(bool enabled);
 
 #endif
 
-/*
- * Exported functions for interfaces called from assembly or from generated
- * code. Declared here to avoid warnings about missing declarations.
- */
+ 
 
 asmlinkage void kasan_unpoison_task_stack_below(const void *watermark);
 void __asan_register_globals(void *globals, ssize_t size);
@@ -641,4 +593,4 @@ void *__hwasan_memcpy(void *dest, const void *src, ssize_t len);
 void kasan_tag_mismatch(void *addr, unsigned long access_info,
 			unsigned long ret_ip);
 
-#endif /* __MM_KASAN_KASAN_H */
+#endif  

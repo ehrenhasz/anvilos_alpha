@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for UniPhier AIDET (ARM Interrupt Detector)
- *
- * Copyright (C) 2017 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/init.h>
@@ -18,7 +13,7 @@
 
 #define UNIPHIER_AIDET_NR_IRQS		256
 
-#define UNIPHIER_AIDET_DETCONF		0x04	/* inverter register base */
+#define UNIPHIER_AIDET_DETCONF		0x04	 
 
 struct uniphier_aidet_priv {
 	struct irq_domain *domain;
@@ -58,7 +53,7 @@ static int uniphier_aidet_irq_set_type(struct irq_data *data, unsigned int type)
 	struct uniphier_aidet_priv *priv = data->chip_data;
 	unsigned int val;
 
-	/* enable inverter for active low triggers */
+	 
 	switch (type) {
 	case IRQ_TYPE_EDGE_RISING:
 	case IRQ_TYPE_LEVEL_HIGH:
@@ -143,10 +138,10 @@ static int uniphier_aidet_domain_alloc(struct irq_domain *domain,
 	if (ret)
 		return ret;
 
-	/* parent is GIC */
+	 
 	parent_fwspec.fwnode = domain->parent->fwnode;
 	parent_fwspec.param_count = 3;
-	parent_fwspec.param[0] = 0;		/* SPI */
+	parent_fwspec.param[0] = 0;		 
 	parent_fwspec.param[1] = hwirq;
 	parent_fwspec.param[2] = type;
 
@@ -237,7 +232,7 @@ static const struct of_device_id uniphier_aidet_match[] = {
 	{ .compatible = "socionext,uniphier-ld20-aidet" },
 	{ .compatible = "socionext,uniphier-pxs3-aidet" },
 	{ .compatible = "socionext,uniphier-nx1-aidet" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver uniphier_aidet_driver = {

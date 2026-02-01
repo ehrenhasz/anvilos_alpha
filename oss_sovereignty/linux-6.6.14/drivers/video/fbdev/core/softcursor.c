@@ -1,14 +1,4 @@
-/*
- * linux/drivers/video/console/softcursor.c
- *
- * Generic software cursor for frame buffer devices
- *
- *  Created 14 Nov 2002 by James Simmons
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License.  See the file COPYING in the main directory of this
- * archive for more details.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/string.h>

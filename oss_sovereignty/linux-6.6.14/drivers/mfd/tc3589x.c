@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Hanumath Prasad <hanumath.prasad@stericsson.com> for ST-Ericsson
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -18,9 +13,7 @@
 #include <linux/mfd/tc3589x.h>
 #include <linux/err.h>
 
-/*
- * enum tc3589x_version - indicates the TC3589x version
- */
+ 
 enum tc3589x_version {
 	TC3589X_TC35890,
 	TC3589X_TC35892,
@@ -34,11 +27,7 @@ enum tc3589x_version {
 #define TC3589x_CLKMODE_MODCTL_SLEEP		0x0
 #define TC3589x_CLKMODE_MODCTL_OPERATION	(1 << 0)
 
-/**
- * tc3589x_reg_read() - read a single TC3589x register
- * @tc3589x:	Device to read from
- * @reg:	Register to read
- */
+ 
 int tc3589x_reg_read(struct tc3589x *tc3589x, u8 reg)
 {
 	int ret;
@@ -52,12 +41,7 @@ int tc3589x_reg_read(struct tc3589x *tc3589x, u8 reg)
 }
 EXPORT_SYMBOL_GPL(tc3589x_reg_read);
 
-/**
- * tc3589x_reg_write() - write a single TC3589x register
- * @tc3589x:	Device to write to
- * @reg:	Register to read
- * @data:	Value to write
- */
+ 
 int tc3589x_reg_write(struct tc3589x *tc3589x, u8 reg, u8 data)
 {
 	int ret;
@@ -71,13 +55,7 @@ int tc3589x_reg_write(struct tc3589x *tc3589x, u8 reg, u8 data)
 }
 EXPORT_SYMBOL_GPL(tc3589x_reg_write);
 
-/**
- * tc3589x_block_read() - read multiple TC3589x registers
- * @tc3589x:	Device to read from
- * @reg:	First register
- * @length:	Number of registers
- * @values:	Buffer to write to
- */
+ 
 int tc3589x_block_read(struct tc3589x *tc3589x, u8 reg, u8 length, u8 *values)
 {
 	int ret;
@@ -91,13 +69,7 @@ int tc3589x_block_read(struct tc3589x *tc3589x, u8 reg, u8 length, u8 *values)
 }
 EXPORT_SYMBOL_GPL(tc3589x_block_read);
 
-/**
- * tc3589x_block_write() - write multiple TC3589x registers
- * @tc3589x:	Device to write to
- * @reg:	First register
- * @length:	Number of registers
- * @values:	Values to write
- */
+ 
 int tc3589x_block_write(struct tc3589x *tc3589x, u8 reg, u8 length,
 			const u8 *values)
 {
@@ -113,13 +85,7 @@ int tc3589x_block_write(struct tc3589x *tc3589x, u8 reg, u8 length,
 }
 EXPORT_SYMBOL_GPL(tc3589x_block_write);
 
-/**
- * tc3589x_set_bits() - set the value of a bitfield in a TC3589x register
- * @tc3589x:	Device to write to
- * @reg:	Register to write
- * @mask:	Mask of bits to set
- * @val:	Value to set
- */
+ 
 int tc3589x_set_bits(struct tc3589x *tc3589x, u8 reg, u8 mask, u8 val)
 {
 	int ret;
@@ -193,12 +159,7 @@ again:
 		status &= ~(1 << bit);
 	}
 
-	/*
-	 * A dummy read or write (to any register) appears to be necessary to
-	 * have the last interrupt clear (for example, GPIO IC write) take
-	 * effect. In such a case, recheck for any interrupt which is still
-	 * pending.
-	 */
+	 
 	status = tc3589x_reg_read(tc3589x, TC3589x_IRQST);
 	if (status)
 		goto again;
@@ -265,11 +226,7 @@ static int tc3589x_chip_init(struct tc3589x *tc3589x)
 
 	dev_info(tc3589x->dev, "manufacturer: %#x, version: %#x\n", manf, ver);
 
-	/*
-	 * Put everything except the IRQ module into reset;
-	 * also spare the GPIO module for any pin initialization
-	 * done during pre-kernel boot
-	 */
+	 
 	ret = tc3589x_reg_write(tc3589x, TC3589x_RSTCTRL,
 				TC3589x_RSTCTRL_TIMRST
 				| TC3589x_RSTCTRL_ROTRST
@@ -277,7 +234,7 @@ static int tc3589x_chip_init(struct tc3589x *tc3589x)
 	if (ret < 0)
 		return ret;
 
-	/* Clear the reset interrupt. */
+	 
 	return tc3589x_reg_write(tc3589x, TC3589x_RSTINTCLR, 0x1);
 }
 
@@ -312,7 +269,7 @@ static int tc3589x_device_init(struct tc3589x *tc3589x)
 }
 
 static const struct of_device_id tc3589x_match[] = {
-	/* Legacy compatible string */
+	 
 	{ .compatible = "tc3589x", .data = (void *) TC3589X_UNKNOWN },
 	{ .compatible = "toshiba,tc35890", .data = (void *) TC3589X_TC35890 },
 	{ .compatible = "toshiba,tc35892", .data = (void *) TC3589X_TC35892 },
@@ -368,7 +325,7 @@ static int tc3589x_probe(struct i2c_client *i2c)
 			return PTR_ERR(pdata);
 		}
 	} else {
-		/* When not probing from device tree we have this ID */
+		 
 		version = id->driver_data;
 	}
 
@@ -442,7 +399,7 @@ static int tc3589x_suspend(struct device *dev)
 	struct i2c_client *client = tc3589x->i2c;
 	int ret = 0;
 
-	/* put the system to sleep mode */
+	 
 	if (!device_may_wakeup(&client->dev))
 		ret = tc3589x_reg_write(tc3589x, TC3589x_CLKMODE,
 				TC3589x_CLKMODE_MODCTL_SLEEP);
@@ -456,7 +413,7 @@ static int tc3589x_resume(struct device *dev)
 	struct i2c_client *client = tc3589x->i2c;
 	int ret = 0;
 
-	/* enable the system into operation */
+	 
 	if (!device_may_wakeup(&client->dev))
 		ret = tc3589x_reg_write(tc3589x, TC3589x_CLKMODE,
 				TC3589x_CLKMODE_MODCTL_OPERATION);

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Samsung S5P G2D - 2D Graphics Accelerator Driver
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Kamil Debski, <k.debski@samsung.com>
- */
+ 
+ 
 
 #include <linux/platform_device.h>
 #include <media/v4l2-device.h>
@@ -30,18 +25,18 @@ struct g2d_dev {
 };
 
 struct g2d_frame {
-	/* Original dimensions */
+	 
 	u32	width;
 	u32	height;
-	/* Crop size */
+	 
 	u32	c_width;
 	u32	c_height;
-	/* Offset */
+	 
 	u32	o_width;
 	u32	o_height;
-	/* Image format */
+	 
 	struct g2d_fmt *fmt;
-	/* Variables that can calculated once and reused */
+	 
 	u32	stride;
 	u32	bottom;
 	u32	right;

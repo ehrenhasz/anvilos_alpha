@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2019 Mellanox Technologies.
+
+
 
 #include <linux/mlx5/fs.h>
 #include "eswitch.h"
@@ -75,9 +75,7 @@ mlx5_eswitch_termtbl_create(struct mlx5_core_dev *dev,
 		return -EOPNOTSUPP;
 	}
 
-	/* As this is the terminating action then the termination table is the
-	 * same prio as the slow path
-	 */
+	 
 	ft_attr.flags = MLX5_FLOW_TABLE_TERMINATION | MLX5_FLOW_TABLE_UNMANAGED |
 			MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT;
 	ft_attr.prio = FDB_TC_OFFLOAD;
@@ -225,13 +223,13 @@ mlx5_eswitch_termtbl_required(struct mlx5_eswitch *esw,
 	    (!mlx5_eswitch_offload_is_uplink_port(esw, spec) && !esw_attr->int_port))
 		return false;
 
-	/* push vlan on RX */
+	 
 	if (flow_act->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
 	    !(mlx5_fs_get_capabilities(esw->dev, MLX5_FLOW_NAMESPACE_FDB) &
 	      MLX5_FLOW_STEERING_CAP_VLAN_PUSH_ON_RX))
 		return true;
 
-	/* hairpin */
+	 
 	for (i = esw_attr->split_count; i < esw_attr->out_count; i++)
 		if (!esw_attr->dest_int_port && esw_attr->dests[i].vport_valid &&
 		    esw_attr->dests[i].vport == MLX5_VPORT_UPLINK)
@@ -261,7 +259,7 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
 	for (i = 0; i < num_dest; i++) {
 		struct mlx5_termtbl_handle *tt;
 
-		/* only vport destinations can be terminated */
+		 
 		if (dest[i].type != MLX5_FLOW_DESTINATION_TYPE_VPORT)
 			continue;
 
@@ -273,7 +271,7 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
 			term_tbl_act.pkt_reformat = NULL;
 		}
 
-		/* get the terminating table for the action list */
+		 
 		tt = mlx5_eswitch_termtbl_get_create(esw, &term_tbl_act,
 						     &dest[i], attr);
 		if (IS_ERR(tt)) {
@@ -283,17 +281,17 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
 		attr->dests[num_vport_dests].termtbl = tt;
 		num_vport_dests++;
 
-		/* link the destination with the termination table */
+		 
 		dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
 		dest[i].ft = tt->termtbl;
 		term_table_created = true;
 	}
 
-	/* at least one destination should reference a termination table */
+	 
 	if (!term_table_created)
 		goto revert_changes;
 
-	/* create the FTE */
+	 
 	flow_act->action &= ~MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
 	flow_act->pkt_reformat = NULL;
 	flow_act->flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
@@ -304,9 +302,7 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
 	goto out;
 
 revert_changes:
-	/* revert the changes that were made to the original flow_act
-	 * and fall-back to the original rule actions
-	 */
+	 
 	mlx5_eswitch_termtbl_actions_move(&term_tbl_act, flow_act);
 
 	for (curr_dest = 0; curr_dest < num_vport_dests; curr_dest++) {
@@ -314,9 +310,7 @@ revert_changes:
 
 		attr->dests[curr_dest].termtbl = NULL;
 
-		/* search for the destination associated with the
-		 * current term table
-		 */
+		 
 		for (i = 0; i < num_dest; i++) {
 			if (dest[i].ft != tt->termtbl)
 				continue;

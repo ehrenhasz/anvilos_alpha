@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Broadcom
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/init.h>
@@ -147,7 +145,7 @@ static int iproc_gpio_irq_set_type(struct irq_data *d, u32 type)
 		writel_relaxed(int_pol, chip->base + IPROC_GPIO_CCA_INT_LEVEL);
 		break;
 	default:
-		/* should not come here */
+		 
 		ret = -EINVAL;
 		goto out_unlock;
 	}
@@ -171,12 +169,12 @@ static irqreturn_t iproc_gpio_irq_handler(int irq, void *data)
 	unsigned long int_bits = 0;
 	u32 int_status;
 
-	/* go through the entire GPIOs and handle all interrupts */
+	 
 	int_status = readl_relaxed(chip->intr + IPROC_CCA_INT_STS);
 	if (int_status & IPROC_CCA_INT_F_GPIOINT) {
 		u32 event, level;
 
-		/* Get level and edge interrupts */
+		 
 		event =
 		    readl_relaxed(chip->base + IPROC_GPIO_CCA_INT_EVENT_MASK);
 		event &= readl_relaxed(chip->base + IPROC_GPIO_CCA_INT_EVENT);
@@ -256,15 +254,12 @@ static int iproc_gpio_probe(struct platform_device *pdev)
 		if (IS_ERR(chip->intr))
 			return PTR_ERR(chip->intr);
 
-		/* Enable GPIO interrupts for CCA GPIO */
+		 
 		val = readl_relaxed(chip->intr + IPROC_CCA_INT_MASK);
 		val |= IPROC_CCA_INT_F_GPIOINT;
 		writel_relaxed(val, chip->intr + IPROC_CCA_INT_MASK);
 
-		/*
-		 * Directly request the irq here instead of passing
-		 * a flow-handler because the irq is shared.
-		 */
+		 
 		ret = devm_request_irq(dev, irq, iproc_gpio_irq_handler,
 				       IRQF_SHARED, chip->gc.label, &chip->gc);
 		if (ret) {
@@ -274,7 +269,7 @@ static int iproc_gpio_probe(struct platform_device *pdev)
 
 		girq = &chip->gc.irq;
 		gpio_irq_chip_set_chip(girq, &iproc_gpio_irq_chip);
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->parent_handler = NULL;
 		girq->num_parents = 0;
 		girq->parents = NULL;

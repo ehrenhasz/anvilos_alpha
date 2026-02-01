@@ -1,38 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2017 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_drv.h"
 #include <linux/highmem.h>
 
-/*
- * Template that implements find_first_diff() for a generic
- * unsigned integer type. @size and return value are in bytes.
- */
+ 
 #define VMW_FIND_FIRST_DIFF(_type)			 \
 static size_t vmw_find_first_diff_ ## _type		 \
 	(const _type * dst, const _type * src, size_t size)\
@@ -48,12 +20,7 @@ static size_t vmw_find_first_diff_ ## _type		 \
 }
 
 
-/*
- * Template that implements find_last_diff() for a generic
- * unsigned integer type. Pointers point to the item following the
- * *end* of the area to be examined. @size and return value are in
- * bytes.
- */
+ 
 #define VMW_FIND_LAST_DIFF(_type)					\
 static ssize_t vmw_find_last_diff_ ## _type(				\
 	const _type * dst, const _type * src, size_t size)		\
@@ -68,12 +35,7 @@ static ssize_t vmw_find_last_diff_ ## _type(				\
 }
 
 
-/*
- * Instantiate find diff functions for relevant unsigned integer sizes,
- * assuming that wider integers are faster (including aligning) up to the
- * architecture native width, which is assumed to be 32 bit unless
- * CONFIG_64BIT is defined.
- */
+ 
 VMW_FIND_FIRST_DIFF(u8);
 VMW_FIND_LAST_DIFF(u8);
 
@@ -89,17 +51,11 @@ VMW_FIND_LAST_DIFF(u64);
 #endif
 
 
-/* We use size aligned copies. This computes (addr - align(addr)) */
+ 
 #define SPILL(_var, _type) ((unsigned long) _var & (sizeof(_type) - 1))
 
 
-/*
- * Template to compute find_first_diff() for a certain integer type
- * including a head copy for alignment, and adjustment of parameters
- * for tail find or increased resolution find using an unsigned integer find
- * of smaller width. If finding is complete, and resolution is sufficient,
- * the macro executes a return statement. Otherwise it falls through.
- */
+ 
 #define VMW_TRY_FIND_FIRST_DIFF(_type)					\
 do {									\
 	unsigned int spill = SPILL(dst, _type);				\
@@ -134,27 +90,13 @@ do {									\
 } while (0)								\
 
 
-/**
- * vmw_find_first_diff - find the first difference between dst and src
- *
- * @dst: The destination address
- * @src: The source address
- * @size: Number of bytes to compare
- * @granularity: The granularity needed for the return value in bytes.
- * return: The offset from find start where the first difference was
- * encountered in bytes. If no difference was found, the function returns
- * a value >= @size.
- */
+ 
 static size_t vmw_find_first_diff(const u8 *dst, const u8 *src, size_t size,
 				  size_t granularity)
 {
 	size_t offset = 0;
 
-	/*
-	 * Try finding with large integers if alignment allows, or we can
-	 * fix it. Fall through if we need better resolution or alignment
-	 * was bad.
-	 */
+	 
 #ifdef CONFIG_64BIT
 	VMW_TRY_FIND_FIRST_DIFF(u64);
 #endif
@@ -166,13 +108,7 @@ static size_t vmw_find_first_diff(const u8 *dst, const u8 *src, size_t size,
 }
 
 
-/*
- * Template to compute find_last_diff() for a certain integer type
- * including a tail copy for alignment, and adjustment of parameters
- * for head find or increased resolution find using an unsigned integer find
- * of smaller width. If finding is complete, and resolution is sufficient,
- * the macro executes a return statement. Otherwise it falls through.
- */
+ 
 #define VMW_TRY_FIND_LAST_DIFF(_type)					\
 do {									\
 	unsigned int spill = SPILL(dst, _type);				\
@@ -207,16 +143,7 @@ do {									\
 } while (0)
 
 
-/**
- * vmw_find_last_diff - find the last difference between dst and src
- *
- * @dst: The destination address
- * @src: The source address
- * @size: Number of bytes to compare
- * @granularity: The granularity needed for the return value in bytes.
- * return: The offset from find start where the last difference was
- * encountered in bytes, or a negative value if no difference was found.
- */
+ 
 static ssize_t vmw_find_last_diff(const u8 *dst, const u8 *src, size_t size,
 				  size_t granularity)
 {
@@ -234,28 +161,14 @@ static ssize_t vmw_find_last_diff(const u8 *dst, const u8 *src, size_t size,
 }
 
 
-/**
- * vmw_memcpy - A wrapper around kernel memcpy with allowing to plug it into a
- * struct vmw_diff_cpy.
- *
- * @diff: The struct vmw_diff_cpy closure argument (unused).
- * @dest: The copy destination.
- * @src: The copy source.
- * @n: Number of bytes to copy.
- */
+ 
 void vmw_memcpy(struct vmw_diff_cpy *diff, u8 *dest, const u8 *src, size_t n)
 {
 	memcpy(dest, src, n);
 }
 
 
-/**
- * vmw_adjust_rect - Adjust rectangle coordinates for newly found difference
- *
- * @diff: The struct vmw_diff_cpy used to track the modified bounding box.
- * @diff_offs: The offset from @diff->line_offset where the difference was
- * found.
- */
+ 
 static void vmw_adjust_rect(struct vmw_diff_cpy *diff, size_t diff_offs)
 {
 	size_t offs = (diff_offs + diff->line_offset) / diff->cpp;
@@ -267,24 +180,7 @@ static void vmw_adjust_rect(struct vmw_diff_cpy *diff, size_t diff_offs)
 	rect->y2 = max_t(int, rect->y2, diff->line + 1);
 }
 
-/**
- * vmw_diff_memcpy - memcpy that creates a bounding box of modified content.
- *
- * @diff: The struct vmw_diff_cpy used to track the modified bounding box.
- * @dest: The copy destination.
- * @src: The copy source.
- * @n: Number of bytes to copy.
- *
- * In order to correctly track the modified content, the field @diff->line must
- * be pre-loaded with the current line number, the field @diff->line_offset must
- * be pre-loaded with the line offset in bytes where the copy starts, and
- * finally the field @diff->cpp need to be preloaded with the number of bytes
- * per unit in the horizontal direction of the area we're examining.
- * Typically bytes per pixel.
- * This is needed to know the needed granularity of the difference computing
- * operations. A higher cpp generally leads to faster execution at the cost of
- * bounding box width precision.
- */
+ 
 void vmw_diff_memcpy(struct vmw_diff_cpy *diff, u8 *dest, const u8 *src,
 		     size_t n)
 {
@@ -293,16 +189,13 @@ void vmw_diff_memcpy(struct vmw_diff_cpy *diff, u8 *dest, const u8 *src,
 	if (WARN_ON_ONCE(round_down(n, diff->cpp) != n))
 		return;
 
-	/* TODO: Possibly use a single vmw_find_first_diff per line? */
+	 
 	csize = vmw_find_first_diff(dest, src, n, diff->cpp);
 	if (csize < n) {
 		vmw_adjust_rect(diff, csize);
 		byte_len = diff->cpp;
 
-		/*
-		 * Starting from where first difference was found, find
-		 * location of last difference, and then copy.
-		 */
+		 
 		diff->line_offset += csize;
 		dest += csize;
 		src += csize;
@@ -317,21 +210,7 @@ void vmw_diff_memcpy(struct vmw_diff_cpy *diff, u8 *dest, const u8 *src,
 	diff->line_offset += n;
 }
 
-/**
- * struct vmw_bo_blit_line_data - Convenience argument to vmw_bo_cpu_blit_line
- *
- * @mapped_dst: Already mapped destination page index in @dst_pages.
- * @dst_addr: Kernel virtual address of mapped destination page.
- * @dst_pages: Array of destination bo pages.
- * @dst_num_pages: Number of destination bo pages.
- * @dst_prot: Destination bo page protection.
- * @mapped_src: Already mapped source page index in @dst_pages.
- * @src_addr: Kernel virtual address of mapped source page.
- * @src_pages: Array of source bo pages.
- * @src_num_pages: Number of source bo pages.
- * @src_prot: Source bo page protection.
- * @diff: Struct vmw_diff_cpy, in the end forwarded to the memcpy routine.
- */
+ 
 struct vmw_bo_blit_line_data {
 	u32 mapped_dst;
 	u8 *dst_addr;
@@ -346,14 +225,7 @@ struct vmw_bo_blit_line_data {
 	struct vmw_diff_cpy *diff;
 };
 
-/**
- * vmw_bo_cpu_blit_line - Blit part of a line from one bo to another.
- *
- * @d: Blit data as described above.
- * @dst_offset: Destination copy start offset from start of bo.
- * @src_offset: Source copy start offset from start of bo.
- * @bytes_to_copy: Number of bytes to copy in this line.
- */
+ 
 static int vmw_bo_cpu_blit_line(struct vmw_bo_blit_line_data *d,
 				u32 dst_offset,
 				u32 src_offset,
@@ -420,30 +292,7 @@ static int vmw_bo_cpu_blit_line(struct vmw_bo_blit_line_data *d,
 	return 0;
 }
 
-/**
- * vmw_bo_cpu_blit - in-kernel cpu blit.
- *
- * @dst: Destination buffer object.
- * @dst_offset: Destination offset of blit start in bytes.
- * @dst_stride: Destination stride in bytes.
- * @src: Source buffer object.
- * @src_offset: Source offset of blit start in bytes.
- * @src_stride: Source stride in bytes.
- * @w: Width of blit.
- * @h: Height of blit.
- * @diff: The struct vmw_diff_cpy used to track the modified bounding box.
- * return: Zero on success. Negative error value on failure. Will print out
- * kernel warnings on caller bugs.
- *
- * Performs a CPU blit from one buffer object to another avoiding a full
- * bo vmap which may exhaust- or fragment vmalloc space.
- * On supported architectures (x86), we're using kmap_atomic which avoids
- * cross-processor TLB- and cache flushes and may, on non-HIGHMEM systems
- * reference already set-up mappings.
- *
- * Neither of the buffer objects may be placed in PCI memory
- * (Fixed memory in TTM terminology) when using this function.
- */
+ 
 int vmw_bo_cpu_blit(struct ttm_buffer_object *dst,
 		    u32 dst_offset, u32 dst_stride,
 		    struct ttm_buffer_object *src,
@@ -459,7 +308,7 @@ int vmw_bo_cpu_blit(struct ttm_buffer_object *dst,
 	struct vmw_bo_blit_line_data d;
 	int ret = 0;
 
-	/* Buffer objects need to be either pinned or reserved: */
+	 
 	if (!(dst->pin_count))
 		dma_resv_assert_held(dst->base.resv);
 	if (!(src->pin_count))

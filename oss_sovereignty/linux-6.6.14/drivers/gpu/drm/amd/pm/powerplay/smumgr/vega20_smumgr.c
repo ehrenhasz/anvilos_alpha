@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "smumgr.h"
 #include "vega20_inc.h"
@@ -35,13 +14,13 @@
 
 #include "smu_v11_0_i2c.h"
 
-/* MP Apertures */
+ 
 #define MP0_Public			0x03800000
 #define MP0_SRAM			0x03900000
 #define MP1_Public			0x03b00000
 #define MP1_SRAM			0x03c00004
 
-/* address block */
+ 
 #define smnMP1_FIRMWARE_FLAGS		0x3010024
 #define smnMP0_FW_INTF			0x30101c0
 #define smnMP1_PUB_CTRL			0x3010b14
@@ -61,12 +40,7 @@ bool vega20_is_smc_ram_running(struct pp_hwmgr *hwmgr)
 	return false;
 }
 
-/*
- * Check if SMC has responded to previous message.
- *
- * @param    smumgr  the address of the powerplay hardware manager.
- * @return   TRUE    SMC has responded, FALSE otherwise.
- */
+ 
 static uint32_t vega20_wait_for_response(struct pp_hwmgr *hwmgr)
 {
 	struct amdgpu_device *adev = hwmgr->adev;
@@ -80,12 +54,7 @@ static uint32_t vega20_wait_for_response(struct pp_hwmgr *hwmgr)
 	return RREG32_SOC15(MP1, 0, mmMP1_SMN_C2PMSG_90);
 }
 
-/*
- * Send a message to the SMC, and do not wait for its response.
- * @param    smumgr  the address of the powerplay hardware manager.
- * @param    msg the message to send.
- * @return   Always return 0.
- */
+ 
 static int vega20_send_msg_to_smc_without_waiting(struct pp_hwmgr *hwmgr,
 		uint16_t msg)
 {
@@ -96,12 +65,7 @@ static int vega20_send_msg_to_smc_without_waiting(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/*
- * Send a message to the SMC, and wait for its response.
- * @param    hwmgr  the address of the powerplay hardware manager.
- * @param    msg the message to send.
- * @return   Always return 0.
- */
+ 
 static int vega20_send_msg_to_smc(struct pp_hwmgr *hwmgr, uint16_t msg)
 {
 	struct amdgpu_device *adev = hwmgr->adev;
@@ -120,13 +84,7 @@ static int vega20_send_msg_to_smc(struct pp_hwmgr *hwmgr, uint16_t msg)
 	return (ret == PPSMC_Result_OK) ? 0 : -EIO;
 }
 
-/*
- * Send a message to the SMC with parameter
- * @param    hwmgr:  the address of the powerplay hardware manager.
- * @param    msg: the message to send.
- * @param    parameter: the parameter to send
- * @return   Always return 0.
- */
+ 
 static int vega20_send_msg_to_smc_with_parameter(struct pp_hwmgr *hwmgr,
 		uint16_t msg, uint32_t parameter)
 {
@@ -155,11 +113,7 @@ static uint32_t vega20_get_argument(struct pp_hwmgr *hwmgr)
 	return RREG32_SOC15(MP1, 0, mmMP1_SMN_C2PMSG_82);
 }
 
-/*
- * Copy table from SMC into driver FB
- * @param   hwmgr    the address of the HW manager
- * @param   table_id    the driver's table ID to copy from
- */
+ 
 static int vega20_copy_table_from_smc(struct pp_hwmgr *hwmgr,
 				      uint8_t *table, int16_t table_id)
 {
@@ -200,11 +154,7 @@ static int vega20_copy_table_from_smc(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/*
- * Copy table from Driver FB into SMC
- * @param   hwmgr    the address of the HW manager
- * @param   table_id    the table to copy from
- */
+ 
 static int vega20_copy_table_to_smc(struct pp_hwmgr *hwmgr,
 				    uint8_t *table, int16_t table_id)
 {
@@ -436,7 +386,7 @@ static int vega20_smu_init(struct pp_hwmgr *hwmgr)
 
 	hwmgr->smu_backend = priv;
 
-	/* allocate space for pptable */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(PPTable_t),
 			PAGE_SIZE,
@@ -450,7 +400,7 @@ static int vega20_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_PPTABLE].version = 0x01;
 	priv->smu_tables.entry[TABLE_PPTABLE].size = sizeof(PPTable_t);
 
-	/* allocate space for watermarks table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(Watermarks_t),
 			PAGE_SIZE,
@@ -464,7 +414,7 @@ static int vega20_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_WATERMARKS].version = 0x01;
 	priv->smu_tables.entry[TABLE_WATERMARKS].size = sizeof(Watermarks_t);
 
-	/* allocate space for pmstatuslog table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			tools_size,
 			PAGE_SIZE,
@@ -478,7 +428,7 @@ static int vega20_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_PMSTATUSLOG].version = 0x01;
 	priv->smu_tables.entry[TABLE_PMSTATUSLOG].size = tools_size;
 
-	/* allocate space for OverDrive table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(OverDriveTable_t),
 			PAGE_SIZE,
@@ -492,7 +442,7 @@ static int vega20_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_OVERDRIVE].version = 0x01;
 	priv->smu_tables.entry[TABLE_OVERDRIVE].size = sizeof(OverDriveTable_t);
 
-	/* allocate space for SmuMetrics table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(SmuMetrics_t),
 			PAGE_SIZE,
@@ -506,7 +456,7 @@ static int vega20_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_SMU_METRICS].version = 0x01;
 	priv->smu_tables.entry[TABLE_SMU_METRICS].size = sizeof(SmuMetrics_t);
 
-	/* allocate space for ActivityMonitor table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(DpmActivityMonitorCoeffInt_t),
 			PAGE_SIZE,

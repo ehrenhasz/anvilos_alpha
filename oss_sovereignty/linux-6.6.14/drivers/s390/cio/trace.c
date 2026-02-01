@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Tracepoint definitions for s390_cio
- *
- * Copyright IBM Corp. 2015
- * Author(s): Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <asm/crw.h>
 #include "cio.h"

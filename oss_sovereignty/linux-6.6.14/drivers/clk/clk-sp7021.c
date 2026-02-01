@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Copyright (C) Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -14,11 +11,11 @@
 
 #include <dt-bindings/clock/sunplus,sp7021-clkc.h>
 
-/* speical div_width values for PLLTV/PLLA */
+ 
 #define DIV_TV		33
 #define DIV_A		34
 
-/* PLLTV parameters */
+ 
 enum {
 	SEL_FRA,
 	SDM_MOD,
@@ -38,7 +35,7 @@ enum {
 #define MASK_DIVN	GENMASK(7, 0)
 #define MASK_DIVM	GENMASK(14, 8)
 
-/* HIWORD_MASK FIELD_PREP */
+ 
 #define HWM_FIELD_PREP(mask, value)		\
 ({						\
 	u64 _m = mask;				\
@@ -48,20 +45,20 @@ enum {
 struct sp_pll {
 	struct clk_hw hw;
 	void __iomem *reg;
-	spinlock_t lock;	/* lock for reg */
+	spinlock_t lock;	 
 	int div_shift;
 	int div_width;
-	int pd_bit;		/* power down bit idx */
-	int bp_bit;		/* bypass bit idx */
-	unsigned long brate;	/* base rate, TODO: replace brate with muldiv */
-	u32 p[P_MAX];		/* for hold PLLTV/PLLA parameters */
+	int pd_bit;		 
+	int bp_bit;		 
+	unsigned long brate;	 
+	u32 p[P_MAX];		 
 };
 
 #define to_sp_pll(_hw)	container_of(_hw, struct sp_pll, hw)
 
 struct sp_clk_gate_info {
-	u16	reg;		/* reg_index_shift */
-	u16	ext_parent;	/* parent is extclk */
+	u16	reg;		 
+	u16	ext_parent;	 
 };
 
 static const struct sp_clk_gate_info sp_clk_gates[] = {
@@ -134,9 +131,9 @@ static const struct sp_clk_gate_info sp_clk_gates[] = {
 #define _M		1000000UL
 #define F_27M		(27 * _M)
 
-/*********************************** PLL_TV **********************************/
+ 
 
-/* TODO: set proper FVCO range */
+ 
 #define FVCO_MIN	(100 * _M)
 #define FVCO_MAX	(200 * _M)
 
@@ -145,7 +142,7 @@ static const struct sp_clk_gate_info sp_clk_gates[] = {
 
 static long plltv_integer_div(struct sp_pll *clk, unsigned long freq)
 {
-	/* valid m values: 27M must be divisible by m */
+	 
 	static const u32 m_table[] = {
 		1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32
 	};
@@ -155,14 +152,14 @@ static long plltv_integer_div(struct sp_pll *clk, unsigned long freq)
 
 	freq = clamp(freq, F_MIN, F_MAX);
 
-	/* DIVR 0~3 */
+	 
 	for (r = 0; r <= 3; r++) {
 		fvco = freq << r;
 		if (fvco <= FVCO_MAX)
 			break;
 	}
 
-	/* DIVM */
+	 
 	for (m = 0; m < ARRAY_SIZE(m_table); m++) {
 		nf = fvco * m_table[m];
 		n = nf / F_27M;
@@ -174,7 +171,7 @@ static long plltv_integer_div(struct sp_pll *clk, unsigned long freq)
 		goto err_not_found;
 	}
 
-	/* save parameters */
+	 
 	clk->p[SEL_FRA] = 0;
 	clk->p[DIVR]    = r;
 	clk->p[DIVN]    = n;
@@ -189,23 +186,23 @@ err_not_found:
 	return ret;
 }
 
-/* parameters for PLLTV fractional divider */
+ 
 static const u32 pt[][5] = {
-	/* conventional fractional */
+	 
 	{
-		1,			/* factor */
-		5,			/* 5 * p0 (nint) */
-		1,			/* 1 * p0 */
-		F_27M,			/* F_27M / p0 */
-		1,			/* p0 / p2 */
+		1,			 
+		5,			 
+		1,			 
+		F_27M,			 
+		1,			 
 	},
-	/* phase rotation */
+	 
 	{
-		10,			/* factor */
-		54,			/* 5.4 * p0 (nint) */
-		2,			/* 0.2 * p0 */
-		F_27M / 10,		/* F_27M / p0 */
-		5,			/* p0 / p2 */
+		10,			 
+		54,			 
+		2,			 
+		F_27M / 10,		 
+		5,			 
 	},
 };
 
@@ -222,7 +219,7 @@ static long plltv_fractional_div(struct sp_pll *clk, unsigned long freq)
 
 	freq = clamp(freq, F_MIN, F_MAX);
 
-	/* DIVR 0~3 */
+	 
 	for (r = 0; r <= 3; r++) {
 		fvco = freq << r;
 		if (fvco <= FVCO_MAX)
@@ -230,17 +227,17 @@ static long plltv_fractional_div(struct sp_pll *clk, unsigned long freq)
 	}
 	f = F_27M >> r;
 
-	/* PH_SEL */
+	 
 	for (ph = ARRAY_SIZE(pt) - 1; ph >= 0; ph--) {
 		const u32 *pp = pt[ph];
 
-		/* SDM_MOD */
+		 
 		for (sdm = 0; sdm < ARRAY_SIZE(sdm_mod_vals); sdm++) {
 			u32 mod = sdm_mod_vals[sdm];
 
-			/* DIVM 1~32 */
+			 
 			for (m = 1; m <= 32; m++) {
-				u32 df; /* diff freq */
+				u32 df;  
 				u32 df_quotient, df_remainder;
 
 				nf = fvco * m;
@@ -274,7 +271,7 @@ static long plltv_fractional_div(struct sp_pll *clk, unsigned long freq)
 				if (df_quotient_min > df_quotient ||
 				    (df_quotient_min == df_quotient &&
 				    df_remainder_min > df_remainder)) {
-					/* found a closer freq, save parameters */
+					 
 					clk->p[SEL_FRA] = 1;
 					clk->p[SDM_MOD] = sdm;
 					clk->p[PH_SEL]  = ph;
@@ -332,9 +329,9 @@ static int plltv_set_rate(struct sp_pll *clk)
 	return 0;
 }
 
-/*********************************** PLL_A ***********************************/
+ 
 
-/* from Q628_PLLs_REG_setting.xlsx */
+ 
 static const struct {
 	u32 rate;
 	u32 regs[5];
@@ -398,7 +395,7 @@ static long plla_round_rate(struct sp_pll *clk, unsigned long rate)
 	return pa[i].rate;
 }
 
-/********************************** SP_PLL ***********************************/
+ 
 
 static long sp_pll_calc_div(struct sp_pll *clk, unsigned long rate)
 {
@@ -419,7 +416,7 @@ static long sp_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	long ret;
 
 	if (rate == *prate) {
-		ret = *prate; /* bypass */
+		ret = *prate;  
 	} else if (clk->div_width == DIV_A) {
 		ret = plla_round_rate(clk, rate);
 	} else if (clk->div_width == DIV_TV) {
@@ -441,7 +438,7 @@ static unsigned long sp_pll_recalc_rate(struct clk_hw *hw,
 	unsigned long ret;
 
 	if (reg & BIT(clk->bp_bit)) {
-		ret = prate; /* bypass */
+		ret = prate;  
 	} else if (clk->div_width == DIV_A) {
 		ret = pa[clk->p[0]].rate;
 	} else if (clk->div_width == DIV_TV) {
@@ -452,7 +449,7 @@ static unsigned long sp_pll_recalc_rate(struct clk_hw *hw,
 		m = FIELD_GET(MASK_DIVM, reg2) + 1;
 
 		if (reg & MASK_SEL_FRA) {
-			/* fractional divider */
+			 
 			u32 sdm  = FIELD_GET(MASK_SDM_MOD, reg);
 			u32 ph   = FIELD_GET(MASK_PH_SEL, reg);
 			u32 nfra = FIELD_GET(MASK_NFRA, reg);
@@ -464,7 +461,7 @@ static unsigned long sp_pll_recalc_rate(struct clk_hw *hw,
 			r1  = ret * (sdm_mod_vals[sdm] - nfra) / sdm_mod_vals[sdm] / pp[4];
 			ret = (r0 - r1) / m;
 		} else {
-			/* integer divider */
+			 
 			u32 n = FIELD_GET(MASK_DIVN, reg2) + 1;
 
 			ret = (prate / m * n) >> r;
@@ -485,10 +482,10 @@ static int sp_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	unsigned long flags;
 	u32 reg;
 
-	reg = BIT(clk->bp_bit + 16); /* HIWORD_MASK */
+	reg = BIT(clk->bp_bit + 16);  
 
 	if (rate == prate) {
-		reg |= BIT(clk->bp_bit); /* bypass */
+		reg |= BIT(clk->bp_bit);  
 	} else if (clk->div_width == DIV_A) {
 		return plla_set_rate(clk);
 	} else if (clk->div_width == DIV_TV) {
@@ -593,8 +590,8 @@ static struct clk_hw *sp_pll_register(struct device *dev, const char *name,
 static int sp7021_clk_probe(struct platform_device *pdev)
 {
 	static const u32 sp_clken[] = {
-		0x67ef, 0x03ff, 0xff03, 0xfff0, 0x0004, /* G0.1~5  */
-		0x0000, 0x8000, 0xffff, 0x0040, 0x0000, /* G0.6~10 */
+		0x67ef, 0x03ff, 0xff03, 0xfff0, 0x0004,  
+		0x0000, 0x8000, 0xffff, 0x0040, 0x0000,  
 	};
 	static struct clk_parent_data pd_ext, pd_sys, pd_e;
 	struct device *dev = &pdev->dev;
@@ -613,7 +610,7 @@ static int sp7021_clk_probe(struct platform_device *pdev)
 	if (IS_ERR(sys_base))
 		return PTR_ERR(sys_base);
 
-	/* enable default clks */
+	 
 	for (i = 0; i < ARRAY_SIZE(sp_clken); i++)
 		writel((sp_clken[i] << 16) | sp_clken[i], clk_base + i * 4);
 
@@ -626,7 +623,7 @@ static int sp7021_clk_probe(struct platform_device *pdev)
 	hws = clk_data->hws;
 	pd_ext.index = 0;
 
-	/* PLLs */
+	 
 	hws[PLL_A] = sp_pll_register(dev, "plla", &pd_ext, PLLA_CTL,
 				     11, 12, 27000000, 0, DIV_A, 0);
 	if (IS_ERR(hws[PLL_A]))
@@ -666,14 +663,14 @@ static int sp7021_clk_probe(struct platform_device *pdev)
 	if (IS_ERR(hws[PLL_TV_A]))
 		return PTR_ERR(hws[PLL_TV_A]);
 
-	/* system clock, should not be disabled */
+	 
 	hws[PLL_SYS] = sp_pll_register(dev, "pllsys", &pd_ext, sys_base,
 				       10, 9, 13500000, 0, 4, CLK_IS_CRITICAL);
 	if (IS_ERR(hws[PLL_SYS]))
 		return PTR_ERR(hws[PLL_SYS]);
 	pd_sys.hw = hws[PLL_SYS];
 
-	/* gates */
+	 
 	for (i = 0; i < ARRAY_SIZE(sp_clk_gates); i++) {
 		char name[10];
 		u32 j = sp_clk_gates[i].reg;

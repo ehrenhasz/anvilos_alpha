@@ -1,26 +1,4 @@
-/* valid adjtimex test
- *              by: John Stultz <john.stultz@linaro.org>
- *              (C) Copyright Linaro 2015
- *              Licensed under the GPLv2
- *
- *  This test validates adjtimex interface with valid
- *  and invalid test data.
- *
- *  Usage: valid-adjtimex
- *
- *  To build:
- *	$ gcc valid-adjtimex.c -o valid-adjtimex -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 
 
@@ -46,7 +24,7 @@ int clock_adjtime(clockid_t id, struct timex *tx)
 }
 
 
-/* clear NTP time_status & time_state */
+ 
 int clear_time_state(void)
 {
 	struct timex tx;
@@ -120,7 +98,7 @@ int validate_freq(void)
 	clear_time_state();
 
 	memset(&tx, 0, sizeof(struct timex));
-	/* Set the leap second insert flag */
+	 
 
 	printf("Testing ADJ_FREQ... ");
 	fflush(stdout);
@@ -167,7 +145,7 @@ int validate_freq(void)
 	}
 
 
-	if (sizeof(long) == 8) { /* this case only applies to 64bit systems */
+	if (sizeof(long) == 8) {  
 		for (i = 0; i < NUM_FREQ_INVALID; i++) {
 			tx.modes = ADJ_FREQUENCY;
 			tx.freq = invalid_freq[i];
@@ -184,7 +162,7 @@ int validate_freq(void)
 
 	printf("[OK]\n");
 out:
-	/* reset freq to zero */
+	 
 	tx.modes = ADJ_FREQUENCY;
 	tx.freq = 0;
 	ret = adjtimex(&tx);
@@ -253,7 +231,7 @@ int validate_set_offset(void)
 	printf("Testing ADJ_SETOFFSET... ");
 	fflush(stdout);
 
-	/* Test valid values */
+	 
 	if (set_offset(NSEC_PER_SEC - 1, 1))
 		return -1;
 
@@ -296,7 +274,7 @@ int validate_set_offset(void)
 	if (set_offset(-5 * USEC_PER_SEC - USEC_PER_SEC / 2, 0))
 		return -1;
 
-	/* Test invalid values */
+	 
 	if (set_bad_offset(0, -1, 1))
 		return -1;
 	if (set_bad_offset(0, -1, 0))

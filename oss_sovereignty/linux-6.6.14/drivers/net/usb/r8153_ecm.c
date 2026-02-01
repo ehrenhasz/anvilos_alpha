@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/mii.h>
@@ -122,21 +122,21 @@ static const struct driver_info r8153_info = {
 };
 
 static const struct usb_device_id products[] = {
-/* Realtek RTL8153 Based USB 3.0 Ethernet Adapters */
+ 
 {
 	USB_DEVICE_AND_INTERFACE_INFO(VENDOR_ID_REALTEK, 0x8153, USB_CLASS_COMM,
 				      USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
 	.driver_info = (unsigned long)&r8153_info,
 },
 
-/* Lenovo Powered USB-C Travel Hub (4X90S92381, based on Realtek RTL8153) */
+ 
 {
 	USB_DEVICE_AND_INTERFACE_INFO(VENDOR_ID_LENOVO, 0x721e, USB_CLASS_COMM,
 				      USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
 	.driver_info = (unsigned long)&r8153_info,
 },
 
-	{ },		/* END */
+	{ },		 
 };
 MODULE_DEVICE_TABLE(usb, products);
 

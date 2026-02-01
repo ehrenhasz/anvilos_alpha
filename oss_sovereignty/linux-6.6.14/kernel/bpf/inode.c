@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Minimal file system backend for holding eBPF maps and programs,
- * used by bpf(2) object pinning.
- *
- * Authors:
- *
- *	Daniel Borkmann <daniel@iogearbox.net>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/magic.h>
@@ -301,16 +294,7 @@ static int bpffs_map_release(struct inode *inode, struct file *file)
 	return seq_release(inode, file);
 }
 
-/* bpffs_map_fops should only implement the basic
- * read operation for a BPF map.  The purpose is to
- * provide a simple user intuitive way to do
- * "cat bpffs/pathto/a-pinned-map".
- *
- * Other operations (e.g. write, lookup...) should be realized by
- * the userspace tools (e.g. bpftool) through the
- * BPF_OBJ_GET_INFO_BY_FD and the map's lookup/update
- * interface.
- */
+ 
 static const struct file_operations bpffs_map_fops = {
 	.open		= bpffs_map_open,
 	.read		= seq_read,
@@ -370,9 +354,7 @@ static int bpf_mklink(struct dentry *dentry, umode_t mode, void *arg)
 static struct dentry *
 bpf_lookup(struct inode *dir, struct dentry *dentry, unsigned flags)
 {
-	/* Dots in names (e.g. "/sys/fs/bpf/foo.bar") are reserved for future
-	 * extensions. That allows popoulate_bpffs() create special files.
-	 */
+	 
 	if ((dir->i_mode & S_IALLUGO) &&
 	    strchr(dentry->d_name.name, '.'))
 		return ERR_PTR(-EPERM);
@@ -412,7 +394,7 @@ static const struct inode_operations bpf_dir_iops = {
 	.unlink		= simple_unlink,
 };
 
-/* pin iterator link into bpffs */
+ 
 static int bpf_iter_link_pin_kernel(struct dentry *parent,
 				    const char *name, struct bpf_link *link)
 {
@@ -595,9 +577,7 @@ struct bpf_prog *bpf_prog_get_type_path(const char *name, enum bpf_prog_type typ
 }
 EXPORT_SYMBOL(bpf_prog_get_type_path);
 
-/*
- * Display the mount options in /proc/mounts.
- */
+ 
 static int bpf_show_options(struct seq_file *m, struct dentry *root)
 {
 	umode_t mode = d_inode(root)->i_mode & S_IALLUGO & ~S_ISVTX;
@@ -646,10 +626,7 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
 
 	opt = fs_parse(fc, bpf_fs_parameters, param, &result);
 	if (opt < 0) {
-		/* We might like to report bad mount options here, but
-		 * traditionally we've ignored all mount options, so we'd
-		 * better continue to ignore non-existing options for bpf.
-		 */
+		 
 		if (opt == -ENOPARAM) {
 			opt = vfs_parse_fs_param_source(fc, param);
 			if (opt != -ENOPARAM)
@@ -676,18 +653,13 @@ EXPORT_SYMBOL_GPL(bpf_preload_ops);
 
 static bool bpf_preload_mod_get(void)
 {
-	/* If bpf_preload.ko wasn't loaded earlier then load it now.
-	 * When bpf_preload is built into vmlinux the module's __init
-	 * function will populate it.
-	 */
+	 
 	if (!bpf_preload_ops) {
 		request_module("bpf_preload");
 		if (!bpf_preload_ops)
 			return false;
 	}
-	/* And grab the reference, so the module doesn't disappear while the
-	 * kernel is interacting with the kernel module and its UMD.
-	 */
+	 
 	if (!try_module_get(bpf_preload_ops->owner)) {
 		pr_err("bpf_preload module get failed.\n");
 		return false;
@@ -698,7 +670,7 @@ static bool bpf_preload_mod_get(void)
 static void bpf_preload_mod_put(void)
 {
 	if (bpf_preload_ops)
-		/* now user can "rmmod bpf_preload" if necessary */
+		 
 		module_put(bpf_preload_ops->owner);
 }
 
@@ -709,12 +681,10 @@ static int populate_bpffs(struct dentry *parent)
 	struct bpf_preload_info objs[BPF_PRELOAD_LINKS] = {};
 	int err = 0, i;
 
-	/* grab the mutex to make sure the kernel interactions with bpf_preload
-	 * are serialized
-	 */
+	 
 	mutex_lock(&bpf_preload_lock);
 
-	/* if bpf_preload.ko wasn't built into vmlinux then load it */
+	 
 	if (!bpf_preload_mod_get())
 		goto out;
 
@@ -774,9 +744,7 @@ static const struct fs_context_operations bpf_context_ops = {
 	.get_tree	= bpf_get_tree,
 };
 
-/*
- * Set up the filesystem mount context.
- */
+ 
 static int bpf_init_fs_context(struct fs_context *fc)
 {
 	struct bpf_mount_opts *opts;

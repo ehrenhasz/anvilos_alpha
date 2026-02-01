@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include <linux/log2.h>
 #include <linux/math64.h>
@@ -55,12 +53,7 @@ assert_dc_off(struct drm_i915_private *i915)
 	drm_WARN_ON(&i915->drm, !enabled);
 }
 
-/*
- * Prepare HW for CX0 phy transactions.
- *
- * It is required that PSR and DC5/6 are disabled before any CX0 message
- * bus transaction is executed.
- */
+ 
 static intel_wakeref_t intel_cx0_phy_transaction_begin(struct intel_encoder *encoder)
 {
 	struct drm_i915_private *i915 = to_i915(encoder->base.dev);
@@ -175,7 +168,7 @@ static u8 __intel_cx0_read(struct drm_i915_private *i915, enum port port,
 
 	assert_dc_off(i915);
 
-	/* 3 tries is assumed to be enough to read successfully */
+	 
 	for (i = 0; i < 3; i++) {
 		status = __intel_cx0_read_once(i915, port, lane, addr);
 
@@ -254,7 +247,7 @@ static void __intel_cx0_write(struct drm_i915_private *i915, enum port port,
 
 	assert_dc_off(i915);
 
-	/* 3 tries is assumed to be enough to write successfully */
+	 
 	for (i = 0; i < 3; i++) {
 		status = __intel_cx0_write_once(i915, port, lane, addr, data, committed);
 
@@ -404,7 +397,7 @@ void intel_cx0_phy_set_signal_levels(struct intel_encoder *encoder,
 			      MB_WRITE_COMMITTED);
 	}
 
-	/* Write Override enables in 0xD71 */
+	 
 	intel_cx0_rmw(i915, encoder->port, INTEL_CX0_BOTH_LANES, PHY_C10_VDR_OVRD,
 		      0, PHY_C10_VDR_OVRD_TX1 | PHY_C10_VDR_OVRD_TX2,
 		      MB_WRITE_COMMITTED);
@@ -416,12 +409,7 @@ void intel_cx0_phy_set_signal_levels(struct intel_encoder *encoder,
 	intel_cx0_phy_transaction_end(encoder, wakeref);
 }
 
-/*
- * Basic DP link rates with 38.4 MHz reference clock.
- * Note: The tables below are with SSC. In non-ssc
- * registers 0xC04 to 0xC08(pll[4] to pll[8]) will be
- * programmed 0.
- */
+ 
 
 static const struct intel_c10pll_state mtl_c10_dp_rbr = {
 	.clock = 162000,
@@ -513,7 +501,7 @@ static const struct intel_c10pll_state mtl_c10_dp_hbr1 = {
 	.pll[5] = 0x0A,
 	.pll[6] = 0x29,
 	.pll[7] = 0x10,
-	.pll[8] = 0x1,   /* Verify */
+	.pll[8] = 0x1,    
 	.pll[9] = 0x1,
 	.pll[10] = 0,
 	.pll[11] = 0,
@@ -678,185 +666,185 @@ static const struct intel_c10pll_state * const mtl_c10_edp_tables[] = {
 	NULL,
 };
 
-/* C20 basic DP 1.4 tables */
+ 
 static const struct intel_c20pll_state mtl_c20_dp_rbr = {
 	.link_bit_rate = 162000,
 	.clock = 162000,
-	.tx = {	0xbe88, /* tx cfg0 */
-		0x5800, /* tx cfg1 */
-		0x0000, /* tx cfg2 */
+	.tx = {	0xbe88,  
+		0x5800,  
+		0x0000,  
 		},
-	.cmn = {0x0500, /* cmn cfg0*/
-		0x0005, /* cmn cfg1 */
-		0x0000, /* cmn cfg2 */
-		0x0000, /* cmn cfg3 */
+	.cmn = {0x0500,  
+		0x0005,  
+		0x0000,  
+		0x0000,  
 		},
-	.mpllb = { 0x50a8,	/* mpllb cfg0 */
-		0x2120,		/* mpllb cfg1 */
-		0xcd9a,		/* mpllb cfg2 */
-		0xbfc1,		/* mpllb cfg3 */
-		0x5ab8,         /* mpllb cfg4 */
-		0x4c34,         /* mpllb cfg5 */
-		0x2000,		/* mpllb cfg6 */
-		0x0001,		/* mpllb cfg7 */
-		0x6000,		/* mpllb cfg8 */
-		0x0000,		/* mpllb cfg9 */
-		0x0000,		/* mpllb cfg10 */
+	.mpllb = { 0x50a8,	 
+		0x2120,		 
+		0xcd9a,		 
+		0xbfc1,		 
+		0x5ab8,          
+		0x4c34,          
+		0x2000,		 
+		0x0001,		 
+		0x6000,		 
+		0x0000,		 
+		0x0000,		 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_dp_hbr1 = {
 	.link_bit_rate = 270000,
 	.clock = 270000,
-	.tx = {	0xbe88, /* tx cfg0 */
-		0x4800, /* tx cfg1 */
-		0x0000, /* tx cfg2 */
+	.tx = {	0xbe88,  
+		0x4800,  
+		0x0000,  
 		},
-	.cmn = {0x0500, /* cmn cfg0*/
-		0x0005, /* cmn cfg1 */
-		0x0000, /* cmn cfg2 */
-		0x0000, /* cmn cfg3 */
+	.cmn = {0x0500,  
+		0x0005,  
+		0x0000,  
+		0x0000,  
 		},
-	.mpllb = { 0x308c,	/* mpllb cfg0 */
-		0x2110,		/* mpllb cfg1 */
-		0xcc9c,		/* mpllb cfg2 */
-		0xbfc1,		/* mpllb cfg3 */
-		0x4b9a,         /* mpllb cfg4 */
-		0x3f81,         /* mpllb cfg5 */
-		0x2000,		/* mpllb cfg6 */
-		0x0001,		/* mpllb cfg7 */
-		0x5000,		/* mpllb cfg8 */
-		0x0000,		/* mpllb cfg9 */
-		0x0000,		/* mpllb cfg10 */
+	.mpllb = { 0x308c,	 
+		0x2110,		 
+		0xcc9c,		 
+		0xbfc1,		 
+		0x4b9a,          
+		0x3f81,          
+		0x2000,		 
+		0x0001,		 
+		0x5000,		 
+		0x0000,		 
+		0x0000,		 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_dp_hbr2 = {
 	.link_bit_rate = 540000,
 	.clock = 540000,
-	.tx = {	0xbe88, /* tx cfg0 */
-		0x4800, /* tx cfg1 */
-		0x0000, /* tx cfg2 */
+	.tx = {	0xbe88,  
+		0x4800,  
+		0x0000,  
 		},
-	.cmn = {0x0500, /* cmn cfg0*/
-		0x0005, /* cmn cfg1 */
-		0x0000, /* cmn cfg2 */
-		0x0000, /* cmn cfg3 */
+	.cmn = {0x0500,  
+		0x0005,  
+		0x0000,  
+		0x0000,  
 		},
-	.mpllb = { 0x108c,	/* mpllb cfg0 */
-		0x2108,		/* mpllb cfg1 */
-		0xcc9c,		/* mpllb cfg2 */
-		0xbfc1,		/* mpllb cfg3 */
-		0x4b9a,         /* mpllb cfg4 */
-		0x3f81,         /* mpllb cfg5 */
-		0x2000,		/* mpllb cfg6 */
-		0x0001,		/* mpllb cfg7 */
-		0x5000,		/* mpllb cfg8 */
-		0x0000,		/* mpllb cfg9 */
-		0x0000,		/* mpllb cfg10 */
+	.mpllb = { 0x108c,	 
+		0x2108,		 
+		0xcc9c,		 
+		0xbfc1,		 
+		0x4b9a,          
+		0x3f81,          
+		0x2000,		 
+		0x0001,		 
+		0x5000,		 
+		0x0000,		 
+		0x0000,		 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_dp_hbr3 = {
 	.link_bit_rate = 810000,
 	.clock = 810000,
-	.tx = {	0xbe88, /* tx cfg0 */
-		0x4800, /* tx cfg1 */
-		0x0000, /* tx cfg2 */
+	.tx = {	0xbe88,  
+		0x4800,  
+		0x0000,  
 		},
-	.cmn = {0x0500, /* cmn cfg0*/
-		0x0005, /* cmn cfg1 */
-		0x0000, /* cmn cfg2 */
-		0x0000, /* cmn cfg3 */
+	.cmn = {0x0500,  
+		0x0005,  
+		0x0000,  
+		0x0000,  
 		},
-	.mpllb = { 0x10d2,	/* mpllb cfg0 */
-		0x2108,		/* mpllb cfg1 */
-		0x8d98,		/* mpllb cfg2 */
-		0xbfc1,		/* mpllb cfg3 */
-		0x7166,         /* mpllb cfg4 */
-		0x5f42,         /* mpllb cfg5 */
-		0x2000,		/* mpllb cfg6 */
-		0x0001,		/* mpllb cfg7 */
-		0x7800,		/* mpllb cfg8 */
-		0x0000,		/* mpllb cfg9 */
-		0x0000,		/* mpllb cfg10 */
+	.mpllb = { 0x10d2,	 
+		0x2108,		 
+		0x8d98,		 
+		0xbfc1,		 
+		0x7166,          
+		0x5f42,          
+		0x2000,		 
+		0x0001,		 
+		0x7800,		 
+		0x0000,		 
+		0x0000,		 
 		},
 };
 
-/* C20 basic DP 2.0 tables */
+ 
 static const struct intel_c20pll_state mtl_c20_dp_uhbr10 = {
-	.link_bit_rate = 1000000, /* 10 Gbps */
+	.link_bit_rate = 1000000,  
 	.clock = 312500,
-	.tx = {	0xbe21, /* tx cfg0 */
-		0x4800, /* tx cfg1 */
-		0x0000, /* tx cfg2 */
+	.tx = {	0xbe21,  
+		0x4800,  
+		0x0000,  
 		},
-	.cmn = {0x0500, /* cmn cfg0*/
-		0x0005, /* cmn cfg1 */
-		0x0000, /* cmn cfg2 */
-		0x0000, /* cmn cfg3 */
+	.cmn = {0x0500,  
+		0x0005,  
+		0x0000,  
+		0x0000,  
 		},
-	.mplla = { 0x3104,	/* mplla cfg0 */
-		0xd105,		/* mplla cfg1 */
-		0xc025,		/* mplla cfg2 */
-		0xc025,		/* mplla cfg3 */
-		0x8c00,		/* mplla cfg4 */
-		0x759a,		/* mplla cfg5 */
-		0x4000,		/* mplla cfg6 */
-		0x0003,		/* mplla cfg7 */
-		0x3555,		/* mplla cfg8 */
-		0x0001,		/* mplla cfg9 */
+	.mplla = { 0x3104,	 
+		0xd105,		 
+		0xc025,		 
+		0xc025,		 
+		0x8c00,		 
+		0x759a,		 
+		0x4000,		 
+		0x0003,		 
+		0x3555,		 
+		0x0001,		 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_dp_uhbr13_5 = {
-	.link_bit_rate = 1350000, /* 13.5 Gbps */
+	.link_bit_rate = 1350000,  
 	.clock = 421875,
-	.tx = {	0xbea0, /* tx cfg0 */
-		0x4800, /* tx cfg1 */
-		0x0000, /* tx cfg2 */
+	.tx = {	0xbea0,  
+		0x4800,  
+		0x0000,  
 		},
-	.cmn = {0x0500, /* cmn cfg0*/
-		0x0005, /* cmn cfg1 */
-		0x0000, /* cmn cfg2 */
-		0x0000, /* cmn cfg3 */
+	.cmn = {0x0500,  
+		0x0005,  
+		0x0000,  
+		0x0000,  
 		},
-	.mpllb = { 0x015f,	/* mpllb cfg0 */
-		0x2205,		/* mpllb cfg1 */
-		0x1b17,		/* mpllb cfg2 */
-		0xffc1,		/* mpllb cfg3 */
-		0xe100,		/* mpllb cfg4 */
-		0xbd00,		/* mpllb cfg5 */
-		0x2000,		/* mpllb cfg6 */
-		0x0001,		/* mpllb cfg7 */
-		0x4800,		/* mpllb cfg8 */
-		0x0000,		/* mpllb cfg9 */
-		0x0000,		/* mpllb cfg10 */
+	.mpllb = { 0x015f,	 
+		0x2205,		 
+		0x1b17,		 
+		0xffc1,		 
+		0xe100,		 
+		0xbd00,		 
+		0x2000,		 
+		0x0001,		 
+		0x4800,		 
+		0x0000,		 
+		0x0000,		 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_dp_uhbr20 = {
-	.link_bit_rate = 2000000, /* 20 Gbps */
+	.link_bit_rate = 2000000,  
 	.clock = 625000,
-	.tx = {	0xbe20, /* tx cfg0 */
-		0x4800, /* tx cfg1 */
-		0x0000, /* tx cfg2 */
+	.tx = {	0xbe20,  
+		0x4800,  
+		0x0000,  
 		},
-	.cmn = {0x0500, /* cmn cfg0*/
-		0x0005, /* cmn cfg1 */
-		0x0000, /* cmn cfg2 */
-		0x0000, /* cmn cfg3 */
+	.cmn = {0x0500,  
+		0x0005,  
+		0x0000,  
+		0x0000,  
 		},
-	.mplla = { 0x3104,	/* mplla cfg0 */
-		0xd105,		/* mplla cfg1 */
-		0xc025,		/* mplla cfg2 */
-		0xc025,		/* mplla cfg3 */
-		0xa6ab,		/* mplla cfg4 */
-		0x8c00,		/* mplla cfg5 */
-		0x4000,		/* mplla cfg6 */
-		0x0003,		/* mplla cfg7 */
-		0x3555,		/* mplla cfg8 */
-		0x0001,		/* mplla cfg9 */
+	.mplla = { 0x3104,	 
+		0xd105,		 
+		0xc025,		 
+		0xc025,		 
+		0xa6ab,		 
+		0x8c00,		 
+		0x4000,		 
+		0x0003,		 
+		0x3555,		 
+		0x0001,		 
 		},
 };
 
@@ -871,9 +859,7 @@ static const struct intel_c20pll_state * const mtl_c20_dp_tables[] = {
 	NULL,
 };
 
-/*
- * HDMI link rates with 38.4 MHz reference clock.
- */
+ 
 
 static const struct intel_c10pll_state mtl_c10_hdmi_25_2 = {
 	.clock = 25200,
@@ -1005,7 +991,7 @@ static const struct intel_c10pll_state mtl_c10_hdmi_594 = {
 	.pll[19] = 0x23,
 };
 
-/* Precomputed C10 HDMI PLL tables */
+ 
 static const struct intel_c10pll_state mtl_c10_hdmi_27027 = {
 	.clock = 27027,
 	.tx = 0x10,
@@ -1407,8 +1393,8 @@ static const struct intel_c10pll_state mtl_c10_hdmi_593407 = {
 };
 
 static const struct intel_c10pll_state * const mtl_c10_hdmi_tables[] = {
-	&mtl_c10_hdmi_25_2, /* Consolidated Table */
-	&mtl_c10_hdmi_27_0, /* Consolidated Table */
+	&mtl_c10_hdmi_25_2,  
+	&mtl_c10_hdmi_27_0,  
 	&mtl_c10_hdmi_27027,
 	&mtl_c10_hdmi_28320,
 	&mtl_c10_hdmi_30240,
@@ -1422,7 +1408,7 @@ static const struct intel_c10pll_state * const mtl_c10_hdmi_tables[] = {
 	&mtl_c10_hdmi_65000,
 	&mtl_c10_hdmi_71000,
 	&mtl_c10_hdmi_74176,
-	&mtl_c10_hdmi_74_25, /* Consolidated Table */
+	&mtl_c10_hdmi_74_25,  
 	&mtl_c10_hdmi_75000,
 	&mtl_c10_hdmi_78750,
 	&mtl_c10_hdmi_85500,
@@ -1435,7 +1421,7 @@ static const struct intel_c10pll_state * const mtl_c10_hdmi_tables[] = {
 	&mtl_c10_hdmi_138500,
 	&mtl_c10_hdmi_147160,
 	&mtl_c10_hdmi_148352,
-	&mtl_c10_hdmi_148_5, /* Consolidated Table */
+	&mtl_c10_hdmi_148_5,  
 	&mtl_c10_hdmi_154000,
 	&mtl_c10_hdmi_162000,
 	&mtl_c10_hdmi_167000,
@@ -1451,267 +1437,267 @@ static const struct intel_c10pll_state * const mtl_c10_hdmi_tables[] = {
 	&mtl_c10_hdmi_497750,
 	&mtl_c10_hdmi_592000,
 	&mtl_c10_hdmi_593407,
-	&mtl_c10_hdmi_594, /* Consolidated Table */
+	&mtl_c10_hdmi_594,  
 	NULL,
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_25_175 = {
 	.link_bit_rate = 25175,
 	.clock = 25175,
-	.tx = {  0xbe88, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe88,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0xa0d2,	/* mpllb cfg0 */
-		   0x7d80,	/* mpllb cfg1 */
-		   0x0906,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x0200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x0000,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0001,	/* mpllb cfg10 */
+	.mpllb = { 0xa0d2,	 
+		   0x7d80,	 
+		   0x0906,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x0200,	 
+		   0x0001,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x0001,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_27_0 = {
 	.link_bit_rate = 27000,
 	.clock = 27000,
-	.tx = {  0xbe88, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe88,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0xa0e0,	/* mpllb cfg0 */
-		   0x7d80,	/* mpllb cfg1 */
-		   0x0906,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x8000,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0001,	/* mpllb cfg10 */
+	.mpllb = { 0xa0e0,	 
+		   0x7d80,	 
+		   0x0906,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0001,	 
+		   0x8000,	 
+		   0x0000,	 
+		   0x0001,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_74_25 = {
 	.link_bit_rate = 74250,
 	.clock = 74250,
-	.tx = {  0xbe88, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe88,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x609a,	/* mpllb cfg0 */
-		   0x7d40,	/* mpllb cfg1 */
-		   0xca06,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x5800,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0001,	/* mpllb cfg10 */
+	.mpllb = { 0x609a,	 
+		   0x7d40,	 
+		   0xca06,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0001,	 
+		   0x5800,	 
+		   0x0000,	 
+		   0x0001,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_148_5 = {
 	.link_bit_rate = 148500,
 	.clock = 148500,
-	.tx = {  0xbe88, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe88,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x409a,	/* mpllb cfg0 */
-		   0x7d20,	/* mpllb cfg1 */
-		   0xca06,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x5800,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0001,	/* mpllb cfg10 */
+	.mpllb = { 0x409a,	 
+		   0x7d20,	 
+		   0xca06,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0001,	 
+		   0x5800,	 
+		   0x0000,	 
+		   0x0001,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_594 = {
 	.link_bit_rate = 594000,
 	.clock = 594000,
-	.tx = {  0xbe88, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe88,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x009a,	/* mpllb cfg0 */
-		   0x7d08,	/* mpllb cfg1 */
-		   0xca06,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x5800,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0001,	/* mpllb cfg10 */
+	.mpllb = { 0x009a,	 
+		   0x7d08,	 
+		   0xca06,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0001,	 
+		   0x5800,	 
+		   0x0000,	 
+		   0x0001,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_300 = {
 	.link_bit_rate = 3000000,
 	.clock = 166670,
-	.tx = {  0xbe98, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe98,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x209c,	/* mpllb cfg0 */
-		   0x7d10,	/* mpllb cfg1 */
-		   0xca06,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x2000,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0004,	/* mpllb cfg10 */
+	.mpllb = { 0x209c,	 
+		   0x7d10,	 
+		   0xca06,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0001,	 
+		   0x2000,	 
+		   0x0000,	 
+		   0x0004,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_600 = {
 	.link_bit_rate = 6000000,
 	.clock = 333330,
-	.tx = {  0xbe98, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe98,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x009c,	/* mpllb cfg0 */
-		   0x7d08,	/* mpllb cfg1 */
-		   0xca06,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x2000,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0004,	/* mpllb cfg10 */
+	.mpllb = { 0x009c,	 
+		   0x7d08,	 
+		   0xca06,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0001,	 
+		   0x2000,	 
+		   0x0000,	 
+		   0x0004,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_800 = {
 	.link_bit_rate = 8000000,
 	.clock = 444440,
-	.tx = {  0xbe98, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe98,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x00d0,	/* mpllb cfg0 */
-		   0x7d08,	/* mpllb cfg1 */
-		   0x4a06,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0003,	/* mpllb cfg7 */
-		   0x2aaa,	/* mpllb cfg8 */
-		   0x0002,	/* mpllb cfg9 */
-		   0x0004,	/* mpllb cfg10 */
+	.mpllb = { 0x00d0,	 
+		   0x7d08,	 
+		   0x4a06,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0003,	 
+		   0x2aaa,	 
+		   0x0002,	 
+		   0x0004,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_1000 = {
 	.link_bit_rate = 10000000,
 	.clock = 555560,
-	.tx = {  0xbe98, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe98,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x1104,	/* mpllb cfg0 */
-		   0x7d08,	/* mpllb cfg1 */
-		   0x0a06,	/* mpllb cfg2 */
-		   0xbe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0003,	/* mpllb cfg7 */
-		   0x3555,	/* mpllb cfg8 */
-		   0x0001,	/* mpllb cfg9 */
-		   0x0004,	/* mpllb cfg10 */
+	.mpllb = { 0x1104,	 
+		   0x7d08,	 
+		   0x0a06,	 
+		   0xbe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0003,	 
+		   0x3555,	 
+		   0x0001,	 
+		   0x0004,	 
 		},
 };
 
 static const struct intel_c20pll_state mtl_c20_hdmi_1200 = {
 	.link_bit_rate = 12000000,
 	.clock = 666670,
-	.tx = {  0xbe98, /* tx cfg0 */
-		  0x9800, /* tx cfg1 */
-		  0x0000, /* tx cfg2 */
+	.tx = {  0xbe98,  
+		  0x9800,  
+		  0x0000,  
 		},
-	.cmn = { 0x0500, /* cmn cfg0*/
-		  0x0005, /* cmn cfg1 */
-		  0x0000, /* cmn cfg2 */
-		  0x0000, /* cmn cfg3 */
+	.cmn = { 0x0500,  
+		  0x0005,  
+		  0x0000,  
+		  0x0000,  
 		},
-	.mpllb = { 0x0138,	/* mpllb cfg0 */
-		   0x7d08,	/* mpllb cfg1 */
-		   0x5486,	/* mpllb cfg2 */
-		   0xfe40,	/* mpllb cfg3 */
-		   0x0000,	/* mpllb cfg4 */
-		   0x0000,	/* mpllb cfg5 */
-		   0x2200,	/* mpllb cfg6 */
-		   0x0001,	/* mpllb cfg7 */
-		   0x4000,	/* mpllb cfg8 */
-		   0x0000,	/* mpllb cfg9 */
-		   0x0004,	/* mpllb cfg10 */
+	.mpllb = { 0x0138,	 
+		   0x7d08,	 
+		   0x5486,	 
+		   0xfe40,	 
+		   0x0000,	 
+		   0x0000,	 
+		   0x2200,	 
+		   0x0001,	 
+		   0x4000,	 
+		   0x0000,	 
+		   0x0004,	 
 		},
 };
 
@@ -1815,10 +1801,7 @@ void intel_c10pll_readout_hw_state(struct intel_encoder *encoder,
 
 	wakeref = intel_cx0_phy_transaction_begin(encoder);
 
-	/*
-	 * According to C10 VDR Register programming Sequence we need
-	 * to do this to read PHY internal registers from MsgBus.
-	 */
+	 
 	intel_cx0_rmw(i915, encoder->port, lane, PHY_C10_VDR_CONTROL(1),
 		      0, C10_VDR_CTRL_MSGBUS_ACCESS,
 		      MB_WRITE_COMMITTED);
@@ -1844,7 +1827,7 @@ static void intel_c10_pll_program(struct drm_i915_private *i915,
 		      0, C10_VDR_CTRL_MSGBUS_ACCESS,
 		      MB_WRITE_COMMITTED);
 
-	/* Custom width needs to be programmed to 0 for both the phy lanes */
+	 
 	intel_cx0_rmw(i915, encoder->port, INTEL_CX0_BOTH_LANES, PHY_C10_VDR_CUSTOM_WIDTH,
 		      C10_VDR_CUSTOM_WIDTH_MASK, C10_VDR_CUSTOM_WIDTH_8_10,
 		      MB_WRITE_COMMITTED);
@@ -1852,7 +1835,7 @@ static void intel_c10_pll_program(struct drm_i915_private *i915,
 		      0, C10_VDR_CTRL_UPDATE_CFG,
 		      MB_WRITE_COMMITTED);
 
-	/* Program the pll values only for the master lane */
+	 
 	for (i = 0; i < ARRAY_SIZE(pll_state->pll); i++)
 		intel_cx0_write(i915, encoder->port, INTEL_CX0_LANE0, PHY_C10_VDR_PLL(i),
 				pll_state->pll[i],
@@ -2017,7 +2000,7 @@ static int intel_c20pll_calc_state(struct intel_crtc_state *crtc_state,
 	const struct intel_c20pll_state * const *tables;
 	int i;
 
-	/* try computed C20 HDMI tables before using consolidated tables */
+	 
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI)) {
 		if (intel_c20_compute_hdmi_tmds_pll(crtc_state->port_clock,
 						    &crtc_state->cx0pll_state.c20) == 0)
@@ -2051,7 +2034,7 @@ int intel_cx0pll_calc_state(struct intel_crtc_state *crtc_state,
 
 static bool intel_c20_use_mplla(u32 clock)
 {
-	/* 10G and 20G rates use MPLLA */
+	 
 	if (clock == 312500 || clock == 625000)
 		return true;
 
@@ -2068,10 +2051,10 @@ void intel_c20pll_readout_hw_state(struct intel_encoder *encoder,
 
 	wakeref = intel_cx0_phy_transaction_begin(encoder);
 
-	/* 1. Read current context selection */
+	 
 	cntx = intel_cx0_read(i915, encoder->port, INTEL_CX0_LANE0, PHY_C20_VDR_CUSTOM_SERDES_RATE) & PHY_C20_CONTEXT_TOGGLE;
 
-	/* Read Tx configuration */
+	 
 	for (i = 0; i < ARRAY_SIZE(pll_state->tx); i++) {
 		if (cntx)
 			pll_state->tx[i] = intel_c20_sram_read(i915, encoder->port, INTEL_CX0_LANE0,
@@ -2081,7 +2064,7 @@ void intel_c20pll_readout_hw_state(struct intel_encoder *encoder,
 							       PHY_C20_A_TX_CNTX_CFG(i));
 	}
 
-	/* Read common configuration */
+	 
 	for (i = 0; i < ARRAY_SIZE(pll_state->cmn); i++) {
 		if (cntx)
 			pll_state->cmn[i] = intel_c20_sram_read(i915, encoder->port, INTEL_CX0_LANE0,
@@ -2092,7 +2075,7 @@ void intel_c20pll_readout_hw_state(struct intel_encoder *encoder,
 	}
 
 	if (pll_state->tx[0] & C20_PHY_USE_MPLLB) {
-		/* MPLLB configuration */
+		 
 		for (i = 0; i < ARRAY_SIZE(pll_state->mpllb); i++) {
 			if (cntx)
 				pll_state->mpllb[i] = intel_c20_sram_read(i915, encoder->port, INTEL_CX0_LANE0,
@@ -2102,7 +2085,7 @@ void intel_c20pll_readout_hw_state(struct intel_encoder *encoder,
 									  PHY_C20_A_MPLLB_CNTX_CFG(i));
 		}
 	} else {
-		/* MPLLA configuration */
+		 
 		for (i = 0; i < ARRAY_SIZE(pll_state->mplla); i++) {
 			if (cntx)
 				pll_state->mplla[i] = intel_c20_sram_read(i915, encoder->port, INTEL_CX0_LANE0,
@@ -2139,31 +2122,31 @@ void intel_c20pll_dump_hw_state(struct drm_i915_private *i915,
 static u8 intel_c20_get_dp_rate(u32 clock)
 {
 	switch (clock) {
-	case 162000: /* 1.62 Gbps DP1.4 */
+	case 162000:  
 		return 0;
-	case 270000: /* 2.7 Gbps DP1.4 */
+	case 270000:  
 		return 1;
-	case 540000: /* 5.4 Gbps DP 1.4 */
+	case 540000:  
 		return 2;
-	case 810000: /* 8.1 Gbps DP1.4 */
+	case 810000:  
 		return 3;
-	case 216000: /* 2.16 Gbps eDP */
+	case 216000:  
 		return 4;
-	case 243000: /* 2.43 Gbps eDP */
+	case 243000:  
 		return 5;
-	case 324000: /* 3.24 Gbps eDP */
+	case 324000:  
 		return 6;
-	case 432000: /* 4.32 Gbps eDP */
+	case 432000:  
 		return 7;
-	case 312500: /* 10 Gbps DP2.0 */
+	case 312500:  
 		return 8;
-	case 421875: /* 13.5 Gbps DP2.0 */
+	case 421875:  
 		return 9;
-	case 625000: /* 20 Gbps DP2.0*/
+	case 625000:  
 		return 10;
-	case 648000: /* 6.48 Gbps eDP*/
+	case 648000:  
 		return 11;
-	case 675000: /* 6.75 Gbps eDP*/
+	case 675000:  
 		return 12;
 	default:
 		MISSING_CASE(clock);
@@ -2177,13 +2160,13 @@ static u8 intel_c20_get_hdmi_rate(u32 clock)
 		return 0;
 
 	switch (clock) {
-	case 166670: /* 3 Gbps */
-	case 333330: /* 6 Gbps */
-	case 666670: /* 12 Gbps */
+	case 166670:  
+	case 333330:  
+	case 666670:  
 		return 1;
-	case 444440: /* 8 Gbps */
+	case 444440:  
 		return 2;
-	case 555560: /* 10 Gbps */
+	case 555560:  
 		return 3;
 	default:
 		MISSING_CASE(clock);
@@ -2193,7 +2176,7 @@ static u8 intel_c20_get_hdmi_rate(u32 clock)
 
 static bool is_dp2(u32 clock)
 {
-	/* DP2.0 clock rates */
+	 
 	if (clock == 312500 || clock == 421875 || clock  == 625000)
 		return true;
 
@@ -2203,11 +2186,11 @@ static bool is_dp2(u32 clock)
 static bool is_hdmi_frl(u32 clock)
 {
 	switch (clock) {
-	case 166670: /* 3 Gbps */
-	case 333330: /* 6 Gbps */
-	case 444440: /* 8 Gbps */
-	case 555560: /* 10 Gbps */
-	case 666670: /* 12 Gbps */
+	case 166670:  
+	case 333330:  
+	case 444440:  
+	case 555560:  
+	case 666670:  
 		return true;
 	default:
 		return false;
@@ -2218,8 +2201,8 @@ static bool intel_c20_protocol_switch_valid(struct intel_encoder *encoder)
 {
 	struct intel_digital_port *intel_dig_port = enc_to_dig_port(encoder);
 
-	/* banks should not be cleared for DPALT/USB4/TBT modes */
-	/* TODO: optimize re-calibration in legacy mode */
+	 
+	 
 	return intel_tc_port_in_legacy_mode(intel_dig_port);
 }
 
@@ -2246,22 +2229,18 @@ static void intel_c20_pll_program(struct drm_i915_private *i915,
 	if (intel_crtc_has_dp_encoder(crtc_state))
 		dp = true;
 
-	/* 1. Read current context selection */
+	 
 	cntx = intel_cx0_read(i915, encoder->port, INTEL_CX0_LANE0, PHY_C20_VDR_CUSTOM_SERDES_RATE) & BIT(0);
 
-	/*
-	 * 2. If there is a protocol switch from HDMI to DP or vice versa, clear
-	 * the lane #0 MPLLB CAL_DONE_BANK DP2.0 10G and 20G rates enable MPLLA.
-	 * Protocol switch is only applicable for MPLLA
-	 */
+	 
 	if (intel_c20_protocol_switch_valid(encoder)) {
 		for (i = 0; i < 4; i++)
 			intel_c20_sram_write(i915, encoder->port, INTEL_CX0_LANE0, RAWLANEAONX_DIG_TX_MPLLB_CAL_DONE_BANK(i), 0);
 		usleep_range(4000, 4100);
 	}
 
-	/* 3. Write SRAM configuration context. If A in use, write configuration to B context */
-	/* 3.1 Tx configuration */
+	 
+	 
 	for (i = 0; i < ARRAY_SIZE(pll_state->tx); i++) {
 		if (cntx)
 			intel_c20_sram_write(i915, encoder->port, INTEL_CX0_LANE0, PHY_C20_A_TX_CNTX_CFG(i), pll_state->tx[i]);
@@ -2269,7 +2248,7 @@ static void intel_c20_pll_program(struct drm_i915_private *i915,
 			intel_c20_sram_write(i915, encoder->port, INTEL_CX0_LANE0, PHY_C20_B_TX_CNTX_CFG(i), pll_state->tx[i]);
 	}
 
-	/* 3.2 common configuration */
+	 
 	for (i = 0; i < ARRAY_SIZE(pll_state->cmn); i++) {
 		if (cntx)
 			intel_c20_sram_write(i915, encoder->port, INTEL_CX0_LANE0, PHY_C20_A_CMN_CNTX_CFG(i), pll_state->cmn[i]);
@@ -2277,7 +2256,7 @@ static void intel_c20_pll_program(struct drm_i915_private *i915,
 			intel_c20_sram_write(i915, encoder->port, INTEL_CX0_LANE0, PHY_C20_B_CMN_CNTX_CFG(i), pll_state->cmn[i]);
 	}
 
-	/* 3.3 mpllb or mplla configuration */
+	 
 	if (intel_c20_use_mplla(pll_state->clock)) {
 		for (i = 0; i < ARRAY_SIZE(pll_state->mplla); i++) {
 			if (cntx)
@@ -2302,13 +2281,13 @@ static void intel_c20_pll_program(struct drm_i915_private *i915,
 		}
 	}
 
-	/* 4. Program custom width to match the link protocol */
+	 
 	intel_cx0_rmw(i915, encoder->port, lane, PHY_C20_VDR_CUSTOM_WIDTH,
 		      PHY_C20_CUSTOM_WIDTH_MASK,
 		      PHY_C20_CUSTOM_WIDTH(intel_get_c20_custom_width(pll_state->clock, dp)),
 		      MB_WRITE_COMMITTED);
 
-	/* 5. For DP or 6. For HDMI */
+	 
 	if (dp) {
 		intel_cx0_rmw(i915, encoder->port, lane, PHY_C20_VDR_CUSTOM_SERDES_RATE,
 			      BIT(6) | PHY_C20_CUSTOM_SERDES_MASK,
@@ -2325,10 +2304,7 @@ static void intel_c20_pll_program(struct drm_i915_private *i915,
 				MB_WRITE_COMMITTED);
 	}
 
-	/*
-	 * 7. Write Vendor specific registers to toggle context setting to load
-	 * the updated programming toggle context bit
-	 */
+	 
 	intel_cx0_rmw(i915, encoder->port, lane, PHY_C20_VDR_CUSTOM_SERDES_RATE,
 		      BIT(0), cntx ? 0 : 1, MB_WRITE_COMMITTED);
 }
@@ -2426,8 +2402,8 @@ static void intel_program_port_clock_ctl(struct intel_encoder *encoder,
 	else
 		val |= XELPDP_DDI_CLOCK_SELECT(XELPDP_DDI_CLOCK_SELECT_MAXPCLK);
 
-	/* TODO: HDMI FRL */
-	/* DP2.0 10G and 20G rates enable MPLLA*/
+	 
+	 
 	if (crtc_state->port_clock == 1000000 || crtc_state->port_clock == 2000000)
 		val |= crtc_state->cx0pll_state.ssc_enabled ? XELPDP_SSC_ENABLE_PLLA : 0;
 	else
@@ -2472,7 +2448,7 @@ static void intel_cx0_powerdown_change_sequence(struct drm_i915_private *i915,
 		     intel_cx0_get_powerdown_state(INTEL_CX0_BOTH_LANES, XELPDP_LANE_POWERDOWN_NEW_STATE_MASK),
 		     intel_cx0_get_powerdown_state(lane_mask, state));
 
-	/* Wait for pending transactions.*/
+	 
 	for_each_cx0_lane_in_mask(lane_mask, lane)
 		if (intel_de_wait_for_clear(i915, XELPDP_PORT_M2P_MSGBUS_CTL(port, lane),
 					    XELPDP_PORT_M2P_TRANSACTION_PENDING,
@@ -2487,7 +2463,7 @@ static void intel_cx0_powerdown_change_sequence(struct drm_i915_private *i915,
 		     intel_cx0_get_powerdown_update(INTEL_CX0_BOTH_LANES),
 		     intel_cx0_get_powerdown_update(lane_mask));
 
-	/* Update Timeout Value */
+	 
 	if (__intel_de_wait_for_register(i915, XELPDP_PORT_BUF_CTL2(port),
 					 intel_cx0_get_powerdown_update(lane_mask), 0,
 					 XELPDP_PORT_POWERDOWN_UPDATE_TIMEOUT_US, 0, NULL))
@@ -2604,7 +2580,7 @@ static void intel_cx0_program_phy_lane(struct drm_i915_private *i915,
 			      C10_VDR_CTRL_MSGBUS_ACCESS,
 			      MB_WRITE_COMMITTED);
 
-	/* TODO: DP-alt MFD case where only one PHY lane should be programmed. */
+	 
 	l0t1 = intel_cx0_read(i915, port, INTEL_CX0_LANE0, PHY_CX0_TX_CONTROL(1, 2));
 	l0t2 = intel_cx0_read(i915, port, INTEL_CX0_LANE0, PHY_CX0_TX_CONTROL(2, 2));
 	l1t1 = intel_cx0_read(i915, port, INTEL_CX0_LANE1, PHY_CX0_TX_CONTROL(1, 2));
@@ -2655,7 +2631,7 @@ static void intel_cx0_program_phy_lane(struct drm_i915_private *i915,
 		}
 	}
 
-	/* disable MLs */
+	 
 	intel_cx0_write(i915, port, INTEL_CX0_LANE0, PHY_CX0_TX_CONTROL(1, 2),
 			l0t1, MB_WRITE_COMMITTED);
 	intel_cx0_write(i915, port, INTEL_CX0_LANE0, PHY_CX0_TX_CONTROL(2, 2),
@@ -2705,55 +2681,37 @@ static void intel_cx0pll_enable(struct intel_encoder *encoder,
 					  INTEL_CX0_LANE0;
 	intel_wakeref_t wakeref = intel_cx0_phy_transaction_begin(encoder);
 
-	/*
-	 * 1. Program PORT_CLOCK_CTL REGISTER to configure
-	 * clock muxes, gating and SSC
-	 */
+	 
 	intel_program_port_clock_ctl(encoder, crtc_state, lane_reversal);
 
-	/* 2. Bring PHY out of reset. */
+	 
 	intel_cx0_phy_lane_reset(i915, encoder, lane_reversal);
 
-	/*
-	 * 3. Change Phy power state to Ready.
-	 * TODO: For DP alt mode use only one lane.
-	 */
+	 
 	intel_cx0_powerdown_change_sequence(i915, encoder->port, INTEL_CX0_BOTH_LANES,
 					    CX0_P2_STATE_READY);
 
-	/* 4. Program PHY internal PLL internal registers. */
+	 
 	if (intel_is_c10phy(i915, phy))
 		intel_c10_pll_program(i915, crtc_state, encoder);
 	else
 		intel_c20_pll_program(i915, crtc_state, encoder);
 
-	/*
-	 * 5. Program the enabled and disabled owned PHY lane
-	 * transmitters over message bus
-	 */
+	 
 	intel_cx0_program_phy_lane(i915, encoder, crtc_state->lane_count, lane_reversal);
 
-	/*
-	 * 6. Follow the Display Voltage Frequency Switching - Sequence
-	 * Before Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/*
-	 * 7. Program DDI_CLK_VALFREQ to match intended DDI
-	 * clock frequency.
-	 */
+	 
 	intel_de_write(i915, DDI_CLK_VALFREQ(encoder->port),
 		       crtc_state->port_clock);
 
-	/*
-	 * 8. Set PORT_CLOCK_CTL register PCLK PLL Request
-	 * LN<Lane for maxPCLK> to "1" to enable PLL.
-	 */
+	 
 	intel_de_rmw(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 		     intel_cx0_get_pclk_pll_request(INTEL_CX0_BOTH_LANES),
 		     intel_cx0_get_pclk_pll_request(maxpclk_lane));
 
-	/* 9. Poll on PORT_CLOCK_CTL PCLK PLL Ack LN<Lane for maxPCLK> == "1". */
+	 
 	if (__intel_de_wait_for_register(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 					 intel_cx0_get_pclk_pll_ack(INTEL_CX0_BOTH_LANES),
 					 intel_cx0_get_pclk_pll_ack(maxpclk_lane),
@@ -2761,12 +2719,9 @@ static void intel_cx0pll_enable(struct intel_encoder *encoder,
 		drm_warn(&i915->drm, "Port %c PLL not locked after %dus.\n",
 			 phy_name(phy), XELPDP_PCLK_PLL_ENABLE_TIMEOUT_US);
 
-	/*
-	 * 10. Follow the Display Voltage Frequency Switching Sequence After
-	 * Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/* TODO: enable TBT-ALT mode */
+	 
 	intel_cx0_phy_transaction_end(encoder, wakeref);
 }
 
@@ -2821,30 +2776,22 @@ static void intel_mtl_tbt_pll_enable(struct intel_encoder *encoder,
 	enum phy phy = intel_port_to_phy(i915, encoder->port);
 	u32 val = 0;
 
-	/*
-	 * 1. Program PORT_CLOCK_CTL REGISTER to configure
-	 * clock muxes, gating and SSC
-	 */
+	 
 	val |= XELPDP_DDI_CLOCK_SELECT(intel_mtl_tbt_clock_select(i915, crtc_state->port_clock));
 	val |= XELPDP_FORWARD_CLOCK_UNGATE;
 	intel_de_rmw(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 		     XELPDP_DDI_CLOCK_SELECT_MASK | XELPDP_FORWARD_CLOCK_UNGATE, val);
 
-	/* 2. Read back PORT_CLOCK_CTL REGISTER */
+	 
 	val = intel_de_read(i915, XELPDP_PORT_CLOCK_CTL(encoder->port));
 
-	/*
-	 * 3. Follow the Display Voltage Frequency Switching - Sequence
-	 * Before Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/*
-	 * 4. Set PORT_CLOCK_CTL register TBT CLOCK Request to "1" to enable PLL.
-	 */
+	 
 	val |= XELPDP_TBT_CLOCK_REQUEST;
 	intel_de_write(i915, XELPDP_PORT_CLOCK_CTL(encoder->port), val);
 
-	/* 5. Poll on PORT_CLOCK_CTL TBT CLOCK Ack == "1". */
+	 
 	if (__intel_de_wait_for_register(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 					 XELPDP_TBT_CLOCK_ACK,
 					 XELPDP_TBT_CLOCK_ACK,
@@ -2852,15 +2799,9 @@ static void intel_mtl_tbt_pll_enable(struct intel_encoder *encoder,
 		drm_warn(&i915->drm, "[ENCODER:%d:%s][%c] PHY PLL not locked after 100us.\n",
 			 encoder->base.base.id, encoder->base.name, phy_name(phy));
 
-	/*
-	 * 6. Follow the Display Voltage Frequency Switching Sequence After
-	 * Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/*
-	 * 7. Program DDI_CLK_VALFREQ to match intended DDI
-	 * clock frequency.
-	 */
+	 
 	intel_de_write(i915, DDI_CLK_VALFREQ(encoder->port),
 		       crtc_state->port_clock);
 }
@@ -2883,30 +2824,22 @@ static void intel_cx0pll_disable(struct intel_encoder *encoder)
 	bool is_c10 = intel_is_c10phy(i915, phy);
 	intel_wakeref_t wakeref = intel_cx0_phy_transaction_begin(encoder);
 
-	/* 1. Change owned PHY lane power to Disable state. */
+	 
 	intel_cx0_powerdown_change_sequence(i915, encoder->port, INTEL_CX0_BOTH_LANES,
 					    is_c10 ? CX0_P2PG_STATE_DISABLE :
 					    CX0_P4PG_STATE_DISABLE);
 
-	/*
-	 * 2. Follow the Display Voltage Frequency Switching Sequence Before
-	 * Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/*
-	 * 3. Set PORT_CLOCK_CTL register PCLK PLL Request LN<Lane for maxPCLK>
-	 * to "0" to disable PLL.
-	 */
+	 
 	intel_de_rmw(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 		     intel_cx0_get_pclk_pll_request(INTEL_CX0_BOTH_LANES) |
 		     intel_cx0_get_pclk_refclk_request(INTEL_CX0_BOTH_LANES), 0);
 
-	/* 4. Program DDI_CLK_VALFREQ to 0. */
+	 
 	intel_de_write(i915, DDI_CLK_VALFREQ(encoder->port), 0);
 
-	/*
-	 * 5. Poll on PORT_CLOCK_CTL PCLK PLL Ack LN<Lane for maxPCLK**> == "0".
-	 */
+	 
 	if (__intel_de_wait_for_register(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 					 intel_cx0_get_pclk_pll_ack(INTEL_CX0_BOTH_LANES) |
 					 intel_cx0_get_pclk_refclk_ack(INTEL_CX0_BOTH_LANES), 0,
@@ -2914,12 +2847,9 @@ static void intel_cx0pll_disable(struct intel_encoder *encoder)
 		drm_warn(&i915->drm, "Port %c PLL not unlocked after %dus.\n",
 			 phy_name(phy), XELPDP_PCLK_PLL_DISABLE_TIMEOUT_US);
 
-	/*
-	 * 6. Follow the Display Voltage Frequency Switching Sequence After
-	 * Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/* 7. Program PORT_CLOCK_CTL register to disable and gate clocks. */
+	 
 	intel_de_rmw(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 		     XELPDP_DDI_CLOCK_SELECT_MASK, 0);
 	intel_de_rmw(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
@@ -2933,36 +2863,26 @@ static void intel_mtl_tbt_pll_disable(struct intel_encoder *encoder)
 	struct drm_i915_private *i915 = to_i915(encoder->base.dev);
 	enum phy phy = intel_port_to_phy(i915, encoder->port);
 
-	/*
-	 * 1. Follow the Display Voltage Frequency Switching Sequence Before
-	 * Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/*
-	 * 2. Set PORT_CLOCK_CTL register TBT CLOCK Request to "0" to disable PLL.
-	 */
+	 
 	intel_de_rmw(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 		     XELPDP_TBT_CLOCK_REQUEST, 0);
 
-	/* 3. Poll on PORT_CLOCK_CTL TBT CLOCK Ack == "0". */
+	 
 	if (__intel_de_wait_for_register(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 					 XELPDP_TBT_CLOCK_ACK, 0, 10, 0, NULL))
 		drm_warn(&i915->drm, "[ENCODER:%d:%s][%c] PHY PLL not unlocked after 10us.\n",
 			 encoder->base.base.id, encoder->base.name, phy_name(phy));
 
-	/*
-	 * 4. Follow the Display Voltage Frequency Switching Sequence After
-	 * Frequency Change. We handle this step in bxt_set_cdclk().
-	 */
+	 
 
-	/*
-	 * 5. Program PORT CLOCK CTRL register to disable and gate clocks
-	 */
+	 
 	intel_de_rmw(i915, XELPDP_PORT_CLOCK_CTL(encoder->port),
 		     XELPDP_DDI_CLOCK_SELECT_MASK |
 		     XELPDP_FORWARD_CLOCK_UNGATE, 0);
 
-	/* 6. Program DDI_CLK_VALFREQ to 0. */
+	 
 	intel_de_write(i915, DDI_CLK_VALFREQ(encoder->port), 0);
 }
 
@@ -2981,10 +2901,7 @@ intel_mtl_port_pll_type(struct intel_encoder *encoder,
 			const struct intel_crtc_state *crtc_state)
 {
 	struct drm_i915_private *i915 = to_i915(encoder->base.dev);
-	/*
-	 * TODO: Determine the PLL type from the SW state, once MTL PLL
-	 * handling is done via the standard shared DPLL framework.
-	 */
+	 
 	u32 val = intel_de_read(i915, XELPDP_PORT_CLOCK_CTL(encoder->port));
 	u32 clock = REG_FIELD_GET(XELPDP_DDI_CLOCK_SELECT_MASK, val);
 
@@ -3012,7 +2929,7 @@ void intel_c10pll_state_verify(struct intel_atomic_state *state,
 	if (!new_crtc_state->hw.active)
 		return;
 
-	/* intel_get_crtc_new_encoder() only works for modeset/fastset commits */
+	 
 	if (!intel_crtc_needs_modeset(new_crtc_state) &&
 	    !intel_crtc_needs_fastset(new_crtc_state))
 		return;

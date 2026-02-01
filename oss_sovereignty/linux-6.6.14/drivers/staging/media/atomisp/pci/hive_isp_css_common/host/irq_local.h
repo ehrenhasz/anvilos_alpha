@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __IRQ_LOCAL_H_INCLUDED__
 #define __IRQ_LOCAL_H_INCLUDED__
@@ -20,15 +8,15 @@
 
 #include <irq_controller_defs.h>
 
-/* IRQ0_ID */
+ 
 #include "hive_isp_css_defs.h"
 #define HIVE_GP_DEV_IRQ_NUM_IRQS	32
-/* IRQ1_ID */
+ 
 #include "input_formatter_subsystem_defs.h"
 #define HIVE_IFMT_IRQ_NUM_IRQS		5
-/* IRQ2_ID */
+ 
 #include "input_system_defs.h"
-/* IRQ3_ID */
+ 
 #include "input_selector_defs.h"
 
 #define	IRQ_ID_OFFSET	32
@@ -123,4 +111,4 @@ struct irq_controller_state {
 	unsigned int	irq_level_not_pulse;
 };
 
-#endif /* __IRQ_LOCAL_H_INCLUDED__ */
+#endif  

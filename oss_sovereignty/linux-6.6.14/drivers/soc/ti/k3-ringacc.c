@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI K3 NAVSS Ring Accelerator subsystem driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
@@ -24,17 +20,7 @@ static DEFINE_MUTEX(k3_ringacc_list_lock);
 #define K3_RINGACC_CFG_RING_SIZE_ELCNT_MASK		GENMASK(19, 0)
 #define K3_DMARING_CFG_RING_SIZE_ELCNT_MASK		GENMASK(15, 0)
 
-/**
- * struct k3_ring_rt_regs - The RA realtime Control/Status Registers region
- *
- * @resv_16: Reserved
- * @db: Ring Doorbell Register
- * @resv_4: Reserved
- * @occ: Ring Occupancy Register
- * @indx: Ring Current Index Register
- * @hwocc: Ring Hardware Occupancy Register
- * @hwindx: Ring Hardware Current Index Register
- */
+ 
 struct k3_ring_rt_regs {
 	u32	resv_16[4];
 	u32	db;
@@ -53,14 +39,7 @@ struct k3_ring_rt_regs {
 #define K3_DMARING_RT_DB_ENTRY_MASK		GENMASK(7, 0)
 #define K3_DMARING_RT_DB_TDOWN_ACK		BIT(31)
 
-/**
- * struct k3_ring_fifo_regs - The Ring Accelerator Queues Registers region
- *
- * @head_data: Ring Head Entry Data Registers
- * @tail_data: Ring Tail Entry Data Registers
- * @peek_head_data: Ring Peek Head Entry Data Regs
- * @peek_tail_data: Ring Peek Tail Entry Data Regs
- */
+ 
 struct k3_ring_fifo_regs {
 	u32	head_data[128];
 	u32	tail_data[128];
@@ -68,12 +47,7 @@ struct k3_ring_fifo_regs {
 	u32	peek_tail_data[128];
 };
 
-/**
- * struct k3_ringacc_proxy_gcfg_regs - RA Proxy Global Config MMIO Region
- *
- * @revision: Revision Register
- * @config: Config Register
- */
+ 
 struct k3_ringacc_proxy_gcfg_regs {
 	u32	revision;
 	u32	config;
@@ -81,14 +55,7 @@ struct k3_ringacc_proxy_gcfg_regs {
 
 #define K3_RINGACC_PROXY_CFG_THREADS_MASK		GENMASK(15, 0)
 
-/**
- * struct k3_ringacc_proxy_target_regs - Proxy Datapath MMIO Region
- *
- * @control: Proxy Control Register
- * @status: Proxy Status Register
- * @resv_512: Reserved
- * @data: Proxy Data Register
- */
+ 
 struct k3_ringacc_proxy_target_regs {
 	u32	control;
 	u32	status;
@@ -117,15 +84,7 @@ struct k3_ring_ops {
 	int (*pop_head)(struct k3_ring *ring, void *elm);
 };
 
-/**
- * struct k3_ring_state - Internal state tracking structure
- *
- * @free: Number of free entries
- * @occ: Occupancy
- * @windex: Write index
- * @rindex: Read index
- * @tdown_complete: Tear down complete state
- */
+ 
 struct k3_ring_state {
 	u32 free;
 	u32 occ;
@@ -134,27 +93,7 @@ struct k3_ring_state {
 	u32 tdown_complete:1;
 };
 
-/**
- * struct k3_ring - RA Ring descriptor
- *
- * @rt: Ring control/status registers
- * @fifos: Ring queues registers
- * @proxy: Ring Proxy Datapath registers
- * @ring_mem_dma: Ring buffer dma address
- * @ring_mem_virt: Ring buffer virt address
- * @ops: Ring operations
- * @size: Ring size in elements
- * @elm_size: Size of the ring element
- * @mode: Ring mode
- * @flags: flags
- * @state: Ring state
- * @ring_id: Ring Id
- * @parent: Pointer on struct @k3_ringacc
- * @use_count: Use count for shared rings
- * @proxy_id: RA Ring Proxy Id (only if @K3_RINGACC_RING_USE_PROXY)
- * @dma_dev: device to be used for DMA API (allocation, mapping)
- * @asel: Address Space Select value for physical addresses
- */
+ 
 struct k3_ring {
 	struct k3_ring_rt_regs __iomem *rt;
 	struct k3_ring_fifo_regs __iomem *fifos;
@@ -183,32 +122,12 @@ struct k3_ringacc_ops {
 	int (*init)(struct platform_device *pdev, struct k3_ringacc *ringacc);
 };
 
-/**
- * struct k3_ringacc - Rings accelerator descriptor
- *
- * @dev: pointer on RA device
- * @proxy_gcfg: RA proxy global config registers
- * @proxy_target_base: RA proxy datapath region
- * @num_rings: number of ring in RA
- * @rings_inuse: bitfield for ring usage tracking
- * @rm_gp_range: general purpose rings range from tisci
- * @dma_ring_reset_quirk: DMA reset workaround enable
- * @num_proxies: number of RA proxies
- * @proxy_inuse: bitfield for proxy usage tracking
- * @rings: array of rings descriptors (struct @k3_ring)
- * @list: list of RAs in the system
- * @req_lock: protect rings allocation
- * @tisci: pointer ti-sci handle
- * @tisci_ring_ops: ti-sci rings ops
- * @tisci_dev_id: ti-sci device id
- * @ops: SoC specific ringacc operation
- * @dma_rings: indicate DMA ring (dual ring within BCDMA/PKTDMA)
- */
+ 
 struct k3_ringacc {
 	struct device *dev;
 	struct k3_ringacc_proxy_gcfg_regs __iomem *proxy_gcfg;
 	void __iomem *proxy_target_base;
-	u32 num_rings; /* number of rings in Ringacc module */
+	u32 num_rings;  
 	unsigned long *rings_inuse;
 	struct ti_sci_resource *rm_gp_range;
 
@@ -218,7 +137,7 @@ struct k3_ringacc {
 
 	struct k3_ring *rings;
 	struct list_head list;
-	struct mutex req_lock; /* protect rings allocation */
+	struct mutex req_lock;  
 
 	const struct ti_sci_handle *tisci;
 	const struct ti_sci_rm_ringacc_ops *tisci_ring_ops;
@@ -228,11 +147,7 @@ struct k3_ringacc {
 	bool dma_rings;
 };
 
-/**
- * struct k3_ringacc_soc_data - Rings accelerator SoC data
- *
- * @dma_ring_reset_quirk:  DMA reset workaround enable
- */
+ 
 struct k3_ringacc_soc_data {
 	unsigned dma_ring_reset_quirk:1;
 };
@@ -279,7 +194,7 @@ static struct k3_ring_ops k3_dmaring_fwd_ops = {
 };
 
 static struct k3_ring_ops k3_dmaring_reverse_ops = {
-		/* Reverse side of the DMA ring can only be popped by SW */
+		 
 		.pop_head = k3_dmaring_reverse_pop,
 };
 
@@ -340,7 +255,7 @@ struct k3_ring *k3_ringacc_request_ring(struct k3_ringacc *ringacc,
 		goto err_module_get;
 
 	if (id == K3_RINGACC_RING_ID_ANY) {
-		/* Request for any general purpose ring */
+		 
 		struct ti_sci_resource_desc *gp_rings =
 						&ringacc->rm_gp_range->desc[0];
 		unsigned long size;
@@ -397,10 +312,7 @@ static int k3_dmaring_request_dual_ring(struct k3_ringacc *ringacc, int fwd_id,
 {
 	int ret = 0;
 
-	/*
-	 * DMA rings must be requested by ID, completion ring is the reverse
-	 * side of the forward ring
-	 */
+	 
 	if (fwd_id < 0)
 		return -EINVAL;
 
@@ -522,29 +434,18 @@ void k3_ringacc_ring_reset_dma(struct k3_ring *ring, u32 occ)
 
 		dev_dbg(ring->parent->dev, "%s %u occ: %u\n", __func__,
 			ring->ring_id, occ);
-		/* TI-SCI ring reset */
+		 
 		k3_ringacc_ring_reset_sci(ring);
 
-		/*
-		 * Setup the ring in ring/doorbell mode (if not already in this
-		 * mode)
-		 */
+		 
 		if (ring->mode != K3_RINGACC_RING_MODE_RING)
 			k3_ringacc_ring_reconfig_qmode_sci(
 					ring, K3_RINGACC_RING_MODE_RING);
-		/*
-		 * Ring the doorbell 2**22 – ringOcc times.
-		 * This will wrap the internal UDMAP ring state occupancy
-		 * counter (which is 21-bits wide) to 0.
-		 */
+		 
 		db_ring_cnt = (1U << 22) - occ;
 
 		while (db_ring_cnt != 0) {
-			/*
-			 * Ring the doorbell with the maximum count each
-			 * iteration if possible to minimize the total
-			 * of writes
-			 */
+			 
 			if (db_ring_cnt > K3_RINGACC_MAX_DB_RING_CNT)
 				db_ring_cnt_cur = K3_RINGACC_MAX_DB_RING_CNT;
 			else
@@ -554,13 +455,13 @@ void k3_ringacc_ring_reset_dma(struct k3_ring *ring, u32 occ)
 			db_ring_cnt -= db_ring_cnt_cur;
 		}
 
-		/* Restore the original ring mode (if not ring mode) */
+		 
 		if (ring->mode != K3_RINGACC_RING_MODE_RING)
 			k3_ringacc_ring_reconfig_qmode_sci(ring, ring->mode);
 	}
 
 reset:
-	/* Reset the ring */
+	 
 	k3_ringacc_ring_reset(ring);
 }
 EXPORT_SYMBOL_GPL(k3_ringacc_ring_reset_dma);
@@ -590,10 +491,7 @@ int k3_ringacc_ring_free(struct k3_ring *ring)
 
 	ringacc = ring->parent;
 
-	/*
-	 * DMA rings: rings shared memory and configuration, only forward ring
-	 * is configured and reverse ring considered as slave.
-	 */
+	 
 	if (ringacc->dma_rings && (ring->flags & K3_RING_FLAG_REVERSE))
 		return 0;
 
@@ -709,10 +607,7 @@ static int k3_dmaring_cfg(struct k3_ring *ring, struct k3_ring_cfg *cfg)
 
 	ringacc = ring->parent;
 
-	/*
-	 * DMA rings: rings shared memory and configuration, only forward ring
-	 * is configured and reverse ring considered as slave.
-	 */
+	 
 	if (ringacc->dma_rings && (ring->flags & K3_RING_FLAG_REVERSE))
 		return 0;
 
@@ -751,7 +646,7 @@ static int k3_dmaring_cfg(struct k3_ring *ring, struct k3_ring_cfg *cfg)
 
 	k3_ringacc_ring_dump(ring);
 
-	/* DMA rings: configure reverse ring */
+	 
 	reverse_ring = &ringacc->rings[ring->ring_id + ringacc->num_rings];
 	reverse_ring->size = cfg->size;
 	reverse_ring->elm_size = cfg->elm_size;
@@ -808,14 +703,7 @@ int k3_ringacc_ring_cfg(struct k3_ring *ring, struct k3_ring_cfg *cfg)
 		return -EINVAL;
 	}
 
-	/*
-	 * In case of shared ring only the first user (master user) can
-	 * configure the ring. The sequence should be by the client:
-	 * ring = k3_ringacc_request_ring(ringacc, ring_id, 0); # master user
-	 * k3_ringacc_ring_cfg(ring, cfg); # master configuration
-	 * k3_ringacc_request_ring(ringacc, ring_id, K3_RING_FLAG_SHARED);
-	 * k3_ringacc_request_ring(ringacc, ring_id, K3_RING_FLAG_SHARED);
-	 */
+	 
 	if (ring->use_count != 1)
 		return 0;
 
@@ -1086,11 +974,7 @@ static int k3_ringacc_ring_pop_tail_io(struct k3_ring *ring, void *elem)
 					 K3_RINGACC_ACCESS_MODE_POP_HEAD);
 }
 
-/*
- * The element is 48 bits of address + ASEL bits in the ring.
- * ASEL is used by the DMAs and should be removed for the kernel as it is not
- * part of the physical memory address.
- */
+ 
 static void k3_dmaring_remove_asel_from_elem(u64 *elem)
 {
 	*elem &= GENMASK_ULL(K3_ADDRESS_ASEL_SHIFT - 1, 0);
@@ -1101,12 +985,7 @@ static int k3_dmaring_fwd_pop(struct k3_ring *ring, void *elem)
 	void *elem_ptr;
 	u32 elem_idx;
 
-	/*
-	 * DMA rings: forward ring is always tied DMA channel and HW does not
-	 * maintain any state data required for POP operation and its unknown
-	 * how much elements were consumed by HW. So, to actually
-	 * do POP, the read pointer has to be recalculated every time.
-	 */
+	 
 	ring->state.occ = k3_ringacc_ring_read_occ(ring);
 	if (ring->state.windex >= ring->state.occ)
 		elem_idx = ring->state.windex - ring->state.occ;
@@ -1359,7 +1238,7 @@ static const struct soc_device_attribute k3_ringacc_socinfo[] = {
 	  .revision = "SR1.0",
 	  .data = &k3_ringacc_soc_data_sr1
 	},
-	{/* sentinel */}
+	{ }
 };
 
 static int k3_ringacc_init(struct platform_device *pdev,
@@ -1453,7 +1332,7 @@ static struct ringacc_match_data k3_ringacc_data = {
 	},
 };
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id k3_ringacc_of_match[] = {
 	{ .compatible = "ti,am654-navss-ringacc", .data = &k3_ringacc_data, },
 	{},

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include "efc.h"
 
@@ -24,7 +21,7 @@ efc_remote_node_cb(void *arg, int event, void *data)
 struct efc_node *
 efc_node_find(struct efc_nport *nport, u32 port_id)
 {
-	/* Find an FC node structure given the FC port ID */
+	 
 	return xa_load(&nport->lookup, port_id);
 }
 
@@ -100,7 +97,7 @@ struct efc_node *efc_node_alloc(struct efc_nport *nport,
 		goto xa_fail;
 	}
 
-	/* initialize refcount */
+	 
 	kref_init(&node->ref);
 	node->release = _efc_node_free;
 	kref_get(&nport->ref);
@@ -130,10 +127,7 @@ efc_node_free(struct efc_node *node)
 	node_printf(node, "Free'd\n");
 
 	if (node->refound) {
-		/*
-		 * Save the name server node. We will send fake RSCN event at
-		 * the end to handle ignored RSCN event during node deletion
-		 */
+		 
 		ns = efc_node_find(node->nport, FC_FID_DIR_SERV);
 	}
 
@@ -142,23 +136,18 @@ efc_node_free(struct efc_node *node)
 		return;
 	}
 
-	/* Free HW resources */
+	 
 	rc = efc_node_free_resources(efc, &node->rnode);
 	if (rc < 0)
 		efc_log_err(efc, "efc_hw_node_free failed: %d\n", rc);
 
-	/* if the gidpt_delay_timer is still running, then delete it */
+	 
 	if (timer_pending(&node->gidpt_delay_timer))
 		del_timer(&node->gidpt_delay_timer);
 
 	xa_erase(&nport->lookup, node->rnode.fc_id);
 
-	/*
-	 * If the node_list is empty,
-	 * then post a ALL_CHILD_NODES_FREE event to the nport,
-	 * after the lock is released.
-	 * The nport may be free'd as a result of the event.
-	 */
+	 
 	if (xa_empty(&nport->lookup))
 		efc_sm_post_event(&nport->sm, EFC_EVT_ALL_CHILD_NODES_FREE,
 				  NULL);
@@ -170,7 +159,7 @@ efc_node_free(struct efc_node *node)
 	kref_put(&node->ref, node->release);
 
 	if (ns) {
-		/* sending fake RSCN event to name server node */
+		 
 		efc_node_post_event(ns, EFC_EVT_RSCN_RCVD, NULL);
 	}
 }
@@ -200,7 +189,7 @@ efc_node_attach(struct efc_node *node)
 		efc_log_err(efc, "Warning: unattached domain\n");
 		return -EIO;
 	}
-	/* Update node->wwpn/wwnn */
+	 
 
 	efc_node_build_eui_name(node->wwpn, sizeof(node->wwpn),
 				efc_node_get_wwpn(node));
@@ -210,7 +199,7 @@ efc_node_attach(struct efc_node *node)
 	efc_dma_copy_in(&node->sparm_dma_buf, node->service_params + 4,
 			sizeof(node->service_params) - 4);
 
-	/* take lock to protect node->rnode.attached */
+	 
 	rc = efc_cmd_node_attach(efc, &node->rnode, &node->sparm_dma_buf);
 	if (rc < 0)
 		efc_log_debug(efc, "efc_hw_node_attach failed: %d\n", rc);
@@ -271,15 +260,11 @@ static void efc_node_handle_implicit_logo(struct efc_node *node)
 {
 	int rc;
 
-	/*
-	 * currently, only case for implicit logo is PLOGI
-	 * recvd. Thus, node's ELS IO pending list won't be
-	 * empty (PLOGI will be on it)
-	 */
+	 
 	WARN_ON(node->send_ls_acc != EFC_NODE_SEND_LS_ACC_PLOGI);
 	node_printf(node, "Reason: implicit logout, re-authenticate\n");
 
-	/* Re-attach node with the same HW node resources */
+	 
 	node->req_free = false;
 	rc = efc_node_attach(node);
 	efc_node_transition(node, __efc_d_wait_node_attach, NULL);
@@ -294,21 +279,14 @@ static void efc_node_handle_explicit_logo(struct efc_node *node)
 	s8 pend_frames_empty;
 	unsigned long flags = 0;
 
-	/* cleanup any pending LS_ACC ELSs */
+	 
 	efc_node_send_ls_io_cleanup(node);
 
 	spin_lock_irqsave(&node->pend_frames_lock, flags);
 	pend_frames_empty = list_empty(&node->pend_frames);
 	spin_unlock_irqrestore(&node->pend_frames_lock, flags);
 
-	/*
-	 * there are two scenarios where we want to keep
-	 * this node alive:
-	 * 1. there are pending frames that need to be
-	 *    processed or
-	 * 2. we're an initiator and the remote node is
-	 *    a target and we need to re-authenticate
-	 */
+	 
 	node_printf(node, "Shutdown: explicit logo pend=%d ", !pend_frames_empty);
 	node_printf(node, "nport.ini=%d node.tgt=%d\n",
 		    node->nport->enable_ini, node->targ);
@@ -316,30 +294,18 @@ static void efc_node_handle_explicit_logo(struct efc_node *node)
 		u8 send_plogi = false;
 
 		if (node->nport->enable_ini && node->targ) {
-			/*
-			 * we're an initiator and
-			 * node shutting down is a target;
-			 * we'll need to re-authenticate in
-			 * initial state
-			 */
+			 
 			send_plogi = true;
 		}
 
-		/*
-		 * transition to __efc_d_init
-		 * (will retain HW node resources)
-		 */
+		 
 		node->els_io_enabled = true;
 		node->req_free = false;
 
-		/*
-		 * either pending frames exist or we are re-authenticating
-		 * with PLOGI (or both); in either case, return to initial
-		 * state
-		 */
+		 
 		efc_node_init_device(node, send_plogi);
 	}
-	/* else: let node shutdown occur */
+	 
 }
 
 static void
@@ -373,16 +339,12 @@ __efc_node_shutdown(struct efc_sm_ctx *ctx,
 	case EFC_EVT_ENTER: {
 		efc_node_hold_frames(node);
 		WARN_ON(!efc_els_io_list_empty(node, &node->els_ios_list));
-		/* by default, we will be freeing node after we unwind */
+		 
 		node->req_free = true;
 
 		switch (node->shutdown_reason) {
 		case EFC_NODE_SHUTDOWN_IMPLICIT_LOGO:
-			/* Node shutdown b/c of PLOGI received when node
-			 * already logged in. We have PLOGI service
-			 * parameters, so submit node attach; we won't be
-			 * freeing this node
-			 */
+			 
 
 			efc_node_handle_implicit_logo(node);
 			break;
@@ -393,14 +355,9 @@ __efc_node_shutdown(struct efc_sm_ctx *ctx,
 
 		case EFC_NODE_SHUTDOWN_DEFAULT:
 		default: {
-			/*
-			 * shutdown due to link down,
-			 * node going away (xport event) or
-			 * nport shutdown, purge pending and
-			 * proceed to cleanup node
-			 */
+			 
 
-			/* cleanup any pending LS_ACC ELSs */
+			 
 			efc_node_send_ls_io_cleanup(node);
 
 			node_printf(node,
@@ -424,20 +381,17 @@ __efc_node_shutdown(struct efc_sm_ctx *ctx,
 static bool
 efc_node_check_els_quiesced(struct efc_node *node)
 {
-	/* check to see if ELS requests, completions are quiesced */
+	 
 	if (node->els_req_cnt == 0 && node->els_cmpl_cnt == 0 &&
 	    efc_els_io_list_empty(node, &node->els_ios_list)) {
 		if (!node->attached) {
-			/* hw node detach already completed, proceed */
+			 
 			node_printf(node, "HW node not attached\n");
 			efc_node_transition(node,
 					    __efc_node_wait_ios_shutdown,
 					     NULL);
 		} else {
-			/*
-			 * hw node detach hasn't completed,
-			 * transition and wait
-			 */
+			 
 			node_printf(node, "HW node still attached\n");
 			efc_node_transition(node, __efc_node_wait_node_free,
 					    NULL);
@@ -450,10 +404,7 @@ efc_node_check_els_quiesced(struct efc_node *node)
 void
 efc_node_initiate_cleanup(struct efc_node *node)
 {
-	/*
-	 * if ELS's have already been quiesced, will move to next state
-	 * if ELS's have not been quiesced, abort them
-	 */
+	 
 	if (!efc_node_check_els_quiesced(node)) {
 		efc_node_hold_frames(node);
 		efc_node_transition(node, __efc_node_wait_els_shutdown, NULL);
@@ -470,7 +421,7 @@ __efc_node_wait_els_shutdown(struct efc_sm_ctx *ctx,
 	efc_node_evt_set(ctx, evt, __func__);
 
 	node_sm_trace();
-	/* Node state machine: Wait for all ELSs to complete */
+	 
 	switch (evt) {
 	case EFC_EVT_ENTER:
 		efc_node_hold_frames(node);
@@ -502,7 +453,7 @@ __efc_node_wait_els_shutdown(struct efc_sm_ctx *ctx,
 		break;
 
 	case EFC_EVT_ALL_CHILD_NODES_FREE:
-		/* all ELS IO's complete */
+		 
 		node_printf(node, "All ELS IOs complete\n");
 		WARN_ON(!efc_els_io_list_empty(node, &node->els_ios_list));
 		check_quiesce = true;
@@ -513,12 +464,12 @@ __efc_node_wait_els_shutdown(struct efc_sm_ctx *ctx,
 		break;
 
 	case EFC_EVT_DOMAIN_ATTACH_OK:
-		/* don't care about domain_attach_ok */
+		 
 		break;
 
-	/* ignore shutdown events as we're already in shutdown path */
+	 
 	case EFC_EVT_SHUTDOWN:
-		/* have default shutdown event take precedence */
+		 
 		node->shutdown_reason = EFC_NODE_SHUTDOWN_DEFAULT;
 		fallthrough;
 
@@ -555,23 +506,23 @@ __efc_node_wait_node_free(struct efc_sm_ctx *ctx,
 		break;
 
 	case EFC_EVT_NODE_FREE_OK:
-		/* node is officially no longer attached */
+		 
 		node->attached = false;
 		efc_node_transition(node, __efc_node_wait_ios_shutdown, NULL);
 		break;
 
 	case EFC_EVT_ALL_CHILD_NODES_FREE:
 	case EFC_EVT_NODE_ACTIVE_IO_LIST_EMPTY:
-		/* As IOs and ELS IO's complete we expect to get these events */
+		 
 		break;
 
 	case EFC_EVT_DOMAIN_ATTACH_OK:
-		/* don't care about domain_attach_ok */
+		 
 		break;
 
-	/* ignore shutdown events as we're already in shutdown path */
+	 
 	case EFC_EVT_SHUTDOWN:
-		/* have default shutdown event take precedence */
+		 
 		node->shutdown_reason = EFC_NODE_SHUTDOWN_DEFAULT;
 		fallthrough;
 
@@ -599,9 +550,9 @@ __efc_node_wait_ios_shutdown(struct efc_sm_ctx *ctx,
 	case EFC_EVT_ENTER:
 		efc_node_hold_frames(node);
 
-		/* first check to see if no ELS IOs are outstanding */
+		 
 		if (efc_els_io_list_empty(node, &node->els_ios_list))
-			/* If there are any active IOS, Free them. */
+			 
 			efc_node_transition(node, __efc_node_shutdown, NULL);
 		break;
 
@@ -616,15 +567,15 @@ __efc_node_wait_ios_shutdown(struct efc_sm_ctx *ctx,
 		break;
 
 	case EFC_EVT_SRRS_ELS_REQ_FAIL:
-		/* Can happen as ELS IO IO's complete */
+		 
 		if (WARN_ON(!node->els_req_cnt))
 			break;
 		node->els_req_cnt--;
 		break;
 
-	/* ignore shutdown events as we're already in shutdown path */
+	 
 	case EFC_EVT_SHUTDOWN:
-		/* have default shutdown event take precedence */
+		 
 		node->shutdown_reason = EFC_NODE_SHUTDOWN_DEFAULT;
 		fallthrough;
 
@@ -634,7 +585,7 @@ __efc_node_wait_ios_shutdown(struct efc_sm_ctx *ctx,
 			      efc_sm_event_name(evt));
 		break;
 	case EFC_EVT_DOMAIN_ATTACH_OK:
-		/* don't care about domain_attach_ok */
+		 
 		break;
 	default:
 		__efc_node_common(__func__, ctx, evt, arg);
@@ -665,10 +616,7 @@ __efc_node_common(const char *funcname, struct efc_sm_ctx *ctx,
 		node->refound = true;
 		break;
 
-	/*
-	 * node->attached must be set appropriately
-	 * for all node attach/detach events
-	 */
+	 
 	case EFC_EVT_NODE_ATTACH_OK:
 		node->attached = true;
 		break;
@@ -678,11 +626,7 @@ __efc_node_common(const char *funcname, struct efc_sm_ctx *ctx,
 		node->attached = false;
 		break;
 
-	/*
-	 * handle any ELS completions that
-	 * other states either didn't care about
-	 * or forgot about
-	 */
+	 
 	case EFC_EVT_SRRS_ELS_CMPL_OK:
 	case EFC_EVT_SRRS_ELS_CMPL_FAIL:
 		if (WARN_ON(!node->els_cmpl_cnt))
@@ -690,11 +634,7 @@ __efc_node_common(const char *funcname, struct efc_sm_ctx *ctx,
 		node->els_cmpl_cnt--;
 		break;
 
-	/*
-	 * handle any ELS request completions that
-	 * other states either didn't care about
-	 * or forgot about
-	 */
+	 
 	case EFC_EVT_SRRS_ELS_REQ_OK:
 	case EFC_EVT_SRRS_ELS_REQ_FAIL:
 	case EFC_EVT_SRRS_ELS_REQ_RJT:
@@ -707,10 +647,7 @@ __efc_node_common(const char *funcname, struct efc_sm_ctx *ctx,
 	case EFC_EVT_ELS_RCVD: {
 		struct fc_frame_header *hdr = cbdata->header->dma.virt;
 
-		/*
-		 * Unsupported ELS was received,
-		 * send LS_RJT, command not supported
-		 */
+		 
 		efc_log_debug(efc,
 			      "[%s] (%s) ELS x%02x, LS_RJT not supported\n",
 			      node->display_name, funcname,
@@ -733,11 +670,11 @@ __efc_node_common(const char *funcname, struct efc_sm_ctx *ctx,
 	case EFC_EVT_SCR_RCVD: {
 		struct fc_frame_header *hdr = cbdata->header->dma.virt;
 
-		/* sm: / send ELS_RJT */
+		 
 		efc_log_debug(efc, "[%s] (%s) %s sending ELS_RJT\n",
 			      node->display_name, funcname,
 			      efc_sm_event_name(evt));
-		/* if we didn't catch this in a state, send generic LS_RJT */
+		 
 		efc_send_ls_rjt(node, be16_to_cpu(hdr->fh_ox_id),
 				ELS_RJT_UNAB, ELS_EXPL_NONE, 0);
 		break;
@@ -747,7 +684,7 @@ __efc_node_common(const char *funcname, struct efc_sm_ctx *ctx,
 			      node->display_name, funcname,
 			      efc_sm_event_name(evt));
 
-		/* sm: / send BA_ACC */
+		 
 		efc_send_bls_acc(node, cbdata->header->dma.virt);
 		break;
 	}
@@ -775,21 +712,13 @@ efc_node_post_event(struct efc_node *node,
 
 	efc_sm_post_event(&node->sm, evt, arg);
 
-	/* If our event call depth is one and
-	 * we're not holding frames
-	 * then we can dispatch any pending frames.
-	 * We don't want to allow the efc_process_node_pending()
-	 * call to recurse.
-	 */
+	 
 	if (!node->hold_frames && node->evtdepth == 1)
 		efc_process_node_pending(node);
 
 	node->evtdepth--;
 
-	/*
-	 * Free the node object if so requested,
-	 * and we're at an event call depth of zero
-	 */
+	 
 	if (node->evtdepth == 0 && node->req_free)
 		free_node = true;
 
@@ -889,10 +818,7 @@ __efc_node_paused(struct efc_sm_ctx *ctx,
 
 	node_sm_trace();
 
-	/*
-	 * This state is entered when a state is "paused". When resumed, the
-	 * node is transitioned to a previously saved state (node->ndoedb_state)
-	 */
+	 
 	switch (evt) {
 	case EFC_EVT_ENTER:
 		node_printf(node, "Paused\n");
@@ -951,7 +877,7 @@ efc_node_recv_els_frame(struct efc_node *node,
 	cbdata.header = seq->header;
 	cbdata.payload = seq->payload;
 
-	/* find a matching event for the ELS command */
+	 
 	for (i = 0; i < ARRAY_SIZE(els_cmd_list); i++) {
 		if (els_cmd_list[i].cmd == buf[0]) {
 			evt = els_cmd_list[i].evt;
@@ -998,15 +924,12 @@ efc_process_node_pending(struct efc_node *node)
 	unsigned long flags = 0;
 
 	for (;;) {
-		/* need to check for hold frames condition after each frame
-		 * processed because any given frame could cause a transition
-		 * to a state that holds frames
-		 */
+		 
 		if (node->hold_frames)
 			break;
 
 		seq = NULL;
-		/* Get next frame/sequence */
+		 
 		spin_lock_irqsave(&node->pend_frames_lock, flags);
 
 		if (!list_empty(&node->pend_frames)) {
@@ -1023,7 +946,7 @@ efc_process_node_pending(struct efc_node *node)
 		}
 		node->pend_frames_processed++;
 
-		/* now dispatch frame(s) to dispatch function */
+		 
 		efc_node_dispatch_frame(node, seq);
 		efc->tt.hw_seq_free(efc, seq);
 	}
@@ -1044,7 +967,7 @@ efc_scsi_sess_reg_complete(struct efc_node *node, u32 status)
 		evt = EFC_EVT_NODE_SESS_REG_FAIL;
 
 	spin_lock_irqsave(&efc->lock, flags);
-	/* Notify the node to resume */
+	 
 	efc_node_post_event(node, evt, NULL);
 	spin_unlock_irqrestore(&efc->lock, flags);
 }
@@ -1055,7 +978,7 @@ efc_scsi_del_initiator_complete(struct efc *efc, struct efc_node *node)
 	unsigned long flags = 0;
 
 	spin_lock_irqsave(&efc->lock, flags);
-	/* Notify the node to resume */
+	 
 	efc_node_post_event(node, EFC_EVT_NODE_DEL_INI_COMPLETE, NULL);
 	spin_unlock_irqrestore(&efc->lock, flags);
 }
@@ -1066,7 +989,7 @@ efc_scsi_del_target_complete(struct efc *efc, struct efc_node *node)
 	unsigned long flags = 0;
 
 	spin_lock_irqsave(&efc->lock, flags);
-	/* Notify the node to resume */
+	 
 	efc_node_post_event(node, EFC_EVT_NODE_DEL_TGT_COMPLETE, NULL);
 	spin_unlock_irqrestore(&efc->lock, flags);
 }

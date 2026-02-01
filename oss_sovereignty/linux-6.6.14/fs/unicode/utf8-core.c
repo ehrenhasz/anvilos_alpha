@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -69,9 +69,7 @@ int utf8_strncasecmp(const struct unicode_map *um,
 }
 EXPORT_SYMBOL(utf8_strncasecmp);
 
-/* String cf is expected to be a valid UTF-8 casefolded
- * string.
- */
+ 
 int utf8_strncasecmp_folded(const struct unicode_map *um,
 			    const struct qstr *cf,
 			    const struct qstr *s1)

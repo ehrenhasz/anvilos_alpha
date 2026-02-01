@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * API bus driver for ADT7316/7/8 ADT7516/7/9 digital temperature
- * sensor, ADC and DAC
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -18,9 +13,7 @@
 #define ADT7316_SPI_CMD_READ		0x91
 #define ADT7316_SPI_CMD_WRITE		0x90
 
-/*
- * adt7316 register access by SPI
- */
+ 
 
 static int adt7316_spi_multi_read(void *client, u8 reg, u8 count, u8 *data)
 {
@@ -84,9 +77,7 @@ static int adt7316_spi_write(void *client, u8 reg, u8 val)
 	return adt7316_spi_multi_write(client, reg, 1, &val);
 }
 
-/*
- * device probe and remove
- */
+ 
 
 static int adt7316_spi_probe(struct spi_device *spi_dev)
 {
@@ -99,14 +90,14 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
 		.multi_write = adt7316_spi_multi_write,
 	};
 
-	/* don't exceed max specified SPI CLK frequency */
+	 
 	if (spi_dev->max_speed_hz > ADT7316_SPI_MAX_FREQ_HZ) {
 		dev_err(&spi_dev->dev, "SPI CLK %d Hz?\n",
 			spi_dev->max_speed_hz);
 		return -EINVAL;
 	}
 
-	/* switch from default I2C protocol to SPI protocol */
+	 
 	adt7316_spi_write(spi_dev, 0, 0);
 	adt7316_spi_write(spi_dev, 0, 0);
 	adt7316_spi_write(spi_dev, 0, 0);

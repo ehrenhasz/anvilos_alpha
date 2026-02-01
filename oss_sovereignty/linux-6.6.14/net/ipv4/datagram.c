@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	common UDP/RAW code
- *	Linux INET implementation
- *
- * Authors:
- * 	Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -62,7 +56,7 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
 		goto out;
 	}
 	if (!inet->inet_saddr)
-		inet->inet_saddr = fl4->saddr;	/* Update source address */
+		inet->inet_saddr = fl4->saddr;	 
 	if (!inet->inet_rcv_saddr) {
 		inet->inet_rcv_saddr = fl4->saddr;
 		if (sk->sk_prot->rehash)
@@ -93,10 +87,7 @@ int ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 }
 EXPORT_SYMBOL(ip4_datagram_connect);
 
-/* Because UDP xmit path can manipulate sk_dst_cache without holding
- * socket lock, we need to use sk_dst_set() here,
- * even if we own the socket lock.
- */
+ 
 void ip4_datagram_release_cb(struct sock *sk)
 {
 	const struct inet_sock *inet = inet_sk(sk);

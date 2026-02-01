@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Force feedback support for ACRUX game controllers
- *
- * From what I have gathered, these devices are mass produced in China
- * by several vendors. They often share the same design as the original
- * Xbox 360 controller.
- *
- * 1a34:0802 "ACRUX USB GAMEPAD 8116"
- *  - tested with an EXEQ EQ-PCU-02090 game controller.
- *
- * Copyright (c) 2010 Sergei Kolzun <x0r@dv-life.ru>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -144,19 +132,13 @@ static int ax_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
 	error = axff_init(hdev);
 	if (error) {
-		/*
-		 * Do not fail device initialization completely as device
-		 * may still be partially operable, just warn.
-		 */
+		 
 		hid_warn(hdev,
 			 "Failed to enable force feedback support, error: %d\n",
 			 error);
 	}
 
-	/*
-	 * We need to start polling device right away, otherwise
-	 * it will go into a coma.
-	 */
+	 
 	error = hid_hw_open(hdev);
 	if (error) {
 		dev_err(&hdev->dev, "hw open failed\n");

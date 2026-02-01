@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015-2020, NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef TEGRA210_MC_H
 #define TEGRA210_MC_H
 
 #include "mc.h"
 
-/* register definitions */
+ 
 #define MC_LATENCY_ALLOWANCE_AVPC_0				0x2e4
 #define MC_LATENCY_ALLOWANCE_HC_0				0x310
 #define MC_LATENCY_ALLOWANCE_HC_1				0x314

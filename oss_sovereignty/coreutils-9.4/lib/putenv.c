@@ -1,31 +1,9 @@
-/* Copyright (C) 1991, 1994, 1997-1998, 2000, 2003-2023 Free Software
-   Foundation, Inc.
-
-   NOTE: The canonical source of this file is maintained with the GNU C
-   Library.  Bugs can be reported to bug-glibc@prep.ai.mit.edu.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <stdlib.h>
 
 #include <stddef.h>
 
-/* Include errno.h *after* sys/types.h to work around header problems
-   on AIX 3.2.5.  */
+ 
 #include <errno.h>
 #ifndef __set_errno
 # define __set_errno(ev) ((errno) = (ev))
@@ -48,7 +26,7 @@ extern char **environ;
 #endif
 
 #if _LIBC
-/* This lock protects against simultaneous modifications of 'environ'.  */
+ 
 # include <bits/libc-lock.h>
 __libc_lock_define_initialized (static, envlock)
 # define LOCK   __libc_lock_lock (envlock)
@@ -59,7 +37,7 @@ __libc_lock_define_initialized (static, envlock)
 #endif
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef SetEnvironmentVariable
 # define SetEnvironmentVariable SetEnvironmentVariableA
 #endif
@@ -99,13 +77,13 @@ _unsetenv (const char *name)
   while (*ep != NULL)
     if (!strncmp (*ep, name, len) && (*ep)[len] == '=')
       {
-        /* Found it.  Remove this pointer by moving later ones back.  */
+         
         char **dp = ep;
 
         do
           dp[0] = dp[1];
         while (*dp++);
-        /* Continue the loop in case NAME appears again.  */
+         
       }
     else
       ++ep;
@@ -117,8 +95,7 @@ _unsetenv (const char *name)
 }
 
 
-/* Put STRING, which is of the form "NAME=VALUE", in the environment.
-   If STRING contains no '=', then remove STRING from the environment.  */
+ 
 int
 putenv (char *string)
 {
@@ -127,21 +104,17 @@ putenv (char *string)
 
   if (name_end == NULL)
     {
-      /* Remove the variable from the environment.  */
+       
       return _unsetenv (string);
     }
 
 #if HAVE_DECL__PUTENV
-  /* Rely on _putenv to allocate the new environment.  If other
-     parts of the application use _putenv, the !HAVE_DECL__PUTENV code
-     would fight over who owns the environ vector, causing a crash.  */
+   
   if (name_end[1])
     return _putenv (string);
   else
     {
-      /* _putenv ("NAME=") unsets NAME, so invoke _putenv ("NAME= ")
-         to allocate the environ vector and then replace the new
-         entry with "NAME=".  */
+       
       int putenv_result;
       char *name_x = malloc (name_end - string + sizeof "= ");
       if (!name_x)
@@ -159,11 +132,10 @@ putenv (char *string)
 # if defined _WIN32 && ! defined __CYGWIN__
       if (putenv_result == 0)
         {
-          /* _putenv propagated "NAME= " into the subprocess environment;
-             fix that by calling SetEnvironmentVariable directly.  */
+           
           name_x[name_end - string] = 0;
           putenv_result = SetEnvironmentVariable (name_x, "") ? 0 : -1;
-          errno = ENOMEM; /* ENOMEM is the only way to fail.  */
+          errno = ENOMEM;  
         }
 # endif
       free (name_x);

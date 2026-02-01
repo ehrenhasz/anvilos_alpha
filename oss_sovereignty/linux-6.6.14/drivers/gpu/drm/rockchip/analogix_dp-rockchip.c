@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Rockchip SoC DP (Display Port) interface driver.
- *
- * Copyright (C) Fuzhou Rockchip Electronics Co., Ltd.
- * Author: Andy Yan <andy.yan@rock-chips.com>
- *         Yakir Yang <ykk@rock-chips.com>
- *         Jeff Chen <jeff.chen@rock-chips.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/mfd/syscon.h>
@@ -41,13 +34,7 @@
 
 #define PSR_WAIT_LINE_FLAG_TIMEOUT_MS	100
 
-/**
- * struct rockchip_dp_chip_data - splite the grf setting of kind of chips
- * @lcdsel_grf_reg: grf register offset of lcdc select
- * @lcdsel_big: reg value of selecting vop big for eDP
- * @lcdsel_lit: reg value of selecting vop little for eDP
- * @chip_type: specific chip type
- */
+ 
 struct rockchip_dp_chip_data {
 	u32	lcdsel_grf_reg;
 	u32	lcdsel_big;
@@ -127,7 +114,7 @@ static int rockchip_dp_get_modes(struct analogix_dp_plat_data *plat_data,
 				 struct drm_connector *connector)
 {
 	struct drm_display_info *di = &connector->display_info;
-	/* VOP couldn't output YUV video format for eDP rightly */
+	 
 	u32 mask = DRM_COLOR_FORMAT_YCBCR444 | DRM_COLOR_FORMAT_YCBCR422;
 
 	if ((di->color_formats & mask)) {
@@ -145,7 +132,7 @@ rockchip_dp_drm_encoder_mode_fixup(struct drm_encoder *encoder,
 				   const struct drm_display_mode *mode,
 				   struct drm_display_mode *adjusted_mode)
 {
-	/* do nothing */
+	 
 	return true;
 }
 
@@ -153,7 +140,7 @@ static void rockchip_dp_drm_encoder_mode_set(struct drm_encoder *encoder,
 					     struct drm_display_mode *mode,
 					     struct drm_display_mode *adjusted)
 {
-	/* do nothing */
+	 
 }
 
 static
@@ -188,7 +175,7 @@ static void rockchip_dp_drm_encoder_enable(struct drm_encoder *encoder,
 		return;
 
 	old_crtc_state = drm_atomic_get_old_crtc_state(state, crtc);
-	/* Coming back from self refresh, nothing to do */
+	 
 	if (old_crtc_state && old_crtc_state->self_refresh_active)
 		return;
 
@@ -225,12 +212,12 @@ static void rockchip_dp_drm_encoder_disable(struct drm_encoder *encoder,
 	int ret;
 
 	crtc = rockchip_dp_drm_get_new_crtc(encoder, state);
-	/* No crtc means we're doing a full shutdown */
+	 
 	if (!crtc)
 		return;
 
 	new_crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
-	/* If we're not entering self-refresh, no need to wait for vact */
+	 
 	if (!new_crtc_state || !new_crtc_state->self_refresh_active)
 		return;
 
@@ -247,13 +234,7 @@ rockchip_dp_drm_encoder_atomic_check(struct drm_encoder *encoder,
 	struct rockchip_crtc_state *s = to_rockchip_crtc_state(crtc_state);
 	struct drm_display_info *di = &conn_state->connector->display_info;
 
-	/*
-	 * The hardware IC designed that VOP must output the RGB10 video
-	 * format to eDP controller, and if eDP panel only support RGB8,
-	 * then eDP controller should cut down the video data, not via VOP
-	 * controller, that's why we need to hardcode the VOP output mode
-	 * to RGA10 here.
-	 */
+	 
 
 	s->output_mode = ROCKCHIP_OUT_MODE_AAAA;
 	s->output_type = DRM_MODE_CONNECTOR_eDP;

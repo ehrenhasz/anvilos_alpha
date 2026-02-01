@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2008 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2015 Intel Deutschland GmbH
- *****************************************************************************/
+
+ 
 
 #include <linux/kernel.h>
 
@@ -17,15 +13,9 @@
 #include "agn.h"
 #include "calib.h"
 
-/******************************************************************************
- *
- * uCode download functions
- *
- ******************************************************************************/
+ 
 
-/*
- *  Calibration
- */
+ 
 static int iwl_set_Xtal_calib(struct iwl_priv *priv)
 {
 	struct iwl_calib_xtal_freq_cmd cmd;
@@ -102,12 +92,7 @@ int iwl_init_alive_start(struct iwl_priv *priv)
 
 	if (priv->lib->bt_params &&
 	    priv->lib->bt_params->advanced_bt_coexist) {
-		/*
-		 * Tell uCode we are ready to perform calibration
-		 * need to perform this before any calibration
-		 * no need to close the envlope since we are going
-		 * to load the runtime uCode later.
-		 */
+		 
 		ret = iwl_send_bt_env(priv, IWL_BT_COEX_ENV_OPEN,
 			BT_COEX_PRIO_TBL_EVT_INIT_CALIB2);
 		if (ret)
@@ -119,10 +104,7 @@ int iwl_init_alive_start(struct iwl_priv *priv)
 	if (ret)
 		return ret;
 
-	/**
-	 * temperature offset calibration is only needed for runtime ucode,
-	 * so prepare the value now.
-	 */
+	 
 	if (priv->lib->need_temp_offset_calib) {
 		if (priv->lib->temp_offset_v2)
 			return iwl_set_temperature_offset_calib_v2(priv);
@@ -137,7 +119,7 @@ static int iwl_send_wimax_coex(struct iwl_priv *priv)
 {
 	struct iwl_wimax_coex_cmd coex_cmd;
 
-	/* coexistence is disabled */
+	 
 	memset(&coex_cmd, 0, sizeof(coex_cmd));
 
 	return iwl_dvm_send_cmd_pdu(priv,
@@ -317,10 +299,7 @@ int iwl_load_ucode_wait_alive(struct iwl_priv *priv,
 		return ret;
 	}
 
-	/*
-	 * Some things may run in the background now, but we
-	 * just wait for the ALIVE notification here.
-	 */
+	 
 	ret = iwl_wait_notification(&priv->notif_wait, &alive_wait,
 					UCODE_ALIVE_TIMEOUT);
 	if (ret) {
@@ -337,7 +316,7 @@ int iwl_load_ucode_wait_alive(struct iwl_priv *priv,
 	priv->ucode_loaded = true;
 
 	if (ucode_type != IWL_UCODE_WOWLAN) {
-		/* delay a bit to give rfkill time to run */
+		 
 		msleep(5);
 	}
 
@@ -383,7 +362,7 @@ int iwl_run_init_ucode(struct iwl_priv *priv)
 
 	lockdep_assert_held(&priv->mutex);
 
-	/* No init ucode required? Curious, but maybe ok */
+	 
 	if (!priv->fw->img[IWL_UCODE_INIT].num_sec)
 		return 0;
 
@@ -391,7 +370,7 @@ int iwl_run_init_ucode(struct iwl_priv *priv)
 				   calib_complete, ARRAY_SIZE(calib_complete),
 				   iwlagn_wait_calib, priv);
 
-	/* Will also start the device */
+	 
 	ret = iwl_load_ucode_wait_alive(priv, IWL_UCODE_INIT);
 	if (ret)
 		goto error;
@@ -400,10 +379,7 @@ int iwl_run_init_ucode(struct iwl_priv *priv)
 	if (ret)
 		goto error;
 
-	/*
-	 * Some things may run in the background now, but we
-	 * just wait for the calibration complete notification.
-	 */
+	 
 	ret = iwl_wait_notification(&priv->notif_wait, &calib_wait,
 					UCODE_CALIB_TIMEOUT);
 
@@ -412,7 +388,7 @@ int iwl_run_init_ucode(struct iwl_priv *priv)
  error:
 	iwl_remove_notification(&priv->notif_wait, &calib_wait);
  out:
-	/* Whatever happened, stop the device */
+	 
 	iwl_trans_stop_device(priv->trans);
 	priv->ucode_loaded = false;
 

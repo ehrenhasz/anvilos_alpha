@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 1998-2008 VIA Technologies, Inc. All Rights Reserved.
- * Copyright 2001-2008 S3 Graphics, Inc. All Rights Reserved.
- * Copyright 2011 Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
- */
-/*
- * clock and PLL management functions
- */
+
+ 
+ 
 
 #include <linux/kernel.h>
 #include <linux/via-core.h>
@@ -41,45 +35,45 @@ static inline u32 vx855_encode_pll(struct via_pll_config pll)
 
 static inline void cle266_set_primary_pll_encoded(u32 data)
 {
-	via_write_reg_mask(VIASR, 0x40, 0x02, 0x02); /* enable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x02, 0x02);  
 	via_write_reg(VIASR, 0x46, data & 0xFF);
 	via_write_reg(VIASR, 0x47, (data >> 8) & 0xFF);
-	via_write_reg_mask(VIASR, 0x40, 0x00, 0x02); /* disable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x00, 0x02);  
 }
 
 static inline void k800_set_primary_pll_encoded(u32 data)
 {
-	via_write_reg_mask(VIASR, 0x40, 0x02, 0x02); /* enable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x02, 0x02);  
 	via_write_reg(VIASR, 0x44, data & 0xFF);
 	via_write_reg(VIASR, 0x45, (data >> 8) & 0xFF);
 	via_write_reg(VIASR, 0x46, (data >> 16) & 0xFF);
-	via_write_reg_mask(VIASR, 0x40, 0x00, 0x02); /* disable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x00, 0x02);  
 }
 
 static inline void cle266_set_secondary_pll_encoded(u32 data)
 {
-	via_write_reg_mask(VIASR, 0x40, 0x04, 0x04); /* enable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x04, 0x04);  
 	via_write_reg(VIASR, 0x44, data & 0xFF);
 	via_write_reg(VIASR, 0x45, (data >> 8) & 0xFF);
-	via_write_reg_mask(VIASR, 0x40, 0x00, 0x04); /* disable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x00, 0x04);  
 }
 
 static inline void k800_set_secondary_pll_encoded(u32 data)
 {
-	via_write_reg_mask(VIASR, 0x40, 0x04, 0x04); /* enable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x04, 0x04);  
 	via_write_reg(VIASR, 0x4A, data & 0xFF);
 	via_write_reg(VIASR, 0x4B, (data >> 8) & 0xFF);
 	via_write_reg(VIASR, 0x4C, (data >> 16) & 0xFF);
-	via_write_reg_mask(VIASR, 0x40, 0x00, 0x04); /* disable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x00, 0x04);  
 }
 
 static inline void set_engine_pll_encoded(u32 data)
 {
-	via_write_reg_mask(VIASR, 0x40, 0x01, 0x01); /* enable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x01, 0x01);  
 	via_write_reg(VIASR, 0x47, data & 0xFF);
 	via_write_reg(VIASR, 0x48, (data >> 8) & 0xFF);
 	via_write_reg(VIASR, 0x49, (data >> 16) & 0xFF);
-	via_write_reg_mask(VIASR, 0x40, 0x00, 0x01); /* disable reset */
+	via_write_reg_mask(VIASR, 0x40, 0x00, 0x01);  
 }
 
 static void cle266_set_primary_pll(struct via_pll_config config)
@@ -224,7 +218,7 @@ static inline u8 set_clock_source_common(enum via_clksrc source, bool use_pll)
 		data = 0x02;
 		break;
 	case VIA_CLKSRC_TVPLL:
-		data = 0x04; /* 0x06 should be the same */
+		data = 0x04;  
 		break;
 	case VIA_CLKSRC_DVP1TVCLKR:
 		data = 0x0A;
@@ -338,15 +332,7 @@ void via_clock_init(struct via_clock *clock, int gfx_chip)
 	}
 
 	if (machine_is_olpc()) {
-		/* The OLPC XO-1.5 cannot suspend/resume reliably if the
-		 * IGA1/IGA2 clocks are set as on or off (memory rot
-		 * occasionally happens during suspend under such
-		 * configurations).
-		 *
-		 * The only known stable scenario is to leave this bits as-is,
-		 * which in their default states are documented to enable the
-		 * clock only when it is needed.
-		 */
+		 
 		clock->set_primary_clock_state = noop_set_clock_state;
 		clock->set_secondary_clock_state = noop_set_clock_state;
 	}

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (c) 2006,2007 Daniel Mack
-*/
+
+ 
 
 #include <linux/device.h>
 #include <linux/usb.h>
@@ -56,7 +54,7 @@ static void snd_usb_caiaq_midi_send(struct snd_usb_caiaqdev *cdev,
 	struct device *dev = caiaqdev_to_dev(cdev);
 
 	cdev->midi_out_buf[0] = EP1_CMD_MIDI_WRITE;
-	cdev->midi_out_buf[1] = 0; /* port */
+	cdev->midi_out_buf[1] = 0;  
 	len = snd_rawmidi_transmit(substream, cdev->midi_out_buf + 3,
 				   EP1_BUFSIZE - 3);
 

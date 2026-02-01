@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __KVM_X86_PAGE_TRACK_H
 #define __KVM_X86_PAGE_TRACK_H
 
@@ -45,7 +45,7 @@ static inline void kvm_page_track_delete_slot(struct kvm *kvm,
 
 static inline bool kvm_page_track_has_external_user(struct kvm *kvm) { return false; }
 
-#endif /* CONFIG_KVM_EXTERNAL_WRITE_TRACKING */
+#endif  
 
 static inline void kvm_page_track_write(struct kvm_vcpu *vcpu, gpa_t gpa,
 					const u8 *new, int bytes)
@@ -55,4 +55,4 @@ static inline void kvm_page_track_write(struct kvm_vcpu *vcpu, gpa_t gpa,
 	kvm_mmu_track_write(vcpu, gpa, new, bytes);
 }
 
-#endif /* __KVM_X86_PAGE_TRACK_H */
+#endif  

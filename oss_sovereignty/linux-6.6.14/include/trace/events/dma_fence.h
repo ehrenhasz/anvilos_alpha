@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM dma_fence
 
@@ -83,7 +83,7 @@ DEFINE_EVENT(dma_fence, dma_fence_wait_end,
 	TP_ARGS(fence)
 );
 
-#endif /*  _TRACE_DMA_FENCE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

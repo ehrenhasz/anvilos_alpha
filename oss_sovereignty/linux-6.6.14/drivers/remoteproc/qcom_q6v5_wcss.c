@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2018 Linaro Ltd.
- * Copyright (C) 2014 Sony Mobile Communications AB
- * Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -24,7 +20,7 @@
 
 #define WCSS_CRASH_REASON		421
 
-/* Q6SS Register Offsets */
+ 
 #define Q6SS_RESET_REG		0x014
 #define Q6SS_GFMUX_CTL_REG		0x020
 #define Q6SS_PWR_CTL_REG		0x030
@@ -33,33 +29,33 @@
 #define Q6SS_CGC_OVERRIDE		0x034
 #define Q6SS_BCR_REG			0x6000
 
-/* AXI Halt Register Offsets */
+ 
 #define AXI_HALTREQ_REG			0x0
 #define AXI_HALTACK_REG			0x4
 #define AXI_IDLE_REG			0x8
 
 #define HALT_ACK_TIMEOUT_MS		100
 
-/* Q6SS_RESET */
+ 
 #define Q6SS_STOP_CORE			BIT(0)
 #define Q6SS_CORE_ARES			BIT(1)
 #define Q6SS_BUS_ARES_ENABLE		BIT(2)
 
-/* Q6SS_BRC_RESET */
+ 
 #define Q6SS_BRC_BLK_ARES		BIT(0)
 
-/* Q6SS_GFMUX_CTL */
+ 
 #define Q6SS_CLK_ENABLE			BIT(1)
 #define Q6SS_SWITCH_CLK_SRC		BIT(8)
 
-/* Q6SS_PWR_CTL */
+ 
 #define Q6SS_L2DATA_STBY_N		BIT(18)
 #define Q6SS_SLP_RET_N			BIT(19)
 #define Q6SS_CLAMP_IO			BIT(20)
 #define QDSS_BHS_ON			BIT(21)
 #define QDSS_Q6_MEMORIES		GENMASK(15, 0)
 
-/* Q6SS parameters */
+ 
 #define Q6SS_LDO_BYP		BIT(25)
 #define Q6SS_BHS_ON		BIT(24)
 #define Q6SS_CLAMP_WL		BIT(21)
@@ -68,7 +64,7 @@
 #define Q6SS_XO_CBCR		GENMASK(5, 3)
 #define Q6SS_SLEEP_CBCR		GENMASK(5, 2)
 
-/* Q6SS config/status registers */
+ 
 #define TCSR_GLOBAL_CFG0	0x0
 #define TCSR_GLOBAL_CFG1	0x4
 #define SSCAON_CONFIG		0x8
@@ -157,17 +153,17 @@ static int q6v5_wcss_reset(struct q6v5_wcss *wcss)
 	u32 val;
 	int i;
 
-	/* Assert resets, stop core */
+	 
 	val = readl(wcss->reg_base + Q6SS_RESET_REG);
 	val |= Q6SS_CORE_ARES | Q6SS_BUS_ARES_ENABLE | Q6SS_STOP_CORE;
 	writel(val, wcss->reg_base + Q6SS_RESET_REG);
 
-	/* BHS require xo cbcr to be enabled */
+	 
 	val = readl(wcss->reg_base + Q6SS_XO_CBCR);
 	val |= 0x1;
 	writel(val, wcss->reg_base + Q6SS_XO_CBCR);
 
-	/* Read CLKOFF bit to go low indicating CLK is enabled */
+	 
 	ret = readl_poll_timeout(wcss->reg_base + Q6SS_XO_CBCR,
 				 val, !(val & BIT(31)), 1,
 				 HALT_CHECK_MAX_LOOPS);
@@ -176,58 +172,54 @@ static int q6v5_wcss_reset(struct q6v5_wcss *wcss)
 			"xo cbcr enabling timed out (rc:%d)\n", ret);
 		return ret;
 	}
-	/* Enable power block headswitch and wait for it to stabilize */
+	 
 	val = readl(wcss->reg_base + Q6SS_PWR_CTL_REG);
 	val |= Q6SS_BHS_ON;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 	udelay(1);
 
-	/* Put LDO in bypass mode */
+	 
 	val |= Q6SS_LDO_BYP;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* Deassert Q6 compiler memory clamp */
+	 
 	val = readl(wcss->reg_base + Q6SS_PWR_CTL_REG);
 	val &= ~Q6SS_CLAMP_QMC_MEM;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* Deassert memory peripheral sleep and L2 memory standby */
+	 
 	val |= Q6SS_L2DATA_STBY_N | Q6SS_SLP_RET_N;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* Turn on L1, L2, ETB and JU memories 1 at a time */
+	 
 	val = readl(wcss->reg_base + Q6SS_MEM_PWR_CTL);
 	for (i = MEM_BANKS; i >= 0; i--) {
 		val |= BIT(i);
 		writel(val, wcss->reg_base + Q6SS_MEM_PWR_CTL);
-		/*
-		 * Read back value to ensure the write is done then
-		 * wait for 1us for both memory peripheral and data
-		 * array to turn on.
-		 */
+		 
 		val |= readl(wcss->reg_base + Q6SS_MEM_PWR_CTL);
 		udelay(1);
 	}
-	/* Remove word line clamp */
+	 
 	val = readl(wcss->reg_base + Q6SS_PWR_CTL_REG);
 	val &= ~Q6SS_CLAMP_WL;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* Remove IO clamp */
+	 
 	val &= ~Q6SS_CLAMP_IO;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* Bring core out of reset */
+	 
 	val = readl(wcss->reg_base + Q6SS_RESET_REG);
 	val &= ~Q6SS_CORE_ARES;
 	writel(val, wcss->reg_base + Q6SS_RESET_REG);
 
-	/* Turn on core clock */
+	 
 	val = readl(wcss->reg_base + Q6SS_GFMUX_CTL_REG);
 	val |= Q6SS_CLK_ENABLE;
 	writel(val, wcss->reg_base + Q6SS_GFMUX_CTL_REG);
 
-	/* Start core execution */
+	 
 	val = readl(wcss->reg_base + Q6SS_RESET_REG);
 	val &= ~Q6SS_STOP_CORE;
 	writel(val, wcss->reg_base + Q6SS_RESET_REG);
@@ -242,7 +234,7 @@ static int q6v5_wcss_start(struct rproc *rproc)
 
 	qcom_q6v5_prepare(&wcss->q6v5);
 
-	/* Release Q6 and WCSS reset */
+	 
 	ret = reset_control_deassert(wcss->wcss_reset);
 	if (ret) {
 		dev_err(wcss->dev, "wcss_reset failed\n");
@@ -255,7 +247,7 @@ static int q6v5_wcss_start(struct rproc *rproc)
 		goto wcss_reset;
 	}
 
-	/* Lithium configuration - clock gating and bus arbitration */
+	 
 	ret = regmap_update_bits(wcss->halt_map,
 				 wcss->halt_nc + TCSR_GLOBAL_CFG0,
 				 TCSR_WCSS_CLK_MASK,
@@ -269,7 +261,7 @@ static int q6v5_wcss_start(struct rproc *rproc)
 	if (ret)
 		goto wcss_q6_reset;
 
-	/* Write bootaddr to EVB so that Q6WCSS will jump there after reset */
+	 
 	writel(rproc->bootaddr >> 4, wcss->reg_base + Q6SS_RST_EVB);
 
 	ret = q6v5_wcss_reset(wcss);
@@ -296,55 +288,55 @@ static int q6v5_wcss_qcs404_power_on(struct q6v5_wcss *wcss)
 	unsigned long val;
 	int ret, idx;
 
-	/* Toggle the restart */
+	 
 	reset_control_assert(wcss->wcss_reset);
 	usleep_range(200, 300);
 	reset_control_deassert(wcss->wcss_reset);
 	usleep_range(200, 300);
 
-	/* Enable GCC_WDSP_Q6SS_AHBS_CBCR clock */
+	 
 	ret = clk_prepare_enable(wcss->gcc_abhs_cbcr);
 	if (ret)
 		return ret;
 
-	/* Remove reset to the WCNSS QDSP6SS */
+	 
 	reset_control_deassert(wcss->wcss_q6_bcr_reset);
 
-	/* Enable Q6SSTOP_AHBFABRIC_CBCR clock */
+	 
 	ret = clk_prepare_enable(wcss->ahbfabric_cbcr_clk);
 	if (ret)
 		goto disable_gcc_abhs_cbcr_clk;
 
-	/* Enable the LCCCSR CBC clock, Q6SSTOP_Q6SSTOP_LCC_CSR_CBCR clock */
+	 
 	ret = clk_prepare_enable(wcss->lcc_csr_cbcr);
 	if (ret)
 		goto disable_ahbfabric_cbcr_clk;
 
-	/* Enable the Q6AHBS CBC, Q6SSTOP_Q6SS_AHBS_CBCR clock */
+	 
 	ret = clk_prepare_enable(wcss->ahbs_cbcr);
 	if (ret)
 		goto disable_csr_cbcr_clk;
 
-	/* Enable the TCM slave CBC, Q6SSTOP_Q6SS_TCM_SLAVE_CBCR clock */
+	 
 	ret = clk_prepare_enable(wcss->tcm_slave_cbcr);
 	if (ret)
 		goto disable_ahbs_cbcr_clk;
 
-	/* Enable the Q6SS AHB master CBC, Q6SSTOP_Q6SS_AHBM_CBCR clock */
+	 
 	ret = clk_prepare_enable(wcss->qdsp6ss_abhm_cbcr);
 	if (ret)
 		goto disable_tcm_slave_cbcr_clk;
 
-	/* Enable the Q6SS AXI master CBC, Q6SSTOP_Q6SS_AXIM_CBCR clock */
+	 
 	ret = clk_prepare_enable(wcss->qdsp6ss_axim_cbcr);
 	if (ret)
 		goto disable_abhm_cbcr_clk;
 
-	/* Enable the Q6SS XO CBC */
+	 
 	val = readl(wcss->reg_base + Q6SS_XO_CBCR);
 	val |= BIT(0);
 	writel(val, wcss->reg_base + Q6SS_XO_CBCR);
-	/* Read CLKOFF bit to go low indicating CLK is enabled */
+	 
 	ret = readl_poll_timeout(wcss->reg_base + Q6SS_XO_CBCR,
 				 val, !(val & BIT(31)), 1,
 				 HALT_CHECK_MAX_LOOPS);
@@ -356,22 +348,22 @@ static int q6v5_wcss_qcs404_power_on(struct q6v5_wcss *wcss)
 
 	writel(0, wcss->reg_base + Q6SS_CGC_OVERRIDE);
 
-	/* Enable QDSP6 sleep clock clock */
+	 
 	val = readl(wcss->reg_base + Q6SS_SLEEP_CBCR);
 	val |= BIT(0);
 	writel(val, wcss->reg_base + Q6SS_SLEEP_CBCR);
 
-	/* Enable the Enable the Q6 AXI clock, GCC_WDSP_Q6SS_AXIM_CBCR*/
+	 
 	ret = clk_prepare_enable(wcss->gcc_axim_cbcr);
 	if (ret)
 		goto disable_sleep_cbcr_clk;
 
-	/* Assert resets, stop core */
+	 
 	val = readl(wcss->reg_base + Q6SS_RESET_REG);
 	val |= Q6SS_CORE_ARES | Q6SS_BUS_ARES_ENABLE | Q6SS_STOP_CORE;
 	writel(val, wcss->reg_base + Q6SS_RESET_REG);
 
-	/* Program the QDSP6SS PWR_CTL register */
+	 
 	writel(0x01700000, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
 	writel(0x03700000, wcss->reg_base + Q6SS_PWR_CTL_REG);
@@ -380,10 +372,7 @@ static int q6v5_wcss_qcs404_power_on(struct q6v5_wcss *wcss)
 
 	writel(0x033C0000, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/*
-	 * Enable memories by turning on the QDSP6 memory foot/head switch, one
-	 * bank at a time to avoid in-rush current
-	 */
+	 
 	for (idx = 28; idx >= 0; idx--) {
 		writel((readl(wcss->reg_base + Q6SS_MEM_PWR_CTL) |
 			(1 << idx)), wcss->reg_base + Q6SS_MEM_PWR_CTL);
@@ -396,12 +385,12 @@ static int q6v5_wcss_qcs404_power_on(struct q6v5_wcss *wcss)
 	val &= ~Q6SS_CORE_ARES;
 	writel(val, wcss->reg_base + Q6SS_RESET_REG);
 
-	/* Enable the Q6 core clock at the GFM, Q6SSTOP_QDSP6SS_GFMUX_CTL */
+	 
 	val = readl(wcss->reg_base + Q6SS_GFMUX_CTL_REG);
 	val |= Q6SS_CLK_ENABLE | Q6SS_SWITCH_CLK_SRC;
 	writel(val, wcss->reg_base + Q6SS_GFMUX_CTL_REG);
 
-	/* Enable sleep clock branch needed for BCR circuit */
+	 
 	ret = clk_prepare_enable(wcss->lcc_bcr_sleep);
 	if (ret)
 		goto disable_core_gfmux_clk;
@@ -444,7 +433,7 @@ static inline int q6v5_wcss_qcs404_reset(struct q6v5_wcss *wcss)
 
 	writel(0x80800000, wcss->reg_base + Q6SS_STRAP_ACC);
 
-	/* Start core execution */
+	 
 	val = readl(wcss->reg_base + Q6SS_RESET_REG);
 	val &= ~Q6SS_STOP_CORE;
 	writel(val, wcss->reg_base + Q6SS_RESET_REG);
@@ -501,15 +490,15 @@ static void q6v5_wcss_halt_axi_port(struct q6v5_wcss *wcss,
 	unsigned int val;
 	int ret;
 
-	/* Check if we're already idle */
+	 
 	ret = regmap_read(halt_map, offset + AXI_IDLE_REG, &val);
 	if (!ret && val)
 		return;
 
-	/* Assert halt request */
+	 
 	regmap_write(halt_map, offset + AXI_HALTREQ_REG, 1);
 
-	/* Wait for halt */
+	 
 	timeout = jiffies + msecs_to_jiffies(HALT_ACK_TIMEOUT_MS);
 	for (;;) {
 		ret = regmap_read(halt_map, offset + AXI_HALTACK_REG, &val);
@@ -523,7 +512,7 @@ static void q6v5_wcss_halt_axi_port(struct q6v5_wcss *wcss,
 	if (ret || !val)
 		dev_err(wcss->dev, "port failed halt\n");
 
-	/* Clear halt request (port will remain halted until reset) */
+	 
 	regmap_write(halt_map, offset + AXI_HALTREQ_REG, 0);
 }
 
@@ -534,17 +523,17 @@ static int q6v5_qcs404_wcss_shutdown(struct q6v5_wcss *wcss)
 
 	q6v5_wcss_halt_axi_port(wcss, wcss->halt_map, wcss->halt_wcss);
 
-	/* assert clamps to avoid MX current inrush */
+	 
 	val = readl(wcss->reg_base + Q6SS_PWR_CTL_REG);
 	val |= (Q6SS_CLAMP_IO | Q6SS_CLAMP_WL | Q6SS_CLAMP_QMC_MEM);
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* Disable memories by turning off memory foot/headswitch */
+	 
 	writel((readl(wcss->reg_base + Q6SS_MEM_PWR_CTL) &
 		~QDSS_Q6_MEMORIES),
 		wcss->reg_base + Q6SS_MEM_PWR_CTL);
 
-	/* Clear the BHS_ON bit */
+	 
 	val = readl(wcss->reg_base + Q6SS_PWR_CTL_REG);
 	val &= ~Q6SS_BHS_ON;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
@@ -596,24 +585,24 @@ static int q6v5_wcss_powerdown(struct q6v5_wcss *wcss)
 	int ret;
 	u32 val;
 
-	/* 1 - Assert WCSS/Q6 HALTREQ */
+	 
 	q6v5_wcss_halt_axi_port(wcss, wcss->halt_map, wcss->halt_wcss);
 
-	/* 2 - Enable WCSSAON_CONFIG */
+	 
 	val = readl(wcss->rmb_base + SSCAON_CONFIG);
 	val |= SSCAON_ENABLE;
 	writel(val, wcss->rmb_base + SSCAON_CONFIG);
 
-	/* 3 - Set SSCAON_CONFIG */
+	 
 	val |= SSCAON_BUS_EN;
 	val &= ~SSCAON_BUS_MUX_MASK;
 	writel(val, wcss->rmb_base + SSCAON_CONFIG);
 
-	/* 4 - SSCAON_CONFIG 1 */
+	 
 	val |= BIT(1);
 	writel(val, wcss->rmb_base + SSCAON_CONFIG);
 
-	/* 5 - wait for SSCAON_STATUS */
+	 
 	ret = readl_poll_timeout(wcss->rmb_base + SSCAON_STATUS,
 				 val, (val & 0xffff) == 0x400, 1000,
 				 HALT_CHECK_MAX_LOOPS);
@@ -623,15 +612,15 @@ static int q6v5_wcss_powerdown(struct q6v5_wcss *wcss)
 		return ret;
 	}
 
-	/* 6 - De-assert WCSS_AON reset */
+	 
 	reset_control_assert(wcss->wcss_aon_reset);
 
-	/* 7 - Disable WCSSAON_CONFIG 13 */
+	 
 	val = readl(wcss->rmb_base + SSCAON_CONFIG);
 	val &= ~SSCAON_ENABLE;
 	writel(val, wcss->rmb_base + SSCAON_CONFIG);
 
-	/* 8 - De-assert WCSS/Q6 HALTREQ */
+	 
 	reset_control_assert(wcss->wcss_reset);
 
 	return 0;
@@ -643,32 +632,32 @@ static int q6v5_q6_powerdown(struct q6v5_wcss *wcss)
 	u32 val;
 	int i;
 
-	/* 1 - Halt Q6 bus interface */
+	 
 	q6v5_wcss_halt_axi_port(wcss, wcss->halt_map, wcss->halt_q6);
 
-	/* 2 - Disable Q6 Core clock */
+	 
 	val = readl(wcss->reg_base + Q6SS_GFMUX_CTL_REG);
 	val &= ~Q6SS_CLK_ENABLE;
 	writel(val, wcss->reg_base + Q6SS_GFMUX_CTL_REG);
 
-	/* 3 - Clamp I/O */
+	 
 	val = readl(wcss->reg_base + Q6SS_PWR_CTL_REG);
 	val |= Q6SS_CLAMP_IO;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* 4 - Clamp WL */
+	 
 	val |= QDSS_BHS_ON;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* 5 - Clear Erase standby */
+	 
 	val &= ~Q6SS_L2DATA_STBY_N;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* 6 - Clear Sleep RTN */
+	 
 	val &= ~Q6SS_SLP_RET_N;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* 7 - turn off Q6 memory foot/head switch one bank at a time */
+	 
 	for (i = 0; i < 20; i++) {
 		val = readl(wcss->reg_base + Q6SS_MEM_PWR_CTL);
 		val &= ~BIT(i);
@@ -676,17 +665,17 @@ static int q6v5_q6_powerdown(struct q6v5_wcss *wcss)
 		mdelay(1);
 	}
 
-	/* 8 - Assert QMC memory RTN */
+	 
 	val = readl(wcss->reg_base + Q6SS_PWR_CTL_REG);
 	val |= Q6SS_CLAMP_QMC_MEM;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 
-	/* 9 - Turn off BHS */
+	 
 	val &= ~Q6SS_BHS_ON;
 	writel(val, wcss->reg_base + Q6SS_PWR_CTL_REG);
 	udelay(1);
 
-	/* 10 - Wait till BHS Reset is done */
+	 
 	ret = readl_poll_timeout(wcss->reg_base + Q6SS_BHS_STATUS,
 				 val, !(val & BHS_EN_REST_ACK), 1000,
 				 HALT_CHECK_MAX_LOOPS);
@@ -695,10 +684,10 @@ static int q6v5_q6_powerdown(struct q6v5_wcss *wcss)
 		return ret;
 	}
 
-	/* 11 -  Assert WCSS reset */
+	 
 	reset_control_assert(wcss->wcss_reset);
 
-	/* 12 - Assert Q6 reset */
+	 
 	reset_control_assert(wcss->wcss_q6_reset);
 
 	return 0;
@@ -709,7 +698,7 @@ static int q6v5_wcss_stop(struct rproc *rproc)
 	struct q6v5_wcss *wcss = rproc->priv;
 	int ret;
 
-	/* WCSS powerdown */
+	 
 	if (wcss->requires_force_stop) {
 		ret = qcom_q6v5_request_stop(&wcss->q6v5, NULL);
 		if (ret == -ETIMEDOUT) {
@@ -727,7 +716,7 @@ static int q6v5_wcss_stop(struct rproc *rproc)
 		if (ret)
 			return ret;
 
-		/* Q6 Power down */
+		 
 		ret = q6v5_q6_powerdown(wcss);
 		if (ret)
 			return ret;

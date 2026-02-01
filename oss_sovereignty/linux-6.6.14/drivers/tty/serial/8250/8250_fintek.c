@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Probe for F81216A LPC to 4 UART
- *
- *  Copyright (C) 2014-2016 Ricardo Ribalda, Qtechnology A/S
- */
+
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/pnp.h>
@@ -37,16 +33,7 @@
 #define IRQ_LEVEL_LOW	0
 #define IRQ_EDGE_HIGH	BIT(5)
 
-/*
- * F81216H clock source register, the value and mask is the same with F81866,
- * but it's on F0h.
- *
- * Clock speeds for UART (register F0h)
- * 00: 1.8432MHz.
- * 01: 18.432MHz.
- * 10: 24MHz.
- * 11: 14.769MHz.
- */
+ 
 #define RS485  0xF0
 #define RTS_INVERT BIT(5)
 #define RS485_URA BIT(4)
@@ -62,19 +49,7 @@
 #define F81216_LDN_LOW	0x0
 #define F81216_LDN_HIGH	0x4
 
-/*
- * F81866/966 registers
- *
- * The IRQ setting mode of F81866/966 is not the same with F81216 series.
- *	Level/Low: IRQ_MODE0:0, IRQ_MODE1:0
- *	Edge/High: IRQ_MODE0:1, IRQ_MODE1:0
- *
- * Clock speeds for UART (register F2h)
- * 00: 1.8432MHz.
- * 01: 18.432MHz.
- * 10: 24MHz.
- * 11: 14.769MHz.
- */
+ 
 #define F81866_IRQ_MODE		0xf0
 #define F81866_IRQ_SHARE	BIT(0)
 #define F81866_IRQ_MODE0	BIT(1)
@@ -125,7 +100,7 @@ static int fintek_8250_enter_key(u16 base_port, u8 key)
 	if (!request_muxed_region(base_port, 2, "8250_fintek"))
 		return -EBUSY;
 
-	/* Force to deactive all SuperIO in this base_port */
+	 
 	outb(EXIT_KEY, base_port + ADDR_PORT);
 
 	outb(key, base_port + ADDR_PORT);
@@ -202,7 +177,7 @@ static int fintek_8250_rs485_config(struct uart_port *port, struct ktermios *ter
 
 
 	if (rs485->flags & SER_RS485_ENABLED) {
-		/* Hardware do not support same RTS level on send and receive */
+		 
 		if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
 		    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
 			return -EINVAL;
@@ -263,7 +238,7 @@ static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
 static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
 {
 	switch (pdata->pid) {
-	case CHIP_ID_F81216H: /* 128Bytes FIFO */
+	case CHIP_ID_F81216H:  
 	case CHIP_ID_F81966:
 	case CHIP_ID_F81866:
 		sio_write_mask_reg(pdata, FIFO_CTRL,
@@ -271,7 +246,7 @@ static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
 				   FIFO_MODE_128 | RXFTHR_MODE_4X);
 		break;
 
-	default: /* Default 16Bytes FIFO */
+	default:  
 		break;
 	}
 }
@@ -289,10 +264,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
 			F81866_UART_CLK_14_769MHZ, F81866_UART_CLK_18_432MHZ,
 			F81866_UART_CLK_24MHZ };
 
-	/*
-	 * We'll use serial8250_do_set_termios() for baud = 0, otherwise It'll
-	 * crash on baudrate_table[i] % baud with "division by zero".
-	 */
+	 
 	if (!baud)
 		goto exit;
 
@@ -305,7 +277,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
 		reg = F81866_UART_CLK;
 		break;
 	default:
-		/* Don't change clocksource with unknown PID */
+		 
 		dev_warn(port->dev,
 			"%s: pid: %x Not support. use default set_termios.\n",
 			__func__, pdata->pid);
@@ -410,7 +382,7 @@ static int probe_setup_port(struct fintek_8250 *pdata,
 	return -ENODEV;
 }
 
-/* Only the first port supports delays */
+ 
 static const struct serial_rs485 fintek_8250_rs485_supported_port0 = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
 	.delay_rts_before_send = 1,
@@ -438,7 +410,7 @@ static void fintek_8250_set_rs485_handler(struct uart_8250_port *uart)
 			uart->port.rs485_supported = fintek_8250_rs485_supported;
 		break;
 
-	default: /* No RS485 Auto direction functional */
+	default:  
 		break;
 	}
 }

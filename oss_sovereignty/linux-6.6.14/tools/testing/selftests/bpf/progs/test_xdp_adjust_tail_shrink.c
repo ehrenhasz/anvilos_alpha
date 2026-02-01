@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/if_ether.h>
 #include <bpf/bpf_helpers.h>
@@ -18,11 +13,11 @@ int _xdp_adjust_tail_shrink(struct xdp_md *xdp)
 
 	switch (bpf_xdp_get_buff_len(xdp)) {
 	case 54:
-		/* sizeof(pkt_v4) */
-		offset = 256; /* shrink too much */
+		 
+		offset = 256;  
 		break;
 	case 9000:
-		/* non-linear buff test cases */
+		 
 		if (data + 1 > data_end)
 			return XDP_DROP;
 

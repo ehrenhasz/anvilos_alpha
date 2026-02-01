@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #ifndef __NVKM_PMU_MEMX_H__
 #define __NVKM_PMU_MEMX_H__
 #include "priv.h"
@@ -60,7 +60,7 @@ nvkm_memx_init(struct nvkm_pmu *pmu, struct nvkm_memx **pmemx)
 	memx->base = reply[0];
 	memx->size = reply[1];
 
-	/* acquire data segment access */
+	 
 	do {
 		nvkm_wr32(device, 0x10a580, 0x00000003);
 	} while (nvkm_rd32(device, 0x10a580) != 0x00000003);
@@ -77,14 +77,14 @@ nvkm_memx_fini(struct nvkm_memx **pmemx, bool exec)
 	struct nvkm_device *device = subdev->device;
 	u32 finish, reply[2];
 
-	/* flush the cache... */
+	 
 	memx_out(memx);
 
-	/* release data segment access */
+	 
 	finish = nvkm_rd32(device, 0x10a1c0) & 0x00ffffff;
 	nvkm_wr32(device, 0x10a580, 0x00000000);
 
-	/* call MEMX process to execute the script, and wait for reply */
+	 
 	if (exec) {
 		nvkm_pmu_send(pmu, reply, PROC_MEMX, MEMX_MSG_EXEC,
 			      memx->base, finish);
@@ -110,7 +110,7 @@ nvkm_memx_wait(struct nvkm_memx *memx,
 	nvkm_debug(&memx->pmu->subdev, "R[%06x] & %08x == %08x, %d us\n",
 		   addr, mask, data, nsec);
 	memx_cmd(memx, MEMX_WAIT, 4, (u32[]){ addr, mask, data, nsec });
-	memx_out(memx); /* fuc can't handle multiple */
+	memx_out(memx);  
 }
 
 void
@@ -118,7 +118,7 @@ nvkm_memx_nsec(struct nvkm_memx *memx, u32 nsec)
 {
 	nvkm_debug(&memx->pmu->subdev, "    DELAY = %d ns\n", nsec);
 	memx_cmd(memx, MEMX_DELAY, 1, (u32[]){ nsec });
-	memx_out(memx); /* fuc can't handle multiple */
+	memx_out(memx);  
 }
 
 void
@@ -132,7 +132,7 @@ nvkm_memx_wait_vblank(struct nvkm_memx *memx)
 	if (device->chipset < 0xd0) {
 		heads = nvkm_rd32(device, 0x610050);
 		for (i = 0; i < 2; i++) {
-			/* Heuristic: sync to head with biggest resolution */
+			 
 			if (heads & (2 << (i << 3))) {
 				x = nvkm_rd32(device, 0x610b40 + (0x540 * i));
 				y = (x & 0xffff0000) >> 16;
@@ -152,7 +152,7 @@ nvkm_memx_wait_vblank(struct nvkm_memx *memx)
 
 	nvkm_debug(subdev, "WAIT VBLANK HEAD%d\n", head_sync);
 	memx_cmd(memx, MEMX_VBLANK, 1, (u32[]){ head_sync });
-	memx_out(memx); /* fuc can't handle multiple */
+	memx_out(memx);  
 }
 
 void
@@ -179,7 +179,7 @@ nvkm_memx_train_result(struct nvkm_pmu *pmu, u32 *res, int rsize)
 	if (size > rsize)
 		return -ENOMEM;
 
-	/* read the packet */
+	 
 	nvkm_wr32(device, 0x10a1c0, 0x02000000 | base);
 
 	for (i = 0; i < size; i++)

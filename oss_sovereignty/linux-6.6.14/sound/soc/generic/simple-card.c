@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ASoC simple sound card support
-//
-// Copyright (C) 2012 Renesas Solutions Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -37,15 +37,12 @@ static int asoc_simple_parse_platform(struct device_node *node,
 	if (!node)
 		return 0;
 
-	/*
-	 * Get node via "sound-dai = <&phandle port>"
-	 * it will be used as xxx_of_node on soc_bind_dai_link()
-	 */
+	 
 	ret = of_parse_phandle_with_args(node, DAI, CELL, 0, &args);
 	if (ret)
 		return ret;
 
-	/* dai_name is not required and may not exist for plat component */
+	 
 
 	dlc->of_node = args.np;
 
@@ -64,17 +61,12 @@ static int asoc_simple_parse_dai(struct device *dev,
 	if (!node)
 		return 0;
 
-	/*
-	 * Get node via "sound-dai = <&phandle port>"
-	 * it will be used as xxx_of_node on soc_bind_dai_link()
-	 */
+	 
 	ret = of_parse_phandle_with_args(node, DAI, CELL, 0, &args);
 	if (ret)
 		return ret;
 
-	/*
-	 * Try to find from DAI args
-	 */
+	 
 	dai = snd_soc_get_dai_via_args(&args);
 	if (dai) {
 		dlc->dai_name = snd_soc_dai_name_get(dai);
@@ -85,25 +77,7 @@ static int asoc_simple_parse_dai(struct device *dev,
 		goto parse_dai_end;
 	}
 
-	/*
-	 * FIXME
-	 *
-	 * Here, dlc->dai_name is pointer to CPU/Codec DAI name.
-	 * If user unbinded CPU or Codec driver, but not for Sound Card,
-	 * dlc->dai_name is keeping unbinded CPU or Codec
-	 * driver's pointer.
-	 *
-	 * If user re-bind CPU or Codec driver again, ALSA SoC will try
-	 * to rebind Card via snd_soc_try_rebind_card(), but because of
-	 * above reason, it might can't bind Sound Card.
-	 * Because Sound Card is pointing to released dai_name pointer.
-	 *
-	 * To avoid this rebind Card issue,
-	 * 1) It needs to alloc memory to keep dai_name eventhough
-	 *    CPU or Codec driver was unbinded, or
-	 * 2) user need to rebind Sound Card everytime
-	 *    if he unbinded CPU or Codec.
-	 */
+	 
 	ret = snd_soc_get_dlc(&args, dlc);
 	if (ret < 0)
 		return ret;
@@ -225,7 +199,7 @@ static int simple_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 
 	dev_dbg(dev, "link_of DPCM (%pOF)\n", np);
 
-	/* For single DAI link & old style of DT node */
+	 
 	if (is_top)
 		prefix = PREFIX;
 
@@ -234,9 +208,9 @@ static int simple_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 		struct snd_soc_dai_link_component *platforms = asoc_link_to_platform(dai_link, 0);
 		int is_single_links = 0;
 
-		/* Codec is dummy */
+		 
 
-		/* FE settings */
+		 
 		dai_link->dynamic		= 1;
 		dai_link->dpcm_merged_format	= 1;
 
@@ -252,9 +226,9 @@ static int simple_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 		struct snd_soc_dai_link_component *codecs = asoc_link_to_codec(dai_link, 0);
 		struct snd_soc_codec_conf *cconf;
 
-		/* CPU is dummy */
+		 
 
-		/* BE settings */
+		 
 		dai_link->no_pcm		= 1;
 		dai_link->be_hw_params_fixup	= asoc_simple_be_hw_params_fixup;
 
@@ -266,7 +240,7 @@ static int simple_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 
 		snprintf(dai_name, sizeof(dai_name), "be.%s", codecs->dai_name);
 
-		/* check "prefix" from top node */
+		 
 		snd_soc_of_parse_node_prefix(top, cconf, codecs->of_node,
 					      PREFIX "prefix");
 		snd_soc_of_parse_node_prefix(node, cconf, codecs->of_node,
@@ -312,7 +286,7 @@ static int simple_dai_link_of(struct asoc_simple_priv *priv,
 
 	dev_dbg(dev, "link_of (%pOF)\n", node);
 
-	/* For single DAI link & old style of DT node */
+	 
 	if (is_top)
 		prefix = PREFIX;
 
@@ -367,7 +341,7 @@ static int __simple_for_each_link(struct asoc_simple_priv *priv,
 	bool is_top = 0;
 	int ret = 0;
 
-	/* Check if it has dai-link */
+	 
 	node = of_get_child_by_name(top, PREFIX "dai-link");
 	if (!node) {
 		node = of_node_get(top);
@@ -376,7 +350,7 @@ static int __simple_for_each_link(struct asoc_simple_priv *priv,
 
 	add_devs = of_get_child_by_name(top, PREFIX "additional-devs");
 
-	/* loop for all dai-link */
+	 
 	do {
 		struct asoc_simple_data adata;
 		struct device_node *codec;
@@ -384,24 +358,24 @@ static int __simple_for_each_link(struct asoc_simple_priv *priv,
 		struct device_node *np;
 		int num = of_get_child_count(node);
 
-		/* Skip additional-devs node */
+		 
 		if (node == add_devs) {
 			node = of_get_next_child(top, node);
 			continue;
 		}
 
-		/* get codec */
+		 
 		codec = of_get_child_by_name(node, is_top ?
 					     PREFIX "codec" : "codec");
 		if (!codec) {
 			ret = -ENODEV;
 			goto error;
 		}
-		/* get platform */
+		 
 		plat = of_get_child_by_name(node, is_top ?
 					    PREFIX "plat" : "plat");
 
-		/* get convert-xxx property */
+		 
 		memset(&adata, 0, sizeof(adata));
 		for_each_child_of_node(node, np) {
 			if (np == add_devs)
@@ -409,33 +383,19 @@ static int __simple_for_each_link(struct asoc_simple_priv *priv,
 			simple_parse_convert(dev, np, &adata);
 		}
 
-		/* loop for all CPU/Codec node */
+		 
 		for_each_child_of_node(node, np) {
 			if (plat == np || add_devs == np)
 				continue;
-			/*
-			 * It is DPCM
-			 * if it has many CPUs,
-			 * or has convert-xxx property
-			 */
+			 
 			if (dpcm_selectable &&
 			    (num > 2 || asoc_simple_is_convert_required(&adata))) {
-				/*
-				 * np
-				 *	 |1(CPU)|0(Codec)  li->cpu
-				 * CPU	 |Pass  |return
-				 * Codec |return|Pass
-				 */
+				 
 				if (li->cpu != (np == codec))
 					ret = func_dpcm(priv, np, codec, li, is_top);
-			/* else normal sound */
+			 
 			} else {
-				/*
-				 * np
-				 *	 |1(CPU)|0(Codec)  li->cpu
-				 * CPU	 |Pass  |return
-				 * Codec |return|return
-				 */
+				 
 				if (li->cpu && (np != codec))
 					ret = func_noml(priv, np, codec, li, is_top);
 			}
@@ -471,18 +431,7 @@ static int simple_for_each_link(struct asoc_simple_priv *priv,
 						 struct link_info *li, bool is_top))
 {
 	int ret;
-	/*
-	 * Detect all CPU first, and Detect all Codec 2nd.
-	 *
-	 * In Normal sound case, all DAIs are detected
-	 * as "CPU-Codec".
-	 *
-	 * In DPCM sound case,
-	 * all CPUs   are detected as "CPU-dummy", and
-	 * all Codecs are detected as "dummy-Codec".
-	 * To avoid random sub-device numbering,
-	 * detect "dummy-Codec" in last;
-	 */
+	 
 	for (li->cpu = 1; li->cpu >= 0; li->cpu--) {
 		ret = __simple_for_each_link(priv, li, func_noml, func_dpcm);
 		if (ret < 0)
@@ -534,7 +483,7 @@ static int simple_parse_of(struct asoc_simple_priv *priv, struct link_info *li)
 	if (ret < 0)
 		return ret;
 
-	/* Single/Muti DAI link(s) & New style of DT node */
+	 
 	memset(li, 0, sizeof(*li));
 	ret = simple_for_each_link(priv, li,
 				   simple_dai_link_of,
@@ -567,20 +516,7 @@ static int simple_count_noml(struct asoc_simple_priv *priv,
 		return -EINVAL;
 	}
 
-	/*
-	 * DON'T REMOVE platforms
-	 *
-	 * Some CPU might be using soc-generic-dmaengine-pcm. This means CPU and Platform
-	 * are different Component, but are sharing same component->dev.
-	 * Simple Card had been supported it without special Platform selection.
-	 * We need platforms here.
-	 *
-	 * In case of no Platform, it will be Platform == CPU, but Platform will be
-	 * ignored by snd_soc_rtd_add_component().
-	 *
-	 * see
-	 *	simple-card-utils.c :: asoc_simple_canonicalize_platform()
-	 */
+	 
 	li->num[li->link].cpus		= 1;
 	li->num[li->link].platforms	= 1;
 
@@ -604,19 +540,15 @@ static int simple_count_dpcm(struct asoc_simple_priv *priv,
 	}
 
 	if (li->cpu) {
-		/*
-		 * DON'T REMOVE platforms
-		 * see
-		 *	simple_count_noml()
-		 */
+		 
 		li->num[li->link].cpus		= 1;
 		li->num[li->link].platforms	= 1;
 
-		li->link++; /* CPU-dummy */
+		li->link++;  
 	} else {
 		li->num[li->link].codecs	= 1;
 
-		li->link++; /* dummy-Codec */
+		li->link++;  
 	}
 
 	return 0;
@@ -628,52 +560,7 @@ static int simple_get_dais_count(struct asoc_simple_priv *priv,
 	struct device *dev = simple_priv_to_dev(priv);
 	struct device_node *top = dev->of_node;
 
-	/*
-	 * link_num :	number of links.
-	 *		CPU-Codec / CPU-dummy / dummy-Codec
-	 * dais_num :	number of DAIs
-	 * ccnf_num :	number of codec_conf
-	 *		same number for "dummy-Codec"
-	 *
-	 * ex1)
-	 * CPU0 --- Codec0	link : 5
-	 * CPU1 --- Codec1	dais : 7
-	 * CPU2 -/		ccnf : 1
-	 * CPU3 --- Codec2
-	 *
-	 *	=> 5 links = 2xCPU-Codec + 2xCPU-dummy + 1xdummy-Codec
-	 *	=> 7 DAIs  = 4xCPU + 3xCodec
-	 *	=> 1 ccnf  = 1xdummy-Codec
-	 *
-	 * ex2)
-	 * CPU0 --- Codec0	link : 5
-	 * CPU1 --- Codec1	dais : 6
-	 * CPU2 -/		ccnf : 1
-	 * CPU3 -/
-	 *
-	 *	=> 5 links = 1xCPU-Codec + 3xCPU-dummy + 1xdummy-Codec
-	 *	=> 6 DAIs  = 4xCPU + 2xCodec
-	 *	=> 1 ccnf  = 1xdummy-Codec
-	 *
-	 * ex3)
-	 * CPU0 --- Codec0	link : 6
-	 * CPU1 -/		dais : 6
-	 * CPU2 --- Codec1	ccnf : 2
-	 * CPU3 -/
-	 *
-	 *	=> 6 links = 0xCPU-Codec + 4xCPU-dummy + 2xdummy-Codec
-	 *	=> 6 DAIs  = 4xCPU + 2xCodec
-	 *	=> 2 ccnf  = 2xdummy-Codec
-	 *
-	 * ex4)
-	 * CPU0 --- Codec0 (convert-rate)	link : 3
-	 * CPU1 --- Codec1			dais : 4
-	 *					ccnf : 1
-	 *
-	 *	=> 3 links = 1xCPU-Codec + 1xCPU-dummy + 1xdummy-Codec
-	 *	=> 4 DAIs  = 2xCPU + 2xCodec
-	 *	=> 1 ccnf  = 1xdummy-Codec
-	 */
+	 
 	if (!top) {
 		li->num[0].cpus		= 1;
 		li->num[0].codecs	= 1;
@@ -717,7 +604,7 @@ static int asoc_simple_probe(struct platform_device *pdev)
 	struct link_info *li;
 	int ret;
 
-	/* Allocate the private data and the DAI link array */
+	 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;

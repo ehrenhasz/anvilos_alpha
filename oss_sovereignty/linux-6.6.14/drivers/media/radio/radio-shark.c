@@ -1,25 +1,4 @@
-/*
- * Linux V4L2 radio driver for the Griffin radioSHARK USB radio receiver
- *
- * Note the radioSHARK offers the audio through a regular USB audio device,
- * this driver only handles the tuning.
- *
- * The info necessary to drive the shark was taken from the small userspace
- * shark.c program by Michael Rolig, which he kindly placed in the Public
- * Domain.
- *
- * Copyright (c) 2012 Hans de Goede <hdegoede@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-*/
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -36,9 +15,7 @@
 #define SHARK_USE_LEDS 1
 #endif
 
-/*
- * Version Information
- */
+ 
 MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
 MODULE_DESCRIPTION("Griffin radioSHARK, USB radio receiver driver");
 MODULE_LICENSE("GPL");
@@ -46,7 +23,7 @@ MODULE_LICENSE("GPL");
 #define SHARK_IN_EP		0x83
 #define SHARK_OUT_EP		0x05
 
-#define TEA575X_BIT_MONO	(1<<22)		/* 0 = stereo, 1 = mono */
+#define TEA575X_BIT_MONO	(1<<22)		 
 #define TEA575X_BIT_BAND_MASK	(3<<20)
 #define TEA575X_BIT_BAND_FM	(0<<20)
 
@@ -55,7 +32,7 @@ MODULE_LICENSE("GPL");
 
 #define v4l2_dev_to_shark(d) container_of(d, struct shark_device, v4l2_dev)
 
-/* Note BLUE_IS_PULSE comes after NO_LEDS as it is a status bit, not a LED */
+ 
 enum { BLUE_LED, BLUE_PULSE_LED, RED_LED, NO_LEDS, BLUE_IS_PULSE };
 
 struct shark_device {
@@ -82,12 +59,12 @@ static void shark_write_val(struct snd_tea575x *tea, u32 val)
 	struct shark_device *shark = tea->private_data;
 	int i, res, actual_len;
 
-	/* Avoid unnecessary (slow) USB transfers */
+	 
 	if (shark->last_val == val)
 		return;
 
 	memset(shark->transfer_buffer, 0, TB_LEN);
-	shark->transfer_buffer[0] = 0xc0; /* Write shift register command */
+	shark->transfer_buffer[0] = 0xc0;  
 	for (i = 0; i < 4; i++)
 		shark->transfer_buffer[i] |= (val >> (24 - i * 8)) & 0xff;
 
@@ -132,11 +109,7 @@ static u32 shark_read_val(struct snd_tea575x *tea)
 
 	shark->last_val = val;
 
-	/*
-	 * The shark does not allow actually reading the stereo / mono pin :(
-	 * So assume that when we're tuned to an FM station and mono has not
-	 * been requested, that we're receiving stereo.
-	 */
+	 
 	if (((val & TEA575X_BIT_BAND_MASK) == TEA575X_BIT_BAND_FM) &&
 	    !(val & TEA575X_BIT_MONO))
 		shark->tea.stereo = true;
@@ -321,7 +294,7 @@ static int usb_shark_probe(struct usb_interface *intf,
 		SHARK_OUT_EP | USB_DIR_OUT,
 		0};
 
-	/* Are the expected endpoints present? */
+	 
 	if (!usb_check_int_endpoints(intf, ep_addresses)) {
 		dev_err(&intf->dev, "Invalid radioSHARK device\n");
 		return -EINVAL;
@@ -401,7 +374,7 @@ static int usb_shark_resume(struct usb_interface *intf)
 }
 #endif
 
-/* Specify the bcdDevice value, as the radioSHARK and radioSHARK2 share ids */
+ 
 static const struct usb_device_id usb_shark_device_table[] = {
 	{ .match_flags = USB_DEVICE_ID_MATCH_DEVICE_AND_VERSION |
 			 USB_DEVICE_ID_MATCH_INT_CLASS,

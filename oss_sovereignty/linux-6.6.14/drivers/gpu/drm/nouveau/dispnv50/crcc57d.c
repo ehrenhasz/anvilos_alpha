@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 
 #include "crc.h"
 #include "crcc37d.h"

@@ -1,35 +1,15 @@
-/*
- * Copyright 2019 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef __NVHW_DRF_H__
 #define __NVHW_DRF_H__
 
-/* Helpers common to all DRF accessors. */
+ 
 #define DRF_LO(drf)    (0 ? drf)
 #define DRF_HI(drf)    (1 ? drf)
 #define DRF_BITS(drf)  (DRF_HI(drf) - DRF_LO(drf) + 1)
 #define DRF_MASK(drf)  (~0ULL >> (64 - DRF_BITS(drf)))
 #define DRF_SMASK(drf) (DRF_MASK(drf) << DRF_LO(drf))
 
-/* Helpers for DRF-MW accessors. */
+ 
 #define DRF_MX_MW(drf)      drf
 #define DRF_MX(drf)         DRF_MX_##drf
 #define DRF_MW(drf)         DRF_MX(drf)
@@ -58,7 +38,7 @@
 #define DRF_HW_CLR(o,drf)   ((o)[DRF_HW_IDX((o),drf)] & ~DRF_HW_SMASK((o),drf))
 #define DRF_HW_SET(o,drf,v) (DRF_HW_CLR((o),drf) | DRF_HW_VAL((o),drf,(v)))
 
-/* DRF accessors. */
+ 
 #define NVVAL_X(drf,v) (((v) & DRF_MASK(drf)) << DRF_LO(drf))
 #define NVVAL_N(X,d,r,f,  v) NVVAL_X(d##_##r##_##f, (v))
 #define NVVAL_I(X,d,r,f,i,v) NVVAL_X(d##_##r##_##f(i), (v))
@@ -98,7 +78,7 @@
 #define NVDEF_SET_(X,_1,_2,_3,_4,_5,_6,IMPL,...) IMPL
 #define NVDEF_SET(A...) NVDEF_SET_(X, ##A, NVDEF_SET_I, NVDEF_SET_N)(X, ##A)
 
-/* DRF-MW accessors. */
+ 
 #define NVVAL_MW_GET_X(o,drf)                                                       \
 	((DRF_MW_SPANS((o),drf) ?                                                   \
 	  (DRF_HW_GET((o),drf) << DRF_LW_BITS((o),drf)) : 0) | DRF_LW_GET((o),drf))
@@ -122,21 +102,21 @@
 #define NVDEF_MW_SET_(X,_1,_2,_3,_4,_5,_6,IMPL,...) IMPL
 #define NVDEF_MW_SET(A...) NVDEF_MW_SET_(X, ##A, NVDEF_MW_SET_I, NVDEF_MW_SET_N)(X, ##A)
 
-/* Helper for reading an arbitrary object. */
+ 
 #define DRF_RD_X(e,p,o,dr) e((p), (o), dr)
 #define DRF_RD_N(X,e,p,o,d,r  ) DRF_RD_X(e, (p), (o), d##_##r)
 #define DRF_RD_I(X,e,p,o,d,r,i) DRF_RD_X(e, (p), (o), d##_##r(i))
 #define DRF_RD_(X,_1,_2,_3,_4,_5,_6,IMPL,...) IMPL
 #define DRF_RD(A...) DRF_RD_(X, ##A, DRF_RD_I, DRF_RD_N)(X, ##A)
 
-/* Helper for writing an arbitrary object. */
+ 
 #define DRF_WR_X(e,p,o,dr,v) e((p), (o), dr, (v))
 #define DRF_WR_N(X,e,p,o,d,r,  v) DRF_WR_X(e, (p), (o), d##_##r   , (v))
 #define DRF_WR_I(X,e,p,o,d,r,i,v) DRF_WR_X(e, (p), (o), d##_##r(i), (v))
 #define DRF_WR_(X,_1,_2,_3,_4,_5,_6,_7,IMPL,...) IMPL
 #define DRF_WR(A...) DRF_WR_(X, ##A, DRF_WR_I, DRF_WR_N)(X, ##A)
 
-/* Helper for modifying an arbitrary object. */
+ 
 #define DRF_MR_X(er,ew,ty,p,o,dr,m,v) ({               \
 	ty _t = DRF_RD_X(er, (p), (o), dr);            \
 	DRF_WR_X(ew, (p), (o), dr, (_t & ~(m)) | (v)); \
@@ -147,14 +127,14 @@
 #define DRF_MR_(X,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,IMPL,...) IMPL
 #define DRF_MR(A...) DRF_MR_(X, ##A, DRF_MR_I, DRF_MR_N)(X, ##A)
 
-/* Helper for extracting a field value from arbitrary object. */
+ 
 #define DRF_RV_X(e,p,o,dr,drf) NVVAL_GET_X(DRF_RD_X(e, (p), (o), dr), drf)
 #define DRF_RV_N(X,e,p,o,d,r,  f) DRF_RV_X(e, (p), (o), d##_##r   , d##_##r##_##f)
 #define DRF_RV_I(X,e,p,o,d,r,i,f) DRF_RV_X(e, (p), (o), d##_##r(i), d##_##r##_##f)
 #define DRF_RV_(X,_1,_2,_3,_4,_5,_6,_7,IMPL,...) IMPL
 #define DRF_RV(A...) DRF_RV_(X, ##A, DRF_RV_I, DRF_RV_N)(X, ##A)
 
-/* Helper for writing field value to arbitrary object (all other bits cleared). */
+ 
 #define DRF_WV_N(X,e,p,o,d,r,  f,v)                                    \
 	DRF_WR_X(e, (p), (o), d##_##r   , NVVAL_X(d##_##r##_##f, (v)))
 #define DRF_WV_I(X,e,p,o,d,r,i,f,v)                                    \
@@ -162,7 +142,7 @@
 #define DRF_WV_(X,_1,_2,_3,_4,_5,_6,_7,_8,IMPL,...) IMPL
 #define DRF_WV(A...) DRF_WV_(X, ##A, DRF_WV_I, DRF_WV_N)(X, ##A)
 
-/* Helper for writing field definition to arbitrary object (all other bits cleared). */
+ 
 #define DRF_WD_N(X,e,p,o,d,r,  f,v)                                                    \
 	DRF_WR_X(e, (p), (o), d##_##r   , NVVAL_X(d##_##r##_##f, d##_##r##_##f##_##v))
 #define DRF_WD_I(X,e,p,o,d,r,i,f,v)                                                    \
@@ -170,7 +150,7 @@
 #define DRF_WD_(X,_1,_2,_3,_4,_5,_6,_7,_8,IMPL,...) IMPL
 #define DRF_WD(A...) DRF_WD_(X, ##A, DRF_WD_I, DRF_WD_N)(X, ##A)
 
-/* Helper for modifying field value in arbitrary object. */
+ 
 #define DRF_MV_N(X,er,ew,ty,p,o,d,r,  f,v)                                               \
 	NVVAL_GET_X(DRF_MR_X(er, ew, ty, (p), (o), d##_##r   , DRF_SMASK(d##_##r##_##f), \
 		    NVVAL_X(d##_##r##_##f, (v))), d##_##r##_##f)
@@ -180,7 +160,7 @@
 #define DRF_MV_(X,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,IMPL,...) IMPL
 #define DRF_MV(A...) DRF_MV_(X, ##A, DRF_MV_I, DRF_MV_N)(X, ##A)
 
-/* Helper for modifying field definition in arbitrary object. */
+ 
 #define DRF_MD_N(X,er,ew,ty,p,o,d,r,  f,v)                                               \
 	NVVAL_GET_X(DRF_MR_X(er, ew, ty, (p), (o), d##_##r   , DRF_SMASK(d##_##r##_##f), \
 		    NVVAL_X(d##_##r##_##f, d##_##r##_##f##_##v)), d##_##r##_##f)
@@ -190,7 +170,7 @@
 #define DRF_MD_(X,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,IMPL,...) IMPL
 #define DRF_MD(A...) DRF_MD_(X, ##A, DRF_MD_I, DRF_MD_N)(X, ##A)
 
-/* Helper for testing against field value in arbitrary object */
+ 
 #define DRF_TV_N(X,e,p,o,d,r,  f,cmp,v)                                          \
 	NVVAL_TEST_X(DRF_RD_X(e, (p), (o), d##_##r   ), d##_##r##_##f, cmp, (v))
 #define DRF_TV_I(X,e,p,o,d,r,i,f,cmp,v)                                          \
@@ -198,7 +178,7 @@
 #define DRF_TV_(X,_1,_2,_3,_4,_5,_6,_7,_8,_9,IMPL,...) IMPL
 #define DRF_TV(A...) DRF_TV_(X, ##A, DRF_TV_I, DRF_TV_N)(X, ##A)
 
-/* Helper for testing against field definition in arbitrary object */
+ 
 #define DRF_TD_N(X,e,p,o,d,r,  f,cmp,v)                                                          \
 	NVVAL_TEST_X(DRF_RD_X(e, (p), (o), d##_##r   ), d##_##r##_##f, cmp, d##_##r##_##f##_##v)
 #define DRF_TD_I(X,e,p,o,d,r,i,f,cmp,v)                                                          \

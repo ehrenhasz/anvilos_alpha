@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  dcdbas.h: Definitions for Dell Systems Management Base driver
- *
- *  Copyright (C) 1995-2005 Dell Inc.
- */
+ 
+ 
 
 #ifndef _DCDBAS_H_
 #define _DCDBAS_H_
@@ -114,5 +110,5 @@ struct smi_buffer {
 int dcdbas_smi_alloc(struct smi_buffer *smi_buffer, unsigned long size);
 void dcdbas_smi_free(struct smi_buffer *smi_buffer);
 
-#endif /* _DCDBAS_H_ */
+#endif  
 

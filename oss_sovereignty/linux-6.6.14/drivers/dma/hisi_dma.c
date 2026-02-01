@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2019-2022 HiSilicon Limited. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/dmaengine.h>
@@ -10,7 +10,7 @@
 #include <linux/spinlock.h>
 #include "virt-dma.h"
 
-/* HiSilicon DMA register common field define */
+ 
 #define HISI_DMA_Q_SQ_BASE_L			0x0
 #define HISI_DMA_Q_SQ_BASE_H			0x4
 #define HISI_DMA_Q_SQ_DEPTH			0x8
@@ -30,7 +30,7 @@
 #define HISI_DMA_Q_ERR_INT_NUM1			0x88
 #define HISI_DMA_Q_ERR_INT_NUM2			0x8c
 
-/* HiSilicon IP08 DMA register and field define */
+ 
 #define HISI_DMA_HIP08_MODE			0x217C
 #define HISI_DMA_HIP08_Q_BASE			0x0
 #define HISI_DMA_HIP08_Q_CTRL0_ERR_ABORT_EN	BIT(2)
@@ -43,7 +43,7 @@
 #define HISI_DMA_HIP08_Q_ERR_INT_NUM6		0x48
 #define HISI_DMA_HIP08_Q_CTRL0_SQCQ_DRCT	BIT(24)
 
-/* HiSilicon IP09 DMA register and field define */
+ 
 #define HISI_DMA_HIP09_DMA_FLR_DISABLE		0xA00
 #define HISI_DMA_HIP09_DMA_FLR_DISABLE_B	BIT(0)
 #define HISI_DMA_HIP09_Q_BASE			0x2000
@@ -80,12 +80,7 @@
 
 #define HISI_DMA_MAX_DIR_NAME_LEN		128
 
-/*
- * The HIP08B(HiSilicon IP08) and HIP09A(HiSilicon IP09) are DMA iEPs, they
- * have the same pci device id but different pci revision.
- * Unfortunately, they have different register layouts, so two layout
- * enumerations are defined.
- */
+ 
 enum hisi_dma_reg_layout {
 	HISI_DMA_REG_LAYOUT_INVALID = 0,
 	HISI_DMA_REG_LAYOUT_HIP08,
@@ -162,7 +157,7 @@ struct hisi_dma_dev {
 	u32 chan_num;
 	u32 chan_depth;
 	enum hisi_dma_reg_layout reg_layout;
-	void __iomem *queue_base; /* queue region start of register */
+	void __iomem *queue_base;  
 	struct hisi_dma_chan chan[];
 };
 
@@ -281,7 +276,7 @@ static const struct debugfs_reg32 hisi_dma_hip09_comm_regs[] = {
 	{"DMA_CH_DONE_STS                   ", 0x02E0ull},
 	{"DMA_CH_ERR_STS                    ", 0x0320ull},
 };
-#endif /* CONFIG_DEBUG_FS*/
+#endif  
 
 static enum hisi_dma_reg_layout hisi_dma_get_reg_layout(struct pci_dev *pdev)
 {
@@ -521,17 +516,17 @@ static void hisi_dma_start_transfer(struct hisi_dma_chan *chan)
 
 	memcpy(sqe, &desc->sqe, sizeof(struct hisi_dma_sqe));
 
-	/* update other field in sqe */
+	 
 	sqe->dw0 = cpu_to_le32(FIELD_PREP(OPCODE_MASK, OPCODE_M2M));
 	sqe->dw0 |= cpu_to_le32(LOCAL_IRQ_EN);
 
-	/* make sure data has been updated in sqe */
+	 
 	wmb();
 
-	/* update sq tail, point to new sqe position */
+	 
 	chan->sq_tail = (chan->sq_tail + 1) % hdma_dev->chan_depth;
 
-	/* update sq_tail to trigger a new task */
+	 
 	hisi_dma_chan_write(hdma_dev->queue_base, HISI_DMA_Q_SQ_TAIL_PTR,
 			    chan->qp_num, chan->sq_tail);
 }
@@ -612,7 +607,7 @@ static void hisi_dma_init_hw_qp(struct hisi_dma_dev *hdma_dev, u32 index)
 	void __iomem *addr;
 	u32 tmp;
 
-	/* set sq, cq base */
+	 
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_SQ_BASE_L, index,
 			    lower_32_bits(chan->sq_dma));
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_SQ_BASE_H, index,
@@ -622,15 +617,15 @@ static void hisi_dma_init_hw_qp(struct hisi_dma_dev *hdma_dev, u32 index)
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_CQ_BASE_H, index,
 			    upper_32_bits(chan->cq_dma));
 
-	/* set sq, cq depth */
+	 
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_SQ_DEPTH, index, hw_depth);
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_CQ_DEPTH, index, hw_depth);
 
-	/* init sq tail and cq head */
+	 
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_SQ_TAIL_PTR, index, 0);
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_CQ_HEAD_PTR, index, 0);
 
-	/* init error interrupt stats */
+	 
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_ERR_INT_NUM0, index, 0);
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_ERR_INT_NUM1, index, 0);
 	hisi_dma_chan_write(q_base, HISI_DMA_Q_ERR_INT_NUM2, index, 0);
@@ -644,42 +639,27 @@ static void hisi_dma_init_hw_qp(struct hisi_dma_dev *hdma_dev, u32 index)
 				    index, 0);
 		hisi_dma_chan_write(q_base, HISI_DMA_HIP08_Q_ERR_INT_NUM6,
 				    index, 0);
-		/*
-		 * init SQ/CQ direction selecting register.
-		 * "0" is to local side and "1" is to remote side.
-		 */
+		 
 		addr = q_base + HISI_DMA_Q_CTRL0 + index * HISI_DMA_Q_OFFSET;
 		hisi_dma_update_bit(addr, HISI_DMA_HIP08_Q_CTRL0_SQCQ_DRCT, 0);
 
-		/*
-		 * 0 - Continue to next descriptor if error occurs.
-		 * 1 - Abort the DMA queue if error occurs.
-		 */
+		 
 		hisi_dma_update_bit(addr,
 				    HISI_DMA_HIP08_Q_CTRL0_ERR_ABORT_EN, 0);
 	} else {
 		addr = q_base + HISI_DMA_Q_CTRL0 + index * HISI_DMA_Q_OFFSET;
 
-		/*
-		 * init SQ/CQ direction selecting register.
-		 * "0" is to local side and "1" is to remote side.
-		 */
+		 
 		hisi_dma_update_bit(addr, HISI_DMA_HIP09_Q_CTRL0_SQ_DRCT, 0);
 		hisi_dma_update_bit(addr, HISI_DMA_HIP09_Q_CTRL0_CQ_DRCT, 0);
 
-		/*
-		 * 0 - Continue to next descriptor if error occurs.
-		 * 1 - Abort the DMA queue if error occurs.
-		 */
+		 
 
 		tmp = readl_relaxed(addr);
 		tmp &= ~HISI_DMA_HIP09_Q_CTRL0_ERR_ABORT_EN;
 		writel_relaxed(tmp, addr);
 
-		/*
-		 * 0 - dma should process FLR whith CPU.
-		 * 1 - dma not process FLR, only cpu process FLR.
-		 */
+		 
 		addr = q_base + HISI_DMA_HIP09_DMA_FLR_DISABLE +
 		       index * HISI_DMA_Q_OFFSET;
 		hisi_dma_update_bit(addr, HISI_DMA_HIP09_DMA_FLR_DISABLE_B, 0);
@@ -770,7 +750,7 @@ static int hisi_dma_request_qps_irq(struct hisi_dma_dev *hdma_dev)
 	return 0;
 }
 
-/* This function enables all hw channels in a device */
+ 
 static int hisi_dma_enable_hw_channels(struct hisi_dma_dev *hdma_dev)
 {
 	int ret;
@@ -836,7 +816,7 @@ static void hisi_dma_init_dma_dev(struct hisi_dma_dev *hdma_dev)
 	INIT_LIST_HEAD(&dma_dev->channels);
 }
 
-/* --- debugfs implementation --- */
+ 
 #ifdef CONFIG_DEBUG_FS
 #include <linux/debugfs.h>
 static struct debugfs_reg32 *hisi_dma_get_ch_regs(struct hisi_dma_dev *hdma_dev,
@@ -944,8 +924,8 @@ static void hisi_dma_create_debugfs(struct hisi_dma_dev *hdma_dev)
 }
 #else
 static void hisi_dma_create_debugfs(struct hisi_dma_dev *hdma_dev) { }
-#endif /* CONFIG_DEBUG_FS*/
-/* --- debugfs implementation --- */
+#endif  
+ 
 
 static int hisi_dma_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
@@ -997,7 +977,7 @@ static int hisi_dma_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	msi_num = hisi_dma_get_msi_num(pdev);
 
-	/* This will be freed by 'pcim_release()'. See 'pcim_enable_device()' */
+	 
 	ret = pci_alloc_irq_vectors(pdev, msi_num, msi_num, PCI_IRQ_MSI);
 	if (ret < 0) {
 		dev_err(dev, "Failed to allocate MSI vectors!\n");

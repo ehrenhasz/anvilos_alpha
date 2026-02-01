@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Authors:
- *    Scott  Bauer      <scott.bauer@intel.com>
- *    Rafael Antognolli <rafael.antognolli@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":OPAL: " fmt
 
@@ -29,7 +23,7 @@
 #define IO_BUFFER_LENGTH 2048
 #define MAX_TOKS 64
 
-/* Number of bytes needed by cmd_finalize. */
+ 
 #define CMD_FINALIZE_BYTES_NEEDED 7
 
 static struct key *sed_opal_keyring;
@@ -48,12 +42,7 @@ enum opal_atom_width {
 	OPAL_WIDTH_TOKEN
 };
 
-/*
- * On the parsed response, we don't store again the toks that are already
- * stored in the response buffer. Instead, for each token, we just store a
- * pointer to the position in the buffer where the token starts, and the size
- * of the token in bytes.
- */
+ 
 struct opal_resp_tok {
 	const u8 *pos;
 	size_t len;
@@ -65,14 +54,7 @@ struct opal_resp_tok {
 	} stored;
 };
 
-/*
- * From the response header it's not possible to know how many tokens there are
- * on the payload. So we hardcode that the maximum will be MAX_TOKS, and later
- * if we start dealing with messages that have more than that, we can increase
- * this number. This is done to avoid having to make two passes through the
- * response, the first one counting how many tokens we have and the second one
- * actually storing the positions.
- */
+ 
 struct parsed_resp {
 	int num;
 	struct opal_resp_tok toks[MAX_TOKS];
@@ -88,10 +70,10 @@ struct opal_dev {
 	u16 comid;
 	u32 hsn;
 	u32 tsn;
-	u64 align; /* alignment granularity */
+	u64 align;  
 	u64 lowest_lba;
 	u32 logical_block_size;
-	u8  align_required; /* ALIGN: 0 or 1 */
+	u8  align_required;  
 
 	size_t pos;
 	u8 *cmd;
@@ -106,7 +88,7 @@ struct opal_dev {
 
 
 static const u8 opaluid[][OPAL_UID_LENGTH] = {
-	/* users */
+	 
 	[OPAL_SMUID_UID] =
 		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff },
 	[OPAL_THISSP_UID] =
@@ -134,7 +116,7 @@ static const u8 opaluid[][OPAL_UID_LENGTH] = {
 	[OPAL_ENTERPRISE_ERASEMASTER_UID] =
 		{ 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x84, 0x01 },
 
-	/* tables */
+	 
 	[OPAL_TABLE_TABLE] =
 		{ 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01 },
 	[OPAL_LOCKINGRANGE_GLOBAL] =
@@ -160,7 +142,7 @@ static const u8 opaluid[][OPAL_UID_LENGTH] = {
 	[OPAL_DATASTORE] =
 		{ 0x00, 0x00, 0x10, 0x01, 0x00, 0x00, 0x00, 0x00 },
 
-	/* C_PIN_TABLE object ID's */
+	 
 	[OPAL_C_PIN_MSID] =
 		{ 0x00, 0x00, 0x00, 0x0B, 0x00, 0x00, 0x84, 0x02},
 	[OPAL_C_PIN_SID] =
@@ -168,22 +150,18 @@ static const u8 opaluid[][OPAL_UID_LENGTH] = {
 	[OPAL_C_PIN_ADMIN1] =
 		{ 0x00, 0x00, 0x00, 0x0B, 0x00, 0x01, 0x00, 0x01},
 
-	/* half UID's (only first 4 bytes used) */
+	 
 	[OPAL_HALF_UID_AUTHORITY_OBJ_REF] =
 		{ 0x00, 0x00, 0x0C, 0x05, 0xff, 0xff, 0xff, 0xff },
 	[OPAL_HALF_UID_BOOLEAN_ACE] =
 		{ 0x00, 0x00, 0x04, 0x0E, 0xff, 0xff, 0xff, 0xff },
 
-	/* special value for omitted optional parameter */
+	 
 	[OPAL_UID_HEXFF] =
 		{ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
 };
 
-/*
- * TCG Storage SSC Methods.
- * Derived from: TCG_Storage_Architecture_Core_Spec_v2.01_r1.00
- * Section: 6.3 Assigned UIDs
- */
+ 
 static const u8 opalmethod[][OPAL_METHOD_LENGTH] = {
 	[OPAL_PROPERTIES] =
 		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x01 },
@@ -228,11 +206,7 @@ struct opal_suspend_data {
 	struct list_head node;
 };
 
-/*
- * Derived from:
- * TCG_Storage_Architecture_Core_Spec_v2.01_r1.00
- * Section: 5.1.5 Method Status Codes
- */
+ 
 static const char * const opal_errors[] = {
 	"Success",
 	"Not Authorized",
@@ -274,9 +248,7 @@ static void print_buffer(const u8 *ptr, u32 length)
 #endif
 }
 
-/*
- * Allocate/update a SED Opal key and add it to the SED Opal keyring.
- */
+ 
 static int update_sed_opal_key(const char *desc, u_char *key_data, int keylen)
 {
 	key_ref_t kr;
@@ -297,9 +269,7 @@ static int update_sed_opal_key(const char *desc, u_char *key_data, int keylen)
 	return 0;
 }
 
-/*
- * Read a SED Opal key from the SED Opal keyring.
- */
+ 
 static int read_sed_opal_key(const char *key_name, u_char *buffer, int buflen)
 {
 	int ret;
@@ -337,10 +307,10 @@ static int opal_get_key(struct opal_dev *dev, struct opal_key *key)
 
 	switch (key->key_type) {
 	case OPAL_INCLUDED:
-		/* the key is ready to use */
+		 
 		break;
 	case OPAL_KEYRING:
-		/* the key is in the keyring */
+		 
 		ret = read_sed_opal_key(OPAL_AUTH_KEY, key->key, OPAL_KEY_MAX);
 		if (ret > 0) {
 			if (ret > U8_MAX) {
@@ -358,7 +328,7 @@ static int opal_get_key(struct opal_dev *dev, struct opal_key *key)
 	if (ret < 0)
 		goto error;
 
-	/* must have a PEK by now or it's an error */
+	 
 	if (key->key_type != OPAL_INCLUDED || key->key_len == 0) {
 		ret = -EINVAL;
 		goto error;
@@ -535,7 +505,7 @@ static int execute_steps(struct opal_dev *dev,
 	size_t state = 0;
 	int error;
 
-	/* first do a discovery0 */
+	 
 	error = opal_discovery0_step(dev);
 	if (error)
 		return error;
@@ -549,14 +519,7 @@ static int execute_steps(struct opal_dev *dev,
 	return 0;
 
 out_error:
-	/*
-	 * For each OPAL command the first step in steps starts some sort of
-	 * session. If an error occurred in the initial discovery0 or if an
-	 * error occurred in the first step (and thus stopping the loop with
-	 * state == 0) then there was an error before or during the attempt to
-	 * start a session. Therefore we shouldn't attempt to terminate a
-	 * session, as one has not yet been created.
-	 */
+	 
 	if (state > 0)
 		end_opal_session_error(dev);
 
@@ -565,7 +528,7 @@ out_error:
 
 static int opal_discovery0_end(struct opal_dev *dev, void *data)
 {
-	struct opal_discovery *discv_out = data; /* may be NULL */
+	struct opal_discovery *discv_out = data;  
 	u8 __user *buf_out;
 	u64 len_out;
 	bool found_com_id = false, supported = true, single_user = false;
@@ -589,11 +552,11 @@ static int opal_discovery0_end(struct opal_dev *dev, void *data)
 		if (buf_out && copy_to_user(buf_out, dev->resp, len_out))
 			return -EFAULT;
 
-		discv_out->size = hlen; /* actual size of data */
+		discv_out->size = hlen;  
 	}
 
-	epos += hlen; /* end of buffer */
-	cpos += sizeof(*hdr); /* current position on buffer */
+	epos += hlen;  
+	cpos += sizeof(*hdr);  
 
 	while (cpos < epos && supported) {
 		const struct d0_features *body =
@@ -625,7 +588,7 @@ static int opal_discovery0_end(struct opal_dev *dev, void *data)
 			break;
 		case FC_ENTERPRISE:
 		case FC_DATASTORE:
-			/* some ignored properties */
+			 
 			pr_debug("Found OPAL feature description: %d\n",
 				 be16_to_cpu(body->code));
 			break;
@@ -638,7 +601,7 @@ static int opal_discovery0_end(struct opal_dev *dev, void *data)
 			found_com_id = true;
 			break;
 		case 0xbfff ... 0xffff:
-			/* vendor specific, just ignore */
+			 
 			break;
 		default:
 			pr_debug("OPAL Unknown feature: %d\n",
@@ -848,11 +811,7 @@ static int cmd_finalize(struct opal_dev *cmd, u32 hsn, u32 tsn)
 	struct opal_header *hdr;
 	int err = 0;
 
-	/*
-	 * Close the parameter list opened from cmd_start.
-	 * The number of bytes added must be equal to
-	 * CMD_FINALIZE_BYTES_NEEDED.
-	 */
+	 
 	add_token_u8(&err, cmd, OPAL_ENDLIST);
 
 	add_token_u8(&err, cmd, OPAL_ENDOFDATA);
@@ -1047,15 +1006,15 @@ static int response_parse(const u8 *buf, size_t length,
 	total = slen;
 	print_buffer(pos, total);
 	while (total > 0) {
-		if (pos[0] <= TINY_ATOM_BYTE) /* tiny atom */
+		if (pos[0] <= TINY_ATOM_BYTE)  
 			token_length = response_parse_tiny(iter, pos);
-		else if (pos[0] <= SHORT_ATOM_BYTE) /* short atom */
+		else if (pos[0] <= SHORT_ATOM_BYTE)  
 			token_length = response_parse_short(iter, pos);
-		else if (pos[0] <= MEDIUM_ATOM_BYTE) /* medium atom */
+		else if (pos[0] <= MEDIUM_ATOM_BYTE)  
 			token_length = response_parse_medium(iter, pos);
-		else if (pos[0] <= LONG_ATOM_BYTE) /* long atom */
+		else if (pos[0] <= LONG_ATOM_BYTE)  
 			token_length = response_parse_long(iter, pos);
-		else /* TOKEN */
+		else  
 			token_length = response_parse_token(iter, pos);
 
 		if (token_length < 0)
@@ -1161,7 +1120,7 @@ static u8 response_status(const struct parsed_resp *resp)
 	return response_get_u64(resp, resp->num - 4);
 }
 
-/* Parses and checks for errors */
+ 
 static int parse_and_check_status(struct opal_dev *dev)
 {
 	int error;
@@ -1194,11 +1153,7 @@ static int cmd_start(struct opal_dev *dev, const u8 *uid, const u8 *method)
 	add_token_bytestring(&err, dev, uid, OPAL_UID_LENGTH);
 	add_token_bytestring(&err, dev, method, OPAL_METHOD_LENGTH);
 
-	/*
-	 * Every method call is followed by its parameters enclosed within
-	 * OPAL_STARTLIST and OPAL_ENDLIST tokens. We automatically open the
-	 * parameter list here and close it later in cmd_finalize.
-	 */
+	 
 	add_token_u8(&err, dev, OPAL_STARTLIST);
 
 	return err;
@@ -1292,33 +1247,21 @@ static int generic_get_columns(struct opal_dev *dev, const u8 *table,
 	return finalize_and_send(dev, parse_and_check_status);
 }
 
-/*
- * request @column from table @table on device @dev. On success, the column
- * data will be available in dev->resp->tok[4]
- */
+ 
 static int generic_get_column(struct opal_dev *dev, const u8 *table,
 			      u64 column)
 {
 	return generic_get_columns(dev, table, column, column);
 }
 
-/*
- * see TCG SAS 5.3.2.3 for a description of the available columns
- *
- * the result is provided in dev->resp->tok[4]
- */
+ 
 static int generic_get_table_info(struct opal_dev *dev, const u8 *table_uid,
 				  u64 column)
 {
 	u8 uid[OPAL_UID_LENGTH];
 	const unsigned int half = OPAL_UID_LENGTH_HALF;
 
-	/* sed-opal UIDs can be split in two halves:
-	 *  first:  actual table index
-	 *  second: relative index in the table
-	 * so we have to get the first half of the OPAL_TABLE_TABLE and use the
-	 * first part of the target table as relative index into that table
-	 */
+	 
 	memcpy(uid, opaluid[OPAL_TABLE_TABLE], half);
 	memcpy(uid + half, table_uid, half);
 
@@ -1398,7 +1341,7 @@ static int generic_table_write_data(struct opal_dev *dev, const u64 data,
 	size_t off = 0;
 	int err;
 
-	/* do we fit in the available space? */
+	 
 	err = generic_get_table_info(dev, uid, OPAL_TABLE_ROWS);
 	if (err) {
 		pr_debug("Couldn't get the table size\n");
@@ -1412,7 +1355,7 @@ static int generic_table_write_data(struct opal_dev *dev, const u64 data,
 		return -ENOSPC;
 	}
 
-	/* do the actual transmission(s) */
+	 
 	while (off < size) {
 		err = cmd_start(dev, uid, opalmethod[OPAL_SET]);
 		add_token_u8(&err, dev, OPAL_STARTNAME);
@@ -1423,12 +1366,7 @@ static int generic_table_write_data(struct opal_dev *dev, const u64 data,
 		add_token_u8(&err, dev, OPAL_STARTNAME);
 		add_token_u8(&err, dev, OPAL_VALUES);
 
-		/*
-		 * The bytestring header is either 1 or 2 bytes, so assume 2.
-		 * There also needs to be enough space to accommodate the
-		 * trailing OPAL_ENDNAME (1 byte) and tokens added by
-		 * cmd_finalize.
-		 */
+		 
 		len = min(remaining_size(dev) - (2+1+CMD_FINALIZE_BYTES_NEEDED),
 			  (size_t)(size - off));
 		pr_debug("Write bytes %zu+%llu/%llu\n", off, len, size);
@@ -1628,19 +1566,19 @@ static int locking_range_status(struct opal_dev *dev, void *data)
 		return err;
 	}
 
-	/* range start */
+	 
 	err = response_get_column(&dev->parsed, &tok_n, OPAL_RANGESTART,
 				  &lrst->range_start);
 	if (err)
 		return err;
 
-	/* range length */
+	 
 	err = response_get_column(&dev->parsed, &tok_n, OPAL_RANGELENGTH,
 				  &lrst->range_length);
 	if (err)
 		return err;
 
-	/* RLE */
+	 
 	err = response_get_column(&dev->parsed, &tok_n, OPAL_READLOCKENABLED,
 				  &resp);
 	if (err)
@@ -1648,7 +1586,7 @@ static int locking_range_status(struct opal_dev *dev, void *data)
 
 	lrst->RLE = !!resp;
 
-	/* WLE */
+	 
 	err = response_get_column(&dev->parsed, &tok_n, OPAL_WRITELOCKENABLED,
 				  &resp);
 	if (err)
@@ -1656,21 +1594,21 @@ static int locking_range_status(struct opal_dev *dev, void *data)
 
 	lrst->WLE = !!resp;
 
-	/* read locked */
+	 
 	err = response_get_column(&dev->parsed, &tok_n, OPAL_READLOCKED, &resp);
 	if (err)
 		return err;
 
 	rlocked = !!resp;
 
-	/* write locked */
+	 
 	err = response_get_column(&dev->parsed, &tok_n, OPAL_WRITELOCKED, &resp);
 	if (err)
 		return err;
 
 	wlocked = !!resp;
 
-	/* opal_lock_state can not map 'read locked' only state. */
+	 
 	lrst->l_state = OPAL_RW;
 	if (rlocked && wlocked)
 		lrst->l_state = OPAL_LK;
@@ -1711,11 +1649,11 @@ static int start_generic_opal_session(struct opal_dev *dev,
 	case OPAL_SID_UID:
 	case OPAL_PSID_UID:
 		add_token_u8(&err, dev, OPAL_STARTNAME);
-		add_token_u8(&err, dev, 0); /* HostChallenge */
+		add_token_u8(&err, dev, 0);  
 		add_token_bytestring(&err, dev, key, key_len);
 		add_token_u8(&err, dev, OPAL_ENDNAME);
 		add_token_u8(&err, dev, OPAL_STARTNAME);
-		add_token_u8(&err, dev, 3); /* HostSignAuth */
+		add_token_u8(&err, dev, 3);  
 		add_token_bytestring(&err, dev, opaluid[auth],
 				     OPAL_UID_LENGTH);
 		add_token_u8(&err, dev, OPAL_ENDNAME);
@@ -1855,7 +1793,7 @@ static int internal_activate_user(struct opal_dev *dev, void *data)
 	add_token_u8(&err, dev, OPAL_VALUES);
 	add_token_u8(&err, dev, OPAL_STARTLIST);
 	add_token_u8(&err, dev, OPAL_STARTNAME);
-	add_token_u8(&err, dev, 5); /* Enabled */
+	add_token_u8(&err, dev, 5);  
 	add_token_u8(&err, dev, OPAL_TRUE);
 	add_token_u8(&err, dev, OPAL_ENDNAME);
 	add_token_u8(&err, dev, OPAL_ENDLIST);
@@ -1921,7 +1859,7 @@ static int set_mbr_done(struct opal_dev *dev, void *data)
 	add_token_u8(&err, dev, OPAL_STARTLIST);
 	add_token_u8(&err, dev, OPAL_STARTNAME);
 	add_token_u8(&err, dev, OPAL_MBRDONE);
-	add_token_u8(&err, dev, *mbr_done_tf); /* Done T or F */
+	add_token_u8(&err, dev, *mbr_done_tf);  
 	add_token_u8(&err, dev, OPAL_ENDNAME);
 	add_token_u8(&err, dev, OPAL_ENDLIST);
 	add_token_u8(&err, dev, OPAL_ENDNAME);
@@ -2087,11 +2025,7 @@ static int set_lr_boolean_ace(struct opal_dev *dev,
 
 		add_authority_object_ref(&err, dev, user_uid, sizeof(user_uid));
 
-		/*
-		 * Add boolean operator in postfix only with
-		 * two or more authorities being added in ACE
-		 * expresion.
-		 * */
+		 
 		if (u > 0)
 			add_boolean_object_ref(&err, dev, OPAL_BOOLEAN_OR);
 	}
@@ -2168,7 +2102,7 @@ static int lock_unlock_locking_range(struct opal_dev *dev, void *data)
 		write_locked = 0;
 		break;
 	case OPAL_LK:
-		/* vars are initialized to locked */
+		 
 		break;
 	default:
 		pr_debug("Tried to set an invalid locking state... returning to uland\n");
@@ -2227,7 +2161,7 @@ static int lock_unlock_locking_range_sum(struct opal_dev *dev, void *data)
 		write_locked = 0;
 		break;
 	case OPAL_LK:
-		/* vars are initialized to locked */
+		 
 		break;
 	default:
 		pr_debug("Tried to set an invalid locking state.\n");
@@ -2280,7 +2214,7 @@ static int activate_lsp(struct opal_dev *dev, void *data)
 	return finalize_and_send(dev, parse_and_check_status);
 }
 
-/* Determine if we're in the Manufactured Inactive or Active state */
+ 
 static int get_lsp_lifecycle(struct opal_dev *dev, void *data)
 {
 	u8 lc_status;
@@ -2292,8 +2226,8 @@ static int get_lsp_lifecycle(struct opal_dev *dev, void *data)
 		return err;
 
 	lc_status = response_get_u64(&dev->parsed, 4);
-	/* 0x08 is Manufactured Inactive */
-	/* 0x09 is Manufactured */
+	 
+	 
 	if (lc_status != OPAL_MANUFACTURED_INACTIVE) {
 		pr_debug("Couldn't determine the status of the Lifecycle state\n");
 		return -ENODEV;
@@ -2354,13 +2288,7 @@ static int read_table_data_cont(struct opal_dev *dev)
 	return 0;
 }
 
-/*
- * IO_BUFFER_LENGTH = 2048
- * sizeof(header) = 56
- * No. of Token Bytes in the Response = 11
- * MAX size of data that can be carried in response buffer
- * at a time is : 2048 - (56 + 11) = 1981 = 0x7BD.
- */
+ 
 #define OPAL_MAX_READ_TABLE (0x7BD)
 
 static int read_table_data(struct opal_dev *dev, void *data)
@@ -2380,7 +2308,7 @@ static int read_table_data(struct opal_dev *dev, void *data)
 
 	table_len = response_get_u64(&dev->parsed, 4);
 
-	/* Check if the user is trying to read from the table limits */
+	 
 	if (read_size > table_len || offset > table_len - read_size) {
 		pr_debug("Read size exceeds the Table size limits (%llu vs. %llu)\n",
 			  offset + read_size, table_len);
@@ -2393,15 +2321,14 @@ static int read_table_data(struct opal_dev *dev, void *data)
 		add_token_u8(&err, dev, OPAL_STARTLIST);
 		add_token_u8(&err, dev, OPAL_STARTNAME);
 		add_token_u8(&err, dev, OPAL_STARTROW);
-		add_token_u64(&err, dev, offset + off); /* start row value */
+		add_token_u64(&err, dev, offset + off);  
 		add_token_u8(&err, dev, OPAL_ENDNAME);
 
 		add_token_u8(&err, dev, OPAL_STARTNAME);
 		add_token_u8(&err, dev, OPAL_ENDROW);
 
 		len = min(max_read_size, (size_t)(read_size - off));
-		add_token_u64(&err, dev, offset + off + len); /* end row value
-							       */
+		add_token_u64(&err, dev, offset + off + len);  
 		add_token_u8(&err, dev, OPAL_ENDNAME);
 		add_token_u8(&err, dev, OPAL_ENDLIST);
 
@@ -2414,7 +2341,7 @@ static int read_table_data(struct opal_dev *dev, void *data)
 		if (err)
 			break;
 
-		/* len+1: This includes the NULL terminator at the end*/
+		 
 		if (dev->prev_d_len > len + 1) {
 			err = -EOVERFLOW;
 			break;
@@ -2511,10 +2438,7 @@ struct opal_dev *init_opal_dev(void *data, sec_send_recv *send_recv)
 	if (!dev)
 		return NULL;
 
-	/*
-	 * Presumably DMA-able buffers must be cache-aligned. Kmalloc makes
-	 * sure the allocated buffer is DMA-safe in that regard.
-	 */
+	 
 	dev->cmd = kmalloc(IO_BUFFER_LENGTH, GFP_KERNEL);
 	if (!dev->cmd)
 		goto err_free_dev;
@@ -2583,12 +2507,12 @@ static int opal_get_discv(struct opal_dev *dev, struct opal_discovery *discv)
 	mutex_unlock(&dev->dev_lock);
 	if (ret)
 		return ret;
-	return discv->size; /* modified to actual length of data */
+	return discv->size;  
 }
 
 static int opal_revertlsp(struct opal_dev *dev, struct opal_revert_lsp *rev)
 {
-	/* controller will terminate session */
+	 
 	const struct opal_step steps[] = {
 		{ start_admin1LSP_opal_session, &rev->key },
 		{ revert_lsp, rev }
@@ -2772,7 +2696,7 @@ static int opal_add_user_to_lr(struct opal_dev *dev,
 
 static int opal_reverttper(struct opal_dev *dev, struct opal_key *opal, bool psid)
 {
-	/* controller will terminate session */
+	 
 	const struct opal_step revert_steps[] = {
 		{ start_SIDASP_opal_session, opal },
 		{ revert_tper, }
@@ -2798,10 +2722,7 @@ static int opal_reverttper(struct opal_dev *dev, struct opal_key *opal, bool psi
 				    ARRAY_SIZE(revert_steps));
 	mutex_unlock(&dev->dev_lock);
 
-	/*
-	 * If we successfully reverted lets clean
-	 * any saved locking ranges.
-	 */
+	 
 	if (!ret)
 		clean_opal_dev(dev);
 
@@ -2851,20 +2772,7 @@ static void opal_lock_check_for_saved_key(struct opal_dev *dev,
 			lk_unlk->session.opal_key.key_len > 0)
 		return;
 
-	/*
-	 * Usually when closing a crypto device (eg: dm-crypt with LUKS) the
-	 * volume key is not required, as it requires root privileges anyway,
-	 * and root can deny access to a disk in many ways regardless.
-	 * Requiring the volume key to lock the device is a peculiarity of the
-	 * OPAL specification. Given we might already have saved the key if
-	 * the user requested it via the 'IOC_OPAL_SAVE' ioctl, we can use
-	 * that key to lock the device if no key was provided here, the
-	 * locking range matches and the appropriate flag was passed with
-	 * 'IOC_OPAL_SAVE'.
-	 * This allows integrating OPAL with tools and libraries that are used
-	 * to the common behaviour and do not ask for the volume key when
-	 * closing a device.
-	 */
+	 
 	setup_opal_dev(dev);
 	list_for_each_entry(iter, &dev->unlk_lst, node) {
 		if ((iter->unlk.flags & OPAL_SAVE_FOR_LOCK) &&
@@ -2986,7 +2894,7 @@ static int opal_locking_range_status(struct opal_dev *dev,
 	ret = execute_steps(dev, lr_steps, ARRAY_SIZE(lr_steps));
 	mutex_unlock(&dev->dev_lock);
 
-	/* skip session info when copying back to uspace */
+	 
 	if (!ret && copy_to_user(data + offsetof(struct opal_lr_status, range_start),
 				(void *)opal_lrst + offsetof(struct opal_lr_status, range_start),
 				sizeof(*opal_lrst) - offsetof(struct opal_lr_status, range_start))) {
@@ -3018,7 +2926,7 @@ static int opal_set_new_pw(struct opal_dev *dev, struct opal_new_pw *opal_pw)
 	if (ret)
 		return ret;
 
-	/* update keyring with new password */
+	 
 	ret = update_sed_opal_key(OPAL_AUTH_KEY,
 				  opal_pw->new_user_pw.opal_key.key,
 				  opal_pw->new_user_pw.opal_key.key_len);
@@ -3036,7 +2944,7 @@ static int opal_activate_user(struct opal_dev *dev,
 	};
 	int ret;
 
-	/* We can't activate Admin1 it's active as manufactured */
+	 
 	if (opal_session->who < OPAL_USER1 ||
 	    opal_session->who > OPAL_USER9) {
 		pr_debug("Who was not a valid user: %d\n", opal_session->who);
@@ -3162,10 +3070,7 @@ static int opal_get_status(struct opal_dev *dev, void __user *data)
 {
 	struct opal_status sts = {0};
 
-	/*
-	 * check_opal_support() error is not fatal,
-	 * !dev->supported is a valid condition
-	 */
+	 
 	if (!check_opal_support(dev))
 		sts.flags = dev->flags;
 	if (copy_to_user(data, &sts, sizeof(sts))) {

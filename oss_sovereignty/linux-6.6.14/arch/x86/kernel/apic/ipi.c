@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/cpumask.h>
 #include <linux/delay.h>
@@ -30,16 +30,7 @@ late_initcall(print_ipi_mode);
 
 void apic_smt_update(void)
 {
-	/*
-	 * Do not switch to broadcast mode if:
-	 * - Disabled on the command line
-	 * - Only a single CPU is online
-	 * - Not all present CPUs have been at least booted once
-	 *
-	 * The latter is important as the local APIC might be in some
-	 * random state and a broadcast might cause havoc. That's
-	 * especially true for NMI broadcasting.
-	 */
+	 
 	if (apic_ipi_shorthand_off || num_online_cpus() == 1 ||
 	    !cpumask_equal(cpu_present_mask, &cpus_booted_once_mask)) {
 		static_branch_disable(&apic_use_ipi_shorthand);
@@ -59,11 +50,7 @@ void apic_send_IPI_allbutself(unsigned int vector)
 		__apic_send_IPI_mask_allbutself(cpu_online_mask, vector);
 }
 
-/*
- * Send a 'reschedule' IPI to another CPU. It goes straight through and
- * wastes no time serializing anything. Worst case is that we lose a
- * reschedule ...
- */
+ 
 void native_smp_send_reschedule(int cpu)
 {
 	if (unlikely(cpu_is_offline(cpu))) {
@@ -97,7 +84,7 @@ sendmask:
 	__apic_send_IPI_mask(mask, CALL_FUNCTION_VECTOR);
 }
 
-#endif /* CONFIG_SMP */
+#endif  
 
 static inline int __prepare_ICR2(unsigned int mask)
 {
@@ -123,57 +110,32 @@ void apic_mem_wait_icr_idle(void)
 		cpu_relax();
 }
 
-/*
- * This is safe against interruption because it only writes the lower 32
- * bits of the APIC_ICR register. The destination field is ignored for
- * short hand IPIs.
- *
- *  wait_icr_idle()
- *  write(ICR2, dest)
- *  NMI
- *	wait_icr_idle()
- *	write(ICR)
- *	wait_icr_idle()
- *  write(ICR)
- *
- * This function does not need to disable interrupts as there is no ICR2
- * interaction. The memory write is direct except when the machine is
- * affected by the 11AP Pentium erratum, which turns the plain write into
- * an XCHG operation.
- */
+ 
 static void __default_send_IPI_shortcut(unsigned int shortcut, int vector)
 {
-	/*
-	 * Wait for the previous ICR command to complete.  Use
-	 * safe_apic_wait_icr_idle() for the NMI vector as there have been
-	 * issues where otherwise the system hangs when the panic CPU tries
-	 * to stop the others before launching the kdump kernel.
-	 */
+	 
 	if (unlikely(vector == NMI_VECTOR))
 		apic_mem_wait_icr_idle_timeout();
 	else
 		apic_mem_wait_icr_idle();
 
-	/* Destination field (ICR2) and the destination mode are ignored */
+	 
 	native_apic_mem_write(APIC_ICR, __prepare_ICR(shortcut, vector, 0));
 }
 
-/*
- * This is used to send an IPI with no shorthand notation (the destination is
- * specified in bits 56 to 63 of the ICR).
- */
+ 
 void __default_send_IPI_dest_field(unsigned int dest_mask, int vector,
 				   unsigned int dest_mode)
 {
-	/* See comment in __default_send_IPI_shortcut() */
+	 
 	if (unlikely(vector == NMI_VECTOR))
 		apic_mem_wait_icr_idle_timeout();
 	else
 		apic_mem_wait_icr_idle();
 
-	/* Set the IPI destination field in the ICR */
+	 
 	native_apic_mem_write(APIC_ICR2, __prepare_ICR2(dest_mask));
-	/* Send it with the proper destination mode */
+	 
 	native_apic_mem_write(APIC_ICR, __prepare_ICR(0, vector, dest_mode));
 }
 
@@ -216,9 +178,7 @@ void default_send_IPI_mask_allbutself_phys(const struct cpumask *mask,
 	local_irq_restore(flags);
 }
 
-/*
- * Helper function for APICs which insist on cpumasks
- */
+ 
 void default_send_IPI_single(int cpu, int vector)
 {
 	__apic_send_IPI_mask(cpumask_of(cpu), vector);

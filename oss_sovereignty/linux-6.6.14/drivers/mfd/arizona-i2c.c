@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Arizona-i2c.c  --  Arizona I2C bus interface
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>

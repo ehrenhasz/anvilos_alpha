@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021 Gerhard Engleder <gerhard@engleder-embedded.com> */
+
+ 
 
 #include "tsnep.h"
 
@@ -91,9 +91,7 @@ static bool gc_delayed_enable(struct tsnep_adapter *adapter, bool a, int delay)
 	if (!enable_gc_timeout(adapter))
 		return false;
 
-	/* for start time after timeout, the timeout can guarantee, that enable
-	 * is blocked if too late
-	 */
+	 
 	time = ioread32(adapter->addr + ECM_SYSTEM_TIME_LOW);
 	time += TSNEP_GC_TIMEOUT;
 	iowrite32(time, adapter->addr + TSNEP_GC_TIME);
@@ -104,11 +102,11 @@ static bool gc_delayed_enable(struct tsnep_adapter *adapter, bool a, int delay)
 	after = ktime_get_ns();
 
 	if (delay > TSNEP_GC_TIMEOUT) {
-		/* timeout must have blocked enable */
+		 
 		if (enabled)
 			return false;
 	} else if ((after - before) < TSNEP_GC_TIMEOUT * 14 / 16) {
-		/* timeout must not have blocked enable */
+		 
 		if (!enabled)
 			return false;
 	}
@@ -230,7 +228,7 @@ static bool check_gate(struct tsnep_adapter *adapter)
 		return false;
 	}
 	if (curr->start_time <= system_time) {
-		/* GCL is already active */
+		 
 		int index;
 
 		index = get_operation(curr, system_time, &next_time);
@@ -242,7 +240,7 @@ static bool check_gate(struct tsnep_adapter *adapter)
 		next_gate_open =
 			curr->operation[index].properties & TSNEP_GCL_MASK;
 	} else if (curr->change) {
-		/* operation of previous GCL is active */
+		 
 		int index;
 		u64 start_before;
 		u64 n;
@@ -259,14 +257,14 @@ static bool check_gate(struct tsnep_adapter *adapter)
 		     curr->start_time) &&
 		    (curr->start_time - prev->cycle_time_extension <=
 		     system_time)) {
-			/* extend */
+			 
 			index = prev->count - 1;
 		}
 		gate_open = prev->operation[index].properties & TSNEP_GCL_MASK;
 		next_gate_open =
 			curr->operation[0].properties & TSNEP_GCL_MASK;
 	} else {
-		/* GCL is waiting for start */
+		 
 		next_time = curr->start_time;
 		gate_open = 0xFF;
 		next_gate_open = curr->operation[0].properties & TSNEP_GCL_MASK;
@@ -469,14 +467,14 @@ static bool tsnep_test_taprio_change(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to identical */
+	 
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 	delay_base_time(adapter, qopt, 17);
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to same cycle time */
+	 
 	qopt->base_time = ktime_set(0, 0);
 	qopt->entries[0].gate_mask = 0x42;
 	qopt->entries[1].gate_mask = 0x43;
@@ -503,7 +501,7 @@ static bool tsnep_test_taprio_change(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to multiple of cycle time */
+	 
 	qopt->base_time = ktime_set(0, 0);
 	qopt->cycle_time = 200000;
 	qopt->entries[0].gate_mask = 0x79;
@@ -529,7 +527,7 @@ static bool tsnep_test_taprio_change(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to shorter cycle time */
+	 
 	qopt->base_time = ktime_set(0, 0);
 	qopt->cycle_time = 333333;
 	qopt->entries[0].gate_mask = 0x8F;
@@ -553,7 +551,7 @@ static bool tsnep_test_taprio_change(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to longer cycle time */
+	 
 	qopt->base_time = ktime_set(0, 0);
 	qopt->cycle_time = 400000;
 	qopt->entries[0].gate_mask = 0x84;
@@ -622,7 +620,7 @@ static bool tsnep_test_taprio_extension(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to different phase */
+	 
 	qopt->base_time = ktime_set(0, 50000);
 	qopt->entries[0].gate_mask = 0x92;
 	qopt->entries[0].interval = 33000;
@@ -633,7 +631,7 @@ static bool tsnep_test_taprio_extension(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to different phase and longer cycle time */
+	 
 	qopt->base_time = ktime_set(0, 0);
 	qopt->cycle_time = 1000000;
 	qopt->cycle_time_extension = 700000;
@@ -657,7 +655,7 @@ static bool tsnep_test_taprio_extension(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to different phase and shorter cycle time */
+	 
 	qopt->base_time = ktime_set(0, 0);
 	qopt->cycle_time = 1500000;
 	qopt->cycle_time_extension = 700000;
@@ -683,7 +681,7 @@ static bool tsnep_test_taprio_extension(struct tsnep_adapter *adapter)
 	if (!enable_check_taprio(adapter, qopt, 100))
 		goto failed;
 
-	/* change to different cycle time */
+	 
 	qopt->base_time = ktime_set(0, 0);
 	qopt->cycle_time = 1000000;
 	qopt->cycle_time_extension = 700000;
@@ -772,7 +770,7 @@ void tsnep_ethtool_self_test(struct net_device *netdev,
 	eth_test->len = TSNEP_TEST_COUNT;
 
 	if (eth_test->flags != ETH_TEST_FL_OFFLINE) {
-		/* no tests are done online */
+		 
 		data[TSNEP_TEST_ENABLE] = 0;
 		data[TSNEP_TEST_TAPRIO] = 0;
 		data[TSNEP_TEST_TAPRIO_CHANGE] = 0;

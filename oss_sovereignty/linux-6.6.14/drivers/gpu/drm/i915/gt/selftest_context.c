@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "i915_selftest.h"
 #include "intel_engine_heartbeat.h"
@@ -21,7 +19,7 @@ static int request_sync(struct i915_request *rq)
 	intel_timeline_get(tl);
 	i915_request_get(rq);
 
-	/* Opencode i915_request_add() so we can keep the timeline locked. */
+	 
 	__i915_request_commit(rq);
 	rq->sched.attr.priority = I915_PRIORITY_BARRIER;
 	__i915_request_queue_bh(rq);
@@ -67,7 +65,7 @@ static int context_sync(struct intel_context *ce)
 	} while (!err);
 	mutex_unlock(&tl->mutex);
 
-	/* Wait for all barriers to complete (remote CPU) before we check */
+	 
 	i915_active_unlock_wait(&ce->active);
 	return err;
 }
@@ -97,18 +95,7 @@ static int __live_context_size(struct intel_engine_cs *engine)
 		goto err;
 	}
 
-	/*
-	 * Note that execlists also applies a redzone which it checks on
-	 * context unpin when debugging. We are using the same location
-	 * and same poison value so that our checks overlap. Despite the
-	 * redundancy, we want to keep this little selftest so that we
-	 * get coverage of any and all submission backends, and we can
-	 * always extend this test to ensure we trick the HW into a
-	 * compromising position wrt to the various sections that need
-	 * to be written into the context state.
-	 *
-	 * TLDR; this overlaps with the execlists redzone.
-	 */
+	 
 	vaddr += engine->context_size - I915_GTT_PAGE_SIZE;
 	memset(vaddr, POISON_INUSE, I915_GTT_PAGE_SIZE);
 
@@ -123,7 +110,7 @@ static int __live_context_size(struct intel_engine_cs *engine)
 	if (err)
 		goto err_unpin;
 
-	/* Force the context switch */
+	 
 	rq = intel_engine_create_kernel_request(engine);
 	if (IS_ERR(rq)) {
 		err = PTR_ERR(rq);
@@ -152,10 +139,7 @@ static int live_context_size(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Check that our context sizes are correct by seeing if the
-	 * HW tries to write past the end of one.
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		struct file *saved;
@@ -165,16 +149,10 @@ static int live_context_size(void *arg)
 
 		intel_engine_pm_get(engine);
 
-		/*
-		 * Hide the old default state -- we lie about the context size
-		 * and get confused when the default state is smaller than
-		 * expected. For our do nothing request, inheriting the
-		 * active state is sufficient, we are only checking that we
-		 * don't use more than we planned.
-		 */
+		 
 		saved = fetch_and_zero(&engine->default_state);
 
-		/* Overlaps with the execlists redzone */
+		 
 		engine->context_size += I915_GTT_PAGE_SIZE;
 
 		err = __live_context_size(engine);
@@ -199,22 +177,7 @@ static int __live_active_context(struct intel_engine_cs *engine)
 	int pass;
 	int err;
 
-	/*
-	 * We keep active contexts alive until after a subsequent context
-	 * switch as the final write from the context-save will be after
-	 * we retire the final request. We track when we unpin the context,
-	 * under the presumption that the final pin is from the last request,
-	 * and instead of immediately unpinning the context, we add a task
-	 * to unpin the context from the next idle-barrier.
-	 *
-	 * This test makes sure that the context is kept alive until a
-	 * subsequent idle-barrier (emitted when the engine wakeref hits 0
-	 * with no more outstanding requests).
-	 *
-	 * In GuC submission mode we don't use idle barriers and we instead
-	 * get a message from the GuC to signal that it is safe to unpin the
-	 * context from memory.
-	 */
+	 
 	if (intel_engine_uses_guc(engine))
 		return 0;
 
@@ -246,7 +209,7 @@ static int __live_active_context(struct intel_engine_cs *engine)
 		if (err)
 			goto out_engine;
 
-		/* Context will be kept active until after an idle-barrier. */
+		 
 		if (i915_active_is_idle(&ce->active)) {
 			pr_err("context is not active; expected idle-barrier (%s pass %d)\n",
 			       engine->name, pass);
@@ -267,12 +230,12 @@ out_engine:
 			goto err;
 	}
 
-	/* Now make sure our idle-barriers are flushed */
+	 
 	err = intel_engine_flush_barriers(engine);
 	if (err)
 		goto err;
 
-	/* Wait for the barrier and in the process wait for engine to park */
+	 
 	err = context_sync(engine->kernel_context);
 	if (err)
 		goto err;
@@ -358,15 +321,7 @@ static int __live_remote_context(struct intel_engine_cs *engine)
 	int pass;
 	int err;
 
-	/*
-	 * Check that our idle barriers do not interfere with normal
-	 * activity tracking. In particular, check that operating
-	 * on the context image remotely (intel_context_prepare_remote_request),
-	 * which inserts foreign fences into intel_context.active, does not
-	 * clobber the idle-barrier.
-	 *
-	 * In GuC submission mode we don't use idle barriers.
-	 */
+	 
 	if (intel_engine_uses_guc(engine))
 		return 0;
 

@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/******************************************************************************
- * privcmd-buf.c
- *
- * Mmap of hypercall buffers.
- *
- * Copyright (c) 2018 Juergen Gross
- */
+
+ 
 
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 

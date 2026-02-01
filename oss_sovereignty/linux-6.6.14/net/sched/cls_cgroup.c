@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/cls_cgroup.c	Control Group Classifier
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -136,7 +132,7 @@ static void cls_cgroup_destroy(struct tcf_proto *tp, bool rtnl_held,
 {
 	struct cls_cgroup_head *head = rtnl_dereference(tp->root);
 
-	/* Head can still be NULL due to cls_cgroup_init(). */
+	 
 	if (head) {
 		if (tcf_exts_get_net(&head->exts))
 			tcf_queue_work(&head->rwork, cls_cgroup_destroy_work);

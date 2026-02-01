@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power off through MediaTek PMIC
- *
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -40,7 +33,7 @@ static void mt6323_do_pwroff(void)
 	if (ret)
 		dev_err(pwrc->dev, "failed to write BBPU: %d\n", ret);
 
-	/* Wait some time until system down, otherwise, notice with a warn */
+	 
 	mdelay(1000);
 
 	WARN_ONCE(1, "Unable to power off system\n");

@@ -1,44 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * builtin-stat.c
- *
- * Builtin stat command: Give a precise performance counters summary
- * overview about any workload, CPU or specific PID.
- *
- * Sample output:
 
-   $ perf stat ./hackbench 10
-
-  Time: 0.118
-
-  Performance counter stats for './hackbench 10':
-
-       1708.761321 task-clock                #   11.037 CPUs utilized
-            41,190 context-switches          #    0.024 M/sec
-             6,735 CPU-migrations            #    0.004 M/sec
-            17,318 page-faults               #    0.010 M/sec
-     5,205,202,243 cycles                    #    3.046 GHz
-     3,856,436,920 stalled-cycles-frontend   #   74.09% frontend cycles idle
-     1,600,790,871 stalled-cycles-backend    #   30.75% backend  cycles idle
-     2,603,501,247 instructions              #    0.50  insns per cycle
-                                             #    1.48  stalled cycles per insn
-       484,357,498 branches                  #  283.455 M/sec
-         6,388,934 branch-misses             #    1.32% of all branches
-
-        0.154822978  seconds time elapsed
-
- *
- * Copyright (C) 2008-2011, Red Hat Inc, Ingo Molnar <mingo@redhat.com>
- *
- * Improvements and fixes by:
- *
- *   Arjan van de Ven <arjan@linux.intel.com>
- *   Yanmin Zhang <yanmin.zhang@intel.com>
- *   Wu Fengguang <fengguang.wu@intel.com>
- *   Mike Galbraith <efault@gmx.de>
- *   Paul Mackerras <paulus@samba.org>
- *   Jaswinder Singh Rajput <jaswinder@kernel.org>
- */
+ 
 
 #include "builtin.h"
 #include "util/cgroup.h"
@@ -153,7 +114,7 @@ static struct perf_stat_config stat_config = {
 	.aggr_mode		= AGGR_GLOBAL,
 	.aggr_level		= MAX_CACHE_LVL + 1,
 	.scale			= true,
-	.unit_width		= 4, /* strlen("unit") */
+	.unit_width		= 4,  
 	.run_count		= 1,
 	.metric_only_len	= METRIC_ONLY_LEN,
 	.walltime_nsecs_stats	= &walltime_nsecs_stats,
@@ -191,13 +152,13 @@ static void evlist__check_cpu_maps(struct evlist *evlist)
 	evlist__for_each_entry(evlist, evsel) {
 		struct evsel *leader = evsel__leader(evsel);
 
-		/* Check that leader matches cpus with each member. */
+		 
 		if (leader == evsel)
 			continue;
 		if (cpus_map_matched(leader, evsel))
 			continue;
 
-		/* If there's mismatch disable the group and warn user. */
+		 
 		if (warned_leader != leader) {
 			char buf[200];
 
@@ -304,15 +265,12 @@ static int read_single_counter(struct evsel *counter, int cpu_map_idx,
 		case PERF_TOOL_NONE:
 			return evsel__read_counter(counter, cpu_map_idx, thread);
 		case PERF_TOOL_MAX:
-			/* This should never be reached */
+			 
 			return 0;
 	}
 }
 
-/*
- * Read out the results of a single counter:
- * do not aggregate counts across CPUs in system-wide mode
- */
+ 
 static int read_counter_cpu(struct evsel *counter, struct timespec *rs, int cpu_map_idx)
 {
 	int nthreads = perf_thread_map__nr(evsel_list->core.threads);
@@ -326,10 +284,7 @@ static int read_counter_cpu(struct evsel *counter, struct timespec *rs, int cpu_
 
 		count = perf_counts(counter->counts, cpu_map_idx, thread);
 
-		/*
-		 * The leader's group read loads data into its group members
-		 * (via evsel__read_counter()) and sets their count->loaded.
-		 */
+		 
 		if (!perf_counts__is_loaded(counter->counts, cpu_map_idx, thread) &&
 		    read_single_counter(counter, cpu_map_idx, thread, rs)) {
 			counter->counts->scaled = -1;
@@ -491,11 +446,7 @@ static void disable_counters(void)
 {
 	struct evsel *counter;
 
-	/*
-	 * If we don't have tracee (attaching to task or cpu), counters may
-	 * still be running. To get accurate group ratios, we must stop groups
-	 * from counting before reading their constituent counters.
-	 */
+	 
 	if (!target__none(&target)) {
 		evlist__for_each_entry(evsel_list, counter)
 			bpf_counter__disable(counter);
@@ -506,11 +457,7 @@ static void disable_counters(void)
 
 static volatile sig_atomic_t workload_exec_errno;
 
-/*
- * evlist__prepare_workload will send a SIGUSR1
- * if the fork fails, since we asked by setting its
- * want_signal to true.
- */
+ 
 static void workload_exec_failed_signal(int signo __maybe_unused, siginfo_t *info,
 					void *ucontext __maybe_unused)
 {
@@ -610,11 +557,11 @@ static int dispatch_events(bool forks, int timeout, int interval, int *times)
 			break;
 
 		clock_gettime(CLOCK_MONOTONIC, &time_start);
-		if (!(evlist__poll(evsel_list, time_to_sleep) > 0)) { /* poll timeout or EINTR */
+		if (!(evlist__poll(evsel_list, time_to_sleep) > 0)) {  
 			if (timeout || handle_interval(interval, times))
 				break;
 			time_to_sleep = sleep_time;
-		} else { /* fd revent */
+		} else {  
 			process_evlist(evsel_list, interval);
 			clock_gettime(CLOCK_MONOTONIC, &time_stop);
 			compute_tts(&time_start, &time_stop, &time_to_sleep);
@@ -633,10 +580,7 @@ enum counter_recovery {
 static enum counter_recovery stat_handle_error(struct evsel *counter)
 {
 	char msg[BUFSIZ];
-	/*
-	 * PPC returns ENXIO for HW counters until 2.6.37
-	 * (behavior changed with commit b0a873e).
-	 */
+	 
 	if (errno == EINVAL || errno == ENOSYS ||
 	    errno == ENOENT || errno == EOPNOTSUPP ||
 	    errno == ENXIO) {
@@ -644,10 +588,7 @@ static enum counter_recovery stat_handle_error(struct evsel *counter)
 			ui__warning("%s event is not supported by the kernel.\n",
 				    evsel__name(counter));
 		counter->supported = false;
-		/*
-		 * errored is a sticky flag that means one of the counter's
-		 * cpu event had a problem and needs to be reexamined.
-		 */
+		 
 		counter->errored = true;
 
 		if ((evsel__leader(counter) != counter) ||
@@ -660,10 +601,7 @@ static enum counter_recovery stat_handle_error(struct evsel *counter)
 	} else if (target__has_per_thread(&target) &&
 		   evsel_list->core.threads &&
 		   evsel_list->core.threads->err_thread != -1) {
-		/*
-		 * For global --per-thread case, skip current
-		 * error thread.
-		 */
+		 
 		if (!thread_map__remove(evsel_list->core.threads,
 					evsel_list->core.threads->err_thread)) {
 			evsel_list->core.threads->err_thread = -1;
@@ -730,10 +668,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
 	evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
 		counter = evlist_cpu_itr.evsel;
 
-		/*
-		 * bperf calls evsel__open_per_cpu() in bperf__load(), so
-		 * no need to call it again here.
-		 */
+		 
 		if (target.use_bpf)
 			break;
 
@@ -745,13 +680,7 @@ try_again:
 		if (create_perf_stat_counter(counter, &stat_config, &target,
 					     evlist_cpu_itr.cpu_map_idx) < 0) {
 
-			/*
-			 * Weak group failed. We cannot just undo this here
-			 * because earlier CPUs might be in group mode, and the kernel
-			 * doesn't support mixing group and non group reads. Defer
-			 * it to later.
-			 * Don't close here because we're in the wrong affinity.
-			 */
+			 
 			if ((errno == EINVAL || errno == EBADF) &&
 				evsel__leader(counter) != counter &&
 				counter->weak_group) {
@@ -777,12 +706,9 @@ try_again:
 	}
 
 	if (second_pass) {
-		/*
-		 * Now redo all the weak group after closing them,
-		 * and also close errored counters.
-		 */
+		 
 
-		/* First close errored or weak retry */
+		 
 		evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
 			counter = evlist_cpu_itr.evsel;
 
@@ -791,7 +717,7 @@ try_again:
 
 			perf_evsel__close_cpu(&counter->core, evlist_cpu_itr.cpu_map_idx);
 		}
-		/* Now reopen weak */
+		 
 		evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
 			counter = evlist_cpu_itr.evsel;
 
@@ -867,7 +793,7 @@ try_again_reset:
 			return -1;
 	}
 
-	/* Exec the command, if any */
+	 
 	if (forks)
 		evlist__start_workload(evsel_list);
 
@@ -925,19 +851,11 @@ try_again_reset:
 		update_rusage_stats(&ru_stats, &stat_config.ru_data);
 	}
 
-	/*
-	 * Closing a group leader splits the group, and as we only disable
-	 * group leaders, results in remaining events becoming enabled. To
-	 * avoid arbitrary skew, we must read all counters before closing any
-	 * group leaders.
-	 */
+	 
 	if (read_counters(&(struct timespec) { .tv_nsec = t1-t0 }) == 0)
 		process_counters();
 
-	/*
-	 * We need to keep evsel_list alive, because it's processed
-	 * later the evsel_list will be closed after.
-	 */
+	 
 	if (!STAT_RECORD)
 		evlist__close(evsel_list);
 
@@ -972,7 +890,7 @@ static int run_perf_stat(int argc, const char **argv, int run_idx)
 
 static void print_counters(struct timespec *ts, int argc, const char **argv)
 {
-	/* Do not print anything if we record to the pipe. */
+	 
 	if (STAT_RECORD && perf_stat.data.is_pipe)
 		return;
 	if (quiet)
@@ -989,12 +907,7 @@ static void skip_signal(int signo)
 		done = 1;
 
 	signr = signo;
-	/*
-	 * render child_pid harmless
-	 * won't send SIGTERM to a random
-	 * process in case of race condition
-	 * and fast PID recycling
-	 */
+	 
 	child_pid = -1;
 }
 
@@ -1002,12 +915,7 @@ static void sig_atexit(void)
 {
 	sigset_t set, oset;
 
-	/*
-	 * avoid race condition with SIGCHLD handler
-	 * in skip_signal() which is modifying child_pid
-	 * goal is to avoid send SIGTERM to a random
-	 * process
-	 */
+	 
 	sigemptyset(&set);
 	sigaddset(&set, SIGCHLD);
 	sigprocmask(SIG_BLOCK, &set, &oset);
@@ -1119,21 +1027,13 @@ static int parse_cache_level(const struct option *opt,
 	u32 *aggr_mode = (u32 *)opt->value;
 	u32 *aggr_level = (u32 *)opt->data;
 
-	/*
-	 * If no string is specified, aggregate based on the topology of
-	 * Last Level Cache (LLC). Since the LLC level can change from
-	 * architecture to architecture, set level greater than
-	 * MAX_CACHE_LVL which will be interpreted as LLC.
-	 */
+	 
 	if (str == NULL) {
 		level = MAX_CACHE_LVL + 1;
 		goto out;
 	}
 
-	/*
-	 * The format to specify cache level is LX or lX where X is the
-	 * cache level.
-	 */
+	 
 	if (strlen(str) != 2 || (str[0] != 'l' && str[0] != 'L')) {
 		pr_err("Cache level must be of form L[1-%d], or l[1-%d]\n",
 		       MAX_CACHE_LVL,
@@ -1301,39 +1201,25 @@ static struct option stat_options[] = {
 	OPT_END()
 };
 
-/**
- * Calculate the cache instance ID from the map in
- * /sys/devices/system/cpu/cpuX/cache/indexY/shared_cpu_list
- * Cache instance ID is the first CPU reported in the shared_cpu_list file.
- */
+ 
 static int cpu__get_cache_id_from_map(struct perf_cpu cpu, char *map)
 {
 	int id;
 	struct perf_cpu_map *cpu_map = perf_cpu_map__new(map);
 
-	/*
-	 * If the map contains no CPU, consider the current CPU to
-	 * be the first online CPU in the cache domain else use the
-	 * first online CPU of the cache domain as the ID.
-	 */
+	 
 	if (perf_cpu_map__empty(cpu_map))
 		id = cpu.cpu;
 	else
 		id = perf_cpu_map__cpu(cpu_map, 0).cpu;
 
-	/* Free the perf_cpu_map used to find the cache ID */
+	 
 	perf_cpu_map__put(cpu_map);
 
 	return id;
 }
 
-/**
- * cpu__get_cache_id - Returns 0 if successful in populating the
- * cache level and cache id. Cache level is read from
- * /sys/devices/system/cpu/cpuX/cache/indexY/level where as cache instance ID
- * is the first CPU reported by
- * /sys/devices/system/cpu/cpuX/cache/indexY/shared_cpu_list
- */
+ 
 static int cpu__get_cache_details(struct perf_cpu cpu, struct perf_cache *cache)
 {
 	int ret = 0;
@@ -1346,11 +1232,7 @@ static int cpu__get_cache_details(struct perf_cpu cpu, struct perf_cache *cache)
 
 	ret = build_caches_for_cpu(cpu.cpu, caches, &caches_cnt);
 	if (ret) {
-		/*
-		 * If caches_cnt is not 0, cpu_cache_level data
-		 * was allocated when building the topology.
-		 * Free the allocated data before returning.
-		 */
+		 
 		if (caches_cnt)
 			goto free_caches;
 
@@ -1360,10 +1242,7 @@ static int cpu__get_cache_details(struct perf_cpu cpu, struct perf_cache *cache)
 	if (!caches_cnt)
 		return -1;
 
-	/*
-	 * Save the data for the highest level if no
-	 * level was specified by the user.
-	 */
+	 
 	if (cache_level > MAX_CACHE_LVL) {
 		int max_level_index = 0;
 
@@ -1375,7 +1254,7 @@ static int cpu__get_cache_details(struct perf_cpu cpu, struct perf_cache *cache)
 		cache->cache_lvl = caches[max_level_index].level;
 		cache->cache = cpu__get_cache_id_from_map(cpu, caches[max_level_index].map);
 
-		/* Reset i to 0 to free entire caches[] */
+		 
 		i = 0;
 		goto free_caches;
 	}
@@ -1390,21 +1269,14 @@ static int cpu__get_cache_details(struct perf_cpu cpu, struct perf_cache *cache)
 	}
 
 free_caches:
-	/*
-	 * Free all the allocated cpu_cache_level data.
-	 */
+	 
 	while (i < caches_cnt)
 		cpu_cache_level__free(&caches[i++]);
 
 	return ret;
 }
 
-/**
- * aggr_cpu_id__cache - Create an aggr_cpu_id with cache instache ID, cache
- * level, die and socket populated with the cache instache ID, cache level,
- * die and socket for cpu. The function signature is compatible with
- * aggr_cpu_id_get_t.
- */
+ 
 static struct aggr_cpu_id aggr_cpu_id__cache(struct perf_cpu cpu, void *data)
 {
 	int ret;
@@ -1439,43 +1311,43 @@ static const char *const aggr_mode__string[] = {
 static struct aggr_cpu_id perf_stat__get_socket(struct perf_stat_config *config __maybe_unused,
 						struct perf_cpu cpu)
 {
-	return aggr_cpu_id__socket(cpu, /*data=*/NULL);
+	return aggr_cpu_id__socket(cpu,  NULL);
 }
 
 static struct aggr_cpu_id perf_stat__get_die(struct perf_stat_config *config __maybe_unused,
 					     struct perf_cpu cpu)
 {
-	return aggr_cpu_id__die(cpu, /*data=*/NULL);
+	return aggr_cpu_id__die(cpu,  NULL);
 }
 
 static struct aggr_cpu_id perf_stat__get_cache_id(struct perf_stat_config *config __maybe_unused,
 						  struct perf_cpu cpu)
 {
-	return aggr_cpu_id__cache(cpu, /*data=*/NULL);
+	return aggr_cpu_id__cache(cpu,  NULL);
 }
 
 static struct aggr_cpu_id perf_stat__get_core(struct perf_stat_config *config __maybe_unused,
 					      struct perf_cpu cpu)
 {
-	return aggr_cpu_id__core(cpu, /*data=*/NULL);
+	return aggr_cpu_id__core(cpu,  NULL);
 }
 
 static struct aggr_cpu_id perf_stat__get_node(struct perf_stat_config *config __maybe_unused,
 					      struct perf_cpu cpu)
 {
-	return aggr_cpu_id__node(cpu, /*data=*/NULL);
+	return aggr_cpu_id__node(cpu,  NULL);
 }
 
 static struct aggr_cpu_id perf_stat__get_global(struct perf_stat_config *config __maybe_unused,
 						struct perf_cpu cpu)
 {
-	return aggr_cpu_id__global(cpu, /*data=*/NULL);
+	return aggr_cpu_id__global(cpu,  NULL);
 }
 
 static struct aggr_cpu_id perf_stat__get_cpu(struct perf_stat_config *config __maybe_unused,
 					     struct perf_cpu cpu)
 {
-	return aggr_cpu_id__cpu(cpu, /*data=*/NULL);
+	return aggr_cpu_id__cpu(cpu,  NULL);
 }
 
 static struct aggr_cpu_id perf_stat__get_aggr(struct perf_stat_config *config,
@@ -1483,7 +1355,7 @@ static struct aggr_cpu_id perf_stat__get_aggr(struct perf_stat_config *config,
 {
 	struct aggr_cpu_id id;
 
-	/* per-process mode - should use global aggr mode */
+	 
 	if (cpu.cpu == -1)
 		return get_id(config, cpu);
 
@@ -1594,7 +1466,7 @@ static int perf_stat_init_aggr_mode(void)
 	if (get_id) {
 		bool needs_sort = stat_config.aggr_mode != AGGR_NONE;
 		stat_config.aggr_map = cpu_aggr_map__new(evsel_list->core.user_requested_cpus,
-							 get_id, /*data=*/NULL, needs_sort);
+							 get_id,  NULL, needs_sort);
 		if (!stat_config.aggr_map) {
 			pr_err("cannot build %s map\n", aggr_mode__string[stat_config.aggr_mode]);
 			return -1;
@@ -1617,11 +1489,7 @@ static int perf_stat_init_aggr_mode(void)
 		return 0;
 	}
 
-	/*
-	 * The evsel_list->cpus is the base we operate on,
-	 * taking the highest cpu number to be the size of
-	 * the aggregation translate cpumap.
-	 */
+	 
 	if (!perf_cpu_map__empty(evsel_list->core.user_requested_cpus))
 		nr = perf_cpu_map__max(evsel_list->core.user_requested_cpus).cpu;
 	else
@@ -1670,11 +1538,7 @@ static struct aggr_cpu_id perf_env__get_die_aggr_by_cpu(struct perf_cpu cpu, voi
 	struct aggr_cpu_id id = aggr_cpu_id__empty();
 
 	if (cpu.cpu != -1) {
-		/*
-		 * die_id is relative to socket, so start
-		 * with the socket ID and then add die to
-		 * make a unique ID.
-		 */
+		 
 		id.socket = env->cpu[cpu.cpu].socket_id;
 		id.die = env->cpu[cpu.cpu].die_id;
 	}
@@ -1699,11 +1563,7 @@ static void perf_env__get_cache_id_for_cpu(struct perf_cpu cpu, struct perf_env 
 		struct perf_cpu_map *cpu_map;
 		int map_contains_cpu;
 
-		/*
-		 * If user has not specified a level, find the fist level with
-		 * the cpu in the map. Since building the map is expensive, do
-		 * this only if levels match.
-		 */
+		 
 		if (cache_level <= MAX_CACHE_LVL && caches[i].level != cache_level)
 			continue;
 
@@ -1742,11 +1602,7 @@ static struct aggr_cpu_id perf_env__get_core_aggr_by_cpu(struct perf_cpu cpu, vo
 	struct aggr_cpu_id id = aggr_cpu_id__empty();
 
 	if (cpu.cpu != -1) {
-		/*
-		 * core_id is relative to socket and die,
-		 * we need a global id. So we set
-		 * socket, die id and core id
-		 */
+		 
 		id.socket = env->cpu[cpu.cpu].socket_id;
 		id.die = env->cpu[cpu.cpu].die_id;
 		id.core = env->cpu[cpu.cpu].core_id;
@@ -1761,11 +1617,7 @@ static struct aggr_cpu_id perf_env__get_cpu_aggr_by_cpu(struct perf_cpu cpu, voi
 	struct aggr_cpu_id id = aggr_cpu_id__empty();
 
 	if (cpu.cpu != -1) {
-		/*
-		 * core_id is relative to socket and die,
-		 * we need a global id. So we set
-		 * socket, die id and core id
-		 */
+		 
 		id.socket = env->cpu[cpu.cpu].socket_id;
 		id.die = env->cpu[cpu.cpu].die_id;
 		id.core = env->cpu[cpu.cpu].core_id;
@@ -1788,7 +1640,7 @@ static struct aggr_cpu_id perf_env__get_global_aggr_by_cpu(struct perf_cpu cpu _
 {
 	struct aggr_cpu_id id = aggr_cpu_id__empty();
 
-	/* it always aggregates to the cpu 0 */
+	 
 	id.cpu = (struct perf_cpu){ .cpu = 0 };
 	return id;
 }
@@ -1919,10 +1771,7 @@ static int perf_stat_init_aggr_mode_file(struct perf_stat *st)
 	return 0;
 }
 
-/*
- * Add default attributes, if there were no attributes specified or
- * if -d/--detailed, -d -d or -d -d -d is used:
- */
+ 
 static int add_default_attributes(void)
 {
 	struct perf_event_attr default_attrs0[] = {
@@ -1947,9 +1796,7 @@ static int add_default_attributes(void)
 
 };
 
-/*
- * Detailed stats (-d), covering the L1 and last level data caches:
- */
+ 
 	struct perf_event_attr detailed_attrs[] = {
 
   { .type = PERF_TYPE_HW_CACHE,
@@ -1977,9 +1824,7 @@ static int add_default_attributes(void)
 	(PERF_COUNT_HW_CACHE_RESULT_MISS	<< 16)				},
 };
 
-/*
- * Very detailed stats (-d -d), covering the instruction cache and the TLB caches:
- */
+ 
 	struct perf_event_attr very_detailed_attrs[] = {
 
   { .type = PERF_TYPE_HW_CACHE,
@@ -2020,9 +1865,7 @@ static int add_default_attributes(void)
 
 };
 
-/*
- * Very, very detailed stats (-d -d -d), adding prefetch events:
- */
+ 
 	struct perf_event_attr very_very_detailed_attrs[] = {
 
   { .type = PERF_TYPE_HW_CACHE,
@@ -2041,16 +1884,12 @@ static int add_default_attributes(void)
 	struct perf_event_attr default_null_attrs[] = {};
 	const char *pmu = parse_events_option_args.pmu_filter ?: "all";
 
-	/* Set attrs if no event is selected and !null_run: */
+	 
 	if (stat_config.null_run)
 		return 0;
 
 	if (transaction_run) {
-		/* Handle -T as -M transaction. Once platform specific metrics
-		 * support has been added to the json files, all architectures
-		 * will use this approach. To determine transaction support
-		 * on an architecture test for such a metric name.
-		 */
+		 
 		if (!metricgroup__has_metric(pmu, "transaction")) {
 			pr_err("Missing transaction metrics\n");
 			return -1;
@@ -2123,9 +1962,9 @@ static int add_default_attributes(void)
 		str[8] = stat_config.topdown_level + '0';
 		if (metricgroup__parse_groups(evsel_list,
 						pmu, str,
-						/*metric_no_group=*/false,
-						/*metric_no_merge=*/false,
-						/*metric_no_threshold=*/true,
+						 false,
+						 false,
+						 true,
 						stat_config.user_requested_cpu_list,
 						stat_config.system_wide,
 						&stat_config.metric_events) < 0)
@@ -2136,7 +1975,7 @@ static int add_default_attributes(void)
 		stat_config.topdown_level = 1;
 
 	if (!evsel_list->core.nr_entries) {
-		/* No events so add defaults. */
+		 
 		if (target__has_cpu(&target))
 			default_attrs0[0].config = PERF_COUNT_SW_CPU_CLOCK;
 
@@ -2152,10 +1991,7 @@ static int add_default_attributes(void)
 		}
 		if (evlist__add_default_attrs(evsel_list, default_attrs1) < 0)
 			return -1;
-		/*
-		 * Add TopdownL1 metrics if they exist. To minimize
-		 * multiplexing, don't request threshold computation.
-		 */
+		 
 		if (metricgroup__has_metric(pmu, "Default")) {
 			struct evlist *metric_evlist = evlist__new();
 			struct evsel *metric_evsel;
@@ -2164,9 +2000,9 @@ static int add_default_attributes(void)
 				return -1;
 
 			if (metricgroup__parse_groups(metric_evlist, pmu, "Default",
-							/*metric_no_group=*/false,
-							/*metric_no_merge=*/false,
-							/*metric_no_threshold=*/true,
+							 false,
+							 false,
+							 true,
 							stat_config.user_requested_cpu_list,
 							stat_config.system_wide,
 							&stat_config.metric_events) < 0)
@@ -2180,31 +2016,31 @@ static int add_default_attributes(void)
 			evlist__delete(metric_evlist);
 		}
 
-		/* Platform specific attrs */
+		 
 		if (evlist__add_default_attrs(evsel_list, default_null_attrs) < 0)
 			return -1;
 	}
 
-	/* Detailed events get appended to the event list: */
+	 
 
 	if (detailed_run <  1)
 		return 0;
 
-	/* Append detailed run extra attributes: */
+	 
 	if (evlist__add_default_attrs(evsel_list, detailed_attrs) < 0)
 		return -1;
 
 	if (detailed_run < 2)
 		return 0;
 
-	/* Append very detailed run extra attributes: */
+	 
 	if (evlist__add_default_attrs(evsel_list, very_detailed_attrs) < 0)
 		return -1;
 
 	if (detailed_run < 3)
 		return 0;
 
-	/* Append very, very detailed run extra attributes: */
+	 
 	return evlist__add_default_attrs(evsel_list, very_very_detailed_attrs);
 }
 
@@ -2322,7 +2158,7 @@ static int set_maps(struct perf_stat *st)
 
 	perf_evlist__set_maps(&evsel_list->core, st->cpus, st->threads);
 
-	if (evlist__alloc_stats(&stat_config, evsel_list, /*alloc_raw=*/true))
+	if (evlist__alloc_stats(&stat_config, evsel_list,  true))
 		return -ENOMEM;
 
 	st->maps_allocated = true;
@@ -2443,15 +2279,7 @@ static int __cmd_report(int argc, const char **argv)
 
 static void setup_system_wide(int forks)
 {
-	/*
-	 * Make system wide (-a) the default target if
-	 * no target was specified and one of following
-	 * conditions is met:
-	 *
-	 *   - there's no workload specified
-	 *   - there is workload specified but all requested
-	 *     events are system wide events
-	 */
+	 
 	if (!target__none(&target))
 		return;
 
@@ -2493,7 +2321,7 @@ int cmd_stat(int argc, const char **argv)
 
 	parse_events__shrink_config_terms();
 
-	/* String-parsing callback-based options would segfault when negated */
+	 
 	set_option_flag(stat_options, 'e', "event", PARSE_OPT_NONEG);
 	set_option_flag(stat_options, 'M', "metrics", PARSE_OPT_NONEG);
 	set_option_flag(stat_options, 'G', "cgroup", PARSE_OPT_NONEG);
@@ -2519,9 +2347,7 @@ int cmd_stat(int argc, const char **argv)
 	interval = stat_config.interval;
 	timeout = stat_config.timeout;
 
-	/*
-	 * For record command the -o is already taken care of.
-	 */
+	 
 	if (!STAT_RECORD && output_name && strcmp(output_name, "-"))
 		output = NULL;
 
@@ -2587,19 +2413,17 @@ int cmd_stat(int argc, const char **argv)
 
 	stat_config.output = output;
 
-	/*
-	 * let the spreadsheet do the pretty-printing
-	 */
+	 
 	if (stat_config.csv_output) {
-		/* User explicitly passed -B? */
+		 
 		if (big_num_opt == 1) {
 			fprintf(stderr, "-B option not supported with -x\n");
 			parse_options_usage(stat_usage, stat_options, "B", 1);
 			parse_options_usage(NULL, stat_options, "x", 1);
 			goto out;
-		} else /* Nope, so disable big number formatting */
+		} else  
 			stat_config.big_num = false;
-	} else if (big_num_opt == 0) /* User passed --no-big-num */
+	} else if (big_num_opt == 0)  
 		stat_config.big_num = false;
 
 	err = target__validate(&target);
@@ -2610,10 +2434,7 @@ int cmd_stat(int argc, const char **argv)
 
 	setup_system_wide(argc);
 
-	/*
-	 * Display user/system times only for single
-	 * run and when there's specified tracee.
-	 */
+	 
 	if ((stat_config.run_count == 1) && target__none(&target))
 		stat_config.ru_display = true;
 
@@ -2646,10 +2467,7 @@ int cmd_stat(int argc, const char **argv)
 		}
 	}
 
-	/*
-	 * no_aggr, cgroup are for system-wide only
-	 * --per-thread is aggregated per thread, we dont mix it with cpu mode
-	 */
+	 
 	if (((stat_config.aggr_mode != AGGR_GLOBAL &&
 	      stat_config.aggr_mode != AGGR_THREAD) ||
 	     (nr_cgroups || stat_config.cgroup_list)) &&
@@ -2689,10 +2507,7 @@ int cmd_stat(int argc, const char **argv)
 		}
 	}
 
-	/*
-	 * Metric parsing needs to be delayed as metrics may optimize events
-	 * knowing the target is system-wide.
-	 */
+	 
 	if (metrics) {
 		const char *pmu = parse_events_option_args.pmu_filter ?: "all";
 		int ret = metricgroup__parse_groups(evsel_list, pmu, metrics,
@@ -2746,10 +2561,7 @@ int cmd_stat(int argc, const char **argv)
 
 	evlist__check_cpu_maps(evsel_list);
 
-	/*
-	 * Initialize thread_map with comm names,
-	 * so we could print it out on output.
-	 */
+	 
 	if (stat_config.aggr_mode == AGGR_THREAD) {
 		thread_map__read_comms(evsel_list->core.threads);
 	}
@@ -2790,23 +2602,10 @@ int cmd_stat(int argc, const char **argv)
 	if (evlist__alloc_stats(&stat_config, evsel_list, interval))
 		goto out;
 
-	/*
-	 * Set sample_type to PERF_SAMPLE_IDENTIFIER, which should be harmless
-	 * while avoiding that older tools show confusing messages.
-	 *
-	 * However for pipe sessions we need to keep it zero,
-	 * because script's perf_evsel__check_attr is triggered
-	 * by attr->sample_type != 0, and we can't run it on
-	 * stat sessions.
-	 */
+	 
 	stat_config.identifier = !(STAT_RECORD && perf_stat.data.is_pipe);
 
-	/*
-	 * We dont want to block the signals - that would cause
-	 * child tasks to inherit that and Ctrl-C would not work.
-	 * What we want is for Ctrl-C to work in the exec()-ed
-	 * task, but being ignored by perf stat itself:
-	 */
+	 
 	atexit(sig_atexit);
 	if (!forever)
 		signal(SIGINT,  skip_signal);
@@ -2817,7 +2616,7 @@ int cmd_stat(int argc, const char **argv)
 	if (evlist__initialize_ctlfd(evsel_list, stat_config.ctl_fd, stat_config.ctl_fd_ack))
 		goto out;
 
-	/* Enable ignoring missing threads when -p option is defined. */
+	 
 	evlist__first(evsel_list)->ignore_missing_thread = target.pid;
 	status = 0;
 	for (run_idx = 0; forever || run_idx < stat_config.run_count; run_idx++) {
@@ -2844,18 +2643,7 @@ int cmd_stat(int argc, const char **argv)
 	evlist__finalize_ctlfd(evsel_list);
 
 	if (STAT_RECORD) {
-		/*
-		 * We synthesize the kernel mmap record just so that older tools
-		 * don't emit warnings about not being able to resolve symbols
-		 * due to /proc/sys/kernel/kptr_restrict settings and instead provide
-		 * a saner message about no samples being in the perf.data file.
-		 *
-		 * This also serves to suppress a warning about f_header.data.size == 0
-		 * in header.c at the moment 'perf stat record' gets introduced, which
-		 * is not really needed once we start adding the stat specific PERF_RECORD_
-		 * records, but the need to suppress the kptr_restrict messages in older
-		 * tools remain  -acme
-		 */
+		 
 		int fd = perf_data__fd(&perf_stat.data);
 
 		err = perf_event__synthesize_kernel_mmap((void *)&perf_stat,

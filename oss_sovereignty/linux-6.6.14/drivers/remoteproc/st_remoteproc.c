@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST's Remote Processor Control Driver
- *
- * Copyright (C) 2015 STMicroelectronics - All Rights Reserved
- *
- * Author: Ludovic Barre <ludovic.barre@st.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -79,7 +73,7 @@ static void st_rproc_kick(struct rproc *rproc, int vqid)
 	struct device *dev = rproc->dev.parent;
 	int ret;
 
-	/* send the index of the triggered virtqueue in the mailbox payload */
+	 
 	if (WARN_ON(vqid >= ST_RPROC_MAX_VRING))
 		return;
 
@@ -102,7 +96,7 @@ static int st_rproc_mem_alloc(struct rproc *rproc,
 		return -ENOMEM;
 	}
 
-	/* Update memory entry va */
+	 
 	mem->va = va;
 
 	return 0;
@@ -134,9 +128,9 @@ static int st_rproc_parse_fw(struct rproc *rproc, const struct firmware *fw)
 			return -EINVAL;
 		}
 
-		/*  No need to map vdev buffer */
+		 
 		if (strcmp(it.node->name, "vdev0buffer")) {
-			/* Register memory region */
+			 
 			mem = rproc_mem_entry_init(dev, NULL,
 						   (dma_addr_t)rmem->base,
 						   rmem->size, rmem->base,
@@ -144,7 +138,7 @@ static int st_rproc_parse_fw(struct rproc *rproc, const struct firmware *fw)
 						   st_rproc_mem_release,
 						   it.node->name);
 		} else {
-			/* Register reserved memory for vdev buffer allocation */
+			 
 			mem = rproc_of_resm_mem_entry_init(dev, index,
 							   rmem->size,
 							   rmem->base,
@@ -240,9 +234,7 @@ static const struct rproc_ops st_rproc_ops = {
 	.get_boot_addr		= rproc_elf_get_boot_addr,
 };
 
-/*
- * Fetch state of the processor: 0 is off, 1 is on.
- */
+ 
 static int st_rproc_state(struct platform_device *pdev)
 {
 	struct rproc *rproc = platform_get_drvdata(pdev);
@@ -395,10 +387,7 @@ static int st_rproc_probe(struct platform_device *pdev)
 		ddata->mbox_client_vq1.knows_txdone	= false;
 		ddata->mbox_client_vq1.rx_callback	= st_rproc_mbox_callback_vq1;
 
-		/*
-		 * To control a co-processor without IPC mechanism.
-		 * This driver can be used without mbox and rpmsg.
-		 */
+		 
 		chan = mbox_request_channel_byname(&ddata->mbox_client_vq0, "vq0_rx");
 		if (IS_ERR(chan)) {
 			dev_err(&rproc->dev, "failed to request mbox chan 0\n");

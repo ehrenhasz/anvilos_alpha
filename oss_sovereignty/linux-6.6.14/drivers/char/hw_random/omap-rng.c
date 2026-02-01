@@ -1,19 +1,4 @@
-/*
- * omap-rng.c - RNG driver for TI OMAP CPU family
- *
- * Author: Deepak Saxena <dsaxena@plexity.net>
- *
- * Copyright 2005 (c) MontaVista Software, Inc.
- *
- * Mostly based on original driver:
- *
- * Copyright (C) 2005 Nokia Corporation
- * Author: Juha Yrjölä <juha.yrjola@nokia.com>
- *
- * This file is licensed under  the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -64,11 +49,7 @@
 #define OMAP4_RNG_OUTPUT_SIZE			0x8
 #define EIP76_RNG_OUTPUT_SIZE			0x10
 
-/*
- * EIP76 RNG takes approx. 700us to produce 16 bytes of output data
- * as per testing results. And to account for the lack of udelay()'s
- * reliability, we keep the timeout as 1000us.
- */
+ 
 #define RNG_DATA_FILL_TIMEOUT			100
 
 enum {
@@ -133,14 +114,7 @@ static const u16 reg_map_eip76[] = {
 };
 
 struct omap_rng_dev;
-/**
- * struct omap_rng_pdata - RNG IP block-specific data
- * @regs: Pointer to the register offsets structure.
- * @data_size: No. of bytes in RNG output.
- * @data_present: Callback to determine if data is available.
- * @init: Callback for IP specific initialization sequence.
- * @cleanup: Callback for IP specific cleanup sequence.
- */
+ 
 struct omap_rng_pdata {
 	u16	*regs;
 	u32	data_size;
@@ -250,28 +224,22 @@ static int eip76_rng_init(struct omap_rng_dev *priv)
 {
 	u32 val;
 
-	/* Return if RNG is already running. */
+	 
 	if (omap_rng_read(priv, RNG_CONTROL_REG) & RNG_CONTROL_ENABLE_TRNG_MASK)
 		return 0;
 
-	/*  Number of 512 bit blocks of raw Noise Source output data that must
-	 *  be processed by either the Conditioning Function or the
-	 *  SP 800-90 DRBG ‘BC_DF’ functionality to yield a ‘full entropy’
-	 *  output value.
-	 */
+	 
 	val = 0x5 << RNG_CONFIG_MIN_REFIL_CYCLES_SHIFT;
 
-	/* Number of FRO samples that are XOR-ed together into one bit to be
-	 * shifted into the main shift register
-	 */
+	 
 	val |= RNG_CONFIG_MAX_REFIL_CYCLES << RNG_CONFIG_MAX_REFIL_CYCLES_SHIFT;
 	omap_rng_write(priv, RNG_CONFIG_REG, val);
 
-	/* Enable all available FROs */
+	 
 	omap_rng_write(priv, RNG_FRODETUNE_REG, 0x0);
 	omap_rng_write(priv, RNG_FROENABLE_REG, RNG_REG_FROENABLE_MASK);
 
-	/* Enable TRNG */
+	 
 	val = RNG_CONTROL_ENABLE_TRNG_MASK;
 	omap_rng_write(priv, RNG_CONTROL_REG, val);
 
@@ -282,7 +250,7 @@ static int omap4_rng_init(struct omap_rng_dev *priv)
 {
 	u32 val;
 
-	/* Return if RNG is already running. */
+	 
 	if (omap_rng_read(priv, RNG_CONTROL_REG) & RNG_CONTROL_ENABLE_TRNG_MASK)
 		return 0;
 
@@ -317,12 +285,7 @@ static irqreturn_t omap4_rng_irq(int irq, void *dev_id)
 	struct omap_rng_dev *priv = dev_id;
 	u32 fro_detune, fro_enable;
 
-	/*
-	 * Interrupt raised by a fro shutdown threshold, do the following:
-	 * 1. Clear the alarm events.
-	 * 2. De tune the FROs which are shutdown.
-	 * 3. Re enable the shutdown FROs.
-	 */
+	 
 	omap_rng_write(priv, RNG_ALARMMASK_REG, 0x0);
 	omap_rng_write(priv, RNG_ALARMSTOP_REG, 0x0);
 
@@ -397,12 +360,7 @@ static int of_get_omap_rng_device_details(struct omap_rng_dev *priv,
 			return err;
 		}
 
-		/*
-		 * On OMAP4, enabling the shutdown_oflo interrupt is
-		 * done in the interrupt mask register. There is no
-		 * such register on EIP76, and it's enabled by the
-		 * same bit in the control register
-		 */
+		 
 		if (priv->pdata->regs[RNG_INTMASK_REG])
 			omap_rng_write(priv, RNG_INTMASK_REG,
 				       RNG_SHUTDOWN_OFLO_MASK);
@@ -415,7 +373,7 @@ static int of_get_omap_rng_device_details(struct omap_rng_dev *priv,
 
 static int get_omap_rng_device_details(struct omap_rng_dev *omap_rng)
 {
-	/* Only OMAP2/3 can be non-DT */
+	 
 	omap_rng->pdata = &omap2_rng_pdata;
 	return 0;
 }

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  STMicroelectronics STMPE811 IIO ADC Driver
- *
- *  4 channel, 10/12-bit ADC
- *
- *  Copyright (C) 2013-2018 Toradex AG <stefan.agner@toradex.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/err.h>
@@ -49,7 +43,7 @@ struct stmpe_adc {
 	struct device *dev;
 	struct mutex lock;
 
-	/* We are allocating plus one for the temperature channel */
+	 
 	struct iio_chan_spec stmpe_adc_iio_channels[STMPE_ADC_LAST_NR + 2];
 
 	struct completion completion;
@@ -119,10 +113,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
 		return -ETIMEDOUT;
 	}
 
-	/*
-	 * absolute temp = +V3.3 * value /7.51 [K]
-	 * scale to [milli °C]
-	 */
+	 
 	*val = ((449960l * info->value) / 1024l) - 273150;
 
 	mutex_unlock(&info->lock);
@@ -182,17 +173,17 @@ static irqreturn_t stmpe_adc_isr(int irq, void *dev_id)
 
 		int_sta = stmpe_reg_read(info->stmpe, STMPE_REG_ADC_INT_STA);
 
-		/* Is the interrupt relevant */
+		 
 		if (!(int_sta & STMPE_ADC_CH(info->channel)))
 			return IRQ_NONE;
 
-		/* Read value */
+		 
 		stmpe_block_read(info->stmpe,
 			STMPE_REG_ADC_DATA_CH(info->channel), 2, (u8 *) &data);
 
 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA, int_sta);
 	} else if (info->channel == STMPE_TEMP_CHANNEL) {
-		/* Read value */
+		 
 		stmpe_block_read(info->stmpe, STMPE_REG_TEMP_DATA, 2,
 				(u8 *) &data);
 	} else {
@@ -243,7 +234,7 @@ static int stmpe_adc_init_hw(struct stmpe_adc *adc)
 		return ret;
 	}
 
-	/* use temp irq for each conversion completion */
+	 
 	stmpe_reg_write(stmpe, STMPE_REG_TEMP_TH, 0);
 	stmpe_reg_write(stmpe, STMPE_REG_TEMP_TH + 1, 0);
 

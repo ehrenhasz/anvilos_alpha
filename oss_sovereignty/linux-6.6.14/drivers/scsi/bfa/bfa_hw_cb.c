@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
+
+ 
 
 #include "bfad_drv.h"
 #include "bfa_modules.h"
@@ -35,13 +28,7 @@ bfa_hwcb_reqq_ack_msix(struct bfa_s *bfa, int reqq)
 			bfa->iocfc.bfa_regs.intr_status);
 }
 
-/*
- * Actions to respond RME Interrupt for Crossbow ASIC:
- * - Write 1 to Interrupt Status register
- *              INTX - done in bfa_intx()
- *              MSIX - done in bfa_hwcb_rspq_ack_msix()
- * - Update CI (only if new CI)
- */
+ 
 static void
 bfa_hwcb_rspq_ack_msix(struct bfa_s *bfa, int rspq, u32 ci)
 {
@@ -91,17 +78,13 @@ bfa_hwcb_msix_getvecs(struct bfa_s *bfa, u32 *msix_vecs_bmap,
 	*num_vecs = __HFN_NUMINTS;
 }
 
-/*
- * Dummy interrupt handler for handling spurious interrupts.
- */
+ 
 static void
 bfa_hwcb_msix_dummy(struct bfa_s *bfa, int vec)
 {
 }
 
-/*
- * No special setup required for crossbow -- vector assignments are implicit.
- */
+ 
 void
 bfa_hwcb_msix_init(struct bfa_s *bfa, int nvecs)
 {
@@ -159,9 +142,7 @@ bfa_hwcb_msix_uninstall(struct bfa_s *bfa)
 		bfa->msix.handler[i] = bfa_hwcb_msix_dummy;
 }
 
-/*
- * No special enable/disable -- vector assignments are implicit.
- */
+ 
 void
 bfa_hwcb_isr_mode_set(struct bfa_s *bfa, bfa_boolean_t msix)
 {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/module.h>
@@ -24,15 +22,10 @@
 #define RCB_RESET_WAIT_TIMES 30
 #define RCB_RESET_TRY_TIMES 10
 
-/* Because default mtu is 1500, rcb buffer size is set to 2048 enough */
+ 
 #define RCB_DEFAULT_BUFFER_SIZE 2048
 
-/**
- *hns_rcb_wait_fbd_clean - clean fbd
- *@qs: ring struct pointer array
- *@q_num: num of array
- *@flag: tx or rx flag
- */
+ 
 void hns_rcb_wait_fbd_clean(struct hnae_queue **qs, int q_num, u32 flag)
 {
 	int i, wait_cnt;
@@ -81,10 +74,7 @@ int hns_rcb_wait_tx_ring_clean(struct hnae_queue *qs)
 	return 0;
 }
 
-/**
- *hns_rcb_reset_ring_hw - ring reset
- *@q: ring struct pointer
- */
+ 
 void hns_rcb_reset_ring_hw(struct hnae_queue *q)
 {
 	u32 wait_cnt;
@@ -129,12 +119,7 @@ void hns_rcb_reset_ring_hw(struct hnae_queue *q)
 			hns_ae_get_vf_cb(q->handle)->port_index);
 }
 
-/**
- *hns_rcb_int_ctrl_hw - rcb irq enable control
- *@q: hnae queue struct pointer
- *@flag:ring flag tx or rx
- *@mask:mask
- */
+ 
 void hns_rcb_int_ctrl_hw(struct hnae_queue *q, u32 flag, u32 mask)
 {
 	u32 int_mask_en = !!mask;
@@ -185,11 +170,7 @@ void hns_rcbv2_int_clr_hw(struct hnae_queue *q, u32 flag)
 		dsaf_write_dev(q, RCBV2_RX_RING_INT_STS_REG, 1);
 }
 
-/**
- *hns_rcb_ring_enable_hw - enable ring
- *@q: rcb ring
- *@val: value to write
- */
+ 
 void hns_rcb_ring_enable_hw(struct hnae_queue *q, u32 val)
 {
 	dsaf_write_dev(q, RCB_RING_PREFETCH_EN_REG, !!val);
@@ -200,21 +181,15 @@ void hns_rcb_start(struct hnae_queue *q, u32 val)
 	hns_rcb_ring_enable_hw(q, val);
 }
 
-/**
- *hns_rcb_common_init_commit_hw - make rcb common init completed
- *@rcb_common: rcb common device
- */
+ 
 void hns_rcb_common_init_commit_hw(struct rcb_common_cb *rcb_common)
 {
-	wmb();	/* Sync point before breakpoint */
+	wmb();	 
 	dsaf_write_dev(rcb_common, RCB_COM_CFG_SYS_FSH_REG, 1);
-	wmb();	/* Sync point after breakpoint */
+	wmb();	 
 }
 
-/* hns_rcb_set_tx_ring_bs - init rcb ring buf size regester
- *@q: hnae_queue
- *@buf_size: buffer size set to hw
- */
+ 
 void hns_rcb_set_tx_ring_bs(struct hnae_queue *q, u32 buf_size)
 {
 	u32 bd_size_type = hns_rcb_buf_size2type(buf_size);
@@ -223,10 +198,7 @@ void hns_rcb_set_tx_ring_bs(struct hnae_queue *q, u32 buf_size)
 		       bd_size_type);
 }
 
-/* hns_rcb_set_rx_ring_bs - init rcb ring buf size regester
- *@q: hnae_queue
- *@buf_size: buffer size set to hw
- */
+ 
 void hns_rcb_set_rx_ring_bs(struct hnae_queue *q, u32 buf_size)
 {
 	u32 bd_size_type = hns_rcb_buf_size2type(buf_size);
@@ -235,11 +207,7 @@ void hns_rcb_set_rx_ring_bs(struct hnae_queue *q, u32 buf_size)
 		       bd_size_type);
 }
 
-/**
- *hns_rcb_ring_init - init rcb ring
- *@ring_pair: ring pair control block
- *@ring_type: ring type, RX_RING or TX_RING
- */
+ 
 static void hns_rcb_ring_init(struct ring_pair_cb *ring_pair, int ring_type)
 {
 	struct hnae_queue *q = &ring_pair->q;
@@ -274,22 +242,14 @@ static void hns_rcb_ring_init(struct ring_pair_cb *ring_pair, int ring_type)
 	}
 }
 
-/**
- *hns_rcb_init_hw - init rcb hardware
- *@ring: rcb ring
- */
+ 
 void hns_rcb_init_hw(struct ring_pair_cb *ring)
 {
 	hns_rcb_ring_init(ring, RX_RING);
 	hns_rcb_ring_init(ring, TX_RING);
 }
 
-/**
- *hns_rcb_set_port_desc_cnt - set rcb port description num
- *@rcb_common: rcb_common device
- *@port_idx:port index
- *@desc_cnt:BD num
- */
+ 
 static void hns_rcb_set_port_desc_cnt(struct rcb_common_cb *rcb_common,
 				      u32 port_idx, u32 desc_cnt)
 {
@@ -331,14 +291,14 @@ static int hns_rcb_common_get_port_num(struct rcb_common_cb *rcb_common)
 		return HNS_RCB_DEBUG_NW_ENGINE_NUM;
 }
 
-/*clr rcb comm exception irq**/
+ 
 static void hns_rcb_comm_exc_irq_en(
 			struct rcb_common_cb *rcb_common, int en)
 {
 	u32 clr_vlue = 0xfffffffful;
 	u32 msk_vlue = en ? 0 : 0xfffffffful;
 
-	/* clr int*/
+	 
 	dsaf_write_dev(rcb_common, RCB_COM_INTSTS_ECC_ERR_REG, clr_vlue);
 
 	dsaf_write_dev(rcb_common, RCB_COM_SF_CFG_RING_STS, clr_vlue);
@@ -348,23 +308,19 @@ static void hns_rcb_comm_exc_irq_en(
 	dsaf_write_dev(rcb_common, RCB_COM_RINT_TX_PKT_REG, clr_vlue);
 	dsaf_write_dev(rcb_common, RCB_COM_AXI_ERR_STS, clr_vlue);
 
-	/*en msk*/
+	 
 	dsaf_write_dev(rcb_common, RCB_COM_INTMASK_ECC_ERR_REG, msk_vlue);
 
 	dsaf_write_dev(rcb_common, RCB_COM_SF_CFG_INTMASK_RING, msk_vlue);
 
-	/*for tx bd neednot cacheline, so msk sf_txring_fbd_intmask (bit 1)**/
+	 
 	dsaf_write_dev(rcb_common, RCB_COM_SF_CFG_INTMASK_BD, msk_vlue | 2);
 
 	dsaf_write_dev(rcb_common, RCB_COM_INTMSK_TX_PKT_REG, msk_vlue);
 	dsaf_write_dev(rcb_common, RCB_COM_AXI_WR_ERR_INTMASK, msk_vlue);
 }
 
-/**
- *hns_rcb_common_init_hw - init rcb common hardware
- *@rcb_common: rcb_common device
- *retuen 0 - success , negative --fail
- */
+ 
 int hns_rcb_common_init_hw(struct rcb_common_cb *rcb_common)
 {
 	u32 reg_val;
@@ -504,10 +460,7 @@ static int hns_rcb_get_base_irq_idx(struct rcb_common_cb *rcb_common)
 
 #define RCB_COMM_BASE_TO_RING_BASE(base, ringid)\
 	((base) + 0x10000 + HNS_RCB_REG_OFFSET * (ringid))
-/**
- *hns_rcb_get_cfg - get rcb config
- *@rcb_common: rcb common device
- */
+ 
 int hns_rcb_get_cfg(struct rcb_common_cb *rcb_common)
 {
 	struct ring_pair_cb *ring_pair_cb;
@@ -545,26 +498,14 @@ int hns_rcb_get_cfg(struct rcb_common_cb *rcb_common)
 	return 0;
 }
 
-/**
- *hns_rcb_get_rx_coalesced_frames - get rcb port rx coalesced frames
- *@rcb_common: rcb_common device
- *@port_idx:port id in comm
- *
- *Returns: coalesced_frames
- */
+ 
 u32 hns_rcb_get_rx_coalesced_frames(
 	struct rcb_common_cb *rcb_common, u32 port_idx)
 {
 	return dsaf_read_dev(rcb_common, RCB_CFG_PKTLINE_REG + port_idx * 4);
 }
 
-/**
- *hns_rcb_get_tx_coalesced_frames - get rcb port tx coalesced frames
- *@rcb_common: rcb_common device
- *@port_idx:port id in comm
- *
- *Returns: coalesced_frames
- */
+ 
 u32 hns_rcb_get_tx_coalesced_frames(
 	struct rcb_common_cb *rcb_common, u32 port_idx)
 {
@@ -574,13 +515,7 @@ u32 hns_rcb_get_tx_coalesced_frames(
 	return dsaf_read_dev(rcb_common, reg);
 }
 
-/**
- *hns_rcb_get_coalesce_usecs - get rcb port coalesced time_out
- *@rcb_common: rcb_common device
- *@port_idx:port id in comm
- *
- *Returns: time_out
- */
+ 
 u32 hns_rcb_get_coalesce_usecs(
 	struct rcb_common_cb *rcb_common, u32 port_idx)
 {
@@ -592,15 +527,7 @@ u32 hns_rcb_get_coalesce_usecs(
 				     RCB_PORT_CFG_OVERTIME_REG + port_idx * 4);
 }
 
-/**
- *hns_rcb_set_coalesce_usecs - set rcb port coalesced time_out
- *@rcb_common: rcb_common device
- *@port_idx:port id in comm
- *@timeout:tx/rx time for coalesced time_out
- *
- * Returns:
- * Zero for success, or an error code in case of failure
- */
+ 
 int hns_rcb_set_coalesce_usecs(
 	struct rcb_common_cb *rcb_common, u32 port_idx, u32 timeout)
 {
@@ -625,15 +552,7 @@ int hns_rcb_set_coalesce_usecs(
 	return 0;
 }
 
-/**
- *hns_rcb_set_tx_coalesced_frames - set rcb coalesced frames
- *@rcb_common: rcb_common device
- *@port_idx:port id in comm
- *@coalesced_frames:tx/rx BD num for coalesced frames
- *
- * Returns:
- * Zero for success, or an error code in case of failure
- */
+ 
 int hns_rcb_set_tx_coalesced_frames(
 	struct rcb_common_cb *rcb_common, u32 port_idx, u32 coalesced_frames)
 {
@@ -655,15 +574,7 @@ int hns_rcb_set_tx_coalesced_frames(
 	return 0;
 }
 
-/**
- *hns_rcb_set_rx_coalesced_frames - set rcb rx coalesced frames
- *@rcb_common: rcb_common device
- *@port_idx:port id in comm
- *@coalesced_frames:tx/rx BD num for coalesced frames
- *
- * Returns:
- * Zero for success, or an error code in case of failure
- */
+ 
 int hns_rcb_set_rx_coalesced_frames(
 	struct rcb_common_cb *rcb_common, u32 port_idx, u32 coalesced_frames)
 {
@@ -686,13 +597,7 @@ int hns_rcb_set_rx_coalesced_frames(
 	return 0;
 }
 
-/**
- *hns_rcb_get_queue_mode - get max VM number and max ring number per VM
- *						accordding to dsaf mode
- *@dsaf_mode: dsaf mode
- *@max_vfn : max vfn number
- *@max_q_per_vf:max ring number per vm
- */
+ 
 void hns_rcb_get_queue_mode(enum dsaf_mode dsaf_mode, u16 *max_vfn,
 			    u16 *max_q_per_vf)
 {
@@ -839,11 +744,7 @@ void hns_rcb_update_stats(struct hnae_queue *queue)
 			 PPE_COM_HIS_TX_PKT_QID_ERR_CNT_REG + 4 * ring->index);
 }
 
-/**
- *hns_rcb_get_stats - get rcb statistic
- *@queue: rcb ring
- *@data:statistic value
- */
+ 
 void hns_rcb_get_stats(struct hnae_queue *queue, u64 *data)
 {
 	u64 *regs_buff = data;
@@ -886,11 +787,7 @@ void hns_rcb_get_stats(struct hnae_queue *queue, u64 *data)
 	regs_buff[27] = queue->rx_ring.stats.l3l4_csum_err;
 }
 
-/**
- *hns_rcb_get_ring_sset_count - rcb string set count
- *@stringset:ethtool cmd
- *return rcb ring string set count
- */
+ 
 int hns_rcb_get_ring_sset_count(int stringset)
 {
 	if (stringset == ETH_SS_STATS)
@@ -899,30 +796,19 @@ int hns_rcb_get_ring_sset_count(int stringset)
 	return 0;
 }
 
-/**
- *hns_rcb_get_common_regs_count - rcb common regs count
- *return regs count
- */
+ 
 int hns_rcb_get_common_regs_count(void)
 {
 	return HNS_RCB_COMMON_DUMP_REG_NUM;
 }
 
-/**
- *hns_rcb_get_ring_regs_count - rcb ring regs count
- *return regs count
- */
+ 
 int hns_rcb_get_ring_regs_count(void)
 {
 	return HNS_RCB_RING_DUMP_REG_NUM;
 }
 
-/**
- *hns_rcb_get_strings - get rcb string set
- *@stringset:string set index
- *@data:strings name value
- *@index:queue index
- */
+ 
 void hns_rcb_get_strings(int stringset, u8 *data, int index)
 {
 	u8 *buff = data;
@@ -972,7 +858,7 @@ void hns_rcb_get_common_regs(struct rcb_common_cb *rcb_com, void *data)
 	u32 reg_num_tmp;
 	u32 i;
 
-	/*rcb common registers */
+	 
 	regs[0] = dsaf_read_dev(rcb_com, RCB_COM_CFG_ENDIAN_REG);
 	regs[1] = dsaf_read_dev(rcb_com, RCB_COM_CFG_SYS_FSH_REG);
 	regs[2] = dsaf_read_dev(rcb_com, RCB_COM_CFG_INIT_FLAG_REG);
@@ -1015,8 +901,8 @@ void hns_rcb_get_common_regs(struct rcb_common_cb *rcb_com, void *data)
 	regs[36] = dsaf_read_dev(rcb_com, RCB_COM_AXI_ERR_STS);
 	regs[37] = dsaf_read_dev(rcb_com, RCB_COM_CHK_TX_FBD_NUM_REG);
 
-	/* rcb common entry registers */
-	for (i = 0; i < 16; i++) { /* total 16 model registers */
+	 
+	for (i = 0; i < 16; i++) {  
 		regs[38 + i]
 			= dsaf_read_dev(rcb_com, RCB_CFG_BD_NUM_REG + 4 * i);
 		regs[54 + i]
@@ -1031,7 +917,7 @@ void hns_rcb_get_common_regs(struct rcb_common_cb *rcb_com, void *data)
 	regs[76] = dsaf_read_dev(rcb_com, RCB_CFG_PKTLINE_INT_NUM_REG);
 	regs[77] = dsaf_read_dev(rcb_com, RCB_CFG_OVERTIME_INT_NUM_REG);
 
-	/* mark end of rcb common regs */
+	 
 	for (i = 78; i < 80; i++)
 		regs[i] = 0xcccccccc;
 }
@@ -1043,7 +929,7 @@ void hns_rcb_get_ring_regs(struct hnae_queue *queue, void *data)
 		= container_of(queue, struct ring_pair_cb, q);
 	u32 i;
 
-	/*rcb ring registers */
+	 
 	regs[0] = dsaf_read_dev(queue, RCB_RING_RX_RING_BASEADDR_L_REG);
 	regs[1] = dsaf_read_dev(queue, RCB_RING_RX_RING_BASEADDR_H_REG);
 	regs[2] = dsaf_read_dev(queue, RCB_RING_RX_RING_BD_NUM_REG);
@@ -1082,7 +968,7 @@ void hns_rcb_get_ring_regs(struct hnae_queue *queue, void *data)
 	regs[33] = dsaf_read_dev(queue, RCB_RING_INTMSK_TX_OVERTIME_REG);
 	regs[34] = dsaf_read_dev(queue, RCB_RING_INTSTS_TX_OVERTIME_REG);
 
-	/* mark end of ring regs */
+	 
 	for (i = 35; i < 40; i++)
 		regs[i] = 0xcccccc00 + ring_pair->index;
 }

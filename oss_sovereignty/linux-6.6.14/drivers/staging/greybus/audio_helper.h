@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus Audio Sound SoC helper APIs
- */
+ 
+ 
 
 #ifndef __LINUX_GBAUDIO_HELPER_H
 #define __LINUX_GBAUDIO_HELPER_H

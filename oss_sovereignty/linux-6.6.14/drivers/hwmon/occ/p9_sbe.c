@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright IBM Corp 2019
+
+
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -23,7 +23,7 @@ struct p9_sbe_occ {
 	void *ffdc;
 	size_t ffdc_len;
 	size_t ffdc_size;
-	struct mutex sbe_error_lock;	/* lock access to ffdc data */
+	struct mutex sbe_error_lock;	 
 	struct device *sbe;
 };
 
@@ -148,12 +148,12 @@ static int p9_sbe_occ_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, occ);
 
 	occ->powr_sample_time_us = 500;
-	occ->poll_cmd_data = 0x20;		/* P9 OCC poll data */
+	occ->poll_cmd_data = 0x20;		 
 	occ->send_cmd = p9_sbe_occ_send_cmd;
 
 	rc = occ_setup(occ);
 	if (rc == -ESHUTDOWN)
-		rc = -ENODEV;	/* Host is shutdown, don't spew errors */
+		rc = -ENODEV;	 
 
 	if (!rc) {
 		rc = device_create_bin_file(occ->bus_dev, &bin_attr_ffdc);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2021, Maxim Integrated
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -95,7 +95,7 @@ static int max98520_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 			   MAX98520_PCM_MODE_CFG_PCM_BCLKEDGE,
 			   invert);
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		format = MAX98520_PCM_FORMAT_I2S;
@@ -121,7 +121,7 @@ static int max98520_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 	return 0;
 }
 
-/* BCLKs per LRCLK */
+ 
 static const int bclk_sel_table[] = {
 	32, 48, 64, 96, 128, 192, 256, 384, 512, 320,
 };
@@ -129,7 +129,7 @@ static const int bclk_sel_table[] = {
 static int max98520_get_bclk_sel(int bclk)
 {
 	int i;
-	/* match BCLKs per LRCLK */
+	 
 	for (i = 0; i < ARRAY_SIZE(bclk_sel_table); i++) {
 		if (bclk_sel_table[i] == bclk)
 			return i + 2;
@@ -142,12 +142,12 @@ static int max98520_set_clock(struct snd_soc_component *component,
 {
 	struct max98520_priv *max98520 =
 		snd_soc_component_get_drvdata(component);
-	/* BCLK/LRCLK ratio calculation */
+	 
 	int blr_clk_ratio = params_channels(params) * max98520->ch_size;
 	int value;
 
 	if (!max98520->tdm_mode) {
-		/* BCLK configuration */
+		 
 		value = max98520_get_bclk_sel(blr_clk_ratio);
 		if (!value) {
 			dev_err(component->dev, "format unsupported %d\n",
@@ -174,7 +174,7 @@ static int max98520_dai_hw_params(struct snd_pcm_substream *substream,
 	unsigned int sampling_rate = 0;
 	unsigned int chan_sz = 0;
 
-	/* pcm mode configuration */
+	 
 	switch (snd_pcm_format_width(params_format(params))) {
 	case 16:
 		chan_sz = MAX98520_PCM_MODE_CFG_CHANSZ_16;
@@ -200,7 +200,7 @@ static int max98520_dai_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(component->dev, "format supported %d",
 		params_format(params));
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 8000:
 		sampling_rate = MAX98520_PCM_SR_8000;
@@ -249,7 +249,7 @@ static int max98520_dai_hw_params(struct snd_pcm_substream *substream,
 
 	dev_dbg(component->dev, " %s ch_size: %d, sampling rate : %d out\n", __func__,
 		snd_pcm_format_width(params_format(params)), params_rate(params));
-	/* set DAI_SR to correct LRCLK frequency */
+	 
 	regmap_update_bits(max98520->regmap,
 			   MAX98520_R2042_PCM_SR_SETUP,
 			   MAX98520_PCM_SR_MASK,
@@ -276,7 +276,7 @@ static int max98520_dai_tdm_slot(struct snd_soc_dai *dai,
 	else
 		max98520->tdm_mode = true;
 
-	/* BCLK configuration */
+	 
 	bsel = max98520_get_bclk_sel(slots * slot_width);
 	if (bsel == 0) {
 		dev_err(component->dev, "BCLK %d not supported\n",
@@ -289,7 +289,7 @@ static int max98520_dai_tdm_slot(struct snd_soc_dai *dai,
 			   MAX98520_PCM_CLK_SETUP_BSEL_MASK,
 			   bsel);
 
-	/* Channel size configuration */
+	 
 	switch (slot_width) {
 	case 16:
 		chan_sz = MAX98520_PCM_MODE_CFG_CHANSZ_16;
@@ -310,7 +310,7 @@ static int max98520_dai_tdm_slot(struct snd_soc_dai *dai,
 			   MAX98520_R2040_PCM_MODE_CFG,
 			   MAX98520_PCM_MODE_CFG_CHANSZ_MASK, chan_sz);
 
-	/* Rx slot configuration */
+	 
 	regmap_update_bits(max98520->regmap,
 			   MAX98520_R2044_PCM_RX_SRC2,
 			   MAX98520_PCM_DMIX_CH0_SRC_MASK,
@@ -417,11 +417,11 @@ static const struct snd_soc_dapm_widget max98520_dapm_widgets[] = {
 	SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
 	SND_SOC_DAPM_MUX("DAI Sel Mux", SND_SOC_NOPM, 0, 0,	&max98520_dai_controls),
 	SND_SOC_DAPM_OUTPUT("BE_OUT"),
-	/* Left Input Selection */
+	 
 	SND_SOC_DAPM_MIXER("Left Input Selection", SND_SOC_NOPM, 0, 0,
 			   &max98520_left_input_mixer_controls[0],
 			   ARRAY_SIZE(max98520_left_input_mixer_controls)),
-	/* Right Input Selection */
+	 
 	SND_SOC_DAPM_MIXER("Right Input Selection", SND_SOC_NOPM, 0, 0,
 			   &max98520_right_input_mixer_controls[0],
 			   ARRAY_SIZE(max98520_right_input_mixer_controls)),
@@ -515,35 +515,35 @@ static bool max98520_volatile_reg(struct device *dev, unsigned int reg)
 }
 
 static const struct snd_kcontrol_new max98520_snd_controls[] = {
-/* Volume */
+ 
 SOC_SINGLE_TLV("Digital Volume", MAX98520_R2090_AMP_VOL_CTRL,
 	       0, 0x7F, 1, max98520_digital_tlv),
 SOC_SINGLE_TLV("Speaker Volume", MAX98520_R2091_AMP_PATH_GAIN,
 	       0, 0x5, 0, max98520_spk_tlv),
-/* Volume Ramp Up/Down Enable*/
+ 
 SOC_SINGLE("Ramp Up Switch", MAX98520_R2092_AMP_DSP_CFG,
 	   MAX98520_DSP_SPK_VOL_RMPUP_SHIFT, 1, 0),
 SOC_SINGLE("Ramp Down Switch", MAX98520_R2092_AMP_DSP_CFG,
 	   MAX98520_DSP_SPK_VOL_RMPDN_SHIFT, 1, 0),
-/* Clock Monitor Enable */
+ 
 SOC_SINGLE("CLK Monitor Switch", MAX98520_R2037_ERR_MON_CTRL,
 	   MAX98520_CTRL_CMON_EN_SHIFT, 1, 0),
-/* Clock Monitor Config */
+ 
 SOC_SINGLE("CLKMON Autorestart Switch", MAX98520_R2030_CLK_MON_CTRL,
 	   MAX98520_CMON_AUTORESTART_SHIFT, 1, 0),
-/* Dither Enable */
+ 
 SOC_SINGLE("Dither Switch", MAX98520_R2092_AMP_DSP_CFG,
 	   MAX98520_DSP_SPK_DITH_EN_SHIFT, 1, 0),
-/* DC Blocker Enable */
+ 
 SOC_SINGLE("DC Blocker Switch", MAX98520_R2092_AMP_DSP_CFG,
 	   MAX98520_DSP_SPK_DCBLK_EN_SHIFT, 1, 0),
-/* Speaker Safe Mode Enable */
+ 
 SOC_SINGLE("Speaker Safemode Switch", MAX98520_R2092_AMP_DSP_CFG,
 	   MAX98520_DSP_SPK_SAFE_EN_SHIFT, 1, 0),
-/* AMP SSM Enable */
+ 
 SOC_SINGLE("CP Bypass Switch", MAX98520_R2094_SSM_CFG,
 	   MAX98520_SSM_RCVR_MODE_SHIFT, 1, 0),
-/* Dynamic Headroom Tracking */
+ 
 SOC_SINGLE("DHT Switch", MAX98520_R20D8_DHT_EN, 0, 1, 0),
 SOC_SINGLE("DHT Limiter Mode", MAX98520_R20D2_LIMITER_CFG2,
 	   MAX98520_DHT_LIMITER_MODE_SHIFT, 1, 0),
@@ -561,7 +561,7 @@ SOC_SINGLE_TLV("DHT Hysteresis", MAX98520_R20D6_DHT_HYSTERESIS_CFG,
 	       MAX98520_DHT_HYSTERESIS_SHIFT, 0x7, 0, max98520_dht_hysteresis_tlv),
 SOC_ENUM("DHT Attack Rate", max98520_dht_attack_rate_enum),
 SOC_ENUM("DHT Release Rate", max98520_dht_release_rate_enum),
-/* ADC configuration */
+ 
 SOC_SINGLE("ADC PVDD CH Switch", MAX98520_R20CF_MEAS_ADC_CFG, 0, 1, 0),
 SOC_SINGLE("ADC PVDD FLT Switch", MAX98520_R20B2_ADC_PVDD0_CFG,	MAX98520_FLT_EN_SHIFT, 1, 0),
 SOC_SINGLE("ADC TEMP FLT Switch", MAX98520_R20B3_ADC_THERMAL_CFG, MAX98520_FLT_EN_SHIFT, 1, 0),
@@ -572,7 +572,7 @@ SOC_SINGLE("ADC TEMP LSB", MAX98520_R20B9_ADC_TEMP_READBACK_LSB, 0, 0x01, 0),
 };
 
 static const struct snd_soc_dapm_route max98520_audio_map[] = {
-	/* Plabyack */
+	 
 	{"DAI Sel Mux", "Left", "Amp Enable"},
 	{"DAI Sel Mux", "Right", "Amp Enable"},
 	{"DAI Sel Mux", "LeftRight", "Amp Enable"},
@@ -599,22 +599,22 @@ static int max98520_probe(struct snd_soc_component *component)
 	struct max98520_priv *max98520 =
 		snd_soc_component_get_drvdata(component);
 
-	/* Software Reset */
+	 
 	regmap_write(max98520->regmap, MAX98520_R2000_SW_RESET, 1);
 
-	/* L/R mono mix configuration : "DAI Sel" for 0x2043 */
+	 
 	regmap_write(max98520->regmap, MAX98520_R2043_PCM_RX_SRC1, 0x2);
 
-	/* PCM input channles configuration : "Left Input Selection" for 0x2044 */
-	/* PCM input channles configuration : "Right Input Selection" for 0x2044 */
+	 
+	 
 	regmap_write(max98520->regmap, MAX98520_R2044_PCM_RX_SRC2, 0x10);
 
-	/* Enable DC blocker */
+	 
 	regmap_update_bits(max98520->regmap, MAX98520_R2092_AMP_DSP_CFG, 1, 1);
-	/* Enable Clock Monitor Auto-restart */
+	 
 	regmap_write(max98520->regmap, MAX98520_R2030_CLK_MON_CTRL, 0x1);
 
-	/* set Rx Enable */
+	 
 	regmap_update_bits(max98520->regmap,
 			   MAX98520_R204F_PCM_RX_EN,
 			   MAX98520_PCM_RX_EN_MASK,
@@ -696,7 +696,7 @@ static int max98520_i2c_probe(struct i2c_client *i2c)
 
 	i2c_set_clientdata(i2c, max98520);
 
-	/* regmap initialization */
+	 
 	max98520->regmap = devm_regmap_init_i2c(i2c, &max98520_regmap);
 	if (IS_ERR(max98520->regmap)) {
 		ret = PTR_ERR(max98520->regmap);
@@ -704,7 +704,7 @@ static int max98520_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Power on device */
+	 
 	max98520->reset_gpio = devm_gpiod_get_optional(&i2c->dev, "reset", GPIOD_OUT_HIGH);
 	if (max98520->reset_gpio) {
 		if (IS_ERR(max98520->reset_gpio)) {
@@ -716,7 +716,7 @@ static int max98520_i2c_probe(struct i2c_client *i2c)
 		max98520_power_on(max98520, 1);
 	}
 
-	/* Check Revision ID */
+	 
 	ret = regmap_read(max98520->regmap, MAX98520_R21FF_REVISION_ID, &reg);
 	if (ret < 0) {
 		dev_err(&i2c->dev,
@@ -725,7 +725,7 @@ static int max98520_i2c_probe(struct i2c_client *i2c)
 	}
 	dev_info(&i2c->dev, "MAX98520 revisionID: 0x%02X\n", reg);
 
-	/* codec registration */
+	 
 	ret = devm_snd_soc_register_component(&i2c->dev,
 					      &soc_codec_dev_max98520,
 						  max98520_dai, ARRAY_SIZE(max98520_dai));

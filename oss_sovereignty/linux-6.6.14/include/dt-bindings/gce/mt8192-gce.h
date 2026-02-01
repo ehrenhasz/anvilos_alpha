@@ -1,17 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Yongqiang Niu <yongqiang.niu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_GCE_MT8192_H
 #define _DT_BINDINGS_GCE_MT8192_H
 
-/* assign timeout 0 also means default */
+ 
 #define CMDQ_NO_TIMEOUT		0xffffffff
 #define CMDQ_TIMEOUT_DEFAULT	1000
 
-/* GCE thread priority */
+ 
 #define CMDQ_THR_PRIO_LOWEST	0
 #define CMDQ_THR_PRIO_1		1
 #define CMDQ_THR_PRIO_2		2
@@ -21,10 +18,10 @@
 #define CMDQ_THR_PRIO_6		6
 #define CMDQ_THR_PRIO_HIGHEST	7
 
-/* CPR count in 32bit register */
+ 
 #define GCE_CPR_COUNT		1312
 
-/* GCE subsys table */
+ 
 #define SUBSYS_1300XXXX		0
 #define SUBSYS_1400XXXX		1
 #define SUBSYS_1401XXXX		2

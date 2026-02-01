@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2013,2018,2020-2021 Intel Corporation
+
+
 
 #include <linux/bitops.h>
 #include <linux/dmaengine.h>
@@ -51,7 +51,7 @@ static void idma32_initialize_chan_xbar(struct dw_dma_chan *dwc)
 	u8 dst_id, src_id;
 	u32 value;
 
-	/* DMA Channel ID Configuration register must be programmed first */
+	 
 	value = readl(misc + DMA_REGACCESS_CHID_CFG);
 
 	value &= ~REGACCESS_CHID_MASK;
@@ -59,7 +59,7 @@ static void idma32_initialize_chan_xbar(struct dw_dma_chan *dwc)
 
 	writel(value, misc + DMA_REGACCESS_CHID_CFG);
 
-	/* Configure channel attributes */
+	 
 	value = readl(misc + DMA_CTL_CH(dwc->chan.chan_id));
 
 	value &= ~(CTL_CH_RD_NON_SNOOP_BIT | CTL_CH_WR_NON_SNOOP_BIT);
@@ -76,21 +76,16 @@ static void idma32_initialize_chan_xbar(struct dw_dma_chan *dwc)
 		value |= CTL_CH_RD_NON_SNOOP_BIT;
 		break;
 	default:
-		/*
-		 * Memory-to-Memory and Device-to-Device are ignored for now.
-		 *
-		 * For Memory-to-Memory transfers we would need to set mode
-		 * and disable snooping on both sides.
-		 */
+		 
 		return;
 	}
 
 	writel(value, misc + DMA_CTL_CH(dwc->chan.chan_id));
 
-	/* Configure crossbar selection */
+	 
 	value = readl(misc + DMA_XBAR_SEL(dwc->chan.chan_id));
 
-	/* DEVFN selection */
+	 
 	value &= ~XBAR_SEL_DEVID_MASK;
 	value |= idma32_get_slave_devfn(dwc);
 
@@ -102,13 +97,13 @@ static void idma32_initialize_chan_xbar(struct dw_dma_chan *dwc)
 		value &= ~XBAR_SEL_RX_TX_BIT;
 		break;
 	default:
-		/* Memory-to-Memory and Device-to-Device are ignored for now */
+		 
 		return;
 	}
 
 	writel(value, misc + DMA_XBAR_SEL(dwc->chan.chan_id));
 
-	/* Configure DMA channel low and high registers */
+	 
 	switch (dwc->direction) {
 	case DMA_MEM_TO_DEV:
 		dst_id = dwc->chan.chan_id;
@@ -119,18 +114,18 @@ static void idma32_initialize_chan_xbar(struct dw_dma_chan *dwc)
 		src_id = dwc->chan.chan_id;
 		break;
 	default:
-		/* Memory-to-Memory and Device-to-Device are ignored for now */
+		 
 		return;
 	}
 
-	/* Set default burst alignment */
+	 
 	cfglo |= IDMA32C_CFGL_DST_BURST_ALIGN | IDMA32C_CFGL_SRC_BURST_ALIGN;
 
-	/* Low 4 bits of the request lines */
+	 
 	cfghi |= IDMA32C_CFGH_DST_PER(dst_id & 0xf);
 	cfghi |= IDMA32C_CFGH_SRC_PER(src_id & 0xf);
 
-	/* Request line extension (2 bits) */
+	 
 	cfghi |= IDMA32C_CFGH_DST_PER_EXT(dst_id >> 4 & 0x3);
 	cfghi |= IDMA32C_CFGH_SRC_PER_EXT(src_id >> 4 & 0x3);
 
@@ -143,14 +138,14 @@ static void idma32_initialize_chan_generic(struct dw_dma_chan *dwc)
 	u32 cfghi = 0;
 	u32 cfglo = 0;
 
-	/* Set default burst alignment */
+	 
 	cfglo |= IDMA32C_CFGL_DST_BURST_ALIGN | IDMA32C_CFGL_SRC_BURST_ALIGN;
 
-	/* Low 4 bits of the request lines */
+	 
 	cfghi |= IDMA32C_CFGH_DST_PER(dwc->dws.dst_id & 0xf);
 	cfghi |= IDMA32C_CFGH_SRC_PER(dwc->dws.src_id & 0xf);
 
-	/* Request line extension (2 bits) */
+	 
 	cfghi |= IDMA32C_CFGH_DST_PER_EXT(dwc->dws.dst_id >> 4 & 0x3);
 	cfghi |= IDMA32C_CFGH_SRC_PER_EXT(dwc->dws.src_id >> 4 & 0x3);
 
@@ -219,25 +214,20 @@ static void idma32_set_device_name(struct dw_dma *dw, int id)
 	snprintf(dw->name, sizeof(dw->name), "idma32:dmac%d", id);
 }
 
-/*
- * Program FIFO size of channels.
- *
- * By default full FIFO (512 bytes) is assigned to channel 0. Here we
- * slice FIFO on equal parts between channels.
- */
+ 
 static void idma32_fifo_partition(struct dw_dma *dw)
 {
 	u64 value = IDMA32C_FP_PSIZE_CH0(64) | IDMA32C_FP_PSIZE_CH1(64) |
 		    IDMA32C_FP_UPDATE;
 	u64 fifo_partition = 0;
 
-	/* Fill FIFO_PARTITION low bits (Channels 0..1, 4..5) */
+	 
 	fifo_partition |= value << 0;
 
-	/* Fill FIFO_PARTITION high bits (Channels 2..3, 6..7) */
+	 
 	fifo_partition |= value << 32;
 
-	/* Program FIFO Partition registers - 64 bytes per channel */
+	 
 	idma32_writeq(dw, FIFO_PARTITION1, fifo_partition);
 	idma32_writeq(dw, FIFO_PARTITION0, fifo_partition);
 }
@@ -262,7 +252,7 @@ int idma32_dma_probe(struct dw_dma_chip *chip)
 	if (!dw)
 		return -ENOMEM;
 
-	/* Channel operations */
+	 
 	if (chip->pdata->quirks & DW_DMA_QUIRK_XBAR_PRESENT)
 		dw->initialize_chan = idma32_initialize_chan_xbar;
 	else
@@ -274,7 +264,7 @@ int idma32_dma_probe(struct dw_dma_chip *chip)
 	dw->bytes2block = idma32_bytes2block;
 	dw->block2bytes = idma32_block2bytes;
 
-	/* Device operations */
+	 
 	dw->set_device_name = idma32_set_device_name;
 	dw->disable = idma32_disable;
 	dw->enable = idma32_enable;

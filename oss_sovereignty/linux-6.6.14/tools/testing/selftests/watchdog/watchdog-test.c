@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-* Watchdog Driver Test Program
-* - Tests all ioctls
-* - Tests Magic Close - CONFIG_WATCHDOG_NOWAYOUT
-* - Could be tested against softdog driver on systems that
-*   don't have watchdog hardware.
-* - TODO:
-* - Enhance test to add coverage for WDIOC_GETTEMP.
-*
-* Reference: Documentation/watchdog/watchdog-api.rst
- */
+
+ 
 
 #include <errno.h>
 #include <stdio.h>
@@ -45,11 +35,7 @@ static const struct option lopts[] = {
 	{NULL,                  no_argument, NULL, 0x0}
 };
 
-/*
- * This function simply sends an IOCTL to the driver, which in turn ticks
- * the PC Watchdog card to reset its internal timer so it doesn't trigger
- * a computer reset.
- */
+ 
 static void keep_alive(void)
 {
 	int dummy;
@@ -60,10 +46,7 @@ static void keep_alive(void)
 		printf(".");
 }
 
-/*
- * The main program.  Run the program with "-d" to disable the card,
- * or "-e" to enable the card.
- */
+ 
 
 static void term(int sig)
 {
@@ -199,9 +182,7 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	/*
-	 * Validate that `file` is a watchdog device
-	 */
+	 
 	ret = ioctl(fd, WDIOC_GETSUPPORT, &info);
 	if (ret) {
 		printf("WDIOC_GETSUPPORT error '%s'\n", strerror(errno));
@@ -308,13 +289,10 @@ int main(int argc, char *argv[])
 				printf("WDIOC_GETTIMELEFT error '%s'\n", strerror(errno));
 			break;
 		case 'f':
-			/* Handled above */
+			 
 			break;
 		case 'i':
-			/*
-			 * watchdog_info was obtained as part of file open
-			 * validation. So we just show it here.
-			 */
+			 
 			oneshot = 1;
 			printf("watchdog_info:\n");
 			printf(" identity:\t\t%s\n", info.identity);
@@ -341,10 +319,7 @@ int main(int argc, char *argv[])
 		sleep(ping_rate);
 	}
 end:
-	/*
-	 * Send specific magic character 'V' just in case Magic Close is
-	 * enabled to ensure watchdog gets disabled on close.
-	 */
+	 
 	ret = write(fd, &v, 1);
 	if (ret < 0)
 		printf("Stopping watchdog ticks failed (%d)...\n", errno);

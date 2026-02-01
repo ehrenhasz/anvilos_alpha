@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <linux/tick.h>
 #include <linux/percpu-defs.h>
@@ -43,7 +43,7 @@ static void xen_vcpu_notify_restore(void *data)
 	if (xen_pv_domain() && boot_cpu_has(X86_FEATURE_SPEC_CTRL))
 		wrmsrl(MSR_IA32_SPEC_CTRL, this_cpu_read(spec_ctrl));
 
-	/* Boot processor notified via generic timekeeping_resume() */
+	 
 	if (smp_processor_id() == 0)
 		return;
 

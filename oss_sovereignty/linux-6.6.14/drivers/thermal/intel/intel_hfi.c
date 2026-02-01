@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hardware Feedback Interface Driver
- *
- * Copyright (c) 2021, Intel Corporation.
- *
- * Authors: Aubrey Li <aubrey.li@linux.intel.com>
- *          Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
- *
- *
- * The Hardware Feedback Interface provides a performance and energy efficiency
- * capability information for each CPU in the system. Depending on the processor
- * model, hardware may periodically update these capabilities as a result of
- * changes in the operating conditions (e.g., power limits or thermal
- * constraints). On other processor models, there is a single HFI update
- * at boot.
- *
- * This file provides functionality to process HFI updates and relay these
- * updates to userspace.
- */
+
+ 
 
 #define pr_fmt(fmt)  "intel-hfi: " fmt
 
@@ -45,11 +27,11 @@
 
 #include "../thermal_netlink.h"
 
-/* Hardware Feedback Interface MSR configuration bits */
+ 
 #define HW_FEEDBACK_PTR_VALID_BIT		BIT(0)
 #define HW_FEEDBACK_CONFIG_HFI_ENABLE_BIT	BIT(0)
 
-/* CPUID detection and enumeration definitions for HFI */
+ 
 
 #define CPUID_HFI_LEAF 6
 
@@ -72,46 +54,19 @@ union cpuid6_edx {
 	u32 full;
 };
 
-/**
- * struct hfi_cpu_data - HFI capabilities per CPU
- * @perf_cap:		Performance capability
- * @ee_cap:		Energy efficiency capability
- *
- * Capabilities of a logical processor in the HFI table. These capabilities are
- * unitless.
- */
+ 
 struct hfi_cpu_data {
 	u8	perf_cap;
 	u8	ee_cap;
 } __packed;
 
-/**
- * struct hfi_hdr - Header of the HFI table
- * @perf_updated:	Hardware updated performance capabilities
- * @ee_updated:		Hardware updated energy efficiency capabilities
- *
- * Properties of the data in an HFI table.
- */
+ 
 struct hfi_hdr {
 	u8	perf_updated;
 	u8	ee_updated;
 } __packed;
 
-/**
- * struct hfi_instance - Representation of an HFI instance (i.e., a table)
- * @local_table:	Base of the local copy of the HFI table
- * @timestamp:		Timestamp of the last update of the local table.
- *			Located at the base of the local table.
- * @hdr:		Base address of the header of the local table
- * @data:		Base address of the data of the local table
- * @cpus:		CPUs represented in this HFI table instance
- * @hw_table:		Pointer to the HFI table of this instance
- * @update_work:	Delayed work to process HFI updates
- * @table_lock:		Lock to protect acceses to the table of this instance
- * @event_lock:		Lock to process HFI interrupts
- *
- * A set of parameters to parse and navigate a specific HFI table.
- */
+ 
 struct hfi_instance {
 	union {
 		void			*local_table;
@@ -126,28 +81,14 @@ struct hfi_instance {
 	raw_spinlock_t		event_lock;
 };
 
-/**
- * struct hfi_features - Supported HFI features
- * @nr_table_pages:	Size of the HFI table in 4KB pages
- * @cpu_stride:		Stride size to locate the capability data of a logical
- *			processor within the table (i.e., row stride)
- * @hdr_size:		Size of the table header
- *
- * Parameters and supported features that are common to all HFI instances
- */
+ 
 struct hfi_features {
 	size_t		nr_table_pages;
 	unsigned int	cpu_stride;
 	unsigned int	hdr_size;
 };
 
-/**
- * struct hfi_cpu_info - Per-CPU attributes to consume HFI data
- * @index:		Row of this CPU in its HFI table
- * @hfi_instance:	Attributes of the HFI table to which this CPU belongs
- *
- * Parameters to link a logical processor to an HFI table and a row within it.
- */
+ 
 struct hfi_cpu_info {
 	s16			index;
 	struct hfi_instance	*hfi_instance;
@@ -179,10 +120,7 @@ static void get_hfi_caps(struct hfi_instance *hfi_instance,
 		caps = hfi_instance->data + index * hfi_features.cpu_stride;
 		cpu_caps[i].cpu = cpu;
 
-		/*
-		 * Scale performance and energy efficiency to
-		 * the [0, 1023] interval that thermal netlink uses.
-		 */
+		 
 		cpu_caps[i].performance = caps->perf_cap << 2;
 		cpu_caps[i].efficiency = caps->ee_cap << 2;
 
@@ -191,20 +129,18 @@ static void get_hfi_caps(struct hfi_instance *hfi_instance,
 	raw_spin_unlock_irq(&hfi_instance->table_lock);
 }
 
-/*
- * Call update_capabilities() when there are changes in the HFI table.
- */
+ 
 static void update_capabilities(struct hfi_instance *hfi_instance)
 {
 	struct thermal_genl_cpu_caps *cpu_caps;
 	int i = 0, cpu_count;
 
-	/* CPUs may come online/offline while processing an HFI update. */
+	 
 	mutex_lock(&hfi_instance_lock);
 
 	cpu_count = cpumask_weight(hfi_instance->cpus);
 
-	/* No CPUs to report in this hfi_instance. */
+	 
 	if (!cpu_count)
 		goto out;
 
@@ -217,7 +153,7 @@ static void update_capabilities(struct hfi_instance *hfi_instance)
 	if (cpu_count < HFI_MAX_THERM_NOTIFY_COUNT)
 		goto last_cmd;
 
-	/* Process complete chunks of HFI_MAX_THERM_NOTIFY_COUNT capabilities. */
+	 
 	for (i = 0;
 	     (i + HFI_MAX_THERM_NOTIFY_COUNT) <= cpu_count;
 	     i += HFI_MAX_THERM_NOTIFY_COUNT)
@@ -227,7 +163,7 @@ static void update_capabilities(struct hfi_instance *hfi_instance)
 	cpu_count = cpu_count - i;
 
 last_cmd:
-	/* Process the remaining capabilities if any. */
+	 
 	if (cpu_count)
 		thermal_genl_cpu_capability_event(cpu_count, &cpu_caps[i]);
 
@@ -260,23 +196,14 @@ void intel_hfi_process_event(__u64 pkg_therm_status_msr_val)
 	if (!info)
 		return;
 
-	/*
-	 * A CPU is linked to its HFI instance before the thermal vector in the
-	 * local APIC is unmasked. Hence, info->hfi_instance cannot be NULL
-	 * when receiving an HFI event.
-	 */
+	 
 	hfi_instance = info->hfi_instance;
 	if (unlikely(!hfi_instance)) {
 		pr_debug("Received event on CPU %d but instance was null", cpu);
 		return;
 	}
 
-	/*
-	 * On most systems, all CPUs in the package receive a package-level
-	 * thermal interrupt when there is an HFI update. It is sufficient to
-	 * let a single CPU to acknowledge the update and queue work to
-	 * process it. The remaining CPUs can resume their work.
-	 */
+	 
 	if (!raw_spin_trylock(&hfi_instance->event_lock))
 		return;
 
@@ -287,11 +214,7 @@ void intel_hfi_process_event(__u64 pkg_therm_status_msr_val)
 		return;
 	}
 
-	/*
-	 * Ack duplicate update. Since there is an active HFI
-	 * status from HW, it must be a new event, not a case
-	 * where a lagging CPU entered the locked region.
-	 */
+	 
 	new_timestamp = *(u64 *)hfi_instance->hw_table;
 	if (*hfi_instance->timestamp == new_timestamp) {
 		thermal_clear_package_intr_status(PACKAGE_LEVEL, PACKAGE_THERM_STATUS_HFI_UPDATED);
@@ -301,17 +224,11 @@ void intel_hfi_process_event(__u64 pkg_therm_status_msr_val)
 
 	raw_spin_lock(&hfi_instance->table_lock);
 
-	/*
-	 * Copy the updated table into our local copy. This includes the new
-	 * timestamp.
-	 */
+	 
 	memcpy(hfi_instance->local_table, hfi_instance->hw_table,
 	       hfi_features.nr_table_pages << PAGE_SHIFT);
 
-	/*
-	 * Let hardware know that we are done reading the HFI table and it is
-	 * free to update it again.
-	 */
+	 
 	thermal_clear_package_intr_status(PACKAGE_LEVEL, PACKAGE_THERM_STATUS_HFI_UPDATED);
 
 	raw_spin_unlock(&hfi_instance->table_lock);
@@ -325,7 +242,7 @@ static void init_hfi_cpu_index(struct hfi_cpu_info *info)
 {
 	union cpuid6_edx edx;
 
-	/* Do not re-read @cpu's index if it has already been initialized. */
+	 
 	if (info->index > -1)
 		return;
 
@@ -333,33 +250,18 @@ static void init_hfi_cpu_index(struct hfi_cpu_info *info)
 	info->index = edx.split.index;
 }
 
-/*
- * The format of the HFI table depends on the number of capabilities that the
- * hardware supports. Keep a data structure to navigate the table.
- */
+ 
 static void init_hfi_instance(struct hfi_instance *hfi_instance)
 {
-	/* The HFI header is below the time-stamp. */
+	 
 	hfi_instance->hdr = hfi_instance->local_table +
 			    sizeof(*hfi_instance->timestamp);
 
-	/* The HFI data starts below the header. */
+	 
 	hfi_instance->data = hfi_instance->hdr + hfi_features.hdr_size;
 }
 
-/**
- * intel_hfi_online() - Enable HFI on @cpu
- * @cpu:	CPU in which the HFI will be enabled
- *
- * Enable the HFI to be used in @cpu. The HFI is enabled at the die/package
- * level. The first CPU in the die/package to come online does the full HFI
- * initialization. Subsequent CPUs will just link themselves to the HFI
- * instance of their die/package.
- *
- * This function is called before enabling the thermal vector in the local APIC
- * in order to ensure that @cpu has an associated HFI instance when it receives
- * an HFI event.
- */
+ 
 void intel_hfi_online(unsigned int cpu)
 {
 	struct hfi_instance *hfi_instance;
@@ -368,14 +270,11 @@ void intel_hfi_online(unsigned int cpu)
 	u64 msr_val;
 	u16 die_id;
 
-	/* Nothing to do if hfi_instances are missing. */
+	 
 	if (!hfi_instances)
 		return;
 
-	/*
-	 * Link @cpu to the HFI instance of its package/die. It does not
-	 * matter whether the instance has been initialized.
-	 */
+	 
 	info = &per_cpu(hfi_cpu_info, cpu);
 	die_id = topology_logical_die_id(cpu);
 	hfi_instance = info->hfi_instance;
@@ -389,21 +288,14 @@ void intel_hfi_online(unsigned int cpu)
 
 	init_hfi_cpu_index(info);
 
-	/*
-	 * Now check if the HFI instance of the package/die of @cpu has been
-	 * initialized (by checking its header). In such case, all we have to
-	 * do is to add @cpu to this instance's cpumask.
-	 */
+	 
 	mutex_lock(&hfi_instance_lock);
 	if (hfi_instance->hdr) {
 		cpumask_set_cpu(cpu, hfi_instance->cpus);
 		goto unlock;
 	}
 
-	/*
-	 * Hardware is programmed with the physical address of the first page
-	 * frame of the table. Hence, the allocated memory must be page-aligned.
-	 */
+	 
 	hfi_instance->hw_table = alloc_pages_exact(hfi_features.nr_table_pages,
 						   GFP_KERNEL | __GFP_ZERO);
 	if (!hfi_instance->hw_table)
@@ -411,22 +303,13 @@ void intel_hfi_online(unsigned int cpu)
 
 	hw_table_pa = virt_to_phys(hfi_instance->hw_table);
 
-	/*
-	 * Allocate memory to keep a local copy of the table that
-	 * hardware generates.
-	 */
+	 
 	hfi_instance->local_table = kzalloc(hfi_features.nr_table_pages << PAGE_SHIFT,
 					    GFP_KERNEL);
 	if (!hfi_instance->local_table)
 		goto free_hw_table;
 
-	/*
-	 * Program the address of the feedback table of this die/package. On
-	 * some processors, hardware remembers the old address of the HFI table
-	 * even after having been reprogrammed and re-enabled. Thus, do not free
-	 * the pages allocated for the table or reprogram the hardware with a
-	 * new base address. Namely, program the hardware only once.
-	 */
+	 
 	msr_val = hw_table_pa | HW_FEEDBACK_PTR_VALID_BIT;
 	wrmsrl(MSR_IA32_HW_FEEDBACK_PTR, msr_val);
 
@@ -438,10 +321,7 @@ void intel_hfi_online(unsigned int cpu)
 
 	cpumask_set_cpu(cpu, hfi_instance->cpus);
 
-	/*
-	 * Enable the hardware feedback interface and never disable it. See
-	 * comment on programming the address of the table.
-	 */
+	 
 	rdmsrl(MSR_IA32_HW_FEEDBACK_CONFIG, msr_val);
 	msr_val |= HW_FEEDBACK_CONFIG_HFI_ENABLE_BIT;
 	wrmsrl(MSR_IA32_HW_FEEDBACK_CONFIG, msr_val);
@@ -455,26 +335,13 @@ free_hw_table:
 	goto unlock;
 }
 
-/**
- * intel_hfi_offline() - Disable HFI on @cpu
- * @cpu:	CPU in which the HFI will be disabled
- *
- * Remove @cpu from those covered by its HFI instance.
- *
- * On some processors, hardware remembers previous programming settings even
- * after being reprogrammed. Thus, keep HFI enabled even if all CPUs in the
- * die/package of @cpu are offline. See note in intel_hfi_online().
- */
+ 
 void intel_hfi_offline(unsigned int cpu)
 {
 	struct hfi_cpu_info *info = &per_cpu(hfi_cpu_info, cpu);
 	struct hfi_instance *hfi_instance;
 
-	/*
-	 * Check if @cpu as an associated, initialized (i.e., with a non-NULL
-	 * header). Also, HFI instances are only initialized if X86_FEATURE_HFI
-	 * is present.
-	 */
+	 
 	hfi_instance = info->hfi_instance;
 	if (!hfi_instance)
 		return;
@@ -495,10 +362,7 @@ static __init int hfi_parse_features(void)
 	if (!boot_cpu_has(X86_FEATURE_HFI))
 		return -ENODEV;
 
-	/*
-	 * If we are here we know that CPUID_HFI_LEAF exists. Parse the
-	 * supported capabilities and the size of the HFI table.
-	 */
+	 
 	edx.full = cpuid_edx(CPUID_HFI_LEAF);
 
 	if (!edx.split.capabilities.split.performance) {
@@ -506,27 +370,17 @@ static __init int hfi_parse_features(void)
 		return -ENODEV;
 	}
 
-	/*
-	 * The number of supported capabilities determines the number of
-	 * columns in the HFI table. Exclude the reserved bits.
-	 */
+	 
 	edx.split.capabilities.split.__reserved = 0;
 	nr_capabilities = hweight8(edx.split.capabilities.bits);
 
-	/* The number of 4KB pages required by the table */
+	 
 	hfi_features.nr_table_pages = edx.split.table_pages + 1;
 
-	/*
-	 * The header contains change indications for each supported feature.
-	 * The size of the table header is rounded up to be a multiple of 8
-	 * bytes.
-	 */
+	 
 	hfi_features.hdr_size = DIV_ROUND_UP(nr_capabilities, 8) * 8;
 
-	/*
-	 * Data of each logical processor is also rounded up to be a multiple
-	 * of 8 bytes.
-	 */
+	 
 	hfi_features.cpu_stride = DIV_ROUND_UP(nr_capabilities, 8) * 8;
 
 	return 0;
@@ -540,14 +394,11 @@ void __init intel_hfi_init(void)
 	if (hfi_parse_features())
 		return;
 
-	/* There is one HFI instance per die/package. */
+	 
 	max_hfi_instances = topology_max_packages() *
 			    topology_max_die_per_package();
 
-	/*
-	 * This allocation may fail. CPU hotplug callbacks must check
-	 * for a null pointer.
-	 */
+	 
 	hfi_instances = kcalloc(max_hfi_instances, sizeof(*hfi_instances),
 				GFP_KERNEL);
 	if (!hfi_instances)

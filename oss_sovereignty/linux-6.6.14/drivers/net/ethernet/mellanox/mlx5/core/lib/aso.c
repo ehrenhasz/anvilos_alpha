@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <linux/mlx5/device.h>
 #include <linux/mlx5/transobj.h>
@@ -8,31 +8,31 @@
 #include "wq.h"
 
 struct mlx5_aso_cq {
-	/* data path - accessed per cqe */
+	 
 	struct mlx5_cqwq           wq;
 
-	/* data path - accessed per napi poll */
+	 
 	struct mlx5_core_cq        mcq;
 
-	/* control */
+	 
 	struct mlx5_core_dev      *mdev;
 	struct mlx5_wq_ctrl        wq_ctrl;
 } ____cacheline_aligned_in_smp;
 
 struct mlx5_aso {
-	/* data path */
+	 
 	u16                        cc;
 	u16                        pc;
 
 	struct mlx5_wqe_ctrl_seg  *doorbell_cseg;
 	struct mlx5_aso_cq         cq;
 
-	/* read only */
+	 
 	struct mlx5_wq_cyc         wq;
 	void __iomem              *uar_map;
 	u32                        sqn;
 
-	/* control path */
+	 
 	struct mlx5_wq_ctrl        wq_ctrl;
 
 } ____cacheline_aligned_in_smp;
@@ -368,7 +368,7 @@ void mlx5_aso_post_wqe(struct mlx5_aso *aso, bool with_data,
 		       struct mlx5_wqe_ctrl_seg *doorbell_cseg)
 {
 	doorbell_cseg->fm_ce_se |= MLX5_WQE_CTRL_CQ_UPDATE;
-	/* ensure wqe is visible to device before updating doorbell record */
+	 
 	dma_wmb();
 
 	if (with_data)
@@ -377,14 +377,12 @@ void mlx5_aso_post_wqe(struct mlx5_aso *aso, bool with_data,
 		aso->pc += MLX5_ASO_WQEBBS;
 	*aso->wq.db = cpu_to_be32(aso->pc);
 
-	/* ensure doorbell record is visible to device before ringing the
-	 * doorbell
-	 */
+	 
 	wmb();
 
 	mlx5_write64((__be32 *)doorbell_cseg, aso->uar_map);
 
-	/* Ensure doorbell is written on uar_page before poll_cq */
+	 
 	WRITE_ONCE(doorbell_cseg, NULL);
 }
 
@@ -397,9 +395,7 @@ int mlx5_aso_poll_cq(struct mlx5_aso *aso, bool with_data)
 	if (!cqe)
 		return -ETIMEDOUT;
 
-	/* sq->cc must be updated only after mlx5_cqwq_update_db_record(),
-	 * otherwise a cq overrun may occur
-	 */
+	 
 	mlx5_cqwq_pop(&cq->wq);
 
 	if (unlikely(get_cqe_opcode(cqe) != MLX5_CQE_REQ)) {
@@ -420,7 +416,7 @@ int mlx5_aso_poll_cq(struct mlx5_aso *aso, bool with_data)
 
 	mlx5_cqwq_update_db_record(&cq->wq);
 
-	/* ensure cq space is freed before enabling more cqes */
+	 
 	wmb();
 
 	if (with_data)

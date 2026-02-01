@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2021 Broadcom Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -72,7 +65,7 @@ static int bnxt_ptp_settime(struct ptp_clock_info *ptp_info,
 	return 0;
 }
 
-/* Caller holds ptp_lock */
+ 
 static int bnxt_refclk_read(struct bnxt *bp, struct ptp_system_timestamp *sts,
 			    u64 *ns)
 {
@@ -158,7 +151,7 @@ static int bnxt_ptp_gettimex(struct ptp_clock_info *ptp_info,
 	return 0;
 }
 
-/* Caller holds ptp_lock */
+ 
 void bnxt_ptp_update_current_time(struct bnxt *bp)
 {
 	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
@@ -445,7 +438,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info *ptp_info,
 
 	switch (rq->type) {
 	case PTP_CLK_REQ_EXTTS:
-		/* Configure an External PPS IN */
+		 
 		pin_id = ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS,
 				      rq->extts.index);
 		if (!TSIO_PIN_VALID(pin_id))
@@ -460,7 +453,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info *ptp_info,
 			ptp->pps_info.pins[pin_id].event = BNXT_PPS_EVENT_EXTERNAL;
 		return rc;
 	case PTP_CLK_REQ_PEROUT:
-		/* Configure a Periodic PPS OUT */
+		 
 		pin_id = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT,
 				      rq->perout.index);
 		if (!TSIO_PIN_VALID(pin_id))
@@ -474,7 +467,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info *ptp_info,
 
 		return rc;
 	case PTP_CLK_REQ_PPS:
-		/* Configure PHC PPS IN */
+		 
 		rc = bnxt_ptp_cfg_pin(bp, 0, BNXT_PPS_PIN_PPS_IN);
 		if (rc)
 			return rc;
@@ -776,7 +769,7 @@ static int bnxt_ptp_verify(struct ptp_clock_info *ptp_info, unsigned int pin,
 {
 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
 						ptp_info);
-	/* Allow only PPS pin function configuration */
+	 
 	if (ptp->pps_info.pins[pin].usage <= BNXT_PPS_PIN_PPS_OUT &&
 	    func != PTP_PF_PHYSYNC)
 		return 0;
@@ -794,7 +787,7 @@ static int bnxt_ptp_pps_init(struct bnxt *bp)
 	u8 *pin_usg;
 	u32 i, rc;
 
-	/* Query current/default PIN CFG */
+	 
 	rc = hwrm_req_init(bp, req, HWRM_FUNC_PTP_PIN_QCFG);
 	if (rc)
 		return rc;
@@ -818,7 +811,7 @@ static int bnxt_ptp_pps_init(struct bnxt *bp)
 		return -ENOMEM;
 	}
 
-	/* Report the TSIO capability to kernel */
+	 
 	pin_usg = &resp->pin0_usage;
 	for (i = 0; i < pps_info->num_pins; i++, pin_usg++) {
 		snprintf(ptp_info->pin_config[i].name,
@@ -836,7 +829,7 @@ static int bnxt_ptp_pps_init(struct bnxt *bp)
 	}
 	hwrm_req_drop(bp, req);
 
-	/* Only 1 each of ext_ts and per_out pins is available in HW */
+	 
 	ptp_info->n_ext_ts = 1;
 	ptp_info->n_per_out = 1;
 	ptp_info->pps = 1;
@@ -861,7 +854,7 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
 		ptp->cc.read = bnxt_cc_read;
 		ptp->cc.mask = CYCLECOUNTER_MASK(48);
 		if (BNXT_MH(bp)) {
-			/* Use timecounter based non-real time mode */
+			 
 			ptp->cc.shift = BNXT_CYCLES_SHIFT;
 			ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
 			ptp->cmult = ptp->cc.mult;
@@ -875,11 +868,11 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
 		timecounter_init(&ptp->tc, &ptp->cc, ktime_to_ns(ktime_get_real()));
 }
 
-/* Caller holds ptp_lock */
+ 
 void bnxt_ptp_rtc_timecounter_init(struct bnxt_ptp_cfg *ptp, u64 ns)
 {
 	timecounter_init(&ptp->tc, &ptp->cc, ns);
-	/* For RTC, cycle_last must be in sync with the timecounter value. */
+	 
 	ptp->tc.cycle_last = ns & ptp->cc.mask;
 }
 

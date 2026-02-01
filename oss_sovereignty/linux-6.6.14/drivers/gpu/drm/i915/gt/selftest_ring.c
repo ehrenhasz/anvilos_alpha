@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 static struct intel_ring *mock_ring(unsigned long sz)
 {
@@ -85,14 +83,14 @@ static int igt_ring_direction(void *dummy)
 
 	GEM_BUG_ON(ring->size != 2 * half);
 
-	/* Precision of wrap detection is limited to ring->size / 2 */
+	 
 	for (step = 1; step < half; step <<= 1) {
 		err |= check_ring_offset(ring, 0, step);
 		err |= check_ring_offset(ring, half, step);
 	}
 	err |= check_ring_step(ring, 0, half - 64);
 
-	/* And check unwrapped handling for good measure */
+	 
 	err |= check_ring_offset(ring, 0, 2 * half + 64);
 	err |= check_ring_offset(ring, 3 * half, 1);
 

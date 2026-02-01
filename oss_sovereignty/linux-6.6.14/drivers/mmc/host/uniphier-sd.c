@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2017-2018 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -22,15 +22,15 @@
 
 #define   UNIPHIER_SD_CLK_CTL_DIV1024		BIT(16)
 #define   UNIPHIER_SD_CLK_CTL_DIV1		BIT(10)
-#define   UNIPHIER_SD_CLKCTL_OFFEN		BIT(9)  // auto SDCLK stop
+#define   UNIPHIER_SD_CLKCTL_OFFEN		BIT(9)  
 #define UNIPHIER_SD_CC_EXT_MODE		0x1b0
 #define   UNIPHIER_SD_CC_EXT_MODE_DMA		BIT(1)
 #define UNIPHIER_SD_HOST_MODE		0x1c8
 #define UNIPHIER_SD_VOLT		0x1e4
 #define   UNIPHIER_SD_VOLT_MASK			GENMASK(1, 0)
 #define   UNIPHIER_SD_VOLT_OFF			0
-#define   UNIPHIER_SD_VOLT_330			1	// 3.3V signal
-#define   UNIPHIER_SD_VOLT_180			2	// 1.8V signal
+#define   UNIPHIER_SD_VOLT_330			1	
+#define   UNIPHIER_SD_VOLT_180			2	
 #define UNIPHIER_SD_DMA_MODE		0x410
 #define   UNIPHIER_SD_DMA_MODE_DIR_MASK		GENMASK(17, 16)
 #define   UNIPHIER_SD_DMA_MODE_DIR_TO_DEV	0
@@ -40,27 +40,24 @@
 #define   UNIPHIER_SD_DMA_MODE_WIDTH_16		1
 #define   UNIPHIER_SD_DMA_MODE_WIDTH_32		2
 #define   UNIPHIER_SD_DMA_MODE_WIDTH_64		3
-#define   UNIPHIER_SD_DMA_MODE_ADDR_INC		BIT(0)	// 1: inc, 0: fixed
+#define   UNIPHIER_SD_DMA_MODE_ADDR_INC		BIT(0)	
 #define UNIPHIER_SD_DMA_CTL		0x414
-#define   UNIPHIER_SD_DMA_CTL_START	BIT(0)	// start DMA (auto cleared)
+#define   UNIPHIER_SD_DMA_CTL_START	BIT(0)	
 #define UNIPHIER_SD_DMA_RST		0x418
 #define   UNIPHIER_SD_DMA_RST_CH1	BIT(9)
 #define   UNIPHIER_SD_DMA_RST_CH0	BIT(8)
 #define UNIPHIER_SD_DMA_ADDR_L		0x440
 #define UNIPHIER_SD_DMA_ADDR_H		0x444
 
-/* SD control */
+ 
 #define UNIPHIER_SDCTRL_CHOFFSET	0x200
 #define UNIPHIER_SDCTRL_MODE		0x30
 #define   UNIPHIER_SDCTRL_MODE_UHS1MOD		BIT(15)
 #define   UNIPHIER_SDCTRL_MODE_SDRSEL		BIT(14)
 
-/*
- * IP is extended to support various features: built-in DMA engine,
- * 1/1024 divisor, etc.
- */
+ 
 #define UNIPHIER_SD_CAP_EXTENDED_IP		BIT(0)
-/* RX channel of the built-in DMA controller is broken (Pro5) */
+ 
 #define UNIPHIER_SD_CAP_BROKEN_DMA_RX		BIT(1)
 
 struct uniphier_sd_priv {
@@ -89,7 +86,7 @@ static void uniphier_sd_dma_endisable(struct tmio_mmc_host *host, int enable)
 	sd_ctrl_write16(host, CTL_DMA_ENABLE, enable ? DMA_ENABLE_DMASDRW : 0);
 }
 
-/* external DMA engine */
+ 
 static void uniphier_sd_external_dma_issue(struct tasklet_struct *t)
 {
 	struct tmio_mmc_host *host = from_tasklet(host, t, dma_issue);
@@ -112,13 +109,7 @@ static void uniphier_sd_external_dma_callback(void *param,
 	spin_lock_irqsave(&host->lock, flags);
 
 	if (result->result == DMA_TRANS_NOERROR) {
-		/*
-		 * When the external DMA engine is enabled, strangely enough,
-		 * the DATAEND flag can be asserted even if the DMA engine has
-		 * not been kicked yet.  Enable the TMIO_STAT_DATAEND irq only
-		 * after we make sure the DMA engine finishes the transfer,
-		 * hence, in this callback.
-		 */
+		 
 		tmio_mmc_enable_mmc_irqs(host, TMIO_STAT_DATAEND);
 	} else {
 		host->data->error = -ETIMEDOUT;
@@ -191,10 +182,10 @@ static void uniphier_sd_external_dma_request(struct tmio_mmc_host *host,
 	if (IS_ERR(chan)) {
 		dev_warn(mmc_dev(host->mmc),
 			 "failed to request DMA channel. falling back to PIO\n");
-		return;	/* just use PIO even for -EPROBE_DEFER */
+		return;	 
 	}
 
-	/* this driver uses a single channel for both RX an TX */
+	 
 	priv->chan = chan;
 	host->chan_rx = chan;
 	host->chan_tx = chan;
@@ -308,10 +299,7 @@ static void uniphier_sd_internal_dma_request(struct tmio_mmc_host *host,
 {
 	struct uniphier_sd_priv *priv = uniphier_sd_priv(host);
 
-	/*
-	 * Due to a hardware bug, Pro5 cannot use DMA for RX.
-	 * We can still use DMA for TX, but PIO for RX.
-	 */
+	 
 	if (!(priv->caps & UNIPHIER_SD_CAP_BROKEN_DMA_RX))
 		host->chan_rx = (void *)0xdeadbeaf;
 
@@ -322,7 +310,7 @@ static void uniphier_sd_internal_dma_request(struct tmio_mmc_host *host,
 
 static void uniphier_sd_internal_dma_release(struct tmio_mmc_host *host)
 {
-	/* Each value is set to zero to assume "disabling" each DMA */
+	 
 	host->chan_rx = NULL;
 	host->chan_tx = NULL;
 }
@@ -376,14 +364,11 @@ static int uniphier_sd_clk_enable(struct tmio_mmc_host *host)
 
 	priv->clk_rate = clk_get_rate(priv->clk);
 
-	/* If max-frequency property is set, use it. */
+	 
 	if (!mmc->f_max)
 		mmc->f_max = priv->clk_rate;
 
-	/*
-	 * 1/512 is the finest divisor in the original IP.  Newer versions
-	 * also supports 1/1024 divisor. (UniPhier-specific extension)
-	 */
+	 
 	if (priv->caps & UNIPHIER_SD_CAP_EXTENDED_IP)
 		mmc->f_min = priv->clk_rate / 1024;
 	else
@@ -422,10 +407,10 @@ static void uniphier_sd_hw_reset(struct mmc_host *mmc)
 	struct uniphier_sd_priv *priv = uniphier_sd_priv(host);
 
 	reset_control_assert(priv->rst_hw);
-	/* For eMMC, minimum is 1us but give it 9us for good measure */
+	 
 	udelay(9);
 	reset_control_deassert(priv->rst_hw);
-	/* For eMMC, minimum is 200us but give it 300us for good measure */
+	 
 	usleep_range(300, 1000);
 }
 
@@ -474,7 +459,7 @@ static void uniphier_sd_set_clock(struct tmio_mmc_host *host,
 
 	tmp = readl(host->ctl + (CTL_SD_CARD_CLK_CTL << 1));
 
-	/* stop the clock before changing its rate to avoid a glitch signal */
+	 
 	tmp &= ~CLK_CTL_SCLKEN;
 	writel(tmp, host->ctl + (CTL_SD_CARD_CLK_CTL << 1));
 
@@ -489,14 +474,7 @@ static void uniphier_sd_set_clock(struct tmio_mmc_host *host,
 
 	divisor = priv->clk_rate / clock;
 
-	/*
-	 * In the original IP, bit[7:0] represents the divisor.
-	 * bit7 set: 1/512, ... bit0 set:1/4, all bits clear: 1/2
-	 *
-	 * The IP does not define a way to achieve 1/1.  For UniPhier variants,
-	 * bit10 is used for 1/1.  Newer versions of UniPhier variants use
-	 * bit16 for 1/1024.
-	 */
+	 
 	if (divisor <= 1)
 		tmp |= UNIPHIER_SD_CLK_CTL_DIV1;
 	else if (priv->caps & UNIPHIER_SD_CAP_EXTENDED_IP && divisor > 512)
@@ -515,13 +493,7 @@ static void uniphier_sd_host_init(struct tmio_mmc_host *host)
 	struct uniphier_sd_priv *priv = uniphier_sd_priv(host);
 	u32 val;
 
-	/*
-	 * Connected to 32bit AXI.
-	 * This register holds settings for SoC-specific internal bus
-	 * connection.  What is worse, the register spec was changed,
-	 * breaking the backward compatibility.  Write an appropriate
-	 * value depending on a flag associated with a compatible string.
-	 */
+	 
 	if (priv->caps & UNIPHIER_SD_CAP_EXTENDED_IP)
 		val = 0x00000101;
 	else
@@ -530,10 +502,7 @@ static void uniphier_sd_host_init(struct tmio_mmc_host *host)
 	writel(val, host->ctl + UNIPHIER_SD_HOST_MODE);
 
 	val = 0;
-	/*
-	 * If supported, the controller can automatically
-	 * enable/disable the clock line to the card.
-	 */
+	 
 	if (priv->caps & UNIPHIER_SD_CAP_EXTENDED_IP)
 		val |= UNIPHIER_SD_CLKCTL_OFFEN;
 
@@ -642,7 +611,7 @@ static int uniphier_sd_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->rst);
 	}
 
-	/* old version has one more reset */
+	 
 	if (!(priv->caps & UNIPHIER_SD_CAP_EXTENDED_IP)) {
 		priv->rst_br = devm_reset_control_get_shared(dev, "bridge");
 		if (IS_ERR(priv->rst_br)) {
@@ -748,7 +717,7 @@ static const struct of_device_id uniphier_sd_match[] = {
 		.compatible = "socionext,uniphier-sd-v3.1.1",
 		.data = (void *)UNIPHIER_SD_CAP_EXTENDED_IP,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_sd_match);
 

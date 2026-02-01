@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hash algorithms supported by the CESA: MD5, SHA1 and SHA256.
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- * Author: Arnaud Ebalard <arno@natisbad.org>
- *
- * This work is based on an initial version written by
- * Sebastian Andrzej Siewior < sebastian at breakpoint dot cc >
- */
+
+ 
 
 #include <crypto/hmac.h>
 #include <crypto/md5.h>
@@ -138,7 +130,7 @@ static int mv_cesa_ahash_pad_req(struct mv_cesa_ahash_req *creq, u8 *buf)
 	unsigned int padlen;
 
 	buf[0] = 0x80;
-	/* Pad out to 56 mod 64 */
+	 
 	padlen = mv_cesa_ahash_pad_len(creq);
 	memset(buf + 1, 0, padlen - 1);
 
@@ -262,7 +254,7 @@ static void mv_cesa_ahash_std_step(struct ahash_request *req)
 	mv_cesa_set_mac_op_frag_len(op, len);
 	mv_cesa_update_op_cfg(op, frag_mode, CESA_SA_DESC_CFG_FRAG_MSK);
 
-	/* FIXME: only update enc_len field */
+	 
 	if (engine->pool)
 		memcpy(engine->sram_pool, op, sizeof(*op));
 	else
@@ -313,12 +305,12 @@ static void mv_cesa_ahash_dma_step(struct ahash_request *req)
 	struct mv_cesa_ahash_req *creq = ahash_request_ctx(req);
 	struct mv_cesa_req *base = &creq->base;
 
-	/* We must explicitly set the digest state. */
+	 
 	if (base->chain.first->flags & CESA_TDMA_SET_STATE) {
 		struct mv_cesa_engine *engine = base->engine;
 		int i;
 
-		/* Set the hash state in the IVDIG regs. */
+		 
 		for (i = 0; i < ARRAY_SIZE(creq->state); i++)
 			writel_relaxed(creq->state[i], engine->regs +
 				       CESA_IVDIG(i));
@@ -364,10 +356,7 @@ static void mv_cesa_ahash_complete(struct crypto_async_request *req)
 	     CESA_TDMA_RESULT) {
 		__le32 *data = NULL;
 
-		/*
-		 * Result is already in the correct endianness when the SA is
-		 * used
-		 */
+		 
 		data = creq->base.chain.last->op->ctx.hash.hash;
 		for (i = 0; i < digsize / 4; i++)
 			creq->state[i] = le32_to_cpu(data[i]);
@@ -378,10 +367,7 @@ static void mv_cesa_ahash_complete(struct crypto_async_request *req)
 			creq->state[i] = readl_relaxed(engine->regs +
 						       CESA_IVDIG(i));
 		if (creq->last_req) {
-			/*
-			 * Hardware's MD5 digest is in little endian format, but
-			 * SHA in big endian format
-			 */
+			 
 			if (creq->algo_le) {
 				__le32 *result = (void *)ahashreq->result;
 
@@ -500,10 +486,10 @@ mv_cesa_dma_add_frag(struct mv_cesa_tdma_chain *chain,
 	if (IS_ERR(op))
 		return op;
 
-	/* Set the operation block fragment length. */
+	 
 	mv_cesa_set_mac_op_frag_len(op, frag_len);
 
-	/* Append dummy desc to launch operation */
+	 
 	ret = mv_cesa_dma_add_dummy_launch(chain, flags);
 	if (ret)
 		return ERR_PTR(ret);
@@ -552,10 +538,7 @@ mv_cesa_ahash_dma_last_req(struct mv_cesa_tdma_chain *chain,
 	struct mv_cesa_op_ctx *op;
 	int ret;
 
-	/*
-	 * If the transfer is smaller than our maximum length, and we have
-	 * some data outstanding, we can ask the engine to finish the hash.
-	 */
+	 
 	if (creq->len <= CESA_SA_DESC_MAC_SRC_TOTAL_LEN_MAX && frag_len) {
 		op = mv_cesa_dma_add_frag(chain, &creq->op_tmpl, frag_len,
 					  flags);
@@ -577,11 +560,7 @@ mv_cesa_ahash_dma_last_req(struct mv_cesa_tdma_chain *chain,
 		return op;
 	}
 
-	/*
-	 * The request is longer than the engine can handle, or we have
-	 * no data outstanding. Manually generate the padding, adding it
-	 * as a "mid" fragment.
-	 */
+	 
 	ret = mv_cesa_ahash_dma_alloc_padding(ahashdreq, flags);
 	if (ret)
 		return ERR_PTR(ret);
@@ -655,20 +634,13 @@ static int mv_cesa_ahash_dma_req_init(struct ahash_request *req)
 	mv_cesa_tdma_desc_iter_init(&basereq->chain);
 	mv_cesa_ahash_req_iter_init(&iter, req);
 
-	/*
-	 * Add the cache (left-over data from a previous block) first.
-	 * This will never overflow the SRAM size.
-	 */
+	 
 	ret = mv_cesa_ahash_dma_add_cache(&basereq->chain, creq, flags);
 	if (ret)
 		goto err_free_tdma;
 
 	if (iter.src.sg) {
-		/*
-		 * Add all the new data, inserting an operation block and
-		 * launch command between each full SRAM block-worth of
-		 * data. We intentionally do not add the final op block.
-		 */
+		 
 		while (true) {
 			ret = mv_cesa_dma_add_op_transfers(&basereq->chain,
 							   &iter.base,
@@ -690,15 +662,11 @@ static int mv_cesa_ahash_dma_req_init(struct ahash_request *req)
 			}
 		}
 	} else {
-		/* Account for the data that was in the cache. */
+		 
 		frag_len = iter.base.op_len;
 	}
 
-	/*
-	 * At this point, frag_len indicates whether we have any data
-	 * outstanding which needs an operation.  Queue up the final
-	 * operation, which depends whether this is the final request.
-	 */
+	 
 	if (creq->last_req)
 		op = mv_cesa_ahash_dma_last_req(&basereq->chain, &iter, creq,
 						frag_len, flags);
@@ -711,16 +679,11 @@ static int mv_cesa_ahash_dma_req_init(struct ahash_request *req)
 		goto err_free_tdma;
 	}
 
-	/*
-	 * If results are copied via DMA, this means that this
-	 * request can be directly processed by the engine,
-	 * without partial updates. So we can chain it at the
-	 * DMA level with other requests.
-	 */
+	 
 	type = basereq->chain.last->flags & CESA_TDMA_TYPE_MSK;
 
 	if (op && type != CESA_TDMA_RESULT) {
-		/* Add dummy desc to wait for crypto operation end */
+		 
 		ret = mv_cesa_dma_add_dummy_end(&basereq->chain, flags);
 		if (ret)
 			goto err_free_tdma;
@@ -738,11 +701,7 @@ static int mv_cesa_ahash_dma_req_init(struct ahash_request *req)
 		basereq->chain.last->flags |= CESA_TDMA_BREAK_CHAIN;
 
 	if (set_state) {
-		/*
-		 * Put the CESA_TDMA_SET_STATE flag on the first tdma desc to
-		 * let the step logic know that the IVDIG registers should be
-		 * explicitly set before launching a TDMA chain.
-		 */
+		 
 		basereq->chain.first->flags |= CESA_TDMA_SET_STATE;
 	}
 
@@ -1159,7 +1118,7 @@ static int mv_cesa_ahmac_pad_init(struct ahash_request *req,
 		ret = crypto_ahash_digest(req);
 		ret = crypto_wait_req(ret, &result);
 
-		/* Set the memory region to 0 to avoid any leak. */
+		 
 		kfree_sensitive(keydup);
 
 		if (ret)

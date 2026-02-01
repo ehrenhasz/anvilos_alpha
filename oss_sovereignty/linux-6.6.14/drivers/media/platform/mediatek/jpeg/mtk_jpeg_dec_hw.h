@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- *         Rick Chang <rick.chang@mediatek.com>
- *         Xia Jiang <xia.jiang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTK_JPEG_DEC_HW_H
 #define _MTK_JPEG_DEC_HW_H
@@ -78,4 +73,4 @@ void mtk_jpeg_dec_set_config(void __iomem *base,
 void mtk_jpeg_dec_reset(void __iomem *dec_reg_base);
 void mtk_jpeg_dec_start(void __iomem *dec_reg_base);
 
-#endif /* _MTK_JPEG_HW_H */
+#endif  

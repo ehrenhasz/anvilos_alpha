@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Derived from many drivers using generic_serial interface.
- *
- * Copyright (C) 2008 Maxime Bizon <mbizon@freebox.fr>
- *
- *  Serial driver for BCM63xx integrated UART.
- *
- * Hardware flow control was _not_ tested since I only have RX/TX on
- * my board.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -30,14 +21,7 @@
 
 static struct uart_port ports[BCM63XX_NR_UARTS];
 
-/*
- * rx interrupt mask / stat
- *
- * mask:
- *  - rx fifo full
- *  - rx fifo above threshold
- *  - rx fifo not empty for too long
- */
+ 
 #define UART_RX_INT_MASK	(UART_IR_MASK(UART_IR_RXOVER) |		\
 				UART_IR_MASK(UART_IR_RXTHRESH) |	\
 				UART_IR_MASK(UART_IR_RXTIMEOUT))
@@ -46,30 +30,18 @@ static struct uart_port ports[BCM63XX_NR_UARTS];
 				UART_IR_STAT(UART_IR_RXTHRESH) |	\
 				UART_IR_STAT(UART_IR_RXTIMEOUT))
 
-/*
- * tx interrupt mask / stat
- *
- * mask:
- * - tx fifo empty
- * - tx fifo below threshold
- */
+ 
 #define UART_TX_INT_MASK	(UART_IR_MASK(UART_IR_TXEMPTY) |	\
 				UART_IR_MASK(UART_IR_TXTRESH))
 
 #define UART_TX_INT_STAT	(UART_IR_STAT(UART_IR_TXEMPTY) |	\
 				UART_IR_STAT(UART_IR_TXTRESH))
 
-/*
- * external input interrupt
- *
- * mask: any edge on CTS, DCD
- */
+ 
 #define UART_EXTINP_INT_MASK	(UART_EXTINP_IRMASK(UART_EXTINP_IR_CTS) | \
 				 UART_EXTINP_IRMASK(UART_EXTINP_IR_DCD))
 
-/*
- * handy uart register accessor
- */
+ 
 static inline unsigned int bcm_uart_readl(struct uart_port *port,
 					 unsigned int offset)
 {
@@ -82,9 +54,7 @@ static inline void bcm_uart_writel(struct uart_port *port,
 	__raw_writel(value, port->membase + offset);
 }
 
-/*
- * serial core request to check if uart tx fifo is empty
- */
+ 
 static unsigned int bcm_uart_tx_empty(struct uart_port *port)
 {
 	unsigned int val;
@@ -93,16 +63,14 @@ static unsigned int bcm_uart_tx_empty(struct uart_port *port)
 	return (val & UART_IR_STAT(UART_IR_TXEMPTY)) ? 1 : 0;
 }
 
-/*
- * serial core request to set RTS and DTR pin state and loopback mode
- */
+ 
 static void bcm_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
 	unsigned int val;
 
 	val = bcm_uart_readl(port, UART_MCTL_REG);
 	val &= ~(UART_MCTL_DTR_MASK | UART_MCTL_RTS_MASK);
-	/* invert of written value is reflected on the pin */
+	 
 	if (!(mctrl & TIOCM_DTR))
 		val |= UART_MCTL_DTR_MASK;
 	if (!(mctrl & TIOCM_RTS))
@@ -117,9 +85,7 @@ static void bcm_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 	bcm_uart_writel(port, val, UART_CTL_REG);
 }
 
-/*
- * serial core request to return RI, CTS, DCD and DSR pin state
- */
+ 
 static unsigned int bcm_uart_get_mctrl(struct uart_port *port)
 {
 	unsigned int val, mctrl;
@@ -137,9 +103,7 @@ static unsigned int bcm_uart_get_mctrl(struct uart_port *port)
 	return mctrl;
 }
 
-/*
- * serial core request to disable tx ASAP (used for flow control)
- */
+ 
 static void bcm_uart_stop_tx(struct uart_port *port)
 {
 	unsigned int val;
@@ -153,9 +117,7 @@ static void bcm_uart_stop_tx(struct uart_port *port)
 	bcm_uart_writel(port, val, UART_IR_REG);
 }
 
-/*
- * serial core request to (re)enable tx
- */
+ 
 static void bcm_uart_start_tx(struct uart_port *port)
 {
 	unsigned int val;
@@ -169,9 +131,7 @@ static void bcm_uart_start_tx(struct uart_port *port)
 	bcm_uart_writel(port, val, UART_CTL_REG);
 }
 
-/*
- * serial core request to stop rx, called before port shutdown
- */
+ 
 static void bcm_uart_stop_rx(struct uart_port *port)
 {
 	unsigned int val;
@@ -181,9 +141,7 @@ static void bcm_uart_stop_rx(struct uart_port *port)
 	bcm_uart_writel(port, val, UART_IR_REG);
 }
 
-/*
- * serial core request to enable modem status interrupt reporting
- */
+ 
 static void bcm_uart_enable_ms(struct uart_port *port)
 {
 	unsigned int val;
@@ -193,9 +151,7 @@ static void bcm_uart_enable_ms(struct uart_port *port)
 	bcm_uart_writel(port, val, UART_IR_REG);
 }
 
-/*
- * serial core request to start/stop emitting break char
- */
+ 
 static void bcm_uart_break_ctl(struct uart_port *port, int ctl)
 {
 	unsigned long flags;
@@ -213,39 +169,31 @@ static void bcm_uart_break_ctl(struct uart_port *port, int ctl)
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
-/*
- * return port type in string format
- */
+ 
 static const char *bcm_uart_type(struct uart_port *port)
 {
 	return (port->type == PORT_BCM63XX) ? "bcm63xx_uart" : NULL;
 }
 
-/*
- * read all chars in rx fifo and send them to core
- */
+ 
 static void bcm_uart_do_rx(struct uart_port *port)
 {
 	struct tty_port *tty_port = &port->state->port;
 	unsigned int max_count;
 
-	/* limit number of char read in interrupt, should not be
-	 * higher than fifo size anyway since we're much faster than
-	 * serial port */
+	 
 	max_count = 32;
 	do {
 		unsigned int iestat, c, cstat;
 		char flag;
 
-		/* get overrun/fifo empty information from ier
-		 * register */
+		 
 		iestat = bcm_uart_readl(port, UART_IR_REG);
 
 		if (unlikely(iestat & UART_IR_STAT(UART_IR_RXOVER))) {
 			unsigned int val;
 
-			/* fifo reset is required to clear
-			 * interrupt */
+			 
 			val = bcm_uart_readl(port, UART_CTL_REG);
 			val |= UART_CTL_RSTRXFIFO_MASK;
 			bcm_uart_writel(port, val, UART_CTL_REG);
@@ -263,7 +211,7 @@ static void bcm_uart_do_rx(struct uart_port *port)
 		c &= 0xff;
 
 		if (unlikely((cstat & UART_FIFO_ANYERR_MASK))) {
-			/* do stats first */
+			 
 			if (cstat & UART_FIFO_BRKDET_MASK) {
 				port->icount.brk++;
 				if (uart_handle_break(port))
@@ -275,7 +223,7 @@ static void bcm_uart_do_rx(struct uart_port *port)
 			if (cstat & UART_FIFO_FRAMEERR_MASK)
 				port->icount.frame++;
 
-			/* update flag wrt read_status_mask */
+			 
 			cstat &= port->read_status_mask;
 			if (cstat & UART_FIFO_BRKDET_MASK)
 				flag = TTY_BREAK;
@@ -297,10 +245,7 @@ static void bcm_uart_do_rx(struct uart_port *port)
 	tty_flip_buffer_push(tty_port);
 }
 
-/*
- * fill tx fifo with chars to send, stop when fifo is about to be full
- * or when all chars have been sent.
- */
+ 
 static void bcm_uart_do_tx(struct uart_port *port)
 {
 	unsigned int val;
@@ -317,15 +262,13 @@ static void bcm_uart_do_tx(struct uart_port *port)
 	if (pending)
 		return;
 
-	/* nothing to send, disable transmit interrupt */
+	 
 	val = bcm_uart_readl(port, UART_IR_REG);
 	val &= ~UART_TX_INT_MASK;
 	bcm_uart_writel(port, val, UART_IR_REG);
 }
 
-/*
- * process uart interrupt
- */
+ 
 static irqreturn_t bcm_uart_interrupt(int irq, void *dev_id)
 {
 	struct uart_port *port;
@@ -357,9 +300,7 @@ static irqreturn_t bcm_uart_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * enable rx & tx operation on uart
- */
+ 
 static void bcm_uart_enable(struct uart_port *port)
 {
 	unsigned int val;
@@ -369,9 +310,7 @@ static void bcm_uart_enable(struct uart_port *port)
 	bcm_uart_writel(port, val, UART_CTL_REG);
 }
 
-/*
- * disable rx & tx operation on uart
- */
+ 
 static void bcm_uart_disable(struct uart_port *port)
 {
 	unsigned int val;
@@ -382,59 +321,54 @@ static void bcm_uart_disable(struct uart_port *port)
 	bcm_uart_writel(port, val, UART_CTL_REG);
 }
 
-/*
- * clear all unread data in rx fifo and unsent data in tx fifo
- */
+ 
 static void bcm_uart_flush(struct uart_port *port)
 {
 	unsigned int val;
 
-	/* empty rx and tx fifo */
+	 
 	val = bcm_uart_readl(port, UART_CTL_REG);
 	val |= UART_CTL_RSTRXFIFO_MASK | UART_CTL_RSTTXFIFO_MASK;
 	bcm_uart_writel(port, val, UART_CTL_REG);
 
-	/* read any pending char to make sure all irq status are
-	 * cleared */
+	 
 	(void)bcm_uart_readl(port, UART_FIFO_REG);
 }
 
-/*
- * serial core request to initialize uart and start rx operation
- */
+ 
 static int bcm_uart_startup(struct uart_port *port)
 {
 	unsigned int val;
 	int ret;
 
-	/* mask all irq and flush port */
+	 
 	bcm_uart_disable(port);
 	bcm_uart_writel(port, 0, UART_IR_REG);
 	bcm_uart_flush(port);
 
-	/* clear any pending external input interrupt */
+	 
 	(void)bcm_uart_readl(port, UART_EXTINP_REG);
 
-	/* set rx/tx fifo thresh to fifo half size */
+	 
 	val = bcm_uart_readl(port, UART_MCTL_REG);
 	val &= ~(UART_MCTL_RXFIFOTHRESH_MASK | UART_MCTL_TXFIFOTHRESH_MASK);
 	val |= (port->fifosize / 2) << UART_MCTL_RXFIFOTHRESH_SHIFT;
 	val |= (port->fifosize / 2) << UART_MCTL_TXFIFOTHRESH_SHIFT;
 	bcm_uart_writel(port, val, UART_MCTL_REG);
 
-	/* set rx fifo timeout to 1 char time */
+	 
 	val = bcm_uart_readl(port, UART_CTL_REG);
 	val &= ~UART_CTL_RXTMOUTCNT_MASK;
 	val |= 1 << UART_CTL_RXTMOUTCNT_SHIFT;
 	bcm_uart_writel(port, val, UART_CTL_REG);
 
-	/* report any edge on dcd and cts */
+	 
 	val = UART_EXTINP_INT_MASK;
 	val |= UART_EXTINP_DCD_NOSENSE_MASK;
 	val |= UART_EXTINP_CTS_NOSENSE_MASK;
 	bcm_uart_writel(port, val, UART_EXTINP_REG);
 
-	/* register irq and enable rx interrupts */
+	 
 	ret = request_irq(port->irq, bcm_uart_interrupt, 0,
 			  dev_name(port->dev), port);
 	if (ret)
@@ -444,9 +378,7 @@ static int bcm_uart_startup(struct uart_port *port)
 	return 0;
 }
 
-/*
- * serial core request to flush & disable uart
- */
+ 
 static void bcm_uart_shutdown(struct uart_port *port)
 {
 	unsigned long flags;
@@ -460,9 +392,7 @@ static void bcm_uart_shutdown(struct uart_port *port)
 	free_irq(port->irq, port);
 }
 
-/*
- * serial core request to change current uart setting
- */
+ 
 static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 				 const struct ktermios *old)
 {
@@ -472,15 +402,15 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* Drain the hot tub fully before we power it off for the winter. */
+	 
 	for (tries = 3; !bcm_uart_tx_empty(port) && tries; tries--)
 		mdelay(10);
 
-	/* disable uart while changing speed */
+	 
 	bcm_uart_disable(port);
 	bcm_uart_flush(port);
 
-	/* update Control register */
+	 
 	ctl = bcm_uart_readl(port, UART_CTL_REG);
 	ctl &= ~UART_CTL_BITSPERSYM_MASK;
 
@@ -513,12 +443,12 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 		ctl |= (UART_CTL_RXPAREVEN_MASK | UART_CTL_TXPAREVEN_MASK);
 	bcm_uart_writel(port, ctl, UART_CTL_REG);
 
-	/* update Baudword register */
+	 
 	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk / 16);
 	quot = uart_get_divisor(port, baud) - 1;
 	bcm_uart_writel(port, quot, UART_BAUD_REG);
 
-	/* update Interrupt register */
+	 
 	ier = bcm_uart_readl(port, UART_IR_REG);
 
 	ier &= ~UART_IR_MASK(UART_IR_EXTIP);
@@ -527,7 +457,7 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 
 	bcm_uart_writel(port, ier, UART_IR_REG);
 
-	/* update read/ignore mask */
+	 
 	port->read_status_mask = UART_FIFO_VALID_MASK;
 	if (new->c_iflag & INPCK) {
 		port->read_status_mask |= UART_FIFO_FRAMEERR_MASK;
@@ -549,26 +479,20 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
-/*
- * serial core request to claim uart iomem
- */
+ 
 static int bcm_uart_request_port(struct uart_port *port)
 {
-	/* UARTs always present */
+	 
 	return 0;
 }
 
-/*
- * serial core request to release uart iomem
- */
+ 
 static void bcm_uart_release_port(struct uart_port *port)
 {
-	/* Nothing to release ... */
+	 
 }
 
-/*
- * serial core request to do any port required autoconfiguration
- */
+ 
 static void bcm_uart_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE) {
@@ -578,10 +502,7 @@ static void bcm_uart_config_port(struct uart_port *port, int flags)
 	}
 }
 
-/*
- * serial core request to check that port information in serinfo are
- * suitable
- */
+ 
 static int bcm_uart_verify_port(struct uart_port *port,
 				struct serial_struct *serinfo)
 {
@@ -597,9 +518,7 @@ static int bcm_uart_verify_port(struct uart_port *port,
 }
 
 #ifdef CONFIG_CONSOLE_POLL
-/*
- * return true when outstanding tx equals fifo size
- */
+ 
 static bool bcm_uart_tx_full(struct uart_port *port)
 {
 	unsigned int val;
@@ -630,7 +549,7 @@ static void bcm_uart_poll_put_char(struct uart_port *port, unsigned char c)
 }
 #endif
 
-/* serial core callbacks */
+ 
 static const struct uart_ops bcm_uart_ops = {
 	.tx_empty	= bcm_uart_tx_empty,
 	.get_mctrl	= bcm_uart_get_mctrl,
@@ -661,7 +580,7 @@ static void wait_for_xmitr(struct uart_port *port)
 {
 	unsigned int tmout;
 
-	/* Wait up to 10ms for the character(s) to be sent. */
+	 
 	tmout = 10000;
 	while (--tmout) {
 		unsigned int val;
@@ -672,7 +591,7 @@ static void wait_for_xmitr(struct uart_port *port)
 		udelay(1);
 	}
 
-	/* Wait up to 1s for flow control if necessary */
+	 
 	if (port->flags & UPF_CONS_FLOW) {
 		tmout = 1000000;
 		while (--tmout) {
@@ -686,18 +605,14 @@ static void wait_for_xmitr(struct uart_port *port)
 	}
 }
 
-/*
- * output given char
- */
+ 
 static void bcm_console_putchar(struct uart_port *port, unsigned char ch)
 {
 	wait_for_xmitr(port);
 	bcm_uart_writel(port, ch, UART_FIFO_REG);
 }
 
-/*
- * console core request to output given string
- */
+ 
 static void bcm_console_write(struct console *co, const char *s,
 			      unsigned int count)
 {
@@ -709,7 +624,7 @@ static void bcm_console_write(struct console *co, const char *s,
 
 	local_irq_save(flags);
 	if (port->sysrq) {
-		/* bcm_uart_interrupt() already took the lock */
+		 
 		locked = 0;
 	} else if (oops_in_progress) {
 		locked = spin_trylock(&port->lock);
@@ -718,10 +633,10 @@ static void bcm_console_write(struct console *co, const char *s,
 		locked = 1;
 	}
 
-	/* call helper to deal with \r\n */
+	 
 	uart_console_write(port, s, count, bcm_console_putchar);
 
-	/* and wait for char to be transmitted */
+	 
 	wait_for_xmitr(port);
 
 	if (locked)
@@ -729,10 +644,7 @@ static void bcm_console_write(struct console *co, const char *s,
 	local_irq_restore(flags);
 }
 
-/*
- * console core request to setup given console, find matching uart
- * port and setup it.
- */
+ 
 static int bcm_console_setup(struct console *co, char *options)
 {
 	struct uart_port *port;
@@ -795,7 +707,7 @@ OF_EARLYCON_DECLARE(bcm63xx_uart, "brcm,bcm6345-uart", bcm_early_console_setup);
 #define BCM63XX_CONSOLE	(&bcm63xx_console)
 #else
 #define BCM63XX_CONSOLE	NULL
-#endif /* CONFIG_SERIAL_BCM63XX_CONSOLE */
+#endif  
 
 static struct uart_driver bcm_uart_driver = {
 	.owner		= THIS_MODULE,
@@ -807,9 +719,7 @@ static struct uart_driver bcm_uart_driver = {
 	.cons		= BCM63XX_CONSOLE,
 };
 
-/*
- * platform driver probe/remove callback
- */
+ 
 static int bcm_uart_probe(struct platform_device *pdev)
 {
 	struct resource *res_mem;
@@ -874,20 +784,18 @@ static int bcm_uart_remove(struct platform_device *pdev)
 
 	port = platform_get_drvdata(pdev);
 	uart_remove_one_port(&bcm_uart_driver, port);
-	/* mark port as free */
+	 
 	ports[pdev->id].membase = NULL;
 	return 0;
 }
 
 static const struct of_device_id bcm63xx_of_match[] = {
 	{ .compatible = "brcm,bcm6345-uart" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bcm63xx_of_match);
 
-/*
- * platform driver stuff
- */
+ 
 static struct platform_driver bcm_uart_platform_driver = {
 	.probe	= bcm_uart_probe,
 	.remove	= bcm_uart_remove,

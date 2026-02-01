@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdlib.h>
 #include <string.h>
 #include <linux/zalloc.h>
@@ -395,7 +395,7 @@ static void init_block_hist(struct block_hist *bh, struct block_fmt *block_fmts,
 	register_block_columns(&bh->block_list, block_fmts,
 			       block_hpps, nr_hpps);
 
-	/* Sort by the first fmt */
+	 
 	perf_hpp_list__register_sort_field(&bh->block_list, &block_fmts[0].fmt);
 }
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/list.h>
@@ -8,37 +8,22 @@
 #include <linux/workqueue.h>
 #include <linux/mbcache.h>
 
-/*
- * Mbcache is a simple key-value store. Keys need not be unique, however
- * key-value pairs are expected to be unique (we use this fact in
- * mb_cache_entry_delete_or_get()).
- *
- * Ext2 and ext4 use this cache for deduplication of extended attribute blocks.
- * Ext4 also uses it for deduplication of xattr values stored in inodes.
- * They use hash of data as a key and provide a value that may represent a
- * block or inode number. That's why keys need not be unique (hash of different
- * data may be the same). However user provided value always uniquely
- * identifies a cache entry.
- *
- * We provide functions for creation and removal of entries, search by key,
- * and a special "delete entry with given key-value pair" operation. Fixed
- * size hash table is used for fast key lookups.
- */
+ 
 
 struct mb_cache {
-	/* Hash table of entries */
+	 
 	struct hlist_bl_head	*c_hash;
-	/* log2 of hash table size */
+	 
 	int			c_bucket_bits;
-	/* Maximum entries in cache to avoid degrading hash too much */
+	 
 	unsigned long		c_max_entries;
-	/* Protects c_list, c_entry_count */
+	 
 	spinlock_t		c_list_lock;
 	struct list_head	c_list;
-	/* Number of entries in cache */
+	 
 	unsigned long		c_entry_count;
 	struct shrinker		c_shrink;
-	/* Work for shrinking when the cache has too many entries */
+	 
 	struct work_struct	c_shrink_work;
 };
 
@@ -53,24 +38,10 @@ static inline struct hlist_bl_head *mb_cache_entry_head(struct mb_cache *cache,
 	return &cache->c_hash[hash_32(key, cache->c_bucket_bits)];
 }
 
-/*
- * Number of entries to reclaim synchronously when there are too many entries
- * in cache
- */
+ 
 #define SYNC_SHRINK_BATCH 64
 
-/*
- * mb_cache_entry_create - create entry in cache
- * @cache - cache where the entry should be created
- * @mask - gfp mask with which the entry should be allocated
- * @key - key of the entry
- * @value - value of the entry
- * @reusable - is the entry reusable by others?
- *
- * Creates entry in @cache with key @key and value @value. The function returns
- * -EBUSY if entry with the same key and value already exists in cache.
- * Otherwise 0 is returned.
- */
+ 
 int mb_cache_entry_create(struct mb_cache *cache, gfp_t mask, u32 key,
 			  u64 value, bool reusable)
 {
@@ -78,10 +49,10 @@ int mb_cache_entry_create(struct mb_cache *cache, gfp_t mask, u32 key,
 	struct hlist_bl_node *dup_node;
 	struct hlist_bl_head *head;
 
-	/* Schedule background reclaim if there are too many entries */
+	 
 	if (cache->c_entry_count >= cache->c_max_entries)
 		schedule_work(&cache->c_shrink_work);
-	/* Do some sync reclaim if background reclaim cannot keep up */
+	 
 	if (cache->c_entry_count >= 2*cache->c_max_entries)
 		mb_cache_shrink(cache, SYNC_SHRINK_BATCH);
 
@@ -90,13 +61,7 @@ int mb_cache_entry_create(struct mb_cache *cache, gfp_t mask, u32 key,
 		return -ENOMEM;
 
 	INIT_LIST_HEAD(&entry->e_list);
-	/*
-	 * We create entry with two references. One reference is kept by the
-	 * hash table, the other reference is used to protect us from
-	 * mb_cache_entry_delete_or_get() until the entry is fully setup. This
-	 * avoids nesting of cache->c_list_lock into hash table bit locks which
-	 * is problematic for RT.
-	 */
+	 
 	atomic_set(&entry->e_refcnt, 2);
 	entry->e_key = key;
 	entry->e_value = value;
@@ -136,13 +101,7 @@ void __mb_cache_entry_free(struct mb_cache *cache, struct mb_cache_entry *entry)
 }
 EXPORT_SYMBOL(__mb_cache_entry_free);
 
-/*
- * mb_cache_entry_wait_unused - wait to be the last user of the entry
- *
- * @entry - entry to work on
- *
- * Wait to be the last user of the entry.
- */
+ 
 void mb_cache_entry_wait_unused(struct mb_cache_entry *entry)
 {
 	wait_var_event(&entry->e_refcnt, atomic_read(&entry->e_refcnt) <= 2);
@@ -181,14 +140,7 @@ out:
 	return entry;
 }
 
-/*
- * mb_cache_entry_find_first - find the first reusable entry with the given key
- * @cache: cache where we should search
- * @key: key to look for
- *
- * Search in @cache for a reusable entry with key @key. Grabs reference to the
- * first reusable entry found and returns the entry.
- */
+ 
 struct mb_cache_entry *mb_cache_entry_find_first(struct mb_cache *cache,
 						 u32 key)
 {
@@ -196,16 +148,7 @@ struct mb_cache_entry *mb_cache_entry_find_first(struct mb_cache *cache,
 }
 EXPORT_SYMBOL(mb_cache_entry_find_first);
 
-/*
- * mb_cache_entry_find_next - find next reusable entry with the same key
- * @cache: cache where we should search
- * @entry: entry to start search from
- *
- * Finds next reusable entry in the hash chain which has the same key as @entry.
- * If @entry is unhashed (which can happen when deletion of entry races with the
- * search), finds the first reusable entry in the hash chain. The function drops
- * reference to @entry and returns with a reference to the found entry.
- */
+ 
 struct mb_cache_entry *mb_cache_entry_find_next(struct mb_cache *cache,
 						struct mb_cache_entry *entry)
 {
@@ -213,12 +156,7 @@ struct mb_cache_entry *mb_cache_entry_find_next(struct mb_cache *cache,
 }
 EXPORT_SYMBOL(mb_cache_entry_find_next);
 
-/*
- * mb_cache_entry_get - get a cache entry by value (and key)
- * @cache - cache we work with
- * @key - key
- * @value - value
- */
+ 
 struct mb_cache_entry *mb_cache_entry_get(struct mb_cache *cache, u32 key,
 					  u64 value)
 {
@@ -240,17 +178,7 @@ out:
 }
 EXPORT_SYMBOL(mb_cache_entry_get);
 
-/* mb_cache_entry_delete_or_get - remove a cache entry if it has no users
- * @cache - cache we work with
- * @key - key
- * @value - value
- *
- * Remove entry from cache @cache with key @key and value @value. The removal
- * happens only if the entry is unused. The function returns NULL in case the
- * entry was successfully removed or there's no entry in cache. Otherwise the
- * function grabs reference of the entry that we failed to delete because it
- * still has users and return it.
- */
+ 
 struct mb_cache_entry *mb_cache_entry_delete_or_get(struct mb_cache *cache,
 						    u32 key, u64 value)
 {
@@ -260,10 +188,7 @@ struct mb_cache_entry *mb_cache_entry_delete_or_get(struct mb_cache *cache,
 	if (!entry)
 		return NULL;
 
-	/*
-	 * Drop the ref we got from mb_cache_entry_get() and the initial hash
-	 * ref if we are the last user
-	 */
+	 
 	if (atomic_cmpxchg(&entry->e_refcnt, 2, 0) != 2)
 		return entry;
 
@@ -277,12 +202,7 @@ struct mb_cache_entry *mb_cache_entry_delete_or_get(struct mb_cache *cache,
 }
 EXPORT_SYMBOL(mb_cache_entry_delete_or_get);
 
-/* mb_cache_entry_touch - cache entry got used
- * @cache - cache the entry belongs to
- * @entry - entry that got used
- *
- * Marks entry as used to give hit higher chances of surviving in cache.
- */
+ 
 void mb_cache_entry_touch(struct mb_cache *cache,
 			  struct mb_cache_entry *entry)
 {
@@ -299,7 +219,7 @@ static unsigned long mb_cache_count(struct shrinker *shrink,
 	return cache->c_entry_count;
 }
 
-/* Shrink number of entries in cache */
+ 
 static unsigned long mb_cache_shrink(struct mb_cache *cache,
 				     unsigned long nr_to_scan)
 {
@@ -310,7 +230,7 @@ static unsigned long mb_cache_shrink(struct mb_cache *cache,
 	while (nr_to_scan-- && !list_empty(&cache->c_list)) {
 		entry = list_first_entry(&cache->c_list,
 					 struct mb_cache_entry, e_list);
-		/* Drop initial hash reference if there is no user */
+		 
 		if (test_bit(MBE_REFERENCED_B, &entry->e_flags) ||
 		    atomic_cmpxchg(&entry->e_refcnt, 1, 0) != 1) {
 			clear_bit(MBE_REFERENCED_B, &entry->e_flags);
@@ -338,7 +258,7 @@ static unsigned long mb_cache_scan(struct shrinker *shrink,
 	return mb_cache_shrink(cache, sc->nr_to_scan);
 }
 
-/* We shrink 1/X of the cache when we have too many entries in it */
+ 
 #define SHRINK_DIVISOR 16
 
 static void mb_cache_shrink_worker(struct work_struct *work)
@@ -348,12 +268,7 @@ static void mb_cache_shrink_worker(struct work_struct *work)
 	mb_cache_shrink(cache, cache->c_max_entries / SHRINK_DIVISOR);
 }
 
-/*
- * mb_cache_create - create cache
- * @bucket_bits: log2 of the hash table size
- *
- * Create cache for keys with 2^bucket_bits hash entries.
- */
+ 
 struct mb_cache *mb_cache_create(int bucket_bits)
 {
 	struct mb_cache *cache;
@@ -395,23 +310,14 @@ err_out:
 }
 EXPORT_SYMBOL(mb_cache_create);
 
-/*
- * mb_cache_destroy - destroy cache
- * @cache: the cache to destroy
- *
- * Free all entries in cache and cache itself. Caller must make sure nobody
- * (except shrinker) can reach @cache when calling this.
- */
+ 
 void mb_cache_destroy(struct mb_cache *cache)
 {
 	struct mb_cache_entry *entry, *next;
 
 	unregister_shrinker(&cache->c_shrink);
 
-	/*
-	 * We don't bother with any locking. Cache must not be used at this
-	 * point.
-	 */
+	 
 	list_for_each_entry_safe(entry, next, &cache->c_list, e_list) {
 		list_del(&entry->e_list);
 		WARN_ON(atomic_read(&entry->e_refcnt) != 1);

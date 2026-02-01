@@ -1,12 +1,4 @@
-/*
- * Driver for MMC and SSD cards for Cavium OCTEON and ThunderX SOCs.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2012-2017 Cavium Inc.
- */
+ 
 
 #ifndef _CAVIUM_MMC_H_
 #define _CAVIUM_MMC_H_
@@ -22,7 +14,7 @@
 
 #define CAVIUM_MAX_MMC		4
 
-/* DMA register addresses */
+ 
 #define MIO_EMM_DMA_FIFO_CFG(x)	(0x00 + x->reg_off_dma)
 #define MIO_EMM_DMA_FIFO_ADR(x)	(0x10 + x->reg_off_dma)
 #define MIO_EMM_DMA_FIFO_CMD(x)	(0x18 + x->reg_off_dma)
@@ -33,7 +25,7 @@
 #define MIO_EMM_DMA_INT_ENA_W1S(x) (0x40 + x->reg_off_dma)
 #define MIO_EMM_DMA_INT_ENA_W1C(x) (0x48 + x->reg_off_dma)
 
-/* register addresses */
+ 
 #define MIO_EMM_CFG(x)		(0x00 + x->reg_off)
 #define MIO_EMM_SWITCH(x)	(0x48 + x->reg_off)
 #define MIO_EMM_DMA(x)		(0x50 + x->reg_off)
@@ -59,7 +51,7 @@ struct cvm_mmc_host {
 	int reg_off;
 	int reg_off_dma;
 	u64 emm_cfg;
-	u64 n_minus_one;	/* OCTEON II workaround location */
+	u64 n_minus_one;	 
 	int last_slot;
 	struct clk *clk;
 	int sys_freq;
@@ -85,23 +77,23 @@ struct cvm_mmc_host {
 	void (*acquire_bus)(struct cvm_mmc_host *);
 	void (*release_bus)(struct cvm_mmc_host *);
 	void (*int_enable)(struct cvm_mmc_host *, u64);
-	/* required on some MIPS models */
+	 
 	void (*dmar_fixup)(struct cvm_mmc_host *, struct mmc_command *,
 			   struct mmc_data *, u64);
 	void (*dmar_fixup_done)(struct cvm_mmc_host *);
 };
 
 struct cvm_mmc_slot {
-	struct mmc_host *mmc;		/* slot-level mmc_core object */
-	struct cvm_mmc_host *host;	/* common hw for all slots */
+	struct mmc_host *mmc;		 
+	struct cvm_mmc_host *host;	 
 
 	u64 clock;
 
 	u64 cached_switch;
 	u64 cached_rca;
 
-	unsigned int cmd_cnt;		/* sample delay */
-	unsigned int dat_cnt;		/* sample delay */
+	unsigned int cmd_cnt;		 
+	unsigned int dat_cnt;		 
 
 	int bus_id;
 };
@@ -116,7 +108,7 @@ struct cvm_mmc_cr_mods {
 	u8 rtype_xor;
 };
 
-/* Bitfield definitions */
+ 
 #define MIO_EMM_DMA_FIFO_CFG_CLR	BIT_ULL(16)
 #define MIO_EMM_DMA_FIFO_CFG_INT_LVL	GENMASK_ULL(12, 8)
 #define MIO_EMM_DMA_FIFO_CFG_COUNT	GENMASK_ULL(4, 0)
@@ -206,7 +198,7 @@ struct cvm_mmc_cr_mods {
 #define MIO_EMM_SWITCH_CLK_HI		GENMASK_ULL(31, 16)
 #define MIO_EMM_SWITCH_CLK_LO		GENMASK_ULL(15, 0)
 
-/* Protoypes */
+ 
 irqreturn_t cvm_mmc_interrupt(int irq, void *dev_id);
 int cvm_mmc_of_slot_probe(struct device *dev, struct cvm_mmc_host *host);
 int cvm_mmc_of_slot_remove(struct cvm_mmc_slot *slot);

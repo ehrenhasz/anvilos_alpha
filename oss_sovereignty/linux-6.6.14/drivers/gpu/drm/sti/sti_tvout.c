@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Vincent Abriou <vincent.abriou@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -25,7 +20,7 @@
 #include "sti_drv.h"
 #include "sti_vtg.h"
 
-/* glue registers */
+ 
 #define TVO_CSC_MAIN_M0                  0x000
 #define TVO_CSC_MAIN_M1                  0x004
 #define TVO_CSC_MAIN_M2                  0x008
@@ -103,7 +98,7 @@
 
 #define TVO_MIN_HD_HEIGHT                720
 
-/* enum listing the supported output data format */
+ 
 enum sti_tvout_video_out_type {
 	STI_TVOUT_VIDEO_OUT_RGB,
 	STI_TVOUT_VIDEO_OUT_YUV,
@@ -130,13 +125,13 @@ struct sti_tvout_encoder {
 
 #define to_sti_tvout(x) to_sti_tvout_encoder(x)->tvout
 
-/* preformatter conversion matrix */
+ 
 static const u32 rgb_to_ycbcr_601[8] = {
 	0xF927082E, 0x04C9FEAB, 0x01D30964, 0xFA95FD3D,
 	0x0000082E, 0x00002000, 0x00002000, 0x00000000
 };
 
-/* 709 RGB to YCbCr */
+ 
 static const u32 rgb_to_ycbcr_709[8] = {
 	0xF891082F, 0x0367FF40, 0x01280B71, 0xF9B1FE20,
 	0x0000082F, 0x00002000, 0x00002000, 0x00000000
@@ -152,15 +147,7 @@ static void tvout_write(struct sti_tvout *tvout, u32 val, int offset)
 	writel(val, tvout->regs + offset);
 }
 
-/**
- * tvout_vip_set_color_order - Set the clipping mode of a VIP
- *
- * @tvout: tvout structure
- * @reg: register to set
- * @cr_r: red chroma or red order
- * @y_g: y or green order
- * @cb_b: blue chroma or blue order
- */
+ 
 static void tvout_vip_set_color_order(struct sti_tvout *tvout, int reg,
 				      u32 cr_r, u32 y_g, u32 cb_b)
 {
@@ -176,13 +163,7 @@ static void tvout_vip_set_color_order(struct sti_tvout *tvout, int reg,
 	tvout_write(tvout, val, reg);
 }
 
-/**
- * tvout_vip_set_clip_mode - Set the clipping mode of a VIP
- *
- * @tvout: tvout structure
- * @reg: register to set
- * @range: clipping range
- */
+ 
 static void tvout_vip_set_clip_mode(struct sti_tvout *tvout, int reg, u32 range)
 {
 	u32 val = tvout_read(tvout, reg);
@@ -192,13 +173,7 @@ static void tvout_vip_set_clip_mode(struct sti_tvout *tvout, int reg, u32 range)
 	tvout_write(tvout, val, reg);
 }
 
-/**
- * tvout_vip_set_rnd - Set the rounded value of a VIP
- *
- * @tvout: tvout structure
- * @reg: register to set
- * @rnd: rounded val per component
- */
+ 
 static void tvout_vip_set_rnd(struct sti_tvout *tvout, int reg, u32 rnd)
 {
 	u32 val = tvout_read(tvout, reg);
@@ -208,14 +183,7 @@ static void tvout_vip_set_rnd(struct sti_tvout *tvout, int reg, u32 rnd)
 	tvout_write(tvout, val, reg);
 }
 
-/**
- * tvout_vip_set_sel_input - Select the VIP input
- *
- * @tvout: tvout structure
- * @reg: register to set
- * @main_path: main or auxiliary path
- * @video_out: selected_input (main/aux + conv)
- */
+ 
 static void tvout_vip_set_sel_input(struct sti_tvout *tvout,
 				    int reg,
 				    bool main_path,
@@ -238,7 +206,7 @@ static void tvout_vip_set_sel_input(struct sti_tvout *tvout,
 		break;
 	}
 
-	/* on stih407 chip the sel_input bypass mode logic is inverted */
+	 
 	sel_input = sel_input ^ TVO_VIP_SEL_INPUT_BYPASS_MASK;
 
 	val &= ~TVO_VIP_SEL_INPUT_MASK;
@@ -246,13 +214,7 @@ static void tvout_vip_set_sel_input(struct sti_tvout *tvout,
 	tvout_write(tvout, val, reg);
 }
 
-/**
- * tvout_vip_set_in_vid_fmt - Select the input video signed or unsigned
- *
- * @tvout: tvout structure
- * @reg: register to set
- * @in_vid_fmt: used video input format
- */
+ 
 static void tvout_vip_set_in_vid_fmt(struct sti_tvout *tvout,
 		int reg, u32 in_vid_fmt)
 {
@@ -263,12 +225,7 @@ static void tvout_vip_set_in_vid_fmt(struct sti_tvout *tvout,
 	tvout_write(tvout, val, reg);
 }
 
-/**
- * tvout_preformatter_set_matrix - Set preformatter matrix
- *
- * @tvout: tvout structure
- * @mode: display mode structure
- */
+ 
 static void tvout_preformatter_set_matrix(struct sti_tvout *tvout,
 					  struct drm_display_mode *mode)
 {
@@ -288,13 +245,7 @@ static void tvout_preformatter_set_matrix(struct sti_tvout *tvout,
 	}
 }
 
-/**
- * tvout_dvo_start - Start VIP block for DVO output
- *
- * @tvout: pointer on tvout structure
- * @main_path: true if main path has to be used in the vip configuration
- *	  else aux path is used.
- */
+ 
 static void tvout_dvo_start(struct sti_tvout *tvout, bool main_path)
 {
 	u32 tvo_in_vid_format;
@@ -304,7 +255,7 @@ static void tvout_dvo_start(struct sti_tvout *tvout, bool main_path)
 
 	if (main_path) {
 		DRM_DEBUG_DRIVER("main vip for DVO\n");
-		/* Select the input sync for dvo */
+		 
 		tmp = TVO_SYNC_MAIN_VTG_SET_REF | VTG_SYNC_ID_DVO;
 		val  = tmp << TVO_SYNC_DVO_PAD_VSYNC_SHIFT;
 		val |= tmp << TVO_SYNC_DVO_PAD_HSYNC_SHIFT;
@@ -313,7 +264,7 @@ static void tvout_dvo_start(struct sti_tvout *tvout, bool main_path)
 		tvo_in_vid_format = TVO_MAIN_IN_VID_FORMAT;
 	} else {
 		DRM_DEBUG_DRIVER("aux vip for DVO\n");
-		/* Select the input sync for dvo */
+		 
 		tmp = TVO_SYNC_AUX_VTG_SET_REF | VTG_SYNC_ID_DVO;
 		val  = tmp << TVO_SYNC_DVO_PAD_VSYNC_SHIFT;
 		val |= tmp << TVO_SYNC_DVO_PAD_HSYNC_SHIFT;
@@ -322,33 +273,27 @@ static void tvout_dvo_start(struct sti_tvout *tvout, bool main_path)
 		tvo_in_vid_format = TVO_AUX_IN_VID_FORMAT;
 	}
 
-	/* Set color channel order */
+	 
 	tvout_vip_set_color_order(tvout, TVO_VIP_DVO,
 				  TVO_VIP_REORDER_CR_R_SEL,
 				  TVO_VIP_REORDER_Y_G_SEL,
 				  TVO_VIP_REORDER_CB_B_SEL);
 
-	/* Set clipping mode */
+	 
 	tvout_vip_set_clip_mode(tvout, TVO_VIP_DVO, TVO_VIP_CLIP_DISABLED);
 
-	/* Set round mode (rounded to 8-bit per component) */
+	 
 	tvout_vip_set_rnd(tvout, TVO_VIP_DVO, TVO_VIP_RND_8BIT_ROUNDED);
 
-	/* Set input video format */
+	 
 	tvout_vip_set_in_vid_fmt(tvout, tvo_in_vid_format, TVO_IN_FMT_SIGNED);
 
-	/* Input selection */
+	 
 	tvout_vip_set_sel_input(tvout, TVO_VIP_DVO, main_path,
 				STI_TVOUT_VIDEO_OUT_RGB);
 }
 
-/**
- * tvout_hdmi_start - Start VIP block for HDMI output
- *
- * @tvout: pointer on tvout structure
- * @main_path: true if main path has to be used in the vip configuration
- *	  else aux path is used.
- */
+ 
 static void tvout_hdmi_start(struct sti_tvout *tvout, bool main_path)
 {
 	u32 tvo_in_vid_format;
@@ -357,47 +302,41 @@ static void tvout_hdmi_start(struct sti_tvout *tvout, bool main_path)
 
 	if (main_path) {
 		DRM_DEBUG_DRIVER("main vip for hdmi\n");
-		/* select the input sync for hdmi */
+		 
 		tvout_write(tvout,
 			    TVO_SYNC_MAIN_VTG_SET_REF | VTG_SYNC_ID_HDMI,
 			    TVO_HDMI_SYNC_SEL);
 		tvo_in_vid_format = TVO_MAIN_IN_VID_FORMAT;
 	} else {
 		DRM_DEBUG_DRIVER("aux vip for hdmi\n");
-		/* select the input sync for hdmi */
+		 
 		tvout_write(tvout,
 			    TVO_SYNC_AUX_VTG_SET_REF | VTG_SYNC_ID_HDMI,
 			    TVO_HDMI_SYNC_SEL);
 		tvo_in_vid_format = TVO_AUX_IN_VID_FORMAT;
 	}
 
-	/* set color channel order */
+	 
 	tvout_vip_set_color_order(tvout, TVO_VIP_HDMI,
 				  TVO_VIP_REORDER_CR_R_SEL,
 				  TVO_VIP_REORDER_Y_G_SEL,
 				  TVO_VIP_REORDER_CB_B_SEL);
 
-	/* set clipping mode */
+	 
 	tvout_vip_set_clip_mode(tvout, TVO_VIP_HDMI, TVO_VIP_CLIP_DISABLED);
 
-	/* set round mode (rounded to 8-bit per component) */
+	 
 	tvout_vip_set_rnd(tvout, TVO_VIP_HDMI, TVO_VIP_RND_8BIT_ROUNDED);
 
-	/* set input video format */
+	 
 	tvout_vip_set_in_vid_fmt(tvout, tvo_in_vid_format, TVO_IN_FMT_SIGNED);
 
-	/* input selection */
+	 
 	tvout_vip_set_sel_input(tvout, TVO_VIP_HDMI, main_path,
 				STI_TVOUT_VIDEO_OUT_RGB);
 }
 
-/**
- * tvout_hda_start - Start HDF VIP and HD DAC
- *
- * @tvout: pointer on tvout structure
- * @main_path: true if main path has to be used in the vip configuration
- *	  else aux path is used.
- */
+ 
 static void tvout_hda_start(struct sti_tvout *tvout, bool main_path)
 {
 	u32 tvo_in_vid_format;
@@ -407,7 +346,7 @@ static void tvout_hda_start(struct sti_tvout *tvout, bool main_path)
 
 	if (main_path) {
 		DRM_DEBUG_DRIVER("main vip for HDF\n");
-		/* Select the input sync for HD analog and HD DCS */
+		 
 		val  = TVO_SYNC_MAIN_VTG_SET_REF | VTG_SYNC_ID_HDDCS;
 		val  = val << TVO_SYNC_HD_DCS_SHIFT;
 		val |= TVO_SYNC_MAIN_VTG_SET_REF | VTG_SYNC_ID_HDF;
@@ -415,7 +354,7 @@ static void tvout_hda_start(struct sti_tvout *tvout, bool main_path)
 		tvo_in_vid_format = TVO_MAIN_IN_VID_FORMAT;
 	} else {
 		DRM_DEBUG_DRIVER("aux vip for HDF\n");
-		/* Select the input sync for HD analog and HD DCS */
+		 
 		val  = TVO_SYNC_AUX_VTG_SET_REF | VTG_SYNC_ID_HDDCS;
 		val  = val << TVO_SYNC_HD_DCS_SHIFT;
 		val |= TVO_SYNC_AUX_VTG_SET_REF | VTG_SYNC_ID_HDF;
@@ -423,26 +362,26 @@ static void tvout_hda_start(struct sti_tvout *tvout, bool main_path)
 		tvo_in_vid_format = TVO_AUX_IN_VID_FORMAT;
 	}
 
-	/* set color channel order */
+	 
 	tvout_vip_set_color_order(tvout, TVO_VIP_HDF,
 				  TVO_VIP_REORDER_CR_R_SEL,
 				  TVO_VIP_REORDER_Y_G_SEL,
 				  TVO_VIP_REORDER_CB_B_SEL);
 
-	/* set clipping mode */
+	 
 	tvout_vip_set_clip_mode(tvout, TVO_VIP_HDF, TVO_VIP_CLIP_DISABLED);
 
-	/* set round mode (rounded to 10-bit per component) */
+	 
 	tvout_vip_set_rnd(tvout, TVO_VIP_HDF, TVO_VIP_RND_10BIT_ROUNDED);
 
-	/* Set input video format */
+	 
 	tvout_vip_set_in_vid_fmt(tvout, tvo_in_vid_format, TVO_IN_FMT_SIGNED);
 
-	/* Input selection */
+	 
 	tvout_vip_set_sel_input(tvout, TVO_VIP_HDF, main_path,
 				STI_TVOUT_VIDEO_OUT_YUV);
 
-	/* power up HD DAC */
+	 
 	tvout_write(tvout, 0, TVO_HD_DAC_CFG_OFF);
 }
 
@@ -642,7 +581,7 @@ static void sti_dvo_encoder_disable(struct drm_encoder *encoder)
 {
 	struct sti_tvout *tvout = to_sti_tvout(encoder);
 
-	/* Reset VIP register */
+	 
 	tvout_write(tvout, 0x0, TVO_VIP_DVO);
 }
 
@@ -692,10 +631,10 @@ static void sti_hda_encoder_disable(struct drm_encoder *encoder)
 {
 	struct sti_tvout *tvout = to_sti_tvout(encoder);
 
-	/* reset VIP register */
+	 
 	tvout_write(tvout, 0x0, TVO_VIP_HDF);
 
-	/* power down HD DAC */
+	 
 	tvout_write(tvout, 1, TVO_HD_DAC_CFG_OFF);
 }
 
@@ -743,7 +682,7 @@ static void sti_hdmi_encoder_disable(struct drm_encoder *encoder)
 {
 	struct sti_tvout *tvout = to_sti_tvout(encoder);
 
-	/* reset VIP register */
+	 
 	tvout_write(tvout, 0x0, TVO_VIP_HDMI);
 }
 
@@ -851,7 +790,7 @@ static int sti_tvout_probe(struct platform_device *pdev)
 
 	tvout->dev = dev;
 
-	/* get memory resources */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "tvout-reg");
 	if (!res) {
 		DRM_ERROR("Invalid glue resource\n");
@@ -861,9 +800,9 @@ static int sti_tvout_probe(struct platform_device *pdev)
 	if (!tvout->regs)
 		return -ENOMEM;
 
-	/* get reset resources */
+	 
 	tvout->reset = devm_reset_control_get(dev, "tvout");
-	/* take tvout out of reset */
+	 
 	if (!IS_ERR(tvout->reset))
 		reset_control_deassert(tvout->reset);
 
@@ -879,7 +818,7 @@ static void sti_tvout_remove(struct platform_device *pdev)
 
 static const struct of_device_id tvout_of_match[] = {
 	{ .compatible = "st,stih407-tvout", },
-	{ /* end node */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tvout_of_match);
 

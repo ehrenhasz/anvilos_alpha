@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//         Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/types.h>
 
@@ -12,8 +12,8 @@
 #include "trace.h"
 
 #define BYTES_PER_LINE 16
-#define MAX_CHUNK_SIZE ((PAGE_SIZE - 150) /* Place for trace header */	\
-			/ (2 * BYTES_PER_LINE + 4) /* chars per line */	\
+#define MAX_CHUNK_SIZE ((PAGE_SIZE - 150)  	\
+			/ (2 * BYTES_PER_LINE + 4)  	\
 			* BYTES_PER_LINE)
 
 void trace_avs_msg_payload(const void *data, size_t size)

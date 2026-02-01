@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: George Sun <george.sun@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -15,7 +12,7 @@
 #include "../vdec_drv_if.h"
 #include "../vdec_vpu_if.h"
 
-/* reset_frame_context defined in VP9 spec */
+ 
 #define VP9_RESET_FRAME_CONTEXT_NONE0 0
 #define VP9_RESET_FRAME_CONTEXT_NONE1 1
 #define VP9_RESET_FRAME_CONTEXT_SPEC 2
@@ -30,9 +27,7 @@
 #define SEG_FLAG(x) (!!((seg)->flags & V4L2_VP9_SEGMENTATION_FLAG_##x))
 #define VP9_BAND_6(band) ((band) == 0 ? 3 : 6)
 
-/*
- * struct vdec_vp9_slice_frame_ctx - vp9 prob tables footprint
- */
+ 
 struct vdec_vp9_slice_frame_ctx {
 	struct {
 		u8 probs[6][3];
@@ -41,7 +36,7 @@ struct vdec_vp9_slice_frame_ctx {
 
 	u8 y_mode_prob[4][16];
 	u8 switch_interp_prob[4][16];
-	u8 seg[32];  /* ignore */
+	u8 seg[32];   
 	u8 comp_inter_prob[16];
 	u8 comp_ref_prob[16];
 	u8 single_ref_prob[5][2];
@@ -81,9 +76,7 @@ struct vdec_vp9_slice_frame_ctx {
 	u8 intra_inter_prob[8];
 };
 
-/*
- * struct vdec_vp9_slice_frame_counts - vp9 counts tables footprint
- */
+ 
 struct vdec_vp9_slice_frame_counts {
 	union {
 		struct {
@@ -135,22 +128,7 @@ struct vdec_vp9_slice_frame_counts {
 	u32 reserved[126][4];
 };
 
-/**
- * struct vdec_vp9_slice_counts_map - vp9 counts tables to map
- *                                    v4l2_vp9_frame_symbol_counts
- * @skip:	skip counts.
- * @y_mode:	Y prediction mode counts.
- * @filter:	interpolation filter counts.
- * @mv_joint:	motion vector joint counts.
- * @sign:	motion vector sign counts.
- * @classes:	motion vector class counts.
- * @class0:	motion vector class0 bit counts.
- * @bits:	motion vector bits counts.
- * @class0_fp:	motion vector class0 fractional bit counts.
- * @fp:	motion vector fractional bit counts.
- * @class0_hp:	motion vector class0 high precision fractional bit counts.
- * @hp:	motion vector high precision fractional bit counts.
- */
+ 
 struct vdec_vp9_slice_counts_map {
 	u32 skip[3][2];
 	u32 y_mode[4][10];
@@ -165,10 +143,7 @@ struct vdec_vp9_slice_counts_map {
 	u32 hp[2][2];
 };
 
-/*
- * struct vdec_vp9_slice_uncompressed_header - vp9 uncompressed header syntax
- *                                             used for decoding
- */
+ 
 struct vdec_vp9_slice_uncompressed_header {
 	u8 profile;
 	u8 last_frame_type;
@@ -195,20 +170,20 @@ struct vdec_vp9_slice_uncompressed_header {
 	u8 frame_parallel_decoding_mode;
 	u8 frame_context_idx;
 
-	/* loop_filter_params */
+	 
 	u8 loop_filter_level;
 	u8 loop_filter_sharpness;
 	u8 loop_filter_delta_enabled;
 	s8 loop_filter_ref_deltas[4];
 	s8 loop_filter_mode_deltas[2];
 
-	/* quantization_params */
+	 
 	u8 base_q_idx;
 	s8 delta_q_y_dc;
 	s8 delta_q_uv_dc;
 	s8 delta_q_uv_ac;
 
-	/* segmentation_params */
+	 
 	u8 segmentation_enabled;
 	u8 segmentation_update_map;
 	u8 segmentation_tree_probs[7];
@@ -220,7 +195,7 @@ struct vdec_vp9_slice_uncompressed_header {
 	u8 feature_enabled[8];
 	s16 feature_value[8][4];
 
-	/* tile_info */
+	 
 	u8 tile_cols_log2;
 	u8 tile_rows_log2;
 	u8 padding2[2];
@@ -228,14 +203,11 @@ struct vdec_vp9_slice_uncompressed_header {
 	u16 uncompressed_header_size;
 	u16 header_size_in_bytes;
 
-	/* LAT OUT, CORE IN */
+	 
 	u32 dequant[8][4];
 };
 
-/*
- * struct vdec_vp9_slice_compressed_header - vp9 compressed header syntax
- *                                           used for decoding.
- */
+ 
 struct vdec_vp9_slice_compressed_header {
 	u8 tx_mode;
 	u8 ref_mode;
@@ -244,9 +216,7 @@ struct vdec_vp9_slice_compressed_header {
 	u8 padding[3];
 };
 
-/*
- * struct vdec_vp9_slice_tiles - vp9 tile syntax
- */
+ 
 struct vdec_vp9_slice_tiles {
 	u32 size[4][64];
 	u32 mi_rows[4];
@@ -255,9 +225,7 @@ struct vdec_vp9_slice_tiles {
 	u8 padding[7];
 };
 
-/*
- * struct vdec_vp9_slice_reference - vp9 reference frame information
- */
+ 
 struct vdec_vp9_slice_reference {
 	u16 frame_width;
 	u16 frame_height;
@@ -267,9 +235,7 @@ struct vdec_vp9_slice_reference {
 	u8 padding;
 };
 
-/*
- * struct vdec_vp9_slice_frame - vp9 syntax used for decoding
- */
+ 
 struct vdec_vp9_slice_frame {
 	struct vdec_vp9_slice_uncompressed_header uh;
 	struct vdec_vp9_slice_compressed_header ch;
@@ -277,20 +243,16 @@ struct vdec_vp9_slice_frame {
 	struct vdec_vp9_slice_reference ref[3];
 };
 
-/*
- * struct vdec_vp9_slice_init_vsi - VSI used to initialize instance
- */
+ 
 struct vdec_vp9_slice_init_vsi {
 	unsigned int architecture;
 	unsigned int reserved;
 	u64 core_vsi;
-	/* default frame context's position in MicroP */
+	 
 	u64 default_frame_ctx;
 };
 
-/*
- * struct vdec_vp9_slice_mem - memory address and size
- */
+ 
 struct vdec_vp9_slice_mem {
 	union {
 		u64 buf;
@@ -303,25 +265,19 @@ struct vdec_vp9_slice_mem {
 	};
 };
 
-/*
- * struct vdec_vp9_slice_bs - input buffer for decoding
- */
+ 
 struct vdec_vp9_slice_bs {
 	struct vdec_vp9_slice_mem buf;
 	struct vdec_vp9_slice_mem frame;
 };
 
-/*
- * struct vdec_vp9_slice_fb - frame buffer for decoding
- */
+ 
 struct vdec_vp9_slice_fb {
 	struct vdec_vp9_slice_mem y;
 	struct vdec_vp9_slice_mem c;
 };
 
-/*
- * struct vdec_vp9_slice_state - decoding state
- */
+ 
 struct vdec_vp9_slice_state {
 	int err;
 	unsigned int full;
@@ -331,29 +287,11 @@ struct vdec_vp9_slice_state {
 	unsigned int crc[12];
 };
 
-/**
- * struct vdec_vp9_slice_vsi - exchange decoding information
- *                             between Main CPU and MicroP
- *
- * @bs:	input buffer
- * @fb:	output buffer
- * @ref:	3 reference buffers
- * @mv:	mv working buffer
- * @seg:	segmentation working buffer
- * @tile:	tile buffer
- * @prob:	prob table buffer, used to set/update prob table
- * @counts:	counts table buffer, used to update prob table
- * @ube:	general buffer
- * @trans:	trans buffer position in general buffer
- * @err_map:	error buffer
- * @row_info:	row info buffer
- * @frame:	decoding syntax
- * @state:	decoding state
- */
+ 
 struct vdec_vp9_slice_vsi {
-	/* used in LAT stage */
+	 
 	struct vdec_vp9_slice_bs bs;
-	/* used in Core stage */
+	 
 	struct vdec_vp9_slice_fb fb;
 	struct vdec_vp9_slice_fb ref[3];
 
@@ -363,27 +301,19 @@ struct vdec_vp9_slice_vsi {
 	struct vdec_vp9_slice_mem prob;
 	struct vdec_vp9_slice_mem counts;
 
-	/* LAT stage's output, Core stage's input */
+	 
 	struct vdec_vp9_slice_mem ube;
 	struct vdec_vp9_slice_mem trans;
 	struct vdec_vp9_slice_mem err_map;
 	struct vdec_vp9_slice_mem row_info;
 
-	/* decoding parameters */
+	 
 	struct vdec_vp9_slice_frame frame;
 
 	struct vdec_vp9_slice_state state;
 };
 
-/**
- * struct vdec_vp9_slice_pfc - per-frame context that contains a local vsi.
- *                             pass it from lat to core
- *
- * @vsi:	local vsi. copy to/from remote vsi before/after decoding
- * @ref_idx:	reference buffer index
- * @seq:	picture sequence
- * @state:	decoding state
- */
+ 
 struct vdec_vp9_slice_pfc {
 	struct vdec_vp9_slice_vsi vsi;
 
@@ -391,13 +321,11 @@ struct vdec_vp9_slice_pfc {
 
 	int seq;
 
-	/* LAT/Core CRC */
+	 
 	struct vdec_vp9_slice_state state[2];
 };
 
-/*
- * enum vdec_vp9_slice_resolution_level
- */
+ 
 enum vdec_vp9_slice_resolution_level {
 	VP9_RES_NONE,
 	VP9_RES_FHD,
@@ -405,44 +333,13 @@ enum vdec_vp9_slice_resolution_level {
 	VP9_RES_8K,
 };
 
-/*
- * struct vdec_vp9_slice_ref - picture's width & height should kept
- *                             for later decoding as reference picture
- */
+ 
 struct vdec_vp9_slice_ref {
 	unsigned int width;
 	unsigned int height;
 };
 
-/**
- * struct vdec_vp9_slice_instance - represent one vp9 instance
- *
- * @ctx:		pointer to codec's context
- * @vpu:		VPU instance
- * @seq:		global picture sequence
- * @level:		level of current resolution
- * @width:		width of last picture
- * @height:		height of last picture
- * @frame_type:	frame_type of last picture
- * @irq:		irq to Main CPU or MicroP
- * @show_frame:	show_frame of last picture
- * @dpb:		picture information (width/height) for reference
- * @mv:		mv working buffer
- * @seg:		segmentation working buffer
- * @tile:		tile buffer
- * @prob:		prob table buffer, used to set/update prob table
- * @counts:		counts table buffer, used to update prob table
- * @frame_ctx:		4 frame context according to VP9 Spec
- * @frame_ctx_helper:	4 frame context according to newest kernel spec
- * @dirty:		state of each frame context
- * @init_vsi:		vsi used for initialized VP9 instance
- * @vsi:		vsi used for decoding/flush ...
- * @core_vsi:		vsi used for Core stage
- *
- * @sc_pfc:		per frame context single core
- * @counts_map:	used map to counts_helper
- * @counts_helper:	counts table according to newest kernel spec
- */
+ 
 struct vdec_vp9_slice_instance {
 	struct mtk_vcodec_dec_ctx *ctx;
 	struct vdec_vpu_inst vpu;
@@ -451,37 +348,33 @@ struct vdec_vp9_slice_instance {
 
 	enum vdec_vp9_slice_resolution_level level;
 
-	/* for resolution change and get_pic_info */
+	 
 	unsigned int width;
 	unsigned int height;
 
-	/* for last_frame_type */
+	 
 	unsigned int frame_type;
 	unsigned int irq;
 
 	unsigned int show_frame;
 
-	/* maintain vp9 reference frame state */
+	 
 	struct vdec_vp9_slice_ref dpb[VB2_MAX_FRAME];
 
-	/*
-	 * normal working buffers
-	 * mv[0]/seg[0]/tile/prob/counts is used for LAT
-	 * mv[1]/seg[1] is used for CORE
-	 */
+	 
 	struct mtk_vcodec_mem mv[2];
 	struct mtk_vcodec_mem seg[2];
 	struct mtk_vcodec_mem tile;
 	struct mtk_vcodec_mem prob;
 	struct mtk_vcodec_mem counts;
 
-	/* 4 prob tables */
+	 
 	struct vdec_vp9_slice_frame_ctx frame_ctx[4];
-	/*4 helper tables */
+	 
 	struct v4l2_vp9_frame_context frame_ctx_helper;
 	unsigned char dirty[4];
 
-	/* MicroP vsi */
+	 
 	union {
 		struct vdec_vp9_slice_init_vsi *init_vsi;
 		struct vdec_vp9_slice_vsi *vsi;
@@ -493,9 +386,7 @@ struct vdec_vp9_slice_instance {
 	struct v4l2_vp9_frame_symbol_counts counts_helper;
 };
 
-/*
- * all VP9 instances could share this default frame context.
- */
+ 
 static struct vdec_vp9_slice_frame_ctx *vdec_vp9_slice_default_frame_ctx;
 static DEFINE_MUTEX(vdec_vp9_slice_frame_ctx_lock);
 
@@ -544,7 +435,7 @@ static int vdec_vp9_slice_alloc_working_buffer(struct vdec_vp9_slice_instance *i
 {
 	struct mtk_vcodec_dec_ctx *ctx = instance->ctx;
 	enum vdec_vp9_slice_resolution_level level;
-	/* super blocks */
+	 
 	unsigned int max_sb_w;
 	unsigned int max_sb_h;
 	unsigned int max_w;
@@ -562,12 +453,12 @@ static int vdec_vp9_slice_alloc_working_buffer(struct vdec_vp9_slice_instance *i
 	    h > VCODEC_DEC_4K_CODED_HEIGHT) {
 		return -EINVAL;
 	} else if (w > MTK_VDEC_MAX_W || h > MTK_VDEC_MAX_H) {
-		/* 4K */
+		 
 		level = VP9_RES_4K;
 		max_w = VCODEC_DEC_4K_CODED_WIDTH;
 		max_h = VCODEC_DEC_4K_CODED_HEIGHT;
 	} else {
-		/* FHD */
+		 
 		level = VP9_RES_FHD;
 		max_w = MTK_VDEC_MAX_W;
 		max_h = MTK_VDEC_MAX_H;
@@ -583,10 +474,7 @@ static int vdec_vp9_slice_alloc_working_buffer(struct vdec_vp9_slice_instance *i
 	max_sb_h = DIV_ROUND_UP(max_h, 64);
 	ret = -ENOMEM;
 
-	/*
-	 * Lat-flush must wait core idle, otherwise core will
-	 * use released buffers
-	 */
+	 
 
 	size = (max_sb_w * max_sb_h + 2) * 576;
 	for (i = 0; i < 2; i++) {
@@ -662,12 +550,7 @@ static void vdec_vp9_slice_vsi_from_remote(struct vdec_vp9_slice_vsi *vsi,
 	struct vdec_vp9_slice_frame *rf;
 	struct vdec_vp9_slice_frame *f;
 
-	/*
-	 * compressed header
-	 * dequant
-	 * buffer position
-	 * decode state
-	 */
+	 
 	if (!skip) {
 		rf = &remote_vsi->frame;
 		f = &vsi->frame;
@@ -747,7 +630,7 @@ static void vdec_vp9_slice_setup_hdr(struct vdec_vp9_slice_instance *instance,
 	uh->frame_width = hdr->frame_width_minus_1 + 1;
 	uh->frame_height = hdr->frame_height_minus_1 + 1;
 	uh->intra_only = HDR_FLAG(INTRA_ONLY);
-	/* map v4l2 enum to values defined in VP9 spec for firmware */
+	 
 	switch (hdr->reset_frame_context) {
 	case V4L2_VP9_RESET_FRAME_CTX_NONE:
 		uh->reset_frame_context = VP9_RESET_FRAME_CONTEXT_NONE0;
@@ -762,16 +645,7 @@ static void vdec_vp9_slice_setup_hdr(struct vdec_vp9_slice_instance *instance,
 		uh->reset_frame_context = VP9_RESET_FRAME_CONTEXT_NONE0;
 		break;
 	}
-	/*
-	 * ref_frame_sign_bias specifies the intended direction
-	 * of the motion vector in time for each reference frame.
-	 * - INTRA_FRAME = 0,
-	 * - LAST_FRAME = 1,
-	 * - GOLDEN_FRAME = 2,
-	 * - ALTREF_FRAME = 3,
-	 * ref_frame_sign_bias[INTRA_FRAME] is always 0
-	 * and VDA only passes another 3 directions
-	 */
+	 
 	uh->ref_frame_sign_bias[0] = 0;
 	for (i = 0; i < 3; i++)
 		uh->ref_frame_sign_bias[i + 1] =
@@ -782,7 +656,7 @@ static void vdec_vp9_slice_setup_hdr(struct vdec_vp9_slice_instance *instance,
 	uh->frame_parallel_decoding_mode = HDR_FLAG(PARALLEL_DEC_MODE);
 	uh->frame_context_idx = hdr->frame_context_idx;
 
-	/* tile info */
+	 
 	uh->tile_cols_log2 = hdr->tile_cols_log2;
 	uh->tile_rows_log2 = hdr->tile_rows_log2;
 
@@ -805,23 +679,12 @@ static void vdec_vp9_slice_setup_frame_ctx(struct vdec_vp9_slice_instance *insta
 	error_resilient_mode = HDR_FLAG(ERROR_RESILIENT);
 	reset_frame_context = uh->reset_frame_context;
 
-	/*
-	 * according to "6.2 Uncompressed header syntax" in
-	 * "VP9 Bitstream & Decoding Process Specification",
-	 * reset @frame_context_idx when (FrameIsIntra || error_resilient_mode)
-	 */
+	 
 	if (key_frame || intra_only || error_resilient_mode) {
-		/*
-		 * @reset_frame_context specifies
-		 * whether the frame context should be
-		 * reset to default values:
-		 * 0 or 1 means do not reset any frame context
-		 * 2 resets just the context specified in the frame header
-		 * 3 resets all contexts
-		 */
+		 
 		if (key_frame || error_resilient_mode ||
 		    reset_frame_context == 3) {
-			/* use default table */
+			 
 			for (i = 0; i < 4; i++)
 				instance->dirty[i] = 0;
 		} else if (reset_frame_context == 2) {
@@ -901,7 +764,7 @@ static int vdec_vp9_slice_setup_tile(struct vdec_vp9_slice_vsi *vsi,
 	if (rows > 4 || cols > 64)
 		return -EINVAL;
 
-	/* setup mi rows/cols information */
+	 
 	mi_rows = (hdr->frame_height_minus_1 + 1 + 7) >> 3;
 	mi_cols = (hdr->frame_width_minus_1 + 1 + 7) >> 3;
 
@@ -946,7 +809,7 @@ static int vdec_vp9_slice_setup_pfc(struct vdec_vp9_slice_instance *instance,
 	struct vdec_vp9_slice_vsi *vsi;
 	int ret;
 
-	/* frame header */
+	 
 	hdr_ctrl = v4l2_ctrl_find(&instance->ctx->ctrl_hdl, V4L2_CID_STATELESS_VP9_FRAME);
 	if (!hdr_ctrl || !hdr_ctrl->p_cur.p)
 		return -EINVAL;
@@ -955,7 +818,7 @@ static int vdec_vp9_slice_setup_pfc(struct vdec_vp9_slice_instance *instance,
 	vsi = &pfc->vsi;
 	uh = &vsi->frame.uh;
 
-	/* setup vsi information */
+	 
 	vdec_vp9_slice_setup_hdr(instance, uh, hdr);
 	vdec_vp9_slice_setup_frame_ctx(instance, uh, hdr);
 	vdec_vp9_slice_setup_loop_filter(uh, &hdr->lf);
@@ -966,7 +829,7 @@ static int vdec_vp9_slice_setup_pfc(struct vdec_vp9_slice_instance *instance,
 		return ret;
 	vdec_vp9_slice_setup_state(vsi);
 
-	/* core stage needs buffer index to get ref y/c ... */
+	 
 	vdec_vp9_slice_setup_ref_idx(pfc, hdr);
 
 	pfc->seq = instance->seq;
@@ -1005,7 +868,7 @@ static int vdec_vp9_slice_setup_lat_buffer(struct vdec_vp9_slice_instance *insta
 	vsi->ube.dma_addr = lat_buf->ctx->msg_queue.wdma_addr.dma_addr;
 	vsi->ube.size = lat_buf->ctx->msg_queue.wdma_addr.size;
 	vsi->trans.dma_addr = lat_buf->ctx->msg_queue.wdma_wptr_addr;
-	/* used to store trans end */
+	 
 	vsi->trans.dma_addr_end = lat_buf->ctx->msg_queue.wdma_rptr_addr;
 	vsi->err_map.dma_addr = lat_buf->wdma_err_addr.dma_addr;
 	vsi->err_map.size = lat_buf->wdma_err_addr.size;
@@ -1043,7 +906,7 @@ static void vdec_vp9_slice_setup_seg_buffer(struct vdec_vp9_slice_instance *inst
 {
 	struct vdec_vp9_slice_uncompressed_header *uh;
 
-	/* reset segment buffer */
+	 
 	uh = &vsi->frame.uh;
 	if (uh->frame_type == 0 ||
 	    uh->intra_only ||
@@ -1055,14 +918,7 @@ static void vdec_vp9_slice_setup_seg_buffer(struct vdec_vp9_slice_instance *inst
 	}
 }
 
-/*
- * parse tiles according to `6.4 Decode tiles syntax`
- * in "vp9-bitstream-specification"
- *
- * frame contains uncompress header, compressed header and several tiles.
- * this function parses tiles' position and size, stores them to tile buffer
- * for decoding.
- */
+ 
 static int vdec_vp9_slice_setup_tile_buffer(struct vdec_vp9_slice_instance *instance,
 					    struct vdec_vp9_slice_vsi *vsi,
 					    struct mtk_vcodec_mem *bs)
@@ -1104,12 +960,12 @@ static int vdec_vp9_slice_setup_tile_buffer(struct vdec_vp9_slice_instance *inst
 	}
 
 	tiles = &vsi->frame.tiles;
-	/* setup tile buffer */
+	 
 
 	va = (unsigned char *)bs->va;
 	pos = va + offset;
 	end = va + bs->size;
-	/* truncated */
+	 
 	pa = (unsigned int)bs->dma_addr + offset;
 	tb = instance->tile.va;
 	for (i = 0; i < rows; i++) {
@@ -1173,7 +1029,7 @@ static int vdec_vp9_slice_setup_lat(struct vdec_vp9_slice_instance *instance,
 
 	vdec_vp9_slice_setup_seg_buffer(instance, vsi, &instance->seg[0]);
 
-	/* setup prob/tile buffers for LAT */
+	 
 
 	ret = vdec_vp9_slice_setup_prob_buffer(instance, vsi);
 	if (ret)
@@ -1196,13 +1052,7 @@ void vdec_vp9_slice_map_counts_eob_coef(unsigned int i, unsigned int j, unsigned
 {
 	u32 l = 0, m;
 
-	/*
-	 * helper eo -> mtk eo
-	 * helpre e1 -> mtk c3
-	 * helper c0 -> c0
-	 * helper c1 -> c1
-	 * helper c2 -> c2
-	 */
+	 
 	for (m = 0; m < 3; m++) {
 		counts_helper->coeff[i][j][k][l][m] =
 			(u32 (*)[3]) & counts->coef_probs[i][j][k].band_0[m];
@@ -1351,10 +1201,7 @@ void vdec_vp9_slice_framectx_map_helper(bool frame_is_intra,
 				vdec_vp9_slice_map_to_coef(i, j, k, pre_frame_ctx,
 							   frame_ctx_helper);
 
-	/*
-	 * use previous prob when frame is not intra or
-	 * we should use the prob updated by the compressed header parse
-	 */
+	 
 	if (!frame_is_intra)
 		frame_ctx = pre_frame_ctx;
 
@@ -1550,7 +1397,7 @@ static int vdec_vp9_slice_update_prob(struct vdec_vp9_slice_instance *instance,
 		vdec_vp9_slice_counts_map_helper(&instance->counts_map, counts, counts_helper);
 
 		frame_is_intra = !vsi->frame.uh.frame_type || vsi->frame.uh.intra_only;
-		/* check default prob */
+		 
 		if (!instance->dirty[uh->frame_context_idx])
 			vdec_vp9_slice_framectx_map_helper(frame_is_intra,
 							   vdec_vp9_slice_default_frame_ctx,
@@ -1624,9 +1471,9 @@ static int vdec_vp9_slice_update_lat(struct vdec_vp9_slice_instance *instance,
 		       (unsigned long)vsi->trans.dma_addr,
 		       (unsigned long)vsi->trans.dma_addr_end);
 
-	/* buffer full, need to re-decode */
+	 
 	if (vsi->state.full) {
-		/* buffer not enough */
+		 
 		if (vsi->trans.dma_addr_end - vsi->trans.dma_addr ==
 			vsi->ube.size)
 			return -ENOMEM;
@@ -1676,25 +1523,25 @@ static int vdec_vp9_slice_setup_core_buffer(struct vdec_vp9_slice_instance *inst
 	h = vsi->frame.uh.frame_height;
 	size = ALIGN(w, 64) * ALIGN(h, 64);
 
-	/* frame buffer */
+	 
 	vsi->fb.y.dma_addr = fb->base_y.dma_addr;
 	if (plane == 1)
 		vsi->fb.c.dma_addr = fb->base_y.dma_addr + size;
 	else
 		vsi->fb.c.dma_addr = fb->base_c.dma_addr;
 
-	/* reference buffers */
+	 
 	vq = v4l2_m2m_get_vq(instance->ctx->m2m_ctx,
 			     V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 	if (!vq)
 		return -EINVAL;
 
-	/* get current output buffer */
+	 
 	vb = &v4l2_m2m_next_dst_buf(instance->ctx->m2m_ctx)->vb2_buf;
 	if (!vb)
 		return -EINVAL;
 
-	/* update internal buffer's width/height */
+	 
 	for (i = 0; i < vq->num_buffers; i++) {
 		if (vb == vq->bufs[i]) {
 			instance->dpb[i].width = w;
@@ -1703,10 +1550,7 @@ static int vdec_vp9_slice_setup_core_buffer(struct vdec_vp9_slice_instance *inst
 		}
 	}
 
-	/*
-	 * get buffer's width/height from instance
-	 * get buffer address from vb2buf
-	 */
+	 
 	for (i = 0; i < 3; i++) {
 		ref = &vsi->frame.ref[i];
 		vb = vb2_find_buffer(vq, pfc->ref_idx[i]);
@@ -1871,7 +1715,7 @@ static int vdec_vp9_slice_init(struct mtk_vcodec_dec_ctx *ctx)
 		goto error_vpu_init;
 	}
 
-	/* init vsi and global flags */
+	 
 
 	vsi = instance->vpu.vsi;
 	if (!vsi) {
@@ -1951,7 +1795,7 @@ static void vdec_vp9_slice_get_pic_info(struct vdec_vp9_slice_instance *instance
 static void vdec_vp9_slice_get_dpb_size(struct vdec_vp9_slice_instance *instance,
 					unsigned int *dpb_sz)
 {
-	/* refer VP9 specification */
+	 
 	*dpb_sz = 9;
 }
 
@@ -1990,7 +1834,7 @@ static int vdec_vp9_slice_single_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		return -EINVAL;
 	ctx = instance->ctx;
 
-	/* bs NULL means flush decoder */
+	 
 	if (!bs)
 		return vdec_vp9_slice_flush(h_vdec, bs, fb, res_chg);
 
@@ -2015,7 +1859,7 @@ static int vdec_vp9_slice_single_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 
 	ret = mtk_vcodec_wait_for_done_ctx(ctx,	MTK_INST_IRQ_RECEIVED,
 					   WAIT_INTR_TIMEOUT_MS, MTK_VDEC_CORE);
-	/* update remote vsi if decode timeout */
+	 
 	if (ret) {
 		mtk_vdec_err(ctx, "VP9 decode timeout %d\n", ret);
 		WRITE_ONCE(instance->vsi->state.timeout, 1);
@@ -2048,13 +1892,13 @@ static int vdec_vp9_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		return -EINVAL;
 	ctx = instance->ctx;
 
-	/* init msgQ for the first time */
+	 
 	if (vdec_msg_queue_init(&ctx->msg_queue, ctx,
 				vdec_vp9_slice_core_decode,
 				sizeof(*pfc)))
 		return -ENOMEM;
 
-	/* bs NULL means flush decoder */
+	 
 	if (!bs)
 		return vdec_vp9_slice_flush(h_vdec, bs, fb, res_chg);
 
@@ -2086,7 +1930,7 @@ static int vdec_vp9_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	if (instance->irq) {
 		ret = mtk_vcodec_wait_for_done_ctx(ctx,	MTK_INST_IRQ_RECEIVED,
 						   WAIT_INTR_TIMEOUT_MS, MTK_VDEC_LAT0);
-		/* update remote vsi if decode timeout */
+		 
 		if (ret) {
 			mtk_vdec_err(ctx, "VP9 decode timeout %d pic %d\n", ret, pfc->seq);
 			WRITE_ONCE(instance->vsi->state.timeout, 1);
@@ -2097,7 +1941,7 @@ static int vdec_vp9_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	vdec_vp9_slice_vsi_from_remote(vsi, instance->vsi, 0);
 	ret = vdec_vp9_slice_update_lat(instance, lat_buf, pfc);
 
-	/* LAT trans full, no more UBE or decode timeout */
+	 
 	if (ret) {
 		mtk_vdec_err(ctx, "VP9 decode error: %d\n", ret);
 		goto err_free_fb_out;
@@ -2174,7 +2018,7 @@ static int vdec_vp9_slice_core_decode(struct vdec_lat_buf *lat_buf)
 	if (instance->irq) {
 		ret = mtk_vcodec_wait_for_done_ctx(ctx, MTK_INST_IRQ_RECEIVED,
 						   WAIT_INTR_TIMEOUT_MS, MTK_VDEC_CORE);
-		/* update remote vsi if decode timeout */
+		 
 		if (ret) {
 			mtk_vdec_err(ctx, "VP9 core timeout pic %d\n", pfc->seq);
 			WRITE_ONCE(instance->core_vsi->state.timeout, 1);
@@ -2199,7 +2043,7 @@ static int vdec_vp9_slice_core_decode(struct vdec_lat_buf *lat_buf)
 
 err:
 	if (ctx && pfc) {
-		/* always update read pointer */
+		 
 		vdec_msg_queue_update_ube_rptr(&ctx->msg_queue, pfc->vsi.trans.dma_addr_end);
 
 		if (fb)

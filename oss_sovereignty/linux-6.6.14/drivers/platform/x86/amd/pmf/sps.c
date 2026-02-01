@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD Platform Management Framework (PMF) Driver
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- */
+
+ 
 
 #include "pmf.h"
 
@@ -232,7 +225,7 @@ static int amd_pmf_profile_set(struct platform_profile_handler *pprof,
 
 	pmf->current_profile = profile;
 
-	/* Notify EC about the slider position change */
+	 
 	if (is_apmf_func_supported(pmf, APMF_FUNC_OS_POWER_SLIDER_UPDATE)) {
 		ret = amd_pmf_power_slider_update_event(pmf);
 		if (ret)
@@ -257,19 +250,19 @@ int amd_pmf_init_sps(struct amd_pmf_dev *dev)
 	if (is_apmf_func_supported(dev, APMF_FUNC_STATIC_SLIDER_GRANULAR)) {
 		amd_pmf_load_defaults_sps(dev);
 
-		/* update SPS balanced power mode thermals */
+		 
 		amd_pmf_set_sps_power_limits(dev);
 	}
 
 	dev->pprof.profile_get = amd_pmf_profile_get;
 	dev->pprof.profile_set = amd_pmf_profile_set;
 
-	/* Setup supported modes */
+	 
 	set_bit(PLATFORM_PROFILE_LOW_POWER, dev->pprof.choices);
 	set_bit(PLATFORM_PROFILE_BALANCED, dev->pprof.choices);
 	set_bit(PLATFORM_PROFILE_PERFORMANCE, dev->pprof.choices);
 
-	/* Create platform_profile structure and register */
+	 
 	err = platform_profile_register(&dev->pprof);
 	if (err)
 		dev_err(dev->dev, "Failed to register SPS support, this is most likely an SBIOS bug: %d\n",

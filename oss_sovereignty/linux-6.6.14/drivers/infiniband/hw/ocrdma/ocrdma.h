@@ -1,44 +1,4 @@
-/* This file is part of the Emulex RoCE Device Driver for
- * RoCE (RDMA over Converged Ethernet) adapters.
- * Copyright (C) 2012-2015 Emulex. All rights reserved.
- * EMULEX and SLI are trademarks of Emulex.
- * www.emulex.com
- *
- * This software is available to you under a choice of one of two licenses.
- * You may choose to be licensed under the terms of the GNU General Public
- * License (GPL) Version 2, available from the file COPYING in the main
- * directory of this source tree, or the BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+ 
 
 #ifndef __OCRDMA_H__
 #define __OCRDMA_H__
@@ -132,13 +92,13 @@ struct ocrdma_queue_info {
 	dma_addr_t dma;
 	u32 size;
 	u16 len;
-	u16 entry_size;		/* Size of an element in the queue */
-	u16 id;			/* qid, where to ring the doorbell. */
+	u16 entry_size;		 
+	u16 id;			 
 	u16 head, tail;
 	bool created;
 };
 
-struct ocrdma_aic_obj {         /* Adaptive interrupt coalescing (AIC) info */
+struct ocrdma_aic_obj {          
 	u32 prev_eqd;
 	u64 eq_intr_cnt;
 	u64 prev_eq_intr_cnt;
@@ -160,7 +120,7 @@ struct ocrdma_mq {
 };
 
 struct mqe_ctx {
-	struct mutex lock; /* for serializing mailbox commands on MQ */
+	struct mutex lock;  
 	wait_queue_head_t cmd_wait;
 	u32 tag;
 	u16 cqe_status;
@@ -239,7 +199,7 @@ struct ocrdma_dev {
 	struct ib_device ibdev;
 	struct ocrdma_dev_attr attr;
 
-	struct mutex dev_lock; /* provides syncronise access to device data */
+	struct mutex dev_lock;  
 	spinlock_t flush_q_lock ____cacheline_aligned;
 
 	struct ocrdma_cq **cq_tbl;
@@ -251,9 +211,7 @@ struct ocrdma_dev {
 	u16 base_eqid;
 	u16 max_eq;
 
-	/* provided synchronization to sgid table for
-	 * updating gid entries triggered by notifier.
-	 */
+	 
 	spinlock_t sgid_lock;
 
 	int gsi_qp_created;
@@ -265,9 +223,7 @@ struct ocrdma_dev {
 		dma_addr_t pa;
 		u32 size;
 		u32 num_ah;
-		/* provide synchronization for av
-		 * entry allocations.
-		 */
+		 
 		spinlock_t lock;
 		u32 ahid;
 		struct ocrdma_pbl pbl;
@@ -285,7 +241,7 @@ struct ocrdma_dev {
 	struct list_head entry;
 	int id;
 	u64 *stag_arr;
-	u8 sl; /* service level */
+	u8 sl;  
 	bool pfc_state;
 	atomic_t update_sl;
 	u16 pvid;
@@ -293,7 +249,7 @@ struct ocrdma_dev {
 	u32 flags;
 
 	ulong last_stats_time;
-	struct mutex stats_lock; /* provide synch for debugfs operations */
+	struct mutex stats_lock;  
 	struct stats_mem stats_mem;
 	struct ocrdma_stats rsrc_stats;
 	struct ocrdma_stats rx_stats;
@@ -316,16 +272,11 @@ struct ocrdma_cq {
 	struct ib_cq ibcq;
 	struct ocrdma_cqe *va;
 	u32 phase;
-	u32 getp;	/* pointer to pending wrs to
-			 * return to stack, wrap arounds
-			 * at max_hw_cqe
-			 */
+	u32 getp;	 
 	u32 max_hw_cqe;
 	bool phase_change;
-	spinlock_t cq_lock ____cacheline_aligned; /* provide synchronization
-						   * to cq polling
-						   */
-	/* syncronizes cq completion handler invoked from multiple context */
+	spinlock_t cq_lock ____cacheline_aligned;  
+	 
 	spinlock_t comp_handler_lock ____cacheline_aligned;
 	u16 id;
 	u16 eqn;
@@ -335,9 +286,7 @@ struct ocrdma_cq {
 	u32 len;
 	u32 cqe_cnt;
 
-	/* head of all qp's sq and rq for which cqes need to be flushed
-	 * by the software.
-	 */
+	 
 	struct list_head sq_head, rq_head;
 };
 
@@ -359,13 +308,13 @@ struct ocrdma_ah {
 };
 
 struct ocrdma_qp_hwq_info {
-	u8 *va;			/* virtual address */
+	u8 *va;			 
 	u32 max_sges;
 	u32 head, tail;
 	u32 entry_size;
 	u32 max_cnt;
 	u32 max_wqe_idx;
-	u16 dbid;		/* qid, where to ring the doorbell. */
+	u16 dbid;		 
 	u32 len;
 	dma_addr_t pa;
 };
@@ -378,7 +327,7 @@ struct ocrdma_srq {
 	u32 *idx_bit_fields;
 	u32 bit_fields_len;
 
-	/* provide synchronization to multiple context(s) posting rqe */
+	 
 	spinlock_t q_lock ____cacheline_aligned;
 
 	struct ocrdma_pd *pd;
@@ -399,10 +348,10 @@ struct ocrdma_qp {
 	} *wqe_wr_id_tbl;
 	u32 max_inline_data;
 
-	/* provide synchronization to multiple context(s) posting wqe, rqe */
+	 
 	spinlock_t q_lock ____cacheline_aligned;
 	struct ocrdma_cq *sq_cq;
-	/* list maintained per CQ to flush SQ errors */
+	 
 	struct list_head sq_entry;
 
 	u8 __iomem *rq_db;
@@ -410,10 +359,10 @@ struct ocrdma_qp {
 	u64 *rqe_wr_id_tbl;
 	struct ocrdma_cq *rq_cq;
 	struct ocrdma_srq *srq;
-	/* list maintained per CQ to flush RQ errors */
+	 
 	struct list_head rq_entry;
 
-	enum ocrdma_qp_state state;	/*  QP state */
+	enum ocrdma_qp_state state;	 
 	int cap_flags;
 	u32 max_ord, max_ird;
 
@@ -433,7 +382,7 @@ struct ocrdma_ucontext {
 	struct ib_ucontext ibucontext;
 
 	struct list_head mm_head;
-	struct mutex mm_list_lock; /* protects list entries of mm type */
+	struct mutex mm_list_lock;  
 	struct ocrdma_pd *cntxt_pd;
 	int pd_in_use;
 
@@ -586,9 +535,7 @@ static inline u8 ocrdma_get_app_prio(u8 *app_prio, u8 prio)
 }
 
 static inline u8 ocrdma_is_enabled_and_synced(u32 state)
-{	/* May also be used to interpret TC-state, QCN-state
-	 * Appl-state and Logical-link-state in future.
-	 */
+{	 
 	return (state & OCRDMA_STATE_FLAG_ENABLED) &&
 		(state & OCRDMA_STATE_FLAG_SYNC);
 }

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Seattle AHCI SATA driver
- *
- * Copyright (c) 2015, Advanced Micro Devices
- * Author: Brijesh Singh <brijesh.singh@amd.com>
- *
- * based on the AHCI SATA platform driver by Jeff Garzik and Anton Vorontsov
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,17 +12,7 @@
 #include <linux/pci_ids.h>
 #include "ahci.h"
 
-/* SGPIO Control Register definition
- *
- * Bit		Type		Description
- * 31		RW		OD7.2 (activity)
- * 30		RW		OD7.1 (locate)
- * 29		RW		OD7.0 (fault)
- * 28...8	RW		OD6.2...OD0.0 (3bits per port, 1 bit per LED)
- * 7		RO		SGPIO feature flag
- * 6:4		RO		Reserved
- * 3:0		RO		Number of ports (0 means no port supported)
- */
+ 
 #define ACTIVITY_BIT_POS(x)		(8 + (3 * x))
 #define LOCATE_BIT_POS(x)		(ACTIVITY_BIT_POS(x) + 1)
 #define FAULT_BIT_POS(x)		(LOCATE_BIT_POS(x) + 1)
@@ -86,7 +69,7 @@ static ssize_t seattle_transmit_led_message(struct ata_port *ap, u32 state,
 	struct ahci_em_priv *emp;
 	u32 val;
 
-	/* get the slot number from the message */
+	 
 	pmp = (state & EM_MSG_LED_PMP_SLOT) >> 8;
 	if (pmp >= EM_MAX_SLOTS)
 		return -EINVAL;
@@ -112,7 +95,7 @@ static ssize_t seattle_transmit_led_message(struct ata_port *ap, u32 state,
 
 	spin_lock_irqsave(ap->lock, flags);
 
-	/* save off new led state for port/slot */
+	 
 	emp->led_state = state;
 
 	spin_unlock_irqrestore(ap->lock, flags);

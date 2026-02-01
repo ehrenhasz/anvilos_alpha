@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  net/dccp/ipv4.c
- *
- *  An implementation of the DCCP protocol
- *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- */
+
+ 
 
 #include <linux/dccp.h>
 #include <linux/icmp.h>
@@ -36,11 +31,7 @@ struct dccp_v4_pernet {
 
 static unsigned int dccp_v4_pernet_id __read_mostly;
 
-/*
- * The per-net v4_ctl_sk socket is used for responding to
- * the Out-of-the-blue (OOTB) packets. A control sock will be created
- * for this socket at the initialization time.
- */
+ 
 
 int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 {
@@ -105,12 +96,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	inet_csk(sk)->icsk_ext_hdr_len = 0;
 	if (inet_opt)
 		inet_csk(sk)->icsk_ext_hdr_len = inet_opt->opt.optlen;
-	/*
-	 * Socket identity is still unknown (sport may be zero).
-	 * However we set state to DCCP_REQUESTING and not releasing socket
-	 * lock select source port, enter ourselves into the hash tables and
-	 * complete initialization after this.
-	 */
+	 
 	dccp_set_state(sk, DCCP_REQUESTING);
 	err = inet_hash_connect(&dccp_death_row, sk);
 	if (err != 0)
@@ -123,7 +109,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 		rt = NULL;
 		goto failure;
 	}
-	/* OK, now commit destination to socket.  */
+	 
 	sk_setup_caps(sk, &rt->dst);
 
 	dp->dccps_iss = secure_dccp_sequence_number(inet->inet_saddr,
@@ -139,9 +125,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 out:
 	return err;
 failure:
-	/*
-	 * This unhashes the socket and releases the local port, if necessary.
-	 */
+	 
 	dccp_set_state(sk, DCCP_CLOSED);
 	inet_bhash2_reset_saddr(sk);
 	ip_rt_put(rt);
@@ -151,9 +135,7 @@ failure:
 }
 EXPORT_SYMBOL_GPL(dccp_v4_connect);
 
-/*
- * This routine does path mtu discovery as defined in RFC1191.
- */
+ 
 static inline void dccp_do_pmtu_discovery(struct sock *sk,
 					  const struct iphdr *iph,
 					  u32 mtu)
@@ -162,10 +144,7 @@ static inline void dccp_do_pmtu_discovery(struct sock *sk,
 	const struct inet_sock *inet = inet_sk(sk);
 	const struct dccp_sock *dp = dccp_sk(sk);
 
-	/* We are not interested in DCCP_LISTEN and request_socks (RESPONSEs
-	 * send out by Linux are always < 576bytes so they should go through
-	 * unfragmented).
-	 */
+	 
 	if (sk->sk_state == DCCP_LISTEN)
 		return;
 
@@ -173,9 +152,7 @@ static inline void dccp_do_pmtu_discovery(struct sock *sk,
 	if (!dst)
 		return;
 
-	/* Something is about to be wrong... Remember soft error
-	 * for the case, if this connection will not able to recover.
-	 */
+	 
 	if (mtu < dst_mtu(dst) && ip_dont_fragment(sk, dst))
 		WRITE_ONCE(sk->sk_err_soft, EMSGSIZE);
 
@@ -186,15 +163,9 @@ static inline void dccp_do_pmtu_discovery(struct sock *sk,
 	    inet_csk(sk)->icsk_pmtu_cookie > mtu) {
 		dccp_sync_mss(sk, mtu);
 
-		/*
-		 * From RFC 4340, sec. 14.1:
-		 *
-		 *	DCCP-Sync packets are the best choice for upward
-		 *	probing, since DCCP-Sync probes do not risk application
-		 *	data loss.
-		 */
+		 
 		dccp_send_sync(sk, dp->dccps_gsr, DCCP_PKT_SYNC);
-	} /* else let the usual retransmit timer handle it */
+	}  
 }
 
 static void dccp_do_redirect(struct sk_buff *skb, struct sock *sk)
@@ -210,37 +181,18 @@ void dccp_req_err(struct sock *sk, u64 seq)
 	struct request_sock *req = inet_reqsk(sk);
 	struct net *net = sock_net(sk);
 
-	/*
-	 * ICMPs are not backlogged, hence we cannot get an established
-	 * socket here.
-	 */
+	 
 	if (!between48(seq, dccp_rsk(req)->dreq_iss, dccp_rsk(req)->dreq_gss)) {
 		__NET_INC_STATS(net, LINUX_MIB_OUTOFWINDOWICMPS);
 	} else {
-		/*
-		 * Still in RESPOND, just remove it silently.
-		 * There is no good way to pass the error to the newly
-		 * created socket, and POSIX does not want network
-		 * errors returned from accept().
-		 */
+		 
 		inet_csk_reqsk_queue_drop(req->rsk_listener, req);
 	}
 	reqsk_put(req);
 }
 EXPORT_SYMBOL(dccp_req_err);
 
-/*
- * This routine is called by the ICMP module when it gets some sort of error
- * condition. If err < 0 then the socket should be closed and the error
- * returned to the user. If err > 0 it's just the icmp type << 8 | icmp code.
- * After adjustment header points to the first 8 bytes of the tcp header. We
- * need to find the appropriate port.
- *
- * The locking strategy used here is very "optimistic". When someone else
- * accesses the socket the ICMP is just dropped and for some paths there is no
- * check at all. A more general error queue to queue errors for later handling
- * is probably better.
- */
+ 
 static int dccp_v4_err(struct sk_buff *skb, u32 info)
 {
 	const struct iphdr *iph = (struct iphdr *)skb->data;
@@ -282,9 +234,7 @@ static int dccp_v4_err(struct sk_buff *skb, u32 info)
 	}
 
 	bh_lock_sock(sk);
-	/* If too many ICMPs get dropped on busy
-	 * servers this needs to be solved differently.
-	 */
+	 
 	if (sock_owned_by_user(sk))
 		__NET_INC_STATS(net, LINUX_MIB_LOCKDROPPEDICMPS);
 
@@ -304,7 +254,7 @@ static int dccp_v4_err(struct sk_buff *skb, u32 info)
 			dccp_do_redirect(skb, sk);
 		goto out;
 	case ICMP_SOURCE_QUENCH:
-		/* Just silently ignore these. */
+		 
 		goto out;
 	case ICMP_PARAMETERPROB:
 		err = EPROTO;
@@ -313,7 +263,7 @@ static int dccp_v4_err(struct sk_buff *skb, u32 info)
 		if (code > NR_ICMP_UNREACH)
 			goto out;
 
-		if (code == ICMP_FRAG_NEEDED) { /* PMTU discovery (RFC1191) */
+		if (code == ICMP_FRAG_NEEDED) {  
 			if (!sock_owned_by_user(sk))
 				dccp_do_pmtu_discovery(sk, iph, info);
 			goto out;
@@ -344,26 +294,12 @@ static int dccp_v4_err(struct sk_buff *skb, u32 info)
 		goto out;
 	}
 
-	/* If we've already connected we will keep trying
-	 * until we time out, or the user gives up.
-	 *
-	 * rfc1122 4.2.3.9 allows to consider as hard errors
-	 * only PROTO_UNREACH and PORT_UNREACH (well, FRAG_FAILED too,
-	 * but it is obsoleted by pmtu discovery).
-	 *
-	 * Note, that in modern internet, where routing is unreliable
-	 * and in each dark corner broken firewalls sit, sending random
-	 * errors ordered by their masters even this two messages finally lose
-	 * their original sense (even Linux sends invalid PORT_UNREACHs)
-	 *
-	 * Now we are in compliance with RFCs.
-	 *							--ANK (980905)
-	 */
+	 
 
 	if (!sock_owned_by_user(sk) && inet_test_bit(RECVERR, sk)) {
 		sk->sk_err = err;
 		sk_error_report(sk);
-	} else { /* Only an error on timeout */
+	} else {  
 		WRITE_ONCE(sk->sk_err_soft, err);
 	}
 out:
@@ -398,12 +334,7 @@ static inline u64 dccp_v4_init_sequence(const struct sk_buff *skb)
 					   dccp_hdr(skb)->dccph_sport);
 }
 
-/*
- * The three way handshake has completed - we got a valid ACK or DATAACK -
- * now create the new socket.
- *
- * This is the equivalent of TCP's tcp_v4_syn_recv_sock
- */
+ 
 struct sock *dccp_v4_request_recv_sock(const struct sock *sk,
 				       struct sk_buff *skb,
 				       struct request_sock *req,
@@ -531,7 +462,7 @@ static void dccp_v4_ctl_send_reset(const struct sock *sk, struct sk_buff *rxskb)
 	struct dccp_v4_pernet *pn;
 	struct sock *ctl_sk;
 
-	/* Never send a reset in response to a reset. */
+	 
 	if (dccp_hdr(rxskb)->dccph_type == DCCP_PKT_RESET)
 		return;
 
@@ -598,19 +529,15 @@ int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
 	const __be32 service = dccp_hdr_request(skb)->dccph_req_service;
 	struct dccp_skb_cb *dcb = DCCP_SKB_CB(skb);
 
-	/* Never answer to DCCP_PKT_REQUESTs send to broadcast or multicast */
+	 
 	if (skb_rtable(skb)->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))
-		return 0;	/* discard, don't send a reset here */
+		return 0;	 
 
 	if (dccp_bad_service_code(sk, service)) {
 		dcb->dccpd_reset_code = DCCP_RESET_CODE_BAD_SERVICE_CODE;
 		goto drop;
 	}
-	/*
-	 * TW buckets are converted to open requests without
-	 * limitations, they conserve resources and peer is
-	 * evidently real one.
-	 */
+	 
 	dcb->dccpd_reset_code = DCCP_RESET_CODE_TOO_BUSY;
 	if (inet_csk_reqsk_queue_is_full(sk))
 		goto drop;
@@ -639,13 +566,7 @@ int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
 	if (security_inet_conn_request(sk, skb, req))
 		goto drop_and_free;
 
-	/*
-	 * Step 3: Process LISTEN state
-	 *
-	 * Set S.ISR, S.GSR, S.SWL, S.SWH from packet or Init Cookie
-	 *
-	 * Setting S.SWL/S.SWH to is deferred to dccp_create_openreq_child().
-	 */
+	 
 	dreq->dreq_isr	   = dcb->dccpd_seq;
 	dreq->dreq_gsr	   = dreq->dreq_isr;
 	dreq->dreq_iss	   = dccp_v4_init_sequence(skb);
@@ -671,35 +592,13 @@ int dccp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
 {
 	struct dccp_hdr *dh = dccp_hdr(skb);
 
-	if (sk->sk_state == DCCP_OPEN) { /* Fast path */
+	if (sk->sk_state == DCCP_OPEN) {  
 		if (dccp_rcv_established(sk, skb, dh, skb->len))
 			goto reset;
 		return 0;
 	}
 
-	/*
-	 *  Step 3: Process LISTEN state
-	 *	 If P.type == Request or P contains a valid Init Cookie option,
-	 *	      (* Must scan the packet's options to check for Init
-	 *		 Cookies.  Only Init Cookies are processed here,
-	 *		 however; other options are processed in Step 8.  This
-	 *		 scan need only be performed if the endpoint uses Init
-	 *		 Cookies *)
-	 *	      (* Generate a new socket and switch to that socket *)
-	 *	      Set S := new socket for this port pair
-	 *	      S.state = RESPOND
-	 *	      Choose S.ISS (initial seqno) or set from Init Cookies
-	 *	      Initialize S.GAR := S.ISS
-	 *	      Set S.ISR, S.GSR, S.SWL, S.SWH from packet or Init Cookies
-	 *	      Continue with S.state == RESPOND
-	 *	      (* A Response packet will be generated in Step 11 *)
-	 *	 Otherwise,
-	 *	      Generate Reset(No Connection) unless P.type == Reset
-	 *	      Drop packet and return
-	 *
-	 * NOTE: the check for the packet types is done in
-	 *	 dccp_rcv_state_process
-	 */
+	 
 
 	if (dccp_rcv_state_process(sk, skb, dh, skb->len))
 		goto reset;
@@ -712,13 +611,7 @@ reset:
 }
 EXPORT_SYMBOL_GPL(dccp_v4_do_rcv);
 
-/**
- *	dccp_invalid_packet  -  check for malformed packets
- *	@skb: Packet to validate
- *
- *	Implements RFC 4340, 8.5:  Step 1: Check header basics
- *	Packets that fail these checks are ignored and do not receive Resets.
- */
+ 
 int dccp_invalid_packet(struct sk_buff *skb)
 {
 	const struct dccp_hdr *dh;
@@ -728,7 +621,7 @@ int dccp_invalid_packet(struct sk_buff *skb)
 	if (skb->pkt_type != PACKET_HOST)
 		return 1;
 
-	/* If the packet is shorter than 12 bytes, drop packet and return */
+	 
 	if (!pskb_may_pull(skb, sizeof(struct dccp_hdr))) {
 		DCCP_WARN("pskb_may_pull failed\n");
 		return 1;
@@ -736,32 +629,25 @@ int dccp_invalid_packet(struct sk_buff *skb)
 
 	dh = dccp_hdr(skb);
 
-	/* If P.type is not understood, drop packet and return */
+	 
 	if (dh->dccph_type >= DCCP_PKT_INVALID) {
 		DCCP_WARN("invalid packet type\n");
 		return 1;
 	}
 
-	/*
-	 * If P.Data Offset is too small for packet type, drop packet and return
-	 */
+	 
 	dccph_doff = dh->dccph_doff;
 	if (dccph_doff < dccp_hdr_len(skb) / sizeof(u32)) {
 		DCCP_WARN("P.Data Offset(%u) too small\n", dccph_doff);
 		return 1;
 	}
-	/*
-	 * If P.Data Offset is too large for packet, drop packet and return
-	 */
+	 
 	if (!pskb_may_pull(skb, dccph_doff * sizeof(u32))) {
 		DCCP_WARN("P.Data Offset(%u) too large\n", dccph_doff);
 		return 1;
 	}
 	dh = dccp_hdr(skb);
-	/*
-	 * If P.type is not Data, Ack, or DataAck and P.X == 0 (the packet
-	 * has short sequence numbers), drop packet and return
-	 */
+	 
 	if ((dh->dccph_type < DCCP_PKT_DATA    ||
 	    dh->dccph_type > DCCP_PKT_DATAACK) && dh->dccph_x == 0)  {
 		DCCP_WARN("P.type (%s) not Data || [Data]Ack, while P.X == 0\n",
@@ -769,10 +655,7 @@ int dccp_invalid_packet(struct sk_buff *skb)
 		return 1;
 	}
 
-	/*
-	 * If P.CsCov is too large for the packet size, drop packet and return.
-	 * This must come _before_ checksumming (not as RFC 4340 suggests).
-	 */
+	 
 	cscov = dccp_csum_coverage(skb);
 	if (cscov > skb->len) {
 		DCCP_WARN("P.CsCov %u exceeds packet length %d\n",
@@ -780,15 +663,14 @@ int dccp_invalid_packet(struct sk_buff *skb)
 		return 1;
 	}
 
-	/* If header checksum is incorrect, drop packet and return.
-	 * (This step is completed in the AF-dependent functions.) */
+	 
 	skb->csum = skb_checksum(skb, 0, cscov, 0);
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(dccp_invalid_packet);
 
-/* this is called when real data arrives */
+ 
 static int dccp_v4_rcv(struct sk_buff *skb)
 {
 	const struct dccp_hdr *dh;
@@ -797,13 +679,13 @@ static int dccp_v4_rcv(struct sk_buff *skb)
 	struct sock *sk;
 	int min_cov;
 
-	/* Step 1: Check header basics */
+	 
 
 	if (dccp_invalid_packet(skb))
 		goto discard_it;
 
 	iph = ip_hdr(skb);
-	/* Step 1: If header checksum is incorrect, drop packet and return */
+	 
 	if (dccp_v4_csum_finish(skb, iph->saddr, iph->daddr)) {
 		DCCP_WARN("dropped packet with invalid checksum\n");
 		goto discard_it;
@@ -838,12 +720,7 @@ lookup:
 		goto no_dccp_socket;
 	}
 
-	/*
-	 * Step 2:
-	 *	... or S.state == TIMEWAIT,
-	 *		Generate Reset(No Connection) unless P.type == Reset
-	 *		Drop packet and return
-	 */
+	 
 	if (sk->sk_state == DCCP_TIME_WAIT) {
 		dccp_pr_debug("sk->sk_state == DCCP_TIME_WAIT: do_time_wait\n");
 		inet_twsk_put(inet_twsk(sk));
@@ -876,18 +753,12 @@ lookup:
 			return 0;
 		}
 	}
-	/*
-	 * RFC 4340, sec. 9.2.1: Minimum Checksum Coverage
-	 *	o if MinCsCov = 0, only packets with CsCov = 0 are accepted
-	 *	o if MinCsCov > 0, also accept packets with CsCov >= MinCsCov
-	 */
+	 
 	min_cov = dccp_sk(sk)->dccps_pcrlen;
 	if (dh->dccph_cscov && (min_cov == 0 || dh->dccph_cscov < min_cov))  {
 		dccp_pr_debug("Packet CsCov %d does not satisfy MinCsCov %d\n",
 			      dh->dccph_cscov, min_cov);
-		/* FIXME: "Such packets SHOULD be reported using Data Dropped
-		 *         options (Section 11.7) with Drop Code 0, Protocol
-		 *         Constraints."                                     */
+		 
 		goto discard_and_relse;
 	}
 
@@ -900,12 +771,7 @@ lookup:
 no_dccp_socket:
 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
 		goto discard_it;
-	/*
-	 * Step 2:
-	 *	If no socket ...
-	 *		Generate Reset(No Connection) unless P.type == Reset
-	 *		Drop packet and return
-	 */
+	 
 	if (dh->dccph_type != DCCP_PKT_RESET) {
 		DCCP_SKB_CB(skb)->dccpd_reset_code =
 					DCCP_RESET_CODE_NO_CONNECTION;
@@ -997,11 +863,11 @@ static const struct proto_ops inet_dccp_ops = {
 	.socketpair	   = sock_no_socketpair,
 	.accept		   = inet_accept,
 	.getname	   = inet_getname,
-	/* FIXME: work on tcp_poll to rename it to inet_csk_poll */
+	 
 	.poll		   = dccp_poll,
 	.ioctl		   = inet_ioctl,
 	.gettstamp	   = sock_gettstamp,
-	/* FIXME: work on inet_listen to rename it to sock_common_listen */
+	 
 	.listen		   = inet_dccp_listen,
 	.shutdown	   = inet_shutdown,
 	.setsockopt	   = sock_common_setsockopt,
@@ -1088,11 +954,7 @@ static void __exit dccp_v4_exit(void)
 module_init(dccp_v4_init);
 module_exit(dccp_v4_exit);
 
-/*
- * __stringify doesn't likes enums, so use SOCK_DCCP (6) and IPPROTO_DCCP (33)
- * values directly, Also cover the case where the protocol is not specified,
- * i.e. net-pf-PF_INET-proto-0-type-SOCK_DCCP
- */
+ 
 MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 33, 6);
 MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 0, 6);
 MODULE_LICENSE("GPL");

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Allwinner sunXi IR controller
- *
- * Copyright (C) 2014 Alexsey Shestacov <wingrime@linux-sunxi.org>
- * Copyright (C) 2014 Alexander Bersenev <bay@hackerdom.ru>
- *
- * Based on sun5i-ir.c:
- * Copyright (C) 2007-2012 Daniel Wang
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -20,67 +11,62 @@
 
 #define SUNXI_IR_DEV "sunxi-ir"
 
-/* Registers */
-/* IR Control */
+ 
+ 
 #define SUNXI_IR_CTL_REG      0x00
-/* Global Enable */
+ 
 #define REG_CTL_GEN			BIT(0)
-/* RX block enable */
+ 
 #define REG_CTL_RXEN			BIT(1)
-/* CIR mode */
+ 
 #define REG_CTL_MD			(BIT(4) | BIT(5))
 
-/* Rx Config */
+ 
 #define SUNXI_IR_RXCTL_REG    0x10
-/* Pulse Polarity Invert flag */
+ 
 #define REG_RXCTL_RPPI			BIT(2)
 
-/* Rx Data */
+ 
 #define SUNXI_IR_RXFIFO_REG   0x20
 
-/* Rx Interrupt Enable */
+ 
 #define SUNXI_IR_RXINT_REG    0x2C
-/* Rx FIFO Overflow Interrupt Enable */
+ 
 #define REG_RXINT_ROI_EN		BIT(0)
-/* Rx Packet End Interrupt Enable */
+ 
 #define REG_RXINT_RPEI_EN		BIT(1)
-/* Rx FIFO Data Available Interrupt Enable */
+ 
 #define REG_RXINT_RAI_EN		BIT(4)
 
-/* Rx FIFO available byte level */
+ 
 #define REG_RXINT_RAL(val)    ((val) << 8)
 
-/* Rx Interrupt Status */
+ 
 #define SUNXI_IR_RXSTA_REG    0x30
-/* Rx FIFO Overflow */
+ 
 #define REG_RXSTA_ROI			REG_RXINT_ROI_EN
-/* Rx Packet End */
+ 
 #define REG_RXSTA_RPE			REG_RXINT_RPEI_EN
-/* Rx FIFO Data Available */
+ 
 #define REG_RXSTA_RA			REG_RXINT_RAI_EN
-/* RX FIFO Get Available Counter */
+ 
 #define REG_RXSTA_GET_AC(val) (((val) >> 8) & (ir->fifo_size * 2 - 1))
-/* Clear all interrupt status value */
+ 
 #define REG_RXSTA_CLEARALL    0xff
 
-/* IR Sample Config */
+ 
 #define SUNXI_IR_CIR_REG      0x34
-/* CIR_REG register noise threshold */
+ 
 #define REG_CIR_NTHR(val)    (((val) << 2) & (GENMASK(7, 2)))
-/* CIR_REG register idle threshold */
+ 
 #define REG_CIR_ITHR(val)    (((val) << 8) & (GENMASK(15, 8)))
 
-/* Required frequency for IR0 or IR1 clock in CIR mode (default) */
+ 
 #define SUNXI_IR_BASE_CLK     8000000
-/* Noise threshold in samples  */
+ 
 #define SUNXI_IR_RXNOISE      1
 
-/**
- * struct sunxi_ir_quirks - Differences between SoC variants.
- *
- * @has_reset: SoC needs reset deasserted.
- * @fifo_size: size of the fifo.
- */
+ 
 struct sunxi_ir_quirks {
 	bool		has_reset;
 	int		fifo_size;
@@ -107,17 +93,17 @@ static irqreturn_t sunxi_ir_irq(int irqno, void *dev_id)
 
 	status = readl(ir->base + SUNXI_IR_RXSTA_REG);
 
-	/* clean all pending statuses */
+	 
 	writel(status | REG_RXSTA_CLEARALL, ir->base + SUNXI_IR_RXSTA_REG);
 
 	if (status & (REG_RXSTA_RA | REG_RXSTA_RPE)) {
-		/* How many messages in fifo */
+		 
 		rc  = REG_RXSTA_GET_AC(status);
-		/* Sanity check */
+		 
 		rc = rc > ir->fifo_size ? ir->fifo_size : rc;
-		/* If we have data */
+		 
 		for (cnt = 0; cnt < rc; cnt++) {
-			/* for each bit in fifo */
+			 
 			dt = readb(ir->base + SUNXI_IR_RXFIFO_REG);
 			rawir.pulse = (dt & 0x80) != 0;
 			rawir.duration = ((dt & 0x7f) + 1) *
@@ -138,17 +124,17 @@ static irqreturn_t sunxi_ir_irq(int irqno, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* Convert idle threshold to usec */
+ 
 static unsigned int sunxi_ithr_to_usec(unsigned int base_clk, unsigned int ithr)
 {
 	return DIV_ROUND_CLOSEST(USEC_PER_SEC * (ithr + 1),
 				 base_clk / (128 * 64));
 }
 
-/* Convert usec to idle threshold */
+ 
 static unsigned int sunxi_usec_to_ithr(unsigned int base_clk, unsigned int usec)
 {
-	/* make sure we don't end up with a timeout less than requested */
+	 
 	return DIV_ROUND_UP((base_clk / (128 * 64)) * usec,  USEC_PER_SEC) - 1;
 }
 
@@ -161,7 +147,7 @@ static int sunxi_ir_set_timeout(struct rc_dev *rc_dev, unsigned int timeout)
 
 	dev_dbg(rc_dev->dev.parent, "setting idle threshold to %u\n", ithr);
 
-	/* Set noise threshold and idle threshold */
+	 
 	writel(REG_CIR_NTHR(SUNXI_IR_RXNOISE) | REG_CIR_ITHR(ithr),
 	       ir->base + SUNXI_IR_CIR_REG);
 
@@ -192,27 +178,24 @@ static int sunxi_ir_hw_init(struct device *dev)
 		goto exit_disable_apb_clk;
 	}
 
-	/* Enable CIR Mode */
+	 
 	writel(REG_CTL_MD, ir->base + SUNXI_IR_CTL_REG);
 
-	/* Set noise threshold and idle threshold */
+	 
 	sunxi_ir_set_timeout(ir->rc, ir->rc->timeout);
 
-	/* Invert Input Signal */
+	 
 	writel(REG_RXCTL_RPPI, ir->base + SUNXI_IR_RXCTL_REG);
 
-	/* Clear All Rx Interrupt Status */
+	 
 	writel(REG_RXSTA_CLEARALL, ir->base + SUNXI_IR_RXSTA_REG);
 
-	/*
-	 * Enable IRQ on overflow, packet end, FIFO available with trigger
-	 * level
-	 */
+	 
 	writel(REG_RXINT_ROI_EN | REG_RXINT_RPEI_EN |
 	       REG_RXINT_RAI_EN | REG_RXINT_RAL(ir->fifo_size / 2 - 1),
 	       ir->base + SUNXI_IR_RXINT_REG);
 
-	/* Enable IR Module */
+	 
 	tmp = readl(ir->base + SUNXI_IR_CTL_REG);
 	writel(tmp | REG_CTL_GEN | REG_CTL_RXEN, ir->base + SUNXI_IR_CTL_REG);
 
@@ -271,7 +254,7 @@ static int sunxi_ir_probe(struct platform_device *pdev)
 
 	ir->fifo_size = quirks->fifo_size;
 
-	/* Clock */
+	 
 	ir->apb_clk = devm_clk_get(dev, "apb");
 	if (IS_ERR(ir->apb_clk)) {
 		dev_err(dev, "failed to get a apb clock.\n");
@@ -283,10 +266,10 @@ static int sunxi_ir_probe(struct platform_device *pdev)
 		return PTR_ERR(ir->clk);
 	}
 
-	/* Base clock frequency (optional) */
+	 
 	of_property_read_u32(dn, "clock-frequency", &b_clk_freq);
 
-	/* Reset */
+	 
 	if (quirks->has_reset) {
 		ir->rst = devm_reset_control_get_exclusive(dev, NULL);
 		if (IS_ERR(ir->rst))
@@ -300,7 +283,7 @@ static int sunxi_ir_probe(struct platform_device *pdev)
 	}
 	dev_dbg(dev, "set base clock frequency to %d Hz.\n", b_clk_freq);
 
-	/* IO */
+	 
 	ir->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(ir->base)) {
 		return PTR_ERR(ir->base);
@@ -323,7 +306,7 @@ static int sunxi_ir_probe(struct platform_device *pdev)
 	ir->rc->map_name = ir->map_name ?: RC_MAP_EMPTY;
 	ir->rc->dev.parent = dev;
 	ir->rc->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER;
-	/* Frequency after IR internal divider with sample period in us */
+	 
 	ir->rc->rx_resolution = (USEC_PER_SEC / (b_clk_freq / 64));
 	ir->rc->timeout = IR_DEFAULT_TIMEOUT;
 	ir->rc->min_timeout = sunxi_ithr_to_usec(b_clk_freq, 0);
@@ -339,7 +322,7 @@ static int sunxi_ir_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, ir);
 
-	/* IRQ */
+	 
 	ir->irq = platform_get_irq(pdev, 0);
 	if (ir->irq < 0) {
 		ret = ir->irq;

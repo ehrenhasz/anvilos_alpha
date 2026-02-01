@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Spreadtrum Communications Inc.
- * Copyright (C) 2018 Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -13,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <linux/spinlock.h>
 
-/* EIC registers definition */
+ 
 #define SPRD_EIC_DBNC_DATA		0x0
 #define SPRD_EIC_DBNC_DMSK		0x4
 #define SPRD_EIC_DBNC_IEV		0x14
@@ -49,38 +46,14 @@
 #define SPRD_EIC_SYNC_INTPOL		0x18
 #define SPRD_EIC_SYNC_DATA		0x1c
 
-/*
- * The digital-chip EIC controller can support maximum 3 banks, and each bank
- * contains 8 EICs.
- */
+ 
 #define SPRD_EIC_MAX_BANK		3
 #define SPRD_EIC_PER_BANK_NR		8
 #define SPRD_EIC_DATA_MASK		GENMASK(7, 0)
 #define SPRD_EIC_BIT(x)			((x) & (SPRD_EIC_PER_BANK_NR - 1))
 #define SPRD_EIC_DBNC_MASK		GENMASK(11, 0)
 
-/*
- * The Spreadtrum EIC (external interrupt controller) can be used only in
- * input mode to generate interrupts if detecting input signals.
- *
- * The Spreadtrum digital-chip EIC controller contains 4 sub-modules:
- * debounce EIC, latch EIC, async EIC and sync EIC,
- *
- * The debounce EIC is used to capture the input signals' stable status
- * (millisecond resolution) and a single-trigger mechanism is introduced
- * into this sub-module to enhance the input event detection reliability.
- * The debounce range is from 1ms to 4s with a step size of 1ms.
- *
- * The latch EIC is used to latch some special power down signals and
- * generate interrupts, since the latch EIC does not depend on the APB clock
- * to capture signals.
- *
- * The async EIC uses a 32k clock to capture the short signals (microsecond
- * resolution) to generate interrupts by level or edge trigger.
- *
- * The EIC-sync is similar with GPIO's input function, which is a synchronized
- * signal input register.
- */
+ 
 enum sprd_eic_type {
 	SPRD_EIC_DEBOUNCE,
 	SPRD_EIC_LATCH,
@@ -195,13 +168,13 @@ static int sprd_eic_get(struct gpio_chip *chip, unsigned int offset)
 
 static int sprd_eic_direction_input(struct gpio_chip *chip, unsigned int offset)
 {
-	/* EICs are always input, nothing need to do here. */
+	 
 	return 0;
 }
 
 static void sprd_eic_set(struct gpio_chip *chip, unsigned int offset, int value)
 {
-	/* EICs are always input, nothing need to do here. */
+	 
 }
 
 static int sprd_eic_set_debounce(struct gpio_chip *chip, unsigned int offset,
@@ -453,10 +426,7 @@ static void sprd_eic_toggle_trigger(struct gpio_chip *chip, unsigned int irq,
 	u32 trigger = irqd_get_trigger_type(data);
 	int state, post_state;
 
-	/*
-	 * The debounce EIC and latch EIC can only support level trigger, so we
-	 * can toggle the level trigger to emulate the edge trigger.
-	 */
+	 
 	if ((sprd_eic->type != SPRD_EIC_DEBOUNCE &&
 	     sprd_eic->type != SPRD_EIC_LATCH) ||
 	    !(trigger & IRQ_TYPE_EDGE_BOTH))
@@ -551,11 +521,7 @@ static void sprd_eic_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(ic, desc);
 
-	/*
-	 * Since the digital-chip EIC 4 sub-modules (debounce, latch, async
-	 * and sync) share one same interrupt line, we should iterate each
-	 * EIC module to check if there are EIC interrupts were triggered.
-	 */
+	 
 	for (type = SPRD_EIC_DEBOUNCE; type < SPRD_EIC_MAX; type++) {
 		chip = gpiochip_find(&type, sprd_eic_match_chip_by_type);
 		if (!chip)
@@ -602,12 +568,7 @@ static int sprd_eic_probe(struct platform_device *pdev)
 		return sprd_eic->irq;
 
 	for (i = 0; i < SPRD_EIC_MAX_BANK; i++) {
-		/*
-		 * We can have maximum 3 banks EICs, and each EIC has
-		 * its own base address. But some platform maybe only
-		 * have one bank EIC, thus base[1] and base[2] can be
-		 * optional.
-		 */
+		 
 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
 		if (!res)
 			break;
@@ -674,7 +635,7 @@ static const struct of_device_id sprd_eic_of_match[] = {
 		.data = &sc9860_eic_sync_data,
 	},
 	{
-		/* end of list */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, sprd_eic_of_match);

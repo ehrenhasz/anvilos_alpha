@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C)2003,2004 USAGI/WIDE Project
- *
- * Author:
- *	Yasuyuki Kozakai @USAGI <yasuyuki.kozakai@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/timer.h>
@@ -46,7 +41,7 @@ bool icmpv6_pkt_to_tuple(const struct sk_buff *skb,
 	return true;
 }
 
-/* Add 1; spaces filled with 0. */
+ 
 static const u_int8_t invmap[] = {
 	[ICMPV6_ECHO_REQUEST - 128]	= ICMPV6_ECHO_REPLY + 1,
 	[ICMPV6_ECHO_REPLY - 128]	= ICMPV6_ECHO_REQUEST + 1,
@@ -83,7 +78,7 @@ static unsigned int *icmpv6_get_timeouts(struct net *net)
 	return &nf_icmpv6_pernet(net)->timeout;
 }
 
-/* Returns verdict for packet, or -1 for invalid. */
+ 
 int nf_conntrack_icmpv6_packet(struct nf_conn *ct,
 			       struct sk_buff *skb,
 			       enum ip_conntrack_info ctinfo,
@@ -102,7 +97,7 @@ int nf_conntrack_icmpv6_packet(struct nf_conn *ct,
 		int type = ct->tuplehash[0].tuple.dst.u.icmp.type - 128;
 
 		if (type < 0 || type >= sizeof(valid_new) || !valid_new[type]) {
-			/* Can't create a new ICMPv6 `conn' with this. */
+			 
 			pr_debug("icmpv6: can't create new conn with type %u\n",
 				 type + 128);
 			nf_ct_dump_tuple_ipv6(&ct->tuplehash[0].tuple);
@@ -113,9 +108,7 @@ int nf_conntrack_icmpv6_packet(struct nf_conn *ct,
 	if (!timeout)
 		timeout = icmpv6_get_timeouts(nf_ct_net(ct));
 
-	/* Do not immediately delete the connection after the first
-	   successful reply to avoid excessive conntrackd traffic
-	   and also to handle correctly ICMP echo reply duplicates. */
+	 
 	nf_ct_refresh_acct(ct, ctinfo, skb, *timeout);
 
 	return NF_ACCEPT;
@@ -159,16 +152,14 @@ nf_conntrack_icmpv6_redirect(struct nf_conn *tmpl, struct sk_buff *skb,
 
 	dataoff += sizeof(*rd_msg);
 
-	/* warning: rd_msg no longer usable after this call */
+	 
 	nd_opt = skb_header_pointer(skb, dataoff, sizeof(*nd_opt), &tmp.nd_opt);
 	if (!nd_opt || nd_opt->nd_opt_len == 0) {
 		icmpv6_error_log(skb, state, "redirect without options");
 		return -NF_ACCEPT;
 	}
 
-	/* We could call ndisc_parse_options(), but it would need
-	 * skb_linearize() and a bit more work.
-	 */
+	 
 	if (nd_opt->nd_opt_type != ND_OPT_REDIRECT_HDR)
 		return NF_ACCEPT;
 
@@ -212,7 +203,7 @@ int nf_conntrack_icmpv6_error(struct nf_conn *tmpl,
 	if (icmp6h->icmp6_type == NDISC_REDIRECT)
 		return nf_conntrack_icmpv6_redirect(tmpl, skb, dataoff, state);
 
-	/* is not error message ? */
+	 
 	if (icmp6h->icmp6_type >= 128)
 		return NF_ACCEPT;
 
@@ -306,7 +297,7 @@ static int icmpv6_timeout_nlattr_to_obj(struct nlattr *tb[],
 		*timeout =
 		    ntohl(nla_get_be32(tb[CTA_TIMEOUT_ICMPV6_TIMEOUT])) * HZ;
 	} else {
-		/* Set default ICMPv6 timeout. */
+		 
 		*timeout = in->timeout;
 	}
 	return 0;
@@ -329,7 +320,7 @@ static const struct nla_policy
 icmpv6_timeout_nla_policy[CTA_TIMEOUT_ICMPV6_MAX+1] = {
 	[CTA_TIMEOUT_ICMPV6_TIMEOUT]	= { .type = NLA_U32 },
 };
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 
 void nf_conntrack_icmpv6_init_net(struct net *net)
 {
@@ -355,5 +346,5 @@ const struct nf_conntrack_l4proto nf_conntrack_l4proto_icmpv6 =
 		.obj_size	= sizeof(unsigned int),
 		.nla_policy	= icmpv6_timeout_nla_policy,
 	},
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 };

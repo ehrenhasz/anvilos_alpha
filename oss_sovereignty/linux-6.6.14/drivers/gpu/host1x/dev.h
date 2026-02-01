@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2015, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef HOST1X_DEV_H
 #define HOST1X_DEV_H
@@ -95,26 +93,22 @@ struct host1x_table_desc {
 };
 
 struct host1x_info {
-	unsigned int nb_channels; /* host1x: number of channels supported */
-	unsigned int nb_pts; /* host1x: number of syncpoints supported */
-	unsigned int nb_bases; /* host1x: number of syncpoint bases supported */
-	unsigned int nb_mlocks; /* host1x: number of mlocks supported */
-	int (*init)(struct host1x *host1x); /* initialize per SoC ops */
-	unsigned int sync_offset; /* offset of syncpoint registers */
-	u64 dma_mask; /* mask of addressable memory */
-	bool has_wide_gather; /* supports GATHER_W opcode */
-	bool has_hypervisor; /* has hypervisor registers */
-	bool has_common; /* has common registers separate from hypervisor */
+	unsigned int nb_channels;  
+	unsigned int nb_pts;  
+	unsigned int nb_bases;  
+	unsigned int nb_mlocks;  
+	int (*init)(struct host1x *host1x);  
+	unsigned int sync_offset;  
+	u64 dma_mask;  
+	bool has_wide_gather;  
+	bool has_hypervisor;  
+	bool has_common;  
 	unsigned int num_sid_entries;
 	const struct host1x_sid_entry *sid_table;
 	struct host1x_table_desc streamid_vm_table;
 	struct host1x_table_desc classid_vm_table;
 	struct host1x_table_desc mmio_vm_table;
-	/*
-	 * On T20-T148, the boot chain may setup DC to increment syncpoints
-	 * 26/27 on VBLANK. As such we cannot use these syncpoints until
-	 * the display driver disables VBLANK increments.
-	 */
+	 
 	bool reserve_vblank_syncpts;
 };
 
@@ -122,7 +116,7 @@ struct host1x {
 	const struct host1x_info *info;
 
 	void __iomem *regs;
-	void __iomem *hv_regs; /* hypervisor region */
+	void __iomem *hv_regs;  
 	void __iomem *common_regs;
 	int syncpt_irq;
 	struct host1x_syncpt *syncpt;

@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2001 - 2003 Jeff Dike (jdike@addtoit.com)
- * Licensed under the GPL
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/smp.h>
@@ -11,7 +8,7 @@
 #include <asm/ptrace.h>
 #include <asm/sysrq.h>
 
-/* This is declared by <linux/sched.h> */
+ 
 void show_regs(struct pt_regs *regs)
 {
         printk("\n");

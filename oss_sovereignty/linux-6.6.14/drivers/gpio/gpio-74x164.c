@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  74Hx164 - Generic serial-in/parallel-out 8-bits shift register GPIO driver
- *
- *  Copyright (C) 2010 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2010 Miguel Gaio <miguel.gaio@efixo.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/consumer.h>
@@ -22,13 +17,7 @@ struct gen_74x164_chip {
 	struct mutex		lock;
 	struct gpio_desc	*gpiod_oe;
 	u32			registers;
-	/*
-	 * Since the registers are chained, every byte sent will make
-	 * the previous byte shift to the next register in the
-	 * chain. Thus, the first byte sent will end up in the last
-	 * register at the end of the transfer. So, to have a logical
-	 * numbering, store the bytes in reverse order.
-	 */
+	 
 	u8			buffer[];
 };
 
@@ -103,9 +92,7 @@ static int gen_74x164_probe(struct spi_device *spi)
 	u32 nregs;
 	int ret;
 
-	/*
-	 * bits_per_word cannot be configured in platform data
-	 */
+	 
 	spi->bits_per_word = 8;
 
 	ret = spi_setup(spi);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2016 Broadcom
+
+
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -18,12 +18,12 @@ static int ns2_pci_phy_init(struct phy *p)
 	struct mdio_device *mdiodev = phy_get_drvdata(p);
 	int rc;
 
-	/* select the AFE 100MHz block page */
+	 
 	rc = mdiodev_write(mdiodev, BLK_ADDR_REG_OFFSET, PLL_AFE1_100MHZ_BLK);
 	if (rc)
 		goto err;
 
-	/* set the 100 MHz reference clock amplitude to 2.05 v */
+	 
 	rc = mdiodev_write(mdiodev, PLL_CLK_AMP_OFFSET, PLL_CLK_AMP_2P05V);
 	if (rc)
 		goto err;
@@ -68,7 +68,7 @@ static int ns2_pci_phy_probe(struct mdio_device *mdiodev)
 
 static const struct of_device_id ns2_pci_phy_of_match[] = {
 	{ .compatible = "brcm,ns2-pcie-phy", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ns2_pci_phy_of_match);
 

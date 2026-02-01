@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -193,7 +191,7 @@ static struct clk *_tegra_clk_register_periph(const char *name,
 	if (!bank)
 		return ERR_PTR(-EINVAL);
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	periph->hw.init = &init;
 	periph->magic = TEGRA_CLK_PERIPH_MAGIC;
 	periph->mux.reg = clk_base + offset;

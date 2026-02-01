@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Runtime test cases for CONFIG_FORTIFY_SOURCE that aren't expected to
- * Oops the kernel on success. (For those, see drivers/misc/lkdtm/fortify.c)
- *
- * For corner cases with UBSAN, try testing with:
- *
- * ./tools/testing/kunit/kunit.py run --arch=x86_64 \
- *	--kconfig_add CONFIG_FORTIFY_SOURCE=y \
- *	--kconfig_add CONFIG_UBSAN=y \
- *	--kconfig_add CONFIG_UBSAN_TRAP=y \
- *	--kconfig_add CONFIG_UBSAN_BOUNDS=y \
- *	--kconfig_add CONFIG_UBSAN_LOCAL_BOUNDS=y \
- *	--make_options LLVM=1 fortify
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <kunit/test.h>
@@ -32,14 +19,14 @@ static void known_sizes_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, __compiletime_strlen(ptr_of_11), 11);
 
 	KUNIT_EXPECT_EQ(test, __compiletime_strlen(array_unknown), SIZE_MAX);
-	/* Externally defined and dynamically sized string pointer: */
+	 
 	KUNIT_EXPECT_EQ(test, __compiletime_strlen(test->name), SIZE_MAX);
 }
 
-/* This is volatile so the optimizer can't perform DCE below. */
+ 
 static volatile int pick;
 
-/* Not inline to keep optimizer from figuring out which string we want. */
+ 
 static noinline size_t want_minus_one(int pick)
 {
 	const char *str;
@@ -70,7 +57,7 @@ static void control_flow_split_test(struct kunit *test)
 
 #if !__has_builtin(__builtin_dynamic_object_size)
 #define KUNIT_EXPECT_BDOS(test, p, expected, name)			\
-	/* Silence "unused variable 'expected'" warning. */		\
+	 		\
 	KUNIT_EXPECT_EQ(test, expected, expected)
 #else
 #define KUNIT_EXPECT_BDOS(test, p, expected, name)			\
@@ -79,7 +66,7 @@ static void control_flow_split_test(struct kunit *test)
 		"__alloc_size() not working with __bdos on " name "\n")
 #endif
 
-/* If the execpted size is a constant value, __bos can see it. */
+ 
 #define check_const(_expected, alloc, free)		do {		\
 	size_t expected = (_expected);					\
 	void *p = alloc;						\
@@ -89,7 +76,7 @@ static void control_flow_split_test(struct kunit *test)
 	free;								\
 } while (0)
 
-/* If the execpted size is NOT a constant value, __bos CANNOT see it. */
+ 
 #define check_dynamic(_expected, alloc, free)		do {		\
 	size_t expected = (_expected);					\
 	void *p = alloc;						\
@@ -99,9 +86,9 @@ static void control_flow_split_test(struct kunit *test)
 	free;								\
 } while (0)
 
-/* Assortment of constant-value kinda-edge cases. */
+ 
 #define CONST_TEST_BODY(TEST_alloc)	do {				\
-	/* Special-case vmalloc()-family to skip 0-sized allocs. */	\
+	 	\
 	if (strcmp(#TEST_alloc, "TEST_vmalloc") != 0)			\
 		TEST_alloc(check_const, 0, 0);				\
 	TEST_alloc(check_const, 1, 1);					\
@@ -122,13 +109,9 @@ static volatile size_t unknown_size = 50;
 #define DYNAMIC_TEST_BODY(TEST_alloc)	do {				\
 	size_t size = unknown_size;					\
 									\
-	/*								\
-	 * Expected size is "size" in each test, before it is then	\
-	 * internally incremented in each test.	Requires we disable	\
-	 * -Wunsequenced.						\
-	 */								\
+	 								\
 	TEST_alloc(check_dynamic, size, size++);			\
-	/* Make sure incrementing actually happened. */			\
+	 			\
 	KUNIT_EXPECT_NE(test, size, unknown_size);			\
 } while (0)
 #endif
@@ -201,14 +184,14 @@ static void alloc_size_##allocator##_dynamic_test(struct kunit *test)	\
 		kfree(p));						\
 									\
 	len = 11;							\
-	/* Using memdup() with fixed size, so force unknown length. */	\
+	 	\
 	if (!__builtin_constant_p(expected_size))			\
 		len += zero_size;					\
 	checker(len, kmemdup("hello there", len, gfp), kfree(p));	\
 } while (0)
 DEFINE_ALLOC_SIZE_TEST_PAIR(kmalloc)
 
-/* Sizes are in pages, not bytes. */
+ 
 #define TEST_vmalloc(checker, expected_pages, alloc_pages)	do {	\
 	gfp_t gfp = GFP_KERNEL | __GFP_NOWARN;				\
 	checker((expected_pages) * PAGE_SIZE,				\
@@ -220,7 +203,7 @@ DEFINE_ALLOC_SIZE_TEST_PAIR(kmalloc)
 } while (0)
 DEFINE_ALLOC_SIZE_TEST_PAIR(vmalloc)
 
-/* Sizes are in pages (and open-coded for side-effects), not bytes. */
+ 
 #define TEST_kvmalloc(checker, expected_pages, alloc_pages)	do {	\
 	gfp_t gfp = GFP_KERNEL | __GFP_NOWARN;				\
 	size_t prev_size;						\
@@ -268,7 +251,7 @@ DEFINE_ALLOC_SIZE_TEST_PAIR(kvmalloc)
 	void *orig;							\
 	size_t len;							\
 									\
-	/* Create dummy device for devm_kmalloc()-family tests. */	\
+	 	\
 	dev = root_device_register(dev_name);				\
 	KUNIT_ASSERT_FALSE_MSG(test, IS_ERR(dev),			\
 			       "Cannot register test device\n");	\
@@ -297,7 +280,7 @@ DEFINE_ALLOC_SIZE_TEST_PAIR(kvmalloc)
 		devm_kfree(dev, p));					\
 									\
 	len = 4;							\
-	/* Using memdup() with fixed size, so force unknown length. */	\
+	 	\
 	if (!__builtin_constant_p(expected_size))			\
 		len += zero_size;					\
 	checker(len, devm_kmemdup(dev, "Ohai", len, gfp),		\

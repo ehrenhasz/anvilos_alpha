@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Interrupt controller support for MAX8998
-//
-// Copyright (C) 2010 Samsung Electronics Co.Ltd
-// Author: Joonyoung Shim <jy0922.shim@samsung.com>
+
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -110,10 +110,7 @@ static void max8998_irq_sync_unlock(struct irq_data *data)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(max8998->irq_masks_cur); i++) {
-		/*
-		 * If there's been a change in the mask write it back
-		 * to the hardware.
-		 */
+		 
 		if (max8998->irq_masks_cur[i] != max8998->irq_masks_cache[i]) {
 			max8998->irq_masks_cache[i] = max8998->irq_masks_cur[i];
 			max8998_write_reg(max8998->i2c, MAX8998_REG_IRQM1 + i,
@@ -163,11 +160,11 @@ static irqreturn_t max8998_irq_thread(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* Apply masking */
+	 
 	for (i = 0; i < MAX8998_NUM_IRQ_REGS; i++)
 		irq_reg[i] &= ~max8998->irq_masks_cur[i];
 
-	/* Report */
+	 
 	for (i = 0; i < MAX8998_IRQ_NR; i++) {
 		if (irq_reg[max8998_irqs[i].reg - 1] & max8998_irqs[i].mask) {
 			irq = irq_find_mapping(max8998->irq_domain, i);
@@ -220,7 +217,7 @@ int max8998_irq_init(struct max8998_dev *max8998)
 
 	mutex_init(&max8998->irqlock);
 
-	/* Mask the individual interrupt sources */
+	 
 	for (i = 0; i < MAX8998_NUM_IRQ_REGS; i++) {
 		max8998->irq_masks_cur[i] = 0xff;
 		max8998->irq_masks_cache[i] = 0xff;

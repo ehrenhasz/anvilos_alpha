@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2015 Synaptics Incorporated
- * Copyright (C) 2016 Zodiac Inflight Innovations
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/rmi.h>
@@ -18,59 +15,25 @@
 
 #define F54_NAME		"rmi4_f54"
 
-/* F54 data offsets */
+ 
 #define F54_REPORT_DATA_OFFSET  3
 #define F54_FIFO_OFFSET         1
 #define F54_NUM_TX_OFFSET       1
 #define F54_NUM_RX_OFFSET       0
 
-/*
- * The smbus protocol can read only 32 bytes max at a time.
- * But this should be fine for i2c/spi as well.
- */
+ 
 #define F54_REPORT_DATA_SIZE	32
 
-/* F54 commands */
+ 
 #define F54_GET_REPORT          1
 #define F54_FORCE_CAL           2
 
-/* F54 capabilities */
+ 
 #define F54_CAP_BASELINE	(1 << 2)
 #define F54_CAP_IMAGE8		(1 << 3)
 #define F54_CAP_IMAGE16		(1 << 6)
 
-/**
- * enum rmi_f54_report_type - RMI4 F54 report types
- *
- * @F54_REPORT_NONE:	No Image Report.
- *
- * @F54_8BIT_IMAGE:	Normalized 8-Bit Image Report. The capacitance variance
- *			from baseline for each pixel.
- *
- * @F54_16BIT_IMAGE:	Normalized 16-Bit Image Report. The capacitance variance
- *			from baseline for each pixel.
- *
- * @F54_RAW_16BIT_IMAGE:
- *			Raw 16-Bit Image Report. The raw capacitance for each
- *			pixel.
- *
- * @F54_TRUE_BASELINE:	True Baseline Report. The baseline capacitance for each
- *			pixel.
- *
- * @F54_FULL_RAW_CAP:   Full Raw Capacitance Report. The raw capacitance with
- *			low reference set to its minimum value and high
- *			reference set to its maximum value.
- *
- * @F54_FULL_RAW_CAP_RX_OFFSET_REMOVED:
- *			Full Raw Capacitance with Receiver Offset Removed
- *			Report. Set Low reference to its minimum value and high
- *			references to its maximum value, then report the raw
- *			capacitance for each pixel.
- *
- * @F54_MAX_REPORT_TYPE:
- *			Maximum number of Report Types.  Used for sanity
- *			checking.
- */
+ 
 enum rmi_f54_report_type {
 	F54_REPORT_NONE = 0,
 	F54_8BIT_IMAGE = 1,
@@ -116,7 +79,7 @@ struct f54_data {
 
 	struct completion cmd_done;
 
-	/* V4L2 support */
+	 
 	struct v4l2_device v4l2;
 	struct v4l2_pix_format format;
 	struct video_device vdev;
@@ -127,10 +90,7 @@ struct f54_data {
 	enum rmi_f54_report_type inputs[F54_MAX_REPORT_TYPE];
 };
 
-/*
- * Basic checks on report_type to ensure we write a valid type
- * to the sensor.
- */
+ 
 static bool is_f54_report_type_valid(struct f54_data *f54,
 				     enum rmi_f54_report_type reptype)
 {
@@ -171,7 +131,7 @@ static void rmi_f54_create_input_map(struct f54_data *f54)
 		f54->inputs[i++] = reptype;
 	}
 
-	/* Remaining values are zero via kzalloc */
+	 
 }
 
 static int rmi_f54_request_report(struct rmi_function *fn, u8 report_type)
@@ -180,7 +140,7 @@ static int rmi_f54_request_report(struct rmi_function *fn, u8 report_type)
 	struct rmi_device *rmi_dev = fn->rmi_dev;
 	int error;
 
-	/* Write Report Type into F54_AD_Data0 */
+	 
 	if (f54->report_type != report_type) {
 		error = rmi_write(rmi_dev, f54->fn->fd.data_base_addr,
 				  report_type);
@@ -189,11 +149,7 @@ static int rmi_f54_request_report(struct rmi_function *fn, u8 report_type)
 		f54->report_type = report_type;
 	}
 
-	/*
-	 * Small delay after disabling interrupts to avoid race condition
-	 * in firmare. This value is a bit higher than absolutely necessary.
-	 * Should be removed once issue is resolved in firmware.
-	 */
+	 
 	usleep_range(2000, 3000);
 
 	mutex_lock(&f54->data_mutex);
@@ -325,7 +281,7 @@ static void rmi_f54_buffer_queue(struct vb2_buffer *vb)
 		goto done;
 	}
 
-	/* get frame data */
+	 
 	mutex_lock(&f54->data_mutex);
 
 	while (f54->is_busy) {
@@ -367,7 +323,7 @@ static void rmi_f54_stop_streaming(struct vb2_queue *q)
 	f54->sequence = 0;
 }
 
-/* V4L2 structures */
+ 
 static const struct vb2_ops rmi_f54_queue_ops = {
 	.queue_setup            = rmi_f54_queue_setup,
 	.buf_queue              = rmi_f54_buffer_queue,
@@ -545,15 +501,12 @@ static void rmi_f54_work(struct work_struct *work)
 		dev_err(&fn->dev, "Bad report size, report type=%d\n",
 				f54->report_type);
 		error = -EINVAL;
-		goto error;     /* retry won't help */
+		goto error;      
 	}
 
 	mutex_lock(&f54->data_mutex);
 
-	/*
-	 * Need to check if command has completed.
-	 * If not try again later.
-	 */
+	 
 	error = rmi_read(fn->rmi_dev, f54->fn->fd.command_base_addr,
 			 &command);
 	if (error) {
@@ -695,7 +648,7 @@ static int rmi_f54_probe(struct rmi_function *fn)
 	rmi_f54_create_input_map(f54);
 	rmi_f54_set_input(f54, 0);
 
-	/* register video device */
+	 
 	strscpy(f54->v4l2.name, F54_NAME, sizeof(f54->v4l2.name));
 	ret = v4l2_device_register(&fn->dev, &f54->v4l2);
 	if (ret) {
@@ -703,7 +656,7 @@ static int rmi_f54_probe(struct rmi_function *fn)
 		goto remove_wq;
 	}
 
-	/* initialize the queue */
+	 
 	mutex_init(&f54->lock);
 	f54->queue = rmi_f54_queue;
 	f54->queue.drv_priv = f54;

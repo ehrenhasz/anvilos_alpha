@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hardware Random Number Generator support.
- * Cavium Thunder, Marvell OcteonTx/Tx2 processor families.
- *
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include <linux/hw_random.h>
 #include <linux/io.h>
@@ -14,13 +9,13 @@
 
 #include <asm/arch_timer.h>
 
-/* PCI device IDs */
+ 
 #define	PCI_DEVID_CAVIUM_RNG_PF		0xA018
 #define	PCI_DEVID_CAVIUM_RNG_VF		0xA033
 
 #define HEALTH_STATUS_REG		0x38
 
-/* RST device info */
+ 
 #define PCI_DEVICE_ID_RST_OTX2		0xA085
 #define RST_BOOT_REG			0x1600ULL
 #define CLOCK_BASE_RATE			50000000ULL
@@ -54,7 +49,7 @@ static inline bool is_octeontx(struct pci_dev *pdev)
 
 static u64 rng_get_coprocessor_clkrate(void)
 {
-	u64 ret = CLOCK_BASE_RATE * 16; /* Assume 800Mhz as default */
+	u64 ret = CLOCK_BASE_RATE * 16;  
 	struct pci_dev *pdev;
 	void __iomem *base;
 
@@ -67,7 +62,7 @@ static u64 rng_get_coprocessor_clkrate(void)
 	if (!base)
 		goto error_put_pdev;
 
-	/* RST: PNR_MUL * 50Mhz gives clockrate */
+	 
 	ret = CLOCK_BASE_RATE * ((readq(base + RST_BOOT_REG) >> 33) & 0x3F);
 
 	iounmap(base);
@@ -86,7 +81,7 @@ static int check_rng_health(struct cavium_rng *rng)
 	u64 time_elapsed;
 
 
-	/* Skip checking health for OcteonTx */
+	 
 	if (!rng->pf_regbase)
 		return 0;
 
@@ -102,16 +97,11 @@ static int check_rng_health(struct cavium_rng *rng)
 
 	cur_time = arch_timer_read_counter();
 
-	/* RNM_HEALTH_STATUS[CYCLES_SINCE_HEALTH_FAILURE]
-	 * Number of coprocessor cycles times 2 since the last failure.
-	 * This field doesn't get cleared/updated until another failure.
-	 */
+	 
 	cycles = cycles / 2;
-	cur_err = (cycles * 1000000000) / rng->clock_rate; /* In nanosec */
+	cur_err = (cycles * 1000000000) / rng->clock_rate;  
 
-	/* Ignore errors that happenned a long time ago, these
-	 * are most likely false positive errors.
-	 */
+	 
 	if (cur_err > MSEC_TO_NSEC(10)) {
 		rng->prev_error = 0;
 		rng->prev_time = 0;
@@ -119,16 +109,11 @@ static int check_rng_health(struct cavium_rng *rng)
 	}
 
 	if (rng->prev_error) {
-		/* Calculate time elapsed since last error
-		 * '1' tick of CNTVCT is 10ns, since it runs at 100Mhz.
-		 */
+		 
 		time_elapsed = (cur_time - rng->prev_time) * 10;
 		time_elapsed += rng->prev_error;
 
-		/* Check if current error is a new one or the old one itself.
-		 * If error is a new one then consider there is a persistent
-		 * issue with entropy, declare hardware failure.
-		 */
+		 
 		if (cur_err < time_elapsed) {
 			dev_err(&rng->pdev->dev, "HWRNG failure detected\n");
 			rng->prev_error = cur_err;
@@ -142,7 +127,7 @@ static int check_rng_health(struct cavium_rng *rng)
 	return 0;
 }
 
-/* Read data from the RNG unit */
+ 
 static int cavium_rng_read(struct hwrng *rng, void *dat, size_t max, bool wait)
 {
 	struct cavium_rng *p = container_of(rng, struct cavium_rng, ops);
@@ -170,7 +155,7 @@ static int cavium_map_pf_regs(struct cavium_rng *rng)
 {
 	struct pci_dev *pdev;
 
-	/* Health status is not supported on 83xx, skip mapping PF CSRs */
+	 
 	if (is_octeontx(rng->pdev)) {
 		rng->pf_regbase = NULL;
 		return 0;
@@ -193,13 +178,13 @@ static int cavium_map_pf_regs(struct cavium_rng *rng)
 
 	pci_dev_put(pdev);
 
-	/* Get co-processor clock rate */
+	 
 	rng->clock_rate = rng_get_coprocessor_clkrate();
 
 	return 0;
 }
 
-/* Map Cavium RNG to an HWRNG object */
+ 
 static int cavium_rng_probe_vf(struct	pci_dev		*pdev,
 			 const struct	pci_device_id	*id)
 {
@@ -212,7 +197,7 @@ static int cavium_rng_probe_vf(struct	pci_dev		*pdev,
 
 	rng->pdev = pdev;
 
-	/* Map the RNG result */
+	 
 	rng->result = pcim_iomap(pdev, 0, 0);
 	if (!rng->result) {
 		dev_err(&pdev->dev, "Error iomap failed retrieving result.\n");
@@ -228,7 +213,7 @@ static int cavium_rng_probe_vf(struct	pci_dev		*pdev,
 
 	pci_set_drvdata(pdev, rng);
 
-	/* Health status is available only at PF, hence map PF registers. */
+	 
 	ret = cavium_map_pf_regs(rng);
 	if (ret)
 		return ret;
@@ -242,7 +227,7 @@ static int cavium_rng_probe_vf(struct	pci_dev		*pdev,
 	return 0;
 }
 
-/* Remove the VF */
+ 
 static void cavium_rng_remove_vf(struct pci_dev *pdev)
 {
 	struct cavium_rng *rng;

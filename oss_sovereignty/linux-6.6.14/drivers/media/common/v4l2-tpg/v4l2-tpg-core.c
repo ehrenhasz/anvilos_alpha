@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * v4l2-tpg-core.c - Test Pattern Generator
- *
- * Note: gen_twopix and tpg_gen_text are based on code from vivi.c. See the
- * vivi.c source for the copyright information of those functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/tpg/v4l2-tpg.h>
 
-/* Must remain in sync with enum tpg_pattern */
+ 
 const char * const tpg_pattern_strings[] = {
 	"75% Colorbar",
 	"100% Colorbar",
@@ -39,7 +32,7 @@ const char * const tpg_pattern_strings[] = {
 };
 EXPORT_SYMBOL_GPL(tpg_pattern_strings);
 
-/* Must remain in sync with enum tpg_aspect */
+ 
 const char * const tpg_aspect_strings[] = {
 	"Source Width x Height",
 	"4x3",
@@ -50,11 +43,7 @@ const char * const tpg_aspect_strings[] = {
 };
 EXPORT_SYMBOL_GPL(tpg_aspect_strings);
 
-/*
- * Sine table: sin[0] = 127 * sin(-180 degrees)
- *             sin[128] = 127 * sin(0 degrees)
- *             sin[256] = 127 * sin(180 degrees)
- */
+ 
 static const s8 sin[257] = {
 	   0,   -4,   -7,  -11,  -13,  -18,  -20,  -22,  -26,  -29,  -33,  -35,  -37,  -41,  -43,  -48,
 	 -50,  -52,  -56,  -58,  -62,  -63,  -65,  -69,  -71,  -75,  -76,  -78,  -82,  -83,  -87,  -88,
@@ -77,7 +66,7 @@ static const s8 sin[257] = {
 
 #define cos(idx) sin[((idx) + 64) % sizeof(sin)]
 
-/* Global font descriptor */
+ 
 static const u8 *font8x16;
 
 void tpg_set_font(const u8 *f)
@@ -562,7 +551,7 @@ static void color_to_hsv(struct tpg_data *tpg, int r, int g, int b,
 	g >>= 4;
 	b >>= 4;
 
-	/* Value */
+	 
 	max_rgb = max3(r, g, b);
 	*v = max_rgb;
 	if (!max_rgb) {
@@ -571,7 +560,7 @@ static void color_to_hsv(struct tpg_data *tpg, int r, int g, int b,
 		return;
 	}
 
-	/* Saturation */
+	 
 	min_rgb = min3(r, g, b);
 	diff_rgb = max_rgb - min_rgb;
 	aux = 255 * diff_rgb;
@@ -585,7 +574,7 @@ static void color_to_hsv(struct tpg_data *tpg, int r, int g, int b,
 
 	third_size = (tpg->real_hsv_enc == V4L2_HSV_ENC_180) ? 60 : 85;
 
-	/* Hue */
+	 
 	if (max_rgb == r) {
 		aux =  g - b;
 		third = 0;
@@ -602,7 +591,7 @@ static void color_to_hsv(struct tpg_data *tpg, int r, int g, int b,
 	aux /= diff_rgb;
 	aux += third;
 
-	/* Clamp Hue */
+	 
 	if (tpg->real_hsv_enc == V4L2_HSV_ENC_180) {
 		if (aux < 0)
 			aux += 180;
@@ -686,13 +675,11 @@ static void color_to_ycbcr(struct tpg_data *tpg, int r, int g, int b,
 		rgb2ycbcr(full ? bt601_full : bt601, r, g, b, y_offset, y, cb, cr);
 		break;
 	case V4L2_YCBCR_ENC_XV601:
-		/* Ignore quantization range, there is only one possible
-		 * Y'CbCr encoding. */
+		 
 		rgb2ycbcr(bt601, r, g, b, 16, y, cb, cr);
 		break;
 	case V4L2_YCBCR_ENC_XV709:
-		/* Ignore quantization range, there is only one possible
-		 * Y'CbCr encoding. */
+		 
 		rgb2ycbcr(rec709, r, g, b, 16, y, cb, cr);
 		break;
 	case V4L2_YCBCR_ENC_BT2020:
@@ -801,13 +788,11 @@ static void ycbcr_to_color(struct tpg_data *tpg, int y, int cb, int cr,
 		ycbcr2rgb(full ? bt601_full : bt601, y, cb, cr, y_offset, r, g, b);
 		break;
 	case V4L2_YCBCR_ENC_XV601:
-		/* Ignore quantization range, there is only one possible
-		 * Y'CbCr encoding. */
+		 
 		ycbcr2rgb(bt601, y, cb, cr, 16, r, g, b);
 		break;
 	case V4L2_YCBCR_ENC_XV709:
-		/* Ignore quantization range, there is only one possible
-		 * Y'CbCr encoding. */
+		 
 		ycbcr2rgb(rec709, y, cb, cr, 16, r, g, b);
 		break;
 	case V4L2_YCBCR_ENC_BT2020:
@@ -847,7 +832,7 @@ static void ycbcr_to_color(struct tpg_data *tpg, int y, int cb, int cr,
 	}
 }
 
-/* precalculate color bar values to speed up rendering */
+ 
 static void precalculate_color(struct tpg_data *tpg, int k)
 {
 	int col = k;
@@ -889,26 +874,16 @@ static void precalculate_color(struct tpg_data *tpg, int k)
 
 	if (tpg->qual == TPG_QUAL_GRAY ||
 	    tpg->color_enc ==  TGP_COLOR_ENC_LUMA) {
-		/* Rec. 709 Luma function */
-		/* (0.2126, 0.7152, 0.0722) * (255 * 256) */
+		 
+		 
 		r = g = b = (13879 * r + 46688 * g + 4713 * b) >> 16;
 	}
 
-	/*
-	 * The assumption is that the RGB output is always full range,
-	 * so only if the rgb_range overrides the 'real' rgb range do
-	 * we need to convert the RGB values.
-	 *
-	 * Remember that r, g and b are still in the 0 - 0xff0 range.
-	 */
+	 
 	if (tpg->real_rgb_range == V4L2_DV_RGB_RANGE_LIMITED &&
 	    tpg->rgb_range == V4L2_DV_RGB_RANGE_FULL &&
 	    tpg->color_enc == TGP_COLOR_ENC_RGB) {
-		/*
-		 * Convert from full range (which is what r, g and b are)
-		 * to limited range (which is the 'real' RGB range), which
-		 * is then interpreted as full range.
-		 */
+		 
 		r = (r * 219) / 255 + (16 << 4);
 		g = (g * 219) / 255 + (16 << 4);
 		b = (b * 219) / 255 + (16 << 4);
@@ -916,10 +891,7 @@ static void precalculate_color(struct tpg_data *tpg, int k)
 		   tpg->rgb_range == V4L2_DV_RGB_RANGE_LIMITED &&
 		   tpg->color_enc == TGP_COLOR_ENC_RGB) {
 
-		/*
-		 * Clamp r, g and b to the limited range and convert to full
-		 * range since that's what we deliver.
-		 */
+		 
 		r = clamp(r, 16 << 4, 235 << 4);
 		g = clamp(g, 16 << 4, 235 << 4);
 		b = clamp(b, 16 << 4, 235 << 4);
@@ -931,10 +903,10 @@ static void precalculate_color(struct tpg_data *tpg, int k)
 	if ((tpg->brightness != 128 || tpg->contrast != 128 ||
 	     tpg->saturation != 128 || tpg->hue) &&
 	    tpg->color_enc != TGP_COLOR_ENC_LUMA) {
-		/* Implement these operations */
+		 
 		int tmp_cb, tmp_cr;
 
-		/* First convert to YCbCr */
+		 
 
 		color_to_ycbcr(tpg, r, g, b, &y, &cb, &cr);
 
@@ -971,18 +943,14 @@ static void precalculate_color(struct tpg_data *tpg, int k)
 	}
 	case TGP_COLOR_ENC_YCBCR:
 	{
-		/* Convert to YCbCr */
+		 
 		if (!ycbcr_valid)
 			color_to_ycbcr(tpg, r, g, b, &y, &cb, &cr);
 
 		y >>= 4;
 		cb >>= 4;
 		cr >>= 4;
-		/*
-		 * XV601/709 use the header/footer margins to encode R', G'
-		 * and B' values outside the range [0-1]. So do not clamp
-		 * XV601/709 values.
-		 */
+		 
 		if (tpg->real_quantization == V4L2_QUANTIZATION_LIM_RANGE &&
 		    tpg->real_ycbcr_enc != V4L2_YCBCR_ENC_XV601 &&
 		    tpg->real_ycbcr_enc != V4L2_YCBCR_ENC_XV709) {
@@ -1097,7 +1065,7 @@ static void tpg_precalculate_colors(struct tpg_data *tpg)
 		precalculate_color(tpg, k);
 }
 
-/* 'odd' is true for pixels 1, 3, 5, etc. and false for pixels 0, 2, 4, etc. */
+ 
 static void gen_twopix(struct tpg_data *tpg,
 		u8 buf[TPG_MAX_PLANES][8], int color, bool odd)
 {
@@ -1111,9 +1079,9 @@ static void gen_twopix(struct tpg_data *tpg,
 		alpha = 0;
 	if (color == TPG_COLOR_RANDOM)
 		precalculate_color(tpg, color);
-	r_y_h = tpg->colors[color][0]; /* R or precalculated Y, H */
-	g_u_s = tpg->colors[color][1]; /* G or precalculated U, V */
-	b_v = tpg->colors[color][2]; /* B or precalculated V */
+	r_y_h = tpg->colors[color][0];  
+	g_u_s = tpg->colors[color][1];  
+	b_v = tpg->colors[color][2];  
 
 	switch (tpg->fourcc) {
 	case V4L2_PIX_FMT_GREY:
@@ -1129,17 +1097,12 @@ static void gen_twopix(struct tpg_data *tpg,
 		break;
 	case V4L2_PIX_FMT_Y16:
 	case V4L2_PIX_FMT_Z16:
-		/*
-		 * Ideally both bytes should be set to r_y_h, but then you won't
-		 * be able to detect endian problems. So keep it 0 except for
-		 * the corner case where r_y_h is 0xff so white really will be
-		 * white (0xffff).
-		 */
+		 
 		buf[0][offset] = r_y_h == 0xff ? r_y_h : 0;
 		buf[0][offset+1] = r_y_h;
 		break;
 	case V4L2_PIX_FMT_Y16_BE:
-		/* See comment for V4L2_PIX_FMT_Y16 above */
+		 
 		buf[0][offset] = r_y_h;
 		buf[0][offset+1] = r_y_h == 0xff ? r_y_h : 0;
 		break;
@@ -1536,7 +1499,7 @@ unsigned tpg_g_interleaved_plane(const struct tpg_data *tpg, unsigned buf_line)
 }
 EXPORT_SYMBOL_GPL(tpg_g_interleaved_plane);
 
-/* Return how many pattern lines are used by the current pattern. */
+ 
 static unsigned tpg_get_pat_lines(const struct tpg_data *tpg)
 {
 	switch (tpg->pattern) {
@@ -1558,7 +1521,7 @@ static unsigned tpg_get_pat_lines(const struct tpg_data *tpg)
 	}
 }
 
-/* Which pattern line should be used for the given frame line. */
+ 
 static unsigned tpg_get_pat_line(const struct tpg_data *tpg, unsigned line)
 {
 	switch (tpg->pattern) {
@@ -1585,27 +1548,23 @@ static unsigned tpg_get_pat_line(const struct tpg_data *tpg, unsigned line)
 	}
 }
 
-/*
- * Which color should be used for the given pattern line and X coordinate.
- * Note: x is in the range 0 to 2 * tpg->src_width.
- */
+ 
 static enum tpg_color tpg_get_color(const struct tpg_data *tpg,
 				    unsigned pat_line, unsigned x)
 {
-	/* Maximum number of bars are TPG_COLOR_MAX - otherwise, the input print code
-	   should be modified */
+	 
 	static const enum tpg_color bars[3][8] = {
-		/* Standard ITU-R 75% color bar sequence */
+		 
 		{ TPG_COLOR_CSC_WHITE,   TPG_COLOR_75_YELLOW,
 		  TPG_COLOR_75_CYAN,     TPG_COLOR_75_GREEN,
 		  TPG_COLOR_75_MAGENTA,  TPG_COLOR_75_RED,
 		  TPG_COLOR_75_BLUE,     TPG_COLOR_100_BLACK, },
-		/* Standard ITU-R 100% color bar sequence */
+		 
 		{ TPG_COLOR_100_WHITE,   TPG_COLOR_100_YELLOW,
 		  TPG_COLOR_100_CYAN,    TPG_COLOR_100_GREEN,
 		  TPG_COLOR_100_MAGENTA, TPG_COLOR_100_RED,
 		  TPG_COLOR_100_BLUE,    TPG_COLOR_100_BLACK, },
-		/* Color bar sequence suitable to test CSC */
+		 
 		{ TPG_COLOR_CSC_WHITE,   TPG_COLOR_CSC_YELLOW,
 		  TPG_COLOR_CSC_CYAN,    TPG_COLOR_CSC_GREEN,
 		  TPG_COLOR_CSC_MAGENTA, TPG_COLOR_CSC_RED,
@@ -1669,12 +1628,7 @@ static enum tpg_color tpg_get_color(const struct tpg_data *tpg,
 	}
 }
 
-/*
- * Given the pixel aspect ratio and video aspect ratio calculate the
- * coordinates of a centered square and the coordinates of the border of
- * the active video area. The coordinates are relative to the source
- * frame rectangle.
- */
+ 
 static void tpg_calculate_square_border(struct tpg_data *tpg)
 {
 	unsigned w = tpg->src_width;
@@ -1776,7 +1730,7 @@ static void tpg_precalculate_line(struct tpg_data *tpg)
 	}
 
 	for (pat = 0; pat < tpg_get_pat_lines(tpg); pat++) {
-		/* Coarse scaling with Bresenham */
+		 
 		unsigned int_part = tpg->src_width / tpg->scaled_width;
 		unsigned fract_part = tpg->src_width % tpg->scaled_width;
 		unsigned src_x = 0;
@@ -1874,7 +1828,7 @@ static void tpg_precalculate_line(struct tpg_data *tpg)
 	gen_twopix(tpg, tpg->textfg, TPG_COLOR_TEXTFG, 1);
 }
 
-/* need this to do rgb24 rendering */
+ 
 typedef struct { u16 __; u8 _; } __packed x24;
 
 #define PRINTSTR(PIXTYPE) do {	\
@@ -1973,7 +1927,7 @@ void tpg_gen_text(const struct tpg_data *tpg, u8 *basep[TPG_MAX_PLANES][2],
 
 	len = strlen(text);
 
-	/* Checks if it is possible to show string */
+	 
 	if (y + 16 >= tpg->compose.height || x + 8 >= tpg->compose.width)
 		return;
 
@@ -1991,7 +1945,7 @@ void tpg_gen_text(const struct tpg_data *tpg, u8 *basep[TPG_MAX_PLANES][2],
 		div = 2;
 
 	for (p = 0; p < tpg->planes; p++) {
-		/* Print text */
+		 
 		switch (tpg->twopixelsize[p]) {
 		case 2:
 			tpg_print_str_2(tpg, basep, p, first, div, step, y, x,
@@ -2087,7 +2041,7 @@ void tpg_update_mv_step(struct tpg_data *tpg)
 }
 EXPORT_SYMBOL_GPL(tpg_update_mv_step);
 
-/* Map the line number relative to the crop rectangle to a frame line number */
+ 
 static unsigned tpg_calc_frameline(const struct tpg_data *tpg, unsigned src_y,
 				    unsigned field)
 {
@@ -2101,10 +2055,7 @@ static unsigned tpg_calc_frameline(const struct tpg_data *tpg, unsigned src_y,
 	}
 }
 
-/*
- * Map the line number relative to the compose rectangle to a destination
- * buffer line number.
- */
+ 
 static unsigned tpg_calc_buffer_line(const struct tpg_data *tpg, unsigned y,
 				    unsigned field)
 {
@@ -2231,12 +2182,9 @@ void tpg_log_status(struct tpg_data *tpg)
 }
 EXPORT_SYMBOL_GPL(tpg_log_status);
 
-/*
- * This struct contains common parameters used by both the drawing of the
- * test pattern and the drawing of the extras (borders, square, etc.)
- */
+ 
 struct tpg_draw_params {
-	/* common data */
+	 
 	bool is_tv;
 	bool is_60hz;
 	unsigned twopixsize;
@@ -2246,13 +2194,13 @@ struct tpg_draw_params {
 	unsigned frame_line;
 	unsigned frame_line_next;
 
-	/* test pattern */
+	 
 	unsigned mv_hor_old;
 	unsigned mv_hor_new;
 	unsigned mv_vert_old;
 	unsigned mv_vert_new;
 
-	/* extras */
+	 
 	unsigned wss_width;
 	unsigned wss_random_offset;
 	unsigned sav_eav_f;
@@ -2324,10 +2272,7 @@ static void tpg_fill_plane_extras(const struct tpg_data *tpg,
 
 	if (params->is_tv && !params->is_60hz &&
 	    frame_line == 0 && params->wss_width) {
-		/*
-		 * Replace the first half of the top line of a 50 Hz frame
-		 * with random data to simulate a WSS signal.
-		 */
+		 
 		u8 *wss = tpg->random_line[p] + params->wss_random_offset;
 
 		memcpy(vbuf, wss, params->wss_width);
@@ -2514,10 +2459,7 @@ static void tpg_fill_plane_pattern(const struct tpg_data *tpg,
 		if (tpg->vdownsampling[p] > 1 && frame_line != frame_line_next) {
 			int avg_pat;
 
-			/*
-			 * Now decide whether we need to use downsampled_lines[].
-			 * That's necessary if the two lines use different patterns.
-			 */
+			 
 			pat_line_next_old = tpg_get_pat_line(tpg,
 					(frame_line_next + mv_vert_old) % tpg->src_height);
 			pat_line_next_new = tpg_get_pat_line(tpg,
@@ -2597,7 +2539,7 @@ void tpg_fill_plane_buffer(struct tpg_data *tpg, v4l2_std_id std,
 	struct tpg_draw_params params;
 	unsigned factor = V4L2_FIELD_HAS_T_OR_B(tpg->field) ? 2 : 1;
 
-	/* Coarse scaling with Bresenham */
+	 
 	unsigned int_part = (tpg->crop.height / factor) / tpg->compose.height;
 	unsigned fract_part = (tpg->crop.height / factor) % tpg->compose.height;
 	unsigned src_y = 0;
@@ -2631,22 +2573,12 @@ void tpg_fill_plane_buffer(struct tpg_data *tpg, v4l2_std_id std,
 			src_y++;
 		}
 
-		/*
-		 * For line-interleaved formats determine the 'plane'
-		 * based on the buffer line.
-		 */
+		 
 		if (tpg_g_interleaved(tpg))
 			p = tpg_g_interleaved_plane(tpg, buf_line);
 
 		if (tpg->vdownsampling[p] > 1) {
-			/*
-			 * When doing vertical downsampling the field setting
-			 * matters: for SEQ_BT/TB we downsample each field
-			 * separately (i.e. lines 0+2 are combined, as are
-			 * lines 1+3), for the other field settings we combine
-			 * odd and even lines. Doing that for SEQ_BT/TB would
-			 * be really weird.
-			 */
+			 
 			if (tpg->field == V4L2_FIELD_SEQ_BT ||
 			    tpg->field == V4L2_FIELD_SEQ_TB) {
 				unsigned next_src_y = src_y;

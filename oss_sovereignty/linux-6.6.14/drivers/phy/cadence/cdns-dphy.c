@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright: 2017-2018 Cadence Design Systems, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -20,7 +18,7 @@
 #define DPHY_PLL_RATE_HZ		108000000
 #define POLL_TIMEOUT_US			1000
 
-/* DPHY registers */
+ 
 #define DPHY_PMA_CMN(reg)		(reg)
 #define DPHY_PMA_LCLK(reg)		(0x100 + (reg))
 #define DPHY_PMA_LDATA(lane, reg)	(0x200 + ((lane) * 0x100) + (reg))
@@ -110,7 +108,7 @@ struct cdns_dphy {
 	struct phy *phy;
 };
 
-/* Order of bands is important since the index is the band number. */
+ 
 static const unsigned int tx_bands[] = {
 	80, 100, 120, 160, 200, 240, 320, 390, 450, 510, 560, 640, 690, 770,
 	870, 950, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500
@@ -193,7 +191,7 @@ static unsigned long cdns_dphy_get_wakeup_time_ns(struct cdns_dphy *dphy)
 
 static unsigned long cdns_dphy_ref_get_wakeup_time_ns(struct cdns_dphy *dphy)
 {
-	/* Default wakeup time is 800 ns (in a simulated environment). */
+	 
 	return 800;
 }
 
@@ -225,7 +223,7 @@ static void cdns_dphy_ref_set_psm_div(struct cdns_dphy *dphy, u8 div)
 
 static unsigned long cdns_dphy_j721e_get_wakeup_time_ns(struct cdns_dphy *dphy)
 {
-	/* Minimum wakeup time as per MIPI D-PHY spec v1.2 */
+	 
 	return 1000000;
 }
 
@@ -234,10 +232,7 @@ static void cdns_dphy_j721e_set_pll_cfg(struct cdns_dphy *dphy,
 {
 	u32 status;
 
-	/*
-	 * set the PWM and PLL Byteclk divider settings to recommended values
-	 * which is same as that of in ref ops
-	 */
+	 
 	writel(DPHY_CMN_PWM_HIGH(6) | DPHY_CMN_PWM_LOW(0x101) |
 	       DPHY_CMN_PWM_DIV(0x8),
 	       dphy->regs + DPHY_CMN_PWM);
@@ -263,11 +258,7 @@ static void cdns_dphy_j721e_set_psm_div(struct cdns_dphy *dphy, u8 div)
 	writel(div, dphy->regs + DPHY_TX_J721E_WIZ_PSM_FREQ);
 }
 
-/*
- * This is the reference implementation of DPHY hooks. Specific integration of
- * this IP may have to re-implement some of them depending on how they decided
- * to wire things in the SoC.
- */
+ 
 static const struct cdns_dphy_ops ref_dphy_ops = {
 	.get_wakeup_time_ns = cdns_dphy_ref_get_wakeup_time_ns,
 	.set_pll_cfg = cdns_dphy_ref_set_pll_cfg,
@@ -342,27 +333,15 @@ static int cdns_dphy_configure(struct phy *phy, union phy_configure_opts *opts)
 	if (ret)
 		return ret;
 
-	/*
-	 * Configure the internal PSM clk divider so that the DPHY has a
-	 * 1MHz clk (or something close).
-	 */
+	 
 	ret = cdns_dphy_setup_psm(dphy);
 	if (ret)
 		return ret;
 
-	/*
-	 * Configure attach clk lanes to data lanes: the DPHY has 2 clk lanes
-	 * and 8 data lanes, each clk lane can be attache different set of
-	 * data lanes. The 2 groups are named 'left' and 'right', so here we
-	 * just say that we want the 'left' clk lane to drive the 'left' data
-	 * lanes.
-	 */
+	 
 	cdns_dphy_set_clk_lane_cfg(dphy, DPHY_CLK_CFG_LEFT_DRIVES_LEFT);
 
-	/*
-	 * Configure the DPHY PLL that will be used to generate the TX byte
-	 * clk.
-	 */
+	 
 	cdns_dphy_set_pll_cfg(dphy, &cfg);
 
 	band_ctrl = cdns_dphy_tx_get_band_ctrl(opts->mipi_dphy.hs_clk_rate);
@@ -383,7 +362,7 @@ static int cdns_dphy_power_on(struct phy *phy)
 	clk_prepare_enable(dphy->psm_clk);
 	clk_prepare_enable(dphy->pll_ref_clk);
 
-	/* Start TX state machine. */
+	 
 	writel(DPHY_CMN_SSM_EN | DPHY_CMN_TX_MODE_EN,
 	       dphy->regs + DPHY_CMN_SSM);
 
@@ -466,7 +445,7 @@ static void cdns_dphy_remove(struct platform_device *pdev)
 static const struct of_device_id cdns_dphy_of_match[] = {
 	{ .compatible = "cdns,dphy", .data = &ref_dphy_ops },
 	{ .compatible = "ti,j721e-dphy", .data = &j721e_dphy_ops },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, cdns_dphy_of_match);
 

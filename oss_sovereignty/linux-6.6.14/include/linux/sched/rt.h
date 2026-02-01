@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_SCHED_RT_H
 #define _LINUX_SCHED_RT_H
 
@@ -30,9 +30,7 @@ static inline bool task_is_realtime(struct task_struct *tsk)
 }
 
 #ifdef CONFIG_RT_MUTEXES
-/*
- * Must hold either p->pi_lock or task_rq(p)->lock.
- */
+ 
 static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *p)
 {
 	return p->pi_top_task;
@@ -50,10 +48,7 @@ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task
 extern void normalize_rt_tasks(void);
 
 
-/*
- * default timeslice is 100 msecs (used only for SCHED_RR tasks).
- * Timeslices get refilled after they expire.
- */
+ 
 #define RR_TIMESLICE		(100 * HZ / 1000)
 
-#endif /* _LINUX_SCHED_RT_H */
+#endif  

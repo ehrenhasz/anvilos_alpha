@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * APEI Generic Hardware Error Source support
- *
- * Generic Hardware Error Source provides a way to report platform
- * hardware errors (such as that from chipset). It works in so called
- * "Firmware First" mode, that is, hardware errors are reported to
- * firmware firstly, then reported to Linux by firmware. This way,
- * some non-standard hardware error registers or non-standard hardware
- * link can be checked by firmware to produce more hardware error
- * information for Linux.
- *
- * For more information about Generic Hardware Error Source, please
- * refer to ACPI Specification version 4.0, section 17.3.2.6
- *
- * Copyright 2010,2011 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- */
+
+ 
 
 #include <linux/arm_sdei.h>
 #include <linux/kernel.h>
@@ -58,13 +42,13 @@
 
 #define GHES_ESTATUS_POOL_MIN_ALLOC_ORDER 3
 
-/* This is just an estimation for memory pool allocation */
+ 
 #define GHES_ESTATUS_CACHE_AVG_SIZE	512
 
 #define GHES_ESTATUS_CACHES_SIZE	4
 
 #define GHES_ESTATUS_IN_CACHE_MAX_NSEC	10000000000ULL
-/* Prevent too many caches are allocated because of RCU */
+ 
 #define GHES_ESTATUS_CACHE_ALLOCED_MAX	(GHES_ESTATUS_CACHES_SIZE * 3 / 2)
 
 #define GHES_ESTATUS_CACHE_LEN(estatus_len)			\
@@ -85,10 +69,7 @@
 	((struct acpi_hest_generic_data *)                              \
 	((struct ghes_vendor_record_entry *)(vendor_entry) + 1))
 
-/*
- *  NMI-like notifications vary by architecture, before the compiler can prune
- *  unused static functions it needs a value for these enums.
- */
+ 
 #ifndef CONFIG_ARM_SDE_INTERFACE
 #define FIX_APEI_GHES_SDEI_NORMAL	__end_of_fixed_addresses
 #define FIX_APEI_GHES_SDEI_CRITICAL	__end_of_fixed_addresses
@@ -101,48 +82,23 @@ static inline bool is_hest_type_generic_v2(struct ghes *ghes)
 	return ghes->generic->header.type == ACPI_HEST_TYPE_GENERIC_ERROR_V2;
 }
 
-/*
- * This driver isn't really modular, however for the time being,
- * continuing to use module_param is the easiest way to remain
- * compatible with existing boot arg use cases.
- */
+ 
 bool ghes_disable;
 module_param_named(disable, ghes_disable, bool, 0);
 
-/*
- * "ghes.edac_force_enable" forcibly enables ghes_edac and skips the platform
- * check.
- */
+ 
 static bool ghes_edac_force_enable;
 module_param_named(edac_force_enable, ghes_edac_force_enable, bool, 0);
 
-/*
- * All error sources notified with HED (Hardware Error Device) share a
- * single notifier callback, so they need to be linked and checked one
- * by one. This holds true for NMI too.
- *
- * RCU is used for these lists, so ghes_list_mutex is only used for
- * list changing, not for traversing.
- */
+ 
 static LIST_HEAD(ghes_hed);
 static DEFINE_MUTEX(ghes_list_mutex);
 
-/*
- * A list of GHES devices which are given to the corresponding EDAC driver
- * ghes_edac for further use.
- */
+ 
 static LIST_HEAD(ghes_devs);
 static DEFINE_MUTEX(ghes_devs_mutex);
 
-/*
- * Because the memory area used to transfer hardware error information
- * from BIOS to Linux can be determined only in NMI, IRQ or timer
- * handler, but general ioremap can not be used in atomic context, so
- * the fixmap is used instead.
- *
- * This spinlock is used to prevent the fixmap entry from being used
- * simultaneously.
- */
+ 
 static DEFINE_SPINLOCK(ghes_notify_lock_irq);
 
 struct ghes_vendor_record_entry {
@@ -209,14 +165,7 @@ err_pool_alloc:
 	return -ENOMEM;
 }
 
-/**
- * ghes_estatus_pool_region_free - free previously allocated memory
- *				   from the ghes_estatus_pool.
- * @addr: address of memory to free.
- * @size: size of memory to free.
- *
- * Returns none.
- */
+ 
 void ghes_estatus_pool_region_free(unsigned long addr, u32 size)
 {
 	gen_pool_free(ghes_estatus_pool, addr, size);
@@ -314,7 +263,7 @@ static inline int ghes_severity(int severity)
 	case CPER_SEV_FATAL:
 		return GHES_SEV_PANIC;
 	default:
-		/* Unknown, go panic */
+		 
 		return GHES_SEV_PANIC;
 	}
 }
@@ -343,7 +292,7 @@ static void ghes_copy_tofrom_phys(void *buffer, u64 paddr, u32 len,
 	}
 }
 
-/* Check the top-level record header has an appropriate size. */
+ 
 static int __ghes_check_estatus(struct ghes *ghes,
 				struct acpi_hest_generic_status *estatus)
 {
@@ -367,7 +316,7 @@ static int __ghes_check_estatus(struct ghes *ghes,
 	return 0;
 }
 
-/* Read the CPER block, returning its address, and header in estatus. */
+ 
 static int __ghes_peek_estatus(struct ghes *ghes,
 			       struct acpi_hest_generic_status *estatus,
 			       u64 *buf_paddr, enum fixed_addresses fixmap_idx)
@@ -441,19 +390,12 @@ static void ghes_clear_estatus(struct ghes *ghes,
 			      sizeof(estatus->block_status), 0,
 			      fixmap_idx);
 
-	/*
-	 * GHESv2 type HEST entries introduce support for error acknowledgment,
-	 * so only acknowledge the error if this support is present.
-	 */
+	 
 	if (is_hest_type_generic_v2(ghes))
 		ghes_ack_error(ghes->generic_v2);
 }
 
-/*
- * Called as task_work before returning to user-space.
- * Ensure any queued work has been done before we return to the context that
- * triggered the notification.
- */
+ 
 static void ghes_kick_task_work(struct callback_head *head)
 {
 	struct acpi_hest_generic_status *estatus;
@@ -498,7 +440,7 @@ static bool ghes_handle_memory_failure(struct acpi_hest_generic_data *gdata,
 	if (!(mem_err->validation_bits & CPER_MEM_VALID_PA))
 		return false;
 
-	/* iff following two events can be handled properly by now */
+	 
 	if (sec_sev == GHES_SEV_CORRECTED &&
 	    (gdata->flags & CPER_SEC_ERROR_THRESHOLD_EXCEEDED))
 		flags = MF_SOFT_OFFLINE;
@@ -531,12 +473,7 @@ static bool ghes_handle_arm_hw_error(struct acpi_hest_generic_data *gdata, int s
 		bool has_pa = (err_info->validation_bits & CPER_ARM_INFO_VALID_PHYSICAL_ADDR);
 		const char *error_type = "unknown error";
 
-		/*
-		 * The field (err_info->error_info & BIT(26)) is fixed to set to
-		 * 1 in some old firmware of HiSilicon Kunpeng920. We assume that
-		 * firmware won't mix corrected errors in an uncorrected section,
-		 * and don't filter out 'corrected' error here.
-		 */
+		 
 		if (is_cache && has_pa) {
 			queued = ghes_do_memory_failure(err_info->physical_fault_addr, 0);
 			p += err_info->length;
@@ -555,20 +492,7 @@ static bool ghes_handle_arm_hw_error(struct acpi_hest_generic_data *gdata, int s
 	return queued;
 }
 
-/*
- * PCIe AER errors need to be sent to the AER driver for reporting and
- * recovery. The GHES severities map to the following AER severities and
- * require the following handling:
- *
- * GHES_SEV_CORRECTABLE -> AER_CORRECTABLE
- *     These need to be reported by the AER driver but no recovery is
- *     necessary.
- * GHES_SEV_RECOVERABLE -> AER_NONFATAL
- * GHES_SEV_RECOVERABLE && CPER_SEC_RESET -> AER_FATAL
- *     These both need to be reported and recovered from by the AER driver.
- * GHES_SEV_PANIC does not make it to this handling since the kernel must
- *     panic.
- */
+ 
 static void ghes_handle_aer(struct acpi_hest_generic_data *gdata)
 {
 #ifdef CONFIG_ACPI_APEI_PCIEAER
@@ -584,11 +508,7 @@ static void ghes_handle_aer(struct acpi_hest_generic_data *gdata)
 				  pcie_err->device_id.function);
 		aer_severity = cper_severity_to_aer(gdata->error_severity);
 
-		/*
-		 * If firmware reset the component to contain
-		 * the error, we must reinitialize it before
-		 * use, so treat it as a fatal AER error.
-		 */
+		 
 		if (gdata->flags & CPER_SEC_RESET)
 			aer_severity = AER_FATAL;
 
@@ -729,7 +649,7 @@ static int ghes_print_estatus(const char *pfx,
 			      const struct acpi_hest_generic *generic,
 			      const struct acpi_hest_generic_status *estatus)
 {
-	/* Not more than 2 messages every 5 seconds */
+	 
 	static DEFINE_RATELIMIT_STATE(ratelimit_corrected, 5*HZ, 2);
 	static DEFINE_RATELIMIT_STATE(ratelimit_uncorrected, 5*HZ, 2);
 	struct ratelimit_state *ratelimit;
@@ -745,10 +665,7 @@ static int ghes_print_estatus(const char *pfx,
 	return 0;
 }
 
-/*
- * GHES error status reporting throttle, to report more kinds of
- * errors, instead of just most frequently occurred errors.
- */
+ 
 static int ghes_estatus_cached(struct acpi_hest_generic_status *estatus)
 {
 	u32 len;
@@ -857,21 +774,11 @@ ghes_estatus_cache_add(struct acpi_hest_generic *generic,
 	rcu_read_unlock();
 
 	if (slot != -1) {
-		/*
-		 * Use release semantics to ensure that ghes_estatus_cached()
-		 * running on another CPU will see the updated cache fields if
-		 * it can see the new value of the pointer.
-		 */
+		 
 		victim = xchg_release(&ghes_estatus_caches[slot],
 				      RCU_INITIALIZER(new_cache));
 
-		/*
-		 * At this point, victim may point to a cached item different
-		 * from the one based on which we selected the slot. Instead of
-		 * going to the loop again to pick another slot, let's just
-		 * drop the other item anyway: this may cause a false cache
-		 * miss later on, but that won't cause any problems.
-		 */
+		 
 		if (victim)
 			call_rcu(&unrcu_pointer(victim)->rcu,
 				 ghes_estatus_cache_rcu_free);
@@ -886,7 +793,7 @@ static void __ghes_panic(struct ghes *ghes,
 
 	ghes_clear_estatus(ghes, estatus, buf_paddr, fixmap_idx);
 
-	/* reboot to log the error! */
+	 
 	if (!panic_timeout)
 		panic_timeout = ghes_panic_timeout;
 	panic("Fatal hardware error!");
@@ -982,17 +889,7 @@ static struct notifier_block ghes_notifier_hed = {
 	.notifier_call = ghes_notify_hed,
 };
 
-/*
- * Handlers for CPER records may not be NMI safe. For example,
- * memory_failure_queue() takes spinlocks and calls schedule_work_on().
- * In any NMI-like handler, memory from ghes_estatus_pool is used to save
- * estatus, and added to the ghes_estatus_llist. irq_work_queue() causes
- * ghes_proc_in_irq() to run in IRQ context where each estatus in
- * ghes_estatus_llist is processed.
- *
- * Memory from the ghes_estatus_pool is also used with the ghes_estatus_cache
- * to suppress frequent messages.
- */
+ 
 static struct llist_head ghes_estatus_llist;
 static struct irq_work ghes_proc_irq_work;
 
@@ -1007,10 +904,7 @@ static void ghes_proc_in_irq(struct irq_work *irq_work)
 	int ret;
 
 	llnode = llist_del_all(&ghes_estatus_llist);
-	/*
-	 * Because the time order of estatus in list is reversed,
-	 * revert it back to proper order.
-	 */
+	 
 	llnode = llist_reverse_order(llnode);
 	while (llnode) {
 		next = llnode->next;
@@ -1051,10 +945,7 @@ static void ghes_print_queued_estatus(void)
 	struct acpi_hest_generic_status *estatus;
 
 	llnode = llist_del_all(&ghes_estatus_llist);
-	/*
-	 * Because the time order of estatus in list is reversed,
-	 * revert it back to proper order.
-	 */
+	 
 	llnode = llist_reverse_order(llnode);
 	while (llnode) {
 		estatus_node = llist_entry(llnode, struct ghes_estatus_node,
@@ -1115,7 +1006,7 @@ static int ghes_in_nmi_queue_one_entry(struct ghes *ghes,
 
 	ghes_clear_estatus(ghes, &tmp_header, buf_paddr, fixmap_idx);
 
-	/* This error has been reported before, don't process it again. */
+	 
 	if (ghes_estatus_cached(estatus))
 		goto no_work;
 
@@ -1152,10 +1043,7 @@ static int ghes_in_nmi_spool_from_list(struct list_head *rcu_list,
 #ifdef CONFIG_ACPI_APEI_SEA
 static LIST_HEAD(ghes_sea);
 
-/*
- * Return 0 only if one of the SEA error sources successfully reported an error
- * record sent from the firmware.
- */
+ 
 int ghes_notify_sea(void)
 {
 	static DEFINE_RAW_SPINLOCK(ghes_notify_lock_sea);
@@ -1182,16 +1070,13 @@ static void ghes_sea_remove(struct ghes *ghes)
 	mutex_unlock(&ghes_list_mutex);
 	synchronize_rcu();
 }
-#else /* CONFIG_ACPI_APEI_SEA */
+#else  
 static inline void ghes_sea_add(struct ghes *ghes) { }
 static inline void ghes_sea_remove(struct ghes *ghes) { }
-#endif /* CONFIG_ACPI_APEI_SEA */
+#endif  
 
 #ifdef CONFIG_HAVE_ACPI_APEI_NMI
-/*
- * NMI may be triggered on any CPU, so ghes_in_nmi is used for
- * having only one concurrent reader.
- */
+ 
 static atomic_t ghes_in_nmi = ATOMIC_INIT(0);
 
 static LIST_HEAD(ghes_nmi);
@@ -1229,16 +1114,13 @@ static void ghes_nmi_remove(struct ghes *ghes)
 	if (list_empty(&ghes_nmi))
 		unregister_nmi_handler(NMI_LOCAL, "ghes");
 	mutex_unlock(&ghes_list_mutex);
-	/*
-	 * To synchronize with NMI handler, ghes can only be
-	 * freed after NMI handler finishes.
-	 */
+	 
 	synchronize_rcu();
 }
-#else /* CONFIG_HAVE_ACPI_APEI_NMI */
+#else  
 static inline void ghes_nmi_add(struct ghes *ghes) { }
 static inline void ghes_nmi_remove(struct ghes *ghes) { }
-#endif /* CONFIG_HAVE_ACPI_APEI_NMI */
+#endif  
 
 static void ghes_nmi_init_cxt(void)
 {
@@ -1374,7 +1256,7 @@ static int ghes_probe(struct platform_device *ghes_dev)
 		ghes_add_timer(ghes);
 		break;
 	case ACPI_HEST_NOTIFY_EXTERNAL:
-		/* External interrupt vector is GSI */
+		 
 		rc = acpi_gsi_to_irq(generic->notify.vector, &ghes->irq);
 		if (rc) {
 			pr_err(GHES_PFX "Failed to map GSI to IRQ for generic hardware error source: %d\n",
@@ -1423,7 +1305,7 @@ static int ghes_probe(struct platform_device *ghes_dev)
 	list_add_tail(&ghes->elist, &ghes_devs);
 	mutex_unlock(&ghes_devs_mutex);
 
-	/* Handle any pending errors right away */
+	 
 	spin_lock_irqsave(&ghes_notify_lock_irq, flags);
 	ghes_proc(ghes);
 	spin_unlock_irqrestore(&ghes_notify_lock_irq, flags);
@@ -1543,12 +1425,10 @@ void __init acpi_ghes_init(void)
 		pr_info(GHES_PFX "Failed to enable APEI firmware first mode.\n");
 }
 
-/*
- * Known x86 systems that prefer GHES error reporting:
- */
+ 
 static struct acpi_platform_list plat_list[] = {
 	{"HPE   ", "Server  ", 0, ACPI_SIG_FADT, all_versions},
-	{ } /* End */
+	{ }  
 };
 
 struct list_head *ghes_get_devices(void)

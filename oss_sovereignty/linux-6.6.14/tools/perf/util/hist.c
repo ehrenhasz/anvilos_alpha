@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "callchain.h"
 #include "debug.h"
 #include "dso.h"
@@ -85,11 +85,7 @@ void hists__calc_col_len(struct hists *hists, struct hist_entry *h)
 
 	if (h->block_info)
 		return;
-	/*
-	 * +4 accounts for '[x] ' priv level info
-	 * +2 accounts for 0x prefix on raw addresses
-	 * +3 accounts for ' y ' symtab origin info
-	 */
+	 
 	if (h->ms.sym) {
 		symlen = h->ms.sym->namelen + 4;
 		if (verbose > 0)
@@ -315,7 +311,7 @@ static void he_stat__decay(struct he_stat *he_stat)
 {
 	he_stat->period = (he_stat->period * 7) / 8;
 	he_stat->nr_events = (he_stat->nr_events * 7) / 8;
-	/* XXX need decay for weight too? */
+	 
 }
 
 static void hists__delete_entry(struct hists *hists, struct hist_entry *he);
@@ -429,9 +425,7 @@ struct hist_entry *hists__get_entry(struct hists *hists, int idx)
 	return NULL;
 }
 
-/*
- * histogram, sorted on item, collects periods
- */
+ 
 
 static int hist_entry__init(struct hist_entry *he,
 			    struct hist_entry *template,
@@ -454,11 +448,7 @@ static int hist_entry__init(struct hist_entry *he,
 	he->ms.map = map__get(he->ms.map);
 
 	if (he->branch_info) {
-		/*
-		 * This branch info is (a part of) allocated from
-		 * sample__resolve_bstack() and will be freed after
-		 * adding new entries.  So we need to save a copy.
-		 */
+		 
 		he->branch_info = malloc(sizeof(*he->branch_info));
 		if (he->branch_info == NULL)
 			goto err;
@@ -606,12 +596,7 @@ static struct hist_entry *hists__findnew_entry(struct hists *hists,
 		parent = *p;
 		he = rb_entry(parent, struct hist_entry, rb_node_in);
 
-		/*
-		 * Make sure that it receives arguments in a same order as
-		 * hist_entry__collapse() so that we can use an appropriate
-		 * function when searching an entry regardless which sort
-		 * keys were used.
-		 */
+		 
 		cmp = hist_entry__cmp(he, entry);
 		if (!cmp) {
 			if (sample_self) {
@@ -621,22 +606,14 @@ static struct hist_entry *hists__findnew_entry(struct hists *hists,
 			if (symbol_conf.cumulate_callchain)
 				he_stat__add_period(he->stat_acc, period);
 
-			/*
-			 * This mem info was allocated from sample__resolve_mem
-			 * and will not be used anymore.
-			 */
+			 
 			mem_info__zput(entry->mem_info);
 
 			block_info__zput(entry->block_info);
 
 			kvm_info__zput(entry->kvm_info);
 
-			/* If the map of an existing hist_entry has
-			 * become out-of-date due to an exec() or
-			 * similar, update it.  Otherwise we will
-			 * mis-adjust symbol addresses when computing
-			 * the history counter to increment.
-			 */
+			 
 			if (he->ms.map != entry->ms.map) {
 				map__put(he->ms.map);
 				he->ms.map = map__get(entry->ms.map);
@@ -846,13 +823,7 @@ iter_add_single_mem_entry(struct hist_entry_iter *iter, struct addr_location *al
 	if (!cost)
 		cost = 1;
 
-	/*
-	 * must pass period=weight in order to get the correct
-	 * sorting from hists__collapse_resort() which is solely
-	 * based on periods. We want sorting be done on nr_events * weight
-	 * and this is indirectly achieved by passing period=weight here
-	 * and the he_stat__add_period() function.
-	 */
+	 
 	sample->period = cost;
 
 	he = hists__add_entry(hists, al, iter->parent, NULL, mi, NULL,
@@ -881,11 +852,7 @@ iter_finish_mem_entry(struct hist_entry_iter *iter,
 	err = hist_entry__append_callchain(he, iter->sample);
 
 out:
-	/*
-	 * We don't need to free iter->priv (mem_info) here since the mem info
-	 * was either already freed in hists__findnew_entry() or passed to a
-	 * new hist entry by hist_entry__new().
-	 */
+	 
 	iter->priv = NULL;
 
 	iter->he = NULL;
@@ -953,10 +920,7 @@ iter_add_next_branch_entry(struct hist_entry_iter *iter, struct addr_location *a
 	if (iter->hide_unresolved && !(bi[i].from.ms.sym && bi[i].to.ms.sym))
 		goto out;
 
-	/*
-	 * The report shows the percentage of total branches captured
-	 * and not events sampled. Thus we use a pseudo period of 1.
-	 */
+	 
 	sample->period = 1;
 	sample->weight = bi->flags.cycles ? bi->flags.cycles : 1;
 
@@ -1036,11 +1000,7 @@ iter_prepare_cumulative_entry(struct hist_entry_iter *iter,
 
 	callchain_cursor_commit(cursor);
 
-	/*
-	 * This is for detecting cycles or recursions so that they're
-	 * cumulated only one time to prevent entries more than 100%
-	 * overhead.
-	 */
+	 
 	he_cache = malloc(sizeof(*he_cache) * (cursor->nr + 1));
 	if (he_cache == NULL)
 		return -ENOMEM;
@@ -1072,10 +1032,7 @@ iter_add_single_cumulative_entry(struct hist_entry_iter *iter,
 
 	hist_entry__append_callchain(he, sample);
 
-	/*
-	 * We need to re-initialize the cursor since callchain_append()
-	 * advanced the cursor to the end.
-	 */
+	 
 	callchain_cursor_commit(get_tls_callchain_cursor());
 
 	hists__inc_nr_samples(hists, he->filtered);
@@ -1145,21 +1102,14 @@ iter_add_next_cumulative_entry(struct hist_entry_iter *iter,
 
 	callchain_cursor_advance(tls_cursor);
 
-	/*
-	 * Check if there's duplicate entries in the callchain.
-	 * It's possible that it has cycles or recursive calls.
-	 */
+	 
 	for (i = 0; i < iter->curr; i++) {
-		/*
-		 * For most cases, there are no duplicate entries in callchain.
-		 * The symbols are usually different. Do a quick check for
-		 * symbols first.
-		 */
+		 
 		if (fast && hist_entry__fast__sym_diff(he_cache[i], &he_tmp))
 			continue;
 
 		if (hist_entry__cmp(he_cache[i], &he_tmp) == 0) {
-			/* to avoid calling callback function */
+			 
 			iter->he = NULL;
 			return 0;
 		}
@@ -1351,13 +1301,7 @@ void hist_entry__delete(struct hist_entry *he)
 	ops->free(he);
 }
 
-/*
- * If this is not the last column, then we need to pad it according to the
- * pre-calculated max length for this column, otherwise don't bother adding
- * spaces because that would break viewing this with, for instance, 'less',
- * that would show tons of trailing spaces when a long C++ demangled method
- * names is sampled.
-*/
+ 
 int hist_entry__snprintf_alignment(struct hist_entry *he, struct perf_hpp *hpp,
 				   struct perf_hpp_fmt *fmt, int printed)
 {
@@ -1372,9 +1316,7 @@ int hist_entry__snprintf_alignment(struct hist_entry *he, struct perf_hpp *hpp,
 	return printed;
 }
 
-/*
- * collapse the histogram
- */
+ 
 
 static void hists__apply_filters(struct hists *hists, struct hist_entry *he);
 static void hists__remove_entry_filter(struct hists *hists, struct hist_entry *he,
@@ -1419,7 +1361,7 @@ static void hist_entry__check_and_remove_filter(struct hist_entry *he,
 		return;
 	}
 
-	/* if it's filtered by own fmt, it has to have filter bits */
+	 
 	perf_hpp_list__for_each_format(he->hpp_list, fmt) {
 		if (check(fmt)) {
 			type_match = true;
@@ -1428,12 +1370,7 @@ static void hist_entry__check_and_remove_filter(struct hist_entry *he,
 	}
 
 	if (type_match) {
-		/*
-		 * If the filter is for current level entry, propagate
-		 * filter marker to parents.  The marker bit was
-		 * already set by default so it only needs to clear
-		 * non-filtered entries.
-		 */
+		 
 		if (!(he->filtered & (1 << type))) {
 			while (parent) {
 				parent->filtered &= ~(1 << type);
@@ -1441,15 +1378,7 @@ static void hist_entry__check_and_remove_filter(struct hist_entry *he,
 			}
 		}
 	} else {
-		/*
-		 * If current entry doesn't have matching formats, set
-		 * filter marker for upper level entries.  it will be
-		 * cleared if its lower level entries is not filtered.
-		 *
-		 * For lower-level entries, it inherits parent's
-		 * filter bit so that lower level entries of a
-		 * non-filtered entry won't set the filter marker.
-		 */
+		 
 		if (parent == NULL)
 			he->filtered |= (1 << type);
 		else
@@ -1514,13 +1443,13 @@ static struct hist_entry *hierarchy_insert_entry(struct hists *hists,
 
 	hists->nr_entries++;
 
-	/* save related format list for output */
+	 
 	new->hpp_list = hpp_list;
 	new->parent_he = parent_he;
 
 	hist_entry__apply_hierarchy_filters(new);
 
-	/* some fields are now passed to 'new' */
+	 
 	perf_hpp_list__for_each_sort_list(hpp_list, fmt) {
 		if (perf_hpp__is_trace_entry(fmt) || perf_hpp__is_dynamic_entry(fmt))
 			he->trace_output = NULL;
@@ -1554,11 +1483,11 @@ static int hists__hierarchy_insert_entry(struct hists *hists,
 	int ret = 0;
 
 	list_for_each_entry(node, &hists->hpp_formats, list) {
-		/* skip period (overhead) and elided columns */
+		 
 		if (node->level == 0 || node->skip)
 			continue;
 
-		/* insert copy of 'he' for each fmt into the hierarchy */
+		 
 		new_he = hierarchy_insert_entry(hists, root, he, parent, &node->hpp);
 		if (new_he == NULL) {
 			ret = -1;
@@ -1588,10 +1517,10 @@ static int hists__hierarchy_insert_entry(struct hists *hists,
 		}
 	}
 
-	/* 'he' is no longer used */
+	 
 	hist_entry__delete(he);
 
-	/* return 0 (or -1) since it already applied filters */
+	 
 	return ret;
 }
 
@@ -1701,11 +1630,7 @@ int hists__collapse_resort(struct hists *hists, struct ui_progress *prog)
 			return -1;
 
 		if (ret) {
-			/*
-			 * If it wasn't combined with one of the entries already
-			 * collapsed, we need to apply the filters that may have
-			 * been set by, say, the hist_browser.
-			 */
+			 
 			hists__apply_filters(hists, n);
 		}
 		if (prog)
@@ -1771,11 +1696,7 @@ static void hierarchy_recalc_total_periods(struct hists *hists)
 	hists->stats.total_period = 0;
 	hists->stats.total_non_filtered_period = 0;
 
-	/*
-	 * recalculate total period using top-level entries only
-	 * since lower level entries only see non-filtered entries
-	 * but upper level entries have sum of both entries.
-	 */
+	 
 	while (node) {
 		he = rb_entry(node, struct hist_entry, rb_node);
 		node = rb_next(node);
@@ -1810,7 +1731,7 @@ static void hierarchy_insert_output_entry(struct rb_root_cached *root,
 	rb_link_node(&he->rb_node, parent, p);
 	rb_insert_color_cached(&he->rb_node, root, leftmost);
 
-	/* update column width of dynamic entry */
+	 
 	perf_hpp_list__for_each_sort_list(he->hpp_list, fmt) {
 		if (fmt->init)
 			fmt->init(fmt, he);
@@ -1910,7 +1831,7 @@ static void __hists__insert_output_entry(struct rb_root_cached *entries,
 	rb_link_node(&he->rb_node, parent, p);
 	rb_insert_color_cached(&he->rb_node, entries, leftmost);
 
-	/* update column width of dynamic entries */
+	 
 	perf_hpp_list__for_each_sort_list(&perf_hpp_list, fmt) {
 		if (fmt->init)
 			fmt->init(fmt, he);
@@ -2100,7 +2021,7 @@ static void hists__remove_entry_filter(struct hists *hists, struct hist_entry *h
 			if (parent->filtered)
 				goto next;
 
-			/* force fold unfiltered entry for simplicity */
+			 
 			parent->unfolded = false;
 			parent->has_no_entry = false;
 			parent->row_offset = 0;
@@ -2113,7 +2034,7 @@ next:
 	if (h->filtered)
 		return;
 
-	/* force fold unfiltered entry for simplicity */
+	 
 	h->unfolded = false;
 	h->has_no_entry = false;
 	h->row_offset = 0;
@@ -2254,30 +2175,20 @@ static void hists__filter_hierarchy(struct hists *hists, int type, const void *a
 
 		ret = hist_entry__filter(h, type, arg);
 
-		/*
-		 * case 1. non-matching type
-		 * zero out the period, set filter marker and move to child
-		 */
+		 
 		if (ret < 0) {
 			memset(&h->stat, 0, sizeof(h->stat));
 			h->filtered |= (1 << type);
 
 			nd = __rb_hierarchy_next(&h->rb_node, HMD_FORCE_CHILD);
 		}
-		/*
-		 * case 2. matched type (filter out)
-		 * set filter marker and move to next
-		 */
+		 
 		else if (ret == 1) {
 			h->filtered |= (1 << type);
 
 			nd = __rb_hierarchy_next(&h->rb_node, HMD_FORCE_SIBLING);
 		}
-		/*
-		 * case 3. ok (not filtered)
-		 * add period to hists and parents, erase the filter marker
-		 * and move to next sibling
-		 */
+		 
 		else {
 			hists__remove_entry_filter(hists, h, type);
 
@@ -2287,10 +2198,7 @@ static void hists__filter_hierarchy(struct hists *hists, int type, const void *a
 
 	hierarchy_recalc_total_periods(hists);
 
-	/*
-	 * resort output after applying a new filter since filter in a lower
-	 * hierarchy can change periods in a upper hierarchy.
-	 */
+	 
 	nd = rb_first_cached(&hists->entries);
 	while (nd) {
 		struct hist_entry *h = rb_entry(nd, struct hist_entry, rb_node);
@@ -2538,9 +2446,7 @@ static void hists__match_hierarchy(struct rb_root_cached *leader_root,
 	}
 }
 
-/*
- * Look for pairs to link to the leader buckets (hist_entries):
- */
+ 
 void hists__match(struct hists *leader, struct hists *other)
 {
 	struct rb_root_cached *root;
@@ -2548,7 +2454,7 @@ void hists__match(struct hists *leader, struct hists *other)
 	struct hist_entry *pos, *pair;
 
 	if (symbol_conf.report_hierarchy) {
-		/* hierarchy report always collapses entries */
+		 
 		return hists__match_hierarchy(&leader->entries_collapsed,
 					      &other->entries_collapsed);
 	}
@@ -2595,7 +2501,7 @@ static int hists__link_hierarchy(struct hists *leader_hists,
 			if (leader == NULL)
 				return -1;
 
-			/* do not point parent in the pos */
+			 
 			leader->parent_he = parent;
 
 			hist_entry__add_pair(pos, leader);
@@ -2611,11 +2517,7 @@ static int hists__link_hierarchy(struct hists *leader_hists,
 	return 0;
 }
 
-/*
- * Look for entries in the other hists that are not present in the leader, if
- * we find them, just add a dummy entry on the leader hists, with period=0,
- * nr_events=0, to serve as the list header.
- */
+ 
 int hists__link(struct hists *leader, struct hists *other)
 {
 	struct rb_root_cached *root;
@@ -2623,7 +2525,7 @@ int hists__link(struct hists *leader, struct hists *other)
 	struct hist_entry *pos, *pair;
 
 	if (symbol_conf.report_hierarchy) {
-		/* hierarchy report always collapses entries */
+		 
 		return hists__link_hierarchy(leader, NULL,
 					     &leader->entries_collapsed,
 					     &other->entries_collapsed);
@@ -2674,22 +2576,13 @@ void hist__account_cycles(struct branch_stack *bs, struct addr_location *al,
 	struct branch_info *bi;
 	struct branch_entry *entries = perf_sample__branch_entries(sample);
 
-	/* If we have branch cycles always annotate them. */
+	 
 	if (bs && bs->nr && entries[0].flags.cycles) {
 		bi = sample__resolve_bstack(sample, al);
 		if (bi) {
 			struct addr_map_symbol *prev = NULL;
 
-			/*
-			 * Ignore errors, still want to process the
-			 * other entries.
-			 *
-			 * For non standard branch modes always
-			 * force no IPC (prev == NULL)
-			 *
-			 * Note that perf stores branches reversed from
-			 * program order!
-			 */
+			 
 			for (int i = bs->nr - 1; i >= 0; i--) {
 				addr_map_symbol__account_cycles(&bi[i].from,
 					nonany_branch_mode ? NULL : prev,
@@ -2905,10 +2798,7 @@ static int hists_evsel__init(struct evsel *evsel)
 	return 0;
 }
 
-/*
- * XXX We probably need a hists_evsel__exit() to free the hist_entries
- * stored in the rbtree...
- */
+ 
 
 int hists__init(void)
 {

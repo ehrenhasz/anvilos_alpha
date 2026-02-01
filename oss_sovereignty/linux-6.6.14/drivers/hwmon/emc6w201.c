@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * emc6w201.c - Hardware monitoring driver for the SMSC EMC6W201
- * Copyright (C) 2011  Jean Delvare <jdelvare@suse.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -14,15 +11,11 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 
-/*
- * Addresses to scan
- */
+ 
 
 static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, I2C_CLIENT_END };
 
-/*
- * The EMC6W201 registers
- */
+ 
 
 #define EMC6W201_REG_IN(nr)		(0x20 + (nr))
 #define EMC6W201_REG_TEMP(nr)		(0x26 + (nr))
@@ -38,26 +31,21 @@ static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, I2C_CLIENT_END };
 
 enum subfeature { input, min, max };
 
-/*
- * Per-device data
- */
+ 
 
 struct emc6w201_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	bool valid; /* false until following fields are valid */
-	unsigned long last_updated; /* in jiffies */
+	bool valid;  
+	unsigned long last_updated;  
 
-	/* registers values */
+	 
 	u8 in[3][6];
 	s8 temp[3][6];
 	u16 fan[2][5];
 };
 
-/*
- * Combine LSB and MSB registers in a single value
- * Locking: must be called with data->update_lock held
- */
+ 
 static u16 emc6w201_read16(struct i2c_client *client, u8 reg)
 {
 	int lsb, msb;
@@ -67,16 +55,13 @@ static u16 emc6w201_read16(struct i2c_client *client, u8 reg)
 	if (unlikely(lsb < 0 || msb < 0)) {
 		dev_err(&client->dev, "%d-bit %s failed at 0x%02x\n",
 			16, "read", reg);
-		return 0xFFFF;	/* Arbitrary value */
+		return 0xFFFF;	 
 	}
 
 	return (msb << 8) | lsb;
 }
 
-/*
- * Write 16-bit value to LSB and MSB registers
- * Locking: must be called with data->update_lock held
- */
+ 
 static int emc6w201_write16(struct i2c_client *client, u8 reg, u16 val)
 {
 	int err;
@@ -91,7 +76,7 @@ static int emc6w201_write16(struct i2c_client *client, u8 reg, u16 val)
 	return err;
 }
 
-/* Read 8-bit value from register */
+ 
 static u8 emc6w201_read8(struct i2c_client *client, u8 reg)
 {
 	int val;
@@ -100,13 +85,13 @@ static u8 emc6w201_read8(struct i2c_client *client, u8 reg)
 	if (unlikely(val < 0)) {
 		dev_err(&client->dev, "%d-bit %s failed at 0x%02x\n",
 			8, "read", reg);
-		return 0x00;	/* Arbitrary value */
+		return 0x00;	 
 	}
 
 	return val;
 }
 
-/* Write 8-bit value to register */
+ 
 static int emc6w201_write8(struct i2c_client *client, u8 reg, u8 val)
 {
 	int err;
@@ -170,9 +155,7 @@ static struct emc6w201_data *emc6w201_update_device(struct device *dev)
 	return data;
 }
 
-/*
- * Sysfs callback functions
- */
+ 
 
 static const s16 nominal_mv[6] = { 2500, 1500, 3300, 5000, 1500, 1500 };
 
@@ -403,11 +386,9 @@ static struct attribute *emc6w201_attrs[] = {
 
 ATTRIBUTE_GROUPS(emc6w201);
 
-/*
- * Driver interface
- */
+ 
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int emc6w201_detect(struct i2c_client *client,
 			   struct i2c_board_info *info)
 {
@@ -417,7 +398,7 @@ static int emc6w201_detect(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* Identification */
+	 
 	company = i2c_smbus_read_byte_data(client, EMC6W201_REG_COMPANY);
 	if (company != 0x5C)
 		return -ENODEV;
@@ -430,7 +411,7 @@ static int emc6w201_detect(struct i2c_client *client,
 		return -ENODEV;
 	}
 
-	/* Check configuration */
+	 
 	config = i2c_smbus_read_byte_data(client, EMC6W201_REG_CONFIG);
 	if (config < 0 || (config & 0xF4) != 0x04)
 		return -ENODEV;

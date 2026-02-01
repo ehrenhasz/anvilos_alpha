@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Google, Inc.
- *     Thiebaud Weksteen <tweek@google.com>
- */
+
+ 
 
 #define TPM_MEMREMAP(start, size) early_memremap(start, size)
 #define TPM_MEMUNMAP(start, size) early_memunmap(start, size)
@@ -33,9 +30,7 @@ static int __init tpm2_calc_event_log_size(void *data, int count, void *size_inf
 	return size;
 }
 
-/*
- * Reserve the memory associated with the TPM Event Log configuration table.
- */
+ 
 int __init efi_tpm_eventlog_init(void)
 {
 	struct linux_efi_tpm_eventlog *log_tbl;
@@ -44,10 +39,7 @@ int __init efi_tpm_eventlog_init(void)
 	int ret = 0;
 
 	if (efi.tpm_log == EFI_INVALID_TABLE_ADDR) {
-		/*
-		 * We can't calculate the size of the final events without the
-		 * first entry in the TPM log, so bail here.
-		 */
+		 
 		return 0;
 	}
 

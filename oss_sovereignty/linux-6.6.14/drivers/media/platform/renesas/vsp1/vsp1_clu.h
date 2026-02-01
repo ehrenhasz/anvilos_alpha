@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_clu.h  --  R-Car VSP1 Cubic Look-Up Table
- *
- * Copyright (C) 2015 Renesas Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_CLU_H__
 #define __VSP1_CLU_H__
 
@@ -42,4 +36,4 @@ static inline struct vsp1_clu *to_clu(struct v4l2_subdev *subdev)
 
 struct vsp1_clu *vsp1_clu_create(struct vsp1_device *vsp1);
 
-#endif /* __VSP1_CLU_H__ */
+#endif  

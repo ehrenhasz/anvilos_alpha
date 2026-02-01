@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Freescale ALSA SoC Digital Audio Interface (SAI) driver.
-//
-// Copyright 2012-2015 Freescale Semiconductor, Inc.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -41,21 +41,12 @@ static const struct snd_pcm_hw_constraint_list fsl_sai_rate_constraints = {
 	.list = fsl_sai_rates,
 };
 
-/**
- * fsl_sai_dir_is_synced - Check if stream is synced by the opposite stream
- *
- * SAI supports synchronous mode using bit/frame clocks of either Transmitter's
- * or Receiver's for both streams. This function is used to check if clocks of
- * the stream's are synced by the opposite stream.
- *
- * @sai: SAI context
- * @dir: stream direction
- */
+ 
 static inline bool fsl_sai_dir_is_synced(struct fsl_sai *sai, int dir)
 {
 	int adir = (dir == TX) ? RX : TX;
 
-	/* current dir in async mode while opposite dir in sync mode */
+	 
 	return !sai->synchronous[dir] && sai->synchronous[adir];
 }
 
@@ -64,20 +55,20 @@ static struct pinctrl_state *fsl_sai_get_pins_state(struct fsl_sai *sai, u32 bcl
 	struct pinctrl_state *state = NULL;
 
 	if (sai->is_pdm_mode) {
-		/* DSD512@44.1kHz, DSD512@48kHz */
+		 
 		if (bclk >= 22579200)
 			state = pinctrl_lookup_state(sai->pinctrl, "dsd512");
 
-		/* Get default DSD state */
+		 
 		if (IS_ERR_OR_NULL(state))
 			state = pinctrl_lookup_state(sai->pinctrl, "dsd");
 	} else {
-		/* 706k32b2c, 768k32b2c, etc */
+		 
 		if (bclk >= 45158400)
 			state = pinctrl_lookup_state(sai->pinctrl, "pcm_b2m");
 	}
 
-	/* Get default state */
+	 
 	if (IS_ERR_OR_NULL(state))
 		state = pinctrl_lookup_state(sai->pinctrl, "default");
 
@@ -92,14 +83,10 @@ static irqreturn_t fsl_sai_isr(int irq, void *devid)
 	u32 flags, xcsr, mask;
 	irqreturn_t iret = IRQ_NONE;
 
-	/*
-	 * Both IRQ status bits and IRQ mask bits are in the xCSR but
-	 * different shifts. And we here create a mask only for those
-	 * IRQs that we activated.
-	 */
+	 
 	mask = (FSL_SAI_FLAGS >> FSL_SAI_CSR_xIE_SHIFT) << FSL_SAI_CSR_xF_SHIFT;
 
-	/* Tx IRQ */
+	 
 	regmap_read(sai->regmap, FSL_SAI_TCSR(ofs), &xcsr);
 	flags = xcsr & mask;
 
@@ -130,7 +117,7 @@ static irqreturn_t fsl_sai_isr(int irq, void *devid)
 		regmap_write(sai->regmap, FSL_SAI_TCSR(ofs), flags | xcsr);
 
 irq_rx:
-	/* Rx IRQ */
+	 
 	regmap_read(sai->regmap, FSL_SAI_RCSR(ofs), &xcsr);
 	flags = xcsr & mask;
 
@@ -282,41 +269,25 @@ static int fsl_sai_set_dai_fmt_tr(struct snd_soc_dai *cpu_dai,
 
 	sai->is_pdm_mode = false;
 	sai->is_dsp_mode = false;
-	/* DAI mode */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
-		/*
-		 * Frame low, 1clk before data, one word length for frame sync,
-		 * frame sync starts one serial clock cycle earlier,
-		 * that is, together with the last bit of the previous
-		 * data word.
-		 */
+		 
 		val_cr2 |= FSL_SAI_CR2_BCP;
 		val_cr4 |= FSL_SAI_CR4_FSE | FSL_SAI_CR4_FSP;
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
-		/*
-		 * Frame high, one word length for frame sync,
-		 * frame sync asserts with the first bit of the frame.
-		 */
+		 
 		val_cr2 |= FSL_SAI_CR2_BCP;
 		break;
 	case SND_SOC_DAIFMT_DSP_A:
-		/*
-		 * Frame high, 1clk before data, one bit for frame sync,
-		 * frame sync starts one serial clock cycle earlier,
-		 * that is, together with the last bit of the previous
-		 * data word.
-		 */
+		 
 		val_cr2 |= FSL_SAI_CR2_BCP;
 		val_cr4 |= FSL_SAI_CR4_FSE;
 		sai->is_dsp_mode = true;
 		break;
 	case SND_SOC_DAIFMT_DSP_B:
-		/*
-		 * Frame high, one bit for frame sync,
-		 * frame sync asserts with the first bit of the frame.
-		 */
+		 
 		val_cr2 |= FSL_SAI_CR2_BCP;
 		sai->is_dsp_mode = true;
 		break;
@@ -326,34 +297,34 @@ static int fsl_sai_set_dai_fmt_tr(struct snd_soc_dai *cpu_dai,
 		sai->is_pdm_mode = true;
 		break;
 	case SND_SOC_DAIFMT_RIGHT_J:
-		/* To be done */
+		 
 	default:
 		return -EINVAL;
 	}
 
-	/* DAI clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_IF:
-		/* Invert both clocks */
+		 
 		val_cr2 ^= FSL_SAI_CR2_BCP;
 		val_cr4 ^= FSL_SAI_CR4_FSP;
 		break;
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Invert bit clock */
+		 
 		val_cr2 ^= FSL_SAI_CR2_BCP;
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
-		/* Invert frame clock */
+		 
 		val_cr4 ^= FSL_SAI_CR4_FSP;
 		break;
 	case SND_SOC_DAIFMT_NB_NF:
-		/* Nothing to do for both normal cases */
+		 
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* DAI clock provider masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
 		val_cr2 |= FSL_SAI_CR2_BCD_MSTR;
@@ -412,15 +383,11 @@ static int fsl_sai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
 	u32 id;
 	bool support_1_1_ratio = sai->verid.version >= 0x0301;
 
-	/* Don't apply to consumer mode */
+	 
 	if (sai->is_consumer_mode)
 		return 0;
 
-	/*
-	 * There is no point in polling MCLK0 if it is identical to MCLK1.
-	 * And given that MQS use case has to use MCLK1 though two clocks
-	 * are the same, we simply skip MCLK0 and start to find from MCLK1.
-	 */
+	 
 	id = sai->soc_data->mclk0_is_mclk1 ? 1 : 0;
 
 	for (; id < FSL_SAI_MCLK_MAX; id++) {
@@ -440,10 +407,7 @@ static int fsl_sai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
 
 		diff = abs((long)clk_rate - ratio * freq);
 
-		/*
-		 * Drop the source that can not be
-		 * divided into the required rate.
-		 */
+		 
 		if (diff != 0 && clk_rate / diff < 1000)
 			continue;
 
@@ -471,16 +435,7 @@ static int fsl_sai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
 	dev_dbg(dai->dev, "best fit: clock id=%d, div=%d, deviation =%d\n",
 			sai->mclk_id[tx], savediv, bestdiff);
 
-	/*
-	 * 1) For Asynchronous mode, we must set RCR2 register for capture, and
-	 *    set TCR2 register for playback.
-	 * 2) For Tx sync with Rx clock, we must set RCR2 register for playback
-	 *    and capture.
-	 * 3) For Rx sync with Tx clock, we must set TCR2 register for playback
-	 *    and capture.
-	 * 4) For Tx and Rx are both Synchronous with another SAI, we just
-	 *    ignore it.
-	 */
+	 
 	if (fsl_sai_dir_is_synced(sai, adir))
 		reg = FSL_SAI_xCR2(!tx, ofs);
 	else if (!sai->synchronous[dir])
@@ -542,10 +497,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
 
 	pins = DIV_ROUND_UP(channels, slots);
 
-	/*
-	 * PDM mode, channels are independent
-	 * each channels are on one dataline/FIFO.
-	 */
+	 
 	if (sai->is_pdm_mode) {
 		pins = channels;
 		dl_type = FSL_SAI_DL_PDM;
@@ -581,7 +533,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
 		if (ret)
 			return ret;
 
-		/* Do not enable the clock if it is already enabled */
+		 
 		if (!(sai->mclk_streams & BIT(substream->stream))) {
 			ret = clk_prepare_enable(sai->mclk_clk[sai->mclk_id[tx]]);
 			if (ret)
@@ -604,15 +556,11 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
 
 	val_cr4 |= FSL_SAI_CR4_FRSZ(slots);
 
-	/* Set to output mode to avoid tri-stated data pins */
+	 
 	if (tx)
 		val_cr4 |= FSL_SAI_CR4_CHMOD;
 
-	/*
-	 * For SAI provider mode, when Tx(Rx) sync with Rx(Tx) clock, Rx(Tx) will
-	 * generate bclk and frame clock for Tx(Rx), we should set RCR4(TCR4),
-	 * RCR5(TCR5) for playback(capture), or there will be sync error.
-	 */
+	 
 
 	if (!sai->is_consumer_mode && fsl_sai_dir_is_synced(sai, adir)) {
 		regmap_update_bits(sai->regmap, FSL_SAI_xCR4(!tx, ofs),
@@ -624,14 +572,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
 				   FSL_SAI_CR5_FBT_MASK, val_cr5);
 	}
 
-	/*
-	 * Combine mode has limation:
-	 * - Can't used for singel dataline/FIFO case except the FIFO0
-	 * - Can't used for multi dataline/FIFO case except the enabled FIFOs
-	 *   are successive and start from FIFO0
-	 *
-	 * So for common usage, all multi fifo case disable the combine mode.
-	 */
+	 
 	if (hweight8(dl_cfg[dl_cfg_idx].mask[tx]) <= 1 || sai->is_multi_fifo_dma)
 		regmap_update_bits(sai->regmap, FSL_SAI_xCR4(tx, ofs),
 				   FSL_SAI_CR4_FCOMB_MASK, 0);
@@ -663,7 +604,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
 				   watermark);
 	}
 
-	/* Find a proper tcre setting */
+	 
 	for (i = 0; i < sai->soc_data->pins; i++) {
 		trce_mask = (1 << (i + 1)) - 1;
 		if (hweight8(dl_cfg[dl_cfg_idx].mask[tx] & trce_mask) == pins)
@@ -674,15 +615,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
 			   FSL_SAI_CR3_TRCE_MASK,
 			   FSL_SAI_CR3_TRCE((dl_cfg[dl_cfg_idx].mask[tx] & trce_mask)));
 
-	/*
-	 * When the TERE and FSD_MSTR enabled before configuring the word width
-	 * There will be no frame sync clock issue, because word width impact
-	 * the generation of frame sync clock.
-	 *
-	 * TERE enabled earlier only for i.MX8MP case for the hardware limitation,
-	 * We need to disable FSD_MSTR before configuring word width, then enable
-	 * FSD_MSTR bit for this specific case.
-	 */
+	 
 	if (sai->soc_data->mclk_with_tere && sai->mclk_direction_output &&
 	    !sai->is_consumer_mode)
 		regmap_update_bits(sai->regmap, FSL_SAI_xCR4(tx, ofs),
@@ -696,7 +629,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
 			   FSL_SAI_CR5_WNW_MASK | FSL_SAI_CR5_W0W_MASK |
 			   FSL_SAI_CR5_FBT_MASK, val_cr5);
 
-	/* Enable FSD_MSTR after configuring word width */
+	 
 	if (sai->soc_data->mclk_with_tere && sai->mclk_direction_output &&
 	    !sai->is_consumer_mode)
 		regmap_update_bits(sai->regmap, FSL_SAI_xCR4(tx, ofs),
@@ -715,7 +648,7 @@ static int fsl_sai_hw_free(struct snd_pcm_substream *substream,
 	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
 	unsigned int ofs = sai->soc_data->reg_offset;
 
-	/* Clear xMR to avoid channel swap with mclk_with_tere enabled case */
+	 
 	regmap_write(sai->regmap, FSL_SAI_xMR(tx), 0);
 
 	regmap_update_bits(sai->regmap, FSL_SAI_xCR3(tx, ofs),
@@ -744,7 +677,7 @@ static void fsl_sai_config_disable(struct fsl_sai *sai, int dir)
 	regmap_update_bits(sai->regmap, FSL_SAI_xCSR(tx, ofs),
 			   mask, 0);
 
-	/* TERE will remain set till the end of current frame */
+	 
 	do {
 		udelay(10);
 		regmap_read(sai->regmap, FSL_SAI_xCSR(tx, ofs), &xcsr);
@@ -753,17 +686,11 @@ static void fsl_sai_config_disable(struct fsl_sai *sai, int dir)
 	regmap_update_bits(sai->regmap, FSL_SAI_xCSR(tx, ofs),
 			   FSL_SAI_CSR_FR, FSL_SAI_CSR_FR);
 
-	/*
-	 * For sai master mode, after several open/close sai,
-	 * there will be no frame clock, and can't recover
-	 * anymore. Add software reset to fix this issue.
-	 * This is a hardware bug, and will be fix in the
-	 * next sai version.
-	 */
+	 
 	if (!sai->is_consumer_mode) {
-		/* Software Reset */
+		 
 		regmap_write(sai->regmap, FSL_SAI_xCSR(tx, ofs), FSL_SAI_CSR_SR);
-		/* Clear SR bit to finish the reset */
+		 
 		regmap_write(sai->regmap, FSL_SAI_xCSR(tx, ofs), 0);
 	}
 }
@@ -779,20 +706,13 @@ static int fsl_sai_trigger(struct snd_pcm_substream *substream, int cmd,
 	int dir = tx ? TX : RX;
 	u32 xcsr;
 
-	/*
-	 * Asynchronous mode: Clear SYNC for both Tx and Rx.
-	 * Rx sync with Tx clocks: Clear SYNC for Tx, set it for Rx.
-	 * Tx sync with Rx clocks: Clear SYNC for Rx, set it for Tx.
-	 */
+	 
 	regmap_update_bits(sai->regmap, FSL_SAI_TCR2(ofs), FSL_SAI_CR2_SYNC,
 			   sai->synchronous[TX] ? FSL_SAI_CR2_SYNC : 0);
 	regmap_update_bits(sai->regmap, FSL_SAI_RCR2(ofs), FSL_SAI_CR2_SYNC,
 			   sai->synchronous[RX] ? FSL_SAI_CR2_SYNC : 0);
 
-	/*
-	 * It is recommended that the transmitter is the last enabled
-	 * and the first disabled.
-	 */
+	 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
@@ -802,17 +722,7 @@ static int fsl_sai_trigger(struct snd_pcm_substream *substream, int cmd,
 
 		regmap_update_bits(sai->regmap, FSL_SAI_xCSR(tx, ofs),
 				   FSL_SAI_CSR_TERE, FSL_SAI_CSR_TERE);
-		/*
-		 * Enable the opposite direction for synchronous mode
-		 * 1. Tx sync with Rx: only set RE for Rx; set TE & RE for Tx
-		 * 2. Rx sync with Tx: only set TE for Tx; set RE & TE for Rx
-		 *
-		 * RM recommends to enable RE after TE for case 1 and to enable
-		 * TE after RE for case 2, but we here may not always guarantee
-		 * that happens: "arecord 1.wav; aplay 2.wav" in case 1 enables
-		 * TE after RE, which is against what RM recommends but should
-		 * be safe to do, judging by years of testing results.
-		 */
+		 
 		if (fsl_sai_dir_is_synced(sai, adir))
 			regmap_update_bits(sai->regmap, FSL_SAI_xCSR((!tx), ofs),
 					   FSL_SAI_CSR_TERE, FSL_SAI_CSR_TERE);
@@ -828,22 +738,14 @@ static int fsl_sai_trigger(struct snd_pcm_substream *substream, int cmd,
 		regmap_update_bits(sai->regmap, FSL_SAI_xCSR(tx, ofs),
 				   FSL_SAI_CSR_xIE_MASK, 0);
 
-		/* Check if the opposite FRDE is also disabled */
+		 
 		regmap_read(sai->regmap, FSL_SAI_xCSR(!tx, ofs), &xcsr);
 
-		/*
-		 * If opposite stream provides clocks for synchronous mode and
-		 * it is inactive, disable it before disabling the current one
-		 */
+		 
 		if (fsl_sai_dir_is_synced(sai, adir) && !(xcsr & FSL_SAI_CSR_FRDE))
 			fsl_sai_config_disable(sai, adir);
 
-		/*
-		 * Disable current stream if either of:
-		 * 1. current stream doesn't provide clocks for synchronous mode
-		 * 2. current stream provides clocks for synchronous mode but no
-		 *    more stream is active.
-		 */
+		 
 		if (!fsl_sai_dir_is_synced(sai, dir) || !(xcsr & FSL_SAI_CSR_FRDE))
 			fsl_sai_config_disable(sai, dir);
 
@@ -862,10 +764,7 @@ static int fsl_sai_startup(struct snd_pcm_substream *substream,
 	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
 	int ret;
 
-	/*
-	 * EDMA controller needs period size to be a multiple of
-	 * tx/rx maxburst
-	 */
+	 
 	if (sai->soc_data->use_edma)
 		snd_pcm_hw_constraint_step(substream->runtime, 0,
 					   SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
@@ -883,10 +782,10 @@ static int fsl_sai_dai_probe(struct snd_soc_dai *cpu_dai)
 	struct fsl_sai *sai = dev_get_drvdata(cpu_dai->dev);
 	unsigned int ofs = sai->soc_data->reg_offset;
 
-	/* Software Reset for both Tx and Rx */
+	 
 	regmap_write(sai->regmap, FSL_SAI_TCSR(ofs), FSL_SAI_CSR_SR);
 	regmap_write(sai->regmap, FSL_SAI_RCSR(ofs), FSL_SAI_CSR_SR);
-	/* Clear SR bit to finish the reset */
+	 
 	regmap_write(sai->regmap, FSL_SAI_TCSR(ofs), 0);
 	regmap_write(sai->regmap, FSL_SAI_RCSR(ofs), 0);
 
@@ -1072,7 +971,7 @@ static bool fsl_sai_volatile_reg(struct device *dev, unsigned int reg)
 	if (reg == FSL_SAI_TCSR(ofs) || reg == FSL_SAI_RCSR(ofs))
 		return true;
 
-	/* Set VERID and PARAM be volatile for reading value in probe */
+	 
 	if (ofs == 8 && (reg == FSL_SAI_VERID || reg == FSL_SAI_PARAM))
 		return true;
 
@@ -1181,24 +1080,21 @@ static int fsl_sai_check_version(struct device *dev)
 
 	dev_dbg(dev, "PARAM: 0x%016X\n", val);
 
-	/* Max slots per frame, power of 2 */
+	 
 	sai->param.slot_num = 1 <<
 		((val & FSL_SAI_PARAM_SPF_MASK) >> FSL_SAI_PARAM_SPF_SHIFT);
 
-	/* Words per fifo, power of 2 */
+	 
 	sai->param.fifo_depth = 1 <<
 		((val & FSL_SAI_PARAM_WPF_MASK) >> FSL_SAI_PARAM_WPF_SHIFT);
 
-	/* Number of datalines implemented */
+	 
 	sai->param.dataline = val & FSL_SAI_PARAM_DLN_MASK;
 
 	return 0;
 }
 
-/*
- * Calculate the offset between first two datalines, don't
- * different offset in one case.
- */
+ 
 static unsigned int fsl_sai_calc_dl_off(unsigned long dl_mask)
 {
 	int fbidx, nbidx, offset;
@@ -1210,18 +1106,7 @@ static unsigned int fsl_sai_calc_dl_off(unsigned long dl_mask)
 	return (offset < 0 || offset >= (FSL_SAI_DL_NUM - 1) ? 0 : offset);
 }
 
-/*
- * read the fsl,dataline property from dts file.
- * It has 3 value for each configuration, first one means the type:
- * I2S(1) or PDM(2), second one is dataline mask for 'rx', third one is
- * dataline mask for 'tx'. for example
- *
- * fsl,dataline = <1 0xff 0xff 2 0xff 0x11>,
- *
- * It means I2S type rx mask is 0xff, tx mask is 0xff, PDM type
- * rx mask is 0xff, tx mask is 0x11 (dataline 1 and 4 enabled).
- *
- */
+ 
 static int fsl_sai_read_dlcfg(struct fsl_sai *sai)
 {
 	struct platform_device *pdev = sai->pdev;
@@ -1244,12 +1129,12 @@ static int fsl_sai_read_dlcfg(struct fsl_sai *sai)
 	}
 
 	num_cfg = elems / 3;
-	/*  Add one more for default value */
+	 
 	cfg = devm_kzalloc(&pdev->dev, (num_cfg + 1) * sizeof(*cfg), GFP_KERNEL);
 	if (!cfg)
 		return -ENOMEM;
 
-	/* Consider default value "0 0xFF 0xFF" if property is missing */
+	 
 	soc_dl = BIT(sai->soc_data->pins) - 1;
 	cfg[0].type = FSL_SAI_DL_DEFAULT;
 	cfg[0].pins[0] = sai->soc_data->pins;
@@ -1262,12 +1147,7 @@ static int fsl_sai_read_dlcfg(struct fsl_sai *sai)
 	cfg[0].start_off[1] = 0;
 	cfg[0].next_off[1] = 0;
 	for (i = 1, index = 0; i < num_cfg + 1; i++) {
-		/*
-		 * type of dataline
-		 * 0 means default mode
-		 * 1 means I2S mode
-		 * 2 means PDM mode
-		 */
+		 
 		ret = of_property_read_u32_index(np, propname, index++, &type);
 		if (ret)
 			return -EINVAL;
@@ -1349,13 +1229,13 @@ static int fsl_sai_probe(struct platform_device *pdev)
 	}
 
 	sai->bus_clk = devm_clk_get(dev, "bus");
-	/* Compatible with old DTB cases */
+	 
 	if (IS_ERR(sai->bus_clk) && PTR_ERR(sai->bus_clk) != -EPROBE_DEFER)
 		sai->bus_clk = devm_clk_get(dev, "sai");
 	if (IS_ERR(sai->bus_clk)) {
 		dev_err(dev, "failed to get bus clock: %ld\n",
 				PTR_ERR(sai->bus_clk));
-		/* -EPROBE_DEFER */
+		 
 		return PTR_ERR(sai->bus_clk);
 	}
 
@@ -1377,12 +1257,12 @@ static int fsl_sai_probe(struct platform_device *pdev)
 	fsl_asoc_get_pll_clocks(&pdev->dev, &sai->pll8k_clk,
 				&sai->pll11k_clk);
 
-	/* Use Multi FIFO mode depending on the support from SDMA script */
+	 
 	ret = of_property_read_u32_array(np, "dmas", dmas, 4);
 	if (!sai->soc_data->use_edma && !ret && dmas[2] == IMX_DMATYPE_MULTI_SAI)
 		sai->is_multi_fifo_dma = true;
 
-	/* read dataline mask for rx and tx*/
+	 
 	ret = fsl_sai_read_dlcfg(sai);
 	if (ret < 0) {
 		dev_err(dev, "failed to read dlcfg %d\n", ret);
@@ -1403,7 +1283,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
 	memcpy(&sai->cpu_dai_drv, &fsl_sai_dai_template,
 	       sizeof(fsl_sai_dai_template));
 
-	/* Sync Tx with Rx as default by following old DT binding */
+	 
 	sai->synchronous[RX] = true;
 	sai->synchronous[TX] = false;
 	sai->cpu_dai_drv.symmetric_rate = 1;
@@ -1412,17 +1292,17 @@ static int fsl_sai_probe(struct platform_device *pdev)
 
 	if (of_property_read_bool(np, "fsl,sai-synchronous-rx") &&
 	    of_property_read_bool(np, "fsl,sai-asynchronous")) {
-		/* error out if both synchronous and asynchronous are present */
+		 
 		dev_err(dev, "invalid binding for synchronous mode\n");
 		return -EINVAL;
 	}
 
 	if (of_property_read_bool(np, "fsl,sai-synchronous-rx")) {
-		/* Sync Rx with Tx */
+		 
 		sai->synchronous[RX] = false;
 		sai->synchronous[TX] = true;
 	} else if (of_property_read_bool(np, "fsl,sai-asynchronous")) {
-		/* Discard all settings for asynchronous mode */
+		 
 		sai->synchronous[RX] = false;
 		sai->synchronous[TX] = false;
 		sai->cpu_dai_drv.symmetric_rate = 0;
@@ -1469,12 +1349,12 @@ static int fsl_sai_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_pm_get_sync;
 
-	/* Get sai version */
+	 
 	ret = fsl_sai_check_version(dev);
 	if (ret < 0)
 		dev_warn(dev, "Error reading SAI version: %d\n", ret);
 
-	/* Select MCLK direction */
+	 
 	if (sai->mclk_direction_output &&
 	    sai->soc_data->max_register >= FSL_SAI_MCTL) {
 		regmap_update_bits(sai->regmap, FSL_SAI_MCTL,
@@ -1485,10 +1365,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
 	if (ret < 0 && ret != -ENOSYS)
 		goto err_pm_get_sync;
 
-	/*
-	 * Register platform component before registering cpu dai for there
-	 * is not defer probe for platform component in snd_soc_add_pcm_runtime().
-	 */
+	 
 	if (sai->soc_data->use_imx_pcm) {
 		ret = imx_pcm_dma_init(pdev);
 		if (ret) {
@@ -1652,7 +1529,7 @@ static const struct of_device_id fsl_sai_ids[] = {
 	{ .compatible = "fsl,imx8ulp-sai", .data = &fsl_sai_imx8ulp_data },
 	{ .compatible = "fsl,imx8mn-sai", .data = &fsl_sai_imx8mn_data },
 	{ .compatible = "fsl,imx93-sai", .data = &fsl_sai_imx93_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_sai_ids);
 

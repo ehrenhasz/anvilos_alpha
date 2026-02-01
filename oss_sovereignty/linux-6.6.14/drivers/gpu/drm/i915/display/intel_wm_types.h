@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_WM_TYPES_H__
 #define __INTEL_WM_TYPES_H__
@@ -12,7 +10,7 @@
 
 enum intel_ddb_partitioning {
 	INTEL_DDB_PART_1_2,
-	INTEL_DDB_PART_5_6, /* IVB+ */
+	INTEL_DDB_PART_5_6,  
 };
 
 struct ilk_wm_values {
@@ -56,7 +54,7 @@ struct g4x_wm_values {
 };
 
 struct skl_ddb_entry {
-	u16 start, end;	/* in number of blocks, 'end' is exclusive */
+	u16 start, end;	 
 };
 
 static inline u16 skl_ddb_entry_size(const struct skl_ddb_entry *entry)
@@ -73,4 +71,4 @@ static inline bool skl_ddb_entry_equal(const struct skl_ddb_entry *e1,
 	return false;
 }
 
-#endif /* __INTEL_WM_TYPES_H__ */
+#endif  

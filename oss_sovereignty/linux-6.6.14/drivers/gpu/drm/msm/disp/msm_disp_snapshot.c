@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
@@ -56,7 +54,7 @@ static void _msm_disp_snapshot_work(struct kthread_work *work)
 	struct msm_disp_state *disp_state;
 	struct drm_printer p;
 
-	/* Serialize dumping here */
+	 
 	mutex_lock(&kms->dump_mutex);
 	disp_state = msm_disp_snapshot_state_sync(kms);
 	mutex_unlock(&kms->dump_mutex);
@@ -69,11 +67,7 @@ static void _msm_disp_snapshot_work(struct kthread_work *work)
 		msm_disp_state_print(disp_state, &p);
 	}
 
-	/*
-	 * If COREDUMP is disabled, the stub will call the free function.
-	 * If there is a codedump pending for the device, the dev_coredumpm()
-	 * will also free new coredump state.
-	 */
+	 
 	dev_coredumpm(disp_state->dev, THIS_MODULE, disp_state, 0, GFP_KERNEL,
 			disp_devcoredump_read, msm_disp_state_free);
 }

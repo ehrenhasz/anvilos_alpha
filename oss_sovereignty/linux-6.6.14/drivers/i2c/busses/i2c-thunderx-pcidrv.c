@@ -1,14 +1,4 @@
-/*
- * Cavium ThunderX i2c driver.
- *
- * Copyright (C) 2015,2016 Cavium Inc.
- * Authors: Fred Martin <fmartin@caviumnetworks.com>
- *	    Jan Glauber <jglauber@cavium.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -32,20 +22,14 @@
 #define TWSI_INT_ENA_W1C		0x1028
 #define TWSI_INT_ENA_W1S		0x1030
 
-/*
- * Enable the CORE interrupt.
- * The interrupt will be asserted when there is non-STAT_IDLE state in the
- * SW_TWSI_EOP_TWSI_STAT register.
- */
+ 
 static void thunder_i2c_int_enable(struct octeon_i2c *i2c)
 {
 	octeon_i2c_writeq_flush(TWSI_INT_CORE_INT,
 				i2c->twsi_base + TWSI_INT_ENA_W1S);
 }
 
-/*
- * Disable the CORE interrupt.
- */
+ 
 static void thunder_i2c_int_disable(struct octeon_i2c *i2c)
 {
 	octeon_i2c_writeq_flush(TWSI_INT_CORE_INT,
@@ -86,7 +70,7 @@ static void thunder_i2c_clock_enable(struct device *dev, struct octeon_i2c *i2c)
 	int ret;
 
 	if (acpi_disabled) {
-		/* DT */
+		 
 		i2c->clk = clk_get(dev, NULL);
 		if (IS_ERR(i2c->clk)) {
 			i2c->clk = NULL;
@@ -98,7 +82,7 @@ static void thunder_i2c_clock_enable(struct device *dev, struct octeon_i2c *i2c)
 			goto skip;
 		i2c->sys_freq = clk_get_rate(i2c->clk);
 	} else {
-		/* ACPI */
+		 
 		device_property_read_u32(dev, "sclk", &i2c->sys_freq);
 	}
 
@@ -139,7 +123,7 @@ static int thunder_i2c_smbus_setup_of(struct octeon_i2c *i2c,
 static int thunder_i2c_smbus_setup(struct octeon_i2c *i2c,
 				   struct device_node *node)
 {
-	/* TODO: ACPI support */
+	 
 	if (!acpi_disabled)
 		return -EOPNOTSUPP;
 

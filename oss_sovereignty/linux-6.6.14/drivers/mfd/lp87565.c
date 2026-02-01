@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Texas Instruments Incorporated - https://www.ti.com/
- *
- * Author: Keerthy <j-keerthy@ti.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
@@ -74,11 +70,11 @@ static int lp87565_probe(struct i2c_client *client)
 
 	if (lp87565->reset_gpio) {
 		gpiod_set_value_cansleep(lp87565->reset_gpio, 1);
-		/* The minimum assertion time is undocumented, just guess */
+		 
 		usleep_range(2000, 4000);
 
 		gpiod_set_value_cansleep(lp87565->reset_gpio, 0);
-		/* Min 1.2 ms before first I2C transaction */
+		 
 		usleep_range(1500, 3000);
 	}
 

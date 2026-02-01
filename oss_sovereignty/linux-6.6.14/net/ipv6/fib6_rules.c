@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/ipv6/fib6_rules.c	IPv6 Routing Policy Rules
- *
- * Copyright (C)2003-2006 Helsinki University of Technology
- * Copyright (C)2003-2006 USAGI/WIDE Project
- *
- * Authors
- *	Thomas Graf		<tgraf@suug.ch>
- *	Ville Nuorvala		<vnuorval@tcs.hut.fi>
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/notifier.h>
@@ -60,7 +51,7 @@ unsigned int fib6_rules_seq_read(struct net *net)
 	return fib_rules_seq_read(net, AF_INET6);
 }
 
-/* called with rcu lock held; no reference taken on fib6_info */
+ 
 int fib6_lookup(struct net *net, int oif, struct flowi6 *fl6,
 		struct fib6_result *res, int flags)
 {
@@ -102,7 +93,7 @@ struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
 			.flags = FIB_LOOKUP_NOREF,
 		};
 
-		/* update flow if oif or iif point to device enslaved to l3mdev */
+		 
 		l3mdev_update_flow(net, flowi6_to_flowi(fl6));
 
 		fib_rules_lookup(net->ipv6.fib6_rules_ops,
@@ -135,9 +126,7 @@ static int fib6_rule_saddr(struct net *net, struct fib_rule *rule, int flags,
 {
 	struct fib6_rule *r = (struct fib6_rule *)rule;
 
-	/* If we need to find a source address for this traffic,
-	 * we check the result if it meets requirement of the rule.
-	 */
+	 
 	if ((rule->flags & FIB_RULE_FIND_SADDR) &&
 	    r->src.plen && !(flags & RT6_LOOKUP_F_HAS_SADDR)) {
 		struct in6_addr saddr;
@@ -281,15 +270,11 @@ INDIRECT_CALLABLE_SCOPE bool fib6_rule_suppress(struct fib_rule *rule,
 	if (rt->rt6i_idev)
 		dev = rt->rt6i_idev->dev;
 
-	/* do not accept result if the route does
-	 * not meet the required prefix length
-	 */
+	 
 	if (rt->rt6i_dst.plen <= rule->suppress_prefixlen)
 		goto suppress_route;
 
-	/* do not accept result if the route uses a device
-	 * belonging to a forbidden interface group
-	 */
+	 
 	if (rule->suppress_ifgroup != -1 && dev && dev->group == rule->suppress_ifgroup)
 		goto suppress_route;
 
@@ -310,11 +295,7 @@ INDIRECT_CALLABLE_SCOPE int fib6_rule_match(struct fib_rule *rule,
 	    !ipv6_prefix_equal(&fl6->daddr, &r->dst.addr, r->dst.plen))
 		return 0;
 
-	/*
-	 * If FIB_RULE_FIND_SADDR is set and we do not have a
-	 * source address for the traffic, we defer check for
-	 * source address.
-	 */
+	 
 	if (r->src.plen) {
 		if (flags & RT6_LOOKUP_F_HAS_SADDR) {
 			if (!ipv6_prefix_equal(&fl6->saddr, &r->src.addr,
@@ -445,8 +426,8 @@ nla_put_failure:
 
 static size_t fib6_rule_nlmsg_payload(struct fib_rule *rule)
 {
-	return nla_total_size(16) /* dst */
-	       + nla_total_size(16); /* src */
+	return nla_total_size(16)  
+	       + nla_total_size(16);  
 }
 
 static const struct fib_rules_ops __net_initconst fib6_rules_ops_template = {

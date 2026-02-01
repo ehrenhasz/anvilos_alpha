@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <string.h>
 
@@ -12,9 +12,9 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 
-#define SERV4_IP		0xc0a801feU /* 192.168.1.254 */
+#define SERV4_IP		0xc0a801feU  
 #define SERV4_PORT		4040
-#define SERV4_REWRITE_IP	0x7f000001U /* 127.0.0.1 */
+#define SERV4_REWRITE_IP	0x7f000001U  
 #define SERV4_REWRITE_PORT	4444
 
 #ifndef IFNAMSIZ
@@ -80,7 +80,7 @@ static __inline int misc_opts(struct bpf_sock_addr *ctx, int opt)
 {
 	int old, tmp, new = 0xeb9f;
 
-	/* Socket in test case has guarantee that old never equals to new. */
+	 
 	if (bpf_getsockopt(ctx, SOL_SOCKET, opt, &old, sizeof(old)) ||
 	    old == new)
 		return 1;
@@ -116,7 +116,7 @@ int bind_v4_prog(struct bpf_sock_addr *ctx)
 	    ctx->user_port != bpf_htons(SERV4_PORT))
 		return 0;
 
-	// u8 narrow loads:
+	
 	user_ip4 = 0;
 	user_ip4 |= ((volatile __u8 *)&ctx->user_ip4)[0] << 0;
 	user_ip4 |= ((volatile __u8 *)&ctx->user_ip4)[1] << 8;
@@ -131,22 +131,22 @@ int bind_v4_prog(struct bpf_sock_addr *ctx)
 	if (ctx->user_port != user_port)
 		return 0;
 
-	// u16 narrow loads:
+	
 	user_ip4 = 0;
 	user_ip4 |= ((volatile __u16 *)&ctx->user_ip4)[0] << 0;
 	user_ip4 |= ((volatile __u16 *)&ctx->user_ip4)[1] << 16;
 	if (ctx->user_ip4 != user_ip4)
 		return 0;
 
-	/* Bind to device and unbind it. */
+	 
 	if (bind_to_device(ctx))
 		return 0;
 
-	/* Test for misc socket options. */
+	 
 	if (misc_opts(ctx, SO_MARK) || misc_opts(ctx, SO_PRIORITY))
 		return 0;
 
-	/* Set reuseport and unset */
+	 
 	if (bind_reuseport(ctx))
 		return 0;
 

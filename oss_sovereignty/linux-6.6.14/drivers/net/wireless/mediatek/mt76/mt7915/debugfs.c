@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/relay.h>
 #include "mt7915.h"
@@ -9,7 +9,7 @@
 
 #define FW_BIN_LOG_MAGIC	0x44e98caf
 
-/** global debugfs **/
+ 
 
 struct hw_queue_map {
 	const char *name;
@@ -23,9 +23,7 @@ mt7915_implicit_txbf_set(void *data, u64 val)
 {
 	struct mt7915_dev *dev = data;
 
-	/* The existing connected stations shall reconnect to apply
-	 * new implicit txbf configuration.
-	 */
+	 
 	dev->ibf = !!val;
 
 	return mt7915_mcu_set_txbf(dev, MT_BF_TYPE_UPDATE);
@@ -44,7 +42,7 @@ mt7915_implicit_txbf_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(fops_implicit_txbf, mt7915_implicit_txbf_get,
 			 mt7915_implicit_txbf_set, "%lld\n");
 
-/* test knob of system error recovery */
+ 
 static ssize_t
 mt7915_sys_recovery_set(struct file *file, const char __user *user_buf,
 			size_t count, loff_t *ppos)
@@ -71,17 +69,7 @@ mt7915_sys_recovery_set(struct file *file, const char __user *user_buf,
 		return -EINVAL;
 
 	switch (val) {
-	/*
-	 * 0: grab firmware current SER state.
-	 * 1: trigger & enable system error L1 recovery.
-	 * 2: trigger & enable system error L2 recovery.
-	 * 3: trigger & enable system error L3 rx abort.
-	 * 4: trigger & enable system error L3 tx abort
-	 * 5: trigger & enable system error L3 tx disable.
-	 * 6: trigger & enable system error L3 bf recovery.
-	 * 7: trigger & enable system error full recovery.
-	 * 8: trigger firmware crash.
-	 */
+	 
 	case SER_QUERY:
 		ret = mt7915_mcu_set_ser(dev, 0, 0, band);
 		break;
@@ -98,7 +86,7 @@ mt7915_sys_recovery_set(struct file *file, const char __user *user_buf,
 		ret = mt7915_mcu_set_ser(dev, SER_RECOVER, val, band);
 		break;
 
-	/* enable full chip reset */
+	 
 	case SER_SET_RECOVER_FULL:
 		mt76_set(dev, MT_WFDMA0_MCU_HOST_INT_ENA, MT_MCU_CMD_WDT_MASK);
 		ret = mt7915_mcu_set_ser(dev, 1, 3, band);
@@ -109,7 +97,7 @@ mt7915_sys_recovery_set(struct file *file, const char __user *user_buf,
 		mt7915_reset(dev);
 		break;
 
-	/* WARNING: trigger firmware crash */
+	 
 	case SER_SET_SYSTEM_ASSERT:
 		mt76_wr(dev, MT_MCU_WM_CIRQ_EINT_MASK_CLR_ADDR, BIT(18));
 		mt76_wr(dev, MT_MCU_WM_CIRQ_EINT_SOFT_ADDR, BIT(18));
@@ -136,7 +124,7 @@ mt7915_sys_recovery_get(struct file *file, char __user *user_buf,
 	if (!buff)
 		return -ENOMEM;
 
-	/* HELP */
+	 
 	desc += scnprintf(buff + desc, bufsz - desc,
 			  "Please echo the correct value ...\n");
 	desc += scnprintf(buff + desc, bufsz - desc,
@@ -158,7 +146,7 @@ mt7915_sys_recovery_get(struct file *file, char __user *user_buf,
 	desc += scnprintf(buff + desc, bufsz - desc,
 			  "8: trigger firmware crash\n");
 
-	/* SER statistics */
+	 
 	desc += scnprintf(buff + desc, bufsz - desc,
 			  "\nlet's dump firmware SER statistics...\n");
 	desc += scnprintf(buff + desc, bufsz - desc,
@@ -278,7 +266,7 @@ static int mt7915_muru_stats_show(struct seq_file *file, void *data)
 	if (ret)
 		goto exit;
 
-	/* Non-HE Downlink*/
+	 
 	seq_puts(file, "[Non-HE]\nDownlink\nData Type:  ");
 
 	for (i = 0; i < 5; i++)
@@ -319,7 +307,7 @@ static int mt7915_muru_stats_show(struct seq_file *file, void *data)
 
 	seq_printf(file, "\nAll non-HE DL PPDU count: %lld", total_ppdu_cnt);
 
-	/* HE Downlink */
+	 
 	seq_puts(file, "\n\n[HE]\nDownlink\nData Type:  ");
 
 	for (i = 0; i < 2; i++)
@@ -376,7 +364,7 @@ static int mt7915_muru_stats_show(struct seq_file *file, void *data)
 
 	seq_printf(file, "\nAll HE DL PPDU count: %lld", total_ppdu_cnt);
 
-	/* HE Uplink */
+	 
 	seq_puts(file, "\n\nUplink");
 	seq_puts(file, "\nTrigger-based Uplink MU-MIMO\nData Type:  ");
 
@@ -521,7 +509,7 @@ mt7915_fw_debug_wm_set(void *data, u64 val)
 			goto out;
 	}
 
-	/* WM CPU info record control */
+	 
 	mt76_clear(dev, MT_CPU_UTIL_CTRL, BIT(0));
 	mt76_wr(dev, MT_DIC_CMD_REG_CMD, BIT(2) | BIT(13) | !dev->fw.debug_wm);
 	mt76_wr(dev, MT_MCU_WM_CIRQ_IRQ_MASK_CLR_ADDR, BIT(5));
@@ -686,7 +674,7 @@ mt7915_ampdu_stat_read_phy(struct mt7915_phy *phy,
 	int bound[15], range[4], i;
 	u8 band = phy->mt76->band_idx;
 
-	/* Tx ampdu stat */
+	 
 	for (i = 0; i < ARRAY_SIZE(range); i++)
 		range[i] = mt76_rr(dev, MT_MIB_ARNG(band, i));
 
@@ -716,14 +704,14 @@ mt7915_txbf_stat_read_phy(struct mt7915_phy *phy, struct seq_file *s)
 		"BW20", "BW40", "BW80", "BW160"
 	};
 
-	/* Tx Beamformer monitor */
+	 
 	seq_puts(s, "\nTx Beamformer applied PPDU counts: ");
 
 	seq_printf(s, "iBF: %d, eBF: %d\n",
 		   mib->tx_bf_ibf_ppdu_cnt,
 		   mib->tx_bf_ebf_ppdu_cnt);
 
-	/* Tx Beamformer Rx feedback monitor */
+	 
 	seq_puts(s, "Tx Beamformer Rx feedback statistics: ");
 
 	seq_printf(s, "All: %d, HE: %d, VHT: %d, HT: %d, ",
@@ -737,13 +725,13 @@ mt7915_txbf_stat_read_phy(struct mt7915_phy *phy, struct seq_file *s)
 		   mib->tx_bf_rx_fb_nc_cnt,
 		   mib->tx_bf_rx_fb_nr_cnt);
 
-	/* Tx Beamformee Rx NDPA & Tx feedback report */
+	 
 	seq_printf(s, "Tx Beamformee successful feedback frames: %d\n",
 		   mib->tx_bf_fb_cpl_cnt);
 	seq_printf(s, "Tx Beamformee feedback triggered counts: %d\n",
 		   mib->tx_bf_fb_trig_cnt);
 
-	/* Tx SU & MU counters */
+	 
 	seq_printf(s, "Tx multi-user Beamforming counts: %d\n",
 		   mib->tx_bf_cnt);
 	seq_printf(s, "Tx multi-user MPDU counts: %d\n", mib->tx_mu_mpdu_cnt);
@@ -769,7 +757,7 @@ mt7915_tx_stats_show(struct seq_file *file, void *data)
 	mt7915_mac_update_stats(phy);
 	mt7915_txbf_stat_read_phy(phy, file);
 
-	/* Tx amsdu info */
+	 
 	seq_puts(file, "Tx MSDU statistics:\n");
 	for (i = 0; i < ARRAY_SIZE(mib->tx_amsdu); i++) {
 		seq_printf(file, "AMSDU pack count of %d MSDU in TXD: %8d ",
@@ -885,7 +873,7 @@ mt7915_hw_queues_show(struct seq_file *file, void *data)
 	};
 	u32 val, head, tail;
 
-	/* ple queue */
+	 
 	val = mt76_rr(dev, MT_PLE_FREEPG_CNT);
 	head = mt76_get_field(dev, MT_PLE_FREEPG_HEAD_TAIL, GENMASK(11, 0));
 	tail = mt76_get_field(dev, MT_PLE_FREEPG_HEAD_TAIL, GENMASK(27, 16));
@@ -904,10 +892,10 @@ mt7915_hw_queues_show(struct seq_file *file, void *data)
 	mt7915_hw_queue_read(file, ARRAY_SIZE(ple_queue_map),
 			     &ple_queue_map[0]);
 
-	/* iterate per-sta ple queue */
+	 
 	ieee80211_iterate_stations_atomic(phy->mt76->hw,
 					  mt7915_sta_hw_queue_read, file);
-	/* pse queue */
+	 
 	seq_puts(file, "PSE non-empty queue info:\n");
 	mt7915_hw_queue_read(file, ARRAY_SIZE(pse_queue_map),
 			     &pse_queue_map[0]);
@@ -990,7 +978,7 @@ mt7915_rate_txpower_get(struct file *file, char __user *user_buf,
 	if (ret)
 		goto out;
 
-	/* Txpower propagation path: TMAC -> TXV -> BBP */
+	 
 	len += scnprintf(buf + len, sz - len,
 			 "\nPhy%d Tx power table (channel %d)\n",
 			 phy != &dev->phy, phy->mt76->chandef.chan->hw_value);
@@ -1172,9 +1160,7 @@ mt7915_twt_stats(struct seq_file *s, void *data)
 	return 0;
 }
 
-/* The index of RF registers use the generic regidx, combined with two parts:
- * WF selection [31:24] and offset [23:0].
- */
+ 
 static int
 mt7915_rf_regval_get(void *data, u64 *val)
 {
@@ -1309,7 +1295,7 @@ bool mt7915_debugfs_rx_log(struct mt7915_dev *dev, const void *data, int len)
 }
 
 #ifdef CONFIG_MAC80211_DEBUGFS
-/** per-station debugfs **/
+ 
 
 static ssize_t mt7915_sta_fixed_rate_set(struct file *file,
 					 const char __user *user_buf,
@@ -1336,15 +1322,7 @@ static ssize_t mt7915_sta_fixed_rate_set(struct file *file,
 	else
 		buf[count] = '\0';
 
-	/* mode - cck: 0, ofdm: 1, ht: 2, gf: 3, vht: 4, he_su: 8, he_er: 9
-	 * bw - bw20: 0, bw40: 1, bw80: 2, bw160: 3
-	 * nss - vht: 1~4, he: 1~4, others: ignore
-	 * mcs - cck: 0~4, ofdm: 0~7, ht: 0~32, vht: 0~9, he_su: 0~11, he_er: 0~2
-	 * gi - (ht/vht) lgi: 0, sgi: 1; (he) 0.8us: 0, 1.6us: 1, 3.2us: 2
-	 * ldpc - off: 0, on: 1
-	 * stbc - off: 0, on: 1
-	 * he_ltf - 1xltf: 0, 2xltf: 1, 4xltf: 2
-	 */
+	 
 	if (sscanf(buf, "%hhu %hhu %hhu %hhu %hhu %hhu %hhu %hhu",
 		   &phy.type, &phy.bw, &phy.nss, &phy.mcs, &gi,
 		   &phy.ldpc, &phy.stbc, &he_ltf) != 8) {

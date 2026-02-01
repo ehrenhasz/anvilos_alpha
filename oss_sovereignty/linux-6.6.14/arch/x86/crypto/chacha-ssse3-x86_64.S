@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ChaCha 256-bit cipher algorithm, x64 SSSE3 functions
- *
- * Copyright (C) 2015 Martin Willi
- */
+ 
+ 
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
@@ -20,19 +16,7 @@ CTRINC:	.octa 0x00000003000000020000000100000000
 
 .text
 
-/*
- * chacha_permute - permute one block
- *
- * Permute one 64-byte block where the state matrix is in %xmm0-%xmm3.  This
- * function performs matrix operations on four words in parallel, but requires
- * shuffling to rearrange the words after each round.  8/16-bit word rotation is
- * done with the slightly better performing SSSE3 byte shuffling, 7/12-bit word
- * rotation uses traditional shift+OR.
- *
- * The round count is given in %r8d.
- *
- * Clobbers: %r8d, %xmm4-%xmm7
- */
+ 
 SYM_FUNC_START_LOCAL(chacha_permute)
 
 	movdqa		ROT8(%rip),%xmm4

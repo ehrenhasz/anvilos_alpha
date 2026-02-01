@@ -1,63 +1,5 @@
-/* $OpenBSD: clientloop.c,v 1.402 2023/11/24 00:31:30 dtucker Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * The main loop for the interactive session (client side).
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- *
- *
- * Copyright (c) 1999 Theo de Raadt.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- * SSH2 support added by Markus Friedl.
- * Copyright (c) 1999, 2000, 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -115,75 +57,63 @@
 #include "ssherr.h"
 #include "hostfile.h"
 
-/* Permitted RSA signature algorithms for UpdateHostkeys proofs */
+ 
 #define HOSTKEY_PROOF_RSA_ALGS	"rsa-sha2-512,rsa-sha2-256"
 
-/* Uncertainty (in percent) of keystroke timing intervals */
+ 
 #define SSH_KEYSTROKE_TIMING_FUZZ 10
 
-/* import options */
+ 
 extern Options options;
 
-/* Control socket */
-extern int muxserver_sock; /* XXX use mux_client_cleanup() instead */
+ 
+extern int muxserver_sock;  
 
-/*
- * Name of the host we are connecting to.  This is the name given on the
- * command line, or the Hostname specified for the user-supplied name in a
- * configuration file.
- */
+ 
 extern char *host;
 
-/*
- * If this field is not NULL, the ForwardAgent socket is this path and different
- * instead of SSH_AUTH_SOCK.
- */
+ 
 extern char *forward_agent_sock_path;
 
-/*
- * Flag to indicate that we have received a window change signal which has
- * not yet been processed.  This will cause a message indicating the new
- * window size to be sent to the server a little later.  This is volatile
- * because this is updated in a signal handler.
- */
+ 
 static volatile sig_atomic_t received_window_change_signal = 0;
 static volatile sig_atomic_t received_signal = 0;
 
-/* Time when backgrounded control master using ControlPersist should exit */
+ 
 static time_t control_persist_exit_time = 0;
 
-/* Common data for the client loop code. */
-volatile sig_atomic_t quit_pending; /* Set non-zero to quit the loop. */
-static int last_was_cr;		/* Last character was a newline. */
-static int exit_status;		/* Used to store the command exit status. */
-static struct sshbuf *stderr_buffer;	/* Used for final exit message. */
-static int connection_in;	/* Connection to server (input). */
-static int connection_out;	/* Connection to server (output). */
-static int need_rekeying;	/* Set to non-zero if rekeying is requested. */
-static int session_closed;	/* In SSH2: login session closed. */
-static time_t x11_refuse_time;	/* If >0, refuse x11 opens after this time. */
-static time_t server_alive_time;	/* Time to do server_alive_check */
+ 
+volatile sig_atomic_t quit_pending;  
+static int last_was_cr;		 
+static int exit_status;		 
+static struct sshbuf *stderr_buffer;	 
+static int connection_in;	 
+static int connection_out;	 
+static int need_rekeying;	 
+static int session_closed;	 
+static time_t x11_refuse_time;	 
+static time_t server_alive_time;	 
 static int hostkeys_update_complete;
 static int session_setup_complete;
 
 static void client_init_dispatch(struct ssh *ssh);
 int	session_ident = -1;
 
-/* Track escape per proto2 channel */
+ 
 struct escape_filter_ctx {
 	int escape_pending;
 	int escape_char;
 };
 
-/* Context for channel confirmation replies */
+ 
 struct channel_reply_ctx {
 	const char *request_type;
 	int id;
 	enum confirm_action action;
 };
 
-/* Global request success/failure callbacks */
-/* XXX move to struct ssh? */
+ 
+ 
 struct global_confirm {
 	TAILQ_ENTRY(global_confirm) entry;
 	global_confirm_cb *cb;
@@ -215,20 +145,14 @@ quit_message(const char *fmt, ...)
 	quit_pending = 1;
 }
 
-/*
- * Signal handler for the window change signal (SIGWINCH).  This just sets a
- * flag indicating that the window has changed.
- */
+ 
 static void
 window_change_handler(int sig)
 {
 	received_window_change_signal = 1;
 }
 
-/*
- * Signal handler for signals that cause the program to terminate.  These
- * signals must be trapped to restore terminal modes.
- */
+ 
 static void
 signal_handler(int sig)
 {
@@ -236,32 +160,27 @@ signal_handler(int sig)
 	quit_pending = 1;
 }
 
-/*
- * Sets control_persist_exit_time to the absolute time when the
- * backgrounded control master should exit due to expiry of the
- * ControlPersist timeout.  Sets it to 0 if we are not a backgrounded
- * control master process, or if there is no ControlPersist timeout.
- */
+ 
 static void
 set_control_persist_exit_time(struct ssh *ssh)
 {
 	if (muxserver_sock == -1 || !options.control_persist
 	    || options.control_persist_timeout == 0) {
-		/* not using a ControlPersist timeout */
+		 
 		control_persist_exit_time = 0;
 	} else if (channel_still_open(ssh)) {
-		/* some client connections are still open */
+		 
 		if (control_persist_exit_time > 0)
 			debug2_f("cancel scheduled exit");
 		control_persist_exit_time = 0;
 	} else if (control_persist_exit_time <= 0) {
-		/* a client connection has recently closed */
+		 
 		control_persist_exit_time = monotime() +
 			(time_t)options.control_persist_timeout;
 		debug2_f("schedule exit in %d seconds",
 		    options.control_persist_timeout);
 	}
-	/* else we are already counting down to the timeout */
+	 
 }
 
 #define SSH_X11_VALID_DISPLAY_CHARS ":/.-_"
@@ -315,13 +234,7 @@ client_x11_get_proto(struct ssh *ssh, const char *display,
 	}
 
 	if (xauth_path != NULL) {
-		/*
-		 * Handle FamilyLocal case where $DISPLAY does
-		 * not match an authorization entry.  For this we
-		 * just try "xauth list unix:displaynum.screennum".
-		 * XXX: "localhost" match to determine FamilyLocal
-		 *      is not perfect.
-		 */
+		 
 		if (strncmp(display, "localhost:", 10) == 0) {
 			if ((r = snprintf(xdisplay, sizeof(xdisplay), "unix:%s",
 			    display + 10)) < 0 ||
@@ -332,13 +245,7 @@ client_x11_get_proto(struct ssh *ssh, const char *display,
 			display = xdisplay;
 		}
 		if (trusted == 0) {
-			/*
-			 * Generate an untrusted X11 auth cookie.
-			 *
-			 * The authentication cookie should briefly outlive
-			 * ssh's willingness to forward X11 connections to
-			 * avoid nasty fail-open behaviour in the X server.
-			 */
+			 
 			mktemp_proto(xauthdir, sizeof(xauthdir));
 			if (mkdtemp(xauthdir) == NULL) {
 				error_f("mkdtemp: %s", strerror(errno));
@@ -354,18 +261,18 @@ client_x11_get_proto(struct ssh *ssh, const char *display,
 			}
 
 			if (timeout == 0) {
-				/* auth doesn't time out */
+				 
 				xasprintf(&cmd, "%s -f %s generate %s %s "
 				    "untrusted 2>%s",
 				    xauth_path, xauthfile, display,
 				    SSH_X11_PROTO, _PATH_DEVNULL);
 			} else {
-				/* Add some slack to requested expiry */
+				 
 				if (timeout < UINT_MAX - X11_TIMEOUT_SLACK)
 					x11_timeout_real = timeout +
 					    X11_TIMEOUT_SLACK;
 				else {
-					/* Don't overflow on long timeouts */
+					 
 					x11_timeout_real = UINT_MAX;
 				}
 				xasprintf(&cmd, "%s -f %s generate %s %s "
@@ -390,11 +297,7 @@ client_x11_get_proto(struct ssh *ssh, const char *display,
 			free(cmd);
 		}
 
-		/*
-		 * When in untrusted mode, we read the cookie only if it was
-		 * successfully generated as an untrusted one in the step
-		 * above.
-		 */
+		 
 		if (trusted || generated) {
 			xasprintf(&cmd,
 			    "%s %s%s list %s 2>" _PATH_DEVNULL,
@@ -418,21 +321,14 @@ client_x11_get_proto(struct ssh *ssh, const char *display,
 		rmdir(xauthdir);
 	}
 
-	/* Don't fall back to fake X11 data for untrusted forwarding */
+	 
 	if (!trusted && !got_data) {
 		error("Warning: untrusted X11 forwarding setup failed: "
 		    "xauth key data not generated");
 		return -1;
 	}
 
-	/*
-	 * If we didn't get authentication data, just make up some
-	 * data.  The forwarding code will check the validity of the
-	 * response anyway, and substitute this data.  The X11
-	 * server, however, will ignore this fake data and use
-	 * whatever authentication mechanisms it was using otherwise
-	 * for the local connection.
-	 */
+	 
 	if (!got_data) {
 		u_int8_t rnd[16];
 		u_int i;
@@ -450,12 +346,7 @@ client_x11_get_proto(struct ssh *ssh, const char *display,
 	return 0;
 }
 
-/*
- * Checks if the client window has changed, and sends a packet about it to
- * the server if so.  The actual change is detected elsewhere (by a software
- * interrupt on Unix); this just checks the flag and sends a message if
- * appropriate.
- */
+ 
 
 static void
 client_check_window_change(struct ssh *ssh)
@@ -503,15 +394,15 @@ server_alive_check(struct ssh *ssh)
 	}
 	if ((r = sshpkt_start(ssh, SSH2_MSG_GLOBAL_REQUEST)) != 0 ||
 	    (r = sshpkt_put_cstring(ssh, "keepalive@openssh.com")) != 0 ||
-	    (r = sshpkt_put_u8(ssh, 1)) != 0 ||		/* boolean: want reply */
+	    (r = sshpkt_put_u8(ssh, 1)) != 0 ||		 
 	    (r = sshpkt_send(ssh)) != 0)
 		fatal_fr(r, "send packet");
-	/* Insert an empty placeholder to maintain ordering */
+	 
 	client_register_global_confirm(NULL, NULL);
 	schedule_server_alive_check();
 }
 
-/* Try to send a dummy keystroke */
+ 
 static int
 send_chaff(struct ssh *ssh)
 {
@@ -519,12 +410,8 @@ send_chaff(struct ssh *ssh)
 
 	if ((ssh->kex->flags & KEX_HAS_PING) == 0)
 		return 0;
-	/* XXX probabilistically send chaff? */
-	/*
-	 * a SSH2_MSG_CHANNEL_DATA payload is 9 bytes:
-	 *    4 bytes channel ID + 4 bytes string length + 1 byte string data
-	 * simulate that here.
-	 */
+	 
+	 
 	if ((r = sshpkt_start(ssh, SSH2_MSG_PING)) != 0 ||
 	    (r = sshpkt_put_cstring(ssh, "PING!")) != 0 ||
 	    (r = sshpkt_send(ssh)) != 0)
@@ -532,7 +419,7 @@ send_chaff(struct ssh *ssh)
 	return 1;
 }
 
-/* Sets the next interval to send a keystroke or chaff packet */
+ 
 static void
 set_next_interval(const struct timespec *now, struct timespec *next_interval,
     u_int interval_ms, int starting)
@@ -543,21 +430,15 @@ set_next_interval(const struct timespec *now, struct timespec *next_interval,
 
 	interval_ns = interval_ms * (1000LL * 1000);
 	fuzz_ns = (interval_ns * SSH_KEYSTROKE_TIMING_FUZZ) / 100;
-	/* Center fuzz around requested interval */
+	 
 	if (fuzz_ns > INT_MAX)
 		fuzz_ns = INT_MAX;
 	if (fuzz_ns > interval_ns) {
-		/* Shouldn't happen */
+		 
 		fatal_f("internal error: fuzz %u%% %lldns > interval %lldns",
 		    SSH_KEYSTROKE_TIMING_FUZZ, fuzz_ns, interval_ns);
 	}
-	/*
-	 * Randomise the keystroke/chaff intervals in two ways:
-	 * 1. Each interval has some random jitter applied to make the
-	 *    interval-to-interval time unpredictable.
-	 * 2. The overall interval rate is also randomly perturbed for each
-	 *    chaffing session to make the average rate unpredictable.
-	 */
+	 
 	if (starting)
 		rate_fuzz = arc4random_uniform(fuzz_ns);
 	interval_ns -= fuzz_ns;
@@ -569,10 +450,7 @@ set_next_interval(const struct timespec *now, struct timespec *next_interval,
 	timespecadd(now, &tmp, next_interval);
 }
 
-/*
- * Performs keystroke timing obfuscation. Returns non-zero if the
- * output fd should be polled.
- */
+ 
 static int
 obfuscate_keystroke_timing(struct ssh *ssh, struct timespec *timeout,
     int channel_did_enqueue)
@@ -588,28 +466,28 @@ obfuscate_keystroke_timing(struct ssh *ssh, struct timespec *timeout,
 	monotime_ts(&now);
 
 	if (options.obscure_keystroke_timing_interval <= 0)
-		return 1;	/* disabled in config */
+		return 1;	 
 
 	if (!channel_tty_open(ssh) || quit_pending) {
-		/* Stop if no channels left of we're waiting for one to close */
+		 
 		stop_reason = "no active channels";
 	} else if (ssh_packet_is_rekeying(ssh)) {
-		/* Stop if we're rekeying */
+		 
 		stop_reason = "rekeying started";
 	} else if (!ssh_packet_interactive_data_to_write(ssh) &&
 	    ssh_packet_have_data_to_write(ssh)) {
-		/* Stop if the output buffer has more than a few keystrokes */
+		 
 		stop_reason = "output buffer filling";
 	} else if (active && channel_did_enqueue &&
 	    ssh_packet_have_data_to_write(ssh)) {
-		/* Still in active mode and have a keystroke queued. */
+		 
 		had_keystroke = 1;
 	} else if (active) {
 		if (timespeccmp(&now, &chaff_until, >=)) {
-			/* Stop if there have been no keystrokes for a while */
+			 
 			stop_reason = "chaff time expired";
 		} else if (timespeccmp(&now, &next_interval, >=)) {
-			/* Otherwise if we were due to send, then send chaff */
+			 
 			if (send_chaff(ssh))
 				nchaff++;
 		}
@@ -624,12 +502,7 @@ obfuscate_keystroke_timing(struct ssh *ssh, struct timespec *timeout,
 		return 1;
 	}
 
-	/*
-	 * If we're in interactive mode, and only have a small amount
-	 * of outbound data, then we assume that the user is typing
-	 * interactively. In this case, start quantising outbound packets to
-	 * fixed time intervals to hide inter-keystroke timing.
-	 */
+	 
 	if (!active && ssh_packet_interactive_data_to_write(ssh) &&
 	    channel_did_enqueue && ssh_packet_have_data_to_write(ssh)) {
 		debug3_f("starting: interval ~%dms",
@@ -640,15 +513,12 @@ obfuscate_keystroke_timing(struct ssh *ssh, struct timespec *timeout,
 		    options.obscure_keystroke_timing_interval, 1);
 	}
 
-	/* Don't hold off if obfuscation inactive */
+	 
 	if (!active)
 		return 1;
 
 	if (had_keystroke) {
-		/*
-		 * Arrange to send chaff packets for a random interval after
-		 * the last keystroke was sent.
-		 */
+		 
 		ms_to_timespec(&tmp, SSH_KEYSTROKE_CHAFF_MIN_MS +
 		    arc4random_uniform(SSH_KEYSTROKE_CHAFF_RNG_MS));
 		timespecadd(&now, &tmp, &chaff_until);
@@ -659,26 +529,23 @@ obfuscate_keystroke_timing(struct ssh *ssh, struct timespec *timeout,
 	if (just_started)
 		return 1;
 
-	/* Don't arm output fd for poll until the timing interval has elapsed */
+	 
 	if (timespeccmp(&now, &next_interval, <))
 		return 0;
 
-	/* Calculate number of intervals missed since the last check */
+	 
 	n = (now.tv_sec - next_interval.tv_sec) * 1000LL * 1000 * 1000;
 	n += now.tv_nsec - next_interval.tv_nsec;
 	n /= options.obscure_keystroke_timing_interval * 1000LL * 1000;
 	n = (n < 0) ? 1 : n + 1;
 
-	/* Advance to the next interval */
+	 
 	set_next_interval(&now, &next_interval,
 	    options.obscure_keystroke_timing_interval * n, 0);
 	return 1;
 }
 
-/*
- * Waits until the client can do something (some data becomes available on
- * one of the file descriptors).
- */
+ 
 static void
 client_wait_until_can_do_something(struct ssh *ssh, struct pollfd **pfdp,
     u_int *npfd_allocp, u_int *npfd_activep, int channel_did_enqueue,
@@ -690,16 +557,16 @@ client_wait_until_can_do_something(struct ssh *ssh, struct pollfd **pfdp,
 
 	*conn_in_readyp = *conn_out_readyp = 0;
 
-	/* Prepare channel poll. First two pollfd entries are reserved */
+	 
 	ptimeout_init(&timeout);
 	channel_prepare_poll(ssh, pfdp, npfd_allocp, npfd_activep, 2, &timeout);
 	if (*npfd_activep < 2)
-		fatal_f("bad npfd %u", *npfd_activep); /* shouldn't happen */
+		fatal_f("bad npfd %u", *npfd_activep);  
 
-	/* channel_prepare_poll could have closed the last channel */
+	 
 	if (session_closed && !channel_still_open(ssh) &&
 	    !ssh_packet_have_data_to_write(ssh)) {
-		/* clear events since we did not call poll() */
+		 
 		for (p = 0; p < *npfd_activep; p++)
 			(*pfdp)[p].revents = 0;
 		return;
@@ -707,18 +574,14 @@ client_wait_until_can_do_something(struct ssh *ssh, struct pollfd **pfdp,
 
 	oready = obfuscate_keystroke_timing(ssh, &timeout, channel_did_enqueue);
 
-	/* Monitor server connection on reserved pollfd entries */
+	 
 	(*pfdp)[0].fd = connection_in;
 	(*pfdp)[0].events = POLLIN;
 	(*pfdp)[1].fd = connection_out;
 	(*pfdp)[1].events = (oready && ssh_packet_have_data_to_write(ssh)) ?
 	    POLLOUT : 0;
 
-	/*
-	 * Wait for something to happen.  This will suspend the process until
-	 * some polled descriptor can be read, written, or has some other
-	 * event pending, or a timeout expires.
-	 */
+	 
 	set_control_persist_exit_time(ssh);
 	if (control_persist_exit_time > 0)
 		ptimeout_deadline_monotime(&timeout, control_persist_exit_time);
@@ -732,16 +595,12 @@ client_wait_until_can_do_something(struct ssh *ssh, struct pollfd **pfdp,
 	ret = ppoll(*pfdp, *npfd_activep, ptimeout_get_tsp(&timeout), sigsetp);
 
 	if (ret == -1) {
-		/*
-		 * We have to clear the events because we return.
-		 * We have to return, because the mainloop checks for the flags
-		 * set by the signal handlers.
-		 */
+		 
 		for (p = 0; p < *npfd_activep; p++)
 			(*pfdp)[p].revents = 0;
 		if (errno == EINTR)
 			return;
-		/* Note: we might still have data in the buffers. */
+		 
 		quit_message("poll: %s", strerror(errno));
 		return;
 	}
@@ -751,11 +610,7 @@ client_wait_until_can_do_something(struct ssh *ssh, struct pollfd **pfdp,
 
 	if (options.server_alive_interval > 0 && !*conn_in_readyp &&
 	    monotime() >= server_alive_time) {
-		/*
-		 * ServerAlive check is needed. We can't rely on the poll
-		 * timing out since traffic on the client side such as port
-		 * forwards can keep waking it up.
-		 */
+		 
 		server_alive_check(ssh);
 	}
 }
@@ -763,7 +618,7 @@ client_wait_until_can_do_something(struct ssh *ssh, struct pollfd **pfdp,
 static void
 client_suspend_self(struct sshbuf *bin, struct sshbuf *bout, struct sshbuf *berr)
 {
-	/* Flush stdout and stderr buffers. */
+	 
 	if (sshbuf_len(bout) > 0)
 		atomicio(vwrite, fileno(stdout), sshbuf_mutable_ptr(bout),
 		    sshbuf_len(bout));
@@ -777,10 +632,10 @@ client_suspend_self(struct sshbuf *bin, struct sshbuf *bout, struct sshbuf *berr
 	sshbuf_reset(bout);
 	sshbuf_reset(berr);
 
-	/* Send the suspend signal to the program itself. */
+	 
 	kill(getpid(), SIGTSTP);
 
-	/* Reset window sizes in case they have changed */
+	 
 	received_window_change_signal = 1;
 
 	enter_raw_mode(options.request_tty == REQUEST_TTY_FORCE);
@@ -791,13 +646,10 @@ client_process_net_input(struct ssh *ssh)
 {
 	int r;
 
-	/*
-	 * Read input from the server, and add any such data to the buffer of
-	 * the packet subsystem.
-	 */
+	 
 	schedule_server_alive_check();
 	if ((r = ssh_packet_process_read(ssh, connection_in)) == 0)
-		return; /* success */
+		return;  
 	if (r == SSH_ERR_SYSTEM_ERROR) {
 		if (errno == EAGAIN || errno == EINTR || errno == EWOULDBLOCK)
 			return;
@@ -817,16 +669,13 @@ client_status_confirm(struct ssh *ssh, int type, Channel *c, void *ctx)
 	char errmsg[256];
 	int r, tochan;
 
-	/*
-	 * If a TTY was explicitly requested, then a failure to allocate
-	 * one is fatal.
-	 */
+	 
 	if (cr->action == CONFIRM_TTY &&
 	    (options.request_tty == REQUEST_TTY_FORCE ||
 	    options.request_tty == REQUEST_TTY_YES))
 		cr->action = CONFIRM_CLOSE;
 
-	/* XXX suppress on mux _client_ quietmode */
+	 
 	tochan = options.log_level >= SYSLOG_LEVEL_ERROR &&
 	    c->ctl_chan != -1 && c->extended_usage == CHAN_EXTENDED_WRITE;
 
@@ -842,13 +691,10 @@ client_status_confirm(struct ssh *ssh, int type, Channel *c, void *ctx)
 			    "%s request failed on channel %d",
 			    cr->request_type, c->self);
 		}
-		/* If error occurred on primary session channel, then exit */
+		 
 		if (cr->action == CONFIRM_CLOSE && c->self == session_ident)
 			fatal("%s", errmsg);
-		/*
-		 * If error occurred on mux client, append to
-		 * their stderr.
-		 */
+		 
 		if (tochan) {
 			debug3_f("channel %d: mux request: %s", c->self,
 			    cr->request_type);
@@ -858,10 +704,7 @@ client_status_confirm(struct ssh *ssh, int type, Channel *c, void *ctx)
 		} else
 			error("%s", errmsg);
 		if (cr->action == CONFIRM_TTY) {
-			/*
-			 * If a TTY allocation error occurred, then arrange
-			 * for the correct TTY to leave raw mode.
-			 */
+			 
 			if (c->self == session_ident)
 				leave_raw_mode(0);
 			else
@@ -898,7 +741,7 @@ client_register_global_confirm(global_confirm_cb *cb, void *ctx)
 {
 	struct global_confirm *gc, *last_gc;
 
-	/* Coalesce identical callbacks */
+	 
 	last_gc = TAILQ_LAST(&global_confirms, global_confirms);
 	if (last_gc && last_gc->cb == cb && last_gc->ctx == ctx) {
 		if (++last_gc->ref_count >= INT_MAX)
@@ -914,10 +757,7 @@ client_register_global_confirm(global_confirm_cb *cb, void *ctx)
 	TAILQ_INSERT_TAIL(&global_confirms, gc, entry);
 }
 
-/*
- * Returns non-zero if the client is able to handle a hostkeys-00@openssh.com
- * hostkey update request.
- */
+ 
 static int
 can_update_hostkeys(void)
 {
@@ -925,7 +765,7 @@ can_update_hostkeys(void)
 		return 0;
 	if (options.update_hostkeys == SSH_UPDATE_HOSTKEYS_ASK &&
 	    options.batch_mode)
-		return 0; /* won't ask in batchmode, so don't even try */
+		return 0;  
 	if (!options.update_hostkeys || options.num_user_hostfiles <= 0)
 		return 0;
 	return 1;
@@ -936,33 +776,25 @@ client_repledge(void)
 {
 	debug3_f("enter");
 
-	/* Might be able to tighten pledge now that session is established */
+	 
 	if (options.control_master || options.control_path != NULL ||
 	    options.forward_x11 || options.fork_after_authentication ||
 	    can_update_hostkeys() ||
 	    (session_ident != -1 && !session_setup_complete)) {
-		/* Can't tighten */
+		 
 		return;
 	}
-	/*
-	 * LocalCommand and UpdateHostkeys have finished, so can get rid of
-	 * filesystem.
-	 *
-	 * XXX protocol allows a server can to change hostkeys during the
-	 *     connection at rekey time that could trigger a hostkeys update
-	 *     but AFAIK no implementations support this. Could improve by
-	 *     forcing known_hosts to be read-only or via unveil(2).
-	 */
+	 
 	if (options.num_local_forwards != 0 ||
 	    options.num_remote_forwards != 0 ||
 	    options.num_permitted_remote_opens != 0 ||
 	    options.enable_escape_commandline != 0) {
-		/* rfwd needs inet */
+		 
 		debug("pledge: network");
 		if (pledge("stdio unix inet dns proc tty", NULL) == -1)
 			fatal_f("pledge(): %s", strerror(errno));
 	} else if (options.forward_agent != 0) {
-		/* agent forwarding needs to open $SSH_AUTH_SOCK at will */
+		 
 		debug("pledge: agent");
 		if (pledge("stdio unix proc tty", NULL) == -1)
 			fatal_f("pledge(): %s", strerror(errno));
@@ -971,13 +803,7 @@ client_repledge(void)
 		if (pledge("stdio proc tty", NULL) == -1)
 			fatal_f("pledge(): %s", strerror(errno));
 	}
-	/* XXX further things to do:
-	 *
-	 * - might be able to get rid of proc if we kill ~^Z
-	 * - ssh -N (no session)
-	 * - stdio forwarding
-	 * - sessions without tty
-	 */
+	 
 }
 
 static void
@@ -998,7 +824,7 @@ process_cmdline(struct ssh *ssh)
 	while (isspace((u_char)*s))
 		s++;
 	if (*s == '-')
-		s++;	/* Skip cmdline '-', if any */
+		s++;	 
 	if (*s == '\0')
 		goto out;
 
@@ -1047,9 +873,9 @@ process_cmdline(struct ssh *ssh)
 	while (isspace((u_char)*++s))
 		;
 
-	/* XXX update list of forwards in options */
+	 
 	if (delete) {
-		/* We pass 1 for dynamicfwd to restrict to 1 or 2 fields. */
+		 
 		if (!parse_forward(&fwd, s, 1, 0)) {
 			logit("Bad forwarding close specification.");
 			goto out;
@@ -1069,7 +895,7 @@ process_cmdline(struct ssh *ssh)
 		}
 		logit("Canceled forwarding.");
 	} else {
-		/* -R specs can be both dynamic or not, so check both. */
+		 
 		if (remote) {
 			if (!parse_forward(&fwd, s, 0, remote) &&
 			    !parse_forward(&fwd, s, 1, remote)) {
@@ -1105,12 +931,12 @@ out:
 	free(fwd.connect_path);
 }
 
-/* reasons to suppress output of an escape command in help output */
-#define SUPPRESS_NEVER		0	/* never suppress, always show */
-#define SUPPRESS_MUXCLIENT	1	/* don't show in mux client sessions */
-#define SUPPRESS_MUXMASTER	2	/* don't show in mux master sessions */
-#define SUPPRESS_SYSLOG		4	/* don't show when logging to syslog */
-#define SUPPRESS_NOCMDLINE	8	/* don't show when cmdline disabled*/
+ 
+#define SUPPRESS_NEVER		0	 
+#define SUPPRESS_MUXCLIENT	1	 
+#define SUPPRESS_MUXMASTER	2	 
+#define SUPPRESS_SYSLOG		4	 
+#define SUPPRESS_NOCMDLINE	8	 
 struct escape_help_text {
 	const char *cmd;
 	const char *text;
@@ -1163,9 +989,7 @@ print_escape_help(struct sshbuf *b, int escape_char, int mux_client,
 		fatal_fr(r, "sshbuf_putf");
 }
 
-/*
- * Process the characters one by one.
- */
+ 
 static int
 process_escapes(struct ssh *ssh, Channel *c,
     struct sshbuf *bin, struct sshbuf *bout, struct sshbuf *berr,
@@ -1184,18 +1008,18 @@ process_escapes(struct ssh *ssh, Channel *c,
 	efc = (struct escape_filter_ctx *)c->filter_ctx;
 
 	for (i = 0; i < (u_int)len; i++) {
-		/* Get one character at a time. */
+		 
 		ch = buf[i];
 
 		if (efc->escape_pending) {
-			/* We have previously seen an escape character. */
-			/* Clear the flag now. */
+			 
+			 
 			efc->escape_pending = 0;
 
-			/* Process the escaped character. */
+			 
 			switch (ch) {
 			case '.':
-				/* Terminate the connection. */
+				 
 				if ((r = sshbuf_putf(berr, "%c.\r\n",
 				    efc->escape_char)) != 0)
 					fatal_fr(r, "sshbuf_putf");
@@ -1207,7 +1031,7 @@ process_escapes(struct ssh *ssh, Channel *c,
 				return -1;
 
 			case 'Z' - 64:
-				/* XXX support this for mux clients */
+				 
 				if (c && c->ctl_chan != -1) {
 					char b[16];
  noescape:
@@ -1222,16 +1046,16 @@ process_escapes(struct ssh *ssh, Channel *c,
 						fatal_fr(r, "sshbuf_putf");
 					continue;
 				}
-				/* Suspend the program. Inform the user */
+				 
 				if ((r = sshbuf_putf(berr,
 				    "%c^Z [suspend ssh]\r\n",
 				    efc->escape_char)) != 0)
 					fatal_fr(r, "sshbuf_putf");
 
-				/* Restore terminal modes and suspend. */
+				 
 				client_suspend_self(bin, bout, berr);
 
-				/* We have been continued. */
+				 
 				continue;
 
 			case 'B':
@@ -1253,7 +1077,7 @@ process_escapes(struct ssh *ssh, Channel *c,
 				continue;
 
 			case 'V':
-				/* FALLTHROUGH */
+				 
 			case 'v':
 				if (c && c->ctl_chan != -1)
 					goto noescape;
@@ -1280,34 +1104,30 @@ process_escapes(struct ssh *ssh, Channel *c,
 			case '&':
 				if (c->ctl_chan != -1)
 					goto noescape;
-				/*
-				 * Detach the program (continue to serve
-				 * connections, but put in background and no
-				 * more new connections).
-				 */
-				/* Restore tty modes. */
+				 
+				 
 				leave_raw_mode(
 				    options.request_tty == REQUEST_TTY_FORCE);
 
-				/* Stop listening for new connections. */
+				 
 				channel_stop_listening(ssh);
 
 				if ((r = sshbuf_putf(berr, "%c& "
 				    "[backgrounded]\n", efc->escape_char)) != 0)
 					fatal_fr(r, "sshbuf_putf");
 
-				/* Fork into background. */
+				 
 				pid = fork();
 				if (pid == -1) {
 					error("fork: %.100s", strerror(errno));
 					continue;
 				}
-				if (pid != 0) {	/* This is the parent. */
-					/* The parent just exits. */
+				if (pid != 0) {	 
+					 
 					exit(0);
 				}
-				/* The child continues serving connections. */
-				/* fake EOF on stdin */
+				 
+				 
 				if ((r = sshbuf_put_u8(bin, 4)) != 0)
 					fatal_fr(r, "sshbuf_put_u8");
 				return -1;
@@ -1346,28 +1166,19 @@ process_escapes(struct ssh *ssh, Channel *c,
 						fatal_fr(r, "sshbuf_put_u8");
 					bytes++;
 				}
-				/* Escaped characters fall through here */
+				 
 				break;
 			}
 		} else {
-			/*
-			 * The previous character was not an escape char.
-			 * Check if this is an escape.
-			 */
+			 
 			if (last_was_cr && ch == efc->escape_char) {
-				/*
-				 * It is. Set the flag and continue to
-				 * next character.
-				 */
+				 
 				efc->escape_pending = 1;
 				continue;
 			}
 		}
 
-		/*
-		 * Normal character.  Record whether it was a newline,
-		 * and append it to the buffer.
-		 */
+		 
 		last_was_cr = (ch == '\r' || ch == '\n');
 		if ((r = sshbuf_put_u8(bin, ch)) != 0)
 			fatal_fr(r, "sshbuf_put_u8");
@@ -1376,17 +1187,7 @@ process_escapes(struct ssh *ssh, Channel *c,
 	return bytes;
 }
 
-/*
- * Get packets from the connection input buffer, and process them as long as
- * there are packets available.
- *
- * Any unknown packets received during the actual
- * session cause the session to terminate.  This is
- * intended to make debugging easier since no
- * confirmations are sent.  Any compatible protocol
- * extensions must be negotiated during the
- * preparatory phase.
- */
+ 
 
 static void
 client_process_buffered_input_packets(struct ssh *ssh)
@@ -1394,9 +1195,9 @@ client_process_buffered_input_packets(struct ssh *ssh)
 	ssh_dispatch_run_fatal(ssh, DISPATCH_NONBLOCK, &quit_pending);
 }
 
-/* scan buf[] for '~' before sending data to the peer */
+ 
 
-/* Helper: allocate a new escape_filter_ctx and fill in its escape char */
+ 
 void *
 client_new_escape_filter_ctx(int escape_char)
 {
@@ -1408,7 +1209,7 @@ client_new_escape_filter_ctx(int escape_char)
 	return (void *)ret;
 }
 
-/* Free the escape filter context on channel free */
+ 
 void
 client_filter_cleanup(struct ssh *ssh, int cid, void *ctx)
 {
@@ -1433,12 +1234,7 @@ client_channel_closed(struct ssh *ssh, int id, int force, void *arg)
 	leave_raw_mode(options.request_tty == REQUEST_TTY_FORCE);
 }
 
-/*
- * Implements the interactive session with the server.  This is called after
- * the user has been authenticated, and a command has been started on the
- * remote host.  If escape_char != SSH_ESCAPECHAR_NONE, it is the character
- * used as an escape character for terminating or suspending the session.
- */
+ 
 int
 client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
     int ssh2_chan_id)
@@ -1485,12 +1281,12 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 			fatal_f("pledge(): %s", strerror(errno));
 	}
 
-	/* might be able to tighten now */
+	 
 	client_repledge();
 
 	start_time = monotime_double();
 
-	/* Initialize variables. */
+	 
 	last_was_cr = 1;
 	exit_status = -1;
 	connection_in = ssh_packet_get_connection_in(ssh);
@@ -1498,16 +1294,13 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 
 	quit_pending = 0;
 
-	/* Initialize buffer. */
+	 
 	if ((stderr_buffer = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
 
 	client_init_dispatch(ssh);
 
-	/*
-	 * Set signal handlers, (e.g. to restore non-blocking mode)
-	 * but don't overwrite SIG_IGN, matches behaviour from rsh(1)
-	 */
+	 
 	if (ssh_signal(SIGHUP, SIG_IGN) != SIG_IGN)
 		ssh_signal(SIGHUP, signal_handler);
 	if (ssh_signal(SIGINT, SIG_IGN) != SIG_IGN)
@@ -1542,11 +1335,11 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 	    sigaddset(&bsigset, SIGTERM) == -1)
 		error_f("bsigset setup: %s", strerror(errno));
 
-	/* Main loop of the client for the interactive session mode. */
+	 
 	while (!quit_pending) {
 		channel_did_enqueue = 0;
 
-		/* Process buffered packets sent by the server. */
+		 
 		client_process_buffered_input_packets(ssh);
 
 		if (session_closed && !channel_still_open(ssh))
@@ -1555,29 +1348,20 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 		if (ssh_packet_is_rekeying(ssh)) {
 			debug("rekeying in progress");
 		} else if (need_rekeying) {
-			/* manual rekey request */
+			 
 			debug("need rekeying");
 			if ((r = kex_start_rekex(ssh)) != 0)
 				fatal_fr(r, "kex_start_rekex");
 			need_rekeying = 0;
 		} else {
-			/*
-			 * Make packets from buffered channel data, and
-			 * enqueue them for sending to the server.
-			 */
+			 
 			if (ssh_packet_not_very_much_data_to_write(ssh))
 				channel_did_enqueue = channel_output_poll(ssh);
 
-			/*
-			 * Check if the window size has changed, and buffer a
-			 * message about it to the server if so.
-			 */
+			 
 			client_check_window_change(ssh);
 		}
-		/*
-		 * Wait until we have something to do (something becomes
-		 * available on one of the descriptors).
-		 */
+		 
 		if (sigprocmask(SIG_BLOCK, &bsigset, &osigset) == -1)
 			error_f("bsigset sigprocmask: %s", strerror(errno));
 		if (quit_pending)
@@ -1591,24 +1375,21 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 		if (quit_pending)
 			break;
 
-		/* Do channel operations. */
+		 
 		channel_after_poll(ssh, pfd, npfd_active);
 
-		/* Buffer input from the connection.  */
+		 
 		if (conn_in_ready)
 			client_process_net_input(ssh);
 
 		if (quit_pending)
 			break;
 
-		/* A timeout may have triggered rekeying */
+		 
 		if ((r = ssh_packet_check_rekey(ssh)) != 0)
 			fatal_fr(r, "cannot start rekeying");
 
-		/*
-		 * Send as much buffered packet data as possible to the
-		 * sender.
-		 */
+		 
 		if (conn_out_ready) {
 			if ((r = ssh_packet_write_poll(ssh)) != 0) {
 				sshpkt_fatal(ssh, r,
@@ -1616,11 +1397,7 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 			}
 		}
 
-		/*
-		 * If we are a backgrounded control master, and the
-		 * timeout has expired without any active client
-		 * connections, then quit.
-		 */
+		 
 		if (control_persist_exit_time > 0) {
 			if (monotime() >= control_persist_exit_time) {
 				debug("ControlPersist timeout expired");
@@ -1630,15 +1407,15 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 	}
 	free(pfd);
 
-	/* Terminate the session. */
+	 
 
-	/* Stop watching for window change. */
+	 
 	ssh_signal(SIGWINCH, SIG_DFL);
 
 	if ((r = sshpkt_start(ssh, SSH2_MSG_DISCONNECT)) != 0 ||
 	    (r = sshpkt_put_u32(ssh, SSH2_DISCONNECT_BY_APPLICATION)) != 0 ||
 	    (r = sshpkt_put_cstring(ssh, "disconnected by user")) != 0 ||
-	    (r = sshpkt_put_cstring(ssh, "")) != 0 ||	/* language tag */
+	    (r = sshpkt_put_cstring(ssh, "")) != 0 ||	 
 	    (r = sshpkt_send(ssh)) != 0 ||
 	    (r = ssh_packet_write_wait(ssh)) != 0)
 		fatal_fr(r, "send disconnect");
@@ -1648,11 +1425,7 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 	if (have_pty)
 		leave_raw_mode(options.request_tty == REQUEST_TTY_FORCE);
 
-	/*
-	 * If there was no shell or command requested, there will be no remote
-	 * exit status to be returned.  In that case, clear error code if the
-	 * connection was deliberately terminated at this end.
-	 */
+	 
 	if (options.session_type == SESSION_TYPE_NONE &&
 	    received_signal == SIGTERM) {
 		received_signal = 0;
@@ -1664,14 +1437,11 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 		cleanup_exit(255);
 	}
 
-	/*
-	 * In interactive mode (with pseudo tty) display a message indicating
-	 * that the connection has been closed.
-	 */
+	 
 	if (have_pty && options.log_level >= SYSLOG_LEVEL_INFO)
 		quit_message("Connection to %s closed.", host);
 
-	/* Output any buffered data for stderr. */
+	 
 	if (sshbuf_len(stderr_buffer) > 0) {
 		len = atomicio(vwrite, fileno(stderr),
 		    (u_char *)sshbuf_ptr(stderr_buffer),
@@ -1682,10 +1452,10 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 			fatal_fr(r, "sshbuf_consume");
 	}
 
-	/* Clear and free any buffers. */
+	 
 	sshbuf_free(stderr_buffer);
 
-	/* Report bytes transferred, and transfer rates. */
+	 
 	total_time = monotime_double() - start_time;
 	ssh_packet_get_bytes(ssh, &ibytes, &obytes);
 	verbose("Transferred: sent %llu, received %llu bytes, in %.1f seconds",
@@ -1693,12 +1463,12 @@ client_loop(struct ssh *ssh, int have_pty, int escape_char_arg,
 	if (total_time > 0)
 		verbose("Bytes per second: sent %.1f, received %.1f",
 		    obytes / total_time, ibytes / total_time);
-	/* Return the exit status of the program. */
+	 
 	debug("Exit status %d", exit_status);
 	return exit_status;
 }
 
-/*********/
+ 
 
 static Channel *
 client_request_forwarded_tcpip(struct ssh *ssh, const char *request_type,
@@ -1710,7 +1480,7 @@ client_request_forwarded_tcpip(struct ssh *ssh, const char *request_type,
 	u_int listen_port, originator_port;
 	int r;
 
-	/* Get rest of the packet */
+	 
 	if ((r = sshpkt_get_cstring(ssh, &listen_address, NULL)) != 0 ||
 	    (r = sshpkt_get_u32(ssh, &listen_port)) != 0 ||
 	    (r = sshpkt_get_cstring(ssh, &originator_address, NULL)) != 0 ||
@@ -1736,8 +1506,8 @@ client_request_forwarded_tcpip(struct ssh *ssh, const char *request_type,
 			error_f("alloc reply");
 			goto out;
 		}
-		/* reconstruct and send to muxclient */
-		if ((r = sshbuf_put_u8(b, 0)) != 0 ||	/* padlen */
+		 
+		if ((r = sshbuf_put_u8(b, 0)) != 0 ||	 
 		    (r = sshbuf_put_u8(b, SSH2_MSG_CHANNEL_OPEN)) != 0 ||
 		    (r = sshbuf_put_cstring(b, request_type)) != 0 ||
 		    (r = sshbuf_put_u32(b, rchan)) != 0 ||
@@ -1768,9 +1538,9 @@ client_request_forwarded_streamlocal(struct ssh *ssh,
 	char *listen_path;
 	int r;
 
-	/* Get the remote path. */
+	 
 	if ((r = sshpkt_get_cstring(ssh, &listen_path, NULL)) != 0 ||
-	    (r = sshpkt_get_string(ssh, NULL, NULL)) != 0 ||	/* reserved */
+	    (r = sshpkt_get_string(ssh, NULL, NULL)) != 0 ||	 
 	    (r = sshpkt_get_end(ssh)) != 0)
 		fatal_fr(r, "parse packet");
 
@@ -1805,8 +1575,8 @@ client_request_x11(struct ssh *ssh, const char *request_type, int rchan)
 	    (r = sshpkt_get_u32(ssh, &originator_port)) != 0 ||
 	    (r = sshpkt_get_end(ssh)) != 0)
 		fatal_fr(r, "parse packet");
-	/* XXX check permission */
-	/* XXX range check originator port? */
+	 
+	 
 	debug("client_request_x11: request from %s %u", originator,
 	    originator_port);
 	free(originator);
@@ -1869,7 +1639,7 @@ client_request_tun_fwd(struct ssh *ssh, int tun_mode,
 
 	debug("Requesting tun unit %d in mode %d", local_tun, tun_mode);
 
-	/* Open local tunnel device */
+	 
 	if ((fd = tun_open(local_tun, tun_mode, &ifname)) == -1) {
 		error("Tunnel device open failed.");
 		return NULL;
@@ -1902,7 +1672,7 @@ client_request_tun_fwd(struct ssh *ssh, int tun_mode,
 	return ifname;
 }
 
-/* XXXX move to generic input handler */
+ 
 static int
 client_input_channel_open(int type, u_int32_t seq, struct ssh *ssh)
 {
@@ -2001,11 +1771,11 @@ client_input_channel_req(int type, u_int32_t seq, struct ssh *ssh)
 			mux_exit_message(ssh, c, exitval);
 			success = 1;
 		} else if ((int)id == session_ident) {
-			/* Record exit value of local session */
+			 
 			success = 1;
 			exit_status = exitval;
 		} else {
-			/* Probably for a mux channel that has already closed */
+			 
 			debug_f("no sink for exit-status on channel %d",
 			    id);
 		}
@@ -2028,33 +1798,24 @@ client_input_channel_req(int type, u_int32_t seq, struct ssh *ssh)
 }
 
 struct hostkeys_update_ctx {
-	/* The hostname and (optionally) IP address string for the server */
+	 
 	char *host_str, *ip_str;
 
-	/*
-	 * Keys received from the server and a flag for each indicating
-	 * whether they already exist in known_hosts.
-	 * keys_match is filled in by hostkeys_find() and later (for new
-	 * keys) by client_global_hostkeys_prove_confirm().
-	 */
+	 
 	struct sshkey **keys;
-	u_int *keys_match;	/* mask of HKF_MATCH_* from hostfile.h */
-	int *keys_verified;	/* flag for new keys verified by server */
-	size_t nkeys, nnew, nincomplete; /* total, new keys, incomplete match */
+	u_int *keys_match;	 
+	int *keys_verified;	 
+	size_t nkeys, nnew, nincomplete;  
 
-	/*
-	 * Keys that are in known_hosts, but were not present in the update
-	 * from the server (i.e. scheduled to be deleted).
-	 * Filled in by hostkeys_find().
-	 */
+	 
 	struct sshkey **old_keys;
 	size_t nold;
 
-	/* Various special cases. */
-	int complex_hostspec;	/* wildcard or manual pattern-list host name */
-	int ca_available;	/* saw CA key for this host */
-	int old_key_seen;	/* saw old key with other name/addr */
-	int other_name_seen;	/* saw key with other name/addr */
+	 
+	int complex_hostspec;	 
+	int ca_available;	 
+	int old_key_seen;	 
+	int other_name_seen;	 
 };
 
 static void
@@ -2077,30 +1838,26 @@ hostkeys_update_ctx_free(struct hostkeys_update_ctx *ctx)
 	free(ctx);
 }
 
-/*
- * Returns non-zero if a known_hosts hostname list is not of a form that
- * can be handled by UpdateHostkeys. These include wildcard hostnames and
- * hostnames lists that do not follow the form host[,ip].
- */
+ 
 static int
 hostspec_is_complex(const char *hosts)
 {
 	char *cp;
 
-	/* wildcard */
+	 
 	if (strchr(hosts, '*') != NULL || strchr(hosts, '?') != NULL)
 		return 1;
-	/* single host/ip = ok */
+	 
 	if ((cp = strchr(hosts, ',')) == NULL)
 		return 0;
-	/* more than two entries on the line */
+	 
 	if (strchr(cp + 1, ',') != NULL)
 		return 1;
-	/* XXX maybe parse cp+1 and ensure it is an IP? */
+	 
 	return 0;
 }
 
-/* callback to search for ctx->keys in known_hosts */
+ 
 static int
 hostkeys_find(struct hostkey_foreach_line *l, void *_ctx)
 {
@@ -2111,7 +1868,7 @@ hostkeys_find(struct hostkey_foreach_line *l, void *_ctx)
 	if (l->key == NULL)
 		return 0;
 	if (l->status != HKF_STATUS_MATCHED) {
-		/* Record if one of the keys appears on a non-matching line */
+		 
 		for (i = 0; i < ctx->nkeys; i++) {
 			if (sshkey_equal(l->key, ctx->keys[i])) {
 				ctx->other_name_seen = 1;
@@ -2124,8 +1881,8 @@ hostkeys_find(struct hostkey_foreach_line *l, void *_ctx)
 		}
 		return 0;
 	}
-	/* Don't proceed if revocation or CA markers are present */
-	/* XXX relax this */
+	 
+	 
 	if (l->marker != MRK_NONE) {
 		debug3_f("hostkeys file %s:%ld has CA/revocation marker",
 		    l->path, l->linenum);
@@ -2133,26 +1890,23 @@ hostkeys_find(struct hostkey_foreach_line *l, void *_ctx)
 		return 0;
 	}
 
-	/* If CheckHostIP is enabled, then check for mismatched hostname/addr */
+	 
 	if (ctx->ip_str != NULL && strchr(l->hosts, ',') != NULL) {
 		if ((l->match & HKF_MATCH_HOST) == 0) {
-			/* Record if address matched a different hostname. */
+			 
 			ctx->other_name_seen = 1;
 			debug3_f("found address %s against different hostname "
 			    "at %s:%ld", ctx->ip_str, l->path, l->linenum);
 			return 0;
 		} else if ((l->match & HKF_MATCH_IP) == 0) {
-			/* Record if hostname matched a different address. */
+			 
 			ctx->other_name_seen = 1;
 			debug3_f("found hostname %s against different address "
 			    "at %s:%ld", ctx->host_str, l->path, l->linenum);
 		}
 	}
 
-	/*
-	 * UpdateHostkeys is skipped for wildcard host names and hostnames
-	 * that contain more than two entries (ssh never writes these).
-	 */
+	 
 	if (hostspec_is_complex(l->hosts)) {
 		debug3_f("hostkeys file %s:%ld complex host specification",
 		    l->path, l->linenum);
@@ -2160,7 +1914,7 @@ hostkeys_find(struct hostkey_foreach_line *l, void *_ctx)
 		return 0;
 	}
 
-	/* Mark off keys we've already seen for this host */
+	 
 	for (i = 0; i < ctx->nkeys; i++) {
 		if (!sshkey_equal(l->key, ctx->keys[i]))
 			continue;
@@ -2169,7 +1923,7 @@ hostkeys_find(struct hostkey_foreach_line *l, void *_ctx)
 		ctx->keys_match[i] |= l->match;
 		return 0;
 	}
-	/* This line contained a key that not offered by the server */
+	 
 	debug3_f("deprecated %s key at %s:%ld", sshkey_ssh_name(l->key),
 	    l->path, l->linenum);
 	if ((tmp = recallocarray(ctx->old_keys, ctx->nold, ctx->nold + 1,
@@ -2182,7 +1936,7 @@ hostkeys_find(struct hostkey_foreach_line *l, void *_ctx)
 	return 0;
 }
 
-/* callback to search for ctx->old_keys in known_hosts under other names */
+ 
 static int
 hostkeys_check_old(struct hostkey_foreach_line *l, void *_ctx)
 {
@@ -2190,7 +1944,7 @@ hostkeys_check_old(struct hostkey_foreach_line *l, void *_ctx)
 	size_t i;
 	int hashed;
 
-	/* only care about lines that *don't* match the active host spec */
+	 
 	if (l->status == HKF_STATUS_MATCHED || l->key == NULL)
 		return 0;
 
@@ -2207,11 +1961,7 @@ hostkeys_check_old(struct hostkey_foreach_line *l, void *_ctx)
 	return 0;
 }
 
-/*
- * Check known_hosts files for deprecated keys under other names. Returns 0
- * on success or -1 on failure. Updates ctx->old_key_seen if deprecated keys
- * exist under names other than the active hostname/IP.
- */
+ 
 static int
 check_old_keys_othernames(struct hostkeys_update_ctx *ctx)
 {
@@ -2310,16 +2060,9 @@ update_known_hosts(struct hostkeys_update_ctx *ctx)
 	}
 	if (options.update_hostkeys == 0)
 		return;
-	/*
-	 * Now that all the keys are verified, we can go ahead and replace
-	 * them in known_hosts (assuming SSH_UPDATE_HOSTKEYS_ASK didn't
-	 * cancel the operation).
-	 */
+	 
 	for (i = 0; i < options.num_user_hostfiles; i++) {
-		/*
-		 * NB. keys are only added to hostfiles[0], for the rest we
-		 * just delete the hostname entries.
-		 */
+		 
 		if (stat(options.user_hostfiles[i], &sb) != 0) {
 			if (errno == ENOENT) {
 				debug_f("known hosts file %s does not "
@@ -2356,7 +2099,7 @@ client_global_hostkeys_prove_confirm(struct ssh *ssh, int type,
 	size_t siglen;
 
 	if (ctx->nnew == 0)
-		fatal_f("ctx->nnew == 0"); /* sanity */
+		fatal_f("ctx->nnew == 0");  
 	if (type != SSH2_MSG_REQUEST_SUCCESS) {
 		error("Server failed to confirm ownership of "
 		    "private host keys");
@@ -2368,16 +2111,12 @@ client_global_hostkeys_prove_confirm(struct ssh *ssh, int type,
 		rsa_kexalg = ssh->kex->hostkey_alg;
 	if ((signdata = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
-	/*
-	 * Expect a signature for each of the ctx->nnew private keys we
-	 * haven't seen before. They will be in the same order as the
-	 * ctx->keys where the corresponding ctx->keys_match[i] == 0.
-	 */
+	 
 	for (ndone = i = 0; i < ctx->nkeys; i++) {
 		if (ctx->keys_match[i])
 			continue;
 		plaintype = sshkey_type_plain(ctx->keys[i]->type);
-		/* Prepare data to be signed: session ID, unique string, key */
+		 
 		sshbuf_reset(signdata);
 		if ( (r = sshbuf_put_cstring(signdata,
 		    "hostkeys-prove-00@openssh.com")) != 0 ||
@@ -2385,7 +2124,7 @@ client_global_hostkeys_prove_confirm(struct ssh *ssh, int type,
 		    ssh->kex->session_id)) != 0 ||
 		    (r = sshkey_puts(ctx->keys[i], signdata)) != 0)
 			fatal_fr(r, "compose signdata");
-		/* Extract and verify signature */
+		 
 		if ((r = sshpkt_get_string_direct(ssh, &sig, &siglen)) != 0) {
 			error_fr(r, "parse sig");
 			goto out;
@@ -2395,17 +2134,13 @@ client_global_hostkeys_prove_confirm(struct ssh *ssh, int type,
 			    "for %s key %zu", sshkey_type(ctx->keys[i]), i);
 			goto out;
 		}
-		/*
-		 * Special case for RSA keys: if a RSA hostkey was negotiated,
-		 * then use its signature type for verification of RSA hostkey
-		 * proofs. Otherwise, accept only RSA-SHA256/512 signatures.
-		 */
+		 
 		if (plaintype == KEY_RSA && rsa_kexalg == NULL &&
 		    match_pattern_list(alg, HOSTKEY_PROOF_RSA_ALGS, 0) != 1) {
 			debug_f("server used untrusted RSA signature algorithm "
 			    "%s for key %zu, disregarding", alg, i);
 			free(alg);
-			/* zap the key from the list */
+			 
 			sshkey_free(ctx->keys[i]);
 			ctx->keys[i] = NULL;
 			ndone++;
@@ -2421,11 +2156,11 @@ client_global_hostkeys_prove_confirm(struct ssh *ssh, int type,
 			    sshkey_type(ctx->keys[i]), i);
 			goto out;
 		}
-		/* Key is good. Mark it as 'seen' */
+		 
 		ctx->keys_verified[i] = 1;
 		ndone++;
 	}
-	/* Shouldn't happen */
+	 
 	if (ndone != ctx->nnew)
 		fatal_f("ndone != ctx->nnew (%zu / %zu)", ndone, ctx->nnew);
 	if ((r = sshpkt_get_end(ssh)) != 0) {
@@ -2433,7 +2168,7 @@ client_global_hostkeys_prove_confirm(struct ssh *ssh, int type,
 		goto out;
 	}
 
-	/* Make the edits to known_hosts */
+	 
 	update_known_hosts(ctx);
  out:
 	hostkeys_update_ctx_free(ctx);
@@ -2441,10 +2176,7 @@ client_global_hostkeys_prove_confirm(struct ssh *ssh, int type,
 	client_repledge();
 }
 
-/*
- * Returns non-zero if the key is accepted by HostkeyAlgorithms.
- * Made slightly less trivial by the multiple RSA signature algorithm names.
- */
+ 
 static int
 key_accepted_by_hostkeyalgs(const struct sshkey *key)
 {
@@ -2460,11 +2192,7 @@ key_accepted_by_hostkeyalgs(const struct sshkey *key)
 	return match_pattern_list(ktype, hostkeyalgs, 0) == 1;
 }
 
-/*
- * Handle hostkeys-00@openssh.com global request to inform the client of all
- * the server's hostkeys. The keys are checked against the user's
- * HostkeyAlgorithms preference before they are accepted.
- */
+ 
 static int
 client_input_hostkeys(struct ssh *ssh)
 {
@@ -2474,8 +2202,8 @@ client_input_hostkeys(struct ssh *ssh)
 	struct sshkey *key = NULL, **tmp;
 	int r, prove_sent = 0;
 	char *fp;
-	static int hostkeys_seen = 0; /* XXX use struct ssh */
-	extern struct sockaddr_storage hostaddr; /* XXX from ssh.c */
+	static int hostkeys_seen = 0;  
+	extern struct sockaddr_storage hostaddr;  
 	struct hostkeys_update_ctx *ctx = NULL;
 	u_int want;
 
@@ -2509,13 +2237,13 @@ client_input_hostkeys(struct ssh *ssh)
 			    "HostkeyAlgorithms", sshkey_ssh_name(key));
 			continue;
 		}
-		/* Skip certs */
+		 
 		if (sshkey_is_cert(key)) {
 			debug3_f("%s key is a certificate; skipping",
 			    sshkey_ssh_name(key));
 			continue;
 		}
-		/* Ensure keys are unique */
+		 
 		for (i = 0; i < ctx->nkeys; i++) {
 			if (sshkey_equal(key, ctx->keys[i])) {
 				error_f("received duplicated %s host key",
@@ -2523,7 +2251,7 @@ client_input_hostkeys(struct ssh *ssh)
 				goto out;
 			}
 		}
-		/* Key is good, record it */
+		 
 		if ((tmp = recallocarray(ctx->keys, ctx->nkeys, ctx->nkeys + 1,
 		    sizeof(*ctx->keys))) == NULL)
 			fatal_f("recallocarray failed nkeys = %zu",
@@ -2549,7 +2277,7 @@ client_input_hostkeys(struct ssh *ssh)
 	    options.port, &ctx->host_str,
 	    options.check_host_ip ? &ctx->ip_str : NULL);
 
-	/* Find which keys we already know about. */
+	 
 	for (i = 0; i < options.num_user_hostfiles; i++) {
 		debug_f("searching %s for %s / %s",
 		    options.user_hostfiles[i], ctx->host_str,
@@ -2568,7 +2296,7 @@ client_input_hostkeys(struct ssh *ssh)
 		}
 	}
 
-	/* Figure out if we have any new keys to add */
+	 
 	ctx->nnew = ctx->nincomplete = 0;
 	want = HKF_MATCH_HOST | ( options.check_host_ip ? HKF_MATCH_IP : 0);
 	for (i = 0; i < ctx->nkeys; i++) {
@@ -2588,7 +2316,7 @@ client_input_hostkeys(struct ssh *ssh)
 		goto out;
 	}
 
-	/* Various reasons why we cannot proceed with the update */
+	 
 	if (ctx->complex_hostspec) {
 		debug_f("CA/revocation marker, manual host list or wildcard "
 		    "host pattern found, skipping UserKnownHostsFile update");
@@ -2599,16 +2327,10 @@ client_input_hostkeys(struct ssh *ssh)
 		    "skipping UserKnownHostsFile update");
 		goto out;
 	}
-	/*
-	 * If removing keys, check whether they appear under different
-	 * names/addresses and refuse to proceed if they do. This avoids
-	 * cases such as hosts with multiple names becoming inconsistent
-	 * with regards to CheckHostIP entries.
-	 * XXX UpdateHostkeys=force to override this (and other) checks?
-	 */
+	 
 	if (ctx->nold != 0) {
 		if (check_old_keys_othernames(ctx) != 0)
-			goto out; /* error already logged */
+			goto out;  
 		if (ctx->old_key_seen) {
 			debug_f("key(s) for %s%s%s exist under other names; "
 			    "skipping UserKnownHostsFile update",
@@ -2619,23 +2341,16 @@ client_input_hostkeys(struct ssh *ssh)
 	}
 
 	if (ctx->nnew == 0) {
-		/*
-		 * We have some keys to remove or fix matching for.
-		 * We can proceed to do this without requiring a fresh proof
-		 * from the server.
-		 */
+		 
 		update_known_hosts(ctx);
 		goto out;
 	}
-	/*
-	 * We have received previously-unseen keys from the server.
-	 * Ask the server to confirm ownership of the private halves.
-	 */
+	 
 	debug3_f("asking server to prove ownership for %zu keys", ctx->nnew);
 	if ((r = sshpkt_start(ssh, SSH2_MSG_GLOBAL_REQUEST)) != 0 ||
 	    (r = sshpkt_put_cstring(ssh,
 	    "hostkeys-prove-00@openssh.com")) != 0 ||
-	    (r = sshpkt_put_u8(ssh, 1)) != 0) /* bool: want reply */
+	    (r = sshpkt_put_u8(ssh, 1)) != 0)  
 		fatal_fr(r, "prepare hostkeys-prove");
 	if ((buf = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new");
@@ -2651,23 +2366,20 @@ client_input_hostkeys(struct ssh *ssh)
 		fatal_fr(r, "send hostkeys-prove");
 	client_register_global_confirm(
 	    client_global_hostkeys_prove_confirm, ctx);
-	ctx = NULL;  /* will be freed in callback */
+	ctx = NULL;   
 	prove_sent = 1;
 
-	/* Success */
+	 
  out:
 	hostkeys_update_ctx_free(ctx);
 	sshkey_free(key);
 	sshbuf_free(buf);
 	if (!prove_sent) {
-		/* UpdateHostkeys handling completed */
+		 
 		hostkeys_update_complete = 1;
 		client_repledge();
 	}
-	/*
-	 * NB. Return success for all cases. The server doesn't need to know
-	 * what the client does with its hosts file.
-	 */
+	 
 	return 1;
 }
 
@@ -2732,7 +2444,7 @@ client_session2_setup(struct ssh *ssh, int id, int want_tty, int want_subsystem,
 	if (want_tty) {
 		struct winsize ws;
 
-		/* Store window size in the packet. */
+		 
 		if (ioctl(in_fd, TIOCGWINSZ, &ws) == -1)
 			memset(&ws, 0, sizeof(ws));
 
@@ -2750,15 +2462,15 @@ client_session2_setup(struct ssh *ssh, int id, int want_tty, int want_subsystem,
 		ssh_tty_make_modes(ssh, -1, tiop);
 		if ((r = sshpkt_send(ssh)) != 0)
 			fatal_fr(r, "send pty-req");
-		/* XXX wait for reply */
+		 
 		c->client_tty = 1;
 	}
 
-	/* Transfer any environment variables from client to server */
+	 
 	if (options.num_send_env != 0 && env != NULL) {
 		debug("Sending environment.");
 		for (i = 0; env[i] != NULL; i++) {
-			/* Split */
+			 
 			name = xstrdup(env[i]);
 			if ((val = strchr(name, '=')) == NULL) {
 				free(name);
@@ -2783,7 +2495,7 @@ client_session2_setup(struct ssh *ssh, int id, int want_tty, int want_subsystem,
 		}
 	}
 	for (i = 0; i < options.num_setenv; i++) {
-		/* Split */
+		 
 		name = xstrdup(options.setenv[i]);
 		if ((val = strchr(name, '=')) == NULL) {
 			free(name);
@@ -2842,10 +2554,10 @@ client_init_dispatch(struct ssh *ssh)
 	ssh_dispatch_set(ssh, SSH2_MSG_CHANNEL_FAILURE, &channel_input_status_confirm);
 	ssh_dispatch_set(ssh, SSH2_MSG_GLOBAL_REQUEST, &client_input_global_request);
 
-	/* rekeying */
+	 
 	ssh_dispatch_set(ssh, SSH2_MSG_KEXINIT, &kex_input_kexinit);
 
-	/* global request reply messages */
+	 
 	ssh_dispatch_set(ssh, SSH2_MSG_REQUEST_FAILURE, &client_global_request_reply);
 	ssh_dispatch_set(ssh, SSH2_MSG_REQUEST_SUCCESS, &client_global_request_reply);
 }
@@ -2855,17 +2567,14 @@ client_stop_mux(void)
 {
 	if (options.control_path != NULL && muxserver_sock != -1)
 		unlink(options.control_path);
-	/*
-	 * If we are in persist mode, or don't have a shell, signal that we
-	 * should close when all active channels are closed.
-	 */
+	 
 	if (options.control_persist || options.session_type == SESSION_TYPE_NONE) {
 		session_closed = 1;
 		setproctitle("[stopped mux]");
 	}
 }
 
-/* client specific fatal cleanup */
+ 
 void
 cleanup_exit(int i)
 {

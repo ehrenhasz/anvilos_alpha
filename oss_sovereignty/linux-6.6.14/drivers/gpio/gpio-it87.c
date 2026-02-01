@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  GPIO interface for IT87xx Super I/O chips
- *
- *  Author: Diego Elio Pettenò <flameeyes@flameeyes.eu>
- *  Copyright (c) 2017 Google, Inc.
- *
- *  Based on it87_wdt.c     by Oliver Schuster
- *           gpio-it8761e.c by Denis Turischev
- *           gpio-stmpe.c   by Rabin Vincent
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,7 +12,7 @@
 #include <linux/slab.h>
 #include <linux/gpio/driver.h>
 
-/* Chip Id numbers */
+ 
 #define NO_DEV_ID	0xffff
 #define IT8613_ID	0x8613
 #define IT8620_ID	0x8620
@@ -33,31 +24,19 @@
 #define IT8772_ID	0x8772
 #define IT8786_ID	0x8786
 
-/* IO Ports */
+ 
 #define REG		0x2e
 #define VAL		0x2f
 
-/* Logical device Numbers LDN */
+ 
 #define GPIO		0x07
 
-/* Configuration Registers and Functions */
+ 
 #define LDNREG		0x07
 #define CHIPID		0x20
 #define CHIPREV		0x22
 
-/**
- * struct it87_gpio - it87-specific GPIO chip
- * @chip: the underlying gpio_chip structure
- * @lock: a lock to avoid races between operations
- * @io_base: base address for gpio ports
- * @io_size: size of the port rage starting from io_base.
- * @output_base: Super I/O register address for Output Enable register
- * @simple_base: Super I/O 'Simple I/O' Enable register
- * @simple_size: Super IO 'Simple I/O' Enable register size; this is
- *	required because IT87xx chips might only provide Simple I/O
- *	switches on a subset of lines, whereas the others keep the
- *	same status all time.
- */
+ 
 struct it87_gpio {
 	struct gpio_chip chip;
 	spinlock_t lock;
@@ -72,13 +51,11 @@ static struct it87_gpio it87_gpio_chip = {
 	.lock = __SPIN_LOCK_UNLOCKED(it87_gpio_chip.lock),
 };
 
-/* Superio chip access functions; copied from wdt_it87 */
+ 
 
 static inline int superio_enter(void)
 {
-	/*
-	 * Try to reserve REG and REG + 1 for exclusive access.
-	 */
+	 
 	if (!request_muxed_region(REG, 2, KBUILD_MODNAME))
 		return -EBUSY;
 
@@ -158,15 +135,11 @@ static int it87_gpio_request(struct gpio_chip *chip, unsigned gpio_num)
 	if (rc)
 		goto exit;
 
-	/* not all the IT87xx chips support Simple I/O and not all of
-	 * them allow all the lines to be set/unset to Simple I/O.
-	 */
+	 
 	if (group < it87_gpio->simple_size)
 		superio_set_mask(mask, group + it87_gpio->simple_base);
 
-	/* clear output enable, setting the pin to input, as all the
-	 * newly-exported GPIO interfaces are set to input.
-	 */
+	 
 	superio_clear_mask(mask, group + it87_gpio->output_base);
 
 	superio_exit();
@@ -203,7 +176,7 @@ static int it87_gpio_direction_in(struct gpio_chip *chip, unsigned gpio_num)
 	if (rc)
 		goto exit;
 
-	/* clear the output enable bit */
+	 
 	superio_clear_mask(mask, group + it87_gpio->output_base);
 
 	superio_exit();
@@ -246,7 +219,7 @@ static int it87_gpio_direction_out(struct gpio_chip *chip,
 	if (rc)
 		goto exit;
 
-	/* set the output enable bit */
+	 
 	superio_set_mask(mask, group + it87_gpio->output_base);
 
 	it87_gpio_set(chip, gpio_num, val);
@@ -291,11 +264,11 @@ static int __init it87_gpio_init(void)
 	switch (chip_type) {
 	case IT8613_ID:
 		gpio_ba_reg = 0x62;
-		it87_gpio->io_size = 8;  /* it8613 only needs 6, use 8 for alignment */
+		it87_gpio->io_size = 8;   
 		it87_gpio->output_base = 0xc8;
 		it87_gpio->simple_base = 0xc0;
 		it87_gpio->simple_size = 6;
-		it87_gpio->chip.ngpio = 64;  /* has 48, use 64 for convenient calc */
+		it87_gpio->chip.ngpio = 64;   
 		break;
 	case IT8620_ID:
 	case IT8628_ID:
@@ -339,7 +312,7 @@ static int __init it87_gpio_init(void)
 
 	superio_select(GPIO);
 
-	/* fetch GPIO base address */
+	 
 	it87_gpio->io_base = superio_inw(gpio_ba_reg);
 
 	superio_exit();
@@ -352,16 +325,7 @@ static int __init it87_gpio_init(void)
 							KBUILD_MODNAME))
 		return -EBUSY;
 
-	/* Set up aliases for the GPIO connection.
-	 *
-	 * ITE documentation for recent chips such as the IT8728F
-	 * refers to the GPIO lines as GPxy, with a coordinates system
-	 * where x is the GPIO group (starting from 1) and y is the
-	 * bit within the group.
-	 *
-	 * By creating these aliases, we make it easier to understand
-	 * to which GPIO pin we're referring to.
-	 */
+	 
 	labels = kcalloc(it87_gpio->chip.ngpio, sizeof("it87_gpXY"),
 								GFP_KERNEL);
 	labels_table = kcalloc(it87_gpio->chip.ngpio, sizeof(const char *),

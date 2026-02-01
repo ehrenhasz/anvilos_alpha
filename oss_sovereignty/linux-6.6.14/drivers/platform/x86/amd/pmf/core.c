@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMD Platform Management Framework Driver
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- */
+
+ 
 
 #include <asm/amd_nb.h>
 #include <linux/debugfs.h>
@@ -17,12 +10,12 @@
 #include <linux/power_supply.h>
 #include "pmf.h"
 
-/* PMF-SMU communication registers */
+ 
 #define AMD_PMF_REGISTER_MESSAGE	0xA18
 #define AMD_PMF_REGISTER_RESPONSE	0xA78
 #define AMD_PMF_REGISTER_ARGUMENT	0xA58
 
-/* Base address of SMU for mapping physical address to virtual address */
+ 
 #define AMD_PMF_MAPPING_SIZE		0x01000
 #define AMD_PMF_BASE_ADDR_OFFSET	0x10000
 #define AMD_PMF_BASE_ADDR_LO		0x13B102E8
@@ -30,14 +23,14 @@
 #define AMD_PMF_BASE_ADDR_LO_MASK	GENMASK(15, 0)
 #define AMD_PMF_BASE_ADDR_HI_MASK	GENMASK(31, 20)
 
-/* SMU Response Codes */
+ 
 #define AMD_PMF_RESULT_OK                    0x01
 #define AMD_PMF_RESULT_CMD_REJECT_BUSY       0xFC
 #define AMD_PMF_RESULT_CMD_REJECT_PREREQ     0xFD
 #define AMD_PMF_RESULT_CMD_UNKNOWN           0xFE
 #define AMD_PMF_RESULT_FAILED                0xFF
 
-/* List of supported CPU ids */
+ 
 #define AMD_CPU_ID_RMB			0x14b5
 #define AMD_CPU_ID_PS			0x14e8
 #define PCI_DEVICE_ID_AMD_1AH_M20H_ROOT	0x1507
@@ -48,12 +41,12 @@
 #define DELAY_MIN_US	2000
 #define DELAY_MAX_US	3000
 
-/* override Metrics Table sample size time (in ms) */
+ 
 static int metrics_table_loop_ms = 1000;
 module_param(metrics_table_loop_ms, int, 0644);
 MODULE_PARM_DESC(metrics_table_loop_ms, "Metrics Table sample size time (default = 1000ms)");
 
-/* Force load on supported older platforms */
+ 
 static bool force_load;
 module_param(force_load, bool, 0444);
 MODULE_PARM_DESC(force_load, "Force load this driver on supported older platforms (experimental)");
@@ -132,22 +125,22 @@ static void amd_pmf_get_metrics(struct work_struct *work)
 	int socket_power;
 
 	mutex_lock(&dev->update_mutex);
-	/* Transfer table contents */
+	 
 	memset(dev->buf, 0, sizeof(dev->m_table));
 	amd_pmf_send_cmd(dev, SET_TRANSFER_TABLE, 0, 7, NULL);
 	memcpy(&dev->m_table, dev->buf, sizeof(dev->m_table));
 
 	time_elapsed_ms = ktime_to_ms(ktime_get()) - dev->start_time;
-	/* Calculate the avg SoC power consumption */
+	 
 	socket_power = dev->m_table.apu_power + dev->m_table.dgpu_power;
 
 	if (dev->amt_enabled) {
-		/* Apply the Auto Mode transition */
+		 
 		amd_pmf_trans_automode(dev, socket_power, time_elapsed_ms);
 	}
 
 	if (dev->cnqf_enabled) {
-		/* Apply the CnQF transition */
+		 
 		amd_pmf_trans_cnqf(dev, socket_power, time_elapsed_ms);
 	}
 
@@ -187,7 +180,7 @@ int amd_pmf_send_cmd(struct amd_pmf_dev *dev, u8 message, bool get, u32 arg, u32
 
 	mutex_lock(&dev->lock);
 
-	/* Wait until we get a valid response */
+	 
 	rc = readx_poll_timeout(ioread32, dev->regbase + AMD_PMF_REGISTER_RESPONSE,
 				val, val != 0, PMF_MSG_DELAY_MIN_US,
 				PMF_MSG_DELAY_MIN_US * RESPONSE_REGISTER_LOOP_MAX);
@@ -196,16 +189,16 @@ int amd_pmf_send_cmd(struct amd_pmf_dev *dev, u8 message, bool get, u32 arg, u32
 		goto out_unlock;
 	}
 
-	/* Write zero to response register */
+	 
 	amd_pmf_reg_write(dev, AMD_PMF_REGISTER_RESPONSE, 0);
 
-	/* Write argument into argument register */
+	 
 	amd_pmf_reg_write(dev, AMD_PMF_REGISTER_ARGUMENT, arg);
 
-	/* Write message ID to message ID register */
+	 
 	amd_pmf_reg_write(dev, AMD_PMF_REGISTER_MESSAGE, message);
 
-	/* Wait until we get a valid response */
+	 
 	rc = readx_poll_timeout(ioread32, dev->regbase + AMD_PMF_REGISTER_RESPONSE,
 				val, val != 0, PMF_MSG_DELAY_MIN_US,
 				PMF_MSG_DELAY_MIN_US * RESPONSE_REGISTER_LOOP_MAX);
@@ -217,7 +210,7 @@ int amd_pmf_send_cmd(struct amd_pmf_dev *dev, u8 message, bool get, u32 arg, u32
 	switch (val) {
 	case AMD_PMF_RESULT_OK:
 		if (get) {
-			/* PMFW may take longer time to return back the data */
+			 
 			usleep_range(DELAY_MIN_US, 10 * DELAY_MAX_US);
 			*data = amd_pmf_reg_read(dev, AMD_PMF_REGISTER_ARGUMENT);
 		}
@@ -266,7 +259,7 @@ static void amd_pmf_set_dram_addr(struct amd_pmf_dev *dev)
 
 int amd_pmf_init_metrics_table(struct amd_pmf_dev *dev)
 {
-	/* Get Metrics Table Address */
+	 
 	dev->buf = kzalloc(sizeof(dev->m_table), GFP_KERNEL);
 	if (!dev->buf)
 		return -ENOMEM;
@@ -275,10 +268,7 @@ int amd_pmf_init_metrics_table(struct amd_pmf_dev *dev)
 
 	amd_pmf_set_dram_addr(dev);
 
-	/*
-	 * Start collecting the metrics data after a small delay
-	 * or else, we might end up getting stale values from PMFW.
-	 */
+	 
 	schedule_delayed_work(&dev->work_buffer, msecs_to_jiffies(metrics_table_loop_ms * 3));
 
 	return 0;
@@ -300,7 +290,7 @@ static void amd_pmf_init_features(struct amd_pmf_dev *dev)
 {
 	int ret;
 
-	/* Enable Static Slider */
+	 
 	if (is_apmf_func_supported(dev, APMF_FUNC_STATIC_SLIDER_GRANULAR) ||
 	    is_apmf_func_supported(dev, APMF_FUNC_OS_POWER_SLIDER_UPDATE)) {
 		amd_pmf_init_sps(dev);
@@ -309,13 +299,13 @@ static void amd_pmf_init_features(struct amd_pmf_dev *dev)
 		dev_dbg(dev->dev, "SPS enabled and Platform Profiles registered\n");
 	}
 
-	/* Enable Auto Mode */
+	 
 	if (is_apmf_func_supported(dev, APMF_FUNC_AUTO_MODE)) {
 		amd_pmf_init_auto_mode(dev);
 		dev_dbg(dev->dev, "Auto Mode Init done\n");
 	} else if (is_apmf_func_supported(dev, APMF_FUNC_DYN_SLIDER_AC) ||
 			  is_apmf_func_supported(dev, APMF_FUNC_DYN_SLIDER_DC)) {
-		/* Enable Cool n Quiet Framework (CnQF) */
+		 
 		ret = amd_pmf_init_cnqf(dev);
 		if (ret)
 			dev_warn(dev->dev, "CnQF Init failed\n");

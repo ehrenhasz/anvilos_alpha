@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc.
- *
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -155,14 +152,14 @@ static int mt7915_pci_probe(struct pci_dev *pdev,
 	if (ret)
 		goto free_wed_or_irq_vector;
 
-	/* master switch of PCIe tnterrupt enable */
+	 
 	mt76_wr(dev, MT_PCIE_MAC_INT_ENABLE, 0xff);
 
 	if (hif2) {
 		dev->hif2 = hif2;
 
 		mt76_wr(dev, MT_INT1_MASK_CSR, 0);
-		/* master switch of PCIe tnterrupt enable */
+		 
 		if (is_mt7915(mdev))
 			mt76_wr(dev, MT_PCIE1_MAC_INT_ENABLE, 0xff);
 		else

@@ -1,19 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ncm.c -- NCM gadget driver
- *
- * Copyright (C) 2010 Nokia Corporation
- * Contact: Yauheni Kaliuta <yauheni.kaliuta@nokia.com>
- *
- * The driver borrows from ether.c which is:
- *
- * Copyright (C) 2003-2005,2008 David Brownell
- * Copyright (C) 2003-2004 Robert Schwebel, Benedikt Spranger
- * Copyright (C) 2008 Nokia Corporation
- */
 
-/* #define DEBUG */
-/* #define VERBOSE_DEBUG */
+ 
+
+ 
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -24,19 +13,15 @@
 
 #define DRIVER_DESC		"NCM Gadget"
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* DO NOT REUSE THESE IDs with a protocol-incompatible driver!!  Ever!!
- * Instead:  allocate your own, using normal USB-IF procedures.
- */
+ 
 
-/* Thanks to NetChip Technologies for donating this product ID.
- * It's for devices with only CDC Ethernet configurations.
- */
-#define CDC_VENDOR_NUM		0x0525	/* NetChip */
-#define CDC_PRODUCT_NUM		0xa4a1	/* Linux-USB Ethernet Gadget */
+ 
+#define CDC_VENDOR_NUM		0x0525	 
+#define CDC_PRODUCT_NUM		0xa4a1	 
 
-/*-------------------------------------------------------------------------*/
+ 
 USB_GADGET_COMPOSITE_OPTIONS();
 
 USB_ETHERNET_MODULE_PARAMETERS();
@@ -45,38 +30,35 @@ static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
-	/* .bcdUSB = DYNAMIC */
+	 
 
 	.bDeviceClass =		USB_CLASS_COMM,
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
-	/* .bMaxPacketSize0 = f(hardware) */
+	 
 
-	/* Vendor and product id defaults change according to what configs
-	 * we support.  (As does bNumConfigurations.)  These values can
-	 * also be overridden by module parameters.
-	 */
+	 
 	.idVendor =		cpu_to_le16 (CDC_VENDOR_NUM),
 	.idProduct =		cpu_to_le16 (CDC_PRODUCT_NUM),
-	/* .bcdDevice = f(hardware) */
-	/* .iManufacturer = DYNAMIC */
-	/* .iProduct = DYNAMIC */
-	/* NO SERIAL NUMBER */
+	 
+	 
+	 
+	 
 	.bNumConfigurations =	1,
 };
 
 static const struct usb_descriptor_header *otg_desc[2];
 
-/* string IDs are assigned dynamically */
+ 
 static struct usb_string strings_dev[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = DRIVER_DESC,
 	[USB_GADGET_SERIAL_IDX].s = "",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_dev,
 };
 
@@ -88,13 +70,13 @@ static struct usb_gadget_strings *dev_strings[] = {
 static struct usb_function_instance *f_ncm_inst;
 static struct usb_function *f_ncm;
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int ncm_do_config(struct usb_configuration *c)
 {
 	int status;
 
-	/* FIXME alloc iConfiguration string, set it in c->strings */
+	 
 
 	if (gadget_is_otg(c->cdev->gadget)) {
 		c->descriptors = otg_desc;
@@ -115,14 +97,14 @@ static int ncm_do_config(struct usb_configuration *c)
 }
 
 static struct usb_configuration ncm_config_driver = {
-	/* .label = f(hardware) */
+	 
 	.label			= "CDC Ethernet (NCM)",
 	.bConfigurationValue	= 1,
-	/* .iConfiguration = DYNAMIC */
+	 
 	.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int gncm_bind(struct usb_composite_dev *cdev)
 {
@@ -142,9 +124,7 @@ static int gncm_bind(struct usb_composite_dev *cdev)
 	if (!gether_set_dev_addr(ncm_opts->net, dev_addr))
 		pr_info("using self ethernet address: %s", dev_addr);
 
-	/* Allocate string descriptor numbers ... note that string
-	 * contents can be overridden by the composite_dev glue.
-	 */
+	 
 
 	status = usb_string_ids_tab(cdev, strings_dev);
 	if (status < 0)

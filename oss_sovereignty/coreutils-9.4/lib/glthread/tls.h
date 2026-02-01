@@ -1,49 +1,12 @@
-/* Thread-local storage in multithreaded situations.
-   Copyright (C) 2005, 2007-2023 Free Software Foundation, Inc.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2005.  */
-
-/* This file contains thread-local storage primitives for use with a given
-   thread library.  It does not contain primitives for creating threads or
-   for other multithreading primitives.
-
-     Type:                      gl_tls_key_t
-     Initialization:            gl_tls_key_init (name, destructor);
-     Getting per-thread value:  gl_tls_get (name)
-     Setting per-thread value:  gl_tls_set (name, pointer);
-     De-initialization:         gl_tls_key_destroy (name);
-   Equivalent functions with control of error handling:
-     Initialization:            err = glthread_tls_key_init (&name, destructor);
-     Setting per-thread value:  err = glthread_tls_set (&name, pointer);
-     De-initialization:         err = glthread_tls_key_destroy (&name);
-
-   A per-thread value is of type 'void *'.
-
-   A destructor is a function pointer of type 'void (*) (void *)', called
-   when a thread exits, and taking the last per-thread value as argument.  It
-   is unspecified whether the destructor function is called when the last
-   per-thread value is NULL.  On some platforms, the destructor function is
-   not called at all.
-*/
+ 
 
 
 #ifndef _TLS_H
 #define _TLS_H
 
-/* This file uses HAVE_THREADS_H.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -63,15 +26,15 @@
 # endif
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_ISOC_THREADS || USE_ISOC_AND_POSIX_THREADS
 
-/* Use the ISO C threads library.  */
+ 
 
 # include <threads.h>
 
-/* ------------------------- gl_tls_key_t datatype ------------------------- */
+ 
 
 typedef tss_t gl_tls_key_t;
 # define glthread_tls_key_init(KEY, DESTRUCTOR) \
@@ -85,17 +48,17 @@ typedef tss_t gl_tls_key_t;
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_POSIX_THREADS
 
-/* Use the POSIX threads library.  */
+ 
 
 # include <pthread.h>
 
 # if PTHREAD_IN_USE_DETECTION_HARD
 
-/* The pthread_in_use() detection needs to be done at runtime.  */
+ 
 #  define pthread_in_use() \
      glthread_in_use ()
 extern int glthread_in_use (void);
@@ -104,7 +67,7 @@ extern int glthread_in_use (void);
 
 # if USE_POSIX_THREADS_WEAK
 
-/* Use weak references to the POSIX threads library.  */
+ 
 
 #  pragma weak pthread_key_create
 #  pragma weak pthread_getspecific
@@ -128,7 +91,7 @@ extern int glthread_in_use (void);
 
 # endif
 
-/* ------------------------- gl_tls_key_t datatype ------------------------- */
+ 
 
 typedef union
         {
@@ -153,16 +116,16 @@ typedef union
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_WINDOWS_THREADS
 
-# define WIN32_LEAN_AND_MEAN  /* avoid including junk */
+# define WIN32_LEAN_AND_MEAN   
 # include <windows.h>
 
 # include "windows-tls.h"
 
-/* ------------------------- gl_tls_key_t datatype ------------------------- */
+ 
 
 typedef glwthread_tls_key_t gl_tls_key_t;
 # define glthread_tls_key_init(KEY, DESTRUCTOR) \
@@ -176,13 +139,13 @@ typedef glwthread_tls_key_t gl_tls_key_t;
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if !(USE_ISOC_THREADS || USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS || USE_WINDOWS_THREADS)
 
-/* Provide dummy implementation if threads are not supported.  */
+ 
 
-/* ------------------------- gl_tls_key_t datatype ------------------------- */
+ 
 
 typedef struct
         {
@@ -202,11 +165,11 @@ typedef struct
 
 #endif
 
-/* ========================================================================= */
+ 
 
-/* Macros with built-in error handling.  */
+ 
 
-/* ------------------------- gl_tls_key_t datatype ------------------------- */
+ 
 
 #define gl_tls_key_init(NAME, DESTRUCTOR) \
    do                                                 \
@@ -230,6 +193,6 @@ typedef struct
      }                                       \
    while (0)
 
-/* ========================================================================= */
+ 
 
-#endif /* _TLS_H */
+#endif  

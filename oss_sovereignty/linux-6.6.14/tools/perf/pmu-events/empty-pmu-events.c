@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * An empty pmu-events.c file used when there is no architecture json files in
- * arch or when the jevents.py script cannot be run.
- *
- * The test cpu/soc is provided for testing.
- */
+
+ 
 #include "pmu-events/pmu-events.h"
 #include "util/header.h"
 #include "util/pmu.h"
@@ -183,24 +178,17 @@ static const struct pmu_metric pmu_metrics__test_soc_cpu[] = {
 	},
 };
 
-/* Struct used to make the PMU event table implementation opaque to callers. */
+ 
 struct pmu_events_table {
 	const struct pmu_event *entries;
 };
 
-/* Struct used to make the PMU metric table implementation opaque to callers. */
+ 
 struct pmu_metrics_table {
 	const struct pmu_metric *entries;
 };
 
-/*
- * Map a CPU to its table of PMU events. The CPU is identified by the
- * cpuid field, which is an arch-specific identifier for the CPU.
- * The identifier specified in tools/perf/pmu-events/arch/xxx/mapfile
- * must match the get_cpuid_str() in tools/perf/arch/xxx/util/header.c)
- *
- * The  cpuid can contain any character other than the comma.
- */
+ 
 struct pmu_events_map {
 	const char *arch;
 	const char *cpuid;
@@ -208,10 +196,7 @@ struct pmu_events_map {
 	const struct pmu_metrics_table metric_table;
 };
 
-/*
- * Global table mapping each known CPU for the architecture to its
- * table of PMU events.
- */
+ 
 static const struct pmu_events_map pmu_events_map[] = {
 	{
 		.arch = "testarch",
@@ -330,9 +315,7 @@ const struct pmu_events_table *perf_pmu__find_events_table(struct perf_pmu *pmu)
 	char *cpuid = perf_pmu__getcpuid(pmu);
 	int i;
 
-	/* on some platforms which uses cpus map, cpuid can be NULL for
-	 * PMUs other than CORE PMUs.
-	 */
+	 
 	if (!cpuid)
 		return NULL;
 
@@ -358,9 +341,7 @@ const struct pmu_metrics_table *perf_pmu__find_metrics_table(struct perf_pmu *pm
 	char *cpuid = perf_pmu__getcpuid(pmu);
 	int i;
 
-	/* on some platforms which uses cpus map, cpuid can be NULL for
-	 * PMUs other than CORE PMUs.
-	 */
+	 
 	if (!cpuid)
 		return NULL;
 
@@ -406,7 +387,7 @@ int pmu_for_each_core_event(pmu_event_iter_fn fn, void *data)
 {
 	for (const struct pmu_events_map *tables = &pmu_events_map[0]; tables->arch; tables++) {
 		int ret = pmu_events_table__for_each_event(&tables->event_table,
-							   /*pmu=*/ NULL, fn, data);
+							     NULL, fn, data);
 
 		if (ret)
 			return ret;
@@ -443,7 +424,7 @@ int pmu_for_each_sys_event(pmu_event_iter_fn fn, void *data)
 	for (const struct pmu_sys_events *tables = &pmu_sys_event_tables[0];
 	     tables->name;
 	     tables++) {
-		int ret = pmu_events_table__for_each_event(&tables->table, /*pmu=*/ NULL, fn, data);
+		int ret = pmu_events_table__for_each_event(&tables->table,   NULL, fn, data);
 
 		if (ret)
 			return ret;

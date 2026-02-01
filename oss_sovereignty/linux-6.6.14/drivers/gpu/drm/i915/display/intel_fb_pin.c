@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
 
-/**
- * DOC: display pinning helpers
- */
+ 
+
+ 
 
 #include "gem/i915_gem_domain.h"
 #include "gem/i915_gem_object.h"
@@ -31,10 +27,7 @@ intel_pin_fb_obj_dpt(struct drm_framebuffer *fb,
 	u32 alignment;
 	int ret;
 
-	/*
-	 * We are not syncing against the binding (and potential migrations)
-	 * below, so this vm must never be async.
-	 */
+	 
 	GEM_WARN_ON(vm->bind_async_flags);
 
 	if (WARN_ON(!i915_gem_object_is_framebuffer(obj)))
@@ -52,12 +45,7 @@ intel_pin_fb_obj_dpt(struct drm_framebuffer *fb,
 		if (HAS_LMEM(dev_priv)) {
 			unsigned int flags = obj->flags;
 
-			/*
-			 * For this type of buffer we need to able to read from the CPU
-			 * the clear color value found in the buffer, hence we need to
-			 * ensure it is always in the mappable part of lmem, if this is
-			 * a small-bar device.
-			 */
+			 
 			if (intel_fb_rc_ccs_cc_plane(fb) >= 0)
 				flags &= ~I915_BO_ALLOC_GPU_ONLY;
 			ret = __i915_gem_object_migrate(obj, &ww, INTEL_REGION_LMEM_0,
@@ -129,33 +117,16 @@ intel_pin_and_fence_fb_obj(struct drm_framebuffer *fb,
 	if (drm_WARN_ON(dev, alignment && !is_power_of_2(alignment)))
 		return ERR_PTR(-EINVAL);
 
-	/* Note that the w/a also requires 64 PTE of padding following the
-	 * bo. We currently fill all unused PTE with the shadow page and so
-	 * we should always have valid PTE following the scanout preventing
-	 * the VT-d warning.
-	 */
+	 
 	if (intel_scanout_needs_vtd_wa(dev_priv) && alignment < 256 * 1024)
 		alignment = 256 * 1024;
 
-	/*
-	 * Global gtt pte registers are special registers which actually forward
-	 * writes to a chunk of system memory. Which means that there is no risk
-	 * that the register values disappear as soon as we call
-	 * intel_runtime_pm_put(), so it is correct to wrap only the
-	 * pin/unpin/fence and not more.
-	 */
+	 
 	wakeref = intel_runtime_pm_get(&dev_priv->runtime_pm);
 
 	atomic_inc(&dev_priv->gpu_error.pending_fb_pin);
 
-	/*
-	 * Valleyview is definitely limited to scanning out the first
-	 * 512MiB. Lets presume this behaviour was inherited from the
-	 * g4x display engine and that all earlier gen are similarly
-	 * limited. Testing suggests that it is a little more
-	 * complicated than this. For example, Cherryview appears quite
-	 * happy to scanout from anywhere within its global aperture.
-	 */
+	 
 	pinctl = 0;
 	if (HAS_GMCH(dev_priv))
 		pinctl |= PIN_MAPPABLE;
@@ -180,23 +151,7 @@ retry:
 	}
 
 	if (uses_fence && i915_vma_is_map_and_fenceable(vma)) {
-		/*
-		 * Install a fence for tiled scan-out. Pre-i965 always needs a
-		 * fence, whereas 965+ only requires a fence if using
-		 * framebuffer compression.  For simplicity, we always, when
-		 * possible, install a fence as the cost is not that onerous.
-		 *
-		 * If we fail to fence the tiled scanout, then either the
-		 * modeset will reject the change (which is highly unlikely as
-		 * the affected systems, all but one, do not have unmappable
-		 * space) or we will not be able to enable full powersaving
-		 * techniques (also likely not to apply due to various limits
-		 * FBC and the like impose on the size of the buffer, which
-		 * presumably we violated anyway with this unmappable buffer).
-		 * Anyway, it is presumably better to stumble onwards with
-		 * something and try to run the system in a "less than optimal"
-		 * mode that matches the user configuration.
-		 */
+		 
 		ret = i915_vma_pin_fence(vma);
 		if (ret != 0 && DISPLAY_VER(dev_priv) < 4) {
 			i915_vma_unpin(vma);

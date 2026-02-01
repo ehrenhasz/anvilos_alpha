@@ -1,21 +1,4 @@
-/* Save and restore the working directory, possibly using a child process.
-
-   Copyright (C) 2006-2007, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #include <config.h>
 
@@ -36,16 +19,14 @@
 #include "fcntl-safer.h"
 #include "filename.h"
 
-/* Save the working directory into *WD, if it hasn't been saved
-   already.  Return true if a child has been forked to do the real
-   work.  */
+ 
 static bool
 savewd_save (struct savewd *wd)
 {
   switch (wd->state)
     {
     case INITIAL_STATE:
-      /* Save the working directory, or prepare to fall back if possible.  */
+       
       {
         int fd = open_safer (".", O_SEARCH);
         if (0 <= fd)
@@ -67,9 +48,7 @@ savewd_save (struct savewd *wd)
     case FORKING_STATE:
       if (wd->val.child < 0)
         {
-          /* "Save" the initial working directory by forking a new
-             subprocess that will attempt all the work from the chdir
-             until the next savewd_restore.  */
+           
           wd->val.child = fork ();
           if (wd->val.child != 0)
             {
@@ -101,8 +80,7 @@ savewd_chdir (struct savewd *wd, char const *dir, int options,
   int fd = -1;
   int result = 0;
 
-  /* Open the directory if requested, or if avoiding a race condition
-     is requested and possible.  */
+   
   if (open_result
       || (options & (HAVE_WORKING_O_NOFOLLOW ? SAVEWD_CHDIR_NOFOLLOW : 0)))
     {
@@ -170,12 +148,11 @@ savewd_restore (struct savewd *wd, int status)
     {
     case INITIAL_STATE:
     case FD_STATE:
-      /* The working directory is the desired directory, so there's no
-         work to do.  */
+       
       break;
 
     case FD_POST_CHDIR_STATE:
-      /* Restore the working directory using fchdir.  */
+       
       if (fchdir (wd->val.fd) == 0)
         {
           wd->state = FD_STATE;
@@ -190,13 +167,12 @@ savewd_restore (struct savewd *wd, int status)
         }
       FALLTHROUGH;
     case ERROR_STATE:
-      /* Report an error if asked to restore the working directory.  */
+       
       errno = wd->val.errnum;
       return -1;
 
     case FORKING_STATE:
-      /* "Restore" the working directory by waiting for the subprocess
-         to finish.  */
+       
       {
         pid_t child = wd->val.child;
         if (child == 0)
@@ -246,16 +222,7 @@ savewd_finish (struct savewd *wd)
   wd->state = FINAL_STATE;
 }
 
-/* Return true if the actual work is currently being done by a
-   subprocess.
-
-   A true return means that the caller and the subprocess should
-   resynchronize later with savewd_restore, using only their own
-   memory to decide when to resynchronize; they should not consult the
-   file system to decide, because that might lead to race conditions.
-   This is why savewd_chdir is broken out into another function;
-   savewd_chdir's callers _can_ inspect the file system to decide
-   whether to call savewd_chdir.  */
+ 
 static bool
 savewd_delegating (struct savewd const *wd)
 {

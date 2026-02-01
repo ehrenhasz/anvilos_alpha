@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Author: Dan Scally <djrscally@gmail.com> */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -14,51 +14,33 @@
 #include <media/ipu-bridge.h>
 #include <media/v4l2-fwnode.h>
 
-/*
- * 92335fcf-3203-4472-af93-7b4453ac29da
- *
- * Used to build MEI CSI device name to lookup MEI CSI device by
- * device_find_child_by_name().
- */
+ 
 #define MEI_CSI_UUID							\
 	UUID_LE(0x92335FCF, 0x3203, 0x4472,				\
 		0xAF, 0x93, 0x7B, 0x44, 0x53, 0xAC, 0x29, 0xDA)
 
-/*
- * IVSC device name
- *
- * Used to match IVSC device by ipu_bridge_match_ivsc_dev()
- */
+ 
 #define IVSC_DEV_NAME "intel_vsc"
 
-/*
- * Extend this array with ACPI Hardware IDs of devices known to be working
- * plus the number of link-frequencies expected by their drivers, along with
- * the frequency values in hertz. This is somewhat opportunistic way of adding
- * support for this for now in the hopes of a better source for the information
- * (possibly some encoded value in the SSDB buffer that we're unaware of)
- * becoming apparent in the future.
- *
- * Do not add an entry for a sensor that is not actually supported.
- */
+ 
 static const struct ipu_sensor_config ipu_supported_sensors[] = {
-	/* Omnivision OV5693 */
+	 
 	IPU_SENSOR_CONFIG("INT33BE", 1, 419200000),
-	/* Omnivision OV8865 */
+	 
 	IPU_SENSOR_CONFIG("INT347A", 1, 360000000),
-	/* Omnivision OV7251 */
+	 
 	IPU_SENSOR_CONFIG("INT347E", 1, 319200000),
-	/* Omnivision OV2680 */
+	 
 	IPU_SENSOR_CONFIG("OVTI2680", 1, 331200000),
-	/* Omnivision ov8856 */
+	 
 	IPU_SENSOR_CONFIG("OVTI8856", 3, 180000000, 360000000, 720000000),
-	/* Omnivision ov2740 */
+	 
 	IPU_SENSOR_CONFIG("INT3474", 1, 360000000),
-	/* Hynix hi556 */
+	 
 	IPU_SENSOR_CONFIG("INT3537", 1, 437000000),
-	/* Omnivision ov13b10 */
+	 
 	IPU_SENSOR_CONFIG("OVTIDB10", 1, 560000000),
-	/* GalaxyCore GC0310 */
+	 
 	IPU_SENSOR_CONFIG("INT0310", 0),
 };
 
@@ -84,10 +66,7 @@ static const char * const ipu_vcm_types[] = {
 	"lc898212axb",
 };
 
-/*
- * Used to figure out IVSC acpi device by ipu_bridge_get_ivsc_acpi_dev()
- * instead of device and driver match to probe IVSC device.
- */
+ 
 static const struct acpi_device_id ivsc_acpi_ids[] = {
 	{ "INTC1059" },
 	{ "INTC1095" },
@@ -105,7 +84,7 @@ static struct acpi_device *ipu_bridge_get_ivsc_acpi_dev(struct acpi_device *adev
 		const struct acpi_device_id *acpi_id = &ivsc_acpi_ids[i];
 
 		for_each_acpi_dev_match(ivsc_adev, acpi_id->id, NULL, -1)
-			/* camera sensor depends on IVSC in DSDT if exist */
+			 
 			for_each_acpi_consumer_dev(ivsc_adev, consumer)
 				if (consumer->handle == handle) {
 					acpi_dev_put(consumer);
@@ -133,7 +112,7 @@ static struct device *ipu_bridge_get_ivsc_csi_dev(struct acpi_device *adev)
 	uuid_le uuid = MEI_CSI_UUID;
 	char name[64];
 
-	/* IVSC device on platform bus */
+	 
 	dev = bus_find_device(&platform_bus_type, NULL, adev,
 			      ipu_bridge_match_ivsc_dev);
 	if (dev) {
@@ -386,12 +365,12 @@ static void ipu_bridge_init_swnode_names(struct ipu_sensor *sensor)
 		 SWNODE_GRAPH_PORT_NAME_FMT, sensor->link);
 	snprintf(sensor->node_names.port,
 		 sizeof(sensor->node_names.port),
-		 SWNODE_GRAPH_PORT_NAME_FMT, 0); /* Always port 0 */
+		 SWNODE_GRAPH_PORT_NAME_FMT, 0);  
 	snprintf(sensor->node_names.endpoint,
 		 sizeof(sensor->node_names.endpoint),
-		 SWNODE_GRAPH_ENDPOINT_NAME_FMT, 0); /* And endpoint 0 */
+		 SWNODE_GRAPH_ENDPOINT_NAME_FMT, 0);  
 	if (sensor->vcm_type) {
-		/* append link to distinguish nodes with same model VCM */
+		 
 		snprintf(sensor->node_names.vcm, sizeof(sensor->node_names.vcm),
 			 "%s-%u", sensor->vcm_type, sensor->link);
 	}
@@ -488,10 +467,7 @@ static void ipu_bridge_create_connection_swnodes(struct ipu_bridge *bridge,
 	ipu_bridge_init_swnode_group(sensor);
 }
 
-/*
- * The actual instantiation must be done from a workqueue to avoid
- * a deadlock on taking list_lock from v4l2-async twice.
- */
+ 
 struct ipu_bridge_instantiate_vcm_work_data {
 	struct work_struct work;
 	struct device *sensor;
@@ -509,10 +485,7 @@ static void ipu_bridge_instantiate_vcm_work(struct work_struct *work)
 	bool put_fwnode = true;
 	int ret;
 
-	/*
-	 * The client may get probed before the device_link gets added below
-	 * make sure the sensor is powered-up during probe.
-	 */
+	 
 	ret = pm_runtime_get_sync(data->sensor);
 	if (ret < 0) {
 		dev_err(data->sensor, "Error %d runtime-resuming sensor, cannot instantiate VCM\n",
@@ -520,10 +493,7 @@ static void ipu_bridge_instantiate_vcm_work(struct work_struct *work)
 		goto out_pm_put;
 	}
 
-	/*
-	 * Note the client is created only once and then kept around
-	 * even after a rmmod, just like the software-nodes.
-	 */
+	 
 	vcm_client = i2c_acpi_new_device_by_fwnode(acpi_fwnode_handle(adev),
 						   1, &data->board_info);
 	if (IS_ERR(vcm_client)) {
@@ -535,7 +505,7 @@ static void ipu_bridge_instantiate_vcm_work(struct work_struct *work)
 	device_link_add(&vcm_client->dev, data->sensor, DL_FLAG_PM_RUNTIME);
 
 	dev_info(data->sensor, "Instantiated %s VCM\n", data->board_info.type);
-	put_fwnode = false; /* Ownership has passed to the i2c-client */
+	put_fwnode = false;  
 
 out_pm_put:
 	pm_runtime_put(data->sensor);
@@ -561,7 +531,7 @@ int ipu_bridge_instantiate_vcm(struct device *sensor)
 	if (IS_ERR(vcm_fwnode))
 		return 0;
 
-	/* When reloading modules the client will already exist */
+	 
 	vcm_client = i2c_find_device_by_fwnode(vcm_fwnode);
 	if (vcm_client) {
 		fwnode_handle_put(vcm_fwnode);
@@ -583,7 +553,7 @@ int ipu_bridge_instantiate_vcm(struct device *sensor)
 	data->board_info.fwnode = vcm_fwnode;
 	snprintf(data->board_info.type, sizeof(data->board_info.type),
 		 "%pfwP", vcm_fwnode);
-	/* Strip "-<link>" postfix */
+	 
 	sep = strchrnul(data->board_info.type, '-');
 	*sep = 0;
 
@@ -774,13 +744,7 @@ int ipu_bridge_init(struct device *dev,
 		goto err_free_bridge;
 	}
 
-	/*
-	 * Map the lane arrangement, which is fixed for the IPU3 (meaning we
-	 * only need one, rather than one per sensor). We include it as a
-	 * member of the struct ipu_bridge rather than a global variable so
-	 * that it survives if the module is unloaded along with the rest of
-	 * the struct.
-	 */
+	 
 	for (i = 0; i < IPU_MAX_LANES; i++)
 		bridge->data_lanes[i] = i + 1;
 

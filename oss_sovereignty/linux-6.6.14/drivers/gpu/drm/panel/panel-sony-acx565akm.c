@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sony ACX565AKM LCD Panel driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated
- *
- * Based on the omapdrm-specific panel-sony-acx565akm driver
- *
- * Copyright (C) 2010 Nokia Corporation
- * Author: Imre Deak <imre.deak@nokia.com>
- */
 
-/*
- * TODO (to be addressed with hardware access to test the changes):
- *
- * - Update backlight support to use backlight_update_status() etc.
- * - Use prepare/unprepare for the basic power on/off of the backligt
- */
+ 
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -62,12 +48,9 @@ struct acx565akm_panel {
 
 	bool enabled;
 	unsigned int cabc_mode;
-	/*
-	 * Next value of jiffies when we can issue the next sleep in/out
-	 * command.
-	 */
+	 
 	unsigned long hw_guard_end;
-	unsigned long hw_guard_wait;		/* max guard time in jiffies */
+	unsigned long hw_guard_wait;		 
 };
 
 #define to_acx565akm_device(p) container_of(p, struct acx565akm_panel, panel)
@@ -90,11 +73,7 @@ static void acx565akm_transfer(struct acx565akm_panel *lcd, int cmd,
 	x->len = 2;
 
 	if (rlen > 1 && wlen == 0) {
-		/*
-		 * Between the command and the response data there is a
-		 * dummy clock cycle. Add an extra bit after the command
-		 * word to account for this.
-		 */
+		 
 		x->bits_per_word = 10;
 		cmd <<= 1;
 	}
@@ -137,9 +116,7 @@ static inline void acx565akm_read(struct acx565akm_panel *lcd,
 	acx565akm_transfer(lcd, reg, NULL, 0, buf, len);
 }
 
-/* -----------------------------------------------------------------------------
- * Auto Brightness Control Via sysfs
- */
+ 
 
 static unsigned int acx565akm_get_cabc_mode(struct acx565akm_panel *lcd)
 {
@@ -170,7 +147,7 @@ static unsigned int acx565akm_get_hw_cabc_mode(struct acx565akm_panel *lcd)
 }
 
 static const char * const acx565akm_cabc_modes[] = {
-	"off",		/* always used when CABC is not supported */
+	"off",		 
 	"ui",
 	"still-image",
 	"moving-image",
@@ -262,9 +239,7 @@ static const struct attribute_group acx565akm_cabc_attr_group = {
 	.attrs = acx565akm_cabc_attrs,
 };
 
-/* -----------------------------------------------------------------------------
- * Backlight Device
- */
+ 
 
 static int acx565akm_get_actual_brightness(struct acx565akm_panel *lcd)
 {
@@ -386,19 +361,14 @@ static void acx565akm_backlight_cleanup(struct acx565akm_panel *lcd)
 	backlight_device_unregister(lcd->backlight);
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Bridge Operations
- */
+ 
 
 static void acx565akm_set_sleep_mode(struct acx565akm_panel *lcd, int on)
 {
 	int cmd = on ? MIPI_DCS_ENTER_SLEEP_MODE : MIPI_DCS_EXIT_SLEEP_MODE;
 	unsigned long wait;
 
-	/*
-	 * We have to keep 120msec between sleep in/out commands.
-	 * (8.2.15, 8.2.16).
-	 */
+	 
 	wait = lcd->hw_guard_end - jiffies;
 	if ((long)wait > 0 && wait <= lcd->hw_guard_wait) {
 		set_current_state(TASK_UNINTERRUPTIBLE);
@@ -421,7 +391,7 @@ static void acx565akm_set_display_state(struct acx565akm_panel *lcd,
 
 static int acx565akm_power_on(struct acx565akm_panel *lcd)
 {
-	/*FIXME tweak me */
+	 
 	msleep(50);
 
 	gpiod_set_value(lcd->reset_gpio, 1);
@@ -431,20 +401,13 @@ static int acx565akm_power_on(struct acx565akm_panel *lcd)
 		return 0;
 	}
 
-	/*
-	 * We have to meet all the following delay requirements:
-	 * 1. tRW: reset pulse width 10usec (7.12.1)
-	 * 2. tRT: reset cancel time 5msec (7.12.1)
-	 * 3. Providing PCLK,HS,VS signals for 2 frames = ~50msec worst
-	 *    case (7.6.2)
-	 * 4. 120msec before the sleep out command (7.12.1)
-	 */
+	 
 	msleep(120);
 
 	acx565akm_set_sleep_mode(lcd, 0);
 	lcd->enabled = true;
 
-	/* 5msec between sleep out and the next command. (8.2.16) */
+	 
 	usleep_range(5000, 10000);
 	acx565akm_set_display_state(lcd, 1);
 	acx565akm_set_cabc_mode(lcd, lcd->cabc_mode);
@@ -460,17 +423,12 @@ static void acx565akm_power_off(struct acx565akm_panel *lcd)
 	acx565akm_set_display_state(lcd, 0);
 	acx565akm_set_sleep_mode(lcd, 1);
 	lcd->enabled = false;
-	/*
-	 * We have to provide PCLK,HS,VS signals for 2 frames (worst case
-	 * ~50msec) after sending the sleep in command and asserting the
-	 * reset signal. We probably could assert the reset w/o the delay
-	 * but we still delay to avoid possible artifacts. (7.6.1)
-	 */
+	 
 	msleep(50);
 
 	gpiod_set_value(lcd->reset_gpio, 0);
 
-	/* FIXME need to tweak this delay */
+	 
 	msleep(100);
 }
 
@@ -539,9 +497,7 @@ static const struct drm_panel_funcs acx565akm_funcs = {
 	.get_modes = acx565akm_get_modes,
 };
 
-/* -----------------------------------------------------------------------------
- * Probe, Detect and Remove
- */
+ 
 
 static int acx565akm_detect(struct acx565akm_panel *lcd)
 {
@@ -549,10 +505,7 @@ static int acx565akm_detect(struct acx565akm_panel *lcd)
 	u32 status;
 	int ret = 0;
 
-	/*
-	 * After being taken out of reset the panel needs 5ms before the first
-	 * command can be sent.
-	 */
+	 
 	gpiod_set_value(lcd->reset_gpio, 1);
 	usleep_range(5000, 10000);
 
@@ -662,14 +615,14 @@ static void acx565akm_remove(struct spi_device *spi)
 
 static const struct of_device_id acx565akm_of_match[] = {
 	{ .compatible = "sony,acx565akm", },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, acx565akm_of_match);
 
 static const struct spi_device_id acx565akm_ids[] = {
 	{ "acx565akm", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(spi, acx565akm_ids);

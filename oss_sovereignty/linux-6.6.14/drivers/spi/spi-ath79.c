@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI controller driver for the Atheros AR71XX/AR724X/AR913X SoCs
- *
- * Copyright (C) 2009-2011 Gabor Juhos <juhosg@openwrt.org>
- *
- * This driver has been based on the spi-gpio.c:
- *	Copyright (C) 2006,2008 David Brownell
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,15 +19,15 @@
 #define ATH79_SPI_RRW_DELAY_FACTOR	12000
 #define MHZ				(1000 * 1000)
 
-#define AR71XX_SPI_REG_FS		0x00	/* Function Select */
-#define AR71XX_SPI_REG_CTRL		0x04	/* SPI Control */
-#define AR71XX_SPI_REG_IOC		0x08	/* SPI I/O Control */
-#define AR71XX_SPI_REG_RDS		0x0c	/* Read Data Shift */
+#define AR71XX_SPI_REG_FS		0x00	 
+#define AR71XX_SPI_REG_CTRL		0x04	 
+#define AR71XX_SPI_REG_IOC		0x08	 
+#define AR71XX_SPI_REG_RDS		0x0c	 
 
-#define AR71XX_SPI_FS_GPIO		BIT(0)	/* Enable GPIO mode */
+#define AR71XX_SPI_FS_GPIO		BIT(0)	 
 
-#define AR71XX_SPI_IOC_DO		BIT(0)	/* Data Out pin */
-#define AR71XX_SPI_IOC_CLK		BIT(8)	/* CLK pin */
+#define AR71XX_SPI_IOC_DO		BIT(0)	 
+#define AR71XX_SPI_IOC_CLK		BIT(8)	 
 #define AR71XX_SPI_IOC_CS(n)		BIT(16 + (n))
 
 struct ath79_spi {
@@ -83,25 +76,25 @@ static void ath79_spi_chipselect(struct spi_device *spi, int is_active)
 
 static void ath79_spi_enable(struct ath79_spi *sp)
 {
-	/* enable GPIO mode */
+	 
 	ath79_spi_wr(sp, AR71XX_SPI_REG_FS, AR71XX_SPI_FS_GPIO);
 
-	/* save CTRL register */
+	 
 	sp->reg_ctrl = ath79_spi_rr(sp, AR71XX_SPI_REG_CTRL);
 	sp->ioc_base = ath79_spi_rr(sp, AR71XX_SPI_REG_IOC);
 
-	/* clear clk and mosi in the base state */
+	 
 	sp->ioc_base &= ~(AR71XX_SPI_IOC_DO | AR71XX_SPI_IOC_CLK);
 
-	/* TODO: setup speed? */
+	 
 	ath79_spi_wr(sp, AR71XX_SPI_REG_CTRL, 0x43);
 }
 
 static void ath79_spi_disable(struct ath79_spi *sp)
 {
-	/* restore CTRL register */
+	 
 	ath79_spi_wr(sp, AR71XX_SPI_REG_CTRL, sp->reg_ctrl);
-	/* disable GPIO mode */
+	 
 	ath79_spi_wr(sp, AR71XX_SPI_REG_FS, 0);
 }
 
@@ -111,7 +104,7 @@ static u32 ath79_spi_txrx_mode0(struct spi_device *spi, unsigned int nsecs,
 	struct ath79_spi *sp = ath79_spidev_to_sp(spi);
 	u32 ioc = sp->ioc_base;
 
-	/* clock starts at inactive polarity */
+	 
 	for (word <<= (32 - bits); likely(bits); bits--) {
 		u32 out;
 
@@ -120,7 +113,7 @@ static u32 ath79_spi_txrx_mode0(struct spi_device *spi, unsigned int nsecs,
 		else
 			out = ioc & ~AR71XX_SPI_IOC_DO;
 
-		/* setup MSB (to target) on trailing edge */
+		 
 		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out);
 		ath79_spi_delay(sp, nsecs);
 		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out | AR71XX_SPI_IOC_CLK);
@@ -139,24 +132,24 @@ static int ath79_exec_mem_op(struct spi_mem *mem,
 {
 	struct ath79_spi *sp = ath79_spidev_to_sp(mem->spi);
 
-	/* Ensures that reading is performed on device connected to hardware cs0 */
+	 
 	if (spi_get_chipselect(mem->spi, 0) || spi_get_csgpiod(mem->spi, 0))
 		return -ENOTSUPP;
 
-	/* Only use for fast-read op. */
+	 
 	if (op->cmd.opcode != 0x0b || op->data.dir != SPI_MEM_DATA_IN ||
 	    op->addr.nbytes != 3 || op->dummy.nbytes != 1)
 		return -ENOTSUPP;
 
-	/* disable GPIO mode */
+	 
 	ath79_spi_wr(sp, AR71XX_SPI_REG_FS, 0);
 
 	memcpy_fromio(op->data.buf.in, sp->base + op->addr.val, op->data.nbytes);
 
-	/* enable GPIO mode */
+	 
 	ath79_spi_wr(sp, AR71XX_SPI_REG_FS, AR71XX_SPI_FS_GPIO);
 
-	/* restore IOC register */
+	 
 	ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, sp->ioc_base);
 
 	return 0;

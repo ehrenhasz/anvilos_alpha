@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID driver for THQ PS3 uDraw tablet
- *
- * Copyright (C) 2016 Red Hat Inc. All Rights Reserved
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -14,20 +10,9 @@ MODULE_AUTHOR("Bastien Nocera <hadess@hadess.net>");
 MODULE_DESCRIPTION("PS3 uDraw tablet driver");
 MODULE_LICENSE("GPL");
 
-/*
- * Protocol information from:
- * https://brandonw.net/udraw/
- * and the source code of:
- * https://vvvv.org/contribution/udraw-hid
- */
+ 
 
-/*
- * The device is setup with multiple input devices:
- * - the touch area which works as a touchpad
- * - the tablet area which works as a touchpad/drawing tablet
- * - a joypad with a d-pad, and 7 buttons
- * - an accelerometer device
- */
+ 
 
 enum {
 	TOUCH_NONE,
@@ -42,10 +27,7 @@ enum {
 	AXIS_Z
 };
 
-/*
- * Accelerometer min/max values
- * in order, X, Y and Z
- */
+ 
 static struct {
 	int min;
 	int max;
@@ -56,10 +38,10 @@ static struct {
 };
 
 #define DEVICE_NAME "THQ uDraw Game Tablet for PS3"
-/* resolution in pixels */
+ 
 #define RES_X 1920
 #define RES_Y 1080
-/* size in mm */
+ 
 #define WIDTH  160
 #define HEIGHT 90
 #define PRESSURE_OFFSET 113
@@ -72,15 +54,7 @@ struct udraw {
 	struct input_dev *accel_input_dev;
 	struct hid_device *hdev;
 
-	/*
-	 * The device's two-finger support is pretty unreliable, as
-	 * the device could report a single touch when the two fingers
-	 * are too close together, and the distance between fingers, even
-	 * though reported is not in the same unit as the touches.
-	 *
-	 * We'll make do without it, and try to report the first touch
-	 * as reliably as possible.
-	 */
+	 
 	int last_one_finger_x;
 	int last_one_finger_y;
 	int last_two_finger_x;
@@ -117,7 +91,7 @@ static int udraw_raw_event(struct hid_device *hdev, struct hid_report *report,
 	else
 		touch = TOUCH_TWOFINGER;
 
-	/* joypad */
+	 
 	input_report_key(udraw->joy_input_dev, BTN_WEST, data[0] & 1);
 	input_report_key(udraw->joy_input_dev, BTN_SOUTH, !!(data[0] & 2));
 	input_report_key(udraw->joy_input_dev, BTN_EAST, !!(data[0] & 4));
@@ -166,7 +140,7 @@ static int udraw_raw_event(struct hid_device *hdev, struct hid_report *report,
 
 	input_sync(udraw->joy_input_dev);
 
-	/* For pen and touchpad */
+	 
 	x = y = 0;
 	if (touch != TOUCH_NONE) {
 		if (data[15] != 0x0F)
@@ -176,32 +150,22 @@ static int udraw_raw_event(struct hid_device *hdev, struct hid_report *report,
 	}
 
 	if (touch == TOUCH_FINGER) {
-		/* Save the last one-finger touch */
+		 
 		udraw->last_one_finger_x = x;
 		udraw->last_one_finger_y = y;
 		udraw->last_two_finger_x = -1;
 		udraw->last_two_finger_y = -1;
 	} else if (touch == TOUCH_TWOFINGER) {
-		/*
-		 * We have a problem because x/y is the one for the
-		 * second finger but we want the first finger given
-		 * to user-space otherwise it'll look as if it jumped.
-		 *
-		 * See the udraw struct definition for why this was
-		 * implemented this way.
-		 */
+		 
 		if (udraw->last_two_finger_x == -1) {
-			/* Save the position of the 2nd finger */
+			 
 			udraw->last_two_finger_x = x;
 			udraw->last_two_finger_y = y;
 
 			x = udraw->last_one_finger_x;
 			y = udraw->last_one_finger_y;
 		} else {
-			/*
-			 * Offset the 2-finger coords using the
-			 * saved data from the first finger
-			 */
+			 
 			x = x - (udraw->last_two_finger_x
 				- udraw->last_one_finger_x);
 			y = y - (udraw->last_two_finger_y
@@ -209,7 +173,7 @@ static int udraw_raw_event(struct hid_device *hdev, struct hid_report *report,
 		}
 	}
 
-	/* touchpad */
+	 
 	if (touch == TOUCH_FINGER || touch == TOUCH_TWOFINGER) {
 		input_report_key(udraw->touch_input_dev, BTN_TOUCH, 1);
 		input_report_key(udraw->touch_input_dev, BTN_TOOL_FINGER,
@@ -226,7 +190,7 @@ static int udraw_raw_event(struct hid_device *hdev, struct hid_report *report,
 	}
 	input_sync(udraw->touch_input_dev);
 
-	/* pen */
+	 
 	if (touch == TOUCH_PEN) {
 		int level;
 
@@ -245,7 +209,7 @@ static int udraw_raw_event(struct hid_device *hdev, struct hid_report *report,
 	}
 	input_sync(udraw->pen_input_dev);
 
-	/* accel */
+	 
 	x = (data[19] + (data[20] << 8));
 	x = clamp_accel(x, AXIS_X);
 	y = (data[21] + (data[22] << 8));
@@ -257,7 +221,7 @@ static int udraw_raw_event(struct hid_device *hdev, struct hid_report *report,
 	input_report_abs(udraw->accel_input_dev, ABS_Z, z);
 	input_sync(udraw->accel_input_dev);
 
-	/* let hidraw and hiddev handle the report */
+	 
 	return 0;
 }
 
@@ -365,7 +329,7 @@ static bool udraw_setup_accel(struct udraw *udraw,
 
 	input_dev->evbit[0] = BIT(EV_ABS);
 
-	/* 1G accel is reported as ~256, so clamp to 2G */
+	 
 	input_set_abs_params(input_dev, ABS_X, -512, 512, 0, 0);
 	input_set_abs_params(input_dev, ABS_Y, -512, 512, 0, 0);
 	input_set_abs_params(input_dev, ABS_Z, -512, 512, 0, 0);

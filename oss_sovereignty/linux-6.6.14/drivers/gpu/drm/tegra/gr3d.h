@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+ 
+ 
 
 #ifndef TEGRA_GR3D_H
 #define TEGRA_GR3D_H

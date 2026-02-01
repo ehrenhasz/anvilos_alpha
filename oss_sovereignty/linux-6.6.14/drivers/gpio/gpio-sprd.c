@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Spreadtrum Communications Inc.
- * Copyright (C) 2018 Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -12,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/spinlock.h>
 
-/* GPIO registers definition */
+ 
 #define SPRD_GPIO_DATA		0x0
 #define SPRD_GPIO_DMSK		0x4
 #define SPRD_GPIO_DIR		0x8
@@ -25,7 +22,7 @@
 #define SPRD_GPIO_IC		0x24
 #define SPRD_GPIO_INEN		0x28
 
-/* We have 16 banks GPIOs and each bank contain 16 GPIOs */
+ 
 #define SPRD_GPIO_BANK_NR	16
 #define SPRD_GPIO_NR		256
 #define SPRD_GPIO_BANK_SIZE	0x80
@@ -261,7 +258,7 @@ static int sprd_gpio_probe(struct platform_device *pdev)
 
 static const struct of_device_id sprd_gpio_of_match[] = {
 	{ .compatible = "sprd,sc9860-gpio", },
-	{ /* end of list */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sprd_gpio_of_match);
 

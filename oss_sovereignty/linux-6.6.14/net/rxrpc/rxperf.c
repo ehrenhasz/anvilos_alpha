@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* In-kernel rxperf server for testing purposes.
- *
- * Copyright (C) 2022 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "rxperf: " fmt
 #include <linux/module.h>
@@ -37,11 +33,11 @@ static const u8 rxperf_magic_cookie[] = { 0x00, 0x00, 0x47, 0x11 };
 static const u8 secret[8] = { 0xa7, 0x83, 0x8a, 0xcb, 0xc7, 0x83, 0xec, 0x94 };
 
 enum rxperf_call_state {
-	RXPERF_CALL_SV_AWAIT_PARAMS,	/* Server: Awaiting parameter block */
-	RXPERF_CALL_SV_AWAIT_REQUEST,	/* Server: Awaiting request data */
-	RXPERF_CALL_SV_REPLYING,	/* Server: Replying */
-	RXPERF_CALL_SV_AWAIT_ACK,	/* Server: Awaiting final ACK */
-	RXPERF_CALL_COMPLETE,		/* Completed or failed */
+	RXPERF_CALL_SV_AWAIT_PARAMS,	 
+	RXPERF_CALL_SV_AWAIT_REQUEST,	 
+	RXPERF_CALL_SV_REPLYING,	 
+	RXPERF_CALL_SV_AWAIT_ACK,	 
+	RXPERF_CALL_COMPLETE,		 
 };
 
 struct rxperf_call {
@@ -51,8 +47,8 @@ struct rxperf_call {
 	struct work_struct	work;
 	const char		*type;
 	size_t			iov_len;
-	size_t			req_len;	/* Size of request blob */
-	size_t			reply_len;	/* Size of reply blob */
+	size_t			req_len;	 
+	size_t			reply_len;	 
 	unsigned int		debug_id;
 	unsigned int		operation_id;
 	struct rxperf_proto_params params;
@@ -67,7 +63,7 @@ struct rxperf_call {
 };
 
 static struct socket *rxperf_socket;
-static struct key *rxperf_sec_keyring;	/* Ring of security/crypto keys */
+static struct key *rxperf_sec_keyring;	 
 static struct workqueue_struct *rxperf_workqueue;
 
 static void rxperf_deliver_to_call(struct work_struct *work);
@@ -136,9 +132,7 @@ static void rxperf_notify_end_reply_tx(struct sock *sock,
 			      RXPERF_CALL_SV_AWAIT_ACK);
 }
 
-/*
- * Charge the incoming call preallocation.
- */
+ 
 static void rxperf_charge_preallocation(struct work_struct *work)
 {
 	struct rxperf_call *call;
@@ -172,10 +166,7 @@ static void rxperf_charge_preallocation(struct work_struct *work)
 	kfree(call);
 }
 
-/*
- * Open an rxrpc socket and bind it to be a server for callback notifications
- * - the socket is left in blocking mode and non-blocking ops use MSG_DONTWAIT
- */
+ 
 static int rxperf_open_socket(void)
 {
 	struct sockaddr_rxrpc srx;
@@ -189,7 +180,7 @@ static int rxperf_open_socket(void)
 
 	socket->sk->sk_allocation = GFP_NOFS;
 
-	/* bind the callback manager's address to make this a server socket */
+	 
 	memset(&srx, 0, sizeof(srx));
 	srx.srx_family			= AF_RXRPC;
 	srx.srx_service			= RX_PERF_SERVICE;
@@ -227,9 +218,7 @@ error_1:
 	return ret;
 }
 
-/*
- * close the rxrpc socket rxperf was using
- */
+ 
 static void rxperf_close_socket(void)
 {
 	kernel_listen(rxperf_socket, 0);
@@ -238,10 +227,7 @@ static void rxperf_close_socket(void)
 	sock_release(rxperf_socket);
 }
 
-/*
- * Log remote abort codes that indicate that we have a protocol disagreement
- * with the server.
- */
+ 
 static void rxperf_log_error(struct rxperf_call *call, s32 remote_abort)
 {
 	static int max = 0;
@@ -269,9 +255,7 @@ static void rxperf_log_error(struct rxperf_call *call, s32 remote_abort)
 	}
 }
 
-/*
- * deliver messages to a call
- */
+ 
 static void rxperf_deliver_to_call(struct work_struct *work)
 {
 	struct rxperf_call *call = container_of(work, struct rxperf_call, work);
@@ -341,16 +325,14 @@ static void rxperf_deliver_to_call(struct work_struct *work)
 
 call_complete:
 	rxperf_set_call_complete(call, ret, remote_abort);
-	/* The call may have been requeued */
+	 
 	rxrpc_kernel_shutdown_call(rxperf_socket, call->rxcall);
 	rxrpc_kernel_put_call(rxperf_socket, call->rxcall);
 	cancel_work(&call->work);
 	kfree(call);
 }
 
-/*
- * Extract a piece of data from the received data socket buffers.
- */
+ 
 static int rxperf_extract_data(struct rxperf_call *call, bool want_more)
 {
 	u32 remote_abort = 0;
@@ -382,15 +364,13 @@ static int rxperf_extract_data(struct rxperf_call *call, bool want_more)
 	return ret;
 }
 
-/*
- * Grab the operation ID from an incoming manager call.
- */
+ 
 static int rxperf_deliver_param_block(struct rxperf_call *call)
 {
 	u32 version;
 	int ret;
 
-	/* Extract the parameter block */
+	 
 	ret = rxperf_extract_data(call, true);
 	if (ret < 0)
 		return ret;
@@ -408,16 +388,16 @@ static int rxperf_deliver_param_block(struct rxperf_call *call)
 	case RX_PERF_SEND:
 		call->type = "send";
 		call->reply_len = 0;
-		call->iov_len = 4;	/* Expect req size */
+		call->iov_len = 4;	 
 		break;
 	case RX_PERF_RECV:
 		call->type = "recv";
 		call->req_len = 0;
-		call->iov_len = 4;	/* Expect reply size */
+		call->iov_len = 4;	 
 		break;
 	case RX_PERF_RPC:
 		call->type = "rpc";
-		call->iov_len = 8;	/* Expect req size and reply size */
+		call->iov_len = 8;	 
 		break;
 	case RX_PERF_FILE:
 		call->type = "file";
@@ -430,9 +410,7 @@ static int rxperf_deliver_param_block(struct rxperf_call *call)
 	return call->deliver(call);
 }
 
-/*
- * Deliver the request data.
- */
+ 
 static int rxperf_deliver_request(struct rxperf_call *call)
 {
 	int ret;
@@ -488,9 +466,7 @@ static int rxperf_deliver_request(struct rxperf_call *call)
 	}
 }
 
-/*
- * Process a call for which we've received the request.
- */
+ 
 static int rxperf_process_call(struct rxperf_call *call)
 {
 	struct msghdr msg = {};
@@ -524,7 +500,7 @@ static int rxperf_process_call(struct rxperf_call *call)
 	n = rxrpc_kernel_send_data(rxperf_socket, call->rxcall, &msg, len,
 				   rxperf_notify_end_reply_tx);
 	if (n >= 0)
-		return 0; /* Success */
+		return 0;  
 
 	if (n == -ENOMEM)
 		rxrpc_kernel_abort_call(rxperf_socket, call->rxcall,
@@ -533,9 +509,7 @@ static int rxperf_process_call(struct rxperf_call *call)
 	return n;
 }
 
-/*
- * Add a key to the security keyring.
- */
+ 
 static int rxperf_add_key(struct key *keyring)
 {
 	key_ref_t kref;
@@ -562,9 +536,7 @@ static int rxperf_add_key(struct key *keyring)
 	return ret;
 }
 
-/*
- * Initialise the rxperf server.
- */
+ 
 static int __init rxperf_init(void)
 {
 	struct key *keyring;
@@ -610,7 +582,7 @@ error_workqueue:
 	pr_err("Failed to register: %d\n", ret);
 	return ret;
 }
-late_initcall(rxperf_init); /* Must be called after net/ to create socket */
+late_initcall(rxperf_init);  
 
 static void __exit rxperf_exit(void)
 {

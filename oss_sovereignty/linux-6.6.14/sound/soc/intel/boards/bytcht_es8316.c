@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  bytcht_es8316.c - ASoc Machine driver for Intel Baytrail/Cherrytrail
- *                    platforms with Everest ES8316 SoC
- *
- *  Copyright (C) 2017 Endless Mobile, Inc.
- *  Authors: David Yang <yangxiaohua@everest-semi.com>,
- *           Daniel Drake <drake@endlessm.com>
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -30,7 +19,7 @@
 #include "../atom/sst-atom-controls.h"
 #include "../common/soc-intel-quirks.h"
 
-/* jd-inv + terminating entry */
+ 
 #define MAX_NO_PROPS 2
 
 struct byt_cht_es8316_private {
@@ -102,10 +91,7 @@ static const struct snd_soc_dapm_route byt_cht_es8316_audio_map[] = {
 	{"Headphone", NULL, "HPOL"},
 	{"Headphone", NULL, "HPOR"},
 
-	/*
-	 * There is no separate speaker output instead the speakers are muxed to
-	 * the HP outputs. The mux is controlled by the "Speaker Power" supply.
-	 */
+	 
 	{"Speaker", NULL, "HPOL"},
 	{"Speaker", NULL, "HPOR"},
 	{"Speaker", NULL, "Speaker Power"},
@@ -192,14 +178,7 @@ static int byt_cht_es8316_init(struct snd_soc_pcm_runtime *runtime)
 	if (ret)
 		return ret;
 
-	/*
-	 * The firmware might enable the clock at boot (this information
-	 * may or may not be reflected in the enable clock register).
-	 * To change the rate we must disable the clock first to cover these
-	 * cases. Due to common clock framework restrictions that do not allow
-	 * to disable a clock that has not been enabled, we need to enable
-	 * the clock first.
-	 */
+	 
 	ret = clk_prepare_enable(priv->mclk);
 	if (!ret)
 		clk_disable_unprepare(priv->mclk);
@@ -243,25 +222,21 @@ static int byt_cht_es8316_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 	int ret, bits;
 
-	/* The DSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
 	if (quirk & BYT_CHT_ES8316_SSP0) {
-		/* set SSP0 to 16-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 		bits = 16;
 	} else {
-		/* set SSP2 to 24-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 		bits = 24;
 	}
 
-	/*
-	 * Default mode for SSP configuration is TDM 4 slot, override config
-	 * with explicit setting to I2S 2ch 24-bit. The word length is set with
-	 * dai_set_tdm_slot() since there is no other API exposed
-	 */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 				SND_SOC_DAIFMT_I2S     |
 				SND_SOC_DAIFMT_NB_NF   |
@@ -330,7 +305,7 @@ static struct snd_soc_dai_link byt_cht_es8316_dais[] = {
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
 
-		/* back ends */
+		 
 	{
 		.name = "SSP2-Codec",
 		.id = 0,
@@ -346,12 +321,12 @@ static struct snd_soc_dai_link byt_cht_es8316_dais[] = {
 };
 
 
-/* SoC card */
+ 
 static char codec_name[SND_ACPI_I2C_ID_LEN];
 #if !IS_ENABLED(CONFIG_SND_SOC_INTEL_USER_FRIENDLY_LONG_NAMES)
-static char long_name[50]; /* = "bytcht-es8316-*-spk-*-mic" */
+static char long_name[50];  
 #endif
-static char components_string[32]; /* = "cfg-spk:* cfg-mic:* */
+static char components_string[32];  
 
 static int byt_cht_es8316_suspend(struct snd_soc_card *card)
 {
@@ -381,34 +356,18 @@ static int byt_cht_es8316_resume(struct snd_soc_card *card)
 		}
 	}
 
-	/*
-	 * Some Cherry Trail boards with an ES8316 codec have a bug in their
-	 * ACPI tables where the MSSL1680 touchscreen's _PS0 and _PS3 methods
-	 * wrongly also set the speaker-enable GPIO to 1/0. Testing has shown
-	 * that this really is a bug and the GPIO has no influence on the
-	 * touchscreen at all.
-	 *
-	 * The silead.c touchscreen driver does not support runtime suspend, so
-	 * the GPIO can only be changed underneath us during a system suspend.
-	 * This resume() function runs from a pm complete() callback, and thus
-	 * is guaranteed to run after the touchscreen driver/ACPI-subsys has
-	 * brought the touchscreen back up again (and thus changed the GPIO).
-	 *
-	 * So to work around this we pass GPIOD_FLAGS_BIT_NONEXCLUSIVE when
-	 * requesting the GPIO and we set its value here to undo any changes
-	 * done by the touchscreen's broken _PS0 ACPI method.
-	 */
+	 
 	gpiod_set_value_cansleep(priv->speaker_en_gpio, priv->speaker_en);
 
 	return 0;
 }
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht es8316" /* card name will be 'sof-bytcht es8316' */
+ 
+#define SOF_CARD_NAME "bytcht es8316"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "bytcht-es8316"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
 static struct snd_soc_card byt_cht_es8316_card = {
 	.owner = THIS_MODULE,
@@ -432,9 +391,9 @@ static const struct acpi_gpio_mapping byt_cht_es8316_gpios[] = {
 	{ },
 };
 
-/* Please keep this list alphabetically sorted */
+ 
 static const struct dmi_system_id byt_cht_es8316_quirk_table[] = {
-	{	/* Irbis NB41 */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "IRBIS"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "NB41"),
@@ -443,14 +402,14 @@ static const struct dmi_system_id byt_cht_es8316_quirk_table[] = {
 					| BYT_CHT_ES8316_INTMIC_IN2_MAP
 					| BYT_CHT_ES8316_JD_INVERTED),
 	},
-	{	/* Nanote UMPC-01 */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "RWC CO.,LTD"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "UMPC-01"),
 		},
 		.driver_data = (void *)BYT_CHT_ES8316_INTMIC_IN1_MAP,
 	},
-	{	/* Teclast X98 Plus II */
+	{	 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TECLAST"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X98 Plus II"),
@@ -483,7 +442,7 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* fix index of codec dai */
+	 
 	for (i = 0; i < ARRAY_SIZE(byt_cht_es8316_dais); i++) {
 		if (!strcmp(byt_cht_es8316_dais[i].codecs->name,
 			    "i2c-ESSX8316:00")) {
@@ -492,7 +451,7 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(codec_name, sizeof(codec_name),
@@ -509,7 +468,7 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 		return -EPROBE_DEFER;
 	priv->codec_dev = get_device(codec_dev);
 
-	/* override platform name, if required */
+	 
 	byt_cht_es8316_card.dev = dev;
 	platform_name = mach->mach_params.platform;
 
@@ -520,17 +479,17 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Check for BYTCR or other platform and setup quirks */
+	 
 	dmi_id = dmi_first_match(byt_cht_es8316_quirk_table);
 	if (dmi_id) {
 		quirk = (unsigned long)dmi_id->driver_data;
 	} else if (soc_intel_is_byt() &&
 		   mach->mach_params.acpi_ipc_irq_index == 0) {
-		/* On BYTCR default to SSP0, internal-mic-in2-map, mono-spk */
+		 
 		quirk = BYT_CHT_ES8316_SSP0 | BYT_CHT_ES8316_INTMIC_IN2_MAP |
 			BYT_CHT_ES8316_MONO_SPEAKER;
 	} else {
-		/* Others default to internal-mic-in1-map, mono-speaker */
+		 
 		quirk = BYT_CHT_ES8316_INTMIC_IN1_MAP |
 			BYT_CHT_ES8316_MONO_SPEAKER;
 	}
@@ -544,7 +503,7 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 	if (quirk & BYT_CHT_ES8316_SSP0)
 		byt_cht_es8316_dais[dai_index].cpus->dai_name = "ssp0-port";
 
-	/* get the clock */
+	 
 	priv->mclk = devm_clk_get(dev, "pmc_plt_clk_3");
 	if (IS_ERR(priv->mclk)) {
 		put_device(codec_dev);
@@ -571,11 +530,11 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* get speaker enable GPIO */
+	 
 	devm_acpi_dev_add_driver_gpios(codec_dev, byt_cht_es8316_gpios);
 	priv->speaker_en_gpio =
 		gpiod_get_optional(codec_dev, "speaker-enable",
-				   /* see comment in byt_cht_es8316_resume() */
+				    
 				   GPIOD_OUT_LOW | GPIOD_FLAGS_BIT_NONEXCLUSIVE);
 	if (IS_ERR(priv->speaker_en_gpio)) {
 		ret = dev_err_probe(dev, PTR_ERR(priv->speaker_en_gpio),
@@ -597,7 +556,7 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		byt_cht_es8316_card.name = SOF_CARD_NAME;
 		byt_cht_es8316_card.driver_name = SOF_DRIVER_NAME;
@@ -606,11 +565,11 @@ static int snd_byt_cht_es8316_mc_probe(struct platform_device *pdev)
 		byt_cht_es8316_card.driver_name = DRIVER_NAME;
 	}
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		dev->driver->pm = &snd_soc_pm_ops;
 
-	/* register the soc card */
+	 
 	snd_soc_card_set_drvdata(&byt_cht_es8316_card, priv);
 
 	ret = devm_snd_soc_register_card(dev, &byt_cht_es8316_card);

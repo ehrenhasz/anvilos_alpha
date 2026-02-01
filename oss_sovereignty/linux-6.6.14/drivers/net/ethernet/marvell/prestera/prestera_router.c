@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2021 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -17,7 +17,7 @@
 #include "prestera_router_hw.h"
 
 #define PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH
-#define PRESTERA_NH_PROBE_INTERVAL 5000 /* ms */
+#define PRESTERA_NH_PROBE_INTERVAL 5000  
 
 struct prestera_kern_neigh_cache_key {
 	struct prestera_ip_addr addr;
@@ -28,37 +28,37 @@ struct prestera_kern_neigh_cache {
 	struct prestera_kern_neigh_cache_key key;
 	struct rhash_head ht_node;
 	struct list_head kern_fib_cache_list;
-	/* Hold prepared nh_neigh info if is in_kernel */
+	 
 	struct prestera_neigh_info nh_neigh_info;
-	/* Indicate if neighbour is reachable by direct route */
+	 
 	bool reachable;
-	/* Lock cache if neigh is present in kernel */
+	 
 	bool in_kernel;
 };
 
 struct prestera_kern_fib_cache_key {
 	struct prestera_ip_addr addr;
 	u32 prefix_len;
-	u32 kern_tb_id; /* tb_id from kernel (not fixed) */
+	u32 kern_tb_id;  
 };
 
-/* Subscribing on neighbours in kernel */
+ 
 struct prestera_kern_fib_cache {
 	struct prestera_kern_fib_cache_key key;
 	struct {
 		struct prestera_fib_key fib_key;
 		enum prestera_fib_type fib_type;
 		struct prestera_nexthop_group_key nh_grp_key;
-	} lpm_info; /* hold prepared lpm info */
-	/* Indicate if route is not overlapped by another table */
-	struct rhash_head ht_node; /* node of prestera_router */
+	} lpm_info;  
+	 
+	struct rhash_head ht_node;  
 	struct prestera_kern_neigh_cache_head {
 		struct prestera_kern_fib_cache *this;
 		struct list_head head;
 		struct prestera_kern_neigh_cache *n_cache;
 	} kern_neigh_cache_head[PRESTERA_NHGR_SIZE_MAX];
 	union {
-		struct fib_notifier_info info; /* point to any of 4/6 */
+		struct fib_notifier_info info;  
 		struct fib_entry_notifier_info fen4_info;
 	};
 	bool reachable;
@@ -78,7 +78,7 @@ static const struct rhashtable_params __prestera_kern_fib_cache_ht_params = {
 	.automatic_shrinking = true,
 };
 
-/* This util to be used, to convert kernel rules for default vr in hw_vr */
+ 
 static u32 prestera_fix_tb_id(u32 tb_id)
 {
 	if (tb_id == RT_TABLE_UNSPEC ||
@@ -243,18 +243,16 @@ static bool prestera_fib_info_is_nh(struct fib_notifier_info *info)
 		return prestera_fi6_is_nh(fen6_info->rt);
 }
 
-/* must be called with rcu_read_lock() */
+ 
 static int prestera_util_kern_get_route(struct fib_result *res, u32 tb_id,
 					__be32 *addr)
 {
 	struct flowi4 fl4;
 
-	/* TODO: walkthrough appropriate tables in kernel
-	 * to know if the same prefix exists in several tables
-	 */
+	 
 	memset(&fl4, 0, sizeof(fl4));
 	fl4.daddr = *addr;
-	return fib_lookup(&init_net, &fl4, res, 0 /* FIB_LOOKUP_NOREF */);
+	return fib_lookup(&init_net, &fl4, res, 0  );
 }
 
 static bool
@@ -277,7 +275,7 @@ __prestera_util_kern_n_is_reachable_v4(u32 tb_id, __be32 *addr,
 	return reachable;
 }
 
-/* Check if neigh route is reachable */
+ 
 static bool
 prestera_util_kern_n_is_reachable(u32 tb_id,
 				  struct prestera_ip_addr *addr,
@@ -338,10 +336,8 @@ prestera_kern_fib_info_nhc(struct fib_notifier_info *info, int n)
 		}
 	}
 
-	/* if family is incorrect - than upper functions has BUG */
-	/* if doesn't find requested index - there is alsi bug, because
-	 * valid index must be produced by nhs, which checks list length
-	 */
+	 
+	 
 	WARN(1, "Invalid parameters passed to %s n=%d i=%p",
 	     __func__, n, info);
 	return NULL;
@@ -378,16 +374,14 @@ prestera_kern_fib_info_type(struct fib_notifier_info *info)
 	} else if (info->family == AF_INET6) {
 		fen6_info = container_of(info, struct fib6_entry_notifier_info,
 					 info);
-		/* TODO: ECMP in ipv6 is several routes.
-		 * Every route has single nh.
-		 */
+		 
 		return fen6_info->rt->fib6_type;
 	}
 
 	return RTN_UNSPEC;
 }
 
-/* Decided, that uc_nh route with key==nh is obviously neighbour route */
+ 
 static bool
 prestera_fib_node_util_is_neighbour(struct prestera_fib_node *fib_node)
 {
@@ -433,7 +427,7 @@ prestera_neigh_iface_init(struct prestera_switch *sw,
 {
 	struct prestera_port *port;
 
-	iface->vlan_id = 0; /* TODO: vlan egress */
+	iface->vlan_id = 0;  
 	iface->type = prestera_dev_if_type(n->dev);
 	if (iface->type != PRESTERA_IF_PORT_E)
 		return -EINVAL;
@@ -610,9 +604,7 @@ __prestera_kern_fib_cache_create_nhs(struct prestera_switch *sw,
 	return 0;
 }
 
-/* Operations on fi (offload, etc) must be wrapped in utils.
- * This function just create storage.
- */
+ 
 static struct prestera_kern_fib_cache *
 prestera_kern_fib_cache_create(struct prestera_switch *sw,
 			       struct prestera_kern_fib_cache_key *key,
@@ -637,10 +629,10 @@ prestera_kern_fib_cache_create(struct prestera_switch *sw,
 	if (err)
 		goto err_ht_insert;
 
-	/* Handle nexthops */
+	 
 	err = __prestera_kern_fib_cache_create_nhs(sw, fib_cache);
 	if (err)
-		goto out; /* Not critical */
+		goto out;  
 
 out:
 	return fib_cache;
@@ -707,15 +699,15 @@ __prestera_k_arb_fib_lpm_offload_set(struct prestera_switch *sw,
 		fri.dst_len = fc->key.prefix_len;
 		fri.dscp = fc->fen4_info.dscp;
 		fri.type = fc->fen4_info.type;
-		/* flags begin */
+		 
 		fri.offload = offload;
 		fri.trap = trap;
 		fri.offload_failed = fail;
-		/* flags end */
+		 
 		fib_alias_hw_flags_set(&init_net, &fri);
 		return;
 	case PRESTERA_IPV6:
-		/* TODO */
+		 
 		return;
 	}
 }
@@ -731,16 +723,12 @@ __prestera_k_arb_n_lpm_set(struct prestera_switch *sw,
 	struct prestera_fib_node *fib_node;
 	struct prestera_fib_key fib_key;
 
-	/* Exception for fc with prefix 32: LPM entry is already used by fib */
+	 
 	memset(&fc_key, 0, sizeof(fc_key));
 	fc_key.addr = n_cache->key.addr;
 	fc_key.prefix_len = PRESTERA_IP_ADDR_PLEN(n_cache->key.addr.v);
-	/* But better to use tb_id of route, which pointed to this neighbour. */
-	/* We take it from rif, because rif inconsistent.
-	 * Must be separated in_rif and out_rif.
-	 * Also note: for each fib pointed to this neigh should be separated
-	 *            neigh lpm entry (for each ingress vr)
-	 */
+	 
+	 
 	fc_key.kern_tb_id = l3mdev_fib_table(n_cache->key.dev);
 	fib_cache = prestera_kern_fib_cache_find(sw, &fc_key);
 	memset(&fib_key, 0, sizeof(fib_key));
@@ -781,7 +769,7 @@ __prestera_k_arb_nc_kern_fib_fetch(struct prestera_switch *sw,
 		nc->reachable = false;
 }
 
-/* Kernel neighbour -> neigh_cache info */
+ 
 static void
 __prestera_k_arb_nc_kern_n_fetch(struct prestera_switch *sw,
 				 struct prestera_kern_neigh_cache *nc)
@@ -812,7 +800,7 @@ out:
 		neigh_release(n);
 }
 
-/* neigh_cache info -> lpm update */
+ 
 static void
 __prestera_k_arb_nc_apply(struct prestera_switch *sw,
 			  struct prestera_kern_neigh_cache *nc)
@@ -830,7 +818,7 @@ __prestera_k_arb_nc_apply(struct prestera_switch *sw,
 	if (!nh_neigh)
 		goto out;
 
-	/* Do hw update only if something changed to prevent nh flap */
+	 
 	if (memcmp(&nc->nh_neigh_info, &nh_neigh->info,
 		   sizeof(nh_neigh->info))) {
 		memcpy(&nh_neigh->info, &nc->nh_neigh_info,
@@ -867,13 +855,7 @@ __prestera_pr_k_arb_fc_lpm_info_calc(struct prestera_switch *sw,
 		if (prestera_fib_info_is_direct(&fc->info) &&
 		    fc->key.prefix_len ==
 			PRESTERA_IP_ADDR_PLEN(fc->key.addr.v)) {
-			/* This is special case.
-			 * When prefix is 32. Than we will have conflict in lpm
-			 * for direct route - once TRAP added, there is no
-			 * place for neighbour entry. So represent direct route
-			 * with prefix 32, as NH. So neighbour will be resolved
-			 * as nexthop of this route.
-			 */
+			 
 			nhc = prestera_kern_fib_info_nhc(&fc->info, 0);
 			fc->lpm_info.fib_type = PRESTERA_FIB_TYPE_UC_NH;
 			fc->lpm_info.nh_grp_key.neigh[0].addr =
@@ -884,10 +866,7 @@ __prestera_pr_k_arb_fc_lpm_info_calc(struct prestera_switch *sw,
 			break;
 		}
 
-		/* We can also get nh_grp_key from fi. This will be correct to
-		 * because cache not always represent, what actually written to
-		 * lpm. But we use nh cache, as well for now (for this case).
-		 */
+		 
 		for (nh_cnt = 0; nh_cnt < PRESTERA_NHGR_SIZE_MAX; nh_cnt++) {
 			if (!fc->kern_neigh_cache_head[nh_cnt].n_cache)
 				break;
@@ -902,10 +881,10 @@ __prestera_pr_k_arb_fc_lpm_info_calc(struct prestera_switch *sw,
 					PRESTERA_FIB_TYPE_UC_NH :
 					PRESTERA_FIB_TYPE_TRAP;
 		break;
-	/* Unsupported. Leave it for kernel: */
+	 
 	case RTN_BROADCAST:
 	case RTN_MULTICAST:
-	/* Routes we must trap by design: */
+	 
 	case RTN_LOCAL:
 	case RTN_UNREACHABLE:
 	case RTN_PROHIBIT:
@@ -996,7 +975,7 @@ __prestera_k_arb_util_fib_overlaps(struct prestera_switch *sw,
 	struct prestera_kern_fib_cache_key fc_key;
 	struct prestera_kern_fib_cache *rfc;
 
-	/* TODO: parse kernel rules */
+	 
 	rfc = NULL;
 	if (fc->key.kern_tb_id == RT_TABLE_LOCAL) {
 		memcpy(&fc_key, &fc->key, sizeof(fc_key));
@@ -1014,7 +993,7 @@ __prestera_k_arb_util_fib_overlapped(struct prestera_switch *sw,
 	struct prestera_kern_fib_cache_key fc_key;
 	struct prestera_kern_fib_cache *rfc;
 
-	/* TODO: parse kernel rules */
+	 
 	rfc = NULL;
 	if (fc->key.kern_tb_id == RT_TABLE_MAIN) {
 		memcpy(&fc_key, &fc->key, sizeof(fc_key));
@@ -1046,10 +1025,10 @@ static void __prestera_k_arb_hw_state_upd(struct prestera_switch *sw,
 #ifdef PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH
 	if (!hw_active && nc->in_kernel)
 		goto out;
-#else /* PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH */
+#else  
 	if (!hw_active)
 		goto out;
-#endif /* PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH */
+#endif  
 
 	if (nc->key.addr.v == PRESTERA_IPV4) {
 		n = neigh_lookup(&arp_tbl, &nc->key.addr.u.ipv4,
@@ -1072,7 +1051,7 @@ out:
 	return;
 }
 
-/* Propagate hw state to kernel */
+ 
 static void prestera_k_arb_hw_evt(struct prestera_switch *sw)
 {
 	struct prestera_kern_neigh_cache *n_cache;
@@ -1097,7 +1076,7 @@ static void prestera_k_arb_hw_evt(struct prestera_switch *sw)
 	rhashtable_walk_exit(&iter);
 }
 
-/* Propagate kernel event to hw */
+ 
 static void prestera_k_arb_n_evt(struct prestera_switch *sw,
 				 struct neighbour *n)
 {
@@ -1150,10 +1129,10 @@ static void __prestera_k_arb_fib_evt2nc(struct prestera_switch *sw)
 
 static int
 prestera_k_arb_fib_evt(struct prestera_switch *sw,
-		       bool replace, /* replace or del */
+		       bool replace,  
 		       struct fib_notifier_info *info)
 {
-	struct prestera_kern_fib_cache *tfib_cache, *bfib_cache; /* top/btm */
+	struct prestera_kern_fib_cache *tfib_cache, *bfib_cache;  
 	struct prestera_kern_fib_cache_key fc_key;
 	struct prestera_kern_fib_cache *fib_cache;
 	int err;
@@ -1205,7 +1184,7 @@ prestera_k_arb_fib_evt(struct prestera_switch *sw,
 			dev_err(sw->dev->dev, "Applying fib_cache failed");
 	}
 
-	/* Update all neighs to resolve overlapped and apply related */
+	 
 	__prestera_k_arb_fib_evt2nc(sw);
 
 	return 0;
@@ -1217,14 +1196,12 @@ static void __prestera_k_arb_abort_neigh_ht_cb(void *ptr, void *arg)
 	struct prestera_switch *sw = arg;
 
 	if (!list_empty(&n_cache->kern_fib_cache_list)) {
-		WARN_ON(1); /* BUG */
+		WARN_ON(1);  
 		return;
 	}
 	__prestera_k_arb_n_offload_set(sw, n_cache, false);
 	n_cache->in_kernel = false;
-	/* No need to destroy lpm.
-	 * It will be aborted by destroy_ht
-	 */
+	 
 	__prestera_kern_neigh_cache_destruct(sw, n_cache);
 	kfree(n_cache);
 }
@@ -1239,23 +1216,15 @@ static void __prestera_k_arb_abort_fib_ht_cb(void *ptr, void *arg)
 					     false);
 	__prestera_k_arb_fib_nh_offload_set(sw, fib_cache, NULL,
 					    false, false);
-	/* No need to destroy lpm.
-	 * It will be aborted by destroy_ht
-	 */
+	 
 	__prestera_kern_fib_cache_destruct(sw, fib_cache);
 	kfree(fib_cache);
 }
 
 static void prestera_k_arb_abort(struct prestera_switch *sw)
 {
-	/* Function to remove all arbiter entries and related hw objects. */
-	/* Sequence:
-	 *   1) Clear arbiter tables, but don't touch hw
-	 *   2) Clear hw
-	 * We use such approach, because arbiter object is not directly mapped
-	 * to hw. So deletion of one arbiter object may even lead to creation of
-	 * hw object (e.g. in case of overlapped routes).
-	 */
+	 
+	 
 	rhashtable_free_and_destroy(&sw->router->kern_fib_cache_ht,
 				    __prestera_k_arb_abort_fib_ht_cb,
 				    sw);
@@ -1340,7 +1309,7 @@ static int __prestera_inetaddr_cb(struct notifier_block *nb,
 	if (event != NETDEV_DOWN)
 		goto out;
 
-	/* Ignore if this is not latest address */
+	 
 	idev = __in_dev_get_rtnl(dev);
 	if (idev && idev->ifa_list)
 		goto out;
@@ -1364,7 +1333,7 @@ static int __prestera_inetaddr_valid_cb(struct notifier_block *nb,
 	if (event != NETDEV_UP)
 		goto out;
 
-	/* Ignore if this is not first address */
+	 
 	idev = __in_dev_get_rtnl(dev);
 	if (idev && idev->ifa_list)
 		goto out;
@@ -1426,7 +1395,7 @@ out:
 	kfree(fib_work);
 }
 
-/* Called with rcu_read_lock() */
+ 
 static int __prestera_router_fib_event(struct notifier_block *nb,
 				       unsigned long event, void *ptr)
 {
@@ -1479,7 +1448,7 @@ static void prestera_router_neigh_event_work(struct work_struct *work)
 	struct prestera_switch *sw = net_work->sw;
 	struct neighbour *n = net_work->n;
 
-	/* neigh - its not hw related object. It stored only in kernel. So... */
+	 
 	rtnl_lock();
 
 	prestera_k_arb_n_evt(sw, n);
@@ -1599,7 +1568,7 @@ int prestera_router_init(struct prestera_switch *sw)
 
 	router->fib_nb.notifier_call = __prestera_router_fib_event;
 	err = register_fib_notifier(&init_net, &router->fib_nb,
-				    /* TODO: flush fib entries */ NULL, NULL);
+				      NULL, NULL);
 	if (err)
 		goto err_register_fib_notifier;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021-2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GUC_CAPTURE_H
 #define _INTEL_GUC_CAPTURE_H
@@ -32,4 +30,4 @@ int intel_guc_capture_getnullheader(struct intel_guc *guc, void **outptr, size_t
 void intel_guc_capture_destroy(struct intel_guc *guc);
 int intel_guc_capture_init(struct intel_guc *guc);
 
-#endif /* _INTEL_GUC_CAPTURE_H */
+#endif  

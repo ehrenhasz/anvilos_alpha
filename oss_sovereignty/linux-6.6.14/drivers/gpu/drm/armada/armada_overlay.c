@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- *  Rewritten from the dovefb driver, and Armada510 manuals.
- */
+
+ 
 
 #include <linux/bitfield.h>
 
@@ -49,24 +46,19 @@ static inline u32 armada_spu_contrast(struct drm_plane_state *state)
 
 static inline u32 armada_spu_saturation(struct drm_plane_state *state)
 {
-	/* Docs say 15:0, but it seems to actually be 31:16 on Armada 510 */
+	 
 	return drm_to_overlay_state(state)->saturation << 16;
 }
 
 static inline u32 armada_csc(struct drm_plane_state *state)
 {
-	/*
-	 * The CFG_CSC_RGB_* settings control the output of the colour space
-	 * converter, setting the range of output values it produces.  Since
-	 * we will be blending with the full-range graphics, we need to
-	 * produce full-range RGB output from the conversion.
-	 */
+	 
 	return CFG_CSC_RGB_COMPUTER |
 	       (state->color_encoding == DRM_COLOR_YCBCR_BT709 ?
 			CFG_CSC_YUV_CCIR709 : CFG_CSC_YUV_CCIR601);
 }
 
-/* === Plane support === */
+ 
 static void armada_drm_overlay_plane_atomic_update(struct drm_plane *plane,
 	struct drm_atomic_state *state)
 {
@@ -107,7 +99,7 @@ static void armada_drm_overlay_plane_atomic_update(struct drm_plane *plane,
 	val = armada_dst_hw(new_state);
 	if (armada_dst_hw(old_state) != val)
 		armada_reg_queue_set(regs, idx, val, LCD_SPU_DZM_HPXL_VLN);
-	/* FIXME: overlay on an interlaced display */
+	 
 	if (old_state->src.x1 != new_state->src.x1 ||
 	    old_state->src.y1 != new_state->src.y1 ||
 	    old_state->fb != new_state->fb ||
@@ -141,11 +133,7 @@ static void armada_drm_overlay_plane_atomic_update(struct drm_plane *plane,
 		if (new_state->visible)
 			cfg |= CFG_DMA_ENA;
 
-		/*
-		 * Shifting a YUV packed format image by one pixel causes the
-		 * U/V planes to swap.  Compensate for it by also toggling
-		 * the UV swap.
-		 */
+		 
 		format = new_state->fb->format;
 		src_x = new_state->src.x1 >> 16;
 		if (format->num_planes == 1 && src_x & (format->hsub - 1))
@@ -240,7 +228,7 @@ static void armada_drm_overlay_plane_atomic_disable(struct drm_plane *plane,
 	dcrtc = drm_to_armada_crtc(old_state->crtc);
 	regs = dcrtc->regs + dcrtc->regs_idx;
 
-	/* Disable plane and power down the YUV FIFOs */
+	 
 	armada_reg_queue_mod(regs, idx, 0, CFG_DMA_ENA, LCD_SPU_DMA_CTRL0);
 	armada_reg_queue_mod(regs, idx, CFG_PDWN16x66 | CFG_PDWN32x66, 0,
 			     LCD_SPU_SRAM_PARA1);
@@ -418,11 +406,11 @@ static int armada_overlay_get_property(struct drm_plane *plane,
 #define C2K(c,s)	(((c) >> (s)) & 0xff)
 #define R2BGR(r,g,b,s)	(C2K(r,s) << 0 | C2K(g,s) << 8 | C2K(b,s) << 16)
 	if (property == priv->colorkey_prop) {
-		/* Do best-efforts here for this property */
+		 
 		*val = R2BGR(drm_to_overlay_state(state)->colorkey_yr,
 			     drm_to_overlay_state(state)->colorkey_ug,
 			     drm_to_overlay_state(state)->colorkey_vb, 16);
-		/* If min != max, or min != val, error out */
+		 
 		if (*val != R2BGR(drm_to_overlay_state(state)->colorkey_yr,
 				  drm_to_overlay_state(state)->colorkey_ug,
 				  drm_to_overlay_state(state)->colorkey_vb, 24) ||

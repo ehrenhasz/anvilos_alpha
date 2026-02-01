@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -190,11 +168,7 @@ nouveau_cli_work_queue(struct nouveau_cli *cli, struct dma_fence *fence,
 static void
 nouveau_cli_fini(struct nouveau_cli *cli)
 {
-	/* All our channels are dead now, which means all the fences they
-	 * own are signalled, and all callback functions have been called.
-	 *
-	 * So, after flushing the workqueue, there should be nothing left.
-	 */
+	 
 	flush_work(&cli->work);
 	WARN_ON(!list_empty(&cli->worker));
 
@@ -334,9 +308,7 @@ nouveau_accel_ce_init(struct nouveau_drm *drm)
 	u64 runm;
 	int ret = 0;
 
-	/* Allocate channel that has access to a (preferably async) copy
-	 * engine, to use for TTM buffer moves.
-	 */
+	 
 	runm = nvif_fifo_runlist_ce(device);
 	if (!runm) {
 		NV_DEBUG(drm, "no ce runlist\n");
@@ -364,7 +336,7 @@ nouveau_accel_gr_init(struct nouveau_drm *drm)
 	u64 runm;
 	int ret;
 
-	/* Allocate channel that has access to the graphics engine. */
+	 
 	runm = nvif_fifo_runlist(device, NV_DEVICE_HOST_RUNLIST_ENGINES_GR);
 	if (!runm) {
 		NV_DEBUG(drm, "no gr runlist\n");
@@ -378,10 +350,7 @@ nouveau_accel_gr_init(struct nouveau_drm *drm)
 		return;
 	}
 
-	/* A SW class is used on pre-NV50 HW to assist with handling the
-	 * synchronisation of page flips, as well as to implement fences
-	 * on TNT/TNT2 HW that lacks any kind of support in host.
-	 */
+	 
 	if (!drm->channel->nvsw.client && device->info.family < NV_DEVICE_INFO_V0_TESLA) {
 		ret = nvif_object_ctor(&drm->channel->user, "drmNvsw",
 				       NVDRM_NVSW, nouveau_abi16_swclass(drm),
@@ -414,10 +383,7 @@ nouveau_accel_gr_init(struct nouveau_drm *drm)
 		}
 	}
 
-	/* NvMemoryToMemoryFormat requires a notifier ctxdma for some reason,
-	 * even if notification is never requested, so, allocate a ctxdma on
-	 * any GPU where it's possible we'll end up using M2MF for BO moves.
-	 */
+	 
 	if (device->info.family < NV_DEVICE_INFO_V0_FERMI) {
 		ret = nvkm_gpuobj_new(nvxx_device(device), 32, 0, false, NULL,
 				      &drm->notify);
@@ -463,14 +429,12 @@ nouveau_accel_init(struct nouveau_drm *drm)
 	if (nouveau_noaccel)
 		return;
 
-	/* Initialise global support for channels, and synchronisation. */
+	 
 	ret = nouveau_channels_init(drm);
 	if (ret)
 		return;
 
-	/*XXX: this is crap, but the fence/channel stuff is a little
-	 *     backwards in some places.  this will be fixed.
-	 */
+	 
 	ret = n = nvif_object_sclass_get(&device->object, &sclass);
 	if (ret < 0)
 		return;
@@ -516,18 +480,18 @@ nouveau_accel_init(struct nouveau_drm *drm)
 		return;
 	}
 
-	/* Volta requires access to a doorbell register for kickoff. */
+	 
 	if (drm->client.device.info.family >= NV_DEVICE_INFO_V0_VOLTA) {
 		ret = nvif_user_ctor(device, "drmUsermode");
 		if (ret)
 			return;
 	}
 
-	/* Allocate channels we need to support various functions. */
+	 
 	nouveau_accel_gr_init(drm);
 	nouveau_accel_ce_init(drm);
 
-	/* Initialise accelerated TTM buffer moves. */
+	 
 	nouveau_bo_move_init(drm);
 }
 
@@ -598,10 +562,7 @@ nouveau_drm_device_init(struct drm_device *dev)
 	mutex_init(&drm->clients_lock);
 	spin_lock_init(&drm->tile.lock);
 
-	/* workaround an odd issue on nvc1 by disabling the device's
-	 * nosnoop capability.  hopefully won't cause issues until a
-	 * better fix is found - assuming there is one...
-	 */
+	 
 	if (drm->client.device.info.chipset == 0xc1)
 		nvif_mask(&drm->client.device.object, 0x00088080, 0x00000800, 0x00000000);
 
@@ -690,12 +651,7 @@ nouveau_drm_device_fini(struct drm_device *dev)
 	nouveau_ttm_fini(drm);
 	nouveau_vga_fini(drm);
 
-	/*
-	 * There may be existing clients from as-yet unclosed files. For now,
-	 * clean them up here rather than deferring until the file is closed,
-	 * but this likely not correct if we want to support hot-unplugging
-	 * properly.
-	 */
+	 
 	mutex_lock(&drm->clients_lock);
 	list_for_each_entry_safe(cli, temp_cli, &drm->clients, head) {
 		list_del(&cli->head);
@@ -717,45 +673,7 @@ nouveau_drm_device_fini(struct drm_device *dev)
 	kfree(drm);
 }
 
-/*
- * On some Intel PCIe bridge controllers doing a
- * D0 -> D3hot -> D3cold -> D0 sequence causes Nvidia GPUs to not reappear.
- * Skipping the intermediate D3hot step seems to make it work again. This is
- * probably caused by not meeting the expectation the involved AML code has
- * when the GPU is put into D3hot state before invoking it.
- *
- * This leads to various manifestations of this issue:
- *  - AML code execution to power on the GPU hits an infinite loop (as the
- *    code waits on device memory to change).
- *  - kernel crashes, as all PCI reads return -1, which most code isn't able
- *    to handle well enough.
- *
- * In all cases dmesg will contain at least one line like this:
- * 'nouveau 0000:01:00.0: Refused to change power state, currently in D3'
- * followed by a lot of nouveau timeouts.
- *
- * In the \_SB.PCI0.PEG0.PG00._OFF code deeper down writes bit 0x80 to the not
- * documented PCI config space register 0x248 of the Intel PCIe bridge
- * controller (0x1901) in order to change the state of the PCIe link between
- * the PCIe port and the GPU. There are alternative code paths using other
- * registers, which seem to work fine (executed pre Windows 8):
- *  - 0xbc bit 0x20 (publicly available documentation claims 'reserved')
- *  - 0xb0 bit 0x10 (link disable)
- * Changing the conditions inside the firmware by poking into the relevant
- * addresses does resolve the issue, but it seemed to be ACPI private memory
- * and not any device accessible memory at all, so there is no portable way of
- * changing the conditions.
- * On a XPS 9560 that means bits [0,3] on \CPEX need to be cleared.
- *
- * The only systems where this behavior can be seen are hybrid graphics laptops
- * with a secondary Nvidia Maxwell, Pascal or Turing GPU. It's unclear whether
- * this issue only occurs in combination with listed Intel PCIe bridge
- * controllers and the mentioned GPUs or other devices as well.
- *
- * documentation on the PCIe bridge controller can be found in the
- * "7th Generation Intel® Processor Families for H Platforms Datasheet Volume 2"
- * Section "12 PCI Express* Controller (x16) Registers"
- */
+ 
 
 static void quirk_broken_nv_runpm(struct pci_dev *pdev)
 {
@@ -785,9 +703,7 @@ static int nouveau_drm_probe(struct pci_dev *pdev,
 	if (vga_switcheroo_client_probe_defer(pdev))
 		return -EPROBE_DEFER;
 
-	/* We need to check that the chipset is supported before booting
-	 * fbdev off the hardware, as there's no way to put it back.
-	 */
+	 
 	ret = nvkm_device_pci_new(pdev, nouveau_config, "error",
 				  true, false, 0, &device);
 	if (ret)
@@ -795,7 +711,7 @@ static int nouveau_drm_probe(struct pci_dev *pdev,
 
 	nvkm_device_del(&device);
 
-	/* Remove conflicting drivers (vesafb, efifb etc). */
+	 
 	ret = drm_aperture_remove_conflicting_pci_framebuffers(pdev, &driver_pci);
 	if (ret)
 		return ret;
@@ -872,7 +788,7 @@ nouveau_drm_remove(struct pci_dev *pdev)
 	struct drm_device *dev = pci_get_drvdata(pdev);
 	struct nouveau_drm *drm = nouveau_drm(dev);
 
-	/* revert our workaround */
+	 
 	if (drm->old_pm_cap)
 		pdev->pm_cap = drm->old_pm_cap;
 	nouveau_drm_device_remove(dev);
@@ -1014,7 +930,7 @@ nouveau_pmops_resume(struct device *dev)
 
 	ret = nouveau_do_resume(drm_dev, false);
 
-	/* Monitors may have been connected / disconnected during suspend */
+	 
 	nouveau_display_hpd_resume(drm_dev);
 
 	return ret;
@@ -1093,11 +1009,11 @@ nouveau_pmops_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-	/* do magic */
+	 
 	nvif_mask(&device->object, 0x088488, (1 << 25), (1 << 25));
 	drm_dev->switch_power_state = DRM_SWITCH_POWER_ON;
 
-	/* Monitors may have been connected / disconnected during suspend */
+	 
 	nouveau_display_hpd_resume(drm_dev);
 
 	return ret;
@@ -1113,7 +1029,7 @@ nouveau_pmops_runtime_idle(struct device *dev)
 
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_autosuspend(dev);
-	/* we don't want the main rpm_idle to call suspend - we want to autosuspend */
+	 
 	return 1;
 }
 
@@ -1125,7 +1041,7 @@ nouveau_drm_open(struct drm_device *dev, struct drm_file *fpriv)
 	char name[32], tmpname[TASK_COMM_LEN];
 	int ret;
 
-	/* need to bring up power immediately if opening device */
+	 
 	ret = pm_runtime_get_sync(dev->dev);
 	if (ret < 0 && ret != -EACCES) {
 		pm_runtime_put_autosuspend(dev->dev);
@@ -1171,12 +1087,7 @@ nouveau_drm_postclose(struct drm_device *dev, struct drm_file *fpriv)
 	struct nouveau_drm *drm = nouveau_drm(dev);
 	int dev_index;
 
-	/*
-	 * The device is gone, and as it currently stands all clients are
-	 * cleaned up in the removal codepath. In the future this may change
-	 * so that we can support hot-unplugging, but for now we immediately
-	 * return to avoid a double-free situation.
-	 */
+	 
 	if (!drm_dev_enter(dev, &dev_index))
 		return;
 

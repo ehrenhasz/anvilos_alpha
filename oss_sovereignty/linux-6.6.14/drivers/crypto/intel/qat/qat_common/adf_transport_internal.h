@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+ 
+ 
 #ifndef ADF_TRANSPORT_INTRN_H
 #define ADF_TRANSPORT_INTRN_H
 
@@ -19,7 +19,7 @@ struct adf_etr_ring_data {
 	struct adf_etr_bank_data *bank;
 	dma_addr_t dma_addr;
 	struct adf_etr_ring_debug_entry *ring_debug;
-	spinlock_t lock;	/* protects ring data struct */
+	spinlock_t lock;	 
 	u16 head;
 	u16 tail;
 	u32 threshold;
@@ -36,7 +36,7 @@ struct adf_etr_bank_data {
 	u32 bank_number;
 	u16 ring_mask;
 	u16 irq_mask;
-	spinlock_t lock;	/* protects bank data struct */
+	spinlock_t lock;	 
 	struct adf_accel_dev *accel_dev;
 	struct dentry *bank_debug_dir;
 	struct dentry *bank_debug_cfg;

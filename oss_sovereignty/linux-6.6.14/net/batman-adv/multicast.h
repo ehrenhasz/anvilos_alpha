@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Linus Lüssing
- */
+ 
+ 
 
 #ifndef _NET_BATMAN_ADV_MULTICAST_H_
 #define _NET_BATMAN_ADV_MULTICAST_H_
@@ -12,23 +9,15 @@
 #include <linux/netlink.h>
 #include <linux/skbuff.h>
 
-/**
- * enum batadv_forw_mode - the way a packet should be forwarded as
- */
+ 
 enum batadv_forw_mode {
-	/**
-	 * @BATADV_FORW_BCAST: forward the packet to all nodes via a batman-adv
-	 *  broadcast packet
-	 */
+	 
 	BATADV_FORW_BCAST,
 
-	/**
-	 * @BATADV_FORW_UCASTS: forward the packet to some nodes via one
-	 *  or more batman-adv unicast packets
-	 */
+	 
 	BATADV_FORW_UCASTS,
 
-	/** @BATADV_FORW_NONE: don't forward, drop it */
+	 
 	BATADV_FORW_NONE,
 };
 
@@ -94,6 +83,6 @@ static inline void batadv_mcast_purge_orig(struct batadv_orig_node *orig_node)
 {
 }
 
-#endif /* CONFIG_BATMAN_ADV_MCAST */
+#endif  
 
-#endif /* _NET_BATMAN_ADV_MULTICAST_H_ */
+#endif  

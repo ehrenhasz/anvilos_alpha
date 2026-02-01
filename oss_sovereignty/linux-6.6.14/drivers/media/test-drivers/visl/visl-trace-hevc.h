@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 #if !defined(_VISL_TRACE_HEVC_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VISL_TRACE_HEVC_H_
 

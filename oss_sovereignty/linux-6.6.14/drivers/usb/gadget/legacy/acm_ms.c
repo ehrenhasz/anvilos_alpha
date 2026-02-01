@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * acm_ms.c -- Composite driver, with ACM and mass storage support
- *
- * Copyright (C) 2008 David Brownell
- * Copyright (C) 2008 Nokia Corporation
- * Author: David Brownell
- * Modified: Klaus Schwarzkopf <schwarzkopf@sensortherm.de>
- *
- * Heavily based on multi.c and cdc2.c
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,54 +9,51 @@
 #define DRIVER_DESC		"Composite Gadget (ACM + MS)"
 #define DRIVER_VERSION		"2011/10/10"
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- * DO NOT REUSE THESE IDs with a protocol-incompatible driver!!  Ever!!
- * Instead:  allocate your own, using normal USB-IF procedures.
- */
-#define ACM_MS_VENDOR_NUM	0x1d6b	/* Linux Foundation */
-#define ACM_MS_PRODUCT_NUM	0x0106	/* Composite Gadget: ACM + MS*/
+ 
+#define ACM_MS_VENDOR_NUM	0x1d6b	 
+#define ACM_MS_PRODUCT_NUM	0x0106	 
 
 #include "f_mass_storage.h"
 
-/*-------------------------------------------------------------------------*/
+ 
 USB_GADGET_COMPOSITE_OPTIONS();
 
 static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
-	/* .bcdUSB = DYNAMIC */
+	 
 
-	.bDeviceClass =		USB_CLASS_MISC /* 0xEF */,
+	.bDeviceClass =		USB_CLASS_MISC  ,
 	.bDeviceSubClass =	2,
 	.bDeviceProtocol =	1,
 
-	/* .bMaxPacketSize0 = f(hardware) */
+	 
 
-	/* Vendor and product id can be overridden by module parameters.  */
+	 
 	.idVendor =		cpu_to_le16(ACM_MS_VENDOR_NUM),
 	.idProduct =		cpu_to_le16(ACM_MS_PRODUCT_NUM),
-	/* .bcdDevice = f(hardware) */
-	/* .iManufacturer = DYNAMIC */
-	/* .iProduct = DYNAMIC */
-	/* NO SERIAL NUMBER */
-	/*.bNumConfigurations =	DYNAMIC*/
+	 
+	 
+	 
+	 
+	 
 };
 
 static const struct usb_descriptor_header *otg_desc[2];
 
-/* string IDs are assigned dynamically */
+ 
 static struct usb_string strings_dev[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = DRIVER_DESC,
 	[USB_GADGET_SERIAL_IDX].s = "",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_dev,
 };
 
@@ -74,7 +62,7 @@ static struct usb_gadget_strings *dev_strings[] = {
 	NULL,
 };
 
-/****************************** Configurations ******************************/
+ 
 
 static struct fsg_module_parameters fsg_mod_data = { .stall = 1 };
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
@@ -83,26 +71,21 @@ static unsigned int fsg_num_buffers = CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS;
 
 #else
 
-/*
- * Number of buffers we will use.
- * 2 is usually enough for good buffering pipeline
- */
+ 
 #define fsg_num_buffers	CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS
 
-#endif /* CONFIG_USB_GADGET_DEBUG_FILES */
+#endif  
 
-FSG_MODULE_PARAMETERS(/* no prefix */, fsg_mod_data);
+FSG_MODULE_PARAMETERS( , fsg_mod_data);
 
-/*-------------------------------------------------------------------------*/
+ 
 static struct usb_function *f_acm;
 static struct usb_function_instance *f_acm_inst;
 
 static struct usb_function_instance *fi_msg;
 static struct usb_function *f_msg;
 
-/*
- * We _always_ have both ACM and mass storage functions.
- */
+ 
 static int acm_ms_do_config(struct usb_configuration *c)
 {
 	int	status;
@@ -143,11 +126,11 @@ put_acm:
 static struct usb_configuration acm_ms_config_driver = {
 	.label			= DRIVER_DESC,
 	.bConfigurationValue	= 1,
-	/* .iConfiguration = DYNAMIC */
+	 
 	.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int acm_ms_bind(struct usb_composite_dev *cdev)
 {
@@ -166,7 +149,7 @@ static int acm_ms_bind(struct usb_composite_dev *cdev)
 		goto fail_get_msg;
 	}
 
-	/* set up mass storage function */
+	 
 	fsg_config_from_params(&config, &fsg_mod_data, fsg_num_buffers);
 	opts = fsg_opts_from_func_inst(fi_msg);
 
@@ -186,10 +169,7 @@ static int acm_ms_bind(struct usb_composite_dev *cdev)
 
 	fsg_common_set_inquiry_string(opts->common, config.vendor_name,
 				      config.product_name);
-	/*
-	 * Allocate string descriptor numbers ... note that string
-	 * contents can be overridden by the composite_dev glue.
-	 */
+	 
 	status = usb_string_ids_tab(cdev, strings_dev);
 	if (status < 0)
 		goto fail_string_ids;
@@ -209,7 +189,7 @@ static int acm_ms_bind(struct usb_composite_dev *cdev)
 		otg_desc[1] = NULL;
 	}
 
-	/* register our configuration */
+	 
 	status = usb_add_config(cdev, &acm_ms_config_driver, acm_ms_do_config);
 	if (status < 0)
 		goto fail_otg_desc;
@@ -219,7 +199,7 @@ static int acm_ms_bind(struct usb_composite_dev *cdev)
 			DRIVER_DESC);
 	return 0;
 
-	/* error recovery */
+	 
 fail_otg_desc:
 	kfree(otg_desc[0]);
 	otg_desc[0] = NULL;

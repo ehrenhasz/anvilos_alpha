@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STM32 DMA2D - 2D Graphics Accelerator Driver
- *
- * Copyright (c) 2021 Dillon Min
- * Dillon Min, <dillon.minfei@gmail.com>
- *
- * based on s5p-g2d
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Kamil Debski, <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -31,19 +21,7 @@
 #include "dma2d.h"
 #include "dma2d-regs.h"
 
-/*
- * This V4L2 subdev m2m driver enables Chrom-Art Accelerator unit
- * of STMicroelectronics STM32 SoC series.
- *
- * Currently support r2m, m2m, m2m_pfc.
- *
- * - r2m, Filling a part or the whole of a destination image with a specific
- *   color.
- * - m2m, Copying a part or the whole of a source image into a part or the
- *   whole of a destination.
- * - m2m_pfc, Copying a part or the whole of a source image into a part or the
- *   whole of a destination image with a pixel format conversion.
- */
+ 
 
 #define fh2ctx(__fh) container_of(__fh, struct dma2d_ctx, fh)
 
@@ -283,7 +261,7 @@ static int dma2d_open(struct file *file)
 	if (!ctx)
 		return -ENOMEM;
 	ctx->dev = dev;
-	/* Set default formats */
+	 
 	ctx->cap		= def_frame;
 	ctx->bg		= def_frame;
 	ctx->out	= def_frame;
@@ -308,7 +286,7 @@ static int dma2d_open(struct file *file)
 
 	dma2d_setup_ctrls(ctx);
 
-	/* Write the default values to the ctx struct */
+	 
 	v4l2_ctrl_handler_setup(&ctx->ctrl_handler);
 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
@@ -428,9 +406,7 @@ static int vidioc_s_fmt(struct file *file, void *prv, struct v4l2_format *f)
 	struct dma2d_fmt *fmt;
 	int ret = 0;
 
-	/* Adjust all values accordingly to the hardware capabilities
-	 * and chosen format.
-	 */
+	 
 	ret = vidioc_try_fmt(file, prv, f);
 	if (ret)
 		return ret;
@@ -454,7 +430,7 @@ static int vidioc_s_fmt(struct file *file, void *prv, struct v4l2_format *f)
 	frm->width = f->fmt.pix.width;
 	frm->height = f->fmt.pix.height;
 	frm->size = f->fmt.pix.sizeimage;
-	/* Reset crop settings */
+	 
 	frm->o_width = 0;
 	frm->o_height = 0;
 	frm->c_width = frm->width;
@@ -497,7 +473,7 @@ static void device_run(void *prv)
 	dma2d_config_fg(dev, frm_out,
 			vb2_dma_contig_plane_dma_addr(&src->vb2_buf, 0));
 
-	/* TODO: add M2M_BLEND handler here */
+	 
 
 	if (ctx->op_mode != DMA2D_MODE_R2M) {
 		if (frm_out->fmt->fourcc == frm_cap->fmt->fourcc)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH Pin Function Controller pinmux support.
- *
- * Copyright (C) 2012  Paul Mundt
- */
+
+ 
 
 #define DRV_NAME "sh-pfc"
 
@@ -116,9 +112,7 @@ static int sh_pfc_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 	const char *pin;
 	int ret;
 
-	/* Parse the function and configuration properties. At least a function
-	 * or one configuration must be specified.
-	 */
+	 
 	ret = of_property_read_string(np, "function", &function);
 	if (ret < 0 && ret != -EINVAL) {
 		dev_err(dev, "Invalid function in DT\n");
@@ -136,7 +130,7 @@ static int sh_pfc_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 		goto done;
 	}
 
-	/* Count the number of pins and groups and reallocate mappings. */
+	 
 	ret = of_property_count_strings(np, "pins");
 	if (ret == -EINVAL) {
 		num_pins = 0;
@@ -177,7 +171,7 @@ static int sh_pfc_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 	*map = maps;
 	*num_maps = nmaps;
 
-	/* Iterate over pins and groups and create the mappings. */
+	 
 	of_property_for_each_string(np, "groups", prop, group) {
 		if (function) {
 			maps[idx].type = PIN_MAP_TYPE_MUX_GROUP;
@@ -258,7 +252,7 @@ static int sh_pfc_dt_node_to_map(struct pinctrl_dev *pctldev,
 		}
 	}
 
-	/* If no mapping has been found in child nodes try the config node. */
+	 
 	if (*num_maps == 0) {
 		ret = sh_pfc_dt_subnode_to_map(pctldev, np, map, num_maps,
 					       &index);
@@ -278,7 +272,7 @@ done:
 
 	return ret;
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static const struct pinctrl_ops sh_pfc_pinctrl_ops = {
 	.get_groups_count	= sh_pfc_get_groups_count,
@@ -337,10 +331,7 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
 		int idx = sh_pfc_get_pin_index(pfc, grp->pins[i]);
 		struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
 
-		/*
-		 * This driver cannot manage both gpio and mux when the gpio
-		 * pin is already enabled. So, this function fails.
-		 */
+		 
 		if (cfg->gpio_enabled) {
 			ret = -EBUSY;
 			goto done;
@@ -351,7 +342,7 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
 			goto done;
 	}
 
-	/* All group pins are configured, mark the pins as muxed */
+	 
 	for (i = 0; i < grp->nr_pins; ++i) {
 		int idx = sh_pfc_get_pin_index(pfc, grp->pins[i]);
 		struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
@@ -378,9 +369,7 @@ static int sh_pfc_gpio_request_enable(struct pinctrl_dev *pctldev,
 	spin_lock_irqsave(&pfc->lock, flags);
 
 	if (!pfc->gpio && !cfg->mux_mark) {
-		/* If GPIOs are handled externally the pin mux type needs to be
-		 * set to GPIO here.
-		 */
+		 
 		const struct sh_pfc_pin *pin = &pfc->info->pins[idx];
 
 		ret = sh_pfc_config_mux(pfc, pin->enum_id, PINMUX_TYPE_GPIO);
@@ -410,7 +399,7 @@ static void sh_pfc_gpio_disable_free(struct pinctrl_dev *pctldev,
 
 	spin_lock_irqsave(&pfc->lock, flags);
 	cfg->gpio_enabled = false;
-	/* If mux is already set, this configures it here */
+	 
 	if (cfg->mux_mark)
 		sh_pfc_config_mux(pfc, cfg->mux_mark, PINMUX_TYPE_FUNCTION);
 	spin_unlock_irqrestore(&pfc->lock, flags);
@@ -430,9 +419,7 @@ static int sh_pfc_gpio_set_direction(struct pinctrl_dev *pctldev,
 	unsigned int dir;
 	int ret;
 
-	/* Check if the requested direction is supported by the pin. Not all
-	 * SoCs provide pin config data, so perform the check conditionally.
-	 */
+	 
 	if (pin->configs) {
 		dir = input ? SH_PFC_PIN_CFG_INPUT : SH_PFC_PIN_CFG_OUTPUT;
 		if (!(pin->configs & dir))
@@ -495,9 +482,7 @@ static int sh_pfc_pinconf_get_drive_strength(struct sh_pfc *pfc,
 
 	val = (sh_pfc_read(pfc, reg) >> offset) & GENMASK(size - 1, 0);
 
-	/* Convert the value to mA based on a full drive strength value of 24mA.
-	 * We can make the full value configurable later if needed.
-	 */
+	 
 	return (val + 1) * (size == 2 ? 6 : 3);
 }
 
@@ -520,9 +505,7 @@ static int sh_pfc_pinconf_set_drive_strength(struct sh_pfc *pfc,
 	if (strength < step || strength > 24)
 		return -EINVAL;
 
-	/* Convert the value from mA based on a full drive strength value of
-	 * 24mA. We can make the full value configurable later if needed.
-	 */
+	 
 	strength = strength / step - 1;
 
 	spin_lock_irqsave(&pfc->lock, flags);
@@ -538,7 +521,7 @@ static int sh_pfc_pinconf_set_drive_strength(struct sh_pfc *pfc,
 	return 0;
 }
 
-/* Check whether the requested parameter is supported for a pin. */
+ 
 static bool sh_pfc_pinconf_validate(struct sh_pfc *pfc, unsigned int _pin,
 				    enum pin_config_param param)
 {
@@ -718,7 +701,7 @@ static int sh_pfc_pinconf_set(struct pinctrl_dev *pctldev, unsigned _pin,
 		default:
 			return -ENOTSUPP;
 		}
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -752,12 +735,12 @@ static const struct pinconf_ops sh_pfc_pinconf_ops = {
 	.pin_config_config_dbg_show	= pinconf_generic_dump_config,
 };
 
-/* PFC ranges -> pinctrl pin descs */
+ 
 static int sh_pfc_map_pins(struct sh_pfc *pfc, struct sh_pfc_pinctrl *pmx)
 {
 	unsigned int i;
 
-	/* Allocate and initialize the pins and configs arrays. */
+	 
 	pmx->pins = devm_kcalloc(pfc->dev,
 				 pfc->info->nr_pins, sizeof(*pmx->pins),
 				 GFP_KERNEL);
@@ -774,7 +757,7 @@ static int sh_pfc_map_pins(struct sh_pfc *pfc, struct sh_pfc_pinctrl *pmx)
 		const struct sh_pfc_pin *info = &pfc->info->pins[i];
 		struct pinctrl_pin_desc *pin = &pmx->pins[i];
 
-		/* If the pin number is equal to -1 all pins are considered */
+		 
 		pin->number = info->pin != (u16)-1 ? info->pin : i;
 		pin->name = info->name;
 	}

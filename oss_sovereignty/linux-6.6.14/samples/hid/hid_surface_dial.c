@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2022 Benjamin Tissoires
- *
- * This program will morph the Microsoft Surface Dial into a mouse,
- * and depending on the chosen resolution enable or not the haptic feedback:
- * - a resolution (-r) of 3600 will report 3600 "ticks" in one full rotation
- *   without haptic feedback
- * - any other resolution will report N "ticks" in a full rotation with haptic
- *   feedback
- *
- * A good default for low resolution haptic scrolling is 72 (1 "tick" every 5
- * degrees), and set to 3600 for smooth scrolling.
- */
+
+ 
 
 #include <assert.h>
 #include <errno.h>
@@ -205,7 +194,7 @@ int main(int argc, char **argv)
 	skel->data->physical = (int)(resolution / 72);
 
 	bpf_object__for_each_program(prog, *skel->skeleton->obj) {
-		/* ignore syscalls */
+		 
 		if (bpf_program__get_type(prog) != BPF_PROG_TYPE_TRACING)
 			continue;
 

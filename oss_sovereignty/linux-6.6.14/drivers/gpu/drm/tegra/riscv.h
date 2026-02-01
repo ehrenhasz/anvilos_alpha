@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef DRM_TEGRA_RISCV_H
 #define DRM_TEGRA_RISCV_H
@@ -15,7 +13,7 @@ struct tegra_drm_riscv_descriptor {
 };
 
 struct tegra_drm_riscv {
-	/* User initializes */
+	 
 	struct device *dev;
 	void __iomem *regs;
 

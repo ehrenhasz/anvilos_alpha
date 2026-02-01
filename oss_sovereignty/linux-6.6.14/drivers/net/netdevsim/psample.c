@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -213,7 +213,7 @@ int nsim_dev_psample_init(struct nsim_dev *nsim_dev)
 		goto err_psample_free;
 	}
 
-	/* Populate sampling parameters with sane defaults. */
+	 
 	psample->rate = 100;
 	debugfs_create_u32("rate", 0600, psample->ddir, &psample->rate);
 

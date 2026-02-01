@@ -1,30 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
-/* Version */
+ 
 #define RTL_VERSION
 
-/* instruction pipeline depth */
+ 
 #define ISP_BRANCHDELAY                        5
 
-/* bus */
+ 
 #define ISP_BUS_WIDTH                          32
 #define ISP_BUS_ADDR_WIDTH                     32
 #define ISP_BUS_BURST_SIZE                     1
 
-/* data-path */
+ 
 #define ISP_SCALAR_WIDTH                       32
 #define ISP_SLICE_NELEMS                       4
 #define ISP_VEC_NELEMS                         64
@@ -32,7 +20,7 @@
 #define ISP_VEC_ELEM8BITS                      16
 #define ISP_CLONE_DATAPATH_IS_16               1
 
-/* memories */
+ 
 #define ISP_DMEM_DEPTH                         4096
 #define ISP_DMEM_BSEL_DOWNSAMPLE               8
 #define ISP_VMEM_DEPTH                         3072
@@ -54,10 +42,10 @@
 #define ISP_HIST_WIDTH                         24
 #define ISP_HIST_COMPONENTS                    4
 
-/* program counter */
+ 
 #define ISP_PC_WIDTH                           13
 
-/* Template switches */
+ 
 #define ISP_SHIELD_INPUT_DMEM                  0
 #define ISP_SHIELD_OUTPUT_DMEM                 1
 #define ISP_SHIELD_INPUT_VMEM                  0
@@ -66,7 +54,7 @@
 #define ISP_SHIELD_OUTPUT_PMEM                 1
 #define ISP_SHIELD_INPUT_HIST                  1
 #define ISP_SHIELD_OUTPUT_HIST                 1
-/* When LUT is select the shielding is always on */
+ 
 #define ISP_SHIELD_INPUT_VAMEM                 1
 #define ISP_SHIELD_OUTPUT_VAMEM                1
 
@@ -90,15 +78,15 @@
 #define ISP_SPLIT_VMUL_VADD_IS                 0
 #define ISP_RFSPLIT_FPGA                       0
 
-/* RSN or Bus pipelining */
+ 
 #define ISP_RSN_PIPE                           1
 #define ISP_VSF_BUS_PIPE                       0
 
-/* extra slave port to vmem */
+ 
 #define ISP_IF_VMEM                            0
 #define ISP_GDC_VMEM                           0
 
-/* Streaming ports */
+ 
 #define ISP_IF                                 1
 #define ISP_IF_B                               1
 #define ISP_GDC                                1
@@ -106,7 +94,7 @@
 #define ISP_GPFIFO                             1
 #define ISP_SP                                 1
 
-/* Removing Issue Slot(s) */
+ 
 #define ISP_HAS_NOT_SIMD_IS2                   0
 #define ISP_HAS_NOT_SIMD_IS3                   0
 #define ISP_HAS_NOT_SIMD_IS4                   0
@@ -116,7 +104,7 @@
 #define ISP_HAS_NOT_SIMD_IS7                   0
 #define ISP_HAS_NOT_SIMD_IS8                   0
 
-/* ICache  */
+ 
 #define ISP_ICACHE                             1
 #define ISP_ICACHE_ONLY                        0
 #define ISP_ICACHE_PREFETCH                    1
@@ -124,7 +112,7 @@
 #define ISP_ICACHE_SET_BITS                    5
 #define ISP_ICACHE_BLOCKS_PER_SET_BITS         1
 
-/* Experimental Flags */
+ 
 #define ISP_EXP_1                              0
 #define ISP_EXP_2                              0
 #define ISP_EXP_3                              0
@@ -132,7 +120,7 @@
 #define ISP_EXP_5                              0
 #define ISP_EXP_6                              0
 
-/* Derived values */
+ 
 #define ISP_LOG2_PMEM_WIDTH                    10
 #define ISP_VEC_WIDTH                          896
 #define ISP_SLICE_WIDTH                        56
@@ -141,7 +129,7 @@
 #define ISP_SIMDLSU                            1
 #define ISP_LSU_IMM_BITS                       12
 
-/* convenient shortcuts for software*/
+ 
 #define ISP_NWAY                               ISP_VEC_NELEMS
 #define NBITS                                  ISP_VEC_ELEMBITS
 
@@ -149,7 +137,7 @@
 
 #define ISP_VEC_ALIGN                          ISP_VMEM_ALIGN
 
-/* register file sizes */
+ 
 #define ISP_RF0_SIZE        64
 #define ISP_RF1_SIZE        16
 #define ISP_RF2_SIZE        64
@@ -175,7 +163,7 @@
 #define ISP_FRF4_SIZE       4
 #define ISP_FRF5_SIZE       8
 #define ISP_FRF6_SIZE       4
-/* register file read latency */
+ 
 #define ISP_VRF1_READ_LAT       1
 #define ISP_VRF2_READ_LAT       1
 #define ISP_VRF3_READ_LAT       1
@@ -190,7 +178,7 @@
 #define ISP_SRF4_READ_LAT       1
 #define ISP_SRF5_READ_LAT       1
 #define ISP_SRF5_READ_LAT       1
-/* immediate sizes */
+ 
 #define ISP_IS1_IMM_BITS        14
 #define ISP_IS2_IMM_BITS        13
 #define ISP_IS3_IMM_BITS        14
@@ -200,7 +188,7 @@
 #define ISP_IS7_IMM_BITS        9
 #define ISP_IS8_IMM_BITS        16
 #define ISP_IS9_IMM_BITS        11
-/* fifo depths */
+ 
 #define ISP_IF_FIFO_DEPTH         0
 #define ISP_IF_B_FIFO_DEPTH       0
 #define ISP_DMA_FIFO_DEPTH        0

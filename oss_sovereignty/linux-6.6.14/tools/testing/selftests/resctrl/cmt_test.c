@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cache Monitoring Technology (CMT) test
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include "resctrl.h"
 #include <unistd.h>
 
@@ -18,7 +10,7 @@
 
 static int cmt_setup(struct resctrl_val_param *p)
 {
-	/* Run NUM_OF_RUNS times */
+	 
 	if (p->num_of_runs >= NUM_OF_RUNS)
 		return END_OF_TESTS;
 
@@ -51,7 +43,7 @@ static int check_results(struct resctrl_val_param *param, size_t span, int no_of
 			token = strtok(NULL, ":\t");
 		}
 
-		/* Field 3 is llc occ resc value */
+		 
 		if (runs > 0)
 			sum_llc_occu_resc += strtoul(token_array[3], NULL, 0);
 		runs++;
@@ -113,7 +105,7 @@ int cmt_resctrl_val(int cpu_no, int n, const char * const *benchmark_cmd)
 	span = cache_size * n / count_of_bits;
 
 	if (strcmp(cmd[0], "fill_buf") == 0) {
-		/* Duplicate the command to be able to replace span in it */
+		 
 		for (i = 0; benchmark_cmd[i]; i++)
 			new_cmd[i] = benchmark_cmd[i];
 		new_cmd[i] = NULL;

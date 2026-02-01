@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Atheros AR71XX/AR724X/AR913X GPIO API support
- *
- *  Copyright (C) 2015 Alban Bedel <albeu@free.fr>
- *  Copyright (C) 2010-2011 Jaiganesh Narayanan <jnarayanan@atheros.com>
- *  Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/platform_device.h>
@@ -151,10 +144,7 @@ static int ath79_gpio_irq_set_type(struct irq_data *data,
 		ctrl->both_edges &= ~mask;
 	}
 
-	/* As the IRQ configuration can't be loaded atomically we
-	 * have to disable the interrupt while the configuration state
-	 * is invalid.
-	 */
+	 
 	disabled = ath79_gpio_update_bits(
 		ctrl, AR71XX_GPIO_REG_INT_ENABLE, mask, 0);
 
@@ -199,7 +189,7 @@ static void ath79_gpio_irq_handler(struct irq_desc *desc)
 
 	pending = ath79_gpio_read(ctrl, AR71XX_GPIO_REG_INT_PENDING);
 
-	/* Update the polarity of the both edges irqs */
+	 
 	both_edges = ctrl->both_edges & pending;
 	if (both_edges) {
 		state = ath79_gpio_read(ctrl, AR71XX_GPIO_REG_IN);
@@ -273,10 +263,10 @@ static int ath79_gpio_probe(struct platform_device *pdev)
 		dev_err(dev, "bgpio_init failed\n");
 		return err;
 	}
-	/* Use base 0 to stay compatible with legacy platforms */
+	 
 	ctrl->gc.base = 0;
 
-	/* Optional interrupt setup */
+	 
 	if (!np || of_property_read_bool(np, "interrupt-controller")) {
 		girq = &ctrl->gc.irq;
 		gpio_irq_chip_set_chip(girq, &ath79_gpio_irqchip);

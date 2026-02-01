@@ -1,20 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant Linux driver for the
- *  - GENPIX 8pks/qpsk/DCII USB2.0 DVB-S module
- *
- * Copyright (C) 2006,2007 Alan Nisota (alannisota@gmail.com)
- * Copyright (C) 2006,2007 Genpix Electronics (genpix@genpix-electronics.com)
- *
- * Thanks to GENPIX for the sample code used to implement this module.
- *
- * This module is based off the vp7045 and vp702x modules
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include "gp8psk.h"
 #include "gp8psk-fe.h"
 
-/* debug */
+ 
 static char bcm4500_firmware[] = "dvb-usb-gp8psk-02.fw";
 int dvb_usb_gp8psk_debug;
 module_param_named(debug,dvb_usb_gp8psk_debug, int, 0644);
@@ -187,7 +176,7 @@ static int gp8psk_power_ctrl(struct dvb_usb_device *d, int onoff)
 
 	if (onoff) {
 		gp8psk_usb_in_op(d, GET_8PSK_CONFIG,0,0,&status,1);
-		if (! (status & bm8pskStarted)) {  /* started */
+		if (! (status & bm8pskStarted)) {   
 			if(gp_product_id == USB_PID_GENPIX_SKYWALKER_CW3K)
 				gp8psk_usb_out_op(d, CW3K_INIT, 1, 0, NULL, 0);
 			if (gp8psk_usb_in_op(d, BOOT_8PSK, 1, 0, &buf, 1))
@@ -196,27 +185,27 @@ static int gp8psk_power_ctrl(struct dvb_usb_device *d, int onoff)
 		}
 
 		if (gp_product_id == USB_PID_GENPIX_8PSK_REV_1_WARM)
-			if (! (status & bm8pskFW_Loaded)) /* BCM4500 firmware loaded */
+			if (! (status & bm8pskFW_Loaded))  
 				if(gp8psk_load_bcm4500fw(d))
 					return -EINVAL;
 
-		if (! (status & bmIntersilOn)) /* LNB Power */
+		if (! (status & bmIntersilOn))  
 			if (gp8psk_usb_in_op(d, START_INTERSIL, 1, 0,
 					&buf, 1))
 				return -EINVAL;
 
-		/* Set DVB mode to 1 */
+		 
 		if (gp_product_id == USB_PID_GENPIX_8PSK_REV_1_WARM)
 			if (gp8psk_usb_out_op(d, SET_DVB_MODE, 1, 0, NULL, 0))
 				return -EINVAL;
-		/* Abort possible TS (if previous tune crashed) */
+		 
 		if (gp8psk_usb_out_op(d, ARM_TRANSFER, 0, 0, NULL, 0))
 			return -EINVAL;
 	} else {
-		/* Turn off LNB power */
+		 
 		if (gp8psk_usb_in_op(d, START_INTERSIL, 0, 0, &buf, 1))
 			return -EINVAL;
-		/* Turn off 8psk power */
+		 
 		if (gp8psk_usb_in_op(d, BOOT_8PSK, 0, 0, &buf, 1))
 			return -EINVAL;
 		if(gp_product_id == USB_PID_GENPIX_SKYWALKER_CW3K)
@@ -232,13 +221,13 @@ static int gp8psk_bcm4500_reload(struct dvb_usb_device *d)
 
 	deb_xfer("reloading firmware\n");
 
-	/* Turn off 8psk power */
+	 
 	if (gp8psk_usb_in_op(d, BOOT_8PSK, 0, 0, &buf, 1))
 		return -EINVAL;
-	/* Turn On 8psk power */
+	 
 	if (gp8psk_usb_in_op(d, BOOT_8PSK, 1, 0, &buf, 1))
 		return -EINVAL;
-	/* load BCM4500 firmware */
+	 
 	if (gp_product_id == USB_PID_GENPIX_8PSK_REV_1_WARM)
 		if (gp8psk_load_bcm4500fw(d))
 			return -EINVAL;
@@ -250,7 +239,7 @@ static int gp8psk_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff)
 	return gp8psk_usb_out_op(adap->dev, ARM_TRANSFER, onoff, 0 , NULL, 0);
 }
 
-/* Callbacks for gp8psk-fe.c */
+ 
 
 static int gp8psk_fe_in(void *priv, u8 req, u16 value,
 			    u16 index, u8 *b, int blen)
@@ -344,7 +333,7 @@ static struct dvb_usb_device_properties gp8psk_properties = {
 		.fe = {{
 			.streaming_ctrl   = gp8psk_streaming_ctrl,
 			.frontend_attach  = gp8psk_frontend_attach,
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 7,
@@ -384,7 +373,7 @@ static struct dvb_usb_device_properties gp8psk_properties = {
 	}
 };
 
-/* usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver gp8psk_usb_driver = {
 	.name		= "dvb_usb_gp8psk",
 	.probe		= gp8psk_usb_probe,

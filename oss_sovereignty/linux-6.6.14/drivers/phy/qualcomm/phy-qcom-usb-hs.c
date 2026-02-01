@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Linaro Ltd
- */
+
+ 
 #include <linux/module.h>
 #include <linux/ulpi/driver.h>
 #include <linux/ulpi/regs.h>
@@ -156,7 +154,7 @@ static int qcom_usb_hs_phy_power_on(struct phy *phy)
 
 	if (uphy->vbus_edev) {
 		state = extcon_get_state(uphy->vbus_edev, EXTCON_USB);
-		/* setup initial state */
+		 
 		qcom_usb_hs_phy_vbus_notifier(&uphy->vbus_notify, state,
 					      uphy->vbus_edev);
 		ret = extcon_register_notifier(uphy->vbus_edev, EXTCON_USB,
@@ -226,7 +224,7 @@ static int qcom_usb_hs_phy_probe(struct ulpi *ulpi)
 					(u8 *)uphy->init_seq, size);
 	if (ret && size)
 		return ret;
-	/* NUL terminate */
+	 
 	uphy->init_seq[size / 2].addr = uphy->init_seq[size / 2].val = 0;
 
 	uphy->ref_clk = clk = devm_clk_get(&ulpi->dev, "ref");

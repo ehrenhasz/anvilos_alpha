@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence USBSS and USBSSP DRD Driver - host side
- *
- * Copyright (C) 2018-2019 Cadence Design Systems.
- * Copyright (C) 2017-2018 NXP
- *
- * Authors: Peter Chen <peter.chen@nxp.com>
- *          Pawel Laszczak <pawell@cadence.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -29,7 +21,7 @@ static void xhci_cdns3_plat_start(struct usb_hcd *hcd)
 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
 	u32 value;
 
-	/* set usbcmd.EU3S */
+	 
 	value = readl(&xhci->op_regs->command);
 	value |= CMD_PM_INDEX;
 	writel(value, &xhci->op_regs->command);
@@ -102,7 +94,7 @@ static int __cdns_host_init(struct cdns *cdns)
 		goto free_memory;
 	}
 
-	/* Glue needs to access xHCI region register for Power management */
+	 
 	hcd = platform_get_drvdata(xhci);
 	if (hcd)
 		cdns->xhci_regs = hcd->regs;

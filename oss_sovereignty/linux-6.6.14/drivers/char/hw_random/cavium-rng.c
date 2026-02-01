@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hardware Random Number Generator support.
- * Cavium Thunder, Marvell OcteonTx/Tx2 processor families.
- *
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include <linux/hw_random.h>
 #include <linux/io.h>
@@ -19,7 +14,7 @@ struct cavium_rng_pf {
 	void __iomem *control_status;
 };
 
-/* Enable the RNG hardware and activate the VF */
+ 
 static int cavium_rng_probe(struct pci_dev *pdev,
 			const struct pci_device_id *id)
 {
@@ -30,7 +25,7 @@ static int cavium_rng_probe(struct pci_dev *pdev,
 	if (!rng)
 		return -ENOMEM;
 
-	/*Map the RNG control */
+	 
 	rng->control_status = pcim_iomap(pdev, 0, 0);
 	if (!rng->control_status) {
 		dev_err(&pdev->dev,
@@ -38,16 +33,16 @@ static int cavium_rng_probe(struct pci_dev *pdev,
 		return -ENOMEM;
 	}
 
-	/* Enable the RNG hardware and entropy source */
+	 
 	writeq(THUNDERX_RNM_RNG_EN | THUNDERX_RNM_ENT_EN,
 		rng->control_status);
 
 	pci_set_drvdata(pdev, rng);
 
-	/* Enable the Cavium RNG as a VF */
+	 
 	iov_err = pci_enable_sriov(pdev, 1);
 	if (iov_err != 0) {
-		/* Disable the RNG hardware and entropy source */
+		 
 		writeq(0, rng->control_status);
 		dev_err(&pdev->dev,
 			"Error initializing RNG virtual function,(%i).\n",
@@ -58,22 +53,22 @@ static int cavium_rng_probe(struct pci_dev *pdev,
 	return 0;
 }
 
-/* Disable VF and RNG Hardware */
+ 
 static void cavium_rng_remove(struct pci_dev *pdev)
 {
 	struct cavium_rng_pf *rng;
 
 	rng = pci_get_drvdata(pdev);
 
-	/* Remove the VF */
+	 
 	pci_disable_sriov(pdev);
 
-	/* Disable the RNG hardware and entropy source */
+	 
 	writeq(0, rng->control_status);
 }
 
 static const struct pci_device_id cavium_rng_pf_id_table[] = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xa018), 0, 0, 0}, /* Thunder RNM */
+	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xa018), 0, 0, 0},  
 	{0,},
 };
 

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2022-2023  Realtek Corporation
- */
+
+ 
 
 #include "coex.h"
 #include "debug.h"
@@ -123,9 +122,7 @@ static void _set_ch(struct rtw89_dev *rtwdev, u32 val);
 
 static u8 _rxk_5ghz_group_from_idx(u8 idx)
 {
-	/* There are four RXK groups (RTW8851B_RXK_GROUP_NR), but only group 0
-	 * and 2 are used in 5 GHz band, so reduce elements to 2.
-	 */
+	 
 	if (idx < RTW8851B_RXK_GROUP_IDX_NR)
 		return idx * 2;
 
@@ -288,7 +285,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_phy_write32_mask(rtwdev, R_DCOF1, B_DCOF1_RST, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_DCOF9, B_DCOF9_RST, 0x1);
 
-	/* msbk_d: 15/14/13/12 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < 4; i++)
 		tmp |= dack->msbk_d[path][index][i + 12] << (i * 8);
@@ -297,7 +294,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", reg,
 		    rtw89_phy_read32_mask(rtwdev, reg, MASKDWORD));
 
-	/* msbk_d: 11/10/9/8 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < 4; i++)
 		tmp |= dack->msbk_d[path][index][i + 8] << (i * 8);
@@ -306,7 +303,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", reg,
 		    rtw89_phy_read32_mask(rtwdev, reg, MASKDWORD));
 
-	/* msbk_d: 7/6/5/4 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < 4; i++)
 		tmp |= dack->msbk_d[path][index][i + 4] << (i * 8);
@@ -315,7 +312,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", reg,
 		    rtw89_phy_read32_mask(rtwdev, reg, MASKDWORD));
 
-	/* msbk_d: 3/2/1/0 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < 4; i++)
 		tmp |= dack->msbk_d[path][index][i] << (i * 8);
@@ -324,7 +321,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", reg,
 		    rtw89_phy_read32_mask(rtwdev, reg, MASKDWORD));
 
-	/* dadak_d/biask_d */
+	 
 	tmp = 0x0;
 	tmp = (dack->biask_d[path][index] << 22) |
 	      (dack->dadck_d[path][index] << 14);
@@ -2272,25 +2269,25 @@ static u8 _dpk_agc(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy,
 static void _dpk_set_mdpd_para(struct rtw89_dev *rtwdev, u8 order)
 {
 	switch (order) {
-	case 0: /* (5,3,1) */
+	case 0:  
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_OP, 0x0);
 		rtw89_phy_write32_mask(rtwdev, R_DPK_IDL, B_DPK_IDL_SEL, 0x2);
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_PN, 0x4);
 		rtw89_phy_write32_mask(rtwdev, R_MDPK_SYNC, B_MDPK_SYNC_DMAN, 0x1);
 		break;
-	case 1: /* (5,3,0) */
+	case 1:  
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_OP, 0x1);
 		rtw89_phy_write32_mask(rtwdev, R_DPK_IDL, B_DPK_IDL_SEL, 0x1);
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_PN, 0x0);
 		rtw89_phy_write32_mask(rtwdev, R_MDPK_SYNC, B_MDPK_SYNC_DMAN, 0x0);
 		break;
-	case 2: /* (5,0,0) */
+	case 2:  
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_OP, 0x2);
 		rtw89_phy_write32_mask(rtwdev, R_DPK_IDL, B_DPK_IDL_SEL, 0x0);
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_PN, 0x0);
 		rtw89_phy_write32_mask(rtwdev, R_MDPK_SYNC, B_MDPK_SYNC_DMAN, 0x0);
 		break;
-	case 3: /* (7,3,1) */
+	case 3:  
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_OP, 0x3);
 		rtw89_phy_write32_mask(rtwdev, R_DPK_IDL, B_DPK_IDL_SEL, 0x3);
 		rtw89_phy_write32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_PN, 0x4);
@@ -2334,13 +2331,13 @@ static u8 _dpk_order_convert(struct rtw89_dev *rtwdev)
 	order = rtw89_phy_read32_mask(rtwdev, R_LDL_NORM, B_LDL_NORM_OP);
 
 	switch (order) {
-	case 0: /* (5,3,1) */
+	case 0:  
 		val = 0x6;
 		break;
-	case 1: /* (5,3,0) */
+	case 1:  
 		val = 0x2;
 		break;
-	case 2: /* (5,0,0) */
+	case 2:  
 		val = 0x0;
 		break;
 	default:
@@ -2598,7 +2595,7 @@ static void _rck(struct rtw89_dev *rtwdev, enum rtw89_rf_path path)
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[RCK] RF0x00 = 0x%05x\n",
 		    rtw89_read_rf(rtwdev, path, RR_MOD, RFREG_MASK));
 
-	/* RCK trigger */
+	 
 	rtw89_write_rf(rtwdev, path, RR_RCKC, RFREG_MASK, 0x00240);
 
 	ret = read_poll_timeout_atomic(rtw89_read_rf, val, val, 2, 30,

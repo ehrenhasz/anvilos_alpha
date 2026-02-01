@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/nfs/super.c
- *
- *  Copyright (C) 1992  Rick Sladkey
- *
- *  nfs superblock handling functions
- *
- *  Modularised by Alan Cox <alan@lxorguk.ukuu.org.uk>, while hacking some
- *  experimental NFS changes. Modularisation taken straight from SYS5 fs.
- *
- *  Change to nfs_read_super() to permit NFS mounts to multi-homed hosts.
- *  J.S.Peatfield@damtp.cam.ac.uk
- *
- *  Split from inode.c by David Howells <dhowells@redhat.com>
- *
- * - superblocks are indexed on server only - all inodes, dentries, etc. associated with a
- *   particular server are held in the same superblock
- * - NFS superblocks can have several effective roots to the dentry tree
- * - directory type roots are spliced into the tree when a path from one root reaches the root
- *   of another (see nfs_lookup())
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -127,7 +107,7 @@ static void nfs_ssc_unregister_ops(void)
 {
 	nfs_ssc_unregister(&nfs_ssc_clnt_ops_tbl);
 }
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 
 static struct shrinker acl_shrinker = {
 	.count_objects	= nfs_access_cache_count,
@@ -135,9 +115,7 @@ static struct shrinker acl_shrinker = {
 	.seeks		= DEFAULT_SEEKS,
 };
 
-/*
- * Register the NFS filesystems
- */
+ 
 int __init register_nfs_fs(void)
 {
 	int ret;
@@ -170,9 +148,7 @@ error_0:
 	return ret;
 }
 
-/*
- * Unregister the NFS filesystems
- */
+ 
 void __exit unregister_nfs_fs(void)
 {
 	unregister_shrinker(&acl_shrinker);
@@ -240,9 +216,7 @@ int nfs_client_for_each_server(struct nfs_client *clp,
 }
 EXPORT_SYMBOL_GPL(nfs_client_for_each_server);
 
-/*
- * Deliver file system statistics to userspace
- */
+ 
 int nfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct nfs_server *server = NFS_SB(dentry->d_sb);
@@ -270,20 +244,10 @@ int nfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 
 	buf->f_type = NFS_SUPER_MAGIC;
 
-	/*
-	 * Current versions of glibc do not correctly handle the
-	 * case where f_frsize != f_bsize.  Eventually we want to
-	 * report the value of wtmult in this field.
-	 */
+	 
 	buf->f_frsize = dentry->d_sb->s_blocksize;
 
-	/*
-	 * On most *nix systems, f_blocks, f_bfree, and f_bavail
-	 * are reported in units of f_frsize.  Linux hasn't had
-	 * an f_frsize field in its statfs struct until recently,
-	 * thus historically Linux's sys_statfs reports these
-	 * fields in units of f_bsize.
-	 */
+	 
 	buf->f_bsize = dentry->d_sb->s_blocksize;
 	blockbits = dentry->d_sb->s_blocksize_bits;
 	blockres = (1 << blockbits) - 1;
@@ -304,16 +268,14 @@ int nfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 }
 EXPORT_SYMBOL_GPL(nfs_statfs);
 
-/*
- * Map the security flavour number to a name
- */
+ 
 static const char *nfs_pseudoflavour_to_name(rpc_authflavor_t flavour)
 {
 	static const struct {
 		rpc_authflavor_t flavour;
 		const char *str;
 	} sec_flavours[NFS_AUTH_INFO_MAX_FLAVORS] = {
-		/* update NFS_AUTH_INFO_MAX_FLAVORS when this list changes! */
+		 
 		{ RPC_AUTH_NULL, "null" },
 		{ RPC_AUTH_UNIX, "sys" },
 		{ RPC_AUTH_GSS_KRB5, "krb5" },
@@ -426,9 +388,7 @@ static void nfs_show_nfs_version(struct seq_file *m,
 		seq_printf(m, ".%u", minorversion);
 }
 
-/*
- * Describe the mount options in force on this server representation
- */
+ 
 static void nfs_show_mount_options(struct seq_file *m, struct nfs_server *nfss,
 				   int showdefaults)
 {
@@ -544,9 +504,7 @@ static void nfs_show_mount_options(struct seq_file *m, struct nfs_server *nfss,
 	}
 }
 
-/*
- * Describe the mount options on this VFS mountpoint
- */
+ 
 int nfs_show_options(struct seq_file *m, struct dentry *root)
 {
 	struct nfs_server *nfss = NFS_SB(root->d_sb);
@@ -640,9 +598,7 @@ int nfs_show_path(struct seq_file *m, struct dentry *dentry)
 }
 EXPORT_SYMBOL_GPL(nfs_show_path);
 
-/*
- * Present statistical information for this VFS mountpoint
- */
+ 
 int nfs_show_stats(struct seq_file *m, struct dentry *root)
 {
 	int i, cpu;
@@ -652,9 +608,7 @@ int nfs_show_stats(struct seq_file *m, struct dentry *root)
 
 	seq_printf(m, "statvers=%s", NFS_IOSTAT_VERS);
 
-	/*
-	 * Display all mount option settings
-	 */
+	 
 	seq_puts(m, "\n\topts:\t");
 	seq_puts(m, sb_rdonly(root->d_sb) ? "ro" : "rw");
 	seq_puts(m, root->d_sb->s_flags & SB_SYNCHRONOUS ? ",sync" : "");
@@ -686,16 +640,12 @@ int nfs_show_stats(struct seq_file *m, struct dentry *root)
 	}
 #endif
 
-	/*
-	 * Display security flavor in effect for this mount
-	 */
+	 
 	seq_printf(m, "\n\tsec:\tflavor=%u", auth->au_ops->au_flavor);
 	if (auth->au_flavor)
 		seq_printf(m, ",pseudoflavor=%u", auth->au_flavor);
 
-	/*
-	 * Display superblock I/O counters
-	 */
+	 
 	for_each_possible_cpu(cpu) {
 		struct nfs_iostats *stats;
 
@@ -724,17 +674,14 @@ int nfs_show_stats(struct seq_file *m, struct dentry *root)
 }
 EXPORT_SYMBOL_GPL(nfs_show_stats);
 
-/*
- * Begin unmount by attempting to remove all automounted mountpoints we added
- * in response to xdev traversals and referrals
- */
+ 
 void nfs_umount_begin(struct super_block *sb)
 {
 	struct nfs_server *server;
 	struct rpc_clnt *rpc;
 
 	server = NFS_SB(sb);
-	/* -EIO all pending I/O */
+	 
 	rpc = server->client_acl;
 	if (!IS_ERR(rpc))
 		rpc_killall_tasks(rpc);
@@ -744,10 +691,7 @@ void nfs_umount_begin(struct super_block *sb)
 }
 EXPORT_SYMBOL_GPL(nfs_umount_begin);
 
-/*
- * Return true if 'match' is in auth_info or auth_info is empty.
- * Return false otherwise.
- */
+ 
 bool nfs_auth_info_match(const struct nfs_auth_info *auth_info,
 			 rpc_authflavor_t match)
 {
@@ -764,11 +708,7 @@ bool nfs_auth_info_match(const struct nfs_auth_info *auth_info,
 }
 EXPORT_SYMBOL_GPL(nfs_auth_info_match);
 
-/*
- * Ensure that a specified authtype in ctx->auth_info is supported by
- * the server. Returns 0 and sets ctx->selected_flavor if it's ok, and
- * -EACCES if not.
- */
+ 
 static int nfs_verify_authflavors(struct nfs_fs_context *ctx,
 				  rpc_authflavor_t *server_authlist,
 				  unsigned int count)
@@ -777,18 +717,7 @@ static int nfs_verify_authflavors(struct nfs_fs_context *ctx,
 	bool found_auth_null = false;
 	unsigned int i;
 
-	/*
-	 * If the sec= mount option is used, the specified flavor or AUTH_NULL
-	 * must be in the list returned by the server.
-	 *
-	 * AUTH_NULL has a special meaning when it's in the server list - it
-	 * means that the server will ignore the rpc creds, so any flavor
-	 * can be used but still use the sec= that was specified.
-	 *
-	 * Note also that the MNT procedure in MNTv1 does not return a list
-	 * of supported security flavors. In this case, nfs_mount() fabricates
-	 * a security flavor list containing just AUTH_NULL.
-	 */
+	 
 	for (i = 0; i < count; i++) {
 		flavor = server_authlist[i];
 
@@ -814,10 +743,7 @@ out:
 	return 0;
 }
 
-/*
- * Use the remote server's MOUNT service to request the NFS file handle
- * corresponding to the provided path.
- */
+ 
 static int nfs_request_mount(struct fs_context *fc,
 			     struct nfs_fh *root_fh,
 			     rpc_authflavor_t *server_authlist,
@@ -852,9 +778,7 @@ static int nfs_request_mount(struct fs_context *fc,
 	else
 		request.hostname = ctx->nfs_server.hostname;
 
-	/*
-	 * Construct the mount server's address.
-	 */
+	 
 	if (ctx->mount_server.address.sa_family == AF_UNSPEC) {
 		memcpy(request.sap, &ctx->nfs_server._address,
 		       ctx->nfs_server.addrlen);
@@ -863,10 +787,7 @@ static int nfs_request_mount(struct fs_context *fc,
 	request.salen = ctx->mount_server.addrlen;
 	nfs_set_port(request.sap, &ctx->mount_server.port, 0);
 
-	/*
-	 * Now ask the mount server to map our export path
-	 * to a file handle.
-	 */
+	 
 	status = nfs_mount(&request, ctx->timeo, ctx->retrans);
 	if (status != 0) {
 		dfprintk(MOUNT, "NFS: unable to mount server %s, error %d\n",
@@ -892,10 +813,7 @@ static struct nfs_server *nfs_try_mount_request(struct fs_context *fc)
 	if (status)
 		return ERR_PTR(status);
 
-	/*
-	 * Was a sec= authflavor specified in the options? First, verify
-	 * whether the server supports it, and then just try to use it if so.
-	 */
+	 
 	if (ctx->auth_info.flavor_len > 0) {
 		status = nfs_verify_authflavors(ctx, authlist, authlist_len);
 		dfprintk(MOUNT, "NFS: using auth flavor %u\n",
@@ -905,11 +823,7 @@ static struct nfs_server *nfs_try_mount_request(struct fs_context *fc)
 		return ctx->nfs_mod->rpc_ops->create_server(fc);
 	}
 
-	/*
-	 * No sec= option was provided. RFC 2623, section 2.7 suggests we
-	 * SHOULD prefer the flavor listed first. However, some servers list
-	 * AUTH_NULL first. Avoid ever choosing AUTH_NULL.
-	 */
+	 
 	for (i = 0; i < authlist_len; ++i) {
 		rpc_authflavor_t flavor;
 		struct rpcsec_gss_info info;
@@ -934,15 +848,11 @@ static struct nfs_server *nfs_try_mount_request(struct fs_context *fc)
 			return server;
 	}
 
-	/*
-	 * Nothing we tried so far worked. At this point, give up if we've
-	 * already tried AUTH_UNIX or if the server's list doesn't contain
-	 * AUTH_NULL
-	 */
+	 
 	if (tried_auth_unix || !auth_null_in_list)
 		return server;
 
-	/* Last chance! Try AUTH_UNIX */
+	 
 	dfprintk(MOUNT, "NFS: attempting to use auth flavor %u\n", RPC_AUTH_UNIX);
 	ctx->selected_flavor = RPC_AUTH_UNIX;
 	return ctx->nfs_mod->rpc_ops->create_server(fc);
@@ -1010,27 +920,17 @@ int nfs_reconfigure(struct fs_context *fc)
 
 	sync_filesystem(sb);
 
-	/*
-	 * Userspace mount programs that send binary options generally send
-	 * them populated with default values. We have no way to know which
-	 * ones were explicitly specified. Fall back to legacy behavior and
-	 * just return success.
-	 */
+	 
 	if (ctx->skip_reconfig_option_check)
 		return 0;
 
-	/*
-	 * noac is a special case. It implies -o sync, but that's not
-	 * necessarily reflected in the mtab options. reconfigure_super
-	 * will clear SB_SYNCHRONOUS if -o sync wasn't specified in the
-	 * remount options, so we have to explicitly reset it.
-	 */
+	 
 	if (ctx->flags & NFS_MOUNT_NOAC) {
 		fc->sb_flags |= SB_SYNCHRONOUS;
 		fc->sb_flags_mask |= SB_SYNCHRONOUS;
 	}
 
-	/* compare new mount options with old ones */
+	 
 	ret = nfs_compare_remount_data(nfss, ctx);
 	if (ret)
 		return ret;
@@ -1039,9 +939,7 @@ int nfs_reconfigure(struct fs_context *fc)
 }
 EXPORT_SYMBOL_GPL(nfs_reconfigure);
 
-/*
- * Finish setting up an NFS superblock
- */
+ 
 static void nfs_fill_super(struct super_block *sb, struct nfs_fs_context *ctx)
 {
 	struct nfs_server *server = NFS_SB(sb);
@@ -1060,10 +958,7 @@ static void nfs_fill_super(struct super_block *sb, struct nfs_fs_context *ctx)
 		sb->s_time_max = U32_MAX;
 		break;
 	case 3:
-		/*
-		 * The VFS shouldn't apply the umask to mode bits.
-		 * We will do so ourselves when necessary.
-		 */
+		 
 		sb->s_flags |= SB_POSIXACL;
 		sb->s_time_gran = 1;
 		sb->s_time_min = 0;
@@ -1082,7 +977,7 @@ static void nfs_fill_super(struct super_block *sb, struct nfs_fs_context *ctx)
 
 	sb->s_magic = NFS_SUPER_MAGIC;
 
-	/* We probably want something more informative here */
+	 
 	snprintf(sb->s_id, sizeof(sb->s_id),
 		 "%u:%u", MAJOR(sb->s_dev), MINOR(sb->s_dev));
 
@@ -1202,7 +1097,7 @@ static int nfs_compare_super(struct super_block *sb, struct fs_context *fc)
 
 	if (!nfs_compare_super_address(old, server))
 		return 0;
-	/* Note: NFS_MOUNT_UNSHARED == NFS4_MOUNT_UNSHARED */
+	 
 	if (old->flags & NFS_MOUNT_UNSHARED)
 		return 0;
 	if (memcmp(&old->fsid, &server->fsid, sizeof(old->fsid)) != 0)
@@ -1270,7 +1165,7 @@ int nfs_get_tree_common(struct fs_context *fc)
 	if (server->flags & NFS_MOUNT_UNSHARED)
 		compare_super = NULL;
 
-	/* -o noac implies -o sync */
+	 
 	if (server->flags & NFS_MOUNT_NOAC)
 		fc->sb_flags |= SB_SYNCHRONOUS;
 
@@ -1278,7 +1173,7 @@ int nfs_get_tree_common(struct fs_context *fc)
 		if (ctx->clone_data.sb->s_flags & SB_SYNCHRONOUS)
 			fc->sb_flags |= SB_SYNCHRONOUS;
 
-	/* Get a superblock - note that we may end up sharing one that already exists */
+	 
 	fc->s_fs_info = server;
 	s = sget_fc(fc, compare_super, nfs_set_super);
 	fc->s_fs_info = NULL;
@@ -1302,7 +1197,7 @@ int nfs_get_tree_common(struct fs_context *fc)
 
 	if (!s->s_root) {
 		unsigned bsize = ctx->clone_data.inherited_bsize;
-		/* initial superblock/root creation */
+		 
 		nfs_fill_super(s, ctx);
 		if (bsize) {
 			s->s_blocksize_bits = bsize;
@@ -1333,9 +1228,7 @@ error_splat_super:
 	goto out;
 }
 
-/*
- * Destroy an NFS superblock
- */
+ 
 void nfs_kill_super(struct super_block *s)
 {
 	struct nfs_server *server = NFS_SB(s);
@@ -1351,15 +1244,12 @@ EXPORT_SYMBOL_GPL(nfs_kill_super);
 
 #if IS_ENABLED(CONFIG_NFS_V4)
 
-/*
- * NFS v4 module parameters need to stay in the
- * NFS client for backwards compatibility
- */
+ 
 unsigned int nfs_callback_set_tcpport;
 unsigned short nfs_callback_nr_threads;
-/* Default cache timeout is 10 minutes */
+ 
 unsigned int nfs_idmap_cache_timeout = 600;
-/* Turn off NFSv4 uid/gid mapping when using AUTH_SYS */
+ 
 bool nfs4_disable_idmapping = true;
 unsigned short max_session_slots = NFS4_DEF_SLOT_TABLE_SIZE;
 unsigned short max_session_cb_slots = NFS4_DEF_CB_SLOT_TABLE_SIZE;
@@ -1425,4 +1315,4 @@ MODULE_PARM_DESC(recover_lost_locks,
 		 "try to recover it risking data corruption.");
 
 
-#endif /* CONFIG_NFS_V4 */
+#endif  

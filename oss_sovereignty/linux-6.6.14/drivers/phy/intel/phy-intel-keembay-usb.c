@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Keem Bay USB PHY driver
- * Copyright (C) 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -14,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* USS (USB Subsystem) clock control registers */
+ 
 #define USS_CPR_CLK_EN		0x00
 #define USS_CPR_CLK_SET		0x04
 #define USS_CPR_CLK_CLR		0x08
@@ -22,7 +19,7 @@
 #define USS_CPR_RST_SET		0x14
 #define USS_CPR_RST_CLR		0x18
 
-/* USS clock/reset bit fields */
+ 
 #define USS_CPR_PHY_TST		BIT(6)
 #define USS_CPR_LOW_JIT		BIT(5)
 #define USS_CPR_CORE		BIT(4)
@@ -32,7 +29,7 @@
 #define USS_CPR_SYS		BIT(0)
 #define USS_CPR_MASK		GENMASK(6, 0)
 
-/* USS APB slave registers */
+ 
 #define USS_USB_CTRL_CFG0		0x10
 #define  VCC_RESET_N_MASK		BIT(31)
 
@@ -96,7 +93,7 @@ static int keembay_usb_clocks_on(struct keembay_usb_phy *priv)
 		return ret;
 	}
 
-	/* Wait 30us to ensure all analog blocks are powered up. */
+	 
 	usleep_range(30, 60);
 
 	ret = regmap_update_bits(priv->regmap_slv, USS_USB_PHY_CFG0,
@@ -157,10 +154,7 @@ static int keembay_usb_phy_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/*
-	 * According to Keem Bay datasheet, wait minimum 20us after clock
-	 * enable before bringing PHYs out of reset.
-	 */
+	 
 	usleep_range(20, 40);
 
 	ret = keembay_usb_phys_on(priv);
@@ -176,10 +170,7 @@ static int keembay_usb_phy_init(struct phy *phy)
 		return ret;
 	}
 
-	/*
-	 * According to Keem Bay datasheet, wait 2us after disabling the
-	 * clock into the USB 3.x parallel interface.
-	 */
+	 
 	udelay(2);
 
 	ret = regmap_update_bits(priv->regmap_slv,
@@ -216,10 +207,7 @@ static int keembay_usb_phy_init(struct phy *phy)
 		return ret;
 	}
 
-	/*
-	 * According to Keem Bay datasheet, wait 20us after setting the
-	 * SRAM load done bit, before releasing the controller reset.
-	 */
+	 
 	usleep_range(20, 40);
 
 	return keembay_usb_core_on(priv);
@@ -272,12 +260,12 @@ static int keembay_usb_phy_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(phy_provider),
 				     "failed to register phy provider\n");
 
-	/* Setup USB subsystem clocks */
+	 
 	ret = keembay_usb_clocks_on(priv);
 	if (ret)
 		return ret;
 
-	/* and turn on the DWC3 core, prior to DWC3 driver init. */
+	 
 	return keembay_usb_core_on(priv);
 }
 

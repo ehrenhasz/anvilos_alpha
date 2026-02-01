@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/ieee80211.h>
 #include <linux/kernel.h>
@@ -328,7 +326,7 @@ static int ath11k_dp_purge_mon_ring(struct ath11k_base *ab)
 								 NULL,
 								 DP_MON_SERVICE_BUDGET);
 
-		/* nothing more to reap */
+		 
 		if (reaped < DP_MON_SERVICE_BUDGET)
 			return 0;
 
@@ -339,7 +337,7 @@ static int ath11k_dp_purge_mon_ring(struct ath11k_base *ab)
 	return -ETIMEDOUT;
 }
 
-/* Returns number of Rx buffers replenished */
+ 
 int ath11k_dp_rxbufs_replenish(struct ath11k_base *ab, int mac_id,
 			       struct dp_rxdma_ring *rx_ring,
 			       int req_entries,
@@ -441,9 +439,7 @@ static int ath11k_dp_rxdma_buf_ring_free(struct ath11k *ar,
 	spin_lock_bh(&rx_ring->idr_lock);
 	idr_for_each_entry(&rx_ring->bufs_idr, skb, buf_id) {
 		idr_remove(&rx_ring->bufs_idr, buf_id);
-		/* TODO: Understand where internal driver does this dma_unmap
-		 * of rxdma_buffer.
-		 */
+		 
 		dma_unmap_single(ar->ab->dev, ATH11K_SKB_RXCB(skb)->paddr,
 				 skb->len + skb_tailroom(skb), DMA_FROM_DEVICE);
 		dev_kfree_skb_any(skb);
@@ -620,13 +616,9 @@ static int ath11k_dp_rx_pdev_srng_alloc(struct ath11k *ar)
 		}
 	}
 
-	/* if rxdma1_enable is false, then it doesn't need
-	 * to setup rxdam_mon_buf_ring, rxdma_mon_dst_ring
-	 * and rxdma_mon_desc_ring.
-	 * init reap timer for QCA6390.
-	 */
+	 
 	if (!ar->ab->hw_params.rxdma1_enable) {
-		//init mon status buffer reap timer
+		 
 		timer_setup(&ar->ab->mon_reap_timer,
 			    ath11k_dp_service_mon_ring, 0);
 		return 0;
@@ -765,7 +757,7 @@ static void ath11k_dp_rx_tid_del_func(struct ath11k_dp *dp, void *ctx,
 	if (status == HAL_REO_CMD_DRAIN) {
 		goto free_desc;
 	} else if (status != HAL_REO_CMD_SUCCESS) {
-		/* Shouldn't happen! Cleanup in case of other failure? */
+		 
 		ath11k_warn(ab, "failed to delete rx tid %d hw descriptor %d\n",
 			    rx_tid->tid, status);
 		return;
@@ -782,7 +774,7 @@ static void ath11k_dp_rx_tid_del_func(struct ath11k_dp *dp, void *ctx,
 	list_add_tail(&elem->list, &dp->reo_cmd_cache_flush_list);
 	dp->reo_cmd_cache_flush_count++;
 
-	/* Flush and invalidate aged REO desc from HW cache */
+	 
 	list_for_each_entry_safe(elem, tmp, &dp->reo_cmd_cache_flush_list,
 				 list) {
 		if (dp->reo_cmd_cache_flush_count > DP_REO_DESC_FREE_THRESHOLD ||
@@ -1016,7 +1008,7 @@ int ath11k_peer_rx_tid_setup(struct ath11k *ar, const u8 *peer_mac, int vdev_id,
 	}
 
 	rx_tid = &peer->rx_tid[tid];
-	/* Update the tid queue if it is already setup */
+	 
 	if (rx_tid->active) {
 		paddr = rx_tid->paddr;
 		ret = ath11k_peer_rx_tid_reo_update(ar, peer, rx_tid,
@@ -1041,9 +1033,7 @@ int ath11k_peer_rx_tid_setup(struct ath11k *ar, const u8 *peer_mac, int vdev_id,
 
 	rx_tid->ba_win_sz = ba_win_sz;
 
-	/* TODO: Optimize the memory allocation for qos tid based on
-	 * the actual BA window size in REO tid update path.
-	 */
+	 
 	if (tid == HAL_DESC_REO_NON_QOS_TID)
 		hw_desc_sz = ath11k_hal_reo_qdesc_size(ba_win_sz, tid);
 	else
@@ -1171,10 +1161,7 @@ int ath11k_dp_peer_rx_pn_replay_config(struct ath11k_vif *arvif,
 	u8 tid;
 	int ret = 0;
 
-	/* NOTE: Enable PN/TSC replay check offload only for unicast frames.
-	 * We use mac80211 PN/TSC replay check functionality for bcast/mcast
-	 * for now.
-	 */
+	 
 	if (!(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return 0;
 
@@ -1418,10 +1405,7 @@ ath11k_update_per_peer_tx_stats(struct ath11k *ar,
 	sgi = HTT_USR_RATE_GI(user_rate->rate_flags);
 	dcm = HTT_USR_RATE_DCM(user_rate->rate_flags);
 
-	/* Note: If host configured fixed rates and in some other special
-	 * cases, the broadcast/management frames are sent in different rates.
-	 * Firmware rate's control to be skipped for this?
-	 */
+	 
 
 	if (flags == WMI_RATE_PREAMBLE_HE && mcs > ATH11K_HE_MCS_MAX) {
 		ath11k_warn(ab, "Invalid HE mcs %d peer stats",  mcs);
@@ -1499,9 +1483,7 @@ ath11k_update_per_peer_tx_stats(struct ath11k *ar,
 	arsta->tx_duration += tx_duration;
 	memcpy(&arsta->last_txrate, &arsta->txrate, sizeof(struct rate_info));
 
-	/* PPDU stats reported for mgmt packet doesn't have valid tx bytes.
-	 * So skip peer stats update for mgmt packets.
-	 */
+	 
 	if (tid < HTT_PPDU_STATS_NON_QOS_TID) {
 		memset(peer_stats, 0, sizeof(*peer_stats));
 		peer_stats->succ_pkts = succ_pkts;
@@ -1775,10 +1757,7 @@ static int ath11k_dp_rx_msdu_coalesce(struct ath11k *ar,
 	int space_extra, rem_len, buf_len;
 	u32 hal_rx_desc_sz = ar->ab->hw_params.hal_desc_sz;
 
-	/* As the msdu is spread across multiple rx buffers,
-	 * find the offset to the start of msdu for computing
-	 * the length of the msdu in the first buffer.
-	 */
+	 
 	buf_first_hdr_len = hal_rx_desc_sz + l3pad_bytes;
 	buf_first_len = DP_RX_BUFFER_SIZE - buf_first_hdr_len;
 
@@ -1792,22 +1771,17 @@ static int ath11k_dp_rx_msdu_coalesce(struct ath11k *ar,
 	rxcb->is_first_msdu = ath11k_dp_rx_h_msdu_end_first_msdu(ab, ldesc);
 	rxcb->is_last_msdu = ath11k_dp_rx_h_msdu_end_last_msdu(ab, ldesc);
 
-	/* MSDU spans over multiple buffers because the length of the MSDU
-	 * exceeds DP_RX_BUFFER_SIZE - HAL_RX_DESC_SIZE. So assume the data
-	 * in the first buf is of length DP_RX_BUFFER_SIZE - HAL_RX_DESC_SIZE.
-	 */
+	 
 	skb_put(first, DP_RX_BUFFER_SIZE);
 	skb_pull(first, buf_first_hdr_len);
 
-	/* When an MSDU spread over multiple buffers attention, MSDU_END and
-	 * MPDU_END tlvs are valid only in the last buffer. Copy those tlvs.
-	 */
+	 
 	ath11k_dp_rx_desc_end_tlv_copy(ab, rxcb->rx_desc, ldesc);
 
 	space_extra = msdu_len - (buf_first_len + skb_tailroom(first));
 	if (space_extra > 0 &&
 	    (pskb_expand_head(first, 0, space_extra, GFP_ATOMIC) < 0)) {
-		/* Free up all buffers of the MSDU */
+		 
 		while ((skb = __skb_dequeue(msdu_list)) != NULL) {
 			rxcb = ATH11K_SKB_RXCB(skb);
 			if (!rxcb->is_continuation) {
@@ -1974,7 +1948,7 @@ static void ath11k_dp_rx_h_undecap_nwifi(struct ath11k *ar,
 	u16 qos_ctl = 0;
 	u8 *qos;
 
-	/* copy SA & DA and pull decapped header */
+	 
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	hdr_len = ieee80211_hdrlen(hdr->frame_control);
 	ether_addr_copy(da, ieee80211_get_DA(hdr));
@@ -1982,24 +1956,20 @@ static void ath11k_dp_rx_h_undecap_nwifi(struct ath11k *ar,
 	skb_pull(msdu, ieee80211_hdrlen(hdr->frame_control));
 
 	if (rxcb->is_first_msdu) {
-		/* original 802.11 header is valid for the first msdu
-		 * hence we can reuse the same header
-		 */
+		 
 		hdr = (struct ieee80211_hdr *)first_hdr;
 		hdr_len = ieee80211_hdrlen(hdr->frame_control);
 
-		/* Each A-MSDU subframe will be reported as a separate MSDU,
-		 * so strip the A-MSDU bit from QoS Ctl.
-		 */
+		 
 		if (ieee80211_is_data_qos(hdr->frame_control)) {
 			qos = ieee80211_get_qos_ctl(hdr);
 			qos[0] &= ~IEEE80211_QOS_CTL_A_MSDU_PRESENT;
 		}
 	} else {
-		/*  Rebuild qos header if this is a middle/last msdu */
+		 
 		hdr->frame_control |= __cpu_to_le16(IEEE80211_STYPE_QOS_DATA);
 
-		/* Reset the order bit as the HT_Control header is stripped */
+		 
 		hdr->frame_control &= ~(__cpu_to_le16(IEEE80211_FCTL_ORDER));
 
 		qos_ctl = rxcb->tid;
@@ -2007,9 +1977,9 @@ static void ath11k_dp_rx_h_undecap_nwifi(struct ath11k *ar,
 		if (ath11k_dp_rx_h_msdu_start_mesh_ctl_present(ar->ab, rxcb->rx_desc))
 			qos_ctl |= IEEE80211_QOS_CTL_MESH_CONTROL_PRESENT;
 
-		/* TODO Add other QoS ctl fields when required */
+		 
 
-		/* copy decap header before overwriting for reuse below */
+		 
 		memcpy(decap_hdr, (uint8_t *)hdr, hdr_len);
 	}
 
@@ -2030,9 +2000,7 @@ static void ath11k_dp_rx_h_undecap_nwifi(struct ath11k *ar,
 
 	memcpy(skb_push(msdu, hdr_len), hdr, hdr_len);
 
-	/* original 802.11 header has a different DA and in
-	 * case of 4addr it may also have different SA
-	 */
+	 
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	ether_addr_copy(ieee80211_get_DA(hdr), da);
 	ether_addr_copy(ieee80211_get_SA(hdr), sa);
@@ -2061,7 +2029,7 @@ static void ath11k_dp_rx_h_undecap_raw(struct ath11k *ar, struct sk_buff *msdu,
 
 	hdr = (void *)msdu->data;
 
-	/* Tail */
+	 
 	if (status->flag & RX_FLAG_IV_STRIPPED) {
 		skb_trim(msdu, msdu->len -
 			 ath11k_dp_rx_crypto_mic_len(ar, enctype));
@@ -2069,24 +2037,24 @@ static void ath11k_dp_rx_h_undecap_raw(struct ath11k *ar, struct sk_buff *msdu,
 		skb_trim(msdu, msdu->len -
 			 ath11k_dp_rx_crypto_icv_len(ar, enctype));
 	} else {
-		/* MIC */
+		 
 		if (status->flag & RX_FLAG_MIC_STRIPPED)
 			skb_trim(msdu, msdu->len -
 				 ath11k_dp_rx_crypto_mic_len(ar, enctype));
 
-		/* ICV */
+		 
 		if (status->flag & RX_FLAG_ICV_STRIPPED)
 			skb_trim(msdu, msdu->len -
 				 ath11k_dp_rx_crypto_icv_len(ar, enctype));
 	}
 
-	/* MMIC */
+	 
 	if ((status->flag & RX_FLAG_MMIC_STRIPPED) &&
 	    !ieee80211_has_morefrags(hdr->frame_control) &&
 	    enctype == HAL_ENCRYPT_TYPE_TKIP_MIC)
 		skb_trim(msdu, msdu->len - IEEE80211_CCMP_MIC_LEN);
 
-	/* Head */
+	 
 	if (status->flag & RX_FLAG_IV_STRIPPED) {
 		hdr_len = ieee80211_hdrlen(hdr->frame_control);
 		crypto_len = ath11k_dp_rx_crypto_param_len(ar, enctype);
@@ -2141,17 +2109,17 @@ static void ath11k_dp_rx_h_undecap_eth(struct ath11k *ar,
 	if (WARN_ON_ONCE(!rfc1042))
 		return;
 
-	/* pull decapped header and copy SA & DA */
+	 
 	eth = (struct ethhdr *)msdu->data;
 	ether_addr_copy(da, eth->h_dest);
 	ether_addr_copy(sa, eth->h_source);
 	skb_pull(msdu, sizeof(struct ethhdr));
 
-	/* push rfc1042/llc/snap */
+	 
 	memcpy(skb_push(msdu, sizeof(struct ath11k_dp_rfc1042_hdr)), rfc1042,
 	       sizeof(struct ath11k_dp_rfc1042_hdr));
 
-	/* push original 802.11 header */
+	 
 	hdr = (struct ieee80211_hdr *)first_hdr;
 	hdr_len = ieee80211_hdrlen(hdr->frame_control);
 
@@ -2164,9 +2132,7 @@ static void ath11k_dp_rx_h_undecap_eth(struct ath11k *ar,
 
 	memcpy(skb_push(msdu, hdr_len), hdr, hdr_len);
 
-	/* original 802.11 header has a different DA and in
-	 * case of 4addr it may also have different SA
-	 */
+	 
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	ether_addr_copy(ieee80211_get_DA(hdr), da);
 	ether_addr_copy(ieee80211_get_SA(hdr), sa);
@@ -2197,7 +2163,7 @@ static void ath11k_dp_rx_h_undecap(struct ath11k *ar, struct sk_buff *msdu,
 	case DP_RX_DECAP_TYPE_ETHERNET2_DIX:
 		ehdr = (struct ethhdr *)msdu->data;
 
-		/* mac80211 allows fast path only for authorized STA */
+		 
 		if (ehdr->h_proto == cpu_to_be16(ETH_P_PAE)) {
 			ATH11K_SKB_RXCB(msdu)->is_eapol = true;
 			ath11k_dp_rx_h_undecap_eth(ar, msdu, first_hdr,
@@ -2205,15 +2171,13 @@ static void ath11k_dp_rx_h_undecap(struct ath11k *ar, struct sk_buff *msdu,
 			break;
 		}
 
-		/* PN for mcast packets will be validated in mac80211;
-		 * remove eth header and add 802.11 header.
-		 */
+		 
 		if (ATH11K_SKB_RXCB(msdu)->is_mcbc && decrypted)
 			ath11k_dp_rx_h_undecap_eth(ar, msdu, first_hdr,
 						   enctype, status);
 		break;
 	case DP_RX_DECAP_TYPE_8023:
-		/* TODO: Handle undecap for these formats */
+		 
 		break;
 	}
 }
@@ -2255,7 +2219,7 @@ static void ath11k_dp_rx_h_mpdu(struct ath11k *ar,
 	struct rx_attention *rx_attention;
 	u32 err_bitmap;
 
-	/* PN for multicast packets will be checked in mac80211 */
+	 
 	rxcb = ATH11K_SKB_RXCB(msdu);
 	fill_crypto_hdr = ath11k_dp_rx_h_attn_is_mcbc(ar->ab, rx_desc);
 	rxcb->is_mcbc = fill_crypto_hdr;
@@ -2282,7 +2246,7 @@ static void ath11k_dp_rx_h_mpdu(struct ath11k *ar,
 	if (enctype != HAL_ENCRYPT_TYPE_OPEN && !err_bitmap)
 		is_decrypted = ath11k_dp_rx_h_attn_is_decrypted(rx_attention);
 
-	/* Clear per-MPDU flags while leaving per-PPDU flags intact */
+	 
 	rx_status->flag &= ~(RX_FLAG_FAILED_FCS_CRC |
 			     RX_FLAG_MMIC_ERROR |
 			     RX_FLAG_DECRYPTED |
@@ -2501,13 +2465,9 @@ static void ath11k_dp_rx_deliver_msdu(struct ath11k *ar, struct napi_struct *nap
 	rx_status = IEEE80211_SKB_RXCB(msdu);
 	*rx_status = *status;
 
-	/* TODO: trace rx packet */
+	 
 
-	/* PN for multicast packets are not validate in HW,
-	 * so skip 802.3 rx path
-	 * Also, fast_rx expects the STA to be authorized, hence
-	 * eapol packets are sent in slow path.
-	 */
+	 
 	if (decap == DP_RX_DECAP_TYPE_ETHERNET2_DIX && !is_eapol &&
 	    !(is_mcbc && rx_status->flag & RX_FLAG_DECRYPTED))
 		rx_status->flag |= RX_FLAG_8023;
@@ -2731,12 +2691,7 @@ try_again:
 			break;
 	}
 
-	/* Hw might have updated the head pointer after we cached it.
-	 * In this case, even though there are entries in the ring we'll
-	 * get rx_desc NULL. Give the read another try with updated cached
-	 * head pointer so that we can reap complete MPDU in the current
-	 * rx processing.
-	 */
+	 
 	if (unlikely(!done && ath11k_hal_srng_dst_num_free(ab, srng, true))) {
 		ath11k_hal_srng_access_end(ab, srng);
 		goto try_again;
@@ -2965,7 +2920,7 @@ ath11k_dp_rx_mon_update_status_buf_state(struct ath11k_mon_data *pmon,
 	u16 ppdu_id_diff, ppdu_id, tlv_len;
 	u8 *ptr;
 
-	/* PPDU id is part of second tlv, move ptr to second tlv */
+	 
 	tlv_len = FIELD_GET(HAL_TLV_HDR_LEN, tlv->tl);
 	ptr = (u8 *)tlv;
 	ptr += sizeof(*tlv) + tlv_len;
@@ -3059,13 +3014,7 @@ static int ath11k_dp_rx_reap_mon_status_ring(struct ath11k_base *ab, int mac_id,
 				ath11k_warn(ab, "mon status DONE not set %lx, buf_id %d\n",
 					    FIELD_GET(HAL_TLV_HDR_TAG,
 						      tlv->tl), buf_id);
-				/* If done status is missing, hold onto status
-				 * ring until status is done for this status
-				 * ring buffer.
-				 * Keep HP in mon_status_ring unchanged,
-				 * and break from here.
-				 * Check status for same buffer for next time
-				 */
+				 
 				pmon->buf_state = DP_MON_STATUS_NO_DMA;
 				break;
 			}
@@ -3190,7 +3139,7 @@ static int ath11k_dp_rx_h_michael_mic(struct crypto_shash *tfm, u8 *key,
 	if (ret)
 		goto out;
 
-	/* TKIP MIC header */
+	 
 	memcpy(mic_hdr, ieee80211_get_DA(hdr), ETH_ALEN);
 	memcpy(mic_hdr + ETH_ALEN, ieee80211_get_SA(hdr), ETH_ALEN);
 	if (ieee80211_is_data_qos(hdr->frame_control))
@@ -3332,7 +3281,7 @@ static int ath11k_dp_rx_h_defrag(struct ath11k *ar,
 					 RX_FLAG_MIC_STRIPPED;
 		}
 
-		/* RX fragments are always raw packets */
+		 
 		if (skb != last_frag)
 			skb_trim(skb, skb->len - FCS_LEN);
 		ath11k_dp_rx_h_undecap_frag(ar, skb, enctype, flags);
@@ -3404,7 +3353,7 @@ static int ath11k_dp_rx_h_defrag_reo_reinject(struct ath11k *ar, struct dp_rx_ti
 		    FIELD_PREP(RX_MSDU_DESC_INFO0_VALID_DA, 1);
 	msdu0->rx_msdu_info.info0 = msdu_info;
 
-	/* change msdu len in hal rx desc */
+	 
 	ath11k_dp_rxdesc_set_msdu_len(ab, rx_desc, defrag_skb->len - hal_rx_desc_sz);
 
 	paddr = dma_map_single(ab->dev, defrag_skb->data,
@@ -3429,7 +3378,7 @@ static int ath11k_dp_rx_h_defrag_reo_reinject(struct ath11k *ar, struct dp_rx_ti
 	ath11k_hal_rx_buf_addr_info_set(msdu0, paddr, cookie,
 					ab->hw_params.hal_params->rx_buf_rbm);
 
-	/* Fill mpdu details into reo entrance ring */
+	 
 	srng = &ab->hal.srng_list[ab->dp.reo_reinject_ring.ring_id];
 
 	spin_lock_bh(&srng->lock);
@@ -3583,7 +3532,7 @@ static int ath11k_dp_rx_frag_h_mpdu(struct ath11k *ar,
 	more_frags = ath11k_dp_rx_h_mpdu_start_more_frags(ar->ab, msdu);
 	is_mcbc = ath11k_dp_rx_h_attn_is_mcbc(ar->ab, rx_desc);
 
-	/* Multicast/Broadcast fragments are not expected */
+	 
 	if (is_mcbc)
 		return -EINVAL;
 
@@ -3592,11 +3541,7 @@ static int ath11k_dp_rx_frag_h_mpdu(struct ath11k *ar,
 	    tid > IEEE80211_NUM_TIDS)
 		return -EINVAL;
 
-	/* received unfragmented packet in reo
-	 * exception ring, this shouldn't happen
-	 * as these packets typically come from
-	 * reo2sw srngs.
-	 */
+	 
 	if (WARN_ON_ONCE(!frag_no && !more_frags))
 		return -EINVAL;
 
@@ -3619,13 +3564,13 @@ static int ath11k_dp_rx_frag_h_mpdu(struct ath11k *ar,
 
 	if ((!skb_queue_empty(&rx_tid->rx_frags) && seqno != rx_tid->cur_sn) ||
 	    skb_queue_empty(&rx_tid->rx_frags)) {
-		/* Flush stored fragments and start a new sequence */
+		 
 		ath11k_dp_rx_frags_cleanup(rx_tid, true);
 		rx_tid->cur_sn = seqno;
 	}
 
 	if (rx_tid->rx_frag_bitmap & BIT(frag_no)) {
-		/* Fragment already present */
+		 
 		ret = -EINVAL;
 		goto out_unlock;
 	}
@@ -3821,12 +3766,10 @@ int ath11k_dp_process_rx_err(struct ath11k_base *ab, struct napi_struct *napi,
 
 		is_frag = !!(reo_desc->rx_mpdu_info.info0 & RX_MPDU_DESC_INFO0_FRAG_FLAG);
 
-		/* Process only rx fragments with one msdu per link desc below, and drop
-		 * msdu's indicated due to error reasons.
-		 */
+		 
 		if (!is_frag || num_msdus > 1) {
 			drop = 1;
-			/* Return the link desc back to wbm idle list */
+			 
 			ath11k_dp_rx_link_desc_return(ab, desc,
 						      HAL_WBM_REL_BM_ACT_PUT_IN_IDLE);
 		}
@@ -3911,7 +3854,7 @@ static int ath11k_dp_rx_h_null_q_desc(struct ath11k *ar, struct sk_buff *msdu,
 	msdu_len = ath11k_dp_rx_h_msdu_start_msdu_len(ar->ab, desc);
 
 	if (!rxcb->is_frag && ((msdu_len + hal_rx_desc_sz) > DP_RX_BUFFER_SIZE)) {
-		/* First buffer will be freed by the caller, so deduct it's length */
+		 
 		msdu_len = msdu_len - (DP_RX_BUFFER_SIZE - hal_rx_desc_sz);
 		ath11k_dp_rx_null_q_desc_sg_drop(ar, msdu_len, msdu_list);
 		return -EINVAL;
@@ -3925,14 +3868,7 @@ static int ath11k_dp_rx_h_null_q_desc(struct ath11k *ar, struct sk_buff *msdu,
 		return -EIO;
 	}
 
-	/* Handle NULL queue descriptor violations arising out a missing
-	 * REO queue for a given peer or a given TID. This typically
-	 * may happen if a packet is received on a QOS enabled TID before the
-	 * ADDBA negotiation for that TID, when the TID queue is setup. Or
-	 * it may also happen for MC/BC frames if they are not routed to the
-	 * non-QOS TID queue, in the absence of any other default TID queue.
-	 * This error can show up both in a REO destination or WBM release ring.
-	 */
+	 
 
 	rxcb->is_first_msdu = ath11k_dp_rx_h_msdu_end_first_msdu(ar->ab, desc);
 	rxcb->is_last_msdu = ath11k_dp_rx_h_msdu_end_last_msdu(ar->ab, desc);
@@ -3954,9 +3890,7 @@ static int ath11k_dp_rx_h_null_q_desc(struct ath11k *ar, struct sk_buff *msdu,
 
 	rxcb->tid = ath11k_dp_rx_h_mpdu_start_tid(ar->ab, desc);
 
-	/* Please note that caller will having the access to msdu and completing
-	 * rx with mac80211. Need not worry about cleaning up amsdu_list.
-	 */
+	 
 
 	return 0;
 }
@@ -3976,15 +3910,10 @@ static bool ath11k_dp_rx_h_reo_err(struct ath11k *ar, struct sk_buff *msdu,
 			drop = true;
 		break;
 	case HAL_REO_DEST_RING_ERROR_CODE_PN_CHECK_FAILED:
-		/* TODO: Do not drop PN failed packets in the driver;
-		 * instead, it is good to drop such packets in mac80211
-		 * after incrementing the replay counters.
-		 */
+		 
 		fallthrough;
 	default:
-		/* TODO: Review other errors and process them to mac80211
-		 * as appropriate.
-		 */
+		 
 		drop = true;
 		break;
 	}
@@ -4031,9 +3960,7 @@ static bool ath11k_dp_rx_h_rxdma_err(struct ath11k *ar,  struct sk_buff *msdu,
 		ath11k_dp_rx_h_tkip_mic_err(ar, msdu, status);
 		break;
 	default:
-		/* TODO: Review other rxdma error code to check if anything is
-		 * worth reporting to mac80211
-		 */
+		 
 		drop = true;
 		break;
 	}
@@ -4058,7 +3985,7 @@ static void ath11k_dp_rx_wbm_err(struct ath11k *ar,
 		drop = ath11k_dp_rx_h_rxdma_err(ar, msdu, &rxs);
 		break;
 	default:
-		/* msdu will get freed */
+		 
 		break;
 	}
 
@@ -4598,9 +4525,7 @@ static u32 ath11k_dp_rx_mon_comp_ppduid(u32 msdu_ppdu_id, u32 *ppdu_id,
 		ret = msdu_ppdu_id;
 	} else if ((*ppdu_id > msdu_ppdu_id) &&
 		((*ppdu_id - msdu_ppdu_id) > DP_NOT_PPDU_ID_WRAP_AROUND)) {
-		/* mon_dst is behind than mon_status
-		 * skip dst_ring and free it
-		 */
+		 
 		*rx_bufs_used += 1;
 		*ppdu_id = msdu_ppdu_id;
 		ret = msdu_ppdu_id;
@@ -4890,7 +4815,7 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
 		rx_desc = (struct hal_rx_desc *)head_msdu->data;
 		hdr_desc = ath11k_dp_rxdesc_get_80211hdr(ab, rx_desc);
 
-		/* Base size */
+		 
 		wh = (struct ieee80211_hdr_3addr *)hdr_desc;
 
 		if (ieee80211_is_data_qos(wh->frame_control))
@@ -5075,10 +5000,7 @@ mon_deliver_fail:
 	return -EINVAL;
 }
 
-/* The destination ring processing is stuck if the destination is not
- * moving while status ring moves 16 PPDU. The destination ring processing
- * skips this destination ring PPDU as a workaround.
- */
+ 
 #define MON_DEST_RING_STUCK_MAX_CNT 16
 
 static void ath11k_dp_rx_mon_dest_process(struct ath11k *ar, int mac_id,
@@ -5675,9 +5597,7 @@ int ath11k_dp_rx_pdev_mon_attach(struct ath11k *ar)
 		return ret;
 	}
 
-	/* if rxdma1_enable is false, no need to setup
-	 * rxdma_mon_desc_ring.
-	 */
+	 
 	if (!ar->ab->hw_params.rxdma1_enable)
 		return 0;
 
@@ -5720,7 +5640,7 @@ int ath11k_dp_rx_pdev_mon_detach(struct ath11k *ar)
 
 int ath11k_dp_rx_pktlog_start(struct ath11k_base *ab)
 {
-	/* start reap timer */
+	 
 	mod_timer(&ab->mon_reap_timer,
 		  jiffies + msecs_to_jiffies(ATH11K_MON_TIMER_INTERVAL));
 
@@ -5734,7 +5654,7 @@ int ath11k_dp_rx_pktlog_stop(struct ath11k_base *ab, bool stop_timer)
 	if (stop_timer)
 		del_timer_sync(&ab->mon_reap_timer);
 
-	/* reap all the monitor related rings */
+	 
 	ret = ath11k_dp_purge_mon_ring(ab);
 	if (ret) {
 		ath11k_warn(ab, "failed to purge dp mon ring: %d\n", ret);

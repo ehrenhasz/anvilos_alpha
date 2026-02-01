@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ZynqMP Display Controller Driver
- *
- * Copyright (C) 2017 - 2020 Xilinx, Inc.
- *
- * Authors:
- * - Hyun Woo Kwon <hyun.kwon@xilinx.com>
- * - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <drm/drm_fb_dma_helper.h>
 #include <drm/drm_fourcc.h>
@@ -28,49 +20,14 @@
 #include "zynqmp_dp.h"
 #include "zynqmp_dpsub.h"
 
-/*
- * Overview
- * --------
- *
- * The display controller part of ZynqMP DP subsystem, made of the Audio/Video
- * Buffer Manager, the Video Rendering Pipeline (blender) and the Audio Mixer.
- *
- *              +------------------------------------------------------------+
- * +--------+   | +----------------+     +-----------+                       |
- * | DPDMA  | --->|                | --> |   Video   | Video +-------------+ |
- * | 4x vid |   | |                |     | Rendering | -+--> |             | |   +------+
- * | 2x aud |   | |  Audio/Video   | --> | Pipeline  |  |    | DisplayPort |---> | PHY0 |
- * +--------+   | | Buffer Manager |     +-----------+  |    |   Source    | |   +------+
- *              | |    and STC     |     +-----------+  |    | Controller  | |   +------+
- * Live Video --->|                | --> |   Audio   | Audio |             |---> | PHY1 |
- *              | |                |     |   Mixer   | --+-> |             | |   +------+
- * Live Audio --->|                | --> |           |  ||   +-------------+ |
- *              | +----------------+     +-----------+  ||                   |
- *              +---------------------------------------||-------------------+
- *                                                      vv
- *                                                Blended Video and
- *                                                Mixed Audio to PL
- *
- * Only non-live input from the DPDMA and output to the DisplayPort Source
- * Controller are currently supported. Interface with the programmable logic
- * for live streams is not implemented.
- *
- * The display controller code creates planes for the DPDMA video and graphics
- * layers, and a CRTC for the Video Rendering Pipeline.
- */
+ 
 
 #define ZYNQMP_DISP_AV_BUF_NUM_VID_GFX_BUFFERS		4
 #define ZYNQMP_DISP_AV_BUF_NUM_BUFFERS			6
 
 #define ZYNQMP_DISP_MAX_NUM_SUB_PLANES			3
 
-/**
- * struct zynqmp_disp_format - Display subsystem format information
- * @drm_fmt: DRM format (4CC)
- * @buf_fmt: AV buffer format
- * @swap: Flag to swap R & B for RGB formats, and U & V for YUV formats
- * @sf: Scaling factors for color components
- */
+ 
 struct zynqmp_disp_format {
 	u32 drm_fmt;
 	u32 buf_fmt;
@@ -78,40 +35,21 @@ struct zynqmp_disp_format {
 	const u32 *sf;
 };
 
-/**
- * struct zynqmp_disp_layer_dma - DMA channel for one data plane of a layer
- * @chan: DMA channel
- * @xt: Interleaved DMA descriptor template
- * @sgl: Data chunk for dma_interleaved_template
- */
+ 
 struct zynqmp_disp_layer_dma {
 	struct dma_chan *chan;
 	struct dma_interleaved_template xt;
 	struct data_chunk sgl;
 };
 
-/**
- * struct zynqmp_disp_layer_info - Static layer information
- * @formats: Array of supported formats
- * @num_formats: Number of formats in @formats array
- * @num_channels: Number of DMA channels
- */
+ 
 struct zynqmp_disp_layer_info {
 	const struct zynqmp_disp_format *formats;
 	unsigned int num_formats;
 	unsigned int num_channels;
 };
 
-/**
- * struct zynqmp_disp_layer - Display layer
- * @id: Layer ID
- * @disp: Back pointer to struct zynqmp_disp
- * @info: Static layer information
- * @dmas: DMA channels
- * @disp_fmt: Current format information
- * @drm_fmt: Current DRM format information
- * @mode: Current operation mode
- */
+ 
 struct zynqmp_disp_layer {
 	enum zynqmp_dpsub_layer_id id;
 	struct zynqmp_disp *disp;
@@ -124,15 +62,7 @@ struct zynqmp_disp_layer {
 	enum zynqmp_dpsub_layer_mode mode;
 };
 
-/**
- * struct zynqmp_disp - Display controller
- * @dev: Device structure
- * @dpsub: Display subsystem
- * @blend.base: Register I/O base address for the blender
- * @avbuf.base: Register I/O base address for the audio/video buffer manager
- * @audio.base: Registers I/O base address for the audio mixer
- * @layers: Layers (planes)
- */
+ 
 struct zynqmp_disp {
 	struct device *dev;
 	struct zynqmp_dpsub *dpsub;
@@ -150,9 +80,7 @@ struct zynqmp_disp {
 	struct zynqmp_disp_layer layers[ZYNQMP_DPSUB_NUM_LAYERS];
 };
 
-/* -----------------------------------------------------------------------------
- * Audio/Video Buffer Manager
- */
+ 
 
 static const u32 scaling_factors_444[] = {
 	ZYNQMP_DISP_AV_BUF_4BIT_SF,
@@ -184,7 +112,7 @@ static const u32 scaling_factors_101010[] = {
 	ZYNQMP_DISP_AV_BUF_10BIT_SF,
 };
 
-/* List of video layer formats */
+ 
 static const struct zynqmp_disp_format avbuf_vid_fmts[] = {
 	{
 		.drm_fmt	= DRM_FORMAT_VYUY,
@@ -289,7 +217,7 @@ static const struct zynqmp_disp_format avbuf_vid_fmts[] = {
 	},
 };
 
-/* List of graphics layer formats */
+ 
 static const struct zynqmp_disp_format avbuf_gfx_fmts[] = {
 	{
 		.drm_fmt	= DRM_FORMAT_ABGR8888,
@@ -369,14 +297,7 @@ static bool zynqmp_disp_layer_is_video(const struct zynqmp_disp_layer *layer)
 	return layer->id == ZYNQMP_DPSUB_LAYER_VID;
 }
 
-/**
- * zynqmp_disp_avbuf_set_format - Set the input format for a layer
- * @disp: Display controller
- * @layer: The layer
- * @fmt: The format information
- *
- * Set the video buffer manager format for @layer to @fmt.
- */
+ 
 static void zynqmp_disp_avbuf_set_format(struct zynqmp_disp *disp,
 					 struct zynqmp_disp_layer *layer,
 					 const struct zynqmp_disp_format *fmt)
@@ -400,17 +321,7 @@ static void zynqmp_disp_avbuf_set_format(struct zynqmp_disp *disp,
 	}
 }
 
-/**
- * zynqmp_disp_avbuf_set_clocks_sources - Set the clocks sources
- * @disp: Display controller
- * @video_from_ps: True if the video clock originates from the PS
- * @audio_from_ps: True if the audio clock originates from the PS
- * @timings_internal: True if video timings are generated internally
- *
- * Set the source for the video and audio clocks, as well as for the video
- * timings. Clocks can originate from the PS or PL, and timings can be
- * generated internally or externally.
- */
+ 
 static void
 zynqmp_disp_avbuf_set_clocks_sources(struct zynqmp_disp *disp,
 				     bool video_from_ps, bool audio_from_ps,
@@ -428,12 +339,7 @@ zynqmp_disp_avbuf_set_clocks_sources(struct zynqmp_disp *disp,
 	zynqmp_disp_avbuf_write(disp, ZYNQMP_DISP_AV_BUF_CLK_SRC, val);
 }
 
-/**
- * zynqmp_disp_avbuf_enable_channels - Enable buffer channels
- * @disp: Display controller
- *
- * Enable all (video and audio) buffer channels.
- */
+ 
 static void zynqmp_disp_avbuf_enable_channels(struct zynqmp_disp *disp)
 {
 	unsigned int i;
@@ -456,12 +362,7 @@ static void zynqmp_disp_avbuf_enable_channels(struct zynqmp_disp *disp)
 					val);
 }
 
-/**
- * zynqmp_disp_avbuf_disable_channels - Disable buffer channels
- * @disp: Display controller
- *
- * Disable all (video and audio) buffer channels.
- */
+ 
 static void zynqmp_disp_avbuf_disable_channels(struct zynqmp_disp *disp)
 {
 	unsigned int i;
@@ -471,12 +372,7 @@ static void zynqmp_disp_avbuf_disable_channels(struct zynqmp_disp *disp)
 					ZYNQMP_DISP_AV_BUF_CHBUF_FLUSH);
 }
 
-/**
- * zynqmp_disp_avbuf_enable_audio - Enable audio
- * @disp: Display controller
- *
- * Enable all audio buffers with a non-live (memory) source.
- */
+ 
 static void zynqmp_disp_avbuf_enable_audio(struct zynqmp_disp *disp)
 {
 	u32 val;
@@ -488,12 +384,7 @@ static void zynqmp_disp_avbuf_enable_audio(struct zynqmp_disp *disp)
 	zynqmp_disp_avbuf_write(disp, ZYNQMP_DISP_AV_BUF_OUTPUT, val);
 }
 
-/**
- * zynqmp_disp_avbuf_disable_audio - Disable audio
- * @disp: Display controller
- *
- * Disable all audio buffers.
- */
+ 
 static void zynqmp_disp_avbuf_disable_audio(struct zynqmp_disp *disp)
 {
 	u32 val;
@@ -505,13 +396,7 @@ static void zynqmp_disp_avbuf_disable_audio(struct zynqmp_disp *disp)
 	zynqmp_disp_avbuf_write(disp, ZYNQMP_DISP_AV_BUF_OUTPUT, val);
 }
 
-/**
- * zynqmp_disp_avbuf_enable_video - Enable a video layer
- * @disp: Display controller
- * @layer: The layer
- *
- * Enable the video/graphics buffer for @layer.
- */
+ 
 static void zynqmp_disp_avbuf_enable_video(struct zynqmp_disp *disp,
 					   struct zynqmp_disp_layer *layer)
 {
@@ -535,13 +420,7 @@ static void zynqmp_disp_avbuf_enable_video(struct zynqmp_disp *disp,
 	zynqmp_disp_avbuf_write(disp, ZYNQMP_DISP_AV_BUF_OUTPUT, val);
 }
 
-/**
- * zynqmp_disp_avbuf_disable_video - Disable a video layer
- * @disp: Display controller
- * @layer: The layer
- *
- * Disable the video/graphics buffer for @layer.
- */
+ 
 static void zynqmp_disp_avbuf_disable_video(struct zynqmp_disp *disp,
 					    struct zynqmp_disp_layer *layer)
 {
@@ -558,43 +437,27 @@ static void zynqmp_disp_avbuf_disable_video(struct zynqmp_disp *disp,
 	zynqmp_disp_avbuf_write(disp, ZYNQMP_DISP_AV_BUF_OUTPUT, val);
 }
 
-/**
- * zynqmp_disp_avbuf_enable - Enable the video pipe
- * @disp: Display controller
- *
- * De-assert the video pipe reset.
- */
+ 
 static void zynqmp_disp_avbuf_enable(struct zynqmp_disp *disp)
 {
 	zynqmp_disp_avbuf_write(disp, ZYNQMP_DISP_AV_BUF_SRST_REG, 0);
 }
 
-/**
- * zynqmp_disp_avbuf_disable - Disable the video pipe
- * @disp: Display controller
- *
- * Assert the video pipe reset.
- */
+ 
 static void zynqmp_disp_avbuf_disable(struct zynqmp_disp *disp)
 {
 	zynqmp_disp_avbuf_write(disp, ZYNQMP_DISP_AV_BUF_SRST_REG,
 				ZYNQMP_DISP_AV_BUF_SRST_REG_VID_RST);
 }
 
-/* -----------------------------------------------------------------------------
- * Blender (Video Pipeline)
- */
+ 
 
 static void zynqmp_disp_blend_write(struct zynqmp_disp *disp, int reg, u32 val)
 {
 	writel(val, disp->blend.base + reg);
 }
 
-/*
- * Colorspace conversion matrices.
- *
- * Hardcode RGB <-> YUV conversion to full-range SDTV for now.
- */
+ 
 static const u16 csc_zero_matrix[] = {
 	0x0,    0x0,    0x0,
 	0x0,    0x0,    0x0,
@@ -631,13 +494,7 @@ static const u32 csc_sdtv_to_rgb_offsets[] = {
 	0x0, 0x1800, 0x1800
 };
 
-/**
- * zynqmp_disp_blend_set_output_format - Set the output format of the blender
- * @disp: Display controller
- * @format: Output format
- *
- * Set the output format of the blender to @format.
- */
+ 
 static void zynqmp_disp_blend_set_output_format(struct zynqmp_disp *disp,
 						enum zynqmp_dpsub_format format)
 {
@@ -674,17 +531,7 @@ static void zynqmp_disp_blend_set_output_format(struct zynqmp_disp *disp,
 					offsets[i]);
 }
 
-/**
- * zynqmp_disp_blend_set_bg_color - Set the background color
- * @disp: Display controller
- * @rcr: Red/Cr color component
- * @gy: Green/Y color component
- * @bcb: Blue/Cb color component
- *
- * Set the background color to (@rcr, @gy, @bcb), corresponding to the R, G and
- * B or Cr, Y and Cb components respectively depending on the selected output
- * format.
- */
+ 
 static void zynqmp_disp_blend_set_bg_color(struct zynqmp_disp *disp,
 					   u32 rcr, u32 gy, u32 bcb)
 {
@@ -693,12 +540,7 @@ static void zynqmp_disp_blend_set_bg_color(struct zynqmp_disp *disp,
 	zynqmp_disp_blend_write(disp, ZYNQMP_DISP_V_BLEND_BG_CLR_2, bcb);
 }
 
-/**
- * zynqmp_disp_blend_set_global_alpha - Configure global alpha blending
- * @disp: Display controller
- * @enable: True to enable global alpha blending
- * @alpha: Global alpha value (ignored if @enabled is false)
- */
+ 
 void zynqmp_disp_blend_set_global_alpha(struct zynqmp_disp *disp,
 					bool enable, u32 alpha)
 {
@@ -707,17 +549,7 @@ void zynqmp_disp_blend_set_global_alpha(struct zynqmp_disp *disp,
 				(enable ? ZYNQMP_DISP_V_BLEND_SET_GLOBAL_ALPHA_EN : 0));
 }
 
-/**
- * zynqmp_disp_blend_layer_set_csc - Configure colorspace conversion for layer
- * @disp: Display controller
- * @layer: The layer
- * @coeffs: Colorspace conversion matrix
- * @offsets: Colorspace conversion offsets
- *
- * Configure the input colorspace conversion matrix and offsets for the @layer.
- * Columns of the matrix are automatically swapped based on the input format to
- * handle RGB and YCrCb components permutations.
- */
+ 
 static void zynqmp_disp_blend_layer_set_csc(struct zynqmp_disp *disp,
 					    struct zynqmp_disp_layer *layer,
 					    const u16 *coeffs,
@@ -729,11 +561,11 @@ static void zynqmp_disp_blend_layer_set_csc(struct zynqmp_disp *disp,
 
 	if (layer->disp_fmt->swap) {
 		if (layer->drm_fmt->is_yuv) {
-			/* Swap U and V. */
+			 
 			swap[1] = 2;
 			swap[2] = 1;
 		} else {
-			/* Swap R and B. */
+			 
 			swap[0] = 2;
 			swap[2] = 0;
 		}
@@ -759,11 +591,7 @@ static void zynqmp_disp_blend_layer_set_csc(struct zynqmp_disp *disp,
 		zynqmp_disp_blend_write(disp, reg + i * 4, offsets[i]);
 }
 
-/**
- * zynqmp_disp_blend_layer_enable - Enable a layer
- * @disp: Display controller
- * @layer: The layer
- */
+ 
 static void zynqmp_disp_blend_layer_enable(struct zynqmp_disp *disp,
 					   struct zynqmp_disp_layer *layer)
 {
@@ -791,11 +619,7 @@ static void zynqmp_disp_blend_layer_enable(struct zynqmp_disp *disp,
 	zynqmp_disp_blend_layer_set_csc(disp, layer, coeffs, offsets);
 }
 
-/**
- * zynqmp_disp_blend_layer_disable - Disable a layer
- * @disp: Display controller
- * @layer: The layer
- */
+ 
 static void zynqmp_disp_blend_layer_disable(struct zynqmp_disp *disp,
 					    struct zynqmp_disp_layer *layer)
 {
@@ -807,57 +631,32 @@ static void zynqmp_disp_blend_layer_disable(struct zynqmp_disp *disp,
 					csc_zero_offsets);
 }
 
-/* -----------------------------------------------------------------------------
- * Audio Mixer
- */
+ 
 
 static void zynqmp_disp_audio_write(struct zynqmp_disp *disp, int reg, u32 val)
 {
 	writel(val, disp->audio.base + reg);
 }
 
-/**
- * zynqmp_disp_audio_enable - Enable the audio mixer
- * @disp: Display controller
- *
- * Enable the audio mixer by de-asserting the soft reset. The audio state is set to
- * default values by the reset, set the default mixer volume explicitly.
- */
+ 
 static void zynqmp_disp_audio_enable(struct zynqmp_disp *disp)
 {
-	/* Clear the audio soft reset register as it's an non-reset flop. */
+	 
 	zynqmp_disp_audio_write(disp, ZYNQMP_DISP_AUD_SOFT_RESET, 0);
 	zynqmp_disp_audio_write(disp, ZYNQMP_DISP_AUD_MIXER_VOLUME,
 				ZYNQMP_DISP_AUD_MIXER_VOLUME_NO_SCALE);
 }
 
-/**
- * zynqmp_disp_audio_disable - Disable the audio mixer
- * @disp: Display controller
- *
- * Disable the audio mixer by asserting its soft reset.
- */
+ 
 static void zynqmp_disp_audio_disable(struct zynqmp_disp *disp)
 {
 	zynqmp_disp_audio_write(disp, ZYNQMP_DISP_AUD_SOFT_RESET,
 				ZYNQMP_DISP_AUD_SOFT_RESET_AUD_SRST);
 }
 
-/* -----------------------------------------------------------------------------
- * ZynqMP Display Layer & DRM Plane
- */
+ 
 
-/**
- * zynqmp_disp_layer_find_format - Find format information for a DRM format
- * @layer: The layer
- * @drm_fmt: DRM format to search
- *
- * Search display subsystem format information corresponding to the given DRM
- * format @drm_fmt for the @layer, and return a pointer to the format
- * descriptor.
- *
- * Return: A pointer to the format descriptor if found, NULL otherwise
- */
+ 
 static const struct zynqmp_disp_format *
 zynqmp_disp_layer_find_format(struct zynqmp_disp_layer *layer,
 			      u32 drm_fmt)
@@ -872,15 +671,7 @@ zynqmp_disp_layer_find_format(struct zynqmp_disp_layer *layer,
 	return NULL;
 }
 
-/**
- * zynqmp_disp_layer_drm_formats - Return the DRM formats supported by the layer
- * @layer: The layer
- * @num_formats: Pointer to the returned number of formats
- *
- * Return: A newly allocated u32 array that stores all the DRM formats
- * supported by the layer. The number of formats in the array is returned
- * through the num_formats argument.
- */
+ 
 u32 *zynqmp_disp_layer_drm_formats(struct zynqmp_disp_layer *layer,
 				   unsigned int *num_formats)
 {
@@ -899,14 +690,7 @@ u32 *zynqmp_disp_layer_drm_formats(struct zynqmp_disp_layer *layer,
 	return formats;
 }
 
-/**
- * zynqmp_disp_layer_enable - Enable a layer
- * @layer: The layer
- * @mode: Operating mode of layer
- *
- * Enable the @layer in the audio/video buffer manager and the blender. DMA
- * channels are started separately by zynqmp_disp_layer_update().
- */
+ 
 void zynqmp_disp_layer_enable(struct zynqmp_disp_layer *layer,
 			      enum zynqmp_dpsub_layer_mode mode)
 {
@@ -915,13 +699,7 @@ void zynqmp_disp_layer_enable(struct zynqmp_disp_layer *layer,
 	zynqmp_disp_blend_layer_enable(layer->disp, layer);
 }
 
-/**
- * zynqmp_disp_layer_disable - Disable the layer
- * @layer: The layer
- *
- * Disable the layer by stopping its DMA channels and disabling it in the
- * audio/video buffer manager and the blender.
- */
+ 
 void zynqmp_disp_layer_disable(struct zynqmp_disp_layer *layer)
 {
 	unsigned int i;
@@ -935,13 +713,7 @@ void zynqmp_disp_layer_disable(struct zynqmp_disp_layer *layer)
 	zynqmp_disp_blend_layer_disable(layer->disp, layer);
 }
 
-/**
- * zynqmp_disp_layer_set_format - Set the layer format
- * @layer: The layer
- * @info: The format info
- *
- * Set the format for @layer to @info. The layer must be disabled.
- */
+ 
 void zynqmp_disp_layer_set_format(struct zynqmp_disp_layer *layer,
 				  const struct drm_format_info *info)
 {
@@ -955,10 +727,7 @@ void zynqmp_disp_layer_set_format(struct zynqmp_disp_layer *layer,
 	if (!layer->disp->dpsub->dma_enabled)
 		return;
 
-	/*
-	 * Set pconfig for each DMA channel to indicate they're part of a
-	 * video group.
-	 */
+	 
 	for (i = 0; i < info->num_planes; i++) {
 		struct zynqmp_disp_layer_dma *dma = &layer->dmas[i];
 		struct xilinx_dpdma_peripheral_config pconfig = {
@@ -974,16 +743,7 @@ void zynqmp_disp_layer_set_format(struct zynqmp_disp_layer *layer,
 	}
 }
 
-/**
- * zynqmp_disp_layer_update - Update the layer framebuffer
- * @layer: The layer
- * @state: The plane state
- *
- * Update the framebuffer for the layer by issuing a new DMA engine transaction
- * for the new framebuffer.
- *
- * Return: 0 on success, or the DMA descriptor failure error otherwise
- */
+ 
 int zynqmp_disp_layer_update(struct zynqmp_disp_layer *layer,
 			     struct drm_plane_state *state)
 {
@@ -1028,13 +788,7 @@ int zynqmp_disp_layer_update(struct zynqmp_disp_layer *layer,
 	return 0;
 }
 
-/**
- * zynqmp_disp_layer_release_dma - Release DMA channels for a layer
- * @disp: Display controller
- * @layer: The layer
- *
- * Release the DMA channels associated with @layer.
- */
+ 
 static void zynqmp_disp_layer_release_dma(struct zynqmp_disp *disp,
 					  struct zynqmp_disp_layer *layer)
 {
@@ -1049,16 +803,13 @@ static void zynqmp_disp_layer_release_dma(struct zynqmp_disp *disp,
 		if (!dma->chan)
 			continue;
 
-		/* Make sure the channel is terminated before release. */
+		 
 		dmaengine_terminate_sync(dma->chan);
 		dma_release_channel(dma->chan);
 	}
 }
 
-/**
- * zynqmp_disp_destroy_layers - Destroy all layers
- * @disp: Display controller
- */
+ 
 static void zynqmp_disp_destroy_layers(struct zynqmp_disp *disp)
 {
 	unsigned int i;
@@ -1067,15 +818,7 @@ static void zynqmp_disp_destroy_layers(struct zynqmp_disp *disp)
 		zynqmp_disp_layer_release_dma(disp, &disp->layers[i]);
 }
 
-/**
- * zynqmp_disp_layer_request_dma - Request DMA channels for a layer
- * @disp: Display controller
- * @layer: The layer
- *
- * Request all DMA engine channels needed by @layer.
- *
- * Return: 0 on success, or the DMA channel request error otherwise
- */
+ 
 static int zynqmp_disp_layer_request_dma(struct zynqmp_disp *disp,
 					 struct zynqmp_disp_layer *layer)
 {
@@ -1104,12 +847,7 @@ static int zynqmp_disp_layer_request_dma(struct zynqmp_disp *disp,
 	return 0;
 }
 
-/**
- * zynqmp_disp_create_layers - Create and initialize all layers
- * @disp: Display controller
- *
- * Return: 0 on success, or the DMA channel request error otherwise
- */
+ 
 static int zynqmp_disp_create_layers(struct zynqmp_disp *disp)
 {
 	static const struct zynqmp_disp_layer_info layer_info[] = {
@@ -1149,21 +887,16 @@ err:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * ZynqMP Display
- */
+ 
 
-/**
- * zynqmp_disp_enable - Enable the display controller
- * @disp: Display controller
- */
+ 
 void zynqmp_disp_enable(struct zynqmp_disp *disp)
 {
 	zynqmp_disp_blend_set_output_format(disp, ZYNQMP_DPSUB_FORMAT_RGB);
 	zynqmp_disp_blend_set_bg_color(disp, 0, 0, 0);
 
 	zynqmp_disp_avbuf_enable(disp);
-	/* Choose clock source based on the DT clock handle. */
+	 
 	zynqmp_disp_avbuf_set_clocks_sources(disp, disp->dpsub->vid_clk_from_ps,
 					     disp->dpsub->aud_clk_from_ps,
 					     true);
@@ -1173,10 +906,7 @@ void zynqmp_disp_enable(struct zynqmp_disp *disp)
 	zynqmp_disp_audio_enable(disp);
 }
 
-/**
- * zynqmp_disp_disable - Disable the display controller
- * @disp: Display controller
- */
+ 
 void zynqmp_disp_disable(struct zynqmp_disp *disp)
 {
 	zynqmp_disp_audio_disable(disp);
@@ -1186,13 +916,7 @@ void zynqmp_disp_disable(struct zynqmp_disp *disp)
 	zynqmp_disp_avbuf_disable(disp);
 }
 
-/**
- * zynqmp_disp_setup_clock - Configure the display controller pixel clock rate
- * @disp: Display controller
- * @mode_clock: The pixel clock rate, in Hz
- *
- * Return: 0 on success, or a negative error clock otherwise
- */
+ 
 int zynqmp_disp_setup_clock(struct zynqmp_disp *disp,
 			    unsigned long mode_clock)
 {
@@ -1220,9 +944,7 @@ int zynqmp_disp_setup_clock(struct zynqmp_disp *disp,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Initialization & Cleanup
- */
+ 
 
 int zynqmp_disp_probe(struct zynqmp_dpsub *dpsub)
 {

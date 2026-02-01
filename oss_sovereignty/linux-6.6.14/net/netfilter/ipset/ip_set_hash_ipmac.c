@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2016 Tomasz Chilinski <tomasz.chilinski@chilan.com>
- */
 
-/* Kernel module implementing an IP set type: the hash:ip,mac type */
+ 
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/module.h>
@@ -23,21 +22,21 @@
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
 #define IPSET_TYPE_REV_MIN	0
-#define IPSET_TYPE_REV_MAX	1	/* bucketsize, initval support  */
+#define IPSET_TYPE_REV_MAX	1	 
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Tomasz Chilinski <tomasz.chilinski@chilan.com>");
 IP_SET_MODULE_DESC("hash:ip,mac", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_hash:ip,mac");
 
-/* Type specific function prefix */
+ 
 #define HTYPE		hash_ipmac
 
-/* IPv4 variant */
+ 
 
-/* Member elements */
+ 
 struct hash_ipmac4_elem {
-	/* Zero valued IP addresses cannot be stored */
+	 
 	__be32 ip;
 	union {
 		unsigned char ether[ETH_ALEN];
@@ -45,7 +44,7 @@ struct hash_ipmac4_elem {
 	};
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_ipmac4_data_equal(const struct hash_ipmac4_elem *e1,
@@ -140,11 +139,11 @@ hash_ipmac4_uadt(struct ip_set *set, struct nlattr *tb[],
 	return adtfn(set, &e, &ext, &ext, flags);
 }
 
-/* IPv6 variant */
+ 
 
-/* Member elements */
+ 
 struct hash_ipmac6_elem {
-	/* Zero valued IP addresses cannot be stored */
+	 
 	union nf_inet_addr ip;
 	union {
 		unsigned char ether[ETH_ALEN];
@@ -152,7 +151,7 @@ struct hash_ipmac6_elem {
 	};
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_ipmac6_data_equal(const struct hash_ipmac6_elem *e1,

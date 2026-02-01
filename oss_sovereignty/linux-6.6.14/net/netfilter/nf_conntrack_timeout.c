@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) 2012 by Pablo Neira Ayuso <pablo@netfilter.org>
- * (C) 2012 by Vyatta Inc. <http://www.vyatta.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/netfilter.h>
@@ -38,7 +35,7 @@ static int untimeout(struct nf_conn *ct, void *timeout)
 			RCU_INIT_POINTER(timeout_ext->timeout, NULL);
 	}
 
-	/* We are not intended to delete this conntrack. */
+	 
 	return 0;
 }
 
@@ -93,9 +90,7 @@ int nf_ct_set_timeout(struct net *net, struct nf_conn *ct,
 				    timeout_name, 3, timeout->l3num);
 		goto err_put_timeout;
 	}
-	/* Make sure the timeout policy matches any existing protocol tracker,
-	 * otherwise default to generic.
-	 */
+	 
 	if (timeout->l4proto->l4proto != l4num) {
 		ret = -EINVAL;
 		pr_info_ratelimited("Timeout policy `%s' can only be used by "

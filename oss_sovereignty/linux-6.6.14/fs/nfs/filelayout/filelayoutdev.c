@@ -1,32 +1,4 @@
-/*
- *  Device operations for the pnfs nfs4 file layout driver.
- *
- *  Copyright (c) 2002
- *  The Regents of the University of Michigan
- *  All Rights Reserved
- *
- *  Dean Hildebrand <dhildebz@umich.edu>
- *  Garth Goodson   <Garth.Goodson@netapp.com>
- *
- *  Permission is granted to use, copy, create derivative works, and
- *  redistribute this software and such derivative works for any purpose,
- *  so long as the name of the University of Michigan is not used in
- *  any advertising or publicity pertaining to the use or distribution
- *  of this software without specific, written prior authorization. If
- *  the above copyright notice or any other identification of the
- *  University of Michigan is included in any copy of any portion of
- *  this software, then the disclaimer below must also be included.
- *
- *  This software is provided as is, without representation or warranty
- *  of any kind either express or implied, including without limitation
- *  the implied warranties of merchantability, fitness for a particular
- *  purpose, or noninfringement.  The Regents of the University of
- *  Michigan shall not be liable for any damages, including special,
- *  indirect, incidental, or consequential damages, with respect to any
- *  claim arising out of or in connection with the use of the software,
- *  even if it has been or is hereafter advised of the possibility of
- *  such damages.
- */
+ 
 
 #include <linux/nfs_fs.h>
 #include <linux/vmalloc.h>
@@ -58,7 +30,7 @@ nfs4_fl_free_deviceid(struct nfs4_file_layout_dsaddr *dsaddr)
 	kfree_rcu(dsaddr, id_node.rcu);
 }
 
-/* Decode opaque device data and return the result */
+ 
 struct nfs4_file_layout_dsaddr *
 nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 		gfp_t gfp_flags)
@@ -76,7 +48,7 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 	struct list_head dsaddrs;
 	struct nfs4_pnfs_ds_addr *da;
 
-	/* set up xdr stream */
+	 
 	scratch = alloc_page(gfp_flags);
 	if (!scratch)
 		goto out_err;
@@ -84,7 +56,7 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 	xdr_init_decode_pages(&stream, &buf, pdev->pages, pdev->pglen);
 	xdr_set_scratch_page(&stream, scratch);
 
-	/* Get the stripe count (number of stripe index) */
+	 
 	p = xdr_inline_decode(&stream, 4);
 	if (unlikely(!p))
 		goto out_err_free_scratch;
@@ -98,7 +70,7 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 		goto out_err_free_scratch;
 	}
 
-	/* read stripe indices */
+	 
 	stripe_indices = kcalloc(cnt, sizeof(u8), gfp_flags);
 	if (!stripe_indices)
 		goto out_err_free_scratch;
@@ -115,7 +87,7 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 		indexp++;
 	}
 
-	/* Check the multipath list count */
+	 
 	p = xdr_inline_decode(&stream, 4);
 	if (unlikely(!p))
 		goto out_err_free_stripe_indices;
@@ -129,7 +101,7 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 		goto out_err_free_stripe_indices;
 	}
 
-	/* validate stripe indices are all < num */
+	 
 	if (max_stripe_index >= num) {
 		printk(KERN_WARNING "NFS: %s: stripe index %u >= num ds %u\n",
 			__func__, max_stripe_index, num);
@@ -156,7 +128,7 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 		if (unlikely(!p))
 			goto out_err_free_deviceid;
 
-		mp_count = be32_to_cpup(p); /* multipath count */
+		mp_count = be32_to_cpup(p);  
 		for (j = 0; j < mp_count; j++) {
 			da = nfs4_decode_mp_ds_addr(server->nfs_client->cl_net,
 						    &stream, gfp_flags);
@@ -173,7 +145,7 @@ nfs4_fl_alloc_deviceid_node(struct nfs_server *server, struct pnfs_device *pdev,
 		if (!dsaddr->ds_list[i])
 			goto out_err_drain_dsaddrs;
 
-		/* If DS was already in cache, free ds addrs */
+		 
 		while (!list_empty(&dsaddrs)) {
 			da = list_first_entry(&dsaddrs,
 					      struct nfs4_pnfs_ds_addr,
@@ -197,7 +169,7 @@ out_err_drain_dsaddrs:
 	}
 out_err_free_deviceid:
 	nfs4_fl_free_deviceid(dsaddr);
-	/* stripe_indicies was part of dsaddr */
+	 
 	goto out_err_free_scratch;
 out_err_free_stripe_indices:
 	kfree(stripe_indices);
@@ -214,10 +186,7 @@ nfs4_fl_put_deviceid(struct nfs4_file_layout_dsaddr *dsaddr)
 	nfs4_put_deviceid_node(&dsaddr->id_node);
 }
 
-/*
- * Want res = (offset - layout->pattern_offset)/ layout->stripe_unit
- * Then: ((res + fsi) % dsaddr->stripe_count)
- */
+ 
 u32
 nfs4_fl_calc_j_index(struct pnfs_layout_segment *lseg, loff_t offset)
 {
@@ -246,7 +215,7 @@ nfs4_fl_select_ds_fh(struct pnfs_layout_segment *lseg, u32 j)
 		if (flseg->num_fh == 1)
 			i = 0;
 		else if (flseg->num_fh == 0)
-			/* Use the MDS OPEN fh set in nfs_read_rpcsetup */
+			 
 			return NULL;
 		else
 			i = nfs4_fl_calc_ds_index(lseg, j);
@@ -255,7 +224,7 @@ nfs4_fl_select_ds_fh(struct pnfs_layout_segment *lseg, u32 j)
 	return flseg->fh_array[i];
 }
 
-/* Upon return, either ds is connected, or ds is NULL */
+ 
 struct nfs4_pnfs_ds *
 nfs4_fl_prepare_ds(struct pnfs_layout_segment *lseg, u32 ds_idx)
 {

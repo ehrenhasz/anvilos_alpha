@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Diolan DLN-2 USB-I2C adapter
- *
- * Copyright (c) 2014 Intel Corporation
- *
- * Derived from:
- *  i2c-diolan-u2c.c
- *  Copyright (c) 2010-2011 Ericsson AB
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,7 +13,7 @@
 #define DLN2_I2C_MODULE_ID		0x03
 #define DLN2_I2C_CMD(cmd)		DLN2_CMD(cmd, DLN2_I2C_MODULE_ID)
 
-/* I2C commands */
+ 
 #define DLN2_I2C_GET_PORT_COUNT		DLN2_I2C_CMD(0x00)
 #define DLN2_I2C_ENABLE			DLN2_I2C_CMD(0x01)
 #define DLN2_I2C_DISABLE		DLN2_I2C_CMD(0x02)
@@ -43,10 +35,7 @@ struct dln2_i2c {
 	struct platform_device *pdev;
 	struct i2c_adapter adapter;
 	u8 port;
-	/*
-	 * Buffer to hold the packet for read or write transfers. One is enough
-	 * since we can't have multiple transfers in parallel on the i2c bus.
-	 */
+	 
 	void *buf;
 };
 
@@ -202,7 +191,7 @@ static int dln2_i2c_probe(struct platform_device *pdev)
 	dln2->pdev = pdev;
 	dln2->port = pdata->port;
 
-	/* setup i2c adapter description */
+	 
 	dln2->adapter.owner = THIS_MODULE;
 	dln2->adapter.class = I2C_CLASS_HWMON;
 	dln2->adapter.algo = &dln2_i2c_usb_algorithm;
@@ -216,12 +205,12 @@ static int dln2_i2c_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, dln2);
 
-	/* initialize the i2c interface */
+	 
 	ret = dln2_i2c_enable(dln2, true);
 	if (ret < 0)
 		return dev_err_probe(dev, ret, "failed to initialize adapter\n");
 
-	/* and finally attach to i2c layer */
+	 
 	ret = i2c_add_adapter(&dln2->adapter);
 	if (ret < 0)
 		goto out_disable;

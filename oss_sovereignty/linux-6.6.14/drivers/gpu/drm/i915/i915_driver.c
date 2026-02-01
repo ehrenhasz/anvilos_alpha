@@ -1,31 +1,5 @@
-/* i915_drv.c -- i830,i845,i855,i865,i915 driver -*- linux-c -*-
- */
-/*
- *
- * Copyright 2003 Tungsten Graphics, Inc., Cedar Park, Texas.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
- * IN NO EVENT SHALL TUNGSTEN GRAPHICS AND/OR ITS SUPPLIERS BE LIABLE FOR
- * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -110,20 +84,7 @@ static const struct drm_driver i915_drm_driver;
 
 static int i915_workqueues_init(struct drm_i915_private *dev_priv)
 {
-	/*
-	 * The i915 workqueue is primarily used for batched retirement of
-	 * requests (and thus managing bo) once the task has been completed
-	 * by the GPU. i915_retire_requests() is called directly when we
-	 * need high-priority retirement, such as waiting for an explicit
-	 * bo.
-	 *
-	 * It is also used for periodic low-priority events, such as
-	 * idle-timers and recording error state.
-	 *
-	 * All tasks on the workqueue are expected to acquire the dev mutex
-	 * so there is no point in running more than one instance of the
-	 * workqueue at any time.  Use an ordered one.
-	 */
+	 
 	dev_priv->wq = alloc_ordered_workqueue("i915", 0);
 	if (dev_priv->wq == NULL)
 		goto out_err;
@@ -132,12 +93,7 @@ static int i915_workqueues_init(struct drm_i915_private *dev_priv)
 	if (dev_priv->display.hotplug.dp_wq == NULL)
 		goto out_free_wq;
 
-	/*
-	 * The unordered i915 workqueue should be used for all work
-	 * scheduling that do not require running in order, which used
-	 * to be scheduled on the system_wq before moving to a driver
-	 * instance due deprecation of flush_scheduled_work().
-	 */
+	 
 	dev_priv->unordered_wq = alloc_workqueue("i915-unordered", 0, 0);
 	if (dev_priv->unordered_wq == NULL)
 		goto out_free_dp_wq;
@@ -161,16 +117,7 @@ static void i915_workqueues_cleanup(struct drm_i915_private *dev_priv)
 	destroy_workqueue(dev_priv->wq);
 }
 
-/*
- * We don't keep the workarounds for pre-production hardware, so we expect our
- * driver to fail on these machines in one way or another. A little warning on
- * dmesg may help both the user and the bug triagers.
- *
- * Our policy for removing pre-production workarounds is to keep the
- * current gen workarounds as a guide to the bring-up of the next gen
- * (workarounds have a habit of persisting!). Anything older than that
- * should be removed along with the complications they introduce.
- */
+ 
 static void intel_detect_preproduction_hw(struct drm_i915_private *dev_priv)
 {
 	bool pre = false;
@@ -202,16 +149,7 @@ static void sanitize_gpu(struct drm_i915_private *i915)
 	}
 }
 
-/**
- * i915_driver_early_probe - setup state not requiring device access
- * @dev_priv: device private
- *
- * Initialize everything that is a "SW-only" state, that is state not
- * requiring accessing the device or exposing the driver via kernel internal
- * or userspace interfaces. Example steps belonging here: lock initialization,
- * system memory allocation, setting up device specific attributes and
- * function hooks not requiring accessing the device.
- */
+ 
 static int i915_driver_early_probe(struct drm_i915_private *dev_priv)
 {
 	int ret = 0;
@@ -258,7 +196,7 @@ static int i915_driver_early_probe(struct drm_i915_private *dev_priv)
 
 	i915_gem_init_early(dev_priv);
 
-	/* This must be called before any calls to HAS_PCH_* */
+	 
 	intel_detect_pch(dev_priv);
 
 	intel_irq_init(dev_priv);
@@ -278,11 +216,7 @@ err_workqueues:
 	return ret;
 }
 
-/**
- * i915_driver_late_release - cleanup the setup done in
- *			       i915_driver_early_probe()
- * @dev_priv: device private
- */
+ 
 static void i915_driver_late_release(struct drm_i915_private *dev_priv)
 {
 	intel_irq_fini(dev_priv);
@@ -299,15 +233,7 @@ static void i915_driver_late_release(struct drm_i915_private *dev_priv)
 	i915_params_free(&dev_priv->params);
 }
 
-/**
- * i915_driver_mmio_probe - setup device MMIO
- * @dev_priv: device private
- *
- * Setup minimal device state necessary for MMIO accesses later in the
- * initialization sequence. The setup here should avoid any other device-wide
- * side effects or exposing the driver via kernel internal or user space
- * interfaces.
- */
+ 
 static int i915_driver_mmio_probe(struct drm_i915_private *dev_priv)
 {
 	struct intel_gt *gt;
@@ -332,7 +258,7 @@ static int i915_driver_mmio_probe(struct drm_i915_private *dev_priv)
 			return ret;
 	}
 
-	/* Try to make sure MCHBAR is enabled before poking at it */
+	 
 	intel_gmch_bar_setup(dev_priv);
 	intel_device_info_runtime_init(dev_priv);
 
@@ -342,7 +268,7 @@ static int i915_driver_mmio_probe(struct drm_i915_private *dev_priv)
 			goto err_uncore;
 	}
 
-	/* As early as possible, scrub existing GPU state before clobbering */
+	 
 	sanitize_gpu(dev_priv);
 
 	return 0;
@@ -353,26 +279,13 @@ err_uncore:
 	return ret;
 }
 
-/**
- * i915_driver_mmio_release - cleanup the setup done in i915_driver_mmio_probe()
- * @dev_priv: device private
- */
+ 
 static void i915_driver_mmio_release(struct drm_i915_private *dev_priv)
 {
 	intel_gmch_bar_teardown(dev_priv);
 }
 
-/**
- * i915_set_dma_info - set all relevant PCI dma info as configured for the
- * platform
- * @i915: valid i915 instance
- *
- * Set the dma max segment size, device and coherent masks.  The dma mask set
- * needs to occur before i915_ggtt_probe_hw.
- *
- * A couple of platforms have special needs.  Address them as well.
- *
- */
+ 
 static int i915_set_dma_info(struct drm_i915_private *i915)
 {
 	unsigned int mask_size = INTEL_INFO(i915)->dma_mask_size;
@@ -380,29 +293,18 @@ static int i915_set_dma_info(struct drm_i915_private *i915)
 
 	GEM_BUG_ON(!mask_size);
 
-	/*
-	 * We don't have a max segment size, so set it to the max so sg's
-	 * debugging layer doesn't complain
-	 */
+	 
 	dma_set_max_seg_size(i915->drm.dev, UINT_MAX);
 
 	ret = dma_set_mask(i915->drm.dev, DMA_BIT_MASK(mask_size));
 	if (ret)
 		goto mask_err;
 
-	/* overlay on gen2 is broken and can't address above 1G */
+	 
 	if (GRAPHICS_VER(i915) == 2)
 		mask_size = 30;
 
-	/*
-	 * 965GM sometimes incorrectly writes to hardware status page (HWS)
-	 * using 32bit addressing, overwriting memory if HWS is located
-	 * above 4GB.
-	 *
-	 * The documentation also mentions an issue with undefined
-	 * behaviour if any general state is accessed within a page above 4GB,
-	 * which also needs to be handled carefully.
-	 */
+	 
 	if (IS_I965G(i915) || IS_I965GM(i915))
 		mask_size = 32;
 
@@ -433,13 +335,7 @@ static int i915_pcode_init(struct drm_i915_private *i915)
 	return 0;
 }
 
-/**
- * i915_driver_hw_probe - setup state requiring device access
- * @dev_priv: device private
- *
- * Setup state that requires accessing the device, but doesn't require
- * exposing the driver via kernel internal or userspace interfaces.
- */
+ 
 static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
 {
 	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
@@ -458,11 +354,7 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
 	}
 
 	if (HAS_EXECLISTS(dev_priv)) {
-		/*
-		 * Older GVT emulation depends upon intercepting CSB mmio,
-		 * which we no longer use, preferring to use the HWSP cache
-		 * instead.
-		 */
+		 
 		if (intel_vgpu_active(dev_priv) &&
 		    !intel_vgpu_has_hwsp_emulation(dev_priv)) {
 			i915_report_error(dev_priv,
@@ -471,7 +363,7 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
 		}
 	}
 
-	/* needs to be done before ggtt probe */
+	 
 	intel_dram_edram_detect(dev_priv);
 
 	ret = i915_set_dma_info(dev_priv);
@@ -494,10 +386,7 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
 	if (ret)
 		goto err_ggtt;
 
-	/*
-	 * Make sure we probe lmem before we probe stolen-lmem. The BAR size
-	 * might be different due to bar resizing.
-	 */
+	 
 	ret = intel_gt_tiles_init(dev_priv);
 	if (ret)
 		goto err_ggtt;
@@ -514,25 +403,7 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
 
 	pci_set_master(pdev);
 
-	/* On the 945G/GM, the chipset reports the MSI capability on the
-	 * integrated graphics even though the support isn't actually there
-	 * according to the published specs.  It doesn't appear to function
-	 * correctly in testing on 945G.
-	 * This may be a side effect of MSI having been made available for PEG
-	 * and the registers being closely associated.
-	 *
-	 * According to chipset errata, on the 965GM, MSI interrupts may
-	 * be lost or delayed, and was defeatured. MSI interrupts seem to
-	 * get lost on g4x as well, and interrupt delivery seems to stay
-	 * properly dead afterwards. So we'll just disable them for all
-	 * pre-gen5 chipsets.
-	 *
-	 * dp aux and gmbus irq on gen4 seems to be able to generate legacy
-	 * interrupts even when in MSI mode. This results in spurious
-	 * interrupt warnings if the legacy irq no. is shared with another
-	 * device. The kernel then disables that interrupt source and so
-	 * prevents the other device from working properly.
-	 */
+	 
 	if (GRAPHICS_VER(dev_priv) >= 5) {
 		if (pci_enable_msi(pdev) < 0)
 			drm_dbg(&dev_priv->drm, "can't enable MSI");
@@ -548,10 +419,7 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
 	if (ret)
 		goto err_opregion;
 
-	/*
-	 * Fill the dram structure to get the system dram info. This will be
-	 * used for memory latency calculation.
-	 */
+	 
 	intel_dram_detect(dev_priv);
 
 	intel_bw_init_hw(dev_priv);
@@ -574,10 +442,7 @@ err_perf:
 	return ret;
 }
 
-/**
- * i915_driver_hw_remove - cleanup the setup done in i915_driver_hw_probe()
- * @dev_priv: device private
- */
+ 
 static void i915_driver_hw_remove(struct drm_i915_private *dev_priv)
 {
 	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
@@ -590,13 +455,7 @@ static void i915_driver_hw_remove(struct drm_i915_private *dev_priv)
 		pci_disable_msi(pdev);
 }
 
-/**
- * i915_driver_register - register the driver with the rest of the system
- * @dev_priv: device private
- *
- * Perform any steps necessary to make the driver available via kernel
- * internal or userspace interfaces.
- */
+ 
 static void i915_driver_register(struct drm_i915_private *dev_priv)
 {
 	struct intel_gt *gt;
@@ -607,7 +466,7 @@ static void i915_driver_register(struct drm_i915_private *dev_priv)
 
 	intel_vgpu_register(dev_priv);
 
-	/* Reveal our presence to userspace */
+	 
 	if (drm_dev_register(&dev_priv->drm, 0)) {
 		drm_err(&dev_priv->drm,
 			"Failed to register driver for userspace access!\n");
@@ -617,7 +476,7 @@ static void i915_driver_register(struct drm_i915_private *dev_priv)
 	i915_debugfs_register(dev_priv);
 	i915_setup_sysfs(dev_priv);
 
-	/* Depends on sysfs having been initialized */
+	 
 	i915_perf_register(dev_priv);
 
 	for_each_gt(gt, dev_priv, i)
@@ -638,10 +497,7 @@ static void i915_driver_register(struct drm_i915_private *dev_priv)
 		drm_err(&dev_priv->drm, "Failed to register vga switcheroo!\n");
 }
 
-/**
- * i915_driver_unregister - cleanup the registration done in i915_driver_regiser()
- * @dev_priv: device private
- */
+ 
 static void i915_driver_unregister(struct drm_i915_private *dev_priv)
 {
 	struct intel_gt *gt;
@@ -726,26 +582,16 @@ i915_driver_create(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_drvdata(pdev, i915);
 
-	/* Device parameters start as a copy of module parameters. */
+	 
 	i915_params_copy(&i915->params, &i915_modparams);
 
-	/* Set up device info and initial runtime info. */
+	 
 	intel_device_info_driver_create(i915, pdev->device, match_info);
 
 	return i915;
 }
 
-/**
- * i915_driver_probe - setup chip and create an initial config
- * @pdev: PCI device
- * @ent: matching PCI ID entry
- *
- * The driver probe routine has to do several things:
- *   - drive output discovery via intel_display_driver_probe()
- *   - initialize the memory manager
- *   - allocate initial config memory
- *   - setup the DRM framebuffer with the allocated memory
- */
+ 
 int i915_driver_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct drm_i915_private *i915;
@@ -820,7 +666,7 @@ out_cleanup_gem:
 	i915_gem_driver_remove(i915);
 	i915_gem_driver_release(i915);
 out_cleanup_modeset2:
-	/* FIXME clean up the error path */
+	 
 	intel_display_driver_remove(i915);
 	intel_irq_uninstall(i915);
 	intel_display_driver_remove_noirq(i915);
@@ -854,7 +700,7 @@ void i915_driver_remove(struct drm_i915_private *i915)
 
 	i915_driver_unregister(i915);
 
-	/* Flush any external code that still may be under the RCU lock */
+	 
 	synchronize_rcu();
 
 	i915_gem_suspend(i915);
@@ -916,18 +762,7 @@ static int i915_driver_open(struct drm_device *dev, struct drm_file *file)
 	return 0;
 }
 
-/**
- * i915_driver_lastclose - clean up after all DRM clients have exited
- * @dev: DRM device
- *
- * Take care of cleaning up after all DRM clients have exited.  In the
- * mode setting case, we want to restore the kernel's initial mode (just
- * in case the last client left us in a bad state).
- *
- * Additionally, in the non-mode setting case, we'll tear down the GTT
- * and DMA structures, since the kernel won't be using them, and clea
- * up any GEM state.
- */
+ 
 static void i915_driver_lastclose(struct drm_device *dev)
 {
 	struct drm_i915_private *i915 = to_i915(dev);
@@ -946,7 +781,7 @@ static void i915_driver_postclose(struct drm_device *dev, struct drm_file *file)
 
 	kfree_rcu(file_priv, rcu);
 
-	/* Catch up with all the deferred frees from "this" client */
+	 
 	i915_gem_flush_free_objects(to_i915(dev));
 }
 
@@ -957,10 +792,7 @@ static void intel_suspend_encoders(struct drm_i915_private *dev_priv)
 	if (!HAS_DISPLAY(dev_priv))
 		return;
 
-	/*
-	 * TODO: check and remove holding the modeset locks if none of
-	 * the encoders depends on this.
-	 */
+	 
 	drm_modeset_lock_all(&dev_priv->drm);
 	for_each_intel_encoder(&dev_priv->drm, encoder)
 		if (encoder->suspend)
@@ -979,10 +811,7 @@ static void intel_shutdown_encoders(struct drm_i915_private *dev_priv)
 	if (!HAS_DISPLAY(dev_priv))
 		return;
 
-	/*
-	 * TODO: check and remove holding the modeset locks if none of
-	 * the encoders depends on this.
-	 */
+	 
 	drm_modeset_lock_all(&dev_priv->drm);
 	for_each_intel_encoder(&dev_priv->drm, encoder)
 		if (encoder->shutdown)
@@ -1018,17 +847,7 @@ void i915_driver_shutdown(struct drm_i915_private *i915)
 
 	i915_gem_suspend(i915);
 
-	/*
-	 * The only requirement is to reboot with display DC states disabled,
-	 * for now leaving all display power wells in the INIT power domain
-	 * enabled.
-	 *
-	 * TODO:
-	 * - unify the pci_driver::shutdown sequence here with the
-	 *   pci_driver.driver.pm.poweroff,poweroff_late sequence.
-	 * - unify the driver remove and system/runtime suspend sequences with
-	 *   the above unified shutdown/poweroff sequence.
-	 */
+	 
 	intel_power_domains_driver_remove(i915);
 	enable_rpm_wakeref_asserts(&i915->runtime_pm);
 
@@ -1057,12 +876,7 @@ static int i915_drm_prepare(struct drm_device *dev)
 
 	intel_pxp_suspend_prepare(i915->pxp);
 
-	/*
-	 * NB intel_display_driver_suspend() may issue new requests after we've
-	 * ostensibly marked the GPU as ready-to-sleep here. We need to
-	 * split out that work and pull it forward so that after point,
-	 * the GPU is not woken again.
-	 */
+	 
 	return i915_gem_backup_suspend(i915);
 }
 
@@ -1074,8 +888,7 @@ static int i915_drm_suspend(struct drm_device *dev)
 
 	disable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
 
-	/* We do a lot of poking in a lot of registers, make sure they work
-	 * properly. */
+	 
 	intel_power_domains_disable(dev_priv);
 	if (HAS_DISPLAY(dev_priv))
 		drm_kms_helper_poll_disable(dev);
@@ -1091,7 +904,7 @@ static int i915_drm_suspend(struct drm_device *dev)
 
 	intel_suspend_encoders(dev_priv);
 
-	/* Must be called before GGTT is suspended. */
+	 
 	intel_dpt_suspend(dev_priv);
 	i915_ggtt_suspend(to_gt(dev_priv)->ggtt);
 
@@ -1144,18 +957,7 @@ static int i915_drm_suspend_late(struct drm_device *dev, bool hibernation)
 	}
 
 	pci_disable_device(pdev);
-	/*
-	 * During hibernation on some platforms the BIOS may try to access
-	 * the device even though it's already in D3 and hang the machine. So
-	 * leave the device in D0 on those platforms and hope the BIOS will
-	 * power down the device properly. The issue was seen on multiple old
-	 * GENs with different BIOS vendors, so having an explicit blacklist
-	 * is inpractical; apply the workaround on everything pre GEN6. The
-	 * platforms where the issue was seen:
-	 * Lenovo Thinkpad X301, X61s, X60, T60, X41
-	 * Fujitsu FSC S7110
-	 * Acer Aspire 1830T
-	 */
+	 
 	if (!(hibernation && GRAPHICS_VER(dev_priv) < 6))
 		pci_set_power_state(pdev, PCI_D3hot);
 
@@ -1210,7 +1012,7 @@ static int i915_drm_resume(struct drm_device *dev)
 		if (GRAPHICS_VER(gt->i915) >= 8)
 			setup_private_pat(gt);
 
-	/* Must be called after GGTT is resumed. */
+	 
 	intel_dpt_resume(dev_priv);
 
 	intel_dmc_resume(dev_priv);
@@ -1220,16 +1022,7 @@ static int i915_drm_resume(struct drm_device *dev)
 
 	intel_init_pch_refclk(dev_priv);
 
-	/*
-	 * Interrupts have to be enabled before any batches are run. If not the
-	 * GPU will hang. i915_gem_init_hw() will initiate batches to
-	 * update/restore the context.
-	 *
-	 * drm_mode_config_reset() needs AUX interrupts.
-	 *
-	 * Modeset enabling in intel_display_driver_init_hw() also needs working
-	 * interrupts.
-	 */
+	 
 	intel_runtime_pm_enable_interrupts(dev_priv);
 
 	if (HAS_DISPLAY(dev_priv))
@@ -1242,7 +1035,7 @@ static int i915_drm_resume(struct drm_device *dev)
 	intel_clock_gating_init(dev_priv);
 	intel_hpd_init(dev_priv);
 
-	/* MST sideband requires HPD interrupts enabled */
+	 
 	intel_dp_mst_resume(dev_priv);
 	intel_display_driver_resume(dev_priv);
 
@@ -1270,26 +1063,9 @@ static int i915_drm_resume_early(struct drm_device *dev)
 	struct intel_gt *gt;
 	int ret, i;
 
-	/*
-	 * We have a resume ordering issue with the snd-hda driver also
-	 * requiring our device to be power up. Due to the lack of a
-	 * parent/child relationship we currently solve this with an early
-	 * resume hook.
-	 *
-	 * FIXME: This should be solved with a special hdmi sink device or
-	 * similar so that power domains can be employed.
-	 */
+	 
 
-	/*
-	 * Note that we need to set the power state explicitly, since we
-	 * powered off the device during freeze and the PCI core won't power
-	 * it back up for us during thaw. Powering off the device during
-	 * freeze is not a hard requirement though, and during the
-	 * suspend/resume phases the PCI core makes sure we get here with the
-	 * device powered on. So in case we change our freeze logic and keep
-	 * the device powered we can also remove the following set power state
-	 * call.
-	 */
+	 
 	ret = pci_set_power_state(pdev, PCI_D0);
 	if (ret) {
 		drm_err(&dev_priv->drm,
@@ -1297,19 +1073,7 @@ static int i915_drm_resume_early(struct drm_device *dev)
 		return ret;
 	}
 
-	/*
-	 * Note that pci_enable_device() first enables any parent bridge
-	 * device and only then sets the power state for this device. The
-	 * bridge enabling is a nop though, since bridge devices are resumed
-	 * first. The order of enabling power and enabling the device is
-	 * imposed by the PCI core as described above, so here we preserve the
-	 * same order for the freeze/thaw phases.
-	 *
-	 * TODO: eventually we should remove pci_disable_device() /
-	 * pci_enable_enable_device() from suspend/resume. Due to how they
-	 * depend on the device enable refcount we can't anyway depend on them
-	 * disabling/enabling the device.
-	 */
+	 
 	if (pci_enable_device(pdev))
 		return -EIO;
 
@@ -1384,15 +1148,7 @@ static int i915_pm_suspend_late(struct device *kdev)
 {
 	struct drm_i915_private *i915 = kdev_to_i915(kdev);
 
-	/*
-	 * We have a suspend ordering issue with the snd-hda driver also
-	 * requiring our device to be power up. Due to the lack of a
-	 * parent/child relationship we currently solve this with an late
-	 * suspend hook.
-	 *
-	 * FIXME: This should be solved with a special hdmi sink device or
-	 * similar so that power domains can be employed.
-	 */
+	 
 	if (i915->drm.switch_power_state == DRM_SWITCH_POWER_OFF)
 		return 0;
 
@@ -1439,7 +1195,7 @@ static void i915_pm_complete(struct device *kdev)
 	i915_drm_complete(&i915->drm);
 }
 
-/* freeze: before creating the hibernation_image */
+ 
 static int i915_pm_freeze(struct device *kdev)
 {
 	struct drm_i915_private *i915 = kdev_to_i915(kdev);
@@ -1476,7 +1232,7 @@ static int i915_pm_freeze_late(struct device *kdev)
 	return 0;
 }
 
-/* thaw: called after creating the hibernation image, but before turning off. */
+ 
 static int i915_pm_thaw_early(struct device *kdev)
 {
 	return i915_pm_resume_early(kdev);
@@ -1487,7 +1243,7 @@ static int i915_pm_thaw(struct device *kdev)
 	return i915_pm_resume(kdev);
 }
 
-/* restore: called after loading the hibernation image. */
+ 
 static int i915_pm_restore_early(struct device *kdev)
 {
 	return i915_pm_resume_early(kdev);
@@ -1514,10 +1270,7 @@ static int intel_runtime_suspend(struct device *kdev)
 
 	disable_rpm_wakeref_asserts(rpm);
 
-	/*
-	 * We are safe here against re-faults, since the fault handler takes
-	 * an RPM reference.
-	 */
+	 
 	i915_gem_runtime_suspend(dev_priv);
 
 	intel_pxp_runtime_suspend(dev_priv->pxp);
@@ -1555,37 +1308,19 @@ static int intel_runtime_suspend(struct device *kdev)
 		drm_err(&dev_priv->drm,
 			"Unclaimed access detected prior to suspending\n");
 
-	/*
-	 * FIXME: Temporary hammer to avoid freezing the machine on our DGFX
-	 * This should be totally removed when we handle the pci states properly
-	 * on runtime PM.
-	 */
+	 
 	root_pdev = pcie_find_root_port(pdev);
 	if (root_pdev)
 		pci_d3cold_disable(root_pdev);
 
 	rpm->suspended = true;
 
-	/*
-	 * FIXME: We really should find a document that references the arguments
-	 * used below!
-	 */
+	 
 	if (IS_BROADWELL(dev_priv)) {
-		/*
-		 * On Broadwell, if we use PCI_D1 the PCH DDI ports will stop
-		 * being detected, and the call we do at intel_runtime_resume()
-		 * won't be able to restore them. Since PCI_D3hot matches the
-		 * actual specification and appears to be working, use it.
-		 */
+		 
 		intel_opregion_notify_adapter(dev_priv, PCI_D3hot);
 	} else {
-		/*
-		 * current versions of firmware which depend on this opregion
-		 * notification have repurposed the D1 definition to mean
-		 * "runtime suspended" vs. what you would normally expect (D3)
-		 * to distinguish it from notifications that might be sent via
-		 * the suspend path.
-		 */
+		 
 		intel_opregion_notify_adapter(dev_priv, PCI_D1);
 	}
 
@@ -1635,20 +1370,13 @@ static int intel_runtime_resume(struct device *kdev)
 
 	intel_runtime_pm_enable_interrupts(dev_priv);
 
-	/*
-	 * No point of rolling back things in case of an error, as the best
-	 * we can do is to hope that things will still work (and disable RPM).
-	 */
+	 
 	for_each_gt(gt, dev_priv, i)
 		intel_gt_runtime_resume(gt);
 
 	intel_pxp_runtime_resume(dev_priv->pxp);
 
-	/*
-	 * On VLV/CHV display interrupts are part of the display
-	 * power well, so hpd is reinitialized from there. For
-	 * everyone else do it here.
-	 */
+	 
 	if (!IS_VALLEYVIEW(dev_priv) && !IS_CHERRYVIEW(dev_priv)) {
 		intel_hpd_init(dev_priv);
 		intel_hpd_poll_disable(dev_priv);
@@ -1668,10 +1396,7 @@ static int intel_runtime_resume(struct device *kdev)
 }
 
 const struct dev_pm_ops i915_pm_ops = {
-	/*
-	 * S0ix (via system suspend) and S3 event handlers [PMSG_SUSPEND,
-	 * PMSG_RESUME]
-	 */
+	 
 	.prepare = i915_pm_prepare,
 	.suspend = i915_pm_suspend,
 	.suspend_late = i915_pm_suspend_late,
@@ -1679,21 +1404,7 @@ const struct dev_pm_ops i915_pm_ops = {
 	.resume = i915_pm_resume,
 	.complete = i915_pm_complete,
 
-	/*
-	 * S4 event handlers
-	 * @freeze, @freeze_late    : called (1) before creating the
-	 *                            hibernation image [PMSG_FREEZE] and
-	 *                            (2) after rebooting, before restoring
-	 *                            the image [PMSG_QUIESCE]
-	 * @thaw, @thaw_early       : called (1) after creating the hibernation
-	 *                            image, before writing it [PMSG_THAW]
-	 *                            and (2) after failing to create or
-	 *                            restore the image [PMSG_RECOVER]
-	 * @poweroff, @poweroff_late: called after writing the hibernation
-	 *                            image, before rebooting [PMSG_HIBERNATE]
-	 * @restore, @restore_early : called after rebooting and restoring the
-	 *                            hibernation image [PMSG_RESTORE]
-	 */
+	 
 	.freeze = i915_pm_freeze,
 	.freeze_late = i915_pm_freeze_late,
 	.thaw_early = i915_pm_thaw_early,
@@ -1703,7 +1414,7 @@ const struct dev_pm_ops i915_pm_ops = {
 	.restore_early = i915_pm_restore_early,
 	.restore = i915_pm_restore,
 
-	/* S0ix (via runtime suspend) event handlers */
+	 
 	.runtime_suspend = intel_runtime_suspend,
 	.runtime_resume = intel_runtime_resume,
 };
@@ -1792,25 +1503,13 @@ static const struct drm_ioctl_desc i915_ioctls[] = {
 	DRM_IOCTL_DEF_DRV(I915_GEM_VM_DESTROY, i915_gem_vm_destroy_ioctl, DRM_RENDER_ALLOW),
 };
 
-/*
- * Interface history:
- *
- * 1.1: Original.
- * 1.2: Add Power Management
- * 1.3: Add vblank support
- * 1.4: Fix cmdbuffer path, add heap destroy
- * 1.5: Add vblank pipe configuration
- * 1.6: - New ioctl for scheduling buffer swaps on vertical blank
- *      - Support vertical blank on secondary display pipe
- */
+ 
 #define DRIVER_MAJOR		1
 #define DRIVER_MINOR		6
 #define DRIVER_PATCHLEVEL	0
 
 static const struct drm_driver i915_drm_driver = {
-	/* Don't use MTRRs here; the Xserver or userspace app should
-	 * deal with them for Intel hardware.
-	 */
+	 
 	.driver_features =
 	    DRIVER_GEM |
 	    DRIVER_RENDER | DRIVER_MODESET | DRIVER_ATOMIC | DRIVER_SYNCOBJ |

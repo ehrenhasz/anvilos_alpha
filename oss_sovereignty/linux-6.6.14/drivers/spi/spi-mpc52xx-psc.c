@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MPC52xx PSC in SPI mode driver.
- *
- * Maintainer: Dragos Carp
- *
- * Copyright (C) 2006 TOPTICA Photonics AG.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -23,10 +17,10 @@
 #include <asm/mpc52xx.h>
 #include <asm/mpc52xx_psc.h>
 
-#define MCLK 20000000 /* PSC port MClk in hz */
+#define MCLK 20000000  
 
 struct mpc52xx_psc_spi {
-	/* driver internal data */
+	 
 	struct mpc52xx_psc __iomem *psc;
 	struct mpc52xx_psc_fifo __iomem *fifo;
 	int irq;
@@ -35,15 +29,13 @@ struct mpc52xx_psc_spi {
 	struct completion done;
 };
 
-/* controller state */
+ 
 struct mpc52xx_psc_spi_cs {
 	int bits_per_word;
 	int speed_hz;
 };
 
-/* set clock freq, clock ramp, bits per work
- * if t is NULL then reset the values to the default values
- */
+ 
 static int mpc52xx_psc_spi_transfer_setup(struct spi_device *spi,
 		struct spi_transfer *t)
 {
@@ -67,7 +59,7 @@ static void mpc52xx_psc_spi_activate_cs(struct spi_device *spi)
 
 	sicr = in_be32(&psc->sicr);
 
-	/* Set clock phase and polarity */
+	 
 	if (spi->mode & SPI_CPHA)
 		sicr |= 0x00001000;
 	else
@@ -83,22 +75,19 @@ static void mpc52xx_psc_spi_activate_cs(struct spi_device *spi)
 		sicr &= ~0x10000000;
 	out_be32(&psc->sicr, sicr);
 
-	/* Set clock frequency and bits per word
-	 * Because psc->ccr is defined as 16bit register instead of 32bit
-	 * just set the lower byte of BitClkDiv
-	 */
+	 
 	ccr = in_be16((u16 __iomem *)&psc->ccr);
 	ccr &= 0xFF00;
 	if (cs->speed_hz)
 		ccr |= (MCLK / cs->speed_hz - 1) & 0xFF;
-	else /* by default SPI Clk 1MHz */
+	else  
 		ccr |= (MCLK / 1000000 - 1) & 0xFF;
 	out_be16((u16 __iomem *)&psc->ccr, ccr);
 	mps->bits_per_word = cs->bits_per_word;
 }
 
 #define MPC52xx_PSC_BUFSIZE (MPC52xx_PSC_RFNUM_MASK + 1)
-/* wake up when 80% fifo full */
+ 
 #define MPC52xx_PSC_RFALARM (MPC52xx_PSC_BUFSIZE * 20 / 100)
 
 static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
@@ -107,8 +96,8 @@ static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
 	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(spi->master);
 	struct mpc52xx_psc __iomem *psc = mps->psc;
 	struct mpc52xx_psc_fifo __iomem *fifo = mps->fifo;
-	unsigned rb = 0;	/* number of bytes receieved */
-	unsigned sb = 0;	/* number of bytes sent */
+	unsigned rb = 0;	 
+	unsigned sb = 0;	 
 	unsigned char *rx_buf = (unsigned char *)t->rx_buf;
 	unsigned char *tx_buf = (unsigned char *)t->tx_buf;
 	unsigned rfalarm;
@@ -119,7 +108,7 @@ static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
 	if (!t->tx_buf && !t->rx_buf && t->len)
 		return -EINVAL;
 
-	/* enable transmiter/receiver */
+	 
 	out_8(&psc->command, MPC52xx_PSC_TX_ENABLE | MPC52xx_PSC_RX_ENABLE);
 	while (rb < t->len) {
 		if (t->len - rb > MPC52xx_PSC_BUFSIZE) {
@@ -133,7 +122,7 @@ static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
 
 		dev_dbg(&spi->dev, "send %d bytes...\n", send_at_once);
 		for (; send_at_once; sb++, send_at_once--) {
-			/* set EOF flag before the last word is sent */
+			 
 			if (send_at_once == 1 && last_block)
 				out_8(&psc->ircr2, 0x01);
 
@@ -144,10 +133,7 @@ static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
 		}
 
 
-		/* enable interrupts and wait for wake up
-		 * if just one byte is expected the Rx FIFO genererates no
-		 * FFULL interrupt, so activate the RxRDY interrupt
-		 */
+		 
 		out_8(&psc->command, MPC52xx_PSC_SEL_MODE_REG_1);
 		if (t->len - rb == 1) {
 			out_8(&psc->mode, 0);
@@ -169,7 +155,7 @@ static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
 				in_8(&psc->mpc52xx_psc_buffer_8);
 		}
 	}
-	/* disable transmiter/receiver */
+	 
 	out_8(&psc->command, MPC52xx_PSC_TX_DISABLE | MPC52xx_PSC_RX_DISABLE);
 
 	return 0;
@@ -246,29 +232,29 @@ static int mpc52xx_psc_spi_port_config(int psc_id, struct mpc52xx_psc_spi *mps)
 	u32 mclken_div;
 	int ret;
 
-	/* default sysclk is 512MHz */
+	 
 	mclken_div = 512000000 / MCLK;
 	ret = mpc52xx_set_psc_clkdiv(psc_id, mclken_div);
 	if (ret)
 		return ret;
 
-	/* Reset the PSC into a known state */
+	 
 	out_8(&psc->command, MPC52xx_PSC_RST_RX);
 	out_8(&psc->command, MPC52xx_PSC_RST_TX);
 	out_8(&psc->command, MPC52xx_PSC_TX_DISABLE | MPC52xx_PSC_RX_DISABLE);
 
-	/* Disable interrupts, interrupts are based on alarm level */
+	 
 	out_be16(&psc->mpc52xx_psc_imr, 0);
 	out_8(&psc->command, MPC52xx_PSC_SEL_MODE_REG_1);
 	out_8(&fifo->rfcntl, 0);
 	out_8(&psc->mode, MPC52xx_PSC_MODE_FFULL);
 
-	/* Configure 8bit codec mode as a SPI master and use EOF flags */
-	/* SICR_SIM_CODEC8|SICR_GENCLK|SICR_SPI|SICR_MSTR|SICR_USEEOF */
+	 
+	 
 	out_be32(&psc->sicr, 0x0180C800);
-	out_be16((u16 __iomem *)&psc->ccr, 0x070F); /* default SPI Clk 1MHz */
+	out_be16((u16 __iomem *)&psc->ccr, 0x070F);  
 
-	/* Set 2ms DTL delay */
+	 
 	out_8(&psc->ctur, 0x00);
 	out_8(&psc->ctlr, 0x84);
 
@@ -282,7 +268,7 @@ static irqreturn_t mpc52xx_psc_spi_isr(int irq, void *dev_id)
 	struct mpc52xx_psc_spi *mps = (struct mpc52xx_psc_spi *)dev_id;
 	struct mpc52xx_psc __iomem *psc = mps->psc;
 
-	/* disable interrupt and wake up the work queue */
+	 
 	if (in_be16(&psc->mpc52xx_psc_isr) & MPC52xx_PSC_IMR_RXRDY) {
 		out_be16(&psc->mpc52xx_psc_imr, 0);
 		complete(&mps->done);
@@ -306,7 +292,7 @@ static int mpc52xx_psc_spi_of_probe(struct platform_device *pdev)
 	dev_set_drvdata(dev, master);
 	mps = spi_master_get_devdata(master);
 
-	/* the spi->mode bits understood by this driver: */
+	 
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LSB_FIRST;
 
 	ret = device_property_read_u32(dev, "cell-index", &bus_num);
@@ -325,7 +311,7 @@ static int mpc52xx_psc_spi_of_probe(struct platform_device *pdev)
 	if (IS_ERR(mps->psc))
 		return dev_err_probe(dev, PTR_ERR(mps->psc), "could not ioremap I/O port range\n");
 
-	/* On the 5200, fifo regs are immediately ajacent to the psc regs */
+	 
 	mps->fifo = ((void __iomem *)mps->psc) + sizeof(struct mpc52xx_psc);
 
 	mps->irq = platform_get_irq(pdev, 0);
@@ -348,7 +334,7 @@ static int mpc52xx_psc_spi_of_probe(struct platform_device *pdev)
 
 static const struct of_device_id mpc52xx_psc_spi_of_match[] = {
 	{ .compatible = "fsl,mpc5200-psc-spi", },
-	{ .compatible = "mpc5200-psc-spi", }, /* old */
+	{ .compatible = "mpc5200-psc-spi", },  
 	{}
 };
 

@@ -1,23 +1,6 @@
-/* getenv.c - get environment variable value from the shell's variable
-	      list. */
+ 
 
-/* Copyright (C) 1997-2002 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -37,13 +20,9 @@ extern int errno;
 
 extern char **environ;
 
-/* We supply our own version of getenv () because we want library
-   routines to get the changed values of exported variables. */
+ 
 
-/* The NeXT C library has getenv () defined and used in the same file.
-   This screws our scheme.  However, Bash will run on the NeXT using
-   the C library getenv (), since right now the only environment variable
-   that we care about is HOME, and that is already defined.  */
+ 
 static char *last_tempenv_value = (char *)NULL;
 
 char *
@@ -73,10 +52,7 @@ getenv (name)
     {
       register int i, len;
 
-      /* In some cases, s5r3 invokes getenv() before main(); BSD systems
-	 using gprof also exhibit this behavior.  This means that
-	 shell_variables will be 0 when this is invoked.  We look up the
-	 variable in the real environment in that case. */
+       
 
       for (i = 0, len = strlen (name); environ[i]; i++)
 	{
@@ -88,7 +64,7 @@ getenv (name)
   return ((char *)NULL);
 }
 
-/* Some versions of Unix use _getenv instead. */
+ 
 char *
 _getenv (name)
      const char *name;
@@ -96,7 +72,7 @@ _getenv (name)
   return (getenv (name));
 }
 
-/* SUSv3 says argument is a `char *'; BSD implementations disagree */
+ 
 int
 putenv (str)
 #ifndef HAVE_STD_PUTENV
@@ -126,7 +102,7 @@ putenv (str)
 
   value = name + offset + 1;
 
-  /* XXX - should we worry about readonly here? */
+   
   var = bind_variable (name, value, 0);
   if (var == 0)
     {
@@ -169,8 +145,8 @@ setenv (name, value, rewrite)
     }
 
   var = 0;
-  v = (char *)value;	/* some compilers need explicit cast */
-  /* XXX - should we worry about readonly here? */
+  v = (char *)value;	 
+   
   if (rewrite == 0)
     var = find_variable (name);
 
@@ -197,7 +173,7 @@ _setenv (name, value, rewrite)
 }
 #endif
 
-/* SUSv3 says unsetenv returns int; existing implementations (BSD) disagree. */
+ 
 
 #ifdef HAVE_STD_UNSETENV
 #define UNSETENV_RETURN(N)	return(N)
@@ -217,7 +193,7 @@ unsetenv (name)
       UNSETENV_RETURN(-1);
     }
 
-  /* XXX - should we just remove the export attribute here? */
+   
 #if 1
   unbind_variable (name);
 #else
@@ -230,4 +206,4 @@ unsetenv (name)
 
   UNSETENV_RETURN(0);
 }
-#endif /* CAN_REDEFINE_GETENV */
+#endif  

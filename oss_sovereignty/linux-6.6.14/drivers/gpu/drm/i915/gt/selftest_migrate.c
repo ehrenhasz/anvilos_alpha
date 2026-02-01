@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/sort.h>
 
@@ -180,7 +178,7 @@ static int intel_context_copy_ccs(struct intel_context *ce,
 			deps = NULL;
 		}
 
-		/* The PTE updates + clear must not be interrupted. */
+		 
 		err = emit_no_arbitration(rq);
 		if (err)
 			goto out_rq;
@@ -202,7 +200,7 @@ static int intel_context_copy_ccs(struct intel_context *ce,
 
 		err = rq->engine->emit_flush(rq, EMIT_INVALIDATE);
 
-		/* Arbitration is re-enabled between requests. */
+		 
 out_rq:
 		if (*out)
 			i915_request_put(*out);
@@ -273,7 +271,7 @@ static int clear(struct intel_migrate *migrate,
 	if (IS_ERR(obj))
 		return 0;
 
-	/* Consider the rounded up memory too */
+	 
 	sz = obj->base.size;
 
 	if (HAS_FLAT_CCS(i915) && i915_gem_object_is_lmem(obj))
@@ -297,7 +295,7 @@ static int clear(struct intel_migrate *migrate,
 		i915_gem_object_flush_map(obj);
 
 		if (ccs_cap && !val) {
-			/* Write the obj data into ccs surface */
+			 
 			err = intel_migrate_ccs_copy(migrate, &ww, NULL,
 						     obj->mm.pages->sgl,
 						     obj->pat_index,
@@ -329,7 +327,7 @@ static int clear(struct intel_migrate *migrate,
 
 		i915_gem_object_flush_map(obj);
 
-		/* Verify the set/clear of the obj mem */
+		 
 		for (i = 0; !err && i < sz / PAGE_SIZE; i++) {
 			int x = i * 1024 +
 				i915_prandom_u32_max_state(1024, prng);
@@ -556,11 +554,7 @@ static int live_emit_pte_full_ring(void *arg)
 	int len, sz, err;
 	u32 *cs;
 
-	/*
-	 * Simple regression test to check that we don't trample the
-	 * rq->reserved_space when returning from emit_pte(), if the ring is
-	 * nearly full.
-	 */
+	 
 
 	if (igt_spinner_init(&st.spin, to_gt(i915)))
 		return -ENOMEM;
@@ -581,7 +575,7 @@ static int live_emit_pte_full_ring(void *arg)
 		goto out_obj;
 	}
 
-	ce->ring_size = SZ_4K; /* Not too big */
+	ce->ring_size = SZ_4K;  
 
 	err = intel_context_pin(ce);
 	if (err)
@@ -599,14 +593,7 @@ static int live_emit_pte_full_ring(void *arg)
 		goto out_unpin;
 	}
 
-	/*
-	 * Fill the rest of the ring leaving I915_EMIT_PTE_NUM_DWORDS +
-	 * ring->reserved_space at the end. To actually emit the PTEs we require
-	 * slightly more than I915_EMIT_PTE_NUM_DWORDS, since our object size is
-	 * greater than PAGE_SIZE. The correct behaviour is to wait for more
-	 * ring space in emit_pte(), otherwise we trample on the reserved_space
-	 * resulting in crashes when later submitting the rq.
-	 */
+	 
 
 	prev = NULL;
 	do {
@@ -642,10 +629,7 @@ static int live_emit_pte_full_ring(void *arg)
 	timer_setup_on_stack(&st.timer, spinner_kill, 0);
 	mod_timer(&st.timer, jiffies + 2 * HZ);
 
-	/*
-	 * This should wait for the spinner to be killed, otherwise we should go
-	 * down in flames when doing i915_request_add().
-	 */
+	 
 	pr_info("%s emite_pte ring space=%u\n", __func__, rq->ring->space);
 	it = sg_sgt(obj->mm.pages->sgl);
 	len = emit_pte(rq, &it, obj->pat_index, false, 0, CHUNK_SZ);
@@ -659,7 +643,7 @@ static int live_emit_pte_full_ring(void *arg)
 	}
 
 out_rq:
-	i915_request_add(rq); /* GEM_BUG_ON(rq->reserved_space > ring->space)? */
+	i915_request_add(rq);  
 	del_timer_sync(&st.timer);
 	destroy_timer_on_stack(&st.timer);
 out_unpin:
@@ -710,7 +694,7 @@ static int threaded_migrate(struct intel_migrate *migrate,
 		thread[i].tsk = tsk;
 	}
 
-	msleep(10); /* start all threads before we kthread_stop() */
+	msleep(10);  
 
 	for (i = 0; i < n_cpus; ++i) {
 		struct task_struct *tsk = thread[i].tsk;

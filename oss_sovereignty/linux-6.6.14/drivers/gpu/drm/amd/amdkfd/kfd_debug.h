@@ -1,24 +1,4 @@
-/*
- * Copyright 2023 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #ifndef KFD_DEBUG_EVENTS_H_INCLUDED
 #define KFD_DEBUG_EVENTS_H_INCLUDED
@@ -90,11 +70,7 @@ int kfd_dbg_trap_device_snapshot(struct kfd_process *target,
 
 void kfd_dbg_set_enabled_debug_exception_mask(struct kfd_process *target,
 					uint64_t exception_set_mask);
-/*
- * If GFX off is enabled, chips that do not support RLC restore for the debug
- * registers will disable GFX off temporarily for the entire debug session.
- * See disable_on_trap_action_entry and enable_on_trap_action_exit for details.
- */
+ 
 static inline bool kfd_dbg_is_rlc_restore_supported(struct kfd_node *dev)
 {
 	return !(KFD_GC_VERSION(dev) == IP_VERSION(10, 1, 10) ||
@@ -122,7 +98,7 @@ static inline bool kfd_dbg_has_gws_support(struct kfd_node *dev)
 			KFD_GC_VERSION(dev) < IP_VERSION(12, 0, 0)))
 		return false;
 
-	/* Assume debugging and cooperative launch supported otherwise. */
+	 
 	return true;
 }
 

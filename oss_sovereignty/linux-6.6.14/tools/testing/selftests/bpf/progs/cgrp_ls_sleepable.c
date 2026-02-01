@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
@@ -48,7 +48,7 @@ int no_rcu_lock(void *ctx)
 	if (task->pid != target_pid)
 		return 0;
 
-	/* task->cgroups is untrusted in sleepable prog outside of RCU CS */
+	 
 	cgrp = task->cgroups->dfl_cgrp;
 	ptr = bpf_cgrp_storage_get(&map_a, cgrp, 0,
 				   BPF_LOCAL_STORAGE_GET_F_CREATE);
@@ -70,7 +70,7 @@ int yes_rcu_lock(void *ctx)
 
 	bpf_rcu_read_lock();
 	cgrp = task->cgroups->dfl_cgrp;
-	/* cgrp is trusted under RCU CS */
+	 
 	ptr = bpf_cgrp_storage_get(&map_a, cgrp, 0, BPF_LOCAL_STORAGE_GET_F_CREATE);
 	if (ptr)
 		cgroup_id = cgrp->kn->id;

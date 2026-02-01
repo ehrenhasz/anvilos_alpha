@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 #ifndef ATH12K_PCI_H
 #define ATH12K_PCI_H
 
@@ -19,10 +16,10 @@
 #define PCIE_Q6_COOKIE_ADDR			0x01f80500
 #define PCIE_Q6_COOKIE_DATA			0xc0000000
 
-/* register to wake the UMAC from power collapse */
+ 
 #define PCIE_SCRATCH_0_SOC_PCIE_REG		0x4040
 
-/* register used for handshake mechanism to validate UMAC is awake */
+ 
 #define PCIE_SOC_WAKE_PCIE_LOCAL_REG		0x3004
 
 #define PCIE_PCIE_PARF_LTSSM			0x1e081b0
@@ -102,10 +99,10 @@ struct ath12k_pci {
 	unsigned long mhi_state;
 	u32 register_window;
 
-	/* protects register_window above */
+	 
 	spinlock_t window_lock;
 
-	/* enum ath12k_pci_flags */
+	 
 	unsigned long flags;
 	u16 link_ctl;
 	const struct ath12k_pci_ops *pci_ops;
@@ -138,4 +135,4 @@ void ath12k_pci_stop(struct ath12k_base *ab);
 int ath12k_pci_start(struct ath12k_base *ab);
 int ath12k_pci_power_up(struct ath12k_base *ab);
 void ath12k_pci_power_down(struct ath12k_base *ab);
-#endif /* ATH12K_PCI_H */
+#endif  

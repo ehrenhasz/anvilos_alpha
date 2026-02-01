@@ -1,19 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+ 
 
 #ifndef __T7XX_HIF_DPMA_TX_H__
 #define __T7XX_HIF_DPMA_TX_H__
@@ -41,7 +26,7 @@ struct dpmaif_drb {
 	__le32 reserved2;
 };
 
-/* Header fields */
+ 
 #define DRB_HDR_DATA_LEN	GENMASK(31, 16)
 #define DRB_HDR_RESERVED	GENMASK(15, 3)
 #define DRB_HDR_CONT		BIT(2)
@@ -75,4 +60,4 @@ int t7xx_dpmaif_txq_init(struct dpmaif_tx_queue *txq);
 void t7xx_dpmaif_tx_stop(struct dpmaif_ctrl *dpmaif_ctrl);
 void t7xx_dpmaif_tx_clear(struct dpmaif_ctrl *dpmaif_ctrl);
 
-#endif /* __T7XX_HIF_DPMA_TX_H__ */
+#endif  

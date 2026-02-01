@@ -1,6 +1,6 @@
-// Copyright 2014 Paul Sokolovsky.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 #include "re1.5.h"
 
@@ -13,7 +13,7 @@ void re1_5_dumpcode(ByteProg *prog)
                 switch(code[pc++]) {
                 default:
                         assert(0);
-//                        re1_5_fatal("printprog");
+
                 case Split:
                         printf("split %d (%d)\n", pc + (signed char)code[pc] + 1, (signed char)code[pc]);
                         pc++;

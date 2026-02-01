@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Generic driver for the OLPC Embedded Controller.
- *
- * Author: Andres Salomon <dilinger@queued.net>
- *
- * Copyright (C) 2011-2012 One Laptop per Child Foundation.
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/debugfs.h>
 #include <linux/spinlock.h>
@@ -36,30 +30,19 @@ struct olpc_ec_priv {
 	struct work_struct worker;
 	struct mutex cmd_lock;
 
-	/* DCON regulator */
+	 
 	bool dcon_enabled;
 
-	/* Pending EC commands */
+	 
 	struct list_head cmd_q;
 	spinlock_t cmd_q_lock;
 
 	struct dentry *dbgfs_dir;
 
-	/*
-	 * EC event mask to be applied during suspend (defining wakeup
-	 * sources).
-	 */
+	 
 	u16 ec_wakeup_mask;
 
-	/*
-	 * Running an EC command while suspending means we don't always finish
-	 * the command before the machine suspends.  This means that the EC
-	 * is expecting the command protocol to finish, but we after a period
-	 * of time (while the OS is asleep) the EC times out and restarts its
-	 * idle loop.  Meanwhile, the OS wakes up, thinks it's still in the
-	 * middle of the command protocol, starts throwing random things at
-	 * the EC... and everyone's uphappy.
-	 */
+	 
 	bool suspended;
 };
 
@@ -80,7 +63,7 @@ static void olpc_ec_worker(struct work_struct *w)
 	struct ec_cmd_desc *desc = NULL;
 	unsigned long flags;
 
-	/* Grab the first pending command from the queue */
+	 
 	spin_lock_irqsave(&ec->cmd_q_lock, flags);
 	if (!list_empty(&ec->cmd_q)) {
 		desc = list_first_entry(&ec->cmd_q, struct ec_cmd_desc, node);
@@ -88,27 +71,24 @@ static void olpc_ec_worker(struct work_struct *w)
 	}
 	spin_unlock_irqrestore(&ec->cmd_q_lock, flags);
 
-	/* Do we actually have anything to do? */
+	 
 	if (!desc)
 		return;
 
-	/* Protect the EC hw with a mutex; only run one cmd at a time */
+	 
 	mutex_lock(&ec->cmd_lock);
 	desc->err = ec_driver->ec_cmd(desc->cmd, desc->inbuf, desc->inlen,
 			desc->outbuf, desc->outlen, ec_cb_arg);
 	mutex_unlock(&ec->cmd_lock);
 
-	/* Finished, wake up olpc_ec_cmd() */
+	 
 	complete(&desc->finished);
 
-	/* Run the worker thread again in case there are more cmds pending */
+	 
 	schedule_work(&ec->worker);
 }
 
-/*
- * Throw a cmd descripter onto the list.  We now have SMP OLPC machines, so
- * locking is pretty critical.
- */
+ 
 static void queue_ec_descriptor(struct ec_cmd_desc *desc,
 		struct olpc_ec_priv *ec)
 {
@@ -128,7 +108,7 @@ int olpc_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *outbuf, size_t outlen)
 	struct olpc_ec_priv *ec = ec_priv;
 	struct ec_cmd_desc desc;
 
-	/* Driver not yet registered. */
+	 
 	if (!ec_driver)
 		return -EPROBE_DEFER;
 
@@ -138,7 +118,7 @@ int olpc_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *outbuf, size_t outlen)
 	if (!ec)
 		return -ENOMEM;
 
-	/* Suspending in the middle of a command hoses things really badly */
+	 
 	if (WARN_ON(ec->suspended))
 		return -EBUSY;
 
@@ -154,10 +134,10 @@ int olpc_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *outbuf, size_t outlen)
 
 	queue_ec_descriptor(&desc, ec);
 
-	/* Timeouts must be handled in the platform-specific EC hook */
+	 
 	wait_for_completion(&desc.finished);
 
-	/* The worker thread dequeues the cmd; no need to do anything here */
+	 
 	return desc.err;
 }
 EXPORT_SYMBOL_GPL(olpc_ec_cmd);
@@ -191,7 +171,7 @@ int olpc_ec_mask_write(u16 bits)
 	if (WARN_ON(!ec))
 		return -ENODEV;
 
-	/* EC version 0x5f adds support for wide SCI mask */
+	 
 	if (ec->version >= 0x5f) {
 		__be16 ec_word = cpu_to_be16(bits);
 
@@ -204,10 +184,7 @@ int olpc_ec_mask_write(u16 bits)
 }
 EXPORT_SYMBOL_GPL(olpc_ec_mask_write);
 
-/*
- * Returns true if the compile and runtime configurations allow for EC events
- * to wake the system.
- */
+ 
 bool olpc_ec_wakeup_available(void)
 {
 	if (WARN_ON(!ec_driver))
@@ -225,7 +202,7 @@ int olpc_ec_sci_query(u16 *sci_value)
 	if (WARN_ON(!ec))
 		return -ENODEV;
 
-	/* EC version 0x5f adds support for wide SCI mask */
+	 
 	if (ec->version >= 0x5f) {
 		__be16 ec_word;
 
@@ -246,12 +223,9 @@ EXPORT_SYMBOL_GPL(olpc_ec_sci_query);
 
 #ifdef CONFIG_DEBUG_FS
 
-/*
- * debugfs support for "generic commands", to allow sending
- * arbitrary EC commands from userspace.
- */
+ 
 
-#define EC_MAX_CMD_ARGS (5 + 1)		/* cmd byte + 5 args */
+#define EC_MAX_CMD_ARGS (5 + 1)		 
 #define EC_MAX_CMD_REPLY (8)
 
 static DEFINE_MUTEX(ec_dbgfs_lock);
@@ -275,7 +249,7 @@ static ssize_t ec_dbgfs_cmd_write(struct file *file, const char __user *buf,
 			&ec_dbgfs_resp_bytes, &ec_cmd_int[1], &ec_cmd_int[2],
 			&ec_cmd_int[3], &ec_cmd_int[4], &ec_cmd_int[5]);
 	if (m < 2 || ec_dbgfs_resp_bytes > EC_MAX_CMD_REPLY) {
-		/* reset to prevent overflow on read */
+		 
 		ec_dbgfs_resp_bytes = 0;
 
 		pr_debug("olpc-ec: bad ec cmd:  cmd:response-count [arg1 [arg2 ...]]\n");
@@ -283,7 +257,7 @@ static ssize_t ec_dbgfs_cmd_write(struct file *file, const char __user *buf,
 		goto out;
 	}
 
-	/* convert scanf'd ints to char */
+	 
 	ec_cmd_bytes = m - 2;
 	for (i = 0; i <= ec_cmd_bytes; i++)
 		ec_cmd[i] = ec_cmd_int[i];
@@ -347,7 +321,7 @@ static struct dentry *olpc_ec_setup_debugfs(void)
 	return NULL;
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static int olpc_ec_set_dcon_power(struct olpc_ec_priv *ec, bool state)
 {
@@ -425,7 +399,7 @@ static int olpc_ec_probe(struct platform_device *pdev)
 	ec_priv = ec;
 	platform_set_drvdata(pdev, ec);
 
-	/* get the EC revision */
+	 
 	err = olpc_ec_cmd(EC_FIRMWARE_REV, NULL, 0, &ec->version, 1);
 	if (err)
 		goto error;

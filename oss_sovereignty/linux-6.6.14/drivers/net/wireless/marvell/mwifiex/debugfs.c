@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: debugfs
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include <linux/debugfs.h>
 
@@ -27,37 +23,7 @@ static char *bss_modes[] = {
 	"P2P_DEVICE",
 };
 
-/*
- * Proc info file read handler.
- *
- * This function is called when the 'info' file is opened for reading.
- * It prints the following driver related information -
- *      - Driver name
- *      - Driver version
- *      - Driver extended version
- *      - Interface name
- *      - BSS mode
- *      - Media state (connected or disconnected)
- *      - MAC address
- *      - Total number of Tx bytes
- *      - Total number of Rx bytes
- *      - Total number of Tx packets
- *      - Total number of Rx packets
- *      - Total number of dropped Tx packets
- *      - Total number of dropped Rx packets
- *      - Total number of corrupted Tx packets
- *      - Total number of corrupted Rx packets
- *      - Carrier status (on or off)
- *      - Tx queue status (started or stopped)
- *
- * For STA mode drivers, it also prints the following extra -
- *      - ESSID
- *      - BSSID
- *      - Channel
- *      - Region code
- *      - Multicast count
- *      - Multicast addresses
- */
+ 
 static ssize_t
 mwifiex_info_read(struct file *file, char __user *ubuf,
 		  size_t count, loff_t *ppos)
@@ -141,27 +107,7 @@ free_and_exit:
 	return ret;
 }
 
-/*
- * Proc getlog file read handler.
- *
- * This function is called when the 'getlog' file is opened for reading
- * It prints the following log information -
- *      - Number of multicast Tx frames
- *      - Number of failed packets
- *      - Number of Tx retries
- *      - Number of multicast Tx retries
- *      - Number of duplicate frames
- *      - Number of RTS successes
- *      - Number of RTS failures
- *      - Number of ACK failures
- *      - Number of fragmented Rx frames
- *      - Number of multicast Rx frames
- *      - Number of FCS errors
- *      - Number of Tx frames
- *      - WEP ICV error counts
- *      - Number of received beacons
- *      - Number of missed beacons
- */
+ 
 static ssize_t
 mwifiex_getlog_read(struct file *file, char __user *ubuf,
 		    size_t count, loff_t *ppos)
@@ -228,16 +174,7 @@ free_and_exit:
 	return ret;
 }
 
-/* Sysfs histogram file read handler.
- *
- * This function is called when the 'histogram' file is opened for reading
- * It prints the following histogram information -
- *      - Number of histogram samples
- *      - Receive packet number of each rx_rate
- *      - Receive packet number of each snr
- *      - Receive packet number of each nosie_flr
- *      - Receive packet number of each signal streath
- */
+ 
 static ssize_t
 mwifiex_histogram_read(struct file *file, char __user *ubuf,
 		       size_t count, loff_t *ppos)
@@ -330,53 +267,7 @@ mwifiex_histogram_write(struct file *file, const char __user *ubuf,
 
 static struct mwifiex_debug_info info;
 
-/*
- * Proc debug file read handler.
- *
- * This function is called when the 'debug' file is opened for reading
- * It prints the following log information -
- *      - Interrupt count
- *      - WMM AC VO packets count
- *      - WMM AC VI packets count
- *      - WMM AC BE packets count
- *      - WMM AC BK packets count
- *      - Maximum Tx buffer size
- *      - Tx buffer size
- *      - Current Tx buffer size
- *      - Power Save mode
- *      - Power Save state
- *      - Deep Sleep status
- *      - Device wakeup required status
- *      - Number of wakeup tries
- *      - Host Sleep configured status
- *      - Host Sleep activated status
- *      - Number of Tx timeouts
- *      - Number of command timeouts
- *      - Last timed out command ID
- *      - Last timed out command action
- *      - Last command ID
- *      - Last command action
- *      - Last command index
- *      - Last command response ID
- *      - Last command response index
- *      - Last event
- *      - Last event index
- *      - Number of host to card command failures
- *      - Number of sleep confirm command failures
- *      - Number of host to card data failure
- *      - Number of deauthentication events
- *      - Number of disassociation events
- *      - Number of link lost events
- *      - Number of deauthentication commands
- *      - Number of association success commands
- *      - Number of association failure commands
- *      - Number of commands sent
- *      - Number of data packets sent
- *      - Number of command responses received
- *      - Number of events received
- *      - Tx BA stream table (TID, RA)
- *      - Rx reorder table (TID, TA, Start window, Window size, Buffer)
- */
+ 
 static ssize_t
 mwifiex_debug_read(struct file *file, char __user *ubuf,
 		   size_t count, loff_t *ppos)
@@ -406,13 +297,7 @@ free_and_exit:
 
 static u32 saved_reg_type, saved_reg_offset, saved_reg_value;
 
-/*
- * Proc regrdwr file write handler.
- *
- * This function is called when the 'regrdwr' file is opened for writing
- *
- * This function can be used to write to a register.
- */
+ 
 static ssize_t
 mwifiex_regrdwr_write(struct file *file,
 		      const char __user *ubuf, size_t count, loff_t *ppos)
@@ -444,13 +329,7 @@ done:
 	return ret;
 }
 
-/*
- * Proc regrdwr file read handler.
- *
- * This function is called when the 'regrdwr' file is opened for reading
- *
- * This function can be used to read from a register.
- */
+ 
 static ssize_t
 mwifiex_regrdwr_read(struct file *file, char __user *ubuf,
 		     size_t count, loff_t *ppos)
@@ -466,11 +345,11 @@ mwifiex_regrdwr_read(struct file *file, char __user *ubuf,
 		return -ENOMEM;
 
 	if (!saved_reg_type) {
-		/* No command has been given */
+		 
 		pos += snprintf(buf, PAGE_SIZE, "0");
 		goto done;
 	}
-	/* Set command has been given */
+	 
 	if (saved_reg_value != UINT_MAX) {
 		ret = mwifiex_reg_write(priv, saved_reg_type, saved_reg_offset,
 					saved_reg_value);
@@ -483,7 +362,7 @@ mwifiex_regrdwr_read(struct file *file, char __user *ubuf,
 
 		goto done;
 	}
-	/* Get command has been given */
+	 
 	ret = mwifiex_reg_read(priv, saved_reg_type,
 			       saved_reg_offset, &reg_value);
 	if (ret) {
@@ -501,10 +380,7 @@ done:
 	return ret;
 }
 
-/* Proc debug_mask file read handler.
- * This function is called when the 'debug_mask' file is opened for reading
- * This function can be used read driver debugging mask value.
- */
+ 
 static ssize_t
 mwifiex_debug_mask_read(struct file *file, char __user *ubuf,
 			size_t count, loff_t *ppos)
@@ -527,10 +403,7 @@ mwifiex_debug_mask_read(struct file *file, char __user *ubuf,
 	return ret;
 }
 
-/* Proc debug_mask file read handler.
- * This function is called when the 'debug_mask' file is opened for reading
- * This function can be used read driver debugging mask value.
- */
+ 
 static ssize_t
 mwifiex_debug_mask_write(struct file *file, const char __user *ubuf,
 			 size_t count, loff_t *ppos)
@@ -556,9 +429,7 @@ done:
 	return ret;
 }
 
-/* debugfs verext file write handler.
- * This function is called when the 'verext' file is opened for write
- */
+ 
 static ssize_t
 mwifiex_verext_write(struct file *file, const char __user *ubuf,
 		     size_t count, loff_t *ppos)
@@ -582,10 +453,7 @@ mwifiex_verext_write(struct file *file, const char __user *ubuf,
 	return count;
 }
 
-/* Proc verext file read handler.
- * This function is called when the 'verext' file is opened for reading
- * This function can be used read driver exteneed verion string.
- */
+ 
 static ssize_t
 mwifiex_verext_read(struct file *file, char __user *ubuf,
 		    size_t count, loff_t *ppos)
@@ -602,10 +470,7 @@ mwifiex_verext_read(struct file *file, char __user *ubuf,
 	return simple_read_from_buffer(ubuf, count, ppos, buf, ret);
 }
 
-/* Proc memrw file write handler.
- * This function is called when the 'memrw' file is opened for writing
- * This function can be used to write to a memory location.
- */
+ 
 static ssize_t
 mwifiex_memrw_write(struct file *file, const char __user *ubuf, size_t count,
 		    loff_t *ppos)
@@ -649,10 +514,7 @@ done:
 	return ret;
 }
 
-/* Proc memrw file read handler.
- * This function is called when the 'memrw' file is opened for reading
- * This function can be used to read from a memory location.
- */
+ 
 static ssize_t
 mwifiex_memrw_read(struct file *file, char __user *ubuf,
 		   size_t count, loff_t *ppos)
@@ -675,13 +537,7 @@ mwifiex_memrw_read(struct file *file, char __user *ubuf,
 
 static u32 saved_offset = -1, saved_bytes = -1;
 
-/*
- * Proc rdeeprom file write handler.
- *
- * This function is called when the 'rdeeprom' file is opened for writing
- *
- * This function can be used to write to a RDEEPROM location.
- */
+ 
 static ssize_t
 mwifiex_rdeeprom_write(struct file *file,
 		       const char __user *ubuf, size_t count, loff_t *ppos)
@@ -712,13 +568,7 @@ done:
 	return ret;
 }
 
-/*
- * Proc rdeeprom read write handler.
- *
- * This function is called when the 'rdeeprom' file is opened for reading
- *
- * This function can be used to read from a RDEEPROM location.
- */
+ 
 static ssize_t
 mwifiex_rdeeprom_read(struct file *file, char __user *ubuf,
 		      size_t count, loff_t *ppos)
@@ -734,12 +584,12 @@ mwifiex_rdeeprom_read(struct file *file, char __user *ubuf,
 		return -ENOMEM;
 
 	if (saved_offset == -1) {
-		/* No command has been given */
+		 
 		pos = snprintf(buf, PAGE_SIZE, "0");
 		goto done;
 	}
 
-	/* Get command has been given */
+	 
 	ret = mwifiex_eeprom_read(priv, (u16) saved_offset,
 				  (u16) saved_bytes, value);
 	if (ret) {
@@ -759,9 +609,7 @@ out_free:
 	return ret;
 }
 
-/* Proc hscfg file write handler
- * This function can be used to configure the host sleep parameters.
- */
+ 
 static ssize_t
 mwifiex_hscfg_write(struct file *file, const char __user *ubuf,
 		    size_t count, loff_t *ppos)
@@ -817,10 +665,7 @@ done:
 	return ret;
 }
 
-/* Proc hscfg file read handler
- * This function can be used to read host sleep configuration
- * parameters from driver.
- */
+ 
 static ssize_t
 mwifiex_hscfg_read(struct file *file, char __user *ubuf,
 		   size_t count, loff_t *ppos)
@@ -958,9 +803,7 @@ MWIFIEX_DFS_FILE_OPS(timeshare_coex);
 MWIFIEX_DFS_FILE_WRITE_OPS(reset);
 MWIFIEX_DFS_FILE_OPS(verext);
 
-/*
- * This function creates the debug FS directory structure and the files.
- */
+ 
 void
 mwifiex_dev_debugfs_init(struct mwifiex_private *priv)
 {
@@ -988,9 +831,7 @@ mwifiex_dev_debugfs_init(struct mwifiex_private *priv)
 	MWIFIEX_DFS_ADD_FILE(verext);
 }
 
-/*
- * This function removes the debug FS directory structure and the files.
- */
+ 
 void
 mwifiex_dev_debugfs_remove(struct mwifiex_private *priv)
 {
@@ -1000,9 +841,7 @@ mwifiex_dev_debugfs_remove(struct mwifiex_private *priv)
 	debugfs_remove_recursive(priv->dfs_dev_dir);
 }
 
-/*
- * This function creates the top level proc directory.
- */
+ 
 void
 mwifiex_debugfs_init(void)
 {
@@ -1010,9 +849,7 @@ mwifiex_debugfs_init(void)
 		mwifiex_dfs_dir = debugfs_create_dir("mwifiex", NULL);
 }
 
-/*
- * This function removes the top level proc directory.
- */
+ 
 void
 mwifiex_debugfs_remove(void)
 {

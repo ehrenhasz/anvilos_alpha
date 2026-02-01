@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2017 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * SPDX-License-Identifier: GPL-2.0+
- */
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -49,9 +44,9 @@ static const struct meson_gx_package_id {
 	unsigned int pack_id;
 	unsigned int pack_mask;
 } soc_packages[] = {
-	{ "S905", 0x1f, 0, 0x20 }, /* pack_id != 0x20 */
-	{ "S905H", 0x1f, 0x3, 0xf }, /* pack_id & 0xf == 0x3 */
-	{ "S905M", 0x1f, 0x20, 0xf0 }, /* pack_id == 0x20 */
+	{ "S905", 0x1f, 0, 0x20 },  
+	{ "S905H", 0x1f, 0x3, 0xf },  
+	{ "S905M", 0x1f, 0x20, 0xf0 },  
 	{ "S905D", 0x21, 0, 0xf0 },
 	{ "S905X", 0x21, 0x80, 0xf0 },
 	{ "S905W", 0x21, 0xa0, 0xf0 },
@@ -59,7 +54,7 @@ static const struct meson_gx_package_id {
 	{ "S905M2", 0x21, 0xe0, 0xf0 },
 	{ "S805X", 0x21, 0x30, 0xf0 },
 	{ "S805Y", 0x21, 0xb0, 0xf0 },
-	{ "S912", 0x22, 0, 0x0 }, /* Only S912 is known for GXM */
+	{ "S912", 0x22, 0, 0x0 },  
 	{ "962X", 0x24, 0x10, 0xf0 },
 	{ "962E", 0x24, 0x20, 0xf0 },
 	{ "A113X", 0x25, 0x37, 0xff },
@@ -135,24 +130,24 @@ static int __init meson_gx_socinfo_init(void)
 	struct device *dev;
 	int ret;
 
-	/* look up for chipid node */
+	 
 	np = of_find_compatible_node(NULL, NULL, "amlogic,meson-gx-ao-secure");
 	if (!np)
 		return -ENODEV;
 
-	/* check if interface is enabled */
+	 
 	if (!of_device_is_available(np)) {
 		of_node_put(np);
 		return -ENODEV;
 	}
 
-	/* check if chip-id is available */
+	 
 	if (!of_property_read_bool(np, "amlogic,has-chip-id")) {
 		of_node_put(np);
 		return -ENODEV;
 	}
 
-	/* node should be a syscon */
+	 
 	regmap = syscon_node_to_regmap(np);
 	of_node_put(np);
 	if (IS_ERR(regmap)) {

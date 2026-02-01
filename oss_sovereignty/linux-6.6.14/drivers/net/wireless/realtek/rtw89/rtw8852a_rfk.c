@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "coex.h"
 #include "debug.h"
@@ -269,7 +268,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 		path_offset = 0x2000;
 
 	tmp_offset = idx_offset + path_offset;
-	/* msbk_d: 15/14/13/12 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		tmp |= dack->msbk_d[path][index][i + 12] << (i * 8);
@@ -277,7 +276,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_phy_write32(rtwdev, tmp_reg, tmp);
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", tmp_reg,
 		    rtw89_phy_read32_mask(rtwdev, tmp_reg, MASKDWORD));
-	/* msbk_d: 11/10/9/8 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		tmp |= dack->msbk_d[path][index][i + 8] << (i * 8);
@@ -285,7 +284,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_phy_write32(rtwdev, tmp_reg, tmp);
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", tmp_reg,
 		    rtw89_phy_read32_mask(rtwdev, tmp_reg, MASKDWORD));
-	/* msbk_d: 7/6/5/4 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		tmp |= dack->msbk_d[path][index][i + 4] << (i * 8);
@@ -293,7 +292,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_phy_write32(rtwdev, tmp_reg, tmp);
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", tmp_reg,
 		    rtw89_phy_read32_mask(rtwdev, tmp_reg, MASKDWORD));
-	/* msbk_d: 3/2/1/0 */
+	 
 	tmp = 0x0;
 	for (i = 0; i < RTW89_DACK_MSBK_NR / 4; i++)
 		tmp |= dack->msbk_d[path][index][i] << (i * 8);
@@ -301,7 +300,7 @@ static void _dack_reload_by_path(struct rtw89_dev *rtwdev,
 	rtw89_phy_write32(rtwdev, tmp_reg, tmp);
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]0x%x=0x%x\n", tmp_reg,
 		    rtw89_phy_read32_mask(rtwdev, tmp_reg, MASKDWORD));
-	/* dadak_d/biask_d */
+	 
 	tmp = 0x0;
 	tmp = (dack->biask_d[path][index] << 22) |
 	       (dack->dadck_d[path][index] << 14);
@@ -351,7 +350,7 @@ static void _addck(struct rtw89_dev *rtwdev)
 	u32 val;
 	int ret;
 
-	/* S0 */
+	 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_rfk_addck_reset_defs_a_tbl);
 
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]before S0 ADDCK\n");
@@ -371,7 +370,7 @@ static void _addck(struct rtw89_dev *rtwdev)
 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_rfk_addck_restore_defs_a_tbl);
 
-	/* S1 */
+	 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_rfk_addck_reset_defs_b_tbl);
 
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DACK]before S1 ADDCK\n");
@@ -1549,7 +1548,7 @@ static void _rck(struct rtw89_dev *rtwdev, enum rtw89_rf_path path)
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[RCK] RF0x00 = 0x%x\n",
 		    rtw89_read_rf(rtwdev, path, RR_MOD, RFREG_MASK));
 
-	/* RCK trigger */
+	 
 	rtw89_write_rf(rtwdev, path, RR_RCKC, RFREG_MASK, 0x00240);
 
 	ret = read_poll_timeout_atomic(rtw89_read_rf, val, val, 2, 20,
@@ -1560,7 +1559,7 @@ static void _rck(struct rtw89_dev *rtwdev, enum rtw89_rf_path path)
 	rck_val = rtw89_read_rf(rtwdev, path, RR_RCKC, RR_RCKC_CA);
 	rtw89_write_rf(rtwdev, path, RR_RCKC, RFREG_MASK, rck_val);
 
-	/* RCK_ADC_OFFSET */
+	 
 	rtw89_write_rf(rtwdev, path, RR_RCKO, RR_RCKO_OFF, 0x4);
 
 	rtw89_write_rf(rtwdev, path, RR_RFC, RR_RFC_CKEN, 0x1);
@@ -1725,7 +1724,7 @@ static void _rx_dck(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy,
 
 		if (rtwdev->is_tssi_mode[path]) {
 			addr = 0x5818 + (path << 13);
-			/* TSSI pause */
+			 
 			rtw89_phy_write32_set(rtwdev, addr, BIT(30));
 		}
 
@@ -1738,7 +1737,7 @@ static void _rx_dck(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy,
 
 		if (rtwdev->is_tssi_mode[path]) {
 			addr = 0x5818 + (path << 13);
-			/* TSSI resume */
+			 
 			rtw89_phy_write32_clr(rtwdev, addr, BIT(30));
 		}
 	}
@@ -1941,7 +1940,7 @@ static void _dpk_kip_setting(struct rtw89_dev *rtwdev,
 	rtw89_phy_write32_mask(rtwdev, R_KIP_SYSCFG, MASKDWORD, 0x807f030a);
 	rtw89_phy_write32_mask(rtwdev, R_CFIR_SYS + (path << 8), MASKDWORD, 0xce000a08);
 	rtw89_phy_write32_mask(rtwdev, R_DPK_CFG, B_DPK_CFG_IDX, 0x2);
-	rtw89_phy_write32_mask(rtwdev, R_NCTL_CFG, B_NCTL_CFG_SPAGE, path); /*subpage_id*/
+	rtw89_phy_write32_mask(rtwdev, R_NCTL_CFG, B_NCTL_CFG_SPAGE, path);  
 	rtw89_phy_write32_mask(rtwdev, R_DPD_CH0 + (path << 8) + (kidx << 2),
 			       MASKDWORD, 0x003f2e2e);
 	rtw89_phy_write32_mask(rtwdev, R_DPD_CH0A + (path << 8) + (kidx << 2),
@@ -2004,7 +2003,7 @@ static void _dpk_lbk_rxiqk(struct rtw89_dev *rtwdev,
 
 	rtw89_write_rf(rtwdev, path, RR_RXK, RR_RXK_PLLEN, 0x0);
 	rtw89_write_rf(rtwdev, path, RR_RXPOW, RR_RXPOW_IQK, 0x0);
-	rtw89_write_rf(rtwdev, path, RR_RXKPLL, RR_RXKPLL_POW, 0x0); /*POW IQKPLL*/
+	rtw89_write_rf(rtwdev, path, RR_RXKPLL, RR_RXKPLL_POW, 0x0);  
 	rtw89_write_rf(rtwdev, path, RR_MOD, RR_MOD_MASK, RR_MOD_V_DPK);
 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_rfk_dpk_lbk_rxiqk_defs_r_tbl);
@@ -2190,7 +2189,7 @@ static bool _dpk_sync(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy,
 {
 	_dpk_tpg_sel(rtwdev, path, kidx);
 	_dpk_one_shot(rtwdev, phy, path, SYNC);
-	return _dpk_sync_check(rtwdev, path); /*1= fail*/
+	return _dpk_sync_check(rtwdev, path);  
 }
 
 static u16 _dpk_dgain_read(struct rtw89_dev *rtwdev)
@@ -3731,7 +3730,7 @@ void _rtw8852a_tssi_avg_scan(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy)
 	if (!rtwdev->is_tssi_mode[RF_PATH_A] && !rtwdev->is_tssi_mode[RF_PATH_B])
 		return;
 
-	/* disable */
+	 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_tssi_disable_defs_tbl);
 
 	rtw89_phy_write32_mask(rtwdev, R_P0_TSSI_AVG, B_P0_TSSI_AVG, 0x0);
@@ -3740,7 +3739,7 @@ void _rtw8852a_tssi_avg_scan(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy)
 	rtw89_phy_write32_mask(rtwdev, R_P1_TSSI_AVG, B_P1_TSSI_AVG, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_P1_TSSI_MV_AVG, B_P1_TSSI_MV_AVG, 0x0);
 
-	/* enable */
+	 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_tssi_enable_defs_ab_tbl);
 }
 
@@ -3750,7 +3749,7 @@ void _rtw8852a_tssi_set_avg(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy)
 	if (!rtwdev->is_tssi_mode[RF_PATH_A] && !rtwdev->is_tssi_mode[RF_PATH_B])
 		return;
 
-	/* disable */
+	 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_tssi_disable_defs_tbl);
 
 	rtw89_phy_write32_mask(rtwdev, R_P0_TSSI_AVG, B_P0_TSSI_AVG, 0x4);
@@ -3759,7 +3758,7 @@ void _rtw8852a_tssi_set_avg(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy)
 	rtw89_phy_write32_mask(rtwdev, R_P1_TSSI_AVG, B_P1_TSSI_AVG, 0x4);
 	rtw89_phy_write32_mask(rtwdev, R_P1_TSSI_MV_AVG, B_P1_TSSI_MV_AVG, 0x2);
 
-	/* enable */
+	 
 	rtw89_rfk_parser(rtwdev, &rtw8852a_tssi_enable_defs_ab_tbl);
 }
 
@@ -3770,10 +3769,10 @@ static void rtw8852a_tssi_set_avg(struct rtw89_dev *rtwdev,
 		return;
 
 	if (enable) {
-		/* SCAN_START */
+		 
 		_rtw8852a_tssi_avg_scan(rtwdev, phy);
 	} else {
-		/* SCAN_END */
+		 
 		_rtw8852a_tssi_set_avg(rtwdev, phy);
 	}
 }

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO core
- *
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Derived from original vfio:
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- * Author: Tom Lyon, pugs@cisco.com
- */
+
+ 
 
 #include <linux/vfio.h>
 #include <linux/iommufd.h>
@@ -18,7 +9,7 @@
 static struct vfio {
 	struct class			*class;
 	struct list_head		group_list;
-	struct mutex			group_lock; /* locks group_list */
+	struct mutex			group_lock;  
 	struct ida			group_ida;
 	dev_t				group_devt;
 } vfio;
@@ -52,27 +43,17 @@ static struct vfio_device *vfio_device_get_from_name(struct vfio_group *group,
 	return device;
 }
 
-/*
- * VFIO Group fd, /dev/vfio/$GROUP
- */
+ 
 static bool vfio_group_has_iommu(struct vfio_group *group)
 {
 	lockdep_assert_held(&group->group_lock);
-	/*
-	 * There can only be users if there is a container, and if there is a
-	 * container there must be users.
-	 */
+	 
 	WARN_ON(!group->container != !group->container_users);
 
 	return group->container || group->iommufd;
 }
 
-/*
- * VFIO_GROUP_UNSET_CONTAINER should fail if there are other users or
- * if there was no container to unset.  Since the ioctl is called on
- * the group, we know that still exists, therefore the only valid
- * transition here is 1->0.
- */
+ 
 static int vfio_group_ioctl_unset_container(struct vfio_group *group)
 {
 	int ret = 0;
@@ -148,7 +129,7 @@ static int vfio_group_ioctl_set_container(struct vfio_group *group,
 		goto out_unlock;
 	}
 
-	/* The FD passed is not recognized. */
+	 
 	ret = -EBADFD;
 
 out_unlock:
@@ -177,22 +158,13 @@ static int vfio_df_group_open(struct vfio_device_file *df)
 
 	mutex_lock(&device->dev_set->lock);
 
-	/*
-	 * Before the first device open, get the KVM pointer currently
-	 * associated with the group (if there is one) and obtain a reference
-	 * now that will be held until the open_count reaches 0 again.  Save
-	 * the pointer in the device for use by drivers.
-	 */
+	 
 	if (device->open_count == 0)
 		vfio_device_group_get_kvm_safe(device);
 
 	df->iommufd = device->group->iommufd;
 	if (df->iommufd && vfio_device_is_noiommu(device) && device->open_count == 0) {
-		/*
-		 * Require no compat ioas to be assigned to proceed.  The basic
-		 * statement is that the user cannot have done something that
-		 * implies they expected translation to exist
-		 */
+		 
 		if (!capable(CAP_SYS_RAWIO) ||
 		    vfio_iommufd_device_has_compat_ioas(device, df->iommufd))
 			ret = -EPERM;
@@ -211,10 +183,7 @@ static int vfio_df_group_open(struct vfio_device_file *df)
 			goto out_close_device;
 	}
 
-	/*
-	 * Paired with smp_load_acquire() in vfio_device_fops::ioctl/
-	 * read/write/mmap and vfio_file_has_device_access()
-	 */
+	 
 	smp_store_release(&df->access_granted, true);
 
 	mutex_unlock(&device->dev_set->lock);
@@ -268,10 +237,7 @@ static struct file *vfio_device_open_file(struct vfio_device *device)
 	if (ret)
 		goto err_free;
 
-	/*
-	 * We can't use anon_inode_getfd() because we need to modify
-	 * the f_mode flags directly to allow more than just ioctls
-	 */
+	 
 	filep = anon_inode_getfile("[vfio-device]", &vfio_device_fops,
 				   df, O_RDWR);
 	if (IS_ERR(filep)) {
@@ -279,20 +245,13 @@ static struct file *vfio_device_open_file(struct vfio_device *device)
 		goto err_close_device;
 	}
 
-	/*
-	 * TODO: add an anon_inode interface to do this.
-	 * Appears to be missing by lack of need rather than
-	 * explicitly prevented.  Now there's need.
-	 */
+	 
 	filep->f_mode |= (FMODE_PREAD | FMODE_PWRITE);
 
 	if (device->group->type == VFIO_NO_IOMMU)
 		dev_warn(device->dev, "vfio-noiommu device opened by user "
 			 "(%s:%d)\n", current->comm, task_pid_nr(current));
-	/*
-	 * On success the ref of device is moved to the file and
-	 * put in vfio_device_fops_release()
-	 */
+	 
 	return filep;
 
 err_close_device:
@@ -363,13 +322,7 @@ static int vfio_group_ioctl_get_status(struct vfio_group *group,
 		return -ENODEV;
 	}
 
-	/*
-	 * With the container FD the iommu_group_claim_dma_owner() is done
-	 * during SET_CONTAINER but for IOMMFD this is done during
-	 * VFIO_GROUP_GET_DEVICE_FD. Meaning that with iommufd
-	 * VFIO_GROUP_FLAGS_VIABLE could be set but GET_DEVICE_FD will fail due
-	 * to viability.
-	 */
+	 
 	if (vfio_group_has_iommu(group))
 		status.flags |= VFIO_GROUP_FLAGS_CONTAINER_SET |
 				VFIO_GROUP_FLAGS_VIABLE;
@@ -437,10 +390,7 @@ static int vfio_group_fops_open(struct inode *inode, struct file *filep)
 
 	mutex_lock(&group->group_lock);
 
-	/*
-	 * drivers can be zero if this races with vfio_device_remove_group(), it
-	 * will be stable at 0 under the group rwsem
-	 */
+	 
 	if (refcount_read(&group->drivers) == 0) {
 		ret = -ENODEV;
 		goto out_unlock;
@@ -456,9 +406,7 @@ static int vfio_group_fops_open(struct inode *inode, struct file *filep)
 		goto out_unlock;
 	}
 
-	/*
-	 * Do we need multiple instances of the group open?  Seems not.
-	 */
+	 
 	if (group->opened_file) {
 		ret = -EBUSY;
 		goto out_unlock;
@@ -478,10 +426,7 @@ static int vfio_group_fops_release(struct inode *inode, struct file *filep)
 	filep->private_data = NULL;
 
 	mutex_lock(&group->group_lock);
-	/*
-	 * Device FDs hold a group file reference, therefore the group release
-	 * is only called when there are no open devices.
-	 */
+	 
 	WARN_ON(group->notifier.head);
 	if (group->container)
 		vfio_group_detach_container(group);
@@ -502,9 +447,7 @@ static const struct file_operations vfio_group_fops = {
 	.release	= vfio_group_fops_release,
 };
 
-/*
- * Group objects - create, release, get, put, search
- */
+ 
 static struct vfio_group *
 vfio_group_find_from_iommu(struct iommu_group *iommu_group)
 {
@@ -512,10 +455,7 @@ vfio_group_find_from_iommu(struct iommu_group *iommu_group)
 
 	lockdep_assert_held(&vfio.group_lock);
 
-	/*
-	 * group->iommu_group from the vfio.group_list cannot be NULL
-	 * under the vfio.group_lock.
-	 */
+	 
 	list_for_each_entry(group, &vfio.group_list, vfio_next) {
 		if (group->iommu_group == iommu_group)
 			return group;
@@ -564,7 +504,7 @@ static struct vfio_group *vfio_group_alloc(struct iommu_group *iommu_group,
 	INIT_LIST_HEAD(&group->device_list);
 	mutex_init(&group->device_lock);
 	group->iommu_group = iommu_group;
-	/* put in vfio_group_release() */
+	 
 	iommu_group_ref_get(iommu_group);
 	group->type = type;
 	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
@@ -665,12 +605,7 @@ static struct vfio_group *vfio_group_find_or_alloc(struct device *dev)
 
 	iommu_group = iommu_group_get(dev);
 	if (!iommu_group && vfio_noiommu) {
-		/*
-		 * With noiommu enabled, create an IOMMU group for devices that
-		 * don't already have one, implying no IOMMU hardware/driver
-		 * exists.  Taint the kernel because we're about to give a DMA
-		 * capable device to a user without IOMMU protection.
-		 */
+		 
 		group = vfio_noiommu_group_alloc(dev, VFIO_NO_IOMMU);
 		if (!IS_ERR(group)) {
 			add_taint(TAINT_USER, LOCKDEP_STILL_OK);
@@ -694,7 +629,7 @@ static struct vfio_group *vfio_group_find_or_alloc(struct device *dev)
 	}
 	mutex_unlock(&vfio.group_lock);
 
-	/* The vfio_group holds a reference to the iommu_group */
+	 
 	iommu_group_put(iommu_group);
 	return group;
 }
@@ -712,7 +647,7 @@ int vfio_device_set_group(struct vfio_device *device,
 	if (IS_ERR(group))
 		return PTR_ERR(group);
 
-	/* Our reference on group is moved to the device */
+	 
 	device->group = group;
 	return 0;
 }
@@ -725,34 +660,20 @@ void vfio_device_remove_group(struct vfio_device *device)
 	if (group->type == VFIO_NO_IOMMU || group->type == VFIO_EMULATED_IOMMU)
 		iommu_group_remove_device(device->dev);
 
-	/* Pairs with vfio_create_group() / vfio_group_get_from_iommu() */
+	 
 	if (!refcount_dec_and_mutex_lock(&group->drivers, &vfio.group_lock))
 		return;
 	list_del(&group->vfio_next);
 
-	/*
-	 * We could concurrently probe another driver in the group that might
-	 * race vfio_device_remove_group() with vfio_get_group(), so we have to
-	 * ensure that the sysfs is all cleaned up under lock otherwise the
-	 * cdev_device_add() will fail due to the name aready existing.
-	 */
+	 
 	cdev_device_del(&group->cdev, &group->dev);
 
 	mutex_lock(&group->group_lock);
-	/*
-	 * These data structures all have paired operations that can only be
-	 * undone when the caller holds a live reference on the device. Since
-	 * all pairs must be undone these WARN_ON's indicate some caller did not
-	 * properly hold the group reference.
-	 */
+	 
 	WARN_ON(!list_empty(&group->device_list));
 	WARN_ON(group->notifier.head);
 
-	/*
-	 * Revoke all users of group->iommu_group. At this point we know there
-	 * are no devices active because we are unplugging the last one. Setting
-	 * iommu_group to NULL blocks all new users.
-	 */
+	 
 	if (group->container)
 		vfio_group_detach_container(group);
 	iommu_group = group->iommu_group;
@@ -822,14 +743,7 @@ struct vfio_group *vfio_group_from_file(struct file *file)
 	return group;
 }
 
-/**
- * vfio_file_iommu_group - Return the struct iommu_group for the vfio group file
- * @file: VFIO group file
- *
- * The returned iommu_group is valid as long as a ref is held on the file. This
- * returns a reference on the group. This function is deprecated, only the SPAPR
- * path in kvm should call it.
- */
+ 
 struct iommu_group *vfio_file_iommu_group(struct file *file)
 {
 	struct vfio_group *group = vfio_group_from_file(file);
@@ -851,10 +765,7 @@ struct iommu_group *vfio_file_iommu_group(struct file *file)
 }
 EXPORT_SYMBOL_GPL(vfio_file_iommu_group);
 
-/**
- * vfio_file_is_group - True if the file is a vfio group file
- * @file: VFIO group file
- */
+ 
 bool vfio_file_is_group(struct file *file)
 {
 	return vfio_group_from_file(file);
@@ -866,12 +777,7 @@ bool vfio_group_enforced_coherent(struct vfio_group *group)
 	struct vfio_device *device;
 	bool ret = true;
 
-	/*
-	 * If the device does not have IOMMU_CAP_ENFORCE_CACHE_COHERENCY then
-	 * any domain later attached to it will also not support it. If the cap
-	 * is set then the iommu_domain eventually attached to the device/group
-	 * must use a domain with enforce_cache_coherency().
-	 */
+	 
 	mutex_lock(&group->device_lock);
 	list_for_each_entry(device, &group->device_list, group_next) {
 		if (!device_iommu_capable(device->dev,
@@ -891,13 +797,7 @@ void vfio_group_set_kvm(struct vfio_group *group, struct kvm *kvm)
 	spin_unlock(&group->kvm_ref_lock);
 }
 
-/**
- * vfio_file_has_dev - True if the VFIO file is a handle for device
- * @file: VFIO file to check
- * @device: Device that must be part of the file
- *
- * Returns true if given file has permission to manipulate the given device.
- */
+ 
 bool vfio_file_has_dev(struct file *file, struct vfio_device *device)
 {
 	struct vfio_group *group = vfio_group_from_file(file);
@@ -926,7 +826,7 @@ int __init vfio_group_init(void)
 	if (ret)
 		return ret;
 
-	/* /dev/vfio/$GROUP */
+	 
 	vfio.class = class_create("vfio");
 	if (IS_ERR(vfio.class)) {
 		ret = PTR_ERR(vfio.class);

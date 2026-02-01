@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 - Virtual Open Systems
- * Author: Antonios Motakis <a.motakis@virtualopensystems.com>
- */
+ 
+ 
 
 #ifndef VFIO_PLATFORM_PRIVATE_H
 #define VFIO_PLATFORM_PRIVATE_H
@@ -54,13 +51,11 @@ struct vfio_platform_device {
 	struct module			*reset_module;
 	struct device			*device;
 
-	/*
-	 * These fields should be filled by the bus specific binder
-	 */
+	 
 	void		*opaque;
 	const char	*name;
 	uint32_t	flags;
-	/* callbacks to discover device resources */
+	 
 	struct resource*
 		(*get_resource)(struct vfio_platform_device *vdev, int i);
 	int	(*get_irq)(struct vfio_platform_device *vdev, int i);
@@ -126,4 +121,4 @@ static void __exit reset ## _module_exit(void)			\
 module_init(reset ## _module_init);				\
 module_exit(reset ## _module_exit)
 
-#endif /* VFIO_PLATFORM_PRIVATE_H */
+#endif  

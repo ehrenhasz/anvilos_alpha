@@ -1,32 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * adm9240.c	Part of lm_sensors, Linux kernel modules for hardware
- *		monitoring
- *
- * Copyright (C) 1999	Frodo Looijaard <frodol@dds.nl>
- *			Philip Edelbrock <phil@netroedge.com>
- * Copyright (C) 2003	Michiel Rook <michiel@grendelproject.nl>
- * Copyright (C) 2005	Grant Coady <gcoady.lk@gmail.com> with valuable
- *				guidance from Jean Delvare
- *
- * Driver supports	Analog Devices		ADM9240
- *			Dallas Semiconductor	DS1780
- *			National Semiconductor	LM81
- *
- * ADM9240 is the reference, DS1780 and LM81 are register compatibles
- *
- * Voltage	Six inputs are scaled by chip, VID also reported
- * Temperature	Chip temperature to 0.5'C, maximum and max_hysteris
- * Fans		2 fans, low speed alarm, automatic fan clock divider
- * Alarms	16-bit map of active alarms
- * Analog Out	0..1250 mV output
- *
- * Chassis Intrusion: clear CI latch with 'echo 0 > intrusion0_alarm'
- *
- * Test hardware: Intel SE440BX-2 desktop motherboard --Grant
- *
- * LM81 extended temp reading not implemented
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/init.h>
@@ -40,26 +13,26 @@
 #include <linux/mutex.h>
 #include <linux/regmap.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, 0x2f,
 					I2C_CLIENT_END };
 
 enum chips { adm9240, ds1780, lm81 };
 
-/* ADM9240 registers */
+ 
 #define ADM9240_REG_MAN_ID		0x3e
 #define ADM9240_REG_DIE_REV		0x3f
 #define ADM9240_REG_CONFIG		0x40
 
-#define ADM9240_REG_IN(nr)		(0x20 + (nr))   /* 0..5 */
+#define ADM9240_REG_IN(nr)		(0x20 + (nr))    
 #define ADM9240_REG_IN_MAX(nr)		(0x2b + (nr) * 2)
 #define ADM9240_REG_IN_MIN(nr)		(0x2c + (nr) * 2)
-#define ADM9240_REG_FAN(nr)		(0x28 + (nr))   /* 0..1 */
+#define ADM9240_REG_FAN(nr)		(0x28 + (nr))    
 #define ADM9240_REG_FAN_MIN(nr)		(0x3b + (nr))
 #define ADM9240_REG_INT(nr)		(0x41 + (nr))
 #define ADM9240_REG_INT_MASK(nr)	(0x43 + (nr))
 #define ADM9240_REG_TEMP		0x27
-#define ADM9240_REG_TEMP_MAX(nr)	(0x39 + (nr)) /* 0, 1 = high, hyst */
+#define ADM9240_REG_TEMP_MAX(nr)	(0x39 + (nr))  
 #define ADM9240_REG_ANALOG_OUT		0x19
 #define ADM9240_REG_CHASSIS_CLEAR	0x46
 #define ADM9240_REG_VID_FAN_DIV		0x47
@@ -67,7 +40,7 @@ enum chips { adm9240, ds1780, lm81 };
 #define ADM9240_REG_VID4		0x49
 #define ADM9240_REG_TEMP_CONF		0x4b
 
-/* generalised scaling with integer rounding */
+ 
 static inline int SCALE(long val, int mul, int div)
 {
 	if (val < 0)
@@ -76,7 +49,7 @@ static inline int SCALE(long val, int mul, int div)
 		return (val * mul + div / 2) / div;
 }
 
-/* adm9240 internally scales voltage measurements */
+ 
 static const u16 nom_mv[] = { 2500, 2700, 3300, 5000, 12000, 2700 };
 
 static inline unsigned int IN_FROM_REG(u8 reg, int n)
@@ -90,17 +63,17 @@ static inline u8 IN_TO_REG(unsigned long val, int n)
 	return SCALE(val, 192, nom_mv[n]);
 }
 
-/* temperature range: -40..125, 127 disables temperature alarm */
+ 
 static inline s8 TEMP_TO_REG(long val)
 {
 	val = clamp_val(val, -40000, 127000);
 	return SCALE(val, 1, 1000);
 }
 
-/* two fans, each with low fan speed limit */
+ 
 static inline unsigned int FAN_FROM_REG(u8 reg, u8 div)
 {
-	if (!reg) /* error */
+	if (!reg)  
 		return -1;
 
 	if (reg == 255)
@@ -109,7 +82,7 @@ static inline unsigned int FAN_FROM_REG(u8 reg, u8 div)
 	return SCALE(1350000, 1, reg * div);
 }
 
-/* analog out 0..1250mV */
+ 
 static inline u8 AOUT_TO_REG(unsigned long val)
 {
 	val = clamp_val(val, 0, 1250);
@@ -121,17 +94,17 @@ static inline unsigned int AOUT_FROM_REG(u8 reg)
 	return SCALE(reg, 1250, 255);
 }
 
-/* per client data */
+ 
 struct adm9240_data {
 	struct device *dev;
 	struct regmap *regmap;
 	struct mutex update_lock;
 
-	u8 fan_div[2];		/* rw	fan1_div, read-only accessor */
-	u8 vrm;			/* --	vrm set on startup, no accessor */
+	u8 fan_div[2];		 
+	u8 vrm;			 
 };
 
-/* write new fan div, callers must hold data->update_lock */
+ 
 static int adm9240_write_fan_div(struct adm9240_data *data, int channel, u8 fan_div)
 {
 	unsigned int reg, old, shift = (channel + 2) * 2;
@@ -153,17 +126,7 @@ static int adm9240_write_fan_div(struct adm9240_data *data, int channel, u8 fan_
 	return 0;
 }
 
-/*
- * set fan speed low limit:
- *
- * - value is zero: disable fan speed low limit alarm
- *
- * - value is below fan speed measurement range: enable fan speed low
- *   limit alarm to be asserted while fan speed too slow to measure
- *
- * - otherwise: select fan clock divider to suit fan speed low limit,
- *   measurement code may adjust registers to ensure fan speed reading
- */
+ 
 static int adm9240_fan_min_write(struct adm9240_data *data, int channel, long val)
 {
 	u8 new_div;
@@ -191,7 +154,7 @@ static int adm9240_fan_min_write(struct adm9240_data *data, int channel, long va
 			new_div++;
 			new_min /= 2;
 		}
-		if (!new_min) /* keep > 0 */
+		if (!new_min)  
 			new_min++;
 
 		fan_min = new_min;
@@ -270,9 +233,9 @@ static struct attribute *adm9240_attrs[] = {
 
 ATTRIBUTE_GROUPS(adm9240);
 
-/*** sensor chip detect and driver install ***/
+ 
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int adm9240_detect(struct i2c_client *new_client,
 			  struct i2c_board_info *info)
 {
@@ -284,11 +247,11 @@ static int adm9240_detect(struct i2c_client *new_client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* verify chip: reg address should match i2c address */
+	 
 	if (i2c_smbus_read_byte_data(new_client, ADM9240_REG_I2C_ADDR) != address)
 		return -ENODEV;
 
-	/* check known chip manufacturer */
+	 
 	man_id = i2c_smbus_read_byte_data(new_client, ADM9240_REG_MAN_ID);
 	if (man_id == 0x23)
 		name = "adm9240";
@@ -299,7 +262,7 @@ static int adm9240_detect(struct i2c_client *new_client,
 	else
 		return -ENODEV;
 
-	/* successful detect, print chip info */
+	 
 	die_rev = i2c_smbus_read_byte_data(new_client, ADM9240_REG_DIE_REV);
 	dev_info(&adapter->dev, "found %s revision %u\n",
 		 man_id == 0x23 ? "ADM9240" :
@@ -324,17 +287,17 @@ static int adm9240_init_client(struct adm9240_data *data)
 		return err;
 	mode &= 3;
 
-	data->vrm = vid_which_vrm(); /* need this to report vid as mV */
+	data->vrm = vid_which_vrm();  
 
 	dev_info(data->dev, "Using VRM: %d.%d\n", data->vrm / 10,
 		 data->vrm % 10);
 
-	if (conf & 1) { /* measurement cycle running: report state */
+	if (conf & 1) {  
 
 		dev_info(data->dev, "status: config 0x%02x mode %u\n",
 			 conf, mode);
 
-	} else { /* cold start: open limits before starting chip */
+	} else {  
 		int i;
 
 		for (i = 0; i < 6; i++) {
@@ -360,7 +323,7 @@ static int adm9240_init_client(struct adm9240_data *data)
 				return err;
 		}
 
-		/* start measurement cycle */
+		 
 		err = regmap_write(data->regmap, ADM9240_REG_CONFIG, 1);
 		if (err < 0)
 			return err;
@@ -369,7 +332,7 @@ static int adm9240_init_client(struct adm9240_data *data)
 			 "cold start: config was 0x%02x mode %u\n", conf, mode);
 	}
 
-	/* read fan divs */
+	 
 	err = regmap_read(data->regmap, ADM9240_REG_VID_FAN_DIV, &regval);
 	if (err < 0)
 		return err;
@@ -508,7 +471,7 @@ static int adm9240_fan_read(struct device *dev, u32 attr, int channel, long *val
 			return err;
 		}
 		if (regval == 255 && data->fan_div[channel] < 3) {
-			/* adjust fan clock divider on overflow */
+			 
 			err = adm9240_write_fan_div(data, channel,
 						    ++data->fan_div[channel]);
 			if (err) {

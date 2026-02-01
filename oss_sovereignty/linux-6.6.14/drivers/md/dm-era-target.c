@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "dm.h"
 #include "persistent-data/dm-transaction-manager.h"
 #include "persistent-data/dm-bitset.h"
@@ -22,11 +22,7 @@
 #define INVALID_WRITESET_ROOT SUPERBLOCK_LOCATION
 #define MIN_BLOCK_SIZE 8
 
-/*
- *--------------------------------------------------------------
- * Writeset
- *--------------------------------------------------------------
- */
+ 
 struct writeset_metadata {
 	uint32_t nr_bits;
 	dm_block_t root;
@@ -35,17 +31,11 @@ struct writeset_metadata {
 struct writeset {
 	struct writeset_metadata md;
 
-	/*
-	 * An in core copy of the bits to save constantly doing look ups on
-	 * disk.
-	 */
+	 
 	unsigned long *bits;
 };
 
-/*
- * This does not free off the on disk bitset as this will normally be done
- * after digesting into the era array.
- */
+ 
 static void writeset_free(struct writeset *ws)
 {
 	vfree(ws->bits);
@@ -69,9 +59,7 @@ static size_t bitset_size(unsigned int nr_bits)
 	return sizeof(unsigned long) * dm_div_up(nr_bits, BITS_PER_LONG);
 }
 
-/*
- * Allocates memory for the in core bitset.
- */
+ 
 static int writeset_alloc(struct writeset *ws, dm_block_t nr_blocks)
 {
 	ws->bits = vzalloc(bitset_size(nr_blocks));
@@ -83,9 +71,7 @@ static int writeset_alloc(struct writeset *ws, dm_block_t nr_blocks)
 	return 0;
 }
 
-/*
- * Wipes the in-core bitset, and creates a new on disk bitset.
- */
+ 
 static int writeset_init(struct dm_disk_bitset *info, struct writeset *ws,
 			 dm_block_t nr_blocks)
 {
@@ -115,10 +101,7 @@ static int writeset_marked_on_disk(struct dm_disk_bitset *info,
 	int r;
 	dm_block_t old = m->root;
 
-	/*
-	 * The bitset was flushed when it was archived, so we know there'll
-	 * be no change to the root.
-	 */
+	 
 	r = dm_bitset_test_bit(info, m->root, block, &m->root, result);
 	if (r) {
 		DMERR("%s: dm_bitset_test_bit failed", __func__);
@@ -130,9 +113,7 @@ static int writeset_marked_on_disk(struct dm_disk_bitset *info,
 	return r;
 }
 
-/*
- * Returns < 0 on error, 0 if the bit wasn't previously set, 1 if it was.
- */
+ 
 static int writeset_test_and_set(struct dm_disk_bitset *info,
 				 struct writeset *ws, uint32_t block)
 {
@@ -141,7 +122,7 @@ static int writeset_test_and_set(struct dm_disk_bitset *info,
 	if (!test_bit(block, ws->bits)) {
 		r = dm_bitset_set_bit(info, ws->md.root, block, &ws->md.root);
 		if (r) {
-			/* FIXME: fail mode */
+			 
 			return r;
 		}
 
@@ -151,11 +132,7 @@ static int writeset_test_and_set(struct dm_disk_bitset *info,
 	return 1;
 }
 
-/*
- *--------------------------------------------------------------
- * On disk metadata layout
- *--------------------------------------------------------------
- */
+ 
 #define SPACE_MAP_ROOT_SIZE 128
 #define UUID_LEN 16
 
@@ -182,20 +159,14 @@ struct superblock_disk {
 	__le32 current_era;
 	struct writeset_disk current_writeset;
 
-	/*
-	 * Only these two fields are valid within the metadata snapshot.
-	 */
+	 
 	__le64 writeset_tree_root;
 	__le64 era_array_root;
 
 	__le64 metadata_snap;
 } __packed;
 
-/*
- *--------------------------------------------------------------
- * Superblock validation
- *--------------------------------------------------------------
- */
+ 
 static void sb_prepare_for_write(struct dm_block_validator *v,
 				 struct dm_block *b,
 				 size_t sb_block_size)
@@ -260,11 +231,7 @@ static struct dm_block_validator sb_validator = {
 	.check = sb_check
 };
 
-/*
- *--------------------------------------------------------------
- * Low level metadata handling
- *--------------------------------------------------------------
- */
+ 
 #define DM_ERA_METADATA_BLOCK_SIZE 4096
 #define ERA_MAX_CONCURRENT_LOCKS 5
 
@@ -279,11 +246,7 @@ struct era_metadata {
 
 	uint32_t current_era;
 
-	/*
-	 * We preallocate 2 writesets.  When an era rolls over we
-	 * switch between them. This means the allocation is done at
-	 * preresume time, rather than on the io path.
-	 */
+	 
 	struct writeset writesets[2];
 	struct writeset *current_writeset;
 
@@ -296,15 +259,10 @@ struct era_metadata {
 
 	dm_block_t metadata_snap;
 
-	/*
-	 * A flag that is set whenever a writeset has been archived.
-	 */
+	 
 	bool archived_writesets;
 
-	/*
-	 * Reading the space map root can fail, so we read it into this
-	 * buffer before the superblock is locked and updated.
-	 */
+	 
 	__u8 metadata_space_map_root[SPACE_MAP_ROOT_SIZE];
 };
 
@@ -329,7 +287,7 @@ static int superblock_lock(struct era_metadata *md,
 				&sb_validator, sblock);
 }
 
-/* FIXME: duplication with cache and thin */
+ 
 static int superblock_all_zeroes(struct dm_block_manager *bm, bool *result)
 {
 	int r;
@@ -338,9 +296,7 @@ static int superblock_all_zeroes(struct dm_block_manager *bm, bool *result)
 	__le64 *data_le, zero = cpu_to_le64(0);
 	unsigned int sb_block_size = dm_bm_block_size(bm) / sizeof(__le64);
 
-	/*
-	 * We can't use a validator here - it may be all zeroes.
-	 */
+	 
 	r = dm_bm_read_lock(bm, SUPERBLOCK_LOCATION, NULL, &b);
 	if (r)
 		return r;
@@ -359,7 +315,7 @@ static int superblock_all_zeroes(struct dm_block_manager *bm, bool *result)
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static void ws_pack(const struct writeset_metadata *core, struct writeset_disk *disk)
 {
@@ -406,7 +362,7 @@ static int ws_eq(void *context, const void *value1, const void *value2)
 	return !memcmp(value1, value2, sizeof(struct writeset_disk));
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static void setup_writeset_tree_info(struct era_metadata *md)
 {
@@ -441,7 +397,7 @@ static void setup_infos(struct era_metadata *md)
 	setup_era_array_info(md);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int create_fresh_metadata(struct era_metadata *md)
 {
@@ -497,17 +453,13 @@ static void copy_sm_root(struct era_metadata *md, struct superblock_disk *disk)
 	       sizeof(md->metadata_space_map_root));
 }
 
-/*
- * Writes a superblock, including the static fields that don't get updated
- * with every commit (possible optimisation here).  'md' should be fully
- * constructed when this is called.
- */
+ 
 static void prepare_superblock(struct era_metadata *md, struct superblock_disk *disk)
 {
 	disk->magic = cpu_to_le64(SUPERBLOCK_MAGIC);
 	disk->flags = cpu_to_le32(0ul);
 
-	/* FIXME: can't keep blanking the uuid (uuid is currently unused though) */
+	 
 	memset(disk->uuid, 0, sizeof(disk->uuid));
 	disk->version = cpu_to_le32(MAX_ERA_VERSION);
 
@@ -546,9 +498,7 @@ static int write_superblock(struct era_metadata *md)
 	return dm_tm_commit(md->tm, sblock);
 }
 
-/*
- * Assumes block_size and the infos are set.
- */
+ 
 static int format_metadata(struct era_metadata *md)
 {
 	int r;
@@ -581,7 +531,7 @@ static int open_metadata(struct era_metadata *md)
 
 	disk = dm_block_data(sblock);
 
-	/* Verify the data block size hasn't changed */
+	 
 	if (le32_to_cpu(disk->data_block_size) != md->block_size) {
 		DMERR("changing the data block size (from %u to %llu) is not supported",
 		      le32_to_cpu(disk->data_block_size), md->block_size);
@@ -660,24 +610,14 @@ static void destroy_persistent_data_objects(struct era_metadata *md)
 	dm_block_manager_destroy(md->bm);
 }
 
-/*
- * This waits until all era_map threads have picked up the new filter.
- */
+ 
 static void swap_writeset(struct era_metadata *md, struct writeset *new_writeset)
 {
 	rcu_assign_pointer(md->current_writeset, new_writeset);
 	synchronize_rcu();
 }
 
-/*
- *------------------------------------------------------------------------
- * Writesets get 'digested' into the main era array.
- *
- * We're using a coroutine here so the worker thread can do the digestion,
- * thus avoiding synchronisation of the metadata.  Digesting a whole
- * writeset in one go would cause too much latency.
- *------------------------------------------------------------------------
- */
+ 
 struct digest {
 	uint32_t era;
 	unsigned int nr_bits, current_bit;
@@ -773,10 +713,7 @@ static int metadata_digest_lookup_writeset(struct era_metadata *md,
 	ws_unpack(&disk, &d->writeset);
 	d->value = cpu_to_le32(key);
 
-	/*
-	 * We initialise another bitset info to avoid any caching side effects
-	 * with the previous one.
-	 */
+	 
 	dm_disk_bitset_init(md->tm, &d->info);
 
 	d->nr_bits = min(d->writeset.nr_bits, md->nr_blocks);
@@ -797,12 +734,7 @@ static int metadata_digest_start(struct era_metadata *md, struct digest *d)
 	return 0;
 }
 
-/*
- *-----------------------------------------------------------------
- * High level metadata interface.  Target methods should use these,
- * and not the lower level ones.
- *-----------------------------------------------------------------
- */
+ 
 static struct era_metadata *metadata_open(struct block_device *bdev,
 					  sector_t block_size,
 					  bool may_format)
@@ -839,10 +771,7 @@ static void metadata_close(struct era_metadata *md)
 
 static bool valid_nr_blocks(dm_block_t n)
 {
-	/*
-	 * dm_bitset restricts us to 2^32.  test_bit & co. restrict us
-	 * further to 2^31 - 1
-	 */
+	 
 	return n < (1ull << 31);
 }
 
@@ -911,7 +840,7 @@ static int metadata_era_archive(struct era_metadata *md)
 			    keys, &value, &md->writeset_tree_root);
 	if (r) {
 		DMERR("%s: couldn't insert writeset into btree", __func__);
-		/* FIXME: fail mode */
+		 
 		return r;
 	}
 
@@ -952,7 +881,7 @@ static int metadata_era_rollover(struct era_metadata *md)
 		r = metadata_era_archive(md);
 		if (r) {
 			DMERR("%s: metadata_archive_era failed", __func__);
-			/* FIXME: fail mode? */
+			 
 			return r;
 		}
 	}
@@ -960,7 +889,7 @@ static int metadata_era_rollover(struct era_metadata *md)
 	r = metadata_new_era(md);
 	if (r) {
 		DMERR("%s: new era failed", __func__);
-		/* FIXME: fail mode */
+		 
 		return r;
 	}
 
@@ -1019,16 +948,11 @@ static int metadata_commit(struct era_metadata *md)
 
 static int metadata_checkpoint(struct era_metadata *md)
 {
-	/*
-	 * For now we just rollover, but later I want to put a check in to
-	 * avoid this if the filter is still pretty fresh.
-	 */
+	 
 	return metadata_era_rollover(md);
 }
 
-/*
- * Metadata snapshots allow userland to access era data.
- */
+ 
 static int metadata_take_snap(struct era_metadata *md)
 {
 	int r, inc;
@@ -1106,10 +1030,7 @@ static int metadata_drop_snap(struct era_metadata *md)
 		return r;
 	}
 
-	/*
-	 * Whatever happens now we'll commit with no record of the metadata
-	 * snap.
-	 */
+	 
 	md->metadata_snap = SUPERBLOCK_LOCATION;
 
 	disk = dm_block_data(clone);
@@ -1167,7 +1088,7 @@ static int metadata_get_stats(struct era_metadata *md, void *ptr)
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 struct era {
 	struct dm_target *ti;
@@ -1204,11 +1125,7 @@ struct rpc {
 	struct completion complete;
 };
 
-/*
- *---------------------------------------------------------------
- * Remapping.
- *---------------------------------------------------------------
- */
+ 
 static bool block_size_is_power_of_two(struct era *era)
 {
 	return era->sectors_per_block_shift >= 0;
@@ -1231,11 +1148,7 @@ static void remap_to_origin(struct era *era, struct bio *bio)
 	bio_set_dev(bio, era->origin_dev->bdev);
 }
 
-/*
- *--------------------------------------------------------------
- * Worker thread
- *--------------------------------------------------------------
- */
+ 
 static void wake_worker(struct era *era)
 {
 	if (!atomic_read(&era->suspended))
@@ -1283,10 +1196,7 @@ static void process_deferred_bios(struct era *era)
 		r = writeset_test_and_set(&era->md->bitset_info, ws,
 					  get_block(era, bio));
 		if (r < 0) {
-			/*
-			 * This is bad news, we need to rollback.
-			 * FIXME: finish.
-			 */
+			 
 			failed = true;
 		} else if (r == 0)
 			commit_needed = true;
@@ -1306,10 +1216,7 @@ static void process_deferred_bios(struct era *era)
 	else {
 		blk_start_plug(&plug);
 		while ((bio = bio_list_pop(&marked_bios))) {
-			/*
-			 * Only update the in-core writeset if the on-disk one
-			 * was updated too.
-			 */
+			 
 			if (commit_needed)
 				set_bit(get_block(era, bio), ws->bits);
 			submit_bio_noacct(bio);
@@ -1373,9 +1280,7 @@ static void defer_bio(struct era *era, struct bio *bio)
 	wake_worker(era);
 }
 
-/*
- * Make an rpc call to the worker to change the metadata.
- */
+ 
 static int perform_rpc(struct era *era, struct rpc *rpc)
 {
 	rpc->result = 0;
@@ -1424,11 +1329,7 @@ static void stop_worker(struct era *era)
 	drain_workqueue(era->wq);
 }
 
-/*
- *--------------------------------------------------------------
- * Target methods
- *--------------------------------------------------------------
- */
+ 
 static void era_destroy(struct era *era)
 {
 	if (era->md)
@@ -1459,9 +1360,7 @@ static bool valid_block_size(dm_block_t block_size)
 	return greater_than_zero && multiple_of_min_block_size;
 }
 
-/*
- * <metadata dev> <data dev> <data block size (sectors)>
- */
+ 
 static int era_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	int r;
@@ -1563,16 +1462,10 @@ static int era_map(struct dm_target *ti, struct bio *bio)
 	struct era *era = ti->private;
 	dm_block_t block = get_block(era, bio);
 
-	/*
-	 * All bios get remapped to the origin device.  We do this now, but
-	 * it may not get issued until later.  Depending on whether the
-	 * block is marked in this era.
-	 */
+	 
 	remap_to_origin(era, bio);
 
-	/*
-	 * REQ_PREFLUSH bios carry no data, so we're not interested in them.
-	 */
+	 
 	if (!(bio->bi_opf & REQ_PREFLUSH) &&
 	    (bio_data_dir(bio) == WRITE) &&
 	    !metadata_current_marked(era->md, block)) {
@@ -1591,7 +1484,7 @@ static void era_postsuspend(struct dm_target *ti)
 	r = in_worker0(era, metadata_era_archive);
 	if (r) {
 		DMERR("%s: couldn't archive current era", __func__);
-		/* FIXME: fail mode */
+		 
 	}
 
 	stop_worker(era);
@@ -1599,7 +1492,7 @@ static void era_postsuspend(struct dm_target *ti)
 	r = metadata_commit(era->md);
 	if (r) {
 		DMERR("%s: metadata_commit failed", __func__);
-		/* FIXME: fail mode */
+		 
 	}
 }
 
@@ -1636,12 +1529,7 @@ static int era_preresume(struct dm_target *ti)
 	return 0;
 }
 
-/*
- * Status format:
- *
- * <metadata block size> <#used metadata blocks>/<#total metadata blocks>
- * <current era> <held metadata root | '-'>
- */
+ 
 static void era_status(struct dm_target *ti, status_type_t type,
 		       unsigned int status_flags, char *result, unsigned int maxlen)
 {
@@ -1728,10 +1616,7 @@ static void era_io_hints(struct dm_target *ti, struct queue_limits *limits)
 	struct era *era = ti->private;
 	uint64_t io_opt_sectors = limits->io_opt >> SECTOR_SHIFT;
 
-	/*
-	 * If the system-determined stacked limits are compatible with the
-	 * era device's blocksize (io_opt is a factor) do not override them.
-	 */
+	 
 	if (io_opt_sectors < era->sectors_per_block ||
 	    do_div(io_opt_sectors, era->sectors_per_block)) {
 		blk_limits_io_min(limits, 0);
@@ -1739,7 +1624,7 @@ static void era_io_hints(struct dm_target *ti, struct queue_limits *limits)
 	}
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static struct target_type era_target = {
 	.name = "era",

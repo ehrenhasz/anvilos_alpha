@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/inode.c
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
 #include <linux/buffer_head.h>
@@ -400,7 +395,7 @@ static int do_read_inode(struct inode *inode)
 	projid_t i_projid;
 	int err;
 
-	/* Check if ino is within scope */
+	 
 	if (f2fs_check_nid_range(sbi, inode->i_ino))
 		return -EINVAL;
 
@@ -450,12 +445,7 @@ static int do_read_inode(struct inode *inode)
 		fi->i_inline_xattr_size = DEFAULT_INLINE_XATTR_ADDRS;
 	} else {
 
-		/*
-		 * Previous inline data or directory always reserved 200 bytes
-		 * in inode layout, even if inline_xattr is disabled. In order
-		 * to keep inline_dentry's structure for backward compatibility,
-		 * we get the space back only from inline_data.
-		 */
+		 
 		fi->i_inline_xattr_size = 0;
 	}
 
@@ -466,18 +456,18 @@ static int do_read_inode(struct inode *inode)
 		return -EFSCORRUPTED;
 	}
 
-	/* check data exist */
+	 
 	if (f2fs_has_inline_data(inode) && !f2fs_exist_data(inode))
 		__recover_inline_status(inode, node_page);
 
-	/* try to recover cold bit for non-dir inode */
+	 
 	if (!S_ISDIR(inode->i_mode) && !is_cold_node(node_page)) {
 		f2fs_wait_on_page_writeback(node_page, NODE, true, true);
 		set_cold_node(node_page, false);
 		set_page_dirty(node_page);
 	}
 
-	/* get rdev by using inline_info */
+	 
 	__get_inode_rdev(inode, ri);
 
 	if (S_ISREG(inode->i_mode)) {
@@ -531,7 +521,7 @@ static int do_read_inode(struct inode *inode)
 
 	init_idisk_time(inode);
 
-	/* Need all the flag bits */
+	 
 	f2fs_init_read_extent_tree(inode, node_page);
 	f2fs_init_age_extent_tree(inode);
 
@@ -599,10 +589,7 @@ make_now:
 	} else if (ino == F2FS_COMPRESS_INO(sbi)) {
 #ifdef CONFIG_F2FS_FS_COMPRESSION
 		inode->i_mapping->a_ops = &f2fs_compress_aops;
-		/*
-		 * generic_error_remove_page only truncates pages of regular
-		 * inode
-		 */
+		 
 		inode->i_mode |= S_IFREG;
 #endif
 		mapping_set_gfp_mask(inode->i_mapping,
@@ -763,7 +750,7 @@ void f2fs_update_inode(struct inode *inode, struct page *node_page)
 
 	__set_inode_rdev(inode, ri);
 
-	/* deleted inode */
+	 
 	if (inode->i_nlink == 0)
 		clear_page_private_inline(node_page);
 
@@ -783,7 +770,7 @@ retry:
 	if (IS_ERR(node_page)) {
 		int err = PTR_ERR(node_page);
 
-		/* The node block was truncated. */
+		 
 		if (err == -ENOENT)
 			return;
 
@@ -804,9 +791,7 @@ int f2fs_write_inode(struct inode *inode, struct writeback_control *wbc)
 			inode->i_ino == F2FS_META_INO(sbi))
 		return 0;
 
-	/*
-	 * atime could be updated without dirtying f2fs inode in lazytime mode
-	 */
+	 
 	if (f2fs_is_time_consistent(inode) &&
 		!is_inode_flag_set(inode, FI_DIRTY_INODE))
 		return 0;
@@ -814,19 +799,14 @@ int f2fs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	if (!f2fs_is_checkpoint_ready(sbi))
 		return -ENOSPC;
 
-	/*
-	 * We need to balance fs here to prevent from producing dirty node pages
-	 * during the urgent cleaning time when running out of free sections.
-	 */
+	 
 	f2fs_update_inode_page(inode);
 	if (wbc && wbc->nr_to_write)
 		f2fs_balance_fs(sbi, true);
 	return 0;
 }
 
-/*
- * Called at the last iput() if i_nlink is zero
- */
+ 
 void f2fs_evict_inode(struct inode *inode)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
@@ -890,11 +870,7 @@ retry:
 		if (err == -ENOENT) {
 			err = 0;
 
-			/*
-			 * in fuzzed image, another node may has the same
-			 * block address as inode's, if it was truncated
-			 * previously, truncation of inode node will fail.
-			 */
+			 
 			if (is_inode_flag_set(inode, FI_DIRTY_INODE)) {
 				f2fs_warn(F2FS_I_SB(inode),
 					"f2fs_evict_inode: inconsistent node id, ino:%lu",
@@ -905,7 +881,7 @@ retry:
 		}
 	}
 
-	/* give more chances, if ENOMEM case */
+	 
 	if (err == -ENOMEM) {
 		err = 0;
 		goto retry;
@@ -934,7 +910,7 @@ no_delete:
 	else
 		f2fs_inode_synced(inode);
 
-	/* for the case f2fs_new_inode() was failed, .i_ino is zero, skip it */
+	 
 	if (inode->i_ino)
 		invalidate_mapping_pages(NODE_MAPPING(sbi), inode->i_ino,
 							inode->i_ino);
@@ -950,11 +926,7 @@ no_delete:
 		f2fs_alloc_nid_failed(sbi, inode->i_ino);
 		clear_inode_flag(inode, FI_FREE_NID);
 	} else {
-		/*
-		 * If xattr nid is corrupted, we can reach out error condition,
-		 * err & !f2fs_exist_written_data(sbi, inode->i_ino, ORPHAN_INO)).
-		 * In that case, f2fs_check_nid_range() is enough to give a clue.
-		 */
+		 
 	}
 out_clear:
 	fscrypt_put_encryption_info(inode);
@@ -962,34 +934,24 @@ out_clear:
 	clear_inode(inode);
 }
 
-/* caller should call f2fs_lock_op() */
+ 
 void f2fs_handle_failed_inode(struct inode *inode)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	struct node_info ni;
 	int err;
 
-	/*
-	 * clear nlink of inode in order to release resource of inode
-	 * immediately.
-	 */
+	 
 	clear_nlink(inode);
 
-	/*
-	 * we must call this to avoid inode being remained as dirty, resulting
-	 * in a panic when flushing dirty inodes in gdirty_list.
-	 */
+	 
 	f2fs_update_inode_page(inode);
 	f2fs_inode_synced(inode);
 
-	/* don't make bad inode, since it becomes a regular file. */
+	 
 	unlock_new_inode(inode);
 
-	/*
-	 * Note: we should add inode to orphan list before f2fs_unlock_op()
-	 * so we can prevent losing this orphan when encoutering checkpoint
-	 * and following suddenly power-off.
-	 */
+	 
 	err = f2fs_get_node_info(sbi, inode->i_ino, &ni, false);
 	if (err) {
 		set_sbi_flag(sbi, SBI_NEED_FSCK);
@@ -1014,6 +976,6 @@ void f2fs_handle_failed_inode(struct inode *inode)
 out:
 	f2fs_unlock_op(sbi);
 
-	/* iput will drop the inode object */
+	 
 	iput(inode);
 }

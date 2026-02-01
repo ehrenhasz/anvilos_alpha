@@ -1,24 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_amdkfd.h"
 #include "amdgpu_amdkfd_gfx_v10.h"
@@ -87,7 +67,7 @@ static void kgd_program_sh_mem_settings(struct amdgpu_device *adev, uint32_t vmi
 
 	WREG32_SOC15(GC, 0, mmSH_MEM_CONFIG, sh_mem_config);
 	WREG32_SOC15(GC, 0, mmSH_MEM_BASES, sh_mem_bases);
-	/* APE1 no longer exists on GFX9 */
+	 
 
 	unlock_srbm(adev);
 }
@@ -95,13 +75,7 @@ static void kgd_program_sh_mem_settings(struct amdgpu_device *adev, uint32_t vmi
 static int kgd_set_pasid_vmid_mapping(struct amdgpu_device *adev, u32 pasid,
 					unsigned int vmid, uint32_t inst)
 {
-	/*
-	 * We have to assume that there is no outstanding mapping.
-	 * The ATC_VMID_PASID_MAPPING_UPDATE_STATUS bit could be 0 because
-	 * a mapping is in progress or because a mapping finished
-	 * and the SW cleared it.
-	 * So the protocol is to always wait & clear.
-	 */
+	 
 	uint32_t pasid_mapping = (pasid == 0) ? 0 : (uint32_t)pasid |
 			ATC_VMID0_PASID_MAPPING__VALID_MASK;
 
@@ -112,7 +86,7 @@ static int kgd_set_pasid_vmid_mapping(struct amdgpu_device *adev, u32 pasid,
 	       pasid_mapping);
 
 #if 0
-	/* TODO: uncomment this code when the hardware support is ready. */
+	 
 	while (!(RREG32(SOC15_REG_OFFSET(
 				ATHUB, 0,
 				mmATC_VMID_PASID_MAPPING_UPDATE_STATUS)) &
@@ -125,7 +99,7 @@ static int kgd_set_pasid_vmid_mapping(struct amdgpu_device *adev, u32 pasid,
 	       1U << vmid);
 #endif
 
-	/* Mapping vmid to pasid also for IH block */
+	 
 	pr_debug("update mapping for IH block and mmhub");
 	WREG32(SOC15_REG_OFFSET(OSSSYS, 0, mmIH_VMID_0_LUT) + vmid,
 	       pasid_mapping);
@@ -133,9 +107,7 @@ static int kgd_set_pasid_vmid_mapping(struct amdgpu_device *adev, u32 pasid,
 	return 0;
 }
 
-/* TODO - RING0 form of field is obsolete, seems to date back to SI
- * but still works
- */
+ 
 
 static int kgd_init_interrupts(struct amdgpu_device *adev, uint32_t pipe_id,
 				uint32_t inst)
@@ -164,12 +136,7 @@ static uint32_t get_sdma_rlc_reg_offset(struct amdgpu_device *adev,
 	uint32_t sdma_engine_reg_base[2] = {
 		SOC15_REG_OFFSET(SDMA0, 0,
 				 mmSDMA0_RLC0_RB_CNTL) - mmSDMA0_RLC0_RB_CNTL,
-		/* On gfx10, mmSDMA1_xxx registers are defined NOT based
-		 * on SDMA1 base address (dw 0x1860) but based on SDMA0
-		 * base address (dw 0x1260). Therefore use mmSDMA0_RLC0_RB_CNTL
-		 * instead of mmSDMA1_RLC0_RB_CNTL for the base address calc
-		 * below
-		 */
+		 
 		SOC15_REG_OFFSET(SDMA1, 0,
 				 mmSDMA1_RLC0_RB_CNTL) - mmSDMA0_RLC0_RB_CNTL
 	};
@@ -219,7 +186,7 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
 	pr_debug("Load hqd of pipe %d queue %d\n", pipe_id, queue_id);
 	acquire_queue(adev, pipe_id, queue_id);
 
-	/* HQD registers extend from CP_MQD_BASE_ADDR to CP_HQD_EOP_WPTR_MEM. */
+	 
 	mqd_hqd = &m->cp_mqd_base_addr_lo;
 	hqd_base = SOC15_REG_OFFSET(GC, 0, mmCP_MQD_BASE_ADDR);
 
@@ -228,28 +195,13 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
 		WREG32_SOC15_IP(GC, reg, mqd_hqd[reg - hqd_base]);
 
 
-	/* Activate doorbell logic before triggering WPTR poll. */
+	 
 	data = REG_SET_FIELD(m->cp_hqd_pq_doorbell_control,
 			     CP_HQD_PQ_DOORBELL_CONTROL, DOORBELL_EN, 1);
 	WREG32_SOC15(GC, 0, mmCP_HQD_PQ_DOORBELL_CONTROL, data);
 
 	if (wptr) {
-		/* Don't read wptr with get_user because the user
-		 * context may not be accessible (if this function
-		 * runs in a work queue). Instead trigger a one-shot
-		 * polling read from memory in the CP. This assumes
-		 * that wptr is GPU-accessible in the queue's VMID via
-		 * ATC or SVM. WPTR==RPTR before starting the poll so
-		 * the CP starts fetching new commands from the right
-		 * place.
-		 *
-		 * Guessing a 64-bit WPTR from a 32-bit RPTR is a bit
-		 * tricky. Assume that the queue didn't overflow. The
-		 * number of valid bits in the 32-bit RPTR depends on
-		 * the queue size. The remaining bits are taken from
-		 * the saved 64-bit WPTR. If the WPTR wrapped, add the
-		 * queue size.
-		 */
+		 
 		uint32_t queue_size =
 			2 << REG_GET_FIELD(m->cp_hqd_pq_control,
 					   CP_HQD_PQ_CONTROL, QUEUE_SIZE);
@@ -274,7 +226,7 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
 		       (uint32_t)get_queue_mask(adev, pipe_id, queue_id));
 	}
 
-	/* Start the EOP fetcher */
+	 
 	WREG32_SOC15(GC, 0, mmCP_HQD_EOP_RPTR,
 	       REG_SET_FIELD(m->cp_hqd_eop_rptr,
 			     CP_HQD_EOP_RPTR, INIT_FETCHER, 1));
@@ -315,15 +267,15 @@ static int kgd_hiq_mqd_load(struct amdgpu_device *adev, void *mqd,
 
 	amdgpu_ring_write(kiq_ring, PACKET3(PACKET3_MAP_QUEUES, 5));
 	amdgpu_ring_write(kiq_ring,
-			  PACKET3_MAP_QUEUES_QUEUE_SEL(0) | /* Queue_Sel */
-			  PACKET3_MAP_QUEUES_VMID(m->cp_hqd_vmid) | /* VMID */
+			  PACKET3_MAP_QUEUES_QUEUE_SEL(0) |  
+			  PACKET3_MAP_QUEUES_VMID(m->cp_hqd_vmid) |  
 			  PACKET3_MAP_QUEUES_QUEUE(queue_id) |
 			  PACKET3_MAP_QUEUES_PIPE(pipe) |
 			  PACKET3_MAP_QUEUES_ME((mec - 1)) |
-			  PACKET3_MAP_QUEUES_QUEUE_TYPE(0) | /*queue_type: normal compute queue */
-			  PACKET3_MAP_QUEUES_ALLOC_FORMAT(0) | /* alloc format: all_on_one_pipe */
-			  PACKET3_MAP_QUEUES_ENGINE_SEL(1) | /* engine_sel: hiq */
-			  PACKET3_MAP_QUEUES_NUM_QUEUES(1)); /* num_queues: must be 1 */
+			  PACKET3_MAP_QUEUES_QUEUE_TYPE(0) |  
+			  PACKET3_MAP_QUEUES_ALLOC_FORMAT(0) |  
+			  PACKET3_MAP_QUEUES_ENGINE_SEL(1) |  
+			  PACKET3_MAP_QUEUES_NUM_QUEUES(1));  
 	amdgpu_ring_write(kiq_ring,
 			  PACKET3_MAP_QUEUES_DOORBELL_OFFSET(doorbell_off));
 	amdgpu_ring_write(kiq_ring, m->cp_mqd_base_addr_lo);
@@ -548,16 +500,11 @@ static int kgd_hqd_destroy(struct amdgpu_device *adev, void *mqd,
 		break;
 	}
 
-#if 0 /* Is this still needed? */
-	/* Workaround: If IQ timer is active and the wait time is close to or
-	 * equal to 0, dequeueing is not safe. Wait until either the wait time
-	 * is larger or timer is cleared. Also, ensure that IQ_REQ_PEND is
-	 * cleared before continuing. Also, ensure wait times are set to at
-	 * least 0x3.
-	 */
+#if 0  
+	 
 	local_irq_save(flags);
 	preempt_disable();
-	retry = 5000; /* wait for 500 usecs at maximum */
+	retry = 5000;  
 	while (true) {
 		temp = RREG32(mmCP_HQD_IQ_TIMER);
 		if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, PROCESSING_IQ)) {
@@ -566,12 +513,9 @@ static int kgd_hqd_destroy(struct amdgpu_device *adev, void *mqd,
 		}
 		if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, ACTIVE)) {
 			if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, RETRY_TYPE)
-					== 3) /* SEM-rearm is safe */
+					== 3)  
 				break;
-			/* Wait time 3 is safe for CP, but our MMIO read/write
-			 * time is close to 1 microsecond, so check for 10 to
-			 * leave more buffer room
-			 */
+			 
 			if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, WAIT_TIME)
 					>= 10)
 				break;
@@ -707,30 +651,11 @@ static void set_vm_context_page_table_base(struct amdgpu_device *adev,
 		return;
 	}
 
-	/* SDMA is on gfxhub as well for Navi1* series */
+	 
 	adev->gfxhub.funcs->setup_vm_pt_regs(adev, vmid, page_table_base);
 }
 
-/*
- * GFX10 helper for wave launch stall requirements on debug trap setting.
- *
- * vmid:
- *   Target VMID to stall/unstall.
- *
- * stall:
- *   0-unstall wave launch (enable), 1-stall wave launch (disable).
- *   After wavefront launch has been stalled, allocated waves must drain from
- *   SPI in order for debug trap settings to take effect on those waves.
- *   This is roughly a ~3500 clock cycle wait on SPI where a read on
- *   SPI_GDBG_WAVE_CNTL translates to ~32 clock cycles.
- *   KGD_GFX_V10_WAVE_LAUNCH_SPI_DRAIN_LATENCY indicates the number of reads required.
- *
- *   NOTE: We can afford to clear the entire STALL_VMID field on unstall
- *   because current GFX10 chips cannot support multi-process debugging due to
- *   trap configuration and masking being limited to global scope.  Always
- *   assume single process conditions.
- *
- */
+ 
 
 #define KGD_GFX_V10_WAVE_LAUNCH_SPI_DRAIN_LATENCY	110
 static void kgd_gfx_v10_set_wave_launch_stall(struct amdgpu_device *adev, uint32_t vmid, bool stall)
@@ -759,7 +684,7 @@ uint32_t kgd_gfx_v10_enable_debug_trap(struct amdgpu_device *adev,
 
 	kgd_gfx_v10_set_wave_launch_stall(adev, vmid, true);
 
-	/* assume gfx off is disabled for the debug session if rlc restore not supported. */
+	 
 	if (restore_dbg_registers) {
 		uint32_t data = 0;
 
@@ -810,12 +735,7 @@ int kgd_gfx_v10_validate_trap_override_request(struct amdgpu_device *adev,
 {
 	*trap_mask_supported &= KFD_DBG_TRAP_MASK_DBG_ADDRESS_WATCH;
 
-	/* The SPI_GDBG_TRAP_MASK register is global and affects all
-	 * processes. Only allow OR-ing the address-watch bit, since
-	 * this only affects processes under the debugger. Other bits
-	 * should stay 0 to avoid the debugger interfering with other
-	 * processes.
-	 */
+	 
 	if (trap_override != KFD_DBG_TRAP_OVERRIDE_OR)
 		return -EINVAL;
 
@@ -848,7 +768,7 @@ uint32_t kgd_gfx_v10_set_wave_launch_trap_override(struct amdgpu_device *adev,
 	data = REG_SET_FIELD(data, SPI_GDBG_TRAP_MASK, REPLACE, trap_override);
 	WREG32(SOC15_REG_OFFSET(GC, 0, mmSPI_GDBG_TRAP_MASK), data);
 
-	/* We need to preserve wave launch mode stall settings. */
+	 
 	WREG32(SOC15_REG_OFFSET(GC, 0, mmSPI_GDBG_WAVE_CNTL), wave_cntl_prev);
 
 	mutex_unlock(&adev->grbm_idx_mutex);
@@ -911,7 +831,7 @@ uint32_t kgd_gfx_v10_set_address_watch(struct amdgpu_device *adev,
 			MASK,
 			watch_address_mask >> 7);
 
-	/* Turning off this watch point until we set all the registers */
+	 
 	watch_address_cntl = REG_SET_FIELD(watch_address_cntl,
 			TCP_WATCH0_CNTL,
 			VALID,
@@ -929,7 +849,7 @@ uint32_t kgd_gfx_v10_set_address_watch(struct amdgpu_device *adev,
 			(watch_id * TCP_WATCH_STRIDE)),
 			watch_address_low);
 
-	/* Enable the watch point */
+	 
 	watch_address_cntl = REG_SET_FIELD(watch_address_cntl,
 			TCP_WATCH0_CNTL,
 			VALID,
@@ -957,17 +877,7 @@ uint32_t kgd_gfx_v10_clear_address_watch(struct amdgpu_device *adev,
 }
 
 
-/* kgd_gfx_v10_get_iq_wait_times: Returns the mmCP_IQ_WAIT_TIME1/2 values
- * The values read are:
- *     ib_offload_wait_time     -- Wait Count for Indirect Buffer Offloads.
- *     atomic_offload_wait_time -- Wait Count for L2 and GDS Atomics Offloads.
- *     wrm_offload_wait_time    -- Wait Count for WAIT_REG_MEM Offloads.
- *     gws_wait_time            -- Wait Count for Global Wave Syncs.
- *     que_sleep_wait_time      -- Wait Count for Dequeue Retry.
- *     sch_wave_wait_time       -- Wait Count for Scheduling Wave Message.
- *     sem_rearm_wait_time      -- Wait Count for Semaphore re-arm.
- *     deq_retry_wait_time      -- Wait Count for Global Wave Syncs.
- */
+ 
 void kgd_gfx_v10_get_iq_wait_times(struct amdgpu_device *adev,
 					uint32_t *wait_times,
 					uint32_t inst)
@@ -984,10 +894,7 @@ void kgd_gfx_v10_build_grace_period_packet_info(struct amdgpu_device *adev,
 {
 	*reg_data = wait_times;
 
-	/*
-	 * The CP cannont handle a 0 grace period input and will result in
-	 * an infinite grace period being set so set to 1 to prevent this.
-	 */
+	 
 	if (grace_period == 0)
 		grace_period = 1;
 
@@ -1005,18 +912,14 @@ static void program_trap_handler_settings(struct amdgpu_device *adev,
 {
 	lock_srbm(adev, 0, 0, 0, vmid);
 
-	/*
-	 * Program TBA registers
-	 */
+	 
 	WREG32(SOC15_REG_OFFSET(GC, 0, mmSQ_SHADER_TBA_LO),
 			lower_32_bits(tba_addr >> 8));
 	WREG32(SOC15_REG_OFFSET(GC, 0, mmSQ_SHADER_TBA_HI),
 			upper_32_bits(tba_addr >> 8) |
 			(1 << SQ_SHADER_TBA_HI__TRAP_EN__SHIFT));
 
-	/*
-	 * Program TMA registers
-	 */
+	 
 	WREG32(SOC15_REG_OFFSET(GC, 0, mmSQ_SHADER_TMA_LO),
 			lower_32_bits(tma_addr >> 8));
 	WREG32(SOC15_REG_OFFSET(GC, 0, mmSQ_SHADER_TMA_HI),

@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #ifndef __I915_GEM_PM_H__
 #define __I915_GEM_PM_H__
@@ -23,4 +19,4 @@ int i915_gem_backup_suspend(struct drm_i915_private *i915);
 int i915_gem_freeze(struct drm_i915_private *i915);
 int i915_gem_freeze_late(struct drm_i915_private *i915);
 
-#endif /* __I915_GEM_PM_H__ */
+#endif  

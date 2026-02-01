@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_ptimeout.c,v 1.1 2023/01/06 02:59:50 djm Exp $ */
-/*
- * Regress test for misc poll/ppoll timeout helpers.
- *
- * Placed in the public domain.
- */
+ 
+ 
 
 #include "includes.h"
 

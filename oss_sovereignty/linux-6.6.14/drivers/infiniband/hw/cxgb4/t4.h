@@ -1,33 +1,4 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #ifndef __T4_H__
 #define __T4_H__
 
@@ -40,18 +11,18 @@
 
 #define T4_MAX_NUM_PD 65536
 #define T4_MAX_MR_SIZE (~0ULL)
-#define T4_PAGESIZE_MASK 0xffff000  /* 4KB-128MB */
+#define T4_PAGESIZE_MASK 0xffff000   
 #define T4_STAG_UNSET 0xffffffff
 #define T4_FW_MAJ 0
 #define PCIE_MA_SYNC_A 0x30b4
 
 struct t4_status_page {
-	__be32 rsvd1;	/* flit 0 - hw owns */
+	__be32 rsvd1;	 
 	__be16 rsvd2;
 	__be16 qid;
 	__be16 cidx;
 	__be16 pidx;
-	u8 qp_err;	/* flit 1 - sw owns */
+	u8 qp_err;	 
 	u8 db_off;
 	u8 pad[2];
 	u16 host_wq_pidx;
@@ -128,49 +99,47 @@ static inline void init_wr_hdr(union t4_wr *wqe, u16 wrid,
 	wqe->send.len16 = len16;
 }
 
-/* CQE/AE status codes */
+ 
 #define T4_ERR_SUCCESS                     0x0
-#define T4_ERR_STAG                        0x1	/* STAG invalid: either the */
-						/* STAG is offlimt, being 0, */
-						/* or STAG_key mismatch */
-#define T4_ERR_PDID                        0x2	/* PDID mismatch */
-#define T4_ERR_QPID                        0x3	/* QPID mismatch */
-#define T4_ERR_ACCESS                      0x4	/* Invalid access right */
-#define T4_ERR_WRAP                        0x5	/* Wrap error */
-#define T4_ERR_BOUND                       0x6	/* base and bounds voilation */
-#define T4_ERR_INVALIDATE_SHARED_MR        0x7	/* attempt to invalidate a  */
-						/* shared memory region */
-#define T4_ERR_INVALIDATE_MR_WITH_MW_BOUND 0x8	/* attempt to invalidate a  */
-						/* shared memory region */
-#define T4_ERR_ECC                         0x9	/* ECC error detected */
-#define T4_ERR_ECC_PSTAG                   0xA	/* ECC error detected when  */
-						/* reading PSTAG for a MW  */
-						/* Invalidate */
-#define T4_ERR_PBL_ADDR_BOUND              0xB	/* pbl addr out of bounds:  */
-						/* software error */
-#define T4_ERR_SWFLUSH			   0xC	/* SW FLUSHED */
-#define T4_ERR_CRC                         0x10 /* CRC error */
-#define T4_ERR_MARKER                      0x11 /* Marker error */
-#define T4_ERR_PDU_LEN_ERR                 0x12 /* invalid PDU length */
-#define T4_ERR_OUT_OF_RQE                  0x13 /* out of RQE */
-#define T4_ERR_DDP_VERSION                 0x14 /* wrong DDP version */
-#define T4_ERR_RDMA_VERSION                0x15 /* wrong RDMA version */
-#define T4_ERR_OPCODE                      0x16 /* invalid rdma opcode */
-#define T4_ERR_DDP_QUEUE_NUM               0x17 /* invalid ddp queue number */
-#define T4_ERR_MSN                         0x18 /* MSN error */
-#define T4_ERR_TBIT                        0x19 /* tag bit not set correctly */
-#define T4_ERR_MO                          0x1A /* MO not 0 for TERMINATE  */
-						/* or READ_REQ */
+#define T4_ERR_STAG                        0x1	 
+						 
+						 
+#define T4_ERR_PDID                        0x2	 
+#define T4_ERR_QPID                        0x3	 
+#define T4_ERR_ACCESS                      0x4	 
+#define T4_ERR_WRAP                        0x5	 
+#define T4_ERR_BOUND                       0x6	 
+#define T4_ERR_INVALIDATE_SHARED_MR        0x7	 
+						 
+#define T4_ERR_INVALIDATE_MR_WITH_MW_BOUND 0x8	 
+						 
+#define T4_ERR_ECC                         0x9	 
+#define T4_ERR_ECC_PSTAG                   0xA	 
+						 
+						 
+#define T4_ERR_PBL_ADDR_BOUND              0xB	 
+						 
+#define T4_ERR_SWFLUSH			   0xC	 
+#define T4_ERR_CRC                         0x10  
+#define T4_ERR_MARKER                      0x11  
+#define T4_ERR_PDU_LEN_ERR                 0x12  
+#define T4_ERR_OUT_OF_RQE                  0x13  
+#define T4_ERR_DDP_VERSION                 0x14  
+#define T4_ERR_RDMA_VERSION                0x15  
+#define T4_ERR_OPCODE                      0x16  
+#define T4_ERR_DDP_QUEUE_NUM               0x17  
+#define T4_ERR_MSN                         0x18  
+#define T4_ERR_TBIT                        0x19  
+#define T4_ERR_MO                          0x1A  
+						 
 #define T4_ERR_MSN_GAP                     0x1B
 #define T4_ERR_MSN_RANGE                   0x1C
 #define T4_ERR_IRD_OVERFLOW                0x1D
-#define T4_ERR_RQE_ADDR_BOUND              0x1E /* RQE addr out of bounds:  */
-						/* software error */
-#define T4_ERR_INTERNAL_ERR                0x1F /* internal error (opcode  */
-						/* mismatch) */
-/*
- * CQE defs
- */
+#define T4_ERR_RQE_ADDR_BOUND              0x1E  
+						 
+#define T4_ERR_INTERNAL_ERR                0x1F  
+						 
+ 
 struct t4_cqe {
 	__be32 header;
 	__be32 len;
@@ -197,10 +166,7 @@ struct t4_cqe {
 		struct {
 			__be32 mo;
 			__be32 msn;
-			/*
-			 * Use union for immediate data to be consistent with
-			 * stack's 32 bit data and iWARP spec's 64 bit data.
-			 */
+			 
 			union {
 				struct {
 					__be32 imm_data32;
@@ -217,7 +183,7 @@ struct t4_cqe {
 	__be64 bits_type_ts;
 };
 
-/* macros for flit 0 of the cqe */
+ 
 
 #define CQE_QPID_S        12
 #define CQE_QPID_M        0xFFFFF
@@ -266,23 +232,23 @@ struct t4_cqe {
 
 #define CQE_LEN(x)        (be32_to_cpu((x)->len))
 
-/* used for RQ completion processing */
+ 
 #define CQE_WRID_STAG(x)  (be32_to_cpu((x)->u.rcqe.stag))
 #define CQE_WRID_MSN(x)   (be32_to_cpu((x)->u.rcqe.msn))
 #define CQE_ABS_RQE_IDX(x) (be32_to_cpu((x)->u.srcqe.abs_rqe_idx))
 #define CQE_IMM_DATA(x)( \
 	(x)->u.imm_data_rcqe.iw_imm_data.ib_imm_data.imm_data32)
 
-/* used for SQ completion processing */
+ 
 #define CQE_WRID_SQ_IDX(x)	((x)->u.scqe.cidx)
 #define CQE_WRID_FR_STAG(x)     (be32_to_cpu((x)->u.scqe.stag))
 
-/* generic accessor macros */
+ 
 #define CQE_WRID_HI(x)		(be32_to_cpu((x)->u.gen.wrid_hi))
 #define CQE_WRID_LOW(x)		(be32_to_cpu((x)->u.gen.wrid_low))
 #define CQE_DRAIN_COOKIE(x)	((x)->u.drain_cookie)
 
-/* macros for flit 3 of the cqe */
+ 
 #define CQE_GENBIT_S	63
 #define CQE_GENBIT_M	0x1
 #define CQE_GENBIT_G(x)	(((x) >> CQE_GENBIT_S) & CQE_GENBIT_M)
@@ -563,10 +529,7 @@ static inline u16 t4_sq_wq_size(struct t4_wq *wq)
 		return wq->sq.size * T4_SQ_NUM_SLOTS;
 }
 
-/* This function copies 64 byte coalesced work request to memory
- * mapped BAR2 space. For coalesced WRs, the SGE fetches data
- * from the FIFO instead of from Host.
- */
+ 
 static inline void pio_copy(u64 __iomem *dst, u64 *src)
 {
 	int count = 8;
@@ -582,7 +545,7 @@ static inline void pio_copy(u64 __iomem *dst, u64 *src)
 static inline void t4_ring_srq_db(struct t4_srq *srq, u16 inc, u8 len16,
 				  union t4_recv_wr *wqe)
 {
-	/* Flush host queue memory writes. */
+	 
 	wmb();
 	if (inc == 1 && srq->bar2_qid == 0 && wqe) {
 		pr_debug("%s : WC srq->pidx = %d; len16=%d\n",
@@ -594,14 +557,14 @@ static inline void t4_ring_srq_db(struct t4_srq *srq, u16 inc, u8 len16,
 		writel(PIDX_T5_V(inc) | QID_V(srq->bar2_qid),
 		       srq->bar2_va + SGE_UDB_KDOORBELL);
 	}
-	/* Flush user doorbell area writes. */
+	 
 	wmb();
 }
 
 static inline void t4_ring_sq_db(struct t4_wq *wq, u16 inc, union t4_wr *wqe)
 {
 
-	/* Flush host queue memory writes. */
+	 
 	wmb();
 	if (wq->sq.bar2_va) {
 		if (inc == 1 && wq->sq.bar2_qid == 0 && wqe) {
@@ -615,7 +578,7 @@ static inline void t4_ring_sq_db(struct t4_wq *wq, u16 inc, union t4_wr *wqe)
 			       wq->sq.bar2_va + SGE_UDB_KDOORBELL);
 		}
 
-		/* Flush user doorbell area writes. */
+		 
 		wmb();
 		return;
 	}
@@ -626,7 +589,7 @@ static inline void t4_ring_rq_db(struct t4_wq *wq, u16 inc,
 				 union t4_recv_wr *wqe)
 {
 
-	/* Flush host queue memory writes. */
+	 
 	wmb();
 	if (wq->rq.bar2_va) {
 		if (inc == 1 && wq->rq.bar2_qid == 0 && wqe) {
@@ -640,7 +603,7 @@ static inline void t4_ring_rq_db(struct t4_wq *wq, u16 inc,
 			       wq->rq.bar2_va + SGE_UDB_KDOORBELL);
 		}
 
-		/* Flush user doorbell area writes. */
+		 
 		wmb();
 		return;
 	}
@@ -688,7 +651,7 @@ struct t4_cq {
 	u32 cqid;
 	u32 qid_mask;
 	int vector;
-	u16 size; /* including status page */
+	u16 size;  
 	u16 cidx;
 	u16 sw_pidx;
 	u16 sw_cidx;
@@ -793,7 +756,7 @@ static inline int t4_next_hw_cqe(struct t4_cq *cq, struct t4_cqe **cqe)
 		pr_err("cq overflow cqid %u\n", cq->cqid);
 	} else if (t4_valid_cqe(cq, &cq->queue[cq->cidx])) {
 
-		/* Ensure CQE is flushed to memory */
+		 
 		rmb();
 		*cqe = &cq->queue[cq->cidx];
 		ret = 0;

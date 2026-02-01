@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2018 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_GT_BUFFER_POOL_TYPES_H
 #define INTEL_GT_BUFFER_POOL_TYPES_H
@@ -33,4 +31,4 @@ struct intel_gt_buffer_pool_node {
 	u32 pinned;
 };
 
-#endif /* INTEL_GT_BUFFER_POOL_TYPES_H */
+#endif  

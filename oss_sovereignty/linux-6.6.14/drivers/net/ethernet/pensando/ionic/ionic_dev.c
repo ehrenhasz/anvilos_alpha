@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -54,10 +54,10 @@ static void ionic_watchdog_init(struct ionic *ionic)
 	timer_setup(&ionic->watchdog_timer, ionic_watchdog_cb, 0);
 	ionic->watchdog_period = IONIC_WATCHDOG_SECS * HZ;
 
-	/* set times to ensure the first check will proceed */
+	 
 	atomic_long_set(&idev->last_check_time, jiffies - 2 * HZ);
 	idev->last_hb_time = jiffies - 2 * ionic->watchdog_period;
-	/* init as ready, so no transition if the first check succeeds */
+	 
 	idev->last_fw_hb = 0;
 	idev->fw_hb_ready = true;
 	idev->fw_status_ready = true;
@@ -95,7 +95,7 @@ int ionic_dev_setup(struct ionic *ionic)
 	int size;
 	u32 sig;
 
-	/* BAR0: dev_cmd and interrupts */
+	 
 	if (num_bars < 1) {
 		dev_err(dev, "No bars found, aborting\n");
 		return -EFAULT;
@@ -122,7 +122,7 @@ int ionic_dev_setup(struct ionic *ionic)
 
 	ionic_init_devinfo(ionic);
 
-	/* BAR1: doorbells */
+	 
 	bar++;
 	if (num_bars < 2) {
 		dev_err(dev, "Doorbell bar missing, aborting\n");
@@ -134,7 +134,7 @@ int ionic_dev_setup(struct ionic *ionic)
 	idev->db_pages = bar->vaddr;
 	idev->phy_db_pages = bar->bus_addr;
 
-	/* BAR2: optional controller memory mapping */
+	 
 	bar++;
 	mutex_init(&idev->cmb_inuse_lock);
 	if (num_bars < 3 || !ionic->bars[IONIC_PCI_BAR_CMB].len) {
@@ -164,14 +164,12 @@ void ionic_dev_teardown(struct ionic *ionic)
 	mutex_destroy(&idev->cmb_inuse_lock);
 }
 
-/* Devcmd Interface */
+ 
 bool ionic_is_fw_running(struct ionic_dev *idev)
 {
 	u8 fw_status = ioread8(&idev->dev_info_regs->fw_status);
 
-	/* firmware is useful only if the running bit is set and
-	 * fw_status != 0xff (bad PCI read)
-	 */
+	 
 	return (fw_status != 0xff) && (fw_status & IONIC_FW_STS_F_RUNNING);
 }
 
@@ -186,7 +184,7 @@ int ionic_heartbeat_check(struct ionic *ionic)
 	u8 fw_status;
 	u32 fw_hb;
 
-	/* wait a least one second before testing again */
+	 
 	check_time = jiffies;
 	last_check_time = atomic_long_read(&idev->last_check_time);
 do_check_time:
@@ -194,14 +192,14 @@ do_check_time:
 		return 0;
 	if (!atomic_long_try_cmpxchg_relaxed(&idev->last_check_time,
 					     &last_check_time, check_time)) {
-		/* if called concurrently, only the first should proceed. */
+		 
 		dev_dbg(ionic->dev, "%s: do_check_time again\n", __func__);
 		goto do_check_time;
 	}
 
 	fw_status = ioread8(&idev->dev_info_regs->fw_status);
 
-	/* If fw_status is not ready don't bother with the generation */
+	 
 	if (!ionic_is_fw_running(idev)) {
 		fw_status_ready = false;
 	} else {
@@ -212,21 +210,11 @@ do_check_time:
 
 			idev->fw_generation = fw_generation;
 
-			/* If the generation changed, the fw status is not
-			 * ready so we need to trigger a fw-down cycle.  After
-			 * the down, the next watchdog will see the fw is up
-			 * and the generation value stable, so will trigger
-			 * the fw-up activity.
-			 *
-			 * If we had already moved to FW_RESET from a RESET event,
-			 * it is possible that we never saw the fw_status go to 0,
-			 * so we fake the current idev->fw_status_ready here to
-			 * force the transition and get FW up again.
-			 */
+			 
 			if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-				idev->fw_status_ready = false;	/* go to running */
+				idev->fw_status_ready = false;	 
 			else
-				fw_status_ready = false;	/* go to down */
+				fw_status_ready = false;	 
 		}
 	}
 
@@ -234,7 +222,7 @@ do_check_time:
 		fw_status, fw_status_ready, idev->fw_status_ready,
 		idev->last_fw_hb, lif->state[0]);
 
-	/* is this a transition? */
+	 
 	if (fw_status_ready != idev->fw_status_ready &&
 	    !test_bit(IONIC_LIF_F_FW_STOPPING, lif->state)) {
 		bool trigger = false;
@@ -268,9 +256,7 @@ do_check_time:
 	if (!idev->fw_status_ready)
 		return -ENXIO;
 
-	/* Because of some variability in the actual FW heartbeat, we
-	 * wait longer than the DEVCMD_TIMEOUT before checking again.
-	 */
+	 
 	last_check_time = idev->last_hb_time;
 	if (time_before(check_time, last_check_time + DEVCMD_TIMEOUT * 2 * HZ))
 		return 0;
@@ -278,7 +264,7 @@ do_check_time:
 	fw_hb = ioread32(&idev->dev_info_regs->fw_heartbeat);
 	fw_hb_ready = fw_hb != idev->last_fw_hb;
 
-	/* early FW version had no heartbeat, so fake it */
+	 
 	if (!fw_hb_ready && !fw_hb)
 		fw_hb_ready = true;
 
@@ -287,7 +273,7 @@ do_check_time:
 
 	idev->last_fw_hb = fw_hb;
 
-	/* log a transition */
+	 
 	if (fw_hb_ready != idev->fw_hb_ready) {
 		idev->fw_hb_ready = fw_hb_ready;
 		if (!fw_hb_ready)
@@ -326,7 +312,7 @@ void ionic_dev_cmd_go(struct ionic_dev *idev, union ionic_dev_cmd *cmd)
 	iowrite32(1, &idev->dev_cmd_regs->doorbell);
 }
 
-/* Device commands */
+ 
 void ionic_dev_cmd_identify(struct ionic_dev *idev, u8 ver)
 {
 	union ionic_dev_cmd cmd = {
@@ -356,7 +342,7 @@ void ionic_dev_cmd_reset(struct ionic_dev *idev)
 	ionic_dev_cmd_go(idev, &cmd);
 }
 
-/* Port commands */
+ 
 void ionic_dev_cmd_port_identify(struct ionic_dev *idev)
 {
 	union ionic_dev_cmd cmd = {
@@ -448,7 +434,7 @@ void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type)
 	ionic_dev_cmd_go(idev, &cmd);
 }
 
-/* VF commands */
+ 
 int ionic_set_vf_config(struct ionic *ionic, int vf,
 			struct ionic_vf_setattr_cmd *vfc)
 {
@@ -523,7 +509,7 @@ void ionic_vf_start(struct ionic *ionic)
 	ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
 }
 
-/* LIF commands */
+ 
 void ionic_dev_cmd_queue_identify(struct ionic_dev *idev,
 				  u16 lif_type, u8 qtype, u8 qver)
 {
@@ -806,11 +792,11 @@ void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
 	void *cb_arg;
 	u16 index;
 
-	/* check for empty queue */
+	 
 	if (q->tail_idx == q->head_idx)
 		return;
 
-	/* stop index must be for a descriptor that is not yet completed */
+	 
 	if (unlikely(!ionic_q_is_posted(q, stop_index)))
 		dev_err(q->dev,
 			"ionic stop is not posted %s stop %u tail %u head %u\n",

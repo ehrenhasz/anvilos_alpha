@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6350_H
 #define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6350_H
 
-/* DISP_CC clocks */
+ 
 #define DISP_CC_PLL0				0
 #define DISP_CC_MDSS_AHB_CLK			1
 #define DISP_CC_MDSS_AHB_CLK_SRC		2
@@ -42,7 +39,7 @@
 #define DISP_CC_SLEEP_CLK			31
 #define DISP_CC_XO_CLK				32
 
-/* GDSCs */
+ 
 #define MDSS_GDSC				0
 
 #endif

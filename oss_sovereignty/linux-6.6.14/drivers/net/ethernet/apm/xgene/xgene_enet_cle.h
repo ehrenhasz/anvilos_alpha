@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Applied Micro X-Gene SoC Ethernet Classifier structures
- *
- * Copyright (c) 2016, Applied Micro Circuits Corporation
- * Authors: Khuong Dinh <kdinh@apm.com>
- *          Tanmay Inamdar <tinamdar@apm.com>
- *          Iyappan Subramanian <isubramanian@apm.com>
- */
+ 
+ 
 
 #ifndef __XGENE_ENET_CLE_H__
 #define __XGENE_ENET_CLE_H__
@@ -13,7 +7,7 @@
 #include <linux/io.h>
 #include <linux/random.h>
 
-/* Register offsets */
+ 
 #define INDADDR			0x04
 #define INDCMD			0x08
 #define INDCMD_STATUS		0x0c
@@ -24,8 +18,8 @@
 #define DFCLSRESDB00		0x010c
 #define RSS_CTRL0		0x0000013c
 
-#define CLE_CMD_TO		10	/* ms */
-#define CLE_PKTRAM_SIZE		256	/* bytes */
+#define CLE_CMD_TO		10	 
+#define CLE_PKTRAM_SIZE		256	 
 #define CLE_PORT_OFFSET		0x200
 #define CLE_DRAM_REGS		17
 
@@ -106,7 +100,7 @@ enum xgene_cle_byte_store {
 	BOTH_BYTES
 };
 
-/* Preclassification operation types */
+ 
 enum xgene_cle_node_type {
 	INV,
 	KN,
@@ -114,7 +108,7 @@ enum xgene_cle_node_type {
 	RES_NODE
 };
 
-/* Preclassification operation types */
+ 
 enum xgene_cle_op_type {
 	EQT,
 	NEQT,
@@ -172,7 +166,7 @@ enum xgene_cle_ptree_dbptrs {
 	DB_MAX_PTRS
 };
 
-/* RSS sideband signal info */
+ 
 #define SB_IPFRAG_POS	0
 #define SB_IPFRAG_LEN	1
 #define SB_IPPROT_POS	1
@@ -182,7 +176,7 @@ enum xgene_cle_ptree_dbptrs {
 #define SB_HDRLEN_POS	4
 #define SB_HDRLEN_LEN	12
 
-/* RSS indirection table */
+ 
 #define XGENE_CLE_IDT_ENTRIES	128
 #define IDT_DSTQID_POS		0
 #define IDT_DSTQID_LEN		12
@@ -287,4 +281,4 @@ struct xgene_enet_cle {
 
 extern const struct xgene_cle_ops xgene_cle3in_ops;
 
-#endif /* __XGENE_ENET_CLE_H__ */
+#endif  

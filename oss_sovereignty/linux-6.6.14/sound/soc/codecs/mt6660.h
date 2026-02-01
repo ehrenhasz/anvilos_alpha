@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef __SND_SOC_MT6660_H
 #define __SND_SOC_MT6660_H
@@ -74,4 +72,4 @@ struct mt6660_chip {
 #define MT6660_REG_RESV31		(0xD3)
 #define MT6660_REG_RESV40		(0xE0)
 
-#endif /* __SND_SOC_MT6660_H */
+#endif  

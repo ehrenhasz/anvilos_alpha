@@ -1,17 +1,4 @@
-/*
-   BLAKE2 reference source code package - reference C implementations
-
-   Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under the
-   terms of the CC0, the OpenSSL Licence, or the Apache Public License 2.0, at
-   your option.  The terms of these licenses can be found at:
-
-   - CC0 1.0 Universal : https://creativecommons.org/publicdomain/zero/1.0
-   - OpenSSL license   : https://www.openssl.org/source/license.html
-   - Apache 2.0        : https://www.apache.org/licenses/LICENSE-2.0
-
-   More information about the BLAKE2 hash function can be found at
-   https://blake2.net.
-*/
+ 
 #ifndef BLAKE2_IMPL_H
 #define BLAKE2_IMPL_H
 
@@ -154,7 +141,7 @@ static BLAKE2_INLINE uint64_t rotr64( const uint64_t w, const unsigned c )
   return ( w >> c ) | ( w << ( 64 - c ) );
 }
 
-/* prevents compiler optimizing out memset() */
+ 
 static BLAKE2_INLINE void secure_zero_memory(void *v, size_t n)
 {
   static void *(*const volatile memset_v)(void *, int, size_t) = &memset;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   Copyright (C) International Business Machines  Corp., 2002, 2011
- *                 Etersoft, 2012
- *   Author(s): Pavel Shilovsky (pshilovsky@samba.org),
- *              Steve French (sfrench@us.ibm.com)
- *
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/stat.h>
 #include <linux/slab.h>
@@ -35,14 +28,7 @@ free_set_inf_compound(struct smb_rqst *rqst)
 		SMB2_close_free(&rqst[2]);
 }
 
-/*
- * note: If cfile is passed, the reference to it is dropped here.
- * So make sure that you do not reuse cfile after return from this func.
- *
- * If passing @out_iov and @out_buftype, ensure to make them both large enough
- * (>= 3) to hold all compounded responses.  Caller is also responsible for
- * freeing them up with free_rsp_buf().
- */
+ 
 static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 			    struct cifs_sb_info *cifs_sb, const char *full_path,
 			    __u32 desired_access, __u32 create_disposition, __u32 create_options,
@@ -82,11 +68,11 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 
 	resp_buftype[0] = resp_buftype[1] = resp_buftype[2] = CIFS_NO_BUFFER;
 
-	/* We already have a handle so we can skip the open */
+	 
 	if (cfile)
 		goto after_open;
 
-	/* Open */
+	 
 	utf16_path = cifs_convert_path_to_utf16(full_path, cifs_sb);
 	if (!utf16_path) {
 		rc = -ENOMEM;
@@ -118,7 +104,7 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 	num_rqst++;
 	rc = 0;
 
-	/* Operation */
+	 
 	switch (command) {
 	case SMB2_OP_QUERY_INFO:
 		rqst[num_rqst].rq_iov = &vars->qi_iov;
@@ -165,7 +151,7 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 				cfile->fid.volatile_fid,
 				SMB_FIND_FILE_POSIX_INFO,
 				SMB2_O_INFO_FILE, 0,
-				/* TBD: fix following to allow for longer SIDs */
+				 
 				sizeof(struct smb311_posix_qinfo *) + (PATH_MAX * 2) +
 				(sizeof(struct cifs_sid) * 2), 0, NULL);
 		else {
@@ -192,17 +178,14 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 		trace_smb3_delete_enter(xid, ses->Suid, tcon->tid, full_path);
 		break;
 	case SMB2_OP_MKDIR:
-		/*
-		 * Directories are created through parameters in the
-		 * SMB2_open() call.
-		 */
+		 
 		trace_smb3_mkdir_enter(xid, ses->Suid, tcon->tid, full_path);
 		break;
 	case SMB2_OP_RMDIR:
 		rqst[num_rqst].rq_iov = &vars->si_iov[0];
 		rqst[num_rqst].rq_nvec = 1;
 
-		size[0] = 1; /* sizeof __u8 See MS-FSCC section 2.4.11 */
+		size[0] = 1;  
 		data[0] = &delete_pending[0];
 
 		rc = SMB2_set_info_init(tcon, server,
@@ -220,7 +203,7 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 		rqst[num_rqst].rq_iov = &vars->si_iov[0];
 		rqst[num_rqst].rq_nvec = 1;
 
-		size[0] = 8; /* sizeof __le64 */
+		size[0] = 8;  
 		data[0] = ptr;
 
 		if (cfile) {
@@ -298,7 +281,7 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 		size[0] = sizeof(struct smb2_file_rename_info);
 		data[0] = &vars->rename_info;
 
-		size[1] = len + 2 /* null */;
+		size[1] = len + 2  ;
 		data[1] = (__le16 *)ptr;
 
 		if (cfile)
@@ -337,7 +320,7 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 		size[0] = sizeof(struct smb2_file_link_info);
 		data[0] = &vars->link_info;
 
-		size[1] = len + 2 /* null */;
+		size[1] = len + 2  ;
 		data[1] = (__le16 *)ptr;
 
 		rc = SMB2_set_info_init(tcon, server,
@@ -358,10 +341,10 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 	if (rc)
 		goto finished;
 
-	/* We already have a handle so we can skip the close */
+	 
 	if (cfile)
 		goto after_close;
-	/* Close */
+	 
 	flags |= CIFS_CP_CREATE_CLOSE_OP;
 	rqst[num_rqst].rq_iov = &vars->close_iov;
 	rqst[num_rqst].rq_nvec = 1;
@@ -432,7 +415,7 @@ static int smb2_compound_op(const unsigned int xid, struct cifs_tcon *tcon,
 			rc = smb2_validate_and_copy_iov(
 				le16_to_cpu(qi_rsp->OutputBufferOffset),
 				le32_to_cpu(qi_rsp->OutputBufferLength),
-				&rsp_iov[1], sizeof(idata->posix_fi) /* add SIDs */,
+				&rsp_iov[1], sizeof(idata->posix_fi)  ,
 				(char *)&idata->posix_fi);
 		}
 		if (rc == 0) {
@@ -581,7 +564,7 @@ int smb2_query_path_info(const unsigned int xid,
 		rc = -ENOENT;
 	else
 		rc = open_cached_dir(xid, tcon, full_path, cifs_sb, false, &cfid);
-	/* If it is a root and its handle is cached then use it */
+	 
 	if (!rc) {
 		if (cfid->file_all_info_is_valid) {
 			memcpy(&data->fi, &cfid->file_all_info, sizeof(data->fi));
@@ -598,10 +581,7 @@ int smb2_query_path_info(const unsigned int xid,
 			      create_options, ACL_NO_MODE, data, SMB2_OP_QUERY_INFO, cfile,
 			      NULL, NULL, out_iov, out_buftype);
 	hdr = out_iov[0].iov_base;
-	/*
-	 * If first iov is unset, then SMB session was dropped or we've got a
-	 * cached open file (@cfile).
-	 */
+	 
 	if (!hdr || out_buftype[0] == CIFS_NO_BUFFER)
 		goto out;
 
@@ -613,7 +593,7 @@ int smb2_query_path_info(const unsigned int xid,
 			goto out;
 
 		create_options |= OPEN_REPARSE_POINT;
-		/* Failed on a symbolic link - query a reparse point info */
+		 
 		cifs_get_readable_path(tcon, full_path, &cfile);
 		rc = smb2_compound_op(xid, tcon, cifs_sb, full_path,
 				      FILE_READ_ATTRIBUTES, FILE_OPEN,
@@ -664,34 +644,26 @@ int smb311_posix_query_path_info(const unsigned int xid,
 	data->adjust_tz = false;
 	data->reparse_point = false;
 
-	/*
-	 * BB TODO: Add support for using the cached root handle.
-	 * Create SMB2_query_posix_info worker function to do non-compounded query
-	 * when we already have an open file handle for this. For now this is fast enough
-	 * (always using the compounded version).
-	 */
+	 
 
 	cifs_get_readable_path(tcon, full_path, &cfile);
 	rc = smb2_compound_op(xid, tcon, cifs_sb, full_path, FILE_READ_ATTRIBUTES, FILE_OPEN,
 			      create_options, ACL_NO_MODE, data, SMB2_OP_POSIX_QUERY_INFO, cfile,
 			      &sidsbuf, &sidsbuflen, out_iov, out_buftype);
-	/*
-	 * If first iov is unset, then SMB session was dropped or we've got a
-	 * cached open file (@cfile).
-	 */
+	 
 	if (!out_iov[0].iov_base || out_buftype[0] == CIFS_NO_BUFFER)
 		goto out;
 
 	switch (rc) {
 	case 0:
 	case -EOPNOTSUPP:
-		/* BB TODO: When support for special files added to Samba re-verify this path */
+		 
 		rc = parse_create_response(data, cifs_sb, &out_iov[0]);
 		if (rc || !data->reparse_point)
 			goto out;
 
 		create_options |= OPEN_REPARSE_POINT;
-		/* Failed on a symbolic link - query a reparse point info */
+		 
 		cifs_get_readable_path(tcon, full_path, &cfile);
 		rc = smb2_compound_op(xid, tcon, cifs_sb, full_path, FILE_READ_ATTRIBUTES,
 				      FILE_OPEN, create_options, ACL_NO_MODE, data,
@@ -854,7 +826,7 @@ smb2_set_file_info(struct inode *inode, const char *full_path,
 	if ((buf->CreationTime == 0) && (buf->LastAccessTime == 0) &&
 	    (buf->LastWriteTime == 0) && (buf->ChangeTime == 0) &&
 	    (buf->Attributes == 0))
-		return 0; /* would be a no op, no sense sending this */
+		return 0;  
 
 	tlink = cifs_sb_tlink(cifs_sb);
 	if (IS_ERR(tlink))

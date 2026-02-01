@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ad2s1200.c simple support for the ADI Resolver to Digital Converters:
- * AD2S1200/1205
- *
- * Copyright (c) 2018-2018 David Veenstra <davidjulianveenstra@gmail.com>
- * Copyright (c) 2010-2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -23,19 +17,12 @@
 
 #define DRV_NAME "ad2s1200"
 
-/* input clock on serial interface */
+ 
 #define AD2S1200_HZ	8192000
-/* clock period in nano second */
+ 
 #define AD2S1200_TSCLK	(1000000000 / AD2S1200_HZ)
 
-/**
- * struct ad2s1200_state - driver instance specific data.
- * @lock:	protects both the GPIO pins and the rx buffer.
- * @sdev:	spi device.
- * @sample:	GPIO pin SAMPLE.
- * @rdvel:	GPIO pin RDVEL.
- * @rx:		buffer for spi transfers.
- */
+ 
 struct ad2s1200_state {
 	struct mutex lock;
 	struct spi_device *sdev;
@@ -57,12 +44,12 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_ANGL:
-			/* 2 * Pi / (2^12 - 1) ~= 0.001534355 */
+			 
 			*val = 0;
 			*val2 = 1534355;
 			return IIO_VAL_INT_PLUS_NANO;
 		case IIO_ANGL_VEL:
-			/* 2 * Pi ~= 6.283185 */
+			 
 			*val = 6;
 			*val2 = 283185;
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -74,7 +61,7 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
 		mutex_lock(&st->lock);
 		gpiod_set_value(st->sample, 0);
 
-		/* delay (6 * AD2S1200_TSCLK + 20) nano seconds */
+		 
 		udelay(1);
 		gpiod_set_value(st->sample, 1);
 		gpiod_set_value(st->rdvel, !!(chan->type == IIO_ANGL));
@@ -97,7 +84,7 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
 			return -EINVAL;
 		}
 
-		/* delay (2 * AD2S1200_TSCLK + 20) ns for sample pulse */
+		 
 		udelay(1);
 		mutex_unlock(&st->lock);
 

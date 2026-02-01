@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AES CCM routines supporting the Power 7+ Nest Accelerators driver
- *
- * Copyright (C) 2012 International Business Machines Inc.
- *
- * Author: Kent Yoder <yoder1@us.ibm.com>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/aes.h>
@@ -100,7 +94,7 @@ static int ccm4309_aes_nx_setauthsize(struct crypto_aead *tfm,
 	return 0;
 }
 
-/* taken from crypto/ccm.c */
+ 
 static int set_msg_len(u8 *block, unsigned int msglen, int csize)
 {
 	__be32 data;
@@ -119,17 +113,17 @@ static int set_msg_len(u8 *block, unsigned int msglen, int csize)
 	return 0;
 }
 
-/* taken from crypto/ccm.c */
+ 
 static inline int crypto_ccm_check_iv(const u8 *iv)
 {
-	/* 2 <= L <= 8, so 1 <= L' <= 7. */
+	 
 	if (1 > iv[0] || iv[0] > 7)
 		return -EINVAL;
 
 	return 0;
 }
 
-/* based on code from crypto/ccm.c */
+ 
 static int generate_b0(u8 *iv, unsigned int assoclen, unsigned int authsize,
 		       unsigned int cryptlen, u8 *b0)
 {
@@ -140,10 +134,10 @@ static int generate_b0(u8 *iv, unsigned int assoclen, unsigned int authsize,
 	lp = b0[0];
 	l = lp + 1;
 
-	/* set m, bits 3-5 */
+	 
 	*b0 |= (8 * ((m - 2) / 2));
 
-	/* set adata, bit 6, if associated data is used */
+	 
 	if (assoclen)
 		*b0 |= 64;
 
@@ -165,36 +159,20 @@ static int generate_pat(u8                   *iv,
 	int rc;
 	unsigned int max_sg_len;
 
-	/* zero the ctr value */
+	 
 	memset(iv + 15 - iv[0], 0, iv[0] + 1);
 
-	/* page 78 of nx_wb.pdf has,
-	 * Note: RFC3610 allows the AAD data to be up to 2^64 -1 bytes
-	 * in length. If a full message is used, the AES CCA implementation
-	 * restricts the maximum AAD length to 2^32 -1 bytes.
-	 * If partial messages are used, the implementation supports
-	 * 2^64 -1 bytes maximum AAD length.
-	 *
-	 * However, in the cryptoapi's aead_request structure,
-	 * assoclen is an unsigned int, thus it cannot hold a length
-	 * value greater than 2^32 - 1.
-	 * Thus the AAD is further constrained by this and is never
-	 * greater than 2^32.
-	 */
+	 
 
 	if (!assoclen) {
 		b0 = nx_ctx->csbcpb->cpb.aes_ccm.in_pat_or_b0;
 	} else if (assoclen <= 14) {
-		/* if associated data is 14 bytes or less, we do 1 GCM
-		 * operation on 2 AES blocks, B0 (stored in the csbcpb) and B1,
-		 * which is fed in through the source buffers here */
+		 
 		b0 = nx_ctx->csbcpb->cpb.aes_ccm.in_pat_or_b0;
 		b1 = nx_ctx->priv.ccm.iauth_tag;
 		iauth_len = assoclen;
 	} else if (assoclen <= 65280) {
-		/* if associated data is less than (2^16 - 2^8), we construct
-		 * B1 differently and feed in the associated data to a CCA
-		 * operation */
+		 
 		b0 = nx_ctx->csbcpb_aead->cpb.aes_cca.b0;
 		b1 = nx_ctx->csbcpb_aead->cpb.aes_cca.b1;
 		iauth_len = 14;
@@ -204,15 +182,12 @@ static int generate_pat(u8                   *iv,
 		iauth_len = 10;
 	}
 
-	/* generate B0 */
+	 
 	rc = generate_b0(iv, assoclen, authsize, nbytes, b0);
 	if (rc)
 		return rc;
 
-	/* generate B1:
-	 * add control info for associated data
-	 * RFC 3610 and NIST Special Publication 800-38C
-	 */
+	 
 	if (b1) {
 		memset(b1, 0, 16);
 		if (assoclen <= 65280) {
@@ -227,7 +202,7 @@ static int generate_pat(u8                   *iv,
 		}
 	}
 
-	/* now copy any remaining AAD to scatterlist and call nx... */
+	 
 	if (!assoclen) {
 		return rc;
 	} else if (assoclen <= 14) {
@@ -244,8 +219,7 @@ static int generate_pat(u8                   *iv,
 		if (len != 16)
 			return -EINVAL;
 
-		/* inlen should be negative, indicating to phyp that its a
-		 * pointer to an sg list */
+		 
 		nx_ctx->op.inlen = (nx_ctx->in_sg - nx_insg) *
 					sizeof(struct nx_sg);
 		nx_ctx->op.outlen = (nx_ctx->out_sg - nx_outsg) *
@@ -269,7 +243,7 @@ static int generate_pat(u8                   *iv,
 
 		processed += iauth_len;
 
-		/* page_limit: number of sg entries that fit on one page */
+		 
 		max_sg_len = min_t(u64, nx_ctx->ap->sglen,
 				nx_driver.of.max_sg_len/sizeof(struct nx_sg));
 		max_sg_len = min_t(u64, max_sg_len,
@@ -340,7 +314,7 @@ static int ccm_nx_decrypt(struct aead_request   *req,
 
 	nbytes -= authsize;
 
-	/* copy out the auth tag to compare with later */
+	 
 	scatterwalk_map_and_copy(priv->oauth_tag,
 				 req->src, nbytes + req->assoclen, authsize,
 				 SCATTERWALK_FROM_SG);
@@ -352,9 +326,7 @@ static int ccm_nx_decrypt(struct aead_request   *req,
 
 	do {
 
-		/* to_process: the AES_BLOCK_SIZE data chunk to process in this
-		 * update. This value is bound by sg list limits.
-		 */
+		 
 		to_process = nbytes - processed;
 
 		if ((to_process + processed) < nbytes)
@@ -375,9 +347,7 @@ static int ccm_nx_decrypt(struct aead_request   *req,
 		if (rc)
 			goto out;
 
-		/* for partial completion, copy following for next
-		 * entry into loop...
-		 */
+		 
 		memcpy(iv, csbcpb->cpb.aes_ccm.out_ctr, AES_BLOCK_SIZE);
 		memcpy(csbcpb->cpb.aes_ccm.in_pat_or_b0,
 			csbcpb->cpb.aes_ccm.out_pat_or_mac, AES_BLOCK_SIZE);
@@ -386,7 +356,7 @@ static int ccm_nx_decrypt(struct aead_request   *req,
 
 		NX_CPB_FDM(csbcpb) |= NX_FDM_CONTINUATION;
 
-		/* update stats */
+		 
 		atomic_inc(&(nx_ctx->stats->aes_ops));
 		atomic64_add(be32_to_cpu(csbcpb->csb.processed_byte_count),
 			     &(nx_ctx->stats->aes_bytes));
@@ -421,9 +391,7 @@ static int ccm_nx_encrypt(struct aead_request   *req,
 		goto out;
 
 	do {
-		/* to process: the AES_BLOCK_SIZE data chunk to process in this
-		 * update. This value is bound by sg list limits.
-		 */
+		 
 		to_process = nbytes - processed;
 
 		if ((to_process + processed) < nbytes)
@@ -444,9 +412,7 @@ static int ccm_nx_encrypt(struct aead_request   *req,
 		if (rc)
 			goto out;
 
-		/* for partial completion, copy following for next
-		 * entry into loop...
-		 */
+		 
 		memcpy(iv, csbcpb->cpb.aes_ccm.out_ctr, AES_BLOCK_SIZE);
 		memcpy(csbcpb->cpb.aes_ccm.in_pat_or_b0,
 			csbcpb->cpb.aes_ccm.out_pat_or_mac, AES_BLOCK_SIZE);
@@ -455,7 +421,7 @@ static int ccm_nx_encrypt(struct aead_request   *req,
 
 		NX_CPB_FDM(csbcpb) |= NX_FDM_CONTINUATION;
 
-		/* update stats */
+		 
 		atomic_inc(&(nx_ctx->stats->aes_ops));
 		atomic64_add(be32_to_cpu(csbcpb->csb.processed_byte_count),
 			     &(nx_ctx->stats->aes_bytes));
@@ -464,7 +430,7 @@ static int ccm_nx_encrypt(struct aead_request   *req,
 
 	} while (processed < nbytes);
 
-	/* copy out the auth tag */
+	 
 	scatterwalk_map_and_copy(csbcpb->cpb.aes_ccm.out_pat_or_mac,
 				 req->dst, nbytes + req->assoclen, authsize,
 				 SCATTERWALK_TO_SG);

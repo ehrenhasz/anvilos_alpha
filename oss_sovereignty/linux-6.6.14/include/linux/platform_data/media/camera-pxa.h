@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    camera.h - PXA camera driver header file
-
-    Copyright (C) 2003, Intel Corporation
-    Copyright (C) 2008, Guennadi Liakhovetski <kernel@pengutronix.de>
-
-*/
+ 
+ 
 
 #ifndef __ASM_ARCH_CAMERA_H_
 #define __ASM_ARCH_CAMERA_H_
@@ -31,4 +25,4 @@ struct pxacamera_platform_data {
 
 extern void pxa_set_camera_info(struct pxacamera_platform_data *);
 
-#endif /* __ASM_ARCH_CAMERA_H_ */
+#endif  

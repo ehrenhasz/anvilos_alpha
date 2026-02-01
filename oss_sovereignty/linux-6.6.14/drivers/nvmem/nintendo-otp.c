@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Nintendo Wii and Wii U OTP driver
- *
- * This is a driver exposing the OTP of a Nintendo Wii or Wii U console.
- *
- * This memory contains common and per-console keys, signatures and
- * related data required to access peripherals.
- *
- * Based on reversed documentation from https://wiiubrew.org/wiki/Hardware/OTP
- *
- * Copyright (C) 2021 Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -67,7 +56,7 @@ static int nintendo_otp_reg_read(void *context,
 static const struct of_device_id nintendo_otp_of_table[] = {
 	{ .compatible = "nintendo,hollywood-otp", .data = &hollywood_otp_data },
 	{ .compatible = "nintendo,latte-otp", .data = &latte_otp_data },
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, nintendo_otp_of_table);
 

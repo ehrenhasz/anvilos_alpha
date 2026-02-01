@@ -1,19 +1,4 @@
-/*
- * llc_s_ev.c - Defines SAP component events
- *
- * The followed event functions are SAP component events which are described
- * in 802.2 LLC protocol standard document.
- *
- * Copyright (c) 1997 by Procom Technology, Inc.
- *		 2001-2003 by Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- * This program can be redistributed or modified under the terms of the
- * GNU General Public License as published by the Free Software Foundation.
- * This program is distributed without any warranty or implied warranty
- * of merchantability or fitness for a particular purpose.
- *
- * See the GNU General Public License for more details.
- */
+ 
 #include <linux/socket.h>
 #include <net/sock.h>
 #include <net/llc_if.h>

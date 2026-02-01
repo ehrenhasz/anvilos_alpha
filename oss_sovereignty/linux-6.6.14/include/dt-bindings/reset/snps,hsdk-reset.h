@@ -1,6 +1,4 @@
-/**
- * This header provides index for the HSDK reset controller.
- */
+ 
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_SNPS_HSDK
 #define _DT_BINDINGS_RESET_CONTROLLER_SNPS_HSDK
 
@@ -14,4 +12,4 @@
 #define HSDK_DMAC_RESET	7
 #define HSDK_EBI_RESET	8
 
-#endif /*_DT_BINDINGS_RESET_CONTROLLER_SNPS_HSDK*/
+#endif  

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2021, Alibaba Group */
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+ 
+ 
+ 
+ 
+ 
 
 #include "erdma_cm.h"
 #include "erdma_verbs.h"
@@ -91,7 +91,7 @@ static int erdma_modify_qp_state_to_rts(struct erdma_qp *qp,
 	req.sport = to_sockaddr_in(local_addr).sin_port;
 
 	req.send_nxt = tp->snd_nxt;
-	/* rsvd tcp seq for mpa-rsp in server. */
+	 
 	if (qp->attrs.qp_type == ERDMA_QP_PASSIVE)
 		req.send_nxt += MPA_DEFAULT_HDR_LEN + qp->attrs.pd_len;
 	req.recv_nxt = tp->rcv_nxt;
@@ -304,7 +304,7 @@ static int erdma_push_one_sqe(struct erdma_qp *qp, u16 *pi,
 	entry = get_queue_entry(qp->kern_qp.sq_buf, idx, qp->attrs.sq_size,
 				SQEBB_SHIFT);
 
-	/* Clear the SQE header section. */
+	 
 	*entry = 0;
 
 	qp->kern_qp.swr_tbl[idx] = send_wr->wr_id;
@@ -407,7 +407,7 @@ static int erdma_push_one_sqe(struct erdma_qp *qp, u16 *pi,
 
 		if (mr->mem.mtt_nents <= ERDMA_MAX_INLINE_MTT_ENTRIES) {
 			attrs |= FIELD_PREP(ERDMA_SQE_MR_MTT_TYPE_MASK, 0);
-			/* Copy SGLs to SQE content to accelerate */
+			 
 			memcpy(get_queue_entry(qp->kern_qp.sq_buf, idx + 1,
 					       qp->attrs.sq_size, SQEBB_SHIFT),
 			       mr->mem.mtt->buf, MTT_SIZE(mr->mem.mtt_nents));

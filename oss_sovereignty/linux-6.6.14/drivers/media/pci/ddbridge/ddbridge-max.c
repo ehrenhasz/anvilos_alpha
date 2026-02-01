@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ddbridge-max.c: Digital Devices bridge MAX card support
- *
- * Copyright (C) 2010-2017 Digital Devices GmbH
- *                         Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -29,9 +23,9 @@
 #include "ddbridge-max.h"
 #include "mxl5xx.h"
 
-/******************************************************************************/
+ 
 
-/* MaxS4/8 related modparams */
+ 
 static int fmode;
 module_param(fmode, int, 0444);
 MODULE_PARM_DESC(fmode, "frontend emulation mode");
@@ -44,7 +38,7 @@ static int old_quattro;
 module_param(old_quattro, int, 0444);
 MODULE_PARM_DESC(old_quattro, "old quattro LNB input order ");
 
-/******************************************************************************/
+ 
 
 static int lnb_command(struct ddb *dev, u32 link, u32 lnb, u32 cmd)
 {
@@ -445,8 +439,8 @@ int ddb_fe_attach_mxl5xx(struct ddb_input *input)
 	return 0;
 }
 
-/******************************************************************************/
-/* MAX MCI related functions */
+ 
+ 
 
 int ddb_fe_attach_mci(struct ddb_input *input, u32 type)
 {

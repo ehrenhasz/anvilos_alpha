@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ir-mce_kbd-decoder.c - A decoder for the RC6-ish keyboard/mouse IR protocol
- * used by the Microsoft Remote Keyboard for Windows Media Center Edition,
- * referred to by Microsoft's Windows Media Center remote specification docs
- * as "an internal protocol called MCIR-2".
- *
- * Copyright (C) 2011 by Jarod Wilson <jarod@redhat.com>
- */
+
+ 
 #include <linux/module.h>
 
 #include "rc-core-priv.h"
 
-/*
- * This decoder currently supports:
- * - MCIR-2 29-bit IR signals used for mouse movement and buttons
- * - MCIR-2 32-bit IR signals used for standard keyboard keys
- *
- * The media keys on the keyboard send RC-6 signals that are indistinguishable
- * from the keys of the same name on the stock MCE remote, and will be handled
- * by the standard RC-6 decoder, and be made available to the system via the
- * input device for the remote, rather than the keyboard/mouse one.
- */
+ 
 
-#define MCIR2_UNIT		333	/* us */
+#define MCIR2_UNIT		333	 
 #define MCIR2_HEADER_NBITS	5
 #define MCIR2_MOUSE_NBITS	29
 #define MCIR2_KEYBOARD_NBITS	32
@@ -32,7 +17,7 @@
 #define MCIR2_BIT_END		(1 * MCIR2_UNIT)
 #define MCIR2_BIT_0		(1 * MCIR2_UNIT)
 #define MCIR2_BIT_SET		(2 * MCIR2_UNIT)
-#define MCIR2_MODE_MASK		0xf	/* for the header bits */
+#define MCIR2_MODE_MASK		0xf	 
 #define MCIR2_KEYBOARD_HEADER	0x4
 #define MCIR2_MOUSE_HEADER	0x1
 #define MCIR2_MASK_KEYS_START	0xe0
@@ -178,11 +163,11 @@ static void ir_mce_kbd_process_keyboard_data(struct rc_dev *dev, u32 scancode)
 
 static void ir_mce_kbd_process_mouse_data(struct rc_dev *dev, u32 scancode)
 {
-	/* raw mouse coordinates */
+	 
 	u8 xdata = (scancode >> 7) & 0x7f;
 	u8 ydata = (scancode >> 14) & 0x7f;
 	int x, y;
-	/* mouse buttons */
+	 
 	bool right = scancode & 0x40;
 	bool left  = scancode & 0x20;
 
@@ -206,13 +191,7 @@ static void ir_mce_kbd_process_mouse_data(struct rc_dev *dev, u32 scancode)
 	input_report_key(dev->input_dev, BTN_RIGHT, right);
 }
 
-/**
- * ir_mce_kbd_decode() - Decode one mce_kbd pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:		the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_mce_kbd_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct mce_kbd_dec *data = &dev->raw->mce_kbd;
@@ -242,9 +221,7 @@ again:
 		if (!ev.pulse)
 			break;
 
-		/* Note: larger margin on first pulse since each MCIR2_UNIT
-		   is quite short and some hardware takes some time to
-		   adjust to the signal */
+		 
 		if (!eq_margin(ev.duration, MCIR2_PREFIX_PULSE, MCIR2_UNIT))
 			break;
 
@@ -326,7 +303,7 @@ again:
 			} else {
 				del_timer(&data->rx_timeout);
 			}
-			/* Pass data to keyboard buffer parser */
+			 
 			ir_mce_kbd_process_keyboard_data(dev, scancode);
 			spin_unlock(&data->keylock);
 			lsc.rc_proto = RC_PROTO_MCIR2_KBD;
@@ -334,7 +311,7 @@ again:
 		case MCIR2_MOUSE_NBITS:
 			scancode = data->body & 0x1fffff;
 			dev_dbg(&dev->dev, "mouse data 0x%06x\n", scancode);
-			/* Pass data to mouse buffer parser */
+			 
 			ir_mce_kbd_process_mouse_data(dev, scancode);
 			lsc.rc_proto = RC_PROTO_MCIR2_MSE;
 			break;
@@ -384,18 +361,7 @@ static const struct ir_raw_timings_manchester ir_mce_kbd_timings = {
 	.trailer_space	= MCIR2_UNIT * 10,
 };
 
-/**
- * ir_mce_kbd_encode() - Encode a scancode as a stream of raw events
- *
- * @protocol:   protocol to encode
- * @scancode:   scancode to encode
- * @events:     array of raw ir events to write into
- * @max:        maximum size of @events
- *
- * Returns:     The number of events written.
- *              -ENOBUFS if there isn't enough space in the array to fit the
- *              encoding. In this case all @max events will have been written.
- */
+ 
 static int ir_mce_kbd_encode(enum rc_proto protocol, u32 scancode,
 			     struct ir_raw_event *events, unsigned int max)
 {

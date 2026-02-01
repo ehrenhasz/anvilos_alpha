@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2007-2011, Intel Corporation.
- * All Rights Reserved.
- * Copyright (c) 2008, Tungsten Graphics, Inc. Cedar Park, TX., USA.
- * All Rights Reserved.
- *
- **************************************************************************/
+
+ 
 
 #include <linux/aperture.h>
 #include <linux/cpu.h>
@@ -39,24 +33,12 @@
 static const struct drm_driver driver;
 static int psb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent);
 
-/*
- * The table below contains a mapping of the PCI vendor ID and the PCI Device ID
- * to the different groups of PowerVR 5-series chip designs
- *
- * 0x8086 = Intel Corporation
- *
- * PowerVR SGX535    - Poulsbo    - Intel GMA 500, Intel Atom Z5xx
- * PowerVR SGX535    - Moorestown - Intel GMA 600
- * PowerVR SGX535    - Oaktrail   - Intel GMA 600, Intel Atom Z6xx, E6xx
- * PowerVR SGX545    - Cedartrail - Intel GMA 3600, Intel Atom D2500, N2600
- * PowerVR SGX545    - Cedartrail - Intel GMA 3650, Intel Atom D2550, D2700,
- *                                  N2800
- */
+ 
 static const struct pci_device_id pciidlist[] = {
-	/* Poulsbo */
+	 
 	{ 0x8086, 0x8108, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &psb_chip_ops },
 	{ 0x8086, 0x8109, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &psb_chip_ops },
-	/* Oak Trail */
+	 
 	{ 0x8086, 0x4100, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &oaktrail_chip_ops },
 	{ 0x8086, 0x4101, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &oaktrail_chip_ops },
 	{ 0x8086, 0x4102, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &oaktrail_chip_ops },
@@ -66,7 +48,7 @@ static const struct pci_device_id pciidlist[] = {
 	{ 0x8086, 0x4106, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &oaktrail_chip_ops },
 	{ 0x8086, 0x4107, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &oaktrail_chip_ops },
 	{ 0x8086, 0x4108, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &oaktrail_chip_ops },
-	/* Cedar Trail */
+	 
 	{ 0x8086, 0x0be0, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &cdv_chip_ops },
 	{ 0x8086, 0x0be1, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &cdv_chip_ops },
 	{ 0x8086, 0x0be2, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (long) &cdv_chip_ops },
@@ -87,18 +69,11 @@ static const struct pci_device_id pciidlist[] = {
 };
 MODULE_DEVICE_TABLE(pci, pciidlist);
 
-/*
- * Standard IOCTLs.
- */
+ 
 static const struct drm_ioctl_desc psb_ioctls[] = {
 };
 
-/**
- *	psb_spank		-	reset the 2D engine
- *	@dev_priv: our PSB DRM device
- *
- *	Soft reset the graphics engine and then reload the necessary registers.
- */
+ 
 static void psb_spank(struct drm_psb_private *dev_priv)
 {
 	PSB_WSGX32(_PSB_CS_RESET_BIF_RESET | _PSB_CS_RESET_DPM_RESET |
@@ -148,16 +123,16 @@ static int psb_do_init(struct drm_device *dev)
 	PSB_WSGX32(0x00000000, PSB_CR_BIF_BANK1);
 	PSB_RSGX32(PSB_CR_BIF_BANK1);
 
-	/* Do not bypass any MMU access, let them pagefault instead */
+	 
 	PSB_WSGX32((PSB_RSGX32(PSB_CR_BIF_CTRL) & ~_PSB_MMU_ER_MASK),
 		   PSB_CR_BIF_CTRL);
 	PSB_RSGX32(PSB_CR_BIF_CTRL);
 
 	psb_spank(dev_priv);
 
-	/* mmu_gatt ?? */
+	 
 	PSB_WSGX32(pg->gatt_start, PSB_CR_BIF_TWOD_REQ_BASE);
-	PSB_RSGX32(PSB_CR_BIF_TWOD_REQ_BASE); /* Post */
+	PSB_RSGX32(PSB_CR_BIF_TWOD_REQ_BASE);  
 
 	return 0;
 }
@@ -166,7 +141,7 @@ static void psb_driver_unload(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 
-	/* TODO: Kill vblank etc here */
+	 
 
 	gma_backlight_exit(dev);
 	psb_modeset_cleanup(dev);
@@ -215,7 +190,7 @@ static void psb_driver_unload(struct drm_device *dev)
 	pci_dev_put(dev_priv->aux_pdev);
 	pci_dev_put(dev_priv->lpc_pdev);
 
-	/* Destroy VBT data */
+	 
 	psb_intel_destroy_bios(dev);
 
 	gma_power_uninit(dev);
@@ -240,7 +215,7 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
 	struct psb_gtt *pg;
 	int ret = -ENOMEM;
 
-	/* initializing driver private data */
+	 
 
 	dev_priv->ops = (struct psb_ops *)flags;
 
@@ -281,7 +256,7 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
 
 			DRM_DEBUG_KMS("Found aux vdc");
 		} else {
-			/* Couldn't find the aux vdc so map to primary vdc */
+			 
 			dev_priv->aux_reg = dev_priv->vdc_reg;
 			DRM_DEBUG_KMS("Couldn't find aux pci device");
 		}
@@ -316,7 +291,7 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
 	if (ret)
 		goto out_err;
 
-	/* Init OSPM support */
+	 
 	gma_power_init(dev);
 
 	ret = -ENOMEM;
@@ -348,7 +323,7 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
 	if (ret)
 		return ret;
 
-	/* Add stolen memory to SGX MMU */
+	 
 	ret = psb_mmu_insert_pfn_sequence(psb_mmu_get_default_pd(dev_priv->mmu),
 					  dev_priv->stolen_base >> PAGE_SHIFT,
 					  pg->gatt_start,
@@ -362,15 +337,12 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
 
 	acpi_video_register();
 
-	/* Setup vertical blanking handling */
+	 
 	ret = drm_vblank_init(dev, dev_priv->num_pipe);
 	if (ret)
 		goto out_err;
 
-	/*
-	 * Install interrupt handlers prior to powering off SGX or else we will
-	 * crash.
-	 */
+	 
 	dev_priv->vdc_irq_mask = 0;
 	dev_priv->pipestat[0] = 0;
 	dev_priv->pipestat[1] = 0;
@@ -383,12 +355,12 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
 
 	gma_irq_install(dev);
 
-	dev->max_vblank_count = 0xffffff; /* only 24 bits of frame count */
+	dev->max_vblank_count = 0xffffff;  
 
 	psb_modeset_init(dev);
 	drm_kms_helper_poll_init(dev);
 
-	/* Only add backlight support if we have LVDS or MIPI output */
+	 
 	drm_connector_list_iter_begin(dev, &conn_iter);
 	drm_for_each_connector_iter(connector, &conn_iter) {
 		gma_encoder = gma_attached_encoder(connector);
@@ -414,28 +386,12 @@ out_err:
 	return ret;
 }
 
-/*
- * Hardware for gma500 is a hybrid device, which both acts as a PCI
- * device (for legacy vga functionality) but also more like an
- * integrated display on a SoC where the framebuffer simply
- * resides in main memory and not in a special PCI bar (that
- * internally redirects to a stolen range of main memory) like all
- * other integrated PCI display devices implement it.
- *
- * To catch all cases we need to remove conflicting firmware devices
- * for the stolen system memory and for the VGA functionality. As we
- * currently cannot easily find the framebuffer's location in stolen
- * memory, we remove all framebuffers here.
- *
- * TODO: Refactor psb_driver_load() to map vdc_reg earlier. Then
- *       we might be able to read the framebuffer range from the
- *       device.
- */
+ 
 static int gma_remove_conflicting_framebuffers(struct pci_dev *pdev,
 					       const struct drm_driver *req_driver)
 {
 	resource_size_t base = 0;
-	resource_size_t size = U32_MAX; /* 4 GiB HW limit */
+	resource_size_t size = U32_MAX;  
 	const char *name = req_driver->name;
 	int ret;
 

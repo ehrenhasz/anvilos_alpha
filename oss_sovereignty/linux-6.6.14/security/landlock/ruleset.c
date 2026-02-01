@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Landlock LSM - Ruleset management
- *
- * Copyright © 2016-2020 Mickaël Salaün <mic@digikod.net>
- * Copyright © 2018-2020 ANSSI
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bug.h>
@@ -37,11 +32,7 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
 	mutex_init(&new_ruleset->lock);
 	new_ruleset->root = RB_ROOT;
 	new_ruleset->num_layers = num_layers;
-	/*
-	 * hierarchy = NULL
-	 * num_rules = 0
-	 * fs_access_masks[] = 0
-	 */
+	 
 	return new_ruleset;
 }
 
@@ -50,7 +41,7 @@ landlock_create_ruleset(const access_mask_t fs_access_mask)
 {
 	struct landlock_ruleset *new_ruleset;
 
-	/* Informs about useless ruleset. */
+	 
 	if (!fs_access_mask)
 		return ERR_PTR(-ENOMSG);
 	new_ruleset = create_ruleset(1);
@@ -78,7 +69,7 @@ create_rule(struct landlock_object *const object,
 
 	build_check_rule();
 	if (new_layer) {
-		/* Should already be checked by landlock_merge_ruleset(). */
+		 
 		if (WARN_ON_ONCE(num_layers >= LANDLOCK_MAX_NUM_LAYERS))
 			return ERR_PTR(-E2BIG);
 		new_num_layers = num_layers + 1;
@@ -93,11 +84,11 @@ create_rule(struct landlock_object *const object,
 	landlock_get_object(object);
 	new_rule->object = object;
 	new_rule->num_layers = new_num_layers;
-	/* Copies the original layer stack. */
+	 
 	memcpy(new_rule->layers, layers,
 	       flex_array_size(new_rule, layers, num_layers));
 	if (new_layer)
-		/* Adds a copy of @new_layer on the layer stack. */
+		 
 		new_rule->layers[new_rule->num_layers - 1] = *new_layer;
 	return new_rule;
 }
@@ -124,24 +115,7 @@ static void build_check_ruleset(void)
 	BUILD_BUG_ON(fs_access_mask < LANDLOCK_MASK_ACCESS_FS);
 }
 
-/**
- * insert_rule - Create and insert a rule in a ruleset
- *
- * @ruleset: The ruleset to be updated.
- * @object: The object to build the new rule with.  The underlying kernel
- *          object must be held by the caller.
- * @layers: One or multiple layers to be copied into the new rule.
- * @num_layers: The number of @layers entries.
- *
- * When user space requests to add a new rule to a ruleset, @layers only
- * contains one entry and this entry is not assigned to any level.  In this
- * case, the new rule will extend @ruleset, similarly to a boolean OR between
- * access rights.
- *
- * When merging a ruleset in a domain, or copying a domain, @layers will be
- * added to @ruleset as new constraints, similarly to a boolean AND between
- * access rights.
- */
+ 
 static int insert_rule(struct landlock_ruleset *const ruleset,
 		       struct landlock_object *const object,
 		       const struct landlock_layer (*const layers)[],
@@ -169,16 +143,13 @@ static int insert_rule(struct landlock_ruleset *const ruleset,
 			continue;
 		}
 
-		/* Only a single-level layer should match an existing rule. */
+		 
 		if (WARN_ON_ONCE(num_layers != 1))
 			return -EINVAL;
 
-		/* If there is a matching rule, updates it. */
+		 
 		if ((*layers)[0].level == 0) {
-			/*
-			 * Extends access rights when the request comes from
-			 * landlock_add_rule(2), i.e. @ruleset is not a domain.
-			 */
+			 
 			if (WARN_ON_ONCE(this->num_layers != 1))
 				return -EINVAL;
 			if (WARN_ON_ONCE(this->layers[0].level != 0))
@@ -190,10 +161,7 @@ static int insert_rule(struct landlock_ruleset *const ruleset,
 		if (WARN_ON_ONCE(this->layers[0].level == 0))
 			return -EINVAL;
 
-		/*
-		 * Intersects access rights when it is a merge between a
-		 * ruleset and a domain.
-		 */
+		 
 		new_rule = create_rule(object, &this->layers, this->num_layers,
 				       &(*layers)[0]);
 		if (IS_ERR(new_rule))
@@ -203,7 +171,7 @@ static int insert_rule(struct landlock_ruleset *const ruleset,
 		return 0;
 	}
 
-	/* There is no match for @object. */
+	 
 	build_check_ruleset();
 	if (ruleset->num_rules >= LANDLOCK_MAX_NUM_RULES)
 		return -E2BIG;
@@ -227,14 +195,14 @@ static void build_check_layer(void)
 	BUILD_BUG_ON(layer.access < LANDLOCK_MASK_ACCESS_FS);
 }
 
-/* @ruleset must be locked by the caller. */
+ 
 int landlock_insert_rule(struct landlock_ruleset *const ruleset,
 			 struct landlock_object *const object,
 			 const access_mask_t access)
 {
 	struct landlock_layer layers[] = { {
 		.access = access,
-		/* When @level is zero, insert_rule() extends @ruleset. */
+		 
 		.level = 0,
 	} };
 
@@ -265,25 +233,25 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
 	int err = 0;
 
 	might_sleep();
-	/* Should already be checked by landlock_merge_ruleset() */
+	 
 	if (WARN_ON_ONCE(!src))
 		return 0;
-	/* Only merge into a domain. */
+	 
 	if (WARN_ON_ONCE(!dst || !dst->hierarchy))
 		return -EINVAL;
 
-	/* Locks @dst first because we are its only owner. */
+	 
 	mutex_lock(&dst->lock);
 	mutex_lock_nested(&src->lock, SINGLE_DEPTH_NESTING);
 
-	/* Stacks the new layer. */
+	 
 	if (WARN_ON_ONCE(src->num_layers != 1 || dst->num_layers < 1)) {
 		err = -EINVAL;
 		goto out_unlock;
 	}
 	dst->fs_access_masks[dst->num_layers - 1] = src->fs_access_masks[0];
 
-	/* Merges the @src tree. */
+	 
 	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule, &src->root,
 					     node) {
 		struct landlock_layer layers[] = { {
@@ -321,11 +289,11 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
 	if (!parent)
 		return 0;
 
-	/* Locks @child first because we are its only owner. */
+	 
 	mutex_lock(&child->lock);
 	mutex_lock_nested(&parent->lock, SINGLE_DEPTH_NESTING);
 
-	/* Copies the @parent tree. */
+	 
 	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule,
 					     &parent->root, node) {
 		err = insert_rule(child, walker_rule->object,
@@ -339,7 +307,7 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
 		err = -EINVAL;
 		goto out_unlock;
 	}
-	/* Copies the parent layer stack and leaves a space for the new layer. */
+	 
 	memcpy(child->fs_access_masks, parent->fs_access_masks,
 	       flex_array_size(parent, fs_access_masks, parent->num_layers));
 
@@ -390,15 +358,7 @@ void landlock_put_ruleset_deferred(struct landlock_ruleset *const ruleset)
 	}
 }
 
-/**
- * landlock_merge_ruleset - Merge a ruleset with a domain
- *
- * @parent: Parent domain.
- * @ruleset: New ruleset to be merged.
- *
- * Returns the intersection of @parent and @ruleset, or returns @parent if
- * @ruleset is empty, or returns a duplicate of @ruleset if @parent is empty.
- */
+ 
 struct landlock_ruleset *
 landlock_merge_ruleset(struct landlock_ruleset *const parent,
 		       struct landlock_ruleset *const ruleset)
@@ -419,7 +379,7 @@ landlock_merge_ruleset(struct landlock_ruleset *const parent,
 		num_layers = 1;
 	}
 
-	/* Creates a new domain... */
+	 
 	new_dom = create_ruleset(num_layers);
 	if (IS_ERR(new_dom))
 		return new_dom;
@@ -431,12 +391,12 @@ landlock_merge_ruleset(struct landlock_ruleset *const parent,
 	}
 	refcount_set(&new_dom->hierarchy->usage, 1);
 
-	/* ...as a child of @parent... */
+	 
 	err = inherit_ruleset(parent, new_dom);
 	if (err)
 		goto out_put_dom;
 
-	/* ...and including @ruleset. */
+	 
 	err = merge_ruleset(new_dom, ruleset);
 	if (err)
 		goto out_put_dom;
@@ -448,9 +408,7 @@ out_put_dom:
 	return ERR_PTR(err);
 }
 
-/*
- * The returned access has the same lifetime as @ruleset.
- */
+ 
 const struct landlock_rule *
 landlock_find_rule(const struct landlock_ruleset *const ruleset,
 		   const struct landlock_object *const object)

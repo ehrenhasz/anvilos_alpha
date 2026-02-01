@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Analog Devices AD7292 SPI ADC driver
- *
- * Copyright 2019 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -16,27 +12,27 @@
 
 #define ADI_VENDOR_ID 0x0018
 
-/* AD7292 registers definition */
+ 
 #define AD7292_REG_VENDOR_ID		0x00
 #define AD7292_REG_CONF_BANK		0x05
 #define AD7292_REG_CONV_COMM		0x0E
 #define AD7292_REG_ADC_CH(x)		(0x10 + (x))
 
-/* AD7292 configuration bank subregisters definition */
+ 
 #define AD7292_BANK_REG_VIN_RNG0	0x10
 #define AD7292_BANK_REG_VIN_RNG1	0x11
 #define AD7292_BANK_REG_SAMP_MODE	0x12
 
 #define AD7292_RD_FLAG_MSK(x)		(BIT(7) | ((x) & 0x3F))
 
-/* AD7292_REG_ADC_CONVERSION */
+ 
 #define AD7292_ADC_DATA_MASK		GENMASK(15, 6)
 #define AD7292_ADC_DATA(x)		FIELD_GET(AD7292_ADC_DATA_MASK, x)
 
-/* AD7292_CHANNEL_SAMPLING_MODE */
+ 
 #define AD7292_CH_SAMP_MODE(reg, ch)	(((reg) >> 8) & BIT(ch))
 
-/* AD7292_CHANNEL_VIN_RANGE */
+ 
 #define AD7292_CH_VIN_RANGE(reg, ch)	((reg) & BIT(ch))
 
 #define AD7292_VOLTAGE_CHAN(_chan)					\
@@ -148,20 +144,7 @@ static int ad7292_vin_range_multiplier(struct ad7292_state *st, int channel)
 {
 	int samp_mode, range0, range1, factor = 1;
 
-	/*
-	 * Every AD7292 ADC channel may have its input range adjusted according
-	 * to the settings at the ADC sampling mode and VIN range subregisters.
-	 * For a given channel, the minimum input range is equal to Vref, and it
-	 * may be increased by a multiplier factor of 2 or 4 according to the
-	 * following rule:
-	 * If channel is being sampled with respect to AGND:
-	 *	factor = 4 if VIN range0 and VIN range1 equal 0
-	 *	factor = 2 if only one of VIN ranges equal 1
-	 *	factor = 1 if both VIN range0 and VIN range1 equal 1
-	 * If channel is being sampled with respect to AVDD:
-	 *	factor = 4 if VIN range0 and VIN range1 equal 0
-	 *	Behavior is undefined if any of VIN range doesn't equal 0
-	 */
+	 
 
 	samp_mode = ad7292_spi_subreg_read(st, AD7292_REG_CONF_BANK,
 					   AD7292_BANK_REG_SAMP_MODE, 2);
@@ -182,7 +165,7 @@ static int ad7292_vin_range_multiplier(struct ad7292_state *st, int channel)
 		return range1;
 
 	if (AD7292_CH_SAMP_MODE(samp_mode, channel)) {
-		/* Sampling with respect to AGND */
+		 
 		if (!AD7292_CH_VIN_RANGE(range0, channel))
 			factor *= 2;
 
@@ -190,7 +173,7 @@ static int ad7292_vin_range_multiplier(struct ad7292_state *st, int channel)
 			factor *= 2;
 
 	} else {
-		/* Sampling with respect to AVDD */
+		 
 		if (AD7292_CH_VIN_RANGE(range0, channel) ||
 		    AD7292_CH_VIN_RANGE(range1, channel))
 			return -EPERM;
@@ -220,17 +203,7 @@ static int ad7292_read_raw(struct iio_dev *indio_dev,
 
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * To convert a raw value to standard units, the IIO defines
-		 * this formula: Scaled value = (raw + offset) * scale.
-		 * For the scale to be a correct multiplier for (raw + offset),
-		 * it must be calculated as the input range divided by the
-		 * number of possible distinct input values. Given the ADC data
-		 * is 10 bit long, it may assume 2^10 distinct values.
-		 * Hence, scale = range / 2^10. The IIO_VAL_FRACTIONAL_LOG2
-		 * return type indicates to the IIO API to divide *val by 2 to
-		 * the power of *val2 when returning from read_raw.
-		 */
+		 
 
 		ret = ad7292_vin_range_multiplier(st, chan->channel);
 		if (ret < 0)
@@ -297,7 +270,7 @@ static int ad7292_probe(struct spi_device *spi)
 
 		st->vref_mv = ret / 1000;
 	} else {
-		/* Use the internal voltage reference. */
+		 
 		st->vref_mv = 1250;
 	}
 

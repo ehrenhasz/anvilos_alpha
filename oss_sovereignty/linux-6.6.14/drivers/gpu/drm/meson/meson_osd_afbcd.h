@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+ 
+ 
 
 #ifndef __MESON_OSD_AFBCD_H
 #define __MESON_OSD_AFBCD_H
 
 #include "meson_drv.h"
 
-/* This is an internal address used to transfer pixel from AFBC to the VIU */
+ 
 #define MESON_G12A_AFBCD_OUT_ADDR	0x1000000
 
 struct meson_afbcd_ops {
@@ -26,4 +23,4 @@ struct meson_afbcd_ops {
 extern struct meson_afbcd_ops meson_afbcd_gxm_ops;
 extern struct meson_afbcd_ops meson_afbcd_g12a_ops;
 
-#endif /* __MESON_OSD_AFBCD_H */
+#endif  

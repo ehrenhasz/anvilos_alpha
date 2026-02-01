@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPVS:        Round-Robin Scheduling module
- *
- * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
- *              Peter Kese <peter.kese@ijs.si>
- *
- * Fixes/Changes:
- *     Wensong Zhang            :     changed the ip_vs_rr_schedule to return dest
- *     Julian Anastasov         :     fixed the NULL pointer access bug in debugging
- *     Wensong Zhang            :     changed some comestics things for debugging
- *     Wensong Zhang            :     changed for the d-linked destination list
- *     Wensong Zhang            :     added the ip_vs_rr_update_svc
- *     Wensong Zhang            :     added any dest with weight=0 is quiesced
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -36,9 +23,7 @@ static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
 
 	spin_lock_bh(&svc->sched_lock);
 	p = (struct list_head *) svc->sched_data;
-	/* dest is already unlinked, so p->prev is not valid but
-	 * p->next is valid, use it to reach previous entry.
-	 */
+	 
 	if (p == &dest->n_list)
 		svc->sched_data = p->next->prev;
 	spin_unlock_bh(&svc->sched_lock);
@@ -46,9 +31,7 @@ static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
 }
 
 
-/*
- * Round-Robin Scheduling
- */
+ 
 static struct ip_vs_dest *
 ip_vs_rr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		  struct ip_vs_iphdr *iph)
@@ -69,15 +52,13 @@ ip_vs_rr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 						 n_list) {
 			if (!(dest->flags & IP_VS_DEST_F_OVERLOAD) &&
 			    atomic_read(&dest->weight) > 0)
-				/* HIT */
+				 
 				goto out;
 			if (dest == last)
 				goto stop;
 		}
 		pass++;
-		/* Previous dest could be unlinked, do not loop forever.
-		 * If we stay at head there is no need for 2nd pass.
-		 */
+		 
 	} while (pass < 2 && p != &svc->destinations);
 
 stop:
@@ -99,7 +80,7 @@ stop:
 
 
 static struct ip_vs_scheduler ip_vs_rr_scheduler = {
-	.name =			"rr",			/* name */
+	.name =			"rr",			 
 	.refcnt =		ATOMIC_INIT(0),
 	.module =		THIS_MODULE,
 	.n_list =		LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),

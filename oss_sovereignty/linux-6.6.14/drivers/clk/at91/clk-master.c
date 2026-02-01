@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -40,7 +38,7 @@ struct clk_master {
 	u32 safe_div;
 };
 
-/* MCK div reference to be used by notifier. */
+ 
 static struct clk_master *master_div;
 
 static inline bool clk_master_ready(struct clk_master *master)
@@ -158,7 +156,7 @@ static const struct clk_ops master_div_ops = {
 	.restore_context = clk_master_div_restore_context,
 };
 
-/* This function must be called with lock acquired. */
+ 
 static int clk_master_div_set(struct clk_master *master,
 			      unsigned long parent_rate, int div)
 {
@@ -260,17 +258,7 @@ static int clk_master_div_notifier_fn(struct notifier_block *notifier,
 	spin_lock_irqsave(master_div->lock, flags);
 	switch (code) {
 	case PRE_RATE_CHANGE:
-		/*
-		 * We want to avoid any overclocking of MCK DIV domain. To do
-		 * this we set a safe divider (the underclocking is not of
-		 * interest as we can go as low as 32KHz). The relation
-		 * b/w this clock and its parents are as follows:
-		 *
-		 * FRAC PLL -> DIV PLL -> MCK DIV
-		 *
-		 * With the proper safe divider we should be good even with FRAC
-		 * PLL at its maximum value.
-		 */
+		 
 		ret = regmap_read(master_div->regmap, master_div->layout->offset,
 				  &mckr);
 		if (ret) {
@@ -281,17 +269,14 @@ static int clk_master_div_notifier_fn(struct notifier_block *notifier,
 		mckr &= master_div->layout->mask;
 		div = (mckr >> MASTER_DIV_SHIFT) & MASTER_DIV_MASK;
 
-		/* Switch to safe divider. */
+		 
 		clk_master_div_set(master_div,
 				   cnd->old_rate * characteristics->divisors[div],
 				   master_div->safe_div);
 		break;
 
 	case POST_RATE_CHANGE:
-		/*
-		 * At this point we want to restore MCK DIV domain to its maximum
-		 * allowed rate.
-		 */
+		 
 		ret = regmap_read(master_div->regmap, master_div->layout->offset,
 				  &mckr);
 		if (ret) {
@@ -328,7 +313,7 @@ static int clk_master_div_notifier_fn(struct notifier_block *notifier,
 			goto unlock;
 		}
 
-		/* Update the div to preserve MCK DIV clock rate. */
+		 
 		clk_master_div_set(master_div, new_parent_rate,
 				   new_div);
 
@@ -592,7 +577,7 @@ static int clk_sama7g5_master_determine_rate(struct clk_hw *hw,
 	unsigned long parent_rate;
 	unsigned int div, i;
 
-	/* First: check the dividers of MCR. */
+	 
 	for (i = 0; i < clk_hw_get_num_parents(hw); i++) {
 		parent = clk_hw_get_parent_by_index(hw, i);
 		if (!parent)
@@ -614,7 +599,7 @@ static int clk_sama7g5_master_determine_rate(struct clk_hw *hw,
 			break;
 	}
 
-	/* Second: try to request rate form changeable parent. */
+	 
 	if (master->chg_pid < 0)
 		goto end;
 
@@ -707,7 +692,7 @@ static void clk_sama7g5_master_set(struct clk_master *master,
 
 	cparent = (val & AT91_PMC_MCR_V2_CSS) >> PMC_MCR_CSS_SHIFT;
 
-	/* Wait here only if parent is being changed. */
+	 
 	while ((cparent != master->parent) && !clk_master_ready(master))
 		cpu_relax();
 

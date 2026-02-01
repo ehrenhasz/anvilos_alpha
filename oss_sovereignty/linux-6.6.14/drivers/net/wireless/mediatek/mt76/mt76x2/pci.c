@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -74,15 +72,15 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret)
 		goto error;
 
-	/* Fix up ASPM configuration */
+	 
 
-	/* RG_SSUSB_G1_CDR_BIR_LTR = 0x9 */
+	 
 	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
 
-	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
+	 
 	mt76_rmw_field(dev, 0x15a0c, 0xfU << 28, 0xf);
 
-	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
+	 
 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
 
 	mt76_pci_disable_aspm(pdev);
@@ -175,7 +173,7 @@ static struct pci_driver mt76pci_driver = {
 #ifdef CONFIG_PM
 	.suspend	= mt76x2e_suspend,
 	.resume		= mt76x2e_resume,
-#endif /* CONFIG_PM */
+#endif  
 };
 
 module_pci_driver(mt76pci_driver);

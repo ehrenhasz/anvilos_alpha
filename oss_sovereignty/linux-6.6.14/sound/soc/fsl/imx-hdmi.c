@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2017-2020 NXP
+
+
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -8,13 +8,7 @@
 #include <sound/hdmi-codec.h>
 #include "fsl_sai.h"
 
-/**
- * struct cpu_priv - CPU private data
- * @sysclk_id: SYSCLK ids for set_sysclk()
- * @slot_width: Slot width of each frame
- *
- * Note: [1] for tx and [0] for rx
- */
+ 
 struct cpu_priv {
 	u32 sysclk_id[2];
 	u32 slot_width;
@@ -41,7 +35,7 @@ static int imx_hdmi_hw_params(struct snd_pcm_substream *substream,
 	u32 slot_width = data->cpu_priv.slot_width;
 	int ret;
 
-	/* MCLK always is (256 or 192) * rate. */
+	 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, data->cpu_priv.sysclk_id[tx],
 				     8 * slot_width * params_rate(params),
 				     tx ? SND_SOC_CLOCK_OUT : SND_SOC_CLOCK_IN);
@@ -77,7 +71,7 @@ static int imx_hdmi_init(struct snd_soc_pcm_runtime *rtd)
 
 	data->hdmi_jack_pin.pin = "HDMI Jack";
 	data->hdmi_jack_pin.mask = SND_JACK_LINEOUT;
-	/* enable jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(card, "HDMI Jack", SND_JACK_LINEOUT,
 					 &data->hdmi_jack,
 					 &data->hdmi_jack_pin, 1);
@@ -215,7 +209,7 @@ fail:
 static const struct of_device_id imx_hdmi_dt_ids[] = {
 	{ .compatible = "fsl,imx-audio-hdmi", },
 	{ .compatible = "fsl,imx-audio-sii902x", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_hdmi_dt_ids);
 

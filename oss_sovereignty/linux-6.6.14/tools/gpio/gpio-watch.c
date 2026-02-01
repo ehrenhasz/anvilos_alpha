@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * gpio-watch - monitor unrequested lines for property changes using the
- *              character device
- *
- * Copyright (C) 2019 BayLibre SAS
- * Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
- */
+
+ 
 
 #include <ctype.h>
 #include <errno.h>

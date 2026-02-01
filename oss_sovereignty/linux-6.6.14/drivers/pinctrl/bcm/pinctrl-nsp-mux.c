@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2015 Broadcom Corporation
- *
- * This file contains the Northstar plus (NSP) IOMUX driver that supports
- * group based PINMUX configuration. The Northstar plus IOMUX controller
- * allows pins to be individually muxed to GPIO function. The NAND and MMC is
- * a group based selection. The gpio_a 8 - 11 are muxed with gpio_b and pwm.
- * To select PWM, one need to enable the corresponding gpio_b as well.
- *
- *				gpio_a (8 - 11)
- *				+----------
- *				|
- *		gpio_a (8-11)	|	gpio_b (0 - 3)
- *	------------------------+-------+----------
- *					|
- *					|	pwm (0 - 3)
- *					+----------
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -35,14 +19,7 @@
 #define NSP_MUX_BASE0	0x00
 #define NSP_MUX_BASE1	0x01
 #define NSP_MUX_BASE2	0x02
-/*
- * nsp IOMUX register description
- *
- * @base: base 0 or base 1
- * @shift: bit shift for mux configuration of a group
- * @mask: bit mask of the function
- * @alt: alternate function to set to
- */
+ 
 struct nsp_mux {
 	unsigned int base;
 	unsigned int shift;
@@ -50,26 +27,13 @@ struct nsp_mux {
 	unsigned int alt;
 };
 
-/*
- * Keep track of nsp IOMUX configuration and prevent double configuration
- *
- * @nsp_mux: nsp IOMUX register description
- * @is_configured: flag to indicate whether a mux setting has already been
- * configured
- */
+ 
 struct nsp_mux_log {
 	struct nsp_mux mux;
 	bool is_configured;
 };
 
-/*
- * Group based IOMUX configuration
- *
- * @name: name of the group
- * @pins: array of pins used by this group
- * @num_pins: total number of pins used by this group
- * @mux: nsp group based IOMUX configuration
- */
+ 
 struct nsp_pin_group {
 	const char *name;
 	const unsigned int *pins;
@@ -77,34 +41,14 @@ struct nsp_pin_group {
 	const struct nsp_mux mux;
 };
 
-/*
- * nsp mux function and supported pin groups
- *
- * @name: name of the function
- * @groups: array of groups that can be supported by this function
- * @num_groups: total number of groups that can be supported by this function
- */
+ 
 struct nsp_pin_function {
 	const char *name;
 	const char * const *groups;
 	const unsigned int num_groups;
 };
 
-/*
- * nsp IOMUX pinctrl core
- *
- * @pctl: pointer to pinctrl_dev
- * @dev: pointer to device
- * @base0: first mux register
- * @base1: second mux register
- * @base2: third mux register
- * @groups: pointer to array of groups
- * @num_groups: total number of groups
- * @functions: pointer to array of functions
- * @num_functions: total number of functions
- * @mux_log: pointer to the array of mux logs
- * @lock: lock to protect register access
- */
+ 
 struct nsp_pinctrl {
 	struct pinctrl_dev *pctl;
 	struct device *dev;
@@ -119,13 +63,7 @@ struct nsp_pinctrl {
 	spinlock_t lock;
 };
 
-/*
- * Description of a pin in nsp
- *
- * @pin: pin number
- * @name: pin name
- * @gpio_select: reg data to select GPIO
- */
+ 
 struct nsp_pin {
 	unsigned int pin;
 	char *name;
@@ -139,9 +77,7 @@ struct nsp_pin {
 	.gpio_select = g,		\
 }
 
-/*
- * List of muxable pins in nsp
- */
+ 
 static struct nsp_pin nsp_pins[] = {
 	NSP_PIN_DESC(0, "spi_clk", 1),
 	NSP_PIN_DESC(1, "spi_ss", 1),
@@ -188,9 +124,7 @@ static struct nsp_pin nsp_pins[] = {
 	NSP_PIN_DESC(42, "nand_dq7", 0),
 };
 
-/*
- * List of groups of pins
- */
+ 
 
 static const unsigned int spi_pins[] = {0, 1, 2, 3};
 static const unsigned int i2c_pins[] = {4, 5};
@@ -231,9 +165,7 @@ static const unsigned int emmc_pins[] = {32, 33, 34, 35, 36, 37, 38, 39,
 	}						\
 }
 
-/*
- * List of nsp pin groups
- */
+ 
 static const struct nsp_pin_group nsp_pin_groups[] = {
 	NSP_PIN_GROUP(spi, NSP_MUX_BASE0, 0, 0x0f, 0x00),
 	NSP_PIN_GROUP(i2c, NSP_MUX_BASE0, 3, 0x03, 0x00),
@@ -260,9 +192,7 @@ static const struct nsp_pin_group nsp_pin_groups[] = {
 	NSP_PIN_GROUP(emmc, NSP_MUX_BASE2, 0, 0x01, 0x01)
 };
 
-/*
- * List of groups supported by functions
- */
+ 
 
 static const char * const spi_grps[] = {"spi_grp"};
 static const char * const i2c_grps[] = {"i2c_grp"};
@@ -289,9 +219,7 @@ static const char * const emmc_grps[] = {"emmc_grp"};
 	.num_groups = ARRAY_SIZE(func ## _grps),	\
 }
 
-/*
- * List of supported functions in nsp
- */
+ 
 static const struct nsp_pin_function nsp_pin_functions[] = {
 	NSP_PIN_FUNCTION(spi),
 	NSP_PIN_FUNCTION(i2c),
@@ -395,14 +323,11 @@ static int nsp_pinmux_set(struct nsp_pinctrl *pinctrl,
 			(mux->base != mux_log[i].mux.base))
 			continue;
 
-		/* if this is a new configuration, just do it! */
+		 
 		if (!mux_log[i].is_configured)
 			break;
 
-		/*
-		 * IOMUX has been configured previously and one is trying to
-		 * configure it to a different function
-		 */
+		 
 		if (mux_log[i].mux.alt != mux->alt) {
 			dev_err(pinctrl->dev,
 				"double configuration error detected!\n");

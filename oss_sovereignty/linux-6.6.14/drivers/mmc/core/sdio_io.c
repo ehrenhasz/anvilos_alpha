@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/drivers/mmc/core/sdio_io.c
- *
- *  Copyright 2007-2008 Pierre Ossman
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/kernel.h>
@@ -17,13 +13,7 @@
 #include "card.h"
 #include "host.h"
 
-/**
- *	sdio_claim_host - exclusively claim a bus for a certain SDIO function
- *	@func: SDIO function that will be accessed
- *
- *	Claim a bus for a set of operations. The SDIO function given
- *	is used to figure out which bus is relevant.
- */
+ 
 void sdio_claim_host(struct sdio_func *func)
 {
 	if (WARN_ON(!func))
@@ -33,13 +23,7 @@ void sdio_claim_host(struct sdio_func *func)
 }
 EXPORT_SYMBOL_GPL(sdio_claim_host);
 
-/**
- *	sdio_release_host - release a bus for a certain SDIO function
- *	@func: SDIO function that was accessed
- *
- *	Release a bus, allowing others to claim the bus for their
- *	operations.
- */
+ 
 void sdio_release_host(struct sdio_func *func)
 {
 	if (WARN_ON(!func))
@@ -49,13 +33,7 @@ void sdio_release_host(struct sdio_func *func)
 }
 EXPORT_SYMBOL_GPL(sdio_release_host);
 
-/**
- *	sdio_enable_func - enables a SDIO function for usage
- *	@func: SDIO function to enable
- *
- *	Powers up and activates a SDIO function so that register
- *	access is possible.
- */
+ 
 int sdio_enable_func(struct sdio_func *func)
 {
 	int ret;
@@ -100,13 +78,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(sdio_enable_func);
 
-/**
- *	sdio_disable_func - disable a SDIO function
- *	@func: SDIO function to disable
- *
- *	Powers down and deactivates a SDIO function. Register access
- *	to this function will fail until the function is reenabled.
- */
+ 
 int sdio_disable_func(struct sdio_func *func)
 {
 	int ret;
@@ -137,25 +109,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(sdio_disable_func);
 
-/**
- *	sdio_set_block_size - set the block size of an SDIO function
- *	@func: SDIO function to change
- *	@blksz: new block size or 0 to use the default.
- *
- *	The default block size is the largest supported by both the function
- *	and the host, with a maximum of 512 to ensure that arbitrarily sized
- *	data transfer use the optimal (least) number of commands.
- *
- *	A driver may call this to override the default block size set by the
- *	core. This can be used to set a block size greater than the maximum
- *	that reported by the card; it is the driver's responsibility to ensure
- *	it uses a value that the card supports.
- *
- *	Returns 0 on success, -EINVAL if the host does not support the
- *	requested block size, or -EIO (etc.) if one of the resultant FBR block
- *	size register writes failed.
- *
- */
+ 
 int sdio_set_block_size(struct sdio_func *func, unsigned blksz)
 {
 	int ret;
@@ -183,9 +137,7 @@ int sdio_set_block_size(struct sdio_func *func, unsigned blksz)
 }
 EXPORT_SYMBOL_GPL(sdio_set_block_size);
 
-/*
- * Calculate the maximum byte mode transfer size
- */
+ 
 static inline unsigned int sdio_max_byte_size(struct sdio_func *func)
 {
 	unsigned mval =	func->card->host->max_blk_size;
@@ -198,38 +150,17 @@ static inline unsigned int sdio_max_byte_size(struct sdio_func *func)
 	if (mmc_card_broken_byte_mode_512(func->card))
 		return min(mval, 511u);
 
-	return min(mval, 512u); /* maximum size for byte mode */
+	return min(mval, 512u);  
 }
 
-/*
- * This is legacy code, which needs to be re-worked some day. Basically we need
- * to take into account the properties of the host, as to enable the SDIO func
- * driver layer to allocate optimal buffers.
- */
+ 
 static inline unsigned int _sdio_align_size(unsigned int sz)
 {
-	/*
-	 * FIXME: We don't have a system for the controller to tell
-	 * the core about its problems yet, so for now we just 32-bit
-	 * align the size.
-	 */
+	 
 	return ALIGN(sz, 4);
 }
 
-/**
- *	sdio_align_size - pads a transfer size to a more optimal value
- *	@func: SDIO function
- *	@sz: original transfer size
- *
- *	Pads the original data size with a number of extra bytes in
- *	order to avoid controller bugs and/or performance hits
- *	(e.g. some controllers revert to PIO for certain sizes).
- *
- *	If possible, it will also adjust the size so that it can be
- *	handled in just a single request.
- *
- *	Returns the improved size, which might be unmodified.
- */
+ 
 unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz)
 {
 	unsigned int orig_sz;
@@ -238,61 +169,38 @@ unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz)
 
 	orig_sz = sz;
 
-	/*
-	 * Do a first check with the controller, in case it
-	 * wants to increase the size up to a point where it
-	 * might need more than one block.
-	 */
+	 
 	sz = _sdio_align_size(sz);
 
-	/*
-	 * If we can still do this with just a byte transfer, then
-	 * we're done.
-	 */
+	 
 	if (sz <= sdio_max_byte_size(func))
 		return sz;
 
 	if (func->card->cccr.multi_block) {
-		/*
-		 * Check if the transfer is already block aligned
-		 */
+		 
 		if ((sz % func->cur_blksize) == 0)
 			return sz;
 
-		/*
-		 * Realign it so that it can be done with one request,
-		 * and recheck if the controller still likes it.
-		 */
+		 
 		blk_sz = ((sz + func->cur_blksize - 1) /
 			func->cur_blksize) * func->cur_blksize;
 		blk_sz = _sdio_align_size(blk_sz);
 
-		/*
-		 * This value is only good if it is still just
-		 * one request.
-		 */
+		 
 		if ((blk_sz % func->cur_blksize) == 0)
 			return blk_sz;
 
-		/*
-		 * We failed to do one request, but at least try to
-		 * pad the remainder properly.
-		 */
+		 
 		byte_sz = _sdio_align_size(sz % func->cur_blksize);
 		if (byte_sz <= sdio_max_byte_size(func)) {
 			blk_sz = sz / func->cur_blksize;
 			return blk_sz * func->cur_blksize + byte_sz;
 		}
 	} else {
-		/*
-		 * We need multiple requests, so first check that the
-		 * controller can handle the chunk size;
-		 */
+		 
 		chunk_sz = _sdio_align_size(sdio_max_byte_size(func));
 		if (chunk_sz == sdio_max_byte_size(func)) {
-			/*
-			 * Fix up the size of the remainder (if any)
-			 */
+			 
 			byte_sz = orig_sz % chunk_sz;
 			if (byte_sz) {
 				byte_sz = _sdio_align_size(byte_sz);
@@ -302,16 +210,12 @@ unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz)
 		}
 	}
 
-	/*
-	 * The controller is simply incapable of transferring the size
-	 * we want in decent manner, so just return the original size.
-	 */
+	 
 	return orig_sz;
 }
 EXPORT_SYMBOL_GPL(sdio_align_size);
 
-/* Split an arbitrarily sized data transfer into several
- * IO_RW_EXTENDED commands. */
+ 
 static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 	unsigned addr, int incr_addr, u8 *buf, unsigned size)
 {
@@ -322,10 +226,9 @@ static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 	if (!func || (func->num > 7))
 		return -EINVAL;
 
-	/* Do the bulk of the transfer using block mode (if supported). */
+	 
 	if (func->card->cccr.multi_block && (size > sdio_max_byte_size(func))) {
-		/* Blocks per command is limited by host count, host transfer
-		 * size and the maximum for IO_RW_EXTENDED of 511 blocks. */
+		 
 		max_blocks = min(func->card->host->max_blk_count, 511u);
 
 		while (remainder >= func->cur_blksize) {
@@ -349,11 +252,11 @@ static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 		}
 	}
 
-	/* Write the remainder using byte mode. */
+	 
 	while (remainder > 0) {
 		size = min(remainder, sdio_max_byte_size(func));
 
-		/* Indicate byte mode by setting "blocks" = 0 */
+		 
 		ret = mmc_io_rw_extended(func->card, write, func->num, addr,
 			 incr_addr, buf, 0, size);
 		if (ret)
@@ -367,16 +270,7 @@ static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 	return 0;
 }
 
-/**
- *	sdio_readb - read a single byte from a SDIO function
- *	@func: SDIO function to access
- *	@addr: address to read
- *	@err_ret: optional status value from transfer
- *
- *	Reads a single byte from the address space of a given SDIO
- *	function. If there is a problem reading the address, 0xff
- *	is returned and @err_ret will contain the error code.
- */
+ 
 u8 sdio_readb(struct sdio_func *func, unsigned int addr, int *err_ret)
 {
 	int ret;
@@ -398,17 +292,7 @@ u8 sdio_readb(struct sdio_func *func, unsigned int addr, int *err_ret)
 }
 EXPORT_SYMBOL_GPL(sdio_readb);
 
-/**
- *	sdio_writeb - write a single byte to a SDIO function
- *	@func: SDIO function to access
- *	@b: byte to write
- *	@addr: address to write to
- *	@err_ret: optional status value from transfer
- *
- *	Writes a single byte to the address space of a given SDIO
- *	function. @err_ret will contain the status of the actual
- *	transfer.
- */
+ 
 void sdio_writeb(struct sdio_func *func, u8 b, unsigned int addr, int *err_ret)
 {
 	int ret;
@@ -425,19 +309,7 @@ void sdio_writeb(struct sdio_func *func, u8 b, unsigned int addr, int *err_ret)
 }
 EXPORT_SYMBOL_GPL(sdio_writeb);
 
-/**
- *	sdio_writeb_readb - write and read a byte from SDIO function
- *	@func: SDIO function to access
- *	@write_byte: byte to write
- *	@addr: address to write to
- *	@err_ret: optional status value from transfer
- *
- *	Performs a RAW (Read after Write) operation as defined by SDIO spec -
- *	single byte is written to address space of a given SDIO function and
- *	response is read back from the same address, both using single request.
- *	If there is a problem with the operation, 0xff is returned and
- *	@err_ret will contain the error code.
- */
+ 
 u8 sdio_writeb_readb(struct sdio_func *func, u8 write_byte,
 	unsigned int addr, int *err_ret)
 {
@@ -455,16 +327,7 @@ u8 sdio_writeb_readb(struct sdio_func *func, u8 write_byte,
 }
 EXPORT_SYMBOL_GPL(sdio_writeb_readb);
 
-/**
- *	sdio_memcpy_fromio - read a chunk of memory from a SDIO function
- *	@func: SDIO function to access
- *	@dst: buffer to store the data
- *	@addr: address to begin reading from
- *	@count: number of bytes to read
- *
- *	Reads from the address space of a given SDIO function. Return
- *	value indicates if the transfer succeeded or not.
- */
+ 
 int sdio_memcpy_fromio(struct sdio_func *func, void *dst,
 	unsigned int addr, int count)
 {
@@ -472,16 +335,7 @@ int sdio_memcpy_fromio(struct sdio_func *func, void *dst,
 }
 EXPORT_SYMBOL_GPL(sdio_memcpy_fromio);
 
-/**
- *	sdio_memcpy_toio - write a chunk of memory to a SDIO function
- *	@func: SDIO function to access
- *	@addr: address to start writing to
- *	@src: buffer that contains the data to write
- *	@count: number of bytes to write
- *
- *	Writes to the address space of a given SDIO function. Return
- *	value indicates if the transfer succeeded or not.
- */
+ 
 int sdio_memcpy_toio(struct sdio_func *func, unsigned int addr,
 	void *src, int count)
 {
@@ -489,16 +343,7 @@ int sdio_memcpy_toio(struct sdio_func *func, unsigned int addr,
 }
 EXPORT_SYMBOL_GPL(sdio_memcpy_toio);
 
-/**
- *	sdio_readsb - read from a FIFO on a SDIO function
- *	@func: SDIO function to access
- *	@dst: buffer to store the data
- *	@addr: address of (single byte) FIFO
- *	@count: number of bytes to read
- *
- *	Reads from the specified FIFO of a given SDIO function. Return
- *	value indicates if the transfer succeeded or not.
- */
+ 
 int sdio_readsb(struct sdio_func *func, void *dst, unsigned int addr,
 	int count)
 {
@@ -506,16 +351,7 @@ int sdio_readsb(struct sdio_func *func, void *dst, unsigned int addr,
 }
 EXPORT_SYMBOL_GPL(sdio_readsb);
 
-/**
- *	sdio_writesb - write to a FIFO of a SDIO function
- *	@func: SDIO function to access
- *	@addr: address of (single byte) FIFO
- *	@src: buffer that contains the data to write
- *	@count: number of bytes to write
- *
- *	Writes to the specified FIFO of a given SDIO function. Return
- *	value indicates if the transfer succeeded or not.
- */
+ 
 int sdio_writesb(struct sdio_func *func, unsigned int addr, void *src,
 	int count)
 {
@@ -523,16 +359,7 @@ int sdio_writesb(struct sdio_func *func, unsigned int addr, void *src,
 }
 EXPORT_SYMBOL_GPL(sdio_writesb);
 
-/**
- *	sdio_readw - read a 16 bit integer from a SDIO function
- *	@func: SDIO function to access
- *	@addr: address to read
- *	@err_ret: optional status value from transfer
- *
- *	Reads a 16 bit integer from the address space of a given SDIO
- *	function. If there is a problem reading the address, 0xffff
- *	is returned and @err_ret will contain the error code.
- */
+ 
 u16 sdio_readw(struct sdio_func *func, unsigned int addr, int *err_ret)
 {
 	int ret;
@@ -547,17 +374,7 @@ u16 sdio_readw(struct sdio_func *func, unsigned int addr, int *err_ret)
 }
 EXPORT_SYMBOL_GPL(sdio_readw);
 
-/**
- *	sdio_writew - write a 16 bit integer to a SDIO function
- *	@func: SDIO function to access
- *	@b: integer to write
- *	@addr: address to write to
- *	@err_ret: optional status value from transfer
- *
- *	Writes a 16 bit integer to the address space of a given SDIO
- *	function. @err_ret will contain the status of the actual
- *	transfer.
- */
+ 
 void sdio_writew(struct sdio_func *func, u16 b, unsigned int addr, int *err_ret)
 {
 	int ret;
@@ -570,17 +387,7 @@ void sdio_writew(struct sdio_func *func, u16 b, unsigned int addr, int *err_ret)
 }
 EXPORT_SYMBOL_GPL(sdio_writew);
 
-/**
- *	sdio_readl - read a 32 bit integer from a SDIO function
- *	@func: SDIO function to access
- *	@addr: address to read
- *	@err_ret: optional status value from transfer
- *
- *	Reads a 32 bit integer from the address space of a given SDIO
- *	function. If there is a problem reading the address,
- *	0xffffffff is returned and @err_ret will contain the error
- *	code.
- */
+ 
 u32 sdio_readl(struct sdio_func *func, unsigned int addr, int *err_ret)
 {
 	int ret;
@@ -595,17 +402,7 @@ u32 sdio_readl(struct sdio_func *func, unsigned int addr, int *err_ret)
 }
 EXPORT_SYMBOL_GPL(sdio_readl);
 
-/**
- *	sdio_writel - write a 32 bit integer to a SDIO function
- *	@func: SDIO function to access
- *	@b: integer to write
- *	@addr: address to write to
- *	@err_ret: optional status value from transfer
- *
- *	Writes a 32 bit integer to the address space of a given SDIO
- *	function. @err_ret will contain the status of the actual
- *	transfer.
- */
+ 
 void sdio_writel(struct sdio_func *func, u32 b, unsigned int addr, int *err_ret)
 {
 	int ret;
@@ -618,16 +415,7 @@ void sdio_writel(struct sdio_func *func, u32 b, unsigned int addr, int *err_ret)
 }
 EXPORT_SYMBOL_GPL(sdio_writel);
 
-/**
- *	sdio_f0_readb - read a single byte from SDIO function 0
- *	@func: an SDIO function of the card
- *	@addr: address to read
- *	@err_ret: optional status value from transfer
- *
- *	Reads a single byte from the address space of SDIO function 0.
- *	If there is a problem reading the address, 0xff is returned
- *	and @err_ret will contain the error code.
- */
+ 
 unsigned char sdio_f0_readb(struct sdio_func *func, unsigned int addr,
 	int *err_ret)
 {
@@ -650,20 +438,7 @@ unsigned char sdio_f0_readb(struct sdio_func *func, unsigned int addr,
 }
 EXPORT_SYMBOL_GPL(sdio_f0_readb);
 
-/**
- *	sdio_f0_writeb - write a single byte to SDIO function 0
- *	@func: an SDIO function of the card
- *	@b: byte to write
- *	@addr: address to write to
- *	@err_ret: optional status value from transfer
- *
- *	Writes a single byte to the address space of SDIO function 0.
- *	@err_ret will contain the status of the actual transfer.
- *
- *	Only writes to the vendor specific CCCR registers (0xF0 -
- *	0xFF) are permiited; @err_ret will be set to -EINVAL for *
- *	writes outside this range.
- */
+ 
 void sdio_f0_writeb(struct sdio_func *func, unsigned char b, unsigned int addr,
 	int *err_ret)
 {
@@ -687,16 +462,7 @@ void sdio_f0_writeb(struct sdio_func *func, unsigned char b, unsigned int addr,
 }
 EXPORT_SYMBOL_GPL(sdio_f0_writeb);
 
-/**
- *	sdio_get_host_pm_caps - get host power management capabilities
- *	@func: SDIO function attached to host
- *
- *	Returns a capability bitmask corresponding to power management
- *	features supported by the host controller that the card function
- *	might rely upon during a system suspend.  The host doesn't need
- *	to be claimed, nor the function active, for this information to be
- *	obtained.
- */
+ 
 mmc_pm_flag_t sdio_get_host_pm_caps(struct sdio_func *func)
 {
 	if (!func)
@@ -706,19 +472,7 @@ mmc_pm_flag_t sdio_get_host_pm_caps(struct sdio_func *func)
 }
 EXPORT_SYMBOL_GPL(sdio_get_host_pm_caps);
 
-/**
- *	sdio_set_host_pm_flags - set wanted host power management capabilities
- *	@func: SDIO function attached to host
- *	@flags: Power Management flags to set
- *
- *	Set a capability bitmask corresponding to wanted host controller
- *	power management features for the upcoming suspend state.
- *	This must be called, if needed, each time the suspend method of
- *	the function driver is called, and must contain only bits that
- *	were returned by sdio_get_host_pm_caps().
- *	The host doesn't need to be claimed, nor the function active,
- *	for this information to be set.
- */
+ 
 int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags)
 {
 	struct mmc_host *host;
@@ -731,82 +485,34 @@ int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags)
 	if (flags & ~host->pm_caps)
 		return -EINVAL;
 
-	/* function suspend methods are serialized, hence no lock needed */
+	 
 	host->pm_flags |= flags;
 	return 0;
 }
 EXPORT_SYMBOL_GPL(sdio_set_host_pm_flags);
 
-/**
- *	sdio_retune_crc_disable - temporarily disable retuning on CRC errors
- *	@func: SDIO function attached to host
- *
- *	If the SDIO card is known to be in a state where it might produce
- *	CRC errors on the bus in response to commands (like if we know it is
- *	transitioning between power states), an SDIO function driver can
- *	call this function to temporarily disable the SD/MMC core behavior of
- *	triggering an automatic retuning.
- *
- *	This function should be called while the host is claimed and the host
- *	should remain claimed until sdio_retune_crc_enable() is called.
- *	Specifically, the expected sequence of calls is:
- *	- sdio_claim_host()
- *	- sdio_retune_crc_disable()
- *	- some number of calls like sdio_writeb() and sdio_readb()
- *	- sdio_retune_crc_enable()
- *	- sdio_release_host()
- */
+ 
 void sdio_retune_crc_disable(struct sdio_func *func)
 {
 	func->card->host->retune_crc_disable = true;
 }
 EXPORT_SYMBOL_GPL(sdio_retune_crc_disable);
 
-/**
- *	sdio_retune_crc_enable - re-enable retuning on CRC errors
- *	@func: SDIO function attached to host
- *
- *	This is the complement to sdio_retune_crc_disable().
- */
+ 
 void sdio_retune_crc_enable(struct sdio_func *func)
 {
 	func->card->host->retune_crc_disable = false;
 }
 EXPORT_SYMBOL_GPL(sdio_retune_crc_enable);
 
-/**
- *	sdio_retune_hold_now - start deferring retuning requests till release
- *	@func: SDIO function attached to host
- *
- *	This function can be called if it's currently a bad time to do
- *	a retune of the SDIO card.  Retune requests made during this time
- *	will be held and we'll actually do the retune sometime after the
- *	release.
- *
- *	This function could be useful if an SDIO card is in a power state
- *	where it can respond to a small subset of commands that doesn't
- *	include the retuning command.  Care should be taken when using
- *	this function since (presumably) the retuning request we might be
- *	deferring was made for a good reason.
- *
- *	This function should be called while the host is claimed.
- */
+ 
 void sdio_retune_hold_now(struct sdio_func *func)
 {
 	mmc_retune_hold_now(func->card->host);
 }
 EXPORT_SYMBOL_GPL(sdio_retune_hold_now);
 
-/**
- *	sdio_retune_release - signal that it's OK to retune now
- *	@func: SDIO function attached to host
- *
- *	This is the complement to sdio_retune_hold_now().  Calling this
- *	function won't make a retune happen right away but will allow
- *	them to be scheduled normally.
- *
- *	This function should be called while the host is claimed.
- */
+ 
 void sdio_retune_release(struct sdio_func *func)
 {
 	mmc_retune_release(func->card->host);

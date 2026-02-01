@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dwmac-sunxi.c - Allwinner sunxi DWMAC specific glue layer
- *
- * Copyright (C) 2013 Chen-Yu Tsai
- *
- * Chen-Yu Tsai  <wens@csie.org>
- */
+
+ 
 
 #include <linux/stmmac.h>
 #include <linux/clk.h>
@@ -38,12 +32,7 @@ static int sun7i_gmac_init(struct platform_device *pdev, void *priv)
 			return ret;
 	}
 
-	/* Set GMAC interface port mode
-	 *
-	 * The GMAC TX clock lines are configured by setting the clock
-	 * rate, which then uses the auto-reparenting feature of the
-	 * clock driver, and enabling/disabling the clock.
-	 */
+	 
 	if (phy_interface_mode_is_rgmii(gmac->interface)) {
 		clk_set_rate(gmac->tx_clk, SUN7I_GMAC_GMII_RGMII_RATE);
 		clk_prepare_enable(gmac->tx_clk);
@@ -76,7 +65,7 @@ static void sun7i_fix_speed(void *priv, unsigned int speed, unsigned int mode)
 {
 	struct sunxi_priv_data *gmac = priv;
 
-	/* only GMII mode requires us to reconfigure the clock lines */
+	 
 	if (gmac->interface != PHY_INTERFACE_MODE_GMII)
 		return;
 
@@ -131,7 +120,7 @@ static int sun7i_gmac_probe(struct platform_device *pdev)
 		goto err_remove_config_dt;
 	}
 
-	/* Optional regulator for PHY */
+	 
 	gmac->regulator = devm_regulator_get_optional(dev, "phy");
 	if (IS_ERR(gmac->regulator)) {
 		if (PTR_ERR(gmac->regulator) == -EPROBE_DEFER) {
@@ -142,8 +131,7 @@ static int sun7i_gmac_probe(struct platform_device *pdev)
 		gmac->regulator = NULL;
 	}
 
-	/* platform data specifying hardware features and callbacks.
-	 * hardware features were copied from Allwinner drivers. */
+	 
 	plat_dat->tx_coe = 1;
 	plat_dat->has_gmac = true;
 	plat_dat->bsp_priv = gmac;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rl6347a.c - RL6347A class device shared support
- *
- * Copyright 2015 Realtek Semiconductor Corp.
- *
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,7 +14,7 @@ int rl6347a_hw_write(void *context, unsigned int reg, unsigned int value)
 	u8 data[4];
 	int ret, i;
 
-	/* handle index registers */
+	 
 	if (reg <= 0xff) {
 		rl6347a_hw_write(client, RL6347A_COEF_INDEX, reg);
 		for (i = 0; i < rl6347a->index_cache_size; i++) {
@@ -35,11 +29,7 @@ int rl6347a_hw_write(void *context, unsigned int reg, unsigned int value)
 
 	data[0] = (reg >> 24) & 0xff;
 	data[1] = (reg >> 16) & 0xff;
-	/*
-	 * 4 bit VID: reg should be 0
-	 * 12 bit VID: value should be 0
-	 * So we use an OR operator to handle it rather than use if condition.
-	 */
+	 
 	data[2] = ((reg >> 8) & 0xff) | ((value >> 8) & 0xff);
 	data[3] = value & 0xff;
 
@@ -64,7 +54,7 @@ int rl6347a_hw_read(void *context, unsigned int reg, unsigned int *value)
 	__be32 be_reg, buf = 0x0;
 	unsigned int index, vid;
 
-	/* handle index registers */
+	 
 	if (reg <= 0xff) {
 		rl6347a_hw_write(client, RL6347A_COEF_INDEX, reg);
 		reg = RL6347A_PROC_COEF;
@@ -79,13 +69,13 @@ int rl6347a_hw_read(void *context, unsigned int reg, unsigned int *value)
 	}
 	be_reg = cpu_to_be32(reg);
 
-	/* Write register */
+	 
 	xfer[0].addr = client->addr;
 	xfer[0].flags = 0;
 	xfer[0].len = 4;
 	xfer[0].buf = (u8 *)&be_reg;
 
-	/* Read data */
+	 
 	xfer[1].addr = client->addr;
 	xfer[1].flags = I2C_M_RD;
 	xfer[1].len = 4;

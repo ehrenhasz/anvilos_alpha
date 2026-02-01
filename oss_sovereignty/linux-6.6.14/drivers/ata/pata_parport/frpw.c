@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1996-1998  Grant R. Guenther <grant@torque.net>
- *
- * frpw.c is a low-level protocol driver for the Freecom "Power" parallel port
- * IDE adapter.
- *
- * Some applications of this adapter may require a "printer" reset prior to
- * loading the driver.  This can be done by loading and unloading the "lp"
- * driver, or it can be done by this driver if you define FRPW_HARD_RESET.
- * The latter is not recommended as it may upset devices on other ports.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -23,10 +13,7 @@
 #define cec4		w2(0xc);w2(0xe);w2(0xe);w2(0xc);w2(4);w2(4);w2(4);
 #define j44(l,h)	(((l>>4)&0x0f)|(h&0xf0))
 
-/*
- * cont = 0 - access the IDE register file
- * cont = 1 - access the IDE command set
- */
+ 
 static int  cont_map[2] = { 0x08, 0x10 };
 
 static int frpw_read_regr(struct pi_adapter *pi, int cont, int regr)
@@ -181,17 +168,13 @@ static void frpw_disconnect(struct pi_adapter *pi)
 	w2(pi->saved_r2);
 }
 
-/*
- * Stub logic to see if PNP string is available - used to distinguish
- * between the Xilinx and ASIC implementations of the Freecom adapter.
- * returns chip_type:   0 = Xilinx, 1 = ASIC
- */
+ 
 static int frpw_test_pnp(struct pi_adapter *pi)
 {
 	int olddelay, a, b;
 
 #ifdef FRPW_HARD_RESET
-        w0(0); w2(8); udelay(50); w2(0xc);   /* parallel bus reset */
+        w0(0); w2(8); udelay(50); w2(0xc);    
         mdelay(1500);
 #endif
 
@@ -212,10 +195,7 @@ static int frpw_test_pnp(struct pi_adapter *pi)
 	return ((~a & 0x40) && (b & 0x40));
 }
 
-/*
- * We use the pi->private to remember the result of the PNP test.
- * To make this work, private = port*2 + chip.  Yes, I know it's a hack :-(
- */
+ 
 static int frpw_test_proto(struct pi_adapter *pi)
 {
 	int j, k, r;

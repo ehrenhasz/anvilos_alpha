@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) Intel Corp. 2007.
- * All Rights Reserved.
- *
- * Intel funded Tungsten Graphics (http://www.tungstengraphics.com) to
- * develop this driver.
- *
- * This file is part of the Carillo Ranch video subsystem driver.
- *
- * Authors:
- *   Thomas Hellstrom <thomas-at-tungstengraphics-dot-com>
- *   Alan Hourihane <alanh-at-tungstengraphics-dot-com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -26,9 +14,7 @@
 #include <linux/pci.h>
 #include <linux/slab.h>
 
-/* The LVDS- and panel power controls sits on the
- * GPIO port of the ISA bridge.
- */
+ 
 
 #define CRVML_DEVICE_LPC    0x27B8
 #define CRVML_REG_GPIOBAR   0x48
@@ -39,7 +25,7 @@
 #define CRVML_PANEL_ON      0x00000002
 #define CRVML_BACKLIGHT_OFF 0x00000004
 
-/* The PLL Clock register sits on Host bridge */
+ 
 #define CRVML_DEVICE_MCH   0x5001
 #define CRVML_REG_MCHBAR   0x44
 #define CRVML_REG_MCHEN    0x54
@@ -63,11 +49,11 @@ static int cr_backlight_set_intensity(struct backlight_device *bd)
 	u32 cur = inl(addr);
 
 	if (backlight_get_brightness(bd) == 0) {
-		/* OFF */
+		 
 		cur |= CRVML_BACKLIGHT_OFF;
 		outl(cur, addr);
 	} else {
-		/* FULL ON */
+		 
 		cur &= ~CRVML_BACKLIGHT_OFF;
 		outl(cur, addr);
 	}
@@ -100,18 +86,18 @@ static void cr_panel_on(void)
 	u32 cur = inl(addr);
 
 	if (!(cur & CRVML_PANEL_ON)) {
-		/* Make sure LVDS controller is down. */
+		 
 		if (cur & 0x00000001) {
 			cur &= ~CRVML_LVDS_ON;
 			outl(cur, addr);
 		}
-		/* Power up Panel */
+		 
 		schedule_timeout(HZ / 10);
 		cur |= CRVML_PANEL_ON;
 		outl(cur, addr);
 	}
 
-	/* Power up LVDS controller */
+	 
 
 	if (!(cur & CRVML_LVDS_ON)) {
 		schedule_timeout(HZ / 10);
@@ -124,7 +110,7 @@ static void cr_panel_off(void)
 	u32 addr = gpio_bar + CRVML_PANEL_PORT;
 	u32 cur = inl(addr);
 
-	/* Power down LVDS controller first to avoid high currents */
+	 
 	if (cur & CRVML_LVDS_ON) {
 		cur &= ~CRVML_LVDS_ON;
 		outl(cur, addr);

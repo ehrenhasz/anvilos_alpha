@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus interface code
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/greybus.h>
@@ -17,14 +12,14 @@
 
 #define GB_INTERFACE_AUTOSUSPEND_MS			3000
 
-/* Time required for interface to enter standby before disabling REFCLK */
+ 
 #define GB_INTERFACE_SUSPEND_HIBERNATE_DELAY_MS			20
 
-/* Don't-care selector index */
+ 
 #define DME_SELECTOR_INDEX_NULL		0
 
-/* DME attributes */
-/* FIXME: remove ES2 support and DME_T_TST_SRC_INCREMENT */
+ 
+ 
 #define DME_T_TST_SRC_INCREMENT		0x4083
 
 #define DME_DDBL1_MANUFACTURERID	0x5003
@@ -36,7 +31,7 @@
 #define DME_TOSHIBA_GMP_SN1		0x6003
 #define DME_TOSHIBA_GMP_INIT_STATUS	0x6101
 
-/* DDBL1 Manufacturer and Product ids */
+ 
 #define TOSHIBA_DMID			0x0126
 #define TOSHIBA_ES2_BRIDGE_DPID		0x1000
 #define TOSHIBA_ES3_APBRIDGE_DPID	0x1001
@@ -57,10 +52,7 @@ static int gb_interface_read_ara_dme(struct gb_interface *intf)
 	u32 sn0, sn1;
 	int ret;
 
-	/*
-	 * Unless this is a Toshiba bridge, bail out until we have defined
-	 * standard GMP attributes.
-	 */
+	 
 	if (intf->ddbl1_manufacturer_id != TOSHIBA_DMID) {
 		dev_err(&intf->dev, "unknown manufacturer %08x\n",
 			intf->ddbl1_manufacturer_id);
@@ -94,7 +86,7 @@ static int gb_interface_read_dme(struct gb_interface *intf)
 {
 	int ret;
 
-	/* DME attributes have already been read */
+	 
 	if (intf->dme_read)
 		return 0;
 
@@ -130,7 +122,7 @@ static int gb_interface_route_create(struct gb_interface *intf)
 	u8 device_id;
 	int ret;
 
-	/* Allocate an interface device id. */
+	 
 	ret = ida_simple_get(&svc->device_id_map,
 			     GB_SVC_DEVICE_ID_MIN, GB_SVC_DEVICE_ID_MAX + 1,
 			     GFP_KERNEL);
@@ -147,7 +139,7 @@ static int gb_interface_route_create(struct gb_interface *intf)
 		goto err_ida_remove;
 	}
 
-	/* FIXME: Hard-coded AP device id. */
+	 
 	ret = gb_svc_route_create(svc, svc->ap_intf_id, GB_SVC_DEVICE_ID_AP,
 				  intf_id, device_id);
 	if (ret) {
@@ -160,10 +152,7 @@ static int gb_interface_route_create(struct gb_interface *intf)
 	return 0;
 
 err_svc_id_free:
-	/*
-	 * XXX Should we tell SVC that this id doesn't belong to interface
-	 * XXX anymore.
-	 */
+	 
 err_ida_remove:
 	ida_simple_remove(&svc->device_id_map, device_id);
 
@@ -182,14 +171,14 @@ static void gb_interface_route_destroy(struct gb_interface *intf)
 	intf->device_id = GB_INTERFACE_DEVICE_ID_BAD;
 }
 
-/* Locking: Caller holds the interface mutex. */
+ 
 static int gb_interface_legacy_mode_switch(struct gb_interface *intf)
 {
 	int ret;
 
 	dev_info(&intf->dev, "legacy mode switch detected\n");
 
-	/* Mark as disconnected to prevent I/O during disable. */
+	 
 	intf->disconnected = true;
 	gb_interface_disable(intf);
 	intf->disconnected = false;
@@ -258,7 +247,7 @@ static void gb_interface_mode_switch_work(struct work_struct *work)
 	intf = container_of(work, struct gb_interface, mode_switch_work);
 
 	mutex_lock(&intf->mutex);
-	/* Make sure interface is still enabled. */
+	 
 	if (!intf->enabled) {
 		dev_dbg(&intf->dev, "mode switch aborted\n");
 		intf->mode_switch = false;
@@ -266,10 +255,7 @@ static void gb_interface_mode_switch_work(struct work_struct *work)
 		goto out_interface_put;
 	}
 
-	/*
-	 * Prepare the control device for mode switch and make sure to get an
-	 * extra reference before it goes away during interface disable.
-	 */
+	 
 	control = gb_control_get(intf->control);
 	gb_control_mode_switch_prepare(control);
 	gb_interface_disable(intf);
@@ -279,7 +265,7 @@ static void gb_interface_mode_switch_work(struct work_struct *work)
 	ret = wait_for_completion_interruptible_timeout(
 			&intf->mode_switch_completion, timeout);
 
-	/* Finalise control-connection mode switch. */
+	 
 	gb_control_mode_switch_complete(control);
 	gb_control_put(control);
 
@@ -291,7 +277,7 @@ static void gb_interface_mode_switch_work(struct work_struct *work)
 		goto err_deactivate;
 	}
 
-	/* Re-enable (re-enumerate) interface if still active. */
+	 
 	mutex_lock(&intf->mutex);
 	intf->mode_switch = false;
 	if (intf->active) {
@@ -331,10 +317,7 @@ int gb_interface_request_mode_switch(struct gb_interface *intf)
 	intf->mode_switch = true;
 	reinit_completion(&intf->mode_switch_completion);
 
-	/*
-	 * Get a reference to the interface device, which will be put once the
-	 * mode switch is complete.
-	 */
+	 
 	get_device(&intf->dev);
 
 	if (!queue_work(system_long_wq, &intf->mode_switch_work)) {
@@ -350,14 +333,7 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(gb_interface_request_mode_switch);
 
-/*
- * T_TstSrcIncrement is written by the module on ES2 as a stand-in for the
- * init-status attribute DME_TOSHIBA_INIT_STATUS. The AP needs to read and
- * clear it after reading a non-zero value from it.
- *
- * FIXME: This is module-hardware dependent and needs to be extended for every
- * type of module we want to support.
- */
+ 
 static int gb_interface_read_and_clear_init_status(struct gb_interface *intf)
 {
 	struct gb_host_device *hd = intf->hd;
@@ -368,11 +344,7 @@ static int gb_interface_read_and_clear_init_status(struct gb_interface *intf)
 	u16 attr;
 	u8 init_status;
 
-	/*
-	 * ES2 bridges use T_TstSrcIncrement for the init status.
-	 *
-	 * FIXME: Remove ES2 support
-	 */
+	 
 	if (intf->quirks & GB_INTERFACE_QUIRK_NO_INIT_STATUS)
 		attr = DME_T_TST_SRC_INCREMENT;
 	else
@@ -383,32 +355,19 @@ static int gb_interface_read_and_clear_init_status(struct gb_interface *intf)
 	if (ret)
 		return ret;
 
-	/*
-	 * A nonzero init status indicates the module has finished
-	 * initializing.
-	 */
+	 
 	if (!value) {
 		dev_err(&intf->dev, "invalid init status\n");
 		return -ENODEV;
 	}
 
-	/*
-	 * Extract the init status.
-	 *
-	 * For ES2: We need to check lowest 8 bits of 'value'.
-	 * For ES3: We need to check highest 8 bits out of 32 of 'value'.
-	 *
-	 * FIXME: Remove ES2 support
-	 */
+	 
 	if (intf->quirks & GB_INTERFACE_QUIRK_NO_INIT_STATUS)
 		init_status = value & 0xff;
 	else
 		init_status = value >> 24;
 
-	/*
-	 * Check if the interface is executing the quirky ES3 bootrom that,
-	 * for example, requires E2EFC, CSD and CSV to be disabled.
-	 */
+	 
 	bootrom_quirks = GB_INTERFACE_QUIRK_NO_CPORT_FEATURES |
 				GB_INTERFACE_QUIRK_FORCED_DISABLE |
 				GB_INTERFACE_QUIRK_LEGACY_MODE_SWITCH |
@@ -422,7 +381,7 @@ static int gb_interface_read_and_clear_init_status(struct gb_interface *intf)
 		intf->quirks |= bootrom_quirks;
 		break;
 	case GB_INIT_S2_LOADER_BOOT_STARTED:
-		/* S2 Loader doesn't support runtime PM */
+		 
 		intf->quirks &= ~bootrom_quirks;
 		intf->quirks |= s2l_quirks;
 		break;
@@ -431,12 +390,12 @@ static int gb_interface_read_and_clear_init_status(struct gb_interface *intf)
 		intf->quirks &= ~s2l_quirks;
 	}
 
-	/* Clear the init status. */
+	 
 	return gb_svc_dme_peer_set(hd->svc, intf->interface_id, attr,
 				   DME_SELECTOR_INDEX_NULL, 0);
 }
 
-/* interface sysfs attributes */
+ 
 #define gb_interface_attr(field, type)					\
 static ssize_t field##_show(struct device *dev,				\
 			    struct device_attribute *attr,		\
@@ -715,7 +674,7 @@ static int gb_interface_suspend(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Delay to allow interface to enter standby before disabling refclk */
+	 
 	msleep(GB_INTERFACE_SUSPEND_HIBERNATE_DELAY_MS);
 
 	ret = gb_interface_refclk_set(intf, false);
@@ -771,18 +730,7 @@ struct device_type greybus_interface_type = {
 	.pm =		&gb_interface_pm_ops,
 };
 
-/*
- * A Greybus module represents a user-replaceable component on a GMP
- * phone.  An interface is the physical connection on that module.  A
- * module may have more than one interface.
- *
- * Create a gb_interface structure to represent a discovered interface.
- * The position of interface within the Endo is encoded in "interface_id"
- * argument.
- *
- * Returns a pointer to the new interfce or a null pointer if a
- * failure occurs due to memory exhaustion.
- */
+ 
 struct gb_interface *gb_interface_create(struct gb_module *module,
 					 u8 interface_id)
 {
@@ -793,7 +741,7 @@ struct gb_interface *gb_interface_create(struct gb_module *module,
 	if (!intf)
 		return NULL;
 
-	intf->hd = hd;		/* XXX refcount? */
+	intf->hd = hd;		 
 	intf->module = module;
 	intf->interface_id = interface_id;
 	INIT_LIST_HEAD(&intf->bundles);
@@ -802,7 +750,7 @@ struct gb_interface *gb_interface_create(struct gb_module *module,
 	INIT_WORK(&intf->mode_switch_work, gb_interface_mode_switch_work);
 	init_completion(&intf->mode_switch_completion);
 
-	/* Invalid device id to start with */
+	 
 	intf->device_id = GB_INTERFACE_DEVICE_ID_BAD;
 
 	intf->dev.parent = &module->dev;
@@ -888,12 +836,12 @@ static int gb_interface_activate_operation(struct gb_interface *intf,
 	switch (type) {
 	case GB_SVC_INTF_TYPE_DUMMY:
 		*intf_type = GB_INTERFACE_TYPE_DUMMY;
-		/* FIXME: handle as an error for now */
+		 
 		return -ENODEV;
 	case GB_SVC_INTF_TYPE_UNIPRO:
 		*intf_type = GB_INTERFACE_TYPE_UNIPRO;
 		dev_err(&intf->dev, "interface type UniPro not supported\n");
-		/* FIXME: handle as an error for now */
+		 
 		return -ENODEV;
 	case GB_SVC_INTF_TYPE_GREYBUS:
 		*intf_type = GB_INTERFACE_TYPE_GREYBUS;
@@ -973,13 +921,7 @@ err_vsys_disable:
 	return ret;
 }
 
-/*
- * At present, we assume a UniPro-only module to be a Greybus module that
- * failed to send its mailbox poke. There is some reason to believe that this
- * is because of a bug in the ES3 bootrom.
- *
- * FIXME: Check if this is a Toshiba bridge before retrying?
- */
+ 
 static int _gb_interface_activate_es3_hack(struct gb_interface *intf,
 					   enum gb_interface_type *type)
 {
@@ -997,11 +939,7 @@ static int _gb_interface_activate_es3_hack(struct gb_interface *intf,
 	return ret;
 }
 
-/*
- * Activate an interface.
- *
- * Locking: Caller holds the interface mutex.
- */
+ 
 int gb_interface_activate(struct gb_interface *intf)
 {
 	enum gb_interface_type type;
@@ -1016,7 +954,7 @@ int gb_interface_activate(struct gb_interface *intf)
 		ret = _gb_interface_activate(intf, &type);
 	}
 
-	/* Make sure type is detected correctly during reactivation. */
+	 
 	if (intf->type != GB_INTERFACE_TYPE_INVALID) {
 		if (type != intf->type) {
 			dev_err(&intf->dev, "failed to detect interface type\n");
@@ -1033,11 +971,7 @@ int gb_interface_activate(struct gb_interface *intf)
 	return ret;
 }
 
-/*
- * Deactivate an interface.
- *
- * Locking: Caller holds the interface mutex.
- */
+ 
 void gb_interface_deactivate(struct gb_interface *intf)
 {
 	if (!intf->active)
@@ -1045,7 +979,7 @@ void gb_interface_deactivate(struct gb_interface *intf)
 
 	trace_gb_interface_deactivate(intf);
 
-	/* Abort any ongoing mode switch. */
+	 
 	if (intf->mode_switch)
 		complete(&intf->mode_switch_completion);
 
@@ -1058,13 +992,7 @@ void gb_interface_deactivate(struct gb_interface *intf)
 	intf->active = false;
 }
 
-/*
- * Enable an interface by enabling its control connection, fetching the
- * manifest and other information over it, and finally registering its child
- * devices.
- *
- * Locking: Caller holds the interface mutex.
- */
+ 
 int gb_interface_enable(struct gb_interface *intf)
 {
 	struct gb_control *control;
@@ -1078,7 +1006,7 @@ int gb_interface_enable(struct gb_interface *intf)
 		return ret;
 	}
 
-	/* Establish control connection */
+	 
 	control = gb_control_create(intf);
 	if (IS_ERR(control)) {
 		dev_err(&intf->dev, "failed to create control device: %ld\n",
@@ -1091,7 +1019,7 @@ int gb_interface_enable(struct gb_interface *intf)
 	if (ret)
 		goto err_put_control;
 
-	/* Get manifest size using control protocol on CPort */
+	 
 	size = gb_control_get_manifest_size_operation(intf);
 	if (size <= 0) {
 		dev_err(&intf->dev, "failed to get manifest size: %d\n", size);
@@ -1110,17 +1038,14 @@ int gb_interface_enable(struct gb_interface *intf)
 		goto err_disable_control;
 	}
 
-	/* Get manifest using control protocol on CPort */
+	 
 	ret = gb_control_get_manifest_operation(intf, manifest, size);
 	if (ret) {
 		dev_err(&intf->dev, "failed to get manifest: %d\n", ret);
 		goto err_free_manifest;
 	}
 
-	/*
-	 * Parse the manifest and build up our data structures representing
-	 * what's in it.
-	 */
+	 
 	if (!gb_manifest_parse(intf, manifest, size)) {
 		dev_err(&intf->dev, "failed to parse manifest\n");
 		ret = -EINVAL;
@@ -1131,7 +1056,7 @@ int gb_interface_enable(struct gb_interface *intf)
 	if (ret)
 		goto err_destroy_bundles;
 
-	/* Register the control device and any bundles */
+	 
 	ret = gb_control_add(intf->control);
 	if (ret)
 		goto err_destroy_bundles;
@@ -1173,11 +1098,7 @@ err_put_control:
 	return ret;
 }
 
-/*
- * Disable an interface and destroy its bundles.
- *
- * Locking: Caller holds the interface mutex.
- */
+ 
 void gb_interface_disable(struct gb_interface *intf)
 {
 	struct gb_bundle *bundle;
@@ -1190,7 +1111,7 @@ void gb_interface_disable(struct gb_interface *intf)
 
 	pm_runtime_get_sync(&intf->dev);
 
-	/* Set disconnected flag to avoid I/O during connection tear down. */
+	 
 	if (intf->quirks & GB_INTERFACE_QUIRK_FORCED_DISABLE)
 		intf->disconnected = true;
 
@@ -1213,7 +1134,7 @@ void gb_interface_disable(struct gb_interface *intf)
 	pm_runtime_put_noidle(&intf->dev);
 }
 
-/* Register an interface. */
+ 
 int gb_interface_add(struct gb_interface *intf)
 {
 	int ret;
@@ -1246,7 +1167,7 @@ int gb_interface_add(struct gb_interface *intf)
 	return 0;
 }
 
-/* Deregister an interface. */
+ 
 void gb_interface_del(struct gb_interface *intf)
 {
 	if (device_is_registered(&intf->dev)) {

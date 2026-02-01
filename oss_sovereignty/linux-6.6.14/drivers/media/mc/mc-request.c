@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Media device request objects
- *
- * Copyright 2018 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- * Copyright (C) 2018 Intel Corporation
- * Copyright (C) 2018 Google, Inc.
- *
- * Author: Hans Verkuil <hans.verkuil@cisco.com>
- * Author: Sakari Ailus <sakari.ailus@linux.intel.com>
- */
+
+ 
 
 #include <linux/anon_inodes.h>
 #include <linux/file.h>
@@ -40,7 +31,7 @@ static void media_request_clean(struct media_request *req)
 {
 	struct media_request_object *obj, *obj_safe;
 
-	/* Just a sanity check. No other code path is allowed to change this. */
+	 
 	WARN_ON(req->state != MEDIA_REQUEST_STATE_CLEANING);
 	WARN_ON(req->updating_count);
 	WARN_ON(req->access_count);
@@ -65,7 +56,7 @@ static void media_request_release(struct kref *kref)
 
 	dev_dbg(mdev->dev, "request: release %s\n", req->debug_str);
 
-	/* No other users, no need for a spinlock */
+	 
 	req->state = MEDIA_REQUEST_STATE_CLEANING;
 
 	media_request_clean(req);
@@ -125,12 +116,7 @@ static long media_request_ioctl_queue(struct media_request *req)
 
 	dev_dbg(mdev->dev, "request: queue %s\n", req->debug_str);
 
-	/*
-	 * Ensure the request that is validated will be the one that gets queued
-	 * next by serialising the queueing process. This mutex is also used
-	 * to serialize with canceling a vb2 queue and with setting values such
-	 * as controls in a request.
-	 */
+	 
 	mutex_lock(&mdev->req_queue_mutex);
 
 	media_request_get(req);
@@ -151,21 +137,7 @@ static long media_request_ioctl_queue(struct media_request *req)
 
 	ret = mdev->ops->req_validate(req);
 
-	/*
-	 * If the req_validate was successful, then we mark the state as QUEUED
-	 * and call req_queue. The reason we set the state first is that this
-	 * allows req_queue to unbind or complete the queued objects in case
-	 * they are immediately 'consumed'. State changes from QUEUED to another
-	 * state can only happen if either the driver changes the state or if
-	 * the user cancels the vb2 queue. The driver can only change the state
-	 * after each object is queued through the req_queue op (and note that
-	 * that op cannot fail), so setting the state to QUEUED up front is
-	 * safe.
-	 *
-	 * The other reason for changing the state is if the vb2 queue is
-	 * canceled, and that uses the req_queue_mutex which is still locked
-	 * while req_queue is called, so that's safe as well.
-	 */
+	 
 	spin_lock_irqsave(&req->lock, flags);
 	req->state = ret ? MEDIA_REQUEST_STATE_IDLE
 			 : MEDIA_REQUEST_STATE_QUEUED;
@@ -239,7 +211,7 @@ static const struct file_operations request_fops = {
 	.unlocked_ioctl = media_request_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = media_request_ioctl,
-#endif /* CONFIG_COMPAT */
+#endif  
 	.release = media_request_close,
 };
 
@@ -263,14 +235,7 @@ media_request_get_by_fd(struct media_device *mdev, int request_fd)
 	if (req->mdev != mdev)
 		goto err_fput;
 
-	/*
-	 * Note: as long as someone has an open filehandle of the request,
-	 * the request can never be released. The fdget() above ensures that
-	 * even if userspace closes the request filehandle, the release()
-	 * fop won't be called, so the media_request_get() always succeeds
-	 * and there is no race condition where the request was released
-	 * before media_request_get() is called.
-	 */
+	 
 	media_request_get(req);
 	fdput(f);
 
@@ -292,7 +257,7 @@ int media_request_alloc(struct media_device *mdev, int *alloc_fd)
 	int fd;
 	int ret;
 
-	/* Either both are NULL or both are non-NULL */
+	 
 	if (WARN_ON(!mdev->ops->req_alloc ^ !mdev->ops->req_free))
 		return -ENOMEM;
 

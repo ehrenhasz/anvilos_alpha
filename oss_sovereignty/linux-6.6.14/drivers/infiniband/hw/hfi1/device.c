@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015, 2016 Intel Corporation.
- */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/device.h>

@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for Lenovo:
- *  - ThinkPad USB Keyboard with TrackPoint (tpkbd)
- *  - ThinkPad Compact Bluetooth Keyboard with TrackPoint (cptkbd)
- *  - ThinkPad Compact USB Keyboard with TrackPoint (cptkbd)
- *  - ThinkPad TrackPoint Keyboard II USB/Bluetooth (cptkbd/tpIIkbd)
- *
- *  Copyright (c) 2012 Bernhard Seibold
- *  Copyright (c) 2014 Jamie Lentin <jm@lentin.co.uk>
- *
- * Linux IBM/Lenovo Scrollpoint mouse driver:
- * - IBM Scrollpoint III
- * - IBM Scrollpoint Pro
- * - IBM Scrollpoint Optical
- * - IBM Scrollpoint Optical 800dpi
- * - IBM Scrollpoint Optical 800dpi Pro
- * - Lenovo Scrollpoint Optical
- *
- *  Copyright (c) 2012 Peter De Wachter <pdewacht@gmail.com>
- *  Copyright (c) 2018 Peter Ganzhorn <peter.ganzhorn@gmail.com>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/sysfs.h>
@@ -34,11 +13,11 @@
 
 #include "hid-ids.h"
 
-/* Userspace expects F20 for mic-mute KEY_MICMUTE does not work */
+ 
 #define LENOVO_KEY_MICMUTE KEY_F20
 
 struct lenovo_drvdata {
-	u8 led_report[3]; /* Must be first for proper alignment */
+	u8 led_report[3];  
 	int led_state;
 	struct mutex led_report_mutex;
 	struct led_classdev led_mute;
@@ -51,11 +30,7 @@ struct lenovo_drvdata {
 	int select_right;
 	int sensitivity;
 	int press_speed;
-	/* 0: Up
-	 * 1: Down (undecided)
-	 * 2: Scrolling
-	 * 3: Patched firmware, disable workaround
-	 */
+	 
 	u8 middlebutton_state;
 	bool fn_lock;
 };
@@ -108,29 +83,29 @@ static void lenovo_tp10ubkbd_sync_fn_lock(struct work_struct *work)
 }
 
 static const __u8 lenovo_pro_dock_need_fixup_collection[] = {
-	0x05, 0x88,		/* Usage Page (Vendor Usage Page 0x88)	*/
-	0x09, 0x01,		/* Usage (Vendor Usage 0x01)		*/
-	0xa1, 0x01,		/* Collection (Application)		*/
-	0x85, 0x04,		/*  Report ID (4)			*/
-	0x19, 0x00,		/*  Usage Minimum (0)			*/
-	0x2a, 0xff, 0xff,	/*  Usage Maximum (65535)		*/
+	0x05, 0x88,		 
+	0x09, 0x01,		 
+	0xa1, 0x01,		 
+	0x85, 0x04,		 
+	0x19, 0x00,		 
+	0x2a, 0xff, 0xff,	 
 };
 
-/* Broken ThinkPad TrackPoint II collection (Bluetooth mode) */
+ 
 static const __u8 lenovo_tpIIbtkbd_need_fixup_collection[] = {
-	0x06, 0x00, 0xFF,	/* Usage Page (Vendor Defined 0xFF00) */
-	0x09, 0x01,		/* Usage (0x01) */
-	0xA1, 0x01,		/* Collection (Application) */
-	0x85, 0x05,		/*   Report ID (5) */
-	0x1A, 0xF1, 0x00,	/*   Usage Minimum (0xF1) */
-	0x2A, 0xFC, 0x00,	/*   Usage Maximum (0xFC) */
-	0x15, 0x00,		/*   Logical Minimum (0) */
-	0x25, 0x01,		/*   Logical Maximum (1) */
-	0x75, 0x01,		/*   Report Size (1) */
-	0x95, 0x0D,		/*   Report Count (13) */
-	0x81, 0x02,		/*   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-	0x95, 0x03,		/*   Report Count (3) */
-	0x81, 0x01,		/*   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position) */
+	0x06, 0x00, 0xFF,	 
+	0x09, 0x01,		 
+	0xA1, 0x01,		 
+	0x85, 0x05,		 
+	0x1A, 0xF1, 0x00,	 
+	0x2A, 0xFC, 0x00,	 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x75, 0x01,		 
+	0x95, 0x0D,		 
+	0x81, 0x02,		 
+	0x95, 0x03,		 
+	0x81, 0x01,		 
 };
 
 static __u8 *lenovo_report_fixup(struct hid_device *hdev, __u8 *rdesc,
@@ -138,10 +113,7 @@ static __u8 *lenovo_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 {
 	switch (hdev->product) {
 	case USB_DEVICE_ID_LENOVO_TPPRODOCK:
-		/* the fixups that need to be done:
-		 *   - get a reasonable usage max for the vendor collection
-		 *     0x8801 from the report ID 4
-		 */
+		 
 		if (*rsize >= 153 &&
 		    memcmp(&rdesc[140], lenovo_pro_dock_need_fixup_collection,
 			  sizeof(lenovo_pro_dock_need_fixup_collection)) == 0) {
@@ -153,13 +125,13 @@ static __u8 *lenovo_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		if (*rsize >= 263 &&
 		    memcmp(&rdesc[234], lenovo_tpIIbtkbd_need_fixup_collection,
 			  sizeof(lenovo_tpIIbtkbd_need_fixup_collection)) == 0) {
-			rdesc[244] = 0x00; /* usage minimum = 0x00 */
-			rdesc[247] = 0xff; /* usage maximum = 0xff */
-			rdesc[252] = 0xff; /* logical maximum = 0xff */
-			rdesc[254] = 0x08; /* report size = 0x08 */
-			rdesc[256] = 0x01; /* report count = 0x01 */
-			rdesc[258] = 0x00; /* input = 0x00 */
-			rdesc[260] = 0x01; /* report count (2) = 0x01 */
+			rdesc[244] = 0x00;  
+			rdesc[247] = 0xff;  
+			rdesc[252] = 0xff;  
+			rdesc[254] = 0x08;  
+			rdesc[256] = 0x01;  
+			rdesc[258] = 0x00;  
+			rdesc[260] = 0x01;  
 		}
 		break;
 	}
@@ -171,7 +143,7 @@ static int lenovo_input_mapping_tpkbd(struct hid_device *hdev,
 		struct hid_usage *usage, unsigned long **bit, int *max)
 {
 	if (usage->hid == (HID_UP_BUTTON | 0x0010)) {
-		/* This sub-device contains trackpoint, mark it */
+		 
 		hid_set_drvdata(hdev, (void *)1);
 		map_key_clear(LENOVO_KEY_MICMUTE);
 		return 1;
@@ -183,45 +155,45 @@ static int lenovo_input_mapping_cptkbd(struct hid_device *hdev,
 		struct hid_input *hi, struct hid_field *field,
 		struct hid_usage *usage, unsigned long **bit, int *max)
 {
-	/* HID_UP_LNVENDOR = USB, HID_UP_MSVENDOR = BT */
+	 
 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_MSVENDOR ||
 	    (usage->hid & HID_USAGE_PAGE) == HID_UP_LNVENDOR) {
 		switch (usage->hid & HID_USAGE) {
-		case 0x00f1: /* Fn-F4: Mic mute */
+		case 0x00f1:  
 			map_key_clear(LENOVO_KEY_MICMUTE);
 			return 1;
-		case 0x00f2: /* Fn-F5: Brightness down */
+		case 0x00f2:  
 			map_key_clear(KEY_BRIGHTNESSDOWN);
 			return 1;
-		case 0x00f3: /* Fn-F6: Brightness up */
+		case 0x00f3:  
 			map_key_clear(KEY_BRIGHTNESSUP);
 			return 1;
-		case 0x00f4: /* Fn-F7: External display (projector) */
+		case 0x00f4:  
 			map_key_clear(KEY_SWITCHVIDEOMODE);
 			return 1;
-		case 0x00f5: /* Fn-F8: Wireless */
+		case 0x00f5:  
 			map_key_clear(KEY_WLAN);
 			return 1;
-		case 0x00f6: /* Fn-F9: Control panel */
+		case 0x00f6:  
 			map_key_clear(KEY_CONFIG);
 			return 1;
-		case 0x00f8: /* Fn-F11: View open applications (3 boxes) */
+		case 0x00f8:  
 			map_key_clear(KEY_SCALE);
 			return 1;
-		case 0x00f9: /* Fn-F12: Open My computer (6 boxes) USB-only */
-			/* NB: This mapping is invented in raw_event below */
+		case 0x00f9:  
+			 
 			map_key_clear(KEY_FILE);
 			return 1;
-		case 0x00fa: /* Fn-Esc: Fn-lock toggle */
+		case 0x00fa:  
 			map_key_clear(KEY_FN_ESC);
 			return 1;
-		case 0x00fb: /* Middle mouse button (in native mode) */
+		case 0x00fb:  
 			map_key_clear(BTN_MIDDLE);
 			return 1;
 		}
 	}
 
-	/* Compatibility middle/wheel mappings should be ignored */
+	 
 	if (usage->hid == HID_GD_WHEEL)
 		return -1;
 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON &&
@@ -231,7 +203,7 @@ static int lenovo_input_mapping_cptkbd(struct hid_device *hdev,
 			(usage->hid & HID_USAGE) == 0x238)
 		return -1;
 
-	/* Map wheel emulation reports: 0xffa1 = USB, 0xff10 = BT */
+	 
 	if ((usage->hid & HID_USAGE_PAGE) == 0xff100000 ||
 	    (usage->hid & HID_USAGE_PAGE) == 0xffa10000) {
 		field->flags |= HID_MAIN_ITEM_RELATIVE | HID_MAIN_ITEM_VARIABLE;
@@ -257,44 +229,39 @@ static int lenovo_input_mapping_tpIIkbd(struct hid_device *hdev,
 		struct hid_input *hi, struct hid_field *field,
 		struct hid_usage *usage, unsigned long **bit, int *max)
 {
-	/*
-	 * 0xff0a0000 = USB, HID_UP_MSVENDOR = BT.
-	 *
-	 * In BT mode, there are two HID_UP_MSVENDOR pages.
-	 * Use only the page that contains report ID == 5.
-	 */
+	 
 	if (((usage->hid & HID_USAGE_PAGE) == 0xff0a0000 ||
 	    (usage->hid & HID_USAGE_PAGE) == HID_UP_MSVENDOR) &&
 	    field->report->id == 5) {
 		switch (usage->hid & HID_USAGE) {
-		case 0x00bb: /* Fn-F4: Mic mute */
+		case 0x00bb:  
 			map_key_clear(LENOVO_KEY_MICMUTE);
 			return 1;
-		case 0x00c3: /* Fn-F5: Brightness down */
+		case 0x00c3:  
 			map_key_clear(KEY_BRIGHTNESSDOWN);
 			return 1;
-		case 0x00c4: /* Fn-F6: Brightness up */
+		case 0x00c4:  
 			map_key_clear(KEY_BRIGHTNESSUP);
 			return 1;
-		case 0x00c1: /* Fn-F8: Notification center */
+		case 0x00c1:  
 			map_key_clear(KEY_NOTIFICATION_CENTER);
 			return 1;
-		case 0x00bc: /* Fn-F9: Control panel */
+		case 0x00bc:  
 			map_key_clear(KEY_CONFIG);
 			return 1;
-		case 0x00b6: /* Fn-F10: Bluetooth */
+		case 0x00b6:  
 			map_key_clear(KEY_BLUETOOTH);
 			return 1;
-		case 0x00b7: /* Fn-F11: Keyboard config */
+		case 0x00b7:  
 			map_key_clear(KEY_KEYBOARD);
 			return 1;
-		case 0x00b8: /* Fn-F12: User function */
+		case 0x00b8:  
 			map_key_clear(KEY_PROG1);
 			return 1;
-		case 0x00b9: /* Fn-PrtSc: Snipping tool */
+		case 0x00b9:  
 			map_key_clear(KEY_SELECTIVE_SCREENSHOT);
 			return 1;
-		case 0x00b5: /* Fn-Esc: Fn-lock toggle */
+		case 0x00b5:  
 			map_key_clear(KEY_FN_ESC);
 			return 1;
 		}
@@ -302,7 +269,7 @@ static int lenovo_input_mapping_tpIIkbd(struct hid_device *hdev,
 
 	if ((usage->hid & HID_USAGE_PAGE) == 0xffa00000) {
 		switch (usage->hid & HID_USAGE) {
-		case 0x00fb: /* Middle mouse (in native USB mode) */
+		case 0x00fb:  
 			map_key_clear(BTN_MIDDLE);
 			return 1;
 		}
@@ -311,13 +278,13 @@ static int lenovo_input_mapping_tpIIkbd(struct hid_device *hdev,
 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_MSVENDOR &&
 	    field->report->id == 21) {
 		switch (usage->hid & HID_USAGE) {
-		case 0x0004: /* Middle mouse (in native Bluetooth mode) */
+		case 0x0004:  
 			map_key_clear(BTN_MIDDLE);
 			return 1;
 		}
 	}
 
-	/* Compatibility middle/wheel mappings should be ignored */
+	 
 	if (usage->hid == HID_GD_WHEEL)
 		return -1;
 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON &&
@@ -327,7 +294,7 @@ static int lenovo_input_mapping_tpIIkbd(struct hid_device *hdev,
 			(usage->hid & HID_USAGE) == 0x238)
 		return -1;
 
-	/* Map wheel emulation reports: 0xff10 */
+	 
 	if ((usage->hid & HID_USAGE_PAGE) == 0xff100000) {
 		field->flags |= HID_MAIN_ITEM_RELATIVE | HID_MAIN_ITEM_VARIABLE;
 		field->logical_minimum = -127;
@@ -363,34 +330,28 @@ static int lenovo_input_mapping_tp10_ultrabook_kbd(struct hid_device *hdev,
 		struct hid_input *hi, struct hid_field *field,
 		struct hid_usage *usage, unsigned long **bit, int *max)
 {
-	/*
-	 * The ThinkPad 10 Ultrabook Keyboard uses 0x000c0001 usage for
-	 * a bunch of keys which have no standard consumer page code.
-	 */
+	 
 	if (usage->hid == 0x000c0001) {
 		switch (usage->usage_index) {
-		case 8: /* Fn-Esc: Fn-lock toggle */
+		case 8:  
 			map_key_clear(KEY_FN_ESC);
 			return 1;
-		case 9: /* Fn-F4: Mic mute */
+		case 9:  
 			map_key_clear(LENOVO_KEY_MICMUTE);
 			return 1;
-		case 10: /* Fn-F7: Control panel */
+		case 10:  
 			map_key_clear(KEY_CONFIG);
 			return 1;
-		case 11: /* Fn-F8: Search (magnifier glass) */
+		case 11:  
 			map_key_clear(KEY_SEARCH);
 			return 1;
-		case 12: /* Fn-F10: Open My computer (6 boxes) */
+		case 12:  
 			map_key_clear(KEY_FILE);
 			return 1;
 		}
 	}
 
-	/*
-	 * The Ultrabook Keyboard sends a spurious F23 key-press when resuming
-	 * from suspend and it does not actually have a F23 key, ignore it.
-	 */
+	 
 	if (usage->hid == 0x00070072)
 		return -1;
 
@@ -401,37 +362,34 @@ static int lenovo_input_mapping_x1_tab_kbd(struct hid_device *hdev,
 		struct hid_input *hi, struct hid_field *field,
 		struct hid_usage *usage, unsigned long **bit, int *max)
 {
-	/*
-	 * The ThinkPad X1 Tablet Thin Keyboard uses 0x000c0001 usage for
-	 * a bunch of keys which have no standard consumer page code.
-	 */
+	 
 	if (usage->hid == 0x000c0001) {
 		switch (usage->usage_index) {
-		case 0: /* Fn-F10: Enable/disable bluetooth */
+		case 0:  
 			map_key_clear(KEY_BLUETOOTH);
 			return 1;
-		case 1: /* Fn-F11: Keyboard settings */
+		case 1:  
 			map_key_clear(KEY_KEYBOARD);
 			return 1;
-		case 2: /* Fn-F12: User function / Cortana */
+		case 2:  
 			map_key_clear(KEY_MACRO1);
 			return 1;
-		case 3: /* Fn-PrtSc: Snipping tool */
+		case 3:  
 			map_key_clear(KEY_SELECTIVE_SCREENSHOT);
 			return 1;
-		case 8: /* Fn-Esc: Fn-lock toggle */
+		case 8:  
 			map_key_clear(KEY_FN_ESC);
 			return 1;
-		case 9: /* Fn-F4: Mute/unmute microphone */
+		case 9:  
 			map_key_clear(KEY_MICMUTE);
 			return 1;
-		case 10: /* Fn-F9: Settings */
+		case 10:  
 			map_key_clear(KEY_CONFIG);
 			return 1;
-		case 13: /* Fn-F7: Manage external displays */
+		case 13:  
 			map_key_clear(KEY_SWITCHVIDEOMODE);
 			return 1;
-		case 14: /* Fn-F8: Enable/disable wifi */
+		case 14:  
 			map_key_clear(KEY_WLAN);
 			return 1;
 		}
@@ -481,7 +439,7 @@ static int lenovo_input_mapping(struct hid_device *hdev,
 
 #undef map_key_clear
 
-/* Send a config command to the keyboard */
+ 
 static int lenovo_send_cmd_cptkbd(struct hid_device *hdev,
 			unsigned char byte2, unsigned char byte3)
 {
@@ -492,11 +450,7 @@ static int lenovo_send_cmd_cptkbd(struct hid_device *hdev,
 	if (!buf)
 		return -ENOMEM;
 
-	/*
-	 * Feature report 0x13 is used for USB,
-	 * output report 0x18 is used for Bluetooth.
-	 * buf[0] is ignored by hid_hw_raw_request.
-	 */
+	 
 	buf[0] = 0x18;
 	buf[1] = byte2;
 	buf[2] = byte3;
@@ -518,7 +472,7 @@ static int lenovo_send_cmd_cptkbd(struct hid_device *hdev,
 
 	kfree(buf);
 
-	return ret < 0 ? ret : 0; /* BT returns 0, USB returns sizeof(buf) */
+	return ret < 0 ? ret : 0;  
 }
 
 static void lenovo_features_set_cptkbd(struct hid_device *hdev)
@@ -526,15 +480,12 @@ static void lenovo_features_set_cptkbd(struct hid_device *hdev)
 	int ret;
 	struct lenovo_drvdata *cptkbd_data = hid_get_drvdata(hdev);
 
-	/*
-	 * Tell the keyboard a driver understands it, and turn F7, F9, F11 into
-	 * regular keys
-	 */
+	 
 	ret = lenovo_send_cmd_cptkbd(hdev, 0x01, 0x03);
 	if (ret)
 		hid_warn(hdev, "Failed to switch F7/9/11 mode: %d\n", ret);
 
-	/* Switch middle button to native mode */
+	 
 	ret = lenovo_send_cmd_cptkbd(hdev, 0x09, 0x01);
 	if (ret)
 		hid_warn(hdev, "Failed to switch middle button: %d\n", ret);
@@ -646,11 +597,7 @@ static const struct attribute_group lenovo_attr_group_cptkbd = {
 static int lenovo_raw_event(struct hid_device *hdev,
 			struct hid_report *report, u8 *data, int size)
 {
-	/*
-	 * Compact USB keyboard's Fn-F12 report holds down many other keys, and
-	 * its own key is outside the usage page range. Remove extra
-	 * keypresses and remap to inside usage page.
-	 */
+	 
 	if (unlikely(hdev->product == USB_DEVICE_ID_LENOVO_CUSBKBD
 			&& size == 3
 			&& data[0] == 0x15
@@ -669,11 +616,7 @@ static int lenovo_event_tp10ubkbd(struct hid_device *hdev,
 	struct lenovo_drvdata *data = hid_get_drvdata(hdev);
 
 	if (usage->type == EV_KEY && usage->code == KEY_FN_ESC && value == 1) {
-		/*
-		 * The user has toggled the Fn-lock state. Toggle our own
-		 * cached value of it and sync our value to the keyboard to
-		 * ensure things are in sync (the sycning should be a no-op).
-		 */
+		 
 		data->fn_lock = !data->fn_lock;
 		schedule_work(&data->fn_lock_sync_work);
 	}
@@ -687,37 +630,33 @@ static int lenovo_event_cptkbd(struct hid_device *hdev,
 	struct lenovo_drvdata *cptkbd_data = hid_get_drvdata(hdev);
 
 	if (cptkbd_data->middlebutton_state != 3) {
-		/* REL_X and REL_Y events during middle button pressed
-		 * are only possible on patched, bug-free firmware
-		 * so set middlebutton_state to 3
-		 * to never apply workaround anymore
-		 */
+		 
 		if (hdev->product == USB_DEVICE_ID_LENOVO_CUSBKBD &&
 				cptkbd_data->middlebutton_state == 1 &&
 				usage->type == EV_REL &&
 				(usage->code == REL_X || usage->code == REL_Y)) {
 			cptkbd_data->middlebutton_state = 3;
-			/* send middle button press which was hold before */
+			 
 			input_event(field->hidinput->input,
 				EV_KEY, BTN_MIDDLE, 1);
 			input_sync(field->hidinput->input);
 		}
 
-		/* "wheel" scroll events */
+		 
 		if (usage->type == EV_REL && (usage->code == REL_WHEEL ||
 				usage->code == REL_HWHEEL)) {
-			/* Scroll events disable middle-click event */
+			 
 			cptkbd_data->middlebutton_state = 2;
 			return 0;
 		}
 
-		/* Middle click events */
+		 
 		if (usage->type == EV_KEY && usage->code == BTN_MIDDLE) {
 			if (value == 1) {
 				cptkbd_data->middlebutton_state = 1;
 			} else if (value == 0) {
 				if (cptkbd_data->middlebutton_state == 1) {
-					/* No scrolling inbetween, send middle-click */
+					 
 					input_event(field->hidinput->input,
 						EV_KEY, BTN_MIDDLE, 1);
 					input_sync(field->hidinput->input);
@@ -732,11 +671,7 @@ static int lenovo_event_cptkbd(struct hid_device *hdev,
 	}
 
 	if (usage->type == EV_KEY && usage->code == KEY_FN_ESC && value == 1) {
-		/*
-		 * The user has toggled the Fn-lock state. Toggle our own
-		 * cached value of it and sync our value to the keyboard to
-		 * ensure things are in sync (the syncing should be a no-op).
-		 */
+		 
 		cptkbd_data->fn_lock = !cptkbd_data->fn_lock;
 	}
 
@@ -774,7 +709,7 @@ static int lenovo_features_set_tpkbd(struct hid_device *hdev)
 	report->field[0]->value[0] |= data_pointer->dragging          ? 0x04 : 0x08;
 	report->field[0]->value[0] |= data_pointer->release_to_select ? 0x10 : 0x20;
 	report->field[0]->value[0] |= data_pointer->select_right      ? 0x80 : 0x40;
-	report->field[1]->value[0] = 0x03; // unknown setting, imitate windows driver
+	report->field[1]->value[0] = 0x03;  
 	report->field[2]->value[0] = data_pointer->sensitivity;
 	report->field[3]->value[0] = data_pointer->press_speed;
 
@@ -1092,16 +1027,13 @@ static int lenovo_probe_tpkbd(struct hid_device *hdev)
 	struct lenovo_drvdata *data_pointer;
 	int i, ret;
 
-	/*
-	 * Only register extra settings against subdevice where input_mapping
-	 * set drvdata to 1, i.e. the trackpoint.
-	 */
+	 
 	if (!hid_get_drvdata(hdev))
 		return 0;
 
 	hid_set_drvdata(hdev, NULL);
 
-	/* Validate required reports. */
+	 
 	for (i = 0; i < 4; i++) {
 		if (!hid_validate_values(hdev, HID_FEATURE_REPORT, 4, i, 1))
 			return -ENODEV;
@@ -1122,7 +1054,7 @@ static int lenovo_probe_tpkbd(struct hid_device *hdev)
 		goto err;
 	}
 
-	// set same default values as windows driver
+	 
 	data_pointer->sensitivity = 0xa0;
 	data_pointer->press_speed = 0x38;
 
@@ -1145,7 +1077,7 @@ static int lenovo_probe_cptkbd(struct hid_device *hdev)
 	int ret;
 	struct lenovo_drvdata *cptkbd_data;
 
-	/* All the custom action happens on the USBMOUSE device for USB */
+	 
 	if (((hdev->product == USB_DEVICE_ID_LENOVO_CUSBKBD) ||
 	    (hdev->product == USB_DEVICE_ID_LENOVO_TPIIUSBKBD)) &&
 	    hdev->type != HID_TYPE_USBMOUSE) {
@@ -1162,7 +1094,7 @@ static int lenovo_probe_cptkbd(struct hid_device *hdev)
 	}
 	hid_set_drvdata(hdev, cptkbd_data);
 
-	/* Set keyboard settings to known state */
+	 
 	cptkbd_data->middlebutton_state = 0;
 	cptkbd_data->fn_lock = true;
 	cptkbd_data->sensitivity = 0x05;
@@ -1192,11 +1124,7 @@ static int lenovo_probe_tp10ubkbd(struct hid_device *hdev)
 	bool found;
 	int ret;
 
-	/*
-	 * The LEDs and the Fn-lock functionality use output report 9,
-	 * with an application of 0xffa0001, add the LEDs on the interface
-	 * with this output report.
-	 */
+	 
 	found = false;
 	rep_enum = &hdev->report_enum[HID_OUTPUT_REPORT];
 	list_for_each_entry(rep, &rep_enum->report_list, list) {
@@ -1216,12 +1144,7 @@ static int lenovo_probe_tp10ubkbd(struct hid_device *hdev)
 
 	hid_set_drvdata(hdev, data);
 
-	/*
-	 * The Thinkpad 10 ultrabook USB kbd dock's Fn-lock defaults to on.
-	 * We cannot read the state, only set it, so we force it to on here
-	 * (which should be a no-op) to make sure that our state matches the
-	 * keyboard's FN-lock state. This is the same as what Windows does.
-	 */
+	 
 	data->fn_lock = true;
 	lenovo_led_set_tp10ubkbd(hdev, TP10UBKBD_FN_LOCK_LED, data->fn_lock);
 
@@ -1306,10 +1229,7 @@ static void lenovo_remove_tpkbd(struct hid_device *hdev)
 {
 	struct lenovo_drvdata *data_pointer = hid_get_drvdata(hdev);
 
-	/*
-	 * Only the trackpoint half of the keyboard has drvdata and stuff that
-	 * needs unregistering.
-	 */
+	 
 	if (data_pointer == NULL)
 		return;
 
@@ -1371,7 +1291,7 @@ static int lenovo_input_configured(struct hid_device *hdev,
 		case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
 		case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
 			if (test_bit(EV_REL, hi->input->evbit)) {
-				/* set only for trackpoint device */
+				 
 				__set_bit(INPUT_PROP_POINTER, hi->input->propbit);
 				__set_bit(INPUT_PROP_POINTING_STICK,
 						hi->input->propbit);
@@ -1397,10 +1317,7 @@ static const struct hid_device_id lenovo_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_IBM, USB_DEVICE_ID_IBM_SCROLLPOINT_800DPI_OPTICAL_PRO) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_SCROLLPOINT_OPTICAL) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_TP10UBKBD) },
-	/*
-	 * Note bind to the HID_GROUP_GENERIC group, so that we only bind to the keyboard
-	 * part, while letting hid-multitouch.c handle the touchpad and trackpoint.
-	 */
+	 
 	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
 		     USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_X1_TAB) },
 	{ }

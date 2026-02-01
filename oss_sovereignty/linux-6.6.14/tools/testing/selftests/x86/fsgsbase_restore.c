@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fsgsbase_restore.c, test ptrace vs fsgsbase
- * Copyright (c) 2020 Andy Lutomirski
- *
- * This test case simulates a tracer redirecting tracee execution to
- * a function and then restoring tracee state using PTRACE_GETREGS and
- * PTRACE_SETREGS.  This is similar to what gdb does when doing
- * 'p func()'.  The catch is that this test has the called function
- * modify a segment register.  This makes sure that ptrace correctly
- * restores segment state when using PTRACE_SETREGS.
- *
- * This is not part of fsgsbase.c, because that test is 64-bit only.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -64,7 +52,7 @@ static void init_seg(void)
 		.base_addr       = (unsigned int)(uintptr_t)target,
 		.limit           = sizeof(unsigned int) - 1,
 		.seg_32bit       = 1,
-		.contents        = 0, /* Data, grow-up */
+		.contents        = 0,  
 		.read_exec_only  = 0,
 		.limit_in_pages  = 0,
 		.seg_not_present = 0,
@@ -74,7 +62,7 @@ static void init_seg(void)
 		printf("\tusing LDT slot 0\n");
 		asm volatile ("mov %0, %" SEG :: "rm" ((unsigned short)0x7));
 	} else {
-		/* No modify_ldt for us (configured out, perhaps) */
+		 
 
 		struct user_desc *low_desc = mmap(
 			NULL, sizeof(desc),
@@ -84,7 +72,7 @@ static void init_seg(void)
 
 		low_desc->entry_number = -1;
 
-		/* 32-bit set_thread_area */
+		 
 		long ret;
 		asm volatile ("int $0x80"
 			      : "=a" (ret), "+m" (*low_desc)
@@ -109,20 +97,10 @@ static void init_seg(void)
 
 static void tracee_zap_segment(void)
 {
-	/*
-	 * The tracer will redirect execution here.  This is meant to
-	 * work like gdb's 'p func()' feature.  The tricky bit is that
-	 * we modify a segment register in order to make sure that ptrace
-	 * can correctly restore segment registers.
-	 */
+	 
 	printf("\tTracee: in tracee_zap_segment()\n");
 
-	/*
-	 * Write a nonzero selector with base zero to the segment register.
-	 * Using a null selector would defeat the test on AMD pre-Zen2
-	 * CPUs, as such CPUs don't clear the base when loading a null
-	 * selector.
-	 */
+	 
 	unsigned short sel;
 	asm volatile ("mov %%ss, %0\n\t"
 		      "mov %0, %" SEG
@@ -133,7 +111,7 @@ static void tracee_zap_segment(void)
 	printf("\tTracee is going back to sleep\n");
 	syscall(SYS_tgkill, pid, tid, SIGSTOP);
 
-	/* Should not get here. */
+	 
 	while (true) {
 		printf("[FAIL]\tTracee hit unreachable code\n");
 		pause();
@@ -181,7 +159,7 @@ int main()
 
 	int status;
 
-	/* Wait for SIGSTOP. */
+	 
 	if (waitpid(chld, &status, 0) != chld || !WIFSTOPPED(status))
 		err(1, "waitpid");
 
@@ -199,7 +177,7 @@ int main()
 	struct user_regs_struct regs2 = regs;
 #ifdef __x86_64__
 	regs2.rip = (unsigned long)tracee_zap_segment;
-	regs2.rsp -= 128;	/* Don't clobber the redzone. */
+	regs2.rsp -= 128;	 
 #else
 	regs2.eip = (unsigned long)tracee_zap_segment;
 #endif
@@ -210,7 +188,7 @@ int main()
 	if (ptrace(PTRACE_CONT, chld, NULL, NULL) != 0)
 		err(1, "PTRACE_GETREGS");
 
-	/* Wait for SIGSTOP. */
+	 
 	if (waitpid(chld, &status, 0) != chld || !WIFSTOPPED(status))
 		err(1, "waitpid");
 
@@ -220,7 +198,7 @@ int main()
 	if (ptrace(PTRACE_DETACH, chld, NULL, NULL) != 0)
 		err(1, "PTRACE_GETREGS");
 
-	/* Wait for SIGSTOP. */
+	 
 	if (waitpid(chld, &status, 0) != chld)
 		err(1, "waitpid");
 

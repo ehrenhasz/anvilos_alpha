@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SA8775P_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SA8775P_H
 
-/* aggre1_noc */
+ 
 #define MASTER_QUP_3			0
 #define MASTER_EMAC			1
 #define MASTER_EMAC_1			2
@@ -18,7 +15,7 @@
 #define MASTER_USB3_1			7
 #define SLAVE_A1NOC_SNOC		8
 
-/* aggre2_noc */
+ 
 #define MASTER_QDSS_BAM			0
 #define MASTER_QUP_0			1
 #define MASTER_QUP_1			2
@@ -32,7 +29,7 @@
 #define MASTER_UFS_CARD			10
 #define SLAVE_A2NOC_SNOC		11
 
-/* clk_virt */
+ 
 #define MASTER_QUP_CORE_0		0
 #define MASTER_QUP_CORE_1		1
 #define MASTER_QUP_CORE_2		2
@@ -42,7 +39,7 @@
 #define SLAVE_QUP_CORE_2		6
 #define SLAVE_QUP_CORE_3		7
 
-/* config_noc */
+ 
 #define MASTER_GEM_NOC_CNOC		0
 #define MASTER_GEM_NOC_PCIE_SNOC	1
 #define SLAVE_AHB2PHY_0			2
@@ -130,12 +127,12 @@
 #define SLAVE_QDSS_STM			84
 #define SLAVE_TCU			85
 
-/* dc_noc */
+ 
 #define MASTER_CNOC_DC_NOC		0
 #define SLAVE_LLCC_CFG			1
 #define SLAVE_GEM_NOC_CFG		2
 
-/* gem_noc */
+ 
 #define MASTER_GPU_TCU			0
 #define MASTER_PCIE_TCU			1
 #define MASTER_SYS_TCU			2
@@ -158,12 +155,12 @@
 #define SLAVE_SERVICE_GEM_NOC		19
 #define SLAVE_SERVICE_GEM_NOC2		20
 
-/* gpdsp_anoc */
+ 
 #define MASTER_DSP0			0
 #define MASTER_DSP1			1
 #define SLAVE_GP_DSP_SAIL_NOC		2
 
-/* lpass_ag_noc */
+ 
 #define MASTER_CNOC_LPASS_AG_NOC	0
 #define MASTER_LPASS_PROC		1
 #define SLAVE_LPASS_CORE_CFG		2
@@ -174,11 +171,11 @@
 #define SLAVE_SERVICES_LPASS_AML_NOC	7
 #define SLAVE_SERVICE_LPASS_AG_NOC	8
 
-/* mc_virt */
+ 
 #define MASTER_LLCC			0
 #define SLAVE_EBI1			1
 
-/*mmss_noc */
+ 
 #define MASTER_CAMNOC_HF		0
 #define MASTER_CAMNOC_ICP		1
 #define MASTER_CAMNOC_SF		2
@@ -197,26 +194,26 @@
 #define SLAVE_SERVICE_MNOC_HF		15
 #define SLAVE_SERVICE_MNOC_SF		16
 
-/* nspa_noc */
+ 
 #define MASTER_CDSP_NOC_CFG		0
 #define MASTER_CDSP_PROC		1
 #define SLAVE_HCP_A			2
 #define SLAVE_CDSP_MEM_NOC		3
 #define SLAVE_SERVICE_NSP_NOC		4
 
-/* nspb_noc */
+ 
 #define MASTER_CDSPB_NOC_CFG		0
 #define MASTER_CDSP_PROC_B		1
 #define SLAVE_CDSPB_MEM_NOC		2
 #define SLAVE_HCP_B			3
 #define SLAVE_SERVICE_NSPB_NOC		4
 
-/* pcie_anoc */
+ 
 #define MASTER_PCIE_0			0
 #define MASTER_PCIE_1			1
 #define SLAVE_ANOC_PCIE_GEM_NOC		2
 
-/* system_noc */
+ 
 #define MASTER_GIC_AHB			0
 #define MASTER_A1NOC_SNOC		1
 #define MASTER_A2NOC_SNOC		2
@@ -228,4 +225,4 @@
 #define SLAVE_SNOC_GEM_NOC_SF		8
 #define SLAVE_SERVICE_SNOC		9
 
-#endif /* __DT_BINDINGS_INTERCONNECT_QCOM_SA8775P_H */
+#endif  

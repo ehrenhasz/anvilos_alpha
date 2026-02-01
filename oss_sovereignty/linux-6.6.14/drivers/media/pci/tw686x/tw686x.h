@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 VanguardiaSur - www.vanguardiasur.com.ar
- *
- * Copyright (C) 2015 Industrial Research Institute for Automation
- * and Measurements PIAP
- * Written by Krzysztof Ha?asa
- */
+ 
+ 
 
 #include <linux/mutex.h>
 #include <linux/pci.h>
@@ -46,7 +40,7 @@ struct tw686x_dma_desc {
 };
 
 struct tw686x_sg_desc {
-	/* 3 MSBits for flags, 13 LSBits for length */
+	 
 	__le32 flags_length;
 	__le32 phys;
 };
@@ -111,12 +105,9 @@ struct tw686x_dma_ops {
 	u32 hw_dma_mode;
 };
 
-/* struct tw686x_dev - global device status */
+ 
 struct tw686x_dev {
-	/*
-	 * spinlock controlling access to the shared device registers
-	 * (DMA enable/disable)
-	 */
+	 
 	spinlock_t lock;
 
 	struct v4l2_device v4l2_dev;
@@ -132,14 +123,14 @@ struct tw686x_dev {
 	struct tw686x_video_channel *video_channels;
 	struct tw686x_audio_channel *audio_channels;
 
-	/* Per-device audio parameters */
+	 
 	int audio_rate;
 	int period_size;
 	int audio_enabled;
 
 	struct timer_list dma_delay_timer;
-	u32 pending_dma_en; /* must be protected by lock */
-	u32 pending_dma_cmd; /* must be protected by lock */
+	u32 pending_dma_en;  
+	u32 pending_dma_cmd;  
 };
 
 static inline uint32_t reg_read(struct tw686x_dev *dev, unsigned int reg)
@@ -155,12 +146,12 @@ static inline void reg_write(struct tw686x_dev *dev, unsigned int reg,
 
 static inline unsigned int max_channels(struct tw686x_dev *dev)
 {
-	return dev->type & TYPE_MAX_CHANNELS; /* 4 or 8 channels */
+	return dev->type & TYPE_MAX_CHANNELS;  
 }
 
 static inline unsigned is_second_gen(struct tw686x_dev *dev)
 {
-	/* each channel has its own DMA SG table */
+	 
 	return dev->type & TYPE_SECOND_GEN;
 }
 

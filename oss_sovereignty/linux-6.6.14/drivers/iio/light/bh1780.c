@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ROHM 1780GLI Ambient Light Sensor Driver
- *
- * Copyright (C) 2016 Linaro Ltd.
- * Author: Linus Walleij <linus.walleij@linaro.org>
- * Loosely based on the previous BH1780 ALS misc driver
- * Copyright (C) 2010 Texas Instruments
- * Author: Hemanth V <hemanthv@ti.com>
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/platform_device.h>
@@ -31,9 +23,9 @@
 #define BH1780_POFF		(0x0)
 #define BH1780_PON		(0x3)
 
-/* power on settling time in ms */
+ 
 #define BH1780_PON_DELAY	2
-/* max time before value available in ms */
+ 
 #define BH1780_INTERVAL		250
 
 struct bh1780_data {
@@ -159,7 +151,7 @@ static int bh1780_probe(struct i2c_client *client)
 	bh1780->client = client;
 	i2c_set_clientdata(client, indio_dev);
 
-	/* Power up the device */
+	 
 	ret = bh1780_write(bh1780, BH1780_REG_CONTROL, BH1780_PON);
 	if (ret < 0)
 		return ret;
@@ -175,11 +167,7 @@ static int bh1780_probe(struct i2c_client *client)
 		 "Ambient Light Sensor, Rev : %lu\n",
 		 (ret & BH1780_REVMASK));
 
-	/*
-	 * As the device takes 250 ms to even come up with a fresh
-	 * measurement after power-on, do not shut it down unnecessarily.
-	 * Set autosuspend to a five seconds.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(&client->dev, 5000);
 	pm_runtime_use_autosuspend(&client->dev);
 	pm_runtime_put(&client->dev);
@@ -246,7 +234,7 @@ static int bh1780_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-	/* Wait for power on, then for a value to be available */
+	 
 	msleep(BH1780_PON_DELAY + BH1780_INTERVAL);
 
 	return 0;

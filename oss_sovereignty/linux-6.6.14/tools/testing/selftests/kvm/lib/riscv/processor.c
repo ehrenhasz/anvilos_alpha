@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RISC-V code
- *
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <assert.h>
@@ -185,10 +181,7 @@ void riscv_vcpu_mmu_setup(struct kvm_vcpu *vcpu)
 	struct kvm_vm *vm = vcpu->vm;
 	unsigned long satp;
 
-	/*
-	 * The RISC-V Sv48 MMU mode supports 56-bit physical address
-	 * for 48-bit virtual address with 4KB last level page size.
-	 */
+	 
 	switch (vm->mode) {
 	case VM_MODE_P52V48_4K:
 	case VM_MODE_P48V48_4K:
@@ -296,25 +289,21 @@ struct kvm_vcpu *vm_arch_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id,
 	vcpu = __vm_vcpu_add(vm, vcpu_id);
 	riscv_vcpu_mmu_setup(vcpu);
 
-	/*
-	 * With SBI HSM support in KVM RISC-V, all secondary VCPUs are
-	 * powered-off by default so we ensure that all secondary VCPUs
-	 * are powered-on using KVM_SET_MP_STATE ioctl().
-	 */
+	 
 	mps.mp_state = KVM_MP_STATE_RUNNABLE;
 	r = __vcpu_ioctl(vcpu, KVM_SET_MP_STATE, &mps);
 	TEST_ASSERT(!r, "IOCTL KVM_SET_MP_STATE failed (error %d)", r);
 
-	/* Setup global pointer of guest to be same as the host */
+	 
 	asm volatile (
 		"add %0, gp, zero" : "=r" (current_gp) : : "memory");
 	vcpu_set_reg(vcpu, RISCV_CORE_REG(regs.gp), current_gp);
 
-	/* Setup stack pointer and program counter of guest */
+	 
 	vcpu_set_reg(vcpu, RISCV_CORE_REG(regs.sp), stack_vaddr + stack_size);
 	vcpu_set_reg(vcpu, RISCV_CORE_REG(regs.pc), (unsigned long)guest_code);
 
-	/* Setup default exception vector of guest */
+	 
 	vcpu_set_reg(vcpu, RISCV_CSR_REG(stvec), (unsigned long)guest_unexp_trap);
 
 	return vcpu;

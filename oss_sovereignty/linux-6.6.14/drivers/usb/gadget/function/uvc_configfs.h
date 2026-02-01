@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * uvc_configfs.h
- *
- * Configfs support for the uvc function.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
+ 
+ 
 #ifndef UVC_CONFIGFS_H
 #define UVC_CONFIGFS_H
 
@@ -114,9 +105,7 @@ static inline struct uvcg_frame *to_uvcg_frame(struct config_item *item)
 	return container_of(item, struct uvcg_frame, item);
 }
 
-/* -----------------------------------------------------------------------------
- * streaming/uncompressed/<NAME>
- */
+ 
 
 struct uvcg_uncompressed {
 	struct uvcg_format		fmt;
@@ -128,9 +117,7 @@ static inline struct uvcg_uncompressed *to_uvcg_uncompressed(struct config_item 
 	return container_of(to_uvcg_format(item), struct uvcg_uncompressed, fmt);
 }
 
-/* -----------------------------------------------------------------------------
- * streaming/mjpeg/<NAME>
- */
+ 
 
 struct uvcg_mjpeg {
 	struct uvcg_format		fmt;
@@ -142,9 +129,7 @@ static inline struct uvcg_mjpeg *to_uvcg_mjpeg(struct config_item *item)
 	return container_of(to_uvcg_format(item), struct uvcg_mjpeg, fmt);
 }
 
-/* -----------------------------------------------------------------------------
- * control/extensions/<NAME>
- */
+ 
 
 struct uvcg_extension_unit_descriptor {
 	u8 bLength;
@@ -174,4 +159,4 @@ static inline struct uvcg_extension *to_uvcg_extension(struct config_item *item)
 
 int uvcg_attach_configfs(struct f_uvc_opts *opts);
 
-#endif /* UVC_CONFIGFS_H */
+#endif  

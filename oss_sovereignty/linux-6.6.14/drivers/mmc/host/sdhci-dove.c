@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sdhci-dove.c Support for SDHCI on Marvell's Dove SoC
- *
- * Author: Saeed Bishara <saeed@marvell.com>
- *	   Mike Rapoport <mike@compulab.co.il>
- * Based on sdhci-cns3xxx.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -23,7 +17,7 @@ static u16 sdhci_dove_readw(struct sdhci_host *host, int reg)
 	switch (reg) {
 	case SDHCI_HOST_VERSION:
 	case SDHCI_SLOT_INT_STATUS:
-		/* those registers don't exist */
+		 
 		return 0;
 	default:
 		ret = readw(host->ioaddr + reg);
@@ -39,7 +33,7 @@ static u32 sdhci_dove_readl(struct sdhci_host *host, int reg)
 
 	switch (reg) {
 	case SDHCI_CAPABILITIES:
-		/* Mask the support for 3.0V */
+		 
 		ret &= ~SDHCI_CAN_VDD_300;
 		break;
 	}

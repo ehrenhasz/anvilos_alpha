@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sky81452-backlight.c	SKY81452 backlight driver
- *
- * Copyright 2014 Skyworks Solutions Inc.
- * Author : Gyungoh Yoo <jack.yoo@skyworksinc.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>
@@ -17,14 +12,14 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* registers */
+ 
 #define SKY81452_REG0	0x00
 #define SKY81452_REG1	0x01
 #define SKY81452_REG2	0x02
 #define SKY81452_REG4	0x04
 #define SKY81452_REG5	0x05
 
-/* bit mask */
+ 
 #define SKY81452_CS	0xFF
 #define SKY81452_EN	0x3F
 #define SKY81452_IGPW	0x20
@@ -40,18 +35,7 @@
 #define SKY81452_DEFAULT_NAME "lcd-backlight"
 #define SKY81452_MAX_BRIGHTNESS	(SKY81452_CS + 1)
 
-/**
- * struct sky81452_bl_platform_data - backlight platform data
- * @name:	backlight driver name.
- *		If it is not defined, default name is lcd-backlight.
- * @gpiod_enable:GPIO descriptor which control EN pin
- * @enable:	Enable mask for current sink channel 1, 2, 3, 4, 5 and 6.
- * @ignore_pwm:	true if DPWMI should be ignored.
- * @dpwm_mode:	true is DPWM dimming mode, otherwise Analog dimming mode.
- * @phase_shift:true is phase shift mode.
- * @short_detection_threshold:	It should be one of 4, 5, 6 and 7V.
- * @boost_current_limit:	It should be one of 2300, 2750mA.
- */
+ 
 struct sky81452_bl_platform_data {
 	const char *name;
 	struct gpio_desc *gpiod_enable;

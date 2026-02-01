@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  Copyright (C) 2013  Vayavya Labs Pvt Ltd
 
-  This implements all the API for managing HW timestamp & PTP.
-
-
-  Author: Rayagond Kokatanur <rayagond@vayavyalabs.com>
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -30,20 +22,13 @@ static void config_sub_second_increment(void __iomem *ioaddr,
 	unsigned long data;
 	u32 reg_value;
 
-	/* For GMAC3.x, 4.x versions, in "fine adjustement mode" set sub-second
-	 * increment to twice the number of nanoseconds of a clock cycle.
-	 * The calculation of the default_addend value by the caller will set it
-	 * to mid-range = 2^31 when the remainder of this division is zero,
-	 * which will make the accumulator overflow once every 2 ptp_clock
-	 * cycles, adding twice the number of nanoseconds of a clock cycle :
-	 * 2000000000ULL / ptp_clock.
-	 */
+	 
 	if (value & PTP_TCR_TSCFUPDT)
 		data = (2000000000ULL / ptp_clock);
 	else
 		data = (1000000000ULL / ptp_clock);
 
-	/* 0.465ns accuracy */
+	 
 	if (!(value & PTP_TCR_TSCTRLSSR))
 		data = (data * 1000) / 465;
 
@@ -68,31 +53,29 @@ static void hwtstamp_correct_latency(struct stmmac_priv *priv)
 	u64 scaled_ns;
 	u32 val;
 
-	/* MAC-internal ingress latency */
+	 
 	scaled_ns = readl(ioaddr + PTP_TS_INGR_LAT);
 
-	/* See section 11.7.2.5.3.1 "Ingress Correction" on page 4001 of
-	 * i.MX8MP Applications Processor Reference Manual Rev. 1, 06/2021
-	 */
+	 
 	val = readl(ioaddr + PTP_TCR);
 	if (val & PTP_TCR_TSCTRLSSR)
-		/* nanoseconds field is in decimal format with granularity of 1ns/bit */
+		 
 		scaled_ns = ((u64)NSEC_PER_SEC << 16) - scaled_ns;
 	else
-		/* nanoseconds field is in binary format with granularity of ~0.466ns/bit */
+		 
 		scaled_ns = ((1ULL << 31) << 16) -
 			DIV_U64_ROUND_CLOSEST(scaled_ns * PSEC_PER_NSEC, 466U);
 
 	reg_tsic = scaled_ns >> 16;
 	reg_tsicsns = scaled_ns & 0xff00;
 
-	/* set bit 31 for 2's compliment */
+	 
 	reg_tsic |= BIT(31);
 
 	writel(reg_tsic, ioaddr + PTP_TS_INGR_CORR_NS);
 	writel(reg_tsicsns, ioaddr + PTP_TS_INGR_CORR_SNS);
 
-	/* MAC-internal egress latency */
+	 
 	scaled_ns = readl(ioaddr + PTP_TS_EGR_LAT);
 
 	reg_tsec = scaled_ns >> 16;
@@ -108,12 +91,12 @@ static int init_systime(void __iomem *ioaddr, u32 sec, u32 nsec)
 
 	writel(sec, ioaddr + PTP_STSUR);
 	writel(nsec, ioaddr + PTP_STNSUR);
-	/* issue command to initialize the system time value */
+	 
 	value = readl(ioaddr + PTP_TCR);
 	value |= PTP_TCR_TSINIT;
 	writel(value, ioaddr + PTP_TCR);
 
-	/* wait for present system time initialize to complete */
+	 
 	return readl_poll_timeout_atomic(ioaddr + PTP_TCR, value,
 				 !(value & PTP_TCR_TSINIT),
 				 10, 100000);
@@ -125,12 +108,12 @@ static int config_addend(void __iomem *ioaddr, u32 addend)
 	int limit;
 
 	writel(addend, ioaddr + PTP_TAR);
-	/* issue command to update the addend value */
+	 
 	value = readl(ioaddr + PTP_TCR);
 	value |= PTP_TCR_TSADDREG;
 	writel(value, ioaddr + PTP_TCR);
 
-	/* wait for present addend update to complete */
+	 
 	limit = 10;
 	while (limit--) {
 		if (!(readl(ioaddr + PTP_TCR) & PTP_TCR_TSADDREG))
@@ -150,10 +133,7 @@ static int adjust_systime(void __iomem *ioaddr, u32 sec, u32 nsec,
 	int limit;
 
 	if (add_sub) {
-		/* If the new sec value needs to be subtracted with
-		 * the system time, then MAC_STSUR reg should be
-		 * programmed with (2^32 – <new_sec_value>)
-		 */
+		 
 		if (gmac4)
 			sec = -sec;
 
@@ -168,12 +148,12 @@ static int adjust_systime(void __iomem *ioaddr, u32 sec, u32 nsec,
 	value = (add_sub << PTP_STNSUR_ADDSUB_SHIFT) | nsec;
 	writel(value, ioaddr + PTP_STNSUR);
 
-	/* issue command to initialize the system time value */
+	 
 	value = readl(ioaddr + PTP_TCR);
 	value |= PTP_TCR_TSUPDT;
 	writel(value, ioaddr + PTP_TCR);
 
-	/* wait for present system time adjust/update to complete */
+	 
 	limit = 10;
 	while (limit--) {
 		if (!(readl(ioaddr + PTP_TCR) & PTP_TCR_TSUPDT))
@@ -190,13 +170,13 @@ static void get_systime(void __iomem *ioaddr, u64 *systime)
 {
 	u64 ns, sec0, sec1;
 
-	/* Get the TSS value */
+	 
 	sec1 = readl_relaxed(ioaddr + PTP_STSR);
 	do {
 		sec0 = sec1;
-		/* Get the TSSS value */
+		 
 		ns = readl_relaxed(ioaddr + PTP_STNSR);
-		/* Get the TSS value */
+		 
 		sec1 = readl_relaxed(ioaddr + PTP_STSR);
 	} while (sec0 != sec1);
 
@@ -232,9 +212,7 @@ static void timestamp_interrupt(struct stmmac_priv *priv)
 	if (!tsync_int)
 		return;
 
-	/* Read timestamp status to clear interrupt from either external
-	 * timestamp or start/end of PPS.
-	 */
+	 
 	ts_status = readl(priv->ioaddr + GMAC_TIMESTAMP_STATUS);
 
 	if (!(priv->plat->flags & STMMAC_FLAG_EXT_SNAPSHOT_EN))

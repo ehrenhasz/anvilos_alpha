@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * pxa168 clock framework source file
- *
- * Copyright (C) 2012 Marvell
- * Chao Xie <xiechao.mail@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -107,7 +102,7 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
 };
 
 static struct mmp_clk_factor_tbl uart_factor_tbl[] = {
-	{.num = 8125, .den = 1536},	/*14.745MHZ */
+	{.num = 8125, .den = 1536},	 
 };
 
 static void pxa168_pll_init(struct pxa168_clk_unit *pxa_unit)
@@ -252,7 +247,7 @@ static struct mmp_param_gate_clk apmu_gate_clks[] = {
 	{PXA168_CLK_SDH1, "sdh1_clk", "sdh1_mux", CLK_SET_RATE_PARENT, APMU_SDH1, 0x12, 0x12, 0x0, 0, &sdh1_lock},
 	{PXA168_CLK_SDH2, "sdh2_clk", "sdh2_mux", CLK_SET_RATE_PARENT, APMU_SDH2, 0x12, 0x12, 0x0, 0, &sdh2_lock},
 	{PXA168_CLK_SDH3, "sdh3_clk", "sdh3_mux", CLK_SET_RATE_PARENT, APMU_SDH3, 0x12, 0x12, 0x0, 0, &sdh3_lock},
-	/* SDH0/1 and 2/3 AXI clocks are also gated by common bits in SDH0 and SDH2 registers */
+	 
 	{PXA168_CLK_SDH01_AXI, "sdh01_axi_clk", NULL, CLK_SET_RATE_PARENT, APMU_SDH0, 0x9, 0x9, 0x0, 0, &sdh0_lock},
 	{PXA168_CLK_SDH23_AXI, "sdh23_axi_clk", NULL, CLK_SET_RATE_PARENT, APMU_SDH2, 0x9, 0x9, 0x0, 0, &sdh2_lock},
 	{PXA168_CLK_DISP0, "disp0_clk", "disp0_mux", CLK_SET_RATE_PARENT, APMU_DISP0, 0x1b, 0x1b, 0x0, 0, &disp0_lock},

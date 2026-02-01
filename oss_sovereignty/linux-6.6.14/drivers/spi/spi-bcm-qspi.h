@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2016 Broadcom
- */
+ 
+ 
 
 #ifndef __SPI_BCM_QSPI_H__
 #define __SPI_BCM_QSPI_H__
@@ -9,7 +7,7 @@
 #include <linux/types.h>
 #include <linux/io.h>
 
-/* BSPI interrupt masks */
+ 
 #define INTR_BSPI_LR_OVERREAD_MASK		BIT(4)
 #define INTR_BSPI_LR_SESSION_DONE_MASK		BIT(3)
 #define INTR_BSPI_LR_IMPATIENT_MASK		BIT(2)
@@ -29,7 +27,7 @@
 	(BSPI_LR_INTERRUPTS_ERROR |	       \
 	 BSPI_LR_INTERRUPTS_DATA)
 
-/* MSPI Interrupt masks */
+ 
 #define INTR_MSPI_HALTED_MASK			BIT(6)
 #define INTR_MSPI_DONE_MASK			BIT(5)
 
@@ -58,7 +56,7 @@ struct bcm_qspi_soc_intc {
 	u32 (*bcm_qspi_get_int_status)(struct bcm_qspi_soc_intc *soc_intc);
 };
 
-/* Read controller register*/
+ 
 static inline u32 bcm_qspi_readl(bool be, void __iomem *addr)
 {
 	if (be)
@@ -67,7 +65,7 @@ static inline u32 bcm_qspi_readl(bool be, void __iomem *addr)
 		return readl_relaxed(addr);
 }
 
-/* Write controller register*/
+ 
 static inline void bcm_qspi_writel(bool be,
 				   unsigned int data, void __iomem *addr)
 {
@@ -93,12 +91,12 @@ static inline u32 get_qspi_mask(int type)
 	return 0;
 }
 
-/* The common driver functions to be called by the SoC platform driver */
+ 
 int bcm_qspi_probe(struct platform_device *pdev,
 		   struct bcm_qspi_soc_intc *soc_intc);
 void bcm_qspi_remove(struct platform_device *pdev);
 
-/* pm_ops used by the SoC platform driver called on PM suspend/resume */
+ 
 extern const struct dev_pm_ops bcm_qspi_pm_ops;
 
-#endif /* __SPI_BCM_QSPI_H__ */
+#endif  

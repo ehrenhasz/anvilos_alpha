@@ -1,41 +1,5 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/*
- * Copyright (c) 2015-2016, Integrated Device Technology Inc.
- * Copyright (c) 2015, Prodrive Technologies
- * Copyright (c) 2015, Texas Instruments Incorporated
- * Copyright (c) 2015, RapidIO Trade Association
- * All rights reserved.
- *
- * This software is available to you under a choice of one of two licenses.
- * You may choose to be licensed under the terms of the GNU General Public
- * License(GPL) Version 2, or the BSD-3 Clause license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the copyright holder nor the names of its contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #ifndef _RIO_MPORT_CDEV_H_
 #define _RIO_MPORT_CDEV_H_
@@ -44,19 +8,15 @@
 #include <linux/types.h>
 
 struct rio_mport_maint_io {
-	__u16 rioid;		/* destID of remote device */
-	__u8  hopcount;		/* hopcount to remote device */
+	__u16 rioid;		 
+	__u8  hopcount;		 
 	__u8  pad0[5];
-	__u32 offset;		/* offset in register space */
-	__u32 length;		/* length in bytes */
-	__u64 buffer;		/* pointer to data buffer */
+	__u32 offset;		 
+	__u32 length;		 
+	__u64 buffer;		 
 };
 
-/*
- * Definitions for RapidIO data transfers:
- * - memory mapped (MAPPED)
- * - packet generation from memory (TRANSFER)
- */
+ 
 #define RIO_TRANSFER_MODE_MAPPED	(1 << 0)
 #define RIO_TRANSFER_MODE_TRANSFER	(1 << 1)
 #define RIO_CAP_DBL_SEND		(1 << 2)
@@ -68,10 +28,10 @@ struct rio_mport_maint_io {
 
 struct rio_mport_properties {
 	__u16 hdid;
-	__u8  id;			/* Physical port ID */
+	__u8  id;			 
 	__u8  index;
 	__u32 flags;
-	__u32 sys_size;		/* Default addressing size */
+	__u32 sys_size;		 
 	__u8  port_ok;
 	__u8  link_speed;
 	__u8  link_width;
@@ -79,18 +39,14 @@ struct rio_mport_properties {
 	__u32 dma_max_sge;
 	__u32 dma_max_size;
 	__u32 dma_align;
-	__u32 transfer_mode;		/* Default transfer mode */
-	__u32 cap_sys_size;		/* Capable system sizes */
-	__u32 cap_addr_size;		/* Capable addressing sizes */
-	__u32 cap_transfer_mode;	/* Capable transfer modes */
-	__u32 cap_mport;		/* Mport capabilities */
+	__u32 transfer_mode;		 
+	__u32 cap_sys_size;		 
+	__u32 cap_addr_size;		 
+	__u32 cap_transfer_mode;	 
+	__u32 cap_mport;		 
 };
 
-/*
- * Definitions for RapidIO events;
- * - incoming port-writes
- * - incoming doorbells
- */
+ 
 #define RIO_DOORBELL	(1 << 0)
 #define RIO_PORTWRITE	(1 << 1)
 
@@ -100,7 +56,7 @@ struct rio_doorbell {
 };
 
 struct rio_doorbell_filter {
-	__u16 rioid;	/* Use RIO_INVALID_DESTID to match all ids */
+	__u16 rioid;	 
 	__u16 low;
 	__u16 high;
 	__u16 pad0;
@@ -118,10 +74,7 @@ struct rio_pw_filter {
 	__u32 pad0;
 };
 
-/* RapidIO base address for inbound requests set to value defined below
- * indicates that no specific RIO-to-local address translation is requested
- * and driver should use direct (one-to-one) address mapping.
-*/
+ 
 #define RIO_MAP_ANY_ADDR	(__u64)(~((__u64) 0))
 
 struct rio_mmap {
@@ -134,83 +87,64 @@ struct rio_mmap {
 };
 
 struct rio_dma_mem {
-	__u64 length;		/* length of DMA memory */
-	__u64 dma_handle;	/* handle associated with this memory */
+	__u64 length;		 
+	__u64 dma_handle;	 
 	__u64 address;
 };
 
 struct rio_event {
-	__u32 header;	/* event type RIO_DOORBELL or RIO_PORTWRITE */
+	__u32 header;	 
 	union {
-		struct rio_doorbell doorbell;	/* header for RIO_DOORBELL */
-		struct rio_portwrite portwrite; /* header for RIO_PORTWRITE */
+		struct rio_doorbell doorbell;	 
+		struct rio_portwrite portwrite;  
 	} u;
 	__u32 pad0;
 };
 
 enum rio_transfer_sync {
-	RIO_TRANSFER_SYNC,	/* synchronous transfer */
-	RIO_TRANSFER_ASYNC,	/* asynchronous transfer */
-	RIO_TRANSFER_FAF,	/* fire-and-forget transfer */
+	RIO_TRANSFER_SYNC,	 
+	RIO_TRANSFER_ASYNC,	 
+	RIO_TRANSFER_FAF,	 
 };
 
 enum rio_transfer_dir {
-	RIO_TRANSFER_DIR_READ,	/* Read operation */
-	RIO_TRANSFER_DIR_WRITE,	/* Write operation */
+	RIO_TRANSFER_DIR_READ,	 
+	RIO_TRANSFER_DIR_WRITE,	 
 };
 
-/*
- * RapidIO data exchange transactions are lists of individual transfers. Each
- * transfer exchanges data between two RapidIO devices by remote direct memory
- * access and has its own completion code.
- *
- * The RapidIO specification defines four types of data exchange requests:
- * NREAD, NWRITE, SWRITE and NWRITE_R. The RapidIO DMA channel interface allows
- * to specify the required type of write operation or combination of them when
- * only the last data packet requires response.
- *
- * NREAD:    read up to 256 bytes from remote device memory into local memory
- * NWRITE:   write up to 256 bytes from local memory to remote device memory
- *           without confirmation
- * SWRITE:   as NWRITE, but all addresses and payloads must be 64-bit aligned
- * NWRITE_R: as NWRITE, but expect acknowledgment from remote device.
- *
- * The default exchange is chosen from NREAD and any of the WRITE modes as the
- * driver sees fit. For write requests the user can explicitly choose between
- * any of the write modes for each transaction.
- */
+ 
 enum rio_exchange {
-	RIO_EXCHANGE_DEFAULT,	/* Default method */
-	RIO_EXCHANGE_NWRITE,	/* All packets using NWRITE */
-	RIO_EXCHANGE_SWRITE,	/* All packets using SWRITE */
-	RIO_EXCHANGE_NWRITE_R,	/* Last packet NWRITE_R, others NWRITE */
-	RIO_EXCHANGE_SWRITE_R,	/* Last packet NWRITE_R, others SWRITE */
-	RIO_EXCHANGE_NWRITE_R_ALL, /* All packets using NWRITE_R */
+	RIO_EXCHANGE_DEFAULT,	 
+	RIO_EXCHANGE_NWRITE,	 
+	RIO_EXCHANGE_SWRITE,	 
+	RIO_EXCHANGE_NWRITE_R,	 
+	RIO_EXCHANGE_SWRITE_R,	 
+	RIO_EXCHANGE_NWRITE_R_ALL,  
 };
 
 struct rio_transfer_io {
-	__u64 rio_addr;	/* Address in target's RIO mem space */
+	__u64 rio_addr;	 
 	__u64 loc_addr;
 	__u64 handle;
-	__u64 offset;	/* Offset in buffer */
-	__u64 length;	/* Length in bytes */
-	__u16 rioid;	/* Target destID */
-	__u16 method;	/* Data exchange method, one of rio_exchange enum */
-	__u32 completion_code;	/* Completion code for this transfer */
+	__u64 offset;	 
+	__u64 length;	 
+	__u16 rioid;	 
+	__u16 method;	 
+	__u32 completion_code;	 
 };
 
 struct rio_transaction {
-	__u64 block;	/* Pointer to array of <count> transfers */
-	__u32 count;	/* Number of transfers */
-	__u32 transfer_mode;	/* Data transfer mode */
-	__u16 sync;	/* Synch method, one of rio_transfer_sync enum */
-	__u16 dir;	/* Transfer direction, one of rio_transfer_dir enum */
+	__u64 block;	 
+	__u32 count;	 
+	__u32 transfer_mode;	 
+	__u16 sync;	 
+	__u16 dir;	 
 	__u32 pad0;
 };
 
 struct rio_async_tx_wait {
-	__u32 token;	/* DMA transaction ID token */
-	__u32 timeout;	/* Wait timeout in msec, if 0 use default TO */
+	__u32 token;	 
+	__u32 timeout;	 
 };
 
 #define RIO_MAX_DEVNAME_SZ	20
@@ -223,7 +157,7 @@ struct rio_rdev_info {
 	char name[RIO_MAX_DEVNAME_SZ + 1];
 };
 
-/* Driver IOCTL codes */
+ 
 #define RIO_MPORT_DRV_MAGIC           'm'
 
 #define RIO_MPORT_MAINT_HDID_SET	\
@@ -275,4 +209,4 @@ struct rio_rdev_info {
 #define RIO_DEV_DEL \
 	_IOW(RIO_MPORT_DRV_MAGIC, 24, struct rio_rdev_info)
 
-#endif /* _RIO_MPORT_CDEV_H_ */
+#endif  

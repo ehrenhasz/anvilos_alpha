@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/nfs/nfs4namespace.c
- *
- * Copyright (C) 2005 Trond Myklebust <Trond.Myklebust@netapp.com>
- * - Modified by David Howells <dhowells@redhat.com>
- *
- * NFSv4 namespace
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/dcache.h>
@@ -27,10 +20,7 @@
 
 #define NFSDBG_FACILITY		NFSDBG_VFS
 
-/*
- * Work out the length that an NFSv4 path would render to as a standard posix
- * path, with a leading slash but no terminating slash.
- */
+ 
 static ssize_t nfs4_pathname_len(const struct nfs4_pathname *pathname)
 {
 	ssize_t len = 0;
@@ -41,7 +31,7 @@ static ssize_t nfs4_pathname_len(const struct nfs4_pathname *pathname)
 
 		if (component->len > NAME_MAX)
 			goto too_long;
-		len += 1 + component->len; /* Adding "/foo" */
+		len += 1 + component->len;  
 		if (len > PATH_MAX)
 			goto too_long;
 	}
@@ -51,9 +41,7 @@ too_long:
 	return -ENAMETOOLONG;
 }
 
-/*
- * Convert the NFSv4 pathname components into a standard posix path.
- */
+ 
 static char *nfs4_pathname_string(const struct nfs4_pathname *pathname,
 				  unsigned short *_len)
 {
@@ -82,23 +70,18 @@ static char *nfs4_pathname_string(const struct nfs4_pathname *pathname,
 	return buf;
 }
 
-/*
- * return the path component of "<server>:<path>"
- *  nfspath - the "<server>:<path>" string
- *  end - one past the last char that could contain "<server>:"
- * returns NULL on failure
- */
+ 
 static char *nfs_path_component(const char *nfspath, const char *end)
 {
 	char *p;
 
 	if (*nfspath == '[') {
-		/* parse [] escaped IPv6 addrs */
+		 
 		p = strchr(nfspath, ']');
 		if (p != NULL && ++p < end && *p == ':')
 			return p + 1;
 	} else {
-		/* otherwise split on first colon */
+		 
 		p = strchr(nfspath, ':');
 		if (p != NULL && p < end)
 			return p + 1;
@@ -106,9 +89,7 @@ static char *nfs_path_component(const char *nfspath, const char *end)
 	return NULL;
 }
 
-/*
- * Determine the mount path as a string
- */
+ 
 static char *nfs4_path(struct dentry *dentry, char *buffer, ssize_t buflen)
 {
 	char *limit;
@@ -122,10 +103,7 @@ static char *nfs4_path(struct dentry *dentry, char *buffer, ssize_t buflen)
 	return path;
 }
 
-/*
- * Check that fs_locations::fs_root [RFC3530 6.3] is a prefix for what we
- * believe to be the server path to this dentry
- */
+ 
 static int nfs4_validate_fspath(struct dentry *dentry,
 				const struct nfs4_fs_locations *locations,
 				struct nfs_fs_context *ctx)
@@ -184,23 +162,7 @@ size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr_storage *
 	return ret;
 }
 
-/**
- * nfs_find_best_sec - Find a security mechanism supported locally
- * @clnt: pointer to rpc_clnt
- * @server: NFS server struct
- * @flavors: List of security tuples returned by SECINFO procedure
- *
- * Return an rpc client that uses the first security mechanism in
- * "flavors" that is locally supported.  The "flavors" array
- * is searched in the order returned from the server, per RFC 3530
- * recommendation and each flavor is checked for membership in the
- * sec= mount option list if it exists.
- *
- * Return -EPERM if no matching flavor is found in the array.
- *
- * Please call rpc_shutdown_client() when you are done with this rpc client.
- *
- */
+ 
 static struct rpc_clnt *nfs_find_best_sec(struct rpc_clnt *clnt,
 					  struct nfs_server *server,
 					  struct nfs4_secinfo_flavors *flavors)
@@ -218,21 +180,17 @@ static struct rpc_clnt *nfs_find_best_sec(struct rpc_clnt *clnt,
 		case RPC_AUTH_GSS:
 			pflavor = rpcauth_get_pseudoflavor(secinfo->flavor,
 							&secinfo->flavor_info);
-			/* does the pseudoflavor match a sec= mount opt? */
+			 
 			if (pflavor != RPC_AUTH_MAXFLAVOR &&
 			    nfs_auth_info_match(&server->auth_info, pflavor)) {
 				struct rpc_clnt *new;
 				struct rpc_cred *cred;
 
-				/* Cloning creates an rpc_auth for the flavor */
+				 
 				new = rpc_clone_client_set_auth(clnt, pflavor);
 				if (IS_ERR(new))
 					continue;
-				/**
-				* Check that the user actually can use the
-				* flavor. This is mostly for RPC_AUTH_GSS
-				* where cr_init obtains a gss context
-				*/
+				 
 				cred = rpcauth_lookupcred(new->cl_auth, 0);
 				if (IS_ERR(cred)) {
 					rpc_shutdown_client(new);
@@ -246,17 +204,7 @@ static struct rpc_clnt *nfs_find_best_sec(struct rpc_clnt *clnt,
 	return ERR_PTR(-EPERM);
 }
 
-/**
- * nfs4_negotiate_security - in response to an NFS4ERR_WRONGSEC on lookup,
- * return an rpc_clnt that uses the best available security flavor with
- * respect to the secinfo flavor list and the sec= mount options.
- *
- * @clnt: RPC client to clone
- * @inode: directory inode
- * @name: lookup name
- *
- * Please call rpc_shutdown_client() when you are done with this rpc client.
- */
+ 
 struct rpc_clnt *
 nfs4_negotiate_security(struct rpc_clnt *clnt, struct inode *inode,
 					const struct qstr *name)
@@ -293,10 +241,7 @@ static int try_location(struct fs_context *fc,
 	char *export_path, *source, *p;
 	int ret = -ENOENT;
 
-	/* Allocate a buffer big enough to hold any of the hostnames plus a
-	 * terminating char and also a buffer big enough to hold the hostname
-	 * plus a colon plus the path.
-	 */
+	 
 	len = 0;
 	for (s = 0; s < location->nservers; s++) {
 		const struct nfs4_string *buf = &location->servers[s];
@@ -359,12 +304,7 @@ static int try_location(struct fs_context *fc,
 	return ret;
 }
 
-/**
- * nfs_follow_referral - set up mountpoint when hitting a referral on moved error
- * @fc: pointer to struct nfs_fs_context
- * @locations: array of NFSv4 server location information
- *
- */
+ 
 static int nfs_follow_referral(struct fs_context *fc,
 			       const struct nfs4_fs_locations *locations)
 {
@@ -376,7 +316,7 @@ static int nfs_follow_referral(struct fs_context *fc,
 
 	dprintk("%s: referral at %pd2\n", __func__, ctx->clone_data.dentry);
 
-	/* Ensure fs path is a prefix of current dentry path */
+	 
 	error = nfs4_validate_fspath(ctx->clone_data.dentry, locations, ctx);
 	if (error < 0)
 		return error;
@@ -397,11 +337,7 @@ static int nfs_follow_referral(struct fs_context *fc,
 	return error;
 }
 
-/*
- * nfs_do_refmount - handle crossing a referral on server
- * @dentry - dentry of referral
- *
- */
+ 
 static int nfs_do_refmount(struct fs_context *fc, struct rpc_clnt *client)
 {
 	struct nfs_fs_context *ctx = nfs_fc2context(fc);
@@ -410,7 +346,7 @@ static int nfs_do_refmount(struct fs_context *fc, struct rpc_clnt *client)
 	struct page *page;
 	int err = -ENOMEM;
 
-	/* BUG_ON(IS_ROOT(dentry)); */
+	 
 	page = alloc_page(GFP_KERNEL);
 	if (!page)
 		return -ENOMEM;
@@ -422,7 +358,7 @@ static int nfs_do_refmount(struct fs_context *fc, struct rpc_clnt *client)
 	if (!fs_locations->fattr)
 		goto out_free_2;
 
-	/* Get locations */
+	 
 	dentry = ctx->clone_data.dentry;
 	parent = dget_parent(dentry);
 	dprintk("%s: getting locations for %pd2\n",
@@ -457,7 +393,7 @@ int nfs4_submount(struct fs_context *fc, struct nfs_server *server)
 	struct rpc_clnt *client;
 	int ret;
 
-	/* Look it up again to get its attributes and sec flavor */
+	 
 	client = nfs4_proc_lookup_mountpoint(dir, dentry, ctx->mntfh,
 					     ctx->clone_data.fattr);
 	dput(parent);
@@ -475,11 +411,7 @@ int nfs4_submount(struct fs_context *fc, struct nfs_server *server)
 	return ret;
 }
 
-/*
- * Try one location from the fs_locations array.
- *
- * Returns zero on success, or a negative errno value.
- */
+ 
 static int nfs4_try_replacing_one_location(struct nfs_server *server,
 		char *page, char *page2,
 		const struct nfs4_fs_location *location)
@@ -526,18 +458,7 @@ static int nfs4_try_replacing_one_location(struct nfs_server *server,
 	return error;
 }
 
-/**
- * nfs4_replace_transport - set up transport to destination server
- *
- * @server: export being migrated
- * @locations: fs_locations array
- *
- * Returns zero on success, or a negative errno value.
- *
- * The client tries all the entries in the "locations" array, in the
- * order returned by the server, until one works or the end of the
- * array is reached.
- */
+ 
 int nfs4_replace_transport(struct nfs_server *server,
 			   const struct nfs4_fs_locations *locations)
 {

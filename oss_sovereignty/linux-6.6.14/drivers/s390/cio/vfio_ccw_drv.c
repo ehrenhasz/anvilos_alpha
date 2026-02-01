@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * VFIO based Physical Subchannel device driver
- *
- * Copyright IBM Corp. 2017
- * Copyright Red Hat, Inc. 2019
- *
- * Author(s): Dong Jia Shi <bjsdjshi@linux.vnet.ibm.com>
- *            Xiao Feng Ren <renxiaof@linux.vnet.ibm.com>
- *            Cornelia Huck <cohuck@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -31,9 +22,7 @@ struct kmem_cache *vfio_ccw_crw_region;
 debug_info_t *vfio_ccw_debug_msg_id;
 debug_info_t *vfio_ccw_debug_trace_id;
 
-/*
- * Helpers
- */
+ 
 int vfio_ccw_sch_quiesce(struct subchannel *sch)
 {
 	struct vfio_ccw_parent *parent = dev_get_drvdata(&sch->dev);
@@ -41,11 +30,7 @@ int vfio_ccw_sch_quiesce(struct subchannel *sch)
 	DECLARE_COMPLETION_ONSTACK(completion);
 	int iretry, ret = 0;
 
-	/*
-	 * Probably an impossible situation, after being called through
-	 * FSM callbacks. But in the event it did, register a warning
-	 * and return as if things were fine.
-	 */
+	 
 	if (WARN_ON(!private))
 		return 0;
 
@@ -60,10 +45,7 @@ int vfio_ccw_sch_quiesce(struct subchannel *sch)
 			break;
 		}
 
-		/*
-		 * Flush all I/O and wait for
-		 * cancel/halt/clear completion.
-		 */
+		 
 		private->completion = &completion;
 		spin_unlock_irq(sch->lock);
 
@@ -102,12 +84,7 @@ void vfio_ccw_sch_io_todo(struct work_struct *work)
 	memcpy(private->io_region->irb_area, irb, sizeof(*irb));
 	mutex_unlock(&private->io_mutex);
 
-	/*
-	 * Reset to IDLE only if processing of a channel program
-	 * has finished. Do not overwrite a possible processing
-	 * state if the interrupt was unsolicited, or if the final
-	 * interrupt was for HSCH or CSCH.
-	 */
+	 
 	if (cp_is_finished)
 		private->state = VFIO_CCW_STATE_IDLE;
 
@@ -125,20 +102,13 @@ void vfio_ccw_crw_todo(struct work_struct *work)
 		eventfd_signal(private->crw_trigger, 1);
 }
 
-/*
- * Css driver callbacks
- */
+ 
 static void vfio_ccw_sch_irq(struct subchannel *sch)
 {
 	struct vfio_ccw_parent *parent = dev_get_drvdata(&sch->dev);
 	struct vfio_ccw_private *private = dev_get_drvdata(&parent->dev);
 
-	/*
-	 * The subchannel should still be disabled at this point,
-	 * so an interrupt would be quite surprising. As with an
-	 * interrupt while the FSM is closed, let's attempt to
-	 * disable the subchannel again.
-	 */
+	 
 	if (!private) {
 		VFIO_CCW_MSG_EVENT(2, "sch %x.%x.%04x: unexpected interrupt\n",
 				   sch->schid.cssid, sch->schid.ssid,
@@ -232,16 +202,7 @@ static void vfio_ccw_sch_shutdown(struct subchannel *sch)
 	vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
 }
 
-/**
- * vfio_ccw_sch_event - process subchannel event
- * @sch: subchannel
- * @process: non-zero if function is called in process context
- *
- * An unspecified event occurred for this subchannel. Adjust data according
- * to the current operational state of the subchannel. Return zero when the
- * event has been handled sufficiently or -EAGAIN when this function should
- * be called again in process context.
- */
+ 
 static int vfio_ccw_sch_event(struct subchannel *sch, int process)
 {
 	struct vfio_ccw_parent *parent = dev_get_drvdata(&sch->dev);
@@ -276,18 +237,12 @@ static void vfio_ccw_queue_crw(struct vfio_ccw_private *private,
 {
 	struct vfio_ccw_crw *crw;
 
-	/*
-	 * If unable to allocate a CRW, just drop the event and
-	 * carry on.  The guest will either see a later one or
-	 * learn when it issues its own store subchannel.
-	 */
+	 
 	crw = kzalloc(sizeof(*crw), GFP_ATOMIC);
 	if (!crw)
 		return;
 
-	/*
-	 * Build the CRW based on the inputs given to us.
-	 */
+	 
 	crw->crw.rsc = rsc;
 	crw->crw.erc = erc;
 	crw->crw.rsid = rsid;
@@ -318,26 +273,26 @@ static int vfio_ccw_chp_event(struct subchannel *sch,
 
 	switch (event) {
 	case CHP_VARY_OFF:
-		/* Path logically turned off */
+		 
 		sch->opm &= ~mask;
 		sch->lpm &= ~mask;
 		if (sch->schib.pmcw.lpum & mask)
 			cio_cancel_halt_clear(sch, &retry);
 		break;
 	case CHP_OFFLINE:
-		/* Path is gone */
+		 
 		if (sch->schib.pmcw.lpum & mask)
 			cio_cancel_halt_clear(sch, &retry);
 		vfio_ccw_queue_crw(private, CRW_RSC_CPATH, CRW_ERC_PERRN,
 				   link->chpid.id);
 		break;
 	case CHP_VARY_ON:
-		/* Path logically turned on */
+		 
 		sch->opm |= mask;
 		sch->lpm |= mask;
 		break;
 	case CHP_ONLINE:
-		/* Path became available */
+		 
 		sch->lpm |= mask & sch->opm;
 		vfio_ccw_queue_crw(private, CRW_RSC_CPATH, CRW_ERC_INIT,
 				   link->chpid.id);
@@ -349,7 +304,7 @@ static int vfio_ccw_chp_event(struct subchannel *sch,
 
 static struct css_device_id vfio_ccw_sch_ids[] = {
 	{ .match_flags = 0x1, .type = SUBCHANNEL_TYPE_IO, },
-	{ /* end of list */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(css, vfio_ccw_sch_ids);
 

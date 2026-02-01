@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright Red Hat Inc. 2017
- *
- * This file is part of the SCTP kernel implementation
- *
- * These functions implement sctp stream message interleaving, mostly
- * including I-DATA and I-FORWARD-TSN chunks process.
- *
- * Please send any bug reports or fixes you make to the
- * email addresched(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Xin Long <lucien.xin@gmail.com>
- */
+
+ 
 
 #include <net/busy_poll.h>
 #include <net/sctp/sctp.h>
@@ -1077,7 +1063,7 @@ static void sctp_intl_abort_pd(struct sctp_ulpq *ulpq, gfp_t gfp)
 		}
 	}
 
-	/* intl abort pd happens only when all data needs to be cleaned */
+	 
 	sctp_ulpq_flush(ulpq);
 }
 
@@ -1195,11 +1181,11 @@ static bool sctp_validate_iftsn(struct sctp_chunk *chunk)
 
 static void sctp_report_fwdtsn(struct sctp_ulpq *ulpq, __u32 ftsn)
 {
-	/* Move the Cumulattive TSN Ack ahead. */
+	 
 	sctp_tsnmap_skip(&ulpq->asoc->peer.tsn_map, ftsn);
-	/* purge the fragmentation queue */
+	 
 	sctp_ulpq_reasm_flushtsn(ulpq, ftsn);
-	/* Abort any in progress partial delivery. */
+	 
 	sctp_ulpq_abort_pd(ulpq, GFP_ATOMIC);
 }
 
@@ -1230,11 +1216,11 @@ static void sctp_intl_reasm_flushtsn(struct sctp_ulpq *ulpq, __u32 ftsn)
 
 static void sctp_report_iftsn(struct sctp_ulpq *ulpq, __u32 ftsn)
 {
-	/* Move the Cumulattive TSN Ack ahead. */
+	 
 	sctp_tsnmap_skip(&ulpq->asoc->peer.tsn_map, ftsn);
-	/* purge the fragmentation queue */
+	 
 	sctp_intl_reasm_flushtsn(ulpq, ftsn);
-	/* abort only when it's for all data */
+	 
 	if (ftsn == sctp_tsnmap_get_max_tsn_seen(&ulpq->asoc->peer.tsn_map))
 		sctp_intl_abort_pd(ulpq, GFP_ATOMIC);
 }
@@ -1243,7 +1229,7 @@ static void sctp_handle_fwdtsn(struct sctp_ulpq *ulpq, struct sctp_chunk *chunk)
 {
 	struct sctp_fwdtsn_skip *skip;
 
-	/* Walk through all the skipped SSNs */
+	 
 	sctp_walk_fwdtsn(skip, chunk)
 		sctp_ulpq_skip(ulpq, ntohs(skip->stream), ntohs(skip->ssn));
 }
@@ -1280,7 +1266,7 @@ static void sctp_handle_iftsn(struct sctp_ulpq *ulpq, struct sctp_chunk *chunk)
 {
 	struct sctp_ifwdtsn_skip *skip;
 
-	/* Walk through all the skipped MIDs and abort stream pd if possible */
+	 
 	sctp_walk_ifwdtsn(skip, chunk)
 		sctp_intl_skip(ulpq, ntohs(skip->stream),
 			       ntohl(skip->mid), skip->flags);
@@ -1298,7 +1284,7 @@ static int do_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sctp_ulpevent *even
 static struct sctp_stream_interleave sctp_stream_interleave_0 = {
 	.data_chunk_len		= sizeof(struct sctp_data_chunk),
 	.ftsn_chunk_len		= sizeof(struct sctp_fwdtsn_chunk),
-	/* DATA process functions */
+	 
 	.make_datafrag		= sctp_make_datafrag_empty,
 	.assign_number		= sctp_chunk_assign_ssn,
 	.validate_data		= sctp_validate_data,
@@ -1307,7 +1293,7 @@ static struct sctp_stream_interleave sctp_stream_interleave_0 = {
 	.renege_events		= sctp_ulpq_renege,
 	.start_pd		= sctp_ulpq_partial_delivery,
 	.abort_pd		= sctp_ulpq_abort_pd,
-	/* FORWARD-TSN process functions */
+	 
 	.generate_ftsn		= sctp_generate_fwdtsn,
 	.validate_ftsn		= sctp_validate_fwdtsn,
 	.report_ftsn		= sctp_report_fwdtsn,
@@ -1327,7 +1313,7 @@ static int do_sctp_enqueue_event(struct sctp_ulpq *ulpq,
 static struct sctp_stream_interleave sctp_stream_interleave_1 = {
 	.data_chunk_len		= sizeof(struct sctp_idata_chunk),
 	.ftsn_chunk_len		= sizeof(struct sctp_ifwdtsn_chunk),
-	/* I-DATA process functions */
+	 
 	.make_datafrag		= sctp_make_idatafrag_empty,
 	.assign_number		= sctp_chunk_assign_mid,
 	.validate_data		= sctp_validate_idata,
@@ -1336,7 +1322,7 @@ static struct sctp_stream_interleave sctp_stream_interleave_1 = {
 	.renege_events		= sctp_renege_events,
 	.start_pd		= sctp_intl_start_pd,
 	.abort_pd		= sctp_intl_abort_pd,
-	/* I-FORWARD-TSN process functions */
+	 
 	.generate_ftsn		= sctp_generate_iftsn,
 	.validate_ftsn		= sctp_validate_iftsn,
 	.report_ftsn		= sctp_report_iftsn,

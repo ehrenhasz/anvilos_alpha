@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* Copyright (c) 2019-2021, The Linux Foundation. All rights reserved. */
-/* Copyright (c) 2021-2023 Qualcomm Innovation Center, Inc. All rights reserved. */
+
+ 
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -16,7 +16,7 @@
 
 #define MAX_RESET_TIME_SEC 25
 
-static unsigned int mhi_timeout_ms = 2000; /* 2 sec default */
+static unsigned int mhi_timeout_ms = 2000;  
 module_param(mhi_timeout_ms, uint, 0600);
 MODULE_PARM_DESC(mhi_timeout_ms, "MHI controller timeout value");
 
@@ -392,7 +392,7 @@ static struct mhi_event_config aic100_events[] = {
 
 static struct mhi_controller_config aic100_config = {
 	.max_channels = 128,
-	.timeout_ms = 0, /* controlled by mhi_timeout */
+	.timeout_ms = 0,  
 	.buf_len = 0,
 	.num_channels = ARRAY_SIZE(aic100_channels),
 	.ch_cfg = aic100_channels,
@@ -406,13 +406,7 @@ static int mhi_read_reg(struct mhi_controller *mhi_cntrl, void __iomem *addr, u3
 {
 	u32 tmp;
 
-	/*
-	 * SOC_HW_VERSION quirk
-	 * The SOC_HW_VERSION register (offset 0x224) is not reliable and
-	 * may contain uninitialized values, including 0xFFFFFFFF. This could
-	 * cause a false positive link down error.  Instead, intercept any
-	 * reads and provide the correct value of the register.
-	 */
+	 
 	if (addr - mhi_cntrl->regs == 0x224) {
 		*out = 0x60110200;
 		return 0;
@@ -445,10 +439,10 @@ static void mhi_status_cb(struct mhi_controller *mhi_cntrl, enum mhi_callback re
 {
 	struct qaic_device *qdev = pci_get_drvdata(to_pci_dev(mhi_cntrl->cntrl_dev));
 
-	/* this event occurs in atomic context */
+	 
 	if (reason == MHI_CB_FATAL_ERROR)
 		pci_err(qdev->pdev, "Fatal error received from device. Attempting to recover\n");
-	/* this event occurs in non-atomic context */
+	 
 	if (reason == MHI_CB_SYS_ERROR)
 		qaic_dev_reset_clean_local_state(qdev, true);
 }
@@ -459,19 +453,16 @@ static int mhi_reset_and_async_power_up(struct mhi_controller *mhi_cntrl)
 	int current_ee;
 	int ret;
 
-	/* Reset the device to bring the device in PBL EE */
+	 
 	mhi_soc_reset(mhi_cntrl);
 
-	/*
-	 * Keep checking the execution environment(EE) after every 1 second
-	 * interval.
-	 */
+	 
 	do {
 		msleep(1000);
 		current_ee = mhi_get_exec_env(mhi_cntrl);
 	} while (current_ee != MHI_EE_PBL && time_sec++ <= MAX_RESET_TIME_SEC);
 
-	/* If the device is in PBL EE retry power up */
+	 
 	if (current_ee == MHI_EE_PBL)
 		ret = mhi_async_power_up(mhi_cntrl);
 	else
@@ -492,11 +483,7 @@ struct mhi_controller *qaic_mhi_register_controller(struct pci_dev *pci_dev, voi
 
 	mhi_cntrl->cntrl_dev = &pci_dev->dev;
 
-	/*
-	 * Covers the entire possible physical ram region. Remote side is
-	 * going to calculate a size of this range, so subtract 1 to prevent
-	 * rollover.
-	 */
+	 
 	mhi_cntrl->iova_start = 0;
 	mhi_cntrl->iova_stop = PHYS_ADDR_MAX - 1;
 	mhi_cntrl->status_cb = mhi_status_cb;
@@ -515,7 +502,7 @@ struct mhi_controller *qaic_mhi_register_controller(struct pci_dev *pci_dev, voi
 	mhi_cntrl->irq[0] = mhi_irq;
 	mhi_cntrl->fw_image = "qcom/aic100/sbl.bin";
 
-	/* use latest configured timeout */
+	 
 	aic100_config.timeout_ms = mhi_timeout_ms;
 	ret = mhi_register_controller(mhi_cntrl, &aic100_config);
 	if (ret) {
@@ -530,10 +517,7 @@ struct mhi_controller *qaic_mhi_register_controller(struct pci_dev *pci_dev, voi
 	}
 
 	ret = mhi_async_power_up(mhi_cntrl);
-	/*
-	 * If EIO is returned it is possible that device is in SBL EE, which is
-	 * undesired. SOC reset the device and try to power up again.
-	 */
+	 
 	if (ret == -EIO && MHI_EE_SBL == mhi_get_exec_env(mhi_cntrl)) {
 		pci_err(pci_dev, "Found device in SBL at MHI init. Attempting a reset.\n");
 		ret = mhi_reset_and_async_power_up(mhi_cntrl);

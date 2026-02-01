@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2017 NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef TEGRA_PLANE_H
 #define TEGRA_PLANE_H 1
@@ -53,11 +51,11 @@ struct tegra_plane_state {
 	bool reflect_x;
 	bool reflect_y;
 
-	/* used for legacy blending support only */
+	 
 	struct tegra_plane_legacy_blending_state blending[2];
 	bool opaque;
 
-	/* bandwidths are in ICC units, i.e. kbytes/sec */
+	 
 	u32 total_peak_memory_bandwidth;
 	u32 peak_memory_bandwidth;
 	u32 avg_memory_bandwidth;
@@ -95,4 +93,4 @@ int tegra_plane_setup_legacy_state(struct tegra_plane *tegra,
 				   struct tegra_plane_state *state);
 int tegra_plane_interconnect_init(struct tegra_plane *plane);
 
-#endif /* TEGRA_PLANE_H */
+#endif  

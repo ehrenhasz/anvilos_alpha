@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * netup-eeprom.c
- *
- * 24LC02 EEPROM driver in conjunction with NetUP Dual DVB-S2 CI card
- *
- * Copyright (C) 2009 NetUP Inc.
- * Copyright (C) 2009 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #
 #include "cx23885.h"
@@ -20,7 +13,7 @@ int netup_eeprom_read(struct i2c_adapter *i2c_adap, u8 addr)
 	int ret;
 	unsigned char buf[2];
 
-	/* Read from EEPROM */
+	 
 	struct i2c_msg msg[] = {
 		{
 			.addr	= EEPROM_I2C_ADDR,
@@ -54,7 +47,7 @@ int netup_eeprom_write(struct i2c_adapter *i2c_adap, u8 addr, u8 data)
 	int ret;
 	unsigned char bufw[2];
 
-	/* Write into EEPROM */
+	 
 	struct i2c_msg msg[] = {
 		{
 			.addr	= EEPROM_I2C_ADDR,
@@ -74,7 +67,7 @@ int netup_eeprom_write(struct i2c_adapter *i2c_adap, u8 addr, u8 data)
 		return -1;
 	}
 
-	mdelay(10); /* prophylactic delay, datasheet write cycle time = 5 ms */
+	mdelay(10);  
 	return 0;
 };
 

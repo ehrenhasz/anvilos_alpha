@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved. */
+ 
+ 
 
 #ifndef __ABI_MACH_T194_CLOCK_H
 #define __ABI_MACH_T194_CLOCK_H

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  linux/net/sunrpc/gss_rpc_upcall.c
- *
- *  Copyright (C) 2012 Simo Sorce <simo@redhat.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/un.h>
@@ -16,12 +12,10 @@
 #define GSSPROXY_PROGRAM	(400112u)
 #define GSSPROXY_VERS_1		(1u)
 
-/*
- * Encoding/Decoding functions
- */
+ 
 
 enum {
-	GSSX_NULL = 0,	/* Unused */
+	GSSX_NULL = 0,	 
         GSSX_INDICATE_MECHS = 1,
         GSSX_GET_CALL_CONTEXT = 2,
         GSSX_IMPORT_AND_CANON_NAME = 3,
@@ -70,9 +64,7 @@ static const struct rpc_procinfo gssp_procedures[] = {
 
 
 
-/*
- * Common transport functions
- */
+ 
 
 static const struct rpc_program gssp_program;
 
@@ -91,12 +83,7 @@ static int gssp_rpc_create(struct net *net, struct rpc_clnt **_clnt)
 		.program	= &gssp_program,
 		.version	= GSSPROXY_VERS_1,
 		.authflavor	= RPC_AUTH_NULL,
-		/*
-		 * Note we want connection to be done in the caller's
-		 * filesystem namespace.  We therefore turn off the idle
-		 * timeout, which would result in reconnections being
-		 * done without the correct namespace:
-		 */
+		 
 		.flags		= RPC_CLNT_CREATE_NOPING |
 				  RPC_CLNT_CREATE_CONNECTED |
 				  RPC_CLNT_CREATE_NO_IDLE_TIMEOUT
@@ -239,28 +226,26 @@ static void gssp_hostbased_service(char **principal)
 	if (!*principal)
 		return;
 
-	/* terminate and remove realm part */
+	 
 	c = strchr(*principal, '@');
 	if (c) {
 		*c = '\0';
 
-		/* change service-hostname delimiter */
+		 
 		c = strchr(*principal, '/');
 		if (c)
 			*c = '@';
 	}
 	if (!c) {
-		/* not a service principal */
+		 
 		kfree(*principal);
 		*principal = NULL;
 	}
 }
 
-/*
- * Public functions
- */
+ 
 
-/* numbers somewhat arbitrary but large enough for current needs */
+ 
 #define GSSX_MAX_OUT_HANDLE	128
 #define GSSX_MAX_SRC_PRINC	256
 #define GSSX_KMEMBUF (GSSX_max_output_handle_sz + \
@@ -278,10 +263,7 @@ int gssp_accept_sec_context_upcall(struct net *net,
 		.input_token = data->in_token,
 	};
 	struct gssx_ctx rctxh = {
-		/*
-		 * pass in the max length we expect for each of these
-		 * buffers but let the xdr code kmalloc them:
-		 */
+		 
 		.exported_context_token.len = GSSX_max_output_handle_sz,
 		.mech.len = GSS_OID_MAX_LEN,
 		.targ_name.display_name.len = GSSX_max_princ_sz,
@@ -295,7 +277,7 @@ int gssp_accept_sec_context_upcall(struct net *net,
 		.rpc_proc = &gssp_procedures[GSSX_ACCEPT_SEC_CONTEXT],
 		.rpc_argp = &arg,
 		.rpc_resp = &res,
-		.rpc_cred = NULL, /* FIXME ? */
+		.rpc_cred = NULL,  
 	};
 	struct xdr_netobj client_name = { 0 , NULL };
 	struct xdr_netobj target_name = { 0, NULL };
@@ -313,8 +295,7 @@ int gssp_accept_sec_context_upcall(struct net *net,
 
 	gssp_free_receive_pages(&arg);
 
-	/* we need to fetch all data even in case of error so
-	 * that we can free special strctures is they have been allocated */
+	 
 	data->major_status = res.status.major_status;
 	data->minor_status = res.status.minor_status;
 	if (res.context_handle) {
@@ -331,15 +312,13 @@ int gssp_accept_sec_context_upcall(struct net *net,
 
 	if (res.options.count == 1) {
 		gssx_buffer *value = &res.options.data[0].value;
-		/* Currently we only decode CREDS_VALUE, if we add
-		 * anything else we'll have to loop and match on the
-		 * option name */
+		 
 		if (value->len == 1) {
-			/* steal group info from struct svc_cred */
+			 
 			data->creds = *(struct svc_cred *)value->data;
 			data->found_creds = 1;
 		}
-		/* whether we use it or not, free data */
+		 
 		kfree(value->data);
 	}
 
@@ -347,7 +326,7 @@ int gssp_accept_sec_context_upcall(struct net *net,
 		kfree(res.options.data);
 	}
 
-	/* convert to GSS_NT_HOSTBASED_SERVICE form and set into creds */
+	 
 	if (data->found_creds) {
 		if (client_name.data) {
 			data->creds.cr_raw_principal =
@@ -376,9 +355,7 @@ void gssp_free_upcall_data(struct gssp_upcall_data *data)
 	free_svc_cred(&data->creds);
 }
 
-/*
- * Initialization stuff
- */
+ 
 static unsigned int gssp_version1_counts[ARRAY_SIZE(gssp_procedures)];
 static const struct rpc_version gssp_version1 = {
 	.number		= GSSPROXY_VERS_1,

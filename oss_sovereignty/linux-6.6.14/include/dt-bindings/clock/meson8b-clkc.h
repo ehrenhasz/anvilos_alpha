@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Meson8b clock tree IDs
- */
+ 
+ 
 
 #ifndef __MESON8B_CLKC_H
 #define __MESON8B_CLKC_H
@@ -222,4 +220,4 @@
 #define CLKID_VID_PLL_LVDS_EN	216
 #define CLKID_HDMI_PLL_DCO_IN   217
 
-#endif /* __MESON8B_CLKC_H */
+#endif  

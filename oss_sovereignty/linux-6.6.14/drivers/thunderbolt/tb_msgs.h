@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Thunderbolt control channel messages
- *
- * Copyright (C) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2017, Intel Corporation
- */
+ 
+ 
 
 #ifndef _TB_MSGS
 #define _TB_MSGS
@@ -24,7 +19,7 @@ enum tb_cfg_error {
 	TB_CFG_ERROR_LINK_ERROR = 1,
 	TB_CFG_ERROR_INVALID_CONFIG_SPACE = 2,
 	TB_CFG_ERROR_NO_SUCH_PORT = 4,
-	TB_CFG_ERROR_ACK_PLUG_EVENT = 7, /* send as reply to TB_CFG_PKG_EVENT */
+	TB_CFG_ERROR_ACK_PLUG_EVENT = 7,  
 	TB_CFG_ERROR_LOOP = 8,
 	TB_CFG_ERROR_HEC_ERROR_DETECTED = 12,
 	TB_CFG_ERROR_FLOW_CONTROL_ERROR = 13,
@@ -39,37 +34,37 @@ enum tb_cfg_error {
 	TB_CFG_ERROR_ASYM_LINK = 39,
 };
 
-/* common header */
+ 
 struct tb_cfg_header {
 	u32 route_hi:22;
-	u32 unknown:10; /* highest order bit is set on replies */
+	u32 unknown:10;  
 	u32 route_lo;
 } __packed;
 
-/* additional header for read/write packets */
+ 
 struct tb_cfg_address {
-	u32 offset:13; /* in dwords */
-	u32 length:6; /* in dwords */
+	u32 offset:13;  
+	u32 length:6;  
 	u32 port:6;
 	enum tb_cfg_space space:2;
-	u32 seq:2; /* sequence number  */
+	u32 seq:2;  
 	u32 zero:3;
 } __packed;
 
-/* TB_CFG_PKG_READ, response for TB_CFG_PKG_WRITE */
+ 
 struct cfg_read_pkg {
 	struct tb_cfg_header header;
 	struct tb_cfg_address addr;
 } __packed;
 
-/* TB_CFG_PKG_WRITE, response for TB_CFG_PKG_READ */
+ 
 struct cfg_write_pkg {
 	struct tb_cfg_header header;
 	struct tb_cfg_address addr;
-	u32 data[64]; /* maximum size, tb_cfg_address.length has 6 bits */
+	u32 data[64];  
 } __packed;
 
-/* TB_CFG_PKG_ERROR */
+ 
 struct cfg_error_pkg {
 	struct tb_cfg_header header;
 	enum tb_cfg_error error:8;
@@ -85,7 +80,7 @@ struct cfg_ack_pkg {
 #define TB_CFG_ERROR_PG_HOT_PLUG	0x2
 #define TB_CFG_ERROR_PG_HOT_UNPLUG	0x3
 
-/* TB_CFG_PKG_EVENT */
+ 
 struct cfg_event_pkg {
 	struct tb_cfg_header header;
 	u32 port:6;
@@ -93,18 +88,18 @@ struct cfg_event_pkg {
 	bool unplug:1;
 } __packed;
 
-/* TB_CFG_PKG_RESET */
+ 
 struct cfg_reset_pkg {
 	struct tb_cfg_header header;
 } __packed;
 
-/* TB_CFG_PKG_PREPARE_TO_SLEEP */
+ 
 struct cfg_pts_pkg {
 	struct tb_cfg_header header;
 	u32 data;
 } __packed;
 
-/* ICM messages */
+ 
 
 enum icm_pkg_code {
 	ICM_GET_TOPOLOGY = 0x1,
@@ -146,7 +141,7 @@ struct icm_pkg_driver_ready {
 	struct icm_pkg_header hdr;
 };
 
-/* Falcon Ridge only messages */
+ 
 
 struct icm_fr_pkg_driver_ready_response {
 	struct icm_pkg_header hdr;
@@ -157,7 +152,7 @@ struct icm_fr_pkg_driver_ready_response {
 
 #define ICM_FR_SLEVEL_MASK		0xf
 
-/* Falcon Ridge & Alpine Ridge common messages */
+ 
 
 struct icm_fr_pkg_get_topology {
 	struct icm_pkg_header hdr;
@@ -293,7 +288,7 @@ struct icm_fr_pkg_approve_xdomain_response {
 	u16 receive_ring;
 };
 
-/* Alpine Ridge only messages */
+ 
 
 struct icm_ar_pkg_driver_ready_response {
 	struct icm_pkg_header hdr;
@@ -340,7 +335,7 @@ struct icm_ar_pkg_preboot_acl_response {
 	struct icm_ar_boot_acl_entry acl[ICM_AR_PREBOOT_ACL_ENTRIES];
 };
 
-/* Titan Ridge messages */
+ 
 
 struct icm_tr_pkg_driver_ready_response {
 	struct icm_pkg_header hdr;
@@ -484,14 +479,14 @@ struct icm_tr_pkg_disconnect_xdomain_response {
 	uuid_t remote_uuid;
 };
 
-/* Ice Lake messages */
+ 
 
 struct icm_icl_event_rtd3_veto {
 	struct icm_pkg_header hdr;
 	u32 veto_reason;
 };
 
-/* USB4 ICM messages */
+ 
 
 struct icm_usb4_switch_op {
 	struct icm_pkg_header hdr;
@@ -516,7 +511,7 @@ struct icm_usb4_switch_op_response {
 	u32 data[16];
 };
 
-/* XDomain messages */
+ 
 
 struct tb_xdomain_header {
 	u32 route_hi;
@@ -628,14 +623,11 @@ struct tb_xdp_properties_response {
 	};
 };
 
-/*
- * Max length of data array single XDomain property response is allowed
- * to carry.
- */
+ 
 #define TB_XDP_PROPERTIES_MAX_DATA_LENGTH	\
 	(((256 - 4 - sizeof(struct tb_xdp_properties_response))) / 4)
 
-/* Maximum size of the total property block in dwords we allow */
+ 
 #define TB_XDP_PROPERTIES_MAX_LENGTH		500
 
 struct tb_xdp_properties_changed {

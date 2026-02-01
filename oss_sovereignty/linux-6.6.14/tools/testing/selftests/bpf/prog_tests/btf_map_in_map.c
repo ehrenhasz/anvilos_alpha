@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 
@@ -44,7 +44,7 @@ static void test_lookup_update(void)
 	outer_arr_fd = bpf_map__fd(skel->maps.outer_arr);
 	outer_hash_fd = bpf_map__fd(skel->maps.outer_hash);
 
-	/* inner1 = input, inner2 = input + 1, inner3 = input + 2 */
+	 
 	bpf_map_update_elem(outer_arr_fd, &key, &map1_fd, 0);
 	bpf_map_update_elem(outer_hash_fd, &key, &map2_fd, 0);
 	bpf_map_update_elem(outer_arr_dyn_fd, &key, &map3_fd, 0);
@@ -57,7 +57,7 @@ static void test_lookup_update(void)
 	bpf_map_lookup_elem(map3_fd, &key, &val);
 	CHECK(val != 3, "inner3", "got %d != exp %d\n", val, 3);
 
-	/* inner2 = input, inner1 = input + 1, inner4 = input + 2 */
+	 
 	bpf_map_update_elem(outer_arr_fd, &key, &map2_fd, 0);
 	bpf_map_update_elem(outer_hash_fd, &key, &map1_fd, 0);
 	bpf_map_update_elem(outer_arr_dyn_fd, &key, &map4_fd, 0);
@@ -70,7 +70,7 @@ static void test_lookup_update(void)
 	bpf_map_lookup_elem(map4_fd, &key, &val);
 	CHECK(val != 5, "inner4", "got %d != exp %d\n", val, 5);
 
-	/* inner5 = input + 2 */
+	 
 	bpf_map_update_elem(outer_arr_dyn_fd, &key, &map5_fd, 0);
 	skel->bss->input = 5;
 	usleep(1);
@@ -105,13 +105,7 @@ static void test_lookup_update(void)
 	test_btf_map_in_map__destroy(skel);
 	skel = NULL;
 
-	/* we need to either wait for or force synchronize_rcu(), before
-	 * checking for "still exists" condition, otherwise map could still be
-	 * resolvable by ID, causing false positives.
-	 *
-	 * Older kernels (5.8 and earlier) freed map only after two
-	 * synchronize_rcu()s, so trigger two, to be entirely sure.
-	 */
+	 
 	CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
 	CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
 

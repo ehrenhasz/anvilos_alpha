@@ -1,53 +1,15 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2011,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- ****************************************************************************/
+ 
 
-/*
-**	lib_getstr.c
-**
-**	The routine wgetstr().
-**
-*/
+ 
 
 #define NEED_KEY_EVENT
 #include <curses.priv.h>
 
 MODULE_ID("$Id: lib_getstr.c,v 1.38 2021/10/23 19:02:39 tom Exp $")
 
-/*
- * This wipes out the last character, no matter whether it was a tab, control
- * or other character, and handles reverse wraparound.
- */
+ 
 static char *
 WipeOut(WINDOW *win, int y, int x, char *first, char *last, int echoed)
 {
@@ -112,12 +74,7 @@ wgetnstr_events(WINDOW *win,
 	wrefresh(win);
 
     while ((ch = wgetch_events(win, evl)) != ERR) {
-	/*
-	 * Some terminals (the Wyse-50 is the most common) generate
-	 * a \n from the down-arrow key.  With this logic, it is the
-	 * user's choice whether to set kcud=\n for wgetch();
-	 * terminating *getstr() with \n should work either way.
-	 */
+	 
 	if (ch == '\n'
 	    || ch == '\r'
 	    || ch == KEY_DOWN
@@ -152,21 +109,13 @@ wgetnstr_events(WINDOW *win,
 	    if (oldecho == TRUE) {
 		int oldy = win->_cury;
 		if (waddch(win, (chtype) ch) == ERR) {
-		    /*
-		     * We can't really use the lower-right
-		     * corner for input, since it'll mess
-		     * up bookkeeping for erases.
-		     */
+		     
 		    win->_flags &= ~_WRAPPED;
 		    waddch(win, (chtype) ' ');
 		    str = WipeOut(win, y, x, oldstr, str, oldecho);
 		    continue;
 		} else if (IS_WRAPPED(win)) {
-		    /*
-		     * If the last waddch forced a wrap &
-		     * scroll, adjust our reference point
-		     * for erasures.
-		     */
+		     
 		    if (win->_scroll
 			&& oldy == win->_maxy
 			&& win->_cury == win->_maxy) {
@@ -187,9 +136,7 @@ wgetnstr_events(WINDOW *win,
 	win->_cury++;
     wrefresh(win);
 
-    /* Restore with a single I/O call, to fix minor asymmetry between
-     * raw/noraw, etc.
-     */
+     
     sp->_nl = oldnl;
     sp->_echo = oldecho;
     sp->_raw = oldraw;

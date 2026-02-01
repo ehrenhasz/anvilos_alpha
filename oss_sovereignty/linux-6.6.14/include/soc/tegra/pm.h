@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 NVIDIA Corporation
- */
+ 
+ 
 
 #ifndef __SOC_TEGRA_PM_H__
 #define __SOC_TEGRA_PM_H__
@@ -10,9 +8,9 @@
 
 enum tegra_suspend_mode {
 	TEGRA_SUSPEND_NONE = 0,
-	TEGRA_SUSPEND_LP2, /* CPU voltage off */
-	TEGRA_SUSPEND_LP1, /* CPU voltage off, DRAM self-refresh */
-	TEGRA_SUSPEND_LP0, /* CPU + core voltage off, DRAM self-refresh */
+	TEGRA_SUSPEND_LP2,  
+	TEGRA_SUSPEND_LP1,  
+	TEGRA_SUSPEND_LP0,  
 	TEGRA_MAX_SUSPEND_MODE,
 	TEGRA_SUSPEND_NOT_READY,
 };
@@ -21,7 +19,7 @@ enum tegra_suspend_mode {
 enum tegra_suspend_mode
 tegra_pm_validate_suspend_mode(enum tegra_suspend_mode mode);
 
-/* low-level resume entry point */
+ 
 void tegra_resume(void);
 
 int tegra30_pm_secondary_cpu_suspend(unsigned long arg);
@@ -67,6 +65,6 @@ static inline int tegra_pm_park_secondary_cpu(unsigned long cpu)
 static inline void tegra_pm_init_suspend(void)
 {
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
-#endif /* __SOC_TEGRA_PM_H__ */
+#endif  

@@ -1,51 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2018 Google Inc.
- * Author: Eric Dumazet (edumazet@google.com)
- *
- * Reference program demonstrating tcp mmap() usage,
- * and SO_RCVLOWAT hints for receiver.
- *
- * Note : NIC with header split is needed to use mmap() on TCP :
- * Each incoming frame must be a multiple of PAGE_SIZE bytes of TCP payload.
- *
- * How to use on loopback interface :
- *
- *  ifconfig lo mtu 61512  # 15*4096 + 40 (ipv6 header) + 32 (TCP with TS option header)
- *  tcp_mmap -s -z &
- *  tcp_mmap -H ::1 -z
- *
- *  Or leave default lo mtu, but use -M option to set TCP_MAXSEG option to (4096 + 12)
- *      (4096 : page size on x86, 12: TCP TS option length)
- *  tcp_mmap -s -z -M $((4096+12)) &
- *  tcp_mmap -H ::1 -z -M $((4096+12))
- *
- * Note: -z option on sender uses MSG_ZEROCOPY, which forces a copy when packets go through loopback interface.
- *       We might use sendfile() instead, but really this test program is about mmap(), for receivers ;)
- *
- * $ ./tcp_mmap -s &                                 # Without mmap()
- * $ for i in {1..4}; do ./tcp_mmap -H ::1 -z ; done
- * received 32768 MB (0 % mmap'ed) in 14.1157 s, 19.4732 Gbit
- *   cpu usage user:0.057 sys:7.815, 240.234 usec per MB, 65531 c-switches
- * received 32768 MB (0 % mmap'ed) in 14.6833 s, 18.7204 Gbit
- *  cpu usage user:0.043 sys:8.103, 248.596 usec per MB, 65524 c-switches
- * received 32768 MB (0 % mmap'ed) in 11.143 s, 24.6682 Gbit
- *   cpu usage user:0.044 sys:6.576, 202.026 usec per MB, 65519 c-switches
- * received 32768 MB (0 % mmap'ed) in 14.9056 s, 18.4413 Gbit
- *   cpu usage user:0.036 sys:8.193, 251.129 usec per MB, 65530 c-switches
- * $ kill %1   # kill tcp_mmap server
- *
- * $ ./tcp_mmap -s -z &                              # With mmap()
- * $ for i in {1..4}; do ./tcp_mmap -H ::1 -z ; done
- * received 32768 MB (99.9939 % mmap'ed) in 6.73792 s, 40.7956 Gbit
- *   cpu usage user:0.045 sys:2.827, 87.6465 usec per MB, 65532 c-switches
- * received 32768 MB (99.9939 % mmap'ed) in 7.26732 s, 37.8238 Gbit
- *   cpu usage user:0.037 sys:3.087, 95.3369 usec per MB, 65532 c-switches
- * received 32768 MB (99.9939 % mmap'ed) in 7.61661 s, 36.0893 Gbit
- *   cpu usage user:0.046 sys:3.559, 110.016 usec per MB, 65529 c-switches
- * received 32768 MB (99.9939 % mmap'ed) in 7.43764 s, 36.9577 Gbit
- *   cpu usage user:0.035 sys:3.467, 106.873 usec per MB, 65530 c-switches
- */
+
+ 
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <sys/types.h>
@@ -81,12 +35,12 @@ static int cfg_family = AF_INET6;
 static socklen_t cfg_alen = sizeof(struct sockaddr_in6);
 static int cfg_port = 8787;
 
-static int rcvbuf; /* Default: autotuning.  Can be set with -r <integer> option */
-static int sndbuf; /* Default: autotuning.  Can be set with -w <integer> option */
-static int zflg; /* zero copy option. (MSG_ZEROCOPY for sender, mmap() for receiver */
-static int xflg; /* hash received data (simple xor) (-h option) */
-static int keepflag; /* -k option: receiver shall keep all received file in memory (no munmap() calls) */
-static int integrity; /* -i option: sender and receiver compute sha256 over the data.*/
+static int rcvbuf;  
+static int sndbuf;  
+static int zflg;  
+static int xflg;  
+static int keepflag;  
+static int integrity;  
 
 static size_t chunk_size  = 512*1024;
 
@@ -136,7 +90,7 @@ static void *mmap_large_buffer(size_t need, size_t *allocated)
 	void *buffer;
 	size_t sz;
 
-	/* Attempt to use huge pages if possible. */
+	 
 	sz = ALIGN_UP(need, map_align);
 	buffer = mmap(NULL, sz, PROT_READ | PROT_WRITE,
 		      MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
@@ -235,9 +189,7 @@ void *child_thread(void *arg)
 				total_mmap += zc.length;
 				if (xflg)
 					hash_zone(addr, zc.length);
-				/* It is more efficient to unmap the pages right now,
-				 * instead of doing this in next TCP_ZEROCOPY_RECEIVE.
-				 */
+				 
 				madvise(addr, zc.length, MADV_DONTNEED);
 				total += zc.length;
 			}
@@ -399,10 +351,7 @@ static void do_accept(int fdlisten)
 	}
 }
 
-/* Each thread should reserve a big enough vma to avoid
- * spinlock collisions in ptl locks.
- * This size is 2MB on x86_64, and is exported in /proc/meminfo.
- */
+ 
 static unsigned long default_huge_page_size(void)
 {
 	FILE *f = fopen("/proc/meminfo", "r");
@@ -470,7 +419,7 @@ int main(int argc, char *argv[])
 		case 'H':
 			host = optarg;
 			break;
-		case 's': /* server : listen for incoming connections */
+		case 's':  
 			sflg++;
 			break;
 		case 'r':
@@ -509,9 +458,7 @@ int main(int argc, char *argv[])
 	}
 	if (!map_align) {
 		map_align = default_huge_page_size();
-		/* if really /proc/meminfo is not helping,
-		 * we use the default x86_64 hugepagesize.
-		 */
+		 
 		if (!map_align)
 			map_align = 2*1024*1024;
 	}
@@ -593,7 +540,7 @@ int main(int argc, char *argv[])
 
 		if (wr > chunk_size - offset)
 			wr = chunk_size - offset;
-		/* Note : we just want to fill the pipe with random bytes */
+		 
 		wr = send(fd, buffer + offset,
 			  (size_t)wr, zflg ? MSG_ZEROCOPY : 0);
 		if (wr <= 0)

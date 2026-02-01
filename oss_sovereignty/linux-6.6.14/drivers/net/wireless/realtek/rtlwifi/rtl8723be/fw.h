@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8723BE__FW__H__
 #define __RTL8723BE__FW__H__
@@ -14,40 +14,36 @@
 
 #define H2C_PWEMODE_LENGTH			7
 
-/* Fw PS state for RPWM.
-*BIT[2:0] = HW state
-*BIT[3] = Protocol PS state, 1: register active state , 0: register sleep state
-*BIT[4] = sub-state
-*/
+ 
 #define	FW_PS_RF_ON		BIT(2)
 #define	FW_PS_REGISTER_ACTIVE	BIT(3)
 
 #define	FW_PS_ACK		BIT(6)
 #define	FW_PS_TOGGLE		BIT(7)
 
- /* 8723BE RPWM value*/
- /* BIT[0] = 1: 32k, 0: 40M*/
-#define	FW_PS_CLOCK_OFF		BIT(0)		/* 32k*/
-#define	FW_PS_CLOCK_ON		0		/*40M*/
+  
+  
+#define	FW_PS_CLOCK_OFF		BIT(0)		 
+#define	FW_PS_CLOCK_ON		0		 
 
 #define	FW_PS_STATE_MASK	(0x0F)
 #define	FW_PS_STATE_HW_MASK	(0x07)
-/*ISR_ENABLE, IMR_ENABLE, and PS mode should be inherited.*/
+ 
 #define	FW_PS_STATE_INT_MASK	(0x3F)
 
 #define	FW_PS_STATE(x)		(FW_PS_STATE_MASK & (x))
 
-/* ((FW_PS_RF_ON) | (FW_PS_REGISTER_ACTIVE))*/
+ 
 #define	FW_PS_STATE_ALL_ON	(FW_PS_CLOCK_ON)
-/* (FW_PS_RF_ON)*/
+ 
 #define	FW_PS_STATE_RF_ON	(FW_PS_CLOCK_ON)
-/* 0x0*/
+ 
 #define	FW_PS_STATE_RF_OFF	(FW_PS_CLOCK_ON)
-/* (FW_PS_STATE_RF_OFF)*/
+ 
 #define	FW_PS_STATE_RF_OFF_LOW_PWR	(FW_PS_CLOCK_OFF)
 
 
-/* For 8723BE H2C PwrMode Cmd ID 5.*/
+ 
 #define	FW_PWR_STATE_ACTIVE	((FW_PS_RF_ON) | (FW_PS_REGISTER_ACTIVE))
 #define	FW_PWR_STATE_RF_OFF	0
 
@@ -74,7 +70,7 @@ enum rtl8723b_h2c_cmd {
 
 	H2C_8723B_RA_MASK = 0x40,
 	H2C_RSSIBE_REPORT = 0x42,
-	/*Not defined CTW CMD for P2P yet*/
+	 
 	H2C_8723B_P2P_PS_CTW_CMD,
 	MAX_8723B_H2CCMD
 };

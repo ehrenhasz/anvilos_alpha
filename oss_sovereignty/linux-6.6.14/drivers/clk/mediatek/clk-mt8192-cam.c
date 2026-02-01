@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2021 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -92,7 +92,7 @@ static const struct of_device_id of_match_clk_mt8192_cam[] = {
 		.compatible = "mediatek,mt8192-camsys_rawc",
 		.data = &cam_rawc_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8192_cam);

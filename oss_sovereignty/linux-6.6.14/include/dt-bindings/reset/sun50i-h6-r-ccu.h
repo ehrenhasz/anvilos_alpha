@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2016 Icenowy Zheng <icenowy@aosc.xyz>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_RST_SUN50I_H6_R_CCU_H_
 #define _DT_BINDINGS_RST_SUN50I_H6_R_CCU_H_
@@ -15,4 +13,4 @@
 #define RST_R_APB1_W1		6
 #define RST_R_APB2_RSB		7
 
-#endif /* _DT_BINDINGS_RST_SUN50I_H6_R_CCU_H_ */
+#endif  

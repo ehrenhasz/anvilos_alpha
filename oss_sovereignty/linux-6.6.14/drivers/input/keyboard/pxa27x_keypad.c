@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/input/keyboard/pxa27x_keypad.c
- *
- * Driver for the pxa27x matrix keyboard controller.
- *
- * Created:	Feb 22, 2007
- * Author:	Rodolfo Giometti <giometti@linux.it>
- *
- * Based on a previous implementations by Kevin O'Connor
- * <kevin_at_koconnor.net> and Alex Osborne <bobofdoom@gmail.com> and
- * on some suggestions by Nicolas Pitre <nico@fluxnic.net>.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -27,44 +16,42 @@
 #include <linux/of.h>
 
 #include <linux/platform_data/keypad-pxa27x.h>
-/*
- * Keypad Controller registers
- */
-#define KPC             0x0000 /* Keypad Control register */
-#define KPDK            0x0008 /* Keypad Direct Key register */
-#define KPREC           0x0010 /* Keypad Rotary Encoder register */
-#define KPMK            0x0018 /* Keypad Matrix Key register */
-#define KPAS            0x0020 /* Keypad Automatic Scan register */
+ 
+#define KPC             0x0000  
+#define KPDK            0x0008  
+#define KPREC           0x0010  
+#define KPMK            0x0018  
+#define KPAS            0x0020  
 
-/* Keypad Automatic Scan Multiple Key Presser register 0-3 */
+ 
 #define KPASMKP0        0x0028
 #define KPASMKP1        0x0030
 #define KPASMKP2        0x0038
 #define KPASMKP3        0x0040
 #define KPKDI           0x0048
 
-/* bit definitions */
-#define KPC_MKRN(n)	((((n) - 1) & 0x7) << 26) /* matrix key row number */
-#define KPC_MKCN(n)	((((n) - 1) & 0x7) << 23) /* matrix key column number */
-#define KPC_DKN(n)	((((n) - 1) & 0x7) << 6)  /* direct key number */
+ 
+#define KPC_MKRN(n)	((((n) - 1) & 0x7) << 26)  
+#define KPC_MKCN(n)	((((n) - 1) & 0x7) << 23)  
+#define KPC_DKN(n)	((((n) - 1) & 0x7) << 6)   
 
-#define KPC_AS          (0x1 << 30)  /* Automatic Scan bit */
-#define KPC_ASACT       (0x1 << 29)  /* Automatic Scan on Activity */
-#define KPC_MI          (0x1 << 22)  /* Matrix interrupt bit */
-#define KPC_IMKP        (0x1 << 21)  /* Ignore Multiple Key Press */
+#define KPC_AS          (0x1 << 30)   
+#define KPC_ASACT       (0x1 << 29)   
+#define KPC_MI          (0x1 << 22)   
+#define KPC_IMKP        (0x1 << 21)   
 
-#define KPC_MS(n)	(0x1 << (13 + (n)))	/* Matrix scan line 'n' */
+#define KPC_MS(n)	(0x1 << (13 + (n)))	 
 #define KPC_MS_ALL      (0xff << 13)
 
-#define KPC_ME          (0x1 << 12)  /* Matrix Keypad Enable */
-#define KPC_MIE         (0x1 << 11)  /* Matrix Interrupt Enable */
-#define KPC_DK_DEB_SEL	(0x1 <<  9)  /* Direct Keypad Debounce Select */
-#define KPC_DI          (0x1 <<  5)  /* Direct key interrupt bit */
-#define KPC_RE_ZERO_DEB (0x1 <<  4)  /* Rotary Encoder Zero Debounce */
-#define KPC_REE1        (0x1 <<  3)  /* Rotary Encoder1 Enable */
-#define KPC_REE0        (0x1 <<  2)  /* Rotary Encoder0 Enable */
-#define KPC_DE          (0x1 <<  1)  /* Direct Keypad Enable */
-#define KPC_DIE         (0x1 <<  0)  /* Direct Keypad interrupt Enable */
+#define KPC_ME          (0x1 << 12)   
+#define KPC_MIE         (0x1 << 11)   
+#define KPC_DK_DEB_SEL	(0x1 <<  9)   
+#define KPC_DI          (0x1 <<  5)   
+#define KPC_RE_ZERO_DEB (0x1 <<  4)   
+#define KPC_REE1        (0x1 <<  3)   
+#define KPC_REE0        (0x1 <<  2)   
+#define KPC_DE          (0x1 <<  1)   
+#define KPC_DIE         (0x1 <<  0)   
 
 #define KPDK_DKP        (0x1 << 31)
 #define KPDK_DK(n)	((n) & 0xff)
@@ -107,7 +94,7 @@ struct pxa27x_keypad {
 
 	unsigned int row_shift;
 
-	/* state row bits of each column scan */
+	 
 	uint32_t matrix_key_state[MAX_MATRIX_KEY_COLS];
 	uint32_t direct_key_state;
 
@@ -160,10 +147,7 @@ static int pxa27x_keypad_direct_key_parse_dt(struct pxa27x_keypad *keypad,
 	error = of_property_read_u32(np, "marvell,direct-key-count",
 				     &pdata->direct_key_num);
 	if (error) {
-		/*
-		 * If do not have marvel,direct-key-count defined,
-		 * it means direct key is not supported.
-		 */
+		 
 		return error == -EINVAL ? 0 : error;
 	}
 
@@ -173,10 +157,7 @@ static int pxa27x_keypad_direct_key_parse_dt(struct pxa27x_keypad *keypad,
 		if (error != -EINVAL)
 			return error;
 
-		/*
-		 * If marvell,direct-key-mask is not defined, driver will use
-		 * default value. Default value is set when configure the keypad.
-		 */
+		 
 		pdata->direct_key_mask = 0;
 	}
 
@@ -192,7 +173,7 @@ static int pxa27x_keypad_direct_key_parse_dt(struct pxa27x_keypad *keypad,
 
 	size = proplen / sizeof(u16);
 
-	/* Only MAX_DIRECT_KEY_NUM is accepted.*/
+	 
 	if (size > MAX_DIRECT_KEY_NUM)
 		return -EINVAL;
 
@@ -219,11 +200,11 @@ static int pxa27x_keypad_rotary_parse_dt(struct pxa27x_keypad *keypad,
 	struct device_node *np = dev->of_node;
 
 	relkey_ret = of_property_read_u32(np, relkeyname, &code);
-	/* if can read correct rotary key-code, we do not need this. */
+	 
 	if (relkey_ret == 0) {
 		unsigned short relcode;
 
-		/* rotary0 taks lower half, rotary1 taks upper half. */
+		 
 		relcode = code & 0xffff;
 		pdata->rotary0_rel_code = (code & 0xffff);
 		__set_bit(relcode, input_dev->relbit);
@@ -235,18 +216,12 @@ static int pxa27x_keypad_rotary_parse_dt(struct pxa27x_keypad *keypad,
 
 	for (i = 0; i < 2; i++) {
 		prop = of_get_property(np, rotaryname[i], &proplen);
-		/*
-		 * If the prop is not set, it means keypad does not need
-		 * initialize the rotaryX.
-		 */
+		 
 		if (!prop)
 			continue;
 
 		code = be32_to_cpup(prop);
-		/*
-		 * Not all up/down key code are valid.
-		 * Now we depends on direct-rel-code.
-		 */
+		 
 		if ((!(code & 0xffff) || !(code >> 16)) && relkey_ret) {
 			return relkey_ret;
 		} else {
@@ -317,10 +292,7 @@ static int pxa27x_keypad_build_keycode_from_dt(struct pxa27x_keypad *keypad)
 		return error;
 	}
 
-	/*
-	 * The keycodes may not only includes matrix key but also the direct
-	 * key or rotary key.
-	 */
+	 
 	input_dev->keycodemax = ARRAY_SIZE(keypad->keycodes);
 
 	keypad->pdata = pdata;
@@ -353,13 +325,10 @@ static int pxa27x_keypad_build_keycode(struct pxa27x_keypad *keypad)
 	if (error)
 		return error;
 
-	/*
-	 * The keycodes may not only include matrix keys but also the direct
-	 * or rotary keys.
-	 */
+	 
 	input_dev->keycodemax = ARRAY_SIZE(keypad->keycodes);
 
-	/* For direct keys. */
+	 
 	for (i = 0; i < pdata->direct_key_num; i++) {
 		keycode = pdata->direct_key_map[i];
 		keypad->keycodes[MAX_MATRIX_KEY_NUM + i] = keycode;
@@ -424,7 +393,7 @@ static void pxa27x_keypad_scan_matrix(struct pxa27x_keypad *keypad)
 		col = KPAS_CP(kpas);
 		row = KPAS_RP(kpas);
 
-		/* if invalid row/col, treat as no key pressed */
+		 
 		if (col >= pdata->matrix_key_cols ||
 		    row >= pdata->matrix_key_rows)
 			goto scan;
@@ -495,7 +464,7 @@ static void report_rotary_event(struct pxa27x_keypad *keypad, int r, int delta)
 		int code = MAX_MATRIX_KEY_NUM + 2 * r + (delta > 0 ? 0 : 1);
 		unsigned char keycode = keypad->keycodes[code];
 
-		/* simulate a press-n-release */
+		 
 		input_event(dev, EV_MSC, MSC_SCAN, code);
 		input_report_key(dev, keycode, 1);
 		input_sync(dev);
@@ -513,7 +482,7 @@ static void pxa27x_keypad_scan_rotary(struct pxa27x_keypad *keypad)
 	const struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
 	uint32_t kprec;
 
-	/* read and reset to default count value */
+	 
 	kprec = keypad_readl(KPREC);
 	keypad_writel(KPREC, DEFAULT_KPREC);
 
@@ -537,10 +506,7 @@ static void pxa27x_keypad_scan_direct(struct pxa27x_keypad *keypad)
 	if (pdata->enable_rotary0 || pdata->enable_rotary1)
 		pxa27x_keypad_scan_rotary(keypad);
 
-	/*
-	 * The KPDR_DK only output the key pin level, so it relates to board,
-	 * and low level may be active.
-	 */
+	 
 	if (pdata->direct_key_low_active)
 		new_state = ~KPDK_DK(kpdk) & keypad->direct_key_mask;
 	else
@@ -594,17 +560,17 @@ static void pxa27x_keypad_config(struct pxa27x_keypad *keypad)
 	unsigned int mask = 0, direct_key_num = 0;
 	unsigned long kpc = 0;
 
-	/* clear pending interrupt bit */
+	 
 	keypad_readl(KPC);
 
-	/* enable matrix keys with automatic scan */
+	 
 	if (pdata->matrix_key_rows && pdata->matrix_key_cols) {
 		kpc |= KPC_ASACT | KPC_MIE | KPC_ME | KPC_MS_ALL;
 		kpc |= KPC_MKRN(pdata->matrix_key_rows) |
 		       KPC_MKCN(pdata->matrix_key_cols);
 	}
 
-	/* enable rotary key, debounce interval same as direct keys */
+	 
 	if (pdata->enable_rotary0) {
 		mask |= 0x03;
 		direct_key_num = 2;
@@ -620,16 +586,13 @@ static void pxa27x_keypad_config(struct pxa27x_keypad *keypad)
 	if (pdata->direct_key_num > direct_key_num)
 		direct_key_num = pdata->direct_key_num;
 
-	/*
-	 * Direct keys usage may not start from KP_DKIN0, check the platfrom
-	 * mask data to config the specific.
-	 */
+	 
 	if (pdata->direct_key_mask)
 		keypad->direct_key_mask = pdata->direct_key_mask;
 	else
 		keypad->direct_key_mask = ((1 << direct_key_num) - 1) & ~mask;
 
-	/* enable direct key */
+	 
 	if (direct_key_num)
 		kpc |= KPC_DE | KPC_DIE | KPC_DKN(direct_key_num);
 
@@ -642,7 +605,7 @@ static int pxa27x_keypad_open(struct input_dev *dev)
 {
 	struct pxa27x_keypad *keypad = input_get_drvdata(dev);
 	int ret;
-	/* Enable unit clock */
+	 
 	ret = clk_prepare_enable(keypad->clk);
 	if (ret)
 		return ret;
@@ -656,7 +619,7 @@ static void pxa27x_keypad_close(struct input_dev *dev)
 {
 	struct pxa27x_keypad *keypad = input_get_drvdata(dev);
 
-	/* Disable clock unit */
+	 
 	clk_disable_unprepare(keypad->clk);
 }
 
@@ -665,10 +628,7 @@ static int pxa27x_keypad_suspend(struct device *dev)
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pxa27x_keypad *keypad = platform_get_drvdata(pdev);
 
-	/*
-	 * If the keypad is used a wake up source, clock can not be disabled.
-	 * Or it can not detect the key pressing.
-	 */
+	 
 	if (device_may_wakeup(&pdev->dev))
 		enable_irq_wake(keypad->irq);
 	else
@@ -684,17 +644,14 @@ static int pxa27x_keypad_resume(struct device *dev)
 	struct input_dev *input_dev = keypad->input_dev;
 	int ret = 0;
 
-	/*
-	 * If the keypad is used as wake up source, the clock is not turned
-	 * off. So do not need configure it again.
-	 */
+	 
 	if (device_may_wakeup(&pdev->dev)) {
 		disable_irq_wake(keypad->irq);
 	} else {
 		mutex_lock(&input_dev->mutex);
 
 		if (input_device_enabled(input_dev)) {
-			/* Enable unit clock */
+			 
 			ret = clk_prepare_enable(keypad->clk);
 			if (!ret)
 				pxa27x_keypad_config(keypad);
@@ -719,7 +676,7 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 	struct input_dev *input_dev;
 	int irq, error;
 
-	/* Driver need build keycode from device tree or pdata */
+	 
 	if (!np && !pdata)
 		return -EINVAL;
 
@@ -769,11 +726,7 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 		error = pxa27x_keypad_build_keycode(keypad);
 	} else {
 		error = pxa27x_keypad_build_keycode_from_dt(keypad);
-		/*
-		 * Data that we get from DT resides in dynamically
-		 * allocated memory so we need to update our pdata
-		 * pointer.
-		 */
+		 
 		pdata = keypad->pdata;
 	}
 	if (error) {
@@ -795,7 +748,7 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* Register the input device */
+	 
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register input device\n");
@@ -828,5 +781,5 @@ module_platform_driver(pxa27x_keypad_driver);
 
 MODULE_DESCRIPTION("PXA27x Keypad Controller Driver");
 MODULE_LICENSE("GPL");
-/* work with hotplug and coldplug */
+ 
 MODULE_ALIAS("platform:pxa27x-keypad");

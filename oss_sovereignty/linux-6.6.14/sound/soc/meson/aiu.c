@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -82,7 +82,7 @@ static int aiu_cpu_component_probe(struct snd_soc_component *component)
 {
 	struct aiu *aiu = snd_soc_component_get_drvdata(component);
 
-	/* Required for the SPDIF Source control operation */
+	 
 	return clk_prepare_enable(aiu->i2s.clks[PCLK].clk);
 }
 
@@ -293,7 +293,7 @@ static int aiu_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Register the cpu component of the aiu */
+	 
 	ret = snd_soc_register_component(dev, &aiu_cpu_component,
 					 aiu_cpu_dai_drv,
 					 ARRAY_SIZE(aiu_cpu_dai_drv));
@@ -302,14 +302,14 @@ static int aiu_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Register the hdmi codec control component */
+	 
 	ret = aiu_hdmi_ctrl_register_component(dev);
 	if (ret) {
 		dev_err(dev, "Failed to register hdmi control component\n");
 		goto err;
 	}
 
-	/* Register the internal dac control component on gxl */
+	 
 	if (aiu->platform->has_acodec) {
 		ret = aiu_acodec_ctrl_register_component(dev);
 		if (ret) {

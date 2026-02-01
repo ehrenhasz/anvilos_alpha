@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs42l42-i2c.c -- CS42L42 ALSA SoC audio driver for I2C
- *
- * Copyright 2016, 2022 Cirrus Logic, Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LG.Philips LB035Q02 LCD Panel driver
- *
- * Copyright (C) 2013 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- * Based on a driver by: Steve Sakoman <steve@sakoman.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -65,14 +59,14 @@ static int lb035q02_write_reg(struct spi_device *spi, u8 reg, u16 val)
 
 	spi_message_init(&msg);
 
-	/* register index */
+	 
 	buffer[0] = 0x70;
 	buffer[1] = 0x00;
 	buffer[2] = reg & 0x7f;
 	index_xfer.tx_buf = buffer;
 	spi_message_add_tail(&index_xfer, &msg);
 
-	/* register value */
+	 
 	buffer[4] = 0x72;
 	buffer[5] = val >> 8;
 	buffer[6] = val;
@@ -84,7 +78,7 @@ static int lb035q02_write_reg(struct spi_device *spi, u8 reg, u16 val)
 
 static void init_lb035q02_panel(struct spi_device *spi)
 {
-	/* Init sequence from page 28 of the lb035q02 spec */
+	 
 	lb035q02_write_reg(spi, 0x01, 0x6300);
 	lb035q02_write_reg(spi, 0x02, 0x0200);
 	lb035q02_write_reg(spi, 0x03, 0x0177);

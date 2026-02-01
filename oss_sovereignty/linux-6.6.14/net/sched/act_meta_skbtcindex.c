@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_meta_tc_index.c IFE skb->tc_index metadata module
- *
- * copyright Jamal Hadi Salim (2016)
-*/
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>

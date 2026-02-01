@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+ 
+ 
 
 #ifndef _CPTVF_ALGS_H_
 #define _CPTVF_ALGS_H_
@@ -87,7 +85,7 @@ struct enc_context {
 
 struct fchmac_context {
 	u8 ipad[64];
-	u8 opad[64]; /* or OPAD */
+	u8 opad[64];  
 };
 
 struct fc_context {
@@ -114,4 +112,4 @@ struct cvm_req_ctx {
 };
 
 int cptvf_do_request(void *cptvf, struct cpt_request_info *req);
-#endif /*_CPTVF_ALGS_H_*/
+#endif  

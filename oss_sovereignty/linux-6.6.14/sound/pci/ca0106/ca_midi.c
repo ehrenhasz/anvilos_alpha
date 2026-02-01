@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* 
- *  Copyright 10/16/2005 Tilman Kranz <tilde@tk-sls.de>
- *  Creative Audio MIDI, for the CA0106 Driver
- *  Version: 0.0.1
- *
- *  Changelog:
- *    Implementation is based on mpu401 and emu10k1x and
- *    tested with ca0106.
- *    mpu401: Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *    emu10k1x: Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <sound/core.h>
@@ -79,7 +69,7 @@ static void ca_midi_cmd(struct snd_ca_midi *midi, unsigned char cmd, int ack)
 
 	spin_lock_irqsave(&midi->input_lock, flags);
 	ca_midi_write_data(midi, 0x00);
-	/* ca_midi_clear_rx(midi); */
+	 
 
 	ca_midi_write_cmd(midi, cmd);
 	if (ack) {
@@ -216,12 +206,12 @@ static void ca_midi_output_trigger(struct snd_rawmidi_substream *substream, int 
 
 		spin_lock_irqsave(&midi->output_lock, flags);
 	
-		/* try to send some amount of bytes here before interrupts */
+		 
 		while (max > 0) {
 			if (ca_midi_output_ready(midi)) {
 				if (!(midi->midi_mode & CA_MIDI_MODE_OUTPUT) ||
 				    snd_rawmidi_transmit(substream, &byte, 1) != 1) {
-					/* no more data */
+					 
 					spin_unlock_irqrestore(&midi->output_lock, flags);
 					return;
 				}

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Author	Karsten Keil <kkeil@novell.com>
- *
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+
+ 
 
 #include <linux/mISDNif.h>
 #include <linux/slab.h>
@@ -202,10 +197,10 @@ mISDN_sock_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	skb_pull(skb, MISDN_HEADER_LEN);
 
 	if (msg->msg_namelen >= sizeof(struct sockaddr_mISDN)) {
-		/* if we have a address, we use it */
+		 
 		DECLARE_SOCKADDR(struct sockaddr_mISDN *, maddr, msg->msg_name);
 		mISDN_HEAD_ID(skb) = maddr->channel;
-	} else { /* use default for L2 messages */
+	} else {  
 		if ((sk->sk_protocol == ISDN_P_LAPD_TE) ||
 		    (sk->sk_protocol == ISDN_P_LAPD_NT))
 			mISDN_HEAD_ID(skb) = _pms(sk)->ch.nr;

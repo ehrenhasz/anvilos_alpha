@@ -1,20 +1,4 @@
-/* mv -- move or rename files
-   Copyright (C) 1986-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Mike Parker, David MacKenzie, and Jim Meyering */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -35,7 +19,7 @@
 #include "targetdir.h"
 #include "priv-set.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "mv"
 
 #define AUTHORS \
@@ -43,8 +27,7 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   DEBUG_OPTION = CHAR_MAX + 1,
@@ -91,17 +74,13 @@ rm_option_init (struct rm_options *x)
   x->recursive = true;
   x->one_file_system = false;
 
-  /* Should we prompt for removal, too?  No.  Prompting for the 'move'
-     part is enough.  It implies removal.  */
+   
   x->interactive = RMI_NEVER;
   x->stdin_tty = false;
 
   x->verbose = false;
 
-  /* Since this program may well have to process additional command
-     line arguments after any call to 'rm', that function must preserve
-     the initial working directory, in case one of those is a
-     '.'-relative name.  */
+   
   x->require_restore_cwd = true;
 
   {
@@ -121,7 +100,7 @@ cp_option_init (struct cp_options *x)
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
   cp_options_default (x);
-  x->copy_as_regular = false;  /* FIXME: maybe make this an option */
+  x->copy_as_regular = false;   
   x->reflink_mode = REFLINK_AUTO;
   x->dereference = DEREF_NEVER;
   x->unlink_dest_before_opening = false;
@@ -140,12 +119,12 @@ cp_option_init (struct cp_options *x)
   x->set_security_context = nullptr;
   x->reduce_diagnostics = false;
   x->data_copy_required = true;
-  x->require_preserve = false;  /* FIXME: maybe make this an option */
+  x->require_preserve = false;   
   x->require_preserve_context = false;
   x->preserve_xattr = true;
   x->require_preserve_xattr = false;
   x->recursive = true;
-  x->sparse_mode = SPARSE_AUTO;  /* FIXME: maybe make this an option */
+  x->sparse_mode = SPARSE_AUTO;   
   x->symbolic_link = false;
   x->set_mode = false;
   x->mode = 0;
@@ -158,10 +137,7 @@ cp_option_init (struct cp_options *x)
   x->src_info = nullptr;
 }
 
-/* Move SOURCE onto DEST aka DEST_DIRFD+DEST_RELNAME.
-   Handle cross-file-system moves.
-   If SOURCE is a directory, DEST must not exist.
-   Return true if successful.  */
+ 
 
 static bool
 do_move (char const *source, char const *dest,
@@ -177,49 +153,19 @@ do_move (char const *source, char const *dest,
       char const *dir_to_remove;
       if (copy_into_self)
         {
-          /* In general, when copy returns with copy_into_self set, SOURCE is
-             the same as, or a parent of DEST.  In this case we know it's a
-             parent.  It doesn't make sense to move a directory into itself, and
-             besides in some situations doing so would give highly unintuitive
-             results.  Run this 'mkdir b; touch a c; mv * b' in an empty
-             directory.  Here's the result of running echo $(find b -print):
-             b b/a b/b b/b/a b/c.  Notice that only file 'a' was copied
-             into b/b.  Handle this by giving a diagnostic, removing the
-             copied-into-self directory, DEST ('b/b' in the example),
-             and failing.  */
+           
 
           dir_to_remove = nullptr;
           ok = false;
         }
       else if (rename_succeeded)
         {
-          /* No need to remove anything.  SOURCE was successfully
-             renamed to DEST.  Or the user declined to rename a file.  */
+           
           dir_to_remove = nullptr;
         }
       else
         {
-          /* This may mean SOURCE and DEST referred to different devices.
-             It may also conceivably mean that even though they referred
-             to the same device, rename wasn't implemented for that device.
-
-             E.g., (from Joel N. Weber),
-             [...] there might someday be cases where you can't rename
-             but you can copy where the device name is the same, especially
-             on Hurd.  Consider an ftpfs with a primitive ftp server that
-             supports uploading, downloading and deleting, but not renaming.
-
-             Also, note that comparing device numbers is not a reliable
-             check for 'can-rename'.  Some systems can be set up so that
-             files from many different physical devices all have the same
-             st_dev field.  This is a feature of some NFS mounting
-             configurations.
-
-             We reach this point if SOURCE has been successfully copied
-             to DEST.  Now we have to remove SOURCE.
-
-             This function used to resort to copying only when rename
-             failed and set errno to EXDEV.  */
+           
 
           dir_to_remove = source;
         }
@@ -526,9 +472,7 @@ main (int argc, char **argv)
 
   if (target_directory)
     {
-      /* Initialize the hash table only if we'll need it.
-         The problem it is used to detect can arise only if there are
-         two or more files to move.  */
+       
       if (2 <= n_files)
         dest_info_init (&x);
 

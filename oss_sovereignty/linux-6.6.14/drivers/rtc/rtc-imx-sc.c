@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018 NXP.
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/arm-smccc.h>
@@ -65,7 +63,7 @@ static int imx_sc_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct arm_smccc_res res;
 
-	/* pack 2 time parameters into 1 register, 16 bits for each */
+	 
 	arm_smccc_smc(IMX_SIP_SRTC, IMX_SIP_SRTC_SET_TIME,
 		      ((tm->tm_year + 1900) << 16) | (tm->tm_mon + 1),
 		      (tm->tm_mday << 16) | tm->tm_hour,
@@ -124,7 +122,7 @@ static const struct rtc_class_ops imx_sc_rtc_ops = {
 static int imx_sc_rtc_alarm_notify(struct notifier_block *nb,
 					unsigned long event, void *group)
 {
-	/* ignore non-rtc irq */
+	 
 	if (!((event & SC_IRQ_RTC) && (*(u8 *)group == SC_IRQ_GROUP_RTC)))
 		return 0;
 

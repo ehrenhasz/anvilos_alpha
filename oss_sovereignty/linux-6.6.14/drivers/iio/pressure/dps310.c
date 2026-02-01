@@ -1,18 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright IBM Corp 2019
-/*
- * The DPS310 is a barometric pressure and temperature sensor.
- * Currently only reading a single temperature is supported by
- * this driver.
- *
- * https://www.infineon.com/dgdl/?fileId=5546d462576f34750157750826c42242
- *
- * Temperature calculation:
- *   c0 * 0.5 + c1 * T_raw / kT °C
- *
- * TODO:
- *  - Optionally support the FIFO
- */
+
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/limits.h>
@@ -57,18 +45,15 @@
 #define  DPS310_RESET_MAGIC	0x09
 #define DPS310_COEF_BASE	0x10
 
-/* Make sure sleep time is <= 30ms for usleep_range */
+ 
 #define DPS310_POLL_SLEEP_US(t)		min(30000, (t) / 8)
-/* Silently handle error in rate value here */
+ 
 #define DPS310_POLL_TIMEOUT_US(rc)	((rc) <= 0 ? 1000000 : 1000000 / (rc))
 
 #define DPS310_PRS_BASE		DPS310_PRS_B0
 #define DPS310_TMP_BASE		DPS310_TMP_B0
 
-/*
- * These values (defined in the spec) indicate how to scale the raw register
- * values for each level of precision available.
- */
+ 
 static const int scale_factors[] = {
 	 524288,
 	1572864,
@@ -83,7 +68,7 @@ static const int scale_factors[] = {
 struct dps310_data {
 	struct i2c_client *client;
 	struct regmap *regmap;
-	struct mutex lock;	/* Lock for sequential HW access functions */
+	struct mutex lock;	 
 
 	s32 c0, c1;
 	s32 c00, c10, c20, c30, c01, c11, c21;
@@ -107,7 +92,7 @@ static const struct iio_chan_spec dps310_channels[] = {
 	},
 };
 
-/* To be called after checking the COEF_RDY bit in MEAS_CFG */
+ 
 static int dps310_get_coefs(struct dps310_data *data)
 {
 	int rc;
@@ -115,27 +100,20 @@ static int dps310_get_coefs(struct dps310_data *data)
 	u32 c0, c1;
 	u32 c00, c10, c20, c30, c01, c11, c21;
 
-	/* Read all sensor calibration coefficients from the COEF registers. */
+	 
 	rc = regmap_bulk_read(data->regmap, DPS310_COEF_BASE, coef,
 			      sizeof(coef));
 	if (rc < 0)
 		return rc;
 
-	/*
-	 * Calculate temperature calibration coefficients c0 and c1. The
-	 * numbers are 12-bit 2's complement numbers.
-	 */
+	 
 	c0 = (coef[0] << 4) | (coef[1] >> 4);
 	data->c0 = sign_extend32(c0, 11);
 
 	c1 = ((coef[1] & GENMASK(3, 0)) << 8) | coef[2];
 	data->c1 = sign_extend32(c1, 11);
 
-	/*
-	 * Calculate pressure calibration coefficients. c00 and c10 are 20 bit
-	 * 2's complement numbers, while the rest are 16 bit 2's complement
-	 * numbers.
-	 */
+	 
 	c00 = (coef[3] << 12) | (coef[4] << 4) | (coef[5] >> 4);
 	data->c00 = sign_extend32(c00, 19);
 
@@ -160,11 +138,7 @@ static int dps310_get_coefs(struct dps310_data *data)
 	return 0;
 }
 
-/*
- * Some versions of the chip will read temperatures in the ~60C range when
- * it's actually ~20C. This is the manufacturer recommended workaround
- * to correct the issue. The registers used below are undocumented.
- */
+ 
 static int dps310_temp_workaround(struct dps310_data *data)
 {
 	int rc;
@@ -174,10 +148,7 @@ static int dps310_temp_workaround(struct dps310_data *data)
 	if (rc)
 		return rc;
 
-	/*
-	 * If bit 1 is set then the device is okay, and the workaround does not
-	 * need to be applied
-	 */
+	 
 	if (reg & BIT(1))
 		return 0;
 
@@ -205,45 +176,36 @@ static int dps310_startup(struct dps310_data *data)
 	int rc;
 	int ready;
 
-	/*
-	 * Set up pressure sensor in single sample, one measurement per second
-	 * mode
-	 */
+	 
 	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
 	if (rc)
 		return rc;
 
-	/*
-	 * Set up external (MEMS) temperature sensor in single sample, one
-	 * measurement per second mode
-	 */
+	 
 	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
 	if (rc)
 		return rc;
 
-	/* Temp and pressure shifts are disabled when PRC <= 8 */
+	 
 	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
 			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
 	if (rc)
 		return rc;
 
-	/* MEAS_CFG doesn't update correctly unless first written with 0 */
+	 
 	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
 			       DPS310_MEAS_CTRL_BITS, 0);
 	if (rc)
 		return rc;
 
-	/* Turn on temperature and pressure measurement in the background */
+	 
 	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
 			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
 			       DPS310_TEMP_EN | DPS310_BACKGROUND);
 	if (rc)
 		return rc;
 
-	/*
-	 * Calibration coefficients required for reporting temperature.
-	 * They are available 40ms after the device has started
-	 */
+	 
 	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
 				      ready & DPS310_COEF_RDY, 10000, 40000);
 	if (rc)
@@ -277,14 +239,11 @@ static int dps310_get_temp_precision(struct dps310_data *data)
 	if (rc < 0)
 		return rc;
 
-	/*
-	 * Scale factor is bottom 4 bits of the register, but 1111 is
-	 * reserved so just grab bottom three
-	 */
+	 
 	return BIT(val & GENMASK(2, 0));
 }
 
-/* Called with lock held */
+ 
 static int dps310_set_pres_precision(struct dps310_data *data, int val)
 {
 	int rc;
@@ -303,7 +262,7 @@ static int dps310_set_pres_precision(struct dps310_data *data, int val)
 				  DPS310_PRS_PRC_BITS, ilog2(val));
 }
 
-/* Called with lock held */
+ 
 static int dps310_set_temp_precision(struct dps310_data *data, int val)
 {
 	int rc;
@@ -322,7 +281,7 @@ static int dps310_set_temp_precision(struct dps310_data *data, int val)
 				  DPS310_TMP_PRC_BITS, ilog2(val));
 }
 
-/* Called with lock held */
+ 
 static int dps310_set_pres_samp_freq(struct dps310_data *data, int freq)
 {
 	u8 val;
@@ -336,7 +295,7 @@ static int dps310_set_pres_samp_freq(struct dps310_data *data, int freq)
 				  DPS310_PRS_RATE_BITS, val);
 }
 
-/* Called with lock held */
+ 
 static int dps310_set_temp_samp_freq(struct dps310_data *data, int freq)
 {
 	u8 val;
@@ -402,7 +361,7 @@ static int dps310_reset_wait(struct dps310_data *data)
 	if (rc)
 		return rc;
 
-	/* Wait for device chip access: 15ms in specification */
+	 
 	usleep_range(15000, 55000);
 	return 0;
 }
@@ -434,11 +393,11 @@ static int dps310_ready(struct dps310_data *data, int ready_bit, int timeout)
 	rc = dps310_ready_status(data, ready_bit, timeout);
 	if (rc) {
 		if (rc == -ETIMEDOUT && !data->timeout_recovery_failed) {
-			/* Reset and reinitialize the chip. */
+			 
 			if (dps310_reset_reinit(data)) {
 				data->timeout_recovery_failed = true;
 			} else {
-				/* Try again to get sensor ready status. */
+				 
 				if (dps310_ready_status(data, ready_bit, timeout))
 					data->timeout_recovery_failed = true;
 				else
@@ -467,7 +426,7 @@ static int dps310_read_pres_raw(struct dps310_data *data)
 	rate = dps310_get_pres_samp_freq(data);
 	timeout = DPS310_POLL_TIMEOUT_US(rate);
 
-	/* Poll for sensor readiness; base the timeout upon the sample rate. */
+	 
 	rc = dps310_ready(data, DPS310_PRS_RDY, timeout);
 	if (rc)
 		goto done;
@@ -484,7 +443,7 @@ done:
 	return rc;
 }
 
-/* Called with lock held */
+ 
 static int dps310_read_temp_ready(struct dps310_data *data)
 {
 	int rc;
@@ -513,7 +472,7 @@ static int dps310_read_temp_raw(struct dps310_data *data)
 	rate = dps310_get_temp_samp_freq(data);
 	timeout = DPS310_POLL_TIMEOUT_US(rate);
 
-	/* Poll for sensor readiness; base the timeout upon the sample rate. */
+	 
 	rc = dps310_ready(data, DPS310_TMP_RDY, timeout);
 	if (rc)
 		goto done;
@@ -533,7 +492,7 @@ static bool dps310_is_writeable_reg(struct device *dev, unsigned int reg)
 	case DPS310_MEAS_CFG:
 	case DPS310_CFG_REG:
 	case DPS310_RESET:
-	/* No documentation available on the registers below */
+	 
 	case 0x0e:
 	case 0x0f:
 	case 0x62:
@@ -553,7 +512,7 @@ static bool dps310_is_volatile_reg(struct device *dev, unsigned int reg)
 	case DPS310_TMP_B1:
 	case DPS310_TMP_B2:
 	case DPS310_MEAS_CFG:
-	case 0x32:	/* No documentation available on this register */
+	case 0x32:	 
 		return true;
 	default:
 		return false;
@@ -638,7 +597,7 @@ static int dps310_calculate_pressure(struct dps310_data *data)
 	kp = (s64)kpi;
 	kt = (s64)kti;
 
-	/* Refresh temp if it's ready, otherwise just use the latest value */
+	 
 	if (mutex_trylock(&data->lock)) {
 		rc = regmap_read(data->regmap, DPS310_MEAS_CFG, &t_ready);
 		if (rc >= 0 && t_ready & DPS310_TMP_RDY)
@@ -650,7 +609,7 @@ static int dps310_calculate_pressure(struct dps310_data *data)
 	p = (s64)data->pressure_raw;
 	t = (s64)data->temp_raw;
 
-	/* Section 4.9.1 of the DPS310 spec; algebra'd to avoid underflow */
+	 
 	nums[0] = (s64)data->c00;
 	denoms[0] = 1LL;
 	nums[1] = p * (s64)data->c10;
@@ -666,7 +625,7 @@ static int dps310_calculate_pressure(struct dps310_data *data)
 	nums[6] = t * p * p * (s64)data->c21;
 	denoms[6] = kp * kp * kt;
 
-	/* Kernel lacks a div64_s64_rem function; denoms are all positive */
+	 
 	for (i = 0; i < 7; ++i) {
 		u64 irem;
 
@@ -679,7 +638,7 @@ static int dps310_calculate_pressure(struct dps310_data *data)
 		}
 	}
 
-	/* Increase precision and calculate the remainder sum */
+	 
 	for (i = 0; i < 7; ++i)
 		rem += div64_s64((s64)rems[i] * 1000000000LL, denoms[i]);
 
@@ -714,7 +673,7 @@ static int dps310_read_pressure(struct dps310_data *data, int *val, int *val2,
 			return rc;
 
 		*val = rc;
-		*val2 = 1000; /* Convert Pa to KPa per IIO ABI */
+		*val2 = 1000;  
 		return IIO_VAL_FRACTIONAL;
 
 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
@@ -739,13 +698,13 @@ static int dps310_calculate_temp(struct dps310_data *data)
 	if (kt < 0)
 		return kt;
 
-	/* Obtain inverse-scaled offset */
+	 
 	c0 = div_s64((s64)kt * (s64)data->c0, 2);
 
-	/* Add the offset to the unscaled temperature */
+	 
 	t = c0 + ((s64)data->temp_raw * (s64)data->c1);
 
-	/* Convert to milliCelsius and scale the temperature */
+	 
 	return (int)div_s64(t * 1000LL, kt);
 }
 
@@ -819,7 +778,7 @@ static const struct regmap_config dps310_regmap_config = {
 	.writeable_reg = dps310_is_writeable_reg,
 	.volatile_reg = dps310_is_volatile_reg,
 	.cache_type = REGCACHE_RBTREE,
-	.max_register = 0x62, /* No documentation available on this register */
+	.max_register = 0x62,  
 };
 
 static const struct iio_info dps310_info = {
@@ -852,7 +811,7 @@ static int dps310_probe(struct i2c_client *client)
 	if (IS_ERR(data->regmap))
 		return PTR_ERR(data->regmap);
 
-	/* Register to run the device reset when the device is removed */
+	 
 	rc = devm_add_action_or_reset(&client->dev, dps310_reset, data);
 	if (rc)
 		return rc;

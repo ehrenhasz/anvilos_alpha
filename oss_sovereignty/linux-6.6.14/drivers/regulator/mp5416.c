@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// mp5416.c  - regulator driver for mps mp5416
-//
-// Copyright 2020 Monolithic Power Systems, Inc
-//
-// Author: Saravanan Sekar <sravanhome@gmail.com>
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -36,7 +36,7 @@
 #define MP5416_MASK_BUCK4_ILIM		0x03
 #define MP5416_MASK_DVS_SLEWRATE	0xc0
 
-/* values in uV */
+ 
 #define MP5416_VOLT1_MIN		600000
 #define MP5416_VOLT1_MAX		2187500
 #define MP5416_VOLT1_STEP		12500
@@ -115,25 +115,17 @@ static const struct regmap_config mp5416_regmap_config = {
 	.max_register = 0x0d,
 };
 
-/* Current limits array (in uA)
- * ILIM1 & ILIM3
- */
+ 
 static const unsigned int mp5416_I_limits1[] = {
 	3800000, 4600000, 5600000, 6800000
 };
 
-/* ILIM2 & ILIM4 */
+ 
 static const unsigned int mp5416_I_limits2[] = {
 	2200000, 3200000, 4200000, 5200000
 };
 
-/*
- * DVS ramp rate BUCK1 to BUCK4
- * 00: 32mV/us
- * 01: 16mV/us
- * 10: 8mV/us
- * 11: 4mV/us
- */
+ 
 static const unsigned int mp5416_buck_ramp_table[] = {
 	32000, 16000, 8000, 4000
 };

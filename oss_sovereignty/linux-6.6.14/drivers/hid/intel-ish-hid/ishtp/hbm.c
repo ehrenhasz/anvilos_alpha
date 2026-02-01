@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ISHTP bus layer messages handling
- *
- * Copyright (c) 2003-2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -14,25 +10,20 @@
 #include "hbm.h"
 #include "client.h"
 
-/**
- * ishtp_hbm_fw_cl_allocate() - Allocate FW clients
- * @dev: ISHTP device instance
- *
- * Allocates storage for fw clients
- */
+ 
 static void ishtp_hbm_fw_cl_allocate(struct ishtp_device *dev)
 {
 	struct ishtp_fw_client *clients;
 	int b;
 
-	/* count how many ISH clients we have */
+	 
 	for_each_set_bit(b, dev->fw_clients_map, ISHTP_CLIENTS_MAX)
 		dev->fw_clients_num++;
 
 	if (dev->fw_clients_num <= 0)
 		return;
 
-	/* allocate storage for fw clients representation */
+	 
 	clients = kcalloc(dev->fw_clients_num, sizeof(struct ishtp_fw_client),
 			  GFP_KERNEL);
 	if (!clients) {
@@ -43,15 +34,7 @@ static void ishtp_hbm_fw_cl_allocate(struct ishtp_device *dev)
 	dev->fw_clients = clients;
 }
 
-/**
- * ishtp_hbm_cl_hdr() - construct client hbm header
- * @cl: client
- * @hbm_cmd: host bus message command
- * @buf: buffer for cl header
- * @len: buffer length
- *
- * Initialize HBM buffer
- */
+ 
 static inline void ishtp_hbm_cl_hdr(struct ishtp_cl *cl, uint8_t hbm_cmd,
 	void *buf, size_t len)
 {
@@ -64,15 +47,7 @@ static inline void ishtp_hbm_cl_hdr(struct ishtp_cl *cl, uint8_t hbm_cmd,
 	cmd->fw_addr = cl->fw_client_id;
 }
 
-/**
- * ishtp_hbm_cl_addr_equal() - Compare client address
- * @cl: client
- * @buf: Client command buffer
- *
- * Compare client address with the address in command buffer
- *
- * Return: True if they have the same address
- */
+ 
 static inline bool ishtp_hbm_cl_addr_equal(struct ishtp_cl *cl, void *buf)
 {
 	struct ishtp_hbm_cl_cmd *cmd = buf;
@@ -81,14 +56,7 @@ static inline bool ishtp_hbm_cl_addr_equal(struct ishtp_cl *cl, void *buf)
 		cl->fw_client_id == cmd->fw_addr;
 }
 
-/**
- * ishtp_hbm_start_wait() - Wait for HBM start message
- * @dev: ISHTP device instance
- *
- * Wait for HBM start message from firmware
- *
- * Return: 0 if HBM start is/was received else timeout error
- */
+ 
 int ishtp_hbm_start_wait(struct ishtp_device *dev)
 {
 	int ret;
@@ -116,14 +84,7 @@ int ishtp_hbm_start_wait(struct ishtp_device *dev)
 	return 0;
 }
 
-/**
- * ishtp_hbm_start_req() - Send HBM start message
- * @dev: ISHTP device instance
- *
- * Send HBM start message to firmware
- *
- * Return: 0 if success else error code
- */
+ 
 int ishtp_hbm_start_req(struct ishtp_device *dev)
 {
 	struct ishtp_msg_hdr hdr;
@@ -131,16 +92,12 @@ int ishtp_hbm_start_req(struct ishtp_device *dev)
 
 	ishtp_hbm_hdr(&hdr, sizeof(start_req));
 
-	/* host start message */
+	 
 	start_req.hbm_cmd = HOST_START_REQ_CMD;
 	start_req.host_version.major_version = HBM_MAJOR_VERSION;
 	start_req.host_version.minor_version = HBM_MINOR_VERSION;
 
-	/*
-	 * (!) Response to HBM start may be so quick that this thread would get
-	 * preempted BEFORE managing to set hbm_state = ISHTP_HBM_START.
-	 * So set it at first, change back to ISHTP_HBM_IDLE upon failure
-	 */
+	 
 	dev->hbm_state = ISHTP_HBM_START;
 	if (ishtp_write_message(dev, &hdr, &start_req)) {
 		dev_err(dev->devc, "version message send failed\n");
@@ -153,20 +110,13 @@ int ishtp_hbm_start_req(struct ishtp_device *dev)
 	return 0;
 }
 
-/**
- * ishtp_hbm_enum_clients_req() - Send client enum req
- * @dev: ISHTP device instance
- *
- * Send enumeration client request message
- *
- * Return: 0 if success else error code
- */
+ 
 void ishtp_hbm_enum_clients_req(struct ishtp_device *dev)
 {
 	struct ishtp_msg_hdr hdr;
 	struct hbm_host_enum_request enum_req = { 0 };
 
-	/* enumerate clients */
+	 
 	ishtp_hbm_hdr(&hdr, sizeof(enum_req));
 	enum_req.hbm_cmd = HOST_ENUM_REQ_CMD;
 
@@ -178,14 +128,7 @@ void ishtp_hbm_enum_clients_req(struct ishtp_device *dev)
 	dev->hbm_state = ISHTP_HBM_ENUM_CLIENTS;
 }
 
-/**
- * ishtp_hbm_prop_req() - Request property
- * @dev: ISHTP device instance
- *
- * Request property for a single client
- *
- * Return: 0 if success else error code
- */
+ 
 static int ishtp_hbm_prop_req(struct ishtp_device *dev)
 {
 	struct ishtp_msg_hdr hdr;
@@ -198,7 +141,7 @@ static int ishtp_hbm_prop_req(struct ishtp_device *dev)
 	next_client_index = find_next_bit(dev->fw_clients_map,
 		ISHTP_CLIENTS_MAX, dev->fw_client_index);
 
-	/* We got all client properties */
+	 
 	if (next_client_index == ISHTP_CLIENTS_MAX) {
 		dev->hbm_state = ISHTP_HBM_WORKING;
 		dev->dev_state = ISHTP_DEV_ENABLED;
@@ -206,7 +149,7 @@ static int ishtp_hbm_prop_req(struct ishtp_device *dev)
 		for (dev->fw_client_presentation_num = 1;
 			dev->fw_client_presentation_num < client_num + 1;
 				++dev->fw_client_presentation_num)
-			/* Add new client device */
+			 
 			ishtp_bus_new_client(dev);
 		return 0;
 	}
@@ -230,12 +173,7 @@ static int ishtp_hbm_prop_req(struct ishtp_device *dev)
 	return 0;
 }
 
-/**
- * ishtp_hbm_stop_req() - Send HBM stop
- * @dev: ISHTP device instance
- *
- * Send stop request message
- */
+ 
 static void ishtp_hbm_stop_req(struct ishtp_device *dev)
 {
 	struct ishtp_msg_hdr hdr;
@@ -249,15 +187,7 @@ static void ishtp_hbm_stop_req(struct ishtp_device *dev)
 	ishtp_write_message(dev, &hdr, &stop_req);
 }
 
-/**
- * ishtp_hbm_cl_flow_control_req() - Send flow control request
- * @dev: ISHTP device instance
- * @cl: ISHTP client instance
- *
- * Send flow control request
- *
- * Return: 0 if success else error code
- */
+ 
 int ishtp_hbm_cl_flow_control_req(struct ishtp_device *dev,
 				  struct ishtp_cl *cl)
 {
@@ -272,10 +202,7 @@ int ishtp_hbm_cl_flow_control_req(struct ishtp_device *dev,
 	ishtp_hbm_hdr(&hdr, len);
 	ishtp_hbm_cl_hdr(cl, ISHTP_FLOW_CONTROL_CMD, &flow_ctrl, len);
 
-	/*
-	 * Sync possible race when RB recycle and packet receive paths
-	 * both try to send an out FC
-	 */
+	 
 	if (cl->out_flow_ctrl_creds) {
 		spin_unlock_irqrestore(&cl->fc_spinlock, flags);
 		return	0;
@@ -301,15 +228,7 @@ int ishtp_hbm_cl_flow_control_req(struct ishtp_device *dev,
 	return	rv;
 }
 
-/**
- * ishtp_hbm_cl_disconnect_req() - Send disconnect request
- * @dev: ISHTP device instance
- * @cl: ISHTP client instance
- *
- * Send disconnect message to fw
- *
- * Return: 0 if success else error code
- */
+ 
 int ishtp_hbm_cl_disconnect_req(struct ishtp_device *dev, struct ishtp_cl *cl)
 {
 	struct ishtp_msg_hdr hdr;
@@ -322,13 +241,7 @@ int ishtp_hbm_cl_disconnect_req(struct ishtp_device *dev, struct ishtp_cl *cl)
 	return ishtp_write_message(dev, &hdr, &disconn_req);
 }
 
-/**
- * ishtp_hbm_cl_disconnect_res() - Get disconnect response
- * @dev: ISHTP device instance
- * @rs: Response message
- *
- * Received disconnect response from fw
- */
+ 
 static void ishtp_hbm_cl_disconnect_res(struct ishtp_device *dev,
 	struct hbm_client_connect_response *rs)
 {
@@ -346,15 +259,7 @@ static void ishtp_hbm_cl_disconnect_res(struct ishtp_device *dev,
 	spin_unlock_irqrestore(&dev->cl_list_lock, flags);
 }
 
-/**
- * ishtp_hbm_cl_connect_req() - Send connect request
- * @dev: ISHTP device instance
- * @cl: client device instance
- *
- * Send connection request to specific fw client
- *
- * Return: 0 if success else error code
- */
+ 
 int ishtp_hbm_cl_connect_req(struct ishtp_device *dev, struct ishtp_cl *cl)
 {
 	struct ishtp_msg_hdr hdr;
@@ -367,13 +272,7 @@ int ishtp_hbm_cl_connect_req(struct ishtp_device *dev, struct ishtp_cl *cl)
 	return ishtp_write_message(dev, &hdr, &conn_req);
 }
 
-/**
- * ishtp_hbm_cl_connect_res() - Get connect response
- * @dev: ISHTP device instance
- * @rs: Response message
- *
- * Received connect response from fw
- */
+ 
 static void ishtp_hbm_cl_connect_res(struct ishtp_device *dev,
 	struct hbm_client_connect_response *rs)
 {
@@ -397,13 +296,7 @@ static void ishtp_hbm_cl_connect_res(struct ishtp_device *dev,
 	spin_unlock_irqrestore(&dev->cl_list_lock, flags);
 }
 
-/**
- * ishtp_hbm_fw_disconnect_req() - Receive disconnect request
- * @dev: ISHTP device instance
- * @disconnect_req: disconnect request structure
- *
- * Disconnect request bus message from the fw. Send disconnect response.
- */
+ 
 static void ishtp_hbm_fw_disconnect_req(struct ishtp_device *dev,
 	struct hbm_client_connect_request *disconnect_req)
 {
@@ -411,14 +304,14 @@ static void ishtp_hbm_fw_disconnect_req(struct ishtp_device *dev,
 	const size_t len = sizeof(struct hbm_client_connect_response);
 	unsigned long	flags;
 	struct ishtp_msg_hdr hdr;
-	unsigned char data[4];	/* All HBM messages are 4 bytes */
+	unsigned char data[4];	 
 
 	spin_lock_irqsave(&dev->cl_list_lock, flags);
 	list_for_each_entry(cl, &dev->cl_list, link) {
 		if (ishtp_hbm_cl_addr_equal(cl, disconnect_req)) {
 			cl->state = ISHTP_CL_DISCONNECTED;
 
-			/* send disconnect response */
+			 
 			ishtp_hbm_hdr(&hdr, len);
 			ishtp_hbm_cl_hdr(cl, CLIENT_DISCONNECT_RES_CMD, data,
 				len);
@@ -429,13 +322,7 @@ static void ishtp_hbm_fw_disconnect_req(struct ishtp_device *dev,
 	spin_unlock_irqrestore(&dev->cl_list_lock, flags);
 }
 
-/**
- * ishtp_hbm_dma_xfer_ack() - Receive transfer ACK
- * @dev: ISHTP device instance
- * @dma_xfer: HBM transfer message
- *
- * Receive ack for ISHTP-over-DMA client message
- */
+ 
 static void ishtp_hbm_dma_xfer_ack(struct ishtp_device *dev,
 				   struct dma_xfer_hbm *dma_xfer)
 {
@@ -459,19 +346,14 @@ static void ishtp_hbm_dma_xfer_ack(struct ishtp_device *dev,
 			return;
 		}
 
-		/* logical address of the acked mem */
+		 
 		msg = (unsigned char *)dev->ishtp_host_dma_tx_buf + offs;
 		ishtp_cl_release_dma_acked_mem(dev, msg, dma_xfer->msg_length);
 
 		list_for_each_entry(cl, &dev->cl_list, link) {
 			if (cl->fw_client_id == dma_xfer->fw_client_id &&
 			    cl->host_client_id == dma_xfer->host_client_id)
-				/*
-				 * in case that a single ack may be sent
-				 * over several dma transfers, and the last msg
-				 * addr was inside the acked memory, but not in
-				 * its start
-				 */
+				 
 				if (cl->last_dma_addr >=
 							(unsigned char *)msg &&
 						cl->last_dma_addr <
@@ -481,9 +363,7 @@ static void ishtp_hbm_dma_xfer_ack(struct ishtp_device *dev,
 
 					if (!list_empty(&cl->tx_list.list) &&
 						cl->ishtp_flow_ctrl_creds) {
-						/*
-						 * start sending the first msg
-						 */
+						 
 						ishtp_cl_send_msg(dev, cl);
 					}
 				}
@@ -492,13 +372,7 @@ static void ishtp_hbm_dma_xfer_ack(struct ishtp_device *dev,
 	}
 }
 
-/**
- * ishtp_hbm_dma_xfer() - Receive DMA transfer message
- * @dev: ISHTP device instance
- * @dma_xfer: HBM transfer message
- *
- * Receive ISHTP-over-DMA client message
- */
+ 
 static void ishtp_hbm_dma_xfer(struct ishtp_device *dev,
 			       struct dma_xfer_hbm *dma_xfer)
 {
@@ -525,23 +399,16 @@ static void ishtp_hbm_dma_xfer(struct ishtp_device *dev,
 		}
 		msg = dev->ishtp_host_dma_rx_buf + offs;
 		recv_ishtp_cl_msg_dma(dev, msg, dma_xfer);
-		dma_xfer->hbm = DMA_XFER_ACK;	/* Prepare for response */
+		dma_xfer->hbm = DMA_XFER_ACK;	 
 		++dma_xfer;
 	}
 
-	/* Send DMA_XFER_ACK [...] */
+	 
 	ishtp_hbm_hdr(&hdr, ishtp_hdr->length);
 	ishtp_write_message(dev, &hdr, (unsigned char *)prm);
 }
 
-/**
- * ishtp_hbm_dispatch() - HBM dispatch function
- * @dev: ISHTP device instance
- * @hdr: bus message
- *
- * Bottom half read routine after ISR to handle the read bus message cmd
- * processing
- */
+ 
 void ishtp_hbm_dispatch(struct ishtp_device *dev,
 			struct ishtp_bus_message *hdr)
 {
@@ -579,7 +446,7 @@ void ishtp_hbm_dispatch(struct ishtp_device *dev,
 		} else {
 			dev_err(dev->devc,
 				"reset: wrong host start response\n");
-			/* BUG: why do we arrive here? */
+			 
 			ish_hw_reset(dev);
 			return;
 		}
@@ -629,7 +496,7 @@ void ishtp_hbm_dispatch(struct ishtp_device *dev,
 		dev->fw_client_index++;
 		dev->fw_client_presentation_num++;
 
-		/* request property for the next client */
+		 
 		ishtp_hbm_prop_req(dev);
 
 		if (dev->dev_state != ISHTP_DEV_ENABLED)
@@ -667,7 +534,7 @@ void ishtp_hbm_dispatch(struct ishtp_device *dev,
 			ishtp_hbm_fw_cl_allocate(dev);
 			dev->hbm_state = ISHTP_HBM_CLIENT_PROPERTIES;
 
-			/* first property request */
+			 
 			ishtp_hbm_prop_req(dev);
 		} else {
 			dev_err(dev->devc,
@@ -687,7 +554,7 @@ void ishtp_hbm_dispatch(struct ishtp_device *dev,
 		break;
 
 	case CLIENT_DISCONNECT_REQ_CMD:
-		/* search for client */
+		 
 		disconnect_req =
 			(struct hbm_client_connect_request *)ishtp_msg;
 		ishtp_hbm_fw_disconnect_req(dev, disconnect_req);
@@ -730,13 +597,7 @@ void ishtp_hbm_dispatch(struct ishtp_device *dev,
 	}
 }
 
-/**
- * bh_hbm_work_fn() - HBM work function
- * @work: work struct
- *
- * Bottom half processing work function (instead of thread handler)
- * for processing hbm messages
- */
+ 
 void	bh_hbm_work_fn(struct work_struct *work)
 {
 	unsigned long	flags;
@@ -758,14 +619,7 @@ void	bh_hbm_work_fn(struct work_struct *work)
 	}
 }
 
-/**
- * recv_hbm() - Receive HBM message
- * @dev: ISHTP device instance
- * @ishtp_hdr: received bus message
- *
- * Receive and process ISHTP bus messages in ISR context. This will schedule
- * work function to process message
- */
+ 
 void	recv_hbm(struct ishtp_device *dev, struct ishtp_msg_hdr *ishtp_hdr)
 {
 	uint8_t	rd_msg_buf[ISHTP_RD_MSG_BUF_SIZE];
@@ -775,7 +629,7 @@ void	recv_hbm(struct ishtp_device *dev, struct ishtp_msg_hdr *ishtp_hdr)
 
 	dev->ops->ishtp_read(dev, rd_msg_buf, ishtp_hdr->length);
 
-	/* Flow control - handle in place */
+	 
 	if (ishtp_msg->hbm_cmd == ISHTP_FLOW_CONTROL_CMD) {
 		struct hbm_flow_control *flow_control =
 			(struct hbm_flow_control *)ishtp_msg;
@@ -787,12 +641,7 @@ void	recv_hbm(struct ishtp_device *dev, struct ishtp_msg_hdr *ishtp_hdr)
 			if (cl->host_client_id == flow_control->host_addr &&
 					cl->fw_client_id ==
 					flow_control->fw_addr) {
-				/*
-				 * NOTE: It's valid only for counting
-				 * flow-control implementation to receive a
-				 * FC in the middle of sending. Meanwhile not
-				 * supported
-				 */
+				 
 				if (cl->ishtp_flow_ctrl_creds)
 					dev_err(dev->devc,
 					 "recv extra FC from FW client %u (host client %u) (FC count was %d)\n",
@@ -807,10 +656,7 @@ void	recv_hbm(struct ishtp_device *dev, struct ishtp_msg_hdr *ishtp_hdr)
 							&cl->tx_list_spinlock,
 							tx_flags);
 					if (!list_empty(&cl->tx_list.list)) {
-						/*
-						 * start sending the first msg
-						 *	= the callback function
-						 */
+						 
 						spin_unlock_irqrestore(
 							&cl->tx_list_spinlock,
 							tx_flags);
@@ -828,10 +674,7 @@ void	recv_hbm(struct ishtp_device *dev, struct ishtp_msg_hdr *ishtp_hdr)
 		goto	eoi;
 	}
 
-	/*
-	 * Some messages that are safe for ISR processing and important
-	 * to be done "quickly" and in-order, go here
-	 */
+	 
 	if (ishtp_msg->hbm_cmd == CLIENT_CONNECT_RES_CMD ||
 			ishtp_msg->hbm_cmd == CLIENT_DISCONNECT_RES_CMD ||
 			ishtp_msg->hbm_cmd == CLIENT_DISCONNECT_REQ_CMD ||
@@ -840,11 +683,7 @@ void	recv_hbm(struct ishtp_device *dev, struct ishtp_msg_hdr *ishtp_hdr)
 		goto	eoi;
 	}
 
-	/*
-	 * All other HBMs go here.
-	 * We schedule HBMs for processing serially by using system wq,
-	 * possibly there will be multiple HBMs scheduled at the same time.
-	 */
+	 
 	spin_lock_irqsave(&dev->rd_msg_spinlock, flags);
 	if ((dev->rd_msg_fifo_tail + IPC_PAYLOAD_SIZE) %
 			(RD_INT_FIFO_SIZE * IPC_PAYLOAD_SIZE) ==
@@ -864,14 +703,7 @@ eoi:
 	return;
 }
 
-/**
- * recv_fixed_cl_msg() - Receive fixed client message
- * @dev: ISHTP device instance
- * @ishtp_hdr: received bus message
- *
- * Receive and process ISHTP fixed client messages (address == 0)
- * in ISR context
- */
+ 
 void recv_fixed_cl_msg(struct ishtp_device *dev,
 	struct ishtp_msg_hdr *ishtp_hdr)
 {
@@ -886,21 +718,14 @@ void recv_fixed_cl_msg(struct ishtp_device *dev,
 			(struct ish_system_states_header *)rd_msg_buf;
 		if (msg_hdr->cmd == SYSTEM_STATE_SUBSCRIBE)
 			ishtp_send_resume(dev);
-		/* if FW request arrived here, the system is not suspended */
+		 
 		else
 			dev_err(dev->devc, "unknown fixed client msg [%02X]\n",
 				msg_hdr->cmd);
 	}
 }
 
-/**
- * fix_cl_hdr() - Initialize fixed client header
- * @hdr: message header
- * @length: length of message
- * @cl_addr: Client address
- *
- * Initialize message header for fixed client
- */
+ 
 static inline void fix_cl_hdr(struct ishtp_msg_hdr *hdr, size_t length,
 	uint8_t cl_addr)
 {
@@ -911,17 +736,12 @@ static inline void fix_cl_hdr(struct ishtp_msg_hdr *hdr, size_t length,
 	hdr->reserved = 0;
 }
 
-/*** Suspend and resume notification ***/
+ 
 
 static uint32_t current_state;
 static uint32_t supported_states = SUSPEND_STATE_BIT | CONNECTED_STANDBY_STATE_BIT;
 
-/**
- * ishtp_send_suspend() - Send suspend message to FW
- * @dev: ISHTP device instance
- *
- * Send suspend message to FW. This is useful for system freeze (non S3) case
- */
+ 
 void ishtp_send_suspend(struct ishtp_device *dev)
 {
 	struct ishtp_msg_hdr	ishtp_hdr;
@@ -942,12 +762,7 @@ void ishtp_send_suspend(struct ishtp_device *dev)
 }
 EXPORT_SYMBOL(ishtp_send_suspend);
 
-/**
- * ishtp_send_resume() - Send resume message to FW
- * @dev: ISHTP device instance
- *
- * Send resume message to FW. This is useful for system freeze (non S3) case
- */
+ 
 void ishtp_send_resume(struct ishtp_device *dev)
 {
 	struct ishtp_msg_hdr	ishtp_hdr;
@@ -968,12 +783,7 @@ void ishtp_send_resume(struct ishtp_device *dev)
 }
 EXPORT_SYMBOL(ishtp_send_resume);
 
-/**
- * ishtp_query_subscribers() - Send query subscribers message
- * @dev: ISHTP device instance
- *
- * Send message to query subscribers
- */
+ 
 void ishtp_query_subscribers(struct ishtp_device *dev)
 {
 	struct ishtp_msg_hdr	ishtp_hdr;

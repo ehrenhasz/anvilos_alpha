@@ -1,9 +1,4 @@
-/*
- * Broadcom specific AMBA
- * ChipCommon serial flash interface
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 
@@ -85,7 +80,7 @@ static void bcma_sflash_cmd(struct bcma_drv_cc *cc, u32 opcode)
 	bcma_err(cc->core->bus, "SFLASH control command failed (timeout)!\n");
 }
 
-/* Initialize serial flash access */
+ 
 int bcma_sflash_init(struct bcma_drv_cc *cc)
 {
 	struct bcma_bus *bus = cc->core->bus;
@@ -155,8 +150,7 @@ int bcma_sflash_init(struct bcma_drv_cc *cc)
 		  e->name, sflash->size / 1024, sflash->blocksize,
 		  sflash->numblocks);
 
-	/* Prepare platform device, but don't register it yet. It's too early,
-	 * malloc (required by device_private_init) is not available yet. */
+	 
 	bcma_sflash_dev.resource[0].end = bcma_sflash_dev.resource[0].start +
 					  sflash->size;
 	bcma_sflash_dev.dev.platform_data = sflash;

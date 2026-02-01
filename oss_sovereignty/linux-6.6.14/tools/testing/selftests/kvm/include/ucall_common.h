@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2018, Google LLC.
- */
+ 
+ 
 #ifndef SELFTEST_KVM_UCALL_COMMON_H
 #define SELFTEST_KVM_UCALL_COMMON_H
 #include "test_util.h"
 #include "ucall.h"
 
-/* Common ucalls */
+ 
 enum {
 	UCALL_NONE,
 	UCALL_SYNC,
@@ -25,7 +23,7 @@ struct ucall {
 	uint64_t args[UCALL_MAX_ARGS];
 	char buffer[UCALL_BUFFER_LEN];
 
-	/* Host virtual address of this struct. */
+	 
 	struct ucall *hva;
 };
 
@@ -41,12 +39,7 @@ uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc);
 void ucall_init(struct kvm_vm *vm, vm_paddr_t mmio_gpa);
 int ucall_nr_pages_required(uint64_t page_size);
 
-/*
- * Perform userspace call without any associated data.  This bare call avoids
- * allocating a ucall struct, which can be useful if the atomic operations in
- * the full ucall() are problematic and/or unwanted.  Note, this will come out
- * as UCALL_NONE on the backend.
- */
+ 
 #define GUEST_UCALL_NONE()	ucall_arch_do_ucall((vm_vaddr_t)NULL)
 
 #define GUEST_SYNC_ARGS(stage, arg1, arg2, arg3, arg4)	\
@@ -101,4 +94,4 @@ do {										\
 		    (const char *)(ucall).args[GUEST_FILE],			\
 		    (ucall).args[GUEST_LINE], "%s", (ucall).buffer)
 
-#endif /* SELFTEST_KVM_UCALL_COMMON_H */
+#endif  

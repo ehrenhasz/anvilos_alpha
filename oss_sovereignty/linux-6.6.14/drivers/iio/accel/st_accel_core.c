@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics accelerometers driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,12 +16,12 @@
 
 #define ST_ACCEL_NUMBER_DATA_CHANNELS		3
 
-/* DEFAULT VALUE FOR SENSORS */
+ 
 #define ST_ACCEL_DEFAULT_OUT_X_L_ADDR		0x28
 #define ST_ACCEL_DEFAULT_OUT_Y_L_ADDR		0x2a
 #define ST_ACCEL_DEFAULT_OUT_Z_L_ADDR		0x2c
 
-/* FULLSCALE */
+ 
 #define ST_ACCEL_FS_AVL_2G			2
 #define ST_ACCEL_FS_AVL_4G			4
 #define ST_ACCEL_FS_AVL_6G			6
@@ -376,7 +370,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
 		.odr = {
 			.addr = 0x20,
-			.mask = 0x30, /* DF1 and DF0 */
+			.mask = 0x30,  
 			.odr_avl = {
 				{ .hz = 40, .value = 0x00, },
 				{ .hz = 160, .value = 0x01, },
@@ -414,10 +408,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 			.addr = 0x21,
 			.mask = 0x40,
 		},
-		/*
-		 * Data Alignment Setting - needs to be set to get
-		 * left-justified data like all other sensors.
-		 */
+		 
 		.das = {
 			.addr = 0x21,
 			.mask = 0x01,
@@ -437,7 +428,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 			.value = BIT(1),
 		},
 		.multi_read_bit = true,
-		.bootime = 2, /* guess */
+		.bootime = 2,  
 	},
 	{
 		.wai = 0x3b,
@@ -468,10 +459,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 		.fs = {
 			.addr = 0x20,
 			.mask = 0x20,
-			/*
-			 * TODO: check these resulting gain settings, these are
-			 * not in the datsheet
-			 */
+			 
 			.fs_avl = {
 				[0] = {
 					.num = ST_ACCEL_FS_AVL_2G,
@@ -510,7 +498,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 			.value = BIT(7),
 		},
 		.multi_read_bit = false,
-		.bootime = 2, /* guess */
+		.bootime = 2,  
 	},
 	{
 		.wai = 0x32,
@@ -585,7 +573,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 		.bootime = 2,
 	},
 	{
-		/* No WAI register present */
+		 
 		.sensors_supported = {
 			[0] = LIS3L02DQ_ACCEL_DEV_NAME,
 		},
@@ -618,10 +606,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 				},
 			},
 		},
-		/*
-		 * The part has a BDU bit but if set the data is never
-		 * updated so don't set it.
-		 */
+		 
 		.bdu = {
 		},
 		.drdy_irq = {
@@ -805,7 +790,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 		},
 		.ch = (struct iio_chan_spec *)st_accel_16bit_channels,
 		.odr = {
-			/* just ODR = 1100Hz available */
+			 
 			.odr_avl = {
 				{ .hz = 1100, .value = 0x00, },
 			},
@@ -1092,10 +1077,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 		.bootime = 2,
 	},
 	{
-		/*
-		 * Not an ST part. Register-compatible with the LIS2DH, even
-		 * though the WAI value is different.
-		 */
+		 
 		.wai = 0x11,
 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
 		.sensors_supported = {
@@ -1176,7 +1158,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
 	},
 };
 
-/* Default accel DRDY is available on INT1 pin */
+ 
 static const struct st_sensors_platform_data default_accel_pdata = {
 	.drdy_int_pin = 1,
 };
@@ -1261,9 +1243,7 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
 #endif
 
 #ifdef CONFIG_ACPI
-/* Read ST-specific _ONT orientation data from ACPI and generate an
- * appropriate mount matrix.
- */
+ 
 static int apply_acpi_orientation(struct iio_dev *indio_dev)
 {
 	struct st_sensor_data *adata = iio_priv(indio_dev);
@@ -1277,12 +1257,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
 	int i, j;
 	int final_ont[3][3] = { { 0 }, };
 
-	/* For some reason, ST's _ONT translation does not apply directly
-	 * to the data read from the sensor. Another translation must be
-	 * performed first, as described by the matrix below. Perhaps
-	 * ST required this specific translation for the first product
-	 * where the device was mounted?
-	 */
+	 
 	const int default_ont[3][3] = {
 		{  0,  1,  0 },
 		{ -1,  0,  0 },
@@ -1294,7 +1269,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
 	if (!adev)
 		return -ENXIO;
 
-	/* Read _ONT data, which should be a package of 6 integers. */
+	 
 	status = acpi_evaluate_object(adev->handle, "_ONT", NULL, &buffer);
 	if (status == AE_NOT_FOUND) {
 		return -ENXIO;
@@ -1308,10 +1283,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
 	if (ont->type != ACPI_TYPE_PACKAGE || ont->package.count != 6)
 		goto out;
 
-	/* The first 3 integers provide axis order information.
-	 * e.g. 0 1 2 would indicate normal X,Y,Z ordering.
-	 * e.g. 1 0 2 indicates that data arrives in order Y,X,Z.
-	 */
+	 
 	elements = ont->package.elements;
 	for (i = 0; i < 3; i++) {
 		if (elements[i].type != ACPI_TYPE_INTEGER)
@@ -1321,20 +1293,13 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
 		if (val > 2)
 			goto out;
 
-		/* Avoiding full matrix multiplication, we simply reorder the
-		 * columns in the default_ont matrix according to the
-		 * ordering provided by _ONT.
-		 */
+		 
 		final_ont[0][i] = default_ont[0][val];
 		final_ont[1][i] = default_ont[1][val];
 		final_ont[2][i] = default_ont[2][val];
 	}
 
-	/* The final 3 integers provide sign flip information.
-	 * 0 means no change, 1 means flip.
-	 * e.g. 0 0 1 means that Z data should be sign-flipped.
-	 * This is applied after the axis reordering from above.
-	 */
+	 
 	elements += 3;
 	for (i = 0; i < 3; i++) {
 		if (elements[i].type != ACPI_TYPE_INTEGER)
@@ -1346,13 +1311,13 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
 		if (!val)
 			continue;
 
-		/* Flip the values in the indicated column */
+		 
 		final_ont[0][i] *= -1;
 		final_ont[1][i] *= -1;
 		final_ont[2][i] *= -1;
 	}
 
-	/* Convert our integer matrix to a string-based iio_mount_matrix */
+	 
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
 			int matrix_val = final_ont[i][j];
@@ -1386,19 +1351,14 @@ out:
 
 	return ret;
 }
-#else /* !CONFIG_ACPI */
+#else  
 static int apply_acpi_orientation(struct iio_dev *indio_dev)
 {
 	return -EINVAL;
 }
 #endif
 
-/*
- * st_accel_get_settings() - get sensor settings from device name
- * @name: device name buffer reference.
- *
- * Return: valid reference on success, NULL otherwise.
- */
+ 
 const struct st_sensor_settings *st_accel_get_settings(const char *name)
 {
 	int index = st_sensors_get_settings_index(name,
@@ -1429,10 +1389,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
 	indio_dev->channels = adata->sensor_settings->ch;
 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
 
-	/*
-	 * First try specific ACPI methods to retrieve orientation then try the
-	 * generic function.
-	 */
+	 
 	err = apply_acpi_orientation(indio_dev);
 	if (err) {
 		err = iio_read_mount_matrix(parent, &adata->mount_matrix);

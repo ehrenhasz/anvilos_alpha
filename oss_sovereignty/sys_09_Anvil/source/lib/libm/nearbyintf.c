@@ -1,4 +1,4 @@
-// adapted from the rintf() function from musl-1.1.16
+
 
 #include "libm.h"
 

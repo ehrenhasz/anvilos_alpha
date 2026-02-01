@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmw_vmci_defs.h>
 #include <linux/vmw_vmci_api.h>
@@ -28,16 +24,11 @@ MODULE_PARM_DESC(disable_guest,
 static bool vmci_guest_personality_initialized;
 static bool vmci_host_personality_initialized;
 
-static DEFINE_MUTEX(vmci_vsock_mutex); /* protects vmci_vsock_transport_cb */
+static DEFINE_MUTEX(vmci_vsock_mutex);  
 static vmci_vsock_cb vmci_vsock_transport_cb;
 static bool vmci_vsock_cb_host_called;
 
-/*
- * vmci_get_context_id() - Gets the current context ID.
- *
- * Returns the current context ID.  Note that since this is accessed only
- * from code running in the host, this always returns the host context ID.
- */
+ 
 u32 vmci_get_context_id(void)
 {
 	if (vmci_guest_code_active())
@@ -49,15 +40,7 @@ u32 vmci_get_context_id(void)
 }
 EXPORT_SYMBOL_GPL(vmci_get_context_id);
 
-/*
- * vmci_register_vsock_callback() - Register the VSOCK vmci_transport callback.
- *
- * The callback will be called when the first host or guest becomes active,
- * or if they are already active when this function is called.
- * To unregister the callback, call this function with NULL parameter.
- *
- * Returns 0 on success. -EBUSY if a callback is already registered.
- */
+ 
 int vmci_register_vsock_callback(vmci_vsock_cb callback)
 {
 	int err = 0;
@@ -97,9 +80,7 @@ void vmci_call_vsock_callback(bool is_host)
 	if (!vmci_vsock_transport_cb)
 		goto out;
 
-	/* In the host, this function could be called multiple times,
-	 * but we want to register it only once.
-	 */
+	 
 	if (is_host) {
 		if (vmci_vsock_cb_host_called)
 			goto out;

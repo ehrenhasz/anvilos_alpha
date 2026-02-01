@@ -1,27 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sun3 SCSI stuff by Erik Verbruggen (erik@bigmama.xtdnet.nl)
- *
- * Sun3 DMA routines added by Sam Creasey (sammy@sammy.net)
- *
- * VME support added by Sam Creasey
- *
- * TODO: modify this driver to support multiple Sun3 SCSI VME boards
- *
- * Adapted from mac_scsinew.c:
- */
-/*
- * Generic Macintosh NCR5380 driver
- *
- * Copyright 1998, Michael Schmitz <mschmitz@lbl.gov>
- *
- * derived in part from:
- */
-/*
- * Generic Generic NCR5380 driver
- *
- * Copyright 1995, Russell King
- */
+
+ 
+ 
+ 
 
 #include <linux/types.h>
 #include <linux/delay.h>
@@ -36,12 +16,12 @@
 
 #include <scsi/scsi_host.h>
 
-/* minimum number of bytes to do dma on */
+ 
 #define DMA_MIN_SIZE                    129
 
-/* Definitions for the core NCR5380 driver. */
+ 
 
-#define NCR5380_implementation_fields   /* none */
+#define NCR5380_implementation_fields    
 
 #define NCR5380_read(reg)               in_8(hostdata->io + (reg))
 #define NCR5380_write(reg, value)       out_8(hostdata->io + (reg), value)
@@ -58,70 +38,68 @@
 
 #include "NCR5380.h"
 
-/* dma regs start at regbase + 8, directly after the NCR regs */
+ 
 struct sun3_dma_regs {
-	unsigned short dma_addr_hi; /* vme only */
-	unsigned short dma_addr_lo; /* vme only */
-	unsigned short dma_count_hi; /* vme only */
-	unsigned short dma_count_lo; /* vme only */
-	unsigned short udc_data; /* udc dma data reg (obio only) */
-	unsigned short udc_addr; /* uda dma addr reg (obio only) */
-	unsigned short fifo_data; /* fifo data reg,
-	                           * holds extra byte on odd dma reads
-	                           */
+	unsigned short dma_addr_hi;  
+	unsigned short dma_addr_lo;  
+	unsigned short dma_count_hi;  
+	unsigned short dma_count_lo;  
+	unsigned short udc_data;  
+	unsigned short udc_addr;  
+	unsigned short fifo_data;  
 	unsigned short fifo_count;
-	unsigned short csr; /* control/status reg */
-	unsigned short bpack_hi; /* vme only */
-	unsigned short bpack_lo; /* vme only */
-	unsigned short ivect; /* vme only */
-	unsigned short fifo_count_hi; /* vme only */
+	unsigned short csr;  
+	unsigned short bpack_hi;  
+	unsigned short bpack_lo;  
+	unsigned short ivect;  
+	unsigned short fifo_count_hi;  
 };
 
-/* ucd chip specific regs - live in dvma space */
+ 
 struct sun3_udc_regs {
-	unsigned short rsel; /* select regs to load */
-	unsigned short addr_hi; /* high word of addr */
-	unsigned short addr_lo; /* low word */
-	unsigned short count; /* words to be xfer'd */
-	unsigned short mode_hi; /* high word of channel mode */
-	unsigned short mode_lo; /* low word of channel mode */
+	unsigned short rsel;  
+	unsigned short addr_hi;  
+	unsigned short addr_lo;  
+	unsigned short count;  
+	unsigned short mode_hi;  
+	unsigned short mode_lo;  
 };
 
-/* addresses of the udc registers */
+ 
 #define UDC_MODE 0x38
-#define UDC_CSR 0x2e /* command/status */
-#define UDC_CHN_HI 0x26 /* chain high word */
-#define UDC_CHN_LO 0x22 /* chain lo word */
-#define UDC_CURA_HI 0x1a /* cur reg A high */
-#define UDC_CURA_LO 0x0a /* cur reg A low */
-#define UDC_CURB_HI 0x12 /* cur reg B high */
-#define UDC_CURB_LO 0x02 /* cur reg B low */
-#define UDC_MODE_HI 0x56 /* mode reg high */
-#define UDC_MODE_LO 0x52 /* mode reg low */
-#define UDC_COUNT 0x32 /* words to xfer */
+#define UDC_CSR 0x2e  
+#define UDC_CHN_HI 0x26  
+#define UDC_CHN_LO 0x22  
+#define UDC_CURA_HI 0x1a  
+#define UDC_CURA_LO 0x0a  
+#define UDC_CURB_HI 0x12  
+#define UDC_CURB_LO 0x02  
+#define UDC_MODE_HI 0x56  
+#define UDC_MODE_LO 0x52  
+#define UDC_COUNT 0x32  
 
-/* some udc commands */
+ 
 #define UDC_RESET 0
-#define UDC_CHN_START 0xa0 /* start chain */
-#define UDC_INT_ENABLE 0x32 /* channel 1 int on */
+#define UDC_CHN_START 0xa0  
+#define UDC_INT_ENABLE 0x32  
 
-/* udc mode words */
+ 
 #define UDC_MODE_HIWORD 0x40
 #define UDC_MODE_LSEND 0xc2
 #define UDC_MODE_LRECV 0xd2
 
-/* udc reg selections */
+ 
 #define UDC_RSEL_SEND 0x282
 #define UDC_RSEL_RECV 0x182
 
-/* bits in csr reg */
+ 
 #define CSR_DMA_ACTIVE 0x8000
 #define CSR_DMA_CONFLICT 0x4000
 #define CSR_DMA_BUSERR 0x2000
 
-#define CSR_FIFO_EMPTY 0x400 /* fifo flushed? */
-#define CSR_SDB_INT 0x200 /* sbc interrupt pending */
-#define CSR_DMA_INT 0x100 /* dma interrupt pending */
+#define CSR_FIFO_EMPTY 0x400  
+#define CSR_SDB_INT 0x200  
+#define CSR_DMA_INT 0x100  
 
 #define CSR_LEFT 0xc0
 #define CSR_LEFT_3 0xc0
@@ -131,9 +109,9 @@ struct sun3_udc_regs {
 
 #define CSR_DMA_ENABLE 0x10
 
-#define CSR_SEND 0x8 /* 1 = send  0 = recv */
-#define CSR_FIFO 0x2 /* reset fifo */
-#define CSR_INTR 0x4 /* interrupt enable */
+#define CSR_SEND 0x8  
+#define CSR_FIFO 0x2  
+#define CSR_INTR 0x4  
 #define CSR_SCSI 0x1
 
 #define VME_DATA24 0x3d00
@@ -149,10 +127,10 @@ module_param(setup_sg_tablesize, int, 0);
 static int setup_hostid = -1;
 module_param(setup_hostid, int, 0);
 
-/* ms to wait after hitting dma regs */
+ 
 #define SUN3_DMA_DELAY 10
 
-/* dvma buffer to allocate -- 32k should hopefully be more than sufficient */
+ 
 #define SUN3_DVMA_BUFSIZE 0xe000
 
 static struct scsi_cmnd *sun3_dma_setup_done;
@@ -164,7 +142,7 @@ static int sun3_dma_active;
 static unsigned long last_residual;
 
 #ifndef SUN3_SCSI_VME
-/* dma controller register access functions */
+ 
 
 static inline unsigned short sun3_udc_read(unsigned char reg)
 {
@@ -187,7 +165,7 @@ static inline void sun3_udc_write(unsigned short val, unsigned char reg)
 }
 #endif
 
-// safe bits for the CSR
+ 
 #define CSR_GOOD 0x060f
 
 static irqreturn_t scsi_sun3_intr(int irq, void *dev)
@@ -216,7 +194,7 @@ static irqreturn_t scsi_sun3_intr(int irq, void *dev)
 	return IRQ_RETVAL(handled);
 }
 
-/* sun3scsi_dma_setup() -- initialize the dma controller for a read/write */
+ 
 static int sun3scsi_dma_setup(struct NCR5380_hostdata *hostdata,
                               unsigned char *data, int count, int write_flag)
 {
@@ -238,12 +216,12 @@ static int sun3scsi_dma_setup(struct NCR5380_hostdata *hostdata,
 	dregs->fifo_count = 0;
 	sun3_udc_write(UDC_RESET, UDC_CSR);
 	
-	/* reset fifo */
+	 
 	dregs->csr &= ~CSR_FIFO;
 	dregs->csr |= CSR_FIFO;
 #endif
 	
-	/* set direction */
+	 
 	if(write_flag)
 		dregs->csr |= CSR_SEND;
 	else
@@ -260,12 +238,12 @@ static int sun3scsi_dma_setup(struct NCR5380_hostdata *hostdata,
 	dregs->fifo_count_hi = 0;
 	dregs->fifo_count = 0;
 #else
-	/* byte count for fifo */
+	 
 	dregs->fifo_count = count;
 
 	sun3_udc_write(UDC_RESET, UDC_CSR);
 	
-	/* reset fifo */
+	 
 	dregs->csr &= ~CSR_FIFO;
 	dregs->csr |= CSR_FIFO;
 	
@@ -276,10 +254,10 @@ static int sun3scsi_dma_setup(struct NCR5380_hostdata *hostdata,
 		NCR5380_dprint(NDEBUG_DMA, hostdata->host);
 	}
 
-	/* setup udc */
+	 
 	udc_regs->addr_hi = (((unsigned long)(addr) & 0xff0000) >> 8);
 	udc_regs->addr_lo = ((unsigned long)(addr) & 0xffff);
-	udc_regs->count = count/2; /* count in words */
+	udc_regs->count = count/2;  
 	udc_regs->mode_hi = UDC_MODE_HIWORD;
 	if(write_flag) {
 		if(count & 1)
@@ -291,16 +269,16 @@ static int sun3scsi_dma_setup(struct NCR5380_hostdata *hostdata,
 		udc_regs->rsel = UDC_RSEL_RECV;
 	}
 	
-	/* announce location of regs block */
+	 
 	sun3_udc_write(((dvma_vtob(udc_regs) & 0xff0000) >> 8),
 		       UDC_CHN_HI); 
 
 	sun3_udc_write((dvma_vtob(udc_regs) & 0xffff), UDC_CHN_LO);
 
-	/* set dma master on */
+	 
 	sun3_udc_write(0xd, UDC_MODE);
 
-	/* interrupt enable */
+	 
 	sun3_udc_write(UDC_INT_ENABLE, UDC_CSR);
 #endif
 	
@@ -355,9 +333,7 @@ static inline int sun3scsi_dma_start(unsigned long count, unsigned char *data)
 	dregs->fifo_count_hi = (sun3_dma_orig_count >> 16);
 	dregs->fifo_count = (sun3_dma_orig_count & 0xffff);
 
-/*	if(!(csr & CSR_DMA_ENABLE))
- *		dregs->csr |= CSR_DMA_ENABLE;
- */
+ 
 #else
     sun3_udc_write(UDC_CHN_START, UDC_CSR);
 #endif
@@ -365,7 +341,7 @@ static inline int sun3scsi_dma_start(unsigned long count, unsigned char *data)
     return 0;
 }
 
-/* clean up after our dma is done */
+ 
 static int sun3scsi_dma_finish(enum dma_data_direction data_dir)
 {
 	const bool write_flag = data_dir == DMA_TO_DEVICE;
@@ -385,7 +361,7 @@ static int sun3scsi_dma_finish(enum dma_data_direction data_dir)
 	}
 
 	last_residual = fifo;
-	/* empty bytes from the fifo which didn't make it */
+	 
 	if ((!write_flag) && (dregs->csr & CSR_LEFT)) {
 		unsigned char *vaddr;
 
@@ -411,9 +387,9 @@ static int sun3scsi_dma_finish(enum dma_data_direction data_dir)
 		}
 	}
 #else
-	// check to empty the fifo on a read
+	
 	if(!write_flag) {
-		int tmo = 20000; /* .2 sec */
+		int tmo = 20000;  
 		
 		while(1) {
 			if(dregs->csr & CSR_FIFO_EMPTY)
@@ -435,7 +411,7 @@ static int sun3scsi_dma_finish(enum dma_data_direction data_dir)
 	fifo = dregs->fifo_count;
 	last_residual = fifo;
 
-	/* empty bytes from the fifo which didn't make it */
+	 
 	if((!write_flag) && (count - fifo) == 2) {
 		unsigned short data;
 		unsigned char *vaddr;
@@ -463,13 +439,13 @@ static int sun3scsi_dma_finish(enum dma_data_direction data_dir)
 	dregs->fifo_count_hi = 0;
 
 	dregs->csr &= ~CSR_SEND;
-/*	dregs->csr |= CSR_DMA_ENABLE; */
+ 
 #else
 	sun3_udc_write(UDC_RESET, UDC_CSR);
 	dregs->fifo_count = 0;
 	dregs->csr &= ~CSR_SEND;
 
-	/* reset fifo */
+	 
 	dregs->csr &= ~CSR_FIFO;
 	dregs->csr |= CSR_FIFO;
 #endif

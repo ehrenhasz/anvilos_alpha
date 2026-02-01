@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011 Jonathan Cameron
- *
- * A reference industrial I/O driver to illustrate the functionality available.
- *
- * There are numerous real drivers to illustrate the finer points.
- * The purpose of this driver is to provide a driver with far more comments
- * and explanatory notes than any 'real' driver would have.
- * Anyone starting out writing an IIO driver should first make sure they
- * understand all of this driver except those bits specifically marked
- * as being present to allow us to 'fake' the presence of hardware.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -27,59 +16,43 @@ static const struct config_item_type iio_dummy_type = {
 	.ct_owner = THIS_MODULE,
 };
 
-/**
- * struct iio_dummy_accel_calibscale - realworld to register mapping
- * @val: first value in read_raw - here integer part.
- * @val2: second value in read_raw etc - here micro part.
- * @regval: register value - magic device specific numbers.
- */
+ 
 struct iio_dummy_accel_calibscale {
 	int val;
 	int val2;
-	int regval; /* what would be written to hardware */
+	int regval;  
 };
 
 static const struct iio_dummy_accel_calibscale dummy_scales[] = {
-	{ 0, 100, 0x8 }, /* 0.000100 */
-	{ 0, 133, 0x7 }, /* 0.000133 */
-	{ 733, 13, 0x9 }, /* 733.000013 */
+	{ 0, 100, 0x8 },  
+	{ 0, 133, 0x7 },  
+	{ 733, 13, 0x9 },  
 };
 
 #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
 
-/*
- * simple event - triggered when value rises above
- * a threshold
- */
+ 
 static const struct iio_event_spec iio_dummy_event = {
 	.type = IIO_EV_TYPE_THRESH,
 	.dir = IIO_EV_DIR_RISING,
 	.mask_separate = BIT(IIO_EV_INFO_VALUE) | BIT(IIO_EV_INFO_ENABLE),
 };
 
-/*
- * simple step detect event - triggered when a step is detected
- */
+ 
 static const struct iio_event_spec step_detect_event = {
 	.type = IIO_EV_TYPE_CHANGE,
 	.dir = IIO_EV_DIR_NONE,
 	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
 };
 
-/*
- * simple transition event - triggered when the reported running confidence
- * value rises above a threshold value
- */
+ 
 static const struct iio_event_spec iio_running_event = {
 	.type = IIO_EV_TYPE_THRESH,
 	.dir = IIO_EV_DIR_RISING,
 	.mask_separate = BIT(IIO_EV_INFO_VALUE) | BIT(IIO_EV_INFO_ENABLE),
 };
 
-/*
- * simple transition event - triggered when the reported walking confidence
- * value falls under a threshold value
- */
+ 
 static const struct iio_event_spec iio_walking_event = {
 	.type = IIO_EV_TYPE_THRESH,
 	.dir = IIO_EV_DIR_FALLING,
@@ -87,93 +60,59 @@ static const struct iio_event_spec iio_walking_event = {
 };
 #endif
 
-/*
- * iio_dummy_channels - Description of available channels
- *
- * This array of structures tells the IIO core about what the device
- * actually provides for a given channel.
- */
+ 
 static const struct iio_chan_spec iio_dummy_channels[] = {
-	/* indexed ADC channel in_voltage0_raw etc */
+	 
 	{
 		.type = IIO_VOLTAGE,
-		/* Channel has a numeric index of 0 */
+		 
 		.indexed = 1,
 		.channel = 0,
-		/* What other information is available? */
+		 
 		.info_mask_separate =
-		/*
-		 * in_voltage0_raw
-		 * Raw (unscaled no bias removal etc) measurement
-		 * from the device.
-		 */
+		 
 		BIT(IIO_CHAN_INFO_RAW) |
-		/*
-		 * in_voltage0_offset
-		 * Offset for userspace to apply prior to scale
-		 * when converting to standard units (microvolts)
-		 */
+		 
 		BIT(IIO_CHAN_INFO_OFFSET) |
-		/*
-		 * in_voltage0_scale
-		 * Multipler for userspace to apply post offset
-		 * when converting to standard units (microvolts)
-		 */
+		 
 		BIT(IIO_CHAN_INFO_SCALE),
-		/*
-		 * sampling_frequency
-		 * The frequency in Hz at which the channels are sampled
-		 */
+		 
 		.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-		/* The ordering of elements in the buffer via an enum */
+		 
 		.scan_index = DUMMY_INDEX_VOLTAGE_0,
-		.scan_type = { /* Description of storage in buffer */
-			.sign = 'u', /* unsigned */
-			.realbits = 13, /* 13 bits */
-			.storagebits = 16, /* 16 bits used for storage */
-			.shift = 0, /* zero shift */
+		.scan_type = {  
+			.sign = 'u',  
+			.realbits = 13,  
+			.storagebits = 16,  
+			.shift = 0,  
 		},
 #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
 		.event_spec = &iio_dummy_event,
 		.num_event_specs = 1,
-#endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+#endif  
 	},
-	/* Differential ADC channel in_voltage1-voltage2_raw etc*/
+	 
 	{
 		.type = IIO_VOLTAGE,
 		.differential = 1,
-		/*
-		 * Indexing for differential channels uses channel
-		 * for the positive part, channel2 for the negative.
-		 */
+		 
 		.indexed = 1,
 		.channel = 1,
 		.channel2 = 2,
-		/*
-		 * in_voltage1-voltage2_raw
-		 * Raw (unscaled no bias removal etc) measurement
-		 * from the device.
-		 */
+		 
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-		/*
-		 * in_voltage-voltage_scale
-		 * Shared version of scale - shared by differential
-		 * input channels of type IIO_VOLTAGE.
-		 */
+		 
 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-		/*
-		 * sampling_frequency
-		 * The frequency in Hz at which the channels are sampled
-		 */
+		 
 		.scan_index = DUMMY_INDEX_DIFFVOLTAGE_1M2,
-		.scan_type = { /* Description of storage in buffer */
-			.sign = 's', /* signed */
-			.realbits = 12, /* 12 bits */
-			.storagebits = 16, /* 16 bits used for storage */
-			.shift = 0, /* zero shift */
+		.scan_type = {  
+			.sign = 's',  
+			.realbits = 12,  
+			.storagebits = 16,  
+			.shift = 0,  
 		},
 	},
-	/* Differential ADC channel in_voltage3-voltage4_raw etc*/
+	 
 	{
 		.type = IIO_VOLTAGE,
 		.differential = 1,
@@ -191,43 +130,32 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
 			.shift = 0,
 		},
 	},
-	/*
-	 * 'modified' (i.e. axis specified) acceleration channel
-	 * in_accel_z_raw
-	 */
+	 
 	{
 		.type = IIO_ACCEL,
 		.modified = 1,
-		/* Channel 2 is use for modifiers */
+		 
 		.channel2 = IIO_MOD_X,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-		/*
-		 * Internal bias and gain correction values. Applied
-		 * by the hardware or driver prior to userspace
-		 * seeing the readings. Typically part of hardware
-		 * calibration.
-		 */
+		 
 		BIT(IIO_CHAN_INFO_CALIBSCALE) |
 		BIT(IIO_CHAN_INFO_CALIBBIAS),
 		.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ),
 		.scan_index = DUMMY_INDEX_ACCELX,
-		.scan_type = { /* Description of storage in buffer */
-			.sign = 's', /* signed */
-			.realbits = 16, /* 16 bits */
-			.storagebits = 16, /* 16 bits used for storage */
-			.shift = 0, /* zero shift */
+		.scan_type = {  
+			.sign = 's',  
+			.realbits = 16,  
+			.storagebits = 16,  
+			.shift = 0,  
 		},
 	},
-	/*
-	 * Convenience macro for timestamps. 4 is the index in
-	 * the buffer.
-	 */
+	 
 	IIO_CHAN_SOFT_TIMESTAMP(4),
-	/* DAC channel out_voltage0_raw */
+	 
 	{
 		.type = IIO_VOLTAGE,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-		.scan_index = -1, /* No buffer support */
+		.scan_index = -1,  
 		.output = 1,
 		.indexed = 1,
 		.channel = 0,
@@ -237,45 +165,37 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_ENABLE) |
 			BIT(IIO_CHAN_INFO_CALIBHEIGHT),
 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-		.scan_index = -1, /* No buffer support */
+		.scan_index = -1,  
 #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
 		.event_spec = &step_detect_event,
 		.num_event_specs = 1,
-#endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+#endif  
 	},
 	{
 		.type = IIO_ACTIVITY,
 		.modified = 1,
 		.channel2 = IIO_MOD_RUNNING,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-		.scan_index = -1, /* No buffer support */
+		.scan_index = -1,  
 #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
 		.event_spec = &iio_running_event,
 		.num_event_specs = 1,
-#endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+#endif  
 	},
 	{
 		.type = IIO_ACTIVITY,
 		.modified = 1,
 		.channel2 = IIO_MOD_WALKING,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-		.scan_index = -1, /* No buffer support */
+		.scan_index = -1,  
 #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
 		.event_spec = &iio_walking_event,
 		.num_event_specs = 1,
-#endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+#endif  
 	},
 };
 
-/**
- * iio_dummy_read_raw() - data read function.
- * @indio_dev:	the struct iio_dev associated with this device instance
- * @chan:	the channel whose data is to be read
- * @val:	first element of returned value (typically INT)
- * @val2:	second element of returned value (typically MICRO)
- * @mask:	what we actually want to read as per the info_mask_*
- *		in iio_chan_spec.
- */
+ 
 static int iio_dummy_read_raw(struct iio_dev *indio_dev,
 			      struct iio_chan_spec const *chan,
 			      int *val,
@@ -287,11 +207,11 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
 
 	mutex_lock(&st->lock);
 	switch (mask) {
-	case IIO_CHAN_INFO_RAW: /* magic value - channel value read */
+	case IIO_CHAN_INFO_RAW:  
 		switch (chan->type) {
 		case IIO_VOLTAGE:
 			if (chan->output) {
-				/* Set integer part to cached value */
+				 
 				*val = st->dac_val;
 				ret = IIO_VAL_INT;
 			} else if (chan->differential) {
@@ -338,7 +258,7 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
 		}
 		break;
 	case IIO_CHAN_INFO_OFFSET:
-		/* only single ended adc -> 7 */
+		 
 		*val = 7;
 		ret = IIO_VAL_INT;
 		break;
@@ -347,13 +267,13 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
 		case IIO_VOLTAGE:
 			switch (chan->differential) {
 			case 0:
-				/* only single ended adc -> 0.001333 */
+				 
 				*val = 0;
 				*val2 = 1333;
 				ret = IIO_VAL_INT_PLUS_MICRO;
 				break;
 			case 1:
-				/* all differential adc -> 0.000001344 */
+				 
 				*val = 0;
 				*val2 = 1344;
 				ret = IIO_VAL_INT_PLUS_NANO;
@@ -364,7 +284,7 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
 		}
 		break;
 	case IIO_CHAN_INFO_CALIBBIAS:
-		/* only the acceleration axis - read from cache */
+		 
 		*val = st->accel_calibbias;
 		ret = IIO_VAL_INT;
 		break;
@@ -406,19 +326,7 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
 	return ret;
 }
 
-/**
- * iio_dummy_write_raw() - data write function.
- * @indio_dev:	the struct iio_dev associated with this device instance
- * @chan:	the channel whose data is to be written
- * @val:	first element of value to set (typically INT)
- * @val2:	second element of value to set (typically MICRO)
- * @mask:	what we actually want to write as per the info_mask_*
- *		in iio_chan_spec.
- *
- * Note that all raw writes are assumed IIO_VAL_INT and info mask elements
- * are assumed to be IIO_INT_PLUS_MICRO unless the callback write_raw_get_fmt
- * in struct iio_info is provided by the driver.
- */
+ 
 static int iio_dummy_write_raw(struct iio_dev *indio_dev,
 			       struct iio_chan_spec const *chan,
 			       int val,
@@ -436,7 +344,7 @@ static int iio_dummy_write_raw(struct iio_dev *indio_dev,
 			if (chan->output == 0)
 				return -EINVAL;
 
-			/* Locking not required as writing single value */
+			 
 			mutex_lock(&st->lock);
 			st->dac_val = val;
 			mutex_unlock(&st->lock);
@@ -472,7 +380,7 @@ static int iio_dummy_write_raw(struct iio_dev *indio_dev,
 		}
 	case IIO_CHAN_INFO_CALIBSCALE:
 		mutex_lock(&st->lock);
-		/* Compare against table - hard matching here */
+		 
 		for (i = 0; i < ARRAY_SIZE(dummy_scales); i++)
 			if (val == dummy_scales[i].val &&
 			    val2 == dummy_scales[i].val2)
@@ -512,9 +420,7 @@ static int iio_dummy_write_raw(struct iio_dev *indio_dev,
 	}
 }
 
-/*
- * Device type specific information.
- */
+ 
 static const struct iio_info iio_dummy_info = {
 	.read_raw = &iio_dummy_read_raw,
 	.write_raw = &iio_dummy_write_raw,
@@ -523,16 +429,10 @@ static const struct iio_info iio_dummy_info = {
 	.write_event_config = &iio_simple_dummy_write_event_config,
 	.read_event_value = &iio_simple_dummy_read_event_value,
 	.write_event_value = &iio_simple_dummy_write_event_value,
-#endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+#endif  
 };
 
-/**
- * iio_dummy_init_device() - device instance specific init
- * @indio_dev: the iio device structure
- *
- * Most drivers have one of these to set up default values,
- * reset the device to known state etc.
- */
+ 
 static int iio_dummy_init_device(struct iio_dev *indio_dev)
 {
 	struct iio_dummy_state *st = iio_priv(indio_dev);
@@ -551,15 +451,7 @@ static int iio_dummy_init_device(struct iio_dev *indio_dev)
 	return 0;
 }
 
-/**
- * iio_dummy_probe() - device instance probe
- * @name: name of this instance.
- *
- * Arguments are bus type specific.
- * I2C: iio_dummy_probe(struct i2c_client *client,
- *                      const struct i2c_device_id *id)
- * SPI: iio_dummy_probe(struct spi_device *spi)
- */
+ 
 static struct iio_sw_device *iio_dummy_probe(const char *name)
 {
 	int ret;
@@ -568,24 +460,13 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
 	struct iio_sw_device *swd;
 	struct device *parent = NULL;
 
-	/*
-	 * With hardware: Set the parent device.
-	 * parent = &spi->dev;
-	 * parent = &client->dev;
-	 */
+	 
 
 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
 	if (!swd)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Allocate an IIO device.
-	 *
-	 * This structure contains all generic state
-	 * information about the device instance.
-	 * It also has a region (accessed by iio_priv()
-	 * for chip specific state information.
-	 */
+	 
 	indio_dev = iio_device_alloc(parent, sizeof(*st));
 	if (!indio_dev) {
 		ret = -ENOMEM;
@@ -597,40 +478,24 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
 
 	iio_dummy_init_device(indio_dev);
 
-	 /*
-	 * Make the iio_dev struct available to remove function.
-	 * Bus equivalents
-	 * i2c_set_clientdata(client, indio_dev);
-	 * spi_set_drvdata(spi, indio_dev);
-	 */
+	  
 	swd->device = indio_dev;
 
-	/*
-	 * Set the device name.
-	 *
-	 * This is typically a part number and obtained from the module
-	 * id table.
-	 * e.g. for i2c and spi:
-	 *    indio_dev->name = id->name;
-	 *    indio_dev->name = spi_get_device_id(spi)->name;
-	 */
+	 
 	indio_dev->name = kstrdup(name, GFP_KERNEL);
 	if (!indio_dev->name) {
 		ret = -ENOMEM;
 		goto error_free_device;
 	}
 
-	/* Provide description of available channels */
+	 
 	indio_dev->channels = iio_dummy_channels;
 	indio_dev->num_channels = ARRAY_SIZE(iio_dummy_channels);
 
-	/*
-	 * Provide device type specific interface functions and
-	 * constant data.
-	 */
+	 
 	indio_dev->info = &iio_dummy_info;
 
-	/* Specify that device provides sysfs type interfaces */
+	 
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
 	ret = iio_simple_dummy_events_register(indio_dev);
@@ -661,49 +526,30 @@ error_free_swd:
 	return ERR_PTR(ret);
 }
 
-/**
- * iio_dummy_remove() - device instance removal function
- * @swd: pointer to software IIO device abstraction
- *
- * Parameters follow those of iio_dummy_probe for buses.
- */
+ 
 static int iio_dummy_remove(struct iio_sw_device *swd)
 {
-	/*
-	 * Get a pointer to the device instance iio_dev structure
-	 * from the bus subsystem. E.g.
-	 * struct iio_dev *indio_dev = i2c_get_clientdata(client);
-	 * struct iio_dev *indio_dev = spi_get_drvdata(spi);
-	 */
+	 
 	struct iio_dev *indio_dev = swd->device;
 
-	/* Unregister the device */
+	 
 	iio_device_unregister(indio_dev);
 
-	/* Device specific code to power down etc */
+	 
 
-	/* Buffered capture related cleanup */
+	 
 	iio_simple_dummy_unconfigure_buffer(indio_dev);
 
 	iio_simple_dummy_events_unregister(indio_dev);
 
-	/* Free all structures */
+	 
 	kfree(indio_dev->name);
 	iio_device_free(indio_dev);
 
 	return 0;
 }
 
-/*
- * module_iio_sw_device_driver() -  device driver registration
- *
- * Varies depending on bus type of the device. As there is no device
- * here, call probe directly. For information on device registration
- * i2c:
- * Documentation/i2c/writing-clients.rst
- * spi:
- * Documentation/spi/spi-summary.rst
- */
+ 
 static const struct iio_sw_device_ops iio_dummy_device_ops = {
 	.probe = iio_dummy_probe,
 	.remove = iio_dummy_remove,

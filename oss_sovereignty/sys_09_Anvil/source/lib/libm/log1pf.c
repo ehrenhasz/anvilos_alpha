@@ -1,31 +1,22 @@
-/*****************************************************************************/
-/*****************************************************************************/
-// log1pf from musl-0.9.15
-/*****************************************************************************/
-/*****************************************************************************/
+ 
+ 
 
-/* origin: FreeBSD /usr/src/lib/msun/src/s_log1pf.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
+ 
+ 
+
+ 
+ 
 
 #include "libm.h"
 
 static const float
-ln2_hi = 6.9313812256e-01f, /* 0x3f317180 */
-ln2_lo = 9.0580006145e-06f, /* 0x3717f7d1 */
-/* |(log(1+s)-log(1-s))/s - Lg(s)| < 2**-34.24 (~[-4.95e-11, 4.97e-11]). */
-Lg1 = 0xaaaaaa.0p-24f, /* 0.66666662693 */
-Lg2 = 0xccce13.0p-25f, /* 0.40000972152 */
-Lg3 = 0x91e9ee.0p-25f, /* 0.28498786688 */
-Lg4 = 0xf89e26.0p-26f; /* 0.24279078841 */
+ln2_hi = 6.9313812256e-01f,  
+ln2_lo = 9.0580006145e-06f,  
+ 
+Lg1 = 0xaaaaaa.0p-24f,  
+Lg2 = 0xccce13.0p-25f,  
+Lg3 = 0x91e9ee.0p-25f,  
+Lg4 = 0xf89e26.0p-26f;  
 
 float log1pf(float x)
 {
@@ -36,19 +27,19 @@ float log1pf(float x)
 
 	ix = u.i;
 	k = 1;
-	if (ix < 0x3ed413d0 || ix>>31) {  /* 1+x < sqrt(2)+  */
-		if (ix >= 0xbf800000) {  /* x <= -1.0 */
+	if (ix < 0x3ed413d0 || ix>>31) {   
+		if (ix >= 0xbf800000) {   
 			if (x == -1)
-				return x/0.0f; /* log1p(-1)=+inf */
-			return (x-x)/0.0f;     /* log1p(x<-1)=NaN */
+				return x/0.0f;  
+			return (x-x)/0.0f;      
 		}
-		if (ix<<1 < 0x33800000<<1) {   /* |x| < 2**-24 */
-			/* underflow if subnormal */
+		if (ix<<1 < 0x33800000<<1) {    
+			 
 			if ((ix&0x7f800000) == 0)
 				FORCE_EVAL(x*x);
 			return x;
 		}
-		if (ix <= 0xbe95f619) { /* sqrt(2)/2- <= 1+x < sqrt(2)+ */
+		if (ix <= 0xbe95f619) {  
 			k = 0;
 			c = 0;
 			f = x;
@@ -60,13 +51,13 @@ float log1pf(float x)
 		iu = u.i;
 		iu += 0x3f800000 - 0x3f3504f3;
 		k = (int)(iu>>23) - 0x7f;
-		/* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
+		 
 		if (k < 25) {
 			c = k >= 2 ? 1-(u.f-x) : x-(u.f-1);
 			c /= u.f;
 		} else
 			c = 0;
-		/* reduce u into [sqrt(2)/2, sqrt(2)] */
+		 
 		iu = (iu&0x007fffff) + 0x3f3504f3;
 		u.i = iu;
 		f = u.f - 1;

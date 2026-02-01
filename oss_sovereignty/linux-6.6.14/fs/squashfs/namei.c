@@ -1,43 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * namei.c
- */
 
-/*
- * This file implements code to do filename lookup in directories.
- *
- * Like inodes, directories are packed into compressed metadata blocks, stored
- * in a directory table.  Directories are accessed using the start address of
- * the metablock containing the directory and the offset into the
- * decompressed block (<block, offset>).
- *
- * Directories are organised in a slightly complex way, and are not simply
- * a list of file names.  The organisation takes advantage of the
- * fact that (in most cases) the inodes of the files will be in the same
- * compressed metadata block, and therefore, can share the start block.
- * Directories are therefore organised in a two level list, a directory
- * header containing the shared start block value, and a sequence of directory
- * entries, each of which share the shared start block.  A new directory header
- * is written once/if the inode start block changes.  The directory
- * header/directory entry list is repeated as many times as necessary.
- *
- * Directories are sorted, and can contain a directory index to speed up
- * file lookup.  Directory indexes store one entry per metablock, each entry
- * storing the index/filename mapping to the first directory header
- * in each metadata block.  Directories are sorted in alphabetical order,
- * and at lookup the index is scanned linearly looking for the first filename
- * alphabetically larger than the filename being looked up.  At this point the
- * location of the metadata block the filename is in has been found.
- * The general idea of the index is ensure only one metadata block needs to be
- * decompressed to do a lookup irrespective of the length of the directory.
- * This scheme has the advantage that it doesn't require extra memory overhead
- * and doesn't require much extra storage on disk.
- */
+ 
+
+ 
 
 #include <linux/fs.h>
 #include <linux/vfs.h>
@@ -52,14 +16,7 @@
 #include "squashfs.h"
 #include "xattr.h"
 
-/*
- * Lookup name in the directory index, returning the location of the metadata
- * block containing it, and the directory index this represents.
- *
- * If we get an error reading the index then return the part of the index
- * (if any) we have managed to read - the index isn't essential, just
- * quicker.
- */
+ 
 static int get_dir_index_using_name(struct super_block *sb,
 			u64 *next_block, int *next_offset, u64 index_start,
 			int index_offset, int i_count, const char *name,
@@ -113,12 +70,7 @@ static int get_dir_index_using_name(struct super_block *sb,
 	kfree(index);
 
 out:
-	/*
-	 * Return index (f_pos) of the looked up metadata block.  Translate
-	 * from internal f_pos to external f_pos which is offset by 3 because
-	 * we invent "." and ".." entries which are not actually stored in the
-	 * directory.
-	 */
+	 
 	return length + 3;
 }
 
@@ -156,9 +108,7 @@ static struct dentry *squashfs_lookup(struct inode *dir, struct dentry *dentry,
 				squashfs_i(dir)->dir_idx_cnt, name, len);
 
 	while (length < i_size_read(dir)) {
-		/*
-		 * Read directory header.
-		 */
+		 
 		err = squashfs_read_metadata(dir->i_sb, &dirh, &block,
 				&offset, sizeof(dirh));
 		if (err < 0)
@@ -172,9 +122,7 @@ static struct dentry *squashfs_lookup(struct inode *dir, struct dentry *dentry,
 			goto data_error;
 
 		while (dir_count--) {
-			/*
-			 * Read directory entry.
-			 */
+			 
 			err = squashfs_read_metadata(dir->i_sb, dire, &block,
 					&offset, sizeof(*dire));
 			if (err < 0)
@@ -182,7 +130,7 @@ static struct dentry *squashfs_lookup(struct inode *dir, struct dentry *dentry,
 
 			size = le16_to_cpu(dire->size) + 1;
 
-			/* size should never be larger than SQUASHFS_NAME_LEN */
+			 
 			if (size > SQUASHFS_NAME_LEN)
 				goto data_error;
 

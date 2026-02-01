@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -28,15 +22,7 @@
 #define WL1271_CMD_FAST_POLL_COUNT       50
 #define WL1271_WAIT_EVENT_FAST_POLL_COUNT 20
 
-/*
- * send command to firmware
- *
- * @wl: wl struct
- * @id: command id
- * @buf: buffer containing the command, must work with dma
- * @len: length of the buffer
- * return the cmd status code on success.
- */
+ 
 static int __wlcore_cmd_send(struct wl1271 *wl, u16 id, void *buf,
 			     size_t len, size_t res_len)
 {
@@ -65,10 +51,7 @@ static int __wlcore_cmd_send(struct wl1271 *wl, u16 id, void *buf,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * TODO: we just need this because one bit is in a different
-	 * place.  Is there any better way?
-	 */
+	 
 	ret = wl->ops->trigger_cmd(wl, wl->cmd_box_addr, buf, len);
 	if (ret < 0)
 		return ret;
@@ -96,7 +79,7 @@ static int __wlcore_cmd_send(struct wl1271 *wl, u16 id, void *buf,
 			return ret;
 	}
 
-	/* read back the status code of the command */
+	 
 	if (res_len == 0)
 		res_len = sizeof(struct wl1271_cmd_header);
 
@@ -114,10 +97,7 @@ static int __wlcore_cmd_send(struct wl1271 *wl, u16 id, void *buf,
 	return status;
 }
 
-/*
- * send command to fw and return cmd status on success
- * valid_rets contains a bitmap of allowed error codes
- */
+ 
 static int wlcore_cmd_send_failsafe(struct wl1271 *wl, u16 id, void *buf,
 				    size_t len, size_t res_len,
 				    unsigned long valid_rets)
@@ -127,7 +107,7 @@ static int wlcore_cmd_send_failsafe(struct wl1271 *wl, u16 id, void *buf,
 	if (ret < 0)
 		goto fail;
 
-	/* success is always a valid status */
+	 
 	valid_rets |= BIT(CMD_STATUS_SUCCESS);
 
 	if (ret >= MAX_COMMAND_STATUS ||
@@ -142,10 +122,7 @@ fail:
 	return ret;
 }
 
-/*
- * wrapper for wlcore_cmd_send that accept only CMD_STATUS_SUCCESS
- * return 0 on success.
- */
+ 
 int wl1271_cmd_send(struct wl1271 *wl, u16 id, void *buf, size_t len,
 		    size_t res_len)
 {
@@ -157,10 +134,7 @@ int wl1271_cmd_send(struct wl1271 *wl, u16 id, void *buf, size_t len,
 }
 EXPORT_SYMBOL_GPL(wl1271_cmd_send);
 
-/*
- * Poll the mailbox event field until any of the bits in the mask is set or a
- * timeout occurs (WL1271_EVENT_TIMEOUT in msecs)
- */
+ 
 int wlcore_cmd_wait_for_event_or_timeout(struct wl1271 *wl,
 					 u32 mask, bool *timeout)
 {
@@ -196,7 +170,7 @@ int wlcore_cmd_wait_for_event_or_timeout(struct wl1271 *wl,
 		else
 			usleep_range(1000, 5000);
 
-		/* read from both event fields */
+		 
 		ret = wlcore_read(wl, wl->mbox_ptr[0], events_vector,
 				  sizeof(*events_vector), false);
 		if (ret < 0)
@@ -238,7 +212,7 @@ int wl12xx_cmd_role_enable(struct wl1271 *wl, u8 *addr, u8 role_type,
 		goto out;
 	}
 
-	/* get role id */
+	 
 	cmd->role_id = find_first_zero_bit(wl->roles_map, WL12XX_MAX_ROLES);
 	if (cmd->role_id >= WL12XX_MAX_ROLES) {
 		ret = -EBUSY;
@@ -316,26 +290,19 @@ int wl12xx_allocate_link(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 *hlid)
 
 	wl->session_ids[link] = wlcore_get_new_session_id(wl, link);
 
-	/* these bits are used by op_tx */
+	 
 	spin_lock_irqsave(&wl->wl_lock, flags);
 	__set_bit(link, wl->links_map);
 	__set_bit(link, wlvif->links_map);
 	spin_unlock_irqrestore(&wl->wl_lock, flags);
 
-	/*
-	 * take the last "freed packets" value from the current FW status.
-	 * on recovery, we might not have fw_status yet, and
-	 * tx_lnk_free_pkts will be NULL. check for it.
-	 */
+	 
 	if (wl->fw_status->counters.tx_lnk_free_pkts)
 		wl->links[link].prev_freed_pkts =
 			wl->fw_status->counters.tx_lnk_free_pkts[link];
 	wl->links[link].wlvif = wlvif;
 
-	/*
-	 * Take saved value for total freed packets from wlvif, in case this is
-	 * recovery/resume
-	 */
+	 
 	if (wlvif->bss_type != BSS_TYPE_AP_BSS)
 		wl->links[link].total_freed_pkts = wlvif->total_freed_pkts;
 
@@ -352,7 +319,7 @@ void wl12xx_free_link(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 *hlid)
 	if (*hlid == WL12XX_INVALID_LINK_ID)
 		return;
 
-	/* these bits are used by op_tx */
+	 
 	spin_lock_irqsave(&wl->wl_lock, flags);
 	__clear_bit(*hlid, wl->links_map);
 	__clear_bit(*hlid, wlvif->links_map);
@@ -363,26 +330,17 @@ void wl12xx_free_link(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 *hlid)
 	wl->links[*hlid].ba_bitmap = 0;
 	eth_zero_addr(wl->links[*hlid].addr);
 
-	/*
-	 * At this point op_tx() will not add more packets to the queues. We
-	 * can purge them.
-	 */
+	 
 	wl1271_tx_reset_link_queues(wl, *hlid);
 	wl->links[*hlid].wlvif = NULL;
 
 	if (wlvif->bss_type == BSS_TYPE_AP_BSS &&
 	    *hlid == wlvif->ap.bcast_hlid) {
 		u32 sqn_padding = WL1271_TX_SQN_POST_RECOVERY_PADDING;
-		/*
-		 * save the total freed packets in the wlvif, in case this is
-		 * recovery or suspend
-		 */
+		 
 		wlvif->total_freed_pkts = wl->links[*hlid].total_freed_pkts;
 
-		/*
-		 * increment the initial seq number on recovery to account for
-		 * transmitted packets that we haven't yet got in the FW status
-		 */
+		 
 		if (wlvif->encryption_type == KEY_GEM)
 			sqn_padding = WL1271_TX_SQN_POST_RECOVERY_PADDING_GEM;
 
@@ -456,7 +414,7 @@ static int wl12xx_cmd_role_start_dev(struct wl1271 *wl,
 	goto out_free;
 
 err_hlid:
-	/* clear links on error */
+	 
 	wl12xx_free_link(wl, wlvif, &wlvif->dev_hlid);
 
 out_free:
@@ -544,12 +502,7 @@ int wl12xx_cmd_role_start_sta(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	}
 	cmd->sta.hlid = wlvif->sta.hlid;
 	cmd->sta.session = wl->session_ids[wlvif->sta.hlid];
-	/*
-	 * We don't have the correct remote rates in this stage.  The
-	 * rates will be reconfigured later, after association, if the
-	 * firmware supports ACX_PEER_CAP.  Otherwise, there's nothing
-	 * we can do, so use all supported_rates here.
-	 */
+	 
 	cmd->sta.remote_rates = cpu_to_le32(supported_rates);
 
 	wl1271_debug(DEBUG_CMD, "role start: roleid=%d, hlid=%d, session=%d "
@@ -567,7 +520,7 @@ int wl12xx_cmd_role_start_sta(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	goto out_free;
 
 err_hlid:
-	/* clear links on error. */
+	 
 	wl12xx_free_link(wl, wlvif, &wlvif->sta.hlid);
 
 out_free:
@@ -577,7 +530,7 @@ out:
 	return ret;
 }
 
-/* use this function to stop ibss as well */
+ 
 int wl12xx_cmd_role_stop_sta(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
 	struct wl12xx_cmd_role_stop *cmd;
@@ -623,9 +576,9 @@ int wl12xx_cmd_role_start_ap(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 
 	wl1271_debug(DEBUG_CMD, "cmd role start ap %d", wlvif->role_id);
 
-	/* If MESH --> ssid_len is always 0 */
+	 
 	if (!ieee80211_vif_is_mesh(vif)) {
-		/* trying to use hidden SSID with an old hostapd version */
+		 
 		if (wlvif->ssid_len == 0 && !bss_conf->hidden_ssid) {
 			wl1271_error("got a null SSID from beacon/bss");
 			ret = -EINVAL;
@@ -647,7 +600,7 @@ int wl12xx_cmd_role_start_ap(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	if (ret < 0)
 		goto out_free_global;
 
-	/* use the previous security seq, if this is a recovery/resume */
+	 
 	wl->links[wlvif->ap.bcast_hlid].total_freed_pkts =
 						wlvif->total_freed_pkts;
 
@@ -662,14 +615,14 @@ int wl12xx_cmd_role_start_ap(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	cmd->ap.beacon_interval = cpu_to_le16(wlvif->beacon_int);
 	cmd->ap.dtim_interval = bss_conf->dtim_period;
 	cmd->ap.beacon_expiry = WL1271_AP_DEF_BEACON_EXP;
-	/* FIXME: Change when adding DFS */
-	cmd->ap.reset_tsf = 1;  /* By default reset AP TSF */
+	 
+	cmd->ap.reset_tsf = 1;   
 	cmd->ap.wmm = wlvif->wmm_enabled;
 	cmd->channel = wlvif->channel;
 	cmd->channel_type = wlcore_get_native_channel_type(wlvif->channel_type);
 
 	if (!bss_conf->hidden_ssid) {
-		/* take the SSID from the beacon for backward compatibility */
+		 
 		cmd->ap.ssid_type = WL12XX_SSID_TYPE_PUBLIC;
 		cmd->ap.ssid_len = wlvif->ssid_len;
 		memcpy(cmd->ap.ssid, wlvif->ssid, wlvif->ssid_len);
@@ -807,7 +760,7 @@ int wl12xx_cmd_role_start_ibss(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	goto out_free;
 
 err_hlid:
-	/* clear links on error. */
+	 
 	wl12xx_free_link(wl, wlvif, &wlvif->sta.hlid);
 
 out_free:
@@ -818,14 +771,7 @@ out:
 }
 
 
-/**
- * wl1271_cmd_test - send test command to firmware
- *
- * @wl: wl struct
- * @buf: buffer containing the command, with all headers, must work with dma
- * @buf_len: length of the buffer
- * @answer: is answer needed
- */
+ 
 int wl1271_cmd_test(struct wl1271 *wl, void *buf, size_t buf_len, u8 answer)
 {
 	int ret;
@@ -847,15 +793,7 @@ int wl1271_cmd_test(struct wl1271 *wl, void *buf, size_t buf_len, u8 answer)
 }
 EXPORT_SYMBOL_GPL(wl1271_cmd_test);
 
-/**
- * wl1271_cmd_interrogate - read acx from firmware
- *
- * @wl: wl struct
- * @id: acx id
- * @buf: buffer for the response, including all headers, must work with dma
- * @cmd_len: length of command
- * @res_len: length of payload
- */
+ 
 int wl1271_cmd_interrogate(struct wl1271 *wl, u16 id, void *buf,
 			   size_t cmd_len, size_t res_len)
 {
@@ -866,7 +804,7 @@ int wl1271_cmd_interrogate(struct wl1271 *wl, u16 id, void *buf,
 
 	acx->id = cpu_to_le16(id);
 
-	/* response payload length, does not include any headers */
+	 
 	acx->len = cpu_to_le16(res_len - sizeof(*acx));
 
 	ret = wl1271_cmd_send(wl, CMD_INTERROGATE, acx, cmd_len, res_len);
@@ -876,16 +814,7 @@ int wl1271_cmd_interrogate(struct wl1271 *wl, u16 id, void *buf,
 	return ret;
 }
 
-/**
- * wlcore_cmd_configure_failsafe - write acx value to firmware
- *
- * @wl: wl struct
- * @id: acx id
- * @buf: buffer containing acx, including all headers, must work with dma
- * @len: length of buf
- * @valid_rets: bitmap of valid cmd status codes (i.e. return values).
- * return the cmd status on success.
- */
+ 
 int wlcore_cmd_configure_failsafe(struct wl1271 *wl, u16 id, void *buf,
 				  size_t len, unsigned long valid_rets)
 {
@@ -899,7 +828,7 @@ int wlcore_cmd_configure_failsafe(struct wl1271 *wl, u16 id, void *buf,
 
 	acx->id = cpu_to_le16(id);
 
-	/* payload length, does not include any headers */
+	 
 	acx->len = cpu_to_le16(len - sizeof(*acx));
 
 	ret = wlcore_cmd_send_failsafe(wl, CMD_CONFIGURE, acx, len, 0,
@@ -912,10 +841,7 @@ int wlcore_cmd_configure_failsafe(struct wl1271 *wl, u16 id, void *buf,
 	return ret;
 }
 
-/*
- * wrapper for wlcore_cmd_configure that accepts only success status.
- * return 0 on success
- */
+ 
 int wl1271_cmd_configure(struct wl1271 *wl, u16 id, void *buf, size_t len)
 {
 	int ret = wlcore_cmd_configure_failsafe(wl, id, buf, len, 0);
@@ -940,7 +866,7 @@ int wl1271_cmd_data_path(struct wl1271 *wl, bool enable)
 		goto out;
 	}
 
-	/* the channel here is only used for calibration, so hardcoded to 1 */
+	 
 	cmd->channel = 1;
 
 	if (enable) {
@@ -1026,7 +952,7 @@ int wl1271_cmd_template_set(struct wl1271 *wl, u8 role_id,
 		goto out;
 	}
 
-	/* during initialization wlvif is NULL */
+	 
 	cmd->role_id = role_id;
 	cmd->len = cpu_to_le16(buf_len);
 	cmd->template_type = template_id;
@@ -1231,11 +1157,11 @@ int wl1271_cmd_build_arp_rsp(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 
 	tmpl = skb_put_zero(skb, sizeof(*tmpl));
 
-	/* llc layer */
+	 
 	memcpy(tmpl->llc_hdr, rfc1042_header, sizeof(rfc1042_header));
 	tmpl->llc_type = cpu_to_be16(ETH_P_ARP);
 
-	/* arp header */
+	 
 	arp_hdr = &tmpl->arp_hdr;
 	arp_hdr->ar_hrd = cpu_to_be16(ARPHRD_ETHER);
 	arp_hdr->ar_pro = cpu_to_be16(ETH_P_IP);
@@ -1243,11 +1169,11 @@ int wl1271_cmd_build_arp_rsp(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	arp_hdr->ar_pln = 4;
 	arp_hdr->ar_op = cpu_to_be16(ARPOP_REPLY);
 
-	/* arp payload */
+	 
 	memcpy(tmpl->sender_hw, vif->addr, ETH_ALEN);
 	tmpl->sender_ip = wlvif->ip_addr;
 
-	/* encryption space */
+	 
 	switch (wlvif->encryption_type) {
 	case KEY_TKIP:
 		if (wl->quirks & WLCORE_QUIRK_TKIP_HEADER_SPACE)
@@ -1273,11 +1199,11 @@ int wl1271_cmd_build_arp_rsp(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 		memset(space, 0, extra);
 	}
 
-	/* QoS header - BE */
+	 
 	if (wlvif->sta.qos)
 		memset(skb_push(skb, sizeof(__le16)), 0, sizeof(__le16));
 
-	/* mac80211 header */
+	 
 	hdr = skb_push(skb, sizeof(*hdr));
 	memset(hdr, 0, sizeof(*hdr));
 	fc = IEEE80211_FTYPE_DATA | IEEE80211_FCTL_TODS;
@@ -1316,7 +1242,7 @@ int wl1271_build_qos_null_data(struct wl1271 *wl, struct ieee80211_vif *vif)
 					     IEEE80211_STYPE_QOS_NULLFUNC |
 					     IEEE80211_FCTL_TODS);
 
-	/* FIXME: not sure what priority to use here */
+	 
 	template.qos_ctrl = cpu_to_le16(0);
 
 	return wl1271_cmd_template_set(wl, wlvif->role_id,
@@ -1364,7 +1290,7 @@ int wl1271_cmd_set_sta_key(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	struct wl1271_cmd_set_keys *cmd;
 	int ret = 0;
 
-	/* hlid might have already been deleted */
+	 
 	if (wlvif->sta.hlid == WL12XX_INVALID_LINK_ID)
 		return 0;
 
@@ -1393,12 +1319,7 @@ int wl1271_cmd_set_sta_key(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	cmd->key_id = id;
 
 	if (key_type == KEY_TKIP) {
-		/*
-		 * We get the key in the following form:
-		 * TKIP (16 bytes) - TX MIC (8 bytes) - RX MIC (8 bytes)
-		 * but the target is expecting:
-		 * TKIP - RX MIC - TX MIC
-		 */
+		 
 		memcpy(cmd->key, key, 16);
 		memcpy(cmd->key + 16, key + 24, 8);
 		memcpy(cmd->key + 24, key + 16, 8);
@@ -1421,10 +1342,7 @@ out:
 	return ret;
 }
 
-/*
- * TODO: merge with sta/ibss into 1 set_key function.
- * note there are slight diffs
- */
+ 
 int wl1271_cmd_set_ap_key(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 			  u16 action, u8 id, u8 key_type,
 			  u8 key_size, const u8 *key, u8 hlid, u32 tx_seq_32,
@@ -1463,12 +1381,7 @@ int wl1271_cmd_set_ap_key(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	cmd->ac_seq_num32[0] = cpu_to_le32(tx_seq_32);
 
 	if (key_type == KEY_TKIP) {
-		/*
-		 * We get the key in the following form:
-		 * TKIP (16 bytes) - TX MIC (8 bytes) - RX MIC (8 bytes)
-		 * but the target is expecting:
-		 * TKIP - RX MIC - TX MIC
-		 */
+		 
 		memcpy(cmd->key, key, 16);
 		memcpy(cmd->key + 16, key + 24, 8);
 		memcpy(cmd->key + 24, key + 16, 8);
@@ -1506,7 +1419,7 @@ int wl12xx_cmd_set_peer_state(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	cmd->hlid = hlid;
 	cmd->state = WL1271_CMD_STA_STATE_CONNECTED;
 
-	/* wmm param is valid only for station role */
+	 
 	if (wlvif->bss_type == BSS_TYPE_STA_BSS)
 		cmd->wmm = wlvif->wmm_enabled;
 
@@ -1605,7 +1518,7 @@ int wl12xx_cmd_remove_peer(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	}
 
 	cmd->hlid = hlid;
-	/* We never send a deauth, mac80211 is in charge of this */
+	 
 	cmd->reason_opcode = 0;
 	cmd->send_deauth_flag = 0;
 	cmd->role_id = wlvif->role_id;
@@ -1620,11 +1533,7 @@ int wl12xx_cmd_remove_peer(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 				      WLCORE_EVENT_PEER_REMOVE_COMPLETE,
 				      &timeout);
 
-	/*
-	 * We are ok with a timeout here. The event is sometimes not sent
-	 * due to a firmware bug. In case of another error (like SDIO timeout)
-	 * queue a recovery.
-	 */
+	 
 	if (ret)
 		wl12xx_queue_recovery_work(wl);
 
@@ -1637,32 +1546,29 @@ out:
 
 static int wlcore_get_reg_conf_ch_idx(enum nl80211_band band, u16 ch)
 {
-	/*
-	 * map the given band/channel to the respective predefined
-	 * bit expected by the fw
-	 */
+	 
 	switch (band) {
 	case NL80211_BAND_2GHZ:
-		/* channels 1..14 are mapped to 0..13 */
+		 
 		if (ch >= 1 && ch <= 14)
 			return ch - 1;
 		break;
 	case NL80211_BAND_5GHZ:
 		switch (ch) {
 		case 8 ... 16:
-			/* channels 8,12,16 are mapped to 18,19,20 */
+			 
 			return 18 + (ch-8)/4;
 		case 34 ... 48:
-			/* channels 34,36..48 are mapped to 21..28 */
+			 
 			return 21 + (ch-34)/2;
 		case 52 ... 64:
-			/* channels 52,56..64 are mapped to 29..32 */
+			 
 			return 29 + (ch-52)/4;
 		case 100 ... 140:
-			/* channels 100,104..140 are mapped to 33..43 */
+			 
 			return 33 + (ch-100)/4;
 		case 149 ... 165:
-			/* channels 149,153..165 are mapped to 44..48 */
+			 
 			return 44 + (ch-149)/4;
 		default:
 			break;
@@ -1958,11 +1864,7 @@ int wl12xx_croc(struct wl1271 *wl, u8 role_id)
 
 	__clear_bit(role_id, wl->roc_map);
 
-	/*
-	 * Rearm the tx watchdog when removing the last ROC. This prevents
-	 * recoveries due to just finished ROCs - when Tx hasn't yet had
-	 * a chance to get out.
-	 */
+	 
 	if (find_first_bit(wl->roc_map, WL12XX_MAX_ROLES) >= WL12XX_MAX_ROLES)
 		wl12xx_rearm_tx_watchdog_locked(wl);
 out:
@@ -1997,7 +1899,7 @@ out:
 	return ret;
 }
 
-/* start dev role and roc on its channel */
+ 
 int wl12xx_start_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		     enum nl80211_band band, int channel)
 {
@@ -2007,7 +1909,7 @@ int wl12xx_start_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		      wlvif->bss_type == BSS_TYPE_IBSS)))
 		return -EINVAL;
 
-	/* the dev role is already started for p2p mgmt interfaces */
+	 
 	if (!wlcore_is_p2p_mgmt(wlvif)) {
 		ret = wl12xx_cmd_role_enable(wl,
 					     wl12xx_wlvif_to_vif(wlvif)->addr,
@@ -2036,7 +1938,7 @@ out:
 	return ret;
 }
 
-/* croc dev hlid, and stop the role */
+ 
 int wl12xx_stop_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
 	int ret;
@@ -2045,7 +1947,7 @@ int wl12xx_stop_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 		      wlvif->bss_type == BSS_TYPE_IBSS)))
 		return -EINVAL;
 
-	/* flush all pending packets */
+	 
 	ret = wlcore_tx_work_locked(wl);
 	if (ret < 0)
 		goto out;

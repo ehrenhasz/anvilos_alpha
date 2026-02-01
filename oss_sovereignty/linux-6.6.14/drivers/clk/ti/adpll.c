@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -11,7 +11,7 @@
 #include <linux/of_device.h>
 #include <linux/string.h>
 
-#define ADPLL_PLLSS_MMR_LOCK_OFFSET	0x00	/* Managed by MPPULL */
+#define ADPLL_PLLSS_MMR_LOCK_OFFSET	0x00	 
 #define ADPLL_PLLSS_MMR_LOCK_ENABLED	0x1f125B64
 #define ADPLL_PLLSS_MMR_UNLOCK_MAGIC	0x1eda4c3d
 
@@ -27,7 +27,7 @@
 #define ADPLL_CLKCTRL_CLKDCOLDOEN	29
 #define ADPLL_CLKCTRL_IDLE		23
 #define ADPLL_CLKCTRL_CLKOUTEN		20
-#define ADPLL_CLKINPHIFSEL_ADPLL_S	19	/* REVISIT: which bit? */
+#define ADPLL_CLKINPHIFSEL_ADPLL_S	19	 
 #define ADPLL_CLKCTRL_CLKOUTLDOEN_ADPLL_LJ 19
 #define ADPLL_CLKCTRL_ULOWCLKEN		18
 #define ADPLL_CLKCTRL_CLKDCOLDOPWDNZ	17
@@ -79,12 +79,12 @@
 #define ADPLL_STATUS_PREPARED_MASK	(BIT(ADPLL_STATUS_PHASELOCK) | \
 					 BIT(ADPLL_STATUS_FREQLOCK))
 
-#define ADPLL_M3DIV_OFFSET		0x28	/* Only on MPUPLL */
+#define ADPLL_M3DIV_OFFSET		0x28	 
 #define ADPLL_M3DIV_M3			0
 #define ADPLL_M3DIV_M3_WIDTH		5
 #define ADPLL_M3DIV_M3_MASK		0x1f
 
-#define ADPLL_RAMPCTRL_OFFSET		0x2c	/* Only on MPUPLL */
+#define ADPLL_RAMPCTRL_OFFSET		0x2c	 
 #define ADPLL_RAMPCTRL_CLKRAMPLEVEL	19
 #define ADPLL_RAMPCTRL_CLKRAMPRATE	16
 #define ADPLL_RAMPCTRL_RELOCK_RAMP_EN	0
@@ -162,7 +162,7 @@ struct ti_adpll_data {
 	unsigned long pa;
 	void __iomem *iobase;
 	void __iomem *regs;
-	spinlock_t lock;	/* For ADPLL shared register access */
+	spinlock_t lock;	 
 	const char *parent_names[MAX_ADPLL_INPUTS];
 	struct clk *parent_clocks[MAX_ADPLL_INPUTS];
 	struct ti_adpll_clock *clocks;
@@ -192,7 +192,7 @@ static const char *ti_adpll_clk_get_name(struct ti_adpll_data *d,
 	return name;
 }
 
-#define ADPLL_MAX_CON_ID	16	/* See MAX_CON_ID */
+#define ADPLL_MAX_CON_ID	16	 
 
 static int ti_adpll_setup_clock(struct ti_adpll_data *d, struct clk *clock,
 				int index, int output_index, const char *name,
@@ -205,7 +205,7 @@ static int ti_adpll_setup_clock(struct ti_adpll_data *d, struct clk *clock,
 	d->clocks[index].clk = clock;
 	d->clocks[index].unregister = unregister;
 
-	/* Separate con_id in format "pll040dcoclkldo" to fit MAX_CON_ID */
+	 
 	postfix = strrchr(name, '.');
 	if (postfix && strlen(postfix) > 1) {
 		if (strlen(postfix) > ADPLL_MAX_CON_ID)
@@ -375,11 +375,7 @@ static bool ti_adpll_clock_is_bypass(struct ti_adpll_data *d)
 	return v & BIT(ADPLL_STATUS_BYPASS);
 }
 
-/*
- * Locked and bypass are not actually mutually exclusive:  if you only care
- * about the DCO clock and not CLKOUT you can clear M2PWDNZ before enabling
- * the PLL, resulting in status (FREQLOCK | PHASELOCK | BYPASS) after lock.
- */
+ 
 static bool ti_adpll_is_locked(struct ti_adpll_data *d)
 {
 	u32 v = readl_relaxed(d->regs + ADPLL_STATUS_OFFSET);
@@ -428,10 +424,7 @@ static int ti_adpll_is_prepared(struct clk_hw *hw)
 	return ti_adpll_is_locked(d);
 }
 
-/*
- * Note that the DCO clock is never subject to bypass: if the PLL is off,
- * dcoclk is low.
- */
+ 
 static unsigned long ti_adpll_recalc_rate(struct clk_hw *hw,
 					  unsigned long parent_rate)
 {
@@ -465,7 +458,7 @@ static unsigned long ti_adpll_recalc_rate(struct clk_hw *hw,
 	return rate;
 }
 
-/* PLL parent is always clkinp, bypass only affects the children */
+ 
 static u8 ti_adpll_get_parent(struct clk_hw *hw)
 {
 	return 0;
@@ -513,7 +506,7 @@ static int ti_adpll_init_dco(struct ti_adpll_data *d)
 	else
 		width = 4;
 
-	/* Internal input clock divider N2 */
+	 
 	err = ti_adpll_init_divider(d, TI_ADPLL_N2, -ENODEV, "n2",
 				    d->parent_clocks[TI_ADPLL_CLKINP],
 				    d->regs + ADPLL_MN2DIV_OFFSET,
@@ -558,7 +551,7 @@ static int ti_adpll_clkout_is_enabled(struct clk_hw *hw)
 	return clk_gate_ops.is_enabled(gate_hw);
 }
 
-/* Setting PLL bypass puts clkout and clkoutx2 into bypass */
+ 
 static u8 ti_adpll_clkout_get_parent(struct clk_hw *hw)
 {
 	struct ti_adpll_clkout_data *co = to_clkout(hw);
@@ -635,7 +628,7 @@ static int ti_adpll_init_children_adpll_s(struct ti_adpll_data *d)
 	if (!d->c->is_type_s)
 		return 0;
 
-	/* Internal mux, sources from divider N2 or clkinpulow */
+	 
 	err = ti_adpll_init_mux(d, TI_ADPLL_BYPASS, "bypass",
 				d->clocks[TI_ADPLL_N2].clk,
 				d->parent_clocks[TI_ADPLL_CLKINPULOW],
@@ -644,7 +637,7 @@ static int ti_adpll_init_children_adpll_s(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Internal divider M2, sources DCO */
+	 
 	err = ti_adpll_init_divider(d, TI_ADPLL_M2, -ENODEV, "m2",
 				    d->clocks[TI_ADPLL_DCO].clk,
 				    d->regs + ADPLL_M2NDIV_OFFSET,
@@ -654,14 +647,14 @@ static int ti_adpll_init_children_adpll_s(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Internal fixed divider, after M2 before clkout */
+	 
 	err = ti_adpll_init_fixed_factor(d, TI_ADPLL_DIV2, "div2",
 					 d->clocks[TI_ADPLL_M2].clk,
 					 1, 2);
 	if (err)
 		return err;
 
-	/* Output clkout with a mux and gate, sources from div2 or bypass */
+	 
 	err = ti_adpll_init_clkout(d, TI_ADPLL_CLKOUT, TI_ADPLL_S_CLKOUT,
 				   ADPLL_CLKCTRL_CLKOUTEN, "clkout",
 				   d->clocks[TI_ADPLL_DIV2].clk,
@@ -669,14 +662,14 @@ static int ti_adpll_init_children_adpll_s(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Output clkoutx2 with a mux and gate, sources from M2 or bypass */
+	 
 	err = ti_adpll_init_clkout(d, TI_ADPLL_CLKOUT2, TI_ADPLL_S_CLKOUTX2, 0,
 				   "clkout2", d->clocks[TI_ADPLL_M2].clk,
 				   d->clocks[TI_ADPLL_BYPASS].clk);
 	if (err)
 		return err;
 
-	/* Internal mux, sources from DCO and clkinphif */
+	 
 	if (d->parent_clocks[TI_ADPLL_CLKINPHIF]) {
 		err = ti_adpll_init_mux(d, TI_ADPLL_HIF, "hif",
 					d->clocks[TI_ADPLL_DCO].clk,
@@ -687,7 +680,7 @@ static int ti_adpll_init_children_adpll_s(struct ti_adpll_data *d)
 			return err;
 	}
 
-	/* Output clkouthif with a divider M3, sources from hif */
+	 
 	err = ti_adpll_init_divider(d, TI_ADPLL_M3, TI_ADPLL_S_CLKOUTHIF, "m3",
 				    d->clocks[TI_ADPLL_HIF].clk,
 				    d->regs + ADPLL_M3DIV_OFFSET,
@@ -697,7 +690,7 @@ static int ti_adpll_init_children_adpll_s(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Output clock dcoclkldo is the DCO */
+	 
 
 	return 0;
 }
@@ -709,7 +702,7 @@ static int ti_adpll_init_children_adpll_lj(struct ti_adpll_data *d)
 	if (d->c->is_type_s)
 		return 0;
 
-	/* Output clkdcoldo, gated output of DCO */
+	 
 	err = ti_adpll_init_gate(d, TI_ADPLL_DCO_GATE, TI_ADPLL_LJ_CLKDCOLDO,
 				 "clkdcoldo", d->clocks[TI_ADPLL_DCO].clk,
 				 d->regs + ADPLL_CLKCTRL_OFFSET,
@@ -717,7 +710,7 @@ static int ti_adpll_init_children_adpll_lj(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Internal divider M2, sources from DCO */
+	 
 	err = ti_adpll_init_divider(d, TI_ADPLL_M2, -ENODEV,
 				    "m2", d->clocks[TI_ADPLL_DCO].clk,
 				    d->regs + ADPLL_M2NDIV_OFFSET,
@@ -727,7 +720,7 @@ static int ti_adpll_init_children_adpll_lj(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Output clkoutldo, gated output of M2 */
+	 
 	err = ti_adpll_init_gate(d, TI_ADPLL_M2_GATE, TI_ADPLL_LJ_CLKOUTLDO,
 				 "clkoutldo", d->clocks[TI_ADPLL_M2].clk,
 				 d->regs + ADPLL_CLKCTRL_OFFSET,
@@ -736,7 +729,7 @@ static int ti_adpll_init_children_adpll_lj(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Internal mux, sources from divider N2 or clkinpulow */
+	 
 	err = ti_adpll_init_mux(d, TI_ADPLL_BYPASS, "bypass",
 				d->clocks[TI_ADPLL_N2].clk,
 				d->parent_clocks[TI_ADPLL_CLKINPULOW],
@@ -745,7 +738,7 @@ static int ti_adpll_init_children_adpll_lj(struct ti_adpll_data *d)
 	if (err)
 		return err;
 
-	/* Output clkout, sources M2 or bypass */
+	 
 	err = ti_adpll_init_clkout(d, TI_ADPLL_CLKOUT, TI_ADPLL_S_CLKOUT,
 				   ADPLL_CLKCTRL_CLKOUTEN, "clkout",
 				   d->clocks[TI_ADPLL_M2].clk,
@@ -772,7 +765,7 @@ static void ti_adpll_free_resources(struct ti_adpll_data *d)
 	}
 }
 
-/* MPU PLL manages the lock register for all PLLs */
+ 
 static void ti_adpll_unlock_all(void __iomem *reg)
 {
 	u32 v;

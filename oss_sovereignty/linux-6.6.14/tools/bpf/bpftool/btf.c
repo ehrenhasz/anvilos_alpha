@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Facebook */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -896,32 +896,32 @@ show_btf_json(struct bpf_btf_info *info, int fd,
 	struct hashmap_entry *entry;
 	const char *name = u64_to_ptr(info->name);
 
-	jsonw_start_object(json_wtr);	/* btf object */
+	jsonw_start_object(json_wtr);	 
 	jsonw_uint_field(json_wtr, "id", info->id);
 	jsonw_uint_field(json_wtr, "size", info->btf_size);
 
 	jsonw_name(json_wtr, "prog_ids");
-	jsonw_start_array(json_wtr);	/* prog_ids */
+	jsonw_start_array(json_wtr);	 
 	hashmap__for_each_key_entry(btf_prog_table, entry, info->id) {
 		jsonw_uint(json_wtr, entry->value);
 	}
-	jsonw_end_array(json_wtr);	/* prog_ids */
+	jsonw_end_array(json_wtr);	 
 
 	jsonw_name(json_wtr, "map_ids");
-	jsonw_start_array(json_wtr);	/* map_ids */
+	jsonw_start_array(json_wtr);	 
 	hashmap__for_each_key_entry(btf_map_table, entry, info->id) {
 		jsonw_uint(json_wtr, entry->value);
 	}
-	jsonw_end_array(json_wtr);	/* map_ids */
+	jsonw_end_array(json_wtr);	 
 
-	emit_obj_refs_json(refs_table, info->id, json_wtr); /* pids */
+	emit_obj_refs_json(refs_table, info->id, json_wtr);  
 
 	jsonw_bool_field(json_wtr, "kernel", info->kernel_btf);
 
 	if (name && name[0])
 		jsonw_string_field(json_wtr, "name", name);
 
-	jsonw_end_object(json_wtr);	/* btf object */
+	jsonw_end_object(json_wtr);	 
 }
 
 static int
@@ -939,7 +939,7 @@ show_btf(int fd, struct hashmap *btf_prog_table,
 		p_err("can't get BTF object info: %s", strerror(errno));
 		return -1;
 	}
-	/* if kernel support emitting BTF object name, pass name pointer */
+	 
 	if (info.name_len) {
 		memset(&info, 0, sizeof(info));
 		info.name_len = sizeof(name);
@@ -1007,7 +1007,7 @@ static int do_show(int argc, char **argv)
 	}
 
 	if (json_output)
-		jsonw_start_array(json_wtr);	/* root array */
+		jsonw_start_array(json_wtr);	 
 
 	while (true) {
 		err = bpf_btf_get_next_id(id, &id);
@@ -1040,7 +1040,7 @@ static int do_show(int argc, char **argv)
 	}
 
 	if (json_output)
-		jsonw_end_array(json_wtr);	/* root array */
+		jsonw_end_array(json_wtr);	 
 
 exit_free:
 	hashmap__free(btf_prog_table);

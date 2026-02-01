@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Afatech AF9013 demodulator driver
- *
- * Copyright (C) 2007 Antti Palosaari <crope@iki.fi>
- * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
- *
- * Thanks to Afatech who kindly provided information.
- */
+
+ 
 
 #include "af9013_priv.h"
 
@@ -26,7 +19,7 @@ struct af9013_state {
 
 	u32 bandwidth_hz;
 	enum fe_status fe_status;
-	/* RF and IF AGC limits used for signal strength calc */
+	 
 	u8 strength_en, rf_agc_50, rf_agc_80, if_agc_50, if_agc_80;
 	unsigned long set_frontend_jiffies;
 	unsigned long read_status_jiffies;
@@ -49,10 +42,7 @@ static int af9013_set_gpio(struct af9013_state *state, u8 gpio, u8 gpioval)
 
 	dev_dbg(&client->dev, "gpio %u, gpioval %02x\n", gpio, gpioval);
 
-	/*
-	 * GPIO0 & GPIO1 0xd735
-	 * GPIO2 & GPIO3 0xd736
-	 */
+	 
 
 	switch (gpio) {
 	case 0:
@@ -115,14 +105,14 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 	dev_dbg(&client->dev, "frequency %u, bandwidth_hz %u\n",
 		c->frequency, c->bandwidth_hz);
 
-	/* program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params) {
 		ret = fe->ops.tuner_ops.set_params(fe);
 		if (ret)
 			goto err;
 	}
 
-	/* program CFOE coefficients */
+	 
 	if (c->bandwidth_hz != state->bandwidth_hz) {
 		for (i = 0; i < ARRAY_SIZE(coeff_lut); i++) {
 			if (coeff_lut[i].clock == state->clk &&
@@ -131,7 +121,7 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 			}
 		}
 
-		/* Return an error if can't find bandwidth or the right clock */
+		 
 		if (i == ARRAY_SIZE(coeff_lut)) {
 			ret = -EINVAL;
 			goto err;
@@ -143,9 +133,9 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* program frequency control */
+	 
 	if (c->bandwidth_hz != state->bandwidth_hz || state->first_tune) {
-		/* get used IF frequency */
+		 
 		if (fe->ops.tuner_ops.get_if_frequency) {
 			ret = fe->ops.tuner_ops.get_if_frequency(fe,
 								 &if_frequency);
@@ -194,27 +184,27 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* clear TPS lock flag */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd330, 0x08, 0x08);
 	if (ret)
 		goto err;
 
-	/* clear MPEG2 lock flag */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd507, 0x40, 0x00);
 	if (ret)
 		goto err;
 
-	/* empty channel function */
+	 
 	ret = regmap_update_bits(state->regmap, 0x9bfe, 0x01, 0x00);
 	if (ret)
 		goto err;
 
-	/* empty DVB-T channel function */
+	 
 	ret = regmap_update_bits(state->regmap, 0x9bc2, 0x01, 0x00);
 	if (ret)
 		goto err;
 
-	/* transmission parameters */
+	 
 	auto_mode = false;
 	memset(buf, 0, 3);
 
@@ -289,7 +279,7 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 		auto_mode = true;
 	}
 
-	/* Use HP. How and which case we can switch to LP? */
+	 
 	buf[1] |= (1 << 4);
 
 	switch (c->code_rate_HP) {
@@ -360,14 +350,14 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 		goto err;
 
 	if (auto_mode) {
-		/* clear easy mode flag */
+		 
 		ret = regmap_write(state->regmap, 0xaefd, 0x00);
 		if (ret)
 			goto err;
 
 		dev_dbg(&client->dev, "auto params\n");
 	} else {
-		/* set easy mode flag */
+		 
 		ret = regmap_write(state->regmap, 0xaefd, 0x01);
 		if (ret)
 			goto err;
@@ -379,7 +369,7 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 		dev_dbg(&client->dev, "manual params\n");
 	}
 
-	/* Reset FSM */
+	 
 	ret = regmap_write(state->regmap, 0xffff, 0x00);
 	if (ret)
 		goto err;
@@ -523,15 +513,12 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 	dev_dbg(&client->dev, "\n");
 
-	/*
-	 * Return status from the cache if it is younger than 2000ms with the
-	 * exception of last tune is done during 4000ms.
-	 */
+	 
 	if (time_is_after_jiffies(state->read_status_jiffies + msecs_to_jiffies(2000)) &&
 	    time_is_before_jiffies(state->set_frontend_jiffies + msecs_to_jiffies(4000))) {
 		*status = state->fe_status;
 	} else {
-		/* MPEG2 lock */
+		 
 		ret = regmap_read(state->regmap, 0xd507, &utmp);
 		if (ret)
 			goto err;
@@ -540,7 +527,7 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			utmp1 = FE_HAS_SIGNAL | FE_HAS_CARRIER |
 				FE_HAS_VITERBI | FE_HAS_SYNC | FE_HAS_LOCK;
 		} else {
-			/* TPS lock */
+			 
 			ret = regmap_read(state->regmap, 0xd330, &utmp);
 			if (ret)
 				goto err;
@@ -560,16 +547,16 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		*status = utmp1;
 	}
 
-	/* Signal strength */
+	 
 	switch (state->strength_en) {
 	case 0:
-		/* Check if we support signal strength */
+		 
 		ret = regmap_read(state->regmap, 0x9bee, &utmp);
 		if (ret)
 			goto err;
 
 		if ((utmp >> 0) & 0x01) {
-			/* Read agc values for signal strength estimation */
+			 
 			ret = regmap_read(state->regmap, 0x9bbd, &utmp1);
 			if (ret)
 				goto err;
@@ -593,7 +580,7 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 			state->strength_en = 1;
 		} else {
-			/* Signal strength is not supported */
+			 
 			state->strength_en = 2;
 			break;
 		}
@@ -602,15 +589,12 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		if (time_is_after_jiffies(state->strength_jiffies + msecs_to_jiffies(2000)))
 			break;
 
-		/* Read value */
+		 
 		ret = regmap_bulk_read(state->regmap, 0xd07c, buf, 2);
 		if (ret)
 			goto err;
 
-		/*
-		 * Construct line equation from tuner dependent -80/-50 dBm agc
-		 * limits and use it to map current agc value to dBm estimate
-		 */
+		 
 		#define agc_gain (buf[0] + buf[1])
 		#define agc_gain_50dbm (state->rf_agc_50 + state->if_agc_50)
 		#define agc_gain_80dbm (state->rf_agc_80 + state->if_agc_80)
@@ -622,7 +606,7 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			stmp1, agc_gain, agc_gain_50dbm, agc_gain_80dbm);
 
 		state->strength_jiffies = jiffies;
-		/* Convert [-90, -30] dBm to [0x0000, 0xffff] for dvbv3 */
+		 
 		utmp1 = clamp(stmp1 + 90000, 0, 60000);
 		state->dvbv3_strength = div_u64((u64)utmp1 * 0xffff, 60000);
 
@@ -634,13 +618,13 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		break;
 	}
 
-	/* CNR */
+	 
 	switch (state->fe_status & FE_HAS_VITERBI) {
 	case FE_HAS_VITERBI:
 		if (time_is_after_jiffies(state->cnr_jiffies + msecs_to_jiffies(2000)))
 			break;
 
-		/* Check if cnr ready */
+		 
 		ret = regmap_read(state->regmap, 0xd2e1, &utmp);
 		if (ret)
 			goto err;
@@ -650,47 +634,35 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			break;
 		}
 
-		/* Read value */
+		 
 		ret = regmap_bulk_read(state->regmap, 0xd2e3, buf, 3);
 		if (ret)
 			goto err;
 
 		utmp1 = buf[2] << 16 | buf[1] << 8 | buf[0] << 0;
 
-		/* Read current modulation */
+		 
 		ret = regmap_read(state->regmap, 0xd3c1, &utmp);
 		if (ret)
 			goto err;
 
 		switch ((utmp >> 6) & 3) {
 		case 0:
-			/*
-			 * QPSK
-			 * CNR[dB] 13 * -log10((1690000 - value) / value) + 2.6
-			 * value [653799, 1689999], 2.6 / 13 = 3355443
-			 */
+			 
 			utmp1 = clamp(utmp1, 653799U, 1689999U);
 			utmp1 = ((u64)(intlog10(utmp1)
 				- intlog10(1690000 - utmp1)
 				+ 3355443) * 13 * 1000) >> 24;
 			break;
 		case 1:
-			/*
-			 * QAM-16
-			 * CNR[dB] 6 * log10((value - 370000) / (828000 - value)) + 15.7
-			 * value [371105, 827999], 15.7 / 6 = 43900382
-			 */
+			 
 			utmp1 = clamp(utmp1, 371105U, 827999U);
 			utmp1 = ((u64)(intlog10(utmp1 - 370000)
 				- intlog10(828000 - utmp1)
 				+ 43900382) * 6 * 1000) >> 24;
 			break;
 		case 2:
-			/*
-			 * QAM-64
-			 * CNR[dB] 8 * log10((value - 193000) / (425000 - value)) + 23.8
-			 * value [193246, 424999], 23.8 / 8 = 49912218
-			 */
+			 
 			utmp1 = clamp(utmp1, 193246U, 424999U);
 			utmp1 = ((u64)(intlog10(utmp1 - 193000)
 				- intlog10(425000 - utmp1)
@@ -716,13 +688,13 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		break;
 	}
 
-	/* BER / PER */
+	 
 	switch (state->fe_status & FE_HAS_SYNC) {
 	case FE_HAS_SYNC:
 		if (time_is_after_jiffies(state->ber_ucb_jiffies + msecs_to_jiffies(2000)))
 			break;
 
-		/* Check if ber / ucb is ready */
+		 
 		ret = regmap_read(state->regmap, 0xd391, &utmp);
 		if (ret)
 			goto err;
@@ -732,7 +704,7 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			break;
 		}
 
-		/* Read value */
+		 
 		ret = regmap_bulk_read(state->regmap, 0xd385, buf, 7);
 		if (ret)
 			goto err;
@@ -742,7 +714,7 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		utmp3 = buf[6] << 8 | buf[5] << 0;
 		utmp4 = buf[1] << 8 | buf[0] << 0;
 
-		/* Use 10000 TS packets for measure */
+		 
 		if (utmp4 != 10000) {
 			buf[0] = (10000 >> 0) & 0xff;
 			buf[1] = (10000 >> 8) & 0xff;
@@ -751,7 +723,7 @@ static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
 				goto err;
 		}
 
-		/* Reset ber / ucb counter */
+		 
 		ret = regmap_update_bits(state->regmap, 0xd391, 0x20, 0x20);
 		if (ret)
 			goto err;
@@ -837,38 +809,38 @@ static int af9013_init(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* ADC on */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd73a, 0x08, 0x00);
 	if (ret)
 		goto err;
 
-	/* Clear reset */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd417, 0x02, 0x00);
 	if (ret)
 		goto err;
 
-	/* Disable reset */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd417, 0x10, 0x00);
 	if (ret)
 		goto err;
 
-	/* write API version to firmware */
+	 
 	ret = regmap_bulk_write(state->regmap, 0x9bf2, state->api_version, 4);
 	if (ret)
 		goto err;
 
-	/* program ADC control */
+	 
 	switch (state->clk) {
-	case 28800000: /* 28.800 MHz */
+	case 28800000:  
 		utmp = 0;
 		break;
-	case 20480000: /* 20.480 MHz */
+	case 20480000:  
 		utmp = 1;
 		break;
-	case 28000000: /* 28.000 MHz */
+	case 28000000:  
 		utmp = 2;
 		break;
-	case 25000000: /* 25.000 MHz */
+	case 25000000:  
 		utmp = 3;
 		break;
 	default:
@@ -888,7 +860,7 @@ static int af9013_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* Demod core settings */
+	 
 	dev_dbg(&client->dev, "load demod core settings\n");
 	len = ARRAY_SIZE(demod_init_tab);
 	tab = demod_init_tab;
@@ -899,7 +871,7 @@ static int af9013_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* Demod tuner specific settings */
+	 
 	dev_dbg(&client->dev, "load tuner specific settings\n");
 	switch (state->tuner) {
 	case AF9013_TUNER_MXL5003D:
@@ -952,7 +924,7 @@ static int af9013_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* TS interface */
+	 
 	if (state->ts_output_pin == 7)
 		utmp = 1 << 3 | state->ts_mode << 1;
 	else
@@ -961,7 +933,7 @@ static int af9013_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* enable lock led */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd730, 0x01, 0x01);
 	if (ret)
 		goto err;
@@ -983,22 +955,22 @@ static int af9013_sleep(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* disable lock led */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd730, 0x01, 0x00);
 	if (ret)
 		goto err;
 
-	/* Enable reset */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd417, 0x10, 0x10);
 	if (ret)
 		goto err;
 
-	/* Start reset execution */
+	 
 	ret = regmap_write(state->regmap, 0xaeff, 0x01);
 	if (ret)
 		goto err;
 
-	/* Wait reset performs */
+	 
 	ret = regmap_read_poll_timeout(state->regmap, 0xd417, utmp,
 				       (utmp >> 1) & 0x01, 5000, 1000000);
 	if (ret)
@@ -1009,7 +981,7 @@ static int af9013_sleep(struct dvb_frontend *fe)
 		goto err;
 	}
 
-	/* ADC off */
+	 
 	ret = regmap_update_bits(state->regmap, 0xd73a, 0x08, 0x08);
 	if (ret)
 		goto err;
@@ -1034,7 +1006,7 @@ static int af9013_download_firmware(struct af9013_state *state)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Check whether firmware is already running */
+	 
 	ret = regmap_read(state->regmap, 0x98be, &utmp);
 	if (ret)
 		goto err;
@@ -1047,7 +1019,7 @@ static int af9013_download_firmware(struct af9013_state *state)
 	dev_info(&client->dev, "found a '%s' in cold state, will try to load a firmware\n",
 		 af9013_ops.info.name);
 
-	/* Request the firmware, will block and timeout */
+	 
 	ret = request_firmware(&firmware, name, &client->dev);
 	if (ret) {
 		dev_info(&client->dev, "firmware file '%s' not found %d\n",
@@ -1058,7 +1030,7 @@ static int af9013_download_firmware(struct af9013_state *state)
 	dev_info(&client->dev, "downloading firmware from file '%s'\n",
 		 name);
 
-	/* Write firmware checksum & size */
+	 
 	for (i = 0; i < firmware->size; i++)
 		checksum += firmware->data[i];
 
@@ -1070,7 +1042,7 @@ static int af9013_download_firmware(struct af9013_state *state)
 	if (ret)
 		goto err_release_firmware;
 
-	/* Download firmware */
+	 
 	#define LEN_MAX 16
 	for (rem = firmware->size; rem > 0; rem -= LEN_MAX) {
 		len = min(LEN_MAX, rem);
@@ -1087,12 +1059,12 @@ static int af9013_download_firmware(struct af9013_state *state)
 
 	release_firmware(firmware);
 
-	/* Boot firmware */
+	 
 	ret = regmap_write(state->regmap, 0xe205, 0x01);
 	if (ret)
 		goto err;
 
-	/* Check firmware status. 0c=OK, 04=fail */
+	 
 	ret = regmap_read_poll_timeout(state->regmap, 0x98be, utmp,
 				       (utmp == 0x0c || utmp == 0x04),
 				       5000, 1000000);
@@ -1190,7 +1162,7 @@ static int af9013_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid,
 		index, pid, onoff);
 
 	if (pid > 0x1fff) {
-		/* 0x2000 is kernel virtual pid for whole ts (all pids) */
+		 
 		ret = 0;
 		goto err;
 	}
@@ -1228,11 +1200,7 @@ static struct i2c_adapter *af9013_get_i2c_adapter(struct i2c_client *client)
 	return state->muxc->adapter[0];
 }
 
-/*
- * XXX: Hackish solution. We use virtual register, reg bit 16, to carry info
- * about i2c adapter locking. Own locking is needed because i2c mux call has
- * already locked i2c adapter.
- */
+ 
 static int af9013_select(struct i2c_mux_core *muxc, u32 chan)
 {
 	struct af9013_state *state = i2c_mux_priv(muxc);
@@ -1275,7 +1243,7 @@ err:
 	return ret;
 }
 
-/* Own I2C access routines needed for regmap as chip uses extra command byte */
+ 
 static int af9013_wregs(struct i2c_client *client, u8 cmd, u16 reg,
 			const u8 *val, int len, u8 lock)
 {
@@ -1376,7 +1344,7 @@ static int af9013_regmap_write(void *context, const void *data, size_t count)
 		if (ret)
 			goto err;
 	} else if (reg >= 0x5100 && reg < 0x8fff) {
-		/* Firmware download */
+		 
 		cmd = 1 << 7|1 << 6|(len - 1) << 2|1 << 1|1 << 0;
 		ret = af9013_wregs(client, cmd, reg, val, len, lock);
 		if (ret)
@@ -1442,7 +1410,7 @@ static int af9013_probe(struct i2c_client *client)
 		.write = af9013_regmap_write,
 	};
 	static const struct regmap_config regmap_config = {
-		/* Actual reg is 16 bits, see i2c adapter lock */
+		 
 		.reg_bits = 24,
 		.val_bits = 8,
 	};
@@ -1455,7 +1423,7 @@ static int af9013_probe(struct i2c_client *client)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Setup the state */
+	 
 	state->client = client;
 	i2c_set_clientdata(client, state);
 	state->clk = pdata->clk;
@@ -1472,7 +1440,7 @@ static int af9013_probe(struct i2c_client *client)
 		ret = PTR_ERR(state->regmap);
 		goto err_kfree;
 	}
-	/* Create mux i2c adapter */
+	 
 	state->muxc = i2c_mux_alloc(client->adapter, &client->dev, 1, 0, 0,
 				    af9013_select, af9013_deselect);
 	if (!state->muxc) {
@@ -1484,37 +1452,37 @@ static int af9013_probe(struct i2c_client *client)
 	if (ret)
 		goto err_regmap_exit;
 
-	/* Download firmware */
+	 
 	if (state->ts_mode != AF9013_TS_MODE_USB) {
 		ret = af9013_download_firmware(state);
 		if (ret)
 			goto err_i2c_mux_del_adapters;
 	}
 
-	/* Firmware version */
+	 
 	ret = regmap_bulk_read(state->regmap, 0x5103, firmware_version,
 			       sizeof(firmware_version));
 	if (ret)
 		goto err_i2c_mux_del_adapters;
 
-	/* Set GPIOs */
+	 
 	for (i = 0; i < sizeof(state->gpio); i++) {
 		ret = af9013_set_gpio(state, i, state->gpio[i]);
 		if (ret)
 			goto err_i2c_mux_del_adapters;
 	}
 
-	/* Create dvb frontend */
+	 
 	memcpy(&state->fe.ops, &af9013_ops, sizeof(state->fe.ops));
 	state->fe.demodulator_priv = state;
 
-	/* Setup callbacks */
+	 
 	pdata->get_dvb_frontend = af9013_get_dvb_frontend;
 	pdata->get_i2c_adapter = af9013_get_i2c_adapter;
 	pdata->pid_filter = af9013_pid_filter;
 	pdata->pid_filter_ctrl = af9013_pid_filter_ctrl;
 
-	/* Init stats to indicate which stats are supported */
+	 
 	c = &state->fe.dtv_property_cache;
 	c->strength.len = 1;
 	c->cnr.len = 1;

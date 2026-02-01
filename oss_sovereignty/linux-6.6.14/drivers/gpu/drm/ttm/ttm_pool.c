@@ -1,35 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König
- */
 
-/* Pooling of allocated pages is necessary because changing the caching
- * attributes on x86 of the linear mapping requires a costly cross CPU TLB
- * invalidate for those addresses.
- *
- * Additional to that allocations from the DMA coherent API are pooled as well
- * cause they are rather slow compared to alloc_pages+map.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
@@ -47,12 +19,7 @@
 
 #include "ttm_module.h"
 
-/**
- * struct ttm_pool_dma - Helper object for coherent DMA mappings
- *
- * @addr: original DMA address returned for the mapping
- * @vaddr: original vaddr return for the mapping and order in the lower bits
- */
+ 
 struct ttm_pool_dma {
 	dma_addr_t addr;
 	unsigned long vaddr;
@@ -75,7 +42,7 @@ static spinlock_t shrinker_lock;
 static struct list_head shrinker_list;
 static struct shrinker mm_shrinker;
 
-/* Allocate pages of size 1 << order with the given gfp_flags */
+ 
 static struct page *ttm_pool_alloc_page(struct ttm_pool *pool, gfp_t gfp_flags,
 					unsigned int order)
 {
@@ -84,10 +51,7 @@ static struct page *ttm_pool_alloc_page(struct ttm_pool *pool, gfp_t gfp_flags,
 	struct page *p;
 	void *vaddr;
 
-	/* Don't set the __GFP_COMP flag for higher order allocations.
-	 * Mapping pages directly into an userspace process and calling
-	 * put_page() on a TTM allocated page is illegal.
-	 */
+	 
 	if (order)
 		gfp_flags |= __GFP_NOMEMALLOC | __GFP_NORETRY | __GFP_NOWARN |
 			__GFP_KSWAPD_RECLAIM;
@@ -111,9 +75,7 @@ static struct page *ttm_pool_alloc_page(struct ttm_pool *pool, gfp_t gfp_flags,
 	if (!vaddr)
 		goto error_free;
 
-	/* TODO: This is an illegal abuse of the DMA API, but we need to rework
-	 * TTM page fault handling and extend the DMA API to clean this up.
-	 */
+	 
 	if (is_vmalloc_addr(vaddr))
 		p = vmalloc_to_page(vaddr);
 	else
@@ -128,7 +90,7 @@ error_free:
 	return NULL;
 }
 
-/* Reset the caching and pages of size 1 << order */
+ 
 static void ttm_pool_free_page(struct ttm_pool *pool, enum ttm_caching caching,
 			       unsigned int order, struct page *p)
 {
@@ -137,9 +99,7 @@ static void ttm_pool_free_page(struct ttm_pool *pool, enum ttm_caching caching,
 	void *vaddr;
 
 #ifdef CONFIG_X86
-	/* We don't care that set_pages_wb is inefficient here. This is only
-	 * used when we have to shrink and CPU overhead is irrelevant then.
-	 */
+	 
 	if (caching != ttm_cached && !PageHighMem(p))
 		set_pages_wb(p, 1 << order);
 #endif
@@ -159,7 +119,7 @@ static void ttm_pool_free_page(struct ttm_pool *pool, enum ttm_caching caching,
 	kfree(dma);
 }
 
-/* Apply a new caching to an array of pages */
+ 
 static int ttm_pool_apply_caching(struct page **first, struct page **last,
 				  enum ttm_caching caching)
 {
@@ -181,7 +141,7 @@ static int ttm_pool_apply_caching(struct page **first, struct page **last,
 	return 0;
 }
 
-/* Map pages of 1 << order size and fill the DMA address array  */
+ 
 static int ttm_pool_map(struct ttm_pool *pool, unsigned int order,
 			struct page *p, dma_addr_t **dma_addr)
 {
@@ -208,11 +168,11 @@ static int ttm_pool_map(struct ttm_pool *pool, unsigned int order,
 	return 0;
 }
 
-/* Unmap pages of 1 << order size */
+ 
 static void ttm_pool_unmap(struct ttm_pool *pool, dma_addr_t dma_addr,
 			   unsigned int num_pages)
 {
-	/* Unmapped while freeing the page */
+	 
 	if (pool->use_dma_alloc)
 		return;
 
@@ -220,7 +180,7 @@ static void ttm_pool_unmap(struct ttm_pool *pool, dma_addr_t dma_addr,
 		       DMA_BIDIRECTIONAL);
 }
 
-/* Give pages into a specific pool_type */
+ 
 static void ttm_pool_type_give(struct ttm_pool_type *pt, struct page *p)
 {
 	unsigned int i, num_pages = 1 << pt->order;
@@ -238,7 +198,7 @@ static void ttm_pool_type_give(struct ttm_pool_type *pt, struct page *p)
 	atomic_long_add(1 << pt->order, &allocated_pages);
 }
 
-/* Take pages from a specific pool_type, return NULL when nothing available */
+ 
 static struct page *ttm_pool_type_take(struct ttm_pool_type *pt)
 {
 	struct page *p;
@@ -254,7 +214,7 @@ static struct page *ttm_pool_type_take(struct ttm_pool_type *pt)
 	return p;
 }
 
-/* Initialize and add a pool type to the global shrinker list */
+ 
 static void ttm_pool_type_init(struct ttm_pool_type *pt, struct ttm_pool *pool,
 			       enum ttm_caching caching, unsigned int order)
 {
@@ -269,7 +229,7 @@ static void ttm_pool_type_init(struct ttm_pool_type *pt, struct ttm_pool *pool,
 	spin_unlock(&shrinker_lock);
 }
 
-/* Remove a pool_type from the global shrinker list and free all pages */
+ 
 static void ttm_pool_type_fini(struct ttm_pool_type *pt)
 {
 	struct page *p;
@@ -282,7 +242,7 @@ static void ttm_pool_type_fini(struct ttm_pool_type *pt)
 		ttm_pool_free_page(pt->pool, pt->caching, pt->order, p);
 }
 
-/* Return the pool_type to use for the given caching and order */
+ 
 static struct ttm_pool_type *ttm_pool_select_type(struct ttm_pool *pool,
 						  enum ttm_caching caching,
 						  unsigned int order)
@@ -310,7 +270,7 @@ static struct ttm_pool_type *ttm_pool_select_type(struct ttm_pool *pool,
 	return NULL;
 }
 
-/* Free pages using the global shrinker list */
+ 
 static unsigned int ttm_pool_shrink(void)
 {
 	struct ttm_pool_type *pt;
@@ -333,7 +293,7 @@ static unsigned int ttm_pool_shrink(void)
 	return num_pages;
 }
 
-/* Return the allocation order based for a page */
+ 
 static unsigned int ttm_pool_page_order(struct ttm_pool *pool, struct page *p)
 {
 	if (pool->use_dma_alloc) {
@@ -345,7 +305,7 @@ static unsigned int ttm_pool_page_order(struct ttm_pool *pool, struct page *p)
 	return p->private;
 }
 
-/* Called when we got a page, either from a pool or newly allocated */
+ 
 static int ttm_pool_page_allocated(struct ttm_pool *pool, unsigned int order,
 				   struct page *p, dma_addr_t **dma_addr,
 				   unsigned long *num_pages,
@@ -367,19 +327,7 @@ static int ttm_pool_page_allocated(struct ttm_pool *pool, unsigned int order,
 	return 0;
 }
 
-/**
- * ttm_pool_free_range() - Free a range of TTM pages
- * @pool: The pool used for allocating.
- * @tt: The struct ttm_tt holding the page pointers.
- * @caching: The page caching mode used by the range.
- * @start_page: index for first page to free.
- * @end_page: index for last page to free + 1.
- *
- * During allocation the ttm_tt page-vector may be populated with ranges of
- * pages with different attributes if allocation hit an error without being
- * able to completely fulfill the allocation. This function can be used
- * to free these individual ranges.
- */
+ 
 static void ttm_pool_free_range(struct ttm_pool *pool, struct ttm_tt *tt,
 				enum ttm_caching caching,
 				pgoff_t start_page, pgoff_t end_page)
@@ -404,18 +352,7 @@ static void ttm_pool_free_range(struct ttm_pool *pool, struct ttm_tt *tt,
 	}
 }
 
-/**
- * ttm_pool_alloc - Fill a ttm_tt object
- *
- * @pool: ttm_pool to use
- * @tt: ttm_tt object to fill
- * @ctx: operation context
- *
- * Fill the ttm_tt object with pages and also make sure to DMA map them when
- * necessary.
- *
- * Returns: 0 on successe, negative error code otherwise.
- */
+ 
 int ttm_pool_alloc(struct ttm_pool *pool, struct ttm_tt *tt,
 		   struct ttm_operation_ctx *ctx)
 {
@@ -523,14 +460,7 @@ error_free_all:
 }
 EXPORT_SYMBOL(ttm_pool_alloc);
 
-/**
- * ttm_pool_free - Free the backing pages from a ttm_tt object
- *
- * @pool: Pool to give pages back to.
- * @tt: ttm_tt object to unpopulate
- *
- * Give the packing pages back to a pool or free them
- */
+ 
 void ttm_pool_free(struct ttm_pool *pool, struct ttm_tt *tt)
 {
 	ttm_pool_free_range(pool, tt, tt->caching, 0, tt->num_pages);
@@ -540,17 +470,7 @@ void ttm_pool_free(struct ttm_pool *pool, struct ttm_tt *tt)
 }
 EXPORT_SYMBOL(ttm_pool_free);
 
-/**
- * ttm_pool_init - Initialize a pool
- *
- * @pool: the pool to initialize
- * @dev: device for DMA allocations and mappings
- * @nid: NUMA node to use for allocations
- * @use_dma_alloc: true if coherent DMA alloc should be used
- * @use_dma32: true if GFP_DMA32 should be used
- *
- * Initialize the pool and its pool types.
- */
+ 
 void ttm_pool_init(struct ttm_pool *pool, struct device *dev,
 		   int nid, bool use_dma_alloc, bool use_dma32)
 {
@@ -572,14 +492,7 @@ void ttm_pool_init(struct ttm_pool *pool, struct device *dev,
 }
 EXPORT_SYMBOL(ttm_pool_init);
 
-/**
- * ttm_pool_fini - Cleanup a pool
- *
- * @pool: the pool to clean up
- *
- * Free all pages in the pool and unregister the types from the global
- * shrinker.
- */
+ 
 void ttm_pool_fini(struct ttm_pool *pool)
 {
 	unsigned int i, j;
@@ -590,14 +503,12 @@ void ttm_pool_fini(struct ttm_pool *pool)
 				ttm_pool_type_fini(&pool->caching[i].orders[j]);
 	}
 
-	/* We removed the pool types from the LRU, but we need to also make sure
-	 * that no shrinker is concurrently freeing pages from the pool.
-	 */
+	 
 	synchronize_shrinkers();
 }
 EXPORT_SYMBOL(ttm_pool_fini);
 
-/* As long as pages are available make sure to release at least one */
+ 
 static unsigned long ttm_pool_shrinker_scan(struct shrinker *shrink,
 					    struct shrink_control *sc)
 {
@@ -610,7 +521,7 @@ static unsigned long ttm_pool_shrinker_scan(struct shrinker *shrink,
 	return num_freed;
 }
 
-/* Return the number of pages available or SHRINK_EMPTY if we have none */
+ 
 static unsigned long ttm_pool_shrinker_count(struct shrinker *shrink,
 					     struct shrink_control *sc)
 {
@@ -620,14 +531,14 @@ static unsigned long ttm_pool_shrinker_count(struct shrinker *shrink,
 }
 
 #ifdef CONFIG_DEBUG_FS
-/* Count the number of pages available in a pool_type */
+ 
 static unsigned int ttm_pool_type_count(struct ttm_pool_type *pt)
 {
 	unsigned int count = 0;
 	struct page *p;
 
 	spin_lock(&pt->lock);
-	/* Only used for debugfs, the overhead doesn't matter */
+	 
 	list_for_each_entry(p, &pt->pages, lru)
 		++count;
 	spin_unlock(&pt->lock);
@@ -635,7 +546,7 @@ static unsigned int ttm_pool_type_count(struct ttm_pool_type *pt)
 	return count;
 }
 
-/* Print a nice header for the order */
+ 
 static void ttm_pool_debugfs_header(struct seq_file *m)
 {
 	unsigned int i;
@@ -646,7 +557,7 @@ static void ttm_pool_debugfs_header(struct seq_file *m)
 	seq_puts(m, "\n");
 }
 
-/* Dump information about the different pool types */
+ 
 static void ttm_pool_debugfs_orders(struct ttm_pool_type *pt,
 				    struct seq_file *m)
 {
@@ -657,14 +568,14 @@ static void ttm_pool_debugfs_orders(struct ttm_pool_type *pt,
 	seq_puts(m, "\n");
 }
 
-/* Dump the total amount of allocated pages */
+ 
 static void ttm_pool_debugfs_footer(struct seq_file *m)
 {
 	seq_printf(m, "\ntotal\t: %8lu of %8lu\n",
 		   atomic_long_read(&allocated_pages), page_pool_size);
 }
 
-/* Dump the information for the global pools */
+ 
 static int ttm_pool_debugfs_globals_show(struct seq_file *m, void *data)
 {
 	ttm_pool_debugfs_header(m);
@@ -686,14 +597,7 @@ static int ttm_pool_debugfs_globals_show(struct seq_file *m, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(ttm_pool_debugfs_globals);
 
-/**
- * ttm_pool_debugfs - Debugfs dump function for a pool
- *
- * @pool: the pool to dump the information for
- * @m: seq_file to dump to
- *
- * Make a debugfs dump with the per pool and global information.
- */
+ 
 int ttm_pool_debugfs(struct ttm_pool *pool, struct seq_file *m)
 {
 	unsigned int i;
@@ -728,7 +632,7 @@ int ttm_pool_debugfs(struct ttm_pool *pool, struct seq_file *m)
 }
 EXPORT_SYMBOL(ttm_pool_debugfs);
 
-/* Test the shrinker functions and dump the result */
+ 
 static int ttm_pool_debugfs_shrink_show(struct seq_file *m, void *data)
 {
 	struct shrink_control sc = { .gfp_mask = GFP_NOFS };
@@ -744,13 +648,7 @@ DEFINE_SHOW_ATTRIBUTE(ttm_pool_debugfs_shrink);
 
 #endif
 
-/**
- * ttm_pool_mgr_init - Initialize globals
- *
- * @num_pages: default number of pages
- *
- * Initialize the global locks and lists for the MM shrinker.
- */
+ 
 int ttm_pool_mgr_init(unsigned long num_pages)
 {
 	unsigned int i;
@@ -785,11 +683,7 @@ int ttm_pool_mgr_init(unsigned long num_pages)
 	return register_shrinker(&mm_shrinker, "drm-ttm_pool");
 }
 
-/**
- * ttm_pool_mgr_fini - Finalize globals
- *
- * Cleanup the global pools and unregister the MM shrinker.
- */
+ 
 void ttm_pool_mgr_fini(void)
 {
 	unsigned int i;

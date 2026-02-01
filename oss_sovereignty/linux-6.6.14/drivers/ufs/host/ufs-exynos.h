@@ -1,22 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * UFS Host Controller driver for Exynos specific extensions
- *
- * Copyright (C) 2014-2015 Samsung Electronics Co., Ltd.
- *
- */
+ 
+ 
 
 #ifndef _UFS_EXYNOS_H_
 #define _UFS_EXYNOS_H_
 
-/*
- * UNIPRO registers
- */
+ 
 #define UNIPRO_DBG_FORCE_DME_CTRL_STATE		0x150
 
-/*
- * MIBs for PA debug registers
- */
+ 
 #define PA_DBG_CLK_PERIOD	0x9514
 #define PA_DBG_TXPHY_CFGUPDT	0x9518
 #define PA_DBG_RXPHY_CFGUPDT	0x9519
@@ -29,14 +20,10 @@
 #define PA_DBG_OPTION_SUITE	0x9564
 #define PA_DBG_OPTION_SUITE_DYN	0x9565
 
-/*
- * MIBs for Transport Layer debug registers
- */
+ 
 #define T_DBG_SKIP_INIT_HIBERN8_EXIT	0xc001
 
-/*
- * Exynos MPHY attributes
- */
+ 
 #define TX_LINERESET_N_VAL	0x0277
 #define TX_LINERESET_N(v)	(((v) >> 10) & 0xFF)
 #define TX_LINERESET_P_VAL	0x027D
@@ -98,12 +85,12 @@
 #define CMN_PWM_CLK_CTRL	0x0402
 #define PWM_CLK_CTRL_MASK	0x3
 
-#define IATOVAL_NSEC		20000	/* unit: ns */
+#define IATOVAL_NSEC		20000	 
 #define UNIPRO_PCLK_PERIOD(ufs) (NSEC_PER_SEC / ufs->pclk_rate)
 
 struct exynos_ufs;
 
-/* vendor specific pre-defined parameters */
+ 
 #define SLOW 1
 #define FAST 2
 
@@ -119,7 +106,7 @@ struct exynos_ufs;
 #define PCLK_AVAIL_MAX	167000000
 
 struct exynos_ufs_uic_attr {
-	/* TX Attributes */
+	 
 	unsigned int tx_trailingclks;
 	unsigned int tx_dif_p_nsec;
 	unsigned int tx_dif_n_nsec;
@@ -128,7 +115,7 @@ struct exynos_ufs_uic_attr {
 	unsigned int tx_gran_unit_nsec;
 	unsigned int tx_sleep_cnt;
 	unsigned int tx_min_activatetime;
-	/* RX Attributes */
+	 
 	unsigned int rx_filler_enable;
 	unsigned int rx_dif_p_nsec;
 	unsigned int rx_hibern8_wait_nsec;
@@ -142,11 +129,11 @@ struct exynos_ufs_uic_attr {
 	unsigned int rx_hs_g1_prep_sync_len_cap;
 	unsigned int rx_hs_g2_prep_sync_len_cap;
 	unsigned int rx_hs_g3_prep_sync_len_cap;
-	/* Common Attributes */
+	 
 	unsigned int cmn_pwm_clk_ctrl;
-	/* Internal Attributes */
+	 
 	unsigned int pa_dbg_option_suite;
-	/* Changeable Attributes */
+	 
 	unsigned int rx_adv_fine_gran_sup_en;
 	unsigned int rx_adv_fine_gran_step;
 	unsigned int rx_min_actv_time_cap;
@@ -163,7 +150,7 @@ struct exynos_ufs_drv_data {
 	struct exynos_ufs_uic_attr *uic_attr;
 	unsigned int quirks;
 	unsigned int opts;
-	/* SoC's specific operations */
+	 
 	int (*drv_init)(struct device *dev, struct exynos_ufs *ufs);
 	int (*pre_link)(struct exynos_ufs *ufs);
 	int (*post_link)(struct exynos_ufs *ufs);
@@ -267,4 +254,4 @@ static inline void exynos_ufs_disable_dbg_mode(struct ufs_hba *hba)
 	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_DBG_MODE), false);
 }
 
-#endif /* _UFS_EXYNOS_H_ */
+#endif  

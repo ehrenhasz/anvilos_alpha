@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -14,7 +11,7 @@
 #include "xfs_dir2_priv.h"
 #include "xfs_dahash_test.h"
 
-/* 4096 random bytes */
+ 
 static uint8_t __initdata __attribute__((__aligned__(8))) test_buf[] =
 {
 	0x5b, 0x85, 0x21, 0xcb, 0x09, 0x68, 0x7d, 0x30,
@@ -531,12 +528,12 @@ static uint8_t __initdata __attribute__((__aligned__(8))) test_buf[] =
 	0xb9, 0x04, 0xf4, 0x8d, 0xe8, 0x2f, 0x15, 0x9d,
 };
 
-/* 100 test cases */
+ 
 static struct dahash_test {
-	uint16_t	start;	/* random 12 bit offset in buf */
-	uint16_t	length;	/* random 8 bit length of test */
-	xfs_dahash_t	dahash;	/* expected dahash result */
-	xfs_dahash_t	ascii_ci_dahash; /* expected ascii-ci dahash result */
+	uint16_t	start;	 
+	uint16_t	length;	 
+	xfs_dahash_t	dahash;	 
+	xfs_dahash_t	ascii_ci_dahash;  
 } test[] __initdata =
 {
 	{0x0567, 0x0097, 0x96951389, 0xc153aa0d},

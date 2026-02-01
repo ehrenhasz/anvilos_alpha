@@ -1,32 +1,4 @@
-/* Copyright 2008 - 2016 Freescale Semiconductor, Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *	 notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *	 notice, this list of conditions and the following disclaimer in the
- *	 documentation and/or other materials provided with the distribution.
- *     * Neither the name of Freescale Semiconductor nor the
- *	 names of its contributors may be used to endorse or promote products
- *	 derived from this software without specific prior written permission.
- *
- * ALTERNATIVELY, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") as published by the Free Software
- * Foundation, either version 2 of that License or (at your option) any
- * later version.
- *
- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "qman_priv.h"
 
@@ -37,7 +9,7 @@ EXPORT_SYMBOL(qm_channel_pool1);
 u16 qm_channel_caam = QMAN_CHANNEL_CAAM;
 EXPORT_SYMBOL(qm_channel_caam);
 
-/* Register offsets */
+ 
 #define REG_QCSP_LIO_CFG(n)	(0x0000 + ((n) * 0x10))
 #define REG_QCSP_IO_CFG(n)	(0x0004 + ((n) * 0x10))
 #define REG_QCSP_DD_CFG(n)	(0x000c + ((n) * 0x10))
@@ -58,7 +30,7 @@ EXPORT_SYMBOL(qm_channel_caam);
 #define REG_WQ_PC_DD_CFG(n)	(0x680 + ((n) * 0x04))
 #define REG_WQ_DC0_DD_CFG(n)	(0x6c0 + ((n) * 0x04))
 #define REG_WQ_DC1_DD_CFG(n)	(0x700 + ((n) * 0x04))
-#define REG_WQ_DCn_DD_CFG(n)	(0x6c0 + ((n) * 0x40)) /* n=2,3 */
+#define REG_WQ_DCn_DD_CFG(n)	(0x6c0 + ((n) * 0x40))  
 #define REG_CM_CFG		0x0800
 #define REG_ECSR		0x0a00
 #define REG_ECIR		0x0a04
@@ -75,8 +47,8 @@ EXPORT_SYMBOL(qm_channel_caam);
 #define REG_IP_REV_2		0x0bfc
 #define REG_FQD_BARE		0x0c00
 #define REG_PFDR_BARE		0x0c20
-#define REG_offset_BAR		0x0004	/* relative to REG_[FQD|PFDR]_BARE */
-#define REG_offset_AR		0x0010	/* relative to REG_[FQD|PFDR]_BARE */
+#define REG_offset_BAR		0x0004	 
+#define REG_offset_AR		0x0010	 
 #define REG_QCSP_BARE		0x0c80
 #define REG_QCSP_BAR		0x0c84
 #define REG_CI_SCHED_CFG	0x0d00
@@ -89,7 +61,7 @@ EXPORT_SYMBOL(qm_channel_caam);
 #define REG_REV3_QCSP_IO_CFG(n)	(0x1004 + ((n) * 0x10))
 #define REG_REV3_QCSP_DD_CFG(n)	(0x100c + ((n) * 0x10))
 
-/* Assists for QMAN_MCR */
+ 
 #define MCR_INIT_PFDR		0x01000000
 #define MCR_get_rslt(v)		(u8)((v) >> 24)
 #define MCR_rslt_idle(r)	(!(r) || ((r) >= 0xf0))
@@ -97,18 +69,15 @@ EXPORT_SYMBOL(qm_channel_caam);
 #define MCR_rslt_eaccess(r)	((r) == 0xf8)
 #define MCR_rslt_inval(r)	((r) == 0xff)
 
-/*
- * Corenet initiator settings. Stash request queues are 4-deep to match cores
- * ability to snarf. Stash priority is 3, other priorities are 2.
- */
+ 
 #define QM_CI_SCHED_CFG_SRCCIV		4
 #define QM_CI_SCHED_CFG_SRQ_W		3
 #define QM_CI_SCHED_CFG_RW_W		2
 #define QM_CI_SCHED_CFG_BMAN_W		2
-/* write SRCCIV enable */
+ 
 #define QM_CI_SCHED_CFG_SRCCIV_EN	BIT(31)
 
-/* Follows WQ_CS_CFG0-5 */
+ 
 enum qm_wq_class {
 	qm_wq_portal = 0,
 	qm_wq_pool = 1,
@@ -120,33 +89,33 @@ enum qm_wq_class {
 	qm_wq_last = qm_wq_pme
 };
 
-/* Follows FQD_[BARE|BAR|AR] and PFDR_[BARE|BAR|AR] */
+ 
 enum qm_memory {
 	qm_memory_fqd,
 	qm_memory_pfdr
 };
 
-/* Used by all error interrupt registers except 'inhibit' */
-#define QM_EIRQ_CIDE	0x20000000	/* Corenet Initiator Data Error */
-#define QM_EIRQ_CTDE	0x10000000	/* Corenet Target Data Error */
-#define QM_EIRQ_CITT	0x08000000	/* Corenet Invalid Target Transaction */
-#define QM_EIRQ_PLWI	0x04000000	/* PFDR Low Watermark */
-#define QM_EIRQ_MBEI	0x02000000	/* Multi-bit ECC Error */
-#define QM_EIRQ_SBEI	0x01000000	/* Single-bit ECC Error */
-#define QM_EIRQ_PEBI	0x00800000	/* PFDR Enqueues Blocked Interrupt */
-#define QM_EIRQ_IFSI	0x00020000	/* Invalid FQ Flow Control State */
-#define QM_EIRQ_ICVI	0x00010000	/* Invalid Command Verb */
-#define QM_EIRQ_IDDI	0x00000800	/* Invalid Dequeue (Direct-connect) */
-#define QM_EIRQ_IDFI	0x00000400	/* Invalid Dequeue FQ */
-#define QM_EIRQ_IDSI	0x00000200	/* Invalid Dequeue Source */
-#define QM_EIRQ_IDQI	0x00000100	/* Invalid Dequeue Queue */
-#define QM_EIRQ_IECE	0x00000010	/* Invalid Enqueue Configuration */
-#define QM_EIRQ_IEOI	0x00000008	/* Invalid Enqueue Overflow */
-#define QM_EIRQ_IESI	0x00000004	/* Invalid Enqueue State */
-#define QM_EIRQ_IECI	0x00000002	/* Invalid Enqueue Channel */
-#define QM_EIRQ_IEQI	0x00000001	/* Invalid Enqueue Queue */
+ 
+#define QM_EIRQ_CIDE	0x20000000	 
+#define QM_EIRQ_CTDE	0x10000000	 
+#define QM_EIRQ_CITT	0x08000000	 
+#define QM_EIRQ_PLWI	0x04000000	 
+#define QM_EIRQ_MBEI	0x02000000	 
+#define QM_EIRQ_SBEI	0x01000000	 
+#define QM_EIRQ_PEBI	0x00800000	 
+#define QM_EIRQ_IFSI	0x00020000	 
+#define QM_EIRQ_ICVI	0x00010000	 
+#define QM_EIRQ_IDDI	0x00000800	 
+#define QM_EIRQ_IDFI	0x00000400	 
+#define QM_EIRQ_IDSI	0x00000200	 
+#define QM_EIRQ_IDQI	0x00000100	 
+#define QM_EIRQ_IECE	0x00000010	 
+#define QM_EIRQ_IEOI	0x00000008	 
+#define QM_EIRQ_IESI	0x00000004	 
+#define QM_EIRQ_IECI	0x00000002	 
+#define QM_EIRQ_IEQI	0x00000001	 
 
-/* QMAN_ECIR valid error bit */
+ 
 #define PORTAL_ECSR_ERR	(QM_EIRQ_IEQI | QM_EIRQ_IESI | QM_EIRQ_IEOI | \
 			 QM_EIRQ_IDQI | QM_EIRQ_IDSI | QM_EIRQ_IDFI | \
 			 QM_EIRQ_IDDI | QM_EIRQ_ICVI | QM_EIRQ_IFSI)
@@ -155,7 +124,7 @@ enum qm_memory {
 			 QM_EIRQ_IFSI)
 
 struct qm_ecir {
-	u32 info; /* res[30-31], ptyp[29], pnum[24-28], fqid[0-23] */
+	u32 info;  
 };
 
 static bool qm_ecir_is_dcp(const struct qm_ecir *p)
@@ -174,7 +143,7 @@ static int qm_ecir_get_fqid(const struct qm_ecir *p)
 }
 
 struct qm_ecir2 {
-	u32 info; /* ptyp[31], res[10-30], pnum[0-9] */
+	u32 info;  
 };
 
 static bool qm_ecir2_is_dcp(const struct qm_ecir2 *p)
@@ -188,8 +157,8 @@ static int qm_ecir2_get_pnum(const struct qm_ecir2 *p)
 }
 
 struct qm_eadr {
-	u32 info; /* memid[24-27], eadr[0-11] */
-		  /* v3: memid[24-28], eadr[0-15] */
+	u32 info;  
+		   
 };
 
 static int qm_eadr_get_memid(const struct qm_eadr *p)
@@ -260,18 +229,11 @@ static const struct qman_error_info_mdata error_mdata[] = {
 
 #define QMAN_ERRS_TO_DISABLE (QM_EIRQ_PLWI | QM_EIRQ_PEBI)
 
-/*
- * TODO: unimplemented registers
- *
- * Keeping a list here of QMan registers I have not yet covered;
- * QCSP_DD_IHRSR, QCSP_DD_IHRFR, QCSP_DD_HASR,
- * DCP_DD_IHRSR, DCP_DD_IHRFR, DCP_DD_HASR, CM_CFG,
- * QMAN_EECC, QMAN_SBET, QMAN_EINJ, QMAN_SBEC0-12
- */
+ 
 
-/* Pointer to the start of the QMan's CCSR space */
+ 
 static u32 __iomem *qm_ccsr_start;
-/* A SDQCR mask comprising all the available/visible pool channels */
+ 
 static u32 qm_pools_sdqcr;
 static int __qman_probed;
 static int  __qman_requires_cleanup;
@@ -348,16 +310,16 @@ static int qm_set_memory(enum qm_memory memory, u64 ba, u32 size)
 	u32 exp = ilog2(size);
 	u32 bar, bare;
 
-	/* choke if size isn't within range */
+	 
 	DPAA_ASSERT((size >= 4096) && (size <= 1024*1024*1024) &&
 		    is_power_of_2(size));
-	/* choke if 'ba' has lower-alignment than 'size' */
+	 
 	DPAA_ASSERT(!(ba & (size - 1)));
 
-	/* Check to see if QMan has already been initialized */
+	 
 	bar = qm_ccsr_in(offset + REG_offset_BAR);
 	if (bar) {
-		/* Maker sure ba == what was programmed) */
+		 
 		bare = qm_ccsr_in(offset);
 		if (bare != upper_32_bits(ba) || bar != lower_32_bits(ba)) {
 			pr_err("Attempted to reinitialize QMan with different BAR, got 0x%llx read BARE=0x%x BAR=0x%x\n",
@@ -365,10 +327,10 @@ static int qm_set_memory(enum qm_memory memory, u64 ba, u32 size)
 			return -ENOMEM;
 		}
 		__qman_requires_cleanup = 1;
-		/* Return 1 to indicate memory was previously programmed */
+		 
 		return 1;
 	}
-	/* Need to temporarily map the area to make sure it is zeroed */
+	 
 	ptr = memremap(ba, size, MEMREMAP_WB);
 	if (!ptr) {
 		pr_crit("memremap() of QMan private memory failed\n");
@@ -377,11 +339,7 @@ static int qm_set_memory(enum qm_memory memory, u64 ba, u32 size)
 	memset(ptr, 0, size);
 
 #ifdef CONFIG_PPC
-	/*
-	 * PPC doesn't appear to flush the cache on memunmap() but the
-	 * cache must be flushed since QMan does non coherent accesses
-	 * to this memory
-	 */
+	 
 	flush_dcache_range((unsigned long) ptr, (unsigned long) ptr+size);
 #endif
 	memunmap(ptr);
@@ -408,23 +366,19 @@ static int qm_init_pfdr(struct device *dev, u32 pfdr_start, u32 num)
 	u8 rslt = MCR_get_rslt(qm_ccsr_in(REG_MCR));
 
 	DPAA_ASSERT(pfdr_start && !(pfdr_start & 7) && !(num & 7) && num);
-	/* Make sure the command interface is 'idle' */
+	 
 	if (!MCR_rslt_idle(rslt)) {
 		dev_crit(dev, "QMAN_MCR isn't idle");
 		WARN_ON(1);
 	}
 
-	/* Write the MCR command params then the verb */
+	 
 	qm_ccsr_out(REG_MCP(0), pfdr_start);
-	/*
-	 * TODO: remove this - it's a workaround for a model bug that is
-	 * corrected in more recent versions. We use the workaround until
-	 * everyone has upgraded.
-	 */
+	 
 	qm_ccsr_out(REG_MCP(1), pfdr_start + num - 16);
 	dma_wmb();
 	qm_ccsr_out(REG_MCR, MCR_INIT_PFDR);
-	/* Poll for the result */
+	 
 	do {
 		rslt = MCR_get_rslt(qm_ccsr_in(REG_MCR));
 	} while (!MCR_rslt_idle(rslt));
@@ -438,24 +392,15 @@ static int qm_init_pfdr(struct device *dev, u32 pfdr_start, u32 num)
 	return -ENODEV;
 }
 
-/*
- * QMan needs two global memory areas initialized at boot time:
- *  1) FQD: Frame Queue Descriptors used to manage frame queues
- *  2) PFDR: Packed Frame Queue Descriptor Records used to store frames
- * Both areas are reserved using the device tree reserved memory framework
- * and the addresses and sizes are initialized when the QMan device is probed
- */
+ 
 static dma_addr_t fqd_a, pfdr_a;
 static size_t fqd_sz, pfdr_sz;
 
 #ifdef CONFIG_PPC
-/*
- * Support for PPC Device Tree backward compatibility when compatible
- * string is set to fsl-qman-fqd and fsl-qman-pfdr
- */
+ 
 static int zero_priv_mem(phys_addr_t addr, size_t sz)
 {
-	/* map as cacheable, non-guarded */
+	 
 	void __iomem *tmpp = ioremap_cache(addr, sz);
 
 	if (!tmpp)
@@ -522,7 +467,7 @@ static void log_additional_error_info(struct device *dev, u32 isr_val,
 	int memid;
 
 	ecir_val.info = qm_ccsr_in(REG_ECIR);
-	/* Is portal info valid */
+	 
 	if ((qman_ip_rev & 0xFF00) >= QMAN_REV30) {
 		struct qm_ecir2 ecir2_val;
 
@@ -587,7 +532,7 @@ static irqreturn_t qman_isr(int irq, void *ptr)
 			if (qman_hwerr_txts[i].mask & ecsr_val) {
 				log_additional_error_info(dev, isr_mask,
 							  ecsr_val);
-				/* Re-arm error capture registers */
+				 
 				qm_ccsr_out(REG_ECSR, ecsr_val);
 			}
 			if (qman_hwerr_txts[i].mask & QMAN_ERRS_TO_DISABLE) {
@@ -607,33 +552,33 @@ static int qman_init_ccsr(struct device *dev)
 {
 	int i, err;
 
-	/* FQD memory */
+	 
 	err = qm_set_memory(qm_memory_fqd, fqd_a, fqd_sz);
 	if (err < 0)
 		return err;
-	/* PFDR memory */
+	 
 	err = qm_set_memory(qm_memory_pfdr, pfdr_a, pfdr_sz);
 	if (err < 0)
 		return err;
-	/* Only initialize PFDRs if the QMan was not initialized before */
+	 
 	if (err == 0) {
 		err = qm_init_pfdr(dev, 8, pfdr_sz / 64 - 8);
 		if (err)
 			return err;
 	}
-	/* thresholds */
+	 
 	qm_set_pfdr_threshold(512, 64);
 	qm_set_sfdr_threshold(128);
-	/* clear stale PEBI bit from interrupt status register */
+	 
 	qm_ccsr_out(REG_ERR_ISR, QM_EIRQ_PEBI);
-	/* corenet initiator settings */
+	 
 	qm_set_corenet_initiator();
-	/* HID settings */
+	 
 	qm_set_hid();
-	/* Set scheduling weights to defaults */
+	 
 	for (i = qm_wq_first; i <= qm_wq_last; i++)
 		qm_set_wq_scheduling(i, 0, 0, 0, 0, 0, 0, 0);
-	/* We are not prepared to accept ERNs for hardware enqueues */
+	 
 	qm_set_dc(qm_dc_portal_fman0, 1, 0);
 	qm_set_dc(qm_dc_portal_fman1, 1, 0);
 	return 0;
@@ -671,7 +616,7 @@ void qman_set_sdest(u16 channel, unsigned int cpu_idx)
 
 	if ((qman_ip_rev & 0xFF00) >= QMAN_REV30) {
 		before = qm_ccsr_in(REG_REV3_QCSP_IO_CFG(idx));
-		/* Each pair of vcpu share the same SRQ(SDEST) */
+		 
 		cpu_idx /= 2;
 		after = (before & (~IO_CFG_SDEST_MASK)) | (cpu_idx << 16);
 		qm_ccsr_out(REG_REV3_QCSP_IO_CFG(idx), after);
@@ -717,7 +662,7 @@ static int qman_resource_init(struct device *dev)
 		return ret;
 	}
 
-	/* parse pool channels into the SDQCR mask */
+	 
 	for (i = 0; i < cgrid_num; i++)
 		qm_pools_sdqcr |= QM_SDQCR_CHANNELS_POOL_CONV(i);
 
@@ -798,20 +743,13 @@ static int fsl_qman_probe(struct platform_device *pdev)
 
 	if (fqd_a) {
 #ifdef CONFIG_PPC
-		/*
-		 * For PPC backward DT compatibility
-		 * FQD memory MUST be zero'd by software
-		 */
+		 
 		zero_priv_mem(fqd_a, fqd_sz);
 #else
 		WARN(1, "Unexpected architecture using non shared-dma-mem reservations");
 #endif
 	} else {
-		/*
-		 * Order of memory regions is assumed as FQD followed by PFDR
-		 * in order to ensure allocations from the correct regions the
-		 * driver initializes then allocates each piece in order
-		 */
+		 
 		ret = qbman_init_private_mem(dev, 0, &fqd_a, &fqd_sz);
 		if (ret) {
 			dev_err(dev, "qbman_init_private_mem() for FQD failed 0x%x\n",
@@ -822,7 +760,7 @@ static int fsl_qman_probe(struct platform_device *pdev)
 	dev_dbg(dev, "Allocated FQD 0x%llx 0x%zx\n", fqd_a, fqd_sz);
 
 	if (!pfdr_a) {
-		/* Setup PFDR memory */
+		 
 		ret = qbman_init_private_mem(dev, 1, &pfdr_a, &pfdr_sz);
 		if (ret) {
 			dev_err(dev, "qbman_init_private_mem() for PFDR failed 0x%x\n",
@@ -852,12 +790,9 @@ static int fsl_qman_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Write-to-clear any stale bits, (eg. starvation being asserted prior
-	 * to resource allocation during driver init).
-	 */
+	 
 	qm_ccsr_out(REG_ERR_ISR, 0xffffffff);
-	/* Enable Error Interrupts */
+	 
 	qm_ccsr_out(REG_ERR_IER, 0xffffffff);
 
 	qm_fqalloc = devm_gen_pool_create(dev, 0, -1, "qman-fqalloc");

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
+
+ 
 #include <test_progs.h>
 #include "dummy_st_ops_success.skel.h"
 #include "dummy_st_ops_fail.skel.h"
 #include "trace_dummy_st_ops.skel.h"
 
-/* Need to keep consistent with definition in include/linux/bpf.h */
+ 
 struct bpf_dummy_ops_state {
 	int val;
 };

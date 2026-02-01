@@ -1,41 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Oskar Andero <oskar.andero@gmail.com>
- * Copyright (C) 2014 Rose Technology
- * 	   Allan Bendorff Jensen <abj@rosetechnology.dk>
- *	   Soren Andersen <san@rosetechnology.dk>
- *
- * Driver for following ADC chips from Microchip Technology's:
- * 10 Bit converter
- * MCP3001
- * MCP3002
- * MCP3004
- * MCP3008
- * ------------
- * 12 bit converter
- * MCP3201
- * MCP3202
- * MCP3204
- * MCP3208
- * ------------
- * 13 bit converter
- * MCP3301
- * ------------
- * 22 bit converter
- * MCP3550
- * MCP3551
- * MCP3553
- *
- * Datasheet can be found here:
- * https://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf  mcp3001
- * https://ww1.microchip.com/downloads/en/DeviceDoc/21294E.pdf  mcp3002
- * https://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf  mcp3004/08
- * http://ww1.microchip.com/downloads/en/DeviceDoc/21290D.pdf  mcp3201
- * http://ww1.microchip.com/downloads/en/DeviceDoc/21034D.pdf  mcp3202
- * http://ww1.microchip.com/downloads/en/DeviceDoc/21298c.pdf  mcp3204/08
- * https://ww1.microchip.com/downloads/en/DeviceDoc/21700E.pdf  mcp3301
- * http://ww1.microchip.com/downloads/en/DeviceDoc/21950D.pdf  mcp3550/1/3
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/delay.h>
@@ -65,22 +29,10 @@ struct mcp320x_chip_info {
 	const struct iio_chan_spec *channels;
 	unsigned int num_channels;
 	unsigned int resolution;
-	unsigned int conv_time; /* usec */
+	unsigned int conv_time;  
 };
 
-/**
- * struct mcp320x - Microchip SPI ADC instance
- * @spi: SPI slave (parent of the IIO device)
- * @msg: SPI message to select a channel and receive a value from the ADC
- * @transfer: SPI transfers used by @msg
- * @start_conv_msg: SPI message to start a conversion by briefly asserting CS
- * @start_conv_transfer: SPI transfer used by @start_conv_msg
- * @reg: regulator generating Vref
- * @lock: protects read sequences
- * @chip_info: ADC properties
- * @tx_buf: buffer for @transfer[0] (not used on single-channel converters)
- * @rx_buf: buffer for @transfer[1]
- */
+ 
 struct mcp320x {
 	struct spi_device *spi;
 	struct spi_message msg;
@@ -168,20 +120,16 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
 		u32 raw = be32_to_cpup((__be32 *)adc->rx_buf);
 
 		if (!(adc->spi->mode & SPI_CPOL))
-			raw <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
+			raw <<= 1;  
 
-		/*
-		 * If the input is within -vref and vref, bit 21 is the sign.
-		 * Up to 12% overrange or underrange are allowed, in which case
-		 * bit 23 is the sign and bit 0 to 21 is the value.
-		 */
+		 
 		raw >>= 8;
 		if (raw & BIT(22) && raw & BIT(23))
-			return -EIO; /* cannot have overrange AND underrange */
+			return -EIO;  
 		else if (raw & BIT(22))
-			raw &= ~BIT(22); /* overrange */
+			raw &= ~BIT(22);  
 		else if (raw & BIT(23) || raw & BIT(21))
-			raw |= GENMASK(31, 22); /* underrange or negative */
+			raw |= GENMASK(31, 22);  
 
 		*val = (s32)raw;
 		return 0;
@@ -218,7 +166,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			goto out;
 
-		/* convert regulator output voltage to mV */
+		 
 		*val = ret / 1000;
 		*val2 = adc->chip_info->resolution;
 		ret = IIO_VAL_FRACTIONAL_LOG2;
@@ -348,7 +296,7 @@ static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
 		.channels = mcp3201_channels,
 		.num_channels = ARRAY_SIZE(mcp3201_channels),
 		.resolution = 21,
-		/* 2% max deviation + 144 clock periods to exit shutdown */
+		 
 		.conv_time = 80000 * 1.02 + 144000 / 102.4,
 	},
 	[mcp3550_60] = {
@@ -403,7 +351,7 @@ static int mcp320x_probe(struct spi_device *spi)
 	adc->transfer[1].len = DIV_ROUND_UP(chip_info->resolution, 8);
 
 	if (chip_info->num_channels == 1)
-		/* single-channel converters are rx only (no MOSI pin) */
+		 
 		spi_message_init_with_transfers(&adc->msg,
 						&adc->transfer[1], 1);
 	else
@@ -415,24 +363,17 @@ static int mcp320x_probe(struct spi_device *spi)
 	case mcp3550_60:
 	case mcp3551:
 	case mcp3553:
-		/* rx len increases from 24 to 25 bit in SPI mode 0,0 */
+		 
 		if (!(spi->mode & SPI_CPOL))
 			adc->transfer[1].len++;
 
-		/* conversions are started by asserting CS pin for 8 usec */
+		 
 		adc->start_conv_transfer.delay.value = 8;
 		adc->start_conv_transfer.delay.unit = SPI_DELAY_UNIT_USECS;
 		spi_message_init_with_transfers(&adc->start_conv_msg,
 						&adc->start_conv_transfer, 1);
 
-		/*
-		 * If CS was previously kept low (continuous conversion mode)
-		 * and then changed to high, the chip is in shutdown.
-		 * Sometimes it fails to wake from shutdown and clocks out
-		 * only 0xffffff.  The magic sequence of performing two
-		 * conversions without delay between them resets the chip
-		 * and ensures all subsequent conversions succeed.
-		 */
+		 
 		mcp320x_adc_conversion(adc, 0, 1, device_index, &ret);
 		mcp320x_adc_conversion(adc, 0, 1, device_index, &ret);
 	}
@@ -469,7 +410,7 @@ static void mcp320x_remove(struct spi_device *spi)
 }
 
 static const struct of_device_id mcp320x_dt_ids[] = {
-	/* NOTE: The use of compatibles with no vendor prefix is deprecated. */
+	 
 	{ .compatible = "mcp3001" },
 	{ .compatible = "mcp3002" },
 	{ .compatible = "mcp3004" },

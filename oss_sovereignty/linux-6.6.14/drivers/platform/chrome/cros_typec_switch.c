@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2022 Google LLC
- *
- * This driver provides the ability to configure Type-C muxes and retimers which are controlled by
- * the ChromeOS EC.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -18,7 +13,7 @@
 #include <linux/usb/typec_mux.h>
 #include <linux/usb/typec_retimer.h>
 
-/* Handles and other relevant data required for each port's switches. */
+ 
 struct cros_typec_port {
 	int port_num;
 	struct typec_mux_dev *mode_switch;
@@ -26,7 +21,7 @@ struct cros_typec_port {
 	struct cros_typec_switch_data *sdata;
 };
 
-/* Driver-specific data. */
+ 
 struct cros_typec_switch_data {
 	struct device *dev;
 	struct cros_ec_device *ec;
@@ -100,11 +95,7 @@ static bool cros_typec_check_event(struct cros_typec_switch_data *sdata, int por
 	return false;
 }
 
-/*
- * The ChromeOS EC treats both mode-switches and retimers as "muxes" for the purposes of the
- * host command API. This common function configures and verifies the retimer/mode-switch
- * according to the provided setting.
- */
+ 
 static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int port_num, int index,
 				    unsigned long mode, struct typec_altmode *alt)
 {
@@ -118,7 +109,7 @@ static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int po
 		return ret;
 	mux_state = (u8)ret;
 
-	/* Clear any old mux set done event. */
+	 
 	if (index == 0)
 		event_mask = PD_STATUS_EVENT_MUX_0_SET_DONE;
 	else
@@ -128,12 +119,12 @@ static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int po
 	if (ret < 0)
 		return ret;
 
-	/* Send the set command. */
+	 
 	ret = cros_typec_cmd_mux_set(sdata, port_num, index, mux_state);
 	if (ret < 0)
 		return ret;
 
-	/* Check for the mux set done event. */
+	 
 	end = jiffies + msecs_to_jiffies(1000);
 	do {
 		if (cros_typec_check_event(sdata, port_num, event_mask))
@@ -153,7 +144,7 @@ static int cros_typec_mode_switch_set(struct typec_mux_dev *mode_switch,
 {
 	struct cros_typec_port *port = typec_mux_get_drvdata(mode_switch);
 
-	/* Mode switches have index 0. */
+	 
 	return cros_typec_configure_mux(port->sdata, port->port_num, 0, state->mode, state->alt);
 }
 
@@ -161,7 +152,7 @@ static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_re
 {
 	struct cros_typec_port *port = typec_retimer_get_drvdata(retimer);
 
-	/* Retimers have index 1. */
+	 
 	return cros_typec_configure_mux(port->sdata, port->port_num, 1, state->mode, state->alt);
 }
 

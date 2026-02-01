@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/debugfs.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -15,10 +15,7 @@
 
 #include "internal.h"
 
-/*
- * TODO: teach PAGE_OWNER_STACK_DEPTH (__dump_page_owner and save_stack)
- * to use off stack temporal storage
- */
+ 
 #define PAGE_OWNER_STACK_DEPTH (16)
 
 struct page_owner {
@@ -113,14 +110,7 @@ static noinline depot_stack_handle_t save_stack(gfp_t flags)
 	depot_stack_handle_t handle;
 	unsigned int nr_entries;
 
-	/*
-	 * Avoid recursion.
-	 *
-	 * Sometimes page metadata allocation tracking requires more
-	 * memory to be allocated:
-	 * - when new stack trace is saved to stack depot
-	 * - when backtrace itself is calculated (ia64)
-	 */
+	 
 	if (current->in_page_owner)
 		return dummy_handle;
 	current->in_page_owner = 1;
@@ -257,15 +247,7 @@ void __folio_copy_owner(struct folio *newfolio, struct folio *old)
 	new_page_owner->free_ts_nsec = old_page_owner->ts_nsec;
 	strcpy(new_page_owner->comm, old_page_owner->comm);
 
-	/*
-	 * We don't clear the bit on the old folio as it's going to be freed
-	 * after migration. Until then, the info can be useful in case of
-	 * a bug, and the overall stats will be off a bit only temporarily.
-	 * Also, migrate_misplaced_transhuge_page() can still fail the
-	 * migration and then we want the old folio to retain the info. But
-	 * in that case we also don't need to explicitly clear the info from
-	 * the new page, which will be freed.
-	 */
+	 
 	__set_bit(PAGE_EXT_OWNER, &new_ext->flags);
 	__set_bit(PAGE_EXT_OWNER_ALLOCATED, &new_ext->flags);
 	page_ext_put(new_ext);
@@ -284,14 +266,10 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
 	int pageblock_mt, page_mt;
 	int i;
 
-	/* Scan block by block. First and last block may be incomplete */
+	 
 	pfn = zone->zone_start_pfn;
 
-	/*
-	 * Walk the zone in pageblock_nr_pages steps. If a page block spans
-	 * a zone boundary, it will be double counted between zones. This does
-	 * not matter as the mixed block count will still be correct
-	 */
+	 
 	for (; pfn < end_pfn; ) {
 		page = pfn_to_online_page(pfn);
 		if (!page) {
@@ -305,7 +283,7 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
 		pageblock_mt = get_pageblock_migratetype(page);
 
 		for (; pfn < block_end_pfn; pfn++) {
-			/* The pageblock is online, no need to recheck. */
+			 
 			page = pfn_to_page(pfn);
 
 			if (page_zone(page) != zone)
@@ -348,16 +326,14 @@ ext_put_continue:
 		}
 	}
 
-	/* Print counts */
+	 
 	seq_printf(m, "Node %d, zone %8s ", pgdat->node_id, zone->name);
 	for (i = 0; i < MIGRATE_TYPES; i++)
 		seq_printf(m, "%12lu ", count[i]);
 	seq_putc(m, '\n');
 }
 
-/*
- * Looking for memcg information and print it out
- */
+ 
 static inline int print_page_owner_memcg(char *kbuf, size_t count, int ret,
 					 struct page *page)
 {
@@ -389,7 +365,7 @@ static inline int print_page_owner_memcg(char *kbuf, size_t count, int ret,
 			name);
 out_unlock:
 	rcu_read_unlock();
-#endif /* CONFIG_MEMCG */
+#endif  
 
 	return ret;
 }
@@ -414,7 +390,7 @@ print_page_owner(char __user *buf, size_t count, unsigned long pfn,
 			page_owner->tgid, page_owner->comm,
 			page_owner->ts_nsec, page_owner->free_ts_nsec);
 
-	/* Print information relevant to grouping pages by mobility */
+	 
 	pageblock_mt = get_pageblock_migratetype(page);
 	page_mt  = gfp_migratetype(page_owner->gfp_mask);
 	ret += scnprintf(kbuf + ret, count - ret,
@@ -522,24 +498,16 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		pfn = min_low_pfn;
 	else
 		pfn = *ppos;
-	/* Find a valid PFN or the start of a MAX_ORDER_NR_PAGES area */
+	 
 	while (!pfn_valid(pfn) && (pfn & (MAX_ORDER_NR_PAGES - 1)) != 0)
 		pfn++;
 
-	/* Find an allocated page */
+	 
 	for (; pfn < max_pfn; pfn++) {
-		/*
-		 * This temporary page_owner is required so
-		 * that we can avoid the context switches while holding
-		 * the rcu lock and copying the page owner information to
-		 * user through copy_to_user() or GFP_KERNEL allocations.
-		 */
+		 
 		struct page_owner page_owner_tmp;
 
-		/*
-		 * If the new page is in a new MAX_ORDER_NR_PAGES area,
-		 * validate the area as existing, skip it if not
-		 */
+		 
 		if ((pfn & (MAX_ORDER_NR_PAGES - 1)) == 0 && !pfn_valid(pfn)) {
 			pfn += MAX_ORDER_NR_PAGES - 1;
 			continue;
@@ -558,38 +526,26 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		if (unlikely(!page_ext))
 			continue;
 
-		/*
-		 * Some pages could be missed by concurrent allocation or free,
-		 * because we don't hold the zone lock.
-		 */
+		 
 		if (!test_bit(PAGE_EXT_OWNER, &page_ext->flags))
 			goto ext_put_continue;
 
-		/*
-		 * Although we do have the info about past allocation of free
-		 * pages, it's not relevant for current memory usage.
-		 */
+		 
 		if (!test_bit(PAGE_EXT_OWNER_ALLOCATED, &page_ext->flags))
 			goto ext_put_continue;
 
 		page_owner = get_page_owner(page_ext);
 
-		/*
-		 * Don't print "tail" pages of high-order allocations as that
-		 * would inflate the stats.
-		 */
+		 
 		if (!IS_ALIGNED(pfn, 1 << page_owner->order))
 			goto ext_put_continue;
 
-		/*
-		 * Access to page_ext->handle isn't synchronous so we should
-		 * be careful to access it.
-		 */
+		 
 		handle = READ_ONCE(page_owner->handle);
 		if (!handle)
 			goto ext_put_continue;
 
-		/* Record the next PFN to read in the file offset */
+		 
 		*ppos = pfn + 1;
 
 		page_owner_tmp = *page_owner;
@@ -624,11 +580,7 @@ static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
 	unsigned long end_pfn = zone_end_pfn(zone);
 	unsigned long count = 0;
 
-	/*
-	 * Walk the zone in pageblock_nr_pages steps. If a page block spans
-	 * a zone boundary, it will be double counted between zones. This does
-	 * not matter as the mixed block count will still be correct
-	 */
+	 
 	for (; pfn < end_pfn; ) {
 		unsigned long block_end_pfn;
 
@@ -647,13 +599,7 @@ static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
 			if (page_zone(page) != zone)
 				continue;
 
-			/*
-			 * To avoid having to grab zone->lock, be a little
-			 * careful when reading buddy page order. The only
-			 * danger is that we skip too much and potentially miss
-			 * some early allocated pages, which is better than
-			 * heavy lock contention.
-			 */
+			 
 			if (PageBuddy(page)) {
 				unsigned long order = buddy_order_unsafe(page);
 
@@ -669,11 +615,11 @@ static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
 			if (unlikely(!page_ext))
 				continue;
 
-			/* Maybe overlapping zone */
+			 
 			if (test_bit(PAGE_EXT_OWNER, &page_ext->flags))
 				goto ext_put_continue;
 
-			/* Found early allocated page */
+			 
 			__set_page_owner_handle(page_ext, early_handle,
 						0, 0);
 			count++;

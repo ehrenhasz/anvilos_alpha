@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010-2013 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2019-2022 Intel Corporation
- */
+
+ 
 #include <linux/netdevice.h>
 #include <linux/types.h>
 #include <linux/skbuff.h>
@@ -19,20 +16,20 @@
 #define AVG_AMPDU_SIZE	16
 #define AVG_PKT_SIZE	1200
 
-/* Number of bits for an average sized packet */
+ 
 #define MCS_NBITS ((AVG_PKT_SIZE * AVG_AMPDU_SIZE) << 3)
 
-/* Number of symbols for a packet with (bps) bits per symbol */
+ 
 #define MCS_NSYMS(bps) DIV_ROUND_UP(MCS_NBITS, (bps))
 
-/* Transmission time (nanoseconds) for a packet containing (syms) symbols */
+ 
 #define MCS_SYMBOL_TIME(sgi, syms)					\
 	(sgi ?								\
-	  ((syms) * 18000 + 4000) / 5 :	/* syms * 3.6 us */		\
-	  ((syms) * 1000) << 2		/* syms * 4 us */		\
+	  ((syms) * 18000 + 4000) / 5 :	 		\
+	  ((syms) * 1000) << 2		 		\
 	)
 
-/* Transmit duration for the raw data part of an average sized packet */
+ 
 #define MCS_DURATION(streams, sgi, bps) \
 	(MCS_SYMBOL_TIME(sgi, MCS_NSYMS((streams) * (bps))) / AVG_AMPDU_SIZE)
 
@@ -40,9 +37,7 @@
 #define BW_40			1
 #define BW_80			2
 
-/*
- * Define group sort order: HT40 -> SGI -> #streams
- */
+ 
 #define GROUP_IDX(_streams, _sgi, _ht40)	\
 	MINSTREL_HT_GROUP_0 +			\
 	MINSTREL_MAX_STREAMS * 2 * _ht40 +	\
@@ -54,7 +49,7 @@
 #define GROUP_SHIFT(duration)						\
 	_MAX(0, 16 - __builtin_clz(duration))
 
-/* MCS rate information for an MCS group */
+ 
 #define __MCS_GROUP(_streams, _sgi, _ht40, _s)				\
 	[GROUP_IDX(_streams, _sgi, _ht40)] = {				\
 	.streams = _streams,						\
@@ -135,7 +130,7 @@
 		    VHT_GROUP_SHIFT(_streams, _sgi, _bw))
 
 #define CCK_DURATION(_bitrate, _short)			\
-	(1000 * (10 /* SIFS */ +			\
+	(1000 * (10   +			\
 	 (_short ? 72 + 24 : 144 + 48) +		\
 	 (8 * (AVG_PKT_SIZE + 4) * 10) / (_bitrate)))
 
@@ -162,9 +157,9 @@
 #define CCK_GROUP __CCK_GROUP(CCK_GROUP_SHIFT)
 
 #define OFDM_DURATION(_bitrate)				\
-	(1000 * (16 /* SIFS + signal ext */ +		\
-	 16 /* T_PREAMBLE */ +				\
-	 4 /* T_SIGNAL */ +				\
+	(1000 * (16   +		\
+	 16   +				\
+	 4   +				\
 	 4 * (((16 + 80 * (AVG_PKT_SIZE + 4) + 6) /	\
 	      ((_bitrate) * 4)))))
 
@@ -199,14 +194,7 @@ module_param(minstrel_vht_only, bool, 0644);
 MODULE_PARM_DESC(minstrel_vht_only,
 		 "Use only VHT rates when VHT is supported by sta.");
 
-/*
- * To enable sufficiently targeted rate sampling, MCS rates are divided into
- * groups, based on the number of streams and flags (HT40, SGI) that they
- * use.
- *
- * Sortorder has to be fixed for GROUP_IDX macro to be applicable:
- * BW -> SGI -> #streams
- */
+ 
 const struct mcs_group minstrel_mcs_groups[] = {
 	MCS_GROUP(1, 0, BW_20),
 	MCS_GROUP(2, 0, BW_20),
@@ -277,12 +265,7 @@ static const u8 minstrel_sample_seq[] = {
 static void
 minstrel_ht_update_rates(struct minstrel_priv *mp, struct minstrel_ht_sta *mi);
 
-/*
- * Some VHT MCSes are invalid (when Ndbps / Nes is not an integer)
- * e.g for MCS9@20MHzx1Nss: Ndbps=8x52*(5/6) Nes=1
- *
- * Returns the valid mcs map for struct minstrel_mcs_group_data.supported
- */
+ 
 static u16
 minstrel_get_valid_vht_rates(int bw, int nss, __le16 mcs_map)
 {
@@ -323,9 +306,7 @@ minstrel_ht_is_legacy_group(int group)
 	       group == MINSTREL_OFDM_GROUP;
 }
 
-/*
- * Look up an MCS group index based on mac80211 rate information
- */
+ 
 static int
 minstrel_ht_get_group_idx(struct ieee80211_tx_rate *rate)
 {
@@ -334,9 +315,7 @@ minstrel_ht_get_group_idx(struct ieee80211_tx_rate *rate)
 			 !!(rate->flags & IEEE80211_TX_RC_40_MHZ_WIDTH));
 }
 
-/*
- * Look up an MCS group index based on new cfg80211 rate_info.
- */
+ 
 static int
 minstrel_ht_ri_get_group_idx(struct rate_info *rate)
 {
@@ -354,9 +333,7 @@ minstrel_vht_get_group_idx(struct ieee80211_tx_rate *rate)
 			     2*!!(rate->flags & IEEE80211_TX_RC_80_MHZ_WIDTH));
 }
 
-/*
- * Look up an MCS group index based on new cfg80211 rate_info.
- */
+ 
 static int
 minstrel_vht_ri_get_group_idx(struct rate_info *rate)
 {
@@ -392,7 +369,7 @@ minstrel_ht_get_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 		if (rate->idx != mp->cck_rates[idx])
 			continue;
 
-		/* short preamble */
+		 
 		if ((mi->supported[group] & BIT(idx + 4)) &&
 		    (rate->flags & IEEE80211_TX_RC_USE_SHORT_PREAMBLE))
 			idx += 4;
@@ -409,9 +386,7 @@ out:
 	return &mi->groups[group].rates[idx];
 }
 
-/*
- * Get the minstrel rate statistics for specified STA and rate info.
- */
+ 
 static struct minstrel_rate_stats *
 minstrel_ht_ri_get_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 			  struct ieee80211_rate_status *rate_status)
@@ -436,7 +411,7 @@ minstrel_ht_ri_get_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 		if (rate->legacy != minstrel_cck_bitrates[ mp->cck_rates[idx] ])
 			continue;
 
-		/* short preamble */
+		 
 		if ((mi->supported[group] & BIT(idx + 4)) &&
 							mi->use_short_preamble)
 			idx += 4;
@@ -492,10 +467,7 @@ minstrel_ht_avg_ampdu_len(struct minstrel_ht_sta *mi)
 	return 16;
 }
 
-/*
- * Return current throughput based on the average A-MPDU length, taking into
- * account the expected number of retransmissions and their expected length
- */
+ 
 int
 minstrel_ht_get_tp_avg(struct minstrel_ht_sta *mi, int group, int rate,
 		       int prob_avg)
@@ -503,7 +475,7 @@ minstrel_ht_get_tp_avg(struct minstrel_ht_sta *mi, int group, int rate,
 	unsigned int nsecs = 0, overhead = mi->overhead;
 	unsigned int ampdu_len = 1;
 
-	/* do not account throughput if success prob is below 10% */
+	 
 	if (prob_avg < MINSTREL_FRAC(10, 100))
 		return 0;
 
@@ -516,24 +488,14 @@ minstrel_ht_get_tp_avg(struct minstrel_ht_sta *mi, int group, int rate,
 	nsecs += minstrel_mcs_groups[group].duration[rate] <<
 		 minstrel_mcs_groups[group].shift;
 
-	/*
-	 * For the throughput calculation, limit the probability value to 90% to
-	 * account for collision related packet error rate fluctuation
-	 * (prob is scaled - see MINSTREL_FRAC above)
-	 */
+	 
 	if (prob_avg > MINSTREL_FRAC(90, 100))
 		prob_avg = MINSTREL_FRAC(90, 100);
 
 	return MINSTREL_TRUNC(100 * ((prob_avg * 1000000) / nsecs));
 }
 
-/*
- * Find & sort topmost throughput rates
- *
- * If multiple rates provide equal throughput the sorting is based on their
- * current success probability. Higher success probability is preferred among
- * MCS groups, CCK rates do not provide aggregation and are therefore at last.
- */
+ 
 static void
 minstrel_ht_sort_best_tp_rates(struct minstrel_ht_sta *mi, u16 index,
 			       u16 *tp_list)
@@ -567,9 +529,7 @@ minstrel_ht_sort_best_tp_rates(struct minstrel_ht_sta *mi, u16 index,
 		tp_list[j] = index;
 }
 
-/*
- * Find and set the topmost probability rate per sta and per group
- */
+ 
 static void
 minstrel_ht_set_best_prob_rate(struct minstrel_ht_sta *mi, u16 *dest, u16 index)
 {
@@ -591,8 +551,7 @@ minstrel_ht_set_best_prob_rate(struct minstrel_ht_sta *mi, u16 *dest, u16 index)
 	tmp_prob = mi->groups[tmp_group].rates[tmp_idx].prob_avg;
 	tmp_tp_avg = minstrel_ht_get_tp_avg(mi, tmp_group, tmp_idx, tmp_prob);
 
-	/* if max_tp_rate[0] is from MCS_GROUP max_prob_rate get selected from
-	 * MCS_GROUP as well as CCK_GROUP rates do not allow aggregation */
+	 
 	max_tp_group = MI_RATE_GROUP(mi->max_tp_rate[0]);
 	max_tp_idx = MI_RATE_IDX(mi->max_tp_rate[0]);
 	max_tp_prob = mi->groups[max_tp_group].rates[max_tp_idx].prob_avg;
@@ -601,7 +560,7 @@ minstrel_ht_set_best_prob_rate(struct minstrel_ht_sta *mi, u16 *dest, u16 index)
 	    !minstrel_ht_is_legacy_group(max_tp_group))
 		return;
 
-	/* skip rates faster than max tp rate with lower prob */
+	 
 	if (minstrel_get_duration(mi->max_tp_rate[0]) > minstrel_get_duration(index) &&
 	    mrs->prob_avg < max_tp_prob)
 		return;
@@ -630,12 +589,7 @@ minstrel_ht_set_best_prob_rate(struct minstrel_ht_sta *mi, u16 *dest, u16 index)
 }
 
 
-/*
- * Assign new rate set per sta and use CCK rates only if the fastest
- * rate (max_tp_rate[0]) is from CCK group. This prohibits such sorted
- * rate sets where MCS and CCK rates are mixed, because CCK rates can
- * not use aggregation.
- */
+ 
 static void
 minstrel_ht_assign_best_tp_rates(struct minstrel_ht_sta *mi,
 				 u16 tmp_mcs_tp_rate[MAX_THR_RATES],
@@ -663,10 +617,7 @@ minstrel_ht_assign_best_tp_rates(struct minstrel_ht_sta *mi,
 
 }
 
-/*
- * Try to increase robustness of max_prob rate by decrease number of
- * streams if possible.
- */
+ 
 static inline void
 minstrel_ht_prob_rate_reduce_streams(struct minstrel_ht_sta *mi)
 {
@@ -759,9 +710,7 @@ out:
 	return val;
 }
 
-/*
-* Recalculate statistics and counters of a given rate
-*/
+ 
 static void
 minstrel_ht_calc_rate_stats(struct minstrel_priv *mp,
 			    struct minstrel_rate_stats *mrs)
@@ -866,11 +815,7 @@ minstrel_ht_group_min_rate_offset(struct minstrel_ht_sta *mi, int group,
 	return -1;
 }
 
-/*
- * Incremental update rates:
- * Flip through groups and pick the first group rate that is faster than the
- * highest currently selected rate
- */
+ 
 static u16
 minstrel_ht_next_inc_rate(struct minstrel_ht_sta *mi, u32 fast_rate_dur)
 {
@@ -927,12 +872,7 @@ minstrel_ht_next_group_sample_rate(struct minstrel_ht_sta *mi, int group,
 	return -1;
 }
 
-/*
- * Jump rates:
- * Sample random rates, use those that are faster than the highest
- * currently selected rate. Rates between the fastest and the slowest
- * get sorted into the slow sample bucket, but only if it has room
- */
+ 
 static u16
 minstrel_ht_next_jump_rate(struct minstrel_ht_sta *mi, u32 fast_rate_dur,
 			   u32 slow_rate_dur, int *slow_rate_ofs)
@@ -987,7 +927,7 @@ minstrel_ht_next_jump_rate(struct minstrel_ht_sta *mi, u32 fast_rate_dur,
 		if (duration >= slow_rate_dur)
 			continue;
 
-		/* skip slow rates with high success probability */
+		 
 		mrs = minstrel_get_ratestats(mi, index);
 		if (mrs->prob_avg > MINSTREL_FRAC(95, 100))
 			continue;
@@ -1046,15 +986,7 @@ minstrel_ht_refill_sample_rates(struct minstrel_ht_sta *mi)
 }
 
 
-/*
- * Update rate statistics and select new primary rates
- *
- * Rules for rate selection:
- *  - max_prob_rate must use only one stream, as a tradeoff between delivery
- *    probability and throughput during strong fluctuations
- *  - as long as the max prob rate has a probability of more than 75%, pick
- *    higher throughput rates, even if the probablity is a bit lower
- */
+ 
 static void
 minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 {
@@ -1102,7 +1034,7 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 	for (j = 0; j < ARRAY_SIZE(tmp_mcs_tp_rate); j++)
 		tmp_mcs_tp_rate[j] = index;
 
-	/* Find best rate sets within all MCS groups*/
+	 
 	for (group = 0; group < ARRAY_SIZE(minstrel_mcs_groups); group++) {
 		u16 *tp_rate = tmp_mcs_tp_rate;
 		u16 last_prob = 0;
@@ -1111,7 +1043,7 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 		if (!mi->supported[group])
 			continue;
 
-		/* (re)Initialize group rate indexes */
+		 
 		for(j = 0; j < MAX_THR_RATES; j++)
 			tmp_group_tp_rate[j] = MI_RATE(group, 0);
 
@@ -1137,10 +1069,10 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 			if (minstrel_ht_get_tp_avg(mi, group, i, cur_prob) == 0)
 				continue;
 
-			/* Find max throughput rate set */
+			 
 			minstrel_ht_sort_best_tp_rates(mi, index, tp_rate);
 
-			/* Find max throughput rate set within a group */
+			 
 			minstrel_ht_sort_best_tp_rates(mi, index,
 						       tmp_group_tp_rate);
 		}
@@ -1149,7 +1081,7 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 		       sizeof(mg->max_group_tp_rate));
 	}
 
-	/* Assign new rate set per sta */
+	 
 	minstrel_ht_assign_best_tp_rates(mi, tmp_mcs_tp_rate,
 					 tmp_legacy_tp_rate);
 	memcpy(mi->max_tp_rate, tmp_mcs_tp_rate, sizeof(mi->max_tp_rate));
@@ -1167,7 +1099,7 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 
 			index = MI_RATE(group, i);
 
-			/* Find max probability rate per group and global */
+			 
 			minstrel_ht_set_best_prob_rate(mi, &tmp_max_prob_rate,
 						       index);
 		}
@@ -1175,12 +1107,12 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 
 	mi->max_prob_rate = tmp_max_prob_rate;
 
-	/* Try to increase robustness of max_prob_rate*/
+	 
 	minstrel_ht_prob_rate_reduce_streams(mi);
 	minstrel_ht_refill_sample_rates(mi);
 
 #ifdef CONFIG_MAC80211_DEBUGFS
-	/* use fixed index if set */
+	 
 	if (mp->fixed_rate_idx != -1) {
 		for (i = 0; i < 4; i++)
 			mi->max_tp_rate[i] = mp->fixed_rate_idx;
@@ -1188,7 +1120,7 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 	}
 #endif
 
-	/* Reset update timer */
+	 
 	mi->last_stats_update = jiffies;
 	mi->sample_time = jiffies;
 }
@@ -1220,9 +1152,7 @@ minstrel_ht_txstat_valid(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 	return false;
 }
 
-/*
- * Check whether rate_status contains valid information.
- */
+ 
 static bool
 minstrel_ht_ri_txstat_valid(struct minstrel_priv *mp,
 			    struct minstrel_ht_sta *mi,
@@ -1291,11 +1221,11 @@ minstrel_ht_tx_status(void *priv, struct ieee80211_supported_band *sband,
 	bool last, update = false;
 	int i;
 
-	/* Ignore packet that was sent with noAck flag */
+	 
 	if (info->flags & IEEE80211_TX_CTL_NO_ACK)
 		return;
 
-	/* This packet was aggregated but doesn't carry status info */
+	 
 	if ((info->flags & IEEE80211_TX_CTL_AMPDU) &&
 	    !(info->flags & IEEE80211_TX_STAT_AMPDU))
 		return;
@@ -1306,7 +1236,7 @@ minstrel_ht_tx_status(void *priv, struct ieee80211_supported_band *sband,
 		info->status.ampdu_len = 1;
 	}
 
-	/* wraparound */
+	 
 	if (mi->total_packets >= ~0 - info->status.ampdu_len) {
 		mi->total_packets = 0;
 		mi->sample_packets = 0;
@@ -1350,10 +1280,7 @@ minstrel_ht_tx_status(void *priv, struct ieee80211_supported_band *sband,
 	}
 
 	if (mp->hw->max_rates > 1) {
-		/*
-		 * check for sudden death of spatial multiplexing,
-		 * downgrade to a lower number of streams if necessary.
-		 */
+		 
 		rate = minstrel_get_ratestats(mi, mi->max_tp_rate[0]);
 		if (rate->attempts > 30 &&
 		    rate->success < rate->attempts / 4) {
@@ -1386,7 +1313,7 @@ minstrel_calc_retransmit(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 	unsigned int tx_time, tx_time_rtscts, tx_time_data;
 	unsigned int cw = mp->cw_min;
 	unsigned int ctime = 0;
-	unsigned int t_slot = 9; /* FIXME */
+	unsigned int t_slot = 9;  
 	unsigned int ampdu_len = minstrel_ht_avg_ampdu_len(mi);
 	unsigned int overhead = 0, overhead_rtscts = 0;
 
@@ -1403,7 +1330,7 @@ minstrel_calc_retransmit(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 
 	tx_time_data = minstrel_get_duration(index) * ampdu_len / 1000;
 
-	/* Contention time for first 2 tries */
+	 
 	ctime = (t_slot * cw) >> 1;
 	cw = min((cw << 1) | 1, mp->cw_max);
 	ctime += (t_slot * cw) >> 1;
@@ -1417,17 +1344,17 @@ minstrel_calc_retransmit(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 		overhead_rtscts = mi->overhead_rtscts;
 	}
 
-	/* Total TX time for data and Contention after first 2 tries */
+	 
 	tx_time = ctime + 2 * (overhead + tx_time_data);
 	tx_time_rtscts = ctime + 2 * (overhead_rtscts + tx_time_data);
 
-	/* See how many more tries we can fit inside segment size */
+	 
 	do {
-		/* Contention time for this try */
+		 
 		ctime = (t_slot * cw) >> 1;
 		cw = min((cw << 1) | 1, mp->cw_max);
 
-		/* Total TX time after this try */
+		 
 		tx_time += ctime + overhead + tx_time_data;
 		tx_time_rtscts += ctime + overhead_rtscts + tx_time_data;
 
@@ -1474,10 +1401,7 @@ minstrel_ht_set_rate(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 	else
 		idx = index + (group->streams - 1) * 8;
 
-	/* enable RTS/CTS if needed:
-	 *  - if station is in dynamic SMPS (and streams > 1)
-	 *  - for fallback rates, to increase chances of getting through
-	 */
+	 
 	if (offset > 0 ||
 	    (mi->sta->deflink.smps_mode == IEEE80211_SMPS_DYNAMIC &&
 	     group->streams > 1)) {
@@ -1505,44 +1429,32 @@ minstrel_ht_get_max_amsdu_len(struct minstrel_ht_sta *mi)
 	int rate = MI_RATE_IDX(mi->max_prob_rate);
 	unsigned int duration;
 
-	/* Disable A-MSDU if max_prob_rate is bad */
+	 
 	if (mi->groups[group].rates[rate].prob_avg < MINSTREL_FRAC(50, 100))
 		return 1;
 
 	duration = g->duration[rate];
 	duration <<= g->shift;
 
-	/* If the rate is slower than single-stream MCS1, make A-MSDU limit small */
+	 
 	if (duration > MCS_DURATION(1, 0, 52))
 		return 500;
 
-	/*
-	 * If the rate is slower than single-stream MCS4, limit A-MSDU to usual
-	 * data packet size
-	 */
+	 
 	if (duration > MCS_DURATION(1, 0, 104))
 		return 1600;
 
-	/*
-	 * If the rate is slower than single-stream MCS7, or if the max throughput
-	 * rate success probability is less than 75%, limit A-MSDU to twice the usual
-	 * data packet size
-	 */
+	 
 	if (duration > MCS_DURATION(1, 0, 260) ||
 	    (minstrel_ht_get_prob_avg(mi, mi->max_tp_rate[0]) <
 	     MINSTREL_FRAC(75, 100)))
 		return 3200;
 
-	/*
-	 * HT A-MPDU limits maximum MPDU size under BA agreement to 4095 bytes.
-	 * Since aggregation sessions are started/stopped without txq flush, use
-	 * the limit here to avoid the complexity of having to de-aggregate
-	 * packets in the queue.
-	 */
+	 
 	if (!mi->sta->deflink.vht_cap.vht_supported)
 		return IEEE80211_MAX_MPDU_LEN_HT_BA;
 
-	/* unlimited */
+	 
 	return 0;
 }
 
@@ -1557,10 +1469,10 @@ minstrel_ht_update_rates(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 	if (!rates)
 		return;
 
-	/* Start with max_tp_rate[0] */
+	 
 	minstrel_ht_set_rate(mp, mi, rates, i++, mi->max_tp_rate[0]);
 
-	/* Fill up remaining, keep one entry for max_probe_rate */
+	 
 	for (; i < (max_rates - 1); i++)
 		minstrel_ht_set_rate(mp, mi, rates, i, mi->max_tp_rate[i]);
 
@@ -1609,7 +1521,7 @@ minstrel_ht_get_rate(void *priv, struct ieee80211_sta *sta, void *priv_sta,
 		return;
 #endif
 
-	/* Don't use EAPOL frames for sampling on non-mrr hw */
+	 
 	if (mp->hw->max_rates == 1 &&
 	    (info->control.flags & IEEE80211_TX_CTRL_PORT_CTRL_PROTO))
 		return;
@@ -1780,11 +1692,11 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
 
 		nss = minstrel_mcs_groups[i].streams;
 
-		/* Mark MCS > 7 as unsupported if STA is in static SMPS mode */
+		 
 		if (sta->deflink.smps_mode == IEEE80211_SMPS_STATIC && nss > 1)
 			continue;
 
-		/* HT rate */
+		 
 		if (gflags & IEEE80211_TX_RC_MCS) {
 			if (use_vht && minstrel_vht_only)
 				continue;
@@ -1793,7 +1705,7 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
 			continue;
 		}
 
-		/* VHT rate */
+		 
 		if (!vht_cap->vht_supported ||
 		    WARN_ON(!(gflags & IEEE80211_TX_RC_VHT_MCS)) ||
 		    WARN_ON(gflags & IEEE80211_TX_RC_160_MHZ_WIDTH))
@@ -1825,7 +1737,7 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
 	minstrel_ht_update_cck(mp, mi, sband, sta);
 	minstrel_ht_update_ofdm(mp, mi, sband, sta);
 
-	/* create an initial rate table with the lowest supported rates */
+	 
 	minstrel_ht_update_stats(mp, mi);
 	minstrel_ht_update_rates(mp, mi);
 }
@@ -1942,19 +1854,17 @@ minstrel_ht_alloc(struct ieee80211_hw *hw)
 	if (!mp)
 		return NULL;
 
-	/* contention window settings
-	 * Just an approximation. Using the per-queue values would complicate
-	 * the calculations and is probably unnecessary */
+	 
 	mp->cw_min = 15;
 	mp->cw_max = 1023;
 
-	/* maximum time that the hw is allowed to stay in one MRR segment */
+	 
 	mp->segment_size = 6000;
 
 	if (hw->max_rate_tries > 0)
 		mp->max_retry = hw->max_rate_tries;
 	else
-		/* safe default, does not necessarily have to match hw properties */
+		 
 		mp->max_retry = 7;
 
 	mp->hw = hw;
@@ -1994,7 +1904,7 @@ static u32 minstrel_ht_get_expected_throughput(void *priv_sta)
 	j = MI_RATE_IDX(mi->max_tp_rate[0]);
 	prob = mi->groups[i].rates[j].prob_avg;
 
-	/* convert tp_avg from pkt per second in kbps */
+	 
 	tp_avg = minstrel_ht_get_tp_avg(mi, i, j, prob) * 10;
 	tp_avg = tp_avg * AVG_PKT_SIZE * 8 / 1024;
 

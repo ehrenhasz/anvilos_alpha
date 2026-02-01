@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -50,20 +26,20 @@ static void sighandler(int signum) {
     if (signum == SIGINT) {
         #if MICROPY_ASYNC_KBD_INTR
         #if MICROPY_PY_THREAD_GIL
-        // Since signals can occur at any time, we may not be holding the GIL when
-        // this callback is called, so it is not safe to raise an exception here
+        
+        
         #error "MICROPY_ASYNC_KBD_INTR and MICROPY_PY_THREAD_GIL are not compatible"
         #endif
         mp_obj_exception_clear_traceback(MP_OBJ_FROM_PTR(&MP_STATE_VM(mp_kbd_exception)));
         sigset_t mask;
         sigemptyset(&mask);
-        // On entry to handler, its signal is blocked, and unblocked on
-        // normal exit. As we instead perform longjmp, unblock it manually.
+        
+        
         sigprocmask(SIG_SETMASK, &mask, NULL);
         nlr_raise(MP_OBJ_FROM_PTR(&MP_STATE_VM(mp_kbd_exception)));
         #else
-        if (0) { // Disabled
-            // this is the second time we are called, so die straight away
+        if (0) { 
+            
             exit(1);
         }
         mp_sched_keyboard_interrupt();
@@ -73,10 +49,10 @@ static void sighandler(int signum) {
 #endif
 
 void mp_hal_set_interrupt_char(char c) {
-    // configure terminal settings to (not) let ctrl-C through
+    
     if (c == CHAR_CTRL_C) {
         #ifndef _WIN32
-        // enable signal handler
+        
         struct sigaction sa;
         sa.sa_flags = 0;
         sa.sa_handler = sighandler;
@@ -85,7 +61,7 @@ void mp_hal_set_interrupt_char(char c) {
         #endif
     } else {
         #ifndef _WIN32
-        // disable signal handler
+        
         struct sigaction sa;
         sa.sa_flags = 0;
         sa.sa_handler = SIG_DFL;
@@ -102,7 +78,7 @@ void mp_hal_set_interrupt_char(char c) {
 static struct termios orig_termios;
 
 void mp_hal_stdio_mode_raw(void) {
-    // save and set terminal settings
+    
     tcgetattr(0, &orig_termios);
     static struct termios termios;
     termios = orig_termios;
@@ -115,7 +91,7 @@ void mp_hal_stdio_mode_raw(void) {
 }
 
 void mp_hal_stdio_mode_orig(void) {
-    // restore terminal settings
+    
     tcsetattr(0, TCSAFLUSH, &orig_termios);
 }
 
@@ -142,7 +118,7 @@ static int call_dupterm_read(size_t idx) {
         nlr_pop();
         return *(byte *)bufinfo.buf;
     } else {
-        // Temporarily disable dupterm to avoid infinite recursion
+        
         mp_obj_t save_term = MP_STATE_VM(dupterm_objs[idx]);
         MP_STATE_VM(dupterm_objs[idx]) = NULL;
         mp_printf(&mp_plat_print, "dupterm: ");
@@ -156,7 +132,7 @@ static int call_dupterm_read(size_t idx) {
 
 int mp_hal_stdin_rx_chr(void) {
     #if MICROPY_PY_OS_DUPTERM
-    // TODO only support dupterm one slot at the moment
+    
     if (MP_STATE_VM(dupterm_objs[0]) != MP_OBJ_NULL) {
         int c;
         do {
@@ -177,7 +153,7 @@ main_term:;
     ssize_t ret;
     MP_HAL_RETRY_SYSCALL(ret, read(STDIN_FILENO, &c, 1), {});
     if (ret == 0) {
-        c = 4; // EOF, ctrl-D
+        c = 4; 
     } else if (c == '\n') {
         c = '\r';
     }
@@ -195,7 +171,7 @@ mp_uint_t mp_hal_stdout_tx_strn(const char *str, size_t len) {
     return written;
 }
 
-// cooked is same as uncooked because the terminal does some postprocessing
+
 void mp_hal_stdout_tx_strn_cooked(const char *str, size_t len) {
     mp_hal_stdout_tx_strn(str, len);
 }

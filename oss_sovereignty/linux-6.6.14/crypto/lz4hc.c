@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cryptographic API.
- *
- * Copyright (c) 2013 Chanho Min <chanho.min@lge.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/crypto.h>

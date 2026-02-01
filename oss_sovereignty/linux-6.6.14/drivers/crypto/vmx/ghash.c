@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GHASH routines supporting VMX instructions on the Power 8
- *
- * Copyright (C) 2015, 2019 International Business Machines Inc.
- *
- * Author: Marcelo Henrique Cerri <mhcerri@br.ibm.com>
- *
- * Extended by Daniel Axtens <dja@axtens.net> to replace the fallback
- * mechanism. The new approach is based on arm64 code, which is:
- *   Copyright (C) 2014 - 2018 Linaro Ltd. <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/err.h>
@@ -31,9 +21,9 @@ void gcm_ghash_p8(u64 Xi[2], const u128 htable[16],
 		  const u8 *in, size_t len);
 
 struct p8_ghash_ctx {
-	/* key used by vector asm */
+	 
 	u128 htable[16];
-	/* key used by software fallback */
+	 
 	be128 key;
 };
 

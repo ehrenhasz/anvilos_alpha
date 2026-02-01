@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_ptp.c:
- * Definition of functions for Linux PTP support.
- */
+ 
+
+ 
 
 #include <linux/ptp_clock_kernel.h>
 #include <linux/ptp_classify.h>
@@ -255,7 +249,7 @@ static void aq_ptp_tx_timeout_check(struct aq_ptp_s *aq_ptp)
 	if (timeout->active) {
 		timeout_flag = time_is_before_jiffies(timeout->tx_start +
 						      AQ_PTP_TX_TIMEOUT);
-		/* reset active flag if timeout detected */
+		 
 		if (timeout_flag)
 			timeout->active = false;
 	}
@@ -268,13 +262,7 @@ static void aq_ptp_tx_timeout_check(struct aq_ptp_s *aq_ptp)
 	}
 }
 
-/* aq_ptp_adjfine
- * @ptp: the ptp clock structure
- * @ppb: parts per billion adjustment from base
- *
- * adjust the frequency of the ptp cycle counter by the
- * indicated ppb from the base frequency.
- */
+ 
 static int aq_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
 	struct aq_ptp_s *aq_ptp = container_of(ptp, struct aq_ptp_s, ptp_info);
@@ -288,12 +276,7 @@ static int aq_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	return 0;
 }
 
-/* aq_ptp_adjtime
- * @ptp: the ptp clock structure
- * @delta: offset to adjust the cycle counter by
- *
- * adjust the timer by resetting the timecounter structure.
- */
+ 
 static int aq_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 {
 	struct aq_ptp_s *aq_ptp = container_of(ptp, struct aq_ptp_s, ptp_info);
@@ -307,13 +290,7 @@ static int aq_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	return 0;
 }
 
-/* aq_ptp_gettime
- * @ptp: the ptp clock structure
- * @ts: timespec structure to hold the current time value
- *
- * read the timecounter and return the correct value on ns,
- * after converting it into a struct timespec.
- */
+ 
 static int aq_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 {
 	struct aq_ptp_s *aq_ptp = container_of(ptp, struct aq_ptp_s, ptp_info);
@@ -330,13 +307,7 @@ static int aq_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 	return 0;
 }
 
-/* aq_ptp_settime
- * @ptp: the ptp clock structure
- * @ts: the timespec containing the new time for the cycle counter
- *
- * reset the timecounter to use a new base value instead of the kernel
- * wall timer value.
- */
+ 
 static int aq_ptp_settime(struct ptp_clock_info *ptp,
 			  const struct timespec64 *ts)
 {
@@ -375,9 +346,7 @@ static int aq_ptp_hw_pin_conf(struct aq_nic_s *aq_nic, u32 pin_index, u64 start,
 			   "Disable GPIO %d pulsing, start time %llu, period %u\n",
 			   pin_index, start, (u32)period);
 
-	/* Notify hardware of request to being sending pulses.
-	 * If period is ZERO then pulsen is disabled.
-	 */
+	 
 	mutex_lock(&aq_nic->fwreq_mutex);
 	aq_nic->aq_hw_ops->hw_gpio_pulse(aq_nic->aq_hw, pin_index,
 					 start, (u32)period);
@@ -396,26 +365,22 @@ static int aq_ptp_perout_pin_configure(struct ptp_clock_info *ptp,
 	u64 start, period;
 	u32 pin_index = rq->perout.index;
 
-	/* verify the request channel is there */
+	 
 	if (pin_index >= ptp->n_per_out)
 		return -EINVAL;
 
-	/* we cannot support periods greater
-	 * than 4 seconds due to reg limit
-	 */
+	 
 	if (t->sec > 4 || t->sec < 0)
 		return -ERANGE;
 
-	/* convert to unsigned 64b ns,
-	 * verify we can put it in a 32b register
-	 */
+	 
 	period = on ? t->sec * NSEC_PER_SEC + t->nsec : 0;
 
-	/* verify the value is in range supported by hardware */
+	 
 	if (period > U32_MAX)
 		return -ERANGE;
-	/* convert to unsigned 64b ns */
-	/* TODO convert to AQ time */
+	 
+	 
 	start = on ? s->sec * NSEC_PER_SEC + s->nsec : 0;
 
 	aq_ptp_hw_pin_conf(aq_nic, pin_index, start, period);
@@ -432,13 +397,13 @@ static int aq_ptp_pps_pin_configure(struct ptp_clock_info *ptp,
 	u32 pin_index = 0;
 	u32 rest = 0;
 
-	/* verify the request channel is there */
+	 
 	if (pin_index >= ptp->n_per_out)
 		return -EINVAL;
 
 	aq_nic->aq_hw_ops->hw_get_ptp_ts(aq_nic->aq_hw, &start);
 	div_u64_rem(start, NSEC_PER_SEC, &rest);
-	period = on ? NSEC_PER_SEC : 0; /* PPS - pulse per second */
+	period = on ? NSEC_PER_SEC : 0;  
 	start = on ? start - rest + NSEC_PER_SEC *
 		(rest > 990000000LL ? 2 : 1) : 0;
 
@@ -479,11 +444,7 @@ static int aq_ptp_extts_pin_configure(struct ptp_clock_info *ptp,
 	return 0;
 }
 
-/* aq_ptp_gpio_feature_enable
- * @ptp: the ptp clock structure
- * @rq: the requested feature to change
- * @on: whether to enable or disable the feature
- */
+ 
 static int aq_ptp_gpio_feature_enable(struct ptp_clock_info *ptp,
 				      struct ptp_clock_request *rq, int on)
 {
@@ -501,37 +462,26 @@ static int aq_ptp_gpio_feature_enable(struct ptp_clock_info *ptp,
 	return 0;
 }
 
-/* aq_ptp_verify
- * @ptp: the ptp clock structure
- * @pin: index of the pin in question
- * @func: the desired function to use
- * @chan: the function channel index to use
- */
+ 
 static int aq_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
 			 enum ptp_pin_function func, unsigned int chan)
 {
-	/* verify the requested pin is there */
+	 
 	if (!ptp->pin_config || pin >= ptp->n_pins)
 		return -EINVAL;
 
-	/* enforce locked channels, no changing them */
+	 
 	if (chan != ptp->pin_config[pin].chan)
 		return -EINVAL;
 
-	/* we want to keep the functions locked as well */
+	 
 	if (func != ptp->pin_config[pin].func)
 		return -EINVAL;
 
 	return 0;
 }
 
-/* aq_ptp_tx_hwtstamp - utility function which checks for TX time stamp
- * @adapter: the private adapter struct
- *
- * if the timestamp is valid, we convert it into the timecounter ns
- * value, then store that result into the hwtstamps structure which
- * is passed up the network stack
- */
+ 
 void aq_ptp_tx_hwtstamp(struct aq_nic_s *aq_nic, u64 timestamp)
 {
 	struct aq_ptp_s *aq_ptp = aq_nic->aq_ptp;
@@ -551,14 +501,7 @@ void aq_ptp_tx_hwtstamp(struct aq_nic_s *aq_nic, u64 timestamp)
 	aq_ptp_tx_timeout_update(aq_ptp);
 }
 
-/* aq_ptp_rx_hwtstamp - utility function which checks for RX time stamp
- * @adapter: pointer to adapter struct
- * @shhwtstamps: particular skb_shared_hwtstamps to save timestamp
- *
- * if the timestamp is valid, we convert it into the timecounter ns
- * value, then store that result into the hwtstamps structure which
- * is passed up the network stack
- */
+ 
 static void aq_ptp_rx_hwtstamp(struct aq_ptp_s *aq_ptp, struct skb_shared_hwtstamps *shhwtstamps,
 			       u64 timestamp)
 {
@@ -661,7 +604,7 @@ static int aq_ptp_poll(struct napi_struct *napi, int budget)
 	int work_done = 0;
 	int err;
 
-	/* Processing PTP TX traffic */
+	 
 	err = aq_nic->aq_hw_ops->hw_ring_tx_head_update(aq_nic->aq_hw,
 							&aq_ptp->ptp_tx);
 	if (err < 0)
@@ -673,7 +616,7 @@ static int aq_ptp_poll(struct napi_struct *napi, int budget)
 		was_cleaned = true;
 	}
 
-	/* Processing HW_TIMESTAMP RX traffic */
+	 
 	err = aq_nic->aq_hw_ops->hw_ring_hwts_rx_receive(aq_nic->aq_hw,
 							 &aq_ptp->hwts_rx);
 	if (err < 0)
@@ -690,7 +633,7 @@ static int aq_ptp_poll(struct napi_struct *napi, int budget)
 		was_cleaned = true;
 	}
 
-	/* Processing PTP RX traffic */
+	 
 	err = aq_nic->aq_hw_ops->hw_ring_rx_receive(aq_nic->aq_hw,
 						    &aq_ptp->ptp_rx);
 	if (err < 0)
@@ -757,12 +700,9 @@ int aq_ptp_xmit(struct aq_nic_s *aq_nic, struct sk_buff *skb)
 	}
 
 	frags = skb_shinfo(skb)->nr_frags + 1;
-	/* Frags cannot be bigger 16KB
-	 * because PTP usually works
-	 * without Jumbo even in a background
-	 */
+	 
 	if (frags > AQ_CFG_SKB_FRAGS_MAX || frags > aq_ring_avail_dx(ring)) {
-		/* Drop packet because it doesn't make sence to delay it */
+		 
 		dev_kfree_skb_any(skb);
 		goto err_exit;
 	}
@@ -1053,34 +993,34 @@ static void aq_ptp_offset_init_from_fw(const struct hw_atl_ptp_offset *offsets)
 {
 	int i;
 
-	/* Load offsets for PTP */
+	 
 	for (i = 0; i < ARRAY_SIZE(ptp_offset); i++) {
 		switch (i) {
-		/* 100M */
+		 
 		case ptp_offset_idx_100:
 			ptp_offset_init(i, 100,
 					offsets->egress_100,
 					offsets->ingress_100);
 			break;
-		/* 1G */
+		 
 		case ptp_offset_idx_1000:
 			ptp_offset_init(i, 1000,
 					offsets->egress_1000,
 					offsets->ingress_1000);
 			break;
-		/* 2.5G */
+		 
 		case ptp_offset_idx_2500:
 			ptp_offset_init(i, 2500,
 					offsets->egress_2500,
 					offsets->ingress_2500);
 			break;
-		/* 5G */
+		 
 		case ptp_offset_idx_5000:
 			ptp_offset_init(i, 5000,
 					offsets->egress_5000,
 					offsets->ingress_5000);
 			break;
-		/* 10G */
+		 
 		case ptp_offset_idx_10000:
 			ptp_offset_init(i, 10000,
 					offsets->egress_10000,
@@ -1223,7 +1163,7 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int idx_vec)
 
 	aq_nic->aq_ptp = aq_ptp;
 
-	/* enable ptp counter */
+	 
 	aq_utils_obj_set(&aq_nic->aq_hw->flags, AQ_HW_PTP_AVAILABLE);
 	mutex_lock(&aq_nic->fwreq_mutex);
 	aq_nic->aq_fw_ops->enable_ptp(aq_nic->aq_hw, 1);
@@ -1268,7 +1208,7 @@ void aq_ptp_free(struct aq_nic_s *aq_nic)
 	aq_nic_release_filter(aq_nic, aq_rx_filter_l3l4,
 			      aq_ptp->udp_filter.location);
 	cancel_delayed_work_sync(&aq_ptp->poll_sync);
-	/* disable ptp */
+	 
 	mutex_lock(&aq_nic->fwreq_mutex);
 	aq_nic->aq_fw_ops->enable_ptp(aq_nic->aq_hw, 0);
 	mutex_unlock(&aq_nic->fwreq_mutex);
@@ -1285,7 +1225,7 @@ struct ptp_clock *aq_ptp_get_ptp_clock(struct aq_ptp_s *aq_ptp)
 	return aq_ptp->ptp_clock;
 }
 
-/* PTP external GPIO nanoseconds count */
+ 
 static uint64_t aq_ptp_get_sync1588_ts(struct aq_nic_s *aq_nic)
 {
 	u64 ts = 0;
@@ -1354,7 +1294,7 @@ static int aq_ptp_check_sync1588(struct aq_ptp_s *aq_ptp)
 	struct aq_nic_s *aq_nic = aq_ptp->aq_nic;
 	u64 sync_ts;
 
-	 /* Sync1588 pin was triggered */
+	  
 	if (aq_ptp_sync_ts_updated(aq_ptp, &sync_ts)) {
 		if (aq_ptp->extts_pin_enabled) {
 			struct ptp_clock_event ptp_event;
@@ -1394,7 +1334,7 @@ int aq_ptp_get_ring_cnt(struct aq_nic_s *aq_nic, const enum atl_ring_type ring_t
 	if (!aq_nic->aq_ptp)
 		return 0;
 
-	/* Additional RX ring is allocated for PTP HWTS on A1 */
+	 
 	return (aq_nic->aq_ptp->a1_ptp && ring_type == ATL_RING_RX) ? 2 : 1;
 }
 
@@ -1412,7 +1352,7 @@ u64 *aq_ptp_get_stats(struct aq_nic_s *aq_nic, u64 *data)
 	data += count;
 
 	if (aq_ptp->a1_ptp) {
-		/* Only Receive ring for HWTS */
+		 
 		count = aq_ring_fill_stats_data(&aq_ptp->hwts_rx, data);
 		data += count;
 	}

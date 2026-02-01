@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2006-2011 Intel Corporation
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *	Dave Airlie <airlied@linux.ie>
- *	Jesse Barnes <jesse.barnes@intel.com>
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/i2c.h>
@@ -23,9 +16,7 @@
 #include "psb_intel_drv.h"
 #include "psb_intel_reg.h"
 
-/*
- * LVDS I2C backlight control macros
- */
+ 
 #define BRIGHTNESS_MAX_LEVEL 100
 #define BRIGHTNESS_MASK 0xFF
 #define BLC_I2C_TYPE	0x01
@@ -41,9 +32,7 @@
 #define PSB_BACKLIGHT_PWM_POLARITY_BIT_CLEAR (0xFFFE)
 
 struct cdv_intel_lvds_priv {
-	/**
-	 * Saved LVDO output states
-	 */
+	 
 	uint32_t savePP_ON;
 	uint32_t savePP_OFF;
 	uint32_t saveLVDS;
@@ -54,9 +43,7 @@ struct cdv_intel_lvds_priv {
 	uint32_t saveBLC_PWM_CTL;
 };
 
-/*
- * Returns the maximum level of the backlight duty cycle field.
- */
+ 
 static u32 cdv_intel_lvds_get_max_backlight(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -76,11 +63,7 @@ static u32 cdv_intel_lvds_get_max_backlight(struct drm_device *dev)
 	return retval;
 }
 
-/*
- * Sets the backlight level.
- *
- * level backlight level, from 0 to cdv_intel_lvds_get_max_backlight().
- */
+ 
 static void cdv_intel_lvds_set_backlight(struct drm_device *dev, int level)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -101,9 +84,7 @@ static void cdv_intel_lvds_set_backlight(struct drm_device *dev, int level)
 	}
 }
 
-/*
- * Sets the power state for the panel.
- */
+ 
 static void cdv_intel_lvds_set_power(struct drm_device *dev,
 				     struct drm_encoder *encoder, bool on)
 {
@@ -141,7 +122,7 @@ static void cdv_intel_lvds_encoder_dpms(struct drm_encoder *encoder, int mode)
 		cdv_intel_lvds_set_power(dev, encoder, true);
 	else
 		cdv_intel_lvds_set_power(dev, encoder, false);
-	/* XXX: We never power down the LVDS pairs. */
+	 
 }
 
 static void cdv_intel_lvds_save(struct drm_connector *connector)
@@ -160,11 +141,11 @@ static enum drm_mode_status cdv_intel_lvds_mode_valid(struct drm_connector *conn
 	struct drm_display_mode *fixed_mode =
 					dev_priv->mode_dev.panel_fixed_mode;
 
-	/* just in case */
+	 
 	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
 		return MODE_NO_DBLESCAN;
 
-	/* just in case */
+	 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		return MODE_NO_INTERLACE;
 
@@ -187,7 +168,7 @@ static bool cdv_intel_lvds_mode_fixup(struct drm_encoder *encoder,
 	struct drm_encoder *tmp_encoder;
 	struct drm_display_mode *panel_fixed_mode = mode_dev->panel_fixed_mode;
 
-	/* Should never happen!! */
+	 
 	list_for_each_entry(tmp_encoder, &dev->mode_config.encoder_list,
 			    head) {
 		if (tmp_encoder != encoder
@@ -197,12 +178,7 @@ static bool cdv_intel_lvds_mode_fixup(struct drm_encoder *encoder,
 		}
 	}
 
-	/*
-	 * If we have timings from the BIOS for the panel, put them in
-	 * to the adjusted mode.  The CRTC will be set up for this mode,
-	 * with the panel scaling set up to source from the H/VDisplay
-	 * of the original mode.
-	 */
+	 
 	if (panel_fixed_mode != NULL) {
 		adjusted_mode->hdisplay = panel_fixed_mode->hdisplay;
 		adjusted_mode->hsync_start = panel_fixed_mode->hsync_start;
@@ -217,11 +193,7 @@ static bool cdv_intel_lvds_mode_fixup(struct drm_encoder *encoder,
 				      CRTC_INTERLACE_HALVE_V);
 	}
 
-	/*
-	 * XXX: It would be nice to support lower refresh rates on the
-	 * panels to reduce power consumption, and perhaps match the
-	 * user's requested refresh rate.
-	 */
+	 
 
 	return true;
 }
@@ -266,17 +238,9 @@ static void cdv_intel_lvds_mode_set(struct drm_encoder *encoder,
 	struct gma_crtc *gma_crtc = to_gma_crtc(encoder->crtc);
 	u32 pfit_control;
 
-	/*
-	 * The LVDS pin pair will already have been turned on in the
-	 * cdv_intel_crtc_mode_set since it has a large impact on the DPLL
-	 * settings.
-	 */
+	 
 
-	/*
-	 * Enable automatic panel scaling so that non-native modes fill the
-	 * screen.  Should be enabled before the pipe is enabled, according to
-	 * register description and PRM.
-	 */
+	 
 	if (mode->hdisplay != adjusted_mode->hdisplay ||
 	    mode->vdisplay != adjusted_mode->vdisplay)
 		pfit_control = (PFIT_ENABLE | VERT_AUTO_SCALE |
@@ -293,9 +257,7 @@ static void cdv_intel_lvds_mode_set(struct drm_encoder *encoder,
 	REG_WRITE(PFIT_CONTROL, pfit_control);
 }
 
-/*
- * Return the list of DDC modes if available, or the BIOS fixed mode otherwise.
- */
+ 
 static int cdv_intel_lvds_get_modes(struct drm_connector *connector)
 {
 	struct drm_device *dev = connector->dev;
@@ -413,13 +375,7 @@ static const struct drm_connector_funcs cdv_intel_lvds_connector_funcs = {
 	.destroy = cdv_intel_lvds_destroy,
 };
 
-/*
- * Enumerate the child dev array parsed from VBT to check whether
- * the LVDS is present.
- * If it is present, return 1.
- * If it is not present, return false.
- * If no child dev is parsed from VBT, it assumes that the LVDS is present.
- */
+ 
 static bool lvds_is_present_in_vbt(struct drm_device *dev,
 				   u8 *i2c_pin)
 {
@@ -432,10 +388,7 @@ static bool lvds_is_present_in_vbt(struct drm_device *dev,
 	for (i = 0; i < dev_priv->child_dev_num; i++) {
 		struct child_device_config *child = dev_priv->child_dev + i;
 
-		/* If the device type is not LFP, continue.
-		 * We have to check both the new identifiers as well as the
-		 * old for compatibility with some BIOSes.
-		 */
+		 
 		if (child->device_type != DEVICE_TYPE_INT_LFP &&
 		    child->device_type != DEVICE_TYPE_LFP)
 			continue;
@@ -443,19 +396,11 @@ static bool lvds_is_present_in_vbt(struct drm_device *dev,
 		if (child->i2c_pin)
 		    *i2c_pin = child->i2c_pin;
 
-		/* However, we cannot trust the BIOS writers to populate
-		 * the VBT correctly.  Since LVDS requires additional
-		 * information from AIM blocks, a non-zero addin offset is
-		 * a good indicator that the LVDS is actually present.
-		 */
+		 
 		if (child->addin_offset)
 			return true;
 
-		/* But even then some BIOS writers perform some black magic
-		 * and instantiate the device without reference to any
-		 * additional data.  Trust that if the VBT was written into
-		 * the OpRegion then they have validated the LVDS's existence.
-		 */
+		 
 		if (dev_priv->opregion.vbt)
 			return true;
 	}
@@ -463,14 +408,7 @@ static bool lvds_is_present_in_vbt(struct drm_device *dev,
 	return false;
 }
 
-/**
- * cdv_intel_lvds_init - setup LVDS connectors on this device
- * @dev: drm device
- * @mode_dev: PSB mode device
- *
- * Create the connector, register the LVDS DDC bus, and try to figure out what
- * modes we can display on the LVDS panel (if present).
- */
+ 
 void cdv_intel_lvds_init(struct drm_device *dev,
 		     struct psb_intel_mode_device *mode_dev)
 {
@@ -518,7 +456,7 @@ void cdv_intel_lvds_init(struct drm_device *dev,
 	gma_connector->restore = cdv_intel_lvds_restore;
 	encoder = &gma_encoder->base;
 
-	/* Set up the DDC bus. */
+	 
 	ddc_bus = gma_i2c_create(dev, GPIOC, "LVDSDDC_C");
 	if (!ddc_bus) {
 		dev_printk(KERN_ERR, dev->dev,
@@ -547,7 +485,7 @@ void cdv_intel_lvds_init(struct drm_device *dev,
 	connector->interlace_allowed = false;
 	connector->doublescan_allowed = false;
 
-	/*Attach connector properties*/
+	 
 	drm_object_attach_property(&connector->base,
 				      dev->mode_config.scaling_mode_property,
 				      DRM_MODE_SCALE_FULLSCREEN);
@@ -555,10 +493,7 @@ void cdv_intel_lvds_init(struct drm_device *dev,
 				      dev_priv->backlight_property,
 				      BRIGHTNESS_MAX_LEVEL);
 
-	/**
-	 * Set up I2C bus
-	 * FIXME: distroy i2c_bus when exit
-	 */
+	 
 	gma_encoder->i2c_bus = gma_i2c_create(dev, GPIOB, "LVDSBLC_B");
 	if (!gma_encoder->i2c_bus) {
 		dev_printk(KERN_ERR,
@@ -568,20 +503,9 @@ void cdv_intel_lvds_init(struct drm_device *dev,
 	gma_encoder->i2c_bus->slave_addr = 0x2C;
 	dev_priv->lvds_i2c_bus = gma_encoder->i2c_bus;
 
-	/*
-	 * LVDS discovery:
-	 * 1) check for EDID on DDC
-	 * 2) check for VBT data
-	 * 3) check to see if LVDS is already on
-	 *    if none of the above, no panel
-	 * 4) make sure lid is open
-	 *    if closed, act like it's not there for now
-	 */
+	 
 
-	/*
-	 * Attempt to get the fixed panel mode from DDC.  Assume that the
-	 * preferred mode is the right one.
-	 */
+	 
 	mutex_lock(&dev->mode_config.mutex);
 	psb_intel_ddc_get_modes(connector, &ddc_bus->base);
 
@@ -589,25 +513,21 @@ void cdv_intel_lvds_init(struct drm_device *dev,
 		if (scan->type & DRM_MODE_TYPE_PREFERRED) {
 			mode_dev->panel_fixed_mode =
 			    drm_mode_duplicate(dev, scan);
-			goto out;	/* FIXME: check for quirks */
+			goto out;	 
 		}
 	}
 
-	/* Failed to get EDID, what about VBT? do we need this?*/
+	 
 	if (dev_priv->lfp_lvds_vbt_mode) {
 		mode_dev->panel_fixed_mode =
 			drm_mode_duplicate(dev, dev_priv->lfp_lvds_vbt_mode);
 		if (mode_dev->panel_fixed_mode) {
 			mode_dev->panel_fixed_mode->type |=
 				DRM_MODE_TYPE_PREFERRED;
-			goto out;	/* FIXME: check for quirks */
+			goto out;	 
 		}
 	}
-	/*
-	 * If we didn't get EDID, try checking if the panel is already turned
-	 * on.	If so, assume that whatever is currently programmed is the
-	 * correct mode.
-	 */
+	 
 	lvds = REG_READ(LVDS);
 	pipe = (lvds & LVDS_PIPEB_SELECT) ? 1 : 0;
 	crtc = psb_intel_get_crtc_from_pipe(dev, pipe);
@@ -618,18 +538,18 @@ void cdv_intel_lvds_init(struct drm_device *dev,
 		if (mode_dev->panel_fixed_mode) {
 			mode_dev->panel_fixed_mode->type |=
 			    DRM_MODE_TYPE_PREFERRED;
-			goto out;	/* FIXME: check for quirks */
+			goto out;	 
 		}
 	}
 
-	/* If we still don't have a mode after all that, give up. */
+	 
 	if (!mode_dev->panel_fixed_mode) {
 		DRM_DEBUG
 			("Found no modes on the lvds, ignoring the LVDS\n");
 		goto err_unlock;
 	}
 
-	/* setup PWM */
+	 
 	{
 		u32 pwm;
 

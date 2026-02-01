@@ -1,22 +1,9 @@
-/*
- *  linux/fs/hfs/dir.c
- *
- * Copyright (C) 1995-1997  Paul H. Hargrove
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- * This file may be distributed under the terms of the GNU General Public License.
- *
- * This file contains directory-related functions independent of which
- * scheme is being used to represent forks.
- *
- * Based on the minix file system code, (C) 1991, 1992 by Linus Torvalds
- */
+ 
 
 #include "hfs_fs.h"
 #include "btree.h"
 
-/*
- * hfs_lookup()
- */
+ 
 static struct dentry *hfs_lookup(struct inode *dir, struct dentry *dentry,
 				 unsigned int flags)
 {
@@ -42,9 +29,7 @@ static struct dentry *hfs_lookup(struct inode *dir, struct dentry *dentry,
 	return d_splice_alias(inode, dentry);
 }
 
-/*
- * hfs_readdir
- */
+ 
 static int hfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode *inode = file_inode(file);
@@ -68,7 +53,7 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 		goto out;
 
 	if (ctx->pos == 0) {
-		/* This is completely artificial... */
+		 
 		if (!dir_emit_dot(file, ctx))
 			goto out;
 		ctx->pos = 1;
@@ -85,11 +70,11 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 			err = -EIO;
 			goto out;
 		}
-		//if (fd.entrylength < HFS_MIN_THREAD_SZ) {
-		//	pr_err("truncated catalog thread\n");
-		//	err = -EIO;
-		//	goto out;
-		//}
+		
+		
+		
+		
+		
 		if (!dir_emit(ctx, "..", 2,
 			    be32_to_cpu(entry.thread.ParID), DT_DIR))
 			goto out;
@@ -159,10 +144,7 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 		list_add(&rd->list, &HFS_I(inode)->open_dir_list);
 		spin_unlock(&HFS_I(inode)->open_dir_lock);
 	}
-	/*
-	 * Can be done after the list insertion; exclusion with
-	 * hfs_delete_cat() is provided by directory lock.
-	 */
+	 
 	memcpy(&rd->key, &fd.key->cat, sizeof(struct hfs_cat_key));
 out:
 	hfs_find_exit(&fd);
@@ -181,14 +163,7 @@ static int hfs_dir_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/*
- * hfs_create()
- *
- * This is the create() entry in the inode_operations structure for
- * regular HFS directories.  The purpose is to create a new file in
- * a directory and return a corresponding inode, given the inode for
- * the directory and the name (and its length) of the new file.
- */
+ 
 static int hfs_create(struct mnt_idmap *idmap, struct inode *dir,
 		      struct dentry *dentry, umode_t mode, bool excl)
 {
@@ -211,14 +186,7 @@ static int hfs_create(struct mnt_idmap *idmap, struct inode *dir,
 	return 0;
 }
 
-/*
- * hfs_mkdir()
- *
- * This is the mkdir() entry in the inode_operations structure for
- * regular HFS directories.  The purpose is to create a new directory
- * in a directory, given the inode for the parent directory and the
- * name (and its length) of the new directory.
- */
+ 
 static int hfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		     struct dentry *dentry, umode_t mode)
 {
@@ -241,17 +209,7 @@ static int hfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	return 0;
 }
 
-/*
- * hfs_remove()
- *
- * This serves as both unlink() and rmdir() in the inode_operations
- * structure for regular HFS directories.  The purpose is to delete
- * an existing child, given the inode for the parent directory and
- * the name (and its length) of the existing directory.
- *
- * HFS does not have hardlinks, so both rmdir and unlink set the
- * link count to 0.  The only difference is the emptiness check.
- */
+ 
 static int hfs_remove(struct inode *dir, struct dentry *dentry)
 {
 	struct inode *inode = d_inode(dentry);
@@ -269,17 +227,7 @@ static int hfs_remove(struct inode *dir, struct dentry *dentry)
 	return 0;
 }
 
-/*
- * hfs_rename()
- *
- * This is the rename() entry in the inode_operations structure for
- * regular HFS directories.  The purpose is to rename an existing
- * file or directory, given the inode for the current directory and
- * the name (and its length) of the existing file/directory and the
- * inode for the new directory and the name (and its length) of the
- * new file/directory.
- * XXX: how do you handle must_be dir?
- */
+ 
 static int hfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		      struct dentry *old_dentry, struct inode *new_dir,
 		      struct dentry *new_dentry, unsigned int flags)
@@ -289,7 +237,7 @@ static int hfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	if (flags & ~RENAME_NOREPLACE)
 		return -EINVAL;
 
-	/* Unlink destination if it already exists */
+	 
 	if (d_really_is_positive(new_dentry)) {
 		res = hfs_remove(new_dir, new_dentry);
 		if (res)

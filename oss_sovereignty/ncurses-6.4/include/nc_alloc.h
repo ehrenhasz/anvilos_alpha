@@ -1,40 +1,11 @@
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2013,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                    1996-on                     *
- ****************************************************************************/
-/* $Id: nc_alloc.h,v 1.30 2021/11/20 23:33:38 tom Exp $ */
+ 
+ 
 
 #ifndef NC_ALLOC_included
 #define NC_ALLOC_included 1
-/* *INDENT-OFF* */
+ 
 
 #include <ncurses_cfg.h>
 #include <curses.h>
@@ -45,22 +16,22 @@ extern "C" {
 
 #if defined(HAVE_LIBDMALLOC) && HAVE_LIBDMALLOC
 #include <string.h>
-#undef strndup		/* workaround for #define in GLIBC 2.7 */
-#include <dmalloc.h>    /* Gray Watson's library */
+#undef strndup		 
+#include <dmalloc.h>     
 #else
 #undef  HAVE_LIBDMALLOC
 #define HAVE_LIBDMALLOC 0
 #endif
 
 #if defined(HAVE_LIBDBMALLOC) && HAVE_LIBDBMALLOC
-#include <dbmalloc.h>   /* Conor Cahill's library */
+#include <dbmalloc.h>    
 #else
 #undef  HAVE_LIBDBMALLOC
 #define HAVE_LIBDBMALLOC 0
 #endif
 
 #if defined(HAVE_LIBMPATROL) && HAVE_LIBMPATROL
-#include <mpatrol.h>    /* Memory-Patrol library */
+#include <mpatrol.h>     
 #else
 #undef  HAVE_LIBMPATROL
 #define HAVE_LIBMPATROL 0
@@ -85,7 +56,7 @@ extern GCC_NORETURN NCURSES_EXPORT(void) NCURSES_SP_NAME(_nc_free_and_exit)(SCRE
 #endif
 extern GCC_NORETURN NCURSES_EXPORT(void) _nc_free_and_exit(int);
 
-#else /* !NCURSES_INTERNALS */
+#else  
 extern GCC_NORETURN NCURSES_EXPORT(void) _nc_free_and_exit(int) GCC_DEPRECATED("use exit_curses");
 #endif
 
@@ -93,7 +64,7 @@ extern GCC_NORETURN NCURSES_EXPORT(void) _nc_free_and_exit(int) GCC_DEPRECATED("
 
 #else
 extern GCC_NORETURN NCURSES_EXPORT(void) _nc_free_and_exit(int) GCC_DEPRECATED("use exit_curses");
-#endif /* NO_LEAKS, etc */
+#endif  
 
 #ifndef HAVE_NC_FREEALL
 #define HAVE_NC_FREEALL 0
@@ -103,7 +74,7 @@ extern GCC_NORETURN NCURSES_EXPORT(void) _nc_free_and_exit(int) GCC_DEPRECATED("
 #define ExitProgram(code) exit(code)
 #endif
 
-/* doalloc.c */
+ 
 extern NCURSES_EXPORT(void *) _nc_doalloc(void *, size_t);
 #if !HAVE_STRDUP
 #undef strdup
@@ -111,7 +82,7 @@ extern NCURSES_EXPORT(void *) _nc_doalloc(void *, size_t);
 extern NCURSES_EXPORT(char *) _nc_strdup(const char *);
 #endif
 
-/* entries.c */
+ 
 extern NCURSES_EXPORT(void) _nc_leaks_tinfo(void);
 
 #define typeMalloc(type,elts) (type *)malloc((size_t)(elts)*sizeof(type))
@@ -122,6 +93,6 @@ extern NCURSES_EXPORT(void) _nc_leaks_tinfo(void);
 }
 #endif
 
-/* *INDENT-ON* */
+ 
 
-#endif /* NC_ALLOC_included */
+#endif  

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ASoC audio graph sound card support
-//
-// Copyright (C) 2016 Renesas Solutions Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
-// based on ${LINUX}/sound/soc/generic/simple-card.c
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -185,9 +185,9 @@ static int graph_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 		struct snd_soc_dai_link_component *platforms = asoc_link_to_platform(dai_link, 0);
 		int is_single_links = 0;
 
-		/* Codec is dummy */
+		 
 
-		/* FE settings */
+		 
 		dai_link->dynamic		= 1;
 		dai_link->dpcm_merged_format	= 1;
 
@@ -197,16 +197,7 @@ static int graph_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 
 		snprintf(dai_name, sizeof(dai_name),
 			 "fe.%pOFP.%s", cpus->of_node, cpus->dai_name);
-		/*
-		 * In BE<->BE connections it is not required to create
-		 * PCM devices at CPU end of the dai link and thus 'no_pcm'
-		 * flag needs to be set. It is useful when there are many
-		 * BE components and some of these have to be connected to
-		 * form a valid audio path.
-		 *
-		 * For example: FE <-> BE1 <-> BE2 <-> ... <-> BEn where
-		 * there are 'n' BE components in the path.
-		 */
+		 
 		if (card->component_chaining && !soc_component_is_pcm(cpus)) {
 			dai_link->no_pcm = 1;
 			dai_link->be_hw_params_fixup = asoc_simple_be_hw_params_fixup;
@@ -220,9 +211,9 @@ static int graph_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 		struct device_node *port;
 		struct device_node *ports;
 
-		/* CPU is dummy */
+		 
 
-		/* BE settings */
+		 
 		dai_link->no_pcm		= 1;
 		dai_link->be_hw_params_fixup	= asoc_simple_be_hw_params_fixup;
 
@@ -233,7 +224,7 @@ static int graph_dai_link_of_dpcm(struct asoc_simple_priv *priv,
 		snprintf(dai_name, sizeof(dai_name),
 			 "be.%pOFP.%s", codecs->of_node, codecs->dai_name);
 
-		/* check "prefix" from top node */
+		 
 		port = of_get_parent(ep);
 		ports = of_get_parent(port);
 		snd_soc_of_parse_node_prefix(top, cconf, codecs->of_node,
@@ -306,11 +297,7 @@ static inline bool parse_as_dpcm_link(struct asoc_simple_priv *priv,
 	if (!priv->dpcm_selectable)
 		return false;
 
-	/*
-	 * It is DPCM
-	 * if Codec port has many endpoints,
-	 * or has convert-xxx property
-	 */
+	 
 	if ((of_get_child_count(codec_port) > 1) ||
 	    asoc_simple_is_convert_required(adata))
 		return true;
@@ -340,38 +327,34 @@ static int __graph_for_each_link(struct asoc_simple_priv *priv,
 	struct asoc_simple_data adata;
 	int rc, ret = 0;
 
-	/* loop for all listed CPU port */
+	 
 	of_for_each_phandle(&it, rc, node, "dais", NULL, 0) {
 		cpu_port = it.node;
 		cpu_ep	 = NULL;
 
-		/* loop for all CPU endpoint */
+		 
 		while (1) {
 			cpu_ep = of_get_next_child(cpu_port, cpu_ep);
 			if (!cpu_ep)
 				break;
 
-			/* get codec */
+			 
 			codec_ep = of_graph_get_remote_endpoint(cpu_ep);
 			codec_port = of_get_parent(codec_ep);
 
-			/* get convert-xxx property */
+			 
 			memset(&adata, 0, sizeof(adata));
 			graph_parse_convert(dev, codec_ep, &adata);
 			graph_parse_convert(dev, cpu_ep,   &adata);
 
-			/* check if link requires DPCM parsing */
+			 
 			if (parse_as_dpcm_link(priv, codec_port, &adata)) {
-				/*
-				 * Codec endpoint can be NULL for pluggable audio HW.
-				 * Platform DT can populate the Codec endpoint depending on the
-				 * plugged HW.
-				 */
-				/* Do it all CPU endpoint, and 1st Codec endpoint */
+				 
+				 
 				if (li->cpu ||
 				    ((codec_port_old != codec_port) && codec_ep))
 					ret = func_dpcm(priv, cpu_ep, codec_ep, li);
-			/* else normal sound */
+			 
 			} else {
 				if (li->cpu)
 					ret = func_noml(priv, cpu_ep, codec_ep, li);
@@ -404,18 +387,7 @@ static int graph_for_each_link(struct asoc_simple_priv *priv,
 						struct link_info *li))
 {
 	int ret;
-	/*
-	 * Detect all CPU first, and Detect all Codec 2nd.
-	 *
-	 * In Normal sound case, all DAIs are detected
-	 * as "CPU-Codec".
-	 *
-	 * In DPCM sound case,
-	 * all CPUs   are detected as "CPU-dummy", and
-	 * all Codecs are detected as "dummy-Codec".
-	 * To avoid random sub-device numbering,
-	 * detect "dummy-Codec" in last;
-	 */
+	 
 	for (li->cpu = 1; li->cpu >= 0; li->cpu--) {
 		ret = __graph_for_each_link(priv, li, func_noml, func_dpcm);
 		if (ret < 0)
@@ -437,17 +409,13 @@ static int graph_count_noml(struct asoc_simple_priv *priv,
 		return -EINVAL;
 	}
 
-	/*
-	 * DON'T REMOVE platforms
-	 * see
-	 *	simple-card.c :: simple_count_noml()
-	 */
+	 
 	li->num[li->link].cpus		= 1;
 	li->num[li->link].platforms     = 1;
 
 	li->num[li->link].codecs	= 1;
 
-	li->link += 1; /* 1xCPU-Codec */
+	li->link += 1;  
 
 	dev_dbg(dev, "Count As Normal\n");
 
@@ -467,19 +435,15 @@ static int graph_count_dpcm(struct asoc_simple_priv *priv,
 	}
 
 	if (li->cpu) {
-		/*
-		 * DON'T REMOVE platforms
-		 * see
-		 *	simple-card.c :: simple_count_noml()
-		 */
+		 
 		li->num[li->link].cpus		= 1;
 		li->num[li->link].platforms     = 1;
 
-		li->link++; /* 1xCPU-dummy */
+		li->link++;  
 	} else {
 		li->num[li->link].codecs	= 1;
 
-		li->link++; /* 1xdummy-Codec */
+		li->link++;  
 	}
 
 	dev_dbg(dev, "Count As DPCM\n");
@@ -490,52 +454,7 @@ static int graph_count_dpcm(struct asoc_simple_priv *priv,
 static int graph_get_dais_count(struct asoc_simple_priv *priv,
 				struct link_info *li)
 {
-	/*
-	 * link_num :	number of links.
-	 *		CPU-Codec / CPU-dummy / dummy-Codec
-	 * dais_num :	number of DAIs
-	 * ccnf_num :	number of codec_conf
-	 *		same number for "dummy-Codec"
-	 *
-	 * ex1)
-	 * CPU0 --- Codec0	link : 5
-	 * CPU1 --- Codec1	dais : 7
-	 * CPU2 -/		ccnf : 1
-	 * CPU3 --- Codec2
-	 *
-	 *	=> 5 links = 2xCPU-Codec + 2xCPU-dummy + 1xdummy-Codec
-	 *	=> 7 DAIs  = 4xCPU + 3xCodec
-	 *	=> 1 ccnf  = 1xdummy-Codec
-	 *
-	 * ex2)
-	 * CPU0 --- Codec0	link : 5
-	 * CPU1 --- Codec1	dais : 6
-	 * CPU2 -/		ccnf : 1
-	 * CPU3 -/
-	 *
-	 *	=> 5 links = 1xCPU-Codec + 3xCPU-dummy + 1xdummy-Codec
-	 *	=> 6 DAIs  = 4xCPU + 2xCodec
-	 *	=> 1 ccnf  = 1xdummy-Codec
-	 *
-	 * ex3)
-	 * CPU0 --- Codec0	link : 6
-	 * CPU1 -/		dais : 6
-	 * CPU2 --- Codec1	ccnf : 2
-	 * CPU3 -/
-	 *
-	 *	=> 6 links = 0xCPU-Codec + 4xCPU-dummy + 2xdummy-Codec
-	 *	=> 6 DAIs  = 4xCPU + 2xCodec
-	 *	=> 2 ccnf  = 2xdummy-Codec
-	 *
-	 * ex4)
-	 * CPU0 --- Codec0 (convert-rate)	link : 3
-	 * CPU1 --- Codec1			dais : 4
-	 *					ccnf : 1
-	 *
-	 *	=> 3 links = 1xCPU-Codec + 1xCPU-dummy + 1xdummy-Codec
-	 *	=> 4 DAIs  = 2xCPU + 2xCodec
-	 *	=> 1 ccnf  = 1xdummy-Codec
-	 */
+	 
 	return graph_for_each_link(priv, li,
 				   graph_count_noml,
 				   graph_count_dpcm);
@@ -615,7 +534,7 @@ static int graph_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct snd_soc_card *card;
 
-	/* Allocate the private data and the DAI link array */
+	 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;

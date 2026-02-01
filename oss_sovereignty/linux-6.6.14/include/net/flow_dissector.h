@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NET_FLOW_DISSECTOR_H
 #define _NET_FLOW_DISSECTOR_H
 
@@ -12,12 +12,7 @@ struct bpf_prog;
 struct net;
 struct sk_buff;
 
-/**
- * struct flow_dissector_key_control:
- * @thoff:     Transport header offset
- * @addr_type: Type of key. One of FLOW_DISSECTOR_KEY_*
- * @flags:     Key flags. Any of FLOW_DIS_(IS_FRAGMENT|FIRST_FRAGENCAPSULATION)
- */
+ 
 struct flow_dissector_key_control {
 	u16	thoff;
 	u16	addr_type;
@@ -36,12 +31,7 @@ enum flow_dissect_ret {
 	FLOW_DISSECT_RET_CONTINUE,
 };
 
-/**
- * struct flow_dissector_key_basic:
- * @n_proto:  Network header protocol (eg. IPv4/IPv6)
- * @ip_proto: Transport header protocol (eg. TCP/UDP)
- * @padding:  Unused
- */
+ 
 struct flow_dissector_key_basic {
 	__be16	n_proto;
 	u8	ip_proto;
@@ -75,8 +65,8 @@ struct flow_dissector_mpls_lse {
 
 #define FLOW_DIS_MPLS_MAX 7
 struct flow_dissector_key_mpls {
-	struct flow_dissector_mpls_lse ls[FLOW_DIS_MPLS_MAX]; /* Label Stack */
-	u8 used_lses; /* One bit set for each Label Stack Entry in use */
+	struct flow_dissector_mpls_lse ls[FLOW_DIS_MPLS_MAX];  
+	u8 used_lses;  
 };
 
 static inline void dissector_set_mpls_lse(struct flow_dissector_key_mpls *mpls,
@@ -86,16 +76,9 @@ static inline void dissector_set_mpls_lse(struct flow_dissector_key_mpls *mpls,
 }
 
 #define FLOW_DIS_TUN_OPTS_MAX 255
-/**
- * struct flow_dissector_key_enc_opts:
- * @data: tunnel option data
- * @len: length of tunnel option data
- * @dst_opt_type: tunnel option type
- */
+ 
 struct flow_dissector_key_enc_opts {
-	u8 data[FLOW_DIS_TUN_OPTS_MAX];	/* Using IP_TUNNEL_OPTS_MAX is desired
-					 * here but seems difficult to #include
-					 */
+	u8 data[FLOW_DIS_TUN_OPTS_MAX];	 
 	u8 len;
 	__be16 dst_opt_type;
 };
@@ -104,42 +87,26 @@ struct flow_dissector_key_keyid {
 	__be32	keyid;
 };
 
-/**
- * struct flow_dissector_key_ipv4_addrs:
- * @src: source ip address
- * @dst: destination ip address
- */
+ 
 struct flow_dissector_key_ipv4_addrs {
-	/* (src,dst) must be grouped, in the same way than in IP header */
+	 
 	__be32 src;
 	__be32 dst;
 };
 
-/**
- * struct flow_dissector_key_ipv6_addrs:
- * @src: source ip address
- * @dst: destination ip address
- */
+ 
 struct flow_dissector_key_ipv6_addrs {
-	/* (src,dst) must be grouped, in the same way than in IP header */
+	 
 	struct in6_addr src;
 	struct in6_addr dst;
 };
 
-/**
- * struct flow_dissector_key_tipc:
- * @key: source node address combined with selector
- */
+ 
 struct flow_dissector_key_tipc {
 	__be32 key;
 };
 
-/**
- * struct flow_dissector_key_addrs:
- * @v4addrs: IPv4 addresses
- * @v6addrs: IPv6 addresses
- * @tipckey: TIPC key
- */
+ 
 struct flow_dissector_key_addrs {
 	union {
 		struct flow_dissector_key_ipv4_addrs v4addrs;
@@ -148,14 +115,7 @@ struct flow_dissector_key_addrs {
 	};
 };
 
-/**
- * struct flow_dissector_key_arp:
- * @sip: Sender IP address
- * @tip: Target IP address
- * @op:  Operation
- * @sha: Sender hardware address
- * @tha: Target hardware address
- */
+ 
 struct flow_dissector_key_arp {
 	__u32 sip;
 	__u32 tip;
@@ -164,12 +124,7 @@ struct flow_dissector_key_arp {
 	unsigned char tha[ETH_ALEN];
 };
 
-/**
- * struct flow_dissector_key_ports:
- * @ports: port numbers of Transport header
- * @src: source port number
- * @dst: destination port number
- */
+ 
 struct flow_dissector_key_ports {
 	union {
 		__be32 ports;
@@ -180,12 +135,7 @@ struct flow_dissector_key_ports {
 	};
 };
 
-/**
- * struct flow_dissector_key_ports_range
- * @tp: port number from packet
- * @tp_min: min port number in range
- * @tp_max: max port number in range
- */
+ 
 struct flow_dissector_key_ports_range {
 	union {
 		struct flow_dissector_key_ports tp;
@@ -196,12 +146,7 @@ struct flow_dissector_key_ports_range {
 	};
 };
 
-/**
- * struct flow_dissector_key_icmp:
- * @type: ICMP type
- * @code: ICMP code
- * @id:   Session identifier
- */
+ 
 struct flow_dissector_key_icmp {
 	struct {
 		u8 type;
@@ -210,54 +155,32 @@ struct flow_dissector_key_icmp {
 	u16 id;
 };
 
-/**
- * struct flow_dissector_key_eth_addrs:
- * @src: source Ethernet address
- * @dst: destination Ethernet address
- */
+ 
 struct flow_dissector_key_eth_addrs {
-	/* (dst,src) must be grouped, in the same way than in ETH header */
+	 
 	unsigned char dst[ETH_ALEN];
 	unsigned char src[ETH_ALEN];
 };
 
-/**
- * struct flow_dissector_key_tcp:
- * @flags: flags
- */
+ 
 struct flow_dissector_key_tcp {
 	__be16 flags;
 };
 
-/**
- * struct flow_dissector_key_ip:
- * @tos: tos
- * @ttl: ttl
- */
+ 
 struct flow_dissector_key_ip {
 	__u8	tos;
 	__u8	ttl;
 };
 
-/**
- * struct flow_dissector_key_meta:
- * @ingress_ifindex: ingress ifindex
- * @ingress_iftype: ingress interface type
- * @l2_miss: packet did not match an L2 entry during forwarding
- */
+ 
 struct flow_dissector_key_meta {
 	int ingress_ifindex;
 	u16 ingress_iftype;
 	u8 l2_miss;
 };
 
-/**
- * struct flow_dissector_key_ct:
- * @ct_state: conntrack state after converting with map
- * @ct_mark: conttrack mark
- * @ct_zone: conntrack zone
- * @ct_labels: conntrack labels
- */
+ 
 struct flow_dissector_key_ct {
 	u16	ct_state;
 	u16	ct_zone;
@@ -265,62 +188,34 @@ struct flow_dissector_key_ct {
 	u32	ct_labels[4];
 };
 
-/**
- * struct flow_dissector_key_hash:
- * @hash: hash value
- */
+ 
 struct flow_dissector_key_hash {
 	u32 hash;
 };
 
-/**
- * struct flow_dissector_key_num_of_vlans:
- * @num_of_vlans: num_of_vlans value
- */
+ 
 struct flow_dissector_key_num_of_vlans {
 	u8 num_of_vlans;
 };
 
-/**
- * struct flow_dissector_key_pppoe:
- * @session_id: pppoe session id
- * @ppp_proto: ppp protocol
- * @type: pppoe eth type
- */
+ 
 struct flow_dissector_key_pppoe {
 	__be16 session_id;
 	__be16 ppp_proto;
 	__be16 type;
 };
 
-/**
- * struct flow_dissector_key_l2tpv3:
- * @session_id: identifier for a l2tp session
- */
+ 
 struct flow_dissector_key_l2tpv3 {
 	__be32 session_id;
 };
 
-/**
- * struct flow_dissector_key_ipsec:
- * @spi: identifier for a ipsec connection
- */
+ 
 struct flow_dissector_key_ipsec {
 	__be32 spi;
 };
 
-/**
- * struct flow_dissector_key_cfm
- * @mdl_ver: maintenance domain level (mdl) and cfm protocol version
- * @opcode: code specifying a type of cfm protocol packet
- *
- * See 802.1ag, ITU-T G.8013/Y.1731
- *         1               2
- * |7 6 5 4 3 2 1 0|7 6 5 4 3 2 1 0|
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * | mdl | version |     opcode    |
- * +-----+---------+-+-+-+-+-+-+-+-+
- */
+ 
 struct flow_dissector_key_cfm {
 	u8	mdl_ver;
 	u8	opcode;
@@ -330,39 +225,39 @@ struct flow_dissector_key_cfm {
 #define FLOW_DIS_CFM_MDL_MAX 7
 
 enum flow_dissector_key_id {
-	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
-	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
-	FLOW_DISSECTOR_KEY_IPV4_ADDRS, /* struct flow_dissector_key_ipv4_addrs */
-	FLOW_DISSECTOR_KEY_IPV6_ADDRS, /* struct flow_dissector_key_ipv6_addrs */
-	FLOW_DISSECTOR_KEY_PORTS, /* struct flow_dissector_key_ports */
-	FLOW_DISSECTOR_KEY_PORTS_RANGE, /* struct flow_dissector_key_ports */
-	FLOW_DISSECTOR_KEY_ICMP, /* struct flow_dissector_key_icmp */
-	FLOW_DISSECTOR_KEY_ETH_ADDRS, /* struct flow_dissector_key_eth_addrs */
-	FLOW_DISSECTOR_KEY_TIPC, /* struct flow_dissector_key_tipc */
-	FLOW_DISSECTOR_KEY_ARP, /* struct flow_dissector_key_arp */
-	FLOW_DISSECTOR_KEY_VLAN, /* struct flow_dissector_key_vlan */
-	FLOW_DISSECTOR_KEY_FLOW_LABEL, /* struct flow_dissector_key_tags */
-	FLOW_DISSECTOR_KEY_GRE_KEYID, /* struct flow_dissector_key_keyid */
-	FLOW_DISSECTOR_KEY_MPLS_ENTROPY, /* struct flow_dissector_key_keyid */
-	FLOW_DISSECTOR_KEY_ENC_KEYID, /* struct flow_dissector_key_keyid */
-	FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS, /* struct flow_dissector_key_ipv4_addrs */
-	FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS, /* struct flow_dissector_key_ipv6_addrs */
-	FLOW_DISSECTOR_KEY_ENC_CONTROL, /* struct flow_dissector_key_control */
-	FLOW_DISSECTOR_KEY_ENC_PORTS, /* struct flow_dissector_key_ports */
-	FLOW_DISSECTOR_KEY_MPLS, /* struct flow_dissector_key_mpls */
-	FLOW_DISSECTOR_KEY_TCP, /* struct flow_dissector_key_tcp */
-	FLOW_DISSECTOR_KEY_IP, /* struct flow_dissector_key_ip */
-	FLOW_DISSECTOR_KEY_CVLAN, /* struct flow_dissector_key_vlan */
-	FLOW_DISSECTOR_KEY_ENC_IP, /* struct flow_dissector_key_ip */
-	FLOW_DISSECTOR_KEY_ENC_OPTS, /* struct flow_dissector_key_enc_opts */
-	FLOW_DISSECTOR_KEY_META, /* struct flow_dissector_key_meta */
-	FLOW_DISSECTOR_KEY_CT, /* struct flow_dissector_key_ct */
-	FLOW_DISSECTOR_KEY_HASH, /* struct flow_dissector_key_hash */
-	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
-	FLOW_DISSECTOR_KEY_PPPOE, /* struct flow_dissector_key_pppoe */
-	FLOW_DISSECTOR_KEY_L2TPV3, /* struct flow_dissector_key_l2tpv3 */
-	FLOW_DISSECTOR_KEY_CFM, /* struct flow_dissector_key_cfm */
-	FLOW_DISSECTOR_KEY_IPSEC, /* struct flow_dissector_key_ipsec */
+	FLOW_DISSECTOR_KEY_CONTROL,  
+	FLOW_DISSECTOR_KEY_BASIC,  
+	FLOW_DISSECTOR_KEY_IPV4_ADDRS,  
+	FLOW_DISSECTOR_KEY_IPV6_ADDRS,  
+	FLOW_DISSECTOR_KEY_PORTS,  
+	FLOW_DISSECTOR_KEY_PORTS_RANGE,  
+	FLOW_DISSECTOR_KEY_ICMP,  
+	FLOW_DISSECTOR_KEY_ETH_ADDRS,  
+	FLOW_DISSECTOR_KEY_TIPC,  
+	FLOW_DISSECTOR_KEY_ARP,  
+	FLOW_DISSECTOR_KEY_VLAN,  
+	FLOW_DISSECTOR_KEY_FLOW_LABEL,  
+	FLOW_DISSECTOR_KEY_GRE_KEYID,  
+	FLOW_DISSECTOR_KEY_MPLS_ENTROPY,  
+	FLOW_DISSECTOR_KEY_ENC_KEYID,  
+	FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS,  
+	FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS,  
+	FLOW_DISSECTOR_KEY_ENC_CONTROL,  
+	FLOW_DISSECTOR_KEY_ENC_PORTS,  
+	FLOW_DISSECTOR_KEY_MPLS,  
+	FLOW_DISSECTOR_KEY_TCP,  
+	FLOW_DISSECTOR_KEY_IP,  
+	FLOW_DISSECTOR_KEY_CVLAN,  
+	FLOW_DISSECTOR_KEY_ENC_IP,  
+	FLOW_DISSECTOR_KEY_ENC_OPTS,  
+	FLOW_DISSECTOR_KEY_META,  
+	FLOW_DISSECTOR_KEY_CT,  
+	FLOW_DISSECTOR_KEY_HASH,  
+	FLOW_DISSECTOR_KEY_NUM_OF_VLANS,  
+	FLOW_DISSECTOR_KEY_PPPOE,  
+	FLOW_DISSECTOR_KEY_L2TPV3,  
+	FLOW_DISSECTOR_KEY_CFM,  
+	FLOW_DISSECTOR_KEY_IPSEC,  
 
 	FLOW_DISSECTOR_KEY_MAX,
 };
@@ -374,13 +269,12 @@ enum flow_dissector_key_id {
 
 struct flow_dissector_key {
 	enum flow_dissector_key_id key_id;
-	size_t offset; /* offset of struct flow_dissector_key_*
-			  in target the struct */
+	size_t offset;  
 };
 
 struct flow_dissector {
 	unsigned long long  used_keys;
-		/* each bit represents presence of one key id */
+		 
 	unsigned short int offset[FLOW_DISSECTOR_KEY_MAX];
 };
 
@@ -399,7 +293,7 @@ struct flow_keys {
 	struct flow_dissector_key_keyid keyid;
 	struct flow_dissector_key_ports ports;
 	struct flow_dissector_key_icmp icmp;
-	/* 'addrs' must be the last member */
+	 
 	struct flow_dissector_key_addrs addrs;
 };
 
@@ -412,13 +306,7 @@ __be32 flow_get_u32_dst(const struct flow_keys *flow);
 extern struct flow_dissector flow_keys_dissector;
 extern struct flow_dissector flow_keys_basic_dissector;
 
-/* struct flow_keys_digest:
- *
- * This structure is used to hold a digest of the full flow keys. This is a
- * larger "hash" of a flow to allow definitively matching specific flows where
- * the 32 bit skb->hash is not large enough. The size is limited to 16 bytes so
- * that it can be used in CB of skb (see sch_choke for an example).
- */
+ 
 #define FLOW_KEYS_DIGEST_LEN	16
 struct flow_keys_digest {
 	u8	data[FLOW_KEYS_DIGEST_LEN];
@@ -468,6 +356,6 @@ flow_dissector_init_keys(struct flow_dissector_key_control *key_control,
 #ifdef CONFIG_BPF_SYSCALL
 int flow_dissector_bpf_prog_attach_check(struct net *net,
 					 struct bpf_prog *prog);
-#endif /* CONFIG_BPF_SYSCALL */
+#endif  
 
 #endif

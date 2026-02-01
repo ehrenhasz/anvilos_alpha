@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2020 Martin Blumenstingl <martin.blumenstingl@googlemail.com> */
+ 
+ 
 
 #ifndef __LIMA_DEVFREQ_H__
 #define __LIMA_DEVFREQ_H__
@@ -22,11 +22,7 @@ struct lima_devfreq {
 	ktime_t idle_time;
 	ktime_t time_last_update;
 	int busy_count;
-	/*
-	 * Protect busy_time, idle_time, time_last_update and busy_count
-	 * because these can be updated concurrently, for example by the GP
-	 * and PP interrupts.
-	 */
+	 
 	spinlock_t lock;
 };
 

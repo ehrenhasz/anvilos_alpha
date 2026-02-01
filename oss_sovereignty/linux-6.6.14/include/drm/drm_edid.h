@@ -1,25 +1,4 @@
-/*
- * Copyright © 2007-2008 Intel Corporation
- *   Jesse Barnes <jesse.barnes@intel.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef __DRM_EDID_H__
 #define __DRM_EDID_H__
 
@@ -33,7 +12,7 @@ struct i2c_adapter;
 
 #define EDID_LENGTH 128
 #define DDC_ADDR 0x50
-#define DDC_ADDR2 0x52 /* E-DDC 1.2 - where DisplayID can hide */
+#define DDC_ADDR2 0x52  
 
 #define CEA_EXT	    0x02
 #define VTB_EXT	    0x10
@@ -48,16 +27,16 @@ struct est_timings {
 	u8 mfg_rsvd;
 } __attribute__((packed));
 
-/* 00=16:10, 01=4:3, 10=5:4, 11=16:9 */
+ 
 #define EDID_TIMING_ASPECT_SHIFT 6
 #define EDID_TIMING_ASPECT_MASK  (0x3 << EDID_TIMING_ASPECT_SHIFT)
 
-/* need to add 60 */
+ 
 #define EDID_TIMING_VFREQ_SHIFT  0
 #define EDID_TIMING_VFREQ_MASK   (0x3f << EDID_TIMING_VFREQ_SHIFT)
 
 struct std_timing {
-	u8 hsize; /* need to multiply by 8 then add 248 */
+	u8 hsize;  
 	u8 vfreq_aspect;
 } __attribute__((packed));
 
@@ -67,7 +46,7 @@ struct std_timing {
 #define DRM_EDID_PT_STEREO         (1 << 5)
 #define DRM_EDID_PT_INTERLACED     (1 << 7)
 
-/* If detailed data is pixel timing */
+ 
 struct detailed_pixel_timing {
 	u8 hactive_lo;
 	u8 hblank_lo;
@@ -87,20 +66,20 @@ struct detailed_pixel_timing {
 	u8 misc;
 } __attribute__((packed));
 
-/* If it's not pixel timing, it'll be one of the below */
+ 
 struct detailed_data_string {
 	u8 str[13];
 } __attribute__((packed));
 
-#define DRM_EDID_RANGE_OFFSET_MIN_VFREQ (1 << 0) /* 1.4 */
-#define DRM_EDID_RANGE_OFFSET_MAX_VFREQ (1 << 1) /* 1.4 */
-#define DRM_EDID_RANGE_OFFSET_MIN_HFREQ (1 << 2) /* 1.4 */
-#define DRM_EDID_RANGE_OFFSET_MAX_HFREQ (1 << 3) /* 1.4 */
+#define DRM_EDID_RANGE_OFFSET_MIN_VFREQ (1 << 0)  
+#define DRM_EDID_RANGE_OFFSET_MAX_VFREQ (1 << 1)  
+#define DRM_EDID_RANGE_OFFSET_MIN_HFREQ (1 << 2)  
+#define DRM_EDID_RANGE_OFFSET_MAX_HFREQ (1 << 3)  
 
-#define DRM_EDID_DEFAULT_GTF_SUPPORT_FLAG   0x00 /* 1.3 */
-#define DRM_EDID_RANGE_LIMITS_ONLY_FLAG     0x01 /* 1.4 */
-#define DRM_EDID_SECONDARY_GTF_SUPPORT_FLAG 0x02 /* 1.3 */
-#define DRM_EDID_CVT_SUPPORT_FLAG           0x04 /* 1.4 */
+#define DRM_EDID_DEFAULT_GTF_SUPPORT_FLAG   0x00  
+#define DRM_EDID_RANGE_LIMITS_ONLY_FLAG     0x01  
+#define DRM_EDID_SECONDARY_GTF_SUPPORT_FLAG 0x02  
+#define DRM_EDID_CVT_SUPPORT_FLAG           0x04  
 
 #define DRM_EDID_CVT_FLAGS_STANDARD_BLANKING (1 << 3)
 #define DRM_EDID_CVT_FLAGS_REDUCED_BLANKING  (1 << 4)
@@ -110,23 +89,23 @@ struct detailed_data_monitor_range {
 	u8 max_vfreq;
 	u8 min_hfreq_khz;
 	u8 max_hfreq_khz;
-	u8 pixel_clock_mhz; /* need to multiply by 10 */
+	u8 pixel_clock_mhz;  
 	u8 flags;
 	union {
 		struct {
 			u8 reserved;
-			u8 hfreq_start_khz; /* need to multiply by 2 */
-			u8 c; /* need to divide by 2 */
+			u8 hfreq_start_khz;  
+			u8 c;  
 			__le16 m;
 			u8 k;
-			u8 j; /* need to divide by 2 */
+			u8 j;  
 		} __attribute__((packed)) gtf2;
 		struct {
 			u8 version;
-			u8 data1; /* high 6 bits: extra clock resolution */
-			u8 data2; /* plus low 2 of above: max hactive */
+			u8 data1;  
+			u8 data2;  
 			u8 supported_aspects;
-			u8 flags; /* preferred aspect and blanking support */
+			u8 flags;  
 			u8 supported_scalings;
 			u8 preferred_refresh;
 		} __attribute__((packed)) cvt;
@@ -134,10 +113,10 @@ struct detailed_data_monitor_range {
 } __attribute__((packed));
 
 struct detailed_data_wpindex {
-	u8 white_yx_lo; /* Lower 2 bits each */
+	u8 white_yx_lo;  
 	u8 white_x_hi;
 	u8 white_y_hi;
-	u8 gamma; /* need to divide by 100 then add 1 */
+	u8 gamma;  
 } __attribute__((packed));
 
 struct detailed_data_color_point {
@@ -153,9 +132,7 @@ struct cvt_timing {
 
 struct detailed_non_pixel {
 	u8 pad1;
-	u8 type; /* ff=serial, fe=string, fd=monitor range, fc=monitor name
-		    fb=color point data, fa=standard timing data,
-		    f9=undefined, f8=mfg. reserved */
+	u8 type;  
 	u8 pad2;
 	union {
 		struct detailed_data_string str;
@@ -177,7 +154,7 @@ struct detailed_non_pixel {
 #define EDID_DETAIL_MONITOR_SERIAL 0xff
 
 struct detailed_timing {
-	__le16 pixel_clock; /* need to multiply by 10 KHz */
+	__le16 pixel_clock;  
 	union {
 		struct detailed_pixel_timing pixel_data;
 		struct detailed_non_pixel other_data;
@@ -191,36 +168,36 @@ struct detailed_timing {
 #define DRM_EDID_INPUT_BLANK_TO_BLACK  (1 << 4)
 #define DRM_EDID_INPUT_VIDEO_LEVEL     (3 << 5)
 #define DRM_EDID_INPUT_DIGITAL         (1 << 7)
-#define DRM_EDID_DIGITAL_DEPTH_MASK    (7 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_UNDEF   (0 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_6       (1 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_8       (2 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_10      (3 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_12      (4 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_14      (5 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_16      (6 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_DEPTH_RSVD    (7 << 4) /* 1.4 */
-#define DRM_EDID_DIGITAL_TYPE_MASK     (7 << 0) /* 1.4 */
-#define DRM_EDID_DIGITAL_TYPE_UNDEF    (0 << 0) /* 1.4 */
-#define DRM_EDID_DIGITAL_TYPE_DVI      (1 << 0) /* 1.4 */
-#define DRM_EDID_DIGITAL_TYPE_HDMI_A   (2 << 0) /* 1.4 */
-#define DRM_EDID_DIGITAL_TYPE_HDMI_B   (3 << 0) /* 1.4 */
-#define DRM_EDID_DIGITAL_TYPE_MDDI     (4 << 0) /* 1.4 */
-#define DRM_EDID_DIGITAL_TYPE_DP       (5 << 0) /* 1.4 */
-#define DRM_EDID_DIGITAL_DFP_1_X       (1 << 0) /* 1.3 */
+#define DRM_EDID_DIGITAL_DEPTH_MASK    (7 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_UNDEF   (0 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_6       (1 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_8       (2 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_10      (3 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_12      (4 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_14      (5 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_16      (6 << 4)  
+#define DRM_EDID_DIGITAL_DEPTH_RSVD    (7 << 4)  
+#define DRM_EDID_DIGITAL_TYPE_MASK     (7 << 0)  
+#define DRM_EDID_DIGITAL_TYPE_UNDEF    (0 << 0)  
+#define DRM_EDID_DIGITAL_TYPE_DVI      (1 << 0)  
+#define DRM_EDID_DIGITAL_TYPE_HDMI_A   (2 << 0)  
+#define DRM_EDID_DIGITAL_TYPE_HDMI_B   (3 << 0)  
+#define DRM_EDID_DIGITAL_TYPE_MDDI     (4 << 0)  
+#define DRM_EDID_DIGITAL_TYPE_DP       (5 << 0)  
+#define DRM_EDID_DIGITAL_DFP_1_X       (1 << 0)  
 
-#define DRM_EDID_FEATURE_DEFAULT_GTF      (1 << 0) /* 1.2 */
-#define DRM_EDID_FEATURE_CONTINUOUS_FREQ  (1 << 0) /* 1.4 */
+#define DRM_EDID_FEATURE_DEFAULT_GTF      (1 << 0)  
+#define DRM_EDID_FEATURE_CONTINUOUS_FREQ  (1 << 0)  
 #define DRM_EDID_FEATURE_PREFERRED_TIMING (1 << 1)
 #define DRM_EDID_FEATURE_STANDARD_COLOR   (1 << 2)
-/* If analog */
-#define DRM_EDID_FEATURE_DISPLAY_TYPE     (3 << 3) /* 00=mono, 01=rgb, 10=non-rgb, 11=unknown */
-/* If digital */
+ 
+#define DRM_EDID_FEATURE_DISPLAY_TYPE     (3 << 3)  
+ 
 #define DRM_EDID_FEATURE_COLOR_MASK	  (3 << 3)
 #define DRM_EDID_FEATURE_RGB		  (0 << 3)
 #define DRM_EDID_FEATURE_RGB_YCRCB444	  (1 << 3)
 #define DRM_EDID_FEATURE_RGB_YCRCB422	  (2 << 3)
-#define DRM_EDID_FEATURE_RGB_YCRCB	  (3 << 3) /* both 4:4:4 and 4:2:2 */
+#define DRM_EDID_FEATURE_RGB_YCRCB	  (3 << 3)  
 
 #define DRM_EDID_FEATURE_PM_ACTIVE_OFF    (1 << 5)
 #define DRM_EDID_FEATURE_PM_SUSPEND       (1 << 6)
@@ -231,7 +208,7 @@ struct detailed_timing {
 #define DRM_EDID_HDMI_DC_30               (1 << 4)
 #define DRM_EDID_HDMI_DC_Y444             (1 << 3)
 
-/* YCBCR 420 deep color modes */
+ 
 #define DRM_EDID_YCBCR420_DC_48		  (1 << 2)
 #define DRM_EDID_YCBCR420_DC_36		  (1 << 1)
 #define DRM_EDID_YCBCR420_DC_30		  (1 << 0)
@@ -239,18 +216,18 @@ struct detailed_timing {
 				    DRM_EDID_YCBCR420_DC_36 | \
 				    DRM_EDID_YCBCR420_DC_30)
 
-/* HDMI 2.1 additional fields */
+ 
 #define DRM_EDID_MAX_FRL_RATE_MASK		0xf0
 #define DRM_EDID_FAPA_START_LOCATION		(1 << 0)
 #define DRM_EDID_ALLM				(1 << 1)
 #define DRM_EDID_FVA				(1 << 2)
 
-/* Deep Color specific */
+ 
 #define DRM_EDID_DC_30BIT_420			(1 << 0)
 #define DRM_EDID_DC_36BIT_420			(1 << 1)
 #define DRM_EDID_DC_48BIT_420			(1 << 2)
 
-/* VRR specific */
+ 
 #define DRM_EDID_CNMVRR				(1 << 3)
 #define DRM_EDID_CINEMA_VRR			(1 << 4)
 #define DRM_EDID_MDELTA				(1 << 5)
@@ -258,7 +235,7 @@ struct detailed_timing {
 #define DRM_EDID_VRR_MAX_LOWER_MASK		0xff
 #define DRM_EDID_VRR_MIN_MASK			0x3f
 
-/* DSC specific */
+ 
 #define DRM_EDID_DSC_10BPC			(1 << 0)
 #define DRM_EDID_DSC_12BPC			(1 << 1)
 #define DRM_EDID_DSC_16BPC			(1 << 2)
@@ -269,18 +246,18 @@ struct detailed_timing {
 #define DRM_EDID_DSC_MAX_SLICES			0xf
 #define DRM_EDID_DSC_TOTAL_CHUNK_KBYTES		0x3f
 
-/* ELD Header Block */
+ 
 #define DRM_ELD_HEADER_BLOCK_SIZE	4
 
 #define DRM_ELD_VER			0
 # define DRM_ELD_VER_SHIFT		3
 # define DRM_ELD_VER_MASK		(0x1f << 3)
-# define DRM_ELD_VER_CEA861D		(2 << 3) /* supports 861D or below */
+# define DRM_ELD_VER_CEA861D		(2 << 3)  
 # define DRM_ELD_VER_CANNED		(0x1f << 3)
 
-#define DRM_ELD_BASELINE_ELD_LEN	2	/* in dwords! */
+#define DRM_ELD_BASELINE_ELD_LEN	2	 
 
-/* ELD Baseline Block for ELD_Ver == 2 */
+ 
 #define DRM_ELD_CEA_EDID_VER_MNL	4
 # define DRM_ELD_CEA_EDID_VER_SHIFT	5
 # define DRM_ELD_CEA_EDID_VER_MASK	(7 << 5)
@@ -301,8 +278,8 @@ struct detailed_timing {
 # define DRM_ELD_SUPPORTS_AI		(1 << 1)
 # define DRM_ELD_SUPPORTS_HDCP		(1 << 0)
 
-#define DRM_ELD_AUD_SYNCH_DELAY		6	/* in units of 2 ms */
-# define DRM_ELD_AUD_SYNCH_DELAY_MAX	0xfa	/* 500 ms */
+#define DRM_ELD_AUD_SYNCH_DELAY		6	 
+# define DRM_ELD_AUD_SYNCH_DELAY_MAX	0xfa	 
 
 #define DRM_ELD_SPEAKER			7
 # define DRM_ELD_SPEAKER_MASK		0x7f
@@ -314,7 +291,7 @@ struct detailed_timing {
 # define DRM_ELD_SPEAKER_LFE		(1 << 1)
 # define DRM_ELD_SPEAKER_FLR		(1 << 0)
 
-#define DRM_ELD_PORT_ID			8	/* offsets 8..15 inclusive */
+#define DRM_ELD_PORT_ID			8	 
 # define DRM_ELD_PORT_ID_LEN		8
 
 #define DRM_ELD_MANUFACTURER_NAME0	16
@@ -323,28 +300,28 @@ struct detailed_timing {
 #define DRM_ELD_PRODUCT_CODE0		18
 #define DRM_ELD_PRODUCT_CODE1		19
 
-#define DRM_ELD_MONITOR_NAME_STRING	20	/* offsets 20..(20+mnl-1) inclusive */
+#define DRM_ELD_MONITOR_NAME_STRING	20	 
 
 #define DRM_ELD_CEA_SAD(mnl, sad)	(20 + (mnl) + 3 * (sad))
 
 struct edid {
 	u8 header[8];
-	/* Vendor & product info */
+	 
 	u8 mfg_id[2];
 	u8 prod_code[2];
-	u32 serial; /* FIXME: byte order */
+	u32 serial;  
 	u8 mfg_week;
 	u8 mfg_year;
-	/* EDID version */
+	 
 	u8 version;
 	u8 revision;
-	/* Display info: */
+	 
 	u8 input;
 	u8 width_cm;
 	u8 height_cm;
 	u8 gamma;
 	u8 features;
-	/* Color characteristics */
+	 
 	u8 red_green_lo;
 	u8 blue_white_lo;
 	u8 red_x;
@@ -355,26 +332,26 @@ struct edid {
 	u8 blue_y;
 	u8 white_x;
 	u8 white_y;
-	/* Est. timings and mfg rsvd timings*/
+	 
 	struct est_timings established_timings;
-	/* Standard timings 1-8*/
+	 
 	struct std_timing standard_timings[8];
-	/* Detailing timings 1-4 */
+	 
 	struct detailed_timing detailed_timings[4];
-	/* Number of 128 byte ext. blocks */
+	 
 	u8 extensions;
-	/* Checksum */
+	 
 	u8 checksum;
 } __attribute__((packed));
 
 #define EDID_PRODUCT_ID(e) ((e)->prod_code[0] | ((e)->prod_code[1] << 8))
 
-/* Short Audio Descriptor */
+ 
 struct cea_sad {
 	u8 format;
-	u8 channels; /* max number of channels - 1 */
+	u8 channels;  
 	u8 freq;
-	u8 byte2; /* meaning depends on format */
+	u8 byte2;  
 };
 
 struct drm_encoder;
@@ -409,19 +386,13 @@ drm_hdmi_avi_infoframe_quant_range(struct hdmi_avi_infoframe *frame,
 				   const struct drm_display_mode *mode,
 				   enum hdmi_quantization_range rgb_quant_range);
 
-/**
- * drm_eld_mnl - Get ELD monitor name length in bytes.
- * @eld: pointer to an eld memory structure with mnl set
- */
+ 
 static inline int drm_eld_mnl(const uint8_t *eld)
 {
 	return (eld[DRM_ELD_CEA_EDID_VER_MNL] & DRM_ELD_MNL_MASK) >> DRM_ELD_MNL_SHIFT;
 }
 
-/**
- * drm_eld_sad - Get ELD SAD structures.
- * @eld: pointer to an eld memory structure with sad_count set
- */
+ 
 static inline const uint8_t *drm_eld_sad(const uint8_t *eld)
 {
 	unsigned int ver, mnl;
@@ -437,74 +408,39 @@ static inline const uint8_t *drm_eld_sad(const uint8_t *eld)
 	return eld + DRM_ELD_CEA_SAD(mnl, 0);
 }
 
-/**
- * drm_eld_sad_count - Get ELD SAD count.
- * @eld: pointer to an eld memory structure with sad_count set
- */
+ 
 static inline int drm_eld_sad_count(const uint8_t *eld)
 {
 	return (eld[DRM_ELD_SAD_COUNT_CONN_TYPE] & DRM_ELD_SAD_COUNT_MASK) >>
 		DRM_ELD_SAD_COUNT_SHIFT;
 }
 
-/**
- * drm_eld_calc_baseline_block_size - Calculate baseline block size in bytes
- * @eld: pointer to an eld memory structure with mnl and sad_count set
- *
- * This is a helper for determining the payload size of the baseline block, in
- * bytes, for e.g. setting the Baseline_ELD_Len field in the ELD header block.
- */
+ 
 static inline int drm_eld_calc_baseline_block_size(const uint8_t *eld)
 {
 	return DRM_ELD_MONITOR_NAME_STRING - DRM_ELD_HEADER_BLOCK_SIZE +
 		drm_eld_mnl(eld) + drm_eld_sad_count(eld) * 3;
 }
 
-/**
- * drm_eld_size - Get ELD size in bytes
- * @eld: pointer to a complete eld memory structure
- *
- * The returned value does not include the vendor block. It's vendor specific,
- * and comprises of the remaining bytes in the ELD memory buffer after
- * drm_eld_size() bytes of header and baseline block.
- *
- * The returned value is guaranteed to be a multiple of 4.
- */
+ 
 static inline int drm_eld_size(const uint8_t *eld)
 {
 	return DRM_ELD_HEADER_BLOCK_SIZE + eld[DRM_ELD_BASELINE_ELD_LEN] * 4;
 }
 
-/**
- * drm_eld_get_spk_alloc - Get speaker allocation
- * @eld: pointer to an ELD memory structure
- *
- * The returned value is the speakers mask. User has to use %DRM_ELD_SPEAKER
- * field definitions to identify speakers.
- */
+ 
 static inline u8 drm_eld_get_spk_alloc(const uint8_t *eld)
 {
 	return eld[DRM_ELD_SPEAKER] & DRM_ELD_SPEAKER_MASK;
 }
 
-/**
- * drm_eld_get_conn_type - Get device type hdmi/dp connected
- * @eld: pointer to an ELD memory structure
- *
- * The caller need to use %DRM_ELD_CONN_TYPE_HDMI or %DRM_ELD_CONN_TYPE_DP to
- * identify the display type connected.
- */
+ 
 static inline u8 drm_eld_get_conn_type(const uint8_t *eld)
 {
 	return eld[DRM_ELD_SAD_COUNT_CONN_TYPE] & DRM_ELD_CONN_TYPE_MASK;
 }
 
-/**
- * drm_edid_decode_mfg_id - Decode the manufacturer ID
- * @mfg_id: The manufacturer ID
- * @vend: A 4-byte buffer to store the 3-letter vendor string plus a '\0'
- *	  termination
- */
+ 
 static inline const char *drm_edid_decode_mfg_id(u16 mfg_id, char vend[4])
 {
 	vend[0] = '@' + ((mfg_id >> 10) & 0x1f);
@@ -515,43 +451,14 @@ static inline const char *drm_edid_decode_mfg_id(u16 mfg_id, char vend[4])
 	return vend;
 }
 
-/**
- * drm_edid_encode_panel_id - Encode an ID for matching against drm_edid_get_panel_id()
- * @vend_chr_0: First character of the vendor string.
- * @vend_chr_1: Second character of the vendor string.
- * @vend_chr_2: Third character of the vendor string.
- * @product_id: The 16-bit product ID.
- *
- * This is a macro so that it can be calculated at compile time and used
- * as an initializer.
- *
- * For instance:
- *   drm_edid_encode_panel_id('B', 'O', 'E', 0x2d08) => 0x09e52d08
- *
- * Return: a 32-bit ID per panel.
- */
+ 
 #define drm_edid_encode_panel_id(vend_chr_0, vend_chr_1, vend_chr_2, product_id) \
 	((((u32)(vend_chr_0) - '@') & 0x1f) << 26 | \
 	 (((u32)(vend_chr_1) - '@') & 0x1f) << 21 | \
 	 (((u32)(vend_chr_2) - '@') & 0x1f) << 16 | \
 	 ((product_id) & 0xffff))
 
-/**
- * drm_edid_decode_panel_id - Decode a panel ID from drm_edid_encode_panel_id()
- * @panel_id: The panel ID to decode.
- * @vend: A 4-byte buffer to store the 3-letter vendor string plus a '\0'
- *	  termination
- * @product_id: The product ID will be returned here.
- *
- * For instance, after:
- *   drm_edid_decode_panel_id(0x09e52d08, vend, &product_id)
- * These will be true:
- *   vend[0] = 'B'
- *   vend[1] = 'O'
- *   vend[2] = 'E'
- *   vend[3] = '\0'
- *   product_id = 0x2d08
- */
+ 
 static inline void drm_edid_decode_panel_id(u32 panel_id, char vend[4], u16 *product_id)
 {
 	*product_id = (u16)(panel_id & 0xffff);
@@ -595,7 +502,7 @@ struct drm_display_mode *
 drm_display_mode_from_cea_vic(struct drm_device *dev,
 			      u8 video_code);
 
-/* Interface based on struct drm_edid */
+ 
 const struct drm_edid *drm_edid_alloc(const void *edid, size_t size);
 const struct drm_edid *drm_edid_dup(const struct drm_edid *drm_edid);
 void drm_edid_free(const struct drm_edid *drm_edid);
@@ -616,4 +523,4 @@ int drm_edid_connector_add_modes(struct drm_connector *connector);
 const u8 *drm_find_edid_extension(const struct drm_edid *drm_edid,
 				  int ext_id, int *ext_index);
 
-#endif /* __DRM_EDID_H__ */
+#endif  

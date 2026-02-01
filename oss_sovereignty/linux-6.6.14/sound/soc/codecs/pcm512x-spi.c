@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the PCM512x CODECs
- *
- * Author:	Mark Brown <broonie@kernel.org>
- *		Copyright 2014 Linaro Ltd
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

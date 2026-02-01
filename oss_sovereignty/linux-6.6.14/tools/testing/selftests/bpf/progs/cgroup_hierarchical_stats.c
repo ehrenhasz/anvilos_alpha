@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2022 Google LLC.
- */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -10,16 +8,16 @@
 char _license[] SEC("license") = "GPL";
 
 struct percpu_attach_counter {
-	/* Previous percpu state, to figure out if we have new updates */
+	 
 	__u64 prev;
-	/* Current percpu state */
+	 
 	__u64 state;
 };
 
 struct attach_counter {
-	/* State propagated through children, pending aggregation */
+	 
 	__u64 pending;
-	/* Total state, including all cpus and all children */
+	 
 	__u64 state;
 };
 
@@ -89,7 +87,7 @@ int BPF_PROG(flusher, struct cgroup *cgrp, struct cgroup *parent, int cpu)
 	__u64 state;
 	__u64 delta = 0;
 
-	/* Add CPU changes on this level since the last flush */
+	 
 	pcpu_counter = bpf_map_lookup_percpu_elem(&percpu_attach_counters,
 						  &cg_id, cpu);
 	if (pcpu_counter) {
@@ -105,21 +103,21 @@ int BPF_PROG(flusher, struct cgroup *cgrp, struct cgroup *parent, int cpu)
 		goto update_parent;
 	}
 
-	/* Collect pending stats from subtree */
+	 
 	if (total_counter->pending) {
 		delta += total_counter->pending;
 		total_counter->pending = 0;
 	}
 
-	/* Propagate changes to this cgroup's total */
+	 
 	total_counter->state += delta;
 
 update_parent:
-	/* Skip if there are no changes to propagate, or no parent */
+	 
 	if (!delta || !parent_cg_id)
 		return 0;
 
-	/* Propagate changes to cgroup's parent */
+	 
 	parent_counter = bpf_map_lookup_elem(&attach_counters,
 					     &parent_cg_id);
 	if (parent_counter)
@@ -136,11 +134,11 @@ int BPF_PROG(dumper, struct bpf_iter_meta *meta, struct cgroup *cgrp)
 	struct attach_counter *total_counter;
 	__u64 cg_id = cgrp ? cgroup_id(cgrp) : 0;
 
-	/* Do nothing for the terminal call */
+	 
 	if (!cg_id)
 		return 1;
 
-	/* Flush the stats to make sure we get the most updated numbers */
+	 
 	cgroup_rstat_flush(cgrp);
 
 	total_counter = bpf_map_lookup_elem(&attach_counters, &cg_id);

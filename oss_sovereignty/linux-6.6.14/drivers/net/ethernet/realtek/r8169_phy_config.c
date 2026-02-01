@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * r8169_phy_config.c: RealTek 8169/8168/8101 ethernet driver.
- *
- * Copyright (c) 2002 ShuChen <shuchen@realtek.com.tw>
- * Copyright (c) 2003 - 2007 Francois Romieu <romieu@fr.zoreil.com>
- * Copyright (c) a lot of people too. Please respect their work.
- *
- * See MAINTAINERS file for support contact information.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/phy.h>
@@ -389,7 +381,7 @@ static void rtl8168c_3_hw_phy_config(struct rtl8169_private *tp,
 }
 
 static const struct phy_reg rtl8168d_1_phy_reg_init_0[] = {
-	/* Channel Estimation */
+	 
 	{ 0x1f, 0x0001 },
 	{ 0x06, 0x4064 },
 	{ 0x07, 0x2863 },
@@ -408,20 +400,14 @@ static const struct phy_reg rtl8168d_1_phy_reg_init_0[] = {
 	{ 0x1a, 0x05ad },
 	{ 0x14, 0x94c0 },
 
-	/*
-	 * Tx Error Issue
-	 * Enhance line driver power
-	 */
+	 
 	{ 0x1f, 0x0002 },
 	{ 0x06, 0x5561 },
 	{ 0x1f, 0x0005 },
 	{ 0x05, 0x8332 },
 	{ 0x06, 0x5561 },
 
-	/*
-	 * Can not link to 1Gbps with bad cable
-	 * Decrease SNR threshold form 21.07dB to 19.04dB
-	 */
+	 
 	{ 0x1f, 0x0001 },
 	{ 0x17, 0x0cc0 },
 
@@ -474,10 +460,7 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
 {
 	rtl_writephy_batch(phydev, rtl8168d_1_phy_reg_init_0);
 
-	/*
-	 * Rx Error Issue
-	 * Fine Tune Switching regulator parameter
-	 */
+	 
 	phy_write(phydev, 0x1f, 0x0002);
 	phy_modify(phydev, 0x0b, 0x00ef, 0x0010);
 	phy_modify(phydev, 0x0c, 0x5d00, 0xa200);
@@ -489,12 +472,12 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
 		r8168d_phy_param(phydev, 0x8330, 0xffff, 0x6662);
 	}
 
-	/* RSET couple improve */
+	 
 	phy_write(phydev, 0x1f, 0x0002);
 	phy_set_bits(phydev, 0x0d, 0x0300);
 	phy_set_bits(phydev, 0x0f, 0x0010);
 
-	/* Fine tune PLL performance */
+	 
 	phy_write(phydev, 0x1f, 0x0002);
 	phy_modify(phydev, 0x02, 0x0600, 0x0100);
 	phy_clear_bits(phydev, 0x03, 0xe000);
@@ -515,13 +498,13 @@ static void rtl8168d_2_hw_phy_config(struct rtl8169_private *tp,
 		r8168d_phy_param(phydev, 0x8330, 0xffff, 0x2642);
 	}
 
-	/* Fine tune PLL performance */
+	 
 	phy_write(phydev, 0x1f, 0x0002);
 	phy_modify(phydev, 0x02, 0x0600, 0x0100);
 	phy_clear_bits(phydev, 0x03, 0xe000);
 	phy_write(phydev, 0x1f, 0x0000);
 
-	/* Switching regulator Slew rate */
+	 
 	phy_modify_paged(phydev, 0x0002, 0x0f, 0x0000, 0x0017);
 
 	rtl8168d_apply_firmware_cond(tp, phydev, 0xb300);
@@ -539,7 +522,7 @@ static void rtl8168e_1_hw_phy_config(struct rtl8169_private *tp,
 				     struct phy_device *phydev)
 {
 	static const struct phy_reg phy_reg_init[] = {
-		/* Channel estimation fine tune */
+		 
 		{ 0x1f, 0x0001 },
 		{ 0x0b, 0x6c20 },
 		{ 0x07, 0x2872 },
@@ -551,23 +534,23 @@ static void rtl8168e_1_hw_phy_config(struct rtl8169_private *tp,
 
 	r8169_apply_firmware(tp);
 
-	/* Enable Delay cap */
+	 
 	r8168d_phy_param(phydev, 0x8b80, 0xffff, 0xc896);
 
 	rtl_writephy_batch(phydev, phy_reg_init);
 
-	/* Update PFM & 10M TX idle timer */
+	 
 	r8168d_modify_extpage(phydev, 0x002f, 0x15, 0xffff, 0x1919);
 
 	r8168d_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
 
-	/* DCO enable for 10M IDLE Power */
+	 
 	r8168d_modify_extpage(phydev, 0x0023, 0x17, 0x0000, 0x0006);
 
-	/* For impedance matching */
+	 
 	phy_modify_paged(phydev, 0x0002, 0x08, 0x7f00, 0x8000);
 
-	/* PHY auto speed down */
+	 
 	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0050);
 	phy_set_bits(phydev, 0x14, BIT(15));
 
@@ -585,36 +568,36 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp,
 {
 	r8169_apply_firmware(tp);
 
-	/* Enable Delay cap */
+	 
 	r8168d_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
 
-	/* Channel estimation fine tune */
+	 
 	phy_write_paged(phydev, 0x0003, 0x09, 0xa20f);
 
-	/* Green Setting */
+	 
 	r8168d_phy_param(phydev, 0x8b5b, 0xffff, 0x9222);
 	r8168d_phy_param(phydev, 0x8b6d, 0xffff, 0x8000);
 	r8168d_phy_param(phydev, 0x8b76, 0xffff, 0x8000);
 
-	/* For 4-corner performance improve */
+	 
 	phy_write(phydev, 0x1f, 0x0005);
 	phy_write(phydev, 0x05, 0x8b80);
 	phy_set_bits(phydev, 0x17, 0x0006);
 	phy_write(phydev, 0x1f, 0x0000);
 
-	/* PHY auto speed down */
+	 
 	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
 	phy_set_bits(phydev, 0x14, BIT(15));
 
-	/* improve 10M EEE waveform */
+	 
 	r8168d_phy_param(phydev, 0x8b86, 0x0000, 0x0001);
 
-	/* Improve 2-pair detection performance */
+	 
 	r8168d_phy_param(phydev, 0x8b85, 0x0000, 0x4000);
 
 	rtl8168f_config_eee_phy(phydev);
 
-	/* Green feature */
+	 
 	phy_write(phydev, 0x1f, 0x0003);
 	phy_set_bits(phydev, 0x19, BIT(0));
 	phy_set_bits(phydev, 0x10, BIT(10));
@@ -625,14 +608,14 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp,
 static void rtl8168f_hw_phy_config(struct rtl8169_private *tp,
 				   struct phy_device *phydev)
 {
-	/* For 4-corner performance improve */
+	 
 	r8168d_phy_param(phydev, 0x8b80, 0x0000, 0x0006);
 
-	/* PHY auto speed down */
+	 
 	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
 	phy_set_bits(phydev, 0x14, BIT(15));
 
-	/* Improve 10M EEE waveform */
+	 
 	r8168d_phy_param(phydev, 0x8b86, 0x0000, 0x0001);
 
 	rtl8168f_config_eee_phy(phydev);
@@ -643,10 +626,10 @@ static void rtl8168f_1_hw_phy_config(struct rtl8169_private *tp,
 {
 	r8169_apply_firmware(tp);
 
-	/* Channel estimation fine tune */
+	 
 	phy_write_paged(phydev, 0x0003, 0x09, 0xa20f);
 
-	/* Modify green table for giga & fnet */
+	 
 	r8168d_phy_param(phydev, 0x8b55, 0xffff, 0x0000);
 	r8168d_phy_param(phydev, 0x8b5e, 0xffff, 0x0000);
 	r8168d_phy_param(phydev, 0x8b67, 0xffff, 0x0000);
@@ -654,15 +637,15 @@ static void rtl8168f_1_hw_phy_config(struct rtl8169_private *tp,
 	r8168d_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
 	r8168d_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00fb);
 
-	/* Modify green table for 10M */
+	 
 	r8168d_phy_param(phydev, 0x8b79, 0xffff, 0xaa00);
 
-	/* Disable hiimpedance detection (RTCT) */
+	 
 	phy_write_paged(phydev, 0x0003, 0x01, 0x328a);
 
 	rtl8168f_hw_phy_config(tp, phydev);
 
-	/* Improve 2-pair detection performance */
+	 
 	r8168d_phy_param(phydev, 0x8b85, 0x0000, 0x4000);
 }
 
@@ -681,13 +664,13 @@ static void rtl8411_hw_phy_config(struct rtl8169_private *tp,
 
 	rtl8168f_hw_phy_config(tp, phydev);
 
-	/* Improve 2-pair detection performance */
+	 
 	r8168d_phy_param(phydev, 0x8b85, 0x0000, 0x4000);
 
-	/* Channel estimation fine tune */
+	 
 	phy_write_paged(phydev, 0x0003, 0x09, 0xa20f);
 
-	/* Modify green table for giga & fnet */
+	 
 	r8168d_phy_param(phydev, 0x8b55, 0xffff, 0x0000);
 	r8168d_phy_param(phydev, 0x8b5e, 0xffff, 0x0000);
 	r8168d_phy_param(phydev, 0x8b67, 0xffff, 0x0000);
@@ -695,13 +678,13 @@ static void rtl8411_hw_phy_config(struct rtl8169_private *tp,
 	r8168d_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
 	r8168d_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00aa);
 
-	/* Modify green table for 10M */
+	 
 	r8168d_phy_param(phydev, 0x8b79, 0xffff, 0xaa00);
 
-	/* Disable hiimpedance detection (RTCT) */
+	 
 	phy_write_paged(phydev, 0x0003, 0x01, 0x328a);
 
-	/* Modify green table for giga */
+	 
 	r8168d_phy_param(phydev, 0x8b54, 0x0800, 0x0000);
 	r8168d_phy_param(phydev, 0x8b5d, 0x0800, 0x0000);
 	r8168d_phy_param(phydev, 0x8a7c, 0x0100, 0x0000);
@@ -710,10 +693,10 @@ static void rtl8411_hw_phy_config(struct rtl8169_private *tp,
 	r8168d_phy_param(phydev, 0x8a85, 0x0100, 0x0000);
 	r8168d_phy_param(phydev, 0x8a88, 0x0100, 0x0000);
 
-	/* uc same-seed solution */
+	 
 	r8168d_phy_param(phydev, 0x8b85, 0x0000, 0x8000);
 
-	/* Green feature */
+	 
 	phy_write(phydev, 0x1f, 0x0003);
 	phy_clear_bits(phydev, 0x19, BIT(0));
 	phy_clear_bits(phydev, 0x10, BIT(10));
@@ -757,20 +740,20 @@ static void rtl8168g_1_hw_phy_config(struct rtl8169_private *tp,
 	else
 		phy_modify_paged(phydev, 0x0c41, 0x15, BIT(1), 0);
 
-	/* Enable PHY auto speed down */
+	 
 	phy_modify_paged(phydev, 0x0a44, 0x11, 0, BIT(3) | BIT(2));
 
 	rtl8168g_phy_adjust_10m_aldps(phydev);
 
-	/* EEE auto-fallback function */
+	 
 	phy_modify_paged(phydev, 0x0a4b, 0x11, 0, BIT(2));
 
-	/* Enable UC LPF tune function */
+	 
 	r8168g_phy_param(phydev, 0x8012, 0x0000, 0x8000);
 
 	phy_modify_paged(phydev, 0x0c42, 0x11, BIT(13), BIT(14));
 
-	/* Improve SWR Efficiency */
+	 
 	phy_write(phydev, 0x1f, 0x0bcd);
 	phy_write(phydev, 0x14, 0x5065);
 	phy_write(phydev, 0x14, 0xd065);
@@ -801,10 +784,10 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp,
 
 	r8169_apply_firmware(tp);
 
-	/* CHIN EST parameter update */
+	 
 	r8168g_phy_param(phydev, 0x808a, 0x003f, 0x000a);
 
-	/* enable R-tune & PGA-retune function */
+	 
 	r8168g_phy_param(phydev, 0x0811, 0x0000, 0x0800);
 	phy_modify_paged(phydev, 0x0a42, 0x16, 0x0000, 0x0002);
 
@@ -814,7 +797,7 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp,
 	if (ioffset != 0xffff)
 		phy_write_paged(phydev, 0x0bcf, 0x16, ioffset);
 
-	/* Modify rlen (TX LPF corner frequency) level */
+	 
 	data = phy_read_paged(phydev, 0x0bcd, 0x16);
 	data &= 0x000f;
 	rlen = 0;
@@ -823,10 +806,10 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp,
 	data = rlen | (rlen << 4) | (rlen << 8) | (rlen << 12);
 	phy_write_paged(phydev, 0x0bcd, 0x17, data);
 
-	/* disable phy pfm mode */
+	 
 	phy_modify_paged(phydev, 0x0a44, 0x11, BIT(7), 0);
 
-	/* disable 10m pll off */
+	 
 	phy_modify_paged(phydev, 0x0a43, 0x10, BIT(0), 0);
 
 	rtl8168g_disable_aldps(phydev);
@@ -838,13 +821,13 @@ static void rtl8168ep_2_hw_phy_config(struct rtl8169_private *tp,
 {
 	rtl8168g_phy_adjust_10m_aldps(phydev);
 
-	/* Enable UC LPF tune function */
+	 
 	r8168g_phy_param(phydev, 0x8012, 0x0000, 0x8000);
 
-	/* Set rg_sel_sdm_rate */
+	 
 	phy_modify_paged(phydev, 0x0c42, 0x11, BIT(13), BIT(14));
 
-	/* Channel estimation parameters */
+	 
 	r8168g_phy_param(phydev, 0x80f3, 0xff00, 0x8b00);
 	r8168g_phy_param(phydev, 0x80f0, 0xff00, 0x3a00);
 	r8168g_phy_param(phydev, 0x80ef, 0xff00, 0x0500);
@@ -867,7 +850,7 @@ static void rtl8168ep_2_hw_phy_config(struct rtl8169_private *tp,
 	r8168g_phy_param(phydev, 0x80d5, 0xff00, 0xca00);
 	r8168g_phy_param(phydev, 0x80d7, 0xff00, 0x8400);
 
-	/* Force PWM-mode */
+	 
 	phy_write(phydev, 0x1f, 0x0bcd);
 	phy_write(phydev, 0x14, 0x5065);
 	phy_write(phydev, 0x14, 0xd065);
@@ -886,7 +869,7 @@ static void rtl8168ep_2_hw_phy_config(struct rtl8169_private *tp,
 static void rtl8117_hw_phy_config(struct rtl8169_private *tp,
 				  struct phy_device *phydev)
 {
-	/* CHN EST parameters adjust - fnet */
+	 
 	r8168g_phy_param(phydev, 0x808e, 0xff00, 0x4800);
 	r8168g_phy_param(phydev, 0x8090, 0xff00, 0xcc00);
 	r8168g_phy_param(phydev, 0x8092, 0xff00, 0xb000);
@@ -947,7 +930,7 @@ static void rtl8401_hw_phy_config(struct rtl8169_private *tp,
 static void rtl8105e_hw_phy_config(struct rtl8169_private *tp,
 				   struct phy_device *phydev)
 {
-	/* Disable ALDPS before ram code */
+	 
 	phy_write(phydev, 0x18, 0x0310);
 	msleep(100);
 
@@ -961,13 +944,13 @@ static void rtl8105e_hw_phy_config(struct rtl8169_private *tp,
 static void rtl8402_hw_phy_config(struct rtl8169_private *tp,
 				  struct phy_device *phydev)
 {
-	/* Disable ALDPS before setting firmware */
+	 
 	phy_write(phydev, 0x18, 0x0310);
 	msleep(20);
 
 	r8169_apply_firmware(tp);
 
-	/* EEE setting */
+	 
 	phy_write(phydev, 0x1f, 0x0004);
 	phy_write(phydev, 0x10, 0x401f);
 	phy_write(phydev, 0x19, 0x7030);
@@ -984,7 +967,7 @@ static void rtl8106e_hw_phy_config(struct rtl8169_private *tp,
 		{ 0x1f, 0x0000 }
 	};
 
-	/* Disable ALDPS before ram code */
+	 
 	phy_write(phydev, 0x18, 0x0310);
 	msleep(100);
 
@@ -1106,13 +1089,13 @@ void r8169_hw_phy_config(struct rtl8169_private *tp, struct phy_device *phydev,
 			 enum mac_version ver)
 {
 	static const rtl_phy_cfg_fct phy_configs[] = {
-		/* PCI devices. */
+		 
 		[RTL_GIGA_MAC_VER_02] = rtl8169s_hw_phy_config,
 		[RTL_GIGA_MAC_VER_03] = rtl8169s_hw_phy_config,
 		[RTL_GIGA_MAC_VER_04] = rtl8169sb_hw_phy_config,
 		[RTL_GIGA_MAC_VER_05] = rtl8169scd_hw_phy_config,
 		[RTL_GIGA_MAC_VER_06] = rtl8169sce_hw_phy_config,
-		/* PCI-E devices. */
+		 
 		[RTL_GIGA_MAC_VER_07] = rtl8102e_hw_phy_config,
 		[RTL_GIGA_MAC_VER_08] = rtl8102e_hw_phy_config,
 		[RTL_GIGA_MAC_VER_09] = rtl8102e_hw_phy_config,

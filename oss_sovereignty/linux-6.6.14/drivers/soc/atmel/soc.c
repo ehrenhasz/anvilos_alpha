@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Atmel
- *
- * Alexandre Belloni <alexandre.belloni@free-electrons.com
- * Boris Brezillon <boris.brezillon@free-electrons.com
- */
+
+ 
 
 #define pr_fmt(fmt)	"AT91: " fmt
 
@@ -245,7 +240,7 @@ static const struct at91_soc socs[] __initconst = {
 		 AT91_CIDR_VERSION_MASK_SAMA7G5, SAMA7G54_D4G_EXID_MATCH,
 		 "SAMA7G54 4Gb DDR3L SiP", "sama7g5"),
 #endif
-	{ /* sentinel */ },
+	{   },
 };
 
 static int __init at91_get_cidr_exid_from_dbgu(u32 *cidr, u32 *exid)
@@ -314,11 +309,7 @@ struct soc_device * __init at91_soc_init(const struct at91_soc *socs)
 	u32 cidr, exid;
 	int ret;
 
-	/*
-	 * With SAMA5D2 and later SoCs, CIDR and EXID registers are no more
-	 * in the dbgu device but in the chipid device whose purpose is only
-	 * to expose these two registers.
-	 */
+	 
 	ret = at91_get_cidr_exid_from_dbgu(&cidr, &exid);
 	if (ret)
 		ret = at91_get_cidr_exid_from_chipid(&cidr, &exid);

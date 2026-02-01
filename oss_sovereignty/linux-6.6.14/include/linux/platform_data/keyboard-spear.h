@@ -1,11 +1,4 @@
-/*
- * Copyright (C) 2010 ST Microelectronics
- * Rajeev Kumar <rajeevkumar.linux@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #ifndef __PLAT_KEYBOARD_H
 #define __PLAT_KEYBOARD_H
@@ -144,16 +137,7 @@ int _name[] = { \
 #define KEYPAD_6x6     1
 #define KEYPAD_2x2     2
 
-/**
- * struct kbd_platform_data - spear keyboard platform data
- * keymap: pointer to keymap data (table and size)
- * rep: enables key autorepeat
- * mode: choose keyboard support(9x9, 6x6, 2x2)
- * suspended_rate: rate at which keyboard would operate in suspended mode
- *
- * This structure is supposed to be used by platform code to supply
- * keymaps to drivers that implement keyboards.
- */
+ 
 struct kbd_platform_data {
 	const struct matrix_keymap_data *keymap;
 	bool rep;
@@ -161,4 +145,4 @@ struct kbd_platform_data {
 	unsigned int suspended_rate;
 };
 
-#endif /* __PLAT_KEYBOARD_H */
+#endif  

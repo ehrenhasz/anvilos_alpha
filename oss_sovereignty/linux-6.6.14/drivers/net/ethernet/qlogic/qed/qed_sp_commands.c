@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -24,10 +21,7 @@
 void qed_sp_destroy_request(struct qed_hwfn *p_hwfn,
 			    struct qed_spq_entry *p_ent)
 {
-	/* qed_spq_get_entry() can either get an entry from the free_pool,
-	 * or, if no entries are left, allocate a new entry and add it to
-	 * the unlimited_pending list.
-	 */
+	 
 	if (p_ent->queue == &p_hwfn->p_spq->unlimited_pending)
 		kfree(p_ent);
 	else
@@ -311,7 +305,7 @@ int qed_sp_pf_start(struct qed_hwfn *p_hwfn,
 	u8 page_cnt, i;
 	int rc;
 
-	/* update initial eq producer */
+	 
 	qed_eq_prod_update(p_hwfn,
 			   qed_chain_get_prod_idx(&p_hwfn->p_eq->chain));
 
@@ -353,9 +347,7 @@ int qed_sp_pf_start(struct qed_hwfn *p_hwfn,
 	for (i = 0; i < QED_MAX_PFC_PRIORITIES; i++)
 		outer_tag_config->inner_to_outer_pri_map[i] = i;
 
-	/* enable_stag_pri_change should be set if port is in BD mode or,
-	 * UFP with Host Control mode.
-	 */
+	 
 	if (test_bit(QED_MF_UFP_SPECIFIC, &p_hwfn->cdev->mf_bits)) {
 		if (p_hwfn->ufp_info.pri_type == QED_UFP_PRI_OS)
 			outer_tag_config->enable_stag_pri_change = 1;
@@ -366,13 +358,13 @@ int qed_sp_pf_start(struct qed_hwfn *p_hwfn,
 		    cpu_to_le16(((u16)p_hwfn->ufp_info.tc << 13));
 	}
 
-	/* Place EQ address in RAMROD */
+	 
 	DMA_REGPAIR_LE(p_ramrod->event_ring_pbl_addr,
 		       qed_chain_get_pbl_phys(&p_hwfn->p_eq->chain));
 	page_cnt = (u8)qed_chain_get_page_cnt(&p_hwfn->p_eq->chain);
 	p_ramrod->event_ring_num_pages = page_cnt;
 
-	/* Place consolidation queue address in ramrod */
+	 
 	DMA_REGPAIR_LE(p_ramrod->consolid_q_pbl_base_addr,
 		       qed_chain_get_pbl_phys(&p_hwfn->p_consq->chain));
 	page_cnt = (u8)qed_chain_get_page_cnt(&p_hwfn->p_consq->chain);
@@ -432,7 +424,7 @@ int qed_sp_pf_update(struct qed_hwfn *p_hwfn)
 	struct qed_sp_init_data init_data;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -462,7 +454,7 @@ int qed_sp_pf_update_ufp(struct qed_hwfn *p_hwfn)
 		return -EINVAL;
 	}
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -483,7 +475,7 @@ int qed_sp_pf_update_ufp(struct qed_hwfn *p_hwfn)
 	return qed_spq_post(p_hwfn, p_ent, NULL);
 }
 
-/* Set pf update ramrod command params */
+ 
 int qed_sp_pf_update_tunn_cfg(struct qed_hwfn *p_hwfn,
 			      struct qed_ptt *p_ptt,
 			      struct qed_tunnel_info *p_tunn,
@@ -500,7 +492,7 @@ int qed_sp_pf_update_tunn_cfg(struct qed_hwfn *p_hwfn,
 	if (!p_tunn)
 		return -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -531,7 +523,7 @@ int qed_sp_pf_stop(struct qed_hwfn *p_hwfn)
 	struct qed_sp_init_data init_data;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -552,7 +544,7 @@ int qed_sp_heartbeat_ramrod(struct qed_hwfn *p_hwfn)
 	struct qed_sp_init_data init_data;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -573,7 +565,7 @@ int qed_sp_pf_update_stag(struct qed_hwfn *p_hwfn)
 	struct qed_sp_init_data init_data;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;

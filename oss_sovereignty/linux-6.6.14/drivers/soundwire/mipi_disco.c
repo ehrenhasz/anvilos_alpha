@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-// Copyright(c) 2015-17 Intel Corporation.
 
-/*
- * MIPI Discovery And Configuration (DisCo) Specification for SoundWire
- * specifies properties to be implemented for SoundWire Masters and Slaves.
- * The DisCo spec doesn't mandate these properties. However, SDW bus cannot
- * work without knowing these values.
- *
- * The helper functions read the Master and Slave properties. Implementers
- * of Master or Slave drivers can use any of the below three mechanisms:
- *    a) Use these APIs here as .read_prop() callback for Master and Slave
- *    b) Implement own methods and set those as .read_prop(), but invoke
- *    APIs in this file for generic read and override the values with
- *    platform specific data
- *    c) Implement ones own methods which do not use anything provided
- *    here
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/property.h>
@@ -23,10 +9,7 @@
 #include <linux/soundwire/sdw.h>
 #include "bus.h"
 
-/**
- * sdw_master_read_prop() - Read Master properties
- * @bus: SDW bus instance
- */
+ 
 int sdw_master_read_prop(struct sdw_bus *bus)
 {
 	struct sdw_master_prop *prop = &bus->prop;
@@ -38,7 +21,7 @@ int sdw_master_read_prop(struct sdw_bus *bus)
 				 "mipi-sdw-sw-interface-revision",
 				 &prop->revision);
 
-	/* Find master handle */
+	 
 	snprintf(name, sizeof(name),
 		 "mipi-sdw-link-%d-subproperties", bus->link_id);
 
@@ -74,10 +57,7 @@ int sdw_master_read_prop(struct sdw_bus *bus)
 				prop->clk_freq, prop->num_clk_freq);
 	}
 
-	/*
-	 * Check the frequencies supported. If FW doesn't provide max
-	 * freq, then populate here by checking values.
-	 */
+	 
 	if (!prop->max_clk_freq && prop->clk_freq) {
 		prop->max_clk_freq = prop->clk_freq[0];
 		for (i = 1; i < prop->num_clk_freq; i++) {
@@ -170,7 +150,7 @@ static int sdw_slave_read_dpn(struct sdw_slave *slave,
 	char name[40];
 
 	addr = ports;
-	/* valid ports are 1 to 14 so apply mask */
+	 
 	addr &= GENMASK(14, 1);
 
 	for_each_set_bit(bit, &addr, 32) {
@@ -272,7 +252,7 @@ static int sdw_slave_read_dpn(struct sdw_slave *slave,
 		fwnode_property_read_u32(node, "mipi-sdw-port-encoding-type",
 					 &dpn[i].port_encoding);
 
-		/* TODO: Read audio mode */
+		 
 
 		i++;
 	}
@@ -280,10 +260,7 @@ static int sdw_slave_read_dpn(struct sdw_slave *slave,
 	return 0;
 }
 
-/**
- * sdw_slave_read_prop() - Read Slave properties
- * @slave: SDW Slave
- */
+ 
 int sdw_slave_read_prop(struct sdw_slave *slave)
 {
 	struct sdw_slave_prop *prop = &slave->prop;
@@ -340,7 +317,7 @@ int sdw_slave_read_prop(struct sdw_slave *slave)
 	device_property_read_u32(dev, "mipi-sdw-sink-port-list",
 				 &prop->sink_ports);
 
-	/* Read dp0 properties */
+	 
 	port = device_get_named_child_node(dev, "mipi-sdw-dp-0-subproperties");
 	if (!port) {
 		dev_dbg(dev, "DP0 node not found!!\n");
@@ -354,12 +331,9 @@ int sdw_slave_read_prop(struct sdw_slave *slave)
 		sdw_slave_read_dp0(slave, port, prop->dp0_prop);
 	}
 
-	/*
-	 * Based on each DPn port, get source and sink dpn properties.
-	 * Also, some ports can operate as both source or sink.
-	 */
+	 
 
-	/* Allocate memory for set bits in port lists */
+	 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
 					  sizeof(*prop->src_dpn_prop),
@@ -367,7 +341,7 @@ int sdw_slave_read_prop(struct sdw_slave *slave)
 	if (!prop->src_dpn_prop)
 		return -ENOMEM;
 
-	/* Read dpn properties for source port(s) */
+	 
 	sdw_slave_read_dpn(slave, prop->src_dpn_prop, nval,
 			   prop->source_ports, "source");
 
@@ -378,7 +352,7 @@ int sdw_slave_read_prop(struct sdw_slave *slave)
 	if (!prop->sink_dpn_prop)
 		return -ENOMEM;
 
-	/* Read dpn properties for sink port(s) */
+	 
 	sdw_slave_read_dpn(slave, prop->sink_dpn_prop, nval,
 			   prop->sink_ports, "sink");
 

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2022 Benjamin Tissoires
- */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -13,26 +12,26 @@
 SEC("fmod_ret/hid_bpf_device_event")
 int BPF_PROG(hid_event, struct hid_bpf_ctx *hctx)
 {
-	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 9 /* size */);
+	__u8 *data = hid_bpf_get_data(hctx, 0  , 9  );
 
 	if (!data)
-		return 0; /* EPERM check */
+		return 0;  
 
-	/* Touch */
+	 
 	data[1] &= 0xfd;
 
-	/* X */
+	 
 	data[4] = 0;
 	data[5] = 0;
 
-	/* Y */
+	 
 	data[6] = 0;
 	data[7] = 0;
 
 	return 0;
 }
 
-/* 72 == 360 / 5 -> 1 report every 5 degrees */
+ 
 int resolution = 72;
 int physical = 5;
 
@@ -52,13 +51,13 @@ int set_haptic(struct haptic_syscall_args *args)
 	int ret;
 
 	if (size > sizeof(haptic_data))
-		return -7; /* -E2BIG */
+		return -7;  
 
 	ctx = hid_bpf_allocate_context(args->hid);
 	if (!ctx)
-		return -1; /* EPERM check */
+		return -1;  
 
-	haptic_data[0] = 1;  /* report ID */
+	haptic_data[0] = 1;   
 
 	ret = hid_bpf_hw_request(ctx, haptic_data, size, HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
 
@@ -75,16 +74,16 @@ int set_haptic(struct haptic_syscall_args *args)
 		   haptic_data[6],
 		   haptic_data[7]);
 
-	/* whenever resolution multiplier is not 3600, we have the fixed report descriptor */
+	 
 	res = (u16 *)&haptic_data[1];
 	if (*res != 3600) {
-//		haptic_data[1] = 72; /* resolution multiplier */
-//		haptic_data[2] = 0;  /* resolution multiplier */
-//		haptic_data[3] = 0;  /* Repeat Count */
-		haptic_data[4] = 3;  /* haptic Auto Trigger */
-//		haptic_data[5] = 5;  /* Waveform Cutoff Time */
-//		haptic_data[6] = 80; /* Retrigger Period */
-//		haptic_data[7] = 0;  /* Retrigger Period */
+
+
+
+		haptic_data[4] = 3;   
+
+
+
 	} else {
 		haptic_data[4] = 0;
 	}
@@ -100,30 +99,30 @@ int set_haptic(struct haptic_syscall_args *args)
 	return 0;
 }
 
-/* Convert REL_DIAL into REL_WHEEL */
+ 
 SEC("fmod_ret/hid_bpf_rdesc_fixup")
 int BPF_PROG(hid_rdesc_fixup, struct hid_bpf_ctx *hctx)
 {
-	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 4096 /* size */);
+	__u8 *data = hid_bpf_get_data(hctx, 0  , 4096  );
 	__u16 *res, *phys;
 
 	if (!data)
-		return 0; /* EPERM check */
+		return 0;  
 
-	/* Convert TOUCH into a button */
+	 
 	data[31] = HID_UP_BUTTON;
 	data[33] = 2;
 
-	/* Convert REL_DIAL into REL_WHEEL */
+	 
 	data[45] = HID_GD_WHEEL;
 
-	/* Change Resolution Multiplier */
+	 
 	phys = (__u16 *)&data[61];
 	*phys = physical;
 	res = (__u16 *)&data[66];
 	*res = resolution;
 
-	/* Convert X,Y from Abs to Rel */
+	 
 	data[88] = 0x06;
 	data[98] = 0x06;
 

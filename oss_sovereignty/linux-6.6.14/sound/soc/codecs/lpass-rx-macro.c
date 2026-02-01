@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -372,7 +372,7 @@
 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
 			SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000 |\
 			SNDRV_PCM_RATE_384000)
-/* Fractional Rates */
+ 
 #define RX_MACRO_FRAC_RATES (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_88200 |\
 				SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_352800)
 
@@ -487,8 +487,8 @@ enum {
 };
 
 enum {
-	RX_MACRO_COMP1, /* HPH_L */
-	RX_MACRO_COMP2, /* HPH_R */
+	RX_MACRO_COMP1,  
+	RX_MACRO_COMP2,  
 	RX_MACRO_COMP_MAX
 };
 
@@ -528,14 +528,14 @@ enum {
 	INTERP_MIX_PATH,
 };
 
-/* Codec supports 2 IIR filters */
+ 
 enum {
 	IIR0 = 0,
 	IIR1,
 	IIR_MAX,
 };
 
-/* Each IIR has 5 Filter Stages */
+ 
 enum {
 	BAND1 = 0,
 	BAND2,
@@ -591,7 +591,7 @@ enum {
 struct rx_macro {
 	struct device *dev;
 	int comp_enabled[RX_MACRO_COMP_MAX];
-	/* Main path clock users count */
+	 
 	int main_clk_users[INTERP_MAX];
 	int rx_port_value[RX_MACRO_PORTS_MAX];
 	u16 prim_int_users[INTERP_MAX];
@@ -833,7 +833,7 @@ static const struct snd_kcontrol_new rx_mix_tx0_mux =
 		SOC_DAPM_ENUM("RX MIX TX0_MUX Mux", rx_mix_tx0_mux_enum);
 
 static const struct reg_default rx_defaults[] = {
-	/* RX Macro */
+	 
 	{ CDC_RX_TOP_TOP_CFG0, 0x00 },
 	{ CDC_RX_TOP_SWR_CTRL, 0x00 },
 	{ CDC_RX_TOP_DEBUG, 0x00 },
@@ -1137,7 +1137,7 @@ static bool rx_is_wronly_register(struct device *dev,
 
 static bool rx_is_volatile_register(struct device *dev, unsigned int reg)
 {
-	/* Update volatile list for rx/tx macros */
+	 
 	switch (reg) {
 	case CDC_RX_TOP_HPHL_COMP_RD_LSB:
 	case CDC_RX_TOP_HPHL_COMP_WR_LSB:
@@ -1488,7 +1488,7 @@ static bool rx_is_readable_register(struct device *dev, unsigned int reg)
 static const struct regmap_config rx_regmap_config = {
 	.name = "rx_macro",
 	.reg_bits = 16,
-	.val_bits = 32, /* 8 but with 32 bit read/write */
+	.val_bits = 32,  
 	.reg_stride = 4,
 	.cache_type = REGCACHE_FLAT,
 	.reg_defaults = rx_defaults,
@@ -1515,7 +1515,7 @@ static int rx_macro_int_dem_inp_mux_put(struct snd_kcontrol *kcontrol,
 	else if (e->reg == CDC_RX_RX1_RX_PATH_CFG1)
 		look_ahead_dly_reg = CDC_RX_RX1_RX_PATH_CFG0;
 
-	/* Set Look Ahead Delay */
+	 
 	if (val)
 		snd_soc_component_update_bits(component, look_ahead_dly_reg,
 					      CDC_RX_DLY_ZN_EN_MASK,
@@ -1523,7 +1523,7 @@ static int rx_macro_int_dem_inp_mux_put(struct snd_kcontrol *kcontrol,
 	else
 		snd_soc_component_update_bits(component, look_ahead_dly_reg,
 					      CDC_RX_DLY_ZN_EN_MASK, 0);
-	/* Set DEM INP Select */
+	 
 	return snd_soc_dapm_put_enum_double(kcontrol, ucontrol);
 }
 
@@ -1549,11 +1549,7 @@ static int rx_macro_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 	for_each_set_bit(port, &rx->active_ch_mask[dai->id], RX_MACRO_PORTS_MAX) {
 		int_1_mix1_inp = port;
 		int_mux_cfg0 = CDC_RX_INP_MUX_RX_INT0_CFG0;
-		/*
-		 * Loop through all interpolator MUX inputs and find out
-		 * to which interpolator input, the rx port
-		 * is connected
-		 */
+		 
 		for (j = 0; j < INTERP_MAX; j++) {
 			int_mux_cfg1 = int_mux_cfg0 + 4;
 
@@ -1568,7 +1564,7 @@ static int rx_macro_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 			    (inp1_sel == int_1_mix1_inp + INTn_1_INP_SEL_RX0) ||
 			    (inp2_sel == int_1_mix1_inp + INTn_1_INP_SEL_RX0)) {
 				int_fs_reg = CDC_RX_RXn_RX_PATH_CTL(j);
-				/* sample_rate is in Hz */
+				 
 				snd_soc_component_update_bits(component, int_fs_reg,
 							      CDC_RX_PATH_PCM_RATE_MASK,
 							      rate_reg_val);
@@ -1673,16 +1669,7 @@ static int rx_macro_get_channel_map(struct snd_soc_dai *dai,
 			if (++cnt == RX_MACRO_MAX_DMA_CH_PER_PORT)
 				break;
 		}
-		/*
-		 * CDC_DMA_RX_0 port drives RX0/RX1 -- ch_mask 0x1/0x2/0x3
-		 * CDC_DMA_RX_1 port drives RX2/RX3 -- ch_mask 0x1/0x2/0x3
-		 * CDC_DMA_RX_2 port drives RX4     -- ch_mask 0x1
-		 * CDC_DMA_RX_3 port drives RX5     -- ch_mask 0x1
-		 * AIFn can pair to any CDC_DMA_RX_n port.
-		 * In general, below convention is used::
-		 * CDC_DMA_RX_0(AIF1)/CDC_DMA_RX_1(AIF2)/
-		 * CDC_DMA_RX_2(AIF3)/CDC_DMA_RX_3(AIF4)
-		 */
+		 
 		if (mask & 0x0C)
 			mask = mask >> 2;
 		if ((mask & 0x10) || (mask & 0x20))
@@ -1987,7 +1974,7 @@ static int rx_macro_config_compander(struct snd_soc_component *component,
 {
 	u8 pcm_rate, val;
 
-	/* AUX does not have compander */
+	 
 	if (comp == INTERP_AUX)
 		return 0;
 
@@ -2012,7 +1999,7 @@ static int rx_macro_config_compander(struct snd_soc_component *component,
 		return 0;
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Enable Compander Clock */
+		 
 		snd_soc_component_write_field(component, CDC_RX_COMPANDERn_CTL0(comp),
 					      CDC_RX_COMPANDERn_CLK_EN_MASK, 0x1);
 		snd_soc_component_write_field(component, CDC_RX_COMPANDERn_CTL0(comp),
@@ -2045,7 +2032,7 @@ static int rx_macro_load_compander_coeff(struct snd_soc_component *component,
 	int i;
 	int hph_pwr_mode;
 
-	/* AUX does not have compander */
+	 
 	if (comp == INTERP_AUX)
 		return 0;
 
@@ -2059,14 +2046,14 @@ static int rx_macro_load_compander_coeff(struct snd_soc_component *component,
 		comp_coeff_lsb_reg = CDC_RX_TOP_HPHR_COMP_WR_LSB;
 		comp_coeff_msb_reg = CDC_RX_TOP_HPHR_COMP_WR_MSB;
 	} else {
-		/* compander coefficients are loaded only for hph path */
+		 
 		return 0;
 	}
 
 	hph_pwr_mode = rx->hph_pwr_mode;
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Load Compander Coeff */
+		 
 		for (i = 0; i < COMP_MAX_COEFF; i++) {
 			snd_soc_component_write(component, comp_coeff_lsb_reg,
 					comp_coeff_table[hph_pwr_mode][i].lsb);
@@ -2102,9 +2089,9 @@ static int rx_macro_config_softclip(struct snd_soc_component *component,
 		return 0;
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Enable Softclip clock */
+		 
 		rx_macro_enable_softclip_clk(component, rx, true);
-		/* Enable Softclip control */
+		 
 		snd_soc_component_write_field(component, CDC_RX_SOFTCLIP_SOFTCLIP_CTRL,
 					     CDC_RX_SOFTCLIP_EN_MASK, 0x01);
 	}
@@ -2122,14 +2109,14 @@ static int rx_macro_config_aux_hpf(struct snd_soc_component *component,
 				   struct rx_macro *rx, int event)
 {
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Update Aux HPF control */
+		 
 		if (!rx->is_aux_hpf_on)
 			snd_soc_component_update_bits(component,
 				CDC_RX_RX2_RX_PATH_CFG1, 0x04, 0x00);
 	}
 
 	if (SND_SOC_DAPM_EVENT_OFF(event)) {
-		/* Reset to default (HPF=ON) */
+		 
 		snd_soc_component_update_bits(component,
 			CDC_RX_RX2_RX_PATH_CFG1, 0x04, 0x04);
 	}
@@ -2161,10 +2148,7 @@ static int rx_macro_config_classh(struct snd_soc_component *component,
 	rx_macro_enable_clsh_block(rx, true);
 	if (interp_n == INTERP_HPHL ||
 		interp_n == INTERP_HPHR) {
-		/*
-		 * These K1 values depend on the Headphone Impedance
-		 * For now it is assumed to be 16 ohm
-		 */
+		 
 		snd_soc_component_write(component, CDC_RX_CLSH_K1_LSB, 0xc0);
 		snd_soc_component_write_field(component, CDC_RX_CLSH_K1_MSB,
 					      CDC_RX_CLSH_K1_MSB_COEFF_MASK, 0);
@@ -2524,7 +2508,7 @@ static int rx_macro_enable_interp_clk(struct snd_soc_component *component,
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
 		if (rx->main_clk_users[interp_idx] == 0) {
-			/* Main path PGA mute enable */
+			 
 			snd_soc_component_write_field(component, main_reg,
 						      CDC_RX_PATH_PGA_MUTE_MASK, 0x1);
 			snd_soc_component_write_field(component, dsm_reg,
@@ -2549,20 +2533,20 @@ static int rx_macro_enable_interp_clk(struct snd_soc_component *component,
 		rx->main_clk_users[interp_idx]--;
 		if (rx->main_clk_users[interp_idx] <= 0) {
 			rx->main_clk_users[interp_idx] = 0;
-			/* Main path PGA mute enable */
+			 
 			snd_soc_component_write_field(component, main_reg,
 						      CDC_RX_PATH_PGA_MUTE_MASK, 0x1);
-			/* Clk Disable */
+			 
 			snd_soc_component_write_field(component, dsm_reg,
 						      CDC_RX_RXn_DSM_CLK_EN_MASK, 0);
 			snd_soc_component_write_field(component, main_reg,
 						      CDC_RX_PATH_CLK_EN_MASK, 0);
-			/* Reset enable and disable */
+			 
 			snd_soc_component_write_field(component, main_reg,
 						      CDC_RX_PATH_RESET_EN_MASK, 1);
 			snd_soc_component_write_field(component, main_reg,
 						      CDC_RX_PATH_RESET_EN_MASK, 0);
-			/* Reset rate to 48K*/
+			 
 			snd_soc_component_update_bits(component, main_reg,
 						      CDC_RX_PATH_PCM_RATE_MASK,
 						      0x04);
@@ -2601,11 +2585,11 @@ static int rx_macro_enable_mix_path(struct snd_soc_dapm_widget *w,
 					snd_soc_component_read(component, gain_reg));
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* Clk Disable */
+		 
 		snd_soc_component_update_bits(component, mix_reg,
 					      CDC_RX_RXn_MIX_CLK_EN_MASK, 0x00);
 		rx_macro_enable_interp_clk(component, event, w->shift);
-		/* Reset enable and disable */
+		 
 		snd_soc_component_update_bits(component, mix_reg,
 					      CDC_RX_RXn_MIX_RESET_MASK,
 					      CDC_RX_RXn_MIX_RESET);
@@ -2647,7 +2631,7 @@ static int rx_macro_set_iir_gain(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 
 	switch (event) {
-	case SND_SOC_DAPM_POST_PMU: /* fall through */
+	case SND_SOC_DAPM_POST_PMU:  
 	case SND_SOC_DAPM_PRE_PMD:
 		if (strnstr(w->name, "IIR0", sizeof("IIR0"))) {
 			snd_soc_component_write(component,
@@ -2695,7 +2679,7 @@ static uint32_t get_iir_band_coeff(struct snd_soc_component *component,
 	u32 value;
 	int reg, b2_reg;
 
-	/* Address does not automatically update if reading */
+	 
 	reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B1_CTL + 0x80 * iir_idx;
 	b2_reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B2_CTL + 0x80 * iir_idx;
 
@@ -2718,7 +2702,7 @@ static uint32_t get_iir_band_coeff(struct snd_soc_component *component,
 		((band_idx * BAND_MAX + coeff_idx)
 		* sizeof(uint32_t) + 3) & 0x7F);
 
-	/* Mask bits top 2 bits since they are reserved */
+	 
 	value |= (snd_soc_component_read(component, b2_reg) << 24);
 	return value;
 }
@@ -2731,7 +2715,7 @@ static void set_iir_band_coeff(struct snd_soc_component *component,
 	snd_soc_component_write(component, reg, (value & 0xFF));
 	snd_soc_component_write(component, reg, (value >> 8) & 0xFF);
 	snd_soc_component_write(component, reg, (value >> 16) & 0xFF);
-	/* Mask top 2 bits, 7-8 are reserved */
+	 
 	snd_soc_component_write(component, reg, (value >> 24) & 0x3F);
 }
 
@@ -2751,8 +2735,8 @@ static int rx_macro_put_iir_band_audio_mixer(
 
 	memcpy(&coeff[0], ucontrol->value.bytes.data, params->max);
 
-	/* Mask top bit it is reserved */
-	/* Updates addr automatically for each B2 write */
+	 
+	 
 	snd_soc_component_write(component, reg, (band_idx * BAND_MAX *
 						 sizeof(uint32_t)) & 0x7F);
 
@@ -2926,7 +2910,7 @@ static int rx_macro_enable_echo(struct snd_soc_dapm_widget *w,
 	snd_soc_component_update_bits(component, ec_hq_reg, 0x01, 0x01);
 	ec_hq_reg = CDC_RX_EC_REF_HQ0_EC_REF_HQ_CFG0 +
 				0x40 * ec_tx;
-	/* default set to 48k */
+	 
 	snd_soc_component_update_bits(component, ec_hq_reg, 0x1E, 0x08);
 
 	return 0;
@@ -3241,7 +3225,7 @@ static const struct snd_soc_dapm_route rx_audio_map[] = {
 	{"RX AIF_ECHO", NULL, "RX MIX TX2 MUX"},
 	{"RX AIF_ECHO", NULL, "RX_MCLK"},
 
-	/* Mixing path INT0 */
+	 
 	{"RX INT0_2 MUX", "RX0", "RX_RX0"},
 	{"RX INT0_2 MUX", "RX1", "RX_RX1"},
 	{"RX INT0_2 MUX", "RX2", "RX_RX2"},
@@ -3251,7 +3235,7 @@ static const struct snd_soc_dapm_route rx_audio_map[] = {
 	{"RX INT0_2 INTERP", NULL, "RX INT0_2 MUX"},
 	{"RX INT0 SEC MIX", NULL, "RX INT0_2 INTERP"},
 
-	/* Mixing path INT1 */
+	 
 	{"RX INT1_2 MUX", "RX0", "RX_RX0"},
 	{"RX INT1_2 MUX", "RX1", "RX_RX1"},
 	{"RX INT1_2 MUX", "RX2", "RX_RX2"},
@@ -3261,7 +3245,7 @@ static const struct snd_soc_dapm_route rx_audio_map[] = {
 	{"RX INT1_2 INTERP", NULL, "RX INT1_2 MUX"},
 	{"RX INT1 SEC MIX", NULL, "RX INT1_2 INTERP"},
 
-	/* Mixing path INT2 */
+	 
 	{"RX INT2_2 MUX", "RX0", "RX_RX0"},
 	{"RX INT2_2 MUX", "RX1", "RX_RX1"},
 	{"RX INT2_2 MUX", "RX2", "RX_RX2"},
@@ -3577,7 +3561,7 @@ static int rx_macro_probe(struct platform_device *pdev)
 
 	rx->dev = dev;
 
-	/* set MCLK and NPL rates */
+	 
 	clk_set_rate(rx->mclk, MCLK_FREQ);
 	clk_set_rate(rx->npl, MCLK_FREQ);
 
@@ -3601,7 +3585,7 @@ static int rx_macro_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_fsgen;
 
-	/* reset swr block  */
+	 
 	regmap_update_bits(rx->regmap, CDC_RX_CLK_RST_CTRL_SWR_CONTROL,
 			   CDC_RX_SWR_RESET_MASK,
 			   CDC_RX_SWR_RESET);

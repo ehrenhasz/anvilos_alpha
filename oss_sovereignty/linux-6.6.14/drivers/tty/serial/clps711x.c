@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Driver for CLPS711x serial ports
- *
- *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
- *
- *  Copyright 1999 ARM Limited
- *  Copyright (C) 2000 Deep Blue Solutions Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -232,11 +225,11 @@ static int uart_clps711x_startup(struct uart_port *port)
 {
 	struct clps711x_port *s = dev_get_drvdata(port->dev);
 
-	/* Disable break */
+	 
 	writel(readl(port->membase + UBRLCR_OFFSET) & ~UBRLCR_BREAK,
 	       port->membase + UBRLCR_OFFSET);
 
-	/* Enable the port */
+	 
 	return regmap_update_bits(s->syscon, SYSCON_OFFSET,
 				  SYSCON_UARTEN, SYSCON_UARTEN);
 }
@@ -245,7 +238,7 @@ static void uart_clps711x_shutdown(struct uart_port *port)
 {
 	struct clps711x_port *s = dev_get_drvdata(port->dev);
 
-	/* Disable the port */
+	 
 	regmap_update_bits(s->syscon, SYSCON_OFFSET, SYSCON_UARTEN, 0);
 }
 
@@ -256,11 +249,11 @@ static void uart_clps711x_set_termios(struct uart_port *port,
 	u32 ubrlcr;
 	unsigned int baud, quot;
 
-	/* Mask termios capabilities we don't support */
+	 
 	termios->c_cflag &= ~CMSPAR;
 	termios->c_iflag &= ~(BRKINT | IGNBRK);
 
-	/* Ask the core to calculate the divisor for us */
+	 
 	baud = uart_get_baud_rate(port, termios, old, port->uartclk / 4096,
 						      port->uartclk / 16);
 	quot = uart_get_divisor(port, baud);
@@ -290,15 +283,15 @@ static void uart_clps711x_set_termios(struct uart_port *port,
 			ubrlcr |= UBRLCR_EVENPRT;
 	}
 
-	/* Enable FIFO */
+	 
 	ubrlcr |= UBRLCR_FIFOEN;
 
-	/* Set read status mask */
+	 
 	port->read_status_mask = UARTDR_OVERR;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= UARTDR_PARERR | UARTDR_FRMERR;
 
-	/* Set status ignore mask */
+	 
 	port->ignore_status_mask = 0;
 	if (!(termios->c_cflag & CREAD))
 		port->ignore_status_mask |= UARTDR_OVERR | UARTDR_PARERR |
@@ -353,7 +346,7 @@ static void uart_clps711x_console_putchar(struct uart_port *port, unsigned char 
 	struct clps711x_port *s = dev_get_drvdata(port->dev);
 	u32 sysflg = 0;
 
-	/* Wait for FIFO is not full */
+	 
 	do {
 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
 	} while (sysflg & SYSFLG_UTXFF);
@@ -370,7 +363,7 @@ static void uart_clps711x_console_write(struct console *co, const char *c,
 
 	uart_console_write(port, c, n, uart_clps711x_console_putchar);
 
-	/* Wait for transmitter to become empty */
+	 
 	do {
 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
 	} while (sysflg & SYSFLG_UBUSY);
@@ -489,7 +482,7 @@ static int uart_clps711x_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Disable port */
+	 
 	if (!uart_console(&s->port))
 		regmap_update_bits(s->syscon, SYSCON_OFFSET, SYSCON_UARTEN, 0);
 

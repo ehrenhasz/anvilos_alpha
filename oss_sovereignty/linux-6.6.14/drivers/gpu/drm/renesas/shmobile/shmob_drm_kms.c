@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * shmob_drm_kms.c  --  SH Mobile DRM Mode Setting
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_crtc_helper.h>
@@ -19,9 +13,7 @@
 #include "shmob_drm_kms.h"
 #include "shmob_drm_regs.h"
 
-/* -----------------------------------------------------------------------------
- * Format helpers
- */
+ 
 
 static const struct shmob_drm_format_info shmob_drm_format_infos[] = {
 	{
@@ -89,9 +81,7 @@ const struct shmob_drm_format_info *shmob_drm_format_info(u32 fourcc)
 	return NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Frame buffer
- */
+ 
 
 static struct drm_framebuffer *
 shmob_drm_fb_create(struct drm_device *dev, struct drm_file *file_priv,

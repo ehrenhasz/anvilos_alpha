@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mm/debug.c
- *
- * mm/ specific debug routines.
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -18,10 +13,7 @@
 #include "internal.h"
 #include <trace/events/migrate.h>
 
-/*
- * Define EM() and EMe() so that MIGRATE_REASON from trace/events/migrate.h can
- * be used to populate migrate_reason_names[].
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a, b)	b,
@@ -57,24 +49,13 @@ static void __dump_page(struct page *page)
 	struct page *head = &folio->page;
 	struct address_space *mapping;
 	bool compound = PageCompound(page);
-	/*
-	 * Accessing the pageblock without the zone lock. It could change to
-	 * "isolate" again in the meantime, but since we are just dumping the
-	 * state for debugging, it should be fine to accept a bit of
-	 * inaccuracy here due to racing.
-	 */
+	 
 	bool page_cma = is_migrate_cma_page(page);
 	int mapcount;
 	char *type = "";
 
 	if (page < head || (page >= head + MAX_ORDER_NR_PAGES)) {
-		/*
-		 * Corrupt page, so we cannot call page_mapping. Instead, do a
-		 * safe subset of the steps that page_mapping() does. Caution:
-		 * this will be misleading for tail pages, PageSwapCache pages,
-		 * and potentially other situations. (See the page_mapping()
-		 * implementation for what's missing here.)
-		 */
+		 
 		unsigned long tmp = (unsigned long)page->mapping;
 
 		if (tmp & PAGE_MAPPING_ANON)
@@ -88,11 +69,7 @@ static void __dump_page(struct page *page)
 		mapping = page_mapping(page);
 	}
 
-	/*
-	 * Avoid VM_BUG_ON() in page_mapcount().
-	 * page->_mapcount space in struct page is used by sl[aou]b pages to
-	 * encode own info.
-	 */
+	 
 	mapcount = PageSlab(head) ? 0 : page_mapcount(page);
 
 	pr_warn("page:%p refcount:%d mapcount:%d mapping:%p index:%#lx pfn:%#lx\n",
@@ -230,10 +207,7 @@ static int __init setup_vm_debug(char *str)
 {
 	bool __page_init_poisoning = true;
 
-	/*
-	 * Calling vm_debug with no arguments is equivalent to requesting
-	 * to enable all debugging options we can control.
-	 */
+	 
 	if (*str++ != '=' || !*str)
 		goto out;
 
@@ -274,7 +248,7 @@ void vma_iter_dump_tree(const struct vma_iterator *vmi)
 #if defined(CONFIG_DEBUG_VM_MAPLE_TREE)
 	mas_dump(&vmi->mas);
 	mt_dump(vmi->mas.tree, mt_dump_hex);
-#endif	/* CONFIG_DEBUG_VM_MAPLE_TREE */
+#endif	 
 }
 
-#endif		/* CONFIG_DEBUG_VM */
+#endif		 

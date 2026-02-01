@@ -1,32 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- * Contributors:
- *    Changbin Du <changbin.du@intel.com>
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/crc32.h>
@@ -39,12 +11,12 @@
 
 struct gvt_firmware_header {
 	u64 magic;
-	u32 crc32;		/* protect the data after this field */
+	u32 crc32;		 
 	u32 version;
 	u64 cfg_space_size;
-	u64 cfg_space_offset;	/* offset in the file */
+	u64 cfg_space_offset;	 
 	u64 mmio_size;
-	u64 mmio_offset;	/* offset in the file */
+	u64 mmio_offset;	 
 	unsigned char data[];
 };
 
@@ -126,11 +98,7 @@ static void clean_firmware_sysfs(struct intel_gvt *gvt)
 	vfree(firmware_attr.private);
 }
 
-/**
- * intel_gvt_free_firmware - free GVT firmware
- * @gvt: intel gvt device
- *
- */
+ 
 void intel_gvt_free_firmware(struct intel_gvt *gvt)
 {
 	if (!gvt->firmware.firmware_loaded)
@@ -190,11 +158,7 @@ invalid_firmware:
 
 #define GVT_FIRMWARE_PATH "i915/gvt"
 
-/**
- * intel_gvt_load_firmware - load GVT firmware
- * @gvt: intel gvt device
- *
- */
+ 
 int intel_gvt_load_firmware(struct intel_gvt *gvt)
 {
 	struct intel_gvt_device_info *info = &gvt->device_info;

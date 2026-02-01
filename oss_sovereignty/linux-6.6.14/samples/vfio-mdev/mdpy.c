@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mediated virtual PCI display host device driver
- *
- * See mdpy-defs.h for device specs
- *
- *   (c) Gerd Hoffmann <kraxel@redhat.com>
- *
- * based on mtty driver which is:
- *   Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
- *	 Author: Neo Jia <cjia@nvidia.com>
- *		 Kirti Wankhede <kwankhede@nvidia.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -90,7 +75,7 @@ static struct device	mdpy_dev;
 static struct mdev_parent mdpy_parent;
 static const struct vfio_device_ops mdpy_dev_ops;
 
-/* State of each mdev device */
+ 
 struct mdev_state {
 	struct vfio_device vdev;
 	u8 *vconfig;
@@ -129,10 +114,10 @@ static void mdpy_create_config_space(struct mdev_state *mdev_state)
 		   PCI_BASE_ADDRESS_MEM_PREFETCH);
 	mdev_state->bar_mask = ~(mdev_state->memsize) + 1;
 
-	/* vendor specific capability for the config registers */
+	 
 	mdev_state->vconfig[PCI_CAPABILITY_LIST]       = MDPY_VENDORCAP_OFFSET;
-	mdev_state->vconfig[MDPY_VENDORCAP_OFFSET + 0] = 0x09; /* vendor cap */
-	mdev_state->vconfig[MDPY_VENDORCAP_OFFSET + 1] = 0x00; /* next ptr */
+	mdev_state->vconfig[MDPY_VENDORCAP_OFFSET + 0] = 0x09;  
+	mdev_state->vconfig[MDPY_VENDORCAP_OFFSET + 1] = 0x00;  
 	mdev_state->vconfig[MDPY_VENDORCAP_OFFSET + 2] = MDPY_VENDORCAP_SIZE;
 	STORE_LE32((u32 *) &mdev_state->vconfig[MDPY_FORMAT_OFFSET],
 		   mdev_state->type->format);
@@ -210,7 +195,7 @@ static int mdpy_reset(struct mdev_state *mdev_state)
 {
 	u32 stride, i;
 
-	/* initialize with gray gradient */
+	 
 	stride = mdev_state->type->width * mdev_state->type->bytepp;
 	for (i = 0; i < mdev_state->type->height; i++)
 		memset(mdev_state->memblk + i * stride,
@@ -499,7 +484,7 @@ static int mdpy_query_gfx_plane(struct mdev_state *mdev_state,
 	plane->size	      = mdev_state->memsize;
 	plane->region_index   = MDPY_DISPLAY_REGION;
 
-	/* unused */
+	 
 	plane->drm_format_mod = 0;
 	plane->x_pos	      = 0;
 	plane->y_pos	      = 0;
@@ -689,7 +674,7 @@ static const struct file_operations vd_fops = {
 
 static void mdpy_device_release(struct device *dev)
 {
-	/* nothing */
+	 
 }
 
 static int __init mdpy_dev_init(void)

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DMA memory management for framework level HCD code (hc_driver)
- *
- * This implementation plugs in through generic "usb_bus" level methods,
- * and should work with all USB controllers, regardless of bus type.
- *
- * Released under the GPLv2 only.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -21,47 +14,29 @@
 #include <linux/usb/hcd.h>
 
 
-/*
- * DMA-Coherent Buffers
- */
+ 
 
-/* FIXME tune these based on pool statistics ... */
+ 
 static size_t pool_max[HCD_BUFFER_POOLS] = {
 	32, 128, 512, 2048,
 };
 
 void __init usb_init_pool_max(void)
 {
-	/*
-	 * The pool_max values must never be smaller than
-	 * ARCH_DMA_MINALIGN.
-	 */
+	 
 	if (ARCH_DMA_MINALIGN <= 32)
-		;			/* Original value is okay */
+		;			 
 	else if (ARCH_DMA_MINALIGN <= 64)
 		pool_max[0] = 64;
 	else if (ARCH_DMA_MINALIGN <= 128)
-		pool_max[0] = 0;	/* Don't use this pool */
+		pool_max[0] = 0;	 
 	else
-		BUILD_BUG();		/* We don't allow this */
+		BUILD_BUG();		 
 }
 
-/* SETUP primitives */
+ 
 
-/**
- * hcd_buffer_create - initialize buffer pools
- * @hcd: the bus whose buffer pools are to be initialized
- *
- * Context: task context, might sleep
- *
- * Call this as part of initializing a host controller that uses the dma
- * memory allocators.  It initializes some pools of dma-coherent memory that
- * will be shared by all drivers using that controller.
- *
- * Call hcd_buffer_destroy() to clean up after using those pools.
- *
- * Return: 0 if successful. A negative errno value otherwise.
- */
+ 
 int hcd_buffer_create(struct usb_hcd *hcd)
 {
 	char		name[16];
@@ -86,14 +61,7 @@ int hcd_buffer_create(struct usb_hcd *hcd)
 }
 
 
-/**
- * hcd_buffer_destroy - deallocate buffer pools
- * @hcd: the bus whose buffer pools are to be destroyed
- *
- * Context: task context, might sleep
- *
- * This frees the buffer pools created by hcd_buffer_create().
- */
+ 
 void hcd_buffer_destroy(struct usb_hcd *hcd)
 {
 	int i;
@@ -108,9 +76,7 @@ void hcd_buffer_destroy(struct usb_hcd *hcd)
 }
 
 
-/* sometimes alloc/free could use kmalloc with GFP_DMA, for
- * better sharing and to leverage mm/slab.c intelligence.
- */
+ 
 
 void *hcd_buffer_alloc(
 	struct usb_bus		*bus,
@@ -128,7 +94,7 @@ void *hcd_buffer_alloc(
 	if (hcd->localmem_pool)
 		return gen_pool_dma_alloc(hcd->localmem_pool, size, dma);
 
-	/* some USB hosts just use PIO */
+	 
 	if (!hcd_uses_dma(hcd)) {
 		*dma = ~(dma_addr_t) 0;
 		return kmalloc(size, mem_flags);
@@ -183,7 +149,7 @@ void *hcd_buffer_alloc_pages(struct usb_hcd *hcd,
 		return gen_pool_dma_alloc_align(hcd->localmem_pool,
 				size, dma, PAGE_SIZE);
 
-	/* some USB hosts just use PIO */
+	 
 	if (!hcd_uses_dma(hcd)) {
 		*dma = DMA_MAPPING_ERROR;
 		return (void *)__get_free_pages(mem_flags,

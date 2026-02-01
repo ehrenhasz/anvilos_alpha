@@ -1,25 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #ifndef __I915_SELFTEST_H__
 #define __I915_SELFTEST_H__
@@ -48,16 +27,7 @@ int i915_mock_selftests(void);
 int i915_live_selftests(struct pci_dev *pdev);
 int i915_perf_selftests(struct pci_dev *pdev);
 
-/* We extract the function declarations from i915_mock_selftests.h and
- * i915_live_selftests.h Add your unit test declarations there!
- *
- * Mock unit tests are run very early upon module load, before the driver
- * is probed. All hardware interactions, as well as other subsystems, must
- * be "mocked".
- *
- * Live unit tests are run after the driver is loaded - all hardware
- * interactions are real.
- */
+ 
 #define selftest(name, func) int func(void);
 #include "selftests/i915_mock_selftests.h"
 #undef selftest
@@ -111,7 +81,7 @@ int __i915_subtests(const char *caller,
 #define I915_SELFTEST_ONLY(x) unlikely(x)
 #define I915_SELFTEST_EXPORT
 
-#else /* !IS_ENABLED(CONFIG_DRM_I915_SELFTEST) */
+#else  
 
 static inline int i915_mock_selftests(void) { return 0; }
 static inline int i915_live_selftests(struct pci_dev *pdev) { return 0; }
@@ -123,10 +93,7 @@ static inline int i915_perf_selftests(struct pci_dev *pdev) { return 0; }
 
 #endif
 
-/* Using the i915_selftest_ prefix becomes a little unwieldy with the helpers.
- * Instead we use the igt_ shorthand, in reference to the intel-gpu-tools
- * suite of uabi test cases (which includes a test runner for our selftests).
- */
+ 
 
 #define IGT_TIMEOUT(name__) \
 	unsigned long name__ = jiffies + i915_selftest.timeout_jiffies
@@ -139,4 +106,4 @@ bool __igt_timeout(unsigned long timeout, const char *fmt, ...);
 
 void igt_hexdump(const void *buf, size_t len);
 
-#endif /* !__I915_SELFTEST_H__ */
+#endif  

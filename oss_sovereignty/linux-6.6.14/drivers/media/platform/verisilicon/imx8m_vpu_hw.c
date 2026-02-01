@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2019 Pengutronix, Philipp Zabel <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -29,14 +25,14 @@ static void imx8m_soft_reset(struct hantro_dev *vpu, u32 reset_bits)
 {
 	u32 val;
 
-	/* Assert */
+	 
 	val = readl(vpu->ctrl_base + CTRL_SOFT_RESET);
 	val &= ~reset_bits;
 	writel(val, vpu->ctrl_base + CTRL_SOFT_RESET);
 
 	udelay(2);
 
-	/* Release */
+	 
 	val = readl(vpu->ctrl_base + CTRL_SOFT_RESET);
 	val |= reset_bits;
 	writel(val, vpu->ctrl_base + CTRL_SOFT_RESET);
@@ -64,7 +60,7 @@ static int imx8mq_runtime_resume(struct hantro_dev *vpu)
 	imx8m_soft_reset(vpu, RESET_G1 | RESET_G2);
 	imx8m_clk_enable(vpu, CLOCK_G1 | CLOCK_G2);
 
-	/* Set values of the fuse registers */
+	 
 	writel(0xffffffff, vpu->ctrl_base + CTRL_G1_DEC_FUSE);
 	writel(0xffffffff, vpu->ctrl_base + CTRL_G1_PP_FUSE);
 	writel(0xffffffff, vpu->ctrl_base + CTRL_G2_DEC_FUSE);
@@ -74,9 +70,7 @@ static int imx8mq_runtime_resume(struct hantro_dev *vpu)
 	return 0;
 }
 
-/*
- * Supported formats.
- */
+ 
 
 static const struct hantro_fmt imx8m_vpu_postproc_fmts[] = {
 	{
@@ -266,9 +260,7 @@ static void imx8m_vpu_g1_reset(struct hantro_ctx *ctx)
 	imx8m_soft_reset(vpu, RESET_G1);
 }
 
-/*
- * Supported codec ops.
- */
+ 
 
 static const struct hantro_codec_ops imx8mq_vpu_codec_ops[] = {
 	[HANTRO_MODE_MPEG2_DEC] = {
@@ -323,9 +315,7 @@ static const struct hantro_codec_ops imx8mq_vpu_g2_codec_ops[] = {
 	},
 };
 
-/*
- * VPU variants.
- */
+ 
 
 static const struct hantro_irq imx8mq_irqs[] = {
 	{ "g1", imx8m_vpu_g1_irq },

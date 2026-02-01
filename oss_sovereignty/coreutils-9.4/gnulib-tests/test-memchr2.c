@@ -1,32 +1,4 @@
-/*
- * Copyright (C) 2008-2023 Free Software Foundation, Inc.
- * Written by Eric Blake
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include "memchr2.h"
-
-#include <stdlib.h>
-#include <string.h>
-
-#include "zerosize-ptr.h"
-#include "macros.h"
-
-/* Calculating void * + int is not portable, so this wrapper converts
-   to char * to make the tests easier to write.  */
+ 
 #define MEMCHR2 (char *) memchr2
 
 int
@@ -43,7 +15,7 @@ main (void)
   input[n - 2] = 'e';
   input[n - 1] = 'a';
 
-  /* Basic behavior tests.  */
+   
   ASSERT (MEMCHR2 (input, 'a', 'b', n) == input);
   ASSERT (MEMCHR2 (input, 'b', 'a', n) == input);
 
@@ -68,8 +40,7 @@ main (void)
   ASSERT (MEMCHR2 (input + 1, 'a', 'a', n - 1) == input + n - 1);
   ASSERT (MEMCHR2 (input, 'f', 'f', n) == NULL);
 
-  /* Check that a very long haystack is handled quickly if one of the
-     two bytes is found near the beginning.  */
+   
   {
     size_t repeat = 10000;
     for (; repeat > 0; repeat--)
@@ -81,7 +52,7 @@ main (void)
       }
   }
 
-  /* Alignment tests.  */
+   
   {
     int i, j;
     for (i = 0; i < 32; i++)

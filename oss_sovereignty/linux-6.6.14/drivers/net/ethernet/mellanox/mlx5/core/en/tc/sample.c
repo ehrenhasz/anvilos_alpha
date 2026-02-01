@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+ 
 
 #include <linux/skbuff.h>
 #include <net/psample.h>
@@ -16,7 +16,7 @@
 
 static struct esw_vport_tbl_namespace mlx5_esw_vport_tbl_sample_ns = {
 	.max_fte = MLX5_ESW_VPORT_TBL_SIZE_SAMPLE,
-	.max_num_groups = 0,    /* default num of groups */
+	.max_num_groups = 0,     
 	.flags = 0,
 };
 
@@ -25,9 +25,9 @@ struct mlx5e_tc_psample {
 	struct mlx5_flow_table *termtbl;
 	struct mlx5_flow_handle *termtbl_rule;
 	DECLARE_HASHTABLE(hashtbl, 8);
-	struct mutex ht_lock; /* protect hashtbl */
+	struct mutex ht_lock;  
 	DECLARE_HASHTABLE(restore_hashtbl, 8);
-	struct mutex restore_lock; /* protect restore_hashtbl */
+	struct mutex restore_lock;  
 	struct mlx5e_post_act *post_act;
 };
 
@@ -223,12 +223,7 @@ sampler_put(struct mlx5e_tc_psample *tc_psample, struct mlx5e_sampler *sampler)
 	mutex_unlock(&tc_psample->ht_lock);
 }
 
-/* obj_id is used to restore the sample parameters.
- * Set fte_id in original flow table, then match it in the default table.
- * Only set it for NICs can preserve reg_c or decap action. For other cases,
- * use the same match in the default table.
- * Use one header rewrite for both obj_id and fte_id.
- */
+ 
 static struct mlx5_modify_hdr *
 sample_modify_hdr_get(struct mlx5_core_dev *mdev, u32 obj_id,
 		      struct mlx5e_tc_mod_hdr_acts *mod_acts)
@@ -350,11 +345,7 @@ add_post_rule(struct mlx5_eswitch *esw, struct mlx5e_sample_flow *sample_flow,
 	struct mlx5_flow_attr *post_attr;
 	int err;
 
-	/* Allocate default table per vport, chain and prio. Otherwise, there is
-	 * only one default table for the same sampler object. Rules with different
-	 * prio and chain may overlap. For CT sample action, per vport default
-	 * table is needed to resotre the metadata.
-	 */
+	 
 	per_vport_tbl_attr.chain = attr->chain;
 	per_vport_tbl_attr.prio = attr->prio;
 	per_vport_tbl_attr.vport = esw_attr->in_rep->vport;
@@ -373,20 +364,13 @@ add_post_rule(struct mlx5_eswitch *esw, struct mlx5e_sample_flow *sample_flow,
 	}
 	sample_flow->post_attr = post_attr;
 	memcpy(post_attr, attr, attr_sz);
-	/* Perform the original matches on the default table.
-	 * Offload all actions except the sample action.
-	 */
+	 
 	post_attr->chain = 0;
 	post_attr->prio = 0;
 	post_attr->ft = default_tbl;
 	post_attr->flags = MLX5_ATTR_FLAG_NO_IN_PORT;
 
-	/* When offloading sample and encap action, if there is no valid
-	 * neigh data struct, a slow path rule is offloaded first. Source
-	 * port metadata match is set at that time. A per vport table is
-	 * already allocated. No need to match it again. So clear the source
-	 * port metadata match.
-	 */
+	 
 	mlx5_eswitch_clear_rule_source_port(esw, spec);
 	sample_flow->post_rule = mlx5_eswitch_add_offloaded_rule(esw, spec, post_attr);
 	if (IS_ERR(sample_flow->post_rule)) {
@@ -419,52 +403,7 @@ del_post_rule(struct mlx5_eswitch *esw, struct mlx5e_sample_flow *sample_flow,
 	mlx5_esw_vporttbl_put(esw, &tbl_attr);
 }
 
-/* For the following typical flow table:
- *
- * +-------------------------------+
- * +       original flow table     +
- * +-------------------------------+
- * +         original match        +
- * +-------------------------------+
- * + sample action + other actions +
- * +-------------------------------+
- *
- * We translate the tc filter with sample action to the following HW model:
- *
- *         +---------------------+
- *         + original flow table +
- *         +---------------------+
- *         +   original match    +
- *         +---------------------+
- *               | set fte_id (if reg_c preserve cap)
- *               | do decap (if required)
- *               v
- * +------------------------------------------------+
- * +                Flow Sampler Object             +
- * +------------------------------------------------+
- * +                    sample ratio                +
- * +------------------------------------------------+
- * +    sample table id    |    default table id    +
- * +------------------------------------------------+
- *            |                            |
- *            v                            v
- * +-----------------------------+  +-------------------+
- * +        sample table         +  +   default table   +
- * +-----------------------------+  +-------------------+
- * + forward to management vport +             |
- * +-----------------------------+             |
- *                                     +-------+------+
- *                                     |              |reg_c preserve cap
- *                                     |              |or decap action
- *                                     v              v
- *                        +-----------------+   +-------------+
- *                        + per vport table +   + post action +
- *                        +-----------------+   +-------------+
- *                        + original match  +
- *                        +-----------------+
- *                        + other actions   +
- *                        +-----------------+
- */
+ 
 struct mlx5_flow_handle *
 mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
 			struct mlx5_flow_spec *spec,
@@ -491,11 +430,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
 	sample_attr = &attr->sample_attr;
 	sample_attr->sample_flow = sample_flow;
 
-	/* For NICs with reg_c_preserve support or decap action, use
-	 * post action instead of the per vport, chain and prio table.
-	 * Only match the fte id instead of the same match in the
-	 * original flow table.
-	 */
+	 
 	esw = tc_psample->esw;
 	if (mlx5e_tc_act_sample_is_multi_table(esw->dev, attr)) {
 		struct mlx5_flow_table *ft;
@@ -508,7 +443,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
 			goto err_post_rule;
 	}
 
-	/* Create sampler object. */
+	 
 	sample_flow->sampler = sampler_get(tc_psample, sample_attr->rate, default_tbl_id);
 	if (IS_ERR(sample_flow->sampler)) {
 		err = PTR_ERR(sample_flow->sampler);
@@ -516,7 +451,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
 	}
 	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
 
-	/* Create an id mapping reg_c0 value to sample object. */
+	 
 	restore_obj.type = MLX5_MAPPED_OBJ_SAMPLE;
 	restore_obj.sample.group_id = sample_attr->group_num;
 	restore_obj.sample.rate = sample_attr->rate;
@@ -527,7 +462,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
 		goto err_obj_id;
 	sample_attr->restore_obj_id = obj_id;
 
-	/* Create sample restore context. */
+	 
 	mod_acts = &attr->parse_attr->mod_hdr_acts;
 	sample_flow->restore = sample_restore_get(tc_psample, obj_id, mod_acts);
 	if (IS_ERR(sample_flow->restore)) {
@@ -535,18 +470,14 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
 		goto err_sample_restore;
 	}
 
-	/* Perform the original matches on the original table. Offload the
-	 * sample action. The destination is the sampler object.
-	 */
+	 
 	pre_attr = mlx5_alloc_flow_attr(MLX5_FLOW_NAMESPACE_FDB);
 	if (!pre_attr) {
 		err = -ENOMEM;
 		goto err_alloc_pre_flow_attr;
 	}
 	pre_attr->action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-	/* For decap action, do decap in the original flow table instead of the
-	 * default flow table.
-	 */
+	 
 	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP)
 		pre_attr->action |= MLX5_FLOW_CONTEXT_ACTION_DECAP;
 	pre_attr->modify_hdr = sample_flow->restore->modify_hdr;
@@ -596,9 +527,7 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
 	if (IS_ERR_OR_NULL(tc_psample))
 		return;
 
-	/* The following delete order can't be changed, otherwise,
-	 * will hit fw syndromes.
-	 */
+	 
 	esw = tc_psample->esw;
 	sample_flow = attr->sample_attr.sample_flow;
 	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->pre_rule, sample_flow->pre_attr);

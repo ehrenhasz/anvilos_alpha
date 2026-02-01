@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/device.h>
 #include <linux/types.h>
@@ -18,9 +18,7 @@
 #include "bits.h"
 #include "otg.h"
 
-/*
- * ci_device_show: prints information about device capabilities and status
- */
+ 
 static int ci_device_show(struct seq_file *s, void *data)
 {
 	struct ci_hdrc *ci = s->private;
@@ -47,9 +45,7 @@ static int ci_device_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(ci_device);
 
-/*
- * ci_port_test_show: reads port test mode
- */
+ 
 static int ci_port_test_show(struct seq_file *s, void *data)
 {
 	struct ci_hdrc *ci = s->private;
@@ -67,9 +63,7 @@ static int ci_port_test_show(struct seq_file *s, void *data)
 	return 0;
 }
 
-/*
- * ci_port_test_write: writes port test mode
- */
+ 
 static ssize_t ci_port_test_write(struct file *file, const char __user *ubuf,
 				  size_t count, loff_t *ppos)
 {
@@ -84,7 +78,7 @@ static ssize_t ci_port_test_write(struct file *file, const char __user *ubuf,
 	if (copy_from_user(buf, ubuf, count))
 		return -EFAULT;
 
-	/* sscanf requires a zero terminated string */
+	 
 	buf[count] = '\0';
 
 	if (sscanf(buf, "%u", &mode) != 1)
@@ -115,9 +109,7 @@ static const struct file_operations ci_port_test_fops = {
 	.release	= single_release,
 };
 
-/*
- * ci_qheads_show: DMA contents of all queue heads
- */
+ 
 static int ci_qheads_show(struct seq_file *s, void *data)
 {
 	struct ci_hdrc *ci = s->private;
@@ -147,9 +139,7 @@ static int ci_qheads_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(ci_qheads);
 
-/*
- * ci_requests_show: DMA contents of all requests currently queued (all endpts)
- */
+ 
 static int ci_requests_show(struct seq_file *s, void *data)
 {
 	struct ci_hdrc *ci = s->private;
@@ -194,11 +184,11 @@ static int ci_otg_show(struct seq_file *s, void *unused)
 
 	fsm = &ci->fsm;
 
-	/* ------ State ----- */
+	 
 	seq_printf(s, "OTG state: %s\n\n",
 			usb_otg_state_string(ci->otg.state));
 
-	/* ------ State Machine Variables ----- */
+	 
 	seq_printf(s, "a_bus_drop: %d\n", fsm->a_bus_drop);
 
 	seq_printf(s, "a_bus_req: %d\n", fsm->a_bus_req);
@@ -255,7 +245,7 @@ static int ci_registers_show(struct seq_file *s, void *unused)
 	if (!ci || ci->in_lpm)
 		return -EPERM;
 
-	/* ------ Registers ----- */
+	 
 	tmp_reg = hw_read_intr_enable(ci);
 	seq_printf(s, "USBINTR reg: %08x\n", tmp_reg);
 
@@ -280,12 +270,7 @@ static int ci_registers_show(struct seq_file *s, void *unused)
 }
 DEFINE_SHOW_ATTRIBUTE(ci_registers);
 
-/**
- * dbg_create_files: initializes the attribute interface
- * @ci: device
- *
- * This function returns an error code
- */
+ 
 void dbg_create_files(struct ci_hdrc *ci)
 {
 	struct dentry *dir;
@@ -303,10 +288,7 @@ void dbg_create_files(struct ci_hdrc *ci)
 	debugfs_create_file("registers", S_IRUGO, dir, ci, &ci_registers_fops);
 }
 
-/**
- * dbg_remove_files: destroys the attribute interface
- * @ci: device
- */
+ 
 void dbg_remove_files(struct ci_hdrc *ci)
 {
 	debugfs_lookup_and_remove(dev_name(ci->dev), usb_debug_root);

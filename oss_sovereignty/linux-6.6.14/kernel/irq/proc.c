@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 1992, 1998-2004 Linus Torvalds, Ingo Molnar
- *
- * This file contains the /proc/irq/ handling code.
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/gfp.h>
@@ -15,23 +11,7 @@
 
 #include "internals.h"
 
-/*
- * Access rules:
- *
- * procfs protects read/write of /proc/irq/N/ files against a
- * concurrent free of the interrupt descriptor. remove_proc_entry()
- * immediately prevents new read/writes to happen and waits for
- * already running read/write functions to complete.
- *
- * We remove the proc entries first and then delete the interrupt
- * descriptor from the radix tree and free it. So it is guaranteed
- * that irq_to_desc(N) is valid as long as the read/writes are
- * permitted by procfs.
- *
- * The read from /proc/interrupts is a different problem because there
- * is no protection. So the lookup and the access to irqdesc
- * information must be protected by sparse_irq_lock.
- */
+ 
 static struct proc_dir_entry *root_irq_dir;
 
 #ifdef CONFIG_SMP
@@ -114,20 +94,11 @@ static int irq_affinity_list_proc_show(struct seq_file *m, void *v)
 #ifndef CONFIG_AUTO_IRQ_AFFINITY
 static inline int irq_select_affinity_usr(unsigned int irq)
 {
-	/*
-	 * If the interrupt is started up already then this fails. The
-	 * interrupt is assigned to an online CPU already. There is no
-	 * point to move it around randomly. Tell user space that the
-	 * selected mask is bogus.
-	 *
-	 * If not then any change to the affinity is pointless because the
-	 * startup code invokes irq_setup_affinity() which will select
-	 * a online CPU anyway.
-	 */
+	 
 	return -EINVAL;
 }
 #else
-/* ALPHA magic affinity auto selector. Keep it for historical reasons. */
+ 
 static inline int irq_select_affinity_usr(unsigned int irq)
 {
 	return irq_select_affinity(irq);
@@ -154,16 +125,9 @@ static ssize_t write_irq_affinity(int type, struct file *file,
 	if (err)
 		goto free_cpumask;
 
-	/*
-	 * Do not allow disabling IRQs completely - it's a too easy
-	 * way to make the system unusable accidentally :-) At least
-	 * one online CPU still has to be targeted.
-	 */
+	 
 	if (!cpumask_intersects(new_value, cpu_online_mask)) {
-		/*
-		 * Special case for empty set - allow the architecture code
-		 * to set default SMP affinity.
-		 */
+		 
 		err = irq_select_affinity_usr(irq) ? -EINVAL : count;
 	} else {
 		err = irq_set_affinity(irq, new_value);
@@ -245,11 +209,7 @@ static ssize_t default_affinity_write(struct file *file,
 	if (err)
 		goto out;
 
-	/*
-	 * Do not allow disabling IRQs completely - it's a too easy
-	 * way to make the system unusable accidentally :-) At least
-	 * one online CPU still has to be targeted.
-	 */
+	 
 	if (!cpumask_intersects(new_value, cpu_online_mask)) {
 		err = -EINVAL;
 		goto out;
@@ -327,7 +287,7 @@ void register_handler_proc(unsigned int irq, struct irqaction *action)
 
 	snprintf(name, MAX_NAMELEN, "%s", action->name);
 
-	/* create /proc/irq/1234/handler/ */
+	 
 	action->dir = proc_mkdir(name, desc->dir);
 }
 
@@ -344,11 +304,7 @@ void register_irq_proc(unsigned int irq, struct irq_desc *desc)
 	if (!root_irq_dir || (desc->irq_data.chip == &no_irq_chip))
 		return;
 
-	/*
-	 * irq directories are registered only when a handler is
-	 * added, not when the descriptor is created, so multiple
-	 * tasks might try to register at the same time.
-	 */
+	 
 	mutex_lock(&register_lock);
 
 	if (desc->dir)
@@ -356,21 +312,21 @@ void register_irq_proc(unsigned int irq, struct irq_desc *desc)
 
 	sprintf(name, "%d", irq);
 
-	/* create /proc/irq/1234 */
+	 
 	desc->dir = proc_mkdir(name, root_irq_dir);
 	if (!desc->dir)
 		goto out_unlock;
 
 #ifdef CONFIG_SMP
-	/* create /proc/irq/<irq>/smp_affinity */
+	 
 	proc_create_data("smp_affinity", 0644, desc->dir,
 			 &irq_affinity_proc_ops, irqp);
 
-	/* create /proc/irq/<irq>/affinity_hint */
+	 
 	proc_create_single_data("affinity_hint", 0444, desc->dir,
 			irq_affinity_hint_proc_show, irqp);
 
-	/* create /proc/irq/<irq>/smp_affinity_list */
+	 
 	proc_create_data("smp_affinity_list", 0644, desc->dir,
 			 &irq_affinity_list_proc_ops, irqp);
 
@@ -432,16 +388,14 @@ void init_irq_proc(void)
 	unsigned int irq;
 	struct irq_desc *desc;
 
-	/* create /proc/irq */
+	 
 	root_irq_dir = proc_mkdir("irq", NULL);
 	if (!root_irq_dir)
 		return;
 
 	register_default_affinity_proc();
 
-	/*
-	 * Create entries for all existing IRQs.
-	 */
+	 
 	for_each_irq_desc(irq, desc)
 		register_irq_proc(irq, desc);
 }
@@ -472,7 +426,7 @@ int show_interrupts(struct seq_file *p, void *v)
 	if (i == ACTUAL_NR_IRQS)
 		return arch_show_interrupts(p, prec);
 
-	/* print header and calculate the width of the first column */
+	 
 	if (i == 0) {
 		for (prec = 3, j = 1000; prec < 10 && j <= nr_irqs; ++prec)
 			j *= 10;

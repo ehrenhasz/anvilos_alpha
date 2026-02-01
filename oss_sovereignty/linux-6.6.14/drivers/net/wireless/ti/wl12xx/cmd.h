@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 1998-2009, 2011 Texas Instruments. All rights reserved.
- * Copyright (C) 2009 Nokia Corporation
- */
+ 
+ 
 
 #ifndef __WL12XX_CMD_H__
 #define __WL12XX_CMD_H__
@@ -49,11 +44,11 @@ struct wl1271_radio_parms_cmd {
 
 	struct wl1271_cmd_test_header test;
 
-	/* Static radio parameters */
+	 
 	struct wl1271_ini_band_params_2 static_params_2;
 	struct wl1271_ini_band_params_5 static_params_5;
 
-	/* Dynamic radio parameters */
+	 
 	struct wl1271_ini_fem_params_2 dyn_params_2;
 	u8 padding2;
 	struct wl1271_ini_fem_params_5 dyn_params_5;
@@ -65,13 +60,13 @@ struct wl128x_radio_parms_cmd {
 
 	struct wl1271_cmd_test_header test;
 
-	/* Static radio parameters */
+	 
 	struct wl128x_ini_band_params_2 static_params_2;
 	struct wl128x_ini_band_params_5 static_params_5;
 
 	u8 fem_vendor_and_options;
 
-	/* Dynamic radio parameters */
+	 
 	struct wl128x_ini_fem_params_2 dyn_params_2;
 	u8 padding2;
 	struct wl128x_ini_fem_params_5 dyn_params_5;
@@ -94,13 +89,13 @@ struct wl12xx_cmd_channel_switch {
 
 	u8 role_id;
 
-	/* The new serving channel */
+	 
 	u8 channel;
-	/* Relative time of the serving channel switch in TBTT units */
+	 
 	u8 switch_time;
-	/* Stop the role TX, should expect it after radar detection */
+	 
 	u8 stop_tx;
-	/* The target channel tx status 1-stopped 0-open*/
+	 
 	u8 post_switch_tx_disable;
 
 	u8 padding[3];
@@ -115,4 +110,4 @@ int wl12xx_cmd_channel_switch(struct wl1271 *wl,
 			      struct wl12xx_vif *wlvif,
 			      struct ieee80211_channel_switch *ch_switch);
 
-#endif /* __WL12XX_CMD_H__ */
+#endif  

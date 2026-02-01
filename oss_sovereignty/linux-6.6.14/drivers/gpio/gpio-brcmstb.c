@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2015-2017 Broadcom
+
+
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -40,7 +40,7 @@ struct brcmstb_gpio_bank {
 	struct brcmstb_gpio_priv *parent_priv;
 	u32 width;
 	u32 wake_active;
-	u32 saved_regs[GIO_REG_STAT]; /* Don't save and restore GIO_REG_STAT */
+	u32 saved_regs[GIO_REG_STAT];  
 };
 
 struct brcmstb_gpio_priv {
@@ -57,7 +57,7 @@ struct brcmstb_gpio_priv {
 
 #define MAX_GPIO_PER_BANK       32
 #define GPIO_BANK(gpio)         ((gpio) >> 5)
-/* assumes MAX_GPIO_PER_BANK is a multiple of 2 */
+ 
 #define GPIO_BIT(gpio)          ((gpio) & (MAX_GPIO_PER_BANK - 1))
 
 static inline struct brcmstb_gpio_priv *
@@ -117,7 +117,7 @@ static void brcmstb_gpio_set_imask(struct brcmstb_gpio_bank *bank,
 static int brcmstb_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 {
 	struct brcmstb_gpio_priv *priv = brcmstb_gpio_gc_to_priv(gc);
-	/* gc_offset is relative to this gpio_chip; want real offset */
+	 
 	int hwirq = offset + (gc->base - priv->gpio_base);
 
 	if (hwirq >= priv->num_gpios)
@@ -125,7 +125,7 @@ static int brcmstb_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 	return irq_create_mapping(priv->irq_domain, hwirq);
 }
 
-/* -------------------- IRQ chip functions -------------------- */
+ 
 
 static void brcmstb_gpio_irq_mask(struct irq_data *d)
 {
@@ -187,7 +187,7 @@ static int brcmstb_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
 		level = 0;
-		edge_config = 0;  /* don't care, but want known value */
+		edge_config = 0;   
 		edge_insensitive = mask;
 		break;
 	default:
@@ -236,10 +236,7 @@ static int brcmstb_gpio_irq_set_wake(struct irq_data *d, unsigned int enable)
 	struct brcmstb_gpio_priv *priv = bank->parent_priv;
 	u32 mask = BIT(brcmstb_gpio_hwirq_to_offset(d->hwirq, bank));
 
-	/*
-	 * Do not do anything specific for now, suspend/resume callbacks will
-	 * configure the interrupt mask appropriately
-	 */
+	 
 	if (enable)
 		bank->wake_active |= mask;
 	else
@@ -255,7 +252,7 @@ static irqreturn_t brcmstb_gpio_wake_irq_handler(int irq, void *data)
 	if (!priv || irq != priv->parent_wake_irq)
 		return IRQ_NONE;
 
-	/* Nothing to do */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -279,14 +276,14 @@ static void brcmstb_gpio_irq_bank_handler(struct brcmstb_gpio_bank *bank)
 	}
 }
 
-/* Each UPG GIO block has one IRQ for all banks */
+ 
 static void brcmstb_gpio_irq_handler(struct irq_desc *desc)
 {
 	struct brcmstb_gpio_priv *priv = irq_desc_get_handler_data(desc);
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct brcmstb_gpio_bank *bank;
 
-	/* Interrupts weren't properly cleared during probe */
+	 
 	BUG_ON(!priv || !chip);
 
 	chained_irq_enter(chip, desc);
@@ -301,7 +298,7 @@ static struct brcmstb_gpio_bank *brcmstb_gpio_hwirq_to_bank(
 	struct brcmstb_gpio_bank *bank;
 	int i = 0;
 
-	/* banks are in descending order */
+	 
 	list_for_each_entry_reverse(bank, &priv->bank_list, node) {
 		i += bank->gc.ngpio;
 		if (hwirq < i)
@@ -310,10 +307,7 @@ static struct brcmstb_gpio_bank *brcmstb_gpio_hwirq_to_bank(
 	return NULL;
 }
 
-/*
- * This lock class tells lockdep that GPIO irqs are in a different
- * category than their parents, so it won't report false recursion.
- */
+ 
 static struct lock_class_key brcmstb_gpio_irq_lock_class;
 static struct lock_class_key brcmstb_gpio_irq_request_class;
 
@@ -354,7 +348,7 @@ static const struct irq_domain_ops brcmstb_gpio_irq_domain_ops = {
 	.xlate = irq_domain_xlate_twocell,
 };
 
-/* Make sure that the number of banks matches up between properties */
+ 
 static int brcmstb_gpio_sanity_check_banks(struct device *dev,
 		struct device_node *np, struct resource *res)
 {
@@ -380,7 +374,7 @@ static int brcmstb_gpio_remove(struct platform_device *pdev)
 	if (priv->parent_irq > 0)
 		irq_set_chained_handler_and_data(priv->parent_irq, NULL, NULL);
 
-	/* Remove all IRQ mappings and delete the domain */
+	 
 	if (priv->irq_domain) {
 		for (offset = 0; offset < priv->num_gpios; offset++) {
 			virq = irq_find_mapping(priv->irq_domain, offset);
@@ -389,10 +383,7 @@ static int brcmstb_gpio_remove(struct platform_device *pdev)
 		irq_domain_remove(priv->irq_domain);
 	}
 
-	/*
-	 * You can lose return values below, but we report all errors, and it's
-	 * more important to actually perform all of the steps.
-	 */
+	 
 	list_for_each_entry(bank, &priv->bank_list, node)
 		gpiochip_remove(&bank->gc);
 
@@ -430,7 +421,7 @@ static int brcmstb_gpio_of_xlate(struct gpio_chip *gc,
 	return offset;
 }
 
-/* priv->parent_irq and priv->num_gpios must be set before calling */
+ 
 static int brcmstb_gpio_irq_setup(struct platform_device *pdev,
 		struct brcmstb_gpio_priv *priv)
 {
@@ -454,10 +445,7 @@ static int brcmstb_gpio_irq_setup(struct platform_device *pdev,
 			dev_warn(dev,
 				"Couldn't get wake IRQ - GPIOs will not be able to wake from sleep");
 		} else {
-			/*
-			 * Set wakeup capability so we can process boot-time
-			 * "wakeups" (e.g., from S5 cold boot)
-			 */
+			 
 			device_set_wakeup_capable(dev, true);
 			device_wakeup_enable(dev);
 			err = devm_request_irq(dev, priv->parent_wake_irq,
@@ -512,7 +500,7 @@ static void brcmstb_gpio_quiesce(struct device *dev, bool save)
 	struct gpio_chip *gc;
 	u32 imask;
 
-	/* disable non-wake interrupt */
+	 
 	if (priv->parent_irq >= 0)
 		disable_irq(priv->parent_irq);
 
@@ -522,7 +510,7 @@ static void brcmstb_gpio_quiesce(struct device *dev, bool save)
 		if (save)
 			brcmstb_gpio_bank_save(priv, bank);
 
-		/* Unmask GPIOs which have been flagged as wake-up sources */
+		 
 		if (priv->parent_wake_irq)
 			imask = bank->wake_active;
 		else
@@ -534,7 +522,7 @@ static void brcmstb_gpio_quiesce(struct device *dev, bool save)
 
 static void brcmstb_gpio_shutdown(struct platform_device *pdev)
 {
-	/* Enable GPIO for S5 cold boot */
+	 
 	brcmstb_gpio_quiesce(&pdev->dev, false);
 }
 
@@ -570,7 +558,7 @@ static int brcmstb_gpio_resume(struct device *dev)
 	if (priv->parent_wake_irq && need_wakeup_event)
 		pm_wakeup_event(dev, 0);
 
-	/* enable non-wake interrupt */
+	 
 	if (priv->parent_irq >= 0)
 		enable_irq(priv->parent_irq);
 
@@ -580,7 +568,7 @@ static int brcmstb_gpio_resume(struct device *dev)
 #else
 #define brcmstb_gpio_suspend	NULL
 #define brcmstb_gpio_resume	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops brcmstb_gpio_pm_ops = {
 	.suspend_noirq	= brcmstb_gpio_suspend,
@@ -628,14 +616,7 @@ static int brcmstb_gpio_probe(struct platform_device *pdev)
 	if (brcmstb_gpio_sanity_check_banks(dev, np, res))
 		return -EINVAL;
 
-	/*
-	 * MIPS endianness is configured by boot strap, which also reverses all
-	 * bus endianness (i.e., big-endian CPU + big endian bus ==> native
-	 * endian I/O).
-	 *
-	 * Other architectures (e.g., ARM) either do not support big endian, or
-	 * else leave I/O in little endian mode.
-	 */
+	 
 #if defined(CONFIG_MIPS) && defined(__BIG_ENDIAN)
 	flags = BGPIOF_BIG_ENDIAN_BYTE_ORDER;
 #endif
@@ -645,10 +626,7 @@ static int brcmstb_gpio_probe(struct platform_device *pdev)
 		struct brcmstb_gpio_bank *bank;
 		struct gpio_chip *gc;
 
-		/*
-		 * If bank_width is 0, then there is an empty bank in the
-		 * register block. Special handling for this case.
-		 */
+		 
 		if (bank_width == 0) {
 			dev_dbg(dev, "Width 0 found: Empty bank @ %d\n",
 				num_banks);
@@ -673,10 +651,7 @@ static int brcmstb_gpio_probe(struct platform_device *pdev)
 			bank->width = bank_width;
 		}
 
-		/*
-		 * Regs are 4 bytes wide, have data reg, no set/clear regs,
-		 * and direction bits have 0 = output and 1 = input
-		 */
+		 
 		gc = &bank->gc;
 		err = bgpio_init(gc, dev, 4,
 				reg_base + GIO_DATA(bank->id),
@@ -696,16 +671,13 @@ static int brcmstb_gpio_probe(struct platform_device *pdev)
 		gc->base = gpio_base;
 		gc->of_gpio_n_cells = 2;
 		gc->of_xlate = brcmstb_gpio_of_xlate;
-		/* not all ngpio lines are valid, will use bank width later */
+		 
 		gc->ngpio = MAX_GPIO_PER_BANK;
 		gc->offset = bank->id * MAX_GPIO_PER_BANK;
 		if (priv->parent_irq > 0)
 			gc->to_irq = brcmstb_gpio_to_irq;
 
-		/*
-		 * Mask all interrupts by default, since wakeup interrupts may
-		 * be retained from S5 cold boot
-		 */
+		 
 		need_wakeup_event |= !!__brcmstb_gpio_get_active_irqs(bank);
 		gc->write_reg(reg_base + GIO_MASK(bank->id), 0);
 
@@ -720,7 +692,7 @@ static int brcmstb_gpio_probe(struct platform_device *pdev)
 		dev_dbg(dev, "bank=%d, base=%d, ngpio=%d, width=%d\n", bank->id,
 			gc->base, gc->ngpio, bank->width);
 
-		/* Everything looks good, so add bank to list */
+		 
 		list_add(&bank->node, &priv->bank_list);
 
 		num_banks++;

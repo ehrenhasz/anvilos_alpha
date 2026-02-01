@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics sensors buffer library driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/iio/iio.h>
@@ -38,7 +32,7 @@ static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
 				     buf, bytes_to_read) < 0)
 			return -EIO;
 
-		/* Advance the buffer pointer */
+		 
 		buf += storage_bytes;
 	}
 
@@ -53,12 +47,7 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
 	struct st_sensor_data *sdata = iio_priv(indio_dev);
 	s64 timestamp;
 
-	/*
-	 * If we do timestamping here, do it before reading the values, because
-	 * once we've read the values, new interrupts can occur (when using
-	 * the hardware trigger) and the hw_timestamp may get updated.
-	 * By storing it in a local variable first, we are safe.
-	 */
+	 
 	if (iio_trigger_using_own(indio_dev))
 		timestamp = sdata->hw_timestamp;
 	else

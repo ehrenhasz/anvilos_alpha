@@ -1,27 +1,4 @@
-/*
- * This file is part of the Emulex Linux Device Driver for Enterprise iSCSI
- * Host Bus Adapters. Refer to the README file included with this package
- * for driver version and adapter compatibility.
- *
- * Copyright (c) 2018 Broadcom. All Rights Reserved.
- * The term “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as published
- * by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful. ALL EXPRESS
- * OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
- * IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
- * OR NON-INFRINGEMENT, ARE DISCLAIMED, EXCEPT TO THE EXTENT THAT SUCH
- * DISCLAIMERS ARE HELD TO BE LEGALLY INVALID.
- * See the GNU General Public License for more details, a copy of which
- * can be found in the file COPYING included with this package.
- *
- * Contact Information:
- * linux-drivers@broadcom.com
- *
- */
+ 
 
 #include <linux/bsg-lib.h>
 #include <scsi/scsi_transport_iscsi.h>
@@ -95,17 +72,7 @@ unsigned int mgmt_vendor_specific_fw_cmd(struct be_ctrl_info *ctrl,
 	return tag;
 }
 
-/**
- * mgmt_open_connection()- Establish a TCP CXN
- * @phba: driver priv structure
- * @dst_addr: Destination Address
- * @beiscsi_ep: ptr to device endpoint struct
- * @nonemb_cmd: ptr to memory allocated for command
- *
- * return
- *	Success: Tag number of the MBX Command issued
- *	Failure: Error code
- **/
+ 
 int mgmt_open_connection(struct beiscsi_hba *phba,
 			 struct sockaddr *dst_addr,
 			 struct beiscsi_endpoint *beiscsi_ep,
@@ -172,7 +139,7 @@ int mgmt_open_connection(struct beiscsi_hba *phba,
 		beiscsi_ep->dst_tcpport = ntohs(daddr_in->sin_port);
 		beiscsi_ep->ip_type = BEISCSI_IP_TYPE_V4;
 	} else {
-		/* else its PF_INET6 family */
+		 
 		req->ip_address.ip_type = BEISCSI_IP_TYPE_V6;
 		memcpy(&req->ip_address.addr,
 		       &daddr_in6->sin6_addr.in6_u.u6_addr8, 16);
@@ -210,15 +177,7 @@ int mgmt_open_connection(struct beiscsi_hba *phba,
 	return tag;
 }
 
-/**
- * beiscsi_exec_nemb_cmd()- execute non-embedded MBX cmd
- * @phba: driver priv structure
- * @nonemb_cmd: DMA address of the MBX command to be issued
- * @cbfn: callback func on MCC completion
- * @resp_buf: buffer to copy the MBX cmd response
- * @resp_buf_len: response length to be copied
- *
- **/
+ 
 static int beiscsi_exec_nemb_cmd(struct beiscsi_hba *phba,
 				 struct be_dma_mem *nonemb_cmd,
 				 void (*cbfn)(struct beiscsi_hba *,
@@ -251,7 +210,7 @@ static int beiscsi_exec_nemb_cmd(struct beiscsi_hba *phba,
 		ctrl->ptag_state[tag].cbfn = cbfn;
 		tag_mem = &phba->ctrl.ptag_state[tag].tag_mem_state;
 
-		/* store DMA mem to be freed in callback */
+		 
 		tag_mem->size = nonemb_cmd->size;
 		tag_mem->va = nonemb_cmd->va;
 		tag_mem->dma = nonemb_cmd->dma;
@@ -259,13 +218,13 @@ static int beiscsi_exec_nemb_cmd(struct beiscsi_hba *phba,
 	be_mcc_notify(phba, tag);
 	mutex_unlock(&ctrl->mbox_lock);
 
-	/* with cbfn set, its async cmd, don't wait */
+	 
 	if (cbfn)
 		return 0;
 
 	rc = beiscsi_mccq_compl_wait(phba, tag, NULL, nonemb_cmd);
 
-	/* copy the response, if any */
+	 
 	if (resp_buf)
 		memcpy(resp_buf, nonemb_cmd->va, resp_buf_len);
 	return rc;
@@ -293,10 +252,7 @@ static int beiscsi_prep_nemb_cmd(struct beiscsi_hba *phba,
 static void beiscsi_free_nemb_cmd(struct beiscsi_hba *phba,
 				  struct be_dma_mem *cmd, int rc)
 {
-	/*
-	 * If FW is busy the DMA buffer is saved with the tag. When the cmd
-	 * completes this buffer is freed.
-	 */
+	 
 	if (rc == -EBUSY)
 		return;
 
@@ -307,7 +263,7 @@ static void __beiscsi_eq_delay_compl(struct beiscsi_hba *phba, unsigned int tag)
 {
 	struct be_dma_mem *tag_mem;
 
-	/* status is ignored */
+	 
 	__beiscsi_mcc_compl_status(phba, tag, NULL, NULL);
 	tag_mem = &phba->ctrl.ptag_state[tag].tag_mem_state;
 	if (tag_mem->size) {
@@ -341,22 +297,13 @@ int beiscsi_modify_eq_delay(struct beiscsi_hba *phba,
 	rc = beiscsi_exec_nemb_cmd(phba, &nonemb_cmd, __beiscsi_eq_delay_compl,
 				   NULL, 0);
 	if (rc) {
-		/*
-		 * Only free on failure. Async cmds are handled like -EBUSY
-		 * where it's handled for us.
-		 */
+		 
 		beiscsi_free_nemb_cmd(phba, &nonemb_cmd, rc);
 	}
 	return rc;
 }
 
-/**
- * beiscsi_get_initiator_name - read initiator name from flash
- * @phba: device priv structure
- * @name: buffer pointer
- * @cfg: fetch user configured
- *
- */
+ 
 int beiscsi_get_initiator_name(struct beiscsi_hba *phba, char *name, bool cfg)
 {
 	struct be_dma_mem nonemb_cmd;
@@ -418,7 +365,7 @@ unsigned int beiscsi_if_get_handle(struct beiscsi_hba *phba)
 	}
 
 	pbe_allid = embedded_payload(wrb);
-	/* we now support only one interface per function */
+	 
 	phba->interface_handle = pbe_allid->if_hndl_list[0];
 
 	return status;
@@ -578,10 +525,7 @@ beiscsi_if_set_ip(struct beiscsi_hba *phba, u8 *ip,
 		       subnet, ip_len);
 
 	rc = beiscsi_exec_nemb_cmd(phba, &nonemb_cmd, NULL, NULL, 0);
-	/**
-	 * In some cases, host needs to look into individual record status
-	 * even though FW reported success for that IOCTL.
-	 */
+	 
 	if (rc < 0 || req->ip_params.ip_record.status) {
 		__beiscsi_log(phba, KERN_ERR,
 			    "BG_%d : failed to set IP: rc %d status %d\n",
@@ -626,14 +570,14 @@ int beiscsi_if_en_static(struct beiscsi_hba *phba, u32 ip_type,
 		}
 	}
 
-	/* first delete any IP set */
+	 
 	if (!beiscsi_if_zero_ip(if_info->ip_addr.addr, ip_type)) {
 		rc = beiscsi_if_clr_ip(phba, if_info);
 		if (rc)
 			goto exit;
 	}
 
-	/* if ip == NULL then this is called just to release DHCP IP */
+	 
 	if (ip)
 		rc = beiscsi_if_set_ip(phba, ip, subnet, ip_type);
 exit:
@@ -660,16 +604,16 @@ int beiscsi_if_en_dhcp(struct beiscsi_hba *phba, u32 ip_type)
 		goto exit;
 	}
 
-	/* first delete any IP set */
+	 
 	if (!beiscsi_if_zero_ip(if_info->ip_addr.addr, ip_type)) {
 		rc = beiscsi_if_clr_ip(phba, if_info);
 		if (rc)
 			goto exit;
 	}
 
-	/* delete gateway settings if mode change is to DHCP */
+	 
 	memset(&gw_resp, 0, sizeof(gw_resp));
-	/* use ip_type provided in if_info */
+	 
 	rc = beiscsi_if_get_gw(phba, if_info->ip_addr.ip_type, &gw_resp);
 	if (rc) {
 		beiscsi_log(phba, KERN_WARNING, BEISCSI_LOG_CONFIG,
@@ -694,7 +638,7 @@ int beiscsi_if_en_dhcp(struct beiscsi_hba *phba, u32 ip_type)
 		goto exit;
 
 	dhcpreq = nonemb_cmd.va;
-	dhcpreq->flags = 1; /* 1 - blocking; 0 - non-blocking */
+	dhcpreq->flags = 1;  
 	dhcpreq->retry_count = 1;
 	dhcpreq->interface_hndl = phba->interface_handle;
 	dhcpreq->ip_type = ip_type;
@@ -705,18 +649,7 @@ exit:
 	return rc;
 }
 
-/**
- * beiscsi_if_set_vlan()- Issue and wait for CMD completion
- * @phba: device private structure instance
- * @vlan_tag: VLAN tag
- *
- * Issue the MBX Cmd and wait for the completion of the
- * command.
- *
- * returns
- *	Success: 0
- *	Failure: Non-Xero Value
- **/
+ 
 int beiscsi_if_set_vlan(struct beiscsi_hba *phba, uint16_t vlan_tag)
 {
 	int rc;
@@ -765,7 +698,7 @@ int beiscsi_if_get_info(struct beiscsi_hba *phba, int ip_type,
 		req->interface_hndl = phba->interface_handle;
 		req->ip_type = ip_type;
 
-		/* Allocate memory for if_info */
+		 
 		*if_info = kzalloc(ioctl_size, GFP_KERNEL);
 		if (!*if_info) {
 			beiscsi_log(phba, KERN_ERR,
@@ -780,16 +713,16 @@ int beiscsi_if_get_info(struct beiscsi_hba *phba, int ip_type,
 		rc =  beiscsi_exec_nemb_cmd(phba, &nonemb_cmd, NULL, *if_info,
 					    ioctl_size);
 
-		/* Check if the error is because of Insufficent_Buffer */
+		 
 		if (rc == -EAGAIN) {
 
-			/* Get the new memory size */
+			 
 			ioctl_size = ((struct be_cmd_resp_hdr *)
 				      nonemb_cmd.va)->actual_resp_len;
 			ioctl_size += sizeof(struct be_cmd_req_hdr);
 
 			beiscsi_free_nemb_cmd(phba, &nonemb_cmd, rc);
-			/* Free the virtual memory */
+			 
 			kfree(*if_info);
 		} else {
 			beiscsi_free_nemb_cmd(phba, &nonemb_cmd, rc);
@@ -891,14 +824,14 @@ static void beiscsi_boot_process_compl(struct beiscsi_hba *phba,
 					      logo_resp->session_status);
 			}
 		}
-		/* continue to create boot_kset even if logout failed? */
+		 
 		bs->action = BEISCSI_BOOT_CREATE_KSET;
 		break;
 	default:
 		break;
 	}
 
-	/* clear the tag so no other completion matches this tag */
+	 
 	bs->tag = 0;
 	if (!bs->retry) {
 		boot_work = 0;
@@ -907,21 +840,14 @@ static void beiscsi_boot_process_compl(struct beiscsi_hba *phba,
 			      status, bs->action);
 	}
 	if (!boot_work) {
-		/* wait for next event to start boot_work */
+		 
 		clear_bit(BEISCSI_HBA_BOOT_WORK, &phba->state);
 		return;
 	}
 	schedule_work(&phba->boot_work);
 }
 
-/**
- * beiscsi_boot_logout_sess()- Logout from boot FW session
- * @phba: Device priv structure instance
- *
- * return
- *	the TAG used for MBOX Command
- *
- */
+ 
 unsigned int beiscsi_boot_logout_sess(struct beiscsi_hba *phba)
 {
 	struct be_ctrl_info *ctrl = &phba->ctrl;
@@ -941,7 +867,7 @@ unsigned int beiscsi_boot_logout_sess(struct beiscsi_hba *phba)
 	be_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ISCSI_INI,
 			   OPCODE_ISCSI_INI_SESSION_LOGOUT_TARGET,
 			   sizeof(struct be_cmd_req_logout_fw_sess));
-	/* Use the session handle copied into boot_sess */
+	 
 	req->session_handle = phba->boot_struct.boot_sess.session_handle;
 
 	phba->boot_struct.tag = tag;
@@ -953,14 +879,7 @@ unsigned int beiscsi_boot_logout_sess(struct beiscsi_hba *phba)
 
 	return tag;
 }
-/**
- * beiscsi_boot_reopen_sess()- Reopen boot session
- * @phba: Device priv structure instance
- *
- * return
- *	the TAG used for MBOX Command
- *
- **/
+ 
 unsigned int beiscsi_boot_reopen_sess(struct beiscsi_hba *phba)
 {
 	struct be_ctrl_info *ctrl = &phba->ctrl;
@@ -993,15 +912,7 @@ unsigned int beiscsi_boot_reopen_sess(struct beiscsi_hba *phba)
 }
 
 
-/**
- * beiscsi_boot_get_sinfo()- Get boot session info
- * @phba: device priv structure instance
- *
- * Fetches the boot_struct.s_handle info from FW.
- * return
- *	the TAG used for MBOX Command
- *
- **/
+ 
 unsigned int beiscsi_boot_get_sinfo(struct beiscsi_hba *phba)
 {
 	struct be_ctrl_info *ctrl = &phba->ctrl;
@@ -1081,16 +992,7 @@ unsigned int __beiscsi_boot_get_shandle(struct beiscsi_hba *phba, int async)
 	return tag;
 }
 
-/**
- * beiscsi_boot_get_shandle()- Get boot session handle
- * @phba: device priv structure instance
- * @s_handle: session handle returned for boot session.
- *
- * return
- *	Success: 1
- *	Failure: negative
- *
- **/
+ 
 int beiscsi_boot_get_shandle(struct beiscsi_hba *phba, unsigned int *s_handle)
 {
 	struct be_cmd_get_boot_target_resp *boot_resp;
@@ -1099,7 +1001,7 @@ int beiscsi_boot_get_shandle(struct beiscsi_hba *phba, unsigned int *s_handle)
 	int rc;
 
 	*s_handle = BE_BOOT_INVALID_SHANDLE;
-	/* get configured boot session count and handle */
+	 
 	tag = __beiscsi_boot_get_shandle(phba, 0);
 	if (!tag) {
 		beiscsi_log(phba, KERN_ERR,
@@ -1117,27 +1019,19 @@ int beiscsi_boot_get_shandle(struct beiscsi_hba *phba, unsigned int *s_handle)
 	}
 
 	boot_resp = embedded_payload(wrb);
-	/* check if there are any boot targets configured */
+	 
 	if (!boot_resp->boot_session_count) {
 		__beiscsi_log(phba, KERN_INFO,
 			      "BG_%d : No boot targets configured\n");
 		return -ENXIO;
 	}
 
-	/* only if FW has logged in to the boot target, s_handle is valid */
+	 
 	*s_handle = boot_resp->boot_session_handle;
 	return 1;
 }
 
-/**
- * beiscsi_drvr_ver_disp()- Display the driver Name and Version
- * @dev: ptr to device not used.
- * @attr: device attribute, not used.
- * @buf: contains formatted text driver name and version
- *
- * return
- * size of the formatted string
- **/
+ 
 ssize_t
 beiscsi_drvr_ver_disp(struct device *dev, struct device_attribute *attr,
 		       char *buf)
@@ -1145,15 +1039,7 @@ beiscsi_drvr_ver_disp(struct device *dev, struct device_attribute *attr,
 	return snprintf(buf, PAGE_SIZE, BE_NAME "\n");
 }
 
-/**
- * beiscsi_fw_ver_disp()- Display Firmware Version
- * @dev: ptr to device not used.
- * @attr: device attribute, not used.
- * @buf: contains formatted text Firmware version
- *
- * return
- * size of the formatted string
- **/
+ 
 ssize_t
 beiscsi_fw_ver_disp(struct device *dev, struct device_attribute *attr,
 		     char *buf)
@@ -1164,15 +1050,7 @@ beiscsi_fw_ver_disp(struct device *dev, struct device_attribute *attr,
 	return snprintf(buf, PAGE_SIZE, "%s\n", phba->fw_ver_str);
 }
 
-/**
- * beiscsi_active_session_disp()- Display Sessions Active
- * @dev: ptr to device not used.
- * @attr: device attribute, not used.
- * @buf: contains formatted text Session Count
- *
- * return
- * size of the formatted string
- **/
+ 
 ssize_t
 beiscsi_active_session_disp(struct device *dev, struct device_attribute *attr,
 			 char *buf)
@@ -1196,15 +1074,7 @@ beiscsi_active_session_disp(struct device *dev, struct device_attribute *attr,
 	return len;
 }
 
-/**
- * beiscsi_free_session_disp()- Display Avaliable Session
- * @dev: ptr to device not used.
- * @attr: device attribute, not used.
- * @buf: contains formatted text Session Count
- *
- * return
- * size of the formatted string
- **/
+ 
 ssize_t
 beiscsi_free_session_disp(struct device *dev, struct device_attribute *attr,
 		       char *buf)
@@ -1226,15 +1096,7 @@ beiscsi_free_session_disp(struct device *dev, struct device_attribute *attr,
 	return len;
 }
 
-/**
- * beiscsi_adap_family_disp()- Display adapter family.
- * @dev: ptr to device to get priv structure
- * @attr: device attribute, not used.
- * @buf: contains formatted text driver name and version
- *
- * return
- * size of the formatted string
- **/
+ 
 ssize_t
 beiscsi_adap_family_disp(struct device *dev, struct device_attribute *attr,
 			  char *buf)
@@ -1261,15 +1123,7 @@ beiscsi_adap_family_disp(struct device *dev, struct device_attribute *attr,
 	}
 }
 
-/**
- * beiscsi_phys_port_disp()- Display Physical Port Identifier
- * @dev: ptr to device not used.
- * @attr: device attribute, not used.
- * @buf: contains formatted text port identifier
- *
- * return
- * size of the formatted string
- **/
+ 
 ssize_t
 beiscsi_phys_port_disp(struct device *dev, struct device_attribute *attr,
 			 char *buf)
@@ -1458,10 +1312,7 @@ unsigned int beiscsi_invalidate_cxn(struct beiscsi_hba *phba,
 		req->cleanup_type = BE_CLEANUP_TYPE_INVALIDATE;
 	else
 		req->cleanup_type = BE_CLEANUP_TYPE_ISSUE_TCP_RST;
-	/**
-	 * 0 - non-persistent targets
-	 * 1 - save session info on flash
-	 */
+	 
 	req->save_cfg = 0;
 	be_mcc_notify(phba, tag);
 	mutex_unlock(&ctrl->mbox_lock);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PTP 1588 clock support - sysfs interface.
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- * Copyright 2021 NXP
- */
+
+ 
 #include <linux/capability.h>
 #include <linux/slab.h>
 
@@ -90,7 +85,7 @@ static ssize_t extts_fifo_show(struct device *dev,
 	qcnt = queue_cnt(queue);
 	if (qcnt) {
 		event = queue->buf[queue->head];
-		/* Paired with READ_ONCE() in queue_cnt() */
+		 
 		WRITE_ONCE(queue->head, (queue->head + 1) % PTP_MAX_TIMESTAMPS);
 	}
 	spin_unlock_irqrestore(&queue->lock, flags);
@@ -175,7 +170,7 @@ static int unregister_vclock(struct device *dev, void *data)
 	ptp_vclock_unregister(vclock);
 	(*num)--;
 
-	/* For break. Not error. */
+	 
 	if (*num == 0)
 		return -EINVAL;
 
@@ -218,7 +213,7 @@ static ssize_t n_vclocks_store(struct device *dev,
 		goto out;
 	}
 
-	/* Need to create more vclocks */
+	 
 	if (num > ptp->n_vclocks) {
 		for (i = 0; i < num - ptp->n_vclocks; i++) {
 			vclock = ptp_vclock_register(ptp);
@@ -233,7 +228,7 @@ static ssize_t n_vclocks_store(struct device *dev,
 		}
 	}
 
-	/* Need to delete vclocks */
+	 
 	if (num < ptp->n_vclocks) {
 		i = ptp->n_vclocks - num;
 		device_for_each_child_reverse(dev, &i,
@@ -243,7 +238,7 @@ static ssize_t n_vclocks_store(struct device *dev,
 			*(ptp->vclock_index + ptp->n_vclocks - i) = -1;
 	}
 
-	/* Need to inform about changed physical clock behavior */
+	 
 	if (!ptp->has_cycles) {
 		if (num == 0)
 			dev_info(dev, "only physical clock in use now\n");

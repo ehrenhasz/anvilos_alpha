@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+ 
+ 
 #ifndef _KOMEDA_DEV_H_
 #define _KOMEDA_DEV_H_
 
@@ -61,7 +57,7 @@
 			    | KOMEDA_EVENT_MODE \
 			    )
 
-/* pipeline DT ports */
+ 
 enum {
 	KOMEDA_OF_PORT_OUTPUT		= 0,
 	KOMEDA_OF_PORT_COPROC		= 1,
@@ -81,69 +77,39 @@ struct komeda_events {
 	u64 pipes[KOMEDA_MAX_PIPELINES];
 };
 
-/**
- * struct komeda_dev_funcs
- *
- * Supplied by chip level and returned by the chip entry function xxx_identify,
- */
+ 
 struct komeda_dev_funcs {
-	/**
-	 * @init_format_table:
-	 *
-	 * initialize &komeda_dev->format_table, this function should be called
-	 * before the &enum_resource
-	 */
+	 
 	void (*init_format_table)(struct komeda_dev *mdev);
-	/**
-	 * @enum_resources:
-	 *
-	 * for CHIP to report or add pipeline and component resources to CORE
-	 */
+	 
 	int (*enum_resources)(struct komeda_dev *mdev);
-	/** @cleanup: call to chip to cleanup komeda_dev->chip data */
+	 
 	void (*cleanup)(struct komeda_dev *mdev);
-	/** @connect_iommu: Optional, connect to external iommu */
+	 
 	int (*connect_iommu)(struct komeda_dev *mdev);
-	/** @disconnect_iommu: Optional, disconnect to external iommu */
+	 
 	int (*disconnect_iommu)(struct komeda_dev *mdev);
-	/**
-	 * @irq_handler:
-	 *
-	 * for CORE to get the HW event from the CHIP when interrupt happened.
-	 */
+	 
 	irqreturn_t (*irq_handler)(struct komeda_dev *mdev,
 				   struct komeda_events *events);
-	/** @enable_irq: enable irq */
+	 
 	int (*enable_irq)(struct komeda_dev *mdev);
-	/** @disable_irq: disable irq */
+	 
 	int (*disable_irq)(struct komeda_dev *mdev);
-	/** @on_off_vblank: notify HW to on/off vblank */
+	 
 	void (*on_off_vblank)(struct komeda_dev *mdev,
 			      int master_pipe, bool on);
 
-	/** @dump_register: Optional, dump registers to seq_file */
+	 
 	void (*dump_register)(struct komeda_dev *mdev, struct seq_file *seq);
-	/**
-	 * @change_opmode:
-	 *
-	 * Notify HW to switch to a new display operation mode.
-	 */
+	 
 	int (*change_opmode)(struct komeda_dev *mdev, int new_mode);
-	/** @flush: Notify the HW to flush or kickoff the update */
+	 
 	void (*flush)(struct komeda_dev *mdev,
 		      int master_pipe, u32 active_pipes);
 };
 
-/*
- * DISPLAY_MODE describes how many display been enabled, and which will be
- * passed to CHIP by &komeda_dev_funcs->change_opmode(), then CHIP can do the
- * pipeline resources assignment according to this usage hint.
- * -   KOMEDA_MODE_DISP0: Only one display enabled, pipeline-0 work as master.
- * -   KOMEDA_MODE_DISP1: Only one display enabled, pipeline-0 work as master.
- * -   KOMEDA_MODE_DUAL_DISP: Dual display mode, both display has been enabled.
- * And D71 supports assign two pipelines to one single display on mode
- * KOMEDA_MODE_DISP0/DISP1
- */
+ 
 enum {
 	KOMEDA_MODE_INACTIVE	= 0,
 	KOMEDA_MODE_DISP0	= BIT(0),
@@ -151,70 +117,54 @@ enum {
 	KOMEDA_MODE_DUAL_DISP	= KOMEDA_MODE_DISP0 | KOMEDA_MODE_DISP1,
 };
 
-/**
- * struct komeda_dev
- *
- * Pipeline and component are used to describe how to handle the pixel data.
- * komeda_device is for describing the whole view of the device, and the
- * control-abilites of device.
- */
+ 
 struct komeda_dev {
-	/** @dev: the base device structure */
+	 
 	struct device *dev;
-	/** @reg_base: the base address of komeda io space */
+	 
 	u32 __iomem   *reg_base;
 
-	/** @chip: the basic chip information */
+	 
 	struct komeda_chip_info chip;
-	/** @fmt_tbl: initialized by &komeda_dev_funcs->init_format_table */
+	 
 	struct komeda_format_caps_table fmt_tbl;
-	/** @aclk: HW main engine clk */
+	 
 	struct clk *aclk;
 
-	/** @irq: irq number */
+	 
 	int irq;
 
-	/** @lock: used to protect dpmode */
+	 
 	struct mutex lock;
-	/** @dpmode: current display mode */
+	 
 	u32 dpmode;
 
-	/** @n_pipelines: the number of pipe in @pipelines */
+	 
 	int n_pipelines;
-	/** @pipelines: the komeda pipelines */
+	 
 	struct komeda_pipeline *pipelines[KOMEDA_MAX_PIPELINES];
 
-	/** @funcs: chip funcs to access to HW */
+	 
 	const struct komeda_dev_funcs *funcs;
-	/**
-	 * @chip_data:
-	 *
-	 * chip data will be added by &komeda_dev_funcs.enum_resources() and
-	 * destroyed by &komeda_dev_funcs.cleanup()
-	 */
+	 
 	void *chip_data;
 
-	/** @iommu: iommu domain */
+	 
 	struct iommu_domain *iommu;
 
-	/** @debugfs_root: root directory of komeda debugfs */
+	 
 	struct dentry *debugfs_root;
-	/**
-	 * @err_verbosity: bitmask for how much extra info to print on error
-	 *
-	 * See KOMEDA_DEV_* macros for details. Low byte contains the debug
-	 * level categories, the high byte contains extra debug options.
-	 */
+	 
 	u16 err_verbosity;
-	/* Print a single line per error per frame with error events. */
+	 
 #define KOMEDA_DEV_PRINT_ERR_EVENTS BIT(0)
-	/* Print a single line per warning per frame with error events. */
+	 
 #define KOMEDA_DEV_PRINT_WARN_EVENTS BIT(1)
-	/* Print a single line per info event per frame with error events. */
+	 
 #define KOMEDA_DEV_PRINT_INFO_EVENTS BIT(2)
-	/* Dump DRM state on an error or warning event. */
+	 
 #define KOMEDA_DEV_PRINT_DUMP_STATE_ON_EVENT BIT(8)
-	/* Disable rate limiting of event prints (normally one per commit) */
+	 
 #define KOMEDA_DEV_PRINT_DISABLE_RATELIMIT BIT(12)
 };
 
@@ -240,4 +190,4 @@ void komeda_print_events(struct komeda_events *evts, struct drm_device *dev);
 int komeda_dev_resume(struct komeda_dev *mdev);
 int komeda_dev_suspend(struct komeda_dev *mdev);
 
-#endif /*_KOMEDA_DEV_H_*/
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2008 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #ifndef __XFS_IOCTL_H__
 #define __XFS_IOCTL_H__
 

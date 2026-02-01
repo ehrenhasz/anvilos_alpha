@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_ACT_API_H
 #define __NET_ACT_API_H
 
-/*
- * Public action API for classifiers/qdiscs
-*/
+ 
 
 #include <linux/refcount.h>
 #include <net/flow_offload.h>
@@ -23,7 +21,7 @@ struct tc_action_ops;
 
 struct tc_action {
 	const struct tc_action_ops	*ops;
-	__u32				type; /* for backward compat(TCA_OLD_COMPAT) */
+	__u32				type;  
 	struct tcf_idrinfo		*idrinfo;
 
 	u32				tcfa_index;
@@ -60,7 +58,7 @@ struct tc_action {
 #define TCA_ACT_HW_STATS_ANY (TCA_ACT_HW_STATS_IMMEDIATE | \
 			      TCA_ACT_HW_STATS_DELAYED)
 
-/* Reserve 16 bits for user-space. See TCA_ACT_FLAGS_NO_PERCPU_STATS. */
+ 
 #define TCA_ACT_FLAGS_USER_BITS 16
 #define TCA_ACT_FLAGS_USER_MASK 0xffff
 #define TCA_ACT_FLAGS_POLICE	(1U << TCA_ACT_FLAGS_USER_BITS)
@@ -69,9 +67,7 @@ struct tc_action {
 #define TCA_ACT_FLAGS_NO_RTNL	(1U << (TCA_ACT_FLAGS_USER_BITS + 3))
 #define TCA_ACT_FLAGS_AT_INGRESS	(1U << (TCA_ACT_FLAGS_USER_BITS + 4))
 
-/* Update lastuse only if needed, to avoid dirtying a cache line.
- * We use a temp variable to avoid fetching jiffies twice.
- */
+ 
 static inline void tcf_lastuse_update(struct tcf_t *tm)
 {
 	unsigned long now = jiffies;
@@ -106,12 +102,12 @@ typedef void (*tc_action_priv_destructor)(void *priv);
 struct tc_action_ops {
 	struct list_head head;
 	char    kind[IFNAMSIZ];
-	enum tca_id  id; /* identifier should match kind */
+	enum tca_id  id;  
 	unsigned int	net_id;
 	size_t	size;
 	struct module		*owner;
 	int     (*act)(struct sk_buff *, const struct tc_action *,
-		       struct tcf_result *); /* called under RCU BH lock*/
+		       struct tcf_result *);  
 	int     (*dump)(struct sk_buff *, struct tc_action *, int, int);
 	void	(*cleanup)(struct tc_action *);
 	int     (*lookup)(struct net *net, struct tc_action **a, u32 index);
@@ -272,14 +268,14 @@ DECLARE_STATIC_KEY_FALSE(tcf_frag_xmit_count);
 
 int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
 
-#else /* !CONFIG_NET_CLS_ACT */
+#else  
 
 static inline int tcf_action_reoffload_cb(flow_indr_block_bind_cb_t *cb,
 					  void *cb_priv, bool add) {
 	return 0;
 }
 
-#endif /* CONFIG_NET_CLS_ACT */
+#endif  
 
 static inline void tcf_action_stats_update(struct tc_action *a, u64 bytes,
 					   u64 packets, u64 drops,

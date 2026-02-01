@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_HAL_H
 #define ATH12K_HAL_H
@@ -23,16 +20,16 @@ struct ath12k_base;
 #define HAL_RING_BASE_ALIGN	8
 
 #define HAL_WBM_IDLE_SCATTER_BUF_SIZE_MAX	32704
-/* TODO: Check with hw team on the supported scatter buf size */
+ 
 #define HAL_WBM_IDLE_SCATTER_NEXT_PTR_SIZE	8
 #define HAL_WBM_IDLE_SCATTER_BUF_SIZE (HAL_WBM_IDLE_SCATTER_BUF_SIZE_MAX - \
 				       HAL_WBM_IDLE_SCATTER_NEXT_PTR_SIZE)
 
-/* TODO: 16 entries per radio times MAX_VAPS_SUPPORTED */
+ 
 #define HAL_DSCP_TID_MAP_TBL_NUM_ENTRIES_MAX	32
 #define HAL_DSCP_TID_TBL_SIZE			24
 
-/* calculate the register address from bar0 of shadow register x */
+ 
 #define HAL_SHADOW_BASE_ADDR			0x000008fc
 #define HAL_SHADOW_NUM_REGS			40
 #define HAL_HP_OFFSET_IN_REG_START		1
@@ -40,7 +37,7 @@ struct ath12k_base;
 
 #define HAL_SHADOW_REG(x) (HAL_SHADOW_BASE_ADDR + (4 * (x)))
 
-/* WCSS Relative address */
+ 
 #define HAL_SEQ_WCSS_UMAC_OFFSET		0x00a00000
 #define HAL_SEQ_WCSS_UMAC_REO_REG		0x00a38000
 #define HAL_SEQ_WCSS_UMAC_TCL_REG		0x00a44000
@@ -54,7 +51,7 @@ struct ath12k_base;
 
 #define HAL_TCL_SW_CONFIG_BANK_ADDR		0x00a4408c
 
-/* SW2TCL(x) R0 ring configuration address */
+ 
 #define HAL_TCL1_RING_CMN_CTRL_REG		0x00000020
 #define HAL_TCL1_RING_DSCP_TID_MAP		0x00000240
 #define HAL_TCL1_RING_BASE_LSB			0x00000900
@@ -101,7 +98,7 @@ struct ath12k_base;
 #define HAL_TCL1_RING_MISC_OFFSET(ab) \
 		(HAL_TCL1_RING_MISC(ab) - HAL_TCL1_RING_BASE_LSB)
 
-/* SW2TCL(x) R2 ring pointers (head/tail) address */
+ 
 #define HAL_TCL1_RING_HP			0x00002000
 #define HAL_TCL1_RING_TP			0x00002004
 #define HAL_TCL2_RING_HP			0x00002008
@@ -110,21 +107,21 @@ struct ath12k_base;
 #define HAL_TCL1_RING_TP_OFFSET \
 		(HAL_TCL1_RING_TP - HAL_TCL1_RING_HP)
 
-/* TCL STATUS ring address */
+ 
 #define HAL_TCL_STATUS_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_tcl_status_ring_base_lsb)
 #define HAL_TCL_STATUS_RING_HP			0x00002048
 
-/* PPE2TCL1 Ring address */
+ 
 #define HAL_TCL_PPE2TCL1_RING_BASE_LSB		0x00000c48
 #define HAL_TCL_PPE2TCL1_RING_HP		0x00002038
 
-/* WBM PPE Release Ring address */
+ 
 #define HAL_WBM_PPE_RELEASE_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_ppe_rel_ring_base)
 #define HAL_WBM_PPE_RELEASE_RING_HP		0x00003020
 
-/* REO2SW(x) R0 ring configuration address */
+ 
 #define HAL_REO1_GEN_ENABLE			0x00000000
 #define HAL_REO1_MISC_CTRL_ADDR(ab) \
 	((ab)->hw_params->regs->hal_reo1_misc_ctrl_addr)
@@ -155,53 +152,53 @@ struct ath12k_base;
 #define HAL_REO1_AGING_THRESH_IX_2(ab)	((ab)->hw_params->regs->hal_reo1_aging_thres_ix2)
 #define HAL_REO1_AGING_THRESH_IX_3(ab)	((ab)->hw_params->regs->hal_reo1_aging_thres_ix3)
 
-/* REO2SW(x) R2 ring pointers (head/tail) address */
+ 
 #define HAL_REO1_RING_HP			0x00003048
 #define HAL_REO1_RING_TP			0x0000304c
 #define HAL_REO2_RING_HP			0x00003050
 
 #define HAL_REO1_RING_TP_OFFSET			(HAL_REO1_RING_TP - HAL_REO1_RING_HP)
 
-/* REO2SW0 ring configuration address */
+ 
 #define HAL_REO_SW0_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_reo2_sw0_ring_base)
 
-/* REO2SW0 R2 ring pointer (head/tail) address */
+ 
 #define HAL_REO_SW0_RING_HP			0x00003088
 
-/* REO CMD R0 address */
+ 
 #define HAL_REO_CMD_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_reo_cmd_ring_base)
 
-/* REO CMD R2 address */
+ 
 #define HAL_REO_CMD_HP				0x00003020
 
-/* SW2REO R0 address */
+ 
 #define	HAL_SW2REO_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_sw2reo_ring_base)
 #define HAL_SW2REO1_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_sw2reo1_ring_base)
 
-/* SW2REO R2 address */
+ 
 #define HAL_SW2REO_RING_HP			0x00003028
 #define HAL_SW2REO1_RING_HP			0x00003030
 
-/* CE ring R0 address */
+ 
 #define HAL_CE_SRC_RING_BASE_LSB                0x00000000
 #define HAL_CE_DST_RING_BASE_LSB		0x00000000
 #define HAL_CE_DST_STATUS_RING_BASE_LSB		0x00000058
 #define HAL_CE_DST_RING_CTRL			0x000000b0
 
-/* CE ring R2 address */
+ 
 #define HAL_CE_DST_RING_HP			0x00000400
 #define HAL_CE_DST_STATUS_RING_HP		0x00000408
 
-/* REO status address */
+ 
 #define HAL_REO_STATUS_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_reo_status_ring_base)
 #define HAL_REO_STATUS_HP			0x000030a8
 
-/* WBM Idle R0 address */
+ 
 #define HAL_WBM_IDLE_LINK_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_wbm_idle_ring_base_lsb)
 #define HAL_WBM_IDLE_LINK_RING_MISC_ADDR(ab) \
@@ -225,31 +222,31 @@ struct ath12k_base;
 #define HAL_WBM_SCATTERED_DESC_PTR_HP_ADDR(ab) \
 	((ab)->hw_params->regs->hal_wbm_scattered_desc_ptr_hp_addr)
 
-/* WBM Idle R2 address */
+ 
 #define HAL_WBM_IDLE_LINK_RING_HP		0x000030b8
 
-/* SW2WBM R0 release address */
+ 
 #define HAL_WBM_SW_RELEASE_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_wbm_sw_release_ring_base_lsb)
 #define HAL_WBM_SW1_RELEASE_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_wbm_sw1_release_ring_base_lsb)
 
-/* SW2WBM R2 release address */
+ 
 #define HAL_WBM_SW_RELEASE_RING_HP		0x00003010
 #define HAL_WBM_SW1_RELEASE_RING_HP		0x00003018
 
-/* WBM2SW R0 release address */
+ 
 #define HAL_WBM0_RELEASE_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_wbm0_release_ring_base_lsb)
 
 #define HAL_WBM1_RELEASE_RING_BASE_LSB(ab) \
 	((ab)->hw_params->regs->hal_wbm1_release_ring_base_lsb)
 
-/* WBM2SW R2 release address */
+ 
 #define HAL_WBM0_RELEASE_RING_HP		0x000030c8
 #define HAL_WBM1_RELEASE_RING_HP		0x000030d0
 
-/* WBM cookie config address and mask */
+ 
 #define HAL_WBM_SW_COOKIE_CFG0			0x00000040
 #define HAL_WBM_SW_COOKIE_CFG1			0x00000044
 #define HAL_WBM_SW_COOKIE_CFG2			0x00000090
@@ -270,7 +267,7 @@ struct ath12k_base;
 #define HAL_WBM_SW_COOKIE_CONV_CFG_WBM2SW4_EN		BIT(5)
 #define HAL_WBM_SW_COOKIE_CONV_CFG_GLOBAL_EN		BIT(8)
 
-/* TCL ring field mask and offset */
+ 
 #define HAL_TCL1_RING_BASE_MSB_RING_SIZE		GENMASK(27, 8)
 #define HAL_TCL1_RING_BASE_MSB_RING_BASE_ADDR_MSB	GENMASK(7, 0)
 #define HAL_TCL1_RING_ID_ENTRY_SIZE			GENMASK(7, 0)
@@ -296,7 +293,7 @@ struct ath12k_base;
 #define HAL_TCL1_RING_FIELD_DSCP_TID_MAP6		GENMASK(20, 18)
 #define HAL_TCL1_RING_FIELD_DSCP_TID_MAP7		GENMASK(23, 21)
 
-/* REO ring field mask and offset */
+ 
 #define HAL_REO1_RING_BASE_MSB_RING_SIZE		GENMASK(27, 8)
 #define HAL_REO1_RING_BASE_MSB_RING_BASE_ADDR_MSB	GENMASK(7, 0)
 #define HAL_REO1_RING_ID_RING_ID			GENMASK(15, 8)
@@ -320,14 +317,14 @@ struct ath12k_base;
 #define HAL_REO1_SW_COOKIE_CFG_ENABLE			BIT(19)
 #define HAL_REO1_SW_COOKIE_CFG_GLOBAL_ENABLE		BIT(20)
 
-/* CE ring bit field mask and shift */
+ 
 #define HAL_CE_DST_R0_DEST_CTRL_MAX_LEN			GENMASK(15, 0)
 
 #define HAL_ADDR_LSB_REG_MASK				0xffffffff
 
 #define HAL_ADDR_MSB_REG_SHIFT				32
 
-/* WBM ring bit field mask and shift */
+ 
 #define HAL_WBM_LINK_DESC_IDLE_LIST_MODE		BIT(1)
 #define HAL_WBM_SCATTER_BUFFER_SIZE			GENMASK(10, 2)
 #define HAL_WBM_SCATTER_RING_SIZE_OF_IDLE_LINK_DESC_LIST GENMASK(31, 16)
@@ -361,9 +358,7 @@ struct ath12k_base;
 #define HAL_WBM2PPE_RELEASE_RING_BASE_MSB_RING_SIZE	0x000fffff
 
 #define HAL_WBM2SW_REL_ERR_RING_NUM 3
-/* Add any other errors here and return them in
- * ath12k_hal_rx_desc_get_err().
- */
+ 
 
 enum hal_srng_ring_id {
 	HAL_SRNG_RING_ID_REO2SW0 = 0,
@@ -457,7 +452,7 @@ enum hal_srng_ring_id {
 	HAL_SRNG_RING_ID_WBM2SW0_RELEASE = 128,
 	HAL_SRNG_RING_ID_WBM2SW1_RELEASE,
 	HAL_SRNG_RING_ID_WBM2SW2_RELEASE,
-	HAL_SRNG_RING_ID_WBM2SW3_RELEASE, /* RX ERROR RING */
+	HAL_SRNG_RING_ID_WBM2SW3_RELEASE,  
 	HAL_SRNG_RING_ID_WBM2SW4_RELEASE,
 	HAL_SRNG_RING_ID_WBM2SW5_RELEASE,
 	HAL_SRNG_RING_ID_WBM2SW6_RELEASE,
@@ -465,7 +460,7 @@ enum hal_srng_ring_id {
 
 	HAL_SRNG_RING_ID_UMAC_ID_END = 159,
 
-	/* Common DMAC rings shared by all LMACs */
+	 
 	HAL_SRNG_RING_ID_DMAC_CMN_ID_START = 160,
 	HAL_SRNG_SW2RXDMA_BUF0 = HAL_SRNG_RING_ID_DMAC_CMN_ID_START,
 	HAL_SRNG_SW2RXDMA_BUF1 = 161,
@@ -491,12 +486,12 @@ enum hal_srng_ring_id {
 	HAL_SRNG_RING_ID_PMAC1_ID_END,
 };
 
-/* SRNG registers are split into two groups R0 and R2 */
+ 
 #define HAL_SRNG_REG_GRP_R0	0
 #define HAL_SRNG_REG_GRP_R2	1
 #define HAL_SRNG_NUM_REG_GRP    2
 
-/* TODO: number of PMACs */
+ 
 #define HAL_SRNG_NUM_PMACS      3
 #define HAL_SRNG_NUM_DMAC_RINGS (HAL_SRNG_RING_ID_DMAC_CMN_ID_END - \
 				 HAL_SRNG_RING_ID_DMAC_CMN_ID_START)
@@ -540,16 +535,7 @@ enum hal_ring_type {
 #define HAL_DEFAULT_BE_BK_VI_REO_TIMEOUT_USEC	(100 * 1000)
 #define HAL_DEFAULT_VO_REO_TIMEOUT_USEC		(40 * 1000)
 
-/**
- * enum hal_reo_cmd_type: Enum for REO command type
- * @HAL_REO_CMD_GET_QUEUE_STATS: Get REO queue status/stats
- * @HAL_REO_CMD_FLUSH_QUEUE: Flush all frames in REO queue
- * @HAL_REO_CMD_FLUSH_CACHE: Flush descriptor entries in the cache
- * @HAL_REO_CMD_UNBLOCK_CACHE: Unblock a descriptor's address that was blocked
- *      earlier with a 'REO_FLUSH_CACHE' command
- * @HAL_REO_CMD_FLUSH_TIMEOUT_LIST: Flush buffers/descriptors from timeout list
- * @HAL_REO_CMD_UPDATE_RX_QUEUE: Update REO queue settings
- */
+ 
 enum hal_reo_cmd_type {
 	HAL_REO_CMD_GET_QUEUE_STATS     = 0,
 	HAL_REO_CMD_FLUSH_QUEUE         = 1,
@@ -559,16 +545,7 @@ enum hal_reo_cmd_type {
 	HAL_REO_CMD_UPDATE_RX_QUEUE     = 5,
 };
 
-/**
- * enum hal_reo_cmd_status: Enum for execution status of REO command
- * @HAL_REO_CMD_SUCCESS: Command has successfully executed
- * @HAL_REO_CMD_BLOCKED: Command could not be executed as the queue
- *			 or cache was blocked
- * @HAL_REO_CMD_FAILED: Command execution failed, could be due to
- *			invalid queue desc
- * @HAL_REO_CMD_RESOURCE_BLOCKED:
- * @HAL_REO_CMD_DRAIN:
- */
+ 
 enum hal_reo_cmd_status {
 	HAL_REO_CMD_SUCCESS		= 0,
 	HAL_REO_CMD_BLOCKED		= 1,
@@ -597,7 +574,7 @@ struct hal_srng_params {
 	u32 msi_data;
 	u32 msi2_data;
 
-	/* Add more params as needed */
+	 
 };
 
 enum hal_srng_dir {
@@ -605,7 +582,7 @@ enum hal_srng_dir {
 	HAL_SRNG_DIR_DST
 };
 
-/* srng flags */
+ 
 #define HAL_SRNG_FLAGS_MSI_SWAP			0x00000008
 #define HAL_SRNG_FLAGS_RING_PTR_SWAP		0x00000010
 #define HAL_SRNG_FLAGS_DATA_TLV_SWAP		0x00000020
@@ -617,133 +594,124 @@ enum hal_srng_dir {
 #define HAL_SRNG_TLV_HDR_TAG		GENMASK(9, 1)
 #define HAL_SRNG_TLV_HDR_LEN		GENMASK(25, 10)
 
-/* Common SRNG ring structure for source and destination rings */
+ 
 struct hal_srng {
-	/* Unique SRNG ring ID */
+	 
 	u8 ring_id;
 
-	/* Ring initialization done */
+	 
 	u8 initialized;
 
-	/* Interrupt/MSI value assigned to this ring */
+	 
 	int irq;
 
-	/* Physical base address of the ring */
+	 
 	dma_addr_t ring_base_paddr;
 
-	/* Virtual base address of the ring */
+	 
 	u32 *ring_base_vaddr;
 
-	/* Number of entries in ring */
+	 
 	u32 num_entries;
 
-	/* Ring size */
+	 
 	u32 ring_size;
 
-	/* Ring size mask */
+	 
 	u32 ring_size_mask;
 
-	/* Size of ring entry */
+	 
 	u32 entry_size;
 
-	/* Interrupt timer threshold - in micro seconds */
+	 
 	u32 intr_timer_thres_us;
 
-	/* Interrupt batch counter threshold - in number of ring entries */
+	 
 	u32 intr_batch_cntr_thres_entries;
 
-	/* MSI Address */
+	 
 	dma_addr_t msi_addr;
 
-	/* MSI data */
+	 
 	u32 msi_data;
 
-	/* MSI2 Address */
+	 
 	dma_addr_t msi2_addr;
 
-	/* MSI2 data */
+	 
 	u32 msi2_data;
 
-	/* Misc flags */
+	 
 	u32 flags;
 
-	/* Lock for serializing ring index updates */
+	 
 	spinlock_t lock;
 
 	struct lock_class_key lock_key;
 
-	/* Start offset of SRNG register groups for this ring
-	 * TBD: See if this is required - register address can be derived
-	 * from ring ID
-	 */
+	 
 	u32 hwreg_base[HAL_SRNG_NUM_REG_GRP];
 
 	u64 timestamp;
 
-	/* Source or Destination ring */
+	 
 	enum hal_srng_dir ring_dir;
 
 	union {
 		struct {
-			/* SW tail pointer */
+			 
 			u32 tp;
 
-			/* Shadow head pointer location to be updated by HW */
+			 
 			volatile u32 *hp_addr;
 
-			/* Cached head pointer */
+			 
 			u32 cached_hp;
 
-			/* Tail pointer location to be updated by SW - This
-			 * will be a register address and need not be
-			 * accessed through SW structure
-			 */
+			 
 			u32 *tp_addr;
 
-			/* Current SW loop cnt */
+			 
 			u32 loop_cnt;
 
-			/* max transfer size */
+			 
 			u16 max_buffer_length;
 
-			/* head pointer at access end */
+			 
 			u32 last_hp;
 		} dst_ring;
 
 		struct {
-			/* SW head pointer */
+			 
 			u32 hp;
 
-			/* SW reap head pointer */
+			 
 			u32 reap_hp;
 
-			/* Shadow tail pointer location to be updated by HW */
+			 
 			u32 *tp_addr;
 
-			/* Cached tail pointer */
+			 
 			u32 cached_tp;
 
-			/* Head pointer location to be updated by SW - This
-			 * will be a register address and need not be accessed
-			 * through SW structure
-			 */
+			 
 			u32 *hp_addr;
 
-			/* Low threshold - in number of ring entries */
+			 
 			u32 low_threshold;
 
-			/* tail pointer at access end */
+			 
 			u32 last_tp;
 		} src_ring;
 	} u;
 };
 
-/* Interrupt mitigation - Batch threshold in terms of number of frames */
+ 
 #define HAL_SRNG_INT_BATCH_THRESHOLD_TX 256
 #define HAL_SRNG_INT_BATCH_THRESHOLD_RX 128
 #define HAL_SRNG_INT_BATCH_THRESHOLD_OTHER 1
 
-/* Interrupt mitigation - timer threshold in us */
+ 
 #define HAL_SRNG_INT_TIMER_THRESHOLD_TX 1000
 #define HAL_SRNG_INT_TIMER_THRESHOLD_RX 500
 #define HAL_SRNG_INT_TIMER_THRESHOLD_OTHER 256
@@ -754,7 +722,7 @@ enum hal_srng_mac_type {
 	ATH12K_HAL_SRNG_PMAC
 };
 
-/* HW SRNG configuration table */
+ 
 struct hal_srng_config {
 	int start_ring_id;
 	u16 max_rings;
@@ -766,25 +734,7 @@ struct hal_srng_config {
 	u32 max_size;
 };
 
-/**
- * enum hal_rx_buf_return_buf_manager
- *
- * @HAL_RX_BUF_RBM_WBM_IDLE_BUF_LIST: Buffer returned to WBM idle buffer list
- * @HAL_RX_BUF_RBM_WBM_CHIP0_IDLE_DESC_LIST: Descriptor returned to WBM idle
- *	descriptor list, where the chip 0 WBM is chosen in case of a multi-chip config
- * @HAL_RX_BUF_RBM_WBM_CHIP1_IDLE_DESC_LIST: Descriptor returned to WBM idle
- *	descriptor list, where the chip 1 WBM is chosen in case of a multi-chip config
- * @HAL_RX_BUF_RBM_WBM_CHIP2_IDLE_DESC_LIST: Descriptor returned to WBM idle
- *	descriptor list, where the chip 2 WBM is chosen in case of a multi-chip config
- * @HAL_RX_BUF_RBM_FW_BM: Buffer returned to FW
- * @HAL_RX_BUF_RBM_SW0_BM: For ring 0 -- returned to host
- * @HAL_RX_BUF_RBM_SW1_BM: For ring 1 -- returned to host
- * @HAL_RX_BUF_RBM_SW2_BM: For ring 2 -- returned to host
- * @HAL_RX_BUF_RBM_SW3_BM: For ring 3 -- returned to host
- * @HAL_RX_BUF_RBM_SW4_BM: For ring 4 -- returned to host
- * @HAL_RX_BUF_RBM_SW5_BM: For ring 5 -- returned to host
- * @HAL_RX_BUF_RBM_SW6_BM: For ring 6 -- returned to host
- */
+ 
 
 enum hal_rx_buf_return_buf_manager {
 	HAL_RX_BUF_RBM_WBM_IDLE_BUF_LIST,
@@ -813,7 +763,7 @@ enum hal_rx_buf_return_buf_manager {
 #define HAL_REO_CMD_FLG_UNBLK_RESOURCE		BIT(7)
 #define HAL_REO_CMD_FLG_UNBLK_CACHE		BIT(8)
 
-/* Should be matching with HAL_REO_UPD_RX_QUEUE_INFO0_UPD_* fields */
+ 
 #define HAL_REO_CMD_UPD0_RX_QUEUE_NUM		BIT(8)
 #define HAL_REO_CMD_UPD0_VLD			BIT(9)
 #define HAL_REO_CMD_UPD0_ALDC			BIT(10)
@@ -838,7 +788,7 @@ enum hal_rx_buf_return_buf_manager {
 #define HAL_REO_CMD_UPD0_PN_VALID		BIT(29)
 #define HAL_REO_CMD_UPD0_PN			BIT(30)
 
-/* Should be matching with HAL_REO_UPD_RX_QUEUE_INFO1_* fields */
+ 
 #define HAL_REO_CMD_UPD1_VLD			BIT(16)
 #define HAL_REO_CMD_UPD1_ALDC			GENMASK(18, 17)
 #define HAL_REO_CMD_UPD1_DIS_DUP_DETECTION	BIT(19)
@@ -854,7 +804,7 @@ enum hal_rx_buf_return_buf_manager {
 #define HAL_REO_CMD_UPD1_PN_HANDLE_ENABLE	BIT(30)
 #define HAL_REO_CMD_UPD1_IGNORE_AMPDU_FLG	BIT(31)
 
-/* Should be matching with HAL_REO_UPD_RX_QUEUE_INFO2_* fields */
+ 
 #define HAL_REO_CMD_UPD2_SVLD			BIT(10)
 #define HAL_REO_CMD_UPD2_SSN			GENMASK(22, 11)
 #define HAL_REO_CMD_UPD2_SEQ_2K_ERR		BIT(23)
@@ -911,7 +861,7 @@ struct hal_reo_status_queue_stats {
 	u32 pn[4];
 	u32 last_rx_queue_ts;
 	u32 last_rx_dequeue_ts;
-	u32 rx_bitmap[8]; /* Bitmap from 0-255 */
+	u32 rx_bitmap[8];  
 	u32 curr_mpdu_cnt;
 	u32 curr_msdu_cnt;
 	u16 fwd_due_to_bar_cnt;
@@ -992,40 +942,37 @@ struct hal_reo_status {
 	} u;
 };
 
-/* HAL context to be used to access SRNG APIs (currently used by data path
- * and transport (CE) modules)
- */
+ 
 struct ath12k_hal {
-	/* HAL internal state for all SRNG rings.
-	 */
+	 
 	struct hal_srng srng_list[HAL_SRNG_RING_ID_MAX];
 
-	/* SRNG configuration table */
+	 
 	struct hal_srng_config *srng_config;
 
-	/* Remote pointer memory for HW/FW updates */
+	 
 	struct {
 		u32 *vaddr;
 		dma_addr_t paddr;
 	} rdp;
 
-	/* Shared memory for ring pointer updates from host to FW */
+	 
 	struct {
 		u32 *vaddr;
 		dma_addr_t paddr;
 	} wrp;
 
-	/* Available REO blocking resources bitmap */
+	 
 	u8 avail_blk_resource;
 
 	u8 current_blk_index;
 
-	/* shadow register configuration */
+	 
 	u32 shadow_reg_addr[HAL_SHADOW_NUM_REGS];
 	int num_shadow_reg_configured;
 };
 
-/* Maps WBM ring number and Return Buffer Manager Id per TCL ring */
+ 
 struct ath12k_hal_tcl_to_wbm_rbm_map  {
 	u8 wbm_ring_num;
 	u8 rbm_id;

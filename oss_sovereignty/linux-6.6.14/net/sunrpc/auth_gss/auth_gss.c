@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * linux/net/sunrpc/auth_gss/auth_gss.c
- *
- * RPCSEC_GSS client authentication.
- *
- *  Copyright (c) 2000 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  Dug Song       <dugsong@monkey.org>
- *  Andy Adamson   <andros@umich.edu>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -49,25 +39,20 @@ static unsigned int gss_key_expire_timeo = GSS_KEY_EXPIRE_TIMEO;
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
 
-/*
- * This compile-time check verifies that we will not exceed the
- * slack space allotted by the client and server auth_gss code
- * before they call gss_wrap().
- */
+ 
 #define GSS_KRB5_MAX_SLACK_NEEDED					\
-	(GSS_KRB5_TOK_HDR_LEN		/* gss token header */		\
-	+ GSS_KRB5_MAX_CKSUM_LEN	/* gss token checksum */	\
-	+ GSS_KRB5_MAX_BLOCKSIZE	/* confounder */		\
-	+ GSS_KRB5_MAX_BLOCKSIZE	/* possible padding */		\
-	+ GSS_KRB5_TOK_HDR_LEN		/* encrypted hdr in v2 token */	\
-	+ GSS_KRB5_MAX_CKSUM_LEN	/* encryption hmac */		\
-	+ XDR_UNIT * 2			/* RPC verifier */		\
+	(GSS_KRB5_TOK_HDR_LEN		 		\
+	+ GSS_KRB5_MAX_CKSUM_LEN	 	\
+	+ GSS_KRB5_MAX_BLOCKSIZE	 		\
+	+ GSS_KRB5_MAX_BLOCKSIZE	 		\
+	+ GSS_KRB5_TOK_HDR_LEN		 	\
+	+ GSS_KRB5_MAX_CKSUM_LEN	 		\
+	+ XDR_UNIT * 2			 		\
 	+ GSS_KRB5_TOK_HDR_LEN						\
 	+ GSS_KRB5_MAX_CKSUM_LEN)
 
 #define GSS_CRED_SLACK		(RPC_MAX_AUTH_SIZE * 2)
-/* length of a krb5 verifier (48), plus data added before arguments when
- * using integrity (two 4-byte integers): */
+ 
 #define GSS_VERF_SLACK		100
 
 static DEFINE_HASHTABLE(gss_auth_hash_table, 4);
@@ -90,17 +75,12 @@ struct gss_auth {
 	struct rpc_clnt *client;
 	struct net	*net;
 	netns_tracker	ns_tracker;
-	/*
-	 * There are two upcall pipes; dentry[1], named "gssd", is used
-	 * for the new text-based upcall; dentry[0] is named after the
-	 * mechanism (for example, "krb5") and exists for
-	 * backwards-compatibility with older gssd's.
-	 */
+	 
 	struct gss_pipe *gss_pipe[2];
 	const char *target_name;
 };
 
-/* pipe_version >= 0 if and only if someone has a pipe open. */
+ 
 static DEFINE_SPINLOCK(pipe_version_lock);
 static struct rpc_wait_queue pipe_version_rpc_waitqueue;
 static DECLARE_WAIT_QUEUE_HEAD(pipe_version_waitqueue);
@@ -124,11 +104,7 @@ gss_put_ctx(struct gss_cl_ctx *ctx)
 		gss_free_ctx(ctx);
 }
 
-/* gss_cred_set_ctx:
- * called by gss_upcall_callback and gss_create_upcall in order
- * to set the gss context. The actual exchange of an old context
- * and a new one is protected by the pipe->lock.
- */
+ 
 static void
 gss_cred_set_ctx(struct rpc_cred *cred, struct gss_cl_ctx *ctx)
 {
@@ -165,7 +141,7 @@ gss_alloc_context(void)
 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
 	if (ctx != NULL) {
 		ctx->gc_proc = RPC_GSS_PROC_DATA;
-		ctx->gc_seq = 1;	/* NetApp 6.4R1 doesn't accept seq. no. 0 */
+		ctx->gc_seq = 1;	 
 		spin_lock_init(&ctx->gc_seq_lock);
 		refcount_set(&ctx->count,1);
 	}
@@ -183,40 +159,32 @@ gss_fill_context(const void *p, const void *end, struct gss_cl_ctx *ctx, struct 
 	u32 window_size;
 	int ret;
 
-	/* First unsigned int gives the remaining lifetime in seconds of the
-	 * credential - e.g. the remaining TGT lifetime for Kerberos or
-	 * the -t value passed to GSSD.
-	 */
+	 
 	p = simple_get_bytes(p, end, &timeout, sizeof(timeout));
 	if (IS_ERR(p))
 		goto err;
 	if (timeout == 0)
 		timeout = GSSD_MIN_TIMEOUT;
 	ctx->gc_expiry = now + ((unsigned long)timeout * HZ);
-	/* Sequence number window. Determines the maximum number of
-	 * simultaneous requests
-	 */
+	 
 	p = simple_get_bytes(p, end, &window_size, sizeof(window_size));
 	if (IS_ERR(p))
 		goto err;
 	ctx->gc_win = window_size;
-	/* gssd signals an error by passing ctx->gc_win = 0: */
+	 
 	if (ctx->gc_win == 0) {
-		/*
-		 * in which case, p points to an error code. Anything other
-		 * than -EKEYEXPIRED gets converted to -EACCES.
-		 */
+		 
 		p = simple_get_bytes(p, end, &ret, sizeof(ret));
 		if (!IS_ERR(p))
 			p = (ret == -EKEYEXPIRED) ? ERR_PTR(-EKEYEXPIRED) :
 						    ERR_PTR(-EACCES);
 		goto err;
 	}
-	/* copy the opaque wire context */
+	 
 	p = simple_get_netobj(p, end, &ctx->gc_wire_ctx);
 	if (IS_ERR(p))
 		goto err;
-	/* import the opaque security context */
+	 
 	p  = simple_get_bytes(p, end, &seclen, sizeof(seclen));
 	if (IS_ERR(p))
 		goto err;
@@ -232,13 +200,13 @@ gss_fill_context(const void *p, const void *end, struct gss_cl_ctx *ctx, struct 
 		goto err;
 	}
 
-	/* is there any trailing data? */
+	 
 	if (q == end) {
 		p = q;
 		goto done;
 	}
 
-	/* pull in acceptor name (if there is one) */
+	 
 	p = simple_get_netobj(q, end, &ctx->gc_acceptor);
 	if (IS_ERR(p))
 		goto err;
@@ -249,11 +217,7 @@ err:
 	return p;
 }
 
-/* XXX: Need some documentation about why UPCALL_BUF_LEN is so small.
- *	Is user space expecting no more than UPCALL_BUF_LEN bytes?
- *	Note that there are now _two_ NI_MAXHOST sized data items
- *	being passed in this string.
- */
+ 
 #define UPCALL_BUF_LEN	256
 
 struct gss_upcall_msg {
@@ -326,10 +290,7 @@ __gss_find_upcall(struct rpc_pipe *pipe, kuid_t uid, const struct gss_auth *auth
 	return NULL;
 }
 
-/* Try to add an upcall to the pipefs queue.
- * If an upcall owned by our uid already exists, then we return a reference
- * to that upcall instead of adding the new upcall.
- */
+ 
 static inline struct gss_upcall_msg *
 gss_add_msg(struct gss_upcall_msg *gss_msg)
 {
@@ -444,10 +405,7 @@ static int gss_encode_v1_msg(struct gss_upcall_msg *gss_msg,
 	p += len;
 	gss_msg->msg.len = len;
 
-	/*
-	 * target= is a full service principal that names the remote
-	 * identity that we are authenticating to.
-	 */
+	 
 	if (target_name) {
 		len = scnprintf(p, buflen, " target=%s", target_name);
 		buflen -= len;
@@ -455,16 +413,7 @@ static int gss_encode_v1_msg(struct gss_upcall_msg *gss_msg,
 		gss_msg->msg.len += len;
 	}
 
-	/*
-	 * gssd uses service= and srchost= to select a matching key from
-	 * the system's keytab to use as the source principal.
-	 *
-	 * service= is the service name part of the source principal,
-	 * or "*" (meaning choose any).
-	 *
-	 * srchost= is the hostname part of the source principal. When
-	 * not provided, gssd uses the local hostname.
-	 */
+	 
 	if (service_name) {
 		char *c = strchr(service_name, '@');
 
@@ -604,8 +553,7 @@ gss_refresh_upcall(struct rpc_task *task)
 
 	gss_msg = gss_setup_upcall(gss_auth, cred);
 	if (PTR_ERR(gss_msg) == -EAGAIN) {
-		/* XXX: warning on the first, under the assumption we
-		 * shouldn't normally hit this case on a refresh. */
+		 
 		warn_gssd();
 		rpc_sleep_on_timeout(&pipe_version_rpc_waitqueue,
 				task, NULL, jiffies + (15 * HZ));
@@ -622,7 +570,7 @@ gss_refresh_upcall(struct rpc_task *task)
 		rpc_sleep_on(&gss_cred->gc_upcall->rpc_waitqueue, task, NULL);
 	else if (gss_msg->ctx == NULL && gss_msg->msg.errno >= 0) {
 		gss_cred->gc_upcall = gss_msg;
-		/* gss_upcall_callback will release the reference to gss_upcall_msg */
+		 
 		refcount_inc(&gss_msg->count);
 		rpc_sleep_on(&gss_msg->rpc_waitqueue, task, gss_upcall_callback);
 	} else {
@@ -650,7 +598,7 @@ gss_create_upcall(struct gss_auth *gss_auth, struct gss_cred *gss_cred)
 
 retry:
 	err = 0;
-	/* if gssd is down, just skip upcalling altogether */
+	 
 	if (!gssd_running(net)) {
 		warn_gssd();
 		err = -EACCES;
@@ -761,7 +709,7 @@ gss_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
 		goto err;
 
 	err = -ENOENT;
-	/* Find a matching upcall */
+	 
 	spin_lock(&pipe->lock);
 	gss_msg = gss_find_downcall(pipe, uid);
 	if (gss_msg == NULL) {
@@ -817,12 +765,12 @@ static int gss_pipe_open(struct inode *inode, int new_version)
 
 	spin_lock(&pipe_version_lock);
 	if (sn->pipe_version < 0) {
-		/* First open of any gss pipe determines the version: */
+		 
 		sn->pipe_version = new_version;
 		rpc_wake_up(&pipe_version_rpc_waitqueue);
 		wake_up(&pipe_version_waitqueue);
 	} else if (sn->pipe_version != new_version) {
-		/* Trying to open a pipe of a different version */
+		 
 		ret = -EBUSY;
 		goto out;
 	}
@@ -1020,10 +968,7 @@ static void gss_pipe_free(struct gss_pipe *p)
 		kref_put(&p->kref, __gss_pipe_release);
 }
 
-/*
- * NOTE: we have the opportunity to use different
- * parameters based on the input flavor (which must be a pseudoflavor)
- */
+ 
 static struct gss_auth *
 gss_create_new(const struct rpc_auth_create_args *args, struct rpc_clnt *clnt)
 {
@@ -1031,7 +976,7 @@ gss_create_new(const struct rpc_auth_create_args *args, struct rpc_clnt *clnt)
 	struct gss_auth *gss_auth;
 	struct gss_pipe *gss_pipe;
 	struct rpc_auth * auth;
-	int err = -ENOMEM; /* XXX? */
+	int err = -ENOMEM;  
 
 	if (!try_module_get(THIS_MODULE))
 		return ERR_PTR(err);
@@ -1073,12 +1018,7 @@ gss_create_new(const struct rpc_auth_create_args *args, struct rpc_clnt *clnt)
 	err = rpcauth_init_credcache(auth);
 	if (err)
 		goto err_put_mech;
-	/*
-	 * Note: if we created the old pipe first, then someone who
-	 * examined the directory at the right moment might conclude
-	 * that we supported only the old pipe.  So we instead create
-	 * the new pipe first.
-	 */
+	 
 	gss_pipe = gss_pipe_get(clnt, "gssd", &gss_upcall_ops_v1);
 	if (IS_ERR(gss_pipe)) {
 		err = PTR_ERR(gss_pipe);
@@ -1160,15 +1100,7 @@ gss_destroy(struct rpc_auth *auth)
 	gss_put_auth(gss_auth);
 }
 
-/*
- * Auths may be shared between rpc clients that were cloned from a
- * common client with the same xprt, if they also share the flavor and
- * target_name.
- *
- * The auth is looked up from the oldest parent sharing the same
- * cl_xprt, and the auth itself references only that common parent
- * (which is guaranteed to last as long as any of its descendants).
- */
+ 
 static struct gss_auth *
 gss_auth_find_or_add_hashed(const struct rpc_auth_create_args *args,
 		struct rpc_clnt *clnt,
@@ -1234,7 +1166,7 @@ gss_create(const struct rpc_auth_create_args *args, struct rpc_clnt *clnt)
 
 	while (clnt != clnt->cl_parent) {
 		struct rpc_clnt *parent = clnt->cl_parent;
-		/* Find the original parent for this transport */
+		 
 		if (rcu_access_pointer(parent->cl_xpi.xpi_xpswitch) != xps)
 			break;
 		clnt = parent;
@@ -1251,7 +1183,7 @@ gss_dup_cred(struct gss_auth *gss_auth, struct gss_cred *gss_cred)
 {
 	struct gss_cred *new;
 
-	/* Make a copy of the cred so that we can reference count it */
+	 
 	new = kzalloc(sizeof(*gss_cred), GFP_KERNEL);
 	if (new) {
 		struct auth_cred acred = {
@@ -1273,12 +1205,7 @@ gss_dup_cred(struct gss_auth *gss_auth, struct gss_cred *gss_cred)
 	return new;
 }
 
-/*
- * gss_send_destroy_context will cause the RPCSEC_GSS to send a NULL RPC call
- * to the server with the GSS control procedure field set to
- * RPC_GSS_PROC_DESTROY. This should normally cause the server to release
- * all RPCSEC_GSS state associated with that context.
- */
+ 
 static void
 gss_send_destroy_context(struct rpc_cred *cred)
 {
@@ -1302,9 +1229,7 @@ gss_send_destroy_context(struct rpc_cred *cred)
 	}
 }
 
-/* gss_destroy_cred (and gss_free_ctx) are used to clean up after failure
- * to create a new cred or context, so they check that things have been
- * allocated before freeing them. */
+ 
 static void
 gss_do_free_ctx(struct gss_cl_ctx *ctx)
 {
@@ -1369,9 +1294,7 @@ gss_hash_cred(struct auth_cred *acred, unsigned int hashbits)
 	return hash_64(from_kuid(&init_user_ns, acred->cred->fsuid), hashbits);
 }
 
-/*
- * Lookup RPCSEC_GSS cred for the current process
- */
+ 
 static struct rpc_cred *gss_lookup_cred(struct rpc_auth *auth,
 					struct auth_cred *acred, int flags)
 {
@@ -1390,10 +1313,7 @@ gss_create_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags, gfp_t
 		goto out_err;
 
 	rpcauth_init_cred(&cred->gc_base, acred, auth, &gss_credops);
-	/*
-	 * Note: in order to force a call to call_refresh(), we deliberately
-	 * fail to flag the credential as RPCAUTH_CRED_UPTODATE.
-	 */
+	 
 	cred->gc_base.cr_flags = 1UL << RPCAUTH_CRED_NEW;
 	cred->gc_service = gss_auth->service;
 	cred->gc_principal = acred->principal;
@@ -1434,7 +1354,7 @@ gss_stringify_acceptor(struct rpc_cred *cred)
 	len = ctx->gc_acceptor.len;
 	rcu_read_unlock();
 
-	/* no point if there's no string */
+	 
 	if (!len)
 		return NULL;
 realloc:
@@ -1445,7 +1365,7 @@ realloc:
 	rcu_read_lock();
 	ctx = rcu_dereference(gss_cred->gc_ctx);
 
-	/* did the ctx disappear or was it replaced by one with no acceptor? */
+	 
 	if (!ctx || !ctx->gc_acceptor.len) {
 		kfree(string);
 		string = NULL;
@@ -1454,10 +1374,7 @@ realloc:
 
 	acceptor = &ctx->gc_acceptor;
 
-	/*
-	 * Did we find a new acceptor that's longer than the original? Allocate
-	 * a longer buffer and try again.
-	 */
+	 
 	if (len < acceptor->len) {
 		len = acceptor->len;
 		rcu_read_unlock();
@@ -1472,10 +1389,7 @@ out:
 	return string;
 }
 
-/*
- * Returns -EACCES if GSS context is NULL or will expire within the
- * timeout (miliseconds)
- */
+ 
 static int
 gss_key_timeout(struct rpc_cred *rc)
 {
@@ -1502,7 +1416,7 @@ gss_match(struct auth_cred *acred, struct rpc_cred *rc, int flags)
 
 	if (test_bit(RPCAUTH_CRED_NEW, &rc->cr_flags))
 		goto out;
-	/* Don't match with creds that have expired. */
+	 
 	rcu_read_lock();
 	ctx = rcu_dereference(gss_cred->gc_ctx);
 	if (!ctx || time_after(jiffies, ctx->gc_expiry)) {
@@ -1525,13 +1439,7 @@ out:
 	return ret;
 }
 
-/*
- * Marshal credentials.
- *
- * The expensive part is computing the verifier. We can't cache a
- * pre-computed version of the verifier because the seqno, which
- * is different every time, is included in the MIC.
- */
+ 
 static int gss_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -1546,7 +1454,7 @@ static int gss_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 	struct xdr_buf	verf_buf;
 	int status;
 
-	/* Credential */
+	 
 
 	p = xdr_reserve_space(xdr, 7 * sizeof(*p) +
 			      ctx->gc_wire_ctx.len);
@@ -1569,10 +1477,9 @@ static int gss_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 	p = xdr_encode_netobj(p, &ctx->gc_wire_ctx);
 	*cred_len = cpu_to_be32((p - (cred_len + 1)) << 2);
 
-	/* Verifier */
+	 
 
-	/* We compute the checksum for the verifier over the xdr-encoded bytes
-	 * starting with the xid and ending at the end of the credential: */
+	 
 	iov.iov_base = req->rq_snd_buf.head[0].iov_base;
 	iov.iov_len = (u8 *)p - (u8 *)iov.iov_base;
 	xdr_buf_from_iov(&iov, &verf_buf);
@@ -1645,9 +1552,7 @@ static int gss_cred_is_negative_entry(struct rpc_cred *cred)
 	return 0;
 }
 
-/*
-* Refresh credentials. XXX - finish
-*/
+ 
 static int
 gss_refresh(struct rpc_task *task)
 {
@@ -1671,7 +1576,7 @@ out:
 	return ret;
 }
 
-/* Dummy refresh routine: used only when destroying the context */
+ 
 static int
 gss_refresh_null(struct rpc_task *task)
 {
@@ -1717,8 +1622,7 @@ gss_validate(struct rpc_task *task, struct xdr_stream *xdr)
 	if (maj_stat)
 		goto bad_mic;
 
-	/* We leave it to unwrap to calculate au_rslack. For now we just
-	 * calculate the length of the verifier: */
+	 
 	if (test_bit(RPCAUTH_AUTH_UPDATE_SLACK, &cred->cr_auth->au_flags))
 		cred->cr_auth->au_verfsize = XDR_QUADLEN(len) + 2;
 	status = 0;
@@ -1770,7 +1674,7 @@ gss_wrap_req_integ(struct rpc_cred *cred, struct gss_cl_ctx *ctx,
 		clear_bit(RPCAUTH_CRED_UPTODATE, &cred->cr_flags);
 	else if (maj_stat)
 		goto bad_mic;
-	/* Check that the trailing MIC fit in the buffer, after the fact */
+	 
 	if (xdr_stream_encode_opaque_inline(xdr, (void **)&p, mic.len) < 0)
 		goto wrap_failed;
 	return 0;
@@ -1859,12 +1763,7 @@ gss_wrap_req_priv(struct rpc_cred *cred, struct gss_cl_ctx *ctx,
 	inpages = snd_buf->pages + first;
 	snd_buf->pages = rqstp->rq_enc_pages;
 	snd_buf->page_base -= first << PAGE_SHIFT;
-	/*
-	 * Move the tail into its own page, in case gss_wrap needs
-	 * more space in the head when wrapping.
-	 *
-	 * Still... Why can't gss_wrap just slide the tail down?
-	 */
+	 
 	if (snd_buf->page_len || snd_buf->tail[0].iov_len) {
 		char *tmp;
 
@@ -1874,18 +1773,17 @@ gss_wrap_req_priv(struct rpc_cred *cred, struct gss_cl_ctx *ctx,
 	}
 	offset = (u8 *)p - (u8 *)snd_buf->head[0].iov_base;
 	maj_stat = gss_wrap(ctx->gc_gss_ctx, offset, snd_buf, inpages);
-	/* slack space should prevent this ever happening: */
+	 
 	if (unlikely(snd_buf->len > snd_buf->buflen))
 		goto wrap_failed;
-	/* We're assuming that when GSS_S_CONTEXT_EXPIRED, the encryption was
-	 * done anyway, so it's safe to put the request on the wire: */
+	 
 	if (maj_stat == GSS_S_CONTEXT_EXPIRED)
 		clear_bit(RPCAUTH_CRED_UPTODATE, &cred->cr_flags);
 	else if (maj_stat)
 		goto bad_wrap;
 
 	*opaque_len = cpu_to_be32(snd_buf->len - offset);
-	/* guess whether the pad goes into the head or the tail: */
+	 
 	if (snd_buf->page_len || snd_buf->tail[0].iov_len)
 		iov = snd_buf->tail;
 	else
@@ -1914,9 +1812,7 @@ static int gss_wrap_req(struct rpc_task *task, struct xdr_stream *xdr)
 
 	status = -EIO;
 	if (ctx->gc_proc != RPC_GSS_PROC_DATA) {
-		/* The spec seems a little ambiguous here, but I think that not
-		 * wrapping context destruction requests makes the most sense.
-		 */
+		 
 		status = rpcauth_wrap_req_encode(task, xdr);
 		goto out;
 	}
@@ -1938,14 +1834,7 @@ out:
 	return status;
 }
 
-/**
- * gss_update_rslack - Possibly update RPC receive buffer size estimates
- * @task: rpc_task for incoming RPC Reply being unwrapped
- * @cred: controlling rpc_cred for @task
- * @before: XDR words needed before each RPC Reply message
- * @after: XDR words needed following each RPC Reply message
- *
- */
+ 
 static void gss_update_rslack(struct rpc_task *task, struct rpc_cred *cred,
 			      unsigned int before, unsigned int after)
 {
@@ -1965,19 +1854,7 @@ gss_unwrap_resp_auth(struct rpc_task *task, struct rpc_cred *cred)
 	return 0;
 }
 
-/*
- * RFC 2203, Section 5.3.2.2
- *
- *	struct rpc_gss_integ_data {
- *		opaque databody_integ<>;
- *		opaque checksum<>;
- *	};
- *
- *	struct rpc_gss_data_t {
- *		unsigned int seq_num;
- *		proc_req_arg_t arg;
- *	};
- */
+ 
 static noinline_for_stack int
 gss_unwrap_resp_integ(struct rpc_task *task, struct rpc_cred *cred,
 		      struct gss_cl_ctx *ctx, struct rpc_rqst *rqstp,
@@ -1991,7 +1868,7 @@ gss_unwrap_resp_integ(struct rpc_task *task, struct rpc_cred *cred,
 	ret = -EIO;
 	mic.data = NULL;
 
-	/* opaque databody_integ<>; */
+	 
 	if (xdr_stream_decode_u32(xdr, &len))
 		goto unwrap_failed;
 	if (len & 3)
@@ -2004,15 +1881,9 @@ gss_unwrap_resp_integ(struct rpc_task *task, struct rpc_cred *cred,
 	if (xdr_buf_subsegment(rcv_buf, &gss_data, offset, len))
 		goto unwrap_failed;
 
-	/*
-	 * The xdr_stream now points to the beginning of the
-	 * upper layer payload, to be passed below to
-	 * rpcauth_unwrap_resp_decode(). The checksum, which
-	 * follows the upper layer payload in @rcv_buf, is
-	 * located and parsed without updating the xdr_stream.
-	 */
+	 
 
-	/* opaque checksum<>; */
+	 
 	offset += len;
 	if (xdr_decode_word(rcv_buf, offset, &len))
 		goto unwrap_failed;
@@ -2074,13 +1945,11 @@ gss_unwrap_resp_priv(struct rpc_task *task, struct rpc_cred *cred,
 		clear_bit(RPCAUTH_CRED_UPTODATE, &cred->cr_flags);
 	if (maj_stat != GSS_S_COMPLETE)
 		goto bad_unwrap;
-	/* gss_unwrap decrypted the sequence number */
+	 
 	if (be32_to_cpup(p++) != rqstp->rq_seqno)
 		goto bad_seqno;
 
-	/* gss_unwrap redacts the opaque blob from the head iovec.
-	 * rcv_buf has changed, thus the stream needs to be reset.
-	 */
+	 
 	xdr_init_decode(xdr, rcv_buf, p, rqstp);
 
 	gss_update_rslack(task, cred, 2 + ctx->gc_gss_ctx->align,
@@ -2245,9 +2114,7 @@ static struct pernet_operations rpcsec_gss_net_ops = {
 	.exit = rpcsec_gss_exit_net,
 };
 
-/*
- * Initialize RPCSEC_GSS module
- */
+ 
 static int __init init_rpcsec_gss(void)
 {
 	int err = 0;
@@ -2276,7 +2143,7 @@ static void __exit exit_rpcsec_gss(void)
 	unregister_pernet_subsys(&rpcsec_gss_net_ops);
 	gss_svc_shutdown();
 	rpcauth_unregister(&authgss_ops);
-	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+	rcu_barrier();  
 }
 
 MODULE_ALIAS("rpc-auth-6");

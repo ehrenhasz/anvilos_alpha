@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob@ti.com>
- */
+
+ 
 
 #include <linux/math64.h>
 
@@ -17,9 +14,9 @@
 #define to_omap_crtc_state(x) container_of(x, struct omap_crtc_state, base)
 
 struct omap_crtc_state {
-	/* Must be first. */
+	 
 	struct drm_crtc_state base;
-	/* Shadow values for legacy userspace support. */
+	 
 	unsigned int rotation;
 	unsigned int zpos;
 	bool manually_updated;
@@ -48,9 +45,7 @@ struct omap_crtc {
 	void *framedone_handler_data;
 };
 
-/* -----------------------------------------------------------------------------
- * Helper Functions
- */
+ 
 
 struct videomode *omap_crtc_timings(struct drm_crtc *crtc)
 {
@@ -81,23 +76,15 @@ int omap_crtc_wait_pending(struct drm_crtc *crtc)
 {
 	struct omap_crtc *omap_crtc = to_omap_crtc(crtc);
 
-	/*
-	 * Timeout is set to a "sufficiently" high value, which should cover
-	 * a single frame refresh even on slower displays.
-	 */
+	 
 	return wait_event_timeout(omap_crtc->pending_wait,
 				  !omap_crtc_is_pending(crtc),
 				  msecs_to_jiffies(250));
 }
 
-/* -----------------------------------------------------------------------------
- * DSS Manager Functions
- */
+ 
 
-/*
- * Manager-ops, callbacks from output when they need to configure
- * the upstream part of the video pipe.
- */
+ 
 
 void omap_crtc_dss_start_update(struct omap_drm_private *priv,
 				       enum omap_channel channel)
@@ -105,7 +92,7 @@ void omap_crtc_dss_start_update(struct omap_drm_private *priv,
 	dispc_mgr_enable(priv->dispc, channel, true);
 }
 
-/* Called only from the encoder enable/disable and suspend/resume handlers. */
+ 
 void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
 {
 	struct omap_crtc_state *omap_state = to_omap_crtc_state(crtc->state);
@@ -133,10 +120,7 @@ void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
 	}
 
 	if (omap_crtc->channel == OMAP_DSS_CHANNEL_DIGIT) {
-		/*
-		 * Digit output produces some sync lost interrupts during the
-		 * first frame when enabling, so we need to ignore those.
-		 */
+		 
 		omap_crtc->ignore_digit_sync_lost = true;
 	}
 
@@ -147,14 +131,7 @@ void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
 	if (enable) {
 		wait = omap_irq_wait_init(dev, vsync_irq, 1);
 	} else {
-		/*
-		 * When we disable the digit output, we need to wait for
-		 * FRAMEDONE to know that DISPC has finished with the output.
-		 *
-		 * OMAP2/3 does not have FRAMEDONE irq for digit output, and in
-		 * that case we need to use vsync interrupt, and wait for both
-		 * even and odd frames.
-		 */
+		 
 
 		if (framedone_irq)
 			wait = omap_irq_wait_init(dev, framedone_irq, 1);
@@ -173,7 +150,7 @@ void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
 
 	if (omap_crtc->channel == OMAP_DSS_CHANNEL_DIGIT) {
 		omap_crtc->ignore_digit_sync_lost = false;
-		/* make sure the irq handler sees the value above */
+		 
 		mb();
 	}
 }
@@ -258,9 +235,7 @@ void omap_crtc_dss_unregister_framedone(
 	omap_crtc->framedone_handler_data = NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Setup, Flush and Page Flip
- */
+ 
 
 void omap_crtc_error_irq(struct drm_crtc *crtc, u32 irqstatus)
 {
@@ -283,16 +258,13 @@ void omap_crtc_vblank_irq(struct drm_crtc *crtc)
 	bool pending;
 
 	spin_lock(&crtc->dev->event_lock);
-	/*
-	 * If the dispc is busy we're racing the flush operation. Try again on
-	 * the next vblank interrupt.
-	 */
+	 
 	if (dispc_mgr_go_busy(priv->dispc, omap_crtc->channel)) {
 		spin_unlock(&crtc->dev->event_lock);
 		return;
 	}
 
-	/* Send the vblank event if one has been requested. */
+	 
 	if (omap_crtc->event) {
 		drm_crtc_send_vblank_event(crtc, omap_crtc->event);
 		omap_crtc->event = NULL;
@@ -305,7 +277,7 @@ void omap_crtc_vblank_irq(struct drm_crtc *crtc)
 	if (pending)
 		drm_crtc_vblank_put(crtc);
 
-	/* Wake up omap_atomic_complete. */
+	 
 	wake_up(&omap_crtc->pending_wait);
 
 	DBG("%s: apply done", omap_crtc->name);
@@ -321,7 +293,7 @@ void omap_crtc_framedone_irq(struct drm_crtc *crtc, uint32_t irqstatus)
 	omap_crtc->framedone_handler(omap_crtc->framedone_handler_data);
 
 	spin_lock(&crtc->dev->event_lock);
-	/* Send the vblank event if one has been requested. */
+	 
 	if (omap_crtc->event) {
 		drm_crtc_send_vblank_event(crtc, omap_crtc->event);
 		omap_crtc->event = NULL;
@@ -329,7 +301,7 @@ void omap_crtc_framedone_irq(struct drm_crtc *crtc, uint32_t irqstatus)
 	omap_crtc->pending = false;
 	spin_unlock(&crtc->dev->event_lock);
 
-	/* Wake up omap_atomic_complete. */
+	 
 	wake_up(&omap_crtc->pending_wait);
 }
 
@@ -416,9 +388,7 @@ static void omap_crtc_write_crtc_properties(struct drm_crtc *crtc)
 	dispc_mgr_setup(priv->dispc, omap_crtc->channel, &info);
 }
 
-/* -----------------------------------------------------------------------------
- * CRTC Functions
- */
+ 
 
 static void omap_crtc_destroy(struct drm_crtc *crtc)
 {
@@ -456,7 +426,7 @@ static void omap_crtc_atomic_enable(struct drm_crtc *crtc,
 
 	dispc_runtime_get(priv->dispc);
 
-	/* manual updated display will not trigger vsync irq */
+	 
 	if (omap_state->manually_updated)
 		return;
 
@@ -506,11 +476,7 @@ static enum drm_mode_status omap_crtc_mode_valid(struct drm_crtc *crtc,
 
 	drm_display_mode_to_videomode(mode, &vm);
 
-	/*
-	 * DSI might not call this, since the supplied mode is not a
-	 * valid DISPC mode. DSI will calculate and configure the
-	 * proper DISPC mode later.
-	 */
+	 
 	if (omap_crtc->pipe->output->type != OMAP_DISPLAY_TYPE_DSI) {
 		r = dispc_mgr_check_timings(priv->dispc,
 						       omap_crtc->channel,
@@ -519,29 +485,16 @@ static enum drm_mode_status omap_crtc_mode_valid(struct drm_crtc *crtc,
 			return r;
 	}
 
-	/* Check for bandwidth limit */
+	 
 	if (priv->max_bandwidth) {
-		/*
-		 * Estimation for the bandwidth need of a given mode with one
-		 * full screen plane:
-		 * bandwidth = resolution * 32bpp * (pclk / (vtotal * htotal))
-		 *					^^ Refresh rate ^^
-		 *
-		 * The interlaced mode is taken into account by using the
-		 * pixelclock in the calculation.
-		 *
-		 * The equation is rearranged for 64bit arithmetic.
-		 */
+		 
 		uint64_t bandwidth = mode->clock * 1000;
 		unsigned int bpp = 4;
 
 		bandwidth = bandwidth * mode->hdisplay * mode->vdisplay * bpp;
 		bandwidth = div_u64(bandwidth, mode->htotal * mode->vtotal);
 
-		/*
-		 * Reject modes which would need more bandwidth if used with one
-		 * full resolution plane (most common use case).
-		 */
+		 
 		if (priv->max_bandwidth < bandwidth)
 			return MODE_BAD;
 	}
@@ -596,11 +549,11 @@ static int omap_crtc_atomic_check(struct drm_crtc *crtc,
 		struct omap_crtc_state *omap_crtc_state =
 			to_omap_crtc_state(crtc_state);
 
-		/* Mirror new values for zpos and rotation in omap_crtc_state */
+		 
 		omap_crtc_state->zpos = pri_state->zpos;
 		omap_crtc_state->rotation = pri_state->rotation;
 
-		/* Check if this CRTC is for a manually updated display */
+		 
 		omap_crtc_state->manually_updated = omap_crtc_is_manually_updated(crtc);
 	}
 
@@ -636,14 +589,14 @@ static void omap_crtc_atomic_flush(struct drm_crtc *crtc,
 
 	omap_crtc_write_crtc_properties(crtc);
 
-	/* Only flush the CRTC if it is currently enabled. */
+	 
 	if (!omap_crtc->enabled)
 		return;
 
 	DBG("%s: GO", omap_crtc->name);
 
 	if (omap_crtc_state->manually_updated) {
-		/* send new image for page flips and modeset changes */
+		 
 		spin_lock_irq(&crtc->dev->event_lock);
 		omap_crtc_flush(crtc);
 		omap_crtc_arm_event(crtc);
@@ -668,12 +621,7 @@ static int omap_crtc_atomic_set_property(struct drm_crtc *crtc,
 	struct omap_drm_private *priv = crtc->dev->dev_private;
 	struct drm_plane_state *plane_state;
 
-	/*
-	 * Delegate property set to the primary plane. Get the plane state and
-	 * set the property directly, the shadow copy will be assigned in the
-	 * omap_crtc_atomic_check callback. This way updates to plane state will
-	 * always be mirrored in the crtc state correctly.
-	 */
+	 
 	plane_state = drm_atomic_get_plane_state(state->state, crtc->primary);
 	if (IS_ERR(plane_state))
 		return PTR_ERR(plane_state);
@@ -766,9 +714,7 @@ static const struct drm_crtc_helper_funcs omap_crtc_helper_funcs = {
 	.mode_valid = omap_crtc_mode_valid,
 };
 
-/* -----------------------------------------------------------------------------
- * Init and Cleanup
- */
+ 
 
 static const char *channel_names[] = {
 	[OMAP_DSS_CHANNEL_LCD] = "lcd",
@@ -777,7 +723,7 @@ static const char *channel_names[] = {
 	[OMAP_DSS_CHANNEL_LCD3] = "lcd3",
 };
 
-/* initialize crtc */
+ 
 struct drm_crtc *omap_crtc_init(struct drm_device *dev,
 				struct omap_drm_pipeline *pipe,
 				struct drm_plane *plane)
@@ -804,16 +750,7 @@ struct drm_crtc *omap_crtc_init(struct drm_device *dev,
 	omap_crtc->channel = channel;
 	omap_crtc->name = channel_names[channel];
 
-	/*
-	 * We want to refresh manually updated displays from dirty callback,
-	 * which is called quite often (e.g. for each drawn line). This will
-	 * be used to do the display update asynchronously to avoid blocking
-	 * the rendering process and merges multiple dirty calls into one
-	 * update if they arrive very fast. We also call this function for
-	 * atomic display updates (e.g. for page flips), which means we do
-	 * not need extra locking. Atomic updates should be synchronous, but
-	 * need to wait for the framedone interrupt anyways.
-	 */
+	 
 	INIT_DELAYED_WORK(&omap_crtc->update_work,
 			  omap_crtc_manual_display_update);
 
@@ -828,13 +765,7 @@ struct drm_crtc *omap_crtc_init(struct drm_device *dev,
 
 	drm_crtc_helper_add(crtc, &omap_crtc_helper_funcs);
 
-	/* The dispc API adapts to what ever size, but the HW supports
-	 * 256 element gamma table for LCDs and 1024 element table for
-	 * OMAP_DSS_CHANNEL_DIGIT. X server assumes 256 element gamma
-	 * tables so lets use that. Size of HW gamma table can be
-	 * extracted with dispc_mgr_gamma_size(). If it returns 0
-	 * gamma table is not supported.
-	 */
+	 
 	if (dispc_mgr_gamma_size(priv->dispc, channel)) {
 		unsigned int gamma_lut_size = 256;
 

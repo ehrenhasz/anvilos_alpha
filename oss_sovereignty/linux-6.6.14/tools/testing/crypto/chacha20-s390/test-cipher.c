@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (C) 2022 Red Hat, Inc.
- * Author: Vladis Dronov <vdronoff@gmail.com>
- */
+ 
 
 #include <asm/elf.h>
 #include <asm/uaccess.h>
@@ -39,7 +35,7 @@
 static unsigned int data_size __read_mostly = 256;
 static unsigned int debug __read_mostly = 0;
 
-/* tie all skcipher structures together */
+ 
 struct skcipher_def {
 	struct scatterlist sginp, sgout;
 	struct crypto_skcipher *tfm;
@@ -47,7 +43,7 @@ struct skcipher_def {
 	struct crypto_wait wait;
 };
 
-/* Perform cipher operations with the chacha lib */
+ 
 static int test_lib_chacha(u8 *revert, u8 *cipher, u8 *plain)
 {
 	u32 chacha_state[CHACHA_STATE_WORDS];
@@ -65,7 +61,7 @@ static int test_lib_chacha(u8 *revert, u8 *cipher, u8 *plain)
 			       16, 1, iv, 16, 1);
 	}
 
-	/* Encrypt */
+	 
 	chacha_init_arch(chacha_state, (u32*)key, iv);
 
 	start = ktime_get_ns();
@@ -80,7 +76,7 @@ static int test_lib_chacha(u8 *revert, u8 *cipher, u8 *plain)
 
 	pr_info("lib encryption took: %lld nsec", end - start);
 
-	/* Decrypt */
+	 
 	chacha_init_arch(chacha_state, (u32 *)key, iv);
 
 	start = ktime_get_ns();
@@ -97,7 +93,7 @@ static int test_lib_chacha(u8 *revert, u8 *cipher, u8 *plain)
 	return 0;
 }
 
-/* Perform cipher operations with skcipher */
+ 
 static unsigned int test_skcipher_encdec(struct skcipher_def *sk,
 					 int enc)
 {
@@ -122,7 +118,7 @@ static unsigned int test_skcipher_encdec(struct skcipher_def *sk,
 	return rc;
 }
 
-/* Initialize and trigger cipher operations */
+ 
 static int test_skcipher(char *name, u8 *revert, u8 *cipher, u8 *plain)
 {
 	struct skcipher_def sk;
@@ -169,14 +165,14 @@ static int test_skcipher(char *name, u8 *revert, u8 *cipher, u8 *plain)
 	sk.tfm = skcipher;
 	sk.req = req;
 
-	/* Encrypt in one pass */
+	 
 	sg_init_one(&sk.sginp, plain, data_size);
 	sg_init_one(&sk.sgout, cipher, data_size);
 	skcipher_request_set_crypt(req, &sk.sginp, &sk.sgout,
 				   data_size, iv);
 	crypto_init_wait(&sk.wait);
 
-	/* Encrypt data */
+	 
 	start = ktime_get_ns();
 	ret = test_skcipher_encdec(&sk, 1);
 	end = ktime_get_ns();
@@ -191,7 +187,7 @@ static int test_skcipher(char *name, u8 *revert, u8 *cipher, u8 *plain)
 			       16, 1, cipher,
 			       (data_size > 64 ? 64 : data_size), 1);
 
-	/* Prepare for decryption */
+	 
 	memset(iv, 'I', sizeof(iv));
 
 	sg_init_one(&sk.sginp, cipher, data_size);
@@ -200,7 +196,7 @@ static int test_skcipher(char *name, u8 *revert, u8 *cipher, u8 *plain)
 				   data_size, iv);
 	crypto_init_wait(&sk.wait);
 
-	/* Decrypt data */
+	 
 	start = ktime_get_ns();
 	ret = test_skcipher_encdec(&sk, 0);
 	end = ktime_get_ns();
@@ -215,7 +211,7 @@ static int test_skcipher(char *name, u8 *revert, u8 *cipher, u8 *plain)
 			       16, 1, revert,
 			       (data_size > 64 ? 64 : data_size), 1);
 
-	/* Dump some internal skcipher data */
+	 
 	if (debug)
 		pr_info("skcipher %s: cryptlen %d blksize %d stride %d "
 			"ivsize %d alignmask 0x%x\n",
@@ -242,7 +238,7 @@ static int __init chacha_s390_test_init(void)
 	pr_info("s390 ChaCha20 test module: size=%d debug=%d\n",
 		data_size, debug);
 
-	/* Allocate and fill buffers */
+	 
 	plain = vmalloc(data_size);
 	if (!plain) {
 		pr_info("could not allocate plain buffer\n");
@@ -278,7 +274,7 @@ static int __init chacha_s390_test_init(void)
 			       16, 1, plain,
 			       (data_size > 64 ? 64 : data_size), 1);
 
-	/* Use chacha20 generic */
+	 
 	ret = test_skcipher("chacha20-generic", revert, cipher_generic, plain);
 	if (ret)
 		goto out;
@@ -293,7 +289,7 @@ static int __init chacha_s390_test_init(void)
 
 	memset(revert, 0, data_size);
 
-	/* Use chacha20 s390 */
+	 
 	ret = test_skcipher("chacha20-s390", revert, cipher_s390, plain);
 	if (ret)
 		goto out;
@@ -317,7 +313,7 @@ static int __init chacha_s390_test_init(void)
 	memset(cipher_s390, 0, data_size);
 	memset(revert, 0, data_size);
 
-	/* Use chacha20 lib */
+	 
 	test_lib_chacha(revert, cipher_s390, plain);
 
 	if (memcmp(plain, revert, data_size)) {

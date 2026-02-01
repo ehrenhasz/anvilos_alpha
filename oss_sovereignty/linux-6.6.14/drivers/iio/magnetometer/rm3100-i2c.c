@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for PNI RM3100 3-axis geomagnetic sensor on a i2c bus.
- *
- * Copyright (C) 2018 Song Qiang <songqiang1304521@gmail.com>
- *
- * i2c slave address: 0x20 + SA1 << 1 + SA0.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * builtin-probe.c
- *
- * Builtin probe command: Set up probe events by C expression
- *
- * Written by Masami Hiramatsu <mhiramat@redhat.com>
- */
+
+ 
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -35,9 +29,9 @@
 #define DEFAULT_FUNC_FILTER "!_* & !*@plt"
 #define DEFAULT_LIST_FILTER "*"
 
-/* Session management structure */
+ 
 static struct {
-	int command;	/* Command short_name */
+	int command;	 
 	bool list_events;
 	bool uprobes;
 	bool target_used;
@@ -49,7 +43,7 @@ static struct {
 	struct nsinfo *nsi;
 } *params;
 
-/* Parse an event definition. Note that any error must die. */
+ 
 static int parse_probe_event(const char *str)
 {
 	struct perf_probe_event *pev = &params->events[params->nevents];
@@ -71,7 +65,7 @@ static int parse_probe_event(const char *str)
 
 	pev->nsi = nsinfo__get(params->nsi);
 
-	/* Parse a perf-probe command into event */
+	 
 	ret = parse_perf_probe_command(str, pev);
 	pr_debug("%d arguments\n", pev->nargs);
 
@@ -105,13 +99,7 @@ static int set_target(const char *ptr)
 	int found = 0;
 	const char *buf;
 
-	/*
-	 * The first argument after options can be an absolute path
-	 * to an executable / library or kernel module.
-	 *
-	 * TODO: Support relative path, and $PATH, $LD_LIBRARY_PATH,
-	 * short module name.
-	 */
+	 
 	if (!params->target && ptr && *ptr == '/') {
 		params->target = strdup(ptr);
 		if (!params->target)
@@ -141,7 +129,7 @@ static int parse_probe_event_argv(int argc, const char **argv)
 	if (found_target && argc == 1)
 		return 0;
 
-	/* Bind up rest arguments */
+	 
 	len = 0;
 	for (i = 0; i < argc; i++) {
 		if (i == 0 && found_target)
@@ -178,7 +166,7 @@ static int opt_set_target(const struct option *opt, const char *str,
 		else
 			return ret;
 
-		/* Expand given path to absolute path, except for modulename */
+		 
 		if (params->uprobes || strchr(str, '/')) {
 			tmp = nsinfo__realpath(str, params->nsi);
 			if (!tmp) {
@@ -227,7 +215,7 @@ static int opt_set_target_ns(const struct option *opt __maybe_unused,
 }
 
 
-/* Command option callbacks */
+ 
 
 #ifdef HAVE_DWARF_SUPPORT
 static int opt_show_lines(const struct option *opt,
@@ -355,7 +343,7 @@ static int perf_add_probe_events(struct perf_probe_event *pevs, int npevs)
 	if (ret < 0)
 		goto out_cleanup;
 
-	if (params->command == 'D') {	/* it shows definition */
+	if (params->command == 'D') {	 
 		if (probe_conf.bootconfig)
 			ret = show_bootconfig_events(pevs, npevs);
 		else
@@ -376,21 +364,21 @@ static int perf_add_probe_events(struct perf_probe_event *pevs, int npevs)
 
 		for (k = 0; k < pev->ntevs; k++) {
 			struct probe_trace_event *tev = &pev->tevs[k];
-			/* Skipped events have no event name */
+			 
 			if (!tev->event)
 				continue;
 
-			/* We use tev's name for showing new events */
+			 
 			show_perf_probe_event(tev->group, tev->event, pev,
 					      tev->point.module, false);
 
-			/* Save the last valid name */
+			 
 			event = tev->event;
 			group = tev->group;
 		}
 	}
 
-	/* Note that it is possible to skip all events because of blacklist */
+	 
 	if (event) {
 #ifndef HAVE_LIBTRACEEVENT
 		pr_info("\nperf is not linked with libtraceevent, to use the new probe you can use tracefs:\n\n");
@@ -400,7 +388,7 @@ static int perf_add_probe_events(struct perf_probe_event *pevs, int npevs)
 		pr_info("\tcat trace_pipe\n");
 		pr_info("\tBefore removing the probe, echo 0 > events/%s/%s/enable\n", group, event);
 #else
-		/* Show how to use the event. */
+		 
 		pr_info("\nYou can now use it in all perf tools, such as:\n\n");
 		pr_info("\tperf record -e %s:%s -aR sleep 1\n\n", group, event);
 #endif
@@ -453,7 +441,7 @@ static int perf_del_probe_events(struct strfilter *filter)
 	if (probe_conf.cache)
 		return del_perf_probe_caches(filter);
 
-	/* Get current event names */
+	 
 	ret = probe_file__open_both(&kfd, &ufd, PF_FL_RW);
 	if (ret < 0)
 		goto out;
@@ -663,16 +651,10 @@ __cmd_probe(int argc, const char **argv)
 	if (probe_conf.max_probes == 0)
 		probe_conf.max_probes = MAX_PROBES;
 
-	/*
-	 * Only consider the user's kernel image path if given.
-	 */
+	 
 	symbol_conf.try_vmlinux_path = (symbol_conf.vmlinux_name == NULL);
 
-	/*
-	 * Except for --list, --del and --add, other command doesn't depend
-	 * nor change running kernel. So if user gives offline vmlinux,
-	 * ignore its buildid.
-	 */
+	 
 	if (!strchr("lda", params->command) && symbol_conf.vmlinux_name)
 		symbol_conf.ignore_vmlinux_buildid = true;
 
@@ -727,7 +709,7 @@ __cmd_probe(int argc, const char **argv)
 		fallthrough;
 	case 'a':
 
-		/* Ensure the last given target is used */
+		 
 		if (params->target && !params->target_used) {
 			pr_err("  Error: -x/-m must follow the probe definitions.\n");
 			parse_options_usage(probe_usage, options, "m", true);
@@ -738,14 +720,7 @@ __cmd_probe(int argc, const char **argv)
 		ret = perf_add_probe_events(params->events, params->nevents);
 		if (ret < 0) {
 
-			/*
-			 * When perf_add_probe_events() fails it calls
-			 * cleanup_perf_probe_events(pevs, npevs), i.e.
-			 * cleanup_perf_probe_events(params->events, params->nevents), which
-			 * will call clear_perf_probe_event(), so set nevents to zero
-			 * to avoid cleanup_params() to call clear_perf_probe_event() again
-			 * on the same pevs.
-			 */
+			 
 			params->nevents = 0;
 			pr_err_with_code("  Error: Failed to add events.", ret);
 			return ret;

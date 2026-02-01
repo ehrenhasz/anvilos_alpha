@@ -1,27 +1,8 @@
-/* Functions to compute MD5 message digest of files or memory blocks.
-   according to the definition of MD5 in RFC 1321 from April 1992.
-   Copyright (C) 1995-1997, 1999-2001, 2005-2006, 2008-2023 Free Software
-   Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #if HAVE_OPENSSL_MD5
 # define GL_OPENSSL_INLINE _GL_EXTERN_INLINE
 #endif
@@ -36,8 +17,7 @@
 # if __BYTE_ORDER == __BIG_ENDIAN
 #  define WORDS_BIGENDIAN 1
 # endif
-/* We need to keep the namespace clean so define the MD5 function
-   protected using leading __ .  */
+ 
 # define md5_init_ctx __md5_init_ctx
 # define md5_process_block __md5_process_block
 # define md5_process_bytes __md5_process_bytes
@@ -55,13 +35,11 @@
 
 #if ! HAVE_OPENSSL_MD5
 
-/* This array contains the bytes used to pad the buffer to the next
-   64-byte boundary.  (RFC 1321, 3.1: Step 1)  */
-static const unsigned char fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
+ 
+static const unsigned char fillbuf[64] = { 0x80, 0   };
 
 
-/* Initialize structure containing state of computation.
-   (RFC 1321, 3.3: Step 3)  */
+ 
 void
 md5_init_ctx (struct md5_ctx *ctx)
 {
@@ -74,17 +52,14 @@ md5_init_ctx (struct md5_ctx *ctx)
   ctx->buflen = 0;
 }
 
-/* Copy the 4 byte value from v into the memory location pointed to by *cp,
-   If your architecture allows unaligned access this is equivalent to
-   * (uint32_t *) cp = v  */
+ 
 static void
 set_uint32 (char *cp, uint32_t v)
 {
   memcpy (cp, &v, sizeof v);
 }
 
-/* Put result from CTX in first 16 bytes following RESBUF.  The result
-   must be in little endian byte order.  */
+ 
 void *
 md5_read_ctx (const struct md5_ctx *ctx, void *resbuf)
 {
@@ -97,48 +72,44 @@ md5_read_ctx (const struct md5_ctx *ctx, void *resbuf)
   return resbuf;
 }
 
-/* Process the remaining bytes in the internal buffer and the usual
-   prolog according to the standard and write the result to RESBUF.  */
+ 
 void *
 md5_finish_ctx (struct md5_ctx *ctx, void *resbuf)
 {
-  /* Take yet unprocessed bytes into account.  */
+   
   uint32_t bytes = ctx->buflen;
   size_t size = (bytes < 56) ? 64 / 4 : 64 * 2 / 4;
 
-  /* Now count remaining bytes.  */
+   
   ctx->total[0] += bytes;
   if (ctx->total[0] < bytes)
     ++ctx->total[1];
 
-  /* Put the 64-bit file length in *bits* at the end of the buffer.  */
+   
   ctx->buffer[size - 2] = SWAP (ctx->total[0] << 3);
   ctx->buffer[size - 1] = SWAP ((ctx->total[1] << 3) | (ctx->total[0] >> 29));
 
   memcpy (&((char *) ctx->buffer)[bytes], fillbuf, (size - 2) * 4 - bytes);
 
-  /* Process last bytes.  */
+   
   md5_process_block (ctx->buffer, size * 4, ctx);
 
   return md5_read_ctx (ctx, resbuf);
 }
 
-/* Compute MD5 message digest for LEN bytes beginning at BUFFER.  The
-   result is always in little endian byte order, so that a byte-wise
-   output yields to the wanted ASCII representation of the message
-   digest.  */
+ 
 void *
 md5_buffer (const char *buffer, size_t len, void *resblock)
 {
   struct md5_ctx ctx;
 
-  /* Initialize the computation context.  */
+   
   md5_init_ctx (&ctx);
 
-  /* Process whole buffer but last len % 64 bytes.  */
+   
   md5_process_bytes (buffer, len, &ctx);
 
-  /* Put result in desired memory area.  */
+   
   return md5_finish_ctx (&ctx, resblock);
 }
 
@@ -146,8 +117,7 @@ md5_buffer (const char *buffer, size_t len, void *resblock)
 void
 md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
 {
-  /* When we already have some bits in our internal buffer concatenate
-     both inputs first.  */
+   
   if (ctx->buflen != 0)
     {
       size_t left_over = ctx->buflen;
@@ -161,8 +131,7 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
           md5_process_block (ctx->buffer, ctx->buflen & ~63, ctx);
 
           ctx->buflen &= 63;
-          /* The regions in the following copy operation cannot overlap,
-             because ctx->buflen < 64 ≤ (left_over + add) & ~63.  */
+           
           memcpy (ctx->buffer,
                   &((char *) ctx->buffer)[(left_over + add) & ~63],
                   ctx->buflen);
@@ -172,7 +141,7 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
       len -= add;
     }
 
-  /* Process available complete blocks.  */
+   
   if (len >= 64)
     {
 #if !(_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
@@ -193,7 +162,7 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
         }
     }
 
-  /* Move remaining bytes in internal buffer.  */
+   
   if (len > 0)
     {
       size_t left_over = ctx->buflen;
@@ -204,8 +173,7 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
         {
           md5_process_block (ctx->buffer, 64, ctx);
           left_over -= 64;
-          /* The regions in the following copy operation cannot overlap,
-             because left_over ≤ 64.  */
+           
           memcpy (ctx->buffer, &ctx->buffer[16], left_over);
         }
       ctx->buflen = left_over;
@@ -213,17 +181,14 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
 }
 
 
-/* These are the four functions used in the four steps of the MD5 algorithm
-   and defined in the RFC 1321.  The first function is a little bit optimized
-   (as found in Colin Plumbs public domain implementation).  */
-/* #define FF(b, c, d) ((b & c) | (~b & d)) */
+ 
+ 
 #define FF(b, c, d) (d ^ (b & (c ^ d)))
 #define FG(b, c, d) FF (d, b, c)
 #define FH(b, c, d) (b ^ c ^ d)
 #define FI(b, c, d) (c ^ (b | ~d))
 
-/* Process LEN bytes of BUFFER, accumulating context into CTX.
-   It is assumed that LEN % 64 == 0.  */
+ 
 
 void
 md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
@@ -238,14 +203,11 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
   uint32_t D = ctx->D;
   uint32_t lolen = len;
 
-  /* First increment the byte count.  RFC 1321 specifies the possible
-     length of the file up to 2^64 bits.  Here we only compute the
-     number of bytes.  Do a double word increment.  */
+   
   ctx->total[0] += lolen;
   ctx->total[1] += (len >> 31 >> 1) + (ctx->total[0] < lolen);
 
-  /* Process all bytes in the buffer with 64 bytes in each round of
-     the loop.  */
+   
   while (words < endp)
     {
       uint32_t *cwp = correct_words;
@@ -254,12 +216,7 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
       uint32_t C_save = C;
       uint32_t D_save = D;
 
-      /* First round: using the given function, the context and a constant
-         the next context is computed.  Because the algorithms processing
-         unit is a 32-bit word and it is determined to work on words in
-         little endian byte order we perhaps have to change the byte order
-         before the computation.  To reduce the work for the next steps
-         we store the swapped words in the array CORRECT_WORDS.  */
+       
 
 #define OP(a, b, c, d, s, T)                                            \
       do                                                                \
@@ -271,21 +228,12 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
         }                                                               \
       while (0)
 
-      /* It is unfortunate that C does not provide an operator for
-         cyclic rotation.  Hope the C compiler is smart enough.  */
+       
 #define CYCLIC(w, s) (w = (w << s) | (w >> (32 - s)))
 
-      /* Before we start, one word to the strange constants.
-         They are defined in RFC 1321 as
+       
 
-         T[i] = (int) (4294967296.0 * fabs (sin (i))), i=1..64
-
-         Here is an equivalent invocation using Perl:
-
-         perl -e 'foreach(1..64){printf "0x%08x\n", int (4294967296 * abs (sin $_))}'
-       */
-
-      /* Round 1.  */
+       
       OP (A, B, C, D, 7, 0xd76aa478);
       OP (D, A, B, C, 12, 0xe8c7b756);
       OP (C, D, A, B, 17, 0x242070db);
@@ -303,9 +251,7 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
       OP (C, D, A, B, 17, 0xa679438e);
       OP (B, C, D, A, 22, 0x49b40821);
 
-      /* For the second to fourth round we have the possibly swapped words
-         in CORRECT_WORDS.  Redefine the macro to take an additional first
-         argument specifying the function to use.  */
+       
 #undef OP
 #define OP(f, a, b, c, d, k, s, T)                                      \
       do                                                                \
@@ -316,7 +262,7 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
         }                                                               \
       while (0)
 
-      /* Round 2.  */
+       
       OP (FG, A, B, C, D, 1, 5, 0xf61e2562);
       OP (FG, D, A, B, C, 6, 9, 0xc040b340);
       OP (FG, C, D, A, B, 11, 14, 0x265e5a51);
@@ -334,7 +280,7 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
       OP (FG, C, D, A, B, 7, 14, 0x676f02d9);
       OP (FG, B, C, D, A, 12, 20, 0x8d2a4c8a);
 
-      /* Round 3.  */
+       
       OP (FH, A, B, C, D, 5, 4, 0xfffa3942);
       OP (FH, D, A, B, C, 8, 11, 0x8771f681);
       OP (FH, C, D, A, B, 11, 16, 0x6d9d6122);
@@ -352,7 +298,7 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
       OP (FH, C, D, A, B, 15, 16, 0x1fa27cf8);
       OP (FH, B, C, D, A, 2, 23, 0xc4ac5665);
 
-      /* Round 4.  */
+       
       OP (FI, A, B, C, D, 0, 6, 0xf4292244);
       OP (FI, D, A, B, C, 7, 10, 0x432aff97);
       OP (FI, C, D, A, B, 14, 15, 0xab9423a7);
@@ -370,14 +316,14 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
       OP (FI, C, D, A, B, 2, 15, 0x2ad7d2bb);
       OP (FI, B, C, D, A, 9, 21, 0xeb86d391);
 
-      /* Add the starting values of the context.  */
+       
       A += A_save;
       B += B_save;
       C += C_save;
       D += D_save;
     }
 
-  /* Put checksum in context given as argument.  */
+   
   ctx->A = A;
   ctx->B = B;
   ctx->C = C;
@@ -386,9 +332,4 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
 
 #endif
 
-/*
- * Hey Emacs!
- * Local Variables:
- * coding: utf-8
- * End:
- */
+ 

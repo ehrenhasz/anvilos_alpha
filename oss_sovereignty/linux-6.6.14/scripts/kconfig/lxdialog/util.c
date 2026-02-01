@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  util.c
- *
- *  ORIGINAL AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
- *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcap@cfw.com)
- */
+
+ 
 
 #include <stdarg.h>
 
 #include "dialog.h"
 
-/* Needed in signal handler in mconf.c */
+ 
 int saved_x, saved_y;
 
 struct dialog_info dlg;
@@ -143,9 +138,7 @@ static void set_bluetitle_theme(void)
 
 }
 
-/*
- * Select color theme
- */
+ 
 static int set_theme(const char *theme)
 {
 	int use_color = 1;
@@ -208,9 +201,7 @@ static void init_dialog_colors(void)
 	init_one_color(&dlg.darrow);
 }
 
-/*
- * Setup for color display
- */
+ 
 static void color_setup(const char *theme)
 {
 	int use_color;
@@ -223,9 +214,7 @@ static void color_setup(const char *theme)
 		set_mono_theme();
 }
 
-/*
- * Set window to attribute 'attr'
- */
+ 
 void attr_clear(WINDOW * win, int height, int width, chtype attr)
 {
 	int i, j;
@@ -247,7 +236,7 @@ void dialog_clear(void)
 	columns = getmaxx(stdscr);
 
 	attr_clear(stdscr, lines, columns, dlg.screen.atr);
-	/* Display background title if it exists ... - SLH */
+	 
 	if (dlg.backtitle != NULL) {
 		int i, len = 0, skip = 0;
 		struct subtitle_list *pos;
@@ -256,7 +245,7 @@ void dialog_clear(void)
 		mvwaddstr(stdscr, 0, 1, (char *)dlg.backtitle);
 
 		for (pos = dlg.subtitles; pos != NULL; pos = pos->next) {
-			/* 3 is for the arrow and spaces */
+			 
 			len += strlen(pos->text) + 3;
 		}
 
@@ -296,16 +285,14 @@ void dialog_clear(void)
 	wnoutrefresh(stdscr);
 }
 
-/*
- * Do some initialization for dialog
- */
+ 
 int init_dialog(const char *backtitle)
 {
 	int height, width;
 
-	initscr();		/* Init curses */
+	initscr();		 
 
-	/* Get current cursor position for signal handler in mconf.c */
+	 
 	getyx(stdscr, saved_y, saved_x);
 
 	getmaxyx(stdscr, height, width);
@@ -335,20 +322,16 @@ void set_dialog_subtitles(struct subtitle_list *subtitles)
 	dlg.subtitles = subtitles;
 }
 
-/*
- * End using dialog functions.
- */
+ 
 void end_dialog(int x, int y)
 {
-	/* move cursor back to original position */
+	 
 	move(y, x);
 	refresh();
 	endwin();
 }
 
-/* Print the title of the dialog. Center the title and truncate
- * tile if wider than dialog (- 2 chars).
- **/
+ 
 void print_title(WINDOW *dialog, const char *title, int width)
 {
 	if (title) {
@@ -360,12 +343,7 @@ void print_title(WINDOW *dialog, const char *title, int width)
 	}
 }
 
-/*
- * Print a string of text in a window, automatically wrap around to the
- * next line if the string is too long to fit on one line. Newline
- * characters '\n' are properly processed.  We start on a new line
- * if there is no room for at least 4 nonblanks following a double-space.
- */
+ 
 void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 {
 	int newl, cur_x, cur_y;
@@ -376,7 +354,7 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 
 	prompt_len = strlen(tempstr);
 
-	if (prompt_len <= width - x * 2) {	/* If prompt is short */
+	if (prompt_len <= width - x * 2) {	 
 		wmove(win, y, (width - prompt_len) / 2);
 		waddstr(win, tempstr);
 	} else {
@@ -392,9 +370,7 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			if (sp)
 				*sp++ = 0;
 
-			/* Wrap to next line if either the word does not fit,
-			   or it is the first word of a new sentence, and it is
-			   short, and the next word does not fit. */
+			 
 			room = width - cur_x;
 			wlen = strlen(word);
 			if (wlen > room ||
@@ -409,7 +385,7 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			waddstr(win, word);
 			getyx(win, cur_y, cur_x);
 
-			/* Move to the next line if the word separator was a newline */
+			 
 			if (newline_separator) {
 				cur_y++;
 				cur_x = x;
@@ -418,7 +394,7 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 				cur_x++;
 
 			if (sp && *sp == ' ') {
-				cur_x++;	/* double space */
+				cur_x++;	 
 				while (*++sp == ' ') ;
 				newl = 1;
 			} else
@@ -428,9 +404,7 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 	}
 }
 
-/*
- * Print a button
- */
+ 
 void print_button(WINDOW * win, const char *label, int y, int x, int selected)
 {
 	int i, temp;
@@ -457,9 +431,7 @@ void print_button(WINDOW * win, const char *label, int y, int x, int selected)
 	wmove(win, y, x + temp + 1);
 }
 
-/*
- * Draw a rectangular box with line drawing characters
- */
+ 
 void
 draw_box(WINDOW * win, int y, int x, int height, int width,
 	 chtype box, chtype border)
@@ -491,15 +463,12 @@ draw_box(WINDOW * win, int y, int x, int height, int width,
 	}
 }
 
-/*
- * Draw shadows along the right and bottom edge to give a more 3D look
- * to the boxes
- */
+ 
 void draw_shadow(WINDOW * win, int y, int x, int height, int width)
 {
 	int i;
 
-	if (has_colors()) {	/* Whether terminal supports color? */
+	if (has_colors()) {	 
 		wattrset(win, dlg.shadow.atr);
 		wmove(win, y + height, x + 2);
 		for (i = 0; i < width; i++)
@@ -513,9 +482,7 @@ void draw_shadow(WINDOW * win, int y, int x, int height, int width)
 	}
 }
 
-/*
- *  Return the position of the first alphabetic character in a string.
- */
+ 
 int first_alpha(const char *string, const char *exempt)
 {
 	int i, in_paren = 0, c;
@@ -535,15 +502,7 @@ int first_alpha(const char *string, const char *exempt)
 	return 0;
 }
 
-/*
- * ncurses uses ESC to detect escaped char sequences. This resutl in
- * a small timeout before ESC is actually delivered to the application.
- * lxdialog suggest <ESC> <ESC> which is correctly translated to two
- * times esc. But then we need to ignore the second esc to avoid stepping
- * out one menu too much. Filter away all escaped key sequences since
- * keypad(FALSE) turn off ncurses support for escape sequences - and that's
- * needed to make notimeout() do as expected.
- */
+ 
 int on_key_esc(WINDOW *win)
 {
 	int key;
@@ -567,7 +526,7 @@ int on_key_esc(WINDOW *win)
 	return -1;
 }
 
-/* redraw screen in new size */
+ 
 int on_key_resize(void)
 {
 	dialog_clear();

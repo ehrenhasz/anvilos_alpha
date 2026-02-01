@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "core_types.h"
@@ -30,7 +7,7 @@
 #include "basics/conversion.h"
 #include "dcn30/dcn30_cm_common.h"
 
-/* Compute the maximum number of lines that we can fit in the line buffer */
+ 
 static void dscl32_calc_lb_num_partitions(
 		const struct scaler_data *scl_data,
 		enum lb_memory_config lb_config,
@@ -51,9 +28,9 @@ static void dscl32_calc_lb_num_partitions(
 	if (line_size_c == 0)
 		line_size_c = 1;
 
-	memory_line_size_y = (line_size + 5) / 6; /* +5 to ceil */
-	memory_line_size_c = (line_size_c + 5) / 6; /* +5 to ceil */
-	memory_line_size_a = (line_size + 5) / 6; /* +5 to ceil */
+	memory_line_size_y = (line_size + 5) / 6;  
+	memory_line_size_c = (line_size_c + 5) / 6;  
+	memory_line_size_a = (line_size + 5) / 6;  
 
 	if (lb_config == LB_MEMORY_CONFIG_1) {
 		lb_memory_size = 970;
@@ -66,13 +43,13 @@ static void dscl32_calc_lb_num_partitions(
 	} else if (lb_config == LB_MEMORY_CONFIG_3) {
 		if (scl_data->viewport.width  == scl_data->h_active &&
 			scl_data->viewport.height == scl_data->v_active) {
-			/* 420 mode: luma using all 3 mem from Y, plus 3rd mem from Cr and Cb */
-			/* use increased LB size for calculation only if Scaler not enabled */
+			 
+			 
 			lb_memory_size = 970 + 1290 + 1170 + 1170 + 1170;
 			lb_memory_size_c = 970 + 1290;
 			lb_memory_size_a = 970 + 1290 + 1170;
 		} else {
-			/* 420 mode: luma using all 3 mem from Y, plus 3rd mem from Cr and Cb */
+			 
 			lb_memory_size = 970 + 1290 + 484 + 484 + 484;
 			lb_memory_size_c = 970 + 1290;
 			lb_memory_size_a = 970 + 1290 + 484;
@@ -80,7 +57,7 @@ static void dscl32_calc_lb_num_partitions(
 	} else {
 		if (scl_data->viewport.width  == scl_data->h_active &&
 			scl_data->viewport.height == scl_data->v_active) {
-			/* use increased LB size for calculation only if Scaler not enabled */
+			 
 			lb_memory_size = 970 + 1290 + 1170;
 			lb_memory_size_c = 970 + 1290 + 1170;
 			lb_memory_size_a = 970 + 1290 + 1170;
@@ -122,9 +99,9 @@ static struct dpp_funcs dcn32_dpp_funcs = {
 	.dpp_program_cm_dealpha		= dpp3_program_cm_dealpha,
 	.dpp_program_cm_bias		= dpp3_program_cm_bias,
 
-	.dpp_program_blnd_lut		= NULL, // BLNDGAM is removed completely in DCN3.2 DPP
-	.dpp_program_shaper_lut		= NULL, // CM SHAPER block is removed in DCN3.2 DPP, (it is in MPCC, programmable before or after BLND)
-	.dpp_program_3dlut			= NULL, // CM 3DLUT block is removed in DCN3.2 DPP, (it is in MPCC, programmable before or after BLND)
+	.dpp_program_blnd_lut		= NULL, 
+	.dpp_program_shaper_lut		= NULL, 
+	.dpp_program_3dlut			= NULL, 
 
 	.dpp_program_bias_and_scale	= NULL,
 	.dpp_cnv_set_alpha_keyer	= dpp2_cnv_set_alpha_keyer,

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * memconsole-coreboot.c
- *
- * Memory based BIOS console accessed through coreboot table.
- *
- * Copyright 2017 Google Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -17,7 +11,7 @@
 
 #define CB_TAG_CBMEM_CONSOLE	0x17
 
-/* CBMEM firmware console log descriptor. */
+ 
 struct cbmem_cons {
 	u32 size_dont_access_after_boot;
 	u32 cursor;
@@ -30,27 +24,21 @@ struct cbmem_cons {
 static struct cbmem_cons *cbmem_console;
 static u32 cbmem_console_size;
 
-/*
- * The cbmem_console structure is read again on every access because it may
- * change at any time if runtime firmware logs new messages. This may rarely
- * lead to race conditions where the firmware overwrites the beginning of the
- * ring buffer with more lines after we have already read |cursor|. It should be
- * rare and harmless enough that we don't spend extra effort working around it.
- */
+ 
 static ssize_t memconsole_coreboot_read(char *buf, loff_t pos, size_t count)
 {
 	u32 cursor = cbmem_console->cursor & CURSOR_MASK;
 	u32 flags = cbmem_console->cursor & ~CURSOR_MASK;
 	u32 size = cbmem_console_size;
-	struct seg {	/* describes ring buffer segments in logical order */
-		u32 phys;	/* physical offset from start of mem buffer */
-		u32 len;	/* length of segment */
+	struct seg {	 
+		u32 phys;	 
+		u32 len;	 
 	} seg[2] = { {0}, {0} };
 	size_t done = 0;
 	int i;
 
 	if (flags & OVERFLOW) {
-		if (cursor > size)	/* Shouldn't really happen, but... */
+		if (cursor > size)	 
 			cursor = 0;
 		seg[0] = (struct seg){.phys = cursor, .len = size - cursor};
 		seg[1] = (struct seg){.phys = 0, .len = cursor};
@@ -76,7 +64,7 @@ static int memconsole_probe(struct coreboot_device *dev)
 	if (!tmp_cbmc)
 		return -ENOMEM;
 
-	/* Read size only once to prevent overrun attack through /dev/mem. */
+	 
 	cbmem_console_size = tmp_cbmc->size_dont_access_after_boot;
 	cbmem_console = devm_memremap(&dev->dev, dev->cbmem_ref.cbmem_addr,
 				 cbmem_console_size + sizeof(*cbmem_console),

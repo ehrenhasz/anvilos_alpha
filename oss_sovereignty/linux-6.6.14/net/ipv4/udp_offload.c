@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPV4 GSO/GRO offload support
- *	Linux INET implementation
- *
- *	UDPv4 GSO support
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <net/gro.h>
@@ -33,19 +28,14 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
 	if (unlikely(!pskb_may_pull(skb, tnl_hlen)))
 		goto out;
 
-	/* Adjust partial header checksum to negate old length.
-	 * We cannot rely on the value contained in uh->len as it is
-	 * possible that the actual value exceeds the boundaries of the
-	 * 16 bit length field due to the header being added outside of an
-	 * IP or IPv6 frame that was already limited to 64K - 1.
-	 */
+	 
 	if (skb_shinfo(skb)->gso_type & SKB_GSO_PARTIAL)
 		partial = (__force __wsum)uh->len;
 	else
 		partial = (__force __wsum)htonl(skb->len);
 	partial = csum_sub(csum_unfold(uh->check), partial);
 
-	/* setup inner skb. */
+	 
 	skb->encapsulation = 0;
 	SKB_GSO_CB(skb)->encap_level = 0;
 	__skb_pull(skb, tnl_hlen);
@@ -62,7 +52,7 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
 	skb->remcsum_offload = remcsum;
 
 	need_ipsec = skb_dst(skb) && dst_xfrm(skb_dst(skb));
-	/* Try to offload checksum if possible */
+	 
 	offload_csum = !!(need_csum &&
 			  !need_ipsec &&
 			  (skb->dev->features &
@@ -73,17 +63,14 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
 	if (need_csum)
 		features &= ~NETIF_F_SCTP_CRC;
 
-	/* The only checksum offload we care about from here on out is the
-	 * outer one so strip the existing checksum feature flags and
-	 * instead set the flag based on our outer checksum offload value.
-	 */
+	 
 	if (remcsum) {
 		features &= ~NETIF_F_CSUM_MASK;
 		if (!need_csum || offload_csum)
 			features |= NETIF_F_HW_CSUM;
 	}
 
-	/* segment inner packet. */
+	 
 	segs = gso_inner_segment(skb, features);
 	if (IS_ERR_OR_NULL(segs)) {
 		skb_gso_error_unwind(skb, protocol, tnl_hlen, mac_offset,
@@ -102,7 +89,7 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
 		if (remcsum)
 			skb->ip_summed = CHECKSUM_NONE;
 
-		/* Set up inner headers if we are offloading inner checksum */
+		 
 		if (skb->ip_summed == CHECKSUM_PARTIAL) {
 			skb_reset_inner_headers(skb);
 			skb->encapsulation = 1;
@@ -118,10 +105,7 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
 		len = skb->len - udp_offset;
 		uh = udp_hdr(skb);
 
-		/* If we are only performing partial GSO the inner header
-		 * will be using a length value equal to only one MSS sized
-		 * segment instead of the entire frame.
-		 */
+		 
 		if (gso_partial && skb_is_gso(skb)) {
 			uh->len = htons(skb_shinfo(skb)->gso_size +
 					SKB_GSO_CB(skb)->data_offset +
@@ -279,7 +263,7 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
 		return ERR_PTR(-EINVAL);
 
 	if (skb_gso_ok(gso_skb, features | NETIF_F_GSO_ROBUST)) {
-		/* Packet is from an untrusted source, reset gso_segs. */
+		 
 		skb_shinfo(gso_skb)->gso_segs = DIV_ROUND_UP(gso_skb->len - sizeof(*uh),
 							     mss);
 		return NULL;
@@ -290,7 +274,7 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
 
 	skb_pull(gso_skb, sizeof(*uh));
 
-	/* clear destructor to avoid skb_segment assigning it to tail */
+	 
 	copy_dtor = gso_skb->destructor == sock_wfree;
 	if (copy_dtor)
 		gso_skb->destructor = NULL;
@@ -302,22 +286,19 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
 		return segs;
 	}
 
-	/* GSO partial and frag_list segmentation only requires splitting
-	 * the frame into an MSS multiple and possibly a remainder, both
-	 * cases return a GSO skb. So update the mss now.
-	 */
+	 
 	if (skb_is_gso(segs))
 		mss *= skb_shinfo(segs)->gso_segs;
 
 	seg = segs;
 	uh = udp_hdr(seg);
 
-	/* preserve TX timestamp flags and TS key for first segment */
+	 
 	skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
 	skb_shinfo(seg)->tx_flags |=
 			(skb_shinfo(gso_skb)->tx_flags & SKBTX_ANY_TSTAMP);
 
-	/* compute checksum adjustment based on old length versus new */
+	 
 	newlen = htons(sizeof(*uh) + mss);
 	check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
 
@@ -344,7 +325,7 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
 		uh = udp_hdr(seg);
 	}
 
-	/* last packet can be partial gso_size, account for that in checksum */
+	 
 	newlen = htons(skb_tail_pointer(seg) - skb_transport_header(seg) +
 		       seg->data_len);
 	check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
@@ -357,13 +338,11 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
 	else
 		uh->check = gso_make_checksum(seg, ~check) ? : CSUM_MANGLED_0;
 
-	/* update refcount for the packet */
+	 
 	if (copy_dtor) {
 		int delta = sum_truesize - gso_skb->truesize;
 
-		/* In some pathological cases, delta can be negative.
-		 * We need to either use refcount_add() or refcount_sub_and_test()
-		 */
+		 
 		if (likely(delta >= 0))
 			refcount_add(delta, &sk->sk_wmem_alloc);
 		else
@@ -402,10 +381,7 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
 	if (unlikely(skb->len <= mss))
 		goto out;
 
-	/* Do software UFO. Complete and fill in the UDP checksum as
-	 * HW cannot do checksum of UDP packets sent as multiple
-	 * IP fragments.
-	 */
+	 
 
 	uh = udp_hdr(skb);
 	iph = ip_hdr(skb);
@@ -418,16 +394,11 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
 
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
 
-	/* If there is no outer header we can fake a checksum offload
-	 * due to the fact that we have already done the checksum in
-	 * software prior to segmenting the frame.
-	 */
+	 
 	if (!skb->encap_hdr_csum)
 		features |= NETIF_F_HW_CSUM;
 
-	/* Fragment the skb. IP headers of the fragments are updated in
-	 * inet_gso_segment()
-	 */
+	 
 	segs = skb_segment(skb, features);
 out:
 	return segs;
@@ -449,7 +420,7 @@ static int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
 	NAPI_GRO_CB(p)->count++;
 	p->data_len += skb->len;
 
-	/* sk owenrship - if any - completely transferred to the aggregated packet */
+	 
 	skb->destructor = NULL;
 	p->truesize += skb->truesize;
 	p->len += skb->len;
@@ -471,19 +442,19 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
 	unsigned int ulen;
 	int ret = 0;
 
-	/* requires non zero csum, for symmetry with GSO */
+	 
 	if (!uh->check) {
 		NAPI_GRO_CB(skb)->flush = 1;
 		return NULL;
 	}
 
-	/* Do not deal with padded or malicious packets, sorry ! */
+	 
 	ulen = ntohs(uh->len);
 	if (ulen <= sizeof(*uh) || ulen != skb_gro_len(skb)) {
 		NAPI_GRO_CB(skb)->flush = 1;
 		return NULL;
 	}
-	/* pull encapsulating udp header */
+	 
 	skb_gro_pull(skb, sizeof(struct udphdr));
 
 	list_for_each_entry(p, head, list) {
@@ -492,7 +463,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
 
 		uh2 = udp_hdr(p);
 
-		/* Match ports only, as csum is always non zero */
+		 
 		if ((*(u32 *)&uh->source != *(u32 *)&uh2->source)) {
 			NAPI_GRO_CB(p)->same_flow = 0;
 			continue;
@@ -503,12 +474,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
 			return p;
 		}
 
-		/* Terminate the flow on len mismatch or if it grow "too much".
-		 * Under small packet flood GRO count could elsewhere grow a lot
-		 * leading to excessive truesize values.
-		 * On len mismatch merge the first packet shorter than gso_size,
-		 * otherwise complete the GRO packet.
-		 */
+		 
 		if (ulen > ntohs(uh2->len)) {
 			pp = p;
 		} else {
@@ -538,7 +504,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
 		return pp;
 	}
 
-	/* mismatch, but we never need to flush */
+	 
 	return NULL;
 }
 
@@ -551,9 +517,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
 	unsigned int off = skb_gro_offset(skb);
 	int flush = 1;
 
-	/* we can do L4 aggregation only if the packet can't land in a tunnel
-	 * otherwise we could corrupt the inner stream
-	 */
+	 
 	NAPI_GRO_CB(skb)->is_flist = 0;
 	if (!sk || !udp_sk(sk)->gro_receive) {
 		if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
@@ -563,7 +527,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
 		    (sk && udp_test_bit(GRO_ENABLED, sk)) || NAPI_GRO_CB(skb)->is_flist)
 			return call_gro_receive(udp_gro_receive_segment, head, skb);
 
-		/* no GRO, be sure flush the current packet */
+		 
 		goto out;
 	}
 
@@ -573,7 +537,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
 	     !NAPI_GRO_CB(skb)->csum_valid))
 		goto out;
 
-	/* mark that this skb passed once through the tunnel gro layer */
+	 
 	NAPI_GRO_CB(skb)->encap_mark = 1;
 
 	flush = 0;
@@ -584,9 +548,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
 
 		uh2 = (struct udphdr   *)(p->data + off);
 
-		/* Match ports and either checksums are either both zero
-		 * or nonzero.
-		 */
+		 
 		if ((*(u32 *)&uh->source != *(u32 *)&uh2->source) ||
 		    (!uh->check ^ !uh2->check)) {
 			NAPI_GRO_CB(p)->same_flow = 0;
@@ -594,7 +556,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
 		}
 	}
 
-	skb_gro_pull(skb, sizeof(struct udphdr)); /* pull encapsulating udp header */
+	skb_gro_pull(skb, sizeof(struct udphdr));  
 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
 	pp = call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
 
@@ -628,7 +590,7 @@ struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
 	if (unlikely(!uh))
 		goto flush;
 
-	/* Don't bother verifying checksum if we're going to flush anyway. */
+	 
 	if (NAPI_GRO_CB(skb)->flush)
 		goto skip;
 
@@ -685,14 +647,10 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
 		skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
 					: SKB_GSO_UDP_TUNNEL;
 
-		/* clear the encap mark, so that inner frag_list gro_complete
-		 * can take place
-		 */
+		 
 		NAPI_GRO_CB(skb)->encap_mark = 0;
 
-		/* Set encapsulation before calling into inner gro_complete()
-		 * functions to make them set up the inner offsets.
-		 */
+		 
 		skb->encapsulation = 1;
 		err = udp_sk(sk)->gro_complete(sk, skb,
 				nhoff + sizeof(struct udphdr));
@@ -712,7 +670,7 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
 	const struct iphdr *iph = ip_hdr(skb);
 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
 
-	/* do fraglist only if there is no outer UDP encap (or we already processed it) */
+	 
 	if (NAPI_GRO_CB(skb)->is_flist && !NAPI_GRO_CB(skb)->encap_mark) {
 		uh->len = htons(skb->len - nhoff);
 

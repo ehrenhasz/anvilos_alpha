@@ -1,9 +1,5 @@
-/* 	$OpenBSD: tests.c,v 1.2 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for bitmap.h bitmap API
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -51,7 +47,7 @@ tests(void)
 				BN_clear(bn);
 
 				test_subtest_info("set %d/%d/%d", i, j, k);
-				/* Set bits */
+				 
 				if (i >= 0) {
 					ASSERT_INT_EQ(bitmap_set_bit(b, i), 0);
 					ASSERT_INT_EQ(BN_set_bit(bn, i), 1);
@@ -65,21 +61,21 @@ tests(void)
 					ASSERT_INT_EQ(BN_set_bit(bn, k), 1);
 				}
 
-				/* Check perfect match between bitmap and bn */
+				 
 				test_subtest_info("match %d/%d/%d", i, j, k);
 				for (n = 0; n < NTESTS; n++) {
 					ASSERT_INT_EQ(BN_is_bit_set(bn, n),
 					    bitmap_test_bit(b, n));
 				}
 
-				/* Test length calculations */
+				 
 				test_subtest_info("length %d/%d/%d", i, j, k);
 				ASSERT_INT_EQ(BN_num_bits(bn),
 				    (int)bitmap_nbits(b));
 				ASSERT_INT_EQ(BN_num_bytes(bn),
 				    (int)bitmap_nbytes(b));
 
-				/* Test serialisation */
+				 
 				test_subtest_info("serialise %d/%d/%d",
 				    i, j, k);
 				len = bitmap_nbytes(b);
@@ -93,7 +89,7 @@ tests(void)
 				ASSERT_INT_EQ(r, (int)len);
 				ASSERT_MEM_EQ(bbuf, bnbuf, len);
 
-				/* Test deserialisation */
+				 
 				test_subtest_info("deserialise %d/%d/%d",
 				    i, j, k);
 				bitmap_zero(b);
@@ -104,7 +100,7 @@ tests(void)
 					    bitmap_test_bit(b, n));
 				}
 
-				/* Test clearing bits */
+				 
 				test_subtest_info("clear %d/%d/%d",
 				    i, j, k);
 				for (n = 0; n < NTESTS; n++) {

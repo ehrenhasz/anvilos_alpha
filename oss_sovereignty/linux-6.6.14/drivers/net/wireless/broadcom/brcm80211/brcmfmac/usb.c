@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2011 Broadcom Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,11 +21,10 @@
 
 #define IOCTL_RESP_TIMEOUT		msecs_to_jiffies(2000)
 
-#define BRCMF_USB_RESET_GETVER_SPINWAIT	100	/* in unit of ms */
+#define BRCMF_USB_RESET_GETVER_SPINWAIT	100	 
 #define BRCMF_USB_RESET_GETVER_LOOP_CNT	10
 
-#define BRCMF_POSTBOOT_ID		0xA123  /* ID to detect if dongle
-						   has boot up */
+#define BRCMF_POSTBOOT_ID		0xA123   
 #define BRCMF_USB_NRXQ			50
 #define BRCMF_USB_NTXQ			50
 
@@ -52,55 +49,41 @@ static const struct brcmf_firmware_mapping brcmf_usb_fwnames[] = {
 	BRCMF_FW_ENTRY(CY_CC_4373_CHIP_ID, 0xFFFFFFFF, 4373)
 };
 
-#define TRX_MAGIC		0x30524448	/* "HDR0" */
-#define TRX_MAX_OFFSET		3		/* Max number of file offsets */
-#define TRX_UNCOMP_IMAGE	0x20		/* Trx holds uncompressed img */
-#define TRX_RDL_CHUNK		1500		/* size of each dl transfer */
+#define TRX_MAGIC		0x30524448	 
+#define TRX_MAX_OFFSET		3		 
+#define TRX_UNCOMP_IMAGE	0x20		 
+#define TRX_RDL_CHUNK		1500		 
 #define TRX_OFFSETS_DLFWLEN_IDX	0
 
-/* Control messages: bRequest values */
-#define DL_GETSTATE	0	/* returns the rdl_state_t struct */
-#define DL_CHECK_CRC	1	/* currently unused */
-#define DL_GO		2	/* execute downloaded image */
-#define DL_START	3	/* initialize dl state */
-#define DL_REBOOT	4	/* reboot the device in 2 seconds */
-#define DL_GETVER	5	/* returns the bootrom_id_t struct */
-#define DL_GO_PROTECTED	6	/* execute the downloaded code and set reset
-				 * event to occur in 2 seconds.  It is the
-				 * responsibility of the downloaded code to
-				 * clear this event
-				 */
-#define DL_EXEC		7	/* jump to a supplied address */
-#define DL_RESETCFG	8	/* To support single enum on dongle
-				 * - Not used by bootloader
-				 */
-#define DL_DEFER_RESP_OK 9	/* Potentially defer the response to setup
-				 * if resp unavailable
-				 */
+ 
+#define DL_GETSTATE	0	 
+#define DL_CHECK_CRC	1	 
+#define DL_GO		2	 
+#define DL_START	3	 
+#define DL_REBOOT	4	 
+#define DL_GETVER	5	 
+#define DL_GO_PROTECTED	6	 
+#define DL_EXEC		7	 
+#define DL_RESETCFG	8	 
+#define DL_DEFER_RESP_OK 9	 
 
-/* states */
-#define DL_WAITING	0	/* waiting to rx first pkt */
-#define DL_READY	1	/* hdr was good, waiting for more of the
-				 * compressed image
-				 */
-#define DL_BAD_HDR	2	/* hdr was corrupted */
-#define DL_BAD_CRC	3	/* compressed image was corrupted */
-#define DL_RUNNABLE	4	/* download was successful,waiting for go cmd */
-#define DL_START_FAIL	5	/* failed to initialize correctly */
-#define DL_NVRAM_TOOBIG	6	/* host specified nvram data exceeds DL_NVRAM
-				 * value
-				 */
-#define DL_IMAGE_TOOBIG	7	/* firmware image too big */
+ 
+#define DL_WAITING	0	 
+#define DL_READY	1	 
+#define DL_BAD_HDR	2	 
+#define DL_BAD_CRC	3	 
+#define DL_RUNNABLE	4	 
+#define DL_START_FAIL	5	 
+#define DL_NVRAM_TOOBIG	6	 
+#define DL_IMAGE_TOOBIG	7	 
 
 
 struct trx_header_le {
-	__le32 magic;		/* "HDR0" */
-	__le32 len;		/* Length of file including header */
-	__le32 crc32;		/* CRC from flag_version to end of file */
-	__le32 flag_version;	/* 0:15 flags, 16:31 version */
-	__le32 offsets[TRX_MAX_OFFSET];	/* Offsets of partitions from start of
-					 * header
-					 */
+	__le32 magic;		 
+	__le32 len;		 
+	__le32 crc32;		 
+	__le32 flag_version;	 
+	__le32 offsets[TRX_MAX_OFFSET];	 
 };
 
 struct rdl_state_le {
@@ -109,12 +92,12 @@ struct rdl_state_le {
 };
 
 struct bootrom_id_le {
-	__le32 chip;		/* Chip id */
-	__le32 chiprev;		/* Chip rev */
-	__le32 ramsize;		/* Size of  RAM */
-	__le32 remapbase;	/* Current remap base address */
-	__le32 boardtype;	/* Type of board */
-	__le32 boardrev;	/* Board revision */
+	__le32 chip;		 
+	__le32 chiprev;		 
+	__le32 ramsize;		 
+	__le32 remapbase;	 
+	__le32 boardtype;	 
+	__le32 boardrev;	 
 };
 
 struct brcmf_usb_image {
@@ -125,7 +108,7 @@ struct brcmf_usb_image {
 };
 
 struct brcmf_usbdev_info {
-	struct brcmf_usbdev bus_pub; /* MUST BE FIRST */
+	struct brcmf_usbdev bus_pub;  
 	spinlock_t qlock;
 	struct list_head rx_freeq;
 	struct list_head rx_postq;
@@ -144,7 +127,7 @@ struct brcmf_usbdev_info {
 	struct brcmf_usbreq *rx_reqs;
 
 	char fw_name[BRCMF_FW_NAME_LEN];
-	const u8 *image;	/* buffer for combine fw and nvram */
+	const u8 *image;	 
 	int image_len;
 
 	struct usb_device *usbdev;
@@ -152,7 +135,7 @@ struct brcmf_usbdev_info {
 	struct completion dev_init_done;
 
 	int ctl_in_pipe, ctl_out_pipe;
-	struct urb *ctl_urb; /* URB for control endpoint */
+	struct urb *ctl_urb;  
 	struct usb_ctrlrequest ctl_write;
 	struct usb_ctrlrequest ctl_read;
 	u32 ctl_urb_actual_length;
@@ -162,7 +145,7 @@ struct brcmf_usbdev_info {
 	ulong ctl_op;
 	u8 ifnum;
 
-	struct urb *bulk_urb; /* used for FW download */
+	struct urb *bulk_urb;  
 
 	struct brcmf_mp_device *settings;
 };
@@ -522,7 +505,7 @@ static void brcmf_usb_rx_complete(struct urb *urb)
 	skb = req->skb;
 	req->skb = NULL;
 
-	/* zero length packets indicate usb "failure". Do not refill */
+	 
 	if (urb->status != 0 || !urb->actual_length) {
 		brcmu_pkt_buf_free_skb(skb);
 		brcmf_usb_enq(devinfo, &devinfo->rx_freeq, req, NULL);
@@ -600,7 +583,7 @@ brcmf_usb_state_change(struct brcmf_usbdev_info *devinfo, int state)
 
 	devinfo->bus_pub.state = state;
 
-	/* update state of upper layer */
+	 
 	if (state == BRCMFMAC_USB_STATE_DOWN) {
 		brcmf_dbg(USB, "DBUS is down\n");
 		brcmf_bus_change_state(bcmf_bus, BRCMF_BUS_DOWN);
@@ -677,21 +660,21 @@ static int brcmf_usb_up(struct device *dev)
 	if (devinfo->bus_pub.state == BRCMFMAC_USB_STATE_UP)
 		return 0;
 
-	/* Success, indicate devinfo is fully up */
+	 
 	brcmf_usb_state_change(devinfo, BRCMFMAC_USB_STATE_UP);
 
 	if (devinfo->ctl_urb) {
 		devinfo->ctl_in_pipe = usb_rcvctrlpipe(devinfo->usbdev, 0);
 		devinfo->ctl_out_pipe = usb_sndctrlpipe(devinfo->usbdev, 0);
 
-		/* CTL Write */
+		 
 		devinfo->ctl_write.bRequestType =
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE;
 		devinfo->ctl_write.bRequest = 0;
 		devinfo->ctl_write.wValue = cpu_to_le16(0);
 		devinfo->ctl_write.wIndex = cpu_to_le16(devinfo->ifnum);
 
-		/* CTL Read */
+		 
 		devinfo->ctl_read.bRequestType =
 			USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE;
 		devinfo->ctl_read.bRequest = 1;
@@ -803,7 +786,7 @@ brcmf_usb_dlneeded(struct brcmf_usbdev_info *devinfo)
 	if (devinfo == NULL)
 		return false;
 
-	/* Check if firmware downloaded already by querying runtime ID */
+	 
 	id.chip = cpu_to_le32(0xDEAD);
 	brcmf_usb_dl_cmd(devinfo, DL_GETVER, &id, sizeof(id));
 
@@ -838,7 +821,7 @@ brcmf_usb_resetcfg(struct brcmf_usbdev_info *devinfo)
 	do {
 		mdelay(BRCMF_USB_RESET_GETVER_SPINWAIT);
 		loop_cnt++;
-		id.chip = cpu_to_le32(0xDEAD);       /* Get the ID */
+		id.chip = cpu_to_le32(0xDEAD);        
 		err = brcmf_usb_dl_cmd(devinfo, DL_GETVER, &id, sizeof(id));
 		if ((err) && (err != -ETIMEDOUT))
 			return err;
@@ -868,7 +851,7 @@ brcmf_usb_dl_send_bulk(struct brcmf_usbdev_info *devinfo, void *buffer, int len)
 	if ((devinfo == NULL) || (devinfo->bulk_urb == NULL))
 		return -EINVAL;
 
-	/* Prepare the URB */
+	 
 	usb_fill_bulk_urb(devinfo->bulk_urb, devinfo->usbdev,
 			  devinfo->tx_pipe, buffer, len,
 			  (usb_complete_t)brcmf_usb_sync_complete, devinfo);
@@ -902,13 +885,13 @@ brcmf_usb_dl_writeimage(struct brcmf_usbdev_info *devinfo, u8 *fw, int fwlen)
 		goto fail;
 	}
 
-	/* 1) Prepare USB boot loader for runtime image */
+	 
 	brcmf_usb_dl_cmd(devinfo, DL_START, &state, sizeof(state));
 
 	rdlstate = le32_to_cpu(state.state);
 	rdlbytes = le32_to_cpu(state.bytes);
 
-	/* 2) Check we are in the Waiting state */
+	 
 	if (rdlstate != DL_WAITING) {
 		brcmf_err("Failed to DL_START\n");
 		err = -EINVAL;
@@ -918,24 +901,20 @@ brcmf_usb_dl_writeimage(struct brcmf_usbdev_info *devinfo, u8 *fw, int fwlen)
 	dlpos = fw;
 	dllen = fwlen;
 
-	/* Get chip id and rev */
+	 
 	while (rdlbytes != dllen) {
-		/* Wait until the usb device reports it received all
-		 * the bytes we sent */
+		 
 		if ((rdlbytes == sent) && (rdlbytes != dllen)) {
 			if ((dllen-sent) < TRX_RDL_CHUNK)
 				sendlen = dllen-sent;
 			else
 				sendlen = TRX_RDL_CHUNK;
 
-			/* simply avoid having to send a ZLP by ensuring we
-			 * never have an even
-			 * multiple of 64
-			 */
+			 
 			if (!(sendlen % 64))
 				sendlen -= 4;
 
-			/* send data */
+			 
 			memcpy(bulkchunk, dlpos, sendlen);
 			if (brcmf_usb_dl_send_bulk(devinfo, bulkchunk,
 						   sendlen)) {
@@ -957,7 +936,7 @@ brcmf_usb_dl_writeimage(struct brcmf_usbdev_info *devinfo, u8 *fw, int fwlen)
 		rdlstate = le32_to_cpu(state.state);
 		rdlbytes = le32_to_cpu(state.bytes);
 
-		/* restart if an error is reported */
+		 
 		if (rdlstate == DL_BAD_HDR || rdlstate == DL_BAD_CRC) {
 			brcmf_err("Bad Hdr or Bad CRC state %d\n",
 				  rdlstate);
@@ -1005,17 +984,17 @@ static int brcmf_usb_dlrun(struct brcmf_usbdev_info *devinfo)
 	if (devinfo->bus_pub.devid == 0xDEAD)
 		return -EINVAL;
 
-	/* Check we are runnable */
+	 
 	state.state = 0;
 	brcmf_usb_dl_cmd(devinfo, DL_GETSTATE, &state, sizeof(state));
 
-	/* Start the image */
+	 
 	if (state.state == cpu_to_le32(DL_RUNNABLE)) {
 		if (brcmf_usb_dl_cmd(devinfo, DL_GO, &state, sizeof(state)))
 			return -ENODEV;
 		if (brcmf_usb_resetcfg(devinfo))
 			return -ENODEV;
-		/* The Dongle may go for re-enumeration. */
+		 
 	} else {
 		brcmf_err("Dongle not runnable\n");
 		return -EINVAL;
@@ -1062,7 +1041,7 @@ static void brcmf_usb_detach(struct brcmf_usbdev_info *devinfo)
 {
 	brcmf_dbg(USB, "Enter, devinfo %p\n", devinfo);
 
-	/* free the URBS */
+	 
 	brcmf_usb_free_q(&devinfo->rx_freeq);
 	brcmf_usb_free_q(&devinfo->tx_freeq);
 
@@ -1083,7 +1062,7 @@ static int check_file(const u8 *headers)
 	int actual_len = -1;
 
 	brcmf_dbg(USB, "Enter\n");
-	/* Extract trx header */
+	 
 	trx = (struct trx_header_le *) headers;
 	if (trx->magic != cpu_to_le32(TRX_MAGIC))
 		return -1;
@@ -1110,15 +1089,15 @@ struct brcmf_usbdev *brcmf_usb_attach(struct brcmf_usbdev_info *devinfo,
 	devinfo->bus_pub.ntxq = ntxq;
 	devinfo->bus_pub.state = BRCMFMAC_USB_STATE_DOWN;
 
-	/* flow control when too many tx urbs posted */
+	 
 	devinfo->tx_low_watermark = ntxq / 4;
 	devinfo->tx_high_watermark = devinfo->tx_low_watermark * 3;
 	devinfo->bus_pub.bus_mtu = BRCMF_USB_MAX_PKT_SIZE;
 
-	/* Initialize other structure content */
+	 
 	init_waitqueue_head(&devinfo->ioctl_resp_wait);
 
-	/* Initialize the spinlocks */
+	 
 	spin_lock_init(&devinfo->qlock);
 	spin_lock_init(&devinfo->tx_flowblock_lock);
 
@@ -1157,7 +1136,7 @@ error:
 static int brcmf_usb_get_blob(struct device *dev, const struct firmware **fw,
 			      enum brcmf_blob_type type)
 {
-	/* No blobs for USB devices... */
+	 
 	return -ENOENT;
 }
 
@@ -1206,7 +1185,7 @@ static void brcmf_usb_probe_phase2(struct device *dev, int ret,
 	if (ret)
 		goto error;
 
-	/* Attach to the common driver interface */
+	 
 	ret = brcmf_attach(devinfo->dev);
 	if (ret)
 		goto error;
@@ -1287,7 +1266,7 @@ static int brcmf_usb_probe_cb(struct brcmf_usbdev_info *devinfo,
 		ret = brcmf_attach(devinfo->dev);
 		if (ret)
 			goto fail;
-		/* we are done */
+		 
 		complete(&devinfo->dev_init_done);
 		return 0;
 	}
@@ -1300,7 +1279,7 @@ static int brcmf_usb_probe_cb(struct brcmf_usbdev_info *devinfo,
 		goto fail;
 	}
 
-	/* request firmware here */
+	 
 	ret = brcmf_fw_get_firmwares(dev, fwreq, brcmf_usb_probe_phase2);
 	if (ret) {
 		brcmf_err("firmware request failed: %d\n", ret);
@@ -1311,7 +1290,7 @@ static int brcmf_usb_probe_cb(struct brcmf_usbdev_info *devinfo,
 	return 0;
 
 fail:
-	/* Release resources in reverse order */
+	 
 	brcmf_free(devinfo->dev);
 	kfree(bus);
 	brcmf_usb_detach(devinfo);
@@ -1331,7 +1310,7 @@ brcmf_usb_disconnect_cb(struct brcmf_usbdev_info *devinfo)
 	brcmf_usb_detach(devinfo);
 }
 
-/* Forward declaration for usb_match_id() call */
+ 
 static const struct usb_device_id brcmf_usb_devid_table[];
 
 static int
@@ -1361,16 +1340,14 @@ brcmf_usb_probe(struct usb_interface *intf, const struct usb_device_id *id)
 
 	devinfo->usbdev = usb;
 	devinfo->dev = &usb->dev;
-	/* Init completion, to protect for disconnect while still loading.
-	 * Necessary because of the asynchronous firmware load construction
-	 */
+	 
 	init_completion(&devinfo->dev_init_done);
 
 	usb_set_intfdata(intf, devinfo);
 
 	intf->needs_remote_wakeup = 1;
 
-	/* Check that the device supports only one configuration */
+	 
 	if (usb->descriptor.bNumConfigurations != 1) {
 		brcmf_err("Number of configurations: %d not supported\n",
 			  usb->descriptor.bNumConfigurations);
@@ -1440,7 +1417,7 @@ brcmf_usb_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	if (ret)
 		goto fail;
 
-	/* Success */
+	 
 	return 0;
 
 fail:
@@ -1460,9 +1437,7 @@ brcmf_usb_disconnect(struct usb_interface *intf)
 
 	if (devinfo) {
 		wait_for_completion(&devinfo->dev_init_done);
-		/* Make sure that devinfo still exists. Firmware probe routines
-		 * may have released the device and cleared the intfdata.
-		 */
+		 
 		if (!usb_get_intfdata(intf))
 			goto done;
 
@@ -1473,9 +1448,7 @@ done:
 	brcmf_dbg(USB, "Exit\n");
 }
 
-/*
- * only need to signal the bus being down and update the state.
- */
+ 
 static int brcmf_usb_suspend(struct usb_interface *intf, pm_message_t state)
 {
 	struct usb_device *usb = interface_to_usbdev(intf);
@@ -1488,9 +1461,7 @@ static int brcmf_usb_suspend(struct usb_interface *intf, pm_message_t state)
 	return 0;
 }
 
-/*
- * (re-) start the bus.
- */
+ 
 static int brcmf_usb_resume(struct usb_interface *intf)
 {
 	struct usb_device *usb = interface_to_usbdev(intf);
@@ -1550,10 +1521,10 @@ static const struct usb_device_id brcmf_usb_devid_table[] = {
 	LINKSYS_USB_DEVICE(BRCM_USB_43235_LINKSYS_DEVICE_ID),
 	CYPRESS_USB_DEVICE(CY_USB_4373_DEVICE_ID),
 	{ USB_DEVICE(BRCM_USB_VENDOR_ID_LG, BRCM_USB_43242_LG_DEVICE_ID) },
-	/* special entry for device with firmware loaded and running */
+	 
 	BRCMF_USB_DEVICE(BRCM_USB_BCMFW_DEVICE_ID),
 	CYPRESS_USB_DEVICE(BRCM_USB_BCMFW_DEVICE_ID),
-	{ /* end: all zeroes */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(usb, brcmf_usb_devid_table);
@@ -1572,9 +1543,7 @@ static struct usb_driver brcmf_usbdrvr = {
 
 static int brcmf_usb_reset_device(struct device *dev, void *notused)
 {
-	/* device past is the usb interface so we
-	 * need to use parent here.
-	 */
+	 
 	brcmf_dev_reset(dev->parent);
 	return 0;
 }

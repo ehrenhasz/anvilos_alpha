@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Chen Zhong <chen.zhong@mediatek.com>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -14,7 +10,7 @@
 #include "clk-mtk.h"
 
 #include <dt-bindings/clock/mt7622-clk.h>
-#include <linux/clk.h> /* for consumer */
+#include <linux/clk.h>  
 
 #define GATE_TOP0(_id, _name, _parent, _shift)				\
 	GATE_MTK(_id, _name, _parent, &top0_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr)
@@ -310,7 +306,7 @@ static const struct mtk_fixed_factor top_divs[] = {
 };
 
 static const struct mtk_gate top_clks[] = {
-	/* TOP0 */
+	 
 	GATE_TOP0(CLK_TOP_APLL1_DIV_PD, "apll1_ck_div_pd", "apll1_ck_div", 0),
 	GATE_TOP0(CLK_TOP_APLL2_DIV_PD, "apll2_ck_div_pd", "apll2_ck_div", 1),
 	GATE_TOP0(CLK_TOP_I2S0_MCK_DIV_PD, "i2s0_mck_div_pd", "i2s0_mck_div",
@@ -322,7 +318,7 @@ static const struct mtk_gate top_clks[] = {
 	GATE_TOP0(CLK_TOP_I2S3_MCK_DIV_PD, "i2s3_mck_div_pd", "i2s3_mck_div",
 		  5),
 
-	/* TOP1 */
+	 
 	GATE_TOP1(CLK_TOP_A1SYS_HP_DIV_PD, "a1sys_div_pd", "a1sys_div", 0),
 	GATE_TOP1(CLK_TOP_A2SYS_HP_DIV_PD, "a2sys_div_pd", "a2sys_div", 16),
 };
@@ -347,7 +343,7 @@ static const struct mtk_clk_divider top_adj_divs[] = {
 };
 
 static const struct mtk_gate peri_clks[] = {
-	/* PERI0 */
+	 
 	GATE_PERI0(CLK_PERI_THERM_PD, "peri_therm_pd", "axi_sel", 1),
 	GATE_PERI0(CLK_PERI_PWM1_PD, "peri_pwm1_pd", "clkxtal", 2),
 	GATE_PERI0(CLK_PERI_PWM2_PD, "peri_pwm2_pd", "clkxtal", 3),
@@ -376,13 +372,13 @@ static const struct mtk_gate peri_clks[] = {
 	GATE_PERI0(CLK_PERI_NFI_PD, "peri_nfi_pd", "axi_sel", 30),
 	GATE_PERI0(CLK_PERI_NFIECC_PD, "peri_nfiecc_pd", "axi_sel", 31),
 
-	/* PERI1 */
+	 
 	GATE_PERI1(CLK_PERI_FLASH_PD, "peri_flash_pd", "flash_sel", 1),
 	GATE_PERI1(CLK_PERI_IRTX_PD, "peri_irtx_pd", "irtx_sel", 2),
 };
 
 static struct mtk_composite top_muxes[] = {
-	/* CLK_CFG_0 */
+	 
 	MUX_GATE_FLAGS(CLK_TOP_AXI_SEL, "axi_sel", axi_parents,
 		       0x040, 0, 3, 7, CLK_IS_CRITICAL),
 	MUX_GATE_FLAGS(CLK_TOP_MEM_SEL, "mem_sel", mem_parents,
@@ -392,7 +388,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_ETH_SEL, "eth_sel", eth_parents,
 		 0x040, 24, 3, 31),
 
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE(CLK_TOP_PWM_SEL, "pwm_sel", pwm_parents,
 		 0x050, 0, 2, 7),
 	MUX_GATE(CLK_TOP_F10M_REF_SEL, "f10m_ref_sel", f10m_ref_parents,
@@ -402,7 +398,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_FLASH_SEL, "flash_sel", flash_parents,
 		 0x050, 24, 3, 31),
 
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE(CLK_TOP_UART_SEL, "uart_sel", uart_parents,
 		 0x060, 0, 1, 7),
 	MUX_GATE(CLK_TOP_SPI0_SEL, "spi0_sel", spi0_parents,
@@ -412,7 +408,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_MSDC50_0_SEL, "msdc50_0_sel", uart_parents,
 		 0x060, 24, 3, 31),
 
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE(CLK_TOP_MSDC30_0_SEL, "msdc30_0_sel", msdc30_0_parents,
 		 0x070, 0, 3, 7),
 	MUX_GATE(CLK_TOP_MSDC30_1_SEL, "msdc30_1_sel", msdc30_0_parents,
@@ -422,7 +418,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_A2SYS_HP_SEL, "a2sys_hp_sel", a1sys_hp_parents,
 		 0x070, 24, 2, 31),
 
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE(CLK_TOP_INTDIR_SEL, "intdir_sel", intdir_parents,
 		 0x080, 0, 2, 7),
 	MUX_GATE(CLK_TOP_AUD_INTBUS_SEL, "aud_intbus_sel", aud_intbus_parents,
@@ -432,7 +428,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_SCP_SEL, "scp_sel", ddrphycfg_parents,
 		 0x080, 24, 2, 31),
 
-	/* CLK_CFG_5 */
+	 
 	MUX_GATE(CLK_TOP_ATB_SEL, "atb_sel", atb_parents,
 		 0x090, 0, 2, 7),
 	MUX_GATE(CLK_TOP_HIF_SEL, "hif_sel", eth_parents,
@@ -442,7 +438,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_U2_SEL, "usb20_sel", usb20_parents,
 		 0x090, 24, 2, 31),
 
-	/* CLK_CFG_6 */
+	 
 	MUX_GATE(CLK_TOP_AUD1_SEL, "aud1_sel", aud1_parents,
 		 0x0A0, 0, 1, 7),
 	MUX_GATE(CLK_TOP_AUD2_SEL, "aud2_sel", aud2_parents,
@@ -452,7 +448,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_IRTX_SEL, "irtx_sel", f10m_ref_parents,
 		 0x0A0, 24, 1, 31),
 
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE(CLK_TOP_ASM_L_SEL, "asm_l_sel", asm_l_parents,
 		 0x0B0, 0, 2, 7),
 	MUX_GATE(CLK_TOP_ASM_M_SEL, "asm_m_sel", asm_l_parents,
@@ -460,7 +456,7 @@ static struct mtk_composite top_muxes[] = {
 	MUX_GATE(CLK_TOP_ASM_H_SEL, "asm_h_sel", asm_l_parents,
 		 0x0B0, 16, 2, 23),
 
-	/* CLK_AUDDIV_0 */
+	 
 	MUX(CLK_TOP_APLL1_SEL, "apll1_ck_sel", apll1_ck_parents,
 	    0x120, 6, 1),
 	MUX(CLK_TOP_APLL2_SEL, "apll2_ck_sel", apll1_ck_parents,
@@ -476,7 +472,7 @@ static struct mtk_composite top_muxes[] = {
 };
 
 static struct mtk_composite peri_muxes[] = {
-	/* PERI_GLOBALCON_CKSEL */
+	 
 	MUX(CLK_PERIBUS_SEL, "peribus_ck_sel", peribus_ck_parents, 0x05C, 0, 1),
 };
 
@@ -514,7 +510,7 @@ static const struct mtk_clk_desc peri_desc = {
 static const struct of_device_id of_match_clk_mt7622[] = {
 	{ .compatible = "mediatek,mt7622-topckgen", .data = &topck_desc },
 	{ .compatible = "mediatek,mt7622-pericfg", .data = &peri_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7622);
 

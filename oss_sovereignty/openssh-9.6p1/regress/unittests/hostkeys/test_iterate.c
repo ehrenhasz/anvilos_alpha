@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_iterate.c,v 1.8 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for hostfile.h hostkeys_foreach()
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -22,15 +18,15 @@
 #include "hostfile.h"
 
 struct expected {
-	const char *key_file;		/* Path for key, NULL for none */
-	int no_parse_status;		/* Expected status w/o key parsing */
-	int no_parse_keytype;		/* Expected keytype w/o key parsing */
-	int match_host_p;		/* Match 'prometheus.example.com' */
-	int match_host_s;		/* Match 'sisyphus.example.com' */
-	int match_ipv4;			/* Match '192.0.2.1' */
-	int match_ipv6;			/* Match '2001:db8::1' */
-	int match_flags;		/* Expected flags from match */
-	struct hostkey_foreach_line l;	/* Expected line contents */
+	const char *key_file;		 
+	int no_parse_status;		 
+	int no_parse_keytype;		 
+	int match_host_p;		 
+	int match_host_s;		 
+	int match_ipv4;			 
+	int match_ipv6;			 
+	int match_flags;		 
+	struct hostkey_foreach_line l;	 
 };
 
 struct cbctx {
@@ -44,10 +40,7 @@ struct cbctx {
 	int match_ipv6;
 };
 
-/*
- * hostkeys_foreach() iterator callback that verifies the line passed
- * against an array of expected entries.
- */
+ 
 static int
 check(struct hostkey_foreach_line *l, void *_ctx)
 {
@@ -64,7 +57,7 @@ check(struct hostkey_foreach_line *l, void *_ctx)
 	for (;;) {
 		ASSERT_SIZE_T_LT(ctx->i, ctx->nexpected);
 		expected = ctx->expected + ctx->i++;
-		/* If we are matching host/IP then skip entries that don't */
+		 
 		if (!matching)
 			break;
 		if (ctx->match_host_p && expected->match_host_p)
@@ -93,7 +86,7 @@ check(struct hostkey_foreach_line *l, void *_ctx)
 	if (expected->l.keytype == KEY_ECDSA ||
 	    expected->no_parse_keytype == KEY_ECDSA)
 		skip = 1;
-#endif /* OPENSSL_HAS_ECC */
+#endif  
 #ifndef WITH_OPENSSL
 	if (expected->l.keytype == KEY_DSA ||
 	    expected->no_parse_keytype == KEY_DSA ||
@@ -102,7 +95,7 @@ check(struct hostkey_foreach_line *l, void *_ctx)
 	    expected->l.keytype == KEY_ECDSA ||
 	    expected->no_parse_keytype == KEY_ECDSA)
 		skip = 1;
-#endif /* WITH_OPENSSL */
+#endif  
 	if (skip) {
 		expected_status = HKF_STATUS_INVALID;
 		expected_keytype = KEY_UNSPEC;
@@ -113,21 +106,21 @@ check(struct hostkey_foreach_line *l, void *_ctx)
 	UPDATE_MATCH_STATUS(match_ipv4);
 	UPDATE_MATCH_STATUS(match_ipv6);
 
-	ASSERT_PTR_NE(l->path, NULL); /* Don't care about path */
+	ASSERT_PTR_NE(l->path, NULL);  
 	ASSERT_LONG_LONG_EQ(l->linenum, expected->l.linenum);
 	ASSERT_U_INT_EQ(l->status, expected_status);
 	ASSERT_U_INT_EQ(l->match, expected_match);
-	/* Not all test entries contain fulltext */
+	 
 	if (expected->l.line != NULL)
 		ASSERT_STRING_EQ(l->line, expected->l.line);
 	ASSERT_INT_EQ(l->marker, expected->l.marker);
-	/* XXX we skip hashed hostnames for now; implement checking */
+	 
 	if (expected->l.hosts != NULL)
 		ASSERT_STRING_EQ(l->hosts, expected->l.hosts);
-	/* Not all test entries contain raw keys */
+	 
 	if (expected->l.rawkey != NULL)
 		ASSERT_STRING_EQ(l->rawkey, expected->l.rawkey);
-	/* XXX synthesise raw key for cases lacking and compare */
+	 
 	ASSERT_INT_EQ(l->keytype, expected_keytype);
 	if (parse_key) {
 		if (expected->l.key == NULL)
@@ -142,7 +135,7 @@ check(struct hostkey_foreach_line *l, void *_ctx)
 	return 0;
 }
 
-/* Loads public keys for a set of expected results */
+ 
 static void
 prepare_expected(struct expected *expected, size_t n)
 {
@@ -154,7 +147,7 @@ prepare_expected(struct expected *expected, size_t n)
 #ifndef OPENSSL_HAS_ECC
 		if (expected[i].l.keytype == KEY_ECDSA)
 			continue;
-#endif /* OPENSSL_HAS_ECC */
+#endif  
 #ifndef WITH_OPENSSL
 		switch (expected[i].l.keytype) {
 		case KEY_RSA:
@@ -162,7 +155,7 @@ prepare_expected(struct expected *expected, size_t n)
 		case KEY_ECDSA:
 			continue;
 		}
-#endif /* WITH_OPENSSL */
+#endif  
 		ASSERT_INT_EQ(sshkey_load_public(
 		    test_data_file(expected[i].key_file), &expected[i].l.key,
 		    NULL), 0);
@@ -182,18 +175,18 @@ cleanup_expected(struct expected *expected, size_t n)
 
 struct expected expected_full[] = {
 	{ NULL, -1, -1, 0, 0, 0, 0, -1, {
-		NULL,				/* path, don't care */
-		1,				/* line number */
-		HKF_STATUS_COMMENT,		/* status */
-		0,				/* match flags */
-		"# Plain host keys, plain host names", /* full line, optional */
-		MRK_NONE,			/* marker (CA / revoked) */
-		NULL,				/* hosts text */
-		NULL,				/* raw key, optional */
-		KEY_UNSPEC,			/* key type */
-		NULL,				/* deserialised key */
-		NULL,				/* comment */
-		0,				/* note */
+		NULL,				 
+		1,				 
+		HKF_STATUS_COMMENT,		 
+		0,				 
+		"# Plain host keys, plain host names",  
+		MRK_NONE,			 
+		NULL,				 
+		NULL,				 
+		KEY_UNSPEC,			 
+		NULL,				 
+		NULL,				 
+		0,				 
 	} },
 	{ "dsa_1.pub" , -1, -1, 0, HKF_MATCH_HOST, 0, 0, -1, {
 		NULL,
@@ -205,7 +198,7 @@ struct expected expected_full[] = {
 		"sisyphus.example.com",
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #1",
 		0,
 	} },
@@ -219,7 +212,7 @@ struct expected expected_full[] = {
 		"sisyphus.example.com",
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #1",
 		0,
 	} },
@@ -233,7 +226,7 @@ struct expected expected_full[] = {
 		"sisyphus.example.com",
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #1",
 		0,
 	} },
@@ -247,7 +240,7 @@ struct expected expected_full[] = {
 		"sisyphus.example.com",
 		NULL,
 		KEY_RSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"RSA #1",
 		0,
 	} },
@@ -289,7 +282,7 @@ struct expected expected_full[] = {
 		"prometheus.example.com,192.0.2.1,2001:db8::1",
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #2",
 		0,
 	} },
@@ -303,7 +296,7 @@ struct expected expected_full[] = {
 		"prometheus.example.com,192.0.2.1,2001:db8::1",
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #2",
 		0,
 	} },
@@ -317,7 +310,7 @@ struct expected expected_full[] = {
 		"prometheus.example.com,192.0.2.1,2001:db8::1",
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #2",
 		0,
 	} },
@@ -331,7 +324,7 @@ struct expected expected_full[] = {
 		"prometheus.example.com,192.0.2.1,2001:db8::1",
 		NULL,
 		KEY_RSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"RSA #2",
 		0,
 	} },
@@ -373,7 +366,7 @@ struct expected expected_full[] = {
 		"*.example.com,192.0.2.*,2001:*",
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #3",
 		0,
 	} },
@@ -387,7 +380,7 @@ struct expected expected_full[] = {
 		"*.example.com,192.0.2.*,2001:*",
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #3",
 		0,
 	} },
@@ -401,7 +394,7 @@ struct expected expected_full[] = {
 		"*.example.com,192.0.2.*,2001:*",
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #3",
 		0,
 	} },
@@ -415,7 +408,7 @@ struct expected expected_full[] = {
 		"*.example.com,192.0.2.*,2001:*",
 		NULL,
 		KEY_RSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"RSA #3",
 		0,
 	} },
@@ -457,7 +450,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #5",
 		0,
 	} },
@@ -471,7 +464,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #5",
 		0,
 	} },
@@ -485,7 +478,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #5",
 		0,
 	} },
@@ -499,7 +492,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_RSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"RSA #5",
 		0,
 	} },
@@ -517,11 +510,7 @@ struct expected expected_full[] = {
 		NULL,
 		0,
 	} },
-	/*
-	 * The next series have each key listed multiple times, as the
-	 * hostname and addresses in the pre-hashed known_hosts are split
-	 * to separate lines.
-	 */
+	 
 	{ "dsa_6.pub" , -1, -1, HKF_MATCH_HOST|HKF_MATCH_HOST_HASHED, 0, 0, 0, -1, {
 		NULL,
 		25,
@@ -532,7 +521,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #6",
 		0,
 	} },
@@ -546,7 +535,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #6",
 		0,
 	} },
@@ -560,7 +549,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #6",
 		0,
 	} },
@@ -574,7 +563,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #6",
 		0,
 	} },
@@ -588,7 +577,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #6",
 		0,
 	} },
@@ -602,7 +591,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #6",
 		0,
 	} },
@@ -616,7 +605,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #6",
 		0,
 	} },
@@ -630,7 +619,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #6",
 		0,
 	} },
@@ -644,7 +633,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #6",
 		0,
 	} },
@@ -658,7 +647,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_RSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"RSA #6",
 		0,
 	} },
@@ -672,7 +661,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_RSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"RSA #6",
 		0,
 	} },
@@ -686,7 +675,7 @@ struct expected expected_full[] = {
 		NULL,
 		NULL,
 		KEY_RSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"RSA #6",
 		0,
 	} },
@@ -742,7 +731,7 @@ struct expected expected_full[] = {
 		"sisyphus.example.com",
 		NULL,
 		KEY_ED25519,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ED25519 #4",
 		0,
 	} },
@@ -756,7 +745,7 @@ struct expected expected_full[] = {
 		"prometheus.example.com",
 		NULL,
 		KEY_ECDSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"ECDSA #4",
 		0,
 	} },
@@ -770,7 +759,7 @@ struct expected expected_full[] = {
 		"*.example.com",
 		NULL,
 		KEY_DSA,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		"DSA #4",
 		0,
 	} },
@@ -847,7 +836,7 @@ struct expected expected_full[] = {
 	{ NULL, -1, -1, 0, HKF_MATCH_HOST, 0, 0, -1, {
 		NULL,
 		48,
-		HKF_STATUS_INVALID,	/* Would be ok if key not parsed */
+		HKF_STATUS_INVALID,	 
 		0,
 		NULL,
 		MRK_NONE,
@@ -868,21 +857,21 @@ struct expected expected_full[] = {
 		"sisyphus.example.com",
 		NULL,
 		KEY_UNSPEC,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		NULL,
 		0,
 	} },
 	{ NULL, HKF_STATUS_OK, KEY_RSA, HKF_MATCH_HOST, 0, 0, 0, -1, {
 		NULL,
 		50,
-		HKF_STATUS_INVALID,	/* Would be ok if key not parsed */
+		HKF_STATUS_INVALID,	 
 		0,
 		NULL,
 		MRK_NONE,
 		"prometheus.example.com",
 		NULL,
 		KEY_UNSPEC,
-		NULL,	/* filled at runtime */
+		NULL,	 
 		NULL,
 		0,
 	} },

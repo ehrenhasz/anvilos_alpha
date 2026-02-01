@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics accelerometers driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,14 +11,10 @@
 #include <linux/iio/common/st_sensors_spi.h>
 #include "st_accel.h"
 
-/*
- * For new single-chip sensors use <device_name> as compatible string.
- * For old single-chip devices keep <device_name>-accel to maintain
- * compatibility
- */
+ 
 static const struct of_device_id st_accel_of_match[] = {
 	{
-		/* An older compatible */
+		 
 		.compatible = "st,lis302dl-spi",
 		.data = LIS3LV02DL_ACCEL_DEV_NAME,
 	},

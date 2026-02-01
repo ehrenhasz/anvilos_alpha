@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Accelerated GHASH implementation with Intel PCLMULQDQ-NI
- * instructions. This file contains glue code.
- *
- * Copyright (c) 2009 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -60,29 +54,7 @@ static int ghash_setkey(struct crypto_shash *tfm,
 	if (keylen != GHASH_BLOCK_SIZE)
 		return -EINVAL;
 
-	/*
-	 * GHASH maps bits to polynomial coefficients backwards, which makes it
-	 * hard to implement.  But it can be shown that the GHASH multiplication
-	 *
-	 *	D * K (mod x^128 + x^7 + x^2 + x + 1)
-	 *
-	 * (where D is a data block and K is the key) is equivalent to:
-	 *
-	 *	bitreflect(D) * bitreflect(K) * x^(-127)
-	 *		(mod x^128 + x^127 + x^126 + x^121 + 1)
-	 *
-	 * So, the code below precomputes:
-	 *
-	 *	bitreflect(K) * x^(-127) (mod x^128 + x^127 + x^126 + x^121 + 1)
-	 *
-	 * ... but in Montgomery form (so that Montgomery multiplication can be
-	 * used), i.e. with an extra x^128 factor, which means actually:
-	 *
-	 *	bitreflect(K) * x (mod x^128 + x^127 + x^126 + x^121 + 1)
-	 *
-	 * The within-a-byte part of bitreflect() cancels out GHASH's built-in
-	 * reflection, and thus bitreflect() is actually a byteswap.
-	 */
+	 
 	a = get_unaligned_be64(key);
 	b = get_unaligned_be64(key + 8);
 	ctx->shash.a = cpu_to_le64((a << 1) | (b >> 63));
@@ -332,7 +304,7 @@ static struct ahash_alg ghash_async_alg = {
 };
 
 static const struct x86_cpu_id pcmul_cpu_id[] = {
-	X86_MATCH_FEATURE(X86_FEATURE_PCLMULQDQ, NULL), /* Pickle-Mickle-Duck */
+	X86_MATCH_FEATURE(X86_FEATURE_PCLMULQDQ, NULL),  
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, pcmul_cpu_id);

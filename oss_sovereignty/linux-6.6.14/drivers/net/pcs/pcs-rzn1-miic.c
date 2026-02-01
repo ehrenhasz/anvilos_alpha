@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Schneider Electric
- *
- * Clément Léger <clement.leger@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -51,13 +47,7 @@
 #define MIIC_MODCTRL_CONF_CONV_NUM	6
 #define MIIC_MODCTRL_CONF_NONE		-1
 
-/**
- * struct modctrl_match - Matching table entry for  convctrl configuration
- *			  See section 8.2.1 of manual.
- * @mode_cfg: Configuration value for convctrl
- * @conv: Configuration of ethernet port muxes. First index is SWITCH_PORTIN,
- *	  then index 1 - 5 are CONV1 - CONV5.
- */
+ 
 struct modctrl_match {
 	u32 mode_cfg;
 	u8 conv[MIIC_MODCTRL_CONF_CONV_NUM];
@@ -118,25 +108,14 @@ static const char *index_to_string[MIIC_MODCTRL_CONF_CONV_NUM] = {
 	"CONV5",
 };
 
-/**
- * struct miic - MII converter structure
- * @base: base address of the MII converter
- * @dev: Device associated to the MII converter
- * @lock: Lock used for read-modify-write access
- */
+ 
 struct miic {
 	void __iomem *base;
 	struct device *dev;
 	spinlock_t lock;
 };
 
-/**
- * struct miic_port - Per port MII converter struct
- * @miic: backiling to MII converter structure
- * @pcs: PCS structure associated to the port
- * @port: port number
- * @interface: interface mode of the port
- */
+ 
 struct miic_port {
 	struct miic *miic;
 	struct phylink_pcs pcs;
@@ -206,9 +185,7 @@ static int miic_config(struct phylink_pcs *pcs, unsigned int mode,
 		break;
 	case PHY_INTERFACE_MODE_MII:
 		conv_mode = CONV_MODE_MII;
-		/* When in MII mode, speed should be set to 0 (which is actually
-		 * CONV_MODE_10MBPS)
-		 */
+		 
 		speed = CONV_MODE_10MBPS;
 		break;
 	default:
@@ -218,10 +195,7 @@ static int miic_config(struct phylink_pcs *pcs, unsigned int mode,
 	val = FIELD_PREP(MIIC_CONVCTRL_CONV_MODE, conv_mode);
 	mask = MIIC_CONVCTRL_CONV_MODE;
 
-	/* Update speed only if we are going to change the interface because
-	 * the link might already be up and it would break it if the speed is
-	 * changed.
-	 */
+	 
 	if (interface != miic_port->interface) {
 		val |= FIELD_PREP(MIIC_CONVCTRL_CONV_SPEED, speed);
 		mask |= MIIC_CONVCTRL_CONV_SPEED;
@@ -245,7 +219,7 @@ static void miic_link_up(struct phylink_pcs *pcs, unsigned int mode,
 	if (duplex == DUPLEX_FULL)
 		val |= MIIC_CONVCTRL_FULLD;
 
-	/* No speed in MII through-mode */
+	 
 	if (interface != PHY_INTERFACE_MODE_MII) {
 		switch (speed) {
 		case SPEED_1000:
@@ -302,7 +276,7 @@ struct phylink_pcs *miic_create(struct device *dev, struct device_node *np)
 	if (port > MIIC_MAX_NR_PORTS || port < 1)
 		return ERR_PTR(-EINVAL);
 
-	/* The PCS pdev is attached to the parent node */
+	 
 	pcs_np = of_get_parent(np);
 	if (!pcs_np)
 		return ERR_PTR(-ENODEV);
@@ -351,10 +325,7 @@ static int miic_init_hw(struct miic *miic, u32 cfg_mode)
 {
 	int port;
 
-	/* Unlock write access to accessory registers (cf datasheet). If this
-	 * is going to be used in conjunction with the Cortex-M3, this sequence
-	 * will have to be moved in register write
-	 */
+	 
 	miic_reg_writel(miic, MIIC_PRCMD, 0x00A5);
 	miic_reg_writel(miic, MIIC_PRCMD, 0x0001);
 	miic_reg_writel(miic, MIIC_PRCMD, 0xFFFE);
@@ -365,10 +336,7 @@ static int miic_init_hw(struct miic *miic, u32 cfg_mode)
 
 	for (port = 0; port < MIIC_MAX_NR_PORTS; port++) {
 		miic_converter_enable(miic, port, 0);
-		/* Disable speed/duplex control from these registers, datasheet
-		 * says switch registers should be used to setup switch port
-		 * speed and duplex.
-		 */
+		 
 		miic_reg_writel(miic, MIIC_SWCTRL, 0x0);
 		miic_reg_writel(miic, MIIC_SWDUPC, 0x0);
 	}
@@ -490,11 +458,7 @@ static int miic_probe(struct platform_device *pdev)
 	if (ret)
 		goto disable_runtime_pm;
 
-	/* miic_create() relies on that fact that data are attached to the
-	 * platform device to determine if the driver is ready so this needs to
-	 * be the last thing to be done after everything is initialized
-	 * properly.
-	 */
+	 
 	platform_set_drvdata(pdev, miic);
 
 	return 0;
@@ -514,7 +478,7 @@ static int miic_remove(struct platform_device *pdev)
 
 static const struct of_device_id miic_of_mtable[] = {
 	{ .compatible = "renesas,rzn1-miic" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, miic_of_mtable);
 

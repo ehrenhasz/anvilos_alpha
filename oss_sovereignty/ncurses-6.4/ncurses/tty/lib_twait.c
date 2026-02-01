@@ -1,46 +1,8 @@
-/****************************************************************************
- * Copyright 2018,2020 Thomas E. Dickey                                     *
- * Copyright 1998-2015,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
-**	lib_twait.c
-**
-**	The routine _nc_timed_wait().
-**
-**	(This file was originally written by Eric Raymond; however except for
-**	comments, none of the original code remains - T.Dickey).
-*/
+ 
 
 #include <curses.priv.h>
 
@@ -90,9 +52,9 @@ _nc_gettime(TimeType * t0, int first)
 	*t0 = t1;
 	res = 0;
     } else {
-	/* .tv_sec and .tv_usec are unsigned, be careful when subtracting */
+	 
 	if (t0->tv_usec > t1.tv_usec) {
-	    t1.tv_usec += 1000000;	/* Convert 1s in 1e6 microsecs */
+	    t1.tv_usec += 1000000;	 
 	    t1.tv_sec--;
 	}
 	res = (t1.tv_sec - t0->tv_sec) * 1000
@@ -124,13 +86,13 @@ _nc_eventlist_timeout(_nc_eventlist * evl)
 	    if (ev->type == _NC_EVENT_TIMEOUT_MSEC) {
 		event_delay = (int) ev->data.timeout_msec;
 		if (event_delay < 0)
-		    event_delay = INT_MAX;	/* FIXME Is this defined? */
+		    event_delay = INT_MAX;	 
 	    }
 	}
     }
     return event_delay;
 }
-#endif /* NCURSES_WGETCH_EVENTS */
+#endif  
 
 #if (USE_FUNC_POLL || HAVE_SELECT)
 #  define MAYBE_UNUSED
@@ -144,24 +106,7 @@ _nc_eventlist_timeout(_nc_eventlist * evl)
 #  define MAYBE_UNUSED GCC_UNUSED
 #endif
 
-/*
- * Wait a specified number of milliseconds, returning nonzero if the timer
- * didn't expire before there is activity on the specified file descriptors.
- * The file-descriptors are specified by the mode:
- *	TW_NONE    0 - none (absolute time)
- *	TW_INPUT   1 - ncurses' normal input-descriptor
- *	TW_MOUSE   2 - mouse descriptor, if any
- *	TW_ANY     3 - either input or mouse.
- *      TW_EVENT   4 -
- * Experimental:  if NCURSES_WGETCH_EVENTS is defined, (mode & 4) determines
- * whether to pay attention to evl argument.  If set, the smallest of
- * millisecond and of timeout of evl is taken.
- *
- * We return a mask that corresponds to the mode (e.g., 2 for mouse activity).
- *
- * If the milliseconds given are -1, the wait blocks until activity on the
- * descriptors.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
 	       int mode MAYBE_UNUSED,
@@ -298,17 +243,7 @@ _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
 #endif
 
 #elif defined(__BEOS__)
-    /*
-     * BeOS's select() is declared in socket.h, so the configure script does
-     * not see it.  That's just as well, since that function works only for
-     * sockets.  This (using snooze and ioctl) was distilled from Be's patch
-     * for ncurses which uses a separate thread to simulate select().
-     *
-     * FIXME: the return values from the ioctl aren't very clear if we get
-     * interrupted.
-     *
-     * FIXME: this assumes mode&1 if milliseconds < 0 (see lib_getch.c).
-     */
+     
     result = TW_NONE;
     if (mode & TW_INPUT) {
 	int step = (milliseconds < 0) ? 0 : 5000;
@@ -316,7 +251,7 @@ _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
 	bigtime_t useconds = milliseconds * 1000;
 	int n, howmany;
 
-	if (useconds <= 0)	/* we're here to go _through_ the loop */
+	if (useconds <= 0)	 
 	    useconds = 1;
 
 	for (d = 0; d < useconds; d += step) {
@@ -340,10 +275,7 @@ _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
 	milliseconds = 0;
     }
 #elif HAVE_SELECT
-    /*
-     * select() modifies the fd_set arguments; do this in the
-     * loop.
-     */
+     
     FD_ZERO(&set);
 
 #if !USE_KLIBC_KBD
@@ -389,7 +321,7 @@ _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
 	if ((result = select(count, &set, NULL, NULL, &tv)) != 0)
 	    break;
 
-	/* Time out ? */
+	 
 	if (milliseconds >= 0 && _nc_gettime(&t0, FALSE) >= milliseconds) {
 	    result = 0;
 	    break;
@@ -426,7 +358,7 @@ _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
     }
 #endif
 
-#endif /* USE_FUNC_POLL, etc */
+#endif  
 
     returntime = _nc_gettime(&t0, FALSE);
 
@@ -452,32 +384,22 @@ _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
 #endif
 
 #if PRECISE_GETTIME && HAVE_NANOSLEEP
-    /*
-     * If the timeout hasn't expired, and we've gotten no data,
-     * this is probably a system where 'select()' needs to be left
-     * alone so that it can complete.  Make this process sleep,
-     * then come back for more.
-     */
+     
     if (result == 0 && milliseconds > 100) {
-	napms(100);		/* FIXME: this won't be right if I recur! */
+	napms(100);		 
 	milliseconds -= 100;
 	goto retry;
     }
 #endif
 
-    /* return approximate time left in milliseconds */
+     
     if (timeleft)
 	*timeleft = milliseconds;
 
     TR(TRACE_IEVENT, ("end twait: returned %d (%d), remaining time %d msec",
 		      result, errno, milliseconds));
 
-    /*
-     * Both 'poll()' and 'select()' return the number of file descriptors
-     * that are active.  Translate this back to the mask that denotes which
-     * file-descriptors, so that we don't need all of this system-specific
-     * code everywhere.
-     */
+     
     if (result != 0) {
 	if (result > 0) {
 	    result = 0;
@@ -489,7 +411,7 @@ _nc_timed_wait(SCREEN *sp MAYBE_UNUSED,
 		}
 	    }
 #elif defined(__BEOS__)
-	    result = TW_INPUT;	/* redundant, but simple */
+	    result = TW_INPUT;	 
 #elif HAVE_SELECT
 	    if ((mode & TW_MOUSE)
 		&& (fd = sp->_mouse_fd) >= 0

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -20,12 +16,7 @@ struct hdmi_pll_8960 {
 
 #define hw_clk_to_pll(x) container_of(x, struct hdmi_pll_8960, clk_hw)
 
-/*
- * HDMI PLL:
- *
- * To get the parent clock setup properly, we need to plug in hdmi pll
- * configuration into common-clock-framework.
- */
+ 
 
 struct pll_rate {
 	unsigned long rate;
@@ -36,7 +27,7 @@ struct pll_rate {
 	} conf[32];
 };
 
-/* NOTE: keep sorted highest freq to lowest: */
+ 
 static const struct pll_rate freqtbl[] = {
 	{ 154000000, 14, {
 		{ 0x08, REG_HDMI_8960_PHY_PLL_REFCLK_CFG    },
@@ -55,7 +46,7 @@ static const struct pll_rate freqtbl[] = {
 		{ 0x00, REG_HDMI_8960_PHY_PLL_SDM_CFG4      },
 			}
 	},
-	/* 1080p60/1080p50 case */
+	 
 	{ 148500000, 27, {
 		{ 0x02, REG_HDMI_8960_PHY_PLL_REFCLK_CFG    },
 		{ 0x02, REG_HDMI_8960_PHY_PLL_CHRG_PUMP_CFG },
@@ -102,7 +93,7 @@ static const struct pll_rate freqtbl[] = {
 		{ 0x00, REG_HDMI_8960_PHY_PLL_SDM_CFG4      },
 			}
 	},
-	/* 720p60/720p50/1080i60/1080i50/1080p24/1080p30/1080p25 */
+	 
 	{ 74250000, 8, {
 		{ 0x0a, REG_HDMI_8960_PHY_PLL_PWRDN_B       },
 		{ 0x12, REG_HDMI_8960_PHY_PLL_REFCLK_CFG    },
@@ -148,7 +139,7 @@ static const struct pll_rate freqtbl[] = {
 		{ 0x00, REG_HDMI_8960_PHY_PLL_SDM_CFG4      },
 			}
 	},
-	/* 480p60/480i60 */
+	 
 	{ 27030000, 18, {
 		{ 0x0a, REG_HDMI_8960_PHY_PLL_PWRDN_B       },
 		{ 0x38, REG_HDMI_8960_PHY_PLL_REFCLK_CFG    },
@@ -170,7 +161,7 @@ static const struct pll_rate freqtbl[] = {
 		{ 0x00, REG_HDMI_8960_PHY_PLL_VCOCAL_CFG7   },
 			}
 	},
-	/* 576p50/576i50 */
+	 
 	{ 27000000, 27, {
 		{ 0x32, REG_HDMI_8960_PHY_PLL_REFCLK_CFG    },
 		{ 0x02, REG_HDMI_8960_PHY_PLL_CHRG_PUMP_CFG },
@@ -201,7 +192,7 @@ static const struct pll_rate freqtbl[] = {
 		{ 0x00, REG_HDMI_8960_PHY_PLL_VCOCAL_CFG7   },
 			}
 	},
-	/* 640x480p60 */
+	 
 	{ 25200000, 27, {
 		{ 0x32, REG_HDMI_8960_PHY_PLL_REFCLK_CFG    },
 		{ 0x02, REG_HDMI_8960_PHY_PLL_CHRG_PUMP_CFG },
@@ -258,40 +249,32 @@ static int hdmi_pll_enable(struct clk_hw *hw)
 
 	DBG("");
 
-	/* Assert PLL S/W reset */
+	 
 	pll_write(pll, REG_HDMI_8960_PHY_PLL_LOCKDET_CFG2, 0x8d);
 	pll_write(pll, REG_HDMI_8960_PHY_PLL_LOCKDET_CFG0, 0x10);
 	pll_write(pll, REG_HDMI_8960_PHY_PLL_LOCKDET_CFG1, 0x1a);
 
-	/* Wait for a short time before de-asserting
-	 * to allow the hardware to complete its job.
-	 * This much of delay should be fine for hardware
-	 * to assert and de-assert.
-	 */
+	 
 	udelay(10);
 
-	/* De-assert PLL S/W reset */
+	 
 	pll_write(pll, REG_HDMI_8960_PHY_PLL_LOCKDET_CFG2, 0x0d);
 
 	val = hdmi_phy_read(phy, REG_HDMI_8960_PHY_REG12);
 	val |= HDMI_8960_PHY_REG12_SW_RESET;
-	/* Assert PHY S/W reset */
+	 
 	hdmi_phy_write(phy, REG_HDMI_8960_PHY_REG12, val);
 	val &= ~HDMI_8960_PHY_REG12_SW_RESET;
-	/*
-	 * Wait for a short time before de-asserting to allow the hardware to
-	 * complete its job. This much of delay should be fine for hardware to
-	 * assert and de-assert.
-	 */
+	 
 	udelay(10);
-	/* De-assert PHY S/W reset */
+	 
 	hdmi_phy_write(phy, REG_HDMI_8960_PHY_REG12, val);
 	hdmi_phy_write(phy, REG_HDMI_8960_PHY_REG2,  0x3f);
 
 	val = hdmi_phy_read(phy, REG_HDMI_8960_PHY_REG12);
 	val |= HDMI_8960_PHY_REG12_PWRDN_B;
 	hdmi_phy_write(phy, REG_HDMI_8960_PHY_REG12, val);
-	/* Wait 10 us for enabling global power for PHY */
+	 
 	mb();
 	udelay(10);
 
@@ -303,7 +286,7 @@ static int hdmi_pll_enable(struct clk_hw *hw)
 
 	timeout_count = 1000;
 	while (--pll_lock_retry > 0) {
-		/* are we there yet? */
+		 
 		val = pll_read(pll, REG_HDMI_8960_PHY_PLL_STATUS0);
 		if (val & HDMI_8960_PHY_PLL_STATUS0_PLL_LOCK)
 			break;
@@ -313,19 +296,12 @@ static int hdmi_pll_enable(struct clk_hw *hw)
 		if (--timeout_count > 0)
 			continue;
 
-		/*
-		 * PLL has still not locked.
-		 * Do a software reset and try again
-		 * Assert PLL S/W reset first
-		 */
+		 
 		pll_write(pll, REG_HDMI_8960_PHY_PLL_LOCKDET_CFG2, 0x8d);
 		udelay(10);
 		pll_write(pll, REG_HDMI_8960_PHY_PLL_LOCKDET_CFG2, 0x0d);
 
-		/*
-		 * Wait for a short duration for the PLL calibration
-		 * before checking if the PLL gets locked
-		 */
+		 
 		udelay(350);
 
 		timeout_count = 1000;
@@ -350,7 +326,7 @@ static void hdmi_pll_disable(struct clk_hw *hw)
 	val |= HDMI_8960_PHY_REG12_SW_RESET;
 	val &= ~HDMI_8960_PHY_REG12_PWRDN_B;
 	pll_write(pll, REG_HDMI_8960_PHY_PLL_PWRDN_B, val);
-	/* Make sure HDMI PHY/PLL are powered down */
+	 
 	mb();
 }
 
@@ -424,7 +400,7 @@ int msm_hdmi_pll_8960_init(struct platform_device *pdev)
 	struct hdmi_pll_8960 *pll;
 	int i, ret;
 
-	/* sanity check: */
+	 
 	for (i = 0; i < (ARRAY_SIZE(freqtbl) - 1); i++)
 		if (WARN_ON(freqtbl[i].rate < freqtbl[i + 1].rate))
 			return -EINVAL;

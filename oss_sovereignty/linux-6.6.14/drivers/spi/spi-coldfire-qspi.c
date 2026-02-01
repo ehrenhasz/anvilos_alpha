@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale/Motorola Coldfire Queued SPI driver
- *
- * Copyright 2010 Steven King <sfking@fdwdc.com>
-*/
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -143,7 +139,7 @@ static irqreturn_t mcfqspi_irq_handler(int this_irq, void *dev_id)
 {
 	struct mcfqspi *mcfqspi = dev_id;
 
-	/* clear interrupt */
+	 
 	mcfqspi_wr_qir(mcfqspi, MCFQSPI_QIR_SPIFE | MCFQSPI_QIR_SPIF);
 	wake_up(&mcfqspi->waitq);
 
@@ -437,7 +433,7 @@ static void mcfqspi_remove(struct platform_device *pdev)
 	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
 
 	pm_runtime_disable(&pdev->dev);
-	/* disable the hardware (set the baud rate to 0) */
+	 
 	mcfqspi_wr_qmr(mcfqspi, MCFQSPI_QMR_MSTR);
 
 	mcfqspi_cs_teardown(mcfqspi);

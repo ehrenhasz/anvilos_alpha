@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Core driver for Wilco Embedded Controller
- *
- * Copyright 2018 Google LLC
- *
- * This is the entry point for the drivers that control the Wilco EC.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -53,27 +47,24 @@ static int wilco_ec_probe(struct platform_device *pdev)
 	if (!ec->data_buffer)
 		return -ENOMEM;
 
-	/* Prepare access to IO regions provided by ACPI */
-	ec->io_data = wilco_get_resource(pdev, 0);	/* Host Data */
-	ec->io_command = wilco_get_resource(pdev, 1);	/* Host Command */
-	ec->io_packet = wilco_get_resource(pdev, 2);	/* MEC EMI */
+	 
+	ec->io_data = wilco_get_resource(pdev, 0);	 
+	ec->io_command = wilco_get_resource(pdev, 1);	 
+	ec->io_packet = wilco_get_resource(pdev, 2);	 
 	if (!ec->io_data || !ec->io_command || !ec->io_packet)
 		return -ENODEV;
 
-	/* Initialize cros_ec register interface for communication */
+	 
 	cros_ec_lpc_mec_init(ec->io_packet->start,
 			     ec->io_packet->start + EC_MAILBOX_DATA_SIZE);
 
-	/*
-	 * Register a child device that will be found by the debugfs driver.
-	 * Ignore failure.
-	 */
+	 
 	ec->debugfs_pdev = platform_device_register_data(dev,
 							 "wilco-ec-debugfs",
 							 PLATFORM_DEVID_AUTO,
 							 NULL, 0);
 
-	/* Register a child device that will be found by the RTC driver. */
+	 
 	ec->rtc_pdev = platform_device_register_data(dev, "rtc-wilco-ec",
 						     PLATFORM_DEVID_AUTO,
 						     NULL, 0);
@@ -83,7 +74,7 @@ static int wilco_ec_probe(struct platform_device *pdev)
 		goto unregister_debugfs;
 	}
 
-	/* Set up the keyboard backlight LEDs. */
+	 
 	ret = wilco_keyboard_leds_init(ec);
 	if (ret < 0) {
 		dev_err(dev,
@@ -98,7 +89,7 @@ static int wilco_ec_probe(struct platform_device *pdev)
 		goto unregister_rtc;
 	}
 
-	/* Register child device to be found by charger config driver. */
+	 
 	ec->charger_pdev = platform_device_register_data(dev, "wilco-charger",
 							 PLATFORM_DEVID_AUTO,
 							 NULL, 0);
@@ -108,7 +99,7 @@ static int wilco_ec_probe(struct platform_device *pdev)
 		goto remove_sysfs;
 	}
 
-	/* Register child device that will be found by the telemetry driver. */
+	 
 	ec->telem_pdev = platform_device_register_data(dev, "wilco_telem",
 						       PLATFORM_DEVID_AUTO,
 						       ec, sizeof(*ec));

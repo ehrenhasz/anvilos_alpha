@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -51,7 +48,7 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 		return -EINVAL;
 	}
 
-	/* Check for mgmt vnic in addition to normal vnic */
+	 
 	if ((ioread32(&rh->magic) != VNIC_RES_MAGIC) ||
 		(ioread32(&rh->version) != VNIC_RES_VERSION)) {
 		if ((ioread32(&mrh->magic) != MGMTVNIC_MAGIC) ||
@@ -90,7 +87,7 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 		case RES_TYPE_RQ:
 		case RES_TYPE_CQ:
 		case RES_TYPE_INTR_CTRL:
-			/* each count is stride bytes long */
+			 
 			len = count * VNIC_RES_STRIDE;
 			if (len + bar_offset > bar[bar_num].len) {
 				vdev_err(vdev, "vNIC BAR0 resource %d out-of-bounds, offset 0x%x + size 0x%x > bar len 0x%lx\n",
@@ -146,11 +143,7 @@ EXPORT_SYMBOL(vnic_dev_get_res);
 static unsigned int vnic_dev_desc_ring_size(struct vnic_dev_ring *ring,
 	unsigned int desc_count, unsigned int desc_size)
 {
-	/* The base address of the desc rings must be 512 byte aligned.
-	 * Descriptor count is aligned to groups of 32 descriptors.  A
-	 * count of 0 means the maximum 4096 descriptors.  Descriptor
-	 * size is aligned to 16 bytes.
-	 */
+	 
 
 	unsigned int count_align = 32;
 	unsigned int desc_align = 16;
@@ -224,7 +217,7 @@ static int _vnic_dev_cmd(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 
 	status = ioread32(&devcmd->status);
 	if (status == 0xFFFFFFFF) {
-		/* PCI-e target device is gone */
+		 
 		return -ENODEV;
 	}
 	if (status & STAT_BUSY) {
@@ -249,7 +242,7 @@ static int _vnic_dev_cmd(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 
 		status = ioread32(&devcmd->status);
 		if (status == 0xFFFFFFFF) {
-			/* PCI-e target device is gone */
+			 
 			return -ENODEV;
 		}
 
@@ -313,10 +306,7 @@ static int _vnic_dev_cmd2(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 		for (i = 0; i < VNIC_DEVCMD_NARGS; i++)
 			dc2c->cmd_ring[posted].args[i] = vdev->args[i];
 
-	/* Adding write memory barrier prevents compiler and/or CPU reordering,
-	 * thus avoiding descriptor posting before descriptor is initialized.
-	 * Otherwise, hardware can read stale descriptor fields.
-	 */
+	 
 	wmb();
 	iowrite32(new_posted, &dc2c->wq_ctrl->posted_index);
 	dc2c->posted = new_posted;
@@ -387,7 +377,7 @@ static int vnic_dev_init_devcmd2(struct vnic_dev *vdev)
 		goto err_free_devcmd2;
 
 	fetch_index = ioread32(&vdev->devcmd2->wq.ctrl->fetch_index);
-	if (fetch_index == 0xFFFFFFFF) { /* check for hardware gone  */
+	if (fetch_index == 0xFFFFFFFF) {  
 		vdev_err(vdev, "Fatal error in devcmd2 init - hardware surprise removal\n");
 		err = -ENODEV;
 		goto err_free_wq;
@@ -547,7 +537,7 @@ int vnic_dev_fw_info(struct vnic_dev *vdev,
 		a0 = vdev->fw_info_pa;
 		a1 = sizeof(struct vnic_devcmd_fw_info);
 
-		/* only get fw_info once and cache it */
+		 
 		if (vnic_dev_capable(vdev, CMD_MCPU_FW_INFO))
 			err = vnic_dev_cmd(vdev, CMD_MCPU_FW_INFO,
 				&a0, &a1, wait);
@@ -855,8 +845,8 @@ static int vnic_dev_notify_unsetcmd(struct vnic_dev *vdev)
 	int wait = 1000;
 	int err;
 
-	a0 = 0;  /* paddr = 0 to unset notify buffer */
-	a1 = 0x0000ffff00000000ULL; /* intr num = -1 to unreg for intr */
+	a0 = 0;   
+	a1 = 0x0000ffff00000000ULL;  
 	a1 += sizeof(struct vnic_devcmd_notify);
 
 	err = vnic_dev_cmd(vdev, CMD_NOTIFY, &a0, &a1, wait);
@@ -910,9 +900,7 @@ int vnic_dev_init(struct vnic_dev *vdev, int arg)
 	else {
 		vnic_dev_cmd(vdev, CMD_INIT_v1, &a0, &a1, wait);
 		if (a0 & CMD_INITF_DEFAULT_MAC) {
-			/* Emulate these for old CMD_INIT_v1 which
-			 * didn't pass a0 so no CMD_INITF_*.
-			 */
+			 
 			vnic_dev_cmd(vdev, CMD_GET_MAC_ADDR, &a0, &a1, wait);
 			vnic_dev_cmd(vdev, CMD_ADDR_ADD, &a0, &a1, wait);
 		}
@@ -930,7 +918,7 @@ int vnic_dev_deinit(struct vnic_dev *vdev)
 
 void vnic_dev_intr_coal_timer_info_default(struct vnic_dev *vdev)
 {
-	/* Default: hardware intr coal timer is in units of 1.5 usecs */
+	 
 	vdev->intr_coal_timer_info.mul = 2;
 	vdev->intr_coal_timer_info.div = 3;
 	vdev->intr_coal_timer_info.max_usec =
@@ -949,9 +937,7 @@ int vnic_dev_intr_coal_timer_info(struct vnic_dev *vdev)
 	else
 		err = ERR_ECMDUNKNOWN;
 
-	/* Use defaults when firmware doesn't support the devcmd at all or
-	 * supports it for only specific hardware
-	 */
+	 
 	if ((err == ERR_ECMDUNKNOWN) ||
 		(!err && !(vdev->args[0] && vdev->args[1] && vdev->args[2]))) {
 		vdev_netwarn(vdev, "Using default conversion factor for interrupt coalesce timer\n");
@@ -1174,20 +1160,7 @@ int vnic_dev_set_mac_addr(struct vnic_dev *vdev, u8 *mac_addr)
 	return vnic_dev_cmd(vdev, CMD_SET_MAC_ADDR, &a0, &a1, wait);
 }
 
-/* vnic_dev_classifier: Add/Delete classifier entries
- * @vdev: vdev of the device
- * @cmd: CLSF_ADD for Add filter
- *	 CLSF_DEL for Delete filter
- * @entry: In case of ADD filter, the caller passes the RQ number in this
- *	   variable.
- *
- *	   This function stores the filter_id returned by the firmware in the
- *	   same variable before return;
- *
- *	   In case of DEL filter, the caller passes the RQ number. Return
- *	   value is irrelevant.
- * @data: filter data
- */
+ 
 int vnic_dev_classifier(struct vnic_dev *vdev, u8 cmd, u16 *entry,
 			struct filter *data)
 {
@@ -1276,9 +1249,7 @@ int vnic_dev_capable_rss_hash_type(struct vnic_dev *vdev, u8 *rss_hash_type)
 	int err;
 
 	err = vnic_dev_cmd(vdev, CMD_CAPABILITY, &a0, &a1, wait);
-	/* rss_hash_type is valid only when a0 is 1. Adapter which does not
-	 * support CMD_CAPABILITY for rss_hash_type has a0 = 0
-	 */
+	 
 	if (err || (a0 != 1))
 		return -EOPNOTSUPP;
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_IF0013_H__
 #define __NVIF_IF0013_H__
 

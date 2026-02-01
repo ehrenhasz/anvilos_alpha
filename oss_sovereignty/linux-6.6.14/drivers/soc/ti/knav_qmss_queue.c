@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Keystone Queue Manager subsystem driver
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com
- * Authors:	Sandeep Nair <sandeep_n@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- *		Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/dma-mapping.h>
@@ -28,7 +21,7 @@ static DEFINE_MUTEX(knav_dev_lock);
 #define knav_dev_lock_held() \
 	lockdep_is_held(&knav_dev_lock)
 
-/* Queue manager register indices in DTS */
+ 
 #define KNAV_QUEUE_PEEK_REG_INDEX	0
 #define KNAV_QUEUE_STATUS_REG_INDEX	1
 #define KNAV_QUEUE_CONFIG_REG_INDEX	2
@@ -36,16 +29,12 @@ static DEFINE_MUTEX(knav_dev_lock);
 #define KNAV_QUEUE_PUSH_REG_INDEX	4
 #define KNAV_QUEUE_POP_REG_INDEX	5
 
-/* Queue manager register indices in DTS for QMSS in K2G NAVSS.
- * There are no status and vbusm push registers on this version
- * of QMSS. Push registers are same as pop, So all indices above 1
- * are to be re-defined
- */
+ 
 #define KNAV_L_QUEUE_CONFIG_REG_INDEX	1
 #define KNAV_L_QUEUE_REGION_REG_INDEX	2
 #define KNAV_L_QUEUE_PUSH_REG_INDEX	3
 
-/* PDSP register indices in DTS */
+ 
 #define KNAV_QUEUE_PDSP_IRAM_REG_INDEX	0
 #define KNAV_QUEUE_PDSP_REGS_REG_INDEX	1
 #define KNAV_QUEUE_PDSP_INTD_REG_INDEX	2
@@ -63,10 +52,7 @@ static DEFINE_MUTEX(knav_dev_lock);
 	     idx < (kdev)->num_queues_in_use;			\
 	     idx++, inst = knav_queue_idx_to_inst(kdev, idx))
 
-/* All firmware file names end up here. List the firmware file names below.
- * Newest followed by older ones. Search is done from start of the array
- * until a firmware file is found.
- */
+ 
 static const char * const knav_acc_firmwares[] = {"ks2_qmss_pdsp_acc48.bin"};
 
 static bool device_ready;
@@ -76,11 +62,7 @@ bool knav_qmss_device_ready(void)
 }
 EXPORT_SYMBOL_GPL(knav_qmss_device_ready);
 
-/**
- * knav_queue_notify: qmss queue notfier call
- *
- * @inst:		- qmss queue instance like accumulator
- */
+ 
 void knav_queue_notify(struct knav_queue_inst *inst)
 {
 	struct knav_queue *qh;
@@ -236,7 +218,7 @@ static struct knav_queue *__knav_queue_open(struct knav_queue_inst *inst,
 	qh->reg_pop = &inst->qmgr->reg_pop[id];
 	qh->reg_peek = &inst->qmgr->reg_peek[id];
 
-	/* first opener? */
+	 
 	if (!knav_queue_is_busy(inst)) {
 		struct knav_range_info *range = inst->range;
 
@@ -328,12 +310,12 @@ static int knav_queue_enable_notifier(struct knav_queue *qh)
 	if (WARN_ON(!qh->notifier_fn))
 		return -EINVAL;
 
-	/* Adjust the per handle notifier count */
+	 
 	first = (atomic_inc_return(&qh->notifier_enabled) == 1);
 	if (!first)
-		return 0; /* nothing to do */
+		return 0;  
 
-	/* Now adjust the per instance notifier count */
+	 
 	first = (atomic_inc_return(&inst->num_notifiers) == 1);
 	if (first)
 		knav_queue_set_notify(inst, true);
@@ -348,7 +330,7 @@ static int knav_queue_disable_notifier(struct knav_queue *qh)
 
 	last = (atomic_dec_return(&qh->notifier_enabled) == 0);
 	if (!last)
-		return 0; /* nothing to do */
+		return 0;  
 
 	last = (atomic_dec_return(&inst->num_notifiers) == 0);
 	if (last)
@@ -509,20 +491,7 @@ static int knav_queue_flush(struct knav_queue *qh)
 	return 0;
 }
 
-/**
- * knav_queue_open()	- open a hardware queue
- * @name:		- name to give the queue handle
- * @id:			- desired queue number if any or specifes the type
- *			  of queue
- * @flags:		- the following flags are applicable to queues:
- *	KNAV_QUEUE_SHARED - allow the queue to be shared. Queues are
- *			     exclusive by default.
- *			     Subsequent attempts to open a shared queue should
- *			     also have this flag.
- *
- * Returns a handle to the open hardware queue if successful. Use IS_ERR()
- * to check the returned value for error codes.
- */
+ 
 void *knav_queue_open(const char *name, unsigned id,
 					unsigned flags)
 {
@@ -543,10 +512,7 @@ void *knav_queue_open(const char *name, unsigned id,
 }
 EXPORT_SYMBOL_GPL(knav_queue_open);
 
-/**
- * knav_queue_close()	- close a hardware queue handle
- * @qhandle:		- handle to close
- */
+ 
 void knav_queue_close(void *qhandle)
 {
 	struct knav_queue *qh = qhandle;
@@ -570,14 +536,7 @@ void knav_queue_close(void *qhandle)
 }
 EXPORT_SYMBOL_GPL(knav_queue_close);
 
-/**
- * knav_queue_device_control()	- Perform control operations on a queue
- * @qhandle:			- queue handle
- * @cmd:			- control commands
- * @arg:			- command argument
- *
- * Returns 0 on success, errno otherwise.
- */
+ 
 int knav_queue_device_control(void *qhandle, enum knav_queue_ctrl_cmd cmd,
 				unsigned long arg)
 {
@@ -621,15 +580,7 @@ EXPORT_SYMBOL_GPL(knav_queue_device_control);
 
 
 
-/**
- * knav_queue_push()	- push data (or descriptor) to the tail of a queue
- * @qhandle:		- hardware queue handle
- * @dma:		- DMA data to push
- * @size:		- size of data to push
- * @flags:		- can be used to pass additional information
- *
- * Returns 0 on success, errno otherwise.
- */
+ 
 int knav_queue_push(void *qhandle, dma_addr_t dma,
 					unsigned size, unsigned flags)
 {
@@ -644,13 +595,7 @@ int knav_queue_push(void *qhandle, dma_addr_t dma,
 }
 EXPORT_SYMBOL_GPL(knav_queue_push);
 
-/**
- * knav_queue_pop()	- pop data (or descriptor) from the head of a queue
- * @qhandle:		- hardware queue handle
- * @size:		- (optional) size of the data pop'ed.
- *
- * Returns a DMA address on success, 0 on failure.
- */
+ 
 dma_addr_t knav_queue_pop(void *qhandle, unsigned *size)
 {
 	struct knav_queue *qh = qhandle;
@@ -658,7 +603,7 @@ dma_addr_t knav_queue_pop(void *qhandle, unsigned *size)
 	dma_addr_t dma;
 	u32 val, idx;
 
-	/* are we accumulated? */
+	 
 	if (inst->descs) {
 		if (unlikely(atomic_dec_return(&inst->desc_count) < 0)) {
 			atomic_inc(&inst->desc_count);
@@ -682,7 +627,7 @@ dma_addr_t knav_queue_pop(void *qhandle, unsigned *size)
 }
 EXPORT_SYMBOL_GPL(knav_queue_pop);
 
-/* carve out descriptors and push into queue */
+ 
 static void kdesc_fill_pool(struct knav_pool *pool)
 {
 	struct knav_region *region;
@@ -702,7 +647,7 @@ static void kdesc_fill_pool(struct knav_pool *pool)
 	}
 }
 
-/* pop out descriptors and close the queue */
+ 
 static void kdesc_empty_pool(struct knav_pool *pool)
 {
 	dma_addr_t dma;
@@ -729,7 +674,7 @@ static void kdesc_empty_pool(struct knav_pool *pool)
 }
 
 
-/* Get the DMA address of a descriptor */
+ 
 dma_addr_t knav_pool_desc_virt_to_dma(void *ph, void *virt)
 {
 	struct knav_pool *pool = ph;
@@ -744,16 +689,7 @@ void *knav_pool_desc_dma_to_virt(void *ph, dma_addr_t dma)
 }
 EXPORT_SYMBOL_GPL(knav_pool_desc_dma_to_virt);
 
-/**
- * knav_pool_create()	- Create a pool of descriptors
- * @name:		- name to give the pool handle
- * @num_desc:		- numbers of descriptors in the pool
- * @region_id:		- QMSS region id from which the descriptors are to be
- *			  allocated.
- *
- * Returns a pool handle on success.
- * Use IS_ERR_OR_NULL() to identify error values on return.
- */
+ 
 void *knav_pool_create(const char *name,
 					int num_desc, int region_id)
 {
@@ -810,10 +746,7 @@ void *knav_pool_create(const char *name,
 		goto err_unlock;
 	}
 
-	/* Region maintains a sorted (by region offset) list of pools
-	 * use the first free slot which is large enough to accomodate
-	 * the request
-	 */
+	 
 	last_offset = 0;
 	node = &region->pools;
 	list_for_each_entry(iter, &region->pools, region_inst) {
@@ -852,10 +785,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(knav_pool_create);
 
-/**
- * knav_pool_destroy()	- Free a pool of descriptors
- * @ph:		- pool handle
- */
+ 
 void knav_pool_destroy(void *ph)
 {
 	struct knav_pool *pool = ph;
@@ -880,12 +810,7 @@ void knav_pool_destroy(void *ph)
 EXPORT_SYMBOL_GPL(knav_pool_destroy);
 
 
-/**
- * knav_pool_desc_get()	- Get a descriptor from the pool
- * @ph:		- pool handle
- *
- * Returns descriptor from the pool.
- */
+ 
 void *knav_pool_desc_get(void *ph)
 {
 	struct knav_pool *pool = ph;
@@ -901,11 +826,7 @@ void *knav_pool_desc_get(void *ph)
 }
 EXPORT_SYMBOL_GPL(knav_pool_desc_get);
 
-/**
- * knav_pool_desc_put()	- return a descriptor to the pool
- * @ph:		- pool handle
- * @desc:	- virtual address
- */
+ 
 void knav_pool_desc_put(void *ph, void *desc)
 {
 	struct knav_pool *pool = ph;
@@ -915,16 +836,7 @@ void knav_pool_desc_put(void *ph, void *desc)
 }
 EXPORT_SYMBOL_GPL(knav_pool_desc_put);
 
-/**
- * knav_pool_desc_map()	- Map descriptor for DMA transfer
- * @ph:				- pool handle
- * @desc:			- address of descriptor to map
- * @size:			- size of descriptor to map
- * @dma:			- DMA address return pointer
- * @dma_sz:			- adjusted return pointer
- *
- * Returns 0 on success, errno otherwise.
- */
+ 
 int knav_pool_desc_map(void *ph, void *desc, unsigned size,
 					dma_addr_t *dma, unsigned *dma_sz)
 {
@@ -935,22 +847,14 @@ int knav_pool_desc_map(void *ph, void *desc, unsigned size,
 	*dma_sz = size;
 	dma_sync_single_for_device(pool->dev, *dma, size, DMA_TO_DEVICE);
 
-	/* Ensure the descriptor reaches to the memory */
+	 
 	__iowmb();
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(knav_pool_desc_map);
 
-/**
- * knav_pool_desc_unmap()	- Unmap descriptor after DMA transfer
- * @ph:				- pool handle
- * @dma:			- DMA address of descriptor to unmap
- * @dma_sz:			- size of descriptor to unmap
- *
- * Returns descriptor address on success, Use IS_ERR_OR_NULL() to identify
- * error values on return.
- */
+ 
 void *knav_pool_desc_unmap(void *ph, dma_addr_t dma, unsigned dma_sz)
 {
 	struct knav_pool *pool = ph;
@@ -965,11 +869,7 @@ void *knav_pool_desc_unmap(void *ph, dma_addr_t dma, unsigned dma_sz)
 }
 EXPORT_SYMBOL_GPL(knav_pool_desc_unmap);
 
-/**
- * knav_pool_count()	- Get the number of descriptors in pool.
- * @ph:			- pool handle
- * Returns number of elements in the pool.
- */
+ 
 int knav_pool_count(void *ph)
 {
 	struct knav_pool *pool = ph;
@@ -987,16 +887,16 @@ static void knav_queue_setup_region(struct knav_device *kdev,
 	int id = region->id;
 	struct page *page;
 
-	/* unused region? */
+	 
 	if (!region->num_desc) {
 		dev_warn(kdev->dev, "unused region %s\n", region->name);
 		return;
 	}
 
-	/* get hardware descriptor value */
+	 
 	hw_num_desc = ilog2(region->num_desc - 1) + 1;
 
-	/* did we force fit ourselves into nothingness? */
+	 
 	if (region->num_desc < 32) {
 		region->num_desc = 0;
 		dev_warn(kdev->dev, "too few descriptors in region %s\n",
@@ -1124,7 +1024,7 @@ static int knav_queue_setup_regions(struct knav_device *kdev,
 		return -ENODEV;
 	}
 
-	/* Next, we run through the regions and set things up */
+	 
 	for_each_region(kdev, region)
 		knav_queue_setup_region(kdev, region);
 
@@ -1139,31 +1039,16 @@ static int knav_get_link_ram(struct knav_device *kdev,
 	struct device_node *node = pdev->dev.of_node;
 	u32 temp[2];
 
-	/*
-	 * Note: link ram resources are specified in "entry" sized units. In
-	 * reality, although entries are ~40bits in hardware, we treat them as
-	 * 64-bit entities here.
-	 *
-	 * For example, to specify the internal link ram for Keystone-I class
-	 * devices, we would set the linkram0 resource to 0x80000-0x83fff.
-	 *
-	 * This gets a bit weird when other link rams are used.  For example,
-	 * if the range specified is 0x0c000000-0x0c003fff (i.e., 16K entries
-	 * in MSMC SRAM), the actual memory used is 0x0c000000-0x0c020000,
-	 * which accounts for 64-bits per entry, for 16K entries.
-	 */
+	 
 	if (!of_property_read_u32_array(node, name , temp, 2)) {
 		if (temp[0]) {
-			/*
-			 * queue_base specified => using internal or onchip
-			 * link ram WARNING - we do not "reserve" this block
-			 */
+			 
 			block->dma = (dma_addr_t)temp[0];
 			block->virt = NULL;
 			block->size = temp[1];
 		} else {
 			block->size = temp[1];
-			/* queue_base not specific => allocate requested size */
+			 
 			block->virt = dmam_alloc_coherent(kdev->dev,
 						  8 * block->size, &block->dma,
 						  GFP_KERNEL);
@@ -1277,7 +1162,7 @@ static int knav_setup_queue_range(struct knav_device *kdev,
 		range->ops = &knav_gp_range_ops;
 	}
 
-	/* set threshold to 1, and flush out the queues */
+	 
 	for_each_qmgr(kdev, qmgr) {
 		start = max(qmgr->start_queue, range->queue_base);
 		end   = min(qmgr->start_queue + qmgr->num_queues,
@@ -1310,12 +1195,12 @@ static int knav_setup_queue_pools(struct knav_device *kdev,
 
 	for_each_child_of_node(queue_pools, type) {
 		for_each_child_of_node(type, range) {
-			/* return value ignored, we init the rest... */
+			 
 			knav_setup_queue_range(kdev, range);
 		}
 	}
 
-	/* ... and barf if they all failed! */
+	 
 	if (list_empty(&kdev->queue_ranges)) {
 		dev_err(kdev->dev, "no valid queue range found\n");
 		return -ENODEV;
@@ -1474,7 +1359,7 @@ static int knav_queue_init_qmgrs(struct knav_device *kdev,
 			continue;
 		}
 
-		/* Use same push register for pop as well */
+		 
 		if (kdev->version == QMSS_66AK2G)
 			qmgr->reg_pop = qmgr->reg_push;
 
@@ -1588,7 +1473,7 @@ static int knav_queue_load_pdsp(struct knav_device *kdev,
 		 knav_acc_firmwares[i]);
 
 	writel_relaxed(pdsp->id + 1, pdsp->command + 0x18);
-	/* download the firmware */
+	 
 	fwdata = (u32 *)fw->data;
 	fwlen = (fw->size + sizeof(u32) - 1) / sizeof(u32);
 	for (i = 0; i < fwlen; i++)
@@ -1604,21 +1489,21 @@ static int knav_queue_start_pdsp(struct knav_device *kdev,
 	u32 val, timeout = 1000;
 	int ret;
 
-	/* write a command for sync */
+	 
 	writel_relaxed(0xffffffff, pdsp->command);
 	while (readl_relaxed(pdsp->command) != 0xffffffff)
 		cpu_relax();
 
-	/* soft reset the PDSP */
+	 
 	val  = readl_relaxed(&pdsp->regs->control);
 	val &= ~(PDSP_CTRL_PC_MASK | PDSP_CTRL_SOFT_RESET);
 	writel_relaxed(val, &pdsp->regs->control);
 
-	/* enable pdsp */
+	 
 	val = readl_relaxed(&pdsp->regs->control) | PDSP_CTRL_ENABLE;
 	writel_relaxed(val, &pdsp->regs->control);
 
-	/* wait for command register to clear */
+	 
 	ret = knav_queue_pdsp_wait(pdsp->command, timeout, 0);
 	if (ret < 0) {
 		dev_err(kdev->dev,
@@ -1633,7 +1518,7 @@ static void knav_queue_stop_pdsps(struct knav_device *kdev)
 {
 	struct knav_pdsp_info *pdsp;
 
-	/* disable all pdsps */
+	 
 	for_each_pdsp(kdev, pdsp)
 		knav_queue_stop_pdsp(kdev, pdsp);
 }
@@ -1644,12 +1529,7 @@ static int knav_queue_start_pdsps(struct knav_device *kdev)
 	int ret;
 
 	knav_queue_stop_pdsps(kdev);
-	/* now load them all. We return success even if pdsp
-	 * is not loaded as acc channels are optional on having
-	 * firmware availability in the system. We set the loaded
-	 * and stated flag and when initialize the acc range, check
-	 * it and init the range only if pdsp is started.
-	 */
+	 
 	for_each_pdsp(kdev, pdsp) {
 		ret = knav_queue_load_pdsp(kdev, pdsp);
 		if (!ret)
@@ -1708,12 +1588,10 @@ static int knav_queue_init_queues(struct knav_device *kdev)
 	int size, id, base_idx;
 	int idx = 0, ret = 0;
 
-	/* how much do we need for instance data? */
+	 
 	size = sizeof(struct knav_queue_inst);
 
-	/* round this up to a power of 2, keep the index to instance
-	 * arithmetic fast.
-	 * */
+	 
 	kdev->inst_shift = order_base_2(size);
 	size = (1 << kdev->inst_shift) * kdev->num_queues_in_use;
 	kdev->instances = devm_kzalloc(kdev->dev, size, GFP_KERNEL);
@@ -1737,7 +1615,7 @@ static int knav_queue_init_queues(struct knav_device *kdev)
 	return 0;
 }
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id keystone_qmss_of_match[] = {
 	{
 		.compatible = "ti,keystone-navigator-qmss",
@@ -1798,7 +1676,7 @@ static int knav_queue_probe(struct platform_device *pdev)
 	kdev->base_id    = temp[0];
 	kdev->num_queues = temp[1];
 
-	/* Initialize queue managers using device tree configuration */
+	 
 	qmgrs =  of_get_child_by_name(node, "qmgrs");
 	if (!qmgrs) {
 		dev_err(dev, "queue manager info not specified\n");
@@ -1810,7 +1688,7 @@ static int knav_queue_probe(struct platform_device *pdev)
 	if (ret)
 		goto err;
 
-	/* get pdsp configuration values from device tree */
+	 
 	pdsps =  of_get_child_by_name(node, "pdsps");
 	if (pdsps) {
 		ret = knav_queue_init_pdsps(kdev, pdsps);
@@ -1823,7 +1701,7 @@ static int knav_queue_probe(struct platform_device *pdev)
 	}
 	of_node_put(pdsps);
 
-	/* get usable queue range values from device tree */
+	 
 	queue_pools = of_get_child_by_name(node, "queue-pools");
 	if (!queue_pools) {
 		dev_err(dev, "queue-pools not specified\n");
@@ -1843,10 +1721,7 @@ static int knav_queue_probe(struct platform_device *pdev)
 
 	ret = knav_get_link_ram(kdev, "linkram1", &kdev->link_rams[1]);
 	if (ret) {
-		/*
-		 * nothing really, we have one linking ram already, so we just
-		 * live within our means
-		 */
+		 
 	}
 
 	ret = knav_queue_setup_link_ram(kdev);
@@ -1886,7 +1761,7 @@ err:
 
 static int knav_queue_remove(struct platform_device *pdev)
 {
-	/* TODO: Free resources */
+	 
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 	return 0;

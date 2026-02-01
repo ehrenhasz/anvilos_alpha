@@ -1,50 +1,4 @@
-/*
-*
-* tp3780i.c -- board driver for 3780i on ThinkPads
-*
-*
-* Written By: Mike Sullivan IBM Corporation
-*
-* Copyright (C) 1999 IBM Corporation
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* NO WARRANTY
-* THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
-* LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
-* MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
-* solely responsible for determining the appropriateness of using and
-* distributing the Program and assumes all risks associated with its
-* exercise of rights under this Agreement, including but not limited to
-* the risks and costs of program errors, damage to or loss of data,
-* programs or equipment, and unavailability or interruption of operations.
-*
-* DISCLAIMER OF LIABILITY
-* NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
-* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-* DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-* TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
-* USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
-* HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*
-* 10/23/2000 - Alpha Release
-*	First release to the public
-*/
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -140,7 +94,7 @@ static irqreturn_t DspInterrupt(int irq, void *dev_id)
 			}
 			if (usIPCSource == 0)
 				break;
-			/* try next IPC */
+			 
 			usIsolationMask = usIsolationMask << 1;
 		}
 	} else {
@@ -196,7 +150,7 @@ int tp3780I_CalcResources(THINKPAD_BD_DATA * pBDData)
 		return -EIO;
 	}
 
-	/* Sanity check */
+	 
 	if (
 		( rSmapiInfo.usDspIRQ == 0 )
 		|| ( rSmapiInfo.usDspBaseIO ==  0 )
@@ -358,7 +312,7 @@ int tp3780I_EnableDSP(THINKPAD_BD_DATA * pBDData)
 	if (request_irq(pSettings->usUartIrq, &UartInterrupt, 0, "mwave_uart", NULL)) {
 		PRINTK_ERROR(KERN_ERR_MWAVE "tp3780i::tp3780I_EnableDSP: Error: Could not get UART IRQ %x\n", pSettings->usUartIrq);
 		goto exit_cleanup;
-	} else {		/* no conflict just release */
+	} else {		 
 		free_irq(pSettings->usUartIrq, NULL);
 	}
 
@@ -457,7 +411,7 @@ int tp3780I_StartDSP(THINKPAD_BD_DATA * pBDData)
 	PRINTK_2(TRACE_TP3780I, "tp3780i::tp3780I_StartDSP entry pBDData %p\n", pBDData);
 
 	if (dsp3780I_Run(pSettings) == 0) {
-		// @BUG @TBD EnableSRAM(pBDData);
+		
 	} else {
 		retval = -EIO;
 	}
@@ -474,13 +428,13 @@ int tp3780I_QueryAbilities(THINKPAD_BD_DATA * pBDData, MW_ABILITIES * pAbilities
 		"tp3780i::tp3780I_QueryAbilities entry pBDData %p\n", pBDData);
 
 	memset(pAbilities, 0, sizeof(*pAbilities));
-	/* fill out standard constant fields */
+	 
 	pAbilities->instr_per_sec = pBDData->rDspSettings.uIps;
 	pAbilities->data_size = pBDData->rDspSettings.uDStoreSize;
 	pAbilities->inst_size = pBDData->rDspSettings.uIStoreSize;
 	pAbilities->bus_dma_bw = pBDData->rDspSettings.uDmaBandwidth;
 
-	/* fill out dynamically determined fields */
+	 
 	pAbilities->component_list[0] = 0x00010000 | MW_ADC_MASK;
 	pAbilities->component_list[1] = 0x00010000 | MW_ACI_MASK;
 	pAbilities->component_list[2] = 0x00010000 | MW_AIC1_MASK;
@@ -490,7 +444,7 @@ int tp3780I_QueryAbilities(THINKPAD_BD_DATA * pBDData, MW_ABILITIES * pAbilities
 	pAbilities->component_list[6] = 0x00010000 | MW_UART_MASK;
 	pAbilities->component_count = 7;
 
-	/* Fill out Mwave OS and BIOS task names */
+	 
 
 	memcpy(pAbilities->mwave_os_name, TP_ABILITIES_MWAVEOS_NAME,
 		sizeof(TP_ABILITIES_MWAVEOS_NAME));

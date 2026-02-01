@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_LWTUNNEL_H
 #define __NET_LWTUNNEL_H 1
 
@@ -11,14 +11,12 @@
 #define LWTUNNEL_HASH_BITS   7
 #define LWTUNNEL_HASH_SIZE   (1 << LWTUNNEL_HASH_BITS)
 
-/* lw tunnel state flags */
+ 
 #define LWTUNNEL_STATE_OUTPUT_REDIRECT	BIT(0)
 #define LWTUNNEL_STATE_INPUT_REDIRECT	BIT(1)
 #define LWTUNNEL_STATE_XMIT_REDIRECT	BIT(2)
 
-/* LWTUNNEL_XMIT_CONTINUE should be distinguishable from dst_output return
- * values (NET_XMIT_xxx and NETDEV_TX_xxx in linux/netdevice.h) for safety.
- */
+ 
 enum {
 	LWTUNNEL_XMIT_DONE,
 	LWTUNNEL_XMIT_CONTINUE = 0x100,
@@ -209,9 +207,7 @@ static inline int lwtunnel_valid_encap_type(u16 encap_type,
 static inline int lwtunnel_valid_encap_type_attr(struct nlattr *attr, int len,
 						 struct netlink_ext_ack *extack)
 {
-	/* return 0 since we are not walking attr looking for
-	 * RTA_ENCAP_TYPE attribute on nexthops.
-	 */
+	 
 	return 0;
 }
 
@@ -262,8 +258,8 @@ static inline int lwtunnel_xmit(struct sk_buff *skb)
 	return -EOPNOTSUPP;
 }
 
-#endif /* CONFIG_LWTUNNEL */
+#endif  
 
 #define MODULE_ALIAS_RTNL_LWT(encap_type) MODULE_ALIAS("rtnl-lwt-" __stringify(encap_type))
 
-#endif /* __NET_LWTUNNEL_H */
+#endif  

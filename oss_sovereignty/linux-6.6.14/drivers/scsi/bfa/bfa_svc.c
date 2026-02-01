@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
+
+ 
 
 #include "bfad_drv.h"
 #include "bfad_im.h"
@@ -16,63 +9,48 @@
 
 BFA_TRC_FILE(HAL, FCXP);
 
-/*
- * LPS related definitions
- */
+ 
 #define BFA_LPS_MIN_LPORTS      (1)
 #define BFA_LPS_MAX_LPORTS      (256)
 
-/*
- * Maximum Vports supported per physical port or vf.
- */
+ 
 #define BFA_LPS_MAX_VPORTS_SUPP_CB  255
 #define BFA_LPS_MAX_VPORTS_SUPP_CT  190
 
 
-/*
- * FC PORT related definitions
- */
-/*
- * The port is considered disabled if corresponding physical port or IOC are
- * disabled explicitly
- */
+ 
+ 
 #define BFA_PORT_IS_DISABLED(bfa) \
 	((bfa_fcport_is_disabled(bfa) == BFA_TRUE) || \
 	(bfa_ioc_is_disabled(&bfa->ioc) == BFA_TRUE))
 
-/*
- * BFA port state machine events
- */
+ 
 enum bfa_fcport_sm_event {
-	BFA_FCPORT_SM_START	= 1,	/*  start port state machine	*/
-	BFA_FCPORT_SM_STOP	= 2,	/*  stop port state machine	*/
-	BFA_FCPORT_SM_ENABLE	= 3,	/*  enable port		*/
-	BFA_FCPORT_SM_DISABLE	= 4,	/*  disable port state machine */
-	BFA_FCPORT_SM_FWRSP	= 5,	/*  firmware enable/disable rsp */
-	BFA_FCPORT_SM_LINKUP	= 6,	/*  firmware linkup event	*/
-	BFA_FCPORT_SM_LINKDOWN	= 7,	/*  firmware linkup down	*/
-	BFA_FCPORT_SM_QRESUME	= 8,	/*  CQ space available	*/
-	BFA_FCPORT_SM_HWFAIL	= 9,	/*  IOC h/w failure		*/
-	BFA_FCPORT_SM_DPORTENABLE = 10, /*  enable dport      */
-	BFA_FCPORT_SM_DPORTDISABLE = 11,/*  disable dport     */
-	BFA_FCPORT_SM_FAA_MISCONFIG = 12,	/* FAA misconfiguratin */
-	BFA_FCPORT_SM_DDPORTENABLE  = 13,	/* enable ddport	*/
-	BFA_FCPORT_SM_DDPORTDISABLE = 14,	/* disable ddport	*/
+	BFA_FCPORT_SM_START	= 1,	 
+	BFA_FCPORT_SM_STOP	= 2,	 
+	BFA_FCPORT_SM_ENABLE	= 3,	 
+	BFA_FCPORT_SM_DISABLE	= 4,	 
+	BFA_FCPORT_SM_FWRSP	= 5,	 
+	BFA_FCPORT_SM_LINKUP	= 6,	 
+	BFA_FCPORT_SM_LINKDOWN	= 7,	 
+	BFA_FCPORT_SM_QRESUME	= 8,	 
+	BFA_FCPORT_SM_HWFAIL	= 9,	 
+	BFA_FCPORT_SM_DPORTENABLE = 10,  
+	BFA_FCPORT_SM_DPORTDISABLE = 11, 
+	BFA_FCPORT_SM_FAA_MISCONFIG = 12,	 
+	BFA_FCPORT_SM_DDPORTENABLE  = 13,	 
+	BFA_FCPORT_SM_DDPORTDISABLE = 14,	 
 };
 
-/*
- * BFA port link notification state machine events
- */
+ 
 
 enum bfa_fcport_ln_sm_event {
-	BFA_FCPORT_LN_SM_LINKUP		= 1,	/*  linkup event	*/
-	BFA_FCPORT_LN_SM_LINKDOWN	= 2,	/*  linkdown event	*/
-	BFA_FCPORT_LN_SM_NOTIFICATION	= 3	/*  done notification	*/
+	BFA_FCPORT_LN_SM_LINKUP		= 1,	 
+	BFA_FCPORT_LN_SM_LINKDOWN	= 2,	 
+	BFA_FCPORT_LN_SM_NOTIFICATION	= 3	 
 };
 
-/*
- * RPORT related definitions
- */
+ 
 #define bfa_rport_offline_cb(__rp) do {					\
 	if ((__rp)->bfa->fcs)						\
 		bfa_cb_rport_offline((__rp)->rport_drv);      \
@@ -91,9 +69,7 @@ enum bfa_fcport_ln_sm_event {
 		}							\
 } while (0)
 
-/*
- * forward declarations FCXP related functions
- */
+ 
 static void	__bfa_fcxp_send_cbfn(void *cbarg, bfa_boolean_t complete);
 static void	hal_fcxp_rx_plog(struct bfa_s *bfa, struct bfa_fcxp_s *fcxp,
 				struct bfi_fcxp_send_rsp_s *fcxp_rsp);
@@ -103,9 +79,7 @@ static void	bfa_fcxp_qresume(void *cbarg);
 static void	bfa_fcxp_queue(struct bfa_fcxp_s *fcxp,
 				struct bfi_fcxp_send_req_s *send_req);
 
-/*
- * forward declarations for LPS functions
- */
+ 
 static void bfa_lps_login_rsp(struct bfa_s *bfa,
 				struct bfi_lps_login_rsp_s *rsp);
 static void bfa_lps_no_res(struct bfa_lps_s *first_lps, u8 count);
@@ -120,9 +94,7 @@ static void bfa_lps_login_comp(struct bfa_lps_s *lps);
 static void bfa_lps_logout_comp(struct bfa_lps_s *lps);
 static void bfa_lps_cvl_event(struct bfa_lps_s *lps);
 
-/*
- * forward declaration for LPS state machine
- */
+ 
 static void bfa_lps_sm_init(struct bfa_lps_s *lps, enum bfa_lps_event event);
 static void bfa_lps_sm_login(struct bfa_lps_s *lps, enum bfa_lps_event event);
 static void bfa_lps_sm_loginwait(struct bfa_lps_s *lps, enum bfa_lps_event
@@ -134,9 +106,7 @@ static void bfa_lps_sm_logout(struct bfa_lps_s *lps, enum bfa_lps_event event);
 static void bfa_lps_sm_logowait(struct bfa_lps_s *lps, enum bfa_lps_event
 					event);
 
-/*
- * forward declaration for FC Port functions
- */
+ 
 static bfa_boolean_t bfa_fcport_send_enable(struct bfa_fcport_s *fcport);
 static bfa_boolean_t bfa_fcport_send_disable(struct bfa_fcport_s *fcport);
 static void bfa_fcport_update_linkinfo(struct bfa_fcport_s *fcport);
@@ -152,9 +122,7 @@ static void bfa_fcport_stats_get_timeout(void *cbarg);
 static void bfa_fcport_stats_clr_timeout(void *cbarg);
 static void bfa_trunk_iocdisable(struct bfa_s *bfa);
 
-/*
- * forward declaration for FC PORT state machine
- */
+ 
 static void     bfa_fcport_sm_uninit(struct bfa_fcport_s *fcport,
 					enum bfa_fcport_sm_event event);
 static void     bfa_fcport_sm_enabling_qwait(struct bfa_fcport_s *fcport,
@@ -220,9 +188,7 @@ static struct bfa_sm_table_s hal_port_sm_table[] = {
 };
 
 
-/*
- * forward declaration for RPORT related functions
- */
+ 
 static struct bfa_rport_s *bfa_rport_alloc(struct bfa_rport_mod_s *rp_mod);
 static void		bfa_rport_free(struct bfa_rport_s *rport);
 static bfa_boolean_t	bfa_rport_send_fwcreate(struct bfa_rport_s *rp);
@@ -233,9 +199,7 @@ static void		__bfa_cb_rport_online(void *cbarg,
 static void		__bfa_cb_rport_offline(void *cbarg,
 						bfa_boolean_t complete);
 
-/*
- * forward declaration for RPORT state machine
- */
+ 
 static void     bfa_rport_sm_uninit(struct bfa_rport_s *rp,
 					enum bfa_rport_event event);
 static void     bfa_rport_sm_created(struct bfa_rport_s *rp,
@@ -263,9 +227,7 @@ static void     bfa_rport_sm_fwdelete_qfull(struct bfa_rport_s *rp,
 static void     bfa_rport_sm_deleting_qfull(struct bfa_rport_s *rp,
 					enum bfa_rport_event event);
 
-/*
- * PLOG related definitions
- */
+ 
 static int
 plkd_validate_logrec(struct bfa_plog_rec_s *pl_rec)
 {
@@ -400,9 +362,7 @@ bfa_plog_fchdr_and_pl(struct bfa_plog_s *plog, enum bfa_plog_mid mid,
 }
 
 
-/*
- *  fcxp_pvt BFA FCXP private functions
- */
+ 
 
 static void
 claim_fcxps_mem(struct bfa_fcxp_mod_s *mod)
@@ -461,7 +421,7 @@ bfa_fcxp_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 	else
 		per_fcxp_sz = BFA_FCXP_MAX_IBUF_SZ + BFA_FCXP_MAX_LBUF_SZ;
 
-	/* dma memory */
+	 
 	nsegs = BFI_MEM_DMA_NSEGS(num_fcxps, per_fcxp_sz);
 	per_seg_fcxp = BFI_MEM_NREQS_SEG(per_fcxp_sz);
 
@@ -475,7 +435,7 @@ bfa_fcxp_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 				num_fcxps * per_fcxp_sz);
 	}
 
-	/* kva memory */
+	 
 	bfa_mem_kva_setup(minfo, fcxp_kva,
 		cfg->fwcfg.num_fcxp_reqs * sizeof(struct bfa_fcxp_s));
 }
@@ -489,9 +449,7 @@ bfa_fcxp_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	mod->bfa = bfa;
 	mod->num_fcxps = cfg->fwcfg.num_fcxp_reqs;
 
-	/*
-	 * Initialize FCXP request and response payload sizes.
-	 */
+	 
 	mod->req_pld_sz = mod->rsp_pld_sz = BFA_FCXP_MAX_IBUF_SZ;
 	if (!cfg->drvcfg.min_cfg)
 		mod->rsp_pld_sz = BFA_FCXP_MAX_LBUF_SZ;
@@ -509,7 +467,7 @@ bfa_fcxp_iocdisable(struct bfa_s *bfa)
 	struct bfa_fcxp_s *fcxp;
 	struct list_head	      *qe, *qen;
 
-	/* Enqueue unused fcxp resources to free_q */
+	 
 	list_splice_tail_init(&mod->fcxp_req_unused_q, &mod->fcxp_req_free_q);
 	list_splice_tail_init(&mod->fcxp_rsp_unused_q, &mod->fcxp_rsp_free_q);
 
@@ -572,9 +530,7 @@ bfa_fcxp_init_reqrsp(struct bfa_fcxp_s *fcxp,
 
 		*nr_sgles = n_sgles;
 
-		/*
-		 * alloc required sgpgs
-		 */
+		 
 		if (n_sgles > BFI_SGE_INLINE)
 			WARN_ON(1);
 	}
@@ -645,7 +601,7 @@ bfa_fcxp_null_comp(void *bfad_fcxp, struct bfa_fcxp_s *fcxp, void *cbarg,
 		   bfa_status_t req_status, u32 rsp_len,
 		   u32 resid_len, struct fchs_s *rsp_fchs)
 {
-	/* discarded fcxp completion */
+	 
 }
 
 static void
@@ -673,10 +629,7 @@ hal_fcxp_send_comp(struct bfa_s *bfa, struct bfi_fcxp_send_rsp_s *fcxp_rsp)
 
 	fcxp_rsp->rsp_len = be32_to_cpu(fcxp_rsp->rsp_len);
 
-	/*
-	 * @todo f/w should not set residue to non-0 when everything
-	 *	 is received.
-	 */
+	 
 	if (fcxp_rsp->req_status == BFA_STATUS_OK)
 		fcxp_rsp->residue_len = 0;
 	else
@@ -694,9 +647,7 @@ hal_fcxp_send_comp(struct bfa_s *bfa, struct bfi_fcxp_send_rsp_s *fcxp_rsp)
 			fcxp->send_cbfn(fcxp->caller, fcxp, fcxp->send_cbarg,
 					fcxp_rsp->req_status, fcxp_rsp->rsp_len,
 					fcxp_rsp->residue_len, &fcxp_rsp->fchs);
-			/*
-			 * fcxp automatically freed on return from the callback
-			 */
+			 
 			bfa_fcxp_free(fcxp);
 		} else {
 			fcxp->rsp_status = fcxp_rsp->req_status;
@@ -716,9 +667,7 @@ static void
 hal_fcxp_tx_plog(struct bfa_s *bfa, u32 reqlen, struct bfa_fcxp_s *fcxp,
 		 struct fchs_s *fchs)
 {
-	/*
-	 * TODO: TX ox_id
-	 */
+	 
 	if (reqlen > 0) {
 		if (fcxp->use_ireqbuf) {
 			u32	pld_w0 =
@@ -765,9 +714,7 @@ hal_fcxp_rx_plog(struct bfa_s *bfa, struct bfa_fcxp_s *fcxp,
 	}
 }
 
-/*
- * Handler to resume sending fcxp when space in available in cpe queue.
- */
+ 
 static void
 bfa_fcxp_qresume(void *cbarg)
 {
@@ -780,9 +727,7 @@ bfa_fcxp_qresume(void *cbarg)
 	bfa_fcxp_queue(fcxp, send_req);
 }
 
-/*
- * Queue fcxp send request to foimrware.
- */
+ 
 static void
 bfa_fcxp_queue(struct bfa_fcxp_s *fcxp, struct bfi_fcxp_send_req_s *send_req)
 {
@@ -815,9 +760,7 @@ bfa_fcxp_queue(struct bfa_fcxp_s *fcxp, struct bfi_fcxp_send_req_s *send_req)
 	send_req->req_len = cpu_to_be32(reqi->req_tot_len);
 	send_req->rsp_maxlen = cpu_to_be32(rspi->rsp_maxlen);
 
-	/*
-	 * setup req sgles
-	 */
+	 
 	if (fcxp->use_ireqbuf == 1) {
 		bfa_alen_set(&send_req->req_alen, reqi->req_tot_len,
 					BFA_FCXP_REQ_PLD_PA(fcxp));
@@ -832,9 +775,7 @@ bfa_fcxp_queue(struct bfa_fcxp_s *fcxp, struct bfi_fcxp_send_req_s *send_req)
 		}
 	}
 
-	/*
-	 * setup rsp sgles
-	 */
+	 
 	if (fcxp->use_irspbuf == 1) {
 		WARN_ON(rspi->rsp_maxlen > BFA_FCXP_MAX_LBUF_SZ);
 
@@ -860,31 +801,7 @@ bfa_fcxp_queue(struct bfa_fcxp_s *fcxp, struct bfi_fcxp_send_req_s *send_req)
 	bfa_trc(bfa, bfa_reqq_ci(bfa, BFA_REQQ_FCXP));
 }
 
-/*
- * Allocate an FCXP instance to send a response or to send a request
- * that has a response. Request/response buffers are allocated by caller.
- *
- * @param[in]	bfa		BFA bfa instance
- * @param[in]	nreq_sgles	Number of SG elements required for request
- *				buffer. 0, if fcxp internal buffers are	used.
- *				Use bfa_fcxp_get_reqbuf() to get the
- *				internal req buffer.
- * @param[in]	req_sgles	SG elements describing request buffer. Will be
- *				copied in by BFA and hence can be freed on
- *				return from this function.
- * @param[in]	get_req_sga	function ptr to be called to get a request SG
- *				Address (given the sge index).
- * @param[in]	get_req_sglen	function ptr to be called to get a request SG
- *				len (given the sge index).
- * @param[in]	get_rsp_sga	function ptr to be called to get a response SG
- *				Address (given the sge index).
- * @param[in]	get_rsp_sglen	function ptr to be called to get a response SG
- *				len (given the sge index).
- * @param[in]	req		Allocated FCXP is used to send req or rsp?
- *				request - BFA_TRUE, response - BFA_FALSE
- *
- * @return FCXP instance. NULL on failure.
- */
+ 
 struct bfa_fcxp_s *
 bfa_fcxp_req_rsp_alloc(void *caller, struct bfa_s *bfa, int nreq_sgles,
 		int nrsp_sgles, bfa_fcxp_get_sgaddr_t req_sga_cbfn,
@@ -908,13 +825,7 @@ bfa_fcxp_req_rsp_alloc(void *caller, struct bfa_s *bfa, int nreq_sgles,
 	return fcxp;
 }
 
-/*
- * Get the internal request buffer pointer
- *
- * @param[in]	fcxp	BFA fcxp pointer
- *
- * @return		pointer to the internal request buffer
- */
+ 
 void *
 bfa_fcxp_get_reqbuf(struct bfa_fcxp_s *fcxp)
 {
@@ -935,13 +846,7 @@ bfa_fcxp_get_reqbufsz(struct bfa_fcxp_s *fcxp)
 	return mod->req_pld_sz;
 }
 
-/*
- * Get the internal response buffer pointer
- *
- * @param[in]	fcxp	BFA fcxp pointer
- *
- * @return		pointer to the internal request buffer
- */
+ 
 void *
 bfa_fcxp_get_rspbuf(struct bfa_fcxp_s *fcxp)
 {
@@ -953,17 +858,11 @@ bfa_fcxp_get_rspbuf(struct bfa_fcxp_s *fcxp)
 	fcxp_buf = bfa_mem_get_dmabuf_kva(mod, fcxp->fcxp_tag,
 				mod->req_pld_sz + mod->rsp_pld_sz);
 
-	/* fcxp_buf = req_buf + rsp_buf :- add req_buf_sz to get to rsp_buf */
+	 
 	return ((u8 *) fcxp_buf) + mod->req_pld_sz;
 }
 
-/*
- * Free the BFA FCXP
- *
- * @param[in]	fcxp			BFA fcxp pointer
- *
- * @return		void
- */
+ 
 void
 bfa_fcxp_free(struct bfa_fcxp_s *fcxp)
 {
@@ -974,27 +873,7 @@ bfa_fcxp_free(struct bfa_fcxp_s *fcxp)
 	bfa_fcxp_put(fcxp);
 }
 
-/*
- * Send a FCXP request
- *
- * @param[in]	fcxp	BFA fcxp pointer
- * @param[in]	rport	BFA rport pointer. Could be left NULL for WKA rports
- * @param[in]	vf_id	virtual Fabric ID
- * @param[in]	lp_tag	lport tag
- * @param[in]	cts	use Continuous sequence
- * @param[in]	cos	fc Class of Service
- * @param[in]	reqlen	request length, does not include FCHS length
- * @param[in]	fchs	fc Header Pointer. The header content will be copied
- *			in by BFA.
- *
- * @param[in]	cbfn	call back function to be called on receiving
- *								the response
- * @param[in]	cbarg	arg for cbfn
- * @param[in]	rsp_timeout
- *			response timeout
- *
- * @return		bfa_status_t
- */
+ 
 void
 bfa_fcxp_send(struct bfa_fcxp_s *fcxp, struct bfa_rport_s *rport,
 	      u16 vf_id, u8 lp_tag, bfa_boolean_t cts, enum fc_cos cos,
@@ -1008,9 +887,7 @@ bfa_fcxp_send(struct bfa_fcxp_s *fcxp, struct bfa_rport_s *rport,
 
 	bfa_trc(bfa, fcxp->fcxp_tag);
 
-	/*
-	 * setup request/response info
-	 */
+	 
 	reqi->bfa_rport = rport;
 	reqi->vf_id = vf_id;
 	reqi->lp_tag = lp_tag;
@@ -1023,9 +900,7 @@ bfa_fcxp_send(struct bfa_fcxp_s *fcxp, struct bfa_rport_s *rport,
 	fcxp->send_cbfn = cbfn ? cbfn : bfa_fcxp_null_comp;
 	fcxp->send_cbarg = cbarg;
 
-	/*
-	 * If no room in CPE queue, wait for space in request queue
-	 */
+	 
 	send_req = bfa_reqq_next(bfa, BFA_REQQ_FCXP);
 	if (!send_req) {
 		bfa_trc(bfa, fcxp->fcxp_tag);
@@ -1037,13 +912,7 @@ bfa_fcxp_send(struct bfa_fcxp_s *fcxp, struct bfa_rport_s *rport,
 	bfa_fcxp_queue(fcxp, send_req);
 }
 
-/*
- * Abort a BFA FCXP
- *
- * @param[in]	fcxp	BFA fcxp pointer
- *
- * @return		void
- */
+ 
 bfa_status_t
 bfa_fcxp_abort(struct bfa_fcxp_s *fcxp)
 {
@@ -1098,10 +967,7 @@ bfa_fcxp_walloc_cancel(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe)
 void
 bfa_fcxp_discard(struct bfa_fcxp_s *fcxp)
 {
-	/*
-	 * If waiting for room in request queue, cancel reqq wait
-	 * and free fcxp.
-	 */
+	 
 	if (fcxp->reqq_waiting) {
 		fcxp->reqq_waiting = BFA_FALSE;
 		bfa_reqq_wcancel(&fcxp->reqq_wqe);
@@ -1152,13 +1018,9 @@ bfa_fcxp_res_recfg(struct bfa_s *bfa, u16 num_fcxp_fw)
 	}
 }
 
-/*
- *  BFA LPS state machine functions
- */
+ 
 
-/*
- * Init state -- no login
- */
+ 
 static void
 bfa_lps_sm_init(struct bfa_lps_s *lps, enum bfa_lps_event event)
 {
@@ -1196,17 +1058,10 @@ bfa_lps_sm_init(struct bfa_lps_s *lps, enum bfa_lps_event event)
 		break;
 
 	case BFA_LPS_SM_FWRSP:
-		/*
-		 * Could happen when fabric detects loopback and discards
-		 * the lps request. Fw will eventually sent out the timeout
-		 * Just ignore
-		 */
+		 
 		break;
 	case BFA_LPS_SM_SET_N2N_PID:
-		/*
-		 * When topology is set to loop, bfa_lps_set_n2n_pid() sends
-		 * this event. Ignore this event.
-		 */
+		 
 		break;
 
 	default:
@@ -1214,9 +1069,7 @@ bfa_lps_sm_init(struct bfa_lps_s *lps, enum bfa_lps_event event)
 	}
 }
 
-/*
- * login is in progress -- awaiting response from firmware
- */
+ 
 static void
 bfa_lps_sm_login(struct bfa_lps_s *lps, enum bfa_lps_event event)
 {
@@ -1233,7 +1086,7 @@ bfa_lps_sm_login(struct bfa_lps_s *lps, enum bfa_lps_event event)
 			else
 				bfa_plog_str(lps->bfa->plog, BFA_PL_MID_LPS,
 					BFA_PL_EID_LOGIN, 0, "FLOGI Accept");
-			/* If N2N, send the assigned PID to FW */
+			 
 			bfa_trc(lps->bfa, lps->fport);
 			bfa_trc(lps->bfa, lps->lp_pid);
 
@@ -1268,9 +1121,7 @@ bfa_lps_sm_login(struct bfa_lps_s *lps, enum bfa_lps_event event)
 	}
 }
 
-/*
- * login pending - awaiting space in request queue
- */
+ 
 static void
 bfa_lps_sm_loginwait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 {
@@ -1290,11 +1141,7 @@ bfa_lps_sm_loginwait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 		break;
 
 	case BFA_LPS_SM_RX_CVL:
-		/*
-		 * Login was not even sent out; so when getting out
-		 * of this state, it will appear like a login retry
-		 * after Clear virtual link
-		 */
+		 
 		break;
 
 	default:
@@ -1302,9 +1149,7 @@ bfa_lps_sm_loginwait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 	}
 }
 
-/*
- * login complete
- */
+ 
 static void
 bfa_lps_sm_online(struct bfa_lps_s *lps, enum bfa_lps_event event)
 {
@@ -1327,7 +1172,7 @@ bfa_lps_sm_online(struct bfa_lps_s *lps, enum bfa_lps_event event)
 	case BFA_LPS_SM_RX_CVL:
 		bfa_sm_set_state(lps, bfa_lps_sm_init);
 
-		/* Let the vport module know about this event */
+		 
 		bfa_lps_cvl_event(lps);
 		bfa_plog_str(lps->bfa->plog, BFA_PL_MID_LPS,
 			BFA_PL_EID_FIP_FCF_CVL, 0, "FCF Clear Virt. Link Rx");
@@ -1351,9 +1196,7 @@ bfa_lps_sm_online(struct bfa_lps_s *lps, enum bfa_lps_event event)
 	}
 }
 
-/*
- * login complete
- */
+ 
 static void
 bfa_lps_sm_online_n2n_pid_wait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 {
@@ -1376,7 +1219,7 @@ bfa_lps_sm_online_n2n_pid_wait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 		bfa_sm_set_state(lps, bfa_lps_sm_init);
 		bfa_reqq_wcancel(&lps->wqe);
 
-		/* Let the vport module know about this event */
+		 
 		bfa_lps_cvl_event(lps);
 		bfa_plog_str(lps->bfa->plog, BFA_PL_MID_LPS,
 			BFA_PL_EID_FIP_FCF_CVL, 0, "FCF Clear Virt. Link Rx");
@@ -1393,9 +1236,7 @@ bfa_lps_sm_online_n2n_pid_wait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 	}
 }
 
-/*
- * logout in progress - awaiting firmware response
- */
+ 
 static void
 bfa_lps_sm_logout(struct bfa_lps_s *lps, enum bfa_lps_event event)
 {
@@ -1418,9 +1259,7 @@ bfa_lps_sm_logout(struct bfa_lps_s *lps, enum bfa_lps_event event)
 	}
 }
 
-/*
- * logout pending -- awaiting space in request queue
- */
+ 
 static void
 bfa_lps_sm_logowait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 {
@@ -1446,13 +1285,9 @@ bfa_lps_sm_logowait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 
 
 
-/*
- *  lps_pvt BFA LPS private functions
- */
+ 
 
-/*
- * return memory requirement
- */
+ 
 void
 bfa_lps_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
@@ -1467,9 +1302,7 @@ bfa_lps_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 			sizeof(struct bfa_lps_s) * BFA_LPS_MAX_LPORTS);
 }
 
-/*
- * bfa module attach at initialization time
- */
+ 
 void
 bfa_lps_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	struct bfa_pcidev_s *pcidev)
@@ -1500,9 +1333,7 @@ bfa_lps_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	}
 }
 
-/*
- * IOC in disabled state -- consider all lps offline
- */
+ 
 void
 bfa_lps_iocdisable(struct bfa_s *bfa)
 {
@@ -1521,9 +1352,7 @@ bfa_lps_iocdisable(struct bfa_s *bfa)
 	list_splice_tail_init(&mod->lps_login_q, &mod->lps_active_q);
 }
 
-/*
- * Firmware login response
- */
+ 
 static void
 bfa_lps_login_rsp(struct bfa_s *bfa, struct bfi_lps_login_rsp_s *rsp)
 {
@@ -1568,7 +1397,7 @@ bfa_lps_login_rsp(struct bfa_s *bfa, struct bfi_lps_login_rsp_s *rsp)
 		break;
 
 	default:
-		/* Nothing to do with other status */
+		 
 		break;
 	}
 
@@ -1602,9 +1431,7 @@ bfa_lps_no_res(struct bfa_lps_s *first_lps, u8 count)
 	}
 }
 
-/*
- * Firmware logout response
- */
+ 
 static void
 bfa_lps_logout_rsp(struct bfa_s *bfa, struct bfi_lps_logout_rsp_s *rsp)
 {
@@ -1617,9 +1444,7 @@ bfa_lps_logout_rsp(struct bfa_s *bfa, struct bfi_lps_logout_rsp_s *rsp)
 	bfa_sm_send_event(lps, BFA_LPS_SM_FWRSP);
 }
 
-/*
- * Firmware received a Clear virtual link request (for FCoE)
- */
+ 
 static void
 bfa_lps_rx_cvl_event(struct bfa_s *bfa, struct bfi_lps_cvl_event_s *cvl)
 {
@@ -1631,9 +1456,7 @@ bfa_lps_rx_cvl_event(struct bfa_s *bfa, struct bfi_lps_cvl_event_s *cvl)
 	bfa_sm_send_event(lps, BFA_LPS_SM_RX_CVL);
 }
 
-/*
- * Space is available in request queue, resume queueing request to firmware.
- */
+ 
 static void
 bfa_lps_reqq_resume(void *lps_arg)
 {
@@ -1642,9 +1465,7 @@ bfa_lps_reqq_resume(void *lps_arg)
 	bfa_sm_send_event(lps, BFA_LPS_SM_RESUME);
 }
 
-/*
- * lps is freed -- triggered by vport delete
- */
+ 
 static void
 bfa_lps_free(struct bfa_lps_s *lps)
 {
@@ -1655,9 +1476,7 @@ bfa_lps_free(struct bfa_lps_s *lps)
 	list_add_tail(&lps->qe, &mod->lps_free_q);
 }
 
-/*
- * send login request to firmware
- */
+ 
 static void
 bfa_lps_send_login(struct bfa_lps_s *lps)
 {
@@ -1683,9 +1502,7 @@ bfa_lps_send_login(struct bfa_lps_s *lps)
 	list_add_tail(&lps->qe, &mod->lps_login_q);
 }
 
-/*
- * send logout request to firmware
- */
+ 
 static void
 bfa_lps_send_logout(struct bfa_lps_s *lps)
 {
@@ -1702,9 +1519,7 @@ bfa_lps_send_logout(struct bfa_lps_s *lps)
 	bfa_reqq_produce(lps->bfa, lps->reqq, m->mh);
 }
 
-/*
- * send n2n pid set request to firmware
- */
+ 
 static void
 bfa_lps_send_set_n2n_pid(struct bfa_lps_s *lps)
 {
@@ -1721,9 +1536,7 @@ bfa_lps_send_set_n2n_pid(struct bfa_lps_s *lps)
 	bfa_reqq_produce(lps->bfa, lps->reqq, m->mh);
 }
 
-/*
- * Indirect login completion handler for non-fcs
- */
+ 
 static void
 bfa_lps_login_comp_cb(void *arg, bfa_boolean_t complete)
 {
@@ -1738,9 +1551,7 @@ bfa_lps_login_comp_cb(void *arg, bfa_boolean_t complete)
 		bfa_cb_lps_flogi_comp(lps->bfa->bfad, lps->uarg, lps->status);
 }
 
-/*
- * Login completion handler -- direct call for fcs, queue for others
- */
+ 
 static void
 bfa_lps_login_comp(struct bfa_lps_s *lps)
 {
@@ -1756,9 +1567,7 @@ bfa_lps_login_comp(struct bfa_lps_s *lps)
 		bfa_cb_lps_flogi_comp(lps->bfa->bfad, lps->uarg, lps->status);
 }
 
-/*
- * Indirect logout completion handler for non-fcs
- */
+ 
 static void
 bfa_lps_logout_comp_cb(void *arg, bfa_boolean_t complete)
 {
@@ -1773,9 +1582,7 @@ bfa_lps_logout_comp_cb(void *arg, bfa_boolean_t complete)
 		bfa_cb_lps_flogo_comp(lps->bfa->bfad, lps->uarg);
 }
 
-/*
- * Logout completion handler -- direct call for fcs, queue for others
- */
+ 
 static void
 bfa_lps_logout_comp(struct bfa_lps_s *lps)
 {
@@ -1788,9 +1595,7 @@ bfa_lps_logout_comp(struct bfa_lps_s *lps)
 		bfa_cb_lps_fdisclogo_comp(lps->bfa->bfad, lps->uarg);
 }
 
-/*
- * Clear virtual link completion handler for non-fcs
- */
+ 
 static void
 bfa_lps_cvl_event_cb(void *arg, bfa_boolean_t complete)
 {
@@ -1799,15 +1604,12 @@ bfa_lps_cvl_event_cb(void *arg, bfa_boolean_t complete)
 	if (!complete)
 		return;
 
-	/* Clear virtual link to base port will result in link down */
+	 
 	if (lps->fdisc)
 		bfa_cb_lps_cvl_event(lps->bfa->bfad, lps->uarg);
 }
 
-/*
- * Received Clear virtual link event --direct call for fcs,
- * queue for others
- */
+ 
 static void
 bfa_lps_cvl_event(struct bfa_lps_s *lps)
 {
@@ -1817,16 +1619,14 @@ bfa_lps_cvl_event(struct bfa_lps_s *lps)
 		return;
 	}
 
-	/* Clear virtual link to base port will result in link down */
+	 
 	if (lps->fdisc)
 		bfa_cb_lps_cvl_event(lps->bfa->bfad, lps->uarg);
 }
 
 
 
-/*
- *  lps_public BFA LPS public functions
- */
+ 
 
 u32
 bfa_lps_get_max_vport(struct bfa_s *bfa)
@@ -1837,9 +1637,7 @@ bfa_lps_get_max_vport(struct bfa_s *bfa)
 		return BFA_LPS_MAX_VPORTS_SUPP_CB;
 }
 
-/*
- * Allocate a lport srvice tag.
- */
+ 
 struct bfa_lps_s  *
 bfa_lps_alloc(struct bfa_s *bfa)
 {
@@ -1857,19 +1655,14 @@ bfa_lps_alloc(struct bfa_s *bfa)
 	return lps;
 }
 
-/*
- * Free lport service tag. This can be called anytime after an alloc.
- * No need to wait for any pending login/logout completions.
- */
+ 
 void
 bfa_lps_delete(struct bfa_lps_s *lps)
 {
 	bfa_sm_send_event(lps, BFA_LPS_SM_DELETE);
 }
 
-/*
- * Initiate a lport login.
- */
+ 
 void
 bfa_lps_flogi(struct bfa_lps_s *lps, void *uarg, u8 alpa, u16 pdusz,
 	wwn_t pwwn, wwn_t nwwn, bfa_boolean_t auth_en)
@@ -1884,9 +1677,7 @@ bfa_lps_flogi(struct bfa_lps_s *lps, void *uarg, u8 alpa, u16 pdusz,
 	bfa_sm_send_event(lps, BFA_LPS_SM_LOGIN);
 }
 
-/*
- * Initiate a lport fdisc login.
- */
+ 
 void
 bfa_lps_fdisc(struct bfa_lps_s *lps, void *uarg, u16 pdusz, wwn_t pwwn,
 	wwn_t nwwn)
@@ -1902,9 +1693,7 @@ bfa_lps_fdisc(struct bfa_lps_s *lps, void *uarg, u16 pdusz, wwn_t pwwn,
 }
 
 
-/*
- * Initiate a lport FDSIC logout.
- */
+ 
 void
 bfa_lps_fdisclogo(struct bfa_lps_s *lps)
 {
@@ -1919,9 +1708,7 @@ bfa_lps_get_fwtag(struct bfa_s *bfa, u8 lp_tag)
 	return BFA_LPS_FROM_TAG(mod, lp_tag)->fw_tag;
 }
 
-/*
- * Return lport services tag given the pid
- */
+ 
 u8
 bfa_lps_get_tag_from_pid(struct bfa_s *bfa, u32 pid)
 {
@@ -1934,14 +1721,12 @@ bfa_lps_get_tag_from_pid(struct bfa_s *bfa, u32 pid)
 			return lps->bfa_tag;
 	}
 
-	/* Return base port tag anyway */
+	 
 	return 0;
 }
 
 
-/*
- * return port id assigned to the base lport
- */
+ 
 u32
 bfa_lps_get_base_pid(struct bfa_s *bfa)
 {
@@ -1950,9 +1735,7 @@ bfa_lps_get_base_pid(struct bfa_s *bfa)
 	return BFA_LPS_FROM_TAG(mod, 0)->lp_pid;
 }
 
-/*
- * Set PID in case of n2n (which is assigned during PLOGI)
- */
+ 
 void
 bfa_lps_set_n2n_pid(struct bfa_lps_s *lps, uint32_t n2n_pid)
 {
@@ -1963,9 +1746,7 @@ bfa_lps_set_n2n_pid(struct bfa_lps_s *lps, uint32_t n2n_pid)
 	bfa_sm_send_event(lps, BFA_LPS_SM_SET_N2N_PID);
 }
 
-/*
- * LPS firmware message class handler.
- */
+ 
 void
 bfa_lps_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 {
@@ -2006,14 +1787,12 @@ bfa_fcport_aen_post(struct bfa_fcport_s *fcport, enum bfa_port_aen_event event)
 	aen_entry->aen_data.port.ioc_type = bfa_get_type(fcport->bfa);
 	aen_entry->aen_data.port.pwwn = fcport->pwwn;
 
-	/* Send the AEN notification */
+	 
 	bfad_im_post_vendor_event(aen_entry, bfad, ++fcport->bfa->bfa_aen_seq,
 				  BFA_AEN_CAT_PORT, event);
 }
 
-/*
- * FC PORT state machine functions
- */
+ 
 static void
 bfa_fcport_sm_uninit(struct bfa_fcport_s *fcport,
 			enum bfa_fcport_sm_event event)
@@ -2022,9 +1801,7 @@ bfa_fcport_sm_uninit(struct bfa_fcport_s *fcport,
 
 	switch (event) {
 	case BFA_FCPORT_SM_START:
-		/*
-		 * Start event after IOC is configured and BFA is started.
-		 */
+		 
 		fcport->use_flash_cfg = BFA_TRUE;
 
 		if (bfa_fcport_send_enable(fcport)) {
@@ -2038,18 +1815,11 @@ bfa_fcport_sm_uninit(struct bfa_fcport_s *fcport,
 		break;
 
 	case BFA_FCPORT_SM_ENABLE:
-		/*
-		 * Port is persistently configured to be in enabled state. Do
-		 * not change state. Port enabling is done when START event is
-		 * received.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
-		/*
-		 * If a port is persistently configured to be disabled, the
-		 * first event will a port disable request.
-		 */
+		 
 		bfa_sm_set_state(fcport, bfa_fcport_sm_disabled);
 		break;
 
@@ -2082,16 +1852,11 @@ bfa_fcport_sm_enabling_qwait(struct bfa_fcport_s *fcport,
 		break;
 
 	case BFA_FCPORT_SM_ENABLE:
-		/*
-		 * Already enable is in progress.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
-		/*
-		 * Just send disable request to firmware when room becomes
-		 * available in request queue.
-		 */
+		 
 		bfa_sm_set_state(fcport, bfa_fcport_sm_disabled);
 		bfa_reqq_wcancel(&fcport->reqq_wait);
 		bfa_plog_str(fcport->bfa->plog, BFA_PL_MID_HAL,
@@ -2104,10 +1869,7 @@ bfa_fcport_sm_enabling_qwait(struct bfa_fcport_s *fcport,
 
 	case BFA_FCPORT_SM_LINKUP:
 	case BFA_FCPORT_SM_LINKDOWN:
-		/*
-		 * Possible to get link events when doing back-to-back
-		 * enable/disables.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_HWFAIL:
@@ -2149,9 +1911,7 @@ bfa_fcport_sm_enabling(struct bfa_fcport_s *fcport,
 		break;
 
 	case BFA_FCPORT_SM_ENABLE:
-		/*
-		 * Already being enabled.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
@@ -2228,22 +1988,18 @@ bfa_fcport_sm_linkdown(struct bfa_fcport_s *fcport,
 			"Base port online: WWN = %s\n", pwwn_buf);
 		bfa_fcport_aen_post(fcport, BFA_PORT_AEN_ONLINE);
 
-		/* If QoS is enabled and it is not online, send AEN */
+		 
 		if (fcport->cfg.qos_enabled &&
 		    fcport->qos_attr.state != BFA_QOS_ONLINE)
 			bfa_fcport_aen_post(fcport, BFA_PORT_AEN_QOS_NEG);
 		break;
 
 	case BFA_FCPORT_SM_LINKDOWN:
-		/*
-		 * Possible to get link down event.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_ENABLE:
-		/*
-		 * Already enabled.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
@@ -2291,9 +2047,7 @@ bfa_fcport_sm_linkup(struct bfa_fcport_s *fcport,
 
 	switch (event) {
 	case BFA_FCPORT_SM_ENABLE:
-		/*
-		 * Already enabled.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
@@ -2401,17 +2155,12 @@ bfa_fcport_sm_disabling_qwait(struct bfa_fcport_s *fcport,
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
-		/*
-		 * Already being disabled.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_LINKUP:
 	case BFA_FCPORT_SM_LINKDOWN:
-		/*
-		 * Possible to get link events when doing back-to-back
-		 * enable/disables.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_HWFAIL:
@@ -2461,10 +2210,7 @@ bfa_fcport_sm_toggling_qwait(struct bfa_fcport_s *fcport,
 
 	case BFA_FCPORT_SM_LINKUP:
 	case BFA_FCPORT_SM_LINKDOWN:
-		/*
-		 * Possible to get link events when doing back-to-back
-		 * enable/disables.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_HWFAIL:
@@ -2491,9 +2237,7 @@ bfa_fcport_sm_disabling(struct bfa_fcport_s *fcport,
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
-		/*
-		 * Already being disabled.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_ENABLE:
@@ -2517,10 +2261,7 @@ bfa_fcport_sm_disabling(struct bfa_fcport_s *fcport,
 
 	case BFA_FCPORT_SM_LINKUP:
 	case BFA_FCPORT_SM_LINKDOWN:
-		/*
-		 * Possible to get link events when doing back-to-back
-		 * enable/disables.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_HWFAIL:
@@ -2542,9 +2283,7 @@ bfa_fcport_sm_disabled(struct bfa_fcport_s *fcport,
 
 	switch (event) {
 	case BFA_FCPORT_SM_START:
-		/*
-		 * Ignore start event for a port that is disabled.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_STOP:
@@ -2567,9 +2306,7 @@ bfa_fcport_sm_disabled(struct bfa_fcport_s *fcport,
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
-		/*
-		 * Already disabled.
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_HWFAIL:
@@ -2605,16 +2342,12 @@ bfa_fcport_sm_stopped(struct bfa_fcport_s *fcport,
 		break;
 
 	default:
-		/*
-		 * Ignore all other events.
-		 */
+		 
 		;
 	}
 }
 
-/*
- * Port is enabled. IOC is down/failed.
- */
+ 
 static void
 bfa_fcport_sm_iocdown(struct bfa_fcport_s *fcport,
 			 enum bfa_fcport_sm_event event)
@@ -2631,16 +2364,12 @@ bfa_fcport_sm_iocdown(struct bfa_fcport_s *fcport,
 		break;
 
 	default:
-		/*
-		 * Ignore all events.
-		 */
+		 
 		;
 	}
 }
 
-/*
- * Port is disabled. IOC is down/failed.
- */
+ 
 static void
 bfa_fcport_sm_iocfail(struct bfa_fcport_s *fcport,
 			 enum bfa_fcport_sm_event event)
@@ -2657,9 +2386,7 @@ bfa_fcport_sm_iocfail(struct bfa_fcport_s *fcport,
 		break;
 
 	default:
-		/*
-		 * Ignore all events.
-		 */
+		 
 		;
 	}
 }
@@ -2674,9 +2401,7 @@ bfa_fcport_sm_dport(struct bfa_fcport_s *fcport, enum bfa_fcport_sm_event event)
 	case BFA_FCPORT_SM_DISABLE:
 	case BFA_FCPORT_SM_ENABLE:
 	case BFA_FCPORT_SM_START:
-		/*
-		 * Ignore event for a port that is dport
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_STOP:
@@ -2712,9 +2437,7 @@ bfa_fcport_sm_ddport(struct bfa_fcport_s *fcport,
 	case BFA_FCPORT_SM_DPORTDISABLE:
 	case BFA_FCPORT_SM_ENABLE:
 	case BFA_FCPORT_SM_START:
-		/*
-		 * Ignore event for a port that is ddport
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_STOP:
@@ -2740,9 +2463,7 @@ bfa_fcport_sm_faa_misconfig(struct bfa_fcport_s *fcport,
 	case BFA_FCPORT_SM_DPORTENABLE:
 	case BFA_FCPORT_SM_ENABLE:
 	case BFA_FCPORT_SM_START:
-		/*
-		 * Ignore event for a port as there is FAA misconfig
-		 */
+		 
 		break;
 
 	case BFA_FCPORT_SM_DISABLE:
@@ -2773,9 +2494,7 @@ bfa_fcport_sm_faa_misconfig(struct bfa_fcport_s *fcport,
 	}
 }
 
-/*
- * Link state is down
- */
+ 
 static void
 bfa_fcport_ln_sm_dn(struct bfa_fcport_ln_s *ln,
 		enum bfa_fcport_ln_sm_event event)
@@ -2793,9 +2512,7 @@ bfa_fcport_ln_sm_dn(struct bfa_fcport_ln_s *ln,
 	}
 }
 
-/*
- * Link state is waiting for down notification
- */
+ 
 static void
 bfa_fcport_ln_sm_dn_nf(struct bfa_fcport_ln_s *ln,
 		enum bfa_fcport_ln_sm_event event)
@@ -2816,9 +2533,7 @@ bfa_fcport_ln_sm_dn_nf(struct bfa_fcport_ln_s *ln,
 	}
 }
 
-/*
- * Link state is waiting for down notification and there is a pending up
- */
+ 
 static void
 bfa_fcport_ln_sm_dn_up_nf(struct bfa_fcport_ln_s *ln,
 		enum bfa_fcport_ln_sm_event event)
@@ -2840,9 +2555,7 @@ bfa_fcport_ln_sm_dn_up_nf(struct bfa_fcport_ln_s *ln,
 	}
 }
 
-/*
- * Link state is up
- */
+ 
 static void
 bfa_fcport_ln_sm_up(struct bfa_fcport_ln_s *ln,
 		enum bfa_fcport_ln_sm_event event)
@@ -2860,9 +2573,7 @@ bfa_fcport_ln_sm_up(struct bfa_fcport_ln_s *ln,
 	}
 }
 
-/*
- * Link state is waiting for up notification
- */
+ 
 static void
 bfa_fcport_ln_sm_up_nf(struct bfa_fcport_ln_s *ln,
 		enum bfa_fcport_ln_sm_event event)
@@ -2883,9 +2594,7 @@ bfa_fcport_ln_sm_up_nf(struct bfa_fcport_ln_s *ln,
 	}
 }
 
-/*
- * Link state is waiting for up notification and there is a pending down
- */
+ 
 static void
 bfa_fcport_ln_sm_up_dn_nf(struct bfa_fcport_ln_s *ln,
 		enum bfa_fcport_ln_sm_event event)
@@ -2907,9 +2616,7 @@ bfa_fcport_ln_sm_up_dn_nf(struct bfa_fcport_ln_s *ln,
 	}
 }
 
-/*
- * Link state is waiting for up notification and there are pending down and up
- */
+ 
 static void
 bfa_fcport_ln_sm_up_dn_up_nf(struct bfa_fcport_ln_s *ln,
 			enum bfa_fcport_ln_sm_event event)
@@ -2942,10 +2649,7 @@ __bfa_cb_fcport_event(void *cbarg, bfa_boolean_t complete)
 		bfa_sm_send_event(ln, BFA_FCPORT_LN_SM_NOTIFICATION);
 }
 
-/*
- * Send SCN notification to upper layers.
- * trunk - false if caller is fcport to ignore fcport event in trunked mode
- */
+ 
 static void
 bfa_fcport_scn(struct bfa_fcport_s *fcport, enum bfa_port_linkstate event,
 	bfa_boolean_t trunk)
@@ -3011,9 +2715,7 @@ bfa_fcport_mem_claim(struct bfa_fcport_s *fcport)
 				bfa_mem_dma_virt(fcport_dma);
 }
 
-/*
- * Memory initialization.
- */
+ 
 void
 bfa_fcport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
@@ -3030,15 +2732,11 @@ bfa_fcport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	bfa_sm_set_state(fcport, bfa_fcport_sm_uninit);
 	bfa_sm_set_state(ln, bfa_fcport_ln_sm_dn);
 
-	/*
-	 * initialize time stamp for stats reset
-	 */
+	 
 	fcport->stats_reset_time = ktime_get_seconds();
 	fcport->stats_dma_ready = BFA_FALSE;
 
-	/*
-	 * initialize and set default configuration
-	 */
+	 
 	port_cfg->topology = BFA_PORT_TOPOLOGY_P2P;
 	port_cfg->speed = BFA_PORT_SPEED_AUTO;
 	port_cfg->trunked = BFA_FALSE;
@@ -3063,9 +2761,7 @@ bfa_fcport_start(struct bfa_s *bfa)
 	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_START);
 }
 
-/*
- * Called when IOC failure is detected.
- */
+ 
 void
 bfa_fcport_iocdisable(struct bfa_s *bfa)
 {
@@ -3075,9 +2771,7 @@ bfa_fcport_iocdisable(struct bfa_s *bfa)
 	bfa_trunk_iocdisable(bfa);
 }
 
-/*
- * Update loop info in fcport for SCN online
- */
+ 
 static void
 bfa_fcport_update_loop_info(struct bfa_fcport_s *fcport,
 			struct bfa_fcport_loop_info_s *loop_info)
@@ -3105,7 +2799,7 @@ bfa_fcport_update_linkinfo(struct bfa_fcport_s *fcport)
 		return;
 	}
 
-	/* QoS Details */
+	 
 	fcport->qos_attr = pevent->link_state.qos_attr;
 	fcport->qos_vc_attr = pevent->link_state.attr.vc_fcf.qos_vc_attr;
 
@@ -3114,13 +2808,11 @@ bfa_fcport_update_linkinfo(struct bfa_fcport_s *fcport)
 
 	fcport->fec_state = pevent->link_state.fec_state;
 
-	/*
-	 * update trunk state if applicable
-	 */
+	 
 	if (!fcport->cfg.trunked)
 		trunk->attr.state = BFA_TRUNK_DISABLED;
 
-	/* update FCoE specific */
+	 
 	fcport->fcoe_vlan =
 		be16_to_cpu(pevent->link_state.attr.vc_fcf.fcf.vlan);
 
@@ -3136,23 +2828,16 @@ bfa_fcport_reset_linkinfo(struct bfa_fcport_s *fcport)
 	fcport->fec_state = BFA_FEC_OFFLINE;
 }
 
-/*
- * Send port enable message to firmware.
- */
+ 
 static bfa_boolean_t
 bfa_fcport_send_enable(struct bfa_fcport_s *fcport)
 {
 	struct bfi_fcport_enable_req_s *m;
 
-	/*
-	 * Increment message tag before queue check, so that responses to old
-	 * requests are discarded.
-	 */
+	 
 	fcport->msgtag++;
 
-	/*
-	 * check for room in queue to send request now
-	 */
+	 
 	m = bfa_reqq_next(fcport->bfa, BFA_REQQ_PORT);
 	if (!m) {
 		bfa_reqq_wait(fcport->bfa, BFA_REQQ_PORT,
@@ -3172,30 +2857,21 @@ bfa_fcport_send_enable(struct bfa_fcport_s *fcport)
 	bfa_trc(fcport->bfa, m->stats_dma_addr.a32.addr_lo);
 	bfa_trc(fcport->bfa, m->stats_dma_addr.a32.addr_hi);
 
-	/*
-	 * queue I/O message to firmware
-	 */
+	 
 	bfa_reqq_produce(fcport->bfa, BFA_REQQ_PORT, m->mh);
 	return BFA_TRUE;
 }
 
-/*
- * Send port disable message to firmware.
- */
+ 
 static	bfa_boolean_t
 bfa_fcport_send_disable(struct bfa_fcport_s *fcport)
 {
 	struct bfi_fcport_req_s *m;
 
-	/*
-	 * Increment message tag before queue check, so that responses to old
-	 * requests are discarded.
-	 */
+	 
 	fcport->msgtag++;
 
-	/*
-	 * check for room in queue to send request now
-	 */
+	 
 	m = bfa_reqq_next(fcport->bfa, BFA_REQQ_PORT);
 	if (!m) {
 		bfa_reqq_wait(fcport->bfa, BFA_REQQ_PORT,
@@ -3207,9 +2883,7 @@ bfa_fcport_send_disable(struct bfa_fcport_s *fcport)
 			bfa_fn_lpu(fcport->bfa));
 	m->msgtag = fcport->msgtag;
 
-	/*
-	 * queue I/O message to firmware
-	 */
+	 
 	bfa_reqq_produce(fcport->bfa, BFA_REQQ_PORT, m->mh);
 
 	return BFA_TRUE;
@@ -3233,7 +2907,7 @@ bfa_fcport_qos_stats_swap(struct bfa_qos_stats_s *d,
 	__be32	*sip = (__be32 *) s;
 	int		i;
 
-	/* Now swap the 32 bit fields */
+	 
 	for (i = 0; i < (sizeof(struct bfa_qos_stats_s)/sizeof(u32)); ++i)
 		dip[i] = be32_to_cpu(sip[i]);
 }
@@ -3274,7 +2948,7 @@ __bfa_cb_fcport_stats_get(void *cbarg, bfa_boolean_t complete)
 			cb = (struct bfa_cb_pending_q_s *)qe;
 			if (fcport->stats_status == BFA_STATUS_OK) {
 				ret = (union bfa_fcport_stats_u *)cb->data;
-				/* Swap FC QoS or FCoE stats */
+				 
 				if (bfa_ioc_get_fcmode(&fcport->bfa->ioc))
 					bfa_fcport_qos_stats_swap(&ret->fcqos,
 							&fcport->stats->fcqos);
@@ -3343,9 +3017,7 @@ __bfa_cb_fcport_stats_clr(void *cbarg, bfa_boolean_t complete)
 	struct list_head *qe, *qen;
 
 	if (complete) {
-		/*
-		 * re-initialize time stamp for stats reset
-		 */
+		 
 		fcport->stats_reset_time = ktime_get_seconds();
 		list_for_each_safe(qe, qen, &fcport->statsclr_pending_q) {
 			bfa_q_deq(&fcport->statsclr_pending_q, &qe);
@@ -3400,9 +3072,7 @@ bfa_fcport_send_stats_clear(void *cbarg)
 	bfa_reqq_produce(fcport->bfa, BFA_REQQ_PORT, msg->mh);
 }
 
-/*
- * Handle trunk SCN event from firmware.
- */
+ 
 static void
 bfa_trunk_scn(struct bfa_fcport_s *fcport, struct bfi_fcport_trunk_scn_s *scn)
 {
@@ -3421,9 +3091,7 @@ bfa_trunk_scn(struct bfa_fcport_s *fcport, struct bfi_fcport_trunk_scn_s *scn)
 	bfa_trc(fcport->bfa, scn->trunk_state);
 	bfa_trc(fcport->bfa, scn->trunk_speed);
 
-	/*
-	 * Save off new state for trunk attribute query
-	 */
+	 
 	state_prev = trunk->attr.state;
 	if (fcport->cfg.trunked && (trunk->attr.state != BFA_TRUNK_DISABLED))
 		trunk->attr.state = scn->trunk_state;
@@ -3469,9 +3137,7 @@ bfa_trunk_scn(struct bfa_fcport_s *fcport, struct bfi_fcport_trunk_scn_s *scn)
 			BFA_PL_EID_TRUNK_SCN, 0, "Trunk down");
 	}
 
-	/*
-	 * Notify upper layers if trunk state changed.
-	 */
+	 
 	if ((state_prev != trunk->attr.state) ||
 		(scn->trunk_state == BFA_TRUNK_OFFLINE)) {
 		bfa_fcport_scn(fcport, (scn->trunk_state == BFA_TRUNK_ONLINE) ?
@@ -3485,9 +3151,7 @@ bfa_trunk_iocdisable(struct bfa_s *bfa)
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
 	int i = 0;
 
-	/*
-	 * In trunked mode, notify upper layers that link is down
-	 */
+	 
 	if (fcport->cfg.trunked) {
 		if (fcport->trunk.attr.state == BFA_TRUNK_ONLINE)
 			bfa_fcport_scn(fcport, BFA_PORT_LINKDOWN, BFA_TRUE);
@@ -3507,17 +3171,13 @@ bfa_trunk_iocdisable(struct bfa_s *bfa)
 	}
 }
 
-/*
- * Called to initialize port attributes
- */
+ 
 void
 bfa_fcport_init(struct bfa_s *bfa)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
 
-	/*
-	 * Initialize port attributes from IOC hardware data.
-	 */
+	 
 	bfa_fcport_set_wwns(fcport);
 	if (fcport->cfg.maxfrsize == 0)
 		fcport->cfg.maxfrsize = bfa_ioc_maxfrsize(&bfa->ioc);
@@ -3532,9 +3192,7 @@ bfa_fcport_init(struct bfa_s *bfa)
 	WARN_ON(!fcport->speed_sup);
 }
 
-/*
- * Firmware message handler.
- */
+ 
 void
 bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 {
@@ -3620,9 +3278,7 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 		break;
 
 	case BFI_FCPORT_I2H_STATS_GET_RSP:
-		/*
-		 * check for timer pop before processing the rsp
-		 */
+		 
 		if (list_empty(&fcport->stats_pending_q) ||
 		    (fcport->stats_status == BFA_STATUS_ETIMER))
 			break;
@@ -3633,9 +3289,7 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 		break;
 
 	case BFI_FCPORT_I2H_STATS_CLEAR_RSP:
-		/*
-		 * check for timer pop before processing the rsp
-		 */
+		 
 		if (list_empty(&fcport->statsclr_pending_q) ||
 		    (fcport->stats_status == BFA_STATUS_ETIMER))
 			break;
@@ -3659,9 +3313,7 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 	}
 }
 
-/*
- * Registered callback for port events.
- */
+ 
 void
 bfa_fcport_event_register(struct bfa_s *bfa,
 				void (*cbfn) (void *cbarg,
@@ -3705,7 +3357,7 @@ bfa_fcport_disable(struct bfa_s *bfa)
 	return BFA_STATUS_OK;
 }
 
-/* If PBC is disabled on port, return error */
+ 
 bfa_status_t
 bfa_fcport_is_pbcdisabled(struct bfa_s *bfa)
 {
@@ -3720,9 +3372,7 @@ bfa_fcport_is_pbcdisabled(struct bfa_s *bfa)
 	return BFA_STATUS_OK;
 }
 
-/*
- * Configure port speed.
- */
+ 
 bfa_status_t
 bfa_fcport_cfg_speed(struct bfa_s *bfa, enum bfa_port_speed speed)
 {
@@ -3740,14 +3390,14 @@ bfa_fcport_cfg_speed(struct bfa_s *bfa, enum bfa_port_speed speed)
 		return BFA_STATUS_UNSUPP_SPEED;
 	}
 
-	/* Port speed entered needs to be checked */
+	 
 	if (bfa_ioc_get_type(&fcport->bfa->ioc) == BFA_IOC_TYPE_FC) {
-		/* For CT2, 1G is not supported */
+		 
 		if ((speed == BFA_PORT_SPEED_1GBPS) &&
 		    (bfa_asic_id_ct2(bfa->ioc.pcidev.device_id)))
 			return BFA_STATUS_UNSUPP_SPEED;
 
-		/* Already checked for Auto Speed and Max Speed supp */
+		 
 		if (!(speed == BFA_PORT_SPEED_1GBPS ||
 		      speed == BFA_PORT_SPEED_2GBPS ||
 		      speed == BFA_PORT_SPEED_4GBPS ||
@@ -3765,9 +3415,7 @@ bfa_fcport_cfg_speed(struct bfa_s *bfa, enum bfa_port_speed speed)
 	return BFA_STATUS_OK;
 }
 
-/*
- * Get current speed.
- */
+ 
 enum bfa_port_speed
 bfa_fcport_get_speed(struct bfa_s *bfa)
 {
@@ -3776,9 +3424,7 @@ bfa_fcport_get_speed(struct bfa_s *bfa)
 	return fcport->speed;
 }
 
-/*
- * Configure port topology.
- */
+ 
 bfa_status_t
 bfa_fcport_cfg_topology(struct bfa_s *bfa, enum bfa_port_topology topology)
 {
@@ -3822,9 +3468,7 @@ bfa_fcport_cfg_topology(struct bfa_s *bfa, enum bfa_port_topology topology)
 	return BFA_STATUS_OK;
 }
 
-/*
- * Get current topology.
- */
+ 
 enum bfa_port_topology
 bfa_fcport_get_topology(struct bfa_s *bfa)
 {
@@ -3833,9 +3477,7 @@ bfa_fcport_get_topology(struct bfa_s *bfa)
 	return fcport->topology;
 }
 
-/*
- * Get config topology.
- */
+ 
 enum bfa_port_topology
 bfa_fcport_get_cfg_topology(struct bfa_s *bfa)
 {
@@ -3896,11 +3538,11 @@ bfa_fcport_cfg_maxfrsize(struct bfa_s *bfa, u16 maxfrsize)
 	bfa_trc(bfa, maxfrsize);
 	bfa_trc(bfa, fcport->cfg.maxfrsize);
 
-	/* with in range */
+	 
 	if ((maxfrsize > FC_MAX_PDUSZ) || (maxfrsize < FC_MIN_PDUSZ))
 		return BFA_STATUS_INVLD_DFSZ;
 
-	/* power of 2, if not the max frame size of 2112 */
+	 
 	if ((maxfrsize != FC_MAX_PDUSZ) && (maxfrsize & (maxfrsize - 1)))
 		return BFA_STATUS_INVLD_DFSZ;
 
@@ -3934,9 +3576,7 @@ bfa_fcport_set_tx_bbcredit(struct bfa_s *bfa, u16 tx_bbcredit)
 	fcport->cfg.tx_bbcredit = (u8)tx_bbcredit;
 }
 
-/*
- * Get port attributes.
- */
+ 
 
 wwn_t
 bfa_fcport_get_wwn(struct bfa_s *bfa, bfa_boolean_t node)
@@ -3963,18 +3603,18 @@ bfa_fcport_get_attr(struct bfa_s *bfa, struct bfa_port_attr_s *attr)
 
 	memcpy(&attr->pport_cfg, &fcport->cfg,
 		sizeof(struct bfa_port_cfg_s));
-	/* speed attributes */
+	 
 	attr->pport_cfg.speed = fcport->cfg.speed;
 	attr->speed_supported = fcport->speed_sup;
 	attr->speed = fcport->speed;
 	attr->cos_supported = FC_CLASS_3;
 
-	/* topology attributes */
+	 
 	attr->pport_cfg.topology = fcport->cfg.topology;
 	attr->topology = fcport->topology;
 	attr->pport_cfg.trunked = fcport->cfg.trunked;
 
-	/* beacon attributes */
+	 
 	attr->beacon = fcport->beacon;
 	attr->link_e2e_beacon = fcport->link_e2e_beacon;
 
@@ -3984,7 +3624,7 @@ bfa_fcport_get_attr(struct bfa_s *bfa, struct bfa_port_attr_s *attr)
 
 	attr->fec_state = fcport->fec_state;
 
-	/* PBC Disabled State */
+	 
 	if (bfa_fcport_is_pbcdisabled(bfa))
 		attr->port_state = BFA_PORT_ST_PREBOOT_DISABLED;
 	else {
@@ -3994,15 +3634,13 @@ bfa_fcport_get_attr(struct bfa_s *bfa, struct bfa_port_attr_s *attr)
 			attr->port_state = BFA_PORT_ST_FWMISMATCH;
 	}
 
-	/* FCoE vlan */
+	 
 	attr->fcoe_vlan = fcport->fcoe_vlan;
 }
 
 #define BFA_FCPORT_STATS_TOV	1000
 
-/*
- * Fetch port statistics (FCQoS or FCoE).
- */
+ 
 bfa_status_t
 bfa_fcport_get_stats(struct bfa_s *bfa, struct bfa_cb_pending_q_s *cb)
 {
@@ -4027,9 +3665,7 @@ bfa_fcport_get_stats(struct bfa_s *bfa, struct bfa_cb_pending_q_s *cb)
 	return BFA_STATUS_OK;
 }
 
-/*
- * Reset port statistics (FCQoS or FCoE).
- */
+ 
 bfa_status_t
 bfa_fcport_clear_stats(struct bfa_s *bfa, struct bfa_cb_pending_q_s *cb)
 {
@@ -4054,9 +3690,7 @@ bfa_fcport_clear_stats(struct bfa_s *bfa, struct bfa_cb_pending_q_s *cb)
 	return BFA_STATUS_OK;
 }
 
-/*
- * Fetch port attributes.
- */
+ 
 bfa_boolean_t
 bfa_fcport_is_disabled(struct bfa_s *bfa)
 {
@@ -4119,9 +3753,7 @@ bfa_fcport_is_ratelim(struct bfa_s *bfa)
 
 }
 
-/*
- *	Enable/Disable FAA feature in port config
- */
+ 
 void
 bfa_fcport_cfg_faa(struct bfa_s *bfa, u8 state)
 {
@@ -4131,9 +3763,7 @@ bfa_fcport_cfg_faa(struct bfa_s *bfa, u8 state)
 	fcport->cfg.faa_state = state;
 }
 
-/*
- * Get default minimum ratelim speed
- */
+ 
 enum bfa_port_speed
 bfa_fcport_get_ratelim_speed(struct bfa_s *bfa)
 {
@@ -4261,9 +3891,7 @@ bfa_fcport_get_bbcr_attr(struct bfa_s *bfa,
 void
 bfa_fcport_dportenable(struct bfa_s *bfa)
 {
-	/*
-	 * Assume caller check for port is in disable state
-	 */
+	 
 	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_DPORTENABLE);
 	bfa_port_set_dportenabled(&bfa->modules.port, BFA_TRUE);
 }
@@ -4271,9 +3899,7 @@ bfa_fcport_dportenable(struct bfa_s *bfa)
 void
 bfa_fcport_dportdisable(struct bfa_s *bfa)
 {
-	/*
-	 * Assume caller check for port is in disable state
-	 */
+	 
 	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_DPORTDISABLE);
 	bfa_port_set_dportenabled(&bfa->modules.port, BFA_FALSE);
 }
@@ -4281,27 +3907,19 @@ bfa_fcport_dportdisable(struct bfa_s *bfa)
 static void
 bfa_fcport_ddportenable(struct bfa_s *bfa)
 {
-	/*
-	 * Assume caller check for port is in disable state
-	 */
+	 
 	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_DDPORTENABLE);
 }
 
 static void
 bfa_fcport_ddportdisable(struct bfa_s *bfa)
 {
-	/*
-	 * Assume caller check for port is in disable state
-	 */
+	 
 	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_DDPORTDISABLE);
 }
 
-/*
- * Rport State machine functions
- */
-/*
- * Beginning state, only online event expected.
- */
+ 
+ 
 static void
 bfa_rport_sm_uninit(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4352,9 +3970,7 @@ bfa_rport_sm_created(struct bfa_rport_s *rp, enum bfa_rport_event event)
 	}
 }
 
-/*
- * Waiting for rport create response from firmware.
- */
+ 
 static void
 bfa_rport_sm_fwcreate(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4389,9 +4005,7 @@ bfa_rport_sm_fwcreate(struct bfa_rport_s *rp, enum bfa_rport_event event)
 	}
 }
 
-/*
- * Request queue is full, awaiting queue resume to send create request.
- */
+ 
 static void
 bfa_rport_sm_fwcreate_qfull(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4430,9 +4044,7 @@ bfa_rport_sm_fwcreate_qfull(struct bfa_rport_s *rp, enum bfa_rport_event event)
 	}
 }
 
-/*
- * Online state - normal parking state.
- */
+ 
 static void
 bfa_rport_sm_online(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4498,9 +4110,7 @@ bfa_rport_sm_online(struct bfa_rport_s *rp, enum bfa_rport_event event)
 	}
 }
 
-/*
- * Firmware rport is being deleted - awaiting f/w response.
- */
+ 
 static void
 bfa_rport_sm_fwdelete(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4561,9 +4171,7 @@ bfa_rport_sm_fwdelete_qfull(struct bfa_rport_s *rp, enum bfa_rport_event event)
 	}
 }
 
-/*
- * Offline state.
- */
+ 
 static void
 bfa_rport_sm_offline(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4600,9 +4208,7 @@ bfa_rport_sm_offline(struct bfa_rport_s *rp, enum bfa_rport_event event)
 	}
 }
 
-/*
- * Rport is deleted, waiting for firmware response to delete.
- */
+ 
 static void
 bfa_rport_sm_deleting(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4652,9 +4258,7 @@ bfa_rport_sm_deleting_qfull(struct bfa_rport_s *rp, enum bfa_rport_event event)
 	}
 }
 
-/*
- * Waiting for rport create response from firmware. A delete is pending.
- */
+ 
 static void
 bfa_rport_sm_delete_pending(struct bfa_rport_s *rp,
 				enum bfa_rport_event event)
@@ -4683,9 +4287,7 @@ bfa_rport_sm_delete_pending(struct bfa_rport_s *rp,
 	}
 }
 
-/*
- * Waiting for rport create response from firmware. Rport offline is pending.
- */
+ 
 static void
 bfa_rport_sm_offline_pending(struct bfa_rport_s *rp,
 				 enum bfa_rport_event event)
@@ -4719,9 +4321,7 @@ bfa_rport_sm_offline_pending(struct bfa_rport_s *rp,
 	}
 }
 
-/*
- * IOC h/w failed.
- */
+ 
 static void
 bfa_rport_sm_iocdisable(struct bfa_rport_s *rp, enum bfa_rport_event event)
 {
@@ -4759,9 +4359,7 @@ bfa_rport_sm_iocdisable(struct bfa_rport_s *rp, enum bfa_rport_event event)
 
 
 
-/*
- *  bfa_rport_private BFA rport private functions
- */
+ 
 
 static void
 __bfa_cb_rport_online(void *cbarg, bfa_boolean_t complete)
@@ -4798,7 +4396,7 @@ bfa_rport_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 	if (cfg->fwcfg.num_rports < BFA_RPORT_MIN)
 		cfg->fwcfg.num_rports = BFA_RPORT_MIN;
 
-	/* kva memory */
+	 
 	bfa_mem_kva_setup(minfo, rport_kva,
 		cfg->fwcfg.num_rports * sizeof(struct bfa_rport_s));
 }
@@ -4828,18 +4426,14 @@ bfa_rport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		rp->rport_tag = i;
 		bfa_sm_set_state(rp, bfa_rport_sm_uninit);
 
-		/*
-		 *  - is unused
-		 */
+		 
 		if (i)
 			list_add_tail(&rp->qe, &mod->rp_free_q);
 
 		bfa_reqq_winit(&rp->reqq_wait, bfa_rport_qresume, rp);
 	}
 
-	/*
-	 * consume memory
-	 */
+	 
 	bfa_mem_kva_curp(mod) = (u8 *) rp;
 }
 
@@ -4850,7 +4444,7 @@ bfa_rport_iocdisable(struct bfa_s *bfa)
 	struct bfa_rport_s *rport;
 	struct list_head *qe, *qen;
 
-	/* Enqueue unused rport resources to free_q */
+	 
 	list_splice_tail_init(&mod->rp_unused_q, &mod->rp_free_q);
 
 	list_for_each_safe(qe, qen, &mod->rp_active_q) {
@@ -4886,9 +4480,7 @@ bfa_rport_send_fwcreate(struct bfa_rport_s *rp)
 {
 	struct bfi_rport_create_req_s *m;
 
-	/*
-	 * check for room in queue to send request now
-	 */
+	 
 	m = bfa_reqq_next(rp->bfa, BFA_REQQ_RPORT);
 	if (!m) {
 		bfa_reqq_wait(rp->bfa, BFA_REQQ_RPORT, &rp->reqq_wait);
@@ -4907,9 +4499,7 @@ bfa_rport_send_fwcreate(struct bfa_rport_s *rp)
 	m->vf_id = rp->rport_info.vf_id;
 	m->cisc = rp->rport_info.cisc;
 
-	/*
-	 * queue I/O message to firmware
-	 */
+	 
 	bfa_reqq_produce(rp->bfa, BFA_REQQ_RPORT, m->mh);
 	return BFA_TRUE;
 }
@@ -4919,9 +4509,7 @@ bfa_rport_send_fwdelete(struct bfa_rport_s *rp)
 {
 	struct bfi_rport_delete_req_s *m;
 
-	/*
-	 * check for room in queue to send request now
-	 */
+	 
 	m = bfa_reqq_next(rp->bfa, BFA_REQQ_RPORT);
 	if (!m) {
 		bfa_reqq_wait(rp->bfa, BFA_REQQ_RPORT, &rp->reqq_wait);
@@ -4932,9 +4520,7 @@ bfa_rport_send_fwdelete(struct bfa_rport_s *rp)
 			bfa_fn_lpu(rp->bfa));
 	m->fw_handle = rp->fw_handle;
 
-	/*
-	 * queue I/O message to firmware
-	 */
+	 
 	bfa_reqq_produce(rp->bfa, BFA_REQQ_RPORT, m->mh);
 	return BFA_TRUE;
 }
@@ -4944,9 +4530,7 @@ bfa_rport_send_fwspeed(struct bfa_rport_s *rp)
 {
 	struct bfa_rport_speed_req_s *m;
 
-	/*
-	 * check for room in queue to send request now
-	 */
+	 
 	m = bfa_reqq_next(rp->bfa, BFA_REQQ_RPORT);
 	if (!m) {
 		bfa_trc(rp->bfa, rp->rport_info.speed);
@@ -4958,22 +4542,16 @@ bfa_rport_send_fwspeed(struct bfa_rport_s *rp)
 	m->fw_handle = rp->fw_handle;
 	m->speed = (u8)rp->rport_info.speed;
 
-	/*
-	 * queue I/O message to firmware
-	 */
+	 
 	bfa_reqq_produce(rp->bfa, BFA_REQQ_RPORT, m->mh);
 	return BFA_TRUE;
 }
 
 
 
-/*
- *  bfa_rport_public
- */
+ 
 
-/*
- * Rport interrupt processing.
- */
+ 
 void
 bfa_rport_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 {
@@ -5041,9 +4619,7 @@ bfa_rport_res_recfg(struct bfa_s *bfa, u16 num_rport_fw)
 	}
 }
 
-/*
- *  bfa_rport_api
- */
+ 
 
 struct bfa_rport_s *
 bfa_rport_create(struct bfa_s *bfa, void *rport_drv)
@@ -5070,10 +4646,7 @@ bfa_rport_online(struct bfa_rport_s *rport, struct bfa_rport_info_s *rport_info)
 {
 	WARN_ON(rport_info->max_frmsz == 0);
 
-	/*
-	 * Some JBODs are seen to be not setting PDU size correctly in PLOGI
-	 * responses. Default to minimum size.
-	 */
+	 
 	if (rport_info->max_frmsz == 0) {
 		bfa_trc(rport->bfa, rport->rport_tag);
 		rport_info->max_frmsz = FC_MIN_PDUSZ;
@@ -5095,7 +4668,7 @@ bfa_rport_speed(struct bfa_rport_s *rport, enum bfa_port_speed speed)
 	}
 }
 
-/* Set Rport LUN Mask */
+ 
 void
 bfa_rport_set_lunmask(struct bfa_s *bfa, struct bfa_rport_s *rp)
 {
@@ -5111,7 +4684,7 @@ bfa_rport_set_lunmask(struct bfa_s *bfa, struct bfa_rport_s *rp)
 	bfa_fcpim_lunmask_rp_update(bfa, lp_wwn, rp_wwn, rp->rport_tag, lp_tag);
 }
 
-/* Unset Rport LUN mask */
+ 
 void
 bfa_rport_unset_lunmask(struct bfa_s *bfa, struct bfa_rport_s *rp)
 {
@@ -5127,13 +4700,9 @@ bfa_rport_unset_lunmask(struct bfa_s *bfa, struct bfa_rport_s *rp)
 			BFA_RPORT_TAG_INVALID, BFA_LP_TAG_INVALID);
 }
 
-/*
- * SGPG related functions
- */
+ 
 
-/*
- * Compute and return memory needed by FCP(im) module.
- */
+ 
 void
 bfa_sgpg_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
@@ -5164,7 +4733,7 @@ bfa_sgpg_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 					num_sgpg * sgpg_sz);
 	}
 
-	/* kva memory */
+	 
 	bfa_mem_kva_setup(minfo, sgpg_kva,
 		cfg->drvcfg.num_sgpgs * sizeof(struct bfa_sgpg_s));
 }
@@ -5196,7 +4765,7 @@ bfa_sgpg_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	num_sgpg = cfg->drvcfg.num_sgpgs;
 	nsegs = BFI_MEM_DMA_NSEGS(num_sgpg, sgpg_sz);
 
-	/* dma/kva mem claim */
+	 
 	hsgpg = (struct bfa_sgpg_s *) bfa_mem_kva_curp(mod);
 
 	bfa_mem_dma_seg_iter(mod, seg_ptr, nsegs, idx) {
@@ -5266,9 +4835,7 @@ bfa_sgpg_mfree(struct bfa_s *bfa, struct list_head *sgpg_q, int nsgpg)
 	if (list_empty(&mod->sgpg_wait_q))
 		return;
 
-	/*
-	 * satisfy as many waiting requests as possible
-	 */
+	 
 	do {
 		wqe = bfa_q_first(&mod->sgpg_wait_q);
 		if (mod->free_sgpgs < wqe->nsgpg)
@@ -5294,13 +4861,9 @@ bfa_sgpg_wait(struct bfa_s *bfa, struct bfa_sgpg_wqe_s *wqe, int nsgpg)
 
 	wqe->nsgpg_total = wqe->nsgpg = nsgpg;
 
-	/*
-	 * allocate any left to this one first
-	 */
+	 
 	if (mod->free_sgpgs) {
-		/*
-		 * no one else is waiting for SGPG
-		 */
+		 
 		WARN_ON(!list_empty(&mod->sgpg_wait_q));
 		list_splice_tail_init(&mod->sgpg_q, &wqe->sgpg_q);
 		wqe->nsgpg -= mod->free_sgpgs;
@@ -5332,14 +4895,8 @@ bfa_sgpg_winit(struct bfa_sgpg_wqe_s *wqe, void (*cbfn) (void *cbarg),
 	wqe->cbarg = cbarg;
 }
 
-/*
- *  UF related functions
- */
-/*
- *****************************************************************************
- * Internal functions
- *****************************************************************************
- */
+ 
+ 
 static void
 __bfa_cb_uf_recv(void *cbarg, bfa_boolean_t complete)
 {
@@ -5372,9 +4929,7 @@ claim_uf_post_msgs(struct bfa_uf_mod_s *ufm)
 		bfa_alen_set(&uf_bp_msg->alen, buf_len, ufm_pbs_pa(ufm, i));
 	}
 
-	/*
-	 * advance pointer beyond consumed memory
-	 */
+	 
 	bfa_mem_kva_curp(ufm) = (u8 *) uf_bp_msg;
 }
 
@@ -5384,14 +4939,10 @@ claim_ufs(struct bfa_uf_mod_s *ufm)
 	u16 i;
 	struct bfa_uf_s   *uf;
 
-	/*
-	 * Claim block of memory for UF list
-	 */
+	 
 	ufm->uf_list = (struct bfa_uf_s *) bfa_mem_kva_curp(ufm);
 
-	/*
-	 * Initialize UFs and queue it in UF free queue
-	 */
+	 
 	for (i = 0, uf = ufm->uf_list; i < ufm->num_ufs; i++, uf++) {
 		memset(uf, 0, sizeof(struct bfa_uf_s));
 		uf->bfa = ufm->bfa;
@@ -5402,9 +4953,7 @@ claim_ufs(struct bfa_uf_mod_s *ufm)
 		list_add_tail(&uf->qe, &ufm->uf_free_q);
 	}
 
-	/*
-	 * advance memory pointer
-	 */
+	 
 	bfa_mem_kva_curp(ufm) = (u8 *) uf;
 }
 
@@ -5438,7 +4987,7 @@ bfa_uf_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 				num_ufs * BFA_PER_UF_DMA_SZ);
 	}
 
-	/* kva memory */
+	 
 	bfa_mem_kva_setup(minfo, uf_kva, cfg->fwcfg.num_uf_bufs *
 		(sizeof(struct bfa_uf_s) + sizeof(struct bfi_uf_buf_post_s)));
 }
@@ -5519,7 +5068,7 @@ uf_recv(struct bfa_s *bfa, struct bfi_uf_frm_rcvd_s *m)
 	m->frm_len = be16_to_cpu(m->frm_len);
 	m->xfr_len = be16_to_cpu(m->xfr_len);
 
-	list_del(&uf->qe);	/* dequeue from posted queue */
+	list_del(&uf->qe);	 
 
 	uf->data_ptr = buf;
 	uf->data_len = m->xfr_len;
@@ -5549,7 +5098,7 @@ bfa_uf_iocdisable(struct bfa_s *bfa)
 	struct bfa_uf_s *uf;
 	struct list_head *qe, *qen;
 
-	/* Enqueue unused uf resources to free_q */
+	 
 	list_splice_tail_init(&ufm->uf_unused_q, &ufm->uf_free_q);
 
 	list_for_each_safe(qe, qen, &ufm->uf_posted_q) {
@@ -5565,13 +5114,7 @@ bfa_uf_start(struct bfa_s *bfa)
 	bfa_uf_post_all(BFA_UF_MOD(bfa));
 }
 
-/*
- * Register handler for all unsolicted receive frames.
- *
- * @param[in]	bfa		BFA instance
- * @param[in]	ufrecv	receive handler function
- * @param[in]	cbarg	receive handler arg
- */
+ 
 void
 bfa_uf_recv_register(struct bfa_s *bfa, bfa_cb_uf_recv_t ufrecv, void *cbarg)
 {
@@ -5581,13 +5124,7 @@ bfa_uf_recv_register(struct bfa_s *bfa, bfa_cb_uf_recv_t ufrecv, void *cbarg)
 	ufm->cbarg = cbarg;
 }
 
-/*
- *	Free an unsolicited frame back to BFA.
- *
- * @param[in]		uf		unsolicited frame to be freed
- *
- * @return None
- */
+ 
 void
 bfa_uf_free(struct bfa_uf_s *uf)
 {
@@ -5597,9 +5134,7 @@ bfa_uf_free(struct bfa_uf_s *uf)
 
 
 
-/*
- *  uf_pub BFA uf module public functions
- */
+ 
 void
 bfa_uf_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 {
@@ -5629,30 +5164,26 @@ bfa_uf_res_recfg(struct bfa_s *bfa, u16 num_uf_fw)
 	}
 }
 
-/*
- *	Dport forward declaration
- */
+ 
 
 enum bfa_dport_test_state_e {
-	BFA_DPORT_ST_DISABLED	= 0,	/*!< dport is disabled */
-	BFA_DPORT_ST_INP	= 1,	/*!< test in progress */
-	BFA_DPORT_ST_COMP	= 2,	/*!< test complete successfully */
-	BFA_DPORT_ST_NO_SFP	= 3,	/*!< sfp is not present */
-	BFA_DPORT_ST_NOTSTART	= 4,	/*!< test not start dport is enabled */
+	BFA_DPORT_ST_DISABLED	= 0,	 
+	BFA_DPORT_ST_INP	= 1,	 
+	BFA_DPORT_ST_COMP	= 2,	 
+	BFA_DPORT_ST_NO_SFP	= 3,	 
+	BFA_DPORT_ST_NOTSTART	= 4,	 
 };
 
-/*
- * BFA DPORT state machine events
- */
+ 
 enum bfa_dport_sm_event {
-	BFA_DPORT_SM_ENABLE	= 1,	/* dport enable event         */
-	BFA_DPORT_SM_DISABLE    = 2,    /* dport disable event        */
-	BFA_DPORT_SM_FWRSP      = 3,    /* fw enable/disable rsp      */
-	BFA_DPORT_SM_QRESUME    = 4,    /* CQ space available         */
-	BFA_DPORT_SM_HWFAIL     = 5,    /* IOC h/w failure            */
-	BFA_DPORT_SM_START	= 6,	/* re-start dport test        */
-	BFA_DPORT_SM_REQFAIL	= 7,	/* request failure            */
-	BFA_DPORT_SM_SCN	= 8,	/* state change notify frm fw */
+	BFA_DPORT_SM_ENABLE	= 1,	 
+	BFA_DPORT_SM_DISABLE    = 2,     
+	BFA_DPORT_SM_FWRSP      = 3,     
+	BFA_DPORT_SM_QRESUME    = 4,     
+	BFA_DPORT_SM_HWFAIL     = 5,     
+	BFA_DPORT_SM_START	= 6,	 
+	BFA_DPORT_SM_REQFAIL	= 7,	 
+	BFA_DPORT_SM_SCN	= 8,	 
 };
 
 static void bfa_dport_sm_disabled(struct bfa_dport_s *dport,
@@ -5681,14 +5212,10 @@ static void bfa_dport_req_comp(struct bfa_dport_s *dport,
 static void bfa_dport_scn(struct bfa_dport_s *dport,
 				struct bfi_diag_dport_scn_s *msg);
 
-/*
- *	BFA fcdiag module
- */
-#define BFA_DIAG_QTEST_TOV	1000    /* msec */
+ 
+#define BFA_DIAG_QTEST_TOV	1000     
 
-/*
- *	Set port status to busy
- */
+ 
 static void
 bfa_fcdiag_set_busy_status(struct bfa_fcdiag_s *fcdiag)
 {
@@ -5709,7 +5236,7 @@ bfa_fcdiag_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 
 	fcdiag->bfa             = bfa;
 	fcdiag->trcmod  = bfa->trcmod;
-	/* The common DIAG attach bfa_diag_attach() will do all memory claim */
+	 
 	dport->bfa = bfa;
 	bfa_sm_set_state(dport, bfa_dport_sm_disabled);
 	bfa_reqq_winit(&dport->reqq_wait, bfa_dport_qresume, dport);
@@ -5768,7 +5295,7 @@ bfa_fcdiag_queuetest_send(struct bfa_fcdiag_s *fcdiag)
 	if (!req)
 		return BFA_STATUS_DEVBUSY;
 
-	/* build host command */
+	 
 	bfi_h2i_set(req->mh, BFI_MC_DIAG, BFI_DIAG_H2I_QTEST,
 		bfa_fn_lpu(fcdiag->bfa));
 
@@ -5776,7 +5303,7 @@ bfa_fcdiag_queuetest_send(struct bfa_fcdiag_s *fcdiag)
 		req->data[i] = QTEST_PAT_DEFAULT;
 
 	bfa_trc(fcdiag, fcdiag->qtest.queue);
-	/* ring door bell */
+	 
 	bfa_reqq_produce(fcdiag->bfa, fcdiag->qtest.queue, req->mh);
 	return BFA_STATUS_OK;
 }
@@ -5789,16 +5316,16 @@ bfa_fcdiag_queuetest_comp(struct bfa_fcdiag_s *fcdiag,
 	bfa_status_t status = BFA_STATUS_OK;
 	int i;
 
-	/* Check timer, should still be active   */
+	 
 	if (!fcdiag->qtest.timer_active) {
 		bfa_trc(fcdiag, fcdiag->qtest.timer_active);
 		return;
 	}
 
-	/* update count */
+	 
 	fcdiag->qtest.count--;
 
-	/* Check result */
+	 
 	for (i = 0; i < BFI_LMSG_PL_WSZ; i++) {
 		if (rsp->data[i] != ~(QTEST_PAT_DEFAULT)) {
 			res->status = BFA_STATUS_DATACORRUPTED;
@@ -5825,7 +5352,7 @@ bfa_fcdiag_queuetest_comp(struct bfa_fcdiag_s *fcdiag,
 		}
 	}
 
-	/* Stop timer when we comp all queue */
+	 
 	if (fcdiag->qtest.timer_active) {
 		bfa_timer_stop(&fcdiag->qtest.timer);
 		fcdiag->qtest.timer_active = 0;
@@ -5868,7 +5395,7 @@ bfa_fcdiag_loopback_send(struct bfa_fcdiag_s *fcdiag,
 	if (!lb_req)
 		return BFA_STATUS_DEVBUSY;
 
-	/* build host command */
+	 
 	bfi_h2i_set(lb_req->mh, BFI_MC_DIAG, BFI_DIAG_H2I_LOOPBACK,
 		bfa_fn_lpu(fcdiag->bfa));
 
@@ -5877,7 +5404,7 @@ bfa_fcdiag_loopback_send(struct bfa_fcdiag_s *fcdiag,
 	lb_req->loopcnt = loopback->loopcnt;
 	lb_req->pattern = loopback->pattern;
 
-	/* ring door bell */
+	 
 	bfa_reqq_produce(fcdiag->bfa, BFA_REQQ_DIAG, lb_req->mh);
 
 	bfa_trc(fcdiag, loopback->lb_mode);
@@ -5887,9 +5414,7 @@ bfa_fcdiag_loopback_send(struct bfa_fcdiag_s *fcdiag,
 	return BFA_STATUS_OK;
 }
 
-/*
- *	cpe/rme intr handler
- */
+ 
 void
 bfa_fcdiag_intr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 {
@@ -5917,20 +5442,7 @@ bfa_fcdiag_intr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 	}
 }
 
-/*
- *	Loopback test
- *
- *   @param[in] *bfa            - bfa data struct
- *   @param[in] opmode          - port operation mode
- *   @param[in] speed           - port speed
- *   @param[in] lpcnt           - loop count
- *   @param[in] pat                     - pattern to build packet
- *   @param[in] *result         - pt to bfa_diag_loopback_result_t data struct
- *   @param[in] cbfn            - callback function
- *   @param[in] cbarg           - callback functioin arg
- *
- *   @param[out]
- */
+ 
 bfa_status_t
 bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 		enum bfa_port_speed speed, u32 lpcnt, u32 pat,
@@ -5945,7 +5457,7 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 	if (!bfa_iocfc_is_operational(bfa))
 		return BFA_STATUS_IOC_NON_OP;
 
-	/* if port is PBC disabled, return error */
+	 
 	if (bfa_fcport_is_pbcdisabled(bfa)) {
 		bfa_trc(fcdiag, BFA_STATUS_PBC);
 		return BFA_STATUS_PBC;
@@ -5956,9 +5468,7 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 		return BFA_STATUS_PORT_NOT_DISABLED;
 	}
 
-	/*
-	 * Check if input speed is supported by the port mode
-	 */
+	 
 	if (bfa_ioc_get_type(&bfa->ioc) == BFA_IOC_TYPE_FC) {
 		if (!(speed == BFA_PORT_SPEED_1GBPS ||
 		      speed == BFA_PORT_SPEED_2GBPS ||
@@ -5980,16 +5490,14 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 		}
 	}
 
-	/*
-	 * For CT2, 1G is not supported
-	 */
+	 
 	if ((speed == BFA_PORT_SPEED_1GBPS) &&
 	    (bfa_asic_id_ct2(bfa->ioc.pcidev.device_id))) {
 		bfa_trc(fcdiag, speed);
 		return BFA_STATUS_UNSUPP_SPEED;
 	}
 
-	/* For Mezz card, port speed entered needs to be checked */
+	 
 	if (bfa_mfg_is_mezz(bfa->ioc.attr->card_type)) {
 		if (bfa_ioc_get_type(&bfa->ioc) == BFA_IOC_TYPE_FC) {
 			if (!(speed == BFA_PORT_SPEED_1GBPS ||
@@ -6004,12 +5512,12 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 				return BFA_STATUS_UNSUPP_SPEED;
 		}
 	}
-	/* check to see if fcport is dport */
+	 
 	if (bfa_fcport_is_dport(bfa)) {
 		bfa_trc(fcdiag, fcdiag->lb.lock);
 		return BFA_STATUS_DPORT_ENABLED;
 	}
-	/* check to see if there is another destructive diag cmd running */
+	 
 	if (fcdiag->lb.lock) {
 		bfa_trc(fcdiag, fcdiag->lb.lock);
 		return BFA_STATUS_DEVBUSY;
@@ -6026,23 +5534,12 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 	memset(result, 0, sizeof(struct bfa_diag_loopback_result_s));
 	bfa_fcdiag_set_busy_status(fcdiag);
 
-	/* Send msg to fw */
+	 
 	status = bfa_fcdiag_loopback_send(fcdiag, &loopback);
 	return status;
 }
 
-/*
- *	DIAG queue test command
- *
- *   @param[in] *bfa            - bfa data struct
- *   @param[in] force           - 1: don't do ioc op checking
- *   @param[in] queue           - queue no. to test
- *   @param[in] *result         - pt to bfa_diag_qtest_result_t data struct
- *   @param[in] cbfn            - callback function
- *   @param[in] *cbarg          - callback functioin arg
- *
- *   @param[out]
- */
+ 
 bfa_status_t
 bfa_fcdiag_queuetest(struct bfa_s *bfa, u32 force, u32 queue,
 		struct bfa_diag_qtest_result_s *result, bfa_cb_diag_t cbfn,
@@ -6056,24 +5553,24 @@ bfa_fcdiag_queuetest(struct bfa_s *bfa, u32 force, u32 queue,
 	if (!force && !bfa_iocfc_is_operational(bfa))
 		return BFA_STATUS_IOC_NON_OP;
 
-	/* check to see if there is another destructive diag cmd running */
+	 
 	if (fcdiag->qtest.lock) {
 		bfa_trc(fcdiag, fcdiag->qtest.lock);
 		return BFA_STATUS_DEVBUSY;
 	}
 
-	/* Initialization */
+	 
 	fcdiag->qtest.lock = 1;
 	fcdiag->qtest.cbfn = cbfn;
 	fcdiag->qtest.cbarg = cbarg;
 	fcdiag->qtest.result = result;
 	fcdiag->qtest.count = QTEST_CNT_DEFAULT;
 
-	/* Init test results */
+	 
 	fcdiag->qtest.result->status = BFA_STATUS_OK;
 	fcdiag->qtest.result->count  = 0;
 
-	/* send */
+	 
 	if (queue < BFI_IOC_MAX_CQS) {
 		fcdiag->qtest.result->queue  = (u8)queue;
 		fcdiag->qtest.queue = (u8)queue;
@@ -6085,7 +5582,7 @@ bfa_fcdiag_queuetest(struct bfa_s *bfa, u32 force, u32 queue,
 	}
 	status = bfa_fcdiag_queuetest_send(fcdiag);
 
-	/* Start a timer */
+	 
 	if (status == BFA_STATUS_OK) {
 		bfa_timer_start(bfa, &fcdiag->qtest.timer,
 				bfa_fcdiag_queuetest_timeout, fcdiag,
@@ -6095,13 +5592,7 @@ bfa_fcdiag_queuetest(struct bfa_s *bfa, u32 force, u32 queue,
 	return status;
 }
 
-/*
- * DIAG PLB is running
- *
- *   @param[in] *bfa    - bfa data struct
- *
- *   @param[out]
- */
+ 
 bfa_status_t
 bfa_fcdiag_lb_is_running(struct bfa_s *bfa)
 {
@@ -6109,9 +5600,7 @@ bfa_fcdiag_lb_is_running(struct bfa_s *bfa)
 	return fcdiag->lb.lock ?  BFA_STATUS_DIAG_BUSY : BFA_STATUS_OK;
 }
 
-/*
- *	D-port
- */
+ 
 #define bfa_dport_result_start(__dport, __mode) do {				\
 		(__dport)->result.start_time = ktime_get_real_seconds();	\
 		(__dport)->result.status = DPORT_TEST_ST_INPRG;			\
@@ -6148,11 +5637,11 @@ bfa_dport_sm_disabled(struct bfa_dport_s *dport, enum bfa_dport_sm_event event)
 		break;
 
 	case BFA_DPORT_SM_DISABLE:
-		/* Already disabled */
+		 
 		break;
 
 	case BFA_DPORT_SM_HWFAIL:
-		/* ignore */
+		 
 		break;
 
 	case BFA_DPORT_SM_SCN:
@@ -6266,7 +5755,7 @@ bfa_dport_sm_enabled(struct bfa_dport_s *dport, enum bfa_dport_sm_event event)
 
 		case BFI_DPORT_SCN_TESTSKIP:
 		case BFI_DPORT_SCN_SUBTESTSTART:
-			/* no state change */
+			 
 			break;
 
 		case BFI_DPORT_SCN_SFP_REMOVED:
@@ -6320,7 +5809,7 @@ bfa_dport_sm_disabling_qwait(struct bfa_dport_s *dport,
 		break;
 
 	case BFA_DPORT_SM_SCN:
-		/* ignore */
+		 
 		break;
 
 	default:
@@ -6345,7 +5834,7 @@ bfa_dport_sm_disabling(struct bfa_dport_s *dport, enum bfa_dport_sm_event event)
 		break;
 
 	case BFA_DPORT_SM_SCN:
-		/* no state change */
+		 
 		break;
 
 	default:
@@ -6458,7 +5947,7 @@ bfa_dport_sm_dynamic_disabling_qwait(struct bfa_dport_s *dport,
 		break;
 
 	case BFA_DPORT_SM_SCN:
-		/* ignore */
+		 
 		break;
 
 	default:
@@ -6471,9 +5960,7 @@ bfa_dport_send_req(struct bfa_dport_s *dport, enum bfi_dport_req req)
 {
 	struct bfi_diag_dport_req_s *m;
 
-	/*
-	 * check for room in queue to send request now
-	 */
+	 
 	m = bfa_reqq_next(dport->bfa, BFA_REQQ_DIAG);
 	if (!m) {
 		bfa_reqq_wait(dport->bfa, BFA_REQQ_PORT, &dport->reqq_wait);
@@ -6488,9 +5975,7 @@ bfa_dport_send_req(struct bfa_dport_s *dport, enum bfi_dport_req req)
 		m->payload = cpu_to_be32(dport->payload);
 	}
 
-	/*
-	 * queue I/O message to firmware
-	 */
+	 
 	bfa_reqq_produce(dport->bfa, BFA_REQQ_DIAG, m->mh);
 
 	return BFA_TRUE;
@@ -6622,11 +6107,7 @@ bfa_dport_scn(struct bfa_dport_s *dport, struct bfi_diag_dport_scn_s *msg)
 	bfa_sm_send_event(dport, BFA_DPORT_SM_SCN);
 }
 
-/*
- * Dport enable
- *
- * @param[in] *bfa            - bfa data struct
- */
+ 
 bfa_status_t
 bfa_dport_enable(struct bfa_s *bfa, u32 lpcnt, u32 pat,
 				bfa_cb_diag_t cbfn, void *cbarg)
@@ -6634,91 +6115,69 @@ bfa_dport_enable(struct bfa_s *bfa, u32 lpcnt, u32 pat,
 	struct bfa_fcdiag_s *fcdiag = BFA_FCDIAG_MOD(bfa);
 	struct bfa_dport_s  *dport = &fcdiag->dport;
 
-	/*
-	 * Dport is not support in MEZZ card
-	 */
+	 
 	if (bfa_mfg_is_mezz(dport->bfa->ioc.attr->card_type)) {
 		bfa_trc(dport->bfa, BFA_STATUS_PBC);
 		return BFA_STATUS_CMD_NOTSUPP_MEZZ;
 	}
 
-	/*
-	 * Dport is supported in CT2 or above
-	 */
+	 
 	if (!(bfa_asic_id_ct2(dport->bfa->ioc.pcidev.device_id))) {
 		bfa_trc(dport->bfa, dport->bfa->ioc.pcidev.device_id);
 		return BFA_STATUS_FEATURE_NOT_SUPPORTED;
 	}
 
-	/*
-	 * Check to see if IOC is down
-	*/
+	 
 	if (!bfa_iocfc_is_operational(bfa))
 		return BFA_STATUS_IOC_NON_OP;
 
-	/* if port is PBC disabled, return error */
+	 
 	if (bfa_fcport_is_pbcdisabled(bfa)) {
 		bfa_trc(dport->bfa, BFA_STATUS_PBC);
 		return BFA_STATUS_PBC;
 	}
 
-	/*
-	 * Check if port mode is FC port
-	 */
+	 
 	if (bfa_ioc_get_type(&bfa->ioc) != BFA_IOC_TYPE_FC) {
 		bfa_trc(dport->bfa, bfa_ioc_get_type(&bfa->ioc));
 		return BFA_STATUS_CMD_NOTSUPP_CNA;
 	}
 
-	/*
-	 * Check if port is in LOOP mode
-	 */
+	 
 	if ((bfa_fcport_get_cfg_topology(bfa) == BFA_PORT_TOPOLOGY_LOOP) ||
 	    (bfa_fcport_get_topology(bfa) == BFA_PORT_TOPOLOGY_LOOP)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_TOPOLOGY_LOOP;
 	}
 
-	/*
-	 * Check if port is TRUNK mode
-	 */
+	 
 	if (bfa_fcport_is_trunk_enabled(bfa)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_ERROR_TRUNK_ENABLED;
 	}
 
-	/*
-	 * Check if diag loopback is running
-	 */
+	 
 	if (bfa_fcdiag_lb_is_running(bfa)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_DIAG_BUSY;
 	}
 
-	/*
-	 * Check to see if port is disable or in dport state
-	 */
+	 
 	if ((bfa_fcport_is_disabled(bfa) == BFA_FALSE) &&
 	    (bfa_fcport_is_dport(bfa) == BFA_FALSE)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_PORT_NOT_DISABLED;
 	}
 
-	/*
-	 * Check if dport is in dynamic mode
-	 */
+	 
 	if (dport->dynamic)
 		return BFA_STATUS_DDPORT_ERR;
 
-	/*
-	 * Check if dport is busy
-	 */
+	 
 	if (bfa_dport_is_sending_req(dport))
 		return BFA_STATUS_DEVBUSY;
 
-	/*
-	 * Check if dport is already enabled
-	 */
+	 
 	if (bfa_sm_cmp_state(dport, bfa_dport_sm_enabled)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_DPORT_ENABLED;
@@ -6735,11 +6194,7 @@ bfa_dport_enable(struct bfa_s *bfa, u32 lpcnt, u32 pat,
 	return BFA_STATUS_OK;
 }
 
-/*
- *	Dport disable
- *
- *	@param[in] *bfa            - bfa data struct
- */
+ 
 bfa_status_t
 bfa_dport_disable(struct bfa_s *bfa, bfa_cb_diag_t cbfn, void *cbarg)
 {
@@ -6749,37 +6204,29 @@ bfa_dport_disable(struct bfa_s *bfa, bfa_cb_diag_t cbfn, void *cbarg)
 	if (bfa_ioc_is_disabled(&bfa->ioc))
 		return BFA_STATUS_IOC_DISABLED;
 
-	/* if port is PBC disabled, return error */
+	 
 	if (bfa_fcport_is_pbcdisabled(bfa)) {
 		bfa_trc(dport->bfa, BFA_STATUS_PBC);
 		return BFA_STATUS_PBC;
 	}
 
-	/*
-	 * Check if dport is in dynamic mode
-	 */
+	 
 	if (dport->dynamic) {
 		return BFA_STATUS_DDPORT_ERR;
 	}
 
-	/*
-	 * Check to see if port is disable or in dport state
-	 */
+	 
 	if ((bfa_fcport_is_disabled(bfa) == BFA_FALSE) &&
 	    (bfa_fcport_is_dport(bfa) == BFA_FALSE)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_PORT_NOT_DISABLED;
 	}
 
-	/*
-	 * Check if dport is busy
-	 */
+	 
 	if (bfa_dport_is_sending_req(dport))
 		return BFA_STATUS_DEVBUSY;
 
-	/*
-	 * Check if dport is already disabled
-	 */
+	 
 	if (bfa_sm_cmp_state(dport, bfa_dport_sm_disabled)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_DPORT_DISABLED;
@@ -6792,11 +6239,7 @@ bfa_dport_disable(struct bfa_s *bfa, bfa_cb_diag_t cbfn, void *cbarg)
 	return BFA_STATUS_OK;
 }
 
-/*
- * Dport start -- restart dport test
- *
- *   @param[in] *bfa		- bfa data struct
- */
+ 
 bfa_status_t
 bfa_dport_start(struct bfa_s *bfa, u32 lpcnt, u32 pat,
 			bfa_cb_diag_t cbfn, void *cbarg)
@@ -6804,28 +6247,19 @@ bfa_dport_start(struct bfa_s *bfa, u32 lpcnt, u32 pat,
 	struct bfa_fcdiag_s *fcdiag = BFA_FCDIAG_MOD(bfa);
 	struct bfa_dport_s *dport = &fcdiag->dport;
 
-	/*
-	 * Check to see if IOC is down
-	 */
+	 
 	if (!bfa_iocfc_is_operational(bfa))
 		return BFA_STATUS_IOC_NON_OP;
 
-	/*
-	 * Check if dport is in dynamic mode
-	 */
+	 
 	if (dport->dynamic)
 		return BFA_STATUS_DDPORT_ERR;
 
-	/*
-	 * Check if dport is busy
-	 */
+	 
 	if (bfa_dport_is_sending_req(dport))
 		return BFA_STATUS_DEVBUSY;
 
-	/*
-	 * Check if dport is in enabled state.
-	 * Test can only be restart when previous test has completed
-	 */
+	 
 	if (!bfa_sm_cmp_state(dport, bfa_dport_sm_enabled)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_DPORT_DISABLED;
@@ -6853,41 +6287,29 @@ bfa_dport_start(struct bfa_s *bfa, u32 lpcnt, u32 pat,
 	return BFA_STATUS_OK;
 }
 
-/*
- * Dport show -- return dport test result
- *
- *   @param[in] *bfa		- bfa data struct
- */
+ 
 bfa_status_t
 bfa_dport_show(struct bfa_s *bfa, struct bfa_diag_dport_result_s *result)
 {
 	struct bfa_fcdiag_s *fcdiag = BFA_FCDIAG_MOD(bfa);
 	struct bfa_dport_s *dport = &fcdiag->dport;
 
-	/*
-	 * Check to see if IOC is down
-	 */
+	 
 	if (!bfa_iocfc_is_operational(bfa))
 		return BFA_STATUS_IOC_NON_OP;
 
-	/*
-	 * Check if dport is busy
-	 */
+	 
 	if (bfa_dport_is_sending_req(dport))
 		return BFA_STATUS_DEVBUSY;
 
-	/*
-	 * Check if dport is in enabled state.
-	 */
+	 
 	if (!bfa_sm_cmp_state(dport, bfa_dport_sm_enabled)) {
 		bfa_trc(dport->bfa, 0);
 		return BFA_STATUS_DPORT_DISABLED;
 
 	}
 
-	/*
-	 * Check if there is SFP
-	 */
+	 
 	if (dport->test_state == BFA_DPORT_ST_NO_SFP)
 		return BFA_STATUS_DPORT_INV_SFP;
 

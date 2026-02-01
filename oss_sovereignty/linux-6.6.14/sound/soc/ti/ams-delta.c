@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ams-delta.c  --  SoC audio for Amstrad E3 (Delta) videophone
- *
- * Copyright (C) 2009 Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
- *
- * Initially based on sound/soc/omap/osk5912.x
- * Copyright (C) 2008 Mistral Solutions
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/spinlock.h>
@@ -40,17 +33,17 @@ static int ams_delta_event_handsfree(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* Board specific DAPM widgets */
+ 
 static const struct snd_soc_dapm_widget ams_delta_dapm_widgets[] = {
-	/* Handset */
+	 
 	SND_SOC_DAPM_MIC("Mouthpiece", NULL),
 	SND_SOC_DAPM_HP("Earpiece", ams_delta_event_handset),
-	/* Handsfree/Speakerphone */
+	 
 	SND_SOC_DAPM_MIC("Microphone", NULL),
 	SND_SOC_DAPM_SPK("Speaker", ams_delta_event_handsfree),
 };
 
-/* How they are connected to codec pins */
+ 
 static const struct snd_soc_dapm_route ams_delta_audio_map[] = {
 	{"TELIN", NULL, "Mouthpiece"},
 	{"Earpiece", NULL, "TELOUT"},
@@ -59,15 +52,13 @@ static const struct snd_soc_dapm_route ams_delta_audio_map[] = {
 	{"Speaker", NULL, "SPKOUT"},
 };
 
-/*
- * Controls, functional after the modem line discipline is activated.
- */
+ 
 
-/* Virtual switch: audio input/output constellations */
+ 
 static const char *ams_delta_audio_mode[] =
 	{"Mixed", "Handset", "Handsfree", "Speakerphone"};
 
-/* Selection <-> pin translation */
+ 
 #define AMS_DELTA_MOUTHPIECE	0
 #define AMS_DELTA_EARPIECE	1
 #define AMS_DELTA_MICROPHONE	2
@@ -91,10 +82,7 @@ static const unsigned short ams_delta_audio_mode_pins[] = {
 
 static unsigned short ams_delta_audio_agc;
 
-/*
- * Used for passing a codec structure pointer
- * from the board initialization code to the tty line discipline.
- */
+ 
 static struct snd_soc_component *cx20442_codec;
 
 static int ams_delta_set_audio_mode(struct snd_kcontrol *kcontrol,
@@ -106,7 +94,7 @@ static int ams_delta_set_audio_mode(struct snd_kcontrol *kcontrol,
 	unsigned short pins;
 	int pin, changed = 0;
 
-	/* Refuse any mode changes if we are not able to control the codec. */
+	 
 	if (!cx20442_codec->card->pop_time)
 		return -EUNATCH;
 
@@ -115,10 +103,10 @@ static int ams_delta_set_audio_mode(struct snd_kcontrol *kcontrol,
 
 	snd_soc_dapm_mutex_lock(dapm);
 
-	/* Translate selection to bitmap */
+	 
 	pins = ams_delta_audio_mode_pins[ucontrol->value.enumerated.item[0]];
 
-	/* Setup pins after corresponding bits if changed */
+	 
 	pin = !!(pins & (1 << AMS_DELTA_MOUTHPIECE));
 
 	if (pin != snd_soc_dapm_get_pin_status(dapm, "Mouthpiece")) {
@@ -211,7 +199,7 @@ static const struct snd_kcontrol_new ams_delta_audio_controls[] = {
 			ams_delta_get_audio_mode, ams_delta_set_audio_mode),
 };
 
-/* Hook switch */
+ 
 static struct snd_soc_jack ams_delta_hook_switch;
 static struct snd_soc_jack_gpio ams_delta_hook_switch_gpios[] = {
 	{
@@ -222,10 +210,9 @@ static struct snd_soc_jack_gpio ams_delta_hook_switch_gpios[] = {
 	}
 };
 
-/* After we are able to control the codec over the modem,
- * the hook switch can be used for dynamic DAPM reconfiguration. */
+ 
 static struct snd_soc_jack_pin ams_delta_hook_switch_pins[] = {
-	/* Handset */
+	 
 	{
 		.pin = "Mouthpiece",
 		.mask = SND_JACK_MICROPHONE,
@@ -234,7 +221,7 @@ static struct snd_soc_jack_pin ams_delta_hook_switch_pins[] = {
 		.pin = "Earpiece",
 		.mask = SND_JACK_HEADPHONE,
 	},
-	/* Handsfree */
+	 
 	{
 		.pin = "Microphone",
 		.mask = SND_JACK_MICROPHONE,
@@ -248,14 +235,9 @@ static struct snd_soc_jack_pin ams_delta_hook_switch_pins[] = {
 };
 
 
-/*
- * Modem line discipline, required for making above controls functional.
- * Activated from userspace with ldattach, possibly invoked from udev rule.
- */
+ 
 
-/* To actually apply any modem controlled configuration changes to the codec,
- * we must connect codec DAI pins to the modem for a moment.  Be careful not
- * to interfere with our digital mute function that shares the same hardware. */
+ 
 static struct timer_list cx81801_timer;
 static bool cx81801_cmd_pending;
 static bool ams_delta_muted;
@@ -271,13 +253,12 @@ static void cx81801_timeout(struct timer_list *unused)
 	muted = ams_delta_muted;
 	spin_unlock(&ams_delta_lock);
 
-	/* Reconnect the codec DAI back from the modem to the CPU DAI
-	 * only if digital mute still off */
+	 
 	if (!muted)
 		gpiod_set_value(gpiod_modem_codec, 0);
 }
 
-/* Line discipline .open() */
+ 
 static int cx81801_open(struct tty_struct *tty)
 {
 	int ret;
@@ -285,10 +266,7 @@ static int cx81801_open(struct tty_struct *tty)
 	if (!cx20442_codec)
 		return -ENODEV;
 
-	/*
-	 * Pass the codec structure pointer for use by other ldisc callbacks,
-	 * both the card and the codec specific parts.
-	 */
+	 
 	tty->disc_data = cx20442_codec;
 
 	ret = v253_ops.open(tty);
@@ -299,7 +277,7 @@ static int cx81801_open(struct tty_struct *tty)
 	return ret;
 }
 
-/* Line discipline .close() */
+ 
 static void cx81801_close(struct tty_struct *tty)
 {
 	struct snd_soc_component *component = tty->disc_data;
@@ -307,7 +285,7 @@ static void cx81801_close(struct tty_struct *tty)
 
 	del_timer_sync(&cx81801_timer);
 
-	/* Prevent the hook switch from further changing the DAPM pins */
+	 
 	INIT_LIST_HEAD(&ams_delta_hook_switch.pins);
 
 	if (!component)
@@ -317,7 +295,7 @@ static void cx81801_close(struct tty_struct *tty)
 
 	dapm = &component->card->dapm;
 
-	/* Revert back to default audio input/output constellation */
+	 
 	snd_soc_dapm_mutex_lock(dapm);
 
 	snd_soc_dapm_disable_pin_unlocked(dapm, "Mouthpiece");
@@ -331,13 +309,13 @@ static void cx81801_close(struct tty_struct *tty)
 	snd_soc_dapm_mutex_unlock(dapm);
 }
 
-/* Line discipline .hangup() */
+ 
 static void cx81801_hangup(struct tty_struct *tty)
 {
 	cx81801_close(tty);
 }
 
-/* Line discipline .receive_buf() */
+ 
 static void cx81801_receive(struct tty_struct *tty, const u8 *cp, const u8 *fp,
 			    size_t count)
 {
@@ -349,14 +327,14 @@ static void cx81801_receive(struct tty_struct *tty, const u8 *cp, const u8 *fp,
 		return;
 
 	if (!component->card->pop_time) {
-		/* First modem response, complete setup procedure */
+		 
 
-		/* Initialize timer used for config pulse generation */
+		 
 		timer_setup(&cx81801_timer, cx81801_timeout, 0);
 
 		v253_ops.receive_buf(tty, cp, fp, count);
 
-		/* Link hook switch to DAPM pins */
+		 
 		ret = snd_soc_jack_add_pins(&ams_delta_hook_switch,
 					ARRAY_SIZE(ams_delta_hook_switch_pins),
 					ams_delta_hook_switch_pins);
@@ -373,7 +351,7 @@ static void cx81801_receive(struct tty_struct *tty, const u8 *cp, const u8 *fp,
 	for (c = &cp[count - 1]; c >= cp; c--) {
 		if (*c != '\r')
 			continue;
-		/* Complete modem response received, apply config to codec */
+		 
 
 		spin_lock_bh(&ams_delta_lock);
 		mod_timer(&cx81801_timer, jiffies + msecs_to_jiffies(150));
@@ -381,15 +359,14 @@ static void cx81801_receive(struct tty_struct *tty, const u8 *cp, const u8 *fp,
 		cx81801_cmd_pending = 1;
 		spin_unlock_bh(&ams_delta_lock);
 
-		/* Apply config pulse by connecting the codec to the modem
-		 * if not already done */
+		 
 		if (apply)
 			gpiod_set_value(gpiod_modem_codec, 1);
 		break;
 	}
 }
 
-/* Line discipline .write_wakeup() */
+ 
 static void cx81801_wakeup(struct tty_struct *tty)
 {
 	v253_ops.write_wakeup(tty);
@@ -407,18 +384,12 @@ static struct tty_ldisc_ops cx81801_ops = {
 };
 
 
-/*
- * Even if not very useful, the sound card can still work without any of the
- * above functionality activated.  You can still control its audio input/output
- * constellation and speakerphone gain from userspace by issuing AT commands
- * over the modem port.
- */
+ 
 
 static struct snd_soc_ops ams_delta_ops;
 
 
-/* Digital mute implemented using modem/CPU multiplexer.
- * Shares hardware with codec config pulse generation */
+ 
 static bool ams_delta_muted = 1;
 
 static int ams_delta_mute(struct snd_soc_dai *dai, int mute, int direction)
@@ -438,13 +409,13 @@ static int ams_delta_mute(struct snd_soc_dai *dai, int mute, int direction)
 	return 0;
 }
 
-/* Our codec DAI probably doesn't have its own .ops structure */
+ 
 static const struct snd_soc_dai_ops ams_delta_dai_ops = {
 	.mute_stream = ams_delta_mute,
 	.no_capture_mute = 1,
 };
 
-/* Will be used if the codec ever has its own digital_mute function */
+ 
 static int ams_delta_startup(struct snd_pcm_substream *substream)
 {
 	return ams_delta_mute(NULL, 0, substream->stream);
@@ -456,9 +427,7 @@ static void ams_delta_shutdown(struct snd_pcm_substream *substream)
 }
 
 
-/*
- * Card initialization
- */
+ 
 
 static int ams_delta_cx20442_init(struct snd_soc_pcm_runtime *rtd)
 {
@@ -466,13 +435,12 @@ static int ams_delta_cx20442_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_card *card = rtd->card;
 	struct snd_soc_dapm_context *dapm = &card->dapm;
 	int ret;
-	/* Codec is ready, now add/activate board specific controls */
+	 
 
-	/* Store a pointer to the codec structure for tty ldisc use */
+	 
 	cx20442_codec = asoc_rtd_to_codec(rtd, 0)->component;
 
-	/* Add hook switch - can be used to control the codec from userspace
-	 * even if line discipline fails */
+	 
 	ret = snd_soc_card_jack_new_pins(card, "hook_switch", SND_JACK_HEADSET,
 					 &ams_delta_hook_switch, NULL, 0);
 	if (ret)
@@ -496,7 +464,7 @@ static int ams_delta_cx20442_init(struct snd_soc_pcm_runtime *rtd)
 		return 0;
 	}
 
-	/* Set up digital mute if not provided by the codec */
+	 
 	if (!codec_dai->driver->ops) {
 		codec_dai->driver->ops = &ams_delta_dai_ops;
 	} else {
@@ -504,7 +472,7 @@ static int ams_delta_cx20442_init(struct snd_soc_pcm_runtime *rtd)
 		ams_delta_ops.shutdown = ams_delta_shutdown;
 	}
 
-	/* Register optional line discipline for over the modem control */
+	 
 	ret = tty_register_ldisc(&cx81801_ops);
 	if (ret) {
 		dev_warn(card->dev,
@@ -513,7 +481,7 @@ static int ams_delta_cx20442_init(struct snd_soc_pcm_runtime *rtd)
 		return 0;
 	}
 
-	/* Set up initial pin constellation */
+	 
 	snd_soc_dapm_disable_pin(dapm, "Mouthpiece");
 	snd_soc_dapm_disable_pin(dapm, "Speaker");
 	snd_soc_dapm_disable_pin(dapm, "AGCIN");
@@ -522,7 +490,7 @@ static int ams_delta_cx20442_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
-/* DAI glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEFS(cx20442,
 	DAILINK_COMP_ARRAY(COMP_CPU("omap-mcbsp.1")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("cx20442-codec", "cx20442-voice")),
@@ -538,7 +506,7 @@ static struct snd_soc_dai_link ams_delta_dai_link = {
 	SND_SOC_DAILINK_REG(cx20442),
 };
 
-/* Audio card driver */
+ 
 static struct snd_soc_card ams_delta_audio_card = {
 	.name = "AMS_DELTA",
 	.owner = THIS_MODULE,
@@ -553,7 +521,7 @@ static struct snd_soc_card ams_delta_audio_card = {
 	.num_dapm_routes = ARRAY_SIZE(ams_delta_audio_map),
 };
 
-/* Module init/exit */
+ 
 static int ams_delta_probe(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = &ams_delta_audio_card;

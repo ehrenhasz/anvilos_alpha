@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	STV6110(A) Silicon tuner driver
-
-	Copyright (C) Manu Abraham <abraham.manu@gmail.com>
-
-	Copyright (C) ST Microelectronics
-
-*/
+ 
+ 
 
 #ifndef __STV6110x_REG_H
 #define __STV6110x_REG_H
@@ -67,4 +60,4 @@
 #define STV6110x_STAT2				0x06
 #define STV6110x_STAT3				0x07
 
-#endif /* __STV6110x_REG_H */
+#endif  

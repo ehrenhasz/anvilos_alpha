@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Felix Fietkau <nbd@nbd.name> */
+
+ 
 
 #ifndef __MTK_WED_REGS_H
 #define __MTK_WED_REGS_H
@@ -64,8 +64,8 @@ struct mtk_wdma_desc {
 #define MTK_WED_EXT_INT_STATUS_TKID_TITO_INVALID	BIT(4)
 #define MTK_WED_EXT_INT_STATUS_TX_FBUF_LO_TH		BIT(8)
 #define MTK_WED_EXT_INT_STATUS_TX_FBUF_HI_TH		BIT(9)
-#define MTK_WED_EXT_INT_STATUS_RX_FBUF_LO_TH		BIT(10) /* wed v2 */
-#define MTK_WED_EXT_INT_STATUS_RX_FBUF_HI_TH		BIT(11) /* wed v2 */
+#define MTK_WED_EXT_INT_STATUS_RX_FBUF_LO_TH		BIT(10)  
+#define MTK_WED_EXT_INT_STATUS_RX_FBUF_HI_TH		BIT(11)  
 #define MTK_WED_EXT_INT_STATUS_RX_DRV_R_RESP_ERR	BIT(16)
 #define MTK_WED_EXT_INT_STATUS_RX_DRV_W_RESP_ERR	BIT(17)
 #define MTK_WED_EXT_INT_STATUS_RX_DRV_COHERENT		BIT(18)
@@ -199,7 +199,7 @@ struct mtk_wdma_desc {
 #define MTK_WED_WPDMA_GLO_CFG_BYTE_SWAP			BIT(29)
 #define MTK_WED_WPDMA_GLO_CFG_RX_2B_OFFSET		BIT(31)
 
-/* CONFIG_MEDIATEK_NETSYS_V2 */
+ 
 #define MTK_WED_WPDMA_GLO_CFG_RX_DRV_R0_PKT_PROC	BIT(4)
 #define MTK_WED_WPDMA_GLO_CFG_RX_DRV_R1_PKT_PROC	BIT(5)
 #define MTK_WED_WPDMA_GLO_CFG_RX_DRV_R0_CRX_SYNC	BIT(6)
@@ -398,7 +398,7 @@ struct mtk_wdma_desc {
 #define MTK_PCIE_MIRROR_MAP_EN				BIT(0)
 #define MTK_PCIE_MIRROR_MAP_WED_ID			BIT(1)
 
-/* DMA channel mapping */
+ 
 #define HIFSYS_DMA_AG_MAP				0x008
 
 #define MTK_WED_RTQM_GLO_CFG				0xb00

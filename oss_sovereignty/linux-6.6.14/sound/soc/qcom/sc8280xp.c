@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022, Linaro Limited
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -33,11 +33,7 @@ static int sc8280xp_snd_init(struct snd_soc_pcm_runtime *rtd)
 	switch (cpu_dai->id) {
 	case WSA_CODEC_DMA_RX_0:
 	case WSA_CODEC_DMA_RX_1:
-		/*
-		 * set limit of 0dB on Digital Volume for Speakers,
-		 * this can prevent damage of speakers to some extent without
-		 * active speaker protection
-		 */
+		 
 		snd_soc_limit_volume(card, "WSA_RX0 Digital Volume", 84);
 		snd_soc_limit_volume(card, "WSA_RX1 Digital Volume", 84);
 		break;
@@ -138,7 +134,7 @@ static int sc8280xp_platform_probe(struct platform_device *pdev)
 	if (!card)
 		return -ENOMEM;
 	card->owner = THIS_MODULE;
-	/* Allocate the private data */
+	 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;

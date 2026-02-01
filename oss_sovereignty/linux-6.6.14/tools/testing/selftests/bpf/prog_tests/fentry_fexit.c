@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 #include <test_progs.h>
 #include "fentry_test.lskel.h"
 #include "fexit_test.lskel.h"

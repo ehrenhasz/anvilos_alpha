@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_MEMORY_H__
 #define __NVKM_MEMORY_H__
 #include <core/os.h>
@@ -12,10 +12,10 @@ struct nvkm_tags {
 };
 
 enum nvkm_memory_target {
-	NVKM_MEM_TARGET_INST, /* instance memory */
-	NVKM_MEM_TARGET_VRAM, /* video memory */
-	NVKM_MEM_TARGET_HOST, /* coherent system memory */
-	NVKM_MEM_TARGET_NCOH, /* non-coherent system memory */
+	NVKM_MEM_TARGET_INST,  
+	NVKM_MEM_TARGET_VRAM,  
+	NVKM_MEM_TARGET_HOST,  
+	NVKM_MEM_TARGET_NCOH,  
 };
 
 struct nvkm_memory {
@@ -66,9 +66,7 @@ void nvkm_memory_tags_put(struct nvkm_memory *, struct nvkm_device *,
 	(p)->func->map((p),(o),(vm),(va),(av),(ac))
 #define nvkm_memory_kmap(p,i) ((p)->func->kmap ? (p)->func->kmap((p), (i)) : -ENOSYS)
 
-/* accessor macros - kmap()/done() must bracket use of the other accessor
- * macros to guarantee correct behaviour across all chipsets
- */
+ 
 #define nvkm_kmap(o)     (o)->func->acquire(o)
 #define nvkm_done(o)     (o)->func->release(o)
 

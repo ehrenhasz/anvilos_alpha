@@ -1,11 +1,9 @@
-/* Linux multicast routing support
- * Common logic shared by IPv4 [ipmr] and IPv6 [ip6mr] implementation
- */
+ 
 
 #include <linux/rhashtable.h>
 #include <linux/mroute_base.h>
 
-/* Sets everything common except 'dev', since that is done under locking */
+ 
 void vif_device_init(struct vif_device *v,
 		     struct net_device *dev,
 		     unsigned long rate_limit,
@@ -100,7 +98,7 @@ void *mr_mfc_find_any(struct mr_table *mrt, int vifi, void *hasharg)
 		if (c->mfc_un.res.ttls[vifi] < 255)
 			return c;
 
-		/* It's ok if the vifi is part of the static tree */
+		 
 		proxy = mr_mfc_find_any_parent(mrt, c->mfc_parent);
 		if (proxy && proxy->mfc_un.res.ttls[vifi] < 255)
 			return c;
@@ -188,7 +186,7 @@ void *mr_mfc_seq_next(struct seq_file *seq, void *v,
 	if (it->cache == &mrt->mfc_unres_queue)
 		goto end_of_list;
 
-	/* exhausted cache_array, show unresolved */
+	 
 	rcu_read_unlock();
 	it->cache = &mrt->mfc_unres_queue;
 
@@ -215,7 +213,7 @@ int mr_fill_mroute(struct mr_table *mrt, struct sk_buff *skb,
 	unsigned long lastuse;
 	int ct;
 
-	/* If cache is unresolved, don't try to parse IIF and OIF */
+	 
 	if (c->mfc_parent >= MAXVIFS) {
 		rtm->rtm_flags |= RTNH_F_UNRESOLVED;
 		return -ENOENT;
@@ -364,9 +362,7 @@ int mr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb,
 	struct mr_table *mrt;
 	int err;
 
-	/* multicast does not track protocol or have route type other
-	 * than RTN_MULTICAST
-	 */
+	 
 	if (filter->filter_set) {
 		if (filter->protocol || filter->flags ||
 		    (filter->rt_type && filter->rt_type != RTN_MULTICAST))
@@ -414,7 +410,7 @@ int mr_dump(struct net *net, struct notifier_block *nb, unsigned short family,
 		struct mr_mfc *mfc;
 		int vifi;
 
-		/* Notifiy on table VIF entries */
+		 
 		rcu_read_lock();
 		for (vifi = 0; vifi < mrt->maxvif; vifi++, v++) {
 			vif_dev = rcu_dereference(v->dev);
@@ -433,7 +429,7 @@ int mr_dump(struct net *net, struct notifier_block *nb, unsigned short family,
 		if (err)
 			return err;
 
-		/* Notify on table MFC entries */
+		 
 		list_for_each_entry_rcu(mfc, &mrt->mfc_cache_list, list) {
 			err = mr_call_mfc_notifier(nb, family,
 						   FIB_EVENT_ENTRY_ADD,

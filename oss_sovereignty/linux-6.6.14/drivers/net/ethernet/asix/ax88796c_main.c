@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010 ASIX Electronics Corporation
- * Copyright (c) 2020 Samsung Electronics Co., Ltd.
- *
- * ASIX AX88796C SPI Fast Ethernet Linux driver
- */
+
+ 
 
 #define pr_fmt(fmt)	"ax88796c: " fmt
 
@@ -105,7 +100,7 @@ static void ax88796c_set_hw_multicast(struct net_device *ndev)
 		rx_ctl |= RXCR_AMALL;
 
 	} else if (mc_count == 0) {
-		/* just broadcast and directed */
+		 
 	} else {
 		u32 crc_bits;
 		int i;
@@ -149,7 +144,7 @@ static void ax88796c_load_mac_addr(struct net_device *ndev)
 
 	lockdep_assert_held(&ax_local->spi_lock);
 
-	/* Try the device tree first */
+	 
 	if (!platform_get_ethdev_address(&ax_local->spi->dev, ndev) &&
 	    is_valid_ether_addr(ndev->dev_addr)) {
 		if (netif_msg_probe(ax_local))
@@ -158,7 +153,7 @@ static void ax88796c_load_mac_addr(struct net_device *ndev)
 		return;
 	}
 
-	/* Read the MAC address from AX88796C */
+	 
 	temp = AX_READ(&ax_local->ax_spi, P3_MACASR0);
 	addr[5] = (u8)temp;
 	addr[4] = (u8)(temp >> 8);
@@ -179,7 +174,7 @@ static void ax88796c_load_mac_addr(struct net_device *ndev)
 		return;
 	}
 
-	/* Use random address if none found */
+	 
 	if (netif_msg_probe(ax_local))
 		dev_info(&ax_local->spi->dev, "Use random MAC address\n");
 	eth_hw_addr_random(ndev);
@@ -189,7 +184,7 @@ static void ax88796c_proc_tx_hdr(struct tx_pkt_info *info, u8 ip_summed)
 {
 	u16 pkt_len_bar = (~info->pkt_len & TX_HDR_SOP_PKTLENBAR);
 
-	/* Prepare SOP header */
+	 
 	info->sop.flags_len = info->pkt_len |
 		((ip_summed == CHECKSUM_NONE) ||
 		 (ip_summed == CHECKSUM_UNNECESSARY) ? TX_HDR_SOP_DICF : 0);
@@ -199,7 +194,7 @@ static void ax88796c_proc_tx_hdr(struct tx_pkt_info *info, u8 ip_summed)
 	cpu_to_be16s(&info->sop.flags_len);
 	cpu_to_be16s(&info->sop.seq_lenbar);
 
-	/* Prepare Segment header */
+	 
 	info->seg.flags_seqnum_seglen = TX_HDR_SEG_FS | TX_HDR_SEG_LS
 						| info->pkt_len;
 
@@ -208,7 +203,7 @@ static void ax88796c_proc_tx_hdr(struct tx_pkt_info *info, u8 ip_summed)
 	cpu_to_be16s(&info->seg.flags_seqnum_seglen);
 	cpu_to_be16s(&info->seg.eo_so_seglenbar);
 
-	/* Prepare EOP header */
+	 
 	info->eop.seq_len = ((info->seq_num << 11) &
 			     TX_HDR_EOP_SEQNUM) | info->pkt_len;
 	info->eop.seqbar_lenbar = ((~info->seq_num << 11) &
@@ -228,7 +223,7 @@ ax88796c_check_free_pages(struct ax88796c_device *ax_local, u8 need_pages)
 
 	free_pages = AX_READ(&ax_local->ax_spi, P0_TFBFCR) & TX_FREEBUF_MASK;
 	if (free_pages < need_pages) {
-		/* schedule free page interrupt */
+		 
 		tmp = AX_READ(&ax_local->ax_spi, P0_TFBFCR)
 				& TFBFCR_SCHE_FREE_PAGE;
 		AX_WRITE(&ax_local->ax_spi, tmp | TFBFCR_TX_PAGE_SET |
@@ -283,16 +278,16 @@ ax88796c_tx_fixup(struct net_device *ndev, struct sk_buff_head *q)
 	info.seq_num = seq_num;
 	ax88796c_proc_tx_hdr(&info, skb->ip_summed);
 
-	/* SOP and SEG header */
+	 
 	memcpy(skb_push(skb, TX_OVERHEAD), &info.sop, TX_OVERHEAD);
 
-	/* Write SPI TXQ header */
+	 
 	memcpy(skb_push(skb, spi_len), ax88796c_tx_cmd_buf, spi_len);
 
-	/* Make 32-bit alignment */
+	 
 	skb_put(skb, padlen);
 
-	/* EOP header */
+	 
 	skb_put_data(skb, &info.eop, TX_EOP_SIZE);
 
 	skb_unlink(skb, q);
@@ -355,7 +350,7 @@ static int ax88796c_hard_xmit(struct ax88796c_device *ax_local)
 
 	if (((AX_READ(&ax_local->ax_spi, P0_TSNR) & TXNR_TXB_IDLE) == 0) ||
 	    ((ISR_TXERR & AX_READ(&ax_local->ax_spi, P0_ISR)) != 0)) {
-		/* Ack tx error int */
+		 
 		AX_WRITE(&ax_local->ax_spi, ISR_TXERR, P0_ISR);
 
 		this_cpu_inc(ax_local->stats->tx_dropped);
@@ -364,7 +359,7 @@ static int ax88796c_hard_xmit(struct ax88796c_device *ax_local)
 			netif_err(ax_local, tx_err, ax_local->ndev,
 				  "TX FIFO error, re-initialize the TX bridge\n");
 
-		/* Reinitial tx bridge */
+		 
 		AX_WRITE(&ax_local->ax_spi, TXNR_TXB_REINIT |
 			AX_READ(&ax_local->ax_spi, P0_TSNR), P0_TSNR);
 		ax_local->seq_num = 0;
@@ -411,12 +406,12 @@ ax88796c_skb_return(struct ax88796c_device *ax_local,
 		if (!(ndev->features & NETIF_F_RXCSUM))
 			break;
 
-		/* checksum error bit is set */
+		 
 		if ((rxhdr->flags & RX_HDR3_L3_ERR) ||
 		    (rxhdr->flags & RX_HDR3_L4_ERR))
 			break;
 
-		/* Other types may be indicated by more than one bit. */
+		 
 		if ((rxhdr->flags & RX_HDR3_L4_TYPE_TCP) ||
 		    (rxhdr->flags & RX_HDR3_L4_TYPE_UDP))
 			skb->ip_summed = CHECKSUM_UNNECESSARY;
@@ -501,7 +496,7 @@ static int ax88796c_receive(struct net_device *ndev)
 
 	lockdep_assert_held(&ax_local->spi_lock);
 
-	/* check rx packet and total word count */
+	 
 	AX_WRITE(&ax_local->ax_spi, AX_READ(&ax_local->ax_spi, P0_RTWCR)
 		  | RTWCR_RX_LATCH, P0_RTWCR);
 
@@ -526,7 +521,7 @@ static int ax88796c_receive(struct net_device *ndev)
 	axspi_read_rxq(&ax_local->ax_spi,
 		       skb_put(skb, w_count * 2), skb->len);
 
-	/* Check if rx bridge is idle */
+	 
 	if ((AX_READ(&ax_local->ax_spi, P0_RXBCR2) & RXBCR2_RXB_IDLE) == 0) {
 		if (net_ratelimit())
 			netif_err(ax_local, rx_err, ndev,
@@ -620,7 +615,7 @@ static void ax88796c_work(struct work_struct *work)
 		AX_WRITE(&ax_local->ax_spi, IMR_MASKALL, P0_IMR);
 
 		while (ax88796c_process_isr(ax_local))
-			/* nothing */;
+			 ;
 
 		clear_bit(EVENT_INTR, &ax_local->flags);
 
@@ -821,19 +816,19 @@ ax88796c_open(struct net_device *ndev)
 	ax88796c_set_mac_addr(ndev);
 	ax88796c_set_csums(ax_local);
 
-	/* Disable stuffing packet */
+	 
 	t = AX_READ(&ax_local->ax_spi, P1_RXBSPCR);
 	t &= ~RXBSPCR_STUF_ENABLE;
 	AX_WRITE(&ax_local->ax_spi, t, P1_RXBSPCR);
 
-	/* Enable RX packet process */
+	 
 	AX_WRITE(&ax_local->ax_spi, RPPER_RXEN, P1_RPPER);
 
 	t = AX_READ(&ax_local->ax_spi, P0_FER);
 	t |= FER_RXEN | FER_TXEN | FER_BSWAP | FER_IRQ_PULL;
 	AX_WRITE(&ax_local->ax_spi, t, P0_FER);
 
-	/* Setup LED mode */
+	 
 	AX_WRITE(&ax_local->ax_spi,
 		 (LCR_LED0_EN | LCR_LED0_DUPLEX | LCR_LED1_EN |
 		 LCR_LED1_100MODE), P2_LCR0);
@@ -841,15 +836,15 @@ ax88796c_open(struct net_device *ndev)
 		 (AX_READ(&ax_local->ax_spi, P2_LCR1) & LCR_LED2_MASK) |
 		 LCR_LED2_EN | LCR_LED2_LINK, P2_LCR1);
 
-	/* Disable PHY auto-polling */
+	 
 	AX_WRITE(&ax_local->ax_spi, PCR_PHYID(AX88796C_PHY_ID), P2_PCR);
 
-	/* Enable MAC interrupts */
+	 
 	AX_WRITE(&ax_local->ax_spi, IMR_DEFAULT, P0_IMR);
 
 	mutex_unlock(&ax_local->spi_lock);
 
-	/* Setup flow-control configuration */
+	 
 	phy_support_asym_pause(ax_local->phydev);
 
 	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
@@ -882,25 +877,18 @@ ax88796c_close(struct net_device *ndev)
 
 	phy_stop(ndev->phydev);
 
-	/* We lock the mutex early not only to protect the device
-	 * against concurrent access, but also avoid waking up the
-	 * queue in ax88796c_work(). phy_stop() needs to be called
-	 * before because it locks the mutex to access SPI.
-	 */
+	 
 	mutex_lock(&ax_local->spi_lock);
 
 	netif_stop_queue(ndev);
 
-	/* No more work can be scheduled now. Make any pending work,
-	 * including one already waiting for the mutex to be unlocked,
-	 * NOP.
-	 */
+	 
 	netif_dbg(ax_local, ifdown, ndev, "clearing bits\n");
 	clear_bit(EVENT_SET_MULTI, &ax_local->flags);
 	clear_bit(EVENT_INTR, &ax_local->flags);
 	clear_bit(EVENT_TX, &ax_local->flags);
 
-	/* Disable MAC interrupts */
+	 
 	AX_WRITE(&ax_local->ax_spi, IMR_MASKALL, P0_IMR);
 	__skb_queue_purge(&ax_local->tx_wait_q);
 	ax88796c_soft_reset(ax_local);
@@ -946,14 +934,14 @@ static int ax88796c_hard_reset(struct ax88796c_device *ax_local)
 	struct device *dev = (struct device *)&ax_local->spi->dev;
 	struct gpio_desc *reset_gpio;
 
-	/* reset info */
+	 
 	reset_gpio = gpiod_get(dev, "reset", 0);
 	if (IS_ERR(reset_gpio)) {
 		dev_err(dev, "Could not get 'reset' GPIO: %ld", PTR_ERR(reset_gpio));
 		return PTR_ERR(reset_gpio);
 	}
 
-	/* set reset */
+	 
 	gpiod_direction_output(reset_gpio, 1);
 	msleep(100);
 	gpiod_direction_output(reset_gpio, 0);
@@ -1030,17 +1018,17 @@ static int ax88796c_probe(struct spi_device *spi)
 
 	mutex_lock(&ax_local->spi_lock);
 
-	/* ax88796c gpio reset */
+	 
 	ax88796c_hard_reset(ax_local);
 
-	/* Reset AX88796C */
+	 
 	ret = ax88796c_soft_reset(ax_local);
 	if (ret < 0) {
 		ret = -ENODEV;
 		mutex_unlock(&ax_local->spi_lock);
 		goto err;
 	}
-	/* Check board revision */
+	 
 	temp = AX_READ(&ax_local->ax_spi, P2_CRIR);
 	if ((temp & 0xF) != 0x0) {
 		dev_err(&spi->dev, "spi read failed: %d\n", temp);
@@ -1049,7 +1037,7 @@ static int ax88796c_probe(struct spi_device *spi)
 		goto err;
 	}
 
-	/*Reload EEPROM*/
+	 
 	ax88796c_reload_eeprom(ax_local);
 
 	ax88796c_load_mac_addr(ndev);
@@ -1062,7 +1050,7 @@ static int ax88796c_probe(struct spi_device *spi)
 			 ndev->dev_addr[2], ndev->dev_addr[3],
 			 ndev->dev_addr[4], ndev->dev_addr[5]);
 
-	/* Disable power saving */
+	 
 	AX_WRITE(&ax_local->ax_spi, (AX_READ(&ax_local->ax_spi, P0_PSCR)
 				     & PSCR_PS_MASK) | PSCR_PS_D0, P0_PSCR);
 

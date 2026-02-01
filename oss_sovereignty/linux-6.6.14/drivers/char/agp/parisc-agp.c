@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HP Quicksilver AGP GART routines
- *
- * Copyright (c) 2006, Kyle McMartin <kyle@parisc-linux.org>
- *
- * Based on drivers/char/agpgart/hp-agp.c which is
- * (c) Copyright 2002, 2003 Hewlett-Packard Development Company, L.P.
- *	Bjorn Helgaas <bjorn.helgaas@hp.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -58,7 +50,7 @@ static struct gatt_mask parisc_agp_masks[] =
 
 static struct aper_size_info_fixed parisc_agp_sizes[] =
 {
-        {0, 0, 0},              /* filled in by parisc_agp_fetch_size() */
+        {0, 0, 0},               
 };
 
 static int
@@ -90,11 +82,11 @@ parisc_agp_tlbflush(struct agp_memory *mem)
 {
 	struct _parisc_agp_info *info = &parisc_agp_info;
 
-	/* force fdc ops to be visible to IOMMU */
+	 
 	asm_io_sync();
 
 	writeq(info->gart_base | ilog2(info->gart_size), info->ioc_regs+IOC_PCOM);
-	readq(info->ioc_regs+IOC_PCOM);	/* flush */
+	readq(info->ioc_regs+IOC_PCOM);	 
 }
 
 static int
@@ -195,16 +187,16 @@ static unsigned long
 parisc_agp_mask_memory(struct agp_bridge_data *bridge, dma_addr_t addr,
 		       int type)
 {
-	unsigned ci;			/* coherent index */
+	unsigned ci;			 
 	dma_addr_t pa;
 
 	pa = addr & IOVP_MASK;
 	asm("lci 0(%1), %0" : "=r" (ci) : "r" (phys_to_virt(pa)));
 
-	pa |= (ci >> PAGE_SHIFT) & 0xff;/* move CI (8 bits) into lowest byte */
-	pa |= SBA_PDIR_VALID_BIT;	/* set "valid" bit */
+	pa |= (ci >> PAGE_SHIFT) & 0xff; 
+	pa |= SBA_PDIR_VALID_BIT;	 
 
-	/* return native (big-endian) PDIR entry */
+	 
 	return pa;
 }
 
@@ -403,14 +395,14 @@ parisc_agp_init(void)
 	if (!sba_list)
 		goto out;
 
-	/* Find our parent Pluto */
+	 
 	sba = sba_list->dev;
 	if (!IS_PLUTO(sba)) {
 		printk(KERN_INFO DRVPFX "No Pluto found, so no AGPGART for you.\n");
 		goto out;
 	}
 
-	/* Now search our Pluto for our precious AGP device... */
+	 
 	device_for_each_child(&sba->dev, &lba, find_quicksilver);
 
 	if (!lba) {
@@ -420,7 +412,7 @@ parisc_agp_init(void)
 
 	lbadev = parisc_get_drvdata(lba);
 
-	/* w00t, let's go find our cookies... */
+	 
 	parisc_agp_setup(sba_list->ioc[0].ioc_hpa, lbadev->hba.base_addr);
 
 	return 0;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <subcmd/pager.h>
 #include <string.h>
@@ -20,11 +20,11 @@ int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)
 			goto auto_color;
 	}
 
-	/* Missing or explicit false to turn off colorization */
+	 
 	if (!perf_config_bool(var, value))
 		return 0;
 
-	/* any normal truth value defaults to 'auto' */
+	 
  auto_color:
 	if (stdout_is_tty < 0)
 		stdout_is_tty = isatty(1);

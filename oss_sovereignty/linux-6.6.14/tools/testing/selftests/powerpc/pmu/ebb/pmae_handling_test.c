@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <sched.h>
 #include <signal.h>
@@ -12,18 +10,7 @@
 #include "ebb.h"
 
 
-/*
- * Test that the kernel properly handles PMAE across context switches.
- *
- * We test this by calling into the kernel inside our EBB handler, where PMAE
- * is clear. A cpu eater companion thread is running on the same CPU as us to
- * encourage the scheduler to switch us.
- *
- * The kernel must make sure that when it context switches us back in, it
- * honours the fact that we had PMAE clear.
- *
- * Observed to hit the failing case on the first EBB with a broken kernel.
- */
+ 
 
 static bool mmcr0_mismatch;
 static uint64_t before, after;
@@ -43,7 +30,7 @@ static void syscall_ebb_callee(void)
 
 	before = mfspr(SPRN_MMCR0);
 
-	/* Try and get ourselves scheduled, to force a PMU context switch */
+	 
 	sched_yield();
 
 	after = mfspr(SPRN_MMCR0);

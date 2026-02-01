@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI AM437x Image Sensor Interface Registers
- *
- * Copyright (C) 2013 - 2014 Texas Instruments, Inc.
- *
- * Benoit Parrot <bparrot@ti.com>
- * Lad, Prabhakar <prabhakar.csengg@gmail.com>
- */
+ 
+ 
 
 #ifndef AM437X_VPFE_REGS_H
 #define AM437X_VPFE_REGS_H
 
-/* VPFE module register offset */
+ 
 #define VPFE_REVISION				0x0
 #define VPFE_PCR				0x4
 #define VPFE_SYNMODE				0x8
@@ -42,7 +35,7 @@
 #define VPFE_IRQ_EN_CLR				0x120
 #define VPFE_REG_END				0x124
 
-/* Define bit fields within selected registers */
+ 
 #define VPFE_FID_POL_MASK			1
 #define VPFE_FID_POL_SHIFT			4
 #define VPFE_HD_POL_MASK			1
@@ -129,4 +122,4 @@
 #define VPFE_CONFIG_ST_OCP_ACTIVE		0
 #define VPFE_CONFIG_ST_OCP_STANDBY		1
 
-#endif		/* AM437X_VPFE_REGS_H */
+#endif		 

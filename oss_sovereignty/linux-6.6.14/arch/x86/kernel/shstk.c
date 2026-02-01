@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * shstk.c - Intel shadow stack support
- *
- * Copyright (c) 2021, Intel Corporation.
- * Yu-cheng Yu <yu-cheng.yu@intel.com>
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/bitops.h>
@@ -43,24 +38,18 @@ static void features_clr(unsigned long features)
 	current->thread.features &= ~features;
 }
 
-/*
- * Create a restore token on the shadow stack.  A token is always 8-byte
- * and aligned to 8.
- */
+ 
 static int create_rstor_token(unsigned long ssp, unsigned long *token_addr)
 {
 	unsigned long addr;
 
-	/* Token must be aligned */
+	 
 	if (!IS_ALIGNED(ssp, 8))
 		return -EINVAL;
 
 	addr = ssp - SS_FRAME_SIZE;
 
-	/*
-	 * SSP is aligned, so reserved bits and mode bit are a zero, just mark
-	 * the token 64-bit.
-	 */
+	 
 	ssp |= BIT(0);
 
 	if (write_user_shstk_64((u64 __user *)addr, (u64)ssp))
@@ -72,31 +61,7 @@ static int create_rstor_token(unsigned long ssp, unsigned long *token_addr)
 	return 0;
 }
 
-/*
- * VM_SHADOW_STACK will have a guard page. This helps userspace protect
- * itself from attacks. The reasoning is as follows:
- *
- * The shadow stack pointer(SSP) is moved by CALL, RET, and INCSSPQ. The
- * INCSSP instruction can increment the shadow stack pointer. It is the
- * shadow stack analog of an instruction like:
- *
- *   addq $0x80, %rsp
- *
- * However, there is one important difference between an ADD on %rsp
- * and INCSSP. In addition to modifying SSP, INCSSP also reads from the
- * memory of the first and last elements that were "popped". It can be
- * thought of as acting like this:
- *
- * READ_ONCE(ssp);       // read+discard top element on stack
- * ssp += nr_to_pop * 8; // move the shadow stack
- * READ_ONCE(ssp-8);     // read+discard last popped stack element
- *
- * The maximum distance INCSSP can move the SSP is 2040 bytes, before
- * it would read the memory. Therefore a single page gap will be enough
- * to prevent any operation from shifting the SSP to an adjacent stack,
- * since it would have to land in the gap at least once, causing a
- * fault.
- */
+ 
 static unsigned long alloc_shstk(unsigned long addr, unsigned long size,
 				 unsigned long token_offset, bool set_res_tok)
 {
@@ -138,19 +103,11 @@ static void unmap_shadow_stack(u64 base, u64 size)
 
 	r = vm_munmap(base, size);
 
-	/*
-	 * mmap_write_lock_killable() failed with -EINTR. This means
-	 * the process is about to die and have it's MM cleaned up.
-	 * This task shouldn't ever make it back to userspace. In this
-	 * case it is ok to leak a shadow stack, so just exit out.
-	 */
+	 
 	if (r == -EINTR)
 		return;
 
-	/*
-	 * For all other types of vm_munmap() failure, either the
-	 * system is out of memory or there is bug.
-	 */
+	 
 	WARN_ON_ONCE(r);
 }
 
@@ -159,11 +116,11 @@ static int shstk_setup(void)
 	struct thread_shstk *shstk = &current->thread.shstk;
 	unsigned long addr, size;
 
-	/* Already enabled */
+	 
 	if (features_enabled(ARCH_SHSTK_SHSTK))
 		return 0;
 
-	/* Also not supported for 32 bit and x32 */
+	 
 	if (!cpu_feature_enabled(X86_FEATURE_USER_SHSTK) || in_32bit_syscall())
 		return -EOPNOTSUPP;
 
@@ -197,28 +154,18 @@ unsigned long shstk_alloc_thread_stack(struct task_struct *tsk, unsigned long cl
 	struct thread_shstk *shstk = &tsk->thread.shstk;
 	unsigned long addr, size;
 
-	/*
-	 * If shadow stack is not enabled on the new thread, skip any
-	 * switch to a new shadow stack.
-	 */
+	 
 	if (!features_enabled(ARCH_SHSTK_SHSTK))
 		return 0;
 
-	/*
-	 * For CLONE_VFORK the child will share the parents shadow stack.
-	 * Make sure to clear the internal tracking of the thread shadow
-	 * stack so the freeing logic run for child knows to leave it alone.
-	 */
+	 
 	if (clone_flags & CLONE_VFORK) {
 		shstk->base = 0;
 		shstk->size = 0;
 		return 0;
 	}
 
-	/*
-	 * For !CLONE_VM the child will use a copy of the parents shadow
-	 * stack.
-	 */
+	 
 	if (!(clone_flags & CLONE_VM))
 		return 0;
 
@@ -253,10 +200,7 @@ static int put_shstk_data(u64 __user *addr, u64 data)
 	if (WARN_ON_ONCE(data & SHSTK_DATA_BIT))
 		return -EINVAL;
 
-	/*
-	 * Mark the high bit so that the sigframe can't be processed as a
-	 * return address.
-	 */
+	 
 	if (write_user_shstk_64(addr, data | SHSTK_DATA_BIT))
 		return -EFAULT;
 	return 0;
@@ -281,7 +225,7 @@ static int shstk_push_sigframe(unsigned long *ssp)
 {
 	unsigned long target_ssp = *ssp;
 
-	/* Token must be aligned */
+	 
 	if (!IS_ALIGNED(target_ssp, 8))
 		return -EINVAL;
 
@@ -299,12 +243,7 @@ static int shstk_pop_sigframe(unsigned long *ssp)
 	bool need_to_check_vma;
 	int err = 1;
 
-	/*
-	 * It is possible for the SSP to be off the end of a shadow stack by 4
-	 * or 8 bytes. If the shadow stack is at the start of a page or 4 bytes
-	 * before it, it might be this case, so check that the address being
-	 * read is actually shadow stack.
-	 */
+	 
 	if (!IS_ALIGNED(*ssp, 8))
 		return -EINVAL;
 
@@ -327,11 +266,11 @@ static int shstk_pop_sigframe(unsigned long *ssp)
 		mmap_read_unlock(current->mm);
 	}
 
-	/* Restore SSP aligned? */
+	 
 	if (unlikely(!IS_ALIGNED(token_addr, 8)))
 		return -EINVAL;
 
-	/* SSP in userspace? */
+	 
 	if (unlikely(token_addr >= TASK_SIZE_MAX))
 		return -EINVAL;
 
@@ -365,7 +304,7 @@ int setup_signal_shadow_stack(struct ksignal *ksig)
 	if (unlikely(err))
 		return err;
 
-	/* Push restorer address */
+	 
 	ssp -= SS_FRAME_SIZE;
 	err = write_user_shstk_64((u64 __user *)ssp, (u64)restorer);
 	if (unlikely(err))
@@ -410,28 +349,15 @@ void shstk_free(struct task_struct *tsk)
 	    !features_enabled(ARCH_SHSTK_SHSTK))
 		return;
 
-	/*
-	 * When fork() with CLONE_VM fails, the child (tsk) already has a
-	 * shadow stack allocated, and exit_thread() calls this function to
-	 * free it.  In this case the parent (current) and the child share
-	 * the same mm struct.
-	 */
+	 
 	if (!tsk->mm || tsk->mm != current->mm)
 		return;
 
-	/*
-	 * If shstk->base is NULL, then this task is not managing its
-	 * own shadow stack (CLONE_VFORK). So skip freeing it.
-	 */
+	 
 	if (!shstk->base)
 		return;
 
-	/*
-	 * shstk->base is NULL for CLONE_VFORK child tasks, and so is
-	 * normal. But size = 0 on a shstk->base is not normal and
-	 * indicated an attempt to free the thread shadow stack twice.
-	 * Warn about it.
-	 */
+	 
 	if (WARN_ON(!shstk->size))
 		return;
 
@@ -447,15 +373,11 @@ static int wrss_control(bool enable)
 	if (!cpu_feature_enabled(X86_FEATURE_USER_SHSTK))
 		return -EOPNOTSUPP;
 
-	/*
-	 * Only enable WRSS if shadow stack is enabled. If shadow stack is not
-	 * enabled, WRSS will already be disabled, so don't bother clearing it
-	 * when disabling.
-	 */
+	 
 	if (!features_enabled(ARCH_SHSTK_SHSTK))
 		return -EPERM;
 
-	/* Already enabled/disabled? */
+	 
 	if (features_enabled(ARCH_SHSTK_WRSS) == enable)
 		return 0;
 
@@ -486,12 +408,12 @@ static int shstk_disable(void)
 	if (!cpu_feature_enabled(X86_FEATURE_USER_SHSTK))
 		return -EOPNOTSUPP;
 
-	/* Already disabled? */
+	 
 	if (!features_enabled(ARCH_SHSTK_SHSTK))
 		return 0;
 
 	fpregs_lock_and_load();
-	/* Disable WRSS too when disabling shadow stack */
+	 
 	wrmsrl(MSR_IA32_U_CET, 0);
 	wrmsrl(MSR_IA32_PL3_SSP, 0);
 	fpregs_unlock();
@@ -513,18 +435,14 @@ SYSCALL_DEFINE3(map_shadow_stack, unsigned long, addr, unsigned long, size, unsi
 	if (flags & ~SHADOW_STACK_SET_TOKEN)
 		return -EINVAL;
 
-	/* If there isn't space for a token */
+	 
 	if (set_tok && size < 8)
 		return -ENOSPC;
 
 	if (addr && addr < SZ_4G)
 		return -ERANGE;
 
-	/*
-	 * An overflow would result in attempting to write the restore token
-	 * to the wrong location. Not catastrophic, but just return the right
-	 * error code and block it.
-	 */
+	 
 	aligned_size = PAGE_ALIGN(size);
 	if (aligned_size < size)
 		return -EOVERFLOW;
@@ -545,7 +463,7 @@ long shstk_prctl(struct task_struct *task, int option, unsigned long arg2)
 		return 0;
 	}
 
-	/* Only allow via ptrace */
+	 
 	if (task != current) {
 		if (option == ARCH_SHSTK_UNLOCK && IS_ENABLED(CONFIG_CHECKPOINT_RESTORE)) {
 			task->thread.features_locked &= ~features;
@@ -554,11 +472,11 @@ long shstk_prctl(struct task_struct *task, int option, unsigned long arg2)
 		return -EINVAL;
 	}
 
-	/* Do not allow to change locked features */
+	 
 	if (features & task->thread.features_locked)
 		return -EPERM;
 
-	/* Only support enabling/disabling one feature at a time. */
+	 
 	if (hweight_long(features) > 1)
 		return -EINVAL;
 
@@ -570,7 +488,7 @@ long shstk_prctl(struct task_struct *task, int option, unsigned long arg2)
 		return -EINVAL;
 	}
 
-	/* Handle ARCH_SHSTK_ENABLE */
+	 
 	if (features & ARCH_SHSTK_SHSTK)
 		return shstk_setup();
 	if (features & ARCH_SHSTK_WRSS)

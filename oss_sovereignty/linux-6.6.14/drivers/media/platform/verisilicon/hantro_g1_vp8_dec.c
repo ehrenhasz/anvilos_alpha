@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VP8 codec driver
- *
- * Copyright (C) 2019 Rockchip Electronics Co., Ltd.
- *	ZhiChao Yu <zhichao.yu@rock-chips.com>
- *
- * Copyright (C) 2019 Google, Inc.
- *	Tomasz Figa <tfiga@chromium.org>
- */
+
+ 
 
 #include <media/v4l2-mem2mem.h>
 
@@ -15,7 +7,7 @@
 #include "hantro.h"
 #include "hantro_g1_regs.h"
 
-/* DCT partition base address regs */
+ 
 static const struct hantro_reg vp8_dec_dct_base[8] = {
 	{ G1_REG_ADDR_STR, 0, 0xffffffff },
 	{ G1_REG_ADDR_REF(8), 0, 0xffffffff },
@@ -27,7 +19,7 @@ static const struct hantro_reg vp8_dec_dct_base[8] = {
 	{ G1_REG_ADDR_REF(15), 0, 0xffffffff },
 };
 
-/* Loop filter level regs */
+ 
 static const struct hantro_reg vp8_dec_lf_level[4] = {
 	{ G1_REG_REF_PIC(2), 18, 0x3f },
 	{ G1_REG_REF_PIC(2), 12, 0x3f },
@@ -35,7 +27,7 @@ static const struct hantro_reg vp8_dec_lf_level[4] = {
 	{ G1_REG_REF_PIC(2), 0, 0x3f },
 };
 
-/* Macroblock loop filter level adjustment regs */
+ 
 static const struct hantro_reg vp8_dec_mb_adj[4] = {
 	{ G1_REG_REF_PIC(0), 21, 0x7f },
 	{ G1_REG_REF_PIC(0), 14, 0x7f },
@@ -43,7 +35,7 @@ static const struct hantro_reg vp8_dec_mb_adj[4] = {
 	{ G1_REG_REF_PIC(0), 0, 0x7f },
 };
 
-/* Reference frame adjustment regs */
+ 
 static const struct hantro_reg vp8_dec_ref_adj[4] = {
 	{ G1_REG_REF_PIC(1), 21, 0x7f },
 	{ G1_REG_REF_PIC(1), 14, 0x7f },
@@ -51,7 +43,7 @@ static const struct hantro_reg vp8_dec_ref_adj[4] = {
 	{ G1_REG_REF_PIC(1), 0, 0x7f },
 };
 
-/* Quantizer */
+ 
 static const struct hantro_reg vp8_dec_quant[4] = {
 	{ G1_REG_REF_PIC(3), 11, 0x7ff },
 	{ G1_REG_REF_PIC(3), 0, 0x7ff },
@@ -59,7 +51,7 @@ static const struct hantro_reg vp8_dec_quant[4] = {
 	{ G1_REG_BD_REF_PIC(4), 0, 0x7ff },
 };
 
-/* Quantizer delta regs */
+ 
 static const struct hantro_reg vp8_dec_quant_delta[5] = {
 	{ G1_REG_REF_PIC(3), 27, 0x1f },
 	{ G1_REG_REF_PIC(3), 22, 0x1f },
@@ -68,7 +60,7 @@ static const struct hantro_reg vp8_dec_quant_delta[5] = {
 	{ G1_REG_BD_P_REF_PIC, 27, 0x1f },
 };
 
-/* DCT partition start bits regs */
+ 
 static const struct hantro_reg vp8_dec_dct_start_bits[8] = {
 	{ G1_REG_DEC_CTRL2, 26, 0x3f }, { G1_REG_DEC_CTRL4, 26, 0x3f },
 	{ G1_REG_DEC_CTRL4, 20, 0x3f }, { G1_REG_DEC_CTRL7, 24, 0x3f },
@@ -76,7 +68,7 @@ static const struct hantro_reg vp8_dec_dct_start_bits[8] = {
 	{ G1_REG_DEC_CTRL7, 6, 0x3f },  { G1_REG_DEC_CTRL7, 0, 0x3f },
 };
 
-/* Precision filter tap regs */
+ 
 static const struct hantro_reg vp8_dec_pred_bc_tap[8][4] = {
 	{
 		{ G1_REG_PRED_FLT, 22, 0x3ff },
@@ -128,9 +120,7 @@ static const struct hantro_reg vp8_dec_pred_bc_tap[8][4] = {
 	},
 };
 
-/*
- * Set loop filters
- */
+ 
 static void cfg_lf(struct hantro_ctx *ctx,
 		   const struct v4l2_ctrl_vp8_frame *hdr)
 {
@@ -170,9 +160,7 @@ static void cfg_lf(struct hantro_ctx *ctx,
 	}
 }
 
-/*
- * Set quantization parameters
- */
+ 
 static void cfg_qp(struct hantro_ctx *ctx,
 		   const struct v4l2_ctrl_vp8_frame *hdr)
 {
@@ -203,31 +191,7 @@ static void cfg_qp(struct hantro_ctx *ctx,
 	hantro_reg_write(vpu, &vp8_dec_quant_delta[4], q->uv_ac_delta);
 }
 
-/*
- * set control partition and DCT partition regs
- *
- * VP8 frame stream data layout:
- *
- *	                     first_part_size          parttion_sizes[0]
- *                              ^                     ^
- * src_dma                      |                     |
- * ^                   +--------+------+        +-----+-----+
- * |                   | control part  |        |           |
- * +--------+----------------+------------------+-----------+-----+-----------+
- * | tag 3B | extra 7B | hdr | mb_data | DCT sz | DCT part0 | ... | DCT partn |
- * +--------+-----------------------------------+-----------+-----+-----------+
- *                           |         |        |                             |
- *                           v         +----+---+                             v
- *                           mb_start       |                       src_dma_end
- *                                          v
- *                                       DCT size part
- *                                      (num_dct-1)*3B
- * Note:
- *   1. only key-frames have extra 7-bytes
- *   2. all offsets are base on src_dma
- *   3. number of DCT parts is 1, 2, 4 or 8
- *   4. the addresses set to the VPU must be 64-bits aligned
- */
+ 
 static void cfg_parts(struct hantro_ctx *ctx,
 		      const struct v4l2_ctrl_vp8_frame *hdr)
 {
@@ -245,17 +209,7 @@ static void cfg_parts(struct hantro_ctx *ctx,
 	vb2_src = hantro_get_src_buf(ctx);
 	src_dma = vb2_dma_contig_plane_dma_addr(&vb2_src->vb2_buf, 0);
 
-	/*
-	 * Calculate control partition mb data info
-	 * @first_part_header_bits:	bits offset of mb data from first
-	 *				part start pos
-	 * @mb_offset_bits:		bits offset of mb data from src_dma
-	 *				base addr
-	 * @mb_offset_byte:		bytes offset of mb data from src_dma
-	 *				base addr
-	 * @mb_start_bits:		bits offset of mb data from mb data
-	 *				64bits alignment addr
-	 */
+	 
 	mb_offset_bits = first_part_offset * 8 +
 			 hdr->first_part_header_bits + 8;
 	mb_offset_bytes = mb_offset_bits / 8;
@@ -265,30 +219,23 @@ static void cfg_parts(struct hantro_ctx *ctx,
 		  (mb_offset_bytes - first_part_offset) +
 		  (mb_offset_bytes & DEC_8190_ALIGN_MASK);
 
-	/* Macroblock data aligned base addr */
+	 
 	vdpu_write_relaxed(vpu, (mb_offset_bytes & (~DEC_8190_ALIGN_MASK))
 				+ src_dma, G1_REG_ADDR_REF(13));
 
-	/* Macroblock data start bits */
+	 
 	reg.base = G1_REG_DEC_CTRL2;
 	reg.mask = 0x3f;
 	reg.shift = 18;
 	hantro_reg_write(vpu, &reg, mb_start_bits);
 
-	/* Macroblock aligned data length */
+	 
 	reg.base = G1_REG_DEC_CTRL6;
 	reg.mask = 0x3fffff;
 	reg.shift = 0;
 	hantro_reg_write(vpu, &reg, mb_size + 1);
 
-	/*
-	 * Calculate DCT partition info
-	 * @dct_size_part_size: Containing sizes of DCT part, every DCT part
-	 *			has 3 bytes to store its size, except the last
-	 *			DCT part
-	 * @dct_part_offset:	bytes offset of DCT parts from src_dma base addr
-	 * @dct_part_total_len: total size of all DCT parts
-	 */
+	 
 	dct_size_part_size = (hdr->num_dct_parts - 1) * 3;
 	dct_part_offset = first_part_offset + hdr->first_part_size;
 	for (i = 0; i < hdr->num_dct_parts; i++)
@@ -296,18 +243,18 @@ static void cfg_parts(struct hantro_ctx *ctx,
 	dct_part_total_len += dct_size_part_size;
 	dct_part_total_len += (dct_part_offset & DEC_8190_ALIGN_MASK);
 
-	/* Number of DCT partitions */
+	 
 	reg.base = G1_REG_DEC_CTRL6;
 	reg.mask = 0xf;
 	reg.shift = 24;
 	hantro_reg_write(vpu, &reg, hdr->num_dct_parts - 1);
 
-	/* DCT partition length */
+	 
 	vdpu_write_relaxed(vpu,
 			   G1_REG_DEC_CTRL3_STREAM_LEN(dct_part_total_len),
 			   G1_REG_DEC_CTRL3);
 
-	/* DCT partitions base address */
+	 
 	for (i = 0; i < hdr->num_dct_parts; i++) {
 		u32 byte_offset = dct_part_offset + dct_size_part_size + count;
 		u32 base_addr = byte_offset + src_dma;
@@ -322,10 +269,7 @@ static void cfg_parts(struct hantro_ctx *ctx,
 	}
 }
 
-/*
- * prediction filter taps
- * normal 6-tap filters
- */
+ 
 static void cfg_tap(struct hantro_ctx *ctx,
 		    const struct v4l2_ctrl_vp8_frame *hdr)
 {
@@ -338,7 +282,7 @@ static void cfg_tap(struct hantro_ctx *ctx,
 	reg.mask = 0xf;
 
 	if ((hdr->version & 0x03) != 0)
-		return; /* Tap filter not used. */
+		return;  
 
 	for (i = 0; i < 8; i++) {
 		val = (hantro_vp8_dec_mc_filter[i][0] << 2) |
@@ -412,11 +356,11 @@ static void cfg_buffers(struct hantro_ctx *ctx,
 	dma_addr_t dst_dma;
 	u32 reg;
 
-	/* Set probability table buffer address */
+	 
 	vdpu_write_relaxed(vpu, ctx->vp8_dec.prob_tbl.dma,
 			   G1_REG_ADDR_QTABLE);
 
-	/* Set segment map address */
+	 
 	reg = G1_REG_FWD_PIC1_SEGMENT_BASE(ctx->vp8_dec.segment_map.dma);
 	if (seg->flags & V4L2_VP8_SEGMENT_FLAG_ENABLED) {
 		reg |= G1_REG_FWD_PIC1_SEGMENT_E;
@@ -445,7 +389,7 @@ int hantro_g1_vp8_dec_run(struct hantro_ctx *ctx)
 	if (WARN_ON(!hdr))
 		return -EINVAL;
 
-	/* Reset segment_map buffer in keyframe */
+	 
 	if (V4L2_VP8_FRAME_IS_KEY_FRAME(hdr) && ctx->vp8_dec.segment_map.cpu)
 		memset(ctx->vp8_dec.segment_map.cpu, 0,
 		       ctx->vp8_dec.segment_map.size);
@@ -473,7 +417,7 @@ int hantro_g1_vp8_dec_run(struct hantro_ctx *ctx)
 		reg |= G1_REG_DEC_CTRL0_FILTERING_DIS;
 	vdpu_write_relaxed(vpu, reg, G1_REG_DEC_CTRL0);
 
-	/* Frame dimensions */
+	 
 	mb_width = MB_WIDTH(width);
 	mb_height = MB_HEIGHT(height);
 	reg = G1_REG_DEC_CTRL1_PIC_MB_WIDTH(mb_width) |
@@ -482,7 +426,7 @@ int hantro_g1_vp8_dec_run(struct hantro_ctx *ctx)
 	      G1_REG_DEC_CTRL1_PIC_MB_H_EXT(mb_height >> 8);
 	vdpu_write_relaxed(vpu, reg, G1_REG_DEC_CTRL1);
 
-	/* Boolean decoder */
+	 
 	reg = G1_REG_DEC_CTRL2_BOOLEAN_RANGE(hdr->coder_state.range)
 		| G1_REG_DEC_CTRL2_BOOLEAN_VALUE(hdr->coder_state.value);
 	vdpu_write_relaxed(vpu, reg, G1_REG_DEC_CTRL2);

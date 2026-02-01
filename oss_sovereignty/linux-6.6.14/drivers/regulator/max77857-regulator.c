@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023 Analog Devices, Inc.
- * ADI Regulator driver for the MAX77857
- * MAX77859 and MAX77831.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -201,7 +197,7 @@ static int max77859_set_voltage_sel(struct regulator_dev *rdev,
 	if (ret)
 		return ret;
 
-	/* actually apply new voltage */
+	 
 	return regmap_set_bits(rdev->regmap, MAX77859_REG_CONT3,
 			       MAX77859_CONT3_DVS_START);
 }
@@ -296,8 +292,8 @@ static const unsigned int max77857_switch_freq[] = {
 #define RAMAP_DELAY_INIT_VAL 1333
 
 static const unsigned int max77857_ramp_table[2][4] = {
-	{ RAMAP_DELAY_INIT_VAL, 667, 333, 227 }, /* when switch freq is 1.8MHz or 2.1MHz */
-	{ 1166, 667, 333, 167 }, /* when switch freq is 1.2MHz or 1.5MHz */
+	{ RAMAP_DELAY_INIT_VAL, 667, 333, 227 },  
+	{ 1166, 667, 333, 167 },  
 };
 
 static struct regulator_desc max77857_regulator_desc = {

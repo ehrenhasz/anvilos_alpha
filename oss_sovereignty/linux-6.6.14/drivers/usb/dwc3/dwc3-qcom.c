@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, The Linux Foundation. All rights reserved.
- *
- * Inspired by dwc3-of-simple.c
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/io.h>
@@ -24,7 +21,7 @@
 #include <linux/usb.h>
 #include "core.h"
 
-/* USB QSCRATCH Hardware registers */
+ 
 #define QSCRATCH_HS_PHY_CTRL			0x10
 #define UTMI_OTG_VBUS_VALID			BIT(20)
 #define SW_SESSVLD_SEL				BIT(28)
@@ -45,7 +42,7 @@
 #define SDM845_QSCRATCH_SIZE			0x400
 #define SDM845_DWC3_CORE_SIZE			0xcd00
 
-/* Interconnect path bandwidths in MBps */
+ 
 #define USB_MEMORY_AVG_HS_BW MBps_to_icc(240)
 #define USB_MEMORY_PEAK_HS_BW MBps_to_icc(700)
 #define USB_MEMORY_AVG_SS_BW  MBps_to_icc(1000)
@@ -101,7 +98,7 @@ static inline void dwc3_qcom_setbits(void __iomem *base, u32 offset, u32 val)
 	reg |= val;
 	writel(reg, base + offset);
 
-	/* ensure that above write is through */
+	 
 	readl(base + offset);
 }
 
@@ -113,7 +110,7 @@ static inline void dwc3_qcom_clrbits(void __iomem *base, u32 offset, u32 val)
 	reg &= ~val;
 	writel(reg, base + offset);
 
-	/* ensure that above write is through */
+	 
 	readl(base + offset);
 }
 
@@ -137,7 +134,7 @@ static int dwc3_qcom_vbus_notifier(struct notifier_block *nb,
 {
 	struct dwc3_qcom *qcom = container_of(nb, struct dwc3_qcom, vbus_nb);
 
-	/* enable vbus override for device mode */
+	 
 	dwc3_qcom_vbus_override_enable(qcom, event);
 	qcom->mode = event ? USB_DR_MODE_PERIPHERAL : USB_DR_MODE_HOST;
 
@@ -149,7 +146,7 @@ static int dwc3_qcom_host_notifier(struct notifier_block *nb,
 {
 	struct dwc3_qcom *qcom = container_of(nb, struct dwc3_qcom, host_nb);
 
-	/* disable vbus override in host mode */
+	 
 	dwc3_qcom_vbus_override_enable(qcom, !event);
 	qcom->mode = event ? USB_DR_MODE_HOST : USB_DR_MODE_PERIPHERAL;
 
@@ -196,7 +193,7 @@ static int dwc3_qcom_register_extcon(struct dwc3_qcom *qcom)
 		return ret;
 	}
 
-	/* Update initial VBUS override based on extcon state */
+	 
 	if (extcon_get_state(qcom->edev, EXTCON_USB) ||
 	    !extcon_get_state(host_edev, EXTCON_USB_HOST))
 		dwc3_qcom_vbus_notifier(&qcom->vbus_nb, true, qcom->edev);
@@ -236,12 +233,7 @@ static int dwc3_qcom_interconnect_disable(struct dwc3_qcom *qcom)
 	return ret;
 }
 
-/**
- * dwc3_qcom_interconnect_init() - Get interconnect path handles
- * and set bandwidth.
- * @qcom:			Pointer to the concerned usb core.
- *
- */
+ 
 static int dwc3_qcom_interconnect_init(struct dwc3_qcom *qcom)
 {
 	enum usb_device_speed max_speed;
@@ -292,29 +284,22 @@ put_path_ddr:
 	return ret;
 }
 
-/**
- * dwc3_qcom_interconnect_exit() - Release interconnect path handles
- * @qcom:			Pointer to the concerned usb core.
- *
- * This function is used to release interconnect path handle.
- */
+ 
 static void dwc3_qcom_interconnect_exit(struct dwc3_qcom *qcom)
 {
 	icc_put(qcom->icc_path_ddr);
 	icc_put(qcom->icc_path_apps);
 }
 
-/* Only usable in contexts where the role can not change. */
+ 
 static bool dwc3_qcom_is_host(struct dwc3_qcom *qcom)
 {
 	struct dwc3 *dwc;
 
-	/*
-	 * FIXME: Fix this layering violation.
-	 */
+	 
 	dwc = platform_get_drvdata(qcom->dwc3);
 
-	/* Core driver may not have probed yet. */
+	 
 	if (!dwc)
 		return false;
 
@@ -327,17 +312,10 @@ static enum usb_device_speed dwc3_qcom_read_usb2_speed(struct dwc3_qcom *qcom)
 	struct usb_device *udev;
 	struct usb_hcd __maybe_unused *hcd;
 
-	/*
-	 * FIXME: Fix this layering violation.
-	 */
+	 
 	hcd = platform_get_drvdata(dwc->xhci);
 
-	/*
-	 * It is possible to query the speed of all children of
-	 * USB2.0 root hub via usb_hub_for_each_child(). DWC3 code
-	 * currently supports only 1 port per controller. So
-	 * this is sufficient.
-	 */
+	 
 #ifdef CONFIG_USB
 	udev = usb_hub_find_child(hcd->self.root_hub, 1);
 #else
@@ -391,14 +369,7 @@ static void dwc3_qcom_enable_interrupts(struct dwc3_qcom *qcom)
 {
 	dwc3_qcom_enable_wakeup_irq(qcom->hs_phy_irq, 0);
 
-	/*
-	 * Configure DP/DM line interrupts based on the USB2 device attached to
-	 * the root hub port. When HS/FS device is connected, configure the DP line
-	 * as falling edge to detect both disconnect and remote wakeup scenarios. When
-	 * LS device is connected, configure DM line as falling edge to detect both
-	 * disconnect and remote wakeup. When no device is connected, configure both
-	 * DP and DM lines as rising edge to detect HS/HS/LS device connect scenario.
-	 */
+	 
 
 	if (qcom->usb2_speed == USB_SPEED_LOW) {
 		dwc3_qcom_enable_wakeup_irq(qcom->dm_hs_phy_irq,
@@ -436,10 +407,7 @@ static int dwc3_qcom_suspend(struct dwc3_qcom *qcom, bool wakeup)
 	if (ret)
 		dev_warn(qcom->dev, "failed to disable interconnect: %d\n", ret);
 
-	/*
-	 * The role is stable during suspend as role switching is done from a
-	 * freezable workqueue.
-	 */
+	 
 	if (dwc3_qcom_is_host(qcom) && wakeup) {
 		qcom->usb2_speed = dwc3_qcom_read_usb2_speed(qcom);
 		dwc3_qcom_enable_interrupts(qcom);
@@ -474,7 +442,7 @@ static int dwc3_qcom_resume(struct dwc3_qcom *qcom, bool wakeup)
 	if (ret)
 		dev_warn(qcom->dev, "failed to enable interconnect: %d\n", ret);
 
-	/* Clear existing events from PHY related to L2 in/out */
+	 
 	dwc3_qcom_setbits(qcom->qscratch_base, PWR_EVNT_IRQ_STAT_REG,
 			  PWR_EVNT_LPM_IN_L2_MASK | PWR_EVNT_LPM_OUT_L2_MASK);
 
@@ -488,14 +456,11 @@ static irqreturn_t qcom_dwc3_resume_irq(int irq, void *data)
 	struct dwc3_qcom *qcom = data;
 	struct dwc3	*dwc = platform_get_drvdata(qcom->dwc3);
 
-	/* If pm_suspended then let pm_resume take care of resuming h/w */
+	 
 	if (qcom->pm_suspended)
 		return IRQ_HANDLED;
 
-	/*
-	 * This is safe as role switching is done from a freezable workqueue
-	 * and the wakeup interrupts are disabled as part of resume.
-	 */
+	 
 	if (dwc3_qcom_is_host(qcom))
 		pm_runtime_resume(&dwc->xhci->dev);
 
@@ -504,7 +469,7 @@ static irqreturn_t qcom_dwc3_resume_irq(int irq, void *data)
 
 static void dwc3_qcom_select_utmi_clk(struct dwc3_qcom *qcom)
 {
-	/* Configure dwc3 to use UTMI clock as PIPE clock not present */
+	 
 	dwc3_qcom_setbits(qcom->qscratch_base, QSCRATCH_GENERAL_CFG,
 			  PIPE_UTMI_CLK_DIS);
 
@@ -545,7 +510,7 @@ static int dwc3_qcom_setup_irq(struct platform_device *pdev)
 	irq = dwc3_qcom_get_irq(pdev, "hs_phy_irq",
 				pdata ? pdata->hs_phy_irq_index : -1);
 	if (irq > 0) {
-		/* Keep wakeup interrupts disabled until suspend */
+		 
 		irq_set_status_flags(irq, IRQ_NOAUTOEN);
 		ret = devm_request_threaded_irq(qcom->dev, irq, NULL,
 					qcom_dwc3_resume_irq,
@@ -776,12 +741,12 @@ static struct platform_device *dwc3_qcom_create_urs_usb_platdev(struct device *d
 	int ret;
 	int id;
 
-	/* Figure out device id */
+	 
 	ret = sscanf(fwnode_get_name(dev->fwnode), "URS%d", &id);
 	if (!ret)
 		return NULL;
 
-	/* Find the child using name */
+	 
 	snprintf(name, sizeof(name), "USB%d", id);
 	fwh = fwnode_get_named_child_node(dev->fwnode, name);
 	if (!fwh)
@@ -901,10 +866,7 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
 		goto free_urs;
 	}
 
-	/*
-	 * Disable pipe_clk requirement if specified. Used when dwc3
-	 * operates without SSPHY and only HS/FS/LS modes are supported.
-	 */
+	 
 	ignore_pipe_clk = device_property_read_bool(dev,
 				"qcom,select-utmi-as-pipe-clk");
 	if (ignore_pipe_clk)
@@ -926,11 +888,11 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
 
 	qcom->mode = usb_get_dr_mode(&qcom->dwc3->dev);
 
-	/* enable vbus override for device mode */
+	 
 	if (qcom->mode != USB_DR_MODE_HOST)
 		dwc3_qcom_vbus_override_enable(qcom, true);
 
-	/* register extcon to override sw_vbus on Vbus change later */
+	 
 	ret = dwc3_qcom_register_extcon(qcom);
 	if (ret)
 		goto interconnect_exit;

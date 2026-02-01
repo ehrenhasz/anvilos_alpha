@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interconnect.h>
@@ -90,7 +88,7 @@ static int vpu_rpc_send_cmd_buf(struct vpu_shared_addr *shared, struct vpu_rpc_e
 		}
 	}
 
-	/*update wptr after data is written*/
+	 
 	mb();
 	desc->wptr = wptr;
 
@@ -157,7 +155,7 @@ static int vpu_rpc_receive_msg_buf(struct vpu_shared_addr *shared, struct vpu_rp
 		}
 	}
 
-	/*update rptr after data is read*/
+	 
 	mb();
 	desc->rptr = rptr;
 

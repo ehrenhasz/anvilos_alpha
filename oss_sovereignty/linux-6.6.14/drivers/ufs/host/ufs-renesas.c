@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Renesas UFS host controller driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,7 +15,7 @@
 #include "ufshcd-pltfrm.h"
 
 struct ufs_renesas_priv {
-	bool initialized;	/* The hardware needs initialization once */
+	bool initialized;	 
 };
 
 enum {
@@ -143,7 +139,7 @@ struct ufs_renesas_init_param {
 	u32 index;
 };
 
-/* This setting is for SERIES B */
+ 
 static const struct ufs_renesas_init_param ufs_param[] = {
 	PARAM_WRITE(0xc0, 0x49425308),
 	PARAM_WRITE_D0_D4(0x00000104, 0x00000002),
@@ -179,7 +175,7 @@ static const struct ufs_renesas_init_param ufs_param[] = {
 	PARAM_WRITE(0xd0, 0x00000d2c),
 	PARAM_POLL(0xd4, BIT(0), BIT(0)),
 
-	/* phy setup */
+	 
 	PARAM_INDIRECT_WRITE(1, 0x01, 0x001f),
 	PARAM_INDIRECT_WRITE(7, 0x5d, 0x0014),
 	PARAM_INDIRECT_WRITE(7, 0x5e, 0x0014),
@@ -265,7 +261,7 @@ static const struct ufs_renesas_init_param ufs_param[] = {
 	PARAM_INDIRECT_WRITE(7, 0x5e, 0x0017),
 	PARAM_INDIRECT_POLL(7, 0x55, 0, BIT(6)),
 	PARAM_INDIRECT_POLL(7, 0x41, 0, BIT(7)),
-	/* end of phy setup */
+	 
 
 	PARAM_WRITE(0xf0, 0),
 	PARAM_WRITE(0xd0, 0x00000d00),
@@ -379,7 +375,7 @@ static const struct ufs_hba_variant_ops ufs_renesas_vops = {
 
 static const struct of_device_id __maybe_unused ufs_renesas_of_match[] = {
 	{ .compatible = "renesas,r8a779f0-ufs" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ufs_renesas_of_match);
 

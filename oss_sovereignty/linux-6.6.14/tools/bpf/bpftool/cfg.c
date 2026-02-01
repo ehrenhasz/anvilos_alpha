@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/list.h>
 #include <stdlib.h>
@@ -449,9 +449,7 @@ static void func_output_edges(struct func_node *func)
 		draw_bb_succ_edges(func, bb);
 	}
 
-	/* Add an invisible edge from ENTRY to EXIT, this is to
-	 * improve the graph layout.
-	 */
+	 
 	printf("\tfn_%d_bb_%d:s -> fn_%d_bb_%d:n [style=\"invis\", constraint=true];\n",
 	       func_idx, ENTRY_BLOCK_INDEX, func_idx, EXIT_BLOCK_INDEX);
 }

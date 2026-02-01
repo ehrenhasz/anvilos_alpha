@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Exynos generic interconnect provider driver
- *
- * Copyright (c) 2020 Samsung Electronics Co., Ltd.
- *
- * Authors: Artur Świgoń <a.swigon@samsung.com>
- *          Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/interconnect-provider.h>
 #include <linux/module.h>
@@ -20,7 +13,7 @@
 struct exynos_icc_priv {
 	struct device *dev;
 
-	/* One interconnect node per provider */
+	 
 	struct icc_provider provider;
 	struct icc_node *node;
 
@@ -38,9 +31,9 @@ static struct icc_node *exynos_icc_get_parent(struct device_node *np)
 	num = of_count_phandle_with_args(np, "interconnects",
 					 "#interconnect-cells");
 	if (num < 1)
-		return NULL; /* parent nodes are optional */
+		return NULL;  
 
-	/* Get the interconnect target node */
+	 
 	ret = of_parse_phandle_with_args(np, "interconnects",
 					"#interconnect-cells", 0, &args);
 	if (ret < 0)
@@ -143,9 +136,7 @@ static int exynos_generic_icc_probe(struct platform_device *pdev)
 	icc_node->data = priv;
 	icc_node_add(icc_node, provider);
 
-	/*
-	 * Register a PM QoS request for the parent (devfreq) device.
-	 */
+	 
 	ret = dev_pm_qos_add_request(bus_dev, &priv->qos_req,
 				     DEV_PM_QOS_MIN_FREQUENCY, 0);
 	if (ret < 0)

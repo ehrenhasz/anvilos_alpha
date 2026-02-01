@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016, Amir Vadai <amir@vadai.me>
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -125,7 +122,7 @@ tunnel_key_copy_geneve_opt(const struct nlattr *nla, void *dst, int dst_len,
 		opt->opt_class =
 			nla_get_be16(tb[TCA_TUNNEL_KEY_ENC_OPT_GENEVE_CLASS]);
 		opt->type = nla_get_u8(tb[TCA_TUNNEL_KEY_ENC_OPT_GENEVE_TYPE]);
-		opt->length = data_len / 4; /* length is in units of 4 bytes */
+		opt->length = data_len / 4;  
 		opt->r1 = 0;
 		opt->r2 = 0;
 		opt->r3 = 0;

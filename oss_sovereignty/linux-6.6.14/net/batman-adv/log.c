@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner
- */
+
+ 
 
 #include "log.h"
 #include "main.h"
@@ -11,13 +8,7 @@
 
 #include "trace.h"
 
-/**
- * batadv_debug_log() - Add debug log entry
- * @bat_priv: the bat priv with all the soft interface information
- * @fmt: format string
- *
- * Return: 0 on success or negative error number in case of failure
- */
+ 
 int batadv_debug_log(struct batadv_priv *bat_priv, const char *fmt, ...)
 {
 	struct va_format vaf;

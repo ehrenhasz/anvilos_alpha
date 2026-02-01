@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/skbuff.h>
 #include <linux/netfilter.h>
@@ -76,13 +76,13 @@ static unsigned int nf_route_table_hook6(void *priv,
 	nft_set_pktinfo(&pkt, skb, state);
 	nft_set_pktinfo_ipv6(&pkt);
 
-	/* save source/dest address, mark, hoplimit, flowlabel, priority */
+	 
 	memcpy(&saddr, &ipv6_hdr(skb)->saddr, sizeof(saddr));
 	memcpy(&daddr, &ipv6_hdr(skb)->daddr, sizeof(daddr));
 	mark = skb->mark;
 	hop_limit = ipv6_hdr(skb)->hop_limit;
 
-	/* flowlabel and prio (includes version, which shouldn't change either)*/
+	 
 	flowlabel = *((u32 *)ipv6_hdr(skb));
 
 	ret = nft_do_chain(&pkt, priv);

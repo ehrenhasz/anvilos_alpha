@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/V2M Pin Control and GPIO driver core
- *
- * Based on:
- *   Renesas RZ/G2L Pin Control and GPIO driver core
- *
- * Copyright (C) 2022 Renesas Electronics Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -33,15 +26,12 @@
 
 #define DRV_NAME	"pinctrl-rzv2m"
 
-/*
- * Use 16 lower bits [15:0] for pin identifier
- * Use 16 higher bits [31:16] for pin mux function
- */
+ 
 #define MUX_PIN_ID_MASK		GENMASK(15, 0)
 #define MUX_FUNC_MASK		GENMASK(31, 16)
 #define MUX_FUNC(pinconf)	FIELD_GET(MUX_FUNC_MASK, (pinconf))
 
-/* PIN capabilities */
+ 
 #define PIN_CFG_GRP_1_8V_2		1
 #define PIN_CFG_GRP_1_8V_3		2
 #define PIN_CFG_GRP_SWIO_1		3
@@ -56,10 +46,7 @@
 					 PIN_CFG_DRV | \
 					 PIN_CFG_SLEW)
 
-/*
- * n indicates number of pins in the port, a is the register index
- * and f is pin configuration capabilities supported.
- */
+ 
 #define RZV2M_GPIO_PORT_PACK(n, a, f)	(((n) << 24) | ((a) << 16) | (f))
 #define RZV2M_GPIO_PORT_GET_PINCNT(x)	FIELD_GET(GENMASK(31, 24), (x))
 #define RZV2M_GPIO_PORT_GET_INDEX(x)	FIELD_GET(GENMASK(23, 16), (x))
@@ -67,10 +54,7 @@
 
 #define RZV2M_DEDICATED_PORT_IDX	22
 
-/*
- * BIT(31) indicates dedicated pin, b is the register bits (b * 16)
- * and f is the pin configuration capabilities supported.
- */
+ 
 #define RZV2M_SINGLE_PIN		BIT(31)
 #define RZV2M_SINGLE_PIN_PACK(b, f)	(RZV2M_SINGLE_PIN | \
 					 ((RZV2M_DEDICATED_PORT_IDX) << 24) | \
@@ -124,8 +108,8 @@ struct rzv2m_pinctrl {
 	struct gpio_chip		gpio_chip;
 	struct pinctrl_gpio_range	gpio_range;
 
-	spinlock_t			lock; /* lock read/write registers */
-	struct mutex			mutex; /* serialize adding groups and functions */
+	spinlock_t			lock;  
+	struct mutex			mutex;  
 };
 
 static const unsigned int drv_1_8V_group2_uA[] = { 1800, 3800, 7800, 11000 };
@@ -133,7 +117,7 @@ static const unsigned int drv_1_8V_group3_uA[] = { 1600, 3200, 6400, 9600 };
 static const unsigned int drv_SWIO_group2_3_3V_uA[] = { 9000, 11000, 13000, 18000 };
 static const unsigned int drv_3_3V_group_uA[] = { 2000, 4000, 8000, 12000 };
 
-/* Helper for registers that have a write enable bit in the upper word */
+ 
 static void rzv2m_writel_we(void __iomem *addr, u8 shift, u8 value)
 {
 	writel((BIT(16) | value) << shift, addr);
@@ -144,15 +128,15 @@ static void rzv2m_pinctrl_set_pfc_mode(struct rzv2m_pinctrl *pctrl,
 {
 	void __iomem *addr;
 
-	/* Mask input/output */
+	 
 	rzv2m_writel_we(pctrl->base + DI_MSK(port), pin, 1);
 	rzv2m_writel_we(pctrl->base + EN_MSK(port), pin, 1);
 
-	/* Select the function and set the write enable bits */
+	 
 	addr = pctrl->base + PFSEL(port) + (pin / 4) * 4;
 	writel(((PFC_MASK << 16) | func) << ((pin % 4) * 4), addr);
 
-	/* Unmask input/output */
+	 
 	rzv2m_writel_we(pctrl->base + EN_MSK(port), pin, 0);
 	rzv2m_writel_we(pctrl->base + DI_MSK(port), pin, 0);
 };
@@ -302,7 +286,7 @@ static int rzv2m_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 		goto done;
 	}
 
-	/* Collect pin locations and mux settings from DT properties */
+	 
 	for (i = 0; i < num_pinmux; ++i) {
 		u32 value;
 
@@ -326,17 +310,14 @@ static int rzv2m_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 
 	mutex_lock(&pctrl->mutex);
 
-	/* Register a single pin group listing all the pins we read from DT */
+	 
 	gsel = pinctrl_generic_add_group(pctldev, name, pins, num_pinmux, NULL);
 	if (gsel < 0) {
 		ret = gsel;
 		goto unlock;
 	}
 
-	/*
-	 * Register a single group function where the 'data' is an array PSEL
-	 * register values read from DT.
-	 */
+	 
 	pin_fn[0] = name;
 	fsel = pinmux_generic_add_function(pctldev, name, pin_fn, 1, psel_val);
 	if (fsel < 0) {
@@ -493,7 +474,7 @@ static int rzv2m_pinctrl_pinconf_get(struct pinctrl_dev *pctldev,
 		if (!(cfg & PIN_CFG_BIAS))
 			return -EINVAL;
 
-		/* PUPD uses 2-bits per pin */
+		 
 		bit *= 2;
 
 		switch ((readl(pctrl->base + PUPD(port)) >> bit) & PUPD_MASK) {
@@ -516,7 +497,7 @@ static int rzv2m_pinctrl_pinconf_get(struct pinctrl_dev *pctldev,
 		if (!(cfg & PIN_CFG_DRV))
 			return -EINVAL;
 
-		/* DRV uses 2-bits per pin */
+		 
 		bit *= 2;
 
 		val = (readl(pctrl->base + DRV(port)) >> bit) & DRV_MASK;
@@ -597,7 +578,7 @@ static int rzv2m_pinctrl_pinconf_set(struct pinctrl_dev *pctldev,
 			if (!(cfg & PIN_CFG_BIAS))
 				return -EINVAL;
 
-			/* PUPD uses 2-bits per pin */
+			 
 			bit *= 2;
 
 			switch (param) {
@@ -647,7 +628,7 @@ static int rzv2m_pinctrl_pinconf_set(struct pinctrl_dev *pctldev,
 			if (index >= 4)
 				return -EINVAL;
 
-			/* DRV uses 2-bits per pin */
+			 
 			bit *= 2;
 
 			rzv2m_rmw_pin_config(pctrl, DRV(port), bit, DRV_MASK, index);
@@ -712,7 +693,7 @@ static int rzv2m_pinctrl_pinconf_group_get(struct pinctrl_dev *pctldev,
 		if (ret)
 			return ret;
 
-		/* Check config matches previous pins */
+		 
 		if (i && prev_config != *config)
 			return -EOPNOTSUPP;
 
@@ -834,10 +815,7 @@ static void rzv2m_gpio_free(struct gpio_chip *chip, unsigned int offset)
 {
 	pinctrl_gpio_free(chip->base + offset);
 
-	/*
-	 * Set the GPIO as an input to ensure that the next GPIO request won't
-	 * drive the GPIO pin as an output.
-	 */
+	 
 	rzv2m_gpio_direction_input(chip, offset);
 }
 
@@ -1098,7 +1076,7 @@ static const struct of_device_id rzv2m_pinctrl_of_table[] = {
 		.compatible = "renesas,r9a09g011-pinctrl",
 		.data = &r9a09g011_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver rzv2m_pinctrl_driver = {

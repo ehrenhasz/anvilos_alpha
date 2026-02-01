@@ -6,7 +6,7 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 
-/* Packet parsing state machine helpers. */
+ 
 #define cursor_advance(_cursor, _len) \
 	({ void *_tmp = _cursor; _cursor += _len; _tmp; })
 
@@ -125,15 +125,15 @@ static __always_inline int is_valid_tlv_boundary(struct __sk_buff *skb,
 	int err;
 
 	srh_off = (char *)srh - (char *)(long)skb->data;
-	// cur_off = end of segments, start of possible TLVs
+	
 	cur_off = srh_off + sizeof(*srh) +
 		sizeof(struct ip6_addr_t) * (srh->first_segment + 1);
 
 	*pad_off = 0;
 
-	// we can only go as far as ~10 TLVs due to the BPF max stack size
-	// workaround: define induction variable "i" as "long" instead
-	// of "int" to prevent alu32 sub-register spilling.
+	
+	
+	
 	#pragma clang loop unroll(disable)
 	for (long i = 0; i < 100; i++) {
 		struct sr6_tlv_t tlv;
@@ -163,7 +163,7 @@ static __always_inline int is_valid_tlv_boundary(struct __sk_buff *skb,
 		}
 
 		cur_off += sizeof(tlv) + tlv.len;
-	} // we reached the padding or HMAC TLVs, or the end of the SRH
+	} 
 
 	if (*pad_off == 0)
 		*pad_off = cur_off;
@@ -205,14 +205,14 @@ static __always_inline int add_tlv(struct __sk_buff *skb,
 	if (err)
 		return err;
 
-	// the following can't be moved inside update_tlv_pad because the
-	// bpf verifier has some issues with it
+	
+	
 	pad_off += sizeof(*itlv) + itlv->len;
 	partial_srh_len = pad_off - srh_off;
 	len_remaining = partial_srh_len % 8;
 	new_pad = 8 - len_remaining;
 
-	if (new_pad == 1) // cannot pad for 1 byte only
+	if (new_pad == 1) 
 		new_pad = 9;
 	else if (new_pad == 8)
 		new_pad = 0;
@@ -220,8 +220,8 @@ static __always_inline int add_tlv(struct __sk_buff *skb,
 	return update_tlv_pad(skb, new_pad, pad_size, pad_off);
 }
 
-// Add an Egress TLV fc00::4, add the flag A,
-// and apply End.X action to fc42::1
+
+
 SEC("lwt_seg6local")
 int __add_egr_x(struct __sk_buff *skb)
 {

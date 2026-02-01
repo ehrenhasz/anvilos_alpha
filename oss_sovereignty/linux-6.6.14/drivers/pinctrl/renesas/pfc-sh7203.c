@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SH7203 Pinmux
- *
- *  Copyright (C) 2008  Magnus Damm
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <cpu/sh7203.h>
@@ -269,7 +265,7 @@ enum {
 };
 
 static const u16 pinmux_data[] = {
-	/* PA */
+	 
 	PINMUX_DATA(PA7_DATA, PA7_IN),
 	PINMUX_DATA(PA6_DATA, PA6_IN),
 	PINMUX_DATA(PA5_DATA, PA5_IN),
@@ -279,7 +275,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PA1_DATA, PA1_IN),
 	PINMUX_DATA(PA0_DATA, PA0_IN),
 
-	/* PB */
+	 
 	PINMUX_DATA(PB12_DATA, PB12MD_00, FORCE_OUT),
 	PINMUX_DATA(WDTOVF_MARK, PB12MD_01),
 	PINMUX_DATA(IRQOUT_MARK, PB12MD_10, PB12IRQ_00),
@@ -341,7 +337,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PINT0_PB_MARK, PB0MD_10),
 	PINMUX_DATA(IRQ0_PB_MARK, PB0MD_11),
 
-	/* PC */
+	 
 	PINMUX_DATA(PC14_DATA, PC14MD_0, PC14_IN, PC14_OUT),
 	PINMUX_DATA(WAIT_MARK, PC14MD_1),
 
@@ -390,7 +386,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(A0_MARK, PC0MD_01),
 	PINMUX_DATA(CS7_MARK, PC0MD_10),
 
-	/* PD */
+	 
 	PINMUX_DATA(PD15_DATA, PD15MD_000, PD15_IN, PD15_OUT),
 	PINMUX_DATA(D31_MARK, PD15MD_001),
 	PINMUX_DATA(PINT7_PD_MARK, PD15MD_010),
@@ -494,7 +490,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(DREQ2_MARK, PD0MD_100),
 	PINMUX_DATA(TIOC0A_MARK, PD0MD_101),
 
-	/* PE */
+	 
 	PINMUX_DATA(PE15_DATA, PE15MD_00, PE15_IN, PE15_OUT),
 	PINMUX_DATA(IOIS16_MARK, PE15MD_01),
 	PINMUX_DATA(RTS3_MARK, PE15MD_11),
@@ -571,7 +567,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(RXD0_MARK, PE0MD_011),
 	PINMUX_DATA(ADTRG_PE_MARK, PE0MD_100),
 
-	/* PF */
+	 
 	PINMUX_DATA(PF30_DATA, PF30MD_0, PF30_IN, PF30_OUT),
 	PINMUX_DATA(AUDIO_CLK_MARK, PF30MD_1),
 
@@ -699,7 +695,7 @@ static const u16 pinmux_data[] = {
 };
 
 static const struct sh_pfc_pin pinmux_pins[] = {
-	/* PA */
+	 
 	PINMUX_GPIO(PA7),
 	PINMUX_GPIO(PA6),
 	PINMUX_GPIO(PA5),
@@ -709,7 +705,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PA1),
 	PINMUX_GPIO(PA0),
 
-	/* PB */
+	 
 	PINMUX_GPIO(PB12),
 	PINMUX_GPIO(PB11),
 	PINMUX_GPIO(PB10),
@@ -724,7 +720,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PB1),
 	PINMUX_GPIO(PB0),
 
-	/* PC */
+	 
 	PINMUX_GPIO(PC14),
 	PINMUX_GPIO(PC13),
 	PINMUX_GPIO(PC12),
@@ -741,7 +737,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PC1),
 	PINMUX_GPIO(PC0),
 
-	/* PD */
+	 
 	PINMUX_GPIO(PD15),
 	PINMUX_GPIO(PD14),
 	PINMUX_GPIO(PD13),
@@ -759,7 +755,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PD1),
 	PINMUX_GPIO(PD0),
 
-	/* PE */
+	 
 	PINMUX_GPIO(PE15),
 	PINMUX_GPIO(PE14),
 	PINMUX_GPIO(PE13),
@@ -777,7 +773,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PE1),
 	PINMUX_GPIO(PE0),
 
-	/* PF */
+	 
 	PINMUX_GPIO(PF30),
 	PINMUX_GPIO(PF29),
 	PINMUX_GPIO(PF28),
@@ -814,7 +810,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 #define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
 
 static const struct pinmux_func pinmux_func_gpios[] = {
-	/* INTC */
+	 
 	GPIO_FN(PINT7_PB),
 	GPIO_FN(PINT6_PB),
 	GPIO_FN(PINT5_PB),
@@ -862,7 +858,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(IRQOUT_REFOUT),
 	GPIO_FN(UBCTRG),
 
-	/* CAN */
+	 
 	GPIO_FN(CTX1),
 	GPIO_FN(CRX1),
 	GPIO_FN(CTX0),
@@ -870,7 +866,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(CRX0),
 	GPIO_FN(CRX0_CRX1),
 
-	/* IIC3 */
+	 
 	GPIO_FN(SDA3),
 	GPIO_FN(SCL3),
 	GPIO_FN(SDA2),
@@ -880,7 +876,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SDA0),
 	GPIO_FN(SCL0),
 
-	/* DMAC */
+	 
 	GPIO_FN(TEND0_PD),
 	GPIO_FN(TEND0_PE),
 	GPIO_FN(DACK0_PD),
@@ -898,11 +894,11 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(DACK3),
 	GPIO_FN(DREQ3),
 
-	/* ADC */
+	 
 	GPIO_FN(ADTRG_PD),
 	GPIO_FN(ADTRG_PE),
 
-	/* BSC */
+	 
 	GPIO_FN(D31),
 	GPIO_FN(D30),
 	GPIO_FN(D29),
@@ -953,7 +949,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(A0),
 	GPIO_FN(CS7),
 
-	/* TMU */
+	 
 	GPIO_FN(TIOC4D),
 	GPIO_FN(TIOC4C),
 	GPIO_FN(TIOC4B),
@@ -979,7 +975,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(TCLKB_PF),
 	GPIO_FN(TCLKA_PF),
 
-	/* SSU */
+	 
 	GPIO_FN(SCS0_PD),
 	GPIO_FN(SSO0_PD),
 	GPIO_FN(SSI0_PD),
@@ -997,7 +993,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SSI1_PF),
 	GPIO_FN(SSCK1_PF),
 
-	/* SCIF */
+	 
 	GPIO_FN(TXD0),
 	GPIO_FN(RXD0),
 	GPIO_FN(SCK0),
@@ -1013,7 +1009,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(RXD3),
 	GPIO_FN(SCK3),
 
-	/* SSI */
+	 
 	GPIO_FN(AUDIO_CLK),
 	GPIO_FN(SSIDATA3),
 	GPIO_FN(SSIWS3),
@@ -1028,7 +1024,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SSIWS0),
 	GPIO_FN(SSISCK0),
 
-	/* FLCTL */
+	 
 	GPIO_FN(FCE),
 	GPIO_FN(FRB),
 	GPIO_FN(NAF7),
@@ -1044,7 +1040,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(FCDE),
 	GPIO_FN(FWE),
 
-	/* LCDC */
+	 
 	GPIO_FN(LCD_VEPWC),
 	GPIO_FN(LCD_VCPWC),
 	GPIO_FN(LCD_CLK),
@@ -1075,17 +1071,17 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PBIORL", 0xfffe3886, 16,
 			     GROUP(-4, 1, 1, 1, 1, -8),
 			     GROUP(
-		/* RESERVED [4] */
+		 
 		PB11_IN, PB11_OUT,
 		PB10_IN, PB10_OUT,
 		PB9_IN, PB9_OUT,
 		PB8_IN, PB8_OUT,
-		/* RESERVED [8] */ ))
+		  ))
 	},
 	{ PINMUX_CFG_REG_VAR("PBCRL4", 0xfffe3890, 16,
 			     GROUP(-12, 4),
 			     GROUP(
-		/* RESERVED [12] */
+		 
 		PB12MD_00, PB12MD_01, PB12MD_10, PB12MD_11,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
 	},
@@ -1131,7 +1127,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("IFCR", 0xfffe38a2, 16,
 			     GROUP(-12, 4),
 			     GROUP(
-		/* RESERVED [12] */
+		 
 		PB12IRQ_00, PB12IRQ_01, PB12IRQ_10, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
 	},
@@ -1156,7 +1152,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PCCRL4", 0xfffe3910, 16,
 			     GROUP(-4, 4, 4, 4),
 			     GROUP(
-		/* RESERVED [4] */
+		 
 		PC14MD_0, PC14MD_1,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
@@ -1407,7 +1403,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PFCRH4", 0xfffe3a88, 16,
 			     GROUP(-4, 4, 4, 4),
 			     GROUP(
-		/* RESERVED [4] */
+		 
 
 		PF30MD_0, PF30MD_1,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1509,7 +1505,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PF0MD_00, PF0MD_01, PF0MD_10, PF0MD_11,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct pinmux_data_reg pinmux_data_regs[] = {
@@ -1555,7 +1551,7 @@ static const struct pinmux_data_reg pinmux_data_regs[] = {
 		PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
 		PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 const struct sh_pfc_soc_info sh7203_pinmux_info = {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * x64 SIMD accelerated ChaCha and XChaCha stream ciphers,
- * including ChaCha20 (RFC7539)
- *
- * Copyright (C) 2015 Martin Willi
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/chacha.h>
@@ -290,7 +285,7 @@ static int __init chacha_simd_mod_init(void)
 
 		if (IS_ENABLED(CONFIG_AS_AVX512) &&
 		    boot_cpu_has(X86_FEATURE_AVX512VL) &&
-		    boot_cpu_has(X86_FEATURE_AVX512BW)) /* kmovq */
+		    boot_cpu_has(X86_FEATURE_AVX512BW))  
 			static_branch_enable(&chacha_use_avx512vl);
 	}
 	return IS_REACHABLE(CONFIG_CRYPTO_SKCIPHER) ?

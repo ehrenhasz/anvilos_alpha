@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Amlogic Meson GX eFuse Driver
- *
- * Copyright (c) 2016 Endless Computers, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -34,7 +29,7 @@ static int meson_efuse_write(void *context, unsigned int offset,
 
 static const struct of_device_id meson_efuse_match[] = {
 	{ .compatible = "amlogic,meson-gxbb-efuse", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, meson_efuse_match);
 

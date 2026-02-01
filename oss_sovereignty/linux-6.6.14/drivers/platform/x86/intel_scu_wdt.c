@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Merrifield watchdog platform device library file
- *
- * (C) Copyright 2014 Intel Corporation
- * Author: David Cohen <david.a.cohen@linux.intel.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -34,7 +29,7 @@ static int tangier_probe(struct platform_device *pdev)
 	if (!pdata)
 		return -EINVAL;
 
-	/* IOAPIC builds identity mapping between GSI and IRQ on MID */
+	 
 	ioapic_set_alloc_attr(&info, cpu_to_node(0), 1, 0);
 	irq = mp_map_gsi_to_irq(gsi, IOAPIC_MAP_ALLOC, &info);
 	if (irq < 0) {

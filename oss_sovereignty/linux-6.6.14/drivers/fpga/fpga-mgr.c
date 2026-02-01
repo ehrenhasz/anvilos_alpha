@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FPGA Manager Core
- *
- *  Copyright (C) 2013-2015 Altera Corporation
- *  Copyright (C) 2017 Intel Corporation
- *
- * With code from the mailing list:
- * Copyright (C) 2013 Xilinx, Inc.
- */
+
+ 
 #include <linux/firmware.h>
 #include <linux/fpga/fpga-mgr.h>
 #include <linux/idr.h>
@@ -52,10 +44,7 @@ static inline int fpga_mgr_write(struct fpga_manager *mgr, const char *buf, size
 	return -EOPNOTSUPP;
 }
 
-/*
- * After all the FPGA image has been written, do the device specific steps to
- * finish and set the FPGA into operating mode.
- */
+ 
 static inline int fpga_mgr_write_complete(struct fpga_manager *mgr,
 					  struct fpga_image_info *info)
 {
@@ -100,12 +89,7 @@ static inline int fpga_mgr_write_sg(struct fpga_manager *mgr,
 	return -EOPNOTSUPP;
 }
 
-/**
- * fpga_image_info_alloc - Allocate an FPGA image info struct
- * @dev: owning device
- *
- * Return: struct fpga_image_info or NULL
- */
+ 
 struct fpga_image_info *fpga_image_info_alloc(struct device *dev)
 {
 	struct fpga_image_info *info;
@@ -124,10 +108,7 @@ struct fpga_image_info *fpga_image_info_alloc(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(fpga_image_info_alloc);
 
-/**
- * fpga_image_info_free - Free an FPGA image info struct
- * @info: FPGA image info struct to free
- */
+ 
 void fpga_image_info_free(struct fpga_image_info *info)
 {
 	struct device *dev;
@@ -144,10 +125,7 @@ void fpga_image_info_free(struct fpga_image_info *info)
 }
 EXPORT_SYMBOL_GPL(fpga_image_info_free);
 
-/*
- * Call the low level driver's parse_header function with entire FPGA image
- * buffer on the input. This will set info->header_size and info->data_size.
- */
+ 
 static int fpga_mgr_parse_header_mapped(struct fpga_manager *mgr,
 					struct fpga_image_info *info,
 					const char *buf, size_t count)
@@ -170,13 +148,7 @@ static int fpga_mgr_parse_header_mapped(struct fpga_manager *mgr,
 	return ret;
 }
 
-/*
- * Call the low level driver's parse_header function with first fragment of
- * scattered FPGA image on the input. If header fits first fragment,
- * parse_header will set info->header_size and info->data_size. If it is not,
- * parse_header will set desired size to info->header_size and -EAGAIN will be
- * returned.
- */
+ 
 static int fpga_mgr_parse_header_sg_first(struct fpga_manager *mgr,
 					  struct fpga_image_info *info,
 					  struct sg_table *sgt)
@@ -202,13 +174,7 @@ static int fpga_mgr_parse_header_sg_first(struct fpga_manager *mgr,
 	return ret;
 }
 
-/*
- * Copy scattered FPGA image fragments to temporary buffer and call the
- * low level driver's parse_header function. This should be called after
- * fpga_mgr_parse_header_sg_first() returned -EAGAIN. In case of success,
- * pointer to the newly allocated image header copy will be returned and
- * its size will be set into *ret_size. Returned buffer needs to be freed.
- */
+ 
 static void *fpga_mgr_parse_header_sg(struct fpga_manager *mgr,
 				      struct fpga_image_info *info,
 				      struct sg_table *sgt, size_t *ret_size)
@@ -258,13 +224,7 @@ static void *fpga_mgr_parse_header_sg(struct fpga_manager *mgr,
 	return buf;
 }
 
-/*
- * Call the low level driver's write_init function. This will do the
- * device-specific things to get the FPGA into the state where it is ready to
- * receive an FPGA image. The low level driver gets to see at least first
- * info->header_size bytes in the buffer. If info->header_size is 0,
- * write_init will not get any bytes of image buffer.
- */
+ 
 static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
 				   struct fpga_image_info *info,
 				   const char *buf, size_t count)
@@ -299,16 +259,13 @@ static int fpga_mgr_prepare_sg(struct fpga_manager *mgr,
 	char *buf;
 	int ret;
 
-	/* Short path. Low level driver don't care about image header. */
+	 
 	if (!mgr->mops->initial_header_size && !mgr->mops->parse_header)
 		return fpga_mgr_write_init_buf(mgr, info, NULL, 0);
 
-	/*
-	 * First try to use miter to map the first fragment to access the
-	 * header, this is the typical path.
-	 */
+	 
 	ret = fpga_mgr_parse_header_sg_first(mgr, info, sgt);
-	/* If 0, header fits first fragment, call write_init on it */
+	 
 	if (!ret) {
 		sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
 		if (sg_miter_next(&miter)) {
@@ -318,18 +275,12 @@ static int fpga_mgr_prepare_sg(struct fpga_manager *mgr,
 			return ret;
 		}
 		sg_miter_stop(&miter);
-	/*
-	 * If -EAGAIN, more sg buffer is needed,
-	 * otherwise an error has occurred.
-	 */
+	 
 	} else if (ret != -EAGAIN) {
 		return ret;
 	}
 
-	/*
-	 * Copy the fragments into temporary memory.
-	 * Copying is done inside fpga_mgr_parse_header_sg().
-	 */
+	 
 	buf = fpga_mgr_parse_header_sg(mgr, info, sgt, &len);
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
@@ -341,23 +292,7 @@ static int fpga_mgr_prepare_sg(struct fpga_manager *mgr,
 	return ret;
 }
 
-/**
- * fpga_mgr_buf_load_sg - load fpga from image in buffer from a scatter list
- * @mgr:	fpga manager
- * @info:	fpga image specific information
- * @sgt:	scatterlist table
- *
- * Step the low level fpga manager through the device-specific steps of getting
- * an FPGA ready to be configured, writing the image to it, then doing whatever
- * post-configuration steps necessary.  This code assumes the caller got the
- * mgr pointer from of_fpga_mgr_get() or fpga_mgr_get() and checked that it is
- * not an error code.
- *
- * This is the preferred entry point for FPGA programming, it does not require
- * any contiguous kernel memory.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 static int fpga_mgr_buf_load_sg(struct fpga_manager *mgr,
 				struct fpga_image_info *info,
 				struct sg_table *sgt)
@@ -368,7 +303,7 @@ static int fpga_mgr_buf_load_sg(struct fpga_manager *mgr,
 	if (ret)
 		return ret;
 
-	/* Write the FPGA image to the FPGA. */
+	 
 	mgr->state = FPGA_MGR_STATE_WRITE;
 	if (mgr->mops->write_sg) {
 		ret = fpga_mgr_write_sg(mgr, sgt);
@@ -433,9 +368,7 @@ static int fpga_mgr_buf_load_mapped(struct fpga_manager *mgr,
 	if (info->data_size)
 		count = info->data_size;
 
-	/*
-	 * Write the FPGA image to the FPGA.
-	 */
+	 
 	mgr->state = FPGA_MGR_STATE_WRITE;
 	ret = fpga_mgr_write(mgr, buf, count);
 	if (ret) {
@@ -447,20 +380,7 @@ static int fpga_mgr_buf_load_mapped(struct fpga_manager *mgr,
 	return fpga_mgr_write_complete(mgr, info);
 }
 
-/**
- * fpga_mgr_buf_load - load fpga from image in buffer
- * @mgr:	fpga manager
- * @info:	fpga image info
- * @buf:	buffer contain fpga image
- * @count:	byte count of buf
- *
- * Step the low level fpga manager through the device-specific steps of getting
- * an FPGA ready to be configured, writing the image to it, then doing whatever
- * post-configuration steps necessary.  This code assumes the caller got the
- * mgr pointer from of_fpga_mgr_get() and checked that it is not an error code.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 static int fpga_mgr_buf_load(struct fpga_manager *mgr,
 			     struct fpga_image_info *info,
 			     const char *buf, size_t count)
@@ -472,18 +392,11 @@ static int fpga_mgr_buf_load(struct fpga_manager *mgr,
 	int index;
 	int rc;
 
-	/*
-	 * This is just a fast path if the caller has already created a
-	 * contiguous kernel buffer and the driver doesn't require SG, non-SG
-	 * drivers will still work on the slow path.
-	 */
+	 
 	if (mgr->mops->write)
 		return fpga_mgr_buf_load_mapped(mgr, info, buf, count);
 
-	/*
-	 * Convert the linear kernel pointer into a sg_table of pages for use
-	 * by the driver.
-	 */
+	 
 	nr_pages = DIV_ROUND_UP((unsigned long)buf + count, PAGE_SIZE) -
 		   (unsigned long)buf / PAGE_SIZE;
 	pages = kmalloc_array(nr_pages, sizeof(struct page *), GFP_KERNEL);
@@ -503,10 +416,7 @@ static int fpga_mgr_buf_load(struct fpga_manager *mgr,
 		p += PAGE_SIZE;
 	}
 
-	/*
-	 * The temporary pages list is used to code share the merging algorithm
-	 * in sg_alloc_table_from_pages
-	 */
+	 
 	rc = sg_alloc_table_from_pages(&sgt, pages, index, offset_in_page(buf),
 				       count, GFP_KERNEL);
 	kfree(pages);
@@ -519,20 +429,7 @@ static int fpga_mgr_buf_load(struct fpga_manager *mgr,
 	return rc;
 }
 
-/**
- * fpga_mgr_firmware_load - request firmware and load to fpga
- * @mgr:	fpga manager
- * @info:	fpga image specific information
- * @image_name:	name of image file on the firmware search path
- *
- * Request an FPGA image using the firmware class, then write out to the FPGA.
- * Update the state before each step to provide info on what step failed if
- * there is a failure.  This code assumes the caller got the mgr pointer
- * from of_fpga_mgr_get() or fpga_mgr_get() and checked that it is not an error
- * code.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 static int fpga_mgr_firmware_load(struct fpga_manager *mgr,
 				  struct fpga_image_info *info,
 				  const char *image_name)
@@ -559,16 +456,7 @@ static int fpga_mgr_firmware_load(struct fpga_manager *mgr,
 	return ret;
 }
 
-/**
- * fpga_mgr_load - load FPGA from scatter/gather table, buffer, or firmware
- * @mgr:	fpga manager
- * @info:	fpga image information.
- *
- * Load the FPGA from an image which is indicated in @info.  If successful, the
- * FPGA ends up in operating mode.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int fpga_mgr_load(struct fpga_manager *mgr, struct fpga_image_info *info)
 {
 	info->header_size = mgr->mops->initial_header_size;
@@ -589,27 +477,27 @@ static const char * const state_str[] = {
 	[FPGA_MGR_STATE_POWER_UP] =		"power up",
 	[FPGA_MGR_STATE_RESET] =		"reset",
 
-	/* requesting FPGA image from firmware */
+	 
 	[FPGA_MGR_STATE_FIRMWARE_REQ] =		"firmware request",
 	[FPGA_MGR_STATE_FIRMWARE_REQ_ERR] =	"firmware request error",
 
-	/* Parse FPGA image header */
+	 
 	[FPGA_MGR_STATE_PARSE_HEADER] =		"parse header",
 	[FPGA_MGR_STATE_PARSE_HEADER_ERR] =	"parse header error",
 
-	/* Preparing FPGA to receive image */
+	 
 	[FPGA_MGR_STATE_WRITE_INIT] =		"write init",
 	[FPGA_MGR_STATE_WRITE_INIT_ERR] =	"write init error",
 
-	/* Writing image to FPGA */
+	 
 	[FPGA_MGR_STATE_WRITE] =		"write",
 	[FPGA_MGR_STATE_WRITE_ERR] =		"write error",
 
-	/* Finishing configuration after image has been written */
+	 
 	[FPGA_MGR_STATE_WRITE_COMPLETE] =	"write complete",
 	[FPGA_MGR_STATE_WRITE_COMPLETE_ERR] =	"write complete error",
 
-	/* FPGA reports to be in normal operating mode */
+	 
 	[FPGA_MGR_STATE_OPERATING] =		"operating",
 };
 
@@ -685,12 +573,7 @@ static int fpga_mgr_dev_match(struct device *dev, const void *data)
 	return dev->parent == data;
 }
 
-/**
- * fpga_mgr_get - Given a device, get a reference to an fpga mgr.
- * @dev:	parent device that fpga mgr was registered with
- *
- * Return: fpga manager struct or IS_ERR() condition containing error code.
- */
+ 
 struct fpga_manager *fpga_mgr_get(struct device *dev)
 {
 	struct device *mgr_dev = class_find_device(&fpga_mgr_class, NULL, dev,
@@ -702,13 +585,7 @@ struct fpga_manager *fpga_mgr_get(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(fpga_mgr_get);
 
-/**
- * of_fpga_mgr_get - Given a device node, get a reference to an fpga mgr.
- *
- * @node:	device node
- *
- * Return: fpga manager struct or IS_ERR() condition containing error code.
- */
+ 
 struct fpga_manager *of_fpga_mgr_get(struct device_node *node)
 {
 	struct device *dev;
@@ -721,10 +598,7 @@ struct fpga_manager *of_fpga_mgr_get(struct device_node *node)
 }
 EXPORT_SYMBOL_GPL(of_fpga_mgr_get);
 
-/**
- * fpga_mgr_put - release a reference to an fpga manager
- * @mgr:	fpga manager structure
- */
+ 
 void fpga_mgr_put(struct fpga_manager *mgr)
 {
 	module_put(mgr->dev.parent->driver->owner);
@@ -732,18 +606,7 @@ void fpga_mgr_put(struct fpga_manager *mgr)
 }
 EXPORT_SYMBOL_GPL(fpga_mgr_put);
 
-/**
- * fpga_mgr_lock - Lock FPGA manager for exclusive use
- * @mgr:	fpga manager
- *
- * Given a pointer to FPGA Manager (from fpga_mgr_get() or
- * of_fpga_mgr_put()) attempt to get the mutex. The user should call
- * fpga_mgr_lock() and verify that it returns 0 before attempting to
- * program the FPGA.  Likewise, the user should call fpga_mgr_unlock
- * when done programming the FPGA.
- *
- * Return: 0 for success or -EBUSY
- */
+ 
 int fpga_mgr_lock(struct fpga_manager *mgr)
 {
 	if (!mutex_trylock(&mgr->ref_mutex)) {
@@ -755,26 +618,14 @@ int fpga_mgr_lock(struct fpga_manager *mgr)
 }
 EXPORT_SYMBOL_GPL(fpga_mgr_lock);
 
-/**
- * fpga_mgr_unlock - Unlock FPGA manager after done programming
- * @mgr:	fpga manager
- */
+ 
 void fpga_mgr_unlock(struct fpga_manager *mgr)
 {
 	mutex_unlock(&mgr->ref_mutex);
 }
 EXPORT_SYMBOL_GPL(fpga_mgr_unlock);
 
-/**
- * fpga_mgr_register_full - create and register an FPGA Manager device
- * @parent:	fpga manager device from pdev
- * @info:	parameters for fpga manager
- *
- * The caller of this function is responsible for calling fpga_mgr_unregister().
- * Using devm_fpga_mgr_register_full() instead is recommended.
- *
- * Return: pointer to struct fpga_manager pointer or ERR_PTR()
- */
+ 
 struct fpga_manager *
 fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *info)
 {
@@ -819,11 +670,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
 	if (ret)
 		goto error_device;
 
-	/*
-	 * Initialize framework state by requesting low level driver read state
-	 * from device.  FPGA may be in reset mode or may have been programmed
-	 * by bootloader or EEPROM.
-	 */
+	 
 	mgr->state = fpga_mgr_state(mgr);
 
 	ret = device_register(&mgr->dev);
@@ -843,21 +690,7 @@ error_kfree:
 }
 EXPORT_SYMBOL_GPL(fpga_mgr_register_full);
 
-/**
- * fpga_mgr_register - create and register an FPGA Manager device
- * @parent:	fpga manager device from pdev
- * @name:	fpga manager name
- * @mops:	pointer to structure of fpga manager ops
- * @priv:	fpga manager private data
- *
- * The caller of this function is responsible for calling fpga_mgr_unregister().
- * Using devm_fpga_mgr_register() instead is recommended. This simple
- * version of the register function should be sufficient for most users. The
- * fpga_mgr_register_full() function is available for users that need to pass
- * additional, optional parameters.
- *
- * Return: pointer to struct fpga_manager pointer or ERR_PTR()
- */
+ 
 struct fpga_manager *
 fpga_mgr_register(struct device *parent, const char *name,
 		  const struct fpga_manager_ops *mops, void *priv)
@@ -872,20 +705,12 @@ fpga_mgr_register(struct device *parent, const char *name,
 }
 EXPORT_SYMBOL_GPL(fpga_mgr_register);
 
-/**
- * fpga_mgr_unregister - unregister an FPGA manager
- * @mgr: fpga manager struct
- *
- * This function is intended for use in an FPGA manager driver's remove function.
- */
+ 
 void fpga_mgr_unregister(struct fpga_manager *mgr)
 {
 	dev_info(&mgr->dev, "%s %s\n", __func__, mgr->name);
 
-	/*
-	 * If the low level driver provides a method for putting fpga into
-	 * a desired state upon unregister, do it.
-	 */
+	 
 	fpga_mgr_fpga_remove(mgr);
 
 	device_unregister(&mgr->dev);
@@ -899,16 +724,7 @@ static void devm_fpga_mgr_unregister(struct device *dev, void *res)
 	fpga_mgr_unregister(dr->mgr);
 }
 
-/**
- * devm_fpga_mgr_register_full - resource managed variant of fpga_mgr_register()
- * @parent:	fpga manager device from pdev
- * @info:	parameters for fpga manager
- *
- * Return:  fpga manager pointer on success, negative error code otherwise.
- *
- * This is the devres variant of fpga_mgr_register_full() for which the unregister
- * function will be called automatically when the managing device is detached.
- */
+ 
 struct fpga_manager *
 devm_fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *info)
 {
@@ -932,19 +748,7 @@ devm_fpga_mgr_register_full(struct device *parent, const struct fpga_manager_inf
 }
 EXPORT_SYMBOL_GPL(devm_fpga_mgr_register_full);
 
-/**
- * devm_fpga_mgr_register - resource managed variant of fpga_mgr_register()
- * @parent:	fpga manager device from pdev
- * @name:	fpga manager name
- * @mops:	pointer to structure of fpga manager ops
- * @priv:	fpga manager private data
- *
- * Return:  fpga manager pointer on success, negative error code otherwise.
- *
- * This is the devres variant of fpga_mgr_register() for which the
- * unregister function will be called automatically when the managing
- * device is detached.
- */
+ 
 struct fpga_manager *
 devm_fpga_mgr_register(struct device *parent, const char *name,
 		       const struct fpga_manager_ops *mops, void *priv)

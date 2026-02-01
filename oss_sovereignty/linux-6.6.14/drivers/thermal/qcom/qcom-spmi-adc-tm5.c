@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020 Linaro Limited
- *
- * Based on original driver:
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- *
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/iio/adc/qcom-vadc-common.h>
@@ -22,15 +15,7 @@
 
 #include "../thermal_hwmon.h"
 
-/*
- * Thermal monitoring block consists of 8 (ADC_TM5_NUM_CHANNELS) channels. Each
- * channel is programmed to use one of ADC channels for voltage comparison.
- * Voltages are programmed using ADC codes, so we have to convert temp to
- * voltage and then to ADC code value.
- *
- * Configuration of TM channels must match configuration of corresponding ADC
- * channels.
- */
+ 
 
 #define ADC5_MAX_CHANNEL                        0xc0
 #define ADC_TM5_NUM_CHANNELS		8
@@ -47,13 +32,13 @@
 #define ADC_TM5_FAST_AVG_EN				BIT(7)
 
 #define ADC_TM5_MEAS_INTERVAL_CTL		(ADC_TM5_ADC_DIG_PARAM + 2)
-#define ADC_TM5_TIMER1					3 /* 3.9ms */
+#define ADC_TM5_TIMER1					3  
 
 #define ADC_TM5_MEAS_INTERVAL_CTL2		(ADC_TM5_ADC_DIG_PARAM + 3)
 #define ADC_TM5_MEAS_INTERVAL_CTL2_MASK			0xf0
-#define ADC_TM5_TIMER2					10 /* 1 second */
+#define ADC_TM5_TIMER2					10  
 #define ADC_TM5_MEAS_INTERVAL_CTL3_MASK			0xf
-#define ADC_TM5_TIMER3					4 /* 4 second */
+#define ADC_TM5_TIMER3					4  
 
 #define ADC_TM_EN_CTL1				0x46
 #define ADC_TM_EN					BIT(7)
@@ -174,58 +159,24 @@ struct adc_tm5_data {
 	int gen;
 };
 
-/**
- * struct adc_tm5_channel - ADC Thermal Monitoring channel data.
- * @channel: channel number.
- * @adc_channel: corresponding ADC channel number.
- * @cal_method: calibration method.
- * @prescale: channel scaling performed on the input signal.
- * @hw_settle_time: the time between AMUX being configured and the
- *	start of conversion.
- * @decimation: sampling rate supported for the channel.
- * @avg_samples: ability to provide single result from the ADC
- *	that is an average of multiple measurements.
- * @high_thr_en: channel upper voltage threshold enable state.
- * @low_thr_en: channel lower voltage threshold enable state.
- * @meas_en: recurring measurement enable state
- * @iio: IIO channel instance used by this channel.
- * @chip: ADC TM chip instance.
- * @tzd: thermal zone device used by this channel.
- */
+ 
 struct adc_tm5_channel {
 	unsigned int		channel;
 	unsigned int		adc_channel;
 	enum adc_tm5_cal_method	cal_method;
 	unsigned int		prescale;
 	unsigned int		hw_settle_time;
-	unsigned int		decimation;	/* For Gen2 ADC_TM */
-	unsigned int		avg_samples;	/* For Gen2 ADC_TM */
-	bool			high_thr_en;	/* For Gen2 ADC_TM */
-	bool			low_thr_en;	/* For Gen2 ADC_TM */
-	bool			meas_en;	/* For Gen2 ADC_TM */
+	unsigned int		decimation;	 
+	unsigned int		avg_samples;	 
+	bool			high_thr_en;	 
+	bool			low_thr_en;	 
+	bool			meas_en;	 
 	struct iio_channel	*iio;
 	struct adc_tm5_chip	*chip;
 	struct thermal_zone_device *tzd;
 };
 
-/**
- * struct adc_tm5_chip - ADC Thermal Monitoring properties
- * @regmap: SPMI ADC5 Thermal Monitoring  peripheral register map field.
- * @dev: SPMI ADC5 device.
- * @data: software configuration data.
- * @channels: array of ADC TM channel data.
- * @nchannels: amount of channels defined/allocated
- * @decimation: sampling rate supported for the channel.
- *      Applies to all channels, used only on Gen1 ADC_TM.
- * @avg_samples: ability to provide single result from the ADC
- *      that is an average of multiple measurements. Applies to all
- *      channels, used only on Gen1 ADC_TM.
- * @base: base address of TM registers.
- * @adc_mutex_lock: ADC_TM mutex lock, used only on Gen2 ADC_TM.
- *      It is used to ensure only one ADC channel configuration
- *      is done at a time using the shared set of configuration
- *      registers.
- */
+ 
 struct adc_tm5_chip {
 	struct regmap		*regmap;
 	struct device		*dev;
@@ -275,7 +226,7 @@ static irqreturn_t adc_tm5_isr(int irq, void *data)
 		bool upper_set = false, lower_set = false;
 		unsigned int ch = chip->channels[i].channel;
 
-		/* No TZD, we warned at the boot time */
+		 
 		if (!chip->channels[i].tzd)
 			continue;
 
@@ -336,7 +287,7 @@ static irqreturn_t adc_tm5_gen2_isr(int irq, void *data)
 		bool upper_set = false, lower_set = false;
 		unsigned int ch = chip->channels[i].channel;
 
-		/* No TZD, we warned at the boot time */
+		 
 		if (!chip->channels[i].tzd)
 			continue;
 
@@ -418,10 +369,7 @@ static int32_t adc_tm5_gen2_conv_req(struct adc_tm5_chip *chip)
 		return ret;
 	}
 
-	/*
-	 * SW sets a handshake bit and waits for PBS to clear it
-	 * before the next conversion request can be queued.
-	 */
+	 
 
 	for (count = 0; count < ADC_TM_GEN2_POLL_RETRY_COUNT; count++) {
 		ret = adc_tm5_read(chip, ADC_TM_GEN2_CFG_HS_SET, &data, sizeof(data));
@@ -522,7 +470,7 @@ static int adc_tm5_configure(struct adc_tm5_channel *channel, int low, int high)
 
 	buf[0] = channel->adc_channel;
 
-	/* High temperature corresponds to low voltage threshold */
+	 
 	if (high != INT_MAX) {
 		u16 adc_code = qcom_adc_tm5_temp_volt_scale(channel->prescale,
 				chip->data->full_scale_code_volt, high);
@@ -533,7 +481,7 @@ static int adc_tm5_configure(struct adc_tm5_channel *channel, int low, int high)
 		buf[7] &= ~ADC_TM5_M_LOW_THR_INT_EN;
 	}
 
-	/* Low temperature corresponds to high voltage threshold */
+	 
 	if (low != -INT_MAX) {
 		u16 adc_code = qcom_adc_tm5_temp_volt_scale(channel->prescale,
 				chip->data->full_scale_code_volt, low);
@@ -546,7 +494,7 @@ static int adc_tm5_configure(struct adc_tm5_channel *channel, int low, int high)
 
 	buf[5] = ADC5_TIMER_SEL_2;
 
-	/* Set calibration select, hw_settle delay */
+	 
 	buf[6] &= ~ADC_TM5_M_CTL_HW_SETTLE_DELAY_MASK;
 	buf[6] |= FIELD_PREP(ADC_TM5_M_CTL_HW_SETTLE_DELAY_MASK, channel->hw_settle_time);
 	buf[6] &= ~ADC_TM5_M_CTL_CAL_SEL_MASK;
@@ -580,10 +528,10 @@ static int adc_tm5_gen2_configure(struct adc_tm5_channel *channel, int low, int 
 		goto config_fail;
 	}
 
-	/* Set SID from virtual channel number */
+	 
 	buf[0] = channel->adc_channel >> 8;
 
-	/* Set TM channel number used and measurement interval */
+	 
 	buf[1] &= ~ADC_TM_GEN2_TM_CH_SEL;
 	buf[1] |= FIELD_PREP(ADC_TM_GEN2_TM_CH_SEL, channel->channel);
 	buf[1] &= ~ADC_TM_GEN2_MEAS_INT_SEL;
@@ -600,7 +548,7 @@ static int adc_tm5_gen2_configure(struct adc_tm5_channel *channel, int low, int 
 
 	buf[5] = channel->hw_settle_time & ADC_TM_GEN2_HW_SETTLE_DELAY;
 
-	/* High temperature corresponds to low voltage threshold */
+	 
 	if (high != INT_MAX) {
 		channel->low_thr_en = true;
 		adc_code = qcom_adc_tm5_gen2_temp_res_scale(high);
@@ -609,7 +557,7 @@ static int adc_tm5_gen2_configure(struct adc_tm5_channel *channel, int low, int 
 		channel->low_thr_en = false;
 	}
 
-	/* Low temperature corresponds to high voltage threshold */
+	 
 	if (low != -INT_MAX) {
 		channel->high_thr_en = true;
 		adc_code = qcom_adc_tm5_gen2_temp_res_scale(low);
@@ -800,11 +748,7 @@ static int adc_tm5_get_dt_channel_data(struct adc_tm5_chip *adc_tm,
 
 	channel->channel = chan;
 
-	/*
-	 * We are tied to PMIC's ADC controller, which always use single
-	 * argument for channel number.  So don't bother parsing
-	 * #io-channel-cells, just enforce cell_count = 1.
-	 */
+	 
 	ret = of_parse_phandle_with_fixed_args(node, "io-channels", 1, 0, &args);
 	if (ret < 0) {
 		dev_err(dev, "%s: error parsing ADC channel number %d: %d\n", name, chan, ret);
@@ -846,7 +790,7 @@ static int adc_tm5_get_dt_channel_data(struct adc_tm5_chip *adc_tm,
 		}
 		channel->prescale = ret;
 	} else {
-		/* 1:1 prescale is index 0 */
+		 
 		channel->prescale = 0;
 	}
 

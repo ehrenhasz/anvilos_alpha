@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2006-2008 Nokia Corporation.
- *
- * Authors: Adrian Hunter
- *          Artem Bityutskiy (Битюцкий Артём)
- */
 
-/* This file implements TNC functions for committing */
+ 
+
+ 
 
 #include <linux/random.h>
 #include "ubifs.h"
 
-/**
- * make_idx_node - make an index node for fill-the-gaps method of TNC commit.
- * @c: UBIFS file-system description object
- * @idx: buffer in which to place new index node
- * @znode: znode from which to make new index node
- * @lnum: LEB number where new index node will be written
- * @offs: offset where new index node will be written
- * @len: length of new index node
- */
+ 
 static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 			 struct ubifs_znode *znode, int lnum, int offs, int len)
 {
@@ -29,7 +14,7 @@ static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 	u8 hash[UBIFS_HASH_ARR_SZ];
 	int i, err;
 
-	/* Make index node */
+	 
 	idx->ch.node_type = UBIFS_IDX_NODE;
 	idx->child_cnt = cpu_to_le16(znode->child_cnt);
 	idx->level = cpu_to_le16(znode->level);
@@ -60,7 +45,7 @@ static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 
 	err = insert_old_idx_znode(c, znode);
 
-	/* Update the parent */
+	 
 	zp = znode->parent;
 	if (zp) {
 		struct ubifs_zbranch *zbr;
@@ -83,26 +68,14 @@ static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 	ubifs_assert(c, ubifs_zn_dirty(znode));
 	ubifs_assert(c, ubifs_zn_cow(znode));
 
-	/*
-	 * Note, unlike 'write_index()' we do not add memory barriers here
-	 * because this function is called with @c->tnc_mutex locked.
-	 */
+	 
 	__clear_bit(DIRTY_ZNODE, &znode->flags);
 	__clear_bit(COW_ZNODE, &znode->flags);
 
 	return err;
 }
 
-/**
- * fill_gap - make index nodes in gaps in dirty index LEBs.
- * @c: UBIFS file-system description object
- * @lnum: LEB number that gap appears in
- * @gap_start: offset of start of gap
- * @gap_end: offset of end of gap
- * @dirt: adds dirty space to this
- *
- * This function returns the number of index nodes written into the gap.
- */
+ 
 static int fill_gap(struct ubifs_info *c, int lnum, int gap_start, int gap_end,
 		    int *dirt)
 {
@@ -140,10 +113,10 @@ static int fill_gap(struct ubifs_info *c, int lnum, int gap_start, int gap_end,
 	}
 	if (gap_end == c->leb_size) {
 		c->ileb_len = ALIGN(gap_pos, c->min_io_size);
-		/* Pad to end of min_io_size */
+		 
 		pad_len = c->ileb_len - gap_pos;
 	} else
-		/* Pad to end of gap */
+		 
 		pad_len = gap_remains;
 	dbg_gc("LEB %d:%d to %d len %d nodes written %d wasted bytes %d",
 	       lnum, gap_start, gap_end, gap_end - gap_start, written, pad_len);
@@ -152,14 +125,7 @@ static int fill_gap(struct ubifs_info *c, int lnum, int gap_start, int gap_end,
 	return written;
 }
 
-/**
- * find_old_idx - find an index node obsoleted since the last commit start.
- * @c: UBIFS file-system description object
- * @lnum: LEB number of obsoleted index node
- * @offs: offset of obsoleted index node
- *
- * Returns %1 if found and %0 otherwise.
- */
+ 
 static int find_old_idx(struct ubifs_info *c, int lnum, int offs)
 {
 	struct ubifs_old_idx *o;
@@ -182,19 +148,7 @@ static int find_old_idx(struct ubifs_info *c, int lnum, int offs)
 	return 0;
 }
 
-/**
- * is_idx_node_in_use - determine if an index node can be overwritten.
- * @c: UBIFS file-system description object
- * @key: key of index node
- * @level: index node level
- * @lnum: LEB number of index node
- * @offs: offset of index node
- *
- * If @key / @lnum / @offs identify an index node that was not part of the old
- * index, then this function returns %0 (obsolete).  Else if the index node was
- * part of the old index but is now dirty %1 is returned, else if it is clean %2
- * is returned. A negative error code is returned on failure.
- */
+ 
 static int is_idx_node_in_use(struct ubifs_info *c, union ubifs_key *key,
 			      int level, int lnum, int offs)
 {
@@ -202,25 +156,14 @@ static int is_idx_node_in_use(struct ubifs_info *c, union ubifs_key *key,
 
 	ret = is_idx_node_in_tnc(c, key, level, lnum, offs);
 	if (ret < 0)
-		return ret; /* Error code */
+		return ret;  
 	if (ret == 0)
 		if (find_old_idx(c, lnum, offs))
 			return 1;
 	return ret;
 }
 
-/**
- * layout_leb_in_gaps - layout index nodes using in-the-gaps method.
- * @c: UBIFS file-system description object
- * @p: return LEB number in @c->gap_lebs[p]
- *
- * This function lays out new index nodes for dirty znodes using in-the-gaps
- * method of TNC commit.
- * This function merely puts the next znode into the next gap, making no attempt
- * to try to maximise the number of znodes that fit.
- * This function returns the number of index nodes written into the gaps, or a
- * negative error code on failure.
- */
+ 
 static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 {
 	struct ubifs_scan_leb *sleb;
@@ -228,21 +171,14 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 	int lnum, dirt = 0, gap_start, gap_end, err, written, tot_written;
 
 	tot_written = 0;
-	/* Get an index LEB with lots of obsolete index nodes */
+	 
 	lnum = ubifs_find_dirty_idx_leb(c);
 	if (lnum < 0)
-		/*
-		 * There also may be dirt in the index head that could be
-		 * filled, however we do not check there at present.
-		 */
-		return lnum; /* Error code */
+		 
+		return lnum;  
 	c->gap_lebs[p] = lnum;
 	dbg_gc("LEB %d", lnum);
-	/*
-	 * Scan the index LEB.  We use the generic scan for this even though
-	 * it is more comprehensive and less efficient than is needed for this
-	 * purpose.
-	 */
+	 
 	sleb = ubifs_scan(c, lnum, 0, c->ileb_buf, 0);
 	c->ileb_len = 0;
 	if (IS_ERR(sleb))
@@ -256,28 +192,23 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 		idx = snod->node;
 		key_read(c, ubifs_idx_key(c, idx), &snod->key);
 		level = le16_to_cpu(idx->level);
-		/* Determine if the index node is in use (not obsolete) */
+		 
 		in_use = is_idx_node_in_use(c, &snod->key, level, lnum,
 					    snod->offs);
 		if (in_use < 0) {
 			ubifs_scan_destroy(sleb);
-			return in_use; /* Error code */
+			return in_use;  
 		}
 		if (in_use) {
 			if (in_use == 1)
 				dirt += ALIGN(snod->len, 8);
-			/*
-			 * The obsolete index nodes form gaps that can be
-			 * overwritten.  This gap has ended because we have
-			 * found an index node that is still in use
-			 * i.e. not obsolete
-			 */
+			 
 			gap_end = snod->offs;
-			/* Try to fill gap */
+			 
 			written = fill_gap(c, lnum, gap_start, gap_end, &dirt);
 			if (written < 0) {
 				ubifs_scan_destroy(sleb);
-				return written; /* Error code */
+				return written;  
 			}
 			tot_written += written;
 			gap_start = ALIGN(snod->offs + snod->len, 8);
@@ -286,10 +217,10 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 	ubifs_scan_destroy(sleb);
 	c->ileb_len = c->leb_size;
 	gap_end = c->leb_size;
-	/* Try to fill gap */
+	 
 	written = fill_gap(c, lnum, gap_start, gap_end, &dirt);
 	if (written < 0)
-		return written; /* Error code */
+		return written;  
 	tot_written += written;
 	if (tot_written == 0) {
 		struct ubifs_lprops lp;
@@ -299,10 +230,7 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 		if (err)
 			return err;
 		if (lp.free == c->leb_size) {
-			/*
-			 * We must have snatched this LEB from the idx_gc list
-			 * so we need to correct the free and dirty space.
-			 */
+			 
 			err = ubifs_change_one_lp(c, lnum,
 						  c->leb_size - c->ileb_len,
 						  dirt, 0, 0, 0);
@@ -322,20 +250,12 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 	return tot_written;
 }
 
-/**
- * get_leb_cnt - calculate the number of empty LEBs needed to commit.
- * @c: UBIFS file-system description object
- * @cnt: number of znodes to commit
- *
- * This function returns the number of empty LEBs needed to commit @cnt znodes
- * to the current index head.  The number is not exact and may be more than
- * needed.
- */
+ 
 static int get_leb_cnt(struct ubifs_info *c, int cnt)
 {
 	int d;
 
-	/* Assume maximum index node size (i.e. overestimate space needed) */
+	 
 	cnt -= (c->leb_size - c->ihead_offs) / c->max_idx_node_sz;
 	if (cnt < 0)
 		cnt = 0;
@@ -343,16 +263,7 @@ static int get_leb_cnt(struct ubifs_info *c, int cnt)
 	return DIV_ROUND_UP(cnt, d);
 }
 
-/**
- * layout_in_gaps - in-the-gaps method of committing TNC.
- * @c: UBIFS file-system description object
- * @cnt: number of dirty znodes to commit.
- *
- * This function lays out new index nodes for dirty znodes using in-the-gaps
- * method of TNC commit.
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int layout_in_gaps(struct ubifs_info *c, int cnt)
 {
 	int err, leb_needed_cnt, written, p = 0, old_idx_lebs, *gap_lebs;
@@ -376,15 +287,12 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 				return err;
 			}
 			if (!dbg_is_chk_index(c)) {
-				/*
-				 * Do not print scary warnings if the debugging
-				 * option which forces in-the-gaps is enabled.
-				 */
+				 
 				ubifs_warn(c, "out of space");
 				ubifs_dump_budg(c, &c->bi);
 				ubifs_dump_lprops(c);
 			}
-			/* Try to commit anyway */
+			 
 			break;
 		}
 		p++;
@@ -392,14 +300,7 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 		leb_needed_cnt = get_leb_cnt(c, cnt);
 		dbg_gc("%d znodes remaining, need %d LEBs, have %d", cnt,
 		       leb_needed_cnt, c->ileb_cnt);
-		/*
-		 * Dynamically change the size of @c->gap_lebs to prevent
-		 * oob, because @c->lst.idx_lebs could be increased by
-		 * function @get_idx_gc_leb (called by layout_leb_in_gaps->
-		 * ubifs_find_dirty_idx_leb) during loop. Only enlarge
-		 * @c->gap_lebs when needed.
-		 *
-		 */
+		 
 		if (leb_needed_cnt > c->ileb_cnt && p >= old_idx_lebs &&
 		    old_idx_lebs < c->lst.idx_lebs) {
 			old_idx_lebs = c->lst.idx_lebs;
@@ -418,14 +319,7 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 	return 0;
 }
 
-/**
- * layout_in_empty_space - layout index nodes in empty space.
- * @c: UBIFS file-system description object
- *
- * This function lays out new index nodes for dirty znodes using empty LEBs.
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int layout_in_empty_space(struct ubifs_info *c)
 {
 	struct ubifs_znode *znode, *cnext, *zp;
@@ -444,7 +338,7 @@ static int layout_in_empty_space(struct ubifs_info *c)
 	used = 0;
 	avail = buf_len;
 
-	/* Ensure there is enough room for first write */
+	 
 	next_len = ubifs_idx_node_sz(c, cnext->child_cnt);
 	if (buf_offs + next_len > c->leb_size)
 		lnum = -1;
@@ -454,7 +348,7 @@ static int layout_in_empty_space(struct ubifs_info *c)
 
 		len = ubifs_idx_node_sz(c, znode->child_cnt);
 
-		/* Determine the index node position */
+		 
 		if (lnum == -1) {
 			if (c->ileb_nxt >= c->ileb_cnt) {
 				ubifs_err(c, "out of space");
@@ -472,7 +366,7 @@ static int layout_in_empty_space(struct ubifs_info *c)
 		znode->offs = offs;
 		znode->len = len;
 
-		/* Update the parent */
+		 
 		zp = znode->parent;
 		if (zp) {
 			struct ubifs_zbranch *zbr;
@@ -490,23 +384,17 @@ static int layout_in_empty_space(struct ubifs_info *c)
 		}
 		c->calc_idx_sz += ALIGN(len, 8);
 
-		/*
-		 * Once lprops is updated, we can decrease the dirty znode count
-		 * but it is easier to just do it here.
-		 */
+		 
 		atomic_long_dec(&c->dirty_zn_cnt);
 
-		/*
-		 * Calculate the next index node length to see if there is
-		 * enough room for it
-		 */
+		 
 		cnext = znode->cnext;
 		if (cnext == c->cnext)
 			next_len = 0;
 		else
 			next_len = ubifs_idx_node_sz(c, cnext->child_cnt);
 
-		/* Update buffer positions */
+		 
 		wlen = used + len;
 		used += ALIGN(len, 8);
 		avail -= ALIGN(len, 8);
@@ -522,7 +410,7 @@ static int layout_in_empty_space(struct ubifs_info *c)
 		else
 			blen = ALIGN(wlen, c->min_io_size);
 
-		/* The buffer is full or there are no more znodes to do */
+		 
 		buf_offs += blen;
 		if (next_len) {
 			if (buf_offs + next_len > c->leb_size) {
@@ -552,19 +440,7 @@ static int layout_in_empty_space(struct ubifs_info *c)
 	return 0;
 }
 
-/**
- * layout_commit - determine positions of index nodes to commit.
- * @c: UBIFS file-system description object
- * @no_space: indicates that insufficient empty LEBs were allocated
- * @cnt: number of znodes to commit
- *
- * Calculate and update the positions of index nodes to commit.  If there were
- * an insufficient number of empty LEBs allocated, then index nodes are placed
- * into the gaps created by obsolete index nodes in non-empty index LEBs.  For
- * this purpose, an obsolete index node is one that was not in the index as at
- * the end of the last commit.  To write "in-the-gaps" requires that those index
- * LEBs are updated atomically in-place.
- */
+ 
 static int layout_commit(struct ubifs_info *c, int no_space, int cnt)
 {
 	int err;
@@ -578,10 +454,7 @@ static int layout_commit(struct ubifs_info *c, int no_space, int cnt)
 	return err;
 }
 
-/**
- * find_first_dirty - find first dirty znode.
- * @znode: znode to begin searching from
- */
+ 
 static struct ubifs_znode *find_first_dirty(struct ubifs_znode *znode)
 {
 	int i, cont;
@@ -613,10 +486,7 @@ static struct ubifs_znode *find_first_dirty(struct ubifs_znode *znode)
 	}
 }
 
-/**
- * find_next_dirty - find next dirty znode.
- * @znode: znode to begin searching from
- */
+ 
 static struct ubifs_znode *find_next_dirty(struct ubifs_znode *znode)
 {
 	int n = znode->iip + 1;
@@ -633,12 +503,7 @@ static struct ubifs_znode *find_next_dirty(struct ubifs_znode *znode)
 	return znode;
 }
 
-/**
- * get_znodes_to_commit - create list of dirty znodes to commit.
- * @c: UBIFS file-system description object
- *
- * This function returns the number of znodes to commit.
- */
+ 
 static int get_znodes_to_commit(struct ubifs_info *c)
 {
 	struct ubifs_znode *znode, *cnext;
@@ -671,15 +536,7 @@ static int get_znodes_to_commit(struct ubifs_info *c)
 	return cnt;
 }
 
-/**
- * alloc_idx_lebs - allocate empty LEBs to be used to commit.
- * @c: UBIFS file-system description object
- * @cnt: number of znodes to commit
- *
- * This function returns %-ENOSPC if it cannot allocate a sufficient number of
- * empty LEBs.  %0 is returned on success, otherwise a negative error code
- * is returned.
- */
+ 
 static int alloc_idx_lebs(struct ubifs_info *c, int cnt)
 {
 	int i, leb_cnt, lnum;
@@ -705,15 +562,7 @@ static int alloc_idx_lebs(struct ubifs_info *c, int cnt)
 	return 0;
 }
 
-/**
- * free_unused_idx_lebs - free unused LEBs that were allocated for the commit.
- * @c: UBIFS file-system description object
- *
- * It is possible that we allocate more empty LEBs for the commit than we need.
- * This functions frees the surplus.
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int free_unused_idx_lebs(struct ubifs_info *c)
 {
 	int i, err = 0, lnum, er;
@@ -729,12 +578,7 @@ static int free_unused_idx_lebs(struct ubifs_info *c)
 	return err;
 }
 
-/**
- * free_idx_lebs - free unused LEBs after commit end.
- * @c: UBIFS file-system description object
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int free_idx_lebs(struct ubifs_info *c)
 {
 	int err;
@@ -745,16 +589,7 @@ static int free_idx_lebs(struct ubifs_info *c)
 	return err;
 }
 
-/**
- * ubifs_tnc_start_commit - start TNC commit.
- * @c: UBIFS file-system description object
- * @zroot: new index root position is returned here
- *
- * This function prepares the list of indexing nodes to commit and lays out
- * their positions on flash. If there is not enough free space it uses the
- * in-gap commit method. Returns zero in case of success and a negative error
- * code in case of failure.
- */
+ 
 int ubifs_tnc_start_commit(struct ubifs_info *c, struct ubifs_zbranch *zroot)
 {
 	int err = 0, cnt;
@@ -788,14 +623,7 @@ int ubifs_tnc_start_commit(struct ubifs_info *c, struct ubifs_zbranch *zroot)
 		goto out;
 
 	spin_lock(&c->space_lock);
-	/*
-	 * Although we have not finished committing yet, update size of the
-	 * committed index ('c->bi.old_idx_sz') and zero out the index growth
-	 * budget. It is OK to do this now, because we've reserved all the
-	 * space which is needed to commit the index, and it is save for the
-	 * budgeting subsystem to assume the index is already committed,
-	 * even though it is not.
-	 */
+	 
 	ubifs_assert(c, c->bi.min_idx_lebs == ubifs_calc_min_idx_lebs(c));
 	c->bi.old_idx_sz = c->calc_idx_sz;
 	c->bi.uncommitted_idx = 0;
@@ -814,13 +642,7 @@ out:
 	return err;
 }
 
-/**
- * write_index - write index nodes.
- * @c: UBIFS file-system description object
- *
- * This function writes the index nodes whose positions were laid out in the
- * layout_in_empty_space function.
- */
+ 
 static int write_index(struct ubifs_info *c)
 {
 	struct ubifs_idx_node *idx;
@@ -832,19 +654,16 @@ static int write_index(struct ubifs_info *c)
 	if (!cnext)
 		return 0;
 
-	/*
-	 * Always write index nodes to the index head so that index nodes and
-	 * other types of nodes are never mixed in the same erase block.
-	 */
+	 
 	lnum = c->ihead_lnum;
 	buf_offs = c->ihead_offs;
 
-	/* Allocate commit buffer */
+	 
 	buf_len = ALIGN(c->max_idx_node_sz, c->min_io_size);
 	used = 0;
 	avail = buf_len;
 
-	/* Ensure there is enough room for first write */
+	 
 	next_len = ubifs_idx_node_sz(c, cnext->child_cnt);
 	if (buf_offs + next_len > c->leb_size) {
 		err = ubifs_update_one_lp(c, lnum, LPROPS_NC, 0, 0,
@@ -862,7 +681,7 @@ static int write_index(struct ubifs_info *c)
 		znode = cnext;
 		idx = c->cbuf + used;
 
-		/* Make index node */
+		 
 		idx->ch.node_type = UBIFS_IDX_NODE;
 		idx->child_cnt = cpu_to_le16(znode->child_cnt);
 		idx->level = cpu_to_le16(znode->level);
@@ -904,7 +723,7 @@ static int write_index(struct ubifs_info *c)
 
 		mutex_unlock(&c->tnc_mutex);
 
-		/* Determine the index node position */
+		 
 		if (lnum == -1) {
 			lnum = c->ilebs[lnum_pos++];
 			buf_offs = 0;
@@ -919,58 +738,28 @@ static int write_index(struct ubifs_info *c)
 			return -EINVAL;
 		}
 
-		/* Grab some stuff from znode while we still can */
+		 
 		cnext = znode->cnext;
 
 		ubifs_assert(c, ubifs_zn_dirty(znode));
 		ubifs_assert(c, ubifs_zn_cow(znode));
 
-		/*
-		 * It is important that other threads should see %DIRTY_ZNODE
-		 * flag cleared before %COW_ZNODE. Specifically, it matters in
-		 * the 'dirty_cow_znode()' function. This is the reason for the
-		 * first barrier. Also, we want the bit changes to be seen to
-		 * other threads ASAP, to avoid unnecessary copying, which is
-		 * the reason for the second barrier.
-		 */
+		 
 		clear_bit(DIRTY_ZNODE, &znode->flags);
 		smp_mb__before_atomic();
 		clear_bit(COW_ZNODE, &znode->flags);
 		smp_mb__after_atomic();
 
-		/*
-		 * We have marked the znode as clean but have not updated the
-		 * @c->clean_zn_cnt counter. If this znode becomes dirty again
-		 * before 'free_obsolete_znodes()' is called, then
-		 * @c->clean_zn_cnt will be decremented before it gets
-		 * incremented (resulting in 2 decrements for the same znode).
-		 * This means that @c->clean_zn_cnt may become negative for a
-		 * while.
-		 *
-		 * Q: why we cannot increment @c->clean_zn_cnt?
-		 * A: because we do not have the @c->tnc_mutex locked, and the
-		 *    following code would be racy and buggy:
-		 *
-		 *    if (!ubifs_zn_obsolete(znode)) {
-		 *            atomic_long_inc(&c->clean_zn_cnt);
-		 *            atomic_long_inc(&ubifs_clean_zn_cnt);
-		 *    }
-		 *
-		 *    Thus, we just delay the @c->clean_zn_cnt update until we
-		 *    have the mutex locked.
-		 */
+		 
 
-		/* Do not access znode from this point on */
+		 
 
-		/* Update buffer positions */
+		 
 		wlen = used + len;
 		used += ALIGN(len, 8);
 		avail -= ALIGN(len, 8);
 
-		/*
-		 * Calculate the next index node length to see if there is
-		 * enough room for it
-		 */
+		 
 		if (cnext == c->cnext)
 			next_len = 0;
 		else
@@ -988,7 +777,7 @@ static int write_index(struct ubifs_info *c)
 			ubifs_pad(c, c->cbuf + wlen, blen - wlen);
 		}
 
-		/* The buffer is full or there are no more znodes to do */
+		 
 		err = ubifs_leb_write(c, lnum, c->cbuf, buf_offs, blen);
 		if (err)
 			return err;
@@ -1023,12 +812,7 @@ static int write_index(struct ubifs_info *c)
 	return 0;
 }
 
-/**
- * free_obsolete_znodes - free obsolete znodes.
- * @c: UBIFS file-system description object
- *
- * At the end of commit end, obsolete znodes are freed.
- */
+ 
 static void free_obsolete_znodes(struct ubifs_info *c)
 {
 	struct ubifs_znode *znode, *cnext;
@@ -1047,13 +831,7 @@ static void free_obsolete_znodes(struct ubifs_info *c)
 	} while (cnext != c->cnext);
 }
 
-/**
- * return_gap_lebs - return LEBs used by the in-gap commit method.
- * @c: UBIFS file-system description object
- *
- * This function clears the "taken" flag for the LEBs which were used by the
- * "commit in-the-gaps" method.
- */
+ 
 static int return_gap_lebs(struct ubifs_info *c)
 {
 	int *p, err;
@@ -1074,12 +852,7 @@ static int return_gap_lebs(struct ubifs_info *c)
 	return 0;
 }
 
-/**
- * ubifs_tnc_end_commit - update the TNC for commit end.
- * @c: UBIFS file-system description object
- *
- * Write the dirty znodes.
- */
+ 
 int ubifs_tnc_end_commit(struct ubifs_info *c)
 {
 	int err;

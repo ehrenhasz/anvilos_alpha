@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1+
-// Copyright (C) 2022, Linaro Ltd - Daniel Lezcano <daniel.lezcano@linaro.org>
+
+
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>

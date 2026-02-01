@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Beomho Seo <beomho.seo@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -15,12 +12,12 @@
 #include <linux/iio/sysfs.h>
 #include <linux/iio/events.h>
 
-/* Slave address 0x19 for PS of 7 bit addressing protocol for I2C */
+ 
 #define CM36651_I2C_ADDR_PS		0x19
-/* Alert Response Address */
+ 
 #define CM36651_ARA			0x0C
 
-/* Ambient light sensor */
+ 
 #define CM36651_CS_CONF1		0x00
 #define CM36651_CS_CONF2		0x01
 #define CM36651_ALS_WH_M		0x02
@@ -30,29 +27,29 @@
 #define CM36651_CS_CONF3		0x06
 #define CM36651_CS_CONF_REG_NUM		0x02
 
-/* Proximity sensor */
+ 
 #define CM36651_PS_CONF1		0x00
 #define CM36651_PS_THD			0x01
 #define CM36651_PS_CANC			0x02
 #define CM36651_PS_CONF2		0x03
 #define CM36651_PS_REG_NUM		0x04
 
-/* CS_CONF1 command code */
+ 
 #define CM36651_ALS_ENABLE		0x00
 #define CM36651_ALS_DISABLE		0x01
 #define CM36651_ALS_INT_EN		0x02
 #define CM36651_ALS_THRES		0x04
 
-/* CS_CONF2 command code */
+ 
 #define CM36651_CS_CONF2_DEFAULT_BIT	0x08
 
-/* CS_CONF3 channel integration time */
-#define CM36651_CS_IT1			0x00 /* Integration time 80 msec */
-#define CM36651_CS_IT2			0x40 /* Integration time 160 msec */
-#define CM36651_CS_IT3			0x80 /* Integration time 320 msec */
-#define CM36651_CS_IT4			0xC0 /* Integration time 640 msec */
+ 
+#define CM36651_CS_IT1			0x00  
+#define CM36651_CS_IT2			0x40  
+#define CM36651_CS_IT3			0x80  
+#define CM36651_CS_IT4			0xC0  
 
-/* PS_CONF1 command code */
+ 
 #define CM36651_PS_ENABLE		0x00
 #define CM36651_PS_DISABLE		0x01
 #define CM36651_PS_INT_EN		0x02
@@ -60,25 +57,25 @@
 #define CM36651_PS_PERS3		0x08
 #define CM36651_PS_PERS4		0x0C
 
-/* PS_CONF1 command code: integration time */
-#define CM36651_PS_IT1			0x00 /* Integration time 0.32 msec */
-#define CM36651_PS_IT2			0x10 /* Integration time 0.42 msec */
-#define CM36651_PS_IT3			0x20 /* Integration time 0.52 msec */
-#define CM36651_PS_IT4			0x30 /* Integration time 0.64 msec */
+ 
+#define CM36651_PS_IT1			0x00  
+#define CM36651_PS_IT2			0x10  
+#define CM36651_PS_IT3			0x20  
+#define CM36651_PS_IT4			0x30  
 
-/* PS_CONF1 command code: duty ratio */
-#define CM36651_PS_DR1			0x00 /* Duty ratio 1/80 */
-#define CM36651_PS_DR2			0x40 /* Duty ratio 1/160 */
-#define CM36651_PS_DR3			0x80 /* Duty ratio 1/320 */
-#define CM36651_PS_DR4			0xC0 /* Duty ratio 1/640 */
+ 
+#define CM36651_PS_DR1			0x00  
+#define CM36651_PS_DR2			0x40  
+#define CM36651_PS_DR3			0x80  
+#define CM36651_PS_DR4			0xC0  
 
-/* PS_THD command code */
+ 
 #define CM36651_PS_INITIAL_THD		0x05
 
-/* PS_CANC command code */
+ 
 #define CM36651_PS_CANC_DEFAULT		0x00
 
-/* PS_CONF2 command code */
+ 
 #define CM36651_PS_HYS1			0x00
 #define CM36651_PS_HYS2			0x01
 #define CM36651_PS_SMART_PERS_EN	0x02
@@ -146,7 +143,7 @@ static int cm36651_setup_reg(struct cm36651_data *cm36651)
 	struct i2c_client *ps_client = cm36651->ps_client;
 	int i, ret;
 
-	/* CS initialization */
+	 
 	cm36651->cs_ctrl_regs[CM36651_CS_CONF1] = CM36651_ALS_ENABLE |
 							     CM36651_ALS_THRES;
 	cm36651->cs_ctrl_regs[CM36651_CS_CONF2] = CM36651_CS_CONF2_DEFAULT_BIT;
@@ -158,7 +155,7 @@ static int cm36651_setup_reg(struct cm36651_data *cm36651)
 			return ret;
 	}
 
-	/* PS initialization */
+	 
 	cm36651->ps_ctrl_regs[CM36651_PS_CONF1] = CM36651_PS_ENABLE |
 								CM36651_PS_IT2;
 	cm36651->ps_ctrl_regs[CM36651_PS_THD] = CM36651_PS_INITIAL_THD;
@@ -173,7 +170,7 @@ static int cm36651_setup_reg(struct cm36651_data *cm36651)
 			return ret;
 	}
 
-	/* Set shutdown mode */
+	 
 	ret = i2c_smbus_write_byte_data(client, CM36651_CS_CONF1,
 							  CM36651_ALS_DISABLE);
 	if (ret < 0)
@@ -235,13 +232,7 @@ static irqreturn_t cm36651_irq_handler(int irq, void *data)
 	int ev_dir, ret;
 	u64 ev_code;
 
-	/*
-	 * The PS INT pin is an active low signal that PS INT move logic low
-	 * when the object is detect. Once the MCU host received the PS INT
-	 * "LOW" signal, the Host needs to read the data at Alert Response
-	 * Address(ARA) to clear the PS INT signal. After clearing the PS
-	 * INT pin, the PS INT signal toggles from low to high.
-	 */
+	 
 	ret = i2c_smbus_read_byte(cm36651->ara_client);
 	if (ret < 0) {
 		dev_err(&client->dev,
@@ -341,7 +332,7 @@ static int cm36651_read_channel(struct cm36651_data *cm36651,
 		dev_err(&client->dev, "CM36651 set operation mode failed\n");
 		return ret;
 	}
-	/* Delay for work after enable operation */
+	 
 	msleep(50);
 	ret = cm36651_read_output(cm36651, chan, val);
 	if (ret < 0) {

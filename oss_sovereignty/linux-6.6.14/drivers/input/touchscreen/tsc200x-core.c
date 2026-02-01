@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TSC2004/TSC2005 touchscreen driver core
- *
- * Copyright (C) 2006-2010 Nokia Corporation
- * Copyright (C) 2015 QWERTY Embedded Design
- * Copyright (C) 2015 EMAC Inc.
- *
- * Author: Lauri Leukkunen <lauri.leukkunen@nokia.com>
- * based on TSC2301 driver by Klaus K. Pedersen <klaus.k.pedersen@nokia.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,24 +14,7 @@
 #include <linux/gpio/consumer.h>
 #include "tsc200x-core.h"
 
-/*
- * The touchscreen interface operates as follows:
- *
- * 1) Pen is pressed against the touchscreen.
- * 2) TSC200X performs AD conversion.
- * 3) After the conversion is done TSC200X drives DAV line down.
- * 4) GPIO IRQ is received and tsc200x_irq_thread() is scheduled.
- * 5) tsc200x_irq_thread() queues up a transfer to fetch the x, y, z1, z2
- *    values.
- * 6) tsc200x_irq_thread() reports coordinates to input layer and sets up
- *    tsc200x_penup_timer() to be called after TSC200X_PENUP_TIME_MS (40ms).
- * 7) When the penup timer expires, there have not been touch or DAV interrupts
- *    during the last 40ms which means the pen has been lifted.
- *
- * ESD recovery via a hardware reset is done if the TSC200X doesn't respond
- * after a configurable period (in ms) of activity. If esd_timeout is 0, the
- * watchdog is disabled.
- */
+ 
 
 static const struct regmap_range tsc200x_writable_ranges[] = {
 	regmap_reg_range(TSC200X_REG_AUX_HIGH, TSC200X_REG_CFR2),
@@ -82,7 +56,7 @@ struct tsc200x {
 
 	struct mutex		mutex;
 
-	/* raw copy of previous x,y,z */
+	 
 	int			in_x;
 	int			in_y;
 	int                     in_z1;
@@ -141,42 +115,36 @@ static irqreturn_t tsc200x_irq_thread(int irq, void *_ts)
 	struct tsc200x_data tsdata;
 	int error;
 
-	/* read the coordinates */
+	 
 	error = regmap_bulk_read(ts->regmap, TSC200X_REG_X, &tsdata,
 				 TSC200X_DATA_REGS);
 	if (unlikely(error))
 		goto out;
 
-	/* validate position */
+	 
 	if (unlikely(tsdata.x > MAX_12BIT || tsdata.y > MAX_12BIT))
 		goto out;
 
-	/* Skip reading if the pressure components are out of range */
+	 
 	if (unlikely(tsdata.z1 == 0 || tsdata.z2 > MAX_12BIT))
 		goto out;
 	if (unlikely(tsdata.z1 >= tsdata.z2))
 		goto out;
 
-       /*
-	* Skip point if this is a pen down with the exact same values as
-	* the value before pen-up - that implies SPI fed us stale data
-	*/
+        
 	if (!ts->pen_down &&
 	    ts->in_x == tsdata.x && ts->in_y == tsdata.y &&
 	    ts->in_z1 == tsdata.z1 && ts->in_z2 == tsdata.z2) {
 		goto out;
 	}
 
-	/*
-	 * At this point we are happy we have a valid and useful reading.
-	 * Remember it for later comparisons. We may now begin downsampling.
-	 */
+	 
 	ts->in_x = tsdata.x;
 	ts->in_y = tsdata.y;
 	ts->in_z1 = tsdata.z1;
 	ts->in_z2 = tsdata.z2;
 
-	/* Compute touch pressure resistance using equation #1 */
+	 
 	pressure = tsdata.x * (tsdata.z2 - tsdata.z1) / tsdata.z1;
 	pressure = pressure * ts->x_plate_ohm / 4096;
 	if (unlikely(pressure > MAX_12BIT))
@@ -222,12 +190,12 @@ static void tsc200x_reset(struct tsc200x *ts)
 {
 	if (ts->reset_gpio) {
 		gpiod_set_value_cansleep(ts->reset_gpio, 1);
-		usleep_range(100, 500); /* only 10us required */
+		usleep_range(100, 500);  
 		gpiod_set_value_cansleep(ts->reset_gpio, 0);
 	}
 }
 
-/* must be called with ts->mutex held */
+ 
 static void __tsc200x_disable(struct tsc200x *ts)
 {
 	tsc200x_stop_scan(ts);
@@ -240,7 +208,7 @@ static void __tsc200x_disable(struct tsc200x *ts)
 	enable_irq(ts->irq);
 }
 
-/* must be called with ts->mutex held */
+ 
 static void __tsc200x_enable(struct tsc200x *ts)
 {
 	tsc200x_start_scan(ts);
@@ -266,9 +234,7 @@ static ssize_t tsc200x_selftest_show(struct device *dev,
 
 	mutex_lock(&ts->mutex);
 
-	/*
-	 * Test TSC200X communications via temp high register.
-	 */
+	 
 	__tsc200x_disable(ts);
 
 	error = regmap_read(ts->regmap, TSC200X_REG_TEMP_HIGH, &temp_high_orig);
@@ -301,13 +267,13 @@ static ssize_t tsc200x_selftest_show(struct device *dev,
 		success = false;
 	}
 
-	/* hardware reset */
+	 
 	tsc200x_reset(ts);
 
 	if (!success)
 		goto out;
 
-	/* test that the reset really happened */
+	 
 	error = regmap_read(ts->regmap, TSC200X_REG_TEMP_HIGH, &temp_high);
 	if (error) {
 		dev_warn(dev, "selftest failed: read error %d after reset\n",
@@ -363,11 +329,7 @@ static void tsc200x_esd_work(struct work_struct *work)
 	unsigned int r;
 
 	if (!mutex_trylock(&ts->mutex)) {
-		/*
-		 * If the mutex is taken, it means that disable or enable is in
-		 * progress. In that case just reschedule the work. If the work
-		 * is not needed, it will be canceled by disable.
-		 */
+		 
 		goto reschedule;
 	}
 
@@ -375,18 +337,14 @@ static void tsc200x_esd_work(struct work_struct *work)
 				  msecs_to_jiffies(ts->esd_timeout)))
 		goto out;
 
-	/* We should be able to read register without disabling interrupts. */
+	 
 	error = regmap_read(ts->regmap, TSC200X_REG_CFR0, &r);
 	if (!error &&
 	    !((r ^ TSC200X_CFR0_INITVALUE) & TSC200X_CFR0_RW_MASK)) {
 		goto out;
 	}
 
-	/*
-	 * If we could not read our known value from configuration register 0
-	 * then we should reset the controller as if from power-up and start
-	 * scanning again.
-	 */
+	 
 	dev_info(ts->dev, "TSC200X not responding - resetting\n");
 
 	disable_irq(ts->irq);
@@ -402,7 +360,7 @@ static void tsc200x_esd_work(struct work_struct *work)
 out:
 	mutex_unlock(&ts->mutex);
 reschedule:
-	/* re-arm the watchdog */
+	 
 	schedule_delayed_work(&ts->esd_work,
 			      round_jiffies_relative(
 					msecs_to_jiffies(ts->esd_timeout)));
@@ -536,7 +494,7 @@ int tsc200x_probe(struct device *dev, int irq, const struct input_id *tsc_id,
 
 	touchscreen_parse_properties(input_dev, false, &ts->prop);
 
-	/* Ensure the touchscreen is off */
+	 
 	tsc200x_stop_scan(ts);
 
 	error = devm_request_threaded_irq(dev, irq, NULL,

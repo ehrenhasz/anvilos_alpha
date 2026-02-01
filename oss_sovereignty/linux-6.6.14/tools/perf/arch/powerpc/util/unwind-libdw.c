@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <elfutils/libdwfl.h>
 #include <linux/kernel.h>
 #include "perf_regs.h"
@@ -6,7 +6,7 @@
 #include "../../../util/perf_regs.h"
 #include "../../../util/sample.h"
 
-/* See backends/ppc_initreg.c and backends/ppc_regs.c in elfutils.  */
+ 
 static const int special_regs[3][2] = {
 	{ 65, PERF_REG_POWERPC_LINK },
 	{ 101, PERF_REG_POWERPC_XER },

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Hwmon client for industrial I/O devices
- *
- * Copyright (c) 2011 Jonathan Cameron
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -17,14 +14,7 @@
 #include <linux/iio/consumer.h>
 #include <linux/iio/types.h>
 
-/**
- * struct iio_hwmon_state - device instance state
- * @channels:		filled with array of channels from iio
- * @num_channels:	number of channels in channels (saves counting twice)
- * @attr_group:		the group of attributes
- * @groups:		null terminated array of attribute groups
- * @attrs:		null terminated array of attribute pointers.
- */
+ 
 struct iio_hwmon_state {
 	struct iio_channel *channels;
 	int num_channels;
@@ -33,11 +23,7 @@ struct iio_hwmon_state {
 	struct attribute **attrs;
 };
 
-/*
- * Assumes that IIO and hwmon operate in the same base units.
- * This is supposed to be true, but needs verification for
- * new channel types.
- */
+ 
 static ssize_t iio_hwmon_read_val(struct device *dev,
 				  struct device_attribute *attr,
 				  char *buf)
@@ -58,7 +44,7 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
 		return ret;
 
 	if (type == IIO_POWER)
-		result *= 1000; /* mili-Watts to micro-Watts conversion */
+		result *= 1000;  
 
 	return sprintf(buf, "%d\n", result);
 }
@@ -90,7 +76,7 @@ static int iio_hwmon_probe(struct platform_device *pdev)
 
 	st->channels = channels;
 
-	/* count how many attributes we have */
+	 
 	while (st->channels[st->num_channels].indio_dev)
 		st->num_channels++;
 

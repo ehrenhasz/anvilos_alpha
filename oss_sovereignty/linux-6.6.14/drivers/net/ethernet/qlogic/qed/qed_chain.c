@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* Copyright (c) 2020 Marvell International Ltd. */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/qed/qed_chain.h>
@@ -129,12 +129,7 @@ static void qed_chain_free_pbl(struct qed_dev *cdev, struct qed_chain *chain)
 	chain->pbl.pp_addr_tbl = NULL;
 }
 
-/**
- * qed_chain_free() - Free chain DMA memory.
- *
- * @cdev: Main device structure.
- * @chain: Chain to free.
- */
+ 
 void qed_chain_free(struct qed_dev *cdev, struct qed_chain *chain)
 {
 	switch (chain->mode) {
@@ -167,12 +162,7 @@ qed_chain_alloc_sanity_check(struct qed_dev *cdev,
 	if (!chain_size)
 		return -EINVAL;
 
-	/* The actual chain size can be larger than the maximal possible value
-	 * after rounding up the requested elements number to pages, and after
-	 * taking into account the unusuable elements (next-ptr elements).
-	 * The size of a "u16" chain can be (U16_MAX + 1) since the chain
-	 * size/capacity fields are of u32 type.
-	 */
+	 
 	switch (params->cnt_type) {
 	case QED_CHAIN_CNT_TYPE_U16:
 		if (chain_size > U16_MAX + 1)
@@ -220,9 +210,7 @@ static int qed_chain_alloc_next_ptr(struct qed_dev *cdev,
 		virt_prev = virt;
 	}
 
-	/* Last page's next element should point to the beginning of the
-	 * chain.
-	 */
+	 
 	qed_chain_init_next_ptr_elem(chain, virt_prev, chain->p_virt_addr,
 				     chain->p_phys_addr);
 
@@ -297,10 +285,10 @@ alloc_pages:
 			qed_chain_reset(chain);
 		}
 
-		/* Fill the PBL table with the physical address of the page */
+		 
 		pbl_virt[i] = cpu_to_le64(phys);
 
-		/* Keep the virtual address of the page */
+		 
 		addr_tbl[i].virt_addr = virt;
 		addr_tbl[i].dma_map = phys;
 	}
@@ -308,15 +296,7 @@ alloc_pages:
 	return 0;
 }
 
-/**
- * qed_chain_alloc() - Allocate and initialize a chain.
- *
- * @cdev: Main device structure.
- * @chain: Chain to be processed.
- * @params: Chain initialization parameters.
- *
- * Return: 0 on success, negative errno otherwise.
- */
+ 
 int qed_chain_alloc(struct qed_dev *cdev, struct qed_chain *chain,
 		    struct qed_chain_init_params *params)
 {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -13,11 +13,11 @@ MODULE_DESCRIPTION(PDSC_DRV_DESCRIPTION);
 MODULE_AUTHOR("Advanced Micro Devices, Inc");
 MODULE_LICENSE("GPL");
 
-/* Supported devices */
+ 
 static const struct pci_device_id pdsc_id_table[] = {
 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_CORE_PF) },
 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_VDPA_VF) },
-	{ 0, }	/* end of table */
+	{ 0, }	 
 };
 MODULE_DEVICE_TABLE(pci, pdsc_id_table);
 
@@ -56,10 +56,7 @@ static int pdsc_map_bars(struct pdsc *pdsc)
 
 	bars = pdsc->bars;
 
-	/* Since the PCI interface in the hardware is configurable,
-	 * we need to poke into all the bars to find the set we're
-	 * expecting.
-	 */
+	 
 	for (i = 0, j = 0; i < PDS_CORE_BARS_MAX; i++) {
 		if (!(pci_resource_flags(pdev, i) & IORESOURCE_MEM))
 			continue;
@@ -68,7 +65,7 @@ static int pdsc_map_bars(struct pdsc *pdsc)
 		bars[j].bus_addr = pci_resource_start(pdev, i);
 		bars[j].res_index = i;
 
-		/* only map the whole bar 0 */
+		 
 		if (j > 0) {
 			bars[j].vaddr = NULL;
 		} else {
@@ -83,7 +80,7 @@ static int pdsc_map_bars(struct pdsc *pdsc)
 	}
 	num_bars = j;
 
-	/* BAR0: dev_cmd and interrupts */
+	 
 	if (num_bars < 1) {
 		dev_err(dev, "No bars found\n");
 		err = -EFAULT;
@@ -108,7 +105,7 @@ static int pdsc_map_bars(struct pdsc *pdsc)
 		goto err_out;
 	}
 
-	/* BAR1: doorbells */
+	 
 	bar++;
 	if (num_bars < 2) {
 		dev_err(dev, "Doorbell bar missing\n");
@@ -229,7 +226,7 @@ static int pdsc_init_pf(struct pdsc *pdsc)
 	if (err)
 		goto err_out_release_regions;
 
-	/* General workqueue and timer, but don't start timer yet */
+	 
 	snprintf(wq_name, sizeof(wq_name), "%s.%d", PDS_CORE_DRV_NAME, pdsc->uid);
 	pdsc->wq = create_singlethread_workqueue(wq_name);
 	INIT_WORK(&pdsc->health_work, pdsc_health_thread);
@@ -280,7 +277,7 @@ static int pdsc_init_pf(struct pdsc *pdsc)
 	devl_register(dl);
 	devl_unlock(dl);
 
-	/* Lastly, start the health check timer */
+	 
 	mod_timer(&pdsc->wdtimer, round_jiffies(jiffies + pdsc->wdtimer_period));
 
 	return 0;
@@ -346,7 +343,7 @@ static int pdsc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 	pdsc->uid = err;
 
-	/* Query system for DMA addressing limitation for the device. */
+	 
 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(PDS_CORE_ADDR_LEN));
 	if (err) {
 		dev_err(dev, "Unable to obtain 64-bit DMA for consistent allocations, aborting: %pe\n",
@@ -389,9 +386,7 @@ static void pdsc_remove(struct pci_dev *pdev)
 	struct pdsc *pdsc = pci_get_drvdata(pdev);
 	struct devlink *dl;
 
-	/* Unhook the registrations first to be sure there
-	 * are no requests while we're stopping.
-	 */
+	 
 	dl = priv_to_devlink(pdsc);
 	devl_lock(dl);
 	devl_unregister(dl);
@@ -414,10 +409,7 @@ static void pdsc_remove(struct pci_dev *pdev)
 			pf->vfs[pdsc->vf_id].vf = NULL;
 		}
 	} else {
-		/* Remove the VFs and their aux_bus connections before other
-		 * cleanup so that the clients can use the AdminQ to cleanly
-		 * shut themselves down.
-		 */
+		 
 		pdsc_sriov_configure(pdev, 0);
 
 		del_timer_sync(&pdsc->wdtimer);

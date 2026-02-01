@@ -1,94 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Realtek SMI subdriver for the Realtek RTL8365MB-VC ethernet switch.
- *
- * Copyright (C) 2021 Alvin Šipraga <alsi@bang-olufsen.dk>
- * Copyright (C) 2021 Michael Rasmussen <mir@bang-olufsen.dk>
- *
- * The RTL8365MB-VC is a 4+1 port 10/100/1000M switch controller. It includes 4
- * integrated PHYs for the user facing ports, and an extension interface which
- * can be connected to the CPU - or another PHY - via either MII, RMII, or
- * RGMII. The switch is configured via the Realtek Simple Management Interface
- * (SMI), which uses the MDIO/MDC lines.
- *
- * Below is a simplified block diagram of the chip and its relevant interfaces.
- *
- *                          .-----------------------------------.
- *                          |                                   |
- *         UTP <---------------> Giga PHY <-> PCS <-> P0 GMAC   |
- *         UTP <---------------> Giga PHY <-> PCS <-> P1 GMAC   |
- *         UTP <---------------> Giga PHY <-> PCS <-> P2 GMAC   |
- *         UTP <---------------> Giga PHY <-> PCS <-> P3 GMAC   |
- *                          |                                   |
- *     CPU/PHY <-MII/RMII/RGMII--->  Extension  <---> Extension |
- *                          |       interface 1        GMAC 1   |
- *                          |                                   |
- *     SMI driver/ <-MDC/SCL---> Management    ~~~~~~~~~~~~~~   |
- *        EEPROM   <-MDIO/SDA--> interface     ~REALTEK ~~~~~   |
- *                          |                  ~RTL8365MB ~~~   |
- *                          |                  ~GXXXC TAIWAN~   |
- *        GPIO <--------------> Reset          ~~~~~~~~~~~~~~   |
- *                          |                                   |
- *      Interrupt  <----------> Link UP/DOWN events             |
- *      controller          |                                   |
- *                          '-----------------------------------'
- *
- * The driver uses DSA to integrate the 4 user and 1 extension ports into the
- * kernel. Netdevices are created for the user ports, as are PHY devices for
- * their integrated PHYs. The device tree firmware should also specify the link
- * partner of the extension port - either via a fixed-link or other phy-handle.
- * See the device tree bindings for more detailed information. Note that the
- * driver has only been tested with a fixed-link, but in principle it should not
- * matter.
- *
- * NOTE: Currently, only the RGMII interface is implemented in this driver.
- *
- * The interrupt line is asserted on link UP/DOWN events. The driver creates a
- * custom irqchip to handle this interrupt and demultiplex the events by reading
- * the status registers via SMI. Interrupts are then propagated to the relevant
- * PHY device.
- *
- * The EEPROM contains initial register values which the chip will read over I2C
- * upon hardware reset. It is also possible to omit the EEPROM. In both cases,
- * the driver will manually reprogram some registers using jam tables to reach
- * an initial state defined by the vendor driver.
- *
- * This Linux driver is written based on an OS-agnostic vendor driver from
- * Realtek. The reference GPL-licensed sources can be found in the OpenWrt
- * source tree under the name rtl8367c. The vendor driver claims to support a
- * number of similar switch controllers from Realtek, but the only hardware we
- * have is the RTL8365MB-VC. Moreover, there does not seem to be any chip under
- * the name RTL8367C. Although one wishes that the 'C' stood for some kind of
- * common hardware revision, there exist examples of chips with the suffix -VC
- * which are explicitly not supported by the rtl8367c driver and which instead
- * require the rtl8367d vendor driver. With all this uncertainty, the driver has
- * been modestly named rtl8365mb. Future implementors may wish to rename things
- * accordingly.
- *
- * In the same family of chips, some carry up to 8 user ports and up to 2
- * extension ports. Where possible this driver tries to make things generic, but
- * more work must be done to support these configurations. According to
- * documentation from Realtek, the family should include the following chips:
- *
- *  - RTL8363NB
- *  - RTL8363NB-VB
- *  - RTL8363SC
- *  - RTL8363SC-VB
- *  - RTL8364NB
- *  - RTL8364NB-VB
- *  - RTL8365MB-VC
- *  - RTL8366SC
- *  - RTL8367RB-VB
- *  - RTL8367SB
- *  - RTL8367S
- *  - RTL8370MB
- *  - RTL8310SR
- *
- * Some of the register logic for these additional chips has been skipped over
- * while implementing this driver. It is therefore not possible to assume that
- * things will work out-of-the-box for other chips, and a careful review of the
- * vendor driver may be needed to expand support. The RTL8365MB-VC seems to be
- * one of the simpler chips.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -102,7 +13,7 @@
 
 #include "realtek.h"
 
-/* Family-specific data and limits */
+ 
 #define RTL8365MB_PHYADDRMAX		7
 #define RTL8365MB_NUM_PHYREGS		32
 #define RTL8365MB_PHYREGMAX		(RTL8365MB_NUM_PHYREGS - 1)
@@ -110,7 +21,7 @@
 #define RTL8365MB_MAX_NUM_EXTINTS	3
 #define RTL8365MB_LEARN_LIMIT_MAX	2112
 
-/* Chip identification registers */
+ 
 #define RTL8365MB_CHIP_ID_REG		0x1300
 
 #define RTL8365MB_CHIP_VER_REG		0x1301
@@ -118,18 +29,18 @@
 #define RTL8365MB_MAGIC_REG		0x13C2
 #define   RTL8365MB_MAGIC_VALUE		0x0249
 
-/* Chip reset register */
+ 
 #define RTL8365MB_CHIP_RESET_REG	0x1322
 #define RTL8365MB_CHIP_RESET_SW_MASK	0x0002
 #define RTL8365MB_CHIP_RESET_HW_MASK	0x0001
 
-/* Interrupt polarity register */
+ 
 #define RTL8365MB_INTR_POLARITY_REG	0x1100
 #define   RTL8365MB_INTR_POLARITY_MASK	0x0001
 #define   RTL8365MB_INTR_POLARITY_HIGH	0
 #define   RTL8365MB_INTR_POLARITY_LOW	1
 
-/* Interrupt control/status register - enable/check specific interrupt types */
+ 
 #define RTL8365MB_INTR_CTRL_REG			0x1101
 #define RTL8365MB_INTR_STATUS_REG		0x1102
 #define   RTL8365MB_INTR_SLIENT_START_2_MASK	0x1000
@@ -158,14 +69,14 @@
 		 RTL8365MB_INTR_METER_EXCEEDED_MASK |  \
 		 RTL8365MB_INTR_LINK_CHANGE_MASK)
 
-/* Per-port interrupt type status registers */
+ 
 #define RTL8365MB_PORT_LINKDOWN_IND_REG		0x1106
 #define   RTL8365MB_PORT_LINKDOWN_IND_MASK	0x07FF
 
 #define RTL8365MB_PORT_LINKUP_IND_REG		0x1107
 #define   RTL8365MB_PORT_LINKUP_IND_MASK	0x07FF
 
-/* PHY indirect access registers */
+ 
 #define RTL8365MB_INDIRECT_ACCESS_CTRL_REG			0x1F00
 #define   RTL8365MB_INDIRECT_ACCESS_CTRL_RW_MASK		0x0002
 #define   RTL8365MB_INDIRECT_ACCESS_CTRL_RW_READ		0
@@ -181,15 +92,15 @@
 #define RTL8365MB_INDIRECT_ACCESS_WRITE_DATA_REG		0x1F03
 #define RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG			0x1F04
 
-/* PHY OCP address prefix register */
+ 
 #define RTL8365MB_GPHY_OCP_MSB_0_REG			0x1D15
 #define   RTL8365MB_GPHY_OCP_MSB_0_CFG_CPU_OCPADR_MASK	0x0FC0
 #define RTL8365MB_PHY_OCP_ADDR_PREFIX_MASK		0xFC00
 
-/* The PHY OCP addresses of PHY registers 0~31 start here */
+ 
 #define RTL8365MB_PHY_OCP_ADDR_PHYREG_BASE		0xA400
 
-/* External interface port mode values - used in DIGITAL_INTERFACE_SELECT */
+ 
 #define RTL8365MB_EXT_PORT_MODE_DISABLE		0
 #define RTL8365MB_EXT_PORT_MODE_RGMII		1
 #define RTL8365MB_EXT_PORT_MODE_MII_MAC		2
@@ -205,9 +116,9 @@
 #define RTL8365MB_EXT_PORT_MODE_1000X		12
 #define RTL8365MB_EXT_PORT_MODE_100FX		13
 
-/* External interface mode configuration registers 0~1 */
-#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0		0x1305 /* EXT1 */
-#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1		0x13C3 /* EXT2 */
+ 
+#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0		0x1305  
+#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1		0x13C3  
 #define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(_extint) \
 		((_extint) == 1 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0 : \
 		 (_extint) == 2 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1 : \
@@ -217,10 +128,10 @@
 #define   RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_OFFSET(_extint) \
 		(((_extint) % 2) * 4)
 
-/* External interface RGMII TX/RX delay configuration registers 0~2 */
-#define RTL8365MB_EXT_RGMXF_REG0		0x1306 /* EXT0 */
-#define RTL8365MB_EXT_RGMXF_REG1		0x1307 /* EXT1 */
-#define RTL8365MB_EXT_RGMXF_REG2		0x13C5 /* EXT2 */
+ 
+#define RTL8365MB_EXT_RGMXF_REG0		0x1306  
+#define RTL8365MB_EXT_RGMXF_REG1		0x1307  
+#define RTL8365MB_EXT_RGMXF_REG2		0x13C5  
 #define RTL8365MB_EXT_RGMXF_REG(_extint) \
 		((_extint) == 0 ? RTL8365MB_EXT_RGMXF_REG0 : \
 		 (_extint) == 1 ? RTL8365MB_EXT_RGMXF_REG1 : \
@@ -229,15 +140,15 @@
 #define   RTL8365MB_EXT_RGMXF_RXDELAY_MASK	0x0007
 #define   RTL8365MB_EXT_RGMXF_TXDELAY_MASK	0x0008
 
-/* External interface port speed values - used in DIGITAL_INTERFACE_FORCE */
+ 
 #define RTL8365MB_PORT_SPEED_10M	0
 #define RTL8365MB_PORT_SPEED_100M	1
 #define RTL8365MB_PORT_SPEED_1000M	2
 
-/* External interface force configuration registers 0~2 */
-#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0		0x1310 /* EXT0 */
-#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG1		0x1311 /* EXT1 */
-#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG2		0x13C4 /* EXT2 */
+ 
+#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0		0x1310  
+#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG1		0x1311  
+#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG2		0x13C4  
 #define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG(_extint) \
 		((_extint) == 0 ? RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0 : \
 		 (_extint) == 1 ? RTL8365MB_DIGITAL_INTERFACE_FORCE_REG1 : \
@@ -251,11 +162,11 @@
 #define   RTL8365MB_DIGITAL_INTERFACE_FORCE_DUPLEX_MASK		0x0004
 #define   RTL8365MB_DIGITAL_INTERFACE_FORCE_SPEED_MASK		0x0003
 
-/* CPU port mask register - controls which ports are treated as CPU ports */
+ 
 #define RTL8365MB_CPU_PORT_MASK_REG	0x1219
 #define   RTL8365MB_CPU_PORT_MASK_MASK	0x07FF
 
-/* CPU control register */
+ 
 #define RTL8365MB_CPU_CTRL_REG			0x121A
 #define   RTL8365MB_CPU_CTRL_TRAP_PORT_EXT_MASK	0x0400
 #define   RTL8365MB_CPU_CTRL_TAG_FORMAT_MASK	0x0200
@@ -265,23 +176,23 @@
 #define   RTL8365MB_CPU_CTRL_INSERTMODE_MASK	0x0006
 #define   RTL8365MB_CPU_CTRL_EN_MASK		0x0001
 
-/* Maximum packet length register */
+ 
 #define RTL8365MB_CFG0_MAX_LEN_REG	0x088C
 #define   RTL8365MB_CFG0_MAX_LEN_MASK	0x3FFF
 #define RTL8365MB_CFG0_MAX_LEN_MAX	0x3FFF
 
-/* Port learning limit registers */
+ 
 #define RTL8365MB_LUT_PORT_LEARN_LIMIT_BASE		0x0A20
 #define RTL8365MB_LUT_PORT_LEARN_LIMIT_REG(_physport) \
 		(RTL8365MB_LUT_PORT_LEARN_LIMIT_BASE + (_physport))
 
-/* Port isolation (forwarding mask) registers */
+ 
 #define RTL8365MB_PORT_ISOLATION_REG_BASE		0x08A2
 #define RTL8365MB_PORT_ISOLATION_REG(_physport) \
 		(RTL8365MB_PORT_ISOLATION_REG_BASE + (_physport))
 #define   RTL8365MB_PORT_ISOLATION_MASK			0x07FF
 
-/* MSTP port state registers - indexed by tree instance */
+ 
 #define RTL8365MB_MSTI_CTRL_BASE			0x0A00
 #define RTL8365MB_MSTI_CTRL_REG(_msti, _physport) \
 		(RTL8365MB_MSTI_CTRL_BASE + ((_msti) << 1) + ((_physport) >> 3))
@@ -289,11 +200,11 @@
 #define   RTL8365MB_MSTI_CTRL_PORT_STATE_MASK(_physport) \
 		(0x3 << RTL8365MB_MSTI_CTRL_PORT_STATE_OFFSET((_physport)))
 
-/* MIB counter value registers */
+ 
 #define RTL8365MB_MIB_COUNTER_BASE	0x1000
 #define RTL8365MB_MIB_COUNTER_REG(_x)	(RTL8365MB_MIB_COUNTER_BASE + (_x))
 
-/* MIB counter address register */
+ 
 #define RTL8365MB_MIB_ADDRESS_REG		0x1004
 #define   RTL8365MB_MIB_ADDRESS_PORT_OFFSET	0x007C
 #define   RTL8365MB_MIB_ADDRESS(_p, _x) \
@@ -303,12 +214,7 @@
 #define   RTL8365MB_MIB_CTRL0_RESET_MASK	0x0002
 #define   RTL8365MB_MIB_CTRL0_BUSY_MASK		0x0001
 
-/* The DSA callback .get_stats64 runs in atomic context, so we are not allowed
- * to block. On the other hand, accessing MIB counters absolutely requires us to
- * block. The solution is thus to schedule work which polls the MIB counters
- * asynchronously and updates some private data, which the callback can then
- * fetch atomically. Three seconds should be a good enough polling interval.
- */
+ 
 #define RTL8365MB_STATS_INTERVAL_JIFFIES	(3 * HZ)
 
 enum rtl8365mb_mib_counter_index {
@@ -450,7 +356,7 @@ struct rtl8365mb_jam_tbl_entry {
 	u16 val;
 };
 
-/* Lifted from the vendor driver sources */
+ 
 static const struct rtl8365mb_jam_tbl_entry rtl8365mb_init_jam_8365mb_vc[] = {
 	{ 0x13EB, 0x15BB }, { 0x1303, 0x06D6 }, { 0x1304, 0x0700 },
 	{ 0x13E2, 0x003F }, { 0x13F9, 0x0090 }, { 0x121E, 0x03CA },
@@ -478,34 +384,14 @@ enum rtl8365mb_phy_interface_mode {
 	RTL8365MB_PHY_INTERFACE_MODE_HSGMII = BIT(6),
 };
 
-/**
- * struct rtl8365mb_extint - external interface info
- * @port: the port with an external interface
- * @id: the external interface ID, which is either 0, 1, or 2
- * @supported_interfaces: a bitmask of supported PHY interface modes
- *
- * Represents a mapping: port -> { id, supported_interfaces }. To be embedded
- * in &struct rtl8365mb_chip_info for every port with an external interface.
- */
+ 
 struct rtl8365mb_extint {
 	int port;
 	int id;
 	unsigned int supported_interfaces;
 };
 
-/**
- * struct rtl8365mb_chip_info - static chip-specific info
- * @name: human-readable chip name
- * @chip_id: chip identifier
- * @chip_ver: chip silicon revision
- * @extints: available external interfaces
- * @jam_table: chip-specific initialization jam table
- * @jam_size: size of the chip's jam table
- *
- * These data are specific to a given chip in the family of switches supported
- * by this driver. When adding support for another chip in the family, a new
- * chip info should be added to the rtl8365mb_chip_infos array.
- */
+ 
 struct rtl8365mb_chip_info {
 	const char *name;
 	u32 chip_id;
@@ -515,7 +401,7 @@ struct rtl8365mb_chip_info {
 	size_t jam_size;
 };
 
-/* Chip info for each supported switch in the family */
+ 
 #define PHY_INTF(_mode) (RTL8365MB_PHY_INTERFACE_MODE_ ## _mode)
 static const struct rtl8365mb_chip_info rtl8365mb_chip_infos[] = {
 	{
@@ -584,19 +470,7 @@ enum rtl8365mb_cpu_rxlen {
 	RTL8365MB_CPU_RXLEN_64BYTES = 1,
 };
 
-/**
- * struct rtl8365mb_cpu - CPU port configuration
- * @enable: enable/disable hardware insertion of CPU tag in switch->CPU frames
- * @mask: port mask of ports that parse should parse CPU tags
- * @trap_port: forward trapped frames to this port
- * @insert: CPU tag insertion mode in switch->CPU frames
- * @position: position of CPU tag in frame
- * @rx_length: minimum CPU RX length
- * @format: CPU tag format
- *
- * Represents the CPU tagging and CPU port configuration of the switch. These
- * settings are configurable at runtime.
- */
+ 
 struct rtl8365mb_cpu {
 	bool enable;
 	u32 mask;
@@ -607,15 +481,7 @@ struct rtl8365mb_cpu {
 	enum rtl8365mb_cpu_format format;
 };
 
-/**
- * struct rtl8365mb_port - private per-port data
- * @priv: pointer to parent realtek_priv data
- * @index: DSA port index, same as dsa_port::index
- * @stats: link statistics populated by rtl8365mb_stats_poll, ready for atomic
- *         access via rtl8365mb_get_stats64
- * @stats_lock: protect the stats structure during read/update
- * @mib_work: delayed work for polling MIB counters
- */
+ 
 struct rtl8365mb_port {
 	struct realtek_priv *priv;
 	unsigned int index;
@@ -624,17 +490,7 @@ struct rtl8365mb_port {
 	struct delayed_work mib_work;
 };
 
-/**
- * struct rtl8365mb - driver private data
- * @priv: pointer to parent realtek_priv data
- * @irq: registered IRQ or zero
- * @chip_info: chip-specific info about the attached switch
- * @cpu: CPU tagging and CPU port configuration for this chip
- * @mib_lock: prevent concurrent reads of MIB counters
- * @ports: per-port data
- *
- * Private data for this driver.
- */
+ 
 struct rtl8365mb {
 	struct realtek_priv *priv;
 	int irq;
@@ -659,7 +515,7 @@ static int rtl8365mb_phy_ocp_prepare(struct realtek_priv *priv, int phy,
 	u32 val;
 	int ret;
 
-	/* Set OCP prefix */
+	 
 	val = FIELD_GET(RTL8365MB_PHY_OCP_ADDR_PREFIX_MASK, ocp_addr);
 	ret = regmap_update_bits(
 		priv->map_nolock, RTL8365MB_GPHY_OCP_MSB_0_REG,
@@ -668,7 +524,7 @@ static int rtl8365mb_phy_ocp_prepare(struct realtek_priv *priv, int phy,
 	if (ret)
 		return ret;
 
-	/* Set PHY register address */
+	 
 	val = RTL8365MB_PHY_BASE;
 	val |= FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK, phy);
 	val |= FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_ADDRESS_OCPADR_5_1_MASK,
@@ -699,7 +555,7 @@ static int rtl8365mb_phy_ocp_read(struct realtek_priv *priv, int phy,
 	if (ret)
 		goto out;
 
-	/* Execute read operation */
+	 
 	val = FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_MASK,
 			 RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_VALUE) |
 	      FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_RW_MASK,
@@ -713,7 +569,7 @@ static int rtl8365mb_phy_ocp_read(struct realtek_priv *priv, int phy,
 	if (ret)
 		goto out;
 
-	/* Get PHY register data */
+	 
 	ret = regmap_read(priv->map_nolock,
 			  RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG, &val);
 	if (ret)
@@ -743,13 +599,13 @@ static int rtl8365mb_phy_ocp_write(struct realtek_priv *priv, int phy,
 	if (ret)
 		goto out;
 
-	/* Set PHY register data */
+	 
 	ret = regmap_write(priv->map_nolock,
 			   RTL8365MB_INDIRECT_ACCESS_WRITE_DATA_REG, data);
 	if (ret)
 		goto out;
 
-	/* Execute write operation */
+	 
 	val = FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_MASK,
 			 RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_VALUE) |
 	      FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_RW_MASK,
@@ -891,30 +747,9 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
 	dp = dsa_to_port(priv->ds, port);
 	dn = dp->dn;
 
-	/* Set the RGMII TX/RX delay
-	 *
-	 * The Realtek vendor driver indicates the following possible
-	 * configuration settings:
-	 *
-	 *   TX delay:
-	 *     0 = no delay, 1 = 2 ns delay
-	 *   RX delay:
-	 *     0 = no delay, 7 = maximum delay
-	 *     Each step is approximately 0.3 ns, so the maximum delay is about
-	 *     2.1 ns.
-	 *
-	 * The vendor driver also states that this must be configured *before*
-	 * forcing the external interface into a particular mode, which is done
-	 * in the rtl8365mb_phylink_mac_link_{up,down} functions.
-	 *
-	 * Only configure an RGMII TX (resp. RX) delay if the
-	 * tx-internal-delay-ps (resp. rx-internal-delay-ps) OF property is
-	 * specified. We ignore the detail of the RGMII interface mode
-	 * (RGMII_{RXID, TXID, etc.}), as this is considered to be a PHY-only
-	 * property.
-	 */
+	 
 	if (!of_property_read_u32(dn, "tx-internal-delay-ps", &val)) {
-		val = val / 1000; /* convert to ns */
+		val = val / 1000;  
 
 		if (val == 0 || val == 2)
 			tx_delay = val / 2;
@@ -924,7 +759,7 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
 	}
 
 	if (!of_property_read_u32(dn, "rx-internal-delay-ps", &val)) {
-		val = DIV_ROUND_CLOSEST(val, 300); /* convert to 0.3 ns step */
+		val = DIV_ROUND_CLOSEST(val, 300);  
 
 		if (val <= 7)
 			rx_delay = val;
@@ -972,7 +807,7 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
 		return -ENODEV;
 
 	if (link) {
-		/* Force the link up with the desired configuration */
+		 
 		r_link = 1;
 		r_rx_pause = rx_pause ? 1 : 0;
 		r_tx_pause = tx_pause ? 1 : 0;
@@ -999,7 +834,7 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
 			return -EINVAL;
 		}
 	} else {
-		/* Force the link down and reset any programmed configuration */
+		 
 		r_link = 0;
 		r_tx_pause = 0;
 		r_rx_pause = 0;
@@ -1038,18 +873,13 @@ static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
 			  config->supported_interfaces);
 
-		/* GMII is the default interface mode for phylib, so
-		 * we have to support it for ports with integrated PHY.
-		 */
+		 
 		__set_bit(PHY_INTERFACE_MODE_GMII,
 			  config->supported_interfaces);
 		return;
 	}
 
-	/* Populate according to the modes supported by _this driver_,
-	 * not necessarily the modes supported by the hardware, some of
-	 * which remain unimplemented.
-	 */
+	 
 
 	if (extint->supported_interfaces & RTL8365MB_PHY_INTERFACE_MODE_RGMII)
 		phy_interface_set_rgmii(config->supported_interfaces);
@@ -1078,9 +908,7 @@ static void rtl8365mb_phylink_mac_config(struct dsa_switch *ds, int port,
 		return;
 	}
 
-	/* TODO: Implement MII and RMII modes, which the RTL8365MB-VC also
-	 * supports
-	 */
+	 
 }
 
 static void rtl8365mb_phylink_mac_link_down(struct dsa_switch *ds, int port,
@@ -1143,10 +971,7 @@ static int rtl8365mb_port_change_mtu(struct dsa_switch *ds, int port,
 	struct realtek_priv *priv = ds->priv;
 	int frame_size;
 
-	/* When a new MTU is set, DSA always sets the CPU port's MTU to the
-	 * largest MTU of the slave ports. Because the switch only has a global
-	 * RX length register, only allowing CPU port here is enough.
-	 */
+	 
 	if (!dsa_is_cpu_port(ds, port))
 		return 0;
 
@@ -1200,11 +1025,7 @@ static void rtl8365mb_port_stp_state_set(struct dsa_switch *ds, int port,
 static int rtl8365mb_port_set_learning(struct realtek_priv *priv, int port,
 				       bool enable)
 {
-	/* Enable/disable learning by limiting the number of L2 addresses the
-	 * port can learn. Realtek documentation states that a limit of zero
-	 * disables learning. When enabling learning, set it to the chip's
-	 * maximum.
-	 */
+	 
 	return regmap_write(priv->map, RTL8365MB_LUT_PORT_LEARN_LIMIT_REG(port),
 			    enable ? RTL8365MB_LEARN_LIMIT_MAX : 0);
 }
@@ -1223,37 +1044,30 @@ static int rtl8365mb_mib_counter_read(struct realtek_priv *priv, int port,
 	int ret;
 	int i;
 
-	/* The MIB address is an SRAM address. We request a particular address
-	 * and then poll the control register before reading the value from some
-	 * counter registers.
-	 */
+	 
 	ret = regmap_write(priv->map, RTL8365MB_MIB_ADDRESS_REG,
 			   RTL8365MB_MIB_ADDRESS(port, offset));
 	if (ret)
 		return ret;
 
-	/* Poll for completion */
+	 
 	ret = regmap_read_poll_timeout(priv->map, RTL8365MB_MIB_CTRL0_REG, val,
 				       !(val & RTL8365MB_MIB_CTRL0_BUSY_MASK),
 				       10, 100);
 	if (ret)
 		return ret;
 
-	/* Presumably this indicates a MIB counter read failure */
+	 
 	if (val & RTL8365MB_MIB_CTRL0_RESET_MASK)
 		return -EIO;
 
-	/* There are four MIB counter registers each holding a 16 bit word of a
-	 * MIB counter. Depending on the offset, we should read from the upper
-	 * two or lower two registers. In case the MIB counter is 4 words, we
-	 * read from all four registers.
-	 */
+	 
 	if (length == 4)
 		offset = 3;
 	else
 		offset = (offset + 1) % 4;
 
-	/* Read the MIB counter 16 bits at a time */
+	 
 	for (i = 0; i < length; i++) {
 		ret = regmap_read(priv->map,
 				  RTL8365MB_MIB_COUNTER_REG(offset - i), &val);
@@ -1263,7 +1077,7 @@ static int rtl8365mb_mib_counter_read(struct realtek_priv *priv, int port,
 		tmpvalue = ((tmpvalue) << 16) | (val & 0xFFFF);
 	}
 
-	/* Only commit the result if no error occurred */
+	 
 	*mibvalue = tmpvalue;
 
 	return 0;
@@ -1366,7 +1180,7 @@ static void rtl8365mb_get_mac_stats(struct dsa_switch *ds, int port,
 	for (i = 0; i < RTL8365MB_MIB_END; i++) {
 		struct rtl8365mb_mib_counter *mib = &rtl8365mb_mib_counters[i];
 
-		/* Only fetch required MIB counters (marked = 1 above) */
+		 
 		if (!cnt[i])
 			continue;
 
@@ -1377,11 +1191,7 @@ static void rtl8365mb_get_mac_stats(struct dsa_switch *ds, int port,
 	}
 	mutex_unlock(&mb->mib_lock);
 
-	/* The RTL8365MB-VC exposes MIB objects, which we have to translate into
-	 * IEEE 802.3 Managed Objects. This is not always completely faithful,
-	 * but we try out best. See RFC 3635 for a detailed treatment of the
-	 * subject.
-	 */
+	 
 
 	mac_stats->FramesTransmittedOK = cnt[RTL8365MB_MIB_ifOutUcastPkts] +
 					 cnt[RTL8365MB_MIB_ifOutMulticastPkts] +
@@ -1463,7 +1273,7 @@ static void rtl8365mb_stats_update(struct realtek_priv *priv, int port)
 	for (i = 0; i < RTL8365MB_MIB_END; i++) {
 		struct rtl8365mb_mib_counter *c = &rtl8365mb_mib_counters[i];
 
-		/* Only fetch required MIB counters (marked = 1 above) */
+		 
 		if (!cnt[i])
 			continue;
 
@@ -1474,7 +1284,7 @@ static void rtl8365mb_stats_update(struct realtek_priv *priv, int port)
 	}
 	mutex_unlock(&mb->mib_lock);
 
-	/* Don't update statistics if there was an error reading the counters */
+	 
 	if (ret)
 		return;
 
@@ -1489,7 +1299,7 @@ static void rtl8365mb_stats_update(struct realtek_priv *priv, int port)
 			    cnt[RTL8365MB_MIB_ifOutMulticastPkts] +
 			    cnt[RTL8365MB_MIB_ifOutBroadcastPkts];
 
-	/* if{In,Out}Octets includes FCS - remove it */
+	 
 	stats->rx_bytes = cnt[RTL8365MB_MIB_ifInOctets] - 4 * stats->rx_packets;
 	stats->tx_bytes =
 		cnt[RTL8365MB_MIB_ifOutOctets] - 4 * stats->tx_packets;
@@ -1544,9 +1354,7 @@ static void rtl8365mb_stats_setup(struct realtek_priv *priv)
 	struct rtl8365mb *mb = priv->chip_data;
 	int i;
 
-	/* Per-chip global mutex to protect MIB counter access, since doing
-	 * so requires accessing a series of registers in a particular order.
-	 */
+	 
 	mutex_init(&mb->mib_lock);
 
 	for (i = 0; i < priv->num_ports; i++) {
@@ -1555,12 +1363,10 @@ static void rtl8365mb_stats_setup(struct realtek_priv *priv)
 		if (dsa_is_unused_port(priv->ds, i))
 			continue;
 
-		/* Per-port spinlock to protect the stats64 data */
+		 
 		spin_lock_init(&p->stats_lock);
 
-		/* This work polls the MIB counters and keeps the stats64 data
-		 * up-to-date.
-		 */
+		 
 		INIT_DELAYED_WORK(&p->mib_work, rtl8365mb_stats_poll);
 	}
 }
@@ -1647,7 +1453,7 @@ out_none:
 
 static struct irq_chip rtl8365mb_irq_chip = {
 	.name = "rtl8365mb",
-	/* The hardware doesn't support masking IRQs on a per-port basis */
+	 
 };
 
 static int rtl8365mb_irq_map(struct irq_domain *domain, unsigned int irq,
@@ -1709,7 +1515,7 @@ static int rtl8365mb_irq_setup(struct realtek_priv *priv)
 		return -EINVAL;
 	}
 
-	/* rtl8365mb IRQs cascade off this one */
+	 
 	irq = of_irq_get(intc, 0);
 	if (irq <= 0) {
 		if (irq != -EPROBE_DEFER)
@@ -1739,7 +1545,7 @@ static int rtl8365mb_irq_setup(struct realtek_priv *priv)
 		irq_set_parent(virq, irq);
 	}
 
-	/* Configure chip interrupt signal polarity */
+	 
 	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
 	switch (irq_trig) {
 	case IRQF_TRIGGER_RISING:
@@ -1763,12 +1569,12 @@ static int rtl8365mb_irq_setup(struct realtek_priv *priv)
 	if (ret)
 		goto out_remove_irqdomain;
 
-	/* Disable the interrupt in case the chip has it enabled on reset */
+	 
 	ret = rtl8365mb_irq_disable(priv);
 	if (ret)
 		goto out_remove_irqdomain;
 
-	/* Clear the interrupt status register */
+	 
 	ret = regmap_write(priv->map, RTL8365MB_INTR_STATUS_REG,
 			   RTL8365MB_INTR_ALL_MASK);
 	if (ret)
@@ -1781,7 +1587,7 @@ static int rtl8365mb_irq_setup(struct realtek_priv *priv)
 		goto out_remove_irqdomain;
 	}
 
-	/* Store the irq so that we know to free it during teardown */
+	 
 	mb->irq = irq;
 
 	ret = rtl8365mb_irq_enable(priv);
@@ -1881,11 +1687,7 @@ static int rtl8365mb_change_tag_protocol(struct dsa_switch *ds,
 		cpu->format = RTL8365MB_CPU_FORMAT_8BYTES;
 		cpu->position = RTL8365MB_CPU_POS_BEFORE_CRC;
 		break;
-	/* The switch also supports a 4-byte format, similar to rtl4a but with
-	 * the same 0x04 8-bit version and probably 8-bit port source/dest.
-	 * There is no public doc about it. Not supported yet and it will probably
-	 * never be.
-	 */
+	 
 	default:
 		return -EPROTONOSUPPORT;
 	}
@@ -1902,7 +1704,7 @@ static int rtl8365mb_switch_init(struct realtek_priv *priv)
 
 	ci = mb->chip_info;
 
-	/* Do any chip-specific init jam before getting to the common stuff */
+	 
 	if (ci->jam_table) {
 		for (i = 0; i < ci->jam_size; i++) {
 			ret = regmap_write(priv->map, ci->jam_table[i].reg,
@@ -1912,7 +1714,7 @@ static int rtl8365mb_switch_init(struct realtek_priv *priv)
 		}
 	}
 
-	/* Common init jam */
+	 
 	for (i = 0; i < ARRAY_SIZE(rtl8365mb_init_jam_common); i++) {
 		ret = regmap_write(priv->map, rtl8365mb_init_jam_common[i].reg,
 				   rtl8365mb_init_jam_common[i].val);
@@ -1930,9 +1732,7 @@ static int rtl8365mb_reset_chip(struct realtek_priv *priv)
 	priv->write_reg_noack(priv, RTL8365MB_CHIP_RESET_REG,
 			      FIELD_PREP(RTL8365MB_CHIP_RESET_HW_MASK, 1));
 
-	/* Realtek documentation says the chip needs 1 second to reset. Sleep
-	 * for 100 ms before accessing any registers to prevent ACK timeouts.
-	 */
+	 
 	msleep(100);
 	return regmap_read_poll_timeout(priv->map, RTL8365MB_CHIP_RESET_REG, val,
 					!(val & RTL8365MB_CHIP_RESET_HW_MASK),
@@ -1957,21 +1757,21 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
 		goto out_error;
 	}
 
-	/* Configure switch to vendor-defined initial state */
+	 
 	ret = rtl8365mb_switch_init(priv);
 	if (ret) {
 		dev_err(priv->dev, "failed to initialize switch: %d\n", ret);
 		goto out_error;
 	}
 
-	/* Set up cascading IRQs */
+	 
 	ret = rtl8365mb_irq_setup(priv);
 	if (ret == -EPROBE_DEFER)
 		return ret;
 	else if (ret)
 		dev_info(priv->dev, "no interrupt support\n");
 
-	/* Configure CPU tagging */
+	 
 	dsa_switch_for_each_cpu_port(cpu_dp, priv->ds) {
 		cpu->mask |= BIT(cpu_dp->index);
 
@@ -1983,30 +1783,27 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
 	if (ret)
 		goto out_teardown_irq;
 
-	/* Configure ports */
+	 
 	for (i = 0; i < priv->num_ports; i++) {
 		struct rtl8365mb_port *p = &mb->ports[i];
 
 		if (dsa_is_unused_port(priv->ds, i))
 			continue;
 
-		/* Forward only to the CPU */
+		 
 		ret = rtl8365mb_port_set_isolation(priv, i, cpu->mask);
 		if (ret)
 			goto out_teardown_irq;
 
-		/* Disable learning */
+		 
 		ret = rtl8365mb_port_set_learning(priv, i, false);
 		if (ret)
 			goto out_teardown_irq;
 
-		/* Set the initial STP state of all ports to DISABLED, otherwise
-		 * ports will still forward frames to the CPU despite being
-		 * administratively down by default.
-		 */
+		 
 		rtl8365mb_port_stp_state_set(priv->ds, i, BR_STATE_DISABLED);
 
-		/* Set up per-port private data */
+		 
 		p->priv = priv;
 		p->index = i;
 	}
@@ -2023,7 +1820,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
 		}
 	}
 
-	/* Start statistics counter polling */
+	 
 	rtl8365mb_stats_setup(priv);
 
 	return 0;
@@ -2047,9 +1844,7 @@ static int rtl8365mb_get_chip_id_and_ver(struct regmap *map, u32 *id, u32 *ver)
 {
 	int ret;
 
-	/* For some reason we have to write a magic value to an arbitrary
-	 * register whenever accessing the chip ID/version registers.
-	 */
+	 
 	ret = regmap_write(map, RTL8365MB_MAGIC_REG, RTL8365MB_MAGIC_VALUE);
 	if (ret)
 		return ret;
@@ -2062,7 +1857,7 @@ static int rtl8365mb_get_chip_id_and_ver(struct regmap *map, u32 *id, u32 *ver)
 	if (ret)
 		return ret;
 
-	/* Reset magic register */
+	 
 	ret = regmap_write(map, RTL8365MB_MAGIC_REG, 0);
 	if (ret)
 		return ret;

@@ -1,14 +1,4 @@
-/*
- * SATA glue for Cavium Octeon III SOCs.
- *
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2010-2015 Cavium Networks
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
@@ -72,7 +62,7 @@ static int ahci_octeon_probe(struct platform_device *pdev)
 
 static const struct of_device_id octeon_ahci_match[] = {
 	{ .compatible = "cavium,octeon-7130-sata-uctl", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, octeon_ahci_match);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Frame Interval Monitor.
- *
- * Copyright (c) 2016 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/irq.h>
 #include <linux/module.h>
@@ -30,39 +26,39 @@ enum {
 	FIM_NUM_ICAP_CONTROLS,
 };
 
-#define FIM_CL_ENABLE_DEF          0 /* FIM disabled by default */
-#define FIM_CL_NUM_DEF             8 /* average 8 frames */
-#define FIM_CL_NUM_SKIP_DEF        2 /* skip 2 frames after restart */
-#define FIM_CL_TOLERANCE_MIN_DEF  50 /* usec */
-#define FIM_CL_TOLERANCE_MAX_DEF   0 /* no max tolerance (unbounded) */
+#define FIM_CL_ENABLE_DEF          0  
+#define FIM_CL_NUM_DEF             8  
+#define FIM_CL_NUM_SKIP_DEF        2  
+#define FIM_CL_TOLERANCE_MIN_DEF  50  
+#define FIM_CL_TOLERANCE_MAX_DEF   0  
 
 struct imx_media_fim {
-	/* the owning subdev of this fim instance */
+	 
 	struct v4l2_subdev *sd;
 
-	/* FIM's control handler */
+	 
 	struct v4l2_ctrl_handler ctrl_handler;
 
-	/* control clusters */
+	 
 	struct v4l2_ctrl  *ctrl[FIM_NUM_CONTROLS];
 	struct v4l2_ctrl  *icap_ctrl[FIM_NUM_ICAP_CONTROLS];
 
-	spinlock_t        lock; /* protect control values */
+	spinlock_t        lock;  
 
-	/* current control values */
+	 
 	bool              enabled;
 	int               num_avg;
 	int               num_skip;
-	unsigned long     tolerance_min; /* usec */
-	unsigned long     tolerance_max; /* usec */
-	/* input capture method of measuring FI */
+	unsigned long     tolerance_min;  
+	unsigned long     tolerance_max;  
+	 
 	int               icap_channel;
 	int               icap_flags;
 
 	int               counter;
 	ktime_t		  last_ts;
-	unsigned long     sum;       /* usec */
-	unsigned long     nominal;   /* usec */
+	unsigned long     sum;        
+	unsigned long     nominal;    
 
 	struct completion icap_first_event;
 	bool              stream_on;
@@ -116,11 +112,11 @@ static void reset_fim(struct imx_media_fim *fim, bool curval)
 		fim->tolerance_max = tol_max->val;
 	}
 
-	/* disable tolerance range if max <= min */
+	 
 	if (fim->tolerance_max <= fim->tolerance_min)
 		fim->tolerance_max = 0;
 
-	/* num_skip must be >= 1 if input capture not used */
+	 
 	if (!icap_enabled(fim))
 		fim->num_skip = max_t(int, fim->num_skip, 1);
 
@@ -137,12 +133,7 @@ static void send_fim_event(struct imx_media_fim *fim, unsigned long error)
 	v4l2_subdev_notify_event(fim->sd, &ev);
 }
 
-/*
- * Monitor an averaged frame interval. If the average deviates too much
- * from the nominal frame rate, send the frame interval error event. The
- * frame intervals are averaged in order to quiet noise from
- * (presumably random) interrupt latency.
- */
+ 
 static void frame_interval_monitor(struct imx_media_fim *fim,
 				   ktime_t timestamp)
 {
@@ -153,7 +144,7 @@ static void frame_interval_monitor(struct imx_media_fim *fim,
 	if (!fim->enabled || ++fim->counter <= 0)
 		goto out_update_ts;
 
-	/* max error is less than l00µs, so use 32-bit division or fail */
+	 
 	interval = ktime_to_ns(ktime_sub(timestamp, fim->last_ts));
 	error = abs(interval - NSEC_PER_USEC * (u64)fim->nominal);
 	if (error > U32_MAX)
@@ -190,14 +181,7 @@ out_update_ts:
 		send_fim_event(fim, error_avg);
 }
 
-/*
- * In case we are monitoring the first frame interval after streamon
- * (when fim->num_skip = 0), we need a valid fim->last_ts before we
- * can begin. This only applies to the input capture method. It is not
- * possible to accurately measure the first FI after streamon using the
- * EOF method, so fim->num_skip minimum is set to 1 in that case, so this
- * function is a noop when the EOF method is used.
- */
+ 
 static void fim_acquire_first_ts(struct imx_media_fim *fim)
 {
 	unsigned long ret;
@@ -212,7 +196,7 @@ static void fim_acquire_first_ts(struct imx_media_fim *fim)
 		v4l2_warn(fim->sd, "wait first icap event timeout\n");
 }
 
-/* FIM Controls */
+ 
 static int fim_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct imx_media_fim *fim = container_of(ctrl->handler,
@@ -262,8 +246,8 @@ static const struct v4l2_ctrl_config fim_ctrl[] = {
 		.name = "FIM Num Average",
 		.type = V4L2_CTRL_TYPE_INTEGER,
 		.def = FIM_CL_NUM_DEF,
-		.min =  1, /* no averaging */
-		.max = 64, /* average 64 frames */
+		.min =  1,  
+		.max = 64,  
 		.step = 1,
 	},
 	[FIM_CL_TOLERANCE_MIN] = {
@@ -292,8 +276,8 @@ static const struct v4l2_ctrl_config fim_ctrl[] = {
 		.name = "FIM Num Skip",
 		.type = V4L2_CTRL_TYPE_INTEGER,
 		.def = FIM_CL_NUM_SKIP_DEF,
-		.min =   0, /* skip no frames */
-		.max = 256, /* skip 256 frames */
+		.min =   0,  
+		.max = 256,  
 		.step =  1,
 	},
 };
@@ -304,7 +288,7 @@ static const struct v4l2_ctrl_config fim_icap_ctrl[] = {
 		.id = V4L2_CID_IMX_FIM_ICAP_EDGE,
 		.name = "FIM Input Capture Edge",
 		.type = V4L2_CTRL_TYPE_INTEGER,
-		.def =  IRQ_TYPE_NONE, /* input capture disabled by default */
+		.def =  IRQ_TYPE_NONE,  
 		.min =  IRQ_TYPE_NONE,
 		.max =  IRQ_TYPE_EDGE_BOTH,
 		.step = 1,
@@ -350,14 +334,7 @@ err_free:
 	return ret;
 }
 
-/*
- * Monitor frame intervals via EOF interrupt. This method is
- * subject to uncertainty errors introduced by interrupt latency.
- *
- * This is a noop if the Input Capture method is being used, since
- * the frame_interval_monitor() is called by the input capture event
- * callback handler in that case.
- */
+ 
 void imx_media_fim_eof_monitor(struct imx_media_fim *fim, ktime_t timestamp)
 {
 	unsigned long flags;
@@ -370,7 +347,7 @@ void imx_media_fim_eof_monitor(struct imx_media_fim *fim, ktime_t timestamp)
 	spin_unlock_irqrestore(&fim->lock, flags);
 }
 
-/* Called by the subdev in its s_stream callback */
+ 
 void imx_media_fim_set_stream(struct imx_media_fim *fim,
 			      const struct v4l2_fract *fi,
 			      bool on)
@@ -399,12 +376,12 @@ out:
 
 int imx_media_fim_add_controls(struct imx_media_fim *fim)
 {
-	/* add the FIM controls to the calling subdev ctrl handler */
+	 
 	return v4l2_ctrl_add_handler(fim->sd->ctrl_handler,
 				     &fim->ctrl_handler, NULL, false);
 }
 
-/* Called by the subdev in its subdev registered callback */
+ 
 struct imx_media_fim *imx_media_fim_init(struct v4l2_subdev *sd)
 {
 	struct imx_media_fim *fim;

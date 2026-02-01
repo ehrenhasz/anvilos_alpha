@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -15,14 +13,11 @@
 
 #define IMX_SIP_DDR_DVFS			0xc2000004
 
-/* Query available frequencies. */
+ 
 #define IMX_SIP_DDR_DVFS_GET_FREQ_COUNT		0x10
 #define IMX_SIP_DDR_DVFS_GET_FREQ_INFO		0x11
 
-/*
- * This should be in a 1:1 mapping with devicetree OPPs but
- * firmware provides additional info.
- */
+ 
 struct imx8m_ddrc_freq {
 	unsigned long rate;
 	unsigned long smcarg;
@@ -31,42 +26,15 @@ struct imx8m_ddrc_freq {
 	int dram_apb_parent_index;
 };
 
-/* Hardware limitation */
+ 
 #define IMX8M_DDRC_MAX_FREQ_COUNT 4
 
-/*
- * i.MX8M DRAM Controller clocks have the following structure (abridged):
- *
- * +----------+       |\            +------+
- * | dram_pll |-------|M| dram_core |      |
- * +----------+       |U|---------->| D    |
- *                 /--|X|           |  D   |
- *   dram_alt_root |  |/            |   R  |
- *                 |                |    C |
- *            +---------+           |      |
- *            |FIX DIV/4|           |      |
- *            +---------+           |      |
- *  composite:     |                |      |
- * +----------+    |                |      |
- * | dram_alt |----/                |      |
- * +----------+                     |      |
- * | dram_apb |-------------------->|      |
- * +----------+                     +------+
- *
- * The dram_pll is used for higher rates and dram_alt is used for lower rates.
- *
- * Frequency switching is implemented in TF-A (via SMC call) and can change the
- * configuration of the clocks, including mux parents. The dram_alt and
- * dram_apb clocks are "imx composite" and their parent can change too.
- *
- * We need to prepare/enable the new mux parents head of switching and update
- * their information afterwards.
- */
+ 
 struct imx8m_ddrc {
 	struct devfreq_dev_profile profile;
 	struct devfreq *devfreq;
 
-	/* For frequency switching: */
+	 
 	struct clk *dram_core;
 	struct clk *dram_pll;
 	struct clk *dram_alt;
@@ -82,10 +50,7 @@ static struct imx8m_ddrc_freq *imx8m_ddrc_find_freq(struct imx8m_ddrc *priv,
 	struct imx8m_ddrc_freq *freq;
 	int i;
 
-	/*
-	 * Firmware reports values in MT/s, so we round-down from Hz
-	 * Rounding is extra generous to ensure a match.
-	 */
+	 
 	rate = DIV_ROUND_CLOSEST(rate, 250000);
 	for (i = 0; i < priv->freq_count; ++i) {
 		freq = &priv->freq_table[i];
@@ -109,7 +74,7 @@ static void imx8m_ddrc_smc_set_freq(int target_freq)
 	for_each_online_cpu(cpu)
 		online_cpus |= (1 << (cpu * 8));
 
-	/* change the ddr freqency */
+	 
 	arm_smccc_smc(IMX_SIP_DDR_DVFS, target_freq, online_cpus,
 			0, 0, 0, 0, 0, &res);
 
@@ -133,12 +98,7 @@ static int imx8m_ddrc_set_freq(struct device *dev, struct imx8m_ddrc_freq *freq)
 	struct clk *new_dram_apb_parent;
 	int ret;
 
-	/*
-	 * Fetch new parents
-	 *
-	 * new_dram_alt_parent and new_dram_apb_parent are optional but
-	 * new_dram_core_parent is not.
-	 */
+	 
 	new_dram_core_parent = clk_get_parent_by_index(
 			priv->dram_core, freq->dram_core_parent_index - 1);
 	if (!new_dram_core_parent) {
@@ -167,7 +127,7 @@ static int imx8m_ddrc_set_freq(struct device *dev, struct imx8m_ddrc_freq *freq)
 	} else
 		new_dram_apb_parent = NULL;
 
-	/* increase reference counts and ensure clks are ON before switch */
+	 
 	ret = clk_prepare_enable(new_dram_core_parent);
 	if (ret) {
 		dev_err(dev, "failed to enable new dram_core parent: %d\n",
@@ -189,7 +149,7 @@ static int imx8m_ddrc_set_freq(struct device *dev, struct imx8m_ddrc_freq *freq)
 
 	imx8m_ddrc_smc_set_freq(freq->smcarg);
 
-	/* update parents in clk tree after switch. */
+	 
 	ret = clk_set_parent(priv->dram_core, new_dram_core_parent);
 	if (ret)
 		dev_warn(dev, "failed to set dram_core parent: %d\n", ret);
@@ -206,18 +166,10 @@ static int imx8m_ddrc_set_freq(struct device *dev, struct imx8m_ddrc_freq *freq)
 				 ret);
 	}
 
-	/*
-	 * Explicitly refresh dram PLL rate.
-	 *
-	 * Even if it's marked with CLK_GET_RATE_NOCACHE the rate will not be
-	 * automatically refreshed when clk_get_rate is called on children.
-	 */
+	 
 	clk_get_rate(priv->dram_pll);
 
-	/*
-	 * clk_set_parent transfer the reference count from old parent.
-	 * now we drop extra reference counts used during the switch
-	 */
+	 
 	clk_disable_unprepare(new_dram_apb_parent);
 out_disable_alt_parent:
 	clk_disable_unprepare(new_dram_alt_parent);
@@ -251,10 +203,7 @@ static int imx8m_ddrc_target(struct device *dev, unsigned long *freq, u32 flags)
 	if (!freq_info)
 		return -EINVAL;
 
-	/*
-	 * Read back the clk rate to verify switch was correct and so that
-	 * we can report it on all error paths.
-	 */
+	 
 	ret = imx8m_ddrc_set_freq(dev, freq_info);
 
 	new_freq = clk_get_rate(priv->dram_core);
@@ -286,7 +235,7 @@ static int imx8m_ddrc_init_freq_info(struct device *dev)
 	struct arm_smccc_res res;
 	int index;
 
-	/* An error here means DDR DVFS API not supported by firmware */
+	 
 	arm_smccc_smc(IMX_SIP_DDR_DVFS, IMX_SIP_DDR_DVFS_GET_FREQ_COUNT,
 			0, 0, 0, 0, 0, 0, &res);
 	priv->freq_count = res.a0;
@@ -299,7 +248,7 @@ static int imx8m_ddrc_init_freq_info(struct device *dev)
 
 		arm_smccc_smc(IMX_SIP_DDR_DVFS, IMX_SIP_DDR_DVFS_GET_FREQ_INFO,
 			      index, 0, 0, 0, 0, 0, &res);
-		/* Result should be strictly positive */
+		 
 		if ((long)res.a0 <= 0)
 			return -ENODEV;
 
@@ -309,15 +258,15 @@ static int imx8m_ddrc_init_freq_info(struct device *dev)
 		freq->dram_alt_parent_index = res.a2;
 		freq->dram_apb_parent_index = res.a3;
 
-		/* dram_core has 2 options: dram_pll or dram_alt_root */
+		 
 		if (freq->dram_core_parent_index != 1 &&
 				freq->dram_core_parent_index != 2)
 			return -ENODEV;
-		/* dram_apb and dram_alt have exactly 8 possible parents */
+		 
 		if (freq->dram_alt_parent_index > 8 ||
 				freq->dram_apb_parent_index > 8)
 			return -ENODEV;
-		/* dram_core from alt requires explicit dram_alt parent */
+		 
 		if (freq->dram_core_parent_index == 2 &&
 				freq->dram_alt_parent_index == 0)
 			return -ENODEV;
@@ -334,7 +283,7 @@ static int imx8m_ddrc_check_opps(struct device *dev)
 	unsigned long freq;
 	int i, opp_count;
 
-	/* Enumerate DT OPPs and disable those not supported by firmware */
+	 
 	opp_count = dev_pm_opp_get_opp_count(dev);
 	if (opp_count < 0)
 		return opp_count;
@@ -439,7 +388,7 @@ err:
 
 static const struct of_device_id imx8m_ddrc_of_match[] = {
 	{ .compatible = "fsl,imx8m-ddrc", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx8m_ddrc_of_match);
 

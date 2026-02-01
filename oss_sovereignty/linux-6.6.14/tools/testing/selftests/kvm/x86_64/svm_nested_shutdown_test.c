@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * svm_nested_shutdown_test
- *
- * Copyright (C) 2022, Red Hat, Inc.
- *
- * Nested SVM testing: test that unintercepted shutdown in L2 doesn't crash the host
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -28,14 +22,14 @@ static void l1_guest_code(struct svm_test_data *svm, struct idt_entry *idt)
 
 	vmcb->control.intercept &= ~(BIT(INTERCEPT_SHUTDOWN));
 
-	idt[6].p   = 0; // #UD is intercepted but its injection will cause #NP
-	idt[11].p  = 0; // #NP is not intercepted and will cause another
-			// #NP that will be converted to #DF
-	idt[8].p   = 0; // #DF will cause #NP which will cause SHUTDOWN
+	idt[6].p   = 0; 
+	idt[11].p  = 0; 
+			
+	idt[8].p   = 0; 
 
 	run_guest(vmcb, svm->vmcb_gpa);
 
-	/* should not reach here */
+	 
 	GUEST_ASSERT(0);
 }
 

@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
 
-/* WARNING: This implemenation is not necessarily the same
- * as the tcp_dctcp.c.  The purpose is mainly for testing
- * the kernel BPF logic.
- */
+ 
+
+ 
 
 #include <stddef.h>
 #include <linux/bpf.h>
@@ -45,7 +42,7 @@ struct dctcp {
 	__u32 loss_cwnd;
 };
 
-static unsigned int dctcp_shift_g = 4; /* g = 1/2^4 */
+static unsigned int dctcp_shift_g = 4;  
 static unsigned int dctcp_alpha_on_init = DCTCP_MAX_ALPHA;
 
 static __always_inline void dctcp_reset(const struct tcp_sock *tp,
@@ -65,25 +62,22 @@ void BPF_PROG(dctcp_init, struct sock *sk)
 	int *stg;
 
 	if (!(tp->ecn_flags & TCP_ECN_OK) && fallback[0]) {
-		/* Switch to fallback */
+		 
 		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
 				   (void *)fallback, sizeof(fallback)) == -EBUSY)
 			ebusy_cnt++;
 
-		/* Switch back to myself and the recurred dctcp_init()
-		 * will get -EBUSY for all bpf_setsockopt(TCP_CONGESTION),
-		 * except the last "cdg" one.
-		 */
+		 
 		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
 				   (void *)bpf_dctcp, sizeof(bpf_dctcp)) == -EBUSY)
 			ebusy_cnt++;
 
-		/* Switch back to fallback */
+		 
 		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
 				   (void *)fallback, sizeof(fallback)) == -EBUSY)
 			ebusy_cnt++;
 
-		/* Expecting -ENOTSUPP for tcp_cdg_res */
+		 
 		tcp_cdg_res = bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
 					     (void *)tcp_cdg, sizeof(tcp_cdg));
 		bpf_getsockopt(sk, SOL_TCP, TCP_CONGESTION,
@@ -120,20 +114,18 @@ void BPF_PROG(dctcp_update_alpha, struct sock *sk, __u32 flags)
 	const struct tcp_sock *tp = tcp_sk(sk);
 	struct dctcp *ca = inet_csk_ca(sk);
 
-	/* Expired RTT */
+	 
 	if (!before(tp->snd_una, ca->next_seq)) {
 		__u32 delivered_ce = tp->delivered_ce - ca->old_delivered_ce;
 		__u32 alpha = ca->dctcp_alpha;
 
-		/* alpha = (1 - g) * alpha + g * F */
+		 
 
 		alpha -= min_not_zero(alpha, alpha >> dctcp_shift_g);
 		if (delivered_ce) {
 			__u32 delivered = tp->delivered - ca->old_delivered;
 
-			/* If dctcp_shift_g == 1, a 32bit value would overflow
-			 * after 8 M packets.
-			 */
+			 
 			delivered_ce <<= (10 - dctcp_shift_g);
 			delivered_ce /= max(1U, delivered);
 
@@ -159,9 +151,7 @@ void BPF_PROG(dctcp_state, struct sock *sk, __u8 new_state)
 	if (new_state == TCP_CA_Recovery &&
 	    new_state != BPF_CORE_READ_BITFIELD(inet_csk(sk), icsk_ca_state))
 		dctcp_react_to_loss(sk);
-	/* We handle RTO in dctcp_cwnd_event to ensure that we perform only
-	 * one loss-adjustment per RTT.
-	 */
+	 
 }
 
 static __always_inline void dctcp_ece_ack_cwr(struct sock *sk, __u32 ce_state)
@@ -174,11 +164,7 @@ static __always_inline void dctcp_ece_ack_cwr(struct sock *sk, __u32 ce_state)
 		tp->ecn_flags &= ~TCP_ECN_DEMAND_CWR;
 }
 
-/* Minimal DCTP CE state machine:
- *
- * S:	0 <- last pkt was non-CE
- *	1 <- last pkt was CE
- */
+ 
 static __always_inline
 void dctcp_ece_ack_update(struct sock *sk, enum tcp_ca_event evt,
 			  __u32 *prior_rcv_nxt, __u32 *ce_state)
@@ -186,10 +172,7 @@ void dctcp_ece_ack_update(struct sock *sk, enum tcp_ca_event evt,
 	__u32 new_ce_state = (evt == CA_EVENT_ECN_IS_CE) ? 1 : 0;
 
 	if (*ce_state != new_ce_state) {
-		/* CE state has changed, force an immediate ACK to
-		 * reflect the new CE state. If an ACK was delayed,
-		 * send that first to reflect the prior CE state.
-		 */
+		 
 		if (inet_csk(sk)->icsk_ack.pending & ICSK_ACK_TIMER) {
 			dctcp_ece_ack_cwr(sk, *ce_state);
 			bpf_tcp_send_ack(sk, *prior_rcv_nxt);
@@ -215,7 +198,7 @@ void BPF_PROG(dctcp_cwnd_event, struct sock *sk, enum tcp_ca_event ev)
 		dctcp_react_to_loss(sk);
 		break;
 	default:
-		/* Don't care for the rest. */
+		 
 		break;
 	}
 }

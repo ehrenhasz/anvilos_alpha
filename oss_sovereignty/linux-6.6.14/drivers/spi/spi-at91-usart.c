@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for AT91 USART Controllers as SPI
-//
-// Copyright (C) 2018 Microchip Technology Inc.
-//
-// Author: Radu Pirea <radu.pirea@microchip.com>
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -64,7 +64,7 @@
 #define US_DMA_MIN_BYTES       16
 #define US_DMA_TIMEOUT         (msecs_to_jiffies(1000))
 
-/* Register access macros */
+ 
 #define at91_usart_spi_readl(port, reg) \
 	readl_relaxed((port)->regs + US_##reg)
 #define at91_usart_spi_writel(port, reg, value) \
@@ -84,7 +84,7 @@ struct at91_usart_spi {
 
 	struct completion	xfer_completion;
 
-	/*used in interrupt to protect data reading*/
+	 
 	spinlock_t		lock;
 
 	phys_addr_t		phybase;
@@ -222,7 +222,7 @@ static int at91_usart_spi_dma_transfer(struct spi_controller *ctlr,
 	struct dma_async_tx_descriptor *txdesc;
 	dma_cookie_t cookie;
 
-	/* Disable RX interrupt */
+	 
 	at91_usart_spi_writel(aus, IDR, US_IR_RXRDY);
 
 	rxdesc = dmaengine_prep_slave_sg(rxchan,
@@ -260,7 +260,7 @@ static int at91_usart_spi_dma_transfer(struct spi_controller *ctlr,
 	return 0;
 
 at91_usart_spi_err_dma:
-	/* Enable RX interrupt if something fails and fallback to PIO */
+	 
 	at91_usart_spi_writel(aus, IER, US_IR_RXRDY);
 	at91_usart_spi_stop_dma(ctlr);
 

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+
+ 
+ 
+ 
 
 #include "erdma_verbs.h"
 
@@ -217,7 +217,7 @@ static int create_eq_cmd(struct erdma_dev *dev, u32 eqn, struct erdma_eq *eq)
 	req.depth = ilog2(eq->depth);
 	req.qbuf_addr = eq->qbuf_dma_addr;
 	req.qtype = ERDMA_EQ_TYPE_CEQ;
-	/* Vector index is the same as EQN. */
+	 
 	req.vector_idx = eqn;
 	db_info_dma_addr = eq->qbuf_dma_addr + (eq->depth << EQE_SHIFT);
 	req.db_dma_addr_l = lower_32_bits(db_info_dma_addr);
@@ -249,7 +249,7 @@ static int erdma_ceq_init_one(struct erdma_dev *dev, u16 ceqn)
 	eq->ci = 0;
 	dev->ceqs[ceqn].dev = dev;
 
-	/* CEQ indexed from 1, 0 rsvd for CMDQ-EQ. */
+	 
 	ret = create_eq_cmd(dev, ceqn + 1, eq);
 	dev->ceqs[ceqn].ready = ret ? false : true;
 
@@ -267,7 +267,7 @@ static void erdma_ceq_uninit_one(struct erdma_dev *dev, u16 ceqn)
 
 	erdma_cmdq_build_reqhdr(&req.hdr, CMDQ_SUBMOD_COMMON,
 				CMDQ_OPCODE_DESTROY_EQ);
-	/* CEQ indexed from 1, 0 rsvd for CMDQ-EQ. */
+	 
 	req.eqn = ceqn + 1;
 	req.qtype = ERDMA_EQ_TYPE_CEQ;
 	req.vector_idx = ceqn + 1;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm MSM8996 Network-on-Chip (NoC) QoS driver
- *
- * Copyright (c) 2021 Yassine Oudjana <y.oudjana@protonmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interconnect-provider.h>

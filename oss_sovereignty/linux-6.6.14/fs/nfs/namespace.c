@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/nfs/namespace.c
- *
- * Copyright (C) 2005 Trond Myklebust <Trond.Myklebust@netapp.com>
- * - Modified by David Howells <dhowells@redhat.com>
- *
- * NFS namespace
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/dcache.h>
@@ -29,26 +22,7 @@ static LIST_HEAD(nfs_automount_list);
 static DECLARE_DELAYED_WORK(nfs_automount_task, nfs_expire_automounts);
 int nfs_mountpoint_expiry_timeout = 500 * HZ;
 
-/*
- * nfs_path - reconstruct the path given an arbitrary dentry
- * @base - used to return pointer to the end of devname part of path
- * @dentry_in - pointer to dentry
- * @buffer - result buffer
- * @buflen_in - length of buffer
- * @flags - options (see below)
- *
- * Helper function for constructing the server pathname
- * by arbitrary hashed dentry.
- *
- * This is mainly for use in figuring out the path on the
- * server side when automounting on top of an existing partition
- * and in generating /proc/mounts and friends.
- *
- * Supported flags:
- * NFS_PATH_CANONICAL: ensure there is exactly one slash after
- *		       the original device (export) name
- *		       (if unset, the original name is returned verbatim)
- */
+ 
 char *nfs_path(char **p, struct dentry *dentry_in, char *buffer,
 	       ssize_t buflen_in, unsigned flags)
 {
@@ -105,7 +79,7 @@ rename_retry:
 	}
 	namelen = strlen(base);
 	if (*end == '/') {
-		/* Strip off excess slashes in base string */
+		 
 		while (namelen > 0 && base[namelen - 1] == '/')
 			namelen--;
 	}
@@ -130,18 +104,7 @@ Elong:
 }
 EXPORT_SYMBOL_GPL(nfs_path);
 
-/*
- * nfs_d_automount - Handle crossing a mountpoint on the server
- * @path - The mountpoint
- *
- * When we encounter a mountpoint on the server, we want to set up
- * a mountpoint on the client too, to prevent inode numbers from
- * colliding, and to allow "df" to work properly.
- * On NFSv4, we also want to allow for the fact that different
- * filesystems may be migrated to different servers in a failover
- * situation, and that different filesystems may want to use
- * different security flavours.
- */
+ 
 struct vfsmount *nfs_d_automount(struct path *path)
 {
 	struct nfs_fs_context *ctx;
@@ -155,9 +118,7 @@ struct vfsmount *nfs_d_automount(struct path *path)
 	if (IS_ROOT(path->dentry))
 		return ERR_PTR(-ESTALE);
 
-	/* Open a new filesystem context, transferring parameters from the
-	 * parent superblock, including the network namespace.
-	 */
+	 
 	fc = fs_context_for_submount(path->mnt->mnt_sb->s_type, path->dentry);
 	if (IS_ERR(fc))
 		return ERR_CAST(fc);
@@ -174,7 +135,7 @@ struct vfsmount *nfs_d_automount(struct path *path)
 		fc->net_ns = get_net(client->cl_net);
 	}
 
-	/* for submounts we want the same server; referrals will reassign */
+	 
 	memcpy(&ctx->nfs_server._address, &client->cl_addr, client->cl_addrlen);
 	ctx->nfs_server.addrlen	= client->cl_addrlen;
 	ctx->nfs_server.port	= server->port;
@@ -195,7 +156,7 @@ struct vfsmount *nfs_d_automount(struct path *path)
 	if (IS_ERR(mnt))
 		goto out_fc;
 
-	mntget(mnt); /* prevent immediate expiration */
+	mntget(mnt);  
 	if (timeout <= 0)
 		goto out_fc;
 
@@ -255,11 +216,7 @@ void nfs_release_automount_timer(void)
 		cancel_delayed_work(&nfs_automount_task);
 }
 
-/**
- * nfs_do_submount - set up mountpoint when crossing a filesystem boundary
- * @fc: pointer to struct nfs_fs_context
- *
- */
+ 
 int nfs_do_submount(struct fs_context *fc)
 {
 	struct nfs_fs_context *ctx = nfs_fc2context(fc);
@@ -268,7 +225,7 @@ int nfs_do_submount(struct fs_context *fc)
 	char *buffer, *p;
 	int ret;
 
-	/* create a new volume representation */
+	 
 	server = ctx->nfs_mod->rpc_ops->clone_server(NFS_SB(ctx->clone_data.sb),
 						     ctx->mntfh,
 						     ctx->clone_data.fattr,
@@ -307,7 +264,7 @@ int nfs_submount(struct fs_context *fc, struct nfs_server *server)
 	struct dentry *parent = dget_parent(dentry);
 	int err;
 
-	/* Look it up again to get its attributes */
+	 
 	err = server->nfs_client->rpc_ops->lookup(d_inode(parent), dentry,
 						  ctx->mntfh, ctx->clone_data.fattr);
 	dput(parent);

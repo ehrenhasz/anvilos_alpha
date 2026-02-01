@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include <linux/device.h>
 
@@ -55,36 +55,24 @@ fail:
 	return -ENOMEM;
 }
 
-/*
- * Allocate a new parameter via recycling the oldest entry in the pool.
- */
+ 
 void imgu_css_pool_get(struct imgu_css_pool *pool)
 {
-	/* Get the oldest entry */
+	 
 	u32 n = (pool->last + 1) % IPU3_CSS_POOL_SIZE;
 
 	pool->entry[n].valid = true;
 	pool->last = n;
 }
 
-/*
- * Undo, for all practical purposes, the effect of pool_get().
- */
+ 
 void imgu_css_pool_put(struct imgu_css_pool *pool)
 {
 	pool->entry[pool->last].valid = false;
 	pool->last = (pool->last + IPU3_CSS_POOL_SIZE - 1) % IPU3_CSS_POOL_SIZE;
 }
 
-/**
- * imgu_css_pool_last - Retrieve the nth pool entry from last
- *
- * @pool: a pointer to &struct imgu_css_pool.
- * @n: the distance to the last index.
- *
- * Returns:
- *  The nth entry from last or null map to indicate no frame stored.
- */
+ 
 const struct imgu_css_map *
 imgu_css_pool_last(struct imgu_css_pool *pool, unsigned int n)
 {

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PWM framework driver for Cirrus Logic EP93xx
- *
- * Copyright (c) 2009        Matthieu Crapet <mcrapet@gmail.com>
- * Copyright (c) 2009, 2013  H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * EP9301/02 have only one channel:
- *   platform device ep93xx-pwm.1 - PWMOUT1 (EGPIO14)
- *
- * EP9307 has only one channel:
- *   platform device ep93xx-pwm.0 - PWMOUT
- *
- * EP9312/15 have two channels:
- *   platform device ep93xx-pwm.0 - PWMOUT
- *   platform device ep93xx-pwm.1 - PWMOUT1 (EGPIO14)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -26,7 +11,7 @@
 
 #include <asm/div64.h>
 
-#include <linux/soc/cirrus/ep93xx.h>	/* for ep93xx_pwm_{acquire,release}_gpio() */
+#include <linux/soc/cirrus/ep93xx.h>	 
 
 #define EP93XX_PWMx_TERM_COUNT	0x00
 #define EP93XX_PWMx_DUTY_CYCLE	0x04
@@ -77,10 +62,7 @@ static int ep93xx_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			enabled = false;
 		}
 
-		/*
-		 * The clock needs to be enabled to access the PWM registers.
-		 * Polarity can only be changed when the PWM is disabled.
-		 */
+		 
 		ret = clk_prepare_enable(ep93xx_pwm->clk);
 		if (ret)
 			return ret;
@@ -102,10 +84,7 @@ static int ep93xx_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 	}
 
-	/*
-	 * The clock needs to be enabled to access the PWM registers.
-	 * Configuration can be changed at any time.
-	 */
+	 
 	if (!pwm_is_enabled(pwm)) {
 		ret = clk_prepare_enable(ep93xx_pwm->clk);
 		if (ret)
@@ -125,7 +104,7 @@ static int ep93xx_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (period_cycles < 0x10000 && duty_cycles < 0x10000) {
 		term = readw(base + EP93XX_PWMx_TERM_COUNT);
 
-		/* Order is important if PWM is running */
+		 
 		if (period_cycles > term) {
 			writew(period_cycles, base + EP93XX_PWMx_TERM_COUNT);
 			writew(duty_cycles, base + EP93XX_PWMx_DUTY_CYCLE);

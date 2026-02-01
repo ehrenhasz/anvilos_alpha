@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  linux/drivers/net/ethernet/ibm/ehea/ehea_hw.h
- *
- *  eHEA ethernet device driver for IBM eServer System p
- *
- *  (C) Copyright IBM Corp. 2006
- *
- *  Authors:
- *       Christoph Raisch <raisch@de.ibm.com>
- *       Jan-Bernd Themann <themann@de.ibm.com>
- *       Thomas Klein <tklein@de.ibm.com>
- */
+ 
+ 
 
 #ifndef __EHEA_HW_H__
 #define __EHEA_HW_H__
@@ -175,10 +164,7 @@ struct ehea_eqtemm {
 	u64 eqx_it;
 };
 
-/*
- * These access functions will be changed when the dissuccsion about
- * the new access methods for POWER has settled.
- */
+ 
 
 static inline u64 epa_load(struct h_epa epa, u32 offset)
 {
@@ -188,7 +174,7 @@ static inline u64 epa_load(struct h_epa epa, u32 offset)
 static inline void epa_store(struct h_epa epa, u32 offset, u64 value)
 {
 	__raw_writeq(value, (void __iomem *)(epa.addr + offset));
-	epa_load(epa, offset);	/* synchronize explicitly to eHEA */
+	epa_load(epa, offset);	 
 }
 
 static inline void epa_store_acc(struct h_epa epa, u32 offset, u64 value)
@@ -250,4 +236,4 @@ static inline void ehea_reset_cq_ep(struct ehea_cq *my_cq)
 		      EHEA_BMASK_SET(CQX_EP_EVENT_PENDING, 0));
 }
 
-#endif	/* __EHEA_HW_H__ */
+#endif	 

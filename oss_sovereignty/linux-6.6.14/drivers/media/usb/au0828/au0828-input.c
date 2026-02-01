@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-// handle au0828 IR remotes via linux kernel input layer.
-//
-// Copyright (c) 2014 Mauro Carvalho Chehab <mchehab@samsung.com>
-// Copyright (c) 2014 Samsung Electronics Co., Ltd.
-//
-// Based on em28xx-input.c.
+
+
+
+
+
+
+
 
 #include "au0828.h"
 
@@ -26,19 +26,17 @@ struct au0828_rc {
 	char name[32];
 	char phys[32];
 
-	/* poll decoder */
+	 
 	int polling;
 	struct delayed_work work;
 
-	/* i2c slave address of external device (if used) */
+	 
 	u16 i2c_dev_addr;
 
 	int  (*get_key_i2c)(struct au0828_rc *ir);
 };
 
-/*
- * AU8522 has a builtin IR receiver. Add functions to get IR from it
- */
+ 
 
 static int au8522_rc_write(struct au0828_rc *ir, u16 reg, u8 data)
 {
@@ -92,7 +90,7 @@ static int au8522_rc_andor(struct au0828_rc *ir, u16 reg, u8 mask, u8 value)
 	oldbuf = buf;
 	buf = (buf & ~mask) | (value & mask);
 
-	/* Nothing to do, just return */
+	 
 	if (buf == oldbuf)
 		return 0;
 
@@ -102,9 +100,9 @@ static int au8522_rc_andor(struct au0828_rc *ir, u16 reg, u8 mask, u8 value)
 #define au8522_rc_set(ir, reg, bit) au8522_rc_andor(ir, (reg), (bit), (bit))
 #define au8522_rc_clear(ir, reg, bit) au8522_rc_andor(ir, (reg), (bit), 0)
 
-/* Remote Controller time units */
+ 
 
-#define AU8522_UNIT		200 /* us */
+#define AU8522_UNIT		200  
 #define NEC_START_SPACE		(4500 / AU8522_UNIT)
 #define NEC_START_PULSE		(563 * 16)
 #define RC5_START_SPACE		(4 * AU8522_UNIT)
@@ -118,29 +116,29 @@ static int au0828_get_key_au8522(struct au0828_rc *ir)
 	int prv_bit, bit, width;
 	bool first = true;
 
-	/* do nothing if device is disconnected */
+	 
 	if (test_bit(DEV_DISCONNECTED, &ir->dev->dev_state))
 		return 0;
 
-	/* Check IR int */
+	 
 	rc = au8522_rc_read(ir, 0xe1, -1, buf, 1);
 	if (rc < 0 || !(buf[0] & (1 << 4))) {
-		/* Be sure that IR is enabled */
+		 
 		au8522_rc_set(ir, 0xe0, 1 << 4);
 		return 0;
 	}
 
-	/* Something arrived. Get the data */
+	 
 	rc = au8522_rc_read(ir, 0xe3, 0x11, buf, sizeof(buf));
 
 
 	if (rc < 0)
 		return rc;
 
-	/* Disable IR */
+	 
 	au8522_rc_clear(ir, 0xe0, 1 << 4);
 
-	/* Enable IR */
+	 
 	au8522_rc_set(ir, 0xe0, 1 << 4);
 
 	dprintk(16, "RC data received: %*ph\n", 40, buf);
@@ -155,14 +153,7 @@ static int au0828_get_key_au8522(struct au0828_rc *ir)
 				continue;
 			}
 
-			/*
-			 * Fix an au8522 bug: the first pulse event
-			 * is lost. So, we need to fake it, based on the
-			 * protocol. That means that not all raw decoders
-			 * will work, as we need to add a hack for each
-			 * protocol, based on the first space.
-			 * So, we only support RC5 and NEC.
-			 */
+			 
 
 			if (first) {
 				first = false;
@@ -170,13 +161,13 @@ static int au0828_get_key_au8522(struct au0828_rc *ir)
 				rawir.pulse = true;
 				if (width > NEC_START_SPACE - 2 &&
 				    width < NEC_START_SPACE + 2) {
-					/* NEC protocol */
+					 
 					rawir.duration = NEC_START_PULSE;
 					dprintk(16, "Storing NEC start %s with duration %d",
 						rawir.pulse ? "pulse" : "space",
 						rawir.duration);
 				} else {
-					/* RC5 protocol */
+					 
 					rawir.duration = RC5_START_PULSE;
 					dprintk(16, "Storing RC5 start %s with duration %d",
 						rawir.pulse ? "pulse" : "space",
@@ -209,9 +200,7 @@ static int au0828_get_key_au8522(struct au0828_rc *ir)
 	return 1;
 }
 
-/*
- * Generic IR code
- */
+ 
 
 static void au0828_rc_work(struct work_struct *work)
 {
@@ -231,7 +220,7 @@ static int au0828_rc_start(struct rc_dev *rc)
 
 	INIT_DELAYED_WORK(&ir->work, au0828_rc_work);
 
-	/* Enable IR */
+	 
 	au8522_rc_set(ir, 0xe0, 1 << 4);
 
 	schedule_delayed_work(&ir->work, msecs_to_jiffies(ir->polling));
@@ -245,9 +234,9 @@ static void au0828_rc_stop(struct rc_dev *rc)
 
 	cancel_delayed_work_sync(&ir->work);
 
-	/* do nothing if device is disconnected */
+	 
 	if (!test_bit(DEV_DISCONNECTED, &ir->dev->dev_state)) {
-		/* Disable IR */
+		 
 		au8522_rc_clear(ir, 0xe0, 1 << 4);
 	}
 }
@@ -288,7 +277,7 @@ int au0828_rc_register(struct au0828_dev *dev)
 	if (!ir || !rc)
 		goto error;
 
-	/* record handles to ourself */
+	 
 	ir->dev = dev;
 	dev->ir = ir;
 	ir->rc = rc;
@@ -297,7 +286,7 @@ int au0828_rc_register(struct au0828_dev *dev)
 	rc->open = au0828_rc_start;
 	rc->close = au0828_rc_stop;
 
-	if (dev->board.has_ir_i2c) {	/* external i2c device */
+	if (dev->board.has_ir_i2c) {	 
 		switch (dev->boardnr) {
 		case AU0828_BOARD_HAUPPAUGE_HVR950Q:
 			rc->map_name = RC_MAP_HAUPPAUGE;
@@ -311,10 +300,10 @@ int au0828_rc_register(struct au0828_dev *dev)
 		ir->i2c_dev_addr = i2c_rc_dev_addr;
 	}
 
-	/* This is how often we ask the chip for IR information */
-	ir->polling = 100; /* ms */
+	 
+	ir->polling = 100;  
 
-	/* init input device */
+	 
 	snprintf(ir->name, sizeof(ir->name), "au0828 IR (%s)",
 		 dev->board.name);
 
@@ -332,7 +321,7 @@ int au0828_rc_register(struct au0828_dev *dev)
 	rc->allowed_protocols = RC_PROTO_BIT_NEC | RC_PROTO_BIT_NECX |
 				RC_PROTO_BIT_NEC32 | RC_PROTO_BIT_RC5;
 
-	/* all done */
+	 
 	err = rc_register_device(rc);
 	if (err)
 		goto error;
@@ -352,13 +341,13 @@ void au0828_rc_unregister(struct au0828_dev *dev)
 {
 	struct au0828_rc *ir = dev->ir;
 
-	/* skip detach on non attached boards */
+	 
 	if (!ir)
 		return;
 
 	rc_unregister_device(ir->rc);
 
-	/* done */
+	 
 	kfree(ir);
 	dev->ir = NULL;
 }
@@ -374,7 +363,7 @@ int au0828_rc_suspend(struct au0828_dev *dev)
 
 	cancel_delayed_work_sync(&ir->work);
 
-	/* Disable IR */
+	 
 	au8522_rc_clear(ir, 0xe0, 1 << 4);
 
 	return 0;
@@ -389,7 +378,7 @@ int au0828_rc_resume(struct au0828_dev *dev)
 
 	pr_info("Restarting RC\n");
 
-	/* Enable IR */
+	 
 	au8522_rc_set(ir, 0xe0, 1 << 4);
 
 	schedule_delayed_work(&ir->work, msecs_to_jiffies(ir->polling));

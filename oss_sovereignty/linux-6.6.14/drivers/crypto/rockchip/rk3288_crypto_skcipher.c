@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Crypto acceleration support for Rockchip RK3288
- *
- * Copyright (c) 2015, Fuzhou Rockchip Electronics Co., Ltd
- *
- * Author: Zain Wang <zain.wang@rock-chips.com>
- *
- * Some ideas are from marvell-cesa.c and s5p-sss.c driver.
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/skcipher.h>
@@ -340,7 +332,7 @@ static int rk_cipher_run(struct crypto_engine *engine, void *async_req)
 			continue;
 		}
 		if (rctx->mode & RK_CRYPTO_DEC) {
-			/* we backup last block of source to be used as IV at next step */
+			 
 			offset = sgs->length - ivsize;
 			scatterwalk_map_and_copy(biv, sgs, offset, ivsize, 0);
 		}

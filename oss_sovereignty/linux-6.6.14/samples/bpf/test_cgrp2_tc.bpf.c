@@ -1,15 +1,10 @@
-/* Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #define KBUILD_MODNAME "foo"
 #include "vmlinux.h"
 #include "net_shared.h"
 #include <bpf/bpf_helpers.h>
 
-/* copy of 'struct ethhdr' without __packed */
+ 
 struct eth_hdr {
 	unsigned char   h_dest[ETH_ALEN];
 	unsigned char   h_source[ETH_ALEN];
@@ -35,7 +30,7 @@ int handle_egress(struct __sk_buff *skb)
 	char pass_msg[] = "pass\n";
 	char reject_msg[] = "reject\n";
 
-	/* single length check */
+	 
 	if (data + sizeof(*eth) + sizeof(*ip6h) > data_end)
 		return TC_ACT_OK;
 

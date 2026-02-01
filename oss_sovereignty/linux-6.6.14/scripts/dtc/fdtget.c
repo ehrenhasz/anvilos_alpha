@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
- *
- * Portions from U-Boot cmd_fdt.c (C) Copyright 2007
- * Gerald Van Baren, Custom IDEAS, vanbaren@cideas.com
- * Based on code written by:
- *   Pantelis Antoniou <pantelis.antoniou@gmail.com> and
- *   Matthew McClintock <msm@freescale.com>
- */
+
+ 
 
 #include <assert.h>
 #include <ctype.h>
@@ -21,17 +13,17 @@
 #include "util.h"
 
 enum display_mode {
-	MODE_SHOW_VALUE,	/* show values for node properties */
-	MODE_LIST_PROPS,	/* list the properties for a node */
-	MODE_LIST_SUBNODES,	/* list the subnodes of a node */
+	MODE_SHOW_VALUE,	 
+	MODE_LIST_PROPS,	 
+	MODE_LIST_SUBNODES,	 
 };
 
-/* Holds information which controls our output and options */
+ 
 struct display_info {
-	int type;		/* data type (s/i/u/x or 0 for default) */
-	int size;		/* data size (1/2/4) */
-	enum display_mode mode;	/* display mode that we are using */
-	const char *default_val; /* default value if node/property not found */
+	int type;		 
+	int size;		 
+	enum display_mode mode;	 
+	const char *default_val;  
 };
 
 static void report_error(const char *where, int err)
@@ -39,17 +31,7 @@ static void report_error(const char *where, int err)
 	fprintf(stderr, "Error at '%s': %s\n", where, fdt_strerror(err));
 }
 
-/**
- * Displays data of a given length according to selected options
- *
- * If a specific data type is provided in disp, then this is used. Otherwise
- * we try to guess the data type / size from the contents.
- *
- * @param disp		Display information / options
- * @param data		Data to display
- * @param len		Maximum length of buffer
- * @return 0 if ok, -1 if data does not match format
- */
+ 
 static int show_data(struct display_info *disp, const char *data, int len)
 {
 	int i, size;
@@ -59,7 +41,7 @@ static int show_data(struct display_info *disp, const char *data, int len)
 	int is_string;
 	char fmt[3];
 
-	/* no data, don't print */
+	 
 	if (len == 0)
 		return 0;
 
@@ -98,13 +80,7 @@ static int show_data(struct display_info *disp, const char *data, int len)
 	return 0;
 }
 
-/**
- * List all properties in a node, one per line.
- *
- * @param blob		FDT blob
- * @param node		Node to display
- * @return 0 if ok, or FDT_ERR... if not.
- */
+ 
 static int list_properties(const void *blob, int node)
 {
 	const struct fdt_property *data;
@@ -113,7 +89,7 @@ static int list_properties(const void *blob, int node)
 
 	prop = fdt_first_property_offset(blob, node);
 	do {
-		/* Stop silently when there are no more properties */
+		 
 		if (prop < 0)
 			return prop == -FDT_ERR_NOTFOUND ? 0 : prop;
 		data = fdt_get_property_by_offset(blob, prop, NULL);
@@ -124,22 +100,16 @@ static int list_properties(const void *blob, int node)
 	} while (1);
 }
 
-#define MAX_LEVEL	32		/* how deeply nested we will go */
+#define MAX_LEVEL	32		 
 
-/**
- * List all subnodes in a node, one per line
- *
- * @param blob		FDT blob
- * @param node		Node to display
- * @return 0 if ok, or FDT_ERR... if not.
- */
+ 
 static int list_subnodes(const void *blob, int node)
 {
-	int nextoffset;		/* next node offset from libfdt */
-	uint32_t tag;		/* current tag */
-	int level = 0;		/* keep track of nesting level */
+	int nextoffset;		 
+	uint32_t tag;		 
+	int level = 0;		 
 	const char *pathp;
-	int depth = 1;		/* the assumed depth of this node */
+	int depth = 1;		 
 
 	while (level >= 0) {
 		tag = fdt_next_tag(blob, node, &nextoffset);
@@ -150,7 +120,7 @@ static int list_subnodes(const void *blob, int node)
 				if (pathp == NULL)
 					pathp = "/* NULL pointer error */";
 				if (*pathp == '\0')
-					pathp = "/";	/* root is nameless */
+					pathp = "/";	 
 				if (level == 1)
 					puts(pathp);
 			}
@@ -163,7 +133,7 @@ static int list_subnodes(const void *blob, int node)
 		case FDT_END_NODE:
 			level--;
 			if (level == 0)
-				level = -1;		/* exit the loop */
+				level = -1;		 
 			break;
 		case FDT_END:
 			return 1;
@@ -179,16 +149,7 @@ static int list_subnodes(const void *blob, int node)
 	return 0;
 }
 
-/**
- * Show the data for a given node (and perhaps property) according to the
- * display option provided.
- *
- * @param blob		FDT blob
- * @param disp		Display information / options
- * @param node		Node to display
- * @param property	Name of property to display, or NULL if none
- * @return 0 if ok, -ve on error
- */
+ 
 static int show_data_for_item(const void *blob, struct display_info *disp,
 		int node, const char *property)
 {
@@ -224,15 +185,7 @@ static int show_data_for_item(const void *blob, struct display_info *disp,
 	return err;
 }
 
-/**
- * Run the main fdtget operation, given a filename and valid arguments
- *
- * @param disp		Display information / options
- * @param filename	Filename of blob file
- * @param arg		List of arguments to process
- * @param arg_count	Number of arguments
- * @param return 0 if ok, -ve on error
- */
+ 
 static int do_fdtget(struct display_info *disp, const char *filename,
 		     char **arg, int arg_count, int args_per_step)
 {
@@ -294,7 +247,7 @@ int main(int argc, char *argv[])
 	struct display_info disp;
 	int args_per_step = 2;
 
-	/* set defaults */
+	 
 	memset(&disp, '\0', sizeof(disp));
 	disp.size = -1;
 	disp.mode = MODE_SHOW_VALUE;
@@ -338,11 +291,11 @@ int main(int argc, char *argv[])
 	argv += optind;
 	argc -= optind;
 
-	/* Allow no arguments, and silently succeed */
+	 
 	if (!argc)
 		return 0;
 
-	/* Check for node, property arguments */
+	 
 	if (args_per_step == 2 && (argc % 2))
 		usage("Must have an even number of arguments");
 

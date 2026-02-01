@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * QE USB routines
- *
- * Copyright 2006 Freescale Semiconductor, Inc.
- *               Shlomi Gridish <gridish@freescale.com>
- *               Jerry Huang <Chang-Ming.Huang@freescale.com>
- * Copyright (c) MontaVista Software, Inc. 2008.
- *               Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>

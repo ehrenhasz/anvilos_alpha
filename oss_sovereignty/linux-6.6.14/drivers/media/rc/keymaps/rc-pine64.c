@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-// Keytable for the Pine64 IR Remote Controller
-// Copyright (c) 2017 Jonas Karlman
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -36,7 +36,7 @@ static struct rc_map_table pine64[] = {
 	{ 0x404009, KEY_NUMERIC_9 },
 	{ 0x40400c, KEY_BACKSPACE },
 	{ 0x404000, KEY_NUMERIC_0 },
-	{ 0x404047, KEY_EPG }, // mouse
+	{ 0x404047, KEY_EPG }, 
 };
 
 static struct rc_map_list pine64_map = {

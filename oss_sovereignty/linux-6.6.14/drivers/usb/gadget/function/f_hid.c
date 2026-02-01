@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * f_hid.c -- USB HID function driver
- *
- * Copyright (C) 2010 Fabien Chouteau <fabien.chouteau@barco.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,10 +25,10 @@ static const struct class hidg_class = {
 };
 
 static DEFINE_IDA(hidg_ida);
-static DEFINE_MUTEX(hidg_ida_lock); /* protects access to hidg_ida */
+static DEFINE_MUTEX(hidg_ida_lock);  
 
-/*-------------------------------------------------------------------------*/
-/*                            HID gadget struct                            */
+ 
+ 
 
 struct f_hidg_req_list {
 	struct usb_request	*req;
@@ -41,7 +37,7 @@ struct f_hidg_req_list {
 };
 
 struct f_hidg {
-	/* configuration */
+	 
 	unsigned char			bInterfaceSubClass;
 	unsigned char			bInterfaceProtocol;
 	unsigned char			protocol;
@@ -49,27 +45,20 @@ struct f_hidg {
 	unsigned short			report_desc_length;
 	char				*report_desc;
 	unsigned short			report_length;
-	/*
-	 * use_out_ep - if true, the OUT Endpoint (interrupt out method)
-	 *              will be used to receive reports from the host
-	 *              using functions with the "intout" suffix.
-	 *              Otherwise, the OUT Endpoint will not be configured
-	 *              and the SETUP/SET_REPORT method ("ssreport" suffix)
-	 *              will be used to receive reports.
-	 */
+	 
 	bool				use_out_ep;
 
-	/* recv report */
+	 
 	spinlock_t			read_spinlock;
 	wait_queue_head_t		read_queue;
-	/* recv report - interrupt out only (use_out_ep == 1) */
+	 
 	struct list_head		completed_out_req;
 	unsigned int			qlen;
-	/* recv report - setup set_report only (use_out_ep == 0) */
+	 
 	char				*set_report_buf;
 	unsigned int			set_report_length;
 
-	/* send report */
+	 
 	spinlock_t			write_spinlock;
 	bool				write_pending;
 	wait_queue_head_t		write_queue;
@@ -97,19 +86,19 @@ static void hidg_release(struct device *dev)
 	kfree(hidg);
 }
 
-/*-------------------------------------------------------------------------*/
-/*                           Static descriptors                            */
+ 
+ 
 
 static struct usb_interface_descriptor hidg_interface_desc = {
 	.bLength		= sizeof hidg_interface_desc,
 	.bDescriptorType	= USB_DT_INTERFACE,
-	/* .bInterfaceNumber	= DYNAMIC */
+	 
 	.bAlternateSetting	= 0,
-	/* .bNumEndpoints	= DYNAMIC (depends on use_out_ep) */
+	 
 	.bInterfaceClass	= USB_CLASS_HID,
-	/* .bInterfaceSubClass	= DYNAMIC */
-	/* .bInterfaceProtocol	= DYNAMIC */
-	/* .iInterface		= DYNAMIC */
+	 
+	 
+	 
 };
 
 static struct hid_descriptor hidg_desc = {
@@ -118,31 +107,28 @@ static struct hid_descriptor hidg_desc = {
 	.bcdHID				= cpu_to_le16(0x0101),
 	.bCountryCode			= 0x00,
 	.bNumDescriptors		= 0x1,
-	/*.desc[0].bDescriptorType	= DYNAMIC */
-	/*.desc[0].wDescriptorLenght	= DYNAMIC */
+	 
+	 
 };
 
-/* Super-Speed Support */
+ 
 
 static struct usb_endpoint_descriptor hidg_ss_in_ep_desc = {
 	.bLength		= USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType	= USB_DT_ENDPOINT,
 	.bEndpointAddress	= USB_DIR_IN,
 	.bmAttributes		= USB_ENDPOINT_XFER_INT,
-	/*.wMaxPacketSize	= DYNAMIC */
-	.bInterval		= 4, /* FIXME: Add this field in the
-				      * HID gadget configuration?
-				      * (struct hidg_func_descriptor)
-				      */
+	 
+	.bInterval		= 4,  
 };
 
 static struct usb_ss_ep_comp_descriptor hidg_ss_in_comp_desc = {
 	.bLength                = sizeof(hidg_ss_in_comp_desc),
 	.bDescriptorType        = USB_DT_SS_ENDPOINT_COMP,
 
-	/* .bMaxBurst           = 0, */
-	/* .bmAttributes        = 0, */
-	/* .wBytesPerInterval   = DYNAMIC */
+	 
+	 
+	 
 };
 
 static struct usb_endpoint_descriptor hidg_ss_out_ep_desc = {
@@ -150,20 +136,17 @@ static struct usb_endpoint_descriptor hidg_ss_out_ep_desc = {
 	.bDescriptorType	= USB_DT_ENDPOINT,
 	.bEndpointAddress	= USB_DIR_OUT,
 	.bmAttributes		= USB_ENDPOINT_XFER_INT,
-	/*.wMaxPacketSize	= DYNAMIC */
-	.bInterval		= 4, /* FIXME: Add this field in the
-				      * HID gadget configuration?
-				      * (struct hidg_func_descriptor)
-				      */
+	 
+	.bInterval		= 4,  
 };
 
 static struct usb_ss_ep_comp_descriptor hidg_ss_out_comp_desc = {
 	.bLength                = sizeof(hidg_ss_out_comp_desc),
 	.bDescriptorType        = USB_DT_SS_ENDPOINT_COMP,
 
-	/* .bMaxBurst           = 0, */
-	/* .bmAttributes        = 0, */
-	/* .wBytesPerInterval   = DYNAMIC */
+	 
+	 
+	 
 };
 
 static struct usb_descriptor_header *hidg_ss_descriptors_intout[] = {
@@ -184,18 +167,15 @@ static struct usb_descriptor_header *hidg_ss_descriptors_ssreport[] = {
 	NULL,
 };
 
-/* High-Speed Support */
+ 
 
 static struct usb_endpoint_descriptor hidg_hs_in_ep_desc = {
 	.bLength		= USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType	= USB_DT_ENDPOINT,
 	.bEndpointAddress	= USB_DIR_IN,
 	.bmAttributes		= USB_ENDPOINT_XFER_INT,
-	/*.wMaxPacketSize	= DYNAMIC */
-	.bInterval		= 4, /* FIXME: Add this field in the
-				      * HID gadget configuration?
-				      * (struct hidg_func_descriptor)
-				      */
+	 
+	.bInterval		= 4,  
 };
 
 static struct usb_endpoint_descriptor hidg_hs_out_ep_desc = {
@@ -203,11 +183,8 @@ static struct usb_endpoint_descriptor hidg_hs_out_ep_desc = {
 	.bDescriptorType	= USB_DT_ENDPOINT,
 	.bEndpointAddress	= USB_DIR_OUT,
 	.bmAttributes		= USB_ENDPOINT_XFER_INT,
-	/*.wMaxPacketSize	= DYNAMIC */
-	.bInterval		= 4, /* FIXME: Add this field in the
-				      * HID gadget configuration?
-				      * (struct hidg_func_descriptor)
-				      */
+	 
+	.bInterval		= 4,  
 };
 
 static struct usb_descriptor_header *hidg_hs_descriptors_intout[] = {
@@ -225,18 +202,15 @@ static struct usb_descriptor_header *hidg_hs_descriptors_ssreport[] = {
 	NULL,
 };
 
-/* Full-Speed Support */
+ 
 
 static struct usb_endpoint_descriptor hidg_fs_in_ep_desc = {
 	.bLength		= USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType	= USB_DT_ENDPOINT,
 	.bEndpointAddress	= USB_DIR_IN,
 	.bmAttributes		= USB_ENDPOINT_XFER_INT,
-	/*.wMaxPacketSize	= DYNAMIC */
-	.bInterval		= 10, /* FIXME: Add this field in the
-				       * HID gadget configuration?
-				       * (struct hidg_func_descriptor)
-				       */
+	 
+	.bInterval		= 10,  
 };
 
 static struct usb_endpoint_descriptor hidg_fs_out_ep_desc = {
@@ -244,11 +218,8 @@ static struct usb_endpoint_descriptor hidg_fs_out_ep_desc = {
 	.bDescriptorType	= USB_DT_ENDPOINT,
 	.bEndpointAddress	= USB_DIR_OUT,
 	.bmAttributes		= USB_ENDPOINT_XFER_INT,
-	/*.wMaxPacketSize	= DYNAMIC */
-	.bInterval		= 10, /* FIXME: Add this field in the
-				       * HID gadget configuration?
-				       * (struct hidg_func_descriptor)
-				       */
+	 
+	.bInterval		= 10,  
 };
 
 static struct usb_descriptor_header *hidg_fs_descriptors_intout[] = {
@@ -266,18 +237,18 @@ static struct usb_descriptor_header *hidg_fs_descriptors_ssreport[] = {
 	NULL,
 };
 
-/*-------------------------------------------------------------------------*/
-/*                                 Strings                                 */
+ 
+ 
 
 #define CT_FUNC_HID_IDX	0
 
 static struct usb_string ct_func_string_defs[] = {
 	[CT_FUNC_HID_IDX].s	= "HID Interface",
-	{},			/* end of list */
+	{},			 
 };
 
 static struct usb_gadget_strings ct_func_string_table = {
-	.language	= 0x0409,	/* en-US */
+	.language	= 0x0409,	 
 	.strings	= ct_func_string_defs,
 };
 
@@ -286,8 +257,8 @@ static struct usb_gadget_strings *ct_func_strings[] = {
 	NULL,
 };
 
-/*-------------------------------------------------------------------------*/
-/*                              Char Device                                */
+ 
+ 
 
 static ssize_t f_hidg_intout_read(struct file *file, char __user *buffer,
 				  size_t count, loff_t *ptr)
@@ -305,7 +276,7 @@ static ssize_t f_hidg_intout_read(struct file *file, char __user *buffer,
 
 #define READ_COND_INTOUT (!list_empty(&hidg->completed_out_req))
 
-	/* wait for at least one buffer to complete */
+	 
 	while (!READ_COND_INTOUT) {
 		spin_unlock_irqrestore(&hidg->read_spinlock, flags);
 		if (file->f_flags & O_NONBLOCK)
@@ -317,30 +288,22 @@ static ssize_t f_hidg_intout_read(struct file *file, char __user *buffer,
 		spin_lock_irqsave(&hidg->read_spinlock, flags);
 	}
 
-	/* pick the first one */
+	 
 	list = list_first_entry(&hidg->completed_out_req,
 				struct f_hidg_req_list, list);
 
-	/*
-	 * Remove this from list to protect it from beign free()
-	 * while host disables our function
-	 */
+	 
 	list_del(&list->list);
 
 	req = list->req;
 	count = min_t(unsigned int, count, req->actual - list->pos);
 	spin_unlock_irqrestore(&hidg->read_spinlock, flags);
 
-	/* copy to user outside spinlock */
+	 
 	count -= copy_to_user(buffer, req->buf + list->pos, count);
 	list->pos += count;
 
-	/*
-	 * if this request is completely handled and transfered to
-	 * userspace, remove its entry from the list and requeue it
-	 * again. Otherwise, we will revisit it again upon the next
-	 * call, taking into account its current read position.
-	 */
+	 
 	if (list->pos == req->actual) {
 		kfree(list);
 
@@ -448,7 +411,7 @@ static ssize_t f_hidg_write(struct file *file, const char __user *buffer,
 
 #define WRITE_COND (!hidg->write_pending)
 try_again:
-	/* write queue */
+	 
 	while (!WRITE_COND) {
 		spin_unlock_irqrestore(&hidg->write_spinlock, flags);
 		if (file->f_flags & O_NONBLOCK)
@@ -483,13 +446,10 @@ try_again:
 
 	spin_lock_irqsave(&hidg->write_spinlock, flags);
 
-	/* when our function has been disabled by host */
+	 
 	if (!hidg->req) {
 		free_ep_req(hidg->in_ep, req);
-		/*
-		 * TODO
-		 * Should we fail with error here?
-		 */
+		 
 		goto try_again;
 	}
 
@@ -566,8 +526,8 @@ static int f_hidg_open(struct inode *inode, struct file *fd)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
-/*                                usb_function                             */
+ 
+ 
 
 static inline struct usb_request *hidg_alloc_ep_req(struct usb_ep *ep,
 						    unsigned length)
@@ -601,9 +561,9 @@ static void hidg_intout_complete(struct usb_ep *ep, struct usb_request *req)
 	default:
 		ERROR(cdev, "Set report failed %d\n", req->status);
 		fallthrough;
-	case -ECONNABORTED:		/* hardware forced ep reset */
-	case -ECONNRESET:		/* request dequeued */
-	case -ESHUTDOWN:		/* disconnect from host */
+	case -ECONNABORTED:		 
+	case -ECONNRESET:		 
+	case -ESHUTDOWN:		 
 free_req:
 		free_ep_req(ep, req);
 		return;
@@ -662,7 +622,7 @@ static int hidg_setup(struct usb_function *f,
 		  | HID_REQ_GET_REPORT):
 		VDBG(cdev, "get_report\n");
 
-		/* send an empty report */
+		 
 		length = min_t(unsigned, length, hidg->report_length);
 		memset(req->buf, 0x0, length);
 
@@ -701,10 +661,7 @@ static int hidg_setup(struct usb_function *f,
 		if (value > HID_REPORT_PROTOCOL)
 			goto stall;
 		length = 0;
-		/*
-		 * We assume that programs implementing the Boot protocol
-		 * are also compatible with the Report Protocol
-		 */
+		 
 		if (hidg->bInterfaceSubClass == USB_INTERFACE_SUBCLASS_BOOT) {
 			hidg->protocol = value;
 			goto respond;
@@ -814,7 +771,7 @@ static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 	VDBG(cdev, "hidg_set_alt intf:%d alt:%d\n", intf, alt);
 
 	if (hidg->in_ep != NULL) {
-		/* restart endpoint */
+		 
 		usb_ep_disable(hidg->in_ep);
 
 		status = config_ep_by_speed(f->config->cdev->gadget, f,
@@ -838,7 +795,7 @@ static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 	}
 
 	if (hidg->use_out_ep && hidg->out_ep != NULL) {
-		/* restart endpoint */
+		 
 		usb_ep_disable(hidg->out_ep);
 
 		status = config_ep_by_speed(f->config->cdev->gadget, f,
@@ -854,9 +811,7 @@ static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 		}
 		hidg->out_ep->driver_data = hidg;
 
-		/*
-		 * allocate a bunch of read buffers and queue them all at once.
-		 */
+		 
 		for (i = 0; i < hidg->qlen && status == 0; i++) {
 			struct usb_request *req =
 					hidg_alloc_ep_req(hidg->out_ep,
@@ -919,20 +874,20 @@ static int hidg_bind(struct usb_configuration *c, struct usb_function *f)
 	struct usb_string	*us;
 	int			status;
 
-	/* maybe allocate device-global string IDs, and patch descriptors */
+	 
 	us = usb_gstrings_attach(c->cdev, ct_func_strings,
 				 ARRAY_SIZE(ct_func_string_defs));
 	if (IS_ERR(us))
 		return PTR_ERR(us);
 	hidg_interface_desc.iInterface = us[CT_FUNC_HID_IDX].id;
 
-	/* allocate instance-specific interface IDs, and patch descriptors */
+	 
 	status = usb_interface_id(c, f);
 	if (status < 0)
 		goto fail;
 	hidg_interface_desc.bInterfaceNumber = status;
 
-	/* allocate instance-specific endpoints */
+	 
 	status = -ENODEV;
 	ep = usb_ep_autoconfig(c->cdev->gadget, &hidg_fs_in_ep_desc);
 	if (!ep)
@@ -947,10 +902,10 @@ static int hidg_bind(struct usb_configuration *c, struct usb_function *f)
 		hidg->out_ep = ep;
 	}
 
-	/* used only if use_out_ep == 1 */
+	 
 	hidg->set_report_buf = NULL;
 
-	/* set descriptor dynamic values */
+	 
 	hidg_interface_desc.bInterfaceSubClass = hidg->bInterfaceSubClass;
 	hidg_interface_desc.bInterfaceProtocol = hidg->bInterfaceProtocol;
 	hidg_interface_desc.bNumEndpoints = hidg->use_out_ep ? 2 : 1;
@@ -966,10 +921,7 @@ static int hidg_bind(struct usb_configuration *c, struct usb_function *f)
 				cpu_to_le16(hidg->report_length);
 	hidg_hs_out_ep_desc.wMaxPacketSize = cpu_to_le16(hidg->report_length);
 	hidg_fs_out_ep_desc.wMaxPacketSize = cpu_to_le16(hidg->report_length);
-	/*
-	 * We can use hidg_desc struct here but we should not relay
-	 * that its content won't change after returning from this function.
-	 */
+	 
 	hidg_desc.desc[0].bDescriptorType = HID_DT_REPORT;
 	hidg_desc.desc[0].wDescriptorLength =
 		cpu_to_le16(hidg->report_desc_length);
@@ -1008,7 +960,7 @@ static int hidg_bind(struct usb_configuration *c, struct usb_function *f)
 	init_waitqueue_head(&hidg->read_queue);
 	INIT_LIST_HEAD(&hidg->completed_out_req);
 
-	/* create char device */
+	 
 	cdev_init(&hidg->cdev, &f_hidg_fops);
 	status = cdev_device_add(&hidg->cdev, &hidg->dev);
 	if (status)
@@ -1266,7 +1218,7 @@ static struct usb_function *hidg_alloc(struct usb_function_instance *fi)
 	struct f_hid_opts *opts;
 	int ret;
 
-	/* allocate and initialize one new instance */
+	 
 	hidg = kzalloc(sizeof(*hidg), GFP_KERNEL);
 	if (!hidg)
 		return ERR_PTR(-ENOMEM);
@@ -1309,7 +1261,7 @@ static struct usb_function *hidg_alloc(struct usb_function_instance *fi)
 	hidg->func.setup   = hidg_setup;
 	hidg->func.free_func = hidg_free;
 
-	/* this could be made configurable at some point */
+	 
 	hidg->qlen	   = 4;
 
 	return &hidg->func;

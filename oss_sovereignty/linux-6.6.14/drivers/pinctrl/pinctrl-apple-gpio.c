@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple SoC pinctrl+GPIO+external IRQ driver
- *
- * Copyright (C) The Asahi Linux Contributors
- * Copyright (C) 2020 Corellium LLC
- *
- * Based on: pinctrl-pistachio.c
- * Copyright (C) 2014 Imagination Technologies Ltd.
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <dt-bindings/pinctrl/apple.h>
 
@@ -77,7 +68,7 @@ struct regmap_config regmap_config = {
 	.use_raw_spinlock = true,
 };
 
-/* No locking needed to mask/unmask IRQs as the interrupt mode is per pin-register. */
+ 
 static void apple_gpio_set_reg(struct apple_gpio_pinctrl *pctl,
                                unsigned int pin, u32 mask, u32 value)
 {
@@ -97,7 +88,7 @@ static u32 apple_gpio_get_reg(struct apple_gpio_pinctrl *pctl,
 	return val;
 }
 
-/* Pin controller functions */
+ 
 
 static int apple_gpio_dt_node_to_map(struct pinctrl_dev *pctldev,
                                      struct device_node *node,
@@ -168,7 +159,7 @@ static const struct pinctrl_ops apple_gpio_pinctrl_ops = {
 	.dt_free_map = pinctrl_utils_free_map,
 };
 
-/* Pin multiplexer functions */
+ 
 
 static int apple_gpio_pinmux_set(struct pinctrl_dev *pctldev, unsigned func,
                                  unsigned group)
@@ -190,7 +181,7 @@ static const struct pinmux_ops apple_gpio_pinmux_ops = {
 	.strict = true,
 };
 
-/* GPIO chip functions */
+ 
 
 static int apple_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
 {
@@ -207,10 +198,7 @@ static int apple_gpio_get(struct gpio_chip *chip, unsigned offset)
 	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(chip);
 	unsigned int reg = apple_gpio_get_reg(pctl, offset);
 
-	/*
-	 * If this is an input GPIO, read the actual value (not the
-	 * cached regmap value)
-	 */
+	 
 	if (FIELD_GET(REG_GPIOx_MODE, reg) != REG_GPIOx_OUT)
 		reg = readl_relaxed(pctl->base + REG_GPIO(offset));
 
@@ -248,7 +236,7 @@ static int apple_gpio_direction_output(struct gpio_chip *chip,
 	return 0;
 }
 
-/* IRQ chip functions */
+ 
 
 static void apple_gpio_irq_ack(struct irq_data *data)
 {
@@ -361,7 +349,7 @@ static const struct irq_chip apple_gpio_irqchip = {
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
-/* Probe & register */
+ 
 
 static int apple_gpio_register(struct apple_gpio_pinctrl *pctl)
 {

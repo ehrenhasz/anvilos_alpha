@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * aQuantia Corporation Network Driver
- * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
- */
+ 
+ 
 
-/* File aq_cfg.h: Definition of configuration parameters and constants. */
+ 
 
 #ifndef AQ_CFG_H
 #define AQ_CFG_H
@@ -42,10 +39,10 @@
 #define AQ_CFG_RX_PAGEORDER 0U
 #define AQ_CFG_XDP_PAGEORDER 2U
 
-/* LRO */
+ 
 #define AQ_CFG_IS_LRO_DEF           1U
 
-/* RSS */
+ 
 #define AQ_CFG_RSS_INDIRECTION_TABLE_MAX  64U
 #define AQ_CFG_RSS_HASHKEY_SIZE           40U
 
@@ -61,18 +58,17 @@
 
 #define AQ_CFG_SKB_FRAGS_MAX   32U
 
-/* Number of descriptors available in one ring to resume this ring queue
- */
+ 
 #define AQ_CFG_RESTART_DESC_THRES   (AQ_CFG_SKB_FRAGS_MAX * 2)
 
-/*#define AQ_CFG_MAC_ADDR_PERMANENT {0x30, 0x0E, 0xE3, 0x12, 0x34, 0x56}*/
+ 
 
 #define AQ_CFG_FC_MODE AQ_NIC_FC_FULL
 
-/* Default WOL modes used on initialization */
+ 
 #define AQ_CFG_WOL_MODES WAKE_MAGIC
 
-#define AQ_CFG_SPEED_MSK  0xFFFFU	/* 0xFFFFU==auto_neg */
+#define AQ_CFG_SPEED_MSK  0xFFFFU	 
 
 #define AQ_CFG_IS_AUTONEG_DEF       1U
 #define AQ_CFG_MTU_DEF              1514U
@@ -83,4 +79,4 @@
 #define AQ_CFG_DRV_DESC        "Marvell (Aquantia) Corporation(R) Network Driver"
 #define AQ_CFG_DRV_NAME        "atlantic"
 
-#endif /* AQ_CFG_H */
+#endif  

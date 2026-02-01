@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 #include <stdio.h>
@@ -101,13 +100,7 @@ static int pre_test_lru_hash_lookup(int tasks)
 	if (num_map_entries > lru_hash_lookup_test_entries)
 		lru_hash_lookup_test_entries = num_map_entries;
 
-	/* Populate the lru_hash_map for LRU_HASH_LOOKUP perf test.
-	 *
-	 * It is fine that the user requests for a map with
-	 * num_map_entries < 32 and some of the later lru hash lookup
-	 * may return not found.  For LRU map, we are not interested
-	 * in such small map performance.
-	 */
+	 
 	for (key = 0; key < lru_hash_lookup_test_entries; key++) {
 		ret = bpf_map_update_elem(fd, &key, &val, BPF_NOEXIST);
 		if (ret)
@@ -127,10 +120,7 @@ static void do_test_lru(enum test_type test, int cpu)
 	int i, ret;
 
 	if (test == INNER_LRU_HASH_PREALLOC && cpu) {
-		/* If CPU is not 0, create inner_lru hash map and insert the fd
-		 * value into the array_of_lru_hash map. In case of CPU 0,
-		 * 'inner_lru_hash_map' was statically inserted on the map init
-		 */
+		 
 		int outer_fd = map_fd[array_of_lru_hashs_idx];
 		unsigned int mycpu, mynode;
 		LIBBPF_OPTS(bpf_map_create_opts, opts,
@@ -408,7 +398,7 @@ static void fixup_map(struct bpf_object *obj)
 	bpf_object__for_each_map(map, obj) {
 		const char *name = bpf_map__name(map);
 
-		/* Only change the max_entries for the enabled test(s) */
+		 
 		for (i = 0; i < NR_TESTS; i++) {
 			if (!strcmp(test_map_names[i], name) &&
 			    (check_test_flags(i))) {
@@ -462,11 +452,11 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* resize BPF map prior to loading */
+	 
 	if (num_map_entries > 0)
 		fixup_map(obj);
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

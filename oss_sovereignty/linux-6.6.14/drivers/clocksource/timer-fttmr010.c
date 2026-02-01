@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Faraday Technology FTTMR010 timer driver
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * Based on a rewrite of arch/arm/mach-gemini/timer.c:
- * Copyright (C) 2001-2006 Storlink, Corp.
- * Copyright (C) 2008-2009 Paulius Zaleckas <paulius.zaleckas@teltonika.lt>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/of.h>
@@ -20,9 +13,7 @@
 #include <linux/bitops.h>
 #include <linux/delay.h>
 
-/*
- * Register definitions common for all the timer variants.
- */
+ 
 #define TIMER1_COUNT		(0x00)
 #define TIMER1_LOAD		(0x04)
 #define TIMER1_MATCH1		(0x08)
@@ -37,14 +28,10 @@
 #define TIMER3_MATCH2		(0x2c)
 #define TIMER_CR		(0x30)
 
-/*
- * Control register set to clear for ast2600 only.
- */
+ 
 #define AST2600_TIMER_CR_CLR	(0x3c)
 
-/*
- * Control register (TMC30) bit fields for fttmr010/gemini/moxart timers.
- */
+ 
 #define TIMER_1_CR_ENABLE	BIT(0)
 #define TIMER_1_CR_CLOCK	BIT(1)
 #define TIMER_1_CR_INT		BIT(2)
@@ -58,11 +45,7 @@
 #define TIMER_2_CR_UPDOWN	BIT(10)
 #define TIMER_3_CR_UPDOWN	BIT(11)
 
-/*
- * Control register (TMC30) bit fields for aspeed ast2400/ast2500 timers.
- * The aspeed timers move bits around in the control register and lacks
- * bits for setting the timer to count upwards.
- */
+ 
 #define TIMER_1_CR_ASPEED_ENABLE	BIT(0)
 #define TIMER_1_CR_ASPEED_CLOCK		BIT(1)
 #define TIMER_1_CR_ASPEED_INT		BIT(2)
@@ -73,16 +56,7 @@
 #define TIMER_3_CR_ASPEED_CLOCK		BIT(9)
 #define TIMER_3_CR_ASPEED_INT		BIT(10)
 
-/*
- * Interrupt status/mask register definitions for fttmr010/gemini/moxart
- * timers.
- * The registers don't exist and they are not needed on aspeed timers
- * because:
- *   - aspeed timer overflow interrupt is controlled by bits in Control
- *     Register (TMC30).
- *   - aspeed timers always generate interrupt when either one of the
- *     Match registers equals to Status register.
- */
+ 
 #define TIMER_INTR_STATE	(0x34)
 #define TIMER_INTR_MASK		(0x38)
 #define TIMER_1_INT_MATCH1	BIT(0)
@@ -108,10 +82,7 @@ struct fttmr010 {
 #endif
 };
 
-/*
- * A local singleton used by sched_clock and delay timer reads, which are
- * fast and stateless
- */
+ 
 static struct fttmr010 *local_fttmr;
 
 static inline struct fttmr010 *to_fttmr010(struct clock_event_device *evt)
@@ -145,22 +116,19 @@ static int fttmr010_timer_set_next_event(unsigned long cycles,
 	struct fttmr010 *fttmr010 = to_fttmr010(evt);
 	u32 cr;
 
-	/* Stop */
+	 
 	fttmr010->timer_shutdown(evt);
 
 	if (fttmr010->is_aspeed) {
-		/*
-		 * ASPEED Timer Controller will load TIMER1_LOAD register
-		 * into TIMER1_COUNT register when the timer is re-enabled.
-		 */
+		 
 		writel(cycles, fttmr010->base + TIMER1_LOAD);
 	} else {
-		/* Setup the match register forward in time */
+		 
 		cr = readl(fttmr010->base + TIMER1_COUNT);
 		writel(cr + cycles, fttmr010->base + TIMER1_MATCH1);
 	}
 
-	/* Start */
+	 
 	cr = readl(fttmr010->base + TIMER_CR);
 	cr |= fttmr010->t1_enable_val;
 	writel(cr, fttmr010->base + TIMER_CR);
@@ -172,7 +140,7 @@ static int ast2600_timer_shutdown(struct clock_event_device *evt)
 {
 	struct fttmr010 *fttmr010 = to_fttmr010(evt);
 
-	/* Stop */
+	 
 	writel(fttmr010->t1_enable_val, fttmr010->base + AST2600_TIMER_CR_CLR);
 
 	return 0;
@@ -183,7 +151,7 @@ static int fttmr010_timer_shutdown(struct clock_event_device *evt)
 	struct fttmr010 *fttmr010 = to_fttmr010(evt);
 	u32 cr;
 
-	/* Stop */
+	 
 	cr = readl(fttmr010->base + TIMER_CR);
 	cr &= ~fttmr010->t1_enable_val;
 	writel(cr, fttmr010->base + TIMER_CR);
@@ -196,17 +164,17 @@ static int fttmr010_timer_set_oneshot(struct clock_event_device *evt)
 	struct fttmr010 *fttmr010 = to_fttmr010(evt);
 	u32 cr;
 
-	/* Stop */
+	 
 	fttmr010->timer_shutdown(evt);
 
-	/* Setup counter start from 0 or ~0 */
+	 
 	writel(0, fttmr010->base + TIMER1_COUNT);
 	if (fttmr010->is_aspeed) {
 		writel(~0, fttmr010->base + TIMER1_LOAD);
 	} else {
 		writel(0, fttmr010->base + TIMER1_LOAD);
 
-		/* Enable interrupt */
+		 
 		cr = readl(fttmr010->base + TIMER_INTR_MASK);
 		cr &= ~(TIMER_1_INT_OVERFLOW | TIMER_1_INT_MATCH2);
 		cr |= TIMER_1_INT_MATCH1;
@@ -222,10 +190,10 @@ static int fttmr010_timer_set_periodic(struct clock_event_device *evt)
 	u32 period = DIV_ROUND_CLOSEST(fttmr010->tick_rate, HZ);
 	u32 cr;
 
-	/* Stop */
+	 
 	fttmr010->timer_shutdown(evt);
 
-	/* Setup timer to fire at 1/HZ intervals. */
+	 
 	if (fttmr010->is_aspeed) {
 		writel(period, fttmr010->base + TIMER1_LOAD);
 	} else {
@@ -233,14 +201,14 @@ static int fttmr010_timer_set_periodic(struct clock_event_device *evt)
 		writel(cr, fttmr010->base + TIMER1_COUNT);
 		writel(cr, fttmr010->base + TIMER1_LOAD);
 
-		/* Enable interrupt on overflow */
+		 
 		cr = readl(fttmr010->base + TIMER_INTR_MASK);
 		cr &= ~(TIMER_1_INT_MATCH1 | TIMER_1_INT_MATCH2);
 		cr |= TIMER_1_INT_OVERFLOW;
 		writel(cr, fttmr010->base + TIMER_INTR_MASK);
 	}
 
-	/* Start the timer */
+	 
 	cr = readl(fttmr010->base + TIMER_CR);
 	cr |= fttmr010->t1_enable_val;
 	writel(cr, fttmr010->base + TIMER_CR);
@@ -248,9 +216,7 @@ static int fttmr010_timer_set_periodic(struct clock_event_device *evt)
 	return 0;
 }
 
-/*
- * IRQ handler for the timer
- */
+ 
 static irqreturn_t fttmr010_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *evt = dev_id;
@@ -279,11 +245,7 @@ static int __init fttmr010_common_init(struct device_node *np,
 	int ret;
 	u32 val;
 
-	/*
-	 * These implementations require a clock reference.
-	 * FIXME: we currently only support clocking using PCLK
-	 * and using EXTCLK is not supported in the driver.
-	 */
+	 
 	clk = of_clk_get_by_name(np, "PCLK");
 	if (IS_ERR(clk)) {
 		pr_err("could not get PCLK\n");
@@ -308,7 +270,7 @@ static int __init fttmr010_common_init(struct device_node *np,
 		ret = -ENXIO;
 		goto out_free;
 	}
-	/* IRQ for timer 1 */
+	 
 	irq = irq_of_parse_and_map(np, 0);
 	if (irq <= 0) {
 		pr_err("Can't parse IRQ\n");
@@ -316,9 +278,7 @@ static int __init fttmr010_common_init(struct device_node *np,
 		goto out_unmap;
 	}
 
-	/*
-	 * The Aspeed timers move bits around in the control register.
-	 */
+	 
 	if (is_aspeed) {
 		fttmr010->t1_enable_val = TIMER_1_CR_ASPEED_ENABLE |
 			TIMER_1_CR_ASPEED_INT;
@@ -326,17 +286,12 @@ static int __init fttmr010_common_init(struct device_node *np,
 	} else {
 		fttmr010->t1_enable_val = TIMER_1_CR_ENABLE | TIMER_1_CR_INT;
 
-		/*
-		 * Reset the interrupt mask and status
-		 */
+		 
 		writel(TIMER_INT_ALL_MASK, fttmr010->base + TIMER_INTR_MASK);
 		writel(0, fttmr010->base + TIMER_INTR_STATE);
 	}
 
-	/*
-	 * Enable timer 1 count up, timer 2 count up, except on Aspeed,
-	 * where everything just counts down.
-	 */
+	 
 	if (is_aspeed)
 		val = TIMER_2_CR_ASPEED_ENABLE;
 	else {
@@ -345,10 +300,7 @@ static int __init fttmr010_common_init(struct device_node *np,
 	}
 	writel(val, fttmr010->base + TIMER_CR);
 
-	/*
-	 * Setup free-running clocksource timer (interrupts
-	 * disabled.)
-	 */
+	 
 	local_fttmr = fttmr010;
 	writel(0, fttmr010->base + TIMER2_COUNT);
 	writel(0, fttmr010->base + TIMER2_MATCH1);
@@ -372,9 +324,7 @@ static int __init fttmr010_common_init(struct device_node *np,
 				     fttmr010->tick_rate);
 	}
 
-	/*
-	 * Setup clockevent timer (interrupt-driven) on timer 1.
-	 */
+	 
 	writel(0, fttmr010->base + TIMER1_COUNT);
 	writel(0, fttmr010->base + TIMER1_LOAD);
 	writel(0, fttmr010->base + TIMER1_MATCH1);
@@ -397,7 +347,7 @@ static int __init fttmr010_common_init(struct device_node *np,
 	}
 
 	fttmr010->clkevt.name = "FTTMR010-TIMER1";
-	/* Reasonably fast and accurate clock event */
+	 
 	fttmr010->clkevt.rating = 300;
 	fttmr010->clkevt.features = CLOCK_EVT_FEAT_PERIODIC |
 		CLOCK_EVT_FEAT_ONESHOT;
@@ -413,7 +363,7 @@ static int __init fttmr010_common_init(struct device_node *np,
 					1, 0xffffffff);
 
 #ifdef CONFIG_ARM
-	/* Also use this timer for delays */
+	 
 	if (fttmr010->is_aspeed)
 		fttmr010->delay_timer.read_current_timer =
 			fttmr010_read_current_timer_down;

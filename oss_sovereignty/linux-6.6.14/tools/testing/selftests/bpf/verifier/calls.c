@@ -638,11 +638,7 @@
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_8, 8),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_8, BPF_REG_7, 2),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 3),
-	/* clear_all_pkt_pointers() has to walk all frames
-	 * to make sure that pkt pointers in the caller
-	 * are cleared when callee is calling a helper that
-	 * adjusts packet size
-	 */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_6, 0),
 	BPF_MOV32_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
@@ -992,7 +988,7 @@
 {
 	"calls: two calls with stack write",
 	.insns = {
-	/* main prog */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
@@ -1002,7 +998,7 @@
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -16),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 7),
@@ -1011,12 +1007,12 @@
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 4),
 	BPF_ALU64_REG(BPF_ADD, BPF_REG_8, BPF_REG_0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_8),
-	/* write into stack frame of main prog */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_7, BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
-	/* read from stack frame of main prog */
+	 
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1026,12 +1022,12 @@
 {
 	"calls: stack overflow using two frames (pre-call access)",
 	.insns = {
-	/* prog 1 */
+	 
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
 	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),
 	BPF_EXIT_INSN(),
 
-	/* prog 2 */
+	 
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
@@ -1043,12 +1039,12 @@
 {
 	"calls: stack overflow using two frames (post-call access)",
 	.insns = {
-	/* prog 1 */
+	 
 	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 2),
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
 	BPF_EXIT_INSN(),
 
-	/* prog 2 */
+	 
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
@@ -1060,116 +1056,93 @@
 {
 	"calls: stack depth check using three frames. test1",
 	.insns = {
-	/* main */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 4), /* call A */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 5), /* call B */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 4),  
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 5),  
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -32, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
-	/* A */
+	 
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -256, 0),
 	BPF_EXIT_INSN(),
-	/* B */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, -3), /* call A */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, -3),  
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -64, 0),
 	BPF_EXIT_INSN(),
 	},
 	.prog_type = BPF_PROG_TYPE_XDP,
-	/* stack_main=32, stack_A=256, stack_B=64
-	 * and max(main+A, main+A+B) < 512
-	 */
+	 
 	.result = ACCEPT,
 },
 {
 	"calls: stack depth check using three frames. test2",
 	.insns = {
-	/* main */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 4), /* call A */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 5), /* call B */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 4),  
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 5),  
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -32, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
-	/* A */
+	 
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -64, 0),
 	BPF_EXIT_INSN(),
-	/* B */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, -3), /* call A */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, -3),  
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -256, 0),
 	BPF_EXIT_INSN(),
 	},
 	.prog_type = BPF_PROG_TYPE_XDP,
-	/* stack_main=32, stack_A=64, stack_B=256
-	 * and max(main+A, main+A+B) < 512
-	 */
+	 
 	.result = ACCEPT,
 },
 {
 	"calls: stack depth check using three frames. test3",
 	.insns = {
-	/* main */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 6), /* call A */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 6),  
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 8), /* call B */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 8),  
 	BPF_JMP_IMM(BPF_JGE, BPF_REG_6, 0, 1),
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -64, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
-	/* A */
+	 
 	BPF_JMP_IMM(BPF_JLT, BPF_REG_1, 10, 1),
 	BPF_EXIT_INSN(),
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -224, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, -3),
-	/* B */
+	 
 	BPF_JMP_IMM(BPF_JGT, BPF_REG_1, 2, 1),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, -6), /* call A */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, -6),  
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -256, 0),
 	BPF_EXIT_INSN(),
 	},
 	.prog_type = BPF_PROG_TYPE_XDP,
-	/* stack_main=64, stack_A=224, stack_B=256
-	 * and max(main+A, main+A+B) > 512
-	 */
+	 
 	.errstr = "combined stack",
 	.result = REJECT,
 },
 {
 	"calls: stack depth check using three frames. test4",
-	/* void main(void) {
-	 *   func1(0);
-	 *   func1(1);
-	 *   func2(1);
-	 * }
-	 * void func1(int alloc_or_recurse) {
-	 *   if (alloc_or_recurse) {
-	 *     frame_pointer[-300] = 1;
-	 *   } else {
-	 *     func2(alloc_or_recurse);
-	 *   }
-	 * }
-	 * void func2(int alloc_or_recurse) {
-	 *   if (alloc_or_recurse) {
-	 *     frame_pointer[-300] = 1;
-	 *   }
-	 * }
-	 */
+	 
 	.insns = {
-	/* main */
+	 
 	BPF_MOV64_IMM(BPF_REG_1, 0),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 6), /* call A */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 6),  
 	BPF_MOV64_IMM(BPF_REG_1, 1),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 4), /* call A */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 4),  
 	BPF_MOV64_IMM(BPF_REG_1, 1),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 7), /* call B */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 7),  
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
-	/* A */
+	 
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 2),
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
 	BPF_EXIT_INSN(),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call B */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* B */
+	 
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 1),
 	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
 	BPF_EXIT_INSN(),
@@ -1181,31 +1154,31 @@
 {
 	"calls: stack depth check using three frames. test5",
 	.insns = {
-	/* main */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call A */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* A */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call B */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* B */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call C */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* C */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call D */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* D */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call E */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* E */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call F */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* F */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call G */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* G */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call H */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* H */
+	 
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1216,34 +1189,34 @@
 {
 	"calls: stack depth check in dead code",
 	.insns = {
-	/* main */
+	 
 	BPF_MOV64_IMM(BPF_REG_1, 0),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call A */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* A */
+	 
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 1),
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 2), /* call B */
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 2),  
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
-	/* B */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call C */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* C */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call D */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* D */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call E */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* E */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call F */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* F */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call G */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* G */
-	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call H */
+	 
+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),  
 	BPF_EXIT_INSN(),
-	/* H */
+	 
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1301,7 +1274,7 @@
 {
 	"calls: two calls with stack write and void return",
 	.insns = {
-	/* main prog */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
@@ -1311,7 +1284,7 @@
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -16),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 3),
@@ -1319,10 +1292,10 @@
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
-	/* write into stack frame of main prog */
+	 
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
-	BPF_EXIT_INSN(), /* void return */
+	BPF_EXIT_INSN(),  
 	},
 	.prog_type = BPF_PROG_TYPE_XDP,
 	.result = ACCEPT,
@@ -1349,50 +1322,50 @@
 {
 	"calls: two calls that return map_value",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -16),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 8),
 
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -8),
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 1),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
-	/* fetch secound map_value_ptr from the stack */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -16),
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 1),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
-	/* call 3rd function twice */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* first time with fp-8 */
+	 
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 3),
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_7),
-	/* second time with fp-16 */
+	 
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-	/* lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-	/* write map_value_ptr into stack frame of main prog */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
-	BPF_EXIT_INSN(), /* return 0 */
+	BPF_EXIT_INSN(),  
 	},
 	.prog_type = BPF_PROG_TYPE_XDP,
 	.fixup_map_hash_8b = { 23 },
@@ -1401,8 +1374,8 @@
 {
 	"calls: two calls that return map_value with bool condition",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
@@ -1411,30 +1384,30 @@
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
-	/* call 3rd function twice */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* first time with fp-8 */
+	 
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 9),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_6, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_7),
-	/* second time with fp-16 */
+	 
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 4),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 1, 2),
-	/* fetch secound map_value_ptr from the stack */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-	/* lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
@@ -1442,11 +1415,11 @@
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
-	BPF_EXIT_INSN(), /* return 0 */
-	/* write map_value_ptr into stack frame of main prog */
+	BPF_EXIT_INSN(),  
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 1),
-	BPF_EXIT_INSN(), /* return 1 */
+	BPF_EXIT_INSN(),  
 	},
 	.prog_type = BPF_PROG_TYPE_XDP,
 	.fixup_map_hash_8b = { 23 },
@@ -1455,8 +1428,8 @@
 {
 	"calls: two calls that return map_value with incorrect bool check",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
@@ -1465,30 +1438,30 @@
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
-	/* call 3rd function twice */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* first time with fp-8 */
+	 
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 9),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_6, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_7),
-	/* second time with fp-16 */
+	 
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 4),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
-	/* fetch secound map_value_ptr from the stack */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-	/* lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
@@ -1496,11 +1469,11 @@
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_0, 0),
-	BPF_EXIT_INSN(), /* return 0 */
-	/* write map_value_ptr into stack frame of main prog */
+	BPF_EXIT_INSN(),  
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_0, 1),
-	BPF_EXIT_INSN(), /* return 1 */
+	BPF_EXIT_INSN(),  
 	},
 	.prog_type = BPF_PROG_TYPE_XDP,
 	.fixup_map_hash_8b = { 23 },
@@ -1512,8 +1485,8 @@
 {
 	"calls: two calls that receive map_value via arg=ptr_stack_of_caller. test1",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
@@ -1522,10 +1495,10 @@
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* 1st lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
@@ -1534,44 +1507,44 @@
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_8, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 2),
-	/* write map_value_ptr into stack frame of main prog at fp-8 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_8, 1),
 
-	/* 2nd lookup from map */
-	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10), /* 20 */
+	 
+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),  
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
-	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, /* 24 */
+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,  
 		     BPF_FUNC_map_lookup_elem),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_9, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 2),
-	/* write map_value_ptr into stack frame of main prog at fp-16 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_7, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_9, 1),
 
-	/* call 3rd func with fp-8, 0|1, fp-16, 0|1 */
-	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6), /* 30 */
+	 
+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),  
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_8),
 	BPF_MOV64_REG(BPF_REG_3, BPF_REG_7),
 	BPF_MOV64_REG(BPF_REG_4, BPF_REG_9),
-	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),  /* 34 */
+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),   
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
-	/* if arg2 == 1 do *arg1 = 0 */
+	 
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_2, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 
-	/* if arg4 == 1 do *arg3 = 0 */
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_4, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_3, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 2, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1584,8 +1557,8 @@
 {
 	"calls: two calls that receive map_value via arg=ptr_stack_of_caller. test2",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
@@ -1594,10 +1567,10 @@
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* 1st lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
@@ -1606,44 +1579,44 @@
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_8, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 2),
-	/* write map_value_ptr into stack frame of main prog at fp-8 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_8, 1),
 
-	/* 2nd lookup from map */
-	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10), /* 20 */
+	 
+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),  
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
-	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, /* 24 */
+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,  
 		     BPF_FUNC_map_lookup_elem),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_9, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 2),
-	/* write map_value_ptr into stack frame of main prog at fp-16 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_7, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_9, 1),
 
-	/* call 3rd func with fp-8, 0|1, fp-16, 0|1 */
-	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6), /* 30 */
+	 
+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),  
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_8),
 	BPF_MOV64_REG(BPF_REG_3, BPF_REG_7),
 	BPF_MOV64_REG(BPF_REG_4, BPF_REG_9),
-	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),  /* 34 */
+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),   
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
-	/* if arg2 == 1 do *arg1 = 0 */
+	 
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_2, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 
-	/* if arg4 == 1 do *arg3 = 0 */
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_4, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_3, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1654,8 +1627,8 @@
 {
 	"calls: two jumps that receive map_value via arg=ptr_stack_of_jumper. test3",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
@@ -1664,10 +1637,10 @@
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* 1st lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -24, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -24),
@@ -1676,43 +1649,43 @@
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_8, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 2),
-	/* write map_value_ptr into stack frame of main prog at fp-8 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_8, 1),
 
-	/* 2nd lookup from map */
+	 
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -24),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
-	BPF_MOV64_IMM(BPF_REG_9, 0),  // 26
+	BPF_MOV64_IMM(BPF_REG_9, 0),  
 	BPF_JMP_IMM(BPF_JA, 0, 0, 2),
-	/* write map_value_ptr into stack frame of main prog at fp-16 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_7, BPF_REG_0, 0),
 	BPF_MOV64_IMM(BPF_REG_9, 1),
 
-	/* call 3rd func with fp-8, 0|1, fp-16, 0|1 */
-	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6), // 30
+	 
+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6), 
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_8),
 	BPF_MOV64_REG(BPF_REG_3, BPF_REG_7),
 	BPF_MOV64_REG(BPF_REG_4, BPF_REG_9),
-	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 1), // 34
+	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 1), 
 	BPF_JMP_IMM(BPF_JA, 0, 0, -30),
 
-	/* subprog 2 */
-	/* if arg2 == 1 do *arg1 = 0 */
+	 
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_2, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 
-	/* if arg4 == 1 do *arg3 = 0 */
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_4, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_3, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 2, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, -8),
 	},
@@ -1725,8 +1698,8 @@
 {
 	"calls: two calls that receive map_value_ptr_or_null via arg. test1",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
@@ -1735,35 +1708,35 @@
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* 1st lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-	/* write map_value_ptr_or_null into stack frame of main prog at fp-8 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_8, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 1),
 	BPF_MOV64_IMM(BPF_REG_8, 1),
 
-	/* 2nd lookup from map */
+	 
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-	/* write map_value_ptr_or_null into stack frame of main prog at fp-16 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_7, BPF_REG_0, 0),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_9, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 1),
 	BPF_MOV64_IMM(BPF_REG_9, 1),
 
-	/* call 3rd func with fp-8, 0|1, fp-16, 0|1 */
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_8),
 	BPF_MOV64_REG(BPF_REG_3, BPF_REG_7),
@@ -1771,19 +1744,19 @@
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
-	/* if arg2 == 1 do *arg1 = 0 */
+	 
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_2, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 
-	/* if arg4 == 1 do *arg3 = 0 */
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_4, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_3, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1794,8 +1767,8 @@
 {
 	"calls: two calls that receive map_value_ptr_or_null via arg. test2",
 	.insns = {
-	/* main prog */
-	/* pass fp-16, fp-8 into a function */
+	 
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
@@ -1804,35 +1777,35 @@
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_2),
-	/* 1st lookup from map */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-	/* write map_value_ptr_or_null into stack frame of main prog at fp-8 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_8, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 1),
 	BPF_MOV64_IMM(BPF_REG_8, 1),
 
-	/* 2nd lookup from map */
+	 
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-	/* write map_value_ptr_or_null into stack frame of main prog at fp-16 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_7, BPF_REG_0, 0),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
 	BPF_MOV64_IMM(BPF_REG_9, 0),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 1),
 	BPF_MOV64_IMM(BPF_REG_9, 1),
 
-	/* call 3rd func with fp-8, 0|1, fp-16, 0|1 */
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_8),
 	BPF_MOV64_REG(BPF_REG_3, BPF_REG_7),
@@ -1840,19 +1813,19 @@
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),
 	BPF_EXIT_INSN(),
 
-	/* subprog 2 */
-	/* if arg2 == 1 do *arg1 = 0 */
+	 
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_2, 1, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 
-	/* if arg4 == 0 do *arg3 = 0 */
+	 
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_4, 0, 2),
-	/* fetch map_value_ptr from the stack of this function */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_3, 0),
-	/* write into map value */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_0, 0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1869,19 +1842,19 @@
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
 		    offsetof(struct __sk_buff, data_end)),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_2),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
-	/* spill unchecked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 2),
-	/* now the pkt range is verified, read pkt_ptr from stack */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_4, 0),
-	/* write 4 bytes into packet */
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1896,24 +1869,24 @@
 	BPF_MOV64_REG(BPF_REG_4, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, -8),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 3),
-	/* Marking is still kept, but not in all cases safe. */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_4, BPF_REG_10, -8),
 	BPF_ST_MEM(BPF_W, BPF_REG_4, 0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
 		    offsetof(struct __sk_buff, data_end)),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_2),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
-	/* spill unchecked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 2),
-	/* now the pkt range is verified, read pkt_ptr from stack */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_4, 0),
-	/* write 4 bytes into packet */
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -1929,26 +1902,26 @@
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, -8),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 4),
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 2),
-	/* Marking is still kept and safe here. */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_4, BPF_REG_10, -8),
 	BPF_ST_MEM(BPF_W, BPF_REG_4, 0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
 		    offsetof(struct __sk_buff, data_end)),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_2),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
-	/* spill unchecked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_MOV64_IMM(BPF_REG_5, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 3),
 	BPF_MOV64_IMM(BPF_REG_5, 1),
-	/* now the pkt range is verified, read pkt_ptr from stack */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_4, 0),
-	/* write 4 bytes into packet */
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_5),
 	BPF_EXIT_INSN(),
@@ -1965,25 +1938,25 @@
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, -8),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 4),
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 2),
-	/* Check marking propagated. */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_4, BPF_REG_10, -8),
 	BPF_ST_MEM(BPF_W, BPF_REG_4, 0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
 		    offsetof(struct __sk_buff, data_end)),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_2),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
-	/* spill unchecked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_MOV64_IMM(BPF_REG_5, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 2),
 	BPF_MOV64_IMM(BPF_REG_5, 1),
-	/* don't read back pkt_ptr from stack here */
-	/* write 4 bytes into packet */
+	 
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_5),
 	BPF_EXIT_INSN(),
@@ -2004,7 +1977,7 @@
 	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_4, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
@@ -2013,11 +1986,11 @@
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
 	BPF_MOV64_IMM(BPF_REG_5, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 3),
-	/* spill checked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_MOV64_IMM(BPF_REG_5, 1),
-	/* don't read back pkt_ptr from stack here */
-	/* write 4 bytes into packet */
+	 
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_5),
 	BPF_EXIT_INSN(),
@@ -2040,7 +2013,7 @@
 	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_4, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
@@ -2049,11 +2022,11 @@
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
 	BPF_MOV64_IMM(BPF_REG_5, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 3),
-	/* spill checked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_MOV64_IMM(BPF_REG_5, 1),
-	/* don't read back pkt_ptr from stack here */
-	/* write 4 bytes into packet */
+	 
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_5),
 	BPF_EXIT_INSN(),
@@ -2075,7 +2048,7 @@
 	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_4, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
@@ -2084,11 +2057,11 @@
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
 	BPF_MOV64_IMM(BPF_REG_5, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 3),
-	/* spill checked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_MOV64_IMM(BPF_REG_5, 1),
-	/* don't read back pkt_ptr from stack here */
-	/* write 4 bytes into packet */
+	 
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_5),
 	BPF_EXIT_INSN(),
@@ -2117,7 +2090,7 @@
 	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_4, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
@@ -2126,11 +2099,11 @@
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
 	BPF_MOV64_IMM(BPF_REG_5, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 3),
-	/* spill checked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_MOV64_IMM(BPF_REG_5, 1),
-	/* don't read back pkt_ptr from stack here */
-	/* write 4 bytes into packet */
+	 
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_5),
 	BPF_EXIT_INSN(),
@@ -2158,7 +2131,7 @@
 	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_4, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
+	 
 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,
 		    offsetof(struct __sk_buff, data)),
 	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
@@ -2166,12 +2139,12 @@
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_2),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 8),
 	BPF_MOV64_IMM(BPF_REG_5, 0),
-	/* spill unchecked pkt_ptr into stack of caller */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_4, BPF_REG_2, 0),
 	BPF_JMP_REG(BPF_JGT, BPF_REG_0, BPF_REG_3, 2),
 	BPF_MOV64_IMM(BPF_REG_5, 1),
-	/* don't read back pkt_ptr from stack here */
-	/* write 4 bytes into packet */
+	 
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),
 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_5),
 	BPF_EXIT_INSN(),
@@ -2189,24 +2162,24 @@
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 4),
-	/* fetch map_value_or_null or const_zero from stack */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -8),
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 1),
-	/* store into map_value */
+	 
 	BPF_ST_MEM(BPF_W, BPF_REG_0, 0, 0),
 	BPF_EXIT_INSN(),
 
-	/* subprog 1 */
-	/* if (ctx == 0) return; */
+	 
+	 
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 8),
-	/* else bpf_map_lookup() and *(fp - 8) = r0 */
+	 
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_2),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1, 0),
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-	/* write map_value_ptr_or_null into stack frame of main prog at fp-8 */
+	 
 	BPF_STX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 	},
@@ -2217,16 +2190,9 @@
 {
 	"calls: stack init to zero and pruning",
 	.insns = {
-	/* first make allocated_stack 16 byte */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -16, 0),
-	/* now fork the execution such that the false branch
-	 * of JGT insn will be verified second and it skisp zero
-	 * init of fp-8 stack slot. If stack liveness marking
-	 * is missing live_read marks from call map_lookup
-	 * processing then pruning will incorrectly assume
-	 * that fp-8 stack slot was unused in the fall-through
-	 * branch and will accept the program incorrectly
-	 */
+	 
 	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
 	BPF_JMP_IMM(BPF_JGT, BPF_REG_0, 2, 2),
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
@@ -2241,7 +2207,7 @@
 	.fixup_map_hash_48b = { 7 },
 	.errstr_unpriv = "invalid indirect read from stack R2 off -8+0 size 8",
 	.result_unpriv = REJECT,
-	/* in privileged mode reads from uninitialized stack locations are permitted */
+	 
 	.result = ACCEPT,
 },
 {
@@ -2266,11 +2232,7 @@
 {
 	"calls: cross frame pruning",
 	.insns = {
-	/* r8 = !!random();
-	 * call pruner()
-	 * if (r8)
-	 *     do something bad;
-	 */
+	 
 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
 	BPF_MOV64_IMM(BPF_REG_8, 0),
 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
@@ -2314,77 +2276,54 @@
 	.errstr = "!read_ok",
 	.result = REJECT,
 },
-/* Make sure that verifier.c:states_equal() considers IDs from all
- * frames when building 'idmap' for check_ids().
- */
+ 
 {
 	"calls: check_ids() across call boundary",
 	.insns = {
-	/* Function main() */
+	 
 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-	/* fp[-24] = map_lookup_elem(...) ; get a MAP_VALUE_PTR_OR_NULL with some ID */
+	 
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1,
 		      0),
 	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
 	BPF_STX_MEM(BPF_DW, BPF_REG_FP, BPF_REG_0, -24),
-	/* fp[-32] = map_lookup_elem(...) ; get a MAP_VALUE_PTR_OR_NULL with some ID */
+	 
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
 	BPF_LD_MAP_FD(BPF_REG_1,
 		      0),
 	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
 	BPF_STX_MEM(BPF_DW, BPF_REG_FP, BPF_REG_0, -32),
-	/* call foo(&fp[-24], &fp[-32])   ; both arguments have IDs in the current
-	 *                                ; stack frame
-	 */
+	 
 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_FP),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -24),
 	BPF_MOV64_REG(BPF_REG_2, BPF_REG_FP),
 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -32),
 	BPF_CALL_REL(2),
-	/* exit 0 */
+	 
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
-	/* Function foo()
-	 *
-	 * r9 = &frame[0].fp[-24]  ; save arguments in the callee saved registers,
-	 * r8 = &frame[0].fp[-32]  ; arguments are pointers to pointers to map value
-	 */
+	 
 	BPF_MOV64_REG(BPF_REG_9, BPF_REG_1),
 	BPF_MOV64_REG(BPF_REG_8, BPF_REG_2),
-	/* r7 = ktime_get_ns() */
+	 
 	BPF_EMIT_CALL(BPF_FUNC_ktime_get_ns),
 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-	/* r6 = ktime_get_ns() */
+	 
 	BPF_EMIT_CALL(BPF_FUNC_ktime_get_ns),
 	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-	/* if r6 > r7 goto +1      ; no new information about the state is derived from
-	 *                         ; this check, thus produced verifier states differ
-	 *                         ; only in 'insn_idx'
-	 * r9 = r8
-	 */
+	 
 	BPF_JMP_REG(BPF_JGT, BPF_REG_6, BPF_REG_7, 1),
 	BPF_MOV64_REG(BPF_REG_9, BPF_REG_8),
-	/* r9 = *r9                ; verifier get's to this point via two paths:
-	 *                         ; (I) one including r9 = r8, verified first;
-	 *                         ; (II) one excluding r9 = r8, verified next.
-	 *                         ; After load of *r9 to r9 the frame[0].fp[-24].id == r9.id.
-	 *                         ; Suppose that checkpoint is created here via path (I).
-	 *                         ; When verifying via (II) the r9.id must be compared against
-	 *                         ; frame[0].fp[-24].id, otherwise (I) and (II) would be
-	 *                         ; incorrectly deemed equivalent.
-	 * if r9 == 0 goto <exit>
-	 */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_9, BPF_REG_9, 0),
 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_9, 0, 1),
-	/* r8 = *r8                ; read map value via r8, this is not safe
-	 * r0 = *r8                ; because r8 might be not equal to r9.
-	 */
+	 
 	BPF_LDX_MEM(BPF_DW, BPF_REG_8, BPF_REG_8, 0),
 	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_8, 0),
-	/* exit 0 */
+	 
 	BPF_MOV64_IMM(BPF_REG_0, 0),
 	BPF_EXIT_INSN(),
 	},

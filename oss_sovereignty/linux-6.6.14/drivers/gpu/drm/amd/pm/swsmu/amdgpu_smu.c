@@ -1,24 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #define SWSMU_CODE_LAYER_L1
 
@@ -45,11 +25,7 @@
 #include "smu_v13_0_7_ppt.h"
 #include "amd_pcie.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -255,20 +231,7 @@ static int smu_dpm_set_jpeg_enable(struct smu_context *smu,
 	return ret;
 }
 
-/**
- * smu_dpm_set_power_gate - power gate/ungate the specific IP block
- *
- * @handle:        smu_context pointer
- * @block_type: the IP block to power gate/ungate
- * @gate:       to power gate if true, ungate otherwise
- *
- * This API uses no smu->mutex lock protection due to:
- * 1. It is either called by other IP block(gfx/sdma/vcn/uvd/vce).
- *    This is guarded to be race condition free by the caller.
- * 2. Or get called on user setting request of power_dpm_force_performance_level.
- *    Under this case, the smu->mutex lock protection is already enforced on
- *    the parent API smu_force_performance_level of the call path.
- */
+ 
 static int smu_dpm_set_power_gate(void *handle,
 				  uint32_t block_type,
 				  bool gate)
@@ -284,10 +247,7 @@ static int smu_dpm_set_power_gate(void *handle,
 	}
 
 	switch (block_type) {
-	/*
-	 * Some legacy code of amdgpu_vcn.c and vcn_v2*.c still uses
-	 * AMD_IP_BLOCK_TYPE_UVD for VCN. So, here both of them are kept.
-	 */
+	 
 	case AMD_IP_BLOCK_TYPE_UVD:
 	case AMD_IP_BLOCK_TYPE_VCN:
 		ret = smu_dpm_set_vcn_enable(smu, !gate);
@@ -321,14 +281,7 @@ static int smu_dpm_set_power_gate(void *handle,
 	return ret;
 }
 
-/**
- * smu_set_user_clk_dependencies - set user profile clock dependencies
- *
- * @smu:	smu_context pointer
- * @clk:	enum smu_clk_type type
- *
- * Enable/Disable the clock dependency for the @clk type.
- */
+ 
 static void smu_set_user_clk_dependencies(struct smu_context *smu, enum smu_clk_type clk)
 {
 	if (smu->adev->in_suspend)
@@ -338,32 +291,25 @@ static void smu_set_user_clk_dependencies(struct smu_context *smu, enum smu_clk_
 		smu->user_dpm_profile.clk_dependency = 0;
 		smu->user_dpm_profile.clk_dependency = BIT(SMU_FCLK) | BIT(SMU_SOCCLK);
 	} else if (clk == SMU_FCLK) {
-		/* MCLK takes precedence over FCLK */
+		 
 		if (smu->user_dpm_profile.clk_dependency == (BIT(SMU_FCLK) | BIT(SMU_SOCCLK)))
 			return;
 
 		smu->user_dpm_profile.clk_dependency = 0;
 		smu->user_dpm_profile.clk_dependency = BIT(SMU_MCLK) | BIT(SMU_SOCCLK);
 	} else if (clk == SMU_SOCCLK) {
-		/* MCLK takes precedence over SOCCLK */
+		 
 		if (smu->user_dpm_profile.clk_dependency == (BIT(SMU_FCLK) | BIT(SMU_SOCCLK)))
 			return;
 
 		smu->user_dpm_profile.clk_dependency = 0;
 		smu->user_dpm_profile.clk_dependency = BIT(SMU_MCLK) | BIT(SMU_FCLK);
 	} else
-		/* Add clk dependencies here, if any */
+		 
 		return;
 }
 
-/**
- * smu_restore_dpm_user_profile - reinstate user dpm profile
- *
- * @smu:	smu_context pointer
- *
- * Restore the saved user power configurations include power limit,
- * clock frequencies, fan control mode and fan speed.
- */
+ 
 static void smu_restore_dpm_user_profile(struct smu_context *smu)
 {
 	struct smu_dpm_context *smu_dpm_ctx = &(smu->smu_dpm);
@@ -375,25 +321,22 @@ static void smu_restore_dpm_user_profile(struct smu_context *smu)
 	if (!smu->pm_enabled || !smu->adev->pm.dpm_enabled)
 		return;
 
-	/* Enable restore flag */
+	 
 	smu->user_dpm_profile.flags |= SMU_DPM_USER_PROFILE_RESTORE;
 
-	/* set the user dpm power limit */
+	 
 	if (smu->user_dpm_profile.power_limit) {
 		ret = smu_set_power_limit(smu, smu->user_dpm_profile.power_limit);
 		if (ret)
 			dev_err(smu->adev->dev, "Failed to set power limit value\n");
 	}
 
-	/* set the user dpm clock configurations */
+	 
 	if (smu_dpm_ctx->dpm_level == AMD_DPM_FORCED_LEVEL_MANUAL) {
 		enum smu_clk_type clk_type;
 
 		for (clk_type = 0; clk_type < SMU_CLK_COUNT; clk_type++) {
-			/*
-			 * Iterate over smu clk type and force the saved user clk
-			 * configs, skip if clock dependency is enabled
-			 */
+			 
 			if (!(smu->user_dpm_profile.clk_dependency & BIT(clk_type)) &&
 					smu->user_dpm_profile.clk_mask[clk_type]) {
 				ret = smu_force_smuclk_levels(smu, clk_type,
@@ -405,7 +348,7 @@ static void smu_restore_dpm_user_profile(struct smu_context *smu)
 		}
 	}
 
-	/* set the user dpm fan configurations */
+	 
 	if (smu->user_dpm_profile.fan_mode == AMD_FAN_CTRL_MANUAL ||
 	    smu->user_dpm_profile.fan_mode == AMD_FAN_CTRL_NONE) {
 		ret = smu_set_fan_control_mode(smu, smu->user_dpm_profile.fan_mode);
@@ -429,7 +372,7 @@ static void smu_restore_dpm_user_profile(struct smu_context *smu)
 		}
 	}
 
-	/* Restore user customized OD settings */
+	 
 	if (smu->user_dpm_profile.user_od) {
 		if (smu->ppt_funcs->restore_user_od_settings) {
 			ret = smu->ppt_funcs->restore_user_od_settings(smu);
@@ -438,7 +381,7 @@ static void smu_restore_dpm_user_profile(struct smu_context *smu)
 		}
 	}
 
-	/* Disable restore flag */
+	 
 	smu->user_dpm_profile.flags &= ~SMU_DPM_USER_PROFILE_RESTORE;
 }
 
@@ -448,7 +391,7 @@ static int smu_get_power_num_states(void *handle,
 	if (!state_info)
 		return -EINVAL;
 
-	/* not support power state */
+	 
 	memset(state_info, 0, sizeof(struct pp_states_info));
 	state_info->nums = 1;
 	state_info->states[0] = POWER_STATE_TYPE_DEFAULT;
@@ -458,7 +401,7 @@ static int smu_get_power_num_states(void *handle,
 
 bool is_support_sw_smu(struct amdgpu_device *adev)
 {
-	/* vega20 is 11.0.2, but it's supported via the powerplay code */
+	 
 	if (adev->asic_type == CHIP_VEGA20)
 		return false;
 
@@ -526,10 +469,7 @@ static int smu_sys_set_pp_table(void *handle,
 	smu_table->power_play_table = smu_table->hardcode_pptable;
 	smu_table->power_play_table_size = size;
 
-	/*
-	 * Special hw_fini action(for Navi1x, the DPMs disablement will be
-	 * skipped) may be needed for custom pptable uploading.
-	 */
+	 
 	smu->uploading_custom_pp_table = true;
 
 	ret = smu_reset(smu);
@@ -547,13 +487,7 @@ static int smu_get_driver_allowed_feature_mask(struct smu_context *smu)
 	uint32_t allowed_feature_mask[SMU_FEATURE_MAX/32];
 	int ret = 0;
 
-	/*
-	 * With SCPM enabled, the allowed featuremasks setting(via
-	 * PPSMC_MSG_SetAllowedFeaturesMaskLow/High) is not permitted.
-	 * That means there is no way to let PMFW knows the settings below.
-	 * Thus, we just assume all the features are allowed under
-	 * such scenario.
-	 */
+	 
 	if (smu->adev->scpm_enabled) {
 		bitmap_fill(feature->allowed, SMU_FEATURE_MAX);
 		return 0;
@@ -617,12 +551,12 @@ static int smu_set_funcs(struct amdgpu_device *adev)
 	case IP_VERSION(11, 0, 2):
 		adev->pm.pp_feature &= ~PP_GFXOFF_MASK;
 		arcturus_set_ppt_funcs(smu);
-		/* OD is not supported on Arcturus */
+		 
 		smu->od_enabled = false;
 		break;
 	case IP_VERSION(13, 0, 2):
 		aldebaran_set_ppt_funcs(smu);
-		/* Enable pp_od_clk_voltage node */
+		 
 		smu->od_enabled = true;
 		break;
 	case IP_VERSION(13, 0, 0):
@@ -631,7 +565,7 @@ static int smu_set_funcs(struct amdgpu_device *adev)
 		break;
 	case IP_VERSION(13, 0, 6):
 		smu_v13_0_6_set_ppt_funcs(smu);
-		/* Enable pp_od_clk_voltage node */
+		 
 		smu->od_enabled = true;
 		break;
 	case IP_VERSION(13, 0, 7):
@@ -734,13 +668,7 @@ static int smu_late_init(void *handle)
 		return ret;
 	}
 
-	/*
-	 * Explicitly notify PMFW the power mode the system in. Since
-	 * the PMFW may boot the ASIC with a different mode.
-	 * For those supporting ACDC switch via gpio, PMFW will
-	 * handle the switch automatically. Driver involvement
-	 * is unnecessary.
-	 */
+	 
 	if (!smu->dc_controlled_by_gpio) {
 		ret = smu_set_power_source(smu,
 					   adev->pm.ac_power ? SMU_POWER_SOURCE_AC :
@@ -808,7 +736,7 @@ static int smu_init_fb_allocations(struct smu_context *smu)
 	uint32_t max_table_size = 0;
 	int ret, i;
 
-	/* VRAM allocation for tool table */
+	 
 	if (tables[SMU_TABLE_PMSTATUSLOG].size) {
 		ret = amdgpu_bo_create_kernel(adev,
 					      tables[SMU_TABLE_PMSTATUSLOG].size,
@@ -824,14 +752,12 @@ static int smu_init_fb_allocations(struct smu_context *smu)
 	}
 
 	driver_table->domain = AMDGPU_GEM_DOMAIN_VRAM | AMDGPU_GEM_DOMAIN_GTT;
-	/* VRAM allocation for driver table */
+	 
 	for (i = 0; i < SMU_TABLE_COUNT; i++) {
 		if (tables[i].size == 0)
 			continue;
 
-		/* If one of the tables has VRAM domain restriction, keep it in
-		 * VRAM
-		 */
+		 
 		if ((tables[i].domain &
 		    (AMDGPU_GEM_DOMAIN_VRAM | AMDGPU_GEM_DOMAIN_GTT)) ==
 			    AMDGPU_GEM_DOMAIN_VRAM)
@@ -883,16 +809,7 @@ static int smu_fini_fb_allocations(struct smu_context *smu)
 	return 0;
 }
 
-/**
- * smu_alloc_memory_pool - allocate memory pool in the system memory
- *
- * @smu: amdgpu_device pointer
- *
- * This memory pool will be used for SMC use and msg SetSystemVirtualDramAddr
- * and DramLogSetDramAddr can notify it changed.
- *
- * Returns 0 on success, error on failure.
- */
+ 
 static int smu_alloc_memory_pool(struct smu_context *smu)
 {
 	struct amdgpu_device *adev = smu->adev;
@@ -989,29 +906,21 @@ static int smu_smc_table_sw_init(struct smu_context *smu)
 {
 	int ret;
 
-	/**
-	 * Create smu_table structure, and init smc tables such as
-	 * TABLE_PPTABLE, TABLE_WATERMARKS, TABLE_SMU_METRICS, and etc.
-	 */
+	 
 	ret = smu_init_smc_tables(smu);
 	if (ret) {
 		dev_err(smu->adev->dev, "Failed to init smc tables!\n");
 		return ret;
 	}
 
-	/**
-	 * Create smu_power_context structure, and allocate smu_dpm_context and
-	 * context size to fill the smu_power_context data.
-	 */
+	 
 	ret = smu_init_power(smu);
 	if (ret) {
 		dev_err(smu->adev->dev, "Failed to init smu_init_power!\n");
 		return ret;
 	}
 
-	/*
-	 * allocate vram bos to store smc table contents.
-	 */
+	 
 	ret = smu_init_fb_allocations(smu);
 	if (ret)
 		return ret;
@@ -1088,11 +997,7 @@ static void smu_swctf_delayed_work_handler(struct work_struct *work)
 	struct amdgpu_device *adev = smu->adev;
 	uint32_t hotspot_tmp, size;
 
-	/*
-	 * If the hotspot temperature is confirmed as below SW CTF setting point
-	 * after the delay enforced, nothing will be done.
-	 * Otherwise, a graceful shutdown will be performed to prevent further damage.
-	 */
+	 
 	if (range->software_shutdown_temp &&
 	    smu->ppt_funcs->read_sensor &&
 	    !smu->ppt_funcs->read_sensor(smu,
@@ -1158,7 +1063,7 @@ static int smu_sw_init(void *handle)
 		return ret;
 	}
 
-	/* get boot_values from vbios to set revision, gfxclk, and etc. */
+	 
 	ret = smu_get_vbios_bootup_values(smu);
 	if (ret) {
 		dev_err(adev->dev, "Failed to get VBIOS boot clock values!\n");
@@ -1177,7 +1082,7 @@ static int smu_sw_init(void *handle)
 		return ret;
 	}
 
-	/* If there is no way to query fan control mode, fan control is not supported */
+	 
 	if (!smu->ppt_funcs->get_fan_control_mode)
 		smu->adev->pm.no_fan = true;
 
@@ -1265,30 +1170,21 @@ static int smu_smc_hw_setup(struct smu_context *smu)
 		return ret;
 	}
 
-	/*
-	 * Set PMSTATUSLOG table bo address with SetToolsDramAddr MSG for tools.
-	 */
+	 
 	ret = smu_set_tool_table_location(smu);
 	if (ret) {
 		dev_err(adev->dev, "Failed to SetToolsDramAddr!\n");
 		return ret;
 	}
 
-	/*
-	 * Use msg SetSystemVirtualDramAddr and DramLogSetDramAddr can notify
-	 * pool location.
-	 */
+	 
 	ret = smu_notify_memory_pool_location(smu);
 	if (ret) {
 		dev_err(adev->dev, "Failed to SetDramLogDramAddr!\n");
 		return ret;
 	}
 
-	/*
-	 * It is assumed the pptable used before runpm is same as
-	 * the one used afterwards. Thus, we can reuse the stored
-	 * copy and do not need to resetup the pptable again.
-	 */
+	 
 	if (!adev->in_runpm) {
 		ret = smu_setup_pptable(smu);
 		if (ret) {
@@ -1297,17 +1193,11 @@ static int smu_smc_hw_setup(struct smu_context *smu)
 		}
 	}
 
-	/* smu_dump_pptable(smu); */
+	 
 
-	/*
-	 * With SCPM enabled, PSP is responsible for the PPTable transferring
-	 * (to SMU). Driver involvement is not needed and permitted.
-	 */
+	 
 	if (!adev->scpm_enabled) {
-		/*
-		 * Copy pptable bo in the vram to smc with SMU MSGs such as
-		 * SetDriverDramAddr and TransferTableDram2Smu.
-		 */
+		 
 		ret = smu_write_pptable(smu);
 		if (ret) {
 			dev_err(adev->dev, "Failed to transfer pptable to SMC!\n");
@@ -1315,15 +1205,12 @@ static int smu_smc_hw_setup(struct smu_context *smu)
 		}
 	}
 
-	/* issue Run*Btc msg */
+	 
 	ret = smu_run_btc(smu);
 	if (ret)
 		return ret;
 
-	/*
-	 * With SCPM enabled, these actions(and relevant messages) are
-	 * not needed and permitted.
-	 */
+	 
 	if (!adev->scpm_enabled) {
 		ret = smu_feature_set_allowed_mask(smu);
 		if (ret) {
@@ -1350,11 +1237,7 @@ static int smu_smc_hw_setup(struct smu_context *smu)
 	if (!smu_is_dpm_running(smu))
 		dev_info(adev->dev, "dpm has been disabled\n");
 
-	/*
-	 * Set initialized values (get from vbios) to dpm tables context such as
-	 * gfxclk, memclk, dcefclk, and etc. And enable the DPM feature for each
-	 * type of clks.
-	 */
+	 
 	ret = smu_set_default_dpm_table(smu);
 	if (ret) {
 		dev_err(adev->dev, "Failed to setup default dpm clock tables!\n");
@@ -1370,10 +1253,7 @@ static int smu_smc_hw_setup(struct smu_context *smu)
 	else if (adev->pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN1)
 		pcie_gen = 0;
 
-	/* Bit 31:16: LCLK DPM level. 0 is DPM0, and 1 is DPM1
-	 * Bit 15:8:  PCIE GEN, 0 to 3 corresponds to GEN1 to GEN4
-	 * Bit 7:0:   PCIE lane width, 1 to 7 corresponds is x1 to x32
-	 */
+	 
 	if (adev->pm.pcie_mlw_mask & CAIL_PCIE_LINK_WIDTH_SUPPORT_X16)
 		pcie_width = 6;
 	else if (adev->pm.pcie_mlw_mask & CAIL_PCIE_LINK_WIDTH_SUPPORT_X12)
@@ -1410,10 +1290,7 @@ static int smu_smc_hw_setup(struct smu_context *smu)
 		return ret;
 	}
 
-	/*
-	 * Set min deep sleep dce fclk with bootup value from vbios via
-	 * SetMinDeepSleepDcefclk MSG.
-	 */
+	 
 	ret = smu_set_min_dcef_deep_sleep(smu,
 					  smu->smu_table.boot_values.dcefclk / 100);
 
@@ -1443,10 +1320,7 @@ static int smu_start_smc_engine(struct smu_context *smu)
 		}
 	}
 
-	/*
-	 * Send msg GetDriverIfVersion to check if the return value is equal
-	 * with DRIVER_IF_VERSION of smc header.
-	 */
+	 
 	ret = smu_check_fw_version(smu);
 	if (ret)
 		return ret;
@@ -1493,13 +1367,7 @@ static int smu_hw_init(void *handle)
 		return ret;
 	}
 
-	/*
-	 * Move maximum sustainable clock retrieving here considering
-	 * 1. It is not needed on resume(from S3).
-	 * 2. DAL settings come between .hw_init and .late_init of SMU.
-	 *    And DAL needs to know the maximum sustainable clocks. Thus
-	 *    it cannot be put in .late_init().
-	 */
+	 
 	ret = smu_init_max_sustainable_clocks(smu);
 	if (ret) {
 		dev_err(adev->dev, "Failed to init max sustainable clocks!\n");
@@ -1522,10 +1390,7 @@ static int smu_disable_dpms(struct smu_context *smu)
 		  (amdgpu_asic_reset_method(adev) == AMD_RESET_METHOD_BACO)) ||
 		 ((adev->in_runpm || adev->in_s4) && amdgpu_asic_supports_baco(adev)));
 
-	/*
-	 * For SMU 13.0.0 and 13.0.7, PMFW will handle the DPM features(disablement or others)
-	 * properly on suspend/reset/unload. Driver involvement may cause some unexpected issues.
-	 */
+	 
 	switch (adev->ip_versions[MP1_HWIP][0]) {
 	case IP_VERSION(13, 0, 0):
 	case IP_VERSION(13, 0, 7):
@@ -1535,17 +1400,7 @@ static int smu_disable_dpms(struct smu_context *smu)
 		break;
 	}
 
-	/*
-	 * For custom pptable uploading, skip the DPM features
-	 * disable process on Navi1x ASICs.
-	 *   - As the gfx related features are under control of
-	 *     RLC on those ASICs. RLC reinitialization will be
-	 *     needed to reenable them. That will cost much more
-	 *     efforts.
-	 *
-	 *   - SMU firmware can handle the DPM reenablement
-	 *     properly.
-	 */
+	 
 	if (smu->uploading_custom_pp_table) {
 		switch (adev->ip_versions[MP1_HWIP][0]) {
 		case IP_VERSION(11, 0, 0):
@@ -1562,10 +1417,7 @@ static int smu_disable_dpms(struct smu_context *smu)
 		}
 	}
 
-	/*
-	 * For Sienna_Cichlid, PMFW will handle the features disablement properly
-	 * on BACO in. Driver involvement is unnecessary.
-	 */
+	 
 	if (use_baco) {
 		switch (adev->ip_versions[MP1_HWIP][0]) {
 		case IP_VERSION(11, 0, 7):
@@ -1579,10 +1431,7 @@ static int smu_disable_dpms(struct smu_context *smu)
 		}
 	}
 
-	/*
-	 * For SMU 13.0.4/11, PMFW will handle the features disablement properly
-	 * for gpu reset and S0i3 cases. Driver involvement is unnecessary.
-	 */
+	 
 	if (amdgpu_in_reset(adev) || adev->in_s0ix) {
 		switch (adev->ip_versions[MP1_HWIP][0]) {
 		case IP_VERSION(13, 0, 4):
@@ -1593,17 +1442,14 @@ static int smu_disable_dpms(struct smu_context *smu)
 		}
 	}
 
-	/*
-	 * For gpu reset, runpm and hibernation through BACO,
-	 * BACO feature has to be kept enabled.
-	 */
+	 
 	if (use_baco && smu_feature_is_enabled(smu, SMU_FEATURE_BACO_BIT)) {
 		ret = smu_disable_all_features_with_exception(smu,
 							      SMU_FEATURE_BACO_BIT);
 		if (ret)
 			dev_err(adev->dev, "Failed to disable smu features except BACO.\n");
 	} else {
-		/* DisableAllSmuFeatures message is not permitted with SCPM enabled */
+		 
 		if (!adev->scpm_enabled) {
 			ret = smu_system_features_control(smu, false);
 			if (ret)
@@ -1716,10 +1562,7 @@ static int smu_suspend(void *handle)
 
 	smu_set_gfx_cgpg(smu, false);
 
-	/*
-	 * pwfw resets entrycount when device is suspended, so we save the
-	 * last value to be used when we resume to keep it consistent
-	 */
+	 
 	ret = smu_get_entrycount_gfxoff(smu, &count);
 	if (!ret)
 		adev->gfx.gfx_off_entrycount = count;
@@ -1812,7 +1655,7 @@ static int smu_enable_umd_pstate(void *handle,
 		return -EINVAL;
 
 	if (!(smu_dpm_ctx->dpm_level & profile_mode_mask)) {
-		/* enter umd pstate, save current level, disable gfx cg*/
+		 
 		if (*level & profile_mode_mask) {
 			smu_dpm_ctx->saved_dpm_level = smu_dpm_ctx->dpm_level;
 			smu_gpo_control(smu, false);
@@ -1821,7 +1664,7 @@ static int smu_enable_umd_pstate(void *handle,
 			amdgpu_asic_update_umd_stable_pstate(smu->adev, true);
 		}
 	} else {
-		/* exit umd pstate, restore level, enable gfx cg*/
+		 
 		if (!(*level & profile_mode_mask)) {
 			if (*level == AMD_DPM_FORCED_LEVEL_PROFILE_EXIT)
 				*level = smu_dpm_ctx->saved_dpm_level;
@@ -1885,7 +1728,7 @@ static int smu_adjust_power_state_dynamic(struct smu_context *smu,
 			return ret;
 		}
 
-		/* update the saved copy */
+		 
 		smu_dpm_ctx->dpm_level = level;
 	}
 
@@ -2008,7 +1851,7 @@ static int smu_force_performance_level(void *handle,
 	ret = smu_handle_task(smu, level,
 			      AMD_PP_TASK_READJUST_POWER_STATE);
 
-	/* reset user dpm clock state */
+	 
 	if (!ret && smu_dpm_ctx->dpm_level != AMD_DPM_FORCED_LEVEL_MANUAL) {
 		memset(smu->user_dpm_profile.clk_mask, 0, sizeof(smu->user_dpm_profile.clk_mask));
 		smu->user_dpm_profile.clk_dependency = 0;
@@ -2096,13 +1939,7 @@ static int smu_force_ppclk_levels(void *handle,
 	return smu_force_smuclk_levels(smu, clk_type, mask);
 }
 
-/*
- * On system suspending or resetting, the dpm_enabled
- * flag will be cleared. So that those SMU services which
- * are not supported will be gated.
- * However, the mp1 state setting should still be granted
- * even if the dpm_enabled cleared.
- */
+ 
 static int smu_set_mp1_state(void *handle,
 			     enum pp_mp1_state mp1_state)
 {
@@ -2184,7 +2021,7 @@ int smu_set_ac_dc(struct smu_context *smu)
 	if (!smu->pm_enabled || !smu->adev->pm.dpm_enabled)
 		return -EOPNOTSUPP;
 
-	/* controlled by firmware */
+	 
 	if (smu->dc_controlled_by_gpio)
 		return 0;
 
@@ -2250,7 +2087,7 @@ static int smu_load_microcode(void *handle)
 	if (!smu->pm_enabled)
 		return -EOPNOTSUPP;
 
-	/* This should be used for non PSP loading */
+	 
 	if (adev->firmware.load_type == AMDGPU_FW_LOAD_PSP)
 		return 0;
 
@@ -2302,7 +2139,7 @@ static int smu_set_fan_speed_rpm(void *handle, uint32_t speed)
 		smu->user_dpm_profile.flags |= SMU_CUSTOM_FAN_SPEED_RPM;
 		smu->user_dpm_profile.fan_speed_rpm = speed;
 
-		/* Override custom PWM setting as they cannot co-exist */
+		 
 		smu->user_dpm_profile.flags &= ~SMU_CUSTOM_FAN_SPEED_PWM;
 		smu->user_dpm_profile.fan_speed_pwm = 0;
 	}
@@ -2310,16 +2147,7 @@ static int smu_set_fan_speed_rpm(void *handle, uint32_t speed)
 	return ret;
 }
 
-/**
- * smu_get_power_limit - Request one of the SMU Power Limits
- *
- * @handle: pointer to smu context
- * @limit: requested limit is written back to this variable
- * @pp_limit_level: &pp_power_limit_level which limit of the power to return
- * @pp_power_type: &pp_power_type type of power
- * Return:  0 on success, <0 on error
- *
- */
+ 
 int smu_get_power_limit(void *handle,
 			uint32_t *limit,
 			enum pp_power_limit_level pp_limit_level,
@@ -2606,7 +2434,7 @@ static int smu_read_sensor(void *handle,
 	}
 
 unlock:
-	// assign uint32_t to int
+	
 	*size_arg = size_val;
 
 	return ret;
@@ -2699,7 +2527,7 @@ static int smu_set_fan_control_mode(void *handle, u32 value)
 	if (!(smu->user_dpm_profile.flags & SMU_DPM_USER_PROFILE_RESTORE)) {
 		smu->user_dpm_profile.fan_mode = value;
 
-		/* reset user dpm fan speed */
+		 
 		if (value != AMD_FAN_CTRL_MANUAL) {
 			smu->user_dpm_profile.fan_speed_pwm = 0;
 			smu->user_dpm_profile.fan_speed_rpm = 0;
@@ -2749,7 +2577,7 @@ static int smu_set_fan_speed_pwm(void *handle, u32 speed)
 		smu->user_dpm_profile.flags |= SMU_CUSTOM_FAN_SPEED_PWM;
 		smu->user_dpm_profile.fan_speed_pwm = speed;
 
-		/* Override custom RPM setting as they cannot co-exist */
+		 
 		smu->user_dpm_profile.flags &= ~SMU_CUSTOM_FAN_SPEED_RPM;
 		smu->user_dpm_profile.fan_speed_rpm = 0;
 	}
@@ -3125,7 +2953,7 @@ static int smu_get_prv_buffer_details(void *handle, void **addr, size_t *size)
 }
 
 static const struct amd_pm_funcs swsmu_pm_funcs = {
-	/* export for sysfs */
+	 
 	.set_fan_control_mode    = smu_set_fan_control_mode,
 	.get_fan_control_mode    = smu_get_fan_control_mode,
 	.set_fan_speed_pwm   = smu_set_fan_speed_pwm,
@@ -3145,7 +2973,7 @@ static const struct amd_pm_funcs swsmu_pm_funcs = {
 	.get_pp_table            = smu_sys_get_pp_table,
 	.set_pp_table            = smu_sys_set_pp_table,
 	.switch_power_profile    = smu_switch_power_profile,
-	/* export to amdgpu */
+	 
 	.dispatch_tasks          = smu_handle_dpm_task,
 	.load_firmware           = smu_load_microcode,
 	.set_powergating_by_smu  = smu_dpm_set_power_gate,
@@ -3156,7 +2984,7 @@ static const struct amd_pm_funcs swsmu_pm_funcs = {
 	.odn_edit_dpm_table      = smu_od_edit_dpm_table,
 	.set_mp1_state           = smu_set_mp1_state,
 	.gfx_state_change_set    = smu_gfx_state_change_set,
-	/* export to DC */
+	 
 	.get_sclk                         = smu_get_sclk,
 	.get_mclk                         = smu_get_mclk,
 	.display_configuration_change     = smu_display_configuration_change,
@@ -3199,15 +3027,11 @@ int smu_stb_collect_info(struct smu_context *smu, void *buf, uint32_t size)
 	if (!smu->ppt_funcs->stb_collect_info || !smu->stb_context.enabled)
 		return -EOPNOTSUPP;
 
-	/* Confirm the buffer allocated is of correct size */
+	 
 	if (size != smu->stb_context.stb_buf_size)
 		return -EINVAL;
 
-	/*
-	 * No need to lock smu mutex as we access STB directly through MMIO
-	 * and not going through SMU messaging route (for now at least).
-	 * For registers access rely on implementation internal locking.
-	 */
+	 
 	return smu->ppt_funcs->stb_collect_info(smu, buf, size);
 }
 
@@ -3261,13 +3085,7 @@ static int smu_stb_debugfs_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * We have to define not only read method but also
- * open and release because .read takes up to PAGE_SIZE
- * data each time so and so is invoked multiple times.
- *  We allocate the STB buffer in .open and release it
- *  in .release
- */
+ 
 static const struct file_operations smu_stb_debugfs_fops = {
 	.owner = THIS_MODULE,
 	.open = smu_stb_debugfs_open,

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek ALSA SoC Audio DAI ADDA Control
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/regmap.h>
@@ -128,7 +122,7 @@ static int mt8195_adda_mtkaif_init(struct mtk_base_afe *afe)
 	unsigned int mask = 0;
 	unsigned int val = 0;
 
-	/* set rx protocol 2 & mtkaif_rxif_clkinv_adc inverse */
+	 
 	mask = (MTKAIF_RXIF_CLKINV_ADC | MTKAIF_RXIF_PROTOCOL2);
 	val = (MTKAIF_RXIF_CLKINV_ADC | MTKAIF_RXIF_PROTOCOL2);
 
@@ -144,7 +138,7 @@ static int mt8195_adda_mtkaif_init(struct mtk_base_afe *afe)
 		return 0;
 	}
 
-	/* set delay for ch1, ch2 */
+	 
 	if (param->mtkaif_phase_cycle[MT8195_MTKAIF_MISO_0] >=
 	    param->mtkaif_phase_cycle[MT8195_MTKAIF_MISO_1]) {
 		delay_data = DELAY_DATA_MISO1;
@@ -165,7 +159,7 @@ static int mt8195_adda_mtkaif_init(struct mtk_base_afe *afe)
 	val |= delay_data << MTKAIF_RXIF_DELAY_DATA_SHIFT;
 	regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG2, mask, val);
 
-	/* set delay between ch3 and ch2 */
+	 
 	if (param->mtkaif_phase_cycle[MT8195_MTKAIF_MISO_2] >=
 	    param->mtkaif_phase_cycle[MT8195_MTKAIF_MISO_1]) {
 		delay_data = DELAY_DATA_MISO1;
@@ -222,7 +216,7 @@ static int mtk_adda_dl_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		break;
 	default:
@@ -253,7 +247,7 @@ static void mtk_adda_ul_mictype(struct mtk_base_afe *afe, int adda, bool dmic)
 	mask = (UL_SDM3_LEVEL_CTL | UL_MODE_3P25M_CH1_CTL |
 		UL_MODE_3P25M_CH2_CTL);
 
-	/* turn on dmic, ch1, ch2 */
+	 
 	if (dmic)
 		val = mask;
 
@@ -277,7 +271,7 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 		mtk_adda_ul_mictype(afe, MTK_AFE_ADDA, param->mtkaif_dmic_on);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		break;
 	default:
@@ -313,7 +307,7 @@ static int mtk_adda6_ul_event(struct snd_soc_dapm_widget *w,
 				   val);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		break;
 	default:
@@ -642,21 +636,21 @@ static int mtk_dai_da_configure(struct mtk_base_afe *afe,
 	unsigned int val = 0;
 	unsigned int mask = 0;
 
-	/* set sampling rate */
+	 
 	mask |= DL_2_INPUT_MODE_CTL_MASK;
 	val |= DL_2_INPUT_MODE_CTL(afe_adda_dl_rate_transform(afe, rate));
 
-	/* turn off saturation */
+	 
 	mask |= DL_2_CH1_SATURATION_EN_CTL;
 	mask |= DL_2_CH2_SATURATION_EN_CTL;
 
-	/* turn off mute function */
+	 
 	mask |= DL_2_MUTE_CH1_OFF_CTL_PRE;
 	mask |= DL_2_MUTE_CH2_OFF_CTL_PRE;
 	val |= DL_2_MUTE_CH1_OFF_CTL_PRE;
 	val |= DL_2_MUTE_CH2_OFF_CTL_PRE;
 
-	/* set voice input data if input sample rate is 8k or 16k */
+	 
 	mask |= DL_2_VOICE_MODE_CTL_PRE;
 	if (rate == 8000 || rate == 16000)
 		val |= DL_2_VOICE_MODE_CTL_PRE;
@@ -666,7 +660,7 @@ static int mtk_dai_da_configure(struct mtk_base_afe *afe,
 	mask = 0;
 	val = 0;
 
-	/* new 2nd sdm */
+	 
 	mask |= DL_USE_NEW_2ND_SDM;
 	val |= DL_USE_NEW_2ND_SDM;
 	regmap_update_bits(afe->regmap, AFE_ADDA_DL_SDM_DCCOMP_CON, mask, val);
@@ -734,7 +728,7 @@ static const struct snd_soc_dai_ops mtk_dai_adda_ops = {
 	.hw_params = mtk_dai_adda_hw_params,
 };
 
-/* dai driver */
+ 
 #define MTK_ADDA_PLAYBACK_RATES (SNDRV_PCM_RATE_8000_48000 |\
 				 SNDRV_PCM_RATE_96000 |\
 				 SNDRV_PCM_RATE_192000)

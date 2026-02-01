@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Blowfish Cipher Algorithm, by Bruce Schneier.
- * http://www.counterpane.com/blowfish.html
- *
- * Adapted from Kerneli implementation.
- *
- * Copyright (c) Herbert Valerio Riedel <hvr@hvrlab.org>
- * Copyright (c) Kyle McMartin <kyle@debian.org>
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <linux/init.h>
@@ -20,10 +9,7 @@
 #include <linux/types.h>
 #include <crypto/blowfish.h>
 
-/*
- * Round loop unrolling macros, S is a pointer to a S-Box array
- * organized in 4 unsigned longs at a row.
- */
+ 
 #define GET32_3(x) (((x) & 0xff))
 #define GET32_2(x) (((x) >> (8)) & (0xff))
 #define GET32_1(x) (((x) >> (16)) & (0xff))

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+ 
+ 
 
 #ifndef DRM_TEGRA_SOR_H
 #define DRM_TEGRA_SOR_H
@@ -104,7 +102,7 @@
 #define  SOR_PLL0_PWR				(1 << 0)
 
 #define SOR_PLL1 0x18
-/* XXX: read-only bit? */
+ 
 #define  SOR_PLL1_LOADADJ_MASK			(0xf << 20)
 #define  SOR_PLL1_LOADADJ(x)			(((x) & 0xf) << 20)
 #define  SOR_PLL1_TERM_COMPOUT			(1 << 15)

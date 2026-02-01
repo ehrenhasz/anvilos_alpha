@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ISCSI_TARGET_LOGIN_H
 #define ISCSI_TARGET_LOGIN_H
 
@@ -26,4 +26,4 @@ extern void iscsi_target_login_sess_out(struct iscsit_conn *, bool, bool);
 extern int iscsi_target_login_thread(void *);
 extern void iscsi_handle_login_thread_timeout(struct timer_list *t);
 
-#endif   /*** ISCSI_TARGET_LOGIN_H ***/
+#endif    

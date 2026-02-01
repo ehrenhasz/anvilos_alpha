@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C), 2008-2021, OPPO Mobile Comm Corp., Ltd.
- *             https://www.oppo.com/
- */
+
+ 
 #include <linux/sysfs.h>
 #include <linux/kobject.h>
 
@@ -67,7 +64,7 @@ static struct attribute *erofs_attrs[] = {
 };
 ATTRIBUTE_GROUPS(erofs);
 
-/* Features this copy of erofs supports */
+ 
 EROFS_ATTR_FEATURE(zero_padding);
 EROFS_ATTR_FEATURE(compr_cfgs);
 EROFS_ATTR_FEATURE(big_pcluster);

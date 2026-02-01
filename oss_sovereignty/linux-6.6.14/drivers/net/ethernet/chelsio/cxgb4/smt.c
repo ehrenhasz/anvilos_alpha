@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4/T5/T6 Ethernet driver for Linux.
- *
- * Copyright (c) 2017 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "cxgb4.h"
 #include "smt.h"
@@ -73,9 +41,7 @@ static struct smt_entry *find_or_alloc_smte(struct smt_data *s, u8 *smac)
 				first_free = e;
 		} else {
 			if (e->state == SMT_STATE_SWITCHING) {
-				/* This entry is actually in use. See if we can
-				 * re-use it ?
-				 */
+				 
 				if (memcmp(e->src_mac, smac, ETH_ALEN) == 0)
 					goto found_reuse;
 			}
@@ -97,17 +63,12 @@ found_reuse:
 
 static void t4_smte_free(struct smt_entry *e)
 {
-	if (e->refcnt == 0) {  /* hasn't been recycled */
+	if (e->refcnt == 0) {   
 		e->state = SMT_STATE_UNUSED;
 	}
 }
 
-/**
- * cxgb4_smt_release - Release SMT entry
- * @e: smt entry to release
- *
- * Releases ref count and frees up an smt entry from SMT table
- */
+ 
 void cxgb4_smt_release(struct smt_entry *e)
 {
 	spin_lock_bh(&e->lock);
@@ -149,23 +110,17 @@ static int write_smt_entry(struct adapter *adapter, struct smt_entry *e)
 		skb = alloc_skb(size, GFP_ATOMIC);
 		if (!skb)
 			return -ENOMEM;
-		/* Source MAC Table (SMT) contains 256 SMAC entries
-		 * organized in 128 rows of 2 entries each.
-		 */
+		 
 		req = (struct cpl_smt_write_req *)__skb_put(skb, size);
 		INIT_TP_WR(req, 0);
 
-		/* Each row contains an SMAC pair.
-		 * LSB selects the SMAC entry within a row
-		 */
+		 
 		row = (e->idx >> 1);
 		if (e->idx & 1) {
 			req->pfvf1 = 0x0;
 			memcpy(req->src_mac1, e->src_mac, ETH_ALEN);
 
-			/* fill pfvf0/src_mac0 with entry
-			 * at prev index from smt-tab.
-			 */
+			 
 			req->pfvf0 = 0x0;
 			memcpy(req->src_mac0, s->smtab[e->idx - 1].src_mac,
 			       ETH_ALEN);
@@ -173,9 +128,7 @@ static int write_smt_entry(struct adapter *adapter, struct smt_entry *e)
 			req->pfvf0 = 0x0;
 			memcpy(req->src_mac0, e->src_mac, ETH_ALEN);
 
-			/* fill pfvf1/src_mac1 with entry
-			 * at next index from smt-tab
-			 */
+			 
 			req->pfvf1 = 0x0;
 			memcpy(req->src_mac1, s->smtab[e->idx + 1].src_mac,
 			       ETH_ALEN);
@@ -185,12 +138,12 @@ static int write_smt_entry(struct adapter *adapter, struct smt_entry *e)
 		skb = alloc_skb(size, GFP_ATOMIC);
 		if (!skb)
 			return -ENOMEM;
-		/* Source MAC Table (SMT) contains 256 SMAC entries */
+		 
 		t6req = (struct cpl_t6_smt_write_req *)__skb_put(skb, size);
 		INIT_TP_WR(t6req, 0);
 		req = (struct cpl_smt_write_req *)t6req;
 
-		/* fill pfvf0/src_mac0 from smt-tab */
+		 
 		req->pfvf0 = 0x0;
 		memcpy(req->src_mac0, s->smtab[e->idx].src_mac, ETH_ALEN);
 		row = e->idx;
@@ -231,14 +184,7 @@ static struct smt_entry *t4_smt_alloc_switching(struct adapter *adap, u16 pfvf,
 	return e;
 }
 
-/**
- * cxgb4_smt_alloc_switching - Allocates an SMT entry for switch filters.
- * @dev: net_device pointer
- * @smac: MAC address to add to SMT
- * Returns pointer to the SMT entry created
- *
- * Allocates an SMT entry to be used by switching rule of a filter.
- */
+ 
 struct smt_entry *cxgb4_smt_alloc_switching(struct net_device *dev, u8 *smac)
 {
 	struct adapter *adap = netdev2adap(dev);

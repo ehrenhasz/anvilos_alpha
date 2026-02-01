@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * LTC2992 - Dual Wide Range Power Monitor
- *
- * Copyright 2020 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -78,21 +74,21 @@
 #define LTC2992_SENSE_FAULT(x)		(LTC2992_FAULT1 + ((x) * 0x32))
 #define LTC2992_DSENSE_FAULT(x)		(LTC2992_FAULT1 + ((x) * 0x32))
 
-/* CTRLB register bitfields */
+ 
 #define LTC2992_RESET_HISTORY		BIT(3)
 
-/* FAULT1 FAULT2 registers common bitfields */
+ 
 #define LTC2992_POWER_FAULT_MSK(x)	(BIT(6) << (x))
 #define LTC2992_DSENSE_FAULT_MSK(x)	(BIT(4) << (x))
 #define LTC2992_SENSE_FAULT_MSK(x)	(BIT(2) << (x))
 
-/* FAULT1 bitfields */
+ 
 #define LTC2992_GPIO1_FAULT_MSK(x)	(BIT(0) << (x))
 
-/* FAULT2 bitfields */
+ 
 #define LTC2992_GPIO2_FAULT_MSK(x)	(BIT(0) << (x))
 
-/* FAULT3 bitfields */
+ 
 #define LTC2992_GPIO3_FAULT_MSK(x)	(BIT(6) << (x))
 #define LTC2992_GPIO4_FAULT_MSK(x)	(BIT(4) << (x))
 
@@ -110,7 +106,7 @@
 struct ltc2992_state {
 	struct i2c_client		*client;
 	struct gpio_chip		gc;
-	struct mutex			gpio_mutex; /* lock for gpio access */
+	struct mutex			gpio_mutex;  
 	const char			*gpio_names[LTC2992_GPIO_NR];
 	struct regmap			*regmap;
 	u32				r_sense_uohm[2];

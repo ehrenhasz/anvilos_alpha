@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdlib.h>
 #include <stddef.h>
 #include <ftw.h>
@@ -31,7 +31,7 @@
 
 static unsigned int iterations = 100;
 static unsigned int nr_mmaps   = 100;
-static unsigned int nr_samples = 100;  /* samples per mmap */
+static unsigned int nr_samples = 100;   
 
 static u64 bench_sample_type;
 static u16 bench_id_hdr_size;
@@ -71,11 +71,7 @@ static const char *const bench_usage[] = {
 	NULL
 };
 
-/*
- * Helper for collect_dso that adds the given file as a dso to dso_list
- * if it contains a build-id.  Stops after collecting 4 times more than
- * we need (for MMAP2 events).
- */
+ 
 static int add_dso(const char *fpath, const struct stat *sb __maybe_unused,
 		   int typeflag, struct FTW *ftwbuf __maybe_unused)
 {
@@ -95,7 +91,7 @@ static int add_dso(const char *fpath, const struct stat *sb __maybe_unused,
 	dso->ino = nr_dsos++;
 	pr_debug2("  Adding DSO: %s\n", fpath);
 
-	/* stop if we collected enough DSOs */
+	 
 	if ((unsigned int)nr_dsos == DSO_MMAP_RATIO * nr_mmaps)
 		return 1;
 
@@ -128,7 +124,7 @@ static void release_dso(void)
 	free(dsos);
 }
 
-/* Fake address used by mmap and sample events */
+ 
 static u64 dso_map_addr(struct bench_dso *dso)
 {
 	return 0x400000ULL + dso->ino * 8192ULL;
@@ -197,12 +193,12 @@ static ssize_t synthesize_mmap(struct bench_data *data, struct bench_dso *dso, u
 	event.mmap2.prot = PROT_EXEC;
 
 	if (len > sizeof(event.mmap2)) {
-		/* write mmap2 event first */
+		 
 		if (writen(data->input_pipe[1], &event, len - bench_id_hdr_size) < 0)
 			return -1;
-		/* zero-fill sample id header */
+		 
 		memset(id_hdr_ptr, 0, bench_id_hdr_size);
-		/* put timestamp in the right position */
+		 
 		ts_idx = (bench_id_hdr_size / sizeof(u64)) - 2;
 		id_hdr_ptr[ts_idx] = timestamp;
 		if (writen(data->input_pipe[1], id_hdr_ptr, bench_id_hdr_size) < 0)
@@ -255,7 +251,7 @@ static void *data_reader(void *arg)
 	flag = fcntl(data->output_pipe[0], F_GETFL);
 	fcntl(data->output_pipe[0], F_SETFL, flag | O_NONBLOCK);
 
-	/* read out data from child */
+	 
 	while (true) {
 		n = read(data->output_pipe[0], buf, sizeof(buf));
 		if (n > 0)
@@ -323,7 +319,7 @@ static int setup_injection(struct bench_data *data, bool build_id_all)
 		if (build_id_all)
 			inject_argv[2] = strdup("--buildid-all");
 
-		/* signal that we're ready to go */
+		 
 		close(ready_pipe[1]);
 
 		cmd_inject(inject_argc, inject_argv);
@@ -337,7 +333,7 @@ static int setup_injection(struct bench_data *data, bool build_id_all)
 	close(data->input_pipe[0]);
 	close(data->output_pipe[1]);
 
-	/* wait for child ready */
+	 
 	if (read(ready_pipe[0], &buf, 1) < 0)
 		return -1;
 	close(ready_pipe[0]);
@@ -351,7 +347,7 @@ static int inject_build_id(struct bench_data *data, u64 *max_rss)
 	unsigned int i, k;
 	struct rusage rusage;
 
-	/* this makes the child to run */
+	 
 	if (perf_header__write_pipe(data->input_pipe[1]) < 0)
 		return -1;
 
@@ -381,7 +377,7 @@ static int inject_build_id(struct bench_data *data, u64 *max_rss)
 		}
 	}
 
-	/* this makes the child to finish */
+	 
 	close(data->input_pipe[1]);
 
 	wait4(data->pid, &status, 0, &rusage);
@@ -435,7 +431,7 @@ static void do_inject_loop(struct bench_data *data, bool build_id_all)
 	printf("  Average build-id%s injection took: %.3f msec (+- %.3f msec)\n",
 	       build_id_all ? "-all" : "", time_average, time_stddev);
 
-	/* each iteration, it processes MMAP2 + BUILD_ID + nr_samples * SAMPLE */
+	 
 	time_average = avg_stats(&time_stats) / (nr_mmaps * (nr_samples + 2));
 	time_stddev = stddev_stats(&time_stats) / (nr_mmaps * (nr_samples + 2));
 	printf("  Average time per event: %.3f usec (+- %.3f usec)\n",

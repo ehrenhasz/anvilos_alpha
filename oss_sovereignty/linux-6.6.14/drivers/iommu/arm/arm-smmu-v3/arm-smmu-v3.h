@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * IOMMU API for ARM architected SMMUv3 implementations.
- *
- * Copyright (C) 2015 ARM Limited
- */
+ 
+ 
 
 #ifndef _ARM_SMMU_V3_H
 #define _ARM_SMMU_V3_H
@@ -14,7 +10,7 @@
 #include <linux/mmzone.h>
 #include <linux/sizes.h>
 
-/* MMIO registers */
+ 
 #define ARM_SMMU_IDR0			0x0
 #define IDR0_ST_LVL			GENMASK(28, 27)
 #define IDR0_ST_LVL_2LVL		1
@@ -91,7 +87,7 @@
 #define CR1_QUEUE_SH			GENMASK(5, 4)
 #define CR1_QUEUE_OC			GENMASK(3, 2)
 #define CR1_QUEUE_IC			GENMASK(1, 0)
-/* CR1 cacheability fields don't quite follow the usual TCR-style encoding */
+ 
 #define CR1_CACHE_NC			0
 #define CR1_CACHE_WB			1
 #define CR1_CACHE_WT			2
@@ -160,12 +156,12 @@
 
 #define ARM_SMMU_REG_SZ			0xe00
 
-/* Common MSI config fields */
+ 
 #define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
 #define MSI_CFG2_SH			GENMASK(5, 4)
 #define MSI_CFG2_MEMATTR		GENMASK(3, 0)
 
-/* Common memory attribute values */
+ 
 #define ARM_SMMU_SH_NSH			0
 #define ARM_SMMU_SH_OSH			2
 #define ARM_SMMU_SH_ISH			3
@@ -184,20 +180,14 @@
 #define Q_BASE_ADDR_MASK		GENMASK_ULL(51, 5)
 #define Q_BASE_LOG2SIZE			GENMASK(4, 0)
 
-/* Ensure DMA allocations are naturally aligned */
+ 
 #ifdef CONFIG_CMA_ALIGNMENT
 #define Q_MAX_SZ_SHIFT			(PAGE_SHIFT + CONFIG_CMA_ALIGNMENT)
 #else
 #define Q_MAX_SZ_SHIFT			(PAGE_SHIFT + MAX_ORDER)
 #endif
 
-/*
- * Stream table.
- *
- * Linear: Enough to cover 1 << IDR1.SIDSIZE entries
- * 2lvl: 128k L1 entries,
- *       256 lazy entries per table (each table covers a PCI bus)
- */
+ 
 #define STRTAB_L1_SZ_SHIFT		20
 #define STRTAB_SPLIT			8
 
@@ -262,13 +252,7 @@
 
 #define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
 
-/*
- * Context descriptors.
- *
- * Linear: when less than 1024 SSIDs are supported
- * 2lvl: at most 1024 L1 entries,
- *       1024 lazy entries per table.
- */
+ 
 #define CTXDESC_SPLIT			10
 #define CTXDESC_L2_ENTRIES		(1 << CTXDESC_SPLIT)
 
@@ -300,13 +284,10 @@
 
 #define CTXDESC_CD_1_TTB0_MASK		GENMASK_ULL(51, 4)
 
-/*
- * When the SMMU only supports linear context descriptor tables, pick a
- * reasonable size limit (64kB).
- */
+ 
 #define CTXDESC_LINEAR_CDMAX		ilog2(SZ_64K / (CTXDESC_CD_DWORDS << 3))
 
-/* Command queue */
+ 
 #define CMDQ_ENT_SZ_SHIFT		4
 #define CMDQ_ENT_DWORDS			((1 << CMDQ_ENT_SZ_SHIFT) >> 3)
 #define CMDQ_MAX_SZ_SHIFT		(Q_MAX_SZ_SHIFT - CMDQ_ENT_SZ_SHIFT)
@@ -319,11 +300,7 @@
 
 #define CMDQ_PROD_OWNED_FLAG		Q_OVERFLOW_FLAG
 
-/*
- * This is used to size the command queue and therefore must be at least
- * BITS_PER_LONG so that the valid_map works correctly (it relies on the
- * total number of queue entries being a multiple of BITS_PER_LONG).
- */
+ 
 #define CMDQ_BATCH_ENTRIES		BITS_PER_LONG
 
 #define CMDQ_0_OP			GENMASK_ULL(7, 0)
@@ -376,7 +353,7 @@
 #define CMDQ_SYNC_0_MSIDATA		GENMASK_ULL(63, 32)
 #define CMDQ_SYNC_1_MSIADDR_MASK	GENMASK_ULL(51, 2)
 
-/* Event queue */
+ 
 #define EVTQ_ENT_SZ_SHIFT		5
 #define EVTQ_ENT_DWORDS			((1 << EVTQ_ENT_SZ_SHIFT) >> 3)
 #define EVTQ_MAX_SZ_SHIFT		(Q_MAX_SZ_SHIFT - EVTQ_ENT_SZ_SHIFT)
@@ -402,7 +379,7 @@
 #define EVTQ_2_ADDR			GENMASK_ULL(63, 0)
 #define EVTQ_3_IPA			GENMASK_ULL(51, 12)
 
-/* PRI queue */
+ 
 #define PRIQ_ENT_SZ_SHIFT		4
 #define PRIQ_ENT_DWORDS			((1 << PRIQ_ENT_SZ_SHIFT) >> 3)
 #define PRIQ_MAX_SZ_SHIFT		(Q_MAX_SZ_SHIFT - PRIQ_ENT_SZ_SHIFT)
@@ -419,8 +396,8 @@
 #define PRIQ_1_PRG_IDX			GENMASK_ULL(8, 0)
 #define PRIQ_1_ADDR_MASK		GENMASK_ULL(63, 12)
 
-/* High-level queue structures */
-#define ARM_SMMU_POLL_TIMEOUT_US	1000000 /* 1s! */
+ 
+#define ARM_SMMU_POLL_TIMEOUT_US	1000000  
 #define ARM_SMMU_POLL_SPIN_COUNT	10
 
 #define MSI_IOVA_BASE			0x8000000
@@ -433,11 +410,11 @@ enum pri_resp {
 };
 
 struct arm_smmu_cmdq_ent {
-	/* Common fields */
+	 
 	u8				opcode;
 	bool				substream_valid;
 
-	/* Command-specific fields */
+	 
 	union {
 		#define CMDQ_OP_PREFETCH_CFG	0x1
 		struct {
@@ -526,7 +503,7 @@ struct arm_smmu_ll_queue {
 
 struct arm_smmu_queue {
 	struct arm_smmu_ll_queue	llq;
-	int				irq; /* Wired interrupt */
+	int				irq;  
 
 	__le64				*base;
 	dma_addr_t			base_dma;
@@ -567,7 +544,7 @@ struct arm_smmu_priq {
 	struct arm_smmu_queue		q;
 };
 
-/* High-level stream table and context descriptor structures */
+ 
 struct arm_smmu_strtab_l1_desc {
 	u8				span;
 
@@ -620,7 +597,7 @@ struct arm_smmu_strtab_cfg {
 	u32				strtab_base_cfg;
 };
 
-/* An SMMUv3 instance */
+ 
 struct arm_smmu_device {
 	struct device			*dev;
 	void __iomem			*base;
@@ -661,8 +638,8 @@ struct arm_smmu_device {
 	int				gerr_irq;
 	int				combined_irq;
 
-	unsigned long			ias; /* IPA */
-	unsigned long			oas; /* PA */
+	unsigned long			ias;  
+	unsigned long			oas;  
 	unsigned long			pgsize_bitmap;
 
 #define ARM_SMMU_MAX_ASIDS		(1 << 16)
@@ -677,7 +654,7 @@ struct arm_smmu_device {
 
 	struct arm_smmu_strtab_cfg	strtab_cfg;
 
-	/* IOMMU core code handle */
+	 
 	struct iommu_device		iommu;
 
 	struct rb_root			streams;
@@ -690,7 +667,7 @@ struct arm_smmu_stream {
 	struct rb_node			node;
 };
 
-/* SMMU private data for each master */
+ 
 struct arm_smmu_master {
 	struct arm_smmu_device		*smmu;
 	struct device			*dev;
@@ -706,7 +683,7 @@ struct arm_smmu_master {
 	unsigned int			ssid_bits;
 };
 
-/* SMMU private data for an IOMMU domain */
+ 
 enum arm_smmu_domain_stage {
 	ARM_SMMU_DOMAIN_S1 = 0,
 	ARM_SMMU_DOMAIN_S2,
@@ -716,7 +693,7 @@ enum arm_smmu_domain_stage {
 
 struct arm_smmu_domain {
 	struct arm_smmu_device		*smmu;
-	struct mutex			init_mutex; /* Protects smmu pointer */
+	struct mutex			init_mutex;  
 
 	struct io_pgtable_ops		*pgtbl_ops;
 	bool				stall_enabled;
@@ -766,7 +743,7 @@ void arm_smmu_sva_notifier_synchronize(void);
 struct iommu_domain *arm_smmu_sva_domain_alloc(void);
 void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
 				   struct device *dev, ioasid_t id);
-#else /* CONFIG_ARM_SMMU_V3_SVA */
+#else  
 static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
 {
 	return false;
@@ -809,5 +786,5 @@ static inline void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
 						 ioasid_t id)
 {
 }
-#endif /* CONFIG_ARM_SMMU_V3_SVA */
-#endif /* _ARM_SMMU_V3_H */
+#endif  
+#endif  

@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Intel Corporation. All rights reserved.
- * Intel Visual Sensing Controller ACE Linux driver
- */
 
-/*
- * To set ownership of camera sensor, there is specific command, which
- * is sent via MEI protocol. That's a two-step scheme where the firmware
- * first acks receipt of the command and later responses the command was
- * executed. The command sending function uses "completion" as the
- * synchronization mechanism. The notification for command is received
- * via a mei callback which wakes up the caller. There can be only one
- * outstanding command at a time.
- *
- * The power line of camera sensor is directly connected to IVSC instead
- * of host, when camera sensor ownership is switched to host, sensor is
- * already powered up by firmware.
- */
+ 
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/completion.h>
@@ -32,55 +17,55 @@
 
 #define	MEI_ACE_DRIVER_NAME	"ivsc_ace"
 
-/* indicating driver message */
+ 
 #define	ACE_DRV_MSG		1
-/* indicating set command */
+ 
 #define	ACE_CMD_SET		4
-/* command timeout determined experimentally */
+ 
 #define	ACE_CMD_TIMEOUT		(5 * HZ)
-/* indicating the first command block */
+ 
 #define	ACE_CMD_INIT_BLOCK	1
-/* indicating the last command block */
+ 
 #define	ACE_CMD_FINAL_BLOCK	1
-/* size of camera status notification content */
+ 
 #define	ACE_CAMERA_STATUS_SIZE	5
 
-/* UUID used to get firmware id */
+ 
 #define ACE_GET_FW_ID_UUID UUID_LE(0x6167DCFB, 0x72F1, 0x4584, 0xBF, \
 				   0xE3, 0x84, 0x17, 0x71, 0xAA, 0x79, 0x0B)
 
-/* UUID used to get csi device */
+ 
 #define MEI_CSI_UUID UUID_LE(0x92335FCF, 0x3203, 0x4472, \
 			     0xAF, 0x93, 0x7b, 0x44, 0x53, 0xAC, 0x29, 0xDA)
 
-/* identify firmware event type */
+ 
 enum ace_event_type {
-	/* firmware ready */
+	 
 	ACE_FW_READY = 0x8,
 
-	/* command response */
+	 
 	ACE_CMD_RESPONSE = 0x10,
 };
 
-/* identify camera sensor ownership */
+ 
 enum ace_camera_owner {
 	ACE_CAMERA_IVSC,
 	ACE_CAMERA_HOST,
 };
 
-/* identify the command id supported by firmware IPC */
+ 
 enum ace_cmd_id {
-	/* used to switch camera sensor to host */
+	 
 	ACE_SWITCH_CAMERA_TO_HOST = 0x13,
 
-	/* used to switch camera sensor to IVSC */
+	 
 	ACE_SWITCH_CAMERA_TO_IVSC = 0x14,
 
-	/* used to get firmware id */
+	 
 	ACE_GET_FW_ID = 0x1A,
 };
 
-/* ACE command header structure */
+ 
 struct ace_cmd_hdr {
 	u32 firmware_id : 16;
 	u32 instance_id : 8;
@@ -95,19 +80,19 @@ struct ace_cmd_hdr {
 	u32 _hw_rsvd_2 : 2;
 } __packed;
 
-/* ACE command parameter structure */
+ 
 union ace_cmd_param {
 	uuid_le uuid;
 	u32 param;
 };
 
-/* ACE command structure */
+ 
 struct ace_cmd {
 	struct ace_cmd_hdr hdr;
 	union ace_cmd_param param;
 } __packed;
 
-/* ACE notification header */
+ 
 union ace_notif_hdr {
 	struct _confirm {
 		u32 status : 24;
@@ -148,14 +133,14 @@ union ace_notif_hdr {
 	} __packed response;
 };
 
-/* ACE notification content */
+ 
 union ace_notif_cont {
 	u16 firmware_id;
 	u8 state_notif;
 	u8 camera_status[ACE_CAMERA_STATUS_SIZE];
 };
 
-/* ACE notification structure */
+ 
 struct ace_notif {
 	union ace_notif_hdr hdr;
 	union ace_notif_cont cont;
@@ -164,21 +149,21 @@ struct ace_notif {
 struct mei_ace {
 	struct mei_cl_device *cldev;
 
-	/* command ack */
+	 
 	struct ace_notif cmd_ack;
-	/* command response */
+	 
 	struct ace_notif cmd_response;
-	/* used to wait for command ack and response */
+	 
 	struct completion cmd_completion;
-	/* lock used to prevent multiple call to send command */
+	 
 	struct mutex lock;
 
-	/* used to construct command */
+	 
 	u16 firmware_id;
 
 	struct device *csi_dev;
 
-	/* runtime PM link from ace to csi */
+	 
 	struct device_link *csi_link;
 
 	struct work_struct work;
@@ -223,7 +208,7 @@ static int construct_command(struct mei_ace *ace, struct ace_cmd *cmd,
 	return hdr->param_size + sizeof(cmd->hdr);
 }
 
-/* send command to firmware */
+ 
 static int mei_ace_send(struct mei_ace *ace, struct ace_cmd *cmd,
 			size_t len, bool only_ack)
 {
@@ -254,7 +239,7 @@ static int mei_ace_send(struct mei_ace *ace, struct ace_cmd *cmd,
 		goto out;
 	}
 
-	/* command ack status */
+	 
 	ret = ack_hdr->ack.status;
 	if (ret) {
 		ret = -EIO;
@@ -306,7 +291,7 @@ static int ace_set_camera_owner(struct mei_ace *ace,
 	return ret;
 }
 
-/* the first command downloaded to firmware */
+ 
 static inline int ace_get_firmware_id(struct mei_ace *ace)
 {
 	struct ace_cmd cmd;
@@ -359,7 +344,7 @@ static void handle_command_ack(struct mei_ace *ace,
 	}
 }
 
-/* callback for receive */
+ 
 static void mei_ace_rx(struct mei_cl_device *cldev)
 {
 	struct mei_ace *ace = mei_cldev_get_drvdata(cldev);
@@ -383,10 +368,7 @@ static void mei_ace_rx(struct mei_cl_device *cldev)
 		handle_command_response(ace, &event, ret);
 		break;
 	case ACE_FW_READY:
-		/*
-		 * firmware ready notification sent to driver
-		 * after HECI client connected with firmware.
-		 */
+		 
 		dev_dbg(&cldev->dev, "firmware ready\n");
 		break;
 	default:
@@ -410,7 +392,7 @@ static int mei_ace_setup_dev_link(struct mei_ace *ace)
 		goto err;
 	}
 
-	/* setup link between mei_ace and mei_csi */
+	 
 	ace->csi_link = device_link_add(csi_dev, dev, DL_FLAG_PM_RUNTIME |
 					DL_FLAG_RPM_ACTIVE | DL_FLAG_STATELESS);
 	if (!ace->csi_link) {
@@ -430,7 +412,7 @@ err:
 	return ret;
 }
 
-/* switch camera to host before probe sensor device */
+ 
 static void mei_ace_post_probe_work(struct work_struct *work)
 {
 	struct acpi_device *adev;
@@ -555,7 +537,7 @@ static const struct dev_pm_ops mei_ace_pm_ops = {
 
 static const struct mei_cl_device_id mei_ace_tbl[] = {
 	{ MEI_ACE_DRIVER_NAME, MEI_ACE_UUID, MEI_CL_VERSION_ANY },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(mei, mei_ace_tbl);
 

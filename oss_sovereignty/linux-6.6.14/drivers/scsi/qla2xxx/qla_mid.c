@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+ 
 #include "qla_def.h"
 #include "qla_gbl.h"
 #include "qla_target.h"
@@ -32,7 +29,7 @@ qla24xx_allocate_vp_id(scsi_qla_host_t *vha)
 	struct qla_hw_data *ha = vha->hw;
 	unsigned long flags;
 
-	/* Find an empty slot and assign an vp_id */
+	 
 	mutex_lock(&ha->vport_lock);
 	vp_id = find_first_zero_bit(ha->vp_idx_map, ha->max_npiv_vports + 1);
 	if (vp_id > ha->max_npiv_vports) {
@@ -68,13 +65,7 @@ qla24xx_deallocate_vp_id(scsi_qla_host_t *vha)
 	u32 i, bailout;
 
 	mutex_lock(&ha->vport_lock);
-	/*
-	 * Wait for all pending activities to finish before removing vport from
-	 * the list.
-	 * Lock needs to be held for safe removal from the list (it
-	 * ensures no active vp_list traversal while the vport is removed
-	 * from the queue)
-	 */
+	 
 	bailout = 0;
 	for (i = 0; i < 500; i++) {
 		spin_lock_irqsave(&ha->vport_slock, flags);
@@ -114,7 +105,7 @@ qla24xx_find_vhost_by_name(struct qla_hw_data *ha, uint8_t *port_name)
 	unsigned long flags;
 
 	spin_lock_irqsave(&ha->vport_slock, flags);
-	/* Locate matching device in database. */
+	 
 	list_for_each_entry_safe(vha, tvha, &ha->vp_list, list) {
 		if (!memcmp(port_name, vha->port_name, WWN_SIZE)) {
 			spin_unlock_irqrestore(&ha->vport_slock, flags);
@@ -125,28 +116,11 @@ qla24xx_find_vhost_by_name(struct qla_hw_data *ha, uint8_t *port_name)
 	return NULL;
 }
 
-/*
- * qla2x00_mark_vp_devices_dead
- *	Updates fcport state when device goes offline.
- *
- * Input:
- *	ha = adapter block pointer.
- *	fcport = port structure pointer.
- *
- * Return:
- *	None.
- *
- * Context:
- */
+ 
 static void
 qla2x00_mark_vp_devices_dead(scsi_qla_host_t *vha)
 {
-	/*
-	 * !!! NOTE !!!
-	 * This function, if called in contexts other than vp create, disable
-	 * or delete, please make sure this is synchronized with the
-	 * delete thread.
-	 */
+	 
 	fc_port_t *fcport;
 
 	list_for_each_entry(fcport, &vha->vp_fcports, list) {
@@ -170,7 +144,7 @@ qla24xx_disable_vp(scsi_qla_host_t *vha)
 		if (DBELL_ACTIVE(vha))
 			qla2x00_post_aen_work(vha, FCH_EVT_VENDOR_UNIQUE,
 			    FCH_EVT_VENDOR_UNIQUE_VPORT_DOWN);
-		/* delete sessions and flush sa_indexes */
+		 
 		qla2x00_wait_for_sess_deletion(vha);
 	}
 
@@ -185,7 +159,7 @@ qla24xx_disable_vp(scsi_qla_host_t *vha)
 	if (!vha->hw->flags.edif_enabled)
 		qla2x00_wait_for_sess_deletion(vha);
 
-	/* Remove port id from vp target map */
+	 
 	spin_lock_irqsave(&vha->hw->hardware_lock, flags);
 	qla_update_vp_map(vha, RESET_AL_PA);
 	spin_unlock_irqrestore(&vha->hw->hardware_lock, flags);
@@ -209,7 +183,7 @@ qla24xx_enable_vp(scsi_qla_host_t *vha)
 	struct qla_hw_data *ha = vha->hw;
 	scsi_qla_host_t *base_vha = pci_get_drvdata(ha->pdev);
 
-	/* Check if physical ha port is Up */
+	 
 	if (atomic_read(&base_vha->loop_state) == LOOP_DOWN  ||
 		atomic_read(&base_vha->loop_state) == LOOP_DEAD ||
 		!(ha->current_topology & ISP_CFG_F)) {
@@ -223,7 +197,7 @@ qla24xx_enable_vp(scsi_qla_host_t *vha)
 		goto enable_failed;
 	}
 
-	/* Initialize the new vport unless it is a persistent port */
+	 
 	mutex_lock(&ha->vport_lock);
 	ret = qla24xx_modify_vp_config(vha);
 	mutex_unlock(&ha->vport_lock);
@@ -259,7 +233,7 @@ qla24xx_configure_vp(scsi_qla_host_t *vha)
 		    "receiving of RSCN requests: 0x%x.\n", ret);
 		return;
 	} else {
-		/* Corresponds to SCR enabled */
+		 
 		clear_bit(VP_SCR_NEEDED, &vha->vp_flags);
 	}
 
@@ -325,22 +299,14 @@ qla2x00_vp_abort_isp(scsi_qla_host_t *vha)
 {
 	fc_port_t *fcport;
 
-	/*
-	 * To exclusively reset vport, we need to log it out first.
-	 * Note: This control_vp can fail if ISP reset is already
-	 * issued, this is expected, as the vp would be already
-	 * logged out due to ISP reset.
-	 */
+	 
 	if (!test_bit(ABORT_ISP_ACTIVE, &vha->dpc_flags)) {
 		qla24xx_control_vp(vha, VCE_COMMAND_DISABLE_VPS_LOGO_ALL);
 		list_for_each_entry(fcport, &vha->vp_fcports, list)
 			fcport->logout_on_delete = 0;
 	}
 
-	/*
-	 * Physical port will do most of the abort and recovery work. We can
-	 * just treat it as a loop down
-	 */
+	 
 	if (atomic_read(&vha->loop_state) != LOOP_DOWN) {
 		atomic_set(&vha->loop_state, LOOP_DOWN);
 		qla2x00_mark_all_devices_lost(vha);
@@ -364,10 +330,10 @@ qla2x00_do_dpc_vp(scsi_qla_host_t *vha)
 	ql_dbg(ql_dbg_dpc + ql_dbg_verbose, vha, 0x4012,
 	    "Entering %s vp_flags: 0x%lx.\n", __func__, vha->vp_flags);
 
-	/* Check if Fw is ready to configure VP first */
+	 
 	if (test_bit(VP_CONFIG_OK, &base_vha->vp_flags)) {
 		if (test_and_clear_bit(VP_IDX_ACQUIRED, &vha->vp_flags)) {
-			/* VP acquired. complete port configuration */
+			 
 			ql_dbg(ql_dbg_dpc, vha, 0x4014,
 			    "Configure VP scheduled.\n");
 			qla24xx_configure_vp(vha);
@@ -463,15 +429,15 @@ qla24xx_vport_create_req_sanity_check(struct fc_vport *fc_vport)
 	if (fc_vport->roles != FC_PORT_ROLE_FCP_INITIATOR)
 		return VPCERR_UNSUPPORTED;
 
-	/* Check up the F/W and H/W support NPIV */
+	 
 	if (!ha->flags.npiv_supported)
 		return VPCERR_UNSUPPORTED;
 
-	/* Check up whether npiv supported switch presented */
+	 
 	if (!(ha->switch_cap & FLOGI_MID_SUPPORT))
 		return VPCERR_NO_FABRIC_SUPP;
 
-	/* Check up unique WWPN */
+	 
 	u64_to_wwn(fc_vport->port_name, port_name);
 	if (!memcmp(port_name, base_vha->port_name, WWN_SIZE))
 		return VPCERR_BAD_WWN;
@@ -479,7 +445,7 @@ qla24xx_vport_create_req_sanity_check(struct fc_vport *fc_vport)
 	if (vha)
 		return VPCERR_BAD_WWN;
 
-	/* Check up max-npiv-supports */
+	 
 	if (ha->num_vhosts > ha->max_npiv_vports) {
 		ql_dbg(ql_dbg_vport, vha, 0xa004,
 		    "num_vhosts %ud is bigger "
@@ -508,7 +474,7 @@ qla24xx_create_vhost(struct fc_vport *fc_vport)
 
 	host = vha->host;
 	fc_vport->dd_data = vha;
-	/* New host info */
+	 
 	u64_to_wwn(fc_vport->node_name, vha->node_name);
 	u64_to_wwn(fc_vport->port_name, vha->port_name);
 
@@ -527,10 +493,7 @@ qla24xx_create_vhost(struct fc_vport *fc_vport)
 	set_bit(REGISTER_FDMI_NEEDED, &vha->dpc_flags);
 	set_bit(REGISTER_FC4_NEEDED, &vha->dpc_flags);
 
-	/*
-	 * To fix the issue of processing a parent's RSCN for the vport before
-	 * its SCR is complete.
-	 */
+	 
 	set_bit(VP_SCR_NEEDED, &vha->vp_flags);
 	atomic_set(&vha->loop_state, LOOP_DOWN);
 	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
@@ -647,7 +610,7 @@ qla25xx_delete_rsp_que(struct scsi_qla_host *vha, struct rsp_que *rsp)
 	return ret;
 }
 
-/* Delete all queues for a given vhost */
+ 
 int
 qla25xx_delete_queues(struct scsi_qla_host *vha)
 {
@@ -662,7 +625,7 @@ qla25xx_delete_queues(struct scsi_qla_host *vha)
 		    qp_list_elem)
 			qla2xxx_delete_qpair(vha, qpair);
 	} else {
-		/* Delete request queues */
+		 
 		for (cnt = 1; cnt < ha->max_req_queues; cnt++) {
 			req = ha->req_q_map[cnt];
 			if (req && test_bit(cnt, ha->req_qid_map)) {
@@ -676,7 +639,7 @@ qla25xx_delete_queues(struct scsi_qla_host *vha)
 			}
 		}
 
-		/* Delete response queues */
+		 
 		for (cnt = 1; cnt < ha->max_rsp_queues; cnt++) {
 			rsp = ha->rsp_q_map[cnt];
 			if (rsp && test_bit(cnt, ha->rsp_qid_map)) {
@@ -751,10 +714,10 @@ qla25xx_create_req_que(struct qla_hw_data *ha, uint16_t options,
 		req->rsp = NULL;
 	else
 		req->rsp = ha->rsp_q_map[rsp_que];
-	/* Use alternate PCI bus number */
+	 
 	if (MSB(req->rid))
 		options |= BIT_4;
-	/* Use alternate PCI devfn */
+	 
 	if (LSB(req->rid))
 		options |= BIT_5;
 	req->options = options;
@@ -821,7 +784,7 @@ static void qla_do_work(struct work_struct *work)
 
 }
 
-/* create response queue */
+ 
 int
 qla25xx_create_rsp_que(struct qla_hw_data *ha, uint16_t options,
     uint8_t vp_idx, uint16_t rid, struct qla_qpair *qpair, bool startqp)
@@ -869,17 +832,17 @@ qla25xx_create_rsp_que(struct qla_hw_data *ha, uint16_t options,
 	ql_dbg(ql_dbg_init, base_vha, 0x00e4,
 	    "rsp queue_id=%d rid=%d vp_idx=%d hw=%p.\n",
 	    que_id, rsp->rid, rsp->vp_idx, rsp->hw);
-	/* Use alternate PCI bus number */
+	 
 	if (MSB(rsp->rid))
 		options |= BIT_4;
-	/* Use alternate PCI devfn */
+	 
 	if (LSB(rsp->rid))
 		options |= BIT_5;
-	/* Enable MSIX handshake mode on for uncapable adapters */
+	 
 	if (!IS_MSIX_NACK_CAPABLE(ha))
 		options |= BIT_6;
 
-	/* Set option to indicate response queue creation */
+	 
 	options |= BIT_1;
 
 	rsp->options = options;
@@ -933,16 +896,10 @@ static void qla_ctrlvp_sp_done(srb_t *sp, int res)
 {
 	if (sp->comp)
 		complete(sp->comp);
-	/* don't free sp here. Let the caller do the free */
+	 
 }
 
-/**
- * qla24xx_control_vp() - Enable a virtual port for given host
- * @vha:	adapter block pointer
- * @cmd:	command type to be sent for enable virtual port
- *
- * Return:	qla2xxx local function return status code.
- */
+ 
 int qla24xx_control_vp(scsi_qla_host_t *vha, int cmd)
 {
 	int rval = QLA_MEMORY_ALLOC_FAILED;
@@ -958,7 +915,7 @@ int qla24xx_control_vp(scsi_qla_host_t *vha, int cmd)
 	if (vp_index == 0 || vp_index >= ha->max_npiv_vports)
 		return QLA_PARAMETER_ERROR;
 
-	/* ref: INIT */
+	 
 	sp = qla2x00_get_sp(base_vha, NULL, GFP_KERNEL);
 	if (!sp)
 		return rval;
@@ -1001,7 +958,7 @@ int qla24xx_control_vp(scsi_qla_host_t *vha, int cmd)
 		break;
 	}
 done:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 	return rval;
 }
@@ -1020,7 +977,7 @@ struct scsi_qla_host *qla_find_host_by_vp_idx(struct scsi_qla_host *vha, uint16_
 	return NULL;
 }
 
-/* vport_slock to be held by the caller */
+ 
 void
 qla_update_vp_map(struct scsi_qla_host *vha, int cmd)
 {
@@ -1133,7 +1090,7 @@ void qla_free_buf_pool(struct qla_qpair *qp)
 	kfree(qp->buf_pool.buf_map);
 }
 
-/* it is assume qp->qp_lock is held at this point */
+ 
 int qla_get_buf(struct scsi_qla_host *vha, struct qla_qpair *qp, struct qla_buf_dsc *dsc)
 {
 	u16 tag, i = 0;
@@ -1228,18 +1185,18 @@ static void __qla_adjust_buf(struct qla_qpair *qp)
 
 	if (qp->buf_pool.prev_max > qp->buf_pool.max_used &&
 	    qp->buf_pool.num_alloc > qp->buf_pool.max_used) {
-		/* down trend */
+		 
 		trim = qp->buf_pool.num_alloc - qp->buf_pool.max_used;
 		trim  = (trim * 10) / 100;
 		trim = trim ? trim : 1;
 		qla_trim_buf(qp, trim);
 	} else if (!qp->buf_pool.prev_max  && !qp->buf_pool.max_used) {
-		/* 2 periods of no io */
+		 
 		qla_trim_buf(qp, qp->buf_pool.num_alloc);
 	}
 }
 
-/* it is assume qp->qp_lock is held at this point */
+ 
 void qla_put_buf(struct qla_qpair *qp, struct qla_buf_dsc *dsc)
 {
 	if (dsc->tag == TAG_FREED)
@@ -1281,7 +1238,7 @@ void qla_adjust_buf(struct scsi_qla_host *vha)
 			continue;
 
 		if (qp->buf_pool.take_snapshot) {
-			/* no io has gone through in the last EXPIRE period */
+			 
 			spin_lock_irqsave(qp->qp_lock_ptr, flags);
 			__qla_adjust_buf(qp);
 			spin_unlock_irqrestore(qp->qp_lock_ptr, flags);

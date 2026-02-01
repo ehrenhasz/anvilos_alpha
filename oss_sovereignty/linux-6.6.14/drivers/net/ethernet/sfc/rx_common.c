@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "net_driver.h"
 #include <linux/module.h>
@@ -15,22 +8,16 @@
 #include "nic.h"
 #include "rx_common.h"
 
-/* This is the percentage fill level below which new RX descriptors
- * will be added to the RX descriptor ring.
- */
+ 
 static unsigned int rx_refill_threshold;
 module_param(rx_refill_threshold, uint, 0444);
 MODULE_PARM_DESC(rx_refill_threshold,
 		 "RX descriptor ring refill threshold (%)");
 
-/* RX maximum head room required.
- *
- * This must be at least 1 to prevent overflow, plus one packet-worth
- * to allow pipelined receives.
- */
+ 
 #define EFX_RXD_HEAD_ROOM (1 + EFX_RX_MAX_FRAGS)
 
-/* Check the RX page recycle ring for a page that can be reused. */
+ 
 static struct page *efx_reuse_page(struct efx_rx_queue *rx_queue)
 {
 	struct efx_nic *efx = rx_queue->efx;
@@ -46,11 +33,11 @@ static struct page *efx_reuse_page(struct efx_rx_queue *rx_queue)
 		return NULL;
 
 	rx_queue->page_ring[index] = NULL;
-	/* page_remove cannot exceed page_add. */
+	 
 	if (rx_queue->page_remove != rx_queue->page_add)
 		++rx_queue->page_remove;
 
-	/* If page_count is 1 then we hold the only reference to this page. */
+	 
 	if (page_count(page) == 1) {
 		++rx_queue->page_recycle_count;
 		return page;
@@ -66,10 +53,7 @@ static struct page *efx_reuse_page(struct efx_rx_queue *rx_queue)
 	return NULL;
 }
 
-/* Attempt to recycle the page if there is an RX recycle ring; the page can
- * only be added if this is the final RX buffer, to prevent pages being used in
- * the descriptor ring and appearing in the recycle ring simultaneously.
- */
+ 
 static void efx_recycle_rx_page(struct efx_channel *channel,
 				struct efx_rx_buffer *rx_buf)
 {
@@ -78,7 +62,7 @@ static void efx_recycle_rx_page(struct efx_channel *channel,
 	struct page *page = rx_buf->page;
 	unsigned int index;
 
-	/* Only recycle the page after processing the final buffer. */
+	 
 	if (!(rx_buf->flags & EFX_RX_BUF_LAST_IN_PAGE))
 		return;
 
@@ -87,10 +71,7 @@ static void efx_recycle_rx_page(struct efx_channel *channel,
 		unsigned int read_index = rx_queue->page_remove &
 			rx_queue->page_ptr_mask;
 
-		/* The next slot in the recycle ring is available, but
-		 * increment page_remove if the read pointer currently
-		 * points here.
-		 */
+		 
 		if (read_index == index)
 			++rx_queue->page_remove;
 		rx_queue->page_ring[index] = page;
@@ -102,7 +83,7 @@ static void efx_recycle_rx_page(struct efx_channel *channel,
 	put_page(rx_buf->page);
 }
 
-/* Recycle the pages that are used by buffers that have just been received. */
+ 
 void efx_recycle_rx_pages(struct efx_channel *channel,
 			  struct efx_rx_buffer *rx_buf,
 			  unsigned int n_frags)
@@ -153,7 +134,7 @@ static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
 	if (unlikely(!rx_queue->page_ring))
 		return;
 
-	/* Unmap and release the pages in the recycle ring. Remove the ring. */
+	 
 	for (i = 0; i <= rx_queue->page_ptr_mask; i++) {
 		struct page *page = rx_queue->page_ring[i];
 		struct efx_rx_page_state *state;
@@ -174,11 +155,11 @@ static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
 static void efx_fini_rx_buffer(struct efx_rx_queue *rx_queue,
 			       struct efx_rx_buffer *rx_buf)
 {
-	/* Release the page reference we hold for the buffer. */
+	 
 	if (rx_buf->page)
 		put_page(rx_buf->page);
 
-	/* If this is the last buffer in a page, unmap and free it. */
+	 
 	if (rx_buf->flags & EFX_RX_BUF_LAST_IN_PAGE) {
 		efx_unmap_rx_buffer(rx_queue->efx, rx_buf);
 		efx_free_rx_buffers(rx_queue, rx_buf, 1);
@@ -192,7 +173,7 @@ int efx_probe_rx_queue(struct efx_rx_queue *rx_queue)
 	unsigned int entries;
 	int rc;
 
-	/* Create the smallest power-of-two aligned ring */
+	 
 	entries = max(roundup_pow_of_two(efx->rxq_entries), EFX_MIN_DMAQ_SIZE);
 	EFX_WARN_ON_PARANOID(entries > EFX_MAX_DMAQ_SIZE);
 	rx_queue->ptr_mask = entries - 1;
@@ -202,7 +183,7 @@ int efx_probe_rx_queue(struct efx_rx_queue *rx_queue)
 		  efx_rx_queue_index(rx_queue), efx->rxq_entries,
 		  rx_queue->ptr_mask);
 
-	/* Allocate RX buffers */
+	 
 	rx_queue->buffer = kcalloc(entries, sizeof(*rx_queue->buffer),
 				   GFP_KERNEL);
 	if (!rx_queue->buffer)
@@ -226,7 +207,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
 	netif_dbg(rx_queue->efx, drv, rx_queue->efx->net_dev,
 		  "initialising RX queue %d\n", efx_rx_queue_index(rx_queue));
 
-	/* Initialise ptr fields */
+	 
 	rx_queue->added_count = 0;
 	rx_queue->notified_count = 0;
 	rx_queue->granted_count = 0;
@@ -240,7 +221,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
 	rx_queue->page_recycle_failed = 0;
 	rx_queue->page_recycle_full = 0;
 
-	/* Initialise limit fields */
+	 
 	max_fill = efx->rxq_entries - EFX_RXD_HEAD_ROOM;
 	max_trigger =
 		max_fill - efx->rx_pages_per_batch * efx->rx_bufs_per_page;
@@ -256,7 +237,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
 	rx_queue->fast_fill_trigger = trigger;
 	rx_queue->refill_enabled = true;
 
-	/* Initialise XDP queue information */
+	 
 	rc = xdp_rxq_info_reg(&rx_queue->xdp_rxq_info, efx->net_dev,
 			      rx_queue->core_index, 0);
 
@@ -269,7 +250,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
 		rx_queue->xdp_rxq_info_valid = true;
 	}
 
-	/* Set up RX descriptor ring */
+	 
 	efx_nic_init_rx(rx_queue);
 }
 
@@ -285,7 +266,7 @@ void efx_fini_rx_queue(struct efx_rx_queue *rx_queue)
 	if (rx_queue->grant_credits)
 		flush_work(&rx_queue->grant_work);
 
-	/* Release RX buffers from the current read ptr to the write ptr */
+	 
 	if (rx_queue->buffer) {
 		for (i = rx_queue->removed_count; i < rx_queue->added_count;
 		     i++) {
@@ -315,9 +296,7 @@ void efx_remove_rx_queue(struct efx_rx_queue *rx_queue)
 	rx_queue->buffer = NULL;
 }
 
-/* Unmap a DMA-mapped page.  This function is only called for the final RX
- * buffer in a page.
- */
+ 
 void efx_unmap_rx_buffer(struct efx_nic *efx,
 			 struct efx_rx_buffer *rx_buf)
 {
@@ -350,7 +329,7 @@ void efx_rx_slow_fill(struct timer_list *t)
 {
 	struct efx_rx_queue *rx_queue = from_timer(rx_queue, t, slow_fill);
 
-	/* Post an event to cause NAPI to run and refill the queue */
+	 
 	efx_nic_generate_fill_event(rx_queue);
 	++rx_queue->slow_fill_count;
 }
@@ -360,15 +339,7 @@ void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue)
 	mod_timer(&rx_queue->slow_fill, jiffies + msecs_to_jiffies(10));
 }
 
-/* efx_init_rx_buffers - create EFX_RX_BATCH page-based RX buffers
- *
- * @rx_queue:		Efx RX queue
- *
- * This allocates a batch of pages, maps them for DMA, and populates
- * struct efx_rx_buffers for each one. Return a negative error code or
- * 0 on success. If a single page can be used for multiple buffers,
- * then the page will either be inserted fully, or not at all.
- */
+ 
 static int efx_init_rx_buffers(struct efx_rx_queue *rx_queue, bool atomic)
 {
 	unsigned int page_offset, index, count;
@@ -442,17 +413,7 @@ void efx_rx_config_page_split(struct efx_nic *efx)
 					       efx->rx_bufs_per_page);
 }
 
-/* efx_fast_push_rx_descriptors - push new RX descriptors quickly
- * @rx_queue:		RX descriptor queue
- *
- * This will aim to fill the RX descriptor queue up to
- * @rx_queue->@max_fill. If there is insufficient atomic
- * memory to do so, a slow fill will be scheduled.
- *
- * The caller must provide serialisation (none is used here). In practise,
- * this means this function must run from the NAPI handler, or be called
- * when NAPI is disabled.
- */
+ 
 void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
 {
 	struct efx_nic *efx = rx_queue->efx;
@@ -462,13 +423,13 @@ void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
 	if (!rx_queue->refill_enabled)
 		return;
 
-	/* Calculate current fill level, and exit if we don't need to fill */
+	 
 	fill_level = (rx_queue->added_count - rx_queue->removed_count);
 	EFX_WARN_ON_ONCE_PARANOID(fill_level > rx_queue->efx->rxq_entries);
 	if (fill_level >= rx_queue->fast_fill_trigger)
 		goto out;
 
-	/* Record minimum fill level */
+	 
 	if (unlikely(fill_level < rx_queue->min_fill)) {
 		if (fill_level)
 			rx_queue->min_fill = fill_level;
@@ -487,7 +448,7 @@ void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
 	do {
 		rc = efx_init_rx_buffers(rx_queue, atomic);
 		if (unlikely(rc)) {
-			/* Ensure that we don't leave the rx queue empty */
+			 
 			efx_schedule_slow_fill(rx_queue);
 			goto out;
 		}
@@ -503,9 +464,7 @@ void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
 		efx_nic_notify_rx_desc(rx_queue);
 }
 
-/* Pass a received packet up through GRO.  GRO can handle pages
- * regardless of checksum state and skbs with a good checksum.
- */
+ 
 void
 efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
 		  unsigned int n_frags, u8 *eh, __wsum csum)
@@ -556,37 +515,33 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
 	napi_gro_frags(napi);
 }
 
-/* RSS contexts.  We're using linked lists and crappy O(n) algorithms, because
- * (a) this is an infrequent control-plane operation and (b) n is small (max 64)
- */
+ 
 struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
 {
 	struct list_head *head = &efx->rss_context.list;
 	struct efx_rss_context *ctx, *new;
-	u32 id = 1; /* Don't use zero, that refers to the master RSS context */
+	u32 id = 1;  
 
 	WARN_ON(!mutex_is_locked(&efx->rss_lock));
 
-	/* Search for first gap in the numbering */
+	 
 	list_for_each_entry(ctx, head, list) {
 		if (ctx->user_id != id)
 			break;
 		id++;
-		/* Check for wrap.  If this happens, we have nearly 2^32
-		 * allocated RSS contexts, which seems unlikely.
-		 */
+		 
 		if (WARN_ON_ONCE(!id))
 			return NULL;
 	}
 
-	/* Create the new entry */
+	 
 	new = kmalloc(sizeof(*new), GFP_KERNEL);
 	if (!new)
 		return NULL;
 	new->context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
 	new->rx_hash_udp_4tuple = false;
 
-	/* Insert the new entry into the gap */
+	 
 	new->user_id = id;
 	list_add_tail(&new->list, &ctx->list);
 	return new;
@@ -621,15 +576,7 @@ void efx_set_default_rx_indir_table(struct efx_nic *efx,
 			ethtool_rxfh_indir_default(i, efx->rss_spread);
 }
 
-/**
- * efx_filter_is_mc_recipient - test whether spec is a multicast recipient
- * @spec: Specification to test
- *
- * Return: %true if the specification is a non-drop RX filter that
- * matches a local MAC address I/G bit value of 1 or matches a local
- * IPv4 or IPv6 address value in the respective multicast address
- * range.  Otherwise %false.
- */
+ 
 bool efx_filter_is_mc_recipient(const struct efx_filter_spec *spec)
 {
 	if (!(spec->flags & EFX_FILTER_FLAG_RX) ||
@@ -682,25 +629,20 @@ bool efx_rps_check_rule(struct efx_arfs_rule *rule, unsigned int filter_idx,
 			bool *force)
 {
 	if (rule->filter_id == EFX_ARFS_FILTER_ID_PENDING) {
-		/* ARFS is currently updating this entry, leave it */
+		 
 		return false;
 	}
 	if (rule->filter_id == EFX_ARFS_FILTER_ID_ERROR) {
-		/* ARFS tried and failed to update this, so it's probably out
-		 * of date.  Remove the filter and the ARFS rule entry.
-		 */
+		 
 		rule->filter_id = EFX_ARFS_FILTER_ID_REMOVING;
 		*force = true;
 		return true;
-	} else if (WARN_ON(rule->filter_id != filter_idx)) { /* can't happen */
-		/* ARFS has moved on, so old filter is not needed.  Since we did
-		 * not mark the rule with EFX_ARFS_FILTER_ID_REMOVING, it will
-		 * not be removed by efx_rps_hash_del() subsequently.
-		 */
+	} else if (WARN_ON(rule->filter_id != filter_idx)) {  
+		 
 		*force = true;
 		return true;
 	}
-	/* Remove it iff ARFS wants to. */
+	 
 	return true;
 }
 
@@ -773,12 +715,7 @@ void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
 	hlist_for_each(node, head) {
 		rule = container_of(node, struct efx_arfs_rule, node);
 		if (efx_filter_spec_equal(spec, &rule->spec)) {
-			/* Someone already reused the entry.  We know that if
-			 * this check doesn't fire (i.e. filter_id == REMOVING)
-			 * then the REMOVING mark was put there by our caller,
-			 * because caller is holding a lock on filter table and
-			 * only holders of that lock set REMOVING.
-			 */
+			 
 			if (rule->filter_id != EFX_ARFS_FILTER_ID_REMOVING)
 				return;
 			hlist_del(node);
@@ -786,7 +723,7 @@ void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
 			return;
 		}
 	}
-	/* We didn't find it. */
+	 
 	WARN_ON(1);
 }
 #endif
@@ -867,17 +804,12 @@ static void efx_filter_rfs_work(struct work_struct *data)
 
 	rc = efx->type->filter_insert(efx, &req->spec, true);
 	if (rc >= 0)
-		/* Discard 'priority' part of EF10+ filter ID (mcdi_filters) */
+		 
 		rc %= efx->type->max_rx_ip_filters;
 	if (efx->rps_hash_table) {
 		spin_lock_bh(&efx->rps_hash_lock);
 		rule = efx_rps_hash_find(efx, &req->spec);
-		/* The rule might have already gone, if someone else's request
-		 * for the same spec was already worked and then expired before
-		 * we got around to our work.  In that case we have nothing
-		 * tying us to an arfs_id, meaning that as soon as the filter
-		 * is considered for expiry it will be removed.
-		 */
+		 
 		if (rule) {
 			if (rc < 0)
 				rule->filter_id = EFX_ARFS_FILTER_ID_ERROR;
@@ -888,9 +820,7 @@ static void efx_filter_rfs_work(struct work_struct *data)
 		spin_unlock_bh(&efx->rps_hash_lock);
 	}
 	if (rc >= 0) {
-		/* Remember this so we can check whether to expire the filter
-		 * later.
-		 */
+		 
 		mutex_lock(&efx->rps_mutex);
 		if (channel->rps_flow_id[rc] == RPS_FLOW_ID_INVALID)
 			channel->rfs_filter_count++;
@@ -928,14 +858,12 @@ static void efx_filter_rfs_work(struct work_struct *data)
 				  req->spec.loc_host, ntohs(req->spec.loc_port),
 				  req->rxq_index, req->flow_id, rc, arfs_id);
 		channel->n_rfs_failed++;
-		/* We're overloading the NIC's filter tables, so let's do a
-		 * chunk of extra expiry work.
-		 */
+		 
 		__efx_filter_rfs_expire(channel, min(channel->rfs_filter_count,
 						     100u));
 	}
 
-	/* Release references */
+	 
 	clear_bit(slot_idx, &efx->rps_slot_map);
 	dev_put(req->net_dev);
 }
@@ -951,7 +879,7 @@ int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
 	bool new;
 	int rc;
 
-	/* find a free slot */
+	 
 	for (slot_idx = 0; slot_idx < EFX_RPS_MAX_IN_FLIGHT; slot_idx++)
 		if (!test_and_set_bit(slot_idx, &efx->rps_slot_map))
 			break;
@@ -1002,7 +930,7 @@ int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
 	req->spec.loc_port = fk.ports.dst;
 
 	if (efx->rps_hash_table) {
-		/* Add it to ARFS hash table */
+		 
 		spin_lock(&efx->rps_hash_lock);
 		rule = efx_rps_hash_add(efx, &req->spec, &new);
 		if (!rule) {
@@ -1012,7 +940,7 @@ int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
 		if (new)
 			rule->arfs_id = efx->rps_next_id++ % RPS_NO_FILTER;
 		rc = rule->arfs_id;
-		/* Skip if existing or pending filter already does the right thing */
+		 
 		if (!new && rule->rxq_index == rxq_index &&
 		    rule->filter_id >= EFX_ARFS_FILTER_ID_PENDING)
 			goto out_unlock;
@@ -1020,15 +948,11 @@ int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
 		rule->filter_id = EFX_ARFS_FILTER_ID_PENDING;
 		spin_unlock(&efx->rps_hash_lock);
 	} else {
-		/* Without an ARFS hash table, we just use arfs_id 0 for all
-		 * filters.  This means if multiple flows hash to the same
-		 * flow_id, all but the most recently touched will be eligible
-		 * for expiry.
-		 */
+		 
 		rc = 0;
 	}
 
-	/* Queue the request */
+	 
 	dev_hold(req->net_dev = net_dev);
 	INIT_WORK(&req->work, efx_filter_rfs_work);
 	req->rxq_index = rxq_index;
@@ -1070,11 +994,7 @@ bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota)
 		}
 		if (++index == size)
 			index = 0;
-		/* If we were called with a quota that exceeds the total number
-		 * of filters in the table (which shouldn't happen, but could
-		 * if two callers race), ensure that we don't loop forever -
-		 * stop when we've examined every row of the table.
-		 */
+		 
 		if (index == start)
 			break;
 	}
@@ -1084,4 +1004,4 @@ bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota)
 	return true;
 }
 
-#endif /* CONFIG_RFS_ACCEL */
+#endif  

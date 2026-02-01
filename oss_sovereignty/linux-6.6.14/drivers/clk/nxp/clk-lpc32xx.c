@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Vladimir Zapolskiy <vz@mleia.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -14,7 +12,7 @@
 #undef pr_fmt
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
-/* Common bitfield definitions for x397 PLL (lock), USB PLL and HCLK PLL */
+ 
 #define PLL_CTRL_ENABLE			BIT(16)
 #define PLL_CTRL_BYPASS			BIT(15)
 #define PLL_CTRL_DIRECT			BIT(14)
@@ -24,7 +22,7 @@
 #define PLL_CTRL_FEEDDIV		(0xFF << 1)
 #define PLL_CTRL_LOCK			BIT(0)
 
-/* Clock registers on System Control Block */
+ 
 #define LPC32XX_CLKPWR_DEBUG_CTRL	0x00
 #define LPC32XX_CLKPWR_USB_DIV		0x1C
 #define LPC32XX_CLKPWR_HCLKDIV_CTRL	0x40
@@ -57,7 +55,7 @@
 #define LPC32XX_CLKPWR_UART_CLK_CTRL	0xE4
 #define LPC32XX_CLKPWR_DMA_CLK_CTRL	0xE8
 
-/* Clock registers on USB controller */
+ 
 #define LPC32XX_USB_CLK_CTRL		0xF4
 #define LPC32XX_USB_CLK_STS		0xF8
 
@@ -82,13 +80,13 @@ enum {
 };
 
 enum {
-	/* Start from the last defined clock in dt bindings */
+	 
 	LPC32XX_CLK_ADC_DIV = LPC32XX_CLK_PERIPH + 1,
 	LPC32XX_CLK_ADC_RTC,
 	LPC32XX_CLK_TEST1,
 	LPC32XX_CLK_TEST2,
 
-	/* System clocks, PLL 397x and HCLK PLL clocks */
+	 
 	LPC32XX_CLK_OSC,
 	LPC32XX_CLK_SYS,
 	LPC32XX_CLK_PLL397X,
@@ -98,25 +96,25 @@ enum {
 	LPC32XX_CLK_ARM,
 	LPC32XX_CLK_ARM_VFP,
 
-	/* USB clocks */
+	 
 	LPC32XX_CLK_USB_PLL,
 	LPC32XX_CLK_USB_DIV,
 	LPC32XX_CLK_USB,
 
-	/* Only one control PWR_CTRL[10] for both muxes */
+	 
 	LPC32XX_CLK_PERIPH_HCLK_MUX,
 	LPC32XX_CLK_PERIPH_ARM_MUX,
 
-	/* Only one control PWR_CTRL[2] for all three muxes */
+	 
 	LPC32XX_CLK_SYSCLK_PERIPH_MUX,
 	LPC32XX_CLK_SYSCLK_HCLK_MUX,
 	LPC32XX_CLK_SYSCLK_ARM_MUX,
 
-	/* Two clock sources external to the driver */
+	 
 	LPC32XX_CLK_XTAL_32K,
 	LPC32XX_CLK_XTAL,
 
-	/* Renumbered USB clocks, may have a parent from SCB table */
+	 
 	LPC32XX_CLK_USB_OFFSET,
 	LPC32XX_CLK_USB_I2C = LPC32XX_USB_CLK_I2C + LPC32XX_CLK_USB_OFFSET,
 	LPC32XX_CLK_USB_DEV = LPC32XX_USB_CLK_DEVICE + LPC32XX_CLK_USB_OFFSET,
@@ -124,10 +122,10 @@ enum {
 	LPC32XX_CLK_USB_OTG = LPC32XX_USB_CLK_OTG + LPC32XX_CLK_USB_OFFSET,
 	LPC32XX_CLK_USB_AHB = LPC32XX_USB_CLK_AHB + LPC32XX_CLK_USB_OFFSET,
 
-	/* Stub for composite clocks */
+	 
 	LPC32XX_CLK__NULL,
 
-	/* Subclocks of composite clocks, clocks above are for CCF */
+	 
 	LPC32XX_CLK_PWM1_MUX,
 	LPC32XX_CLK_PWM1_DIV,
 	LPC32XX_CLK_PWM1_GATE,
@@ -248,10 +246,7 @@ static const struct clk_proto_t clk_proto[LPC32XX_CLK_CCF_MAX] __initconst = {
 	LPC32XX_CLK_DEFINE(SSP0, "ssp0", 0x0, LPC32XX_CLK_HCLK),
 	LPC32XX_CLK_DEFINE(SSP1, "ssp1", 0x0, LPC32XX_CLK_HCLK),
 
-	/*
-	 * CLK_GET_RATE_NOCACHE is needed, if UART clock is disabled, its
-	 * divider register does not contain information about selected rate.
-	 */
+	 
 	LPC32XX_CLK_DEFINE(UART3, "uart3", CLK_GET_RATE_NOCACHE,
 		LPC32XX_CLK_PERIPH, LPC32XX_CLK_HCLK),
 	LPC32XX_CLK_DEFINE(UART4, "uart4", CLK_GET_RATE_NOCACHE,
@@ -291,7 +286,7 @@ static const struct clk_proto_t clk_proto[LPC32XX_CLK_CCF_MAX] __initconst = {
 		LPC32XX_CLK_HCLK, LPC32XX_CLK_PERIPH, LPC32XX_CLK_USB,
 		LPC32XX_CLK_OSC, LPC32XX_CLK_PLL397X),
 
-	/* USB controller clocks */
+	 
 	LPC32XX_CLK_DEFINE(USB_AHB, "usb_ahb", 0x0, LPC32XX_CLK_USB),
 	LPC32XX_CLK_DEFINE(USB_OTG, "usb_otg", 0x0, LPC32XX_CLK_USB_AHB),
 	LPC32XX_CLK_DEFINE(USB_I2C, "usb_i2c", 0x0, LPC32XX_CLK_USB_AHB),
@@ -536,7 +531,7 @@ static int clk_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	u32 val;
 	unsigned long new_rate;
 
-	/* Validate PLL clock parameters computed on round rate stage */
+	 
 	switch (clk->mode) {
 	case PLL_DIRECT:
 		val = PLL_CTRL_DIRECT;
@@ -572,7 +567,7 @@ static int clk_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 		return -EINVAL;
 	}
 
-	/* Sanity check that round rate is equal to the requested one */
+	 
 	if (new_rate != rate)
 		return -EINVAL;
 
@@ -592,19 +587,19 @@ static long clk_hclk_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	if (rate > 266500000)
 		return -EINVAL;
 
-	/* Have to check all 20 possibilities to find the minimal M */
+	 
 	for (p_i = 4; p_i >= 0; p_i--) {
 		for (n_i = 4; n_i > 0; n_i--) {
 			m_i = div64_u64(o * n_i * (1 << p_i), i);
 
-			/* Check for valid PLL parameter constraints */
+			 
 			if (!(m_i && m_i <= 256
 			      && pll_is_valid(i, n_i, 1000000, 27000000)
 			      && pll_is_valid(i * m_i * (1 << p_i), n_i,
 					      156000000, 320000000)))
 				continue;
 
-			/* Store some intermediate valid parameters */
+			 
 			if (o * n_i * (1 << p_i) - i * m_i <= d) {
 				m = m_i;
 				n = n_i;
@@ -624,7 +619,7 @@ static long clk_hclk_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	clk->n_div = n;
 	clk->p_div = p;
 
-	/* Set only direct or non-integer mode of PLL */
+	 
 	if (!p)
 		clk->mode = PLL_DIRECT;
 	else
@@ -651,27 +646,22 @@ static long clk_usb_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 
 	pr_debug("%s: %lu/%lu\n", clk_hw_get_name(hw), *parent_rate, rate);
 
-	/*
-	 * The only supported USB clock is 48MHz, with PLL internal constraints
-	 * on Fclkin, Fcco and Fref this implies that Fcco must be 192MHz
-	 * and post-divider must be 4, this slightly simplifies calculation of
-	 * USB divider, USB PLL N and M parameters.
-	 */
+	 
 	if (rate != 48000000)
 		return -EINVAL;
 
-	/* USB divider clock */
+	 
 	usb_div_hw = clk_hw_get_parent_by_index(hw, 0);
 	if (!usb_div_hw)
 		return -EINVAL;
 
-	/* Main oscillator clock */
+	 
 	osc_hw = clk_hw_get_parent_by_index(usb_div_hw, 0);
 	if (!osc_hw)
 		return -EINVAL;
-	o = clk_hw_get_rate(osc_hw);	/* must be in range 1..20 MHz */
+	o = clk_hw_get_rate(osc_hw);	 
 
-	/* Check if valid USB divider and USB PLL parameters exists */
+	 
 	for (d_i = 16; d_i >= 1; d_i--) {
 		for (n_i = 1; n_i <= 4; n_i++) {
 			m = div64_u64(192000000 * d_i * n_i, o);
@@ -730,11 +720,7 @@ static int clk_ddram_enable(struct clk_hw *hw)
 	regmap_read(clk_regmap, clk->reg, &val);
 	hclk_div = val & clk->busy_mask;
 
-	/*
-	 * DDRAM clock must be 2 times higher than HCLK,
-	 * this implies DDRAM clock can not be enabled,
-	 * if HCLK clock rate is equal to ARM clock rate
-	 */
+	 
 	if (hclk_div == 0x0 || hclk_div == (BIT(1) | BIT(0)))
 		return -EINVAL;
 
@@ -961,7 +947,7 @@ static long clk_divider_round_rate(struct clk_hw *hw, unsigned long rate,
 	struct lpc32xx_clk_div *divider = to_lpc32xx_div(hw);
 	unsigned int bestdiv;
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		regmap_read(clk_regmap, divider->reg, &bestdiv);
 		bestdiv >>= divider->shift;
@@ -1231,20 +1217,20 @@ static struct clk_hw_proto clk_hw_proto[LPC32XX_CLK_HW_MAX] = {
 	LPC32XX_DEFINE_DIV(HCLK_DIV, HCLKDIV_CTRL, 0, 2, clk_hclk_div_table,
 			   CLK_DIVIDER_READ_ONLY),
 
-	/* Register 3 read-only muxes with a single control PWR_CTRL[2] */
+	 
 	LPC32XX_DEFINE_MUX(SYSCLK_PERIPH_MUX, PWR_CTRL, 2, 0x1, NULL,
 			   CLK_MUX_READ_ONLY),
 	LPC32XX_DEFINE_MUX(SYSCLK_HCLK_MUX, PWR_CTRL, 2, 0x1, NULL,
 			   CLK_MUX_READ_ONLY),
 	LPC32XX_DEFINE_MUX(SYSCLK_ARM_MUX, PWR_CTRL, 2, 0x1, NULL,
 			   CLK_MUX_READ_ONLY),
-	/* Register 2 read-only muxes with a single control PWR_CTRL[10] */
+	 
 	LPC32XX_DEFINE_MUX(PERIPH_HCLK_MUX, PWR_CTRL, 10, 0x1, NULL,
 			   CLK_MUX_READ_ONLY),
 	LPC32XX_DEFINE_MUX(PERIPH_ARM_MUX, PWR_CTRL, 10, 0x1, NULL,
 			   CLK_MUX_READ_ONLY),
 
-	/* 3 always on gates with a single control PWR_CTRL[0] same as OSC */
+	 
 	LPC32XX_DEFINE_GATE(PERIPH, PWR_CTRL, 0, CLK_GATE_SET_TO_DISABLE),
 	LPC32XX_DEFINE_GATE(HCLK, PWR_CTRL, 0, CLK_GATE_SET_TO_DISABLE),
 	LPC32XX_DEFINE_GATE(ARM, PWR_CTRL, 0, CLK_GATE_SET_TO_DISABLE),
@@ -1349,24 +1335,12 @@ static struct clk_hw_proto clk_hw_proto[LPC32XX_CLK_HW_MAX] = {
 	LPC32XX_DEFINE_CLK(MLC, FLASHCLK_CTRL,
 			   BIT(1), BIT(2) | BIT(1), 0x0, BIT(1),
 			   BIT(2) | BIT(0), BIT(2) | BIT(0), clk_mask_ops),
-	/*
-	 * ADC/TS clock unfortunately cannot be registered as a composite one
-	 * due to a different connection of gate, div and mux, e.g. gating it
-	 * won't mean that the clock is off, if peripheral clock is its parent:
-	 *
-	 * rtc-->[gate]-->|     |
-	 *                | mux |--> adc/ts
-	 * pclk-->[div]-->|     |
-	 *
-	 * Constraints:
-	 * ADC --- resulting clock must be <= 4.5 MHz
-	 * TS  --- resulting clock must be <= 400 KHz
-	 */
+	 
 	LPC32XX_DEFINE_DIV(ADC_DIV, ADCCLK_CTRL1, 0, 8, NULL, 0),
 	LPC32XX_DEFINE_GATE(ADC_RTC, ADCCLK_CTRL, 0, 0),
 	LPC32XX_DEFINE_MUX(ADC, ADCCLK_CTRL1, 8, 0x1, NULL, 0),
 
-	/* USB controller clocks */
+	 
 	LPC32XX_DEFINE_USB(USB_AHB,
 			   BIT(24), 0x0, BIT(24), BIT(4), 0, clk_usb_ops),
 	LPC32XX_DEFINE_USB(USB_OTG,
@@ -1492,7 +1466,7 @@ static void __init lpc32xx_clk_init(struct device_node *np)
 	struct clk *clk_osc, *clk_32k;
 	void __iomem *base = NULL;
 
-	/* Ensure that parent clocks are available and valid */
+	 
 	clk_32k = of_clk_get_by_name(np, clk_proto[LPC32XX_CLK_XTAL_32K].name);
 	if (IS_ERR(clk_32k)) {
 		pr_err("failed to find external 32KHz clock: %ld\n",
@@ -1525,13 +1499,7 @@ static void __init lpc32xx_clk_init(struct device_node *np)
 		return;
 	}
 
-	/*
-	 * Divider part of PWM and MS clocks requires a quirk to avoid
-	 * a misinterpretation of formally valid zero value in register
-	 * bitfield, which indicates another clock gate. Instead of
-	 * adding complexity to a gate clock ensure that zero value in
-	 * divider clock is never met in runtime.
-	 */
+	 
 	lpc32xx_clk_div_quirk(LPC32XX_CLKPWR_PWMCLK_CTRL, 0xf0, BIT(0));
 	lpc32xx_clk_div_quirk(LPC32XX_CLKPWR_PWMCLK_CTRL, 0xf00, BIT(2));
 	lpc32xx_clk_div_quirk(LPC32XX_CLKPWR_MS_CTRL, 0xf, BIT(5) | BIT(9));
@@ -1547,17 +1515,17 @@ static void __init lpc32xx_clk_init(struct device_node *np)
 
 	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);
 
-	/* Set 48MHz rate of USB PLL clock */
+	 
 	clk_set_rate(clk[LPC32XX_CLK_USB_PLL], 48000000);
 
-	/* These two clocks must be always on independently on consumers */
+	 
 	clk_prepare_enable(clk[LPC32XX_CLK_ARM]);
 	clk_prepare_enable(clk[LPC32XX_CLK_HCLK]);
 
-	/* Enable ARM VFP by default */
+	 
 	clk_prepare_enable(clk[LPC32XX_CLK_ARM_VFP]);
 
-	/* Disable enabled by default clocks for NAND MLC and SLC */
+	 
 	clk_mask_disable(&clk_hw_proto[LPC32XX_CLK_SLC].hw0.clk.hw);
 	clk_mask_disable(&clk_hw_proto[LPC32XX_CLK_MLC].hw0.clk.hw);
 }

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Arm Statistical Profiling Extensions (SPE) support
- * Copyright (c) 2017-2018, Arm Ltd.
- */
+
+ 
 
 #include <byteswap.h>
 #include <endian.h>
@@ -154,7 +151,7 @@ static int arm_spe_get_trace(struct arm_spe_buffer *b, void *data)
 	queue = &speq->spe->queues.queue_array[speq->queue_nr];
 
 	buffer = auxtrace_buffer__next(queue, buffer);
-	/* If no more data, drop the previous auxtrace_buffer and return */
+	 
 	if (!buffer) {
 		if (old_buffer)
 			auxtrace_buffer__drop_data(old_buffer);
@@ -164,9 +161,9 @@ static int arm_spe_get_trace(struct arm_spe_buffer *b, void *data)
 
 	speq->buffer = buffer;
 
-	/* If the aux_buffer doesn't have data associated, try to load it */
+	 
 	if (!buffer->data) {
-		/* get the file desc associated with the perf data file */
+		 
 		int fd = perf_data__fd(speq->spe->session->data);
 
 		buffer->data = auxtrace_buffer__get_data(buffer, fd);
@@ -210,11 +207,11 @@ static struct arm_spe_queue *arm_spe__alloc_queue(struct arm_spe *spe,
 	speq->cpu = -1;
 	speq->period_instructions = 0;
 
-	/* params set */
+	 
 	params.get_trace = arm_spe_get_trace;
 	params.data = speq;
 
-	/* create new decoder */
+	 
 	speq->decoder = arm_spe_decoder_new(&params);
 	if (!speq->decoder)
 		goto out_free;
@@ -388,9 +385,7 @@ static int arm_spe__synth_instruction_sample(struct arm_spe_queue *speq,
 	union perf_event *event = speq->event_buf;
 	struct perf_sample sample = { .ip = 0, };
 
-	/*
-	 * Handles perf instruction sampling period.
-	 */
+	 
 	speq->period_instructions++;
 	if (speq->period_instructions < spe->instructions_sample_period)
 		return 0;
@@ -419,18 +414,9 @@ static const struct midr_range neoverse_spe[] = {
 static void arm_spe__synth_data_source_neoverse(const struct arm_spe_record *record,
 						union perf_mem_data_src *data_src)
 {
-	/*
-	 * Even though four levels of cache hierarchy are possible, no known
-	 * production Neoverse systems currently include more than three levels
-	 * so for the time being we assume three exist. If a production system
-	 * is built with four the this function would have to be changed to
-	 * detect the number of levels for reporting.
-	 */
+	 
 
-	/*
-	 * We have no data on the hit level or data source for stores in the
-	 * Neoverse SPE records.
-	 */
+	 
 	if (record->op & ARM_SPE_OP_ST) {
 		data_src->mem_lvl = PERF_MEM_LVL_NA;
 		data_src->mem_lvl_num = PERF_MEM_LVLNUM_NA;
@@ -454,28 +440,20 @@ static void arm_spe__synth_data_source_neoverse(const struct arm_spe_record *rec
 		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L2;
 		data_src->mem_snoopx = PERF_MEM_SNOOPX_PEER;
 		break;
-	/*
-	 * We don't know if this is L1, L2 but we do know it was a cache-2-cache
-	 * transfer, so set SNOOPX_PEER
-	 */
+	 
 	case ARM_SPE_NV_LOCAL_CLUSTER:
 	case ARM_SPE_NV_PEER_CLUSTER:
 		data_src->mem_lvl = PERF_MEM_LVL_L3 | PERF_MEM_LVL_HIT;
 		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L3;
 		data_src->mem_snoopx = PERF_MEM_SNOOPX_PEER;
 		break;
-	/*
-	 * System cache is assumed to be L3
-	 */
+	 
 	case ARM_SPE_NV_SYS_CACHE:
 		data_src->mem_lvl = PERF_MEM_LVL_L3 | PERF_MEM_LVL_HIT;
 		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L3;
 		data_src->mem_snoop = PERF_MEM_SNOOP_HIT;
 		break;
-	/*
-	 * We don't know what level it hit in, except it came from the other
-	 * socket
-	 */
+	 
 	case ARM_SPE_NV_REMOTE:
 		data_src->mem_lvl = PERF_MEM_LVL_REM_CCE1;
 		data_src->mem_lvl_num = PERF_MEM_LVLNUM_ANY_CACHE;
@@ -615,10 +593,7 @@ static int arm_spe_sample(struct arm_spe_queue *speq)
 			return err;
 	}
 
-	/*
-	 * When data_src is zero it means the record is not a memory operation,
-	 * skip to synthesize memory sample for this case.
-	 */
+	 
 	if (spe->sample_memory && data_src) {
 		err = arm_spe__synth_mem_sample(speq, spe->memory_id, data_src);
 		if (err)
@@ -644,29 +619,9 @@ static int arm_spe_run_decoder(struct arm_spe_queue *speq, u64 *timestamp)
 		spe->kernel_start = machine__kernel_start(spe->machine);
 
 	while (1) {
-		/*
-		 * The usual logic is firstly to decode the packets, and then
-		 * based the record to synthesize sample; but here the flow is
-		 * reversed: it calls arm_spe_sample() for synthesizing samples
-		 * prior to arm_spe_decode().
-		 *
-		 * Two reasons for this code logic:
-		 * 1. Firstly, when setup queue in arm_spe__setup_queue(), it
-		 * has decoded trace data and generated a record, but the record
-		 * is left to generate sample until run to here, so it's correct
-		 * to synthesize sample for the left record.
-		 * 2. After decoding trace data, it needs to compare the record
-		 * timestamp with the coming perf event, if the record timestamp
-		 * is later than the perf event, it needs bail out and pushs the
-		 * record into auxtrace heap, thus the record can be deferred to
-		 * synthesize sample until run to here at the next time; so this
-		 * can correlate samples between Arm SPE trace data and other
-		 * perf events with correct time ordering.
-		 */
+		 
 
-		/*
-		 * Update pid/tid info.
-		 */
+		 
 		record = &speq->decoder->record;
 		if (!spe->timeless_decoding && record->context_id != (u64)-1) {
 			ret = arm_spe_set_tid(speq, record->context_id);
@@ -686,24 +641,17 @@ static int arm_spe_run_decoder(struct arm_spe_queue *speq, u64 *timestamp)
 			return 1;
 		}
 
-		/*
-		 * Error is detected when decode SPE trace data, continue to
-		 * the next trace data and find out more records.
-		 */
+		 
 		if (ret < 0)
 			continue;
 
 		record = &speq->decoder->record;
 
-		/* Update timestamp for the last record */
+		 
 		if (record->timestamp > speq->timestamp)
 			speq->timestamp = record->timestamp;
 
-		/*
-		 * If the timestamp of the queue is later than timestamp of the
-		 * coming perf event, bail out so can allow the perf event to
-		 * be processed ahead.
-		 */
+		 
 		if (!spe->timeless_decoding && speq->timestamp >= *timestamp) {
 			*timestamp = speq->timestamp;
 			return 0;
@@ -790,10 +738,7 @@ static bool arm_spe__is_timeless_decoding(struct arm_spe *spe)
 	struct evlist *evlist = spe->session->evlist;
 	bool timeless_decoding = true;
 
-	/*
-	 * Circle through the list of event and complain if we find one
-	 * with the time bit set.
-	 */
+	 
 	evlist__for_each_entry(evlist, evsel) {
 		if ((evsel->core.attr.sample_type & PERF_SAMPLE_TIME))
 			timeless_decoding = false;
@@ -832,10 +777,7 @@ static int arm_spe_process_queues(struct arm_spe *spe, u64 timestamp)
 			ts = timestamp;
 		}
 
-		/*
-		 * A previous context-switch event has set pid/tid in the machine's context, so
-		 * here we need to update the pid/tid in the thread and SPE queue.
-		 */
+		 
 		if (!spe->use_ctx_pkt_for_pid)
 			arm_spe_set_pid_tid_cpu(spe, queue);
 
@@ -971,7 +913,7 @@ static int arm_spe_process_auxtrace_event(struct perf_session *session,
 		if (err)
 			return err;
 
-		/* Dump here now we have copied a piped trace out of the pipe */
+		 
 		if (dump_trace) {
 			if (auxtrace_buffer__get_data(buffer, fd)) {
 				arm_spe_dump_event(spe, buffer->data,
@@ -1162,7 +1104,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 	attr.sample_id_all = evsel->core.attr.sample_id_all;
 	attr.read_format = evsel->core.attr.read_format;
 
-	/* create new id val to be a fixed offset from evsel id */
+	 
 	id = evsel->core.id[0] + 1000000000;
 
 	if (!id)
@@ -1171,7 +1113,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 	if (spe->synth_opts.flc) {
 		spe->sample_flc = true;
 
-		/* Level 1 data cache miss */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1179,7 +1121,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 		arm_spe_set_event_name(evlist, id, "l1d-miss");
 		id += 1;
 
-		/* Level 1 data cache access */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1191,7 +1133,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 	if (spe->synth_opts.llc) {
 		spe->sample_llc = true;
 
-		/* Last level cache miss */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1199,7 +1141,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 		arm_spe_set_event_name(evlist, id, "llc-miss");
 		id += 1;
 
-		/* Last level cache access */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1211,7 +1153,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 	if (spe->synth_opts.tlb) {
 		spe->sample_tlb = true;
 
-		/* TLB miss */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1219,7 +1161,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 		arm_spe_set_event_name(evlist, id, "tlb-miss");
 		id += 1;
 
-		/* TLB access */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1231,7 +1173,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 	if (spe->synth_opts.branches) {
 		spe->sample_branch = true;
 
-		/* Branch miss */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1243,7 +1185,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
 	if (spe->synth_opts.remote_access) {
 		spe->sample_remote_access = true;
 
-		/* Remote access */
+		 
 		err = arm_spe_synth_event(session, &attr, id);
 		if (err)
 			return err;
@@ -1311,23 +1253,14 @@ int arm_spe_process_auxtrace_info(union perf_event *event,
 		goto err_free;
 
 	spe->session = session;
-	spe->machine = &session->machines.host; /* No kvm support */
+	spe->machine = &session->machines.host;  
 	spe->auxtrace_type = auxtrace_info->type;
 	spe->pmu_type = auxtrace_info->priv[ARM_SPE_PMU_TYPE];
 	spe->midr = midr;
 
 	spe->timeless_decoding = arm_spe__is_timeless_decoding(spe);
 
-	/*
-	 * The synthesized event PERF_RECORD_TIME_CONV has been handled ahead
-	 * and the parameters for hardware clock are stored in the session
-	 * context.  Passes these parameters to the struct perf_tsc_conversion
-	 * in "spe->tc", which is used for later conversion between clock
-	 * counter and timestamp.
-	 *
-	 * For backward compatibility, copies the fields starting from
-	 * "time_cycles" only if they are contained in the event.
-	 */
+	 
 	spe->tc.time_shift = tc->time_shift;
 	spe->tc.time_mult = tc->time_mult;
 	spe->tc.time_zero = tc->time_zero;

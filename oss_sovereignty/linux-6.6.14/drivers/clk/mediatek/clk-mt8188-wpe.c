@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -48,7 +45,7 @@ static const struct mtk_gate wpe_top_clks[] = {
 };
 
 static const struct mtk_gate wpe_vpp0_clks[] = {
-	/* WPE_VPP00 */
+	 
 	GATE_WPE_VPP0_0(CLK_WPE_VPP0_VGEN, "wpe_vpp0_vgen", "top_img", 0),
 	GATE_WPE_VPP0_0(CLK_WPE_VPP0_EXT, "wpe_vpp0_ext", "top_img", 1),
 	GATE_WPE_VPP0_0(CLK_WPE_VPP0_VFC, "wpe_vpp0_vfc", "top_img", 2),
@@ -67,7 +64,7 @@ static const struct mtk_gate wpe_vpp0_clks[] = {
 	GATE_WPE_VPP0_0(CLK_WPE_VPP0_MDP_CROP, "wpe_vpp0_mdp_crop", "top_img", 15),
 	GATE_WPE_VPP0_0(CLK_WPE_VPP0_ISP_CROP, "wpe_vpp0_isp_crop", "top_img", 16),
 	GATE_WPE_VPP0_0(CLK_WPE_VPP0_TOP, "wpe_vpp0_top", "top_img", 17),
-	/* WPE_VPP0_1 */
+	 
 	GATE_WPE_VPP0_1(CLK_WPE_VPP0_VECI, "wpe_vpp0_veci", "top_img", 0),
 	GATE_WPE_VPP0_1(CLK_WPE_VPP0_VEC2I, "wpe_vpp0_vec2i", "top_img", 1),
 	GATE_WPE_VPP0_1(CLK_WPE_VPP0_VEC3I, "wpe_vpp0_vec3i", "top_img", 2),
@@ -88,7 +85,7 @@ static const struct mtk_clk_desc wpe_vpp0_desc = {
 static const struct of_device_id of_match_clk_mt8188_wpe[] = {
 	{ .compatible = "mediatek,mt8188-wpesys", .data = &wpe_top_desc },
 	{ .compatible = "mediatek,mt8188-wpesys-vpp0", .data = &wpe_vpp0_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8188_wpe);
 

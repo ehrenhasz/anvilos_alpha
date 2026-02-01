@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Hardware library for MAC Merge Layer and Frame Preemption on TSN-capable
- * switches (VSC9959)
- *
- * Copyright 2022-2023 NXP
- */
+
+ 
 #include <linux/ethtool.h>
 #include <soc/mscc/ocelot.h>
 #include <soc/mscc/ocelot_dev.h>
@@ -57,21 +52,12 @@ void ocelot_port_update_active_preemptible_tcs(struct ocelot *ocelot, int port)
 
 	lockdep_assert_held(&ocelot->fwd_domain_lock);
 
-	/* Only commit preemptible TCs when MAC Merge is active.
-	 * On NXP LS1028A, when using QSGMII, the port hangs if transmitting
-	 * preemptible frames at any other link speed than gigabit, so avoid
-	 * preemption at lower speeds in this PHY mode.
-	 */
+	 
 	if ((ocelot_port->phy_mode != PHY_INTERFACE_MODE_QSGMII ||
 	     ocelot_port->speed == SPEED_1000) && mm->tx_active)
 		val = mm->preemptible_tcs;
 
-	/* Cut through switching doesn't work for preemptible priorities,
-	 * so first make sure it is disabled. Also, changing the preemptible
-	 * TCs affects the oversized frame dropping logic, so that needs to be
-	 * re-triggered. And since tas_guard_bands_update() also implicitly
-	 * calls cut_through_fwd(), we don't need to explicitly call it.
-	 */
+	 
 	mm->active_preemptible_tcs = val;
 	ocelot->ops->tas_guard_bands_update(ocelot, port);
 
@@ -212,12 +198,7 @@ int ocelot_port_set_mm(struct ocelot *ocelot, int port,
 		       QSYS_PREEMPTION_CFG,
 		       port);
 
-	/* The switch will emit an IRQ when TX is disabled, to notify that it
-	 * has become inactive. We optimize ocelot_mm_update_port_status() to
-	 * not bother processing MM IRQs at all for ports with TX disabled,
-	 * but we need to ACK this IRQ now, while mm->tx_enabled is still set,
-	 * otherwise we get an IRQ storm.
-	 */
+	 
 	if (mm->tx_enabled && !cfg->tx_enabled) {
 		ocelot_mm_update_port_status(ocelot, port);
 		WARN_ON(mm->tx_active);
@@ -289,9 +270,7 @@ int ocelot_mm_init(struct ocelot *ocelot)
 		mm = &ocelot->mm[port];
 		ocelot_port = ocelot->ports[port];
 
-		/* Update initial status variable for the
-		 * verification state machine
-		 */
+		 
 		val = ocelot_port_readl(ocelot_port, DEV_MM_STATUS);
 		mm->verify_status = ocelot_mm_verify_status(val);
 	}

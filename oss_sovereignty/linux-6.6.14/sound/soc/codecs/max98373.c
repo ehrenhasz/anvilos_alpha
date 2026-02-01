@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017, Maxim Integrated
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -181,10 +181,7 @@ static int max98373_feedback_get(struct snd_kcontrol *kcontrol,
 	int i;
 
 	if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
-		/*
-		 * Register values will be cached before suspend. The cached value
-		 * will be a valid value and userspace will happy with that.
-		 */
+		 
 		for (i = 0; i < max98373->cache_num; i++) {
 			if (mc->reg == max98373->cache[i].reg) {
 				ucontrol->value.integer.value[0] = max98373->cache[i].val;
@@ -205,13 +202,13 @@ SOC_SINGLE("Ramp Up Switch", MAX98373_R203F_AMP_DSP_CFG,
 	MAX98373_AMP_DSP_CFG_RMP_UP_SHIFT, 1, 0),
 SOC_SINGLE("Ramp Down Switch", MAX98373_R203F_AMP_DSP_CFG,
 	MAX98373_AMP_DSP_CFG_RMP_DN_SHIFT, 1, 0),
-/* Speaker Amplifier Overcurrent Automatic Restart Enable */
+ 
 SOC_SINGLE("OVC Autorestart Switch", MAX98373_R20FE_DEVICE_AUTO_RESTART_CFG,
 	MAX98373_OVC_AUTORESTART_SHIFT, 1, 0),
-/* Thermal Shutdown Automatic Restart Enable */
+ 
 SOC_SINGLE("THERM Autorestart Switch", MAX98373_R20FE_DEVICE_AUTO_RESTART_CFG,
 	MAX98373_THERM_AUTORESTART_SHIFT, 1, 0),
-/* Clock Monitor Automatic Restart Enable */
+ 
 SOC_SINGLE("CMON Autorestart Switch", MAX98373_R20FE_DEVICE_AUTO_RESTART_CFG,
 	MAX98373_CMON_AUTORESTART_SHIFT, 1, 0),
 SOC_SINGLE("CLK Monitor Switch", MAX98373_R20FE_DEVICE_AUTO_RESTART_CFG,
@@ -227,7 +224,7 @@ SOC_SINGLE_TLV("Speaker Volume", MAX98373_R203E_AMP_PATH_GAIN,
 SOC_SINGLE_TLV("FS Max Volume", MAX98373_R203E_AMP_PATH_GAIN,
 	MAX98373_FS_GAIN_MAX_SHIFT, 9, 0, max98373_spkgain_max_tlv),
 SOC_ENUM("Output Voltage", max98373_out_volt_enum),
-/* Dynamic Headroom Tracking */
+ 
 SOC_SINGLE("DHT Switch", MAX98373_R20D4_DHT_EN,
 	MAX98373_DHT_EN_SHIFT, 1, 0),
 SOC_SINGLE_TLV("DHT Min Volume", MAX98373_R20D1_DHT_CFG,
@@ -240,7 +237,7 @@ SOC_SINGLE_TLV("DHT Release Step Volume", MAX98373_R20D3_DHT_RELEASE_CFG,
 	MAX98373_DHT_RELEASE_STEP_SHIFT, 4, 0, max98373_dht_step_size_tlv),
 SOC_ENUM("DHT Attack Rate", max98373_dht_attack_rate_enum),
 SOC_ENUM("DHT Release Rate", max98373_dht_release_rate_enum),
-/* ADC configuration */
+ 
 SOC_SINGLE("ADC PVDD CH Switch", MAX98373_R2056_MEAS_ADC_PVDD_CH_EN, 0, 1, 0),
 SOC_SINGLE("ADC PVDD FLT Switch", MAX98373_R2052_MEAS_ADC_PVDD_FLT_CFG,
 	MAX98373_FLT_EN_SHIFT, 1, 0),
@@ -255,7 +252,7 @@ SOC_SINGLE("ADC PVDD FLT Coeff", MAX98373_R2052_MEAS_ADC_PVDD_FLT_CFG,
 SOC_SINGLE("ADC TEMP FLT Coeff", MAX98373_R2053_MEAS_ADC_THERM_FLT_CFG,
 	0, 0x3, 0),
 SOC_ENUM("ADC SampleRate", max98373_adc_samplerate_enum),
-/* Brownout Detection Engine */
+ 
 SOC_SINGLE("BDE Switch", MAX98373_R20B5_BDE_EN, MAX98373_BDE_EN_SHIFT, 1, 0),
 SOC_SINGLE("BDE LVL4 Mute Switch", MAX98373_R20B2_BDE_L4_CFG_2,
 	MAX98373_LVL4_MUTE_EN_SHIFT, 1, 0),
@@ -296,7 +293,7 @@ SOC_SINGLE_TLV("BDE LVL3 Limiter Thresh Volume", MAX98373_R20AE_BDE_L3_CFG_1,
 	0, 0xF, 1, max98373_limiter_thresh_tlv),
 SOC_SINGLE_TLV("BDE LVL4 Limiter Thresh Volume", MAX98373_R20B1_BDE_L4_CFG_1,
 	0, 0xF, 1, max98373_limiter_thresh_tlv),
-/* Limiter */
+ 
 SOC_SINGLE("Limiter Switch", MAX98373_R20E2_LIMITER_EN,
 	MAX98373_LIMITER_EN_SHIFT, 1, 0),
 SOC_SINGLE("Limiter Src Switch", MAX98373_R20E0_LIMITER_THRESH_CFG,
@@ -308,12 +305,12 @@ SOC_ENUM("Limiter Release Rate", max98373_limiter_release_rate_enum),
 };
 
 static const struct snd_soc_dapm_route max98373_audio_map[] = {
-	/* Plabyack */
+	 
 	{"DAI Sel Mux", "Left", "Amp Enable"},
 	{"DAI Sel Mux", "Right", "Amp Enable"},
 	{"DAI Sel Mux", "LeftRight", "Amp Enable"},
 	{"BE_OUT", NULL, "DAI Sel Mux"},
-	/* Capture */
+	 
 	{ "VI Sense", "Switch", "VMON" },
 	{ "VI Sense", "Switch", "IMON" },
 	{ "SpkFB Sense", "Switch", "FBMON" },
@@ -326,7 +323,7 @@ void max98373_reset(struct max98373_priv *max98373, struct device *dev)
 {
 	int ret, reg, count;
 
-	/* Software Reset */
+	 
 	ret = regmap_update_bits(max98373->regmap,
 		MAX98373_R2000_SW_RESET,
 		MAX98373_SOFT_RESET,
@@ -337,7 +334,7 @@ void max98373_reset(struct max98373_priv *max98373, struct device *dev)
 	count = 0;
 	while (count < 3) {
 		usleep_range(10000, 11000);
-		/* Software Reset Verification */
+		 
 		ret = regmap_read(max98373->regmap,
 			MAX98373_R21FF_REV_ID, &reg);
 		if (!ret) {
@@ -354,32 +351,32 @@ static int max98373_probe(struct snd_soc_component *component)
 {
 	struct max98373_priv *max98373 = snd_soc_component_get_drvdata(component);
 
-	/* Software Reset */
+	 
 	max98373_reset(max98373, component->dev);
 
-	/* IV default slot configuration */
+	 
 	regmap_write(max98373->regmap,
 		MAX98373_R2020_PCM_TX_HIZ_EN_1,
 		0xFF);
 	regmap_write(max98373->regmap,
 		MAX98373_R2021_PCM_TX_HIZ_EN_2,
 		0xFF);
-	/* L/R mix configuration */
+	 
 	regmap_write(max98373->regmap,
 		MAX98373_R2029_PCM_TO_SPK_MONO_MIX_1,
 		0x80);
 	regmap_write(max98373->regmap,
 		MAX98373_R202A_PCM_TO_SPK_MONO_MIX_2,
 		0x1);
-	/* Enable DC blocker */
+	 
 	regmap_write(max98373->regmap,
 		MAX98373_R203F_AMP_DSP_CFG,
 		0x3);
-	/* Enable IMON VMON DC blocker */
+	 
 	regmap_write(max98373->regmap,
 		MAX98373_R2046_IV_SENSE_ADC_DSP_CFG,
 		0x7);
-	/* voltage, current slot configuration */
+	 
 	regmap_write(max98373->regmap,
 		MAX98373_R2022_PCM_TX_SRC_1,
 		(max98373->i_slot << MAX98373_PCM_TX_CH_SRC_A_I_SHIFT |
@@ -402,24 +399,24 @@ static int max98373_probe(struct snd_soc_component *component)
 			MAX98373_R2021_PCM_TX_HIZ_EN_2,
 			1 << (max98373->i_slot - 8), 0);
 
-	/* enable auto restart function by default */
+	 
 	regmap_write(max98373->regmap,
 		MAX98373_R20FE_DEVICE_AUTO_RESTART_CFG,
 		0xF);
 
-	/* speaker feedback slot configuration */
+	 
 	regmap_write(max98373->regmap,
 		MAX98373_R2023_PCM_TX_SRC_2,
 		max98373->spkfb_slot & 0xFF);
 
-	/* Set interleave mode */
+	 
 	if (max98373->interleave_mode)
 		regmap_update_bits(max98373->regmap,
 			MAX98373_R2024_PCM_DATA_FMT_CFG,
 			MAX98373_PCM_TX_CH_INTERLEAVE_MASK,
 			MAX98373_PCM_TX_CH_INTERLEAVE_MASK);
 
-	/* Speaker enable */
+	 
 	regmap_update_bits(max98373->regmap,
 		MAX98373_R2043_AMP_EN,
 		MAX98373_SPK_EN_MASK, 1);
@@ -490,7 +487,7 @@ void max98373_slot_config(struct device *dev,
 				max98373->reset_gpio);
 		}
 	} else {
-		/* this makes reset_gpio as invalid */
+		 
 		max98373->reset_gpio = -1;
 	}
 

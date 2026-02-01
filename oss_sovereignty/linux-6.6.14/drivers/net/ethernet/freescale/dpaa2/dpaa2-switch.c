@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DPAA2 Ethernet Switch driver
- *
- * Copyright 2014-2016 Freescale Semiconductor Inc.
- * Copyright 2017-2021 NXP
- *
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -19,7 +13,7 @@
 
 #include "dpaa2-switch.h"
 
-/* Minimal supported DPSW version */
+ 
 #define DPSW_MIN_VER_MAJOR		8
 #define DPSW_MIN_VER_MINOR		9
 
@@ -59,16 +53,11 @@ static u16 dpaa2_switch_port_set_fdb(struct ethsw_port_priv *port_priv,
 	struct net_device *other_dev;
 	struct list_head *iter;
 
-	/* If we leave a bridge (bridge_dev is NULL), find an unused
-	 * FDB and use that.
-	 */
+	 
 	if (!bridge_dev) {
 		fdb = dpaa2_switch_fdb_get_unused(port_priv->ethsw_data);
 
-		/* If there is no unused FDB, we must be the last port that
-		 * leaves the last bridge, all the others are standalone. We
-		 * can just keep the FDB that we already have.
-		 */
+		 
 
 		if (!fdb) {
 			port_priv->fdb->bridge_dev = NULL;
@@ -81,15 +70,10 @@ static u16 dpaa2_switch_port_set_fdb(struct ethsw_port_priv *port_priv,
 		return 0;
 	}
 
-	/* The below call to netdev_for_each_lower_dev() demands the RTNL lock
-	 * being held. Assert on it so that it's easier to catch new code
-	 * paths that reach this point without the RTNL lock.
-	 */
+	 
 	ASSERT_RTNL();
 
-	/* If part of a bridge, use the FDB of the first dpaa2 switch interface
-	 * to be present in that bridge
-	 */
+	 
 	netdev_for_each_lower_dev(bridge_dev, other_dev, iter) {
 		if (!dpaa2_switch_port_dev_check(other_dev))
 			continue;
@@ -101,21 +85,17 @@ static u16 dpaa2_switch_port_set_fdb(struct ethsw_port_priv *port_priv,
 		break;
 	}
 
-	/* The current port is about to change its FDB to the one used by the
-	 * first port that joined the bridge.
-	 */
+	 
 	if (other_port_priv) {
-		/* The previous FDB is about to become unused, since the
-		 * interface is no longer standalone.
-		 */
+		 
 		port_priv->fdb->in_use = false;
 		port_priv->fdb->bridge_dev = NULL;
 
-		/* Get a reference to the new FDB */
+		 
 		port_priv->fdb = other_port_priv->fdb;
 	}
 
-	/* Keep track of the new upper bridge device */
+	 
 	port_priv->fdb->bridge_dev = bridge_dev;
 
 	return 0;
@@ -129,9 +109,7 @@ static void dpaa2_switch_fdb_get_flood_cfg(struct ethsw_core *ethsw, u16 fdb_id,
 
 	memset(cfg, 0, sizeof(*cfg));
 
-	/* Add all the DPAA2 switch ports found in the same bridging domain to
-	 * the egress flooding domain
-	 */
+	 
 	for (j = 0; j < ethsw->sw_attr.num_ifs; j++) {
 		if (!ethsw->ports[j])
 			continue;
@@ -144,7 +122,7 @@ static void dpaa2_switch_fdb_get_flood_cfg(struct ethsw_core *ethsw, u16 fdb_id,
 			cfg->if_id[i++] = ethsw->ports[j]->idx;
 	}
 
-	/* Add the CTRL interface to the egress flooding domain */
+	 
 	cfg->if_id[i++] = ethsw->sw_attr.num_ifs;
 
 	cfg->fdb_id = fdb_id;
@@ -157,7 +135,7 @@ static int dpaa2_switch_fdb_set_egress_flood(struct ethsw_core *ethsw, u16 fdb_i
 	struct dpsw_egress_flood_cfg flood_cfg;
 	int err;
 
-	/* Setup broadcast flooding domain */
+	 
 	dpaa2_switch_fdb_get_flood_cfg(ethsw, fdb_id, DPSW_BROADCAST, &flood_cfg);
 	err = dpsw_set_egress_flood(ethsw->mc_io, 0, ethsw->dpsw_handle,
 				    &flood_cfg);
@@ -166,7 +144,7 @@ static int dpaa2_switch_fdb_set_egress_flood(struct ethsw_core *ethsw, u16 fdb_i
 		return err;
 	}
 
-	/* Setup unknown flooding domain */
+	 
 	dpaa2_switch_fdb_get_flood_cfg(ethsw, fdb_id, DPSW_FLOODING, &flood_cfg);
 	err = dpsw_set_egress_flood(ethsw->mc_io, 0, ethsw->dpsw_handle,
 				    &flood_cfg);
@@ -242,7 +220,7 @@ static int dpaa2_switch_port_set_pvid(struct ethsw_port_priv *port_priv, u16 pvi
 
 	tci_cfg.vlan_id = pvid;
 
-	/* Interface needs to be down to change PVID */
+	 
 	up = dpaa2_switch_port_is_up(port_priv);
 	if (up) {
 		err = dpsw_if_disable(ethsw->mc_io, 0,
@@ -261,7 +239,7 @@ static int dpaa2_switch_port_set_pvid(struct ethsw_port_priv *port_priv, u16 pvi
 		goto set_tci_error;
 	}
 
-	/* Delete previous PVID info and mark the new one */
+	 
 	port_priv->vlans[port_priv->pvid] &= ~ETHSW_VLAN_PVID;
 	port_priv->vlans[pvid] |= ETHSW_VLAN_PVID;
 	port_priv->pvid = pvid;
@@ -293,9 +271,7 @@ static int dpaa2_switch_port_add_vlan(struct ethsw_port_priv *port_priv,
 		return -EEXIST;
 	}
 
-	/* If hit, this VLAN rule will lead the packet into the FDB table
-	 * specified in the vlan configuration below
-	 */
+	 
 	vcfg.num_ifs = 1;
 	vcfg.if_id[0] = port_priv->idx;
 	vcfg.fdb_id = dpaa2_switch_port_get_fdb_id(port_priv);
@@ -354,7 +330,7 @@ static int dpaa2_switch_port_set_stp_state(struct ethsw_port_priv *port_priv, u8
 	u16 vid;
 
 	if (!netif_running(port_priv->netdev) || state == port_priv->stp_state)
-		return 0;	/* Nothing to do */
+		return 0;	 
 
 	stp_cfg.state = br_stp_state_to_dpsw(state);
 	for (vid = 0; vid <= VLAN_VID_MASK; vid++) {
@@ -436,7 +412,7 @@ static int dpaa2_switch_port_fdb_del_uc(struct ethsw_port_priv *port_priv,
 	err = dpsw_fdb_remove_unicast(port_priv->ethsw_data->mc_io, 0,
 				      port_priv->ethsw_data->dpsw_handle,
 				      fdb_id, &entry);
-	/* Silently discard error for calling multiple times the del command */
+	 
 	if (err && err != -ENXIO)
 		netdev_err(port_priv->netdev,
 			   "dpsw_fdb_remove_unicast err %d\n", err);
@@ -459,7 +435,7 @@ static int dpaa2_switch_port_fdb_add_mc(struct ethsw_port_priv *port_priv,
 	err = dpsw_fdb_add_multicast(port_priv->ethsw_data->mc_io, 0,
 				     port_priv->ethsw_data->dpsw_handle,
 				     fdb_id, &entry);
-	/* Silently discard error for calling multiple times the add command */
+	 
 	if (err && err != -ENXIO)
 		netdev_err(port_priv->netdev, "dpsw_fdb_add_multicast err %d\n",
 			   err);
@@ -482,7 +458,7 @@ static int dpaa2_switch_port_fdb_del_mc(struct ethsw_port_priv *port_priv,
 	err = dpsw_fdb_remove_multicast(port_priv->ethsw_data->mc_io, 0,
 					port_priv->ethsw_data->dpsw_handle,
 					fdb_id, &entry);
-	/* Silently discard error for calling multiple times the del command */
+	 
 	if (err && err != -ENAVAIL)
 		netdev_err(port_priv->netdev,
 			   "dpsw_fdb_remove_multicast err %d\n", err);
@@ -600,18 +576,11 @@ static int dpaa2_switch_port_link_state_update(struct net_device *netdev)
 	struct dpsw_link_state state;
 	int err;
 
-	/* When we manage the MAC/PHY using phylink there is no need
-	 * to manually update the netif_carrier.
-	 * We can avoid locking because we are called from the "link changed"
-	 * IRQ handler, which is the same as the "endpoint changed" IRQ handler
-	 * (the writer to port_priv->mac), so we cannot race with it.
-	 */
+	 
 	if (dpaa2_mac_is_type_phy(port_priv->mac))
 		return 0;
 
-	/* Interrupts are received even though no one issued an 'ifconfig up'
-	 * on the switch interface. Ignore these link state update interrupts
-	 */
+	 
 	if (!netif_running(netdev))
 		return 0;
 
@@ -639,24 +608,19 @@ static int dpaa2_switch_port_link_state_update(struct net_device *netdev)
 	return 0;
 }
 
-/* Manage all NAPI instances for the control interface.
- *
- * We only have one RX queue and one Tx Conf queue for all
- * switch ports. Therefore, we only need to enable the NAPI instance once, the
- * first time one of the switch ports runs .dev_open().
- */
+ 
 
 static void dpaa2_switch_enable_ctrl_if_napi(struct ethsw_core *ethsw)
 {
 	int i;
 
-	/* Access to the ethsw->napi_users relies on the RTNL lock */
+	 
 	ASSERT_RTNL();
 
-	/* a new interface is using the NAPI instance */
+	 
 	ethsw->napi_users++;
 
-	/* if there is already a user of the instance, return */
+	 
 	if (ethsw->napi_users > 1)
 		return;
 
@@ -668,10 +632,10 @@ static void dpaa2_switch_disable_ctrl_if_napi(struct ethsw_core *ethsw)
 {
 	int i;
 
-	/* Access to the ethsw->napi_users relies on the RTNL lock */
+	 
 	ASSERT_RTNL();
 
-	/* If we are not the last interface using the NAPI, return */
+	 
 	ethsw->napi_users--;
 	if (ethsw->napi_users)
 		return;
@@ -689,11 +653,7 @@ static int dpaa2_switch_port_open(struct net_device *netdev)
 	mutex_lock(&port_priv->mac_lock);
 
 	if (!dpaa2_switch_port_is_type_phy(port_priv)) {
-		/* Explicitly set carrier off, otherwise
-		 * netif_carrier_ok() will return true and cause 'ip link show'
-		 * to report the LOWER_UP flag, even though the link
-		 * notification wasn't even received.
-		 */
+		 
 		netif_carrier_off(netdev);
 	}
 
@@ -950,7 +910,7 @@ static int dpaa2_switch_port_vlan_add(struct net_device *netdev, __be16 proto,
 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
 		.vid = vid,
 		.obj.orig_dev = netdev,
-		/* This API only allows programming tagged, non-PVID VIDs */
+		 
 		.flags = 0,
 	};
 
@@ -964,7 +924,7 @@ static int dpaa2_switch_port_vlan_kill(struct net_device *netdev, __be16 proto,
 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
 		.vid = vid,
 		.obj.orig_dev = netdev,
-		/* This API only allows programming tagged, non-PVID VIDs */
+		 
 		.flags = 0,
 	};
 
@@ -982,7 +942,7 @@ static int dpaa2_switch_port_set_mac_addr(struct ethsw_port_priv *port_priv)
 	if (!(ethsw->features & ETHSW_FEATURE_MAC_ADDR))
 		return 0;
 
-	/* Get firmware address, if any */
+	 
 	err = dpsw_if_get_port_mac_addr(ethsw->mc_io, 0, ethsw->dpsw_handle,
 					port_priv->idx, mac_addr);
 	if (err) {
@@ -990,21 +950,15 @@ static int dpaa2_switch_port_set_mac_addr(struct ethsw_port_priv *port_priv)
 		return err;
 	}
 
-	/* First check if firmware has any address configured by bootloader */
+	 
 	if (!is_zero_ether_addr(mac_addr)) {
 		eth_hw_addr_set(net_dev, mac_addr);
 	} else {
-		/* No MAC address configured, fill in net_dev->dev_addr
-		 * with a random one
-		 */
+		 
 		eth_hw_addr_random(net_dev);
 		dev_dbg_once(dev, "device(s) have all-zero hwaddr, replaced with random\n");
 
-		/* Override NET_ADDR_RANDOM set by eth_hw_addr_random(); for all
-		 * practical purposes, this will be our "permanent" mac address,
-		 * at least until the next reboot. This move will also permit
-		 * register_netdevice() to properly fill up net_dev->perm_addr.
-		 */
+		 
 		net_dev->addr_assign_type = NET_ADDR_PERM;
 	}
 
@@ -1029,7 +983,7 @@ static void dpaa2_switch_free_fd(const struct ethsw_core *ethsw,
 			 skb_tail_pointer(skb) - buffer_start,
 			 DMA_TO_DEVICE);
 
-	/* Move on with skb release */
+	 
 	dev_kfree_skb(skb);
 }
 
@@ -1047,17 +1001,11 @@ static int dpaa2_switch_build_single_fd(struct ethsw_core *ethsw,
 			       DPAA2_SWITCH_TX_BUF_ALIGN,
 			       DPAA2_SWITCH_TX_BUF_ALIGN);
 
-	/* Clear FAS to have consistent values for TX confirmation. It is
-	 * located in the first 8 bytes of the buffer's hardware annotation
-	 * area
-	 */
+	 
 	hwa = buff_start + DPAA2_SWITCH_SWA_SIZE;
 	memset(hwa, 0, 8);
 
-	/* Store a backpointer to the skb at the beginning of the buffer
-	 * (in the private data area) such that we can release it
-	 * on Tx confirm
-	 */
+	 
 	skbh = (struct sk_buff **)buff_start;
 	*skbh = skb;
 
@@ -1067,7 +1015,7 @@ static int dpaa2_switch_build_single_fd(struct ethsw_core *ethsw,
 	if (unlikely(dma_mapping_error(dev, addr)))
 		return -ENOMEM;
 
-	/* Setup the FD fields */
+	 
 	memset(fd, 0, sizeof(*fd));
 
 	dpaa2_fd_set_addr(fd, addr);
@@ -1099,17 +1047,15 @@ static netdev_tx_t dpaa2_switch_port_tx(struct sk_buff *skb,
 		skb = ns;
 	}
 
-	/* We'll be holding a back-reference to the skb until Tx confirmation */
+	 
 	skb = skb_unshare(skb, GFP_ATOMIC);
 	if (unlikely(!skb)) {
-		/* skb_unshare() has already freed the skb */
+		 
 		net_err_ratelimited("%s: Error copying the socket buffer\n", net_dev->name);
 		goto err_exit;
 	}
 
-	/* At this stage, we do not support non-linear skbs so just try to
-	 * linearize the skb and if that's not working, just drop the packet.
-	 */
+	 
 	err = skb_linearize(skb);
 	if (err) {
 		net_err_ratelimited("%s: skb_linearize error (%d)!\n", net_dev->name, err);
@@ -1245,16 +1191,12 @@ static int dpaa2_switch_port_block_bind(struct ethsw_port_priv *port_priv,
 	struct dpaa2_switch_filter_block *old_block = port_priv->filter_block;
 	int err;
 
-	/* Offload all the mirror entries found in the block on this new port
-	 * joining it.
-	 */
+	 
 	err = dpaa2_switch_block_offload_mirror(block, port_priv);
 	if (err)
 		return err;
 
-	/* If the port is already bound to this ACL table then do nothing. This
-	 * can happen when this port is the first one to join a tc block
-	 */
+	 
 	if (port_priv->filter_block == block)
 		return 0;
 
@@ -1262,9 +1204,7 @@ static int dpaa2_switch_port_block_bind(struct ethsw_port_priv *port_priv,
 	if (err)
 		return err;
 
-	/* Mark the previous ACL table as being unused if this was the last
-	 * port that was using it.
-	 */
+	 
 	if (old_block->ports == 0)
 		old_block->in_use = false;
 
@@ -1279,16 +1219,12 @@ dpaa2_switch_port_block_unbind(struct ethsw_port_priv *port_priv,
 	struct dpaa2_switch_filter_block *new_block;
 	int err;
 
-	/* Unoffload all the mirror entries found in the block from the
-	 * port leaving it.
-	 */
+	 
 	err = dpaa2_switch_block_unoffload_mirror(block, port_priv);
 	if (err)
 		return err;
 
-	/* We are the last port that leaves a block (an ACL table).
-	 * We'll continue to use this table.
-	 */
+	 
 	if (block->ports == BIT(port_priv->idx))
 		return 0;
 
@@ -1319,10 +1255,7 @@ static int dpaa2_switch_setup_tc_block_bind(struct net_device *netdev,
 					ethsw);
 
 	if (!block_cb) {
-		/* If the filter block is not already known, then this port
-		 * must be the first to join it. In this case, we can just
-		 * continue to use our private table
-		 */
+		 
 		filter_block = port_priv->filter_block;
 
 		block_cb = flow_block_cb_alloc(dpaa2_switch_port_setup_tc_block_cb_ig,
@@ -1529,10 +1462,7 @@ static irqreturn_t dpaa2_switch_irq0_handler_thread(int irq_num, void *arg)
 	}
 
 	if (status & DPSW_IRQ_EVENT_ENDPOINT_CHANGED) {
-		/* We can avoid locking because the "endpoint changed" IRQ
-		 * handler is the only one who changes priv->mac at runtime,
-		 * so we are not racing with anyone.
-		 */
+		 
 		had_mac = !!port_priv->mac;
 		if (had_mac)
 			dpaa2_switch_port_disconnect_mac(port_priv);
@@ -1772,13 +1702,11 @@ int dpaa2_switch_port_vlans_add(struct net_device *netdev,
 	struct dpsw_attr *attr = &ethsw->sw_attr;
 	int err = 0;
 
-	/* Make sure that the VLAN is not already configured
-	 * on the switch port
-	 */
+	 
 	if (port_priv->vlans[vlan->vid] & ETHSW_VLAN_MEMBER)
 		return -EEXIST;
 
-	/* Check if there is space for a new VLAN */
+	 
 	err = dpsw_get_attributes(ethsw->mc_io, 0, ethsw->dpsw_handle,
 				  &ethsw->sw_attr);
 	if (err) {
@@ -1788,7 +1716,7 @@ int dpaa2_switch_port_vlans_add(struct net_device *netdev,
 	if (attr->max_vlans - attr->num_vlans < 1)
 		return -ENOSPC;
 
-	/* Check if there is space for a new VLAN */
+	 
 	err = dpsw_get_attributes(ethsw->mc_io, 0, ethsw->dpsw_handle,
 				  &ethsw->sw_attr);
 	if (err) {
@@ -1799,7 +1727,7 @@ int dpaa2_switch_port_vlans_add(struct net_device *netdev,
 		return -ENOSPC;
 
 	if (!port_priv->ethsw_data->vlans[vlan->vid]) {
-		/* this is a new VLAN */
+		 
 		err = dpaa2_switch_add_vlan(port_priv, vlan->vid);
 		if (err)
 			return err;
@@ -1833,7 +1761,7 @@ static int dpaa2_switch_port_mdb_add(struct net_device *netdev,
 	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
 	int err;
 
-	/* Check if address is already set on this port */
+	 
 	if (dpaa2_switch_port_lookup_address(netdev, 0, mdb->addr))
 		return -EEXIST;
 
@@ -1883,10 +1811,7 @@ static int dpaa2_switch_port_del_vlan(struct ethsw_port_priv *port_priv, u16 vid
 		return -ENOENT;
 
 	if (port_priv->vlans[vid] & ETHSW_VLAN_PVID) {
-		/* If we are deleting the PVID of a port, use VLAN 4095 instead
-		 * as we are sure that neither the bridge nor the 8021q module
-		 * will use it
-		 */
+		 
 		err = dpaa2_switch_port_set_pvid(port_priv, 4095);
 		if (err)
 			return err;
@@ -1916,13 +1841,11 @@ static int dpaa2_switch_port_del_vlan(struct ethsw_port_priv *port_priv, u16 vid
 		}
 		port_priv->vlans[vid] &= ~ETHSW_VLAN_MEMBER;
 
-		/* Delete VLAN from switch if it is no longer configured on
-		 * any port
-		 */
+		 
 		for (i = 0; i < ethsw->sw_attr.num_ifs; i++) {
 			if (ethsw->ports[i] &&
 			    ethsw->ports[i]->vlans[vid] & ETHSW_VLAN_MEMBER)
-				return 0; /* Found a port member in VID */
+				return 0;  
 		}
 
 		ethsw->vlans[vid] &= ~ETHSW_VLAN_GLOBAL;
@@ -2022,19 +1945,19 @@ static int dpaa2_switch_port_bridge_join(struct net_device *netdev,
 		}
 	}
 
-	/* Delete the previously manually installed VLAN 1 */
+	 
 	err = dpaa2_switch_port_del_vlan(port_priv, 1);
 	if (err)
 		return err;
 
 	dpaa2_switch_port_set_fdb(port_priv, upper_dev);
 
-	/* Inherit the initial bridge port learning state */
+	 
 	learn_ena = br_port_flag_is_set(netdev, BR_LEARNING);
 	err = dpaa2_switch_port_set_learning(port_priv, learn_ena);
 	port_priv->learn_ena = learn_ena;
 
-	/* Setup the egress flood policy (broadcast, unknown unicast) */
+	 
 	err = dpaa2_switch_fdb_set_egress_flood(ethsw, port_priv->fdb->fdb_id);
 	if (err)
 		goto err_egress_flood;
@@ -2084,53 +2007,42 @@ static int dpaa2_switch_port_bridge_leave(struct net_device *netdev)
 	struct ethsw_core *ethsw = port_priv->ethsw_data;
 	int err;
 
-	/* First of all, fast age any learn FDB addresses on this switch port */
+	 
 	dpaa2_switch_port_fast_age(port_priv);
 
-	/* Clear all RX VLANs installed through vlan_vid_add() either as VLAN
-	 * upper devices or otherwise from the FDB table that we are about to
-	 * leave
-	 */
+	 
 	err = vlan_for_each(netdev, dpaa2_switch_port_clear_rxvlan, netdev);
 	if (err)
 		netdev_err(netdev, "Unable to clear RX VLANs from old FDB table, err (%d)\n", err);
 
 	dpaa2_switch_port_set_fdb(port_priv, NULL);
 
-	/* Restore all RX VLANs into the new FDB table that we just joined */
+	 
 	err = vlan_for_each(netdev, dpaa2_switch_port_restore_rxvlan, netdev);
 	if (err)
 		netdev_err(netdev, "Unable to restore RX VLANs to the new FDB, err (%d)\n", err);
 
-	/* Reset the flooding state to denote that this port can send any
-	 * packet in standalone mode. With this, we are also ensuring that any
-	 * later bridge join will have the flooding flag on.
-	 */
+	 
 	port_priv->bcast_flood = true;
 	port_priv->ucast_flood = true;
 
-	/* Setup the egress flood policy (broadcast, unknown unicast).
-	 * When the port is not under a bridge, only the CTRL interface is part
-	 * of the flooding domain besides the actual port
-	 */
+	 
 	err = dpaa2_switch_fdb_set_egress_flood(ethsw, port_priv->fdb->fdb_id);
 	if (err)
 		return err;
 
-	/* Recreate the egress flood domain of the FDB that we just left */
+	 
 	err = dpaa2_switch_fdb_set_egress_flood(ethsw, old_fdb->fdb_id);
 	if (err)
 		return err;
 
-	/* No HW learning when not under a bridge */
+	 
 	err = dpaa2_switch_port_set_learning(port_priv, false);
 	if (err)
 		return err;
 	port_priv->learn_ena = false;
 
-	/* Add the VLAN 1 as PVID when not under a bridge. We need this since
-	 * the dpaa2 switch interfaces are not capable to be VLAN unaware
-	 */
+	 
 	return dpaa2_switch_port_add_vlan(port_priv, DEFAULT_VLAN_ID,
 					  BRIDGE_VLAN_INFO_UNTAGGED | BRIDGE_VLAN_INFO_PVID);
 }
@@ -2140,9 +2052,7 @@ static int dpaa2_switch_prevent_bridging_with_8021q_upper(struct net_device *net
 	struct net_device *upper_dev;
 	struct list_head *iter;
 
-	/* RCU read lock not necessary because we have write-side protection
-	 * (rtnl_mutex), however a non-rcu iterator does not exist.
-	 */
+	 
 	netdev_for_each_upper_dev_rcu(netdev, upper_dev, iter)
 		if (is_vlan_dev(upper_dev))
 			return -EOPNOTSUPP;
@@ -2269,7 +2179,7 @@ static void dpaa2_switch_event_work(struct work_struct *work)
 	dev_put(dev);
 }
 
-/* Called under rcu_read_lock() */
+ 
 static int dpaa2_switch_port_event(struct notifier_block *nb,
 				   unsigned long event, void *ptr)
 {
@@ -2305,7 +2215,7 @@ static int dpaa2_switch_port_event(struct notifier_block *nb,
 		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
 				fdb_info->addr);
 
-		/* Take a reference on the device to avoid being freed. */
+		 
 		dev_hold(dev);
 		break;
 	default:
@@ -2360,7 +2270,7 @@ static int dpaa2_switch_port_blocking_event(struct notifier_block *nb,
 	return NOTIFY_DONE;
 }
 
-/* Build a linear skb based on a single-buffer frame descriptor */
+ 
 static struct sk_buff *dpaa2_switch_build_linear_skb(struct ethsw_core *ethsw,
 						     const struct dpaa2_fd *fd)
 {
@@ -2407,7 +2317,7 @@ static void dpaa2_switch_rx(struct dpaa2_switch_fq *fq,
 	u16 vlan_tci, vid;
 	int if_id, err;
 
-	/* get switch ingress interface ID */
+	 
 	if_id = upper_32_bits(dpaa2_fd_get_flc(fd)) & 0x0000FFFF;
 
 	if (if_id >= ethsw->sw_attr.num_ifs) {
@@ -2417,7 +2327,7 @@ static void dpaa2_switch_rx(struct dpaa2_switch_fq *fq,
 	port_priv = ethsw->ports[if_id];
 	netdev = port_priv->netdev;
 
-	/* build the SKB based on the FD received */
+	 
 	if (dpaa2_fd_get_format(fd) != dpaa2_fd_single) {
 		if (net_ratelimit()) {
 			netdev_err(netdev, "Received invalid frame format\n");
@@ -2431,12 +2341,7 @@ static void dpaa2_switch_rx(struct dpaa2_switch_fq *fq,
 
 	skb_reset_mac_header(skb);
 
-	/* Remove the VLAN header if the packet that we just received has a vid
-	 * equal to the port PVIDs. Since the dpaa2-switch can operate only in
-	 * VLAN-aware mode and no alterations are made on the packet when it's
-	 * redirected/mirrored to the control interface, we are sure that there
-	 * will always be a VLAN header present.
-	 */
+	 
 	hdr = vlan_eth_hdr(skb);
 	vid = ntohs(hdr->h_vlan_TCI) & VLAN_VID_MASK;
 	if (vid == port_priv->pvid) {
@@ -2450,7 +2355,7 @@ static void dpaa2_switch_rx(struct dpaa2_switch_fq *fq,
 	skb->dev = netdev;
 	skb->protocol = eth_type_trans(skb, skb->dev);
 
-	/* Setup the offload_fwd_mark only if the port is under a bridge */
+	 
 	skb->offload_fwd_mark = !!(port_priv->fdb->bridge_dev);
 
 	netif_receive_skb(skb);
@@ -2494,9 +2399,7 @@ static int dpaa2_switch_setup_fqs(struct ethsw_core *ethsw)
 	return 0;
 }
 
-/* Free buffers acquired from the buffer pool or which were meant to
- * be released in the pool
- */
+ 
 static void dpaa2_switch_free_bufs(struct ethsw_core *ethsw, u64 *buf_array, int count)
 {
 	struct device *dev = ethsw->dev;
@@ -2511,9 +2414,7 @@ static void dpaa2_switch_free_bufs(struct ethsw_core *ethsw, u64 *buf_array, int
 	}
 }
 
-/* Perform a single release command to add buffers
- * to the specified buffer pool
- */
+ 
 static int dpaa2_switch_add_bufs(struct ethsw_core *ethsw, u16 bpid)
 {
 	struct device *dev = ethsw->dev;
@@ -2525,10 +2426,7 @@ static int dpaa2_switch_add_bufs(struct ethsw_core *ethsw, u16 bpid)
 	int i;
 
 	for (i = 0; i < BUFS_PER_CMD; i++) {
-		/* Allocate one page for each Rx buffer. WRIOP sees
-		 * the entire page except for a tailroom reserved for
-		 * skb shared info
-		 */
+		 
 		page = dev_alloc_pages(0);
 		if (!page) {
 			dev_err(dev, "buffer allocation failed\n");
@@ -2545,9 +2443,7 @@ static int dpaa2_switch_add_bufs(struct ethsw_core *ethsw, u16 bpid)
 	}
 
 release_bufs:
-	/* In case the portal is busy, retry until successful or
-	 * max retries hit.
-	 */
+	 
 	while ((err = dpaa2_io_service_release(NULL, bpid,
 					       buf_array, i)) == -EBUSY) {
 		if (retries++ >= DPAA2_SWITCH_SWP_BUSY_RETRIES)
@@ -2556,7 +2452,7 @@ release_bufs:
 		cpu_relax();
 	}
 
-	/* If release command failed, clean up and bail out. */
+	 
 	if (err) {
 		dpaa2_switch_free_bufs(ethsw, buf_array, i);
 		return 0;
@@ -2567,9 +2463,7 @@ release_bufs:
 err_map:
 	__free_pages(page, 0);
 err_alloc:
-	/* If we managed to allocate at least some buffers,
-	 * release them to hardware
-	 */
+	 
 	if (i)
 		goto release_bufs;
 
@@ -2586,9 +2480,7 @@ static int dpaa2_switch_refill_bp(struct ethsw_core *ethsw)
 		do {
 			new_count = dpaa2_switch_add_bufs(ethsw, ethsw->bpid);
 			if (unlikely(!new_count)) {
-				/* Out of memory; abort for now, we'll
-				 * try later on
-				 */
+				 
 				break;
 			}
 			*count += new_count;
@@ -2742,9 +2634,7 @@ static int dpaa2_switch_pull_fq(struct dpaa2_switch_fq *fq)
 {
 	int err, retries = 0;
 
-	/* Try to pull from the FQ while the portal is busy and we didn't hit
-	 * the maximum number fo retries
-	 */
+	 
 	do {
 		err = dpaa2_io_service_pull_fq(NULL, fq->fqid, fq->store);
 		cpu_relax();
@@ -2756,7 +2646,7 @@ static int dpaa2_switch_pull_fq(struct dpaa2_switch_fq *fq)
 	return err;
 }
 
-/* Consume all frames pull-dequeued into the store */
+ 
 static int dpaa2_switch_store_consume(struct dpaa2_switch_fq *fq)
 {
 	struct ethsw_core *ethsw = fq->ethsw;
@@ -2765,7 +2655,7 @@ static int dpaa2_switch_store_consume(struct dpaa2_switch_fq *fq)
 	int retries = 0;
 
 	do {
-		/* Get the next available FD from the store */
+		 
 		dq = dpaa2_io_store_next(fq->store, &is_last);
 		if (unlikely(!dq)) {
 			if (retries++ >= DPAA2_SWITCH_SWP_BUSY_RETRIES) {
@@ -2787,7 +2677,7 @@ static int dpaa2_switch_store_consume(struct dpaa2_switch_fq *fq)
 	return cleaned;
 }
 
-/* NAPI poll routine */
+ 
 static int dpaa2_switch_poll(struct napi_struct *napi, int budget)
 {
 	int err, cleaned = 0, store_cleaned, work_done;
@@ -2801,7 +2691,7 @@ static int dpaa2_switch_poll(struct napi_struct *napi, int budget)
 		if (unlikely(err))
 			break;
 
-		/* Refill pool if appropriate */
+		 
 		dpaa2_switch_refill_bp(fq->ethsw);
 
 		store_cleaned = dpaa2_switch_store_consume(fq);
@@ -2814,9 +2704,7 @@ static int dpaa2_switch_poll(struct napi_struct *napi, int budget)
 
 	} while (store_cleaned);
 
-	/* We didn't consume the entire budget, so finish napi and re-enable
-	 * data availability notifications
-	 */
+	 
 	napi_complete_done(napi, cleaned);
 	do {
 		err = dpaa2_io_service_rearm(NULL, &fq->nctx);
@@ -2847,10 +2735,7 @@ static int dpaa2_switch_setup_dpio(struct ethsw_core *ethsw)
 	for (i = 0; i < DPAA2_SWITCH_RX_NUM_FQS; i++) {
 		nctx = &ethsw->fq[i].nctx;
 
-		/* Register a new software context for the FQID.
-		 * By using NULL as the first parameter, we specify that we do
-		 * not care on which cpu are interrupts received for this queue
-		 */
+		 
 		nctx->is_cdan = 0;
 		nctx->id = ethsw->fq[i].fqid;
 		nctx->desired_cpu = DPAA2_IO_ANY_CPU;
@@ -2901,12 +2786,12 @@ static int dpaa2_switch_ctrl_if_setup(struct ethsw_core *ethsw)
 {
 	int err;
 
-	/* setup FQs for Rx and Tx Conf */
+	 
 	err = dpaa2_switch_setup_fqs(ethsw);
 	if (err)
 		return err;
 
-	/* setup the buffer pool needed on the Rx path */
+	 
 	err = dpaa2_switch_setup_dpbp(ethsw);
 	if (err)
 		return err;
@@ -2986,7 +2871,7 @@ static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
 		goto err_close;
 	}
 
-	/* Minimum supported DPSW version check */
+	 
 	if (ethsw->major < DPSW_MIN_VER_MAJOR ||
 	    (ethsw->major == DPSW_MIN_VER_MAJOR &&
 	     ethsw->minor < DPSW_MIN_VER_MINOR)) {
@@ -3027,9 +2912,7 @@ static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
 			goto err_close;
 		}
 
-		/* Switch starts with all ports configured to VLAN 1. Need to
-		 * remove this setting to allow configuration at bridge join
-		 */
+		 
 		vcfg.num_ifs = 1;
 		vcfg.if_id[0] = i;
 		err = dpsw_vlan_remove_if_untagged(ethsw->mc_io, 0, ethsw->dpsw_handle,
@@ -3087,19 +2970,17 @@ err_close:
 	return err;
 }
 
-/* Add an ACL to redirect frames with specific destination MAC address to
- * control interface
- */
+ 
 static int dpaa2_switch_port_trap_mac_addr(struct ethsw_port_priv *port_priv,
 					   const char *mac)
 {
 	struct dpaa2_switch_acl_entry acl_entry = {0};
 
-	/* Match on the destination MAC address */
+	 
 	ether_addr_copy(acl_entry.key.match.l2_dest_mac, mac);
 	eth_broadcast_addr(acl_entry.key.mask.l2_dest_mac);
 
-	/* Trap to CPU */
+	 
 	acl_entry.cfg.precedence = 0;
 	acl_entry.cfg.result.action = DPSW_ACL_ACTION_REDIRECT_TO_CTRL_IF;
 
@@ -3124,7 +3005,7 @@ static int dpaa2_switch_port_init(struct ethsw_port_priv *port_priv, u16 port)
 	u16 fdb_id, acl_tbl_id;
 	int err;
 
-	/* Get the Tx queue for this specific port */
+	 
 	err = dpsw_if_get_attributes(ethsw->mc_io, 0, ethsw->dpsw_handle,
 				     port_priv->idx, &dpsw_if_attr);
 	if (err) {
@@ -3133,7 +3014,7 @@ static int dpaa2_switch_port_init(struct ethsw_port_priv *port_priv, u16 port)
 	}
 	port_priv->tx_qdid = dpsw_if_attr.qdid;
 
-	/* Create a FDB table for this particular switch port */
+	 
 	fdb_cfg.num_fdb_entries = ethsw->sw_attr.max_fdb_entries / ethsw->sw_attr.num_ifs;
 	err = dpsw_fdb_add(ethsw->mc_io, 0, ethsw->dpsw_handle,
 			   &fdb_id, &fdb_cfg);
@@ -3142,27 +3023,24 @@ static int dpaa2_switch_port_init(struct ethsw_port_priv *port_priv, u16 port)
 		return err;
 	}
 
-	/* Find an unused dpaa2_switch_fdb structure and use it */
+	 
 	fdb = dpaa2_switch_fdb_get_unused(ethsw);
 	fdb->fdb_id = fdb_id;
 	fdb->in_use = true;
 	fdb->bridge_dev = NULL;
 	port_priv->fdb = fdb;
 
-	/* We need to add VLAN 1 as the PVID on this port until it is under a
-	 * bridge since the DPAA2 switch is not able to handle the traffic in a
-	 * VLAN unaware fashion
-	 */
+	 
 	err = dpaa2_switch_port_vlans_add(netdev, &vlan);
 	if (err)
 		return err;
 
-	/* Setup the egress flooding domains (broadcast, unknown unicast */
+	 
 	err = dpaa2_switch_fdb_set_egress_flood(ethsw, port_priv->fdb->fdb_id);
 	if (err)
 		return err;
 
-	/* Create an ACL table to be used by this switch port */
+	 
 	acl_cfg.max_entries = DPAA2_ETHSW_PORT_MAX_ACL_ENTRIES;
 	err = dpsw_acl_add(ethsw->mc_io, 0, ethsw->dpsw_handle,
 			   &acl_tbl_id, &acl_cfg);
@@ -3279,18 +3157,14 @@ static int dpaa2_switch_probe_port(struct ethsw_core *ethsw,
 	port_priv->bcast_flood = true;
 	port_priv->ucast_flood = true;
 
-	/* Set MTU limits */
+	 
 	port_netdev->min_mtu = ETH_MIN_MTU;
 	port_netdev->max_mtu = ETHSW_MAX_FRAME_LENGTH;
 
-	/* Populate the private port structure so that later calls to
-	 * dpaa2_switch_port_init() can use it.
-	 */
+	 
 	ethsw->ports[port_idx] = port_priv;
 
-	/* The DPAA2 switch's ingress path depends on the VLAN table,
-	 * thus we are not able to disable VLAN filtering.
-	 */
+	 
 	port_netdev->features = NETIF_F_HW_VLAN_CTAG_FILTER |
 				NETIF_F_HW_VLAN_STAG_FILTER |
 				NETIF_F_HW_TC;
@@ -3327,7 +3201,7 @@ static int dpaa2_switch_probe(struct fsl_mc_device *sw_dev)
 	struct ethsw_core *ethsw;
 	int i, err;
 
-	/* Allocate switch core*/
+	 
 	ethsw = kzalloc(sizeof(*ethsw), GFP_KERNEL);
 
 	if (!ethsw)
@@ -3379,27 +3253,20 @@ static int dpaa2_switch_probe(struct fsl_mc_device *sw_dev)
 			goto err_free_netdev;
 	}
 
-	/* Add a NAPI instance for each of the Rx queues. The first port's
-	 * net_device will be associated with the instances since we do not have
-	 * different queues for each switch ports.
-	 */
+	 
 	for (i = 0; i < DPAA2_SWITCH_RX_NUM_FQS; i++)
 		netif_napi_add(ethsw->ports[0]->netdev, &ethsw->fq[i].napi,
 			       dpaa2_switch_poll);
 
-	/* Setup IRQs */
+	 
 	err = dpaa2_switch_setup_irqs(sw_dev);
 	if (err)
 		goto err_stop;
 
-	/* By convention, if the mirror port is equal to the number of switch
-	 * interfaces, then mirroring of any kind is disabled.
-	 */
+	 
 	ethsw->mirror_port =  ethsw->sw_attr.num_ifs;
 
-	/* Register the netdev only when the entire setup is done and the
-	 * switch port interfaces are ready to receive traffic
-	 */
+	 
 	for (i = 0; i < ethsw->sw_attr.num_ifs; i++) {
 		err = register_netdev(ethsw->ports[i]->netdev);
 		if (err < 0) {

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * MIPI-DSI Novatek NT35560-based panel controller.
- *
- * Supported panels include:
- * Sony ACX424AKM - a 480x854 AMOLED DSI panel
- * Sony ACX424AKP - a 480x864 AMOLED DSI panel
- *
- * Copyright (C) Linaro Ltd. 2019-2021
- * Author: Linus Walleij
- * Based on code and know-how from Marcus Lorentzon
- * Copyright (C) ST-Ericsson SA 2010
- * Based on code and know-how from Johan Olson and Joakim Wesslen
- * Copyright (C) Sony Ericsson Mobile Communications 2010
- */
+
+ 
 #include <linux/backlight.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -31,16 +18,11 @@
 #define NT35560_DCS_READ_ID3		0xDC
 #define NT35560_DCS_SET_MDDI		0xAE
 
-/*
- * Sony seems to use vendor ID 0x81
- */
+ 
 #define DISPLAY_SONY_ACX424AKP_ID1	0x8103
 #define DISPLAY_SONY_ACX424AKP_ID2	0x811a
 #define DISPLAY_SONY_ACX424AKP_ID3	0x811b
-/*
- * The fourth ID looks like a bug, vendor IDs begin at 0x80
- * and panel 00 ... seems like default values.
- */
+ 
 #define DISPLAY_SONY_ACX424AKP_ID4	0x8000
 
 struct nt35560_config {
@@ -72,10 +54,7 @@ static const struct drm_display_mode sony_acx424akp_vid_mode = {
 	.flags = DRM_MODE_FLAG_PVSYNC,
 };
 
-/*
- * The timings are not very helpful as the display is used in
- * command mode using the maximum HS frequency.
- */
+ 
 static const struct drm_display_mode sony_acx424akp_cmd_mode = {
 	.clock = 35478,
 	.hdisplay = 480,
@@ -86,10 +65,7 @@ static const struct drm_display_mode sony_acx424akp_cmd_mode = {
 	.vsync_start = 864 + 1,
 	.vsync_end = 864 + 1 + 1,
 	.vtotal = 864 + 1 + 1 + 1,
-	/*
-	 * Some desired refresh rate, experiments at the maximum "pixel"
-	 * clock speed (HS clock 420 MHz) yields around 117Hz.
-	 */
+	 
 	.width_mm = 48,
 	.height_mm = 84,
 };
@@ -114,10 +90,7 @@ static const struct drm_display_mode sony_acx424akm_vid_mode = {
 	.flags = DRM_MODE_FLAG_PVSYNC,
 };
 
-/*
- * The timings are not very helpful as the display is used in
- * command mode using the maximum HS frequency.
- */
+ 
 static const struct drm_display_mode sony_acx424akm_cmd_mode = {
 	.clock = 35478,
 	.hdisplay = 480,
@@ -142,7 +115,7 @@ static inline struct nt35560 *panel_to_nt35560(struct drm_panel *panel)
 	return container_of(panel, struct nt35560, panel);
 }
 
-#define FOSC			20 /* 20Mhz */
+#define FOSC			20  
 #define SCALE_FACTOR_NS_DIV_MHZ	1000
 
 static int nt35560_set_brightness(struct backlight_device *bl)
@@ -157,7 +130,7 @@ static int nt35560_set_brightness(struct backlight_device *bl)
 	int ret;
 
 	if (backlight_is_blank(bl)) {
-		/* Disable backlight */
+		 
 		par = 0x00;
 		ret = mipi_dsi_dcs_write(dsi, MIPI_DCS_WRITE_CONTROL_DISPLAY,
 					 &par, 1);
@@ -168,13 +141,13 @@ static int nt35560_set_brightness(struct backlight_device *bl)
 		return 0;
 	}
 
-	/* Calculate the PWM duty cycle in n/256's */
+	 
 	pwm_ratio = max(((duty_ns * 256) / period_ns) - 1, 1);
 	pwm_div = max(1,
 		      ((FOSC * period_ns) / 256) /
 		      SCALE_FACTOR_NS_DIV_MHZ);
 
-	/* Set up PWM dutycycle ONE byte (differs from the standard) */
+	 
 	dev_dbg(nt->dev, "calculated duty cycle %02x\n", pwm_ratio);
 	ret = mipi_dsi_dcs_write(dsi, MIPI_DCS_SET_DISPLAY_BRIGHTNESS,
 				 &pwm_ratio, 1);
@@ -183,15 +156,7 @@ static int nt35560_set_brightness(struct backlight_device *bl)
 		return ret;
 	}
 
-	/*
-	 * Sequence to write PWMDIV:
-	 *	address		data
-	 *	0xF3		0xAA   CMD2 Unlock
-	 *	0x00		0x01   Enter CMD2 page 0
-	 *	0X7D		0x01   No reload MTP of CMD2 P1
-	 *	0x22		PWMDIV
-	 *	0x7F		0xAA   CMD2 page 1 lock
-	 */
+	 
 	par = 0xaa;
 	ret = mipi_dsi_dcs_write(dsi, 0xf3, &par, 1);
 	if (ret < 0) {
@@ -222,7 +187,7 @@ static int nt35560_set_brightness(struct backlight_device *bl)
 		return ret;
 	}
 
-	/* Enable backlight */
+	 
 	par = 0x24;
 	ret = mipi_dsi_dcs_write(dsi, MIPI_DCS_WRITE_CONTROL_DISPLAY,
 				 &par, 1);
@@ -300,10 +265,10 @@ static int nt35560_power_on(struct nt35560 *nt)
 		return ret;
 	}
 
-	/* Assert RESET */
+	 
 	gpiod_set_value_cansleep(nt->reset_gpio, 1);
 	udelay(20);
-	/* De-assert RESET */
+	 
 	gpiod_set_value_cansleep(nt->reset_gpio, 0);
 	usleep_range(11000, 20000);
 
@@ -312,7 +277,7 @@ static int nt35560_power_on(struct nt35560 *nt)
 
 static void nt35560_power_off(struct nt35560 *nt)
 {
-	/* Assert RESET */
+	 
 	gpiod_set_value_cansleep(nt->reset_gpio, 1);
 	usleep_range(11000, 20000);
 
@@ -336,7 +301,7 @@ static int nt35560_prepare(struct drm_panel *panel)
 		goto err_power_off;
 	}
 
-	/* Enabe tearing mode: send TE (tearing effect) at VBLANK */
+	 
 	ret = mipi_dsi_dcs_set_tear_on(dsi,
 				       MIPI_DSI_DCS_TEAR_MODE_VBLANK);
 	if (ret) {
@@ -344,16 +309,7 @@ static int nt35560_prepare(struct drm_panel *panel)
 		goto err_power_off;
 	}
 
-	/*
-	 * Set MDDI
-	 *
-	 * This presumably deactivates the Qualcomm MDDI interface and
-	 * selects DSI, similar code is found in other drivers such as the
-	 * Sharp LS043T1LE01 which makes us suspect that this panel may be
-	 * using a Novatek NT35565 or similar display driver chip that shares
-	 * this command. Due to the lack of documentation we cannot know for
-	 * sure.
-	 */
+	 
 	ret = mipi_dsi_dcs_write(dsi, NT35560_DCS_SET_MDDI,
 				 &mddi, sizeof(mddi));
 	if (ret < 0) {
@@ -361,7 +317,7 @@ static int nt35560_prepare(struct drm_panel *panel)
 		goto err_power_off;
 	}
 
-	/* Exit sleep mode */
+	 
 	ret = mipi_dsi_dcs_exit_sleep_mode(dsi);
 	if (ret) {
 		dev_err(nt->dev, "failed to exit sleep mode (%d)\n", ret);
@@ -375,7 +331,7 @@ static int nt35560_prepare(struct drm_panel *panel)
 		goto err_power_off;
 	}
 	if (nt->video_mode) {
-		/* In video mode turn peripheral on */
+		 
 		ret = mipi_dsi_turn_on_peripheral(dsi);
 		if (ret) {
 			dev_err(nt->dev, "failed to turn on peripheral\n");
@@ -402,7 +358,7 @@ static int nt35560_unprepare(struct drm_panel *panel)
 		return ret;
 	}
 
-	/* Enter sleep mode */
+	 
 	ret = mipi_dsi_dcs_enter_sleep_mode(dsi);
 	if (ret) {
 		dev_err(nt->dev, "failed to enter sleep mode (%d)\n", ret);
@@ -441,7 +397,7 @@ static int nt35560_get_modes(struct drm_panel *panel,
 
 	drm_mode_probed_add(connector, mode);
 
-	return 1; /* Number of modes */
+	return 1;  
 }
 
 static const struct drm_panel_funcs nt35560_drm_funcs = {
@@ -473,17 +429,12 @@ static int nt35560_probe(struct mipi_dsi_device *dsi)
 
 	dsi->lanes = 2;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	/*
-	 * FIXME: these come from the ST-Ericsson vendor driver for the
-	 * HREF520 and seems to reflect limitations in the PLLs on that
-	 * platform, if you have the datasheet, please cross-check the
-	 * actual max rates.
-	 */
+	 
 	dsi->lp_rate = 19200000;
 	dsi->hs_rate = 420160000;
 
 	if (nt->video_mode)
-		/* Burst mode using event for sync */
+		 
 		dsi->mode_flags =
 			MIPI_DSI_MODE_VIDEO |
 			MIPI_DSI_MODE_VIDEO_BURST;
@@ -495,7 +446,7 @@ static int nt35560_probe(struct mipi_dsi_device *dsi)
 	if (IS_ERR(nt->supply))
 		return PTR_ERR(nt->supply);
 
-	/* This asserts RESET by default */
+	 
 	nt->reset_gpio = devm_gpiod_get_optional(dev, "reset",
 						 GPIOD_OUT_HIGH);
 	if (IS_ERR(nt->reset_gpio))
@@ -539,7 +490,7 @@ static const struct of_device_id nt35560_of_match[] = {
 		.compatible = "sony,acx424akm",
 		.data = &sony_acx424akm_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, nt35560_of_match);
 

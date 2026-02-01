@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004 IBM Corporation
- * Copyright (C) 2014 Intel Corporation
- *
- * Authors:
- * Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Dave Safford <safford@watson.ibm.com>
- * Reiner Sailer <sailer@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * TPM chip management routines.
- */
+
+ 
 
 #include <linux/poll.h>
 #include <linux/slab.h>
@@ -94,14 +80,7 @@ static void tpm_clk_disable(struct tpm_chip *chip)
 		chip->ops->clk_enable(chip, false);
 }
 
-/**
- * tpm_chip_start() - power on the TPM
- * @chip:	a TPM chip to use
- *
- * Return:
- * * The response length	- OK
- * * -errno			- A system error
- */
+ 
 int tpm_chip_start(struct tpm_chip *chip)
 {
 	int ret;
@@ -127,14 +106,7 @@ int tpm_chip_start(struct tpm_chip *chip)
 }
 EXPORT_SYMBOL_GPL(tpm_chip_start);
 
-/**
- * tpm_chip_stop() - power off the TPM
- * @chip:	a TPM chip to use
- *
- * Return:
- * * The response length	- OK
- * * -errno			- A system error
- */
+ 
 void tpm_chip_stop(struct tpm_chip *chip)
 {
 	tpm_go_idle(chip);
@@ -143,17 +115,7 @@ void tpm_chip_stop(struct tpm_chip *chip)
 }
 EXPORT_SYMBOL_GPL(tpm_chip_stop);
 
-/**
- * tpm_try_get_ops() - Get a ref to the tpm_chip
- * @chip: Chip to ref
- *
- * The caller must already have some kind of locking to ensure that chip is
- * valid. This function will lock the chip so that the ops member can be
- * accessed safely. The locking prevents tpm_chip_unregister from
- * completing, so it should not be held for long periods.
- *
- * Returns -ERRNO if the chip could not be got.
- */
+ 
 int tpm_try_get_ops(struct tpm_chip *chip)
 {
 	int rc = -EIO;
@@ -179,13 +141,7 @@ out_ops:
 }
 EXPORT_SYMBOL_GPL(tpm_try_get_ops);
 
-/**
- * tpm_put_ops() - Release a ref to the tpm_chip
- * @chip: Chip to put
- *
- * This is the opposite pair to tpm_try_get_ops(). After this returns chip may
- * be kfree'd.
- */
+ 
 void tpm_put_ops(struct tpm_chip *chip)
 {
 	tpm_chip_stop(chip);
@@ -195,9 +151,7 @@ void tpm_put_ops(struct tpm_chip *chip)
 }
 EXPORT_SYMBOL_GPL(tpm_put_ops);
 
-/**
- * tpm_default_chip() - find a TPM chip and get a reference to it
- */
+ 
 struct tpm_chip *tpm_default_chip(void)
 {
 	struct tpm_chip *chip, *res = NULL;
@@ -222,21 +176,7 @@ struct tpm_chip *tpm_default_chip(void)
 }
 EXPORT_SYMBOL_GPL(tpm_default_chip);
 
-/**
- * tpm_find_get_ops() - find and reserve a TPM chip
- * @chip:	a &struct tpm_chip instance, %NULL for the default chip
- *
- * Finds a TPM chip and reserves its class device and operations. The chip must
- * be released with tpm_put_ops() after use.
- * This function is for internal use only. It supports existing TPM callers
- * by accepting NULL, but those callers should be converted to pass in a chip
- * directly.
- *
- * Return:
- * A reserved &struct tpm_chip instance.
- * %NULL if a chip is not found.
- * %NULL if the chip is not available.
- */
+ 
 struct tpm_chip *tpm_find_get_ops(struct tpm_chip *chip)
 {
 	int rc;
@@ -251,19 +191,14 @@ struct tpm_chip *tpm_find_get_ops(struct tpm_chip *chip)
 	if (!chip)
 		return NULL;
 	rc = tpm_try_get_ops(chip);
-	/* release additional reference we got from tpm_default_chip() */
+	 
 	put_device(&chip->dev);
 	if (rc)
 		return NULL;
 	return chip;
 }
 
-/**
- * tpm_dev_release() - free chip memory and the device number
- * @dev: the character device for the TPM chip
- *
- * This is used as the release function for the character device.
- */
+ 
 static void tpm_dev_release(struct device *dev)
 {
 	struct tpm_chip *chip = container_of(dev, struct tpm_chip, dev);
@@ -278,15 +213,7 @@ static void tpm_dev_release(struct device *dev)
 	kfree(chip);
 }
 
-/**
- * tpm_class_shutdown() - prepare the TPM device for loss of power.
- * @dev: device to which the chip is associated.
- *
- * Issues a TPM2_Shutdown command prior to loss of power, as required by the
- * TPM 2.0 spec. Then, calls bus- and device- specific shutdown code.
- *
- * Return: always 0 (i.e. success)
- */
+ 
 int tpm_class_shutdown(struct device *dev)
 {
 	struct tpm_chip *chip = container_of(dev, struct tpm_chip, dev);
@@ -304,16 +231,7 @@ int tpm_class_shutdown(struct device *dev)
 	return 0;
 }
 
-/**
- * tpm_chip_alloc() - allocate a new struct tpm_chip instance
- * @pdev: device to which the chip is associated
- *        At this point pdev mst be initialized, but does not have to
- *        be registered
- * @ops: struct tpm_class_ops instance
- *
- * Allocates a new struct tpm_chip instance and assigns a free
- * device number for it. Must be paired with put_device(&chip->dev).
- */
+ 
 struct tpm_chip *tpm_chip_alloc(struct device *pdev,
 				const struct tpm_class_ops *ops)
 {
@@ -381,13 +299,7 @@ static void tpm_put_device(void *dev)
 	put_device(dev);
 }
 
-/**
- * tpmm_chip_alloc() - allocate a new struct tpm_chip instance
- * @pdev: parent device to which the chip is associated
- * @ops: struct tpm_class_ops instance
- *
- * Same as tpm_chip_alloc except devm is used to do the put_device
- */
+ 
 struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
 				 const struct tpm_class_ops *ops)
 {
@@ -429,7 +341,7 @@ static int tpm_add_char_device(struct tpm_chip *chip)
 			goto err_del_cdev;
 	}
 
-	/* Make the chip available. */
+	 
 	mutex_lock(&idr_lock);
 	idr_replace(&dev_nums_idr, chip, chip->dev_num);
 	mutex_unlock(&idr_lock);
@@ -445,19 +357,15 @@ static void tpm_del_char_device(struct tpm_chip *chip)
 {
 	cdev_device_del(&chip->cdev, &chip->dev);
 
-	/* Make the chip unavailable. */
+	 
 	mutex_lock(&idr_lock);
 	idr_replace(&dev_nums_idr, NULL, chip->dev_num);
 	mutex_unlock(&idr_lock);
 
-	/* Make the driver uncallable. */
+	 
 	down_write(&chip->ops_sem);
 
-	/*
-	 * Check if chip->ops is still valid: In case that the controller
-	 * drivers shutdown handler unregisters the controller in its
-	 * shutdown handler we are called twice and chip->ops to NULL.
-	 */
+	 
 	if (chip->ops) {
 		if (chip->flags & TPM_CHIP_FLAG_TPM2) {
 			if (!tpm_chip_start(chip)) {
@@ -484,10 +392,7 @@ static void tpm_del_legacy_sysfs(struct tpm_chip *chip)
 		sysfs_remove_link(&chip->dev.parent->kobj, (*i)->name);
 }
 
-/* For compatibility with legacy sysfs paths we provide symlinks from the
- * parent dev directory to selected names within the tpm chip directory. Old
- * kernel versions created these files directly under the parent.
- */
+ 
 static int tpm_add_legacy_sysfs(struct tpm_chip *chip)
 {
 	struct attribute **i;
@@ -502,7 +407,7 @@ static int tpm_add_legacy_sysfs(struct tpm_chip *chip)
 	if (rc && rc != -ENOENT)
 		return rc;
 
-	/* All the names from tpm-sysfs */
+	 
 	for (i = chip->groups[0]->attrs; *i != NULL; ++i) {
 		rc = compat_only_sysfs_link_entry_to_kobj(
 		    &chip->dev.parent->kobj, &chip->dev.kobj, (*i)->name, NULL);
@@ -519,7 +424,7 @@ static int tpm_hwrng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 {
 	struct tpm_chip *chip = container_of(rng, struct tpm_chip, hwrng);
 
-	/* Give back zero bytes, as TPM chip has not yet fully resumed: */
+	 
 	if (chip->flags & TPM_CHIP_FLAG_SUSPENDED)
 		return 0;
 
@@ -566,13 +471,7 @@ static int tpm_get_pcr_allocation(struct tpm_chip *chip)
 	return rc;
 }
 
-/*
- * tpm_chip_bootstrap() - Boostrap TPM chip after power on
- * @chip: TPM chip to use.
- *
- * Initialize TPM chip after power on. This a one-shot function: subsequent
- * calls will have no effect.
- */
+ 
 int tpm_chip_bootstrap(struct tpm_chip *chip)
 {
 	int rc;
@@ -592,27 +491,14 @@ int tpm_chip_bootstrap(struct tpm_chip *chip)
 stop:
 	tpm_chip_stop(chip);
 
-	/*
-	 * Unconditionally set, as driver initialization should cease, when the
-	 * boostrapping process fails.
-	 */
+	 
 	chip->flags |= TPM_CHIP_FLAG_BOOTSTRAPPED;
 
 	return rc;
 }
 EXPORT_SYMBOL_GPL(tpm_chip_bootstrap);
 
-/*
- * tpm_chip_register() - create a character device for the TPM chip
- * @chip: TPM chip to use.
- *
- * Creates a character device for the TPM chip and adds sysfs attributes for
- * the device. As the last step this function adds the chip to the list of TPM
- * chips available for in-kernel use.
- *
- * This function should be only called after the chip initialization is
- * complete.
- */
+ 
 int tpm_chip_register(struct tpm_chip *chip)
 {
 	int rc;
@@ -653,19 +539,7 @@ out_ppi:
 }
 EXPORT_SYMBOL_GPL(tpm_chip_register);
 
-/*
- * tpm_chip_unregister() - release the TPM driver
- * @chip: TPM chip to use.
- *
- * Takes the chip first away from the list of available TPM chips and then
- * cleans up all the resources reserved by tpm_chip_register().
- *
- * Once this function returns the driver call backs in 'op's will not be
- * running and will no longer start.
- *
- * NOTE: This function should be only called before deinitializing chip
- * resources.
- */
+ 
 void tpm_chip_unregister(struct tpm_chip *chip)
 {
 	tpm_del_legacy_sysfs(chip);

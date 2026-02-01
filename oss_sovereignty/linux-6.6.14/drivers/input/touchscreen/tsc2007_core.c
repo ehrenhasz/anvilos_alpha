@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/input/touchscreen/tsc2007.c
- *
- * Copyright (c) 2008 MtekVision Co., Ltd.
- *	Kwangwoo Lee <kwlee@mtekvision.com>
- *
- * Using code from:
- *  - ads7846.c
- *	Copyright (c) 2005 David Brownell
- *	Copyright (c) 2006 Nokia Corporation
- *  - corgi_ts.c
- *	Copyright (C) 2004-2005 Richard Purdie
- *  - omap_ts.[hc], ads7846.h, ts_osk.c
- *	Copyright (C) 2002 MontaVista Software
- *	Copyright (C) 2004 Texas Instruments
- *	Copyright (C) 2005 Dirk Behme
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -39,10 +23,7 @@ int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd)
 		return data;
 	}
 
-	/* The protocol and raw data format from i2c interface:
-	 * S Addr Wr [A] Comm [A] S Addr Rd [A] [DataLow] A [DataHigh] NA P
-	 * Where DataLow has [D11-D4], DataHigh has [D3-D0 << 4 | Dummy 4bit].
-	 */
+	 
 	val = swab16(data) >> 4;
 
 	dev_dbg(&tsc->client->dev, "data: 0x%x, val: 0x%x\n", data, val);
@@ -52,17 +33,17 @@ int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd)
 
 static void tsc2007_read_values(struct tsc2007 *tsc, struct ts_event *tc)
 {
-	/* y- still on; turn on only y+ (and ADC) */
+	 
 	tc->y = tsc2007_xfer(tsc, READ_Y);
 
-	/* turn y- off, x+ on, then leave in lowpower */
+	 
 	tc->x = tsc2007_xfer(tsc, READ_X);
 
-	/* turn y+ off, x- on; we'll use formula #1 */
+	 
 	tc->z1 = tsc2007_xfer(tsc, READ_Z1);
 	tc->z2 = tsc2007_xfer(tsc, READ_Z2);
 
-	/* Prepare for next touch reading - power down ADC, enable PENIRQ */
+	 
 	tsc2007_xfer(tsc, PWRDOWN);
 }
 
@@ -70,12 +51,12 @@ u32 tsc2007_calculate_resistance(struct tsc2007 *tsc, struct ts_event *tc)
 {
 	u32 rt = 0;
 
-	/* range filtering */
+	 
 	if (tc->x == MAX_12BIT)
 		tc->x = 0;
 
 	if (likely(tc->x && tc->z1)) {
-		/* compute touch resistance using equation #1 */
+		 
 		rt = tc->z2 - tc->z1;
 		rt *= tc->x;
 		rt *= tsc->x_plate_ohms;
@@ -88,19 +69,7 @@ u32 tsc2007_calculate_resistance(struct tsc2007 *tsc, struct ts_event *tc)
 
 bool tsc2007_is_pen_down(struct tsc2007 *ts)
 {
-	/*
-	 * NOTE: We can't rely on the pressure to determine the pen down
-	 * state, even though this controller has a pressure sensor.
-	 * The pressure value can fluctuate for quite a while after
-	 * lifting the pen and in some cases may not even settle at the
-	 * expected value.
-	 *
-	 * The only safe way to check for the pen up condition is in the
-	 * work function by reading the pen signal state (it's a GPIO
-	 * and IRQ). Unfortunately such callback is not always available,
-	 * in that case we assume that the pen is down and expect caller
-	 * to fall back on the pressure reading.
-	 */
+	 
 
 	if (!ts->get_pendown_state)
 		return true;
@@ -117,7 +86,7 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
 
 	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
 
-		/* pen is down, continue with the measurement */
+		 
 
 		mutex_lock(&ts->mlock);
 		tsc2007_read_values(ts, &tc);
@@ -126,11 +95,7 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
 		rt = tsc2007_calculate_resistance(ts, &tc);
 
 		if (!rt && !ts->get_pendown_state) {
-			/*
-			 * If pressure reported is 0 and we don't have
-			 * callback to check pendown state, we have to
-			 * assume that pen was lifted up.
-			 */
+			 
 			break;
 		}
 
@@ -149,11 +114,7 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
 			input_sync(input);
 
 		} else {
-			/*
-			 * Sample found inconsistent by debouncing or pressure is
-			 * beyond the maximum. Don't report it to user space,
-			 * repeat at least once more the measurement.
-			 */
+			 
 			dev_dbg(&ts->client->dev, "ignored pressure %d\n", rt);
 		}
 
@@ -191,7 +152,7 @@ static int tsc2007_open(struct input_dev *input_dev)
 
 	enable_irq(ts->irq);
 
-	/* Prepare for touch readings - power down ADC and enable PENIRQ */
+	 
 	err = tsc2007_xfer(ts, PWRDOWN);
 	if (err < 0) {
 		tsc2007_stop(ts);
@@ -374,12 +335,12 @@ static int tsc2007_probe(struct i2c_client *client)
 
 	tsc2007_stop(ts);
 
-	/* power down the chip (TSC2007_SETUP does not ACK on I2C) */
+	 
 	err = tsc2007_xfer(ts, PWRDOWN);
 	if (err < 0) {
 		dev_err(&client->dev,
 			"Failed to setup chip: %d\n", err);
-		return err;	/* chip does not respond */
+		return err;	 
 	}
 
 	err = input_register_device(input_dev);
@@ -408,7 +369,7 @@ MODULE_DEVICE_TABLE(i2c, tsc2007_idtable);
 
 static const struct of_device_id tsc2007_of_match[] = {
 	{ .compatible = "ti,tsc2007" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tsc2007_of_match);
 

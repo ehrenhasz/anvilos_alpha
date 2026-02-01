@@ -1,49 +1,17 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies.
- * All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/export.h>
 #include "fw_qos.h"
 #include "fw.h"
 
 enum {
-	/* allocate vpp opcode modifiers */
+	 
 	MLX4_ALLOCATE_VPP_ALLOCATE	= 0x0,
 	MLX4_ALLOCATE_VPP_QUERY		= 0x1
 };
 
 enum {
-	/* set vport qos opcode modifiers */
+	 
 	MLX4_SET_VPORT_QOS_SET		= 0x0,
 	MLX4_SET_VPORT_QOS_QUERY	= 0x1
 };
@@ -55,7 +23,7 @@ struct mlx4_set_port_prio2tc_context {
 struct mlx4_port_scheduler_tc_cfg_be {
 	__be16 pg;
 	__be16 bw_precentage;
-	__be16 max_bw_units; /* 3-100Mbps, 4-1Gbps, other values - reserved */
+	__be16 max_bw_units;  
 	__be16 max_bw_value;
 };
 
@@ -63,7 +31,7 @@ struct mlx4_set_port_scheduler_context {
 	struct mlx4_port_scheduler_tc_cfg_be tc[MLX4_NUM_TC];
 };
 
-/* Granular Qos (per VF) section */
+ 
 struct mlx4_alloc_vpp_param {
 	__be32 available_vpp;
 	__be32 vpp_p_up[MLX4_NUM_UP];
@@ -178,7 +146,7 @@ int mlx4_ALLOCATE_VPP_get(struct mlx4_dev *dev, u8 port,
 	if (err)
 		goto out;
 
-	/* Total number of supported VPPs */
+	 
 	*available_vpp = (u16)be32_to_cpu(out_param->available_vpp);
 
 	for (i = 0; i < MLX4_NUM_UP; i++)

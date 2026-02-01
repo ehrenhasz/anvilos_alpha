@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_endian.h>
@@ -72,10 +72,7 @@ int ingress_lookup(struct __sk_buff *skb)
 	if (skb->protocol != bpf_htons(ETH_P_IPV6))
 		return 1;
 
-	/* For SYN packets coming to listening socket skb->remote_port will be
-	 * zero, so IPv6/TCP headers are loaded to identify remote peer
-	 * instead.
-	 */
+	 
 	if (bpf_skb_load_bytes(skb, 0, &ip6h, sizeof(ip6h)))
 		return 1;
 

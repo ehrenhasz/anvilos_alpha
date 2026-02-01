@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- * Copyright (C) 2014 Endless Mobile
- *
- * Written by:
- *     Jasper St. Pierre <jstpierre@mecheye.net>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/soc/amlogic/meson-canvas.h>
@@ -29,7 +21,7 @@
 
 #define MESON_G12A_VIU_OFFSET	0x5ec0
 
-/* CRTC definition */
+ 
 
 struct meson_crtc {
 	struct drm_crtc base;
@@ -45,7 +37,7 @@ struct meson_crtc {
 };
 #define to_meson_crtc(x) container_of(x, struct meson_crtc, base)
 
-/* CRTC */
+ 
 
 static int meson_crtc_enable_vblank(struct drm_crtc *crtc)
 {
@@ -95,11 +87,11 @@ static void meson_g12a_crtc_atomic_enable(struct drm_crtc *crtc,
 		return;
 	}
 
-	/* VD1 Preblend vertical start/end */
+	 
 	writel(FIELD_PREP(GENMASK(11, 0), 2303),
 	       priv->io_base + _REG(VPP_PREBLEND_VD1_V_START_END));
 
-	/* Setup Blender */
+	 
 	writel(crtc_state->mode.hdisplay |
 	       crtc_state->mode.vdisplay << 16,
 	       priv->io_base + _REG(VPP_POSTBLEND_H_SIZE));
@@ -131,11 +123,11 @@ static void meson_crtc_atomic_enable(struct drm_crtc *crtc,
 		return;
 	}
 
-	/* Enable VPP Postblend */
+	 
 	writel(crtc_state->mode.hdisplay,
 	       priv->io_base + _REG(VPP_POSTBLEND_H_SIZE));
 
-	/* VD1 Preblend vertical start/end */
+	 
 	writel(FIELD_PREP(GENMASK(11, 0), 2303),
 			priv->io_base + _REG(VPP_PREBLEND_VD1_V_START_END));
 
@@ -186,7 +178,7 @@ static void meson_crtc_atomic_disable(struct drm_crtc *crtc,
 	priv->viu.vd1_enabled = false;
 	priv->viu.vd1_commit = false;
 
-	/* Disable VPP Postblend */
+	 
 	writel_bits_relaxed(VPP_OSD1_POSTBLEND | VPP_VD1_POSTBLEND |
 			    VPP_VD1_PREBLEND | VPP_POSTBLEND_ENABLE, 0,
 			    priv->io_base + _REG(VPP_MISC));
@@ -315,7 +307,7 @@ void meson_crtc_irq(struct meson_drm *priv)
 	struct meson_crtc *meson_crtc = to_meson_crtc(priv->crtc);
 	unsigned long flags;
 
-	/* Update the OSD registers */
+	 
 	if (priv->viu.osd1_enabled && priv->viu.osd1_commit) {
 		writel_relaxed(priv->viu.osd1_ctrl_stat,
 				priv->io_base + _REG(VIU_OSD1_CTRL_STAT));
@@ -374,7 +366,7 @@ void meson_crtc_irq(struct meson_drm *priv)
 					    MESON_CANVAS_WRAP_NONE,
 					    MESON_CANVAS_BLKMODE_LINEAR, 0);
 
-		/* Enable OSD1 */
+		 
 		if (meson_crtc->enable_osd1)
 			meson_crtc->enable_osd1(priv);
 
@@ -388,7 +380,7 @@ void meson_crtc_irq(struct meson_drm *priv)
 		priv->viu.osd1_commit = false;
 	}
 
-	/* Update the VD1 registers */
+	 
 	if (priv->viu.vd1_enabled && priv->viu.vd1_commit) {
 
 		if (priv->viu.vd1_afbc) {
@@ -650,7 +642,7 @@ void meson_crtc_irq(struct meson_drm *priv)
 				priv->io_base + _REG(VPP_HSC_PHASE_CTRL));
 		writel_relaxed(0x42, priv->io_base + _REG(VPP_SCALE_COEF_IDX));
 
-		/* Enable VD1 */
+		 
 		if (meson_crtc->enable_vd1)
 			meson_crtc->enable_vd1(priv);
 

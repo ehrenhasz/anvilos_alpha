@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C link layer for the NXP NCI driver
- *
- * Copyright (C) 2014  NXP Semiconductors  All rights reserved.
- * Copyright (C) 2012-2015  Intel Corporation. All rights reserved.
- *
- * Authors: Clément Perrochaud <clement.perrochaud@nxp.com>
- * Authors: Oleg Zhurakivskyy <oleg.zhurakivskyy@intel.com>
- *
- * Derived from PN544 device driver:
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -36,10 +25,7 @@ struct nxp_nci_i2c_phy {
 	struct gpio_desc *gpiod_en;
 	struct gpio_desc *gpiod_fw;
 
-	int hard_fault; /*
-			 * < 0 if hardware error occurred (e.g. i2c err)
-			 * and prevents normal operation.
-			 */
+	int hard_fault;  
 };
 
 static int nxp_nci_i2c_set_mode(void *phy_id,
@@ -68,7 +54,7 @@ static int nxp_nci_i2c_write(void *phy_id, struct sk_buff *skb)
 
 	r = i2c_master_send(client, skb->data, skb->len);
 	if (r < 0) {
-		/* Retry, chip was in standby */
+		 
 		msleep(110);
 		r = i2c_master_send(client, skb->data, skb->len);
 	}
@@ -81,7 +67,7 @@ static int nxp_nci_i2c_write(void *phy_id, struct sk_buff *skb)
 			r, skb->len);
 		r = -EREMOTEIO;
 	} else {
-		/* Success but return 0 and not number of bytes */
+		 
 		r = 0;
 	}
 
@@ -143,7 +129,7 @@ fw_read_exit:
 static int nxp_nci_i2c_nci_read(struct nxp_nci_i2c_phy *phy,
 				struct sk_buff **skb)
 {
-	struct nci_ctrl_hdr header; /* May actually be a data header */
+	struct nci_ctrl_hdr header;  
 	struct i2c_client *client = phy->i2c_dev;
 	int r;
 

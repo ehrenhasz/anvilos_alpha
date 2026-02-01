@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * A security identifier table (sidtab) is a lookup table
- * of security context structures indexed by SID value.
- *
- * Original author: Stephen Smalley, <stephen.smalley.work@gmail.com>
- * Author: Ondrej Mosnacek, <omosnacek@gmail.com>
- *
- * Copyright (C) 2018 Red Hat, Inc.
- */
+ 
+ 
 #ifndef _SS_SIDTAB_H_
 #define _SS_SIDTAB_H_
 
@@ -32,7 +24,7 @@ union sidtab_entry_inner {
 	struct sidtab_node_leaf  *ptr_leaf;
 };
 
-/* align node size to page boundary */
+ 
 #define SIDTAB_NODE_ALLOC_SHIFT PAGE_SHIFT
 #define SIDTAB_NODE_ALLOC_SIZE  PAGE_SIZE
 
@@ -46,7 +38,7 @@ union sidtab_entry_inner {
 
 #define SIDTAB_MAX_BITS 32
 #define SIDTAB_MAX U32_MAX
-/* ensure enough tree levels for SIDTAB_MAX entries */
+ 
 #define SIDTAB_MAX_LEVEL \
 	DIV_ROUND_UP(SIDTAB_MAX_BITS - size_to_shift(SIDTAB_LEAF_ENTRIES), \
 		     SIDTAB_INNER_SHIFT)
@@ -73,32 +65,26 @@ struct sidtab_convert_params {
 #define SIDTAB_HASH_BUCKETS (1 << SIDTAB_HASH_BITS)
 
 struct sidtab {
-	/*
-	 * lock-free read access only for as many items as a prior read of
-	 * 'count'
-	 */
+	 
 	union sidtab_entry_inner roots[SIDTAB_MAX_LEVEL + 1];
-	/*
-	 * access atomically via {READ|WRITE}_ONCE(); only increment under
-	 * spinlock
-	 */
+	 
 	u32 count;
-	/* access only under spinlock */
+	 
 	struct sidtab_convert_params *convert;
 	bool frozen;
 	spinlock_t lock;
 
 #if CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE > 0
-	/* SID -> context string cache */
+	 
 	u32 cache_free_slots;
 	struct list_head cache_lru_list;
 	spinlock_t cache_lock;
 #endif
 
-	/* index == SID - 1 (no entry for SECSID_NULL) */
+	 
 	struct sidtab_isid_entry isids[SECINITSID_NUM];
 
-	/* Hash table for fast reverse context-to-sid lookups. */
+	 
 	DECLARE_HASHTABLE(context_to_sid, SIDTAB_HASH_BITS);
 };
 
@@ -151,8 +137,8 @@ static inline int sidtab_sid2str_get(struct sidtab *s,
 {
 	return -ENOENT;
 }
-#endif /* CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE > 0 */
+#endif  
 
-#endif	/* _SS_SIDTAB_H_ */
+#endif	 
 
 

@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
-/*
- * Copyright (C) STMicroelectronics 2020 - All Rights Reserved
- * Author: Gabriel Fernandez <gabriel.fernandez@foss.st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_STM32MP13_CLKS_H_
 #define _DT_BINDINGS_STM32MP13_CLKS_H_
 
-/* OSCILLATOR clocks */
+ 
 #define CK_HSE		0
 #define CK_CSI		1
 #define CK_LSI		2
@@ -15,13 +12,13 @@
 #define CK_HSI		4
 #define CK_HSE_DIV2	5
 
-/* PLL */
+ 
 #define PLL1		6
 #define PLL2		7
 #define PLL3		8
 #define PLL4		9
 
-/* ODF */
+ 
 #define PLL1_P		10
 #define PLL1_Q		11
 #define PLL1_R		12
@@ -42,29 +39,29 @@
 #define PCLK5		26
 #define PCLK6		27
 
-/* SYSTEM CLOCK */
+ 
 #define CK_PER		28
 #define CK_MPU		29
 #define CK_AXI		30
 #define CK_MLAHB	31
 
-/* BASE TIMER */
+ 
 #define CK_TIMG1	32
 #define CK_TIMG2	33
 #define CK_TIMG3	34
 
-/* AUX */
+ 
 #define RTC		35
 
-/* TRACE & DEBUG clocks */
+ 
 #define CK_DBG		36
 #define CK_TRACE	37
 
-/* MCO clocks */
+ 
 #define CK_MCO1		38
 #define CK_MCO2		39
 
-/* IP clocks */
+ 
 #define SYSCFG		40
 #define VREF		41
 #define DTS		42
@@ -111,7 +108,7 @@
 #define ETH1STP		83
 #define ETH2STP		84
 
-/* IP clocks with parents */
+ 
 #define SDMMC1_K	85
 #define SDMMC2_K	86
 #define ADC1_K		87
@@ -174,7 +171,7 @@
 #define SAES_K		144
 #define DTS_K		145
 
-/* DDR */
+ 
 #define DDRC1		146
 #define DDRC1LP		147
 #define DDRC2		148
@@ -195,7 +192,7 @@
 
 #define STM32MP1_LAST_CLK 162
 
-/* SCMI clock identifiers */
+ 
 #define CK_SCMI_HSE		0
 #define CK_SCMI_HSI		1
 #define CK_SCMI_CSI		2
@@ -226,4 +223,4 @@
 #define CK_SCMI_RTC		27
 #define CK_SCMI_RTCAPB		28
 
-#endif /* _DT_BINDINGS_STM32MP13_CLKS_H_ */
+#endif  

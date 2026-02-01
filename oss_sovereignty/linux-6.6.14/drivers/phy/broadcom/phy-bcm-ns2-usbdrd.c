@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2017 Broadcom
+
+
 
 #include <linux/delay.h>
 #include <linux/extcon-provider.h>
@@ -119,7 +119,7 @@ static int ns2_drd_phy_poweroff(struct phy *phy)
 	val &= ~DRD_DEV_MODE;
 	writel(val, driver->crmu_usb2_ctrl);
 
-	/* Disable Host and Device Mode */
+	 
 	val = readl(driver->icfgdrd_regs + ICFG_FSM_CTRL);
 	val &= ~(DRD_HOST_MODE | DRD_DEVICE_MODE | ICFG_OFF_MODE);
 	writel(val, driver->icfgdrd_regs + ICFG_FSM_CTRL);
@@ -146,7 +146,7 @@ static int ns2_drd_phy_poweron(struct phy *phy)
 		val |= (AFE_CORERDY_VDDC | DRD_DEV_MODE);
 		writel(val, driver->crmu_usb2_ctrl);
 
-		/* Bring PHY and PHY_PLL out of Reset */
+		 
 		val = readl(driver->crmu_usb2_ctrl);
 		val |= (PHY_PLL_RESETB | PHY_RESETB);
 		writel(val, driver->crmu_usb2_ctrl);
@@ -173,7 +173,7 @@ static int ns2_drd_phy_poweron(struct phy *phy)
 		val &= ~IDM_RST_BIT;
 		writel(val, driver->idmdrd_rst_ctrl);
 
-		/* port over current Polarity */
+		 
 		val = readl(driver->usb2h_strap_reg);
 		val |= OHCI_OVRCUR_POL;
 		writel(val, driver->usb2h_strap_reg);
@@ -237,16 +237,16 @@ static void extcon_work(struct work_struct *work)
 	id = gpiod_get_value_cansleep(driver->id_gpiod);
 	vbus = gpiod_get_value_cansleep(driver->vbus_gpiod);
 
-	if (!id && vbus) { /* Host connected */
+	if (!id && vbus) {  
 		extcon_set_state_sync(driver->edev, EXTCON_USB_HOST, true);
 		pr_debug("Host cable connected\n");
 		driver->data->new_state = EVT_HOST;
 		connect_change(driver);
-	} else if (id && !vbus) { /* Disconnected */
+	} else if (id && !vbus) {  
 		extcon_set_state_sync(driver->edev, EXTCON_USB_HOST, false);
 		extcon_set_state_sync(driver->edev, EXTCON_USB, false);
 		pr_debug("Cable disconnected\n");
-	} else if (id && vbus) { /* Device connected */
+	} else if (id && vbus) {  
 		extcon_set_state_sync(driver->edev, EXTCON_USB, true);
 		pr_debug("Device cable connected\n");
 		driver->data->new_state = EVT_DEVICE;
@@ -312,7 +312,7 @@ static int ns2_drd_phy_probe(struct platform_device *pdev)
 	if (IS_ERR(driver->usb2h_strap_reg))
 		return PTR_ERR(driver->usb2h_strap_reg);
 
-	 /* create extcon */
+	  
 	driver->id_gpiod = devm_gpiod_get(&pdev->dev, "id", GPIOD_IN);
 	if (IS_ERR(driver->id_gpiod)) {
 		dev_err(dev, "failed to get ID GPIO\n");
@@ -372,7 +372,7 @@ static int ns2_drd_phy_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(dev, driver);
 
-	/* Shutdown all ports. They can be powered up as required */
+	 
 	val = readl(driver->crmu_usb2_ctrl);
 	val &= ~(AFE_CORERDY_VDDC | PHY_RESETB);
 	writel(val, driver->crmu_usb2_ctrl);

@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2004, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
 
 #ifndef	_SYS_FM_PROTOCOL_H
 #define	_SYS_FM_PROTOCOL_H
@@ -38,11 +17,11 @@ extern "C" {
 #endif
 #include <sys/processor.h>
 
-/* FM common member names */
+ 
 #define	FM_CLASS			"class"
 #define	FM_VERSION			"version"
 
-/* FM protocol category 1 class names */
+ 
 #define	FM_EREPORT_CLASS		"ereport"
 #define	FM_FAULT_CLASS			"fault"
 #define	FM_DEFECT_CLASS			"defect"
@@ -51,40 +30,37 @@ extern "C" {
 #define	FM_IREPORT_CLASS		"ireport"
 #define	FM_SYSEVENT_CLASS		"sysevent"
 
-/* FM list.* event class values */
+ 
 #define	FM_LIST_SUSPECT_CLASS		FM_LIST_EVENT ".suspect"
 #define	FM_LIST_ISOLATED_CLASS		FM_LIST_EVENT ".isolated"
 #define	FM_LIST_REPAIRED_CLASS		FM_LIST_EVENT ".repaired"
 #define	FM_LIST_UPDATED_CLASS		FM_LIST_EVENT ".updated"
 #define	FM_LIST_RESOLVED_CLASS		FM_LIST_EVENT ".resolved"
 
-/* ereport class subcategory values */
+ 
 #define	FM_ERROR_CPU			"cpu"
 #define	FM_ERROR_IO			"io"
 
-/* ereport version and payload member names */
+ 
 #define	FM_EREPORT_VERS0		0
 #define	FM_EREPORT_VERSION		FM_EREPORT_VERS0
 
-/* ereport payload member names */
+ 
 #define	FM_EREPORT_DETECTOR		"detector"
 #define	FM_EREPORT_ENA			"ena"
 #define	FM_EREPORT_TIME			"time"
 #define	FM_EREPORT_EID			"eid"
 
-/* list.* event payload member names */
+ 
 #define	FM_LIST_EVENT_SIZE		"list-sz"
 
-/* ireport.* event payload member names */
+ 
 #define	FM_IREPORT_DETECTOR		"detector"
 #define	FM_IREPORT_UUID			"uuid"
 #define	FM_IREPORT_PRIORITY		"pri"
 #define	FM_IREPORT_ATTRIBUTES		"attr"
 
-/*
- * list.suspect, isolated, updated, repaired and resolved
- * versions/payload member names.
- */
+ 
 #define	FM_SUSPECT_UUID			"uuid"
 #define	FM_SUSPECT_DIAG_CODE		"code"
 #define	FM_SUSPECT_DIAG_TIME		"diag-time"
@@ -109,7 +85,7 @@ extern "C" {
 #define	FM_SUSPECT_REPLACED		0x20
 #define	FM_SUSPECT_ACQUITTED		0x40
 
-/* fault event versions and payload member names */
+ 
 #define	FM_FAULT_VERS0			0
 #define	FM_FAULT_VERSION		FM_FAULT_VERS0
 
@@ -120,12 +96,12 @@ extern "C" {
 #define	FM_FAULT_RESOURCE		"resource"
 #define	FM_FAULT_LOCATION		"location"
 
-/* resource event versions and payload member names */
+ 
 #define	FM_RSRC_VERS0			0
 #define	FM_RSRC_VERSION			FM_RSRC_VERS0
 #define	FM_RSRC_RESOURCE		"resource"
 
-/* resource.fm.asru.* payload member names */
+ 
 #define	FM_RSRC_ASRU_UUID		"uuid"
 #define	FM_RSRC_ASRU_CODE		"code"
 #define	FM_RSRC_ASRU_FAULTY		"faulty"
@@ -136,7 +112,7 @@ extern "C" {
 #define	FM_RSRC_ASRU_UNUSABLE		"unusable"
 #define	FM_RSRC_ASRU_EVENT		"event"
 
-/* resource.fm.xprt.* versions and payload member names */
+ 
 #define	FM_RSRC_XPRT_VERS0		0
 #define	FM_RSRC_XPRT_VERSION		FM_RSRC_XPRT_VERS0
 #define	FM_RSRC_XPRT_UUID		"uuid"
@@ -144,18 +120,16 @@ extern "C" {
 #define	FM_RSRC_XPRT_FAULT_STATUS	"fault-status"
 #define	FM_RSRC_XPRT_FAULT_HAS_ASRU	"fault-has-asru"
 
-/*
- * FM ENA Format Macros
- */
+ 
 #define	ENA_FORMAT_MASK			0x3
 #define	ENA_FORMAT(ena)			((ena) & ENA_FORMAT_MASK)
 
-/* ENA format types */
+ 
 #define	FM_ENA_FMT0			0
 #define	FM_ENA_FMT1			1
 #define	FM_ENA_FMT2			2
 
-/* Format 1 */
+ 
 #define	ENA_FMT1_GEN_MASK		0x00000000000003FCull
 #define	ENA_FMT1_ID_MASK		0xFFFFFFFFFFFFFC00ull
 #define	ENA_FMT1_CPUID_MASK		0x00000000000FFC00ull
@@ -165,7 +139,7 @@ extern "C" {
 #define	ENA_FMT1_CPUID_SHFT		ENA_FMT1_ID_SHFT
 #define	ENA_FMT1_TIME_SHFT		20
 
-/* Format 2 */
+ 
 #define	ENA_FMT2_GEN_MASK		0x00000000000003FCull
 #define	ENA_FMT2_ID_MASK		0xFFFFFFFFFFFFFC00ull
 #define	ENA_FMT2_TIME_MASK		ENA_FMT2_ID_MASK
@@ -173,13 +147,13 @@ extern "C" {
 #define	ENA_FMT2_ID_SHFT		10
 #define	ENA_FMT2_TIME_SHFT		ENA_FMT2_ID_SHFT
 
-/* Common FMRI type names */
+ 
 #define	FM_FMRI_AUTHORITY		"authority"
 #define	FM_FMRI_SCHEME			"scheme"
 #define	FM_FMRI_SVC_AUTHORITY		"svc-authority"
 #define	FM_FMRI_FACILITY		"facility"
 
-/* FMRI authority-type member names */
+ 
 #define	FM_FMRI_AUTH_CHASSIS		"chassis-id"
 #define	FM_FMRI_AUTH_PRODUCT_SN		"product-sn"
 #define	FM_FMRI_AUTH_PRODUCT		"product-id"
@@ -190,7 +164,7 @@ extern "C" {
 #define	FM_AUTH_VERS0			0
 #define	FM_FMRI_AUTH_VERSION		FM_AUTH_VERS0
 
-/* scheme name values */
+ 
 #define	FM_FMRI_SCHEME_FMD		"fmd"
 #define	FM_FMRI_SCHEME_DEV		"dev"
 #define	FM_FMRI_SCHEME_HC		"hc"
@@ -203,7 +177,7 @@ extern "C" {
 #define	FM_FMRI_SCHEME_ZFS		"zfs"
 #define	FM_FMRI_SCHEME_SW		"sw"
 
-/* Scheme versions */
+ 
 #define	FMD_SCHEME_VERSION0		0
 #define	FM_FMD_SCHEME_VERSION		FMD_SCHEME_VERSION0
 #define	DEV_SCHEME_VERSION0		0
@@ -228,7 +202,7 @@ extern "C" {
 #define	SW_SCHEME_VERSION0		0
 #define	FM_SW_SCHEME_VERSION		SW_SCHEME_VERSION0
 
-/* hc scheme member names */
+ 
 #define	FM_FMRI_HC_SERIAL_ID		"serial"
 #define	FM_FMRI_HC_PART			"part"
 #define	FM_FMRI_HC_REVISION		"revision"
@@ -237,45 +211,45 @@ extern "C" {
 #define	FM_FMRI_HC_LIST			"hc-list"
 #define	FM_FMRI_HC_SPECIFIC		"hc-specific"
 
-/* facility member names */
+ 
 #define	FM_FMRI_FACILITY_NAME		"facility-name"
 #define	FM_FMRI_FACILITY_TYPE		"facility-type"
 
-/* hc-list version and member names */
+ 
 #define	FM_FMRI_HC_NAME			"hc-name"
 #define	FM_FMRI_HC_ID			"hc-id"
 
 #define	HC_LIST_VERSION0		0
 #define	FM_HC_LIST_VERSION		HC_LIST_VERSION0
 
-/* hc-specific member names */
+ 
 #define	FM_FMRI_HC_SPECIFIC_OFFSET	"offset"
 #define	FM_FMRI_HC_SPECIFIC_PHYSADDR	"physaddr"
 
-/* fmd module scheme member names */
+ 
 #define	FM_FMRI_FMD_NAME		"mod-name"
 #define	FM_FMRI_FMD_VERSION		"mod-version"
 
-/* dev scheme member names */
+ 
 #define	FM_FMRI_DEV_ID			"devid"
 #define	FM_FMRI_DEV_TGTPTLUN0		"target-port-l0id"
 #define	FM_FMRI_DEV_PATH		"device-path"
 
-/* pkg scheme member names */
+ 
 #define	FM_FMRI_PKG_BASEDIR		"pkg-basedir"
 #define	FM_FMRI_PKG_INST		"pkg-inst"
 #define	FM_FMRI_PKG_VERSION		"pkg-version"
 
-/* svc scheme member names */
+ 
 #define	FM_FMRI_SVC_NAME		"svc-name"
 #define	FM_FMRI_SVC_INSTANCE		"svc-instance"
 #define	FM_FMRI_SVC_CONTRACT_ID		"svc-contract-id"
 
-/* svc-authority member names */
+ 
 #define	FM_FMRI_SVC_AUTH_SCOPE		"scope"
 #define	FM_FMRI_SVC_AUTH_SYSTEM_FQN	"system-fqn"
 
-/* cpu scheme member names */
+ 
 #define	FM_FMRI_CPU_ID			"cpuid"
 #define	FM_FMRI_CPU_SERIAL_ID		"serial"
 #define	FM_FMRI_CPU_MASK		"cpumask"
@@ -289,29 +263,29 @@ extern "C" {
 #define	FM_FMRI_CPU_CACHE_TYPE_L2	0
 #define	FM_FMRI_CPU_CACHE_TYPE_L3	1
 
-/* legacy-hc scheme member names */
+ 
 #define	FM_FMRI_LEGACY_HC		"component"
 #define	FM_FMRI_LEGACY_HC_PREFIX	FM_FMRI_SCHEME_HC":///" \
     FM_FMRI_LEGACY_HC"="
 
-/* mem scheme member names */
+ 
 #define	FM_FMRI_MEM_UNUM		"unum"
 #define	FM_FMRI_MEM_SERIAL_ID		"serial"
 #define	FM_FMRI_MEM_PHYSADDR		"physaddr"
 #define	FM_FMRI_MEM_MEMCONFIG		"memconfig"
 #define	FM_FMRI_MEM_OFFSET		"offset"
 
-/* mod scheme member names */
+ 
 #define	FM_FMRI_MOD_PKG			"mod-pkg"
 #define	FM_FMRI_MOD_NAME		"mod-name"
 #define	FM_FMRI_MOD_ID			"mod-id"
 #define	FM_FMRI_MOD_DESC		"mod-desc"
 
-/* zfs scheme member names */
+ 
 #define	FM_FMRI_ZFS_POOL		"pool"
 #define	FM_FMRI_ZFS_VDEV		"vdev"
 
-/* sw scheme member names - extra indentation for members of an nvlist */
+ 
 #define	FM_FMRI_SW_OBJ			"object"
 #define	FM_FMRI_SW_OBJ_PATH			"path"
 #define	FM_FMRI_SW_OBJ_ROOT			"root"
@@ -329,8 +303,8 @@ extern "C" {
 #define	FM_FMRI_SW_CTXT_ZONE			"zone"
 #define	FM_FMRI_SW_CTXT_CTID			"ctid"
 #define	FM_FMRI_SW_CTXT_STACK			"stack"
-#define	FM_NVA_FREE		0	/* free allocator on nvlist_destroy */
-#define	FM_NVA_RETAIN		1	/* keep allocator on nvlist_destroy */
+#define	FM_NVA_FREE		0	 
+#define	FM_NVA_RETAIN		1	 
 
 extern nv_alloc_t *fm_nva_xcreate(char *, size_t);
 extern void fm_nva_xdestroy(nv_alloc_t *);
@@ -366,4 +340,4 @@ extern void fm_erpt_dropped_increment(void);
 }
 #endif
 
-#endif /* _SYS_FM_PROTOCOL_H */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * db-export.c: Support for exporting data suitable for import to a database
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <errno.h>
 #include <stdlib.h>
@@ -99,12 +96,7 @@ int db_export__comm(struct db_export *dbe, struct comm *comm,
 	return __db_export__comm(dbe, comm, thread);
 }
 
-/*
- * Export the "exec" comm. The "exec" comm is the program / application command
- * name at the time it first executes. It is used to group threads for the same
- * program. Note that the main thread pid (or thread group id tgid) cannot be
- * used because it does not change when a new program is exec'ed.
- */
+ 
 int db_export__exec_comm(struct db_export *dbe, struct comm *comm,
 			 struct thread *main_thread)
 {
@@ -117,16 +109,7 @@ int db_export__exec_comm(struct db_export *dbe, struct comm *comm,
 	if (err)
 		return err;
 
-	/*
-	 * Record the main thread for this comm. Note that the main thread can
-	 * have many "exec" comms because there will be a new one every time it
-	 * exec's. An "exec" comm however will only ever have 1 main thread.
-	 * That is different to any other threads for that same program because
-	 * exec() will effectively kill them, so the relationship between the
-	 * "exec" comm and non-main threads is 1-to-1. That is why
-	 * db_export__comm_thread() is called here for the main thread, but it
-	 * is called for non-main threads when they are exported.
-	 */
+	 
 	return db_export__comm_thread(dbe, comm, main_thread);
 }
 
@@ -221,11 +204,7 @@ static struct call_path *call_path_from_sample(struct db_export *dbe,
 	if (!symbol_conf.use_callchain || !sample->callchain)
 		return NULL;
 
-	/*
-	 * Since the call path tree must be built starting with the root, we
-	 * must use ORDER_CALL for call chain resolution, in order to process
-	 * the callchain starting with the root node and ending with the leaf.
-	 */
+	 
 	callchain_param.order = ORDER_CALLER;
 	cursor = get_tls_callchain_cursor();
 	err = thread__resolve_callchain(thread, cursor, evsel,
@@ -246,11 +225,7 @@ static struct call_path *call_path_from_sample(struct db_export *dbe,
 		if (!node)
 			break;
 
-		/*
-		 * Handle export of symbol and dso for this node by
-		 * constructing an addr_location struct and then passing it to
-		 * db_ids_from_al() to perform the export.
-		 */
+		 
 		addr_location__init(&al);
 		al.sym = node->ms.sym;
 		al.map = map__get(node->ms.map);
@@ -262,7 +237,7 @@ static struct call_path *call_path_from_sample(struct db_export *dbe,
 
 		db_ids_from_al(dbe, &al, &dso_db_id, &sym_db_id, &offset);
 
-		/* add node to the call path tree if it doesn't exist */
+		 
 		current = call_path__findnew(dbe->cpr, current,
 					     al.sym, node->ip,
 					     kernel_start);
@@ -271,11 +246,11 @@ static struct call_path *call_path_from_sample(struct db_export *dbe,
 		addr_location__exit(&al);
 	}
 
-	/* Reset the callchain order to its prior value. */
+	 
 	callchain_param.order = saved_order;
 
 	if (current == &dbe->cpr->call_path) {
-		/* Bail because the callchain was empty. */
+		 
 		return NULL;
 	}
 
@@ -300,17 +275,11 @@ static int db_export__threads(struct db_export *dbe, struct thread *thread,
 	int err;
 
 	if (main_thread) {
-		/*
-		 * A thread has a reference to the main thread, so export the
-		 * main thread first.
-		 */
+		 
 		err = db_export__thread(dbe, main_thread, machine, main_thread);
 		if (err)
 			return err;
-		/*
-		 * Export comm before exporting the non-main thread because
-		 * db_export__comm_thread() can be called further below.
-		 */
+		 
 		comm = machine__thread_exec_comm(machine, main_thread);
 		if (comm) {
 			err = db_export__exec_comm(dbe, comm, main_thread);
@@ -321,10 +290,7 @@ static int db_export__threads(struct db_export *dbe, struct thread *thread,
 	}
 
 	if (thread != main_thread) {
-		/*
-		 * For a non-main thread, db_export__comm_thread() must be
-		 * called only if thread has not previously been exported.
-		 */
+		 
 		bool export_comm_thread = comm && !thread__db_id(thread);
 
 		err = db_export__thread(dbe, thread, machine, main_thread);
@@ -456,7 +422,7 @@ int db_export__branch_types(struct db_export *dbe)
 			break;
 	}
 
-	/* Add trace begin / end variants */
+	 
 	for (i = 0; branch_types[i].name ; i++) {
 		const char *name = branch_types[i].name;
 		u32 type = branch_types[i].branch_type;
@@ -586,10 +552,7 @@ int db_export__switch(struct db_export *dbe, union perf_event *event,
 			return err;
 	}
 
-	/*
-	 * Do not export if both threads are unknown (i.e. not being traced),
-	 * or one is unknown and the other is the idle task.
-	 */
+	 
 	if ((!th_a_id || is_idle_a) && (!th_b_id || is_idle_b))
 		return 0;
 

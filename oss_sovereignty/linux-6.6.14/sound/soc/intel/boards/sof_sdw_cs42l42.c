@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2023 Intel Corporation
 
-/*
- *  sof_sdw_cs42l42 - Helpers to handle CS42L42 from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -23,10 +21,10 @@ static const struct snd_soc_dapm_widget cs42l42_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route cs42l42_map[] = {
-	/* HP jack connectors - unknown if we have jack detection */
+	 
 	{"Headphone", NULL, "cs42l42 HP"},
 
-	/* other jacks */
+	 
 	{"cs42l42 HS", NULL, "Headset Mic"},
 };
 
@@ -118,10 +116,7 @@ int sof_sdw_cs42l42_init(struct snd_soc_card *card,
 			 struct sof_sdw_codec_info *info,
 			 bool playback)
 {
-	/*
-	 * headset should be initialized once.
-	 * Do it with dai link for playback.
-	 */
+	 
 	if (!playback)
 		return 0;
 

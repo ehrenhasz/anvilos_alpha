@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_KTHREAD_H
 #define _LINUX_KTHREAD_H
-/* Simple interface for creating and stopping kernel threads without mess. */
+ 
 #include <linux/err.h>
 #include <linux/sched.h>
 
@@ -13,17 +13,7 @@ struct task_struct *kthread_create_on_node(int (*threadfn)(void *data),
 					   int node,
 					   const char namefmt[], ...);
 
-/**
- * kthread_create - create a kthread on the current node
- * @threadfn: the function to run in the thread
- * @data: data pointer for @threadfn()
- * @namefmt: printf-style format string for the thread name
- * @arg: arguments for @namefmt.
- *
- * This macro will create a kthread on the current node, leaving it in
- * the stopped state.  This is just a helper for kthread_create_on_node();
- * see the documentation there for more details.
- */
+ 
 #define kthread_create(threadfn, data, namefmt, arg...) \
 	kthread_create_on_node(threadfn, data, NUMA_NO_NODE, namefmt, ##arg)
 
@@ -39,15 +29,7 @@ bool set_kthread_struct(struct task_struct *p);
 void kthread_set_per_cpu(struct task_struct *k, int cpu);
 bool kthread_is_per_cpu(struct task_struct *k);
 
-/**
- * kthread_run - create and wake a thread.
- * @threadfn: the function to run until signal_pending(current).
- * @data: data ptr for @threadfn.
- * @namefmt: printf-style name for the thread.
- *
- * Description: Convenient wrapper for kthread_create() followed by
- * wake_up_process().  Returns the kthread or ERR_PTR(-ENOMEM).
- */
+ 
 #define kthread_run(threadfn, data, namefmt, ...)			   \
 ({									   \
 	struct task_struct *__k						   \
@@ -57,18 +39,7 @@ bool kthread_is_per_cpu(struct task_struct *k);
 	__k;								   \
 })
 
-/**
- * kthread_run_on_cpu - create and wake a cpu bound thread.
- * @threadfn: the function to run until signal_pending(current).
- * @data: data ptr for @threadfn.
- * @cpu: The cpu on which the thread should be bound,
- * @namefmt: printf-style name for the thread. Format is restricted
- *	     to "name.*%u". Code fills in cpu number.
- *
- * Description: Convenient wrapper for kthread_create_on_cpu()
- * followed by wake_up_process().  Returns the kthread or
- * ERR_PTR(-ENOMEM).
- */
+ 
 static inline struct task_struct *
 kthread_run_on_cpu(int (*threadfn)(void *data), void *data,
 			unsigned int cpu, const char *namefmt)
@@ -103,20 +74,13 @@ int kthreadd(void *unused);
 extern struct task_struct *kthreadd_task;
 extern int tsk_fork_get_node(struct task_struct *tsk);
 
-/*
- * Simple work processor based on kthread.
- *
- * This provides easier way to make use of kthreads.  A kthread_work
- * can be queued and flushed using queue/kthread_flush_work()
- * respectively.  Queued kthread_works are processed by a kthread
- * running kthread_worker_fn().
- */
+ 
 struct kthread_work;
 typedef void (*kthread_work_func_t)(struct kthread_work *work);
 void kthread_delayed_work_timer_fn(struct timer_list *t);
 
 enum {
-	KTW_FREEZABLE		= 1 << 0,	/* freeze during suspend */
+	KTW_FREEZABLE		= 1 << 0,	 
 };
 
 struct kthread_worker {
@@ -132,7 +96,7 @@ struct kthread_work {
 	struct list_head	node;
 	kthread_work_func_t	func;
 	struct kthread_worker	*worker;
-	/* Number of canceling calls that are running at the moment. */
+	 
 	int			canceling;
 };
 
@@ -223,4 +187,4 @@ struct cgroup_subsys_state *kthread_blkcg(void);
 #else
 static inline void kthread_associate_blkcg(struct cgroup_subsys_state *css) { }
 #endif
-#endif /* _LINUX_KTHREAD_H */
+#endif  

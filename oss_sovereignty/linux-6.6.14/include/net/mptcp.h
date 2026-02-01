@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Multipath TCP
- *
- * Copyright (c) 2017 - 2019, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __NET_MPTCP_H
 #define __NET_MPTCP_H
@@ -16,7 +12,7 @@ struct mptcp_info;
 struct mptcp_sock;
 struct seq_file;
 
-/* MPTCP sk_buff extension data */
+ 
 struct mptcp_ext {
 	union {
 		u64	data_ack;
@@ -150,9 +146,7 @@ void mptcp_write_options(struct tcphdr *th, __be32 *ptr, struct tcp_sock *tp,
 
 void mptcp_diag_fill_info(struct mptcp_sock *msk, struct mptcp_info *info);
 
-/* move the skb extension owership, with the assumption that 'to' is
- * newly allocated
- */
+ 
 static inline void mptcp_skb_ext_move(struct sk_buff *to,
 				      struct sk_buff *from)
 {
@@ -183,19 +177,13 @@ static inline void mptcp_skb_ext_copy(struct sk_buff *to,
 static inline bool mptcp_ext_matches(const struct mptcp_ext *to_ext,
 				     const struct mptcp_ext *from_ext)
 {
-	/* MPTCP always clears the ext when adding it to the skb, so
-	 * holes do not bother us here
-	 */
+	 
 	return !from_ext ||
 	       (to_ext && from_ext &&
 	        !memcmp(from_ext, to_ext, sizeof(struct mptcp_ext)));
 }
 
-/* check if skbs can be collapsed.
- * MPTCP collapse is allowed if neither @to or @from carry an mptcp data
- * mapping, or if the extension of @to is the same as @from.
- * Collapsing is not possible if @to lacks an extension, but @from carries one.
- */
+ 
 static inline bool mptcp_skb_can_collapse(const struct sk_buff *to,
 					  const struct sk_buff *from)
 {
@@ -293,7 +281,7 @@ static inline int mptcp_subflow_init_cookie_req(struct request_sock *req,
 						const struct sock *sk_listener,
 						struct sk_buff *skb)
 {
-	return 0; /* TCP fallback */
+	return 0;  
 }
 
 static inline struct request_sock *mptcp_subflow_reqsk_alloc(const struct request_sock_ops *ops,
@@ -304,7 +292,7 @@ static inline struct request_sock *mptcp_subflow_reqsk_alloc(const struct reques
 }
 
 static inline __be32 mptcp_reset_option(const struct sk_buff *skb)  { return htonl(0u); }
-#endif /* CONFIG_MPTCP */
+#endif  
 
 #if IS_ENABLED(CONFIG_MPTCP_IPV6)
 int mptcpv6_init(void);
@@ -324,4 +312,4 @@ static inline struct mptcp_sock *bpf_mptcp_sock_from_subflow(struct sock *sk) { 
 struct mptcp_sock { };
 #endif
 
-#endif /* __NET_MPTCP_H */
+#endif  

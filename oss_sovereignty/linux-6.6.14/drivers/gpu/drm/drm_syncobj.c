@@ -1,191 +1,6 @@
-/*
- * Copyright 2017 Red Hat
- * Parts ported from amdgpu (fence wait code).
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *
- */
+ 
 
-/**
- * DOC: Overview
- *
- * DRM synchronisation objects (syncobj, see struct &drm_syncobj) provide a
- * container for a synchronization primitive which can be used by userspace
- * to explicitly synchronize GPU commands, can be shared between userspace
- * processes, and can be shared between different DRM drivers.
- * Their primary use-case is to implement Vulkan fences and semaphores.
- * The syncobj userspace API provides ioctls for several operations:
- *
- *  - Creation and destruction of syncobjs
- *  - Import and export of syncobjs to/from a syncobj file descriptor
- *  - Import and export a syncobj's underlying fence to/from a sync file
- *  - Reset a syncobj (set its fence to NULL)
- *  - Signal a syncobj (set a trivially signaled fence)
- *  - Wait for a syncobj's fence to appear and be signaled
- *
- * The syncobj userspace API also provides operations to manipulate a syncobj
- * in terms of a timeline of struct &dma_fence_chain rather than a single
- * struct &dma_fence, through the following operations:
- *
- *   - Signal a given point on the timeline
- *   - Wait for a given point to appear and/or be signaled
- *   - Import and export from/to a given point of a timeline
- *
- * At it's core, a syncobj is simply a wrapper around a pointer to a struct
- * &dma_fence which may be NULL.
- * When a syncobj is first created, its pointer is either NULL or a pointer
- * to an already signaled fence depending on whether the
- * &DRM_SYNCOBJ_CREATE_SIGNALED flag is passed to
- * &DRM_IOCTL_SYNCOBJ_CREATE.
- *
- * If the syncobj is considered as a binary (its state is either signaled or
- * unsignaled) primitive, when GPU work is enqueued in a DRM driver to signal
- * the syncobj, the syncobj's fence is replaced with a fence which will be
- * signaled by the completion of that work.
- * If the syncobj is considered as a timeline primitive, when GPU work is
- * enqueued in a DRM driver to signal the a given point of the syncobj, a new
- * struct &dma_fence_chain pointing to the DRM driver's fence and also
- * pointing to the previous fence that was in the syncobj. The new struct
- * &dma_fence_chain fence replace the syncobj's fence and will be signaled by
- * completion of the DRM driver's work and also any work associated with the
- * fence previously in the syncobj.
- *
- * When GPU work which waits on a syncobj is enqueued in a DRM driver, at the
- * time the work is enqueued, it waits on the syncobj's fence before
- * submitting the work to hardware. That fence is either :
- *
- *    - The syncobj's current fence if the syncobj is considered as a binary
- *      primitive.
- *    - The struct &dma_fence associated with a given point if the syncobj is
- *      considered as a timeline primitive.
- *
- * If the syncobj's fence is NULL or not present in the syncobj's timeline,
- * the enqueue operation is expected to fail.
- *
- * With binary syncobj, all manipulation of the syncobjs's fence happens in
- * terms of the current fence at the time the ioctl is called by userspace
- * regardless of whether that operation is an immediate host-side operation
- * (signal or reset) or or an operation which is enqueued in some driver
- * queue. &DRM_IOCTL_SYNCOBJ_RESET and &DRM_IOCTL_SYNCOBJ_SIGNAL can be used
- * to manipulate a syncobj from the host by resetting its pointer to NULL or
- * setting its pointer to a fence which is already signaled.
- *
- * With a timeline syncobj, all manipulation of the synobj's fence happens in
- * terms of a u64 value referring to point in the timeline. See
- * dma_fence_chain_find_seqno() to see how a given point is found in the
- * timeline.
- *
- * Note that applications should be careful to always use timeline set of
- * ioctl() when dealing with syncobj considered as timeline. Using a binary
- * set of ioctl() with a syncobj considered as timeline could result incorrect
- * synchronization. The use of binary syncobj is supported through the
- * timeline set of ioctl() by using a point value of 0, this will reproduce
- * the behavior of the binary set of ioctl() (for example replace the
- * syncobj's fence when signaling).
- *
- *
- * Host-side wait on syncobjs
- * --------------------------
- *
- * &DRM_IOCTL_SYNCOBJ_WAIT takes an array of syncobj handles and does a
- * host-side wait on all of the syncobj fences simultaneously.
- * If &DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL is set, the wait ioctl will wait on
- * all of the syncobj fences to be signaled before it returns.
- * Otherwise, it returns once at least one syncobj fence has been signaled
- * and the index of a signaled fence is written back to the client.
- *
- * Unlike the enqueued GPU work dependencies which fail if they see a NULL
- * fence in a syncobj, if &DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT is set,
- * the host-side wait will first wait for the syncobj to receive a non-NULL
- * fence and then wait on that fence.
- * If &DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT is not set and any one of the
- * syncobjs in the array has a NULL fence, -EINVAL will be returned.
- * Assuming the syncobj starts off with a NULL fence, this allows a client
- * to do a host wait in one thread (or process) which waits on GPU work
- * submitted in another thread (or process) without having to manually
- * synchronize between the two.
- * This requirement is inherited from the Vulkan fence API.
- *
- * Similarly, &DRM_IOCTL_SYNCOBJ_TIMELINE_WAIT takes an array of syncobj
- * handles as well as an array of u64 points and does a host-side wait on all
- * of syncobj fences at the given points simultaneously.
- *
- * &DRM_IOCTL_SYNCOBJ_TIMELINE_WAIT also adds the ability to wait for a given
- * fence to materialize on the timeline without waiting for the fence to be
- * signaled by using the &DRM_SYNCOBJ_WAIT_FLAGS_WAIT_AVAILABLE flag. This
- * requirement is inherited from the wait-before-signal behavior required by
- * the Vulkan timeline semaphore API.
- *
- * Alternatively, &DRM_IOCTL_SYNCOBJ_EVENTFD can be used to wait without
- * blocking: an eventfd will be signaled when the syncobj is. This is useful to
- * integrate the wait in an event loop.
- *
- *
- * Import/export of syncobjs
- * -------------------------
- *
- * &DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE and &DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD
- * provide two mechanisms for import/export of syncobjs.
- *
- * The first lets the client import or export an entire syncobj to a file
- * descriptor.
- * These fd's are opaque and have no other use case, except passing the
- * syncobj between processes.
- * All exported file descriptors and any syncobj handles created as a
- * result of importing those file descriptors own a reference to the
- * same underlying struct &drm_syncobj and the syncobj can be used
- * persistently across all the processes with which it is shared.
- * The syncobj is freed only once the last reference is dropped.
- * Unlike dma-buf, importing a syncobj creates a new handle (with its own
- * reference) for every import instead of de-duplicating.
- * The primary use-case of this persistent import/export is for shared
- * Vulkan fences and semaphores.
- *
- * The second import/export mechanism, which is indicated by
- * &DRM_SYNCOBJ_FD_TO_HANDLE_FLAGS_IMPORT_SYNC_FILE or
- * &DRM_SYNCOBJ_HANDLE_TO_FD_FLAGS_EXPORT_SYNC_FILE lets the client
- * import/export the syncobj's current fence from/to a &sync_file.
- * When a syncobj is exported to a sync file, that sync file wraps the
- * sycnobj's fence at the time of export and any later signal or reset
- * operations on the syncobj will not affect the exported sync file.
- * When a sync file is imported into a syncobj, the syncobj's fence is set
- * to the fence wrapped by that sync file.
- * Because sync files are immutable, resetting or signaling the syncobj
- * will not affect any sync files whose fences have been imported into the
- * syncobj.
- *
- *
- * Import/export of timeline points in timeline syncobjs
- * -----------------------------------------------------
- *
- * &DRM_IOCTL_SYNCOBJ_TRANSFER provides a mechanism to transfer a struct
- * &dma_fence_chain of a syncobj at a given u64 point to another u64 point
- * into another syncobj.
- *
- * Note that if you want to transfer a struct &dma_fence_chain from a given
- * point on a timeline syncobj from/into a binary syncobj, you can use the
- * point 0 to mean take/replace the fence in the syncobj.
- */
+ 
 
 #include <linux/anon_inodes.h>
 #include <linux/dma-fence-unwrap.h>
@@ -231,14 +46,7 @@ static void
 syncobj_eventfd_entry_func(struct drm_syncobj *syncobj,
 			   struct syncobj_eventfd_entry *entry);
 
-/**
- * drm_syncobj_find - lookup and reference a sync object.
- * @file_private: drm file private pointer
- * @handle: sync object handle to lookup.
- *
- * Returns a reference to the syncobj pointed to by handle or NULL. The
- * reference must be released by calling drm_syncobj_put().
- */
+ 
 struct drm_syncobj *drm_syncobj_find(struct drm_file *file_private,
 				     u32 handle)
 {
@@ -246,7 +54,7 @@ struct drm_syncobj *drm_syncobj_find(struct drm_file *file_private,
 
 	spin_lock(&file_private->syncobj_table_lock);
 
-	/* Check if we currently have a reference on the object */
+	 
 	syncobj = idr_find(&file_private->syncobj_idr, handle);
 	if (syncobj)
 		drm_syncobj_get(syncobj);
@@ -266,10 +74,7 @@ static void drm_syncobj_fence_add_wait(struct drm_syncobj *syncobj,
 		return;
 
 	spin_lock(&syncobj->lock);
-	/* We've already tried once to get a fence and failed.  Now that we
-	 * have the lock, try one more time just to be sure we don't add a
-	 * callback when a fence has already been set.
-	 */
+	 
 	fence = dma_fence_get(rcu_dereference_protected(syncobj->fence, 1));
 	if (!fence || dma_fence_chain_find_seqno(&fence, wait->point)) {
 		dma_fence_put(fence);
@@ -298,9 +103,7 @@ syncobj_eventfd_entry_free(struct syncobj_eventfd_entry *entry)
 {
 	eventfd_ctx_put(entry->ev_fd_ctx);
 	dma_fence_put(entry->fence);
-	/* This happens either inside the syncobj lock, or after the node has
-	 * already been removed from the list.
-	 */
+	 
 	list_del(&entry->node);
 	kfree(entry);
 }
@@ -315,15 +118,7 @@ drm_syncobj_add_eventfd(struct drm_syncobj *syncobj,
 	spin_unlock(&syncobj->lock);
 }
 
-/**
- * drm_syncobj_add_point - add new timeline point to the syncobj
- * @syncobj: sync object to add timeline point do
- * @chain: chain node to use to add the point
- * @fence: fence to encapsulate in the chain node
- * @point: sequence number to use for the point
- *
- * Add the chain node as new timeline point to the syncobj.
- */
+ 
 void drm_syncobj_add_point(struct drm_syncobj *syncobj,
 			   struct dma_fence_chain *chain,
 			   struct dma_fence *fence,
@@ -338,7 +133,7 @@ void drm_syncobj_add_point(struct drm_syncobj *syncobj,
 	spin_lock(&syncobj->lock);
 
 	prev = drm_syncobj_fence_get(syncobj);
-	/* You are adding an unorder point to timeline, which could cause payload returned from query_ioctl is 0! */
+	 
 	if (prev && prev->seqno >= point)
 		DRM_DEBUG("You are adding an unorder point to timeline!\n");
 	dma_fence_chain_init(chain, prev, fence, point);
@@ -350,19 +145,13 @@ void drm_syncobj_add_point(struct drm_syncobj *syncobj,
 		syncobj_eventfd_entry_func(syncobj, ev_fd_cur);
 	spin_unlock(&syncobj->lock);
 
-	/* Walk the chain once to trigger garbage collection */
+	 
 	dma_fence_chain_for_each(fence, prev);
 	dma_fence_put(prev);
 }
 EXPORT_SYMBOL(drm_syncobj_add_point);
 
-/**
- * drm_syncobj_replace_fence - replace fence in a sync object.
- * @syncobj: Sync object to replace fence in
- * @fence: fence to install in sync file.
- *
- * This replaces the fence on a sync object.
- */
+ 
 void drm_syncobj_replace_fence(struct drm_syncobj *syncobj,
 			       struct dma_fence *fence)
 {
@@ -392,12 +181,7 @@ void drm_syncobj_replace_fence(struct drm_syncobj *syncobj,
 }
 EXPORT_SYMBOL(drm_syncobj_replace_fence);
 
-/**
- * drm_syncobj_assign_null_handle - assign a stub fence to the sync object
- * @syncobj: sync object to assign the fence on
- *
- * Assign a already signaled stub fence to the sync object.
- */
+ 
 static int drm_syncobj_assign_null_handle(struct drm_syncobj *syncobj)
 {
 	struct dma_fence *fence = dma_fence_allocate_private_stub(ktime_get());
@@ -410,23 +194,9 @@ static int drm_syncobj_assign_null_handle(struct drm_syncobj *syncobj)
 	return 0;
 }
 
-/* 5s default for wait submission */
+ 
 #define DRM_SYNCOBJ_WAIT_FOR_SUBMIT_TIMEOUT 5000000000ULL
-/**
- * drm_syncobj_find_fence - lookup and reference the fence in a sync object
- * @file_private: drm file private pointer
- * @handle: sync object handle to lookup.
- * @point: timeline point
- * @flags: DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT or not
- * @fence: out parameter for the fence
- *
- * This is just a convenience function that combines drm_syncobj_find() and
- * drm_syncobj_fence_get().
- *
- * Returns 0 on success or a negative error value on failure. On success @fence
- * contains a reference to the fence, which must be released by calling
- * dma_fence_put().
- */
+ 
 int drm_syncobj_find_fence(struct drm_file *file_private,
 			   u32 handle, u64 point, u64 flags,
 			   struct dma_fence **fence)
@@ -439,10 +209,7 @@ int drm_syncobj_find_fence(struct drm_file *file_private,
 	if (!syncobj)
 		return -ENOENT;
 
-	/* Waiting for userspace with locks help is illegal cause that can
-	 * trivial deadlock with page faults for example. Make lockdep complain
-	 * about it early on.
-	 */
+	 
 	if (flags & DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT) {
 		might_sleep();
 		lockdep_assert_none_held_once();
@@ -453,11 +220,7 @@ int drm_syncobj_find_fence(struct drm_file *file_private,
 	if (*fence) {
 		ret = dma_fence_chain_find_seqno(fence, point);
 		if (!ret) {
-			/* If the requested seqno is already signaled
-			 * drm_syncobj_find_fence may return a NULL
-			 * fence. To make sure the recipient gets
-			 * signalled, use a new fence instead.
-			 */
+			 
 			if (!*fence)
 				*fence = dma_fence_get_stub();
 
@@ -508,12 +271,7 @@ out:
 }
 EXPORT_SYMBOL(drm_syncobj_find_fence);
 
-/**
- * drm_syncobj_free - free a sync object.
- * @kref: kref to free.
- *
- * Only to be called from kref_put in drm_syncobj_put.
- */
+ 
 void drm_syncobj_free(struct kref *kref)
 {
 	struct drm_syncobj *syncobj = container_of(kref,
@@ -530,18 +288,7 @@ void drm_syncobj_free(struct kref *kref)
 }
 EXPORT_SYMBOL(drm_syncobj_free);
 
-/**
- * drm_syncobj_create - create a new syncobj
- * @out_syncobj: returned syncobj
- * @flags: DRM_SYNCOBJ_* flags
- * @fence: if non-NULL, the syncobj will represent this fence
- *
- * This is the first function to create a sync object. After creating, drivers
- * probably want to make it available to userspace, either through
- * drm_syncobj_get_handle() or drm_syncobj_get_fd().
- *
- * Returns 0 on success or a negative error value on failure.
- */
+ 
 int drm_syncobj_create(struct drm_syncobj **out_syncobj, uint32_t flags,
 		       struct dma_fence *fence)
 {
@@ -573,23 +320,13 @@ int drm_syncobj_create(struct drm_syncobj **out_syncobj, uint32_t flags,
 }
 EXPORT_SYMBOL(drm_syncobj_create);
 
-/**
- * drm_syncobj_get_handle - get a handle from a syncobj
- * @file_private: drm file private pointer
- * @syncobj: Sync object to export
- * @handle: out parameter with the new handle
- *
- * Exports a sync object created with drm_syncobj_create() as a handle on
- * @file_private to userspace.
- *
- * Returns 0 on success or a negative error value on failure.
- */
+ 
 int drm_syncobj_get_handle(struct drm_file *file_private,
 			   struct drm_syncobj *syncobj, u32 *handle)
 {
 	int ret;
 
-	/* take a reference to put in the idr */
+	 
 	drm_syncobj_get(syncobj);
 
 	idr_preload(GFP_KERNEL);
@@ -652,15 +389,7 @@ static const struct file_operations drm_syncobj_file_fops = {
 	.release = drm_syncobj_file_release,
 };
 
-/**
- * drm_syncobj_get_fd - get a file descriptor from a syncobj
- * @syncobj: Sync object to export
- * @p_fd: out parameter with the new file descriptor
- *
- * Exports a sync object created with drm_syncobj_create() as a file descriptor.
- *
- * Returns 0 on success or a negative error value on failure.
- */
+ 
 int drm_syncobj_get_fd(struct drm_syncobj *syncobj, int *p_fd)
 {
 	struct file *file;
@@ -715,7 +444,7 @@ static int drm_syncobj_fd_to_handle(struct drm_file *file_private,
 		return -EINVAL;
 	}
 
-	/* take a reference to put in the idr */
+	 
 	syncobj = f.file->private_data;
 	drm_syncobj_get(syncobj);
 
@@ -788,13 +517,7 @@ err_put_fd:
 	put_unused_fd(fd);
 	return ret;
 }
-/**
- * drm_syncobj_open - initializes syncobj file-private structures at devnode open time
- * @file_private: drm file-private structure to set up
- *
- * Called at device open time, sets up the structure for handling refcounting
- * of sync objects.
- */
+ 
 void
 drm_syncobj_open(struct drm_file *file_private)
 {
@@ -811,14 +534,7 @@ drm_syncobj_release_handle(int id, void *ptr, void *data)
 	return 0;
 }
 
-/**
- * drm_syncobj_release - release file-private sync object resources
- * @file_private: drm file-private structure to clean up
- *
- * Called at close time when the filp is going away.
- *
- * Releases any remaining references on objects by this filp.
- */
+ 
 void
 drm_syncobj_release(struct drm_file *file_private)
 {
@@ -836,7 +552,7 @@ drm_syncobj_create_ioctl(struct drm_device *dev, void *data,
 	if (!drm_core_check_feature(dev, DRIVER_SYNCOBJ))
 		return -EOPNOTSUPP;
 
-	/* no valid flags yet */
+	 
 	if (args->flags & ~DRM_SYNCOBJ_CREATE_SIGNALED)
 		return -EINVAL;
 
@@ -853,7 +569,7 @@ drm_syncobj_destroy_ioctl(struct drm_device *dev, void *data,
 	if (!drm_core_check_feature(dev, DRIVER_SYNCOBJ))
 		return -EOPNOTSUPP;
 
-	/* make sure padding is empty */
+	 
 	if (args->pad)
 		return -EINVAL;
 	return drm_syncobj_destroy(file_private, args->handle);
@@ -1005,7 +721,7 @@ static void syncobj_wait_syncobj_func(struct drm_syncobj *syncobj,
 {
 	struct dma_fence *fence;
 
-	/* This happens inside the syncobj lock */
+	 
 	fence = rcu_dereference_protected(syncobj->fence,
 					  lockdep_is_held(&syncobj->lock));
 	dma_fence_get(fence);
@@ -1055,11 +771,7 @@ static signed long drm_syncobj_array_wait_timeout(struct drm_syncobj **syncobjs,
 		timeout = -ENOMEM;
 		goto err_free_points;
 	}
-	/* Walk the list of sync objects and initialize entries.  We do
-	 * this up-front so that we can properly return -EINVAL if there is
-	 * a syncobj with a missing fence and then never have the chance of
-	 * returning -EINVAL again.
-	 */
+	 
 	signaled_count = 0;
 	for (i = 0; i < count; ++i) {
 		struct dma_fence *fence;
@@ -1096,12 +808,7 @@ static signed long drm_syncobj_array_wait_timeout(struct drm_syncobj **syncobjs,
 	     !(flags & DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL)))
 		goto cleanup_entries;
 
-	/* There's a very annoying laxness in the dma_fence API here, in
-	 * that backends are not required to automatically report when a
-	 * fence is signaled prior to fence->ops->enable_signaling() being
-	 * called.  So here if we fail to match signaled_count, we need to
-	 * fallthough and try a 0 timeout wait!
-	 */
+	 
 
 	if (flags & DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT) {
 		for (i = 0; i < count; ++i)
@@ -1123,7 +830,7 @@ static signed long drm_syncobj_array_wait_timeout(struct drm_syncobj **syncobjs,
 			     dma_fence_add_callback(fence,
 						    &entries[i].fence_cb,
 						    syncobj_wait_fence_func))) {
-				/* The fence has been signaled */
+				 
 				if (flags & DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL) {
 					signaled_count++;
 				} else {
@@ -1169,19 +876,13 @@ err_free_points:
 	return timeout;
 }
 
-/**
- * drm_timeout_abs_to_jiffies - calculate jiffies timeout from absolute value
- *
- * @timeout_nsec: timeout nsec component in ns, 0 for poll
- *
- * Calculate the timeout in jiffies from an absolute time in sec/nsec.
- */
+ 
 signed long drm_timeout_abs_to_jiffies(int64_t timeout_nsec)
 {
 	ktime_t abs_timeout, now;
 	u64 timeout_ns, timeout_jiffies64;
 
-	/* make 0 timeout means poll - absolute 0 doesn't seem valid */
+	 
 	if (timeout_nsec == 0)
 		return 0;
 
@@ -1194,7 +895,7 @@ signed long drm_timeout_abs_to_jiffies(int64_t timeout_nsec)
 	timeout_ns = ktime_to_ns(ktime_sub(abs_timeout, now));
 
 	timeout_jiffies64 = nsecs_to_jiffies64(timeout_ns);
-	/*  clamp timeout to avoid infinite timeout */
+	 
 	if (timeout_jiffies64 >= MAX_SCHEDULE_TIMEOUT - 1)
 		return MAX_SCHEDULE_TIMEOUT - 1;
 
@@ -1376,7 +1077,7 @@ syncobj_eventfd_entry_func(struct drm_syncobj *syncobj,
 	int ret;
 	struct dma_fence *fence;
 
-	/* This happens inside the syncobj lock */
+	 
 	fence = dma_fence_get(rcu_dereference_protected(syncobj->fence, 1));
 	ret = dma_fence_chain_find_seqno(&fence, entry->point);
 	if (ret != 0 || !fence) {
@@ -1627,8 +1328,7 @@ int drm_syncobj_query_ioctl(struct drm_device *dev, void *data,
 				dma_fence_chain_for_each(iter, fence) {
 					if (iter->context != fence->context) {
 						dma_fence_put(iter);
-						/* It is most likely that timeline has
-						* unorder points. */
+						 
 						break;
 					}
 					dma_fence_put(last_signaled);

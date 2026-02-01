@@ -1,17 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * 25-Jul-1998 Major changes to allow for ip chain table
- *
- * 3-Jan-2000 Named tables to allow packet selection for different uses.
- */
+ 
+ 
 
-/*
- * 	Format of an IP6 firewall descriptor
- *
- * 	src, dst, src_mask, dst_mask are always stored in network byte order.
- * 	flags are stored in host byte order (of course).
- * 	Port numbers are stored in HOST byte order.
- */
+ 
 #ifndef _IP6_TABLES_H
 #define _IP6_TABLES_H
 
@@ -51,5 +41,5 @@ compat_ip6t_get_target(struct compat_ip6t_entry *e)
 	return (void *)e + e->target_offset;
 }
 
-#endif /* CONFIG_COMPAT */
-#endif /* _IP6_TABLES_H */
+#endif  
+#endif  

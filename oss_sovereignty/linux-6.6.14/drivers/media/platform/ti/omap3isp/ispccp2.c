@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ispccp2.c
- *
- * TI OMAP3 ISP - CCP2 module
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2010 Texas Instruments, Inc.
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -23,9 +13,9 @@
 #include "ispreg.h"
 #include "ispccp2.h"
 
-/* Number of LCX channels */
+ 
 #define CCP2_LCx_CHANS_NUM			3
-/* Max/Min size for CCP2 video port */
+ 
 #define ISPCCP2_DAT_START_MIN			0
 #define ISPCCP2_DAT_START_MAX			4095
 #define ISPCCP2_DAT_SIZE_MIN			0
@@ -33,7 +23,7 @@
 #define ISPCCP2_VPCLK_FRACDIV			65536
 #define ISPCCP2_LCx_CTRL_FORMAT_RAW8_DPCM10_VP	0x12
 #define ISPCCP2_LCx_CTRL_FORMAT_RAW10_VP	0x16
-/* Max/Min size for CCP2 memory channel */
+ 
 #define ISPCCP2_LCM_HSIZE_COUNT_MIN		16
 #define ISPCCP2_LCM_HSIZE_COUNT_MAX		8191
 #define ISPCCP2_LCM_HSIZE_SKIP_MIN		0
@@ -51,16 +41,14 @@
 #define ISPCCP2_LCM_CTRL_DST_PORT_VP		0
 #define ISPCCP2_LCM_CTRL_DST_PORT_MEM		1
 
-/* Set only the required bits */
+ 
 #define BIT_SET(var, shift, mask, val)			\
 	do {						\
 		var = ((var) & ~((mask) << (shift)))	\
 			| ((val) << (shift));		\
 	} while (0)
 
-/*
- * ccp2_print_status - Print current CCP2 module register values.
- */
+ 
 #define CCP2_PRINT_REGISTER(isp, name)\
 	dev_dbg(isp->dev, "###CCP2 " #name "=0x%08x\n", \
 		isp_reg_readl(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_##name))
@@ -103,22 +91,19 @@ static void ccp2_print_status(struct isp_ccp2_device *ccp2)
 	dev_dbg(isp->dev, "--------------------------------------------\n");
 }
 
-/*
- * ccp2_reset - Reset the CCP2
- * @ccp2: pointer to ISP CCP2 device
- */
+ 
 static void ccp2_reset(struct isp_ccp2_device *ccp2)
 {
 	struct isp_device *isp = to_isp_device(ccp2);
 	int i = 0;
 
-	/* Reset the CSI1/CCP2B and wait for reset to complete */
+	 
 	isp_reg_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_SYSCONFIG,
 		    ISPCCP2_SYSCONFIG_SOFT_RESET);
 	while (!(isp_reg_readl(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_SYSSTATUS) &
 		 ISPCCP2_SYSSTATUS_RESET_DONE)) {
 		udelay(10);
-		if (i++ > 10) {  /* try read 10 times */
+		if (i++ > 10) {   
 			dev_warn(isp->dev,
 				"omap3_isp: timeout waiting for ccp2 reset\n");
 			break;
@@ -126,10 +111,7 @@ static void ccp2_reset(struct isp_ccp2_device *ccp2)
 	}
 }
 
-/*
- * ccp2_pwr_cfg - Configure the power mode settings
- * @ccp2: pointer to ISP CCP2 device
- */
+ 
 static void ccp2_pwr_cfg(struct isp_ccp2_device *ccp2)
 {
 	struct isp_device *isp = to_isp_device(ccp2);
@@ -140,11 +122,7 @@ static void ccp2_pwr_cfg(struct isp_ccp2_device *ccp2)
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_SYSCONFIG);
 }
 
-/*
- * ccp2_if_enable - Enable CCP2 interface.
- * @ccp2: pointer to ISP CCP2 device
- * @enable: enable/disable flag
- */
+ 
 static int ccp2_if_enable(struct isp_ccp2_device *ccp2, u8 enable)
 {
 	struct isp_device *isp = to_isp_device(ccp2);
@@ -157,13 +135,13 @@ static int ccp2_if_enable(struct isp_ccp2_device *ccp2, u8 enable)
 			return ret;
 	}
 
-	/* Enable/Disable all the LCx channels */
+	 
 	for (i = 0; i < CCP2_LCx_CHANS_NUM; i++)
 		isp_reg_clr_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCx_CTRL(i),
 				ISPCCP2_LCx_CTRL_CHAN_EN,
 				enable ? ISPCCP2_LCx_CTRL_CHAN_EN : 0);
 
-	/* Enable/Disable ccp2 interface in ccp2 mode */
+	 
 	isp_reg_clr_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL,
 			ISPCCP2_CTRL_MODE | ISPCCP2_CTRL_IF_EN,
 			enable ? (ISPCCP2_CTRL_MODE | ISPCCP2_CTRL_IF_EN) : 0);
@@ -174,11 +152,7 @@ static int ccp2_if_enable(struct isp_ccp2_device *ccp2, u8 enable)
 	return 0;
 }
 
-/*
- * ccp2_mem_enable - Enable CCP2 memory interface.
- * @ccp2: pointer to ISP CCP2 device
- * @enable: enable/disable flag
- */
+ 
 static void ccp2_mem_enable(struct isp_ccp2_device *ccp2, u8 enable)
 {
 	struct isp_device *isp = to_isp_device(ccp2);
@@ -186,7 +160,7 @@ static void ccp2_mem_enable(struct isp_ccp2_device *ccp2, u8 enable)
 	if (enable)
 		ccp2_if_enable(ccp2, 0);
 
-	/* Enable/Disable ccp2 interface in ccp2 mode */
+	 
 	isp_reg_clr_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL,
 			ISPCCP2_CTRL_MODE, enable ? ISPCCP2_CTRL_MODE : 0);
 
@@ -195,15 +169,7 @@ static void ccp2_mem_enable(struct isp_ccp2_device *ccp2, u8 enable)
 			enable ? ISPCCP2_LCM_CTRL_CHAN_EN : 0);
 }
 
-/*
- * ccp2_phyif_config - Initialize CCP2 phy interface config
- * @ccp2: Pointer to ISP CCP2 device
- * @buscfg: CCP2 platform data
- *
- * Configure the CCP2 physical interface module from platform data.
- *
- * Returns -EIO if strobe is chosen in CSI1 mode, or 0 on success.
- */
+ 
 static int ccp2_phyif_config(struct isp_ccp2_device *ccp2,
 			     const struct isp_ccp2_cfg *buscfg)
 {
@@ -212,7 +178,7 @@ static int ccp2_phyif_config(struct isp_ccp2_device *ccp2,
 
 	val = isp_reg_readl(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL) |
 			    ISPCCP2_CTRL_MODE;
-	/* Data/strobe physical layer */
+	 
 	BIT_SET(val, ISPCCP2_CTRL_PHY_SEL_SHIFT, ISPCCP2_CTRL_PHY_SEL_MASK,
 		buscfg->phy_layer);
 	BIT_SET(val, ISPCCP2_CTRL_IO_OUT_SEL_SHIFT,
@@ -228,36 +194,23 @@ static int ccp2_phyif_config(struct isp_ccp2_device *ccp2,
 		if (buscfg->ccp2_mode == ISP_CCP2_MODE_CCP2)
 			dev_warn(isp->dev, "OMAP3 CCP2 bus not available\n");
 		if (buscfg->phy_layer == ISP_CCP2_PHY_DATA_STROBE)
-			/* Strobe mode requires CCP2 */
+			 
 			return -EIO;
 	}
 
 	return 0;
 }
 
-/*
- * ccp2_vp_config - Initialize CCP2 video port interface.
- * @ccp2: Pointer to ISP CCP2 device
- * @vpclk_div: Video port divisor
- *
- * Configure the CCP2 video port with the given clock divisor. The valid divisor
- * values depend on the ISP revision:
- *
- * - revision 1.0 and 2.0	1 to 4
- * - revision 15.0		1 to 65536
- *
- * The exact divisor value used might differ from the requested value, as ISP
- * revision 15.0 represent the divisor by 65536 divided by an integer.
- */
+ 
 static void ccp2_vp_config(struct isp_ccp2_device *ccp2,
 			   unsigned int vpclk_div)
 {
 	struct isp_device *isp = to_isp_device(ccp2);
 	u32 val;
 
-	/* ISPCCP2_CTRL Video port */
+	 
 	val = isp_reg_readl(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL);
-	val |= ISPCCP2_CTRL_VP_ONLY_EN;	/* Disable the memory write port */
+	val |= ISPCCP2_CTRL_VP_ONLY_EN;	 
 
 	if (isp->revision == ISP_REVISION_15_0) {
 		vpclk_div = clamp_t(unsigned int, vpclk_div, 1, 65536);
@@ -273,15 +226,7 @@ static void ccp2_vp_config(struct isp_ccp2_device *ccp2,
 	isp_reg_writel(isp, val, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL);
 }
 
-/*
- * ccp2_lcx_config - Initialize CCP2 logical channel interface.
- * @ccp2: Pointer to ISP CCP2 device
- * @config: Pointer to ISP LCx config structure.
- *
- * This will analyze the parameters passed by the interface config
- * and configure CSI1/CCP2 logical channel
- *
- */
+ 
 static void ccp2_lcx_config(struct isp_ccp2_device *ccp2,
 			    struct isp_interface_lcx_config *config)
 {
@@ -294,19 +239,19 @@ static void ccp2_lcx_config(struct isp_ccp2_device *ccp2,
 		break;
 	case MEDIA_BUS_FMT_SGRBG10_1X10:
 	default:
-		format = ISPCCP2_LCx_CTRL_FORMAT_RAW10_VP;	/* RAW10+VP */
+		format = ISPCCP2_LCx_CTRL_FORMAT_RAW10_VP;	 
 		break;
 	}
-	/* ISPCCP2_LCx_CTRL logical channel #0 */
+	 
 	val = isp_reg_readl(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCx_CTRL(0))
-			    | (ISPCCP2_LCx_CTRL_REGION_EN); /* Region */
+			    | (ISPCCP2_LCx_CTRL_REGION_EN);  
 
 	if (isp->revision == ISP_REVISION_15_0) {
-		/* CRC */
+		 
 		BIT_SET(val, ISPCCP2_LCx_CTRL_CRC_SHIFT_15_0,
 			ISPCCP2_LCx_CTRL_CRC_MASK,
 			config->crc);
-		/* Format = RAW10+VP or RAW8+DPCM10+VP*/
+		 
 		BIT_SET(val, ISPCCP2_LCx_CTRL_FORMAT_SHIFT_15_0,
 			ISPCCP2_LCx_CTRL_FORMAT_MASK_15_0, format);
 	} else {
@@ -319,15 +264,15 @@ static void ccp2_lcx_config(struct isp_ccp2_device *ccp2,
 	}
 	isp_reg_writel(isp, val, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCx_CTRL(0));
 
-	/* ISPCCP2_DAT_START for logical channel #0 */
+	 
 	isp_reg_writel(isp, config->data_start << ISPCCP2_LCx_DAT_SHIFT,
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCx_DAT_START(0));
 
-	/* ISPCCP2_DAT_SIZE for logical channel #0 */
+	 
 	isp_reg_writel(isp, config->data_size << ISPCCP2_LCx_DAT_SHIFT,
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCx_DAT_SIZE(0));
 
-	/* Enable error IRQs for logical channel #0 */
+	 
 	val = ISPCCP2_LC01_IRQSTATUS_LC0_FIFO_OVF_IRQ |
 	      ISPCCP2_LC01_IRQSTATUS_LC0_CRC_IRQ |
 	      ISPCCP2_LC01_IRQSTATUS_LC0_FSP_IRQ |
@@ -339,12 +284,7 @@ static void ccp2_lcx_config(struct isp_ccp2_device *ccp2,
 	isp_reg_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LC01_IRQENABLE, val);
 }
 
-/*
- * ccp2_if_configure - Configure ccp2 with data from sensor
- * @ccp2: Pointer to ISP CCP2 device
- *
- * Return 0 on success or a negative error code
- */
+ 
 static int ccp2_if_configure(struct isp_ccp2_device *ccp2)
 {
 	struct isp_pipeline *pipe = to_isp_pipeline(&ccp2->subdev.entity);
@@ -395,17 +335,11 @@ static int ccp2_adjust_bandwidth(struct isp_ccp2_device *ccp2)
 	u64 bound;
 	u64 area;
 
-	/* Compute the minimum clock divisor, based on the pipeline maximum
-	 * data rate. This is an absolute lower bound if we don't want SBL
-	 * overflows, so round the value up.
-	 */
+	 
 	vpclk_div = max_t(unsigned int, DIV_ROUND_UP(l3_ick, pipe->max_rate),
 			  vpclk_div);
 
-	/* Compute the maximum clock divisor, based on the requested frame rate.
-	 * This is a soft lower bound to achieve a frame rate equal or higher
-	 * than the requested value, so round the value down.
-	 */
+	 
 	timeperframe = &pipe->max_timeperframe;
 
 	if (timeperframe->numerator) {
@@ -422,15 +356,7 @@ static int ccp2_adjust_bandwidth(struct isp_ccp2_device *ccp2)
 	return vpclk_div;
 }
 
-/*
- * ccp2_mem_configure - Initialize CCP2 memory input/output interface
- * @ccp2: Pointer to ISP CCP2 device
- * @config: Pointer to ISP mem interface config structure
- *
- * This will analyze the parameters passed by the interface config
- * structure, and configure the respective registers for proper
- * CSI1/CCP2 memory input.
- */
+ 
 static void ccp2_mem_configure(struct isp_ccp2_device *ccp2,
 			       struct isp_interface_mem_config *config)
 {
@@ -446,12 +372,12 @@ static void ccp2_mem_configure(struct isp_ccp2_device *ccp2,
 
 	ccp2_pwr_cfg(ccp2);
 
-	/* Hsize, Skip */
+	 
 	isp_reg_writel(isp, ISPCCP2_LCM_HSIZE_SKIP_MIN |
 		       (config->hsize_count << ISPCCP2_LCM_HSIZE_SHIFT),
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_HSIZE);
 
-	/* Vsize, no. of lines */
+	 
 	isp_reg_writel(isp, config->vsize_count << ISPCCP2_LCM_VSIZE_SHIFT,
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_VSIZE);
 
@@ -463,34 +389,34 @@ static void ccp2_mem_configure(struct isp_ccp2_device *ccp2,
 	isp_reg_writel(isp, config->src_ofst, OMAP3_ISP_IOMEM_CCP2,
 		       ISPCCP2_LCM_SRC_OFST);
 
-	/* Source and Destination formats */
+	 
 	val = ISPCCP2_LCM_CTRL_DST_FORMAT_RAW10 <<
 	      ISPCCP2_LCM_CTRL_DST_FORMAT_SHIFT;
 
 	if (dpcm_decompress) {
-		/* source format is RAW8 */
+		 
 		val |= ISPCCP2_LCM_CTRL_SRC_FORMAT_RAW8 <<
 		       ISPCCP2_LCM_CTRL_SRC_FORMAT_SHIFT;
 
-		/* RAW8 + DPCM10 - simple predictor */
+		 
 		val |= ISPCCP2_LCM_CTRL_SRC_DPCM_PRED;
 
-		/* enable source DPCM decompression */
+		 
 		val |= ISPCCP2_LCM_CTRL_SRC_DECOMPR_DPCM10 <<
 		       ISPCCP2_LCM_CTRL_SRC_DECOMPR_SHIFT;
 	} else {
-		/* source format is RAW10 */
+		 
 		val |= ISPCCP2_LCM_CTRL_SRC_FORMAT_RAW10 <<
 		       ISPCCP2_LCM_CTRL_SRC_FORMAT_SHIFT;
 	}
 
-	/* Burst size to 32x64 */
+	 
 	val |= ISPCCP2_LCM_CTRL_BURST_SIZE_32X <<
 	       ISPCCP2_LCM_CTRL_BURST_SIZE_SHIFT;
 
 	isp_reg_writel(isp, val, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_CTRL);
 
-	/* Prefetch setup */
+	 
 	if (dpcm_decompress)
 		hwords = (ISPCCP2_LCM_HSIZE_SKIP_MIN +
 			  config->hsize_count) >> 3;
@@ -501,29 +427,23 @@ static void ccp2_mem_configure(struct isp_ccp2_device *ccp2,
 	isp_reg_writel(isp, hwords << ISPCCP2_LCM_PREFETCH_SHIFT,
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_PREFETCH);
 
-	/* Video port */
+	 
 	isp_reg_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL,
 		    ISPCCP2_CTRL_IO_OUT_SEL | ISPCCP2_CTRL_MODE);
 	ccp2_vp_config(ccp2, ccp2_adjust_bandwidth(ccp2));
 
-	/* Clear LCM interrupts */
+	 
 	isp_reg_writel(isp, ISPCCP2_LCM_IRQSTATUS_OCPERROR_IRQ |
 		       ISPCCP2_LCM_IRQSTATUS_EOF_IRQ,
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_IRQSTATUS);
 
-	/* Enable LCM interrupts */
+	 
 	isp_reg_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_IRQENABLE,
 		    ISPCCP2_LCM_IRQSTATUS_EOF_IRQ |
 		    ISPCCP2_LCM_IRQSTATUS_OCPERROR_IRQ);
 }
 
-/*
- * ccp2_set_inaddr - Sets memory address of input frame.
- * @ccp2: Pointer to ISP CCP2 device
- * @addr: 32bit memory address aligned on 32byte boundary.
- *
- * Configures the memory address from which the input frame is to be read.
- */
+ 
 static void ccp2_set_inaddr(struct isp_ccp2_device *ccp2, u32 addr)
 {
 	struct isp_device *isp = to_isp_device(ccp2);
@@ -531,9 +451,7 @@ static void ccp2_set_inaddr(struct isp_ccp2_device *ccp2, u32 addr)
 	isp_reg_writel(isp, addr, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_SRC_ADDR);
 }
 
-/* -----------------------------------------------------------------------------
- * Interrupt handling
- */
+ 
 
 static void ccp2_isr_buffer(struct isp_ccp2_device *ccp2)
 {
@@ -553,12 +471,7 @@ static void ccp2_isr_buffer(struct isp_ccp2_device *ccp2)
 	}
 }
 
-/*
- * omap3isp_ccp2_isr - Handle ISP CCP2 interrupts
- * @ccp2: Pointer to ISP CCP2 device
- *
- * This will handle the CCP2 interrupts
- */
+ 
 void omap3isp_ccp2_isr(struct isp_ccp2_device *ccp2)
 {
 	struct isp_pipeline *pipe = to_isp_pipeline(&ccp2->subdev.entity);
@@ -572,7 +485,7 @@ void omap3isp_ccp2_isr(struct isp_ccp2_device *ccp2)
 		ISPCCP2_LC01_IRQSTATUS_LC0_SSC_IRQ;
 	u32 lcx_irqstatus, lcm_irqstatus;
 
-	/* First clear the interrupts */
+	 
 	lcx_irqstatus = isp_reg_readl(isp, OMAP3_ISP_IOMEM_CCP2,
 				      ISPCCP2_LC01_IRQSTATUS);
 	isp_reg_writel(isp, lcx_irqstatus, OMAP3_ISP_IOMEM_CCP2,
@@ -582,7 +495,7 @@ void omap3isp_ccp2_isr(struct isp_ccp2_device *ccp2)
 				      ISPCCP2_LCM_IRQSTATUS);
 	isp_reg_writel(isp, lcm_irqstatus, OMAP3_ISP_IOMEM_CCP2,
 		       ISPCCP2_LCM_IRQSTATUS);
-	/* Errors */
+	 
 	if (lcx_irqstatus & ISPCCP2_LC01_ERROR) {
 		pipe->error = true;
 		dev_dbg(isp->dev, "CCP2 err:%x\n", lcx_irqstatus);
@@ -597,28 +510,19 @@ void omap3isp_ccp2_isr(struct isp_ccp2_device *ccp2)
 	if (omap3isp_module_sync_is_stopping(&ccp2->wait, &ccp2->stopping))
 		return;
 
-	/* Handle queued buffers on frame end interrupts */
+	 
 	if (lcm_irqstatus & ISPCCP2_LCM_IRQSTATUS_EOF_IRQ)
 		ccp2_isr_buffer(ccp2);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
 static const unsigned int ccp2_fmts[] = {
 	MEDIA_BUS_FMT_SGRBG10_1X10,
 	MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8,
 };
 
-/*
- * __ccp2_get_format - helper function for getting ccp2 format
- * @ccp2  : Pointer to ISP CCP2 device
- * @cfg: V4L2 subdev pad configuration
- * @pad   : pad number
- * @which : wanted subdev format
- * return format structure or NULL on error
- */
+ 
 static struct v4l2_mbus_framefmt *
 __ccp2_get_format(struct isp_ccp2_device *ccp2,
 		  struct v4l2_subdev_state *sd_state,
@@ -631,14 +535,7 @@ __ccp2_get_format(struct isp_ccp2_device *ccp2,
 		return &ccp2->formats[pad];
 }
 
-/*
- * ccp2_try_format - Handle try format by pad subdev method
- * @ccp2  : Pointer to ISP CCP2 device
- * @cfg: V4L2 subdev pad configuration
- * @pad   : pad num
- * @fmt   : pointer to v4l2 mbus format structure
- * @which : wanted subdev format
- */
+ 
 static void ccp2_try_format(struct isp_ccp2_device *ccp2,
 			       struct v4l2_subdev_state *sd_state,
 			       unsigned int pad,
@@ -670,11 +567,7 @@ static void ccp2_try_format(struct isp_ccp2_device *ccp2,
 		break;
 
 	case CCP2_PAD_SOURCE:
-		/* Source format - copy sink format and change pixel code
-		 * to SGRBG10_1X10 as we don't support CCP2 write to memory.
-		 * When CCP2 write to memory feature will be added this
-		 * should be changed properly.
-		 */
+		 
 		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SINK,
 					   which);
 		memcpy(fmt, format, sizeof(*fmt));
@@ -686,13 +579,7 @@ static void ccp2_try_format(struct isp_ccp2_device *ccp2,
 	fmt->colorspace = V4L2_COLORSPACE_SRGB;
 }
 
-/*
- * ccp2_enum_mbus_code - Handle pixel format enumeration
- * @sd     : pointer to v4l2 subdev structure
- * @cfg: V4L2 subdev pad configuration
- * @code   : pointer to v4l2_subdev_mbus_code_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int ccp2_enum_mbus_code(struct v4l2_subdev *sd,
 				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_mbus_code_enum *code)
@@ -747,13 +634,7 @@ static int ccp2_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ccp2_get_format - Handle get format by pads subdev method
- * @sd    : pointer to v4l2 subdev structure
- * @cfg: V4L2 subdev pad configuration
- * @fmt   : pointer to v4l2 subdev format structure
- * return -EINVAL or zero on success
- */
+ 
 static int ccp2_get_format(struct v4l2_subdev *sd,
 			   struct v4l2_subdev_state *sd_state,
 			   struct v4l2_subdev_format *fmt)
@@ -769,13 +650,7 @@ static int ccp2_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ccp2_set_format - Handle set format by pads subdev method
- * @sd    : pointer to v4l2 subdev structure
- * @cfg: V4L2 subdev pad configuration
- * @fmt   : pointer to v4l2 subdev format structure
- * returns zero
- */
+ 
 static int ccp2_set_format(struct v4l2_subdev *sd,
 			   struct v4l2_subdev_state *sd_state,
 			   struct v4l2_subdev_format *fmt)
@@ -790,7 +665,7 @@ static int ccp2_set_format(struct v4l2_subdev *sd,
 	ccp2_try_format(ccp2, sd_state, fmt->pad, &fmt->format, fmt->which);
 	*format = fmt->format;
 
-	/* Propagate the format from sink to source */
+	 
 	if (fmt->pad == CCP2_PAD_SINK) {
 		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SOURCE,
 					   fmt->which);
@@ -802,15 +677,7 @@ static int ccp2_set_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ccp2_init_formats - Initialize formats on all pads
- * @sd: ISP CCP2 V4L2 subdevice
- * @fh: V4L2 subdev file handle
- *
- * Initialize all pad formats with default values. If fh is not NULL, try
- * formats are initialized on the file handle. Otherwise active formats are
- * initialized on the device.
- */
+ 
 static int ccp2_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_subdev_format format;
@@ -826,12 +693,7 @@ static int ccp2_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	return 0;
 }
 
-/*
- * ccp2_s_stream - Enable/Disable streaming on ccp2 subdev
- * @sd    : pointer to v4l2 subdev structure
- * @enable: 1 == Enable, 0 == Disable
- * return zero
- */
+ 
 static int ccp2_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct isp_ccp2_device *ccp2 = v4l2_get_subdevdata(sd);
@@ -856,7 +718,7 @@ static int ccp2_s_stream(struct v4l2_subdev *sd, int enable)
 		ccp2_if_configure(ccp2);
 		ccp2_print_status(ccp2);
 
-		/* Enable CSI1/CCP2 interface */
+		 
 		ret = ccp2_if_enable(ccp2, 1);
 		if (ret < 0) {
 			if (ccp2->phy)
@@ -890,7 +752,7 @@ static int ccp2_s_stream(struct v4l2_subdev *sd, int enable)
 			ccp2_mem_enable(ccp2, 0);
 			omap3isp_sbl_disable(isp, OMAP3_ISP_SBL_CSI1_READ);
 		} else if (ccp2->input == CCP2_INPUT_SENSOR) {
-			/* Disable CSI1/CCP2 interface */
+			 
 			ccp2_if_enable(ccp2, 0);
 			if (ccp2->phy)
 				omap3isp_csiphy_release(ccp2->phy);
@@ -902,12 +764,12 @@ static int ccp2_s_stream(struct v4l2_subdev *sd, int enable)
 	return 0;
 }
 
-/* subdev video operations */
+ 
 static const struct v4l2_subdev_video_ops ccp2_sd_video_ops = {
 	.s_stream = ccp2_s_stream,
 };
 
-/* subdev pad operations */
+ 
 static const struct v4l2_subdev_pad_ops ccp2_sd_pad_ops = {
 	.enum_mbus_code = ccp2_enum_mbus_code,
 	.enum_frame_size = ccp2_enum_frame_size,
@@ -915,27 +777,20 @@ static const struct v4l2_subdev_pad_ops ccp2_sd_pad_ops = {
 	.set_fmt = ccp2_set_format,
 };
 
-/* subdev operations */
+ 
 static const struct v4l2_subdev_ops ccp2_sd_ops = {
 	.video = &ccp2_sd_video_ops,
 	.pad = &ccp2_sd_pad_ops,
 };
 
-/* subdev internal operations */
+ 
 static const struct v4l2_subdev_internal_ops ccp2_sd_internal_ops = {
 	.open = ccp2_init_formats,
 };
 
-/* --------------------------------------------------------------------------
- * ISP ccp2 video device node
- */
+ 
 
-/*
- * ccp2_video_queue - Queue video buffer.
- * @video : Pointer to isp video structure
- * @buffer: Pointer to isp_buffer structure
- * return -EIO or zero on success
- */
+ 
 static int ccp2_video_queue(struct isp_video *video, struct isp_buffer *buffer)
 {
 	struct isp_ccp2_device *ccp2 = &video->isp->isp_ccp2;
@@ -948,18 +803,9 @@ static const struct isp_video_operations ccp2_video_ops = {
 	.queue = ccp2_video_queue,
 };
 
-/* -----------------------------------------------------------------------------
- * Media entity operations
- */
+ 
 
-/*
- * ccp2_link_setup - Setup ccp2 connections.
- * @entity : Pointer to media entity structure
- * @local  : Pointer to local pad array
- * @remote : Pointer to remote pad array
- * @flags  : Link flags
- * return -EINVAL on error or zero on success
- */
+ 
 static int ccp2_link_setup(struct media_entity *entity,
 			   const struct media_pad *local,
 			   const struct media_pad *remote, u32 flags)
@@ -968,13 +814,13 @@ static int ccp2_link_setup(struct media_entity *entity,
 	struct isp_ccp2_device *ccp2 = v4l2_get_subdevdata(sd);
 	unsigned int index = local->index;
 
-	/* FIXME: this is actually a hack! */
+	 
 	if (is_media_entity_v4l2_subdev(remote->entity))
 		index |= 2 << 16;
 
 	switch (index) {
 	case CCP2_PAD_SINK:
-		/* read from memory */
+		 
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (ccp2->input == CCP2_INPUT_SENSOR)
 				return -EBUSY;
@@ -986,7 +832,7 @@ static int ccp2_link_setup(struct media_entity *entity,
 		break;
 
 	case CCP2_PAD_SINK | 2 << 16:
-		/* read from sensor/phy */
+		 
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (ccp2->input == CCP2_INPUT_MEMORY)
 				return -EBUSY;
@@ -997,7 +843,7 @@ static int ccp2_link_setup(struct media_entity *entity,
 		} break;
 
 	case CCP2_PAD_SOURCE | 2 << 16:
-		/* write to video port/ccdc */
+		 
 		if (flags & MEDIA_LNK_FL_ENABLED)
 			ccp2->output = CCP2_OUTPUT_CCDC;
 		else
@@ -1011,35 +857,27 @@ static int ccp2_link_setup(struct media_entity *entity,
 	return 0;
 }
 
-/* media operations */
+ 
 static const struct media_entity_operations ccp2_media_ops = {
 	.link_setup = ccp2_link_setup,
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/*
- * omap3isp_ccp2_unregister_entities - Unregister media entities: subdev
- * @ccp2: Pointer to ISP CCP2 device
- */
+ 
 void omap3isp_ccp2_unregister_entities(struct isp_ccp2_device *ccp2)
 {
 	v4l2_device_unregister_subdev(&ccp2->subdev);
 	omap3isp_video_unregister(&ccp2->video_in);
 }
 
-/*
- * omap3isp_ccp2_register_entities - Register the subdev media entity
- * @ccp2: Pointer to ISP CCP2 device
- * @vdev: Pointer to v4l device
- * return negative error code or zero on success
- */
+ 
 
 int omap3isp_ccp2_register_entities(struct isp_ccp2_device *ccp2,
 				    struct v4l2_device *vdev)
 {
 	int ret;
 
-	/* Register the subdev and video nodes. */
+	 
 	ccp2->subdev.dev = vdev->mdev->dev;
 	ret = v4l2_device_register_subdev(vdev, &ccp2->subdev);
 	if (ret < 0)
@@ -1056,15 +894,9 @@ error:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * ISP ccp2 initialisation and cleanup
- */
+ 
 
-/*
- * ccp2_init_entities - Initialize ccp2 subdev and media entity.
- * @ccp2: Pointer to ISP CCP2 device
- * return negative error code or zero on success
- */
+ 
 static int ccp2_init_entities(struct isp_ccp2_device *ccp2)
 {
 	struct v4l2_subdev *sd = &ccp2->subdev;
@@ -1078,7 +910,7 @@ static int ccp2_init_entities(struct isp_ccp2_device *ccp2)
 	v4l2_subdev_init(sd, &ccp2_sd_ops);
 	sd->internal_ops = &ccp2_sd_internal_ops;
 	strscpy(sd->name, "OMAP3 ISP CCP2", sizeof(sd->name));
-	sd->grp_id = 1 << 16;   /* group ID for isp subdevs */
+	sd->grp_id = 1 << 16;    
 	v4l2_set_subdevdata(sd, ccp2);
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
@@ -1093,17 +925,7 @@ static int ccp2_init_entities(struct isp_ccp2_device *ccp2)
 
 	ccp2_init_formats(sd, NULL);
 
-	/*
-	 * The CCP2 has weird line alignment requirements, possibly caused by
-	 * DPCM8 decompression. Line length for data read from memory must be a
-	 * multiple of 128 bits (16 bytes) in continuous mode (when no padding
-	 * is present at end of lines). Additionally, if padding is used, the
-	 * padded line length must be a multiple of 32 bytes. To simplify the
-	 * implementation we use a fixed 32 bytes alignment regardless of the
-	 * input format and width. If strict 128 bits alignment support is
-	 * required ispvideo will need to be made aware of this special dual
-	 * alignment requirements.
-	 */
+	 
 	ccp2->video_in.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 	ccp2->video_in.bpl_alignment = 32;
 	ccp2->video_in.bpl_max = 0xffffffe0;
@@ -1122,11 +944,7 @@ error:
 	return ret;
 }
 
-/*
- * omap3isp_ccp2_init - CCP2 initialization.
- * @isp : Pointer to ISP device
- * return negative error code or zero on success
- */
+ 
 int omap3isp_ccp2_init(struct isp_device *isp)
 {
 	struct isp_ccp2_device *ccp2 = &isp->isp_ccp2;
@@ -1134,17 +952,7 @@ int omap3isp_ccp2_init(struct isp_device *isp)
 
 	init_waitqueue_head(&ccp2->wait);
 
-	/*
-	 * On the OMAP34xx the CSI1 receiver is operated in the CSIb IO
-	 * complex, which is powered by vdds_csib power rail. Hence the
-	 * request for the regulator.
-	 *
-	 * On the OMAP36xx, the CCP2 uses the CSI PHY1 or PHY2, shared with
-	 * the CSI2c or CSI2a receivers. The PHY then needs to be explicitly
-	 * configured.
-	 *
-	 * TODO: Don't hardcode the usage of PHY1 (shared with CSI2c).
-	 */
+	 
 	if (isp->revision == ISP_REVISION_2_0) {
 		ccp2->vdds_csib = devm_regulator_get(isp->dev, "vdds_csib");
 		if (IS_ERR(ccp2->vdds_csib)) {
@@ -1170,10 +978,7 @@ int omap3isp_ccp2_init(struct isp_device *isp)
 	return 0;
 }
 
-/*
- * omap3isp_ccp2_cleanup - CCP2 un-initialization
- * @isp : Pointer to ISP device
- */
+ 
 void omap3isp_ccp2_cleanup(struct isp_device *isp)
 {
 	struct isp_ccp2_device *ccp2 = &isp->isp_ccp2;

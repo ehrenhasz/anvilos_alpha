@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2017, Mellanox Technologies inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/rdma_user_ioctl.h>
 #include <rdma/uverbs_ioctl.h>
@@ -41,7 +11,7 @@ struct bundle_alloc_head {
 };
 
 struct bundle_priv {
-	/* Must be first */
+	 
 	struct bundle_alloc_head alloc_head;
 	struct bundle_alloc_head *allocated_mem;
 	size_t internal_avail;
@@ -60,19 +30,12 @@ struct bundle_priv {
 	DECLARE_BITMAP(spec_finalize, UVERBS_API_ATTR_BKEY_LEN);
 	DECLARE_BITMAP(uobj_hw_obj_valid, UVERBS_API_ATTR_BKEY_LEN);
 
-	/*
-	 * Must be last. bundle ends in a flex array which overlaps
-	 * internal_buffer.
-	 */
+	 
 	struct uverbs_attr_bundle bundle;
 	u64 internal_buffer[32];
 };
 
-/*
- * Each method has an absolute minimum amount of memory it needs to allocate,
- * precompute that amount and determine if the onstack memory can be used or
- * if allocation is need.
- */
+ 
 void uapi_compute_bundle_size(struct uverbs_api_ioctl_method *method_elm,
 			      unsigned int num_attrs)
 {
@@ -86,23 +49,11 @@ void uapi_compute_bundle_size(struct uverbs_api_ioctl_method *method_elm,
 	method_elm->bundle_size =
 		ALIGN(bundle_size + 256, sizeof(*pbundle->internal_buffer));
 
-	/* Do not want order-2 allocations for this. */
+	 
 	WARN_ON_ONCE(method_elm->bundle_size > PAGE_SIZE);
 }
 
-/**
- * _uverbs_alloc() - Quickly allocate memory for use with a bundle
- * @bundle: The bundle
- * @size: Number of bytes to allocate
- * @flags: Allocator flags
- *
- * The bundle allocator is intended for allocations that are connected with
- * processing the system call related to the bundle. The allocated memory is
- * always freed once the system call completes, and cannot be freed any other
- * way.
- *
- * This tries to use a small pool of pre-allocated memory for performance.
- */
+ 
 __malloc void *_uverbs_alloc(struct uverbs_attr_bundle *bundle, size_t size,
 			     gfp_t flags)
 {
@@ -189,12 +140,7 @@ static int uverbs_process_idrs_array(struct bundle_priv *pbundle,
 	if (IS_ERR(attr->uobjects))
 		return PTR_ERR(attr->uobjects);
 
-	/*
-	 * Since idr is 4B and *uobjects is >= 4B, we can use attr->uobjects
-	 * to store idrs array and avoid additional memory allocation. The
-	 * idrs array is offset to the end of the uobjects array so we will be
-	 * able to read idr and replace with a pointer.
-	 */
+	 
 	idr_vals = (u32 *)(attr->uobjects + array_len) - array_len;
 
 	if (uattr->len > sizeof(uattr->data)) {
@@ -254,18 +200,14 @@ static int uverbs_process_attr(struct bundle_priv *pbundle,
 
 		val_spec = &spec->u2.enum_def.ids[uattr->attr_data.enum_data.elem_id];
 
-		/* Currently we only support PTR_IN based enums */
+		 
 		if (val_spec->type != UVERBS_ATTR_TYPE_PTR_IN)
 			return -EOPNOTSUPP;
 
 		e->ptr_attr.enum_id = uattr->attr_data.enum_data.elem_id;
 		fallthrough;
 	case UVERBS_ATTR_TYPE_PTR_IN:
-		/* Ensure that any data provided by userspace beyond the known
-		 * struct is zero. Userspace that knows how to use some future
-		 * longer struct will fail here if used with an old kernel and
-		 * non-zero content, making ABI compat/discovery simpler.
-		 */
+		 
 		if (uattr->len > val_spec->u.ptr.len &&
 		    val_spec->zero_trailing &&
 		    !uverbs_is_attr_cleared(uattr, val_spec->u.ptr.len))
@@ -313,12 +255,7 @@ static int uverbs_process_attr(struct bundle_priv *pbundle,
 		o_attr = &e->obj_attr;
 		o_attr->attr_elm = attr_uapi;
 
-		/*
-		 * The type of uattr->data is u64 for UVERBS_ATTR_TYPE_IDR and
-		 * s64 for UVERBS_ATTR_TYPE_FD. We can cast the u64 to s64
-		 * here without caring about truncation as we know that the
-		 * IDR implementation today rejects negative IDs
-		 */
+		 
 		o_attr->uobject = uverbs_get_uobject_from_file(
 			spec->u.obj.obj_type, spec->u.obj.access,
 			uattr->data_s64, &pbundle->bundle);
@@ -330,7 +267,7 @@ static int uverbs_process_attr(struct bundle_priv *pbundle,
 			unsigned int uattr_idx = uattr - pbundle->uattrs;
 			s64 id = o_attr->uobject->id;
 
-			/* Copy the allocated id to the user-space */
+			 
 			if (put_user(id, &pbundle->user_attrs[uattr_idx].data))
 				return -EFAULT;
 		}
@@ -341,7 +278,7 @@ static int uverbs_process_attr(struct bundle_priv *pbundle,
 		if (uattr->attr_data.reserved || uattr->len != 0 ||
 		    uattr->data_s64 < INT_MIN || uattr->data_s64 > INT_MAX)
 			return -EINVAL;
-		/* _uverbs_get_const_signed() is the accessor */
+		 
 		e->ptr_attr.data = uattr->data_s64;
 		break;
 
@@ -356,16 +293,7 @@ static int uverbs_process_attr(struct bundle_priv *pbundle,
 	return 0;
 }
 
-/*
- * We search the radix tree with the method prefix and now we want to fast
- * search the suffix bits to get a particular attribute pointer. It is not
- * totally clear to me if this breaks the radix tree encasulation or not, but
- * it uses the iter data to determine if the method iter points at the same
- * chunk that will store the attribute, if so it just derefs it directly. By
- * construction in most kernel configs the method and attrs will all fit in a
- * single radix chunk, so in most cases this will have no search. Other cases
- * this falls back to a full search.
- */
+ 
 static void __rcu **uapi_get_attr_for_method(struct bundle_priv *pbundle,
 					     u32 attr_key)
 {
@@ -395,17 +323,14 @@ static int uverbs_set_attr(struct bundle_priv *pbundle,
 
 	slot = uapi_get_attr_for_method(pbundle, attr_key);
 	if (!slot) {
-		/*
-		 * Kernel does not support the attribute but user-space says it
-		 * is mandatory
-		 */
+		 
 		if (uattr->flags & UVERBS_ATTR_F_MANDATORY)
 			return -EPROTONOSUPPORT;
 		return 0;
 	}
 	attr = rcu_dereference_protected(*slot, true);
 
-	/* Reject duplicate attributes from user-space */
+	 
 	if (test_bit(attr_bkey, pbundle->bundle.attr_present))
 		return -EINVAL;
 
@@ -427,7 +352,7 @@ static int ib_uverbs_run_method(struct bundle_priv *pbundle,
 	unsigned int i;
 	int ret;
 
-	/* See uverbs_disassociate_api() */
+	 
 	handler = srcu_dereference(
 		pbundle->method_elm->handler,
 		&pbundle->bundle.ufile->device->disassociate_srcu);
@@ -446,7 +371,7 @@ static int ib_uverbs_run_method(struct bundle_priv *pbundle,
 			return ret;
 	}
 
-	/* User space did not provide all the mandatory attributes */
+	 
 	if (unlikely(!bitmap_subset(pbundle->method_elm->attr_mandatory,
 				    pbundle->bundle.attr_present,
 				    pbundle->method_elm->key_bitmap_len)))
@@ -474,11 +399,7 @@ static int ib_uverbs_run_method(struct bundle_priv *pbundle,
 		ret = handler(&pbundle->bundle);
 	}
 
-	/*
-	 * Until the drivers are revised to use the bundle directly we have to
-	 * assume that the driver wrote to its UHW_OUT and flag userspace
-	 * appropriately.
-	 */
+	 
 	if (!ret && pbundle->method_elm->has_udata) {
 		const struct uverbs_attr *attr =
 			uverbs_attr_get(&pbundle->bundle, UVERBS_ATTR_UHW_OUT);
@@ -487,11 +408,7 @@ static int ib_uverbs_run_method(struct bundle_priv *pbundle,
 			ret = uverbs_set_output(&pbundle->bundle, attr);
 	}
 
-	/*
-	 * EPROTONOSUPPORT is ONLY to be returned if the ioctl framework can
-	 * not invoke the method because the request is not supported.  No
-	 * other cases should return this code.
-	 */
+	 
 	if (WARN_ON_ONCE(ret == -EPROTONOSUPPORT))
 		return -EINVAL;
 
@@ -504,7 +421,7 @@ static void bundle_destroy(struct bundle_priv *pbundle, bool commit)
 	struct bundle_alloc_head *memblock;
 	unsigned int i;
 
-	/* fast path for simple uobjects */
+	 
 	i = -1;
 	while ((i = find_next_bit(pbundle->uobj_finalize, key_bitmap_len,
 				  i + 1)) < key_bitmap_len) {
@@ -585,11 +502,11 @@ static int ib_uverbs_cmd_verbs(struct ib_uverbs_file *ufile,
 		pbundle->allocated_mem = NULL;
 	}
 
-	/* Space for the pbundle->bundle.attrs flex array */
+	 
 	pbundle->method_elm = method_elm;
 	pbundle->method_key = attrs_iter.index;
 	pbundle->bundle.ufile = ufile;
-	pbundle->bundle.context = NULL; /* only valid if bundle has uobject */
+	pbundle->bundle.context = NULL;  
 	pbundle->radix = &uapi->radix;
 	pbundle->radix_slots = slot;
 	pbundle->radix_slots_len = radix_tree_chunk_size(&attrs_iter);
@@ -646,17 +563,13 @@ int uverbs_get_flags64(u64 *to, const struct uverbs_attr_bundle *attrs_bundle,
 	u64 flags;
 
 	attr = uverbs_attr_get(attrs_bundle, idx);
-	/* Missing attribute means 0 flags */
+	 
 	if (IS_ERR(attr)) {
 		*to = 0;
 		return 0;
 	}
 
-	/*
-	 * New userspace code should use 8 bytes to pass flags, but we
-	 * transparently support old userspaces that were using 4 bytes as
-	 * well.
-	 */
+	 
 	if (attr->ptr_attr.len == 8)
 		flags = attr->ptr_attr.data;
 	else if (attr->ptr_attr.len == 4)
@@ -690,11 +603,7 @@ int uverbs_get_flags32(u32 *to, const struct uverbs_attr_bundle *attrs_bundle,
 }
 EXPORT_SYMBOL(uverbs_get_flags32);
 
-/*
- * Fill a ib_udata struct (core or uhw) using the given attribute IDs.
- * This is primarily used to convert the UVERBS_ATTR_UHW() into the
- * ib_udata format used by the drivers.
- */
+ 
 void uverbs_fill_udata(struct uverbs_attr_bundle *bundle,
 		       struct ib_udata *udata, unsigned int attr_in,
 		       unsigned int attr_out)
@@ -746,10 +655,7 @@ int uverbs_copy_to(const struct uverbs_attr_bundle *bundle, size_t idx,
 EXPORT_SYMBOL(uverbs_copy_to);
 
 
-/*
- * This is only used if the caller has directly used copy_to_use to write the
- * data.  It signals to user space that the buffer is filled in.
- */
+ 
 int uverbs_output_written(const struct uverbs_attr_bundle *bundle, size_t idx)
 {
 	const struct uverbs_attr *attr = uverbs_attr_get(bundle, idx);
@@ -824,7 +730,7 @@ int uverbs_copy_to_struct_or_zero(const struct uverbs_attr_bundle *bundle,
 }
 EXPORT_SYMBOL(uverbs_copy_to_struct_or_zero);
 
-/* Once called an abort will call through to the type's destroy_hw() */
+ 
 void uverbs_finalize_uobj_create(const struct uverbs_attr_bundle *bundle,
 				 u16 idx)
 {

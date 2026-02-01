@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016 Thomas Gleixner.
- * Copyright (C) 2016-2017 Christoph Hellwig.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/cpu.h>
@@ -20,7 +17,7 @@ static void grp_spread_init_one(struct cpumask *irqmsk, struct cpumask *nmsk,
 	for ( ; cpus_per_grp > 0; ) {
 		cpu = cpumask_first(nmsk);
 
-		/* Should not happen, but I'm too lazy to think about it */
+		 
 		if (cpu >= nr_cpu_ids)
 			return;
 
@@ -28,7 +25,7 @@ static void grp_spread_init_one(struct cpumask *irqmsk, struct cpumask *nmsk,
 		cpumask_set_cpu(cpu, irqmsk);
 		cpus_per_grp--;
 
-		/* If the cpu has siblings, use them first */
+		 
 		siblmsk = topology_sibling_cpumask(cpu);
 		for (sibl = -1; cpus_per_grp > 0; ) {
 			sibl = cpumask_next(sibl, siblmsk);
@@ -87,7 +84,7 @@ static int get_nodes_in_cpumask(cpumask_var_t *node_to_cpumask,
 {
 	int n, nodes = 0;
 
-	/* Calculate the number of nodes in the supplied affinity mask */
+	 
 	for_each_node(n) {
 		if (cpumask_intersects(mask, node_to_cpumask[n])) {
 			node_set(n, *nodemsk);
@@ -114,19 +111,7 @@ static int ncpus_cmp_func(const void *l, const void *r)
 	return ln->ncpus - rn->ncpus;
 }
 
-/*
- * Allocate group number for each node, so that for each node:
- *
- * 1) the allocated number is >= 1
- *
- * 2) the allocated number is <= active CPU number of this node
- *
- * The actual allocated total groups may be less than @numgrps when
- * active total CPU number is less than @numgrps.
- *
- * Active CPUs means the CPUs in '@cpu_mask AND @node_to_cpumask[]'
- * for each node.
- */
+ 
 static void alloc_nodes_groups(unsigned int numgrps,
 			       cpumask_var_t *node_to_cpumask,
 			       const struct cpumask *cpu_mask,
@@ -158,74 +143,7 @@ static void alloc_nodes_groups(unsigned int numgrps,
 	sort(node_groups, nr_node_ids, sizeof(node_groups[0]),
 	     ncpus_cmp_func, NULL);
 
-	/*
-	 * Allocate groups for each node according to the ratio of this
-	 * node's nr_cpus to remaining un-assigned ncpus. 'numgrps' is
-	 * bigger than number of active numa nodes. Always start the
-	 * allocation from the node with minimized nr_cpus.
-	 *
-	 * This way guarantees that each active node gets allocated at
-	 * least one group, and the theory is simple: over-allocation
-	 * is only done when this node is assigned by one group, so
-	 * other nodes will be allocated >= 1 groups, since 'numgrps' is
-	 * bigger than number of numa nodes.
-	 *
-	 * One perfect invariant is that number of allocated groups for
-	 * each node is <= CPU count of this node:
-	 *
-	 * 1) suppose there are two nodes: A and B
-	 * 	ncpu(X) is CPU count of node X
-	 * 	grps(X) is the group count allocated to node X via this
-	 * 	algorithm
-	 *
-	 * 	ncpu(A) <= ncpu(B)
-	 * 	ncpu(A) + ncpu(B) = N
-	 * 	grps(A) + grps(B) = G
-	 *
-	 * 	grps(A) = max(1, round_down(G * ncpu(A) / N))
-	 * 	grps(B) = G - grps(A)
-	 *
-	 * 	both N and G are integer, and 2 <= G <= N, suppose
-	 * 	G = N - delta, and 0 <= delta <= N - 2
-	 *
-	 * 2) obviously grps(A) <= ncpu(A) because:
-	 *
-	 * 	if grps(A) is 1, then grps(A) <= ncpu(A) given
-	 * 	ncpu(A) >= 1
-	 *
-	 * 	otherwise,
-	 * 		grps(A) <= G * ncpu(A) / N <= ncpu(A), given G <= N
-	 *
-	 * 3) prove how grps(B) <= ncpu(B):
-	 *
-	 * 	if round_down(G * ncpu(A) / N) == 0, vecs(B) won't be
-	 * 	over-allocated, so grps(B) <= ncpu(B),
-	 *
-	 * 	otherwise:
-	 *
-	 * 	grps(A) =
-	 * 		round_down(G * ncpu(A) / N) =
-	 * 		round_down((N - delta) * ncpu(A) / N) =
-	 * 		round_down((N * ncpu(A) - delta * ncpu(A)) / N)	 >=
-	 * 		round_down((N * ncpu(A) - delta * N) / N)	 =
-	 * 		cpu(A) - delta
-	 *
-	 * 	then:
-	 *
-	 * 	grps(A) - G >= ncpu(A) - delta - G
-	 * 	=>
-	 * 	G - grps(A) <= G + delta - ncpu(A)
-	 * 	=>
-	 * 	grps(B) <= N - ncpu(A)
-	 * 	=>
-	 * 	grps(B) <= cpu(B)
-	 *
-	 * For nodes >= 3, it can be thought as one node and another big
-	 * node given that is exactly what this algorithm is implemented,
-	 * and we always re-calculate 'remaining_ncpus' & 'numgrps', and
-	 * finally for each node X: grps(X) <= ncpu(X).
-	 *
-	 */
+	 
 	for (n = 0; n < nr_node_ids; n++) {
 		unsigned ngroups, ncpus;
 
@@ -262,13 +180,10 @@ static int __group_cpus_evenly(unsigned int startgrp, unsigned int numgrps,
 
 	nodes = get_nodes_in_cpumask(node_to_cpumask, cpu_mask, &nodemsk);
 
-	/*
-	 * If the number of nodes in the mask is greater than or equal the
-	 * number of groups we just spread the groups across the nodes.
-	 */
+	 
 	if (numgrps <= nodes) {
 		for_each_node_mask(n, nodemsk) {
-			/* Ensure that only CPUs which are in both masks are set */
+			 
 			cpumask_and(nmsk, cpu_mask, node_to_cpumask[n]);
 			cpumask_or(&masks[curgrp], &masks[curgrp], nmsk);
 			if (++curgrp == last_grp)
@@ -283,7 +198,7 @@ static int __group_cpus_evenly(unsigned int startgrp, unsigned int numgrps,
 	if (!node_groups)
 		return -ENOMEM;
 
-	/* allocate group number for each node */
+	 
 	alloc_nodes_groups(numgrps, node_to_cpumask, cpu_mask,
 			   nodemsk, nmsk, node_groups);
 	for (i = 0; i < nr_node_ids; i++) {
@@ -293,7 +208,7 @@ static int __group_cpus_evenly(unsigned int startgrp, unsigned int numgrps,
 		if (nv->ngroups == UINT_MAX)
 			continue;
 
-		/* Get the cpus on this node which are in the mask */
+		 
 		cpumask_and(nmsk, cpu_mask, node_to_cpumask[nv->id]);
 		ncpus = cpumask_weight(nmsk);
 		if (!ncpus)
@@ -301,23 +216,20 @@ static int __group_cpus_evenly(unsigned int startgrp, unsigned int numgrps,
 
 		WARN_ON_ONCE(nv->ngroups > ncpus);
 
-		/* Account for rounding errors */
+		 
 		extra_grps = ncpus - nv->ngroups * (ncpus / nv->ngroups);
 
-		/* Spread allocated groups on CPUs of the current node */
+		 
 		for (v = 0; v < nv->ngroups; v++, curgrp++) {
 			cpus_per_grp = ncpus / nv->ngroups;
 
-			/* Account for extra groups to compensate rounding errors */
+			 
 			if (extra_grps) {
 				cpus_per_grp++;
 				--extra_grps;
 			}
 
-			/*
-			 * wrapping has to be considered given 'startgrp'
-			 * may start anywhere
-			 */
+			 
 			if (curgrp >= last_grp)
 				curgrp = 0;
 			grp_spread_init_one(&masks[curgrp], nmsk,
@@ -329,21 +241,7 @@ static int __group_cpus_evenly(unsigned int startgrp, unsigned int numgrps,
 	return done;
 }
 
-/**
- * group_cpus_evenly - Group all CPUs evenly per NUMA/CPU locality
- * @numgrps: number of groups
- *
- * Return: cpumask array if successful, NULL otherwise. And each element
- * includes CPUs assigned to this group
- *
- * Try to put close CPUs from viewpoint of CPU and NUMA locality into
- * same group, and run two-stage grouping:
- *	1) allocate present CPUs on these groups evenly first
- *	2) allocate other possible CPUs on these groups evenly
- *
- * We guarantee in the resulted grouping that all CPUs are covered, and
- * no same CPU is assigned to multiple groups
- */
+ 
 struct cpumask *group_cpus_evenly(unsigned int numgrps)
 {
 	unsigned int curgrp = 0, nr_present = 0, nr_others = 0;
@@ -368,33 +266,17 @@ struct cpumask *group_cpus_evenly(unsigned int numgrps)
 
 	build_node_to_cpumask(node_to_cpumask);
 
-	/*
-	 * Make a local cache of 'cpu_present_mask', so the two stages
-	 * spread can observe consistent 'cpu_present_mask' without holding
-	 * cpu hotplug lock, then we can reduce deadlock risk with cpu
-	 * hotplug code.
-	 *
-	 * Here CPU hotplug may happen when reading `cpu_present_mask`, and
-	 * we can live with the case because it only affects that hotplug
-	 * CPU is handled in the 1st or 2nd stage, and either way is correct
-	 * from API user viewpoint since 2-stage spread is sort of
-	 * optimization.
-	 */
+	 
 	cpumask_copy(npresmsk, data_race(cpu_present_mask));
 
-	/* grouping present CPUs first */
+	 
 	ret = __group_cpus_evenly(curgrp, numgrps, node_to_cpumask,
 				  npresmsk, nmsk, masks);
 	if (ret < 0)
 		goto fail_build_affinity;
 	nr_present = ret;
 
-	/*
-	 * Allocate non present CPUs starting from the next group to be
-	 * handled. If the grouping of present CPUs already exhausted the
-	 * group space, assign the non present CPUs to the already
-	 * allocated out groups.
-	 */
+	 
 	if (nr_present >= numgrps)
 		curgrp = 0;
 	else
@@ -423,7 +305,7 @@ struct cpumask *group_cpus_evenly(unsigned int numgrps)
 	}
 	return masks;
 }
-#else /* CONFIG_SMP */
+#else  
 struct cpumask *group_cpus_evenly(unsigned int numgrps)
 {
 	struct cpumask *masks = kcalloc(numgrps, sizeof(*masks), GFP_KERNEL);
@@ -431,9 +313,9 @@ struct cpumask *group_cpus_evenly(unsigned int numgrps)
 	if (!masks)
 		return NULL;
 
-	/* assign all CPUs(cpu 0) to the 1st group only */
+	 
 	cpumask_copy(&masks[0], cpu_possible_mask);
 	return masks;
 }
-#endif /* CONFIG_SMP */
+#endif  
 EXPORT_SYMBOL_GPL(group_cpus_evenly);

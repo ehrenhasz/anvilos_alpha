@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ss-cipher.c - hardware cryptographic offloader for
- * Allwinner A80/A83T SoC
- *
- * Copyright (C) 2016-2019 Corentin LABBE <clabbe.montjoie@gmail.com>
- *
- * This file add support for AES cipher with 128,192,256 bits keysize in
- * CBC and ECB mode.
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 
 #include <linux/bottom_half.h>
 #include <linux/crypto.h>
@@ -72,7 +62,7 @@ static bool sun8i_ss_need_fallback(struct skcipher_request *areq)
 		sg = sg_next(sg);
 	}
 
-	/* SS need same numbers of SG (with same length) for source and destination */
+	 
 	in_sg = areq->src;
 	out_sg = areq->dst;
 	while (in_sg && out_sg) {
@@ -139,7 +129,7 @@ static int sun8i_ss_setup_ivs(struct skcipher_request *areq)
 					 ivsize, 0);
 	}
 
-	/* we need to copy all IVs from source in case DMA is bi-directionnal */
+	 
 	while (sg && len) {
 		if (sg_dma_len(sg) == 0) {
 			sg = sg_next(sg);
@@ -155,7 +145,7 @@ static int sun8i_ss_setup_ivs(struct skcipher_request *areq)
 			goto dma_iv_error;
 		}
 		rctx->p_iv[i] = a;
-		/* we need to setup all others IVs only in the decrypt way */
+		 
 		if (rctx->op_dir == SS_ENCRYPTION)
 			return 0;
 		todo = min(len, sg_dma_len(sg));

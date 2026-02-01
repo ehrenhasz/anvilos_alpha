@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/range.c
- * comedi routines for voltage ranges
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-8 David A. Schleef <ds@schleef.org>
- */
+
+ 
 
 #include <linux/uaccess.h>
 #include <linux/comedi/comedidev.h>
@@ -32,19 +26,7 @@ EXPORT_SYMBOL_GPL(range_0_32mA);
 const struct comedi_lrange range_unknown = { 1, {{0, 1000000, UNIT_none} } };
 EXPORT_SYMBOL_GPL(range_unknown);
 
-/*
- * COMEDI_RANGEINFO ioctl
- * range information
- *
- * arg:
- *	pointer to comedi_rangeinfo structure
- *
- * reads:
- *	comedi_rangeinfo structure
- *
- * writes:
- *	array of comedi_krange structures to rangeinfo->range_ptr pointer
- */
+ 
 int do_rangeinfo_ioctl(struct comedi_device *dev,
 		       struct comedi_rangeinfo *it)
 {
@@ -85,23 +67,7 @@ int do_rangeinfo_ioctl(struct comedi_device *dev,
 	return 0;
 }
 
-/**
- * comedi_check_chanlist() - Validate each element in a chanlist.
- * @s: comedi_subdevice struct
- * @n: number of elements in the chanlist
- * @chanlist: the chanlist to validate
- *
- * Each element consists of a channel number, a range index, an analog
- * reference type and some flags, all packed into an unsigned int.
- *
- * This checks that the channel number and range index are supported by
- * the comedi subdevice.  It does not check whether the analog reference
- * type and the flags are supported.  Drivers that care should check those
- * themselves.
- *
- * Return: %0 if all @chanlist elements are valid (success),
- *         %-EINVAL if one or more elements are invalid.
- */
+ 
 int comedi_check_chanlist(struct comedi_subdevice *s, int n,
 			  unsigned int *chanlist)
 {

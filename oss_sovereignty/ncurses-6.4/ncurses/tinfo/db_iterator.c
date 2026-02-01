@@ -1,39 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2020,2022 Thomas E. Dickey                                *
- * Copyright 2006-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
-/*
- * Iterators for terminal databases.
- */
+ 
 
 #include <curses.priv.h>
 
@@ -92,11 +61,7 @@ check_existence(const char *name, struct stat *sb)
     return result;
 }
 
-/*
- * Trim newlines (and backslashes preceding those) and tab characters to
- * help simplify scripting of the quick-dump feature.  Leave spaces and
- * other backslashes alone.
- */
+ 
 static void
 trim_formatting(char *source)
 {
@@ -113,10 +78,7 @@ trim_formatting(char *source)
     *target = '\0';
 }
 
-/*
- * Store the latest value of an environment variable in my_vars[] so we can
- * detect if one changes, invalidating the cached search-list.
- */
+ 
 static bool
 update_getenv(const char *name, DBDIRS which)
 {
@@ -135,7 +97,7 @@ update_getenv(const char *name, DBDIRS which)
 		       cached_value != 0 &&
 		       strcmp(value, cached_value) == 0));
 
-	/* Set variable name to enable checks in cache_expired(). */
+	 
 	my_vars[which].name = name;
 
 	if (!same_value) {
@@ -163,17 +125,7 @@ cache_getenv(const char *name, DBDIRS which)
 }
 #endif
 
-/*
- * The cache expires if at least a second has passed since the initial lookup,
- * or if one of the environment variables changed.
- *
- * Only a few applications use multiple lookups of terminal entries, seems that
- * aside from bulk I/O such as tic and toe, that leaves interactive programs
- * which should not be modifying the terminal databases in a way that would
- * invalidate the search-list.
- *
- * The "1-second" is to allow for user-directed changes outside the program.
- */
+ 
 static bool
 cache_expired(void)
 {
@@ -209,10 +161,7 @@ update_tic_dir(const char *update)
     TicDirectory = update;
 }
 
-/*
- * Record the "official" location of the terminfo directory, according to
- * the place where we're writing to, or the normal default, if not.
- */
+ 
 NCURSES_EXPORT(const char *)
 _nc_tic_dir(const char *path)
 {
@@ -233,11 +182,7 @@ _nc_tic_dir(const char *path)
     return TicDirectory ? TicDirectory : TERMINFO;
 }
 
-/*
- * Special fix to prevent the terminfo directory from being moved after tic
- * has chdir'd to it.  If we let it be changed, then if $TERMINFO has a
- * relative path, we'll lose track of the actual directory.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_keep_tic_dir(const char *path)
 {
@@ -245,9 +190,7 @@ _nc_keep_tic_dir(const char *path)
     KeepTicDirectory = TRUE;
 }
 
-/*
- * Cleanup.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_last_db(void)
 {
@@ -256,11 +199,7 @@ _nc_last_db(void)
     }
 }
 
-/*
- * This is a simple iterator which allows the caller to step through the
- * possible locations for a terminfo directory.  ncurses uses this to find
- * terminfo files to read.
- */
+ 
 NCURSES_EXPORT(const char *)
 _nc_next_db(DBDIRS * state, int *offset)
 {
@@ -290,9 +229,7 @@ _nc_first_db(DBDIRS * state, int *offset)
 
     T((T_CALLED("_nc_first_db")));
 
-    /* build a blob containing all of the strings we will use for a lookup
-     * table.
-     */
+     
     if (my_blob == 0 || (cache_has_expired = cache_expired())) {
 	size_t blobsize = 0;
 	const char *values[dbdLAST];
@@ -305,10 +242,7 @@ _nc_first_db(DBDIRS * state, int *offset)
 	for (j = 0; j < dbdLAST; ++j)
 	    values[j] = 0;
 
-	/*
-	 * This is the first item in the list, and is used only when tic is
-	 * writing to the database, as a performance improvement.
-	 */
+	 
 	values[dbdTIC] = TicDirectory;
 
 #if NCURSES_USE_DATABASE
@@ -334,13 +268,13 @@ _nc_first_db(DBDIRS * state, int *offset)
 #endif
 #if NCURSES_USE_TERMCAP
 	    values[dbdEnvOnce2] = cache_getenv("TERMCAP", dbdEnvOnce2);
-	    /* only use $TERMCAP if it is an absolute path */
+	     
 	    if (values[dbdEnvOnce2] != 0
 		&& *values[dbdEnvOnce2] != '/') {
 		values[dbdEnvOnce2] = 0;
 	    }
 	    values[dbdEnvList2] = cache_getenv("TERMPATH", dbdEnvList2);
-#endif /* NCURSES_USE_TERMCAP */
+#endif  
 	}
 
 	for (j = 0; j < dbdLAST; ++j) {
@@ -356,9 +290,7 @@ _nc_first_db(DBDIRS * state, int *offset)
 		add_to_blob(values[j], blobsize);
 	    }
 
-	    /* Now, build an array which will be pointers to the distinct
-	     * strings in the blob.
-	     */
+	     
 	    blobsize = 2;
 	    for (j = 0; my_blob[j] != '\0'; ++j) {
 		if (my_blob[j] == NCURSES_PATHSEP)
@@ -378,9 +310,7 @@ _nc_first_db(DBDIRS * state, int *offset)
 		    }
 		}
 
-		/*
-		 * Eliminate duplicates from the list.
-		 */
+		 
 		for (j = 0; my_list[j] != 0; ++j) {
 #ifdef TERMINFO
 		    if (*my_list[j] == '\0')
@@ -400,10 +330,7 @@ _nc_first_db(DBDIRS * state, int *offset)
 		    }
 		}
 
-		/*
-		 * Eliminate non-existent databases, and those that happen to
-		 * be symlinked to another location.
-		 */
+		 
 		for (j = 0; my_list[j] != 0; ++j) {
 		    bool found = check_existence(my_list[j], &my_stat[j]);
 #if HAVE_LINK

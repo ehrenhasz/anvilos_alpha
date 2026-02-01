@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BMI160 - Bosch IMU (accel, gyro plus external magnetometer)
- *
- * Copyright (c) 2016, Intel Corporation.
- * Copyright (c) 2019, Martin Kelly.
- *
- * IIO core driver for BMI160, with support for I2C/SPI busses
- *
- * TODO: magnetometer, hardware FIFO
- */
+
+ 
 #include <linux/module.h>
 #include <linux/regmap.h>
 #include <linux/delay.h>
@@ -30,7 +21,7 @@
 
 #define BMI160_REG_PMU_STATUS	0x03
 
-/* X axis data low byte address, the rest can be obtained using axis offset */
+ 
 #define BMI160_REG_DATA_MAGN_XOUT_L	0x04
 #define BMI160_REG_DATA_GYRO_XOUT_L	0x0C
 #define BMI160_REG_DATA_ACCEL_XOUT_L	0x12
@@ -81,7 +72,7 @@
 #define BMI160_INT1_LATCH_MASK		BIT(4)
 #define BMI160_INT2_LATCH_MASK		BIT(5)
 
-/* INT1 and INT2 are in the opposite order as in INT_OUT_CTRL! */
+ 
 #define BMI160_REG_INT_MAP		0x56
 #define BMI160_INT1_MAP_DRDY_EN		0x80
 #define BMI160_INT2_MAP_DRDY_EN		0x08
@@ -112,7 +103,7 @@
 	.ext_info = bmi160_ext_info,				\
 }
 
-/* scan indexes follow DATA register order */
+ 
 enum bmi160_scan_axis {
 	BMI160_SCAN_EXT_MAGN_X = 0,
 	BMI160_SCAN_EXT_MAGN_Y,
@@ -131,7 +122,7 @@ enum bmi160_sensor_type {
 	BMI160_ACCEL	= 0,
 	BMI160_GYRO,
 	BMI160_EXT_MAGN,
-	BMI160_NUM_SENSORS /* must be last */
+	BMI160_NUM_SENSORS  
 };
 
 enum bmi160_int_pin {
@@ -146,7 +137,7 @@ const struct regmap_config bmi160_regmap_config = {
 EXPORT_SYMBOL_NS(bmi160_regmap_config, IIO_BMI160);
 
 struct bmi160_regs {
-	u8 data; /* LSB byte register for X-axis */
+	u8 data;  
 	u8 config;
 	u8 config_odr_mask;
 	u8 config_bwp_mask;
@@ -541,10 +532,7 @@ static int bmi160_write_conf_reg(struct regmap *regmap, unsigned int reg,
 	if (ret)
 		return ret;
 
-	/*
-	 * We need to wait after writing before we can write again. See the
-	 * datasheet, page 93.
-	 */
+	 
 	usleep_range(write_usleep, write_usleep + 1000);
 
 	return 0;
@@ -577,15 +565,10 @@ static int bmi160_config_pin(struct regmap *regmap, enum bmi160_int_pin pin,
 	}
 	int_out_ctrl_mask = BMI160_INT_OUT_CTRL_MASK << int_out_ctrl_shift;
 
-	/*
-	 * Enable the requested pin with the right settings:
-	 * - Push-pull/open-drain
-	 * - Active low/high
-	 * - Edge/level triggered
-	 */
+	 
 	int_out_ctrl_bits = BMI160_OUTPUT_EN;
 	if (open_drain)
-		/* Default is push-pull. */
+		 
 		int_out_ctrl_bits |= BMI160_OPEN_DRAIN;
 	int_out_ctrl_bits |= irq_mask;
 	int_out_ctrl_bits <<= int_out_ctrl_shift;
@@ -596,14 +579,14 @@ static int bmi160_config_pin(struct regmap *regmap, enum bmi160_int_pin pin,
 	if (ret)
 		return ret;
 
-	/* Set the pin to input mode with no latching. */
+	 
 	ret = bmi160_write_conf_reg(regmap, BMI160_REG_INT_LATCH,
 				    int_latch_mask, int_latch_mask,
 				    write_usleep);
 	if (ret)
 		return ret;
 
-	/* Map interrupts to the requested pin. */
+	 
 	ret = bmi160_write_conf_reg(regmap, BMI160_REG_INT_MAP,
 				    int_map_mask, int_map_mask,
 				    write_usleep);
@@ -639,7 +622,7 @@ static int bmi160_get_irq(struct fwnode_handle *fwnode, enum bmi160_int_pin *pin
 {
 	int irq;
 
-	/* Use INT1 if possible, otherwise fall back to INT2. */
+	 
 	irq = fwnode_irq_get_byname(fwnode, "INT1");
 	if (irq > 0) {
 		*pin = BMI160_PIN_INT1;
@@ -661,7 +644,7 @@ static int bmi160_config_device_irq(struct iio_dev *indio_dev, int irq_type,
 	struct bmi160_data *data = iio_priv(indio_dev);
 	struct device *dev = regmap_get_device(data->regmap);
 
-	/* Level-triggered, active-low is the default if we set all zeroes. */
+	 
 	if (irq_type == IRQF_TRIGGER_RISING)
 		irq_mask = BMI160_ACTIVE_HIGH | BMI160_EDGE_TRIGGERED;
 	else if (irq_type == IRQF_TRIGGER_FALLING)
@@ -722,10 +705,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
 
 	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
 
-	/*
-	 * CS rising edge is needed before starting SPI, so do a dummy read
-	 * See Section 3.2.1, page 86 of the datasheet
-	 */
+	 
 	if (use_spi) {
 		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
 		if (ret)

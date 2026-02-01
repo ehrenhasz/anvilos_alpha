@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -14,7 +14,7 @@
 
 #include "clk-krait.h"
 
-/* Secondary and primary muxes share the same cp15 register */
+ 
 static DEFINE_SPINLOCK(krait_clock_reg_lock);
 
 #define LPL_SHIFT	8
@@ -29,7 +29,7 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
 
 	regval = krait_get_l2_indirect_reg(mux->offset);
 
-	/* apq/ipq8064 Errata: disable sec_src clock gating during switch. */
+	 
 	if (mux->disable_sec_src_gating) {
 		regval |= SECCLKAGD;
 		krait_set_l2_indirect_reg(mux->offset, regval);
@@ -43,20 +43,17 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
 	}
 	krait_set_l2_indirect_reg(mux->offset, regval);
 
-	/* apq/ipq8064 Errata: re-enabled sec_src clock gating. */
+	 
 	if (mux->disable_sec_src_gating) {
 		regval &= ~SECCLKAGD;
 		krait_set_l2_indirect_reg(mux->offset, regval);
 	}
 
-	/* Wait for switch to complete. */
+	 
 	mb();
 	udelay(1);
 
-	/*
-	 * Unlock now to make sure the mux register is not
-	 * modified while switching to the new parent.
-	 */
+	 
 	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
 }
 
@@ -67,7 +64,7 @@ static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
 
 	sel = clk_mux_index_to_val(mux->parent_map, 0, index);
 	mux->en_mask = sel;
-	/* Don't touch mux if CPU is off as it won't work */
+	 
 	if (__clk_is_enabled(hw->clk))
 		__krait_mux_set_sel(mux, sel);
 
@@ -96,7 +93,7 @@ const struct clk_ops krait_mux_clk_ops = {
 };
 EXPORT_SYMBOL_GPL(krait_mux_clk_ops);
 
-/* The divider can divide by 2, 4, 6 and 8. But we only really need div-2. */
+ 
 static int krait_div2_determine_rate(struct clk_hw *hw, struct clk_rate_request *req)
 {
 	req->best_parent_rate = clk_hw_round_rate(clk_hw_get_parent(hw), req->rate * 2);

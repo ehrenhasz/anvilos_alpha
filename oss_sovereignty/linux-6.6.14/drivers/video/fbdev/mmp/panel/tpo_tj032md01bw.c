@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/video/mmp/panel/tpo_tj032md01bw.c
- * active panel using spi interface to do init
- *
- * Copyright (C) 2012 Marvell Technology Group Ltd.
- * Authors:  Guoqing Li <ligq@marvell.com>
- *          Lisa Du <cldu@marvell.com>
- *          Zhou Zhu <zzhu3@marvell.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -129,14 +121,14 @@ static int tpohvga_probe(struct spi_device *spi)
 	int ret;
 	struct tpohvga_plat_data *plat_data;
 
-	/* get configs from platform data */
+	 
 	mi = spi->dev.platform_data;
 	if (mi == NULL) {
 		dev_err(&spi->dev, "%s: no platform data defined\n", __func__);
 		return -EINVAL;
 	}
 
-	/* setup spi related info */
+	 
 	spi->bits_per_word = 16;
 	ret = spi_setup(spi);
 	if (ret < 0) {

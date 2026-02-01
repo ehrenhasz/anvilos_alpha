@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,7 +20,7 @@
 #define MP4_QS			16
 #define DMA_ALIGN		4096
 
-/* 6010 M4V */
+ 
 static u8 vop_6010_ntsc_d1[] = {
 	0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x20,
 	0x02, 0x48, 0x1d, 0xc0, 0x00, 0x40, 0x00, 0x40,
@@ -57,7 +49,7 @@ static u8 vop_6010_pal_cif[] = {
 	0x1f, 0x4c, 0x2c, 0x10, 0x90, 0x51, 0x18, 0x3f,
 };
 
-/* 6110 h.264 */
+ 
 static u8 vop_6110_ntsc_d1[] = {
 	0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x1e,
 	0x9a, 0x74, 0x05, 0x81, 0xec, 0x80, 0x00, 0x00,
@@ -190,14 +182,14 @@ void solo_update_mode(struct solo_enc_dev *solo_enc)
 
 	memcpy(solo_enc->vop, vop, vop_len);
 
-	/* Some fixups for 6010/M4V */
+	 
 	if (solo_dev->type == SOLO_DEV_6010) {
 		u16 fps = solo_dev->fps * 1000;
 		u16 interval = solo_enc->interval * 1000;
 
 		vop = solo_enc->vop;
 
-		/* Frame rate and interval */
+		 
 		vop[22] = fps >> 4;
 		vop[23] = ((fps << 4) & 0xf0) | 0x0c
 			| ((interval >> 13) & 0x3);
@@ -207,7 +199,7 @@ void solo_update_mode(struct solo_enc_dev *solo_enc)
 
 	solo_enc->vop_len = vop_len;
 
-	/* Now handle the jpeg header */
+	 
 	vop = solo_enc->jpeg_header;
 	vop[SOF0_START + 5] = 0xff & (solo_enc->height >> 8);
 	vop[SOF0_START + 6] = 0xff & solo_enc->height;
@@ -226,7 +218,7 @@ static int solo_enc_on(struct solo_enc_dev *solo_enc)
 
 	solo_update_mode(solo_enc);
 
-	/* Make sure to do a bandwidth check */
+	 
 	if (solo_enc->bw_weight > solo_dev->enc_bw_remain)
 		return -EBUSY;
 	solo_enc->sequence = 0;
@@ -235,10 +227,10 @@ static int solo_enc_on(struct solo_enc_dev *solo_enc)
 	if (solo_enc->type == SOLO_ENC_TYPE_EXT)
 		solo_reg_write(solo_dev, SOLO_CAP_CH_COMP_ENA_E(ch), 1);
 
-	/* Disable all encoding for this channel */
+	 
 	solo_reg_write(solo_dev, SOLO_CAP_CH_SCALE(ch), 0);
 
-	/* Common for both std and ext encoding */
+	 
 	solo_reg_write(solo_dev, SOLO_VE_CH_INTL(ch),
 		       solo_enc->interlaced ? 1 : 0);
 
@@ -247,17 +239,17 @@ static int solo_enc_on(struct solo_enc_dev *solo_enc)
 	else
 		interval = solo_enc->interval;
 
-	/* Standard encoding only */
+	 
 	solo_reg_write(solo_dev, SOLO_VE_CH_GOP(ch), solo_enc->gop);
 	solo_reg_write(solo_dev, SOLO_VE_CH_QP(ch), solo_enc->qp);
 	solo_reg_write(solo_dev, SOLO_CAP_CH_INTV(ch), interval);
 
-	/* Extended encoding only */
+	 
 	solo_reg_write(solo_dev, SOLO_VE_CH_GOP_E(ch), solo_enc->gop);
 	solo_reg_write(solo_dev, SOLO_VE_CH_QP_E(ch), solo_enc->qp);
 	solo_reg_write(solo_dev, SOLO_CAP_CH_INTV_E(ch), interval);
 
-	/* Enables the standard encoder */
+	 
 	solo_reg_write(solo_dev, SOLO_CAP_CH_SCALE(ch), solo_enc->mode);
 
 	return 0;
@@ -281,14 +273,14 @@ static int enc_get_mpeg_dma(struct solo_dev *solo_dev, dma_addr_t dma,
 	if (off > SOLO_MP4E_EXT_SIZE(solo_dev))
 		return -EINVAL;
 
-	/* Single shot */
+	 
 	if (off + size <= SOLO_MP4E_EXT_SIZE(solo_dev)) {
 		return solo_p2m_dma_t(solo_dev, 0, dma,
 				      SOLO_MP4E_EXT_ADDR(solo_dev) + off, size,
 				      0, 0);
 	}
 
-	/* Buffer wrap */
+	 
 	ret = solo_p2m_dma_t(solo_dev, 0, dma,
 			     SOLO_MP4E_EXT_ADDR(solo_dev) + off,
 			     SOLO_MP4E_EXT_SIZE(solo_dev) - off, 0, 0);
@@ -303,8 +295,7 @@ static int enc_get_mpeg_dma(struct solo_dev *solo_dev, dma_addr_t dma,
 	return ret;
 }
 
-/* Build a descriptor queue out of an SG list and send it to the P2M for
- * processing. */
+ 
 static int solo_send_desc(struct solo_enc_dev *solo_enc, int skip,
 			  struct sg_table *vbuf, int off, int size,
 			  unsigned int base, unsigned int base_size)
@@ -329,7 +320,7 @@ static int solo_send_desc(struct solo_enc_dev *solo_enc, int skip,
 		dma = sg_dma_address(sg);
 		len = sg_dma_len(sg);
 
-		/* We assume this is smaller than the scatter size */
+		 
 		BUG_ON(skip >= len);
 		if (skip) {
 			len -= skip;
@@ -341,16 +332,12 @@ static int solo_send_desc(struct solo_enc_dev *solo_enc, int skip,
 		len = min(len, size);
 
 		if (len <= left) {
-			/* Single descriptor */
+			 
 			solo_p2m_fill_desc(desc, 0, dma, base + off,
 					   len, 0, 0);
 		} else {
-			/* Buffer wrap */
-			/* XXX: Do these as separate DMA requests, to avoid
-			   timeout errors triggered by awkwardly sized
-			   descriptors. See
-			   <https://github.com/bluecherrydvr/solo6x10/issues/8>
-			 */
+			 
+			 
 			ret = solo_p2m_dma_t(solo_dev, 0, dma, base + off,
 					     left, 0, 0);
 			if (ret)
@@ -372,7 +359,7 @@ static int solo_send_desc(struct solo_enc_dev *solo_enc, int skip,
 		if (off >= base_size)
 			off -= base_size;
 
-		/* Because we may use two descriptors per loop */
+		 
 		if (solo_enc->desc_count >= (solo_enc->desc_nelts - 1)) {
 			ret = solo_p2m_dma_desc(solo_dev, solo_enc->desc_items,
 						solo_enc->desc_dma,
@@ -390,7 +377,7 @@ static int solo_send_desc(struct solo_enc_dev *solo_enc, int skip,
 			solo_enc->desc_dma, solo_enc->desc_count - 1);
 }
 
-/* Extract values from VOP header - VE_STATUSxx */
+ 
 static inline __always_unused int vop_interlaced(const vop_header *vh)
 {
 	return (__le32_to_cpu((*vh)[0]) >> 30) & 1;
@@ -480,7 +467,7 @@ static int solo_fill_mpeg(struct solo_enc_dev *solo_enc,
 	if (vb2_plane_size(vb, 0) < vop_mpeg_size(vh))
 		return -EIO;
 
-	/* If this is a key frame, add extra header */
+	 
 	vbuf->flags &= ~(V4L2_BUF_FLAG_KEYFRAME | V4L2_BUF_FLAG_PFRAME |
 		V4L2_BUF_FLAG_BFRAME);
 	if (!vop_type(vh)) {
@@ -493,7 +480,7 @@ static int solo_fill_mpeg(struct solo_enc_dev *solo_enc,
 		vb2_set_plane_payload(vb, 0, vop_mpeg_size(vh));
 	}
 
-	/* Now get the actual mpeg payload */
+	 
 	frame_off = (vop_mpeg_offset(vh) - SOLO_MP4E_EXT_ADDR(solo_dev) +
 		sizeof(*vh)) % SOLO_MP4E_EXT_SIZE(solo_dev);
 	frame_size = ALIGN(vop_mpeg_size(vh) + skip, DMA_ALIGN);
@@ -515,7 +502,7 @@ static int solo_enc_fillbuf(struct solo_enc_dev *solo_enc,
 	case V4L2_PIX_FMT_H264:
 		ret = solo_fill_mpeg(solo_enc, vb, vh);
 		break;
-	default: /* V4L2_PIX_FMT_MJPEG */
+	default:  
 		ret = solo_fill_jpeg(solo_enc, vb, vh);
 		break;
 	}
@@ -524,7 +511,7 @@ static int solo_enc_fillbuf(struct solo_enc_dev *solo_enc,
 		vbuf->sequence = solo_enc->sequence++;
 		vb->timestamp = ktime_get_ns();
 
-		/* Check for motion flags */
+		 
 		if (solo_is_motion_on(solo_enc) && enc_buf->motion) {
 			struct v4l2_event ev = {
 				.type = V4L2_EVENT_MOTION_DET,
@@ -584,7 +571,7 @@ static void solo_handle_ring(struct solo_dev *solo_dev)
 		u8 ch;
 		u8 cur_q;
 
-		/* Check if the hardware has any new ones in the queue */
+		 
 		cur_q = solo_reg_read(solo_dev, SOLO_VE_STATE(11)) & 0xff;
 		if (cur_q == solo_dev->enc_idx)
 			break;
@@ -609,14 +596,14 @@ static void solo_handle_ring(struct solo_dev *solo_dev)
 			continue;
 		}
 
-		/* FAIL... */
+		 
 		if (enc_get_mpeg_dma(solo_dev, solo_dev->vh_dma, off,
 				     sizeof(vop_header)))
 			continue;
 
 		enc_buf.vh = solo_dev->vh_buf;
 
-		/* Sanity check */
+		 
 		if (vop_mpeg_offset(enc_buf.vh) !=
 			SOLO_MP4E_EXT_ADDR(solo_dev) + off)
 			continue;
@@ -743,7 +730,7 @@ static void solo_enc_buf_finish(struct vb2_buffer *vb)
 			sg_copy_from_buffer(sgt->sgl, sgt->nents,
 					solo_enc->vop, solo_enc->vop_len);
 		break;
-	default: /* V4L2_PIX_FMT_MJPEG */
+	default:  
 		sg_copy_from_buffer(sgt->sgl, sgt->nents,
 				solo_enc->jpeg_header, solo_enc->jpeg_len);
 		break;
@@ -853,11 +840,11 @@ static int solo_enc_try_fmt_cap(struct file *file, void *priv,
 
 	if (pix->width < solo_dev->video_hsize ||
 	    pix->height < solo_dev->video_vsize << 1) {
-		/* Default to CIF 1/2 size */
+		 
 		pix->width = solo_dev->video_hsize >> 1;
 		pix->height = solo_dev->video_vsize;
 	} else {
-		/* Full frame */
+		 
 		pix->width = solo_dev->video_hsize;
 		pix->height = solo_dev->video_vsize << 1;
 	}
@@ -872,7 +859,7 @@ static int solo_enc_try_fmt_cap(struct file *file, void *priv,
 		break;
 	}
 
-	/* Just set these */
+	 
 	pix->colorspace = V4L2_COLORSPACE_SMPTE170M;
 	pix->sizeimage = FRAME_BUF_SIZE;
 	pix->bytesperline = 0;
@@ -900,19 +887,10 @@ static int solo_enc_set_fmt_cap(struct file *file, void *priv,
 	else
 		solo_enc->mode = SOLO_ENC_MODE_CIF;
 
-	/* This does not change the encoder at all */
+	 
 	solo_enc->fmt = pix->pixelformat;
 
-	/*
-	 * More information is needed about these 'extended' types. As far
-	 * as I can tell these are basically additional video streams with
-	 * different MPEG encoding attributes that can run in parallel with
-	 * the main stream. If so, then this should be implemented as a
-	 * second video node. Abusing priv like this is certainly not the
-	 * right approach.
-	if (pix->priv)
-		solo_enc->type = SOLO_ENC_TYPE_EXT;
-	 */
+	 
 	solo_update_mode(solo_enc);
 	return 0;
 }
@@ -1020,7 +998,7 @@ static int solo_g_parm(struct file *file, void *priv,
 	cp->timeperframe.numerator = solo_enc->interval;
 	cp->timeperframe.denominator = solo_enc->solo_dev->fps;
 	cp->capturemode = 0;
-	/* XXX: Shouldn't we be able to get/set this from vb2? */
+	 
 	cp->readbuffers = 2;
 
 	return 0;
@@ -1119,8 +1097,7 @@ static int solo_subscribe_event(struct v4l2_fh *fh,
 
 	switch (sub->type) {
 	case V4L2_EVENT_MOTION_DET:
-		/* Allow for up to 30 events (1 second for NTSC) to be
-		 * stored. */
+		 
 		return v4l2_event_subscribe(fh, sub, 30, NULL);
 	default:
 		return v4l2_ctrl_subscribe_event(fh, sub);
@@ -1141,29 +1118,29 @@ static const struct v4l2_ioctl_ops solo_enc_ioctl_ops = {
 	.vidioc_querycap		= solo_enc_querycap,
 	.vidioc_s_std			= solo_enc_s_std,
 	.vidioc_g_std			= solo_enc_g_std,
-	/* Input callbacks */
+	 
 	.vidioc_enum_input		= solo_enc_enum_input,
 	.vidioc_s_input			= solo_enc_set_input,
 	.vidioc_g_input			= solo_enc_get_input,
-	/* Video capture format callbacks */
+	 
 	.vidioc_enum_fmt_vid_cap	= solo_enc_enum_fmt_cap,
 	.vidioc_try_fmt_vid_cap		= solo_enc_try_fmt_cap,
 	.vidioc_s_fmt_vid_cap		= solo_enc_set_fmt_cap,
 	.vidioc_g_fmt_vid_cap		= solo_enc_get_fmt_cap,
-	/* Streaming I/O */
+	 
 	.vidioc_reqbufs			= vb2_ioctl_reqbufs,
 	.vidioc_querybuf		= vb2_ioctl_querybuf,
 	.vidioc_qbuf			= vb2_ioctl_qbuf,
 	.vidioc_dqbuf			= vb2_ioctl_dqbuf,
 	.vidioc_streamon		= vb2_ioctl_streamon,
 	.vidioc_streamoff		= vb2_ioctl_streamoff,
-	/* Frame size and interval */
+	 
 	.vidioc_enum_framesizes		= solo_enum_framesizes,
 	.vidioc_enum_frameintervals	= solo_enum_frameintervals,
-	/* Video capture parameters */
+	 
 	.vidioc_s_parm			= solo_s_parm,
 	.vidioc_g_parm			= solo_g_parm,
-	/* Logging and events */
+	 
 	.vidioc_log_status		= v4l2_ctrl_log_status,
 	.vidioc_subscribe_event		= solo_subscribe_event,
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
@@ -1193,7 +1170,7 @@ static const struct v4l2_ctrl_config solo_osd_text_ctrl = {
 	.step = 1,
 };
 
-/* Motion Detection Threshold matrix */
+ 
 static const struct v4l2_ctrl_config solo_md_thresholds = {
 	.ops = &solo_ctrl_ops,
 	.id = V4L2_CID_DETECT_MD_THRESHOLD_GRID,
@@ -1278,7 +1255,7 @@ static struct solo_enc_dev *solo_enc_alloc(struct solo_dev *solo_dev,
 
 	spin_lock_init(&solo_enc->motion_lock);
 
-	/* Initialize this per encoder */
+	 
 	solo_enc->jpeg_len = sizeof(jpeg_header);
 	memcpy(solo_enc->jpeg_header, jpeg_header, solo_enc->jpeg_len);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Linear Technology LTC1665/LTC1660, 8 channels DAC
- *
- * Copyright (C) 2018 Marcus Folkesson <marcus.folkesson@gmail.com>
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
@@ -64,7 +60,7 @@ static int ltc1660_read_raw(struct iio_dev *indio_dev,
 			return *val;
 		}
 
-		/* Convert to mV */
+		 
 		*val /= 1000;
 		*val2 = chan->scan_type.realbits;
 		return IIO_VAL_FRACTIONAL_LOG2;
@@ -219,14 +215,14 @@ static void ltc1660_remove(struct spi_device *spi)
 static const struct of_device_id ltc1660_dt_ids[] = {
 	{ .compatible = "lltc,ltc1660", .data = (void *)ID_LTC1660 },
 	{ .compatible = "lltc,ltc1665", .data = (void *)ID_LTC1665 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ltc1660_dt_ids);
 
 static const struct spi_device_id ltc1660_id[] = {
 	{"ltc1660", ID_LTC1660},
 	{"ltc1665", ID_LTC1665},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, ltc1660_id);
 

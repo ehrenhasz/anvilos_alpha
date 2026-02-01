@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * R-Car Display Unit Color Management Module
- *
- * Copyright (C) 2019 Jacopo Mondi <jacopo+renesas@jmondi.org>
- */
+ 
+ 
 
 #ifndef __RCAR_CMM_H__
 #define __RCAR_CMM_H__
@@ -13,12 +9,7 @@
 struct drm_color_lut;
 struct platform_device;
 
-/**
- * struct rcar_cmm_config - CMM configuration
- *
- * @lut:	1D-LUT configuration
- * @lut.table:	1D-LUT table entries. Disable LUT operations when NULL
- */
+ 
 struct rcar_cmm_config {
 	struct {
 		struct drm_color_lut *table;
@@ -53,6 +44,6 @@ static inline int rcar_cmm_setup(struct platform_device *pdev,
 {
 	return 0;
 }
-#endif /* IS_ENABLED(CONFIG_DRM_RCAR_CMM) */
+#endif  
 
-#endif /* __RCAR_CMM_H__ */
+#endif  

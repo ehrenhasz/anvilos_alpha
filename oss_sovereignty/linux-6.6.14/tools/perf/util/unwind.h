@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __UNWIND_H
 #define __UNWIND_H
 
@@ -27,16 +27,12 @@ struct unwind_libunwind_ops {
 };
 
 #ifdef HAVE_DWARF_UNWIND_SUPPORT
-/*
- * When best_effort is set, don't report errors and fail silently. This could
- * be expanded in the future to be more permissive about things other than
- * error messages.
- */
+ 
 int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
 			struct thread *thread,
 			struct perf_sample *data, int max_stack,
 			bool best_effort);
-/* libunwind specific */
+ 
 #ifdef HAVE_LIBUNWIND_SUPPORT
 #ifndef LIBUNWIND__ARCH_REG_ID
 #define LIBUNWIND__ARCH_REG_ID(regnum) libunwind__arch_reg_id(regnum)
@@ -78,5 +74,5 @@ static inline int unwind__prepare_access(struct maps *maps __maybe_unused,
 
 static inline void unwind__flush_access(struct maps *maps __maybe_unused) {}
 static inline void unwind__finish_access(struct maps *maps __maybe_unused) {}
-#endif /* HAVE_DWARF_UNWIND_SUPPORT */
-#endif /* __UNWIND_H */
+#endif  
+#endif  

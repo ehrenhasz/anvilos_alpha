@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Xilinx GMII2RGMII Converter driver
- *
- * Copyright (C) 2016 Xilinx, Inc.
- * Copyright (C) 2016 Andrew Lunn <andrew@lunn.ch>
- *
- * Author: Andrew Lunn <andrew@lunn.ch>
- * Author: Kedareswara rao Appana <appanad@xilinx.com>
- *
- * Description:
- * This driver is developed for Xilinx GMII2RGMII Converter
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/mii.h>

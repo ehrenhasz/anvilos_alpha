@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007-2014 Nicira, Inc.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if.h>
@@ -23,15 +21,11 @@
 
 static LIST_HEAD(vport_ops_list);
 
-/* Protected by RCU read lock for reading, ovs_mutex for writing. */
+ 
 static struct hlist_head *dev_table;
 #define VPORT_HASH_BUCKETS 1024
 
-/**
- *	ovs_vport_init - initialize vport subsystem
- *
- * Called at module load time to initialize the vport subsystem.
- */
+ 
 int ovs_vport_init(void)
 {
 	dev_table = kcalloc(VPORT_HASH_BUCKETS, sizeof(struct hlist_head),
@@ -42,11 +36,7 @@ int ovs_vport_init(void)
 	return 0;
 }
 
-/**
- *	ovs_vport_exit - shutdown vport subsystem
- *
- * Called at module exit time to shutdown the vport subsystem.
- */
+ 
 void ovs_vport_exit(void)
 {
 	kfree(dev_table);
@@ -84,14 +74,7 @@ void ovs_vport_ops_unregister(struct vport_ops *ops)
 }
 EXPORT_SYMBOL_GPL(ovs_vport_ops_unregister);
 
-/**
- *	ovs_vport_locate - find a port that has already been created
- *
- * @net: network namespace
- * @name: name of port to find
- *
- * Must be called with ovs or RCU read lock.
- */
+ 
 struct vport *ovs_vport_locate(const struct net *net, const char *name)
 {
 	struct hlist_head *bucket = hash_bucket(net, name);
@@ -106,19 +89,7 @@ struct vport *ovs_vport_locate(const struct net *net, const char *name)
 	return NULL;
 }
 
-/**
- *	ovs_vport_alloc - allocate and initialize new vport
- *
- * @priv_size: Size of private data area to allocate.
- * @ops: vport device ops
- * @parms: information about new vport.
- *
- * Allocate and initialize a new vport defined by @ops.  The vport will contain
- * a private data area of size @priv_size that can be accessed using
- * vport_priv().  Some parameters of the vport will be initialized from @parms.
- * @vports that are no longer needed should be released with
- * vport_free().
- */
+ 
 struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *ops,
 			      const struct vport_parms *parms)
 {
@@ -162,21 +133,10 @@ err_kfree_vport:
 }
 EXPORT_SYMBOL_GPL(ovs_vport_alloc);
 
-/**
- *	ovs_vport_free - uninitialize and free vport
- *
- * @vport: vport to free
- *
- * Frees a vport allocated with vport_alloc() when it is no longer needed.
- *
- * The caller must ensure that an RCU grace period has passed since the last
- * time @vport was in a datapath.
- */
+ 
 void ovs_vport_free(struct vport *vport)
 {
-	/* vport is freed from RCU callback or error path, Therefore
-	 * it is safe to use raw dereference.
-	 */
+	 
 	kfree(rcu_dereference_raw(vport->upcall_portids));
 	free_percpu(vport->upcall_stats);
 	kfree(vport);
@@ -194,14 +154,7 @@ static struct vport_ops *ovs_vport_lookup(const struct vport_parms *parms)
 	return NULL;
 }
 
-/**
- *	ovs_vport_add - add vport device (for kernel callers)
- *
- * @parms: Information about new vport.
- *
- * Creates a new vport with the specified configuration (which is dependent on
- * device type).  ovs_mutex must be held.
- */
+ 
 struct vport *ovs_vport_add(const struct vport_parms *parms)
 {
 	struct vport_ops *ops;
@@ -226,10 +179,7 @@ struct vport *ovs_vport_add(const struct vport_parms *parms)
 		return vport;
 	}
 
-	/* Unlock to attempt module load and return -EAGAIN if load
-	 * was successful as we need to restart the port addition
-	 * workflow.
-	 */
+	 
 	ovs_unlock();
 	request_module("vport-type-%d", parms->type);
 	ovs_lock();
@@ -240,15 +190,7 @@ struct vport *ovs_vport_add(const struct vport_parms *parms)
 		return ERR_PTR(-EAGAIN);
 }
 
-/**
- *	ovs_vport_set_options - modify existing vport device (for kernel callers)
- *
- * @vport: vport to modify.
- * @options: New configuration.
- *
- * Modifies an existing device with the specified configuration (which is
- * dependent on device type).  ovs_mutex must be held.
- */
+ 
 int ovs_vport_set_options(struct vport *vport, struct nlattr *options)
 {
 	if (!vport->ops->set_options)
@@ -256,14 +198,7 @@ int ovs_vport_set_options(struct vport *vport, struct nlattr *options)
 	return vport->ops->set_options(vport, options);
 }
 
-/**
- *	ovs_vport_del - delete existing vport device
- *
- * @vport: vport to delete.
- *
- * Detaches @vport from its datapath and destroys it.  ovs_mutex must
- * be held.
- */
+ 
 void ovs_vport_del(struct vport *vport)
 {
 	hlist_del_rcu(&vport->hash_node);
@@ -271,16 +206,7 @@ void ovs_vport_del(struct vport *vport)
 	vport->ops->destroy(vport);
 }
 
-/**
- *	ovs_vport_get_stats - retrieve device stats
- *
- * @vport: vport from which to retrieve the stats
- * @stats: location to store stats
- *
- * Retrieves transmit, receive, and error stats for the given device.
- *
- * Must be called with ovs_mutex or rcu_read_lock.
- */
+ 
 void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
 {
 	const struct rtnl_link_stats64 *dev_stats;
@@ -298,16 +224,7 @@ void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
 	stats->tx_packets = dev_stats->tx_packets;
 }
 
-/**
- *	ovs_vport_get_upcall_stats - retrieve upcall stats
- *
- * @vport: vport from which to retrieve the stats.
- * @skb: sk_buff where upcall stats should be appended.
- *
- * Retrieves upcall stats for the given device.
- *
- * Must be called with ovs_mutex or rcu_read_lock.
- */
+ 
 int ovs_vport_get_upcall_stats(struct vport *vport, struct sk_buff *skb)
 {
 	struct nlattr *nla;
@@ -348,22 +265,7 @@ int ovs_vport_get_upcall_stats(struct vport *vport, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	ovs_vport_get_options - retrieve device options
- *
- * @vport: vport from which to retrieve the options.
- * @skb: sk_buff where options should be appended.
- *
- * Retrieves the configuration of the given device, appending an
- * %OVS_VPORT_ATTR_OPTIONS attribute that in turn contains nested
- * vport-specific attributes to @skb.
- *
- * Returns 0 if successful, -EMSGSIZE if @skb has insufficient room, or another
- * negative error code if a real error occurred.  If an error occurs, @skb is
- * left unmodified.
- *
- * Must be called with ovs_mutex or rcu_read_lock.
- */
+ 
 int ovs_vport_get_options(const struct vport *vport, struct sk_buff *skb)
 {
 	struct nlattr *nla;
@@ -386,19 +288,7 @@ int ovs_vport_get_options(const struct vport *vport, struct sk_buff *skb)
 	return 0;
 }
 
-/**
- *	ovs_vport_set_upcall_portids - set upcall portids of @vport.
- *
- * @vport: vport to modify.
- * @ids: new configuration, an array of port ids.
- *
- * Sets the vport's upcall_portids to @ids.
- *
- * Returns 0 if successful, -EINVAL if @ids is zero length or cannot be parsed
- * as an array of U32.
- *
- * Must be called with ovs_mutex.
- */
+ 
 int ovs_vport_set_upcall_portids(struct vport *vport, const struct nlattr *ids)
 {
 	struct vport_portids *old, *vport_portids;
@@ -424,20 +314,7 @@ int ovs_vport_set_upcall_portids(struct vport *vport, const struct nlattr *ids)
 	return 0;
 }
 
-/**
- *	ovs_vport_get_upcall_portids - get the upcall_portids of @vport.
- *
- * @vport: vport from which to retrieve the portids.
- * @skb: sk_buff where portids should be appended.
- *
- * Retrieves the configuration of the given vport, appending the
- * %OVS_VPORT_ATTR_UPCALL_PID attribute which is the array of upcall
- * portids to @skb.
- *
- * Returns 0 if successful, -EMSGSIZE if @skb has insufficient room.
- * If an error occurs, @skb is left unmodified.  Must be called with
- * ovs_mutex or rcu_read_lock.
- */
+ 
 int ovs_vport_get_upcall_portids(const struct vport *vport,
 				 struct sk_buff *skb)
 {
@@ -452,17 +329,7 @@ int ovs_vport_get_upcall_portids(const struct vport *vport,
 		return nla_put_u32(skb, OVS_VPORT_ATTR_UPCALL_PID, ids->ids[0]);
 }
 
-/**
- *	ovs_vport_find_upcall_portid - find the upcall portid to send upcall.
- *
- * @vport: vport from which the missed packet is received.
- * @skb: skb that the missed packet was received.
- *
- * Uses the skb_get_hash() to select the upcall portid to send the
- * upcall.
- *
- * Returns the portid of the target socket.  Must be called with rcu_read_lock.
- */
+ 
 u32 ovs_vport_find_upcall_portid(const struct vport *vport,
 				 struct sk_buff *skb)
 {
@@ -472,7 +339,7 @@ u32 ovs_vport_find_upcall_portid(const struct vport *vport,
 
 	ids = rcu_dereference(vport->upcall_portids);
 
-	/* If there is only one portid, select it in the fast-path. */
+	 
 	if (ids->n_ids == 1)
 		return ids->ids[0];
 
@@ -481,16 +348,7 @@ u32 ovs_vport_find_upcall_portid(const struct vport *vport,
 	return ids->ids[ids_index];
 }
 
-/**
- *	ovs_vport_receive - pass up received packet to the datapath for processing
- *
- * @vport: vport that received the packet
- * @skb: skb that was received
- * @tun_info: tunnel (if any) that carried packet
- *
- * Must be called with rcu_read_lock.  The packet cannot be shared and
- * skb->data should point to the Ethernet header.
- */
+ 
 int ovs_vport_receive(struct vport *vport, struct sk_buff *skb,
 		      const struct ip_tunnel_info *tun_info)
 {
@@ -509,7 +367,7 @@ int ovs_vport_receive(struct vport *vport, struct sk_buff *skb,
 		tun_info = NULL;
 	}
 
-	/* Extract flow from 'skb' into 'key'. */
+	 
 	error = ovs_flow_key_extract(tun_info, skb, &key);
 	if (unlikely(error)) {
 		kfree_skb(skb);
@@ -528,10 +386,7 @@ static int packet_length(const struct sk_buff *skb,
 	    eth_type_vlan(skb->protocol))
 		length -= VLAN_HLEN;
 
-	/* Don't subtract for multiple VLAN tags. Most (all?) drivers allow
-	 * (ETH_LEN + VLAN_HLEN) in addition to the mtu value, but almost none
-	 * account for 802.1ad. e.g. is_skb_forwardable().
-	 */
+	 
 
 	return length > 0 ? length : 0;
 }

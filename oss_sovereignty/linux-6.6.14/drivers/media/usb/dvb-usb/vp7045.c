@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant Linux driver for the
- *  - TwinhanDTV Alpha/MagicBoxII USB2.0 DVB-T receiver
- *  - DigitalNow TinyUSB2 DVB-t receiver
- *
- * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
- *
- * Thanks to Twinhan who kindly provided hardware and information.
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include "vp7045.h"
 
-/* debug */
+ 
 static int dvb_usb_vp7045_debug;
 module_param_named(debug,dvb_usb_vp7045_debug, int, 0644);
 MODULE_PARM_DESC(debug, "set debugging level (1=info,xfer=2,rc=4 (or-able))." DVB_USB_DEBUG_STATUS);
@@ -106,11 +97,7 @@ static int vp7045_rc_query(struct dvb_usb_device *d)
 	deb_rc("remote query key: %x\n", key);
 
 	if (key != 0x44) {
-		/*
-		 * The 8 bit address isn't available, but since the remote uses
-		 * address 0 we'll use that. nec repeats are ignored too, even
-		 * though the remote sends them.
-		 */
+		 
 		rc_keydown(d->rc_dev, RC_PROTO_NEC, RC_SCANCODE_NEC(0, key), 0);
 	}
 
@@ -155,8 +142,8 @@ static int vp7045_frontend_attach(struct dvb_usb_adapter *adap)
 	buf[10] = '\0';
 	deb_info("v%s\n",buf);
 
-/*	Dump the EEPROM */
-/*	vp7045_read_eeprom(d,buf, 255, FX2_ID_ADDR); */
+ 
+ 
 
 	adap->fe_adap[0].fe = vp7045_fe_attach(adap->dev);
 
@@ -200,7 +187,7 @@ static struct dvb_usb_device_properties vp7045_properties = {
 		.num_frontends = 1,
 		.fe = {{
 			.frontend_attach  = vp7045_frontend_attach,
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 7,
@@ -240,7 +227,7 @@ static struct dvb_usb_device_properties vp7045_properties = {
 	}
 };
 
-/* usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver vp7045_usb_driver = {
 	.name		= "dvb_usb_vp7045",
 	.probe		= vp7045_usb_probe,

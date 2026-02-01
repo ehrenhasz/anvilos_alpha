@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
- * Author: Liviu Dudau <Liviu.Dudau@arm.com>
- *
- * ARM Mali DP plane manipulation routines.
- */
+
+ 
 
 #include <linux/iommu.h>
 #include <linux/platform_device.h>
@@ -23,7 +18,7 @@
 #include "malidp_hw.h"
 #include "malidp_drv.h"
 
-/* Layer specific register offsets */
+ 
 #define MALIDP_LAYER_FORMAT		0x000
 #define   LAYER_FORMAT_MASK		0x3f
 #define MALIDP_LAYER_CONTROL		0x004
@@ -53,26 +48,17 @@
 
 #define MODIFIERS_COUNT_MAX		15
 
-/*
- * This 4-entry look-up-table is used to determine the full 8-bit alpha value
- * for formats with 1- or 2-bit alpha channels.
- * We set it to give 100%/0% opacity for 1-bit formats and 100%/66%/33%/0%
- * opacity for 2-bit formats.
- */
+ 
 #define MALIDP_ALPHA_LUT 0xffaa5500
 
-/* page sizes the MMU prefetcher can support */
+ 
 #define MALIDP_MMU_PREFETCH_PARTIAL_PGSIZES	(SZ_4K | SZ_64K)
 #define MALIDP_MMU_PREFETCH_FULL_PGSIZES	(SZ_1M | SZ_2M)
 
-/* readahead for partial-frame prefetch */
+ 
 #define MALIDP_MMU_PREFETCH_READAHEAD		8
 
-/*
- * Replicate what the default ->reset hook does: free the state pointer and
- * allocate a new empty object. We just need enough space to store
- * a malidp_plane_state instead of a drm_plane_state.
- */
+ 
 static void malidp_plane_reset(struct drm_plane *plane)
 {
 	struct malidp_plane_state *state = to_malidp_plane_state(plane->state);
@@ -149,12 +135,9 @@ bool malidp_format_mod_supported(struct drm_device *drm,
 	if (WARN_ON(modifier == DRM_FORMAT_MOD_INVALID))
 		return false;
 
-	/* Some pixel formats are supported without any modifier */
+	 
 	if (modifier == DRM_FORMAT_MOD_LINEAR) {
-		/*
-		 * However these pixel formats need to be supported with
-		 * modifiers only
-		 */
+		 
 		return !malidp_hw_format_is_afbc_only(format);
 	}
 
@@ -171,11 +154,11 @@ bool malidp_format_mod_supported(struct drm_device *drm,
 
 	modifiers = malidp_format_modifiers;
 
-	/* SPLIT buffers must use SPARSE layout */
+	 
 	if (WARN_ON_ONCE((modifier & AFBC_SPLIT) && !(modifier & AFBC_SPARSE)))
 		return false;
 
-	/* CBR only applies to YUV formats, where YTR should be always 0 */
+	 
 	if (WARN_ON_ONCE((modifier & AFBC_CBR) && (modifier & AFBC_YTR)))
 		return false;
 
@@ -186,7 +169,7 @@ bool malidp_format_mod_supported(struct drm_device *drm,
 		modifiers++;
 	}
 
-	/* return false, if the modifier was not found */
+	 
 	if (*modifiers == DRM_FORMAT_MOD_INVALID) {
 		DRM_DEBUG_KMS("Unsupported modifier\n");
 		return false;
@@ -205,10 +188,7 @@ bool malidp_format_mod_supported(struct drm_device *drm,
 		return false;
 	}
 
-	/*
-	 * RGB formats need to provide YTR modifier and YUV formats should not
-	 * provide YTR modifier.
-	 */
+	 
 	if (!(info->is_yuv) != !!(modifier & AFBC_FORMAT_MOD_YTR)) {
 		DRM_DEBUG_KMS("AFBC_FORMAT_MOD_YTR is %s for %s formats\n",
 			      info->is_yuv ? "disallowed" : "mandatory",
@@ -287,7 +267,7 @@ static int malidp_se_check_scaling(struct malidp_plane *mp,
 	}
 
 	if ((state->crtc_w == src_w) && (state->crtc_h == src_h)) {
-		/* Scaling not necessary for this plane. */
+		 
 		mc->scaled_planes_mask &= ~(mp->layer->id);
 		return 0;
 	}
@@ -296,7 +276,7 @@ static int malidp_se_check_scaling(struct malidp_plane *mp,
 		return -EINVAL;
 
 	mc->scaled_planes_mask |= mp->layer->id;
-	/* Defer scaling requirements calculation to the crtc check. */
+	 
 	return 0;
 }
 
@@ -311,12 +291,7 @@ static u32 malidp_get_pgsize_bitmap(struct malidp_plane *mp)
 	return 0;
 }
 
-/*
- * Check if the framebuffer is entirely made up of pages at least pgsize in
- * size. Only a heuristic: assumes that each scatterlist entry has been aligned
- * to the largest page size smaller than its length and that the MMU maps to
- * the largest page size possible.
- */
+ 
 static bool malidp_check_pages_threshold(struct malidp_plane_state *ms,
 					 u32 pgsize)
 {
@@ -357,16 +332,13 @@ static bool malidp_check_pages_threshold(struct malidp_plane_state *ms,
 	return true;
 }
 
-/*
- * Check if it is possible to enable partial-frame MMU prefetch given the
- * current format, AFBC state and rotation.
- */
+ 
 static bool malidp_partial_prefetch_supported(u32 format, u64 modifier,
 					      unsigned int rotation)
 {
 	bool afbc, sparse;
 
-	/* rotation and horizontal flip not supported for partial prefetch */
+	 
 	if (rotation & (DRM_MODE_ROTATE_90 | DRM_MODE_ROTATE_180 |
 			DRM_MODE_ROTATE_270 | DRM_MODE_REFLECT_X))
 		return false;
@@ -388,25 +360,25 @@ static bool malidp_partial_prefetch_supported(u32 format, u64 modifier,
 	case DRM_FORMAT_RGB888:
 	case DRM_FORMAT_RGBA5551:
 	case DRM_FORMAT_RGB565:
-		/* always supported */
+		 
 		return true;
 
 	case DRM_FORMAT_ABGR2101010:
 	case DRM_FORMAT_ABGR8888:
 	case DRM_FORMAT_ABGR1555:
 	case DRM_FORMAT_BGR565:
-		/* supported, but if AFBC then must be sparse mode */
+		 
 		return (!afbc) || (afbc && sparse);
 
 	case DRM_FORMAT_BGR888:
-		/* supported, but not for AFBC */
+		 
 		return !afbc;
 
 	case DRM_FORMAT_YUYV:
 	case DRM_FORMAT_UYVY:
 	case DRM_FORMAT_NV12:
 	case DRM_FORMAT_YUV420:
-		/* not supported */
+		 
 		return false;
 
 	default:
@@ -414,18 +386,13 @@ static bool malidp_partial_prefetch_supported(u32 format, u64 modifier,
 	}
 }
 
-/*
- * Select the preferred MMU prefetch mode. Full-frame prefetch is preferred as
- * long as the framebuffer is all large pages. Otherwise partial-frame prefetch
- * is selected as long as it is supported for the current format. The selected
- * page size for prefetch is returned in pgsize_bitmap.
- */
+ 
 static enum mmu_prefetch_mode malidp_mmu_prefetch_select_mode
 		(struct malidp_plane_state *ms,	u32 *pgsize_bitmap)
 {
 	u32 pgsizes;
 
-	/* get the full-frame prefetch page size(s) supported by the MMU */
+	 
 	pgsizes = *pgsize_bitmap & MALIDP_MMU_PREFETCH_FULL_PGSIZES;
 
 	while (pgsizes) {
@@ -439,13 +406,13 @@ static enum mmu_prefetch_mode malidp_mmu_prefetch_select_mode
 		pgsizes -= largest_pgsize;
 	}
 
-	/* get the partial-frame prefetch page size(s) supported by the MMU */
+	 
 	pgsizes = *pgsize_bitmap & MALIDP_MMU_PREFETCH_PARTIAL_PGSIZES;
 
 	if (malidp_partial_prefetch_supported(ms->base.fb->format->format,
 					      ms->base.fb->modifier,
 					      ms->base.rotation)) {
-		/* partial prefetch using the smallest page size */
+		 
 		*pgsize_bitmap = 1 << __ffs(pgsizes);
 		return MALIDP_PREFETCH_MODE_PARTIAL;
 	}
@@ -483,7 +450,7 @@ static void malidp_de_prefetch_settings(struct malidp_plane *mp,
 	if (!mp->layer->mmu_ctrl_offset)
 		return;
 
-	/* get the page sizes supported by the MMU */
+	 
 	ms->mmu_prefetch_pgsize = malidp_get_pgsize_bitmap(mp);
 	ms->mmu_prefetch_mode  =
 		malidp_mmu_prefetch_select_mode(ms, &ms->mmu_prefetch_pgsize);
@@ -542,11 +509,7 @@ static int malidp_de_plane_check(struct drm_plane *plane,
 	    (new_plane_state->crtc_h < mp->hwdev->min_line_size))
 		return -EINVAL;
 
-	/*
-	 * DP550/650 video layers can accept 3 plane formats only if
-	 * fb->pitches[1] == fb->pitches[2] since they don't have a
-	 * third plane stride register.
-	 */
+	 
 	if (ms->n_planes == 3 &&
 	    !(mp->hwdev->hw->features & MALIDP_DEVICE_LV_HAS_3_STRIDES) &&
 	    (new_plane_state->fb->pitches[1] != new_plane_state->fb->pitches[2]))
@@ -556,22 +519,19 @@ static int malidp_de_plane_check(struct drm_plane *plane,
 	if (ret)
 		return ret;
 
-	/* validate the rotation constraints for each layer */
+	 
 	if (new_plane_state->rotation != DRM_MODE_ROTATE_0) {
 		if (mp->layer->rot == ROTATE_NONE)
 			return -EINVAL;
 		if ((mp->layer->rot == ROTATE_COMPRESSED) && !(fb->modifier))
 			return -EINVAL;
-		/*
-		 * packed RGB888 / BGR888 can't be rotated or flipped
-		 * unless they are stored in a compressed way
-		 */
+		 
 		if ((fb->format->format == DRM_FORMAT_RGB888 ||
 		     fb->format->format == DRM_FORMAT_BGR888) && !(fb->modifier))
 			return -EINVAL;
 	}
 
-	/* SMART layer does not support AFBC */
+	 
 	if (mp->layer->id == DE_SMART && fb->modifier) {
 		DRM_ERROR("AFBC framebuffer not supported in SMART layer");
 		return -EINVAL;
@@ -591,7 +551,7 @@ static int malidp_de_plane_check(struct drm_plane *plane,
 		ms->rotmem_size = val;
 	}
 
-	/* HW can't support plane + pixel blending */
+	 
 	if ((new_plane_state->alpha != DRM_BLEND_ALPHA_OPAQUE) &&
 	    (pixel_alpha != DRM_MODE_BLEND_PIXEL_NONE) &&
 	    fb->format->has_alpha)
@@ -615,11 +575,7 @@ static void malidp_de_set_plane_pitches(struct malidp_plane *mp,
 		num_strides = (mp->hwdev->hw->features &
 			       MALIDP_DEVICE_LV_HAS_3_STRIDES) ? 3 : 2;
 
-	/*
-	 * The drm convention for pitch is that it needs to cover width * cpp,
-	 * but our hardware wants the pitch/stride to cover all rows included
-	 * in a tile.
-	 */
+	 
 	for (i = 0; i < num_strides; ++i) {
 		unsigned int block_h = drm_format_info_block_height(mp->base.state->fb->format, i);
 
@@ -676,7 +632,7 @@ static void malidp_de_set_color_encoding(struct malidp_plane *plane,
 	unsigned int i;
 
 	for (i = 0; i < MALIDP_COLORADJ_NUM_COEFFS; i++) {
-		/* coefficients are signed, two's complement values */
+		 
 		malidp_hw_write(plane->hwdev, malidp_yuv2rgb_coeffs[enc][range][i],
 				plane->layer->base + plane->layer->yuv2rgb_offset +
 				i * 4);
@@ -688,7 +644,7 @@ static void malidp_de_set_mmu_control(struct malidp_plane *mp,
 {
 	u32 mmu_ctrl;
 
-	/* check hardware supports MMU prefetch */
+	 
 	if (!mp->layer->mmu_ctrl_offset)
 		return;
 
@@ -712,13 +668,7 @@ static void malidp_set_plane_base_addr(struct drm_framebuffer *fb,
 
 	ptr = mp->layer->ptr + (plane_index << 4);
 
-	/*
-	 * drm_fb_dma_get_gem_addr() alters the physical base address of the
-	 * framebuffer as per the plane's src_x, src_y co-ordinates (ie to
-	 * take care of source cropping).
-	 * For AFBC, this is not needed as the cropping is handled by _AD_CROP_H
-	 * and _AD_CROP_V registers.
-	 */
+	 
 	if (!afbc) {
 		dma_addr = drm_fb_dma_get_gem_addr(fb, plane->state,
 						   plane_index);
@@ -744,7 +694,7 @@ static void malidp_de_set_plane_afbc(struct drm_plane *plane)
 
 	mp = to_malidp_plane(plane);
 
-	/* no afbc_decoder_offset means AFBC is not supported on this plane */
+	 
 	if (!mp->layer->afbc_decoder_offset)
 		return;
 
@@ -753,7 +703,7 @@ static void malidp_de_set_plane_afbc(struct drm_plane *plane)
 		return;
 	}
 
-	/* convert src values from Q16 fixed point to integer */
+	 
 	src_w = plane->state->src_w >> 16;
 	src_h = plane->state->src_h >> 16;
 	src_x = plane->state->src_x >> 16;
@@ -795,15 +745,12 @@ static void malidp_de_plane_update(struct drm_plane *plane,
 
 	mp = to_malidp_plane(plane);
 
-	/*
-	 * For AFBC framebuffer, use the framebuffer width and height for
-	 * configuring layer input size register.
-	 */
+	 
 	if (fb->modifier) {
 		src_w = fb->width;
 		src_h = fb->height;
 	} else {
-		/* convert src values from Q16 fixed point to integer */
+		 
 		src_w = new_state->src_w >> 16;
 		src_h = new_state->src_h >> 16;
 	}
@@ -839,10 +786,7 @@ static void malidp_de_plane_update(struct drm_plane *plane,
 			mp->layer->base + MALIDP_LAYER_OFFSET);
 
 	if (mp->layer->id == DE_SMART) {
-		/*
-		 * Enable the first rectangle in the SMART layer to be
-		 * able to use it as a drm plane.
-		 */
+		 
 		malidp_hw_write(mp->hwdev, 1,
 				mp->layer->base + MALIDP550_LS_ENABLE);
 		malidp_hw_write(mp->hwdev,
@@ -852,11 +796,11 @@ static void malidp_de_plane_update(struct drm_plane *plane,
 
 	malidp_de_set_plane_afbc(plane);
 
-	/* first clear the rotation bits */
+	 
 	val = malidp_hw_read(mp->hwdev, mp->layer->base + MALIDP_LAYER_CONTROL);
 	val &= ~LAYER_ROT_MASK;
 
-	/* setup the rotation and axis flip bits */
+	 
 	if (new_state->rotation & DRM_MODE_ROTATE_MASK)
 		val |= ilog2(plane->state->rotation & DRM_MODE_ROTATE_MASK) <<
 		       LAYER_ROT_OFFSET;
@@ -870,7 +814,7 @@ static void malidp_de_plane_update(struct drm_plane *plane,
 	if (new_state->alpha != DRM_BLEND_ALPHA_OPAQUE) {
 		val |= LAYER_COMP_PLANE;
 	} else if (new_state->fb->format->has_alpha) {
-		/* We only care about blend mode if the format has alpha */
+		 
 		switch (pixel_alpha) {
 		case DRM_MODE_BLEND_PREMULTI:
 			val |= LAYER_COMP_PIXEL | LAYER_PMUL_ENABLE;
@@ -892,7 +836,7 @@ static void malidp_de_plane_update(struct drm_plane *plane,
 			val |= LAYER_FLOWCFG(LAYER_FLOWCFG_SCALE_SE);
 	}
 
-	/* set the 'enable layer' bit */
+	 
 	val |= LAYER_ENABLE;
 
 	malidp_hw_write(mp->hwdev, val,
@@ -940,10 +884,7 @@ int malidp_de_planes_init(struct drm_device *drm)
 	modifiers = malidp_format_modifiers;
 
 	if (!(map->features & MALIDP_DEVICE_AFBC_SUPPORT_SPLIT)) {
-		/*
-		 * Since our hardware does not support SPLIT, so build the list
-		 * of supported modifiers excluding SPLIT ones.
-		 */
+		 
 		while (*modifiers != DRM_FORMAT_MOD_INVALID) {
 			if (!(*modifiers & AFBC_SPLIT))
 				supported_modifiers[j++] = *modifiers;
@@ -963,7 +904,7 @@ int malidp_de_planes_init(struct drm_device *drm)
 	for (i = 0; i < map->n_layers; i++) {
 		u8 id = map->layers[i].id;
 
-		/* build the list of DRM supported formats based on the map */
+		 
 		for (n = 0, j = 0;  j < map->n_pixel_formats; j++) {
 			if ((map->pixel_formats[j].layer & id) == id)
 				formats[n++] = map->pixel_formats[j].format;
@@ -972,9 +913,7 @@ int malidp_de_planes_init(struct drm_device *drm)
 		plane_type = (i == 0) ? DRM_PLANE_TYPE_PRIMARY :
 					DRM_PLANE_TYPE_OVERLAY;
 
-		/*
-		 * All the layers except smart layer supports AFBC modifiers.
-		 */
+		 
 		plane = drmm_universal_plane_alloc(drm, struct malidp_plane, base,
 						   crtcs, &malidp_de_plane_funcs, formats, n,
 						   (id == DE_SMART) ? linear_only_modifiers :
@@ -993,7 +932,7 @@ int malidp_de_planes_init(struct drm_device *drm)
 		drm_plane_create_blend_mode_property(&plane->base, blend_caps);
 
 		if (id == DE_SMART) {
-			/* Skip the features which the SMART layer doesn't have. */
+			 
 			continue;
 		}
 
@@ -1001,9 +940,9 @@ int malidp_de_planes_init(struct drm_device *drm)
 		malidp_hw_write(malidp->dev, MALIDP_ALPHA_LUT,
 				plane->layer->base + MALIDP_LAYER_COMPOSE);
 
-		/* Attach the YUV->RGB property only to video layers */
+		 
 		if (id & (DE_VIDEO1 | DE_VIDEO2)) {
-			/* default encoding for YUV->RGB is BT601 NARROW */
+			 
 			enum drm_color_encoding enc = DRM_COLOR_YCBCR_BT601;
 			enum drm_color_range range = DRM_COLOR_YCBCR_LIMITED_RANGE;
 
@@ -1015,7 +954,7 @@ int malidp_de_planes_init(struct drm_device *drm)
 					BIT(DRM_COLOR_YCBCR_FULL_RANGE),
 					enc, range);
 			if (!ret)
-				/* program the HW registers */
+				 
 				malidp_de_set_color_encoding(plane, enc, range);
 			else
 				DRM_WARN("Failed to create video layer %d color properties\n", id);

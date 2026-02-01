@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
@@ -33,13 +33,13 @@
 
 #if defined(HAVE_LIBBFD_SUPPORT) || defined(HAVE_CPLUS_DEMANGLE_SUPPORT)
 #ifndef DMGL_PARAMS
-#define DMGL_PARAMS     (1 << 0)  /* Include function args */
-#define DMGL_ANSI       (1 << 1)  /* Include const, volatile, etc */
+#define DMGL_PARAMS     (1 << 0)   
+#define DMGL_ANSI       (1 << 1)   
 #endif
 #endif
 
 #ifndef EM_AARCH64
-#define EM_AARCH64	183  /* ARM 64 bit */
+#define EM_AARCH64	183   
 #endif
 
 #ifndef EM_LOONGARCH
@@ -50,12 +50,12 @@
 #define ELF32_ST_VISIBILITY(o)	((o) & 0x03)
 #endif
 
-/* For ELF64 the definitions are the same.  */
+ 
 #ifndef ELF64_ST_VISIBILITY
 #define ELF64_ST_VISIBILITY(o)	ELF32_ST_VISIBILITY (o)
 #endif
 
-/* How to extract information held in the st_other field.  */
+ 
 #ifndef GELF_ST_VISIBILITY
 #define GELF_ST_VISIBILITY(val)	ELF64_ST_VISIBILITY (val)
 #endif
@@ -91,13 +91,7 @@ static int elf_getshdrstrndx(Elf *elf __maybe_unused, size_t *dst __maybe_unused
 #define NT_GNU_BUILD_ID 3
 #endif
 
-/**
- * elf_symtab__for_each_symbol - iterate thru all the symbols
- *
- * @syms: struct elf_symtab instance to iterate
- * @idx: uint32_t idx
- * @sym: GElf_Sym iterator
- */
+ 
 #define elf_symtab__for_each_symbol(syms, nr_syms, idx, sym) \
 	for (idx = 0, gelf_getsym(syms, idx, &sym);\
 	     idx < nr_syms; \
@@ -202,7 +196,7 @@ Elf_Scn *elf_section_by_name(Elf *elf, GElf_Ehdr *ep,
 	Elf_Scn *sec = NULL;
 	size_t cnt = 1;
 
-	/* ELF is corrupted/truncated, avoid calling elf_strptr. */
+	 
 	if (!elf_rawdata(elf_getscn(elf, ep->e_shstrndx), NULL))
 		return NULL;
 
@@ -273,7 +267,7 @@ static int elf_read_program_header(Elf *elf, u64 vaddr, GElf_Phdr *phdr)
 			return 0;
 	}
 
-	/* Not found any valid program header */
+	 
 	return -1;
 }
 
@@ -282,10 +276,7 @@ static bool want_demangle(bool is_kernel_sym)
 	return is_kernel_sym ? symbol_conf.demangle_kernel : symbol_conf.demangle;
 }
 
-/*
- * Demangle C++ function signature, typically replaced by demangle-cxx.cpp
- * version.
- */
+ 
 __weak char *cxx_demangle_sym(const char *str __maybe_unused, bool params __maybe_unused,
 			      bool modifiers __maybe_unused)
 {
@@ -306,11 +297,7 @@ static char *demangle_sym(struct dso *dso, int kmodule, const char *elf_name)
 {
 	char *demangled = NULL;
 
-	/*
-	 * We need to figure out if the object was created from C++ sources
-	 * DWARF DW_compile_unit has this, but we don't always have access
-	 * to it...
-	 */
+	 
 	if (!want_demangle(dso->kernel || kmodule))
 	    return demangled;
 
@@ -322,10 +309,7 @@ static char *demangle_sym(struct dso *dso, int kmodule, const char *elf_name)
 		}
 	}
 	else if (rust_is_mangled(demangled))
-		/*
-		    * Input to Rust demangling is the BFD-demangled
-		    * name which it Rust-demangles in place.
-		    */
+		 
 		rust_demangle_sym(demangled);
 
 	return demangled;
@@ -389,10 +373,7 @@ static int sort_rel(struct rel_info *ri)
 	return 0;
 }
 
-/*
- * For x86_64, the GNU linker is putting IFUNC information in the relocation
- * addend.
- */
+ 
 static bool addend_may_be_ifunc(GElf_Ehdr *ehdr, struct rel_info *ri)
 {
 	return ehdr->e_machine == EM_X86_64 && ri->is_rela &&
@@ -416,7 +397,7 @@ static bool get_ifunc_name(Elf *elf, struct dso *dso, GElf_Ehdr *ehdr,
 
 	sym = dso__find_symbol_nocache(dso, addr);
 
-	/* Expecting the address to be an IFUNC or IFUNC alias */
+	 
 	if (!sym || sym->start != addr || (sym->type != STT_GNU_IFUNC && !sym->ifunc_alias))
 		return false;
 
@@ -457,12 +438,12 @@ static bool get_plt_sizes(struct dso *dso, GElf_Ehdr *ehdr, GElf_Shdr *shdr_plt,
 	case EM_386:
 	case EM_X86_64:
 		*plt_entry_size = shdr_plt->sh_entsize;
-		/* Size is 8 or 16, if not, assume alignment indicates size */
+		 
 		if (*plt_entry_size != 8 && *plt_entry_size != 16)
 			*plt_entry_size = shdr_plt->sh_addralign == 8 ? 8 : 16;
 		*plt_header_size = *plt_entry_size;
 		break;
-	default: /* FIXME: s390/alpha/mips/parisc/poperpc/sh/xtensa need to be checked */
+	default:  
 		*plt_header_size = shdr_plt->sh_entsize;
 		*plt_entry_size = shdr_plt->sh_entsize;
 		break;
@@ -514,7 +495,7 @@ static int sort_rela_dyn(struct rela_dyn_info *di)
 	if (!di->sorted)
 		return -1;
 
-	/* Get data for sorting: the offset and symbol index */
+	 
 	for (i = 0, n = 0; i < di->nr_entries; i++) {
 		GElf_Rela rela;
 		u32 sym_idx;
@@ -528,7 +509,7 @@ static int sort_rela_dyn(struct rela_dyn_info *di)
 		}
 	}
 
-	/* Sort by offset */
+	 
 	di->nr_entries = n;
 	qsort(di->sorted, n, sizeof(di->sorted[0]), cmp_offset);
 
@@ -559,28 +540,28 @@ static void get_rela_dyn_info(Elf *elf, GElf_Ehdr *ehdr, struct rela_dyn_info *d
 	if (!di->plt_got_data || !di->dynstr_data || !di->dynsym_data || !di->rela_dyn_data)
 		return;
 
-	/* Sort into offset order */
+	 
 	sort_rela_dyn(di);
 }
 
-/* Get instruction displacement from a plt entry for x86_64 */
+ 
 static u32 get_x86_64_plt_disp(const u8 *p)
 {
 	u8 endbr64[] = {0xf3, 0x0f, 0x1e, 0xfa};
 	int n = 0;
 
-	/* Skip endbr64 */
+	 
 	if (!memcmp(p, endbr64, sizeof(endbr64)))
 		n += sizeof(endbr64);
-	/* Skip bnd prefix */
+	 
 	if (p[n] == 0xf2)
 		n += 1;
-	/* jmp with 4-byte displacement */
+	 
 	if (p[n] == 0xff && p[n + 1] == 0x25) {
 		u32 disp;
 
 		n += 2;
-		/* Also add offset from start of entry to end of instruction */
+		 
 		memcpy(&disp, p + n, sizeof(disp));
 		return n + 4 + le32toh(disp);
 	}
@@ -605,15 +586,15 @@ static bool get_plt_got_name(GElf_Shdr *shdr, size_t i,
 	if (!disp)
 		return false;
 
-	/* Compute target offset of the .plt.got entry */
+	 
 	vi.offset = shdr->sh_offset + di->plt_got_data->d_off + i + disp;
 
-	/* Find that offset in .rela.dyn (sorted by offset) */
+	 
 	vr = bsearch(&vi, di->sorted, di->nr_entries, sizeof(di->sorted[0]), cmp_offset);
 	if (!vr)
 		return false;
 
-	/* Get the associated symbol */
+	 
 	gelf_getsym(di->dynsym_data, vr->sym_idx, &sym);
 	sym_name = elf_sym__name(&sym, di->dynstr_data);
 	demangled = demangle_sym(di->dso, 0, sym_name);
@@ -661,13 +642,7 @@ out:
 	return err;
 }
 
-/*
- * We need to check if we have a .dynsym, so that we can handle the
- * .plt, synthesizing its symbols, that aren't on the symtabs (be it
- * .dynsym or .symtab).
- * And always look at the original dso, not at debuginfo packages, that
- * have the PLT data stripped out (shdr_rel_plt.sh_type == SHT_NOBITS).
- */
+ 
 int dso__synthesize_plt_symbols(struct dso *dso, struct symsrc *ss)
 {
 	uint32_t idx;
@@ -691,11 +666,7 @@ int dso__synthesize_plt_symbols(struct dso *dso, struct symsrc *ss)
 	if (!elf_section_by_name(elf, &ehdr, &shdr_plt, ".plt", NULL))
 		return 0;
 
-	/*
-	 * A symbol from a previous section (e.g. .init) can have been expanded
-	 * by symbols__fixup_end() to overlap .plt. Truncate it before adding
-	 * a symbol for .plt header.
-	 */
+	 
 	f = dso__find_symbol_nocache(dso, shdr_plt.sh_offset);
 	if (f && f->start < shdr_plt.sh_offset && f->end > shdr_plt.sh_offset)
 		f->end = shdr_plt.sh_offset;
@@ -703,25 +674,25 @@ int dso__synthesize_plt_symbols(struct dso *dso, struct symsrc *ss)
 	if (!get_plt_sizes(dso, &ehdr, &shdr_plt, &plt_header_size, &plt_entry_size))
 		return 0;
 
-	/* Add a symbol for .plt header */
+	 
 	plt_sym = symbol__new(shdr_plt.sh_offset, plt_header_size, STB_GLOBAL, STT_FUNC, ".plt");
 	if (!plt_sym)
 		goto out_elf_end;
 	symbols__insert(&dso->symbols, plt_sym);
 
-	/* Only x86 has .plt.got */
+	 
 	if (machine_is_x86(ehdr.e_machine) &&
 	    dso__synthesize_plt_got_symbols(dso, elf, &ehdr, sympltname, sizeof(sympltname)))
 		goto out_elf_end;
 
-	/* Only x86 has .plt.sec */
+	 
 	if (machine_is_x86(ehdr.e_machine) &&
 	    elf_section_by_name(elf, &ehdr, &plt_sec_shdr, ".plt.sec", NULL)) {
 		if (!get_plt_sizes(dso, &ehdr, &plt_sec_shdr, &plt_header_size, &plt_entry_size))
 			return 0;
-		/* Extend .plt symbol to entire .plt */
+		 
 		plt_sym->end = plt_sym->start + shdr_plt.sh_size;
-		/* Use .plt.sec offset */
+		 
 		plt_offset = plt_sec_shdr.sh_offset;
 		lazy_plt = false;
 	} else {
@@ -749,10 +720,7 @@ int dso__synthesize_plt_symbols(struct dso *dso, struct symsrc *ss)
 		scn_dynsym = ss->dynsym;
 		shdr_dynsym = ss->dynshdr;
 	} else if (shdr_rel_plt.sh_link == ss->symtab_idx) {
-		/*
-		 * A static executable can have a .plt due to IFUNCs, in which
-		 * case .symtab is used not .dynsym.
-		 */
+		 
 		scn_dynsym = ss->symtab;
 		shdr_dynsym = ss->symshdr;
 	} else {
@@ -762,10 +730,7 @@ int dso__synthesize_plt_symbols(struct dso *dso, struct symsrc *ss)
 	if (!scn_dynsym)
 		return 0;
 
-	/*
-	 * Fetch the relocation section to find the idxes to the GOT
-	 * and the symbols in the .dynsym they refer to.
-	 */
+	 
 	ri.reldata = elf_getdata(scn_plt_rel, NULL);
 	if (!ri.reldata)
 		goto out_elf_end;
@@ -790,20 +755,14 @@ int dso__synthesize_plt_symbols(struct dso *dso, struct symsrc *ss)
 	ri.is_rela = shdr_rel_plt.sh_type == SHT_RELA;
 
 	if (lazy_plt) {
-		/*
-		 * Assume a .plt with the same number of entries as the number
-		 * of relocation entries is not lazy and does not have a header.
-		 */
+		 
 		if (ri.nr_entries * plt_entry_size == shdr_plt.sh_size)
 			dso__delete_symbol(dso, plt_sym);
 		else
 			plt_offset += plt_header_size;
 	}
 
-	/*
-	 * x86 doesn't insert IFUNC relocations in .plt order, so sort to get
-	 * back in order.
-	 */
+	 
 	if (machine_is_x86(ehdr.e_machine) && sort_rel(&ri))
 		goto out_elf_end;
 
@@ -848,9 +807,7 @@ char *dso__demangle_sym(struct dso *dso, int kmodule, const char *elf_name)
 	return demangle_sym(dso, kmodule, elf_name);
 }
 
-/*
- * Align offset to 4 bytes as needed for note name and descriptor data.
- */
+ 
 #define NOTE_ALIGN(n) (((n) + 3) & -4U)
 
 static int elf_read_build_id(Elf *elf, void *bf, size_t size)
@@ -875,12 +832,7 @@ static int elf_read_build_id(Elf *elf, void *bf, size_t size)
 		goto out;
 	}
 
-	/*
-	 * Check following sections for notes:
-	 *   '.note.gnu.build-id'
-	 *   '.notes'
-	 *   '.note' (VDSO specific)
-	 */
+	 
 	do {
 		sec = elf_section_by_name(elf, &ehdr, &shdr,
 					  ".note.gnu.build-id", NULL);
@@ -961,7 +913,7 @@ out_close:
 	return err;
 }
 
-#else // HAVE_LIBBFD_BUILDID_SUPPORT
+#else  
 
 static int read_build_id(const char *filename, struct build_id *bid)
 {
@@ -993,7 +945,7 @@ out:
 	return err;
 }
 
-#endif // HAVE_LIBBFD_BUILDID_SUPPORT
+#endif  
 
 int filename__read_build_id(const char *filename, struct build_id *bid)
 {
@@ -1155,7 +1107,7 @@ int filename__read_debuglink(const char *filename, char *debuglink,
 	if (data == NULL)
 		goto out_elf_end;
 
-	/* the start of this section is a zero-terminated string */
+	 
 	strncpy(debuglink, data->d_buf, size);
 
 	err = 0;
@@ -1178,13 +1130,13 @@ static int dso__swap_init(struct dso *dso, unsigned char eidata)
 
 	switch (eidata) {
 	case ELFDATA2LSB:
-		/* We are big endian, DSO is little endian. */
+		 
 		if (*(unsigned char const *)&endian != 1)
 			dso->needs_swap = DSO_SWAP__YES;
 		break;
 
 	case ELFDATA2MSB:
-		/* We are little endian, DSO is big endian. */
+		 
 		if (*(unsigned char const *)&endian != 0)
 			dso->needs_swap = DSO_SWAP__YES;
 		break;
@@ -1216,11 +1168,7 @@ void symsrc__destroy(struct symsrc *ss)
 
 bool elf__needs_adjust_symbols(GElf_Ehdr ehdr)
 {
-	/*
-	 * Usually vmlinux is an ELF file with type ET_EXEC for most
-	 * architectures; except Arm64 kernel is linked with option
-	 * '-share', so need to check type ET_DYN.
-	 */
+	 
 	return ehdr.e_type == ET_EXEC || ehdr.e_type == ET_REL ||
 	       ehdr.e_type == ET_DYN;
 }
@@ -1264,7 +1212,7 @@ int symsrc__init(struct symsrc *ss, struct dso *dso, const char *name,
 		goto out_elf_end;
 	}
 
-	/* Always reject images with a mismatched build-id: */
+	 
 	if (dso->has_build_id && !symbol_conf.ignore_vmlinux_buildid) {
 		u8 build_id[BUILD_ID_SIZE];
 		struct build_id bid;
@@ -1329,28 +1277,14 @@ out_close:
 	return -1;
 }
 
-/**
- * ref_reloc_sym_not_found - has kernel relocation symbol been found.
- * @kmap: kernel maps and relocation reference symbol
- *
- * This function returns %true if we are dealing with the kernel maps and the
- * relocation reference symbol has not yet been found.  Otherwise %false is
- * returned.
- */
+ 
 static bool ref_reloc_sym_not_found(struct kmap *kmap)
 {
 	return kmap && kmap->ref_reloc_sym && kmap->ref_reloc_sym->name &&
 	       !kmap->ref_reloc_sym->unrelocated_addr;
 }
 
-/**
- * ref_reloc - kernel relocation offset.
- * @kmap: kernel maps and relocation reference symbol
- *
- * This function returns the offset of kernel addresses as determined by using
- * the relocation reference symbol i.e. if the kernel has not been relocated
- * then the return value is zero.
- */
+ 
 static u64 ref_reloc(struct kmap *kmap)
 {
 	if (kmap && kmap->ref_reloc_sym &&
@@ -1374,7 +1308,7 @@ static int dso__process_kernel_symbol(struct dso *dso, struct map *map,
 	struct map *curr_map;
 	char dso_name[PATH_MAX];
 
-	/* Adjust symbol to map to file offset */
+	 
 	if (adjust_kernel_syms)
 		sym->st_value -= shdr->sh_addr - shdr->sh_offset;
 
@@ -1382,11 +1316,7 @@ static int dso__process_kernel_symbol(struct dso *dso, struct map *map,
 		return 0;
 
 	if (strcmp(section_name, ".text") == 0) {
-		/*
-		 * The initial kernel mapping is based on
-		 * kallsyms and identity maps.  Overwrite it to
-		 * map to the kernel dso.
-		 */
+		 
 		if (*remap_kernel && dso->kernel && !kmodule) {
 			*remap_kernel = false;
 			map__set_start(map, shdr->sh_addr + ref_reloc(kmap));
@@ -1394,7 +1324,7 @@ static int dso__process_kernel_symbol(struct dso *dso, struct map *map,
 			map__set_pgoff(map, shdr->sh_offset);
 			map__set_map_ip(map, map__dso_map_ip);
 			map__set_unmap_ip(map, map__dso_unmap_ip);
-			/* Ensure maps are correctly ordered */
+			 
 			if (kmaps) {
 				int err;
 				struct map *tmp = map__get(map);
@@ -1407,11 +1337,7 @@ static int dso__process_kernel_symbol(struct dso *dso, struct map *map,
 			}
 		}
 
-		/*
-		 * The initial module mapping is based on
-		 * /proc/modules mapped to offset zero.
-		 * Overwrite it to map to the module dso.
-		 */
+		 
 		if (*remap_kernel && kmodule) {
 			*remap_kernel = false;
 			map__set_pgoff(map, shdr->sh_offset);
@@ -1461,13 +1387,9 @@ static int dso__process_kernel_symbol(struct dso *dso, struct map *map,
 		curr_dso->symtab_type = dso->symtab_type;
 		if (maps__insert(kmaps, curr_map))
 			return -1;
-		/*
-		 * Add it before we drop the reference to curr_map, i.e. while
-		 * we still are sure to have a reference to this DSO via
-		 * *curr_map->dso.
-		 */
+		 
 		dsos__add(&maps__machine(kmaps)->dsos, curr_dso);
-		/* kmaps already got it */
+		 
 		map__put(curr_map);
 		dso__set_loaded(curr_dso);
 		*curr_mapp = curr_map;
@@ -1552,10 +1474,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 
 	memset(&sym, 0, sizeof(sym));
 
-	/*
-	 * The kernel relocation symbol is needed in advance in order to adjust
-	 * kernel maps correctly.
-	 */
+	 
 	if (ref_reloc_sym_not_found(kmap)) {
 		elf_symtab__for_each_symbol(syms, nr_syms, idx, sym) {
 			const char *elf_name = elf_sym__name(&sym, symstrs);
@@ -1568,18 +1487,12 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 		}
 	}
 
-	/*
-	 * Handle any relocation of vdso necessary because older kernels
-	 * attempted to prelink vdso to its virtual address.
-	 */
+	 
 	if (dso__is_vdso(dso))
 		map__set_reloc(map, map__start(map) - dso->text_offset);
 
 	dso->adjust_symbols = runtime_ss->adjust_symbols || ref_reloc(kmap);
-	/*
-	 * Initial kernel and module mappings do not map to the dso.
-	 * Flag the fixups.
-	 */
+	 
 	if (dso->kernel) {
 		remap_kernel = true;
 		adjust_kernel_syms = dso->adjust_symbols;
@@ -1595,9 +1508,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 		if (!is_label && !elf_sym__filter(&sym))
 			continue;
 
-		/* Reject ARM ELF "mapping symbols": these aren't unique and
-		 * don't identify functions, so will confuse the profile
-		 * output: */
+		 
 		if (ehdr.e_machine == EM_ARM || ehdr.e_machine == EM_AARCH64) {
 			if (elf_name[0] == '$' && strchr("adtx", elf_name[1])
 			    && (elf_name[2] == '\0' || elf_name[2] == '.'))
@@ -1613,15 +1524,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 			used_opd = true;
 		}
 
-		/*
-		 * When loading symbols in a data mapping, ABS symbols (which
-		 * has a value of SHN_ABS in its st_shndx) failed at
-		 * elf_getscn().  And it marks the loading as a failure so
-		 * already loaded symbols cannot be fixed up.
-		 *
-		 * I'm not sure what should be done. Just ignore them for now.
-		 * - Namhyung Kim
-		 */
+		 
 		if (sym.st_shndx == SHN_ABS)
 			continue;
 
@@ -1631,25 +1534,13 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 
 		gelf_getshdr(sec, &shdr);
 
-		/*
-		 * If the attribute bit SHF_ALLOC is not set, the section
-		 * doesn't occupy memory during process execution.
-		 * E.g. ".gnu.warning.*" section is used by linker to generate
-		 * warnings when calling deprecated functions, the symbols in
-		 * the section aren't loaded to memory during process execution,
-		 * so skip them.
-		 */
+		 
 		if (!(shdr.sh_flags & SHF_ALLOC))
 			continue;
 
 		secstrs = secstrs_sym;
 
-		/*
-		 * We have to fallback to runtime when syms' section header has
-		 * NOBITS set. NOBITS results in file offset (sh_offset) not
-		 * being incremented. So sh_offset used below has different
-		 * values for syms (invalid) and runtime (valid).
-		 */
+		 
 		if (shdr.sh_type == SHT_NOBITS) {
 			sec = elf_getscn(runtime_ss->elf, sym.st_shndx);
 			if (!sec)
@@ -1664,8 +1555,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 
 		section_name = elf_sec__name(&shdr, secstrs);
 
-		/* On ARM, symbols for thumb functions have 1 added to
-		 * the symbol address as a flag - remove it */
+		 
 		if ((ehdr.e_machine == EM_ARM) &&
 		    (GELF_ST_TYPE(sym.st_info) == STT_FUNC) &&
 		    (sym.st_value & 1))
@@ -1688,14 +1578,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 					"sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n",
 					__func__, (u64)sym.st_value, (u64)shdr.sh_addr,
 					(u64)shdr.sh_offset);
-				/*
-				 * Fail to find program header, let's rollback
-				 * to use shdr.sh_addr and shdr.sh_offset to
-				 * calibrate symbol's file address, though this
-				 * is not necessary for normal C ELF file, we
-				 * still need to handle java JIT symbols in this
-				 * case.
-				 */
+				 
 				sym.st_value -= shdr.sh_addr - shdr.sh_offset;
 			} else {
 				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
@@ -1723,17 +1606,12 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 		nr++;
 	}
 
-	/*
-	 * For misannotated, zeroed, ASM function sizes.
-	 */
+	 
 	if (nr > 0) {
 		symbols__fixup_end(&dso->symbols, false);
 		symbols__fixup_duplicate(&dso->symbols);
 		if (kmap) {
-			/*
-			 * We need to fixup this here too because we create new
-			 * maps here, for things like vsyscall sections.
-			 */
+			 
 			maps__fixup_end(kmaps);
 		}
 	}
@@ -1752,19 +1630,12 @@ int dso__load_sym(struct dso *dso, struct map *map, struct symsrc *syms_ss,
 	dso->is_64_bit = syms_ss->is_64_bit;
 	dso->rel = syms_ss->ehdr.e_type == ET_REL;
 
-	/*
-	 * Modules may already have symbols from kallsyms, but those symbols
-	 * have the wrong values for the dso maps, so remove them.
-	 */
+	 
 	if (kmodule && syms_ss->symtab)
 		symbols__delete(&dso->symbols);
 
 	if (!syms_ss->symtab) {
-		/*
-		 * If the vmlinux is stripped, fail so we will fall back
-		 * to using kallsyms. The vmlinux runtime symbols aren't
-		 * of much use.
-		 */
+		 
 		if (dso->kernel)
 			return err;
 	} else  {
@@ -1890,7 +1761,7 @@ static int copy_bytes(int from, off_t from_offs, int to, off_t to_offs, u64 len)
 		n = page_size;
 		if (len < n)
 			n = len;
-		/* Use read because mmap won't work on proc files */
+		 
 		r = read(from, buf, n);
 		if (r < 0)
 			goto out;
@@ -2270,7 +2141,7 @@ static void kcore_copy__find_remaps(struct kcore_copy_info *kci)
 	if (!kci->stext)
 		return;
 
-	/* Find phdr that corresponds to the kernel map (contains stext) */
+	 
 	kcore_copy__for_each_phdr(kci, p) {
 		u64 pend = p->addr + p->len - 1;
 
@@ -2285,7 +2156,7 @@ static void kcore_copy__find_remaps(struct kcore_copy_info *kci)
 
 	kend = k->offset + k->len;
 
-	/* Find phdrs that remap the kernel */
+	 
 	kcore_copy__for_each_phdr(kci, p) {
 		u64 pend = p->offset + p->len;
 
@@ -2402,7 +2273,7 @@ static int kcore_copy__compare_fds(int from, int to)
 		goto out;
 
 	while (1) {
-		/* Use read because mmap won't work on proc files */
+		 
 		ret = read(from, buf_from, page_size);
 		if (ret < 0)
 			goto out;
@@ -2459,30 +2330,7 @@ static int kcore_copy__compare_file(const char *from_dir, const char *to_dir,
 	return kcore_copy__compare_files(from_filename, to_filename);
 }
 
-/**
- * kcore_copy - copy kallsyms, modules and kcore from one directory to another.
- * @from_dir: from directory
- * @to_dir: to directory
- *
- * This function copies kallsyms, modules and kcore files from one directory to
- * another.  kallsyms and modules are copied entirely.  Only code segments are
- * copied from kcore.  It is assumed that two segments suffice: one for the
- * kernel proper and one for all the modules.  The code segments are determined
- * from kallsyms and modules files.  The kernel map starts at _stext or the
- * lowest function symbol, and ends at _etext or the highest function symbol.
- * The module map starts at the lowest module address and ends at the highest
- * module symbol.  Start addresses are rounded down to the nearest page.  End
- * addresses are rounded up to the nearest page.  An extra page is added to the
- * highest kernel symbol and highest module symbol to, hopefully, encompass that
- * symbol too.  Because it contains only code sections, the resulting kcore is
- * unusual.  One significant peculiarity is that the mapping (start -> pgoff)
- * is not the same for the kernel map and the modules map.  That happens because
- * the data is copied adjacently whereas the original kcore has gaps.  Finally,
- * kallsyms file is compared with its copy to check that modules have not been
- * loaded or unloaded while the copies were taking place.
- *
- * Return: %0 on success, %-1 on failure.
- */
+ 
 int kcore_copy(const char *from_dir, const char *to_dir)
 {
 	struct kcore kcore;
@@ -2640,17 +2488,7 @@ static void sdt_adjust_refctr(struct sdt_note *tmp, GElf_Addr base_addr,
 		tmp->addr.a64[SDT_NOTE_IDX_REFCTR] -= (base_addr - base_off);
 }
 
-/**
- * populate_sdt_note : Parse raw data and identify SDT note
- * @elf: elf of the opened file
- * @data: raw data of a section with description offset applied
- * @len: note description size
- * @type: type of the note
- * @sdt_notes: List to add the SDT note
- *
- * Responsible for parsing the @data in section .note.stapsdt in @elf and
- * if its an SDT note, it appends to @sdt_notes list.
- */
+ 
 static int populate_sdt_note(Elf **elf, const char *data, size_t len,
 			     struct list_head *sdt_notes)
 {
@@ -2687,14 +2525,14 @@ static int populate_sdt_note(Elf **elf, const char *data, size_t len,
 	if (len < dst.d_size + 3)
 		goto out_free_note;
 
-	/* Translation from file representation to memory representation */
+	 
 	if (gelf_xlatetom(*elf, &dst, &src,
 			  elf_getident(*elf, NULL)[EI_DATA]) == NULL) {
 		pr_err("gelf_xlatetom : %s\n", elf_errmsg(-1));
 		goto out_free_note;
 	}
 
-	/* Populate the fields of sdt_note */
+	 
 	provider = data + dst.d_size;
 
 	name = (const char *)memchr(provider, '\0', data + len - provider);
@@ -2714,12 +2552,7 @@ static int populate_sdt_note(Elf **elf, const char *data, size_t len,
 
 	args = memchr(name, '\0', data + len - name);
 
-	/*
-	 * There is no argument if:
-	 * - We reached the end of the note;
-	 * - There is not enough room to hold a potential string;
-	 * - The argument string is empty or just contains ':'.
-	 */
+	 
 	if (args == NULL || data + len - args < 2 ||
 		args[1] == ':' || args[1] == '\0')
 		tmp->args = NULL;
@@ -2745,17 +2578,11 @@ static int populate_sdt_note(Elf **elf, const char *data, size_t len,
 		goto out_free_args;
 	}
 
-	/* Adjust the prelink effect :
-	 * Find out the .stapsdt.base section.
-	 * This scn will help us to handle prelinking (if present).
-	 * Compare the retrieved file offset of the base section with the
-	 * base address in the description of the SDT note. If its different,
-	 * then accordingly, adjust the note location.
-	 */
+	 
 	if (elf_section_by_name(*elf, &ehdr, &shdr, SDT_BASE_SCN, NULL))
 		sdt_adjust_loc(tmp, shdr.sh_offset);
 
-	/* Adjust reference counter offset */
+	 
 	if (elf_section_by_name(*elf, &ehdr, &shdr, SDT_PROBES_SCN, NULL))
 		sdt_adjust_refctr(tmp, shdr.sh_addr, shdr.sh_offset);
 
@@ -2774,15 +2601,7 @@ out_err:
 	return ret;
 }
 
-/**
- * construct_sdt_notes_list : constructs a list of SDT notes
- * @elf : elf to look into
- * @sdt_notes : empty list_head
- *
- * Scans the sections in 'elf' for the section
- * .note.stapsdt. It, then calls populate_sdt_note to find
- * out the SDT events and populates the 'sdt_notes'.
- */
+ 
 static int construct_sdt_notes_list(Elf *elf, struct list_head *sdt_notes)
 {
 	GElf_Ehdr ehdr;
@@ -2803,7 +2622,7 @@ static int construct_sdt_notes_list(Elf *elf, struct list_head *sdt_notes)
 		goto out_ret;
 	}
 
-	/* Look for the required section */
+	 
 	scn = elf_section_by_name(elf, &ehdr, &shdr, SDT_NOTE_SCN, NULL);
 	if (!scn) {
 		ret = -ENOENT;
@@ -2817,13 +2636,13 @@ static int construct_sdt_notes_list(Elf *elf, struct list_head *sdt_notes)
 
 	data = elf_getdata(scn, NULL);
 
-	/* Get the SDT notes */
+	 
 	for (offset = 0; (next = gelf_getnote(data, offset, &nhdr, &name_off,
 					      &desc_off)) > 0; offset = next) {
 		if (nhdr.n_namesz == sizeof(SDT_NOTE_NAME) &&
 		    !memcmp(data->d_buf + name_off, SDT_NOTE_NAME,
 			    sizeof(SDT_NOTE_NAME))) {
-			/* Check the type of the note */
+			 
 			if (nhdr.n_type != SDT_NOTE_TYPE)
 				goto out_ret;
 
@@ -2840,14 +2659,7 @@ out_ret:
 	return ret;
 }
 
-/**
- * get_sdt_note_list : Wrapper to construct a list of sdt notes
- * @head : empty list_head
- * @target : file to find SDT notes from
- *
- * This opens the file, initializes
- * the ELF and then calls construct_sdt_notes_list.
- */
+ 
 int get_sdt_note_list(struct list_head *head, const char *target)
 {
 	Elf *elf;
@@ -2869,13 +2681,7 @@ out_close:
 	return ret;
 }
 
-/**
- * cleanup_sdt_note_list : free the sdt notes' list
- * @sdt_notes: sdt notes' list
- *
- * Free up the SDT notes in @sdt_notes.
- * Returns the number of SDT notes free'd.
- */
+ 
 int cleanup_sdt_note_list(struct list_head *sdt_notes)
 {
 	struct sdt_note *tmp, *pos;
@@ -2892,12 +2698,7 @@ int cleanup_sdt_note_list(struct list_head *sdt_notes)
 	return nr_free;
 }
 
-/**
- * sdt_notes__get_count: Counts the number of sdt events
- * @start: list_head to sdt_notes list
- *
- * Returns the number of SDT notes in a list
- */
+ 
 int sdt_notes__get_count(struct list_head *start)
 {
 	struct sdt_note *sdt_ptr;

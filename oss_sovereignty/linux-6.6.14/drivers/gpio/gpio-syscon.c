@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  SYSCON GPIO driver
- *
- *  Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -17,24 +13,11 @@
 #define GPIO_SYSCON_FEAT_OUT	BIT(1)
 #define GPIO_SYSCON_FEAT_DIR	BIT(2)
 
-/* SYSCON driver is designed to use 32-bit wide registers */
+ 
 #define SYSCON_REG_SIZE		(4)
 #define SYSCON_REG_BITS		(SYSCON_REG_SIZE * 8)
 
-/**
- * struct syscon_gpio_data - Configuration for the device.
- * @compatible:		SYSCON driver compatible string.
- * @flags:		Set of GPIO_SYSCON_FEAT_ flags:
- *			GPIO_SYSCON_FEAT_IN:	GPIOs supports input,
- *			GPIO_SYSCON_FEAT_OUT:	GPIOs supports output,
- *			GPIO_SYSCON_FEAT_DIR:	GPIOs supports switch direction.
- * @bit_count:		Number of bits used as GPIOs.
- * @dat_bit_offset:	Offset (in bits) to the first GPIO bit.
- * @dir_bit_offset:	Optional offset (in bits) to the first bit to switch
- *			GPIO direction (Used with GPIO_SYSCON_FEAT_DIR flag).
- * @set:		HW specific callback to assigns output value
- *			for signal "offset"
- */
+ 
 
 struct syscon_gpio_data {
 	unsigned int	flags;
@@ -122,7 +105,7 @@ static int syscon_gpio_dir_out(struct gpio_chip *chip, unsigned offset, int val)
 }
 
 static const struct syscon_gpio_data clps711x_mctrl_gpio = {
-	/* ARM CLPS711X SYSFLG1 Bits 8-10 */
+	 
 	.flags		= GPIO_SYSCON_FEAT_IN,
 	.bit_count	= 3,
 	.dat_bit_offset	= 0x40 * 8 + 8,
@@ -148,7 +131,7 @@ static void rockchip_gpio_set(struct gpio_chip *chip, unsigned int offset,
 }
 
 static const struct syscon_gpio_data rockchip_rk3328_gpio_mute = {
-	/* RK3328 GPIO_MUTE is an output only pin at GRF_SOC_CON10[1] */
+	 
 	.flags		= GPIO_SYSCON_FEAT_OUT,
 	.bit_count	= 1,
 	.dat_bit_offset = 0x0428 * 8 + 1,
@@ -178,7 +161,7 @@ static void keystone_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 }
 
 static const struct syscon_gpio_data keystone_dsp_gpio = {
-	/* ARM Keystone 2 */
+	 
 	.flags		= GPIO_SYSCON_FEAT_OUT,
 	.bit_count	= 28,
 	.dat_bit_offset	= 4,

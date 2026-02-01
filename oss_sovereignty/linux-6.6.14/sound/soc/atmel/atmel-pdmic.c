@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Atmel PDMIC driver
- *
- * Copyright (C) 2015 Atmel
- *
- * Author: Songjun Wu <songjun.wu@atmel.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/clk.h>
@@ -39,7 +34,7 @@ static const struct of_device_id atmel_pdmic_of_match[] = {
 	{
 		.compatible = "atmel,sama5d2-pdmic",
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_pdmic_of_match);
@@ -100,7 +95,7 @@ static struct atmel_pdmic_pdata *atmel_pdmic_dt_init(struct device *dev)
 	return pdata;
 }
 
-/* cpu dai component */
+ 
 static int atmel_pdmic_cpu_dai_startup(struct snd_pcm_substream *substream,
 					struct snd_soc_dai *cpu_dai)
 {
@@ -118,12 +113,12 @@ static int atmel_pdmic_cpu_dai_startup(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Clear all bits in the Control Register(PDMIC_CR) */
+	 
 	regmap_write(dd->regmap, PDMIC_CR, 0);
 
 	dd->substream = substream;
 
-	/* Enable the overrun error interrupt */
+	 
 	regmap_write(dd->regmap, PDMIC_IER, PDMIC_IER_OVRE);
 
 	return 0;
@@ -135,7 +130,7 @@ static void atmel_pdmic_cpu_dai_shutdown(struct snd_pcm_substream *substream,
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	struct atmel_pdmic *dd = snd_soc_card_get_drvdata(rtd->card);
 
-	/* Disable the overrun error interrupt */
+	 
 	regmap_write(dd->regmap, PDMIC_IDR, PDMIC_IDR_OVRE);
 
 	clk_disable_unprepare(dd->gclk);
@@ -151,7 +146,7 @@ static int atmel_pdmic_cpu_dai_prepare(struct snd_pcm_substream *substream,
 	u32 val;
 	int ret;
 
-	/* Clean the PDMIC Converted Data Register */
+	 
 	ret = regmap_read(dd->regmap, PDMIC_CDR, &val);
 	if (ret < 0)
 		return 0;
@@ -168,7 +163,7 @@ static int atmel_pdmic_cpu_dai_prepare(struct snd_pcm_substream *substream,
 
 #define ATMEL_PDMIC_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
-/* platform */
+ 
 #define ATMEL_PDMIC_MAX_BUF_SIZE  (64 * 1024)
 #define ATMEL_PDMIC_PREALLOC_BUF_SIZE  ATMEL_PDMIC_MAX_BUF_SIZE
 
@@ -217,57 +212,57 @@ atmel_pdmic_dmaengine_pcm_config = {
 	.prealloc_buffer_size	= ATMEL_PDMIC_PREALLOC_BUF_SIZE,
 };
 
-/* codec */
-/* Mic Gain = dgain * 2^(-scale) */
+ 
+ 
 struct mic_gain {
 	unsigned int dgain;
 	unsigned int scale;
 };
 
-/* range from -90 dB to 90 dB */
+ 
 static const struct mic_gain mic_gain_table[] = {
-{    1, 15}, {    1, 14},                           /* -90, -84 dB */
-{    3, 15}, {    1, 13}, {    3, 14}, {    1, 12}, /* -81, -78, -75, -72 dB */
-{    5, 14}, {   13, 15},                           /* -70, -68 dB */
-{    9, 14}, {   21, 15}, {   23, 15}, {   13, 14}, /* -65 ~ -62 dB */
-{   29, 15}, {   33, 15}, {   37, 15}, {   41, 15}, /* -61 ~ -58 dB */
-{   23, 14}, {   13, 13}, {   58, 15}, {   65, 15}, /* -57 ~ -54 dB */
-{   73, 15}, {   41, 14}, {   23, 13}, {   13, 12}, /* -53 ~ -50 dB */
-{   29, 13}, {   65, 14}, {   73, 14}, {   41, 13}, /* -49 ~ -46 dB */
-{   23, 12}, {  207, 15}, {   29, 12}, {   65, 13}, /* -45 ~ -42 dB */
-{   73, 13}, {   41, 12}, {   23, 11}, {  413, 15}, /* -41 ~ -38 dB */
-{  463, 15}, {  519, 15}, {  583, 15}, {  327, 14}, /* -37 ~ -34 dB */
-{  367, 14}, {  823, 15}, {  231, 13}, { 1036, 15}, /* -33 ~ -30 dB */
-{ 1163, 15}, { 1305, 15}, {  183, 12}, { 1642, 15}, /* -29 ~ -26 dB */
-{ 1843, 15}, { 2068, 15}, {  145, 11}, { 2603, 15}, /* -25 ~ -22 dB */
-{  365, 12}, { 3277, 15}, { 3677, 15}, { 4125, 15}, /* -21 ~ -18 dB */
-{ 4629, 15}, { 5193, 15}, { 5827, 15}, { 3269, 14}, /* -17 ~ -14 dB */
-{  917, 12}, { 8231, 15}, { 9235, 15}, { 5181, 14}, /* -13 ~ -10 dB */
-{11627, 15}, {13045, 15}, {14637, 15}, {16423, 15}, /*  -9 ~ -6 dB */
-{18427, 15}, {20675, 15}, { 5799, 13}, {26029, 15}, /*  -5 ~ -2 dB */
-{ 7301, 13}, {    1,  0}, {18383, 14}, {10313, 13}, /*  -1 ~ 2 dB */
-{23143, 14}, {25967, 14}, {29135, 14}, {16345, 13}, /*   3 ~ 6 dB */
-{ 4585, 11}, {20577, 13}, { 1443,  9}, {25905, 13}, /*   7 ~ 10 dB */
-{14533, 12}, { 8153, 11}, { 2287,  9}, {20529, 12}, /*  11 ~ 14 dB */
-{11517, 11}, { 6461, 10}, {28997, 12}, { 4067,  9}, /*  15 ~ 18 dB */
-{18253, 11}, {   10,  0}, {22979, 11}, {25783, 11}, /*  19 ~ 22 dB */
-{28929, 11}, {32459, 11}, { 9105,  9}, {20431, 10}, /*  23 ~ 26 dB */
-{22925, 10}, {12861,  9}, { 7215,  8}, {16191,  9}, /*  27 ~ 30 dB */
-{ 9083,  8}, {20383,  9}, {11435,  8}, { 6145,  7}, /*  31 ~ 34 dB */
-{ 3599,  6}, {32305,  9}, {18123,  8}, {20335,  8}, /*  35 ~ 38 dB */
-{  713,  3}, {  100,  0}, { 7181,  6}, { 8057,  6}, /*  39 ~ 42 dB */
-{  565,  2}, {20287,  7}, {11381,  6}, {25539,  7}, /*  43 ~ 46 dB */
-{ 1791,  3}, { 4019,  4}, { 9019,  5}, {20239,  6}, /*  47 ~ 50 dB */
-{ 5677,  4}, {25479,  6}, { 7147,  4}, { 8019,  4}, /*  51 ~ 54 dB */
-{17995,  5}, {20191,  5}, {11327,  4}, {12709,  4}, /*  55 ~ 58 dB */
-{ 3565,  2}, { 1000,  0}, { 1122,  0}, { 1259,  0}, /*  59 ~ 62 dB */
-{ 2825,  1}, {12679,  3}, { 7113,  2}, { 7981,  2}, /*  63 ~ 66 dB */
-{ 8955,  2}, {20095,  3}, {22547,  3}, {12649,  2}, /*  67 ~ 70 dB */
-{28385,  3}, { 3981,  0}, {17867,  2}, {20047,  2}, /*  71 ~ 74 dB */
-{11247,  1}, {12619,  1}, {14159,  1}, {31773,  2}, /*  75 ~ 78 dB */
-{17825,  1}, {10000,  0}, {11220,  0}, {12589,  0}, /*  79 ~ 82 dB */
-{28251,  1}, {15849,  0}, {17783,  0}, {19953,  0}, /*  83 ~ 86 dB */
-{22387,  0}, {25119,  0}, {28184,  0}, {31623,  0}, /*  87 ~ 90 dB */
+{    1, 15}, {    1, 14},                            
+{    3, 15}, {    1, 13}, {    3, 14}, {    1, 12},  
+{    5, 14}, {   13, 15},                            
+{    9, 14}, {   21, 15}, {   23, 15}, {   13, 14},  
+{   29, 15}, {   33, 15}, {   37, 15}, {   41, 15},  
+{   23, 14}, {   13, 13}, {   58, 15}, {   65, 15},  
+{   73, 15}, {   41, 14}, {   23, 13}, {   13, 12},  
+{   29, 13}, {   65, 14}, {   73, 14}, {   41, 13},  
+{   23, 12}, {  207, 15}, {   29, 12}, {   65, 13},  
+{   73, 13}, {   41, 12}, {   23, 11}, {  413, 15},  
+{  463, 15}, {  519, 15}, {  583, 15}, {  327, 14},  
+{  367, 14}, {  823, 15}, {  231, 13}, { 1036, 15},  
+{ 1163, 15}, { 1305, 15}, {  183, 12}, { 1642, 15},  
+{ 1843, 15}, { 2068, 15}, {  145, 11}, { 2603, 15},  
+{  365, 12}, { 3277, 15}, { 3677, 15}, { 4125, 15},  
+{ 4629, 15}, { 5193, 15}, { 5827, 15}, { 3269, 14},  
+{  917, 12}, { 8231, 15}, { 9235, 15}, { 5181, 14},  
+{11627, 15}, {13045, 15}, {14637, 15}, {16423, 15},  
+{18427, 15}, {20675, 15}, { 5799, 13}, {26029, 15},  
+{ 7301, 13}, {    1,  0}, {18383, 14}, {10313, 13},  
+{23143, 14}, {25967, 14}, {29135, 14}, {16345, 13},  
+{ 4585, 11}, {20577, 13}, { 1443,  9}, {25905, 13},  
+{14533, 12}, { 8153, 11}, { 2287,  9}, {20529, 12},  
+{11517, 11}, { 6461, 10}, {28997, 12}, { 4067,  9},  
+{18253, 11}, {   10,  0}, {22979, 11}, {25783, 11},  
+{28929, 11}, {32459, 11}, { 9105,  9}, {20431, 10},  
+{22925, 10}, {12861,  9}, { 7215,  8}, {16191,  9},  
+{ 9083,  8}, {20383,  9}, {11435,  8}, { 6145,  7},  
+{ 3599,  6}, {32305,  9}, {18123,  8}, {20335,  8},  
+{  713,  3}, {  100,  0}, { 7181,  6}, { 8057,  6},  
+{  565,  2}, {20287,  7}, {11381,  6}, {25539,  7},  
+{ 1791,  3}, { 4019,  4}, { 9019,  5}, {20239,  6},  
+{ 5677,  4}, {25479,  6}, { 7147,  4}, { 8019,  4},  
+{17995,  5}, {20191,  5}, {11327,  4}, {12709,  4},  
+{ 3565,  2}, { 1000,  0}, { 1122,  0}, { 1259,  0},  
+{ 2825,  1}, {12679,  3}, { 7113,  2}, { 7981,  2},  
+{ 8955,  2}, {20095,  3}, {22547,  3}, {12649,  2},  
+{28385,  3}, { 3981,  0}, {17867,  2}, {20047,  2},  
+{11247,  1}, {12619,  1}, {14159,  1}, {31773,  2},  
+{17825,  1}, {10000,  0}, {11220,  0}, {12589,  0},  
+{28251,  1}, {15849,  0}, {17783,  0}, {19953,  0},  
+{22387,  0}, {25119,  0}, {28184,  0}, {31623,  0},  
 };
 
 static const DECLARE_TLV_DB_RANGE(mic_gain_tlv,
@@ -405,7 +400,7 @@ atmel_pdmic_cpu_dai_hw_params(struct snd_pcm_substream *substream,
 	pclk_rate = clk_get_rate(dd->pclk);
 	gclk_rate = clk_get_rate(dd->gclk);
 
-	/* PRESCAL = SELCK/(2*f_pdmic) - 1*/
+	 
 	pclk_prescal = (u32)(pclk_rate/(f_pdmic << 1)) - 1;
 	gclk_prescal = (u32)(gclk_rate/(f_pdmic << 1)) - 1;
 
@@ -484,7 +479,7 @@ static const struct snd_soc_component_driver atmel_pdmic_cpu_dai_component = {
 	.legacy_dai_naming	= 1,
 };
 
-/* ASoC sound card */
+ 
 static int atmel_pdmic_asoc_card_init(struct device *dev,
 				struct snd_soc_card *card)
 {
@@ -536,7 +531,7 @@ static void atmel_pdmic_get_sample_rate(struct atmel_pdmic *dd,
 	*rate_max = mic_max_freq >> 6;
 }
 
-/* PDMIC interrupt handler */
+ 
 static irqreturn_t atmel_pdmic_interrupt(int irq, void *dev_id)
 {
 	struct atmel_pdmic *dd = (struct atmel_pdmic *)dev_id;
@@ -557,7 +552,7 @@ static irqreturn_t atmel_pdmic_interrupt(int irq, void *dev_id)
 	return ret;
 }
 
-/* regmap configuration */
+ 
 #define ATMEL_PDMIC_REG_MAX    0x124
 static const struct regmap_config atmel_pdmic_regmap_config = {
 	.reg_bits	= 32,
@@ -606,9 +601,7 @@ static int atmel_pdmic_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* The gclk clock frequency must always be three times
-	 * lower than the pclk clock frequency
-	 */
+	 
 	ret = clk_set_rate(dd->gclk, clk_get_rate(dd->pclk)/3);
 	if (ret) {
 		dev_err(dev, "failed to set GCK clock rate: %d\n", ret);
@@ -637,10 +630,10 @@ static int atmel_pdmic_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Get the minimal and maximal sample rate that the microphone supports */
+	 
 	atmel_pdmic_get_sample_rate(dd, &rate_min, &rate_max);
 
-	/* register cpu dai */
+	 
 	atmel_pdmic_cpu_dai.capture.rate_min = rate_min;
 	atmel_pdmic_cpu_dai.capture.rate_max = rate_max;
 	ret = devm_snd_soc_register_component(dev,
@@ -651,7 +644,7 @@ static int atmel_pdmic_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* register platform */
+	 
 	ret = devm_snd_dmaengine_pcm_register(dev,
 					     &atmel_pdmic_dmaengine_pcm_config,
 					     0);
@@ -660,7 +653,7 @@ static int atmel_pdmic_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* register sound card */
+	 
 	card = devm_kzalloc(dev, sizeof(*card), GFP_KERNEL);
 	if (!card) {
 		ret = -ENOMEM;

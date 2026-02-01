@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_brx.h  --  R-Car VSP1 Blend ROP Unit (BRU and BRS)
- *
- * Copyright (C) 2013 Renesas Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_BRX_H__
 #define __VSP1_BRX_H__
 
@@ -41,4 +35,4 @@ static inline struct vsp1_brx *to_brx(struct v4l2_subdev *subdev)
 struct vsp1_brx *vsp1_brx_create(struct vsp1_device *vsp1,
 				 enum vsp1_entity_type type);
 
-#endif /* __VSP1_BRX_H__ */
+#endif  

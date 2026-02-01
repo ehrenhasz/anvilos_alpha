@@ -17,4 +17,4 @@
 
 #endif
 
-#endif /* __BUILD_SALT_H */
+#endif  

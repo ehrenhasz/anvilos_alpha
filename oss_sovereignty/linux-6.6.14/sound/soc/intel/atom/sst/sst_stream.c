@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_stream.c - Intel SST Driver for audio engine
- *
- *  Copyright (C) 2008-14 Intel Corp
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com>
- *		KP Jeeja <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/pci.h>
 #include <linux/firmware.h>
 #include <linux/sched.h>
@@ -52,12 +41,7 @@ int sst_alloc_stream_mrfld(struct intel_sst_drv *sst_drv_ctx, void *params)
 	memcpy(&str_info->alloc_param.codec_params, &str_params->sparams,
 			sizeof(struct snd_sst_stream_params));
 
-	/*
-	 * fill channel map params for multichannel support.
-	 * Ideally channel map should be received from upper layers
-	 * for multichannel support.
-	 * Currently hardcoding as per FW reqm.
-	 */
+	 
 	num_ch = sst_get_num_channel(str_params);
 	pcm_params = &str_info->alloc_param.codec_params.uc.pcm_params;
 	for (i = 0; i < 8; i++) {
@@ -88,15 +72,7 @@ int sst_alloc_stream_mrfld(struct intel_sst_drv *sst_drv_ctx, void *params)
 	return sst_realloc_stream(sst_drv_ctx, str_id);
 }
 
-/**
- * sst_realloc_stream - Send msg for (re-)allocating a stream using the
- * @sst_drv_ctx: intel_sst_drv context pointer
- * @str_id: stream ID
- *
- * Send a msg for (re-)allocating a stream using the parameters previously
- * passed to sst_alloc_stream_mrfld() for the same stream ID.
- * Return: 0 or negative errno value.
- */
+ 
 int sst_realloc_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 {
 	struct snd_sst_alloc_response *response;
@@ -118,7 +94,7 @@ int sst_realloc_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 
 	if (ret < 0) {
 		dev_err(sst_drv_ctx->dev, "FW alloc failed ret %d\n", ret);
-		/* alloc failed, so reset the state to uninit */
+		 
 		str_info->status = STREAM_UN_INIT;
 		str_id = ret;
 	} else if (data) {
@@ -139,14 +115,7 @@ out:
 	return str_id;
 }
 
-/**
- * sst_start_stream - Send msg for a starting stream
- * @sst_drv_ctx: intel_sst_drv context pointer
- * @str_id: stream ID
- *
- * This function is called by any function which wants to start
- * a stream.
- */
+ 
 int sst_start_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 {
 	int retval = 0;
@@ -213,10 +182,7 @@ int sst_send_byte_stream_mrfld(struct intel_sst_drv *sst_drv_ctx,
 		}
 	}
 	if (bytes->type == SND_SST_BYTES_GET) {
-		/*
-		 * copy the reply and send back
-		 * we need to update only sz and payload
-		 */
+		 
 		if (bytes_block) {
 			unsigned char *r = block->data;
 
@@ -232,14 +198,7 @@ out:
 	return ret;
 }
 
-/**
- * sst_pause_stream - Send msg for a pausing stream
- * @sst_drv_ctx: intel_sst_drv context pointer
- * @str_id: stream ID
- *
- * This function is called by any function which wants to pause
- * an already running stream.
- */
+ 
 int sst_pause_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 {
 	int retval = 0;
@@ -277,14 +236,7 @@ int sst_pause_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 	return retval;
 }
 
-/**
- * sst_resume_stream - Send msg for resuming stream
- * @sst_drv_ctx: intel_sst_drv context pointer
- * @str_id: stream ID
- *
- * This function is called by any function which wants to resume
- * an already paused stream.
- */
+ 
 int sst_resume_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 {
 	int retval = 0;
@@ -299,10 +251,7 @@ int sst_resume_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 
 	if (str_info->resume_status == STREAM_PAUSED &&
 	    str_info->resume_prev == STREAM_RUNNING) {
-		/*
-		 * Stream was running before suspend and re-created on resume,
-		 * start it to get back to running state.
-		 */
+		 
 		dev_dbg(sst_drv_ctx->dev, "restart recreated stream after resume\n");
 		str_info->status = STREAM_RUNNING;
 		str_info->prev = STREAM_PAUSED;
@@ -310,10 +259,7 @@ int sst_resume_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 		str_info->resume_status = STREAM_UN_INIT;
 	} else if (str_info->resume_status == STREAM_PAUSED &&
 		   str_info->resume_prev == STREAM_INIT) {
-		/*
-		 * Stream was idle before suspend and re-created on resume,
-		 * keep it as is.
-		 */
+		 
 		dev_dbg(sst_drv_ctx->dev, "leaving recreated stream idle after resume\n");
 		str_info->status = STREAM_INIT;
 		str_info->prev = STREAM_PAUSED;
@@ -345,14 +291,7 @@ int sst_resume_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 }
 
 
-/**
- * sst_drop_stream - Send msg for stopping stream
- * @sst_drv_ctx: intel_sst_drv context pointer
- * @str_id: stream ID
- *
- * This function is called by any function which wants to stop
- * a stream.
- */
+ 
 int sst_drop_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 {
 	int retval = 0;
@@ -379,15 +318,7 @@ int sst_drop_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 	return retval;
 }
 
-/**
- * sst_drain_stream - Send msg for draining stream
- * @sst_drv_ctx: intel_sst_drv context pointer
- * @str_id: stream ID
- * @partial_drain: boolean indicating if a gapless transition is taking place
- *
- * This function is called by any function which wants to drain
- * a stream.
- */
+ 
 int sst_drain_stream(struct intel_sst_drv *sst_drv_ctx,
 			int str_id, bool partial_drain)
 {
@@ -409,23 +340,12 @@ int sst_drain_stream(struct intel_sst_drv *sst_drv_ctx,
 	retval = sst_prepare_and_post_msg(sst_drv_ctx, str_info->task_id, IPC_CMD,
 			IPC_IA_DRAIN_STREAM_MRFLD, str_info->pipe_id,
 			sizeof(u8), &partial_drain, NULL, true, true, false, false);
-	/*
-	 * with new non blocked drain implementation in core we dont need to
-	 * wait for respsonse, and need to only invoke callback for drain
-	 * complete
-	 */
+	 
 
 	return retval;
 }
 
-/**
- * sst_free_stream - Frees a stream
- * @sst_drv_ctx: intel_sst_drv context pointer
- * @str_id: stream ID
- *
- * This function is called by any function which wants to free
- * a stream.
- */
+ 
 int sst_free_stream(struct intel_sst_drv *sst_drv_ctx, int str_id)
 {
 	int retval = 0;

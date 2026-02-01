@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Freescale Layerscape SoCs
- *
- * Copyright (C) 2014 Freescale Semiconductor.
- * Copyright 2021 NXP
- *
- * Author: Minghuan Lian <Minghuan.Lian@freescale.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -25,12 +18,12 @@
 #include "../../pci.h"
 #include "pcie-designware.h"
 
-/* PEX Internal Configuration Registers */
-#define PCIE_STRFMR1		0x71c /* Symbol Timer & Filter Mask Register1 */
-#define PCIE_ABSERR		0x8d0 /* Bridge Slave Error Response Register */
-#define PCIE_ABSERR_SETTING	0x9401 /* Forward error of non-posted request */
+ 
+#define PCIE_STRFMR1		0x71c  
+#define PCIE_ABSERR		0x8d0  
+#define PCIE_ABSERR_SETTING	0x9401  
 
-/* PF Message Command Register */
+ 
 #define LS_PCIE_PF_MCR		0x2c
 #define PF_MCR_PTOMR		BIT(0)
 #define PF_MCR_EXL2S		BIT(1)
@@ -63,7 +56,7 @@ static bool ls_pcie_is_bridge(struct ls_pcie *pcie)
 	return header_type == PCI_HEADER_TYPE_BRIDGE;
 }
 
-/* Clear multi-function bit */
+ 
 static void ls_pcie_clear_multifunction(struct ls_pcie *pcie)
 {
 	struct dw_pcie *pci = pcie->pci;
@@ -71,7 +64,7 @@ static void ls_pcie_clear_multifunction(struct ls_pcie *pcie)
 	iowrite8(PCI_HEADER_TYPE_BRIDGE, pci->dbi_base + PCI_HEADER_TYPE);
 }
 
-/* Drop MSG TLP except for Vendor MSG */
+ 
 static void ls_pcie_drop_msg_tlp(struct ls_pcie *pcie)
 {
 	u32 val;
@@ -82,7 +75,7 @@ static void ls_pcie_drop_msg_tlp(struct ls_pcie *pcie)
 	iowrite32(val, pci->dbi_base + PCIE_STRFMR1);
 }
 
-/* Forward error response of outbound non-posted requests */
+ 
 static void ls_pcie_fix_error_response(struct ls_pcie *pcie)
 {
 	struct dw_pcie *pci = pcie->pci;
@@ -132,18 +125,12 @@ static void ls_pcie_exit_from_l2(struct dw_pcie_rp *pp)
 	u32 val;
 	int ret;
 
-	/*
-	 * Set PF_MCR_EXL2S bit in LS_PCIE_PF_MCR register for the link
-	 * to exit L2 state.
-	 */
+	 
 	val = ls_pcie_pf_readl(pcie, LS_PCIE_PF_MCR);
 	val |= PF_MCR_EXL2S;
 	ls_pcie_pf_writel(pcie, LS_PCIE_PF_MCR, val);
 
-	/*
-	 * L2 exit timeout of 10ms is not defined in the specifications,
-	 * it was chosen based on empirical observations.
-	 */
+	 
 	ret = readx_poll_timeout(ls_pcie_pf_readl_addr, LS_PCIE_PF_MCR,
 				 val, !(val & PF_MCR_EXL2S),
 				 1000,

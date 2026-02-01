@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMD MP2 PCIe communication driver
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- *
- * Authors: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- *	    Sandeep Singh <Sandeep.singh@amd.com>
- *	    Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -39,7 +32,7 @@ static int amd_sfh_wait_response_v2(struct amd_mp2_dev *mp2, u8 sid, u32 sensor_
 {
 	union cmd_response cmd_resp;
 
-	/* Get response with status within a max of 1600 ms timeout */
+	 
 	if (!readl_poll_timeout(mp2->mmio + AMD_P2C_MSG(0), cmd_resp.resp,
 				(cmd_resp.response_v2.response == sensor_sts &&
 				cmd_resp.response_v2.status == 0 && (sid == 0xff ||
@@ -143,13 +136,13 @@ static void amd_start_sensor(struct amd_mp2_dev *privdata, struct amd_mp2_sensor
 	union sfh_cmd_param cmd_param;
 	union sfh_cmd_base cmd_base;
 
-	/* fill up command register */
+	 
 	memset(&cmd_base, 0, sizeof(cmd_base));
 	cmd_base.s.cmd_id = ENABLE_SENSOR;
 	cmd_base.s.period = info.period;
 	cmd_base.s.sensor_id = info.sensor_idx;
 
-	/* fill up command param register */
+	 
 	memset(&cmd_param, 0, sizeof(cmd_param));
 	cmd_param.s.buf_layout = 1;
 	cmd_param.s.buf_length = 16;
@@ -163,7 +156,7 @@ static void amd_stop_sensor(struct amd_mp2_dev *privdata, u16 sensor_idx)
 {
 	union sfh_cmd_base cmd_base;
 
-	/* fill up command register */
+	 
 	memset(&cmd_base, 0, sizeof(cmd_base));
 	cmd_base.s.cmd_id = DISABLE_SENSOR;
 	cmd_base.s.period = 0;
@@ -177,7 +170,7 @@ static void amd_stop_all_sensors(struct amd_mp2_dev *privdata)
 {
 	union sfh_cmd_base cmd_base;
 
-	/* fill up command register */
+	 
 	memset(&cmd_base, 0, sizeof(cmd_base));
 	cmd_base.s.cmd_id = STOP_ALL_SENSORS;
 	cmd_base.s.period = 0;
@@ -294,12 +287,7 @@ int amd_sfh_irq_init(struct amd_mp2_dev *privdata)
 
 static const struct dmi_system_id dmi_nodevs[] = {
 	{
-		/*
-		 * Google Chromebooks use Chrome OS Embedded Controller Sensor
-		 * Hub instead of Sensor Hub Fusion and leaves MP2
-		 * uninitialized, which disables all functionalities, even
-		 * including the registers necessary for feature detections.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Google"),
 		},

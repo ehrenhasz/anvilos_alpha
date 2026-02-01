@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Intel Corporation. All rights reserved.
-//
-//
+
+
+
+
+
+
+
+
 
 #include <sound/pcm_params.h>
 #include "ipc3-priv.h"
@@ -32,7 +32,7 @@ static int sof_ipc3_pcm_hw_free(struct snd_soc_component *component,
 	stream.hdr.cmd = SOF_IPC_GLB_STREAM_MSG | SOF_IPC_STREAM_PCM_FREE;
 	stream.comp_id = spcm->stream[substream->stream].comp_id;
 
-	/* send IPC to the DSP */
+	 
 	return sof_ipc_tx_message_no_reply(sdev->ipc, &stream, sizeof(stream));
 }
 
@@ -56,10 +56,10 @@ static int sof_ipc3_pcm_hw_params(struct snd_soc_component *component,
 
 	memset(&pcm, 0, sizeof(pcm));
 
-	/* number of pages should be rounded up */
+	 
 	pcm.params.buffer.pages = PFN_UP(runtime->dma_bytes);
 
-	/* set IPC PCM parameters */
+	 
 	pcm.hdr.size = sizeof(pcm);
 	pcm.hdr.cmd = SOF_IPC_GLB_STREAM_MSG | SOF_IPC_STREAM_PCM_PARAMS;
 	pcm.comp_id = spcm->stream[substream->stream].comp_id;
@@ -73,13 +73,13 @@ static int sof_ipc3_pcm_hw_params(struct snd_soc_component *component,
 	pcm.params.channels = params_channels(params);
 	pcm.params.host_period_bytes = params_period_bytes(params);
 
-	/* container size */
+	 
 	ret = snd_pcm_format_physical_width(params_format(params));
 	if (ret < 0)
 		return ret;
 	pcm.params.sample_container_bytes = ret >> 3;
 
-	/* format */
+	 
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16:
 		pcm.params.frame_fmt = SOF_IPC_FRAME_S16_LE;
@@ -97,17 +97,14 @@ static int sof_ipc3_pcm_hw_params(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 
-	/* Update the IPC message with information from the platform */
+	 
 	pcm.params.stream_tag = platform_params->stream_tag;
 
 	if (platform_params->use_phy_address)
 		pcm.params.buffer.phy_addr = platform_params->phy_addr;
 
 	if (platform_params->no_ipc_position) {
-		/* For older ABIs set host_period_bytes to zero to inform
-		 * FW we don't want position updates. Newer versions use
-		 * no_stream_position for this purpose.
-		 */
+		 
 		if (v->abi_version < SOF_ABI_VER(3, 10, 0))
 			pcm.params.host_period_bytes = 0;
 		else
@@ -119,7 +116,7 @@ static int sof_ipc3_pcm_hw_params(struct snd_soc_component *component,
 
 	dev_dbg(component->dev, "stream_tag %d", pcm.params.stream_tag);
 
-	/* send hw_params IPC to the DSP */
+	 
 	ret = sof_ipc_tx_message(sdev->ipc, &pcm, sizeof(pcm),
 				 &ipc_params_reply, sizeof(ipc_params_reply));
 	if (ret < 0) {
@@ -175,7 +172,7 @@ static int sof_ipc3_pcm_trigger(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 
-	/* send IPC to the DSP */
+	 
 	return sof_ipc_tx_message_no_reply(sdev->ipc, &stream, sizeof(stream));
 }
 
@@ -186,10 +183,7 @@ static void ssp_dai_config_pcm_params_match(struct snd_sof_dev *sdev, const char
 	struct snd_sof_dai *dai;
 	int i;
 
-	/*
-	 * Search for all matching DAIs as we can have both playback and capture DAI
-	 * associated with the same link.
-	 */
+	 
 	list_for_each_entry(dai, &sdev->dai_list, list) {
 		if (!dai->name || strcmp(link_name, dai->name))
 			continue;
@@ -231,7 +225,7 @@ static int sof_ipc3_pcm_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 		return -EINVAL;
 	}
 
-	/* read format from topology */
+	 
 	snd_mask_none(fmt);
 
 	switch (private->comp_dai->config.frame_fmt) {
@@ -249,10 +243,10 @@ static int sof_ipc3_pcm_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 		return -EINVAL;
 	}
 
-	/* read rate and channels from topology */
+	 
 	switch (private->dai_config->type) {
 	case SOF_DAI_INTEL_SSP:
-		/* search for config to pcm params match, if not found use default */
+		 
 		ssp_dai_config_pcm_params_match(sdev, (char *)rtd->dai_link->name, params);
 
 		rate->min = private->dai_config[dai->current_config].ssp.fsync_rate;
@@ -266,7 +260,7 @@ static int sof_ipc3_pcm_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 
 		break;
 	case SOF_DAI_INTEL_DMIC:
-		/* DMIC only supports 16 or 32 bit formats */
+		 
 		if (private->comp_dai->config.frame_fmt == SOF_IPC_FRAME_S24_4LE) {
 			dev_err(component->dev, "Invalid fmt %d for DAI type %d\n",
 				private->comp_dai->config.frame_fmt,
@@ -274,10 +268,7 @@ static int sof_ipc3_pcm_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 		}
 		break;
 	case SOF_DAI_INTEL_HDA:
-		/*
-		 * HDAudio does not follow the default trigger
-		 * sequence due to firmware implementation
-		 */
+		 
 		for_each_dpcm_fe(rtd, SNDRV_PCM_STREAM_PLAYBACK, dpcm) {
 			struct snd_soc_pcm_runtime *fe = dpcm->fe;
 
@@ -286,10 +277,7 @@ static int sof_ipc3_pcm_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 		}
 		break;
 	case SOF_DAI_INTEL_ALH:
-		/*
-		 * Dai could run with different channel count compared with
-		 * front end, so get dai channel count from topology
-		 */
+		 
 		channels->min = private->dai_config->alh.channels;
 		channels->max = private->dai_config->alh.channels;
 		break;

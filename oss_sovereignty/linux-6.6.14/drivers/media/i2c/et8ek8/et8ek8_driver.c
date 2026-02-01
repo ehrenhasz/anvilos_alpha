@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * et8ek8_driver.c
- *
- * Copyright (C) 2008 Nokia Corporation
- *
- * Contact: Sakari Ailus <sakari.ailus@iki.fi>
- *          Tuukka Toivonen <tuukkat76@gmail.com>
- *          Pavel Machek <pavel@ucw.cz>
- *
- * Based on code from Toni Leinonen <toni.leinonen@offcode.fi>.
- *
- * This driver is based on the Micron MT9T012 camera imager driver
- * (C) Texas Instruments.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -66,19 +53,12 @@ enum et8ek8_versions {
 	ET8EK8_REV_2,
 };
 
-/*
- * This table describes what should be written to the sensor register
- * for each gain value. The gain(index in the table) is in terms of
- * 0.1EV, i.e. 10 indexes in the table give 2 time more gain [0] in
- * the *analog gain, [1] in the digital gain
- *
- * Analog gain [dB] = 20*log10(regvalue/32); 0x20..0x100
- */
+ 
 static struct et8ek8_gain {
 	u16 analog;
 	u16 digital;
 } const et8ek8_gain_table[] = {
-	{ 32,    0},  /* x1 */
+	{ 32,    0},   
 	{ 34,    0},
 	{ 37,    0},
 	{ 39,    0},
@@ -88,7 +68,7 @@ static struct et8ek8_gain {
 	{ 52,    0},
 	{ 56,    0},
 	{ 60,    0},
-	{ 64,    0},  /* x2 */
+	{ 64,    0},   
 	{ 69,    0},
 	{ 74,    0},
 	{ 79,    0},
@@ -98,7 +78,7 @@ static struct et8ek8_gain {
 	{104,    0},
 	{111,    0},
 	{119,    0},
-	{128,    0},  /* x4 */
+	{128,    0},   
 	{137,    0},
 	{147,    0},
 	{158,    0},
@@ -108,7 +88,7 @@ static struct et8ek8_gain {
 	{208,    0},
 	{223,    0},
 	{239,    0},
-	{256,    0},  /* x8 */
+	{256,    0},   
 	{256,   73},
 	{256,  152},
 	{256,  236},
@@ -118,26 +98,21 @@ static struct et8ek8_gain {
 	{256,  639},
 	{256,  758},
 	{256,  886},
-	{256, 1023},  /* x16 */
+	{256, 1023},   
 };
 
-/* Register definitions */
+ 
 #define REG_REVISION_NUMBER_L	0x1200
 #define REG_REVISION_NUMBER_H	0x1201
 
 #define PRIV_MEM_START_REG	0x0008
 #define PRIV_MEM_WIN_SIZE	8
 
-#define ET8EK8_I2C_DELAY	3	/* msec delay b/w accesses */
+#define ET8EK8_I2C_DELAY	3	 
 
 #define USE_CRC			1
 
-/*
- * Register access helpers
- *
- * Read a 8/16/32-bit i2c register.  The value is returned in 'val'.
- * Returns zero if successful, or non-zero otherwise.
- */
+ 
 static int et8ek8_i2c_read_reg(struct i2c_client *client, u16 data_length,
 			       u16 reg, u32 *val)
 {
@@ -155,7 +130,7 @@ static int et8ek8_i2c_read_reg(struct i2c_client *client, u16 data_length,
 	msg.len = 2;
 	msg.buf = data;
 
-	/* high byte goes out first */
+	 
 	data[0] = (u8) (reg >> 8);
 	data[1] = (u8) (reg & 0xff);
 	r = i2c_transfer(client->adapter, &msg, 1);
@@ -169,7 +144,7 @@ static int et8ek8_i2c_read_reg(struct i2c_client *client, u16 data_length,
 		goto err;
 
 	*val = 0;
-	/* high byte comes first */
+	 
 	if (data_length == ET8EK8_REG_8BIT)
 		*val = data[0];
 	else
@@ -188,11 +163,11 @@ static void et8ek8_i2c_create_msg(struct i2c_client *client, u16 len, u16 reg,
 				  unsigned char *buf)
 {
 	msg->addr = client->addr;
-	msg->flags = 0; /* Write */
+	msg->flags = 0;  
 	msg->len = 2 + len;
 	msg->buf = buf;
 
-	/* high byte goes out first */
+	 
 	buf[0] = (u8) (reg >> 8);
 	buf[1] = (u8) (reg & 0xff);
 
@@ -210,11 +185,7 @@ static void et8ek8_i2c_create_msg(struct i2c_client *client, u16 len, u16 reg,
 	}
 }
 
-/*
- * A buffered write method that puts the wanted register write
- * commands in smaller number of message lists and passes the lists to
- * the i2c framework
- */
+ 
 static int et8ek8_i2c_buffered_write_regs(struct i2c_client *client,
 					  const struct et8ek8_reg *wnext,
 					  int cnt)
@@ -226,7 +197,7 @@ static int et8ek8_i2c_buffered_write_regs(struct i2c_client *client,
 	u32 val;
 	int rval;
 
-	/* Create new write messages for all writes */
+	 
 	while (wcnt < cnt) {
 		data_length = wnext->type;
 		reg = wnext->reg;
@@ -236,7 +207,7 @@ static int et8ek8_i2c_buffered_write_regs(struct i2c_client *client,
 		et8ek8_i2c_create_msg(client, data_length, reg,
 				    val, &msg[wcnt], &data[wcnt][0]);
 
-		/* Update write count */
+		 
 		wcnt++;
 
 		if (wcnt < ET8EK8_MAX_MSG)
@@ -255,12 +226,7 @@ static int et8ek8_i2c_buffered_write_regs(struct i2c_client *client,
 	return rval < 0 ? rval : 0;
 }
 
-/*
- * Write a list of registers to i2c device.
- *
- * The list of registers is terminated by ET8EK8_REG_TERM.
- * Returns zero if successful, or non-zero otherwise.
- */
+ 
 static int et8ek8_i2c_write_regs(struct i2c_client *client,
 				 const struct et8ek8_reg *regs)
 {
@@ -273,52 +239,37 @@ static int et8ek8_i2c_write_regs(struct i2c_client *client,
 	if (!regs)
 		return -EINVAL;
 
-	/* Initialize list pointers to the start of the list */
+	 
 	next = regs;
 
 	do {
-		/*
-		 * We have to go through the list to figure out how
-		 * many regular writes we have in a row
-		 */
+		 
 		while (next->type != ET8EK8_REG_TERM &&
 		       next->type != ET8EK8_REG_DELAY) {
-			/*
-			 * Here we check that the actual length fields
-			 * are valid
-			 */
+			 
 			if (WARN(next->type != ET8EK8_REG_8BIT &&
 				 next->type != ET8EK8_REG_16BIT,
 				 "Invalid type = %d", next->type)) {
 				return -EINVAL;
 			}
-			/*
-			 * Increment count of successive writes and
-			 * read pointer
-			 */
+			 
 			cnt++;
 			next++;
 		}
 
-		/* Now we start writing ... */
+		 
 		r = et8ek8_i2c_buffered_write_regs(client, regs, cnt);
 
-		/* ... and then check that everything was OK */
+		 
 		if (r < 0) {
 			dev_err(&client->dev, "i2c transfer error!\n");
 			return r;
 		}
 
-		/*
-		 * If we ran into a sleep statement when going through
-		 * the list, this is where we snooze for the required time
-		 */
+		 
 		if (next->type == ET8EK8_REG_DELAY) {
 			msleep(next->val);
-			/*
-			 * ZZZ ...
-			 * Update list pointers and cnt and start over ...
-			 */
+			 
 			next++;
 			regs = next;
 			cnt = 0;
@@ -328,10 +279,7 @@ static int et8ek8_i2c_write_regs(struct i2c_client *client,
 	return 0;
 }
 
-/*
- * Write to a 8/16-bit register.
- * Returns zero if successful, or non-zero otherwise.
- */
+ 
 static int et8ek8_i2c_write_reg(struct i2c_client *client, u16 data_length,
 				u16 reg, u32 val)
 {
@@ -410,16 +358,7 @@ static struct et8ek8_reglist *et8ek8_reglist_find_mode_fmt(
 	unsigned int max_dist_match = (unsigned int)-1;
 	unsigned int max_dist_other = (unsigned int)-1;
 
-	/*
-	 * Find the mode with the closest image size. The distance between
-	 * image sizes is the size in pixels of the non-overlapping regions
-	 * between the requested size and the frame-specified size.
-	 *
-	 * Store both the closest mode that matches the requested format, and
-	 * the closest mode for all other formats. The best match is returned
-	 * if found, otherwise the best mode with a non-matching format is
-	 * returned.
-	 */
+	 
 	for (; *list; list++) {
 		unsigned int dist;
 
@@ -484,7 +423,7 @@ static int et8ek8_reglist_cmp(const void *a, const void *b)
 	const struct et8ek8_reglist **list1 = (const struct et8ek8_reglist **)a,
 		**list2 = (const struct et8ek8_reglist **)b;
 
-	/* Put real modes in the beginning. */
+	 
 	if ((*list1)->type == ET8EK8_REGLIST_MODE &&
 	    (*list2)->type != ET8EK8_REGLIST_MODE)
 		return -1;
@@ -492,7 +431,7 @@ static int et8ek8_reglist_cmp(const void *a, const void *b)
 	    (*list2)->type == ET8EK8_REGLIST_MODE)
 		return 1;
 
-	/* Descending width. */
+	 
 	if ((*list1)->mode.window_width > (*list2)->mode.window_width)
 		return -1;
 	if ((*list1)->mode.window_width < (*list2)->mode.window_width)
@@ -546,11 +485,7 @@ static int et8ek8_reglist_import(struct i2c_client *client,
 	return 0;
 }
 
-/* Called to change the V4L2 gain control value. This function
- * rounds and clamps the given value and updates the V4L2 control value.
- * If power is on, also updates the sensor analog and digital gains.
- * gain is in 0.1 EV (exposure value) units.
- */
+ 
 static int et8ek8_set_gain(struct et8ek8_sensor *sensor, s32 gain)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->subdev);
@@ -559,7 +494,7 @@ static int et8ek8_set_gain(struct et8ek8_sensor *sensor, s32 gain)
 
 	new = et8ek8_gain_table[gain];
 
-	/* FIXME: optimise I2C writes! */
+	 
 	r = et8ek8_i2c_write_reg(client, ET8EK8_REG_8BIT,
 				0x124a, new.analog >> 8);
 	if (r)
@@ -584,7 +519,7 @@ static int et8ek8_set_test_pattern(struct et8ek8_sensor *sensor, s32 mode)
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->subdev);
 	int cbh_mode, cbv_mode, tp_mode, din_sw, r1420, rval;
 
-	/* Values for normal mode */
+	 
 	cbh_mode = 0;
 	cbv_mode = 0;
 	tp_mode  = 0;
@@ -592,7 +527,7 @@ static int et8ek8_set_test_pattern(struct et8ek8_sensor *sensor, s32 mode)
 	r1420    = 0xF0;
 
 	if (mode) {
-		/* Test pattern mode */
+		 
 		if (mode < 5) {
 			cbh_mode = 1;
 			cbv_mode = 1;
@@ -629,9 +564,7 @@ static int et8ek8_set_test_pattern(struct et8ek8_sensor *sensor, s32 mode)
 	return et8ek8_i2c_write_reg(client, ET8EK8_REG_8BIT, 0x1420, r1420);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 controls
- */
+ 
 
 static int et8ek8_set_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -684,7 +617,7 @@ static int et8ek8_init_controls(struct et8ek8_sensor *sensor)
 
 	v4l2_ctrl_handler_init(&sensor->ctrl_handler, 4);
 
-	/* V4L2_CID_GAIN */
+	 
 	v4l2_ctrl_new_std(&sensor->ctrl_handler, &et8ek8_ctrl_ops,
 			  V4L2_CID_GAIN, 0, ARRAY_SIZE(et8ek8_gain_table) - 1,
 			  1, 0);
@@ -699,12 +632,12 @@ static int et8ek8_init_controls(struct et8ek8_sensor *sensor)
 					  min, max, min, max);
 	}
 
-	/* V4L2_CID_PIXEL_RATE */
+	 
 	sensor->pixel_rate =
 		v4l2_ctrl_new_std(&sensor->ctrl_handler, &et8ek8_ctrl_ops,
 		V4L2_CID_PIXEL_RATE, 1, INT_MAX, 1, 1);
 
-	/* V4L2_CID_TEST_PATTERN */
+	 
 	v4l2_ctrl_new_std_menu_items(&sensor->ctrl_handler,
 				     &et8ek8_ctrl_ops, V4L2_CID_TEST_PATTERN,
 				     ARRAY_SIZE(et8ek8_test_pattern_menu) - 1,
@@ -731,11 +664,7 @@ static void et8ek8_update_controls(struct et8ek8_sensor *sensor)
 	min = 1;
 	max = mode->max_exp;
 
-	/*
-	 * Calculate average pixel clock per line. Assume buffers can spread
-	 * the data over horizontal blanking time. Rounding upwards.
-	 * Formula taken from stock Nokia N900 kernel.
-	 */
+	 
 	pixel_rate = ((mode->pixel_clock + (1 << S) - 1) >> S) + mode->width;
 	pixel_rate = mode->window_width * (pixel_rate - 1) / mode->width;
 
@@ -753,10 +682,7 @@ static int et8ek8_configure(struct et8ek8_sensor *sensor)
 	if (rval)
 		goto fail;
 
-	/* Controls set while the power to the sensor is turned off are saved
-	 * but not applied to the hardware. Now that we're about to start
-	 * streaming apply all the current values to the hardware.
-	 */
+	 
 	rval = v4l2_ctrl_handler_setup(&sensor->ctrl_handler);
 	if (rval)
 		goto fail;
@@ -798,9 +724,7 @@ static int et8ek8_s_stream(struct v4l2_subdev *subdev, int streaming)
 	return et8ek8_stream_on(sensor);
 }
 
-/* --------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
 static int et8ek8_power_off(struct et8ek8_sensor *sensor)
 {
@@ -845,11 +769,11 @@ static int et8ek8_power_on(struct et8ek8_sensor *sensor)
 	if (rval)
 		goto out;
 
-	udelay(10); /* I wish this is a good value */
+	udelay(10);  
 
 	gpiod_set_value(sensor->reset, 1);
 
-	msleep(5000 * 1000 / xclk_freq + 1); /* Wait 5000 cycles */
+	msleep(5000 * 1000 / xclk_freq + 1);  
 
 	rval = et8ek8_i2c_reglist_find_write(client, &meta_reglist,
 					     ET8EK8_REGLIST_POWERON);
@@ -860,7 +784,7 @@ static int et8ek8_power_on(struct et8ek8_sensor *sensor)
 	rval = et8ek8_i2c_read_reg(client, ET8EK8_REG_8BIT, 0x1263, &val);
 	if (rval)
 		goto out;
-#if USE_CRC /* TODO get crc setting from DT */
+#if USE_CRC  
 	val |= BIT(4);
 #else
 	val &= ~BIT(4);
@@ -877,9 +801,7 @@ out:
 	return rval;
 }
 
-/* --------------------------------------------------------------------------
- * V4L2 subdev video operations
- */
+ 
 #define MAX_FMTS 4
 static int et8ek8_enum_mbus_code(struct v4l2_subdev *subdev,
 				 struct v4l2_subdev_state *sd_state,
@@ -938,7 +860,7 @@ static int et8ek8_enum_frame_size(struct v4l2_subdev *subdev,
 		if (fse->code != format.code)
 			continue;
 
-		/* Assume that the modes are grouped by frame size. */
+		 
 		if (format.width == cmp_width && format.height == cmp_height)
 			continue;
 
@@ -1088,20 +1010,20 @@ static int et8ek8_g_priv_mem(struct v4l2_subdev *subdev)
 	u8 *ptr  = sensor->priv_mem;
 	int rval = 0;
 
-	/* Read the EEPROM window-by-window, each window 8 bytes */
+	 
 	do {
 		u8 buffer[PRIV_MEM_WIN_SIZE];
 		struct i2c_msg msg;
 		int bytes, i;
 		int ofs;
 
-		/* Set the current window */
+		 
 		rval = et8ek8_i2c_write_reg(client, ET8EK8_REG_8BIT, 0x0001,
 					    0xe0 | (offset >> 3));
 		if (rval < 0)
 			return rval;
 
-		/* Wait for status bit */
+		 
 		for (i = 0; i < 1000; ++i) {
 			u32 status;
 
@@ -1117,8 +1039,8 @@ static int et8ek8_g_priv_mem(struct v4l2_subdev *subdev)
 		if (i == 1000)
 			return -EIO;
 
-		/* Read window, 8 bytes at once, and copy to user space */
-		ofs = offset & 0x07;	/* Offset within this window */
+		 
+		ofs = offset & 0x07;	 
 		bytes = length + ofs > 8 ? 8-ofs : length;
 		msg.addr = client->addr;
 		msg.flags = 0;
@@ -1210,7 +1132,7 @@ static int et8ek8_dev_init(struct v4l2_subdev *subdev)
 			ET8EK8_NAME);
 		goto out_poweroff;
 	}
-	rval = et8ek8_stream_on(sensor); /* Needed to be able to read EEPROM */
+	rval = et8ek8_stream_on(sensor);  
 	if (rval)
 		goto out_poweroff;
 	rval = et8ek8_g_priv_mem(subdev);
@@ -1233,9 +1155,7 @@ out_poweroff:
 	return rval;
 }
 
-/* --------------------------------------------------------------------------
- * sysfs attributes
- */
+ 
 static ssize_t
 priv_mem_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -1252,9 +1172,7 @@ priv_mem_show(struct device *dev, struct device_attribute *attr, char *buf)
 }
 static DEVICE_ATTR_RO(priv_mem);
 
-/* --------------------------------------------------------------------------
- * V4L2 subdev core operations
- */
+ 
 
 static int
 et8ek8_registered(struct v4l2_subdev *subdev)
@@ -1303,16 +1221,14 @@ static int et8ek8_set_power(struct v4l2_subdev *subdev, int on)
 
 	mutex_lock(&sensor->power_lock);
 
-	/* If the power count is modified from 0 to != 0 or from != 0 to 0,
-	 * update the power state.
-	 */
+	 
 	if (sensor->power_count == !on) {
 		ret = __et8ek8_set_power(sensor, !!on);
 		if (ret < 0)
 			goto done;
 	}
 
-	/* Update the power count. */
+	 
 	sensor->power_count += on ? 1 : -1;
 	WARN_ON(sensor->power_count < 0);
 
@@ -1371,9 +1287,7 @@ static const struct v4l2_subdev_internal_ops et8ek8_internal_ops = {
 	.close = et8ek8_close,
 };
 
-/* --------------------------------------------------------------------------
- * I2C driver
- */
+ 
 static int __maybe_unused et8ek8_suspend(struct device *dev)
 {
 	struct v4l2_subdev *subdev = dev_get_drvdata(dev);

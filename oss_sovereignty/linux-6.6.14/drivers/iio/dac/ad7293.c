@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7293 driver
- *
- * Copyright 2021 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -23,7 +19,7 @@
 #define AD7293_PAGE_ADDR_MSK			GENMASK(15, 8)
 #define AD7293_PAGE(x)				FIELD_PREP(AD7293_PAGE_ADDR_MSK, x)
 
-/* AD7293 Register Map Common */
+ 
 #define AD7293_REG_NO_OP			(AD7293_R1B | AD7293_PAGE(0x0) | 0x0)
 #define AD7293_REG_PAGE_SELECT			(AD7293_R1B | AD7293_PAGE(0x0) | 0x1)
 #define AD7293_REG_CONV_CMD			(AD7293_R2B | AD7293_PAGE(0x0) | 0x2)
@@ -32,7 +28,7 @@
 #define AD7293_REG_DEVICE_ID			(AD7293_R2B | AD7293_PAGE(0x0) | 0xC)
 #define AD7293_REG_SOFT_RESET			(AD7293_R2B | AD7293_PAGE(0x0) | 0xF)
 
-/* AD7293 Register Map Page 0x0 */
+ 
 #define AD7293_REG_VIN0				(AD7293_R2B | AD7293_PAGE(0x0) | 0x10)
 #define AD7293_REG_VIN1				(AD7293_R2B | AD7293_PAGE(0x0) | 0x11)
 #define AD7293_REG_VIN2				(AD7293_R2B | AD7293_PAGE(0x0) | 0x12)
@@ -53,7 +49,7 @@
 #define AD7293_REG_BI_VOUT2			(AD7293_R2B | AD7293_PAGE(0x0) | 0x36)
 #define AD7293_REG_BI_VOUT3			(AD7293_R2B | AD7293_PAGE(0x0) | 0x37)
 
-/* AD7293 Register Map Page 0x2 */
+ 
 #define AD7293_REG_DIGITAL_OUT_EN		(AD7293_R2B | AD7293_PAGE(0x2) | 0x11)
 #define AD7293_REG_DIGITAL_INOUT_FUNC		(AD7293_R2B | AD7293_PAGE(0x2) | 0x12)
 #define AD7293_REG_DIGITAL_FUNC_POL		(AD7293_R2B | AD7293_PAGE(0x2) | 0x13)
@@ -79,12 +75,12 @@
 #define AD7293_REG_CL_FR_IT			(AD7293_R2B | AD7293_PAGE(0x2) | 0x2E)
 #define AD7293_REG_INTX_AVSS_AVDD		(AD7293_R2B | AD7293_PAGE(0x2) | 0x2F)
 
-/* AD7293 Register Map Page 0x3 */
+ 
 #define AD7293_REG_VINX_SEQ			(AD7293_R2B | AD7293_PAGE(0x3) | 0x10)
 #define AD7293_REG_ISENSEX_TSENSEX_SEQ		(AD7293_R2B | AD7293_PAGE(0x3) | 0x11)
 #define AD7293_REG_RSX_MON_BI_VOUTX_SEQ		(AD7293_R2B | AD7293_PAGE(0x3) | 0x12)
 
-/* AD7293 Register Map Page 0xE */
+ 
 #define AD7293_REG_VIN0_OFFSET			(AD7293_R1B | AD7293_PAGE(0xE) | 0x10)
 #define AD7293_REG_VIN1_OFFSET			(AD7293_R1B | AD7293_PAGE(0xE) | 0x11)
 #define AD7293_REG_VIN2_OFFSET			(AD7293_R1B | AD7293_PAGE(0xE) | 0x12)
@@ -105,7 +101,7 @@
 #define AD7293_REG_BI_VOUT2_OFFSET		(AD7293_R1B | AD7293_PAGE(0xE) | 0x36)
 #define AD7293_REG_BI_VOUT3_OFFSET		(AD7293_R1B | AD7293_PAGE(0xE) | 0x37)
 
-/* AD7293 Miscellaneous Definitions */
+ 
 #define AD7293_READ				BIT(7)
 #define AD7293_TRANSF_LEN_MSK			GENMASK(17, 16)
 
@@ -138,7 +134,7 @@ static const int adc_range_table[] = {0, 1, 2, 3};
 
 struct ad7293_state {
 	struct spi_device *spi;
-	/* Protect against concurrent accesses to the device, page selection and data content */
+	 
 	struct mutex lock;
 	struct gpio_desc *gpio_reset;
 	struct regulator *reg_avdd;
@@ -770,7 +766,7 @@ static int ad7293_reset(struct ad7293_state *st)
 		return 0;
 	}
 
-	/* Perform a software reset */
+	 
 	return ad7293_soft_reset(st);
 }
 
@@ -858,7 +854,7 @@ static int ad7293_init(struct ad7293_state *st)
 	if (ret > 5500000 || ret < 1700000)
 		return -EINVAL;
 
-	/* Check Chip ID */
+	 
 	ret = __ad7293_spi_read(st, AD7293_REG_DEVICE_ID, &chip_id);
 	if (ret)
 		return ret;

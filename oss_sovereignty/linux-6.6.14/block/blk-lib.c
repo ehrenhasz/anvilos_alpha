@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions related to generic helpers functions
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/bio.h>
@@ -21,17 +19,11 @@ static sector_t bio_discard_limit(struct block_device *bdev, sector_t sector)
 	granularity_aligned_sector =
 		round_up(sector, discard_granularity >> SECTOR_SHIFT);
 
-	/*
-	 * Make sure subsequent bios start aligned to the discard granularity if
-	 * it needs to be split.
-	 */
+	 
 	if (granularity_aligned_sector != sector)
 		return granularity_aligned_sector - sector;
 
-	/*
-	 * Align the bio size to the discard granularity to make splitting the bio
-	 * at discard granularity boundaries easier in the driver if needed.
-	 */
+	 
 	return round_down(UINT_MAX, discard_granularity) >> SECTOR_SHIFT;
 }
 
@@ -46,7 +38,7 @@ int __blkdev_issue_discard(struct block_device *bdev, sector_t sector,
 	if (!bdev_max_discard_sectors(bdev))
 		return -EOPNOTSUPP;
 
-	/* In case the discard granularity isn't set by buggy device driver */
+	 
 	if (WARN_ON_ONCE(!bdev_discard_granularity(bdev))) {
 		pr_err_ratelimited("%pg: Error: discard_granularity is 0.\n",
 				   bdev);
@@ -70,12 +62,7 @@ int __blkdev_issue_discard(struct block_device *bdev, sector_t sector,
 		sector += req_sects;
 		nr_sects -= req_sects;
 
-		/*
-		 * We can loop for a long time in here, if someone does
-		 * full device discards (like mkfs). Be nice and allow
-		 * us to schedule out to avoid softlocking if preempt
-		 * is disabled.
-		 */
+		 
 		cond_resched();
 	}
 
@@ -84,16 +71,7 @@ int __blkdev_issue_discard(struct block_device *bdev, sector_t sector,
 }
 EXPORT_SYMBOL(__blkdev_issue_discard);
 
-/**
- * blkdev_issue_discard - queue a discard
- * @bdev:	blockdev to issue discard for
- * @sector:	start sector
- * @nr_sects:	number of sectors to discard
- * @gfp_mask:	memory allocation flags (for bio_alloc)
- *
- * Description:
- *    Issue a discard request for the sectors in question.
- */
+ 
 int blkdev_issue_discard(struct block_device *bdev, sector_t sector,
 		sector_t nr_sects, gfp_t gfp_mask)
 {
@@ -125,7 +103,7 @@ static int __blkdev_issue_write_zeroes(struct block_device *bdev,
 	if (bdev_read_only(bdev))
 		return -EPERM;
 
-	/* Ensure that max_write_zeroes_sectors doesn't overflow bi_size */
+	 
 	max_write_zeroes_sectors = bdev_write_zeroes_sectors(bdev);
 
 	if (max_write_zeroes_sectors == 0)
@@ -152,12 +130,7 @@ static int __blkdev_issue_write_zeroes(struct block_device *bdev,
 	return 0;
 }
 
-/*
- * Convert a number of 512B sectors to a number of pages.
- * The result is limited to a number of pages that can fit into a BIO.
- * Also make sure that the result is always at least 1 (page) for the cases
- * where nr_sects is lower than the number of sectors in a page.
- */
+ 
 static unsigned int __blkdev_sectors_to_bio_pages(sector_t nr_sects)
 {
 	sector_t pages = DIV_ROUND_UP_SECTOR_T(nr_sects, PAGE_SIZE / 512);
@@ -196,25 +169,7 @@ static int __blkdev_issue_zero_pages(struct block_device *bdev,
 	return 0;
 }
 
-/**
- * __blkdev_issue_zeroout - generate number of zero filed write bios
- * @bdev:	blockdev to issue
- * @sector:	start sector
- * @nr_sects:	number of sectors to write
- * @gfp_mask:	memory allocation flags (for bio_alloc)
- * @biop:	pointer to anchor bio
- * @flags:	controls detailed behavior
- *
- * Description:
- *  Zero-fill a block range, either using hardware offload or by explicitly
- *  writing zeroes to the device.
- *
- *  If a device is using logical block provisioning, the underlying space will
- *  not be released if %flags contains BLKDEV_ZERO_NOUNMAP.
- *
- *  If %flags contains BLKDEV_ZERO_NOFALLBACK, the function will return
- *  -EOPNOTSUPP if no explicit hardware offload for zeroing is provided.
- */
+ 
 int __blkdev_issue_zeroout(struct block_device *bdev, sector_t sector,
 		sector_t nr_sects, gfp_t gfp_mask, struct bio **biop,
 		unsigned flags)
@@ -236,19 +191,7 @@ int __blkdev_issue_zeroout(struct block_device *bdev, sector_t sector,
 }
 EXPORT_SYMBOL(__blkdev_issue_zeroout);
 
-/**
- * blkdev_issue_zeroout - zero-fill a block range
- * @bdev:	blockdev to write
- * @sector:	start sector
- * @nr_sects:	number of sectors to write
- * @gfp_mask:	memory allocation flags (for bio_alloc)
- * @flags:	controls detailed behavior
- *
- * Description:
- *  Zero-fill a block range, either using hardware offload or by explicitly
- *  writing zeroes to the device.  See __blkdev_issue_zeroout() for the
- *  valid values for %flags.
- */
+ 
 int blkdev_issue_zeroout(struct block_device *bdev, sector_t sector,
 		sector_t nr_sects, gfp_t gfp_mask, unsigned flags)
 {
@@ -272,7 +215,7 @@ retry:
 		ret = __blkdev_issue_zero_pages(bdev, sector, nr_sects,
 						gfp_mask, &bio);
 	} else {
-		/* No zeroing offload support */
+		 
 		ret = -EOPNOTSUPP;
 	}
 	if (ret == 0 && bio) {
@@ -286,12 +229,7 @@ retry:
 			goto retry;
 		}
 		if (!bdev_write_zeroes_sectors(bdev)) {
-			/*
-			 * Zeroing offload support was indicated, but the
-			 * device reported ILLEGAL REQUEST (for some devices
-			 * there is no non-destructive way to verify whether
-			 * WRITE ZEROES is actually supported).
-			 */
+			 
 			ret = -EOPNOTSUPP;
 		}
 	}
@@ -309,7 +247,7 @@ int blkdev_issue_secure_erase(struct block_device *bdev, sector_t sector,
 	struct blk_plug plug;
 	int ret = 0;
 
-	/* make sure that "len << SECTOR_SHIFT" doesn't overflow */
+	 
 	if (max_sectors > UINT_MAX >> SECTOR_SHIFT)
 		max_sectors = UINT_MAX >> SECTOR_SHIFT;
 	max_sectors &= ~bs_mask;

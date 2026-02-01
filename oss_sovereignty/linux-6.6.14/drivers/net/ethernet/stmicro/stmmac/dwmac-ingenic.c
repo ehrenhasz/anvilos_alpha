@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwmac-ingenic.c - Ingenic SoCs DWMAC specific glue layer
- *
- * Copyright (c) 2021 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -122,7 +118,7 @@ static int jz4775_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
 		return -EINVAL;
 	}
 
-	/* Update MAC PHY control register */
+	 
 	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
 }
 
@@ -140,7 +136,7 @@ static int x1000_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
 		return -EINVAL;
 	}
 
-	/* Update MAC PHY control register */
+	 
 	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, 0);
 }
 
@@ -160,7 +156,7 @@ static int x1600_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
 		return -EINVAL;
 	}
 
-	/* Update MAC PHY control register */
+	 
 	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
 }
 
@@ -181,7 +177,7 @@ static int x1830_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
 		return -EINVAL;
 	}
 
-	/* Update MAC PHY control register */
+	 
 	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
 }
 
@@ -224,7 +220,7 @@ static int x2000_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
 		return -EINVAL;
 	}
 
-	/* Update MAC PHY control register */
+	 
 	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
 }
 
@@ -258,7 +254,7 @@ static int ingenic_mac_probe(struct platform_device *pdev)
 		goto err_remove_config_dt;
 	}
 
-	/* Get MAC PHY control register */
+	 
 	mac->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node, "mode-reg");
 	if (IS_ERR(mac->regmap)) {
 		dev_err(&pdev->dev, "%s: Failed to get syscon regmap\n", __func__);
@@ -333,7 +329,7 @@ static int ingenic_mac_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(ingenic_mac_pm_ops, ingenic_mac_suspend, ingenic_mac_resume);
 

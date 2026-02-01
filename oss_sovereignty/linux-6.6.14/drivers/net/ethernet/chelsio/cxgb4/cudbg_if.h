@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __CUDBG_IF_H__
 #define __CUDBG_IF_H__
 
-/* Error codes */
+ 
 #define CUDBG_STATUS_NO_MEM -19
 #define CUDBG_STATUS_ENTITY_NOT_FOUND -24
 #define CUDBG_STATUS_NOT_IMPLEMENTED -28
@@ -75,17 +73,17 @@ enum cudbg_dbg_entity_type {
 };
 
 struct cudbg_init {
-	struct adapter *adap; /* Pointer to adapter structure */
-	void *outbuf; /* Output buffer */
-	u32 outbuf_size;  /* Output buffer size */
-	u8 compress_type; /* Type of compression to use */
-	void *compress_buff; /* Compression buffer */
-	u32 compress_buff_size; /* Compression buffer size */
-	void *workspace; /* Workspace for zlib */
+	struct adapter *adap;  
+	void *outbuf;  
+	u32 outbuf_size;   
+	u8 compress_type;  
+	void *compress_buff;  
+	u32 compress_buff_size;  
+	void *workspace;  
 };
 
 static inline unsigned int cudbg_mbytes_to_bytes(unsigned int size)
 {
 	return size * 1024 * 1024;
 }
-#endif /* __CUDBG_IF_H__ */
+#endif  

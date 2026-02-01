@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Boot config tool for initrd image
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -47,17 +45,7 @@ static void xbc_show_compact_tree(void)
 			cnode = xbc_node_get_child(node);
 		while (cnode && xbc_node_is_key(cnode) && !cnode->next) {
 			vnode = xbc_node_get_child(cnode);
-			/*
-			 * If @cnode has value and subkeys, this
-			 * should show it as below.
-			 *
-			 * key(@node) {
-			 *      key(@cnode) = value;
-			 *      key(@cnode) {
-			 *          subkeys;
-			 *      }
-			 * }
-			 */
+			 
 			if (vnode && xbc_node_is_value(vnode) && vnode->next)
 				break;
 			printf("%s.", xbc_node_get_data(node));
@@ -73,10 +61,7 @@ static void xbc_show_compact_tree(void)
 		} else if (cnode && xbc_node_is_value(cnode)) {
 			printf("%s = ", xbc_node_get_data(node));
 			xbc_show_value(cnode, true);
-			/*
-			 * If @node has value and subkeys, continue
-			 * looping on subkeys with same node.
-			 */
+			 
 			if (cnode->next) {
 				cnode = xbc_node_get_next(cnode);
 				continue;
@@ -147,7 +132,7 @@ static int load_xbc_fd(int fd, char **buf, int size)
 	return ret;
 }
 
-/* Return the read size or -errno */
+ 
 static int load_xbc_file(const char *path, char **buf)
 {
 	struct stat stat;
@@ -194,7 +179,7 @@ static int load_xbc_from_initrd(int fd, char **buf)
 	if (read(fd, magic, BOOTCONFIG_MAGIC_LEN) < 0)
 		return pr_errno("Failed to read", -errno);
 
-	/* Check the bootconfig magic bytes */
+	 
 	if (memcmp(magic, BOOTCONFIG_MAGIC, BOOTCONFIG_MAGIC_LEN) != 0)
 		return 0;
 
@@ -209,7 +194,7 @@ static int load_xbc_from_initrd(int fd, char **buf)
 		return pr_errno("Failed to read checksum", -errno);
 	csum = le32toh(csum);
 
-	/* Wrong size error  */
+	 
 	if (stat.st_size < size + 8 + BOOTCONFIG_MAGIC_LEN) {
 		pr_err("bootconfig size is too big\n");
 		return -E2BIG;
@@ -223,7 +208,7 @@ static int load_xbc_from_initrd(int fd, char **buf)
 	if (ret < 0)
 		return ret;
 
-	/* Wrong Checksum */
+	 
 	rcsum = xbc_calc_checksum(*buf, size);
 	if (csum != rcsum) {
 		pr_err("checksum error: %d != %d\n", csum, rcsum);
@@ -231,7 +216,7 @@ static int load_xbc_from_initrd(int fd, char **buf)
 	}
 
 	ret = xbc_init(*buf, size, &msg, NULL);
-	/* Wrong data */
+	 
 	if (ret < 0) {
 		pr_err("parse error: %s.\n", msg);
 		return ret;
@@ -249,7 +234,7 @@ static void show_xbc_error(const char *data, const char *msg, int pos)
 		return;
 	}
 
-	/* Note that pos starts from 0 but lin and col should start from 1. */
+	 
 	col = pos + 1;
 	for (i = 0; i < pos; i++) {
 		if (data[i] == '\n') {
@@ -304,7 +289,7 @@ static int show_xbc(const char *path, bool list)
 		pr_err("Failed to load a boot config from initrd: %d\n", ret);
 		goto out;
 	}
-	/* Assume a bootconfig file if it is enough small */
+	 
 	if (ret == 0 && st.st_size <= XBC_DATA_MAX) {
 		ret = load_xbc_file(path, &buf);
 		if (ret < 0) {
@@ -349,7 +334,7 @@ static int delete_xbc(const char *path)
 					- size - 8 - BOOTCONFIG_MAGIC_LEN);
 		if (ret)
 			ret = -errno;
-	} /* Ignore if there is no boot config in initrd */
+	}  
 
 	close(fd);
 	free(buf);
@@ -375,14 +360,14 @@ static int apply_xbc(const char *path, const char *xbc_path)
 	size = strlen(buf) + 1;
 	csum = xbc_calc_checksum(buf, size);
 
-	/* Backup the bootconfig data */
+	 
 	data = calloc(size + BOOTCONFIG_ALIGN +
 		      sizeof(uint32_t) + sizeof(uint32_t) + BOOTCONFIG_MAGIC_LEN, 1);
 	if (!data)
 		return -ENOMEM;
 	memcpy(data, buf, size);
 
-	/* Check the data format */
+	 
 	ret = xbc_init(buf, size, &msg, &pos);
 	if (ret < 0) {
 		show_xbc_error(data, msg, pos);
@@ -397,11 +382,11 @@ static int apply_xbc(const char *path, const char *xbc_path)
 	printf("\tSize: %u bytes\n", (unsigned int)size);
 	printf("\tChecksum: %d\n", (unsigned int)csum);
 
-	/* TODO: Check the options by schema */
+	 
 	xbc_exit();
 	free(buf);
 
-	/* Remove old boot config if exists */
+	 
 	ret = delete_xbc(path);
 	if (ret < 0) {
 		pr_err("Failed to delete previous boot config: %d\n", ret);
@@ -409,7 +394,7 @@ static int apply_xbc(const char *path, const char *xbc_path)
 		return ret;
 	}
 
-	/* Apply new one */
+	 
 	fd = open(path, O_RDWR | O_APPEND);
 	if (fd < 0) {
 		ret = -errno;
@@ -417,19 +402,19 @@ static int apply_xbc(const char *path, const char *xbc_path)
 		free(data);
 		return ret;
 	}
-	/* TODO: Ensure the @path is initramfs/initrd image */
+	 
 	if (fstat(fd, &stat) < 0) {
 		ret = -errno;
 		pr_err("Failed to get the size of %s\n", path);
 		goto out;
 	}
 
-	/* To align up the total size to BOOTCONFIG_ALIGN, get padding size */
+	 
 	total_size = stat.st_size + size + sizeof(uint32_t) * 2 + BOOTCONFIG_MAGIC_LEN;
 	pad = ((total_size + BOOTCONFIG_ALIGN - 1) & (~BOOTCONFIG_ALIGN_MASK)) - total_size;
 	size += pad;
 
-	/* Add a footer */
+	 
 	p = data + size;
 	*(uint32_t *)p = htole32(size);
 	p += sizeof(uint32_t);
@@ -459,7 +444,7 @@ out:
 	return ret;
 
 out_rollback:
-	/* Map the partial write to -ENOSPC */
+	 
 	if (ret >= 0)
 		ret = -ENOSPC;
 	if (ftruncate(fd, stat.st_size) < 0) {

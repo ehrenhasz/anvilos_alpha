@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2021 Ahmad Fatoum, Pengutronix
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_STARFIVE_JH7100_H__
 #define __DT_BINDINGS_CLOCK_STARFIVE_JH7100_H__
@@ -199,4 +197,4 @@
 
 #define JH7100_CLK_END			189
 
-#endif /* __DT_BINDINGS_CLOCK_STARFIVE_JH7100_H__ */
+#endif  

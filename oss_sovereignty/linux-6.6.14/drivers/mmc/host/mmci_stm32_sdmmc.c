@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Author: Ludovic.barre@st.com for STMicroelectronics.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -86,10 +83,7 @@ static int sdmmc_idma_validate_data(struct mmci_host *host,
 	struct scatterlist *sg;
 	int i;
 
-	/*
-	 * idma has constraints on idmabase & idmasize for each element
-	 * excepted the last element which has no constraint on idmasize
-	 */
+	 
 	idma->use_bounce_buffer = false;
 	for_each_sg(data->sg, sg, data->sg_len - 1, i) {
 		if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
@@ -160,7 +154,7 @@ static int _sdmmc_idma_prep_data(struct mmci_host *host,
 static int sdmmc_idma_prep_data(struct mmci_host *host,
 				struct mmc_data *data, bool next)
 {
-	/* Check if job is already prepared. */
+	 
 	if (!next && data->host_cookie == host->next_cookie)
 		return 0;
 
@@ -249,7 +243,7 @@ static int sdmmc_idma_start(struct mmci_host *host, unsigned int *datactrl)
 		desc[i].idmasize = sg_dma_len(sg);
 	}
 
-	/* notice the end of link list */
+	 
 	desc[data->sg_len - 1].idmalar &= ~MMCI_STM32_ULA;
 
 	dma_wmb();
@@ -279,11 +273,7 @@ static void mmci_sdmmc_set_clkreg(struct mmci_host *host, unsigned int desired)
 	    host->mmc->ios.timing == MMC_TIMING_UHS_DDR50)
 		ddr = MCI_STM32_CLK_DDR;
 
-	/*
-	 * cclk = mclk / (2 * clkdiv)
-	 * clkdiv 0 => bypass
-	 * in ddr mode bypass is not possible
-	 */
+	 
 	if (desired) {
 		if (desired >= host->mclk && !ddr) {
 			host->cclk = host->mclk;
@@ -294,16 +284,12 @@ static void mmci_sdmmc_set_clkreg(struct mmci_host *host, unsigned int desired)
 			host->cclk = host->mclk / (2 * clk);
 		}
 	} else {
-		/*
-		 * while power-on phase the clock can't be define to 0,
-		 * Only power-off and power-cyc deactivate the clock.
-		 * if desired clock is 0, set max divider
-		 */
+		 
 		clk = MCI_STM32_CLK_CLKDIV_MSK;
 		host->cclk = host->mclk / (2 * clk);
 	}
 
-	/* Set actual clock for debug */
+	 
 	if (host->mmc->ios.power_mode == MMC_POWER_ON)
 		host->mmc->actual_clock = host->cclk;
 	else
@@ -329,7 +315,7 @@ static void sdmmc_dlyb_mp15_input_ck(struct sdmmc_dlyb *dlyb)
 	if (!dlyb || !dlyb->base)
 		return;
 
-	/* Output clock = Input clock */
+	 
 	writel_relaxed(0, dlyb->base + DLYB_CR);
 }
 
@@ -338,43 +324,30 @@ static void mmci_sdmmc_set_pwrreg(struct mmci_host *host, unsigned int pwr)
 	struct mmc_ios ios = host->mmc->ios;
 	struct sdmmc_dlyb *dlyb = host->variant_priv;
 
-	/* adds OF options */
+	 
 	pwr = host->pwr_reg_add;
 
 	if (dlyb && dlyb->ops->set_input_ck)
 		dlyb->ops->set_input_ck(dlyb);
 
 	if (ios.power_mode == MMC_POWER_OFF) {
-		/* Only a reset could power-off sdmmc */
+		 
 		reset_control_assert(host->rst);
 		udelay(2);
 		reset_control_deassert(host->rst);
 
-		/*
-		 * Set the SDMMC in Power-cycle state.
-		 * This will make that the SDMMC_D[7:0], SDMMC_CMD and SDMMC_CK
-		 * are driven low, to prevent the Card from being supplied
-		 * through the signal lines.
-		 */
+		 
 		mmci_write_pwrreg(host, MCI_STM32_PWR_CYC | pwr);
 	} else if (ios.power_mode == MMC_POWER_ON) {
-		/*
-		 * After power-off (reset): the irq mask defined in probe
-		 * functionis lost
-		 * ault irq mask (probe) must be activated
-		 */
+		 
 		writel(MCI_IRQENABLE | host->variant->start_err,
 		       host->base + MMCIMASK0);
 
-		/* preserves voltage switch bits */
+		 
 		pwr |= host->pwr_reg & (MCI_STM32_VSWITCHEN |
 					MCI_STM32_VSWITCH);
 
-		/*
-		 * After a power-cycle state, we must set the SDMMC in
-		 * Power-off. The SDMMC_D[7:0], SDMMC_CMD and SDMMC_CK are
-		 * driven high. Then we can set the SDMMC to Power-on state
-		 */
+		 
 		mmci_write_pwrreg(host, MCI_PWR_OFF | pwr);
 		mdelay(1);
 		mmci_write_pwrreg(host, MCI_PWR_ON | pwr);
@@ -422,15 +395,11 @@ static bool sdmmc_busy_complete(struct mmci_host *host, struct mmc_command *cmd,
 	busy_d0end = sdmmc_status & MCI_STM32_BUSYD0END;
 	busy_d0 = sdmmc_status & MCI_STM32_BUSYD0;
 
-	/* complete if there is an error or busy_d0end */
+	 
 	if ((status & err_msk) || busy_d0end)
 		goto complete;
 
-	/*
-	 * On response the busy signaling is reflected in the BUSYD0 flag.
-	 * if busy_d0 is in-progress we must activate busyd0end interrupt
-	 * to wait this completion. Else this request has no busy step.
-	 */
+	 
 	if (busy_d0) {
 		if (!host->busy_status) {
 			writel_relaxed(mask | host->variant->busy_detect_mask,
@@ -614,10 +583,7 @@ static int sdmmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	if (ret)
 		return ret;
 
-	/*
-	 * SDMMC_FBCK is selected when an external Delay Block is needed
-	 * with SDR104 or HS200.
-	 */
+	 
 	clk = host->clk_reg;
 	clk &= ~MCI_STM32_CLK_SEL_MSK;
 	clk |= MCI_STM32_CLK_SELFBCK;
@@ -632,9 +598,9 @@ static int sdmmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
 
 static void sdmmc_pre_sig_volt_vswitch(struct mmci_host *host)
 {
-	/* clear the voltage switch completion flag */
+	 
 	writel_relaxed(MCI_STM32_VSWENDC, host->base + MMCICLEAR);
-	/* enable Voltage switch procedure */
+	 
 	mmci_write_pwrreg(host, host->pwr_reg | MCI_STM32_VSWITCHEN);
 }
 
@@ -651,7 +617,7 @@ static int sdmmc_post_sig_volt_switch(struct mmci_host *host,
 		mmci_write_pwrreg(host, host->pwr_reg | MCI_STM32_VSWITCH);
 		spin_unlock_irqrestore(&host->lock, flags);
 
-		/* wait voltage switch completion while 10ms */
+		 
 		ret = readl_relaxed_poll_timeout(host->base + MMCISTATUS,
 						 status,
 						 (status & MCI_STM32_VSWEND),

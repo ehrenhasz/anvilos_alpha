@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_DSOS
 #define __PERF_DSOS
 
@@ -11,13 +11,10 @@
 struct dso;
 struct dso_id;
 
-/*
- * DSOs are put into both a list for fast iteration and rbtree for fast
- * long name lookup.
- */
+ 
 struct dsos {
 	struct list_head    head;
-	struct rb_root	    root;	/* rbtree root sorted by long name */
+	struct rb_root	    root;	 
 	struct rw_semaphore lock;
 };
 
@@ -37,4 +34,4 @@ size_t __dsos__fprintf_buildid(struct list_head *head, FILE *fp,
 			       bool (skip)(struct dso *dso, int parm), int parm);
 size_t __dsos__fprintf(struct list_head *head, FILE *fp);
 
-#endif /* __PERF_DSOS */
+#endif  

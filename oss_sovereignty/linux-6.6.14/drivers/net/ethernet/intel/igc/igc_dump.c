@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c)  2018 Intel Corporation */
+
+ 
 
 #include "igc.h"
 
@@ -9,16 +9,16 @@ struct igc_reg_info {
 };
 
 static const struct igc_reg_info igc_reg_info_tbl[] = {
-	/* General Registers */
+	 
 	{IGC_CTRL, "CTRL"},
 	{IGC_STATUS, "STATUS"},
 	{IGC_CTRL_EXT, "CTRL_EXT"},
 	{IGC_MDIC, "MDIC"},
 
-	/* Interrupt Registers */
+	 
 	{IGC_ICR, "ICR"},
 
-	/* RX Registers */
+	 
 	{IGC_RCTL, "RCTL"},
 	{IGC_RDLEN(0), "RDLEN"},
 	{IGC_RDH(0), "RDH"},
@@ -27,7 +27,7 @@ static const struct igc_reg_info igc_reg_info_tbl[] = {
 	{IGC_RDBAL(0), "RDBAL"},
 	{IGC_RDBAH(0), "RDBAH"},
 
-	/* TX Registers */
+	 
 	{IGC_TCTL, "TCTL"},
 	{IGC_TDBAL(0), "TDBAL"},
 	{IGC_TDBAH(0), "TDBAH"},
@@ -36,11 +36,11 @@ static const struct igc_reg_info igc_reg_info_tbl[] = {
 	{IGC_TDT(0), "TDT"},
 	{IGC_TXDCTL(0), "TXDCTL"},
 
-	/* List Terminator */
+	 
 	{}
 };
 
-/* igc_regdump - register printout routine */
+ 
 static void igc_regdump(struct igc_hw *hw, struct igc_reg_info *reginfo)
 {
 	struct net_device *dev = igc_get_hw_dev(hw);
@@ -108,7 +108,7 @@ static void igc_regdump(struct igc_hw *hw, struct igc_reg_info *reginfo)
 		    regs[2], regs[3]);
 }
 
-/* igc_rings_dump - Tx-rings and Rx-rings */
+ 
 void igc_rings_dump(struct igc_adapter *adapter)
 {
 	struct net_device *netdev = adapter->netdev;
@@ -126,7 +126,7 @@ void igc_rings_dump(struct igc_adapter *adapter)
 	netdev_info(netdev, "Device info: state %016lX trans_start %016lX\n",
 		    netdev->state, dev_trans_start(netdev));
 
-	/* Print TX Ring Summary */
+	 
 	if (!netif_running(netdev))
 		goto exit;
 
@@ -146,22 +146,13 @@ void igc_rings_dump(struct igc_adapter *adapter)
 			    (u64)buffer_info->time_stamp);
 	}
 
-	/* Print TX Rings */
+	 
 	if (!netif_msg_tx_done(adapter))
 		goto rx_ring_summary;
 
 	netdev_info(netdev, "TX Rings Dump\n");
 
-	/* Transmit Descriptor Formats
-	 *
-	 * Advanced Transmit Descriptor
-	 *   +--------------------------------------------------------------+
-	 * 0 |         Buffer Address [63:0]                                |
-	 *   +--------------------------------------------------------------+
-	 * 8 | PAYLEN  | PORTS  |CC|IDX | STA | DCMD  |DTYP|MAC|RSV| DTALEN |
-	 *   +--------------------------------------------------------------+
-	 *   63      46 45    40 39 38 36 35 32 31   24             15       0
-	 */
+	 
 
 	for (n = 0; n < adapter->num_tx_queues; n++) {
 		tx_ring = adapter->tx_ring[n];
@@ -206,7 +197,7 @@ void igc_rings_dump(struct igc_adapter *adapter)
 		}
 	}
 
-	/* Print RX Rings Summary */
+	 
 rx_ring_summary:
 	netdev_info(netdev, "RX Rings Summary\n");
 	netdev_info(netdev, "Queue [NTU] [NTC]\n");
@@ -216,32 +207,13 @@ rx_ring_summary:
 			    rx_ring->next_to_clean);
 	}
 
-	/* Print RX Rings */
+	 
 	if (!netif_msg_rx_status(adapter))
 		goto exit;
 
 	netdev_info(netdev, "RX Rings Dump\n");
 
-	/* Advanced Receive Descriptor (Read) Format
-	 *    63                                           1        0
-	 *    +-----------------------------------------------------+
-	 *  0 |       Packet Buffer Address [63:1]           |A0/NSE|
-	 *    +----------------------------------------------+------+
-	 *  8 |       Header Buffer Address [63:1]           |  DD  |
-	 *    +-----------------------------------------------------+
-	 *
-	 *
-	 * Advanced Receive Descriptor (Write-Back) Format
-	 *
-	 *   63       48 47    32 31  30      21 20 17 16   4 3     0
-	 *   +------------------------------------------------------+
-	 * 0 | Packet     IP     |SPH| HDR_LEN   | RSV|Packet|  RSS |
-	 *   | Checksum   Ident  |   |           |    | Type | Type |
-	 *   +------------------------------------------------------+
-	 * 8 | VLAN Tag | Length | Extended Error | Extended Status |
-	 *   +------------------------------------------------------+
-	 *   63       48 47    32 31            20 19               0
-	 */
+	 
 
 	for (n = 0; n < adapter->num_rx_queues; n++) {
 		rx_ring = adapter->rx_ring[n];
@@ -269,7 +241,7 @@ rx_ring_summary:
 				next_desc = "";
 
 			if (staterr & IGC_RXD_STAT_DD) {
-				/* Descriptor Done */
+				 
 				netdev_info(netdev, "%s[0x%03X]     %016llX %016llX ---------------- %s\n",
 					    "RWB", i,
 					    le64_to_cpu(u0->a),
@@ -302,13 +274,13 @@ exit:
 	return;
 }
 
-/* igc_regs_dump - registers dump */
+ 
 void igc_regs_dump(struct igc_adapter *adapter)
 {
 	struct igc_hw *hw = &adapter->hw;
 	struct igc_reg_info *reginfo;
 
-	/* Print Registers */
+	 
 	netdev_info(adapter->netdev, "Register Dump\n");
 	netdev_info(adapter->netdev, "Register Name   Value\n");
 	for (reginfo = (struct igc_reg_info *)igc_reg_info_tbl;

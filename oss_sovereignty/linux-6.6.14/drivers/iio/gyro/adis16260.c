@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ADIS16260/ADIS16265 Programmable Digital Gyroscope Sensor Driver
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -13,41 +9,40 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/imu/adis.h>
 
-#define ADIS16260_STARTUP_DELAY	220 /* ms */
+#define ADIS16260_STARTUP_DELAY	220  
 
-#define ADIS16260_FLASH_CNT  0x00 /* Flash memory write count */
-#define ADIS16260_SUPPLY_OUT 0x02 /* Power supply measurement */
-#define ADIS16260_GYRO_OUT   0x04 /* X-axis gyroscope output */
-#define ADIS16260_AUX_ADC    0x0A /* analog input channel measurement */
-#define ADIS16260_TEMP_OUT   0x0C /* internal temperature measurement */
-#define ADIS16260_ANGL_OUT   0x0E /* angle displacement */
-#define ADIS16260_GYRO_OFF   0x14 /* Calibration, offset/bias adjustment */
-#define ADIS16260_GYRO_SCALE 0x16 /* Calibration, scale adjustment */
-#define ADIS16260_ALM_MAG1   0x20 /* Alarm 1 magnitude/polarity setting */
-#define ADIS16260_ALM_MAG2   0x22 /* Alarm 2 magnitude/polarity setting */
-#define ADIS16260_ALM_SMPL1  0x24 /* Alarm 1 dynamic rate of change setting */
-#define ADIS16260_ALM_SMPL2  0x26 /* Alarm 2 dynamic rate of change setting */
-#define ADIS16260_ALM_CTRL   0x28 /* Alarm control */
-#define ADIS16260_AUX_DAC    0x30 /* Auxiliary DAC data */
-#define ADIS16260_GPIO_CTRL  0x32 /* Control, digital I/O line */
-#define ADIS16260_MSC_CTRL   0x34 /* Control, data ready, self-test settings */
-#define ADIS16260_SMPL_PRD   0x36 /* Control, internal sample rate */
-#define ADIS16260_SENS_AVG   0x38 /* Control, dynamic range, filtering */
-#define ADIS16260_SLP_CNT    0x3A /* Control, sleep mode initiation */
-#define ADIS16260_DIAG_STAT  0x3C /* Diagnostic, error flags */
-#define ADIS16260_GLOB_CMD   0x3E /* Control, global commands */
-#define ADIS16260_LOT_ID1    0x52 /* Lot Identification Code 1 */
-#define ADIS16260_LOT_ID2    0x54 /* Lot Identification Code 2 */
-#define ADIS16260_PROD_ID    0x56 /* Product identifier;
-				   * convert to decimal = 16,265/16,260 */
-#define ADIS16260_SERIAL_NUM 0x58 /* Serial number */
+#define ADIS16260_FLASH_CNT  0x00  
+#define ADIS16260_SUPPLY_OUT 0x02  
+#define ADIS16260_GYRO_OUT   0x04  
+#define ADIS16260_AUX_ADC    0x0A  
+#define ADIS16260_TEMP_OUT   0x0C  
+#define ADIS16260_ANGL_OUT   0x0E  
+#define ADIS16260_GYRO_OFF   0x14  
+#define ADIS16260_GYRO_SCALE 0x16  
+#define ADIS16260_ALM_MAG1   0x20  
+#define ADIS16260_ALM_MAG2   0x22  
+#define ADIS16260_ALM_SMPL1  0x24  
+#define ADIS16260_ALM_SMPL2  0x26  
+#define ADIS16260_ALM_CTRL   0x28  
+#define ADIS16260_AUX_DAC    0x30  
+#define ADIS16260_GPIO_CTRL  0x32  
+#define ADIS16260_MSC_CTRL   0x34  
+#define ADIS16260_SMPL_PRD   0x36  
+#define ADIS16260_SENS_AVG   0x38  
+#define ADIS16260_SLP_CNT    0x3A  
+#define ADIS16260_DIAG_STAT  0x3C  
+#define ADIS16260_GLOB_CMD   0x3E  
+#define ADIS16260_LOT_ID1    0x52  
+#define ADIS16260_LOT_ID2    0x54  
+#define ADIS16260_PROD_ID    0x56  
+#define ADIS16260_SERIAL_NUM 0x58  
 
 #define ADIS16260_ERROR_ACTIVE			(1<<14)
 #define ADIS16260_NEW_DATA			(1<<15)
 
-/* MSC_CTRL */
+ 
 #define ADIS16260_MSC_CTRL_MEM_TEST		(1<<11)
-/* Internal self-test enable */
+ 
 #define ADIS16260_MSC_CTRL_INT_SELF_TEST	(1<<10)
 #define ADIS16260_MSC_CTRL_NEG_SELF_TEST	(1<<9)
 #define ADIS16260_MSC_CTRL_POS_SELF_TEST	(1<<8)
@@ -55,15 +50,15 @@
 #define ADIS16260_MSC_CTRL_DATA_RDY_POL_HIGH	(1<<1)
 #define ADIS16260_MSC_CTRL_DATA_RDY_DIO2	(1<<0)
 
-/* SMPL_PRD */
-/* Time base (tB): 0 = 1.953 ms, 1 = 60.54 ms */
+ 
+ 
 #define ADIS16260_SMPL_PRD_TIME_BASE	(1<<7)
 #define ADIS16260_SMPL_PRD_DIV_MASK	0x7F
 
-/* SLP_CNT */
+ 
 #define ADIS16260_SLP_CNT_POWER_OFF     0x80
 
-/* DIAG_STAT */
+ 
 #define ADIS16260_DIAG_STAT_ALARM2	(1<<9)
 #define ADIS16260_DIAG_STAT_ALARM1	(1<<8)
 #define ADIS16260_DIAG_STAT_FLASH_CHK_BIT	6
@@ -74,7 +69,7 @@
 #define ADIS16260_DIAG_STAT_POWER_HIGH_BIT	1
 #define ADIS16260_DIAG_STAT_POWER_LOW_BIT	0
 
-/* GLOB_CMD */
+ 
 #define ADIS16260_GLOB_CMD_SW_RESET	(1<<7)
 #define ADIS16260_GLOB_CMD_FLASH_UPD	(1<<3)
 #define ADIS16260_GLOB_CMD_DAC_LATCH	(1<<2)
@@ -85,9 +80,7 @@
 #define ADIS16260_SPI_BURST	(u32)(1000 * 1000)
 #define ADIS16260_SPI_FAST	(u32)(2000 * 1000)
 
-/* At the moment triggers are only used for ring buffer
- * filling. This may change!
- */
+ 
 
 #define ADIS16260_SCAN_GYRO	0
 #define ADIS16260_SCAN_SUPPLY	1
@@ -165,7 +158,7 @@ static const struct adis16260_chip_info adis16260_chip_info_table[] = {
 	},
 };
 
-/* Power down the device */
+ 
 static int adis16260_stop_device(struct iio_dev *indio_dev)
 {
 	struct adis16260 *adis16260 = iio_priv(indio_dev);
@@ -212,21 +205,21 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
 		case IIO_VOLTAGE:
 			if (chan->channel == 0) {
 				*val = 1;
-				*val2 = 831500; /* 1.8315 mV */
+				*val2 = 831500;  
 			} else {
 				*val = 0;
-				*val2 = 610500; /* 610.5 uV */
+				*val2 = 610500;  
 			}
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_TEMP:
 			*val = 145;
-			*val2 = 300000; /* 0.1453 C */
+			*val2 = 300000;  
 			return IIO_VAL_INT_PLUS_MICRO;
 		default:
 			return -EINVAL;
 		}
 	case IIO_CHAN_INFO_OFFSET:
-		*val = 250000 / 1453; /* 25 C = 0x00 */
+		*val = 250000 / 1453;  
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_CALIBBIAS:
 		addr = adis16260_addresses[chan->scan_index][0];
@@ -250,7 +243,7 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
 			return ret;
 
 		if (spi_get_device_id(adis->spi)->driver_data)
-		/* If an adis16251 */
+		 
 			*val = (val16 & ADIS16260_SMPL_PRD_TIME_BASE) ?
 				8 : 256;
 		else
@@ -370,12 +363,12 @@ static int adis16260_probe(struct spi_device *spi)
 	if (!id)
 		return -ENODEV;
 
-	/* setup the industrialio driver allocated elements */
+	 
 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adis16260));
 	if (!indio_dev)
 		return -ENOMEM;
 	adis16260 = iio_priv(indio_dev);
-	/* this is only used for removal purposes */
+	 
 	spi_set_drvdata(spi, indio_dev);
 
 	adis16260->info = &adis16260_chip_info_table[id->driver_data];
@@ -394,7 +387,7 @@ static int adis16260_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Get the device into a sane initial state */
+	 
 	ret = __adis_initial_startup(&adis16260->adis);
 	if (ret)
 		return ret;
@@ -406,10 +399,7 @@ static int adis16260_probe(struct spi_device *spi)
 	return devm_iio_device_register(&spi->dev, indio_dev);
 }
 
-/*
- * These parts do not need to be differentiated until someone adds
- * support for the on chip filtering.
- */
+ 
 static const struct spi_device_id adis16260_id[] = {
 	{"adis16260", ADIS16260},
 	{"adis16265", ADIS16260},

@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author:
- *	Chuanhong Guo <gch981213@gmail.com> - the main driver logic
- *	Martin Kurbanov <mmkurbanov@sberdevices.ru> - OOB layout
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/mtd/spinand.h>
 
-/* ESMT uses GigaDevice 0xc8 JECDEC ID on some SPI NANDs */
+ 
 #define SPINAND_MFR_ESMT_C8			0xc8
 
 static SPINAND_OP_VARIANTS(read_cache_variants,
@@ -26,32 +22,7 @@ static SPINAND_OP_VARIANTS(update_cache_variants,
 			   SPINAND_PROG_LOAD_X4(false, 0, NULL, 0),
 			   SPINAND_PROG_LOAD(false, 0, NULL, 0));
 
-/*
- * OOB spare area map (64 bytes)
- *
- * Bad Block Markers
- * filled by HW and kernel                 Reserved
- *   |                 +-----------------------+-----------------------+
- *   |                 |                       |                       |
- *   |                 |    OOB free data Area |non ECC protected      |
- *   |   +-------------|-----+-----------------|-----+-----------------|-----+
- *   |   |             |     |                 |     |                 |     |
- * +-|---|----------+--|-----|--------------+--|-----|--------------+--|-----|--------------+
- * | |   | section0 |  |     |    section1  |  |     |    section2  |  |     |    section3  |
- * +-v-+-v-+---+----+--v--+--v--+-----+-----+--v--+--v--+-----+-----+--v--+--v--+-----+-----+
- * |   |   |   |    |     |     |     |     |     |     |     |     |     |     |     |     |
- * |0:1|2:3|4:7|8:15|16:17|18:19|20:23|24:31|32:33|34:35|36:39|40:47|48:49|50:51|52:55|56:63|
- * |   |   |   |    |     |     |     |     |     |     |     |     |     |     |     |     |
- * +---+---+-^-+--^-+-----+-----+--^--+--^--+-----+-----+--^--+--^--+-----+-----+--^--+--^--+
- *           |    |                |     |                 |     |                 |     |
- *           |    +----------------|-----+-----------------|-----+-----------------|-----+
- *           |             ECC Area|(Main + Spare) - filled|by ESMT NAND HW        |
- *           |                     |                       |                       |
- *           +---------------------+-----------------------+-----------------------+
- *                         OOB ECC protected Area - not used due to
- *                         partial programming from some filesystems
- *                             (like JFFS2 with cleanmarkers)
- */
+ 
 
 #define ESMT_OOB_SECTION_COUNT			4
 #define ESMT_OOB_SECTION_SIZE(nand) \
@@ -85,13 +56,10 @@ static int f50l1g41lb_ooblayout_free(struct mtd_info *mtd, int section,
 	if (section >= ESMT_OOB_SECTION_COUNT)
 		return -ERANGE;
 
-	/*
-	 * Reserve space for bad blocks markers (section0) and
-	 * reserved bytes (sections 1-3)
-	 */
+	 
 	region->offset = section * ESMT_OOB_SECTION_SIZE(nand) + 2;
 
-	/* Use only 2 non-protected ECC bytes per each OOB section */
+	 
 	region->length = 2;
 
 	return 0;

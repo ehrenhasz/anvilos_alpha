@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Hauppauge HD PVR USB driver
- *
- * Copyright (C) 2008      Janne Grunau (j@jannau.net)
- *
- * IR device registration code is
- * Copyright (C) 2010	Andy Walls <awalls@md.metrocast.net>
- */
+
+ 
 
 #if IS_ENABLED(CONFIG_I2C)
 
@@ -35,13 +28,13 @@ struct i2c_client *hdpvr_register_ir_i2c(struct hdpvr_device *dev)
 		I2C_BOARD_INFO("ir_z8f0811_hdpvr", Z8F0811_IR_RX_I2C_ADDR),
 	};
 
-	/* Our default information for ir-kbd-i2c.c to use */
+	 
 	init_data->ir_codes = RC_MAP_HAUPPAUGE;
 	init_data->internal_get_key_func = IR_KBD_GET_KEY_HAUP_XVR;
 	init_data->type = RC_PROTO_BIT_RC5 | RC_PROTO_BIT_RC6_MCE |
 			  RC_PROTO_BIT_RC6_6A_32;
 	init_data->name = "HD-PVR";
-	init_data->polling_interval = 405; /* ms, duplicated from Windows */
+	init_data->polling_interval = 405;  
 	info.platform_data = init_data;
 
 	return i2c_new_client_device(&dev->i2c_adapter, &info);
@@ -139,10 +132,7 @@ static int hdpvr_transfer(struct i2c_adapter *i2c_adapter, struct i2c_msg *msgs,
 			goto out;
 		}
 
-		/*
-		 * Write followed by atomic read is the only complex xfer that
-		 * we actually support here.
-		 */
+		 
 		retval = hdpvr_i2c_read(dev, 1, addr, msgs[0].buf, msgs[0].len,
 					msgs[1].buf, msgs[1].len);
 	} else {

@@ -1,40 +1,9 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef DC_BIOS_TYPES_H
 #define DC_BIOS_TYPES_H
 
-/******************************************************************************
- * Interface file for VBIOS implementations.
- *
- * The default implementation is inside DC.
- * Display Manager (which instantiates DC) has the option to supply it's own
- * (external to DC) implementation of VBIOS, which will be called by DC, using
- * this interface.
- * (The intended use is Diagnostics, but other uses may appear.)
- *****************************************************************************/
+ 
 
 #include "include/bios_parser_types.h"
 
@@ -89,7 +58,7 @@ struct dc_vbios_funcs {
 	bool (*is_device_id_supported)(
 		struct dc_bios *bios,
 		struct device_id id);
-	/* COMMANDS */
+	 
 
 	enum bp_result (*encoder_control)(
 		struct dc_bios *bios,
@@ -186,4 +155,4 @@ struct dc_bios {
 	struct dc_golden_table golden_table;
 };
 
-#endif /* DC_BIOS_TYPES_H */
+#endif  

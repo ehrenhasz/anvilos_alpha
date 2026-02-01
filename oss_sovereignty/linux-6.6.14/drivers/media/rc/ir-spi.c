@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// SPI driven IR LED device driver
-//
-// Copyright (c) 2016 Samsung Electronics Co., Ltd.
-// Copyright (c) Andi Shyti <andi@etezian.org>
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/fs.h>
@@ -40,7 +40,7 @@ static int ir_spi_tx(struct rc_dev *dev,
 	struct ir_spi_data *idata = dev->priv;
 	struct spi_transfer xfer;
 
-	/* convert the pulse/space signal to raw binary signal */
+	 
 	for (i = 0; i < count; i++) {
 		unsigned int periods;
 		int j;
@@ -51,11 +51,7 @@ static int ir_spi_tx(struct rc_dev *dev,
 		if (len + periods >= IR_SPI_MAX_BUFSIZE)
 			return -EINVAL;
 
-		/*
-		 * the first value in buffer is a pulse, so that 0, 2, 4, ...
-		 * contain a pulse duration. On the contrary, 1, 3, 5, ...
-		 * contain a space duration.
-		 */
+		 
 		val = (i % 2) ? idata->space : idata->pulse;
 		for (j = 0; j < periods; j++)
 			idata->tx_buf[len++] = val;
@@ -141,10 +137,7 @@ static int ir_spi_probe(struct spi_device *spi)
 	if (ret)
 		dc = 50;
 
-	/* ir_spi_set_duty_cycle cannot fail,
-	 * it returns int to be compatible with the
-	 * rc->s_tx_duty_cycle function
-	 */
+	 
 	ir_spi_set_duty_cycle(idata->rc, dc);
 
 	idata->freq = IR_SPI_DEFAULT_FREQUENCY;

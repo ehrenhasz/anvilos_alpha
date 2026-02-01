@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Public Key Encryption
- *
- * Copyright (c) 2015, Intel Corporation
- * Authors: Tadeusz Struk <tadeusz.struk@intel.com>
- */
+ 
+ 
 #ifndef _CRYPTO_AKCIPHER_INT_H
 #define _CRYPTO_AKCIPHER_INT_H
 #include <crypto/akcipher.h>
@@ -25,9 +20,7 @@ struct crypto_akcipher_spawn {
 	struct crypto_spawn base;
 };
 
-/*
- * Transform internal helpers.
- */
+ 
 static inline void *akcipher_request_ctx(struct akcipher_request *req)
 {
 	return req->__ctx;
@@ -121,35 +114,13 @@ static inline struct akcipher_alg *crypto_spawn_akcipher_alg(
 	return container_of(spawn->base.alg, struct akcipher_alg, base);
 }
 
-/**
- * crypto_register_akcipher() -- Register public key algorithm
- *
- * Function registers an implementation of a public key verify algorithm
- *
- * @alg:	algorithm definition
- *
- * Return: zero on success; error code in case of error
- */
+ 
 int crypto_register_akcipher(struct akcipher_alg *alg);
 
-/**
- * crypto_unregister_akcipher() -- Unregister public key algorithm
- *
- * Function unregisters an implementation of a public key verify algorithm
- *
- * @alg:	algorithm definition
- */
+ 
 void crypto_unregister_akcipher(struct akcipher_alg *alg);
 
-/**
- * akcipher_register_instance() -- Unregister public key template instance
- *
- * Function registers an implementation of an asymmetric key algorithm
- * created from a template
- *
- * @tmpl:	the template from which the algorithm was created
- * @inst:	the template instance
- */
+ 
 int akcipher_register_instance(struct crypto_template *tmpl,
 		struct akcipher_instance *inst);
 #endif

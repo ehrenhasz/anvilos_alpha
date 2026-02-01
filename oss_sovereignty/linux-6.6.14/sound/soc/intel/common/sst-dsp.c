@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Smart Sound Technology (SST) DSP Core Driver
- *
- * Copyright (C) 2013, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -19,7 +15,7 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/intel-sst.h>
 
-/* Internal generic low-level SST IO functions - can be overidden */
+ 
 void sst_shim32_write(void __iomem *addr, u32 offset, u32 value)
 {
 	writel(value, addr + offset);
@@ -44,7 +40,7 @@ u64 sst_shim32_read64(void __iomem *addr, u32 offset)
 }
 EXPORT_SYMBOL_GPL(sst_shim32_read64);
 
-/* Public API */
+ 
 void sst_dsp_shim_write(struct sst_dsp *sst, u32 offset, u32 value)
 {
 	unsigned long flags;
@@ -100,7 +96,7 @@ int sst_dsp_shim_update_bits_unlocked(struct sst_dsp *sst, u32 offset,
 }
 EXPORT_SYMBOL_GPL(sst_dsp_shim_update_bits_unlocked);
 
-/* This is for registers bits with attribute RWC */
+ 
 void sst_dsp_shim_update_bits_forced_unlocked(struct sst_dsp *sst, u32 offset,
 				u32 mask, u32 value)
 {
@@ -129,7 +125,7 @@ int sst_dsp_shim_update_bits(struct sst_dsp *sst, u32 offset,
 }
 EXPORT_SYMBOL_GPL(sst_dsp_shim_update_bits);
 
-/* This is for registers bits with attribute RWC */
+ 
 void sst_dsp_shim_update_bits_forced(struct sst_dsp *sst, u32 offset,
 				u32 mask, u32 value)
 {
@@ -148,15 +144,7 @@ int sst_dsp_register_poll(struct sst_dsp *ctx, u32 offset, u32 mask,
 	unsigned long timeout;
 	int k = 0, s = 500;
 
-	/*
-	 * split the loop into sleeps of varying resolution. more accurately,
-	 * the range of wakeups are:
-	 * Phase 1(first 5ms): min sleep 0.5ms; max sleep 1ms.
-	 * Phase 2:( 5ms to 10ms) : min sleep 0.5ms; max sleep 10ms
-	 * (usleep_range (500, 1000) and usleep_range(5000, 10000) are
-	 * both possible in this phase depending on whether k > 10 or not).
-	 * Phase 3: (beyond 10 ms) min sleep 5ms; max sleep 10ms.
-	 */
+	 
 
 	timeout = jiffies + msecs_to_jiffies(time);
 	while ((((reg = sst_dsp_shim_read_unlocked(ctx, offset)) & mask) != target)
@@ -244,7 +232,7 @@ void sst_dsp_inbox_read(struct sst_dsp *sst, void *message, size_t bytes)
 }
 EXPORT_SYMBOL_GPL(sst_dsp_inbox_read);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Liam Girdwood");
 MODULE_DESCRIPTION("Intel SST Core");
 MODULE_LICENSE("GPL v2");

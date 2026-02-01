@@ -1,17 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/adfs/dir_f.c
- *
- * Copyright (C) 1997-1999 Russell King
- *
- *  E and F format directory handling
- */
+
+ 
 #include "adfs.h"
 #include "dir_f.h"
 
-/*
- * Read an (unaligned) value of length 1..4 bytes
- */
+ 
 static inline unsigned int adfs_readval(unsigned char *p, int len)
 {
 	unsigned int val = 0;
@@ -61,11 +53,7 @@ static inline void adfs_writeval(unsigned char *p, int len, unsigned int val)
 	  (void *)(_bh[_buf]->b_data + _off);	\
 	})
 
-/*
- * There are some algorithms that are nice in
- * assembler, but a bitch in C...  This is one
- * of them.
- */
+ 
 static u8
 adfs_dir_checkbyte(const struct adfs_dir *dir)
 {
@@ -76,11 +64,7 @@ adfs_dir_checkbyte(const struct adfs_dir *dir)
 	int last = 5 - 26;
 	int i = 0;
 
-	/*
-	 * Accumulate each word up to the last whole
-	 * word of the last directory entry.  This
-	 * can spread across several buffer heads.
-	 */
+	 
 	do {
 		last += 26;
 		do {
@@ -90,10 +74,7 @@ adfs_dir_checkbyte(const struct adfs_dir *dir)
 		} while (i < (last & ~3));
 	} while (dir_u8(last) != 0);
 
-	/*
-	 * Accumulate the last few bytes.  These
-	 * bytes will be within the same bh.
-	 */
+	 
 	if (i != last) {
 		ptr.ptr8 = bufoff(bh, i);
 		end.ptr8 = ptr.ptr8 + last - i;
@@ -103,13 +84,7 @@ adfs_dir_checkbyte(const struct adfs_dir *dir)
 		} while (ptr.ptr8 < end.ptr8);
 	}
 
-	/*
-	 * The directory tail is in the final bh
-	 * Note that contary to the RISC OS PRMs,
-	 * the first few bytes are NOT included
-	 * in the check.  All bytes are in the
-	 * same bh.
-	 */
+	 
 	ptr.ptr8 = bufoff(bh, 2008);
 	end.ptr8 = ptr.ptr8 + 36;
 
@@ -137,7 +112,7 @@ static int adfs_f_validate(struct adfs_dir *dir)
 	return 0;
 }
 
-/* Read and check that a directory is valid */
+ 
 static int adfs_f_read(struct super_block *sb, u32 indaddr, unsigned int size,
 		       struct adfs_dir *dir)
 {
@@ -168,9 +143,7 @@ bad_dir:
 	return -EIO;
 }
 
-/*
- * convert a disk-based directory entry to a Linux ADFS directory entry
- */
+ 
 static inline void
 adfs_dir2obj(struct adfs_dir *dir, struct object_info *obj,
 	struct adfs_direntry *de)
@@ -194,9 +167,7 @@ adfs_dir2obj(struct adfs_dir *dir, struct object_info *obj,
 	adfs_object_fixup(dir, obj);
 }
 
-/*
- * convert a Linux ADFS directory entry to a disk-based directory entry
- */
+ 
 static inline void
 adfs_obj2dir(struct adfs_direntry *de, struct object_info *obj)
 {
@@ -207,10 +178,7 @@ adfs_obj2dir(struct adfs_direntry *de, struct object_info *obj)
 	de->newdiratts = obj->attr;
 }
 
-/*
- * get a directory entry.  Note that the caller is responsible
- * for holding the relevant locks.
- */
+ 
 static int
 __adfs_dir_get(struct adfs_dir *dir, int pos, struct object_info *obj)
 {
@@ -288,10 +256,10 @@ static int adfs_f_update(struct adfs_dir *dir, struct object_info *obj)
 		}
 	} while (adfs_readval(de.dirinddiscadd, 3) != obj->indaddr);
 
-	/* Update the directory entry with the new object state */
+	 
 	adfs_obj2dir(&de, obj);
 
-	/* Write the directory entry back to the directory */
+	 
 	return adfs_dir_copyto(dir, offset, &de, 26);
 }
 
@@ -299,14 +267,14 @@ static int adfs_f_commit(struct adfs_dir *dir)
 {
 	int ret;
 
-	/* Increment directory sequence number */
+	 
 	dir->dirhead->startmasseq += 1;
 	dir->newtail->endmasseq += 1;
 
-	/* Update directory check byte */
+	 
 	dir->newtail->dircheckbyte = adfs_dir_checkbyte(dir);
 
-	/* Make sure the directory still validates correctly */
+	 
 	ret = adfs_f_validate(dir);
 	if (ret)
 		adfs_msg(dir->sb, KERN_ERR, "error: update broke directory");

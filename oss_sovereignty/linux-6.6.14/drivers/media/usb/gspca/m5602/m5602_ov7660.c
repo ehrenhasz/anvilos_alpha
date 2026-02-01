@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the ov7660 sensor
- *
- * Copyright (C) 2009 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -200,12 +189,11 @@ int ov7660_probe(struct sd *sd)
 			pr_info("Forcing an %s sensor\n", ov7660.name);
 			goto sensor_found;
 		}
-		/* If we want to force another sensor,
-		don't try to probe this one */
+		 
 		return -ENODEV;
 	}
 
-	/* Do the preinit */
+	 
 	for (i = 0; i < ARRAY_SIZE(preinit_ov7660) && !err; i++) {
 		u8 data[2];
 
@@ -247,7 +235,7 @@ int ov7660_init(struct sd *sd)
 {
 	int i, err;
 
-	/* Init the sensor */
+	 
 	for (i = 0; i < ARRAY_SIZE(init_ov7660); i++) {
 		u8 data[2];
 
@@ -462,7 +450,7 @@ static void ov7660_dump_registers(struct sd *sd)
 		else
 			pr_info("register 0x%x is read only\n", address);
 
-		/* Restore original value */
+		 
 		m5602_write_sensor(sd, address, &old_value, 1);
 	}
 }

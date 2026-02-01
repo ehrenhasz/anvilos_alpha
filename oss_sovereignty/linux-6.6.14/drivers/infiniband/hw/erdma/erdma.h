@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ 
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+ 
+ 
+ 
 
 #ifndef __ERDMA_H__
 #define __ERDMA_H__
@@ -158,7 +158,7 @@ struct erdma_irq {
 
 struct erdma_eq_cb {
 	bool ready;
-	void *dev; /* All EQs use this fields to get erdma_dev struct */
+	void *dev;  
 	struct erdma_irq irq;
 	struct erdma_eq eq;
 	struct tasklet_struct tasklet;
@@ -192,11 +192,11 @@ struct erdma_dev {
 	u8 __iomem *func_bar;
 
 	struct erdma_devattr attrs;
-	/* physical port state (only one port per device) */
+	 
 	enum ib_port_state state;
 	u32 mtu;
 
-	/* cmdq and aeq use the same msix vector */
+	 
 	struct erdma_irq comm_irq;
 	struct erdma_cmdq cmdq;
 	struct erdma_eq aeq;

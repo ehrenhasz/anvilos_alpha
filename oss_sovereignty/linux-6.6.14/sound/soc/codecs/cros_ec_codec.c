@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Google, Inc.
- *
- * ChromeOS Embedded Controller codec driver.
- *
- * This driver uses the cros-ec interface to communicate with the ChromeOS
- * EC for audio function.
- */
+
+ 
 
 #include <crypto/sha2.h>
 #include <linux/acpi.h>
@@ -30,7 +23,7 @@ struct cros_ec_codec_priv {
 	struct device *dev;
 	struct cros_ec_device *ec_device;
 
-	/* common */
+	 
 	uint32_t ec_capabilities;
 
 	uint64_t ec_shm_addr;
@@ -41,13 +34,13 @@ struct cros_ec_codec_priv {
 	uint64_t ap_shm_addr;
 	uint64_t ap_shm_last_alloc;
 
-	/* DMIC */
+	 
 	atomic_t dmic_probed;
 
-	/* I2S_RX */
+	 
 	uint32_t i2s_rx_bclk_ratio;
 
-	/* WoV */
+	 
 	bool wov_enabled;
 	uint8_t *wov_audio_shm_p;
 	uint32_t wov_audio_shm_len;
@@ -444,10 +437,7 @@ static void *wov_map_shm(struct cros_ec_codec_priv *priv,
 			return NULL;
 		}
 
-		/*
-		 * Note: EC codec only requests for `r.len' but we allocate
-		 * round up PAGE_SIZE `req'.
-		 */
+		 
 		offset = priv->ap_shm_last_alloc - priv->ap_shm_phys_addr;
 		priv->ap_shm_last_alloc += req;
 
@@ -527,7 +517,7 @@ static void wov_queue_enqueue(struct cros_ec_codec_priv *priv,
 		if (priv->wov_wp >= priv->wov_rp)
 			req = sizeof(priv->wov_buf) - priv->wov_wp;
 		else
-			/* Note: waste 1-byte to differentiate full and empty */
+			 
 			req = priv->wov_rp - priv->wov_wp - 1;
 		req = min(req, len);
 
@@ -692,7 +682,7 @@ static int wov_set_lang_shm(struct cros_ec_codec_priv *priv,
 		memset(priv->wov_lang_shm_p + size, 0,
 		       priv->wov_lang_shm_len - size);
 
-		/* make sure write to memory before calling host command */
+		 
 		wmb();
 		break;
 	}
@@ -751,7 +741,7 @@ static int wov_hotword_model_put(struct snd_kcontrol *kcontrol,
 	uint8_t *buf;
 	int ret;
 
-	/* Skips the TLV header. */
+	 
 	bytes += 2;
 	size -= 8;
 
@@ -1013,7 +1003,7 @@ static int cros_ec_codec_platform_probe(struct platform_device *pdev)
 	}
 	priv->ec_capabilities = r.capabilities;
 
-	/* Reset EC codec i2s rx. */
+	 
 	p.cmd = EC_CODEC_I2S_RX_RESET;
 	ret = send_ec_host_command(priv->ec_device, EC_CMD_EC_CODEC_I2S_RX,
 				   (uint8_t *)&p, sizeof(p), NULL, 0);

@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* 
- *  Copyright (C) 1997	Wu Ching Chen
- *  2.1.x update (C) 1998  Krzysztof G. Baranowski
- *  2.5.x update (C) 2002  Red Hat
- *  2.6.x update (C) 2004  Red Hat
- *
- * Marcelo Tosatti <marcelo@conectiva.com.br> : SMP fixes
- *
- * Wu Ching Chen : NULL pointer fixes  2000/06/02
- *		   support atp876 chip
- *		   enable 32 bit fifo transfer
- *		   support cdrom & remove device run ultra speed
- *		   fix disconnect bug  2000/12/21
- *		   support atp880 chip lvd u160 2001/05/15
- *		   fix prd table bug 2001/09/12 (7.1)
- *
- * atp885 support add by ACARD Hao Ping Lian 2005/01/05
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -167,9 +150,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 
 		target_id = atp_readb_io(dev, c, 0x15);
 
-		/*
-		 *	Remap wide devices onto id numbers
-		 */
+		 
 
 		if ((target_id & 0x40) != 0) {
 			target_id = (target_id & 0x07) | 0x08;
@@ -214,17 +195,13 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 #endif
 			}
 
-			/*
-			 *      Flip wide
-			 */
+			 
 			if (dev->wide_id[c] != 0) {
 				atp_writeb_io(dev, c, 0x1b, 0x01);
 				while ((atp_readb_io(dev, c, 0x1b) & 0x01) != 0x01)
 					atp_writeb_io(dev, c, 0x1b, 0x01);
 			}
-			/*
-			 *	Issue more commands
-			 */
+			 
 			spin_lock_irqsave(dev->host->host_lock, flags);
 			if (((dev->quhd[c] != dev->quend[c]) ||
 			     (dev->last_cmd[c] != 0xff)) &&
@@ -235,9 +212,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 				send_s870(dev,c);
 			}
 			spin_unlock_irqrestore(dev->host->host_lock, flags);
-			/*
-			 *	Done
-			 */
+			 
 			dev->in_int[c] = 0;
 #ifdef ED_DBGP
 				printk("Status 0x85 return\n");
@@ -333,9 +308,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 				atp_writeb_io(dev, c, 0x10, 0x45);
 
 			target_id = atp_readb_io(dev, c, 0x16);
-			/*
-			 *	Remap wide identifiers
-			 */
+			 
 			if ((target_id & 0x10) != 0) {
 				target_id = (target_id & 0x07) | 0x08;
 			} else {
@@ -365,20 +338,20 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 			       atp_readb_io(dev, c, 0x13),
 			       atp_readb_io(dev, c, 0x12));
 #endif
-			/* Remap wide */
+			 
 			j = target_id;
 			if (target_id > 7) {
 				j = (j & 0x07) | 0x40;
 			}
-			/* Add direction */
+			 
 			j |= dev->id[c][target_id].dirct;
 			atp_writeb_io(dev, c, 0x15, j);
 			atp_writeb_io(dev, c, 0x16, 0x80);
 
-			/* enable 32 bit fifo transfer */
+			 
 			if (is885(dev)) {
 				i = atp_readb_pci(dev, c, 1) & 0xf3;
-				//j=workreq->cmnd[0];
+				
 				if ((workreq->cmnd[0] == READ_6) ||
 				    (workreq->cmnd[0] == READ_10) ||
 				    (workreq->cmnd[0] == WRITE_6) ||
@@ -410,9 +383,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 			j = 0;
 			id = 1;
 			id = id << target_id;
-			/*
-			 *	Is this a wide device
-			 */
+			 
 			if ((id & dev->wide_id[c]) != 0) {
 				j |= 0x01;
 			}
@@ -462,9 +433,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 				atp_writeb_pci(dev, c, 2, 0x06);
 				atp_writeb_pci(dev, c, 2, 0x00);
 			}
-			/*
-			 *	Check transfer direction
-			 */
+			 
 			if (dev->id[c][target_id].dirct != 0) {
 				atp_writeb_io(dev, c, 0x18, 0x08);
 				atp_writeb_pci(dev, c, 0, 0x01);
@@ -483,9 +452,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 			return IRQ_HANDLED;
 		}
 
-		/*
-		 *	Current scsi request on this target
-		 */
+		 
 
 		workreq = dev->id[c][target_id].curr_req;
 
@@ -506,9 +473,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 				j = atp_readb_base(dev, 0x29) | 0x01;
 				atp_writeb_base(dev, 0x29, j);
 			}
-			/*
-			 *	Complete the command
-			 */
+			 
 			scsi_dma_unmap(workreq);
 
 			spin_lock_irqsave(dev->host->host_lock, flags);
@@ -516,23 +481,17 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 #ifdef ED_DBGP
 			   printk("workreq->scsi_done\n");
 #endif
-			/*
-			 *	Clear it off the queue
-			 */
+			 
 			dev->id[c][target_id].curr_req = NULL;
 			dev->working[c]--;
 			spin_unlock_irqrestore(dev->host->host_lock, flags);
-			/*
-			 *      Take it back wide
-			 */
+			 
 			if (dev->wide_id[c] != 0) {
 				atp_writeb_io(dev, c, 0x1b, 0x01);
 				while ((atp_readb_io(dev, c, 0x1b) & 0x01) != 0x01)
 					atp_writeb_io(dev, c, 0x1b, 0x01);
 			}
-			/*
-			 *	If there is stuff to send and nothing going then send it
-			 */
+			 
 			spin_lock_irqsave(dev->host->host_lock, flags);
 			if (((dev->last_cmd[c] != 0xff) ||
 			     (dev->quhd[c] != dev->quend[c])) &&
@@ -611,12 +570,7 @@ static irqreturn_t atp870u_intr_handle(int irq, void *dev_id)
 
 	return IRQ_HANDLED;
 }
-/**
- *	atp870u_queuecommand_lck -	Queue SCSI command
- *	@req_p: request block
- *
- *	Queue a command to the ATP queue. Called with the host lock held.
- */
+ 
 static int atp870u_queuecommand_lck(struct scsi_cmnd *req_p)
 {
 	void (*done)(struct scsi_cmnd *) = scsi_done;
@@ -643,9 +597,7 @@ static int atp870u_queuecommand_lck(struct scsi_cmnd *req_p)
 	m = 1;
 	m = m << scmd_id(req_p);
 
-	/*
-	 *      Fake a timeout for missing targets
-	 */
+	 
 
 	if ((m & dev->active_id[c]) == 0) {
 		req_p->result = DID_BAD_TARGET << 16;
@@ -653,17 +605,13 @@ static int atp870u_queuecommand_lck(struct scsi_cmnd *req_p)
 		return 0;
 	}
 
-	/*
-	 *	Count new command
-	 */
+	 
 	dev->quend[c]++;
 	if (dev->quend[c] >= qcnt) {
 		dev->quend[c] = 0;
 	}
 
-	/*
-	 *	Check queue state
-	 */
+	 
 	if (dev->quhd[c] == dev->quend[c]) {
 		if (dev->quend[c] == 0) {
 			dev->quend[c] = qcnt;
@@ -699,18 +647,11 @@ static int atp870u_queuecommand_lck(struct scsi_cmnd *req_p)
 
 static DEF_SCSI_QCMD(atp870u_queuecommand)
 
-/*
- *	send_s870	-	send a command to the controller
- *
- *	On entry there is work queued to be done. We move some of that work to the
- *	controller itself.
- *
- *	Caller holds the host lock.
- */
+ 
 static void send_s870(struct atp_unit *dev, unsigned char c)
 {
 	struct scsi_cmnd *workreq = NULL;
-	unsigned int i;//,k;
+	unsigned int i;
 	unsigned char  j, target_id;
 	unsigned char *prd;
 	unsigned short int w;
@@ -794,9 +735,7 @@ static void send_s870(struct atp_unit *dev, unsigned char c)
 	j = 0;
 	target_id = scmd_id(workreq);
 
-	/*
-	 *	Wide ?
-	 */
+	 
 	w = 1;
 	w = w << target_id;
 	if ((w & dev->wide_id[c]) != 0) {
@@ -809,9 +748,7 @@ static void send_s870(struct atp_unit *dev, unsigned char c)
 		printk("send_s870 while loop 1\n");
 #endif
 	}
-	/*
-	 *	Write the command
-	 */
+	 
 
 	atp_writeb_io(dev, c, 0x00, workreq->cmd_len);
 	atp_writeb_io(dev, c, 0x01, 0x2c);
@@ -822,9 +759,7 @@ static void send_s870(struct atp_unit *dev, unsigned char c)
 	for (i = 0; i < workreq->cmd_len; i++)
 		atp_writeb_io(dev, c, 0x03 + i, workreq->cmnd[i]);
 	atp_writeb_io(dev, c, 0x0f, workreq->device->lun);
-	/*
-	 *	Write the target
-	 */
+	 
 	atp_writeb_io(dev, c, 0x11, dev->id[c][target_id].devsp);
 #ifdef ED_DBGP
 	printk("dev->id[%d][%d].devsp = %2x\n",c,target_id,
@@ -832,9 +767,7 @@ static void send_s870(struct atp_unit *dev, unsigned char c)
 #endif
 
 	sg_count = scsi_dma_map(workreq);
-	/*
-	 *	Write transfer size
-	 */
+	 
 	atp_writeb_io(dev, c, 0x12, ((unsigned char *) (&l))[2]);
 	atp_writeb_io(dev, c, 0x13, ((unsigned char *) (&l))[1]);
 	atp_writeb_io(dev, c, 0x14, ((unsigned char *) (&l))[0]);
@@ -844,15 +777,11 @@ static void send_s870(struct atp_unit *dev, unsigned char c)
 #ifdef ED_DBGP
 	printk("dev->id[%2d][%2d].last_len = %d\n",c,j,dev->id[c][j].last_len);
 #endif
-	/*
-	 *	Flip the wide bits
-	 */
+	 
 	if ((j & 0x08) != 0) {
 		j = (j & 0x07) | 0x40;
 	}
-	/*
-	 *	Check transfer direction
-	 */
+	 
 	if (workreq->sc_data_direction == DMA_TO_DEVICE)
 		atp_writeb_io(dev, c, 0x15, j | 0x20);
 	else
@@ -874,10 +803,7 @@ static void send_s870(struct atp_unit *dev, unsigned char c)
 	prd = dev->id[c][target_id].prd_table;
 	dev->id[c][target_id].prd_pos = prd;
 
-	/*
-	 *	Now write the request list. Either as scatter/gather or as
-	 *	a linear chain.
-	 */
+	 
 
 	if (l) {
 		struct scatterlist *sgpnt;
@@ -984,27 +910,27 @@ static unsigned char fun_scam(struct atp_unit *dev, unsigned short int *val)
 	unsigned char j;
 
 	atp_writew_io(dev, 0, 0x1c, *val);
-	for (i = 0; i < 10; i++) {	/* stable >= bus settle delay(400 ns)  */
+	for (i = 0; i < 10; i++) {	 
 		k = atp_readw_io(dev, 0, 0x1c);
 		j = (unsigned char) (k >> 8);
-		if ((k & 0x8000) != 0)	/* DB7 all release?    */
+		if ((k & 0x8000) != 0)	 
 			i = 0;
 	}
-	*val |= 0x4000;		/* assert DB6           */
+	*val |= 0x4000;		 
 	atp_writew_io(dev, 0, 0x1c, *val);
-	*val &= 0xdfff;		/* assert DB5           */
+	*val &= 0xdfff;		 
 	atp_writew_io(dev, 0, 0x1c, *val);
-	for (i = 0; i < 10; i++) {	/* stable >= bus settle delay(400 ns) */
-		if ((atp_readw_io(dev, 0, 0x1c) & 0x2000) != 0)	/* DB5 all release?       */
+	for (i = 0; i < 10; i++) {	 
+		if ((atp_readw_io(dev, 0, 0x1c) & 0x2000) != 0)	 
 			i = 0;
 	}
-	*val |= 0x8000;		/* no DB4-0, assert DB7    */
+	*val |= 0x8000;		 
 	*val &= 0xe0ff;
 	atp_writew_io(dev, 0, 0x1c, *val);
-	*val &= 0xbfff;		/* release DB6             */
+	*val &= 0xbfff;		 
 	atp_writew_io(dev, 0, 0x1c, *val);
-	for (i = 0; i < 10; i++) {	/* stable >= bus settle delay(400 ns)  */
-		if ((atp_readw_io(dev, 0, 0x1c) & 0x4000) != 0)	/* DB6 all release?  */
+	for (i = 0; i < 10; i++) {	 
+		if ((atp_readw_io(dev, 0, 0x1c) & 0x4000) != 0)	 
 			i = 0;
 	}
 
@@ -1023,12 +949,7 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 		0x38, 0x31, 0x32, 0x2b, 0x34, 0x2d, 0x2e, 0x27
 	};
 
-/*  I can't believe we need this before we've even done anything.  Remove it
- *  and see if anyone bitches.
-	for (i = 0; i < 0x10; i++) {
-		udelay(0xffff);
-	}
- */
+ 
 
 	atp_writeb_io(dev, 0, 1, 0x08);
 	atp_writeb_io(dev, 0, 2, 0x7f);
@@ -1045,7 +966,7 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 		j = 8;
 	}
 	assignid_map = m;
-	atp_writeb_io(dev, 0, 0x02, 0x02);	/* 2*2=4ms,3EH 2/32*3E=3.9ms */
+	atp_writeb_io(dev, 0, 0x02, 0x02);	 
 	atp_writeb_io(dev, 0, 0x03, 0);
 	atp_writeb_io(dev, 0, 0x04, 0);
 	atp_writeb_io(dev, 0, 0x05, 0);
@@ -1094,49 +1015,42 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 
 	udelay(2);
 
-	val = 0x0080;		/* bsy  */
+	val = 0x0080;		 
 	atp_writew_io(dev, 0, 0x1c, val);
-	val |= 0x0040;		/* sel  */
+	val |= 0x0040;		 
 	atp_writew_io(dev, 0, 0x1c, val);
-	val |= 0x0004;		/* msg  */
+	val |= 0x0004;		 
 	atp_writew_io(dev, 0, 0x1c, val);
-	udelay(2);		/* 2 deskew delay(45ns*2=90ns) */
-	val &= 0x007f;		/* no bsy  */
+	udelay(2);		 
+	val &= 0x007f;		 
 	atp_writew_io(dev, 0, 0x1c, val);
 	msleep(128);
-	val &= 0x00fb;		/* after 1ms no msg */
+	val &= 0x00fb;		 
 	atp_writew_io(dev, 0, 0x1c, val);
 	while ((atp_readb_io(dev, 0, 0x1c) & 0x04) != 0)
 		;
 	udelay(2);
 	udelay(100);
 	for (n = 0; n < 0x30000; n++)
-		if ((atp_readb_io(dev, 0, 0x1c) & 0x80) != 0)	/* bsy ? */
+		if ((atp_readb_io(dev, 0, 0x1c) & 0x80) != 0)	 
 			break;
 	if (n < 0x30000)
 		for (n = 0; n < 0x30000; n++)
 			if ((atp_readb_io(dev, 0, 0x1c) & 0x81) == 0x0081) {
 				udelay(2);
-				val |= 0x8003;		/* io,cd,db7  */
+				val |= 0x8003;		 
 				atp_writew_io(dev, 0, 0x1c, val);
 				udelay(2);
-				val &= 0x00bf;		/* no sel     */
+				val &= 0x00bf;		 
 				atp_writew_io(dev, 0, 0x1c, val);
 				udelay(2);
 				break;
 			}
 	while (1) {
-	/*
-	 * The funny division into multiple delays is to accomodate
-	 * arches like ARM where udelay() multiplies its argument by
-	 * a large number to initialize a loop counter.  To avoid
-	 * overflow, the maximum supported udelay is 2000 microseconds.
-	 *
-	 * XXX it would be more polite to find a way to use msleep()
-	 */
+	 
 	mdelay(2);
 	udelay(48);
-	if ((atp_readb_io(dev, 0, 0x1c) & 0x80) == 0x00) {	/* bsy ? */
+	if ((atp_readb_io(dev, 0, 0x1c) & 0x80) == 0x00) {	 
 		atp_writew_io(dev, 0, 0x1c, 0);
 		atp_writeb_io(dev, 0, 0x1b, 0);
 		atp_writeb_io(dev, 0, 0x15, 0);
@@ -1146,11 +1060,11 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 		atp_readb_io(dev, 0, 0x17);
 		return;
 	}
-	val &= 0x00ff;		/* synchronization  */
+	val &= 0x00ff;		 
 	val |= 0x3f00;
 	fun_scam(dev, &val);
 	udelay(2);
-	val &= 0x00ff;		/* isolation        */
+	val &= 0x00ff;		 
 	val |= 0x2000;
 	fun_scam(dev, &val);
 	udelay(2);
@@ -1161,7 +1075,7 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 		if ((atp_readw_io(dev, 0, 0x1c) & 0x2000) == 0)
 			continue;
 		udelay(2);
-		val &= 0x00ff;		/* get ID_STRING */
+		val &= 0x00ff;		 
 		val |= 0x2000;
 		k = fun_scam(dev, &val);
 		if ((k & 0x03) == 0)
@@ -1177,15 +1091,14 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 		i = 8;
 	}
 
-	/* isolation complete..  */
-/*    mbuf[32]=0;
-	printk(" \n%x %x %x %s\n ",assignid_map,mbuf[0],mbuf[1],&mbuf[2]); */
+	 
+ 
 	i = 15;
 	j = mbuf[0];
-	if ((j & 0x20) != 0) {	/* bit5=1:ID up to 7      */
+	if ((j & 0x20) != 0) {	 
 		i = 7;
 	}
-	if ((j & 0x06) != 0) {	/* IDvalid?             */
+	if ((j & 0x06) != 0) {	 
 		k = mbuf[1];
 		while (1) {
 			m = 1;
@@ -1198,8 +1111,8 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 				break;
 		}
 	}
-	if ((m & assignid_map) != 0) {	/* srch from max acceptable ID#  */
-		k = i;			/* max acceptable ID#            */
+	if ((m & assignid_map) != 0) {	 
+		k = i;			 
 		while (1) {
 			m = 1;
 			m <<= k;
@@ -1211,21 +1124,21 @@ static void tscam(struct Scsi_Host *host, bool wide_chip, u8 scam_on)
 				break;
 		}
 	}
-	/* k=binID#,       */
+	 
 	assignid_map |= m;
 	if (k < 8) {
-		quintet[0] = 0x38;	/* 1st dft ID<8    */
+		quintet[0] = 0x38;	 
 	} else {
-		quintet[0] = 0x31;	/* 1st  ID>=8      */
+		quintet[0] = 0x31;	 
 	}
 	k &= 0x07;
 	quintet[1] = g2q_tab[k];
 
-	val &= 0x00ff;		/* AssignID 1stQuintet,AH=001xxxxx  */
+	val &= 0x00ff;		 
 	m = quintet[0] << 8;
 	val |= m;
 	fun_scam(dev, &val);
-	val &= 0x00ff;		/* AssignID 2ndQuintet,AH=001xxxxx */
+	val &= 0x00ff;		 
 	m = quintet[1] << 8;
 	val |= m;
 	fun_scam(dev, &val);
@@ -1334,8 +1247,8 @@ static void atp870_init(struct Scsi_Host *shpnt)
 		atpdev->ultra_map[0] = 0xffff;
 	}
 
-	if (pdev->revision > 0x07)	/* check if atp876 chip */
-		atp_writeb_base(atpdev, 0x3e, 0x00); /* enable terminator */
+	if (pdev->revision > 0x07)	 
+		atp_writeb_base(atpdev, 0x3e, 0x00);  
 
 	k = (atp_readb_base(atpdev, 0x3a) & 0xf3) | 0x10;
 	atp_writeb_base(atpdev, 0x3a, k);
@@ -1531,7 +1444,7 @@ static void atp885_init(struct Scsi_Host *shpnt)
 		k = (k & 0x07) | 0x40;
 	atp_set_host_id(atpdev, 1, k);
 
-	msleep(600); /* this delay used to be called tscam_885() */
+	msleep(600);  
 	dev_info(&pdev->dev, "Scanning Channel A SCSI Device ...\n");
 	atp_is(atpdev, 0, true, atp_readb_io(atpdev, 0, 0x1b) >> 7);
 	atp_writeb_io(atpdev, 0, 0x16, 0x80);
@@ -1551,7 +1464,7 @@ static void atp885_init(struct Scsi_Host *shpnt)
 	shpnt->this_id = atpdev->host_id[0];
 }
 
-/* return non-zero on detection */
+ 
 static int atp870u_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct Scsi_Host *shpnt = NULL;
@@ -1636,9 +1549,7 @@ fail:
 	return err;
 }
 
-/* The abort command does not leave the device in a clean state where
-   it is available to be used again.  Until this gets worked out, we will
-   leave it commented out.  */
+ 
 
 static int atp870u_abort(struct scsi_cmnd * SCpnt)
 {
@@ -1728,16 +1639,16 @@ MODULE_LICENSE("GPL");
 
 static const struct scsi_host_template atp870u_template = {
      .module			= THIS_MODULE,
-     .name			= "atp870u"		/* name */,
+     .name			= "atp870u"		 ,
      .proc_name			= "atp870u",
      .show_info			= atp870u_show_info,
-     .info			= atp870u_info		/* info */,
-     .queuecommand		= atp870u_queuecommand	/* queuecommand */,
-     .eh_abort_handler		= atp870u_abort		/* abort */,
-     .bios_param		= atp870u_biosparam	/* biosparm */,
-     .can_queue			= qcnt			/* can_queue */,
-     .this_id			= 7			/* SCSI ID */,
-     .sg_tablesize		= ATP870U_SCATTER	/*SG_ALL*/,
+     .info			= atp870u_info		 ,
+     .queuecommand		= atp870u_queuecommand	 ,
+     .eh_abort_handler		= atp870u_abort		 ,
+     .bios_param		= atp870u_biosparam	 ,
+     .can_queue			= qcnt			 ,
+     .this_id			= 7			 ,
+     .sg_tablesize		= ATP870U_SCATTER	 ,
      .max_sectors		= ATP870U_MAX_SECTORS,
 };
 
@@ -1829,7 +1740,7 @@ static void atp_is(struct atp_unit *dev, unsigned char c, bool wide_chip,
 		atp_writeb_io(dev, c, 0x10, 0x30);
 		if (is885(dev) || is880(dev))
 			atp_writeb_io(dev, c, 0x14, 0x00);
-		else /* result of is870() merge - is this a bug? */
+		else  
 			atp_writeb_io(dev, c, 0x04, 0x00);
 
 phase_cmd:
@@ -1910,14 +1821,14 @@ inq_ok:
 		if (is885(dev) || is880(dev)) {
 			if ((i < 8) && ((dev->global_map[c] & 0x20) == 0))
 				goto not_wide;
-		} else { /* result of is870() merge - is this a bug? */
+		} else {  
 			if ((dev->global_map[c] & 0x20) == 0)
 				goto not_wide;
 		}
 		if (lvdmode == 0) {
 			goto chg_wide;
 		}
-		if (dev->sp[c][i] != 0x04)	// force u2
+		if (dev->sp[c][i] != 0x04)	
 		{
 			goto chg_wide;
 		}

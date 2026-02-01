@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 #include <net/tso.h>
 #include <linux/tcp.h>
 
@@ -16,9 +14,7 @@
 #include "iwl-scd.h"
 #include <linux/dmapool.h>
 
-/*
- * iwl_txq_update_byte_tbl - Set up entry in Tx byte-count array
- */
+ 
 static void iwl_pcie_gen2_update_byte_tbl(struct iwl_trans *trans,
 					  struct iwl_txq *txq, u16 byte_cnt,
 					  int num_tbs)
@@ -33,20 +29,13 @@ static void iwl_pcie_gen2_update_byte_tbl(struct iwl_trans *trans,
 
 	filled_tfd_size = offsetof(struct iwl_tfh_tfd, tbs) +
 			  num_tbs * sizeof(struct iwl_tfh_tb);
-	/*
-	 * filled_tfd_size contains the number of filled bytes in the TFD.
-	 * Dividing it by 64 will give the number of chunks to fetch
-	 * to SRAM- 0 for one chunk, 1 for 2 and so on.
-	 * If, for example, TFD contains only 3 TBs then 32 bytes
-	 * of the TFD are used, and only one chunk of 64 bytes should
-	 * be fetched
-	 */
+	 
 	num_fetch_chunks = DIV_ROUND_UP(filled_tfd_size, 64) - 1;
 
 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_AX210) {
 		struct iwl_gen3_bc_tbl_entry *scd_bc_tbl_gen3 = txq->bc_tbl.addr;
 
-		/* Starting from AX210, the HW expects bytes */
+		 
 		WARN_ON(trans->txqs.bc_table_dword);
 		WARN_ON(len > 0x3FFF);
 		bc_ent = cpu_to_le16(len | (num_fetch_chunks << 14));
@@ -54,7 +43,7 @@ static void iwl_pcie_gen2_update_byte_tbl(struct iwl_trans *trans,
 	} else {
 		struct iwlagn_scd_bc_tbl *scd_bc_tbl = txq->bc_tbl.addr;
 
-		/* Before AX210, the HW expects DW */
+		 
 		WARN_ON(!trans->txqs.bc_table_dword);
 		len = DIV_ROUND_UP(len, 4);
 		WARN_ON(len > 0xFFF);
@@ -63,19 +52,14 @@ static void iwl_pcie_gen2_update_byte_tbl(struct iwl_trans *trans,
 	}
 }
 
-/*
- * iwl_txq_inc_wr_ptr - Send new write index to hardware
- */
+ 
 void iwl_txq_inc_wr_ptr(struct iwl_trans *trans, struct iwl_txq *txq)
 {
 	lockdep_assert_held(&txq->lock);
 
 	IWL_DEBUG_TX(trans, "Q:%d WR: 0x%x\n", txq->id, txq->write_ptr);
 
-	/*
-	 * if not in power-save mode, uCode will never sleep when we're
-	 * trying to tx (during RFKILL, we're not trying to tx).
-	 */
+	 
 	iwl_write32(trans, HBUS_TARG_WRPTR, txq->write_ptr | (txq->id << 16));
 }
 
@@ -91,12 +75,7 @@ int iwl_txq_gen2_set_tb(struct iwl_trans *trans, struct iwl_tfh_tfd *tfd,
 	int idx = iwl_txq_gen2_get_num_tbs(trans, tfd);
 	struct iwl_tfh_tb *tb;
 
-	/* Only WARN here so we know about the issue, but we mess up our
-	 * unmap path because not every place currently checks for errors
-	 * returned from this function - it can only return an error if
-	 * there's no more space, and so when we know there is enough we
-	 * don't always check ...
-	 */
+	 
 	WARN(iwl_txq_crosses_4g_boundary(addr, len),
 	     "possible DMA problem with iova:0x%llx, len:%d\n",
 	     (unsigned long long)addr, len);
@@ -105,7 +84,7 @@ int iwl_txq_gen2_set_tb(struct iwl_trans *trans, struct iwl_tfh_tfd *tfd,
 		return -EINVAL;
 	tb = &tfd->tbs[idx];
 
-	/* Each TFD can point to a maximum max_tbs Tx buffers */
+	 
 	if (le16_to_cpu(tfd->num_tbs) >= trans->txqs.tfd.max_tbs) {
 		IWL_ERR(trans, "Error can not send more than %d chunks\n",
 			trans->txqs.tfd.max_tbs);
@@ -134,7 +113,7 @@ void iwl_txq_gen2_tfd_unmap(struct iwl_trans *trans, struct iwl_cmd_meta *meta,
 {
 	int i, num_tbs;
 
-	/* Sanity check on number of chunks */
+	 
 	num_tbs = iwl_txq_gen2_get_num_tbs(trans, tfd);
 
 	if (num_tbs > trans->txqs.tfd.max_tbs) {
@@ -142,7 +121,7 @@ void iwl_txq_gen2_tfd_unmap(struct iwl_trans *trans, struct iwl_cmd_meta *meta,
 		return;
 	}
 
-	/* first TB is never freed - it's the bidirectional DMA data */
+	 
 	for (i = 1; i < num_tbs; i++) {
 		if (meta->tbs & BIT(i))
 			dma_unmap_page(trans->dev,
@@ -161,9 +140,7 @@ void iwl_txq_gen2_tfd_unmap(struct iwl_trans *trans, struct iwl_cmd_meta *meta,
 
 void iwl_txq_gen2_free_tfd(struct iwl_trans *trans, struct iwl_txq *txq)
 {
-	/* rd_ptr is bounded by TFD_QUEUE_SIZE_MAX and
-	 * idx is bounded by n_window
-	 */
+	 
 	int idx = iwl_txq_get_cmd_index(txq, txq->read_ptr);
 	struct sk_buff *skb;
 
@@ -177,10 +154,7 @@ void iwl_txq_gen2_free_tfd(struct iwl_trans *trans, struct iwl_txq *txq)
 
 	skb = txq->entries[idx].skb;
 
-	/* Can be called from irqs-disabled context
-	 * If skb is not NULL, it means that the whole queue is being
-	 * freed and that the queue is not empty - free the skb
-	 */
+	 
 	if (skb) {
 		iwl_op_mode_free_skb(trans->op_mode, skb);
 		txq->entries[idx].skb = NULL;
@@ -199,19 +173,14 @@ static struct page *get_workaround_page(struct iwl_trans *trans,
 	if (!ret)
 		return NULL;
 
-	/* set the chaining pointer to the previous page if there */
+	 
 	*(void **)((u8 *)page_address(ret) + PAGE_SIZE - sizeof(void *)) = *page_ptr;
 	*page_ptr = ret;
 
 	return ret;
 }
 
-/*
- * Add a TB and if needed apply the FH HW bug workaround;
- * meta != NULL indicates that it's a page mapping and we
- * need to dma_unmap_page() and set the meta->tbs bit in
- * this case.
- */
+ 
 static int iwl_txq_gen2_set_tb_with_wa(struct iwl_trans *trans,
 				       struct sk_buff *skb,
 				       struct iwl_tfh_tfd *tfd,
@@ -238,14 +207,7 @@ static int iwl_txq_gen2_set_tb_with_wa(struct iwl_trans *trans,
 		goto trace;
 	}
 
-	/*
-	 * Work around a hardware bug. If (as expressed in the
-	 * condition above) the TB ends on a 32-bit boundary,
-	 * then the next TB may be accessed with the wrong
-	 * address.
-	 * To work around it, copy the data elsewhere and make
-	 * a new mapping for it so the device will not fail.
-	 */
+	 
 
 	if (WARN_ON(len > PAGE_SIZE - sizeof(void *))) {
 		ret = -ENOBUFS;
@@ -266,7 +228,7 @@ static int iwl_txq_gen2_set_tb_with_wa(struct iwl_trans *trans,
 		return -ENOMEM;
 	ret = iwl_txq_gen2_set_tb(trans, tfd, phys, len);
 	if (ret < 0) {
-		/* unmap the new allocation as single */
+		 
 		oldphys = phys;
 		meta = NULL;
 		goto unmap;
@@ -302,21 +264,12 @@ struct iwl_tso_hdr_page *get_page_hdr(struct iwl_trans *trans, size_t len,
 	if (!p->page)
 		goto alloc;
 
-	/*
-	 * Check if there's enough room on this page
-	 *
-	 * Note that we put a page chaining pointer *last* in the
-	 * page - we need it somewhere, and if it's there then we
-	 * avoid DMA mapping the last bits of the page which may
-	 * trigger the 32-bit boundary hardware bug.
-	 *
-	 * (see also get_workaround_page() in tx-gen2.c)
-	 */
+	 
 	if (p->pos + len < (u8 *)page_address(p->page) + PAGE_SIZE -
 			   sizeof(void *))
 		goto out;
 
-	/* We don't have enough room on this page, get a new one. */
+	 
 	__free_page(p->page);
 
 alloc:
@@ -324,7 +277,7 @@ alloc:
 	if (!p->page)
 		return NULL;
 	p->pos = page_address(p->page);
-	/* set the chaining pointer to NULL */
+	 
 	*(void **)((u8 *)page_address(p->page) + PAGE_SIZE - sizeof(void *)) = NULL;
 out:
 	*page_ptr = p->page;
@@ -357,34 +310,27 @@ static int iwl_txq_gen2_build_amsdu(struct iwl_trans *trans,
 	total_len = skb->len - snap_ip_tcp_hdrlen - hdr_len;
 	amsdu_pad = 0;
 
-	/* total amount of header we may need for this A-MSDU */
+	 
 	hdr_room = DIV_ROUND_UP(total_len, mss) *
 		(3 + snap_ip_tcp_hdrlen + sizeof(struct ethhdr));
 
-	/* Our device supports 9 segments at most, it will fit in 1 page */
+	 
 	hdr_page = get_page_hdr(trans, hdr_room, skb);
 	if (!hdr_page)
 		return -ENOMEM;
 
 	start_hdr = hdr_page->pos;
 
-	/*
-	 * Pull the ieee80211 header to be able to use TSO core,
-	 * we will restore it for the tx_status flow.
-	 */
+	 
 	skb_pull(skb, hdr_len);
 
-	/*
-	 * Remove the length of all the headers that we don't actually
-	 * have in the MPDU by themselves, but that we duplicate into
-	 * all the different MSDUs inside the A-MSDU.
-	 */
+	 
 	le16_add_cpu(&tx_cmd->len, -snap_ip_tcp_hdrlen);
 
 	tso_start(skb, &tso);
 
 	while (total_len) {
-		/* this is the data left for this subframe */
+		 
 		unsigned int data_left = min_t(unsigned int, mss, total_len);
 		unsigned int tb_len;
 		dma_addr_t tb_phys;
@@ -405,10 +351,7 @@ static int iwl_txq_gen2_build_amsdu(struct iwl_trans *trans,
 		*((__be16 *)hdr_page->pos) = cpu_to_be16(length);
 		hdr_page->pos += sizeof(length);
 
-		/*
-		 * This will copy the SNAP as well which will be considered
-		 * as MAC header.
-		 */
+		 
 		tso_build_hdr(skb, hdr_page->pos, &tso, data_left, !total_len);
 
 		hdr_page->pos += snap_ip_tcp_hdrlen;
@@ -418,21 +361,17 @@ static int iwl_txq_gen2_build_amsdu(struct iwl_trans *trans,
 					 tb_len, DMA_TO_DEVICE);
 		if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
 			goto out_err;
-		/*
-		 * No need for _with_wa, this is from the TSO page and
-		 * we leave some space at the end of it so can't hit
-		 * the buggy scenario.
-		 */
+		 
 		iwl_txq_gen2_set_tb(trans, tfd, tb_phys, tb_len);
 		trace_iwlwifi_dev_tx_tb(trans->dev, skb, start_hdr,
 					tb_phys, tb_len);
-		/* add this subframe's headers' length to the tx_cmd */
+		 
 		le16_add_cpu(&tx_cmd->len, hdr_page->pos - subf_hdrs_start);
 
-		/* prepare the start_hdr for the next subframe */
+		 
 		start_hdr = hdr_page->pos;
 
-		/* put the payload */
+		 
 		while (data_left) {
 			int ret;
 
@@ -450,7 +389,7 @@ static int iwl_txq_gen2_build_amsdu(struct iwl_trans *trans,
 		}
 	}
 
-	/* re -add the WiFi header */
+	 
 	skb_push(skb, hdr_len);
 
 	return 0;
@@ -477,40 +416,28 @@ iwl_tfh_tfd *iwl_txq_gen2_build_tx_amsdu(struct iwl_trans *trans,
 
 	tb_phys = iwl_txq_get_first_tb_dma(txq, idx);
 
-	/*
-	 * No need for _with_wa, the first TB allocation is aligned up
-	 * to a 64-byte boundary and thus can't be at the end or cross
-	 * a page boundary (much less a 2^32 boundary).
-	 */
+	 
 	iwl_txq_gen2_set_tb(trans, tfd, tb_phys, IWL_FIRST_TB_SIZE);
 
-	/*
-	 * The second TB (tb1) points to the remainder of the TX command
-	 * and the 802.11 header - dword aligned size
-	 * (This calculation modifies the TX command, so do it before the
-	 * setup of the first TB)
-	 */
+	 
 	len = tx_cmd_len + sizeof(struct iwl_cmd_header) + hdr_len -
 	      IWL_FIRST_TB_SIZE;
 
-	/* do not align A-MSDU to dword as the subframe header aligns it */
+	 
 
-	/* map the data for TB1 */
+	 
 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
 	tb_phys = dma_map_single(trans->dev, tb1_addr, len, DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
 		goto out_err;
-	/*
-	 * No need for _with_wa(), we ensure (via alignment) that the data
-	 * here can never cross or end at a page boundary.
-	 */
+	 
 	iwl_txq_gen2_set_tb(trans, tfd, tb_phys, len);
 
 	if (iwl_txq_gen2_build_amsdu(trans, skb, tfd, len + IWL_FIRST_TB_SIZE,
 				     hdr_len, dev_cmd))
 		goto out_err;
 
-	/* building the A-MSDU might have changed this data, memcpy it now */
+	 
 	memcpy(&txq->first_tb_bufs[idx], dev_cmd, IWL_FIRST_TB_SIZE);
 	return tfd;
 
@@ -566,22 +493,13 @@ iwl_tfh_tfd *iwl_txq_gen2_build_tx(struct iwl_trans *trans,
 
 	tb_phys = iwl_txq_get_first_tb_dma(txq, idx);
 
-	/* The first TB points to bi-directional DMA data */
+	 
 	memcpy(&txq->first_tb_bufs[idx], dev_cmd, IWL_FIRST_TB_SIZE);
 
-	/*
-	 * No need for _with_wa, the first TB allocation is aligned up
-	 * to a 64-byte boundary and thus can't be at the end or cross
-	 * a page boundary (much less a 2^32 boundary).
-	 */
+	 
 	iwl_txq_gen2_set_tb(trans, tfd, tb_phys, IWL_FIRST_TB_SIZE);
 
-	/*
-	 * The second TB (tb1) points to the remainder of the TX command
-	 * and the 802.11 header - dword aligned size
-	 * (This calculation modifies the TX command, so do it before the
-	 * setup of the first TB)
-	 */
+	 
 	len = tx_cmd_len + sizeof(struct iwl_cmd_header) + hdr_len -
 	      IWL_FIRST_TB_SIZE;
 
@@ -590,20 +508,17 @@ iwl_tfh_tfd *iwl_txq_gen2_build_tx(struct iwl_trans *trans,
 	else
 		tb1_len = len;
 
-	/* map the data for TB1 */
+	 
 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
 	tb_phys = dma_map_single(trans->dev, tb1_addr, tb1_len, DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
 		goto out_err;
-	/*
-	 * No need for _with_wa(), we ensure (via alignment) that the data
-	 * here can never cross or end at a page boundary.
-	 */
+	 
 	iwl_txq_gen2_set_tb(trans, tfd, tb_phys, tb1_len);
 	trace_iwlwifi_dev_tx(trans->dev, skb, tfd, sizeof(*tfd), &dev_cmd->hdr,
 			     IWL_FIRST_TB_SIZE + tb1_len, hdr_len);
 
-	/* set up TFD's third entry to point to remainder of skb's head */
+	 
 	tb2_len = skb_headlen(skb) - hdr_len;
 
 	if (tb2_len > 0) {
@@ -655,7 +570,7 @@ struct iwl_tfh_tfd *iwl_txq_gen2_build_tfd(struct iwl_trans *trans,
 	int len, hdr_len;
 	bool amsdu;
 
-	/* There must be data left over for TB1 or this code must be changed */
+	 
 	BUILD_BUG_ON(sizeof(struct iwl_tx_cmd_gen2) < IWL_FIRST_TB_SIZE);
 	BUILD_BUG_ON(sizeof(struct iwl_cmd_header) +
 		     offsetofend(struct iwl_tx_cmd_gen2, dram_info) >
@@ -678,11 +593,7 @@ struct iwl_tfh_tfd *iwl_txq_gen2_build_tfd(struct iwl_trans *trans,
 
 	hdr_len = ieee80211_hdrlen(hdr->frame_control);
 
-	/*
-	 * Only build A-MSDUs here if doing so by GSO, otherwise it may be
-	 * an A-MSDU for other reasons, e.g. NAN or an A-MSDU having been
-	 * built in the higher layers already.
-	 */
+	 
 	if (amsdu && skb_shinfo(skb)->gso_size)
 		return iwl_txq_gen2_build_tx_amsdu(trans, txq, dev_cmd, skb,
 						    out_meta, hdr_len, len);
@@ -695,21 +606,13 @@ int iwl_txq_space(struct iwl_trans *trans, const struct iwl_txq *q)
 	unsigned int max;
 	unsigned int used;
 
-	/*
-	 * To avoid ambiguity between empty and completely full queues, there
-	 * should always be less than max_tfd_queue_size elements in the queue.
-	 * If q->n_window is smaller than max_tfd_queue_size, there is no need
-	 * to reserve any queue entries for this purpose.
-	 */
+	 
 	if (q->n_window < trans->trans_cfg->base_params->max_tfd_queue_size)
 		max = q->n_window;
 	else
 		max = trans->trans_cfg->base_params->max_tfd_queue_size - 1;
 
-	/*
-	 * max_tfd_queue_size is a power of 2, so the following is equivalent to
-	 * modulo by max_tfd_queue_size and is well defined.
-	 */
+	 
 	used = (q->write_ptr - q->read_ptr) &
 		(trans->trans_cfg->base_params->max_tfd_queue_size - 1);
 
@@ -746,7 +649,7 @@ int iwl_txq_gen2_tx(struct iwl_trans *trans, struct sk_buff *skb,
 	if (iwl_txq_space(trans, txq) < txq->high_mark) {
 		iwl_txq_stop(trans, txq);
 
-		/* don't put the packet on the ring, if there is no room */
+		 
 		if (unlikely(iwl_txq_space(trans, txq) < 3)) {
 			struct iwl_device_tx_cmd **dev_cmd_ptr;
 
@@ -762,7 +665,7 @@ int iwl_txq_gen2_tx(struct iwl_trans *trans, struct sk_buff *skb,
 
 	idx = iwl_txq_get_cmd_index(txq, txq->write_ptr);
 
-	/* Set up driver data for this TFD */
+	 
 	txq->entries[idx].skb = skb;
 	txq->entries[idx].cmd = dev_cmd;
 
@@ -770,7 +673,7 @@ int iwl_txq_gen2_tx(struct iwl_trans *trans, struct sk_buff *skb,
 		cpu_to_le16((u16)(QUEUE_TO_SEQ(txq_id) |
 			    INDEX_TO_SEQ(idx)));
 
-	/* Set up first empty entry in queue's array of Tx/cmd buffers */
+	 
 	out_meta = &txq->entries[idx].meta;
 	out_meta->flags = 0;
 
@@ -792,30 +695,25 @@ int iwl_txq_gen2_tx(struct iwl_trans *trans, struct sk_buff *skb,
 		cmd_len = le16_to_cpu(tx_cmd_gen2->len);
 	}
 
-	/* Set up entry for this TFD in Tx byte-count array */
+	 
 	iwl_pcie_gen2_update_byte_tbl(trans, txq, cmd_len,
 				      iwl_txq_gen2_get_num_tbs(trans, tfd));
 
-	/* start timer if queue currently empty */
+	 
 	if (txq->read_ptr == txq->write_ptr && txq->wd_timeout)
 		mod_timer(&txq->stuck_timer, jiffies + txq->wd_timeout);
 
-	/* Tell device the write index *just past* this latest filled TFD */
+	 
 	txq->write_ptr = iwl_txq_inc_wrap(trans, txq->write_ptr);
 	iwl_txq_inc_wr_ptr(trans, txq);
-	/*
-	 * At this point the frame is "transmitted" successfully
-	 * and we will get a TX status notification eventually.
-	 */
+	 
 	spin_unlock(&txq->lock);
 	return 0;
 }
 
-/*************** HOST COMMAND QUEUE FUNCTIONS   *****/
+ 
 
-/*
- * iwl_txq_gen2_unmap -  Unmap any remaining DMA mappings and free skb's
- */
+ 
 void iwl_txq_gen2_unmap(struct iwl_trans *trans, int txq_id)
 {
 	struct iwl_txq *txq = trans->txqs.txq[txq_id];
@@ -844,7 +742,7 @@ void iwl_txq_gen2_unmap(struct iwl_trans *trans, int txq_id)
 
 	spin_unlock_bh(&txq->lock);
 
-	/* just in case - this queue may have been stopped */
+	 
 	iwl_wake_queue(trans, txq);
 }
 
@@ -853,7 +751,7 @@ static void iwl_txq_gen2_free_memory(struct iwl_trans *trans,
 {
 	struct device *dev = trans->dev;
 
-	/* De-alloc circular buffer of TFDs */
+	 
 	if (txq->tfds) {
 		dma_free_coherent(dev,
 				  trans->txqs.tfd.size * txq->n_window,
@@ -870,14 +768,7 @@ static void iwl_txq_gen2_free_memory(struct iwl_trans *trans,
 	kfree(txq);
 }
 
-/*
- * iwl_pcie_txq_free - Deallocate DMA queue.
- * @txq: Transmit queue to deallocate.
- *
- * Empty queue by removing and destroying all BD's.
- * Free all buffers.
- * 0-fill, but do not free "txq" descriptor structure.
- */
+ 
 static void iwl_txq_gen2_free(struct iwl_trans *trans, int txq_id)
 {
 	struct iwl_txq *txq;
@@ -894,7 +785,7 @@ static void iwl_txq_gen2_free(struct iwl_trans *trans, int txq_id)
 
 	iwl_txq_gen2_unmap(trans, txq_id);
 
-	/* De-alloc array of command/tx buffers */
+	 
 	if (txq_id == trans->txqs.cmd.q_id)
 		for (i = 0; i < txq->n_window; i++) {
 			kfree_sensitive(txq->entries[i].cmd);
@@ -909,15 +800,12 @@ static void iwl_txq_gen2_free(struct iwl_trans *trans, int txq_id)
 	clear_bit(txq_id, trans->txqs.queue_used);
 }
 
-/*
- * iwl_queue_init - Initialize queue's high/low-water and read/write indexes
- */
+ 
 static int iwl_queue_init(struct iwl_txq *q, int slots_num)
 {
 	q->n_window = slots_num;
 
-	/* slots_num must be power-of-two size, otherwise
-	 * iwl_txq_get_cmd_index is broken. */
+	 
 	if (WARN_ON(!is_power_of_2(slots_num)))
 		return -EINVAL;
 
@@ -944,14 +832,13 @@ int iwl_txq_init(struct iwl_trans *trans, struct iwl_txq *txq, int slots_num,
 
 	txq->need_update = false;
 
-	/* max_tfd_queue_size must be power-of-two size, otherwise
-	 * iwl_txq_inc_wrap and iwl_txq_dec_wrap are broken. */
+	 
 	if (WARN_ONCE(tfd_queue_max_size & (tfd_queue_max_size - 1),
 		      "Max tfd queue size must be a power of two, but is %d",
 		      tfd_queue_max_size))
 		return -EINVAL;
 
-	/* Initialize queue's high/low-water marks, and head/tail indexes */
+	 
 	ret = iwl_queue_init(txq, slots_num);
 	if (ret)
 		return ret;
@@ -997,7 +884,7 @@ void iwl_txq_log_scd_error(struct iwl_trans *trans, struct iwl_txq *txq)
 	if (trans->trans_cfg->gen2) {
 		IWL_ERR(trans, "Queue %d is stuck %d %d\n", txq_id,
 			txq->read_ptr, txq->write_ptr);
-		/* TODO: access new SCD registers and dump them */
+		 
 		return;
 	}
 
@@ -1023,7 +910,7 @@ static void iwl_txq_stuck_timer(struct timer_list *t)
 	struct iwl_trans *trans = txq->trans;
 
 	spin_lock(&txq->lock);
-	/* check if triggered erroneously */
+	 
 	if (txq->read_ptr == txq->write_ptr) {
 		spin_unlock(&txq->lock);
 		return;
@@ -1082,8 +969,7 @@ int iwl_txq_alloc(struct iwl_trans *trans, struct iwl_txq *txq, int slots_num,
 				goto error;
 		}
 
-	/* Circular buffer of transmit frame descriptors (TFDs),
-	 * shared with device */
+	 
 	txq->tfds = dma_alloc_coherent(trans->dev, tfd_sz,
 				       &txq->dma_addr, GFP_KERNEL);
 	if (!txq->tfds)
@@ -1208,7 +1094,7 @@ static int iwl_txq_alloc_response(struct iwl_trans *trans, struct iwl_txq *txq,
 	trans->txqs.txq[qid] = txq;
 	wr_ptr &= (trans->trans_cfg->base_params->max_tfd_queue_size - 1);
 
-	/* Place first TFD at index corresponding to start sequence number */
+	 
 	txq->read_ptr = wr_ptr;
 	txq->write_ptr = wr_ptr;
 
@@ -1296,12 +1182,7 @@ void iwl_txq_dyn_free(struct iwl_trans *trans, int queue)
 		 "queue %d out of range", queue))
 		return;
 
-	/*
-	 * Upon HW Rfkill - we stop the device, and then stop the queues
-	 * in the op_mode. Just for the sake of the simplicity of the op_mode,
-	 * allow the op_mode to call txq_disable after it already called
-	 * stop_device.
-	 */
+	 
 	if (!test_and_clear_bit(queue, trans->txqs.queue_used)) {
 		WARN_ONCE(test_bit(STATUS_DEVICE_ENABLED, &trans->status),
 			  "queue %d not used", queue);
@@ -1319,7 +1200,7 @@ void iwl_txq_gen2_tx_free(struct iwl_trans *trans)
 
 	memset(trans->txqs.queue_used, 0, sizeof(trans->txqs.queue_used));
 
-	/* Free all TX queues */
+	 
 	for (i = 0; i < ARRAY_SIZE(trans->txqs.txq); i++) {
 		if (!trans->txqs.txq[i])
 			continue;
@@ -1333,7 +1214,7 @@ int iwl_txq_gen2_init(struct iwl_trans *trans, int txq_id, int queue_size)
 	struct iwl_txq *queue;
 	int ret;
 
-	/* alloc and init the tx queue */
+	 
 	if (!trans->txqs.txq[txq_id]) {
 		queue = kzalloc(sizeof(*queue), GFP_KERNEL);
 		if (!queue) {
@@ -1380,11 +1261,7 @@ static inline dma_addr_t iwl_txq_gen1_tfd_tb_get_addr(struct iwl_trans *trans,
 
 	hi_len = le16_to_cpu(tb->hi_n_len) & 0xF;
 
-	/*
-	 * shift by 16 twice to avoid warnings on 32-bit
-	 * (where this code never runs anyway due to the
-	 * if statement above)
-	 */
+	 
 	return addr | ((hi_len << 16) << 16);
 }
 
@@ -1395,16 +1272,16 @@ void iwl_txq_gen1_tfd_unmap(struct iwl_trans *trans,
 	int i, num_tbs;
 	struct iwl_tfd *tfd = iwl_txq_get_tfd(trans, txq, index);
 
-	/* Sanity check on number of chunks */
+	 
 	num_tbs = iwl_txq_gen1_tfd_get_num_tbs(trans, tfd);
 
 	if (num_tbs > trans->txqs.tfd.max_tbs) {
 		IWL_ERR(trans, "Too many chunks: %i\n", num_tbs);
-		/* @todo issue fatal error, it is quite serious situation */
+		 
 		return;
 	}
 
-	/* first TB is never freed - it's the bidirectional DMA data */
+	 
 
 	for (i = 1; i < num_tbs; i++) {
 		if (meta->tbs & BIT(i))
@@ -1431,9 +1308,7 @@ void iwl_txq_gen1_tfd_unmap(struct iwl_trans *trans,
 #define IWL_TX_CRC_SIZE 4
 #define IWL_TX_DELIMITER_SIZE 4
 
-/*
- * iwl_txq_gen1_update_byte_cnt_tbl - Set up entry in Tx byte-count array
- */
+ 
 void iwl_txq_gen1_update_byte_cnt_tbl(struct iwl_trans *trans,
 				      struct iwl_txq *txq, u16 byte_cnt,
 				      int num_tbs)
@@ -1503,20 +1378,10 @@ void iwl_txq_gen1_inval_byte_cnt_tbl(struct iwl_trans *trans,
 			bc_ent;
 }
 
-/*
- * iwl_txq_free_tfd - Free all chunks referenced by TFD [txq->q.read_ptr]
- * @trans - transport private data
- * @txq - tx queue
- * @dma_dir - the direction of the DMA mapping
- *
- * Does NOT advance any TFD circular buffer read/write indexes
- * Does NOT free the TFD itself (which is within circular buffer)
- */
+ 
 void iwl_txq_free_tfd(struct iwl_trans *trans, struct iwl_txq *txq)
 {
-	/* rd_ptr is bounded by TFD_QUEUE_SIZE_MAX and
-	 * idx is bounded by n_window
-	 */
+	 
 	int rd_ptr = txq->read_ptr;
 	int idx = iwl_txq_get_cmd_index(txq, rd_ptr);
 	struct sk_buff *skb;
@@ -1526,9 +1391,7 @@ void iwl_txq_free_tfd(struct iwl_trans *trans, struct iwl_txq *txq)
 	if (!txq->entries)
 		return;
 
-	/* We have only q->n_window txq->entries, but we use
-	 * TFD_QUEUE_SIZE_MAX tfds
-	 */
+	 
 	if (trans->trans_cfg->gen2)
 		iwl_txq_gen2_tfd_unmap(trans, &txq->entries[idx].meta,
 				       iwl_txq_get_tfd(trans, txq, rd_ptr));
@@ -1536,13 +1399,10 @@ void iwl_txq_free_tfd(struct iwl_trans *trans, struct iwl_txq *txq)
 		iwl_txq_gen1_tfd_unmap(trans, &txq->entries[idx].meta,
 				       txq, rd_ptr);
 
-	/* free SKB */
+	 
 	skb = txq->entries[idx].skb;
 
-	/* Can be called from irqs-disabled context
-	 * If skb is not NULL, it means that the whole queue is being
-	 * freed and that the queue is not empty - free the skb
-	 */
+	 
 	if (skb) {
 		iwl_op_mode_free_skb(trans->op_mode, skb);
 		txq->entries[idx].skb = NULL;
@@ -1556,31 +1416,25 @@ void iwl_txq_progress(struct iwl_txq *txq)
 	if (!txq->wd_timeout)
 		return;
 
-	/*
-	 * station is asleep and we send data - that must
-	 * be uAPSD or PS-Poll. Don't rearm the timer.
-	 */
+	 
 	if (txq->frozen)
 		return;
 
-	/*
-	 * if empty delete timer, otherwise move timer forward
-	 * since we're making progress on this queue
-	 */
+	 
 	if (txq->read_ptr == txq->write_ptr)
 		del_timer(&txq->stuck_timer);
 	else
 		mod_timer(&txq->stuck_timer, jiffies + txq->wd_timeout);
 }
 
-/* Frees buffers until index _not_ inclusive */
+ 
 void iwl_txq_reclaim(struct iwl_trans *trans, int txq_id, int ssn,
 		     struct sk_buff_head *skbs, bool is_flush)
 {
 	struct iwl_txq *txq = trans->txqs.txq[txq_id];
 	int tfd_num, read_ptr, last_to_free;
 
-	/* This function is not meant to release cmd queue*/
+	 
 	if (WARN_ON(txq_id == trans->txqs.cmd.q_id))
 		return;
 
@@ -1604,8 +1458,7 @@ void iwl_txq_reclaim(struct iwl_trans *trans, int txq_id, int ssn,
 	IWL_DEBUG_TX_REPLY(trans, "[Q %d] %d -> %d (%d)\n",
 			   txq_id, txq->read_ptr, tfd_num, ssn);
 
-	/*Since we free until index _not_ inclusive, the one before index is
-	 * the last we will free. This one must be used */
+	 
 	last_to_free = iwl_txq_dec_wrap(trans, tfd_num);
 
 	if (!iwl_txq_used(txq, last_to_free)) {
@@ -1656,22 +1509,10 @@ void iwl_txq_reclaim(struct iwl_trans *trans, int txq_id, int ssn,
 		skb_queue_splice_init(&txq->overflow_q,
 				      is_flush ? skbs : &overflow_skbs);
 
-		/*
-		 * We are going to transmit from the overflow queue.
-		 * Remember this state so that wait_for_txq_empty will know we
-		 * are adding more packets to the TFD queue. It cannot rely on
-		 * the state of &txq->overflow_q, as we just emptied it, but
-		 * haven't TXed the content yet.
-		 */
+		 
 		txq->overflow_tx = true;
 
-		/*
-		 * This is tricky: we are in reclaim path which is non
-		 * re-entrant, so noone will try to take the access the
-		 * txq data from that path. We stopped tx, so we can't
-		 * have tx as well. Bottom line, we can unlock and re-lock
-		 * later.
-		 */
+		 
 		spin_unlock_bh(&txq->lock);
 
 		while ((skb = __skb_dequeue(&overflow_skbs))) {
@@ -1680,11 +1521,7 @@ void iwl_txq_reclaim(struct iwl_trans *trans, int txq_id, int ssn,
 			dev_cmd_ptr = *(void **)((u8 *)skb->cb +
 						 trans->txqs.dev_cmd_offs);
 
-			/*
-			 * Note that we can very well be overflowing again.
-			 * In that case, iwl_txq_space will be small again
-			 * and we won't wake mac80211's queue.
-			 */
+			 
 			iwl_trans_tx(trans, skb, dev_cmd_ptr, txq_id);
 		}
 
@@ -1699,7 +1536,7 @@ out:
 	spin_unlock_bh(&txq->lock);
 }
 
-/* Set wr_ptr of specific device and txq  */
+ 
 void iwl_txq_set_q_ptrs(struct iwl_trans *trans, int txq_id, int ptr)
 {
 	struct iwl_txq *txq = trans->txqs.txq[txq_id];
@@ -1739,23 +1576,17 @@ void iwl_trans_txq_freeze_timer(struct iwl_trans *trans, unsigned long txqs,
 		if (freeze) {
 			if (unlikely(time_after(now,
 						txq->stuck_timer.expires))) {
-				/*
-				 * The timer should have fired, maybe it is
-				 * spinning right now on the lock.
-				 */
+				 
 				goto next_queue;
 			}
-			/* remember how long until the timer fires */
+			 
 			txq->frozen_expiry_remainder =
 				txq->stuck_timer.expires - now;
 			del_timer(&txq->stuck_timer);
 			goto next_queue;
 		}
 
-		/*
-		 * Wake a non-empty queue -> arm timer with the
-		 * remainder before it froze
-		 */
+		 
 		mod_timer(&txq->stuck_timer,
 			  now + txq->frozen_expiry_remainder);
 
@@ -1839,12 +1670,7 @@ static int iwl_trans_txq_send_hcmd_sync(struct iwl_trans *trans,
 
 cancel:
 	if (cmd->flags & CMD_WANT_SKB) {
-		/*
-		 * Cancel the CMD_WANT_SKB flag for the cmd in the
-		 * TX cmd queue. Otherwise in case the cmd comes
-		 * in later, it will possibly set an invalid
-		 * address (cmd->meta.source).
-		 */
+		 
 		txq->entries[cmd_idx].meta.flags &= ~CMD_WANT_SKB;
 	}
 
@@ -1859,7 +1685,7 @@ cancel:
 int iwl_trans_txq_send_hcmd(struct iwl_trans *trans,
 			    struct iwl_host_cmd *cmd)
 {
-	/* Make sure the NIC is still alive in the bus */
+	 
 	if (test_bit(STATUS_TRANS_DEAD, &trans->status))
 		return -ENODEV;
 
@@ -1879,7 +1705,7 @@ int iwl_trans_txq_send_hcmd(struct iwl_trans *trans,
 	if (cmd->flags & CMD_ASYNC) {
 		int ret;
 
-		/* An asynchronous command can not expect an SKB to be set. */
+		 
 		if (WARN_ON(cmd->flags & CMD_WANT_SKB))
 			return -EINVAL;
 

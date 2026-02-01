@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-   Copyright (c) 2013-2014 Intel Corp.
 
-*/
+ 
 
 #include <linux/if_arp.h>
 #include <linux/netdevice.h>
@@ -19,7 +16,7 @@
 #include <net/bluetooth/hci_core.h>
 #include <net/bluetooth/l2cap.h>
 
-#include <net/6lowpan.h> /* for the compression support */
+#include <net/6lowpan.h>  
 
 #define VERSION "0.1"
 
@@ -35,20 +32,13 @@ struct skb_cb {
 };
 #define lowpan_cb(skb) ((struct skb_cb *)((skb)->cb))
 
-/* The devices list contains those devices that we are acting
- * as a proxy. The BT 6LoWPAN device is a virtual device that
- * connects to the Bluetooth LE device. The real connection to
- * BT device is done via l2cap layer. There exists one
- * virtual device / one BT 6LoWPAN network (=hciX device).
- * The list contains struct lowpan_dev elements.
- */
+ 
 static LIST_HEAD(bt_6lowpan_devices);
 static DEFINE_SPINLOCK(devices_lock);
 
 static bool enable_6lowpan;
 
-/* We are listening incoming connections via this channel
- */
+ 
 static struct l2cap_chan *listen_chan;
 static DEFINE_MUTEX(set_lock);
 
@@ -57,7 +47,7 @@ struct lowpan_peer {
 	struct rcu_head rcu;
 	struct l2cap_chan *chan;
 
-	/* peer addresses in various formats */
+	 
 	unsigned char lladdr[ETH_ALEN];
 	struct in6_addr peer_addr;
 };
@@ -68,7 +58,7 @@ struct lowpan_btle_dev {
 	struct hci_dev *hdev;
 	struct net_device *netdev;
 	struct list_head peers;
-	atomic_t peer_count; /* number of items in peers list */
+	atomic_t peer_count;  
 
 	struct work_struct delete_netdev;
 	struct delayed_work notify_peers;
@@ -143,22 +133,16 @@ static inline struct lowpan_peer *peer_lookup_dst(struct lowpan_btle_dev *dev,
 
 	if (!rt) {
 		if (ipv6_addr_any(&lowpan_cb(skb)->gw)) {
-			/* There is neither route nor gateway,
-			 * probably the destination is a direct peer.
-			 */
+			 
 			nexthop = daddr;
 		} else {
-			/* There is a known gateway
-			 */
+			 
 			nexthop = &lowpan_cb(skb)->gw;
 		}
 	} else {
 		nexthop = rt6_nexthop(rt, daddr);
 
-		/* We need to remember the address because it is needed
-		 * by bt_xmit() when sending the packet. In bt_xmit(), the
-		 * destination routing info is not set.
-		 */
+		 
 		memcpy(&lowpan_cb(skb)->gw, nexthop, sizeof(struct in6_addr));
 	}
 
@@ -177,7 +161,7 @@ static inline struct lowpan_peer *peer_lookup_dst(struct lowpan_btle_dev *dev,
 		}
 	}
 
-	/* use the neighbour cache for matching addresses assigned by SLAAC */
+	 
 	neigh = __ipv6_neigh_lookup(dev->netdev, nexthop);
 	if (neigh) {
 		list_for_each_entry_rcu(peer, &dev->peers, list) {
@@ -271,14 +255,12 @@ static int recv_pkt(struct sk_buff *skb, struct net_device *dev,
 	if (!skb)
 		goto drop;
 
-	/* check that it's our buffer */
+	 
 	if (lowpan_is_ipv6(*skb_network_header(skb))) {
-		/* Pull off the 1-byte of 6lowpan header. */
+		 
 		skb_pull(skb, 1);
 
-		/* Copy the packet so that the IPv6 header is
-		 * properly aligned.
-		 */
+		 
 		local_skb = skb_copy_expand(skb, NET_SKB_PAD - 1,
 					    skb_tailroom(skb), GFP_ATOMIC);
 		if (!local_skb)
@@ -340,7 +322,7 @@ drop:
 	return NET_RX_DROP;
 }
 
-/* Packet from BT LE device */
+ 
 static int chan_recv_cb(struct l2cap_chan *chan, struct sk_buff *skb)
 {
 	struct lowpan_btle_dev *dev;
@@ -386,11 +368,7 @@ static int setup_header(struct sk_buff *skb, struct net_device *netdev,
 	} else {
 		BT_DBG("dest IP %pI6c", &ipv6_daddr);
 
-		/* The packet might be sent to 6lowpan interface
-		 * because of routing (either via default route
-		 * or user set route) so get peer according to
-		 * the destination address.
-		 */
+		 
 		peer = peer_lookup_dst(dev, &ipv6_daddr, skb);
 		if (!peer) {
 			BT_DBG("no such peer");
@@ -424,7 +402,7 @@ static int header_create(struct sk_buff *skb, struct net_device *netdev,
 	return 0;
 }
 
-/* Packet to BT LE device */
+ 
 static int send_pkt(struct l2cap_chan *chan, struct sk_buff *skb,
 		    struct net_device *netdev)
 {
@@ -432,9 +410,7 @@ static int send_pkt(struct l2cap_chan *chan, struct sk_buff *skb,
 	struct kvec iv;
 	int err;
 
-	/* Remember the skb so that we can send EAGAIN to the caller if
-	 * we run out of credits.
-	 */
+	 
 	chan->data = skb;
 
 	iv.iov_base = skb->data;
@@ -501,18 +477,12 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
 	bdaddr_t addr;
 	u8 addr_type;
 
-	/* We must take a copy of the skb before we modify/replace the ipv6
-	 * header as the header could be used elsewhere
-	 */
+	 
 	skb = skb_unshare(skb, GFP_ATOMIC);
 	if (!skb)
 		return NET_XMIT_DROP;
 
-	/* Return values from setup_header()
-	 *  <0 - error, packet is dropped
-	 *   0 - this is a multicast packet
-	 *   1 - this is unicast packet
-	 */
+	 
 	err = setup_header(skb, netdev, &addr, &addr_type);
 	if (err < 0) {
 		kfree_skb(skb);
@@ -529,9 +499,7 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
 			err = -ENOENT;
 		}
 	} else {
-		/* We need to send the packet to every device behind this
-		 * interface.
-		 */
+		 
 		err = send_mcast_pkt(skb, netdev);
 	}
 
@@ -599,7 +567,7 @@ static void do_notify_peers(struct work_struct *work)
 	struct lowpan_btle_dev *dev = container_of(work, struct lowpan_btle_dev,
 						   notify_peers.work);
 
-	netdev_notify_peers(dev->netdev); /* send neighbour adv at startup */
+	netdev_notify_peers(dev->netdev);  
 }
 
 static bool is_bt_6lowpan(struct hci_conn *hcon)
@@ -651,7 +619,7 @@ static struct l2cap_chan *add_peer_chan(struct l2cap_chan *chan,
 	peer_add(dev, peer);
 	spin_unlock(&devices_lock);
 
-	/* Notifying peers about us needs to be done without locks held */
+	 
 	if (new_netdev)
 		INIT_DELAYED_WORK(&dev->notify_peers, do_notify_peers);
 	schedule_delayed_work(&dev->notify_peers, msecs_to_jiffies(100));
@@ -757,7 +725,7 @@ static void delete_netdev(struct work_struct *work)
 
 	lowpan_unregister_netdev(entry->netdev);
 
-	/* The entry pointer is deleted by the netdev destructor. */
+	 
 }
 
 static void chan_close_cb(struct l2cap_chan *chan)
@@ -774,9 +742,7 @@ static void chan_close_cb(struct l2cap_chan *chan)
 		if (!is_bt_6lowpan(chan->conn->hcon))
 			return;
 
-		/* If conn is set, then the netdev is also there and we should
-		 * not remove it.
-		 */
+		 
 		remove = false;
 	}
 
@@ -825,10 +791,7 @@ static struct sk_buff *chan_alloc_skb_cb(struct l2cap_chan *chan,
 					 unsigned long hdr_len,
 					 unsigned long len, int nb)
 {
-	/* Note that we must allocate using GFP_ATOMIC here as
-	 * this function is called originally from netdev hard xmit
-	 * function in atomic context.
-	 */
+	 
 	return bt_skb_alloc(hdr_len + len, GFP_ATOMIC);
 }
 
@@ -964,7 +927,7 @@ static int get_l2cap_conn(char *buf, bdaddr_t *addr, u8 *addr_type,
 	if (n < 7)
 		return -EINVAL;
 
-	/* The LE_PUBLIC address type is ignored because of BDADDR_ANY */
+	 
 	hdev = hci_get_route(addr, BDADDR_ANY, BDADDR_LE_PUBLIC);
 	if (!hdev)
 		return -ENOENT;
@@ -992,10 +955,7 @@ static void disconnect_all_peers(void)
 
 	INIT_LIST_HEAD(&peers);
 
-	/* We make a separate list of peers as the close_cb() will
-	 * modify the device peers list so it is better not to mess
-	 * with the same list at the same time.
-	 */
+	 
 
 	rcu_read_lock();
 
@@ -1035,9 +995,7 @@ static void do_enable_set(struct work_struct *work)
 						     struct set_enable, work);
 
 	if (!set_enable->flag || enable_6lowpan != set_enable->flag)
-		/* Disconnect existing connections if 6lowpan is
-		 * disabled
-		 */
+		 
 		disconnect_all_peers();
 
 	enable_6lowpan = set_enable->flag;
@@ -1186,10 +1144,7 @@ static void disconnect_devices(void)
 
 	INIT_LIST_HEAD(&devices);
 
-	/* We make a separate list of devices because the unregister_netdev()
-	 * will call device_event() which will also want to modify the same
-	 * devices list.
-	 */
+	 
 
 	rcu_read_lock();
 

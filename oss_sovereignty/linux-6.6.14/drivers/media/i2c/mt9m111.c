@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for MT9M111/MT9M112/MT9M131 CMOS Image Sensor from Micron/Aptina
- *
- * Copyright (C) 2008, Robert Jarzmik <robert.jarzmik@free.fr>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/videodev2.h>
 #include <linux/slab.h>
@@ -22,16 +18,9 @@
 #include <media/v4l2-event.h>
 #include <media/v4l2-fwnode.h>
 
-/*
- * MT9M111, MT9M112 and MT9M131:
- * i2c address is 0x48 or 0x5d (depending on SADDR pin)
- * The platform has to define struct i2c_board_info objects and link to them
- * from struct soc_camera_host_desc
- */
+ 
 
-/*
- * Sensor core register addresses (0x000..0x0ff)
- */
+ 
 #define MT9M111_CHIP_VERSION		0x000
 #define MT9M111_ROW_START		0x001
 #define MT9M111_COLUMN_START		0x002
@@ -87,9 +76,7 @@
 #define MT9M111_CTXT_CTRL_VBLANK_SEL_B	(1 << 1)
 #define MT9M111_CTXT_CTRL_HBLANK_SEL_B	(1 << 0)
 
-/*
- * Colorpipe register addresses (0x100..0x1ff)
- */
+ 
 #define MT9M111_OPER_MODE_CTRL		0x106
 #define MT9M111_OUTPUT_FORMAT_CTRL	0x108
 #define MT9M111_TPG_CTRL		0x148
@@ -131,9 +118,7 @@
 #define MT9M111_RM_PWR_MASK		BIT(10)
 #define MT9M111_RM_SKIP2_MASK		GENMASK(3, 2)
 
-/*
- * Camera control register addresses (0x200..0x2ff not implemented)
- */
+ 
 
 #define reg_read(reg) mt9m111_reg_read(client, MT9M111_##reg)
 #define reg_write(reg, val) mt9m111_reg_write(client, MT9M111_##reg, (val))
@@ -187,7 +172,7 @@ static struct mt9m111_context context_b = {
 		MT9M111_CTXT_CTRL_HBLANK_SEL_B,
 };
 
-/* MT9M111 has only one fixed colorspace per pixelcode */
+ 
 struct mt9m111_datafmt {
 	u32	code;
 	enum v4l2_colorspace		colorspace;
@@ -230,19 +215,19 @@ struct mt9m111 {
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *gain;
 	struct mt9m111_context *ctx;
-	struct v4l2_rect rect;	/* cropping rectangle */
+	struct v4l2_rect rect;	 
 	struct clk *clk;
-	unsigned int width;	/* output */
-	unsigned int height;	/* sizes */
+	unsigned int width;	 
+	unsigned int height;	 
 	struct v4l2_fract frame_interval;
 	const struct mt9m111_mode_info *current_mode;
-	struct mutex power_lock; /* lock to protect power_count */
+	struct mutex power_lock;  
 	int power_count;
 	const struct mt9m111_datafmt *fmt;
-	int lastpage;	/* PageMap cache value */
+	int lastpage;	 
 	struct regulator *regulator;
 	bool is_streaming;
-	/* user point of view - 0: falling 1: rising edge */
+	 
 	unsigned int pclk_sample:1;
 #ifdef CONFIG_MEDIA_CONTROLLER
 	struct media_pad pad;
@@ -280,7 +265,7 @@ static const struct mt9m111_mode_info mt9m111_mode_data[MT9M111_NUM_MODES] = {
 	},
 };
 
-/* Find a data format by a pixel code */
+ 
 static const struct mt9m111_datafmt *mt9m111_find_datafmt(struct mt9m111 *mt9m111,
 						u32 code)
 {
@@ -410,7 +395,7 @@ static int mt9m111_setup_geometry(struct mt9m111 *mt9m111, struct v4l2_rect *rec
 		ret = reg_write(WINDOW_HEIGHT, rect->height);
 
 	if (code != MEDIA_BUS_FMT_SBGGR10_2X8_PADHI_LE) {
-		/* IFP in use, down-scaling possible */
+		 
 		if (!ret)
 			ret = mt9m111_setup_rect_ctx(mt9m111, &context_b,
 						     rect, width, height);
@@ -463,12 +448,12 @@ static int mt9m111_set_selection(struct v4l2_subdev *sd,
 
 	if (mt9m111->fmt->code == MEDIA_BUS_FMT_SBGGR8_1X8 ||
 	    mt9m111->fmt->code == MEDIA_BUS_FMT_SBGGR10_2X8_PADHI_LE) {
-		/* Bayer format - even size lengths */
+		 
 		align = 1;
-		/* Let the user play with the starting pixel */
+		 
 	}
 
-	/* FIXME: the datasheet doesn't specify minimum sizes */
+	 
 	v4l_bound_align_image(&rect.width, 2, MT9M111_MAX_WIDTH, align,
 			      &rect.height, 2, MT9M111_MAX_HEIGHT, align, 0);
 	rect.left = clamp(rect.left, MT9M111_MIN_DARK_COLS,
@@ -609,7 +594,7 @@ static int mt9m111_set_pixfmt(struct mt9m111 *mt9m111,
 		return -EINVAL;
 	}
 
-	/* receiver samples on falling edge, chip-hw default is rising */
+	 
 	if (mt9m111->pclk_sample == 0)
 		mask_outfmt2 |= MT9M111_OUTFMT_INV_PIX_CLOCK;
 
@@ -645,21 +630,18 @@ static int mt9m111_set_fmt(struct v4l2_subdev *sd,
 	bayer = fmt->code == MEDIA_BUS_FMT_SBGGR8_1X8 ||
 		fmt->code == MEDIA_BUS_FMT_SBGGR10_2X8_PADHI_LE;
 
-	/*
-	 * With Bayer format enforce even side lengths, but let the user play
-	 * with the starting pixel
-	 */
+	 
 	if (bayer) {
 		rect->width = ALIGN(rect->width, 2);
 		rect->height = ALIGN(rect->height, 2);
 	}
 
 	if (fmt->code == MEDIA_BUS_FMT_SBGGR10_2X8_PADHI_LE) {
-		/* IFP bypass mode, no scaling */
+		 
 		mf->width = rect->width;
 		mf->height = rect->height;
 	} else {
-		/* No upscaling */
+		 
 		if (mf->width > rect->width)
 			mf->width = rect->width;
 		if (mf->height > rect->height)
@@ -703,11 +685,7 @@ mt9m111_find_mode(struct mt9m111 *mt9m111, unsigned int req_fps,
 	int i, best_gap_idx = MT9M111_MODE_SXGA_15FPS;
 	bool skip_30fps = false;
 
-	/*
-	 * The fps selection is based on the row, column skipping mechanism.
-	 * So ensure that the sensor window is set to default else the fps
-	 * aren't calculated correctly within the sensor hw.
-	 */
+	 
 	if (sensor_rect->width != MT9M111_MAX_WIDTH ||
 	    sensor_rect->height != MT9M111_MAX_HEIGHT) {
 		dev_info(mt9m111->subdev.dev,
@@ -716,7 +694,7 @@ mt9m111_find_mode(struct mt9m111 *mt9m111, unsigned int req_fps,
 		return NULL;
 	}
 
-	/* 30fps only supported for images not exceeding 640x512 */
+	 
 	if (width > MT9M111_MAX_WIDTH / 2 || height > MT9M111_MAX_HEIGHT / 2) {
 		dev_dbg(mt9m111->subdev.dev,
 			"Framerates > 15fps are supported only for images "
@@ -724,7 +702,7 @@ mt9m111_find_mode(struct mt9m111 *mt9m111, unsigned int req_fps,
 		skip_30fps = true;
 	}
 
-	/* find best matched fps */
+	 
 	for (i = 0; i < MT9M111_NUM_MODES; i++) {
 		unsigned int fps = mt9m111_mode_data[i].max_fps;
 
@@ -738,10 +716,7 @@ mt9m111_find_mode(struct mt9m111 *mt9m111, unsigned int req_fps,
 		}
 	}
 
-	/*
-	 * Use context a/b default timing values instead of calculate blanking
-	 * timing values.
-	 */
+	 
 	mode = &mt9m111_mode_data[best_gap_idx];
 	mt9m111->ctx = (best_gap_idx == MT9M111_MODE_QSXGA_30FPS) ? &context_a :
 								    &context_b;
@@ -1015,10 +990,7 @@ static int mt9m111_s_power(struct v4l2_subdev *sd, int on)
 
 	mutex_lock(&mt9m111->power_lock);
 
-	/*
-	 * If the power count is modified from 0 to != 0 or from != 0 to 0,
-	 * update the power state.
-	 */
+	 
 	if (mt9m111->power_count == !on) {
 		if (on)
 			ret = mt9m111_power_on(mt9m111);
@@ -1027,7 +999,7 @@ static int mt9m111_s_power(struct v4l2_subdev *sd, int on)
 	}
 
 	if (!ret) {
-		/* Update the power count. */
+		 
 		mt9m111->power_count += on ? 1 : -1;
 		WARN_ON(mt9m111->power_count < 0);
 	}
@@ -1082,7 +1054,7 @@ static int mt9m111_s_frame_interval(struct v4l2_subdev *sd,
 
 	fps = DIV_ROUND_CLOSEST(fract->denominator, fract->numerator);
 
-	/* Find best fitting mode. Do not update the mode if no one was found. */
+	 
 	mode = mt9m111_find_mode(mt9m111, fps, mt9m111->width, mt9m111->height);
 	if (!mode)
 		return 0;
@@ -1178,10 +1150,7 @@ static const struct v4l2_subdev_ops mt9m111_subdev_ops = {
 	.pad	= &mt9m111_subdev_pad_ops,
 };
 
-/*
- * Interface active, can use i2c. If it fails, it can indeed mean, that
- * this wasn't our capture interface, so, we wait for the right one
- */
+ 
 static int mt9m111_video_probe(struct i2c_client *client)
 {
 	struct mt9m111 *mt9m111 = to_mt9m111(client);
@@ -1195,11 +1164,11 @@ static int mt9m111_video_probe(struct i2c_client *client)
 	data = reg_read(CHIP_VERSION);
 
 	switch (data) {
-	case 0x143a: /* MT9M111 or MT9M131 */
+	case 0x143a:  
 		dev_info(&client->dev,
 			"Detected a MT9M111/MT9M131 chip ID %x\n", data);
 		break;
-	case 0x148c: /* MT9M112 */
+	case 0x148c:  
 		dev_info(&client->dev, "Detected a MT9M112 chip ID %x\n", data);
 		break;
 	default:
@@ -1278,7 +1247,7 @@ static int mt9m111_probe(struct i2c_client *client)
 		return PTR_ERR(mt9m111->regulator);
 	}
 
-	/* Default HIGHPOWER context */
+	 
 	mt9m111->ctx = &context_b;
 
 	v4l2_i2c_subdev_init(&mt9m111->subdev, client, &mt9m111_subdev_ops);
@@ -1327,7 +1296,7 @@ static int mt9m111_probe(struct i2c_client *client)
 	mt9m111->frame_interval.numerator = 1;
 	mt9m111->frame_interval.denominator = mt9m111->current_mode->max_fps;
 
-	/* Second stage probe - when a capture adapter is there */
+	 
 	mt9m111->rect.left	= MT9M111_MIN_DARK_COLS;
 	mt9m111->rect.top	= MT9M111_MIN_DARK_ROWS;
 	mt9m111->rect.width	= MT9M111_MAX_WIDTH;

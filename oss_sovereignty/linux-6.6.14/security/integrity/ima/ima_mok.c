@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Juniper Networks, Inc.
- *
- * Author:
- * Petko Manolov <petko.manolov@konsulko.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/kernel.h>
@@ -18,9 +13,7 @@
 
 struct key *ima_blacklist_keyring;
 
-/*
- * Allocate the IMA blacklist keyring
- */
+ 
 static __init int ima_mok_init(void)
 {
 	struct key_restriction *restriction;

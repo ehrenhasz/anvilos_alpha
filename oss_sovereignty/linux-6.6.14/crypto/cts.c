@@ -1,44 +1,8 @@
-/*
- * CTS: Cipher Text Stealing mode
- *
- * COPYRIGHT (c) 2008
- * The Regents of the University of Michigan
- * ALL RIGHTS RESERVED
- *
- * Permission is granted to use, copy, create derivative works
- * and redistribute this software and such derivative works
- * for any purpose, so long as the name of The University of
- * Michigan is not used in any advertising or publicity
- * pertaining to the use of distribution of this software
- * without specific, written prior authorization.  If the
- * above copyright notice or any other identification of the
- * University of Michigan is included in any copy of any
- * portion of this software, then the disclaimer below must
- * also be included.
- *
- * THIS SOFTWARE IS PROVIDED AS IS, WITHOUT REPRESENTATION
- * FROM THE UNIVERSITY OF MICHIGAN AS TO ITS FITNESS FOR ANY
- * PURPOSE, AND WITHOUT WARRANTY BY THE UNIVERSITY OF
- * MICHIGAN OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
- * WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
- * REGENTS OF THE UNIVERSITY OF MICHIGAN SHALL NOT BE LIABLE
- * FOR ANY DAMAGES, INCLUDING SPECIAL, INDIRECT, INCIDENTAL, OR
- * CONSEQUENTIAL DAMAGES, WITH RESPECT TO ANY CLAIM ARISING
- * OUT OF OR IN CONNECTION WITH THE USE OF THE SOFTWARE, EVEN
- * IF IT HAS BEEN OR IS HEREAFTER ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGES.
- */
+ 
 
-/* Derived from various:
- *	Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+ 
 
-/*
- * This is the Cipher Text Stealing mode as described by
- * Section 8 of rfc2040 and referenced by rfc3962.
- * rfc3962 includes errata information in its Appendix A.
- */
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/skcipher.h>
@@ -193,20 +157,20 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
 
 	sg = scatterwalk_ffwd(rctx->sg, req->dst, offset - bsize);
 
-	/* 1. Decrypt Cn-1 (s) to create Dn */
+	 
 	scatterwalk_map_and_copy(d + bsize, sg, 0, bsize, 0);
 	space = crypto_cts_reqctx_space(req);
 	crypto_xor(d + bsize, space, bsize);
-	/* 2. Pad Cn with zeros at the end to create C of length BB */
+	 
 	memset(d, 0, bsize);
 	scatterwalk_map_and_copy(d, req->src, offset, lastn, 0);
-	/* 3. Exclusive-or Dn with C to create Xn */
-	/* 4. Select the first Ln bytes of Xn to create Pn */
+	 
+	 
 	crypto_xor(d + bsize, d, lastn);
 
-	/* 5. Append the tail (BB - Ln) bytes of Xn to Cn to create En */
+	 
 	memcpy(d + lastn, d + bsize + lastn, bsize - lastn);
-	/* 6. Decrypt En to create Pn-1 */
+	 
 
 	scatterwalk_map_and_copy(d, sg, 0, bsize + lastn, 1);
 	memzero_explicit(d, sizeof(d));

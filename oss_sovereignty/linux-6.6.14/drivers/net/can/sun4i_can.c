@@ -1,51 +1,4 @@
-/*
- * sun4i_can.c - CAN bus controller driver for Allwinner SUN4I&SUN7I based SoCs
- *
- * Copyright (C) 2013 Peter Chen
- * Copyright (C) 2015 Gerhard Bertelsmann
- * All rights reserved.
- *
- * Parts of this software are based on (derived from) the SJA1000 code by:
- *   Copyright (C) 2014 Oliver Hartkopp <oliver.hartkopp@volkswagen.de>
- *   Copyright (C) 2007 Wolfgang Grandegger <wg@grandegger.com>
- *   Copyright (C) 2002-2007 Volkswagen Group Electronic Research
- *   Copyright (C) 2003 Matthias Brukner, Trajet Gmbh, Rebenring 33,
- *   38106 Braunschweig, GERMANY
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of Volkswagen nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * Alternatively, provided that this notice is retained in full, this
- * software may be distributed under the terms of the GNU General
- * Public License ("GPL") version 2, in which case the provisions of the
- * GPL apply INSTEAD OF those given above.
- *
- * The provided data structures and external interfaces from this code
- * are not restricted to be used by modules with a GPL compatible license.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
- * DAMAGE.
- *
- */
+ 
 
 #include <linux/netdevice.h>
 #include <linux/can.h>
@@ -64,53 +17,49 @@
 
 #define DRV_NAME "sun4i_can"
 
-/* Registers address (physical base address 0x01C2BC00) */
-#define SUN4I_REG_MSEL_ADDR	0x0000	/* CAN Mode Select */
-#define SUN4I_REG_CMD_ADDR	0x0004	/* CAN Command */
-#define SUN4I_REG_STA_ADDR	0x0008	/* CAN Status */
-#define SUN4I_REG_INT_ADDR	0x000c	/* CAN Interrupt Flag */
-#define SUN4I_REG_INTEN_ADDR	0x0010	/* CAN Interrupt Enable */
-#define SUN4I_REG_BTIME_ADDR	0x0014	/* CAN Bus Timing 0 */
-#define SUN4I_REG_TEWL_ADDR	0x0018	/* CAN Tx Error Warning Limit */
-#define SUN4I_REG_ERRC_ADDR	0x001c	/* CAN Error Counter */
-#define SUN4I_REG_RMCNT_ADDR	0x0020	/* CAN Receive Message Counter */
-#define SUN4I_REG_RBUFSA_ADDR	0x0024	/* CAN Receive Buffer Start Address */
-#define SUN4I_REG_BUF0_ADDR	0x0040	/* CAN Tx/Rx Buffer 0 */
-#define SUN4I_REG_BUF1_ADDR	0x0044	/* CAN Tx/Rx Buffer 1 */
-#define SUN4I_REG_BUF2_ADDR	0x0048	/* CAN Tx/Rx Buffer 2 */
-#define SUN4I_REG_BUF3_ADDR	0x004c	/* CAN Tx/Rx Buffer 3 */
-#define SUN4I_REG_BUF4_ADDR	0x0050	/* CAN Tx/Rx Buffer 4 */
-#define SUN4I_REG_BUF5_ADDR	0x0054	/* CAN Tx/Rx Buffer 5 */
-#define SUN4I_REG_BUF6_ADDR	0x0058	/* CAN Tx/Rx Buffer 6 */
-#define SUN4I_REG_BUF7_ADDR	0x005c	/* CAN Tx/Rx Buffer 7 */
-#define SUN4I_REG_BUF8_ADDR	0x0060	/* CAN Tx/Rx Buffer 8 */
-#define SUN4I_REG_BUF9_ADDR	0x0064	/* CAN Tx/Rx Buffer 9 */
-#define SUN4I_REG_BUF10_ADDR	0x0068	/* CAN Tx/Rx Buffer 10 */
-#define SUN4I_REG_BUF11_ADDR	0x006c	/* CAN Tx/Rx Buffer 11 */
-#define SUN4I_REG_BUF12_ADDR	0x0070	/* CAN Tx/Rx Buffer 12 */
-#define SUN4I_REG_ACPC_ADDR	0x0040	/* CAN Acceptance Code 0 */
-#define SUN4I_REG_ACPM_ADDR	0x0044	/* CAN Acceptance Mask 0 */
-#define SUN4I_REG_ACPC_ADDR_D1	0x0028	/* CAN Acceptance Code 0 on the D1 */
-#define SUN4I_REG_ACPM_ADDR_D1	0x002C	/* CAN Acceptance Mask 0 on the D1 */
-#define SUN4I_REG_RBUF_RBACK_START_ADDR	0x0180	/* CAN transmit buffer start */
-#define SUN4I_REG_RBUF_RBACK_END_ADDR	0x01b0	/* CAN transmit buffer end */
+ 
+#define SUN4I_REG_MSEL_ADDR	0x0000	 
+#define SUN4I_REG_CMD_ADDR	0x0004	 
+#define SUN4I_REG_STA_ADDR	0x0008	 
+#define SUN4I_REG_INT_ADDR	0x000c	 
+#define SUN4I_REG_INTEN_ADDR	0x0010	 
+#define SUN4I_REG_BTIME_ADDR	0x0014	 
+#define SUN4I_REG_TEWL_ADDR	0x0018	 
+#define SUN4I_REG_ERRC_ADDR	0x001c	 
+#define SUN4I_REG_RMCNT_ADDR	0x0020	 
+#define SUN4I_REG_RBUFSA_ADDR	0x0024	 
+#define SUN4I_REG_BUF0_ADDR	0x0040	 
+#define SUN4I_REG_BUF1_ADDR	0x0044	 
+#define SUN4I_REG_BUF2_ADDR	0x0048	 
+#define SUN4I_REG_BUF3_ADDR	0x004c	 
+#define SUN4I_REG_BUF4_ADDR	0x0050	 
+#define SUN4I_REG_BUF5_ADDR	0x0054	 
+#define SUN4I_REG_BUF6_ADDR	0x0058	 
+#define SUN4I_REG_BUF7_ADDR	0x005c	 
+#define SUN4I_REG_BUF8_ADDR	0x0060	 
+#define SUN4I_REG_BUF9_ADDR	0x0064	 
+#define SUN4I_REG_BUF10_ADDR	0x0068	 
+#define SUN4I_REG_BUF11_ADDR	0x006c	 
+#define SUN4I_REG_BUF12_ADDR	0x0070	 
+#define SUN4I_REG_ACPC_ADDR	0x0040	 
+#define SUN4I_REG_ACPM_ADDR	0x0044	 
+#define SUN4I_REG_ACPC_ADDR_D1	0x0028	 
+#define SUN4I_REG_ACPM_ADDR_D1	0x002C	 
+#define SUN4I_REG_RBUF_RBACK_START_ADDR	0x0180	 
+#define SUN4I_REG_RBUF_RBACK_END_ADDR	0x01b0	 
 
-/* Controller Register Description */
+ 
 
-/* mode select register (r/w)
- * offset:0x0000 default:0x0000_0001
- */
-#define SUN4I_MSEL_SLEEP_MODE		(0x01 << 4) /* write in reset mode */
+ 
+#define SUN4I_MSEL_SLEEP_MODE		(0x01 << 4)  
 #define SUN4I_MSEL_WAKE_UP		(0x00 << 4)
-#define SUN4I_MSEL_SINGLE_FILTER	(0x01 << 3) /* write in reset mode */
+#define SUN4I_MSEL_SINGLE_FILTER	(0x01 << 3)  
 #define SUN4I_MSEL_DUAL_FILTERS		(0x00 << 3)
 #define SUN4I_MSEL_LOOPBACK_MODE	BIT(2)
 #define SUN4I_MSEL_LISTEN_ONLY_MODE	BIT(1)
 #define SUN4I_MSEL_RESET_MODE		BIT(0)
 
-/* command register (w)
- * offset:0x0004 default:0x0000_0000
- */
+ 
 #define SUN4I_CMD_BUS_OFF_REQ	BIT(5)
 #define SUN4I_CMD_SELF_RCV_REQ	BIT(4)
 #define SUN4I_CMD_CLEAR_OR_FLAG	BIT(3)
@@ -118,9 +67,7 @@
 #define SUN4I_CMD_ABORT_REQ	BIT(1)
 #define SUN4I_CMD_TRANS_REQ	BIT(0)
 
-/* status register (r)
- * offset:0x0008 default:0x0000_003c
- */
+ 
 #define SUN4I_STA_BIT_ERR	(0x00 << 22)
 #define SUN4I_STA_FORM_ERR	(0x01 << 22)
 #define SUN4I_STA_STUFF_ERR	(0x02 << 22)
@@ -161,9 +108,7 @@
 #define SUN4I_STA_DATA_ORUN	BIT(1)
 #define SUN4I_STA_RBUF_RDY	BIT(0)
 
-/* interrupt register (r)
- * offset:0x000c default:0x0000_0000
- */
+ 
 #define SUN4I_INT_BUS_ERR	BIT(7)
 #define SUN4I_INT_ARB_LOST	BIT(6)
 #define SUN4I_INT_ERR_PASSIVE	BIT(5)
@@ -173,9 +118,7 @@
 #define SUN4I_INT_TBUF_VLD	BIT(1)
 #define SUN4I_INT_RBUF_VLD	BIT(0)
 
-/* interrupt enable register (r/w)
- * offset:0x0010 default:0x0000_0000
- */
+ 
 #define SUN4I_INTEN_BERR	BIT(7)
 #define SUN4I_INTEN_ARB_LOST	BIT(6)
 #define SUN4I_INTEN_ERR_PASSIVE	BIT(5)
@@ -185,29 +128,24 @@
 #define SUN4I_INTEN_TX		BIT(1)
 #define SUN4I_INTEN_RX		BIT(0)
 
-/* error code */
+ 
 #define SUN4I_ERR_INRCV		(0x1 << 5)
 #define SUN4I_ERR_INTRANS	(0x0 << 5)
 
-/* filter mode */
+ 
 #define SUN4I_FILTER_CLOSE	0
 #define SUN4I_SINGLE_FLTER_MODE	1
 #define SUN4I_DUAL_FILTER_MODE	2
 
-/* message buffer flags */
+ 
 #define SUN4I_MSG_EFF_FLAG	BIT(7)
 #define SUN4I_MSG_RTR_FLAG	BIT(6)
 
-/* max. number of interrupts handled in ISR */
+ 
 #define SUN4I_CAN_MAX_IRQ	20
 #define SUN4I_MODE_MAX_RETRIES	100
 
-/**
- * struct sun4ican_quirks - Differences between SoC variants.
- *
- * @has_reset: SoC needs reset deasserted.
- * @acp_offset: Offset of ACPC and ACPM registers
- */
+ 
 struct sun4ican_quirks {
 	bool has_reset;
 	int acp_offset;
@@ -218,7 +156,7 @@ struct sun4ican_priv {
 	void __iomem *base;
 	struct clk *clk;
 	struct reset_control *reset;
-	spinlock_t cmdreg_lock;	/* lock for concurrent cmd register writes */
+	spinlock_t cmdreg_lock;	 
 	int acp_offset;
 };
 
@@ -285,7 +223,7 @@ static int set_reset_mode(struct net_device *dev)
 	return 0;
 }
 
-/* bittiming is called in reset_mode only */
+ 
 static int sun4ican_set_bittiming(struct net_device *dev)
 {
 	struct sun4ican_priv *priv = netdev_priv(dev);
@@ -334,28 +272,28 @@ static int sun4i_can_start(struct net_device *dev)
 	int err;
 	u32 mod_reg_val;
 
-	/* we need to enter the reset mode */
+	 
 	err = set_reset_mode(dev);
 	if (err) {
 		netdev_err(dev, "could not enter reset mode\n");
 		return err;
 	}
 
-	/* set filters - we accept all */
+	 
 	writel(0x00000000, priv->base + SUN4I_REG_ACPC_ADDR + priv->acp_offset);
 	writel(0xFFFFFFFF, priv->base + SUN4I_REG_ACPM_ADDR + priv->acp_offset);
 
-	/* clear error counters and error code capture */
+	 
 	writel(0, priv->base + SUN4I_REG_ERRC_ADDR);
 
-	/* enable interrupts */
+	 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING)
 		writel(0xFF, priv->base + SUN4I_REG_INTEN_ADDR);
 	else
 		writel(0xFF & ~SUN4I_INTEN_BERR,
 		       priv->base + SUN4I_REG_INTEN_ADDR);
 
-	/* enter the selected mode */
+	 
 	mod_reg_val = readl(priv->base + SUN4I_REG_MSEL_ADDR);
 	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
 		mod_reg_val |= SUN4I_MSEL_LOOPBACK_MODE;
@@ -367,7 +305,7 @@ static int sun4i_can_start(struct net_device *dev)
 	if (err)
 		return err;
 
-	/* we are ready to enter the normal mode */
+	 
 	err = set_normal_mode(dev);
 	if (err) {
 		netdev_err(dev, "could not enter normal mode\n");
@@ -385,14 +323,14 @@ static int sun4i_can_stop(struct net_device *dev)
 	int err;
 
 	priv->can.state = CAN_STATE_STOPPED;
-	/* we need to enter reset mode */
+	 
 	err = set_reset_mode(dev);
 	if (err) {
 		netdev_err(dev, "could not enter reset mode\n");
 		return err;
 	}
 
-	/* disable all interrupts */
+	 
 	writel(0, priv->base + SUN4I_REG_INTEN_ADDR);
 
 	return 0;
@@ -419,11 +357,7 @@ static int sun4ican_set_mode(struct net_device *dev, enum can_mode mode)
 	return 0;
 }
 
-/* transmit a CAN message
- * message layout in the sk_buff should be like this:
- * xx xx xx xx         ff         ll 00 11 22 33 44 55 66 77
- * [ can_id ] [flags] [len] [can data (up to 8 bytes]
- */
+ 
 static netdev_tx_t sun4ican_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct sun4ican_priv *priv = netdev_priv(dev);
@@ -484,7 +418,7 @@ static void sun4i_can_rx(struct net_device *dev)
 	canid_t id;
 	int i;
 
-	/* create zero'ed CAN frame buffer */
+	 
 	skb = alloc_can_skb(dev, &cf);
 	if (!skb)
 		return;
@@ -504,7 +438,7 @@ static void sun4i_can_rx(struct net_device *dev)
 		    ((readl(priv->base + SUN4I_REG_BUF2_ADDR) >> 5) & 0x7);
 	}
 
-	/* remote frame ? */
+	 
 	if (fi & SUN4I_MSG_RTR_FLAG) {
 		id |= CAN_RTR_FLAG;
 	} else {
@@ -533,7 +467,7 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
 	unsigned int rxerr, txerr, errc;
 	u32 ecc, alc;
 
-	/* we don't skip if alloc fails because we want the stats anyhow */
+	 
 	skb = alloc_can_err_skb(dev, &cf);
 
 	errc = readl(priv->base + SUN4I_REG_ERRC_ADDR);
@@ -541,7 +475,7 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
 	txerr = errc & 0xFF;
 
 	if (isrc & SUN4I_INT_DATA_OR) {
-		/* data overrun interrupt */
+		 
 		netdev_dbg(dev, "data overrun interrupt\n");
 		if (likely(skb)) {
 			cf->can_id |= CAN_ERR_CRTL;
@@ -550,17 +484,15 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
 		stats->rx_over_errors++;
 		stats->rx_errors++;
 
-		/* reset the CAN IP by entering reset mode
-		 * ignoring timeout error
-		 */
+		 
 		set_reset_mode(dev);
 		set_normal_mode(dev);
 
-		/* clear bit */
+		 
 		sun4i_can_write_cmdreg(priv, SUN4I_CMD_CLEAR_OR_FLAG);
 	}
 	if (isrc & SUN4I_INT_ERR_WRN) {
-		/* error warning interrupt */
+		 
 		netdev_dbg(dev, "error warning interrupt\n");
 
 		if (status & SUN4I_STA_BUS_OFF)
@@ -576,7 +508,7 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
 		cf->data[7] = rxerr;
 	}
 	if (isrc & SUN4I_INT_BUS_ERR) {
-		/* bus error interrupt */
+		 
 		netdev_dbg(dev, "bus error interrupt\n");
 		priv->can.can_stats.bus_error++;
 		stats->rx_errors++;
@@ -601,13 +533,13 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
 					       >> 16;
 				break;
 			}
-			/* error occurred during transmission? */
+			 
 			if ((ecc & SUN4I_STA_ERR_DIR) == 0)
 				cf->data[2] |= CAN_ERR_PROT_TX;
 		}
 	}
 	if (isrc & SUN4I_INT_ERR_PASSIVE) {
-		/* error passive interrupt */
+		 
 		netdev_dbg(dev, "error passive interrupt\n");
 		if (state == CAN_STATE_ERROR_PASSIVE)
 			state = CAN_STATE_ERROR_WARNING;
@@ -615,7 +547,7 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
 			state = CAN_STATE_ERROR_PASSIVE;
 	}
 	if (isrc & SUN4I_INT_ARB_LOST) {
-		/* arbitration lost interrupt */
+		 
 		netdev_dbg(dev, "arbitration lost interrupt\n");
 		alc = readl(priv->base + SUN4I_REG_STA_ADDR);
 		priv->can.can_stats.arbitration_lost++;
@@ -662,16 +594,16 @@ static irqreturn_t sun4i_can_interrupt(int irq, void *dev_id)
 			netdev_warn(dev, "wakeup interrupt\n");
 
 		if (isrc & SUN4I_INT_TBUF_VLD) {
-			/* transmission complete interrupt */
+			 
 			stats->tx_bytes += can_get_echo_skb(dev, 0, NULL);
 			stats->tx_packets++;
 			netif_wake_queue(dev);
 		}
 		if ((isrc & SUN4I_INT_RBUF_VLD) &&
 		    !(isrc & SUN4I_INT_DATA_OR)) {
-			/* receive interrupt - don't read if overrun occurred */
+			 
 			while (status & SUN4I_STA_RBUF_RDY) {
-				/* RX buffer is not empty */
+				 
 				sun4i_can_rx(dev);
 				status = readl(priv->base + SUN4I_REG_STA_ADDR);
 			}
@@ -679,11 +611,11 @@ static irqreturn_t sun4i_can_interrupt(int irq, void *dev_id)
 		if (isrc &
 		    (SUN4I_INT_DATA_OR | SUN4I_INT_ERR_WRN | SUN4I_INT_BUS_ERR |
 		     SUN4I_INT_ERR_PASSIVE | SUN4I_INT_ARB_LOST)) {
-			/* error interrupt */
+			 
 			if (sun4i_can_err(dev, isrc, status))
 				netdev_err(dev, "can't allocate buffer - clearing pending interrupts\n");
 		}
-		/* clear interrupts */
+		 
 		writel(isrc, priv->base + SUN4I_REG_INT_ADDR);
 		readl(priv->base + SUN4I_REG_INT_ADDR);
 	}
@@ -698,26 +630,26 @@ static int sun4ican_open(struct net_device *dev)
 	struct sun4ican_priv *priv = netdev_priv(dev);
 	int err;
 
-	/* common open */
+	 
 	err = open_candev(dev);
 	if (err)
 		return err;
 
-	/* register interrupt handler */
+	 
 	err = request_irq(dev->irq, sun4i_can_interrupt, 0, dev->name, dev);
 	if (err) {
 		netdev_err(dev, "request_irq err: %d\n", err);
 		goto exit_irq;
 	}
 
-	/* software reset deassert */
+	 
 	err = reset_control_deassert(priv->reset);
 	if (err) {
 		netdev_err(dev, "could not deassert CAN reset\n");
 		goto exit_soft_reset;
 	}
 
-	/* turn on clocking for CAN peripheral block */
+	 
 	err = clk_prepare_enable(priv->clk);
 	if (err) {
 		netdev_err(dev, "could not enable CAN peripheral clock\n");
@@ -799,7 +731,7 @@ static const struct of_device_id sun4ican_of_match[] = {
 		.compatible = "allwinner,sun20i-d1-can",
 		.data = &sun4ican_quirks_d1
 	}, {
-		/* sentinel */
+		 
 	},
 };
 

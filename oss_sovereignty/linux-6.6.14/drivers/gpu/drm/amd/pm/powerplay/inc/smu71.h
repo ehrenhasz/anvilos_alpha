@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef SMU71_H
 #define SMU71_H
 
@@ -235,8 +214,8 @@ struct SMU7_VoltageScoreboard {
 
 typedef struct SMU7_VoltageScoreboard SMU7_VoltageScoreboard;
 
-// -------------------------------------------------------------------------------------------------------------------------
-#define SMU7_MAX_PCIE_LINK_SPEEDS 3 /* 0:Gen1 1:Gen2 2:Gen3 */
+
+#define SMU7_MAX_PCIE_LINK_SPEEDS 3  
 
 struct SMU7_PCIeLinkSpeedScoreboard
 {
@@ -261,7 +240,7 @@ struct SMU7_PCIeLinkSpeedScoreboard
 
 typedef struct SMU7_PCIeLinkSpeedScoreboard SMU7_PCIeLinkSpeedScoreboard;
 
-// -------------------------------------------------------- CAC table ------------------------------------------------------
+
 #define SMU7_LKGE_LUT_NUM_OF_TEMP_ENTRIES 16
 #define SMU7_LKGE_LUT_NUM_OF_VOLT_ENTRIES 16
 
@@ -320,7 +299,7 @@ struct SMU7_PowerScoreboard
 
 typedef struct SMU7_PowerScoreboard SMU7_PowerScoreboard;
 
-// --------------------------------------------------------------------------------------------------
+
 
 struct SMU7_ThermalScoreboard {
    int16_t  GpuLimit;
@@ -337,7 +316,7 @@ struct SMU7_ThermalScoreboard {
 
 typedef struct SMU7_ThermalScoreboard SMU7_ThermalScoreboard;
 
-// For FeatureEnables:
+
 #define SMU7_SCLK_DPM_CONFIG_MASK                        0x01
 #define SMU7_VOLTAGE_CONTROLLER_CONFIG_MASK              0x02
 #define SMU7_THERMAL_CONTROLLER_CONFIG_MASK              0x04
@@ -355,7 +334,7 @@ typedef struct SMU7_ThermalScoreboard SMU7_ThermalScoreboard;
 #define SMU7_VCE_MCLK_HANDSHAKE_DISABLE                  0x00010000
 #define SMU7_VCE_SCLK_HANDSHAKE_DISABLE                  0x00020000
 
-// All 'soft registers' should be uint32_t.
+
 struct SMU71_SoftRegisters {
     uint32_t        RefClockFrequency;
     uint32_t        PmTimerPeriod;
@@ -469,9 +448,9 @@ enum  DisplayConfig {
     DP324x1
 };
 
-//#define SX_BLOCK_COUNT 8
-//#define MC_BLOCK_COUNT 1
-//#define CPL_BLOCK_COUNT 27
+
+
+
 
 #if defined SMU__VARIANT__ICELAND
   #define SX_BLOCK_COUNT 8

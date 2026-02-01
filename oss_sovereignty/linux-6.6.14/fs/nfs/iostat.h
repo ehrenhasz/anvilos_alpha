@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  linux/fs/nfs/iostat.h
- *
- *  Declarations for NFS client per-mount statistics
- *
- *  Copyright (C) 2005, 2006 Chuck Lever <cel@netapp.com>
- *
- */
+ 
+ 
 
 #ifndef _NFS_IOSTAT
 #define _NFS_IOSTAT
@@ -57,4 +50,4 @@ static inline void nfs_free_iostats(struct nfs_iostats __percpu *stats)
 		free_percpu(stats);
 }
 
-#endif /* _NFS_IOSTAT */
+#endif  

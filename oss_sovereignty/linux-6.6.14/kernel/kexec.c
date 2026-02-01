@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kexec.c - kexec_load system call
- * Copyright (C) 2002-2004 Eric Biederman  <ebiederm@xmission.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,13 +26,13 @@ static int kimage_alloc_init(struct kimage **rimage, unsigned long entry,
 	bool kexec_on_panic = flags & KEXEC_ON_CRASH;
 
 	if (kexec_on_panic) {
-		/* Verify we have a valid entry point */
+		 
 		if ((entry < phys_to_boot_phys(crashk_res.start)) ||
 		    (entry > phys_to_boot_phys(crashk_res.end)))
 			return -EADDRNOTAVAIL;
 	}
 
-	/* Allocate and initialize a controlling structure */
+	 
 	image = do_kimage_alloc_init();
 	if (!image)
 		return -ENOMEM;
@@ -45,7 +42,7 @@ static int kimage_alloc_init(struct kimage **rimage, unsigned long entry,
 	memcpy(image->segment, segments, nr_segments * sizeof(*segments));
 
 	if (kexec_on_panic) {
-		/* Enable special crash kernel control page alloc policy. */
+		 
 		image->control_page = crashk_res.start;
 		image->type = KEXEC_TYPE_CRASH;
 	}
@@ -54,11 +51,7 @@ static int kimage_alloc_init(struct kimage **rimage, unsigned long entry,
 	if (ret)
 		goto out_free_image;
 
-	/*
-	 * Find a location for the control code buffer, and add it
-	 * the vector of segments so that it's pages will also be
-	 * counted as destination pages.
-	 */
+	 
 	ret = -ENOMEM;
 	image->control_code_page = kimage_alloc_control_pages(image,
 					   get_order(KEXEC_CONTROL_PAGE_SIZE));
@@ -91,11 +84,7 @@ static int do_kexec_load(unsigned long entry, unsigned long nr_segments,
 	unsigned long i;
 	int ret;
 
-	/*
-	 * Because we write directly to the reserved memory region when loading
-	 * crash kernels we need a serialization here to prevent multiple crash
-	 * kernels from attempting to load simultaneously.
-	 */
+	 
 	if (!kexec_trylock())
 		return -EBUSY;
 
@@ -108,17 +97,13 @@ static int do_kexec_load(unsigned long entry, unsigned long nr_segments,
 	}
 
 	if (nr_segments == 0) {
-		/* Uninstall image */
+		 
 		kimage_free(xchg(dest_image, NULL));
 		ret = 0;
 		goto out_unlock;
 	}
 	if (flags & KEXEC_ON_CRASH) {
-		/*
-		 * Loading another kernel to switch to if this one
-		 * crashes.  Free any current crash dump kernel before
-		 * we corrupt it.
-		 */
+		 
 		kimage_free(xchg(&kexec_crash_image, NULL));
 	}
 
@@ -138,10 +123,7 @@ static int do_kexec_load(unsigned long entry, unsigned long nr_segments,
 	if (ret)
 		goto out;
 
-	/*
-	 * Some architecture(like S390) may touch the crash memory before
-	 * machine_kexec_prepare(), we must copy vmcoreinfo data after it.
-	 */
+	 
 	ret = kimage_crash_copy_vmcoreinfo(image);
 	if (ret)
 		goto out;
@@ -158,7 +140,7 @@ static int do_kexec_load(unsigned long entry, unsigned long nr_segments,
 	if (ret)
 		goto out;
 
-	/* Install the new kernel and uninstall the old */
+	 
 	image = xchg(dest_image, image);
 
 out:
@@ -171,26 +153,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * Exec Kernel system call: for obvious reasons only root may call it.
- *
- * This call breaks up into three pieces.
- * - A generic part which loads the new kernel from the current
- *   address space, and very carefully places the data in the
- *   allocated pages.
- *
- * - A generic part that interacts with the kernel and tells all of
- *   the devices to shut down.  Preventing on-going dmas, and placing
- *   the devices in a consistent state so a later kernel can
- *   reinitialize them.
- *
- * - A machine specific part that includes the syscall number
- *   and then copies the image to it's final destination.  And
- *   jumps into the image at entry.
- *
- * kexec does not sync, or unmount filesystems so if you need
- * that to happen you need to do that yourself.
- */
+ 
 
 static inline int kexec_load_check(unsigned long nr_segments,
 				   unsigned long flags)
@@ -199,33 +162,25 @@ static inline int kexec_load_check(unsigned long nr_segments,
 			 KEXEC_TYPE_CRASH : KEXEC_TYPE_DEFAULT;
 	int result;
 
-	/* We only trust the superuser with rebooting the system. */
+	 
 	if (!kexec_load_permitted(image_type))
 		return -EPERM;
 
-	/* Permit LSMs and IMA to fail the kexec */
+	 
 	result = security_kernel_load_data(LOADING_KEXEC_IMAGE, false);
 	if (result < 0)
 		return result;
 
-	/*
-	 * kexec can be used to circumvent module loading restrictions, so
-	 * prevent loading in that case
-	 */
+	 
 	result = security_locked_down(LOCKDOWN_KEXEC);
 	if (result)
 		return result;
 
-	/*
-	 * Verify we have a legal set of flags
-	 * This leaves us room for future extensions.
-	 */
+	 
 	if ((flags & KEXEC_FLAGS) != (flags & ~KEXEC_ARCH_MASK))
 		return -EINVAL;
 
-	/* Put an artificial cap on the number
-	 * of segments passed to kexec_load.
-	 */
+	 
 	if (nr_segments > KEXEC_SEGMENT_MAX)
 		return -EINVAL;
 
@@ -242,7 +197,7 @@ SYSCALL_DEFINE4(kexec_load, unsigned long, entry, unsigned long, nr_segments,
 	if (result)
 		return result;
 
-	/* Verify we are on the appropriate architecture */
+	 
 	if (((flags & KEXEC_ARCH_MASK) != KEXEC_ARCH) &&
 		((flags & KEXEC_ARCH_MASK) != KEXEC_ARCH_DEFAULT))
 		return -EINVAL;
@@ -271,9 +226,7 @@ COMPAT_SYSCALL_DEFINE4(kexec_load, compat_ulong_t, entry,
 	if (result)
 		return result;
 
-	/* Don't allow clients that don't understand the native
-	 * architecture to do anything.
-	 */
+	 
 	if ((flags & KEXEC_ARCH_MASK) == KEXEC_ARCH_DEFAULT)
 		return -EINVAL;
 

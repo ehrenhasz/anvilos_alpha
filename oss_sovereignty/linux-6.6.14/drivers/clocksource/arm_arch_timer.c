@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/clocksource/arm_arch_timer.c
- *
- *  Copyright (C) 2011 ARM Ltd.
- *  All Rights Reserved
- */
+
+ 
 
 #define pr_fmt(fmt) 	"arch_timer: " fmt
 
@@ -53,10 +48,7 @@
 #define CNTV_CVAL_LO	0x30
 #define CNTV_CTL	0x3c
 
-/*
- * The minimum amount of time a generic counter is guaranteed to not roll over
- * (40 years)
- */
+ 
 #define MIN_ROLLOVER_SECS	(40ULL * 365 * 24 * 3600)
 
 static unsigned arch_timers_present __initdata;
@@ -91,7 +83,7 @@ static bool arch_counter_suspend_stop __ro_after_init;
 static enum vdso_clock_mode vdso_default = VDSO_CLOCKMODE_ARCHTIMER;
 #else
 static enum vdso_clock_mode vdso_default = VDSO_CLOCKMODE_NONE;
-#endif /* CONFIG_GENERIC_GETTIMEOFDAY */
+#endif  
 
 static cpumask_t evtstrm_available = CPU_MASK_NONE;
 static bool evtstrm_enable __ro_after_init = IS_ENABLED(CONFIG_ARM_ARCH_TIMER_EVTSTREAM);
@@ -102,25 +94,16 @@ static int __init early_evtstrm_cfg(char *buf)
 }
 early_param("clocksource.arm_arch_timer.evtstrm", early_evtstrm_cfg);
 
-/*
- * Makes an educated guess at a valid counter width based on the Generic Timer
- * specification. Of note:
- *   1) the system counter is at least 56 bits wide
- *   2) a roll-over time of not less than 40 years
- *
- * See 'ARM DDI 0487G.a D11.1.2 ("The system counter")' for more details.
- */
+ 
 static int arch_counter_get_width(void)
 {
 	u64 min_cycles = MIN_ROLLOVER_SECS * arch_timer_rate;
 
-	/* guarantee the returned width is within the valid range */
+	 
 	return clamp_val(ilog2(min_cycles - 1) + 1, 56, 64);
 }
 
-/*
- * Architected system timer support.
- */
+ 
 
 static __always_inline
 void arch_timer_reg_write(int access, enum arch_timer_reg reg, u64 val,
@@ -133,10 +116,7 @@ void arch_timer_reg_write(int access, enum arch_timer_reg reg, u64 val,
 			writel_relaxed((u32)val, timer->base + CNTP_CTL);
 			break;
 		case ARCH_TIMER_REG_CVAL:
-			/*
-			 * Not guaranteed to be atomic, so the timer
-			 * must be disabled at this point.
-			 */
+			 
 			writeq_relaxed(val, timer->base + CNTP_CVAL_LO);
 			break;
 		default:
@@ -149,7 +129,7 @@ void arch_timer_reg_write(int access, enum arch_timer_reg reg, u64 val,
 			writel_relaxed((u32)val, timer->base + CNTV_CTL);
 			break;
 		case ARCH_TIMER_REG_CVAL:
-			/* Same restriction as above */
+			 
 			writeq_relaxed(val, timer->base + CNTV_CVAL_LO);
 			break;
 		default:
@@ -229,12 +209,7 @@ static noinstr u64 arch_counter_get_cntvct(void)
 	return __arch_counter_get_cntvct();
 }
 
-/*
- * Default to cp15 based access because arm64 uses this function for
- * sched_clock() before DT is probed and the cp15 method is guaranteed
- * to exist on arm64. arm doesn't use this before DT is probed so even
- * if we don't have the cp15 accessors we won't have a problem.
- */
+ 
 u64 (*arch_timer_read_counter)(void) __ro_after_init = arch_counter_get_cntvct;
 EXPORT_SYMBOL_GPL(arch_timer_read_counter);
 
@@ -267,10 +242,7 @@ struct ate_acpi_oem_info {
 };
 
 #ifdef CONFIG_FSL_ERRATUM_A008585
-/*
- * The number of retries is an arbitrary value well beyond the highest number
- * of iterations the loop has been observed to take.
- */
+ 
 #define __fsl_a008585_read_reg(reg) ({			\
 	u64 _old, _new;					\
 	int _retries = 200;				\
@@ -297,16 +269,7 @@ static u64 notrace fsl_a008585_read_cntvct_el0(void)
 #endif
 
 #ifdef CONFIG_HISILICON_ERRATUM_161010101
-/*
- * Verify whether the value of the second read is larger than the first by
- * less than 32 is the only way to confirm the value is correct, so clear the
- * lower 5 bits to check whether the difference is greater than 32 or not.
- * Theoretically the erratum should not occur more than twice in succession
- * when reading the system counter, but it is possible that some interrupts
- * may lead to more than twice read errors, triggering the warning, so setting
- * the number of retries far beyond the number of iterations the loop has been
- * observed to take.
- */
+ 
 #define __hisi_161010101_read_reg(reg) ({				\
 	u64 _old, _new;						\
 	int _retries = 50;					\
@@ -332,10 +295,7 @@ static u64 notrace hisi_161010101_read_cntvct_el0(void)
 }
 
 static struct ate_acpi_oem_info hisi_161010101_oem_info[] = {
-	/*
-	 * Note that trailing spaces are required to properly match
-	 * the OEM table information.
-	 */
+	 
 	{
 		.oem_id		= "HISI  ",
 		.oem_table_id	= "HIP05   ",
@@ -351,7 +311,7 @@ static struct ate_acpi_oem_info hisi_161010101_oem_info[] = {
 		.oem_table_id	= "HIP07   ",
 		.oem_revision	= 0,
 	},
-	{ /* Sentinel indicating the end of the OEM array */ },
+	{   },
 };
 #endif
 
@@ -376,13 +336,7 @@ static u64 notrace arm64_858921_read_cntvct_el0(void)
 #endif
 
 #ifdef CONFIG_SUN50I_ERRATUM_UNKNOWN1
-/*
- * The low bits of the counter registers are indeterminate while bit 10 or
- * greater is rolling over. Since the counter value can jump both backward
- * (7ff -> 000 -> 800) and forward (7ff -> fff -> 800), ignore register values
- * with all ones or all zeros in the low bits. Bound the loop by the maximum
- * number of CPU cycles in 3 consecutive 24 MHz counter periods.
- */
+ 
 #define __sun50i_a64_read_reg(reg) ({					\
 	u64 _val;							\
 	int _retries = 150;						\
@@ -413,10 +367,7 @@ EXPORT_SYMBOL_GPL(timer_unstable_counter_workaround);
 
 static atomic_t timer_unstable_counter_workaround_in_use = ATOMIC_INIT(0);
 
-/*
- * Force the inlining of this function so that the register accesses
- * can be themselves correctly inlined.
- */
+ 
 static __always_inline
 void erratum_set_next_event_generic(const int access, unsigned long evt,
 				    struct clock_event_device *clk)
@@ -545,7 +496,7 @@ bool arch_timer_check_acpi_oem_erratum(const struct arch_timer_erratum_workaroun
 	const struct ate_acpi_oem_info *info = wa->id;
 	const struct acpi_table_header *table = arg;
 
-	/* Iterate over the ACPI OEM info array, looking for a match */
+	 
 	while (memcmp(info, &empty_oem_info, sizeof(*info))) {
 		if (!memcmp(info->oem_id, table->oem_id, ACPI_OEM_ID_SIZE) &&
 		    !memcmp(info->oem_table_id, table->oem_table_id, ACPI_OEM_TABLE_ID_SIZE) &&
@@ -592,12 +543,7 @@ void arch_timer_enable_workaround(const struct arch_timer_erratum_workaround *wa
 	if (wa->read_cntvct_el0 || wa->read_cntpct_el0)
 		atomic_set(&timer_unstable_counter_workaround_in_use, 1);
 
-	/*
-	 * Don't use the vdso fastpath if errata require using the
-	 * out-of-line counter accessor. We may change our mind pretty
-	 * late in the game (with a per-CPU erratum, for example), so
-	 * change both the default value and the vdso itself.
-	 */
+	 
 	if (wa->read_cntvct_el0) {
 		clocksource_counter.vdso_clock_mode = VDSO_CLOCKMODE_NONE;
 		vdso_default = VDSO_CLOCKMODE_NONE;
@@ -660,7 +606,7 @@ static bool arch_timer_counter_has_wa(void)
 #define arch_timer_check_ool_workaround(t,a)		do { } while(0)
 #define arch_timer_this_cpu_has_cntvct_wa()		({false;})
 #define arch_timer_counter_has_wa()			({false;})
-#endif /* CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND */
+#endif  
 
 static __always_inline irqreturn_t timer_handler(const int access,
 					struct clock_event_device *evt)
@@ -793,7 +739,7 @@ static __always_inline void set_next_event_mem(const int access, unsigned long e
 
 	ctrl = arch_timer_reg_read(access, ARCH_TIMER_REG_CTRL, clk);
 
-	/* Timer must be disabled before programming CVAL */
+	 
 	if (ctrl & ARCH_TIMER_CTRL_ENABLE) {
 		ctrl &= ~ARCH_TIMER_CTRL_ENABLE;
 		arch_timer_reg_write(access, ARCH_TIMER_REG_CTRL, ctrl, clk);
@@ -829,13 +775,7 @@ static u64 __arch_timer_check_delta(void)
 {
 #ifdef CONFIG_ARM64
 	const struct midr_range broken_cval_midrs[] = {
-		/*
-		 * XGene-1 implements CVAL in terms of TVAL, meaning
-		 * that the maximum timer range is 32bit. Shame on them.
-		 *
-		 * Note that TVAL is signed, thus has only 31 of its
-		 * 32 bits to express magnitude.
-		 */
+		 
 		MIDR_REV_RANGE(MIDR_CPU_MODEL(ARM_CPU_IMP_APM,
 					      APM_CPU_PART_XGENE),
 			       APM_CPU_VAR_POTENZA, 0x0, 0xf),
@@ -917,7 +857,7 @@ static void arch_timer_evtstrm_enable(unsigned int divider)
 	u32 cntkctl = arch_timer_get_cntkctl();
 
 #ifdef CONFIG_ARM64
-	/* ECV is likely to require a large divider. Use the EVNTIS flag. */
+	 
 	if (cpus_have_const_cap(ARM64_HAS_ECV) && divider > 15) {
 		cntkctl |= ARCH_TIMER_EVT_INTERVAL_SCALE;
 		divider -= 8;
@@ -926,7 +866,7 @@ static void arch_timer_evtstrm_enable(unsigned int divider)
 
 	divider = min(divider, 15U);
 	cntkctl &= ~ARCH_TIMER_EVT_TRIGGER_MASK;
-	/* Set the divider and enable virtual event stream */
+	 
 	cntkctl |= (divider << ARCH_TIMER_EVT_TRIGGER_SHIFT)
 			| ARCH_TIMER_VIRT_EVT_EN;
 	arch_timer_set_cntkctl(cntkctl);
@@ -938,21 +878,15 @@ static void arch_timer_configure_evtstream(void)
 {
 	int evt_stream_div, lsb;
 
-	/*
-	 * As the event stream can at most be generated at half the frequency
-	 * of the counter, use half the frequency when computing the divider.
-	 */
+	 
 	evt_stream_div = arch_timer_rate / ARCH_TIMER_EVT_STREAM_FREQ / 2;
 
-	/*
-	 * Find the closest power of two to the divisor. If the adjacent bit
-	 * of lsb (last set bit, starts from 0) is set, then we use (lsb + 1).
-	 */
+	 
 	lsb = fls(evt_stream_div) - 1;
 	if (lsb > 0 && (evt_stream_div & BIT(lsb - 1)))
 		lsb++;
 
-	/* enable event stream */
+	 
 	arch_timer_evtstrm_enable(max(0, lsb));
 }
 
@@ -960,19 +894,15 @@ static void arch_counter_set_user_access(void)
 {
 	u32 cntkctl = arch_timer_get_cntkctl();
 
-	/* Disable user access to the timers and both counters */
-	/* Also disable virtual event stream */
+	 
+	 
 	cntkctl &= ~(ARCH_TIMER_USR_PT_ACCESS_EN
 			| ARCH_TIMER_USR_VT_ACCESS_EN
 		        | ARCH_TIMER_USR_VCT_ACCESS_EN
 			| ARCH_TIMER_VIRT_EVT_EN
 			| ARCH_TIMER_USR_PCT_ACCESS_EN);
 
-	/*
-	 * Enable user access to the virtual counter if it doesn't
-	 * need to be workaround. The vdso may have been already
-	 * disabled though.
-	 */
+	 
 	if (arch_timer_this_cpu_has_cntvct_wa())
 		pr_info("CPU%d: Trapping CNTVCT access\n", smp_processor_id());
 	else
@@ -1028,27 +958,23 @@ static int validate_timer_rate(void)
 	if (!arch_timer_rate)
 		return -EINVAL;
 
-	/* Arch timer frequency < 1MHz can cause trouble */
+	 
 	WARN_ON(arch_timer_rate < 1000000);
 
 	return 0;
 }
 
-/*
- * For historical reasons, when probing with DT we use whichever (non-zero)
- * rate was probed first, and don't verify that others match. If the first node
- * probed has a clock-frequency property, this overrides the HW register.
- */
+ 
 static void __init arch_timer_of_configure_rate(u32 rate, struct device_node *np)
 {
-	/* Who has more than one independent system counter? */
+	 
 	if (arch_timer_rate)
 		return;
 
 	if (of_property_read_u32(np, "clock-frequency", &arch_timer_rate))
 		arch_timer_rate = rate;
 
-	/* Check the timer frequency. */
+	 
 	if (validate_timer_rate())
 		pr_warn("frequency not available\n");
 }
@@ -1078,11 +1004,7 @@ u32 arch_timer_get_rate(void)
 
 bool arch_timer_evtstrm_available(void)
 {
-	/*
-	 * We might get called from a preemptible context. This is fine
-	 * because availability of the event stream should be always the same
-	 * for a preemptible context and context where we might resume a task.
-	 */
+	 
 	return cpumask_test_cpu(raw_smp_processor_id(), &evtstrm_available);
 }
 
@@ -1104,7 +1026,7 @@ static void __init arch_counter_register(unsigned type)
 	u64 start_count;
 	int width;
 
-	/* Register the CP15 based counter if we have one */
+	 
 	if (type & ARCH_TIMER_TYPE_CP15) {
 		u64 (*rd)(void);
 
@@ -1261,7 +1183,7 @@ static int __init arch_timer_register(void)
 	if (err)
 		goto out_unreg_notify;
 
-	/* Register and immediately configure the timer on the boot CPU */
+	 
 	err = cpuhp_setup_state(CPUHP_AP_ARM_ARCH_TIMER_STARTING,
 				"clockevents/arm/arch_timer:starting",
 				arch_timer_starting_cpu, arch_timer_dying_cpu);
@@ -1329,14 +1251,11 @@ static bool __init arch_timer_needs_of_probing(void)
 	bool needs_probing = false;
 	unsigned int mask = ARCH_TIMER_TYPE_CP15 | ARCH_TIMER_TYPE_MEM;
 
-	/* We have two timers, and both device-tree nodes are probed. */
+	 
 	if ((arch_timers_present & mask) == mask)
 		return false;
 
-	/*
-	 * Only one type of timer is probed,
-	 * check if we have another type of timer node in device-tree.
-	 */
+	 
 	if (arch_timers_present & ARCH_TIMER_TYPE_CP15)
 		dn = of_find_matching_node(NULL, arch_timer_mem_of_match);
 	else
@@ -1357,24 +1276,7 @@ static int __init arch_timer_common_init(void)
 	return arch_timer_arch_init();
 }
 
-/**
- * arch_timer_select_ppi() - Select suitable PPI for the current system.
- *
- * If HYP mode is available, we know that the physical timer
- * has been configured to be accessible from PL1. Use it, so
- * that a guest can use the virtual timer instead.
- *
- * On ARMv8.1 with VH extensions, the kernel runs in HYP. VHE
- * accesses to CNTP_*_EL1 registers are silently redirected to
- * their CNTHP_*_EL2 counterparts, and use a different PPI
- * number.
- *
- * If no interrupt provided for virtual timer, we'll have to
- * stick to the physical timer. It'd better be accessible...
- * For arm64 we never use the secure interrupt.
- *
- * Return: a suitable PPI type for the current system.
- */
+ 
 static enum arch_timer_ppi_nr __init arch_timer_select_ppi(void)
 {
 	if (is_kernel_in_hyp_mode())
@@ -1427,13 +1329,10 @@ static int __init arch_timer_of_init(struct device_node *np)
 
 	arch_timer_c3stop = !of_property_read_bool(np, "always-on");
 
-	/* Check for globally applicable workarounds */
+	 
 	arch_timer_check_ool_workaround(ate_match_dt, np);
 
-	/*
-	 * If we cannot rely on firmware initializing the timer registers then
-	 * we should use the physical timers instead.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_ARM) &&
 	    of_property_read_bool(np, "arm,cpu-registers-not-fw-configured"))
 		arch_timer_uses_ppi = ARCH_TIMER_PHYS_SECURE_PPI;
@@ -1445,7 +1344,7 @@ static int __init arch_timer_of_init(struct device_node *np)
 		return -EINVAL;
 	}
 
-	/* On some systems, the counter stops ticking when in suspend. */
+	 
 	arch_counter_suspend_stop = of_property_read_bool(np,
 							 "arm,no-tick-in-suspend");
 
@@ -1497,10 +1396,7 @@ arch_timer_mem_find_best_frame(struct arch_timer_mem *timer_mem)
 
 	cnttidr = readl_relaxed(cntctlbase + CNTTIDR);
 
-	/*
-	 * Try to find a virtual capable frame. Otherwise fall back to a
-	 * physical capable frame.
-	 */
+	 
 	for (i = 0; i < ARCH_TIMER_MEM_MAX_FRAMES; i++) {
 		u32 cntacr = CNTACR_RFRQ | CNTACR_RWPT | CNTACR_RPCT |
 			     CNTACR_RWVT | CNTACR_RVOFF | CNTACR_RVCT;
@@ -1509,7 +1405,7 @@ arch_timer_mem_find_best_frame(struct arch_timer_mem *timer_mem)
 		if (!frame->valid)
 			continue;
 
-		/* Try enabling everything, and see what sticks */
+		 
 		writel_relaxed(cntacr, cntctlbase + CNTACR(i));
 		cntacr = readl_relaxed(cntctlbase + CNTACR(i));
 
@@ -1689,10 +1585,7 @@ static int __init arch_timer_mem_acpi_init(int platform_timer_count)
 	if (ret || !timer_count)
 		goto out;
 
-	/*
-	 * While unlikely, it's theoretically possible that none of the frames
-	 * in a timer expose the combination of feature we want.
-	 */
+	 
 	for (i = 0; i < timer_count; i++) {
 		timer = &timers[i];
 
@@ -1706,11 +1599,8 @@ static int __init arch_timer_mem_acpi_init(int platform_timer_count)
 			goto out;
 		}
 
-		if (!best_frame) /* implies !frame */
-			/*
-			 * Only complain about missing suitable frames if we
-			 * haven't already found one in a previous iteration.
-			 */
+		if (!best_frame)  
+			 
 			pr_err("Unable to find a suitable frame in timer @ %pa\n",
 				&timer->cntctlbase);
 	}
@@ -1722,7 +1612,7 @@ out:
 	return ret;
 }
 
-/* Initialize per-processor generic timer and memory-mapped timer(if present) */
+ 
 static int __init arch_timer_acpi_init(struct acpi_table_header *table)
 {
 	int ret, platform_timer_count;
@@ -1749,10 +1639,7 @@ static int __init arch_timer_acpi_init(struct acpi_table_header *table)
 
 	arch_timer_populate_kvm_info();
 
-	/*
-	 * When probing via ACPI, we have no mechanism to override the sysreg
-	 * CNTFRQ value. This *must* be correct.
-	 */
+	 
 	arch_timer_rate = arch_timer_get_cntfrq();
 	ret = validate_timer_rate();
 	if (ret) {
@@ -1766,10 +1653,10 @@ static int __init arch_timer_acpi_init(struct acpi_table_header *table)
 		return -EINVAL;
 	}
 
-	/* Always-on capability */
+	 
 	arch_timer_c3stop = acpi_gtdt_c3stop(arch_timer_uses_ppi);
 
-	/* Check for globally applicable workarounds */
+	 
 	arch_timer_check_ool_workaround(ate_match_acpi_oem_info, table);
 
 	ret = arch_timer_register();

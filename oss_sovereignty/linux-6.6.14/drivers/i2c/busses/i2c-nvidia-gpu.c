@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Nvidia GPU I2C controller Driver
- *
- * Copyright (C) 2018 NVIDIA Corporation. All rights reserved.
- * Author: Ajay Gupta <ajayg@nvidia.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -20,7 +15,7 @@
 
 #include "i2c-ccgx-ucsi.h"
 
-/* I2C definitions */
+ 
 #define I2C_MST_CNTL				0x00
 #define I2C_MST_CNTL_GEN_START			BIT(0)
 #define I2C_MST_CNTL_GEN_STOP			BIT(1)
@@ -62,14 +57,14 @@ static void gpu_enable_i2c_bus(struct gpu_i2c_dev *i2cd)
 {
 	u32 val;
 
-	/* enable I2C */
+	 
 	val = readl(i2cd->regs + I2C_MST_HYBRID_PADCTL);
 	val |= I2C_MST_HYBRID_PADCTL_MODE_I2C |
 		I2C_MST_HYBRID_PADCTL_I2C_SCL_INPUT_RCV |
 		I2C_MST_HYBRID_PADCTL_I2C_SDA_INPUT_RCV;
 	writel(val, i2cd->regs + I2C_MST_HYBRID_PADCTL);
 
-	/* enable 100KHZ mode */
+	 
 	val = I2C_MST_I2C0_TIMING_SCL_PERIOD_100KHZ;
 	val |= (I2C_MST_I2C0_TIMING_TIMEOUT_CLK_CNT_MAX
 	    << I2C_MST_I2C0_TIMING_TIMEOUT_CLK_CNT);
@@ -171,16 +166,13 @@ static int gpu_i2c_master_xfer(struct i2c_adapter *adap,
 	bool send_stop = true;
 	int i, j;
 
-	/*
-	 * The controller supports maximum 4 byte read due to known
-	 * limitation of sending STOP after every read.
-	 */
+	 
 	pm_runtime_get_sync(i2cd->dev);
 	for (i = 0; i < num; i++) {
 		if (msgs[i].flags & I2C_M_RD) {
-			/* program client address before starting read */
+			 
 			writel(msgs[i].addr, i2cd->regs + I2C_MST_ADDR);
-			/* gpu_i2c_read has implicit start */
+			 
 			status = gpu_i2c_read(i2cd, msgs[i].buf, msgs[i].len);
 			if (status < 0)
 				goto exit;
@@ -238,19 +230,7 @@ static const struct i2c_algorithm gpu_i2c_algorithm = {
 	.functionality	= gpu_i2c_functionality,
 };
 
-/*
- * This driver is for Nvidia GPU cards with USB Type-C interface.
- * We want to identify the cards using vendor ID and class code only
- * to avoid dependency of adding product id for any new card which
- * requires this driver.
- * Currently there is no class code defined for UCSI device over PCI
- * so using UNKNOWN class for now and it will be updated when UCSI
- * over PCI gets a class code.
- * There is no other NVIDIA cards with UNKNOWN class code. Even if the
- * driver gets loaded for an undesired card then eventually i2c_read()
- * (initiated from UCSI i2c_client) will timeout or UCSI commands will
- * timeout.
- */
+ 
 #define PCI_CLASS_SERIAL_UNKNOWN	0x0c80
 static const struct pci_device_id gpu_i2c_ids[] = {
 	{ PCI_VENDOR_ID_NVIDIA, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
@@ -260,9 +240,9 @@ static const struct pci_device_id gpu_i2c_ids[] = {
 MODULE_DEVICE_TABLE(pci, gpu_i2c_ids);
 
 static const struct property_entry ccgx_props[] = {
-	/* Use FW built for NVIDIA GPU only */
+	 
 	PROPERTY_ENTRY_STRING("firmware-name", "nvidia,gpu"),
-	/* USB-C doesn't power the system */
+	 
 	PROPERTY_ENTRY_U8("scope", POWER_SUPPLY_SCOPE_DEVICE),
 	{ }
 };
@@ -347,12 +327,7 @@ static __maybe_unused int gpu_i2c_resume(struct device *dev)
 	struct gpu_i2c_dev *i2cd = dev_get_drvdata(dev);
 
 	gpu_enable_i2c_bus(i2cd);
-	/*
-	 * Runtime resume ccgx client so that it can see for any
-	 * connector change event. Old ccg firmware has known
-	 * issue of not triggering interrupt when a device is
-	 * connected to runtime resume the controller.
-	 */
+	 
 	pm_request_resume(&i2cd->ccgx_client->dev);
 	return 0;
 }

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * SELinux support for the XFRM LSM hooks
- *
- * Author : Trent Jaeger, <jaegert@us.ibm.com>
- * Updated : Venkat Yekkirala, <vyekkirala@TrustedCS.com>
- */
+ 
+ 
 #ifndef _SELINUX_XFRM_H_
 #define _SELINUX_XFRM_H_
 
@@ -91,4 +86,4 @@ static inline int selinux_xfrm_skb_sid(struct sk_buff *skb, u32 *sid)
 }
 #endif
 
-#endif /* _SELINUX_XFRM_H_ */
+#endif  

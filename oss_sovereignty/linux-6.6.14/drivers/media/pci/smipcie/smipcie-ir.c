@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SMI PCIe driver for DVBSky cards.
- *
- * Copyright (C) 2014 Max nibble <nibble.max@gmail.com>
- */
+
+ 
 
 #include "smipcie.h"
 
@@ -101,7 +97,7 @@ static void smi_ir_decode(struct smi_rc *ir)
 	ir_raw_event_handle(rc_dev);
 }
 
-/* ir functions call by main driver.*/
+ 
 int smi_ir_irq(struct smi_rc *ir, u32 int_status)
 {
 	int handled = 0;
@@ -139,7 +135,7 @@ int smi_ir_init(struct smi_dev *dev)
 	if (!rc_dev)
 		return -ENOMEM;
 
-	/* init input device */
+	 
 	snprintf(ir->device_name, sizeof(ir->device_name), "IR (%s)",
 		 dev->info->name);
 	snprintf(ir->input_phys, sizeof(ir->input_phys), "pci-%s/ir0",

@@ -1,26 +1,4 @@
-/*
- * Copyright 2014 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "outp.h"
 #include "dp.h"
 #include "ior.h"
@@ -74,7 +52,7 @@ nvkm_outp_xlat(struct nvkm_outp *outp, enum nvkm_ior_type *type)
 	case 1:
 		switch (outp->info.type) {
 		case DCB_OUTPUT_TMDS: *type = PIOR; return TMDS;
-		case DCB_OUTPUT_DP  : *type = PIOR; return TMDS; /* not a bug */
+		case DCB_OUTPUT_DP  : *type = PIOR; return TMDS;  
 		default:
 			break;
 		}
@@ -118,7 +96,7 @@ nvkm_outp_acquire_hda(struct nvkm_outp *outp, enum nvkm_ior_type type,
 {
 	struct nvkm_ior *ior;
 
-	/* Failing that, a completely unused OR is the next best thing. */
+	 
 	list_for_each_entry(ior, &outp->disp->iors, head) {
 		if (!ior->identity && ior->hda == hda &&
 		    !ior->asy.outp && ior->type == type && !ior->arm.outp &&
@@ -126,9 +104,7 @@ nvkm_outp_acquire_hda(struct nvkm_outp *outp, enum nvkm_ior_type type,
 			return nvkm_outp_acquire_ior(outp, user, ior);
 	}
 
-	/* Last resort is to assign an OR that's already active on HW,
-	 * but will be released during the next modeset.
-	 */
+	 
 	list_for_each_entry(ior, &outp->disp->iors, head) {
 		if (!ior->identity && ior->hda == hda &&
 		    !ior->asy.outp && ior->type == type &&
@@ -152,12 +128,12 @@ nvkm_outp_acquire(struct nvkm_outp *outp, u8 user, bool hda)
 		return 0;
 	}
 
-	/* Lookup a compatible, and unused, OR to assign to the device. */
+	 
 	proto = nvkm_outp_xlat(outp, &type);
 	if (proto == UNKNOWN)
 		return -ENOSYS;
 
-	/* Deal with panels requiring identity-mapped SOR assignment. */
+	 
 	if (outp->identity) {
 		ior = nvkm_ior_find(outp->disp, SOR, ffs(outp->info.or) - 1);
 		if (WARN_ON(!ior))
@@ -165,45 +141,29 @@ nvkm_outp_acquire(struct nvkm_outp *outp, u8 user, bool hda)
 		return nvkm_outp_acquire_ior(outp, user, ior);
 	}
 
-	/* First preference is to reuse the OR that is currently armed
-	 * on HW, if any, in order to prevent unnecessary switching.
-	 */
+	 
 	list_for_each_entry(ior, &outp->disp->iors, head) {
 		if (!ior->identity && !ior->asy.outp && ior->arm.outp == outp) {
-			/*XXX: For various complicated reasons, we can't outright switch
-			 *     the boot-time OR on the first modeset without some fairly
-			 *     invasive changes.
-			 *
-			 *     The systems that were fixed by modifying the OR selection
-			 *     code to account for HDA support shouldn't regress here as
-			 *     the HDA-enabled ORs match the relevant output's pad macro
-			 *     index, and the firmware seems to select an OR this way.
-			 *
-			 *     This warning is to make it obvious if that proves wrong.
-			 */
+			 
 			WARN_ON(hda && !ior->hda);
 			return nvkm_outp_acquire_ior(outp, user, ior);
 		}
 	}
 
-	/* If we don't need HDA, first try to acquire an OR that doesn't
-	 * support it to leave free the ones that do.
-	 */
+	 
 	if (!hda) {
 		if (!nvkm_outp_acquire_hda(outp, type, user, false))
 			return 0;
 
-		/* Use a HDA-supporting SOR anyway. */
+		 
 		return nvkm_outp_acquire_hda(outp, type, user, true);
 	}
 
-	/* We want HDA, try to acquire an OR that supports it. */
+	 
 	if (!nvkm_outp_acquire_hda(outp, type, user, true))
 		return 0;
 
-	/* There weren't any free ORs that support HDA, grab one that
-	 * doesn't and at least allow display to work still.
-	 */
+	 
 	return nvkm_outp_acquire_hda(outp, type, user, false);
 }
 
@@ -223,7 +183,7 @@ nvkm_outp_init_route(struct nvkm_outp *outp)
 	struct nvkm_ior *ior;
 	int id, link;
 
-	/* Find any OR from the class that is able to support this device. */
+	 
 	proto = nvkm_outp_xlat(outp, &type);
 	if (proto == UNKNOWN)
 		return;
@@ -234,7 +194,7 @@ nvkm_outp_init_route(struct nvkm_outp *outp)
 		return;
 	}
 
-	/* Determine the specific OR, if any, this device is attached to. */
+	 
 	if (ior->func->route.get) {
 		id = ior->func->route.get(outp, &link);
 		if (id < 0) {
@@ -242,7 +202,7 @@ nvkm_outp_init_route(struct nvkm_outp *outp)
 			return;
 		}
 	} else {
-		/* Prior to DCB 4.1, this is hardwired like so. */
+		 
 		id   = ffs(outp->info.or) - 1;
 		link = (ior->type == SOR) ? outp->info.sorconf.link : 0;
 	}
@@ -253,16 +213,13 @@ nvkm_outp_init_route(struct nvkm_outp *outp)
 		return;
 	}
 
-	/* Determine if the OR is already configured for this device. */
+	 
 	ior->func->state(ior, &ior->arm);
 	if (!ior->arm.head || ior->arm.proto != proto) {
 		OUTP_DBG(outp, "no heads (%x %d %d)", ior->arm.head,
 			 ior->arm.proto, proto);
 
-		/* The EFI GOP driver on Ampere can leave unused DP links routed,
-		 * which we don't expect.  The DisableLT IED script *should* get
-		 * us back to where we need to be.
-		 */
+		 
 		if (ior->func->route.get && !ior->arm.head && outp->info.type == DCB_OUTPUT_DP)
 			nvkm_dp_disable(outp, ior);
 
@@ -318,7 +275,7 @@ nvkm_outp_new_(const struct nvkm_outp_func *func, struct nvkm_disp *disp,
 		 outp->info.connector, outp->info.i2c_index,
 		 outp->info.bus, outp->info.heads);
 
-	/* Cull output paths we can't map to an output resource. */
+	 
 	proto = nvkm_outp_xlat(outp, &type);
 	if (proto == UNKNOWN)
 		return -ENODEV;

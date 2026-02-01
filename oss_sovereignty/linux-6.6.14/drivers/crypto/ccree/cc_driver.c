@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2012-2019 ARM Limited or its affiliates. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -50,7 +50,7 @@ struct cc_hw_data {
 #define CC_NUM_IDRS 4
 #define CC_HW_RESET_LOOP_COUNT 10
 
-/* Note: PIDR3 holds CMOD/Rev so ignored for HW identification purposes */
+ 
 static const u32 pidr_0124_offsets[CC_NUM_IDRS] = {
 	CC_REG(PERIPHERAL_ID_0), CC_REG(PERIPHERAL_ID_1),
 	CC_REG(PERIPHERAL_ID_2), CC_REG(PERIPHERAL_ID_4)
@@ -61,9 +61,9 @@ static const u32 cidr_0123_offsets[CC_NUM_IDRS] = {
 	CC_REG(COMPONENT_ID_2), CC_REG(COMPONENT_ID_3)
 };
 
-/* Hardware revisions defs. */
+ 
 
-/* The 703 is a OSCCA only variant of the 713 */
+ 
 static const struct cc_hw_data cc703_hw = {
 	.name = "703", .rev = CC_HW_REV_713, .cidr_0123 = 0xB105F00DU,
 	.pidr_0124 = 0x040BB0D0U, .std_bodies = CC_STD_OSCCA
@@ -105,11 +105,11 @@ static void init_cc_cache_params(struct cc_drvdata *drvdata)
 	u32 cache_params, ace_const, val;
 	u64 mask;
 
-	/* compute CC_AXIM_CACHE_PARAMS */
+	 
 	cache_params = cc_ioread(drvdata, CC_REG(AXIM_CACHE_PARAMS));
 	dev_dbg(dev, "Cache params previous: 0x%08X\n", cache_params);
 
-	/* non cached or write-back, write allocate */
+	 
 	val = drvdata->coherent ? 0xb : 0x2;
 
 	mask = CC_GENMASK(CC_AXIM_CACHE_PARAMS_AWCACHE);
@@ -131,11 +131,11 @@ static void init_cc_cache_params(struct cc_drvdata *drvdata)
 	if (drvdata->hw_rev <= CC_HW_REV_710)
 		return;
 
-	/* compute CC_AXIM_ACE_CONST */
+	 
 	ace_const = cc_ioread(drvdata, CC_REG(AXIM_ACE_CONST));
 	dev_dbg(dev, "ACE-const previous: 0x%08X\n", ace_const);
 
-	/* system or outer-sharable */
+	 
 	val = drvdata->coherent ? 0x2 : 0x3;
 
 	mask = CC_GENMASK(CC_AXIM_ACE_CONST_ARDOMAIN);
@@ -185,49 +185,45 @@ static irqreturn_t cc_isr(int irq, void *dev_id)
 	u32 irr;
 	u32 imr;
 
-	/* STAT_OP_TYPE_GENERIC STAT_PHASE_0: Interrupt */
-	/* if driver suspended return, probably shared interrupt */
+	 
+	 
 	if (pm_runtime_suspended(dev))
 		return IRQ_NONE;
 
-	/* read the interrupt status */
+	 
 	irr = cc_ioread(drvdata, CC_REG(HOST_IRR));
 	dev_dbg(dev, "Got IRR=0x%08X\n", irr);
 
-	if (irr == 0) /* Probably shared interrupt line */
+	if (irr == 0)  
 		return IRQ_NONE;
 
 	imr = cc_ioread(drvdata, CC_REG(HOST_IMR));
 
-	/* clear interrupt - must be before processing events */
+	 
 	cc_iowrite(drvdata, CC_REG(HOST_ICR), irr);
 
 	drvdata->irq = irr;
-	/* Completion interrupt - most probable */
+	 
 	if (irr & drvdata->comp_mask) {
-		/* Mask all completion interrupts - will be unmasked in
-		 * deferred service handler
-		 */
+		 
 		cc_iowrite(drvdata, CC_REG(HOST_IMR), imr | drvdata->comp_mask);
 		irr &= ~drvdata->comp_mask;
 		complete_request(drvdata);
 	}
 #ifdef CONFIG_CRYPTO_FIPS
-	/* TEE FIPS interrupt */
+	 
 	if (irr & CC_GPR0_IRQ_MASK) {
-		/* Mask interrupt - will be unmasked in Deferred service
-		 * handler
-		 */
+		 
 		cc_iowrite(drvdata, CC_REG(HOST_IMR), imr | CC_GPR0_IRQ_MASK);
 		irr &= ~CC_GPR0_IRQ_MASK;
 		fips_handler(drvdata);
 	}
 #endif
-	/* AXI error interrupt */
+	 
 	if (irr & CC_AXI_ERR_IRQ_MASK) {
 		u32 axi_err;
 
-		/* Read the AXI error ID */
+		 
 		axi_err = cc_ioread(drvdata, CC_REG(AXIM_MON_ERR));
 		dev_dbg(dev, "AXI completion error: axim_mon_err=0x%08X\n",
 			axi_err);
@@ -238,7 +234,7 @@ static irqreturn_t cc_isr(int irq, void *dev_id)
 	if (irr) {
 		dev_dbg_ratelimited(dev, "IRR includes unknown cause bits (0x%08X)\n",
 				    irr);
-		/* Just warning */
+		 
 	}
 
 	return IRQ_HANDLED;
@@ -249,23 +245,21 @@ bool cc_wait_for_reset_completion(struct cc_drvdata *drvdata)
 	unsigned int val;
 	unsigned int i;
 
-	/* 712/710/63 has no reset completion indication, always return true */
+	 
 	if (drvdata->hw_rev <= CC_HW_REV_712)
 		return true;
 
 	for (i = 0; i < CC_HW_RESET_LOOP_COUNT; i++) {
-		/* in cc7x3 NVM_IS_IDLE indicates that CC reset is
-		 *  completed and device is fully functional
-		 */
+		 
 		val = cc_ioread(drvdata, CC_REG(NVM_IS_IDLE));
 		if (val & CC_NVM_IS_IDLE_MASK) {
-			/* hw indicate reset completed */
+			 
 			return true;
 		}
-		/* allow scheduling other process on the processor */
+		 
 		schedule();
 	}
-	/* reset not completed */
+	 
 	return false;
 }
 
@@ -274,8 +268,8 @@ int init_cc_regs(struct cc_drvdata *drvdata)
 	unsigned int val;
 	struct device *dev = drvdata_to_dev(drvdata);
 
-	/* Unmask all AXI interrupt sources AXI_CFG1 register   */
-	/* AXI interrupt config are obsoleted startign at cc7x3 */
+	 
+	 
 	if (drvdata->hw_rev <= CC_HW_REV_712) {
 		val = cc_ioread(drvdata, CC_REG(AXIM_CFG));
 		cc_iowrite(drvdata, CC_REG(AXIM_CFG), val & ~CC_AXI_IRQ_MASK);
@@ -283,12 +277,12 @@ int init_cc_regs(struct cc_drvdata *drvdata)
 			cc_ioread(drvdata, CC_REG(AXIM_CFG)));
 	}
 
-	/* Clear all pending interrupts */
+	 
 	val = cc_ioread(drvdata, CC_REG(HOST_IRR));
 	dev_dbg(dev, "IRR=0x%08X\n", val);
 	cc_iowrite(drvdata, CC_REG(HOST_ICR), val);
 
-	/* Unmask relevant interrupt cause */
+	 
 	val = drvdata->comp_mask | CC_AXI_ERR_IRQ_MASK;
 
 	if (drvdata->hw_rev >= CC_HW_REV_712)
@@ -347,9 +341,9 @@ static int init_cc_resources(struct platform_device *plat_dev)
 
 	new_drvdata->coherent = of_dma_is_coherent(np);
 
-	/* Get device resources */
-	/* First CC registers space */
-	/* Map registers space */
+	 
+	 
+	 
 	new_drvdata->cc_base = devm_platform_get_and_ioremap_resource(plat_dev,
 								      0, &req_mem_cc_regs);
 	if (IS_ERR(new_drvdata->cc_base))
@@ -360,7 +354,7 @@ static int init_cc_resources(struct platform_device *plat_dev)
 	dev_dbg(dev, "CC registers mapped from %pa to 0x%p\n",
 		&req_mem_cc_regs->start, new_drvdata->cc_base);
 
-	/* Then IRQ */
+	 
 	irq = platform_get_irq(plat_dev, 0);
 	if (irq < 0)
 		return irq;
@@ -396,13 +390,13 @@ static int init_cc_resources(struct platform_device *plat_dev)
 		goto post_pm_err;
 	}
 
-	/* Wait for Cryptocell reset completion */
+	 
 	if (!cc_wait_for_reset_completion(new_drvdata)) {
 		dev_err(dev, "Cryptocell reset not completed");
 	}
 
 	if (hw_rev->rev <= CC_HW_REV_712) {
-		/* Verify correct mapping */
+		 
 		val = cc_ioread(new_drvdata, new_drvdata->sig_offset);
 		if (val != hw_rev->sig) {
 			dev_err(dev, "Invalid CC signature: SIGNATURE=0x%08X != expected=0x%08X\n",
@@ -413,7 +407,7 @@ static int init_cc_resources(struct platform_device *plat_dev)
 		sig_cidr = val;
 		hw_rev_pidr = cc_ioread(new_drvdata, new_drvdata->ver_offset);
 	} else {
-		/* Verify correct mapping */
+		 
 		val = cc_read_idr(new_drvdata, pidr_0124_offsets);
 		if (val != hw_rev->pidr_0124) {
 			dev_err(dev, "Invalid CC PIDR: PIDR0124=0x%08X != expected=0x%08X\n",
@@ -432,11 +426,11 @@ static int init_cc_resources(struct platform_device *plat_dev)
 		}
 		sig_cidr = val;
 
-		/* Check HW engine configuration */
+		 
 		val = cc_ioread(new_drvdata, CC_REG(HOST_REMOVE_INPUT_PINS));
 		switch (val) {
 		case CC_PINS_FULL:
-			/* This is fine */
+			 
 			break;
 		case CC_PINS_SLIM:
 			if (new_drvdata->std_bodies & CC_STD_NIST) {
@@ -450,7 +444,7 @@ static int init_cc_resources(struct platform_device *plat_dev)
 			goto post_pm_err;
 		}
 
-		/* Check security disable state */
+		 
 		val = cc_ioread(new_drvdata, CC_REG(SECURITY_DISABLED));
 		val &= CC_SECURITY_DISABLED_MASK;
 		new_drvdata->sec_disabled |= !!val;
@@ -465,10 +459,10 @@ static int init_cc_resources(struct platform_device *plat_dev)
 	if (new_drvdata->sec_disabled)
 		dev_info(dev, "Security Disabled mode is in effect. Security functions disabled.\n");
 
-	/* Display HW versions */
+	 
 	dev_info(dev, "ARM CryptoCell %s Driver: HW version 0x%08X/0x%8X, Driver version %s\n",
 		 hw_rev->name, hw_rev_pidr, sig_cidr, DRV_MODULE_VERSION);
-	/* register the driver isr function */
+	 
 	rc = devm_request_irq(dev, irq, cc_isr, IRQF_SHARED, "ccree",
 			      new_drvdata);
 	if (rc) {
@@ -521,16 +515,14 @@ static int init_cc_resources(struct platform_device *plat_dev)
 		goto post_req_mgr_err;
 	}
 
-	/* hash must be allocated first due to use of send_request_init()
-	 * and dependency of AEAD on it
-	 */
+	 
 	rc = cc_hash_alloc(new_drvdata);
 	if (rc) {
 		dev_err(dev, "cc_hash_alloc failed\n");
 		goto post_buf_mgr_err;
 	}
 
-	/* Allocate crypto algs */
+	 
 	rc = cc_cipher_alloc(new_drvdata);
 	if (rc) {
 		dev_err(dev, "cc_cipher_alloc failed\n");
@@ -543,10 +535,7 @@ static int init_cc_resources(struct platform_device *plat_dev)
 		goto post_cipher_err;
 	}
 
-	/* If we got here and FIPS mode is enabled
-	 * it means all FIPS test passed, so let TEE
-	 * know we're good.
-	 */
+	 
 	cc_set_ree_fips_status(new_drvdata, true);
 
 	pm_runtime_put(dev);
@@ -576,7 +565,7 @@ post_pm_err:
 
 void fini_cc_regs(struct cc_drvdata *drvdata)
 {
-	/* Mask all interrupts */
+	 
 	cc_iowrite(drvdata, CC_REG(HOST_IMR), 0xFFFFFFFF);
 }
 
@@ -613,7 +602,7 @@ static int ccree_probe(struct platform_device *plat_dev)
 	int rc;
 	struct device *dev = &plat_dev->dev;
 
-	/* Map registers space */
+	 
 	rc = init_cc_resources(plat_dev);
 	if (rc)
 		return rc;
@@ -671,7 +660,7 @@ static void __exit ccree_exit(void)
 }
 module_exit(ccree_exit);
 
-/* Module description */
+ 
 MODULE_DESCRIPTION("ARM TrustZone CryptoCell REE Driver");
 MODULE_VERSION(DRV_MODULE_VERSION);
 MODULE_AUTHOR("ARM");

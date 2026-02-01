@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Sample code to test firmware-management protocol
- *
- * Copyright(c) 2016 Google Inc. All rights reserved.
- * Copyright(c) 2016 Linaro Ltd. All rights reserved.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +36,7 @@ static int update_intf_firmware(int fd)
 {
 	int ret;
 
-	/* Get Interface Firmware Version */
+	 
 	printf("Get Interface Firmware Version\n");
 
 	ret = ioctl(fd, FW_MGMT_IOC_GET_INTF_FW, &intf_fw_info);
@@ -55,7 +50,7 @@ static int update_intf_firmware(int fd)
 		intf_fw_info.firmware_tag, intf_fw_info.major,
 		intf_fw_info.minor);
 
-	/* Try Interface Firmware load over Unipro */
+	 
 	printf("Loading Interface Firmware\n");
 
 	intf_load.load_method = GB_FW_U_LOAD_METHOD_UNIPRO;
@@ -84,7 +79,7 @@ static int update_intf_firmware(int fd)
 		firmware_tag, intf_load.major, intf_load.minor,
 		intf_load.status);
 
-	/* Initiate Mode-switch to the newly loaded firmware */
+	 
 	printf("Initiate Mode switch\n");
 
 	ret = ioctl(fd, FW_MGMT_IOC_MODE_SWITCH);
@@ -98,7 +93,7 @@ static int update_backend_firmware(int fd)
 {
 	int ret;
 
-	/* Get Backend Firmware Version */
+	 
 	printf("Getting Backend Firmware Version\n");
 
 	strncpy((char *)&backend_fw_info.firmware_tag, firmware_tag,
@@ -126,7 +121,7 @@ retry_fw_version:
 		return -1;
 	}
 
-	/* Try Backend Firmware Update over Unipro */
+	 
 	printf("Updating Backend Firmware\n");
 
 	strncpy((char *)&backend_update.firmware_tag, firmware_tag,
@@ -196,7 +191,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	/* Set Timeout */
+	 
 	printf("Setting timeout to %u ms\n", fw_timeout);
 
 	ret = ioctl(fd, FW_MGMT_IOC_SET_TIMEOUT_MS, &fw_timeout);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PPS sysfs support
- *
- * Copyright (C) 2007-2009   Rodolfo Giometti <giometti@linux.it>
- */
+
+ 
 
 
 #include <linux/device.h>
@@ -11,9 +7,7 @@
 #include <linux/string.h>
 #include <linux/pps_kernel.h>
 
-/*
- * Attribute functions
- */
+ 
 
 static ssize_t assert_show(struct device *dev, struct device_attribute *attr,
 			   char *buf)

@@ -1,22 +1,6 @@
-/* variables.h -- data structures for shell variables. */
+ 
 
-/* Copyright (C) 1987-2022 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if !defined (_VARIABLES_H_)
 #define _VARIABLES_H_
@@ -25,31 +9,31 @@
 #include "array.h"
 #include "assoc.h"
 
-/* Shell variables and functions are stored in hash tables. */
+ 
 #include "hashlib.h"
 
 #include "conftypes.h"
 
-/* A variable context. */
+ 
 typedef struct var_context {
-  char *name;		/* empty or NULL means global context */
-  int scope;		/* 0 means global context */
+  char *name;		 
+  int scope;		 
   int flags;
-  struct var_context *up;	/* previous function calls */
-  struct var_context *down;	/* down towards global context */
-  HASH_TABLE *table;		/* variables at this scope */
+  struct var_context *up;	 
+  struct var_context *down;	 
+  HASH_TABLE *table;		 
 } VAR_CONTEXT;
 
-/* Flags for var_context->flags */
+ 
 #define VC_HASLOCAL	0x01
 #define VC_HASTMPVAR	0x02
-#define VC_FUNCENV	0x04	/* also function if name != NULL */
-#define VC_BLTNENV	0x08	/* builtin_env */
-#define VC_TEMPENV	0x10	/* temporary_env */
+#define VC_FUNCENV	0x04	 
+#define VC_BLTNENV	0x08	 
+#define VC_TEMPENV	0x10	 
 
 #define VC_TEMPFLAGS	(VC_FUNCENV|VC_BLTNENV|VC_TEMPENV)
 
-/* Accessing macros */
+ 
 #define vc_isfuncenv(vc)	(((vc)->flags & VC_FUNCENV) != 0)
 #define vc_isbltnenv(vc)	(((vc)->flags & VC_BLTNENV) != 0)
 #define vc_istempenv(vc)	(((vc)->flags & (VC_TEMPFLAGS)) == VC_TEMPENV)
@@ -59,79 +43,75 @@ typedef struct var_context {
 #define vc_haslocals(vc)	(((vc)->flags & VC_HASLOCAL) != 0)
 #define vc_hastmpvars(vc)	(((vc)->flags & VC_HASTMPVAR) != 0)
 
-/* What a shell variable looks like. */
+ 
 
 typedef struct variable *sh_var_value_func_t PARAMS((struct variable *));
 typedef struct variable *sh_var_assign_func_t PARAMS((struct variable *, char *, arrayind_t, char *));
 
-/* For the future */
+ 
 union _value {
-  char *s;			/* string value */
-  intmax_t i;			/* int value */
-  COMMAND *f;			/* function */
-  ARRAY *a;			/* array */
-  HASH_TABLE *h;		/* associative array */
-  double d;			/* floating point number */
+  char *s;			 
+  intmax_t i;			 
+  COMMAND *f;			 
+  ARRAY *a;			 
+  HASH_TABLE *h;		 
+  double d;			 
 #if defined (HAVE_LONG_DOUBLE)
-  long double ld;		/* long double */
+  long double ld;		 
 #endif
-  struct variable *v;		/* possible indirect variable use */
-  void *opaque;			/* opaque data for future use */
+  struct variable *v;		 
+  void *opaque;			 
 };
 
 typedef struct variable {
-  char *name;			/* Symbol that the user types. */
-  char *value;			/* Value that is returned. */
-  char *exportstr;		/* String for the environment. */
-  sh_var_value_func_t *dynamic_value;	/* Function called to return a `dynamic'
-				   value for a variable, like $SECONDS
-				   or $RANDOM. */
-  sh_var_assign_func_t *assign_func; /* Function called when this `special
-				   variable' is assigned a value in
-				   bind_variable. */
-  int attributes;		/* export, readonly, array, invisible... */
-  int context;			/* Which context this variable belongs to. */
+  char *name;			 
+  char *value;			 
+  char *exportstr;		 
+  sh_var_value_func_t *dynamic_value;	 
+  sh_var_assign_func_t *assign_func;  
+  int attributes;		 
+  int context;			 
 } SHELL_VAR;
 
 typedef struct _vlist {
   SHELL_VAR **list;
-  int list_size;	/* allocated size */
-  int list_len;		/* current number of entries */
+  int list_size;	 
+  int list_len;		 
 } VARLIST;
 
-/* The various attributes that a given variable can have. */
-/* First, the user-visible attributes */
-#define att_exported	0x0000001	/* export to environment */
-#define att_readonly	0x0000002	/* cannot change */
-#define att_array	0x0000004	/* value is an array */
-#define att_function	0x0000008	/* value is a function */
-#define att_integer	0x0000010	/* internal representation is int */
-#define att_local	0x0000020	/* variable is local to a function */
-#define att_assoc	0x0000040	/* variable is an associative array */
-#define att_trace	0x0000080	/* function is traced with DEBUG trap */
-#define att_uppercase	0x0000100	/* word converted to uppercase on assignment */
-#define att_lowercase	0x0000200	/* word converted to lowercase on assignment */
-#define att_capcase	0x0000400	/* word capitalized on assignment */
-#define att_nameref	0x0000800	/* word is a name reference */
+ 
+ 
+#define att_exported	0x0000001	 
+#define att_readonly	0x0000002	 
+#define att_array	0x0000004	 
+#define att_function	0x0000008	 
+#define att_integer	0x0000010	 
+#define att_local	0x0000020	 
+#define att_assoc	0x0000040	 
+#define att_trace	0x0000080	 
+#define att_uppercase	0x0000100	 
+#define att_lowercase	0x0000200	 
+#define att_capcase	0x0000400	 
+#define att_nameref	0x0000800	 
 
 #define user_attrs	(att_exported|att_readonly|att_integer|att_local|att_trace|att_uppercase|att_lowercase|att_capcase|att_nameref)
 
 #define attmask_user	0x0000fff
 
-/* Internal attributes used for bookkeeping */
-#define att_invisible	0x0001000	/* cannot see */
-#define att_nounset	0x0002000	/* cannot unset */
-#define att_noassign	0x0004000	/* assignment not allowed */
-#define att_imported	0x0008000	/* came from environment */
-#define att_special	0x0010000	/* requires special handling */
-#define att_nofree	0x0020000	/* do not free value on unset */
-#define att_regenerate	0x0040000	/* regenerate when exported */
+ 
+#define att_invisible	0x0001000	 
+#define att_nounset	0x0002000	 
+#define att_noassign	0x0004000	 
+#define att_imported	0x0008000	 
+#define att_special	0x0010000	 
+#define att_nofree	0x0020000	 
+#define att_regenerate	0x0040000	 
 
 #define	attmask_int	0x00ff000
 
-/* Internal attributes used for variable scoping. */
-#define att_tempvar	0x0100000	/* variable came from the temp environment */
-#define att_propagate	0x0200000	/* propagate to previous scope */
+ 
+#define att_tempvar	0x0100000	 
+#define att_propagate	0x0200000	 
 
 #define attmask_scope	0x0f00000
 
@@ -159,30 +139,30 @@ typedef struct _vlist {
 #define tempvar_p(var)		((((var)->attributes) & (att_tempvar)))
 #define propagate_p(var)	((((var)->attributes) & (att_propagate)))
 
-/* Variable names: lvalues */
+ 
 #define name_cell(var)		((var)->name)
 
-/* Accessing variable values: rvalues */
+ 
 #define value_cell(var)		((var)->value)
 #define function_cell(var)	(COMMAND *)((var)->value)
 #define array_cell(var)		(ARRAY *)((var)->value)
 #define assoc_cell(var)		(HASH_TABLE *)((var)->value)
-#define nameref_cell(var)	((var)->value)		/* so it can change later */
+#define nameref_cell(var)	((var)->value)		 
 
-#define NAMEREF_MAX	8	/* only 8 levels of nameref indirection */
+#define NAMEREF_MAX	8	 
 
 #define var_isset(var)		((var)->value != 0)
 #define var_isunset(var)	((var)->value == 0)
 #define var_isnull(var)		((var)->value && *(var)->value == 0)
 
-/* Assigning variable values: lvalues */
+ 
 #define var_setvalue(var, str)	((var)->value = (str))
 #define var_setfunc(var, func)	((var)->value = (char *)(func))
 #define var_setarray(var, arr)	((var)->value = (char *)(arr))
 #define var_setassoc(var, arr)	((var)->value = (char *)(arr))
 #define var_setref(var, str)	((var)->value = (str))
 
-/* Make VAR be auto-exported. */
+ 
 #define set_auto_export(var) \
   do { (var)->attributes |= att_exported; array_needs_making = 1; } while (0)
 
@@ -198,7 +178,7 @@ typedef struct _vlist {
 #define VSETFLAGS(var, flags)	((var)->attributes = (flags))
 #define VCLRFLAGS(var)		((var)->attributes = 0)
 
-/* Macros to perform various operations on `exportstr' member of a SHELL_VAR. */
+ 
 #define CLEAR_EXPORTSTR(var)	(var)->exportstr = (char *)NULL
 #define COPY_EXPORTSTR(var)	((var)->exportstr) ? savestring ((var)->exportstr) : (char *)NULL
 #define SET_EXPORTSTR(var, value)  (var)->exportstr = (value)
@@ -221,19 +201,19 @@ typedef struct _vlist {
 
 #define ifsname(s)	((s)[0] == 'I' && (s)[1] == 'F' && (s)[2] == 'S' && (s)[3] == '\0')
 
-/* Flag values for make_local_variable and its array counterparts */
+ 
 #define MKLOC_ASSOCOK		0x01
 #define MKLOC_ARRAYOK		0x02
 #define MKLOC_INHERIT		0x04
 
-/* Special value for nameref with invalid value for creation or assignment */
+ 
 extern SHELL_VAR nameref_invalid_value;
 #define INVALID_NAMEREF_VALUE	(void *)&nameref_invalid_value
 	
-/* Stuff for hacking variables. */
+ 
 typedef int sh_var_map_func_t PARAMS((SHELL_VAR *));
 
-/* Where we keep the variables and functions */
+ 
 extern VAR_CONTEXT *global_variables;
 extern VAR_CONTEXT *shell_variables;
 
@@ -248,12 +228,12 @@ extern int tempenv_assign_error;
 extern int array_needs_making;
 extern int shell_level;
 
-/* XXX */
+ 
 extern WORD_LIST *rest_of_args;
 extern int posparam_count;
 extern pid_t dollar_dollar_pid;
 
-extern int localvar_inherit;		/* declared in variables.c */
+extern int localvar_inherit;		 
 
 extern void initialize_shell_variables PARAMS((char **, int));
 
@@ -277,7 +257,7 @@ extern SHELL_VAR *find_global_variable_last_nameref PARAMS((const char *, int));
 extern SHELL_VAR *find_variable_nameref PARAMS((SHELL_VAR *));
 extern SHELL_VAR *find_variable_nameref_for_create PARAMS((const char *, int));
 extern SHELL_VAR *find_variable_nameref_for_assignment PARAMS((const char *, int));
-/*extern SHELL_VAR *find_variable_internal PARAMS((const char *, int));*/
+ 
 extern SHELL_VAR *find_variable_tempenv PARAMS((const char *));
 extern SHELL_VAR *find_variable_notempenv PARAMS((const char *));
 extern SHELL_VAR *find_global_variable PARAMS((const char *));
@@ -404,18 +384,15 @@ extern void restore_pipestatus_array PARAMS((ARRAY *));
 
 extern void set_pipestatus_from_exit PARAMS((int));
 
-/* The variable in NAME has just had its state changed.  Check to see if it
-   is one of the special ones where something special happens. */
+ 
 extern void stupidly_hack_special_variables PARAMS((char *));
 
-/* Reinitialize some special variables that have external effects upon unset
-   when the shell reinitializes itself. */
+ 
 extern void reinit_special_variables PARAMS((void));
 
 extern int get_random_number PARAMS((void));
 
-/* The `special variable' functions that get called when a particular
-   variable is set. */
+ 
 extern void sv_ifs PARAMS((char *));
 extern void sv_path PARAMS((char *));
 extern void sv_mail PARAMS((char *));
@@ -449,7 +426,7 @@ extern void sv_history_control PARAMS((char *));
 extern void sv_histchars PARAMS((char *));
 #  endif
 extern void sv_histtimefmt PARAMS((char *));
-#endif /* HISTORY */
+#endif  
 
 #if defined (HAVE_TZSET)
 extern void sv_tz PARAMS((char *));
@@ -459,4 +436,4 @@ extern void sv_tz PARAMS((char *));
 extern void sv_childmax PARAMS((char *));
 #endif
 
-#endif /* !_VARIABLES_H_ */
+#endif  

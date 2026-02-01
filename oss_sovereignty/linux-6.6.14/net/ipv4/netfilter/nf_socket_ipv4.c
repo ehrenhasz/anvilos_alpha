@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007-2008 BalaBit IT Ltd.
- * Author: Krisztian Kovacs
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -51,8 +48,7 @@ extract_icmp4_fields(const struct sk_buff *skb, u8 *protocol,
 	if (ports == NULL)
 		return 1;
 
-	/* the inside IP packet is the one quoted from our side, thus
-	 * its saddr is the local address */
+	 
 	*protocol = inside_iph->protocol;
 	*laddr = inside_iph->saddr;
 	*lport = ports[0];
@@ -124,10 +120,7 @@ struct sock *nf_sk_lookup_slow_v4(struct net *net, const struct sk_buff *skb,
 	}
 
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
-	/* Do the lookup with the original socket address in
-	 * case this is a reply packet of an established
-	 * SNAT-ted connection.
-	 */
+	 
 	ct = nf_ct_get(skb, &ctinfo);
 	if (ct &&
 	    ((iph->protocol != IPPROTO_ICMP &&

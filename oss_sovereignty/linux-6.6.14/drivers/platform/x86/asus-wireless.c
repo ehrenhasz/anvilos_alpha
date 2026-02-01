@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Asus Wireless Radio Control Driver
- *
- * Copyright (C) 2015-2016 Endless Mobile, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

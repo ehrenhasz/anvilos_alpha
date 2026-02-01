@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019-2020 Icenowy Zheng <icenowy@aosc.io>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/delay.h>
@@ -39,64 +37,64 @@ struct k101_im2ba02_init_cmd {
 };
 
 static const struct k101_im2ba02_init_cmd k101_im2ba02_init_cmds[] = {
-	/* Switch to page 0 */
+	 
 	{ .data = { 0xE0, 0x00 } },
 
-	/* Seems to be some password */
+	 
 	{ .data = { 0xE1, 0x93} },
 	{ .data = { 0xE2, 0x65 } },
 	{ .data = { 0xE3, 0xF8 } },
 
-	/* Lane number, 0x02 - 3 lanes, 0x03 - 4 lanes */
+	 
 	{ .data = { 0x80, 0x03 } },
 
-	/* Sequence control */
+	 
 	{ .data = { 0x70, 0x02 } },
 	{ .data = { 0x71, 0x23 } },
 	{ .data = { 0x72, 0x06 } },
 
-	/* Switch to page 1 */
+	 
 	{ .data = { 0xE0, 0x01 } },
 
-	/* Set VCOM */
+	 
 	{ .data = { 0x00, 0x00 } },
 	{ .data = { 0x01, 0x66 } },
-	/* Set VCOM_Reverse */
+	 
 	{ .data = { 0x03, 0x00 } },
 	{ .data = { 0x04, 0x25 } },
 
-	/* Set Gamma Power, VG[MS][PN] */
+	 
 	{ .data = { 0x17, 0x00 } },
 	{ .data = { 0x18, 0x6D } },
 	{ .data = { 0x19, 0x00 } },
 	{ .data = { 0x1A, 0x00 } },
-	{ .data = { 0x1B, 0xBF } }, /* VGMN = -4.5V */
+	{ .data = { 0x1B, 0xBF } },  
 	{ .data = { 0x1C, 0x00 } },
 
-	/* Set Gate Power */
-	{ .data = { 0x1F, 0x3E } }, /* VGH_R = 15V */
-	{ .data = { 0x20, 0x28 } }, /* VGL_R = -11V */
-	{ .data = { 0x21, 0x28 } }, /* VGL_R2 = -11V */
-	{ .data = { 0x22, 0x0E } }, /* PA[6:4] = 0, PA[0] = 0 */
+	 
+	{ .data = { 0x1F, 0x3E } },  
+	{ .data = { 0x20, 0x28 } },  
+	{ .data = { 0x21, 0x28 } },  
+	{ .data = { 0x22, 0x0E } },  
 
-	/* Set Panel */
-	{ .data = { 0x37, 0x09 } }, /* SS = 1, BGR = 1 */
+	 
+	{ .data = { 0x37, 0x09 } },  
 
-	/* Set RGBCYC */
-	{ .data = { 0x38, 0x04 } }, /* JDT = 100 column inversion */
-	{ .data = { 0x39, 0x08 } }, /* RGB_N_EQ1 */
-	{ .data = { 0x3A, 0x12 } }, /* RGB_N_EQ2 */
-	{ .data = { 0x3C, 0x78 } }, /* set EQ3 for TE_H */
-	{ .data = { 0x3D, 0xFF } }, /* set CHGEN_ON */
-	{ .data = { 0x3E, 0xFF } }, /* set CHGEN_OFF */
-	{ .data = { 0x3F, 0x7F } }, /* set CHGEN_OFF2 */
+	 
+	{ .data = { 0x38, 0x04 } },  
+	{ .data = { 0x39, 0x08 } },  
+	{ .data = { 0x3A, 0x12 } },  
+	{ .data = { 0x3C, 0x78 } },  
+	{ .data = { 0x3D, 0xFF } },  
+	{ .data = { 0x3E, 0xFF } },  
+	{ .data = { 0x3F, 0x7F } },  
 
-	/* Set TCON parameter */
-	{ .data = { 0x40, 0x06 } }, /* RSO = 800 points */
-	{ .data = { 0x41, 0xA0 } }, /* LN = 1280 lines */
+	 
+	{ .data = { 0x40, 0x06 } },  
+	{ .data = { 0x41, 0xA0 } },  
 
-	/* Set power voltage */
-	{ .data = { 0x55, 0x0F } }, /* DCDCM */
+	 
+	{ .data = { 0x55, 0x0F } },  
 	{ .data = { 0x56, 0x01 } },
 	{ .data = { 0x57, 0x69 } },
 	{ .data = { 0x58, 0x0A } },
@@ -104,7 +102,7 @@ static const struct k101_im2ba02_init_cmd k101_im2ba02_init_cmds[] = {
 	{ .data = { 0x5A, 0x45 } },
 	{ .data = { 0x5B, 0x15 } },
 
-	/* Set gamma */
+	 
 	{ .data = { 0x5D, 0x7C } },
 	{ .data = { 0x5E, 0x65 } },
 	{ .data = { 0x5F, 0x55 } },
@@ -144,7 +142,7 @@ static const struct k101_im2ba02_init_cmd k101_im2ba02_init_cmds[] = {
 	{ .data = { 0x81, 0x25 } },
 	{ .data = { 0x82, 0x00 } },
 
-	/* Switch to page 2, for GIP */
+	 
 	{ .data = { 0xE0, 0x02 } },
 
 	{ .data = { 0x00, 0x1E } },
@@ -495,7 +493,7 @@ static void k101_im2ba02_dsi_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id k101_im2ba02_of_match[] = {
 	{ .compatible = "feixin,k101-im2ba02", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, k101_im2ba02_of_match);
 

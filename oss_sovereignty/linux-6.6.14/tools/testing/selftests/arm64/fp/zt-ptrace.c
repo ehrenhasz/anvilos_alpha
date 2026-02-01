@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 ARM Limited.
- */
+
+ 
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -20,7 +18,7 @@
 
 #include "../../kselftest.h"
 
-/* <linux/elf.h> and <sys/auxv.h> don't like each other, so: */
+ 
 #ifndef NT_ARM_ZA
 #define NT_ARM_ZA 0x40c
 #endif
@@ -116,7 +114,7 @@ static int set_zt(pid_t pid, const char zt[ZT_SIG_REG_BYTES])
 	return ptrace(PTRACE_SETREGSET, pid, NT_ARM_ZT, &iov);
 }
 
-/* Reading with ZA disabled returns all zeros */
+ 
 static void ptrace_za_disabled_read_zt(pid_t child)
 {
 	struct user_za_header za;
@@ -124,7 +122,7 @@ static void ptrace_za_disabled_read_zt(pid_t child)
 	int ret, i;
 	bool fail = false;
 
-	/* Disable PSTATE.ZA using the ZA interface */
+	 
 	memset(&za, 0, sizeof(za));
 	za.vl = sme_vl;
 	za.size = sizeof(za);
@@ -135,7 +133,7 @@ static void ptrace_za_disabled_read_zt(pid_t child)
 		fail = true;
 	}
 
-	/* Read back ZT */
+	 
 	ret = get_zt(child, zt);
 	if (ret != 0) {
 		ksft_print_msg("Failed to read ZT\n");
@@ -152,7 +150,7 @@ static void ptrace_za_disabled_read_zt(pid_t child)
 	ksft_test_result(!fail, "ptrace_za_disabled_read_zt\n");
 }
 
-/* Writing then reading ZT should return the data written */
+ 
 static void ptrace_set_get_zt(pid_t child)
 {
 	char zt_in[ZT_SIG_REG_BYTES];
@@ -185,7 +183,7 @@ static void ptrace_set_get_zt(pid_t child)
 	ksft_test_result(!fail, "ptrace_set_get_zt\n");
 }
 
-/* Writing ZT should set PSTATE.ZA */
+ 
 static void ptrace_enable_za_via_zt(pid_t child)
 {
 	struct user_za_header za_in;
@@ -196,7 +194,7 @@ static void ptrace_enable_za_via_zt(pid_t child)
 	int ret, i, vq;
 	bool fail = false;
 
-	/* Disable PSTATE.ZA using the ZA interface */
+	 
 	memset(&za_in, 0, sizeof(za_in));
 	za_in.vl = sme_vl;
 	za_in.size = sizeof(za_in);
@@ -207,7 +205,7 @@ static void ptrace_enable_za_via_zt(pid_t child)
 		fail = true;
 	}
 
-	/* Write ZT */
+	 
 	fill_buf(zt, sizeof(zt));
 	ret = set_zt(child, zt);
 	if (ret != 0) {
@@ -215,11 +213,11 @@ static void ptrace_enable_za_via_zt(pid_t child)
 		fail = true;
 	}
 
-	/* Read back ZA and check for register data */
+	 
 	za_out = NULL;
 	za_out_size = 0;
 	if (get_za(child, (void **)&za_out, &za_out_size)) {
-		/* Should have an unchanged VL */
+		 
 		if (za_out->vl != sme_vl) {
 			ksft_print_msg("VL changed from %d to %d\n",
 				       sme_vl, za_out->vl);
@@ -228,7 +226,7 @@ static void ptrace_enable_za_via_zt(pid_t child)
 		vq = __sve_vq_from_vl(za_out->vl);
 		za_data = (char *)za_out + ZA_PT_ZA_OFFSET;
 
-		/* Should have register data */
+		 
 		if (za_out->size < ZA_PT_SIZE(vq)) {
 			ksft_print_msg("ZA data less than expected: %u < %u\n",
 				       za_out->size, ZA_PT_SIZE(vq));
@@ -236,7 +234,7 @@ static void ptrace_enable_za_via_zt(pid_t child)
 			vq = 0;
 		}
 
-		/* That register data should be non-zero */
+		 
 		for (i = 0; i < ZA_PT_ZA_SIZE(vq); i++) {
 			if (za_data[i]) {
 				ksft_print_msg("ZA byte %d is %x\n",
@@ -259,7 +257,7 @@ static int do_parent(pid_t child)
 	int status;
 	siginfo_t si;
 
-	/* Attach to the child */
+	 
 	while (1) {
 		int sig;
 
@@ -269,10 +267,7 @@ static int do_parent(pid_t child)
 			goto error;
 		}
 
-		/*
-		 * This should never happen but it's hard to flag in
-		 * the framework.
-		 */
+		 
 		if (pid != child)
 			continue;
 
@@ -289,7 +284,7 @@ static int do_parent(pid_t child)
 				goto disappeared;
 
 			if (errno == EINVAL) {
-				sig = 0; /* bust group-stop */
+				sig = 0;  
 				goto cont;
 			}
 
@@ -342,7 +337,7 @@ int main(void)
 		ksft_exit_skip("SME2 not available\n");
 	}
 
-	/* We need a valid SME VL to enable/disable ZA */
+	 
 	sme_vl = prctl(PR_SME_GET_VL);
 	if (sme_vl == -1) {
 		ksft_set_plan(1);

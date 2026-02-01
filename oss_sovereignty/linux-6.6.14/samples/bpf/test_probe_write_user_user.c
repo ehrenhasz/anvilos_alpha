@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <assert.h>
 #include <unistd.h>
@@ -37,7 +37,7 @@ int main(int ac, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;
@@ -59,7 +59,7 @@ int main(int ac, char **argv)
 	assert((serverfd = socket(AF_INET, SOCK_STREAM, 0)) > 0);
 	assert((clientfd = socket(AF_INET, SOCK_STREAM, 0)) > 0);
 
-	/* Bind server to ephemeral port on lo */
+	 
 	memset(&serv_addr, 0, sizeof(serv_addr));
 	serv_addr_in->sin_family = AF_INET;
 	serv_addr_in->sin_port = 0;
@@ -98,7 +98,7 @@ int main(int ac, char **argv)
 	printf("Client's peer address: %s:%d\n",
 	       ip, ntohs(tmp_addr_in->sin_port));
 
-	/* Is the server's getsockname = the socket getpeername */
+	 
 	assert(memcmp(&serv_addr, &tmp_addr, sizeof(struct sockaddr_in)) == 0);
 
 cleanup:

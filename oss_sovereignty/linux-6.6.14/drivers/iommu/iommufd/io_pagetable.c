@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
- *
- * The io_pagetable is the top of datastructure that maps IOVA's to PFNs. The
- * PFNs can be placed into an iommu_domain, or returned to the caller as a page
- * list for access by an in-kernel user.
- *
- * The datastructure uses the iopt_pages to optimize the storage of the PFNs
- * between the domains and xarray.
- */
+
+ 
 #include <linux/iommufd.h>
 #include <linux/lockdep.h>
 #include <linux/iommu.h>
@@ -101,10 +93,7 @@ static bool __alloc_iova_check_used(struct interval_tree_span_iter *span,
 	return true;
 }
 
-/*
- * Automatically find a block of IOVA that is not being used and not reserved.
- * Does not return a 0 IOVA even if it is valid.
- */
+ 
 static int iopt_alloc_iova(struct io_pagetable *iopt, unsigned long *iova,
 			   unsigned long uptr, unsigned long length)
 {
@@ -115,14 +104,11 @@ static int iopt_alloc_iova(struct io_pagetable *iopt, unsigned long *iova,
 
 	lockdep_assert_held(&iopt->iova_rwsem);
 
-	/* Protect roundup_pow-of_two() from overflow */
+	 
 	if (length == 0 || length >= ULONG_MAX / 2)
 		return -EOVERFLOW;
 
-	/*
-	 * Keep alignment present in the uptr when building the IOVA, this
-	 * increases the chance we can map a THP.
-	 */
+	 
 	if (!uptr)
 		iova_alignment = roundup_pow_of_two(length);
 	else
@@ -173,19 +159,17 @@ static int iopt_check_iova(struct io_pagetable *iopt, unsigned long iova,
 	if (check_add_overflow(iova, length - 1, &last))
 		return -EOVERFLOW;
 
-	/* No reserved IOVA intersects the range */
+	 
 	if (iopt_reserved_iter_first(iopt, iova, last))
 		return -EINVAL;
 
-	/* Check that there is not already a mapping in the range */
+	 
 	if (iopt_area_iter_first(iopt, iova, last))
 		return -EEXIST;
 	return 0;
 }
 
-/*
- * The area takes a slice of the pages from start_bytes to start_byte + length
- */
+ 
 static int iopt_insert_area(struct io_pagetable *iopt, struct iopt_area *area,
 			    struct iopt_pages *pages, unsigned long iova,
 			    unsigned long start_byte, unsigned long length,
@@ -212,10 +196,7 @@ static int iopt_insert_area(struct io_pagetable *iopt, struct iopt_area *area,
 	if (WARN_ON(area->pages_node.last >= pages->npages))
 		return -EOVERFLOW;
 
-	/*
-	 * The area is inserted with a NULL pages indicating it is not fully
-	 * initialized yet.
-	 */
+	 
 	area->iopt = iopt;
 	interval_tree_insert(&area->node, &iopt->area_itree);
 	return 0;
@@ -255,7 +236,7 @@ static int iopt_alloc_area_pages(struct io_pagetable *iopt,
 	}
 
 	if (flags & IOPT_ALLOC_IOVA) {
-		/* Use the first entry to guess the ideal IOVA alignment */
+		 
 		elm = list_first_entry(pages_list, struct iopt_pages_list,
 				       next);
 		rc = iopt_alloc_iova(
@@ -274,10 +255,7 @@ static int iopt_alloc_area_pages(struct io_pagetable *iopt,
 			goto out_unlock;
 	}
 
-	/*
-	 * Areas are created with a NULL pages so that the IOVA space is
-	 * reserved and we can unlock the iova_rwsem.
-	 */
+	 
 	iova = *dst_iova;
 	list_for_each_entry(elm, pages_list, next) {
 		rc = iopt_insert_area(iopt, elm->area, elm->pages, iova,
@@ -360,11 +338,7 @@ int iopt_map_pages(struct io_pagetable *iopt, struct list_head *pages_list,
 
 	down_write(&iopt->iova_rwsem);
 	list_for_each_entry(elm, pages_list, next) {
-		/*
-		 * area->pages must be set inside the domains_rwsem to ensure
-		 * any newly added domains will get filled. Moves the reference
-		 * in from the list.
-		 */
+		 
 		elm->area->pages = elm->pages;
 		elm->pages = NULL;
 		elm->area = NULL;
@@ -375,25 +349,7 @@ out_unlock_domains:
 	return rc;
 }
 
-/**
- * iopt_map_user_pages() - Map a user VA to an iova in the io page table
- * @ictx: iommufd_ctx the iopt is part of
- * @iopt: io_pagetable to act on
- * @iova: If IOPT_ALLOC_IOVA is set this is unused on input and contains
- *        the chosen iova on output. Otherwise is the iova to map to on input
- * @uptr: User VA to map
- * @length: Number of bytes to map
- * @iommu_prot: Combination of IOMMU_READ/WRITE/etc bits for the mapping
- * @flags: IOPT_ALLOC_IOVA or zero
- *
- * iova, uptr, and length must be aligned to iova_alignment. For domain backed
- * page tables this will pin the pages and load them into the domain at iova.
- * For non-domain page tables this will only setup a lazy reference and the
- * caller must use iopt_access_pages() to touch them.
- *
- * iopt_unmap_iova() must be called to undo this before the io_pagetable can be
- * destroyed.
- */
+ 
 int iopt_map_user_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
 			unsigned long *iova, void __user *uptr,
 			unsigned long length, int iommu_prot,
@@ -473,11 +429,7 @@ static int iopt_unmap_iova_range(struct io_pagetable *iopt, unsigned long start,
 	unsigned int tries = 0;
 	int rc = -ENOENT;
 
-	/*
-	 * The domains_rwsem must be held in read mode any time any area->pages
-	 * is NULL. This prevents domain attach/detatch from running
-	 * concurrently with cleaning up the area.
-	 */
+	 
 again:
 	down_read(&iopt->domains_rwsem);
 	down_write(&iopt->iova_rwsem);
@@ -486,7 +438,7 @@ again:
 		unsigned long area_first = iopt_area_iova(area);
 		struct iopt_pages *pages;
 
-		/* Userspace should not race map/unmap's of the same area */
+		 
 		if (!area->pages) {
 			rc = -EBUSY;
 			goto out_unlock_iova;
@@ -500,11 +452,7 @@ again:
 		if (area_first != start)
 			tries = 0;
 
-		/*
-		 * num_accesses writers must hold the iova_rwsem too, so we can
-		 * safely read it under the write side of the iovam_rwsem
-		 * without the pages->mutex.
-		 */
+		 
 		if (area->num_accesses) {
 			size_t length = iopt_area_length(area);
 
@@ -514,7 +462,7 @@ again:
 			up_read(&iopt->domains_rwsem);
 
 			iommufd_access_notify_unmap(iopt, area_first, length);
-			/* Something is not responding to unmap requests. */
+			 
 			tries++;
 			if (WARN_ON(tries > 100))
 				return -EDEADLOCK;
@@ -544,16 +492,7 @@ out_unlock_iova:
 	return rc;
 }
 
-/**
- * iopt_unmap_iova() - Remove a range of iova
- * @iopt: io_pagetable to act on
- * @iova: Starting iova to unmap
- * @length: Number of bytes to unmap
- * @unmapped: Return number of bytes unmapped
- *
- * The requested range must be a superset of existing ranges.
- * Splitting/truncating IOVA mappings is not allowed.
- */
+ 
 int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
 		    unsigned long length, unsigned long *unmapped)
 {
@@ -573,13 +512,13 @@ int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped)
 	int rc;
 
 	rc = iopt_unmap_iova_range(iopt, 0, ULONG_MAX, unmapped);
-	/* If the IOVAs are empty then unmap all succeeds */
+	 
 	if (rc == -ENOENT)
 		return 0;
 	return rc;
 }
 
-/* The caller must always free all the nodes in the allowed_iova rb_root. */
+ 
 int iopt_set_allow_iova(struct io_pagetable *iopt,
 			struct rb_root_cached *allowed_iova)
 {
@@ -657,11 +596,7 @@ void iopt_init_table(struct io_pagetable *iopt)
 	xa_init_flags(&iopt->domains, XA_FLAGS_ACCOUNT);
 	xa_init_flags(&iopt->access_list, XA_FLAGS_ALLOC);
 
-	/*
-	 * iopt's start as SW tables that can use the entire size_t IOVA space
-	 * due to the use of size_t in the APIs. They have no alignment
-	 * restriction.
-	 */
+	 
 	iopt->iova_alignment = 1;
 }
 
@@ -684,15 +619,7 @@ void iopt_destroy_table(struct io_pagetable *iopt)
 	WARN_ON(!RB_EMPTY_ROOT(&iopt->area_itree.rb_root));
 }
 
-/**
- * iopt_unfill_domain() - Unfill a domain with PFNs
- * @iopt: io_pagetable to act on
- * @domain: domain to unfill
- *
- * This is used when removing a domain from the iopt. Every area in the iopt
- * will be unmapped from the domain. The domain must already be removed from the
- * domains xarray.
- */
+ 
 static void iopt_unfill_domain(struct io_pagetable *iopt,
 			       struct iommu_domain *domain)
 {
@@ -701,12 +628,9 @@ static void iopt_unfill_domain(struct io_pagetable *iopt,
 	lockdep_assert_held(&iopt->iova_rwsem);
 	lockdep_assert_held_write(&iopt->domains_rwsem);
 
-	/*
-	 * Some other domain is holding all the pfns still, rapidly unmap this
-	 * domain.
-	 */
+	 
 	if (iopt->next_domain_id != 0) {
-		/* Pick an arbitrary remaining domain to act as storage */
+		 
 		struct iommu_domain *storage_domain =
 			xa_load(&iopt->domains, 0);
 
@@ -745,14 +669,7 @@ static void iopt_unfill_domain(struct io_pagetable *iopt,
 	}
 }
 
-/**
- * iopt_fill_domain() - Fill a domain with PFNs
- * @iopt: io_pagetable to act on
- * @domain: domain to fill
- *
- * Fill the domain with PFNs from every area in the iopt. On failure the domain
- * is left unchanged.
- */
+ 
 static int iopt_fill_domain(struct io_pagetable *iopt,
 			    struct iommu_domain *domain)
 {
@@ -808,7 +725,7 @@ out_unfill:
 	return rc;
 }
 
-/* All existing area's conform to an increased page size */
+ 
 static int iopt_check_iova_alignment(struct io_pagetable *iopt,
 				     unsigned long new_iova_alignment)
 {
@@ -856,14 +773,7 @@ int iopt_table_add_domain(struct io_pagetable *iopt,
 		}
 	}
 
-	/*
-	 * The io page size drives the iova_alignment. Internally the iopt_pages
-	 * works in PAGE_SIZE units and we adjust when mapping sub-PAGE_SIZE
-	 * objects into the iommu_domain.
-	 *
-	 * A iommu_domain must always be able to accept PAGE_SIZE to be
-	 * compatible as we can't guarantee higher contiguity.
-	 */
+	 
 	new_iova_alignment = max_t(unsigned long,
 				   1UL << __ffs(domain->pgsize_bitmap),
 				   iopt->iova_alignment);
@@ -877,7 +787,7 @@ int iopt_table_add_domain(struct io_pagetable *iopt,
 			goto out_unlock;
 	}
 
-	/* No area exists that is outside the allowed domain aperture */
+	 
 	if (geometry->aperture_start != 0) {
 		rc = iopt_reserve_iova(iopt, 0, geometry->aperture_start - 1,
 				       domain);
@@ -925,7 +835,7 @@ static int iopt_calculate_iova_alignment(struct io_pagetable *iopt)
 	lockdep_assert_held_write(&iopt->iova_rwsem);
 	lockdep_assert_held(&iopt->domains_rwsem);
 
-	/* See batch_iommu_map_small() */
+	 
 	if (iopt->disable_large_pages)
 		new_iova_alignment = PAGE_SIZE;
 	else
@@ -966,10 +876,7 @@ void iopt_table_remove_domain(struct io_pagetable *iopt,
 	if (WARN_ON(iter_domain != domain) || index >= iopt->next_domain_id)
 		goto out_unlock;
 
-	/*
-	 * Compress the xarray to keep it linear by swapping the entry to erase
-	 * with the tail entry and shrinking the tail.
-	 */
+	 
 	iopt->next_domain_id--;
 	iter_domain = xa_erase(&iopt->domains, iopt->next_domain_id);
 	if (index != iopt->next_domain_id)
@@ -984,15 +891,7 @@ out_unlock:
 	up_write(&iopt->domains_rwsem);
 }
 
-/**
- * iopt_area_split - Split an area into two parts at iova
- * @area: The area to split
- * @iova: Becomes the last of a new area
- *
- * This splits an area into two. It is part of the VFIO compatibility to allow
- * poking a hole in the mapping. The two areas continue to point at the same
- * iopt_pages, just with different starting bytes.
- */
+ 
 static int iopt_area_split(struct iopt_area *area, unsigned long iova)
 {
 	unsigned long alignment = area->iopt->iova_alignment;
@@ -1028,19 +927,13 @@ static int iopt_area_split(struct iopt_area *area, unsigned long iova)
 	}
 
 	mutex_lock(&pages->mutex);
-	/*
-	 * Splitting is not permitted if an access exists, we don't track enough
-	 * information to split existing accesses.
-	 */
+	 
 	if (area->num_accesses) {
 		rc = -EINVAL;
 		goto err_unlock;
 	}
 
-	/*
-	 * Splitting is not permitted if a domain could have been mapped with
-	 * huge pages.
-	 */
+	 
 	if (area->storage_domain && !iopt->disable_large_pages) {
 		rc = -EINVAL;
 		goto err_unlock;
@@ -1060,10 +953,7 @@ static int iopt_area_split(struct iopt_area *area, unsigned long iova)
 	if (WARN_ON(rc))
 		goto err_remove_lhs;
 
-	/*
-	 * If the original area has filled a domain, domains_itree has to be
-	 * updated.
-	 */
+	 
 	if (area->storage_domain) {
 		interval_tree_remove(&area->pages_node, &pages->domains_itree);
 		interval_tree_insert(&lhs->pages_node, &pages->domains_itree);
@@ -1078,10 +968,7 @@ static int iopt_area_split(struct iopt_area *area, unsigned long iova)
 	kfree(area);
 	mutex_unlock(&pages->mutex);
 
-	/*
-	 * No change to domains or accesses because the pages hasn't been
-	 * changed
-	 */
+	 
 	return 0;
 
 err_remove_lhs:
@@ -1139,7 +1026,7 @@ int iopt_disable_large_pages(struct io_pagetable *iopt)
 	if (iopt->disable_large_pages)
 		goto out_unlock;
 
-	/* Won't do it if domains already have pages mapped in them */
+	 
 	if (!xa_empty(&iopt->domains) &&
 	    !RB_EMPTY_ROOT(&iopt->area_itree.rb_root)) {
 		rc = -EINVAL;
@@ -1191,7 +1078,7 @@ void iopt_remove_access(struct io_pagetable *iopt,
 	up_write(&iopt->domains_rwsem);
 }
 
-/* Narrow the valid_iova_itree to include reserved ranges from a device. */
+ 
 int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
 					struct device *dev,
 					phys_addr_t *sw_msi_start)
@@ -1206,7 +1093,7 @@ int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
 		return -EINVAL;
 
 	down_write(&iopt->iova_rwsem);
-	/* FIXME: drivers allocate memory but there is no failure propogated */
+	 
 	iommu_get_resv_regions(dev, &resv_regions);
 
 	list_for_each_entry(resv, &resv_regions, list) {
@@ -1226,7 +1113,7 @@ int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
 			goto out_reserved;
 	}
 
-	/* Drivers must offer sane combinations of regions */
+	 
 	if (WARN_ON(num_sw_msi && num_hw_msi) || WARN_ON(num_sw_msi > 1)) {
 		rc = -EINVAL;
 		goto out_reserved;

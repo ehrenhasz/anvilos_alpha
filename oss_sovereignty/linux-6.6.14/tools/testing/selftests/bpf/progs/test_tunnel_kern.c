@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2016 VMware
- * Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+
+ 
 #include <stddef.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -28,9 +22,7 @@
 
 #define VXLAN_UDP_PORT 4789
 
-/* Only IPv4 address assigned to veth1.
- * 172.16.1.200
- */
+ 
 #define ASSIGNED_ADDR_VETH1 0xac1001c8
 
 struct geneve_opt {
@@ -40,7 +32,7 @@ struct geneve_opt {
 	__u8	r3:1;
 	__u8	r2:1;
 	__u8	r1:1;
-	__u8	opt_data[8]; /* hard-coded to 8 byte */
+	__u8	opt_data[8];  
 };
 
 struct vxlanhdr {
@@ -81,7 +73,7 @@ int gre_set_tunnel(struct __sk_buff *skb)
 	struct bpf_tunnel_key key;
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+	key.remote_ipv4 = 0xac100164;  
 	key.tunnel_id = 2;
 	key.tunnel_tos = 0;
 	key.tunnel_ttl = 64;
@@ -103,7 +95,7 @@ int gre_set_tunnel_no_key(struct __sk_buff *skb)
 	struct bpf_tunnel_key key;
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+	key.remote_ipv4 = 0xac100164;  
 	key.tunnel_ttl = 64;
 
 	ret = bpf_skb_set_tunnel_key(skb, &key, sizeof(key),
@@ -140,7 +132,7 @@ int ip6gretap_set_tunnel(struct __sk_buff *skb)
 	int ret;
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.remote_ipv6[3] = bpf_htonl(0x11); /* ::11 */
+	key.remote_ipv6[3] = bpf_htonl(0x11);  
 	key.tunnel_id = 2;
 	key.tunnel_tos = 0;
 	key.tunnel_ttl = 64;
@@ -184,7 +176,7 @@ int erspan_set_tunnel(struct __sk_buff *skb)
 	int ret;
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+	key.remote_ipv4 = 0xac100164;  
 	key.tunnel_id = 2;
 	key.tunnel_tos = 0;
 	key.tunnel_ttl = 64;
@@ -350,7 +342,7 @@ int vxlan_set_tunnel_dst(struct __sk_buff *skb)
 	}
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.local_ipv4 = 0xac100164; /* 172.16.1.100 */
+	key.local_ipv4 = 0xac100164;  
 	key.remote_ipv4 = *local_ip;
 	key.tunnel_id = 2;
 	key.tunnel_tos = 0;
@@ -363,7 +355,7 @@ int vxlan_set_tunnel_dst(struct __sk_buff *skb)
 		return TC_ACT_SHOT;
 	}
 
-	md.gbp = 0x800FF; /* Set VXLAN Group Policy extension */
+	md.gbp = 0x800FF;  
 	ret = bpf_skb_set_tunnel_opt(skb, &md, sizeof(md));
 	if (ret < 0) {
 		log_err(ret);
@@ -390,7 +382,7 @@ int vxlan_set_tunnel_src(struct __sk_buff *skb)
 
 	__builtin_memset(&key, 0x0, sizeof(key));
 	key.local_ipv4 = *local_ip;
-	key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+	key.remote_ipv4 = 0xac100164;  
 	key.tunnel_id = 2;
 	key.tunnel_tos = 0;
 	key.tunnel_ttl = 64;
@@ -402,7 +394,7 @@ int vxlan_set_tunnel_src(struct __sk_buff *skb)
 		return TC_ACT_SHOT;
 	}
 
-	md.gbp = 0x800FF; /* Set VXLAN Group Policy extension */
+	md.gbp = 0x800FF;  
 	ret = bpf_skb_set_tunnel_opt(skb, &md, sizeof(md));
 	if (ret < 0) {
 		log_err(ret);
@@ -514,7 +506,7 @@ int ip6vxlan_set_tunnel_dst(struct __sk_buff *skb)
 	}
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.local_ipv6[3] = bpf_htonl(0x11); /* ::11 */
+	key.local_ipv6[3] = bpf_htonl(0x11);  
 	key.remote_ipv6[3] = bpf_htonl(*local_ip);
 	key.tunnel_id = 22;
 	key.tunnel_tos = 0;
@@ -546,7 +538,7 @@ int ip6vxlan_set_tunnel_src(struct __sk_buff *skb)
 
 	__builtin_memset(&key, 0x0, sizeof(key));
 	key.local_ipv6[3] = bpf_htonl(*local_ip);
-	key.remote_ipv6[3] = bpf_htonl(0x11); /* ::11 */
+	key.remote_ipv6[3] = bpf_htonl(0x11);  
 	key.tunnel_id = 22;
 	key.tunnel_tos = 0;
 	key.tunnel_ttl = 64;
@@ -605,18 +597,18 @@ int geneve_set_tunnel(struct __sk_buff *skb)
 	struct geneve_opt gopt;
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+	key.remote_ipv4 = 0xac100164;  
 	key.tunnel_id = 2;
 	key.tunnel_tos = 0;
 	key.tunnel_ttl = 64;
 
 	__builtin_memset(&gopt, 0x0, sizeof(gopt));
-	gopt.opt_class = bpf_htons(0x102); /* Open Virtual Networking (OVN) */
+	gopt.opt_class = bpf_htons(0x102);  
 	gopt.type = 0x08;
 	gopt.r1 = 0;
 	gopt.r2 = 0;
 	gopt.r3 = 0;
-	gopt.length = 2; /* 4-byte multiple */
+	gopt.length = 2;  
 	*(int *) &gopt.opt_data = bpf_htonl(0xdeadbeef);
 
 	ret = bpf_skb_set_tunnel_key(skb, &key, sizeof(key),
@@ -665,7 +657,7 @@ int ip6geneve_set_tunnel(struct __sk_buff *skb)
 	int ret;
 
 	__builtin_memset(&key, 0x0, sizeof(key));
-	key.remote_ipv6[3] = bpf_htonl(0x11); /* ::11 */
+	key.remote_ipv6[3] = bpf_htonl(0x11);  
 	key.tunnel_id = 22;
 	key.tunnel_tos = 0;
 	key.tunnel_ttl = 64;
@@ -678,12 +670,12 @@ int ip6geneve_set_tunnel(struct __sk_buff *skb)
 	}
 
 	__builtin_memset(&gopt, 0x0, sizeof(gopt));
-	gopt.opt_class = bpf_htons(0x102); /* Open Virtual Networking (OVN) */
+	gopt.opt_class = bpf_htons(0x102);  
 	gopt.type = 0x08;
 	gopt.r1 = 0;
 	gopt.r2 = 0;
 	gopt.r3 = 0;
-	gopt.length = 2; /* 4-byte multiple */
+	gopt.length = 2;  
 	*(int *) &gopt.opt_data = bpf_htonl(0xfeedbeef);
 
 	ret = bpf_skb_set_tunnel_opt(skb, &gopt, sizeof(gopt));
@@ -728,7 +720,7 @@ int ipip_set_tunnel(struct __sk_buff *skb)
 	void *data_end = (void *)(long)skb->data_end;
 	int ret;
 
-	/* single length check */
+	 
 	if (data + sizeof(*iph) > data_end) {
 		log_err(1);
 		return TC_ACT_SHOT;
@@ -736,7 +728,7 @@ int ipip_set_tunnel(struct __sk_buff *skb)
 
 	key.tunnel_ttl = 64;
 	if (iph->protocol == IPPROTO_ICMP) {
-		key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+		key.remote_ipv4 = 0xac100164;  
 	}
 
 	ret = bpf_skb_set_tunnel_key(skb, &key, sizeof(key), 0);
@@ -781,7 +773,7 @@ int ipip_gue_set_tunnel(struct __sk_buff *skb)
 
 	key.tunnel_ttl = 64;
 	if (iph->protocol == IPPROTO_ICMP)
-		key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+		key.remote_ipv4 = 0xac100164;  
 
 	ret = bpf_skb_set_tunnel_key(skb, &key, sizeof(key), 0);
 	if (ret < 0) {
@@ -818,7 +810,7 @@ int ipip_fou_set_tunnel(struct __sk_buff *skb)
 
 	key.tunnel_ttl = 64;
 	if (iph->protocol == IPPROTO_ICMP)
-		key.remote_ipv4 = 0xac100164; /* 172.16.1.100 */
+		key.remote_ipv4 = 0xac100164;  
 
 	ret = bpf_skb_set_tunnel_key(skb, &key, sizeof(key), 0);
 	if (ret < 0) {
@@ -875,7 +867,7 @@ int ipip6_set_tunnel(struct __sk_buff *skb)
 	void *data_end = (void *)(long)skb->data_end;
 	int ret;
 
-	/* single length check */
+	 
 	if (data + sizeof(*iph) > data_end) {
 		log_err(1);
 		return TC_ACT_SHOT;
@@ -884,7 +876,7 @@ int ipip6_set_tunnel(struct __sk_buff *skb)
 	__builtin_memset(&key, 0x0, sizeof(key));
 	key.tunnel_ttl = 64;
 	if (iph->protocol == IPPROTO_ICMP) {
-		key.remote_ipv6[3] = bpf_htonl(0x11); /* ::11 */
+		key.remote_ipv6[3] = bpf_htonl(0x11);  
 	}
 
 	ret = bpf_skb_set_tunnel_key(skb, &key, sizeof(key),
@@ -924,15 +916,15 @@ int ip6ip6_set_tunnel(struct __sk_buff *skb)
 	void *data_end = (void *)(long)skb->data_end;
 	int ret;
 
-	/* single length check */
+	 
 	if (data + sizeof(*iph) > data_end) {
 		log_err(1);
 		return TC_ACT_SHOT;
 	}
 
 	key.tunnel_ttl = 64;
-	if (iph->nexthdr == 58 /* NEXTHDR_ICMP */) {
-		key.remote_ipv6[3] = bpf_htonl(0x11); /* ::11 */
+	if (iph->nexthdr == 58  ) {
+		key.remote_ipv6[3] = bpf_htonl(0x11);  
 	}
 
 	ret = bpf_skb_set_tunnel_key(skb, &key, sizeof(key),

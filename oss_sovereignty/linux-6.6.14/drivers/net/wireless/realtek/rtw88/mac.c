@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "mac.h"
@@ -107,7 +106,7 @@ static int rtw_mac_pre_system_cfg(struct rtw_dev *rtwdev)
 		return -EINVAL;
 	}
 
-	/* config PIN Mux */
+	 
 	value32 = rtw_read32(rtwdev, REG_PAD_CTRL1);
 	value32 |= BIT_PAPE_WLBT_SEL | BIT_LNAON_WLBT_SEL;
 	rtw_write32(rtwdev, REG_PAD_CTRL1, value32);
@@ -120,7 +119,7 @@ static int rtw_mac_pre_system_cfg(struct rtw_dev *rtwdev)
 	value32 |= BIT_WLRFE_4_5_EN;
 	rtw_write32(rtwdev, REG_GPIO_MUXCFG, value32);
 
-	/* disable BB/RF */
+	 
 	value8 = rtw_read8(rtwdev, REG_SYS_FUNC_EN);
 	value8 &= ~(BIT_FEN_BB_RSTB | BIT_FEN_BB_GLB_RST);
 	rtw_write8(rtwdev, REG_SYS_FUNC_EN, value8);
@@ -164,7 +163,7 @@ static int rtw_pwr_cmd_polling(struct rtw_dev *rtwdev,
 	if (rtw_hci_type(rtwdev) != RTW_HCI_TYPE_PCIE)
 		goto err;
 
-	/* if PCIE, toggle BIT_PFM_WOWL and try again */
+	 
 	value = rtw_read8(rtwdev, REG_SYS_PW_CTRL);
 	if (rtwdev->chip->id == RTW_CHIP_TYPE_8723D)
 		rtw_write8(rtwdev, REG_SYS_PW_CTRL, value & ~BIT_PFM_WOWL);
@@ -280,7 +279,7 @@ static int rtw_mac_power_switch(struct rtw_dev *rtwdev, bool pwr_on)
 	if (rtw_chip_wcpu_11ac(rtwdev)) {
 		rpwm = rtw_read8(rtwdev, rtwdev->hci.rpwm_addr);
 
-		/* Check FW still exist or not */
+		 
 		if (rtw_read16(rtwdev, REG_MCUFW_CTRL) == 0xC078) {
 			rpwm = (rpwm ^ BIT_RPWM_TOGGLE) & BIT_RPWM_TOGGLE;
 			rtw_write8(rtwdev, rtwdev->hci.rpwm_addr, rpwm);
@@ -332,7 +331,7 @@ static int __rtw_mac_init_system_cfg(struct rtw_dev *rtwdev)
 	value8 = (rtw_read8(rtwdev, REG_CR_EXT + 3) & 0xF0) | 0x0C;
 	rtw_write8(rtwdev, REG_CR_EXT + 3, value8);
 
-	/* disable boot-from-flash for driver's DL FW */
+	 
 	tmp = rtw_read32(rtwdev, REG_MCUFW_CTRL);
 	if (tmp & BIT_BOOT_FSPI_EN) {
 		rtw_write32(rtwdev, REG_MCUFW_CTRL, tmp & (~BIT_BOOT_FSPI_EN));
@@ -431,16 +430,16 @@ static bool check_firmware_size(const u8 *data, u32 size)
 static void wlan_cpu_enable(struct rtw_dev *rtwdev, bool enable)
 {
 	if (enable) {
-		/* cpu io interface enable */
+		 
 		rtw_write8_set(rtwdev, REG_RSV_CTRL + 1, BIT_WLMCU_IOIF);
 
-		/* cpu enable */
+		 
 		rtw_write8_set(rtwdev, REG_SYS_FUNC_EN + 1, BIT_FEN_CPUEN);
 	} else {
-		/* cpu io interface disable */
+		 
 		rtw_write8_clr(rtwdev, REG_SYS_FUNC_EN + 1, BIT_FEN_CPUEN);
 
-		/* cpu disable */
+		 
 		rtw_write8_clr(rtwdev, REG_RSV_CTRL + 1, BIT_WLMCU_IOIF);
 	}
 }
@@ -453,7 +452,7 @@ static void download_firmware_reg_backup(struct rtw_dev *rtwdev,
 	u8 tmp;
 	u8 bckp_idx = 0;
 
-	/* set HIQ to hi priority */
+	 
 	bckp[bckp_idx].len = 1;
 	bckp[bckp_idx].reg = REG_TXDMA_PQ_MAP + 1;
 	bckp[bckp_idx].val = rtw_read8(rtwdev, REG_TXDMA_PQ_MAP + 1);
@@ -461,7 +460,7 @@ static void download_firmware_reg_backup(struct rtw_dev *rtwdev,
 	tmp = RTW_DMA_MAPPING_HIGH << 6;
 	rtw_write8(rtwdev, REG_TXDMA_PQ_MAP + 1, tmp);
 
-	/* DLFW only use HIQ, map HIQ to hi priority */
+	 
 	bckp[bckp_idx].len = 1;
 	bckp[bckp_idx].reg = REG_CR;
 	bckp[bckp_idx].val = rtw_read8(rtwdev, REG_CR);
@@ -474,7 +473,7 @@ static void download_firmware_reg_backup(struct rtw_dev *rtwdev,
 	rtw_write8(rtwdev, REG_CR, tmp);
 	rtw_write32(rtwdev, REG_H2CQ_CSR, BIT_H2CQ_FULL);
 
-	/* Config hi priority queue and public priority queue page number */
+	 
 	bckp[bckp_idx].len = 2;
 	bckp[bckp_idx].reg = REG_FIFOPAGE_INFO_1;
 	bckp[bckp_idx].val = rtw_read16(rtwdev, REG_FIFOPAGE_INFO_1);
@@ -489,7 +488,7 @@ static void download_firmware_reg_backup(struct rtw_dev *rtwdev,
 	if (rtw_hci_type(rtwdev) == RTW_HCI_TYPE_SDIO)
 		rtw_read32(rtwdev, REG_SDIO_FREE_TXPG);
 
-	/* Disable beacon related functions */
+	 
 	tmp = rtw_read8(rtwdev, REG_BCN_CTRL);
 	bckp[bckp_idx].len = 1;
 	bckp[bckp_idx].reg = REG_BCN_CTRL;
@@ -755,7 +754,7 @@ static void download_firmware_end_flow(struct rtw_dev *rtwdev)
 
 	rtw_write32(rtwdev, REG_TXDMA_STATUS, BTI_PAGE_OVF);
 
-	/* Check IMEM & DMEM checksum is OK or not */
+	 
 	fw_ctrl = rtw_read16(rtwdev, REG_MCUFW_CTRL);
 	if ((fw_ctrl & BIT_CHECK_SUM_OK) != BIT_CHECK_SUM_OK)
 		return;
@@ -803,7 +802,7 @@ static int __rtw_download_firmware(struct rtw_dev *rtwdev,
 	if (ret)
 		goto dlfw_fail;
 
-	/* reset desc and index */
+	 
 	rtw_hci_setup(rtwdev);
 
 	rtwdev->h2c.last_box_num = 0;
@@ -814,7 +813,7 @@ static int __rtw_download_firmware(struct rtw_dev *rtwdev,
 	return 0;
 
 dlfw_fail:
-	/* Disable FWDL_EN */
+	 
 	rtw_write8_clr(rtwdev, REG_MCUFW_CTRL, BIT_MCUFWDL_EN);
 	rtw_write8_set(rtwdev, REG_SYS_FUNC_EN + 1, BIT_FEN_CPUEN);
 
@@ -946,7 +945,7 @@ static int __rtw_download_firmware_legacy(struct rtw_dev *rtwdev,
 	if (ret)
 		goto out;
 
-	/* reset desc and index */
+	 
 	rtw_hci_setup(rtwdev);
 
 	rtwdev->h2c.last_box_num = 0;
@@ -1014,7 +1013,7 @@ static void __rtw_mac_flush_prio_queue(struct rtw_dev *rtwdev,
 	addr = &chip->prioq_addrs->prio[prio_queue];
 	wsize = chip->prioq_addrs->wsize;
 
-	/* check if all of the reserved pages are available for 100 msecs */
+	 
 	for (i = 0; i < 5; i++) {
 		rsvd_page = wsize ? rtw_read16(rtwdev, addr->rsvd) :
 				     rtw_read8(rtwdev, addr->rsvd);
@@ -1026,12 +1025,7 @@ static void __rtw_mac_flush_prio_queue(struct rtw_dev *rtwdev,
 		msleep(20);
 	}
 
-	/* priority queue is still not empty, throw a warning,
-	 *
-	 * Note that if we want to flush the tx queue when having a lot of
-	 * traffic (ex, 100Mbps up), some of the packets could be dropped.
-	 * And it requires like ~2secs to flush the full priority queue.
-	 */
+	 
 	if (!drop)
 		rtw_warn(rtwdev, "timed out to flush queue %d\n", prio_queue);
 }
@@ -1050,10 +1044,7 @@ void rtw_mac_flush_queues(struct rtw_dev *rtwdev, u32 queues, bool drop)
 {
 	u32 prio_queues = 0;
 
-	/* If all of the hardware queues are requested to flush,
-	 * or the priority queues are not mapped yet,
-	 * flush all of the priority queues
-	 */
+	 
 	if (queues == BIT(rtwdev->hw->queues) - 1 || !rtwdev->fifo.rqpn)
 		prio_queues = BIT(RTW_DMA_MAPPING_MAX) - 1;
 	else
@@ -1120,7 +1111,7 @@ static int set_trx_fifo_info(struct rtw_dev *rtwdev)
 	u16 cur_pg_addr;
 	u8 csi_buf_pg_num = chip->csi_buf_pg_num;
 
-	/* config rsvd page num */
+	 
 	fifo->rsvd_drv_pg_num = chip->rsvd_drv_pg_num;
 	fifo->txff_pg_num = chip->txff_size >> 7;
 	if (rtw_chip_wcpu_11n(rtwdev))
@@ -1346,7 +1337,7 @@ static int rtw_drv_info_cfg(struct rtw_dev *rtwdev)
 	if (rtw_chip_wcpu_11ac(rtwdev)) {
 		value8 = rtw_read8(rtwdev, REG_TRXFF_BNDY + 1);
 		value8 &= 0xF0;
-		/* For rxdesc len = 0 issue */
+		 
 		value8 |= 0xF;
 		rtw_write8(rtwdev, REG_TRXFF_BNDY + 1, value8);
 	}

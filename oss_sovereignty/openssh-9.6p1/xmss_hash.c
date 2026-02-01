@@ -1,10 +1,5 @@
-/* $OpenBSD: xmss_hash.c,v 1.3 2022/04/20 16:00:25 millert Exp $ */
-/*
-hash.c version 20160722
-Andreas Hülsing
-Joost Rijneveld
-Public domain.
-*/
+ 
+ 
 
 #include "includes.h"
 #ifdef WITH_XMSS
@@ -39,9 +34,9 @@ int core_hash_SHA2(unsigned char *out, const unsigned int type, const unsigned c
   unsigned long long i = 0;
   unsigned char buf[inlen + n + keylen];
   
-  // Input is (toByte(X, 32) || KEY || M) 
   
-  // set toByte
+  
+  
   to_byte(buf, type, n);
   
   for (i=0; i < keylen; i++) {
@@ -65,29 +60,23 @@ int core_hash_SHA2(unsigned char *out, const unsigned int type, const unsigned c
   return 1;
 }
 
-/**
- * Implements PRF
- */
+ 
 int prf(unsigned char *out, const unsigned char *in, const unsigned char *key, unsigned int keylen)
 { 
   return core_hash_SHA2(out, 3, key, keylen, in, 32, keylen);
 }
 
-/*
- * Implemts H_msg
- */
+ 
 int h_msg(unsigned char *out, const unsigned char *in, unsigned long long inlen, const unsigned char *key, const unsigned int keylen, const unsigned int n)
 {
   if (keylen != 3*n){
-    // H_msg takes 3n-bit keys, but n does not match the keylength of keylen
+    
     return -1;
   }  
   return core_hash_SHA2(out, 2, key, keylen, in, inlen, n);
 }
 
-/**
- * We assume the left half is in in[0]...in[n-1]
- */
+ 
 int hash_h(unsigned char *out, const unsigned char *in, const unsigned char *pub_seed, uint32_t addr[8], const unsigned int n)
 {
 
@@ -100,7 +89,7 @@ int hash_h(unsigned char *out, const unsigned char *in, const unsigned char *pub
   setKeyAndMask(addr, 0);
   addr_to_byte(byte_addr, addr);
   prf(key, byte_addr, pub_seed, n);
-  // Use MSB order
+  
   setKeyAndMask(addr, 1);
   addr_to_byte(byte_addr, addr);
   prf(bitmask, byte_addr, pub_seed, n);
@@ -134,4 +123,4 @@ int hash_f(unsigned char *out, const unsigned char *in, const unsigned char *pub
   }
   return core_hash_SHA2(out, 0, key, n, buf, n, n);
 }
-#endif /* WITH_XMSS */
+#endif  

@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include <subdev/bios.h>
 #include <subdev/bios/dcb.h>
 
@@ -70,23 +48,7 @@ dcb_table(struct nvkm_bios *bios, u8 *ver, u8 *hdr, u8 *cnt, u8 *len)
 			return dcb;
 		}
 	} else {
-		/*
-		 * v1.4 (some NV15/16, NV11+) seems the same as v1.5, but
-		 * always has the same single (crt) entry, even when tv-out
-		 * present, so the conclusion is this version cannot really
-		 * be used.
-		 *
-		 * v1.2 tables (some NV6/10, and NV15+) normally have the
-		 * same 5 entries, which are not specific to the card and so
-		 * no use.
-		 *
-		 * v1.2 does have an I2C table that read_dcb_i2c_table can
-		 * handle, but cards exist (nv11 in #14821) with a bad i2c
-		 * table pointer, so use the indices parsed in
-		 * parse_bmp_structure.
-		 *
-		 * v1.1 (NV5+, maybe some NV4) is entirely unhelpful
-		 */
+		 
 		nvkm_debug(subdev, "DCB contains no useful data\n");
 		return 0x0000;
 	}
@@ -143,16 +105,16 @@ dcb_outp_parse(struct nvkm_bios *bios, u8 idx, u8 *ver, u8 *len,
 			switch (outp->type) {
 			case DCB_OUTPUT_DP:
 				switch (conf & 0x00e00000) {
-				case 0x00000000: /* 1.62 */
+				case 0x00000000:  
 					outp->dpconf.link_bw = 0x06;
 					break;
-				case 0x00200000: /* 2.7 */
+				case 0x00200000:  
 					outp->dpconf.link_bw = 0x0a;
 					break;
-				case 0x00400000: /* 5.4 */
+				case 0x00400000:  
 					outp->dpconf.link_bw = 0x14;
 					break;
-				case 0x00600000: /* 8.1 */
+				case 0x00600000:  
 				default:
 					outp->dpconf.link_bw = 0x1e;
 					break;
@@ -177,7 +139,7 @@ dcb_outp_parse(struct nvkm_bios *bios, u8 idx, u8 *ver, u8 *len,
 			case DCB_OUTPUT_TMDS:
 			case DCB_OUTPUT_LVDS:
 				outp->link = (conf & 0x00000030) >> 4;
-				outp->sorconf.link = outp->link; /*XXX*/
+				outp->sorconf.link = outp->link;  
 				outp->extdev = 0x00;
 				if (outp->location != 0)
 					outp->extdev = (conf & 0x0000ff00) >> 8;
@@ -217,9 +179,9 @@ dcb_outp_foreach(struct nvkm_bios *bios, void *data,
 
 	while ((outp = dcb_outp(bios, ++idx, &ver, &len))) {
 		if (nvbios_rd32(bios, outp) == 0x00000000)
-			break; /* seen on an NV11 with DCB v1.5 */
+			break;  
 		if (nvbios_rd32(bios, outp) == 0xffffffff)
-			break; /* seen on an NV17 with DCB v2.0 */
+			break;  
 
 		if (nvbios_rd08(bios, outp) == DCB_OUTPUT_UNUSED)
 			continue;

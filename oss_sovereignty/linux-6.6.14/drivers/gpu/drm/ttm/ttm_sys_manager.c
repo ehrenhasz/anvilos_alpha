@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+ 
 
 #include <drm/ttm/ttm_resource.h>
 #include <drm/ttm/ttm_device.h>
@@ -36,10 +36,7 @@ void ttm_sys_man_init(struct ttm_device *bdev)
 {
 	struct ttm_resource_manager *man = &bdev->sysman;
 
-	/*
-	 * Initialize the system memory buffer type.
-	 * Other types need to be driver / IOCTL initialized.
-	 */
+	 
 	man->use_tt = true;
 	man->func = &ttm_sys_manager_func;
 

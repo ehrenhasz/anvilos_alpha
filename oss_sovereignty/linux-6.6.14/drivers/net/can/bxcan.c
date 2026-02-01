@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// bxcan.c - STM32 Basic Extended CAN controller driver
-//
-// Copyright (c) 2022 Dario Binacchi <dario.binacchi@amarulasolutions.com>
-//
-// NOTE: The ST documentation uses the terms master/slave instead of
-// primary/secondary.
+
+
+
+
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -32,7 +32,7 @@
 #define BXCAN_RX_MB_NUM 2
 #define BXCAN_TX_MB_NUM 3
 
-/* Primary control register (MCR) bits */
+ 
 #define BXCAN_MCR_RESET BIT(15)
 #define BXCAN_MCR_TTCM BIT(7)
 #define BXCAN_MCR_ABOM BIT(6)
@@ -43,21 +43,21 @@
 #define BXCAN_MCR_SLEEP BIT(1)
 #define BXCAN_MCR_INRQ BIT(0)
 
-/* Primary status register (MSR) bits */
+ 
 #define BXCAN_MSR_ERRI BIT(2)
 #define BXCAN_MSR_SLAK BIT(1)
 #define BXCAN_MSR_INAK BIT(0)
 
-/* Transmit status register (TSR) bits */
+ 
 #define BXCAN_TSR_RQCP2 BIT(16)
 #define BXCAN_TSR_RQCP1 BIT(8)
 #define BXCAN_TSR_RQCP0 BIT(0)
 
-/* Receive FIFO 0 register (RF0R) bits */
+ 
 #define BXCAN_RF0R_RFOM0 BIT(5)
 #define BXCAN_RF0R_FMP0_MASK GENMASK(1, 0)
 
-/* Interrupt enable register (IER) bits */
+ 
 #define BXCAN_IER_SLKIE BIT(17)
 #define BXCAN_IER_WKUIE BIT(16)
 #define BXCAN_IER_ERRIE BIT(15)
@@ -73,7 +73,7 @@
 #define BXCAN_IER_FMPIE0 BIT(1)
 #define BXCAN_IER_TMEIE BIT(0)
 
-/* Error status register (ESR) bits */
+ 
 #define BXCAN_ESR_REC_MASK GENMASK(31, 24)
 #define BXCAN_ESR_TEC_MASK GENMASK(23, 16)
 #define BXCAN_ESR_LEC_MASK GENMASK(6, 4)
@@ -81,7 +81,7 @@
 #define BXCAN_ESR_EPVF BIT(1)
 #define BXCAN_ESR_EWGF BIT(0)
 
-/* Bit timing register (BTR) bits */
+ 
 #define BXCAN_BTR_SILM BIT(31)
 #define BXCAN_BTR_LBKM BIT(30)
 #define BXCAN_BTR_SJW_MASK GENMASK(25, 24)
@@ -89,23 +89,23 @@
 #define BXCAN_BTR_TS1_MASK GENMASK(19, 16)
 #define BXCAN_BTR_BRP_MASK GENMASK(9, 0)
 
-/* TX mailbox identifier register (TIxR, x = 0..2) bits */
+ 
 #define BXCAN_TIxR_STID_MASK GENMASK(31, 21)
 #define BXCAN_TIxR_EXID_MASK GENMASK(31, 3)
 #define BXCAN_TIxR_IDE BIT(2)
 #define BXCAN_TIxR_RTR BIT(1)
 #define BXCAN_TIxR_TXRQ BIT(0)
 
-/* TX mailbox data length and time stamp register (TDTxR, x = 0..2 bits */
+ 
 #define BXCAN_TDTxR_DLC_MASK GENMASK(3, 0)
 
-/* RX FIFO mailbox identifier register (RIxR, x = 0..1 */
+ 
 #define BXCAN_RIxR_STID_MASK GENMASK(31, 21)
 #define BXCAN_RIxR_EXID_MASK GENMASK(31, 3)
 #define BXCAN_RIxR_IDE BIT(2)
 #define BXCAN_RIxR_RTR BIT(1)
 
-/* RX FIFO mailbox data length and timestamp register (RDTxR, x = 0..1) bits */
+ 
 #define BXCAN_RDTxR_TIME_MASK GENMASK(31, 16)
 #define BXCAN_RDTxR_DLC_MASK GENMASK(3, 0)
 
@@ -119,7 +119,7 @@
 
 #define BXCAN_FILTER_ID(cfg) ((cfg) == BXCAN_CFG_DUAL_SECONDARY ? 14 : 0)
 
-/* Filter primary register (FMR) bits */
+ 
 #define BXCAN_FMR_CANSB_MASK GENMASK(13, 8)
 #define BXCAN_FMR_FINIT BIT(0)
 
@@ -140,26 +140,26 @@ enum bxcan_cfg {
 	BXCAN_CFG_DUAL_SECONDARY
 };
 
-/* Structure of the message buffer */
+ 
 struct bxcan_mb {
-	u32 id;			/* can identifier */
-	u32 dlc;		/* data length control and timestamp */
-	u32 data[2];		/* data */
+	u32 id;			 
+	u32 dlc;		 
+	u32 data[2];		 
 };
 
-/* Structure of the hardware registers */
+ 
 struct bxcan_regs {
-	u32 mcr;			/* 0x00 - primary control */
-	u32 msr;			/* 0x04 - primary status */
-	u32 tsr;			/* 0x08 - transmit status */
-	u32 rf0r;			/* 0x0c - FIFO 0 */
-	u32 rf1r;			/* 0x10 - FIFO 1 */
-	u32 ier;			/* 0x14 - interrupt enable */
-	u32 esr;			/* 0x18 - error status */
-	u32 btr;			/* 0x1c - bit timing*/
-	u32 reserved0[88];		/* 0x20 */
-	struct bxcan_mb tx_mb[BXCAN_TX_MB_NUM];	/* 0x180 - tx mailbox */
-	struct bxcan_mb rx_mb[BXCAN_RX_MB_NUM];	/* 0x1b0 - rx mailbox */
+	u32 mcr;			 
+	u32 msr;			 
+	u32 tsr;			 
+	u32 rf0r;			 
+	u32 rf1r;			 
+	u32 ier;			 
+	u32 esr;			 
+	u32 btr;			 
+	u32 reserved0[88];		 
+	struct bxcan_mb tx_mb[BXCAN_TX_MB_NUM];	 
+	struct bxcan_mb rx_mb[BXCAN_RX_MB_NUM];	 
 };
 
 struct bxcan_priv {
@@ -174,7 +174,7 @@ struct bxcan_priv {
 	int sce_irq;
 	enum bxcan_cfg cfg;
 	struct clk *clk;
-	spinlock_t rmw_lock;	/* lock for read-modify-write operations */
+	spinlock_t rmw_lock;	 
 	unsigned int tx_head;
 	unsigned int tx_tail;
 	u32 timestamp;
@@ -220,41 +220,34 @@ static void bxcan_enable_filters(struct bxcan_priv *priv, enum bxcan_cfg cfg)
 	unsigned int fid = BXCAN_FILTER_ID(cfg);
 	u32 fmask = BIT(fid);
 
-	/* Filter settings:
-	 *
-	 * Accept all messages.
-	 * Assign filter 0 to CAN1 and filter 14 to CAN2 in identifier
-	 * mask mode with 32 bits width.
-	 */
+	 
 
-	/* Enter filter initialization mode and assing filters to CAN
-	 * controllers.
-	 */
+	 
 	regmap_update_bits(priv->gcan, BXCAN_FMR_REG,
 			   BXCAN_FMR_CANSB_MASK | BXCAN_FMR_FINIT,
 			   FIELD_PREP(BXCAN_FMR_CANSB_MASK, 14) |
 			   BXCAN_FMR_FINIT);
 
-	/* Deactivate filter */
+	 
 	regmap_update_bits(priv->gcan, BXCAN_FA1R_REG, fmask, 0);
 
-	/* Two 32-bit registers in identifier mask mode */
+	 
 	regmap_update_bits(priv->gcan, BXCAN_FM1R_REG, fmask, 0);
 
-	/* Single 32-bit scale configuration */
+	 
 	regmap_update_bits(priv->gcan, BXCAN_FS1R_REG, fmask, fmask);
 
-	/* Assign filter to FIFO 0 */
+	 
 	regmap_update_bits(priv->gcan, BXCAN_FFA1R_REG, fmask, 0);
 
-	/* Accept all messages */
+	 
 	regmap_write(priv->gcan, BXCAN_FiR1_REG(fid), 0);
 	regmap_write(priv->gcan, BXCAN_FiR2_REG(fid), 0);
 
-	/* Activate filter */
+	 
 	regmap_update_bits(priv->gcan, BXCAN_FA1R_REG, fmask, fmask);
 
-	/* Exit filter initialization mode */
+	 
 	regmap_update_bits(priv->gcan, BXCAN_FMR_REG, BXCAN_FMR_FINIT, 0);
 }
 
@@ -280,7 +273,7 @@ static bool bxcan_tx_busy(const struct bxcan_priv *priv)
 
 	netif_stop_queue(priv->ndev);
 
-	/* Memory barrier before checking tx_free (head and tail) */
+	 
 	smp_mb();
 
 	if (bxcan_get_tx_free(priv) == 0) {
@@ -453,9 +446,7 @@ static irqreturn_t bxcan_tx_isr(int irq, void *dev_id)
 	writel(tsr, &regs->tsr);
 
 	if (bxcan_get_tx_free(priv)) {
-		/* Make sure that anybody stopping the queue after
-		 * this sees the new tx_ring->tail.
-		 */
+		 
 		smp_mb();
 		netif_wake_queue(ndev);
 	}
@@ -472,7 +463,7 @@ static void bxcan_handle_state_change(struct net_device *ndev, u32 esr)
 	struct sk_buff *skb;
 	struct can_frame *cf;
 
-	/* Early exit if no error flag is set */
+	 
 	if (!(esr & (BXCAN_ESR_EWGF | BXCAN_ESR_EPVF | BXCAN_ESR_BOFF)))
 		return;
 
@@ -486,7 +477,7 @@ static void bxcan_handle_state_change(struct net_device *ndev, u32 esr)
 	else if (esr & BXCAN_ESR_EWGF)
 		new_state = CAN_STATE_ERROR_WARNING;
 
-	/* state hasn't changed */
+	 
 	if (unlikely(new_state == priv->can.state))
 		return;
 
@@ -523,17 +514,14 @@ static void bxcan_handle_bus_err(struct net_device *ndev, u32 esr)
 
 	lec_code = FIELD_GET(BXCAN_ESR_LEC_MASK, esr);
 
-	/* Early exit if no lec update or no error.
-	 * No lec update means that no CAN bus event has been detected
-	 * since CPU wrote BXCAN_LEC_UNUSED value to status reg.
-	 */
+	 
 	if (lec_code == BXCAN_LEC_UNUSED || lec_code == BXCAN_LEC_NO_ERROR)
 		return;
 
-	/* Common for all type of bus errors */
+	 
 	priv->can.can_stats.bus_error++;
 
-	/* Propagate the error condition to the CAN stack */
+	 
 	skb = alloc_can_err_skb(ndev, &cf);
 	if (skb)
 		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
@@ -652,29 +640,19 @@ static int bxcan_chip_start(struct net_device *ndev)
 		goto failed_enter_init;
 	}
 
-	/* MCR
-	 *
-	 * select request order priority
-	 * enable time triggered mode
-	 * bus-off state left on sw request
-	 * sleep mode left on sw request
-	 * retransmit automatically on error
-	 * do not lock RX FIFO on overrun
-	 */
+	 
 	bxcan_rmw(priv, &regs->mcr,
 		  BXCAN_MCR_ABOM | BXCAN_MCR_AWUM | BXCAN_MCR_NART |
 		  BXCAN_MCR_RFLM, BXCAN_MCR_TTCM | BXCAN_MCR_TXFP);
 
-	/* Bit timing register settings */
+	 
 	set = FIELD_PREP(BXCAN_BTR_BRP_MASK, bt->brp - 1) |
 		FIELD_PREP(BXCAN_BTR_TS1_MASK, bt->phase_seg1 +
 			   bt->prop_seg - 1) |
 		FIELD_PREP(BXCAN_BTR_TS2_MASK, bt->phase_seg2 - 1) |
 		FIELD_PREP(BXCAN_BTR_SJW_MASK, bt->sjw - 1);
 
-	/* loopback + silent mode put the controller in test mode,
-	 * useful for hot self-test
-	 */
+	 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
 		set |= BXCAN_BTR_LBKM;
 
@@ -687,7 +665,7 @@ static int bxcan_chip_start(struct net_device *ndev)
 
 	bxcan_enable_filters(priv, priv->cfg);
 
-	/* Clear all internal status */
+	 
 	priv->tx_head = 0;
 	priv->tx_tail = 0;
 
@@ -698,20 +676,11 @@ static int bxcan_chip_start(struct net_device *ndev)
 		goto failed_leave_init;
 	}
 
-	/* Set a `lec` value so that we can check for updates later */
+	 
 	bxcan_rmw(priv, &regs->esr, BXCAN_ESR_LEC_MASK,
 		  FIELD_PREP(BXCAN_ESR_LEC_MASK, BXCAN_LEC_UNUSED));
 
-	/* IER
-	 *
-	 * Enable interrupt for:
-	 * bus-off
-	 * passive error
-	 * warning error
-	 * last error code
-	 * RX FIFO pending message
-	 * TX mailbox empty
-	 */
+	 
 	clr = BXCAN_IER_WKUIE | BXCAN_IER_SLKIE |  BXCAN_IER_FOVIE1 |
 		BXCAN_IER_FFIE1 | BXCAN_IER_FMPIE1 | BXCAN_IER_FOVIE0 |
 		BXCAN_IER_FFIE0;
@@ -805,7 +774,7 @@ static void bxcan_chip_stop(struct net_device *ndev)
 	struct bxcan_priv *priv = netdev_priv(ndev);
 	struct bxcan_regs __iomem *regs = priv->regs;
 
-	/* disable all interrupts */
+	 
 	bxcan_rmw(priv, &regs->ier, BXCAN_IER_SLKIE | BXCAN_IER_WKUIE |
 		  BXCAN_IER_ERRIE | BXCAN_IER_LECIE | BXCAN_IER_BOFIE |
 		  BXCAN_IER_EPVIE | BXCAN_IER_EWGIE | BXCAN_IER_FOVIE1 |
@@ -860,7 +829,7 @@ static netdev_tx_t bxcan_start_xmit(struct sk_buff *skb,
 	else
 		id = FIELD_PREP(BXCAN_TIxR_STID_MASK, cf->can_id);
 
-	if (cf->can_id & CAN_RTR_FLAG) { /* Remote transmission request */
+	if (cf->can_id & CAN_RTR_FLAG) {  
 		id |= BXCAN_TIxR_RTR;
 	} else {
 		for (i = 0, j = 0; i < cf->len; i += 4, j++)
@@ -871,7 +840,7 @@ static netdev_tx_t bxcan_start_xmit(struct sk_buff *skb,
 
 	can_put_echo_skb(skb, ndev, idx, 0);
 
-	/* Start transmission */
+	 
 	writel(id | BXCAN_TIxR_TXRQ, &mb_regs->id);
 
 	return NETDEV_TX_OK;
@@ -1081,7 +1050,7 @@ static SIMPLE_DEV_PM_OPS(bxcan_pm_ops, bxcan_suspend, bxcan_resume);
 
 static const struct of_device_id bxcan_of_match[] = {
 	{.compatible = "st,stm32f4-bxcan"},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, bxcan_of_match);
 

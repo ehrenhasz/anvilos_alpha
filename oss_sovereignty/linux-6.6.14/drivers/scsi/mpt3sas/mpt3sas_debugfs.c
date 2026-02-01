@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Debugfs interface Support for MPT (Message Passing Technology) based
- * controllers.
- *
- * Copyright (C) 2020  Broadcom Inc.
- *
- * Authors: Broadcom Inc.
- * Sreekanth Reddy  <sreekanth.reddy@broadcom.com>
- * Suganath Prabu <suganath-prabu.subramani@broadcom.com>
- *
- * Send feedback to : MPT-FusionLinux.pdl@broadcom.com)
- *
- **/
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -28,13 +16,7 @@
 
 static struct dentry *mpt3sas_debugfs_root;
 
-/*
- * _debugfs_iocdump_read - copy ioc dump from debugfs buffer
- * @filep:	File Pointer
- * @ubuf:	Buffer to fill data
- * @cnt:	Length of the buffer
- * @ppos:	Offset in the file
- */
+ 
 
 static ssize_t
 _debugfs_iocdump_read(struct file *filp, char __user *ubuf, size_t cnt,
@@ -49,9 +31,7 @@ _debugfs_iocdump_read(struct file *filp, char __user *ubuf, size_t cnt,
 	return simple_read_from_buffer(ubuf, cnt, ppos, debug->buf, debug->len);
 }
 
-/*
- * _debugfs_iocdump_open :	open the ioc_dump debugfs attribute file
- */
+ 
 static int
 _debugfs_iocdump_open(struct inode *inode, struct file *file)
 {
@@ -68,11 +48,7 @@ _debugfs_iocdump_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/*
- * _debugfs_iocdump_release :	release the ioc_dump debugfs attribute
- * @inode: inode structure to the corresponds device
- * @file: File pointer
- */
+ 
 static int
 _debugfs_iocdump_release(struct inode *inode, struct file *file)
 {
@@ -93,9 +69,7 @@ static const struct file_operations mpt3sas_debugfs_iocdump_fops = {
 	.release        = _debugfs_iocdump_release,
 };
 
-/*
- * mpt3sas_init_debugfs :	Create debugfs root for mpt3sas driver
- */
+ 
 void mpt3sas_init_debugfs(void)
 {
 	mpt3sas_debugfs_root = debugfs_create_dir("mpt3sas", NULL);
@@ -103,18 +77,13 @@ void mpt3sas_init_debugfs(void)
 		pr_info("mpt3sas: Cannot create debugfs root\n");
 }
 
-/*
- * mpt3sas_exit_debugfs :	Remove debugfs root for mpt3sas driver
- */
+ 
 void mpt3sas_exit_debugfs(void)
 {
 	debugfs_remove_recursive(mpt3sas_debugfs_root);
 }
 
-/*
- * mpt3sas_setup_debugfs :	Setup debugfs per HBA adapter
- * ioc:				MPT3SAS_ADAPTER object
- */
+ 
 void
 mpt3sas_setup_debugfs(struct MPT3SAS_ADAPTER *ioc)
 {
@@ -146,10 +115,7 @@ mpt3sas_setup_debugfs(struct MPT3SAS_ADAPTER *ioc)
 
 }
 
-/*
- * mpt3sas_destroy_debugfs :	Destroy debugfs per HBA adapter
- * @ioc:	MPT3SAS_ADAPTER object
- */
+ 
 void mpt3sas_destroy_debugfs(struct MPT3SAS_ADAPTER *ioc)
 {
 	debugfs_remove_recursive(ioc->debugfs_root);

@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Do sleep inside a spin-lock
- *  Copyright (c) 1999 by Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/export.h>
 #include <sound/core.h>
 #include "seq_lock.h"
 
-/* wait until all locks are released */
+ 
 void snd_use_lock_sync_helper(snd_use_lock_t *lockp, const char *file, int line)
 {
 	int warn_count = 5 * HZ;

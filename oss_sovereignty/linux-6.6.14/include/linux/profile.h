@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_PROFILE_H
 #define _LINUX_PROFILE_H
 
@@ -35,25 +35,19 @@ static inline int create_proc_profile(void)
 
 extern int prof_on __read_mostly;
 
-/* init basic kernel profiler */
+ 
 int profile_init(void);
 int profile_setup(char *str);
 void profile_tick(int type);
 int setup_profiling_timer(unsigned int multiplier);
 
-/*
- * Add multiple profiler hits to a given address:
- */
+ 
 void profile_hits(int type, void *ip, unsigned int nr_hits);
 
-/*
- * Single profiler hit:
- */
+ 
 static inline void profile_hit(int type, void *ip)
 {
-	/*
-	 * Speedup for the common (no profiling enabled) case:
-	 */
+	 
 	if (unlikely(prof_on == type))
 		profile_hits(type, ip, 1);
 }
@@ -86,6 +80,6 @@ static inline void profile_hit(int type, void *ip)
 }
 
 
-#endif /* CONFIG_PROFILING */
+#endif  
 
-#endif /* _LINUX_PROFILE_H */
+#endif  

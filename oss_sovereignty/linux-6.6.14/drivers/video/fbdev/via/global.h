@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 1998-2008 VIA Technologies, Inc. All Rights Reserved.
- * Copyright 2001-2008 S3 Graphics, Inc. All Rights Reserved.
-
- */
+ 
+ 
 
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
@@ -41,7 +37,7 @@
 #include "vt1636.h"
 #include "tblDPASetting.h"
 
-/* External struct*/
+ 
 
 extern int viafb_platform_epia_dvi;
 extern int viafb_device_lcd_dualedge;
@@ -69,4 +65,4 @@ extern int viafb_primary_dev;
 
 extern int viafb_lcd_panel_id;
 
-#endif /* __GLOBAL_H__ */
+#endif  

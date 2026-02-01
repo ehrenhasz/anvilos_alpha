@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Assorted bcache debug code
- *
- * Copyright 2010, 2011 Kent Overstreet <kent.overstreet@gmail.com>
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include "bcache.h"
 #include "btree.h"
@@ -155,7 +150,7 @@ out_put:
 
 #ifdef CONFIG_DEBUG_FS
 
-/* XXX: cache set refcounting */
+ 
 
 struct dump_iterator {
 	char			buf[PAGE_SIZE];
@@ -254,10 +249,6 @@ void bch_debug_exit(void)
 
 void __init bch_debug_init(void)
 {
-	/*
-	 * it is unnecessary to check return value of
-	 * debugfs_create_file(), we should not care
-	 * about this.
-	 */
+	 
 	bcache_debug = debugfs_create_dir("bcache", NULL);
 }

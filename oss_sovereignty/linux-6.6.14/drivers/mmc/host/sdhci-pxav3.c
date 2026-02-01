@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Marvell International Ltd.
- *		Zhangfei Gao <zhangfei.gao@marvell.com>
- *		Kevin Wang <dwang4@marvell.com>
- *		Mingwei Wang <mwwang@marvell.com>
- *		Philip Rakity <prakity@marvell.com>
- *		Mark Brown <markb@marvell.com>
- */
+
+ 
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -53,18 +46,12 @@ struct sdhci_pxa {
 	void __iomem *sdio3_conf_reg;
 };
 
-/*
- * These registers are relative to the second register region, for the
- * MBus bridge.
- */
+ 
 #define SDHCI_WINDOW_CTRL(i)	(0x80 + ((i) << 3))
 #define SDHCI_WINDOW_BASE(i)	(0x84 + ((i) << 3))
 #define SDHCI_MAX_WIN_NUM	8
 
-/*
- * Fields below belong to SDIO3 Configuration Register (third register
- * region for the Armada 38x flavor)
- */
+ 
 
 #define SDIO3_CONF_CLK_INV	BIT(0)
 #define SDIO3_CONF_SD_FB_CLK	BIT(2)
@@ -101,12 +88,12 @@ static int mv_conf_mbus_windows(struct platform_device *pdev,
 	for (i = 0; i < dram->num_cs; i++) {
 		const struct mbus_dram_window *cs = dram->cs + i;
 
-		/* Write size, attributes and target id to control register */
+		 
 		writel(((cs->size - 1) & 0xffff0000) |
 			(cs->mbus_attr << 8) |
 			(dram->mbus_dram_target_id << 4) | 1,
 			regs + SDHCI_WINDOW_CTRL(i));
-		/* Write base address to base register */
+		 
 		writel(cs->base, regs + SDHCI_WINDOW_BASE(i));
 	}
 
@@ -134,22 +121,13 @@ static int armada_38x_quirks(struct platform_device *pdev,
 		if (IS_ERR(pxa->sdio3_conf_reg))
 			return PTR_ERR(pxa->sdio3_conf_reg);
 	} else {
-		/*
-		 * According to erratum 'FE-2946959' both SDR50 and DDR50
-		 * modes require specific clock adjustments in SDIO3
-		 * Configuration register, if the adjustment is not done,
-		 * remove them from the capabilities.
-		 */
+		 
 		host->caps1 &= ~(SDHCI_SUPPORT_SDR50 | SDHCI_SUPPORT_DDR50);
 
 		dev_warn(&pdev->dev, "conf-sdio3 register not found: disabling SDR50 and DDR50 modes.\nConsider updating your dtb\n");
 	}
 
-	/*
-	 * According to erratum 'ERR-7878951' Armada 38x SDHCI
-	 * controller has different capabilities than the ones shown
-	 * in its registers
-	 */
+	 
 	if (of_property_read_bool(np, "no-1-8-v")) {
 		host->caps &= ~SDHCI_CAN_VDD_180;
 		host->mmc->caps &= ~MMC_CAP_1_8V_DDR;
@@ -169,10 +147,7 @@ static void pxav3_reset(struct sdhci_host *host, u8 mask)
 	sdhci_reset(host, mask);
 
 	if (mask == SDHCI_RESET_ALL) {
-		/*
-		 * tune timing of read data/command when crc error happen
-		 * no performance impact
-		 */
+		 
 		if (pdata && 0 != pdata->clk_delay_cycles) {
 			u16 tmp;
 
@@ -203,17 +178,17 @@ static void pxav3_gen_init_74_clocks(struct sdhci_host *host, u8 power_mode)
 				pxa->power_mode,
 				power_mode);
 
-		/* set we want notice of when 74 clocks are sent */
+		 
 		tmp = readw(host->ioaddr + SD_CE_ATA_2);
 		tmp |= SDCE_MISC_INT_EN;
 		writew(tmp, host->ioaddr + SD_CE_ATA_2);
 
-		/* start sending the 74 clocks */
+		 
 		tmp = readw(host->ioaddr + SD_CFG_FIFO_PARAM);
 		tmp |= SDCFG_GEN_PAD_CLK_ON;
 		writew(tmp, host->ioaddr + SD_CFG_FIFO_PARAM);
 
-		/* slowest speed is about 100KHz or 10usec per clock */
+		 
 		udelay(740);
 		count = 0;
 
@@ -227,7 +202,7 @@ static void pxav3_gen_init_74_clocks(struct sdhci_host *host, u8 power_mode)
 		if (count == MAX_WAIT_COUNT)
 			dev_warn(mmc_dev(host->mmc), "74 clock interrupt not cleared\n");
 
-		/* clear the interrupt bit if posted */
+		 
 		tmp = readw(host->ioaddr + SD_CE_ATA_2);
 		tmp |= SDCE_MISC_INT;
 		writew(tmp, host->ioaddr + SD_CE_ATA_2);
@@ -241,13 +216,10 @@ static void pxav3_set_uhs_signaling(struct sdhci_host *host, unsigned int uhs)
 	struct sdhci_pxa *pxa = sdhci_pltfm_priv(pltfm_host);
 	u16 ctrl_2;
 
-	/*
-	 * Set V18_EN -- UHS modes do not work without this.
-	 * does not change signaling voltage
-	 */
+	 
 	ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
 
-	/* Select Bus Speed Mode for host */
+	 
 	ctrl_2 &= ~SDHCI_CTRL_UHS_MASK;
 	switch (uhs) {
 	case MMC_TIMING_UHS_SDR12:
@@ -268,10 +240,7 @@ static void pxav3_set_uhs_signaling(struct sdhci_host *host, unsigned int uhs)
 		break;
 	}
 
-	/*
-	 * Update SDIO3 Configuration register according to erratum
-	 * FE-2946959
-	 */
+	 
 	if (pxa->sdio3_conf_reg) {
 		u8 reg_val  = readb(pxa->sdio3_conf_reg);
 
@@ -399,7 +368,7 @@ static int sdhci_pxav3_probe(struct platform_device *pdev)
 	if (!IS_ERR(pxa->clk_core))
 		clk_prepare_enable(pxa->clk_core);
 
-	/* enable 1/8V DDR capable */
+	 
 	host->mmc->caps |= MMC_CAP_1_8V_DDR;
 
 	if (of_device_is_compatible(np, "marvell,armada-380-sdhci")) {
@@ -420,11 +389,11 @@ static int sdhci_pxav3_probe(struct platform_device *pdev)
 		pdata = pxav3_get_mmc_pdata(dev);
 		pdev->dev.platform_data = pdata;
 	} else if (pdata) {
-		/* on-chip device */
+		 
 		if (pdata->flags & PXA_FLAG_CARD_PERMANENT)
 			host->mmc->caps |= MMC_CAP_NONREMOVABLE;
 
-		/* If slot design supports 8 bit data, indicate this to MMC. */
+		 
 		if (pdata->flags & PXA_FLAG_SD_8_BIT_CAPABLE_SLOT)
 			host->mmc->caps |= MMC_CAP_8_BIT_DATA;
 

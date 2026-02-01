@@ -1,41 +1,4 @@
-/*
- * Atheros CARL9170 driver
- *
- * mac80211 interaction code
- *
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2009, 2010, Christian Lamparter <chunkeey@googlemail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *    Copyright (c) 2007-2008 Atheros Communications, Inc.
- *
- *    Permission to use, copy, modify, and/or distribute this software for any
- *    purpose with or without fee is hereby granted, provided that the above
- *    copyright notice and this permission notice appear in all copies.
- *
- *    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -82,14 +45,11 @@ struct ieee80211_rate __carl9170_ratetable[] = {
 #define carl9170_a_ratetable	(__carl9170_ratetable + 4)
 #define carl9170_a_ratetable_size	8
 
-/*
- * NB: The hw_value is used as an index into the carl9170_phy_freq_params
- *     array in phy.c so that we don't have to do frequency lookups!
- */
+ 
 #define CHAN(_freq, _idx) {		\
 	.center_freq	= (_freq),	\
 	.hw_value	= (_idx),	\
-	.max_power	= 18, /* XXX */	\
+	.max_power	= 18,  	\
 }
 
 static struct ieee80211_channel carl9170_2ghz_chantable[] = {
@@ -221,10 +181,7 @@ static void carl9170_flush(struct ar9170 *ar, bool drop_queued)
 	if (drop_queued) {
 		int i;
 
-		/*
-		 * We can only drop frames which have not been uploaded
-		 * to the device yet.
-		 */
+		 
 
 		for (i = 0; i < ar->hw->queues; i++) {
 			struct sk_buff *skb;
@@ -241,7 +198,7 @@ static void carl9170_flush(struct ar9170 *ar, bool drop_queued)
 		}
 	}
 
-	/* Wait for all other outstanding frames to timeout. */
+	 
 	if (atomic_read(&ar->tx_total_queued))
 		WARN_ON(wait_for_completion_timeout(&ar->tx_flush, HZ) == 0);
 }
@@ -302,7 +259,7 @@ static void carl9170_zap_queues(struct ar9170 *ar)
 	BUILD_BUG_ON(CARL9170_NUM_TX_LIMIT_HARD < CARL9170_NUM_TX_LIMIT_SOFT);
 	BUILD_BUG_ON(CARL9170_NUM_TX_LIMIT_HARD >= CARL9170_BAW_BITS);
 
-	/* reinitialize queues statistics */
+	 
 	memset(&ar->tx_stats, 0, sizeof(ar->tx_stats));
 	for (i = 0; i < ar->hw->queues; i++)
 		ar->tx_stats[i].limit = CARL9170_NUM_TX_LIMIT_HARD;
@@ -342,7 +299,7 @@ static int carl9170_op_start(struct ieee80211_hw *hw)
 
 	carl9170_zap_queues(ar);
 
-	/* reset QoS defaults */
+	 
 	CARL9170_FILL_QUEUE(ar->edcf[AR9170_TXQ_VO], 2, 3,     7, 47);
 	CARL9170_FILL_QUEUE(ar->edcf[AR9170_TXQ_VI], 2, 7,    15, 94);
 	CARL9170_FILL_QUEUE(ar->edcf[AR9170_TXQ_BE], 3, 15, 1023,  0);
@@ -350,16 +307,14 @@ static int carl9170_op_start(struct ieee80211_hw *hw)
 	CARL9170_FILL_QUEUE(ar->edcf[AR9170_TXQ_SPECIAL], 2, 3, 7, 0);
 
 	ar->current_factor = ar->current_density = -1;
-	/* "The first key is unique." */
+	 
 	ar->usedkeys = 1;
 	ar->filter_state = 0;
 	ar->ps.last_action = jiffies;
 	ar->ps.last_slept = jiffies;
 	ar->erp_mode = CARL9170_ERP_AUTO;
 
-	/* Set "disable hw crypto offload" whenever the module parameter
-	 * nohwcrypt is true or if the firmware does not support it.
-	 */
+	 
 	ar->disable_offload = modparam_nohwcrypt |
 		ar->fw.disable_offload_fw;
 	ar->rx_software_decryption = ar->disable_offload;
@@ -395,7 +350,7 @@ static int carl9170_op_start(struct ieee80211_hw *hw)
 	if (err)
 		goto out;
 
-	/* Clear key-cache */
+	 
 	for (i = 0; i < AR9170_CAM_MAX_USER + 4; i++) {
 		err = carl9170_upload_key(ar, i, NULL, AR9170_ENC_ALG_NONE,
 					  0, NULL, 0);
@@ -433,7 +388,7 @@ static void carl9170_cancel_worker(struct ar9170 *ar)
 	cancel_delayed_work_sync(&ar->tx_janitor);
 #ifdef CONFIG_CARL9170_LEDS
 	cancel_delayed_work_sync(&ar->led_work);
-#endif /* CONFIG_CARL9170_LEDS */
+#endif  
 	cancel_work_sync(&ar->ps_work);
 	cancel_work_sync(&ar->ping_work);
 	cancel_work_sync(&ar->ampdu_work);
@@ -453,7 +408,7 @@ static void carl9170_op_stop(struct ieee80211_hw *hw)
 
 		carl9170_led_set_state(ar, 0);
 
-		/* stop DMA */
+		 
 		carl9170_write_reg(ar, AR9170_MAC_REG_DMA_TRIGGER, 0);
 		carl9170_usb_stop(ar);
 	}
@@ -493,11 +448,7 @@ static void carl9170_restart_work(struct work_struct *work)
 
 		ieee80211_restart_hw(ar->hw);
 	} else {
-		/*
-		 * The reset was unsuccessful and the device seems to
-		 * be dead. But there's still one option: a low-level
-		 * usb subsystem reset...
-		 */
+		 
 
 		carl9170_usb_reset(ar);
 	}
@@ -507,11 +458,7 @@ void carl9170_restart(struct ar9170 *ar, const enum carl9170_restart_reasons r)
 {
 	carl9170_set_state_when(ar, CARL9170_STARTED, CARL9170_IDLE);
 
-	/*
-	 * Sometimes, an error can trigger several different reset events.
-	 * By ignoring these *surplus* reset events, the device won't be
-	 * killed again, right after it has recovered.
-	 */
+	 
 	if (atomic_inc_return(&ar->pending_restarts) > 1) {
 		dev_dbg(&ar->udev->dev, "ignoring restart (%d)\n", r);
 		return;
@@ -533,11 +480,7 @@ void carl9170_restart(struct ar9170 *ar, const enum carl9170_restart_reasons r)
 
 	ieee80211_queue_work(ar->hw, &ar->restart_work);
 
-	/*
-	 * At this point, the device instance might have vanished/disabled.
-	 * So, don't put any code which access the ar9170 struct
-	 * without proper protection.
-	 */
+	 
 }
 
 static void carl9170_ping_work(struct work_struct *work)
@@ -568,24 +511,11 @@ static int carl9170_init_interface(struct ar9170 *ar,
 
 	memcpy(common->macaddr, vif->addr, ETH_ALEN);
 
-	/* We have to fall back to software crypto, whenever
-	 * the user choose to participates in an IBSS. HW
-	 * offload for IBSS RSN is not supported by this driver.
-	 *
-	 * NOTE: If the previous main interface has already
-	 * disabled hw crypto offload, we have to keep this
-	 * previous disable_offload setting as it was.
-	 * Altough ideally, we should notify mac80211 and tell
-	 * it to forget about any HW crypto offload for now.
-	 */
+	 
 	ar->disable_offload |= ((vif->type != NL80211_IFTYPE_STATION) &&
 	    (vif->type != NL80211_IFTYPE_AP));
 
-	/* The driver used to have P2P GO+CLIENT support,
-	 * but since this was dropped and we don't know if
-	 * there are any gremlins lurking in the shadows,
-	 * so best we keep HW offload disabled for P2P.
-	 */
+	 
 	ar->disable_offload |= vif->p2p;
 
 	ar->rx_software_decryption = ar->disable_offload;
@@ -605,10 +535,7 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 	mutex_lock(&ar->mutex);
 	rcu_read_lock();
 	if (vif_priv->active) {
-		/*
-		 * Skip the interface structure initialization,
-		 * if the vif survived the _restart call.
-		 */
+		 
 		vif_id = vif_priv->id;
 		vif_priv->enable_beacon = false;
 
@@ -620,15 +547,7 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 		goto init;
 	}
 
-	/* Because the AR9170 HW's MAC doesn't provide full support for
-	 * multiple, independent interfaces [of different operation modes].
-	 * We have to select ONE main interface [main mode of HW], but we
-	 * can have multiple slaves [AKA: entry in the ACK-table].
-	 *
-	 * The first (from HEAD/TOP) interface in the ar->vif_list is
-	 * always the main intf. All following intfs in this list
-	 * are considered to be slave intfs.
-	 */
+	 
 	main_vif = carl9170_get_main_vif(ar);
 
 	if (main_vif) {
@@ -675,15 +594,10 @@ static int carl9170_op_add_interface(struct ieee80211_hw *hw,
 	vif_priv->enable_beacon = false;
 	ar->vifs++;
 	if (old_main) {
-		/* We end up in here, if the main interface is being replaced.
-		 * Put the new main interface at the HEAD of the list and the
-		 * previous inteface will automatically become second in line.
-		 */
+		 
 		list_add_rcu(&vif_priv->list, &ar->vif_list);
 	} else {
-		/* Add new inteface. If the list is empty, it will become the
-		 * main inteface, otherwise it will be slave.
-		 */
+		 
 		list_add_tail_rcu(&vif_priv->list, &ar->vif_list);
 	}
 	rcu_assign_pointer(ar->vif_priv[vif_id].vif, vif);
@@ -698,11 +612,7 @@ init:
 		if (old_main) {
 			struct carl9170_vif_info *old_main_priv =
 				(void *) old_main->drv_priv;
-			/* downgrade old main intf to slave intf.
-			 * NOTE: We are no longer under rcu_read_lock.
-			 * But we are still holding ar->mutex, so the
-			 * vif data [id, addr] is safe.
-			 */
+			 
 			err = carl9170_mod_virtual_mac(ar, old_main_priv->id,
 						       old_main->addr);
 			if (err)
@@ -813,7 +723,7 @@ void carl9170_ps_check(struct ar9170 *ar)
 	ieee80211_queue_work(ar->hw, &ar->ps_work);
 }
 
-/* caller must hold ar->mutex */
+ 
 static int carl9170_ps_update(struct ar9170 *ar)
 {
 	bool ps = false;
@@ -897,7 +807,7 @@ static int carl9170_op_config(struct ieee80211_hw *hw, u32 changed)
 
 	mutex_lock(&ar->mutex);
 	if (changed & IEEE80211_CONF_CHANGE_LISTEN_INTERVAL) {
-		/* TODO */
+		 
 		err = 0;
 	}
 
@@ -908,7 +818,7 @@ static int carl9170_op_config(struct ieee80211_hw *hw, u32 changed)
 	}
 
 	if (changed & IEEE80211_CONF_CHANGE_SMPS) {
-		/* TODO */
+		 
 		err = 0;
 	}
 
@@ -916,7 +826,7 @@ static int carl9170_op_config(struct ieee80211_hw *hw, u32 changed)
 		enum nl80211_channel_type channel_type =
 			cfg80211_get_chandef_type(&hw->conf.chandef);
 
-		/* adjust slot time for 5 GHz */
+		 
 		err = carl9170_set_slot_time(ar);
 		if (err)
 			goto out;
@@ -960,7 +870,7 @@ static u64 carl9170_op_prepare_multicast(struct ieee80211_hw *hw,
 	struct netdev_hw_addr *ha;
 	u64 mchash;
 
-	/* always get broadcast frames */
+	 
 	mchash = 1ULL << (0xff >> 2);
 
 	netdev_hw_addr_list_for_each(ha, mc_list)
@@ -976,7 +886,7 @@ static void carl9170_op_configure_filter(struct ieee80211_hw *hw,
 {
 	struct ar9170 *ar = hw->priv;
 
-	/* mask supported flags */
+	 
 	*new_flags &= FIF_ALLMULTI | ar->rx_filter_caps;
 
 	if (!IS_ACCEPTING_CMD(ar))
@@ -985,10 +895,7 @@ static void carl9170_op_configure_filter(struct ieee80211_hw *hw,
 	mutex_lock(&ar->mutex);
 
 	ar->filter_state = *new_flags;
-	/*
-	 * We can support more by setting the sniffer bit and
-	 * then checking the error flags, later.
-	 */
+	 
 
 	if (*new_flags & FIF_ALLMULTI)
 		multicast = ~0ULL;
@@ -1076,10 +983,7 @@ static void carl9170_op_bss_info_changed(struct ieee80211_hw *hw,
 			bss_conf->dtim_period = main_vif->bss_conf.dtim_period;
 		}
 
-		/*
-		 * Therefore a hard limit for the broadcast traffic should
-		 * prevent false alarms.
-		 */
+		 
 		if (vif->type != NL80211_IFTYPE_STATION &&
 		    (bss_conf->beacon_int * bss_conf->dtim_period >=
 		     (CARL9170_QUEUE_STUCK_TIMEOUT / 2))) {
@@ -1093,7 +997,7 @@ static void carl9170_op_bss_info_changed(struct ieee80211_hw *hw,
 	}
 
 	if (changed & BSS_CHANGED_HT) {
-		/* TODO */
+		 
 		err = 0;
 		if (err)
 			goto out;
@@ -1102,10 +1006,7 @@ static void carl9170_op_bss_info_changed(struct ieee80211_hw *hw,
 	if (main_vif != vif)
 		goto out;
 
-	/*
-	 * The following settings can only be changed by the
-	 * master interface.
-	 */
+	 
 
 	if (changed & BSS_CHANGED_BSSID) {
 		memcpy(common->curbssid, bss_conf->bssid, ETH_ALEN);
@@ -1167,23 +1068,14 @@ static int carl9170_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	if (ar->disable_offload || !vif)
 		return -EOPNOTSUPP;
 
-	/* Fall back to software encryption whenever the driver is connected
-	 * to more than one network.
-	 *
-	 * This is very unfortunate, because some machines cannot handle
-	 * the high througput speed in 802.11n networks.
-	 */
+	 
 
 	if (!is_main_vif(ar, vif)) {
 		mutex_lock(&ar->mutex);
 		goto err_softw;
 	}
 
-	/*
-	 * While the hardware supports *catch-all* key, for offloading
-	 * group-key en-/de-cryption. The way of how the hardware
-	 * decides which keyId maps to which key, remains a mystery...
-	 */
+	 
 	if ((vif->type != NL80211_IFTYPE_STATION &&
 	     vif->type != NL80211_IFTYPE_ADHOC) &&
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
@@ -1241,10 +1133,7 @@ static int carl9170_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 			if (err)
 				goto out;
 
-			/*
-			 * hardware is not capable generating MMIC
-			 * of fragmented frames!
-			 */
+			 
 			key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIC;
 		}
 
@@ -1254,7 +1143,7 @@ static int carl9170_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		key->flags |= IEEE80211_KEY_FLAG_GENERATE_IV;
 	} else {
 		if (!IS_STARTED(ar)) {
-			/* The device is gone... together with the key ;-) */
+			 
 			err = 0;
 			goto out;
 		}
@@ -1308,10 +1197,7 @@ static int carl9170_op_sta_add(struct ieee80211_hw *hw,
 
 	if (sta->deflink.ht_cap.ht_supported) {
 		if (sta->deflink.ht_cap.ampdu_density > 6) {
-			/*
-			 * HW does support 16us AMPDU density.
-			 * No HT-Xmit for station.
-			 */
+			 
 
 			return 0;
 		}
@@ -1476,7 +1362,7 @@ static int carl9170_op_ampdu_action(struct ieee80211_hw *hw,
 
 	case IEEE80211_AMPDU_RX_START:
 	case IEEE80211_AMPDU_RX_STOP:
-		/* Handled by hardware */
+		 
 		break;
 
 	default:
@@ -1519,7 +1405,7 @@ static int carl9170_register_wps_button(struct ar9170 *ar)
 	ar->wps.pbc = input;
 	return 0;
 }
-#endif /* CONFIG_CARL9170_WPC */
+#endif  
 
 #ifdef CONFIG_CARL9170_HWRNG
 static int carl9170_rng_get(struct ar9170 *ar)
@@ -1603,7 +1489,7 @@ static int carl9170_register_hwrng(struct ar9170 *ar)
 
 	return carl9170_rng_get(ar);
 }
-#endif /* CONFIG_CARL9170_HWRNG */
+#endif  
 
 static int carl9170_op_get_survey(struct ieee80211_hw *hw, int idx,
 				struct survey_info *survey)
@@ -1742,11 +1628,7 @@ void *carl9170_alloc(size_t priv_size)
 	struct sk_buff *skb;
 	int i;
 
-	/*
-	 * this buffer is used for rx stream reconstruction.
-	 * Under heavy load this device (or the transport layer?)
-	 * tends to split the streams into separate rx descriptors.
-	 */
+	 
 
 	skb = __dev_alloc_skb(AR9170_RX_STREAM_MAX_SIZE, GFP_KERNEL);
 	if (!skb)
@@ -1763,14 +1645,7 @@ void *carl9170_alloc(size_t priv_size)
 	memset(&ar->rx_plcp, 0, sizeof(struct ar9170_rx_head));
 	ar->rx_has_plcp = false;
 
-	/*
-	 * Here's a hidden pitfall!
-	 *
-	 * All 4 AC queues work perfectly well under _legacy_ operation.
-	 * However as soon as aggregation is enabled, the traffic flow
-	 * gets very bumpy. Therefore we have to _switch_ to a
-	 * software AC with a single HW queue.
-	 */
+	 
 	hw->queues = __AR9170_NUM_TXQ;
 
 	mutex_init(&ar->mutex);
@@ -1803,7 +1678,7 @@ void *carl9170_alloc(size_t priv_size)
 	INIT_LIST_HEAD(&ar->vif_list);
 	init_completion(&ar->tx_flush);
 
-	/* firmware decides which modes we support */
+	 
 	hw->wiphy->interface_modes = 0;
 
 	ieee80211_hw_set(hw, RX_INCLUDES_FCS);
@@ -1817,10 +1692,7 @@ void *carl9170_alloc(size_t priv_size)
 	ieee80211_hw_set(hw, SUPPORTS_HT_CCK_RATES);
 
 	if (!modparam_noht) {
-		/*
-		 * see the comment above, why we allow the user
-		 * to disable HT by a module parameter.
-		 */
+		 
 		ieee80211_hw_set(hw, AMPDU_AGGREGATION);
 	}
 
@@ -1832,7 +1704,7 @@ void *carl9170_alloc(size_t priv_size)
 	hw->max_rate_tries = CARL9170_TX_USER_RATE_TRIES;
 
 	for (i = 0; i < ARRAY_SIZE(ar->noise); i++)
-		ar->noise[i] = -95; /* ATH_DEFAULT_NOISE_FLOOR */
+		ar->noise[i] = -95;  
 
 	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
 
@@ -1845,7 +1717,7 @@ err_nomem:
 
 static int carl9170_read_eeprom(struct ar9170 *ar)
 {
-#define RW	8	/* number of words to read at once */
+#define RW	8	 
 #define RB	(sizeof(u32) * RW)
 	u8 *eeprom = (void *)&ar->eeprom;
 	__le32 offsets[RW];
@@ -1855,7 +1727,7 @@ static int carl9170_read_eeprom(struct ar9170 *ar)
 
 	BUILD_BUG_ON(RB > CARL9170_MAX_CMD_LEN - 4);
 #ifndef __CHECKER__
-	/* don't want to handle trailing remains */
+	 
 	BUILD_BUG_ON(sizeof(ar->eeprom) % RB);
 #endif
 
@@ -1926,7 +1798,7 @@ static int carl9170_parse_eeprom(struct ar9170 *ar)
 
 	regulatory->current_rd = le16_to_cpu(ar->eeprom.reg_domain[0]);
 
-	/* second part of wiphy init */
+	 
 	SET_IEEE80211_PERM_ADDR(ar->hw, ar->eeprom.mac_address);
 
 	return 0;
@@ -1950,7 +1822,7 @@ int carl9170_register(struct ar9170 *ar)
 	if (!ar->mem_bitmap)
 		return -ENOMEM;
 
-	/* try to read EEPROM, init MAC addr */
+	 
 	err = carl9170_read_eeprom(ar);
 	if (err)
 		return err;
@@ -1978,7 +1850,7 @@ int carl9170_register(struct ar9170 *ar)
 	if (err)
 		return err;
 
-	/* mac80211 interface is now registered */
+	 
 	ar->registered = true;
 
 	if (!ath_is_world_regd(regulatory))
@@ -1986,7 +1858,7 @@ int carl9170_register(struct ar9170 *ar)
 
 #ifdef CONFIG_CARL9170_DEBUGFS
 	carl9170_debugfs_register(ar);
-#endif /* CONFIG_CARL9170_DEBUGFS */
+#endif  
 
 	err = carl9170_led_init(ar);
 	if (err)
@@ -1996,19 +1868,19 @@ int carl9170_register(struct ar9170 *ar)
 	err = carl9170_led_register(ar);
 	if (err)
 		goto err_unreg;
-#endif /* CONFIG_CARL9170_LEDS */
+#endif  
 
 #ifdef CONFIG_CARL9170_WPC
 	err = carl9170_register_wps_button(ar);
 	if (err)
 		goto err_unreg;
-#endif /* CONFIG_CARL9170_WPC */
+#endif  
 
 #ifdef CONFIG_CARL9170_HWRNG
 	err = carl9170_register_hwrng(ar);
 	if (err)
 		goto err_unreg;
-#endif /* CONFIG_CARL9170_HWRNG */
+#endif  
 
 	dev_info(&ar->udev->dev, "Atheros AR9170 is registered as '%s'\n",
 		 wiphy_name(ar->hw->wiphy));
@@ -2029,11 +1901,11 @@ void carl9170_unregister(struct ar9170 *ar)
 
 #ifdef CONFIG_CARL9170_LEDS
 	carl9170_led_unregister(ar);
-#endif /* CONFIG_CARL9170_LEDS */
+#endif  
 
 #ifdef CONFIG_CARL9170_DEBUGFS
 	carl9170_debugfs_unregister(ar);
-#endif /* CONFIG_CARL9170_DEBUGFS */
+#endif  
 
 	carl9170_cancel_worker(ar);
 	cancel_work_sync(&ar->restart_work);

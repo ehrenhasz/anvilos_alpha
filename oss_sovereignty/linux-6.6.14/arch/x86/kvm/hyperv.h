@@ -1,22 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * KVM Microsoft Hyper-V emulation
- *
- * derived from arch/x86/kvm/x86.c
- *
- * Copyright (C) 2006 Qumranet, Inc.
- * Copyright (C) 2008 Qumranet, Inc.
- * Copyright IBM Corporation, 2008
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
- * Copyright (C) 2015 Andrey Smetanin <asmetanin@virtuozzo.com>
- *
- * Authors:
- *   Avi Kivity   <avi@qumranet.com>
- *   Yaniv Kamay  <yaniv@qumranet.com>
- *   Amit Shah    <amit.shah@qumranet.com>
- *   Ben-Ami Yassour <benami@il.ibm.com>
- *   Andrey Smetanin <asmetanin@virtuozzo.com>
- */
+ 
+ 
 
 #ifndef __ARCH_X86_KVM_HYPERV_H__
 #define __ARCH_X86_KVM_HYPERV_H__
@@ -24,26 +7,18 @@
 #include <linux/kvm_host.h>
 #include "x86.h"
 
-/* "Hv#1" signature */
+ 
 #define HYPERV_CPUID_SIGNATURE_EAX 0x31237648
 
-/*
- * The #defines related to the synthetic debugger are required by KDNet, but
- * they are not documented in the Hyper-V TLFS because the synthetic debugger
- * functionality has been deprecated and is subject to removal in future
- * versions of Windows.
- */
+ 
 #define HYPERV_CPUID_SYNDBG_VENDOR_AND_MAX_FUNCTIONS	0x40000080
 #define HYPERV_CPUID_SYNDBG_INTERFACE			0x40000081
 #define HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES	0x40000082
 
-/*
- * Hyper-V synthetic debugger platform capabilities
- * These are HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX bits.
- */
+ 
 #define HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING	BIT(1)
 
-/* Hyper-V Synthetic debug options MSR */
+ 
 #define HV_X64_MSR_SYNDBG_CONTROL		0x400000F1
 #define HV_X64_MSR_SYNDBG_STATUS		0x400000F2
 #define HV_X64_MSR_SYNDBG_SEND_BUFFER		0x400000F3
@@ -51,7 +26,7 @@
 #define HV_X64_MSR_SYNDBG_PENDING_BUFFER	0x400000F5
 #define HV_X64_MSR_SYNDBG_OPTIONS		0x400000FF
 
-/* Hyper-V HV_X64_MSR_SYNDBG_OPTIONS bits */
+ 
 #define HV_X64_SYNDBG_OPTION_USE_HCALLS		BIT(2)
 
 static inline struct kvm_hv *to_kvm_hv(struct kvm *kvm)
@@ -136,30 +111,17 @@ static inline bool kvm_hv_has_stimer_pending(struct kvm_vcpu *vcpu)
 			     HV_SYNIC_STIMER_COUNT);
 }
 
-/*
- * With HV_ACCESS_TSC_INVARIANT feature, invariant TSC (CPUID.80000007H:EDX[8])
- * is only observed after HV_X64_MSR_TSC_INVARIANT_CONTROL was written to.
- */
+ 
 static inline bool kvm_hv_invtsc_suppressed(struct kvm_vcpu *vcpu)
 {
 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 
-	/*
-	 * If Hyper-V's invariant TSC control is not exposed to the guest,
-	 * the invariant TSC CPUID flag is not suppressed, Windows guests were
-	 * observed to be able to handle it correctly. Going forward, VMMs are
-	 * encouraged to enable Hyper-V's invariant TSC control when invariant
-	 * TSC CPUID flag is set to make KVM's behavior match genuine Hyper-V.
-	 */
+	 
 	if (!hv_vcpu ||
 	    !(hv_vcpu->cpuid_cache.features_eax & HV_ACCESS_TSC_INVARIANT))
 		return false;
 
-	/*
-	 * If Hyper-V's invariant TSC control is exposed to the guest, KVM is
-	 * responsible for suppressing the invariant TSC CPUID flag if the
-	 * Hyper-V control is not enabled.
-	 */
+	 
 	return !(to_kvm_hv(vcpu->kvm)->hv_invtsc_control & HV_EXPOSE_INVARIANT_TSC);
 }
 

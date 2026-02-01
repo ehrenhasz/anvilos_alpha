@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ext2/ioctl.c
- *
- * Copyright (C) 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- */
+
+ 
 
 #include "ext2.h"
 #include <linux/capability.h>
@@ -36,7 +29,7 @@ int ext2_fileattr_set(struct mnt_idmap *idmap,
 	if (fileattr_has_fsx(fa))
 		return -EOPNOTSUPP;
 
-	/* Is it quota file? Do not allow user to mess with it */
+	 
 	if (IS_NOQUOTA(inode))
 		return -EPERM;
 
@@ -112,14 +105,8 @@ setversion_out:
 		if (rsv_window_size > EXT2_MAX_RESERVE_BLOCKS)
 			rsv_window_size = EXT2_MAX_RESERVE_BLOCKS;
 
-		/*
-		 * need to allocate reservation structure for this inode
-		 * before set the window size
-		 */
-		/*
-		 * XXX What lock should protect the rsv_goal_size?
-		 * Accessed in ext2_get_block only.  ext3 uses i_truncate.
-		 */
+		 
+		 
 		mutex_lock(&ei->truncate_mutex);
 		if (!ei->i_block_alloc_info)
 			ext2_init_block_alloc_info(inode);
@@ -143,7 +130,7 @@ setversion_out:
 #ifdef CONFIG_COMPAT
 long ext2_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-	/* These are just misnamed, they actually get/put from/to user an int */
+	 
 	switch (cmd) {
 	case EXT2_IOC32_GETVERSION:
 		cmd = EXT2_IOC_GETVERSION;

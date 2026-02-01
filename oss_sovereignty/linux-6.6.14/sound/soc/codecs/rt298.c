@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt298.c  --  RT298 ALSA SoC audio codec driver
- *
- * Copyright 2015 Realtek Semiconductor Corp.
- * Author: Bard Liao <bardliao@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -236,13 +231,13 @@ static int rt298_jack_detect(struct rt298_priv *rt298, bool *hp, bool *mic)
 			return -1;
 		rt298->is_hp_in = *hp;
 		if (*hp) {
-			/* power on HV,VERF */
+			 
 			regmap_update_bits(rt298->regmap,
 				RT298_DC_GAIN, 0x200, 0x200);
 
 			snd_soc_dapm_force_enable_pin(dapm, "HV");
 			snd_soc_dapm_force_enable_pin(dapm, "VREF");
-			/* power LDO1 */
+			 
 			snd_soc_dapm_force_enable_pin(dapm, "LDO1");
 			snd_soc_dapm_sync(dapm);
 
@@ -335,7 +330,7 @@ static int rt298_mic_detect(struct snd_soc_component *component,
 	rt298->jack = jack;
 
 	if (jack) {
-		/* Enable IRQ */
+		 
 		if (rt298->jack->status & SND_JACK_HEADPHONE)
 			snd_soc_dapm_force_enable_pin(dapm, "LDO1");
 		if (rt298->jack->status & SND_JACK_MICROPHONE) {
@@ -343,11 +338,11 @@ static int rt298_mic_detect(struct snd_soc_component *component,
 			snd_soc_dapm_force_enable_pin(dapm, "VREF");
 		}
 		regmap_update_bits(rt298->regmap, RT298_IRQ_CTRL, 0x2, 0x2);
-		/* Send an initial empty report */
+		 
 		snd_soc_jack_report(rt298->jack, rt298->jack->status,
 				    SND_JACK_MICROPHONE | SND_JACK_HEADPHONE);
 	} else {
-		/* Disable IRQ */
+		 
 		regmap_update_bits(rt298->regmap, RT298_IRQ_CTRL, 0x2, 0x0);
 		snd_soc_dapm_disable_pin(dapm, "HV");
 		snd_soc_dapm_disable_pin(dapm, "VREF");
@@ -384,7 +379,7 @@ static const struct snd_kcontrol_new rt298_snd_controls[] = {
 			    RT298_SPOR_GAIN, RT298_MUTE_SFT, 1, 1),
 };
 
-/* Digital Mixer */
+ 
 static const struct snd_kcontrol_new rt298_front_mix[] = {
 	SOC_DAPM_SINGLE("DAC Switch",  RT298_F_DAC_SWITCH,
 			RT298_MUTE_SFT, 1, 1),
@@ -392,7 +387,7 @@ static const struct snd_kcontrol_new rt298_front_mix[] = {
 			RT298_MUTE_SFT, 1, 1),
 };
 
-/* Analog Input Mixer */
+ 
 static const struct snd_kcontrol_new rt298_rec_mix[] = {
 	SOC_DAPM_SINGLE("Mic1 Switch", RT298_REC_MIC_SWITCH,
 			RT298_MUTE_SFT, 1, 1),
@@ -416,7 +411,7 @@ static const struct snd_kcontrol_new hpor_enable_control =
 	SOC_DAPM_SINGLE_AUTODISABLE("Switch", RT298_HPOR_GAIN,
 			RT298_MUTE_SFT, 1, 1);
 
-/* ADC0 source */
+ 
 static const char * const rt298_adc_src[] = {
 	"Mic", "RECMIX", "Dmic"
 };
@@ -442,14 +437,14 @@ static const struct snd_kcontrol_new rt298_adc1_mux =
 static const char * const rt298_dac_src[] = {
 	"Front", "Surround"
 };
-/* HP-OUT source */
+ 
 static SOC_ENUM_SINGLE_DECL(rt298_hpo_enum, RT298_HPO_MUX,
 				0, rt298_dac_src);
 
 static const struct snd_kcontrol_new rt298_hpo_mux =
 SOC_DAPM_ENUM("HPO source", rt298_hpo_enum);
 
-/* SPK-OUT source */
+ 
 static SOC_ENUM_SINGLE_DECL(rt298_spo_enum, RT298_SPK_MUX,
 				0, rt298_dac_src);
 
@@ -510,7 +505,7 @@ static int rt298_adc_event(struct snd_soc_dapm_widget *w,
 		snd_soc_component_update_bits(component,
 			VERB_CMD(AC_VERB_SET_AMP_GAIN_MUTE, nid, 0),
 			0x7080, 0x7000);
-		 /* If MCLK doesn't exist, reset AD filter */
+		  
 		if (!(snd_soc_component_read(component, RT298_VAD_CTRL) & 0x200)) {
 			pr_info("NO MCLK\n");
 			switch (nid) {
@@ -592,14 +587,14 @@ static const struct snd_soc_dapm_widget rt298_dapm_widgets[] = {
 		0, 0, rt298_mic1_event, SND_SOC_DAPM_PRE_PMU |
 		SND_SOC_DAPM_POST_PMD),
 
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("DMIC1 Pin"),
 	SND_SOC_DAPM_INPUT("DMIC2 Pin"),
 	SND_SOC_DAPM_INPUT("MIC1"),
 	SND_SOC_DAPM_INPUT("LINE1"),
 	SND_SOC_DAPM_INPUT("Beep"),
 
-	/* DMIC */
+	 
 	SND_SOC_DAPM_PGA_E("DMIC1", RT298_SET_POWER(RT298_DMIC1), 0, 1,
 		NULL, 0, rt298_set_dmic1_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -608,15 +603,15 @@ static const struct snd_soc_dapm_widget rt298_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("DMIC Receiver", SND_SOC_NOPM,
 		0, 0, NULL, 0),
 
-	/* REC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("RECMIX", SND_SOC_NOPM, 0, 0,
 		rt298_rec_mix, ARRAY_SIZE(rt298_rec_mix)),
 
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC 0", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_ADC("ADC 1", NULL, SND_SOC_NOPM, 0, 0),
 
-	/* ADC Mux */
+	 
 	SND_SOC_DAPM_MUX_E("ADC 0 Mux", RT298_SET_POWER(RT298_ADC_IN1), 0, 1,
 		&rt298_adc0_mux, rt298_adc_event, SND_SOC_DAPM_PRE_PMD |
 		SND_SOC_DAPM_POST_PMU),
@@ -624,31 +619,31 @@ static const struct snd_soc_dapm_widget rt298_dapm_widgets[] = {
 		&rt298_adc1_mux, rt298_adc_event, SND_SOC_DAPM_PRE_PMD |
 		SND_SOC_DAPM_POST_PMU),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF2RX", "AIF2 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF2TX", "AIF2 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Output Side */
-	/* DACs */
+	 
+	 
 	SND_SOC_DAPM_DAC("DAC 0", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_DAC("DAC 1", NULL, SND_SOC_NOPM, 0, 0),
 
-	/* Output Mux */
+	 
 	SND_SOC_DAPM_MUX("SPK Mux", SND_SOC_NOPM, 0, 0, &rt298_spo_mux),
 	SND_SOC_DAPM_MUX("HPO Mux", SND_SOC_NOPM, 0, 0, &rt298_hpo_mux),
 
 	SND_SOC_DAPM_SUPPLY("HP Power", RT298_SET_PIN_HPO,
 		RT298_SET_PIN_SFT, 0, NULL, 0),
 
-	/* Output Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Front", RT298_SET_POWER(RT298_DAC_OUT1), 0, 1,
 			rt298_front_mix, ARRAY_SIZE(rt298_front_mix)),
 	SND_SOC_DAPM_PGA("Surround", RT298_SET_POWER(RT298_DAC_OUT2), 0, 1,
 			NULL, 0),
 
-	/* Output Pga */
+	 
 	SND_SOC_DAPM_SWITCH_E("SPO", SND_SOC_NOPM, 0, 0,
 		&spo_enable_control, rt298_spk_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -657,7 +652,7 @@ static const struct snd_soc_dapm_widget rt298_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("HPO R", SND_SOC_NOPM, 0, 0,
 		&hpor_enable_control),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("SPOL"),
 	SND_SOC_DAPM_OUTPUT("SPOR"),
 	SND_SOC_DAPM_OUTPUT("HPO Pin"),
@@ -752,7 +747,7 @@ static int rt298_hw_params(struct snd_pcm_substream *substream,
 	int d_len_code;
 
 	switch (params_rate(params)) {
-	/* bit 14 0:48K 1:44.1K */
+	 
 	case 44100:
 	case 48000:
 		break;
@@ -781,7 +776,7 @@ static int rt298_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (params_channels(params) <= 16) {
-		/* bit 3:0 Number of Channel */
+		 
 		val |= (params_channels(params) - 1);
 	} else {
 		dev_err(component->dev, "Unsupported channels %d\n",
@@ -791,7 +786,7 @@ static int rt298_hw_params(struct snd_pcm_substream *substream,
 
 	d_len_code = 0;
 	switch (params_width(params)) {
-	/* bit 6:4 Bits per Sample */
+	 
 	case 16:
 		d_len_code = 0;
 		val |= (0x1 << 4);
@@ -862,7 +857,7 @@ static int rt298_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	default:
 		return -EINVAL;
 	}
-	/* bit 15 Stream Type 0:PCM 1:Non-PCM */
+	 
 	snd_soc_component_update_bits(component, RT298_DAC_FORMAT, 0x8000, 0);
 	snd_soc_component_update_bits(component, RT298_ADC_FORMAT, 0x8000, 0);
 
@@ -985,7 +980,7 @@ static irqreturn_t rt298_irq(int irq, void *data)
 
 	ret = rt298_jack_detect(rt298, &hp, &mic);
 
-	/* Clear IRQ */
+	 
 	regmap_update_bits(rt298->regmap, RT298_IRQ_CTRL, 0x1, 0x1);
 
 	if (ret == 0) {
@@ -1214,7 +1209,7 @@ static int rt298_i2c_probe(struct i2c_client *i2c)
 	rt298->i2c = i2c;
 	i2c_set_clientdata(i2c, rt298);
 
-	/* restore codec default */
+	 
 	for (i = 0; i < INDEX_CACHE_SIZE; i++)
 		regmap_write(rt298->regmap, rt298->index_cache[i].reg,
 				rt298->index_cache[i].def);
@@ -1225,7 +1220,7 @@ static int rt298_i2c_probe(struct i2c_client *i2c)
 	if (pdata)
 		rt298->pdata = *pdata;
 
-	/* enable jack combo mode on supported devices */
+	 
 	acpiid = acpi_match_device(dev->driver->acpi_match_table, dev);
 	if (acpiid && acpiid->driver_data) {
 		rt298->pdata = *(struct rt298_platform_data *)
@@ -1237,10 +1232,10 @@ static int rt298_i2c_probe(struct i2c_client *i2c)
 		rt298->pdata.gpio2_en = false;
 	}
 
-	/* VREF Charging */
+	 
 	regmap_update_bits(rt298->regmap, 0x04, 0x80, 0x80);
 	regmap_update_bits(rt298->regmap, 0x1b, 0x860, 0x860);
-	/* Vref2 */
+	 
 	regmap_update_bits(rt298->regmap, 0x08, 0x20, 0x20);
 
 	regmap_write(rt298->regmap, RT298_SET_AUDIO_POWER, AC_PWRST_D3);

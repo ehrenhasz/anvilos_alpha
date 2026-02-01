@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensirion SPS30 particulate matter sensor driver
- *
- * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- */
+
+ 
 
 #include <linux/crc8.h>
 #include <linux/delay.h>
@@ -18,9 +14,9 @@
 
 #include "sps30.h"
 
-/* sensor measures reliably up to 3000 ug / m3 */
+ 
 #define SPS30_MAX_PM 3000
-/* minimum and maximum self cleaning periods in seconds */
+ 
 #define SPS30_AUTO_CLEANING_PERIOD_MIN 0
 #define SPS30_AUTO_CLEANING_PERIOD_MAX 604800
 
@@ -40,21 +36,21 @@ static s32 sps30_float_to_int_clamped(__be32 *fp)
 {
 	int val = be32_to_cpup(fp);
 	int mantissa = val & GENMASK(22, 0);
-	/* this is fine since passed float is always non-negative */
+	 
 	int exp = val >> 23;
 	int fraction, shift;
 
-	/* special case 0 */
+	 
 	if (!exp && !mantissa)
 		return 0;
 
 	exp -= 127;
 	if (exp < 0) {
-		/* return values ranging from 1 to 99 */
+		 
 		return ((((1 << 23) + mantissa) * 100) >> 23) >> (-exp);
 	}
 
-	/* return values ranging from 100 to 300000 */
+	 
 	shift = 23 - exp;
 	val = (1 << exp) + (mantissa >> shift);
 	if (val >= SPS30_MAX_PM)
@@ -107,7 +103,7 @@ static irqreturn_t sps30_trigger_handler(int irq, void *p)
 	struct sps30_state *state = iio_priv(indio_dev);
 	int ret;
 	struct {
-		s32 data[4]; /* PM1, PM2P5, PM4, PM10 */
+		s32 data[4];  
 		s64 ts;
 	} scan;
 
@@ -137,7 +133,7 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
 		switch (chan->type) {
 		case IIO_MASSCONCENTRATION:
 			mutex_lock(&state->lock);
-			/* read up to the number of bytes actually needed */
+			 
 			switch (chan->channel2) {
 			case IIO_MOD_PM1:
 				ret = sps30_do_meas(state, data, 1);
@@ -247,10 +243,7 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
 
 	msleep(20);
 
-	/*
-	 * sensor requires reset in order to return up to date self cleaning
-	 * period
-	 */
+	 
 	ret = sps30_do_reset(state);
 	if (ret)
 		dev_warn(dev,

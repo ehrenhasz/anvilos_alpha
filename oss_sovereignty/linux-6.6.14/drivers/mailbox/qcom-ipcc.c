@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/interrupt.h>
@@ -13,7 +11,7 @@
 
 #include <dt-bindings/mailbox/qcom-ipcc.h>
 
-/* IPCC Register offsets */
+ 
 #define IPCC_REG_SEND_ID		0x0c
 #define IPCC_REG_RECV_ID		0x10
 #define IPCC_REG_RECV_SIGNAL_ENABLE	0x14
@@ -26,27 +24,13 @@
 
 #define IPCC_NO_PENDING_IRQ		GENMASK(31, 0)
 
-/**
- * struct qcom_ipcc_chan_info - Per-mailbox-channel info
- * @client_id:	The client-id to which the interrupt has to be triggered
- * @signal_id:	The signal-id to which the interrupt has to be triggered
- */
+ 
 struct qcom_ipcc_chan_info {
 	u16 client_id;
 	u16 signal_id;
 };
 
-/**
- * struct qcom_ipcc - Holder for the mailbox driver
- * @dev:		Device associated with this instance
- * @base:		Base address of the IPCC frame associated to APSS
- * @irq_domain:		The irq_domain associated with this instance
- * @chans:		The mailbox channels array
- * @mchan:		The per-mailbox channel info array
- * @mbox:		The mailbox controller
- * @num_chans:		Number of @chans elements
- * @irq:		Summary irq
- */
+ 
 struct qcom_ipcc {
 	struct device *dev;
 	void __iomem *base;
@@ -213,10 +197,7 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
 	struct device *dev = ipcc->dev;
 	int i, j, ret;
 
-	/*
-	 * Find out the number of clients interested in this mailbox
-	 * and create channels accordingly.
-	 */
+	 
 	ipcc->num_chans = 0;
 	for_each_node_with_property(client_dn, "mboxes") {
 		if (!of_device_is_available(client_dn))
@@ -232,7 +213,7 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
 		}
 	}
 
-	/* If no clients are found, skip registering as a mbox controller */
+	 
 	if (!ipcc->num_chans)
 		return 0;
 

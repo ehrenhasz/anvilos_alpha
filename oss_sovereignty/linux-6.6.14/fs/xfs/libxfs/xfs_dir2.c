@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2001,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -25,9 +22,7 @@ const struct xfs_name xfs_name_dotdot = {
 	.type	= XFS_DIR3_FT_DIR,
 };
 
-/*
- * Convert inode mode to directory entry filetype
- */
+ 
 unsigned char
 xfs_mode_to_ftype(
 	int		mode)
@@ -52,10 +47,7 @@ xfs_mode_to_ftype(
 	}
 }
 
-/*
- * ASCII case-insensitive (ie. A-Z) support for directories that was
- * used in IRIX.
- */
+ 
 xfs_dahash_t
 xfs_ascii_ci_hashname(
 	const struct xfs_name	*name)
@@ -114,7 +106,7 @@ xfs_da_mount(
 		return -ENOMEM;
 	}
 
-	/* set up directory geometry */
+	 
 	dageo = mp->m_dir_geo;
 	dageo->blklog = mp->m_sb.sb_blocklog + mp->m_sb.sb_dirblklog;
 	dageo->fsblog = mp->m_sb.sb_blocklog;
@@ -142,10 +134,7 @@ xfs_da_mount(
 			xfs_dir2_data_entsize(mp, 1) +
 			xfs_dir2_data_entsize(mp, 2);
 
-	/*
-	 * Now we've set up the block conversion variables, we can calculate the
-	 * segment block constants using the geometry structure.
-	 */
+	 
 	dageo->datablk = xfs_dir2_byte_to_da(dageo, XFS_DIR2_DATA_OFFSET);
 	dageo->leafblk = xfs_dir2_byte_to_da(dageo, XFS_DIR2_LEAF_OFFSET);
 	dageo->freeblk = xfs_dir2_byte_to_da(dageo, XFS_DIR2_FREE_OFFSET);
@@ -155,7 +144,7 @@ xfs_da_mount(
 					mp->m_sb.sb_blocklog;
 	dageo->magicpct = (dageo->blksize * 37) / 100;
 
-	/* set up attribute geometry - single fsb only */
+	 
 	dageo = mp->m_attr_geo;
 	dageo->blklog = mp->m_sb.sb_blocklog;
 	dageo->fsblog = mp->m_sb.sb_blocklog;
@@ -182,9 +171,7 @@ xfs_da_unmount(
 	kmem_free(mp->m_attr_geo);
 }
 
-/*
- * Return 1 if directory contains only "." and "..".
- */
+ 
 int
 xfs_dir_isempty(
 	xfs_inode_t	*dp)
@@ -192,7 +179,7 @@ xfs_dir_isempty(
 	xfs_dir2_sf_hdr_t	*sfp;
 
 	ASSERT(S_ISDIR(VFS_I(dp)->i_mode));
-	if (dp->i_disk_size == 0)	/* might happen during shutdown. */
+	if (dp->i_disk_size == 0)	 
 		return 1;
 	if (dp->i_disk_size > xfs_inode_data_fork_size(dp))
 		return 0;
@@ -200,9 +187,7 @@ xfs_dir_isempty(
 	return !sfp->count;
 }
 
-/*
- * Validate a given inode number.
- */
+ 
 int
 xfs_dir_ino_validate(
 	xfs_mount_t	*mp,
@@ -219,9 +204,7 @@ xfs_dir_ino_validate(
 	return 0;
 }
 
-/*
- * Initialize a directory with its "." and ".." entries.
- */
+ 
 int
 xfs_dir_init(
 	xfs_trans_t	*tp,
@@ -248,17 +231,14 @@ xfs_dir_init(
 	return error;
 }
 
-/*
- * Enter a name in a directory, or check for available space.
- * If inum is 0, only the available space test is performed.
- */
+ 
 int
 xfs_dir_createname(
 	struct xfs_trans	*tp,
 	struct xfs_inode	*dp,
 	const struct xfs_name	*name,
-	xfs_ino_t		inum,		/* new entry inode number */
-	xfs_extlen_t		total)		/* bmap's total block count */
+	xfs_ino_t		inum,		 
+	xfs_extlen_t		total)		 
 {
 	struct xfs_da_args	*args;
 	int			rval;
@@ -317,10 +297,7 @@ out_free:
 	return rval;
 }
 
-/*
- * If doing a CI lookup and case-insensitive match, dup actual name into
- * args.value. Return EEXIST for success (ie. name found) or an error.
- */
+ 
 int
 xfs_dir_cilookup_result(
 	struct xfs_da_args *args,
@@ -342,19 +319,15 @@ xfs_dir_cilookup_result(
 	return -EEXIST;
 }
 
-/*
- * Lookup a name in a directory, give back the inode number.
- * If ci_name is not NULL, returns the actual name in ci_name if it differs
- * to name, or ci_name->name is set to NULL for an exact match.
- */
+ 
 
 int
 xfs_dir_lookup(
 	struct xfs_trans	*tp,
 	struct xfs_inode	*dp,
 	const struct xfs_name	*name,
-	xfs_ino_t		*inum,	  /* out: inode number */
-	struct xfs_name		*ci_name) /* out: actual name if CI match */
+	xfs_ino_t		*inum,	   
+	struct xfs_name		*ci_name)  
 {
 	struct xfs_da_args	*args;
 	int			rval;
@@ -364,14 +337,7 @@ xfs_dir_lookup(
 	ASSERT(S_ISDIR(VFS_I(dp)->i_mode));
 	XFS_STATS_INC(dp->i_mount, xs_dir_lookup);
 
-	/*
-	 * We need to use KM_NOFS here so that lockdep will not throw false
-	 * positive deadlock warnings on a non-transactional lookup path. It is
-	 * safe to recurse into inode recalim in that case, but lockdep can't
-	 * easily be taught about it. Hence KM_NOFS avoids having to add more
-	 * lockdep Doing this avoids having to add a bunch of lockdep class
-	 * annotations into the reclaim path for the ilock.
-	 */
+	 
 	args = kmem_zalloc(sizeof(*args), KM_NOFS);
 	args->geo = dp->i_mount->m_dir_geo;
 	args->name = name->name;
@@ -423,16 +389,14 @@ out_free:
 	return rval;
 }
 
-/*
- * Remove an entry from a directory.
- */
+ 
 int
 xfs_dir_removename(
 	struct xfs_trans	*tp,
 	struct xfs_inode	*dp,
 	struct xfs_name		*name,
 	xfs_ino_t		ino,
-	xfs_extlen_t		total)		/* bmap's total block count */
+	xfs_extlen_t		total)		 
 {
 	struct xfs_da_args	*args;
 	int			rval;
@@ -481,16 +445,14 @@ out_free:
 	return rval;
 }
 
-/*
- * Replace the inode number of a directory entry.
- */
+ 
 int
 xfs_dir_replace(
 	struct xfs_trans	*tp,
 	struct xfs_inode	*dp,
-	const struct xfs_name	*name,		/* name of entry to replace */
-	xfs_ino_t		inum,		/* new inode number */
-	xfs_extlen_t		total)		/* bmap's total block count */
+	const struct xfs_name	*name,		 
+	xfs_ino_t		inum,		 
+	xfs_extlen_t		total)		 
 {
 	struct xfs_da_args	*args;
 	int			rval;
@@ -542,45 +504,34 @@ out_free:
 	return rval;
 }
 
-/*
- * See if this entry can be added to the directory without allocating space.
- */
+ 
 int
 xfs_dir_canenter(
 	xfs_trans_t	*tp,
 	xfs_inode_t	*dp,
-	struct xfs_name	*name)		/* name of entry to add */
+	struct xfs_name	*name)		 
 {
 	return xfs_dir_createname(tp, dp, name, 0, 0);
 }
 
-/*
- * Utility routines.
- */
+ 
 
-/*
- * Add a block to the directory.
- *
- * This routine is for data and free blocks, not leaf/node blocks which are
- * handled by xfs_da_grow_inode.
- */
+ 
 int
 xfs_dir2_grow_inode(
 	struct xfs_da_args	*args,
-	int			space,	/* v2 dir's space XFS_DIR2_xxx_SPACE */
-	xfs_dir2_db_t		*dbp)	/* out: block number added */
+	int			space,	 
+	xfs_dir2_db_t		*dbp)	 
 {
 	struct xfs_inode	*dp = args->dp;
 	struct xfs_mount	*mp = dp->i_mount;
-	xfs_fileoff_t		bno;	/* directory offset of new block */
-	int			count;	/* count of filesystem blocks */
+	xfs_fileoff_t		bno;	 
+	int			count;	 
 	int			error;
 
 	trace_xfs_dir2_grow_inode(args, space);
 
-	/*
-	 * Set lowest possible block in the space requested.
-	 */
+	 
 	bno = XFS_B_TO_FSBT(mp, space * XFS_DIR2_SPACE_SIZE);
 	count = args->geo->fsbcount;
 
@@ -590,11 +541,9 @@ xfs_dir2_grow_inode(
 
 	*dbp = xfs_dir2_da_to_db(args->geo, (xfs_dablk_t)bno);
 
-	/*
-	 * Update file's size if this is the data space and it grew.
-	 */
+	 
 	if (space == XFS_DIR2_DATA_SPACE) {
-		xfs_fsize_t	size;		/* directory file (data) size */
+		xfs_fsize_t	size;		 
 
 		size = XFS_FSB_TO_B(mp, bno + count);
 		if (size > dp->i_disk_size) {
@@ -605,9 +554,7 @@ xfs_dir2_grow_inode(
 	return 0;
 }
 
-/*
- * See if the directory is a single-block form directory.
- */
+ 
 int
 xfs_dir2_isblock(
 	struct xfs_da_args	*args,
@@ -631,9 +578,7 @@ xfs_dir2_isblock(
 	return 0;
 }
 
-/*
- * See if the directory is a single-leaf form directory.
- */
+ 
 int
 xfs_dir2_isleaf(
 	struct xfs_da_args	*args,
@@ -654,20 +599,16 @@ xfs_dir2_isleaf(
 	return 0;
 }
 
-/*
- * Remove the given block from the directory.
- * This routine is used for data and free blocks, leaf/node are done
- * by xfs_da_shrink_inode.
- */
+ 
 int
 xfs_dir2_shrink_inode(
 	struct xfs_da_args	*args,
 	xfs_dir2_db_t		db,
 	struct xfs_buf		*bp)
 {
-	xfs_fileoff_t		bno;		/* directory file offset */
-	xfs_dablk_t		da;		/* directory file offset */
-	int			done;		/* bunmap is finished */
+	xfs_fileoff_t		bno;		 
+	xfs_dablk_t		da;		 
+	int			done;		 
 	struct xfs_inode	*dp;
 	int			error;
 	struct xfs_mount	*mp;
@@ -680,71 +621,47 @@ xfs_dir2_shrink_inode(
 	tp = args->trans;
 	da = xfs_dir2_db_to_da(args->geo, db);
 
-	/* Unmap the fsblock(s). */
+	 
 	error = xfs_bunmapi(tp, dp, da, args->geo->fsbcount, 0, 0, &done);
 	if (error) {
-		/*
-		 * ENOSPC actually can happen if we're in a removename with no
-		 * space reservation, and the resulting block removal would
-		 * cause a bmap btree split or conversion from extents to btree.
-		 * This can only happen for un-fragmented directory blocks,
-		 * since you need to be punching out the middle of an extent.
-		 * In this case we need to leave the block in the file, and not
-		 * binval it.  So the block has to be in a consistent empty
-		 * state and appropriately logged.  We don't free up the buffer,
-		 * the caller can tell it hasn't happened since it got an error
-		 * back.
-		 */
+		 
 		return error;
 	}
 	ASSERT(done);
-	/*
-	 * Invalidate the buffer from the transaction.
-	 */
+	 
 	xfs_trans_binval(tp, bp);
-	/*
-	 * If it's not a data block, we're done.
-	 */
+	 
 	if (db >= xfs_dir2_byte_to_db(args->geo, XFS_DIR2_LEAF_OFFSET))
 		return 0;
-	/*
-	 * If the block isn't the last one in the directory, we're done.
-	 */
+	 
 	if (dp->i_disk_size > xfs_dir2_db_off_to_byte(args->geo, db + 1, 0))
 		return 0;
 	bno = da;
 	if ((error = xfs_bmap_last_before(tp, dp, &bno, XFS_DATA_FORK))) {
-		/*
-		 * This can't really happen unless there's kernel corruption.
-		 */
+		 
 		return error;
 	}
 	if (db == args->geo->datablk)
 		ASSERT(bno == 0);
 	else
 		ASSERT(bno > 0);
-	/*
-	 * Set the size to the new last block.
-	 */
+	 
 	dp->i_disk_size = XFS_FSB_TO_B(mp, bno);
 	xfs_trans_log_inode(tp, dp, XFS_ILOG_CORE);
 	return 0;
 }
 
-/* Returns true if the directory entry name is valid. */
+ 
 bool
 xfs_dir2_namecheck(
 	const void	*name,
 	size_t		length)
 {
-	/*
-	 * MAXNAMELEN includes the trailing null, but (name/length) leave it
-	 * out, so use >= for the length check.
-	 */
+	 
 	if (length >= MAXNAMELEN)
 		return false;
 
-	/* There shouldn't be any slashes or nulls here */
+	 
 	return !memchr(name, '/', length) && !memchr(name, 0, length);
 }
 

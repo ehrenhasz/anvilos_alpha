@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * DaVinci MDIO Module driver
- *
- * Copyright (C) 2010 Texas Instruments.
- *
- * Shamelessly ripped out of davinci_emac.c, original copyrights follow:
- *
- * Copyright (C) 2009 Texas Instruments.
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -28,17 +19,13 @@
 #include <linux/mdio-bitbang.h>
 #include <linux/sys_soc.h>
 
-/*
- * This timeout definition is a worst-case ultra defensive measure against
- * unexpected controller lock ups.  Ideally, we should never ever hit this
- * scenario in practice.
- */
-#define MDIO_TIMEOUT		100 /* msecs */
+ 
+#define MDIO_TIMEOUT		100  
 
 #define PHY_REG_MASK		0x1f
 #define PHY_ID_MASK		0x1f
 
-#define DEF_OUT_FREQ		2200000		/* 2.2 MHz */
+#define DEF_OUT_FREQ		2200000		 
 
 struct davinci_mdio_of_param {
 	int autosuspend_delay_ms;
@@ -98,10 +85,8 @@ struct davinci_mdio_data {
 	struct device	*dev;
 	struct mii_bus	*bus;
 	bool            active_in_suspend;
-	unsigned long	access_time; /* jiffies */
-	/* Indicates that driver shouldn't modify phy_mask in case
-	 * if MDIO bus is registered from DT.
-	 */
+	unsigned long	access_time;  
+	 
 	bool		skip_scan;
 	u32		clk_div;
 	bool		manual_mode;
@@ -117,21 +102,11 @@ static void davinci_mdio_init_clk(struct davinci_mdio_data *data)
 		div = CONTROL_MAX_DIV;
 
 	data->clk_div = div;
-	/*
-	 * One mdio transaction consists of:
-	 *	32 bits of preamble
-	 *	32 bits of transferred data
-	 *	24 bits of bus yield (not needed unless shared?)
-	 */
+	 
 	mdio_out_khz = mdio_in / (1000 * (div + 1));
 	access_time  = (88 * 1000) / mdio_out_khz;
 
-	/*
-	 * In the worst case, we could be kicking off a user-access immediately
-	 * after the mdio bus scan state-machine triggered its own read.  If
-	 * so, our request could get deferred by one access cycle.  We
-	 * defensively allow for 4 access cycles.
-	 */
+	 
 	data->access_time = usecs_to_jiffies(access_time * 4);
 	if (!data->access_time)
 		data->access_time = 1;
@@ -139,7 +114,7 @@ static void davinci_mdio_init_clk(struct davinci_mdio_data *data)
 
 static void davinci_mdio_enable(struct davinci_mdio_data *data)
 {
-	/* set enable and clock divider */
+	 
 	writel(data->clk_div | CONTROL_ENABLE, &data->regs->control);
 }
 
@@ -147,7 +122,7 @@ static void davinci_mdio_disable(struct davinci_mdio_data *data)
 {
 	u32 reg;
 
-	/* Disable MDIO state machine */
+	 
 	reg = readl(&data->regs->control);
 
 	reg &= ~CONTROL_CLKDIV;
@@ -160,7 +135,7 @@ static void davinci_mdio_disable(struct davinci_mdio_data *data)
 static void davinci_mdio_enable_manual_mode(struct davinci_mdio_data *data)
 {
 	u32 reg;
-	/* set manual mode */
+	 
 	reg = readl(&data->regs->poll);
 	reg |= MDIO_MANUALMODE;
 	writel(reg, &data->regs->poll);
@@ -305,10 +280,10 @@ static int davinci_mdio_common_reset(struct davinci_mdio_data *data)
 		davinci_mdio_enable_manual_mode(data);
 	}
 
-	/* wait for scan logic to settle */
+	 
 	msleep(PHY_MAX_ADDR * data->access_time);
 
-	/* dump hardware version info */
+	 
 	ver = readl(&data->regs->version);
 	dev_info(data->dev,
 		 "davinci mdio revision %d.%d, bus freq %ld\n",
@@ -318,14 +293,14 @@ static int davinci_mdio_common_reset(struct davinci_mdio_data *data)
 	if (data->skip_scan)
 		goto done;
 
-	/* get phy mask from the alive register */
+	 
 	phy_mask = readl(&data->regs->alive);
 	if (phy_mask) {
-		/* restrict mdio bus to live phys only */
+		 
 		dev_info(data->dev, "detected phy mask %x\n", ~phy_mask);
 		phy_mask = ~phy_mask;
 	} else {
-		/* desperately scan all phys */
+		 
 		dev_warn(data->dev, "no live phy, scanning all\n");
 		phy_mask = 0;
 	}
@@ -355,7 +330,7 @@ static int davinci_mdiobb_reset(struct mii_bus *bus)
 	return davinci_mdio_common_reset(data);
 }
 
-/* wait until hardware is ready for another user access */
+ 
 static inline int wait_for_user_access(struct davinci_mdio_data *data)
 {
 	struct davinci_mdio_regs __iomem *regs = data->regs;
@@ -373,11 +348,7 @@ static inline int wait_for_user_access(struct davinci_mdio_data *data)
 			continue;
 		}
 
-		/*
-		 * An emac soft_reset may have clobbered the mdio controller's
-		 * state machine.  We need to reset and retry the current
-		 * operation
-		 */
+		 
 		dev_warn(data->dev, "resetting idled controller\n");
 		davinci_mdio_enable(data);
 		return -EAGAIN;
@@ -391,7 +362,7 @@ static inline int wait_for_user_access(struct davinci_mdio_data *data)
 	return -ETIMEDOUT;
 }
 
-/* wait until hardware state machine is idle */
+ 
 static inline int wait_for_idle(struct davinci_mdio_data *data)
 {
 	struct davinci_mdio_regs __iomem *regs = data->regs;
@@ -521,7 +492,7 @@ static const struct soc_device_attribute k3_mdio_socinfo[] = {
 	{ .family = "J721E", .revision = "SR1.0", .data = &am65_mdio_soc_data },
 	{ .family = "J721E", .revision = "SR2.0", .data = &am65_mdio_soc_data },
 	{ .family = "J721S2", .revision = "SR1.0", .data = &am65_mdio_soc_data},
-	{ /* sentinel */ },
+	{   },
 };
 
 #if IS_ENABLED(CONFIG_OF)
@@ -532,7 +503,7 @@ static const struct davinci_mdio_of_param of_cpsw_mdio_data = {
 static const struct of_device_id davinci_mdio_of_mtable[] = {
 	{ .compatible = "ti,davinci_mdio", },
 	{ .compatible = "ti,cpsw-mdio", .data = &of_cpsw_mdio_data},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, davinci_mdio_of_mtable);
 #endif
@@ -643,11 +614,7 @@ static int davinci_mdio_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
-	/* register the mii bus
-	 * Create PHYs from DT only in case if PHY child nodes are explicitly
-	 * defined to support backward compatibility with DTs which assume that
-	 * Davinci MDIO will always scan the bus for PHYs detection.
-	 */
+	 
 	if (dev->of_node && of_get_child_count(dev->of_node))
 		data->skip_scan = true;
 
@@ -655,7 +622,7 @@ static int davinci_mdio_probe(struct platform_device *pdev)
 	if (ret)
 		goto bail_out;
 
-	/* scan and dump the bus */
+	 
 	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
 		phy = mdiobus_get_phy(data->bus, addr);
 		if (phy) {
@@ -696,7 +663,7 @@ static int davinci_mdio_runtime_suspend(struct device *dev)
 	struct davinci_mdio_data *data = dev_get_drvdata(dev);
 	u32 ctrl;
 
-	/* shutdown the scan state machine */
+	 
 	ctrl = readl(&data->regs->control);
 	ctrl &= ~CONTROL_ENABLE;
 	writel(ctrl, &data->regs->control);
@@ -733,7 +700,7 @@ static int davinci_mdio_suspend(struct device *dev)
 	if (ret < 0)
 		return ret;
 
-	/* Select sleep pin state */
+	 
 	pinctrl_pm_select_sleep_state(dev);
 
 	return 0;
@@ -743,7 +710,7 @@ static int davinci_mdio_resume(struct device *dev)
 {
 	struct davinci_mdio_data *data = dev_get_drvdata(dev);
 
-	/* Select default pin state */
+	 
 	pinctrl_pm_select_default_state(dev);
 
 	if (data->active_in_suspend)

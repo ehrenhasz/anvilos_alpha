@@ -1,26 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Merged with mainline rtllib.h in Aug 2004.  Original ieee802_11
- * remains copyright by the original authors
- *
- * Portions of the merged code are based on Host AP (software wireless
- * LAN access point) driver for Intersil Prism2/2.5/3.
- *
- * Copyright (c) 2001-2002, SSH Communications Security Corp and Jouni Malinen
- * <jkmaline@cc.hut.fi>
- * Copyright (c) 2002-2003, Jouni Malinen <jkmaline@cc.hut.fi>
- *
- * Adaption to a generic IEEE 802.11 stack by James Ketrenos
- * <jketreno@linux.intel.com>
- * Copyright (c) 2004, Intel Corporation
- *
- * Modified for Realtek's wi-fi cards by Andrea Merello
- * <andrea.merello@gmail.com>
- */
+ 
+ 
 #ifndef RTLLIB_H
 #define RTLLIB_H
-#include <linux/if_ether.h> /* ETH_ALEN */
-#include <linux/kernel.h>   /* ARRAY_SIZE */
+#include <linux/if_ether.h>  
+#include <linux/kernel.h>    
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/jiffies.h>
@@ -37,7 +20,7 @@
 #include "rtl819x_TS.h"
 
 #include <linux/netdevice.h>
-#include <linux/if_arp.h> /* ARPHRD_ETHER */
+#include <linux/if_arp.h>  
 #include <net/cfg80211.h>
 #include <net/lib80211.h>
 
@@ -59,8 +42,8 @@
 #endif
 
 #ifndef IW_CUSTOM_MAX
-/* Max number of char in custom event - use multiple of them if needed */
-#define IW_CUSTOM_MAX	256	/* In bytes */
+ 
+#define IW_CUSTOM_MAX	256	 
 #endif
 
 #define container_of_dwork_rsl(x, y, z)				\
@@ -76,7 +59,7 @@ static inline void *netdev_priv_rsl(struct net_device *dev)
 #define KEY_TYPE_TKIP		0x2
 #define KEY_TYPE_CCMP		0x4
 #define KEY_TYPE_WEP104		0x5
-/* added for rtl819x tx procedure */
+ 
 #define MAX_QUEUE_SIZE		0x10
 
 #define BK_QUEUE			       0
@@ -98,10 +81,10 @@ static inline void *netdev_priv_rsl(struct net_device *dev)
 #define	RT_CLEAR_PS_LEVEL(psc, _PS_FLAG)	\
 	(psc->CurPsLevel &= (~(_PS_FLAG)))
 
-/* defined for skb cb field */
-/* At most 28 byte */
+ 
+ 
 struct cb_desc {
-	/* Tx Desc Related flags (8-9) */
+	 
 	u8 bLastIniPkt:1;
 	u8 bCmdOrInit:1;
 	u8 bFirstSeg:1;
@@ -113,7 +96,7 @@ struct cb_desc {
 
 	u8 nStuckCount;
 
-	/* Tx Firmware Related flags (10-11)*/
+	 
 	u8 bCTSEnable:1;
 	u8 bRTSEnable:1;
 	u8 bUseShortGI:1;
@@ -132,7 +115,7 @@ struct cb_desc {
 	u8 drv_agg_enable:1;
 	u8 reserved2:1;
 
-	/* Tx Desc related element(12-19) */
+	 
 	u8 rata_index;
 	u8 queue_index;
 	u16 txbuf_size;
@@ -143,7 +126,7 @@ struct cb_desc {
 	u8 macId;
 	u8 priority;
 
-	/* Tx firmware related element(20-27) */
+	 
 	u8 data_rate;
 	u8 rts_rate;
 	u8 ampdu_factor;
@@ -174,7 +157,7 @@ struct sw_chnl_cmd {
 	u32			msDelay;
 } __packed;
 
-/*--------------------------Define -------------------------------------------*/
+ 
 #define MGN_1M		  0x02
 #define MGN_2M		  0x04
 #define MGN_5_5M		0x0b
@@ -313,14 +296,7 @@ enum rt_op_mode {
 
 #define msleep_interruptible_rsl  msleep_interruptible
 
-/* Maximum size for the MA-UNITDATA primitive, 802.11 standard section
- * 6.2.1.1.2.
- *
- * The figure in section 7.1.2 suggests a body size of up to 2312
- * bytes is allowed, which is a bit confusing, I suspect this
- * represents the 2304 bytes of real data, plus a possible 8 bytes of
- * WEP IV and ICV. (this interpretation suggested by Ramiro Barreiro)
- */
+ 
 #define RTLLIB_1ADDR_LEN 10
 #define RTLLIB_2ADDR_LEN 16
 #define RTLLIB_3ADDR_LEN 24
@@ -332,7 +308,7 @@ enum rt_op_mode {
 #define MIN_FRAG_THRESHOLD     256U
 #define MAX_FRAG_THRESHOLD     2346U
 
-/* Frame control field constants */
+ 
 #define RTLLIB_FCTL_FTYPE		0x000c
 #define RTLLIB_FCTL_STYPE		0x00f0
 #define RTLLIB_FCTL_FRAMETYPE	0x00fc
@@ -350,7 +326,7 @@ enum rt_op_mode {
 #define RTLLIB_FTYPE_CTL		0x0004
 #define RTLLIB_FTYPE_DATA		0x0008
 
-/* management */
+ 
 #define RTLLIB_STYPE_ASSOC_REQ	0x0000
 #define RTLLIB_STYPE_ASSOC_RESP		0x0010
 #define RTLLIB_STYPE_REASSOC_REQ	0x0020
@@ -364,13 +340,13 @@ enum rt_op_mode {
 #define RTLLIB_STYPE_DEAUTH		0x00C0
 #define RTLLIB_STYPE_MANAGE_ACT	0x00D0
 
-/* control */
+ 
 #define RTLLIB_STYPE_PSPOLL		0x00A0
 #define RTLLIB_STYPE_RTS		0x00B0
 #define RTLLIB_STYPE_CTS		0x00C0
 #define RTLLIB_STYPE_ACK		0x00D0
 
-/* data */
+ 
 #define RTLLIB_STYPE_DATA		0x0000
 #define RTLLIB_STYPE_DATA_CFACK	0x0010
 #define RTLLIB_STYPE_DATA_CFPOLL	0x0020
@@ -382,7 +358,7 @@ enum rt_op_mode {
 #define RTLLIB_SCTL_FRAG		0x000F
 #define RTLLIB_SCTL_SEQ		0xFFF0
 
-/* QOS control */
+ 
 #define RTLLIB_QCTL_TID	      0x000F
 
 #define	FC_QOS_BIT					BIT7
@@ -426,24 +402,24 @@ enum wireless_mode {
 };
 
 #ifndef ETH_P_PAE
-#define ETH_P_PAE	0x888E		/* Port Access Entity (IEEE 802.1X) */
-#define ETH_P_IP	0x0800		/* Internet Protocol packet	*/
-#define ETH_P_ARP	0x0806		/* Address Resolution packet	*/
-#endif /* ETH_P_PAE */
+#define ETH_P_PAE	0x888E		 
+#define ETH_P_IP	0x0800		 
+#define ETH_P_ARP	0x0806		 
+#endif  
 
 #ifndef ETH_P_80211_RAW
 #define ETH_P_80211_RAW (ETH_P_ECONET + 1)
 #endif
 
-/* IEEE 802.11 defines */
+ 
 
 #define P80211_OUI_LEN 3
 
 struct rtllib_snap_hdr {
-	u8    dsap;   /* always 0xAA */
-	u8    ssap;   /* always 0xAA */
-	u8    ctrl;   /* always 0x03 */
-	u8    oui[P80211_OUI_LEN];    /* organizational universal id */
+	u8    dsap;    
+	u8    ssap;    
+	u8    ctrl;    
+	u8    oui[P80211_OUI_LEN];     
 
 } __packed;
 
@@ -463,7 +439,7 @@ enum _REG_PREAMBLE_MODE {
 #define WLAN_GET_SEQ_FRAG(seq) ((seq) & RTLLIB_SCTL_FRAG)
 #define WLAN_GET_SEQ_SEQ(seq)  (((seq) & RTLLIB_SCTL_SEQ) >> 4)
 
-/* Authentication algorithms */
+ 
 #define WLAN_AUTH_OPEN 0
 #define WLAN_AUTH_SHARED_KEY 1
 #define WLAN_AUTH_LEAP 128
@@ -498,7 +474,7 @@ enum _REG_PREAMBLE_MODE {
 #define RTLLIB_OFDM_RATE_54MB		0x6C
 #define RTLLIB_BASIC_RATE_MASK		0x80
 
-/* this is stolen and modified from the madwifi driver*/
+ 
 #define RTLLIB_FC0_TYPE_MASK		0x0c
 #define RTLLIB_FC0_TYPE_DATA		0x08
 #define RTLLIB_FC0_SUBTYPE_MASK	0xB0
@@ -508,7 +484,7 @@ enum _REG_PREAMBLE_MODE {
 	(((fc) & (RTLLIB_FC0_TYPE_MASK | RTLLIB_FC0_SUBTYPE_MASK)) == \
 	 (RTLLIB_FC0_TYPE_DATA | RTLLIB_FC0_SUBTYPE_QOS))
 
-/* this is stolen from ipw2200 driver */
+ 
 #define IEEE_IBSS_MAC_HASH_SIZE 31
 struct ieee_ibss_seq {
 	u8 mac[ETH_ALEN];
@@ -518,16 +494,13 @@ struct ieee_ibss_seq {
 	struct list_head list;
 };
 
-/* NOTE: This data is for statistical purposes; not all hardware provides this
- *       information for frames received.  Not setting these will not cause
- *       any adverse affects.
- */
+ 
 struct rtllib_rx_stats {
 	u64 mac_time;
 	s8  rssi;
 	u8  signal;
 	u8  noise;
-	u16 rate; /* in 100 kbps */
+	u16 rate;  
 	u8  control;
 	u8  mask;
 	u16 len;
@@ -574,11 +547,7 @@ struct rtllib_rx_stats {
 	u16    Seq_Num;
 };
 
-/* IEEE 802.11 requires that STA supports concurrent reception of at least
- * three fragmented frames. This define can be increased to support more
- * concurrent frames, but it should be noted that each entry can consume about
- * 2 kB of RAM and increasing cache size will slow down frame reassembly.
- */
+ 
 #define RTLLIB_FRAG_CACHE_LEN 4
 
 struct rtllib_frag_entry {
@@ -598,11 +567,11 @@ struct rtllib_device;
 #define SEC_LEVEL	 (1<<7)
 #define SEC_ENABLED       (1<<8)
 
-#define SEC_LEVEL_0      0 /* None */
-#define SEC_LEVEL_1      1 /* WEP 40 and 104 bit */
-#define SEC_LEVEL_2      2 /* Level 1 + TKIP */
-#define SEC_LEVEL_2_CKIP 3 /* Level 1 + CKIP */
-#define SEC_LEVEL_3      4 /* Level 2 + CCMP */
+#define SEC_LEVEL_0      0  
+#define SEC_LEVEL_1      1  
+#define SEC_LEVEL_2      2  
+#define SEC_LEVEL_2_CKIP 3  
+#define SEC_LEVEL_3      4  
 
 #define SEC_ALG_NONE		0
 #define SEC_ALG_WEP		1
@@ -625,17 +594,9 @@ struct rtllib_security {
 	u16 flags;
 } __packed;
 
-/* 802.11 data frame from AP
- *       ,-------------------------------------------------------------------.
- * Bytes |  2   |  2   |    6    |    6    |    6    |  2   | 0..2312 |   4  |
- *       |------|------|---------|---------|---------|------|---------|------|
- * Desc. | ctrl | dura |  DA/RA  |   TA    |    SA   | Sequ |  frame  |  fcs |
- *       |      | tion | (BSSID) |         |         | ence |  data   |      |
- *       `-------------------------------------------------------------------'
- * Total: 28-2340 bytes
- */
+ 
 
-/* Management Frame Information Element Types */
+ 
 enum rtllib_mfie {
 	MFIE_TYPE_SSID = 0,
 	MFIE_TYPE_RATES = 1,
@@ -669,10 +630,7 @@ enum rtllib_mfie {
 	MFIE_TYPE_QOS_PARAMETER = 222,
 };
 
-/* Minimal header; can be used for passing 802.11 frames with sufficient
- * information to determine what type of underlying data type is actually
- * stored in the data.
- */
+ 
 struct rtllib_pspoll_hdr {
 	__le16 frame_ctl;
 	__le16 aid;
@@ -756,7 +714,7 @@ struct rtllib_authentication {
 	__le16 algorithm;
 	__le16 transaction;
 	__le16 status;
-	/*challenge*/
+	 
 	struct rtllib_info_element info_element[];
 } __packed;
 
@@ -772,7 +730,7 @@ struct rtllib_disassoc {
 
 struct rtllib_probe_request {
 	struct rtllib_hdr_3addr header;
-	/* SSID, supported rates */
+	 
 	struct rtllib_info_element info_element[];
 } __packed;
 
@@ -781,20 +739,18 @@ struct rtllib_probe_response {
 	u32 time_stamp[2];
 	__le16 beacon_interval;
 	__le16 capability;
-	/* SSID, supported rates, FH params, DS params,
-	 * CF params, IBSS params, TIM (if beacon), RSN
-	 */
+	 
 	struct rtllib_info_element info_element[];
 } __packed;
 
-/* Alias beacon for probe_response */
+ 
 #define rtllib_beacon rtllib_probe_response
 
 struct rtllib_assoc_request_frame {
 	struct rtllib_hdr_3addr header;
 	__le16 capability;
 	__le16 listen_interval;
-	/* SSID, supported rates, RSN */
+	 
 	struct rtllib_info_element info_element[];
 } __packed;
 
@@ -803,7 +759,7 @@ struct rtllib_assoc_response_frame {
 	__le16 capability;
 	__le16 status;
 	__le16 aid;
-	struct rtllib_info_element info_element[]; /* supported rates */
+	struct rtllib_info_element info_element[];  
 } __packed;
 
 struct rtllib_txb {
@@ -837,11 +793,7 @@ union frameqos {
 	} field;
 };
 
-/* MAX_RATES_LENGTH needs to be 12.  The spec says 8, and many APs
- * only use 8, and then use extended rates for the remaining supported
- * rates.  Other APs, however, stick all of their supported rates on the
- * main rates information element...
- */
+ 
 #define MAX_RATES_LENGTH		  ((u8)12)
 #define MAX_RATES_EX_LENGTH	       ((u8)16)
 #define MAX_NETWORK_COUNT		  96
@@ -857,12 +809,12 @@ union frameqos {
 #define NETWORK_HAS_OFDM    (1<<1)
 #define NETWORK_HAS_CCK     (1<<2)
 
-/* QoS structure */
+ 
 #define NETWORK_HAS_QOS_PARAMETERS      (1<<3)
 #define NETWORK_HAS_QOS_INFORMATION     (1<<4)
 #define NETWORK_HAS_QOS_MASK	    (NETWORK_HAS_QOS_PARAMETERS | \
 					 NETWORK_HAS_QOS_INFORMATION)
-/* 802.11h */
+ 
 #define NETWORK_HAS_ERP_VALUE	   (1<<10)
 
 #define QOS_QUEUE_NUM		   4
@@ -987,21 +939,7 @@ struct rtllib_softmac_stats {
 	unsigned int txretrycount;
 };
 
-/* These are the data types that can make up management packets
- *
- * u16 auth_algorithm;
- * u16 auth_sequence;
- * u16 beacon_interval;
- * u16 capability;
- * u8 current_ap[ETH_ALEN];
- * u16 listen_interval;
- * struct {
- *   u16 association_id:14, reserved:2;
- * } __packed;
- * u32 time_stamp[2];
- * u16 reason;
- * u16 status;
- */
+ 
 
 #define RTLLIB_DEFAULT_TX_ESSID "Penguin"
 #define RTLLIB_DEFAULT_BASIC_RATE 2
@@ -1035,10 +973,8 @@ enum {WMM_all_frame, WMM_two_frame, WMM_four_frame, WMM_six_frame};
 	((up) < 6) ? WME_AC_VI : \
 	WME_AC_VO)
 
-#define	ETHER_ADDR_LEN		6	/* length of an Ethernet address */
-#define ETHERNET_HEADER_SIZE    14      /* length of two Ethernet address
-					 * plus ether type
-					 */
+#define	ETHER_ADDR_LEN		6	 
+#define ETHERNET_HEADER_SIZE    14       
 
 enum erp_t {
 	ERP_NonERPpresent	= 0x01,
@@ -1047,10 +983,10 @@ enum erp_t {
 };
 
 struct rtllib_network {
-	/* These entries are used to identify a unique network */
+	 
 	u8 bssid[ETH_ALEN];
 	u8 channel;
-	/* Ensure null-terminated for any debug msgs */
+	 
 	u8 ssid[IW_ESSID_MAX_SIZE + 1];
 	u8 ssid_len;
 	u8 hidden_ssid[IW_ESSID_MAX_SIZE + 1];
@@ -1066,7 +1002,7 @@ struct rtllib_network {
 	u8	MBssid[ETH_ALEN];
 	bool	bWithCcxVerNum;
 	u8	BssCcxVerNumber;
-	/* These are network statistics */
+	 
 	struct rtllib_rx_stats stats;
 	u16 capability;
 	u8  rates[MAX_RATES_LENGTH];
@@ -1115,39 +1051,25 @@ struct rtllib_network {
 };
 
 enum rtl_link_state {
-	/* the card is not linked at all */
+	 
 	MAC80211_NOLINK = 0,
 
-	/* RTLLIB_ASSOCIATING* are for BSS client mode
-	 * the driver shall not perform RX filtering unless
-	 * the state is LINKED.
-	 * The driver shall just check for the state LINKED and
-	 * defaults to NOLINK for ALL the other states (including
-	 * LINKED_SCANNING)
-	 */
+	 
 
-	/* the association procedure will start (wq scheduling)*/
+	 
 	RTLLIB_ASSOCIATING,
 	RTLLIB_ASSOCIATING_RETRY,
 
-	/* the association procedure is sending AUTH request*/
+	 
 	RTLLIB_ASSOCIATING_AUTHENTICATING,
 
-	/* the association procedure has successfully authenticated
-	 * and is sending association request
-	 */
+	 
 	RTLLIB_ASSOCIATING_AUTHENTICATED,
 
-	/* the link is ok. the card associated to a BSS or linked
-	 * to a ibss cell or acting as an AP and creating the bss
-	 */
+	 
 	MAC80211_LINKED,
 
-	/* same as LINKED, but the driver shall apply RX filter
-	 * rules as we are in NO_LINK mode. As the card is still
-	 * logically linked, but it is doing a syncro site survey
-	 * then it will be back to LINKED state.
-	 */
+	 
 	MAC80211_LINKED_SCANNING,
 };
 
@@ -1339,9 +1261,9 @@ struct rt_intel_promisc_mode {
 	bool fltr_src_sta_frame;
 };
 
-/*************** DRIVER STATUS   *****/
+ 
 #define STATUS_SCANNING			0
-/*************** DRIVER STATUS   *****/
+ 
 
 enum {
 	LPS_IS_WAKE = 0,
@@ -1361,7 +1283,7 @@ struct rtllib_device {
 
 	enum rt_op_mode OpMode;
 
-	/* The last AssocReq/Resp IEs */
+	 
 	u8 *assocreq_ies, *assocresp_ies;
 	size_t assocreq_ies_len, assocresp_ies_len;
 
@@ -1406,39 +1328,35 @@ struct rtllib_device {
 	struct rx_reorder_entry RxReorderEntry[128];
 	struct list_head		RxReorder_Unused_List;
 
-	/* Bookkeeping structures */
+	 
 	struct net_device_stats stats;
 	struct rtllib_softmac_stats softmac_stats;
 
-	/* Probe / Beacon management */
+	 
 	struct list_head network_free_list;
 	struct list_head network_list;
 	struct rtllib_network *networks;
 	int scans;
 	int scan_age;
 
-	int iw_mode; /* operating mode (IW_MODE_*) */
+	int iw_mode;  
 	bool net_promiscuous_md;
 	struct rt_intel_promisc_mode intel_promiscuous_md_info;
 
 	spinlock_t lock;
 	spinlock_t wpax_suitlist_lock;
 
-	int tx_headroom; /* Set to size of any additional room needed at front
-			  * of allocated Tx SKBs
-			  */
+	int tx_headroom;  
 	u32 config;
 
-	/* WEP and other encryption related settings at the device level */
-	int open_wep; /* Set to 1 to allow unencrypted frames */
+	 
+	int open_wep;  
 	int auth_mode;
-	int reset_on_keychange; /* Set to 1 if the HW needs to be reset on
-				 * WEP key changes
-				 */
+	int reset_on_keychange;  
 
-	int ieee802_1x; /* is IEEE 802.1X used */
+	int ieee802_1x;  
 
-	/* WPA data */
+	 
 	bool bHalfWirelessN24GMode;
 	int wpa_enabled;
 	int drop_unencrypted;
@@ -1458,39 +1376,30 @@ struct rtllib_device {
 
 	struct rt_pmkid_list PMKIDList[NUM_PMKID_CACHE];
 
-	/* Fragmentation structures */
+	 
 	struct rtllib_frag_entry frag_cache[17][RTLLIB_FRAG_CACHE_LEN];
 	unsigned int frag_next_idx[17];
-	u16 fts; /* Fragmentation Threshold */
+	u16 fts;  
 #define DEFAULT_RTS_THRESHOLD 2346U
 #define MIN_RTS_THRESHOLD 1
 #define MAX_RTS_THRESHOLD 2346U
-	u16 rts; /* RTS threshold */
+	u16 rts;  
 
-	/* Association info */
+	 
 	u8 bssid[ETH_ALEN];
 
-	/* This stores infos for the current network.
-	 * Either the network we are associated in INFRASTRUCTURE
-	 * or the network that we are creating in MASTER mode.
-	 * ad-hoc is a mixture ;-).
-	 * Note that in infrastructure mode, even when not associated,
-	 * fields bssid and essid may be valid (if wpa_set and essid_set
-	 * are true) as thy carry the value set by the user via iwconfig
-	 */
+	 
 	struct rtllib_network current_network;
 
 	enum rtl_link_state link_state;
 
-	int mode;       /* A, B, G */
+	int mode;        
 
-	/* used for forcing the ibss workqueue to terminate
-	 * without wait for the syncro scan to terminate
-	 */
+	 
 	short sync_scan_hurryup;
 	u16 scan_watch_dog;
 
-	/* map of allowed channels. 0 is dummy */
+	 
 	void *dot11d_info;
 	bool global_domain;
 	u8 active_channel_map[MAX_CHANNEL_NUMBER+1];
@@ -1498,24 +1407,24 @@ struct rtllib_device {
 	u8   bss_start_channel;
 	u8   ibss_maxjoin_chal;
 
-	int rate;       /* current rate */
+	int rate;        
 	int basic_rate;
 
 	short active_scan;
 
-	/* this contains flags for selectively enable softmac support */
+	 
 	u16 softmac_features;
 
-	/* if the sequence control field is not filled by HW */
+	 
 	u16 seq_ctrl[5];
 
-	/* association procedure transaction sequence number */
+	 
 	u16 associate_seq;
 
-	/* AID for RTXed association responses */
+	 
 	u16 assoc_id;
 
-	/* power save mode related*/
+	 
 	u8 ack_tx_to_ieee;
 	short ps;
 	short sta_sleep;
@@ -1526,7 +1435,7 @@ struct rtllib_device {
 	bool polling;
 
 	short raw_tx;
-	/* used if IEEE_SOFTMAC_TX_QUEUE is set */
+	 
 	short queue_stop;
 	short scanning_continue;
 	short proto_started;
@@ -1544,23 +1453,23 @@ struct rtllib_device {
 	short wap_set;
 	short ssid_set;
 
-	/* set on initialization */
+	 
 	unsigned int wmm_acm;
 
-	/* for discarding duplicated packets in IBSS */
+	 
 	struct list_head ibss_mac_hash[IEEE_IBSS_MAC_HASH_SIZE];
 
-	/* for discarding duplicated packets in BSS */
-	u16 last_rxseq_num[17]; /* rx seq previous per-tid */
-	u16 last_rxfrag_num[17];/* tx frag previous per-tid */
+	 
+	u16 last_rxseq_num[17];  
+	u16 last_rxfrag_num[17]; 
 	unsigned long last_packet_time[17];
 
-	/* for PS mode */
+	 
 	unsigned long last_rx_ps_time;
 	bool			bAwakePktSent;
 	u8			LPSDelayCnt;
 
-	/* used if IEEE_SOFTMAC_SINGLE_QUEUE is set */
+	 
 	struct sk_buff *mgmt_queue_ring[MGMT_QUEUE_NUM];
 	int mgmt_queue_head;
 	int mgmt_queue_tail;
@@ -1588,13 +1497,13 @@ struct rtllib_device {
 	bool bIsAggregateFrame;
 	struct rt_pwr_save_ctrl pwr_save_ctrl;
 
-	/* used if IEEE_SOFTMAC_TX_QUEUE is set */
+	 
 	struct tx_pending tx_pending;
 
-	/* used if IEEE_SOFTMAC_ASSOCIATE is set */
+	 
 	struct timer_list associate_timer;
 
-	/* used if IEEE_SOFTMAC_BEACONS is set */
+	 
 	struct timer_list beacon_timer;
 	u8 need_sw_enc;
 	struct work_struct associate_complete_wq;
@@ -1619,50 +1528,27 @@ struct rtllib_device {
 		};
 	};
 
-	/* Callback functions */
+	 
 
-	/* Softmac-generated frames (management) are TXed via this
-	 * callback if the flag IEEE_SOFTMAC_SINGLE_QUEUE is
-	 * not set. As some cards may have different HW queues that
-	 * one might want to use for data and management frames
-	 * the option to have two callbacks might be useful.
-	 * This function can't sleep.
-	 */
+	 
 	int (*softmac_hard_start_xmit)(struct sk_buff *skb,
 			       struct net_device *dev);
 
-	/* used instead of hard_start_xmit (not softmac_hard_start_xmit)
-	 * if the IEEE_SOFTMAC_TX_QUEUE feature is used to TX data
-	 * frames. If the option IEEE_SOFTMAC_SINGLE_QUEUE is also set
-	 * then also management frames are sent via this callback.
-	 * This function can't sleep.
-	 */
+	 
 	void (*softmac_data_hard_start_xmit)(struct sk_buff *skb,
 			       struct net_device *dev, int rate);
 
-	/* ask to the driver to retune the radio.
-	 * This function can sleep. the driver should ensure
-	 * the radio has been switched before return.
-	 */
+	 
 	void (*set_chan)(struct net_device *dev, short ch);
 
-	/* indicate the driver that the link state is changed
-	 * for example it may indicate the card is associated now.
-	 * Driver might be interested in this to apply RX filter
-	 * rules or simply light the LINK led
-	 */
+	 
 	void (*link_change)(struct net_device *dev);
 
-	/* these two function indicates to the HW when to start
-	 * and stop to send beacons. This is used when the
-	 * IEEE_SOFTMAC_BEACONS is not set. For now the
-	 * stop_send_bacons is NOT guaranteed to be called only
-	 * after start_send_beacons.
-	 */
+	 
 	void (*start_send_beacons)(struct net_device *dev);
 	void (*stop_send_beacons)(struct net_device *dev);
 
-	/* power save mode related */
+	 
 	void (*sta_wake_up)(struct net_device *dev);
 	void (*enter_sleep_state)(struct net_device *dev, u64 time);
 	short (*ps_is_queue_empty)(struct net_device *dev);
@@ -1673,7 +1559,7 @@ struct rtllib_device {
 				     struct rtllib_assoc_response_frame *resp,
 				     struct rtllib_network *network);
 
-	/* check whether Tx hw resource available */
+	 
 	short (*check_nic_enough_desc)(struct net_device *dev, int queue_index);
 	void (*set_bw_mode_handler)(struct net_device *dev,
 				    enum ht_channel_width bandwidth,
@@ -1694,44 +1580,33 @@ struct rtllib_device {
 	void (*rtllib_ips_leave)(struct net_device *dev);
 	void (*leisure_ps_leave)(struct net_device *dev);
 
-	/* This must be the last item so that it points to the data
-	 * allocated beyond this structure by alloc_rtllib
-	 */
+	 
 	u8 priv[];
 };
 
 #define IEEE_MODE_MASK    (WIRELESS_MODE_B | WIRELESS_MODE_G)
 
-/* Generate a 802.11 header */
+ 
 
-/* Uses the channel change callback directly
- * instead of [start/stop] scan callbacks
- */
+ 
 #define IEEE_SOFTMAC_SCAN (1<<2)
 
-/* Perform authentication and association handshake */
+ 
 #define IEEE_SOFTMAC_ASSOCIATE (1<<3)
 
-/* Generate probe requests */
+ 
 #define IEEE_SOFTMAC_PROBERQ (1<<4)
 
-/* Generate response to probe requests */
+ 
 #define IEEE_SOFTMAC_PROBERS (1<<5)
 
-/* The ieee802.11 stack will manage the netif queue
- * wake/stop for the driver, taking care of 802.11
- * fragmentation. See softmac.c for details.
- */
+ 
 #define IEEE_SOFTMAC_TX_QUEUE (1<<7)
 
-/* Uses only the softmac_data_hard_start_xmit
- * even for TX management frames.
- */
+ 
 #define IEEE_SOFTMAC_SINGLE_QUEUE (1<<8)
 
-/* Generate beacons.  The stack will enqueue beacons
- * to the card
- */
+ 
 #define IEEE_SOFTMAC_BEACONS (1<<6)
 
 static inline void *rtllib_priv(struct net_device *dev)
@@ -1741,11 +1616,11 @@ static inline void *rtllib_priv(struct net_device *dev)
 
 static inline int rtllib_is_empty_essid(const char *essid, int essid_len)
 {
-	/* Single white space is for Linksys APs */
+	 
 	if (essid_len == 1 && essid[0] == ' ')
 		return 1;
 
-	/* Otherwise, if the entire essid is 0, we assume it is hidden */
+	 
 	while (essid_len) {
 		essid_len--;
 		if (essid[essid_len] != '\0')
@@ -1762,9 +1637,9 @@ static inline int rtllib_get_hdrlen(u16 fc)
 	switch (WLAN_FC_GET_TYPE(fc)) {
 	case RTLLIB_FTYPE_DATA:
 		if ((fc & RTLLIB_FCTL_FROMDS) && (fc & RTLLIB_FCTL_TODS))
-			hdrlen = RTLLIB_4ADDR_LEN; /* Addr4 */
+			hdrlen = RTLLIB_4ADDR_LEN;  
 		if (RTLLIB_QOS_HAS_SEQ(fc))
-			hdrlen += 2; /* QOS ctrl*/
+			hdrlen += 2;  
 		break;
 	case RTLLIB_FTYPE_CTL:
 		switch (WLAN_FC_GET_STYPE(fc)) {
@@ -1825,11 +1700,11 @@ static inline int rtllib_is_cck_rate(u8 rate)
 	return 0;
 }
 
-/* rtllib.c */
+ 
 void free_rtllib(struct net_device *dev);
 struct net_device *alloc_rtllib(int sizeof_priv);
 
-/* rtllib_tx.c */
+ 
 
 int rtllib_encrypt_fragment(struct rtllib_device *ieee,
 			    struct sk_buff *frag,
@@ -1838,14 +1713,14 @@ int rtllib_encrypt_fragment(struct rtllib_device *ieee,
 netdev_tx_t rtllib_xmit(struct sk_buff *skb,  struct net_device *dev);
 void rtllib_txb_free(struct rtllib_txb *txb);
 
-/* rtllib_rx.c */
+ 
 int rtllib_rx(struct rtllib_device *ieee, struct sk_buff *skb,
 	      struct rtllib_rx_stats *rx_stats);
 void rtllib_rx_probe_rq(struct rtllib_device *ieee,
 			struct sk_buff *skb);
 int rtllib_legal_channel(struct rtllib_device *rtllib, u8 channel);
 
-/* rtllib_wx.c */
+ 
 int rtllib_wx_get_scan(struct rtllib_device *ieee,
 		       struct iw_request_info *info,
 		       union iwreq_data *wrqu, char *key);
@@ -1866,7 +1741,7 @@ int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 		       union iwreq_data *wrqu, char *extra);
 int rtllib_wx_set_gen_ie(struct rtllib_device *ieee, u8 *ie, size_t len);
 
-/* rtllib_softmac.c */
+ 
 int rtllib_rx_frame_softmac(struct rtllib_device *ieee, struct sk_buff *skb,
 			    struct rtllib_rx_stats *rx_stats, u16 type,
 			    u16 stype);
@@ -1911,7 +1786,7 @@ void rtllib_ps_tx_ack(struct rtllib_device *ieee, short success);
 void softmac_mgmt_xmit(struct sk_buff *skb, struct rtllib_device *ieee);
 u8 rtllib_ap_sec_type(struct rtllib_device *ieee);
 
-/* rtllib_softmac_wx.c */
+ 
 
 int rtllib_wx_get_wap(struct rtllib_device *ieee, struct iw_request_info *info,
 		      union iwreq_data *wrqu, char *ext);
@@ -2028,12 +1903,10 @@ static inline const char *escape_essid(const char *essid, u8 essid_len)
 	return escaped;
 }
 
-/* fun with the built-in rtllib stack... */
+ 
 bool rtllib_MgntDisconnect(struct rtllib_device *rtllib, u8 asRsn);
 
-/* For the function is more related to hardware setting, it's better to use the
- * ieee handler to refer to it.
- */
+ 
 void rtllib_FlushRxTsPendingPkts(struct rtllib_device *ieee,
 				 struct rx_ts_record *pTS);
 int rtllib_parse_info_param(struct rtllib_device *ieee,
@@ -2048,4 +1921,4 @@ void HTUseDefaultSetting(struct rtllib_device *ieee);
 #define RT_ASOC_RETRY_LIMIT	5
 u8 MgntQuery_TxRateExcludeCCKRates(struct rtllib_device *ieee);
 
-#endif /* RTLLIB_H */
+#endif  

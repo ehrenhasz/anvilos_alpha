@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
- * Copyright (c) 2017, Linaro Ltd.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/module.h>
@@ -11,14 +8,7 @@
 #include <linux/rpmsg/qcom_glink.h>
 #include <linux/remoteproc/qcom_rproc.h>
 
-/**
- * struct do_cleanup_msg - The data structure for an SSR do_cleanup message
- * @version:	The G-Link SSR protocol version
- * @command:	The G-Link SSR command - do_cleanup
- * @seq_num:	Sequence number
- * @name_len:	Length of the name of the subsystem being restarted
- * @name:	G-Link edge name of the subsystem being restarted
- */
+ 
 struct do_cleanup_msg {
 	__le32 version;
 	__le32 command;
@@ -27,21 +17,14 @@ struct do_cleanup_msg {
 	char name[32];
 };
 
-/**
- * struct cleanup_done_msg - The data structure for an SSR cleanup_done message
- * @version:	The G-Link SSR protocol version
- * @response:	The G-Link SSR response to a do_cleanup command, cleanup_done
- * @seq_num:	Sequence number
- */
+ 
 struct cleanup_done_msg {
 	__le32 version;
 	__le32 response;
 	__le32 seq_num;
 };
 
-/*
- * G-Link SSR protocol commands
- */
+ 
 #define GLINK_SSR_DO_CLEANUP	0
 #define GLINK_SSR_CLEANUP_DONE	1
 
@@ -55,13 +38,10 @@ struct glink_ssr {
 	struct completion completion;
 };
 
-/* Notifier list for all registered glink_ssr instances */
+ 
 static BLOCKING_NOTIFIER_HEAD(ssr_notifiers);
 
-/**
- * qcom_glink_ssr_notify() - notify GLINK SSR about stopped remoteproc
- * @ssr_name:	name of the remoteproc that has been stopped
- */
+ 
 void qcom_glink_ssr_notify(const char *ssr_name)
 {
 	blocking_notifier_call_chain(&ssr_notifiers, 0, (void *)ssr_name);

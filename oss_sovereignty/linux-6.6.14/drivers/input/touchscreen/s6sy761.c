@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// Samsung S6SY761 Touchscreen device driver
-//
-// Copyright (c) 2017 Samsung Electronics Co., Ltd.
-// Copyright (c) 2017 Andi Shyti <andi@etezian.org>
+
+
+
+
+
 
 #include <asm/unaligned.h>
 #include <linux/delay.h>
@@ -15,10 +15,10 @@
 #include <linux/pm_runtime.h>
 #include <linux/regulator/consumer.h>
 
-/* commands */
+ 
 #define S6SY761_SENSE_ON		0x10
 #define S6SY761_SENSE_OFF		0x11
-#define S6SY761_TOUCH_FUNCTION		0x30 /* R/W for get/set */
+#define S6SY761_TOUCH_FUNCTION		0x30  
 #define S6SY761_FIRMWARE_INTEGRITY	0x21
 #define S6SY761_PANEL_INFO		0x23
 #define S6SY761_DEVICE_ID		0x52
@@ -28,22 +28,18 @@
 #define S6SY761_CLEAR_EVENT_STACK	0x62
 #define S6SY761_APPLICATION_MODE	0xe4
 
-/* events */
+ 
 #define S6SY761_EVENT_INFO		0x02
 #define S6SY761_EVENT_VENDOR_INFO	0x07
 
-/* info */
+ 
 #define S6SY761_INFO_BOOT_COMPLETE	0x00
 
-/* firmware status */
+ 
 #define S6SY761_FW_OK			0x80
 
-/*
- * the functionalities are put as a reference
- * as in the device I am using none of them
- * works therefore not used in this driver yet.
- */
-/* touchscreen functionalities */
+ 
+ 
 #define S6SY761_MASK_TOUCH		BIT(0)
 #define S6SY761_MASK_HOVER		BIT(1)
 #define S6SY761_MASK_COVER		BIT(2)
@@ -53,31 +49,31 @@
 #define S6SY761_MASK_WET		BIT(6)
 #define S6SY761_MASK_PROXIMITY		BIT(7)
 
-/* boot status (BS) */
+ 
 #define S6SY761_BS_BOOT_LOADER		0x10
 #define S6SY761_BS_APPLICATION		0x20
 
-/* event id */
+ 
 #define S6SY761_EVENT_ID_COORDINATE	0x00
 #define S6SY761_EVENT_ID_STATUS		0x01
 
-/* event register masks */
-#define S6SY761_MASK_TOUCH_STATE	0xc0 /* byte 0 */
+ 
+#define S6SY761_MASK_TOUCH_STATE	0xc0  
 #define S6SY761_MASK_TID		0x3c
 #define S6SY761_MASK_EID		0x03
-#define S6SY761_MASK_X			0xf0 /* byte 3 */
+#define S6SY761_MASK_X			0xf0  
 #define S6SY761_MASK_Y			0x0f
-#define S6SY761_MASK_Z			0x3f /* byte 6 */
-#define S6SY761_MASK_LEFT_EVENTS	0x3f /* byte 7 */
-#define S6SY761_MASK_TOUCH_TYPE		0xc0 /* MSB in byte 6, LSB in byte 7 */
+#define S6SY761_MASK_Z			0x3f  
+#define S6SY761_MASK_LEFT_EVENTS	0x3f  
+#define S6SY761_MASK_TOUCH_TYPE		0xc0  
 
-/* event touch state values */
+ 
 #define S6SY761_TS_NONE			0x00
 #define S6SY761_TS_PRESS		0x01
 #define S6SY761_TS_MOVE			0x02
 #define S6SY761_TS_RELEASE		0x03
 
-/* application modes */
+ 
 #define S6SY761_APP_NORMAL		0x0
 #define S6SY761_APP_LOW_POWER		0x1
 #define S6SY761_APP_TEST		0x2
@@ -110,10 +106,7 @@ struct s6sy761_data {
 	u8 tx_channel;
 };
 
-/*
- * We can't simply use i2c_smbus_read_i2c_block_data because we
- * need to read more than 255 bytes
- */
+ 
 static int s6sy761_read_events(struct s6sy761_data *sdata, u16 n_events)
 {
 	u8 cmd = S6SY761_READ_ALL_EVENT;
@@ -304,7 +297,7 @@ static int s6sy761_power_on(struct s6sy761_data *sdata)
 
 	msleep(140);
 
-	/* double check whether the touch is functional */
+	 
 	ret = i2c_smbus_read_i2c_block_data(sdata->client,
 					    S6SY761_READ_ONE_EVENT,
 					    S6SY761_EVENT_SIZE,
@@ -324,11 +317,11 @@ static int s6sy761_power_on(struct s6sy761_data *sdata)
 	if (ret < 0)
 		return ret;
 
-	/* for some reasons the device might be stuck in the bootloader */
+	 
 	if (ret != S6SY761_BS_APPLICATION)
 		return -ENODEV;
 
-	/* enable touch functionality */
+	 
 	ret = i2c_smbus_write_word_data(sdata->client,
 					S6SY761_TOUCH_FUNCTION,
 					S6SY761_MASK_TOUCH);
@@ -341,7 +334,7 @@ static int s6sy761_power_on(struct s6sy761_data *sdata)
 static int s6sy761_hw_init(struct s6sy761_data *sdata,
 			   unsigned int *max_x, unsigned int *max_y)
 {
-	u8 buffer[S6SY761_PANEL_ID_SIZE]; /* larger read size */
+	u8 buffer[S6SY761_PANEL_ID_SIZE];  
 	int ret;
 
 	ret = s6sy761_power_on(sdata);
@@ -367,7 +360,7 @@ static int s6sy761_hw_init(struct s6sy761_data *sdata,
 	*max_x = get_unaligned_be16(buffer);
 	*max_y = get_unaligned_be16(buffer + 2);
 
-	/* if no tx channels defined, at least keep one */
+	 
 	sdata->tx_channel = max_t(u8, buffer[8], 1);
 
 	ret = i2c_smbus_read_byte_data(sdata->client,

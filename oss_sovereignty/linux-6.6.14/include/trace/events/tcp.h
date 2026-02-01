@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM tcp
 
@@ -41,12 +41,7 @@
 	TP_STORE_V4MAPPED(__entry, saddr, daddr)
 #endif
 
-/*
- * tcp event with arguments sk and skb
- *
- * Note: this class requires a valid sk pointer; while skb pointer could
- *       be NULL.
- */
+ 
 DECLARE_EVENT_CLASS(tcp_event_sk_skb,
 
 	TP_PROTO(const struct sock *sk, const struct sk_buff *skb),
@@ -102,10 +97,7 @@ DEFINE_EVENT(tcp_event_sk_skb, tcp_retransmit_skb,
 	TP_ARGS(sk, skb)
 );
 
-/*
- * skb of trace_tcp_send_reset is the skb that caused RST. In case of
- * active reset, skb should be NULL
- */
+ 
 DEFINE_EVENT(tcp_event_sk_skb, tcp_send_reset,
 
 	TP_PROTO(const struct sock *sk, const struct sk_buff *skb),
@@ -113,11 +105,7 @@ DEFINE_EVENT(tcp_event_sk_skb, tcp_send_reset,
 	TP_ARGS(sk, skb)
 );
 
-/*
- * tcp event with arguments sk
- *
- * Note: this class requires a valid sk pointer.
- */
+ 
 DECLARE_EVENT_CLASS(tcp_event_sk,
 
 	TP_PROTO(struct sock *sk),
@@ -242,7 +230,7 @@ TRACE_EVENT(tcp_probe,
 	TP_ARGS(sk, skb),
 
 	TP_STRUCT__entry(
-		/* sockaddr_in6 is always bigger than sockaddr_in */
+		 
 		__array(__u8, saddr, sizeof(struct sockaddr_in6))
 		__array(__u8, daddr, sizeof(struct sockaddr_in6))
 		__field(__u16, sport)
@@ -270,7 +258,7 @@ TRACE_EVENT(tcp_probe,
 
 		TP_STORE_ADDR_PORTS(__entry, inet, sk);
 
-		/* For filtering use */
+		 
 		__entry->sport = ntohs(inet->inet_sport);
 		__entry->dport = ntohs(inet->inet_dport);
 		__entry->mark = skb->mark;
@@ -337,9 +325,7 @@ TRACE_EVENT(tcp_probe,
 
 #endif
 
-/*
- * tcp event with only skb
- */
+ 
 DECLARE_EVENT_CLASS(tcp_event_skb,
 
 	TP_PROTO(const struct sk_buff *skb),
@@ -419,7 +405,7 @@ TRACE_EVENT(tcp_cong_state_set,
 		  __entry->cong_state)
 );
 
-#endif /* _TRACE_TCP_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for Keytouch devices not fully compliant with HID standard
- *
- *  Copyright (c) 2011 Jiri Kosina
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -14,8 +9,7 @@
 
 #include "hid-ids.h"
 
-/* Replace the broken report descriptor of this device with rather
- * a default one */
+ 
 static __u8 keytouch_fixed_rdesc[] = {
 0x05, 0x01, 0x09, 0x06, 0xa1, 0x01, 0x05, 0x07, 0x19, 0xe0, 0x29, 0xe7, 0x15,
 0x00, 0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02, 0x95, 0x01, 0x75, 0x08,

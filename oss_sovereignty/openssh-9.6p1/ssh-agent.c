@@ -1,38 +1,5 @@
-/* $OpenBSD: ssh-agent.c,v 1.303 2023/12/18 14:48:08 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * The authentication agent program.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- *
- * Copyright (c) 2000, 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -95,20 +62,20 @@
 # define DEFAULT_ALLOWED_PROVIDERS "/usr/lib*/*,/usr/local/lib*/*"
 #endif
 
-/* Maximum accepted message length */
+ 
 #define AGENT_MAX_LEN		(256*1024)
-/* Maximum bytes to read from client socket */
+ 
 #define AGENT_RBUF_LEN		(4096)
-/* Maximum number of recorded session IDs/hostkeys per connection */
+ 
 #define AGENT_MAX_SESSION_IDS		16
-/* Maximum size of session ID */
+ 
 #define AGENT_MAX_SID_LEN		128
-/* Maximum number of destination constraints to accept on a key */
+ 
 #define AGENT_MAX_DEST_CONSTRAINTS	1024
-/* Maximum number of associated certificate constraints to accept on a key */
+ 
 #define AGENT_MAX_EXT_CERTS		1024
 
-/* XXX store hostkey_sid in a refcounted tree */
+ 
 
 typedef enum {
 	AUTH_UNUSED = 0,
@@ -153,32 +120,29 @@ struct idtable {
 	TAILQ_HEAD(idqueue, identity) idlist;
 };
 
-/* private key table */
+ 
 struct idtable *idtab;
 
 int max_fd = 0;
 
-/* pid of shell == parent of agent */
+ 
 pid_t parent_pid = -1;
 time_t parent_alive_interval = 0;
 
-/* pid of process for which cleanup_socket is applicable */
+ 
 pid_t cleanup_pid = 0;
 
-/* pathname and directory for AUTH_SOCKET */
+ 
 char socket_name[PATH_MAX];
 char socket_dir[PATH_MAX];
 
-/* Pattern-list of allowed PKCS#11/Security key paths */
+ 
 static char *allowed_providers;
 
-/*
- * Allows PKCS11 providers or SK keys that use non-internal providers to
- * be added over a remote connection (identified by session-bind@openssh.com).
- */
+ 
 static int remote_add_provider;
 
-/* locking */
+ 
 #define LOCK_SIZE	32
 #define LOCK_SALT_SIZE	16
 #define LOCK_ROUNDS	1
@@ -188,12 +152,12 @@ u_char lock_salt[LOCK_SALT_SIZE];
 
 extern char *__progname;
 
-/* Default lifetime in seconds (0 == forever) */
+ 
 static int lifetime = 0;
 
 static int fingerprint_hash = SSH_FP_HASH_DEFAULT;
 
-/* Refuse signing of non-SSH messages for web-origin FIDO keys */
+ 
 static int restrict_websafe = 1;
 
 static void
@@ -315,7 +279,7 @@ dump_dest_constraint_hop(const struct dest_constraint_hop *dch)
 		free(fp);
 	}
 }
-#endif /* DEBUG_CONSTRAINTS */
+#endif  
 
 static void
 dump_dest_constraints(const char *context,
@@ -332,7 +296,7 @@ dump_dest_constraints(const char *context,
 		dump_dest_constraint_hop(&dcs[i].to);
 	}
 	debug_f("done for %s", context);
-#endif /* DEBUG_CONSTRAINTS */
+#endif  
 }
 
 static void
@@ -346,10 +310,7 @@ free_identity(Identity *id)
 	free(id);
 }
 
-/*
- * Match 'key' against the key/CA list in a destination constraint hop
- * Returns 0 on success or -1 otherwise.
- */
+ 
 static int
 match_key_hop(const char *tag, const struct sshkey *key,
     const struct dest_constraint_hop *dch)
@@ -361,7 +322,7 @@ match_key_hop(const char *tag, const struct sshkey *key,
 
 	if (key == NULL)
 		return -1;
-	/* XXX logspam */
+	 
 	if ((fp = sshkey_fingerprint(key, SSH_FP_HASH_DEFAULT,
 	    SSH_FP_DEFAULT)) == NULL)
 		fatal_f("fingerprint failed");
@@ -371,7 +332,7 @@ match_key_hop(const char *tag, const struct sshkey *key,
 	for (i = 0; i < dch->nkeys; i++) {
 		if (dch->keys[i] == NULL)
 			return -1;
-		/* XXX logspam */
+		 
 		if ((fp = sshkey_fingerprint(dch->keys[i], SSH_FP_HASH_DEFAULT,
 		    SSH_FP_DEFAULT)) == NULL)
 			fatal_f("fingerprint failed");
@@ -380,17 +341,17 @@ match_key_hop(const char *tag, const struct sshkey *key,
 		    sshkey_type(dch->keys[i]), fp);
 		free(fp);
 		if (!sshkey_is_cert(key)) {
-			/* plain key */
+			 
 			if (dch->key_is_ca[i] ||
 			    !sshkey_equal(key, dch->keys[i]))
 				continue;
 			return 0;
 		}
-		/* certificate */
+		 
 		if (!dch->key_is_ca[i])
 			continue;
 		if (key->cert == NULL || key->cert->signature_key == NULL)
-			return -1; /* shouldn't happen */
+			return -1;  
 		if (!sshkey_equal(key->cert->signature_key, dch->keys[i]))
 			continue;
 		if (sshkey_cert_check_host(key, hostname, 1,
@@ -404,7 +365,7 @@ match_key_hop(const char *tag, const struct sshkey *key,
 	return -1;
 }
 
-/* Check destination constraints on an identity against the hostkey/user */
+ 
 static int
 permitted_by_dest_constraints(const struct sshkey *fromkey,
     const struct sshkey *tokey, Identity *id, const char *user,
@@ -417,7 +378,7 @@ permitted_by_dest_constraints(const struct sshkey *fromkey,
 		*hostnamep = NULL;
 	for (i = 0; i < id->ndest_constraints; i++) {
 		d = id->dest_constraints + i;
-		/* XXX remove logspam */
+		 
 		debug2_f("constraint %zu %s%s%s (%u keys) > %s%s%s (%u keys)",
 		    i, d->from.user ? d->from.user : "",
 		    d->from.user ? "@" : "",
@@ -426,41 +387,37 @@ permitted_by_dest_constraints(const struct sshkey *fromkey,
 		    d->to.user ? d->to.user : "", d->to.user ? "@" : "",
 		    d->to.hostname ? d->to.hostname : "(ANY)", d->to.nkeys);
 
-		/* Match 'from' key */
+		 
 		if (fromkey == NULL) {
-			/* We are matching the first hop */
+			 
 			if (d->from.hostname != NULL || d->from.nkeys != 0)
 				continue;
 		} else if (match_key_hop("from", fromkey, &d->from) != 0)
 			continue;
 
-		/* Match 'to' key */
+		 
 		if (tokey != NULL && match_key_hop("to", tokey, &d->to) != 0)
 			continue;
 
-		/* Match user if specified */
+		 
 		if (d->to.user != NULL && user != NULL &&
 		    !match_pattern(user, d->to.user))
 			continue;
 
-		/* successfully matched this constraint */
+		 
 		if (hostnamep != NULL)
 			*hostnamep = d->to.hostname;
 		debug2_f("allowed for hostname %s",
 		    d->to.hostname == NULL ? "*" : d->to.hostname);
 		return 0;
 	}
-	/* no match */
+	 
 	debug2_f("%s identity \"%s\" not permitted for this destination",
 	    sshkey_type(id->key), id->comment);
 	return -1;
 }
 
-/*
- * Check whether hostkeys on a SocketEntry and the optionally specified user
- * are permitted by the destination constraints on the Identity.
- * Returns 0 on success or -1 otherwise.
- */
+ 
 static int
 identity_permitted(Identity *id, SocketEntry *e, char *user,
     const char **forward_hostnamep, const char **last_hostnamep)
@@ -472,27 +429,24 @@ identity_permitted(Identity *id, SocketEntry *e, char *user,
 	const char *test_user;
 	char *fp1, *fp2;
 
-	/* XXX remove logspam */
+	 
 	debug3_f("entering: key %s comment \"%s\", %zu socket bindings, "
 	    "%zu constraints", sshkey_type(id->key), id->comment,
 	    e->nsession_ids, id->ndest_constraints);
 	if (id->ndest_constraints == 0)
-		return 0; /* unconstrained */
+		return 0;  
 	if (e->session_bind_attempted && e->nsession_ids == 0) {
 		error_f("previous session bind failed on socket");
 		return -1;
 	}
 	if (e->nsession_ids == 0)
-		return 0; /* local use */
-	/*
-	 * Walk through the hops recorded by session_id and try to find a
-	 * constraint that satisfies each.
-	 */
+		return 0;  
+	 
 	for (i = 0; i < e->nsession_ids; i++) {
 		hks = e->session_ids + i;
 		if (hks->key == NULL)
 			fatal_f("internal error: no bound key");
-		/* XXX remove logspam */
+		 
 		fp1 = fp2 = NULL;
 		if (fromkey != NULL &&
 		    (fp1 = sshkey_fingerprint(fromkey, SSH_FP_HASH_DEFAULT,
@@ -509,25 +463,18 @@ identity_permitted(Identity *id, SocketEntry *e, char *user,
 		    sshkey_type(hks->key), fp2);
 		free(fp1);
 		free(fp2);
-		/*
-		 * Record the hostnames for the initial forwarding and
-		 * the final destination.
-		 */
+		 
 		hp = NULL;
 		if (i == e->nsession_ids - 1)
 			hp = last_hostnamep;
 		else if (i == 0)
 			hp = forward_hostnamep;
-		/* Special handling for final recorded binding */
+		 
 		test_user = NULL;
 		if (i == e->nsession_ids - 1) {
-			/* Can only check user at final hop */
+			 
 			test_user = user;
-			/*
-			 * user is only presented for signature requests.
-			 * If this is the case, make sure last binding is not
-			 * for a forwarding.
-			 */
+			 
 			if (hks->forwarded && user != NULL) {
 				error_f("tried to sign on forwarding hop");
 				return -1;
@@ -541,14 +488,7 @@ identity_permitted(Identity *id, SocketEntry *e, char *user,
 			return -1;
 		fromkey = hks->key;
 	}
-	/*
-	 * Another special case: if the last bound session ID was for a
-	 * forwarding, and this function is not being called to check a sign
-	 * request (i.e. no 'user' supplied), then only permit the key if
-	 * there is a permission that would allow it to be used at another
-	 * destination. This hides keys that are allowed to be used to
-	 * authenticate *to* a host but not permitted for *use* beyond it.
-	 */
+	 
 	hks = &e->session_ids[e->nsession_ids - 1];
 	if (hks->forwarded && user == NULL &&
 	    permitted_by_dest_constraints(hks->key, NULL, id,
@@ -557,7 +497,7 @@ identity_permitted(Identity *id, SocketEntry *e, char *user,
 		return -1;
 	}
 
-	/* success */
+	 
 	return 0;
 }
 
@@ -567,7 +507,7 @@ socket_is_remote(SocketEntry *e)
 	return e->session_bind_attempted || (e->nsession_ids != 0);
 }
 
-/* return matching private key for given public key */
+ 
 static Identity *
 lookup_identity(struct sshkey *key)
 {
@@ -580,7 +520,7 @@ lookup_identity(struct sshkey *key)
 	return (NULL);
 }
 
-/* Check confirmation of keysign request */
+ 
 static int
 confirm_key(Identity *id, const char *extra)
 {
@@ -609,7 +549,7 @@ send_status(SocketEntry *e, int success)
 		fatal_fr(r, "compose");
 }
 
-/* send list of supported public keys to 'client' */
+ 
 static void
 process_request_identities(SocketEntry *e)
 {
@@ -632,7 +572,7 @@ process_request_identities(SocketEntry *e)
 		dump_dest_constraints(__func__,
 		    id->dest_constraints, id->ndest_constraints);
 		free(fp);
-		/* identity not visible, don't include in response */
+		 
 		if (identity_permitted(id, e, NULL, NULL, NULL) != 0)
 			continue;
 		if ((r = sshkey_puts_opts(id->key, keys,
@@ -673,13 +613,7 @@ agent_decode_alg(struct sshkey *key, u_int flags)
 	return NULL;
 }
 
-/*
- * Attempt to parse the contents of a buffer as a SSH publickey userauth
- * request, checking its contents for consistency and matching the embedded
- * key against the one that is being used for signing.
- * Note: does not modify msg buffer.
- * Optionally extract the username, session ID and/or hostkey from the request.
- */
+ 
 static int
 parse_userauth_request(struct sshbuf *msg, const struct sshkey *expected_key,
     char **userp, struct sshbuf **sess_idp, struct sshkey **hostkeyp)
@@ -699,20 +633,20 @@ parse_userauth_request(struct sshbuf *msg, const struct sshkey *expected_key,
 	if ((b = sshbuf_fromb(msg)) == NULL)
 		fatal_f("sshbuf_fromb");
 
-	/* SSH userauth request */
+	 
 	if ((r = sshbuf_froms(b, &sess_id)) != 0)
 		goto out;
 	if (sshbuf_len(sess_id) == 0) {
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
-	if ((r = sshbuf_get_u8(b, &t)) != 0 || /* SSH2_MSG_USERAUTH_REQUEST */
-	    (r = sshbuf_get_cstring(b, &user, NULL)) != 0 || /* server user */
-	    (r = sshbuf_get_cstring(b, &service, NULL)) != 0 || /* service */
-	    (r = sshbuf_get_cstring(b, &method, NULL)) != 0 || /* method */
-	    (r = sshbuf_get_u8(b, &sig_follows)) != 0 || /* sig-follows */
-	    (r = sshbuf_get_cstring(b, &pkalg, NULL)) != 0 || /* alg */
-	    (r = sshkey_froms(b, &mkey)) != 0) /* key */
+	if ((r = sshbuf_get_u8(b, &t)) != 0 ||  
+	    (r = sshbuf_get_cstring(b, &user, NULL)) != 0 ||  
+	    (r = sshbuf_get_cstring(b, &service, NULL)) != 0 ||  
+	    (r = sshbuf_get_cstring(b, &method, NULL)) != 0 ||  
+	    (r = sshbuf_get_u8(b, &sig_follows)) != 0 ||  
+	    (r = sshbuf_get_cstring(b, &pkalg, NULL)) != 0 ||  
+	    (r = sshkey_froms(b, &mkey)) != 0)  
 		goto out;
 	if (t != SSH2_MSG_USERAUTH_REQUEST ||
 	    sig_follows != 1 ||
@@ -733,7 +667,7 @@ parse_userauth_request(struct sshbuf *msg, const struct sshkey *expected_key,
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
 	debug3_f("well formed userauth");
 	if (userp != NULL) {
@@ -760,10 +694,7 @@ parse_userauth_request(struct sshbuf *msg, const struct sshkey *expected_key,
 	return r;
 }
 
-/*
- * Attempt to parse the contents of a buffer as a SSHSIG signature request.
- * Note: does not modify buffer.
- */
+ 
 static int
 parse_sshsig_request(struct sshbuf *msg)
 {
@@ -775,29 +706,23 @@ parse_sshsig_request(struct sshbuf *msg)
 
 	if ((r = sshbuf_cmp(b, 0, "SSHSIG", 6)) != 0 ||
 	    (r = sshbuf_consume(b, 6)) != 0 ||
-	    (r = sshbuf_get_cstring(b, NULL, NULL)) != 0 || /* namespace */
-	    (r = sshbuf_get_string_direct(b, NULL, NULL)) != 0 || /* reserved */
-	    (r = sshbuf_get_cstring(b, NULL, NULL)) != 0 || /* hashalg */
-	    (r = sshbuf_get_string_direct(b, NULL, NULL)) != 0) /* H(msg) */
+	    (r = sshbuf_get_cstring(b, NULL, NULL)) != 0 ||  
+	    (r = sshbuf_get_string_direct(b, NULL, NULL)) != 0 ||  
+	    (r = sshbuf_get_cstring(b, NULL, NULL)) != 0 ||  
+	    (r = sshbuf_get_string_direct(b, NULL, NULL)) != 0)  
 		goto out;
 	if (sshbuf_len(b) != 0) {
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	sshbuf_free(b);
 	return r;
 }
 
-/*
- * This function inspects a message to be signed by a FIDO key that has a
- * web-like application string (i.e. one that does not begin with "ssh:".
- * It checks that the message is one of those expected for SSH operations
- * (pubkey userauth, sshsig, CA key signing) to exclude signing challenges
- * for the web.
- */
+ 
 static int
 check_websafe_message_contents(struct sshkey *key, struct sshbuf *data)
 {
@@ -810,7 +735,7 @@ check_websafe_message_contents(struct sshkey *key, struct sshbuf *data)
 		return 1;
 	}
 
-	/* XXX check CA signature operation */
+	 
 
 	error("web-origin key attempting to sign non-SSH message");
 	return 0;
@@ -828,7 +753,7 @@ buf_equal(const struct sshbuf *a, const struct sshbuf *b)
 	return 0;
 }
 
-/* ssh2 only */
+ 
 static void
 process_sign_request2(SocketEntry *e)
 {
@@ -875,16 +800,12 @@ process_sign_request2(SocketEntry *e)
 			   "to sign an unidentified signature");
 			goto send;
 		}
-		/* XXX logspam */
+		 
 		debug_f("user=%s", user);
 		if (identity_permitted(id, e, user, &fwd_host, &dest_host) != 0)
 			goto send;
-		/* XXX display fwd_host/dest_host in askpass UI */
-		/*
-		 * Ensure that the session ID is the most recent one
-		 * registered on the socket - it should have been bound by
-		 * ssh immediately before userauth.
-		 */
+		 
+		 
 		if (buf_equal(sid,
 		    e->session_ids[e->nsession_ids - 1].sid) != 0) {
 			error_f("unexpected session ID (%zu listed) on "
@@ -893,11 +814,7 @@ process_sign_request2(SocketEntry *e)
 			    sshkey_type(id->key), fp);
 			goto send;
 		}
-		/*
-		 * Ensure that the hostkey embedded in the signature matches
-		 * the one most recently bound to the socket. An exception is
-		 * made for the initial forwarding hop.
-		 */
+		 
 		if (e->nsession_ids > 1 && hostkey == NULL) {
 			error_f("refusing use of destination-constrained key: "
 			    "no hostkey recorded in signature for forwarded "
@@ -922,7 +839,7 @@ process_sign_request2(SocketEntry *e)
 		if (restrict_websafe &&
 		    strncmp(id->key->sk_application, "ssh:", 4) != 0 &&
 		    !check_websafe_message_contents(key, data)) {
-			/* error already logged */
+			 
 			goto send;
 		}
 		if (id->key->sk_flags & SSH_SK_USER_PRESENCE_REQD) {
@@ -942,7 +859,7 @@ process_sign_request2(SocketEntry *e)
 		    r == SSH_ERR_KEY_WRONG_PASSPHRASE) {
 			notify_complete(notifier, NULL);
 			notifier = NULL;
-			/* XXX include sig_dest */
+			 
 			xasprintf(&prompt, "Enter PIN%sfor %s key %s: ",
 			    (id->key->sk_flags & SSH_SK_USER_PRESENCE_REQD) ?
 			    " and confirm user presence " : " ",
@@ -954,7 +871,7 @@ process_sign_request2(SocketEntry *e)
 		error_fr(r, "sshkey_sign");
 		goto send;
 	}
-	/* Success */
+	 
 	ok = 0;
 	debug_f("good signature");
  send:
@@ -984,7 +901,7 @@ process_sign_request2(SocketEntry *e)
 		freezero(pin, strlen(pin));
 }
 
-/* shared */
+ 
 static void
 process_remove_identity(SocketEntry *e)
 {
@@ -1001,10 +918,10 @@ process_remove_identity(SocketEntry *e)
 		debug_f("key not found");
 		goto done;
 	}
-	/* identity not visible, cannot be removed */
+	 
 	if (identity_permitted(id, e, NULL, NULL, NULL) != 0)
-		goto done; /* error already logged */
-	/* We have this key, free it. */
+		goto done;  
+	 
 	if (idtab->nentries < 1)
 		fatal_f("internal error: nentries %d", idtab->nentries);
 	TAILQ_REMOVE(&idtab->idlist, id, next);
@@ -1022,21 +939,21 @@ process_remove_all_identities(SocketEntry *e)
 	Identity *id;
 
 	debug2_f("entering");
-	/* Loop over all identities and clear the keys. */
+	 
 	for (id = TAILQ_FIRST(&idtab->idlist); id;
 	    id = TAILQ_FIRST(&idtab->idlist)) {
 		TAILQ_REMOVE(&idtab->idlist, id, next);
 		free_identity(id);
 	}
 
-	/* Mark that there are no identities. */
+	 
 	idtab->nentries = 0;
 
-	/* Send success. */
+	 
 	send_status(e, 1);
 }
 
-/* removes expired keys and returns number of seconds until the next expiry */
+ 
 static time_t
 reaper(void)
 {
@@ -1110,9 +1027,9 @@ parse_dest_constraint_hop(struct sshbuf *b, struct dest_constraint_hop *dch)
 		dch->keys[dch->nkeys] = k;
 		dch->key_is_ca[dch->nkeys] = key_is_ca != 0;
 		dch->nkeys++;
-		k = NULL; /* transferred */
+		k = NULL;  
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	sshkey_free(k);
@@ -1138,7 +1055,7 @@ parse_dest_constraint(struct sshbuf *m, struct dest_constraint *dc)
 	}
 	if ((r = parse_dest_constraint_hop(frombuf, &dc->from)) != 0 ||
 	    (r = parse_dest_constraint_hop(tobuf, &dc->to)) != 0)
-		goto out; /* already logged */
+		goto out;  
 	if (elen != 0) {
 		error_f("unsupported extensions (len %zu)", elen);
 		r = SSH_ERR_FEATURE_UNSUPPORTED;
@@ -1148,7 +1065,7 @@ parse_dest_constraint(struct sshbuf *m, struct dest_constraint *dc)
 	    dc->from.hostname ? dc->from.hostname : "(ORIGIN)", dc->from.nkeys,
 	    dc->to.user ? dc->to.user : "", dc->to.user ? "@" : "",
 	    dc->to.hostname ? dc->to.hostname : "(ANY)", dc->to.nkeys);
-	/* check consistency */
+	 
 	if ((dc->from.hostname == NULL) != (dc->from.nkeys == 0) ||
 	    dc->from.user != NULL) {
 		error_f("inconsistent \"from\" specification");
@@ -1160,7 +1077,7 @@ parse_dest_constraint(struct sshbuf *m, struct dest_constraint *dc)
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	sshbuf_free(b);
@@ -1219,7 +1136,7 @@ parse_key_constraint_extension(struct sshbuf *m, char **sk_providerp,
 			    sizeof(**dcsp));
 			if ((r = parse_dest_constraint(b,
 			    *dcsp + (*ndcsp)++)) != 0)
-				goto out; /* error already logged */
+				goto out;  
 		}
 	} else if (strcmp(ext_name,
 	    "associated-certs-v00@openssh.com") == 0) {
@@ -1256,7 +1173,7 @@ parse_key_constraint_extension(struct sshbuf *m, char **sk_providerp,
 		r = SSH_ERR_FEATURE_UNSUPPORTED;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	free(ext_name);
@@ -1325,7 +1242,7 @@ parse_key_constraints(struct sshbuf *m, struct sshkey *k, time_t *deathp,
 			if ((r = parse_key_constraint_extension(m,
 			    sk_providerp, dcsp, ndcsp,
 			    cert_onlyp, certs, ncerts)) != 0)
-				goto out; /* error already logged */
+				goto out;  
 			break;
 		default:
 			error_f("Unknown constraint %d", ctype);
@@ -1333,7 +1250,7 @@ parse_key_constraints(struct sshbuf *m, struct sshkey *k, time_t *deathp,
 			goto out;
 		}
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	return r;
@@ -1409,20 +1326,20 @@ process_add_identity(SocketEntry *e)
 	if ((id = lookup_identity(k)) == NULL) {
 		id = xcalloc(1, sizeof(Identity));
 		TAILQ_INSERT_TAIL(&idtab->idlist, id, next);
-		/* Increment the number of identities. */
+		 
 		idtab->nentries++;
 	} else {
-		/* identity not visible, do not update */
+		 
 		if (identity_permitted(id, e, NULL, NULL, NULL) != 0)
-			goto out; /* error already logged */
-		/* key state might have been updated */
+			goto out;  
+		 
 		sshkey_free(id->key);
 		free(id->comment);
 		free(id->sk_provider);
 		free_dest_constraints(id->dest_constraints,
 		    id->ndest_constraints);
 	}
-	/* success */
+	 
 	id->key = k;
 	id->comment = comment;
 	id->death = death;
@@ -1439,7 +1356,7 @@ process_add_identity(SocketEntry *e)
 	    sshkey_ssh_name(k), fp, comment, seconds, confirm,
 	    sk_provider == NULL ? "none" : sk_provider, ndest_constraints);
 	free(fp);
-	/* transferred */
+	 
 	k = NULL;
 	comment = NULL;
 	sk_provider = NULL;
@@ -1454,7 +1371,7 @@ process_add_identity(SocketEntry *e)
 	send_status(e, success);
 }
 
-/* XXX todo: encrypt sensitive data with passphrase */
+ 
 static void
 process_lock_agent(SocketEntry *e, int lock)
 {
@@ -1465,11 +1382,7 @@ process_lock_agent(SocketEntry *e, int lock)
 	size_t pwlen;
 
 	debug2_f("entering");
-	/*
-	 * This is deliberately fatal: the user has requested that we lock,
-	 * but we can't parse their request properly. The only safe thing to
-	 * do is abort.
-	 */
+	 
 	if ((r = sshbuf_get_cstring(e->request, &passwd, &pwlen)) != 0)
 		fatal_fr(r, "parse");
 	if (pwlen == 0) {
@@ -1485,7 +1398,7 @@ process_lock_agent(SocketEntry *e, int lock)
 			explicit_bzero(lock_pwhash, sizeof(lock_pwhash));
 			success = 1;
 		} else {
-			/* delay in 0.1s increments up to 10s */
+			 
 			if (fail_count < 100)
 				fail_count++;
 			delay = 100000 * fail_count;
@@ -1522,7 +1435,7 @@ no_identities(SocketEntry *e)
 	sshbuf_free(msg);
 }
 
-/* Add an identity to idlist; takes ownership of 'key' and 'comment' */
+ 
 static void
 add_p11_identity(struct sshkey *key, char *comment, const char *provider,
     time_t death, int confirm, struct dest_constraint *dest_constraints,
@@ -1617,11 +1530,11 @@ process_add_smartcard_key(SocketEntry *e)
 			add_p11_identity(keys[i], comments[i],
 			    canonical_provider, death, confirm,
 			    dest_constraints, ndest_constraints);
-			keys[i] = NULL;		/* transferred */
-			comments[i] = NULL;	/* transferred */
+			keys[i] = NULL;		 
+			comments[i] = NULL;	 
 			success = 1;
 		}
-		/* XXX update constraints for existing keys */
+		 
 		sshkey_free(keys[i]);
 		free(comments[i]);
 	}
@@ -1661,7 +1574,7 @@ process_remove_smartcard_key(SocketEntry *e)
 	debug_f("remove %.100s", canonical_provider);
 	for (id = TAILQ_FIRST(&idtab->idlist); id; id = nxt) {
 		nxt = TAILQ_NEXT(id, next);
-		/* Skip file--based keys */
+		 
 		if (id->provider == NULL)
 			continue;
 		if (!strcmp(canonical_provider, id->provider)) {
@@ -1678,7 +1591,7 @@ send:
 	free(provider);
 	send_status(e, success);
 }
-#endif /* ENABLE_PKCS11 */
+#endif  
 
 static int
 process_ext_session_bind(SocketEntry *e)
@@ -1702,13 +1615,13 @@ process_ext_session_bind(SocketEntry *e)
 	if ((fp = sshkey_fingerprint(key, SSH_FP_HASH_DEFAULT,
 	    SSH_FP_DEFAULT)) == NULL)
 		fatal_f("fingerprint failed");
-	/* check signature with hostkey on session ID */
+	 
 	if ((r = sshkey_verify(key, sshbuf_ptr(sig), sshbuf_len(sig),
 	    sshbuf_ptr(sid), sshbuf_len(sid), NULL, 0, NULL)) != 0) {
 		error_fr(r, "sshkey_verify for %s %s", sshkey_type(key), fp);
 		goto out;
 	}
-	/* check whether sid/key already recorded */
+	 
 	for (i = 0; i < e->nsession_ids; i++) {
 		if (!e->session_ids[i].forwarded) {
 			error_f("attempt to bind session ID to socket "
@@ -1729,12 +1642,9 @@ process_ext_session_bind(SocketEntry *e)
 			r = -1;
 			goto out;
 		}
-		/*
-		 * new sid with previously-seen key can happen, e.g. multiple
-		 * connections to the same host.
-		 */
+		 
 	}
-	/* record new key/sid */
+	 
 	if (e->nsession_ids >= AGENT_MAX_SESSION_IDS) {
 		error_f("too many session IDs recorded");
 		goto out;
@@ -1746,13 +1656,13 @@ process_ext_session_bind(SocketEntry *e)
 	    AGENT_MAX_SESSION_IDS);
 	e->session_ids[i].key = key;
 	e->session_ids[i].forwarded = fwd != 0;
-	key = NULL; /* transferred */
-	/* can't transfer sid; it's refcounted and scoped to request's life */
+	key = NULL;  
+	 
 	if ((e->session_ids[i].sid = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new");
 	if ((r = sshbuf_putb(e->session_ids[i].sid, sid)) != 0)
 		fatal_fr(r, "sshbuf_putb session ID");
-	/* success */
+	 
 	r = 0;
  out:
 	free(fp);
@@ -1781,10 +1691,7 @@ process_extension(SocketEntry *e)
 send:
 	send_status(e, success);
 }
-/*
- * dispatch incoming message.
- * returns 1 on success, 0 for incomplete messages or -1 on error.
- */
+ 
 static int
 process_message(u_int socknum)
 {
@@ -1799,7 +1706,7 @@ process_message(u_int socknum)
 	e = &sockets[socknum];
 
 	if (sshbuf_len(e->input) < 5)
-		return 0;		/* Incomplete message header. */
+		return 0;		 
 	cp = sshbuf_ptr(e->input);
 	msg_len = PEEK_U32(cp);
 	if (msg_len > AGENT_MAX_LEN) {
@@ -1808,9 +1715,9 @@ process_message(u_int socknum)
 		return -1;
 	}
 	if (sshbuf_len(e->input) < msg_len + 4)
-		return 0;		/* Incomplete message body. */
+		return 0;		 
 
-	/* move the current input to e->request */
+	 
 	sshbuf_reset(e->request);
 	if ((r = sshbuf_get_stringb(e->input, e->request)) != 0 ||
 	    (r = sshbuf_get_u8(e->request, &type)) != 0) {
@@ -1824,16 +1731,16 @@ process_message(u_int socknum)
 
 	debug_f("socket %u (fd=%d) type %d", socknum, e->fd, type);
 
-	/* check whether agent is locked */
+	 
 	if (locked && type != SSH_AGENTC_UNLOCK) {
 		sshbuf_reset(e->request);
 		switch (type) {
 		case SSH2_AGENTC_REQUEST_IDENTITIES:
-			/* send empty lists */
+			 
 			no_identities(e);
 			break;
 		default:
-			/* send a fail message for all other request types */
+			 
 			send_status(e, 0);
 		}
 		return 1;
@@ -1845,9 +1752,9 @@ process_message(u_int socknum)
 		process_lock_agent(e, type == SSH_AGENTC_LOCK);
 		break;
 	case SSH_AGENTC_REMOVE_ALL_RSA_IDENTITIES:
-		process_remove_all_identities(e); /* safe for !WITH_SSH1 */
+		process_remove_all_identities(e);  
 		break;
-	/* ssh2 */
+	 
 	case SSH2_AGENTC_SIGN_REQUEST:
 		process_sign_request2(e);
 		break;
@@ -1872,12 +1779,12 @@ process_message(u_int socknum)
 	case SSH_AGENTC_REMOVE_SMARTCARD_KEY:
 		process_remove_smartcard_key(e);
 		break;
-#endif /* ENABLE_PKCS11 */
+#endif  
 	case SSH_AGENTC_EXTENSION:
 		process_extension(e);
 		break;
 	default:
-		/* Unknown message.  Respond with failure. */
+		 
 		error("Unknown message %d", type);
 		sshbuf_reset(e->request);
 		send_status(e, 0);
@@ -1988,7 +1895,7 @@ handle_conn_write(u_int socknum)
 	int r;
 
 	if (sshbuf_len(sockets[socknum].output) == 0)
-		return 0; /* shouldn't happen */
+		return 0;  
 	if ((len = write(sockets[socknum].fd,
 	    sshbuf_ptr(sockets[socknum].output),
 	    sshbuf_len(sockets[socknum].output))) <= 0) {
@@ -2014,7 +1921,7 @@ after_poll(struct pollfd *pfd, size_t npfd, u_int maxfds)
 	for (i = 0; i < npfd; i++) {
 		if (pfd[i].revents == 0)
 			continue;
-		/* Find sockets entry */
+		 
 		for (socknum = 0; socknum < sockets_alloc; socknum++) {
 			if (sockets[socknum].type != AUTH_SOCKET &&
 			    sockets[socknum].type != AUTH_CONNECTION)
@@ -2026,7 +1933,7 @@ after_poll(struct pollfd *pfd, size_t npfd, u_int maxfds)
 			error_f("no socket for fd %d", pfd[i].fd);
 			continue;
 		}
-		/* Process events */
+		 
 		switch (sockets[socknum].type) {
 		case AUTH_SOCKET:
 			if ((pfd[i].revents & (POLLIN|POLLERR)) == 0)
@@ -2067,7 +1974,7 @@ prepare_poll(struct pollfd **pfdp, size_t *npfdp, int *timeoutp, u_int maxfds)
 	time_t deadline;
 	int r;
 
-	/* Count active sockets */
+	 
 	for (i = 0; i < sockets_alloc; i++) {
 		switch (sockets[i].type) {
 		case AUTH_SOCKET:
@@ -2103,10 +2010,7 @@ prepare_poll(struct pollfd **pfdp, size_t *npfdp, int *timeoutp, u_int maxfds)
 		case AUTH_CONNECTION:
 			pfd[j].fd = sockets[i].fd;
 			pfd[j].revents = 0;
-			/*
-			 * Only prepare to read if we can handle a full-size
-			 * input read buffer and enqueue a max size reply..
-			 */
+			 
 			if ((r = sshbuf_check_reserve(sockets[i].input,
 			    AGENT_RBUF_LEN)) == 0 &&
 			    (r = sshbuf_check_reserve(sockets[i].output,
@@ -2127,7 +2031,7 @@ prepare_poll(struct pollfd **pfdp, size_t *npfdp, int *timeoutp, u_int maxfds)
 		deadline = (deadline == 0) ? parent_alive_interval :
 		    MINIMUM(deadline, parent_alive_interval);
 	if (deadline == 0) {
-		*timeoutp = -1; /* INFTIM */
+		*timeoutp = -1;  
 	} else {
 		if (deadline > INT_MAX / 1000)
 			*timeoutp = INT_MAX / 1000;
@@ -2169,12 +2073,9 @@ cleanup_handler(int sig)
 static void
 check_parent_exists(void)
 {
-	/*
-	 * If our parent has exited then getppid() will return (pid_t)1,
-	 * so testing for that should be safe.
-	 */
+	 
 	if (parent_pid != -1 && getppid() != parent_pid) {
-		/* printf("Parent has died - Authentication agent exiting.\n"); */
+		 
 		cleanup_socket();
 		_exit(2);
 	}
@@ -2207,19 +2108,19 @@ main(int ac, char **av)
 	char pidstrbuf[1 + 3 * sizeof pid];
 	size_t len;
 	mode_t prev_mask;
-	int timeout = -1; /* INFTIM */
+	int timeout = -1;  
 	struct pollfd *pfd = NULL;
 	size_t npfd = 0;
 	u_int maxfds;
 
-	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
+	 
 	sanitise_stdfd();
 
-	/* drop */
+	 
 	(void)setegid(getgid());
 	(void)setgid(getgid());
 
-	platform_disable_tracing(0);	/* strict=no */
+	platform_disable_tracing(0);	 
 
 #ifdef RLIMIT_NOFILE
 	if (getrlimit(RLIMIT_NOFILE, &rlim) == -1)
@@ -2327,11 +2228,7 @@ main(int ac, char **av)
 		exit(0);
 	}
 
-	/*
-	 * Minimum file descriptors:
-	 * stdio (3) + listener (1) + syslog (1 maybe) + connection (1) +
-	 * a few spare for libc / stack protectors / sanitisers, etc.
-	 */
+	 
 #define SSH_AGENT_MIN_FDS (3+1+1+1+4)
 	if (rlim.rlim_cur < SSH_AGENT_MIN_FDS)
 		fatal("%s: file descriptor rlimit %lld too low (minimum %u)",
@@ -2341,7 +2238,7 @@ main(int ac, char **av)
 	parent_pid = getpid();
 
 	if (agentsocket == NULL) {
-		/* Create private directory for agent socket */
+		 
 		mktemp_proto(socket_dir, sizeof(socket_dir));
 		if (mkdtemp(socket_dir) == NULL) {
 			perror("mkdtemp: private socket dir");
@@ -2350,28 +2247,22 @@ main(int ac, char **av)
 		snprintf(socket_name, sizeof socket_name, "%s/agent.%ld", socket_dir,
 		    (long)parent_pid);
 	} else {
-		/* Try to use specified agent socket */
+		 
 		socket_dir[0] = '\0';
 		strlcpy(socket_name, agentsocket, sizeof socket_name);
 	}
 
-	/*
-	 * Create socket early so it will exist before command gets run from
-	 * the parent.
-	 */
+	 
 	prev_mask = umask(0177);
 	sock = unix_listener(socket_name, SSH_LISTEN_BACKLOG, 0);
 	if (sock < 0) {
-		/* XXX - unix_listener() calls error() not perror() */
-		*socket_name = '\0'; /* Don't unlink any existing file */
+		 
+		*socket_name = '\0';  
 		cleanup_exit(1);
 	}
 	umask(prev_mask);
 
-	/*
-	 * Fork, and have the parent execute the command, if any, or present
-	 * the socket data.  The child continues as the authentication agent.
-	 */
+	 
 	if (D_flag || d_flag) {
 		log_init(__progname,
 		    d_flag ? SYSLOG_LEVEL_DEBUG3 : SYSLOG_LEVEL_INFO,
@@ -2388,7 +2279,7 @@ main(int ac, char **av)
 		perror("fork");
 		cleanup_exit(1);
 	}
-	if (pid != 0) {		/* Parent - execute the given command. */
+	if (pid != 0) {		 
 		close(sock);
 		snprintf(pidstrbuf, sizeof pidstrbuf, "%ld", (long)pid);
 		if (ac == 0) {
@@ -2409,7 +2300,7 @@ main(int ac, char **av)
 		perror(av[0]);
 		exit(1);
 	}
-	/* child */
+	 
 	log_init(__progname, SYSLOG_LEVEL_INFO, SYSLOG_FACILITY_AUTH, 0);
 
 	if (setsid() == -1) {
@@ -2422,7 +2313,7 @@ main(int ac, char **av)
 		error_f("stdfd_devnull failed");
 
 #ifdef HAVE_SETRLIMIT
-	/* deny core dumps, since memory contains unencrypted private keys */
+	 
 	rlim.rlim_cur = rlim.rlim_max = 0;
 	if (setrlimit(RLIMIT_CORE, &rlim) == -1) {
 		error("setrlimit RLIMIT_CORE: %s", strerror(errno));
@@ -2456,7 +2347,7 @@ skip:
 		saved_errno = errno;
 		if (parent_alive_interval != 0)
 			check_parent_exists();
-		(void) reaper();	/* remove expired keys */
+		(void) reaper();	 
 		if (result == -1) {
 			if (saved_errno == EINTR)
 				continue;
@@ -2464,5 +2355,5 @@ skip:
 		} else if (result > 0)
 			after_poll(pfd, npfd, maxfds);
 	}
-	/* NOTREACHED */
+	 
 }

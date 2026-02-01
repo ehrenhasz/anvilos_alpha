@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// reset-uniphier-glue.c - Glue layer reset driver for UniPhier
-// Copyright 2018 Socionext Inc.
-// Author: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -161,7 +161,7 @@ static const struct of_device_id uniphier_glue_reset_match[] = {
 		.compatible = "socionext,uniphier-pxs3-ahci-reset",
 		.data = &uniphier_pxs2_data,
 	},
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_glue_reset_match);
 

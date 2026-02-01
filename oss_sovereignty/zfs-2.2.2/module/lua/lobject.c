@@ -1,8 +1,4 @@
-/*
-** $Id: lobject.c,v 2.58.1.1 2013/04/12 18:48:47 roberto Exp $
-** Some generic functions over Lua objects
-** See Copyright Notice in lua.h
-*/
+ 
 
 #define lobject_c
 #define LUA_CORE
@@ -23,13 +19,9 @@
 LUAI_DDEF const TValue luaO_nilobject_ = {NILCONSTANT};
 
 
-/*
-** converts an integer to a "floating point byte", represented as
-** (eeeeexxx), where the real value is (1xxx) * 2^(eeeee - 1) if
-** eeeee != 0 and (xxx) otherwise.
-*/
+ 
 int luaO_int2fb (unsigned int x) {
-  int e = 0;  /* exponent */
+  int e = 0;   
   if (x < 8) return x;
   while (x >= 0x10) {
     x = (x+1) >> 1;
@@ -39,7 +31,7 @@ int luaO_int2fb (unsigned int x) {
 }
 
 
-/* converts back */
+ 
 int luaO_fb2int (int x) {
   int e = (x >> 3) & 0x1f;
   if (e == 0) return x;
@@ -97,7 +89,7 @@ static int isneg (const char **s) {
 
 
 static lua_Number readhexa (const char **s, lua_Number r, int *count) {
-  for (; lisxdigit(cast_uchar(**s)); (*s)++) {  /* read integer part */
+  for (; lisxdigit(cast_uchar(**s)); (*s)++) {   
     r = (r * cast_num(16.0)) + cast_num(luaO_hexavalue(cast_uchar(**s)));
     (*count)++;
   }
@@ -105,42 +97,39 @@ static lua_Number readhexa (const char **s, lua_Number r, int *count) {
 }
 
 
-/*
-** convert an hexadecimal numeric string to a number, following
-** C99 specification for 'strtod'
-*/
+ 
 static lua_Number lua_strx2number (const char *s, char **endptr) {
   lua_Number r = 0.0;
   int e = 0, i = 0;
-  int neg = 0;  /* 1 if number is negative */
-  *endptr = cast(char *, s);  /* nothing is valid yet */
-  while (lisspace(cast_uchar(*s))) s++;  /* skip initial spaces */
-  neg = isneg(&s);  /* check signal */
-  if (!(*s == '0' && (*(s + 1) == 'x' || *(s + 1) == 'X')))  /* check '0x' */
-    return 0.0;  /* invalid format (no '0x') */
-  s += 2;  /* skip '0x' */
-  r = readhexa(&s, r, &i);  /* read integer part */
+  int neg = 0;   
+  *endptr = cast(char *, s);   
+  while (lisspace(cast_uchar(*s))) s++;   
+  neg = isneg(&s);   
+  if (!(*s == '0' && (*(s + 1) == 'x' || *(s + 1) == 'X')))   
+    return 0.0;   
+  s += 2;   
+  r = readhexa(&s, r, &i);   
   if (*s == '.') {
-    s++;  /* skip dot */
-    r = readhexa(&s, r, &e);  /* read fractional part */
+    s++;   
+    r = readhexa(&s, r, &e);   
   }
   if (i == 0 && e == 0)
-    return 0.0;  /* invalid format (no digit) */
-  e *= -4;  /* each fractional digit divides value by 2^-4 */
-  *endptr = cast(char *, s);  /* valid up to here */
-  if (*s == 'p' || *s == 'P') {  /* exponent part? */
+    return 0.0;   
+  e *= -4;   
+  *endptr = cast(char *, s);   
+  if (*s == 'p' || *s == 'P') {   
     int exp1 = 0;
     int neg1;
-    s++;  /* skip 'p' */
-    neg1 = isneg(&s);  /* signal */
+    s++;   
+    neg1 = isneg(&s);   
     if (!lisdigit(cast_uchar(*s)))
-      goto ret;  /* must have at least one digit */
-    while (lisdigit(cast_uchar(*s)))  /* read exponent */
+      goto ret;   
+    while (lisdigit(cast_uchar(*s)))   
       exp1 = exp1 * 10 + *(s++) - '0';
     if (neg1) exp1 = -exp1;
     e += exp1;
   }
-  *endptr = cast(char *, s);  /* valid up to here */
+  *endptr = cast(char *, s);   
  ret:
   if (neg) r = -r;
   return ((e >= 0) ? (r * (1ULL << e)) : (r / (1ULL << -e)));
@@ -151,15 +140,15 @@ static lua_Number lua_strx2number (const char *s, char **endptr) {
 
 int luaO_str2d (const char *s, size_t len, lua_Number *result) {
   char *endptr;
-  if (strpbrk(s, "nN"))  /* reject 'inf' and 'nan' */
+  if (strpbrk(s, "nN"))   
     return 0;
-  else if (strpbrk(s, "xX"))  /* hexa? */
+  else if (strpbrk(s, "xX"))   
     *result = lua_strx2number(s, &endptr);
   else
     *result = lua_str2number(s, &endptr);
-  if (endptr == s) return 0;  /* nothing recognized */
+  if (endptr == s) return 0;   
   while (lisspace(cast_uchar(*endptr))) endptr++;
-  return (endptr == s + len);  /* OK if no trailing characters */
+  return (endptr == s + len);   
 }
 
 
@@ -169,13 +158,13 @@ static void pushstr (lua_State *L, const char *str, size_t l) {
 }
 
 
-/* this function handles only `%d', `%c', %f, %p, and `%s' formats */
+ 
 const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_list argp) {
   int n = 0;
   for (;;) {
     const char *e = strchr(fmt, '%');
     if (e == NULL) break;
-    luaD_checkstack(L, 2);  /* fmt + item */
+    luaD_checkstack(L, 2);   
     pushstr(L, fmt, e - fmt);
     switch (*(e+1)) {
       case 's': {
@@ -199,7 +188,7 @@ const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_list argp) {
         break;
       }
       case 'p': {
-        char buff[4*sizeof(void *) + 8]; /* should be enough space for a `%p' */
+        char buff[4*sizeof(void *) + 8];  
         int l = lcompat_sprintf(buff, sizeof(buff), "%p", va_arg(argp, void *));
         pushstr(L, buff, l);
         break;
@@ -234,7 +223,7 @@ const char *luaO_pushfstring (lua_State *L, const char *fmt, ...) {
 }
 
 
-/* number of chars of a literal string without the ending \0 */
+ 
 #define LL(x)	(sizeof(x)/sizeof(char) - 1)
 
 #define RETS	"..."
@@ -245,32 +234,32 @@ const char *luaO_pushfstring (lua_State *L, const char *fmt, ...) {
 
 void luaO_chunkid (char *out, const char *source, size_t bufflen) {
   size_t l = strlen(source);
-  if (*source == '=') {  /* 'literal' source */
-    if (l <= bufflen)  /* small enough? */
+  if (*source == '=') {   
+    if (l <= bufflen)   
       memcpy(out, source + 1, l * sizeof(char));
-    else {  /* truncate it */
+    else {   
       addstr(out, source + 1, bufflen - 1);
       *out = '\0';
     }
   }
-  else if (*source == '@') {  /* file name */
-    if (l <= bufflen)  /* small enough? */
+  else if (*source == '@') {   
+    if (l <= bufflen)   
       memcpy(out, source + 1, l * sizeof(char));
-    else {  /* add '...' before rest of name */
+    else {   
       addstr(out, RETS, LL(RETS));
       bufflen -= LL(RETS);
       memcpy(out, source + 1 + l - bufflen, bufflen * sizeof(char));
     }
   }
-  else {  /* string; format as [string "source"] */
-    const char *nl = strchr(source, '\n');  /* find first new line (if any) */
-    addstr(out, PRE, LL(PRE));  /* add prefix */
-    bufflen -= LL(PRE RETS POS) + 1;  /* save space for prefix+suffix+'\0' */
-    if (l < bufflen && nl == NULL) {  /* small one-line source? */
-      addstr(out, source, l);  /* keep it */
+  else {   
+    const char *nl = strchr(source, '\n');   
+    addstr(out, PRE, LL(PRE));   
+    bufflen -= LL(PRE RETS POS) + 1;   
+    if (l < bufflen && nl == NULL) {   
+      addstr(out, source, l);   
     }
     else {
-      if (nl != NULL) l = nl - source;  /* stop at first newline */
+      if (nl != NULL) l = nl - source;   
       if (l > bufflen) l = bufflen;
       addstr(out, source, l);
       addstr(out, RETS, LL(RETS));

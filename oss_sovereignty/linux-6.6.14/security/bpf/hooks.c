@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2020 Google LLC.
- */
+
+ 
 #include <linux/lsm_hooks.h>
 #include <linux/bpf_lsm.h>
 

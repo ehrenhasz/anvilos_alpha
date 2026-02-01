@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _PANEL_SAMSUNG_S6E63M0_H
 #define _PANEL_SAMSUNG_S6E63M0_H
 
-/* Manufacturer Command Set */
+ 
 #define MCS_ELVSS_ON		0xb1
 #define MCS_TEMP_SWIRE		0xb2
 #define MCS_PENTILE_1		0xb3
@@ -37,4 +37,4 @@ int s6e63m0_probe(struct device *dev, void *trsp,
 		  bool dsi_mode);
 void s6e63m0_remove(struct device *dev);
 
-#endif /* _PANEL_SAMSUNG_S6E63M0_H */
+#endif  

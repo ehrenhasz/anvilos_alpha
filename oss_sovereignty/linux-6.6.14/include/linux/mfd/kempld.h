@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Kontron PLD driver definitions
- *
- * Copyright (c) 2010-2012 Kontron Europe GmbH
- * Author: Michael Brunner <michael.brunner@kontron.com>
- */
+ 
+ 
 
 #ifndef _LINUX_MFD_KEMPLD_H_
 #define _LINUX_MFD_KEMPLD_H_
 
-/* kempld register definitions */
+ 
 #define KEMPLD_IOINDEX			0xa80
 #define KEMPLD_IODATA			0xa81
 #define KEMPLD_MUTEX_KEY		0x80
@@ -50,17 +45,7 @@
 
 #define KEMPLD_VERSION_LEN		10
 
-/**
- * struct kempld_info - PLD device information structure
- * @major:	PLD major revision
- * @minor:	PLD minor revision
- * @buildnr:	PLD build number
- * @number:	PLD board specific index
- * @type:	PLD type
- * @spec_major:	PLD FW specification major revision
- * @spec_minor:	PLD FW specification minor revision
- * @version:	PLD version string
- */
+ 
 struct kempld_info {
 	unsigned int major;
 	unsigned int minor;
@@ -72,17 +57,7 @@ struct kempld_info {
 	char version[KEMPLD_VERSION_LEN];
 };
 
-/**
- * struct kempld_device_data - Internal representation of the PLD device
- * @io_base:		Pointer to the IO memory
- * @io_index:		Pointer to the IO index register
- * @io_data:		Pointer to the IO data register
- * @pld_clock:		PLD clock frequency
- * @feature_mask:	PLD feature mask
- * @dev:		Pointer to kernel device structure
- * @info:		KEMPLD info structure
- * @lock:		PLD mutex
- */
+ 
 struct kempld_device_data {
 	void __iomem		*io_base;
 	void __iomem		*io_index;
@@ -94,16 +69,7 @@ struct kempld_device_data {
 	struct mutex		lock;
 };
 
-/**
- * struct kempld_platform_data - PLD hardware configuration structure
- * @pld_clock:			PLD clock frequency
- * @gpio_base			GPIO base pin number
- * @ioresource:			IO addresses of the PLD
- * @get_mutex:			PLD specific get_mutex callback
- * @release_mutex:		PLD specific release_mutex callback
- * @get_info:			PLD specific get_info callback
- * @register_cells:		PLD specific register_cells callback
- */
+ 
 struct kempld_platform_data {
 	u32				pld_clock;
 	int				gpio_base;
@@ -123,4 +89,4 @@ extern void kempld_write16(struct kempld_device_data *pld, u8 index, u16 data);
 extern u32 kempld_read32(struct kempld_device_data *pld, u8 index);
 extern void kempld_write32(struct kempld_device_data *pld, u8 index, u32 data);
 
-#endif /* _LINUX_MFD_KEMPLD_H_ */
+#endif  

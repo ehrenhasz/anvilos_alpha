@@ -1,26 +1,9 @@
-/* Copyright (C) 1992, 1995-2002, 2005-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
-   optimizes away the name == NULL test below.  */
+ 
 #define _GL_ARG_NONNULL(params)
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <stdlib.h>
 
 #include <errno.h>
@@ -36,7 +19,7 @@
 #endif
 
 #if _LIBC
-/* This lock protects against simultaneous modifications of 'environ'.  */
+ 
 # include <bits/libc-lock.h>
 __libc_lock_define_initialized (static, envlock)
 # define LOCK   __libc_lock_lock (envlock)
@@ -46,7 +29,7 @@ __libc_lock_define_initialized (static, envlock)
 # define UNLOCK
 #endif
 
-/* In the GNU C library we must keep the namespace clean.  */
+ 
 #ifdef _LIBC
 # define unsetenv __unsetenv
 #endif
@@ -73,13 +56,13 @@ unsetenv (const char *name)
   while (*ep != NULL)
     if (!strncmp (*ep, name, len) && (*ep)[len] == '=')
       {
-        /* Found it.  Remove this pointer by moving later ones back.  */
+         
         char **dp = ep;
 
         do
           dp[0] = dp[1];
         while (*dp++);
-        /* Continue the loop in case NAME appears again.  */
+         
       }
     else
       ++ep;
@@ -94,7 +77,7 @@ unsetenv (const char *name)
 weak_alias (__unsetenv, unsetenv)
 #endif
 
-#else /* HAVE_UNSETENV */
+#else  
 
 # undef unsetenv
 # if !HAVE_DECL_UNSETENV
@@ -105,8 +88,7 @@ extern int unsetenv (const char *);
 #  endif
 # endif
 
-/* Call the underlying unsetenv, in case there is hidden bookkeeping
-   that needs updating beyond just modifying environ.  */
+ 
 int
 rpl_unsetenv (const char *name)
 {
@@ -124,4 +106,4 @@ rpl_unsetenv (const char *name)
   return result;
 }
 
-#endif /* HAVE_UNSETENV */
+#endif  

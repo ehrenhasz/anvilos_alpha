@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -46,10 +46,7 @@ static __cold int io_uring_show_cred(struct seq_file *m, unsigned int id,
 	return 0;
 }
 
-/*
- * Caller holds a reference to the file already, we don't need to do
- * anything else to get an extra reference.
- */
+ 
 __cold void io_uring_show_fdinfo(struct seq_file *m, struct file *f)
 {
 	struct io_ring_ctx *ctx = f->private_data;
@@ -72,12 +69,7 @@ __cold void io_uring_show_fdinfo(struct seq_file *m, struct file *f)
 	if (ctx->flags & IORING_SETUP_SQE128)
 		sq_shift = 1;
 
-	/*
-	 * we may get imprecise sqe and cqe info if uring is actively running
-	 * since we get cached_sq_head and cached_cq_tail without uring_lock
-	 * and sq_tail and cq_head are changed by userspace. But it's ok since
-	 * we usually use these info when it is stuck.
-	 */
+	 
 	seq_printf(m, "SqMask:\t0x%x\n", sq_mask);
 	seq_printf(m, "SqHead:\t%u\n", sq_head);
 	seq_printf(m, "SqTail:\t%u\n", sq_tail);
@@ -134,12 +126,7 @@ __cold void io_uring_show_fdinfo(struct seq_file *m, struct file *f)
 		seq_printf(m, "\n");
 	}
 
-	/*
-	 * Avoid ABBA deadlock between the seq lock and the io_uring mutex,
-	 * since fdinfo case grabs it in the opposite direction of normal use
-	 * cases. If we fail to get the lock, we just don't iterate any
-	 * structures that could be going away outside the io_uring mutex.
-	 */
+	 
 	has_lock = mutex_trylock(&ctx->uring_lock);
 
 	if (has_lock && (ctx->flags & IORING_SETUP_SQPOLL)) {

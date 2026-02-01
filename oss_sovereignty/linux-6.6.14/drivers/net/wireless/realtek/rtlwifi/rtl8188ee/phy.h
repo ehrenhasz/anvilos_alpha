@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92C_PHY_H__
 #define __RTL92C_PHY_H__
 
-/* MAX_TX_COUNT must always set to 4, otherwise read efuse
- * table secquence will be wrong.
- */
+ 
 #define		MAX_TX_COUNT				4
 
 #define MAX_PRECMD_CNT				16

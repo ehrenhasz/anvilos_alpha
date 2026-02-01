@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2012  Realtek Corporation.*/
+ 
+ 
 
-/*===========================================
- * The following is for 8821A 1ANT BT Co-exist definition
- *===========================================
- */
+ 
 #define	BT_INFO_8821A_1ANT_B_FTP	BIT7
 #define	BT_INFO_8821A_1ANT_B_A2DP	BIT6
 #define	BT_INFO_8821A_1ANT_B_HID	BIT5
@@ -62,7 +59,7 @@ enum BT_8821A_1ANT_COEX_ALGO {
 };
 
 struct coex_dm_8821a_1ant {
-	/* fw mechanism */
+	 
 	bool	cur_ignore_wlan_act;
 	bool	pre_ignore_wlan_act;
 	u8	pre_ps_tdma;
@@ -79,7 +76,7 @@ struct coex_dm_8821a_1ant {
 	u8	pre_rpwm;
 	u8	cur_rpwm;
 
-	/* sw mechanism */
+	 
 	bool	pre_low_penalty_ra;
 	bool	cur_low_penalty_ra;
 	u32	pre_val_0x6c0;
@@ -90,14 +87,14 @@ struct coex_dm_8821a_1ant {
 	u32	cur_val_0x6c8;
 	u8	pre_val_0x6cc;
 	u8	cur_val_0x6cc;
-	/* Auto Rate Fallback Retry cnt */
+	 
 	u32	backup_arfr_cnt1;
-	/* Auto Rate Fallback Retry cnt */
+	 
 	u32	backup_arfr_cnt2;
 	u16	backup_retry_limit;
 	u8	backup_ampdu_max_time;
 
-	/* algorithm related */
+	 
 	u8	pre_algorithm;
 	u8	cur_algorithm;
 	u8	bt_status;
@@ -144,10 +141,7 @@ struct coex_sta_8821a_1ant {
 	u8	bt_info_ext;
 };
 
-/*===========================================
- * The following is interface which will notify coex module.
- *===========================================
- */
+ 
 void ex_btc8821a1ant_init_hwconfig(struct btc_coexist *btcoexist,
 				   bool wifi_only);
 void ex_btc8821a1ant_init_coex_dm(struct btc_coexist *btcoexist);

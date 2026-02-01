@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __BCM47XXSFLASH_H
 #define __BCM47XXSFLASH_H
 
@@ -6,22 +6,22 @@
 
 #define BCM47XXSFLASH_WINDOW_SZ			SZ_16M
 
-/* Used for ST flashes only. */
-#define OPCODE_ST_WREN		0x0006		/* Write Enable */
-#define OPCODE_ST_WRDIS		0x0004		/* Write Disable */
-#define OPCODE_ST_RDSR		0x0105		/* Read Status Register */
-#define OPCODE_ST_WRSR		0x0101		/* Write Status Register */
-#define OPCODE_ST_READ		0x0303		/* Read Data Bytes */
-#define OPCODE_ST_PP		0x0302		/* Page Program */
-#define OPCODE_ST_SE		0x02d8		/* Sector Erase */
-#define OPCODE_ST_BE		0x00c7		/* Bulk Erase */
-#define OPCODE_ST_DP		0x00b9		/* Deep Power-down */
-#define OPCODE_ST_RES		0x03ab		/* Read Electronic Signature */
-#define OPCODE_ST_CSA		0x1000		/* Keep chip select asserted */
-#define OPCODE_ST_SSE		0x0220		/* Sub-sector Erase */
-#define OPCODE_ST_READ4B	0x6313		/* Read Data Bytes in 4Byte addressing mode */
+ 
+#define OPCODE_ST_WREN		0x0006		 
+#define OPCODE_ST_WRDIS		0x0004		 
+#define OPCODE_ST_RDSR		0x0105		 
+#define OPCODE_ST_WRSR		0x0101		 
+#define OPCODE_ST_READ		0x0303		 
+#define OPCODE_ST_PP		0x0302		 
+#define OPCODE_ST_SE		0x02d8		 
+#define OPCODE_ST_BE		0x00c7		 
+#define OPCODE_ST_DP		0x00b9		 
+#define OPCODE_ST_RES		0x03ab		 
+#define OPCODE_ST_CSA		0x1000		 
+#define OPCODE_ST_SSE		0x0220		 
+#define OPCODE_ST_READ4B	0x6313		 
 
-/* Used for Atmel flashes only. */
+ 
 #define OPCODE_AT_READ				0x07e8
 #define OPCODE_AT_PAGE_READ			0x07d2
 #define OPCODE_AT_STATUS			0x01d7
@@ -42,14 +42,14 @@
 #define OPCODE_AT_BUF1_REPROGRAM		0x0258
 #define OPCODE_AT_BUF2_REPROGRAM		0x0259
 
-/* Status register bits for ST flashes */
-#define SR_ST_WIP		0x01		/* Write In Progress */
-#define SR_ST_WEL		0x02		/* Write Enable Latch */
-#define SR_ST_BP_MASK		0x1c		/* Block Protect */
+ 
+#define SR_ST_WIP		0x01		 
+#define SR_ST_WEL		0x02		 
+#define SR_ST_BP_MASK		0x1c		 
 #define SR_ST_BP_SHIFT		2
-#define SR_ST_SRWD		0x80		/* Status Register Write Disable */
+#define SR_ST_SRWD		0x80		 
 
-/* Status register bits for Atmel flashes */
+ 
 #define SR_AT_READY		0x80
 #define SR_AT_MISMATCH		0x40
 #define SR_AT_ID_MASK		0x38
@@ -78,4 +78,4 @@ struct bcm47xxsflash {
 	struct mtd_info mtd;
 };
 
-#endif /* BCM47XXSFLASH */
+#endif  

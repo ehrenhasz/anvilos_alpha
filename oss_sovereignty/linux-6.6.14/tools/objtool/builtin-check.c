@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015-2017 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+
+ 
 
 #include <subcmd/parse-options.h>
 #include <string.h>
@@ -40,12 +38,7 @@ static int parse_hacks(const struct option *opt, const char *str, int unset)
 {
 	bool found = false;
 
-	/*
-	 * Use strstr() as a lazy method of checking for comma-separated
-	 * options.
-	 *
-	 * No string provided == enable all options.
-	 */
+	 
 
 	if (!str || strstr(str, "jump_label")) {
 		opts.hack_jump_label = true;

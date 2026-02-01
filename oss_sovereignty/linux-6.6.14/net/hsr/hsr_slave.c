@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * Frame handler other utility functions for HSR and PRP.
- */
+
+ 
 
 #include "hsr_slave.h"
 #include <linux/etherdevice.h>
@@ -28,7 +22,7 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
 	struct hsr_priv *hsr;
 	__be16 protocol;
 
-	/* Packets from dev_loopback_xmit() do not have L2 header, bail out */
+	 
 	if (unlikely(skb->pkt_type == PACKET_LOOPBACK))
 		return RX_HANDLER_PASS;
 
@@ -43,15 +37,12 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
 	hsr = port->hsr;
 
 	if (hsr_addr_is_self(port->hsr, eth_hdr(skb)->h_source)) {
-		/* Directly kill frames sent by ourselves */
+		 
 		kfree_skb(skb);
 		goto finish_consume;
 	}
 
-	/* For HSR, only tagged frames are expected (unless the device offloads
-	 * HSR tag removal), but for PRP there could be non tagged frames as
-	 * well from Single attached nodes (SANs).
-	 */
+	 
 	protocol = eth_hdr(skb)->h_proto;
 
 	if (!(port->dev->features & NETIF_F_HW_HSR_TAG_RM) &&
@@ -83,14 +74,14 @@ bool hsr_port_exists(const struct net_device *dev)
 static int hsr_check_dev_ok(struct net_device *dev,
 			    struct netlink_ext_ack *extack)
 {
-	/* Don't allow HSR on non-ethernet like devices */
+	 
 	if ((dev->flags & IFF_LOOPBACK) || dev->type != ARPHRD_ETHER ||
 	    dev->addr_len != ETH_ALEN) {
 		NL_SET_ERR_MSG_MOD(extack, "Cannot use loopback or non-ethernet device as HSR slave.");
 		return -EINVAL;
 	}
 
-	/* Don't allow enslaving hsr devices */
+	 
 	if (is_hsr_master(dev)) {
 		NL_SET_ERR_MSG_MOD(extack,
 				   "Cannot create trees of HSR devices.");
@@ -114,14 +105,12 @@ static int hsr_check_dev_ok(struct net_device *dev,
 		return -EOPNOTSUPP;
 	}
 
-	/* HSR over bonded devices has not been tested, but I'm not sure it
-	 * won't work...
-	 */
+	 
 
 	return 0;
 }
 
-/* Setup device to be added to the HSR bridge. */
+ 
 static int hsr_portdev_setup(struct hsr_priv *hsr, struct net_device *dev,
 			     struct hsr_port *port,
 			     struct netlink_ext_ack *extack)
@@ -131,9 +120,7 @@ static int hsr_portdev_setup(struct hsr_priv *hsr, struct net_device *dev,
 	struct hsr_port *master;
 	int res;
 
-	/* Don't use promiscuous mode for offload since L2 frame forward
-	 * happens at the offloaded hardware.
-	 */
+	 
 	if (!port->hsr->fwd_offloaded) {
 		res = dev_set_promiscuity(dev, 1);
 		if (res)
@@ -177,7 +164,7 @@ int hsr_add_port(struct hsr_priv *hsr, struct net_device *dev,
 
 	port = hsr_port_get_hsr(hsr, type);
 	if (port)
-		return -EBUSY;	/* This port already exists */
+		return -EBUSY;	 
 
 	port = kzalloc(sizeof(*port), GFP_KERNEL);
 	if (!port)

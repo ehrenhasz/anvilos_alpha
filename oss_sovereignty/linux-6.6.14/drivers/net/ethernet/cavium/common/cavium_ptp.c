@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* cavium_ptp.c - PTP 1588 clock on Cavium hardware
- * Copyright (c) 2003-2015, 2017 Cavium, Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -84,12 +82,7 @@ void cavium_ptp_put(struct cavium_ptp *ptp)
 }
 EXPORT_SYMBOL(cavium_ptp_put);
 
-/**
- * cavium_ptp_adjfine() - Adjust ptp frequency
- * @ptp_info: PTP clock info
- * @scaled_ppm: how much to adjust by, in parts per million, but with a
- *              16 bit binary fractional field
- */
+ 
 static int cavium_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
 {
 	struct cavium_ptp *clock =
@@ -104,21 +97,7 @@ static int cavium_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
 		scaled_ppm = -scaled_ppm;
 	}
 
-	/* The hardware adds the clock compensation value to the PTP clock
-	 * on every coprocessor clock cycle. Typical convention is that it
-	 * represent number of nanosecond betwen each cycle. In this
-	 * convention compensation value is in 64 bit fixed-point
-	 * representation where upper 32 bits are number of nanoseconds
-	 * and lower is fractions of nanosecond.
-	 * The scaled_ppm represent the ratio in "parts per bilion" by which the
-	 * compensation value should be corrected.
-	 * To calculate new compenstation value we use 64bit fixed point
-	 * arithmetic on following formula
-	 * comp = tbase + tbase * scaled_ppm / (1M * 2^16)
-	 * where tbase is the basic compensation value calculated initialy
-	 * in cavium_ptp_init() -> tbase = 1/Hz. Then we use endian
-	 * independent structure definition to write data to PTP register.
-	 */
+	 
 	comp = ((u64)1000000000ull << 32) / clock->clock_rate;
 	adj = comp * scaled_ppm;
 	adj >>= 16;
@@ -132,11 +111,7 @@ static int cavium_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
 	return 0;
 }
 
-/**
- * cavium_ptp_adjtime() - Adjust ptp time
- * @ptp_info:   PTP clock info
- * @delta: how much to adjust by, in nanosecs
- */
+ 
 static int cavium_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
 {
 	struct cavium_ptp *clock =
@@ -147,17 +122,13 @@ static int cavium_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
 	timecounter_adjtime(&clock->time_counter, delta);
 	spin_unlock_irqrestore(&clock->spin_lock, flags);
 
-	/* Sync, for network driver to get latest value */
+	 
 	smp_mb();
 
 	return 0;
 }
 
-/**
- * cavium_ptp_gettime() - Get hardware clock time with adjustment
- * @ptp_info: PTP clock info
- * @ts:  timespec
- */
+ 
 static int cavium_ptp_gettime(struct ptp_clock_info *ptp_info,
 			      struct timespec64 *ts)
 {
@@ -175,11 +146,7 @@ static int cavium_ptp_gettime(struct ptp_clock_info *ptp_info,
 	return 0;
 }
 
-/**
- * cavium_ptp_settime() - Set hardware clock time. Reset adjustment
- * @ptp_info: PTP clock info
- * @ts:  timespec
- */
+ 
 static int cavium_ptp_settime(struct ptp_clock_info *ptp_info,
 			      const struct timespec64 *ts)
 {
@@ -197,12 +164,7 @@ static int cavium_ptp_settime(struct ptp_clock_info *ptp_info,
 	return 0;
 }
 
-/**
- * cavium_ptp_enable() - Request to enable or disable an ancillary feature.
- * @ptp_info: PTP clock info
- * @rq:  request
- * @on:  is it on
- */
+ 
 static int cavium_ptp_enable(struct ptp_clock_info *ptp_info,
 			     struct ptp_clock_request *rq, int on)
 {
@@ -298,12 +260,7 @@ error_free:
 	devm_kfree(dev, clock);
 
 error:
-	/* For `cavium_ptp_get()` we need to differentiate between the case
-	 * when the core has not tried to probe this device and the case when
-	 * the probe failed.  In the later case we pretend that the
-	 * initialization was successful and keep the error in
-	 * `dev->driver_data`.
-	 */
+	 
 	pci_set_drvdata(pdev, ERR_PTR(err));
 	return 0;
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	w1_ds2408.c - w1 family 29 (DS2408) driver
- *
- * Copyright (c) 2010 Jean-Francois Dagenais <dagenaisj@sonatest.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,17 +15,17 @@
 
 #define W1_F29_RETRIES		3
 
-#define W1_F29_REG_LOGIG_STATE             0x88 /* R */
-#define W1_F29_REG_OUTPUT_LATCH_STATE      0x89 /* R */
-#define W1_F29_REG_ACTIVITY_LATCH_STATE    0x8A /* R */
-#define W1_F29_REG_COND_SEARCH_SELECT_MASK 0x8B /* RW */
-#define W1_F29_REG_COND_SEARCH_POL_SELECT  0x8C /* RW */
-#define W1_F29_REG_CONTROL_AND_STATUS      0x8D /* RW */
+#define W1_F29_REG_LOGIG_STATE             0x88  
+#define W1_F29_REG_OUTPUT_LATCH_STATE      0x89  
+#define W1_F29_REG_ACTIVITY_LATCH_STATE    0x8A  
+#define W1_F29_REG_COND_SEARCH_SELECT_MASK 0x8B  
+#define W1_F29_REG_COND_SEARCH_POL_SELECT  0x8C  
+#define W1_F29_REG_CONTROL_AND_STATUS      0x8D  
 
 #define W1_F29_FUNC_READ_PIO_REGS          0xF0
 #define W1_F29_FUNC_CHANN_ACCESS_READ      0xF5
 #define W1_F29_FUNC_CHANN_ACCESS_WRITE     0x5A
-/* also used to write the control/status reg (0x8D): */
+ 
 #define W1_F29_FUNC_WRITE_COND_SEARCH_REG  0xCC
 #define W1_F29_FUNC_RESET_ACTIVITY_LATCHES 0xC3
 
@@ -192,8 +188,8 @@ static ssize_t output_write(struct file *filp, struct kobject *kobj,
 		}
 
 		if (w1_reset_resume_command(sl->master))
-			goto out; /* unrecoverable error */
-		/* try again, the slave is ready for a command */
+			goto out;  
+		 
 	} while (--retries);
 
 out:
@@ -206,9 +202,7 @@ out:
 }
 
 
-/*
- * Writing to the activity file resets the activity latches.
- */
+ 
 static ssize_t activity_write(struct file *filp, struct kobject *kobj,
 			      struct bin_attribute *bin_attr, char *buf,
 			      loff_t off, size_t count)
@@ -271,7 +265,7 @@ static ssize_t status_control_write(struct file *filp, struct kobject *kobj,
 
 		w1_write_block(sl->master, w1_buf, 3);
 		if (w1_read_8(sl->master) == *buf) {
-			/* success! */
+			 
 			mutex_unlock(&sl->master->bus_mutex);
 			return 1;
 		}
@@ -282,12 +276,7 @@ error:
 	return -EIO;
 }
 
-/*
- * This is a special sequence we must do to ensure the P0 output is not stuck
- * in test mode. This is described in rev 2 of the ds2408's datasheet
- * (http://datasheets.maximintegrated.com/en/ds/DS2408.pdf) under
- * "APPLICATION INFORMATION/Power-up timing".
- */
+ 
 static int w1_f29_disable_test_mode(struct w1_slave *sl)
 {
 	int res;

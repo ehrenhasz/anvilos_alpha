@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for Microchip I2S Multi-channel controller
-//
-// Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries
-//
-// Author: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+
+
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -25,66 +25,60 @@
 #include <sound/soc.h>
 #include <sound/dmaengine_pcm.h>
 
-/*
- * ---- I2S Controller Register map ----
- */
-#define MCHP_I2SMCC_CR		0x0000	/* Control Register */
-#define MCHP_I2SMCC_MRA		0x0004	/* Mode Register A */
-#define MCHP_I2SMCC_MRB		0x0008	/* Mode Register B */
-#define MCHP_I2SMCC_SR		0x000C	/* Status Register */
-#define MCHP_I2SMCC_IERA	0x0010	/* Interrupt Enable Register A */
-#define MCHP_I2SMCC_IDRA	0x0014	/* Interrupt Disable Register A */
-#define MCHP_I2SMCC_IMRA	0x0018	/* Interrupt Mask Register A */
-#define MCHP_I2SMCC_ISRA	0X001C	/* Interrupt Status Register A */
+ 
+#define MCHP_I2SMCC_CR		0x0000	 
+#define MCHP_I2SMCC_MRA		0x0004	 
+#define MCHP_I2SMCC_MRB		0x0008	 
+#define MCHP_I2SMCC_SR		0x000C	 
+#define MCHP_I2SMCC_IERA	0x0010	 
+#define MCHP_I2SMCC_IDRA	0x0014	 
+#define MCHP_I2SMCC_IMRA	0x0018	 
+#define MCHP_I2SMCC_ISRA	0X001C	 
 
-#define MCHP_I2SMCC_IERB	0x0020	/* Interrupt Enable Register B */
-#define MCHP_I2SMCC_IDRB	0x0024	/* Interrupt Disable Register B */
-#define MCHP_I2SMCC_IMRB	0x0028	/* Interrupt Mask Register B */
-#define MCHP_I2SMCC_ISRB	0X002C	/* Interrupt Status Register B */
+#define MCHP_I2SMCC_IERB	0x0020	 
+#define MCHP_I2SMCC_IDRB	0x0024	 
+#define MCHP_I2SMCC_IMRB	0x0028	 
+#define MCHP_I2SMCC_ISRB	0X002C	 
 
-#define MCHP_I2SMCC_RHR		0x0030	/* Receiver Holding Register */
-#define MCHP_I2SMCC_THR		0x0034	/* Transmitter Holding Register */
+#define MCHP_I2SMCC_RHR		0x0030	 
+#define MCHP_I2SMCC_THR		0x0034	 
 
-#define MCHP_I2SMCC_RHL0R	0x0040	/* Receiver Holding Left 0 Register */
-#define MCHP_I2SMCC_RHR0R	0x0044	/* Receiver Holding Right 0 Register */
+#define MCHP_I2SMCC_RHL0R	0x0040	 
+#define MCHP_I2SMCC_RHR0R	0x0044	 
 
-#define MCHP_I2SMCC_RHL1R	0x0048	/* Receiver Holding Left 1 Register */
-#define MCHP_I2SMCC_RHR1R	0x004C	/* Receiver Holding Right 1 Register */
+#define MCHP_I2SMCC_RHL1R	0x0048	 
+#define MCHP_I2SMCC_RHR1R	0x004C	 
 
-#define MCHP_I2SMCC_RHL2R	0x0050	/* Receiver Holding Left 2 Register */
-#define MCHP_I2SMCC_RHR2R	0x0054	/* Receiver Holding Right 2 Register */
+#define MCHP_I2SMCC_RHL2R	0x0050	 
+#define MCHP_I2SMCC_RHR2R	0x0054	 
 
-#define MCHP_I2SMCC_RHL3R	0x0058	/* Receiver Holding Left 3 Register */
-#define MCHP_I2SMCC_RHR3R	0x005C	/* Receiver Holding Right 3 Register */
+#define MCHP_I2SMCC_RHL3R	0x0058	 
+#define MCHP_I2SMCC_RHR3R	0x005C	 
 
-#define MCHP_I2SMCC_THL0R	0x0060	/* Transmitter Holding Left 0 Register */
-#define MCHP_I2SMCC_THR0R	0x0064	/* Transmitter Holding Right 0 Register */
+#define MCHP_I2SMCC_THL0R	0x0060	 
+#define MCHP_I2SMCC_THR0R	0x0064	 
 
-#define MCHP_I2SMCC_THL1R	0x0068	/* Transmitter Holding Left 1 Register */
-#define MCHP_I2SMCC_THR1R	0x006C	/* Transmitter Holding Right 1 Register */
+#define MCHP_I2SMCC_THL1R	0x0068	 
+#define MCHP_I2SMCC_THR1R	0x006C	 
 
-#define MCHP_I2SMCC_THL2R	0x0070	/* Transmitter Holding Left 2 Register */
-#define MCHP_I2SMCC_THR2R	0x0074	/* Transmitter Holding Right 2 Register */
+#define MCHP_I2SMCC_THL2R	0x0070	 
+#define MCHP_I2SMCC_THR2R	0x0074	 
 
-#define MCHP_I2SMCC_THL3R	0x0078	/* Transmitter Holding Left 3 Register */
-#define MCHP_I2SMCC_THR3R	0x007C	/* Transmitter Holding Right 3 Register */
+#define MCHP_I2SMCC_THL3R	0x0078	 
+#define MCHP_I2SMCC_THR3R	0x007C	 
 
-#define MCHP_I2SMCC_VERSION	0x00FC	/* Version Register */
+#define MCHP_I2SMCC_VERSION	0x00FC	 
 
-/*
- * ---- Control Register (Write-only) ----
- */
-#define MCHP_I2SMCC_CR_RXEN		BIT(0)	/* Receiver Enable */
-#define MCHP_I2SMCC_CR_RXDIS		BIT(1)	/* Receiver Disable */
-#define MCHP_I2SMCC_CR_CKEN		BIT(2)	/* Clock Enable */
-#define MCHP_I2SMCC_CR_CKDIS		BIT(3)	/* Clock Disable */
-#define MCHP_I2SMCC_CR_TXEN		BIT(4)	/* Transmitter Enable */
-#define MCHP_I2SMCC_CR_TXDIS		BIT(5)	/* Transmitter Disable */
-#define MCHP_I2SMCC_CR_SWRST		BIT(7)	/* Software Reset */
+ 
+#define MCHP_I2SMCC_CR_RXEN		BIT(0)	 
+#define MCHP_I2SMCC_CR_RXDIS		BIT(1)	 
+#define MCHP_I2SMCC_CR_CKEN		BIT(2)	 
+#define MCHP_I2SMCC_CR_CKDIS		BIT(3)	 
+#define MCHP_I2SMCC_CR_TXEN		BIT(4)	 
+#define MCHP_I2SMCC_CR_TXDIS		BIT(5)	 
+#define MCHP_I2SMCC_CR_SWRST		BIT(7)	 
 
-/*
- * ---- Mode Register A (Read/Write) ----
- */
+ 
 #define MCHP_I2SMCC_MRA_MODE_MASK		GENMASK(0, 0)
 #define MCHP_I2SMCC_MRA_MODE_SLAVE		(0 << 0)
 #define MCHP_I2SMCC_MRA_MODE_MASTER		(1 << 0)
@@ -109,71 +103,66 @@
 
 #define MCHP_I2SMCC_MRA_FORMAT_MASK		GENMASK(7, 6)
 #define MCHP_I2SMCC_MRA_FORMAT_I2S		(0 << 6)
-#define MCHP_I2SMCC_MRA_FORMAT_LJ		(1 << 6) /* Left Justified */
+#define MCHP_I2SMCC_MRA_FORMAT_LJ		(1 << 6)  
 #define MCHP_I2SMCC_MRA_FORMAT_TDM		(2 << 6)
 #define MCHP_I2SMCC_MRA_FORMAT_TDMLJ		(3 << 6)
 
-/* Transmitter uses one DMA channel ... */
-/* Left audio samples duplicated to right audio channel */
+ 
+ 
 #define MCHP_I2SMCC_MRA_RXMONO			BIT(8)
 
-/* I2SDO output of I2SC is internally connected to I2SDI input */
+ 
 #define MCHP_I2SMCC_MRA_RXLOOP			BIT(9)
 
-/* Receiver uses one DMA channel ... */
-/* Left audio samples duplicated to right audio channel */
+ 
+ 
 #define MCHP_I2SMCC_MRA_TXMONO			BIT(10)
 
-/* x sample transmitted when underrun */
-#define MCHP_I2SMCC_MRA_TXSAME_ZERO		(0 << 11) /* Zero sample */
-#define MCHP_I2SMCC_MRA_TXSAME_PREVIOUS		(1 << 11) /* Previous sample */
+ 
+#define MCHP_I2SMCC_MRA_TXSAME_ZERO		(0 << 11)  
+#define MCHP_I2SMCC_MRA_TXSAME_PREVIOUS		(1 << 11)  
 
-/* select between peripheral clock and generated clock */
+ 
 #define MCHP_I2SMCC_MRA_SRCCLK_PCLK		(0 << 12)
 #define MCHP_I2SMCC_MRA_SRCCLK_GCLK		(1 << 12)
 
-/* Number of TDM Channels - 1 */
+ 
 #define MCHP_I2SMCC_MRA_NBCHAN_MASK		GENMASK(15, 13)
 #define MCHP_I2SMCC_MRA_NBCHAN(ch) \
 	((((ch) - 1) << 13) & MCHP_I2SMCC_MRA_NBCHAN_MASK)
 
-/* Selected Clock to I2SMCC Master Clock ratio */
+ 
 #define MCHP_I2SMCC_MRA_IMCKDIV_MASK		GENMASK(21, 16)
 #define MCHP_I2SMCC_MRA_IMCKDIV(div) \
 	(((div) << 16) & MCHP_I2SMCC_MRA_IMCKDIV_MASK)
 
-/* TDM Frame Synchronization */
+ 
 #define MCHP_I2SMCC_MRA_TDMFS_MASK		GENMASK(23, 22)
 #define MCHP_I2SMCC_MRA_TDMFS_SLOT		(0 << 22)
 #define MCHP_I2SMCC_MRA_TDMFS_HALF		(1 << 22)
 #define MCHP_I2SMCC_MRA_TDMFS_BIT		(2 << 22)
 
-/* Selected Clock to I2SMC Serial Clock ratio */
+ 
 #define MCHP_I2SMCC_MRA_ISCKDIV_MASK		GENMASK(29, 24)
 #define MCHP_I2SMCC_MRA_ISCKDIV(div) \
 	(((div) << 24) & MCHP_I2SMCC_MRA_ISCKDIV_MASK)
 
-/* Master Clock mode */
+ 
 #define MCHP_I2SMCC_MRA_IMCKMODE_MASK		GENMASK(30, 30)
-/* 0: No master clock generated*/
+ 
 #define MCHP_I2SMCC_MRA_IMCKMODE_NONE		(0 << 30)
-/* 1: master clock generated (internally generated clock drives I2SMCK pin) */
+ 
 #define MCHP_I2SMCC_MRA_IMCKMODE_GEN		(1 << 30)
 
-/* Slot Width */
-/* 0: slot is 32 bits wide for DATALENGTH = 18/20/24 bits. */
-/* 1: slot is 24 bits wide for DATALENGTH = 18/20/24 bits. */
+ 
+ 
+ 
 #define MCHP_I2SMCC_MRA_IWS			BIT(31)
 
-/*
- * ---- Mode Register B (Read/Write) ----
- */
-/* all enabled I2S left channels are filled first, then I2S right channels */
+ 
+ 
 #define MCHP_I2SMCC_MRB_CRAMODE_LEFT_FIRST	(0 << 0)
-/*
- * an enabled I2S left channel is filled, then the corresponding right
- * channel, until all channels are filled
- */
+ 
 #define MCHP_I2SMCC_MRB_CRAMODE_REGULAR		(1 << 0)
 
 #define MCHP_I2SMCC_MRB_FIFOEN			BIT(4)
@@ -186,15 +175,11 @@
 #define MCHP_I2SMCC_MRB_CLKSEL_EXT		(0 << 16)
 #define MCHP_I2SMCC_MRB_CLKSEL_INT		(1 << 16)
 
-/*
- * ---- Status Registers (Read-only) ----
- */
-#define MCHP_I2SMCC_SR_RXEN		BIT(0)	/* Receiver Enabled */
-#define MCHP_I2SMCC_SR_TXEN		BIT(4)	/* Transmitter Enabled */
+ 
+#define MCHP_I2SMCC_SR_RXEN		BIT(0)	 
+#define MCHP_I2SMCC_SR_TXEN		BIT(4)	 
 
-/*
- * ---- Interrupt Enable/Disable/Mask/Status Registers A ----
- */
+ 
 #define MCHP_I2SMCC_INT_TXRDY_MASK(ch)		GENMASK((ch) - 1, 0)
 #define MCHP_I2SMCC_INT_TXRDYCH(ch)		BIT(ch)
 #define MCHP_I2SMCC_INT_TXUNF_MASK(ch)		GENMASK((ch) + 7, 8)
@@ -204,18 +189,14 @@
 #define MCHP_I2SMCC_INT_RXOVF_MASK(ch)		GENMASK((ch) + 23, 24)
 #define MCHP_I2SMCC_INT_RXOVFCH(ch)		BIT((ch) + 24)
 
-/*
- * ---- Interrupt Enable/Disable/Mask/Status Registers B ----
- */
+ 
 #define MCHP_I2SMCC_INT_WERR			BIT(0)
 #define MCHP_I2SMCC_INT_TXFFRDY			BIT(8)
 #define MCHP_I2SMCC_INT_TXFFEMP			BIT(9)
 #define MCHP_I2SMCC_INT_RXFFRDY			BIT(12)
 #define MCHP_I2SMCC_INT_RXFFFUL			BIT(13)
 
-/*
- * ---- Version Register (Read-only) ----
- */
+ 
 #define MCHP_I2SMCC_VERSION_MASK		GENMASK(11, 0)
 
 #define MCHP_I2SMCC_MAX_CHANNELS		8
@@ -272,10 +253,7 @@ static irqreturn_t mchp_i2s_mcc_interrupt(int irq, void *dev_id)
 	if (!pendinga && !pendingb)
 		return IRQ_NONE;
 
-	/*
-	 * Tx/Rx ready interrupts are enabled when stopping only, to assure
-	 * availability and to disable clocks if necessary
-	 */
+	 
 	if (dev->soc->has_fifo) {
 		idrb |= pendingb & (MCHP_I2SMCC_INT_TXFFRDY |
 				    MCHP_I2SMCC_INT_RXFFRDY);
@@ -318,7 +296,7 @@ static int mchp_i2s_mcc_set_sysclk(struct snd_soc_dai *dai,
 	dev_dbg(dev->dev, "%s() clk_id=%d freq=%u dir=%d\n",
 		__func__, clk_id, freq, dir);
 
-	/* We do not need SYSCLK */
+	 
 	if (dir == SND_SOC_CLOCK_IN)
 		return 0;
 
@@ -345,15 +323,15 @@ static int mchp_i2s_mcc_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	dev_dbg(dev->dev, "%s() fmt=%#x\n", __func__, fmt);
 
-	/* We don't support any kind of clock inversion */
+	 
 	if ((fmt & SND_SOC_DAIFMT_INV_MASK) != SND_SOC_DAIFMT_NB_NF)
 		return -EINVAL;
 
-	/* We can't generate only FSYNC */
+	 
 	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) == SND_SOC_DAIFMT_BC_FP)
 		return -EINVAL;
 
-	/* We can only reconfigure the IP when it's stopped */
+	 
 	if (fmt & SND_SOC_DAIFMT_CONT)
 		return -EINVAL;
 
@@ -378,7 +356,7 @@ static int mchp_i2s_mcc_set_dai_tdm_slot(struct snd_soc_dai *dai,
 		return -EINVAL;
 
 	if (slots) {
-		/* We do not support daisy chain */
+		 
 		if (rx_mask != GENMASK(slots - 1, 0) ||
 		    rx_mask != tx_mask)
 			return -EINVAL;
@@ -424,17 +402,13 @@ static int mchp_i2s_mcc_config_divs(struct mchp_i2s_mcc_dev *dev,
 	struct clk *best_clk = NULL;
 	int ret;
 
-	/* For code simplification */
+	 
 	if (!dev->sysclk)
 		sysclk = bclk;
 	else
 		sysclk = dev->sysclk;
 
-	/*
-	 * MCLK is Selected CLK / (2 * IMCKDIV),
-	 * BCLK is Selected CLK / (2 * ISCKDIV);
-	 * if IMCKDIV or ISCKDIV are 0, MCLK or BCLK = Selected CLK
-	 */
+	 
 	lcm_rate = lcm(sysclk, bclk);
 	if ((lcm_rate / sysclk % 2 == 1 && lcm_rate / sysclk > 2) ||
 	    (lcm_rate / bclk % 2 == 1 && lcm_rate / bclk > 2))
@@ -473,7 +447,7 @@ static int mchp_i2s_mcc_config_divs(struct mchp_i2s_mcc_dev *dev,
 		}
 	}
 
-	/* check if clocks returned only errors */
+	 
 	if (!best_clk) {
 		dev_err(dev->dev, "unable to change rate to clocks\n");
 		return -EINVAL;
@@ -483,7 +457,7 @@ static int mchp_i2s_mcc_config_divs(struct mchp_i2s_mcc_dev *dev,
 		best_clk == dev->pclk ? "pclk" : "gclk",
 		*best_rate, best_diff_rate);
 
-	/* Configure divisors */
+	 
 	if (dev->sysclk)
 		*mra |= MCHP_I2SMCC_MRA_IMCKDIV(*best_rate / (2 * sysclk));
 	*mra |= MCHP_I2SMCC_MRA_ISCKDIV(*best_rate / (2 * bclk));
@@ -548,19 +522,19 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 
 	switch (dev->fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* cpu is BCLK and LRC master */
+		 
 		mra |= MCHP_I2SMCC_MRA_MODE_MASTER;
 		if (dev->sysclk)
 			mra |= MCHP_I2SMCC_MRA_IMCKMODE_GEN;
 		set_divs = 1;
 		break;
 	case SND_SOC_DAIFMT_BP_FC:
-		/* cpu is BCLK master */
+		 
 		mrb |= MCHP_I2SMCC_MRB_CLKSEL_INT;
 		set_divs = 1;
 		fallthrough;
 	case SND_SOC_DAIFMT_BC_FC:
-		/* cpu is slave */
+		 
 		mra |= MCHP_I2SMCC_MRA_MODE_SLAVE;
 		if (dev->sysclk)
 			dev_warn(dev->dev, "Unable to generate MCLK in Slave mode\n");
@@ -571,7 +545,7 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (dev->fmt & (SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_LEFT_J)) {
-		/* for I2S and LEFT_J one pin is needed for every 2 channels */
+		 
 		if (channels > dev->soc->data_pin_pair_num * 2) {
 			dev_err(dev->dev,
 				"unsupported number of audio channels: %d\n",
@@ -579,7 +553,7 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 			return -EINVAL;
 		}
 
-		/* enable for interleaved format */
+		 
 		mrb |= MCHP_I2SMCC_MRB_CRAMODE_REGULAR;
 
 		switch (channels) {
@@ -609,10 +583,7 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 
 		if (dev->tdm_slots) {
 			if (channels % 2 && channels * 2 <= dev->tdm_slots) {
-				/*
-				 * Duplicate data for even-numbered channels
-				 * to odd-numbered channels
-				 */
+				 
 				if (is_playback)
 					mra |= MCHP_I2SMCC_MRA_TXMONO;
 				else
@@ -626,10 +597,7 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 			frame_length = channels * MCHP_I2MCC_TDM_SLOT_WIDTH;
 	}
 
-	/*
-	 * We must have the same burst size configured
-	 * in the DMA transfer and in out IP
-	 */
+	 
 	mrb |= MCHP_I2SMCC_MRB_DMACHUNK(channels);
 	if (is_playback)
 		dev->playback.maxburst = 1 << (fls(channels) - 1);
@@ -677,14 +645,11 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 
-	/* enable FIFO if available */
+	 
 	if (dev->soc->has_fifo)
 		mrb |= MCHP_I2SMCC_MRB_FIFOEN;
 
-	/*
-	 * If we are already running, the wanted setup must be
-	 * the same with the one that's currently ongoing
-	 */
+	 
 	if (mchp_i2s_mcc_is_running(dev)) {
 		u32 mra_cur;
 		u32 mrb_cur;
@@ -698,7 +663,7 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (mra & MCHP_I2SMCC_MRA_SRCCLK_GCLK && !dev->gclk_use) {
-		/* set the rate */
+		 
 		ret = clk_set_rate(dev->gclk, rate);
 		if (ret) {
 			dev_err(dev->dev,
@@ -715,7 +680,7 @@ static int mchp_i2s_mcc_hw_params(struct snd_pcm_substream *substream,
 		dev->gclk_use = 1;
 	}
 
-	/* Save the number of channels to know what interrupts to enable */
+	 
 	dev->channels = channels;
 
 	ret = regmap_write(dev->regmap, MCHP_I2SMCC_MRA, mra);
@@ -811,10 +776,7 @@ static int mchp_i2s_mcc_trigger(struct snd_pcm_substream *substream, int cmd,
 		if (is_playback && (sr & MCHP_I2SMCC_SR_TXEN)) {
 			cr = MCHP_I2SMCC_CR_TXDIS;
 			dev->tx_rdy = 0;
-			/*
-			 * Enable Tx Ready interrupts on all channels
-			 * to assure all data is sent
-			 */
+			 
 			if (dev->soc->has_fifo)
 				ierb = MCHP_I2SMCC_INT_TXFFRDY;
 			else
@@ -822,10 +784,7 @@ static int mchp_i2s_mcc_trigger(struct snd_pcm_substream *substream, int cmd,
 		} else if (!is_playback && (sr & MCHP_I2SMCC_SR_RXEN)) {
 			cr = MCHP_I2SMCC_CR_RXDIS;
 			dev->rx_rdy = 0;
-			/*
-			 * Enable Rx Ready interrupts on all channels
-			 * to assure all data is received
-			 */
+			 
 			if (dev->soc->has_fifo)
 				ierb = MCHP_I2SMCC_INT_RXFFRDY;
 			else
@@ -861,7 +820,7 @@ static int mchp_i2s_mcc_startup(struct snd_pcm_substream *substream,
 {
 	struct mchp_i2s_mcc_dev *dev = snd_soc_dai_get_drvdata(dai);
 
-	/* Software reset the IP if it's not running */
+	 
 	if (!mchp_i2s_mcc_is_running(dev)) {
 		return regmap_write(dev->regmap, MCHP_I2SMCC_CR,
 				    MCHP_I2SMCC_CR_SWRST);
@@ -951,7 +910,7 @@ static const struct of_device_id mchp_i2s_mcc_dt_ids[] = {
 		.compatible = "microchip,sama7g5-i2smcc",
 		.data = &mchp_i2s_mcc_sama7g5,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mchp_i2s_mcc_dt_ids);
 #endif
@@ -1035,7 +994,7 @@ static int mchp_i2s_mcc_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* Get the optional generated clock */
+	 
 	dev->gclk = devm_clk_get(&pdev->dev, "gclk");
 	if (IS_ERR(dev->gclk)) {
 		if (PTR_ERR(dev->gclk) == -EPROBE_DEFER)
@@ -1080,7 +1039,7 @@ static int mchp_i2s_mcc_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* Get IP version. */
+	 
 	regmap_read(dev->regmap, MCHP_I2SMCC_VERSION, &version);
 	dev_info(&pdev->dev, "hw version: %#lx\n",
 		 version & MCHP_I2SMCC_VERSION_MASK);

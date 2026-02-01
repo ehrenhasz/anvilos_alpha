@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Real Time Clock (RTC) Driver for i.MX53
- * Copyright (c) 2004-2011 Freescale Semiconductor, Inc.
- * Copyright (c) 2017 Beckhoff Automation GmbH & Co. KG
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -13,48 +9,43 @@
 #include <linux/pm_wakeirq.h>
 #include <linux/rtc.h>
 
-#define SRTC_LPPDR_INIT       0x41736166	/* init for glitch detect */
+#define SRTC_LPPDR_INIT       0x41736166	 
 
-#define SRTC_LPCR_EN_LP       BIT(3)	/* lp enable */
-#define SRTC_LPCR_WAE         BIT(4)	/* lp wakeup alarm enable */
-#define SRTC_LPCR_ALP         BIT(7)	/* lp alarm flag */
-#define SRTC_LPCR_NSA         BIT(11)	/* lp non secure access */
-#define SRTC_LPCR_NVE         BIT(14)	/* lp non valid state exit bit */
-#define SRTC_LPCR_IE          BIT(15)	/* lp init state exit bit */
+#define SRTC_LPCR_EN_LP       BIT(3)	 
+#define SRTC_LPCR_WAE         BIT(4)	 
+#define SRTC_LPCR_ALP         BIT(7)	 
+#define SRTC_LPCR_NSA         BIT(11)	 
+#define SRTC_LPCR_NVE         BIT(14)	 
+#define SRTC_LPCR_IE          BIT(15)	 
 
-#define SRTC_LPSR_ALP         BIT(3)	/* lp alarm flag */
-#define SRTC_LPSR_NVES        BIT(14)	/* lp non-valid state exit status */
-#define SRTC_LPSR_IES         BIT(15)	/* lp init state exit status */
+#define SRTC_LPSR_ALP         BIT(3)	 
+#define SRTC_LPSR_NVES        BIT(14)	 
+#define SRTC_LPSR_IES         BIT(15)	 
 
-#define SRTC_LPSCMR	0x00	/* LP Secure Counter MSB Reg */
-#define SRTC_LPSCLR	0x04	/* LP Secure Counter LSB Reg */
-#define SRTC_LPSAR	0x08	/* LP Secure Alarm Reg */
-#define SRTC_LPCR	0x10	/* LP Control Reg */
-#define SRTC_LPSR	0x14	/* LP Status Reg */
-#define SRTC_LPPDR	0x18	/* LP Power Supply Glitch Detector Reg */
+#define SRTC_LPSCMR	0x00	 
+#define SRTC_LPSCLR	0x04	 
+#define SRTC_LPSAR	0x08	 
+#define SRTC_LPCR	0x10	 
+#define SRTC_LPSR	0x14	 
+#define SRTC_LPPDR	0x18	 
 
-/* max. number of retries to read registers, 120 was max during test */
+ 
 #define REG_READ_TIMEOUT 2000
 
 struct mxc_rtc_data {
 	struct rtc_device *rtc;
 	void __iomem *ioaddr;
 	struct clk *clk;
-	spinlock_t lock; /* protects register access */
+	spinlock_t lock;  
 	int irq;
 };
 
-/*
- * This function does write synchronization for writes to the lp srtc block.
- * To take care of the asynchronous CKIL clock, all writes from the IP domain
- * will be synchronized to the CKIL domain.
- * The caller should hold the pdata->lock
- */
+ 
 static void mxc_rtc_sync_lp_locked(struct device *dev, void __iomem *ioaddr)
 {
 	unsigned int i;
 
-	/* Wait for 3 CKIL cycles */
+	 
 	for (i = 0; i < 3; i++) {
 		const u32 count = readl(ioaddr + SRTC_LPSCLR);
 		unsigned int timeout = REG_READ_TIMEOUT;
@@ -68,7 +59,7 @@ static void mxc_rtc_sync_lp_locked(struct device *dev, void __iomem *ioaddr)
 	}
 }
 
-/* This function is the RTC interrupt service routine. */
+ 
 static irqreturn_t mxc_rtc_interrupt(int irq, void *dev_id)
 {
 	struct device *dev = dev_id;
@@ -86,19 +77,19 @@ static irqreturn_t mxc_rtc_interrupt(int irq, void *dev_id)
 	lp_status = readl(ioaddr + SRTC_LPSR);
 	lp_cr = readl(ioaddr + SRTC_LPCR);
 
-	/* update irq data & counter */
+	 
 	if (lp_status & SRTC_LPSR_ALP) {
 		if (lp_cr & SRTC_LPCR_ALP)
 			rtc_update_irq(pdata->rtc, 1, RTC_AF | RTC_IRQF);
 
-		/* disable further lp alarm interrupts */
+		 
 		lp_cr &= ~(SRTC_LPCR_ALP | SRTC_LPCR_WAE);
 	}
 
-	/* Update interrupt enables */
+	 
 	writel(lp_cr, ioaddr + SRTC_LPCR);
 
-	/* clear interrupt status */
+	 
 	writel(lp_status, ioaddr + SRTC_LPSR);
 
 	mxc_rtc_sync_lp_locked(dev, ioaddr);
@@ -107,10 +98,7 @@ static irqreturn_t mxc_rtc_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Enable clk and aquire spinlock
- * @return  0 if successful; non-zero otherwise.
- */
+ 
 static int mxc_rtc_lock(struct mxc_rtc_data *const pdata)
 {
 	int ret;
@@ -131,13 +119,7 @@ static int mxc_rtc_unlock(struct mxc_rtc_data *const pdata)
 	return 0;
 }
 
-/*
- * This function reads the current RTC time into tm in Gregorian date.
- *
- * @param  tm           contains the RTC time value upon return
- *
- * @return  0 if successful; non-zero otherwise.
- */
+ 
 static int mxc_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct mxc_rtc_data *pdata = dev_get_drvdata(dev);
@@ -153,13 +135,7 @@ static int mxc_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	return clk_failed;
 }
 
-/*
- * This function sets the internal RTC time based on tm in Gregorian date.
- *
- * @param  tm           the time value to be set in the RTC
- *
- * @return  0 if successful; non-zero otherwise.
- */
+ 
 static int mxc_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct mxc_rtc_data *pdata = dev_get_drvdata(dev);
@@ -175,15 +151,7 @@ static int mxc_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	return mxc_rtc_unlock(pdata);
 }
 
-/*
- * This function reads the current alarm value into the passed in \b alrm
- * argument. It updates the \b alrm's pending field value based on the whether
- * an alarm interrupt occurs or not.
- *
- * @param  alrm         contains the RTC alarm value upon return
- *
- * @return  0 if successful; non-zero otherwise.
- */
+ 
 static int mxc_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct mxc_rtc_data *pdata = dev_get_drvdata(dev);
@@ -199,10 +167,7 @@ static int mxc_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	return mxc_rtc_unlock(pdata);
 }
 
-/*
- * Enable/Disable alarm interrupt
- * The caller should hold the pdata->lock
- */
+ 
 static void mxc_rtc_alarm_irq_enable_locked(struct mxc_rtc_data *pdata,
 					    unsigned int enable)
 {
@@ -228,13 +193,7 @@ static int mxc_rtc_alarm_irq_enable(struct device *dev, unsigned int enable)
 	return mxc_rtc_unlock(pdata);
 }
 
-/*
- * This function sets the RTC alarm based on passed in alrm.
- *
- * @param  alrm         the alarm value to be set in the RTC
- *
- * @return  0 if successful; non-zero otherwise.
- */
+ 
 static int mxc_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	const time64_t time = rtc_tm_to_time64(&alrm->time);
@@ -246,7 +205,7 @@ static int mxc_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 	writel((u32)time, pdata->ioaddr + SRTC_LPSAR);
 
-	/* clear alarm interrupt status bit */
+	 
 	writel(SRTC_LPSR_ALP, pdata->ioaddr + SRTC_LPSR);
 	mxc_rtc_sync_lp_locked(dev, pdata->ioaddr);
 
@@ -310,13 +269,13 @@ static int mxc_rtc_probe(struct platform_device *pdev)
 	ret = clk_prepare_enable(pdata->clk);
 	if (ret)
 		return ret;
-	/* initialize glitch detect */
+	 
 	writel(SRTC_LPPDR_INIT, ioaddr + SRTC_LPPDR);
 
-	/* clear lp interrupt status */
+	 
 	writel(0xFFFFFFFF, ioaddr + SRTC_LPSR);
 
-	/* move out of init state */
+	 
 	writel((SRTC_LPCR_IE | SRTC_LPCR_NSA), ioaddr + SRTC_LPCR);
 	ret = mxc_rtc_wait_for_flag(ioaddr + SRTC_LPSR, SRTC_LPSR_IES);
 	if (ret) {
@@ -325,7 +284,7 @@ static int mxc_rtc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* move out of non-valid state */
+	 
 	writel((SRTC_LPCR_IE | SRTC_LPCR_NVE | SRTC_LPCR_NSA |
 		SRTC_LPCR_EN_LP), ioaddr + SRTC_LPCR);
 	ret = mxc_rtc_wait_for_flag(ioaddr + SRTC_LPSR, SRTC_LPSR_NVES);

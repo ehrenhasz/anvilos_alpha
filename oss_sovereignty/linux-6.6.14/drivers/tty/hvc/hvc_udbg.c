@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * udbg interface to hvc_console.c
- *
- * (C) Copyright David Gibson, IBM Corporation 2008.
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/delay.h>

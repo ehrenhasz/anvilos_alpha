@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 #ifndef MICROPY_INCLUDED_PY_NATIVEGLUE_H
 #define MICROPY_INCLUDED_PY_NATIVEGLUE_H
 
@@ -136,14 +112,14 @@ typedef struct _mp_fun_table_t {
     mp_int_t (*small_int_modulo)(mp_int_t dividend, mp_int_t divisor);
     bool (*yield_from)(mp_obj_t gen, mp_obj_t send_value, mp_obj_t *ret_value);
     void *setjmp_;
-    // Additional entries for dynamic runtime, starts at index 50
+    
     void *(*memset_)(void *s, int c, size_t n);
     void *(*memmove_)(void *dest, const void *src, size_t n);
     void *(*realloc_)(void *ptr, size_t n_bytes, bool allow_move);
     int (*printf_)(const mp_print_t *print, const char *fmt, ...);
     int (*vprintf_)(const mp_print_t *print, const char *fmt, va_list args);
     #if defined(__GNUC__)
-    NORETURN // Only certain compilers support no-return attributes in function pointer declarations
+    NORETURN 
     #endif
     void (*raise_msg)(const mp_obj_type_t *exc_type, mp_rom_error_text_t msg);
     const mp_obj_type_t *(*obj_get_type)(mp_const_obj_t o_in);
@@ -163,8 +139,8 @@ typedef struct _mp_fun_table_t {
     mp_obj_t (*binary_get_val_array)(char typecode, void *p, size_t index);
     void (*binary_set_val_array)(char typecode, void *p, size_t index, mp_obj_t val_in);
     const mp_print_t *plat_print;
-    // The following entries start at index 73 and are referenced by tools-mpy_ld.py,
-    // see constant MP_FUN_TABLE_MP_TYPE_TYPE_OFFSET.
+    
+    
     const mp_obj_type_t *type_type;
     const mp_obj_type_t *type_str;
     const mp_obj_type_t *type_list;
@@ -184,9 +160,9 @@ typedef struct _mp_fun_table_t {
 #if (MICROPY_EMIT_NATIVE && !MICROPY_DYNAMIC_COMPILER) || MICROPY_ENABLE_DYNRUNTIME
 extern const mp_fun_table_t mp_fun_table;
 #elif MICROPY_EMIT_NATIVE && MICROPY_DYNAMIC_COMPILER
-// In dynamic-compiler mode eliminate dependency on entries in mp_fun_table.
-// This only needs to be an independent pointer, content doesn't matter.
+
+
 extern const int mp_fun_table;
 #endif
 
-#endif // MICROPY_INCLUDED_PY_NATIVEGLUE_H
+#endif 

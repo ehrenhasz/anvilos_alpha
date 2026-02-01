@@ -1,18 +1,4 @@
-/*
- * CCI cache coherent interconnect driver
- *
- * Copyright (C) 2013 ARM Ltd.
- * Author: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/arm-cci.h>
 #include <linux/io.h>
@@ -118,14 +104,7 @@ struct cpu_port {
 	u32 port;
 };
 
-/*
- * Use the port MSB as valid flag, shift can be made dynamic
- * by computing number of bits required for port indexes.
- * Code disabling CCI cpu ports runs with D-cache invalidated
- * and SCTLR bit clear so data accesses must be kept to a minimum
- * to improve performance; for now shift is left static to
- * avoid one more data access while disabling the CCI port.
- */
+ 
 #define PORT_VALID_SHIFT	31
 #define PORT_VALID		(0x1 << PORT_VALID_SHIFT)
 
@@ -147,17 +126,7 @@ static inline bool cpu_port_match(struct cpu_port *port, u64 mpidr)
 
 static struct cpu_port cpu_port[NR_CPUS];
 
-/**
- * __cci_ace_get_port - Function to retrieve the port index connected to
- *			a cpu or device.
- *
- * @dn: device node of the device to look-up
- * @type: port type
- *
- * Return value:
- *	- CCI port index if success
- *	- -ENODEV if failure
- */
+ 
 static int __cci_ace_get_port(struct device_node *dn, int type)
 {
 	int i;
@@ -184,15 +153,9 @@ static void cci_ace_init_ports(void)
 	int port, cpu;
 	struct device_node *cpun;
 
-	/*
-	 * Port index look-up speeds up the function disabling ports by CPU,
-	 * since the logical to port index mapping is done once and does
-	 * not change after system boot.
-	 * The stashed index array is initialized for all possible CPUs
-	 * at probe time.
-	 */
+	 
 	for_each_possible_cpu(cpu) {
-		/* too early to use cpu->of_node */
+		 
 		cpun = of_get_cpu_node(cpu, NULL);
 
 		if (WARN(!cpun, "Missing cpu device node\n"))
@@ -211,57 +174,20 @@ static void cci_ace_init_ports(void)
 			cpu);
 	}
 }
-/*
- * Functions to enable/disable a CCI interconnect slave port
- *
- * They are called by low-level power management code to disable slave
- * interfaces snoops and DVM broadcast.
- * Since they may execute with cache data allocation disabled and
- * after the caches have been cleaned and invalidated the functions provide
- * no explicit locking since they may run with D-cache disabled, so normal
- * cacheable kernel locks based on ldrex/strex may not work.
- * Locking has to be provided by BSP implementations to ensure proper
- * operations.
- */
+ 
 
-/**
- * cci_port_control() - function to control a CCI port
- *
- * @port: index of the port to setup
- * @enable: if true enables the port, if false disables it
- */
+ 
 static void notrace cci_port_control(unsigned int port, bool enable)
 {
 	void __iomem *base = ports[port].base;
 
 	writel_relaxed(enable ? CCI_ENABLE_REQ : 0, base + CCI_PORT_CTRL);
-	/*
-	 * This function is called from power down procedures
-	 * and must not execute any instruction that might
-	 * cause the processor to be put in a quiescent state
-	 * (eg wfi). Hence, cpu_relax() can not be added to this
-	 * read loop to optimize power, since it might hide possibly
-	 * disruptive operations.
-	 */
+	 
 	while (readl_relaxed(cci_ctrl_base + CCI_CTRL_STATUS) & 0x1)
 			;
 }
 
-/**
- * cci_disable_port_by_cpu() - function to disable a CCI port by CPU
- *			       reference
- *
- * @mpidr: mpidr of the CPU whose CCI port should be disabled
- *
- * Disabling a CCI port for a CPU implies disabling the CCI port
- * controlling that CPU cluster. Code disabling CPU CCI ports
- * must make sure that the CPU running the code is the last active CPU
- * in the cluster ie all other CPUs are quiescent in a low power state.
- *
- * Return:
- *	0 on success
- *	-ENODEV on port look-up failure
- */
+ 
 int notrace cci_disable_port_by_cpu(u64 mpidr)
 {
 	int cpu;
@@ -277,24 +203,7 @@ int notrace cci_disable_port_by_cpu(u64 mpidr)
 }
 EXPORT_SYMBOL_GPL(cci_disable_port_by_cpu);
 
-/**
- * cci_enable_port_for_self() - enable a CCI port for calling CPU
- *
- * Enabling a CCI port for the calling CPU implies enabling the CCI
- * port controlling that CPU's cluster. Caller must make sure that the
- * CPU running the code is the first active CPU in the cluster and all
- * other CPUs are quiescent in a low power state  or waiting for this CPU
- * to complete the CCI initialization.
- *
- * Because this is called when the MMU is still off and with no stack,
- * the code must be position independent and ideally rely on callee
- * clobbered registers only.  To achieve this we must code this function
- * entirely in assembler.
- *
- * On success this returns with the proper CCI port enabled.  In case of
- * any failure this never returns as the inability to enable the CCI is
- * fatal and there is no possible recovery at this stage.
- */
+ 
 asmlinkage void __naked cci_enable_port_for_self(void)
 {
 	asm volatile ("\n"
@@ -306,28 +215,28 @@ asmlinkage void __naked cci_enable_port_for_self(void)
 "	add	r1, r1, r2		@ &cpu_port \n"
 "	add	ip, r1, %[sizeof_cpu_port] \n"
 
-	/* Loop over the cpu_port array looking for a matching MPIDR */
+	 
 "1:	ldr	r2, [r1, %[offsetof_cpu_port_mpidr_lsb]] \n"
 "	cmp	r2, r0 			@ compare MPIDR \n"
 "	bne	2f \n"
 
-	/* Found a match, now test port validity */
+	 
 "	ldr	r3, [r1, %[offsetof_cpu_port_port]] \n"
 "	tst	r3, #"__stringify(PORT_VALID)" \n"
 "	bne	3f \n"
 
-	/* no match, loop with the next cpu_port entry */
+	 
 "2:	add	r1, r1, %[sizeof_struct_cpu_port] \n"
 "	cmp	r1, ip			@ done? \n"
 "	blo	1b \n"
 
-	/* CCI port not found -- cheaply try to stall this CPU */
+	 
 "cci_port_not_found: \n"
 "	wfi \n"
 "	wfe \n"
 "	b	cci_port_not_found \n"
 
-	/* Use matched port index to look up the corresponding ports entry */
+	 
 "3:	bic	r3, r3, #"__stringify(PORT_VALID)" \n"
 "	adr	r0, 6f \n"
 "	ldmia	r0, {r1, r2} \n"
@@ -337,12 +246,12 @@ asmlinkage void __naked cci_enable_port_for_self(void)
 "	mla	r0, r2, r3, r0		@ &ports[index] \n"
 "	sub	r0, r0, r1		@ virt_to_phys() \n"
 
-	/* Enable the CCI port */
+	 
 "	ldr	r0, [r0, %[offsetof_port_phys]] \n"
 "	mov	r3, %[cci_enable_req]\n"		   
 "	str	r3, [r0, #"__stringify(CCI_PORT_CTRL)"] \n"
 
-	/* poll the status reg for completion */
+	 
 "	adr	r1, 7f \n"
 "	ldr	r0, [r1] \n"
 "	ldr	r0, [r0, r1]		@ cci_ctrl_base \n"
@@ -373,18 +282,7 @@ asmlinkage void __naked cci_enable_port_for_self(void)
 	[offsetof_port_phys] "i" (offsetof(struct cci_ace_port, phys)) );
 }
 
-/**
- * __cci_control_port_by_device() - function to control a CCI port by device
- *				    reference
- *
- * @dn: device node pointer of the device whose CCI port should be
- *      controlled
- * @enable: if true enables the port, if false disables it
- *
- * Return:
- *	0 on success
- *	-ENODEV on port look-up failure
- */
+ 
 int notrace __cci_control_port_by_device(struct device_node *dn, bool enable)
 {
 	int port;
@@ -401,27 +299,12 @@ int notrace __cci_control_port_by_device(struct device_node *dn, bool enable)
 }
 EXPORT_SYMBOL_GPL(__cci_control_port_by_device);
 
-/**
- * __cci_control_port_by_index() - function to control a CCI port by port index
- *
- * @port: port index previously retrieved with cci_ace_get_port()
- * @enable: if true enables the port, if false disables it
- *
- * Return:
- *	0 on success
- *	-ENODEV on port index out of range
- *	-EPERM if operation carried out on an ACE PORT
- */
+ 
 int notrace __cci_control_port_by_index(u32 port, bool enable)
 {
 	if (port >= nb_cci_ports || ports[port].type == ACE_INVALID_PORT)
 		return -ENODEV;
-	/*
-	 * CCI control for ports connected to CPUS is extremely fragile
-	 * and must be made to go through a specific and controlled
-	 * interface (ie cci_disable_port_by_cpu(); control by general purpose
-	 * indexing is therefore disabled for ACE ports.
-	 */
+	 
 	if (ports[port].type == ACE_PORT)
 		return -EPERM;
 
@@ -501,20 +384,14 @@ static int cci_probe_ports(struct device_node *np)
 		ports[i].dn = cp;
 	}
 
-	/*
-	 * If there is no CCI port that is under kernel control
-	 * return early and report probe status.
-	 */
+	 
 	if (!nb_ace && !nb_ace_lite)
 		return -ENODEV;
 
-	 /* initialize a stashed array of ACE ports to speed-up look-up */
+	  
 	cci_ace_init_ports();
 
-	/*
-	 * Multi-cluster systems may need this data when non-coherent, during
-	 * cluster power-up/power-down. Make sure it reaches main memory.
-	 */
+	 
 	sync_cache_w(&cci_ctrl_base);
 	sync_cache_w(&cci_ctrl_phys);
 	sync_cache_w(&ports);
@@ -524,12 +401,12 @@ static int cci_probe_ports(struct device_node *np)
 
 	return 0;
 }
-#else /* !CONFIG_ARM_CCI400_PORT_CTRL */
+#else  
 static inline int cci_probe_ports(struct device_node *np)
 {
 	return 0;
 }
-#endif /* CONFIG_ARM_CCI400_PORT_CTRL */
+#endif  
 
 static int cci_probe(void)
 {
@@ -569,12 +446,7 @@ static int cci_init(void)
 	return cci_init_status;
 }
 
-/*
- * To sort out early init calls ordering a helper function is provided to
- * check if the CCI driver has beed initialized. Function check if the driver
- * has been initialized, if not it calls the init function that probes
- * the driver and updates the return value.
- */
+ 
 bool cci_probed(void)
 {
 	return cci_init() == 0;

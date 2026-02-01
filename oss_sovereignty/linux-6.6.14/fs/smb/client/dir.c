@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   vfs operations that deal with dentries
- *
- *   Copyright (C) International Business Machines  Corp., 2002,2009
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/stat.h>
 #include <linux/slab.h>
@@ -27,8 +20,7 @@
 static void
 renew_parental_timestamps(struct dentry *direntry)
 {
-	/* BB check if there is a way to get the kernel to do this or if we
-	   really need this */
+	 
 	do {
 		cifs_set_time(direntry, jiffies);
 		direntry = direntry->d_parent;
@@ -43,7 +35,7 @@ cifs_build_path_to_root(struct smb3_fs_context *ctx, struct cifs_sb_info *cifs_s
 	int dfsplen;
 	char *full_path = NULL;
 
-	/* if no prefix path, simply set path to the root of share to "" */
+	 
 	if (pplen == 0) {
 		full_path = kzalloc(1, GFP_KERNEL);
 		return full_path;
@@ -66,7 +58,7 @@ cifs_build_path_to_root(struct smb3_fs_context *ctx, struct cifs_sb_info *cifs_s
 	return full_path;
 }
 
-/* Note: caller must free return buffer */
+ 
 const char *
 build_path_from_dentry(struct dentry *direntry, void *page)
 {
@@ -102,7 +94,7 @@ char *__build_path_from_dentry_optional_prefix(struct dentry *direntry, void *pa
 	s = dentry_path_raw(direntry, page, PATH_MAX);
 	if (IS_ERR(s))
 		return s;
-	if (!s[1])	// for root we want "", not "/"
+	if (!s[1])	
 		s++;
 	if (s < (char *)page + pplen + dfsplen)
 		return ERR_PTR(-ENAMETOOLONG);
@@ -113,7 +105,7 @@ char *__build_path_from_dentry_optional_prefix(struct dentry *direntry, void *pa
 		*s = '/';
 	}
 	if (dirsep != '/') {
-		/* BB test paths to Windows with '/' in the midst of prepath */
+		 
 		char *p;
 
 		for (p = s; *p; p++)
@@ -144,11 +136,7 @@ char *build_path_from_dentry_optional_prefix(struct dentry *direntry, void *page
 							MAX_TREE_SIZE, prefix);
 }
 
-/*
- * Don't allow path components longer than the server max.
- * Don't allow the separator character in a path component.
- * The VFS will not allow "/", but "\" is allowed by posix.
- */
+ 
 static int
 check_name(struct dentry *direntry, struct cifs_tcon *tcon)
 {
@@ -172,7 +160,7 @@ check_name(struct dentry *direntry, struct cifs_tcon *tcon)
 }
 
 
-/* Inode operations in similar order to how they appear in Linux file fs.h */
+ 
 
 static int cifs_do_create(struct inode *inode, struct dentry *direntry, unsigned int xid,
 			  struct tcon_link *tlink, unsigned int oflags, umode_t mode, __u32 *oplock,
@@ -209,7 +197,7 @@ static int cifs_do_create(struct inode *inode, struct dentry *direntry, unsigned
 		switch (rc) {
 		case 0:
 			if (newinode == NULL) {
-				/* query inode info */
+				 
 				goto cifs_create_get_file_info;
 			}
 
@@ -221,17 +209,11 @@ static int cifs_do_create(struct inode *inode, struct dentry *direntry, unsigned
 			}
 
 			if (!S_ISREG(newinode->i_mode)) {
-				/*
-				 * The server may allow us to open things like
-				 * FIFOs, but the client isn't set up to deal
-				 * with that. If it's not a regular file, just
-				 * close it and proceed as if it were a normal
-				 * lookup.
-				 */
+				 
 				CIFSSMBClose(xid, tcon, fid->netfid);
 				goto cifs_create_get_file_info;
 			}
-			/* success, no need to query */
+			 
 			goto cifs_create_set_dentry;
 
 		case -ENOENT:
@@ -239,41 +221,25 @@ static int cifs_do_create(struct inode *inode, struct dentry *direntry, unsigned
 
 		case -EIO:
 		case -EINVAL:
-			/*
-			 * EIO could indicate that (posix open) operation is not
-			 * supported, despite what server claimed in capability
-			 * negotiation.
-			 *
-			 * POSIX open in samba versions 3.3.1 and earlier could
-			 * incorrectly fail with invalid parameter.
-			 */
+			 
 			tcon->broken_posix_open = true;
 			break;
 
 		case -EREMOTE:
 		case -EOPNOTSUPP:
-			/*
-			 * EREMOTE indicates DFS junction, which is not handled
-			 * in posix open.  If either that or op not supported
-			 * returned, follow the normal lookup.
-			 */
+			 
 			break;
 
 		default:
 			goto out;
 		}
-		/*
-		 * fallthrough to retry, using older open call, this is case
-		 * where server does not support this SMB level, and falsely
-		 * claims capability (also get here for DFS case which should be
-		 * rare for path not covered on files)
-		 */
+		 
 	}
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
+#endif  
 
 	desired_access = 0;
 	if (OPEN_FMODE(oflags) & FMODE_READ)
-		desired_access |= GENERIC_READ; /* is this too little? */
+		desired_access |= GENERIC_READ;  
 	if (OPEN_FMODE(oflags) & FMODE_WRITE)
 		desired_access |= GENERIC_WRITE;
 
@@ -287,20 +253,14 @@ static int cifs_do_create(struct inode *inode, struct dentry *direntry, unsigned
 	else
 		cifs_dbg(FYI, "Create flag not set in create function\n");
 
-	/*
-	 * BB add processing to set equivalent of mode - e.g. via CreateX with
-	 * ACLs
-	 */
+	 
 
 	if (!server->ops->open) {
 		rc = -ENOSYS;
 		goto out;
 	}
 
-	/*
-	 * if we're not using unix extensions, see if we need to set
-	 * ATTR_READONLY on the create call
-	 */
+	 
 	if (!tcon->unix_ext && (mode & S_IWUGO) == 0)
 		create_options |= CREATE_OPTION_READONLY;
 
@@ -321,10 +281,7 @@ static int cifs_do_create(struct inode *inode, struct dentry *direntry, unsigned
 	}
 
 #ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
-	/*
-	 * If Open reported that we actually created a file then we now have to
-	 * set the mode if possible.
-	 */
+	 
 	if ((tcon->unix_ext) && (*oplock & CIFS_CREATE_ACTION)) {
 		struct cifs_unix_set_info_args args = {
 				.mode	= mode,
@@ -341,31 +298,28 @@ static int cifs_do_create(struct inode *inode, struct dentry *direntry, unsigned
 			else
 				args.gid = current_fsgid();
 		} else {
-			args.uid = INVALID_UID; /* no change */
-			args.gid = INVALID_GID; /* no change */
+			args.uid = INVALID_UID;  
+			args.gid = INVALID_GID;  
 		}
 		CIFSSMBUnixSetFileInfo(xid, tcon, &args, fid->netfid,
 				       current->tgid);
 	} else {
-		/*
-		 * BB implement mode setting via Windows security
-		 * descriptors e.g.
-		 */
-		/* CIFSSMBWinSetPerms(xid,tcon,path,mode,-1,-1,nls);*/
+		 
+		 
 
-		/* Could set r/o dos attribute if mode & 0222 == 0 */
+		 
 	}
 
 cifs_create_get_file_info:
-	/* server might mask mode so we have to query for it */
+	 
 	if (tcon->unix_ext)
 		rc = cifs_get_inode_info_unix(&newinode, full_path, inode->i_sb,
 					      xid);
 	else {
 #else
 	{
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
-		/* TODO: Add support for calling POSIX query info here, but passing in fid */
+#endif  
+		 
 		rc = cifs_get_inode_info(&newinode, full_path, buf, inode->i_sb, xid, fid);
 		if (newinode) {
 			if (server->ops->set_lease_key)
@@ -386,7 +340,7 @@ cifs_create_get_file_info:
 
 #ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
 cifs_create_set_dentry:
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
+#endif  
 	if (rc != 0) {
 		cifs_dbg(FYI, "Create worked, get_inode_info failed rc = %d\n",
 			 rc);
@@ -432,24 +386,11 @@ cifs_atomic_open(struct inode *inode, struct dentry *direntry,
 	if (unlikely(cifs_forced_shutdown(CIFS_SB(inode->i_sb))))
 		return -EIO;
 
-	/*
-	 * Posix open is only called (at lookup time) for file create now. For
-	 * opens (rather than creates), because we do not know if it is a file
-	 * or directory yet, and current Samba no longer allows us to do posix
-	 * open on dirs, we could end up wasting an open call on what turns out
-	 * to be a dir. For file opens, we wait to call posix open till
-	 * cifs_open.  It could be added to atomic_open in the future but the
-	 * performance tradeoff of the extra network request when EISDIR or
-	 * EACCES is returned would have to be weighed against the 50% reduction
-	 * in network traffic in the other paths.
-	 */
+	 
 	if (!(oflags & O_CREAT)) {
 		struct dentry *res;
 
-		/*
-		 * Check for hashed negative dentry. We have already revalidated
-		 * the dentry and it is fine. No need to perform another lookup.
-		 */
+		 
 		if (!d_in_lookup(direntry))
 			return -ENOENT;
 
@@ -535,13 +476,7 @@ int cifs_create(struct mnt_idmap *idmap, struct inode *inode,
 {
 	int rc;
 	unsigned int xid = get_xid();
-	/*
-	 * BB below access is probably too much for mknod to request
-	 *    but we have to do query and setpathinfo so requesting
-	 *    less could fail (unless we want to request getatr and setatr
-	 *    permissions (only).  At least for POSIX we do not have to
-	 *    request so much.
-	 */
+	 
 	unsigned oflags = O_EXCL | O_CREAT | O_RDWR;
 	struct tcon_link *tlink;
 	struct cifs_tcon *tcon;
@@ -628,7 +563,7 @@ cifs_lookup(struct inode *parent_dir_inode, struct dentry *direntry,
 	    unsigned int flags)
 {
 	unsigned int xid;
-	int rc = 0; /* to get around spurious gcc warning, set to zero here */
+	int rc = 0;  
 	struct cifs_sb_info *cifs_sb;
 	struct tcon_link *tlink;
 	struct cifs_tcon *pTcon;
@@ -642,7 +577,7 @@ cifs_lookup(struct inode *parent_dir_inode, struct dentry *direntry,
 	cifs_dbg(FYI, "parent inode = 0x%p name is: %pd and dentry = 0x%p\n",
 		 parent_dir_inode, direntry, direntry);
 
-	/* check whether path exists */
+	 
 
 	cifs_sb = CIFS_SB(parent_dir_inode->i_sb);
 	tlink = cifs_sb_tlink(cifs_sb);
@@ -659,9 +594,7 @@ cifs_lookup(struct inode *parent_dir_inode, struct dentry *direntry,
 		return ERR_PTR(rc);
 	}
 
-	/* can not grab the rename sem here since it would
-	deadlock in the cases (beginning of sys_rename itself)
-	in which we already have the sb rename sem */
+	 
 	page = alloc_dentry_path();
 	full_path = build_path_from_dentry(direntry, page);
 	if (IS_ERR(full_path)) {
@@ -691,8 +624,7 @@ again:
 	}
 
 	if (rc == 0) {
-		/* since paths are not looked up by component - the parent
-		   directories are presumed to be good here */
+		 
 		renew_parental_timestamps(direntry);
 	} else if (rc == -EAGAIN && retry_count++ < 10) {
 		goto again;
@@ -702,8 +634,7 @@ again:
 	} else {
 		if (rc != -EACCES) {
 			cifs_dbg(FYI, "Unexpected lookup error %d\n", rc);
-			/* We special case check for Access Denied - since that
-			is a common return code */
+			 
 		}
 		newInode = ERR_PTR(rc);
 	}
@@ -725,7 +656,7 @@ cifs_d_revalidate(struct dentry *direntry, unsigned int flags)
 	if (d_really_is_positive(direntry)) {
 		inode = d_inode(direntry);
 		if ((flags & LOOKUP_REVAL) && !CIFS_CACHE_READ(CIFS_I(inode)))
-			CIFS_I(inode)->time = 0; /* force reval */
+			CIFS_I(inode)->time = 0;  
 
 		rc = cifs_revalidate_dentry(direntry);
 		if (rc) {
@@ -733,27 +664,15 @@ cifs_d_revalidate(struct dentry *direntry, unsigned int flags)
 			switch (rc) {
 			case -ENOENT:
 			case -ESTALE:
-				/*
-				 * Those errors mean the dentry is invalid
-				 * (file was deleted or recreated)
-				 */
+				 
 				return 0;
 			default:
-				/*
-				 * Otherwise some unexpected error happened
-				 * report it as-is to VFS layer
-				 */
+				 
 				return rc;
 			}
 		}
 		else {
-			/*
-			 * If the inode wasn't known to be a dfs entry when
-			 * the dentry was instantiated, such as when created
-			 * via ->readdir(), it needs to be set now since the
-			 * attributes will have been updated by
-			 * cifs_revalidate_dentry().
-			 */
+			 
 			if (IS_AUTOMOUNT(inode) &&
 			   !(direntry->d_flags & DCACHE_NEED_AUTOMOUNT)) {
 				spin_lock(&direntry->d_lock);
@@ -765,18 +684,11 @@ cifs_d_revalidate(struct dentry *direntry, unsigned int flags)
 		}
 	}
 
-	/*
-	 * This may be nfsd (or something), anyway, we can't see the
-	 * intent of this. So, since this can be for creation, drop it.
-	 */
+	 
 	if (!flags)
 		return 0;
 
-	/*
-	 * Drop the negative dentry, in order to make sure to use the
-	 * case sensitive name which is specified by user if this is
-	 * for creation.
-	 */
+	 
 	if (flags & (LOOKUP_CREATE | LOOKUP_RENAME_TARGET))
 		return 0;
 
@@ -786,19 +698,12 @@ cifs_d_revalidate(struct dentry *direntry, unsigned int flags)
 	return 1;
 }
 
-/* static int cifs_d_delete(struct dentry *direntry)
-{
-	int rc = 0;
-
-	cifs_dbg(FYI, "In cifs d_delete, name = %pd\n", direntry);
-
-	return rc;
-}     */
+ 
 
 const struct dentry_operations cifs_dentry_ops = {
 	.d_revalidate = cifs_d_revalidate,
 	.d_automount = cifs_d_automount,
-/* d_delete:       cifs_d_delete,      */ /* not needed except for debugging */
+   
 };
 
 static int cifs_ci_hash(const struct dentry *dentry, struct qstr *q)
@@ -811,7 +716,7 @@ static int cifs_ci_hash(const struct dentry *dentry, struct qstr *q)
 	hash = init_name_hash(dentry);
 	for (i = 0; i < q->len; i += charlen) {
 		charlen = codepage->char2uni(&q->name[i], q->len - i, &c);
-		/* error out if we can't convert the character */
+		 
 		if (unlikely(charlen < 0))
 			return charlen;
 		hash = partial_name_hash(cifs_toupper(c), hash);
@@ -828,24 +733,16 @@ static int cifs_ci_compare(const struct dentry *dentry,
 	wchar_t c1, c2;
 	int i, l1, l2;
 
-	/*
-	 * We make the assumption here that uppercase characters in the local
-	 * codepage are always the same length as their lowercase counterparts.
-	 *
-	 * If that's ever not the case, then this will fail to match it.
-	 */
+	 
 	if (name->len != len)
 		return 1;
 
 	for (i = 0; i < len; i += l1) {
-		/* Convert characters in both strings to UTF-16. */
+		 
 		l1 = codepage->char2uni(&str[i], len - i, &c1);
 		l2 = codepage->char2uni(&name->name[i], name->len - i, &c2);
 
-		/*
-		 * If we can't convert either character, just declare it to
-		 * be 1 byte long and compare the original byte.
-		 */
+		 
 		if (unlikely(l1 < 0 && l2 < 0)) {
 			if (str[i] != name->name[i])
 				return 1;
@@ -853,14 +750,11 @@ static int cifs_ci_compare(const struct dentry *dentry,
 			continue;
 		}
 
-		/*
-		 * Here, we again ass|u|me that upper/lowercase versions of
-		 * a character are the same length in the local NLS.
-		 */
+		 
 		if (l1 != l2)
 			return 1;
 
-		/* Now compare uppercase versions of these characters */
+		 
 		if (cifs_toupper(c1) != cifs_toupper(c2))
 			return 1;
 	}

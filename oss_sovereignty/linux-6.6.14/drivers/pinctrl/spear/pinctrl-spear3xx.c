@@ -1,24 +1,15 @@
-/*
- * Driver for the ST Microelectronics SPEAr3xx pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/pinctrl/pinctrl.h>
 
 #include "pinctrl-spear3xx.h"
 
-/* pins */
+ 
 static const struct pinctrl_pin_desc spear3xx_pins[] = {
 	SPEAR_PIN_0_TO_101,
 };
 
-/* firda_pins */
+ 
 static const unsigned firda_pins[] = { 0, 1 };
 static struct spear_muxreg firda_muxreg[] = {
 	{
@@ -51,7 +42,7 @@ struct spear_function spear3xx_firda_function = {
 	.ngroups = ARRAY_SIZE(firda_grps),
 };
 
-/* i2c_pins */
+ 
 static const unsigned i2c_pins[] = { 4, 5 };
 static struct spear_muxreg i2c_muxreg[] = {
 	{
@@ -84,7 +75,7 @@ struct spear_function spear3xx_i2c_function = {
 	.ngroups = ARRAY_SIZE(i2c_grps),
 };
 
-/* ssp_cs_pins */
+ 
 static const unsigned ssp_cs_pins[] = { 34, 35, 36 };
 static struct spear_muxreg ssp_cs_muxreg[] = {
 	{
@@ -117,7 +108,7 @@ struct spear_function spear3xx_ssp_cs_function = {
 	.ngroups = ARRAY_SIZE(ssp_cs_grps),
 };
 
-/* ssp_pins */
+ 
 static const unsigned ssp_pins[] = { 6, 7, 8, 9 };
 static struct spear_muxreg ssp_muxreg[] = {
 	{
@@ -150,7 +141,7 @@ struct spear_function spear3xx_ssp_function = {
 	.ngroups = ARRAY_SIZE(ssp_grps),
 };
 
-/* mii_pins */
+ 
 static const unsigned mii_pins[] = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 	21, 22, 23, 24, 25, 26, 27 };
 static struct spear_muxreg mii_muxreg[] = {
@@ -184,7 +175,7 @@ struct spear_function spear3xx_mii_function = {
 	.ngroups = ARRAY_SIZE(mii_grps),
 };
 
-/* gpio0_pin0_pins */
+ 
 static const unsigned gpio0_pin0_pins[] = { 28 };
 static struct spear_muxreg gpio0_pin0_muxreg[] = {
 	{
@@ -210,7 +201,7 @@ struct spear_pingroup spear3xx_gpio0_pin0_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(gpio0_pin0_modemux),
 };
 
-/* gpio0_pin1_pins */
+ 
 static const unsigned gpio0_pin1_pins[] = { 29 };
 static struct spear_muxreg gpio0_pin1_muxreg[] = {
 	{
@@ -236,7 +227,7 @@ struct spear_pingroup spear3xx_gpio0_pin1_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(gpio0_pin1_modemux),
 };
 
-/* gpio0_pin2_pins */
+ 
 static const unsigned gpio0_pin2_pins[] = { 30 };
 static struct spear_muxreg gpio0_pin2_muxreg[] = {
 	{
@@ -262,7 +253,7 @@ struct spear_pingroup spear3xx_gpio0_pin2_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(gpio0_pin2_modemux),
 };
 
-/* gpio0_pin3_pins */
+ 
 static const unsigned gpio0_pin3_pins[] = { 31 };
 static struct spear_muxreg gpio0_pin3_muxreg[] = {
 	{
@@ -288,7 +279,7 @@ struct spear_pingroup spear3xx_gpio0_pin3_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(gpio0_pin3_modemux),
 };
 
-/* gpio0_pin4_pins */
+ 
 static const unsigned gpio0_pin4_pins[] = { 32 };
 static struct spear_muxreg gpio0_pin4_muxreg[] = {
 	{
@@ -314,7 +305,7 @@ struct spear_pingroup spear3xx_gpio0_pin4_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(gpio0_pin4_modemux),
 };
 
-/* gpio0_pin5_pins */
+ 
 static const unsigned gpio0_pin5_pins[] = { 33 };
 static struct spear_muxreg gpio0_pin5_muxreg[] = {
 	{
@@ -349,7 +340,7 @@ struct spear_function spear3xx_gpio0_function = {
 	.ngroups = ARRAY_SIZE(gpio0_grps),
 };
 
-/* uart0_ext_pins */
+ 
 static const unsigned uart0_ext_pins[] = { 37, 38, 39, 40, 41, 42 };
 static struct spear_muxreg uart0_ext_muxreg[] = {
 	{
@@ -382,7 +373,7 @@ struct spear_function spear3xx_uart0_ext_function = {
 	.ngroups = ARRAY_SIZE(uart0_ext_grps),
 };
 
-/* uart0_pins */
+ 
 static const unsigned uart0_pins[] = { 2, 3 };
 static struct spear_muxreg uart0_muxreg[] = {
 	{
@@ -415,7 +406,7 @@ struct spear_function spear3xx_uart0_function = {
 	.ngroups = ARRAY_SIZE(uart0_grps),
 };
 
-/* timer_0_1_pins */
+ 
 static const unsigned timer_0_1_pins[] = { 43, 44, 47, 48 };
 static struct spear_muxreg timer_0_1_muxreg[] = {
 	{
@@ -448,7 +439,7 @@ struct spear_function spear3xx_timer_0_1_function = {
 	.ngroups = ARRAY_SIZE(timer_0_1_grps),
 };
 
-/* timer_2_3_pins */
+ 
 static const unsigned timer_2_3_pins[] = { 45, 46, 49, 50 };
 static struct spear_muxreg timer_2_3_muxreg[] = {
 	{
@@ -481,7 +472,7 @@ struct spear_function spear3xx_timer_2_3_function = {
 	.ngroups = ARRAY_SIZE(timer_2_3_grps),
 };
 
-/* Define muxreg arrays */
+ 
 DEFINE_MUXREG(firda_pins, 0, PMX_FIRDA_MASK, 0);
 DEFINE_MUXREG(i2c_pins, 0, PMX_I2C_MASK, 0);
 DEFINE_MUXREG(ssp_cs_pins, 0, PMX_SSP_CS_MASK, 0);

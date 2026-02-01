@@ -1,38 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * USB Synaptics device driver
- *
- *  Copyright (c) 2002 Rob Miller (rob@inpharmatica . co . uk)
- *  Copyright (c) 2003 Ron Lee (ron@debian.org)
- *	cPad driver for kernel 2.4
- *
- *  Copyright (c) 2004 Jan Steinhoff (cpad@jan-steinhoff . de)
- *  Copyright (c) 2004 Ron Lee (ron@debian.org)
- *	rewritten for kernel 2.6
- *
- *  cPad display character device part is not included. It can be found at
- *  http://jan-steinhoff.de/linux/synaptics-usb.html
- *
- * Bases on:	usb_skeleton.c v2.2 by Greg Kroah-Hartman
- *		drivers/hid/usbhid/usbmouse.c by Vojtech Pavlik
- *		drivers/input/mouse/synaptics.c by Peter Osterlund
- *
- * Trademarks are the property of their respective owners.
- */
 
-/*
- * There are three different types of Synaptics USB devices: Touchpads,
- * touchsticks (or trackpoints), and touchscreens. Touchpads are well supported
- * by this driver, touchstick support has not been tested much yet, and
- * touchscreens have not been tested at all.
- *
- * Up to three alternate settings are possible:
- *	setting 0: one int endpoint for relative movement (used by usbhid.ko)
- *	setting 1: one int endpoint for absolute finger position
- *	setting 2 (cPad only): one int endpoint for absolute finger position and
- *		   two bulk endpoints for the display (in/out)
- * This driver uses setting 1.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -43,21 +12,21 @@
 #include <linux/usb/input.h>
 
 #define USB_VENDOR_ID_SYNAPTICS	0x06cb
-#define USB_DEVICE_ID_SYNAPTICS_TP	0x0001	/* Synaptics USB TouchPad */
-#define USB_DEVICE_ID_SYNAPTICS_INT_TP	0x0002	/* Integrated USB TouchPad */
-#define USB_DEVICE_ID_SYNAPTICS_CPAD	0x0003	/* Synaptics cPad */
-#define USB_DEVICE_ID_SYNAPTICS_TS	0x0006	/* Synaptics TouchScreen */
-#define USB_DEVICE_ID_SYNAPTICS_STICK	0x0007	/* Synaptics USB Styk */
-#define USB_DEVICE_ID_SYNAPTICS_WP	0x0008	/* Synaptics USB WheelPad */
-#define USB_DEVICE_ID_SYNAPTICS_COMP_TP	0x0009	/* Composite USB TouchPad */
-#define USB_DEVICE_ID_SYNAPTICS_WTP	0x0010	/* Wireless TouchPad */
-#define USB_DEVICE_ID_SYNAPTICS_DPAD	0x0013	/* DisplayPad */
+#define USB_DEVICE_ID_SYNAPTICS_TP	0x0001	 
+#define USB_DEVICE_ID_SYNAPTICS_INT_TP	0x0002	 
+#define USB_DEVICE_ID_SYNAPTICS_CPAD	0x0003	 
+#define USB_DEVICE_ID_SYNAPTICS_TS	0x0006	 
+#define USB_DEVICE_ID_SYNAPTICS_STICK	0x0007	 
+#define USB_DEVICE_ID_SYNAPTICS_WP	0x0008	 
+#define USB_DEVICE_ID_SYNAPTICS_COMP_TP	0x0009	 
+#define USB_DEVICE_ID_SYNAPTICS_WTP	0x0010	 
+#define USB_DEVICE_ID_SYNAPTICS_DPAD	0x0013	 
 
 #define SYNUSB_TOUCHPAD			(1 << 0)
 #define SYNUSB_STICK			(1 << 1)
 #define SYNUSB_TOUCHSCREEN		(1 << 2)
-#define SYNUSB_AUXDISPLAY		(1 << 3) /* For cPad */
-#define SYNUSB_COMBO			(1 << 4) /* Composite device (TP + stick) */
+#define SYNUSB_AUXDISPLAY		(1 << 3)  
+#define SYNUSB_COMBO			(1 << 4)  
 #define SYNUSB_IO_ALWAYS		(1 << 5)
 
 #define USB_DEVICE_SYNAPTICS(prod, kind)		\
@@ -78,16 +47,16 @@ struct synusb {
 	struct urb *urb;
 	unsigned char *data;
 
-	/* serialize access to open/suspend */
+	 
 	struct mutex pm_mutex;
 	bool is_open;
 
-	/* input device related data structures */
+	 
 	struct input_dev *input;
 	char name[128];
 	char phys[64];
 
-	/* characteristics of the device */
+	 
 	unsigned long flags;
 };
 
@@ -142,7 +111,7 @@ static void synusb_report_touchpad(struct synusb *synusb)
 			num_fingers = 2 + w;
 			break;
 
-		case 2:	                /* pen, pretend its a finger */
+		case 2:	                 
 			break;
 
 		case 4 ... 15:
@@ -154,11 +123,7 @@ static void synusb_report_touchpad(struct synusb *synusb)
 		tool_width = 0;
 	}
 
-	/*
-	 * Post events
-	 * BTN_TOUCH has to be first as mousedev relies on it when doing
-	 * absolute -> relative conversion
-	 */
+	 
 
 	if (pressure > 30)
 		input_report_key(input_dev, BTN_TOUCH, 1);
@@ -190,13 +155,13 @@ static void synusb_irq(struct urb *urb)
 	struct synusb *synusb = urb->context;
 	int error;
 
-	/* Check our status in case we need to bail out early. */
+	 
 	switch (urb->status) {
 	case 0:
 		usb_mark_last_busy(synusb->udev);
 		break;
 
-	/* Device went away so don't keep trying to read from it. */
+	 
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
@@ -231,7 +196,7 @@ synusb_get_in_endpoint(struct usb_host_interface *iface)
 		endpoint = &iface->endpoint[i].desc;
 
 		if (usb_endpoint_is_int_in(endpoint)) {
-			/* we found our interrupt in endpoint */
+			 
 			return endpoint;
 		}
 	}
@@ -325,10 +290,7 @@ static int synusb_probe(struct usb_interface *intf,
 
 	synusb->flags = id->driver_info;
 	if (synusb->flags & SYNUSB_COMBO) {
-		/*
-		 * This is a combo device, we need to set proper
-		 * capability, depending on the interface.
-		 */
+		 
 		synusb->flags |= intf_num == 1 ?
 					SYNUSB_STICK : SYNUSB_TOUCHPAD;
 	}

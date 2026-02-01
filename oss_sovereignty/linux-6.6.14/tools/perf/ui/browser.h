@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PERF_UI_BROWSER_H_
 #define _PERF_UI_BROWSER_H_ 1
 
@@ -83,4 +83,4 @@ void ui_browser__list_head_seek(struct ui_browser *browser, off_t offset, int wh
 unsigned int ui_browser__list_head_refresh(struct ui_browser *browser);
 
 void ui_browser__init(void);
-#endif /* _PERF_UI_BROWSER_H_ */
+#endif  

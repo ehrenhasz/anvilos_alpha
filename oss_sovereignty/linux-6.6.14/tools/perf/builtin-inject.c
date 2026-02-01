@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-inject.c
- *
- * Builtin inject command: Examine the live mode (stdin) event stream
- * and repipe it to stdout while optionally injecting additional
- * events into it.
- */
+
+ 
 #include "builtin.h"
 
 #include "util/color.h"
@@ -33,7 +27,7 @@
 
 #include <linux/err.h>
 #include <subcmd/parse-options.h>
-#include <uapi/linux/mman.h> /* To get things like MAP_HUGETLB even on older libc headers */
+#include <uapi/linux/mman.h>  
 
 #include <linux/list.h>
 #include <linux/string.h>
@@ -51,7 +45,7 @@ struct guest_event {
 };
 
 struct guest_id {
-	/* hlist_node must be first, see free_hlist() */
+	 
 	struct hlist_node		node;
 	u64				id;
 	u64				host_id;
@@ -59,17 +53,17 @@ struct guest_id {
 };
 
 struct guest_tid {
-	/* hlist_node must be first, see free_hlist() */
+	 
 	struct hlist_node		node;
-	/* Thread ID of QEMU thread */
+	 
 	u32				tid;
 	u32				vcpu;
 };
 
 struct guest_vcpu {
-	/* Current host CPU */
+	 
 	u32				cpu;
-	/* Thread ID of QEMU thread */
+	 
 	u32				tid;
 };
 
@@ -92,14 +86,14 @@ struct guest_session {
 	u16				dflt_id_hdr_size;
 	u64				dflt_id;
 	u64				highest_id;
-	/* Array of guest_vcpu */
+	 
 	struct guest_vcpu		*vcpu;
 	size_t				vcpu_cnt;
-	/* Hash table for guest_id */
+	 
 	struct hlist_head		heads[PERF_EVLIST__HLIST_SIZE];
-	/* Hash table for guest_tid */
+	 
 	struct hlist_head		tids[PERF_EVLIST__HLIST_SIZE];
-	/* Place to stash next guest event */
+	 
 	struct guest_event		ev;
 };
 
@@ -395,9 +389,7 @@ static int perf_event__jit_repipe_mmap(struct perf_tool *tool,
 	u64 n = 0;
 	int ret;
 
-	/*
-	 * if jit marker, then inject jit mmaps and generate ELF images
-	 */
+	 
 	ret = jit_process(inject->session, &inject->output, machine,
 			  event->mmap.filename, event->mmap.pid, event->mmap.tid, &n);
 	if (ret < 0)
@@ -429,10 +421,7 @@ static struct dso *findnew_dso(int pid, int tid, const char *filename,
 	nsi = nsinfo__get(thread__nsinfo(thread));
 
 	if (vdso) {
-		/* The vdso maps are always on the host and not the
-		 * container.  Ensure that we don't use setns to look
-		 * them up.
-		 */
+		 
 		nnsi = nsinfo__copy(nsi);
 		if (nnsi) {
 			nsinfo__put(nsi);
@@ -491,7 +480,7 @@ static int perf_event__repipe_mmap2(struct perf_tool *tool,
 		dso = findnew_dso(event->mmap2.pid, event->mmap2.tid,
 				  event->mmap2.filename, NULL, machine);
 		if (dso) {
-			/* mark it not to inject build-id */
+			 
 			dso->hit = 1;
 		}
 		dso__put(dso);
@@ -510,9 +499,7 @@ static int perf_event__jit_repipe_mmap2(struct perf_tool *tool,
 	u64 n = 0;
 	int ret;
 
-	/*
-	 * if jit marker, then inject jit mmaps and generate ELF images
-	 */
+	 
 	ret = jit_process(inject->session, &inject->output, machine,
 			  event->mmap2.filename, event->mmap2.pid, event->mmap2.tid, &n);
 	if (ret < 0)
@@ -539,11 +526,11 @@ static int perf_event__repipe_buildid_mmap2(struct perf_tool *tool,
 	struct dso *dso;
 
 	if (event->header.misc & PERF_RECORD_MISC_MMAP_BUILD_ID) {
-		/* cannot use dso_id since it'd have invalid info */
+		 
 		dso = findnew_dso(event->mmap2.pid, event->mmap2.tid,
 				  event->mmap2.filename, NULL, machine);
 		if (dso) {
-			/* mark it not to inject build-id */
+			 
 			dso->hit = 1;
 		}
 		dso__put(dso);
@@ -906,11 +893,7 @@ static int host_peek_vm_comms_cb(struct perf_session *session __maybe_unused,
 	    event->comm.pid != gs->machine_pid)
 		return 0;
 
-	/*
-	 * QEMU option -name debug-threads=on, causes thread names formatted as
-	 * below, although it is not an ABI. Also libvirt seems to use this by
-	 * default. Here we rely on it to tell us which thread is which VCPU.
-	 */
+	 
 	ret = sscanf(event->comm.comm, "CPU %u/KVM", &vcpu);
 	if (ret <= 0)
 		return ret;
@@ -1086,7 +1069,7 @@ static int guest_session__add_attr(struct guest_session *gs, struct evsel *evsel
 		u32 vcpu = vcpu_array[i];
 
 		sid = evlist__id2sid(inject->session->evlist, id_array[i]);
-		/* Guest event is per-thread from the host point of view */
+		 
 		sid->cpu.cpu = -1;
 		sid->tid = gs->vcpu[vcpu].tid;
 		sid->machine_pid = gs->machine_pid;
@@ -1194,7 +1177,7 @@ static int guest_session__add_build_ids(struct guest_session *gs)
 	struct dso *dso;
 	int ret;
 
-	/* Build IDs will be put in the Build ID feature section */
+	 
 	perf_header__set_feat(&inject->session->header, HEADER_BUILD_ID);
 
 	dsos__for_each_with_build_id(dso, &machine->dsos.head) {
@@ -1213,7 +1196,7 @@ static int guest_session__ksymbol_event(struct perf_tool *tool,
 {
 	struct guest_session *gs = container_of(tool, struct guest_session, tool);
 
-	/* Only support out-of-line i.e. no BPF support */
+	 
 	if (event->ksymbol.ksym_type != PERF_RECORD_KSYMBOL_TYPE_OOL)
 		return 0;
 
@@ -1226,7 +1209,7 @@ static int guest_session__start(struct guest_session *gs, const char *name, bool
 	struct perf_session *session;
 	int ret;
 
-	/* Only these events will be injected */
+	 
 	gs->tool.mmap		= guest_session__repipe;
 	gs->tool.mmap2		= guest_session__repipe;
 	gs->tool.comm		= guest_session__repipe;
@@ -1236,14 +1219,9 @@ static int guest_session__start(struct guest_session *gs, const char *name, bool
 	gs->tool.context_switch	= guest_session__repipe;
 	gs->tool.ksymbol	= guest_session__ksymbol_event;
 	gs->tool.text_poke	= guest_session__repipe;
-	/*
-	 * Processing a build ID creates a struct dso with that build ID. Later,
-	 * all guest dsos are iterated and the build IDs processed into the host
-	 * session where they will be output to the Build ID feature section
-	 * when the perf.data file header is written.
-	 */
+	 
 	gs->tool.build_id	= perf_event__process_build_id;
-	/* Process the id index to know what VCPU an ID belongs to */
+	 
 	gs->tool.id_index	= perf_event__process_id_index;
 
 	gs->tool.ordered_events	= true;
@@ -1258,19 +1236,16 @@ static int guest_session__start(struct guest_session *gs, const char *name, bool
 		return PTR_ERR(session);
 	gs->session = session;
 
-	/*
-	 * Initial events have zero'd ID samples. Get default ID sample size
-	 * used for removing them.
-	 */
+	 
 	gs->dflt_id_hdr_size = session->machines.host.id_hdr_size;
-	/* And default ID for adding back a host-compatible ID sample */
+	 
 	gs->dflt_id = evlist__first_id(session->evlist);
 	if (!gs->dflt_id) {
 		pr_err("Guest data has no sample IDs");
 		return -EINVAL;
 	}
 
-	/* Temporary file for guest events */
+	 
 	gs->tmp_file_name = strdup(tmp_file_name);
 	if (!gs->tmp_file_name)
 		return -ENOMEM;
@@ -1281,10 +1256,7 @@ static int guest_session__start(struct guest_session *gs, const char *name, bool
 	if (zstd_init(&gs->session->zstd_data, 0) < 0)
 		pr_warning("Guest session decompression initialization failed.\n");
 
-	/*
-	 * perf does not support processing 2 sessions simultaneously, so output
-	 * guest events to a temporary file.
-	 */
+	 
 	ret = perf_session__process_events(gs->session);
 	if (ret)
 		return ret;
@@ -1295,7 +1267,7 @@ static int guest_session__start(struct guest_session *gs, const char *name, bool
 	return 0;
 }
 
-/* Free hlist nodes assuming hlist_node is the first member of hlist entries */
+ 
 static void free_hlist(struct hlist_head *heads, size_t hlist_sz)
 {
 	struct hlist_node *pos, *n;
@@ -1359,10 +1331,7 @@ static void guest_session__convert_time(struct guest_session *gs, u64 guest_time
 	else
 		tsc = guest_time;
 
-	/*
-	 * This is the correct order of operations for x86 if the TSC Offset and
-	 * Multiplier values are used.
-	 */
+	 
 	tsc -= gs->time_offset;
 	tsc /= gs->time_scale;
 
@@ -1392,7 +1361,7 @@ static int guest_session__fetch(struct guest_session *gs)
 		return ret;
 
 	if (!ret) {
-		/* Zero size means EOF */
+		 
 		hdr->size = 0;
 		return 0;
 	}
@@ -1484,12 +1453,12 @@ static int guest_session__inject_events(struct guest_session *gs, u64 timestamp)
 		sample = &gs->ev.sample;
 
 		if (!ev->header.size)
-			return 0; /* EOF */
+			return 0;  
 
 		if (sample->time > timestamp)
 			return 0;
 
-		/* Change cpumode to guest */
+		 
 		cpumode = ev->header.misc & PERF_RECORD_MISC_CPUMODE_MASK;
 		if (cpumode & PERF_RECORD_MISC_USER)
 			cpumode = PERF_RECORD_MISC_GUEST_USER;
@@ -1518,7 +1487,7 @@ static int guest_session__inject_events(struct guest_session *gs, u64 timestamp)
 			return -EINVAL;
 		}
 
-		/* Remove guest id sample */
+		 
 		ev->header.size -= id_hdr_size;
 
 		if (ev->header.size & 7) {
@@ -1533,7 +1502,7 @@ static int guest_session__inject_events(struct guest_session *gs, u64 timestamp)
 			return -EINVAL;
 		}
 
-		/* Change to host ID to avoid conflicting ID values */
+		 
 		sample->id = guest_id->host_id;
 		sample->stream_id = guest_id->host_id;
 
@@ -1543,11 +1512,11 @@ static int guest_session__inject_events(struct guest_session *gs, u64 timestamp)
 				       sample->cpu);
 				return -EINVAL;
 			}
-			/* Change to host CPU instead of guest VCPU */
+			 
 			sample->cpu = gs->vcpu[sample->cpu].cpu;
 		}
 
-		/* New id sample with new ID and CPU */
+		 
 		ret = evlist__append_id_sample(inject->session->evlist, ev, sample);
 		if (ret)
 			return ret;
@@ -1591,10 +1560,7 @@ static int host__finished_init(struct perf_session *session, union perf_event *e
 	struct guest_session *gs = &inject->guest_session;
 	int ret;
 
-	/*
-	 * Peek through host COMM events to find QEMU threads and the VCPU they
-	 * are running.
-	 */
+	 
 	ret = host_peek_vm_comms(session, gs);
 	if (ret)
 		return ret;
@@ -1604,9 +1570,7 @@ static int host__finished_init(struct perf_session *session, union perf_event *e
 		return -EINVAL;
 	}
 
-	/*
-	 * Allocate new (unused) host sample IDs and map them to the guest IDs.
-	 */
+	 
 	gs->highest_id = evlist__find_highest_id(session->evlist);
 	ret = guest_session__map_ids(gs, session->evlist);
 	if (ret)
@@ -1637,12 +1601,7 @@ static int host__finished_init(struct perf_session *session, union perf_event *e
 	return perf_event__repipe_op2_synth(session, event);
 }
 
-/*
- * Obey finished-round ordering. The FINISHED_ROUND event is first processed
- * which flushes host events to file up until the last flush time. Then inject
- * guest events up to the same time. Finally write out the FINISHED_ROUND event
- * itself.
- */
+ 
 static int host__finished_round(struct perf_tool *tool,
 				union perf_event *event,
 				struct ordered_events *oe)
@@ -1690,7 +1649,7 @@ static int host__context_switch(struct perf_tool *tool,
 	if (vcpu >= gs->vcpu_cnt)
 		return -EINVAL;
 
-	/* Guest is switching in, record which CPU the VCPU is now running on */
+	 
 	gs->vcpu[vcpu].cpu = sample->cpu;
 out:
 	return host__repipe(tool, event, sample, machine);
@@ -1841,7 +1800,7 @@ static int save_section_info(struct perf_inject *inject)
 static bool keep_feat(int feat)
 {
 	switch (feat) {
-	/* Keep original information that describes the machine or software */
+	 
 	case HEADER_TRACING_DATA:
 	case HEADER_HOSTNAME:
 	case HEADER_OSRELEASE:
@@ -1864,7 +1823,7 @@ static bool keep_feat(int feat)
 	case HEADER_HYBRID_TOPOLOGY:
 	case HEADER_PMU_CAPS:
 		return true;
-	/* Information that can be updated */
+	 
 	case HEADER_BUILD_ID:
 	case HEADER_CMDLINE:
 	case HEADER_EVENT_DESC:
@@ -1931,7 +1890,7 @@ static int feat_copy_cb(struct feat_copier *fc, int feat, struct feat_writer *fw
 	if (ret < 0)
 		return ret;
 
-	return 1; /* Feature section copied */
+	return 1;  
 }
 
 static int copy_kcore_dir(struct perf_inject *inject)
@@ -2038,17 +1997,14 @@ static int __cmd_inject(struct perf_inject *inject)
 		inject->tool.aux_output_hw_id = perf_event__drop_aux;
 		inject->tool.ordered_events = true;
 		inject->tool.ordering_requires_timestamps = true;
-		/* Allow space in the header for new attributes */
+		 
 		output_data_offset = roundup(8192 + session->header.data_offset, 4096);
 		if (inject->strip)
 			strip_init(inject);
 	} else if (gs->perf_data_file) {
 		char *name = gs->perf_data_file;
 
-		/*
-		 * Not strictly necessary, but keep these events in order wrt
-		 * guest events.
-		 */
+		 
 		inject->tool.mmap		= host__repipe;
 		inject->tool.mmap2		= host__repipe;
 		inject->tool.comm		= host__repipe;
@@ -2058,29 +2014,22 @@ static int __cmd_inject(struct perf_inject *inject)
 		inject->tool.context_switch	= host__repipe;
 		inject->tool.ksymbol		= host__repipe;
 		inject->tool.text_poke		= host__repipe;
-		/*
-		 * Once the host session has initialized, set up sample ID
-		 * mapping and feed in guest attrs, build IDs and initial
-		 * events.
-		 */
+		 
 		inject->tool.finished_init	= host__finished_init;
-		/* Obey finished round ordering */
+		 
 		inject->tool.finished_round	= host__finished_round,
-		/* Keep track of which CPU a VCPU is runnng on */
+		 
 		inject->tool.context_switch	= host__context_switch;
-		/*
-		 * Must order events to be able to obey finished round
-		 * ordering.
-		 */
+		 
 		inject->tool.ordered_events	= true;
 		inject->tool.ordering_requires_timestamps = true;
-		/* Set up a separate session to process guest perf.data file */
+		 
 		ret = guest_session__start(gs, name, session->data->force);
 		if (ret) {
 			pr_err("Failed to process %s, error %d\n", name, ret);
 			return ret;
 		}
-		/* Allow space in the header for guest attributes */
+		 
 		output_data_offset += gs->session->header.data_offset;
 		output_data_offset = roundup(output_data_offset, 4096);
 	}
@@ -2096,10 +2045,7 @@ static int __cmd_inject(struct perf_inject *inject)
 		return ret;
 
 	if (gs->session) {
-		/*
-		 * Remaining guest events have later timestamps. Flush them
-		 * out to file.
-		 */
+		 
 		ret = guest_session__flush_events(gs);
 		if (ret) {
 			pr_err("Failed to flush guest events\n");
@@ -2116,17 +2062,11 @@ static int __cmd_inject(struct perf_inject *inject)
 		if (inject->build_ids)
 			perf_header__set_feat(&session->header,
 					      HEADER_BUILD_ID);
-		/*
-		 * Keep all buildids when there is unprocessed AUX data because
-		 * it is not known which ones the AUX trace hits.
-		 */
+		 
 		if (perf_header__has_feat(&session->header, HEADER_BUILD_ID) &&
 		    inject->have_auxtrace && !inject->itrace_synth_opts.set)
 			dsos__hit_all(session);
-		/*
-		 * The AUX areas have been removed and replaced with
-		 * synthesized hardware events, so clear the feature flag.
-		 */
+		 
 		if (inject->itrace_synth_opts.set) {
 			perf_header__clear_feat(&session->header,
 						HEADER_AUXTRACE);
@@ -2270,9 +2210,7 @@ int cmd_inject(int argc, const char **argv)
 #endif
 	argc = parse_options(argc, argv, options, inject_usage, 0);
 
-	/*
-	 * Any (unrecognized) arguments left?
-	 */
+	 
 	if (argc)
 		usage_with_options(inject_usage, options);
 
@@ -2315,11 +2253,7 @@ int cmd_inject(int argc, const char **argv)
 	data.path = inject.input_name;
 	if (!strcmp(inject.input_name, "-") || inject.output.is_pipe) {
 		inject.is_pipe = true;
-		/*
-		 * Do not repipe header when input is a regular file
-		 * since either it can rewrite the header at the end
-		 * or write a new pipe header.
-		 */
+		 
 		if (strcmp(inject.input_name, "-"))
 			repipe = false;
 	}
@@ -2335,7 +2269,7 @@ int cmd_inject(int argc, const char **argv)
 	if (zstd_init(&(inject.session->zstd_data), 0) < 0)
 		pr_warning("Decompression initialization failed.\n");
 
-	/* Save original section info before feature bits change */
+	 
 	ret = save_section_info(&inject);
 	if (ret)
 		goto out_delete;
@@ -2356,12 +2290,7 @@ int cmd_inject(int argc, const char **argv)
 	}
 
 	if (inject.build_ids && !inject.build_id_all) {
-		/*
-		 * to make sure the mmap records are ordered correctly
-		 * and so that the correct especially due to jitted code
-		 * mmaps. We cannot generate the buildid hit list and
-		 * inject the jit mmaps at the same time for now.
-		 */
+		 
 		inject.tool.ordered_events = true;
 		inject.tool.ordering_requires_timestamps = true;
 		if (known_build_ids != NULL) {
@@ -2385,10 +2314,7 @@ int cmd_inject(int argc, const char **argv)
 		inject.tool.mmap	   = perf_event__jit_repipe_mmap;
 		inject.tool.ordered_events = true;
 		inject.tool.ordering_requires_timestamps = true;
-		/*
-		 * JIT MMAP injection injects all MMAP events in one go, so it
-		 * does not obey finished_round semantics.
-		 */
+		 
 		inject.tool.finished_round = perf_event__drop_oe;
 	}
 #endif

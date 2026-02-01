@@ -1,21 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8723E_PWRSEQCMD_H__
 #define __RTL8723E_PWRSEQCMD_H__
 
 #include "wifi.h"
-/*---------------------------------------------
- * 3 The value of cmd: 4 bits
- *---------------------------------------------
- */
+ 
 #define    PWR_CMD_READ		0x00
 #define    PWR_CMD_WRITE	0x01
 #define    PWR_CMD_POLLING	0x02
 #define    PWR_CMD_DELAY	0x03
 #define    PWR_CMD_END		0x04
 
-/* define the base address of each block */
+ 
 #define   PWR_BASEADDR_MAC	0x00
 #define   PWR_BASEADDR_USB	0x01
 #define   PWR_BASEADDR_PCIE	0x02

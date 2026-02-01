@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header file for:
- * Cypress TrueTouch(TM) Standard Product (TTSP) touchscreen drivers.
- * For use with Cypress Txx3xx parts.
- * Supported parts include:
- * CY8CTST341
- * CY8CTMA340
- *
- * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
- * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
- *
- * Contact Cypress Semiconductor at www.cypress.com (kev@cypress.com)
- */
+ 
+ 
 #ifndef _CYTTSP4_H_
 #define _CYTTSP4_H_
 
@@ -59,4 +47,4 @@ struct cyttsp4_platform_data {
 	struct cyttsp4_mt_platform_data *mt_pdata;
 };
 
-#endif /* _CYTTSP4_H_ */
+#endif  

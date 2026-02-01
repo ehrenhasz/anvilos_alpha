@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "platform_support.h"
 
@@ -32,11 +20,11 @@
 #include "event_fifo.h"
 #define __INLINE_SP__
 
-#include "input_system.h"	/* MIPI_PREDICTOR_NONE,... */
+#include "input_system.h"	 
 
 #include "assert_support.h"
 
-/* System independent */
+ 
 #include "sh_css_internal.h"
 #include "ia_css_isys.h"
 
@@ -45,15 +33,7 @@
 
 #include <hive_isp_css_streaming_to_mipi_types_hrt.h>
 
-/* The data type is used to send special cases:
- * yuv420: odd lines (1, 3 etc) are twice as wide as even
- *         lines (0, 2, 4 etc).
- * rgb: for two pixels per clock, the R and B values are sent
- *      to output_0 while only G is sent to output_1. This means
- *      that output_1 only gets half the number of values of output_0.
- *      WARNING: This type should also be used for Legacy YUV420.
- * regular: used for all other data types (RAW, YUV422, etc)
- */
+ 
 enum inputfifo_mipi_data_type {
 	inputfifo_mipi_data_type_regular,
 	inputfifo_mipi_data_type_yuv420,
@@ -73,17 +53,14 @@ struct inputfifo_instance {
 	enum inputfifo_mipi_data_type	type;
 };
 
-/*
- * Maintain a basic streaming to Mipi administration with ch_id as index
- * ch_id maps on the "Mipi virtual channel ID" and can have value 0..3
- */
+ 
 #define INPUTFIFO_NR_OF_S2M_CHANNELS	(4)
 static struct inputfifo_instance
 	inputfifo_inst_admin[INPUTFIFO_NR_OF_S2M_CHANNELS];
 
-/* Streaming to MIPI */
+ 
 static unsigned int inputfifo_wrap_marker(
-    /* static inline unsigned inputfifo_wrap_marker( */
+     
     unsigned int marker)
 {
 	return marker |
@@ -101,7 +78,7 @@ _sh_css_fifo_snd(unsigned int token)
 }
 
 static void inputfifo_send_data_a(
-    /* static inline void inputfifo_send_data_a( */
+     
     unsigned int data)
 {
 	unsigned int token = (1 << HIVE_STR_TO_MIPI_VALID_A_BIT) |
@@ -111,7 +88,7 @@ static void inputfifo_send_data_a(
 }
 
 static void inputfifo_send_data_b(
-    /* static inline void inputfifo_send_data_b( */
+     
     unsigned int data)
 {
 	unsigned int token = (1 << HIVE_STR_TO_MIPI_VALID_B_BIT) |
@@ -121,7 +98,7 @@ static void inputfifo_send_data_b(
 }
 
 static void inputfifo_send_data(
-    /* static inline void inputfifo_send_data( */
+     
     unsigned int a,
     unsigned int b)
 {
@@ -134,7 +111,7 @@ static void inputfifo_send_data(
 }
 
 static void inputfifo_send_sol(void)
-/* static inline void inputfifo_send_sol(void) */
+ 
 {
 	hrt_data	token = inputfifo_wrap_marker(
 				1 << HIVE_STR_TO_MIPI_SOL_BIT);
@@ -144,7 +121,7 @@ static void inputfifo_send_sol(void)
 }
 
 static void inputfifo_send_eol(void)
-/* static inline void inputfifo_send_eol(void) */
+ 
 {
 	hrt_data	token = inputfifo_wrap_marker(
 				1 << HIVE_STR_TO_MIPI_EOL_BIT);
@@ -153,7 +130,7 @@ static void inputfifo_send_eol(void)
 }
 
 static void inputfifo_send_sof(void)
-/* static inline void inputfifo_send_sof(void) */
+ 
 {
 	hrt_data	token = inputfifo_wrap_marker(
 				1 << HIVE_STR_TO_MIPI_SOF_BIT);
@@ -163,7 +140,7 @@ static void inputfifo_send_sof(void)
 }
 
 static void inputfifo_send_eof(void)
-/* static inline void inputfifo_send_eof(void) */
+ 
 {
 	hrt_data	token = inputfifo_wrap_marker(
 				1 << HIVE_STR_TO_MIPI_EOF_BIT);
@@ -172,8 +149,7 @@ static void inputfifo_send_eof(void)
 }
 
 static void inputfifo_send_ch_id_and_fmt_type(
-    /* static inline
-    void inputfifo_send_ch_id_and_fmt_type( */
+     
     unsigned int ch_id,
     unsigned int fmt_type)
 {
@@ -181,16 +157,14 @@ static void inputfifo_send_ch_id_and_fmt_type(
 
 	inputfifo_curr_ch_id = ch_id & _HIVE_ISP_CH_ID_MASK;
 	inputfifo_curr_fmt_type = fmt_type & _HIVE_ISP_FMT_TYPE_MASK;
-	/* we send an zero marker, this will wrap the ch_id and
-	 * fmt_type automatically.
-	 */
+	 
 	token = inputfifo_wrap_marker(0);
 	_sh_css_fifo_snd(token);
 	return;
 }
 
 static void inputfifo_send_empty_token(void)
-/* static inline void inputfifo_send_empty_token(void) */
+ 
 {
 	hrt_data	token = inputfifo_wrap_marker(0);
 
@@ -199,7 +173,7 @@ static void inputfifo_send_empty_token(void)
 }
 
 static void inputfifo_start_frame(
-    /* static inline void inputfifo_start_frame( */
+     
     unsigned int ch_id,
     unsigned int fmt_type)
 {
@@ -245,26 +219,21 @@ static void inputfifo_send_line2(
 	for (i = 0; i < marker_cycles; i++)
 		inputfifo_send_empty_token();
 	for (i = 0; i < width; i++, data++) {
-		/* for RGB in two_ppc, we only actually send 2 pixels per
-		 * clock in the even pixels (0, 2 etc). In the other cycles,
-		 * we only send 1 pixel, to data[0].
-		 */
+		 
 		unsigned int send_two_pixels = two_ppc;
 
 		if ((is_rgb || is_legacy) && (i % 3 == 2))
 			send_two_pixels = 0;
 		if (send_two_pixels) {
 			if (i + 1 == width) {
-				/* for jpg (binary) copy, this can occur
-				 * if the file contains an odd number of bytes.
-				 */
+				 
 				inputfifo_send_data(
 				    data[0], 0);
 			} else {
 				inputfifo_send_data(
 				    data[0], data[1]);
 			}
-			/* Additional increment because we send 2 pixels */
+			 
 			data++;
 			i++;
 		} else if (two_ppc && is_legacy) {
@@ -275,26 +244,21 @@ static void inputfifo_send_line2(
 	}
 
 	for (i = 0; i < width2; i++, data2++) {
-		/* for RGB in two_ppc, we only actually send 2 pixels per
-		 * clock in the even pixels (0, 2 etc). In the other cycles,
-		 * we only send 1 pixel, to data2[0].
-		 */
+		 
 		unsigned int send_two_pixels = two_ppc;
 
 		if ((is_rgb || is_legacy) && (i % 3 == 2))
 			send_two_pixels = 0;
 		if (send_two_pixels) {
 			if (i + 1 == width2) {
-				/* for jpg (binary) copy, this can occur
-				 * if the file contains an odd number of bytes.
-				 */
+				 
 				inputfifo_send_data(
 				    data2[0], 0);
 			} else {
 				inputfifo_send_data(
 				    data2[0], data2[1]);
 			}
-			/* Additional increment because we send 2 pixels */
+			 
 			data2++;
 			i++;
 		} else if (two_ppc && is_legacy) {
@@ -325,33 +289,7 @@ inputfifo_send_line(const unsigned short *data,
 			     type);
 }
 
-/* Send a frame of data into the input network via the GP FIFO.
- *  Parameters:
- *   - data: array of 16 bit values that contains all data for the frame.
- *   - width: width of a line in number of subpixels, for yuv420 it is the
- *            number of Y components per line.
- *   - height: height of the frame in number of lines.
- *   - ch_id: channel ID.
- *   - fmt_type: format type.
- *   - hblank_cycles: length of horizontal blanking in cycles.
- *   - marker_cycles: number of empty cycles after start-of-line and before
- *                    end-of-frame.
- *   - two_ppc: boolean, describes whether to send one or two pixels per clock
- *              cycle. In this mode, we sent pixels N and N+1 in the same cycle,
- *              to IF_PRIM_A and IF_PRIM_B respectively. The caller must make
- *              sure the input data has been formatted correctly for this.
- *              For example, for RGB formats this means that unused values
- *              must be inserted.
- *   - yuv420: boolean, describes whether (non-legacy) yuv420 data is used. In
- *             this mode, the odd lines (1,3,5 etc) are half as long as the
- *             even lines (2,4,6 etc).
- *             Note that the first line is odd (1) and the second line is even
- *             (2).
- *
- * This function does not do any reordering of pixels, the caller must make
- * sure the data is in the righ format. Please refer to the CSS receiver
- * documentation for details on the data formats.
- */
+ 
 
 static void inputfifo_send_frame(
     const unsigned short *data,
@@ -478,7 +416,7 @@ void ia_css_inputfifo_send_line(
 	assert((data2) || (width2 == 0));
 	s2mi = inputfifo_get_inst(ch_id);
 
-	/* Set global variables that indicate channel_id and format_type */
+	 
 	inputfifo_curr_ch_id = (s2mi->ch_id) & _HIVE_ISP_CH_ID_MASK;
 	inputfifo_curr_fmt_type = (s2mi->fmt_type) & _HIVE_ISP_FMT_TYPE_MASK;
 
@@ -503,7 +441,7 @@ void ia_css_inputfifo_send_embedded_line(
 	ia_css_isys_convert_stream_format_to_mipi_format(data_type,
 		MIPI_PREDICTOR_NONE, &fmt_type);
 
-	/* Set format_type for metadata line. */
+	 
 	inputfifo_curr_fmt_type = fmt_type & _HIVE_ISP_FMT_TYPE_MASK;
 
 	inputfifo_send_line(data, width, s2mi->hblank_cycles, s2mi->marker_cycles,
@@ -517,11 +455,11 @@ void ia_css_inputfifo_end_frame(
 
 	s2mi = inputfifo_get_inst(ch_id);
 
-	/* Set global variables that indicate channel_id and format_type */
+	 
 	inputfifo_curr_ch_id = (s2mi->ch_id) & _HIVE_ISP_CH_ID_MASK;
 	inputfifo_curr_fmt_type = (s2mi->fmt_type) & _HIVE_ISP_FMT_TYPE_MASK;
 
-	/* Call existing HRT function */
+	 
 	inputfifo_end_frame(s2mi->marker_cycles);
 
 	s2mi->streaming = false;

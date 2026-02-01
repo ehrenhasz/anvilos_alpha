@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _GDM_MUX_H_
 #define _GDM_MUX_H_
@@ -22,7 +22,7 @@
 #define AT_PKT_TYPE 0xF011
 #define DM_PKT_TYPE 0xF010
 
-#define RETRY_TIMER 30 /* msec */
+#define RETRY_TIMER 30  
 
 struct mux_pkt_header {
 	__le32 start_flag;
@@ -82,4 +82,4 @@ struct mux_dev {
 	struct tty_dev *tty_dev;
 };
 
-#endif /* _GDM_MUX_H_ */
+#endif  

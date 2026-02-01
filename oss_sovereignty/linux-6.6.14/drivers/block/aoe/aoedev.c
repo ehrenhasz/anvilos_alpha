@@ -1,8 +1,5 @@
-/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
-/*
- * aoedev.c
- * AoE device utility functions; maintains device list.
- */
+ 
+ 
 
 #include <linux/hdreg.h>
 #include <linux/blk-mq.h>
@@ -25,13 +22,7 @@ MODULE_PARM_DESC(aoe_dyndevs, "Use dynamic minor numbers for devices.");
 static struct aoedev *devlist;
 static DEFINE_SPINLOCK(devlist_lock);
 
-/* Because some systems will have one, many, or no
- *   - partitions,
- *   - slots per shelf,
- *   - or shelves,
- * we need some flexibility in the way the minor numbers
- * are allocated.  So they are dynamic.
- */
+ 
 #define N_DEVS ((1U<<MINORBITS)/AOE_PARTITIONS)
 
 static DEFINE_SPINLOCK(used_minors_lock);
@@ -63,8 +54,7 @@ minor_get_static(ulong *sysminor, ulong aoemaj, int aoemin)
 	ulong n;
 	int error = 0;
 	enum {
-		/* for backwards compatibility when !aoe_dyndevs,
-		 * a static number of supported slots per shelf */
+		 
 		NPERSHELF = 16,
 	};
 
@@ -122,17 +112,7 @@ minor_free(ulong minor)
 	spin_unlock_irqrestore(&used_minors_lock, flags);
 }
 
-/*
- * Users who grab a pointer to the device with aoedev_by_aoeaddr
- * automatically get a reference count and must be responsible
- * for performing a aoedev_put.  With the addition of async
- * kthread processing I'm no longer confident that we can
- * guarantee consistency in the face of device flushes.
- *
- * For the time being, we only bother to add extra references for
- * frames sitting on the iocq.  When the kthreads finish processing
- * these frames, they will aoedev_put the device.
- */
+ 
 
 void
 aoedev_put(struct aoedev *d)
@@ -202,7 +182,7 @@ aoedev_downdev(struct aoedev *d)
 
 	d->flags &= ~DEVFL_UP;
 
-	/* clean out active and to-be-retransmitted buffers */
+	 
 	for (i = 0; i < NFACTIVE; i++) {
 		head = &d->factive[i];
 		list_for_each_safe(pos, nx, head)
@@ -212,7 +192,7 @@ aoedev_downdev(struct aoedev *d)
 	list_for_each_safe(pos, nx, head)
 		downdev_frame(pos);
 
-	/* reset window dressings */
+	 
 	tt = d->targets;
 	te = tt + d->ntargets;
 	for (; tt < te && (t = *tt); tt++) {
@@ -220,12 +200,12 @@ aoedev_downdev(struct aoedev *d)
 		t->nout = 0;
 	}
 
-	/* clean out the in-process request (if any) */
+	 
 	aoe_failip(d);
 
-	/* fast fail all pending I/O */
+	 
 	if (d->blkq) {
-		/* UP is cleared, freeze+quiesce to insure all are errored */
+		 
 		blk_mq_freeze_queue(d->blkq);
 		blk_mq_quiesce_queue(d->blkq);
 		blk_mq_unquiesce_queue(d->blkq);
@@ -236,9 +216,7 @@ aoedev_downdev(struct aoedev *d)
 		set_capacity(d->gd, 0);
 }
 
-/* return whether the user asked for this particular
- * device to be flushed
- */
+ 
 static int
 user_req(char *s, size_t slen, struct aoedev *d)
 {
@@ -306,7 +284,7 @@ flush(const char __user *str, size_t cnt, int exiting)
 	struct aoedev *d, **dd;
 	char buf[16];
 	int all = 0;
-	int specified = 0;	/* flush a specific device */
+	int specified = 0;	 
 	unsigned int skipflags;
 
 	skipflags = DEVFL_GDALLOC | DEVFL_NEWSIZE | DEVFL_TKILL;
@@ -322,7 +300,7 @@ flush(const char __user *str, size_t cnt, int exiting)
 	}
 
 	flush_workqueue(aoe_wq);
-	/* pass one: do aoedev_downdev, which might sleep */
+	 
 restart1:
 	spin_lock_irqsave(&devlist_lock, flags);
 	for (d = devlist; d; d = d->next) {
@@ -331,7 +309,7 @@ restart1:
 			goto cont;
 
 		if (exiting) {
-			/* unconditionally take each device down */
+			 
 		} else if (specified) {
 			if (!user_req(buf, cnt, d))
 				goto cont;
@@ -351,9 +329,7 @@ cont:
 	}
 	spin_unlock_irqrestore(&devlist_lock, flags);
 
-	/* pass two: call freedev, which might sleep,
-	 * for aoedevs marked with DEVFL_TKILL
-	 */
+	 
 restart2:
 	spin_lock_irqsave(&devlist_lock, flags);
 	for (d = devlist; d; d = d->next) {
@@ -368,7 +344,7 @@ restart2:
 		spin_unlock(&d->lock);
 	}
 
-	/* pass three: remove aoedevs marked with DEVFL_FREED */
+	 
 	for (dd = &devlist, d = *dd; d; d = *dd) {
 		struct aoedev *doomed = NULL;
 
@@ -395,11 +371,7 @@ aoedev_flush(const char __user *str, size_t cnt)
 	return flush(str, cnt, NOT_EXITING);
 }
 
-/* This has been confirmed to occur once with Tms=3*1000 due to the
- * driver changing link and not processing its transmit ring.  The
- * problem is hard enough to solve by returning an error that I'm
- * still punting on "solving" this.
- */
+ 
 static void
 skbfree(struct sk_buff *skb)
 {
@@ -434,7 +406,7 @@ skbpoolfree(struct aoedev *d)
 	__skb_queue_head_init(&d->skbpool);
 }
 
-/* find it or allocate it */
+ 
 struct aoedev *
 aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 {
@@ -476,7 +448,7 @@ aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 	timer_setup(&d->timer, dummy_timer, 0);
 	d->timer.expires = jiffies + HZ;
 	add_timer(&d->timer);
-	d->bufpool = NULL;	/* defer to aoeblk_gdalloc */
+	d->bufpool = NULL;	 
 	d->tgt = d->targets;
 	d->ref = 1;
 	for (i = 0; i < NFACTIVE; i++)

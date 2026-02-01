@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2019 Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include "mt76.h"
 #include <linux/pci.h>
@@ -20,7 +18,7 @@ void mt76_pci_disable_aspm(struct pci_dev *pdev)
 	}
 
 	if (!aspm_conf && (!parent || !parent_aspm_conf)) {
-		/* aspm already disabled */
+		 
 		return;
 	}
 
@@ -36,9 +34,7 @@ void mt76_pci_disable_aspm(struct pci_dev *pdev)
 			return;
 	}
 
-	/* both device and parent should have the same ASPM setting.
-	 * disable ASPM in downstream component first and then upstream.
-	 */
+	 
 	pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL, aspm_conf);
 	if (parent)
 		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,

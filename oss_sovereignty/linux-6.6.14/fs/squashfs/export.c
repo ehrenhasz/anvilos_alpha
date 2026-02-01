@@ -1,26 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * export.c
- */
 
-/*
- * This file implements code to make Squashfs filesystems exportable (NFS etc.)
- *
- * The export code uses an inode lookup table to map inode numbers passed in
- * filehandles to an inode location on disk.  This table is stored compressed
- * into metadata blocks.  A second index table is used to locate these.  This
- * second index table for speed of access (and because it is small) is read at
- * mount time and cached in memory.
- *
- * The inode lookup table is used only by the export code, inode disk
- * locations are directly encoded in directories, enabling direct access
- * without an intermediate lookup for all operations except the export ops.
- */
+ 
+
+ 
 
 #include <linux/fs.h>
 #include <linux/vfs.h>
@@ -33,9 +14,7 @@
 #include "squashfs_fs_i.h"
 #include "squashfs.h"
 
-/*
- * Look-up inode number (ino) in table, returning the inode location.
- */
+ 
 static long long squashfs_inode_lookup(struct super_block *sb, int ino_num)
 {
 	struct squashfs_sb_info *msblk = sb->s_fs_info;
@@ -109,9 +88,7 @@ static struct dentry *squashfs_get_parent(struct dentry *child)
 }
 
 
-/*
- * Read uncompressed inode lookup table indexes off disk into memory
- */
+ 
 __le64 *squashfs_read_inode_lookup_table(struct super_block *sb,
 		u64 lookup_table_start, u64 next_table, unsigned int inodes)
 {
@@ -123,16 +100,13 @@ __le64 *squashfs_read_inode_lookup_table(struct super_block *sb,
 
 	TRACE("In read_inode_lookup_table, length %d\n", length);
 
-	/* Sanity check values */
+	 
 
-	/* there should always be at least one inode */
+	 
 	if (inodes == 0)
 		return ERR_PTR(-EINVAL);
 
-	/*
-	 * The computed size of the lookup table (length bytes) should exactly
-	 * match the table start and end points
-	 */
+	 
 	if (length != (next_table - lookup_table_start))
 		return ERR_PTR(-EINVAL);
 
@@ -140,14 +114,7 @@ __le64 *squashfs_read_inode_lookup_table(struct super_block *sb,
 	if (IS_ERR(table))
 		return table;
 
-	/*
-	 * table0], table[1], ... table[indexes - 1] store the locations
-	 * of the compressed inode lookup blocks.  Each entry should be
-	 * less than the next (i.e. table[0] < table[1]), and the difference
-	 * between them should be SQUASHFS_METADATA_SIZE or less.
-	 * table[indexes - 1] should  be less than lookup_table_start, and
-	 * again the difference should be SQUASHFS_METADATA_SIZE or less
-	 */
+	 
 	for (n = 0; n < (indexes - 1); n++) {
 		start = le64_to_cpu(table[n]);
 		end = le64_to_cpu(table[n + 1]);

@@ -1,16 +1,4 @@
-/*
- * linux/drivers/video/riva/fbdev-i2c.c - nVidia i2c
- *
- * Maintained by Ani Joshi <ajoshi@shell.unixbox.com>
- *
- * Copyright 2004 Antonino A. Daplas <adaplas @pol.net>
- *
- * Based on radeonfb-i2c.c
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -106,7 +94,7 @@ static int riva_setup_i2c_bus(struct riva_i2c_chan *chan, const char *name,
 
 	i2c_set_adapdata(&chan->adapter, chan);
 
-	/* Raise SCL and SDA */
+	 
 	riva_gpio_setsda(chan, 1);
 	riva_gpio_setscl(chan, 1);
 	udelay(20);

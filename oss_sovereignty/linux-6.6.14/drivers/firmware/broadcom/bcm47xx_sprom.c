@@ -1,30 +1,4 @@
-/*
- *  Copyright (C) 2004 Florian Schirmer <jolt@tuxbox.org>
- *  Copyright (C) 2006 Felix Fietkau <nbd@openwrt.org>
- *  Copyright (C) 2006 Michael Buesch <m@bues.ch>
- *  Copyright (C) 2010 Waldemar Brodkorb <wbx@openadk.org>
- *  Copyright (C) 2010-2012 Hauke Mehrtens <hauke@hauke-m.de>
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- *  THIS  SOFTWARE  IS PROVIDED   ``AS  IS'' AND   ANY  EXPRESS OR IMPLIED
- *  WARRANTIES,   INCLUDING, BUT NOT  LIMITED  TO, THE IMPLIED WARRANTIES OF
- *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
- *  NO  EVENT  SHALL   THE AUTHOR  BE    LIABLE FOR ANY   DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- *  NOT LIMITED   TO, PROCUREMENT OF  SUBSTITUTE GOODS  OR SERVICES; LOSS OF
- *  USE, DATA,  OR PROFITS; OR  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *  ANY THEORY OF LIABILITY, WHETHER IN  CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *  You should have received a copy of the  GNU General Public License along
- *  with this program; if not, write  to the Free Software Foundation, Inc.,
- *  675 Mass Ave, Cambridge, MA 02139, USA.
- */
+ 
 
 #include <linux/bcm47xx_nvram.h>
 #include <linux/bcm47xx_sprom.h>
@@ -171,27 +145,19 @@ static void nvram_read_alpha2(const char *prefix, const char *name,
 	memcpy(val, buf, 2);
 }
 
-/* This is one-function-only macro, it uses local "sprom" variable! */
+ 
 #define ENTRY(_revmask, _type, _prefix, _name, _val, _allset, _fallback) \
 	if (_revmask & BIT(sprom->revision)) \
 		nvram_read_ ## _type(_prefix, NULL, _name, &sprom->_val, \
 				     _allset, _fallback)
-/*
- * Special version of filling function that can be safely called for any SPROM
- * revision. For every NVRAM to SPROM mapping it contains bitmask of revisions
- * for which the mapping is valid.
- * It obviously requires some hexadecimal/bitmasks knowledge, but allows
- * writing cleaner code (easy revisions handling).
- * Note that while SPROM revision 0 was never used, we still keep BIT(0)
- * reserved for it, just to keep numbering sane.
- */
+ 
 static void bcm47xx_sprom_fill_auto(struct ssb_sprom *sprom,
 				    const char *prefix, bool fallback)
 {
 	const char *pre = prefix;
 	bool fb = fallback;
 
-	/* Broadcom extracts it for rev 8+ but it was found on 2 and 4 too */
+	 
 	ENTRY(0xfffffffe, u16, pre, "devid", dev_id, 0, fallback);
 
 	ENTRY(0xfffffffe, u16, pre, "boardrev", board_rev, 0, true);
@@ -367,7 +333,7 @@ static void bcm47xx_sprom_fill_auto(struct ssb_sprom *sprom,
 	ENTRY(0x00000600, u16, pre, "legofdm40duppo", legofdm40duppo, 0, fb);
 	ENTRY(0x00000700, u8, pre, "pcieingress_war", pcieingress_war, 0, fb);
 
-	/* TODO: rev 11 support */
+	 
 	ENTRY(0x00000700, u8, pre, "rxgainerr2ga0", rxgainerr2ga[0], 0, fb);
 	ENTRY(0x00000700, u8, pre, "rxgainerr2ga1", rxgainerr2ga[1], 0, fb);
 	ENTRY(0x00000700, u8, pre, "rxgainerr2ga2", rxgainerr2ga[2], 0, fb);
@@ -387,7 +353,7 @@ static void bcm47xx_sprom_fill_auto(struct ssb_sprom *sprom,
 	ENTRY(0xfffffe00, u8, pre, "sar2g", sar2g, 0, fb);
 	ENTRY(0xfffffe00, u8, pre, "sar5g", sar5g, 0, fb);
 
-	/* TODO: rev 11 support */
+	 
 	ENTRY(0x00000700, u8, pre, "noiselvl2ga0", noiselvl2ga[0], 0, fb);
 	ENTRY(0x00000700, u8, pre, "noiselvl2ga1", noiselvl2ga[1], 0, fb);
 	ENTRY(0x00000700, u8, pre, "noiselvl2ga2", noiselvl2ga[2], 0, fb);
@@ -404,7 +370,7 @@ static void bcm47xx_sprom_fill_auto(struct ssb_sprom *sprom,
 	ENTRY(0x00000700, u8, pre, "noiselvl5gua1", noiselvl5gua[1], 0, fb);
 	ENTRY(0x00000700, u8, pre, "noiselvl5gua2", noiselvl5gua[2], 0, fb);
 }
-#undef ENTRY /* It's specififc, uses local variable, don't use it (again). */
+#undef ENTRY  
 
 static void bcm47xx_fill_sprom_path_r4589(struct ssb_sprom *sprom,
 					  const char *prefix, bool fallback)
@@ -531,12 +497,7 @@ static void bcm47xx_fill_sprom_ethernet(struct ssb_sprom *sprom,
 	nvram_read_macaddr(prefix, "macaddr", sprom->il0mac, fallback);
 	nvram_read_macaddr(prefix, "il0macaddr", sprom->il0mac, fallback);
 
-	/* The address prefix 00:90:4C is used by Broadcom in their initial
-	 * configuration. When a mac address with the prefix 00:90:4C is used
-	 * all devices from the same series are sharing the same mac address.
-	 * To prevent mac address collisions we replace them with a mac address
-	 * based on the base address.
-	 */
+	 
 	if (!bcm47xx_is_valid_mac(sprom->il0mac)) {
 		u8 mac[6];
 
@@ -569,7 +530,7 @@ void bcm47xx_fill_sprom(struct ssb_sprom *sprom, const char *prefix,
 
 	nvram_read_u8(prefix, NULL, "sromrev", &sprom->revision, 0, fallback);
 
-	/* Entries requiring custom functions */
+	 
 	nvram_read_alpha2(prefix, "ccode", sprom->alpha2, fallback);
 	if (sprom->revision >= 3)
 		nvram_read_leddc(prefix, "leddc", &sprom->leddc_on_time,
@@ -614,13 +575,7 @@ static int bcm47xx_get_sprom_ssb(struct ssb_bus *bus, struct ssb_sprom *out)
 #endif
 
 #if IS_BUILTIN(CONFIG_BCMA)
-/*
- * Having many NVRAM entries for PCI devices led to repeating prefixes like
- * pci/1/1/ all the time and wasting flash space. So at some point Broadcom
- * decided to introduce prefixes like 0: 1: 2: etc.
- * If we find e.g. devpath0=pci/2/1 or devpath0=pci/2/1/ we should use 0:
- * instead of pci/2/1/.
- */
+ 
 static void bcm47xx_sprom_apply_prefix_alias(char *prefix, size_t prefix_size)
 {
 	size_t prefix_len = strlen(prefix);
@@ -629,7 +584,7 @@ static void bcm47xx_sprom_apply_prefix_alias(char *prefix, size_t prefix_size)
 	char buf[20];
 	int i;
 
-	/* Passed prefix has to end with a slash */
+	 
 	if (prefix_len <= 0 || prefix[prefix_len - 1] != '/')
 		return;
 
@@ -657,7 +612,7 @@ static int bcm47xx_get_sprom_bcma(struct bcma_bus *bus, struct ssb_sprom *out)
 	switch (bus->hosttype) {
 	case BCMA_HOSTTYPE_PCI:
 		memset(out, 0, sizeof(struct ssb_sprom));
-		/* On BCM47XX all PCI buses share the same domain */
+		 
 		if (IS_ENABLED(CONFIG_BCM47XX))
 			snprintf(buf, sizeof(buf), "pci/%u/%u/",
 				 bus->host_pci->bus->number + 1,
@@ -699,10 +654,7 @@ static int bcm47xx_get_sprom_bcma(struct bcma_bus *bus, struct ssb_sprom *out)
 
 static unsigned int bcm47xx_sprom_registered;
 
-/*
- * On bcm47xx we need to register SPROM fallback handler very early, so we can't
- * use anything like platform device / driver for this.
- */
+ 
 int bcm47xx_sprom_register_fallbacks(void)
 {
 	if (bcm47xx_sprom_registered)

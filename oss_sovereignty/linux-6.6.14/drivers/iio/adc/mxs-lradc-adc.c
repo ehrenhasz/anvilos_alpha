@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale MXS LRADC ADC driver
- *
- * Copyright (c) 2012 DENX Software Engineering, GmbH.
- * Copyright (c) 2017 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
- *
- * Authors:
- *  Marek Vasut <marex@denx.de>
- *  Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -28,12 +19,7 @@
 #include <linux/iio/triggered_buffer.h>
 #include <linux/iio/sysfs.h>
 
-/*
- * Make this runtime configurable if necessary. Currently, if the buffered mode
- * is enabled, the LRADC takes LRADC_DELAY_TIMER_LOOP samples of data before
- * triggering IRQ. The sampling happens every (LRADC_DELAY_TIMER_PER / 2000)
- * seconds. The result is that the samples arrive every 500mS.
- */
+ 
 #define LRADC_DELAY_TIMER_PER	200
 #define LRADC_DELAY_TIMER_LOOP	5
 
@@ -63,40 +49,40 @@ static const char *mx28_lradc_adc_irq_names[] = {
 
 static const u32 mxs_lradc_adc_vref_mv[][LRADC_MAX_TOTAL_CHANS] = {
 	[IMX23_LRADC] = {
-		VREF_MV_BASE,		/* CH0 */
-		VREF_MV_BASE,		/* CH1 */
-		VREF_MV_BASE,		/* CH2 */
-		VREF_MV_BASE,		/* CH3 */
-		VREF_MV_BASE,		/* CH4 */
-		VREF_MV_BASE,		/* CH5 */
-		VREF_MV_BASE * 2,	/* CH6 VDDIO */
-		VREF_MV_BASE * 4,	/* CH7 VBATT */
-		VREF_MV_BASE,		/* CH8 Temp sense 0 */
-		VREF_MV_BASE,		/* CH9 Temp sense 1 */
-		VREF_MV_BASE,		/* CH10 */
-		VREF_MV_BASE,		/* CH11 */
-		VREF_MV_BASE,		/* CH12 USB_DP */
-		VREF_MV_BASE,		/* CH13 USB_DN */
-		VREF_MV_BASE,		/* CH14 VBG */
-		VREF_MV_BASE * 4,	/* CH15 VDD5V */
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE * 2,	 
+		VREF_MV_BASE * 4,	 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE * 4,	 
 	},
 	[IMX28_LRADC] = {
-		VREF_MV_BASE,		/* CH0 */
-		VREF_MV_BASE,		/* CH1 */
-		VREF_MV_BASE,		/* CH2 */
-		VREF_MV_BASE,		/* CH3 */
-		VREF_MV_BASE,		/* CH4 */
-		VREF_MV_BASE,		/* CH5 */
-		VREF_MV_BASE,		/* CH6 */
-		VREF_MV_BASE * 4,	/* CH7 VBATT */
-		VREF_MV_BASE,		/* CH8 Temp sense 0 */
-		VREF_MV_BASE,		/* CH9 Temp sense 1 */
-		VREF_MV_BASE * 2,	/* CH10 VDDIO */
-		VREF_MV_BASE,		/* CH11 VTH */
-		VREF_MV_BASE * 2,	/* CH12 VDDA */
-		VREF_MV_BASE,		/* CH13 VDDD */
-		VREF_MV_BASE,		/* CH14 VBG */
-		VREF_MV_BASE * 4,	/* CH15 VDD5V */
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE * 4,	 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE * 2,	 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE * 2,	 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE,		 
+		VREF_MV_BASE * 4,	 
 	},
 };
 
@@ -115,7 +101,7 @@ struct mxs_lradc_adc {
 	struct device		*dev;
 
 	void __iomem		*base;
-	/* Maximum of 8 channels + 8 byte ts */
+	 
 	u32			buffer[10] __aligned(8);
 	struct iio_trigger	*trig;
 	struct completion	completion;
@@ -127,7 +113,7 @@ struct mxs_lradc_adc {
 };
 
 
-/* Raw I/O operations */
+ 
 static int mxs_lradc_adc_read_single(struct iio_dev *iio_dev, int chan,
 				     int *val)
 {
@@ -135,29 +121,20 @@ static int mxs_lradc_adc_read_single(struct iio_dev *iio_dev, int chan,
 	struct mxs_lradc *lradc = adc->lradc;
 	int ret;
 
-	/*
-	 * See if there is no buffered operation in progress. If there is simply
-	 * bail out. This can be improved to support both buffered and raw IO at
-	 * the same time, yet the code becomes horribly complicated. Therefore I
-	 * applied KISS principle here.
-	 */
+	 
 	ret = iio_device_claim_direct_mode(iio_dev);
 	if (ret)
 		return ret;
 
 	reinit_completion(&adc->completion);
 
-	/*
-	 * No buffered operation in progress, map the channel and trigger it.
-	 * Virtual channel 0 is always used here as the others are always not
-	 * used if doing raw sampling.
-	 */
+	 
 	if (lradc->soc == IMX28_LRADC)
 		writel(LRADC_CTRL1_LRADC_IRQ_EN(0),
 		       adc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
 	writel(0x1, adc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
 
-	/* Enable / disable the divider per requirement */
+	 
 	if (test_bit(chan, &adc->is_divided))
 		writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
 		       adc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
@@ -165,26 +142,26 @@ static int mxs_lradc_adc_read_single(struct iio_dev *iio_dev, int chan,
 		writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
 		       adc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
 
-	/* Clean the slot's previous content, then set new one. */
+	 
 	writel(LRADC_CTRL4_LRADCSELECT_MASK(0),
 	       adc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
 	writel(chan, adc->base + LRADC_CTRL4 + STMP_OFFSET_REG_SET);
 
 	writel(0, adc->base + LRADC_CH(0));
 
-	/* Enable the IRQ and start sampling the channel. */
+	 
 	writel(LRADC_CTRL1_LRADC_IRQ_EN(0),
 	       adc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
 	writel(BIT(0), adc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
 
-	/* Wait for completion on the channel, 1 second max. */
+	 
 	ret = wait_for_completion_killable_timeout(&adc->completion, HZ);
 	if (!ret)
 		ret = -ETIMEDOUT;
 	if (ret < 0)
 		goto err;
 
-	/* Read the data. */
+	 
 	*val = readl(adc->base + LRADC_CH(0)) & LRADC_CH_VALUE_MASK;
 	ret = IIO_VAL_INT;
 
@@ -229,10 +206,7 @@ static int mxs_lradc_adc_read_raw(struct iio_dev *iio_dev,
 
 	case IIO_CHAN_INFO_SCALE:
 		if (chan->type == IIO_TEMP) {
-			/*
-			 * From the datasheet, we have to multiply by 1.012 and
-			 * divide by 4
-			 */
+			 
 			*val = 0;
 			*val2 = 253000;
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -245,12 +219,7 @@ static int mxs_lradc_adc_read_raw(struct iio_dev *iio_dev,
 
 	case IIO_CHAN_INFO_OFFSET:
 		if (chan->type == IIO_TEMP) {
-			/*
-			 * The calculated value from the ADC is in Kelvin, we
-			 * want Celsius for hwmon so the offset is -273.15
-			 * The offset is applied before scaling so it is
-			 * actually -213.15 * 4 / 1.012 = -1079.644268
-			 */
+			 
 			*val = -1079;
 			*val2 = 644268;
 
@@ -284,12 +253,12 @@ static int mxs_lradc_adc_write_raw(struct iio_dev *iio_dev,
 		ret = -EINVAL;
 		if (val == scale_avail[MXS_LRADC_DIV_DISABLED].integer &&
 		    val2 == scale_avail[MXS_LRADC_DIV_DISABLED].nano) {
-			/* divider by two disabled */
+			 
 			clear_bit(chan->channel, &adc->is_divided);
 			ret = 0;
 		} else if (val == scale_avail[MXS_LRADC_DIV_ENABLED].integer &&
 			   val2 == scale_avail[MXS_LRADC_DIV_ENABLED].nano) {
-			/* divider by two enabled */
+			 
 			set_bit(chan->channel, &adc->is_divided);
 			ret = 0;
 		}
@@ -380,7 +349,7 @@ static const struct iio_info mxs_lradc_adc_iio_info = {
 	.attrs			= &mxs_lradc_adc_attribute_group,
 };
 
-/* IRQ Handling */
+ 
 static irqreturn_t mxs_lradc_adc_handle_irq(int irq, void *data)
 {
 	struct iio_dev *iio = data;
@@ -409,7 +378,7 @@ static irqreturn_t mxs_lradc_adc_handle_irq(int irq, void *data)
 }
 
 
-/* Trigger handling */
+ 
 static irqreturn_t mxs_lradc_adc_trigger_handler(int irq, void *p)
 {
 	struct iio_poll_func *pf = p;
@@ -556,11 +525,11 @@ static bool mxs_lradc_adc_validate_scan_mask(struct iio_dev *iio,
 	if (lradc->touchscreen_wire)
 		rsvd_chans += 2;
 
-	/* Test for attempts to map channels with special mode of operation. */
+	 
 	if (bitmap_intersects(mask, &rsvd_mask, LRADC_MAX_TOTAL_CHANS))
 		return false;
 
-	/* Test for attempts to map more channels then available slots. */
+	 
 	if (map_chans + rsvd_chans > LRADC_MAX_MAPPED_CHANS)
 		return false;
 
@@ -573,7 +542,7 @@ static const struct iio_buffer_setup_ops mxs_lradc_adc_buffer_ops = {
 	.validate_scan_mask = &mxs_lradc_adc_validate_scan_mask,
 };
 
-/* Driver initialization */
+ 
 #define MXS_ADC_CHAN(idx, chan_type, name) {			\
 	.type = (chan_type),					\
 	.indexed = 1,						\
@@ -599,7 +568,7 @@ static const struct iio_chan_spec mx23_lradc_chan_spec[] = {
 	MXS_ADC_CHAN(5, IIO_VOLTAGE, "LRADC5"),
 	MXS_ADC_CHAN(6, IIO_VOLTAGE, "VDDIO"),
 	MXS_ADC_CHAN(7, IIO_VOLTAGE, "VBATT"),
-	/* Combined Temperature sensors */
+	 
 	{
 		.type = IIO_TEMP,
 		.indexed = 1,
@@ -611,7 +580,7 @@ static const struct iio_chan_spec mx23_lradc_chan_spec[] = {
 		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
 		.datasheet_name = "TEMP_DIE",
 	},
-	/* Hidden channel to keep indexes */
+	 
 	{
 		.type = IIO_TEMP,
 		.indexed = 1,
@@ -635,7 +604,7 @@ static const struct iio_chan_spec mx28_lradc_chan_spec[] = {
 	MXS_ADC_CHAN(5, IIO_VOLTAGE, "LRADC5"),
 	MXS_ADC_CHAN(6, IIO_VOLTAGE, "LRADC6"),
 	MXS_ADC_CHAN(7, IIO_VOLTAGE, "VBATT"),
-	/* Combined Temperature sensors */
+	 
 	{
 		.type = IIO_TEMP,
 		.indexed = 1,
@@ -647,7 +616,7 @@ static const struct iio_chan_spec mx28_lradc_chan_spec[] = {
 		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
 		.datasheet_name = "TEMP_DIE",
 	},
-	/* Hidden channel to keep indexes */
+	 
 	{
 		.type = IIO_TEMP,
 		.indexed = 1,
@@ -664,19 +633,15 @@ static const struct iio_chan_spec mx28_lradc_chan_spec[] = {
 
 static void mxs_lradc_adc_hw_init(struct mxs_lradc_adc *adc)
 {
-	/* The ADC always uses DELAY CHANNEL 0. */
+	 
 	const u32 adc_cfg =
 		(1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + 0)) |
 		(LRADC_DELAY_TIMER_PER << LRADC_DELAY_DELAY_OFFSET);
 
-	/* Configure DELAY CHANNEL 0 for generic ADC sampling. */
+	 
 	writel(adc_cfg, adc->base + LRADC_DELAY(0));
 
-	/*
-	 * Start internal temperature sensing by clearing bit
-	 * HW_LRADC_CTRL2_TEMPSENSE_PWD. This bit can be left cleared
-	 * after power up.
-	 */
+	 
 	writel(0, adc->base + LRADC_CTRL2);
 }
 
@@ -696,7 +661,7 @@ static int mxs_lradc_adc_probe(struct platform_device *pdev)
 	u64 scale_uv;
 	const char **irq_name;
 
-	/* Allocate the IIO device. */
+	 
 	iio = devm_iio_device_alloc(dev, sizeof(*adc));
 	if (!iio) {
 		dev_err(dev, "Failed to allocate IIO device\n");
@@ -767,18 +732,10 @@ static int mxs_lradc_adc_probe(struct platform_device *pdev)
 
 	adc->vref_mv = mxs_lradc_adc_vref_mv[lradc->soc];
 
-	/* Populate available ADC input ranges */
+	 
 	for (i = 0; i < LRADC_MAX_TOTAL_CHANS; i++) {
 		for (s = 0; s < ARRAY_SIZE(adc->scale_avail[i]); s++) {
-			/*
-			 * [s=0] = optional divider by two disabled (default)
-			 * [s=1] = optional divider by two enabled
-			 *
-			 * The scale is calculated by doing:
-			 *   Vref >> (realbits - s)
-			 * which multiplies by two on the second component
-			 * of the array.
-			 */
+			 
 			scale_uv = ((u64)adc->vref_mv[i] * 100000000) >>
 				   (LRADC_RESOLUTION - s);
 			adc->scale_avail[i][s].nano =
@@ -787,10 +744,10 @@ static int mxs_lradc_adc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Configure the hardware. */
+	 
 	mxs_lradc_adc_hw_init(adc);
 
-	/* Register IIO device. */
+	 
 	ret = iio_device_register(iio);
 	if (ret) {
 		dev_err(dev, "Failed to register IIO device\n");

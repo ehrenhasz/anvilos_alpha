@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/pci.h>
@@ -239,7 +236,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 		     fnic->wq_count, fnic->wq_copy_count, fnic->raw_wq_count,
 		     fnic->rq_count, fnic->cq_count, fnic->intr_count);
 
-	/* Allocate Raw WQ used for FCS frames */
+	 
 	for (i = 0; i < fnic->raw_wq_count; i++) {
 		err = vnic_wq_alloc(fnic->vdev, &fnic->wq[i], i,
 			fnic->config.wq_enet_desc_count,
@@ -248,7 +245,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 			goto err_out_cleanup;
 	}
 
-	/* Allocate Copy WQs used for SCSI IOs */
+	 
 	for (i = 0; i < fnic->wq_copy_count; i++) {
 		err = vnic_wq_copy_alloc(fnic->vdev, &fnic->wq_copy[i],
 			(fnic->raw_wq_count + i),
@@ -258,7 +255,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 			goto err_out_cleanup;
 	}
 
-	/* RQ for receiving FCS frames */
+	 
 	for (i = 0; i < fnic->rq_count; i++) {
 		err = vnic_rq_alloc(fnic->vdev, &fnic->rq[i], i,
 			fnic->config.rq_desc_count,
@@ -267,7 +264,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 			goto err_out_cleanup;
 	}
 
-	/* CQ for each RQ */
+	 
 	for (i = 0; i < fnic->rq_count; i++) {
 		cq_index = i;
 		err = vnic_cq_alloc(fnic->vdev,
@@ -278,7 +275,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 			goto err_out_cleanup;
 	}
 
-	/* CQ for each WQ */
+	 
 	for (i = 0; i < fnic->raw_wq_count; i++) {
 		cq_index = fnic->rq_count + i;
 		err = vnic_cq_alloc(fnic->vdev, &fnic->cq[cq_index], cq_index,
@@ -288,7 +285,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 			goto err_out_cleanup;
 	}
 
-	/* CQ for each COPY WQ */
+	 
 	wq_copy_cq_desc_count = (fnic->config.wq_copy_desc_count * 3);
 	for (i = 0; i < fnic->wq_copy_count; i++) {
 		cq_index = fnic->raw_wq_count + fnic->rq_count + i;
@@ -316,17 +313,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 		goto err_out_cleanup;
 	}
 
-	/*
-	 * Init RQ/WQ resources.
-	 *
-	 * RQ[0 to n-1] point to CQ[0 to n-1]
-	 * WQ[0 to m-1] point to CQ[n to n+m-1]
-	 * WQ_COPY[0 to k-1] points to CQ[n+m to n+m+k-1]
-	 *
-	 * Note for copy wq we always initialize with cq_index = 0
-	 *
-	 * Error interrupt is not enabled for MSI.
-	 */
+	 
 
 	switch (intr_mode) {
 	case VNIC_DEV_INTR_MODE_INTX:
@@ -358,7 +345,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 
 	for (i = 0; i < fnic->wq_copy_count; i++) {
 		vnic_wq_copy_init(&fnic->wq_copy[i],
-				  0 /* cq_index 0 - always */,
+				  0  ,
 				  error_interrupt_enable,
 				  error_interrupt_offset);
 	}
@@ -375,24 +362,19 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 		}
 
 		vnic_cq_init(&fnic->cq[i],
-			0 /* flow_control_enable */,
-			1 /* color_enable */,
-			0 /* cq_head */,
-			0 /* cq_tail */,
-			1 /* cq_tail_color */,
-			1 /* interrupt_enable */,
-			1 /* cq_entry_enable */,
-			0 /* cq_message_enable */,
+			0  ,
+			1  ,
+			0  ,
+			0  ,
+			1  ,
+			1  ,
+			1  ,
+			0  ,
 			interrupt_offset,
-			0 /* cq_message_addr */);
+			0  );
 	}
 
-	/*
-	 * Init INTR resources
-	 *
-	 * mask_on_assertion is not used for INTx due to the level-
-	 * triggered nature of INTx
-	 */
+	 
 
 	switch (intr_mode) {
 	case VNIC_DEV_INTR_MODE_MSI:
@@ -411,7 +393,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 			mask_on_assertion);
 	}
 
-	/* init the stats memory by making the first call here */
+	 
 	err = vnic_dev_stats_dump(fnic->vdev, &fnic->stats);
 	if (err) {
 		shost_printk(KERN_ERR, fnic->lport->host,
@@ -419,7 +401,7 @@ int fnic_alloc_vnic_resources(struct fnic *fnic)
 		goto err_out_cleanup;
 	}
 
-	/* Clear LIF stats */
+	 
 	vnic_dev_stats_clear(fnic->vdev);
 
 	return 0;

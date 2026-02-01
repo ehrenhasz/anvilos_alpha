@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * isppreview.h
- *
- * TI OMAP3 ISP - Preview module
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc.
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+ 
+ 
 
 #ifndef OMAP3_ISP_PREVIEW_H
 #define OMAP3_ISP_PREVIEW_H
@@ -32,7 +22,7 @@
 #define ISPPRV_CONTRAST_HIGH		0xFF
 #define ISPPRV_CONTRAST_UNITS		0x1
 
-/* Additional features not listed in linux/omap3isp.h */
+ 
 #define OMAP3ISP_PREV_CONTRAST		(1 << 17)
 #define OMAP3ISP_PREV_BRIGHTNESS	(1 << 18)
 #define OMAP3ISP_PREV_FEATURES_END	(1 << 19)
@@ -46,7 +36,7 @@ enum preview_input_entity {
 #define PREVIEW_OUTPUT_RESIZER		(1 << 1)
 #define PREVIEW_OUTPUT_MEMORY		(1 << 2)
 
-/* Configure byte layout of YUV image */
+ 
 enum preview_ycpos_mode {
 	YCPOS_YCrYCb = 0,
 	YCPOS_YCbYCr = 1,
@@ -54,26 +44,7 @@ enum preview_ycpos_mode {
 	YCPOS_CrYCbY = 3
 };
 
-/*
- * struct prev_params - Structure for all configuration
- * @busy: Bitmask of busy parameters (being updated or used)
- * @update: Bitmask of the parameters to be updated
- * @features: Set of features enabled.
- * @cfa: CFA coefficients.
- * @csup: Chroma suppression coefficients.
- * @luma: Luma enhancement coefficients.
- * @nf: Noise filter coefficients.
- * @dcor: Noise filter coefficients.
- * @gamma: Gamma coefficients.
- * @wbal: White Balance parameters.
- * @blkadj: Black adjustment parameters.
- * @rgb2rgb: RGB blending parameters.
- * @csc: Color space conversion (RGB to YCbCr) parameters.
- * @hmed: Horizontal median filter.
- * @yclimit: YC limits parameters.
- * @contrast: Contrast.
- * @brightness: Brightness.
- */
+ 
 struct prev_params {
 	u32 busy;
 	u32 update;
@@ -94,29 +65,12 @@ struct prev_params {
 	u8 brightness;
 };
 
-/* Sink and source previewer pads */
+ 
 #define PREV_PAD_SINK			0
 #define PREV_PAD_SOURCE			1
 #define PREV_PADS_NUM			2
 
-/*
- * struct isp_prev_device - Structure for storing ISP Preview module information
- * @subdev: V4L2 subdevice
- * @pads: Media entity pads
- * @formats: Active formats at the subdev pad
- * @crop: Active crop rectangle
- * @input: Module currently connected to the input pad
- * @output: Bitmask of the active output
- * @video_in: Input video entity
- * @video_out: Output video entity
- * @params.params : Active and shadow parameters sets
- * @params.active: Bitmask of parameters active in set 0
- * @params.lock: Parameters lock, protects params.active and params.shadow
- * @underrun: Whether the preview entity has queued buffers on the output
- * @state: Current preview pipeline state
- *
- * This structure is used to store the OMAP ISP Preview module Information.
- */
+ 
 struct isp_prev_device {
 	struct v4l2_subdev subdev;
 	struct media_pad pads[PREV_PADS_NUM];
@@ -158,4 +112,4 @@ int omap3isp_preview_busy(struct isp_prev_device *isp_prev);
 
 void omap3isp_preview_restore_context(struct isp_device *isp);
 
-#endif	/* OMAP3_ISP_PREVIEW_H */
+#endif	 

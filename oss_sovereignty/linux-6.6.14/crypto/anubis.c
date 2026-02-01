@@ -1,33 +1,4 @@
-/*
- * Cryptographic API.
- *
- * Anubis Algorithm
- *
- * The Anubis algorithm was developed by Paulo S. L. M. Barreto and
- * Vincent Rijmen.
- *
- * See
- *
- *	P.S.L.M. Barreto, V. Rijmen,
- *	``The Anubis block cipher,''
- *	NESSIE submission, 2000.
- *
- * This software implements the "tweaked" version of Anubis.
- * Only the S-box and (consequently) the rounds constants have been
- * changed.
- *
- * The original authors have disclaimed all copyright interest in this
- * code and thus put it in the public domain. The subsequent authors
- * have put this under the GNU General Public License.
- *
- * By Aaron Grothe ajgrothe@yahoo.com, October 28, 2004
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- */
+ 
 
 #include <crypto/algapi.h>
 #include <linux/init.h>
@@ -43,7 +14,7 @@
 #define ANUBIS_MAX_ROUNDS	(8 + ANUBIS_MAX_N)
 
 struct anubis_ctx {
-	int key_len; // in bits
+	int key_len; 
 	int R;
 	u32 E[ANUBIS_MAX_ROUNDS + 1][4];
 	u32 D[ANUBIS_MAX_ROUNDS + 1][4];
@@ -480,18 +451,14 @@ static int anubis_setkey(struct crypto_tfm *tfm, const u8 *in_key,
 	N = ctx->key_len >> 5;
 	ctx->R = R = 8 + N;
 
-	/* * map cipher key to initial key state (mu): */
+	 
 	for (i = 0; i < N; i++)
 		kappa[i] = be32_to_cpu(key[i]);
 
-	/*
-	 * generate R + 1 round keys:
-	 */
+	 
 	for (r = 0; r <= R; r++) {
 		u32 K0, K1, K2, K3;
-		/*
-		 * generate r-th round key K^r:
-		 */
+		 
 		K0 = T4[(kappa[N - 1] >> 24)       ];
 		K1 = T4[(kappa[N - 1] >> 16) & 0xff];
 		K2 = T4[(kappa[N - 1] >>  8) & 0xff];
@@ -524,9 +491,7 @@ static int anubis_setkey(struct crypto_tfm *tfm, const u8 *in_key,
 		ctx->E[r][2] = K2;
 		ctx->E[r][3] = K3;
 
-		/*
-		 * compute kappa^{r+1} from kappa^r:
-		 */
+		 
 		if (r == R)
 			break;
 		for (i = 0; i < N; i++) {
@@ -547,10 +512,7 @@ static int anubis_setkey(struct crypto_tfm *tfm, const u8 *in_key,
 			kappa[i] = inter[i];
 	}
 
-	/*
-	 * generate inverse key schedule: K'^0 = K^R, K'^R =
-	 * 				  K^0, K'^r = theta(K^{R-r}):
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		ctx->D[0][i] = ctx->E[R][i];
 		ctx->D[R][i] = ctx->E[0][i];
@@ -578,16 +540,11 @@ static void anubis_crypt(u32 roundKey[ANUBIS_MAX_ROUNDS + 1][4],
 	u32 state[4];
 	u32 inter[4];
 
-	/*
-	 * map plaintext block to cipher state (mu)
-	 * and add initial round key (sigma[K^0]):
-	 */
+	 
 	for (i = 0; i < 4; i++)
 		state[i] = be32_to_cpu(src[i]) ^ roundKey[0][i];
 
-	/*
-	 * R - 1 full rounds:
-	 */
+	 
 
 	for (r = 1; r < R; r++) {
 		inter[0] =
@@ -620,9 +577,7 @@ static void anubis_crypt(u32 roundKey[ANUBIS_MAX_ROUNDS + 1][4],
 		state[3] = inter[3];
 	}
 
-	/*
-	 * last round:
-	 */
+	 
 
 	inter[0] =
 		(T0[(state[0] >> 24)       ] & 0xff000000U) ^
@@ -649,9 +604,7 @@ static void anubis_crypt(u32 roundKey[ANUBIS_MAX_ROUNDS + 1][4],
 		(T3[(state[3]      ) & 0xff] & 0x000000ffU) ^
 		roundKey[R][3];
 
-	/*
-	 * map cipher state to ciphertext block (mu^{-1}):
-	 */
+	 
 
 	for (i = 0; i < 4; i++)
 		dst[i] = cpu_to_be32(inter[i]);

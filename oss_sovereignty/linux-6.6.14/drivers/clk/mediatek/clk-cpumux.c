@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Linaro Ltd.
- * Author: Pi-Cheng Chen <pi-cheng.chen@linaro.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/container_of.h>

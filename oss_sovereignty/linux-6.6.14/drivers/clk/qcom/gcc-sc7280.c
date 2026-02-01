@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/kernel.h>
@@ -3453,11 +3451,7 @@ static int gcc_sc7280_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/*
-	 * Keep the clocks always-ON
-	 * GCC_CAMERA_AHB_CLK/XO_CLK, GCC_DISP_AHB_CLK/XO_CLK
-	 * GCC_VIDEO_AHB_CLK/XO_CLK, GCC_GPU_CFG_AHB_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0x26004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x26028, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x27004, BIT(0), BIT(0));

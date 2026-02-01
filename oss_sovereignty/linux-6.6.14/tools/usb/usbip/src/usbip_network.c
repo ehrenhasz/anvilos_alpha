@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <sys/socket.h>
 
@@ -89,7 +86,7 @@ void usbip_net_pack_usb_interface(int pack __attribute__((unused)),
 				  struct usbip_usb_interface *udev
 				  __attribute__((unused)))
 {
-	/* uint8_t members need nothing */
+	 
 }
 
 static ssize_t usbip_net_xmit(int sockfd, void *buff, size_t bufflen,
@@ -187,7 +184,7 @@ int usbip_net_recv_op_common(int sockfd, uint16_t *code, int *status)
 		if (op_common.code != *code) {
 			dbg("unexpected pdu %#0x for %#0x", op_common.code,
 			    *code);
-			/* return error status */
+			 
 			*status = ST_ERROR;
 			goto err;
 		}
@@ -255,9 +252,7 @@ int usbip_net_set_v6only(int sockfd)
 	return ret;
 }
 
-/*
- * IPv6 Ready
- */
+ 
 int usbip_net_tcp_connect(char *hostname, char *service)
 {
 	struct addrinfo hints, *res, *rp;
@@ -268,7 +263,7 @@ int usbip_net_tcp_connect(char *hostname, char *service)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	/* get all possible addresses */
+	 
 	ret = getaddrinfo(hostname, service, &hints, &res);
 	if (ret < 0) {
 		dbg("getaddrinfo: %s service %s: %s", hostname, service,
@@ -276,16 +271,16 @@ int usbip_net_tcp_connect(char *hostname, char *service)
 		return ret;
 	}
 
-	/* try the addresses */
+	 
 	for (rp = res; rp; rp = rp->ai_next) {
 		sockfd = socket(rp->ai_family, rp->ai_socktype,
 				rp->ai_protocol);
 		if (sockfd < 0)
 			continue;
 
-		/* should set TCP_NODELAY for usbip */
+		 
 		usbip_net_set_nodelay(sockfd);
-		/* TODO: write code for heartbeat */
+		 
 		usbip_net_set_keepalive(sockfd);
 
 		if (connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0)

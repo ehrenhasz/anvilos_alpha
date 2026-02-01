@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-acpi-intel-cml-match.c - tables and support for CML ACPI enumeration.
- *
- * Copyright (c) 2019, Intel Corporation.
- *
- */
+
+ 
 
 #include <sound/soc-acpi.h>
 #include <sound/soc-acpi-intel-match.h>
@@ -34,11 +29,7 @@ static const struct snd_soc_acpi_codecs max98390_spk_codecs = {
 	.codecs = {"MX98390"}
 };
 
-/*
- * The order of the three entries with .id = "10EC5682" matters
- * here, because DSDT tables expose an ACPI HID for the MAX98357A
- * speaker amplifier which is not populated on the board.
- */
+ 
 struct snd_soc_acpi_mach snd_soc_acpi_intel_cml_machines[] = {
 	{
 		.id = "10EC5682",
@@ -83,7 +74,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_cml_machines[] = {
 	{
 		.comp_ids = &essx_83x6,
 		.drv_name = "sof-essx8336",
-		.sof_tplg_filename = "sof-cml-es8336", /* the tplg suffix is added at run time */
+		.sof_tplg_filename = "sof-cml-es8336",  
 		.tplg_quirk_mask = SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER |
 					SND_SOC_ACPI_TPLG_INTEL_SSP_MSB |
 					SND_SOC_ACPI_TPLG_INTEL_DMIC_NUMBER,
@@ -187,7 +178,7 @@ static const struct snd_soc_acpi_adr_device rt711_sdca_0_adr[] = {
 
 static const struct snd_soc_acpi_adr_device rt1316_1_group1_adr[] = {
 	{
-		.adr = 0x000131025D131601ull, /* unique ID is set for some reason */
+		.adr = 0x000131025D131601ull,  
 		.num_endpoints = 1,
 		.endpoints = &spk_l_endpoint,
 		.name_prefix = "rt1316-1"
@@ -281,30 +272,26 @@ static const struct snd_soc_acpi_link_adr cml_3_in_1_sdca[] = {
 
 struct snd_soc_acpi_mach snd_soc_acpi_intel_cml_sdw_machines[] = {
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = cml_3_in_1_default,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-cml-rt711-rt1308-rt715.tplg",
 	},
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = cml_3_in_1_sdca,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-cml-rt711-rt1316-rt714.tplg",
 	},
 	{
-		/*
-		 * link_mask should be 0xB, but all links are enabled by BIOS.
-		 * This entry will be selected if there is no rt1308 exposed
-		 * on link2 since it will fail to match the above entry.
-		 */
+		 
 		.link_mask = 0xF,
 		.links = cml_3_in_1_mono_amp,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-cml-rt711-rt1308-mono-rt715.tplg",
 	},
 	{
-		.link_mask = 0x2, /* RT700 connected on Link1 */
+		.link_mask = 0x2,  
 		.links = cml_rvp,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-cml-rt700.tplg",

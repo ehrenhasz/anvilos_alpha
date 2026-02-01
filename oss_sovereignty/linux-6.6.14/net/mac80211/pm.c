@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Portions
- * Copyright (C) 2020-2021 Intel Corporation
- */
+
+ 
 #include <net/mac80211.h>
 #include <net/rtnetlink.h>
 
@@ -28,7 +25,7 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 		goto suspend;
 
 	local->suspending = true;
-	mb(); /* make suspending visible before any cancellation */
+	mb();  
 
 	ieee80211_scan_cancel(local);
 
@@ -49,7 +46,7 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 		mutex_unlock(&local->sta_mtx);
 	}
 
-	/* keep sched_scan only in case of 'any' trigger */
+	 
 	if (!(wowlan && wowlan->any))
 		ieee80211_sched_scan_cancel(local);
 
@@ -58,24 +55,21 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 					IEEE80211_QUEUE_STOP_REASON_SUSPEND,
 					false);
 
-	/* flush out all packets */
+	 
 	synchronize_net();
 
 	ieee80211_flush_queues(local, NULL, true);
 
 	local->quiescing = true;
-	/* make quiescing visible to timers everywhere */
+	 
 	mb();
 
 	flush_workqueue(local->workqueue);
 
-	/* Don't try to run timers while suspended. */
+	 
 	del_timer_sync(&local->sta_cleanup);
 
-	 /*
-	 * Note that this particular timer doesn't need to be
-	 * restarted at resume.
-	 */
+	  
 	cancel_work_sync(&local->dynamic_ps_enable_work);
 	del_timer_sync(&local->dynamic_ps_timer);
 
@@ -83,28 +77,14 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 	if (local->wowlan) {
 		int err;
 
-		/* Drivers don't expect to suspend while some operations like
-		 * authenticating or associating are in progress. It doesn't
-		 * make sense anyway to accept that, since the authentication
-		 * or association would never finish since the driver can't do
-		 * that on its own.
-		 * Thus, clean up in-progress auth/assoc first.
-		 */
+		 
 		list_for_each_entry(sdata, &local->interfaces, list) {
 			if (!ieee80211_sdata_running(sdata))
 				continue;
 			if (sdata->vif.type != NL80211_IFTYPE_STATION)
 				continue;
 			ieee80211_mgd_quiesce(sdata);
-			/* If suspended during TX in progress, and wowlan
-			 * is enabled (connection will be active) there
-			 * can be a race where the driver is put out
-			 * of power-save due to TX and during suspend
-			 * dynamic_ps_timer is cancelled and TX packet
-			 * is flushed, leaving the driver in ACTIVE even
-			 * after resuming until dynamic_ps_timer puts
-			 * driver back in DOZE.
-			 */
+			 
 			if (sdata->u.mgd.associated &&
 			    sdata->u.mgd.powersave &&
 			     !(local->hw.conf.flags & IEEE80211_CONF_PS)) {
@@ -133,9 +113,7 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 			return err;
 		} else if (err > 0) {
 			WARN_ON(err != 1);
-			/* cfg80211 will call back into mac80211 to disconnect
-			 * all interfaces, allow that to proceed properly
-			 */
+			 
 			ieee80211_wake_queues_by_reason(hw,
 					IEEE80211_MAX_QUEUE_MAP,
 					IEEE80211_QUEUE_STOP_REASON_SUSPEND,
@@ -146,7 +124,7 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 		}
 	}
 
-	/* remove all interfaces that were created in the driver */
+	 
 	list_for_each_entry(sdata, &local->interfaces, list) {
 		if (!ieee80211_sdata_running(sdata))
 			continue;
@@ -165,18 +143,15 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 		drv_remove_interface(local, sdata);
 	}
 
-	/*
-	 * We disconnected on all interfaces before suspend, all channel
-	 * contexts should be released.
-	 */
+	 
 	WARN_ON(!list_empty(&local->chanctx_list));
 
-	/* stop hardware - this must stop RX */
+	 
 	ieee80211_stop_device(local);
 
  suspend:
 	local->suspended = true;
-	/* need suspended to be visible before quiescing is false */
+	 
 	barrier();
 	local->quiescing = false;
 	local->suspending = false;
@@ -184,11 +159,7 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 	return 0;
 }
 
-/*
- * __ieee80211_resume() is a static inline which just calls
- * ieee80211_reconfig(), which is also needed for hardware
- * hang/firmware failure/etc. recovery.
- */
+ 
 
 void ieee80211_report_wowlan_wakeup(struct ieee80211_vif *vif,
 				    struct cfg80211_wowlan_wakeup *wakeup,

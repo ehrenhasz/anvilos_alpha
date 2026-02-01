@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Novell Inc.
- * Copyright (C) 2016 Red Hat, Inc.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/cred.h>
@@ -14,7 +11,7 @@
 #include <linux/exportfs.h>
 #include "overlayfs.h"
 
-#include "../internal.h"	/* for vfs_path_lookup */
+#include "../internal.h"	 
 
 struct ovl_lookup_data {
 	struct super_block *sb;
@@ -26,7 +23,7 @@ struct ovl_lookup_data {
 	bool last;
 	char *redirect;
 	int metacopy;
-	/* Referring to last redirect xattr */
+	 
 	bool absolute_redirect;
 };
 
@@ -44,14 +41,7 @@ static int ovl_check_redirect(const struct path *path, struct ovl_lookup_data *d
 
 	if (buf[0] == '/') {
 		d->absolute_redirect = true;
-		/*
-		 * One of the ancestor path elements in an absolute path
-		 * lookup in ovl_lookup_layer() could have been opaque and
-		 * that will stop further lookup in lower layers (d->stop=true)
-		 * But we have found an absolute redirect in descendant path
-		 * element and that should force continue lookup in lower
-		 * layers (reset d->stop).
-		 */
+		 
 		d->stop = false;
 	} else {
 		res = strlen(buf) + 1;
@@ -70,28 +60,19 @@ static int ovl_check_redirect(const struct path *path, struct ovl_lookup_data *d
 
 static int ovl_acceptable(void *ctx, struct dentry *dentry)
 {
-	/*
-	 * A non-dir origin may be disconnected, which is fine, because
-	 * we only need it for its unique inode number.
-	 */
+	 
 	if (!d_is_dir(dentry))
 		return 1;
 
-	/* Don't decode a deleted empty directory */
+	 
 	if (d_unhashed(dentry))
 		return 0;
 
-	/* Check if directory belongs to the layer we are decoding from */
+	 
 	return is_subdir(dentry, ((struct vfsmount *)ctx)->mnt_root);
 }
 
-/*
- * Check validity of an overlay file handle buffer.
- *
- * Return 0 for a valid file handle.
- * Return -ENODATA for "origin unknown".
- * Return <0 for an invalid file handle.
- */
+ 
 int ovl_check_fb_len(struct ovl_fb *fb, int fb_len)
 {
 	if (fb_len < sizeof(struct ovl_fb) || fb_len < fb->len)
@@ -100,11 +81,11 @@ int ovl_check_fb_len(struct ovl_fb *fb, int fb_len)
 	if (fb->magic != OVL_FH_MAGIC)
 		return -EINVAL;
 
-	/* Treat larger version and unknown flags as "origin unknown" */
+	 
 	if (fb->version > OVL_FH_VERSION || fb->flags & ~OVL_FH_FLAG_ALL)
 		return -ENODATA;
 
-	/* Treat endianness mismatch as "origin unknown" */
+	 
 	if (!(fb->flags & OVL_FH_FLAG_ANY_ENDIAN) &&
 	    (fb->flags & OVL_FH_FLAG_BIG_ENDIAN) != OVL_FH_FLAG_CPU_ENDIAN)
 		return -ENODATA;
@@ -124,7 +105,7 @@ static struct ovl_fh *ovl_get_fh(struct ovl_fs *ofs, struct dentry *upperdentry,
 			return NULL;
 		goto fail;
 	}
-	/* Zero size value means "copied up but origin unknown" */
+	 
 	if (res == 0)
 		return NULL;
 
@@ -166,11 +147,7 @@ struct dentry *ovl_decode_real_fh(struct ovl_fs *ofs, struct ovl_fh *fh,
 	if (!capable(CAP_DAC_READ_SEARCH))
 		return NULL;
 
-	/*
-	 * Make sure that the stored uuid matches the uuid of the lower
-	 * layer where file handle will be decoded.
-	 * In case of uuid=off option just make sure that stored uuid is null.
-	 */
+	 
 	if (ovl_origin_uuid(ofs) ?
 	    !uuid_equal(&fh->fb.uuid, &mnt->mnt_sb->s_uuid) :
 	    !uuid_is_null(&fh->fb.uuid))
@@ -181,12 +158,7 @@ struct dentry *ovl_decode_real_fh(struct ovl_fs *ofs, struct ovl_fh *fh,
 				  bytes >> 2, (int)fh->fb.type,
 				  connected ? ovl_acceptable : NULL, mnt);
 	if (IS_ERR(real)) {
-		/*
-		 * Treat stale file handle to lower file as "origin unknown".
-		 * upper file handle could become stale when upper file is
-		 * unlinked and this information is needed to handle stale
-		 * index entries correctly.
-		 */
+		 
 		if (real == ERR_PTR(-ESTALE) &&
 		    !(fh->fb.flags & OVL_FH_FLAG_PATH_UPPER))
 			real = NULL;
@@ -216,7 +188,7 @@ static struct dentry *ovl_lookup_positive_unlocked(struct ovl_lookup_data *d,
 	if (!IS_ERR(ret) && d_flags_negative(smp_load_acquire(&ret->d_flags))) {
 		if (drop_negative && ret->d_lockref.count == 1) {
 			spin_lock(&ret->d_lock);
-			/* Recheck condition under lock */
+			 
 			if (d_is_negative(ret) && ret->d_lockref.count == 1)
 				__d_drop(ret);
 			spin_unlock(&ret->d_lock);
@@ -247,7 +219,7 @@ static int ovl_lookup_single(struct dentry *base, struct ovl_lookup_data *d,
 	}
 
 	if (ovl_dentry_weird(this)) {
-		/* Don't support traversing automounts and other weirdness */
+		 
 		err = -EREMOTE;
 		goto out_err;
 	}
@@ -255,10 +227,7 @@ static int ovl_lookup_single(struct dentry *base, struct ovl_lookup_data *d,
 		d->stop = d->opaque = true;
 		goto put_and_out;
 	}
-	/*
-	 * This dentry should be a regular file if previous layer lookup
-	 * found a metacopy dentry.
-	 */
+	 
 	if (last_element && d->metacopy && !d_is_reg(this)) {
 		d->stop = true;
 		goto put_and_out;
@@ -281,7 +250,7 @@ static int ovl_lookup_single(struct dentry *base, struct ovl_lookup_data *d,
 			goto out;
 	} else {
 		if (ovl_lookup_trap_inode(d->sb, this)) {
-			/* Caught in a trap of overlapping layers */
+			 
 			err = -ELOOP;
 			goto out_err;
 		}
@@ -318,7 +287,7 @@ out_err:
 static int ovl_lookup_layer(struct dentry *base, struct ovl_lookup_data *d,
 			    struct dentry **ret, bool drop_negative)
 {
-	/* Counting down from the end, since the prefix can change */
+	 
 	size_t rem = d->name.len - 1;
 	struct dentry *dentry = NULL;
 	int err;
@@ -333,7 +302,7 @@ static int ovl_lookup_layer(struct dentry *base, struct ovl_lookup_data *d,
 		size_t thislen = next - s;
 		bool end = !next[0];
 
-		/* Verify we did not go off the rails */
+		 
 		if (WARN_ON(s[-1] != '/'))
 			return -EIO;
 
@@ -376,7 +345,7 @@ static int ovl_lookup_data_layer(struct dentry *dentry, const char *redirect,
 		goto out_path_put;
 
 	err = -ENOENT;
-	/* Only regular file is acceptable as lower data */
+	 
 	if (!d_is_reg(datapath->dentry))
 		goto out_path_put;
 
@@ -388,7 +357,7 @@ out_path_put:
 	return err;
 }
 
-/* Lookup in data-only layers by absolute redirect to layer root */
+ 
 static int ovl_lookup_data_layers(struct dentry *dentry, const char *redirect,
 				  struct ovl_path *lowerdata)
 {
@@ -419,10 +388,7 @@ int ovl_check_origin_fh(struct ovl_fs *ofs, struct ovl_fh *fh, bool connected,
 	int i;
 
 	for (i = 1; i <= ovl_numlowerlayer(ofs); i++) {
-		/*
-		 * If lower fs uuid is not unique among lower fs we cannot match
-		 * fh->uuid to layer.
-		 */
+		 
 		if (ofs->layers[i].fsid &&
 		    ofs->layers[i].fs->bad_uuid)
 			continue;
@@ -484,10 +450,7 @@ static int ovl_check_origin(struct ovl_fs *ofs, struct dentry *upperdentry,
 	return 0;
 }
 
-/*
- * Verify that @fh matches the file handle stored in xattr @name.
- * Return 0 on match, -ESTALE on mismatch, < 0 on error.
- */
+ 
 static int ovl_verify_fh(struct ovl_fs *ofs, struct dentry *dentry,
 			 enum ovl_xattr ox, const struct ovl_fh *fh)
 {
@@ -507,14 +470,7 @@ static int ovl_verify_fh(struct ovl_fs *ofs, struct dentry *dentry,
 	return err;
 }
 
-/*
- * Verify that @real dentry matches the file handle stored in xattr @name.
- *
- * If @set is true and there is no stored file handle, encode @real and store
- * file handle in xattr @name.
- *
- * Return 0 on match, -ESTALE on mismatch, -ENODATA on no xattr, < 0 on error.
- */
+ 
 int ovl_verify_set_fh(struct ovl_fs *ofs, struct dentry *dentry,
 		      enum ovl_xattr ox, struct dentry *real, bool is_upper,
 		      bool set)
@@ -548,7 +504,7 @@ fail:
 	goto out;
 }
 
-/* Get upper dentry from index */
+ 
 struct dentry *ovl_index_upper(struct ovl_fs *ofs, struct dentry *index,
 			       bool connected)
 {
@@ -578,11 +534,7 @@ struct dentry *ovl_index_upper(struct ovl_fs *ofs, struct dentry *index,
 	return upper;
 }
 
-/*
- * Verify that an index entry name matches the origin file handle stored in
- * OVL_XATTR_ORIGIN and that origin file handle can be decoded to lower path.
- * Return 0 on match, -ESTALE on mismatch or stale origin, < 0 on error.
- */
+ 
 int ovl_verify_index(struct ovl_fs *ofs, struct dentry *index)
 {
 	struct ovl_fh *fh = NULL;
@@ -613,37 +565,19 @@ int ovl_verify_index(struct ovl_fs *ofs, struct dentry *index)
 	if (err)
 		goto fail;
 
-	/*
-	 * Whiteout index entries are used as an indication that an exported
-	 * overlay file handle should be treated as stale (i.e. after unlink
-	 * of the overlay inode). These entries contain no origin xattr.
-	 */
+	 
 	if (ovl_is_whiteout(index))
 		goto out;
 
-	/*
-	 * Verifying directory index entries are not stale is expensive, so
-	 * only verify stale dir index if NFS export is enabled.
-	 */
+	 
 	if (d_is_dir(index) && !ofs->config.nfs_export)
 		goto out;
 
-	/*
-	 * Directory index entries should have 'upper' xattr pointing to the
-	 * real upper dir. Non-dir index entries are hardlinks to the upper
-	 * real inode. For non-dir index, we can read the copy up origin xattr
-	 * directly from the index dentry, but for dir index we first need to
-	 * decode the upper directory.
-	 */
+	 
 	upper = ovl_index_upper(ofs, index, false);
 	if (IS_ERR_OR_NULL(upper)) {
 		err = PTR_ERR(upper);
-		/*
-		 * Directory index entries with no 'upper' xattr need to be
-		 * removed. When dir index entry has a stale 'upper' xattr,
-		 * we assume that upper dir was removed and we treat the dir
-		 * index as orphan entry that needs to be whited out.
-		 */
+		 
 		if (err == -ESTALE)
 			goto orphan;
 		else if (!err)
@@ -656,7 +590,7 @@ int ovl_verify_index(struct ovl_fs *ofs, struct dentry *index)
 	if (err)
 		goto fail;
 
-	/* Check if non-dir index is orphan and don't warn before cleaning it */
+	 
 	if (!d_is_dir(index) && d_inode(index)->i_nlink == 1) {
 		err = ovl_check_origin_fh(ofs, fh, false, index, &stack);
 		if (err)
@@ -699,21 +633,7 @@ static int ovl_get_index_name_fh(struct ovl_fh *fh, struct qstr *name)
 
 }
 
-/*
- * Lookup in indexdir for the index entry of a lower real inode or a copy up
- * origin inode. The index entry name is the hex representation of the lower
- * inode file handle.
- *
- * If the index dentry in negative, then either no lower aliases have been
- * copied up yet, or aliases have been copied up in older kernels and are
- * not indexed.
- *
- * If the index dentry for a copy up origin inode is positive, but points
- * to an inode different than the upper inode, then either the upper inode
- * has been copied up and not indexed or it was indexed, but since then
- * index dir was cleared. Either way, that index cannot be used to identify
- * the overlay inode.
- */
+ 
 int ovl_get_index_name(struct ovl_fs *ofs, struct dentry *origin,
 		       struct qstr *name)
 {
@@ -730,7 +650,7 @@ int ovl_get_index_name(struct ovl_fs *ofs, struct dentry *origin,
 	return err;
 }
 
-/* Lookup index by file handle for NFS export */
+ 
 struct dentry *ovl_get_index_fh(struct ovl_fs *ofs, struct ovl_fh *fh)
 {
 	struct dentry *index;
@@ -790,24 +710,13 @@ struct dentry *ovl_lookup_index(struct ovl_fs *ofs, struct dentry *upper,
 
 	inode = d_inode(index);
 	if (ovl_is_whiteout(index) && !verify) {
-		/*
-		 * When index lookup is called with !verify for decoding an
-		 * overlay file handle, a whiteout index implies that decode
-		 * should treat file handle as stale and no need to print a
-		 * warning about it.
-		 */
+		 
 		dput(index);
 		index = ERR_PTR(-ESTALE);
 		goto out;
 	} else if (ovl_dentry_weird(index) || ovl_is_whiteout(index) ||
 		   inode_wrong_type(inode, d_inode(origin)->i_mode)) {
-		/*
-		 * Index should always be of the same file type as origin
-		 * except for the case of a whiteout index. A whiteout
-		 * index should only exist if all lower aliases have been
-		 * unlinked, which means that finding a lower origin on lookup
-		 * whose index is a whiteout should be treated as an error.
-		 */
+		 
 		pr_warn_ratelimited("bad index found (index=%pd2, ftype=%x, origin ftype=%x).\n",
 				    index, d_inode(index)->i_mode & S_IFMT,
 				    d_inode(origin)->i_mode & S_IFMT);
@@ -819,7 +728,7 @@ struct dentry *ovl_lookup_index(struct ovl_fs *ofs, struct dentry *upper,
 			goto fail;
 		}
 
-		/* Verify that dir index 'upper' xattr points to upper dir */
+		 
 		err = ovl_verify_upper(ofs, index, upper, false);
 		if (err) {
 			if (err == -ESTALE) {
@@ -846,10 +755,7 @@ fail:
 	goto out;
 }
 
-/*
- * Returns next layer in stack starting from top.
- * Returns -1 if this is the last layer.
- */
+ 
 int ovl_path_next(int idx, struct dentry *dentry, struct path *path)
 {
 	struct ovl_entry *oe = OVL_E(dentry);
@@ -869,7 +775,7 @@ int ovl_path_next(int idx, struct dentry *dentry, struct path *path)
 	return (idx < ovl_numlower(oe)) ? idx + 1 : -1;
 }
 
-/* Fix missing 'origin' xattr */
+ 
 static int ovl_fix_origin(struct ovl_fs *ofs, struct dentry *dentry,
 			  struct dentry *lower, struct dentry *upper)
 {
@@ -940,7 +846,7 @@ static int ovl_maybe_validate_verity(struct dentry *dentry)
 	return err;
 }
 
-/* Lazy lookup of lowerdata */
+ 
 static int ovl_maybe_lookup_lowerdata(struct dentry *dentry)
 {
 	struct inode *inode = d_inode(dentry);
@@ -960,7 +866,7 @@ static int ovl_maybe_lookup_lowerdata(struct dentry *dentry)
 		return err;
 
 	err = 0;
-	/* Someone got here before us? */
+	 
 	if (ovl_dentry_lowerdata(dentry))
 		goto out;
 
@@ -1046,16 +952,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 			goto out;
 		}
 		if (upperdentry && !d.is_dir) {
-			/*
-			 * Lookup copy up origin by decoding origin file handle.
-			 * We may get a disconnected dentry, which is fine,
-			 * because we only need to hold the origin inode in
-			 * cache and use its inode number.  We may even get a
-			 * connected dentry, that is not under any of the lower
-			 * layers root.  That is also fine for using it's inode
-			 * number - it's the same as if we held a reference
-			 * to a dentry in lower layer that was moved under us.
-			 */
+			 
 			err = ovl_check_origin(ofs, upperdentry, &origin_path);
 			if (err)
 				goto out_put_upper;
@@ -1106,10 +1003,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 			goto out_put;
 		}
 
-		/*
-		 * If no origin fh is stored in upper of a merge dir, store fh
-		 * of lower dir and set upper parent "impure".
-		 */
+		 
 		if (upperdentry && !ctr && !ofs->noxattr && d.is_dir) {
 			err = ovl_fix_origin(ofs, dentry, this, upperdentry);
 			if (err) {
@@ -1118,15 +1012,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 			}
 		}
 
-		/*
-		 * When "verify_lower" feature is enabled, do not merge with a
-		 * lower dir that does not match a stored origin xattr. In any
-		 * case, only verified origin is used for index lookup.
-		 *
-		 * For non-dir dentry, if index=on, then ensure origin
-		 * matches the dentry found using path based lookup,
-		 * otherwise error out.
-		 */
+		 
 		if (upperdentry && !ctr &&
 		    ((d.is_dir && ovl_verify_lower(dentry->d_sb)) ||
 		     (!d.is_dir && ofs->config.index && origin_path))) {
@@ -1144,12 +1030,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 			metacopy_size = d.metacopy;
 
 		if (d.metacopy && ctr) {
-			/*
-			 * Do not store intermediate metacopy dentries in
-			 * lower chain, except top most lower metacopy dentry.
-			 * Continue the loop so that if there is an absolute
-			 * redirect on this dentry, poe can be reset to roe.
-			 */
+			 
 			dput(this);
 			this = NULL;
 		} else {
@@ -1158,16 +1039,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 			ctr++;
 		}
 
-		/*
-		 * Following redirects can have security consequences: it's like
-		 * a symlink into the lower layer without the permission checks.
-		 * This is only a problem if the upper layer is untrusted (e.g
-		 * comes from an USB drive).  This can allow a non-readable file
-		 * or directory to become readable.
-		 *
-		 * Only following redirects when redirects are enabled disables
-		 * this attack vector when not necessary.
-		 */
+		 
 		err = -EPERM;
 		if (d.redirect && !ovl_redirect_follow(ofs)) {
 			pr_warn_ratelimited("refusing to follow redirect for (%pd2)\n",
@@ -1180,25 +1052,18 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 
 		if (d.redirect && d.redirect[0] == '/' && poe != roe) {
 			poe = roe;
-			/* Find the current layer on the root dentry */
+			 
 			i = lower.layer->idx - 1;
 		}
 	}
 
-	/* Defer lookup of lowerdata in data-only layers to first access */
+	 
 	if (d.metacopy && ctr && ofs->numdatalayer && d.absolute_redirect) {
 		d.metacopy = 0;
 		ctr++;
 	}
 
-	/*
-	 * For regular non-metacopy upper dentries, there is no lower
-	 * path based lookup, hence ctr will be zero. If a dentry is found
-	 * using ORIGIN xattr on upper, install it in stack.
-	 *
-	 * For metacopy dentry, path based lookup will find lower dentries.
-	 * Just make sure a corresponding data dentry has been found.
-	 */
+	 
 	if (d.metacopy || (uppermetacopy && !ctr)) {
 		pr_warn_ratelimited("metacopy with no lower data found - abort lookup (%pd2)\n",
 				    dentry);
@@ -1215,25 +1080,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 		origin_path = NULL;
 	}
 
-	/*
-	 * Always lookup index if there is no-upperdentry.
-	 *
-	 * For the case of upperdentry, we have set origin by now if it
-	 * needed to be set. There are basically three cases.
-	 *
-	 * For directories, lookup index by lower inode and verify it matches
-	 * upper inode. We only trust dir index if we verified that lower dir
-	 * matches origin, otherwise dir index entries may be inconsistent
-	 * and we ignore them.
-	 *
-	 * For regular upper, we already set origin if upper had ORIGIN
-	 * xattr. There is no verification though as there is no path
-	 * based dentry lookup in lower in this case.
-	 *
-	 * For metacopy upper, we set a verified origin already if index
-	 * is enabled and if upper had an ORIGIN xattr.
-	 *
-	 */
+	 
 	if (!upperdentry && ctr)
 		origin = stack[0].dentry;
 
@@ -1267,11 +1114,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 			.mnt = ovl_upper_mnt(ofs),
 		};
 
-		/*
-		 * It's safe to assign upperredirect here: the previous
-		 * assignment of happens only if upperdentry is non-NULL, and
-		 * this one only if upperdentry is NULL.
-		 */
+		 
 		upperredirect = ovl_get_redirect_xattr(ofs, &upperpath, 0);
 		if (IS_ERR(upperredirect)) {
 			err = PTR_ERR(upperredirect);
@@ -1293,7 +1136,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
 			.redirect = upperredirect,
 		};
 
-		/* Store lowerdata redirect for lazy lookup */
+		 
 		if (ctr > 1 && !d.is_dir && !stack[ctr - 1].dentry) {
 			oip.lowerdata_redirect = d.redirect;
 			d.redirect = NULL;
@@ -1348,19 +1191,16 @@ bool ovl_lower_positive(struct dentry *dentry)
 	bool positive = false;
 	bool done = false;
 
-	/*
-	 * If dentry is negative, then lower is positive iff this is a
-	 * whiteout.
-	 */
+	 
 	if (!dentry->d_inode)
 		return ovl_dentry_is_opaque(dentry);
 
-	/* Negative upper -> positive lower */
+	 
 	if (!ovl_dentry_upper(dentry))
 		return true;
 
 	old_cred = ovl_override_creds(dentry->d_sb);
-	/* Positive upper -> have to look up lower to see whether it exists */
+	 
 	for (i = 0; !done && !positive && i < ovl_numlower(poe); i++) {
 		struct dentry *this;
 		struct ovl_path *parentpath = &ovl_lowerstack(poe)[i];
@@ -1375,10 +1215,7 @@ bool ovl_lower_positive(struct dentry *dentry)
 				break;
 
 			default:
-				/*
-				 * Assume something is there, we just couldn't
-				 * access it.
-				 */
+				 
 				positive = true;
 				break;
 			}

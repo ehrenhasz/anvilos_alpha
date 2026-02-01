@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Proprietary commands extension for STMicroelectronics NFC NCI Chip
- *
- * Copyright (C) 2014-2015  STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <net/genetlink.h>
 #include <linux/module.h>

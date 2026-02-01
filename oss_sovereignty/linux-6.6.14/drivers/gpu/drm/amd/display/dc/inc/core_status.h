@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef _CORE_STATUS_H_
 #define _CORE_STATUS_H_
@@ -40,15 +17,15 @@ enum dc_status {
 	DC_NO_DP_LINK_BANDWIDTH = 10,
 	DC_EXCEED_DONGLE_CAP = 11,
 	DC_SURFACE_PIXEL_FORMAT_UNSUPPORTED = 12,
-	DC_FAIL_BANDWIDTH_VALIDATE = 13, /* BW and Watermark validation */
+	DC_FAIL_BANDWIDTH_VALIDATE = 13,  
 	DC_FAIL_SCALING = 14,
 	DC_FAIL_DP_LINK_TRAINING = 15,
 	DC_FAIL_DSC_VALIDATE = 16,
 	DC_NO_DSC_RESOURCE = 17,
 	DC_FAIL_UNSUPPORTED_1 = 18,
 	DC_FAIL_CLK_EXCEED_MAX = 21,
-	DC_FAIL_CLK_BELOW_MIN = 22, /*THIS IS MIN PER IP*/
-	DC_FAIL_CLK_BELOW_CFG_REQUIRED = 23, /*THIS IS hard_min in PPLIB*/
+	DC_FAIL_CLK_BELOW_MIN = 22,  
+	DC_FAIL_CLK_BELOW_CFG_REQUIRED = 23,  
 
 	DC_NOT_SUPPORTED = 24,
 	DC_UNSUPPORTED_VALUE = 25,
@@ -61,4 +38,4 @@ enum dc_status {
 
 char *dc_status_to_str(enum dc_status status);
 
-#endif /* _CORE_STATUS_H_ */
+#endif  

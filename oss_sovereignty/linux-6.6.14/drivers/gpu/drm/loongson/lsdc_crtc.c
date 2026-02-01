@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -12,11 +10,7 @@
 
 #include "lsdc_drv.h"
 
-/*
- * After the CRTC soft reset, the vblank counter would be reset to zero.
- * But the address and other settings in the CRTC register remain the same
- * as before.
- */
+ 
 
 static void lsdc_crtc0_soft_reset(struct lsdc_crtc *lcrtc)
 {
@@ -27,7 +21,7 @@ static void lsdc_crtc0_soft_reset(struct lsdc_crtc *lcrtc)
 
 	val &= CFG_VALID_BITS_MASK;
 
-	/* Soft reset bit, active low */
+	 
 	val &= ~CFG_RESET_N;
 
 	val &= ~CFG_PIX_FMT_MASK;
@@ -40,7 +34,7 @@ static void lsdc_crtc0_soft_reset(struct lsdc_crtc *lcrtc)
 
 	lsdc_wreg32(ldev, LSDC_CRTC0_CFG_REG, val);
 
-	/* Wait about a vblank time */
+	 
 	mdelay(20);
 }
 
@@ -53,7 +47,7 @@ static void lsdc_crtc1_soft_reset(struct lsdc_crtc *lcrtc)
 
 	val &= CFG_VALID_BITS_MASK;
 
-	/* Soft reset bit, active low */
+	 
 	val &= ~CFG_RESET_N;
 
 	val &= ~CFG_PIX_FMT_MASK;
@@ -66,7 +60,7 @@ static void lsdc_crtc1_soft_reset(struct lsdc_crtc *lcrtc)
 
 	lsdc_wreg32(ldev, LSDC_CRTC1_CFG_REG, val);
 
-	/* Wait about a vblank time */
+	 
 	msleep(20);
 }
 
@@ -77,11 +71,7 @@ static void lsdc_crtc0_enable(struct lsdc_crtc *lcrtc)
 
 	val = lsdc_rreg32(ldev, LSDC_CRTC0_CFG_REG);
 
-	/*
-	 * This may happen in extremely rare cases, but a soft reset can
-	 * bring it back to normal. We add a warning here, hoping to catch
-	 * something if it happens.
-	 */
+	 
 	if (val & CRTC_ANCHORED) {
 		drm_warn(&ldev->base, "%s stall\n", lcrtc->base.name);
 		return lsdc_crtc0_soft_reset(lcrtc);
@@ -104,11 +94,7 @@ static void lsdc_crtc1_enable(struct lsdc_crtc *lcrtc)
 	struct lsdc_device *ldev = lcrtc->ldev;
 	u32 val;
 
-	/*
-	 * This may happen in extremely rare cases, but a soft reset can
-	 * bring it back to normal. We add a warning here, hoping to catch
-	 * something if it happens.
-	 */
+	 
 	val = lsdc_rreg32(ldev, LSDC_CRTC1_CFG_REG);
 	if (val & CRTC_ANCHORED) {
 		drm_warn(&ldev->base, "%s stall\n", lcrtc->base.name);
@@ -127,7 +113,7 @@ static void lsdc_crtc1_disable(struct lsdc_crtc *lcrtc)
 	udelay(9);
 }
 
-/* All Loongson display controllers have hardware scanout position recoders */
+ 
 
 static void lsdc_crtc0_scan_pos(struct lsdc_crtc *lcrtc, int *hpos, int *vpos)
 {
@@ -193,12 +179,7 @@ static void lsdc_crtc1_flip(struct lsdc_crtc *lcrtc)
 	lsdc_ureg32_set(ldev, LSDC_CRTC1_CFG_REG, CFG_PAGE_FLIP);
 }
 
-/*
- * CRTC0 clone from CRTC1 or CRTC1 clone from CRTC0 using hardware logic
- * This may be useful for custom cloning (TWIN) applications. Saving the
- * bandwidth compared with the clone (mirroring) display mode provided by
- * drm core.
- */
+ 
 
 static void lsdc_crtc0_clone(struct lsdc_crtc *lcrtc)
 {
@@ -250,16 +231,7 @@ static void lsdc_crtc1_set_mode(struct lsdc_crtc *lcrtc,
 		    (mode->crtc_vsync_end << 16) | mode->crtc_vsync_start | VSYNC_EN);
 }
 
-/*
- * This is required for S3 support.
- * After resuming from suspend, LSDC_CRTCx_CFG_REG (x = 0 or 1) is filled
- * with garbage value, which causes the CRTC hang there.
- *
- * This function provides minimal settings for the affected registers.
- * This overrides the firmware's settings on startup, making the CRTC work
- * on our own, similar to the functional of GPU POST (Power On Self Test).
- * Only touch CRTC hardware-related parts.
- */
+ 
 
 static void lsdc_crtc0_reset(struct lsdc_crtc *lcrtc)
 {
@@ -302,13 +274,7 @@ static const struct lsdc_crtc_hw_ops ls7a1000_crtc_hw_ops[2] = {
 	},
 };
 
-/*
- * The 32-bit hardware vblank counter has been available since LS7A2000
- * and LS2K2000. The counter increases even though the CRTC is disabled,
- * it will be reset only if the CRTC is being soft reset.
- * Those registers are also readable for ls7a1000, but its value does not
- * change.
- */
+ 
 
 static u32 lsdc_crtc0_get_vblank_count(struct lsdc_crtc *lcrtc)
 {
@@ -324,12 +290,7 @@ static u32 lsdc_crtc1_get_vblank_count(struct lsdc_crtc *lcrtc)
 	return lsdc_rreg32(ldev, LSDC_CRTC1_VSYNC_COUNTER_REG);
 }
 
-/*
- * The DMA step bit fields are available since LS7A2000/LS2K2000, for
- * supporting odd resolutions. But a large DMA step save the bandwidth.
- * The larger, the better. Behavior of writing those bits on LS7A1000
- * or LS2K1000 is underfined.
- */
+ 
 
 static void lsdc_crtc0_set_dma_step(struct lsdc_crtc *lcrtc,
 				    enum lsdc_dma_steps dma_step)
@@ -402,7 +363,7 @@ static void lsdc_crtc_reset(struct drm_crtc *crtc)
 	else
 		__drm_atomic_helper_crtc_reset(crtc, &priv_crtc_state->base);
 
-	/* Reset the CRTC hardware, this is required for S3 support */
+	 
 	ops->reset(lcrtc);
 }
 
@@ -440,7 +401,7 @@ static u32 lsdc_crtc_get_vblank_counter(struct drm_crtc *crtc)
 {
 	struct lsdc_crtc *lcrtc = to_lsdc_crtc(crtc);
 
-	/* 32-bit hardware vblank counter */
+	 
 	return lcrtc->hw_ops->get_vblank_counter(lcrtc);
 }
 
@@ -466,11 +427,7 @@ static void lsdc_crtc_disable_vblank(struct drm_crtc *crtc)
 	lcrtc->hw_ops->disable_vblank(lcrtc);
 }
 
-/*
- * CRTC related debugfs
- * Primary planes and cursor planes belong to the CRTC as well.
- * For the sake of convenience, plane-related registers are also add here.
- */
+ 
 
 #define REG_DEF(reg) { \
 	.name = __stringify_1(LSDC_##reg##_REG), \
@@ -608,7 +565,7 @@ static struct drm_info_list lsdc_crtc_debugfs_list[2][4] = {
 	},
 };
 
-/* operate manually */
+ 
 
 static int lsdc_crtc_man_op_show(struct seq_file *m, void *data)
 {
@@ -688,7 +645,7 @@ static int lsdc_crtc_late_register(struct drm_crtc *crtc)
 	drm_debugfs_create_files(lcrtc->p_info_list, lcrtc->n_info_list,
 				 crtc->debugfs_entry, minor);
 
-	/* Manual operations supported */
+	 
 	debugfs_create_file("ops", 0644, crtc->debugfs_entry, lcrtc,
 			    &lsdc_crtc_man_op_fops);
 
@@ -758,7 +715,7 @@ lsdc_crtc_mode_valid(struct drm_crtc *crtc, const struct drm_display_mode *mode)
 		return MODE_CLOCK_HIGH;
 	}
 
-	/* 4 for DRM_FORMAT_XRGB8888 */
+	 
 	pitch = mode->hdisplay * 4;
 
 	if (pitch % descp->pitch_align) {
@@ -817,17 +774,14 @@ static void lsdc_crtc_mode_set_nofb(struct drm_crtc *crtc)
 		unsigned int width_in_bytes = mode->hdisplay * 4;
 		enum lsdc_dma_steps dma_step;
 
-		/*
-		 * Using DMA step as large as possible, for improving
-		 * hardware DMA efficiency.
-		 */
+		 
 		if (width_in_bytes % 256 == 0)
 			dma_step = LSDC_DMA_STEP_256_BYTES;
 		else if (width_in_bytes % 128 == 0)
 			dma_step = LSDC_DMA_STEP_128_BYTES;
 		else if (width_in_bytes % 64 == 0)
 			dma_step = LSDC_DMA_STEP_64_BYTES;
-		else  /* width_in_bytes % 32 == 0 */
+		else   
 			dma_step = LSDC_DMA_STEP_32_BYTES;
 
 		crtc_hw_ops->set_dma_step(lcrtc, dma_step);
@@ -873,10 +827,7 @@ static void lsdc_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	lcrtc->hw_ops->disable(lcrtc);
 
-	/*
-	 * Make sure we issue a vblank event after disabling the CRTC if
-	 * someone was waiting it.
-	 */
+	 
 	lsdc_crtc_send_vblank(crtc);
 }
 
@@ -913,7 +864,7 @@ static bool lsdc_crtc_get_scanout_position(struct drm_crtc *crtc,
 	vactive_start = vsw + vbp + 1;
 	vactive_end = vactive_start + mode->crtc_vdisplay;
 
-	/* last scan line before VSYNC */
+	 
 	vfp_end = mode->crtc_vtotal;
 
 	if (stime)

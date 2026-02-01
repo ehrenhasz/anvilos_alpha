@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Public Key Signature Algorithm
- *
- * Copyright (c) 2023 Herbert Xu <herbert@gondor.apana.org.au>
- */
+ 
+ 
 
 #include <crypto/akcipher.h>
 #include <crypto/internal/sig.h>

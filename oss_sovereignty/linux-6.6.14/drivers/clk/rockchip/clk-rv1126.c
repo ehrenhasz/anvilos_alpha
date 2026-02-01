@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Rockchip Electronics Co. Ltd.
- * Author: Finley Xiao <finley.xiao@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -29,7 +26,7 @@ enum rv1126_plls {
 };
 
 static struct rockchip_pll_rate_table rv1126_pll_rates[] = {
-	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac */
+	 
 	RK3036_PLL_RATE(1608000000, 1, 67, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1600000000, 3, 200, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1584000000, 1, 132, 2, 1, 1, 0),
@@ -75,7 +72,7 @@ static struct rockchip_pll_rate_table rv1126_pll_rates[] = {
 	RK3036_PLL_RATE(312000000, 1, 78, 6, 1, 1, 0),
 	RK3036_PLL_RATE(216000000, 1, 72, 4, 2, 1, 0),
 	RK3036_PLL_RATE(96000000, 1, 96, 6, 4, 1, 0),
-	{ /* sentinel */ },
+	{   },
 };
 
 #define RV1126_DIV_ACLK_CORE_MASK	0xf
@@ -265,10 +262,8 @@ static struct rockchip_clk_branch rv1126_dclk_vop_fracmux __initdata =
 	    RV1126_CLKSEL_CON(47), 10, 2, MFLAGS);
 
 static struct rockchip_clk_branch rv1126_clk_pmu_branches[] __initdata = {
-	/*
-	 * Clock-Architecture Diagram 2
-	 */
-	/* PD_PMU */
+	 
+	 
 	COMPOSITE_NOMUX(PCLK_PDPMU, "pclk_pdpmu", "gpll", CLK_IGNORE_UNUSED,
 			RV1126_PMU_CLKSEL_CON(1), 0, 5, DFLAGS,
 			RV1126_PMU_CLKGATE_CON(0), 0, GFLAGS),
@@ -388,17 +383,13 @@ static struct rockchip_clk_branch rv1126_clk_pmu_branches[] __initdata = {
 };
 
 static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
-	/*
-	 * Clock-Architecture Diagram 1
-	 */
+	 
 	MUX(USB480M, "usb480m", mux_usb480m_p, CLK_SET_RATE_PARENT,
 			RV1126_MODE_CON, 10, 2, MFLAGS),
 	FACTOR(0, "xin12m", "xin24m", 0, 1, 2),
 
-	/*
-	 * Clock-Architecture Diagram 3
-	 */
-	/* PD_CORE */
+	 
+	 
 	COMPOSITE_NOMUX(0, "pclk_dbg", "armclk", CLK_IGNORE_UNUSED,
 			RV1126_CLKSEL_CON(1), 0, 3, DFLAGS | CLK_DIVIDER_READ_ONLY,
 			RV1126_CLKGATE_CON(0), 6, GFLAGS),
@@ -412,10 +403,8 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 			RV1126_CLKSEL_CON(0), 8, 5, DFLAGS,
 			RV1126_CLKGATE_CON(0), 8, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 4
-	 */
-	/* PD_BUS */
+	 
+	 
 	COMPOSITE(0, "aclk_pdbus_pre", mux_gpll_cpll_dpll_p, CLK_IGNORE_UNUSED,
 			RV1126_CLKSEL_CON(2), 6, 2, MFLAGS, 0, 5, DFLAGS,
 			RV1126_CLKGATE_CON(2), 0, GFLAGS),
@@ -431,7 +420,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 			RV1126_CLKGATE_CON(2), 2, GFLAGS),
 	GATE(PCLK_PDBUS, "pclk_pdbus", "pclk_pdbus_pre", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(2), 13, GFLAGS),
-	/* aclk_dmac is controlled by sgrf_clkgat_con. */
+	 
 	SGRF_GATE(ACLK_DMAC, "aclk_dmac", "hclk_pdbus"),
 	GATE(ACLK_DCF, "aclk_dcf", "hclk_pdbus", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(3), 6, GFLAGS),
@@ -603,7 +592,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	COMPOSITE(CLK_CAN, "clk_can", mux_gpll_xin24m_p, 0,
 			RV1126_CLKSEL_CON(25), 7, 1, MFLAGS, 0, 7, DFLAGS,
 			RV1126_CLKGATE_CON(7), 9, GFLAGS),
-	/* pclk_otp and clk_otp are controlled by sgrf_clkgat_con. */
+	 
 	SGRF_GATE(CLK_OTP, "clk_otp", "xin24m"),
 	SGRF_GATE(PCLK_OTP, "pclk_otp", "pclk_pdbus"),
 
@@ -622,10 +611,8 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	GATE(CLK_CPU_TSADCPHY, "clk_cpu_tsadcphy", "clk_cpu_tsadc", 0,
 			RV1126_CLKGATE_CON(24), 2, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 6
-	 */
-	/* PD_AUDIO */
+	 
+	 
 	COMPOSITE_NOMUX(HCLK_PDAUDIO, "hclk_pdaudio", "gpll", 0,
 			RV1126_CLKSEL_CON(26), 0, 5, DFLAGS,
 			RV1126_CLKGATE_CON(9), 0, GFLAGS),
@@ -719,10 +706,8 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 			RV1126_CLKSEL_CON(72), 8, 1, MFLAGS, 0, 7, DFLAGS,
 			RV1126_CLKGATE_CON(11), 1, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 9
-	 */
-	/* PD_VO */
+	 
+	 
 	COMPOSITE(ACLK_PDVO, "aclk_pdvo", mux_gpll_cpll_p, 0,
 		  RV1126_CLKSEL_CON(45), 7, 1, MFLAGS, 0, 5, DFLAGS,
 		  RV1126_CLKGATE_CON(14), 0, GFLAGS),
@@ -762,17 +747,15 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 		  RV1126_CLKSEL_CON(54), 7, 1, MFLAGS, 0, 5, DFLAGS,
 		  RV1126_CLKGATE_CON(12), 9, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 12
-	 */
-	/* PD_PHP */
+	 
+	 
 	COMPOSITE(ACLK_PDPHP, "aclk_pdphp", mux_gpll_cpll_p, CLK_IGNORE_UNUSED,
 			RV1126_CLKSEL_CON(53), 7, 1, MFLAGS, 0, 5, DFLAGS,
 			RV1126_CLKGATE_CON(17), 0, GFLAGS),
 	COMPOSITE_NOMUX(HCLK_PDPHP, "hclk_pdphp", "gpll", CLK_IGNORE_UNUSED,
 			RV1126_CLKSEL_CON(53), 8, 5, DFLAGS,
 			RV1126_CLKGATE_CON(17), 1, GFLAGS),
-	/* PD_SDCARD */
+	 
 	GATE(HCLK_PDSDMMC, "hclk_pdsdmmc", "hclk_pdphp", 0,
 			RV1126_CLKGATE_CON(17), 6, GFLAGS),
 	GATE(HCLK_SDMMC, "hclk_sdmmc", "hclk_pdsdmmc", 0,
@@ -783,7 +766,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	MMC(SCLK_SDMMC_DRV,     "sdmmc_drv",    "clk_sdmmc", RV1126_SDMMC_CON0, 1),
 	MMC(SCLK_SDMMC_SAMPLE,  "sdmmc_sample", "clk_sdmmc", RV1126_SDMMC_CON1, 1),
 
-	/* PD_SDIO */
+	 
 	GATE(HCLK_PDSDIO, "hclk_pdsdio", "hclk_pdphp", 0,
 			RV1126_CLKGATE_CON(17), 8, GFLAGS),
 	GATE(HCLK_SDIO, "hclk_sdio", "hclk_pdsdio", 0,
@@ -794,7 +777,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	MMC(SCLK_SDIO_DRV, "sdio_drv", "clk_sdio", RV1126_SDIO_CON0, 1),
 	MMC(SCLK_SDIO_SAMPLE, "sdio_sample", "clk_sdio", RV1126_SDIO_CON1, 1),
 
-	/* PD_NVM */
+	 
 	GATE(HCLK_PDNVM, "hclk_pdnvm", "hclk_pdphp", 0,
 			RV1126_CLKGATE_CON(18), 1, GFLAGS),
 	GATE(HCLK_EMMC, "hclk_emmc", "hclk_pdnvm", 0,
@@ -817,7 +800,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	MMC(SCLK_EMMC_DRV, "emmc_drv", "clk_emmc", RV1126_EMMC_CON0, 1),
 	MMC(SCLK_EMMC_SAMPLE, "emmc_sample", "clk_emmc", RV1126_EMMC_CON1, 1),
 
-	/* PD_USB */
+	 
 	GATE(ACLK_PDUSB, "aclk_pdusb", "aclk_pdphp", 0,
 			RV1126_CLKGATE_CON(19), 0, GFLAGS),
 	GATE(HCLK_PDUSB, "hclk_pdusb", "hclk_pdphp", 0,
@@ -833,7 +816,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 			RV1126_CLKGATE_CON(19), 7, GFLAGS),
 	GATE(CLK_USBOTG_REF, "clk_usbotg_ref", "xin24m", 0,
 			RV1126_CLKGATE_CON(19), 8, GFLAGS),
-	/* PD_GMAC */
+	 
 	GATE(ACLK_PDGMAC, "aclk_pdgmac", "aclk_pdphp", 0,
 			RV1126_CLKGATE_CON(20), 0, GFLAGS),
 	COMPOSITE_NOMUX(PCLK_PDGMAC, "pclk_pdgmac", "aclk_pdgmac", 0,
@@ -884,9 +867,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 			RV1126_CLKSEL_CON(61), 15, 1, MFLAGS, 8, 5, DFLAGS,
 			RV1126_CLKGATE_CON(20), 11, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 15
-	 */
+	 
 	GATE(PCLK_PDTOP, "pclk_pdtop", "pclk_pdbus", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(23), 8, GFLAGS),
 	GATE(PCLK_DSIPHY, "pclk_dsiphy", "pclk_pdtop", 0,
@@ -900,10 +881,8 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	GATE(PCLK_USBPHY_OTG, "pclk_usbphy_otg", "pclk_pdtop", 0,
 			RV1126_CLKGATE_CON(19), 12, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 3
-	 */
-	/* PD_CORE */
+	 
+	 
 	COMPOSITE_NOMUX(0, "aclk_core", "armclk", CLK_IGNORE_UNUSED,
 			RV1126_CLKSEL_CON(1), 4, 4, DFLAGS | CLK_DIVIDER_READ_ONLY,
 			RV1126_CLKGATE_CON(0), 2, GFLAGS),
@@ -915,10 +894,8 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 			RV1126_CLKGATE_CON(0), 3, GFLAGS),
 	GATE(0, "pclk_dbg_niu", "pclk_dbg", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(0), 4, GFLAGS),
-	/*
-	 * Clock-Architecture Diagram 4
-	 */
-	/* PD_BUS */
+	 
+	 
 	GATE(0, "aclk_pdbus_hold_niu1", "aclk_pdbus", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(2), 10, GFLAGS),
 	GATE(0, "aclk_pdbus_niu1", "aclk_pdbus", CLK_IGNORE_UNUSED,
@@ -944,19 +921,15 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	GATE(0, "pclk_intmux", "pclk_pdbus", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(7), 14, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 6
-	 */
-	/* PD_AUDIO */
+	 
+	 
 	GATE(0, "hclk_pdaudio_niu", "hclk_pdaudio", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(9), 2, GFLAGS),
 	GATE(0, "pclk_pdaudio_niu", "hclk_pdaudio", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(9), 3, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 9
-	 */
-	/* PD_VO */
+	 
+	 
 	GATE(0, "aclk_pdvo_niu", "aclk_pdvo", CLK_IGNORE_UNUSED,
 	     RV1126_CLKGATE_CON(14), 3, GFLAGS),
 	GATE(0, "hclk_pdvo_niu", "hclk_pdvo", CLK_IGNORE_UNUSED,
@@ -964,10 +937,8 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	GATE(0, "pclk_pdvo_niu", "pclk_pdvo", CLK_IGNORE_UNUSED,
 	     RV1126_CLKGATE_CON(14), 5, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 12
-	 */
-	/* PD_PHP */
+	 
+	 
 	GATE(0, "aclk_pdphpmid", "aclk_pdphp", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(17), 2, GFLAGS),
 	GATE(0, "hclk_pdphpmid", "hclk_pdphp", CLK_IGNORE_UNUSED,
@@ -977,34 +948,32 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	GATE(0, "hclk_pdphpmid_niu", "hclk_pdphpmid", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(17), 5, GFLAGS),
 
-	/* PD_SDCARD */
+	 
 	GATE(0, "hclk_pdsdmmc_niu", "hclk_pdsdmmc", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(17), 7, GFLAGS),
 
-	/* PD_SDIO */
+	 
 	GATE(0, "hclk_pdsdio_niu", "hclk_pdsdio", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(17), 9, GFLAGS),
 
-	/* PD_NVM */
+	 
 	GATE(0, "hclk_pdnvm_niu", "hclk_pdnvm", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(18), 3, GFLAGS),
 
-	/* PD_USB */
+	 
 	GATE(0, "aclk_pdusb_niu", "aclk_pdusb", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(19), 2, GFLAGS),
 	GATE(0, "hclk_pdusb_niu", "hclk_pdusb", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(19), 3, GFLAGS),
 
-	/* PD_GMAC */
+	 
 	GATE(0, "aclk_pdgmac_niu", "aclk_pdgmac", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(20), 2, GFLAGS),
 	GATE(0, "pclk_pdgmac_niu", "pclk_pdgmac", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(20), 3, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 13
-	 */
-	/* PD_DDR */
+	 
+	 
 	COMPOSITE_NOMUX(0, "pclk_pdddr_pre", "gpll", CLK_IGNORE_UNUSED,
 			RV1126_CLKSEL_CON(64), 0, 5, DFLAGS,
 			RV1126_CLKGATE_CON(21), 0, GFLAGS),
@@ -1041,9 +1010,7 @@ static struct rockchip_clk_branch rv1126_clk_branches[] __initdata = {
 	GATE(TMCLK_DDR_MON, "tmclk_ddr_mon", "xin24m", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(21), 7, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 15
-	 */
+	 
 	GATE(0, "pclk_topniu", "pclk_pdtop", CLK_IGNORE_UNUSED,
 			RV1126_CLKGATE_CON(23), 9, GFLAGS),
 	GATE(PCLK_TOPCRU, "pclk_topcru", "pclk_pdtop", CLK_IGNORE_UNUSED,

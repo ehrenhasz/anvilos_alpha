@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2009 - 2014 Intel Corporation. All rights reserved.
- *****************************************************************************/
+ 
+ 
 
 #if !defined(__IWLWIFI_DEVICE_TRACE_UCODE) || defined(TRACE_HEADER_MULTI_READ)
 #define __IWLWIFI_DEVICE_TRACE_UCODE
@@ -52,7 +49,7 @@ TRACE_EVENT(iwlwifi_dev_ucode_wrap_event,
 		  __get_str(dev), __entry->wraps, __entry->n_entry,
 		  __entry->p_entry)
 );
-#endif /* __IWLWIFI_DEVICE_TRACE_UCODE */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

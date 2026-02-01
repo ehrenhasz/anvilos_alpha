@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "assert_support.h"
 #include "irq.h"
@@ -19,7 +7,7 @@
 #ifndef __INLINE_GP_DEVICE__
 #define __INLINE_GP_DEVICE__
 #endif
-#include "gp_device.h"	/* _REG_GP_IRQ_REQUEST_ADDR */
+#include "gp_device.h"	 
 
 static inline void irq_wait_for_write_complete(
     const irq_ID_t		ID);
@@ -32,7 +20,7 @@ static inline irq_ID_t virq_get_irq_id(const enum virq_id irq_ID,
 
 #ifndef __INLINE_IRQ__
 #include "irq_private.h"
-#endif /* __INLINE_IRQ__ */
+#endif  
 
 static unsigned short IRQ_N_CHANNEL[N_IRQ_ID] = {
 	IRQ0_ID_N_CHANNEL,
@@ -73,9 +61,7 @@ void irq_clear_all(
 	return;
 }
 
-/*
- * Do we want the user to be able to set the signalling method ?
- */
+ 
 void irq_enable_channel(
     const irq_ID_t				ID,
     const unsigned int			irq_id)
@@ -93,23 +79,23 @@ void irq_enable_channel(
 
 	mask |= me;
 	enable |= me;
-	edge_in |= me;	/* rising edge */
+	edge_in |= me;	 
 
-	/* to avoid mishaps configuration must follow the following order */
+	 
 
-	/* mask this interrupt */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_MASK_REG_IDX, mask & ~me);
-	/* rising edge at input */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_EDGE_REG_IDX, edge_in);
-	/* enable interrupt to output */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_ENABLE_REG_IDX, enable);
-	/* clear current irq only */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_CLEAR_REG_IDX, me);
-	/* unmask interrupt from input */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_MASK_REG_IDX, mask);
 
@@ -127,7 +113,7 @@ void irq_enable_pulse(
 	if (pulse) {
 		edge_out = 0xffffffff;
 	}
-	/* output is given as edge, not pulse */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_EDGE_NOT_PULSE_REG_IDX, edge_out);
 	return;
@@ -149,13 +135,13 @@ void irq_disable_channel(
 	mask &= ~me;
 	enable &= ~me;
 
-	/* enable interrupt to output */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_ENABLE_REG_IDX, enable);
-	/* unmask interrupt from input */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_MASK_REG_IDX, mask);
-	/* clear current irq only */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_CLEAR_REG_IDX, me);
 
@@ -176,7 +162,7 @@ enum hrt_isp_css_irq_status irq_get_channel_id(
 	assert(ID < N_IRQ_ID);
 	assert(irq_id);
 
-	/* find the first irq bit */
+	 
 	for (idx = 0; idx < IRQ_N_CHANNEL[ID]; idx++) {
 		if (irq_status & (1U << idx))
 			break;
@@ -184,7 +170,7 @@ enum hrt_isp_css_irq_status irq_get_channel_id(
 	if (idx == IRQ_N_CHANNEL[ID])
 		return hrt_isp_css_irq_status_error;
 
-	/* now check whether there are more bits set */
+	 
 	if (irq_status != (1U << idx))
 		status = hrt_isp_css_irq_status_more_irqs;
 
@@ -217,7 +203,7 @@ void irq_raise(
 	(void)ID;
 
 	addr = IRQ_REQUEST_ADDR[irq_id];
-	/* The SW IRQ pins are remapped to offset zero */
+	 
 	gp_device_reg_store(GP_DEVICE0_ID,
 			    (unsigned int)addr, 1);
 	gp_device_reg_store(GP_DEVICE0_ID,
@@ -263,20 +249,20 @@ void cnd_virq_enable_channel(
 	assert(ID < N_IRQ_ID);
 
 	for (i = IRQ1_ID; i < N_IRQ_ID; i++) {
-		/* It is not allowed to enable the pin of a nested IRQ directly */
+		 
 		assert(irq_ID != IRQ_NESTING_ID[i]);
 	}
 
 	if (en) {
 		irq_enable_channel(ID, channel_ID);
 		if (IRQ_NESTING_ID[ID] != N_virq_id) {
-			/* Single level nesting, otherwise we'd need to recurse */
+			 
 			irq_enable_channel(IRQ0_ID, IRQ_NESTING_ID[ID]);
 		}
 	} else {
 		irq_disable_channel(ID, channel_ID);
 		if ((IRQ_NESTING_ID[ID] != N_virq_id) && !any_irq_channel_enabled(ID)) {
-			/* Only disable the top if the nested ones are empty */
+			 
 			irq_disable_channel(IRQ0_ID, IRQ_NESTING_ID[ID]);
 		}
 	}
@@ -307,7 +293,7 @@ virq_get_channel_signals(struct virq_info *irq_info)
 							    _HRT_IRQ_CONTROLLER_STATUS_REG_IDX);
 
 			if (irq_data != 0) {
-				/* The error condition is an IRQ pulse received with no IRQ status written */
+				 
 				irq_status = hrt_isp_css_irq_status_success;
 			}
 
@@ -346,7 +332,7 @@ enum hrt_isp_css_irq_status virq_get_channel_id(
 
 	assert(irq_id);
 
-	/* find the first irq bit on device 0 */
+	 
 	for (idx = 0; idx < IRQ_N_CHANNEL[IRQ0_ID]; idx++) {
 		if (irq_status & (1U << idx))
 			break;
@@ -356,23 +342,23 @@ enum hrt_isp_css_irq_status virq_get_channel_id(
 		return hrt_isp_css_irq_status_error;
 	}
 
-	/* Check whether there are more bits set on device 0 */
+	 
 	if (irq_status != (1U << idx)) {
 		status = hrt_isp_css_irq_status_more_irqs;
 	}
 
-	/* Check whether we have an IRQ on one of the nested devices */
+	 
 	for (ID = N_IRQ_ID - 1 ; ID > (irq_ID_t)0; ID--) {
 		if (IRQ_NESTING_ID[ID] == (enum virq_id)idx) {
 			break;
 		}
 	}
 
-	/* If we have a nested IRQ, load that state, discard the device 0 state */
+	 
 	if (ID != IRQ0_ID) {
 		irq_status = irq_reg_load(ID,
 					  _HRT_IRQ_CONTROLLER_STATUS_REG_IDX);
-		/* find the first irq bit on device "id" */
+		 
 		for (idx = 0; idx < IRQ_N_CHANNEL[ID]; idx++) {
 			if (irq_status & (1U << idx))
 				break;
@@ -382,17 +368,17 @@ enum hrt_isp_css_irq_status virq_get_channel_id(
 			return hrt_isp_css_irq_status_error;
 		}
 
-		/* Alternatively check whether there are more bits set on this device */
+		 
 		if (irq_status != (1U << idx)) {
 			status = hrt_isp_css_irq_status_more_irqs;
 		} else {
-			/* If this device is empty, clear the state on device 0 */
+			 
 			irq_reg_store(IRQ0_ID,
 				      _HRT_IRQ_CONTROLLER_CLEAR_REG_IDX, 1U << IRQ_NESTING_ID[ID]);
 		}
-	} /* if (ID != IRQ0_ID) */
+	}  
 
-	/* Here we proceed to clear the IRQ on detected device, if no nested IRQ, this is device 0 */
+	 
 	irq_reg_store(ID,
 		      _HRT_IRQ_CONTROLLER_CLEAR_REG_IDX, 1U << idx);
 

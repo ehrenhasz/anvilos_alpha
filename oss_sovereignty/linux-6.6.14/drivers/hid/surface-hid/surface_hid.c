@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Surface System Aggregator Module (SSAM) HID transport driver for the
- * generic HID interface (HID/TC=0x15 subsystem). Provides support for
- * integrated HID devices on Surface Laptop 3, Book 3, and later.
- *
- * Copyright (C) 2019-2021 Blaž Hrastnik <blaz@mxxn.io>,
- *                         Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/hid.h>
@@ -20,7 +13,7 @@
 #include "surface_hid_core.h"
 
 
-/* -- SAM interface. -------------------------------------------------------- */
+ 
 
 struct surface_hid_buffer_slice {
 	__u8 entry;
@@ -48,11 +41,7 @@ static int ssam_hid_get_descriptor(struct surface_hid_device *shid, u8 entry, u8
 	u32 buffer_len, offset, length;
 	int status;
 
-	/*
-	 * Note: The 0x76 above has been chosen because that's what's used by
-	 * the Windows driver. Together with the header, this leads to a 128
-	 * byte payload in total.
-	 */
+	 
 
 	buffer_len = ARRAY_SIZE(buffer) - sizeof(struct surface_hid_buffer_slice);
 
@@ -88,7 +77,7 @@ static int ssam_hid_get_descriptor(struct surface_hid_device *shid, u8 entry, u8
 		offset = get_unaligned_le32(&slice->offset);
 		length = get_unaligned_le32(&slice->length);
 
-		/* Don't mess stuff up in case we receive garbage. */
+		 
 		if (length > buffer_len || offset > len)
 			return -EPROTO;
 
@@ -166,7 +155,7 @@ static u32 ssam_hid_event_fn(struct ssam_event_notifier *nf, const struct ssam_e
 }
 
 
-/* -- Transport driver. ----------------------------------------------------- */
+ 
 
 static int shid_output_report(struct surface_hid_device *shid, u8 rprt_id, u8 *buf, size_t len)
 {
@@ -193,7 +182,7 @@ static int shid_set_feature_report(struct surface_hid_device *shid, u8 rprt_id, 
 }
 
 
-/* -- Driver setup. --------------------------------------------------------- */
+ 
 
 static int surface_hid_probe(struct ssam_device *sdev)
 {

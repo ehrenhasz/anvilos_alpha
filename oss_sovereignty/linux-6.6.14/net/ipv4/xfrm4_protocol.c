@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* xfrm4_protocol.c - Generic xfrm protocol multiplexer.
- *
- * Copyright (C) 2013 secunet Security Networks AG
- *
- * Author:
- * Steffen Klassert <steffen.klassert@secunet.com>
- *
- * Based on:
- * net/ipv4/tunnel4.c
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/mutex.h>

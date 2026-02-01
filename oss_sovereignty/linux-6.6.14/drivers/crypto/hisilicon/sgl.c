@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+ 
 #include <linux/align.h>
 #include <linux/dma-mapping.h>
 #include <linux/hisi_acc_qm.h>
@@ -20,7 +20,7 @@ struct acc_hw_sge {
 	__le32 pad1;
 };
 
-/* use default sgl head size 64B */
+ 
 struct hisi_acc_hw_sgl {
 	dma_addr_t next_dma;
 	__le16 entry_sum_in_chain;
@@ -45,15 +45,7 @@ struct hisi_acc_sgl_pool {
 	size_t sgl_size;
 };
 
-/**
- * hisi_acc_create_sgl_pool() - Create a hw sgl pool.
- * @dev: The device which hw sgl pool belongs to.
- * @count: Count of hisi_acc_hw_sgl in pool.
- * @sge_nr: The count of sge in hw_sgl
- *
- * This function creates a hw sgl pool, after this user can get hw sgl memory
- * from it.
- */
+ 
 struct hisi_acc_sgl_pool *hisi_acc_create_sgl_pool(struct device *dev,
 						   u32 count, u32 sge_nr)
 {
@@ -69,10 +61,7 @@ struct hisi_acc_sgl_pool *hisi_acc_create_sgl_pool(struct device *dev,
 			 sizeof(struct hisi_acc_hw_sgl),
 			 HISI_ACC_SGL_ALIGN_SIZE);
 
-	/*
-	 * the pool may allocate a block of memory of size PAGE_SIZE * 2^MAX_ORDER,
-	 * block size may exceed 2^31 on ia64, so the max of block size is 2^31
-	 */
+	 
 	block_size = 1 << (PAGE_SHIFT + MAX_ORDER < 32 ?
 			   PAGE_SHIFT + MAX_ORDER : 31);
 	sgl_num_per_block = block_size / sgl_size;
@@ -130,13 +119,7 @@ err_free_mem:
 }
 EXPORT_SYMBOL_GPL(hisi_acc_create_sgl_pool);
 
-/**
- * hisi_acc_free_sgl_pool() - Free a hw sgl pool.
- * @dev: The device which hw sgl pool belongs to.
- * @pool: Pointer of pool.
- *
- * This function frees memory of a hw sgl pool.
- */
+ 
 void hisi_acc_free_sgl_pool(struct device *dev, struct hisi_acc_sgl_pool *pool)
 {
 	struct mem_block *block;
@@ -205,17 +188,7 @@ static void clear_hw_sgl_sge(struct hisi_acc_hw_sgl *hw_sgl)
 	}
 }
 
-/**
- * hisi_acc_sg_buf_map_to_hw_sgl - Map a scatterlist to a hw sgl.
- * @dev: The device which hw sgl belongs to.
- * @sgl: Scatterlist which will be mapped to hw sgl.
- * @pool: Pool which hw sgl memory will be allocated in.
- * @index: Index of hisi_acc_hw_sgl in pool.
- * @hw_sgl_dma: The dma address of allocated hw sgl.
- *
- * This function builds hw sgl according input sgl, user can use hw_sgl_dma
- * as src/dst in its BD. Only support single hw sgl currently.
- */
+ 
 struct hisi_acc_hw_sgl *
 hisi_acc_sg_buf_map_to_hw_sgl(struct device *dev,
 			      struct scatterlist *sgl,
@@ -266,14 +239,7 @@ hisi_acc_sg_buf_map_to_hw_sgl(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(hisi_acc_sg_buf_map_to_hw_sgl);
 
-/**
- * hisi_acc_sg_buf_unmap() - Unmap allocated hw sgl.
- * @dev: The device which hw sgl belongs to.
- * @sgl: Related scatterlist.
- * @hw_sgl: Virtual address of hw sgl.
- *
- * This function unmaps allocated hw sgl.
- */
+ 
 void hisi_acc_sg_buf_unmap(struct device *dev, struct scatterlist *sgl,
 			   struct hisi_acc_hw_sgl *hw_sgl)
 {

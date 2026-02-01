@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017 IBM Corp.
+
+
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
 #include <asm/pnv-ocxl.h>
@@ -47,7 +47,7 @@ int ocxl_irq_set_handler(struct ocxl_context *ctx, int irq_id,
 	irq->free_private = free_private;
 
 	rc = 0;
-	// Fall through to unlock
+	
 
 unlock:
 	mutex_unlock(&ctx->irq_lock);
@@ -64,7 +64,7 @@ static irqreturn_t afu_irq_handler(int virq, void *data)
 	if (irq->handler)
 		return irq->handler(irq->private);
 
-	return IRQ_HANDLED; // Just drop it on the ground
+	return IRQ_HANDLED; 
 }
 
 static int setup_afu_irq(struct ocxl_context *ctx, struct afu_irq *irq)
@@ -111,10 +111,7 @@ int ocxl_afu_irq_alloc(struct ocxl_context *ctx, int *irq_id)
 	if (!irq)
 		return -ENOMEM;
 
-	/*
-	 * We limit the number of afu irqs per context and per link to
-	 * avoid a single process or user depleting the pool of IPIs
-	 */
+	 
 
 	mutex_lock(&ctx->irq_lock);
 

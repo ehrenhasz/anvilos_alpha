@@ -1,18 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _FS_CEPH_MSGPOOL
 #define _FS_CEPH_MSGPOOL
 
 #include <linux/mempool.h>
 
-/*
- * we use memory pools for preallocating messages we may receive, to
- * avoid unexpected OOM conditions.
- */
+ 
 struct ceph_msgpool {
 	const char *name;
 	mempool_t *pool;
-	int type;               /* preallocated message type */
-	int front_len;          /* preallocated payload size */
+	int type;                
+	int front_len;           
 	int max_data_items;
 };
 

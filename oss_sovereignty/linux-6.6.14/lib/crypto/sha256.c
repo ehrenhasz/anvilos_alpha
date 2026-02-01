@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SHA-256, as specified in
- * http://csrc.nist.gov/groups/STM/cavp/documents/shs/sha256-384-512.pdf
- *
- * SHA-256 code by Jean-Luc Cooke <jlcooke@certainkey.com>.
- *
- * Copyright (c) Jean-Luc Cooke <jlcooke@certainkey.com>
- * Copyright (c) Andrew McDonald <andrew@mcdonald.org.uk>
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- * Copyright (c) 2014 Red Hat Inc.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <crypto/sha256_base.h>
@@ -74,7 +64,7 @@ static void sha256_transform(u32 *state, const u8 *input, u32 *W)
 	u32 a, b, c, d, e, f, g, h;
 	int i;
 
-	/* load the input */
+	 
 	for (i = 0; i < 16; i += 8) {
 		LOAD_OP(i + 0, W, input);
 		LOAD_OP(i + 1, W, input);
@@ -86,7 +76,7 @@ static void sha256_transform(u32 *state, const u8 *input, u32 *W)
 		LOAD_OP(i + 7, W, input);
 	}
 
-	/* now blend */
+	 
 	for (i = 16; i < 64; i += 8) {
 		BLEND_OP(i + 0, W);
 		BLEND_OP(i + 1, W);
@@ -98,11 +88,11 @@ static void sha256_transform(u32 *state, const u8 *input, u32 *W)
 		BLEND_OP(i + 7, W);
 	}
 
-	/* load the state into our registers */
+	 
 	a = state[0];  b = state[1];  c = state[2];  d = state[3];
 	e = state[4];  f = state[5];  g = state[6];  h = state[7];
 
-	/* now iterate */
+	 
 	for (i = 0; i < 64; i += 8) {
 		SHA256_ROUND(i + 0, a, b, c, d, e, f, g, h);
 		SHA256_ROUND(i + 1, h, a, b, c, d, e, f, g);

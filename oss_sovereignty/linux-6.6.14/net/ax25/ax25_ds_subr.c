@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- * Copyright (C) Joerg Reuter DL1BKE (jreuter@yaina.de)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -30,35 +26,12 @@ void ax25_ds_nr_error_recovery(ax25_cb *ax25)
 	ax25_ds_establish_data_link(ax25);
 }
 
-/*
- *	dl1bke 960114: transmit I frames on DAMA poll
- */
+ 
 void ax25_ds_enquiry_response(ax25_cb *ax25)
 {
 	ax25_cb *ax25o;
 
-	/* Please note that neither DK4EG's nor DG2FEF's
-	 * DAMA spec mention the following behaviour as seen
-	 * with TheFirmware:
-	 *
-	 * 	DB0ACH->DL1BKE <RR C P R0> [DAMA]
-	 *	DL1BKE->DB0ACH <I NR=0 NS=0>
-	 *	DL1BKE-7->DB0PRA-6 DB0ACH <I C S3 R5>
-	 *	DL1BKE->DB0ACH <RR R F R0>
-	 *
-	 * The Flexnet DAMA Master implementation apparently
-	 * insists on the "proper" AX.25 behaviour:
-	 *
-	 * 	DB0ACH->DL1BKE <RR C P R0> [DAMA]
-	 *	DL1BKE->DB0ACH <RR R F R0>
-	 *	DL1BKE->DB0ACH <I NR=0 NS=0>
-	 *	DL1BKE-7->DB0PRA-6 DB0ACH <I C S3 R5>
-	 *
-	 * Flexnet refuses to send us *any* I frame if we send
-	 * a REJ in case AX25_COND_REJECT is set. It is superfluous in
-	 * this mode anyway (a RR or RNR invokes the retransmission).
-	 * Is this a Flexnet bug?
-	 */
+	 
 
 	ax25_std_enquiry_response(ax25);
 
@@ -96,7 +69,7 @@ void ax25_ds_enquiry_response(ax25_cb *ax25)
 		if (ax25o->state == AX25_STATE_1 || ax25o->state == AX25_STATE_2 || skb_peek(&ax25o->ack_queue) != NULL)
 			ax25_ds_t1_timeout(ax25o);
 
-		/* do not start T3 for listening sockets (tnx DD8NE) */
+		 
 
 		if (ax25o->state != AX25_STATE_0)
 			ax25_start_t3timer(ax25o);
@@ -114,13 +87,7 @@ void ax25_ds_establish_data_link(ax25_cb *ax25)
 	ax25_start_t3timer(ax25);
 }
 
-/*
- *	:::FIXME:::
- *	This is a kludge. Not all drivers recognize kiss commands.
- *	We need a driver level  request to switch duplex mode, that does
- *	either SCC changing, PI config or KISS as required. Currently
- *	this request isn't reliable.
- */
+ 
 static void ax25_kiss_cmd(ax25_dev *ax25_dev, unsigned char cmd, unsigned char param)
 {
 	struct sk_buff *skb;
@@ -143,14 +110,7 @@ static void ax25_kiss_cmd(ax25_dev *ax25_dev, unsigned char cmd, unsigned char p
 	dev_queue_xmit(skb);
 }
 
-/*
- *	A nasty problem arises if we count the number of DAMA connections
- *	wrong, especially when connections on the device already existed
- *	and our network node (or the sysop) decides to turn on DAMA Master
- *	mode. We thus flag the 'real' slave connections with
- *	ax25->dama_slave=1 and look on every disconnect if still slave
- *	connections exist.
- */
+ 
 static int ax25_check_dama_slave(ax25_dev *ax25_dev)
 {
 	ax25_cb *ax25;

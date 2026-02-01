@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - rtc driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/irqdomain.h>
@@ -15,7 +9,7 @@
 #include <linux/rtc.h>
 #include <linux/slab.h>
 
-/* register address */
+ 
 #define LP8788_INTEN_3			0x05
 #define LP8788_RTC_UNLOCK		0x64
 #define LP8788_RTC_SEC			0x70
@@ -24,12 +18,12 @@
 #define LP8788_ALM2_SEC			0x7E
 #define LP8788_ALM2_EN			0x84
 
-/* mask/shift bits */
-#define LP8788_INT_RTC_ALM1_M		BIT(1)	/* Addr 05h */
+ 
+#define LP8788_INT_RTC_ALM1_M		BIT(1)	 
 #define LP8788_INT_RTC_ALM1_S		1
-#define LP8788_INT_RTC_ALM2_M		BIT(2)	/* Addr 05h */
+#define LP8788_INT_RTC_ALM2_M		BIT(2)	 
 #define LP8788_INT_RTC_ALM2_S		2
-#define LP8788_ALM_EN_M			BIT(7)	/* Addr 7Dh or 84h */
+#define LP8788_ALM_EN_M			BIT(7)	 
 #define LP8788_ALM_EN_S			7
 
 #define DEFAULT_ALARM_SEL		LP8788_ALARM_1
@@ -86,7 +80,7 @@ static int _to_tm_wday(u8 lp8788_wday)
 	if (lp8788_wday == 0)
 		return 0;
 
-	/* lookup defined weekday from read register value */
+	 
 	for (i = 0; i < MAX_WDAY_BITS; i++) {
 		if ((lp8788_wday >> i) == LP8788_WDAY_SET)
 			break;
@@ -143,7 +137,7 @@ static int lp8788_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		return -EINVAL;
 	}
 
-	/* because rtc weekday is a readonly register, do not update */
+	 
 	data[LPTIME_SEC]  = tm->tm_sec;
 	data[LPTIME_MIN]  = tm->tm_min;
 	data[LPTIME_HOUR] = tm->tm_hour;
@@ -262,7 +256,7 @@ static int lp8788_alarm_irq_register(struct platform_device *pdev,
 
 	rtc->irq = 0;
 
-	/* even the alarm IRQ number is not specified, rtc time should work */
+	 
 	r = platform_get_resource_byname(pdev, IORESOURCE_IRQ, LP8788_ALM_IRQ);
 	if (!r)
 		return 0;

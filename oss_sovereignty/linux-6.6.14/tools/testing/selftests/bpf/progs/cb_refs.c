@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -19,7 +19,7 @@ static __noinline int cb1(void *map, void *key, void *value, void *ctx)
 {
 	void *p = *(void **)ctx;
 	bpf_kfunc_call_test_release(p);
-	/* Without the fix this would cause underflow */
+	 
 	return 0;
 }
 
@@ -41,7 +41,7 @@ static __always_inline int cb2(void *map, void *key, void *value, void *ctx)
 	unsigned long sl = 0;
 
 	*(void **)ctx = bpf_kfunc_call_test_acquire(&sl);
-	/* Without the fix this would leak memory */
+	 
 	return 0;
 }
 
@@ -75,9 +75,7 @@ static __always_inline int cb3(void *map, void *key, void *value, void *ctx)
 
 	bpf_kfunc_call_test_acquire(&sl);
 	bpf_for_each_map_elem(&array_map, cb, &p, 0);
-	/* It should only complain here, not in cb. This is why we need
-	 * callback_ref to be set to frameno.
-	 */
+	 
 	return 0;
 }
 

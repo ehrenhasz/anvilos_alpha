@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vsock_perf - benchmark utility for vsock.
- *
- * Copyright (C) 2022 SberDevices.
- *
- * Author: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
- */
+
+ 
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +42,7 @@ static time_t current_nsec(void)
 	return (ts.tv_sec * NSEC_PER_SEC) + ts.tv_nsec;
 }
 
-/* From lib/cmdline.c. */
+ 
 static unsigned long memparse(const char *ptr)
 {
 	char *endptr;
@@ -391,26 +385,26 @@ int main(int argc, char **argv)
 			break;
 
 		switch (opt) {
-		case 'V': /* Peer buffer size. */
+		case 'V':  
 			vsock_buf_bytes = memparse(optarg);
 			break;
-		case 'R': /* SO_RCVLOWAT value. */
+		case 'R':  
 			rcvlowat_bytes = memparse(optarg);
 			break;
-		case 'P': /* Port to connect to. */
+		case 'P':  
 			port = strtolx(optarg);
 			break;
-		case 'M': /* Bytes to send. */
+		case 'M':  
 			to_send_bytes = memparse(optarg);
 			break;
-		case 'B': /* Size of rx/tx buffer. */
+		case 'B':  
 			buf_size_bytes = memparse(optarg);
 			break;
-		case 'S': /* Sender mode. CID to connect to. */
+		case 'S':  
 			peer_cid = strtolx(optarg);
 			sender = true;
 			break;
-		case 'H': /* Help. */
+		case 'H':  
 			usage();
 			break;
 		default:

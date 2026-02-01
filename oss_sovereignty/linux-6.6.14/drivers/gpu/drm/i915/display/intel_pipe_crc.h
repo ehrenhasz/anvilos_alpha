@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_PIPE_CRC_H__
 #define __INTEL_PIPE_CRC_H__
@@ -35,4 +33,4 @@ static inline void intel_crtc_enable_pipe_crc(struct intel_crtc *crtc)
 }
 #endif
 
-#endif /* __INTEL_PIPE_CRC_H__ */
+#endif  

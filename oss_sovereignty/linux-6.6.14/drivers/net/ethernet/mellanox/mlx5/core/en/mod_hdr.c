@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2020 Mellanox Technologies
+
+
 
 #include <linux/jhash.h>
 #include "mod_hdr.h"
@@ -12,7 +12,7 @@ struct mod_hdr_key {
 };
 
 struct mlx5e_mod_hdr_handle {
-	/* a node of a hash table which keeps all the mod_hdr entries */
+	 
 	struct hlist_node mod_hdr_hlist;
 
 	struct mod_hdr_key key;

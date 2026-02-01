@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * budget-core.c: driver for the SAA7146 based Budget DVB cards
- *
- * Compiled from various sources by Michael Hunold <michael@mihu.de>
- *
- * Copyright (C) 2002 Ralph Metzler <rjkm@metzlerbros.de>
- *
- * Copyright (C) 1999-2002 Ralph  Metzler
- *			 & Marcus Metzler for convergence integrated media GmbH
- *
- * 26feb2004 Support for FS Activy Card (Grundig tuner) by
- *	     Michael Dreher <michael@5dot1.de>,
- *	     Oliver Endriss <o.endriss@gmx.de>,
- *	     Andreas 'randy' Weinberger
- *
- * the project's page is at https://linuxtv.org
- */
+
+ 
 
 
 #include "budget.h"
@@ -40,15 +24,13 @@ module_param_named(bufsize, dma_buffer_size, int, 0444);
 MODULE_PARM_DESC(debug, "Turn on/off budget debugging (default:off).");
 MODULE_PARM_DESC(bufsize, "DMA buffer size in KB, default: 188, min: 188, max: 1410 (Activy: 564)");
 
-/****************************************************************************
- * TT budget / WinTV Nova
- ****************************************************************************/
+ 
 
 static int stop_ts_capture(struct budget *budget)
 {
 	dprintk(2, "budget: %p\n", budget);
 
-	saa7146_write(budget->dev, MC1, MASK_20);	// DMA3 off
+	saa7146_write(budget->dev, MC1, MASK_20);	
 	SAA7146_IER_DISABLE(budget->dev, MASK_10);
 	return 0;
 }
@@ -62,7 +44,7 @@ static int start_ts_capture(struct budget *budget)
 	if (!budget->feeding || !budget->fe_synced)
 		return 0;
 
-	saa7146_write(dev, MC1, MASK_20);	// DMA3 off
+	saa7146_write(dev, MC1, MASK_20);	
 
 	memset(budget->grabbing, 0x00, budget->buffer_size);
 
@@ -70,15 +52,7 @@ static int start_ts_capture(struct budget *budget)
 
 	budget->ttbp = 0;
 
-	/*
-	 *  Signal path on the Activy:
-	 *
-	 *  tuner -> SAA7146 port A -> SAA7146 BRS -> SAA7146 DMA3 -> memory
-	 *
-	 *  Since the tuner feeds 204 bytes packets into the SAA7146,
-	 *  DMA3 is configured to strip the trailing 16 FEC bytes:
-	 *      Pitch: 188, NumBytes3: 188, NumLines3: 1024
-	 */
+	 
 
 	switch(budget->card->type) {
 	case BUDGET_FS_ACTIVY:
@@ -122,10 +96,10 @@ static int start_ts_capture(struct budget *budget)
 
 	saa7146_write(dev, BASE_ODD3, 0);
 	if (budget->buffer_size > budget->buffer_height * budget->buffer_width) {
-		// using odd/even buffers
+		
 		saa7146_write(dev, BASE_EVEN3, budget->buffer_height * budget->buffer_width);
 	} else {
-		// using a single buffer
+		
 		saa7146_write(dev, BASE_EVEN3, 0);
 	}
 	saa7146_write(dev, PROT_ADDR3, budget->buffer_size);
@@ -137,9 +111,9 @@ static int start_ts_capture(struct budget *budget)
 
 	saa7146_write(dev, MC2, (MASK_04 | MASK_20));
 
-	SAA7146_ISR_CLEAR(budget->dev, MASK_10);	/* VPE */
-	SAA7146_IER_ENABLE(budget->dev, MASK_10);	/* VPE */
-	saa7146_write(dev, MC1, (MASK_04 | MASK_20));	/* DMA3 on */
+	SAA7146_ISR_CLEAR(budget->dev, MASK_10);	 
+	SAA7146_IER_ENABLE(budget->dev, MASK_10);	 
+	saa7146_write(dev, MC1, (MASK_04 | MASK_20));	 
 
 	return 0;
 }
@@ -179,11 +153,11 @@ static void vpeirq(struct tasklet_struct *t)
 	u32 newdma = saa7146_read(budget->dev, PCI_VDP3);
 	u32 count;
 
-	/* Ensure streamed PCI data is synced to CPU */
+	 
 	dma_sync_sg_for_cpu(&budget->dev->pci->dev, budget->pt.slist,
 			    budget->pt.nents, DMA_FROM_DEVICE);
 
-	/* nearest lower position divisible by 188 */
+	 
 	newdma -= newdma % 188;
 
 	if (newdma >= budget->buffer_size)
@@ -194,10 +168,10 @@ static void vpeirq(struct tasklet_struct *t)
 	if (budget->feeding == 0 || newdma == olddma)
 		return;
 
-	if (newdma > olddma) {	/* no wraparound, dump olddma..newdma */
+	if (newdma > olddma) {	 
 		count = newdma - olddma;
 		dvb_dmx_swfilter_packets(&budget->demux, mem + olddma, count / 188);
-	} else {		/* wraparound, dump olddma..buflen and 0..newdma */
+	} else {		 
 		count = budget->buffer_size - olddma;
 		dvb_dmx_swfilter_packets(&budget->demux, mem + olddma, count / 188);
 		count += newdma;
@@ -301,9 +275,7 @@ int ttpci_budget_debiwrite(struct budget *budget, u32 config, int addr,
 }
 
 
-/****************************************************************************
- * DVB API SECTION
- ****************************************************************************/
+ 
 
 static int budget_start_feed(struct dvb_demux_feed *feed)
 {
@@ -317,7 +289,7 @@ static int budget_start_feed(struct dvb_demux_feed *feed)
 		return -EINVAL;
 
 	spin_lock(&budget->feedlock);
-	feed->pusi_seen = false; /* have a clean section start */
+	feed->pusi_seen = false;  
 	if (budget->feeding++ == 0)
 		status = start_ts_capture(budget);
 	spin_unlock(&budget->feedlock);
@@ -477,7 +449,7 @@ int ttpci_budget_init(struct budget *budget, struct saa7146_dev *dev,
 	if (ret < 0)
 		return ret;
 
-	/* set dd1 stream a & b */
+	 
 	saa7146_write(dev, DD1_STREAM_B, 0x00000000);
 	saa7146_write(dev, MC2, (MASK_09 | MASK_25));
 	saa7146_write(dev, MC2, (MASK_10 | MASK_26));
@@ -491,10 +463,9 @@ int ttpci_budget_init(struct budget *budget, struct saa7146_dev *dev,
 	spin_lock_init(&budget->feedlock);
 	spin_lock_init(&budget->debilock);
 
-	/* the Siemens DVB needs this if you want to have the i2c chips
-	   get recognized before the main driver is loaded */
+	 
 	if (bi->type != BUDGET_FS_ACTIVY)
-		saa7146_write(dev, GPIO_CTRL, 0x500000);	/* GPIO 3 = 1 */
+		saa7146_write(dev, GPIO_CTRL, 0x500000);	 
 
 	strscpy(budget->i2c_adap.name, budget->card->name,
 		sizeof(budget->i2c_adap.name));
@@ -517,19 +488,19 @@ int ttpci_budget_init(struct budget *budget, struct saa7146_dev *dev,
 	}
 
 	saa7146_write(dev, PCI_BT_V1, 0x001c0000);
-	/* upload all */
+	 
 	saa7146_write(dev, GPIO_CTRL, 0x000000);
 
 	tasklet_setup(&budget->vpe_tasklet, vpeirq);
 
-	/* frontend power on */
+	 
 	if (bi->type != BUDGET_FS_ACTIVY)
 		saa7146_setgpio(dev, 2, SAA7146_GPIO_OUTHI);
 
 	if ((ret = budget_register(budget)) == 0)
-		return 0; /* Everything OK */
+		return 0;  
 
-	/* An error occurred, cleanup resources */
+	 
 	saa7146_vfree_destroy_pgtable(dev->pci, budget->grabbing, &budget->pt);
 
 err_del_i2c:

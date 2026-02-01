@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __REALTEK_PCI92SE_TRX_H__
 #define __REALTEK_PCI92SE_TRX_H__

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Nomadik RNG support
- *  Copyright 2009 Alessandro Rubini
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,16 +14,12 @@ static int nmk_rng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 {
 	void __iomem *base = (void __iomem *)rng->priv;
 
-	/*
-	 * The register is 32 bits and gives 16 random bits (low half).
-	 * A subsequent read will delay the core for 400ns, so we just read
-	 * once and accept the very unlikely very small delay, even if wait==0.
-	 */
+	 
 	*(u16 *)data = __raw_readl(base + 8) & 0xffff;
 	return 2;
 }
 
-/* we have at most one RNG per machine, granted */
+ 
 static struct hwrng nmk_rng = {
 	.name		= "nomadik",
 	.read		= nmk_rng_read,
@@ -69,7 +62,7 @@ static void nmk_rng_remove(struct amba_device *dev)
 static const struct amba_id nmk_rng_ids[] = {
 	{
 		.id	= 0x000805e1,
-		.mask	= 0x000fffff, /* top bits are rev and cfg: accept all */
+		.mask	= 0x000fffff,  
 	},
 	{0, 0},
 };

@@ -1,29 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+ 
 
-/*
- * Copyright (c) 2006-2009 VMware, Inc., Palo Alto, CA., USA
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König
- */
+ 
 
 #define pr_fmt(fmt) "[TTM DEVICE] " fmt
 
@@ -36,9 +13,7 @@
 
 #include "ttm_module.h"
 
-/*
- * ttm_global_mutex - protecting the global state
- */
+ 
 static DEFINE_MUTEX(ttm_global_mutex);
 static unsigned ttm_glob_use_count;
 struct ttm_global ttm_glob;
@@ -81,13 +56,11 @@ static int ttm_global_init(void)
 		ttm_debugfs_root = NULL;
 	}
 
-	/* Limit the number of pages in the pool to about 50% of the total
-	 * system memory.
-	 */
+	 
 	num_pages = ((u64)si.totalram * si.mem_unit) >> PAGE_SHIFT;
 	num_pages /= 2;
 
-	/* But for DMA32 we limit ourself to only use 2GiB maximum. */
+	 
 	num_dma32 = (u64)(si.totalram - si.totalhigh) * si.mem_unit
 		>> PAGE_SHIFT;
 	num_dma32 = min(num_dma32, 2UL << (30 - PAGE_SHIFT));
@@ -116,10 +89,7 @@ out:
 	return ret;
 }
 
-/*
- * A buffer object shrink method that tries to swap out the first
- * buffer object on the global::swap_lru list.
- */
+ 
 int ttm_global_swapout(struct ttm_operation_ctx *ctx, gfp_t gfp_flags)
 {
 	struct ttm_global *glob = &ttm_glob;
@@ -162,7 +132,7 @@ int ttm_device_swapout(struct ttm_device *bdev, struct ttm_operation_ctx *ctx,
 
 			num_pages = PFN_UP(bo->base.size);
 			ret = ttm_bo_swapout(bo, ctx, gfp_flags);
-			/* ttm_bo_swapout has dropped the lru_lock */
+			 
 			if (!ret)
 				return num_pages;
 			if (ret != -EBUSY)
@@ -174,21 +144,7 @@ int ttm_device_swapout(struct ttm_device *bdev, struct ttm_operation_ctx *ctx,
 }
 EXPORT_SYMBOL(ttm_device_swapout);
 
-/**
- * ttm_device_init
- *
- * @bdev: A pointer to a struct ttm_device to initialize.
- * @funcs: Function table for the device.
- * @dev: The core kernel device pointer for DMA mappings and allocations.
- * @mapping: The address space to use for this bo.
- * @vma_manager: A pointer to a vma manager.
- * @use_dma_alloc: If coherent DMA allocation API should be used.
- * @use_dma32: If we should use GFP_DMA32 for device memory allocations.
- *
- * Initializes a struct ttm_device:
- * Returns:
- * !0: Failure.
- */
+ 
 int ttm_device_init(struct ttm_device *bdev, const struct ttm_device_funcs *funcs,
 		    struct device *dev, struct address_space *mapping,
 		    struct drm_vma_offset_manager *vma_manager,
@@ -263,7 +219,7 @@ static void ttm_device_clear_lru_dma_mappings(struct ttm_device *bdev,
 	while ((res = list_first_entry_or_null(list, typeof(*res), lru))) {
 		struct ttm_buffer_object *bo = res->bo;
 
-		/* Take ref against racing releases once lru_lock is unlocked */
+		 
 		if (!ttm_bo_get_unless_zero(bo))
 			continue;
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -7,9 +7,7 @@
 #include <bpf/bpf_core_read.h>
 #include "bpf_experimental.h"
 
-/* BTF load should fail as bpf_rb_root __contains this type and points to
- * 'node', but 'node' is not a bpf_rb_node
- */
+ 
 struct node_data {
 	int key;
 	int data;

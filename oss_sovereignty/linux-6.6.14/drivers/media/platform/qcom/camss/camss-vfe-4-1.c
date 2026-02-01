@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-vfe-4-1.c
- *
- * Qualcomm MSM Camera Subsystem - VFE (Video Front End) Module v4.1
- *
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -497,7 +490,7 @@ static void vfe_set_xbar_cfg(struct vfe_device *vfe, struct vfe_output *output,
 			if (p == V4L2_PIX_FMT_NV12 || p == V4L2_PIX_FMT_NV16)
 				reg |= VFE_0_BUS_XBAR_CFG_x_M_PAIR_STREAM_SWAP_INTER_INTRA;
 		} else {
-			/* On current devices output->wm_num is always <= 2 */
+			 
 			break;
 		}
 
@@ -518,7 +511,7 @@ static void vfe_set_xbar_cfg(struct vfe_device *vfe, struct vfe_output *output,
 static void vfe_set_realign_cfg(struct vfe_device *vfe, struct vfe_line *line,
 				u8 enable)
 {
-	/* empty */
+	 
 }
 static void vfe_set_rdi_cid(struct vfe_device *vfe, enum vfe_line_id id, u8 cid)
 {
@@ -755,7 +748,7 @@ static void vfe_set_qos(struct vfe_device *vfe)
 
 static void vfe_set_ds(struct vfe_device *vfe)
 {
-	/* empty */
+	 
 }
 
 static void vfe_set_cgc_override(struct vfe_device *vfe, u8 wm, u8 enable)
@@ -879,13 +872,7 @@ static void vfe_violation_read(struct vfe_device *vfe)
 	pr_err_ratelimited("VFE: violation = 0x%08x\n", violation);
 }
 
-/*
- * vfe_isr - VFE module interrupt handler
- * @irq: Interrupt line
- * @dev: VFE device
- *
- * Return IRQ_HANDLED on success
- */
+ 
 static irqreturn_t vfe_isr(int irq, void *dev)
 {
 	struct vfe_device *vfe = dev;
@@ -932,19 +919,13 @@ static irqreturn_t vfe_isr(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * vfe_pm_domain_off - Disable power domains specific to this VFE.
- * @vfe: VFE Device
- */
+ 
 static void vfe_pm_domain_off(struct vfe_device *vfe)
 {
-	/* nop */
+	 
 }
 
-/*
- * vfe_pm_domain_on - Enable power domains specific to this VFE.
- * @vfe: VFE Device
- */
+ 
 static int vfe_pm_domain_on(struct vfe_device *vfe)
 {
 	return 0;

@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+ 
+ 
 #ifndef _BUILTIN_H
 #define _BUILTIN_H
 
 #include <subcmd/parse-options.h>
 
 struct opts {
-	/* actions: */
+	 
 	bool dump_orc;
 	bool hack_jump_label;
 	bool hack_noinstr;
@@ -27,7 +25,7 @@ struct opts {
 	int prefix;
 	bool cfi;
 
-	/* options: */
+	 
 	bool backtrace;
 	bool backup;
 	bool dryrun;
@@ -46,4 +44,4 @@ extern int cmd_parse_options(int argc, const char **argv, const char * const usa
 
 extern int objtool_run(int argc, const char **argv);
 
-#endif /* _BUILTIN_H */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2020, NVIDIA CORPORATION.  All rights reserved.
- * Copyright (C) 2015 Google, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk/tegra.h>
@@ -271,7 +268,7 @@
 #define XUSB_PADCTL_USB2_VBUS_ID_OVERRIDE_FLOATING 8
 #define XUSB_PADCTL_USB2_VBUS_ID_OVERRIDE_GROUNDED 0
 
-/* USB2 SLEEPWALK registers */
+ 
 #define UTMIP(_port, _offset1, _offset2) \
 		(((_port) <= 2) ? (_offset1) : (_offset2))
 
@@ -340,25 +337,25 @@
 
 #define PMC_UTMIP_SLEEPWALK_PX(x)	UTMIP(x, 0x204 + (4 * (x)), \
 							0x4e0)
-/* phase A */
+ 
 #define   UTMIP_USBOP_RPD_A			BIT(0)
 #define   UTMIP_USBON_RPD_A			BIT(1)
 #define   UTMIP_AP_A				BIT(4)
 #define   UTMIP_AN_A				BIT(5)
 #define   UTMIP_HIGHZ_A				BIT(6)
-/* phase B */
+ 
 #define   UTMIP_USBOP_RPD_B			BIT(8)
 #define   UTMIP_USBON_RPD_B			BIT(9)
 #define   UTMIP_AP_B				BIT(12)
 #define   UTMIP_AN_B				BIT(13)
 #define   UTMIP_HIGHZ_B				BIT(14)
-/* phase C */
+ 
 #define   UTMIP_USBOP_RPD_C			BIT(16)
 #define   UTMIP_USBON_RPD_C			BIT(17)
 #define   UTMIP_AP_C				BIT(20)
 #define   UTMIP_AN_C				BIT(21)
 #define   UTMIP_HIGHZ_C				BIT(22)
-/* phase D */
+ 
 #define   UTMIP_USBOP_RPD_D			BIT(24)
 #define   UTMIP_USBON_RPD_D			BIT(25)
 #define   UTMIP_AP_D				BIT(28)
@@ -460,7 +457,7 @@ static int tegra210_usb3_lane_map(struct tegra_xusb_lane *lane)
 	return -EINVAL;
 }
 
-/* must be called under padctl->lock */
+ 
 static int tegra210_pex_uphy_enable(struct tegra_xusb_padctl *padctl)
 {
 	struct tegra_xusb_pcie_pad *pcie = to_pcie_pad(padctl->pcie);
@@ -699,7 +696,7 @@ static void tegra210_pex_uphy_disable(struct tegra_xusb_padctl *padctl)
 	clk_disable_unprepare(pcie->pll);
 }
 
-/* must be called under padctl->lock */
+ 
 static int tegra210_sata_uphy_enable(struct tegra_xusb_padctl *padctl)
 {
 	struct tegra_xusb_sata_pad *sata = to_sata_pad(padctl->sata);
@@ -1353,45 +1350,45 @@ static int tegra210_pmc_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 	value = padctl_readl(padctl, XUSB_PADCTL_USB2_OTG_PADX_CTL1(port));
 	rpd_ctrl = RPD_CTRL_VALUE(value);
 
-	/* ensure sleepwalk logic is disabled */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value &= ~UTMIP_MASTER_ENABLE(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 
-	/* ensure sleepwalk logics are in low power mode */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_MASTER_CONFIG);
 	value |= UTMIP_PWR(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_MASTER_CONFIG);
 
-	/* set debounce time */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_DEBOUNCE_DEL);
 	value &= ~UTMIP_LINE_DEB_CNT(~0);
 	value |= UTMIP_LINE_DEB_CNT(0x1);
 	padctl_pmc_writel(priv, value, PMC_USB_DEBOUNCE_DEL);
 
-	/* ensure fake events of sleepwalk logic are desiabled */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_FAKE(port));
 	value &= ~(UTMIP_FAKE_USBOP_VAL(port) | UTMIP_FAKE_USBON_VAL(port) |
 		   UTMIP_FAKE_USBOP_EN(port) | UTMIP_FAKE_USBON_EN(port));
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_FAKE(port));
 
-	/* ensure wake events of sleepwalk logic are not latched */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_LINE_WAKEUP);
 	value &= ~UTMIP_LINE_WAKEUP_EN(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_LINE_WAKEUP);
 
-	/* disable wake event triggers of sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value &= ~UTMIP_WAKE_VAL(port, ~0);
 	value |= UTMIP_WAKE_VAL_NONE(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 
-	/* power down the line state detectors of the pad */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_AO);
 	value |= (USBOP_VAL_PD(port) | USBON_VAL_PD(port));
 	padctl_pmc_writel(priv, value, PMC_USB_AO);
 
-	/* save state per speed */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SAVED_STATE(port));
 	value &= ~SPEED(port, ~0);
 
@@ -1415,20 +1412,17 @@ static int tegra210_pmc_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SAVED_STATE(port));
 
-	/* enable the trigger of the sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEPWALK_CFG(port));
 	value |= UTMIP_LINEVAL_WALK_EN(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEPWALK_CFG(port));
 
-	/*
-	 * Reset the walk pointer and clear the alarm of the sleepwalk logic,
-	 * as well as capture the configuration of the USB2.0 pad.
-	 */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_TRIGGERS);
 	value |= UTMIP_CLR_WALK_PTR(port) | UTMIP_CLR_WAKE_ALARM(port) | UTMIP_CAP_CFG(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_TRIGGERS);
 
-	/* program electrical parameters read from XUSB PADCTL */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_TERM_PAD_CFG);
 	value &= ~(TCTRL_VAL(~0) | PCTRL_VAL(~0));
 	value |= (TCTRL_VAL(tctrl) | PCTRL_VAL(pctrl));
@@ -1439,11 +1433,7 @@ static int tegra210_pmc_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 	value |= RPD_CTRL_PX(rpd_ctrl);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_PAD_CFGX(port));
 
-	/*
-	 * Set up the pull-ups and pull-downs of the signals during the four
-	 * stages of sleepwalk. If a device is connected, program sleepwalk
-	 * logic to maintain a J and keep driving K upon seeing remote wake.
-	 */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_SLEEPWALK_PX(port));
 	value = UTMIP_USBOP_RPD_A | UTMIP_USBOP_RPD_B | UTMIP_USBOP_RPD_C | UTMIP_USBOP_RPD_D;
 	value |= UTMIP_USBON_RPD_A | UTMIP_USBON_RPD_B | UTMIP_USBON_RPD_C | UTMIP_USBON_RPD_D;
@@ -1451,14 +1441,14 @@ static int tegra210_pmc_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 	switch (speed) {
 	case USB_SPEED_HIGH:
 	case USB_SPEED_FULL:
-		/* J state: D+/D- = high/low, K state: D+/D- = low/high */
+		 
 		value |= UTMIP_HIGHZ_A;
 		value |= UTMIP_AP_A;
 		value |= UTMIP_AN_B | UTMIP_AN_C | UTMIP_AN_D;
 		break;
 
 	case USB_SPEED_LOW:
-		/* J state: D+/D- = low/high, K state: D+/D- = high/low */
+		 
 		value |= UTMIP_HIGHZ_A;
 		value |= UTMIP_AN_A;
 		value |= UTMIP_AP_B | UTMIP_AP_C | UTMIP_AP_D;
@@ -1471,14 +1461,14 @@ static int tegra210_pmc_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 
 	padctl_pmc_writel(priv, value, PMC_UTMIP_SLEEPWALK_PX(port));
 
-	/* power up the line state detectors of the pad */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_AO);
 	value &= ~(USBOP_VAL_PD(port) | USBON_VAL_PD(port));
 	padctl_pmc_writel(priv, value, PMC_USB_AO);
 
 	usleep_range(50, 100);
 
-	/* switch the electric control of the USB2.0 pad to PMC */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value |= UTMIP_FSLS_USE_PMC(port) | UTMIP_PCTRL_USE_PMC(port) | UTMIP_TCTRL_USE_PMC(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
@@ -1487,13 +1477,13 @@ static int tegra210_pmc_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 	value |= UTMIP_RPD_CTRL_USE_PMC_PX(port) | UTMIP_RPU_SWITC_LOW_USE_PMC_PX(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG1);
 
-	/* set the wake signaling trigger events */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value &= ~UTMIP_WAKE_VAL(port, ~0);
 	value |= UTMIP_WAKE_VAL_ANY(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 
-	/* enable the wake detection */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value |= UTMIP_MASTER_ENABLE(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
@@ -1515,7 +1505,7 @@ static int tegra210_pmc_utmi_disable_phy_sleepwalk(struct tegra_xusb_lane *lane)
 	if (!priv->regmap)
 		return -EOPNOTSUPP;
 
-	/* disable the wake detection */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value &= ~UTMIP_MASTER_ENABLE(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
@@ -1524,7 +1514,7 @@ static int tegra210_pmc_utmi_disable_phy_sleepwalk(struct tegra_xusb_lane *lane)
 	value &= ~UTMIP_LINE_WAKEUP_EN(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_LINE_WAKEUP);
 
-	/* switch the electric control of the USB2.0 pad to XUSB or USB2 */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value &= ~(UTMIP_FSLS_USE_PMC(port) | UTMIP_PCTRL_USE_PMC(port) |
 		   UTMIP_TCTRL_USE_PMC(port));
@@ -1534,18 +1524,18 @@ static int tegra210_pmc_utmi_disable_phy_sleepwalk(struct tegra_xusb_lane *lane)
 	value &= ~(UTMIP_RPD_CTRL_USE_PMC_PX(port) | UTMIP_RPU_SWITC_LOW_USE_PMC_PX(port));
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG1);
 
-	/* disable wake event triggers of sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 	value &= ~UTMIP_WAKE_VAL(port, ~0);
 	value |= UTMIP_WAKE_VAL_NONE(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_SLEEP_CFG(port));
 
-	/* power down the line state detectors of the port */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_AO);
 	value |= (USBOP_VAL_PD(port) | USBON_VAL_PD(port));
 	padctl_pmc_writel(priv, value, PMC_USB_AO);
 
-	/* clear alarm of the sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_TRIGGERS);
 	value |= UTMIP_CLR_WAKE_ALARM(port);
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_TRIGGERS);
@@ -1563,87 +1553,80 @@ static int tegra210_pmc_hsic_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 	if (!priv->regmap)
 		return -EOPNOTSUPP;
 
-	/* ensure sleepwalk logic is disabled */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEP_CFG);
 	value &= ~UHSIC_MASTER_ENABLE;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEP_CFG);
 
-	/* ensure sleepwalk logics are in low power mode */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_MASTER_CONFIG);
 	value |= UHSIC_PWR;
 	padctl_pmc_writel(priv, value, PMC_UTMIP_MASTER_CONFIG);
 
-	/* set debounce time */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_DEBOUNCE_DEL);
 	value &= ~UHSIC_LINE_DEB_CNT(~0);
 	value |= UHSIC_LINE_DEB_CNT(0x1);
 	padctl_pmc_writel(priv, value, PMC_USB_DEBOUNCE_DEL);
 
-	/* ensure fake events of sleepwalk logic are desiabled */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_FAKE);
 	value &= ~(UHSIC_FAKE_STROBE_VAL | UHSIC_FAKE_DATA_VAL |
 		   UHSIC_FAKE_STROBE_EN | UHSIC_FAKE_DATA_EN);
 	padctl_pmc_writel(priv, value, PMC_UHSIC_FAKE);
 
-	/* ensure wake events of sleepwalk logic are not latched */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_LINE_WAKEUP);
 	value &= ~UHSIC_LINE_WAKEUP_EN;
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_LINE_WAKEUP);
 
-	/* disable wake event triggers of sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEP_CFG);
 	value &= ~UHSIC_WAKE_VAL(~0);
 	value |= UHSIC_WAKE_VAL_NONE;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEP_CFG);
 
-	/* power down the line state detectors of the port */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_AO);
 	value |= STROBE_VAL_PD | DATA0_VAL_PD | DATA1_VAL_PD;
 	padctl_pmc_writel(priv, value, PMC_USB_AO);
 
-	/* save state, HSIC always comes up as HS */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SAVED_STATE);
 	value &= ~UHSIC_MODE(~0);
 	value |= UHSIC_HS;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SAVED_STATE);
 
-	/* enable the trigger of the sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEPWALK_CFG);
 	value |= UHSIC_WAKE_WALK_EN | UHSIC_LINEVAL_WALK_EN;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEPWALK_CFG);
 
-	/*
-	 * Reset the walk pointer and clear the alarm of the sleepwalk logic,
-	 * as well as capture the configuration of the USB2.0 port.
-	 */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_TRIGGERS);
 	value |= UHSIC_CLR_WALK_PTR | UHSIC_CLR_WAKE_ALARM;
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_TRIGGERS);
 
-	/*
-	 * Set up the pull-ups and pull-downs of the signals during the four
-	 * stages of sleepwalk. Maintain a HSIC IDLE and keep driving HSIC
-	 * RESUME upon remote wake.
-	 */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEPWALK_P0);
 	value = UHSIC_DATA0_RPD_A | UHSIC_DATA0_RPU_B | UHSIC_DATA0_RPU_C | UHSIC_DATA0_RPU_D |
 		UHSIC_STROBE_RPU_A | UHSIC_STROBE_RPD_B | UHSIC_STROBE_RPD_C | UHSIC_STROBE_RPD_D;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEPWALK_P0);
 
-	/* power up the line state detectors of the port */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_AO);
 	value &= ~(STROBE_VAL_PD | DATA0_VAL_PD | DATA1_VAL_PD);
 	padctl_pmc_writel(priv, value, PMC_USB_AO);
 
 	usleep_range(50, 100);
 
-	/* set the wake signaling trigger events */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEP_CFG);
 	value &= ~UHSIC_WAKE_VAL(~0);
 	value |= UHSIC_WAKE_VAL_SD10;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEP_CFG);
 
-	/* enable the wake detection */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEP_CFG);
 	value |= UHSIC_MASTER_ENABLE;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEP_CFG);
@@ -1664,7 +1647,7 @@ static int tegra210_pmc_hsic_disable_phy_sleepwalk(struct tegra_xusb_lane *lane)
 	if (!priv->regmap)
 		return -EOPNOTSUPP;
 
-	/* disable the wake detection */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEP_CFG);
 	value &= ~UHSIC_MASTER_ENABLE;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEP_CFG);
@@ -1673,18 +1656,18 @@ static int tegra210_pmc_hsic_disable_phy_sleepwalk(struct tegra_xusb_lane *lane)
 	value &= ~UHSIC_LINE_WAKEUP_EN;
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_LINE_WAKEUP);
 
-	/* disable wake event triggers of sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UHSIC_SLEEP_CFG);
 	value &= ~UHSIC_WAKE_VAL(~0);
 	value |= UHSIC_WAKE_VAL_NONE;
 	padctl_pmc_writel(priv, value, PMC_UHSIC_SLEEP_CFG);
 
-	/* power down the line state detectors of the port */
+	 
 	value = padctl_pmc_readl(priv, PMC_USB_AO);
 	value |= STROBE_VAL_PD | DATA0_VAL_PD | DATA1_VAL_PD;
 	padctl_pmc_writel(priv, value, PMC_USB_AO);
 
-	/* clear alarm of the sleepwalk logic */
+	 
 	value = padctl_pmc_readl(priv, PMC_UTMIP_UHSIC_TRIGGERS);
 	value |= UHSIC_CLR_WAKE_ALARM;
 	padctl_pmc_writel(priv, value, PMC_UTMIP_UHSIC_TRIGGERS);
@@ -1931,11 +1914,7 @@ static int tegra210_usb2_phy_set_mode(struct phy *phy, enum phy_mode mode,
 		} else if (submode == USB_ROLE_DEVICE) {
 			tegra210_xusb_padctl_vbus_override(padctl, true);
 		} else if (submode == USB_ROLE_NONE) {
-			/*
-			 * When port is peripheral only or role transitions to
-			 * USB_ROLE_NONE from USB_ROLE_DEVICE, regulator is not
-			 * be enabled.
-			 */
+			 
 			if (regulator_is_enabled(port->supply))
 				regulator_disable(port->supply);
 

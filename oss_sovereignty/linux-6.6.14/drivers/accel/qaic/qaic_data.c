@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* Copyright (c) 2019-2021, The Linux Foundation. All rights reserved. */
-/* Copyright (c) 2021-2023 Qualcomm Innovation Center, Inc. All rights reserved. */
+
+ 
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -35,10 +35,10 @@
 #define GEN_COMPLETION	BIT(4)
 #define INBOUND_XFER	1
 #define OUTBOUND_XFER	2
-#define REQHP_OFF	0x0 /* we read this */
-#define REQTP_OFF	0x4 /* we write this */
-#define RSPHP_OFF	0x8 /* we write this */
-#define RSPTP_OFF	0xc /* we read this */
+#define REQHP_OFF	0x0  
+#define REQTP_OFF	0x4  
+#define RSPHP_OFF	0x8  
+#define RSPTP_OFF	0xc  
 
 #define ENCODE_SEM(val, index, sync, cmd, flags)			\
 		({							\
@@ -52,81 +52,39 @@
 #define NUM_EVENTS	128
 #define NUM_DELAYS	10
 
-static unsigned int wait_exec_default_timeout_ms = 5000; /* 5 sec default */
+static unsigned int wait_exec_default_timeout_ms = 5000;  
 module_param(wait_exec_default_timeout_ms, uint, 0600);
 MODULE_PARM_DESC(wait_exec_default_timeout_ms, "Default timeout for DRM_IOCTL_QAIC_WAIT_BO");
 
-static unsigned int datapath_poll_interval_us = 100; /* 100 usec default */
+static unsigned int datapath_poll_interval_us = 100;  
 module_param(datapath_poll_interval_us, uint, 0600);
 MODULE_PARM_DESC(datapath_poll_interval_us,
 		 "Amount of time to sleep between activity when datapath polling is enabled");
 
 struct dbc_req {
-	/*
-	 * A request ID is assigned to each memory handle going in DMA queue.
-	 * As a single memory handle can enqueue multiple elements in DMA queue
-	 * all of them will have the same request ID.
-	 */
+	 
 	__le16	req_id;
-	/* Future use */
+	 
 	__u8	seq_id;
-	/*
-	 * Special encoded variable
-	 * 7	0 - Do not force to generate MSI after DMA is completed
-	 *	1 - Force to generate MSI after DMA is completed
-	 * 6:5	Reserved
-	 * 4	1 - Generate completion element in the response queue
-	 *	0 - No Completion Code
-	 * 3	0 - DMA request is a Link list transfer
-	 *	1 - DMA request is a Bulk transfer
-	 * 2	Reserved
-	 * 1:0	00 - No DMA transfer involved
-	 *	01 - DMA transfer is part of inbound transfer
-	 *	10 - DMA transfer has outbound transfer
-	 *	11 - NA
-	 */
+	 
 	__u8	cmd;
 	__le32	resv;
-	/* Source address for the transfer */
+	 
 	__le64	src_addr;
-	/* Destination address for the transfer */
+	 
 	__le64	dest_addr;
-	/* Length of transfer request */
+	 
 	__le32	len;
 	__le32	resv2;
-	/* Doorbell address */
+	 
 	__le64	db_addr;
-	/*
-	 * Special encoded variable
-	 * 7	1 - Doorbell(db) write
-	 *	0 - No doorbell write
-	 * 6:2	Reserved
-	 * 1:0	00 - 32 bit access, db address must be aligned to 32bit-boundary
-	 *	01 - 16 bit access, db address must be aligned to 16bit-boundary
-	 *	10 - 8 bit access, db address must be aligned to 8bit-boundary
-	 *	11 - Reserved
-	 */
+	 
 	__u8	db_len;
 	__u8	resv3;
 	__le16	resv4;
-	/* 32 bit data written to doorbell address */
+	 
 	__le32	db_data;
-	/*
-	 * Special encoded variable
-	 * All the fields of sem_cmdX are passed from user and all are ORed
-	 * together to form sem_cmd.
-	 * 0:11		Semaphore value
-	 * 15:12	Reserved
-	 * 20:16	Semaphore index
-	 * 21		Reserved
-	 * 22		Semaphore Sync
-	 * 23		Reserved
-	 * 26:24	Semaphore command
-	 * 28:27	Reserved
-	 * 29		Semaphore DMA out bound sync fence
-	 * 30		Semaphore DMA in bound sync fence
-	 * 31		Enable semaphore command
-	 */
+	 
 	__le32	sem_cmd0;
 	__le32	sem_cmd1;
 	__le32	sem_cmd2;
@@ -134,9 +92,9 @@ struct dbc_req {
 } __packed;
 
 struct dbc_rsp {
-	/* Request ID of the memory handle whose DMA transaction is completed */
+	 
 	__le16	req_id;
-	/* Status of the DMA transaction. 0 : Success otherwise failure */
+	 
 	__le16	status;
 } __packed;
 
@@ -170,7 +128,7 @@ static int clone_range_of_sgt_for_slice(struct qaic_device *qdev, struct sg_tabl
 	struct sg_table *sgt;
 	int ret, j;
 
-	/* find out number of relevant nents needed for this mem */
+	 
 	total_len = 0;
 	sgf = NULL;
 	sgl = NULL;
@@ -212,7 +170,7 @@ static int clone_range_of_sgt_for_slice(struct qaic_device *qdev, struct sg_tabl
 	if (ret)
 		goto free_sgt;
 
-	/* copy relevant sg node and fix page and length */
+	 
 	sgn = sgf;
 	for_each_sgtable_sg(sgt, sg, j) {
 		memcpy(sg, sgn, sizeof(*sg));
@@ -278,21 +236,13 @@ static int encode_reqs(struct qaic_device *qdev, struct bo_slice *slice,
 		db_len = BIT(7) | 2;
 		break;
 	case 0:
-		db_len = 0; /* doorbell is not active for this command */
+		db_len = 0;  
 		break;
 	default:
-		return -EINVAL; /* should never hit this */
+		return -EINVAL;  
 	}
 
-	/*
-	 * When we end up splitting up a single request (ie a buf slice) into
-	 * multiple DMA requests, we have to manage the sync data carefully.
-	 * There can only be one presync sem. That needs to be on every xfer
-	 * so that the DMA engine doesn't transfer data before the receiver is
-	 * ready. We only do the doorbell and postsync sems after the xfer.
-	 * To guarantee previous xfers for the request are complete, we use a
-	 * fence.
-	 */
+	 
 	dev_addr = req->dev_addr;
 	for_each_sgtable_sg(slice->sgt, sg, i) {
 		slice->reqs[i].cmd = cmd;
@@ -300,12 +250,7 @@ static int encode_reqs(struct qaic_device *qdev, struct bo_slice *slice,
 						      sg_dma_address(sg) : dev_addr);
 		slice->reqs[i].dest_addr = cpu_to_le64(slice->dir == DMA_TO_DEVICE ?
 						       dev_addr : sg_dma_address(sg));
-		/*
-		 * sg_dma_len(sg) returns size of a DMA segment, maximum DMA
-		 * segment size is set to UINT_MAX by qaic and hence return
-		 * values of sg_dma_len(sg) can never exceed u32 range. So,
-		 * by down sizing we are not corrupting the value.
-		 */
+		 
 		slice->reqs[i].len = cpu_to_le32((u32)sg_dma_len(sg));
 		switch (presync_sem) {
 		case BIT(0):
@@ -339,25 +284,13 @@ static int encode_reqs(struct qaic_device *qdev, struct bo_slice *slice,
 		}
 		dev_addr += sg_dma_len(sg);
 	}
-	/* add post transfer stuff to last segment */
+	 
 	i--;
 	slice->reqs[i].cmd |= GEN_COMPLETION;
 	slice->reqs[i].db_addr = db_addr;
 	slice->reqs[i].db_len = db_len;
 	slice->reqs[i].db_data = db_data;
-	/*
-	 * Add a fence if we have more than one request going to the hardware
-	 * representing the entirety of the user request, and the user request
-	 * has no presync condition.
-	 * Fences are expensive, so we try to avoid them. We rely on the
-	 * hardware behavior to avoid needing one when there is a presync
-	 * condition. When a presync exists, all requests for that same
-	 * presync will be queued into a fifo. Thus, since we queue the
-	 * post xfer activity only on the last request we queue, the hardware
-	 * will ensure that the last queued request is processed last, thus
-	 * making sure the post xfer activity happens at the right time without
-	 * a fence.
-	 */
+	 
 	if (i && !presync_sem)
 		req->sem0.flags |= (slice->dir == DMA_TO_DEVICE ?
 				    QAIC_SEM_INSYNCFENCE : QAIC_SEM_OUTSYNCFENCE);
@@ -445,14 +378,11 @@ static int create_sgt(struct qaic_device *qdev, struct sg_table **sgt_out, u64 s
 
 	if (size) {
 		nr_pages = DIV_ROUND_UP(size, PAGE_SIZE);
-		/*
-		 * calculate how much extra we are going to allocate, to remove
-		 * later
-		 */
+		 
 		buf_extra = (PAGE_SIZE - size % PAGE_SIZE) % PAGE_SIZE;
 		max_order = min(MAX_ORDER - 1, get_order(size));
 	} else {
-		/* allocate a single page for book keeping */
+		 
 		nr_pages = 1;
 		buf_extra = 0;
 		max_order = 0;
@@ -465,11 +395,7 @@ static int create_sgt(struct qaic_device *qdev, struct sg_table **sgt_out, u64 s
 	}
 	pages_order = (void *)pages + sizeof(*pages) * nr_pages;
 
-	/*
-	 * Allocate requested memory using alloc_pages. It is possible to allocate
-	 * the requested memory in multiple chunks by calling alloc_pages
-	 * multiple times. Use SG table to handle multiple allocated pages.
-	 */
+	 
 	i = 0;
 	while (nr_pages > 0) {
 		order = min(get_order(nr_pages * PAGE_SIZE), max_order);
@@ -491,7 +417,7 @@ static int create_sgt(struct qaic_device *qdev, struct sg_table **sgt_out, u64 s
 
 		nr_pages -= 1 << order;
 		if (nr_pages <= 0)
-			/* account for over allocation */
+			 
 			buf_extra += abs(nr_pages) * PAGE_SIZE;
 		i++;
 	}
@@ -507,10 +433,10 @@ static int create_sgt(struct qaic_device *qdev, struct sg_table **sgt_out, u64 s
 		goto free_sgt;
 	}
 
-	/* Populate the SG table with the allocated memory pages */
+	 
 	sg = sgt->sgl;
 	for (k = 0; k < i; k++, sg = sg_next(sg)) {
-		/* Last entry requires special handling */
+		 
 		if (k < i - 1) {
 			sg_set_page(sg, pages[k], PAGE_SIZE << pages_order[k], 0);
 		} else {
@@ -616,10 +542,10 @@ static void qaic_free_object(struct drm_gem_object *obj)
 	struct qaic_bo *bo = to_qaic_bo(obj);
 
 	if (obj->import_attach) {
-		/* DMABUF/PRIME Path */
+		 
 		drm_prime_gem_destroy(obj, NULL);
 	} else {
-		/* Private buffer allocation path */
+		 
 		qaic_free_sgt(bo->sgt);
 	}
 
@@ -789,11 +715,7 @@ struct drm_gem_object *qaic_gem_prime_import(struct drm_device *dev, struct dma_
 	}
 
 	drm_gem_private_object_init(dev, obj, attach->dmabuf->size);
-	/*
-	 * skipping dma_buf_map_attachment() as we do not know the direction
-	 * just yet. Once the direction is known in the subsequent IOCTL to
-	 * attach slicing, we can do it then.
-	 */
+	 
 
 	obj->funcs = &qaic_gem_funcs;
 	obj->import_attach = attach;
@@ -1076,11 +998,7 @@ static inline int copy_exec_reqs(struct qaic_device *qdev, struct bo_slice *slic
 	return 0;
 }
 
-/*
- * Based on the value of resize we may only need to transmit first_n
- * entries and the last entry, with last_bytes to send from the last entry.
- * Note that first_n could be 0.
- */
+ 
 static inline int copy_partial_exec_reqs(struct qaic_device *qdev, struct bo_slice *slice,
 					 u64 resize, u32 dbc_id, u32 head, u32 *ptail)
 {
@@ -1109,7 +1027,7 @@ static inline int copy_partial_exec_reqs(struct qaic_device *qdev, struct bo_sli
 	}
 
 	if (total_bytes < resize) {
-		/* User space should have used the full buffer path. */
+		 
 		ret = -EINVAL;
 		return ret;
 	}
@@ -1136,17 +1054,11 @@ static inline int copy_partial_exec_reqs(struct qaic_device *qdev, struct bo_sli
 		}
 	}
 
-	/* Copy over the last entry. Here we need to adjust len to the left over
-	 * size, and set src and dst to the entry it is copied to.
-	 */
+	 
 	last_req = dbc->req_q_base + (tail + first_n) % dbc->nelem * get_dbc_req_elem_size();
 	memcpy(last_req, reqs + slice->nents - 1, sizeof(*reqs));
 
-	/*
-	 * last_bytes holds size of a DMA segment, maximum DMA segment size is
-	 * set to UINT_MAX by qaic and hence last_bytes can never exceed u32
-	 * range. So, by down sizing we are not corrupting the value.
-	 */
+	 
 	last_req->len = cpu_to_le32((u32)last_bytes);
 	last_req->src_addr = reqs[first_n].src_addr;
 	last_req->dest_addr = reqs[first_n].dest_addr;
@@ -1171,10 +1083,7 @@ static int send_bo_list_to_device(struct qaic_device *qdev, struct drm_file *fil
 	int ret;
 
 	for (i = 0; i < count; i++) {
-		/*
-		 * ref count will be decremented when the transfer of this
-		 * buffer is complete. It is inside dbc_irq_threaded_fn().
-		 */
+		 
 		obj = drm_gem_object_lookup(file_priv,
 					    is_partial ? pexec[i].handle : exec[i].handle);
 		if (!obj) {
@@ -1206,21 +1115,14 @@ static int send_bo_list_to_device(struct qaic_device *qdev, struct drm_file *fil
 		bo->req_id = dbc->next_req_id++;
 
 		list_for_each_entry(slice, &bo->slices, slice) {
-			/*
-			 * If this slice does not fall under the given
-			 * resize then skip this slice and continue the loop
-			 */
+			 
 			if (is_partial && pexec[i].resize && pexec[i].resize <= slice->offset)
 				continue;
 
 			for (j = 0; j < slice->nents; j++)
 				slice->reqs[j].req_id = cpu_to_le16(bo->req_id);
 
-			/*
-			 * If it is a partial execute ioctl call then check if
-			 * resize has cut this slice short then do a partial copy
-			 * else do complete copy
-			 */
+			 
 			if (is_partial && pexec[i].resize &&
 			    pexec[i].resize < slice->offset + slice->size)
 				ret = copy_partial_exec_reqs(qdev, slice,
@@ -1268,13 +1170,7 @@ static void update_profiling_data(struct drm_file *file_priv,
 	int i;
 
 	for (i = 0; i < count; i++) {
-		/*
-		 * Since we already committed the BO to hardware, the only way
-		 * this should fail is a pending signal. We can't cancel the
-		 * submit to hardware, so we have to just skip the profiling
-		 * data. In case the signal is not fatal to the process, we
-		 * return success so that the user doesn't try to resubmit.
-		 */
+		 
 		obj = drm_gem_object_lookup(file_priv,
 					    is_partial ? pexec[i].handle : exec[i].handle);
 		if (!obj)
@@ -1357,7 +1253,7 @@ static int __qaic_execute_bo_ioctl(struct drm_device *dev, void *data, struct dr
 	tail = readl(dbc->dbc_base + REQTP_OFF);
 
 	if (head == U32_MAX || tail == U32_MAX) {
-		/* PCI link error */
+		 
 		ret = -ENODEV;
 		goto release_ch_rcu;
 	}
@@ -1369,7 +1265,7 @@ static int __qaic_execute_bo_ioctl(struct drm_device *dev, void *data, struct dr
 	if (ret)
 		goto release_ch_rcu;
 
-	/* Finalize commit to hardware */
+	 
 	submit_ts = ktime_get_ns();
 	writel(tail, dbc->dbc_base + REQTP_OFF);
 
@@ -1400,39 +1296,7 @@ int qaic_partial_execute_bo_ioctl(struct drm_device *dev, void *data, struct drm
 	return __qaic_execute_bo_ioctl(dev, data, file_priv, true);
 }
 
-/*
- * Our interrupt handling is a bit more complicated than a simple ideal, but
- * sadly necessary.
- *
- * Each dbc has a completion queue. Entries in the queue correspond to DMA
- * requests which the device has processed. The hardware already has a built
- * in irq mitigation. When the device puts an entry into the queue, it will
- * only trigger an interrupt if the queue was empty. Therefore, when adding
- * the Nth event to a non-empty queue, the hardware doesn't trigger an
- * interrupt. This means the host doesn't get additional interrupts signaling
- * the same thing - the queue has something to process.
- * This behavior can be overridden in the DMA request.
- * This means that when the host receives an interrupt, it is required to
- * drain the queue.
- *
- * This behavior is what NAPI attempts to accomplish, although we can't use
- * NAPI as we don't have a netdev. We use threaded irqs instead.
- *
- * However, there is a situation where the host drains the queue fast enough
- * that every event causes an interrupt. Typically this is not a problem as
- * the rate of events would be low. However, that is not the case with
- * lprnet for example. On an Intel Xeon D-2191 where we run 8 instances of
- * lprnet, the host receives roughly 80k interrupts per second from the device
- * (per /proc/interrupts). While NAPI documentation indicates the host should
- * just chug along, sadly that behavior causes instability in some hosts.
- *
- * Therefore, we implement an interrupt disable scheme similar to NAPI. The
- * key difference is that we will delay after draining the queue for a small
- * time to allow additional events to come in via polling. Using the above
- * lprnet workload, this reduces the number of interrupts processed from
- * ~80k/sec to about 64 in 5 minutes and appears to solve the system
- * instability.
- */
+ 
 irqreturn_t dbc_irq_handler(int irq, void *data)
 {
 	struct dma_bridge_chan *dbc = data;
@@ -1448,18 +1312,18 @@ irqreturn_t dbc_irq_handler(int irq, void *data)
 	}
 
 	head = readl(dbc->dbc_base + RSPHP_OFF);
-	if (head == U32_MAX) { /* PCI link error */
+	if (head == U32_MAX) {  
 		srcu_read_unlock(&dbc->ch_lock, rcu_id);
 		return IRQ_NONE;
 	}
 
 	tail = readl(dbc->dbc_base + RSPTP_OFF);
-	if (tail == U32_MAX) { /* PCI link error */
+	if (tail == U32_MAX) {  
 		srcu_read_unlock(&dbc->ch_lock, rcu_id);
 		return IRQ_NONE;
 	}
 
-	if (head == tail) { /* queue empty */
+	if (head == tail) {  
 		srcu_read_unlock(&dbc->ch_lock, rcu_id);
 		return IRQ_NONE;
 	}
@@ -1497,13 +1361,13 @@ void irq_polling_work(struct work_struct *work)
 		spin_unlock_irqrestore(&dbc->xfer_lock, flags);
 
 		head = readl(dbc->dbc_base + RSPHP_OFF);
-		if (head == U32_MAX) { /* PCI link error */
+		if (head == U32_MAX) {  
 			srcu_read_unlock(&dbc->ch_lock, rcu_id);
 			return;
 		}
 
 		tail = readl(dbc->dbc_base + RSPTP_OFF);
-		if (tail == U32_MAX) { /* PCI link error */
+		if (tail == U32_MAX) {  
 			srcu_read_unlock(&dbc->ch_lock, rcu_id);
 			return;
 		}
@@ -1537,7 +1401,7 @@ irqreturn_t dbc_irq_threaded_fn(int irq, void *data)
 	rcu_id = srcu_read_lock(&dbc->ch_lock);
 
 	head = readl(dbc->dbc_base + RSPHP_OFF);
-	if (head == U32_MAX) /* PCI link error */
+	if (head == U32_MAX)  
 		goto error_out;
 
 	qdev = dbc->qdev;
@@ -1548,22 +1412,19 @@ read_fifo:
 		cond_resched();
 	}
 
-	/*
-	 * if this channel isn't assigned or gets unassigned during processing
-	 * we have nothing further to do
-	 */
+	 
 	if (!dbc->usr)
 		goto error_out;
 
 	tail = readl(dbc->dbc_base + RSPTP_OFF);
-	if (tail == U32_MAX) /* PCI link error */
+	if (tail == U32_MAX)  
 		goto error_out;
 
-	if (head == tail) { /* queue empty */
+	if (head == tail) {  
 		if (delay_count) {
 			--delay_count;
 			usleep_range(100, 200);
-			goto read_fifo; /* check for a new event */
+			goto read_fifo;  
 		}
 		goto normal_out;
 	}
@@ -1579,12 +1440,7 @@ read_fifo:
 		if (status)
 			pci_dbg(qdev->pdev, "req_id %d failed with status %d\n", req_id, status);
 		spin_lock_irqsave(&dbc->xfer_lock, flags);
-		/*
-		 * A BO can receive multiple interrupts, since a BO can be
-		 * divided into multiple slices and a buffer receives as many
-		 * interrupts as slices. So until it receives interrupts for
-		 * all the slices we cannot mark that buffer complete.
-		 */
+		 
 		list_for_each_entry_safe(bo, i, &dbc->xfer_list, xfer_list) {
 			if (bo->req_id == req_id)
 				bo->nr_slice_xfer_done++;
@@ -1594,10 +1450,7 @@ read_fifo:
 			if (bo->nr_slice_xfer_done < bo->nr_slice)
 				break;
 
-			/*
-			 * At this point we have received all the interrupts for
-			 * BO, which means BO execution is complete.
-			 */
+			 
 			dma_sync_sgtable_for_cpu(&qdev->pdev->dev, bo->sgt, bo->dir);
 			bo->nr_slice_xfer_done = 0;
 			bo->queued = false;
@@ -1611,13 +1464,10 @@ read_fifo:
 		head = (head + 1) % dbc->nelem;
 	}
 
-	/*
-	 * Update the head pointer of response queue and let the device know
-	 * that we have consumed elements from the queue.
-	 */
+	 
 	writel(head, dbc->dbc_base + RSPHP_OFF);
 
-	/* elements might have been put in the queue while we were processing */
+	 
 	goto read_fifo;
 
 normal_out:
@@ -1625,7 +1475,7 @@ normal_out:
 		enable_irq(irq);
 	else
 		schedule_work(&dbc->poll_work);
-	/* checking the fifo and enabling irqs is a race, missed event check */
+	 
 	tail = readl(dbc->dbc_base + RSPTP_OFF);
 	if (tail != U32_MAX && head != tail) {
 		if (likely(!datapath_polling))
@@ -1768,10 +1618,7 @@ int qaic_perf_stats_bo_ioctl(struct drm_device *dev, void *data, struct drm_file
 			goto free_ent;
 		}
 		bo = to_qaic_bo(obj);
-		/*
-		 * perf stats ioctl is called before wait ioctl is complete then
-		 * the latency information is invalid.
-		 */
+		 
 		if (bo->perf_stats.req_processed_ts < bo->perf_stats.req_submit_ts) {
 			ent[i].device_latency_us = 0;
 		} else {
@@ -1826,14 +1673,7 @@ int disable_dbc(struct qaic_device *qdev, u32 dbc_id, struct qaic_user *usr)
 	return 0;
 }
 
-/**
- * enable_dbc - Enable the DBC. DBCs are disabled by removing the context of
- * user. Add user context back to DBC to enable it. This function trusts the
- * DBC ID passed and expects the DBC to be disabled.
- * @qdev: Qranium device handle
- * @dbc_id: ID of the DBC
- * @usr: User context
- */
+ 
 void enable_dbc(struct qaic_device *qdev, u32 dbc_id, struct qaic_user *usr)
 {
 	qdev->dbc[dbc_id].usr = usr;
@@ -1846,10 +1686,7 @@ void wakeup_dbc(struct qaic_device *qdev, u32 dbc_id)
 	dbc->usr = NULL;
 	empty_xfer_list(qdev, dbc);
 	synchronize_srcu(&dbc->ch_lock);
-	/*
-	 * Threads holding channel lock, may add more elements in the xfer_list.
-	 * Flush out these elements from xfer_list.
-	 */
+	 
 	empty_xfer_list(qdev, dbc);
 }
 

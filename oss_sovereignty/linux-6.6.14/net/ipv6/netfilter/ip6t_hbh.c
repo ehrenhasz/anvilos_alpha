@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Kernel module to match Hop-by-Hop and Destination parameters. */
 
-/* (C) 2001-2002 Andras Kis-Szabo <kisza@sch.bme.hu>
- */
+ 
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -22,21 +21,7 @@ MODULE_DESCRIPTION("Xtables: IPv6 Hop-By-Hop and Destination Header match");
 MODULE_AUTHOR("Andras Kis-Szabo <kisza@sch.bme.hu>");
 MODULE_ALIAS("ip6t_dst");
 
-/*
- *  (Type & 0xC0) >> 6
- *	0	-> ignorable
- *	1	-> must drop the packet
- *	2	-> send ICMP PARM PROB regardless and drop packet
- *	3	-> Send ICMP if not a multicast address and drop packet
- *  (Type & 0x20) >> 5
- *	0	-> invariant
- *	1	-> can change the routing
- *  (Type & 0x1F) Type
- *	0	-> Pad1 (only 1 byte!)
- *	1	-> PadN LENGTH info (total length = length + 2)
- *	C0 | 2	-> JUMBO 4 x x x x ( xxxx > 64k )
- *	5	-> RTALERT 2 x x
- */
+ 
 
 static struct xt_match hbh_mt6_reg[] __read_mostly;
 
@@ -74,7 +59,7 @@ hbh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 
 	hdrlen = ipv6_optlen(oh);
 	if (skb->len - ptr < hdrlen) {
-		/* Packet smaller than it's length field */
+		 
 		return false;
 	}
 
@@ -98,7 +83,7 @@ hbh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 		pr_debug("Strict ");
 		pr_debug("#%d ", optinfo->optsnr);
 		for (temp = 0; temp < optinfo->optsnr; temp++) {
-			/* type field exists ? */
+			 
 			if (hdrlen < 1)
 				break;
 			tp = skb_header_pointer(skb, ptr, sizeof(_opttype),
@@ -106,7 +91,7 @@ hbh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 			if (tp == NULL)
 				break;
 
-			/* Type check */
+			 
 			if (*tp != (optinfo->opts[temp] & 0xFF00) >> 8) {
 				pr_debug("Tbad %02X %02X\n", *tp,
 					 (optinfo->opts[temp] & 0xFF00) >> 8);
@@ -114,11 +99,11 @@ hbh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 			} else {
 				pr_debug("Tok ");
 			}
-			/* Length check */
+			 
 			if (*tp) {
 				u16 spec_len;
 
-				/* length field exists ? */
+				 
 				if (hdrlen < 2)
 					break;
 				lp = skb_header_pointer(skb, ptr + 1,
@@ -140,7 +125,7 @@ hbh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 				optlen = 1;
 			}
 
-			/* Step to the next */
+			 
 			pr_debug("len%04X\n", optlen);
 
 			if ((ptr > skb->len - optlen || hdrlen < optlen) &&
@@ -179,7 +164,7 @@ static int hbh_mt6_check(const struct xt_mtchk_param *par)
 
 static struct xt_match hbh_mt6_reg[] __read_mostly = {
 	{
-		/* Note, hbh_mt6 relies on the order of hbh_mt6_reg */
+		 
 		.name		= "hbh",
 		.family		= NFPROTO_IPV6,
 		.match		= hbh_mt6,

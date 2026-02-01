@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FXOS8700 - NXP IMU (accelerometer plus magnetometer)
- *
- * IIO core driver for FXOS8700, with support for I2C/SPI busses
- *
- * TODO: Buffer, trigger, and IRQ support
- */
+
+ 
 #include <linux/module.h>
 #include <linux/regmap.h>
 #include <linux/acpi.h>
@@ -17,7 +11,7 @@
 
 #include "fxos8700.h"
 
-/* Register Definitions */
+ 
 #define FXOS8700_STATUS             0x00
 #define FXOS8700_OUT_X_MSB          0x01
 #define FXOS8700_OUT_X_LSB          0x02
@@ -144,21 +138,21 @@
 #define FXOS8700_NVM_DATA_BNK1      0xa6
 #define FXOS8700_NVM_DATA_BNK0      0xa7
 
-/* Bit definitions for FXOS8700_CTRL_REG1 */
+ 
 #define FXOS8700_CTRL_ODR_MAX       0x00
 #define FXOS8700_CTRL_ODR_MSK       GENMASK(5, 3)
 
-/* Bit definitions for FXOS8700_M_CTRL_REG1 */
+ 
 #define FXOS8700_HMS_MASK           GENMASK(1, 0)
 #define FXOS8700_OS_MASK            GENMASK(4, 2)
 
-/* Bit definitions for FXOS8700_M_CTRL_REG2 */
+ 
 #define FXOS8700_MAXMIN_RST         BIT(2)
 #define FXOS8700_MAXMIN_DIS_THS     BIT(3)
 #define FXOS8700_MAXMIN_DIS         BIT(4)
 
 #define FXOS8700_ACTIVE             0x01
-#define FXOS8700_ACTIVE_MIN_USLEEP  4000 /* from table 6 in datasheet */
+#define FXOS8700_ACTIVE_MIN_USLEEP  4000  
 
 #define FXOS8700_DEVICE_ID          0xC7
 #define FXOS8700_PRE_DEVICE_ID      0xC4
@@ -170,7 +164,7 @@ struct fxos8700_data {
 	__be16 buf[FXOS8700_DATA_BUF_SIZE] __aligned(IIO_DMA_MINALIGN);
 };
 
-/* Regmap info */
+ 
 static const struct regmap_range read_range[] = {
 	{
 		.range_min = FXOS8700_STATUS,
@@ -249,7 +243,7 @@ enum fxos8700_accel_scale_bits {
 	MODE_8G,
 };
 
-/* scan indexes follow DATA register order */
+ 
 enum fxos8700_scan_axis {
 	FXOS8700_SCAN_ACCEL_X = 0,
 	FXOS8700_SCAN_ACCEL_Y,
@@ -264,7 +258,7 @@ enum fxos8700_scan_axis {
 enum fxos8700_sensor {
 	FXOS8700_ACCEL	= 0,
 	FXOS8700_MAGN,
-	FXOS8700_NUM_SENSORS /* must be last */
+	FXOS8700_NUM_SENSORS  
 };
 
 enum fxos8700_int_pin {
@@ -289,11 +283,7 @@ static const struct fxos8700_scale fxos8700_accel_scale[] = {
 	{ MODE_8G, 976},
 };
 
-/*
- * Accellerometer and magnetometer have the same ODR options, set in the
- * CTRL_REG1 register. ODR is halved when using both sensors at once in
- * hybrid mode.
- */
+ 
 static const struct fxos8700_odr fxos8700_odr[] = {
 	{0x00, 800, 0},
 	{0x01, 400, 0},
@@ -355,13 +345,7 @@ static int fxos8700_set_scale(struct fxos8700_data *data,
 		return -EINVAL;
 	}
 
-	/*
-	 * When device is in active mode, it failed to set an ACCEL
-	 * full-scale range(2g/4g/8g) in FXOS8700_XYZ_DATA_CFG.
-	 * This is not align with the datasheet, but it is a fxos8700
-	 * chip behavier. Set the device in standby mode before setting
-	 * an ACCEL full-scale range.
-	 */
+	 
 	ret = regmap_read(data->regmap, FXOS8700_CTRL_REG1, &val);
 	if (ret)
 		return ret;
@@ -396,7 +380,7 @@ static int fxos8700_get_scale(struct fxos8700_data *data,
 	static const int scale_num = ARRAY_SIZE(fxos8700_accel_scale);
 
 	if (t == FXOS8700_MAGN) {
-		*uscale = 1000; /* Magnetometer is locked at 0.001Gs */
+		*uscale = 1000;  
 		return 0;
 	}
 
@@ -421,11 +405,7 @@ static int fxos8700_get_data(struct fxos8700_data *data, int chan_type,
 	s16 tmp;
 	int ret;
 
-	/*
-	 * Different register base addresses varies with channel types.
-	 * This bug hasn't been noticed before because using an enum is
-	 * really hard to read. Use an a switch statement to take over that.
-	 */
+	 
 	switch (chan_type) {
 	case IIO_ACCEL:
 		base = FXOS8700_OUT_X_MSB;
@@ -437,41 +417,31 @@ static int fxos8700_get_data(struct fxos8700_data *data, int chan_type,
 		return -EINVAL;
 	}
 
-	/* Block read 6 bytes of device output registers to avoid data loss */
+	 
 	ret = regmap_bulk_read(data->regmap, base, data->buf,
 			       sizeof(data->buf));
 	if (ret)
 		return ret;
 
-	/* Convert axis to buffer index */
+	 
 	reg = axis - IIO_MOD_X;
 
-	/*
-	 * Convert to native endianness. The accel data and magn data
-	 * are signed, so a forced type conversion is needed.
-	 */
+	 
 	tmp = be16_to_cpu(data->buf[reg]);
 
-	/*
-	 * ACCEL output data registers contain the X-axis, Y-axis, and Z-axis
-	 * 14-bit left-justified sample data and MAGN output data registers
-	 * contain the X-axis, Y-axis, and Z-axis 16-bit sample data. Apply
-	 * a signed 2 bits right shift to the readback raw data from ACCEL
-	 * output data register and keep that from MAGN sensor as the origin.
-	 * Value should be extended to 32 bit.
-	 */
+	 
 	switch (chan_type) {
 	case IIO_ACCEL:
 		tmp = tmp >> 2;
 		break;
 	case IIO_MAGN:
-		/* Nothing to do */
+		 
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* Convert to native endianness */
+	 
 	*val = sign_extend32(tmp, 15);
 
 	return 0;
@@ -491,10 +461,7 @@ static int fxos8700_set_odr(struct fxos8700_data *data, enum fxos8700_sensor t,
 	active_mode = val & FXOS8700_ACTIVE;
 
 	if (active_mode) {
-		/*
-		 * The device must be in standby mode to change any of the
-		 * other fields within CTRL_REG1
-		 */
+		 
 		ret = regmap_write(data->regmap, FXOS8700_CTRL_REG1,
 				   val & ~FXOS8700_ACTIVE);
 		if (ret)
@@ -633,36 +600,30 @@ static int fxos8700_chip_init(struct fxos8700_data *data, bool use_spi)
 	if (ret)
 		return ret;
 
-	/*
-	 * The device must be in standby mode to change any of the other fields
-	 * within CTRL_REG1
-	 */
+	 
 	ret = regmap_write(data->regmap, FXOS8700_CTRL_REG1, 0x00);
 	if (ret)
 		return ret;
 
-	/* Set max oversample ratio (OSR) and both devices active */
+	 
 	ret = regmap_write(data->regmap, FXOS8700_M_CTRL_REG1,
 			   FXOS8700_HMS_MASK | FXOS8700_OS_MASK);
 	if (ret)
 		return ret;
 
-	/* Disable and rst min/max measurements & threshold */
+	 
 	ret = regmap_write(data->regmap, FXOS8700_M_CTRL_REG2,
 			   FXOS8700_MAXMIN_RST | FXOS8700_MAXMIN_DIS_THS |
 			   FXOS8700_MAXMIN_DIS);
 	if (ret)
 		return ret;
 
-	/*
-	 * Set max full-scale range (+/-8G) for ACCEL sensor in chip
-	 * initialization then activate the device.
-	 */
+	 
 	ret = regmap_write(data->regmap, FXOS8700_XYZ_DATA_CFG, MODE_8G);
 	if (ret)
 		return ret;
 
-	/* Max ODR (800Hz individual or 400Hz hybrid), active mode */
+	 
 	return regmap_update_bits(data->regmap, FXOS8700_CTRL_REG1,
 				FXOS8700_CTRL_ODR_MSK | FXOS8700_ACTIVE,
 				FIELD_PREP(FXOS8700_CTRL_ODR_MSK, FXOS8700_CTRL_ODR_MAX) |

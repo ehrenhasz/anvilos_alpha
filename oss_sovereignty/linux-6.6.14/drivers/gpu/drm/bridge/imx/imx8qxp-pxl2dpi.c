@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2020 NXP
- */
+
+ 
 
 #include <linux/firmware/imx/svc/misc.h>
 #include <linux/media-bus-format.h>
@@ -331,7 +329,7 @@ static int imx8qxp_pxl2dpi_parse_dt_companion(struct imx8qxp_pxl2dpi *p2d)
 	int dual_link;
 	int ret = 0;
 
-	/* Locate the companion PXL2DPI for dual-link operation, if any. */
+	 
 	companion = of_parse_phandle(dev->of_node, "fsl,companion-pxl2dpi", 0);
 	if (!companion)
 		return 0;
@@ -342,10 +340,7 @@ static int imx8qxp_pxl2dpi_parse_dt_companion(struct imx8qxp_pxl2dpi *p2d)
 		goto out;
 	}
 
-	/*
-	 * Sanity check: the companion bridge must have the same compatible
-	 * string.
-	 */
+	 
 	match = of_match_device(dev->driver->of_match_table, dev);
 	if (!of_device_is_compatible(companion, match->compatible)) {
 		DRM_DEV_ERROR(dev, "companion PXL2DPI is incompatible\n");
@@ -364,12 +359,7 @@ static int imx8qxp_pxl2dpi_parse_dt_companion(struct imx8qxp_pxl2dpi *p2d)
 
 	companion_p2d = bridge_to_p2d(p2d->companion);
 
-	/*
-	 * We need to work out if the sink is expecting us to function in
-	 * dual-link mode.  We do this by looking at the DT port nodes that
-	 * the next bridges are connected to.  If they are marked as expecting
-	 * even pixels and odd pixels than we need to use the companion PXL2DPI.
-	 */
+	 
 	port1 = of_graph_get_port_by_id(p2d->next_bridge->of_node, 1);
 	port2 = of_graph_get_port_by_id(companion_p2d->next_bridge->of_node, 1);
 	dual_link = drm_of_lvds_get_dual_link_pixel_order(port1, port2);
@@ -466,7 +456,7 @@ static void imx8qxp_pxl2dpi_bridge_remove(struct platform_device *pdev)
 
 static const struct of_device_id imx8qxp_pxl2dpi_dt_ids[] = {
 	{ .compatible = "fsl,imx8qxp-pxl2dpi", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8qxp_pxl2dpi_dt_ids);
 

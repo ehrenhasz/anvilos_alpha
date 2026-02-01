@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// cs35l41.c -- CS35l41 ALSA SoC audio driver
-//
-// Copyright 2017-2021 Cirrus Logic, Inc.
-//
-// Author: David Rhodes <david.rhodes@cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -408,7 +408,7 @@ static irqreturn_t cs35l41_irq(int irq, void *data)
 			    &masks[i]);
 	}
 
-	/* Check to see if unmasked bits are active */
+	 
 	if (!(status[0] & ~masks[0]) && !(status[1] & ~masks[1]) &&
 	    !(status[2] & ~masks[2]) && !(status[3] & ~masks[3]))
 		goto done;
@@ -418,11 +418,7 @@ static irqreturn_t cs35l41_irq(int irq, void *data)
 				   CS35L41_OTP_BOOT_DONE, CS35L41_OTP_BOOT_DONE);
 	}
 
-	/*
-	 * The following interrupts require a
-	 * protection release cycle to get the
-	 * speaker out of Safe-Mode.
-	 */
+	 
 	if (status[0] & CS35L41_AMP_SHORT_ERR) {
 		dev_crit_ratelimited(cs35l41->dev, "Amp short error\n");
 		cs35l41_error_release(cs35l41, CS35L41_AMP_SHORT_ERR, CS35L41_AMP_SHORT_ERR_RLS);
@@ -898,11 +894,11 @@ static int cs35l41_dai_set_sysclk(struct snd_soc_dai *dai,
 	dev_dbg(cs35l41->dev, "Set DAI sysclk %d\n", freq);
 
 	if (freq <= 6144000) {
-		/* Use the lookup table */
+		 
 		fs1_val = cs35l41_fs_mon[fsindex].fs1;
 		fs2_val = cs35l41_fs_mon[fsindex].fs2;
 	} else {
-		/* Use hard-coded values */
+		 
 		fs1_val = 0x10;
 		fs2_val = 0x24;
 	}
@@ -925,12 +921,12 @@ static int cs35l41_set_pdata(struct cs35l41_private *cs35l41)
 	if (hw_cfg->bst_type == CS35L41_EXT_BOOST_NO_VSPK_SWITCH)
 		return -EINVAL;
 
-	/* Required */
+	 
 	ret = cs35l41_init_boost(cs35l41->dev, cs35l41->regmap, hw_cfg);
 	if (ret)
 		return ret;
 
-	/* Optional */
+	 
 	if (hw_cfg->dout_hiz <= CS35L41_ASP_DOUT_HIZ_MASK && hw_cfg->dout_hiz >= 0)
 		regmap_update_bits(cs35l41->regmap, CS35L41_SP_HIZ_CTRL, CS35L41_ASP_DOUT_HIZ_MASK,
 				   hw_cfg->dout_hiz);
@@ -1029,12 +1025,7 @@ static int cs35l41_handle_pdata(struct device *dev, struct cs35l41_hw_cfg *hw_cf
 	unsigned int val;
 	int ret;
 
-	/* Some ACPI systems received the Shared Boost feature before the upstream driver,
-	 * leaving those systems with deprecated _DSD properties.
-	 * To correctly configure those systems add shared-boost-active and shared-boost-passive
-	 * properties mapped to the correct value in boost-type.
-	 * These two are not DT properties and should not be used in new systems designs.
-	 */
+	 
 	if (device_property_read_bool(dev, "cirrus,shared-boost-active")) {
 		hw_cfg->bst_type = CS35L41_SHD_BOOST_ACTV;
 	} else if (device_property_read_bool(dev, "cirrus,shared-boost-passive")) {
@@ -1069,7 +1060,7 @@ static int cs35l41_handle_pdata(struct device *dev, struct cs35l41_hw_cfg *hw_cf
 	else
 		hw_cfg->dout_hiz = -1;
 
-	/* GPIO1 Pin Config */
+	 
 	gpio1->pol_inv = device_property_read_bool(dev, "cirrus,gpio1-polarity-invert");
 	gpio1->out_en = device_property_read_bool(dev, "cirrus,gpio1-output-enable");
 	ret = device_property_read_u32(dev, "cirrus,gpio1-src-select", &val);
@@ -1078,7 +1069,7 @@ static int cs35l41_handle_pdata(struct device *dev, struct cs35l41_hw_cfg *hw_cf
 		gpio1->valid = true;
 	}
 
-	/* GPIO2 Pin Config */
+	 
 	gpio2->pol_inv = device_property_read_bool(dev, "cirrus,gpio2-polarity-invert");
 	gpio2->out_en = device_property_read_bool(dev, "cirrus,gpio2-output-enable");
 	ret = device_property_read_u32(dev, "cirrus,gpio2-src-select", &val);
@@ -1099,7 +1090,7 @@ static int cs35l41_dsp_init(struct cs35l41_private *cs35l41)
 
 	dsp = &cs35l41->dsp;
 	dsp->part = "cs35l41";
-	dsp->fw = 9; /* 9 is WM_ADSP_FW_SPK_PROT in wm_adsp.c */
+	dsp->fw = 9;  
 	dsp->toggle_preload = true;
 
 	cs35l41_configure_cs_dsp(cs35l41->dev, cs35l41->regmap, &dsp->cs_dsp);
@@ -1152,13 +1143,13 @@ static int cs35l41_acpi_get_name(struct cs35l41_private *cs35l41)
 	acpi_handle handle = ACPI_HANDLE(cs35l41->dev);
 	const char *sub;
 
-	/* If there is no ACPI_HANDLE, there is no ACPI for this system, return 0 */
+	 
 	if (!handle)
 		return 0;
 
 	sub = acpi_get_subsystem_id(handle);
 	if (IS_ERR(sub)) {
-		/* If bad ACPI, return 0 and fallback to legacy firmware path, otherwise fail */
+		 
 		if (PTR_ERR(sub) == -ENODATA)
 			return 0;
 		else
@@ -1201,7 +1192,7 @@ int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *
 		return ret;
 	}
 
-	/* returning NULL can be an option if in stereo mode */
+	 
 	cs35l41->reset_gpio = devm_gpiod_get_optional(cs35l41->dev, "reset",
 						      GPIOD_OUT_LOW);
 	if (IS_ERR(cs35l41->reset_gpio)) {
@@ -1217,7 +1208,7 @@ int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *
 		}
 	}
 	if (cs35l41->reset_gpio) {
-		/* satisfy minimum reset pulse width spec */
+		 
 		usleep_range(2000, 2100);
 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 1);
 	}
@@ -1254,9 +1245,7 @@ int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *
 
 	mtl_revid = reg_revid & CS35L41_MTLREVID_MASK;
 
-	/* CS35L41 will have even MTLREVID
-	 * CS35L41R will have odd MTLREVID
-	 */
+	 
 	chipid_match = (mtl_revid % 2) ? CS35L41R_CHIP_ID : CS35L41_CHIP_ID;
 	if (regid != chipid_match) {
 		dev_err(cs35l41->dev, "CS35L41 Device ID (%X). Expected ID %X\n",
@@ -1281,7 +1270,7 @@ int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *
 
 	irq_pol = cs35l41_gpio_config(cs35l41->regmap, &cs35l41->hw_cfg);
 
-	/* Set interrupt masks for critical errors */
+	 
 	regmap_write(cs35l41->regmap, CS35L41_IRQ1_MASK1,
 		     CS35L41_INT1_MASK_DEFAULT);
 	if (cs35l41->hw_cfg.bst_type == CS35L41_SHD_BOOST_PASS ||
@@ -1403,7 +1392,7 @@ static int __maybe_unused cs35l41_runtime_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Test key needs to be unlocked to allow the OTP settings to re-apply */
+	 
 	cs35l41_test_key_unlock(cs35l41->dev, cs35l41->regmap);
 	ret = regcache_sync(cs35l41->regmap);
 	cs35l41_test_key_lock(cs35l41->dev, cs35l41->regmap);

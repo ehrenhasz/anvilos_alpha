@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2022, Alibaba Cloud
- * Copyright (C) 2022, Bytedance Inc. All rights reserved.
- */
+
+ 
 #include <linux/fscache.h>
 #include "internal.h"
 
@@ -15,11 +12,11 @@ static struct vfsmount *erofs_pseudo_mnt;
 struct erofs_fscache_request {
 	struct erofs_fscache_request *primary;
 	struct netfs_cache_resources cache_resources;
-	struct address_space	*mapping;	/* The mapping being accessed */
-	loff_t			start;		/* Start position */
-	size_t			len;		/* Length of the request */
-	size_t			submitted;	/* Length of submitted */
-	short			error;		/* 0 or error that occurred */
+	struct address_space	*mapping;	 
+	loff_t			start;		 
+	size_t			len;		 
+	size_t			submitted;	 
+	short			error;		 
 	refcount_t		ref;
 };
 
@@ -45,7 +42,7 @@ static struct erofs_fscache_request *erofs_fscache_req_chain(struct erofs_fscach
 {
 	struct erofs_fscache_request *req;
 
-	/* use primary request for the first submission */
+	 
 	if (!primary->submitted) {
 		refcount_inc(&primary->ref);
 		return primary;
@@ -107,11 +104,7 @@ static void erofs_fscache_subreq_complete(void *priv,
 	erofs_fscache_req_put(req);
 }
 
-/*
- * Read data from fscache (cookie, pstart, len), and fill the read data into
- * page cache described by (req->mapping, lstart, len). @pstart describeis the
- * start physical address in the cache file.
- */
+ 
 static int erofs_fscache_read_folios_async(struct fscache_cookie *cookie,
 		struct erofs_fscache_request *req, loff_t pstart, size_t len)
 {
@@ -208,7 +201,7 @@ static int erofs_fscache_data_read_slice(struct erofs_fscache_request *primary)
 		size_t offset, size;
 		void *src;
 
-		/* For tail packing layout, the offset may be non-zero. */
+		 
 		offset = erofs_blkoff(sb, map.m_pa);
 		blknr = erofs_blknr(sb, map.m_pa);
 		size = map.m_llen;
@@ -300,7 +293,7 @@ static void erofs_fscache_readahead(struct readahead_control *rac)
 	if (IS_ERR(req))
 		return;
 
-	/* The request completion will drop refs on the folios. */
+	 
 	while (readahead_folio(rac))
 		;
 
@@ -445,10 +438,7 @@ static struct erofs_fscache *erofs_fscache_acquire_cookie(struct super_block *sb
 	}
 	fscache_use_cookie(cookie, false);
 
-	/*
-	 * Allocate anonymous inode in global pseudo mount for shareable blobs,
-	 * so that they are accessible among erofs fs instances.
-	 */
+	 
 	isb = flags & EROFS_REG_COOKIE_SHARE ? erofs_pseudo_mnt->mnt_sb : sb;
 	inode = new_inode(isb);
 	if (!inode) {
@@ -575,16 +565,7 @@ int erofs_fscache_register_fs(struct super_block *sb)
 	if (ret)
 		return ret;
 
-	/*
-	 * When shared domain is enabled, using NEED_NOEXIST to guarantee
-	 * the primary data blob (aka fsid) is unique in the shared domain.
-	 *
-	 * For non-shared-domain case, fscache_acquire_volume() invoked by
-	 * erofs_fscache_register_volume() has already guaranteed
-	 * the uniqueness of primary data blob.
-	 *
-	 * Acquired domain/volume will be relinquished in kill_sb() on error.
-	 */
+	 
 	if (sbi->domain_id)
 		flags |= EROFS_REG_COOKIE_NEED_NOEXIST;
 	fscache = erofs_fscache_register_cookie(sb, sbi->fsid, flags);

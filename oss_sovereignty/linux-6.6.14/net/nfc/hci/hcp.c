@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "hci: %s: " fmt, __func__
 
@@ -13,11 +11,7 @@
 
 #include "hci.h"
 
-/*
- * Payload is the HCP message data only. Instruction will be prepended.
- * Guarantees that cb will be called upon completion or timeout delay
- * counted from the moment the cmd is sent to the transport.
- */
+ 
 int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
 			   u8 type, u8 instruction,
 			   const u8 *payload, size_t payload_len,
@@ -67,7 +61,7 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
 
 		skb_put(skb, NFC_HCI_HCP_PACKET_HEADER_LEN + data_link_len);
 
-		/* Only the last fragment will have the cb bit set to 1 */
+		 
 		packet = (struct hcp_packet *)skb->data;
 		packet->header = pipe;
 		if (firstfrag) {
@@ -81,7 +75,7 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
 			ptr += data_link_len - 1;
 		}
 
-		/* This is the last fragment, set the cb bit */
+		 
 		if (hci_len == 0)
 			packet->header |= ~NFC_HCI_FRAGMENT;
 
@@ -110,10 +104,7 @@ out_skb_err:
 	return err;
 }
 
-/*
- * Receive hcp message for pipe, with type and cmd.
- * skb contains optional message data only.
- */
+ 
 void nfc_hci_hcp_message_rx(struct nfc_hci_dev *hdev, u8 pipe, u8 type,
 			    u8 instruction, struct sk_buff *skb)
 {

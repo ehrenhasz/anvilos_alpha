@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LIBPERF_INTERNAL_MMAP_H
 #define __LIBPERF_INTERNAL_MMAP_H
 
@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <internal/cpumap.h>
 
-/* perf sample has 16 bits size limit */
+ 
 #define PERF_SAMPLE_MAX_SIZE (1 << 16)
 
 struct perf_mmap;
@@ -16,11 +16,7 @@ struct perf_counts_values;
 
 typedef void (*libperf_unmap_cb_t)(struct perf_mmap *map);
 
-/**
- * struct perf_mmap - perf's ring buffer mmap details
- *
- * @refcnt - e.g. code using PERF_EVENT_IOC_SET_OUTPUT to share this
- */
+ 
 struct perf_mmap {
 	void			*base;
 	int			 mask;
@@ -56,4 +52,4 @@ u64 perf_mmap__read_head(struct perf_mmap *map);
 
 int perf_mmap__read_self(struct perf_mmap *map, struct perf_counts_values *count);
 
-#endif /* __LIBPERF_INTERNAL_MMAP_H */
+#endif  

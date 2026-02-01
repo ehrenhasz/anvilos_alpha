@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/export.h>
 #include <linux/netfilter/ipset/pfxlen.h>
 
-/* Prefixlen maps for fast conversions, by Jan Engelhardt. */
+ 
 
 #ifdef E
 #undef E
@@ -145,9 +145,7 @@
 		htonl(c), htonl(d), \
 	} }
 
-/* This table works for both IPv4 and IPv6;
- * just use prefixlen_netmask_map[prefixlength].ip.
- */
+ 
 const union nf_inet_addr ip_set_netmask_map[] = {
 	PREFIXES_MAP
 };
@@ -159,15 +157,13 @@ EXPORT_SYMBOL_GPL(ip_set_netmask_map);
 		  (__force __be32)c, (__force __be32)d,	\
 	} }
 
-/* This table works for both IPv4 and IPv6;
- * just use prefixlen_hostmask_map[prefixlength].ip.
- */
+ 
 const union nf_inet_addr ip_set_hostmask_map[] = {
 	PREFIXES_MAP
 };
 EXPORT_SYMBOL_GPL(ip_set_hostmask_map);
 
-/* Find the largest network which matches the range from left, in host order. */
+ 
 u32
 ip_set_range_to_cidr(u32 from, u32 to, u8 *cidr)
 {

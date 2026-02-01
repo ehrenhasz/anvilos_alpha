@@ -1,19 +1,5 @@
-/*
- * Copyright © 2018 Alexey Dobriyan <adobriyan@gmail.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-// Test /proc/*/fd lookup.
+ 
+
 
 #undef NDEBUG
 #include <assert.h>
@@ -29,7 +15,7 @@
 
 #include "proc.h"
 
-/* lstat(2) has more "coverage" in case non-symlink pops up somehow. */
+ 
 static void test_lookup_pass(const char *pathname)
 {
 	struct stat st;
@@ -60,7 +46,7 @@ static void test_lookup(unsigned int fd)
 	snprintf(buf, sizeof(buf), "/proc/self/fd/%u", fd);
 	test_lookup_pass(buf);
 
-	/* leading junk */
+	 
 	for (c = 1; c <= 255; c++) {
 		if (c == '/')
 			continue;
@@ -68,7 +54,7 @@ static void test_lookup(unsigned int fd)
 		test_lookup_fail(buf);
 	}
 
-	/* trailing junk */
+	 
 	for (c = 1; c <= 255; c++) {
 		if (c == '/')
 			continue;
@@ -104,7 +90,7 @@ int main(void)
 	if (unshare(CLONE_FILES) == -1)
 		return 1;
 
-	/* Wipe fdtable. */
+	 
 	do {
 		DIR *d;
 
@@ -141,18 +127,18 @@ next:
 		closedir(d);
 	} while (de);
 
-	/* Now fdtable is clean. */
+	 
 
 	fd = open("/", O_PATH|O_DIRECTORY);
 	assert(fd == 0);
 	test_lookup(fd);
 	close(fd);
 
-	/* Clean again! */
+	 
 
 	fd = open("/", O_PATH|O_DIRECTORY);
 	assert(fd == 0);
-	/* Default RLIMIT_NOFILE-1 */
+	 
 	target_fd = 1023;
 	while (target_fd > 0) {
 		if (dup2(fd, target_fd) == target_fd)

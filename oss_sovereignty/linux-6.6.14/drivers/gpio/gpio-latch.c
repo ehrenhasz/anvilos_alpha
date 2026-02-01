@@ -1,42 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO latch driver
- *
- *  Copyright (C) 2022 Sascha Hauer <s.hauer@pengutronix.de>
- *
- * This driver implements a GPIO (or better GPO as there is no input)
- * multiplexer based on latches like this:
- *
- * CLK0 ----------------------.        ,--------.
- * CLK1 -------------------.  `--------|>    #0 |
- *                         |           |        |
- * OUT0 ----------------+--|-----------|D0    Q0|-----|<
- * OUT1 --------------+-|--|-----------|D1    Q1|-----|<
- * OUT2 ------------+-|-|--|-----------|D2    Q2|-----|<
- * OUT3 ----------+-|-|-|--|-----------|D3    Q3|-----|<
- * OUT4 --------+-|-|-|-|--|-----------|D4    Q4|-----|<
- * OUT5 ------+-|-|-|-|-|--|-----------|D5    Q5|-----|<
- * OUT6 ----+-|-|-|-|-|-|--|-----------|D6    Q6|-----|<
- * OUT7 --+-|-|-|-|-|-|-|--|-----------|D7    Q7|-----|<
- *        | | | | | | | |  |           `--------'
- *        | | | | | | | |  |
- *        | | | | | | | |  |           ,--------.
- *        | | | | | | | |  `-----------|>    #1 |
- *        | | | | | | | |              |        |
- *        | | | | | | | `--------------|D0    Q0|-----|<
- *        | | | | | | `----------------|D1    Q1|-----|<
- *        | | | | | `------------------|D2    Q2|-----|<
- *        | | | | `--------------------|D3    Q3|-----|<
- *        | | | `----------------------|D4    Q4|-----|<
- *        | | `------------------------|D5    Q5|-----|<
- *        | `--------------------------|D6    Q6|-----|<
- *        `----------------------------|D7    Q7|-----|<
- *                                     `--------'
- *
- * The above is just an example. The actual number of number of latches and
- * the number of inputs per latch is derived from the number of GPIOs given
- * in the corresponding device tree properties.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -56,13 +19,10 @@ struct gpio_latch_priv {
 	unsigned int setup_duration_ns;
 	unsigned int clock_duration_ns;
 	unsigned long *shadow;
-	/*
-	 * Depending on whether any of the underlying GPIOs may sleep we either
-	 * use a mutex or a spinlock to protect our shadow map.
-	 */
+	 
 	union {
-		struct mutex mutex; /* protects @shadow */
-		spinlock_t spinlock; /* protects @shadow */
+		struct mutex mutex;  
+		spinlock_t spinlock;  
 	};
 };
 
@@ -128,12 +88,7 @@ static bool gpio_latch_can_sleep(struct gpio_latch_priv *priv, unsigned int n_la
 	return false;
 }
 
-/*
- * Some value which is still acceptable to delay in atomic context.
- * If we need to go higher we might have to switch to usleep_range(),
- * but that cannot ne used in atomic context and the driver would have
- * to be adjusted to support that.
- */
+ 
 #define DURATION_NS_MAX 5000
 
 static int gpio_latch_probe(struct platform_device *pdev)
@@ -201,7 +156,7 @@ static const struct of_device_id gpio_latch_ids[] = {
 	{
 		.compatible = "gpio-latch",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, gpio_latch_ids);
 

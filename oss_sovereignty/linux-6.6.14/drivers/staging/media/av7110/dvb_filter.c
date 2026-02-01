@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/string.h>
@@ -43,7 +43,7 @@ int dvb_filter_get_ac3info(u8 *mbuf, int count, struct dvb_audio_info *ai, int p
 	ai->off = c;
 	if (c+5 >= count) return -1;
 
-	ai->layer = 0;  // 0 for AC3
+	ai->layer = 0;  
 	headr = mbuf+c+2;
 
 	frame = (headr[2]&0x3f);
@@ -86,7 +86,7 @@ int dvb_filter_pes2ts(struct dvb_filter_pes2ts *p2ts, unsigned char *pes,
 	unsigned char *buf=p2ts->buf;
 	int ret=0, rest;
 
-	//len=6+((pes[4]<<8)|pes[5]);
+	
 
 	if (payload_start)
 		buf[1]|=0x40;

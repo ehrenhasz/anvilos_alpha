@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (c) 2021 Google
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 
-// This should be in sync with "util/ftrace.h"
+
 #define NUM_BUCKET  22
 
 struct {
@@ -71,7 +71,7 @@ int BPF_PROG(func_begin)
 
 	now = bpf_ktime_get_ns();
 
-	// overwrite timestamp for nested functions
+	
 	bpf_map_update_elem(&functime, &key, &now, BPF_ANY);
 	return 0;
 }
@@ -99,7 +99,7 @@ int BPF_PROG(func_end)
 		if (delta < 0)
 			return 0;
 
-		// calculate index using delta
+		
 		for (key = 0; key < (NUM_BUCKET - 1); key++) {
 			if (delta < (cmp_base << key))
 				break;

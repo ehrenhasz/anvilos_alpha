@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada 370 SoC clocks
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -16,11 +7,9 @@
 #include <linux/of.h>
 #include "common.h"
 
-/*
- * Core Clocks
- */
+ 
 
-#define SARL				0	/* Low part [0:31] */
+#define SARL				0	 
 #define	 SARL_A370_SSCG_ENABLE		BIT(10)
 #define	 SARL_A370_PCLK_FREQ_OPT	11
 #define	 SARL_A370_PCLK_FREQ_OPT_MASK	0xF
@@ -147,9 +136,7 @@ static const struct coreclk_soc_desc a370_coreclks = {
 	.num_ratios = ARRAY_SIZE(a370_coreclk_ratios),
 };
 
-/*
- * Clock Gating Control
- */
+ 
 
 static const struct clk_gating_soc_desc a370_gating_desc[] __initconst = {
 	{ "audio", NULL, 0, 0 },

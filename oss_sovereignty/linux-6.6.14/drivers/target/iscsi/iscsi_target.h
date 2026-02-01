@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ISCSI_TARGET_H
 #define ISCSI_TARGET_H
 
@@ -57,4 +57,4 @@ extern struct kmem_cache *lio_r2t_cache;
 extern struct ida sess_ida;
 extern struct mutex auth_id_lock;
 
-#endif   /*** ISCSI_TARGET_H ***/
+#endif    

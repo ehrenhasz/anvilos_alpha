@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/slab.h>
@@ -34,21 +34,12 @@ static long xenbus_alloc(domid_t domid)
 
 	xs_suspend();
 
-	/* If xenstored_ready is nonzero, that means we have already talked to
-	 * xenstore and set up watches. These watches will be restored by
-	 * xs_resume, but that requires communication over the port established
-	 * below that is not visible to anyone until the ioctl returns.
-	 *
-	 * This can be resolved by splitting the ioctl into two parts
-	 * (postponing the resume until xenstored is active) but this is
-	 * unnecessarily complex for the intended use where xenstored is only
-	 * started once - so return -EEXIST if it's already running.
-	 */
+	 
 	if (xenstored_ready)
 		goto out_err;
 
 	gnttab_grant_foreign_access_ref(GNTTAB_RESERVED_XENSTORE, domid,
-			virt_to_gfn(xen_store_interface), 0 /* writable */);
+			virt_to_gfn(xen_store_interface), 0  );
 
 	arg.dom = DOMID_SELF;
 	arg.remote_dom = domid;

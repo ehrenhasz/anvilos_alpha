@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DRM driver for Sitronix ST7586 panels
- *
- * Copyright 2017 David Lechner <david@lechnology.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -26,7 +22,7 @@
 #include <drm/drm_mipi_dbi.h>
 #include <drm/drm_rect.h>
 
-/* controller-specific commands */
+ 
 #define ST7586_DISP_MODE_GRAY	0x38
 #define ST7586_DISP_MODE_MONO	0x39
 #define ST7586_ENABLE_DDRAM	0x3a
@@ -46,19 +42,7 @@
 #define ST7586_DISP_CTRL_MX	BIT(6)
 #define ST7586_DISP_CTRL_MY	BIT(7)
 
-/*
- * The ST7586 controller has an unusual pixel format where 2bpp grayscale is
- * packed 3 pixels per byte with the first two pixels using 3 bits and the 3rd
- * pixel using only 2 bits.
- *
- * |  D7  |  D6  |  D5  ||      |      || 2bpp |
- * | (D4) | (D3) | (D2) ||  D1  |  D0  || GRAY |
- * +------+------+------++------+------++------+
- * |  1   |  1   |  1   ||  1   |  1   || 0  0 | black
- * |  1   |  0   |  0   ||  1   |  0   || 0  1 | dark gray
- * |  0   |  1   |  0   ||  0   |  1   || 1  0 | light gray
- * |  0   |  0   |  0   ||  0   |  0   || 1  1 | white
- */
+ 
 
 static const u8 st7586_lookup[] = { 0x7, 0x4, 0x2, 0x0 };
 
@@ -115,7 +99,7 @@ static void st7586_fb_dirty(struct iosys_map *src, struct drm_framebuffer *fb,
 	struct mipi_dbi *dbi = &dbidev->dbi;
 	int start, end, ret = 0;
 
-	/* 3 pixels per byte, so grow clip to nearest multiple of 3 */
+	 
 	rect->x1 = rounddown(rect->x1, 3);
 	rect->x2 = roundup(rect->x2, 3);
 
@@ -125,7 +109,7 @@ static void st7586_fb_dirty(struct iosys_map *src, struct drm_framebuffer *fb,
 	if (ret)
 		goto err_msg;
 
-	/* Pixels are packed 3 per byte */
+	 
 	start = rect->x1 / 3;
 	end = rect->x2 / 3;
 
@@ -249,12 +233,7 @@ static void st7586_pipe_disable(struct drm_simple_display_pipe *pipe)
 {
 	struct mipi_dbi_dev *dbidev = drm_to_mipi_dbi_dev(pipe->crtc.dev);
 
-	/*
-	 * This callback is not protected by drm_dev_enter/exit since we want to
-	 * turn off the display on regular driver unload. It's highly unlikely
-	 * that the underlying SPI controller is gone should this be called after
-	 * unplug.
-	 */
+	 
 
 	DRM_DEBUG_KMS("\n");
 
@@ -342,7 +321,7 @@ static int st7586_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Cannot read from this controller via SPI */
+	 
 	dbi->read_commands = NULL;
 
 	ret = mipi_dbi_dev_init_with_formats(dbidev, &st7586_pipe_funcs,
@@ -351,13 +330,7 @@ static int st7586_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/*
-	 * we are using 8-bit data, so we are not actually swapping anything,
-	 * but setting mipi->swap_bytes makes mipi_dbi_typec3_command() do the
-	 * right thing and not use 16-bit transfers (which results in swapped
-	 * bytes on little-endian systems and causes out of order data to be
-	 * sent to the display).
-	 */
+	 
 	dbi->swap_bytes = true;
 
 	drm_mode_config_reset(drm);

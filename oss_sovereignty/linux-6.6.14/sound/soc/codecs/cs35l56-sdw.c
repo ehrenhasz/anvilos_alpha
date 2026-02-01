@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// CS35L56 ALSA SoC audio driver SoundWire binding
-//
-// Copyright (C) 2023 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -20,7 +20,7 @@
 
 #include "cs35l56.h"
 
-/* Register addresses are offset when sent over SoundWire */
+ 
 #define CS35L56_SDW_ADDR_OFFSET		0x8000
 
 static int cs35l56_sdw_read_one(struct sdw_slave *peripheral, unsigned int reg, void *buf)
@@ -54,7 +54,7 @@ static int cs35l56_sdw_read(void *context, const void *reg_buf,
 		return cs35l56_sdw_read_one(peripheral, reg, val_buf);
 
 	while (val_size) {
-		bytes = SDW_REG_NO_PAGE - (reg & SDW_REGADDR); /* to end of page */
+		bytes = SDW_REG_NO_PAGE - (reg & SDW_REGADDR);  
 		if (bytes > val_size)
 			bytes = val_size;
 
@@ -103,7 +103,7 @@ static int cs35l56_sdw_gather_write(void *context,
 {
 	struct sdw_slave *peripheral = context;
 	const u8 *src_be = val_buf;
-	u32 val_le_buf[64];	/* Define u32 so it is 32-bit aligned */
+	u32 val_le_buf[64];	 
 	unsigned int reg, bytes;
 	int ret;
 
@@ -114,7 +114,7 @@ static int cs35l56_sdw_gather_write(void *context,
 		return cs35l56_sdw_write_one(peripheral, reg, src_be);
 
 	while (val_size) {
-		bytes = SDW_REG_NO_PAGE - (reg & SDW_REGADDR); /* to end of page */
+		bytes = SDW_REG_NO_PAGE - (reg & SDW_REGADDR);  
 		if (bytes > val_size)
 			bytes = val_size;
 		if (bytes > sizeof(val_le_buf))
@@ -141,18 +141,11 @@ static int cs35l56_sdw_write(void *context, const void *val_buf, size_t val_size
 {
 	const u8 *src_buf = val_buf;
 
-	/* First word of val_buf contains the destination address */
+	 
 	return cs35l56_sdw_gather_write(context, &src_buf[0], 4, &src_buf[4], val_size - 4);
 }
 
-/*
- * Registers are big-endian on I2C and SPI but little-endian on SoundWire.
- * Exported firmware controls are big-endian on I2C/SPI but little-endian on
- * SoundWire. Firmware files are always big-endian and are opaque blobs.
- * Present a big-endian regmap and hide the endianness swap, so that the ALSA
- * byte controls always have the same byte order, and firmware file blobs
- * can be written verbatim.
- */
+ 
 static const struct regmap_bus cs35l56_regmap_bus_sdw = {
 	.read = cs35l56_sdw_read,
 	.write = cs35l56_sdw_write,
@@ -176,12 +169,9 @@ static void cs35l56_sdw_init(struct sdw_slave *peripheral)
 		goto out;
 	}
 
-	/*
-	 * cs35l56_init can return with !init_done if it triggered
-	 * a soft reset.
-	 */
+	 
 	if (cs35l56->base.init_done) {
-		/* Enable SoundWire interrupts */
+		 
 		sdw_write_no_pm(peripheral, CS35L56_SDW_GEN_INT_MASK_1,
 				CS35L56_SDW_INT_MASK_CODEC_IRQ);
 	}
@@ -196,26 +186,17 @@ static int cs35l56_sdw_interrupt(struct sdw_slave *peripheral,
 {
 	struct cs35l56_private *cs35l56 = dev_get_drvdata(&peripheral->dev);
 
-	/* SoundWire core holds our pm_runtime when calling this function. */
+	 
 
 	dev_dbg(cs35l56->base.dev, "int control_port=%#x\n", status->control_port);
 
 	if ((status->control_port & SDW_SCP_INT1_IMPL_DEF) == 0)
 		return 0;
 
-	/*
-	 * Prevent bus manager suspending and possibly issuing a
-	 * bus-reset before the queued work has run.
-	 */
+	 
 	pm_runtime_get_noresume(cs35l56->base.dev);
 
-	/*
-	 * Mask and clear until it has been handled. The read of GEN_INT_STAT_1
-	 * is required as per the SoundWire spec for interrupt status bits
-	 * to clear. GEN_INT_MASK_1 masks the _inputs_ to GEN_INT_STAT1.
-	 * None of the interrupts are time-critical so use the
-	 * power-efficient queue.
-	 */
+	 
 	sdw_write_no_pm(peripheral, CS35L56_SDW_GEN_INT_MASK_1, 0);
 	sdw_read_no_pm(peripheral, CS35L56_SDW_GEN_INT_STAT_1);
 	sdw_write_no_pm(peripheral, CS35L56_SDW_GEN_INT_STAT_1, 0xFF);
@@ -232,7 +213,7 @@ static void cs35l56_sdw_irq_work(struct work_struct *work)
 
 	cs35l56_irq(-1, &cs35l56->base);
 
-	/* unmask interrupts */
+	 
 	if (!cs35l56->sdw_irq_no_unmask)
 		sdw_write_no_pm(cs35l56->sdw_peripheral, CS35L56_SDW_GEN_INT_MASK_1,
 				CS35L56_SDW_INT_MASK_CODEC_IRQ);
@@ -257,13 +238,13 @@ static int cs35l56_sdw_read_prop(struct sdw_slave *peripheral)
 	prop->quirks = SDW_SLAVE_QUIRKS_INVALID_INITIAL_PARITY;
 	prop->scp_int1_mask = SDW_SCP_INT1_BUS_CLASH | SDW_SCP_INT1_PARITY | SDW_SCP_INT1_IMPL_DEF;
 
-	/* DP1 - playback */
+	 
 	ports[0].num = CS35L56_SDW1_PLAYBACK_PORT;
 	ports[0].type = SDW_DPN_FULL;
 	ports[0].ch_prep_timeout = 10;
 	prop->sink_dpn_prop = &ports[0];
 
-	/* DP3 - capture */
+	 
 	ports[1].num = CS35L56_SDW1_CAPTURE_PORT;
 	ports[1].type = SDW_DPN_FULL;
 	ports[1].ch_prep_timeout = 10;
@@ -316,12 +297,7 @@ static int cs35l56_a1_kick_divider(struct cs35l56_private *cs35l56,
 		next_scale_reg = SDW_SCP_BUSCLOCK_SCALE_B1;
 	}
 
-	/*
-	 * Current clock scale value must be different to new value.
-	 * Modify current to guarantee this. If next still has the dummy
-	 * value we wrote when it was current, the core code has not set
-	 * a new scale so restore its original good value
-	 */
+	 
 	curr_scale = sdw_read_no_pm(peripheral, curr_scale_reg);
 	if (curr_scale < 0) {
 		dev_err(cs35l56->base.dev, "Failed to read current clock scale: %d\n", curr_scale);
@@ -398,7 +374,7 @@ static int __maybe_unused cs35l56_sdw_handle_unattach(struct cs35l56_private *cs
 	struct sdw_slave *peripheral = cs35l56->sdw_peripheral;
 
 	if (peripheral->unattach_request) {
-		/* Cannot access registers until bus is re-initialized. */
+		 
 		dev_dbg(cs35l56->base.dev, "Wait for initialization_complete\n");
 		if (!wait_for_completion_timeout(&peripheral->initialization_complete,
 						 msecs_to_jiffies(5000))) {
@@ -408,10 +384,7 @@ static int __maybe_unused cs35l56_sdw_handle_unattach(struct cs35l56_private *cs
 
 		peripheral->unattach_request = 0;
 
-		/*
-		 * Don't call regcache_mark_dirty(), we can't be sure that the
-		 * Manager really did issue a Bus Reset.
-		 */
+		 
 	}
 
 	return 0;
@@ -445,7 +418,7 @@ static int __maybe_unused cs35l56_sdw_runtime_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Re-enable SoundWire interrupts */
+	 
 	sdw_write_no_pm(cs35l56->sdw_peripheral, CS35L56_SDW_GEN_INT_MASK_1,
 			CS35L56_SDW_INT_MASK_CODEC_IRQ);
 
@@ -459,14 +432,11 @@ static int __maybe_unused cs35l56_sdw_system_suspend(struct device *dev)
 	if (!cs35l56->base.init_done)
 		return 0;
 
-	/*
-	 * Disable SoundWire interrupts.
-	 * Flush - don't cancel because that could leave an unbalanced pm_runtime_get.
-	 */
+	 
 	cs35l56->sdw_irq_no_unmask = true;
 	flush_work(&cs35l56->sdw_irq_work);
 
-	/* Mask interrupts and flush in case sdw_irq_work was queued again */
+	 
 	sdw_write_no_pm(cs35l56->sdw_peripheral, CS35L56_SDW_GEN_INT_MASK_1, 0);
 	sdw_read_no_pm(cs35l56->sdw_peripheral, CS35L56_SDW_GEN_INT_STAT_1);
 	sdw_write_no_pm(cs35l56->sdw_peripheral, CS35L56_SDW_GEN_INT_STAT_1, 0xFF);
@@ -480,7 +450,7 @@ static int __maybe_unused cs35l56_sdw_system_resume(struct device *dev)
 	struct cs35l56_private *cs35l56 = dev_get_drvdata(dev);
 
 	cs35l56->sdw_irq_no_unmask = false;
-	/* runtime_resume re-enables the interrupt */
+	 
 
 	return cs35l56_system_resume(dev);
 }
@@ -508,7 +478,7 @@ static int cs35l56_sdw_probe(struct sdw_slave *peripheral, const struct sdw_devi
 		return dev_err_probe(dev, ret, "Failed to allocate register map\n");
 	}
 
-	/* Start in cache-only until device is enumerated */
+	 
 	regcache_cache_only(cs35l56->base.regmap, true);
 
 	ret = cs35l56_common_probe(cs35l56);
@@ -522,7 +492,7 @@ static int cs35l56_sdw_remove(struct sdw_slave *peripheral)
 {
 	struct cs35l56_private *cs35l56 = dev_get_drvdata(&peripheral->dev);
 
-	/* Disable SoundWire interrupts */
+	 
 	cs35l56->sdw_irq_no_unmask = true;
 	cancel_work_sync(&cs35l56->sdw_irq_work);
 	sdw_write_no_pm(peripheral, CS35L56_SDW_GEN_INT_MASK_1, 0);
@@ -538,7 +508,7 @@ static const struct dev_pm_ops cs35l56_sdw_pm = {
 	SET_RUNTIME_PM_OPS(cs35l56_sdw_runtime_suspend, cs35l56_sdw_runtime_resume, NULL)
 	SYSTEM_SLEEP_PM_OPS(cs35l56_sdw_system_suspend, cs35l56_sdw_system_resume)
 	LATE_SYSTEM_SLEEP_PM_OPS(cs35l56_system_suspend_late, cs35l56_system_resume_early)
-	/* NOIRQ stage not needed, SoundWire doesn't use a hard IRQ */
+	 
 };
 
 static const struct sdw_device_id cs35l56_sdw_id[] = {

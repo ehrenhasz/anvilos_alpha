@@ -1,28 +1,8 @@
-/* `dir', `vdir' and `ls' directory listing programs for GNU.
+ 
 
-   Modified by Chet Ramey for Readline.
+ 
 
-   Copyright (C) 1985, 1988, 1990-1991, 1995-2021
-   Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
-
-/* Written by Richard Stallman and David MacKenzie.  */
-
-/* Color support by Peter Anvin <Peter.Anvin@linux.org> and Dennis
-   Flaherty <dennisf@denix.elk.miles.com> based on original patches by
-   Greg Lee <lee@uhunix.uhcc.hawaii.edu>.  */
+ 
 
 #define READLINE_LIBRARY
 
@@ -41,26 +21,26 @@
 
 #include <stdio.h>
 
-#include "posixstat.h" // stat related macros (S_ISREG, ...)
-#include <fcntl.h> // S_ISUID
+#include "posixstat.h"  
+#include <fcntl.h>  
 
 #ifndef S_ISDIR
 #  define	S_ISDIR(m)	(((m) & S_IFMT) == S_IFDIR)
 #endif
 
-// strlen()
+ 
 #if defined (HAVE_STRING_H)
 #  include <string.h>
-#else /* !HAVE_STRING_H */
+#else  
 #  include <strings.h>
-#endif /* !HAVE_STRING_H */
+#endif  
 
-// abort()
+ 
 #if defined (HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include "readline.h"
 #include "rldefs.h"
@@ -77,7 +57,7 @@ static void restore_default_color (void);
 
 COLOR_EXT_TYPE *_rl_color_ext_list = 0;
 
-/* Output a color indicator (which may contain nulls).  */
+ 
 void
 _rl_put_indicator (const struct bin_str *ind)
 {
@@ -130,7 +110,7 @@ _rl_print_prefix_color (void)
 {
   struct bin_str *s;
 
-  /* What do we want to use for the prefix? Let's try cyan first, see colors.h */
+   
   s = _rl_custom_readline_prefix ();
   if (s == 0)
     s = &_rl_color_indicator[C_PREFIX];
@@ -147,24 +127,24 @@ _rl_print_prefix_color (void)
     return 1;
 }
   
-/* Returns whether any color sequence was printed. */
+ 
 bool
 _rl_print_color_indicator (const char *f)
 {
   enum indicator_no colored_filetype;
-  COLOR_EXT_TYPE *ext;	/* Color extension */
-  size_t len;		/* Length of name */
+  COLOR_EXT_TYPE *ext;	 
+  size_t len;		 
 
   const char* name;
   char *filename;
   struct stat astat, linkstat;
   mode_t mode;
-  int linkok;	/* 1 == ok, 0 == dangling symlink, -1 == missing */
+  int linkok;	 
   int stat_ok;
 
   name = f;
 
-  /* This should already have undergone tilde expansion */
+   
   filename = 0;
   if (rl_filename_stat_hook)
     {
@@ -195,16 +175,16 @@ _rl_print_color_indicator (const char *f)
   else
     linkok = -1;
 
-  /* Is this a nonexistent file?  If so, linkok == -1.  */
+   
 
   if (linkok == -1 && _rl_color_indicator[C_MISSING].string != NULL)
     colored_filetype = C_MISSING;
   else if (linkok == 0 && _rl_color_indicator[C_ORPHAN].string != NULL)
-    colored_filetype = C_ORPHAN;	/* dangling symlink */
+    colored_filetype = C_ORPHAN;	 
   else if(stat_ok != 0)
     {
       static enum indicator_no filetype_indicator[] = FILETYPE_INDICATORS;
-      colored_filetype = filetype_indicator[normal]; //f->filetype];
+      colored_filetype = filetype_indicator[normal]; 
     }
   else
     {
@@ -222,7 +202,7 @@ _rl_print_color_indicator (const char *f)
             colored_filetype = C_SETGID;
           else
 #endif
-          if (is_colored (C_CAP) && 0) //f->has_capability)
+          if (is_colored (C_CAP) && 0) 
             colored_filetype = C_CAP;
           else if ((mode & S_IXUGO) != 0 && is_colored (C_EXEC))
             colored_filetype = C_EXEC;
@@ -264,18 +244,18 @@ _rl_print_color_indicator (const char *f)
         colored_filetype = C_CHR;
       else
         {
-          /* Classify a file of some other type as C_ORPHAN.  */
+           
           colored_filetype = C_ORPHAN;
         }
     }
 
-  /* Check the file's suffix only if still classified as C_FILE.  */
+   
   ext = NULL;
   if (colored_filetype == C_FILE)
     {
-      /* Test if NAME has a recognized suffix.  */
+       
       len = strlen (name);
-      name += len;		/* Pointer to final \0.  */
+      name += len;		 
       for (ext = _rl_color_ext_list; ext != NULL; ext = ext->next)
         {
           if (ext->ext.len <= len
@@ -285,14 +265,14 @@ _rl_print_color_indicator (const char *f)
         }
     }
 
-  free (filename);	/* NULL or savestring return value */
+  free (filename);	 
 
   {
     const struct bin_str *const s
       = ext ? &(ext->seq) : &_rl_color_indicator[colored_filetype];
     if (s->string != NULL)
       {
-        /* Need to reset so not dealing with attribute combinations */
+         
         if (is_colored (C_NORM))
 	  restore_default_color ();
         _rl_put_indicator (&_rl_color_indicator[C_LEFT]);
@@ -317,4 +297,4 @@ _rl_prep_non_filename_text (void)
       _rl_put_indicator (&_rl_color_indicator[C_RIGHT]);
     }
 }
-#endif /* COLOR_SUPPORT */
+#endif  

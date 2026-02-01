@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 Meta Platforms, Inc. and affiliates.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/bpf.h>
@@ -157,7 +155,7 @@ static void cgroup_storage_map_free(struct bpf_map *map)
 	bpf_local_storage_map_free(map, &cgroup_cache, NULL);
 }
 
-/* *gfp_flags* is a hidden argument provided by the verifier */
+ 
 BPF_CALL_5(bpf_cgrp_storage_get, struct bpf_map *, map, struct cgroup *, cgroup,
 	   void *, value, u64, flags, gfp_t, gfp_flags)
 {
@@ -177,7 +175,7 @@ BPF_CALL_5(bpf_cgrp_storage_get, struct bpf_map *, map, struct cgroup *, cgroup,
 	if (sdata)
 		goto unlock;
 
-	/* only allocate new storage, when the cgroup is refcounted */
+	 
 	if (!percpu_ref_is_dying(&cgroup->self.refcnt) &&
 	    (flags & BPF_LOCAL_STORAGE_GET_F_CREATE))
 		sdata = bpf_local_storage_update(cgroup, (struct bpf_local_storage_map *)map,

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ARM Generic Interrupt Controller (GIC) private defines that's only
- * shared among the GIC library code.
- */
+ 
+ 
 
 #ifndef SELFTEST_KVM_GIC_PRIVATE_H
 #define SELFTEST_KVM_GIC_PRIVATE_H
@@ -29,4 +26,4 @@ struct gic_common_ops {
 
 extern const struct gic_common_ops gicv3_ops;
 
-#endif /* SELFTEST_KVM_GIC_PRIVATE_H */
+#endif  

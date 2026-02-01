@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
@@ -30,8 +27,8 @@ struct mpa_v2_hdr {
 };
 
 #define MPA_V2_PEER2PEER_MODEL  0x8000
-#define MPA_V2_SEND_RTR         0x4000	/* on ird */
-#define MPA_V2_READ_RTR         0x4000	/* on ord */
+#define MPA_V2_SEND_RTR         0x4000	 
+#define MPA_V2_READ_RTR         0x4000	 
 #define MPA_V2_WRITE_RTR        0x8000
 #define MPA_V2_IRD_ORD_MASK     0x3FFF
 
@@ -56,14 +53,14 @@ struct mpa_v2_hdr {
 #define QED_IWARP_DEF_MAX_RT_TIME	(0)
 #define QED_IWARP_DEF_CWND_FACTOR	(4)
 #define QED_IWARP_DEF_KA_MAX_PROBE_CNT	(5)
-#define QED_IWARP_DEF_KA_TIMEOUT	(1200000)	/* 20 min */
-#define QED_IWARP_DEF_KA_INTERVAL	(1000)		/* 1 sec */
+#define QED_IWARP_DEF_KA_TIMEOUT	(1200000)	 
+#define QED_IWARP_DEF_KA_INTERVAL	(1000)		 
 
 static int qed_iwarp_async_event(struct qed_hwfn *p_hwfn, u8 fw_event_code,
 				 __le16 echo, union event_ring_data *data,
 				 u8 fw_return_code);
 
-/* Override devinfo with iWARP specific values */
+ 
 void qed_iwarp_init_devinfo(struct qed_hwfn *p_hwfn)
 {
 	struct qed_rdma_device *dev = p_hwfn->p_rdma_info->dev;
@@ -87,10 +84,7 @@ void qed_iwarp_init_hw(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
 	p_hwfn->b_rdma_enabled_in_prs = true;
 }
 
-/* We have two cid maps, one for tcp which should be used only from passive
- * syn processing and replacing a pre-allocated ep in the list. The second
- * for active tcp and for QPs.
- */
+ 
 static void qed_iwarp_cid_cleaned(struct qed_hwfn *p_hwfn, u32 cid)
 {
 	cid -= qed_cxt_get_proto_cid_start(p_hwfn, p_hwfn->p_rdma_info->proto);
@@ -150,11 +144,7 @@ static void qed_iwarp_set_tcp_cid(struct qed_hwfn *p_hwfn, u32 cid)
 	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
 }
 
-/* This function allocates a cid for passive tcp (called from syn receive)
- * the reason it's separate from the regular cid allocation is because it
- * is assured that these cids already have ilt allocated. They are preallocated
- * to ensure that we won't need to allocate memory during syn processing
- */
+ 
 static int qed_iwarp_alloc_tcp_cid(struct qed_hwfn *p_hwfn, u32 *cid)
 {
 	int rc;
@@ -293,7 +283,7 @@ static int qed_iwarp_modify_fw(struct qed_hwfn *p_hwfn, struct qed_rdma_qp *qp)
 	u16 flags, trans_to_state;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qp->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -381,9 +371,7 @@ qed_iwarp_modify_qp(struct qed_hwfn *p_hwfn,
 	bool modify_fw = false;
 	int rc = 0;
 
-	/* modify QP can be called from upper-layer or as a result of async
-	 * RST/FIN... therefore need to protect
-	 */
+	 
 	spin_lock_bh(&p_hwfn->p_rdma_info->iwarp.qp_lock);
 	prev_iw_state = qp->iwarp_state;
 
@@ -431,7 +419,7 @@ qed_iwarp_modify_qp(struct qed_hwfn *p_hwfn,
 			qp->iwarp_state = new_state;
 			break;
 		case QED_IWARP_QP_STATE_CLOSING:
-			/* could happen due to race... do nothing.... */
+			 
 			break;
 		default:
 			rc = -EINVAL;
@@ -465,7 +453,7 @@ int qed_iwarp_fw_destroy(struct qed_hwfn *p_hwfn, struct qed_rdma_qp *qp)
 	struct qed_spq_entry *p_ent;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qp->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -517,7 +505,7 @@ int qed_iwarp_destroy_qp(struct qed_hwfn *p_hwfn, struct qed_rdma_qp *qp)
 			return rc;
 	}
 
-	/* Make sure ep is closed before returning and freeing memory. */
+	 
 	if (ep) {
 		while (READ_ONCE(ep->state) != QED_IWARP_EP_CLOSED &&
 		       wait_count++ < 200)
@@ -751,16 +739,14 @@ qed_iwarp_mpa_received(struct qed_hwfn *p_hwfn, struct qed_iwarp_ep *ep)
 		   mpa_rev, *((u32 *)(ep->ep_buffer_virt->in_pdata)));
 
 	if (mpa_rev == MPA_NEGOTIATION_TYPE_ENHANCED) {
-		/* Read ord/ird values from private data buffer */
+		 
 		mpa_v2 = (struct mpa_v2_hdr *)ep->ep_buffer_virt->in_pdata;
 		mpa_hdr_size = sizeof(*mpa_v2);
 
 		mpa_ord = ntohs(mpa_v2->ord);
 		mpa_ird = ntohs(mpa_v2->ird);
 
-		/* Temprary store in cm_info incoming ord/ird requested, later
-		 * replace with negotiated value during accept
-		 */
+		 
 		ep->cm_info.ord = (u8)min_t(u16,
 					    (mpa_ord & MPA_V2_IRD_ORD_MASK),
 					    QED_IWARP_ORD_DEFAULT);
@@ -769,7 +755,7 @@ qed_iwarp_mpa_received(struct qed_hwfn *p_hwfn, struct qed_iwarp_ep *ep)
 					    (mpa_ird & MPA_V2_IRD_ORD_MASK),
 					    QED_IWARP_IRD_DEFAULT);
 
-		/* Peer2Peer negotiation */
+		 
 		ep->rtr_type = MPA_RTR_TYPE_NONE;
 		if (mpa_ird & MPA_V2_PEER2PEER_MODEL) {
 			if (mpa_ord & MPA_V2_WRITE_RTR)
@@ -783,7 +769,7 @@ qed_iwarp_mpa_received(struct qed_hwfn *p_hwfn, struct qed_iwarp_ep *ep)
 
 			ep->rtr_type &= iwarp_info->rtr_type;
 
-			/* if we're left with no match send our capabilities */
+			 
 			if (ep->rtr_type == MPA_RTR_TYPE_NONE)
 				ep->rtr_type = iwarp_info->rtr_type;
 		}
@@ -800,7 +786,7 @@ qed_iwarp_mpa_received(struct qed_hwfn *p_hwfn, struct qed_iwarp_ep *ep)
 		   mpa_rev, ep->cm_info.ord, ep->cm_info.ird, ep->rtr_type,
 		   async_data->mpa_request.ulp_data_len, mpa_hdr_size);
 
-	/* Strip mpa v2 hdr from private data before sending to upper layer */
+	 
 	ep->cm_info.private_data = ep->ep_buffer_virt->in_pdata + mpa_hdr_size;
 
 	ulp_data_len = le16_to_cpu(async_data->mpa_request.ulp_data_len);
@@ -901,7 +887,7 @@ qed_iwarp_mpa_offload(struct qed_hwfn *p_hwfn, struct qed_iwarp_ep *ep)
 	ep->state = QED_IWARP_EP_MPA_OFFLOADED;
 	rc = qed_spq_post(p_hwfn, p_ent, NULL);
 	if (!reject)
-		ep->cid = qp->icid;	/* Now they're migrated. */
+		ep->cid = qp->icid;	 
 
 	DP_VERBOSE(p_hwfn,
 		   QED_MSG_RDMA,
@@ -924,9 +910,7 @@ qed_iwarp_return_ep(struct qed_hwfn *p_hwfn, struct qed_iwarp_ep *ep)
 	memset(&ep->cm_info, 0, sizeof(ep->cm_info));
 
 	if (ep->tcp_cid == QED_IWARP_INVALID_TCP_CID) {
-		/* We don't care about the return code, it's ok if tcp_cid
-		 * remains invalid...in this case we'll defer allocation
-		 */
+		 
 		qed_iwarp_alloc_tcp_cid(p_hwfn, &ep->tcp_cid);
 	}
 	spin_lock_bh(&p_hwfn->p_rdma_info->iwarp.iw_lock);
@@ -995,9 +979,7 @@ qed_iwarp_mpa_reply_arrived(struct qed_hwfn *p_hwfn, struct qed_iwarp_ep *ep)
 #define QED_IWARP_CONNECT_MODE_STRING(ep) \
 	((ep)->connect_mode == TCP_CONNECT_PASSIVE) ? "Passive" : "Active"
 
-/* Called as a result of the event:
- * IWARP_EVENT_TYPE_ASYNC_MPA_HANDSHAKE_COMPLETE
- */
+ 
 static void
 qed_iwarp_mpa_complete(struct qed_hwfn *p_hwfn,
 		       struct qed_iwarp_ep *ep, u8 fw_return_code)
@@ -1080,20 +1062,16 @@ qed_iwarp_mpa_complete(struct qed_hwfn *p_hwfn,
 	}
 
 	if (fw_return_code != RDMA_RETURN_OK)
-		/* paired with READ_ONCE in destroy_qp */
+		 
 		smp_store_release(&ep->state, QED_IWARP_EP_CLOSED);
 
 	ep->event_cb(ep->cb_context, &params);
 
-	/* on passive side, if there is no associated QP (REJECT) we need to
-	 * return the ep to the pool, (in the regular case we add an element
-	 * in accept instead of this one.
-	 * In both cases we need to remove it from the ep_list.
-	 */
+	 
 	if (fw_return_code != RDMA_RETURN_OK) {
 		ep->tcp_cid = QED_IWARP_INVALID_TCP_CID;
 		if ((ep->connect_mode == TCP_CONNECT_PASSIVE) &&
-		    (!ep->qp)) {	/* Rejected */
+		    (!ep->qp)) {	 
 			qed_iwarp_return_ep(p_hwfn, ep);
 		} else {
 			spin_lock_bh(&p_hwfn->p_rdma_info->iwarp.iw_lock);
@@ -1173,7 +1151,7 @@ int qed_iwarp_connect(void *rdma_cxt,
 
 	iwarp_info = &p_hwfn->p_rdma_info->iwarp;
 
-	/* Allocate ep object */
+	 
 	rc = qed_iwarp_alloc_cid(p_hwfn, &cid);
 	if (rc)
 		return rc;
@@ -1257,16 +1235,11 @@ static struct qed_iwarp_ep *qed_iwarp_get_free_ep(struct qed_hwfn *p_hwfn)
 	ep = list_first_entry(&p_hwfn->p_rdma_info->iwarp.ep_free_list,
 			      struct qed_iwarp_ep, list_entry);
 
-	/* in some cases we could have failed allocating a tcp cid when added
-	 * from accept / failure... retry now..this is not the common case.
-	 */
+	 
 	if (ep->tcp_cid == QED_IWARP_INVALID_TCP_CID) {
 		rc = qed_iwarp_alloc_tcp_cid(p_hwfn, &ep->tcp_cid);
 
-		/* if we fail we could look for another entry with a valid
-		 * tcp_cid, but since we don't expect to reach this anyway
-		 * it's not worth the handling
-		 */
+		 
 		if (rc) {
 			ep->tcp_cid = QED_IWARP_INVALID_TCP_CID;
 			ep = NULL;
@@ -1284,10 +1257,7 @@ out:
 #define QED_IWARP_MAX_CID_CLEAN_TIME  100
 #define QED_IWARP_MAX_NO_PROGRESS_CNT 5
 
-/* This function waits for all the bits of a bmap to be cleared, as long as
- * there is progress ( i.e. the number of bits left to be cleared decreases )
- * the function continues.
- */
+ 
 static int
 qed_iwarp_wait_cid_map_cleared(struct qed_hwfn *p_hwfn, struct qed_bmap *bmap)
 {
@@ -1299,11 +1269,7 @@ qed_iwarp_wait_cid_map_cleared(struct qed_hwfn *p_hwfn, struct qed_bmap *bmap)
 	prev_weight = weight;
 
 	while (weight) {
-		/* If the HW device is during recovery, all resources are
-		 * immediately reset without receiving a per-cid indication
-		 * from HW. In this case we don't expect the cid_map to be
-		 * cleared.
-		 */
+		 
 		if (p_hwfn->cdev->recov_in_prog)
 			return 0;
 
@@ -1338,11 +1304,11 @@ static int qed_iwarp_wait_for_all_cids(struct qed_hwfn *p_hwfn)
 	if (rc)
 		return rc;
 
-	/* Now free the tcp cids from the main cid map */
+	 
 	for (i = 0; i < QED_IWARP_PREALLOC_CNT; i++)
 		qed_bmap_release_id(p_hwfn, &p_hwfn->p_rdma_info->cid_map, i);
 
-	/* Now wait for all cids to be completed */
+	 
 	return qed_iwarp_wait_cid_map_cleared(p_hwfn,
 					      &p_hwfn->p_rdma_info->cid_map);
 }
@@ -1386,19 +1352,14 @@ static int qed_iwarp_prealloc_ep(struct qed_hwfn *p_hwfn, bool init)
 		if (rc)
 			return rc;
 
-		/* During initialization we allocate from the main pool,
-		 * afterwards we allocate only from the tcp_cid.
-		 */
+		 
 		if (init) {
 			rc = qed_iwarp_alloc_cid(p_hwfn, &cid);
 			if (rc)
 				goto err;
 			qed_iwarp_set_tcp_cid(p_hwfn, cid);
 		} else {
-			/* We don't care about the return code, it's ok if
-			 * tcp_cid remains invalid...in this case we'll
-			 * defer allocation
-			 */
+			 
 			qed_iwarp_alloc_tcp_cid(p_hwfn, &cid);
 		}
 
@@ -1422,10 +1383,7 @@ int qed_iwarp_alloc(struct qed_hwfn *p_hwfn)
 {
 	int rc;
 
-	/* Allocate bitmap for tcp cid. These are used by passive side
-	 * to ensure it can allocate a tcp cid during dpc that was
-	 * pre-acquired and doesn't require dynamic allocation of ilt
-	 */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_hwfn->p_rdma_info->tcp_cid_map,
 				 QED_IWARP_PREALLOC_CNT, "TCP_CID");
 	if (rc) {
@@ -1488,9 +1446,7 @@ int qed_iwarp_accept(void *rdma_cxt, struct qed_iwarp_accept_in *iparams)
 	ep->qp->ep = ep;
 
 	if (ep->mpa_rev == MPA_NEGOTIATION_TYPE_ENHANCED) {
-		/* Negotiate ord/ird: if upperlayer requested ord larger than
-		 * ird advertised by remote, we need to decrease our ord
-		 */
+		 
 		if (iparams->ord > ep->cm_info.ird)
 			iparams->ord = ep->cm_info.ird;
 
@@ -1499,7 +1455,7 @@ int qed_iwarp_accept(void *rdma_cxt, struct qed_iwarp_accept_in *iparams)
 			iparams->ird = 1;
 	}
 
-	/* Update cm_info ord/ird to be negotiated values */
+	 
 	ep->cm_info.ord = iparams->ord;
 	ep->cm_info.ird = iparams->ird;
 
@@ -1801,14 +1757,14 @@ enum qed_iwarp_mpa_pkt_type {
 #define QED_IWARP_MPA_FPDU_LENGTH_SIZE (2)
 #define QED_IWARP_MPA_CRC32_DIGEST_SIZE (4)
 
-/* Pad to multiple of 4 */
+ 
 #define QED_IWARP_PDU_DATA_LEN_WITH_PAD(data_len) ALIGN(data_len, 4)
 #define QED_IWARP_FPDU_LEN_WITH_PAD(_mpa_len)				   \
 	(QED_IWARP_PDU_DATA_LEN_WITH_PAD((_mpa_len) +			   \
 					 QED_IWARP_MPA_FPDU_LENGTH_SIZE) + \
 					 QED_IWARP_MPA_CRC32_DIGEST_SIZE)
 
-/* fpdu can be fragmented over maximum 3 bds: header, partial mpa, unaligned */
+ 
 #define QED_IWARP_MAX_BDS_PER_FPDU 3
 
 static const char * const pkt_type_str[] = {
@@ -1835,9 +1791,7 @@ qed_iwarp_mpa_classify(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* special case of one byte remaining...
-	 * lower byte will be read next packet
-	 */
+	 
 	if (tcp_payload_len == 1) {
 		fpdu->fpdu_length = *mpa_data << BITS_PER_BYTE;
 		pkt_type = QED_IWARP_MPA_PKT_PARTIAL;
@@ -1879,7 +1833,7 @@ qed_iwarp_init_fpdu(struct qed_iwarp_ll2_buff *buf,
 	else if (tcp_payload_size < fpdu->fpdu_length)
 		fpdu->incomplete_bytes = fpdu->fpdu_length - tcp_payload_size;
 	else
-		fpdu->incomplete_bytes = 0;	/* complete fpdu */
+		fpdu->incomplete_bytes = 0;	 
 
 	fpdu->mpa_frag_len = fpdu->fpdu_length - fpdu->incomplete_bytes;
 }
@@ -1894,12 +1848,7 @@ qed_iwarp_cp_pkt(struct qed_hwfn *p_hwfn,
 	u8 *tmp_buf = p_hwfn->p_rdma_info->iwarp.mpa_intermediate_buf;
 	int rc;
 
-	/* need to copy the data from the partial packet stored in fpdu
-	 * to the new buf, for this we also need to move the data currently
-	 * placed on the buf. The assumption is that the buffer is big enough
-	 * since fpdu_length <= mss, we use an intermediate buffer since
-	 * we may need to copy the new data to an overlapping location
-	 */
+	 
 	if ((fpdu->mpa_frag_len + tcp_payload_size) > (u16)buf->buff_size) {
 		DP_ERR(p_hwfn,
 		       "MPA ALIGN: Unexpected: buffer is not large enough for split fpdu buff_size = %d mpa_frag_len = %d, tcp_payload_size = %d, incomplete_bytes = %d\n",
@@ -1921,15 +1870,13 @@ qed_iwarp_cp_pkt(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* If we managed to post the buffer copy the data to the new buffer
-	 * o/w this will occur in the next round...
-	 */
+	 
 	memcpy((u8 *)(buf->data), tmp_buf,
 	       fpdu->mpa_frag_len + tcp_payload_size);
 
 	fpdu->mpa_buf = buf;
-	/* fpdu->pkt_hdr remains as is */
-	/* fpdu->mpa_frag is overridden with new buf */
+	 
+	 
 	fpdu->mpa_frag = buf->data_phys_addr;
 	fpdu->mpa_frag_virt = buf->data;
 	fpdu->mpa_frag_len += tcp_payload_size;
@@ -1951,12 +1898,12 @@ qed_iwarp_update_fpdu_length(struct qed_hwfn *p_hwfn,
 {
 	u16 mpa_len;
 
-	/* Update incomplete packets if needed */
+	 
 	if (fpdu->incomplete_bytes == QED_IWARP_INVALID_FPDU_LENGTH) {
-		/* Missing lower byte is now available */
+		 
 		mpa_len = fpdu->fpdu_length | *mpa_data;
 		fpdu->fpdu_length = QED_IWARP_FPDU_LEN_WITH_PAD(mpa_len);
-		/* one byte of hdr */
+		 
 		fpdu->mpa_frag_len = 1;
 		fpdu->incomplete_bytes = fpdu->fpdu_length - 1;
 		DP_VERBOSE(p_hwfn,
@@ -1970,16 +1917,7 @@ qed_iwarp_update_fpdu_length(struct qed_hwfn *p_hwfn,
 	(GET_FIELD((_curr_pkt)->flags,	   \
 		   UNALIGNED_OPAQUE_DATA_PKT_REACHED_WIN_RIGHT_EDGE))
 
-/* This function is used to recycle a buffer using the ll2 drop option. It
- * uses the mechanism to ensure that all buffers posted to tx before this one
- * were completed. The buffer sent here will be sent as a cookie in the tx
- * completion function and can then be reposted to rx chain when done. The flow
- * that requires this is the flow where a FPDU splits over more than 3 tcp
- * segments. In this case the driver needs to re-post a rx buffer instead of
- * the one received, but driver can't simply repost a buffer it copied from
- * as there is a case where the buffer was originally a packed FPDU, and is
- * partially posted to FW. Driver needs to ensure FW is done with it.
- */
+ 
 static int
 qed_iwarp_recycle_pkt(struct qed_hwfn *p_hwfn,
 		      struct qed_iwarp_fpdu *fpdu,
@@ -2031,7 +1969,7 @@ qed_iwarp_win_right_edge(struct qed_hwfn *p_hwfn, struct qed_iwarp_fpdu *fpdu)
 	tx_pkt.enable_ip_cksum = true;
 	tx_pkt.enable_l4_cksum = true;
 	tx_pkt.calc_ip_len = true;
-	/* vlan overload with enum iwarp_ll2_tx_queues */
+	 
 	tx_pkt.vlan = IWARP_LL2_ALIGNED_RIGHT_TRIMMED_TX_QUEUE;
 
 	ll2_handle = p_hwfn->p_rdma_info->iwarp.ll2_mpa_handle;
@@ -2064,17 +2002,12 @@ qed_iwarp_send_fpdu(struct qed_hwfn *p_hwfn,
 
 	memset(&tx_pkt, 0, sizeof(tx_pkt));
 
-	/* An unaligned packet means it's split over two tcp segments. So the
-	 * complete packet requires 3 bds, one for the header, one for the
-	 * part of the fpdu of the first tcp segment, and the last fragment
-	 * will point to the remainder of the fpdu. A packed pdu, requires only
-	 * two bds, one for the header and one for the data.
-	 */
+	 
 	tx_pkt.num_of_bds = (pkt_type == QED_IWARP_MPA_PKT_UNALIGNED) ? 3 : 2;
 	tx_pkt.tx_dest = QED_LL2_TX_DEST_LB;
-	tx_pkt.l4_hdr_offset_w = fpdu->pkt_hdr_size >> 2; /* offset in words */
+	tx_pkt.l4_hdr_offset_w = fpdu->pkt_hdr_size >> 2;  
 
-	/* Send the mpa_buf only with the last fpdu (in case of packed) */
+	 
 	if (pkt_type == QED_IWARP_MPA_PKT_UNALIGNED ||
 	    tcp_payload_size <= fpdu->fpdu_length)
 		tx_pkt.cookie = fpdu->mpa_buf;
@@ -2084,23 +2017,21 @@ qed_iwarp_send_fpdu(struct qed_hwfn *p_hwfn,
 	tx_pkt.enable_ip_cksum = true;
 	tx_pkt.enable_l4_cksum = true;
 	tx_pkt.calc_ip_len = true;
-	/* vlan overload with enum iwarp_ll2_tx_queues */
+	 
 	tx_pkt.vlan = IWARP_LL2_ALIGNED_TX_QUEUE;
 
-	/* special case of unaligned packet and not packed, need to send
-	 * both buffers as cookie to release.
-	 */
+	 
 	if (tcp_payload_size == fpdu->incomplete_bytes)
 		fpdu->mpa_buf->piggy_buf = buf;
 
 	ll2_handle = p_hwfn->p_rdma_info->iwarp.ll2_mpa_handle;
 
-	/* Set first fragment to header */
+	 
 	rc = qed_ll2_prepare_tx_packet(p_hwfn, ll2_handle, &tx_pkt, true);
 	if (rc)
 		goto out;
 
-	/* Set second fragment to first part of packet */
+	 
 	rc = qed_ll2_set_fragment_of_tx_packet(p_hwfn, ll2_handle,
 					       fpdu->mpa_frag,
 					       fpdu->mpa_frag_len);
@@ -2112,7 +2043,7 @@ qed_iwarp_send_fpdu(struct qed_hwfn *p_hwfn,
 
 	first_mpa_offset = le16_to_cpu(curr_pkt->first_mpa_offset);
 
-	/* Set third fragment to second part of the packet */
+	 
 	rc = qed_ll2_set_fragment_of_tx_packet(p_hwfn,
 					       ll2_handle,
 					       buf->data_phys_addr +
@@ -2145,10 +2076,7 @@ qed_iwarp_mpa_get_data(struct qed_hwfn *p_hwfn,
 		     curr_pkt->tcp_payload_offset);
 }
 
-/* This function is called when an unaligned or incomplete MPA packet arrives
- * driver needs to align the packet, perhaps using previous data and send
- * it down to FW once it is aligned.
- */
+ 
 static int
 qed_iwarp_process_mpa_pkt(struct qed_hwfn *p_hwfn,
 			  struct qed_iwarp_ll2_mpa_buf *mpa_buf)
@@ -2164,7 +2092,7 @@ qed_iwarp_process_mpa_pkt(struct qed_hwfn *p_hwfn,
 	cid = le32_to_cpu(curr_pkt->cid);
 
 	fpdu = qed_iwarp_get_curr_fpdu(p_hwfn, (u16)cid);
-	if (!fpdu) { /* something corrupt with cid, post rx back */
+	if (!fpdu) {  
 		DP_ERR(p_hwfn, "Invalid cid, drop and post back to rx cid=%x\n",
 		       cid);
 		goto err;
@@ -2224,13 +2152,11 @@ qed_iwarp_process_mpa_pkt(struct qed_hwfn *p_hwfn,
 		case QED_IWARP_MPA_PKT_UNALIGNED:
 			qed_iwarp_update_fpdu_length(p_hwfn, fpdu, mpa_data);
 			if (mpa_buf->tcp_payload_len < fpdu->incomplete_bytes) {
-				/* special handling of fpdu split over more
-				 * than 2 segments
-				 */
+				 
 				if (QED_IWARP_IS_RIGHT_EDGE(curr_pkt)) {
 					rc = qed_iwarp_win_right_edge(p_hwfn,
 								      fpdu);
-					/* packet will be re-processed later */
+					 
 					if (rc)
 						return rc;
 				}
@@ -2238,7 +2164,7 @@ qed_iwarp_process_mpa_pkt(struct qed_hwfn *p_hwfn,
 				rc = qed_iwarp_cp_pkt(p_hwfn, fpdu, curr_pkt,
 						      buf,
 						      mpa_buf->tcp_payload_len);
-				if (rc) /* packet will be re-processed later */
+				if (rc)  
 					return rc;
 
 				mpa_buf->tcp_payload_len = 0;
@@ -2251,9 +2177,7 @@ qed_iwarp_process_mpa_pkt(struct qed_hwfn *p_hwfn,
 			if (rc) {
 				DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
 					   "Can't send FPDU:delay rc=%d\n", rc);
-				/* don't reset fpdu -> we need it for next
-				 * classify
-				 */
+				 
 				break;
 			}
 
@@ -2261,7 +2185,7 @@ qed_iwarp_process_mpa_pkt(struct qed_hwfn *p_hwfn,
 			le16_add_cpu(&curr_pkt->first_mpa_offset,
 				     fpdu->incomplete_bytes);
 
-			/* The framed PDU was sent - no more incomplete bytes */
+			 
 			fpdu->incomplete_bytes = 0;
 			break;
 		}
@@ -2289,16 +2213,14 @@ static void qed_iwarp_process_pending_pkts(struct qed_hwfn *p_hwfn)
 
 		rc = qed_iwarp_process_mpa_pkt(p_hwfn, mpa_buf);
 
-		/* busy means break and continue processing later, don't
-		 * remove the buf from the pending list.
-		 */
+		 
 		if (rc == -EBUSY)
 			break;
 
 		list_move_tail(&mpa_buf->list_entry,
 			       &iwarp_info->mpa_buf_list);
 
-		if (rc) {	/* different error, don't continue */
+		if (rc) {	 
 			DP_NOTICE(p_hwfn, "process pkts failed rc=%d\n", rc);
 			break;
 		}
@@ -2371,7 +2293,7 @@ qed_iwarp_ll2_comp_syn_pkt(void *cxt, struct qed_ll2_comp_rx_data *data)
 	memset(&cm_info, 0, sizeof(cm_info));
 	ll2_syn_handle = p_hwfn->p_rdma_info->iwarp.ll2_syn_handle;
 
-	/* Check if packet was received with errors... */
+	 
 	if (data->err_flags) {
 		DP_NOTICE(p_hwfn, "Error received on SYN packet: 0x%x\n",
 			  data->err_flags);
@@ -2392,7 +2314,7 @@ qed_iwarp_ll2_comp_syn_pkt(void *cxt, struct qed_ll2_comp_rx_data *data)
 	if (rc)
 		goto err;
 
-	/* Check if there is a listener for this 4-tuple+vlan */
+	 
 	listener = qed_iwarp_get_listener(p_hwfn, &cm_info);
 	if (!listener) {
 		DP_VERBOSE(p_hwfn,
@@ -2421,9 +2343,7 @@ qed_iwarp_ll2_comp_syn_pkt(void *cxt, struct qed_ll2_comp_rx_data *data)
 	}
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "Received syn on listening port\n");
-	/* There may be an open ep on this connection if this is a syn
-	 * retrasnmit... need to make sure there isn't...
-	 */
+	 
 	if (qed_iwarp_ep_exists(p_hwfn, &cm_info))
 		goto err;
 
@@ -2484,10 +2404,10 @@ static void qed_iwarp_ll2_comp_tx_pkt(void *cxt, u8 connection_handle,
 	struct qed_iwarp_ll2_buff *piggy;
 	struct qed_hwfn *p_hwfn = cxt;
 
-	if (!buffer)		/* can happen in packed mpa unaligned... */
+	if (!buffer)		 
 		return;
 
-	/* this was originally an rx packet, post it back */
+	 
 	piggy = buffer->piggy_buf;
 	if (piggy) {
 		buffer->piggy_buf = NULL;
@@ -2527,9 +2447,7 @@ static void qed_iwarp_ll2_rel_tx_pkt(void *cxt, u8 connection_handle,
 	kfree(buffer);
 }
 
-/* The only slowpath for iwarp ll2 is unalign flush. When this completion
- * is received, need to reset the FPDU.
- */
+ 
 static void
 qed_iwarp_ll2_slowpath(void *cxt,
 		       u8 connection_handle,
@@ -2621,7 +2539,7 @@ qed_iwarp_ll2_alloc_buffers(struct qed_hwfn *p_hwfn,
 		buffer->buff_size = buff_size;
 		rc = qed_iwarp_ll2_post_rx(p_hwfn, buffer, ll2_handle);
 		if (rc)
-			/* buffers will be deallocated by qed_ll2 */
+			 
 			break;
 	}
 	return rc;
@@ -2657,7 +2575,7 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* Start SYN connection */
+	 
 	cbs.rx_comp_cb = qed_iwarp_ll2_comp_syn_pkt;
 	cbs.rx_release_cb = qed_iwarp_ll2_rel_rx_pkt;
 	cbs.tx_comp_cb = qed_iwarp_ll2_comp_tx_pkt;
@@ -2667,12 +2585,12 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
 
 	memset(&data, 0, sizeof(data));
 	data.input.conn_type = QED_LL2_TYPE_IWARP;
-	/* SYN will use ctx based queues */
+	 
 	data.input.rx_conn_type = QED_LL2_RX_TYPE_CTX;
 	data.input.mtu = params->max_mtu;
 	data.input.rx_num_desc = QED_IWARP_LL2_SYN_RX_SIZE;
 	data.input.tx_num_desc = QED_IWARP_LL2_SYN_TX_SIZE;
-	data.input.tx_max_bds_per_packet = 1;	/* will never be fragmented */
+	data.input.tx_max_bds_per_packet = 1;	 
 	data.input.tx_tc = PKT_LB_TC;
 	data.input.tx_dest = QED_LL2_TX_DEST_LB;
 	data.p_connection_handle = &iwarp_info->ll2_syn_handle;
@@ -2699,9 +2617,9 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
 	if (rc)
 		goto err;
 
-	/* Start OOO connection */
+	 
 	data.input.conn_type = QED_LL2_TYPE_OOO;
-	/* OOO/unaligned will use legacy ll2 queues (ram based) */
+	 
 	data.input.rx_conn_type = QED_LL2_RX_TYPE_LEGACY;
 	data.input.mtu = params->max_mtu;
 
@@ -2712,7 +2630,7 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
 	data.input.rx_num_desc = n_ooo_bufs;
 	data.input.rx_num_ooo_buffers = n_ooo_bufs;
 
-	data.input.tx_max_bds_per_packet = 1;	/* will never be fragmented */
+	data.input.tx_max_bds_per_packet = 1;	 
 	data.input.tx_num_desc = QED_IWARP_LL2_OOO_DEF_TX_SIZE;
 	data.p_connection_handle = &iwarp_info->ll2_ooo_handle;
 
@@ -2724,17 +2642,14 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
 	if (rc)
 		goto err;
 
-	/* Start Unaligned MPA connection */
+	 
 	cbs.rx_comp_cb = qed_iwarp_ll2_comp_mpa_pkt;
 	cbs.slowpath_cb = qed_iwarp_ll2_slowpath;
 
 	memset(&data, 0, sizeof(data));
 	data.input.conn_type = QED_LL2_TYPE_IWARP;
 	data.input.mtu = params->max_mtu;
-	/* FW requires that once a packet arrives OOO, it must have at
-	 * least 2 rx buffers available on the unaligned connection
-	 * for handling the case that it is a partial fpdu.
-	 */
+	 
 	data.input.rx_num_desc = n_ooo_bufs * 2;
 	data.input.tx_num_desc = data.input.rx_num_desc;
 	data.input.tx_max_bds_per_packet = QED_IWARP_MAX_BDS_PER_FPDU;
@@ -2775,11 +2690,7 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
 		goto err;
 	}
 
-	/* The mpa_bufs array serves for pending RX packets received on the
-	 * mpa ll2 that don't have place on the tx ring and require later
-	 * processing. We can't fail on allocation of such a struct therefore
-	 * we allocate enough to take care of all rx packets
-	 */
+	 
 	iwarp_info->mpa_bufs = kcalloc(data.input.rx_num_desc,
 				       sizeof(*iwarp_info->mpa_bufs),
 				       GFP_KERNEL);
@@ -2825,7 +2736,7 @@ int qed_iwarp_setup(struct qed_hwfn *p_hwfn,
 		qed_iwarp_rcv_wnd_size[chip_id].four_ports :
 		qed_iwarp_rcv_wnd_size[chip_id].two_ports;
 
-	/* value 0 is used for ilog2(QED_IWARP_RCV_WND_SIZE_MIN) */
+	 
 	iwarp_info->rcv_wnd_scale = ilog2(rcv_wnd_size) -
 	    ilog2(QED_IWARP_RCV_WND_SIZE_MIN);
 	iwarp_info->rcv_wnd_size = rcv_wnd_size >> iwarp_info->rcv_wnd_scale;
@@ -2875,7 +2786,7 @@ static void qed_iwarp_qp_in_error(struct qed_hwfn *p_hwfn,
 	params.status = (fw_return_code == IWARP_QP_IN_ERROR_GOOD_CLOSE) ?
 			 0 : -ECONNRESET;
 
-	/* paired with READ_ONCE in destroy_qp */
+	 
 	smp_store_release(&ep->state, QED_IWARP_EP_CLOSED);
 
 	spin_lock_bh(&p_hwfn->p_rdma_info->iwarp.iw_lock);
@@ -2966,7 +2877,7 @@ qed_iwarp_tcp_connect_unsuccessful(struct qed_hwfn *p_hwfn,
 	params.event = QED_IWARP_EVENT_ACTIVE_COMPLETE;
 	params.ep_context = ep;
 	params.cm_info = &ep->cm_info;
-	/* paired with READ_ONCE in destroy_qp */
+	 
 	smp_store_release(&ep->state, QED_IWARP_EP_CLOSED);
 
 	switch (fw_return_code) {
@@ -3024,12 +2935,12 @@ qed_iwarp_connect_complete(struct qed_hwfn *p_hwfn,
 	u8 ll2_syn_handle = p_hwfn->p_rdma_info->iwarp.ll2_syn_handle;
 
 	if (ep->connect_mode == TCP_CONNECT_PASSIVE) {
-		/* Done with the SYN packet, post back to ll2 rx */
+		 
 		qed_iwarp_ll2_post_rx(p_hwfn, ep->syn, ll2_syn_handle);
 
 		ep->syn = NULL;
 
-		/* If connect failed - upper layer doesn't know about it */
+		 
 		if (fw_return_code == RDMA_RETURN_OK)
 			qed_iwarp_mpa_received(p_hwfn, ep);
 		else
@@ -3071,7 +2982,7 @@ static int qed_iwarp_async_event(struct qed_hwfn *p_hwfn, u8 fw_event_code,
 
 	switch (fw_event_code) {
 	case IWARP_EVENT_TYPE_ASYNC_CONNECT_COMPLETE:
-		/* Async completion after TCP 3-way handshake */
+		 
 		if (!qed_iwarp_check_ep_ok(p_hwfn, ep))
 			return -EINVAL;
 		DP_VERBOSE(p_hwfn,
@@ -3090,7 +3001,7 @@ static int qed_iwarp_async_event(struct qed_hwfn *p_hwfn, u8 fw_event_code,
 		qed_iwarp_exception_received(p_hwfn, ep, fw_return_code);
 		break;
 	case IWARP_EVENT_TYPE_ASYNC_QP_IN_ERROR_STATE:
-		/* Async completion for Close Connection ramrod */
+		 
 		if (!qed_iwarp_check_ep_ok(p_hwfn, ep))
 			return -EINVAL;
 		DP_VERBOSE(p_hwfn,
@@ -3100,7 +3011,7 @@ static int qed_iwarp_async_event(struct qed_hwfn *p_hwfn, u8 fw_event_code,
 		qed_iwarp_qp_in_error(p_hwfn, ep, fw_return_code);
 		break;
 	case IWARP_EVENT_TYPE_ASYNC_ENHANCED_MPA_REPLY_ARRIVED:
-		/* Async event for active side only */
+		 
 		if (!qed_iwarp_check_ep_ok(p_hwfn, ep))
 			return -EINVAL;
 		DP_VERBOSE(p_hwfn,
@@ -3128,7 +3039,7 @@ static int qed_iwarp_async_event(struct qed_hwfn *p_hwfn, u8 fw_event_code,
 	case IWARP_EVENT_TYPE_ASYNC_SRQ_EMPTY:
 		DP_NOTICE(p_hwfn, "IWARP_EVENT_TYPE_ASYNC_SRQ_EMPTY\n");
 		srq_offset = p_hwfn->p_rdma_info->srq_id_offset;
-		/* FW assigns value that is no greater than u16 */
+		 
 		srq_id = ((u16)le32_to_cpu(fw_handle->lo)) - srq_offset;
 		events.affiliated_event(events.context,
 					QED_IWARP_EVENT_SRQ_EMPTY,
@@ -3137,7 +3048,7 @@ static int qed_iwarp_async_event(struct qed_hwfn *p_hwfn, u8 fw_event_code,
 	case IWARP_EVENT_TYPE_ASYNC_SRQ_LIMIT:
 		DP_NOTICE(p_hwfn, "IWARP_EVENT_TYPE_ASYNC_SRQ_LIMIT\n");
 		srq_offset = p_hwfn->p_rdma_info->srq_id_offset;
-		/* FW assigns value that is no greater than u16 */
+		 
 		srq_id = ((u16)le32_to_cpu(fw_handle->lo)) - srq_offset;
 		events.affiliated_event(events.context,
 					QED_IWARP_EVENT_SRQ_LIMIT,

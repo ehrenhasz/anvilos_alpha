@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2021 Intel Corporation
- */
+ 
 
 #include <drm/drm_drv.h>
 
@@ -23,11 +19,7 @@ static int i915_check_nomodeset(void)
 {
 	bool use_kms = true;
 
-	/*
-	 * Enable KMS by default, unless explicitly overriden by
-	 * either the i915.modeset parameter or by the
-	 * nomodeset boot option.
-	 */
+	 
 
 	if (i915_modparams.modeset == 0)
 		use_kms = false;
@@ -36,7 +28,7 @@ static int i915_check_nomodeset(void)
 		use_kms = false;
 
 	if (!use_kms) {
-		/* Silently fail loading to not upset userspace. */
+		 
 		DRM_DEBUG_DRIVER("KMS disabled.\n");
 		return 1;
 	}
@@ -88,12 +80,7 @@ static int __init i915_init(void)
 			}
 			return err;
 		} else if (err > 0) {
-			/*
-			 * Early-exit success is reserved for things which
-			 * don't have an exit() function because we have no
-			 * idea how far they got or how to partially tear
-			 * them down.
-			 */
+			 
 			WARN_ON(init_funcs[i].exit);
 			break;
 		}

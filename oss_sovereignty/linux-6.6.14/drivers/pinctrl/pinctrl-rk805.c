@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Pinctrl driver for Rockchip RK805/RK806 PMIC
- *
- * Copyright (c) 2017, Fuzhou Rockchip Electronics Co., Ltd
- * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
- *
- * Author: Joseph Chen <chenjh@rock-chips.com>
- * Author: Xu Shengfei <xsf@rock-chips.com>
- *
- * Based on the pinctrl-as3722 driver
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/kernel.h>
@@ -44,19 +34,7 @@ struct rk805_pin_group {
 	unsigned int npins;
 };
 
-/*
- * @reg: gpio setting register;
- * @fun_reg: functions select register;
- * @fun_mask: functions select mask value, when set is gpio;
- * @dir_mask: input or output mask value, when set is output, otherwise input;
- * @val_mask: gpio set value, when set is level high, otherwise low;
- *
- * Different PMIC has different pin features, belowing 3 mask members are not
- * all necessary for every PMIC. For example, RK805 has 2 pins that can be used
- * as output only GPIOs, so func_mask and dir_mask are not needed. RK816 has 1
- * pin that can be used as TS/GPIO, so fun_mask, dir_mask and val_mask are all
- * necessary.
- */
+ 
 struct rk805_pin_config {
 	u8 reg;
 	u8 fun_reg;
@@ -115,13 +93,13 @@ static const char *const rk806_gpio_groups[] = {
 	"gpio_pwrctrl3",
 };
 
-/* RK805: 2 output only GPIOs */
+ 
 static const struct pinctrl_pin_desc rk805_pins_desc[] = {
 	PINCTRL_PIN(RK805_GPIO0, "gpio0"),
 	PINCTRL_PIN(RK805_GPIO1, "gpio1"),
 };
 
-/* RK806 */
+ 
 static const struct pinctrl_pin_desc rk806_pins_desc[] = {
 	PINCTRL_PIN(RK806_GPIO_DVS1, "gpio_pwrctrl1"),
 	PINCTRL_PIN(RK806_GPIO_DVS2, "gpio_pwrctrl2"),
@@ -255,7 +233,7 @@ static struct rk805_pin_config rk806_gpio_cfgs[] = {
 	}
 };
 
-/* generic gpio chip */
+ 
 static int rk805_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
 	struct rk805_pctrl_info *pci = gpiochip_get_data(chip);
@@ -305,7 +283,7 @@ static int rk805_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
 	unsigned int val;
 	int ret;
 
-	/* default output*/
+	 
 	if (!pci->pin_cfg[offset].dir_msk)
 		return GPIO_LINE_DIRECTION_OUT;
 
@@ -337,7 +315,7 @@ static const struct gpio_chip rk805_gpio_chip = {
 	.owner			= THIS_MODULE,
 };
 
-/* generic pinctrl */
+ 
 static int rk805_pinctrl_get_groups_count(struct pinctrl_dev *pctldev)
 {
 	struct rk805_pctrl_info *pci = pinctrl_dev_get_drvdata(pctldev);
@@ -457,7 +435,7 @@ static int rk805_pmx_gpio_set_direction(struct pinctrl_dev *pctldev,
 	struct rk805_pctrl_info *pci = pinctrl_dev_get_drvdata(pctldev);
 	int ret;
 
-	/* set direction */
+	 
 	if (!pci->pin_cfg[offset].dir_msk)
 		return 0;
 
@@ -600,21 +578,21 @@ static int rk805_pinctrl_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Add gpio chip */
+	 
 	ret = devm_gpiochip_add_data(&pdev->dev, &pci->gpio_chip, pci);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Couldn't add gpiochip\n");
 		return ret;
 	}
 
-	/* Add pinctrl */
+	 
 	pci->pctl = devm_pinctrl_register(&pdev->dev, &pci->pinctrl_desc, pci);
 	if (IS_ERR(pci->pctl)) {
 		dev_err(&pdev->dev, "Couldn't add pinctrl\n");
 		return PTR_ERR(pci->pctl);
 	}
 
-	/* Add pin range */
+	 
 	ret = gpiochip_add_pin_range(&pci->gpio_chip, dev_name(&pdev->dev),
 				     0, 0, pci->gpio_chip.ngpio);
 	if (ret < 0) {

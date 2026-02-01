@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 
 #ifndef __DSA_SWITCH_H
 #define __DSA_SWITCH_H
@@ -37,12 +37,12 @@ enum {
 	DSA_NOTIFIER_MASTER_STATE_CHANGE,
 };
 
-/* DSA_NOTIFIER_AGEING_TIME */
+ 
 struct dsa_notifier_ageing_time_info {
 	unsigned int ageing_time;
 };
 
-/* DSA_NOTIFIER_BRIDGE_* */
+ 
 struct dsa_notifier_bridge_info {
 	const struct dsa_port *dp;
 	struct dsa_bridge bridge;
@@ -50,7 +50,7 @@ struct dsa_notifier_bridge_info {
 	struct netlink_ext_ack *extack;
 };
 
-/* DSA_NOTIFIER_FDB_* */
+ 
 struct dsa_notifier_fdb_info {
 	const struct dsa_port *dp;
 	const unsigned char *addr;
@@ -58,7 +58,7 @@ struct dsa_notifier_fdb_info {
 	struct dsa_db db;
 };
 
-/* DSA_NOTIFIER_LAG_FDB_* */
+ 
 struct dsa_notifier_lag_fdb_info {
 	struct dsa_lag *lag;
 	const unsigned char *addr;
@@ -66,14 +66,14 @@ struct dsa_notifier_lag_fdb_info {
 	struct dsa_db db;
 };
 
-/* DSA_NOTIFIER_MDB_* */
+ 
 struct dsa_notifier_mdb_info {
 	const struct dsa_port *dp;
 	const struct switchdev_obj_port_mdb *mdb;
 	struct dsa_db db;
 };
 
-/* DSA_NOTIFIER_LAG_* */
+ 
 struct dsa_notifier_lag_info {
 	const struct dsa_port *dp;
 	struct dsa_lag lag;
@@ -81,31 +81,31 @@ struct dsa_notifier_lag_info {
 	struct netlink_ext_ack *extack;
 };
 
-/* DSA_NOTIFIER_VLAN_* */
+ 
 struct dsa_notifier_vlan_info {
 	const struct dsa_port *dp;
 	const struct switchdev_obj_port_vlan *vlan;
 	struct netlink_ext_ack *extack;
 };
 
-/* DSA_NOTIFIER_MTU */
+ 
 struct dsa_notifier_mtu_info {
 	const struct dsa_port *dp;
 	int mtu;
 };
 
-/* DSA_NOTIFIER_TAG_PROTO_* */
+ 
 struct dsa_notifier_tag_proto_info {
 	const struct dsa_device_ops *tag_ops;
 };
 
-/* DSA_NOTIFIER_TAG_8021Q_VLAN_* */
+ 
 struct dsa_notifier_tag_8021q_vlan_info {
 	const struct dsa_port *dp;
 	u16 vid;
 };
 
-/* DSA_NOTIFIER_MASTER_STATE_CHANGE */
+ 
 struct dsa_notifier_master_state_info {
 	const struct net_device *master;
 	bool operational;

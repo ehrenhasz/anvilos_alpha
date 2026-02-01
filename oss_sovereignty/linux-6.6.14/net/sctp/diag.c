@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright Red Hat Inc. 2017
- *
- * This file is part of the SCTP kernel implementation
- *
- * These functions implement sctp diag support.
- *
- * Please send any bug reports or fixes you make to the
- * email addresched(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Xin Long <lucien.xin@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/inet_diag.h>
@@ -22,7 +9,7 @@
 static void sctp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
 			       void *info);
 
-/* define some functions to make asoc/ep fill look clean */
+ 
 static void inet_diag_msg_sctpasoc_fill(struct inet_diag_msg *r,
 					struct sock *sk,
 					struct sctp_association *asoc)
@@ -115,7 +102,7 @@ static int inet_diag_msg_sctpaddrs_fill(struct sk_buff *skb,
 	return 0;
 }
 
-/* sctp asoc/ep fill*/
+ 
 static int inet_sctp_diag_fill(struct sock *sk, struct sctp_association *asoc,
 			       struct sk_buff *skb,
 			       const struct inet_diag_req_v2 *req,
@@ -214,7 +201,7 @@ errout:
 	return -EMSGSIZE;
 }
 
-/* callback and param */
+ 
 struct sctp_comm_param {
 	struct sk_buff *skb;
 	struct netlink_callback *cb;
@@ -344,7 +331,7 @@ static int sctp_sock_filter(struct sctp_endpoint *ep, struct sctp_transport *tsp
 	struct sock *sk = ep->base.sk;
 	const struct inet_diag_req_v2 *r = commp->r;
 
-	/* find the ep only once through the transports by this condition */
+	 
 	if (!list_is_first(&tsp->asoc->asocs, &ep->asocs))
 		return 0;
 
@@ -400,7 +387,7 @@ out:
 	return err;
 }
 
-/* define the functions for sctp_diag_handler*/
+ 
 static void sctp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
 			       void *info)
 {
@@ -469,12 +456,7 @@ static void sctp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
 	};
 	int pos = cb->args[2];
 
-	/* eps hashtable dumps
-	 * args:
-	 * 0 : if it will traversal listen sock
-	 * 1 : to record the sock pos of this time's traversal
-	 * 4 : to work as a temporary variable to traversal list
-	 */
+	 
 	if (cb->args[0] == 0) {
 		if (!(idiag_states & TCPF_LISTEN))
 			goto skip;
@@ -486,14 +468,7 @@ skip:
 		cb->args[4] = 0;
 	}
 
-	/* asocs by transport hashtable dump
-	 * args:
-	 * 1 : to record the assoc pos of this time's traversal
-	 * 2 : to record the transport pos of this time's traversal
-	 * 3 : to mark if we have dumped the ep info of the current asoc
-	 * 4 : to work as a temporary variable to traversal list
-	 * 5 : to save the sk we get from travelsing the tsp list.
-	 */
+	 
 	if (!(idiag_states & ~(TCPF_LISTEN | TCPF_CLOSE)))
 		goto done;
 

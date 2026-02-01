@@ -1,25 +1,4 @@
-/*
- * Copyright © 2008-2015 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #include "i915_drv.h"
 #include "intel_display_types.h"
@@ -94,7 +73,7 @@ static bool intel_dp_read_lttpr_common_caps(struct intel_dp *intel_dp,
 	       (int)sizeof(intel_dp->lttpr_common_caps),
 	       intel_dp->lttpr_common_caps);
 
-	/* The minimum value of LT_TUNABLE_PHY_REPEATER_FIELD_DATA_STRUCTURE_REV is 1.4 */
+	 
 	if (intel_dp->lttpr_common_caps[0] < 0x14)
 		goto reset_caps;
 
@@ -123,26 +102,14 @@ static int intel_dp_init_lttpr(struct intel_dp *intel_dp, const u8 dpcd[DP_RECEI
 		return 0;
 
 	lttpr_count = drm_dp_lttpr_count(intel_dp->lttpr_common_caps);
-	/*
-	 * Prevent setting LTTPR transparent mode explicitly if no LTTPRs are
-	 * detected as this breaks link training at least on the Dell WD19TB
-	 * dock.
-	 */
+	 
 	if (lttpr_count == 0)
 		return 0;
 
-	/*
-	 * See DP Standard v2.0 3.6.6.1. about the explicit disabling of
-	 * non-transparent mode and the disable->enable non-transparent mode
-	 * sequence.
-	 */
+	 
 	intel_dp_set_lttpr_transparent_mode(intel_dp, true);
 
-	/*
-	 * In case of unsupported number of LTTPRs or failing to switch to
-	 * non-transparent mode fall-back to transparent link training mode,
-	 * still taking into account any LTTPR common lane- rate/count limits.
-	 */
+	 
 	if (lttpr_count < 0)
 		return 0;
 
@@ -162,33 +129,13 @@ static int intel_dp_init_lttpr(struct intel_dp *intel_dp, const u8 dpcd[DP_RECEI
 	return lttpr_count;
 }
 
-/**
- * intel_dp_init_lttpr_and_dprx_caps - detect LTTPR and DPRX caps, init the LTTPR link training mode
- * @intel_dp: Intel DP struct
- *
- * Read the LTTPR common and DPRX capabilities and switch to non-transparent
- * link training mode if any is detected and read the PHY capabilities for all
- * detected LTTPRs. In case of an LTTPR detection error or if the number of
- * LTTPRs is more than is supported (8), fall back to the no-LTTPR,
- * transparent mode link training mode.
- *
- * Returns:
- *   >0  if LTTPRs were detected and the non-transparent LT mode was set. The
- *       DPRX capabilities are read out.
- *    0  if no LTTPRs or more than 8 LTTPRs were detected or in case of a
- *       detection failure and the transparent LT mode was set. The DPRX
- *       capabilities are read out.
- *   <0  Reading out the DPRX capabilities failed.
- */
+ 
 int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp)
 {
 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
 	int lttpr_count = 0;
 
-	/*
-	 * Detecting LTTPRs must be avoided on platforms with an AUX timeout
-	 * period < 3.2ms. (see DP Standard v2.0, 2.11.2, 3.6.6.1).
-	 */
+	 
 	if (!intel_dp_is_edp(intel_dp) &&
 	    (DISPLAY_VER(i915) >= 10 && !IS_GEMINILAKE(i915))) {
 		u8 dpcd[DP_RECEIVER_CAP_SIZE];
@@ -202,10 +149,7 @@ int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp)
 		lttpr_count = intel_dp_init_lttpr(intel_dp, dpcd);
 	}
 
-	/*
-	 * The DPTX shall read the DPRX caps after LTTPR detection, so re-read
-	 * it here.
-	 */
+	 
 	if (drm_dp_read_dpcd_caps(&intel_dp->aux, intel_dp->dpcd)) {
 		intel_dp_reset_lttpr_common_caps(intel_dp);
 		return -EIO;
@@ -270,10 +214,7 @@ static u8 intel_dp_phy_voltage_max(struct intel_dp *intel_dp,
 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
 	u8 voltage_max;
 
-	/*
-	 * Get voltage_max from the DPTX_PHY (source or LTTPR) upstream from
-	 * the DPRX_PHY we train.
-	 */
+	 
 	if (intel_dp_phy_is_downstream_of_source(intel_dp, dp_phy))
 		voltage_max = intel_dp->voltage_max(intel_dp, crtc_state);
 	else
@@ -292,10 +233,7 @@ static u8 intel_dp_phy_preemph_max(struct intel_dp *intel_dp,
 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
 	u8 preemph_max;
 
-	/*
-	 * Get preemph_max from the DPTX_PHY (source or LTTPR) upstream from
-	 * the DPRX_PHY we train.
-	 */
+	 
 	if (intel_dp_phy_is_downstream_of_source(intel_dp, dp_phy))
 		preemph_max = intel_dp->preemph_max(intel_dp);
 	else
@@ -317,7 +255,7 @@ static bool has_per_lane_signal_levels(struct intel_dp *intel_dp,
 		DISPLAY_VER(i915) >= 11;
 }
 
-/* 128b/132b */
+ 
 static u8 intel_dp_get_lane_adjust_tx_ffe_preset(struct intel_dp *intel_dp,
 						 const struct intel_crtc_state *crtc_state,
 						 enum drm_dp_phy dp_phy,
@@ -337,7 +275,7 @@ static u8 intel_dp_get_lane_adjust_tx_ffe_preset(struct intel_dp *intel_dp,
 	return tx_ffe;
 }
 
-/* 8b/10b */
+ 
 static u8 intel_dp_get_lane_adjust_vswing_preemph(struct intel_dp *intel_dp,
 						  const struct intel_crtc_state *crtc_state,
 						  enum drm_dp_phy dp_phy,
@@ -463,7 +401,7 @@ intel_dp_set_link_train(struct intel_dp *intel_dp,
 					       dp_phy, dp_train_pat);
 
 	buf[0] = dp_train_pat;
-	/* DP_TRAINING_LANEx_SET follow DP_TRAINING_PATTERN_SET */
+	 
 	memcpy(buf + 1, intel_dp->train_set, crtc_state->lane_count);
 	len = crtc_state->lane_count + 1;
 
@@ -580,23 +518,14 @@ intel_dp_update_link_train(struct intel_dp *intel_dp,
 	return ret == crtc_state->lane_count;
 }
 
-/* 128b/132b */
+ 
 static bool intel_dp_lane_max_tx_ffe_reached(u8 train_set_lane)
 {
 	return (train_set_lane & DP_TX_FFE_PRESET_VALUE_MASK) ==
 		DP_TX_FFE_PRESET_VALUE_MASK;
 }
 
-/*
- * 8b/10b
- *
- * FIXME: The DP spec is very confusing here, also the Link CTS spec seems to
- * have self contradicting tests around this area.
- *
- * In lieu of better ideas let's just stop when we've reached the max supported
- * vswing with its max pre-emphasis, which is either 2+1 or 3+0 depending on
- * whether vswing level 3 is supported or not.
- */
+ 
 static bool intel_dp_lane_max_vswing_reached(u8 train_set_lane)
 {
 	u8 v = (train_set_lane & DP_TRAIN_VOLTAGE_SWING_MASK) >>
@@ -656,30 +585,19 @@ intel_dp_update_link_bw_set(struct intel_dp *intel_dp,
 		lane_count |= DP_LANE_COUNT_ENHANCED_FRAME_EN;
 
 	if (link_bw) {
-		/* DP and eDP v1.3 and earlier link bw set method. */
+		 
 		u8 link_config[] = { link_bw, lane_count };
 
 		drm_dp_dpcd_write(&intel_dp->aux, DP_LINK_BW_SET, link_config,
 				  ARRAY_SIZE(link_config));
 	} else {
-		/*
-		 * eDP v1.4 and later link rate set method.
-		 *
-		 * eDP v1.4x sinks shall ignore DP_LINK_RATE_SET if
-		 * DP_LINK_BW_SET is set. Avoid writing DP_LINK_BW_SET.
-		 *
-		 * eDP v1.5 sinks allow choosing either, and the last choice
-		 * shall be active.
-		 */
+		 
 		drm_dp_dpcd_writeb(&intel_dp->aux, DP_LANE_COUNT_SET, lane_count);
 		drm_dp_dpcd_writeb(&intel_dp->aux, DP_LINK_RATE_SET, rate_select);
 	}
 }
 
-/*
- * Prepare link training by configuring the link parameters. On DDI platforms
- * also enable the port here.
- */
+ 
 static bool
 intel_dp_prepare_link_train(struct intel_dp *intel_dp,
 			    const struct intel_crtc_state *crtc_state)
@@ -692,17 +610,7 @@ intel_dp_prepare_link_train(struct intel_dp *intel_dp,
 	intel_dp_compute_rate(intel_dp, crtc_state->port_clock,
 			      &link_bw, &rate_select);
 
-	/*
-	 * WaEdpLinkRateDataReload
-	 *
-	 * Parade PS8461E MUX (used on varius TGL+ laptops) needs
-	 * to snoop the link rates reported by the sink when we
-	 * use LINK_RATE_SET in order to operate in jitter cleaning
-	 * mode (as opposed to redriver mode). Unfortunately it
-	 * loses track of the snooped link rates when powered down,
-	 * so we need to make it re-snoop often. Without this high
-	 * link rates are not stable.
-	 */
+	 
 	if (!link_bw) {
 		__le16 sink_rates[DP_MAX_SUPPORTED_RATES];
 
@@ -719,10 +627,7 @@ intel_dp_prepare_link_train(struct intel_dp *intel_dp,
 		lt_dbg(intel_dp, DP_PHY_DPRX,
 		       "Using LINK_RATE_SET value %02x\n",
 		       rate_select);
-	/*
-	 * Spec DP2.1 Section 3.5.2.16
-	 * Prior to LT DPTX should set 128b/132b DP Channel coding and then set link rate
-	 */
+	 
 	intel_dp_update_downspread_ctrl(intel_dp, crtc_state);
 	intel_dp_update_link_bw_set(intel_dp, crtc_state, link_bw,
 				    rate_select);
@@ -766,10 +671,7 @@ intel_dp_dump_link_status(struct intel_dp *intel_dp, enum drm_dp_phy dp_phy,
 	       link_status[3], link_status[4], link_status[5]);
 }
 
-/*
- * Perform the link training clock recovery phase on the given DP PHY using
- * training pattern 1.
- */
+ 
 static bool
 intel_dp_link_training_clock_recovery(struct intel_dp *intel_dp,
 				      const struct intel_crtc_state *crtc_state,
@@ -785,7 +687,7 @@ intel_dp_link_training_clock_recovery(struct intel_dp *intel_dp,
 						    intel_dp->dpcd, dp_phy,
 						    intel_dp_is_uhbr(crtc_state));
 
-	/* clock recovery */
+	 
 	if (!intel_dp_reset_link_train(intel_dp, crtc_state, dp_phy,
 				       DP_TRAINING_PATTERN_1 |
 				       DP_LINK_SCRAMBLING_DISABLE)) {
@@ -793,14 +695,7 @@ intel_dp_link_training_clock_recovery(struct intel_dp *intel_dp,
 		return false;
 	}
 
-	/*
-	 * The DP 1.4 spec defines the max clock recovery retries value
-	 * as 10 but for pre-DP 1.4 devices we set a very tolerant
-	 * retry limit of 80 (4 voltage levels x 4 preemphasis levels x
-	 * x 5 identical voltage retries). Since the previous specs didn't
-	 * define a limit and created the possibility of an infinite loop
-	 * we want to prevent any sync from triggering that corner case.
-	 */
+	 
 	if (intel_dp->dpcd[DP_DPCD_REV] >= DP_DPCD_REV_14)
 		max_cr_tries = 10;
 	else
@@ -833,7 +728,7 @@ intel_dp_link_training_clock_recovery(struct intel_dp *intel_dp,
 			return false;
 		}
 
-		/* Update training set as requested by target */
+		 
 		intel_dp_get_adjust_train(intel_dp, crtc_state, dp_phy,
 					  link_status);
 		if (!intel_dp_update_link_train(intel_dp, crtc_state, dp_phy)) {
@@ -859,11 +754,7 @@ intel_dp_link_training_clock_recovery(struct intel_dp *intel_dp,
 	return false;
 }
 
-/*
- * Pick Training Pattern Sequence (TPS) for channel equalization. 128b/132b TPS2
- * for UHBR+, TPS4 for HBR3 or for 1.4 devices that support it, TPS3 for HBR2 or
- * 1.2 devices that support it, TPS2 otherwise.
- */
+ 
 static u32 intel_dp_training_pattern(struct intel_dp *intel_dp,
 				     const struct intel_crtc_state *crtc_state,
 				     enum drm_dp_phy dp_phy)
@@ -871,16 +762,11 @@ static u32 intel_dp_training_pattern(struct intel_dp *intel_dp,
 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
 	bool source_tps3, sink_tps3, source_tps4, sink_tps4;
 
-	/* UHBR+ use separate 128b/132b TPS2 */
+	 
 	if (intel_dp_is_uhbr(crtc_state))
 		return DP_TRAINING_PATTERN_2;
 
-	/*
-	 * TPS4 support is mandatory for all downstream devices that
-	 * support HBR3. There are no known eDP panels that support
-	 * TPS4 as of Feb 2018 as per VESA eDP_v1.4b_E1 specification.
-	 * LTTPRs must support TPS4.
-	 */
+	 
 	source_tps4 = intel_dp_source_supports_tps4(i915);
 	sink_tps4 = dp_phy != DP_PHY_DPRX ||
 		    drm_dp_tps4_supported(intel_dp->dpcd);
@@ -895,10 +781,7 @@ static u32 intel_dp_training_pattern(struct intel_dp *intel_dp,
 			       "8.1 Gbps link rate without sink TPS4 support\n");
 	}
 
-	/*
-	 * TPS3 support is mandatory for downstream devices that
-	 * support HBR2. However, not all sinks follow the spec.
-	 */
+	 
 	source_tps3 = intel_dp_source_supports_tps3(i915);
 	sink_tps3 = dp_phy != DP_PHY_DPRX ||
 		    drm_dp_tps3_supported(intel_dp->dpcd);
@@ -916,11 +799,7 @@ static u32 intel_dp_training_pattern(struct intel_dp *intel_dp,
 	return DP_TRAINING_PATTERN_2;
 }
 
-/*
- * Perform the link training channel equalization phase on the given DP PHY
- * using one of training pattern 2, 3 or 4 depending on the source and
- * sink capabilities.
- */
+ 
 static bool
 intel_dp_link_training_channel_equalization(struct intel_dp *intel_dp,
 					    const struct intel_crtc_state *crtc_state,
@@ -937,11 +816,11 @@ intel_dp_link_training_channel_equalization(struct intel_dp *intel_dp,
 						intel_dp_is_uhbr(crtc_state));
 
 	training_pattern = intel_dp_training_pattern(intel_dp, crtc_state, dp_phy);
-	/* Scrambling is disabled for TPS2/3 and enabled for TPS4 */
+	 
 	if (training_pattern != DP_TRAINING_PATTERN_4)
 		training_pattern |= DP_LINK_SCRAMBLING_DISABLE;
 
-	/* channel equalization */
+	 
 	if (!intel_dp_set_link_train(intel_dp, crtc_state, dp_phy,
 				     training_pattern)) {
 		lt_err(intel_dp, dp_phy, "Failed to start channel equalization\n");
@@ -957,7 +836,7 @@ intel_dp_link_training_channel_equalization(struct intel_dp *intel_dp,
 			break;
 		}
 
-		/* Make sure clock is still ok */
+		 
 		if (!drm_dp_clock_recovery_ok(link_status,
 					      crtc_state->lane_count)) {
 			intel_dp_dump_link_status(intel_dp, dp_phy, link_status);
@@ -973,7 +852,7 @@ intel_dp_link_training_channel_equalization(struct intel_dp *intel_dp,
 			break;
 		}
 
-		/* Update training set as requested by target */
+		 
 		intel_dp_get_adjust_train(intel_dp, crtc_state, dp_phy,
 					  link_status);
 		if (!intel_dp_update_link_train(intel_dp, crtc_state, dp_phy)) {
@@ -982,7 +861,7 @@ intel_dp_link_training_channel_equalization(struct intel_dp *intel_dp,
 		}
 	}
 
-	/* Try 5 times, else fail and try at lower BW */
+	 
 	if (tries == 5) {
 		intel_dp_dump_link_status(intel_dp, dp_phy, link_status);
 		lt_dbg(intel_dp, dp_phy, "Channel equalization failed 5 times\n");
@@ -1016,22 +895,7 @@ intel_dp_128b132b_intra_hop(struct intel_dp *intel_dp,
 	return sink_status & DP_INTRA_HOP_AUX_REPLY_INDICATION ? 1 : 0;
 }
 
-/**
- * intel_dp_stop_link_train - stop link training
- * @intel_dp: DP struct
- * @crtc_state: state for CRTC attached to the encoder
- *
- * Stop the link training of the @intel_dp port, disabling the training
- * pattern in the sink's DPCD, and disabling the test pattern symbol
- * generation on the port.
- *
- * What symbols are output on the port after this point is
- * platform specific: On DDI/VLV/CHV platforms it will be the idle pattern
- * with the pipe being disabled, on older platforms it's HW specific if/how an
- * idle pattern is generated, as the pipe is already enabled here for those.
- *
- * This function must be called after intel_dp_start_link_train().
- */
+ 
 void intel_dp_stop_link_train(struct intel_dp *intel_dp,
 			      const struct intel_crtc_state *crtc_state)
 {
@@ -1092,11 +956,11 @@ static void intel_dp_schedule_fallback_link_training(struct intel_dp *intel_dp,
 		return;
 	}
 
-	/* Schedule a Hotplug Uevent to userspace to start modeset */
+	 
 	queue_work(i915->unordered_wq, &intel_connector->modeset_retry_work);
 }
 
-/* Perform the link training on all LTTPRs and the DPRX on a link. */
+ 
 static bool
 intel_dp_link_train_all_phys(struct intel_dp *intel_dp,
 			     const struct intel_crtc_state *crtc_state,
@@ -1124,9 +988,7 @@ intel_dp_link_train_all_phys(struct intel_dp *intel_dp,
 	return ret;
 }
 
-/*
- * 128b/132b DP LANEx_EQ_DONE Sequence (DP 2.0 E11 3.5.2.16.1)
- */
+ 
 static bool
 intel_dp_128b132b_lane_eq(struct intel_dp *intel_dp,
 			  const struct intel_crtc_state *crtc_state)
@@ -1137,12 +999,7 @@ intel_dp_128b132b_lane_eq(struct intel_dp *intel_dp,
 	unsigned long deadline;
 	bool timeout = false;
 
-	/*
-	 * Reset signal levels. Start transmitting 128b/132b TPS1.
-	 *
-	 * Put DPRX and LTTPRs (if any) into intra-hop AUX mode by writing TPS1
-	 * in DP_TRAINING_PATTERN_SET.
-	 */
+	 
 	if (!intel_dp_reset_link_train(intel_dp, crtc_state, DP_PHY_DPRX,
 				       DP_TRAINING_PATTERN_1)) {
 		lt_err(intel_dp, DP_PHY_DPRX, "Failed to start 128b/132b TPS1\n");
@@ -1151,36 +1008,33 @@ intel_dp_128b132b_lane_eq(struct intel_dp *intel_dp,
 
 	delay_us = drm_dp_128b132b_read_aux_rd_interval(&intel_dp->aux);
 
-	/* Read the initial TX FFE settings. */
+	 
 	if (drm_dp_dpcd_read_link_status(&intel_dp->aux, link_status) < 0) {
 		lt_err(intel_dp, DP_PHY_DPRX, "Failed to read TX FFE presets\n");
 		return false;
 	}
 
-	/* Update signal levels and training set as requested. */
+	 
 	intel_dp_get_adjust_train(intel_dp, crtc_state, DP_PHY_DPRX, link_status);
 	if (!intel_dp_update_link_train(intel_dp, crtc_state, DP_PHY_DPRX)) {
 		lt_err(intel_dp, DP_PHY_DPRX, "Failed to set initial TX FFE settings\n");
 		return false;
 	}
 
-	/* Start transmitting 128b/132b TPS2. */
+	 
 	if (!intel_dp_set_link_train(intel_dp, crtc_state, DP_PHY_DPRX,
 				     DP_TRAINING_PATTERN_2)) {
 		lt_err(intel_dp, DP_PHY_DPRX, "Failed to start 128b/132b TPS2\n");
 		return false;
 	}
 
-	/* Time budget for the LANEx_EQ_DONE Sequence */
+	 
 	deadline = jiffies + msecs_to_jiffies_timeout(400);
 
 	for (try = 0; try < max_tries; try++) {
 		usleep_range(delay_us, 2 * delay_us);
 
-		/*
-		 * The delay may get updated. The transmitter shall read the
-		 * delay before link status during link training.
-		 */
+		 
 		delay_us = drm_dp_128b132b_read_aux_rd_interval(&intel_dp->aux);
 
 		if (drm_dp_dpcd_read_link_status(&intel_dp->aux, link_status) < 0) {
@@ -1207,9 +1061,9 @@ intel_dp_128b132b_lane_eq(struct intel_dp *intel_dp,
 		}
 
 		if (time_after(jiffies, deadline))
-			timeout = true; /* try one last time after deadline */
+			timeout = true;  
 
-		/* Update signal levels and training set as requested. */
+		 
 		intel_dp_get_adjust_train(intel_dp, crtc_state, DP_PHY_DPRX, link_status);
 		if (!intel_dp_update_link_train(intel_dp, crtc_state, DP_PHY_DPRX)) {
 			lt_err(intel_dp, DP_PHY_DPRX, "Failed to update TX FFE settings\n");
@@ -1225,7 +1079,7 @@ intel_dp_128b132b_lane_eq(struct intel_dp *intel_dp,
 
 	for (;;) {
 		if (time_after(jiffies, deadline))
-			timeout = true; /* try one last time after deadline */
+			timeout = true;  
 
 		if (drm_dp_dpcd_read_link_status(&intel_dp->aux, link_status) < 0) {
 			lt_err(intel_dp, DP_PHY_DPRX, "Failed to read link status\n");
@@ -1255,9 +1109,7 @@ intel_dp_128b132b_lane_eq(struct intel_dp *intel_dp,
 	return true;
 }
 
-/*
- * 128b/132b DP LANEx_CDS_DONE Sequence (DP 2.0 E11 3.5.2.16.2)
- */
+ 
 static bool
 intel_dp_128b132b_lane_cds(struct intel_dp *intel_dp,
 			   const struct intel_crtc_state *crtc_state,
@@ -1272,14 +1124,14 @@ intel_dp_128b132b_lane_cds(struct intel_dp *intel_dp,
 		return false;
 	}
 
-	/* Time budget for the LANEx_CDS_DONE Sequence */
+	 
 	deadline = jiffies + msecs_to_jiffies_timeout((lttpr_count + 1) * 20);
 
 	for (;;) {
 		bool timeout = false;
 
 		if (time_after(jiffies, deadline))
-			timeout = true; /* try one last time after deadline */
+			timeout = true;  
 
 		usleep_range(2000, 3000);
 
@@ -1311,9 +1163,7 @@ intel_dp_128b132b_lane_cds(struct intel_dp *intel_dp,
 	return true;
 }
 
-/*
- * 128b/132b link training sequence. (DP 2.0 E11 SCR on link training.)
- */
+ 
 static bool
 intel_dp_128b132b_link_train(struct intel_dp *intel_dp,
 			     const struct intel_crtc_state *crtc_state,
@@ -1338,30 +1188,18 @@ intel_dp_128b132b_link_train(struct intel_dp *intel_dp,
 	return passed;
 }
 
-/**
- * intel_dp_start_link_train - start link training
- * @intel_dp: DP struct
- * @crtc_state: state for CRTC attached to the encoder
- *
- * Start the link training of the @intel_dp port, scheduling a fallback
- * retraining with reduced link rate/lane parameters if the link training
- * fails.
- * After calling this function intel_dp_stop_link_train() must be called.
- */
+ 
 void intel_dp_start_link_train(struct intel_dp *intel_dp,
 			       const struct intel_crtc_state *crtc_state)
 {
 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
 	bool passed;
 
-	/*
-	 * TODO: Reiniting LTTPRs here won't be needed once proper connector
-	 * HW state readout is added.
-	 */
+	 
 	int lttpr_count = intel_dp_init_lttpr_and_dprx_caps(intel_dp);
 
 	if (lttpr_count < 0)
-		/* Still continue with enabling the port and link training. */
+		 
 		lttpr_count = 0;
 
 	intel_dp_prepare_link_train(intel_dp, crtc_state);
@@ -1371,18 +1209,7 @@ void intel_dp_start_link_train(struct intel_dp *intel_dp,
 	else
 		passed = intel_dp_link_train_all_phys(intel_dp, crtc_state, lttpr_count);
 
-	/*
-	 * Ignore the link failure in CI
-	 *
-	 * In fixed enviroments like CI, sometimes unexpected long HPDs are
-	 * generated by the displays. If ignore_long_hpd flag is set, such long
-	 * HPDs are ignored. And probably as a consequence of these ignored
-	 * long HPDs, subsequent link trainings are failed resulting into CI
-	 * execution failures.
-	 *
-	 * For test cases which rely on the link training or processing of HPDs
-	 * ignore_long_hpd flag can unset from the testcase.
-	 */
+	 
 	if (!passed && i915->display.hotplug.ignore_long_hpd) {
 		lt_dbg(intel_dp, DP_PHY_DPRX, "Ignore the link failure\n");
 		return;
@@ -1395,14 +1222,9 @@ void intel_dp_start_link_train(struct intel_dp *intel_dp,
 void intel_dp_128b132b_sdp_crc16(struct intel_dp *intel_dp,
 				 const struct intel_crtc_state *crtc_state)
 {
-	/*
-	 * VIDEO_DIP_CTL register bit 31 should be set to '0' to not
-	 * disable SDP CRC. This is applicable for Display version 13.
-	 * Default value of bit 31 is '0' hence discarding the write
-	 * TODO: Corrective actions on SDP corruption yet to be defined
-	 */
+	 
 	if (intel_dp_is_uhbr(crtc_state))
-		/* DP v2.0 SCR on SDP CRC16 for 128b/132b Link Layer */
+		 
 		drm_dp_dpcd_writeb(&intel_dp->aux,
 				   DP_SDP_ERROR_DETECTION_CONFIGURATION,
 				   DP_SDP_CRC16_128B132B_EN);

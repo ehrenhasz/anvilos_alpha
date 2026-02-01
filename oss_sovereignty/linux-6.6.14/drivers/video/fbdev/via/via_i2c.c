@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 1998-2009 VIA Technologies, Inc. All Rights Reserved.
- * Copyright 2001-2008 S3 Graphics, Inc. All Rights Reserved.
 
- */
+ 
 
 #include <linux/platform_device.h>
 #include <linux/delay.h>
@@ -12,13 +8,10 @@
 #include <linux/via-core.h>
 #include <linux/via_i2c.h>
 
-/*
- * There can only be one set of these, so there's no point in having
- * them be dynamically allocated...
- */
+ 
 #define VIAFB_NUM_I2C		5
 static struct via_i2c_stuff via_i2c_par[VIAFB_NUM_I2C];
-static struct viafb_dev *i2c_vdev;  /* Passed in from core */
+static struct viafb_dev *i2c_vdev;   
 
 static void via_i2c_setscl(void *data, int state)
 {
@@ -172,10 +165,7 @@ int viafb_i2c_readbytes(u8 adap, u8 slave_addr, u8 index, u8 *buff, int buff_len
 	return ret;
 }
 
-/*
- * Allow other viafb subdevices to look up a specific adapter
- * by port name.
- */
+ 
 struct i2c_adapter *viafb_find_i2c_adapter(enum viafb_i2c_adap which)
 {
 	struct via_i2c_stuff *stuff = &via_i2c_par[which];
@@ -207,9 +197,9 @@ static int create_i2c_bus(struct i2c_adapter *adapter,
 		adapter->dev.parent = &pdev->dev;
 	else
 		adapter->dev.parent = NULL;
-	/* i2c_set_adapdata(adapter, adap_cfg); */
+	 
 
-	/* Raise SCL and SDA */
+	 
 	via_i2c_setsda(adap_cfg, 1);
 	via_i2c_setscl(adap_cfg, 1);
 	udelay(20);
@@ -234,11 +224,11 @@ static int viafb_i2c_probe(struct platform_device *platdev)
 			continue;
 		ret = create_i2c_bus(&i2c_stuff->adapter,
 				     &i2c_stuff->algo, adap_cfg,
-				NULL); /* FIXME: PCIDEV */
+				NULL);  
 		if (ret < 0) {
 			printk(KERN_ERR "viafb: cannot create i2c bus %u:%d\n",
 				i, ret);
-			continue;  /* Still try to make the rest */
+			continue;   
 		}
 		i2c_stuff->is_active = 1;
 	}
@@ -252,10 +242,7 @@ static void viafb_i2c_remove(struct platform_device *platdev)
 
 	for (i = 0; i < VIAFB_NUM_PORTS; i++) {
 		struct via_i2c_stuff *i2c_stuff = &via_i2c_par[i];
-		/*
-		 * Only remove those entries in the array that we've
-		 * actually used (and thus initialized algo_data)
-		 */
+		 
 		if (i2c_stuff->is_active)
 			i2c_del_adapter(&i2c_stuff->adapter);
 	}

@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "hwmgr.h"
 #include "vega10_hwmgr.h"
@@ -31,35 +10,29 @@
 #include "soc15_common.h"
 
 static const struct vega10_didt_config_reg SEDiDtTuningCtrlConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ */
+ 
+	 
 	{   ixDIDT_SQ_TUNING_CTRL,             DIDT_SQ_TUNING_CTRL__MAX_POWER_DELTA_HI_MASK,        DIDT_SQ_TUNING_CTRL__MAX_POWER_DELTA_HI__SHIFT,        0x3853 },
 	{   ixDIDT_SQ_TUNING_CTRL,             DIDT_SQ_TUNING_CTRL__MAX_POWER_DELTA_LO_MASK,        DIDT_SQ_TUNING_CTRL__MAX_POWER_DELTA_LO__SHIFT,        0x3153 },
 
-	/* DIDT_TD */
+	 
 	{   ixDIDT_TD_TUNING_CTRL,             DIDT_TD_TUNING_CTRL__MAX_POWER_DELTA_HI_MASK,        DIDT_TD_TUNING_CTRL__MAX_POWER_DELTA_HI__SHIFT,        0x0dde },
 	{   ixDIDT_TD_TUNING_CTRL,             DIDT_TD_TUNING_CTRL__MAX_POWER_DELTA_LO_MASK,        DIDT_TD_TUNING_CTRL__MAX_POWER_DELTA_LO__SHIFT,        0x0dde },
 
-	/* DIDT_TCP */
+	 
 	{   ixDIDT_TCP_TUNING_CTRL,            DIDT_TCP_TUNING_CTRL__MAX_POWER_DELTA_HI_MASK,       DIDT_TCP_TUNING_CTRL__MAX_POWER_DELTA_HI__SHIFT,       0x3dde },
 	{   ixDIDT_TCP_TUNING_CTRL,            DIDT_TCP_TUNING_CTRL__MAX_POWER_DELTA_LO_MASK,       DIDT_TCP_TUNING_CTRL__MAX_POWER_DELTA_LO__SHIFT,       0x3dde },
 
-	/* DIDT_DB */
+	 
 	{   ixDIDT_DB_TUNING_CTRL,             DIDT_DB_TUNING_CTRL__MAX_POWER_DELTA_HI_MASK,        DIDT_DB_TUNING_CTRL__MAX_POWER_DELTA_HI__SHIFT,        0x3dde },
 	{   ixDIDT_DB_TUNING_CTRL,             DIDT_DB_TUNING_CTRL__MAX_POWER_DELTA_LO_MASK,        DIDT_DB_TUNING_CTRL__MAX_POWER_DELTA_LO__SHIFT,        0x3dde },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEDiDtCtrl3Config_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset               Mask                                                     Shift                                                            Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/*DIDT_SQ_CTRL3 */
+ 
+	 
 	{   ixDIDT_SQ_CTRL3,     DIDT_SQ_CTRL3__GC_DIDT_ENABLE_MASK,       DIDT_SQ_CTRL3__GC_DIDT_ENABLE__SHIFT,             0x0000 },
 	{   ixDIDT_SQ_CTRL3,     DIDT_SQ_CTRL3__GC_DIDT_CLK_EN_OVERRIDE_MASK,       DIDT_SQ_CTRL3__GC_DIDT_CLK_EN_OVERRIDE__SHIFT,             0x0000 },
 	{   ixDIDT_SQ_CTRL3,     DIDT_SQ_CTRL3__THROTTLE_POLICY_MASK,       DIDT_SQ_CTRL3__THROTTLE_POLICY__SHIFT,             0x0003 },
@@ -73,7 +46,7 @@ static const struct vega10_didt_config_reg SEDiDtCtrl3Config_vega10[] = {
 	{   ixDIDT_SQ_CTRL3,     DIDT_SQ_CTRL3__DIDT_FORCE_STALL_MASK,       DIDT_SQ_CTRL3__DIDT_FORCE_STALL__SHIFT,             0x0000 },
 	{   ixDIDT_SQ_CTRL3,     DIDT_SQ_CTRL3__DIDT_STALL_DELAY_EN_MASK,       DIDT_SQ_CTRL3__DIDT_STALL_DELAY_EN__SHIFT,             0x0000 },
 
-	/*DIDT_TCP_CTRL3 */
+	 
 	{   ixDIDT_TCP_CTRL3,    DIDT_TCP_CTRL3__GC_DIDT_ENABLE_MASK,      DIDT_TCP_CTRL3__GC_DIDT_ENABLE__SHIFT,            0x0000 },
 	{   ixDIDT_TCP_CTRL3,    DIDT_TCP_CTRL3__GC_DIDT_CLK_EN_OVERRIDE_MASK,      DIDT_TCP_CTRL3__GC_DIDT_CLK_EN_OVERRIDE__SHIFT,            0x0000 },
 	{   ixDIDT_TCP_CTRL3,    DIDT_TCP_CTRL3__THROTTLE_POLICY_MASK,      DIDT_TCP_CTRL3__THROTTLE_POLICY__SHIFT,            0x0003 },
@@ -87,7 +60,7 @@ static const struct vega10_didt_config_reg SEDiDtCtrl3Config_vega10[] = {
 	{   ixDIDT_TCP_CTRL3,    DIDT_TCP_CTRL3__DIDT_FORCE_STALL_MASK,      DIDT_TCP_CTRL3__DIDT_FORCE_STALL__SHIFT,            0x0000 },
 	{   ixDIDT_TCP_CTRL3,    DIDT_TCP_CTRL3__DIDT_STALL_DELAY_EN_MASK,      DIDT_TCP_CTRL3__DIDT_STALL_DELAY_EN__SHIFT,            0x0000 },
 
-	/*DIDT_TD_CTRL3 */
+	 
 	{   ixDIDT_TD_CTRL3,     DIDT_TD_CTRL3__GC_DIDT_ENABLE_MASK,       DIDT_TD_CTRL3__GC_DIDT_ENABLE__SHIFT,             0x0000 },
 	{   ixDIDT_TD_CTRL3,     DIDT_TD_CTRL3__GC_DIDT_CLK_EN_OVERRIDE_MASK,       DIDT_TD_CTRL3__GC_DIDT_CLK_EN_OVERRIDE__SHIFT,             0x0000 },
 	{   ixDIDT_TD_CTRL3,     DIDT_TD_CTRL3__THROTTLE_POLICY_MASK,       DIDT_TD_CTRL3__THROTTLE_POLICY__SHIFT,             0x0003 },
@@ -101,7 +74,7 @@ static const struct vega10_didt_config_reg SEDiDtCtrl3Config_vega10[] = {
 	{   ixDIDT_TD_CTRL3,     DIDT_TD_CTRL3__DIDT_FORCE_STALL_MASK,       DIDT_TD_CTRL3__DIDT_FORCE_STALL__SHIFT,             0x0000 },
 	{   ixDIDT_TD_CTRL3,     DIDT_TD_CTRL3__DIDT_STALL_DELAY_EN_MASK,       DIDT_TD_CTRL3__DIDT_STALL_DELAY_EN__SHIFT,             0x0000 },
 
-	/*DIDT_DB_CTRL3 */
+	 
 	{   ixDIDT_DB_CTRL3,     DIDT_DB_CTRL3__GC_DIDT_ENABLE_MASK,       DIDT_DB_CTRL3__GC_DIDT_ENABLE__SHIFT,             0x0000 },
 	{   ixDIDT_DB_CTRL3,     DIDT_DB_CTRL3__GC_DIDT_CLK_EN_OVERRIDE_MASK,       DIDT_DB_CTRL3__GC_DIDT_CLK_EN_OVERRIDE__SHIFT,             0x0000 },
 	{   ixDIDT_DB_CTRL3,     DIDT_DB_CTRL3__THROTTLE_POLICY_MASK,       DIDT_DB_CTRL3__THROTTLE_POLICY__SHIFT,             0x0003 },
@@ -115,93 +88,81 @@ static const struct vega10_didt_config_reg SEDiDtCtrl3Config_vega10[] = {
 	{   ixDIDT_DB_CTRL3,     DIDT_DB_CTRL3__DIDT_FORCE_STALL_MASK,       DIDT_DB_CTRL3__DIDT_FORCE_STALL__SHIFT,             0x0000 },
 	{   ixDIDT_DB_CTRL3,     DIDT_DB_CTRL3__DIDT_STALL_DELAY_EN_MASK,       DIDT_DB_CTRL3__DIDT_STALL_DELAY_EN__SHIFT,             0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEDiDtCtrl2Config_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                            Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ */
+ 
+	 
 	{   ixDIDT_SQ_CTRL2,                  DIDT_SQ_CTRL2__MAX_POWER_DELTA_MASK,                 DIDT_SQ_CTRL2__MAX_POWER_DELTA__SHIFT,                 0x3853 },
 	{   ixDIDT_SQ_CTRL2,                  DIDT_SQ_CTRL2__SHORT_TERM_INTERVAL_SIZE_MASK,        DIDT_SQ_CTRL2__SHORT_TERM_INTERVAL_SIZE__SHIFT,        0x00c0 },
 	{   ixDIDT_SQ_CTRL2,                  DIDT_SQ_CTRL2__LONG_TERM_INTERVAL_RATIO_MASK,        DIDT_SQ_CTRL2__LONG_TERM_INTERVAL_RATIO__SHIFT,        0x0000 },
 
-	/* DIDT_TD */
+	 
 	{   ixDIDT_TD_CTRL2,                  DIDT_TD_CTRL2__MAX_POWER_DELTA_MASK,                 DIDT_TD_CTRL2__MAX_POWER_DELTA__SHIFT,                 0x3fff },
 	{   ixDIDT_TD_CTRL2,                  DIDT_TD_CTRL2__SHORT_TERM_INTERVAL_SIZE_MASK,        DIDT_TD_CTRL2__SHORT_TERM_INTERVAL_SIZE__SHIFT,        0x00c0 },
 	{   ixDIDT_TD_CTRL2,                  DIDT_TD_CTRL2__LONG_TERM_INTERVAL_RATIO_MASK,        DIDT_TD_CTRL2__LONG_TERM_INTERVAL_RATIO__SHIFT,        0x0001 },
 
-	/* DIDT_TCP */
+	 
 	{   ixDIDT_TCP_CTRL2,                 DIDT_TCP_CTRL2__MAX_POWER_DELTA_MASK,                DIDT_TCP_CTRL2__MAX_POWER_DELTA__SHIFT,                0x3dde },
 	{   ixDIDT_TCP_CTRL2,                 DIDT_TCP_CTRL2__SHORT_TERM_INTERVAL_SIZE_MASK,       DIDT_TCP_CTRL2__SHORT_TERM_INTERVAL_SIZE__SHIFT,       0x00c0 },
 	{   ixDIDT_TCP_CTRL2,                 DIDT_TCP_CTRL2__LONG_TERM_INTERVAL_RATIO_MASK,       DIDT_TCP_CTRL2__LONG_TERM_INTERVAL_RATIO__SHIFT,       0x0001 },
 
-	/* DIDT_DB */
+	 
 	{   ixDIDT_DB_CTRL2,                  DIDT_DB_CTRL2__MAX_POWER_DELTA_MASK,                 DIDT_DB_CTRL2__MAX_POWER_DELTA__SHIFT,                 0x3dde },
 	{   ixDIDT_DB_CTRL2,                  DIDT_DB_CTRL2__SHORT_TERM_INTERVAL_SIZE_MASK,        DIDT_DB_CTRL2__SHORT_TERM_INTERVAL_SIZE__SHIFT,        0x00c0 },
 	{   ixDIDT_DB_CTRL2,                  DIDT_DB_CTRL2__LONG_TERM_INTERVAL_RATIO_MASK,        DIDT_DB_CTRL2__LONG_TERM_INTERVAL_RATIO__SHIFT,        0x0001 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEDiDtCtrl1Config_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ */
+ 
+	 
 	{   ixDIDT_SQ_CTRL1,                   DIDT_SQ_CTRL1__MIN_POWER_MASK,                       DIDT_SQ_CTRL1__MIN_POWER__SHIFT,                       0x0000 },
 	{   ixDIDT_SQ_CTRL1,                   DIDT_SQ_CTRL1__MAX_POWER_MASK,                       DIDT_SQ_CTRL1__MAX_POWER__SHIFT,                       0xffff },
-	/* DIDT_TD */
+	 
 	{   ixDIDT_TD_CTRL1,                   DIDT_TD_CTRL1__MIN_POWER_MASK,                       DIDT_TD_CTRL1__MIN_POWER__SHIFT,                       0x0000 },
 	{   ixDIDT_TD_CTRL1,                   DIDT_TD_CTRL1__MAX_POWER_MASK,                       DIDT_TD_CTRL1__MAX_POWER__SHIFT,                       0xffff },
-	/* DIDT_TCP */
+	 
 	{   ixDIDT_TCP_CTRL1,                  DIDT_TCP_CTRL1__MIN_POWER_MASK,                      DIDT_TCP_CTRL1__MIN_POWER__SHIFT,                      0x0000 },
 	{   ixDIDT_TCP_CTRL1,                  DIDT_TCP_CTRL1__MAX_POWER_MASK,                      DIDT_TCP_CTRL1__MAX_POWER__SHIFT,                      0xffff },
-	/* DIDT_DB */
+	 
 	{   ixDIDT_DB_CTRL1,                   DIDT_DB_CTRL1__MIN_POWER_MASK,                       DIDT_DB_CTRL1__MIN_POWER__SHIFT,                       0x0000 },
 	{   ixDIDT_DB_CTRL1,                   DIDT_DB_CTRL1__MAX_POWER_MASK,                       DIDT_DB_CTRL1__MAX_POWER__SHIFT,                       0xffff },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 
 static const struct vega10_didt_config_reg SEDiDtWeightConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                  Shift                                                 Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ */
+ 
+	 
 	{   ixDIDT_SQ_WEIGHT0_3,               0xFFFFFFFF,                                           0,                                                    0x2B363B1A },
 	{   ixDIDT_SQ_WEIGHT4_7,               0xFFFFFFFF,                                           0,                                                    0x270B2432 },
 	{   ixDIDT_SQ_WEIGHT8_11,              0xFFFFFFFF,                                           0,                                                    0x00000018 },
 
-	/* DIDT_TD */
+	 
 	{   ixDIDT_TD_WEIGHT0_3,               0xFFFFFFFF,                                           0,                                                    0x2B1D220F },
 	{   ixDIDT_TD_WEIGHT4_7,               0xFFFFFFFF,                                           0,                                                    0x00007558 },
 	{   ixDIDT_TD_WEIGHT8_11,              0xFFFFFFFF,                                           0,                                                    0x00000000 },
 
-	/* DIDT_TCP */
+	 
 	{   ixDIDT_TCP_WEIGHT0_3,               0xFFFFFFFF,                                          0,                                                    0x5ACE160D },
 	{   ixDIDT_TCP_WEIGHT4_7,               0xFFFFFFFF,                                          0,                                                    0x00000000 },
 	{   ixDIDT_TCP_WEIGHT8_11,              0xFFFFFFFF,                                          0,                                                    0x00000000 },
 
-	/* DIDT_DB */
+	 
 	{   ixDIDT_DB_WEIGHT0_3,                0xFFFFFFFF,                                          0,                                                    0x0E152A0F },
 	{   ixDIDT_DB_WEIGHT4_7,                0xFFFFFFFF,                                          0,                                                    0x09061813 },
 	{   ixDIDT_DB_WEIGHT8_11,               0xFFFFFFFF,                                          0,                                                    0x00000013 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEDiDtCtrl0Config_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ */
+ 
+	 
 	{  ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__DIDT_CTRL_EN_MASK,   DIDT_SQ_CTRL0__DIDT_CTRL_EN__SHIFT,  0x0000 },
 	{  ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__PHASE_OFFSET_MASK,   DIDT_SQ_CTRL0__PHASE_OFFSET__SHIFT,  0x0000 },
 	{  ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__DIDT_CTRL_RST_MASK,   DIDT_SQ_CTRL0__DIDT_CTRL_RST__SHIFT,  0x0000 },
@@ -213,7 +174,7 @@ static const struct vega10_didt_config_reg SEDiDtCtrl0Config_Vega10[] = {
 	{  ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__DIDT_AUTO_MPD_EN_MASK,   DIDT_SQ_CTRL0__DIDT_AUTO_MPD_EN__SHIFT,  0x0000 },
 	{  ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__DIDT_STALL_EVENT_EN_MASK,   DIDT_SQ_CTRL0__DIDT_STALL_EVENT_EN__SHIFT,  0x0000 },
 	{  ixDIDT_SQ_CTRL0,                   DIDT_SQ_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR_MASK,   DIDT_SQ_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR__SHIFT,  0x0000 },
-	/* DIDT_TD */
+	 
 	{  ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__DIDT_CTRL_EN_MASK,   DIDT_TD_CTRL0__DIDT_CTRL_EN__SHIFT,  0x0000 },
 	{  ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__PHASE_OFFSET_MASK,   DIDT_TD_CTRL0__PHASE_OFFSET__SHIFT,  0x0000 },
 	{  ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__DIDT_CTRL_RST_MASK,   DIDT_TD_CTRL0__DIDT_CTRL_RST__SHIFT,  0x0000 },
@@ -225,7 +186,7 @@ static const struct vega10_didt_config_reg SEDiDtCtrl0Config_Vega10[] = {
 	{  ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__DIDT_AUTO_MPD_EN_MASK,   DIDT_TD_CTRL0__DIDT_AUTO_MPD_EN__SHIFT,  0x0000 },
 	{  ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__DIDT_STALL_EVENT_EN_MASK,   DIDT_TD_CTRL0__DIDT_STALL_EVENT_EN__SHIFT,  0x0000 },
 	{  ixDIDT_TD_CTRL0,                   DIDT_TD_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR_MASK,   DIDT_TD_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR__SHIFT,  0x0000 },
-	/* DIDT_TCP */
+	 
 	{  ixDIDT_TCP_CTRL0,                  DIDT_TCP_CTRL0__DIDT_CTRL_EN_MASK,  DIDT_TCP_CTRL0__DIDT_CTRL_EN__SHIFT, 0x0000 },
 	{  ixDIDT_TCP_CTRL0,                  DIDT_TCP_CTRL0__PHASE_OFFSET_MASK,  DIDT_TCP_CTRL0__PHASE_OFFSET__SHIFT, 0x0000 },
 	{  ixDIDT_TCP_CTRL0,                  DIDT_TCP_CTRL0__DIDT_CTRL_RST_MASK,  DIDT_TCP_CTRL0__DIDT_CTRL_RST__SHIFT, 0x0000 },
@@ -237,7 +198,7 @@ static const struct vega10_didt_config_reg SEDiDtCtrl0Config_Vega10[] = {
 	{  ixDIDT_TCP_CTRL0,                  DIDT_TCP_CTRL0__DIDT_AUTO_MPD_EN_MASK,  DIDT_TCP_CTRL0__DIDT_AUTO_MPD_EN__SHIFT, 0x0000 },
 	{  ixDIDT_TCP_CTRL0,                  DIDT_TCP_CTRL0__DIDT_STALL_EVENT_EN_MASK,  DIDT_TCP_CTRL0__DIDT_STALL_EVENT_EN__SHIFT, 0x0000 },
 	{  ixDIDT_TCP_CTRL0,                  DIDT_TCP_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR_MASK,  DIDT_TCP_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR__SHIFT, 0x0000 },
-	/* DIDT_DB */
+	 
 	{  ixDIDT_DB_CTRL0,                   DIDT_DB_CTRL0__DIDT_CTRL_EN_MASK,   DIDT_DB_CTRL0__DIDT_CTRL_EN__SHIFT,  0x0000 },
 	{  ixDIDT_DB_CTRL0,                   DIDT_DB_CTRL0__PHASE_OFFSET_MASK,   DIDT_DB_CTRL0__PHASE_OFFSET__SHIFT,  0x0000 },
 	{  ixDIDT_DB_CTRL0,                   DIDT_DB_CTRL0__DIDT_CTRL_RST_MASK,   DIDT_DB_CTRL0__DIDT_CTRL_RST__SHIFT,  0x0000 },
@@ -250,116 +211,107 @@ static const struct vega10_didt_config_reg SEDiDtCtrl0Config_Vega10[] = {
 	{  ixDIDT_DB_CTRL0,                   DIDT_DB_CTRL0__DIDT_STALL_EVENT_EN_MASK,   DIDT_DB_CTRL0__DIDT_STALL_EVENT_EN__SHIFT,  0x0000 },
 	{  ixDIDT_DB_CTRL0,                   DIDT_DB_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR_MASK,   DIDT_DB_CTRL0__DIDT_STALL_EVENT_COUNTER_CLEAR__SHIFT,  0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 
 static const struct vega10_didt_config_reg SEDiDtStallCtrlConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                   Mask                                                     Shift                                                      Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ */
+ 
+	 
 	{   ixDIDT_SQ_STALL_CTRL,    DIDT_SQ_STALL_CTRL__DIDT_STALL_DELAY_HI_MASK,    DIDT_SQ_STALL_CTRL__DIDT_STALL_DELAY_HI__SHIFT,     0x0004 },
 	{   ixDIDT_SQ_STALL_CTRL,    DIDT_SQ_STALL_CTRL__DIDT_STALL_DELAY_LO_MASK,    DIDT_SQ_STALL_CTRL__DIDT_STALL_DELAY_LO__SHIFT,     0x0004 },
 	{   ixDIDT_SQ_STALL_CTRL,    DIDT_SQ_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI_MASK,    DIDT_SQ_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI__SHIFT,     0x000a },
 	{   ixDIDT_SQ_STALL_CTRL,    DIDT_SQ_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO_MASK,    DIDT_SQ_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,     0x000a },
 
-	/* DIDT_TD */
+	 
 	{   ixDIDT_TD_STALL_CTRL,    DIDT_TD_STALL_CTRL__DIDT_STALL_DELAY_HI_MASK,    DIDT_TD_STALL_CTRL__DIDT_STALL_DELAY_HI__SHIFT,     0x0001 },
 	{   ixDIDT_TD_STALL_CTRL,    DIDT_TD_STALL_CTRL__DIDT_STALL_DELAY_LO_MASK,    DIDT_TD_STALL_CTRL__DIDT_STALL_DELAY_LO__SHIFT,     0x0001 },
 	{   ixDIDT_TD_STALL_CTRL,    DIDT_TD_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI_MASK,    DIDT_TD_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI__SHIFT,     0x000a },
 	{   ixDIDT_TD_STALL_CTRL,    DIDT_TD_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO_MASK,    DIDT_TD_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,     0x000a },
 
-	/* DIDT_TCP */
+	 
 	{   ixDIDT_TCP_STALL_CTRL,   DIDT_TCP_STALL_CTRL__DIDT_STALL_DELAY_HI_MASK,   DIDT_TCP_STALL_CTRL__DIDT_STALL_DELAY_HI__SHIFT,    0x0001 },
 	{   ixDIDT_TCP_STALL_CTRL,   DIDT_TCP_STALL_CTRL__DIDT_STALL_DELAY_LO_MASK,   DIDT_TCP_STALL_CTRL__DIDT_STALL_DELAY_LO__SHIFT,    0x0001 },
 	{   ixDIDT_TCP_STALL_CTRL,   DIDT_TCP_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI_MASK,   DIDT_TCP_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI__SHIFT,    0x000a },
 	{   ixDIDT_TCP_STALL_CTRL,   DIDT_TCP_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO_MASK,   DIDT_TCP_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,    0x000a },
 
-	/* DIDT_DB */
+	 
 	{   ixDIDT_DB_STALL_CTRL,    DIDT_DB_STALL_CTRL__DIDT_STALL_DELAY_HI_MASK,    DIDT_DB_STALL_CTRL__DIDT_STALL_DELAY_HI__SHIFT,     0x0004 },
 	{   ixDIDT_DB_STALL_CTRL,    DIDT_DB_STALL_CTRL__DIDT_STALL_DELAY_LO_MASK,    DIDT_DB_STALL_CTRL__DIDT_STALL_DELAY_LO__SHIFT,     0x0004 },
 	{   ixDIDT_DB_STALL_CTRL,    DIDT_DB_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI_MASK,    DIDT_DB_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_HI__SHIFT,     0x000a },
 	{   ixDIDT_DB_STALL_CTRL,    DIDT_DB_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO_MASK,    DIDT_DB_STALL_CTRL__DIDT_MAX_STALLS_ALLOWED_LO__SHIFT,     0x000a },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEDiDtStallPatternConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                        Mask                                                      Shift                                                    Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* DIDT_SQ_STALL_PATTERN_1_2 */
+ 
+	 
 	{   ixDIDT_SQ_STALL_PATTERN_1_2,  DIDT_SQ_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1_MASK,    DIDT_SQ_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1__SHIFT,  0x0001 },
 	{   ixDIDT_SQ_STALL_PATTERN_1_2,  DIDT_SQ_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2_MASK,    DIDT_SQ_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2__SHIFT,  0x0001 },
 
-	/* DIDT_SQ_STALL_PATTERN_3_4 */
+	 
 	{   ixDIDT_SQ_STALL_PATTERN_3_4,  DIDT_SQ_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3_MASK,    DIDT_SQ_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3__SHIFT,  0x0001 },
 	{   ixDIDT_SQ_STALL_PATTERN_3_4,  DIDT_SQ_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4_MASK,    DIDT_SQ_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4__SHIFT,  0x0001 },
 
-	/* DIDT_SQ_STALL_PATTERN_5_6 */
+	 
 	{   ixDIDT_SQ_STALL_PATTERN_5_6,  DIDT_SQ_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5_MASK,    DIDT_SQ_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5__SHIFT,  0x0000 },
 	{   ixDIDT_SQ_STALL_PATTERN_5_6,  DIDT_SQ_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6_MASK,    DIDT_SQ_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6__SHIFT,  0x0000 },
 
-	/* DIDT_SQ_STALL_PATTERN_7 */
+	 
 	{   ixDIDT_SQ_STALL_PATTERN_7,    DIDT_SQ_STALL_PATTERN_7__DIDT_STALL_PATTERN_7_MASK,      DIDT_SQ_STALL_PATTERN_7__DIDT_STALL_PATTERN_7__SHIFT,    0x0000 },
 
-	/* DIDT_TCP_STALL_PATTERN_1_2 */
+	 
 	{   ixDIDT_TCP_STALL_PATTERN_1_2, DIDT_TCP_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1_MASK,   DIDT_TCP_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1__SHIFT, 0x0001 },
 	{   ixDIDT_TCP_STALL_PATTERN_1_2, DIDT_TCP_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2_MASK,   DIDT_TCP_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2__SHIFT, 0x0001 },
 
-	/* DIDT_TCP_STALL_PATTERN_3_4 */
+	 
 	{   ixDIDT_TCP_STALL_PATTERN_3_4, DIDT_TCP_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3_MASK,   DIDT_TCP_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3__SHIFT, 0x0001 },
 	{   ixDIDT_TCP_STALL_PATTERN_3_4, DIDT_TCP_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4_MASK,   DIDT_TCP_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4__SHIFT, 0x0001 },
 
-	/* DIDT_TCP_STALL_PATTERN_5_6 */
+	 
 	{   ixDIDT_TCP_STALL_PATTERN_5_6, DIDT_TCP_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5_MASK,   DIDT_TCP_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5__SHIFT, 0x0000 },
 	{   ixDIDT_TCP_STALL_PATTERN_5_6, DIDT_TCP_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6_MASK,   DIDT_TCP_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6__SHIFT, 0x0000 },
 
-	/* DIDT_TCP_STALL_PATTERN_7 */
+	 
 	{   ixDIDT_TCP_STALL_PATTERN_7,   DIDT_TCP_STALL_PATTERN_7__DIDT_STALL_PATTERN_7_MASK,     DIDT_TCP_STALL_PATTERN_7__DIDT_STALL_PATTERN_7__SHIFT,   0x0000 },
 
-	/* DIDT_TD_STALL_PATTERN_1_2 */
+	 
 	{   ixDIDT_TD_STALL_PATTERN_1_2,  DIDT_TD_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1_MASK,    DIDT_TD_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1__SHIFT,  0x0001 },
 	{   ixDIDT_TD_STALL_PATTERN_1_2,  DIDT_TD_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2_MASK,    DIDT_TD_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2__SHIFT,  0x0001 },
 
-	/* DIDT_TD_STALL_PATTERN_3_4 */
+	 
 	{   ixDIDT_TD_STALL_PATTERN_3_4,  DIDT_TD_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3_MASK,    DIDT_TD_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3__SHIFT,  0x0001 },
 	{   ixDIDT_TD_STALL_PATTERN_3_4,  DIDT_TD_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4_MASK,    DIDT_TD_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4__SHIFT,  0x0001 },
 
-	/* DIDT_TD_STALL_PATTERN_5_6 */
+	 
 	{   ixDIDT_TD_STALL_PATTERN_5_6,  DIDT_TD_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5_MASK,    DIDT_TD_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5__SHIFT,  0x0000 },
 	{   ixDIDT_TD_STALL_PATTERN_5_6,  DIDT_TD_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6_MASK,    DIDT_TD_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6__SHIFT,  0x0000 },
 
-	/* DIDT_TD_STALL_PATTERN_7 */
+	 
 	{   ixDIDT_TD_STALL_PATTERN_7,    DIDT_TD_STALL_PATTERN_7__DIDT_STALL_PATTERN_7_MASK,      DIDT_TD_STALL_PATTERN_7__DIDT_STALL_PATTERN_7__SHIFT,    0x0000 },
 
-	/* DIDT_DB_STALL_PATTERN_1_2 */
+	 
 	{   ixDIDT_DB_STALL_PATTERN_1_2,  DIDT_DB_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1_MASK,    DIDT_DB_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_1__SHIFT,  0x0001 },
 	{   ixDIDT_DB_STALL_PATTERN_1_2,  DIDT_DB_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2_MASK,    DIDT_DB_STALL_PATTERN_1_2__DIDT_STALL_PATTERN_2__SHIFT,  0x0001 },
 
-	/* DIDT_DB_STALL_PATTERN_3_4 */
+	 
 	{   ixDIDT_DB_STALL_PATTERN_3_4,  DIDT_DB_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3_MASK,    DIDT_DB_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_3__SHIFT,  0x0001 },
 	{   ixDIDT_DB_STALL_PATTERN_3_4,  DIDT_DB_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4_MASK,    DIDT_DB_STALL_PATTERN_3_4__DIDT_STALL_PATTERN_4__SHIFT,  0x0001 },
 
-	/* DIDT_DB_STALL_PATTERN_5_6 */
+	 
 	{   ixDIDT_DB_STALL_PATTERN_5_6,  DIDT_DB_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5_MASK,    DIDT_DB_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_5__SHIFT,  0x0000 },
 	{   ixDIDT_DB_STALL_PATTERN_5_6,  DIDT_DB_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6_MASK,    DIDT_DB_STALL_PATTERN_5_6__DIDT_STALL_PATTERN_6__SHIFT,  0x0000 },
 
-	/* DIDT_DB_STALL_PATTERN_7 */
+	 
 	{   ixDIDT_DB_STALL_PATTERN_7,    DIDT_DB_STALL_PATTERN_7__DIDT_STALL_PATTERN_7_MASK,      DIDT_DB_STALL_PATTERN_7__DIDT_STALL_PATTERN_7__SHIFT,    0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SELCacConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ */
+ 
+	 
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x00060021 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x00860021 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x01060021 },
@@ -369,122 +321,107 @@ static const struct vega10_didt_config_reg SELCacConfig_Vega10[] = {
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x03060021 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x03860021 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x04060021 },
-	/* TD */
+	 
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x000E0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x008E0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x010E0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x018E0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x020E0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x028E0020 },
-	/* TCP */
+	 
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x001c0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x009c0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x011c0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x019c0020 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x021c0020 },
-	/* DB */
+	 
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x00200008 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x00820008 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x01020008 },
 	{   ixSE_CAC_CNTL,                     0xFFFFFFFF,                                          0,                                                     0x01820008 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 
 static const struct vega10_didt_config_reg SEEDCStallPatternConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ */
+ 
+	 
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_1_2,   0xFFFFFFFF,                                          0,                                                     0x00030001 },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_3_4,   0xFFFFFFFF,                                          0,                                                     0x000F0007 },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_5_6,   0xFFFFFFFF,                                          0,                                                     0x003F001F },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_7,     0xFFFFFFFF,                                          0,                                                     0x0000007F },
-	/* TD */
+	 
 	{   ixDIDT_TD_EDC_STALL_PATTERN_1_2,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_PATTERN_3_4,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_PATTERN_5_6,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_PATTERN_7,     0xFFFFFFFF,                                          0,                                                     0x00000000 },
-	/* TCP */
+	 
 	{   ixDIDT_TCP_EDC_STALL_PATTERN_1_2,   0xFFFFFFFF,                                         0,                                                     0x00000000 },
 	{   ixDIDT_TCP_EDC_STALL_PATTERN_3_4,   0xFFFFFFFF,                                         0,                                                     0x00000000 },
 	{   ixDIDT_TCP_EDC_STALL_PATTERN_5_6,   0xFFFFFFFF,                                         0,                                                     0x00000000 },
 	{   ixDIDT_TCP_EDC_STALL_PATTERN_7,     0xFFFFFFFF,                                         0,                                                     0x00000000 },
-	/* DB */
+	 
 	{   ixDIDT_DB_EDC_STALL_PATTERN_1_2,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_DB_EDC_STALL_PATTERN_3_4,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_DB_EDC_STALL_PATTERN_5_6,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_DB_EDC_STALL_PATTERN_7,     0xFFFFFFFF,                                          0,                                                     0x00000000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEEDCForceStallPatternConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ */
+ 
+	 
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_1_2,   0xFFFFFFFF,                                          0,                                                     0x00000015 },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_3_4,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_5_6,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_7,     0xFFFFFFFF,                                          0,                                                     0x00000000 },
-	/* TD */
+	 
 	{   ixDIDT_TD_EDC_STALL_PATTERN_1_2,   0xFFFFFFFF,                                          0,                                                     0x00000015 },
 	{   ixDIDT_TD_EDC_STALL_PATTERN_3_4,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_PATTERN_5_6,   0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_PATTERN_7,     0xFFFFFFFF,                                          0,                                                     0x00000000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEEDCStallDelayConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ */
+ 
+	 
 	{   ixDIDT_SQ_EDC_STALL_DELAY_1,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_SQ_EDC_STALL_DELAY_2,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_SQ_EDC_STALL_DELAY_3,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_SQ_EDC_STALL_DELAY_4,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
-	/* TD */
+	 
 	{   ixDIDT_TD_EDC_STALL_DELAY_1,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_DELAY_2,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_DELAY_3,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TD_EDC_STALL_DELAY_4,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
-	/* TCP */
+	 
 	{   ixDIDT_TCP_EDC_STALL_DELAY_1,      0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TCP_EDC_STALL_DELAY_2,      0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TCP_EDC_STALL_DELAY_3,      0xFFFFFFFF,                                          0,                                                     0x00000000 },
 	{   ixDIDT_TCP_EDC_STALL_DELAY_4,      0xFFFFFFFF,                                          0,                                                     0x00000000 },
-	/* DB */
+	 
 	{   ixDIDT_DB_EDC_STALL_DELAY_1,       0xFFFFFFFF,                                          0,                                                     0x00000000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEEDCThresholdConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   ixDIDT_SQ_EDC_THRESHOLD,           0xFFFFFFFF,                                          0,                                                     0x0000010E },
 	{   ixDIDT_TD_EDC_THRESHOLD,           0xFFFFFFFF,                                          0,                                                     0xFFFFFFFF },
 	{   ixDIDT_TCP_EDC_THRESHOLD,          0xFFFFFFFF,                                          0,                                                     0xFFFFFFFF },
 	{   ixDIDT_DB_EDC_THRESHOLD,           0xFFFFFFFF,                                          0,                                                     0xFFFFFFFF },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEEDCCtrlResetConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ */
+ 
+	 
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_EN_MASK,                       DIDT_SQ_EDC_CTRL__EDC_EN__SHIFT,                        0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_SW_RST_MASK,                   DIDT_SQ_EDC_CTRL__EDC_SW_RST__SHIFT,                    0x0001 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,          DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,           0x0000 },
@@ -497,15 +434,12 @@ static const struct vega10_didt_config_reg SEEDCCtrlResetConfig_Vega10[] = {
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEEDCCtrlConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ */
+ 
+	 
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_EN_MASK,                       DIDT_SQ_EDC_CTRL__EDC_EN__SHIFT,                        0x0001 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_SW_RST_MASK,                   DIDT_SQ_EDC_CTRL__EDC_SW_RST__SHIFT,                    0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,          DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,           0x0000 },
@@ -518,15 +452,12 @@ static const struct vega10_didt_config_reg SEEDCCtrlConfig_Vega10[] = {
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN__SHIFT,          0x0001 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg SEEDCCtrlForceStallConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ */
+ 
+	 
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_EN_MASK,                       DIDT_SQ_EDC_CTRL__EDC_EN__SHIFT,                        0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_SW_RST_MASK,                   DIDT_SQ_EDC_CTRL__EDC_SW_RST__SHIFT,                    0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,          DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,           0x0000 },
@@ -539,7 +470,7 @@ static const struct vega10_didt_config_reg SEEDCCtrlForceStallConfig_Vega10[] = 
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN__SHIFT,          0x0001 },
 
-	/* TD */
+	 
 	{   ixDIDT_TD_EDC_CTRL,                DIDT_TD_EDC_CTRL__EDC_EN_MASK,                       DIDT_TD_EDC_CTRL__EDC_EN__SHIFT,                        0x0000 },
 	{   ixDIDT_TD_EDC_CTRL,                DIDT_TD_EDC_CTRL__EDC_SW_RST_MASK,                   DIDT_TD_EDC_CTRL__EDC_SW_RST__SHIFT,                    0x0000 },
 	{   ixDIDT_TD_EDC_CTRL,                DIDT_TD_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,          DIDT_TD_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,           0x0000 },
@@ -552,43 +483,34 @@ static const struct vega10_didt_config_reg SEEDCCtrlForceStallConfig_Vega10[] = 
 	{   ixDIDT_TD_EDC_CTRL,                DIDT_TD_EDC_CTRL__GC_EDC_LEVEL_COMB_EN_MASK,         DIDT_TD_EDC_CTRL__GC_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 	{   ixDIDT_TD_EDC_CTRL,                DIDT_TD_EDC_CTRL__SE_EDC_LEVEL_COMB_EN_MASK,         DIDT_TD_EDC_CTRL__SE_EDC_LEVEL_COMB_EN__SHIFT,          0x0001 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg    GCDiDtDroopCtrlConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   mmGC_DIDT_DROOP_CTRL,             GC_DIDT_DROOP_CTRL__DIDT_DROOP_LEVEL_EN_MASK,   GC_DIDT_DROOP_CTRL__DIDT_DROOP_LEVEL_EN__SHIFT,  0x0000 },
 	{   mmGC_DIDT_DROOP_CTRL,             GC_DIDT_DROOP_CTRL__DIDT_DROOP_THRESHOLD_MASK,   GC_DIDT_DROOP_CTRL__DIDT_DROOP_THRESHOLD__SHIFT,  0x0000 },
 	{   mmGC_DIDT_DROOP_CTRL,             GC_DIDT_DROOP_CTRL__DIDT_DROOP_LEVEL_INDEX_MASK,   GC_DIDT_DROOP_CTRL__DIDT_DROOP_LEVEL_INDEX__SHIFT,  0x0000 },
 	{   mmGC_DIDT_DROOP_CTRL,             GC_DIDT_DROOP_CTRL__DIDT_LEVEL_SEL_MASK,   GC_DIDT_DROOP_CTRL__DIDT_LEVEL_SEL__SHIFT,  0x0000 },
 	{   mmGC_DIDT_DROOP_CTRL,             GC_DIDT_DROOP_CTRL__DIDT_DROOP_LEVEL_OVERFLOW_MASK,   GC_DIDT_DROOP_CTRL__DIDT_DROOP_LEVEL_OVERFLOW__SHIFT,  0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg    GCDiDtCtrl0Config_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   mmGC_DIDT_CTRL0,                  GC_DIDT_CTRL0__DIDT_CTRL_EN_MASK,   GC_DIDT_CTRL0__DIDT_CTRL_EN__SHIFT,  0x0000 },
 	{   mmGC_DIDT_CTRL0,                  GC_DIDT_CTRL0__PHASE_OFFSET_MASK,   GC_DIDT_CTRL0__PHASE_OFFSET__SHIFT,  0x0000 },
 	{   mmGC_DIDT_CTRL0,                  GC_DIDT_CTRL0__DIDT_SW_RST_MASK,   GC_DIDT_CTRL0__DIDT_SW_RST__SHIFT,  0x0000 },
 	{   mmGC_DIDT_CTRL0,                  GC_DIDT_CTRL0__DIDT_CLK_EN_OVERRIDE_MASK,   GC_DIDT_CTRL0__DIDT_CLK_EN_OVERRIDE__SHIFT,  0x0000 },
 	{   mmGC_DIDT_CTRL0,                  GC_DIDT_CTRL0__DIDT_TRIGGER_THROTTLE_LOWBIT_MASK,   GC_DIDT_CTRL0__DIDT_TRIGGER_THROTTLE_LOWBIT__SHIFT,  0x0000 },
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 
 static const struct vega10_didt_config_reg   PSMSEEDCStallPatternConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ EDC STALL PATTERNs */
+ 
+	 
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_1_2,  DIDT_SQ_EDC_STALL_PATTERN_1_2__EDC_STALL_PATTERN_1_MASK,   DIDT_SQ_EDC_STALL_PATTERN_1_2__EDC_STALL_PATTERN_1__SHIFT,   0x0101 },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_1_2,  DIDT_SQ_EDC_STALL_PATTERN_1_2__EDC_STALL_PATTERN_2_MASK,   DIDT_SQ_EDC_STALL_PATTERN_1_2__EDC_STALL_PATTERN_2__SHIFT,   0x0101 },
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_3_4,  DIDT_SQ_EDC_STALL_PATTERN_3_4__EDC_STALL_PATTERN_3_MASK,   DIDT_SQ_EDC_STALL_PATTERN_3_4__EDC_STALL_PATTERN_3__SHIFT,   0x1111 },
@@ -599,15 +521,12 @@ static const struct vega10_didt_config_reg   PSMSEEDCStallPatternConfig_Vega10[]
 
 	{   ixDIDT_SQ_EDC_STALL_PATTERN_7,  DIDT_SQ_EDC_STALL_PATTERN_7__EDC_STALL_PATTERN_7_MASK,   DIDT_SQ_EDC_STALL_PATTERN_7__EDC_STALL_PATTERN_7__SHIFT,     0x5555 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg   PSMSEEDCStallDelayConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ EDC STALL DELAYs */
+ 
+	 
 	{   ixDIDT_SQ_EDC_STALL_DELAY_1,      DIDT_SQ_EDC_STALL_DELAY_1__EDC_STALL_DELAY_SQ0_MASK,  DIDT_SQ_EDC_STALL_DELAY_1__EDC_STALL_DELAY_SQ0__SHIFT,  0x0000 },
 	{   ixDIDT_SQ_EDC_STALL_DELAY_1,      DIDT_SQ_EDC_STALL_DELAY_1__EDC_STALL_DELAY_SQ1_MASK,  DIDT_SQ_EDC_STALL_DELAY_1__EDC_STALL_DELAY_SQ1__SHIFT,  0x0000 },
 	{   ixDIDT_SQ_EDC_STALL_DELAY_1,      DIDT_SQ_EDC_STALL_DELAY_1__EDC_STALL_DELAY_SQ2_MASK,  DIDT_SQ_EDC_STALL_DELAY_1__EDC_STALL_DELAY_SQ2__SHIFT,  0x0000 },
@@ -628,15 +547,12 @@ static const struct vega10_didt_config_reg   PSMSEEDCStallDelayConfig_Vega10[] =
 	{   ixDIDT_SQ_EDC_STALL_DELAY_4,      DIDT_SQ_EDC_STALL_DELAY_4__EDC_STALL_DELAY_SQ14_MASK, DIDT_SQ_EDC_STALL_DELAY_4__EDC_STALL_DELAY_SQ14__SHIFT, 0x0000 },
 	{   ixDIDT_SQ_EDC_STALL_DELAY_4,      DIDT_SQ_EDC_STALL_DELAY_4__EDC_STALL_DELAY_SQ15_MASK, DIDT_SQ_EDC_STALL_DELAY_4__EDC_STALL_DELAY_SQ15__SHIFT, 0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg   PSMSEEDCCtrlResetConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ EDC CTRL */
+ 
+	 
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_EN_MASK,                       DIDT_SQ_EDC_CTRL__EDC_EN__SHIFT,                        0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_SW_RST_MASK,                   DIDT_SQ_EDC_CTRL__EDC_SW_RST__SHIFT,                    0x0001 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,          DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,           0x0000 },
@@ -649,15 +565,12 @@ static const struct vega10_didt_config_reg   PSMSEEDCCtrlResetConfig_Vega10[] = 
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg   PSMSEEDCCtrlConfig_Vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
-	/* SQ EDC CTRL */
+ 
+	 
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_EN_MASK,                       DIDT_SQ_EDC_CTRL__EDC_EN__SHIFT,                        0x0001 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_SW_RST_MASK,                   DIDT_SQ_EDC_CTRL__EDC_SW_RST__SHIFT,                    0x0000 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,          DIDT_SQ_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,           0x0000 },
@@ -670,28 +583,22 @@ static const struct vega10_didt_config_reg   PSMSEEDCCtrlConfig_Vega10[] = {
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__GC_EDC_LEVEL_COMB_EN__SHIFT,          0x0001 },
 	{   ixDIDT_SQ_EDC_CTRL,                DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN_MASK,         DIDT_SQ_EDC_CTRL__SE_EDC_LEVEL_COMB_EN__SHIFT,          0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg   PSMGCEDCDroopCtrlConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   mmGC_EDC_DROOP_CTRL,               GC_EDC_DROOP_CTRL__EDC_DROOP_LEVEL_EN_MASK,          GC_EDC_DROOP_CTRL__EDC_DROOP_LEVEL_EN__SHIFT,           0x0001 },
 	{   mmGC_EDC_DROOP_CTRL,               GC_EDC_DROOP_CTRL__EDC_DROOP_THRESHOLD_MASK,         GC_EDC_DROOP_CTRL__EDC_DROOP_THRESHOLD__SHIFT,          0x0384 },
 	{   mmGC_EDC_DROOP_CTRL,               GC_EDC_DROOP_CTRL__EDC_DROOP_LEVEL_INDEX_MASK,       GC_EDC_DROOP_CTRL__EDC_DROOP_LEVEL_INDEX__SHIFT,        0x0001 },
 	{   mmGC_EDC_DROOP_CTRL,               GC_EDC_DROOP_CTRL__AVG_PSM_SEL_MASK,                 GC_EDC_DROOP_CTRL__AVG_PSM_SEL__SHIFT,                  0x0001 },
 	{   mmGC_EDC_DROOP_CTRL,               GC_EDC_DROOP_CTRL__EDC_LEVEL_SEL_MASK,               GC_EDC_DROOP_CTRL__EDC_LEVEL_SEL__SHIFT,                0x0001 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg   PSMGCEDCCtrlResetConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_EN_MASK,                            GC_EDC_CTRL__EDC_EN__SHIFT,                             0x0000 },
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_SW_RST_MASK,                        GC_EDC_CTRL__EDC_SW_RST__SHIFT,                         0x0001 },
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,               GC_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,                0x0000 },
@@ -699,14 +606,11 @@ static const struct vega10_didt_config_reg   PSMGCEDCCtrlResetConfig_vega10[] = 
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_TRIGGER_THROTTLE_LOWBIT_MASK,       GC_EDC_CTRL__EDC_TRIGGER_THROTTLE_LOWBIT__SHIFT,        0x0000 },
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_ALLOW_WRITE_PWRDELTA_MASK,          GC_EDC_CTRL__EDC_ALLOW_WRITE_PWRDELTA__SHIFT,           0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg   PSMGCEDCCtrlConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_EN_MASK,                            GC_EDC_CTRL__EDC_EN__SHIFT,                             0x0001 },
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_SW_RST_MASK,                        GC_EDC_CTRL__EDC_SW_RST__SHIFT,                         0x0000 },
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_CLK_EN_OVERRIDE_MASK,               GC_EDC_CTRL__EDC_CLK_EN_OVERRIDE__SHIFT,                0x0000 },
@@ -714,27 +618,21 @@ static const struct vega10_didt_config_reg   PSMGCEDCCtrlConfig_vega10[] = {
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_TRIGGER_THROTTLE_LOWBIT_MASK,       GC_EDC_CTRL__EDC_TRIGGER_THROTTLE_LOWBIT__SHIFT,        0x0000 },
 	{   mmGC_EDC_CTRL,                     GC_EDC_CTRL__EDC_ALLOW_WRITE_PWRDELTA_MASK,          GC_EDC_CTRL__EDC_ALLOW_WRITE_PWRDELTA__SHIFT,           0x0000 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg    AvfsPSMResetConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   0x16A02,                         0xFFFFFFFF,                                            0x0,                                                    0x0000005F },
 	{   0x16A05,                         0xFFFFFFFF,                                            0x0,                                                    0x00000001 },
 	{   0x16A06,                         0x00000001,                                            0x0,                                                    0x02000000 },
 	{   0x16A01,                         0xFFFFFFFF,                                            0x0,                                                    0x00003027 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static const struct vega10_didt_config_reg    AvfsPSMInitConfig_vega10[] = {
-/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- *      Offset                             Mask                                                 Shift                                                  Value
- * ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- */
+ 
 	{   0x16A05,                         0xFFFFFFFF,                                            0x18,                                                    0x00000001 },
 	{   0x16A05,                         0xFFFFFFFF,                                            0x8,                                                     0x00000003 },
 	{   0x16A05,                         0xFFFFFFFF,                                            0xa,                                                     0x00000006 },
@@ -743,7 +641,7 @@ static const struct vega10_didt_config_reg    AvfsPSMInitConfig_vega10[] = {
 	{   0x16A06,                         0xFFFFFFFF,                                            0x19,                                                    0x00000001 },
 	{   0x16A01,                         0xFFFFFFFF,                                            0x0,                                                     0x00003027 },
 
-	{   0xFFFFFFFF  }  /* End of list */
+	{   0xFFFFFFFF  }   
 };
 
 static int vega10_program_didt_config_registers(struct pp_hwmgr *hwmgr, const struct vega10_didt_config_reg *config_regs, enum vega10_didt_config_reg_type reg_type)
@@ -873,7 +771,7 @@ static void vega10_didt_set_mask(struct pp_hwmgr *hwmgr, const bool enable)
 		}
 	}
 
-	/* For Vega10, SMC does not support any mask yet. */
+	 
 	if (enable)
 		smum_send_msg_to_smc_with_parameter(hwmgr, PPSMC_MSG_ConfigureGfxDidt, didt_block_info,
 						NULL);
@@ -1255,7 +1153,7 @@ void vega10_initialize_power_tune_defaults(struct pp_hwmgr *hwmgr)
 	table->TplxLimit = cpu_to_le16(tdp_table->usTemperatureLimitPlx);
 	table->LoadLineResistance =
 			hwmgr->platform_descriptor.LoadLineSlope * 256;
-	table->FitLimit = 0; /* Not used for Vega10 */
+	table->FitLimit = 0;  
 
 	table->Liquid1_I2C_address = tdp_table->ucLiquid1_I2C_address;
 	table->Liquid2_I2C_address = tdp_table->ucLiquid2_I2C_address;

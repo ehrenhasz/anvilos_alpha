@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// Copyright (C) IBM Corporation 2018
-// FSI master driver for AST2600
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,7 +20,7 @@
 
 struct fsi_master_aspeed {
 	struct fsi_master	master;
-	struct mutex		lock;	/* protect HW access */
+	struct mutex		lock;	 
 	struct device		*dev;
 	void __iomem		*base;
 	struct clk		*clk;
@@ -30,7 +30,7 @@ struct fsi_master_aspeed {
 #define to_fsi_master_aspeed(m) \
 	container_of(m, struct fsi_master_aspeed, master)
 
-/* Control register (size 0x400) */
+ 
 static const u32 ctrl_base = 0x80000000;
 
 static const u32 fsi_base = 0xa0000000;
@@ -61,22 +61,22 @@ static const u32 fsi_base = 0xa0000000;
 
 #define OPB_RETRY_COUNTER	0x64
 
-/* OPBn_STATUS */
+ 
 #define STATUS_HALFWORD_ACK	BIT(0)
 #define STATUS_FULLWORD_ACK	BIT(1)
 #define STATUS_ERR_ACK		BIT(2)
 #define STATUS_RETRY		BIT(3)
 #define STATUS_TIMEOUT		BIT(4)
 
-/* OPB_IRQ_MASK */
+ 
 #define OPB1_XFER_ACK_EN BIT(17)
 #define OPB0_XFER_ACK_EN BIT(16)
 
-/* OPB_RW */
+ 
 #define CMD_READ	BIT(0)
 #define CMD_WRITE	0
 
-/* OPBx_XFER_SIZE */
+ 
 #define XFER_FULLWORD	(BIT(1) | BIT(0))
 #define XFER_HALFWORD	(BIT(0))
 #define XFER_BYTE	(0)
@@ -84,9 +84,9 @@ static const u32 fsi_base = 0xa0000000;
 #define CREATE_TRACE_POINTS
 #include <trace/events/fsi_master_aspeed.h>
 
-#define FSI_LINK_ENABLE_SETUP_TIME	10	/* in mS */
+#define FSI_LINK_ENABLE_SETUP_TIME	10	 
 
-/* Run the bus at maximum speed by default */
+ 
 #define FSI_DIVISOR_DEFAULT            1
 #define FSI_DIVISOR_CABLED             2
 static u16 aspeed_fsi_divisor = FSI_DIVISOR_DEFAULT;
@@ -101,10 +101,7 @@ static int __opb_write(struct fsi_master_aspeed *aspeed, u32 addr,
 	u32 reg, status;
 	int ret;
 
-	/*
-	 * The ordering of these writes up until the trigger
-	 * write does not matter, so use writel_relaxed.
-	 */
+	 
 	writel_relaxed(CMD_WRITE, base + OPB0_RW);
 	writel_relaxed(transfer_size, base + OPB0_XFER_SIZE);
 	writel_relaxed(addr, base + OPB0_FSI_ADDR);
@@ -120,11 +117,11 @@ static int __opb_write(struct fsi_master_aspeed *aspeed, u32 addr,
 
 	trace_fsi_master_aspeed_opb_write(addr, val, transfer_size, status, reg);
 
-	/* Return error when poll timed out */
+	 
 	if (ret)
 		return ret;
 
-	/* Command failed, master will reset */
+	 
 	if (status & STATUS_ERR_ACK)
 		return -EIO;
 
@@ -153,10 +150,7 @@ static int __opb_read(struct fsi_master_aspeed *aspeed, uint32_t addr,
 	u32 result, reg;
 	int status, ret;
 
-	/*
-	 * The ordering of these writes up until the trigger
-	 * write does not matter, so use writel_relaxed.
-	 */
+	 
 	writel_relaxed(CMD_READ, base + OPB0_RW);
 	writel_relaxed(transfer_size, base + OPB0_XFER_SIZE);
 	writel_relaxed(addr, base + OPB0_FSI_ADDR);
@@ -175,11 +169,11 @@ static int __opb_read(struct fsi_master_aspeed *aspeed, uint32_t addr,
 			readl(base + OPB0_STATUS),
 			reg);
 
-	/* Return error when poll timed out */
+	 
 	if (ret)
 		return ret;
 
-	/* Command failed, master will reset */
+	 
 	if (status & STATUS_ERR_ACK)
 		return -EIO;
 
@@ -236,19 +230,19 @@ static int check_errors(struct fsi_master_aspeed *aspeed, int err)
 	}
 
 	if (err == -EIO) {
-		/* Check MAEB (0x70) ? */
+		 
 
-		/* Then clear errors in master */
+		 
 		ret = opb_writel(aspeed, ctrl_base + FSI_MRESP0,
 				cpu_to_be32(FSI_MRESP_RST_ALL_MASTER));
 		if (ret) {
-			/* TODO: log? return different code? */
+			 
 			return ret;
 		}
-		/* TODO: confirm that 0x70 was okay */
+		 
 	}
 
-	/* This will pass through timeout errors */
+	 
 	return err;
 }
 
@@ -381,7 +375,7 @@ static void aspeed_master_release(struct device *dev)
 	kfree(aspeed);
 }
 
-/* mmode encoders */
+ 
 static inline u32 fsi_mmode_crs0(u32 x)
 {
 	return (x & FSI_MMODE_CRS0MASK) << FSI_MMODE_CRS0SHFT;
@@ -400,7 +394,7 @@ static int aspeed_master_init(struct fsi_master_aspeed *aspeed)
 			| FSI_MRESP_RST_MCR | FSI_MRESP_RST_PYE);
 	opb_writel(aspeed, ctrl_base + FSI_MRESP0, reg);
 
-	/* Initialize the MFSI (hub master) engine */
+	 
 	reg = cpu_to_be32(FSI_MRESP_RST_ALL_MASTER | FSI_MRESP_RST_ALL_LINK
 			| FSI_MRESP_RST_MCR | FSI_MRESP_RST_PYE);
 	opb_writel(aspeed, ctrl_base + FSI_MRESP0, reg);
@@ -422,7 +416,7 @@ static int aspeed_master_init(struct fsi_master_aspeed *aspeed)
 	reg = cpu_to_be32(~0);
 	opb_writel(aspeed, ctrl_base + FSI_MSENP0, reg);
 
-	/* Leave enabled long enough for master logic to set up */
+	 
 	mdelay(FSI_LINK_ENABLE_SETUP_TIME);
 
 	opb_writel(aspeed, ctrl_base + FSI_MCENP0, reg);
@@ -434,7 +428,7 @@ static int aspeed_master_init(struct fsi_master_aspeed *aspeed)
 
 	opb_readl(aspeed, ctrl_base + FSI_MLEVP0, NULL);
 
-	/* Reset the master bridge */
+	 
 	reg = cpu_to_be32(FSI_MRESB_RST_GEN);
 	opb_writel(aspeed, ctrl_base + FSI_MRESB0, reg);
 
@@ -492,10 +486,7 @@ static int tacoma_cabled_fsi_fixup(struct device *dev)
 	struct gpio_desc *routing_gpio, *mux_gpio;
 	int gpio;
 
-	/*
-	 * The routing GPIO is a jumper indicating we should mux for the
-	 * externally connected FSI cable.
-	 */
+	 
 	routing_gpio = devm_gpiod_get_optional(dev, "fsi-routing",
 			GPIOD_IN | GPIOD_FLAGS_BIT_NONEXCLUSIVE);
 	if (IS_ERR(routing_gpio))
@@ -513,13 +504,9 @@ static int tacoma_cabled_fsi_fixup(struct device *dev)
 	if (gpio < 0)
 		return gpio;
 
-	/* If the routing GPIO is high we should set the mux to low. */
+	 
 	if (gpio) {
-		/*
-		 * Cable signal integrity means we should run the bus
-		 * slightly slower. Do not override if a kernel param
-		 * has already overridden.
-		 */
+		 
 		if (aspeed_fsi_divisor == FSI_DIVISOR_DEFAULT)
 			aspeed_fsi_divisor = FSI_DIVISOR_CABLED;
 
@@ -579,24 +566,20 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
 	writel(OPB1_XFER_ACK_EN | OPB0_XFER_ACK_EN,
 			aspeed->base + OPB_IRQ_MASK);
 
-	/* TODO: determine an appropriate value */
+	 
 	writel(0x10, aspeed->base + OPB_RETRY_COUNTER);
 
 	writel(ctrl_base, aspeed->base + OPB_CTRL_BASE);
 	writel(fsi_base, aspeed->base + OPB_FSI_BASE);
 
-	/* Set read data order */
+	 
 	writel(0x00030b1b, aspeed->base + OPB0_READ_ORDER1);
 
-	/* Set write data order */
+	 
 	writel(0x0011101b, aspeed->base + OPB0_WRITE_ORDER1);
 	writel(0x0c330f3f, aspeed->base + OPB0_WRITE_ORDER2);
 
-	/*
-	 * Select OPB0 for all operations.
-	 * Will need to be reworked when enabling DMA or anything that uses
-	 * OPB1.
-	 */
+	 
 	writel(0x1, aspeed->base + OPB0_SELECT);
 
 	rc = opb_readl(aspeed, ctrl_base + FSI_MVER, &raw);
@@ -629,13 +612,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
 	if (rc)
 		goto err_release;
 
-	/* At this point, fsi_master_register performs the device_initialize(),
-	 * and holds the sole reference on master.dev. This means the device
-	 * will be freed (via ->release) during any subsequent call to
-	 * fsi_master_unregister.  We add our own reference to it here, so we
-	 * can perform cleanup (in _remove()) without it being freed before
-	 * we're ready.
-	 */
+	 
 	get_device(&aspeed->master.dev);
 	return 0;
 

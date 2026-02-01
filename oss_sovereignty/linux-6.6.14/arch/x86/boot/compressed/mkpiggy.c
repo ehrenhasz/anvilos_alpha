@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ----------------------------------------------------------------------- *
- *
- *  Copyright (C) 2009 Intel Corporation. All rights reserved.
- *
- *  H. Peter Anvin <hpa@linux.intel.com>
- *
- * -----------------------------------------------------------------------
- *
- * Outputs a small assembly wrapper with the appropriate symbols defined.
- */
+
+ 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,7 +19,7 @@ int main(int argc, char *argv[])
 		goto bail;
 	}
 
-	/* Get the information for the compressed kernel image first */
+	 
 
 	f = fopen(argv[1], "r");
 	if (!f) {

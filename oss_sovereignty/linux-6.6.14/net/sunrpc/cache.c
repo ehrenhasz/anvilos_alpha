@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sunrpc/cache.c
- *
- * Generic code for various authentication-related caches
- * used by sunrpc clients and servers.
- *
- * Copyright (C) 2002 Neil Brown <neilb@cse.unsw.edu.au>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/fs.h>
@@ -50,7 +43,7 @@ static void cache_init(struct cache_head *h, struct cache_detail *detail)
 	kref_init(&h->ref);
 	h->expiry_time = now + CACHE_NEW_EXPIRY;
 	if (now <= detail->flush_time)
-		/* ensure it isn't already expired */
+		 
 		now = detail->flush_time + 1;
 	h->last_refresh = now;
 }
@@ -83,7 +76,7 @@ static struct cache_head *sunrpc_cache_find_rcu(struct cache_detail *detail,
 static void sunrpc_begin_cache_remove_entry(struct cache_head *ch,
 					    struct cache_detail *cd)
 {
-	/* Must be called under cd->hash_lock */
+	 
 	hlist_del_init_rcu(&ch->cache_list);
 	set_bit(CACHE_CLEANED, &ch->flags);
 	cd->entries --;
@@ -106,16 +99,13 @@ static struct cache_head *sunrpc_cache_add_entry(struct cache_detail *detail,
 	new = detail->alloc();
 	if (!new)
 		return NULL;
-	/* must fully initialise 'new', else
-	 * we might get lose if we need to
-	 * cache_put it soon.
-	 */
+	 
 	cache_init(new, detail);
 	detail->init(new, key);
 
 	spin_lock(&detail->hash_lock);
 
-	/* check if entry appeared while we slept */
+	 
 	hlist_for_each_entry_rcu(tmp, head, cache_list,
 				 lockdep_is_held(&detail->hash_lock)) {
 		if (!detail->match(tmp, key))
@@ -151,7 +141,7 @@ struct cache_head *sunrpc_cache_lookup_rcu(struct cache_detail *detail,
 	ret = sunrpc_cache_find_rcu(detail, key, hash);
 	if (ret)
 		return ret;
-	/* Didn't find anything, insert an empty entry */
+	 
 	return sunrpc_cache_add_entry(detail, key, hash);
 }
 EXPORT_SYMBOL_GPL(sunrpc_cache_lookup_rcu);
@@ -163,11 +153,11 @@ static void cache_fresh_locked(struct cache_head *head, time64_t expiry,
 {
 	time64_t now = seconds_since_boot();
 	if (now <= detail->flush_time)
-		/* ensure it isn't immediately treated as expired */
+		 
 		now = detail->flush_time + 1;
 	head->expiry_time = expiry;
 	head->last_refresh = now;
-	smp_wmb(); /* paired with smp_rmb() in cache_is_valid() */
+	smp_wmb();  
 	set_bit(CACHE_VALID, &head->flags);
 }
 
@@ -202,10 +192,7 @@ static void cache_entry_update(struct cache_detail *detail,
 struct cache_head *sunrpc_cache_update(struct cache_detail *detail,
 				       struct cache_head *new, struct cache_head *old, int hash)
 {
-	/* The 'old' entry is to be replaced by 'new'.
-	 * If 'old' is not VALID, we update it directly,
-	 * otherwise we need to replace it
-	 */
+	 
 	struct cache_head *tmp;
 
 	if (!test_bit(CACHE_VALID, &old->flags)) {
@@ -219,7 +206,7 @@ struct cache_head *sunrpc_cache_update(struct cache_detail *detail,
 		}
 		spin_unlock(&detail->hash_lock);
 	}
-	/* We need to insert a new entry */
+	 
 	tmp = detail->alloc();
 	if (!tmp) {
 		cache_put(old, detail);
@@ -248,16 +235,11 @@ static inline int cache_is_valid(struct cache_head *h)
 	if (!test_bit(CACHE_VALID, &h->flags))
 		return -EAGAIN;
 	else {
-		/* entry is valid */
+		 
 		if (test_bit(CACHE_NEGATIVE, &h->flags))
 			return -ENOENT;
 		else {
-			/*
-			 * In combination with write barrier in
-			 * sunrpc_cache_update, ensures that anyone
-			 * using the cache entry after this sees the
-			 * updated contents:
-			 */
+			 
 			smp_rmb();
 			return 0;
 		}
@@ -281,30 +263,17 @@ static int try_to_negate_entry(struct cache_detail *detail, struct cache_head *h
 	return rv;
 }
 
-/*
- * This is the generic cache management routine for all
- * the authentication caches.
- * It checks the currency of a cache item and will (later)
- * initiate an upcall to fill it if needed.
- *
- *
- * Returns 0 if the cache_head can be used, or cache_puts it and returns
- * -EAGAIN if upcall is pending and request has been queued
- * -ETIMEDOUT if upcall failed or request could not be queue or
- *           upcall completed but item is still invalid (implying that
- *           the cache item has been replaced with a newer one).
- * -ENOENT if cache entry was negative
- */
+ 
 int cache_check(struct cache_detail *detail,
 		    struct cache_head *h, struct cache_req *rqstp)
 {
 	int rv;
 	time64_t refresh_age, age;
 
-	/* First decide return status as best we can */
+	 
 	rv = cache_is_valid(h);
 
-	/* now see if we want to start an upcall */
+	 
 	refresh_age = (h->expiry_time - h->last_refresh);
 	age = seconds_since_boot() - h->last_refresh;
 
@@ -327,10 +296,7 @@ int cache_check(struct cache_detail *detail,
 
 	if (rv == -EAGAIN) {
 		if (!cache_defer_req(rqstp, h)) {
-			/*
-			 * Request was not deferred; handle it as best
-			 * we can ourselves:
-			 */
+			 
 			rv = cache_is_valid(h);
 			if (rv == -EAGAIN)
 				rv = -ETIMEDOUT;
@@ -342,37 +308,7 @@ int cache_check(struct cache_detail *detail,
 }
 EXPORT_SYMBOL_GPL(cache_check);
 
-/*
- * caches need to be periodically cleaned.
- * For this we maintain a list of cache_detail and
- * a current pointer into that list and into the table
- * for that entry.
- *
- * Each time cache_clean is called it finds the next non-empty entry
- * in the current table and walks the list in that entry
- * looking for entries that can be removed.
- *
- * An entry gets removed if:
- * - The expiry is before current time
- * - The last_refresh time is before the flush_time for that cache
- *
- * later we might drop old entries with non-NEVER expiry if that table
- * is getting 'full' for some definition of 'full'
- *
- * The question of "how often to scan a table" is an interesting one
- * and is answered in part by the use of the "nextcheck" field in the
- * cache_detail.
- * When a scan of a table begins, the nextcheck field is set to a time
- * that is well into the future.
- * While scanning, if an expiry time is found that is earlier than the
- * current nextcheck time, nextcheck is set to that expiry time.
- * If the flush_time is ever set to a time earlier than the nextcheck
- * time, the nextcheck time is then set to that flush_time.
- *
- * A table is then only scanned if the current time is at least
- * the nextcheck time.
- *
- */
+ 
 
 static LIST_HEAD(cache_list);
 static DEFINE_SPINLOCK(cache_list_lock);
@@ -395,7 +331,7 @@ void sunrpc_init_cache_detail(struct cache_detail *cd)
 	list_add(&cd->others, &cache_list);
 	spin_unlock(&cache_list_lock);
 
-	/* start the cleaning process */
+	 
 	queue_delayed_work(system_power_efficient_wq, &cache_cleaner, 0);
 }
 EXPORT_SYMBOL_GPL(sunrpc_init_cache_detail);
@@ -411,18 +347,13 @@ void sunrpc_destroy_cache_detail(struct cache_detail *cd)
 	spin_unlock(&cd->hash_lock);
 	spin_unlock(&cache_list_lock);
 	if (list_empty(&cache_list)) {
-		/* module must be being unloaded so its safe to kill the worker */
+		 
 		cancel_delayed_work_sync(&cache_cleaner);
 	}
 }
 EXPORT_SYMBOL_GPL(sunrpc_destroy_cache_detail);
 
-/* clean cache tries to find something to clean
- * and cleans it.
- * It returns 1 if it cleaned something,
- *            0 if it didn't find anything this time
- *           -1 if it fell off the end of the list.
- */
+ 
 static int cache_clean(void)
 {
 	int rv = 0;
@@ -430,7 +361,7 @@ static int cache_clean(void)
 
 	spin_lock(&cache_list_lock);
 
-	/* find a suitable table if we don't already have one */
+	 
 	while (current_detail == NULL ||
 	    current_index >= current_detail->hash_size) {
 		if (current_detail)
@@ -451,13 +382,13 @@ static int cache_clean(void)
 		}
 	}
 
-	/* find a non-empty bucket in the table */
+	 
 	while (current_detail &&
 	       current_index < current_detail->hash_size &&
 	       hlist_empty(&current_detail->hash_table[current_index]))
 		current_index++;
 
-	/* find a cleanable entry in the bucket and clean it, or set to next bucket */
+	 
 
 	if (current_detail && current_index < current_detail->hash_size) {
 		struct cache_head *ch = NULL;
@@ -467,7 +398,7 @@ static int cache_clean(void)
 
 		spin_lock(&current_detail->hash_lock);
 
-		/* Ok, now to clean this strand */
+		 
 
 		head = &current_detail->hash_table[current_index];
 		hlist_for_each_entry_safe(ch, tmp, head, cache_list) {
@@ -495,9 +426,7 @@ static int cache_clean(void)
 	return rv;
 }
 
-/*
- * We want to regularly clean the cache, so we need to schedule some work ...
- */
+ 
 static void do_cache_clean(struct work_struct *work)
 {
 	int delay;
@@ -514,11 +443,7 @@ static void do_cache_clean(struct work_struct *work)
 }
 
 
-/*
- * Clean all caches promptly.  This just calls cache_clean
- * repeatedly until we are sure that every cache has had a chance to
- * be fully cleaned
- */
+ 
 void cache_flush(void)
 {
 	while (cache_clean() != -1)
@@ -557,25 +482,12 @@ void cache_purge(struct cache_detail *detail)
 EXPORT_SYMBOL_GPL(cache_purge);
 
 
-/*
- * Deferral and Revisiting of Requests.
- *
- * If a cache lookup finds a pending entry, we
- * need to defer the request and revisit it later.
- * All deferred requests are stored in a hash table,
- * indexed by "struct cache_head *".
- * As it may be wasteful to store a whole request
- * structure, we allow the request to provide a
- * deferred form, which must contain a
- * 'struct cache_deferred_req'
- * This cache_deferred_req contains a method to allow
- * it to be revisited when cache info is available
- */
+ 
 
 #define	DFR_HASHSIZE	(PAGE_SIZE/sizeof(struct list_head))
 #define	DFR_HASH(item)	((((long)item)>>4 ^ (((long)item)>>13)) % DFR_HASHSIZE)
 
-#define	DFR_MAX	300	/* ??? */
+#define	DFR_MAX	300	 
 
 static DEFINE_SPINLOCK(cache_defer_lock);
 static LIST_HEAD(cache_defer_list);
@@ -644,19 +556,13 @@ static void cache_wait_req(struct cache_req *req, struct cache_head *item)
 	if (!test_bit(CACHE_PENDING, &item->flags) ||
 	    wait_for_completion_interruptible_timeout(
 		    &sleeper.completion, req->thread_wait) <= 0) {
-		/* The completion wasn't completed, so we need
-		 * to clean up
-		 */
+		 
 		spin_lock(&cache_defer_lock);
 		if (!hlist_unhashed(&sleeper.handle.hash)) {
 			__unhash_deferred_req(&sleeper.handle);
 			spin_unlock(&cache_defer_lock);
 		} else {
-			/* cache_revisit_request already removed
-			 * this from the hash table, but hasn't
-			 * called ->revisit yet.  It will very soon
-			 * and we need to wait for it.
-			 */
+			 
 			spin_unlock(&cache_defer_lock);
 			wait_for_completion(&sleeper.completion);
 		}
@@ -665,9 +571,7 @@ static void cache_wait_req(struct cache_req *req, struct cache_head *item)
 
 static void cache_limit_defers(void)
 {
-	/* Make sure we haven't exceed the limit of allowed deferred
-	 * requests.
-	 */
+	 
 	struct cache_deferred_req *discard = NULL;
 
 	if (cache_defer_cnt <= DFR_MAX)
@@ -675,7 +579,7 @@ static void cache_limit_defers(void)
 
 	spin_lock(&cache_defer_lock);
 
-	/* Consider removing either the first or the last */
+	 
 	if (cache_defer_cnt > DFR_MAX) {
 		if (get_random_u32_below(2))
 			discard = list_entry(cache_defer_list.next,
@@ -703,7 +607,7 @@ static inline bool cache_defer_immediately(void)
 }
 #endif
 
-/* Return true if and only if a deferred request is queued. */
+ 
 static bool cache_defer_req(struct cache_req *req, struct cache_head *item)
 {
 	struct cache_deferred_req *dreq;
@@ -719,9 +623,7 @@ static bool cache_defer_req(struct cache_req *req, struct cache_head *item)
 		return false;
 	setup_deferral(dreq, item, 1);
 	if (!test_bit(CACHE_PENDING, &item->flags))
-		/* Bit could have been cleared before we managed to
-		 * set up the deferral, so need to revisit just in case
-		 */
+		 
 		cache_revisit_request(item);
 
 	cache_limit_defers();
@@ -777,27 +679,13 @@ void cache_clean_deferred(void *owner)
 	}
 }
 
-/*
- * communicate with user-space
- *
- * We have a magic /proc file - /proc/net/rpc/<cachename>/channel.
- * On read, you get a full request, or block.
- * On write, an update request is processed.
- * Poll works if anything to read, and always allows write.
- *
- * Implemented by linked list of requests.  Each open file has
- * a ->private that also exists in this list.  New requests are added
- * to the end and may wakeup and preceding readers.
- * New readers are added to the head.  If, on read, an item is found with
- * CACHE_UPCALLING clear, we free it from the list.
- *
- */
+ 
 
 static DEFINE_SPINLOCK(queue_lock);
 
 struct cache_queue {
 	struct list_head	list;
-	int			reader;	/* if 0, then request */
+	int			reader;	 
 };
 struct cache_request {
 	struct cache_queue	q;
@@ -808,7 +696,7 @@ struct cache_request {
 };
 struct cache_reader {
 	struct cache_queue	q;
-	int			offset;	/* if non-0, we have a refcnt on next request */
+	int			offset;	 
 };
 
 static int cache_request(struct cache_detail *detail,
@@ -834,11 +722,10 @@ static ssize_t cache_read(struct file *filp, char __user *buf, size_t count,
 	if (count == 0)
 		return 0;
 
-	inode_lock(inode); /* protect against multiple concurrent
-			      * readers on this file */
+	inode_lock(inode);  
  again:
 	spin_lock(&queue_lock);
-	/* need to find next request */
+	 
 	while (rp->q.list.next != &cd->queue &&
 	       list_entry(rp->q.list.next, struct cache_queue, list)
 	       ->reader) {
@@ -886,7 +773,7 @@ static ssize_t cache_read(struct file *filp, char __user *buf, size_t count,
 	}
  out:
 	if (rp->offset == 0) {
-		/* need to release rq */
+		 
 		spin_lock(&queue_lock);
 		rq->readers--;
 		if (rq->readers == 0 &&
@@ -928,7 +815,7 @@ static ssize_t cache_downcall(struct address_space *mapping,
 	char *write_buf;
 	ssize_t ret = -ENOMEM;
 
-	if (count >= 32768) { /* 32k is max userland buffer, lets check anyway */
+	if (count >= 32768) {  
 		ret = -EINVAL;
 		goto out;
 	}
@@ -972,7 +859,7 @@ static __poll_t cache_poll(struct file *filp, poll_table *wait,
 
 	poll_wait(filp, &queue_wait, wait);
 
-	/* alway allow write */
+	 
 	mask = EPOLLOUT | EPOLLWRNORM;
 
 	if (!rp)
@@ -1003,9 +890,7 @@ static int cache_ioctl(struct inode *ino, struct file *filp,
 
 	spin_lock(&queue_lock);
 
-	/* only find the length remaining in current request,
-	 * or the length of the next request
-	 */
+	 
 	for (cq= &rp->q; &cq->list != &cd->queue;
 	     cq = list_entry(cq->list.next, struct cache_queue, list))
 		if (!cq->reader) {
@@ -1095,7 +980,7 @@ static void cache_dequeue(struct cache_detail *detail, struct cache_head *ch)
 			if (cr->item != ch)
 				continue;
 			if (test_bit(CACHE_PENDING, &ch->flags))
-				/* Lost a race and it is pending again */
+				 
 				break;
 			if (cr->readers != 0)
 				continue;
@@ -1111,14 +996,7 @@ static void cache_dequeue(struct cache_detail *detail, struct cache_head *ch)
 	}
 }
 
-/*
- * Support routines for text-based upcalls.
- * Fields are separated by spaces.
- * Fields are either mangled to quote space tab newline slosh with slosh
- * or a hexified with a leading \x
- * Record is terminated with newline.
- *
- */
+ 
 
 void qword_add(char **bpp, int *lp, char *str)
 {
@@ -1184,24 +1062,15 @@ static bool cache_listeners_exist(struct cache_detail *detail)
 	if (atomic_read(&detail->writers))
 		return true;
 	if (detail->last_close == 0)
-		/* This cache was never opened */
+		 
 		return false;
 	if (detail->last_close < seconds_since_boot() - 30)
-		/*
-		 * We allow for the possibility that someone might
-		 * restart a userspace daemon without restarting the
-		 * server; but after 30 seconds, we give up.
-		 */
+		 
 		 return false;
 	return true;
 }
 
-/*
- * register an upcall request to user-space and queue it up for read() by the
- * upcall daemon.
- *
- * Each request is at most one page long.
- */
+ 
 static int cache_pipe_upcall(struct cache_detail *detail, struct cache_head *h)
 {
 	char *buf;
@@ -1209,7 +1078,7 @@ static int cache_pipe_upcall(struct cache_detail *detail, struct cache_head *h)
 	int ret = 0;
 
 	if (test_bit(CACHE_CLEANED, &h->flags))
-		/* Too late to make an upcall */
+		 
 		return -EAGAIN;
 
 	buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
@@ -1232,7 +1101,7 @@ static int cache_pipe_upcall(struct cache_detail *detail, struct cache_head *h)
 		list_add_tail(&crq->q.list, &detail->queue);
 		trace_cache_entry_upcall(detail, h);
 	} else
-		/* Lost a race, no longer PENDING, so don't enqueue */
+		 
 		ret = -EAGAIN;
 	spin_unlock(&queue_lock);
 	wake_up(&queue_wait);
@@ -1263,28 +1132,18 @@ int sunrpc_cache_pipe_upcall_timeout(struct cache_detail *detail,
 }
 EXPORT_SYMBOL_GPL(sunrpc_cache_pipe_upcall_timeout);
 
-/*
- * parse a message from user-space and pass it
- * to an appropriate cache
- * Messages are, like requests, separated into fields by
- * spaces and dequotes as \xHEXSTRING or embedded \nnn octal
- *
- * Message is
- *   reply cachename expiry key ... content....
- *
- * key and content are both parsed by cache
- */
+ 
 
 int qword_get(char **bpp, char *dest, int bufsize)
 {
-	/* return bytes copied, or -1 on error */
+	 
 	char *bp = *bpp;
 	int len = 0;
 
 	while (*bp == ' ') bp++;
 
 	if (bp[0] == '\\' && bp[1] == 'x') {
-		/* HEX STRING */
+		 
 		bp += 2;
 		while (len < bufsize - 1) {
 			int h, l;
@@ -1302,7 +1161,7 @@ int qword_get(char **bpp, char *dest, int bufsize)
 			len++;
 		}
 	} else {
-		/* text with \nnn octal quoting */
+		 
 		while (*bp != ' ' && *bp != '\n' && *bp && len < bufsize-1) {
 			if (*bp == '\\' &&
 			    isodigit(bp[1]) && (bp[1] <= '3') &&
@@ -1331,12 +1190,7 @@ int qword_get(char **bpp, char *dest, int bufsize)
 EXPORT_SYMBOL_GPL(qword_get);
 
 
-/*
- * support /proc/net/rpc/$CACHENAME/content
- * as a seqfile.
- * We call ->cache_show passing NULL for the item to
- * get a header, then pass each real item in the cache
- */
+ 
 
 static void *__cache_seq_start(struct seq_file *m, loff_t *pos)
 {
@@ -1433,7 +1287,7 @@ static int c_show(struct seq_file *m, void *p)
 			   kref_read(&cp->ref), cp->flags);
 	cache_get(cp);
 	if (cache_check(cd, cp, NULL))
-		/* cache_check does a cache_put on failure */
+		 
 		seq_puts(m, "# ");
 	else {
 		if (cache_is_expired(cd, cp))
@@ -1522,18 +1376,10 @@ static ssize_t write_flush(struct file *file, const char __user *buf,
 	simple_strtoul(tbuf, &ep, 0);
 	if (*ep && *ep != '\n')
 		return -EINVAL;
-	/* Note that while we check that 'buf' holds a valid number,
-	 * we always ignore the value and just flush everything.
-	 * Making use of the number leads to races.
-	 */
+	 
 
 	now = seconds_since_boot();
-	/* Always flush everything, so behave like cache_purge()
-	 * Do this by advancing flush_time to the current time,
-	 * or by one second if it has already reached the current time.
-	 * Newly added cache entries will always have ->last_refresh greater
-	 * that ->flush_time, so they don't get flushed prematurely.
-	 */
+	 
 
 	if (cd->flush_time >= now)
 		now = cd->flush_time + 1;
@@ -1600,7 +1446,7 @@ static const struct proc_ops cache_channel_proc_ops = {
 	.proc_read	= cache_read_procfs,
 	.proc_write	= cache_write_procfs,
 	.proc_poll	= cache_poll_procfs,
-	.proc_ioctl	= cache_ioctl_procfs, /* for FIONREAD */
+	.proc_ioctl	= cache_ioctl_procfs,  
 	.proc_open	= cache_open_procfs,
 	.proc_release	= cache_release_procfs,
 };
@@ -1706,7 +1552,7 @@ out_nomem:
 	remove_cache_proc_entries(cd);
 	return -ENOMEM;
 }
-#else /* CONFIG_PROC_FS */
+#else  
 static int create_cache_proc_entries(struct cache_detail *cd, struct net *net)
 {
 	return 0;
@@ -1819,7 +1665,7 @@ const struct file_operations cache_file_operations_pipefs = {
 	.read		= cache_read_pipefs,
 	.write		= cache_write_pipefs,
 	.poll		= cache_poll_pipefs,
-	.unlocked_ioctl	= cache_ioctl_pipefs, /* for FIONREAD */
+	.unlocked_ioctl	= cache_ioctl_pipefs,  
 	.open		= cache_open_pipefs,
 	.release	= cache_release_pipefs,
 };

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SDX65_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SDX65_H

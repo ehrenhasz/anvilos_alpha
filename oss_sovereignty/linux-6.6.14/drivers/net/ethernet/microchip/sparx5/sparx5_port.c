@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/phy/phy.h>
@@ -59,7 +56,7 @@ static void decode_cl37_word(u16 lp_abil, uint16_t ld_abil, struct sparx5_port_s
 	status->link = !(lp_abil & ADVERTISE_RFAULT) && status->link;
 	status->an_complete = true;
 	status->duplex = (ADVERTISE_1000XFULL & lp_abil) ?
-		DUPLEX_FULL : DUPLEX_UNKNOWN; // 1G HDX not supported
+		DUPLEX_FULL : DUPLEX_UNKNOWN; 
 
 	if ((ld_abil & ADVERTISE_1000XPAUSE) &&
 	    (lp_abil & ADVERTISE_1000XPAUSE)) {
@@ -83,13 +80,13 @@ static int sparx5_get_dev2g5_status(struct sparx5 *sparx5,
 	u16 lp_adv, ld_adv;
 	u32 value;
 
-	/* Get PCS Link down sticky */
+	 
 	value = spx5_rd(sparx5, DEV2G5_PCS1G_STICKY(portno));
 	status->link_down = DEV2G5_PCS1G_STICKY_LINK_DOWN_STICKY_GET(value);
-	if (status->link_down)	/* Clear the sticky */
+	if (status->link_down)	 
 		spx5_wr(value, sparx5, DEV2G5_PCS1G_STICKY(portno));
 
-	/* Get both current Link and Sync status */
+	 
 	value = spx5_rd(sparx5, DEV2G5_PCS1G_LINK_STATUS(portno));
 	status->link = DEV2G5_PCS1G_LINK_STATUS_LINK_STATUS_GET(value) &&
 		       DEV2G5_PCS1G_LINK_STATUS_SYNC_STATUS_GET(value);
@@ -101,10 +98,10 @@ static int sparx5_get_dev2g5_status(struct sparx5 *sparx5,
 
 	status->duplex = DUPLEX_FULL;
 
-	/* Get PCS ANEG status register */
+	 
 	value = spx5_rd(sparx5, DEV2G5_PCS1G_ANEG_STATUS(portno));
 
-	/* Aneg complete provides more information  */
+	 
 	if (DEV2G5_PCS1G_ANEG_STATUS_ANEG_COMPLETE_GET(value)) {
 		lp_adv = DEV2G5_PCS1G_ANEG_STATUS_LP_ADV_ABILITY_GET(value);
 		if (port->conf.portmode == PHY_INTERFACE_MODE_SGMII) {
@@ -138,7 +135,7 @@ static int sparx5_get_sfi_status(struct sparx5 *sparx5,
 
 	value = spx5_inst_rd(inst, DEV10G_MAC_TX_MONITOR_STICKY(0));
 	if (value != DEV10G_MAC_TX_MONITOR_STICKY_IDLE_STATE_STICKY) {
-		/* The link is or has been down. Clear the sticky bit */
+		 
 		status->link_down = 1;
 		spx5_inst_wr(0xffffffff, inst, DEV10G_MAC_TX_MONITOR_STICKY(0));
 		value = spx5_inst_rd(inst, DEV10G_MAC_TX_MONITOR_STICKY(0));
@@ -155,8 +152,7 @@ static int sparx5_get_sfi_status(struct sparx5 *sparx5,
 	return 0;
 }
 
-/* Get link status of 1000Base-X/in-band and SFI ports.
- */
+ 
 int sparx5_get_port_status(struct sparx5 *sparx5,
 			   struct sparx5_port *port,
 			   struct sparx5_port_status *status)
@@ -275,11 +271,7 @@ static int sparx5_port_flush_poll(struct sparx5 *sparx5, u32 portno)
 	bool poll_src = true;
 	char *mem = "";
 
-	/* Resource == 0: Memory tracked per source (SRC-MEM)
-	 * Resource == 1: Frame references tracked per source (SRC-REF)
-	 * Resource == 2: Memory tracked per destination (DST-MEM)
-	 * Resource == 3: Frame references tracked per destination. (DST-REF)
-	 */
+	 
 	while (1) {
 		bool empty = true;
 
@@ -325,52 +317,52 @@ static int sparx5_port_disable(struct sparx5 *sparx5, struct sparx5_port *port, 
 	int err;
 
 	if (high_spd_dev) {
-		/* 1: Reset the PCS Rx clock domain  */
+		 
 		spx5_inst_rmw(DEV10G_DEV_RST_CTRL_PCS_RX_RST,
 			      DEV10G_DEV_RST_CTRL_PCS_RX_RST,
 			      devinst,
 			      DEV10G_DEV_RST_CTRL(0));
 
-		/* 2: Disable MAC frame reception */
+		 
 		spx5_inst_rmw(0,
 			      DEV10G_MAC_ENA_CFG_RX_ENA,
 			      devinst,
 			      DEV10G_MAC_ENA_CFG(0));
 	} else {
-		/* 1: Reset the PCS Rx clock domain  */
+		 
 		spx5_inst_rmw(DEV2G5_DEV_RST_CTRL_PCS_RX_RST,
 			      DEV2G5_DEV_RST_CTRL_PCS_RX_RST,
 			      devinst,
 			      DEV2G5_DEV_RST_CTRL(0));
-		/* 2: Disable MAC frame reception */
+		 
 		spx5_inst_rmw(0,
 			      DEV2G5_MAC_ENA_CFG_RX_ENA,
 			      devinst,
 			      DEV2G5_MAC_ENA_CFG(0));
 	}
-	/* 3: Disable traffic being sent to or from switch port->portno */
+	 
 	spx5_rmw(0,
 		 QFWD_SWITCH_PORT_MODE_PORT_ENA,
 		 sparx5,
 		 QFWD_SWITCH_PORT_MODE(port->portno));
 
-	/* 4: Disable dequeuing from the egress queues  */
+	 
 	spx5_rmw(HSCH_PORT_MODE_DEQUEUE_DIS,
 		 HSCH_PORT_MODE_DEQUEUE_DIS,
 		 sparx5,
 		 HSCH_PORT_MODE(port->portno));
 
-	/* 5: Disable Flowcontrol */
+	 
 	spx5_rmw(QSYS_PAUSE_CFG_PAUSE_STOP_SET(0xFFF - 1),
 		 QSYS_PAUSE_CFG_PAUSE_STOP,
 		 sparx5,
 		 QSYS_PAUSE_CFG(port->portno));
 
 	spd_prm = spd == SPEED_10 ? 1000 : spd == SPEED_100 ? 100 : 10;
-	/* 6: Wait while the last frame is exiting the queues */
+	 
 	usleep_range(8 * spd_prm, 10 * spd_prm);
 
-	/* 7: Flush the queues accociated with the port->portno */
+	 
 	spx5_rmw(HSCH_FLUSH_CTRL_FLUSH_PORT_SET(port->portno) |
 		 HSCH_FLUSH_CTRL_FLUSH_DST_SET(1) |
 		 HSCH_FLUSH_CTRL_FLUSH_SRC_SET(1) |
@@ -382,18 +374,18 @@ static int sparx5_port_disable(struct sparx5 *sparx5, struct sparx5_port *port, 
 		 sparx5,
 		 HSCH_FLUSH_CTRL);
 
-	/* 8: Enable dequeuing from the egress queues */
+	 
 	spx5_rmw(0,
 		 HSCH_PORT_MODE_DEQUEUE_DIS,
 		 sparx5,
 		 HSCH_PORT_MODE(port->portno));
 
-	/* 9: Wait until flushing is complete */
+	 
 	err = sparx5_port_flush_poll(sparx5, port->portno);
 	if (err)
 		return err;
 
-	/* 10: Reset the  MAC clock domain */
+	 
 	if (high_spd_dev) {
 		spx5_inst_rmw(DEV10G_DEV_RST_CTRL_PCS_TX_RST_SET(1) |
 			      DEV10G_DEV_RST_CTRL_MAC_RX_RST_SET(1) |
@@ -418,7 +410,7 @@ static int sparx5_port_disable(struct sparx5 *sparx5, struct sparx5_port *port, 
 			      devinst,
 			      DEV2G5_DEV_RST_CTRL(0));
 	}
-	/* 11: Clear flushing */
+	 
 	spx5_rmw(HSCH_FLUSH_CTRL_FLUSH_PORT_SET(port->portno) |
 		 HSCH_FLUSH_CTRL_FLUSH_ENA_SET(0),
 		 HSCH_FLUSH_CTRL_FLUSH_PORT |
@@ -430,27 +422,27 @@ static int sparx5_port_disable(struct sparx5 *sparx5, struct sparx5_port *port, 
 		u32 pcs = sparx5_to_pcs_dev(port->portno);
 		void __iomem *pcsinst = spx5_inst_get(sparx5, pcs, tinst);
 
-		/* 12: Disable 5G/10G/25 BaseR PCS */
+		 
 		spx5_inst_rmw(PCS10G_BR_PCS_CFG_PCS_ENA_SET(0),
 			      PCS10G_BR_PCS_CFG_PCS_ENA,
 			      pcsinst,
 			      PCS10G_BR_PCS_CFG(0));
 
 		if (sparx5_port_is_25g(port->portno))
-			/* Disable 25G PCS */
+			 
 			spx5_rmw(DEV25G_PCS25G_CFG_PCS25G_ENA_SET(0),
 				 DEV25G_PCS25G_CFG_PCS25G_ENA,
 				 sparx5,
 				 DEV25G_PCS25G_CFG(tinst));
 	} else {
-		/* 12: Disable 1G PCS */
+		 
 		spx5_rmw(DEV2G5_PCS1G_CFG_PCS_ENA_SET(0),
 			 DEV2G5_PCS1G_CFG_PCS_ENA,
 			 sparx5,
 			 DEV2G5_PCS1G_CFG(port->portno));
 	}
 
-	/* The port is now flushed and disabled  */
+	 
 	return 0;
 }
 
@@ -510,9 +502,7 @@ static int sparx5_port_fifo_sz(struct sparx5 *sparx5,
 	return  (tmp3 + 2000 + 999) / 1000 + addition;
 }
 
-/* Configure port muxing:
- * QSGMII:     4x2G5 devices
- */
+ 
 static int sparx5_port_mux_set(struct sparx5 *sparx5,
 			       struct sparx5_port *port,
 			       struct sparx5_port_config *conf)
@@ -521,10 +511,10 @@ static int sparx5_port_mux_set(struct sparx5 *sparx5,
 	u32 inst;
 
 	if (port->conf.portmode == conf->portmode)
-		return 0; /* Nothing to do */
+		return 0;  
 
 	switch (conf->portmode) {
-	case PHY_INTERFACE_MODE_QSGMII: /* QSGMII: 4x2G5 devices. Mode Q'  */
+	case PHY_INTERFACE_MODE_QSGMII:  
 		inst = (portno - portno % 4) / 4;
 		spx5_rmw(BIT(inst),
 			 BIT(inst),
@@ -532,7 +522,7 @@ static int sparx5_port_mux_set(struct sparx5 *sparx5,
 			 PORT_CONF_QSGMII_ENA);
 
 		if ((portno / 4 % 2) == 0) {
-			/* Affects d0-d3,d8-d11..d40-d43 */
+			 
 			spx5_rmw(PORT_CONF_USGMII_CFG_BYPASS_SCRAM_SET(1) |
 				 PORT_CONF_USGMII_CFG_BYPASS_DESCRAM_SET(1) |
 				 PORT_CONF_USGMII_CFG_QUAD_MODE_SET(1),
@@ -599,7 +589,7 @@ static int sparx5_port_max_tags_set(struct sparx5 *sparx5,
 
 int sparx5_port_fwd_urg(struct sparx5 *sparx5, u32 speed)
 {
-	u32 clk_period_ps = 1600; /* 625Mhz for now */
+	u32 clk_period_ps = 1600;  
 	u32 urg = 672000;
 
 	switch (speed) {
@@ -637,31 +627,31 @@ static int sparx5_port_fc_setup(struct sparx5 *sparx5,
 				struct sparx5_port_config *conf)
 {
 	bool fc_obey = conf->pause & MLO_PAUSE_RX ? 1 : 0;
-	u32 pause_stop = 0xFFF - 1; /* FC gen disabled */
+	u32 pause_stop = 0xFFF - 1;  
 
 	if (conf->pause & MLO_PAUSE_TX)
 		pause_stop = sparx5_wm_enc(4  * (ETH_MAXLEN /
 						 SPX5_BUFFER_CELL_SZ));
 
-	/* Set HDX flowcontrol */
+	 
 	spx5_rmw(DSM_MAC_CFG_HDX_BACKPREASSURE_SET(conf->duplex == DUPLEX_HALF),
 		 DSM_MAC_CFG_HDX_BACKPREASSURE,
 		 sparx5,
 		 DSM_MAC_CFG(port->portno));
 
-	/* Obey flowcontrol  */
+	 
 	spx5_rmw(DSM_RX_PAUSE_CFG_RX_PAUSE_EN_SET(fc_obey),
 		 DSM_RX_PAUSE_CFG_RX_PAUSE_EN,
 		 sparx5,
 		 DSM_RX_PAUSE_CFG(port->portno));
 
-	/* Disable forward pressure */
+	 
 	spx5_rmw(QSYS_FWD_PRESSURE_FWD_PRESSURE_DIS_SET(fc_obey),
 		 QSYS_FWD_PRESSURE_FWD_PRESSURE_DIS,
 		 sparx5,
 		 QSYS_FWD_PRESSURE(port->portno));
 
-	/* Generate pause frames */
+	 
 	spx5_rmw(QSYS_PAUSE_CFG_PAUSE_STOP_SET(pause_stop),
 		 QSYS_PAUSE_CFG_PAUSE_STOP,
 		 sparx5,
@@ -672,10 +662,10 @@ static int sparx5_port_fc_setup(struct sparx5 *sparx5,
 
 static u16 sparx5_get_aneg_word(struct sparx5_port_config *conf)
 {
-	if (conf->portmode == PHY_INTERFACE_MODE_1000BASEX) /* cl-37 aneg */
+	if (conf->portmode == PHY_INTERFACE_MODE_1000BASEX)  
 		return (conf->pause_adv | ADVERTISE_LPACK | ADVERTISE_1000XFULL);
 	else
-		return 1; /* Enable SGMII Aneg */
+		return 1;  
 }
 
 int sparx5_serdes_set(struct sparx5 *sparx5,
@@ -711,9 +701,7 @@ int sparx5_serdes_set(struct sparx5 *sparx5,
 			return err;
 	}
 
-	/* Configure SerDes with port parameters
-	 * For BaseR, the serdes driver supports 10GGBASE-R and speed 5G/10G/25G
-	 */
+	 
 	portmode = conf->portmode;
 	if (sparx5_is_baser(conf->portmode))
 		portmode = PHY_INTERFACE_MODE_10GBASER;
@@ -734,25 +722,25 @@ static int sparx5_port_pcs_low_set(struct sparx5 *sparx5,
 	if (port->conf.inband) {
 		if (conf->portmode == PHY_INTERFACE_MODE_SGMII ||
 		    conf->portmode == PHY_INTERFACE_MODE_QSGMII)
-			inband_aneg = true; /* Cisco-SGMII in-band-aneg */
+			inband_aneg = true;  
 		else if (conf->portmode == PHY_INTERFACE_MODE_1000BASEX &&
 			 conf->autoneg)
-			inband_aneg = true; /* Clause-37 in-band-aneg */
+			inband_aneg = true;  
 
 		err = sparx5_serdes_set(sparx5, port, conf);
 		if (err)
 			return -EINVAL;
 	} else {
-		sgmii = true; /* Phy is connected to the MAC */
+		sgmii = true;  
 	}
 
-	/* Choose SGMII or 1000BaseX/2500BaseX PCS mode */
+	 
 	spx5_rmw(DEV2G5_PCS1G_MODE_CFG_SGMII_MODE_ENA_SET(sgmii),
 		 DEV2G5_PCS1G_MODE_CFG_SGMII_MODE_ENA,
 		 sparx5,
 		 DEV2G5_PCS1G_MODE_CFG(port->portno));
 
-	/* Enable PCS */
+	 
 	spx5_wr(DEV2G5_PCS1G_CFG_PCS_ENA_SET(1),
 		sparx5,
 		DEV2G5_PCS1G_CFG(port->portno));
@@ -760,7 +748,7 @@ static int sparx5_port_pcs_low_set(struct sparx5 *sparx5,
 	if (inband_aneg) {
 		u16 abil = sparx5_get_aneg_word(conf);
 
-		/* Enable in-band aneg */
+		 
 		spx5_wr(DEV2G5_PCS1G_ANEG_CFG_ADV_ABILITY_SET(abil) |
 			DEV2G5_PCS1G_ANEG_CFG_SW_RESOLVE_ENA_SET(1) |
 			DEV2G5_PCS1G_ANEG_CFG_ANEG_ENA_SET(1) |
@@ -771,7 +759,7 @@ static int sparx5_port_pcs_low_set(struct sparx5 *sparx5,
 		spx5_wr(0, sparx5, DEV2G5_PCS1G_ANEG_CFG(port->portno));
 	}
 
-	/* Take PCS out of reset */
+	 
 	spx5_rmw(DEV2G5_DEV_RST_CTRL_SPEED_SEL_SET(2) |
 		 DEV2G5_DEV_RST_CTRL_PCS_TX_RST_SET(0) |
 		 DEV2G5_DEV_RST_CTRL_PCS_RX_RST_SET(0),
@@ -799,31 +787,31 @@ static int sparx5_port_pcs_high_set(struct sparx5 *sparx5,
 	devinst = spx5_inst_get(sparx5, dev, pix);
 	pcsinst = spx5_inst_get(sparx5, pcs, pix);
 
-	/*  SFI : No in-band-aneg. Speeds 5G/10G/25G */
+	 
 	err = sparx5_serdes_set(sparx5, port, conf);
 	if (err)
 		return -EINVAL;
 	if (conf->portmode == PHY_INTERFACE_MODE_25GBASER) {
-		/* Enable PCS for 25G device, speed 25G */
+		 
 		spx5_rmw(DEV25G_PCS25G_CFG_PCS25G_ENA_SET(1),
 			 DEV25G_PCS25G_CFG_PCS25G_ENA,
 			 sparx5,
 			 DEV25G_PCS25G_CFG(pix));
 	} else {
-		/* Enable PCS for 5G/10G/25G devices, speed 5G/10G */
+		 
 		spx5_inst_rmw(PCS10G_BR_PCS_CFG_PCS_ENA_SET(1),
 			      PCS10G_BR_PCS_CFG_PCS_ENA,
 			      pcsinst,
 			      PCS10G_BR_PCS_CFG(0));
 	}
 
-	/* Enable 5G/10G/25G MAC module */
+	 
 	spx5_inst_wr(DEV10G_MAC_ENA_CFG_RX_ENA_SET(1) |
 		     DEV10G_MAC_ENA_CFG_TX_ENA_SET(1),
 		     devinst,
 		     DEV10G_MAC_ENA_CFG(0));
 
-	/* Take the device out of reset */
+	 
 	spx5_inst_rmw(DEV10G_DEV_RST_CTRL_PCS_RX_RST_SET(0) |
 		      DEV10G_DEV_RST_CTRL_PCS_TX_RST_SET(0) |
 		      DEV10G_DEV_RST_CTRL_MAC_RX_RST_SET(0) |
@@ -840,7 +828,7 @@ static int sparx5_port_pcs_high_set(struct sparx5 *sparx5,
 	return 0;
 }
 
-/* Switch between 1G/2500 and 5G/10G/25G devices */
+ 
 static void sparx5_dev_switch(struct sparx5 *sparx5, int port, bool hsd)
 {
 	int bt_indx = BIT(sparx5_port_dev_index(port));
@@ -863,7 +851,7 @@ static void sparx5_dev_switch(struct sparx5 *sparx5, int port, bool hsd)
 	}
 }
 
-/* Configure speed/duplex dependent registers */
+ 
 static int sparx5_port_config_low_set(struct sparx5 *sparx5,
 				      struct sparx5_port *port,
 				      struct sparx5_port_config *conf)
@@ -878,7 +866,7 @@ static int sparx5_port_config_low_set(struct sparx5 *sparx5,
 	hdx_gap_1 = spd == SPEED_1000 ? 0 : spd == SPEED_100 ? 1 : 2;
 	hdx_gap_2 = spd == SPEED_1000 ? 0 : spd == SPEED_100 ? 4 : 1;
 
-	/* GIG/FDX mode */
+	 
 	spx5_rmw(DEV2G5_MAC_MODE_CFG_GIGA_MODE_ENA_SET(gig_mode) |
 		 DEV2G5_MAC_MODE_CFG_FDX_ENA_SET(fdx),
 		 DEV2G5_MAC_MODE_CFG_GIGA_MODE_ENA |
@@ -886,26 +874,26 @@ static int sparx5_port_config_low_set(struct sparx5 *sparx5,
 		 sparx5,
 		 DEV2G5_MAC_MODE_CFG(port->portno));
 
-	/* Set MAC IFG Gaps */
+	 
 	spx5_wr(DEV2G5_MAC_IFG_CFG_TX_IFG_SET(tx_gap) |
 		DEV2G5_MAC_IFG_CFG_RX_IFG1_SET(hdx_gap_1) |
 		DEV2G5_MAC_IFG_CFG_RX_IFG2_SET(hdx_gap_2),
 		sparx5,
 		DEV2G5_MAC_IFG_CFG(port->portno));
 
-	/* Disabling frame aging when in HDX (due to HDX issue) */
+	 
 	spx5_rmw(HSCH_PORT_MODE_AGE_DIS_SET(fdx == 0),
 		 HSCH_PORT_MODE_AGE_DIS,
 		 sparx5,
 		 HSCH_PORT_MODE(port->portno));
 
-	/* Enable MAC module */
+	 
 	spx5_wr(DEV2G5_MAC_ENA_CFG_RX_ENA |
 		DEV2G5_MAC_ENA_CFG_TX_ENA,
 		sparx5,
 		DEV2G5_MAC_ENA_CFG(port->portno));
 
-	/* Select speed and take MAC out of reset */
+	 
 	spx5_rmw(DEV2G5_DEV_RST_CTRL_SPEED_SEL_SET(clk_spd) |
 		 DEV2G5_DEV_RST_CTRL_MAC_TX_RST_SET(0) |
 		 DEV2G5_DEV_RST_CTRL_MAC_RX_RST_SET(0),
@@ -927,15 +915,15 @@ int sparx5_port_pcs_set(struct sparx5 *sparx5,
 	int err;
 
 	if (sparx5_dev_change(sparx5, port, conf)) {
-		/* switch device */
+		 
 		sparx5_dev_switch(sparx5, port->portno, high_speed_dev);
 
-		/* Disable the not-in-use device */
+		 
 		err = sparx5_port_disable(sparx5, port, !high_speed_dev);
 		if (err)
 			return err;
 	}
-	/* Disable the port before re-configuring */
+	 
 	err = sparx5_port_disable(sparx5, port, high_speed_dev);
 	if (err)
 		return -EINVAL;
@@ -949,13 +937,13 @@ int sparx5_port_pcs_set(struct sparx5 *sparx5,
 		return -EINVAL;
 
 	if (port->conf.inband) {
-		/* Enable/disable 1G counters in ASM */
+		 
 		spx5_rmw(ASM_PORT_CFG_CSC_STAT_DIS_SET(high_speed_dev),
 			 ASM_PORT_CFG_CSC_STAT_DIS,
 			 sparx5,
 			 ASM_PORT_CFG(port->portno));
 
-		/* Enable/disable 1G counters in DSM */
+		 
 		spx5_rmw(DSM_BUF_CFG_CSC_STAT_DIS_SET(high_speed_dev),
 			 DSM_BUF_CFG_CSC_STAT_DIS,
 			 sparx5,
@@ -978,23 +966,23 @@ int sparx5_port_config(struct sparx5 *sparx5,
 	if (err)
 		return err;
 
-	/* high speed device is already configured */
+	 
 	if (!high_speed_dev)
 		sparx5_port_config_low_set(sparx5, port, conf);
 
-	/* Configure flow control */
+	 
 	err = sparx5_port_fc_setup(sparx5, port, conf);
 	if (err)
 		return err;
 
-	/* Set the DSM stop watermark */
+	 
 	stop_wm = sparx5_port_fifo_sz(sparx5, port->portno, conf->speed);
 	spx5_rmw(DSM_DEV_TX_STOP_WM_CFG_DEV_TX_STOP_WM_SET(stop_wm),
 		 DSM_DEV_TX_STOP_WM_CFG_DEV_TX_STOP_WM,
 		 sparx5,
 		 DSM_DEV_TX_STOP_WM_CFG(port->portno));
 
-	/* Enable port in queue system */
+	 
 	urgency = sparx5_port_fwd_urg(sparx5, conf->speed);
 	spx5_rmw(QFWD_SWITCH_PORT_MODE_PORT_ENA_SET(1) |
 		 QFWD_SWITCH_PORT_MODE_FWD_URGENCY_SET(urgency),
@@ -1003,13 +991,13 @@ int sparx5_port_config(struct sparx5 *sparx5,
 		 sparx5,
 		 QFWD_SWITCH_PORT_MODE(port->portno));
 
-	/* Save the new values */
+	 
 	port->conf = *conf;
 
 	return 0;
 }
 
-/* Initialize port config to default */
+ 
 int sparx5_port_init(struct sparx5 *sparx5,
 		     struct sparx5_port *port,
 		     struct sparx5_port_config *conf)
@@ -1022,7 +1010,7 @@ int sparx5_port_init(struct sparx5 *sparx5,
 	bool sd_pol = port->signd_active_high;
 	bool sd_sel = !port->signd_internal;
 	bool sd_ena = port->signd_enable;
-	u32 pause_stop = 0xFFF - 1; /* FC generate disabled */
+	u32 pause_stop = 0xFFF - 1;  
 	void __iomem *devinst;
 	void __iomem *pcsinst;
 	int err;
@@ -1030,30 +1018,30 @@ int sparx5_port_init(struct sparx5 *sparx5,
 	devinst = spx5_inst_get(sparx5, devhigh, pix);
 	pcsinst = spx5_inst_get(sparx5, pcs, pix);
 
-	/* Set the mux port mode  */
+	 
 	err = sparx5_port_mux_set(sparx5, port, conf);
 	if (err)
 		return err;
 
-	/* Configure MAC vlan awareness */
+	 
 	err = sparx5_port_max_tags_set(sparx5, port);
 	if (err)
 		return err;
 
-	/* Set Max Length */
+	 
 	spx5_rmw(DEV2G5_MAC_MAXLEN_CFG_MAX_LEN_SET(ETH_MAXLEN),
 		 DEV2G5_MAC_MAXLEN_CFG_MAX_LEN,
 		 sparx5,
 		 DEV2G5_MAC_MAXLEN_CFG(port->portno));
 
-	/* 1G/2G5: Signal Detect configuration */
+	 
 	spx5_wr(DEV2G5_PCS1G_SD_CFG_SD_POL_SET(sd_pol) |
 		DEV2G5_PCS1G_SD_CFG_SD_SEL_SET(sd_sel) |
 		DEV2G5_PCS1G_SD_CFG_SD_ENA_SET(sd_ena),
 		sparx5,
 		DEV2G5_PCS1G_SD_CFG(port->portno));
 
-	/* Set Pause WM hysteresis */
+	 
 	spx5_rmw(QSYS_PAUSE_CFG_PAUSE_START_SET(pause_start) |
 		 QSYS_PAUSE_CFG_PAUSE_STOP_SET(pause_stop) |
 		 QSYS_PAUSE_CFG_PAUSE_ENA_SET(1),
@@ -1063,15 +1051,15 @@ int sparx5_port_init(struct sparx5 *sparx5,
 		 sparx5,
 		 QSYS_PAUSE_CFG(port->portno));
 
-	/* Port ATOP. Frames are tail dropped when this WM is hit */
+	 
 	spx5_wr(QSYS_ATOP_ATOP_SET(atop),
 		sparx5,
 		QSYS_ATOP(port->portno));
 
-	/* Discard pause frame 01-80-C2-00-00-01 */
+	 
 	spx5_wr(PAUSE_DISCARD, sparx5, ANA_CL_CAPTURE_BPDU_CFG(port->portno));
 
-	/* Discard SMAC multicast */
+	 
 	spx5_rmw(ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS_SET(0),
 		 ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS,
 		 sparx5, ANA_CL_FILTER_CTRL(port->portno));
@@ -1083,7 +1071,7 @@ int sparx5_port_init(struct sparx5 *sparx5,
 			return err;
 
 		if (!sparx5_port_is_2g5(port->portno))
-			/* Enable shadow device */
+			 
 			spx5_rmw(DSM_DEV_TX_STOP_WM_CFG_DEV10G_SHADOW_ENA_SET(1),
 				 DSM_DEV_TX_STOP_WM_CFG_DEV10G_SHADOW_ENA,
 				 sparx5,
@@ -1092,13 +1080,13 @@ int sparx5_port_init(struct sparx5 *sparx5,
 		sparx5_dev_switch(sparx5, port->portno, false);
 	}
 	if (conf->portmode == PHY_INTERFACE_MODE_QSGMII) {
-		// All ports must be PCS enabled in QSGMII mode
+		 
 		spx5_rmw(DEV2G5_DEV_RST_CTRL_PCS_TX_RST_SET(0),
 			 DEV2G5_DEV_RST_CTRL_PCS_TX_RST,
 			 sparx5,
 			 DEV2G5_DEV_RST_CTRL(port->portno));
 	}
-	/* Default IFGs for 1G */
+	 
 	spx5_wr(DEV2G5_MAC_IFG_CFG_TX_IFG_SET(6) |
 		DEV2G5_MAC_IFG_CFG_RX_IFG1_SET(0) |
 		DEV2G5_MAC_IFG_CFG_RX_IFG2_SET(0),
@@ -1106,22 +1094,22 @@ int sparx5_port_init(struct sparx5 *sparx5,
 		DEV2G5_MAC_IFG_CFG(port->portno));
 
 	if (sparx5_port_is_2g5(port->portno))
-		return 0; /* Low speed device only - return */
+		return 0;  
 
-	/* Now setup the high speed device */
+	 
 	if (conf->portmode == PHY_INTERFACE_MODE_NA)
 		conf->portmode = PHY_INTERFACE_MODE_10GBASER;
 
 	if (sparx5_is_baser(conf->portmode))
 		sparx5_dev_switch(sparx5, port->portno, true);
 
-	/* Set Max Length */
+	 
 	spx5_inst_rmw(DEV10G_MAC_MAXLEN_CFG_MAX_LEN_SET(ETH_MAXLEN),
 		      DEV10G_MAC_MAXLEN_CFG_MAX_LEN,
 		      devinst,
 		      DEV10G_MAC_ENA_CFG(0));
 
-	/* Handle Signal Detect in 10G PCS */
+	 
 	spx5_inst_wr(PCS10G_BR_PCS_SD_CFG_SD_POL_SET(sd_pol) |
 		     PCS10G_BR_PCS_SD_CFG_SD_SEL_SET(sd_sel) |
 		     PCS10G_BR_PCS_SD_CFG_SD_ENA_SET(sd_ena),
@@ -1129,7 +1117,7 @@ int sparx5_port_init(struct sparx5 *sparx5,
 		     PCS10G_BR_PCS_SD_CFG(0));
 
 	if (sparx5_port_is_25g(port->portno)) {
-		/* Handle Signal Detect in 25G PCS */
+		 
 		spx5_wr(DEV25G_PCS25G_SD_CFG_SD_POL_SET(sd_pol) |
 			DEV25G_PCS25G_SD_CFG_SD_SEL_SET(sd_sel) |
 			DEV25G_PCS25G_SD_CFG_SD_ENA_SET(sd_ena),
@@ -1144,7 +1132,7 @@ void sparx5_port_enable(struct sparx5_port *port, bool enable)
 {
 	struct sparx5 *sparx5 = port->sparx5;
 
-	/* Enable port for frame transfer? */
+	 
 	spx5_rmw(QFWD_SWITCH_PORT_MODE_PORT_ENA_SET(enable),
 		 QFWD_SWITCH_PORT_MODE_PORT_ENA,
 		 sparx5,
@@ -1170,10 +1158,7 @@ int sparx5_port_qos_pcp_rewr_set(const struct sparx5_port *port,
 	struct sparx5 *sparx5 = port->sparx5;
 	u8 pcp, dei;
 
-	/* Use mapping table, with classified QoS as index, to map QoS and DP
-	 * to tagged PCP and DEI, if PCP is trusted. Otherwise use classified
-	 * PCP. Classified PCP equals frame PCP.
-	 */
+	 
 	if (qos->enable)
 		mode = SPARX5_PORT_REW_TAG_CTRL_MAPPED;
 
@@ -1183,20 +1168,14 @@ int sparx5_port_qos_pcp_rewr_set(const struct sparx5_port *port,
 		 port->sparx5, REW_TAG_CTRL(port->portno));
 
 	for (i = 0; i < ARRAY_SIZE(qos->map.map); i++) {
-		/* Extract PCP and DEI */
+		 
 		pcp = qos->map.map[i];
 		if (pcp > SPARX5_PORT_QOS_PCP_COUNT)
 			dei = 1;
 		else
 			dei = 0;
 
-		/* Rewrite PCP and DEI, for each classified QoS class and DP
-		 * level. This table is only used if tag ctrl mode is set to
-		 * 'mapped'.
-		 *
-		 * 0:0nd   - prio=0 and dp:0 => pcp=0 and dei=0
-		 * 0:0de   - prio=0 and dp:1 => pcp=0 and dei=1
-		 */
+		 
 		if (dei) {
 			spx5_rmw(REW_PCP_MAP_DE1_PCP_DE1_SET(pcp),
 				 REW_PCP_MAP_DE1_PCP_DE1, sparx5,
@@ -1227,13 +1206,13 @@ int sparx5_port_qos_pcp_set(const struct sparx5_port *port,
 	u8 pcp, dp;
 	int i;
 
-	/* Enable/disable pcp and dp for qos classification. */
+	 
 	spx5_rmw(ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA_SET(qos->qos_enable) |
 		 ANA_CL_QOS_CFG_PCP_DEI_DP_ENA_SET(qos->dp_enable),
 		 ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA | ANA_CL_QOS_CFG_PCP_DEI_DP_ENA,
 		 sparx5, ANA_CL_QOS_CFG(port->portno));
 
-	/* Map each pcp and dei value to priority and dp */
+	 
 	for (i = 0; i < ARRAY_SIZE(qos->map.map); i++) {
 		pcp = *(pcp_itr + i);
 		dp = (i < SPARX5_PORT_QOS_PCP_COUNT) ? 0 : 1;
@@ -1263,9 +1242,7 @@ int sparx5_port_qos_dscp_rewr_set(const struct sparx5_port *port,
 	u16 dscp;
 	int i;
 
-	/* On egress, rewrite DSCP value to either classified DSCP or frame
-	 * DSCP. If enabled; classified DSCP, if disabled; frame DSCP.
-	 */
+	 
 	if (qos->enable)
 		rewr = true;
 
@@ -1273,9 +1250,7 @@ int sparx5_port_qos_dscp_rewr_set(const struct sparx5_port *port,
 		 REW_DSCP_MAP_DSCP_UPDATE_ENA, sparx5,
 		 REW_DSCP_MAP(port->portno));
 
-	/* On ingress, map each classified QoS class and DP to classified DSCP
-	 * value. This mapping table is global for all ports.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(qos->map.map); i++) {
 		dscp = qos->map.map[i];
 		spx5_rmw(ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL_SET(dscp),
@@ -1293,9 +1268,7 @@ int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
 	u8 *dscp = qos->map.map;
 	int i;
 
-	/* Enable/disable dscp and dp for qos classification.
-	 * Disable rewrite of dscp values for now.
-	 */
+	 
 	spx5_rmw(ANA_CL_QOS_CFG_DSCP_QOS_ENA_SET(qos->qos_enable) |
 		 ANA_CL_QOS_CFG_DSCP_DP_ENA_SET(qos->dp_enable) |
 		 ANA_CL_QOS_CFG_DSCP_KEEP_ENA_SET(1),
@@ -1303,7 +1276,7 @@ int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
 		 ANA_CL_QOS_CFG_DSCP_KEEP_ENA, sparx5,
 		 ANA_CL_QOS_CFG(port->portno));
 
-	/* Map each dscp value to priority and dp */
+	 
 	for (i = 0; i < ARRAY_SIZE(qos->map.map); i++) {
 		spx5_rmw(ANA_CL_DSCP_CFG_DSCP_QOS_VAL_SET(*(dscp + i)) |
 			 ANA_CL_DSCP_CFG_DSCP_DP_VAL_SET(0),
@@ -1312,7 +1285,7 @@ int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
 			 ANA_CL_DSCP_CFG(i));
 	}
 
-	/* Set per-dscp trust */
+	 
 	for (i = 0; i <  ARRAY_SIZE(qos->map.map); i++) {
 		if (qos->qos_enable) {
 			spx5_rmw(ANA_CL_DSCP_CFG_DSCP_TRUST_ENA_SET(1),
@@ -1329,14 +1302,14 @@ int sparx5_port_qos_default_set(const struct sparx5_port *port,
 {
 	struct sparx5 *sparx5 = port->sparx5;
 
-	/* Set default prio and dp level */
+	 
 	spx5_rmw(ANA_CL_QOS_CFG_DEFAULT_QOS_VAL_SET(qos->default_prio) |
 		 ANA_CL_QOS_CFG_DEFAULT_DP_VAL_SET(0),
 		 ANA_CL_QOS_CFG_DEFAULT_QOS_VAL |
 		 ANA_CL_QOS_CFG_DEFAULT_DP_VAL,
 		 sparx5, ANA_CL_QOS_CFG(port->portno));
 
-	/* Set default pcp and dei for untagged frames */
+	 
 	spx5_rmw(ANA_CL_VLAN_CTRL_PORT_PCP_SET(0) |
 		 ANA_CL_VLAN_CTRL_PORT_DEI_SET(0),
 		 ANA_CL_VLAN_CTRL_PORT_PCP |

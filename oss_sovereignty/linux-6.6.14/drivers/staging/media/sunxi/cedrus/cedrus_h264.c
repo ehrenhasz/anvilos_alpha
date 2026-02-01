@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cedrus VPU driver
- *
- * Copyright (c) 2013 Jens Kuske <jenskuske@gmail.com>
- * Copyright (c) 2018 Bootlin
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/types.h>
@@ -59,7 +54,7 @@ static dma_addr_t cedrus_h264_mv_col_buf_addr(struct cedrus_buffer *buf,
 {
 	dma_addr_t addr = buf->codec.h264.mv_col_buf_dma;
 
-	/* Adjust for the field */
+	 
 	addr += field * buf->codec.h264.mv_col_buf_size / 2;
 
 	return addr;
@@ -151,7 +146,7 @@ static int cedrus_write_frame_list(struct cedrus_ctx *ctx,
 			field_size = field_size * 2;
 
 		output_buf->codec.h264.mv_col_buf_size = field_size * 2;
-		/* Buffer is never accessed by CPU, so we can skip kernel mapping. */
+		 
 		output_buf->codec.h264.mv_col_buf =
 			dma_alloc_attrs(dev->dev,
 					output_buf->codec.h264.mv_col_buf_size,
@@ -316,11 +311,7 @@ static void cedrus_write_pred_weight_table(struct cedrus_ctx *ctx,
 	}
 }
 
-/*
- * It turns out that using VE_H264_VLD_OFFSET to skip bits is not reliable. In
- * rare cases frame is not decoded correctly. However, setting offset to 0 and
- * skipping appropriate amount of bits with flush bits trigger always works.
- */
+ 
 static void cedrus_skip_bits(struct cedrus_dev *dev, int num)
 {
 	int count = 0;
@@ -377,12 +368,7 @@ static void cedrus_set_params(struct cedrus_ctx *ctx,
 			     VE_BUF_CTRL_DBLK_INT_SRAM);
 	}
 
-	/*
-	 * FIXME: Since the bitstream parsing is done in software, and
-	 * in userspace, this shouldn't be needed anymore. But it
-	 * turns out that removing it breaks the decoding process,
-	 * without any clear indication why.
-	 */
+	 
 	cedrus_write(dev, VE_H264_TRIGGER_TYPE,
 		     VE_H264_TRIGGER_TYPE_INIT_SWDEC);
 
@@ -399,12 +385,9 @@ static void cedrus_set_params(struct cedrus_ctx *ctx,
 	if (slice->slice_type == V4L2_H264_SLICE_TYPE_B)
 		cedrus_write_ref_list1(ctx, run);
 
-	// picture parameters
+	 
 	reg = 0;
-	/*
-	 * FIXME: the kernel headers are allowing the default value to
-	 * be passed, but the libva doesn't give us that.
-	 */
+	 
 	reg |= (slice->num_ref_idx_l0_active_minus1 & 0x1f) << 10;
 	reg |= (slice->num_ref_idx_l1_active_minus1 & 0x1f) << 5;
 	reg |= (pps->weighted_bipred_idc & 0x3) << 2;
@@ -418,7 +401,7 @@ static void cedrus_set_params(struct cedrus_ctx *ctx,
 		reg |= VE_H264_PPS_TRANSFORM_8X8_MODE;
 	cedrus_write(dev, VE_H264_PPS, reg);
 
-	// sequence parameters
+	
 	reg = 0;
 	reg |= (sps->chroma_format_idc & 0x7) << 19;
 	reg |= (sps->pic_width_in_mbs_minus1 & 0xff) << 8;
@@ -435,7 +418,7 @@ static void cedrus_set_params(struct cedrus_ctx *ctx,
 		    (sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD);
 	pic_width_in_mbs = sps->pic_width_in_mbs_minus1 + 1;
 
-	// slice parameters
+	
 	reg = 0;
 	reg |= ((slice->first_mb_in_slice % pic_width_in_mbs) & 0xff) << 24;
 	reg |= (((slice->first_mb_in_slice / pic_width_in_mbs) *
@@ -470,10 +453,10 @@ static void cedrus_set_params(struct cedrus_ctx *ctx,
 		reg |= VE_H264_SHS_QP_SCALING_MATRIX_DEFAULT;
 	cedrus_write(dev, VE_H264_SHS_QP, reg);
 
-	// clear status flags
+	
 	cedrus_write(dev, VE_H264_STATUS, cedrus_read(dev, VE_H264_STATUS));
 
-	// enable int
+	
 	cedrus_write(dev, VE_H264_CTRL,
 		     VE_H264_CTRL_SLICE_DECODE_INT |
 		     VE_H264_CTRL_DECODE_ERR_INT |
@@ -542,22 +525,16 @@ static int cedrus_h264_start(struct cedrus_ctx *ctx)
 	unsigned int pic_info_size;
 	int ret;
 
-	/*
-	 * NOTE: All buffers allocated here are only used by HW, so we
-	 * can add DMA_ATTR_NO_KERNEL_MAPPING flag when allocating them.
-	 */
+	 
 
-	/* Formula for picture buffer size is taken from CedarX source. */
+	 
 
 	if (ctx->src_fmt.width > 2048)
 		pic_info_size = CEDRUS_H264_FRAME_NUM * 0x4000;
 	else
 		pic_info_size = CEDRUS_H264_FRAME_NUM * 0x1000;
 
-	/*
-	 * FIXME: If V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY is set,
-	 * there is no need to multiply by 2.
-	 */
+	 
 	pic_info_size += ctx->src_fmt.height * 2 * 64;
 
 	if (pic_info_size < CEDRUS_MIN_PIC_INFO_BUF_SIZE)
@@ -571,13 +548,7 @@ static int cedrus_h264_start(struct cedrus_ctx *ctx)
 	if (!ctx->codec.h264.pic_info_buf)
 		return -ENOMEM;
 
-	/*
-	 * That buffer is supposed to be 16kiB in size, and be aligned
-	 * on 16kiB as well. However, dma_alloc_attrs provides the
-	 * guarantee that we'll have a DMA address aligned on the
-	 * smallest page order that is greater to the requested size,
-	 * so we don't have to overallocate.
-	 */
+	 
 	ctx->codec.h264.neighbor_info_buf =
 		dma_alloc_attrs(dev->dev, CEDRUS_NEIGHBOR_INFO_BUF_SIZE,
 				&ctx->codec.h264.neighbor_info_buf_dma,
@@ -588,10 +559,7 @@ static int cedrus_h264_start(struct cedrus_ctx *ctx)
 	}
 
 	if (ctx->src_fmt.width > 2048) {
-		/*
-		 * Formulas for deblock and intra prediction buffer sizes
-		 * are taken from CedarX source.
-		 */
+		 
 
 		ctx->codec.h264.deblk_buf_size =
 			ALIGN(ctx->src_fmt.width, 32) * 12;
@@ -605,10 +573,7 @@ static int cedrus_h264_start(struct cedrus_ctx *ctx)
 			goto err_neighbor_buf;
 		}
 
-		/*
-		 * NOTE: Multiplying by two deviates from CedarX logic, but it
-		 * is for some unknown reason needed for H264 4K decoding on H6.
-		 */
+		 
 		ctx->codec.h264.intra_pred_buf_size =
 			ALIGN(ctx->src_fmt.width, 64) * 5 * 2;
 		ctx->codec.h264.intra_pred_buf =

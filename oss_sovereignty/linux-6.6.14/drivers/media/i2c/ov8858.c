@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2023 Jacopo Mondi <jacopo.mondi@ideasonboard.com>
- * Copyright (C) 2022 Nicholas Roth <nicholas@rothemail.net>
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -79,9 +75,9 @@
 #define REG_NULL			0xffff
 
 static const char * const ov8858_supply_names[] = {
-	"avdd",		/* Analog power */
-	"dovdd",	/* Digital I/O power */
-	"dvdd",		/* Digital core power */
+	"avdd",		 
+	"dovdd",	 
+	"dvdd",		 
 };
 
 struct regval {
@@ -398,21 +394,16 @@ static const struct regval ov8858_global_regs_r1a[] = {
 };
 
 static const struct regval ov8858_global_regs_r2a_2lane[] = {
-	/*
-	 * MIPI=720Mbps, SysClk=144Mhz,Dac Clock=360Mhz.
-	 * v00_01_00 (05/29/2014) : initial setting
-	 * AM19 : 3617 <- 0xC0
-	 * AM20 : change FWC_6K_EN to be default 0x3618=0x5a
-	 */
-	{0x0103, 0x01}, /* software reset */
-	{0x0100, 0x00}, /* software standby */
-	{0x0302, 0x1e}, /* pll1_multi */
-	{0x0303, 0x00}, /* pll1_divm */
-	{0x0304, 0x03}, /* pll1_div_mipi */
-	{0x030e, 0x02}, /* pll2_rdiv */
-	{0x030f, 0x04}, /* pll2_divsp */
-	{0x0312, 0x03}, /* pll2_pre_div0, pll2_r_divdac */
-	{0x031e, 0x0c}, /* pll1_no_lat */
+	 
+	{0x0103, 0x01},  
+	{0x0100, 0x00},  
+	{0x0302, 0x1e},  
+	{0x0303, 0x00},  
+	{0x0304, 0x03},  
+	{0x030e, 0x02},  
+	{0x030f, 0x04},  
+	{0x0312, 0x03},  
+	{0x031e, 0x0c},  
 	{0x3600, 0x00},
 	{0x3601, 0x00},
 	{0x3602, 0x00},
@@ -454,12 +445,12 @@ static const struct regval ov8858_global_regs_r2a_2lane[] = {
 	{0x3646, 0x83},
 	{0x364a, 0x07},
 	{0x3015, 0x00},
-	{0x3018, 0x32}, /* MIPI 2 lane */
-	{0x3020, 0x93}, /* Clock switch output normal, pclk_div =/1 */
-	{0x3022, 0x01}, /* pd_mipi enable when rst_sync */
-	{0x3031, 0x0a}, /* MIPI 10-bit mode */
+	{0x3018, 0x32},  
+	{0x3020, 0x93},  
+	{0x3022, 0x01},  
+	{0x3031, 0x0a},  
 	{0x3034, 0x00},
-	{0x3106, 0x01}, /* sclk_div, sclk_pre_div */
+	{0x3106, 0x01},  
 	{0x3305, 0xf1},
 	{0x3308, 0x00},
 	{0x3309, 0x28},
@@ -470,18 +461,18 @@ static const struct regval ov8858_global_regs_r2a_2lane[] = {
 	{0x330e, 0x00},
 	{0x330f, 0x40},
 	{0x3307, 0x04},
-	{0x3500, 0x00}, /* exposure H */
-	{0x3501, 0x4d}, /* exposure M */
-	{0x3502, 0x40}, /* exposure L */
-	{0x3503, 0x80}, /* gain delay ?, exposure delay 1 frame, real gain */
-	{0x3505, 0x80}, /* gain option */
-	{0x3508, 0x02}, /* gain H */
-	{0x3509, 0x00}, /* gain L */
-	{0x350c, 0x00}, /* short gain H */
-	{0x350d, 0x80}, /* short gain L */
-	{0x3510, 0x00}, /* short exposure H */
-	{0x3511, 0x02}, /* short exposure M */
-	{0x3512, 0x00}, /* short exposure L */
+	{0x3500, 0x00},  
+	{0x3501, 0x4d},  
+	{0x3502, 0x40},  
+	{0x3503, 0x80},  
+	{0x3505, 0x80},  
+	{0x3508, 0x02},  
+	{0x3509, 0x00},  
+	{0x350c, 0x00},  
+	{0x350d, 0x80},  
+	{0x3510, 0x00},  
+	{0x3511, 0x02},  
+	{0x3512, 0x00},  
 	{0x3700, 0x18},
 	{0x3701, 0x0c},
 	{0x3702, 0x28},
@@ -578,95 +569,95 @@ static const struct regval ov8858_global_regs_r2a_2lane[] = {
 	{0x37b7, 0x00},
 	{0x37b8, 0x00},
 	{0x37b9, 0xff},
-	{0x3800, 0x00}, /* x start H */
-	{0x3801, 0x0c}, /* x start L */
-	{0x3802, 0x00}, /* y start H */
-	{0x3803, 0x0c}, /* y start L */
-	{0x3804, 0x0c}, /* x end H */
-	{0x3805, 0xd3}, /* x end L */
-	{0x3806, 0x09}, /* y end H */
-	{0x3807, 0xa3}, /* y end L */
-	{0x3808, 0x06}, /* x output size H */
-	{0x3809, 0x60}, /* x output size L */
-	{0x380a, 0x04}, /* y output size H */
-	{0x380b, 0xc8}, /* y output size L */
-	{0x380c, 0x07}, /* HTS H */
-	{0x380d, 0x88}, /* HTS L */
-	{0x380e, 0x04}, /* VTS H */
-	{0x380f, 0xdc}, /* VTS L */
-	{0x3810, 0x00}, /* ISP x win H */
-	{0x3811, 0x04}, /* ISP x win L */
-	{0x3813, 0x02}, /* ISP y win L */
-	{0x3814, 0x03}, /* x odd inc */
-	{0x3815, 0x01}, /* x even inc */
-	{0x3820, 0x00}, /* vflip off */
-	{0x3821, 0x67}, /* mirror on, bin on */
-	{0x382a, 0x03}, /* y odd inc */
-	{0x382b, 0x01}, /* y even inc */
+	{0x3800, 0x00},  
+	{0x3801, 0x0c},  
+	{0x3802, 0x00},  
+	{0x3803, 0x0c},  
+	{0x3804, 0x0c},  
+	{0x3805, 0xd3},  
+	{0x3806, 0x09},  
+	{0x3807, 0xa3},  
+	{0x3808, 0x06},  
+	{0x3809, 0x60},  
+	{0x380a, 0x04},  
+	{0x380b, 0xc8},  
+	{0x380c, 0x07},  
+	{0x380d, 0x88},  
+	{0x380e, 0x04},  
+	{0x380f, 0xdc},  
+	{0x3810, 0x00},  
+	{0x3811, 0x04},  
+	{0x3813, 0x02},  
+	{0x3814, 0x03},  
+	{0x3815, 0x01},  
+	{0x3820, 0x00},  
+	{0x3821, 0x67},  
+	{0x382a, 0x03},  
+	{0x382b, 0x01},  
 	{0x3830, 0x08},
 	{0x3836, 0x02},
 	{0x3837, 0x18},
-	{0x3841, 0xff}, /* window auto size enable */
+	{0x3841, 0xff},  
 	{0x3846, 0x48},
-	{0x3d85, 0x16}, /* OTP power up load data enable with BIST */
-	{0x3d8c, 0x73}, /* OTP setting start High */
-	{0x3d8d, 0xde}, /* OTP setting start Low */
+	{0x3d85, 0x16},  
+	{0x3d8c, 0x73},  
+	{0x3d8d, 0xde},  
 	{0x3f08, 0x08},
 	{0x3f0a, 0x00},
-	{0x4000, 0xf1}, /* out_range_trig, format_chg_trig */
-	{0x4001, 0x10}, /* total 128 black column */
-	{0x4005, 0x10}, /* BLC target L */
-	{0x4002, 0x27}, /* value used to limit BLC offset */
-	{0x4009, 0x81}, /* final BLC offset limitation enable */
-	{0x400b, 0x0c}, /* DCBLC on, DCBLC manual mode on */
-	{0x401b, 0x00}, /* zero line R coefficient */
-	{0x401d, 0x00}, /* zoro line T coefficient */
-	{0x4020, 0x00}, /* Anchor left start H */
-	{0x4021, 0x04}, /* Anchor left start L */
-	{0x4022, 0x06}, /* Anchor left end H */
-	{0x4023, 0x00}, /* Anchor left end L */
-	{0x4024, 0x0f}, /* Anchor right start H */
-	{0x4025, 0x2a}, /* Anchor right start L */
-	{0x4026, 0x0f}, /* Anchor right end H */
-	{0x4027, 0x2b}, /* Anchor right end L */
-	{0x4028, 0x00}, /* top zero line start */
-	{0x4029, 0x02}, /* top zero line number */
-	{0x402a, 0x04}, /* top black line start */
-	{0x402b, 0x04}, /* top black line number */
-	{0x402c, 0x00}, /* bottom zero line start */
-	{0x402d, 0x02}, /* bottom zoro line number */
-	{0x402e, 0x04}, /* bottom black line start */
-	{0x402f, 0x04}, /* bottom black line number */
-	{0x401f, 0x00}, /* interpolation x/y disable, Anchor one disable */
+	{0x4000, 0xf1},  
+	{0x4001, 0x10},  
+	{0x4005, 0x10},  
+	{0x4002, 0x27},  
+	{0x4009, 0x81},  
+	{0x400b, 0x0c},  
+	{0x401b, 0x00},  
+	{0x401d, 0x00},  
+	{0x4020, 0x00},  
+	{0x4021, 0x04},  
+	{0x4022, 0x06},  
+	{0x4023, 0x00},  
+	{0x4024, 0x0f},  
+	{0x4025, 0x2a},  
+	{0x4026, 0x0f},  
+	{0x4027, 0x2b},  
+	{0x4028, 0x00},  
+	{0x4029, 0x02},  
+	{0x402a, 0x04},  
+	{0x402b, 0x04},  
+	{0x402c, 0x00},  
+	{0x402d, 0x02},  
+	{0x402e, 0x04},  
+	{0x402f, 0x04},  
+	{0x401f, 0x00},  
 	{0x4034, 0x3f},
-	{0x403d, 0x04}, /* md_precision_en */
-	{0x4300, 0xff}, /* clip max H */
-	{0x4301, 0x00}, /* clip min H */
-	{0x4302, 0x0f}, /* clip min L, clip max L */
+	{0x403d, 0x04},  
+	{0x4300, 0xff},  
+	{0x4301, 0x00},  
+	{0x4302, 0x0f},  
 	{0x4316, 0x00},
 	{0x4500, 0x58},
 	{0x4503, 0x18},
 	{0x4600, 0x00},
 	{0x4601, 0xcb},
-	{0x481f, 0x32}, /* clk prepare min */
-	{0x4837, 0x16}, /* global timing */
-	{0x4850, 0x10}, /* lane 1 = 1, lane 0 = 0 */
-	{0x4851, 0x32}, /* lane 3 = 3, lane 2 = 2 */
+	{0x481f, 0x32},  
+	{0x4837, 0x16},  
+	{0x4850, 0x10},  
+	{0x4851, 0x32},  
 	{0x4b00, 0x2a},
 	{0x4b0d, 0x00},
-	{0x4d00, 0x04}, /* temperature sensor */
+	{0x4d00, 0x04},  
 	{0x4d01, 0x18},
 	{0x4d02, 0xc3},
 	{0x4d03, 0xff},
 	{0x4d04, 0xff},
-	{0x4d05, 0xff}, /* temperature sensor */
-	{0x5000, 0xfe}, /* lenc on, slave/master AWB gain/statistics enable */
-	{0x5001, 0x01}, /* BLC on */
-	{0x5002, 0x08}, /* H scale off, WBMATCH off, OTP_DPC */
-	{0x5003, 0x20}, /* DPC_DBC buffer control enable, WB */
-	{0x501e, 0x93}, /* enable digital gain */
+	{0x4d05, 0xff},  
+	{0x5000, 0xfe},  
+	{0x5001, 0x01},  
+	{0x5002, 0x08},  
+	{0x5003, 0x20},  
+	{0x501e, 0x93},  
 	{0x5046, 0x12},
-	{0x5780, 0x3e}, /* DPC */
+	{0x5780, 0x3e},  
 	{0x5781, 0x0f},
 	{0x5782, 0x44},
 	{0x5783, 0x02},
@@ -686,75 +677,66 @@ static const struct regval ov8858_global_regs_r2a_2lane[] = {
 	{0x5791, 0x04},
 	{0x5792, 0x00},
 	{0x5793, 0x52},
-	{0x5794, 0xa3}, /* DPC */
-	{0x5871, 0x0d}, /* Lenc */
+	{0x5794, 0xa3},  
+	{0x5871, 0x0d},  
 	{0x5870, 0x18},
 	{0x586e, 0x10},
 	{0x586f, 0x08},
 	{0x58f7, 0x01},
-	{0x58f8, 0x3d}, /* Lenc */
-	{0x5901, 0x00}, /* H skip off, V skip off */
-	{0x5b00, 0x02}, /* OTP DPC start address */
-	{0x5b01, 0x10}, /* OTP DPC start address */
-	{0x5b02, 0x03}, /* OTP DPC end address */
-	{0x5b03, 0xcf}, /* OTP DPC end address */
-	{0x5b05, 0x6c}, /* recover method = 2b11, */
-	{0x5e00, 0x00}, /* use 0x3ff to test pattern off */
-	{0x5e01, 0x41}, /* window cut enable */
+	{0x58f8, 0x3d},  
+	{0x5901, 0x00},  
+	{0x5b00, 0x02},  
+	{0x5b01, 0x10},  
+	{0x5b02, 0x03},  
+	{0x5b03, 0xcf},  
+	{0x5b05, 0x6c},  
+	{0x5e00, 0x00},  
+	{0x5e01, 0x41},  
 	{0x382d, 0x7f},
-	{0x4825, 0x3a}, /* lpx_p_min */
-	{0x4826, 0x40}, /* hs_prepare_min */
-	{0x4808, 0x25}, /* wake up delay in 1/1024 s */
+	{0x4825, 0x3a},  
+	{0x4826, 0x40},  
+	{0x4808, 0x25},  
 	{0x3763, 0x18},
 	{0x3768, 0xcc},
 	{0x470b, 0x28},
 	{0x4202, 0x00},
-	{0x400d, 0x10}, /* BLC offset trigger L */
-	{0x4040, 0x04}, /* BLC gain th2 */
-	{0x403e, 0x04}, /* BLC gain th1 */
-	{0x4041, 0xc6}, /* BLC */
+	{0x400d, 0x10},  
+	{0x4040, 0x04},  
+	{0x403e, 0x04},  
+	{0x4041, 0xc6},  
 	{0x3007, 0x80},
 	{0x400a, 0x01},
 	{REG_NULL, 0x00},
 };
 
-/*
- * Xclk 24Mhz
- * max_framerate 30fps
- * mipi_datarate per lane 720Mbps
- */
+ 
 static const struct regval ov8858_1632x1224_regs_2lane[] = {
-	/*
-	 * MIPI=720Mbps, SysClk=144Mhz,Dac Clock=360Mhz.
-	 * v00_01_00 (05/29/2014) : initial setting
-	 * AM19 : 3617 <- 0xC0
-	 * AM20 : change FWC_6K_EN to be default 0x3618=0x5a
-	 */
+	 
 	{0x0100, 0x00},
-	{0x3501, 0x4d}, /* exposure M */
-	{0x3502, 0x40}, /* exposure L */
+	{0x3501, 0x4d},  
+	{0x3502, 0x40},  
 	{0x3778, 0x17},
-	{0x3808, 0x06}, /* x output size H */
-	{0x3809, 0x60}, /* x output size L */
-	{0x380a, 0x04}, /* y output size H */
-	{0x380b, 0xc8}, /* y output size L */
-	{0x380c, 0x07}, /* HTS H */
-	{0x380d, 0x88}, /* HTS L */
-	{0x380e, 0x04}, /* VTS H */
-	{0x380f, 0xdc}, /* VTS L */
-	{0x3814, 0x03}, /* x odd inc */
-	{0x3821, 0x67}, /* mirror on, bin on */
-	{0x382a, 0x03}, /* y odd inc */
+	{0x3808, 0x06},  
+	{0x3809, 0x60},  
+	{0x380a, 0x04},  
+	{0x380b, 0xc8},  
+	{0x380c, 0x07},  
+	{0x380d, 0x88},  
+	{0x380e, 0x04},  
+	{0x380f, 0xdc},  
+	{0x3814, 0x03},  
+	{0x3821, 0x67},  
+	{0x382a, 0x03},  
 	{0x3830, 0x08},
 	{0x3836, 0x02},
 	{0x3f0a, 0x00},
-	{0x4001, 0x10}, /* total 128 black column */
-	{0x4022, 0x06}, /* Anchor left end H */
-	{0x4023, 0x00}, /* Anchor left end L */
-	{0x4025, 0x2a}, /* Anchor right start L */
-	{0x4027, 0x2b}, /* Anchor right end L */
-	{0x402b, 0x04}, /* top black line number */
-	{0x402f, 0x04}, /* bottom black line number */
+	{0x4001, 0x10},  
+	{0x4022, 0x06},  
+	{0x4023, 0x00},  
+	{0x4025, 0x2a},  
+	{0x4027, 0x2b},  
+	{0x402b, 0x04},  
+	{0x402f, 0x04},  
 	{0x4500, 0x58},
 	{0x4600, 0x00},
 	{0x4601, 0xcb},
@@ -763,37 +745,33 @@ static const struct regval ov8858_1632x1224_regs_2lane[] = {
 	{REG_NULL, 0x00},
 };
 
-/*
- * Xclk 24Mhz
- * max_framerate 15fps
- * mipi_datarate per lane 720Mbps
- */
+ 
 static const struct regval ov8858_3264x2448_regs_2lane[] = {
 	{0x0100, 0x00},
-	{0x3501, 0x9a}, /* exposure M */
-	{0x3502, 0x20}, /* exposure L */
+	{0x3501, 0x9a},  
+	{0x3502, 0x20},  
 	{0x3778, 0x1a},
-	{0x3808, 0x0c}, /* x output size H */
-	{0x3809, 0xc0}, /* x output size L */
-	{0x380a, 0x09}, /* y output size H */
-	{0x380b, 0x90}, /* y output size L */
-	{0x380c, 0x07}, /* HTS H */
-	{0x380d, 0x94}, /* HTS L */
-	{0x380e, 0x09}, /* VTS H */
-	{0x380f, 0xaa}, /* VTS L */
-	{0x3814, 0x01}, /* x odd inc */
-	{0x3821, 0x46}, /* mirror on, bin off */
-	{0x382a, 0x01}, /* y odd inc */
+	{0x3808, 0x0c},  
+	{0x3809, 0xc0},  
+	{0x380a, 0x09},  
+	{0x380b, 0x90},  
+	{0x380c, 0x07},  
+	{0x380d, 0x94},  
+	{0x380e, 0x09},  
+	{0x380f, 0xaa},  
+	{0x3814, 0x01},  
+	{0x3821, 0x46},  
+	{0x382a, 0x01},  
 	{0x3830, 0x06},
 	{0x3836, 0x01},
 	{0x3f0a, 0x00},
-	{0x4001, 0x00}, /* total 256 black column */
-	{0x4022, 0x0c}, /* Anchor left end H */
-	{0x4023, 0x60}, /* Anchor left end L */
-	{0x4025, 0x36}, /* Anchor right start L */
-	{0x4027, 0x37}, /* Anchor right end L */
-	{0x402b, 0x08}, /* top black line number */
-	{0x402f, 0x08}, /* bottom black line number */
+	{0x4001, 0x00},  
+	{0x4022, 0x0c},  
+	{0x4023, 0x60},  
+	{0x4025, 0x36},  
+	{0x4027, 0x37},  
+	{0x402b, 0x08},  
+	{0x402f, 0x08},  
 	{0x4500, 0x58},
 	{0x4600, 0x01},
 	{0x4601, 0x97},
@@ -802,22 +780,17 @@ static const struct regval ov8858_3264x2448_regs_2lane[] = {
 };
 
 static const struct regval ov8858_global_regs_r2a_4lane[] = {
-	/*
-	 * MIPI=720Mbps, SysClk=144Mhz,Dac Clock=360Mhz.
-	 * v00_01_00 (05/29/2014) : initial setting
-	 * AM19 : 3617 <- 0xC0
-	 * AM20 : change FWC_6K_EN to be default 0x3618=0x5a
-	 */
-	{0x0103, 0x01}, /* software reset for OVTATool only */
-	{0x0103, 0x01}, /* software reset */
-	{0x0100, 0x00}, /* software standby */
-	{0x0302, 0x1e}, /* pll1_multi */
-	{0x0303, 0x00}, /* pll1_divm */
-	{0x0304, 0x03}, /* pll1_div_mipi */
-	{0x030e, 0x00}, /* pll2_rdiv */
-	{0x030f, 0x04}, /* pll2_divsp */
-	{0x0312, 0x01}, /* pll2_pre_div0, pll2_r_divdac */
-	{0x031e, 0x0c}, /* pll1_no_lat */
+	 
+	{0x0103, 0x01},  
+	{0x0103, 0x01},  
+	{0x0100, 0x00},  
+	{0x0302, 0x1e},  
+	{0x0303, 0x00},  
+	{0x0304, 0x03},  
+	{0x030e, 0x00},  
+	{0x030f, 0x04},  
+	{0x0312, 0x01},  
+	{0x031e, 0x0c},  
 	{0x3600, 0x00},
 	{0x3601, 0x00},
 	{0x3602, 0x00},
@@ -859,12 +832,12 @@ static const struct regval ov8858_global_regs_r2a_4lane[] = {
 	{0x3646, 0x83},
 	{0x364a, 0x07},
 	{0x3015, 0x01},
-	{0x3018, 0x72}, /* MIPI 4 lane */
-	{0x3020, 0x93}, /* Clock switch output normal, pclk_div =/1 */
-	{0x3022, 0x01}, /* pd_mipi enable when rst_sync */
-	{0x3031, 0x0a}, /* MIPI 10-bit mode */
+	{0x3018, 0x72},  
+	{0x3020, 0x93},  
+	{0x3022, 0x01},  
+	{0x3031, 0x0a},  
 	{0x3034, 0x00},
-	{0x3106, 0x01}, /* sclk_div, sclk_pre_div */
+	{0x3106, 0x01},  
 	{0x3305, 0xf1},
 	{0x3308, 0x00},
 	{0x3309, 0x28},
@@ -875,18 +848,18 @@ static const struct regval ov8858_global_regs_r2a_4lane[] = {
 	{0x330e, 0x00},
 	{0x330f, 0x40},
 	{0x3307, 0x04},
-	{0x3500, 0x00}, /* exposure H */
-	{0x3501, 0x4d}, /* exposure M */
-	{0x3502, 0x40}, /* exposure L */
-	{0x3503, 0x80}, /* gain delay ?, exposure delay 1 frame, real gain */
-	{0x3505, 0x80}, /* gain option */
-	{0x3508, 0x02}, /* gain H */
-	{0x3509, 0x00}, /* gain L */
-	{0x350c, 0x00}, /* short gain H */
-	{0x350d, 0x80}, /* short gain L */
-	{0x3510, 0x00}, /* short exposure H */
-	{0x3511, 0x02}, /* short exposure M */
-	{0x3512, 0x00}, /* short exposure L */
+	{0x3500, 0x00},  
+	{0x3501, 0x4d},  
+	{0x3502, 0x40},  
+	{0x3503, 0x80},  
+	{0x3505, 0x80},  
+	{0x3508, 0x02},  
+	{0x3509, 0x00},  
+	{0x350c, 0x00},  
+	{0x350d, 0x80},  
+	{0x3510, 0x00},  
+	{0x3511, 0x02},  
+	{0x3512, 0x00},  
 	{0x3700, 0x30},
 	{0x3701, 0x18},
 	{0x3702, 0x50},
@@ -983,95 +956,95 @@ static const struct regval ov8858_global_regs_r2a_4lane[] = {
 	{0x37b7, 0x00},
 	{0x37b8, 0x00},
 	{0x37b9, 0xff},
-	{0x3800, 0x00}, /* x start H */
-	{0x3801, 0x0c}, /* x start L */
-	{0x3802, 0x00}, /* y start H */
-	{0x3803, 0x0c}, /* y start L */
-	{0x3804, 0x0c}, /* x end H */
-	{0x3805, 0xd3}, /* x end L */
-	{0x3806, 0x09}, /* y end H */
-	{0x3807, 0xa3}, /* y end L */
-	{0x3808, 0x06}, /* x output size H */
-	{0x3809, 0x60}, /* x output size L */
-	{0x380a, 0x04}, /* y output size H */
-	{0x380b, 0xc8}, /* y output size L */
-	{0x380c, 0x07}, /* HTS H */
-	{0x380d, 0x88}, /* HTS L */
-	{0x380e, 0x04}, /* VTS H */
-	{0x380f, 0xdc}, /* VTS L */
-	{0x3810, 0x00}, /* ISP x win H */
-	{0x3811, 0x04}, /* ISP x win L */
-	{0x3813, 0x02}, /* ISP y win L */
-	{0x3814, 0x03}, /* x odd inc */
-	{0x3815, 0x01}, /* x even inc */
-	{0x3820, 0x00}, /* vflip off */
-	{0x3821, 0x67}, /* mirror on, bin o */
-	{0x382a, 0x03}, /* y odd inc */
-	{0x382b, 0x01}, /* y even inc */
+	{0x3800, 0x00},  
+	{0x3801, 0x0c},  
+	{0x3802, 0x00},  
+	{0x3803, 0x0c},  
+	{0x3804, 0x0c},  
+	{0x3805, 0xd3},  
+	{0x3806, 0x09},  
+	{0x3807, 0xa3},  
+	{0x3808, 0x06},  
+	{0x3809, 0x60},  
+	{0x380a, 0x04},  
+	{0x380b, 0xc8},  
+	{0x380c, 0x07},  
+	{0x380d, 0x88},  
+	{0x380e, 0x04},  
+	{0x380f, 0xdc},  
+	{0x3810, 0x00},  
+	{0x3811, 0x04},  
+	{0x3813, 0x02},  
+	{0x3814, 0x03},  
+	{0x3815, 0x01},  
+	{0x3820, 0x00},  
+	{0x3821, 0x67},  
+	{0x382a, 0x03},  
+	{0x382b, 0x01},  
 	{0x3830, 0x08},
 	{0x3836, 0x02},
 	{0x3837, 0x18},
-	{0x3841, 0xff}, /* window auto size enable */
+	{0x3841, 0xff},  
 	{0x3846, 0x48},
-	{0x3d85, 0x16}, /* OTP power up load data/setting enable */
-	{0x3d8c, 0x73}, /* OTP setting start High */
-	{0x3d8d, 0xde}, /* OTP setting start Low */
+	{0x3d85, 0x16},  
+	{0x3d8c, 0x73},  
+	{0x3d8d, 0xde},  
 	{0x3f08, 0x10},
 	{0x3f0a, 0x00},
-	{0x4000, 0xf1}, /* out_range/format_chg/gain/exp_chg trig enable */
-	{0x4001, 0x10}, /* total 128 black column */
-	{0x4005, 0x10}, /* BLC target L */
-	{0x4002, 0x27}, /* value used to limit BLC offset */
-	{0x4009, 0x81}, /* final BLC offset limitation enable */
-	{0x400b, 0x0c}, /* DCBLC on, DCBLC manual mode on */
-	{0x401b, 0x00}, /* zero line R coefficient */
-	{0x401d, 0x00}, /* zoro line T coefficient */
-	{0x4020, 0x00}, /* Anchor left start H */
-	{0x4021, 0x04}, /* Anchor left start L */
-	{0x4022, 0x06}, /* Anchor left end H */
-	{0x4023, 0x00}, /* Anchor left end L */
-	{0x4024, 0x0f}, /* Anchor right start H */
-	{0x4025, 0x2a}, /* Anchor right start L */
-	{0x4026, 0x0f}, /* Anchor right end H */
-	{0x4027, 0x2b}, /* Anchor right end L */
-	{0x4028, 0x00}, /* top zero line start */
-	{0x4029, 0x02}, /* top zero line number */
-	{0x402a, 0x04}, /* top black line start */
-	{0x402b, 0x04}, /* top black line number */
-	{0x402c, 0x00}, /* bottom zero line start */
-	{0x402d, 0x02}, /* bottom zoro line number */
-	{0x402e, 0x04}, /* bottom black line start */
-	{0x402f, 0x04}, /* bottom black line number */
-	{0x401f, 0x00}, /* interpolation x/y disable, Anchor one disable */
+	{0x4000, 0xf1},  
+	{0x4001, 0x10},  
+	{0x4005, 0x10},  
+	{0x4002, 0x27},  
+	{0x4009, 0x81},  
+	{0x400b, 0x0c},  
+	{0x401b, 0x00},  
+	{0x401d, 0x00},  
+	{0x4020, 0x00},  
+	{0x4021, 0x04},  
+	{0x4022, 0x06},  
+	{0x4023, 0x00},  
+	{0x4024, 0x0f},  
+	{0x4025, 0x2a},  
+	{0x4026, 0x0f},  
+	{0x4027, 0x2b},  
+	{0x4028, 0x00},  
+	{0x4029, 0x02},  
+	{0x402a, 0x04},  
+	{0x402b, 0x04},  
+	{0x402c, 0x00},  
+	{0x402d, 0x02},  
+	{0x402e, 0x04},  
+	{0x402f, 0x04},  
+	{0x401f, 0x00},  
 	{0x4034, 0x3f},
-	{0x403d, 0x04}, /* md_precision_en */
-	{0x4300, 0xff}, /* clip max H */
-	{0x4301, 0x00}, /* clip min H */
-	{0x4302, 0x0f}, /* clip min L, clip max L */
+	{0x403d, 0x04},  
+	{0x4300, 0xff},  
+	{0x4301, 0x00},  
+	{0x4302, 0x0f},  
 	{0x4316, 0x00},
 	{0x4500, 0x58},
 	{0x4503, 0x18},
 	{0x4600, 0x00},
 	{0x4601, 0xcb},
-	{0x481f, 0x32}, /* clk prepare min */
-	{0x4837, 0x16}, /* global timing */
-	{0x4850, 0x10}, /* lane 1 = 1, lane 0 = 0 */
-	{0x4851, 0x32}, /* lane 3 = 3, lane 2 = 2 */
+	{0x481f, 0x32},  
+	{0x4837, 0x16},  
+	{0x4850, 0x10},  
+	{0x4851, 0x32},  
 	{0x4b00, 0x2a},
 	{0x4b0d, 0x00},
-	{0x4d00, 0x04}, /* temperature sensor */
+	{0x4d00, 0x04},  
 	{0x4d01, 0x18},
 	{0x4d02, 0xc3},
 	{0x4d03, 0xff},
 	{0x4d04, 0xff},
-	{0x4d05, 0xff}, /* temperature sensor */
-	{0x5000, 0xfe}, /* lenc on, slave/master AWB gain/statistics enable */
-	{0x5001, 0x01}, /* BLC on */
-	{0x5002, 0x08}, /* WBMATCH sensor's gain, H scale/WBMATCH/OTP_DPC off */
-	{0x5003, 0x20}, /* DPC_DBC buffer control enable, WB */
-	{0x501e, 0x93}, /* enable digital gain */
+	{0x4d05, 0xff},  
+	{0x5000, 0xfe},  
+	{0x5001, 0x01},  
+	{0x5002, 0x08},  
+	{0x5003, 0x20},  
+	{0x501e, 0x93},  
 	{0x5046, 0x12},
-	{0x5780, 0x3e}, /* DPC */
+	{0x5780, 0x3e},  
 	{0x5781, 0x0f},
 	{0x5782, 0x44},
 	{0x5783, 0x02},
@@ -1091,68 +1064,64 @@ static const struct regval ov8858_global_regs_r2a_4lane[] = {
 	{0x5791, 0x04},
 	{0x5792, 0x00},
 	{0x5793, 0x52},
-	{0x5794, 0xa3}, /* DPC */
-	{0x5871, 0x0d}, /* Lenc */
+	{0x5794, 0xa3},  
+	{0x5871, 0x0d},  
 	{0x5870, 0x18},
 	{0x586e, 0x10},
 	{0x586f, 0x08},
 	{0x58f7, 0x01},
-	{0x58f8, 0x3d}, /* Lenc */
-	{0x5901, 0x00}, /* H skip off, V skip off */
-	{0x5b00, 0x02}, /* OTP DPC start address */
-	{0x5b01, 0x10}, /* OTP DPC start address */
-	{0x5b02, 0x03}, /* OTP DPC end address */
-	{0x5b03, 0xcf}, /* OTP DPC end address */
-	{0x5b05, 0x6c}, /* recover method = 2b11 */
-	{0x5e00, 0x00}, /* use 0x3ff to test pattern off */
-	{0x5e01, 0x41}, /* window cut enable */
+	{0x58f8, 0x3d},  
+	{0x5901, 0x00},  
+	{0x5b00, 0x02},  
+	{0x5b01, 0x10},  
+	{0x5b02, 0x03},  
+	{0x5b03, 0xcf},  
+	{0x5b05, 0x6c},  
+	{0x5e00, 0x00},  
+	{0x5e01, 0x41},  
 	{0x382d, 0x7f},
-	{0x4825, 0x3a}, /* lpx_p_min */
-	{0x4826, 0x40}, /* hs_prepare_min */
-	{0x4808, 0x25}, /* wake up delay in 1/1024 s */
+	{0x4825, 0x3a},  
+	{0x4826, 0x40},  
+	{0x4808, 0x25},  
 	{0x3763, 0x18},
 	{0x3768, 0xcc},
 	{0x470b, 0x28},
 	{0x4202, 0x00},
-	{0x400d, 0x10}, /* BLC offset trigger L */
-	{0x4040, 0x04}, /* BLC gain th2 */
-	{0x403e, 0x04}, /* BLC gain th1 */
-	{0x4041, 0xc6}, /* BLC */
+	{0x400d, 0x10},  
+	{0x4040, 0x04},  
+	{0x403e, 0x04},  
+	{0x4041, 0xc6},  
 	{0x3007, 0x80},
 	{0x400a, 0x01},
 	{REG_NULL, 0x00},
 };
 
-/*
- * Xclk 24Mhz
- * max_framerate 60fps
- * mipi_datarate per lane 720Mbps
- */
+ 
 static const struct regval ov8858_1632x1224_regs_4lane[] = {
 	{0x0100, 0x00},
-	{0x3501, 0x4d}, /* exposure M */
-	{0x3502, 0x40}, /* exposure L */
-	{0x3808, 0x06}, /* x output size H */
-	{0x3809, 0x60}, /* x output size L */
-	{0x380a, 0x04}, /* y output size H */
-	{0x380b, 0xc8}, /* y output size L */
-	{0x380c, 0x07}, /* HTS H */
-	{0x380d, 0x88}, /* HTS L */
-	{0x380e, 0x04}, /* VTS H */
-	{0x380f, 0xdc}, /* VTS L */
-	{0x3814, 0x03}, /* x odd inc */
-	{0x3821, 0x67}, /* mirror on, bin on */
-	{0x382a, 0x03}, /* y odd inc */
+	{0x3501, 0x4d},  
+	{0x3502, 0x40},  
+	{0x3808, 0x06},  
+	{0x3809, 0x60},  
+	{0x380a, 0x04},  
+	{0x380b, 0xc8},  
+	{0x380c, 0x07},  
+	{0x380d, 0x88},  
+	{0x380e, 0x04},  
+	{0x380f, 0xdc},  
+	{0x3814, 0x03},  
+	{0x3821, 0x67},  
+	{0x382a, 0x03},  
 	{0x3830, 0x08},
 	{0x3836, 0x02},
 	{0x3f0a, 0x00},
-	{0x4001, 0x10}, /* total 128 black column */
-	{0x4022, 0x06}, /* Anchor left end H */
-	{0x4023, 0x00}, /* Anchor left end L */
-	{0x4025, 0x2a}, /* Anchor right start L */
-	{0x4027, 0x2b}, /* Anchor right end L */
-	{0x402b, 0x04}, /* top black line number */
-	{0x402f, 0x04}, /* bottom black line number */
+	{0x4001, 0x10},  
+	{0x4022, 0x06},  
+	{0x4023, 0x00},  
+	{0x4025, 0x2a},  
+	{0x4027, 0x2b},  
+	{0x402b, 0x04},  
+	{0x402f, 0x04},  
 	{0x4500, 0x58},
 	{0x4600, 0x00},
 	{0x4601, 0xcb},
@@ -1161,36 +1130,32 @@ static const struct regval ov8858_1632x1224_regs_4lane[] = {
 	{REG_NULL, 0x00},
 };
 
-/*
- * Xclk 24Mhz
- * max_framerate 30fps
- * mipi_datarate per lane 720Mbps
- */
+ 
 static const struct regval ov8858_3264x2448_regs_4lane[] = {
 	{0x0100, 0x00},
-	{0x3501, 0x9a}, /* exposure M */
-	{0x3502, 0x20}, /* exposure L */
-	{0x3808, 0x0c}, /* x output size H */
-	{0x3809, 0xc0}, /* x output size L */
-	{0x380a, 0x09}, /* y output size H */
-	{0x380b, 0x90}, /* y output size L */
-	{0x380c, 0x07}, /* HTS H */
-	{0x380d, 0x94}, /* HTS L */
-	{0x380e, 0x09}, /* VTS H */
-	{0x380f, 0xaa}, /* VTS L */
-	{0x3814, 0x01}, /* x odd inc */
-	{0x3821, 0x46}, /* mirror on, bin off */
-	{0x382a, 0x01}, /* y odd inc */
+	{0x3501, 0x9a},  
+	{0x3502, 0x20},  
+	{0x3808, 0x0c},  
+	{0x3809, 0xc0},  
+	{0x380a, 0x09},  
+	{0x380b, 0x90},  
+	{0x380c, 0x07},  
+	{0x380d, 0x94},  
+	{0x380e, 0x09},  
+	{0x380f, 0xaa},  
+	{0x3814, 0x01},  
+	{0x3821, 0x46},  
+	{0x382a, 0x01},  
 	{0x3830, 0x06},
 	{0x3836, 0x01},
 	{0x3f0a, 0x00},
-	{0x4001, 0x00}, /* total 256 black column */
-	{0x4022, 0x0c}, /* Anchor left end H */
-	{0x4023, 0x60}, /* Anchor left end L */
-	{0x4025, 0x36}, /* Anchor right start L */
-	{0x4027, 0x37}, /* Anchor right end L */
-	{0x402b, 0x08}, /* top black line number */
-	{0x402f, 0x08}, /* interpolation x/y disable, Anchor one disable */
+	{0x4001, 0x00},  
+	{0x4022, 0x0c},  
+	{0x4023, 0x60},  
+	{0x4025, 0x36},  
+	{0x4027, 0x37},  
+	{0x402b, 0x08},  
+	{0x402f, 0x08},  
 	{0x4500, 0x58},
 	{0x4600, 0x01},
 	{0x4601, 0x97},
@@ -1235,9 +1200,7 @@ static const char * const ov8858_test_pattern_menu[] = {
 	"Vertical Color Bar Type 4"
 };
 
-/* ----------------------------------------------------------------------------
- * HW access
- */
+ 
 
 static int ov8858_write(struct ov8858 *ov8858, u32 reg, u32 val, int *err)
 {
@@ -1292,13 +1255,13 @@ static int ov8858_read(struct ov8858 *ov8858, u32 reg, u32 *val)
 
 	data_be_p = (u8 *)&data_be;
 
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -1317,9 +1280,7 @@ static int ov8858_read(struct ov8858 *ov8858, u32 reg, u32 *val)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------------
- * Streaming
- */
+ 
 
 static int ov8858_start_stream(struct ov8858 *ov8858,
 			       struct v4l2_subdev_state *state)
@@ -1346,7 +1307,7 @@ static int ov8858_start_stream(struct ov8858 *ov8858,
 	if (ret)
 		return ret;
 
-	/* 200 usec max to let PLL stabilize. */
+	 
 	fsleep(200);
 
 	ret = __v4l2_ctrl_handler_setup(&ov8858->ctrl_handler);
@@ -1358,7 +1319,7 @@ static int ov8858_start_stream(struct ov8858 *ov8858,
 	if (ret)
 		return ret;
 
-	/* t5 (fixed) = 10msec before entering streaming state */
+	 
 	fsleep(10000);
 
 	return 0;
@@ -1406,9 +1367,7 @@ static const struct v4l2_subdev_video_ops ov8858_video_ops = {
 	.s_stream = ov8858_s_stream,
 };
 
-/* ----------------------------------------------------------------------------
- * Pad ops
- */
+ 
 
 static int ov8858_set_fmt(struct v4l2_subdev *sd,
 			  struct v4l2_subdev_state *state,
@@ -1427,13 +1386,13 @@ static int ov8858_set_fmt(struct v4l2_subdev *sd,
 	fmt->format.height = mode->height;
 	fmt->format.field = V4L2_FIELD_NONE;
 
-	/* Store the format in the current subdev state. */
+	 
 	*v4l2_subdev_get_pad_format(sd, state, 0) =  fmt->format;
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY)
 		return 0;
 
-	/* Adjust control limits when a new mode is applied. */
+	 
 	h_blank = mode->hts_def - mode->width;
 	__v4l2_ctrl_modify_range(ov8858->hblank, h_blank, h_blank, 1,
 				 h_blank);
@@ -1512,9 +1471,7 @@ static const struct v4l2_subdev_ops ov8858_subdev_ops = {
 	.pad	= &ov8858_pad_ops,
 };
 
-/* ----------------------------------------------------------------------------
- * Controls handling
- */
+ 
 
 static int ov8858_enable_test_pattern(struct ov8858 *ov8858, u32 pattern)
 {
@@ -1540,19 +1497,14 @@ static int ov8858_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max_exp;
 	int ret;
 
-	/*
-	 * The control handler and the subdev state use the same mutex and the
-	 * mutex is guaranteed to be locked:
-	 * - by the core when s_ctrl is called int the VIDIOC_S_CTRL call path
-	 * - by the driver when s_ctrl is called in the s_stream(1) call path
-	 */
+	 
 	state = v4l2_subdev_get_locked_active_state(&ov8858->subdev);
 	format = v4l2_subdev_get_pad_format(&ov8858->subdev, state, 0);
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max_exp = format->height + ctrl->val - OV8858_EXPOSURE_MARGIN;
 		__v4l2_ctrl_modify_range(ov8858->exposure,
 					 ov8858->exposure->minimum, max_exp,
@@ -1566,7 +1518,7 @@ static int ov8858_set_ctrl(struct v4l2_ctrl *ctrl)
 
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of exposure are fractional part */
+		 
 		ret = ov8858_write(ov8858, OV8858_REG_LONG_EXPO,
 				   ctrl->val << 4, NULL);
 		break;
@@ -1575,12 +1527,7 @@ static int ov8858_set_ctrl(struct v4l2_ctrl *ctrl)
 				   ctrl->val, NULL);
 		break;
 	case V4L2_CID_DIGITAL_GAIN:
-		/*
-		 * Digital gain is assembled as:
-		 * 0x350a[7:0] = dgain[13:6]
-		 * 0x350b[5:0] = dgain[5:0]
-		 * Reassemble the control value to write it in one go.
-		 */
+		 
 		digi_gain = (ctrl->val & OV8858_LONG_DIGIGAIN_L_MASK)
 			  | ((ctrl->val & OV8858_LONG_DIGIGAIN_H_MASK) <<
 			      OV8858_LONG_DIGIGAIN_H_SHIFT);
@@ -1610,9 +1557,7 @@ static const struct v4l2_ctrl_ops ov8858_ctrl_ops = {
 	.s_ctrl = ov8858_set_ctrl,
 };
 
-/* ----------------------------------------------------------------------------
- * Power Management
- */
+ 
 
 static int ov8858_power_on(struct ov8858 *ov8858)
 {
@@ -1637,11 +1582,7 @@ static int ov8858_power_on(struct ov8858 *ov8858)
 		goto disable_clk;
 	}
 
-	/*
-	 * The chip manual only suggests 8192 cycles prior to first SCCB
-	 * transaction, but a double sleep between the release of gpios
-	 * helps with sporadic failures observed at probe time.
-	 */
+	 
 	delay_us = DIV_ROUND_UP(8192, OV8858_XVCLK_FREQ / 1000 / 1000);
 
 	gpiod_set_value_cansleep(ov8858->reset_gpio, 0);
@@ -1692,9 +1633,7 @@ static const struct dev_pm_ops ov8858_pm_ops = {
 			   ov8858_runtime_resume, NULL)
 };
 
-/* ----------------------------------------------------------------------------
- * Probe and initialization
- */
+ 
 
 static int ov8858_init_ctrls(struct ov8858 *ov8858)
 {
@@ -1717,7 +1656,7 @@ static int ov8858_init_ctrls(struct ov8858 *ov8858)
 	if (ctrl)
 		ctrl->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* pixel rate = link frequency * 2 * lanes / bpp */
+	 
 	pixel_rate = OV8858_LINK_FREQ * 2 * ov8858->num_lanes / 10;
 	v4l2_ctrl_new_std(handler, NULL, V4L2_CID_PIXEL_RATE,
 			  0, pixel_rate, 1, pixel_rate);
@@ -1802,15 +1741,12 @@ static int ov8858_check_sensor_id(struct ov8858 *ov8858)
 	dev_info(&client->dev, "Detected OV8858 sensor, revision 0x%x\n", id);
 
 	if (id == OV8858_R2A) {
-		/* R2A supports 2 and 4 lanes modes. */
+		 
 		ov8858->global_regs = ov8858->num_lanes == 4
 				    ? ov8858_global_regs_r2a_4lane
 				    : ov8858_global_regs_r2a_2lane;
 	} else if (ov8858->num_lanes == 2) {
-		/*
-		 * R1A only supports 2 lanes mode and it's only partially
-		 * supported.
-		 */
+		 
 		ov8858->global_regs = ov8858_global_regs_r1a;
 		dev_warn(&client->dev, "R1A may not work well!\n");
 	} else {
@@ -1982,7 +1918,7 @@ static void ov8858_remove(struct i2c_client *client)
 
 static const struct of_device_id ov8858_of_match[] = {
 	{ .compatible = "ovti,ov8858" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ov8858_of_match);
 

@@ -7,7 +7,7 @@
 
 #define SPARK_SHIFT 8
 
-/* Print spark lines on outf for numval values in val. */
+ 
 int print_spark(char *bf, int size, unsigned long *val, int numval)
 {
 	static const char *ticks[NUM_SPARKS] = {

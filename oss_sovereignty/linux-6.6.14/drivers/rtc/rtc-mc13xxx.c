@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Real Time Clock driver for Freescale MC13XXX PMIC
- *
- * (C) 2009 Sascha Hauer, Pengutronix
- * (C) 2009 Uwe Kleine-Koenig, Pengutronix
- */
+
+ 
 
 #include <linux/mfd/mc13xxx.h>
 #include <linux/platform_device.h>
@@ -97,10 +92,7 @@ static int mc13xxx_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	mc13xxx_lock(priv->mc13xxx);
 
-	/*
-	 * temporarily invalidate alarm to prevent triggering it when the day is
-	 * already updated while the time isn't yet.
-	 */
+	 
 	ret = mc13xxx_reg_read(priv->mc13xxx, MC13XXX_RTCTODA, &alarmseconds);
 	if (unlikely(ret))
 		goto out;
@@ -112,10 +104,7 @@ static int mc13xxx_rtc_set_time(struct device *dev, struct rtc_time *tm)
 			goto out;
 	}
 
-	/*
-	 * write seconds=0 to prevent a day switch between writing days
-	 * and seconds below
-	 */
+	 
 	ret = mc13xxx_reg_write(priv->mc13xxx, MC13XXX_RTCTOD, 0);
 	if (unlikely(ret))
 		goto out;
@@ -128,7 +117,7 @@ static int mc13xxx_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	if (unlikely(ret))
 		goto out;
 
-	/* restore alarm */
+	 
 	if (alarmseconds < SEC_PER_DAY) {
 		ret = mc13xxx_reg_write(priv->mc13xxx,
 				MC13XXX_RTCTODA, alarmseconds);
@@ -203,7 +192,7 @@ static int mc13xxx_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 
 	mc13xxx_lock(priv->mc13xxx);
 
-	/* disable alarm to prevent false triggering */
+	 
 	ret = mc13xxx_reg_write(priv->mc13xxx, MC13XXX_RTCTODA, 0x1ffff);
 	if (unlikely(ret))
 		goto out;
@@ -288,7 +277,7 @@ static int __init mc13xxx_rtc_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, priv);
 
 	priv->rtc->ops = &mc13xxx_rtc_ops;
-	/* 15bit days + hours, minutes, seconds */
+	 
 	priv->rtc->range_max = (timeu64_t)(1 << 15) * SEC_PER_DAY - 1;
 
 	mc13xxx_lock(mc13xxx);
@@ -344,7 +333,7 @@ static const struct platform_device_id mc13xxx_rtc_idtable[] = {
 	}, {
 		.name = "mc34708-rtc",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, mc13xxx_rtc_idtable);
 

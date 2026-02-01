@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <stdlib.h>
 #include <linux/zalloc.h>
@@ -23,9 +23,7 @@ static void maps__init(struct maps *maps, struct machine *machine)
 
 static void __maps__free_maps_by_name(struct maps *maps)
 {
-	/*
-	 * Free everything to try to do it from the rbtree in the next search
-	 */
+	 
 	for (unsigned int i = 0; i < maps__nr_maps(maps); i++)
 		map__put(maps__maps_by_name(maps)[i]);
 
@@ -83,10 +81,7 @@ int maps__insert(struct maps *maps, struct map *map)
 	}
 
 
-	/*
-	 * If we already performed some search by name, then we need to add the just
-	 * inserted map and resort.
-	 */
+	 
 	if (maps__maps_by_name(maps)) {
 		if (maps__nr_maps(maps) > RC_CHK_ACCESS(maps)->nr_maps_allocated) {
 			int nr_allocate = maps__nr_maps(maps) * 2;
@@ -200,7 +195,7 @@ struct symbol *maps__find_symbol(struct maps *maps, u64 addr, struct map **mapp)
 {
 	struct map *map = maps__find(maps, addr);
 
-	/* Ensure map is loaded before using map->map_ip */
+	 
 	if (map != NULL && map__load(map) >= 0) {
 		if (mapp != NULL)
 			*mapp = map;
@@ -284,10 +279,7 @@ int maps__fixup_overlappings(struct maps *maps, struct map *map, FILE *fp)
 
 	root = maps__entries(maps);
 
-	/*
-	 * Find first map where end > map->start.
-	 * Same as find_vma() in kernel.
-	 */
+	 
 	next = root->rb_node;
 	first = NULL;
 	while (next) {
@@ -307,10 +299,7 @@ int maps__fixup_overlappings(struct maps *maps, struct map *map, FILE *fp)
 		struct map_rb_node *pos = rb_entry(next, struct map_rb_node, rb_node);
 		next = rb_next(&pos->rb_node);
 
-		/*
-		 * Stop if current map starts after map->end.
-		 * Maps are ordered by start: next will not overlap for sure.
-		 */
+		 
 		if (map__start(pos->map) >= map__end(map))
 			break;
 
@@ -327,10 +316,7 @@ int maps__fixup_overlappings(struct maps *maps, struct map *map, FILE *fp)
 		}
 
 		rb_erase_init(&pos->rb_node, root);
-		/*
-		 * Now check if we need to create new maps for areas not
-		 * overlapped by the new map:
-		 */
+		 
 		if (map__start(map) > map__start(pos->map)) {
 			struct map *before = map__clone(pos->map);
 
@@ -380,9 +366,7 @@ put_map:
 	return err;
 }
 
-/*
- * XXX This should not really _copy_ te maps, but refcount them.
- */
+ 
 int maps__clone(struct thread *thread, struct maps *parent)
 {
 	struct maps *maps = thread__maps(thread);

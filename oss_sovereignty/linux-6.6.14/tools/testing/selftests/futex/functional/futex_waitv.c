@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * futex_waitv() test by André Almeida <andrealmeid@collabora.com>
- *
- * Copyright 2021 Collabora Ltd.
- */
+
+ 
 
 #include <errno.h>
 #include <error.h>
@@ -39,7 +35,7 @@ void *waiterfn(void *arg)
 	struct timespec to;
 	int res;
 
-	/* setting absolute timeout for futex2 */
+	 
 	if (clock_gettime(CLOCK_MONOTONIC, &to))
 		error("gettime64 failed\n", errno);
 
@@ -93,7 +89,7 @@ int main(int argc, char *argv[])
 		waitv[i].__reserved = 0;
 	}
 
-	/* Private waitv */
+	 
 	if (pthread_create(&waiter, NULL, waiterfn, NULL))
 		error("pthread_create failed\n", errno);
 
@@ -109,7 +105,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_pass("futex_waitv private\n");
 	}
 
-	/* Shared waitv */
+	 
 	for (i = 0; i < NR_FUTEXES; i++) {
 		int shm_id = shmget(IPC_PRIVATE, 4096, IPC_CREAT | 0666);
 
@@ -145,7 +141,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i < NR_FUTEXES; i++)
 		shmdt(u64_to_ptr(waitv[i].uaddr));
 
-	/* Testing a waiter without FUTEX_32 flag */
+	 
 	waitv[0].flags = FUTEX_PRIVATE_FLAG;
 
 	if (clock_gettime(CLOCK_MONOTONIC, &to))
@@ -163,7 +159,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_pass("futex_waitv without FUTEX_32\n");
 	}
 
-	/* Testing a waiter with an unaligned address */
+	 
 	waitv[0].flags = FUTEX_PRIVATE_FLAG | FUTEX_32;
 	waitv[0].uaddr = 1;
 
@@ -182,7 +178,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_pass("futex_waitv with an unaligned address\n");
 	}
 
-	/* Testing a NULL address for waiters.uaddr */
+	 
 	waitv[0].uaddr = 0x00000000;
 
 	if (clock_gettime(CLOCK_MONOTONIC, &to))
@@ -200,7 +196,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_pass("futex_waitv NULL address in waitv.uaddr\n");
 	}
 
-	/* Testing a NULL address for *waiters */
+	 
 	if (clock_gettime(CLOCK_MONOTONIC, &to))
 		error("gettime64 failed\n", errno);
 
@@ -216,7 +212,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_pass("futex_waitv NULL address in *waiters\n");
 	}
 
-	/* Testing an invalid clockid */
+	 
 	if (clock_gettime(CLOCK_MONOTONIC, &to))
 		error("gettime64 failed\n", errno);
 

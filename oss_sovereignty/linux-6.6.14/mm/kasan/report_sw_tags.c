@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains software tag-based KASAN specific error reporting code.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Andrey Ryabinin <ryabinin.a.a@gmail.com>
- *
- * Some code borrowed from https://github.com/xairy/kasan-prototype by
- *        Andrey Konovalov <andreyknvl@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/ftrace.h>
@@ -50,15 +42,9 @@ size_t kasan_get_alloc_size(void *object, struct kmem_cache *cache)
 	size_t size = 0;
 	u8 *shadow;
 
-	/*
-	 * Skip the addr_has_metadata check, as this function only operates on
-	 * slab memory, which must have metadata.
-	 */
+	 
 
-	/*
-	 * The loop below returns 0 for freed objects, for which KASAN cannot
-	 * calculate the allocation size based on the metadata.
-	 */
+	 
 	shadow = (u8 *)kasan_mem_to_shadow(object);
 	while (size < cache->object_size) {
 		if (*shadow != KASAN_TAG_INVALID)

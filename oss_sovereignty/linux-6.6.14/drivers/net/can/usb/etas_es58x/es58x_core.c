@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Driver for ETAS GmbH ES58X USB CAN(-FD) Bus Interfaces.
- *
- * File es58x_core.c: Core logic to manage the network devices and the
- * USB interface.
- *
- * Copyright (c) 2019 Robert Bosch Engineering and Business Solutions. All rights reserved.
- * Copyright (c) 2020 ETAS K.K.. All rights reserved.
- * Copyright (c) 2020-2022 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/crc16.h>
@@ -30,27 +22,27 @@ MODULE_LICENSE("GPL v2");
 #define ES582_1_PRODUCT_ID 0x0168
 #define ES584_1_PRODUCT_ID 0x0169
 
-/* ES58X FD has some interface protocols unsupported by this driver. */
+ 
 #define ES58X_FD_INTERFACE_PROTOCOL 0
 
-/* Table of devices which work with this driver. */
+ 
 static const struct usb_device_id es58x_id_table[] = {
 	{
-		/* ETAS GmbH ES581.4 USB dual-channel CAN Bus Interface module. */
+		 
 		USB_DEVICE(ES58X_VENDOR_ID, ES581_4_PRODUCT_ID),
 		.driver_info = ES58X_DUAL_CHANNEL
 	}, {
-		/* ETAS GmbH ES582.1 USB dual-channel CAN FD Bus Interface module. */
+		 
 		USB_DEVICE_INTERFACE_PROTOCOL(ES58X_VENDOR_ID, ES582_1_PRODUCT_ID,
 					      ES58X_FD_INTERFACE_PROTOCOL),
 		.driver_info = ES58X_DUAL_CHANNEL | ES58X_FD_FAMILY
 	}, {
-		/* ETAS GmbH ES584.1 USB single-channel CAN FD Bus Interface module. */
+		 
 		USB_DEVICE_INTERFACE_PROTOCOL(ES58X_VENDOR_ID, ES584_1_PRODUCT_ID,
 					      ES58X_FD_INTERFACE_PROTOCOL),
 		.driver_info = ES58X_FD_FAMILY
 	}, {
-		/* Terminating entry */
+		 
 	}
 };
 
@@ -65,20 +57,10 @@ MODULE_DEVICE_TABLE(usb, es58x_id_table);
 	print_hex_dump_debug(KBUILD_MODNAME " " __stringify(buf) ": ",\
 			     DUMP_PREFIX_NONE, 16, 1, buf, len, false)
 
-/* The last two bytes of an ES58X command is a CRC16. The first two
- * bytes (the start of frame) are skipped and the CRC calculation
- * starts on the third byte.
- */
+ 
 #define ES58X_CRC_CALC_OFFSET sizeof_field(union es58x_urb_cmd, sof)
 
-/**
- * es58x_calculate_crc() - Compute the crc16 of a given URB.
- * @urb_cmd: The URB command for which we want to calculate the CRC.
- * @urb_len: Length of @urb_cmd. Must be at least bigger than 4
- *	(ES58X_CRC_CALC_OFFSET + sizeof(crc))
- *
- * Return: crc16 value.
- */
+ 
 static u16 es58x_calculate_crc(const union es58x_urb_cmd *urb_cmd, u16 urb_len)
 {
 	u16 crc;
@@ -88,14 +70,7 @@ static u16 es58x_calculate_crc(const union es58x_urb_cmd *urb_cmd, u16 urb_len)
 	return crc;
 }
 
-/**
- * es58x_get_crc() - Get the CRC value of a given URB.
- * @urb_cmd: The URB command for which we want to get the CRC.
- * @urb_len: Length of @urb_cmd. Must be at least bigger than 4
- *	(ES58X_CRC_CALC_OFFSET + sizeof(crc))
- *
- * Return: crc16 value.
- */
+ 
 static u16 es58x_get_crc(const union es58x_urb_cmd *urb_cmd, u16 urb_len)
 {
 	u16 crc;
@@ -106,12 +81,7 @@ static u16 es58x_get_crc(const union es58x_urb_cmd *urb_cmd, u16 urb_len)
 	return crc;
 }
 
-/**
- * es58x_set_crc() - Set the CRC value of a given URB.
- * @urb_cmd: The URB command for which we want to get the CRC.
- * @urb_len: Length of @urb_cmd. Must be at least bigger than 4
- *	(ES58X_CRC_CALC_OFFSET + sizeof(crc))
- */
+ 
 static void es58x_set_crc(union es58x_urb_cmd *urb_cmd, u16 urb_len)
 {
 	u16 crc;
@@ -122,15 +92,7 @@ static void es58x_set_crc(union es58x_urb_cmd *urb_cmd, u16 urb_len)
 	put_unaligned_le16(crc, crc_addr);
 }
 
-/**
- * es58x_check_crc() - Validate the CRC value of a given URB.
- * @es58x_dev: ES58X device.
- * @urb_cmd: The URB command for which we want to check the CRC.
- * @urb_len: Length of @urb_cmd. Must be at least bigger than 4
- *	(ES58X_CRC_CALC_OFFSET + sizeof(crc))
- *
- * Return: zero on success, -EBADMSG if the CRC check fails.
- */
+ 
 static int es58x_check_crc(struct es58x_device *es58x_dev,
 			   const union es58x_urb_cmd *urb_cmd, u16 urb_len)
 {
@@ -147,16 +109,7 @@ static int es58x_check_crc(struct es58x_device *es58x_dev,
 	return 0;
 }
 
-/**
- * es58x_timestamp_to_ns() - Convert a timestamp value received from a
- *	ES58X device to nanoseconds.
- * @timestamp: Timestamp received from a ES58X device.
- *
- * The timestamp received from ES58X is expressed in multiples of 0.5
- * micro seconds. This function converts it in to nanoseconds.
- *
- * Return: Timestamp value in nanoseconds.
- */
+ 
 static u64 es58x_timestamp_to_ns(u64 timestamp)
 {
 	const u64 es58x_timestamp_ns_mult_coef = 500ULL;
@@ -164,14 +117,7 @@ static u64 es58x_timestamp_to_ns(u64 timestamp)
 	return es58x_timestamp_ns_mult_coef * timestamp;
 }
 
-/**
- * es58x_set_skb_timestamp() - Set the hardware timestamp of an skb.
- * @netdev: CAN network device.
- * @skb: socket buffer of a CAN message.
- * @timestamp: Timestamp received from an ES58X device.
- *
- * Used for both received and echo messages.
- */
+ 
 static void es58x_set_skb_timestamp(struct net_device *netdev,
 				    struct sk_buff *skb, u64 timestamp)
 {
@@ -179,23 +125,12 @@ static void es58x_set_skb_timestamp(struct net_device *netdev,
 	struct skb_shared_hwtstamps *hwts;
 
 	hwts = skb_hwtstamps(skb);
-	/* Ignoring overflow (overflow on 64 bits timestamp with nano
-	 * second precision would occur after more than 500 years).
-	 */
+	 
 	hwts->hwtstamp = ns_to_ktime(es58x_timestamp_to_ns(timestamp) +
 				     es58x_dev->realtime_diff_ns);
 }
 
-/**
- * es58x_rx_timestamp() - Handle a received timestamp.
- * @es58x_dev: ES58X device.
- * @timestamp: Timestamp received from a ES58X device.
- *
- * Calculate the difference between the ES58X device and the kernel
- * internal clocks. This difference will be later used as an offset to
- * convert the timestamps of RX and echo messages to match the kernel
- * system time (e.g. convert to UNIX time).
- */
+ 
 void es58x_rx_timestamp(struct es58x_device *es58x_dev, u64 timestamp)
 {
 	u64 ktime_real_ns = ktime_get_real_ns();
@@ -213,17 +148,7 @@ void es58x_rx_timestamp(struct es58x_device *es58x_dev, u64 timestamp)
 		__func__, device_timestamp, es58x_dev->realtime_diff_ns);
 }
 
-/**
- * es58x_set_realtime_diff_ns() - Calculate difference between the
- *	clocks of the ES58X device and the kernel
- * @es58x_dev: ES58X device.
- *
- * Request a timestamp from the ES58X device. Once the answer is
- * received, the timestamp difference will be set by the callback
- * function es58x_rx_timestamp().
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_set_realtime_diff_ns(struct es58x_device *es58x_dev)
 {
 	if (es58x_dev->ktime_req_ns) {
@@ -237,43 +162,13 @@ static int es58x_set_realtime_diff_ns(struct es58x_device *es58x_dev)
 	return es58x_dev->ops->get_timestamp(es58x_dev);
 }
 
-/**
- * es58x_is_can_state_active() - Is the network device in an active
- *	CAN state?
- * @netdev: CAN network device.
- *
- * The device is considered active if it is able to send or receive
- * CAN frames, that is to say if it is in any of
- * CAN_STATE_ERROR_ACTIVE, CAN_STATE_ERROR_WARNING or
- * CAN_STATE_ERROR_PASSIVE states.
- *
- * Caution: when recovering from a bus-off,
- * net/core/dev.c#can_restart() will call
- * net/core/dev.c#can_flush_echo_skb() without using any kind of
- * locks. For this reason, it is critical to guarantee that no TX or
- * echo operations (i.e. any access to priv->echo_skb[]) can be done
- * while this function is returning false.
- *
- * Return: true if the device is active, else returns false.
- */
+ 
 static bool es58x_is_can_state_active(struct net_device *netdev)
 {
 	return es58x_priv(netdev)->can.state < CAN_STATE_BUS_OFF;
 }
 
-/**
- * es58x_is_echo_skb_threshold_reached() - Determine the limit of how
- *	many skb slots can be taken before we should stop the network
- *	queue.
- * @priv: ES58X private parameters related to the network device.
- *
- * We need to save enough free skb slots in order to be able to do
- * bulk send. This function can be used to determine when to wake or
- * stop the network queue in regard to the number of skb slots already
- * taken if the echo FIFO.
- *
- * Return: boolean.
- */
+ 
 static bool es58x_is_echo_skb_threshold_reached(struct es58x_priv *priv)
 {
 	u32 num_echo_skb =  priv->tx_head - priv->tx_tail;
@@ -283,14 +178,7 @@ static bool es58x_is_echo_skb_threshold_reached(struct es58x_priv *priv)
 	return num_echo_skb >= threshold;
 }
 
-/**
- * es58x_can_free_echo_skb_tail() - Remove the oldest echo skb of the
- *	echo FIFO.
- * @netdev: CAN network device.
- *
- * Naming convention: the tail is the beginning of the FIFO, i.e. the
- * first skb to have entered the FIFO.
- */
+ 
 static void es58x_can_free_echo_skb_tail(struct net_device *netdev)
 {
 	struct es58x_priv *priv = es58x_priv(netdev);
@@ -305,18 +193,7 @@ static void es58x_can_free_echo_skb_tail(struct net_device *netdev)
 	netdev->stats.tx_dropped++;
 }
 
-/**
- * es58x_can_get_echo_skb_recovery() - Try to re-sync the echo FIFO.
- * @netdev: CAN network device.
- * @rcv_packet_idx: Index
- *
- * This function should not be called under normal circumstances. In
- * the unlikely case that one or several URB packages get dropped by
- * the device, the index will get out of sync. Try to recover by
- * dropping the echo skb packets with older indexes.
- *
- * Return: zero if recovery was successful, -EINVAL otherwise.
- */
+ 
 static int es58x_can_get_echo_skb_recovery(struct net_device *netdev,
 					   u32 rcv_packet_idx)
 {
@@ -357,28 +234,7 @@ static int es58x_can_get_echo_skb_recovery(struct net_device *netdev,
 	return ret;
 }
 
-/**
- * es58x_can_get_echo_skb() - Get the skb from the echo FIFO and loop
- *	it back locally.
- * @netdev: CAN network device.
- * @rcv_packet_idx: Index of the first packet received from the device.
- * @tstamps: Array of hardware timestamps received from a ES58X device.
- * @pkts: Number of packets (and so, length of @tstamps).
- *
- * Callback function for when we receive a self reception
- * acknowledgment.  Retrieves the skb from the echo FIFO, sets its
- * hardware timestamp (the actual time it was sent) and loops it back
- * locally.
- *
- * The device has to be active (i.e. network interface UP and not in
- * bus off state or restarting).
- *
- * Packet indexes must be consecutive (i.e. index of first packet is
- * @rcv_packet_idx, index of second packet is @rcv_packet_idx + 1 and
- * index of last packet is @rcv_packet_idx + @pkts - 1).
- *
- * Return: zero on success.
- */
+ 
 int es58x_can_get_echo_skb(struct net_device *netdev, u32 rcv_packet_idx,
 			   u64 *tstamps, unsigned int pkts)
 {
@@ -400,10 +256,7 @@ int es58x_can_get_echo_skb(struct net_device *netdev, u32 rcv_packet_idx,
 			netdev_dbg(netdev,
 				   "Bus is off or device is restarting. Ignoring %u echo packets from index %u\n",
 				   pkts, rcv_packet_idx);
-		/* stats.tx_dropped will be (or was already)
-		 * incremented by
-		 * drivers/net/can/net/dev.c:can_flush_echo_skb().
-		 */
+		 
 		return 0;
 	} else if (num_echo_skb == 0) {
 		if (net_ratelimit())
@@ -459,15 +312,7 @@ int es58x_can_get_echo_skb(struct net_device *netdev, u32 rcv_packet_idx,
 	return 0;
 }
 
-/**
- * es58x_can_reset_echo_fifo() - Reset the echo FIFO.
- * @netdev: CAN network device.
- *
- * The echo_skb array of struct can_priv will be flushed by
- * drivers/net/can/dev.c:can_flush_echo_skb(). This function resets
- * the parameters of the struct es58x_priv of our device and reset the
- * queue (c.f. BQL).
- */
+ 
 static void es58x_can_reset_echo_fifo(struct net_device *netdev)
 {
 	struct es58x_priv *priv = es58x_priv(netdev);
@@ -479,16 +324,7 @@ static void es58x_can_reset_echo_fifo(struct net_device *netdev)
 	netdev_reset_queue(netdev);
 }
 
-/**
- * es58x_flush_pending_tx_msg() - Reset the buffer for transmission messages.
- * @netdev: CAN network device.
- *
- * es58x_start_xmit() will queue up to tx_bulk_max messages in
- * &tx_urb buffer and do a bulk send of all messages in one single URB
- * (c.f. xmit_more flag). When the device recovers from a bus off
- * state or when the device stops, the tx_urb buffer might still have
- * pending messages in it and thus need to be flushed.
- */
+ 
 static void es58x_flush_pending_tx_msg(struct net_device *netdev)
 {
 	struct es58x_priv *priv = es58x_priv(netdev);
@@ -515,21 +351,7 @@ static void es58x_flush_pending_tx_msg(struct net_device *netdev)
 	priv->tx_urb = NULL;
 }
 
-/**
- * es58x_tx_ack_msg() - Handle acknowledgment messages.
- * @netdev: CAN network device.
- * @tx_free_entries: Number of free entries in the device transmit FIFO.
- * @rx_cmd_ret_u32: error code as returned by the ES58X device.
- *
- * ES58X sends an acknowledgment message after a transmission request
- * is done. This is mandatory for the ES581.4 but is optional (and
- * deactivated in this driver) for the ES58X_FD family.
- *
- * Under normal circumstances, this function should never throw an
- * error message.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 int es58x_tx_ack_msg(struct net_device *netdev, u16 tx_free_entries,
 		     enum es58x_ret_u32 rx_cmd_ret_u32)
 {
@@ -549,23 +371,7 @@ int es58x_tx_ack_msg(struct net_device *netdev, u16 tx_free_entries,
 				    rx_cmd_ret_u32);
 }
 
-/**
- * es58x_rx_can_msg() - Handle a received a CAN message.
- * @netdev: CAN network device.
- * @timestamp: Hardware time stamp (only relevant in rx branches).
- * @data: CAN payload.
- * @can_id: CAN ID.
- * @es58x_flags: Please refer to enum es58x_flag.
- * @dlc: Data Length Code (raw value).
- *
- * Fill up a CAN skb and post it.
- *
- * This function handles the case where the DLC of a classical CAN
- * frame is greater than CAN_MAX_DLEN (c.f. the len8_dlc field of
- * struct can_frame).
- *
- * Return: zero on success.
- */
+ 
 int es58x_rx_can_msg(struct net_device *netdev, u64 timestamp, const u8 *data,
 		     canid_t can_id, enum es58x_flag es58x_flags, u8 dlc)
 {
@@ -623,38 +429,7 @@ int es58x_rx_can_msg(struct net_device *netdev, u64 timestamp, const u8 *data,
 	return 0;
 }
 
-/**
- * es58x_rx_err_msg() - Handle a received CAN event or error message.
- * @netdev: CAN network device.
- * @error: Error code.
- * @event: Event code.
- * @timestamp: Timestamp received from a ES58X device.
- *
- * Handle the errors and events received by the ES58X device, create
- * a CAN error skb and post it.
- *
- * In some rare cases the devices might get stuck alternating between
- * CAN_STATE_ERROR_PASSIVE and CAN_STATE_ERROR_WARNING. To prevent
- * this behavior, we force a bus off state if the device goes in
- * CAN_STATE_ERROR_WARNING for ES58X_MAX_CONSECUTIVE_WARN consecutive
- * times with no successful transmission or reception in between.
- *
- * Once the device is in bus off state, the only way to restart it is
- * through the drivers/net/can/dev.c:can_restart() function. The
- * device is technically capable to recover by itself under certain
- * circumstances, however, allowing self recovery would create
- * complex race conditions with drivers/net/can/dev.c:can_restart()
- * and thus was not implemented. To activate automatic restart, please
- * set the restart-ms parameter (e.g. ip link set can0 type can
- * restart-ms 100).
- *
- * If the bus is really instable, this function would try to send a
- * lot of log messages. Those are rate limited (i.e. you will see
- * messages such as "net_ratelimit: XXX callbacks suppressed" in
- * dmesg).
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
 		     enum es58x_event event, u64 timestamp)
 {
@@ -682,7 +457,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
 	skb = alloc_can_err_skb(netdev, &cf);
 
 	switch (error) {
-	case ES58X_ERR_OK:	/* 0: No error */
+	case ES58X_ERR_OK:	 
 		break;
 
 	case ES58X_ERR_PROT_STUFF:
@@ -761,7 +536,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
 	}
 
 	switch (event) {
-	case ES58X_EVENT_OK:	/* 0: No event */
+	case ES58X_EVENT_OK:	 
 		break;
 
 	case ES58X_EVENT_CRTL_ACTIVE:
@@ -780,10 +555,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
 	case ES58X_EVENT_CRTL_PASSIVE:
 		if (net_ratelimit())
 			netdev_dbg(netdev, "Event CAN BUS PASSIVE\n");
-		/* Either TX or RX error count reached passive state
-		 * but we do not know which. Setting both flags by
-		 * default.
-		 */
+		 
 		if (cf) {
 			cf->data[1] |= CAN_ERR_CRTL_RX_PASSIVE;
 			cf->data[1] |= CAN_ERR_CRTL_TX_PASSIVE;
@@ -798,10 +570,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
 	case ES58X_EVENT_CRTL_WARNING:
 		if (net_ratelimit())
 			netdev_dbg(netdev, "Event CAN BUS WARNING\n");
-		/* Either TX or RX error count reached warning state
-		 * but we do not know which. Setting both flags by
-		 * default.
-		 */
+		 
 		if (cf) {
 			cf->data[1] |= CAN_ERR_CRTL_RX_WARNING;
 			cf->data[1] |= CAN_ERR_CRTL_TX_WARNING;
@@ -829,9 +598,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
 		if (net_ratelimit())
 			netdev_warn(netdev,
 				    "Lost connection on either CAN high or CAN low\n");
-		/* Lost connection on either CAN high or CAN
-		 * low. Setting both flags by default.
-		 */
+		 
 		if (cf) {
 			cf->data[4] |= CAN_ERR_TRX_CANH_NO_WIRE;
 			cf->data[4] |= CAN_ERR_TRX_CANL_NO_WIRE;
@@ -874,15 +641,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
 	return ret;
 }
 
-/**
- * es58x_cmd_ret_desc() - Convert a command type to a string.
- * @cmd_ret_type: Type of the command which triggered the return code.
- *
- * The final line (return "<unknown>") should not be reached. If this
- * is the case, there is an implementation bug.
- *
- * Return: a readable description of the @cmd_ret_type.
- */
+ 
 static const char *es58x_cmd_ret_desc(enum es58x_ret_type cmd_ret_type)
 {
 	switch (cmd_ret_type) {
@@ -905,23 +664,7 @@ static const char *es58x_cmd_ret_desc(enum es58x_ret_type cmd_ret_type)
 	return "<unknown>";
 };
 
-/**
- * es58x_rx_cmd_ret_u8() - Handle the command's return code received
- *	from the ES58X device.
- * @dev: Device, only used for the dev_XXX() print functions.
- * @cmd_ret_type: Type of the command which triggered the return code.
- * @rx_cmd_ret_u8: Command error code as returned by the ES58X device.
- *
- * Handles the 8 bits command return code. Those are specific to the
- * ES581.4 device. The return value will eventually be used by
- * es58x_handle_urb_cmd() function which will take proper actions in
- * case of critical issues such and memory errors or bad CRC values.
- *
- * In contrast with es58x_rx_cmd_ret_u32(), the network device is
- * unknown.
- *
- * Return: zero on success, return errno when any error occurs.
- */
+ 
 int es58x_rx_cmd_ret_u8(struct device *dev,
 			enum es58x_ret_type cmd_ret_type,
 			enum es58x_ret_u8 rx_cmd_ret_u8)
@@ -953,20 +696,7 @@ int es58x_rx_cmd_ret_u8(struct device *dev,
 	}
 }
 
-/**
- * es58x_rx_cmd_ret_u32() - Handle the command return code received
- *	from the ES58X device.
- * @netdev: CAN network device.
- * @cmd_ret_type: Type of the command which triggered the return code.
- * @rx_cmd_ret_u32: error code as returned by the ES58X device.
- *
- * Handles the 32 bits command return code. The return value will
- * eventually be used by es58x_handle_urb_cmd() function which will
- * take proper actions in case of critical issues such and memory
- * errors or bad CRC values.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 int es58x_rx_cmd_ret_u32(struct net_device *netdev,
 			 enum es58x_ret_type cmd_ret_type,
 			 enum es58x_ret_u32 rx_cmd_ret_u32)
@@ -1060,16 +790,7 @@ int es58x_rx_cmd_ret_u32(struct net_device *netdev,
 	}
 }
 
-/**
- * es58x_increment_rx_errors() - Increment the network devices' error
- *	count.
- * @es58x_dev: ES58X device.
- *
- * If an error occurs on the early stages on receiving an URB command,
- * we might not be able to figure out on which network device the
- * error occurred. In such case, we arbitrarily increment the error
- * count of all the network devices attached to our ES58X device.
- */
+ 
 static void es58x_increment_rx_errors(struct es58x_device *es58x_dev)
 {
 	int i;
@@ -1079,15 +800,7 @@ static void es58x_increment_rx_errors(struct es58x_device *es58x_dev)
 			es58x_dev->netdev[i]->stats.rx_errors++;
 }
 
-/**
- * es58x_handle_urb_cmd() - Handle the URB command
- * @es58x_dev: ES58X device.
- * @urb_cmd: The URB command received from the ES58X device, might not
- *	be aligned.
- *
- * Sends the URB command to the device specific function. Manages the
- * errors thrown back by those functions.
- */
+ 
 static void es58x_handle_urb_cmd(struct es58x_device *es58x_dev,
 				 const union es58x_urb_cmd *urb_cmd)
 {
@@ -1097,7 +810,7 @@ static void es58x_handle_urb_cmd(struct es58x_device *es58x_dev,
 
 	ret = ops->handle_urb_cmd(es58x_dev, urb_cmd);
 	switch (ret) {
-	case 0:		/* OK */
+	case 0:		 
 		return;
 
 	case -ENODEV:
@@ -1133,34 +846,11 @@ static void es58x_handle_urb_cmd(struct es58x_device *es58x_dev,
 		break;
 	}
 
-	/* Because the urb command could not fully be parsed,
-	 * channel_id is not confirmed. Incrementing rx_errors count
-	 * of all channels.
-	 */
+	 
 	es58x_increment_rx_errors(es58x_dev);
 }
 
-/**
- * es58x_check_rx_urb() - Check the length and format of the URB command.
- * @es58x_dev: ES58X device.
- * @urb_cmd: The URB command received from the ES58X device, might not
- *	be aligned.
- * @urb_actual_len: The actual length of the URB command.
- *
- * Check if the first message of the received urb is valid, that is to
- * say that both the header and the length are coherent.
- *
- * Return:
- * the length of the first message of the URB on success.
- *
- * -ENODATA if the URB command is incomplete (in which case, the URB
- * command should be buffered and combined with the next URB to try to
- * reconstitute the URB command).
- *
- * -EOVERFLOW if the length is bigger than the maximum expected one.
- *
- * -EBADRQC if the start of frame does not match the expected value.
- */
+ 
 static signed int es58x_check_rx_urb(struct es58x_device *es58x_dev,
 				     const union es58x_urb_cmd *urb_cmd,
 				     u32 urb_actual_len)
@@ -1207,18 +897,7 @@ static signed int es58x_check_rx_urb(struct es58x_device *es58x_dev,
 	return urb_cmd_len;
 }
 
-/**
- * es58x_copy_to_cmd_buf() - Copy an array to the URB command buffer.
- * @es58x_dev: ES58X device.
- * @raw_cmd: the buffer we want to copy.
- * @raw_cmd_len: length of @raw_cmd.
- *
- * Concatenates @raw_cmd_len bytes of @raw_cmd to the end of the URB
- * command buffer.
- *
- * Return: zero on success, -EMSGSIZE if not enough space is available
- * to do the copy.
- */
+ 
 static int es58x_copy_to_cmd_buf(struct es58x_device *es58x_dev,
 				 u8 *raw_cmd, int raw_cmd_len)
 {
@@ -1233,24 +912,7 @@ static int es58x_copy_to_cmd_buf(struct es58x_device *es58x_dev,
 	return 0;
 }
 
-/**
- * es58x_split_urb_try_recovery() - Try to recover bad URB sequences.
- * @es58x_dev: ES58X device.
- * @raw_cmd: pointer to the buffer we want to copy.
- * @raw_cmd_len: length of @raw_cmd.
- *
- * Under some rare conditions, we might get incorrect URBs from the
- * device. From our observations, one of the valid URB gets replaced
- * by one from the past. The full root cause is not identified.
- *
- * This function looks for the next start of frame in the urb buffer
- * in order to try to recover.
- *
- * Such behavior was not observed on the devices of the ES58X FD
- * family and only seems to impact the ES581.4.
- *
- * Return: the number of bytes dropped on success, -EBADMSG if recovery failed.
- */
+ 
 static int es58x_split_urb_try_recovery(struct es58x_device *es58x_dev,
 					u8 *raw_cmd, size_t raw_cmd_len)
 {
@@ -1285,23 +947,7 @@ static int es58x_split_urb_try_recovery(struct es58x_device *es58x_dev,
 	return -EBADMSG;
 }
 
-/**
- * es58x_handle_incomplete_cmd() - Reconstitute an URB command from
- *	different URB pieces.
- * @es58x_dev: ES58X device.
- * @urb: last urb buffer received.
- *
- * The device might split the URB commands in an arbitrary amount of
- * pieces. This function concatenates those in an URB buffer until a
- * full URB command is reconstituted and consume it.
- *
- * Return:
- * number of bytes consumed from @urb if successful.
- *
- * -ENODATA if the URB command is still incomplete.
- *
- * -EBADMSG if the URB command is incorrect.
- */
+ 
 static signed int es58x_handle_incomplete_cmd(struct es58x_device *es58x_dev,
 					      struct urb *urb)
 {
@@ -1333,25 +979,10 @@ static signed int es58x_handle_incomplete_cmd(struct es58x_device *es58x_dev,
 	}
 
 	es58x_handle_urb_cmd(es58x_dev, &es58x_dev->rx_cmd_buf);
-	return urb_cmd_len - tmp_cmd_buf_len;	/* consumed length */
+	return urb_cmd_len - tmp_cmd_buf_len;	 
 }
 
-/**
- * es58x_split_urb() - Cut the received URB in individual URB commands.
- * @es58x_dev: ES58X device.
- * @urb: last urb buffer received.
- *
- * The device might send urb in bulk format (i.e. several URB commands
- * concatenated together). This function will split all the commands
- * contained in the urb.
- *
- * Return:
- * number of bytes consumed from @urb if successful.
- *
- * -ENODATA if the URB command is incomplete.
- *
- * -EBADMSG if the URB command is incorrect.
- */
+ 
 static signed int es58x_split_urb(struct es58x_device *es58x_dev,
 				  struct urb *urb)
 {
@@ -1397,16 +1028,7 @@ static signed int es58x_split_urb(struct es58x_device *es58x_dev,
 	return 0;
 }
 
-/**
- * es58x_read_bulk_callback() - Callback for reading data from device.
- * @urb: last urb buffer received.
- *
- * This function gets eventually called each time an URB is received
- * from the ES58X device.
- *
- * Checks urb status, calls read function and resubmits urb read
- * operation.
- */
+ 
 static void es58x_read_bulk_callback(struct urb *urb)
 {
 	struct es58x_device *es58x_dev = urb->context;
@@ -1414,7 +1036,7 @@ static void es58x_read_bulk_callback(struct urb *urb)
 	int i, ret;
 
 	switch (urb->status) {
-	case 0:		/* success */
+	case 0:		 
 		break;
 
 	case -EOVERFLOW:
@@ -1453,10 +1075,7 @@ static void es58x_read_bulk_callback(struct urb *urb)
 		es58x_print_hex_dump_debug(urb->transfer_buffer,
 					   urb->actual_length);
 
-		/* Because the urb command could not be parsed,
-		 * channel_id is not confirmed. Incrementing rx_errors
-		 * count of all channels.
-		 */
+		 
 		es58x_increment_rx_errors(es58x_dev);
 	}
 
@@ -1477,23 +1096,14 @@ static void es58x_read_bulk_callback(struct urb *urb)
 			  urb->transfer_buffer, urb->transfer_dma);
 }
 
-/**
- * es58x_write_bulk_callback() - Callback after writing data to the device.
- * @urb: urb buffer which was previously submitted.
- *
- * This function gets eventually called each time an URB was sent to
- * the ES58X device.
- *
- * Puts the @urb back to the urbs idle anchor and tries to restart the
- * network queue.
- */
+ 
 static void es58x_write_bulk_callback(struct urb *urb)
 {
 	struct net_device *netdev = urb->context;
 	struct es58x_device *es58x_dev = es58x_priv(netdev)->es58x_dev;
 
 	switch (urb->status) {
-	case 0:		/* success */
+	case 0:		 
 		break;
 
 	case -EOVERFLOW:
@@ -1524,23 +1134,7 @@ static void es58x_write_bulk_callback(struct urb *urb)
 	atomic_inc(&es58x_dev->tx_urbs_idle_cnt);
 }
 
-/**
- * es58x_alloc_urb() - Allocate memory for an URB and its transfer
- *	buffer.
- * @es58x_dev: ES58X device.
- * @urb: URB to be allocated.
- * @buf: used to return DMA address of buffer.
- * @buf_len: requested buffer size.
- * @mem_flags: affect whether allocation may block.
- *
- * Allocates an URB and its @transfer_buffer and set its @transfer_dma
- * address.
- *
- * This function is used at start-up to allocate all RX URBs at once
- * and during run time for TX URBs.
- *
- * Return: zero on success, -ENOMEM if no memory is available.
- */
+ 
 static int es58x_alloc_urb(struct es58x_device *es58x_dev, struct urb **urb,
 			   u8 **buf, size_t buf_len, gfp_t mem_flags)
 {
@@ -1563,22 +1157,7 @@ static int es58x_alloc_urb(struct es58x_device *es58x_dev, struct urb **urb,
 	return 0;
 }
 
-/**
- * es58x_get_tx_urb() - Get an URB for transmission.
- * @es58x_dev: ES58X device.
- *
- * Gets an URB from the idle urbs anchor or allocate a new one if the
- * anchor is empty.
- *
- * If there are more than ES58X_TX_URBS_MAX in the idle anchor, do
- * some garbage collection. The garbage collection is done here
- * instead of within es58x_write_bulk_callback() because
- * usb_free_coherent() should not be used in IRQ context:
- * c.f. WARN_ON(irqs_disabled()) in dma_free_attrs().
- *
- * Return: a pointer to an URB on success, NULL if no memory is
- * available.
- */
+ 
 static struct urb *es58x_get_tx_urb(struct es58x_device *es58x_dev)
 {
 	atomic_t *idle_cnt = &es58x_dev->tx_urbs_idle_cnt;
@@ -1600,7 +1179,7 @@ static struct urb *es58x_get_tx_urb(struct es58x_device *es58x_dev)
 	}
 
 	while (atomic_dec_return(idle_cnt) > ES58X_TX_URBS_MAX) {
-		/* Garbage collector */
+		 
 		struct urb *tmp = usb_get_from_anchor(&es58x_dev->tx_urbs_idle);
 
 		if (!tmp)
@@ -1614,14 +1193,7 @@ static struct urb *es58x_get_tx_urb(struct es58x_device *es58x_dev)
 	return urb;
 }
 
-/**
- * es58x_submit_urb() - Send data to the device.
- * @es58x_dev: ES58X device.
- * @urb: URB to be sent.
- * @netdev: CAN network device.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_submit_urb(struct es58x_device *es58x_dev, struct urb *urb,
 			    struct net_device *netdev)
 {
@@ -1644,20 +1216,7 @@ static int es58x_submit_urb(struct es58x_device *es58x_dev, struct urb *urb,
 	return ret;
 }
 
-/**
- * es58x_send_msg() - Prepare an URB and submit it.
- * @es58x_dev: ES58X device.
- * @cmd_type: Command type.
- * @cmd_id: Command ID.
- * @msg: ES58X message to be sent.
- * @msg_len: Length of @msg.
- * @channel_idx: Index of the network device.
- *
- * Creates an URB command from a given message, sets the header and the
- * CRC and then submits it.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 int es58x_send_msg(struct es58x_device *es58x_dev, u8 cmd_type, u8 cmd_id,
 		   const void *msg, u16 msg_len, int channel_idx)
 {
@@ -1667,7 +1226,7 @@ int es58x_send_msg(struct es58x_device *es58x_dev, u8 cmd_type, u8 cmd_id,
 	int urb_cmd_len;
 
 	if (channel_idx == ES58X_CHANNEL_IDX_NA)
-		netdev = es58x_dev->netdev[0];	/* Default to first channel */
+		netdev = es58x_dev->netdev[0];	 
 	else
 		netdev = es58x_dev->netdev[channel_idx];
 
@@ -1689,14 +1248,7 @@ int es58x_send_msg(struct es58x_device *es58x_dev, u8 cmd_type, u8 cmd_id,
 	return es58x_submit_urb(es58x_dev, urb, netdev);
 }
 
-/**
- * es58x_alloc_rx_urbs() - Allocate RX URBs.
- * @es58x_dev: ES58X device.
- *
- * Allocate URBs for reception and anchor them.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_alloc_rx_urbs(struct es58x_device *es58x_dev)
 {
 	const struct device *dev = es58x_dev->dev;
@@ -1739,10 +1291,7 @@ static int es58x_alloc_rx_urbs(struct es58x_device *es58x_dev)
 	return ret;
 }
 
-/**
- * es58x_free_urbs() - Free all the TX and RX URBs.
- * @es58x_dev: ES58X device.
- */
+ 
 static void es58x_free_urbs(struct es58x_device *es58x_dev)
 {
 	struct urb *urb;
@@ -1767,15 +1316,7 @@ static void es58x_free_urbs(struct es58x_device *es58x_dev)
 	usb_kill_anchored_urbs(&es58x_dev->rx_urbs);
 }
 
-/**
- * es58x_open() - Enable the network device.
- * @netdev: CAN network device.
- *
- * Called when the network transitions to the up state. Allocate the
- * URB resources if needed and open the channel.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_open(struct net_device *netdev)
 {
 	struct es58x_device *es58x_dev = es58x_priv(netdev)->es58x_dev;
@@ -1813,16 +1354,7 @@ static int es58x_open(struct net_device *netdev)
 	return ret;
 }
 
-/**
- * es58x_stop() - Disable the network device.
- * @netdev: CAN network device.
- *
- * Called when the network transitions to the down state. If all the
- * channels of the device are closed, free the URB resources which are
- * not needed anymore.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_stop(struct net_device *netdev)
 {
 	struct es58x_priv *priv = es58x_priv(netdev);
@@ -1847,15 +1379,7 @@ static int es58x_stop(struct net_device *netdev)
 	return 0;
 }
 
-/**
- * es58x_xmit_commit() - Send the bulk urb.
- * @netdev: CAN network device.
- *
- * Do the bulk send. This function should be called only once by bulk
- * transmission.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_xmit_commit(struct net_device *netdev)
 {
 	struct es58x_priv *priv = es58x_priv(netdev);
@@ -1874,12 +1398,7 @@ static int es58x_xmit_commit(struct net_device *netdev)
 	return ret;
 }
 
-/**
- * es58x_xmit_more() - Can we put more packets?
- * @priv: ES58X private parameters related to the network device.
- *
- * Return: true if we can put more, false if it is time to send.
- */
+ 
 static bool es58x_xmit_more(struct es58x_priv *priv)
 {
 	unsigned int free_slots =
@@ -1889,23 +1408,7 @@ static bool es58x_xmit_more(struct es58x_priv *priv)
 		priv->tx_can_msg_cnt < priv->es58x_dev->param->tx_bulk_max;
 }
 
-/**
- * es58x_start_xmit() - Transmit an skb.
- * @skb: socket buffer of a CAN message.
- * @netdev: CAN network device.
- *
- * Called when a packet needs to be transmitted.
- *
- * This function relies on Byte Queue Limits (BQL). The main benefit
- * is to increase the throughput by allowing bulk transfers
- * (c.f. xmit_more flag).
- *
- * Queues up to tx_bulk_max messages in &tx_urb buffer and does
- * a bulk send of all messages in one single URB.
- *
- * Return: NETDEV_TX_OK regardless of if we could transmit the @skb or
- *	had to drop it.
- */
+ 
 static netdev_tx_t es58x_start_xmit(struct sk_buff *skb,
 				    struct net_device *netdev)
 {
@@ -1921,7 +1424,7 @@ static netdev_tx_t es58x_start_xmit(struct sk_buff *skb,
 	}
 
 	if (priv->tx_urb && priv->tx_can_msg_is_fd != can_is_canfd_skb(skb)) {
-		/* Can not do bulk send with mixed CAN and CAN FD frames. */
+		 
 		ret = es58x_xmit_commit(netdev);
 		if (ret)
 			goto drop_skb;
@@ -1983,18 +1486,7 @@ static const struct ethtool_ops es58x_ethtool_ops = {
 	.get_ts_info = can_ethtool_op_get_ts_info_hwts,
 };
 
-/**
- * es58x_set_mode() - Change network device mode.
- * @netdev: CAN network device.
- * @mode: either %CAN_MODE_START, %CAN_MODE_STOP or %CAN_MODE_SLEEP
- *
- * Currently, this function is only used to stop and restart the
- * channel during a bus off event (c.f. es58x_rx_err_msg() and
- * drivers/net/can/dev.c:can_restart() which are the two only
- * callers).
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_set_mode(struct net_device *netdev, enum can_mode mode)
 {
 	struct es58x_priv *priv = es58x_priv(netdev);
@@ -2034,15 +1526,7 @@ static int es58x_set_mode(struct net_device *netdev, enum can_mode mode)
 	}
 }
 
-/**
- * es58x_init_priv() - Initialize private parameters.
- * @es58x_dev: ES58X device.
- * @priv: ES58X private parameters related to the network device.
- * @channel_idx: Index of the network device.
- *
- * Return: zero on success, errno if devlink port could not be
- *	properly registered.
- */
+ 
 static int es58x_init_priv(struct es58x_device *es58x_dev,
 			   struct es58x_priv *priv, int channel_idx)
 {
@@ -2073,13 +1557,7 @@ static int es58x_init_priv(struct es58x_device *es58x_dev,
 				     &priv->devlink_port, channel_idx);
 }
 
-/**
- * es58x_init_netdev() - Initialize the network device.
- * @es58x_dev: ES58X device.
- * @channel_idx: Index of the network device.
- *
- * Return: zero on success, errno when any error occurs.
- */
+ 
 static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
 {
 	struct net_device *netdev;
@@ -2101,7 +1579,7 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
 
 	netdev->netdev_ops = &es58x_netdev_ops;
 	netdev->ethtool_ops = &es58x_ethtool_ops;
-	netdev->flags |= IFF_ECHO;	/* We support local echo */
+	netdev->flags |= IFF_ECHO;	 
 	netdev->dev_port = channel_idx;
 
 	ret = register_candev(netdev);
@@ -2121,10 +1599,7 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
 	return ret;
 }
 
-/**
- * es58x_free_netdevs() - Release all network resources of the device.
- * @es58x_dev: ES58X device.
- */
+ 
 static void es58x_free_netdevs(struct es58x_device *es58x_dev)
 {
 	int i;
@@ -2141,14 +1616,7 @@ static void es58x_free_netdevs(struct es58x_device *es58x_dev)
 	}
 }
 
-/**
- * es58x_init_es58x_dev() - Initialize the ES58X device.
- * @intf: USB interface.
- * @driver_info: Quirks of the device.
- *
- * Return: pointer to an ES58X device on success, error pointer when
- *	any error occurs.
- */
+ 
 static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
 						 kernel_ulong_t driver_info)
 {
@@ -2207,14 +1675,7 @@ static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
 	return es58x_dev;
 }
 
-/**
- * es58x_probe() - Initialize the USB device.
- * @intf: USB interface.
- * @id: USB device ID.
- *
- * Return: zero on success, -ENODEV if the interface is not supported
- * or errno when any other error occurs.
- */
+ 
 static int es58x_probe(struct usb_interface *intf,
 		       const struct usb_device_id *id)
 {
@@ -2240,13 +1701,7 @@ static int es58x_probe(struct usb_interface *intf,
 	return 0;
 }
 
-/**
- * es58x_disconnect() - Disconnect the USB device.
- * @intf: USB interface
- *
- * Called by the usb core when driver is unloaded or device is
- * removed.
- */
+ 
 static void es58x_disconnect(struct usb_interface *intf)
 {
 	struct es58x_device *es58x_dev = usb_get_intfdata(intf);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * R-Car MIPI DSI Interface Registers Definitions
- *
- * Copyright (C) 2020 Renesas Electronics Corporation
- */
+ 
+ 
 
 #ifndef __RCAR_MIPI_DSI_REGS_H__
 #define __RCAR_MIPI_DSI_REGS_H__
@@ -12,9 +8,7 @@
 #define LINKSR_LPBUSY			(1 << 1)
 #define LINKSR_HSBUSY			(1 << 0)
 
-/*
- * Video Mode Register
- */
+ 
 #define TXVMSETR			0x180
 #define TXVMSETR_SYNSEQ_PULSES		(0 << 16)
 #define TXVMSETR_SYNSEQ_EVENTS		(1 << 16)
@@ -76,9 +70,7 @@
 #define TXVMVPRMSET4R_HFP(x)		(((x) & 0x1fff) << 16)
 #define TXVMVPRMSET4R_HBP(x)		(((x) & 0x1fff) << 0)
 
-/*
- * PHY-Protocol Interface (PPI) Registers
- */
+ 
 #define PPISETR				0x700
 #define PPISETR_DLEN_0			(0x1 << 0)
 #define PPISETR_DLEN_1			(0x3 << 0)
@@ -103,9 +95,7 @@
 #define PPIDLSR				0x760
 #define PPIDLSR_STPST			(0xf << 0)
 
-/*
- * Clocks registers
- */
+ 
 #define LPCLKSET			0x1000
 #define LPCLKSET_CKEN			(1 << 8)
 #define LPCLKSET_LPCLKDIV(x)		(((x) & 0x3f) << 0)
@@ -173,4 +163,4 @@
 #define PHTC				0x103c
 #define PHTC_TESTCLR			(1 << 0)
 
-#endif /* __RCAR_MIPI_DSI_REGS_H__ */
+#endif  

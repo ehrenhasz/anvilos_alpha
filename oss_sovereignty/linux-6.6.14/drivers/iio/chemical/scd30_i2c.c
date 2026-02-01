@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensirion SCD30 carbon dioxide sensor i2c driver
- *
- * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
- *
- * I2C slave address: 0x61
- */
+
+ 
 #include <linux/crc8.h>
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -41,10 +35,7 @@ static int scd30_i2c_xfer(struct scd30_state *state, char *txbuf, int txsize,
 	struct i2c_client *client = to_i2c_client(state->dev);
 	int ret;
 
-	/*
-	 * repeated start is not supported hence instead of sending two i2c
-	 * messages in a row we send one by one
-	 */
+	 
 	ret = i2c_master_send(client, txbuf, txsize);
 	if (ret < 0)
 		return ret;
@@ -75,7 +66,7 @@ static int scd30_i2c_command(struct scd30_state *state, enum scd30_cmd cmd, u16 
 	i = 2;
 
 	if (rsp) {
-		/* each two bytes are followed by a crc8 */
+		 
 		size += size / 2;
 	} else {
 		put_unaligned_be16(arg, buf + i);
@@ -84,7 +75,7 @@ static int scd30_i2c_command(struct scd30_state *state, enum scd30_cmd cmd, u16 
 		buf[i] = crc;
 		i += 1;
 
-		/* commands below don't take an argument */
+		 
 		if ((cmd == CMD_STOP_MEAS) || (cmd == CMD_RESET))
 			i -= 3;
 	}
@@ -93,7 +84,7 @@ static int scd30_i2c_command(struct scd30_state *state, enum scd30_cmd cmd, u16 
 	if (ret)
 		return ret;
 
-	/* validate received data and strip off crc bytes */
+	 
 	for (i = 0; i < size; i += 3) {
 		crc = crc8(scd30_i2c_crc8_tbl, buf + i, 2, CRC8_INIT_VALUE);
 		if (crc != buf[i + 2]) {

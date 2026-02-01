@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/of.h>
@@ -19,13 +17,7 @@ struct of_pci_addr_pair {
 	u32		size[OF_PCI_SIZE_CELLS];
 };
 
-/*
- * Each entry in the ranges table is a tuple containing the child address,
- * the parent address, and the size of the region in the child address space.
- * Thus, for PCI, in each entry parent address is an address on the primary
- * side and the child address is the corresponding address on the secondary
- * side.
- */
+ 
 struct of_pci_range {
 	u32		child_addr[OF_PCI_ADDRESS_CELLS];
 	u32		parent_addr[OF_PCI_ADDRESS_CELLS];
@@ -133,10 +125,7 @@ static int of_pci_prop_ranges(struct pci_dev *pdev, struct of_changeset *ocs,
 			memcpy(rp[i].child_addr, rp[i].parent_addr,
 			       sizeof(rp[i].child_addr));
 		} else {
-			/*
-			 * For endpoint device, the lower 64-bits of child
-			 * address is always zero.
-			 */
+			 
 			rp[i].child_addr[0] = j;
 		}
 
@@ -159,7 +148,7 @@ static int of_pci_prop_reg(struct pci_dev *pdev, struct of_changeset *ocs,
 {
 	struct of_pci_addr_pair reg = { 0 };
 
-	/* configuration space */
+	 
 	of_pci_set_address(pdev, reg.phys_addr, 0, 0, 0, true);
 
 	return of_changeset_add_prop_u32_array(ocs, np, "reg", (u32 *)&reg,
@@ -230,10 +219,7 @@ static int of_pci_prop_intr_map(struct pci_dev *pdev, struct of_changeset *ocs,
 		}
 	}
 
-	/*
-	 * Parsing interrupt failed for all pins. In this case, it does not
-	 * need to generate interrupt-map property.
-	 */
+	 
 	if (!map_sz)
 		return 0;
 
@@ -317,10 +303,7 @@ int of_pci_add_properties(struct pci_dev *pdev, struct of_changeset *ocs,
 {
 	int ret;
 
-	/*
-	 * The added properties will be released when the
-	 * changeset is destroyed.
-	 */
+	 
 	if (pci_is_bridge(pdev)) {
 		ret = of_changeset_add_prop_string(ocs, np, "device_type",
 						   "pci");

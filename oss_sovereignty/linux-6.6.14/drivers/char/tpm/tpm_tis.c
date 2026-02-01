@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005, 2006 IBM Corporation
- * Copyright (C) 2014, 2015 Intel Corporation
- *
- * Authors:
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- *
- * This device driver implements the TPM interface as defined in
- * the TCG TPM Interface Spec version 1.2, revision 1.0.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -31,10 +16,7 @@
 
 struct tpm_info {
 	struct resource res;
-	/* irq > 0 means: use irq $irq;
-	 * irq = 0 means: autoprobe for an irq;
-	 * irq = -1 means: no irq support
-	 */
+	 
 	int irq;
 };
 
@@ -49,10 +31,7 @@ static inline struct tpm_tis_tcg_phy *to_tpm_tis_tcg_phy(struct tpm_tis_data *da
 }
 
 #ifdef CONFIG_PREEMPT_RT
-/*
- * Flush previous write operations with a dummy read operation to the
- * TPM MMIO base address.
- */
+ 
 static inline void tpm_tis_flush(void __iomem *iobase)
 {
 	ioread8(iobase + TPM_ACCESS(0));
@@ -61,26 +40,14 @@ static inline void tpm_tis_flush(void __iomem *iobase)
 #define tpm_tis_flush(iobase) do { } while (0)
 #endif
 
-/*
- * Write a byte word to the TPM MMIO address, and flush the write queue.
- * The flush ensures that the data is sent immediately over the bus and not
- * aggregated with further requests and transferred later in a batch. The large
- * write requests can lead to unwanted latency spikes by blocking the CPU until
- * the complete batch has been transferred.
- */
+ 
 static inline void tpm_tis_iowrite8(u8 b, void __iomem *iobase, u32 addr)
 {
 	iowrite8(b, iobase + addr);
 	tpm_tis_flush(iobase);
 }
 
-/*
- * Write a 32-bit word to the TPM MMIO address, and flush the write queue.
- * The flush ensures that the data is sent immediately over the bus and not
- * aggregated with further requests and transferred later in a batch. The large
- * write requests can lead to unwanted latency spikes by blocking the CPU until
- * the complete batch has been transferred.
- */
+ 
 static inline void tpm_tis_iowrite32(u32 b, void __iomem *iobase, u32 addr)
 {
 	iowrite32(b, iobase + addr);
@@ -145,16 +112,14 @@ static int check_acpi_tpm2(struct device *dev)
 	if (!aid || aid->driver_data != DEVICE_IS_TPM2)
 		return 0;
 
-	/* If the ACPI TPM2 signature is matched then a global ACPI_SIG_TPM2
-	 * table is mandatory
-	 */
+	 
 	st = acpi_get_table(ACPI_SIG_TPM2, 1, (struct acpi_table_header **)&tbl);
 	if (ACPI_FAILURE(st) || tbl->header.length < sizeof(*tbl)) {
 		dev_err(dev, FW_BUG "failed to get TPM2 ACPI table\n");
 		return -EINVAL;
 	}
 
-	/* The tpm2_crb driver handles this device */
+	 
 	if (tbl->start_method != ACPI_TPM2_MEMORY_MAPPED)
 		ret = -ENODEV;
 
@@ -267,24 +232,19 @@ static int tpm_tis_pnp_init(struct pnp_dev *pnp_dev,
 	return tpm_tis_init(&pnp_dev->dev, &tpm_info);
 }
 
-/*
- * There is a known bug caused by 93e1b7d42e1e ("[PATCH] tpm: add HID module
- * parameter"). This commit added IFX0102 device ID, which is also used by
- * tpm_infineon but ignored to add quirks to probe which driver ought to be
- * used.
- */
+ 
 
 static struct pnp_device_id tpm_pnp_tbl[] = {
-	{"PNP0C31", 0},		/* TPM */
-	{"ATM1200", 0},		/* Atmel */
-	{"IFX0102", 0},		/* Infineon */
-	{"BCM0101", 0},		/* Broadcom */
-	{"BCM0102", 0},		/* Broadcom */
-	{"NSC1200", 0},		/* National */
-	{"ICO0102", 0},		/* Intel */
-	/* Add new here */
-	{"", 0},		/* User Specified */
-	{"", 0}			/* Terminator */
+	{"PNP0C31", 0},		 
+	{"ATM1200", 0},		 
+	{"IFX0102", 0},		 
+	{"BCM0101", 0},		 
+	{"BCM0102", 0},		 
+	{"NSC1200", 0},		 
+	{"ICO0102", 0},		 
+	 
+	{"", 0},		 
+	{"", 0}			 
 };
 MODULE_DEVICE_TABLE(pnp, tpm_pnp_tbl);
 
@@ -330,7 +290,7 @@ static int tpm_tis_plat_probe(struct platform_device *pdev)
 		if (pdev != force_pdev)
 			tpm_info.irq = -1;
 		else
-			/* When forcing auto probe the IRQ */
+			 
 			tpm_info.irq = 0;
 	}
 
@@ -374,10 +334,7 @@ static int tpm_tis_force_device(void)
 	if (!force)
 		return 0;
 
-	/* The driver core will match the name tpm_tis of the device to
-	 * the tpm_tis platform driver and complete the setup via
-	 * tpm_tis_plat_probe
-	 */
+	 
 	pdev = platform_device_register_simple("tpm_tis", -1, x86_resources,
 					       ARRAY_SIZE(x86_resources));
 	if (IS_ERR(pdev))

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Christoph Hellwig.
- */
+
+ 
 #include <linux/blkdev.h>
 #include <linux/kmod.h>
 #include <linux/file.h>
@@ -39,7 +37,7 @@ const struct nfsd4_layout_ops *nfsd4_layout_ops[LAYOUT_TYPE_MAX] =  {
 #endif
 };
 
-/* pNFS device ID to export fsid mapping */
+ 
 #define DEVID_HASH_BITS	8
 #define DEVID_HASH_SIZE	(1 << DEVID_HASH_BITS)
 #define DEVID_HASH_MASK	(DEVID_HASH_SIZE - 1)
@@ -475,7 +473,7 @@ nfsd4_return_file_layout(struct nfs4_layout *lp, struct nfsd4_layout_seg *seg,
 		}
 		lo->offset = layout_end(seg);
 	} else {
-		/* retain the whole layout segment on a split. */
+		 
 		if (layout_end(seg) < end) {
 			dprintk("%s: split not supported\n", __func__);
 			return;
@@ -662,31 +660,25 @@ nfsd4_cb_layout_done(struct nfsd4_callback *cb, struct rpc_task *task)
 	switch (task->tk_status) {
 	case 0:
 	case -NFS4ERR_DELAY:
-		/*
-		 * Anything left? If not, then call it done. Note that we don't
-		 * take the spinlock since this is an optimization and nothing
-		 * should get added until the cb counter goes to zero.
-		 */
+		 
 		if (list_empty(&ls->ls_layouts))
 			return 1;
 
-		/* Poll the client until it's done with the layout */
+		 
 		now = ktime_get();
 		nn = net_generic(ls->ls_stid.sc_client->net, nfsd_net_id);
 
-		/* Client gets 2 lease periods to return it */
+		 
 		cutoff = ktime_add_ns(task->tk_start,
 					 (u64)nn->nfsd4_lease * NSEC_PER_SEC * 2);
 
 		if (ktime_before(now, cutoff)) {
-			rpc_delay(task, HZ/100); /* 10 mili-seconds */
+			rpc_delay(task, HZ/100);  
 			return 0;
 		}
 		fallthrough;
 	default:
-		/*
-		 * Unknown error or non-responding client, we'll need to fence.
-		 */
+		 
 		trace_nfsd_layout_recall_fail(&ls->ls_stid.sc_stateid);
 
 		ops = nfsd4_layout_ops[ls->ls_layout_type];
@@ -725,11 +717,7 @@ static const struct nfsd4_callback_ops nfsd4_cb_layout_ops = {
 static bool
 nfsd4_layout_lm_break(struct file_lock *fl)
 {
-	/*
-	 * We don't want the locks code to timeout the lease for us;
-	 * we'll remove it ourself if a layout isn't returned
-	 * in time:
-	 */
+	 
 	fl->fl_break_time = 0;
 	nfsd4_recall_file_layout(fl->fl_owner);
 	return false;

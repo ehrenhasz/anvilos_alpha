@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Driver for buttons on GPIO lines not capable of generating interrupts
- *
- *  Copyright (C) 2007-2010 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2010 Nuno Goncalves <nunojpg@gmail.com>
- *
- *  This file was based on: /drivers/input/misc/cobalt_btns.c
- *	Copyright (C) 2007 Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
- *
- *  also was based on: /drivers/input/keyboard/gpio_keys.c
- *	Copyright 2005 Phil Blundell
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -186,7 +175,7 @@ gpio_keys_polled_get_devtree_pdata(struct device *dev)
 
 		button->wakeup =
 			fwnode_property_read_bool(child, "wakeup-source") ||
-			/* legacy name */
+			 
 			fwnode_property_read_bool(child, "gpio-key,wakeup");
 
 		if (fwnode_property_read_u32(child, "debounce-interval",
@@ -288,7 +277,7 @@ static int gpio_keys_polled_probe(struct platform_device *pdev)
 		}
 
 		if (!dev_get_platdata(dev)) {
-			/* No legacy static platform data */
+			 
 			child = device_get_next_child_node(dev, child);
 			if (!child) {
 				dev_err(dev, "missing child device node\n");
@@ -304,10 +293,7 @@ static int gpio_keys_polled_probe(struct platform_device *pdev)
 						     "failed to get gpio\n");
 			}
 		} else if (gpio_is_valid(button->gpio)) {
-			/*
-			 * Legacy GPIO number so request the GPIO here and
-			 * convert it to descriptor.
-			 */
+			 
 			unsigned flags = GPIOF_IN;
 
 			if (button->active_low)
@@ -362,7 +348,7 @@ static int gpio_keys_polled_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* report initial state of the buttons */
+	 
 	for (i = 0; i < pdata->nbuttons; i++)
 		gpio_keys_polled_check_state(input, &pdata->buttons[i],
 					     &bdev->data[i]);

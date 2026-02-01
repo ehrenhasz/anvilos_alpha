@@ -1,31 +1,24 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef P54PCI_H
 #define P54PCI_H
 #include <linux/interrupt.h>
 
-/*
- * Defines for PCI based mac80211 Prism54 driver
- *
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- *
- * Based on the islsm (softmac prism54) driver, which is:
- * Copyright 2004-2006 Jean-Baptiste Note <jbnote@gmail.com>, et al.
- */
+ 
 
-/* Device Interrupt register bits */
+ 
 #define ISL38XX_DEV_INT_RESET                   0x0001
 #define ISL38XX_DEV_INT_UPDATE                  0x0002
 #define ISL38XX_DEV_INT_WAKEUP                  0x0008
 #define ISL38XX_DEV_INT_SLEEP                   0x0010
 #define ISL38XX_DEV_INT_ABORT                   0x0020
-/* these two only used in USB */
+ 
 #define ISL38XX_DEV_INT_DATA                    0x0040
 #define ISL38XX_DEV_INT_MGMT                    0x0080
 
 #define ISL38XX_DEV_INT_PCIUART_CTS             0x4000
 #define ISL38XX_DEV_INT_PCIUART_DR              0x8000
 
-/* Interrupt Identification/Acknowledge/Enable register bits */
+ 
 #define ISL38XX_INT_IDENT_UPDATE		0x0002
 #define ISL38XX_INT_IDENT_INIT			0x0004
 #define ISL38XX_INT_IDENT_WAKEUP		0x0008
@@ -33,7 +26,7 @@
 #define ISL38XX_INT_IDENT_PCIUART_CTS		0x4000
 #define ISL38XX_INT_IDENT_PCIUART_DR		0x8000
 
-/* Control/Status register bits */
+ 
 #define ISL38XX_CTRL_STAT_SLEEPMODE		0x00000200
 #define ISL38XX_CTRL_STAT_CLKRUN		0x00800000
 #define ISL38XX_CTRL_STAT_RESET			0x10000000
@@ -65,7 +58,7 @@ struct p54p_csr {
 	u8 direct_mem_win[0x1000];
 } __packed;
 
-/* usb backend only needs the register defines above */
+ 
 #ifndef P54USB_H
 struct p54p_desc {
 	__le32 host_addr;
@@ -105,5 +98,5 @@ struct p54p_priv {
 	struct completion fw_loaded;
 };
 
-#endif /* P54USB_H */
-#endif /* P54PCI_H */
+#endif  
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Sam Shih <sam.shih@mediatek.com>
- * Author: Wenzhen Yu <wenzhen.yu@mediatek.com>
- * Author: Jianhui Zhao <zhaojh329@gmail.com>
- */
+
+ 
 
 
 #include <linux/clk-provider.h>
@@ -288,7 +283,7 @@ static const char * const usb_frmcnt_parents[] __initconst = {
 };
 
 static const struct mtk_mux top_muxes[] = {
-	/* CLK_CFG_0 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_NFI1X_SEL, "nfi1x_sel", nfi1x_parents,
 			     0x000, 0x004, 0x008, 0, 3, 7, 0x1C0, 0),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPINFI_SEL, "spinfi_sel", spinfi_parents,
@@ -297,7 +292,7 @@ static const struct mtk_mux top_muxes[] = {
 			     0x000, 0x004, 0x008, 16, 3, 23, 0x1C0, 2),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPIM_MST_SEL, "spim_mst_sel", spi_parents,
 			     0x000, 0x004, 0x008, 24, 3, 31, 0x1C0, 3),
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_UART_SEL, "uart_sel", uart_parents,
 			     0x010, 0x014, 0x018, 0, 2, 7, 0x1C0, 4),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_PWM_SEL, "pwm_sel", pwm_parents,
@@ -307,7 +302,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_PEXTP_TL_SEL, "pextp_tl_ck_sel",
 			     pextp_tl_ck_parents, 0x010, 0x014, 0x018, 24, 2, 31,
 			     0x1C0, 7),
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_EMMC_208M_SEL, "emmc_208m_sel",
 				   emmc_208m_parents, 0x020, 0x024, 0x028, 0, 3, 7,
 				   0x1C0, 8, 0),
@@ -322,7 +317,7 @@ static const struct mtk_mux top_muxes[] = {
 				   csw_f26m_parents, 0x020, 0x024, 0x028, 24, 1,
 				   31, 0x1C0, 11,
 				   CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_DRAMC_MD32_SEL, "dramc_md32_sel",
 				   dramc_md32_parents, 0x030, 0x034, 0x038, 0, 2,
 				   7, 0x1C0, 12,
@@ -338,7 +333,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_ARM_DB_MAIN_SEL, "arm_db_main_sel",
 			     arm_db_main_parents, 0x030, 0x034, 0x038, 24, 1, 31,
 			     0x1C0, 15),
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AP2CNN_HOST_SEL, "ap2cnn_host_sel",
 			     ap2cnn_host_parents, 0x040, 0x044, 0x048, 0, 1, 7,
 			     0x1C0, 16),
@@ -350,7 +345,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_NETSYS_MCU_SEL, "netsys_mcu_sel",
 			     netsys_mcu_parents, 0x040, 0x044, 0x048, 24, 3, 31,
 			     0x1C0, 19),
-	/* CLK_CFG_5 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_NETSYS_2X_SEL, "netsys_2x_sel",
 			     netsys_2x_parents, 0x050, 0x054, 0x058, 0, 2, 7,
 			     0x1C0, 20),
@@ -361,7 +356,7 @@ static const struct mtk_mux top_muxes[] = {
 			     0x050, 0x054, 0x058, 16, 1, 23, 0x1C0, 22),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_EIP97B_SEL, "eip97b_sel", eip97b_parents,
 			     0x050, 0x054, 0x058, 24, 3, 31, 0x1C0, 23),
-	/* CLK_CFG_6 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_USB3_PHY_SEL, "usb3_phy_sel",
 			     csw_f26m_parents, 0x060, 0x064, 0x068, 0, 1,
 			     7, 0x1C0, 24),
@@ -371,7 +366,7 @@ static const struct mtk_mux top_muxes[] = {
 			     0x060, 0x064, 0x068, 16, 1, 23, 0x1C0, 26),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AUD_L_SEL, "aud_l_sel", aud_l_parents,
 			     0x060, 0x064, 0x068, 24, 2, 31, 0x1C0, 27),
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_A_TUNER_SEL, "a_tuner_sel",
 			     a_tuner_parents, 0x070, 0x074, 0x078, 0, 2, 7,
 			     0x1C0, 28),
@@ -383,7 +378,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_U2U3_XHCI_SEL, "u2u3_xhci_sel",
 			     u2u3_sys_parents, 0x070, 0x074, 0x078, 24, 1, 31,
 			     0x1C4, 0),
-	/* CLK_CFG_8 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_USB_FRMCNT_SEL, "usb_frmcnt_sel",
 			     usb_frmcnt_parents, 0x080, 0x084, 0x088, 0, 1, 7,
 			     0x1C4, 1),
@@ -406,7 +401,7 @@ static const struct mtk_clk_desc topck_desc = {
 
 static const struct of_device_id of_match_clk_mt7981_topckgen[] = {
 	{ .compatible = "mediatek,mt7981-topckgen", .data = &topck_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7981_topckgen);
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <linux/fdtable.h>
 #include <linux/anon_inodes.h>
 #include <linux/uio.h>
@@ -16,10 +16,7 @@ static int cachefiles_ondemand_fd_release(struct inode *inode,
 	xa_lock(&cache->reqs);
 	object->ondemand_id = CACHEFILES_ONDEMAND_ID_CLOSED;
 
-	/*
-	 * Flush all pending READ requests since their completion depends on
-	 * anon_fd.
-	 */
+	 
 	xas_for_each(&xas, req, ULONG_MAX) {
 		if (req->msg.object_id == object_id &&
 		    req->msg.opcode == CACHEFILES_OP_READ) {
@@ -109,11 +106,7 @@ static const struct file_operations cachefiles_ondemand_fd_fops = {
 	.unlocked_ioctl	= cachefiles_ondemand_fd_ioctl,
 };
 
-/*
- * OPEN request Completion (copen)
- * - command: "copen <id>,<cache_size>"
- *   <cache_size> indicates the object size if >=0, error code if negative
- */
+ 
 int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
 {
 	struct cachefiles_req *req;
@@ -149,14 +142,14 @@ int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
 	if (!req)
 		return -EINVAL;
 
-	/* fail OPEN request if copen format is invalid */
+	 
 	ret = kstrtol(psize, 0, &size);
 	if (ret) {
 		req->error = ret;
 		goto out;
 	}
 
-	/* fail OPEN request if daemon reports an error */
+	 
 	if (size < 0) {
 		if (!IS_ERR_VALUE(size)) {
 			req->error = -EINVAL;
@@ -244,11 +237,7 @@ ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
 	int ret = 0;
 	XA_STATE(xas, &cache->reqs, cache->req_id_next);
 
-	/*
-	 * Cyclically search for a request that has not ever been processed,
-	 * to prevent requests from being processed repeatedly, and make
-	 * request distribution fair.
-	 */
+	 
 	xa_lock(&cache->reqs);
 	req = xas_find_marked(&xas, UINT_MAX, CACHEFILES_REQ_NEW);
 	if (!req && cache->req_id_next > 0) {
@@ -286,7 +275,7 @@ ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
 		goto err_put_fd;
 	}
 
-	/* CLOSE request has no reply */
+	 
 	if (msg->opcode == CACHEFILES_OP_CLOSE) {
 		xa_erase(&cache->reqs, id);
 		complete(&req->done);
@@ -337,21 +326,7 @@ static int cachefiles_ondemand_send_req(struct cachefiles_object *object,
 		goto out;
 
 	do {
-		/*
-		 * Stop enqueuing the request when daemon is dying. The
-		 * following two operations need to be atomic as a whole.
-		 *   1) check cache state, and
-		 *   2) enqueue request if cache is alive.
-		 * Otherwise the request may be enqueued after xarray has been
-		 * flushed, leaving the orphan request never being completed.
-		 *
-		 * CPU 1			CPU 2
-		 * =====			=====
-		 *				test CACHEFILES_DEAD bit
-		 * set CACHEFILES_DEAD bit
-		 * flush requests in the xarray
-		 *				enqueue the request
-		 */
+		 
 		xas_lock(&xas);
 
 		if (test_bit(CACHEFILES_DEAD, &cache->flags)) {
@@ -360,7 +335,7 @@ static int cachefiles_ondemand_send_req(struct cachefiles_object *object,
 			goto out;
 		}
 
-		/* coupled with the barrier in cachefiles_flush_reqs() */
+		 
 		smp_mb();
 
 		if (opcode != CACHEFILES_OP_OPEN && object->ondemand_id <= 0) {
@@ -402,14 +377,11 @@ static int cachefiles_ondemand_init_open_req(struct cachefiles_req *req,
 	size_t volume_key_size, cookie_key_size;
 	void *volume_key, *cookie_key;
 
-	/*
-	 * Volume key is a NUL-terminated string. key[0] stores strlen() of the
-	 * string, followed by the content of the string (excluding '\0').
-	 */
+	 
 	volume_key_size = volume->key[0] + 1;
 	volume_key = volume->key + 1;
 
-	/* Cookie key is binary data, which is netfs specific. */
+	 
 	cookie_key_size = cookie->key_len;
 	cookie_key = fscache_get_key(cookie);
 
@@ -432,12 +404,7 @@ static int cachefiles_ondemand_init_close_req(struct cachefiles_req *req,
 	struct cachefiles_object *object = req->object;
 	int object_id = object->ondemand_id;
 
-	/*
-	 * It's possible that object id is still 0 if the cookie looking up
-	 * phase failed before OPEN request has ever been sent. Also avoid
-	 * sending CLOSE request for CACHEFILES_ONDEMAND_ID_CLOSED, which means
-	 * anon_fd has already been closed.
-	 */
+	 
 	if (object_id <= 0)
 		return -ENOENT;
 
@@ -459,7 +426,7 @@ static int cachefiles_ondemand_init_read_req(struct cachefiles_req *req,
 	struct cachefiles_read_ctx *read_ctx = private;
 	int object_id = object->ondemand_id;
 
-	/* Stop enqueuing requests when daemon has closed anon_fd. */
+	 
 	if (object_id <= 0) {
 		WARN_ON_ONCE(object_id == 0);
 		pr_info_once("READ: anonymous fd closed prematurely.\n");
@@ -479,12 +446,7 @@ int cachefiles_ondemand_init_object(struct cachefiles_object *object)
 	struct fscache_volume *volume = object->volume->vcookie;
 	size_t volume_key_size, cookie_key_size, data_len;
 
-	/*
-	 * CacheFiles will firstly check the cache file under the root cache
-	 * directory. If the coherency check failed, it will fallback to
-	 * creating a new tmpfile as the cache file. Reuse the previously
-	 * allocated object ID if any.
-	 */
+	 
 	if (object->ondemand_id > 0)
 		return 0;
 

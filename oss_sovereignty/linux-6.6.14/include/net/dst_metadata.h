@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_DST_METADATA_H
 #define __NET_DST_METADATA_H 1
 
@@ -166,7 +166,7 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
 	memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
 	       sizeof(struct ip_tunnel_info) + md_size);
 #ifdef CONFIG_DST_CACHE
-	/* Unclone the dst cache if there is one */
+	 
 	if (new_md->u.tun_info.dst_cache.cache) {
 		int ret;
 
@@ -270,4 +270,4 @@ static inline struct metadata_dst *ipv6_tun_rx_dst(struct sk_buff *skb,
 				  0, ip6_flowlabel(ip6h), flags, tunnel_id,
 				  md_size);
 }
-#endif /* __NET_DST_METADATA_H */
+#endif  

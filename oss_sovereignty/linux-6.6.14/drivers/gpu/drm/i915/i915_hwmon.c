@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
@@ -15,14 +13,7 @@
 #include "gt/intel_gt.h"
 #include "gt/intel_gt_regs.h"
 
-/*
- * SF_* - scale factors for particular quantities according to hwmon spec.
- * - voltage  - millivolts
- * - power  - microwatts
- * - curr   - milliamperes
- * - energy - microjoules
- * - time   - milliseconds
- */
+ 
 #define SF_VOLTAGE	1000
 #define SF_POWER	1000000
 #define SF_CURR		1000
@@ -40,14 +31,14 @@ struct hwm_reg {
 
 struct hwm_energy_info {
 	u32 reg_val_prev;
-	long accum_energy;			/* Accumulated energy for energy1_input */
+	long accum_energy;			 
 };
 
 struct hwm_drvdata {
 	struct i915_hwmon *hwmon;
 	struct intel_uncore *uncore;
 	struct device *hwmon_dev;
-	struct hwm_energy_info ei;		/*  Energy info for energy1_input */
+	struct hwm_energy_info ei;		 
 	char name[12];
 	int gt_n;
 	bool reset_in_progress;
@@ -57,7 +48,7 @@ struct hwm_drvdata {
 struct i915_hwmon {
 	struct hwm_drvdata ddat;
 	struct hwm_drvdata ddat_gt[I915_MAX_GT];
-	struct mutex hwmon_lock;		/* counter overflow logic and rmw */
+	struct mutex hwmon_lock;		 
 	struct hwm_reg rg;
 	int scl_shift_power;
 	int scl_shift_energy;
@@ -80,11 +71,7 @@ hwm_locked_with_pm_intel_uncore_rmw(struct hwm_drvdata *ddat,
 	mutex_unlock(&hwmon->hwmon_lock);
 }
 
-/*
- * This function's return type of u64 allows for the case where the scaling
- * of the field taken from the 32-bit register value might cause a result to
- * exceed 32 bits.
- */
+ 
 static u64
 hwm_field_read_and_scale(struct hwm_drvdata *ddat, i915_reg_t rgadr,
 			 u32 field_msk, int nshift, u32 scale_factor)
@@ -101,26 +88,7 @@ hwm_field_read_and_scale(struct hwm_drvdata *ddat, i915_reg_t rgadr,
 	return mul_u64_u32_shr(reg_value, scale_factor, nshift);
 }
 
-/*
- * hwm_energy - Obtain energy value
- *
- * The underlying energy hardware register is 32-bits and is subject to
- * overflow. How long before overflow? For example, with an example
- * scaling bit shift of 14 bits (see register *PACKAGE_POWER_SKU_UNIT) and
- * a power draw of 1000 watts, the 32-bit counter will overflow in
- * approximately 4.36 minutes.
- *
- * Examples:
- *    1 watt:  (2^32 >> 14) /    1 W / (60 * 60 * 24) secs/day -> 3 days
- * 1000 watts: (2^32 >> 14) / 1000 W / 60             secs/min -> 4.36 minutes
- *
- * The function significantly increases overflow duration (from 4.36
- * minutes) by accumulating the energy register into a 'long' as allowed by
- * the hwmon API. Using x86_64 128 bit arithmetic (see mul_u64_u32_shr()),
- * a 'long' of 63 bits, SF_ENERGY of 1e6 (~20 bits) and
- * hwmon->scl_shift_energy of 14 bits we have 57 (63 - 20 + 14) bits before
- * energy1_input overflows. This at 1000 W is an overflow duration of 278 years.
- */
+ 
 static void
 hwm_energy(struct hwm_drvdata *ddat, long *energy)
 {
@@ -159,7 +127,7 @@ hwm_power1_max_interval_show(struct device *dev, struct device_attribute *attr,
 	struct hwm_drvdata *ddat = dev_get_drvdata(dev);
 	struct i915_hwmon *hwmon = ddat->hwmon;
 	intel_wakeref_t wakeref;
-	u32 r, x, y, x_w = 2; /* 2 bits */
+	u32 r, x, y, x_w = 2;  
 	u64 tau4, out;
 
 	with_intel_runtime_pm(ddat->uncore->rpm, wakeref)
@@ -167,16 +135,9 @@ hwm_power1_max_interval_show(struct device *dev, struct device_attribute *attr,
 
 	x = REG_FIELD_GET(PKG_PWR_LIM_1_TIME_X, r);
 	y = REG_FIELD_GET(PKG_PWR_LIM_1_TIME_Y, r);
-	/*
-	 * tau = 1.x * power(2,y), x = bits(23:22), y = bits(21:17)
-	 *     = (4 | x) << (y - 2)
-	 * where (y - 2) ensures a 1.x fixed point representation of 1.x
-	 * However because y can be < 2, we compute
-	 *     tau4 = (4 | x) << y
-	 * but add 2 when doing the final right shift to account for units
-	 */
+	 
 	tau4 = (u64)((1 << x_w) | x) << y;
-	/* val in hwmon interface units (millisec) */
+	 
 	out = mul_u64_u32_shr(tau4, SF_TIME, hwmon->scl_shift_time + x_w);
 
 	return sysfs_emit(buf, "%llu\n", out);
@@ -189,7 +150,7 @@ hwm_power1_max_interval_store(struct device *dev,
 {
 	struct hwm_drvdata *ddat = dev_get_drvdata(dev);
 	struct i915_hwmon *hwmon = ddat->hwmon;
-	u32 x, y, rxy, x_w = 2; /* 2 bits */
+	u32 x, y, rxy, x_w = 2;  
 	u64 tau4, r, max_win;
 	unsigned long val;
 	int ret;
@@ -198,16 +159,10 @@ hwm_power1_max_interval_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Max HW supported tau in '1.x * power(2,y)' format, x = 0, y = 0x12
-	 * The hwmon->scl_shift_time default of 0xa results in a max tau of 256 seconds
-	 */
+	 
 #define PKG_MAX_WIN_DEFAULT 0x12ull
 
-	/*
-	 * val must be < max in hwmon interface units. The steps below are
-	 * explained in i915_power1_max_interval_show()
-	 */
+	 
 	r = FIELD_PREP(PKG_MAX_WIN, PKG_MAX_WIN_DEFAULT);
 	x = REG_FIELD_GET(PKG_MAX_WIN_X, r);
 	y = REG_FIELD_GET(PKG_MAX_WIN_Y, r);
@@ -217,16 +172,16 @@ hwm_power1_max_interval_store(struct device *dev,
 	if (val > max_win)
 		return -EINVAL;
 
-	/* val in hw units */
+	 
 	val = DIV_ROUND_CLOSEST_ULL((u64)val << hwmon->scl_shift_time, SF_TIME);
-	/* Convert to 1.x * power(2,y) */
+	 
 	if (!val) {
-		/* Avoid ilog2(0) */
+		 
 		y = 0;
 		x = 0;
 	} else {
 		y = ilog2(val);
-		/* x = (val - (1 << y)) >> (y - 2); */
+		 
 		x = (val - (1ul << y)) << x_w >> y;
 	}
 
@@ -282,10 +237,10 @@ static const struct hwmon_channel_info * const hwm_gt_info[] = {
 	NULL
 };
 
-/* I1 is exposed as power_crit or as curr_crit depending on bit 31 */
+ 
 static int hwm_pcode_read_i1(struct drm_i915_private *i915, u32 *uval)
 {
-	/* Avoid ILLEGAL_SUBCOMMAND "mailbox access failed" warning in snb_pcode_read */
+	 
 	if (IS_DG1(i915) || IS_DG2(i915))
 		return -ENXIO;
 
@@ -323,7 +278,7 @@ hwm_in_read(struct hwm_drvdata *ddat, u32 attr, long *val)
 	case hwmon_in_input:
 		with_intel_runtime_pm(ddat->uncore->rpm, wakeref)
 			reg_value = intel_uncore_read(ddat->uncore, hwmon->rg.gt_perf_status);
-		/* HW register value in units of 2.5 millivolt */
+		 
 		*val = DIV_ROUND_CLOSEST(REG_FIELD_GET(GEN12_VOLTAGE_MASK, reg_value) * 25, 10);
 		return 0;
 	default:
@@ -353,12 +308,7 @@ hwm_power_is_visible(const struct hwm_drvdata *ddat, u32 attr, int chan)
 
 #define PL1_DISABLE 0
 
-/*
- * HW allows arbitrary PL1 limits to be set but silently clamps these values to
- * "typical but not guaranteed" min/max values in rg.pkg_power_sku. Follow the
- * same pattern for sysfs, allow arbitrary PL1 limits to be set but display
- * clamped values when read. Write/read I1 also follows the same pattern.
- */
+ 
 static int
 hwm_power_max_read(struct hwm_drvdata *ddat, long *val)
 {
@@ -366,7 +316,7 @@ hwm_power_max_read(struct hwm_drvdata *ddat, long *val)
 	intel_wakeref_t wakeref;
 	u64 r, min, max;
 
-	/* Check if PL1 limit is disabled */
+	 
 	with_intel_runtime_pm(ddat->uncore->rpm, wakeref)
 		r = intel_uncore_read(ddat->uncore, hwmon->rg.pkg_rapl_limit);
 	if (!(r & PKG_PWR_LIM_1_EN)) {
@@ -402,7 +352,7 @@ hwm_power_max_write(struct hwm_drvdata *ddat, long val)
 	int ret = 0;
 	u32 nval;
 
-	/* Block waiting for GuC reset to complete when needed */
+	 
 	for (;;) {
 		mutex_lock(&hwmon->hwmon_lock);
 
@@ -426,7 +376,7 @@ hwm_power_max_write(struct hwm_drvdata *ddat, long val)
 
 	wakeref = intel_runtime_pm_get(ddat->uncore->rpm);
 
-	/* Disable PL1 limit and verify, because the limit cannot be disabled on all platforms */
+	 
 	if (val == PL1_DISABLE) {
 		intel_uncore_rmw(ddat->uncore, hwmon->rg.pkg_rapl_limit,
 				 PKG_PWR_LIM_1_EN, 0);
@@ -437,7 +387,7 @@ hwm_power_max_write(struct hwm_drvdata *ddat, long val)
 		goto exit;
 	}
 
-	/* Computation in 64-bits to avoid overflow. Round to nearest. */
+	 
 	nval = DIV_ROUND_CLOSEST_ULL((u64)val << hwmon->scl_shift_power, SF_POWER);
 	nval = PKG_PWR_LIM_1_EN | REG_FIELD_PREP(PKG_PWR_LIM_1, nval);
 
@@ -729,7 +679,7 @@ hwm_get_preregistration_info(struct drm_i915_private *i915)
 	long energy;
 	int i;
 
-	/* Available for all Gen12+/dGfx */
+	 
 	hwmon->rg.gt_perf_status = GEN12_RPSTAT1;
 
 	if (IS_DG1(i915) || IS_DG2(i915)) {
@@ -753,10 +703,7 @@ hwm_get_preregistration_info(struct drm_i915_private *i915)
 	}
 
 	with_intel_runtime_pm(uncore->rpm, wakeref) {
-		/*
-		 * The contents of register hwmon->rg.pkg_power_sku_unit do not change,
-		 * so read it once and store the shift values.
-		 */
+		 
 		if (i915_mmio_reg_valid(hwmon->rg.pkg_power_sku_unit))
 			val_sku_unit = intel_uncore_read(uncore,
 							 hwmon->rg.pkg_power_sku_unit);
@@ -766,10 +713,7 @@ hwm_get_preregistration_info(struct drm_i915_private *i915)
 	hwmon->scl_shift_energy = REG_FIELD_GET(PKG_ENERGY_UNIT, val_sku_unit);
 	hwmon->scl_shift_time = REG_FIELD_GET(PKG_TIME_UNIT, val_sku_unit);
 
-	/*
-	 * Initialize 'struct hwm_energy_info', i.e. set fields to the
-	 * first value of the energy register read
-	 */
+	 
 	if (i915_mmio_reg_valid(hwmon->rg.energy_status_all))
 		hwm_energy(ddat, &energy);
 	if (i915_mmio_reg_valid(hwmon->rg.energy_status_tile)) {
@@ -788,7 +732,7 @@ void i915_hwmon_register(struct drm_i915_private *i915)
 	struct intel_gt *gt;
 	int i;
 
-	/* hwmon is available only for dGfx */
+	 
 	if (!IS_DGFX(i915))
 		return;
 
@@ -817,7 +761,7 @@ void i915_hwmon_register(struct drm_i915_private *i915)
 
 	hwm_get_preregistration_info(i915);
 
-	/*  hwmon_dev points to device hwmon<i> */
+	 
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, ddat->name,
 							 ddat,
 							 &hwm_chip_info,
@@ -831,10 +775,7 @@ void i915_hwmon_register(struct drm_i915_private *i915)
 
 	for_each_gt(gt, i915, i) {
 		ddat_gt = hwmon->ddat_gt + i;
-		/*
-		 * Create per-gt directories only if a per-gt attribute is
-		 * visible. Currently this is only energy
-		 */
+		 
 		if (!hwm_gt_is_visible(ddat_gt, hwmon_energy, hwmon_energy_input, 0))
 			continue;
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/arch/arm/plat-pxa/gpio.c
- *
- *  Generic PXA GPIO handling
- *
- *  Author:	Nicolas Pitre
- *  Created:	Jun 15, 2001
- *  Copyright:	MontaVista Software Inc.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -25,26 +17,7 @@
 #include <linux/syscore_ops.h>
 #include <linux/slab.h>
 
-/*
- * We handle the GPIOs by banks, each bank covers up to 32 GPIOs with
- * one set of registers. The register offsets are organized below:
- *
- *           GPLR    GPDR    GPSR    GPCR    GRER    GFER    GEDR
- * BANK 0 - 0x0000  0x000C  0x0018  0x0024  0x0030  0x003C  0x0048
- * BANK 1 - 0x0004  0x0010  0x001C  0x0028  0x0034  0x0040  0x004C
- * BANK 2 - 0x0008  0x0014  0x0020  0x002C  0x0038  0x0044  0x0050
- *
- * BANK 3 - 0x0100  0x010C  0x0118  0x0124  0x0130  0x013C  0x0148
- * BANK 4 - 0x0104  0x0110  0x011C  0x0128  0x0134  0x0140  0x014C
- * BANK 5 - 0x0108  0x0114  0x0120  0x012C  0x0138  0x0144  0x0150
- *
- * BANK 6 - 0x0200  0x020C  0x0218  0x0224  0x0230  0x023C  0x0248
- *
- * NOTE:
- *   BANK 3 is only available on PXA27x and later processors.
- *   BANK 4 and 5 are only available on PXA935, PXA1928
- *   BANK 6 is only available on PXA1928
- */
+ 
 
 #define GPLR_OFFSET	0x00
 #define GPDR_OFFSET	0x0C
@@ -54,7 +27,7 @@
 #define GFER_OFFSET	0x3C
 #define GEDR_OFFSET	0x48
 #define GAFR_OFFSET	0x54
-#define ED_MASK_OFFSET	0x9C	/* GPIO edge detection for AP side */
+#define ED_MASK_OFFSET	0x9C	 
 
 #define BANK_OFF(n)	(((n) / 3) << 8) + (((n) % 3) << 2)
 
@@ -175,9 +148,7 @@ static inline int gpio_is_mmp_type(int type)
 	return (type & MMP_GPIO) != 0;
 }
 
-/* GPIO86/87/88/89 on PXA26x have their direction bits in PXA_GPDR(2 inverted,
- * as well as their Alternate Function value being '1' for GPIO in GAFRx.
- */
+ 
 static inline int __gpio_is_inverted(int gpio)
 {
 	if ((gpio_type == PXA26X_GPIO) && (gpio > 85))
@@ -185,12 +156,7 @@ static inline int __gpio_is_inverted(int gpio)
 	return 0;
 }
 
-/*
- * On PXA25x and PXA27x, GAFRx and GPDRx together decide the alternate
- * function of a GPIO, and GPDRx cannot be altered once configured. It
- * is attributed as "occupied" here (I know this terminology isn't
- * accurate, you are welcome to propose a better one :-)
- */
+ 
 static inline int __gpio_is_occupied(struct pxa_gpio_chip *pchip, unsigned gpio)
 {
 	void __iomem *base;
@@ -372,9 +338,7 @@ static int pxa_init_gpio_chip(struct pxa_gpio_chip *pchip, int ngpio, void __iom
 	return gpiochip_add_data(&pchip->chip, pchip);
 }
 
-/* Update only those GRERx and GFERx edge detection register bits if those
- * bits are set in c->irq_mask
- */
+ 
 static inline void update_edge_detect(struct pxa_gpio_bank *c)
 {
 	uint32_t grer, gfer;
@@ -395,9 +359,7 @@ static int pxa_gpio_irq_type(struct irq_data *d, unsigned int type)
 	unsigned long gpdr, mask = GPIO_bit(gpio);
 
 	if (type == IRQ_TYPE_PROBE) {
-		/* Don't mess with enabled GPIOs using preconfigured edges or
-		 * GPIOs set to alternate function or to output during probe
-		 */
+		 
 		if ((c->irq_edge_rise | c->irq_edge_fall) & GPIO_bit(gpio))
 			return 0;
 
@@ -663,17 +625,17 @@ static int pxa_gpio_probe(struct platform_device *pdev)
 		return PTR_ERR(clk);
 	}
 
-	/* Initialize GPIO chips */
+	 
 	ret = pxa_init_gpio_chip(pchip, pxa_last_gpio + 1, gpio_reg_base);
 	if (ret)
 		return ret;
 
-	/* clear all GPIO edge detects */
+	 
 	for_each_gpio_bank(gpio, c, pchip) {
 		writel_relaxed(0, c->regbase + GFER_OFFSET);
 		writel_relaxed(0, c->regbase + GRER_OFFSET);
 		writel_relaxed(~0, c->regbase + GEDR_OFFSET);
-		/* unmask GPIO edge detect for AP side */
+		 
 		if (gpio_is_mmp_type(gpio_type))
 			writel_relaxed(~0, c->regbase + ED_MASK_OFFSET);
 	}
@@ -761,7 +723,7 @@ static int pxa_gpio_suspend(void)
 		c->saved_grer = readl_relaxed(c->regbase + GRER_OFFSET);
 		c->saved_gfer = readl_relaxed(c->regbase + GFER_OFFSET);
 
-		/* Clear GPIO transition detect bits */
+		 
 		writel_relaxed(0xffffffff, c->regbase + GEDR_OFFSET);
 	}
 	return 0;
@@ -777,7 +739,7 @@ static void pxa_gpio_resume(void)
 		return;
 
 	for_each_gpio_bank(gpio, c, pchip) {
-		/* restore level with set/clear */
+		 
 		writel_relaxed(c->saved_gplr, c->regbase + GPSR_OFFSET);
 		writel_relaxed(~c->saved_gplr, c->regbase + GPCR_OFFSET);
 

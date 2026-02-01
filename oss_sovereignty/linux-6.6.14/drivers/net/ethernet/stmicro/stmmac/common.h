@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*******************************************************************************
-  STMMAC Common Header File
-
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
+ 
 
 #ifndef __COMMON_H__
 #define __COMMON_H__
@@ -26,7 +19,7 @@
 #include "hwif.h"
 #include "mmc.h"
 
-/* Synopsys Core versions */
+ 
 #define	DWMAC_CORE_3_40		0x34
 #define	DWMAC_CORE_3_50		0x35
 #define	DWMAC_CORE_4_00		0x40
@@ -38,16 +31,13 @@
 #define DWXGMAC_CORE_2_20	0x22
 #define DWXLGMAC_CORE_2_00	0x20
 
-/* Device ID */
+ 
 #define DWXGMAC_ID		0x76
 #define DWXLGMAC_ID		0x27
 
-#define STMMAC_CHAN0	0	/* Always supported and default for all chips */
+#define STMMAC_CHAN0	0	 
 
-/* TX and RX Descriptor Length, these need to be power of two.
- * TX descriptor length less than 64 may cause transmit queue timed out error.
- * RX descriptor length less than 64 may cause inconsistent Rx chain error.
- */
+ 
 #define DMA_MIN_TX_SIZE		64
 #define DMA_MAX_TX_SIZE		1024
 #define DMA_DEFAULT_TX_SIZE	512
@@ -57,7 +47,7 @@
 #define STMMAC_GET_ENTRY(x, size)	((x + 1) & (size - 1))
 
 #undef FRAME_FILTER_DEBUG
-/* #define FRAME_FILTER_DEBUG */
+ 
 
 struct stmmac_txq_stats {
 	u64 tx_bytes;
@@ -81,9 +71,9 @@ struct stmmac_rxq_stats {
 	struct u64_stats_sync syncp;
 } ____cacheline_aligned_in_smp;
 
-/* Extra statistic and debug information exposed by ethtool */
+ 
 struct stmmac_extra_stats {
-	/* Transmit errors */
+	 
 	unsigned long tx_underflow ____cacheline_aligned;
 	unsigned long tx_carrier;
 	unsigned long tx_losscarrier;
@@ -95,7 +85,7 @@ struct stmmac_extra_stats {
 	unsigned long tx_payload_error;
 	unsigned long tx_ip_header_error;
 	unsigned long tx_collision;
-	/* Receive errors */
+	 
 	unsigned long rx_desc;
 	unsigned long sa_filter_fail;
 	unsigned long overflow_error;
@@ -114,7 +104,7 @@ struct stmmac_extra_stats {
 	unsigned long rx_overflow_cntr;
 	unsigned long rx_vlan;
 	unsigned long rx_split_hdr_pkt_n;
-	/* Tx/Rx IRQ error info */
+	 
 	unsigned long tx_undeflow_irq;
 	unsigned long tx_process_stopped_irq;
 	unsigned long tx_jabber_irq;
@@ -124,21 +114,21 @@ struct stmmac_extra_stats {
 	unsigned long rx_watchdog_irq;
 	unsigned long tx_early_irq;
 	unsigned long fatal_bus_error_irq;
-	/* Tx/Rx IRQ Events */
+	 
 	unsigned long rx_early_irq;
 	unsigned long threshold;
 	unsigned long irq_receive_pmt_irq_n;
-	/* MMC info */
+	 
 	unsigned long mmc_tx_irq_n;
 	unsigned long mmc_rx_irq_n;
 	unsigned long mmc_rx_csum_offload_irq_n;
-	/* EEE */
+	 
 	unsigned long irq_tx_path_in_lpi_mode_n;
 	unsigned long irq_tx_path_exit_lpi_mode_n;
 	unsigned long irq_rx_path_in_lpi_mode_n;
 	unsigned long irq_rx_path_exit_lpi_mode_n;
 	unsigned long phy_eee_wakeup_error_n;
-	/* Extended RDES status */
+	 
 	unsigned long ip_hdr_err;
 	unsigned long ip_payload_err;
 	unsigned long ip_csum_bypassed;
@@ -164,14 +154,14 @@ struct stmmac_extra_stats {
 	unsigned long l3_filter_match;
 	unsigned long l4_filter_match;
 	unsigned long l3_l4_filter_no_match;
-	/* PCS */
+	 
 	unsigned long irq_pcs_ane_n;
 	unsigned long irq_pcs_link_n;
 	unsigned long irq_rgmii_n;
 	unsigned long pcs_link;
 	unsigned long pcs_duplex;
 	unsigned long pcs_speed;
-	/* debug register */
+	 
 	unsigned long mtl_tx_status_fifo_full;
 	unsigned long mtl_tx_fifo_not_empty;
 	unsigned long mmtl_fifo_ctrl;
@@ -196,13 +186,13 @@ struct stmmac_extra_stats {
 	unsigned long mtl_rx_fifo_ctrl_active;
 	unsigned long mac_rx_frame_ctrl_fifo;
 	unsigned long mac_gmii_rx_proto_engine;
-	/* EST */
+	 
 	unsigned long mtl_est_cgce;
 	unsigned long mtl_est_hlbs;
 	unsigned long mtl_est_hlbf;
 	unsigned long mtl_est_btre;
 	unsigned long mtl_est_btrlm;
-	/* per queue statistics */
+	 
 	struct stmmac_txq_stats txq_stats[MTL_MAX_TX_QUEUES];
 	struct stmmac_rxq_stats rxq_stats[MTL_MAX_RX_QUEUES];
 	unsigned long rx_dropped;
@@ -211,18 +201,18 @@ struct stmmac_extra_stats {
 	unsigned long tx_errors;
 };
 
-/* Safety Feature statistics exposed by ethtool */
+ 
 struct stmmac_safety_stats {
 	unsigned long mac_errors[32];
 	unsigned long mtl_errors[32];
 	unsigned long dma_errors[32];
 };
 
-/* Number of fields in Safety Stats */
+ 
 #define STMMAC_SAFETY_FEAT_SIZE	\
 	(sizeof(struct stmmac_safety_stats) / sizeof(unsigned long))
 
-/* CSR Frequency Access Defines*/
+ 
 #define CSR_F_35M	35000000
 #define CSR_F_60M	60000000
 #define CSR_F_100M	100000000
@@ -235,80 +225,80 @@ struct stmmac_safety_stats {
 #define HASH_TABLE_SIZE 64
 #define PAUSE_TIME 0xffff
 
-/* Flow Control defines */
+ 
 #define FLOW_OFF	0
 #define FLOW_RX		1
 #define FLOW_TX		2
 #define FLOW_AUTO	(FLOW_TX | FLOW_RX)
 
-/* PCS defines */
+ 
 #define STMMAC_PCS_RGMII	(1 << 0)
 #define STMMAC_PCS_SGMII	(1 << 1)
 #define STMMAC_PCS_TBI		(1 << 2)
 #define STMMAC_PCS_RTBI		(1 << 3)
 
-#define SF_DMA_MODE 1		/* DMA STORE-AND-FORWARD Operation Mode */
+#define SF_DMA_MODE 1		 
 
-/* DMA HW feature register fields */
-#define DMA_HW_FEAT_MIISEL	0x00000001	/* 10/100 Mbps Support */
-#define DMA_HW_FEAT_GMIISEL	0x00000002	/* 1000 Mbps Support */
-#define DMA_HW_FEAT_HDSEL	0x00000004	/* Half-Duplex Support */
-#define DMA_HW_FEAT_EXTHASHEN	0x00000008	/* Expanded DA Hash Filter */
-#define DMA_HW_FEAT_HASHSEL	0x00000010	/* HASH Filter */
-#define DMA_HW_FEAT_ADDMAC	0x00000020	/* Multiple MAC Addr Reg */
-#define DMA_HW_FEAT_PCSSEL	0x00000040	/* PCS registers */
-#define DMA_HW_FEAT_L3L4FLTREN	0x00000080	/* Layer 3 & Layer 4 Feature */
-#define DMA_HW_FEAT_SMASEL	0x00000100	/* SMA(MDIO) Interface */
-#define DMA_HW_FEAT_RWKSEL	0x00000200	/* PMT Remote Wakeup */
-#define DMA_HW_FEAT_MGKSEL	0x00000400	/* PMT Magic Packet */
-#define DMA_HW_FEAT_MMCSEL	0x00000800	/* RMON Module */
-#define DMA_HW_FEAT_TSVER1SEL	0x00001000	/* Only IEEE 1588-2002 */
-#define DMA_HW_FEAT_TSVER2SEL	0x00002000	/* IEEE 1588-2008 PTPv2 */
-#define DMA_HW_FEAT_EEESEL	0x00004000	/* Energy Efficient Ethernet */
-#define DMA_HW_FEAT_AVSEL	0x00008000	/* AV Feature */
-#define DMA_HW_FEAT_TXCOESEL	0x00010000	/* Checksum Offload in Tx */
-#define DMA_HW_FEAT_RXTYP1COE	0x00020000	/* IP COE (Type 1) in Rx */
-#define DMA_HW_FEAT_RXTYP2COE	0x00040000	/* IP COE (Type 2) in Rx */
-#define DMA_HW_FEAT_RXFIFOSIZE	0x00080000	/* Rx FIFO > 2048 Bytes */
-#define DMA_HW_FEAT_RXCHCNT	0x00300000	/* No. additional Rx Channels */
-#define DMA_HW_FEAT_TXCHCNT	0x00c00000	/* No. additional Tx Channels */
-#define DMA_HW_FEAT_ENHDESSEL	0x01000000	/* Alternate Descriptor */
-/* Timestamping with Internal System Time */
+ 
+#define DMA_HW_FEAT_MIISEL	0x00000001	 
+#define DMA_HW_FEAT_GMIISEL	0x00000002	 
+#define DMA_HW_FEAT_HDSEL	0x00000004	 
+#define DMA_HW_FEAT_EXTHASHEN	0x00000008	 
+#define DMA_HW_FEAT_HASHSEL	0x00000010	 
+#define DMA_HW_FEAT_ADDMAC	0x00000020	 
+#define DMA_HW_FEAT_PCSSEL	0x00000040	 
+#define DMA_HW_FEAT_L3L4FLTREN	0x00000080	 
+#define DMA_HW_FEAT_SMASEL	0x00000100	 
+#define DMA_HW_FEAT_RWKSEL	0x00000200	 
+#define DMA_HW_FEAT_MGKSEL	0x00000400	 
+#define DMA_HW_FEAT_MMCSEL	0x00000800	 
+#define DMA_HW_FEAT_TSVER1SEL	0x00001000	 
+#define DMA_HW_FEAT_TSVER2SEL	0x00002000	 
+#define DMA_HW_FEAT_EEESEL	0x00004000	 
+#define DMA_HW_FEAT_AVSEL	0x00008000	 
+#define DMA_HW_FEAT_TXCOESEL	0x00010000	 
+#define DMA_HW_FEAT_RXTYP1COE	0x00020000	 
+#define DMA_HW_FEAT_RXTYP2COE	0x00040000	 
+#define DMA_HW_FEAT_RXFIFOSIZE	0x00080000	 
+#define DMA_HW_FEAT_RXCHCNT	0x00300000	 
+#define DMA_HW_FEAT_TXCHCNT	0x00c00000	 
+#define DMA_HW_FEAT_ENHDESSEL	0x01000000	 
+ 
 #define DMA_HW_FEAT_INTTSEN	0x02000000
-#define DMA_HW_FEAT_FLEXIPPSEN	0x04000000	/* Flexible PPS Output */
-#define DMA_HW_FEAT_SAVLANINS	0x08000000	/* Source Addr or VLAN */
-#define DMA_HW_FEAT_ACTPHYIF	0x70000000	/* Active/selected PHY iface */
+#define DMA_HW_FEAT_FLEXIPPSEN	0x04000000	 
+#define DMA_HW_FEAT_SAVLANINS	0x08000000	 
+#define DMA_HW_FEAT_ACTPHYIF	0x70000000	 
 #define DEFAULT_DMA_PBL		8
 
-/* MSI defines */
+ 
 #define STMMAC_MSI_VEC_MAX	32
 
-/* PCS status and mask defines */
-#define	PCS_ANE_IRQ		BIT(2)	/* PCS Auto-Negotiation */
-#define	PCS_LINK_IRQ		BIT(1)	/* PCS Link */
-#define	PCS_RGSMIIIS_IRQ	BIT(0)	/* RGMII or SMII Interrupt */
+ 
+#define	PCS_ANE_IRQ		BIT(2)	 
+#define	PCS_LINK_IRQ		BIT(1)	 
+#define	PCS_RGSMIIIS_IRQ	BIT(0)	 
 
-/* Max/Min RI Watchdog Timer count value */
+ 
 #define MAX_DMA_RIWT		0xff
 #define MIN_DMA_RIWT		0x10
 #define DEF_DMA_RIWT		0xa0
-/* Tx coalesce parameters */
+ 
 #define STMMAC_COAL_TX_TIMER	1000
 #define STMMAC_MAX_COAL_TX_TICK	100000
 #define STMMAC_TX_MAX_FRAMES	256
 #define STMMAC_TX_FRAMES	25
 #define STMMAC_RX_FRAMES	0
 
-/* Packets types */
+ 
 enum packets_types {
-	PACKET_AVCPQ = 0x1, /* AV Untagged Control packets */
-	PACKET_PTPQ = 0x2, /* PTP Packets */
-	PACKET_DCBCPQ = 0x3, /* DCB Control Packets */
-	PACKET_UPQ = 0x4, /* Untagged Packets */
-	PACKET_MCBCQ = 0x5, /* Multicast & Broadcast Packets */
+	PACKET_AVCPQ = 0x1,  
+	PACKET_PTPQ = 0x2,  
+	PACKET_DCBCPQ = 0x3,  
+	PACKET_UPQ = 0x4,  
+	PACKET_MCBCQ = 0x5,  
 };
 
-/* Rx IPC status */
+ 
 enum rx_frame_status {
 	good_frame = 0x0,
 	discard_frame = 0x1,
@@ -318,7 +308,7 @@ enum rx_frame_status {
 	rx_not_ls = 0x10,
 };
 
-/* Tx status */
+ 
 enum tx_frame_status {
 	tx_done = 0x0,
 	tx_not_ls = 0x1,
@@ -352,13 +342,13 @@ enum request_irq_err {
 	REQ_IRQ_ERR_NO,
 };
 
-/* EEE and LPI defines */
+ 
 #define	CORE_IRQ_TX_PATH_IN_LPI_MODE	(1 << 0)
 #define	CORE_IRQ_TX_PATH_EXIT_LPI_MODE	(1 << 1)
 #define	CORE_IRQ_RX_PATH_IN_LPI_MODE	(1 << 2)
 #define	CORE_IRQ_RX_PATH_EXIT_LPI_MODE	(1 << 3)
 
-/* FPE defines */
+ 
 #define FPE_EVENT_UNKNOWN		0
 #define FPE_EVENT_TRSP			BIT(0)
 #define FPE_EVENT_TVER			BIT(1)
@@ -367,7 +357,7 @@ enum request_irq_err {
 
 #define CORE_IRQ_MTL_RX_OVERFLOW	BIT(8)
 
-/* Physical Coding Sublayer */
+ 
 struct rgmii_adv {
 	unsigned int pause;
 	unsigned int duplex;
@@ -378,7 +368,7 @@ struct rgmii_adv {
 #define STMMAC_PCS_PAUSE	1
 #define STMMAC_PCS_ASYM_PAUSE	2
 
-/* DMA HW capabilities */
+ 
 struct dma_features {
 	unsigned int mbps_10_100;
 	unsigned int mbps_1000;
@@ -390,49 +380,49 @@ struct dma_features {
 	unsigned int pmt_remote_wake_up;
 	unsigned int pmt_magic_frame;
 	unsigned int rmon;
-	/* IEEE 1588-2002 */
+	 
 	unsigned int time_stamp;
-	/* IEEE 1588-2008 */
+	 
 	unsigned int atime_stamp;
-	/* 802.3az - Energy-Efficient Ethernet (EEE) */
+	 
 	unsigned int eee;
 	unsigned int av;
 	unsigned int hash_tb_sz;
 	unsigned int tsoen;
-	/* TX and RX csum */
+	 
 	unsigned int tx_coe;
 	unsigned int rx_coe;
 	unsigned int rx_coe_type1;
 	unsigned int rx_coe_type2;
 	unsigned int rxfifo_over_2048;
-	/* TX and RX number of channels */
+	 
 	unsigned int number_rx_channel;
 	unsigned int number_tx_channel;
-	/* TX and RX number of queues */
+	 
 	unsigned int number_rx_queues;
 	unsigned int number_tx_queues;
-	/* PPS output */
+	 
 	unsigned int pps_out_num;
-	/* Number of Traffic Classes */
+	 
 	unsigned int numtc;
-	/* DCB Feature Enable */
+	 
 	unsigned int dcben;
-	/* IEEE 1588 High Word Register Enable */
+	 
 	unsigned int advthword;
-	/* PTP Offload Enable */
+	 
 	unsigned int ptoen;
-	/* One-Step Timestamping Enable */
+	 
 	unsigned int osten;
-	/* Priority-Based Flow Control Enable */
+	 
 	unsigned int pfcen;
-	/* Alternate (enhanced) DESC mode */
+	 
 	unsigned int enh_desc;
-	/* TX and RX FIFO sizes */
+	 
 	unsigned int tx_fifo_size;
 	unsigned int rx_fifo_size;
-	/* Automotive Safety Package */
+	 
 	unsigned int asp;
-	/* RX Parser */
+	 
 	unsigned int frpsel;
 	unsigned int frpbs;
 	unsigned int frpes;
@@ -445,58 +435,58 @@ struct dma_features {
 	unsigned int dvlan;
 	unsigned int l3l4fnum;
 	unsigned int arpoffsel;
-	/* One Step for PTP over UDP/IP Feature Enable */
+	 
 	unsigned int pou_ost_en;
-	/* Tx Timestamp FIFO Depth */
+	 
 	unsigned int ttsfd;
-	/* Queue/Channel-Based VLAN tag insertion on Tx */
+	 
 	unsigned int cbtisel;
-	/* Supported Parallel Instruction Processor Engines */
+	 
 	unsigned int frppipe_num;
-	/* Number of Extended VLAN Tag Filters */
+	 
 	unsigned int nrvf_num;
-	/* TSN Features */
+	 
 	unsigned int estwid;
 	unsigned int estdep;
 	unsigned int estsel;
 	unsigned int fpesel;
 	unsigned int tbssel;
-	/* Number of DMA channels enabled for TBS */
+	 
 	unsigned int tbs_ch_num;
-	/* Per-Stream Filtering Enable */
+	 
 	unsigned int sgfsel;
-	/* Numbers of Auxiliary Snapshot Inputs */
+	 
 	unsigned int aux_snapshot_n;
-	/* Timestamp System Time Source */
+	 
 	unsigned int tssrc;
-	/* Enhanced DMA Enable */
+	 
 	unsigned int edma;
-	/* Different Descriptor Cache Enable */
+	 
 	unsigned int ediffc;
-	/* VxLAN/NVGRE Enable */
+	 
 	unsigned int vxn;
-	/* Debug Memory Interface Enable */
+	 
 	unsigned int dbgmem;
-	/* Number of Policing Counters */
+	 
 	unsigned int pcsel;
 };
 
-/* RX Buffer size must be multiple of 4/8/16 bytes */
+ 
 #define BUF_SIZE_16KiB 16368
 #define BUF_SIZE_8KiB 8188
 #define BUF_SIZE_4KiB 4096
 #define BUF_SIZE_2KiB 2048
 
-/* Power Down and WOL */
+ 
 #define PMT_NOT_SUPPORTED 0
 #define PMT_SUPPORTED 1
 
-/* Common MAC defines */
-#define MAC_CTRL_REG		0x00000000	/* MAC Control */
-#define MAC_ENABLE_TX		0x00000008	/* Transmitter Enable */
-#define MAC_ENABLE_RX		0x00000004	/* Receiver Enable */
+ 
+#define MAC_CTRL_REG		0x00000000	 
+#define MAC_ENABLE_TX		0x00000008	 
+#define MAC_ENABLE_RX		0x00000004	 
 
-/* Default LPI timers */
+ 
 #define STMMAC_DEFAULT_LIT_LS	0x3E8
 #define STMMAC_DEFAULT_TWT_LS	0x1E
 #define STMMAC_ET_MAX		0xFFFFF
@@ -506,11 +496,11 @@ struct dma_features {
 
 #define JUMBO_LEN		9000
 
-/* Receive Side Scaling */
+ 
 #define STMMAC_RSS_HASH_KEY_SIZE	40
 #define STMMAC_RSS_MAX_TABLE_SIZE	256
 
-/* VLAN */
+ 
 #define STMMAC_VLAN_NONE	0x0
 #define STMMAC_VLAN_REMOVE	0x1
 #define STMMAC_VLAN_INSERT	0x2
@@ -545,12 +535,12 @@ struct mac_link {
 };
 
 struct mii_regs {
-	unsigned int addr;	/* MII Address */
-	unsigned int data;	/* MII Data */
-	unsigned int addr_shift;	/* MII address shift */
-	unsigned int reg_shift;		/* MII reg shift */
-	unsigned int addr_mask;		/* MII address mask */
-	unsigned int reg_mask;		/* MII reg mask */
+	unsigned int addr;	 
+	unsigned int data;	 
+	unsigned int addr_shift;	 
+	unsigned int reg_shift;		 
+	unsigned int addr_mask;		 
+	unsigned int reg_mask;		 
 	unsigned int clk_csr_shift;
 	unsigned int clk_csr_mask;
 };
@@ -564,10 +554,10 @@ struct mac_device_info {
 	const struct stmmac_tc_ops *tc;
 	const struct stmmac_mmc_ops *mmc;
 	struct dw_xpcs *xpcs;
-	struct phylink_pcs *lynx_pcs; /* Lynx external PCS */
-	struct mii_regs mii;	/* MII register Addresses */
+	struct phylink_pcs *lynx_pcs;  
+	struct mii_regs mii;	 
 	struct mac_link link;
-	void __iomem *pcsr;     /* vpointer to device CSRs */
+	void __iomem *pcsr;      
 	unsigned int multicast_filter_bins;
 	unsigned int unicast_filter_entries;
 	unsigned int mcast_bits_log2;
@@ -611,4 +601,4 @@ extern const struct stmmac_mode_ops ring_mode_ops;
 extern const struct stmmac_mode_ops chain_mode_ops;
 extern const struct stmmac_desc_ops dwmac4_desc_ops;
 
-#endif /* __COMMON_H__ */
+#endif  

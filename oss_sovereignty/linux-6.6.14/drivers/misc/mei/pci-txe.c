@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013-2020, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,8 +21,8 @@
 #include "hw-txe.h"
 
 static const struct pci_device_id mei_txe_pci_tbl[] = {
-	{PCI_VDEVICE(INTEL, 0x0F18)}, /* Baytrail */
-	{PCI_VDEVICE(INTEL, 0x2298)}, /* Cherrytrail */
+	{PCI_VDEVICE(INTEL, 0x0F18)},  
+	{PCI_VDEVICE(INTEL, 0x2298)},  
 
 	{0, }
 };
@@ -37,16 +34,9 @@ static inline void mei_txe_unset_pm_domain(struct mei_device *dev);
 #else
 static inline void mei_txe_set_pm_domain(struct mei_device *dev) {}
 static inline void mei_txe_unset_pm_domain(struct mei_device *dev) {}
-#endif /* CONFIG_PM */
+#endif  
 
-/**
- * mei_txe_probe - Device Initialization Routine
- *
- * @pdev: PCI device structure
- * @ent: entry in mei_txe_pci_tbl
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 static int mei_txe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct mei_device *dev;
@@ -54,15 +44,15 @@ static int mei_txe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	const int mask = BIT(SEC_BAR) | BIT(BRIDGE_BAR);
 	int err;
 
-	/* enable pci dev */
+	 
 	err = pcim_enable_device(pdev);
 	if (err) {
 		dev_err(&pdev->dev, "failed to enable pci device.\n");
 		goto end;
 	}
-	/* set PCI host mastering  */
+	 
 	pci_set_master(pdev);
-	/* pci request regions and mapping IO device memory for mei driver */
+	 
 	err = pcim_iomap_regions(pdev, mask, KBUILD_MODNAME);
 	if (err) {
 		dev_err(&pdev->dev, "failed to get pci regions.\n");
@@ -78,7 +68,7 @@ static int mei_txe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		}
 	}
 
-	/* allocates and initializes the mei dev structure */
+	 
 	dev = mei_txe_dev_init(pdev);
 	if (!dev) {
 		err = -ENOMEM;
@@ -89,10 +79,10 @@ static int mei_txe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_enable_msi(pdev);
 
-	/* clear spurious interrupts */
+	 
 	mei_clear_interrupts(dev);
 
-	/* request and enable interrupt  */
+	 
 	if (pci_dev_msi_enabled(pdev))
 		err = request_threaded_irq(pdev->irq,
 			NULL,
@@ -124,20 +114,10 @@ static int mei_txe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_drvdata(pdev, dev);
 
-	/*
-	 * MEI requires to resume from runtime suspend mode
-	 * in order to perform link reset flow upon system suspend.
-	 */
+	 
 	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
 
-	/*
-	 * TXE maps runtime suspend/resume to own power gating states,
-	 * hence we need to go around native PCI runtime service which
-	 * eventually brings the device into D3cold/hot state.
-	 * But the TXE device cannot wake up from D3 unlike from own
-	 * power gating. To get around PCI device native runtime pm,
-	 * TXE uses runtime pm domain handlers which take precedence.
-	 */
+	 
 	mei_txe_set_pm_domain(dev);
 
 	pm_runtime_put_noidle(&pdev->dev);
@@ -155,15 +135,7 @@ end:
 	return err;
 }
 
-/**
- * mei_txe_shutdown- Device Shutdown Routine
- *
- * @pdev: PCI device structure
- *
- *  mei_txe_shutdown is called from the reboot notifier
- *  it's a simplified version of remove so we go down
- *  faster.
- */
+ 
 static void mei_txe_shutdown(struct pci_dev *pdev)
 {
 	struct mei_device *dev;
@@ -181,14 +153,7 @@ static void mei_txe_shutdown(struct pci_dev *pdev)
 	free_irq(pdev->irq, dev);
 }
 
-/**
- * mei_txe_remove - Device Removal Routine
- *
- * @pdev: PCI device structure
- *
- * mei_remove is called by the PCI subsystem to alert the driver
- * that it should release a PCI device.
- */
+ 
 static void mei_txe_remove(struct pci_dev *pdev)
 {
 	struct mei_device *dev;
@@ -247,7 +212,7 @@ static int mei_txe_pci_resume(struct device *device)
 
 	mei_clear_interrupts(dev);
 
-	/* request and enable interrupt */
+	 
 	if (pci_dev_msi_enabled(pdev))
 		err = request_threaded_irq(pdev->irq,
 			NULL,
@@ -268,7 +233,7 @@ static int mei_txe_pci_resume(struct device *device)
 
 	return err;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int mei_txe_pm_runtime_idle(struct device *device)
@@ -303,7 +268,7 @@ static int mei_txe_pm_runtime_suspend(struct device *device)
 	else
 		ret = -EAGAIN;
 
-	/* keep irq on we are staying in D0 */
+	 
 
 	dev_dbg(device, "rpm: txe: runtime suspend ret=%d\n", ret);
 
@@ -342,11 +307,7 @@ static int mei_txe_pm_runtime_resume(struct device *device)
 	return ret;
 }
 
-/**
- * mei_txe_set_pm_domain - fill and set pm domain structure for device
- *
- * @dev: mei_device
- */
+ 
 static inline void mei_txe_set_pm_domain(struct mei_device *dev)
 {
 	struct pci_dev *pdev  = to_pci_dev(dev->dev);
@@ -362,14 +323,10 @@ static inline void mei_txe_set_pm_domain(struct mei_device *dev)
 	}
 }
 
-/**
- * mei_txe_unset_pm_domain - clean pm domain structure for device
- *
- * @dev: mei_device
- */
+ 
 static inline void mei_txe_unset_pm_domain(struct mei_device *dev)
 {
-	/* stop using pm callbacks if any */
+	 
 	dev_pm_domain_set(dev->dev, NULL);
 }
 
@@ -385,11 +342,9 @@ static const struct dev_pm_ops mei_txe_pm_ops = {
 #define MEI_TXE_PM_OPS	(&mei_txe_pm_ops)
 #else
 #define MEI_TXE_PM_OPS	NULL
-#endif /* CONFIG_PM */
+#endif  
 
-/*
- *  PCI driver structure
- */
+ 
 static struct pci_driver mei_txe_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = mei_txe_pci_tbl,

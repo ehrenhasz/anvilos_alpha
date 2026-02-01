@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dpu_hwio.h"
 #include "dpu_hw_catalog.h"
@@ -14,7 +13,7 @@
 
 #define DPU_FETCH_CONFIG_RESET_VALUE   0x00000087
 
-/* SSPP registers */
+ 
 #define SSPP_SRC_SIZE                      0x00
 #define SSPP_SRC_XY                        0x08
 #define SSPP_OUT_SIZE                      0x0c
@@ -70,7 +69,7 @@
 #define SSPP_EXCL_REC_SIZE                 0x1B4
 #define SSPP_EXCL_REC_XY                   0x1B8
 
-/* SSPP_SRC_OP_MODE & OP_MODE_REC1 */
+ 
 #define MDSS_MDP_OP_DEINTERLACE            BIT(22)
 #define MDSS_MDP_OP_DEINTERLACE_ODD        BIT(23)
 #define MDSS_MDP_OP_IGC_ROM_1              BIT(18)
@@ -84,7 +83,7 @@
 #define MDSS_MDP_OP_BWC_Q_HIGH             (1 << 1)
 #define MDSS_MDP_OP_BWC_Q_MED              (2 << 1)
 
-/* SSPP_QOS_CTRL */
+ 
 #define SSPP_QOS_CTRL_VBLANK_EN            BIT(16)
 #define SSPP_QOS_CTRL_DANGER_SAFE_EN       BIT(0)
 #define SSPP_QOS_CTRL_DANGER_VBLANK_MASK   0x3
@@ -92,7 +91,7 @@
 #define SSPP_QOS_CTRL_CREQ_VBLANK_MASK     0x3
 #define SSPP_QOS_CTRL_CREQ_VBLANK_OFF      20
 
-/* DPU_SSPP_SCALER_QSEED2 */
+ 
 #define SSPP_VIG_OP_MODE                   0x0
 #define SCALE_CONFIG                       0x04
 #define COMP0_3_PHASE_STEP_X               0x10
@@ -105,12 +104,10 @@
 #define COMP1_2_INIT_PHASE_Y               0x2C
 #define VIG_0_QSEED2_SHARP                 0x30
 
-/* SSPP_TRAFFIC_SHAPER and _REC1 */
+ 
 #define SSPP_TRAFFIC_SHAPER_BPC_MAX        0xFF
 
-/*
- * Definitions for ViG op modes
- */
+ 
 #define VIG_OP_CSC_DST_DATAFMT BIT(19)
 #define VIG_OP_CSC_SRC_DATAFMT BIT(18)
 #define VIG_OP_CSC_EN          BIT(17)
@@ -126,15 +123,13 @@
 #define VIG_OP_PA_SAT_ZERO_EXP BIT(2)
 #define VIG_OP_MEM_PROT_BLEND  BIT(1)
 
-/*
- * Definitions for CSC 10 op modes
- */
+ 
 #define SSPP_VIG_CSC_10_OP_MODE            0x0
 #define VIG_CSC_10_SRC_DATAFMT BIT(1)
 #define VIG_CSC_10_EN          BIT(0)
 #define CSC_10BIT_OFFSET       4
 
-/* traffic shaper clock in Hz */
+ 
 #define TS_CLK			19200000
 
 
@@ -147,11 +142,7 @@ static void dpu_hw_sspp_setup_multirect(struct dpu_sw_pipe *pipe)
 		return;
 
 	if (pipe->multirect_index == DPU_SSPP_RECT_SOLO) {
-		/**
-		 * if rect index is RECT_SOLO, we cannot expect a
-		 * virtual plane sharing the same SSPP id. So we go
-		 * and disable multirect
-		 */
+		 
 		mode_mask = 0;
 	} else {
 		mode_mask = DPU_REG_READ(&ctx->hw, SSPP_MULTIRECT_OPMODE);
@@ -200,9 +191,7 @@ static void _sspp_setup_csc10_opmode(struct dpu_hw_sspp *ctx,
 	DPU_REG_WRITE(&ctx->hw, sblk->csc_blk.base + SSPP_VIG_CSC_10_OP_MODE, opmode);
 }
 
-/*
- * Setup source pixel format, flip,
- */
+ 
 static void dpu_hw_sspp_setup_format(struct dpu_sw_pipe *pipe,
 		const struct dpu_format *fmt, u32 flags)
 {
@@ -250,10 +239,10 @@ static void dpu_hw_sspp_setup_format(struct dpu_sw_pipe *pipe,
 		(fmt->bits[C1_B_Cb] << 2) | (fmt->bits[C0_G_Y] << 0);
 
 	if (flags & DPU_SSPP_ROT_90)
-		src_format |= BIT(11); /* ROT90 */
+		src_format |= BIT(11);  
 
 	if (fmt->alpha_enable && fmt->fetch_planes == DPU_PLANE_INTERLEAVED)
-		src_format |= BIT(8); /* SRCC3_EN */
+		src_format |= BIT(8);  
 
 	if (flags & DPU_SSPP_SOLID_FILL)
 		src_format |= BIT(22);
@@ -268,7 +257,7 @@ static void dpu_hw_sspp_setup_format(struct dpu_sw_pipe *pipe,
 	if (fmt->fetch_mode != DPU_FETCH_LINEAR) {
 		if (DPU_FORMAT_IS_UBWC(fmt))
 			opmode |= MDSS_MDP_OP_BWC_EN;
-		src_format |= (fmt->fetch_mode & 3) << 30; /*FRAME_FORMAT */
+		src_format |= (fmt->fetch_mode & 3) << 30;  
 		DPU_REG_WRITE(c, SSPP_FETCH_CONFIG,
 			DPU_FETCH_CONFIG_RESET_VALUE |
 			ctx->ubwc->highest_bank_bit << 18);
@@ -300,14 +289,14 @@ static void dpu_hw_sspp_setup_format(struct dpu_sw_pipe *pipe,
 
 	opmode |= MDSS_MDP_OP_PE_OVERRIDE;
 
-	/* if this is YUV pixel format, enable CSC */
+	 
 	if (DPU_FORMAT_IS_YUV(fmt))
 		src_format |= BIT(15);
 
 	if (DPU_FORMAT_IS_DX(fmt))
 		src_format |= BIT(14);
 
-	/* update scaler opmode, if appropriate */
+	 
 	if (test_bit(DPU_SSPP_CSC, &ctx->cap->features))
 		_sspp_setup_opmode(ctx, VIG_OP_CSC_EN | VIG_OP_CSC_SRC_DATAFMT,
 			DPU_FORMAT_IS_YUV(fmt));
@@ -320,7 +309,7 @@ static void dpu_hw_sspp_setup_format(struct dpu_sw_pipe *pipe,
 	DPU_REG_WRITE(c, unpack_pat_off, unpack);
 	DPU_REG_WRITE(c, op_mode_off, opmode);
 
-	/* clear previous UBWC error */
+	 
 	DPU_REG_WRITE(c, SSPP_UBWC_ERROR_STATUS, BIT(31));
 }
 
@@ -338,9 +327,9 @@ static void dpu_hw_sspp_setup_pe_config(struct dpu_hw_sspp *ctx,
 
 	c = &ctx->hw;
 
-	/* program SW pixel extension override for all pipes*/
+	 
 	for (color = 0; color < DPU_MAX_PLANES; color++) {
-		/* color 2 has the same set of registers as color 1 */
+		 
 		if (color == 2)
 			continue;
 
@@ -362,19 +351,19 @@ static void dpu_hw_sspp_setup_pe_config(struct dpu_hw_sspp *ctx,
 			pe_ext->num_ext_pxls_right[color]) & shortmask);
 	}
 
-	/* color 0 */
+	 
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C0_LR, lr_pe[0]);
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C0_TB, tb_pe[0]);
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C0_REQ_PIXELS,
 			tot_req_pixels[0]);
 
-	/* color 1 and color 2 */
+	 
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C1C2_LR, lr_pe[1]);
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C1C2_TB, tb_pe[1]);
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C1C2_REQ_PIXELS,
 			tot_req_pixels[1]);
 
-	/* color 3 */
+	 
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C3_LR, lr_pe[3]);
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C3_TB, lr_pe[3]);
 	DPU_REG_WRITE(c, SSPP_SW_PIX_EXT_C3_REQ_PIXELS,
@@ -403,9 +392,7 @@ static u32 _dpu_hw_sspp_get_scaler3_ver(struct dpu_hw_sspp *ctx)
 				      ctx->cap->sblk->scaler_blk.base);
 }
 
-/*
- * dpu_hw_sspp_setup_rects()
- */
+ 
 static void dpu_hw_sspp_setup_rects(struct dpu_sw_pipe *pipe,
 		struct dpu_sw_pipe_cfg *cfg)
 {
@@ -433,7 +420,7 @@ static void dpu_hw_sspp_setup_rects(struct dpu_sw_pipe *pipe,
 	}
 
 
-	/* src and dest rect programming */
+	 
 	src_xy = (cfg->src_rect.y1 << 16) | cfg->src_rect.x1;
 	src_size = (drm_rect_height(&cfg->src_rect) << 16) |
 		   drm_rect_width(&cfg->src_rect);
@@ -441,7 +428,7 @@ static void dpu_hw_sspp_setup_rects(struct dpu_sw_pipe *pipe,
 	dst_size = (drm_rect_height(&cfg->dst_rect) << 16) |
 		drm_rect_width(&cfg->dst_rect);
 
-	/* rectangle register programming */
+	 
 	DPU_REG_WRITE(c, src_size_off, src_size);
 	DPU_REG_WRITE(c, src_xy_off, src_xy);
 	DPU_REG_WRITE(c, out_size_off, dst_size);
@@ -529,7 +516,7 @@ static void dpu_hw_sspp_setup_solidfill(struct dpu_sw_pipe *pipe, u32 color)
 	if (!ctx)
 		return;
 
-	/* cleanup source addresses */
+	 
 	memset(&cfg, 0, sizeof(cfg));
 	ctx->ops.setup_sourceaddress(pipe, &cfg);
 
@@ -625,15 +612,15 @@ int _dpu_hw_sspp_init_debugfs(struct dpu_hw_sspp *hw_pipe, struct dpu_kms *kms,
 
 	snprintf(sspp_name, sizeof(sspp_name), "%d", hw_pipe->idx);
 
-	/* create overall sub-directory for the pipe */
+	 
 	debugfs_root =
 		debugfs_create_dir(sspp_name, entry);
 
-	/* don't error check these */
+	 
 	debugfs_create_xul("features", 0600,
 			debugfs_root, (unsigned long *)&hw_pipe->cap->features);
 
-	/* add register dump support */
+	 
 	dpu_debugfs_create_regset32("src_blk", 0400,
 			debugfs_root,
 			cfg->base,
@@ -686,7 +673,7 @@ struct dpu_hw_sspp *dpu_hw_sspp_init(const struct dpu_sspp_cfg *cfg,
 	hw_pipe->hw.blk_addr = addr + cfg->base;
 	hw_pipe->hw.log_mask = DPU_DBG_MASK_SSPP;
 
-	/* Assign ops */
+	 
 	hw_pipe->ubwc = mdss_data;
 	hw_pipe->idx = cfg->id;
 	hw_pipe->cap = cfg;

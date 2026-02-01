@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
- */
+
+ 
 
 #include "mana_ib.h"
 
@@ -155,11 +153,7 @@ struct ib_mr *mana_ib_reg_user_mr(struct ib_pd *ibpd, u64 start, u64 length,
 	if (err)
 		goto err_dma_region;
 
-	/*
-	 * There is no need to keep track of dma_region_handle after MR is
-	 * successfully created. The dma_region_handle is tracked in the PF
-	 * as part of the lifecycle of this MR.
-	 */
+	 
 
 	return &mr->ibmr;
 

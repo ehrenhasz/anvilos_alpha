@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dcn20_opp.h"
@@ -53,23 +30,19 @@ void opp2_set_disp_pattern_generator(
 	enum test_pattern_dyn_range dyn_range;
 	enum test_pattern_mode mode;
 
-	/* color ramp generator mixes 16-bits color */
+	 
 	uint32_t src_bpc = 16;
-	/* requested bpc */
+	 
 	uint32_t dst_bpc;
 	uint32_t index;
-	/* RGB values of the color bars.
-	 * Produce two RGB colors: RGB0 - white (all Fs)
-	 * and RGB1 - black (all 0s)
-	 * (three RGB components for two colors)
-	 */
+	 
 	uint16_t src_color[6] = {0xFFFF, 0xFFFF, 0xFFFF, 0x0000,
 						0x0000, 0x0000};
-	/* dest color (converted to the specified color format) */
+	 
 	uint16_t dst_color[6];
 	uint32_t inc_base;
 
-	/* translate to bit depth */
+	 
 	switch (color_depth) {
 	case COLOR_DEPTH_666:
 		bit_depth = TEST_PATTERN_COLOR_FORMAT_BPC_6;
@@ -88,12 +61,12 @@ void opp2_set_disp_pattern_generator(
 	break;
 	}
 
-	/* set DPG dimentions */
+	 
 	REG_SET_2(DPG_DIMENSIONS, 0,
 		DPG_ACTIVE_WIDTH, width,
 		DPG_ACTIVE_HEIGHT, height);
 
-	/* set DPG offset */
+	 
 	REG_SET_2(DPG_OFFSET_SEGMENT, 0,
 		DPG_X_OFFSET, offset,
 		DPG_SEGMENT_WIDTH, 0);
@@ -153,18 +126,12 @@ void opp2_set_disp_pattern_generator(
 		break;
 		}
 
-		/* adjust color to the required colorFormat */
+		 
 		for (index = 0; index < 6; index++) {
-			/* dst = 2^dstBpc * src / 2^srcBpc = src >>
-			 * (srcBpc - dstBpc);
-			 */
+			 
 			dst_color[index] =
 				src_color[index] >> (src_bpc - dst_bpc);
-		/* DPG_COLOUR registers are 16-bit MSB aligned value with bits 3:0 hardwired to ZERO.
-		 * XXXXXXXXXX000000 for 10 bit,
-		 * XXXXXXXX00000000 for 8 bit,
-		 * XXXXXX0000000000 for 6 bits
-		 */
+		 
 			dst_color[index] <<= (16 - dst_bpc);
 		}
 
@@ -178,7 +145,7 @@ void opp2_set_disp_pattern_generator(
 				DPG_COLOUR1_B_CB, dst_color[2],
 				DPG_COLOUR0_B_CB, dst_color[5]);
 
-		/* enable test pattern */
+		 
 		REG_UPDATE_6(DPG_CONTROL,
 			DPG_EN, 1,
 			DPG_MODE, mode,
@@ -211,10 +178,7 @@ void opp2_set_disp_pattern_generator(
 		break;
 		}
 
-		/* increment for the first ramp for one color gradation
-		 * 1 gradation for 6-bit color is 2^10
-		 * gradations in 16-bit color
-		 */
+		 
 		inc_base = (src_bpc - dst_bpc);
 
 		switch (bit_depth) {
@@ -255,7 +219,7 @@ void opp2_set_disp_pattern_generator(
 		break;
 		}
 
-		/* enable test pattern */
+		 
 		REG_UPDATE_4(DPG_CONTROL,
 			DPG_EN, 1,
 			DPG_MODE, mode,
@@ -307,7 +271,7 @@ void opp2_dpg_set_blank_color(
 {
 	struct dcn20_opp *oppn20 = TO_DCN20_OPP(opp);
 
-	/* 16-bit MSB aligned value. Bits 3:0 of this field are hardwired to ZERO */
+	 
 	ASSERT(color);
 	REG_SET_2(DPG_COLOUR_B_CB, 0,
 			DPG_COLOUR1_B_CB, color->color_b_cb << 6,
@@ -343,16 +307,13 @@ void opp2_program_left_edge_extra_pixel (
 {
 	struct dcn20_opp *oppn20 = TO_DCN20_OPP(opp);
 
-	/* Specifies the number of extra left edge pixels that are supplied to
-	 * the 422 horizontal chroma sub-sample filter.
-	 * Note that when left edge pixel is not "0", fmt pixel encoding can be in either 420 or 422 mode
-	 * */
+	 
 	REG_UPDATE(FMT_422_CONTROL, FMT_LEFT_EDGE_EXTRA_PIXEL_COUNT, count);
 }
 
-/*****************************************/
-/* Constructor, Destructor               */
-/*****************************************/
+ 
+ 
+ 
 
 static struct opp_funcs dcn20_opp_funcs = {
 		.opp_set_dyn_expansion = opp1_set_dyn_expansion,

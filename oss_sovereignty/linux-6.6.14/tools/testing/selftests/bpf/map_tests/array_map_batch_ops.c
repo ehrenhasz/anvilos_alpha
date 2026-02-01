@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <stdio.h>
 #include <errno.h>
@@ -95,7 +95,7 @@ static void __test_map_lookup_and_update_batch(bool is_pcpu)
 	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n",
 	      strerror(errno));
 
-	/* test 1: lookup in a loop with various steps. */
+	 
 	total_success = 0;
 	for (step = 1; step < max_entries; step++) {
 		map_batch_update(map_fd, max_entries, keys, values, is_pcpu);
@@ -104,9 +104,7 @@ static void __test_map_lookup_and_update_batch(bool is_pcpu)
 		memset(values, 0, max_entries * value_size);
 		batch = 0;
 		total = 0;
-		/* iteratively lookup/delete elements with 'step'
-		 * elements each.
-		 */
+		 
 		count = step;
 		while (true) {
 			err = bpf_map_lookup_batch(map_fd,

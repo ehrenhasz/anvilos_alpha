@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for Kensigton Slimblade Trackball
- *
- *  Copyright (c) 2009 Jiri Kosina
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>

@@ -1,25 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 
@@ -53,7 +32,7 @@ static const void *get_powerplay_table(struct pp_hwmgr *hwmgr)
 				smu_atom_get_data_table(hwmgr->adev, index,
 						&size, &frev, &crev);
 
-		hwmgr->soft_pp_table = table_address;	/*Cache the result in RAM.*/
+		hwmgr->soft_pp_table = table_address;	 
 		hwmgr->soft_pp_table_size = size;
 	}
 
@@ -221,9 +200,7 @@ static int init_powerplay_table_information(
 						 powerplay_table->ODSettingsMin,
 						 ATOM_VEGA12_ODSETTING_COUNT);
 
-	/* hwmgr->platformDescriptor.minOverdriveVDDC = 0;
-	hwmgr->platformDescriptor.maxOverdriveVDDC = 0;
-	hwmgr->platformDescriptor.overdriveVDDCStep = 0; */
+	 
 
 	if (hwmgr->platform_descriptor.overdriveLimit.engineClock > 0
 		&& hwmgr->platform_descriptor.overdriveLimit.memoryClock > 0)
@@ -241,7 +218,7 @@ static int init_powerplay_table_information(
 
 	disable_power_control = 0;
 	if (!disable_power_control) {
-		/* enable TDP overdrive (PowerControl) feature as well if supported */
+		 
 		if (hwmgr->platform_descriptor.TDPODLimit)
 			phm_cap_set(hwmgr->platform_descriptor.platformCaps,
 				PHM_PlatformCaps_PowerControl);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * leds-regulator.c - LED class driver for regulator driven LEDs.
- *
- * Copyright (C) 2009 Antonio Ospite <ospite@studenti.unina.it>
- *
- * Inspired by leds-wm8350 driver.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -35,10 +29,7 @@ static inline int led_regulator_get_max_brightness(struct regulator *supply)
 	if (voltage <= 0)
 		return 1;
 
-	/* even if regulator can't change voltages,
-	 * we still assume it can change status
-	 * and the LED can be turned on and off.
-	 */
+	 
 	ret = regulator_set_voltage(supply, voltage, voltage);
 	if (ret < 0)
 		return 1;
@@ -143,7 +134,7 @@ static int regulator_led_probe(struct platform_device *pdev)
 	init_data.fwnode = dev->fwnode;
 
 	led->cdev.max_brightness = led_regulator_get_max_brightness(vcc);
-	/* Legacy platform data label assignment */
+	 
 	if (pdata) {
 		if (pdata->brightness > led->cdev.max_brightness) {
 			dev_err(dev, "Invalid default brightness %d\n",
@@ -158,7 +149,7 @@ static int regulator_led_probe(struct platform_device *pdev)
 	led->cdev.flags |= LED_CORE_SUSPENDRESUME;
 	led->vcc = vcc;
 
-	/* to handle correctly an already enabled regulator */
+	 
 	if (regulator_is_enabled(led->vcc))
 		led->enabled = 1;
 

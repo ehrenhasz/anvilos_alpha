@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2018 Christian Hewitt
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * Keymap for the Tanix TX3 mini STB remote control
- */
+ 
 
 static struct rc_map_table tanix_tx3mini[] = {
 	{ 0x8051, KEY_POWER },
@@ -32,7 +30,7 @@ static struct rc_map_table tanix_tx3mini[] = {
 	{ 0x800d, KEY_OK },
 
 	{ 0x8049, KEY_MENU },
-	{ 0x8052, KEY_EPG }, // mouse
+	{ 0x8052, KEY_EPG }, 
 
 	{ 0x8031, KEY_1 },
 	{ 0x8032, KEY_2 },
@@ -46,7 +44,7 @@ static struct rc_map_table tanix_tx3mini[] = {
 	{ 0x8038, KEY_8 },
 	{ 0x8039, KEY_9 },
 
-	{ 0x8058, KEY_SUBTITLE }, // 1/a
+	{ 0x8058, KEY_SUBTITLE }, 
 	{ 0x8030, KEY_0 },
 	{ 0x8044, KEY_DELETE },
 };

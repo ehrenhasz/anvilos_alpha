@@ -1,22 +1,6 @@
-/* unicode.c - functions to convert unicode characters */
+ 
 
-/* Copyright (C) 2010-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -47,7 +31,7 @@
 
 #if !defined (STREQ)
 #  define STREQ(a, b) ((a)[0] == (b)[0] && strcmp ((a), (b)) == 0)
-#endif /* !STREQ */
+#endif  
 
 #if defined (HAVE_LOCALE_CHARSET)
 extern const char *locale_charset PARAMS((void));
@@ -107,7 +91,7 @@ u32reset ()
   utf8locale = 0;
 }
 
-/* u32toascii ? */
+ 
 int
 u32tochar (x, s)
      unsigned long x;
@@ -119,7 +103,7 @@ u32tochar (x, s)
 
   if (x <= UCHAR_MAX)
     s[0] = x & 0xFF;
-  else if (x <= USHORT_MAX)	/* assume unsigned short = 16 bits */
+  else if (x <= USHORT_MAX)	 
     {
       s[0] = (x >> 8) & 0xFF;
       s[1] = x & 0xFF;
@@ -149,7 +133,7 @@ u32tocesc (wc, s)
   return l;
 }
 
-/* Convert unsigned 32-bit int to utf-8 character string */
+ 
 int
 u32toutf8 (wc, s)
      u_bits32_t wc;
@@ -170,7 +154,7 @@ u32toutf8 (wc, s)
     }
   else if (wc < 0x10000)
     {
-      /* Technically, we could return 0 here if 0xd800 <= wc <= 0x0dfff */
+       
       s[0] = (wc >> 12) | 0xe0;
       s[1] = ((wc >> 6) & 0x3f) | 0x80;
       s[2] = (wc & 0x3f) | 0x80;
@@ -184,7 +168,7 @@ u32toutf8 (wc, s)
       s[3] = (wc & 0x3f) | 0x80;
       l = 4;
     }
-  /* Strictly speaking, UTF-8 doesn't have characters longer than 4 bytes */
+   
   else if (wc < 0x04000000)
     {
       s[0] = (wc >> 24) | 0xf8;
@@ -211,8 +195,7 @@ u32toutf8 (wc, s)
   return l;
 }
 
-/* Convert a 32-bit unsigned int (unicode) to a UTF-16 string.  Rarely used,
-   only if sizeof(wchar_t) == 2. */
+ 
 int
 u32toutf16 (c, s)
      u_bits32_t c;
@@ -237,8 +220,7 @@ u32toutf16 (c, s)
   return l;
 }
 
-/* convert a single unicode-32 character into a multibyte string and put the
-   result in S, which must be large enough (at least max(10,MB_LEN_MAX) bytes) */
+ 
 int
 u32cconv (c, s)
      unsigned long c;
@@ -268,7 +250,7 @@ u32cconv (c, s)
 #endif
 
 #if HAVE_ICONV
-  /* this is mostly from coreutils-8.5/lib/unicodeio.c */
+   
   if (u32init == 0)
     {
       utf8locale = locale_utf8locale;
@@ -284,22 +266,20 @@ u32cconv (c, s)
 #endif
 	  localconv = iconv_open (charset, "UTF-8");
 	  if (localconv == (iconv_t)-1)
-	    /* We assume ASCII when presented with an unknown encoding. */
+	     
 	    localconv = iconv_open ("ASCII", "UTF-8");
 	}
       u32init = 1;
     }
 
-  /* NL_LANGINFO and locale_charset used when setting locale_utf8locale */
+   
   
-  /* If we have a UTF-8 locale, convert to UTF-8 and return converted value. */
+   
   n = u32toutf8 (c, s);
   if (utf8locale)
     return n;
 
-  /* If the conversion is not supported, even the ASCII requested above, we
-     bail now.  Currently we return the UTF-8 conversion.  We could return
-     u32tocesc(). */
+   
   if (localconv == (iconv_t)-1)
     return n;
     
@@ -312,23 +292,22 @@ u32cconv (c, s)
 
   if (iconv (localconv, (ICONV_CONST char **)&iptr, &sn, &optr, &obytesleft) == (size_t)-1)
     {
-      /* You get ISO C99 escape sequences if iconv fails */      
+             
       n = u32tocesc (c, s);
       return n;
     }
 
   *optr = '\0';
 
-  /* number of chars to be copied is optr - obuf if we want to do bounds
-     checking */
+   
   strcpy (s, obuf);
   return (optr - obuf);
-#endif	/* HAVE_ICONV */
+#endif	 
 
   if (locale_utf8locale)
     n = u32toutf8 (c, s);
   else
-    n = u32tocesc (c, s);	/* fallback is ISO C99 escape sequences */
+    n = u32tocesc (c, s);	 
   return n;
 }
 #else
@@ -336,4 +315,4 @@ void
 u32reset ()
 {
 }
-#endif /* HANDLE_MULTIBYTE */
+#endif  

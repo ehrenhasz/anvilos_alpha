@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2020 Linaro Limited
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- *
- * The powercap based Dynamic Thermal Power Management framework
- * provides to the userspace a consistent API to set the power limit
- * on some devices.
- *
- * DTPM defines the functions to create a tree of constraints. Each
- * parent node is a virtual description of the aggregation of the
- * children. It propagates the constraints set at its level to its
- * children and collect the children power information. The leaves of
- * the tree are the real devices which have the ability to get their
- * current power consumption and set their power limit.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/dtpm.h>
@@ -124,15 +109,7 @@ static void __dtpm_add_power(struct dtpm *dtpm)
 	}
 }
 
-/**
- * dtpm_update_power - Update the power on the dtpm
- * @dtpm: a pointer to a dtpm structure to update
- *
- * Function to update the power values of the dtpm node specified in
- * parameter. These new values will be propagated to the tree.
- *
- * Return: zero on success, -EINVAL if the values are inconsistent
- */
+ 
 int dtpm_update_power(struct dtpm *dtpm)
 {
 	int ret;
@@ -155,17 +132,7 @@ int dtpm_update_power(struct dtpm *dtpm)
 	return ret;
 }
 
-/**
- * dtpm_release_zone - Cleanup when the node is released
- * @pcz: a pointer to a powercap_zone structure
- *
- * Do some housecleaning and update the weight on the tree. The
- * release will be denied if the node has children. This function must
- * be called by the specific release callback of the different
- * backends.
- *
- * Return: 0 on success, -EBUSY if there are children
- */
+ 
 int dtpm_release_zone(struct powercap_zone *pcz)
 {
 	struct dtpm *dtpm = to_dtpm(pcz);
@@ -195,22 +162,14 @@ static int get_power_limit_uw(struct powercap_zone *pcz,
 	return 0;
 }
 
-/*
- * Set the power limit on the nodes, the power limit is distributed
- * given the weight of the children.
- *
- * The dtpm node lock must be held when calling this function.
- */
+ 
 static int __set_power_limit_uw(struct dtpm *dtpm, int cid, u64 power_limit)
 {
 	struct dtpm *child;
 	int ret = 0;
 	u64 power;
 
-	/*
-	 * A max power limitation means we remove the power limit,
-	 * otherwise we set a constraint and flag the dtpm node.
-	 */
+	 
 	if (power_limit == dtpm->power_max) {
 		clear_bit(DTPM_POWER_LIMIT_FLAG, &dtpm->flags);
 	} else {
@@ -220,9 +179,7 @@ static int __set_power_limit_uw(struct dtpm *dtpm, int cid, u64 power_limit)
 	pr_debug("Setting power limit for '%s': %llu uW\n",
 		 dtpm->zone.name, power_limit);
 
-	/*
-	 * Only leaves of the dtpm tree has ops to get/set the power
-	 */
+	 
 	if (dtpm->ops) {
 		dtpm->power_limit = dtpm->ops->set_power_uw(dtpm, power_limit);
 	} else {
@@ -230,14 +187,7 @@ static int __set_power_limit_uw(struct dtpm *dtpm, int cid, u64 power_limit)
 
 		list_for_each_entry(child, &dtpm->children, sibling) {
 
-			/*
-			 * Integer division rounding will inevitably
-			 * lead to a different min or max value when
-			 * set several times. In order to restore the
-			 * initial value, we force the child's min or
-			 * max power every time if the constraint is
-			 * at the boundaries.
-			 */
+			 
 			if (power_limit == dtpm->power_max) {
 				power = child->power_max;
 			} else if (power_limit == dtpm->power_min) {
@@ -270,10 +220,7 @@ static int set_power_limit_uw(struct powercap_zone *pcz,
 	struct dtpm *dtpm = to_dtpm(pcz);
 	int ret;
 
-	/*
-	 * Don't allow values outside of the power range previously
-	 * set when initializing the power numbers.
-	 */
+	 
 	power_limit = clamp_val(power_limit, dtpm->power_min, dtpm->power_max);
 
 	ret = __set_power_limit_uw(dtpm, cid, power_limit);
@@ -311,11 +258,7 @@ static struct powercap_zone_ops zone_ops = {
 	.release = dtpm_release_zone,
 };
 
-/**
- * dtpm_init - Allocate and initialize a dtpm struct
- * @dtpm: The dtpm struct pointer to be initialized
- * @ops: The dtpm device specific ops, NULL for a virtual node
- */
+ 
 void dtpm_init(struct dtpm *dtpm, struct dtpm_ops *ops)
 {
 	if (dtpm) {
@@ -326,13 +269,7 @@ void dtpm_init(struct dtpm *dtpm, struct dtpm_ops *ops)
 	}
 }
 
-/**
- * dtpm_unregister - Unregister a dtpm node from the hierarchy tree
- * @dtpm: a pointer to a dtpm structure corresponding to the node to be removed
- *
- * Call the underlying powercap unregister function. That will call
- * the release callback of the powercap zone.
- */
+ 
 void dtpm_unregister(struct dtpm *dtpm)
 {
 	powercap_unregister_zone(pct, &dtpm->zone);
@@ -340,28 +277,7 @@ void dtpm_unregister(struct dtpm *dtpm)
 	pr_debug("Unregistered dtpm node '%s'\n", dtpm->zone.name);
 }
 
-/**
- * dtpm_register - Register a dtpm node in the hierarchy tree
- * @name: a string specifying the name of the node
- * @dtpm: a pointer to a dtpm structure corresponding to the new node
- * @parent: a pointer to a dtpm structure corresponding to the parent node
- *
- * Create a dtpm node in the tree. If no parent is specified, the node
- * is the root node of the hierarchy. If the root node already exists,
- * then the registration will fail. The powercap controller must be
- * initialized before calling this function.
- *
- * The dtpm structure must be initialized with the power numbers
- * before calling this function.
- *
- * Return: zero on success, a negative value in case of error:
- *  -EAGAIN: the function is called before the framework is initialized.
- *  -EBUSY: the root node is already inserted
- *  -EINVAL: * there is no root node yet and @parent is specified
- *           * no all ops are defined
- *           * parent have ops which are reserved for leaves
- *   Other negative values are reported back from the powercap framework
- */
+ 
 int dtpm_register(const char *name, struct dtpm *dtpm, struct dtpm *parent)
 {
 	struct powercap_zone *pcz;
@@ -461,10 +377,7 @@ static struct dtpm *dtpm_setup_dt(const struct dtpm_node *hierarchy,
 
 	of_node_put(np);
 
-	/*
-	 * By returning a NULL pointer, we let know the caller there
-	 * is no child for us as we are a leaf of the tree
-	 */
+	 
 	return NULL;
 }
 
@@ -488,24 +401,11 @@ static int dtpm_for_each_child(const struct dtpm_node *hierarchy,
 
 		dtpm = dtpm_node_callback[hierarchy[i].type](&hierarchy[i], parent);
 
-		/*
-		 * A NULL pointer means there is no children, hence we
-		 * continue without going deeper in the recursivity.
-		 */
+		 
 		if (!dtpm)
 			continue;
 
-		/*
-		 * There are multiple reasons why the callback could
-		 * fail. The generic glue is abstracting the backend
-		 * and therefore it is not possible to report back or
-		 * take a decision based on the error.  In any case,
-		 * if this call fails, it is not critical in the
-		 * hierarchy creation, we can assume the underlying
-		 * service is not found, so we continue without this
-		 * branch in the tree but with a warning to log the
-		 * information the node was not created.
-		 */
+		 
 		if (IS_ERR(dtpm)) {
 			pr_warn("Failed to create '%s' in the hierarchy\n",
 				hierarchy[i].name);
@@ -520,32 +420,7 @@ static int dtpm_for_each_child(const struct dtpm_node *hierarchy,
 	return 0;
 }
 
-/**
- * dtpm_create_hierarchy - Create the dtpm hierarchy
- * @hierarchy: An array of struct dtpm_node describing the hierarchy
- *
- * The function is called by the platform specific code with the
- * description of the different node in the hierarchy. It creates the
- * tree in the sysfs filesystem under the powercap dtpm entry.
- *
- * The expected tree has the format:
- *
- * struct dtpm_node hierarchy[] = {
- *	[0] { .name = "topmost", type =  DTPM_NODE_VIRTUAL },
- *	[1] { .name = "package", .type = DTPM_NODE_VIRTUAL, .parent = &hierarchy[0] },
- *	[2] { .name = "/cpus/cpu0", .type = DTPM_NODE_DT, .parent = &hierarchy[1] },
- *	[3] { .name = "/cpus/cpu1", .type = DTPM_NODE_DT, .parent = &hierarchy[1] },
- *	[4] { .name = "/cpus/cpu2", .type = DTPM_NODE_DT, .parent = &hierarchy[1] },
- *	[5] { .name = "/cpus/cpu3", .type = DTPM_NODE_DT, .parent = &hierarchy[1] },
- *	[6] { }
- * };
- *
- * The last element is always an empty one and marks the end of the
- * array.
- *
- * Return: zero on success, a negative value in case of error. Errors
- * are reported back from the underlying functions.
- */
+ 
 int dtpm_create_hierarchy(struct of_device_id *dtpm_match_table)
 {
 	const struct of_device_id *match;
@@ -622,10 +497,7 @@ static void __dtpm_destroy_hierarchy(struct dtpm *dtpm)
 	list_for_each_entry_safe(child, aux, &dtpm->children, sibling)
 		__dtpm_destroy_hierarchy(child);
 
-	/*
-	 * At this point, we know all children were removed from the
-	 * recursive call before
-	 */
+	 
 	dtpm_unregister(dtpm);
 }
 

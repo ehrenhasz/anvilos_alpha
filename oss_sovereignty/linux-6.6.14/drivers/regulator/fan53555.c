@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// FAN53555 Fairchild Digitally Programmable TinyBuck Regulator Driver.
-//
-// Supported Part Numbers:
-// FAN53555UC00X/01X/03X/04X/05X
-//
-// Copyright (c) 2012 Marvell Technology Ltd.
-// Yunfan Zhang <yfzhang@marvell.com>
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -22,7 +22,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* Voltage setting */
+ 
 #define FAN53555_VSEL0		0x00
 #define FAN53555_VSEL1		0x01
 
@@ -34,29 +34,29 @@
 #define TCS4525_TIME		0x13
 #define TCS4525_COMMAND		0x14
 
-/* Control register */
+ 
 #define FAN53555_CONTROL	0x02
-/* IC Type */
+ 
 #define FAN53555_ID1		0x03
-/* IC mask version */
+ 
 #define FAN53555_ID2		0x04
-/* Monitor register */
+ 
 #define FAN53555_MONITOR	0x05
 
-/* VSEL bit definitions */
+ 
 #define VSEL_BUCK_EN		BIT(7)
 #define VSEL_MODE		BIT(6)
-/* Chip ID and Verison */
-#define DIE_ID			0x0F	/* ID1 */
-#define DIE_REV			0x0F	/* ID2 */
-/* Control bit definitions */
+ 
+#define DIE_ID			0x0F	 
+#define DIE_REV			0x0F	 
+ 
 #define CTL_OUTPUT_DISCHG	BIT(7)
 #define CTL_SLEW_MASK		GENMASK(6, 4)
 #define CTL_RESET		BIT(2)
 #define CTL_MODE_VSEL0_MODE	BIT(0)
 #define CTL_MODE_VSEL1_MODE	BIT(1)
 
-#define FAN53555_NVOLTAGES	64	/* Numbers of voltages */
+#define FAN53555_NVOLTAGES	64	 
 #define FAN53526_NVOLTAGES	128
 #define RK8602_NVOLTAGES	160
 
@@ -68,8 +68,8 @@
 enum fan53555_vendor {
 	FAN53526_VENDOR_FAIRCHILD = 0,
 	FAN53555_VENDOR_FAIRCHILD,
-	FAN53555_VENDOR_ROCKCHIP,	/* RK8600, RK8601 */
-	RK8602_VENDOR_ROCKCHIP,		/* RK8602, RK8603 */
+	FAN53555_VENDOR_ROCKCHIP,	 
+	RK8602_VENDOR_ROCKCHIP,		 
 	FAN53555_VENDOR_SILERGY,
 	FAN53526_VENDOR_TCS,
 };
@@ -82,7 +82,7 @@ enum {
 	FAN53526_CHIP_REV_08 = 8,
 };
 
-/* IC Type */
+ 
 enum {
 	FAN53555_CHIP_ID_00 = 0,
 	FAN53555_CHIP_ID_01,
@@ -94,11 +94,11 @@ enum {
 };
 
 enum {
-	RK8600_CHIP_ID_08 = 8,		/* RK8600, RK8601 */
+	RK8600_CHIP_ID_08 = 8,		 
 };
 
 enum {
-	RK8602_CHIP_ID_10 = 10,		/* RK8602, RK8603 */
+	RK8602_CHIP_ID_10 = 10,		 
 };
 
 enum {
@@ -109,7 +109,7 @@ enum {
 	TCS4526_CHIP_ID_00 = 0,
 };
 
-/* IC mask revision */
+ 
 enum {
 	FAN53555_CHIP_REV_00 = 0x3,
 	FAN53555_CHIP_REV_13 = 0xf,
@@ -125,24 +125,24 @@ struct fan53555_device_info {
 	struct device *dev;
 	struct regulator_desc desc;
 	struct regulator_init_data *regulator;
-	/* IC Type and Rev */
+	 
 	int chip_id;
 	int chip_rev;
-	/* Voltage setting register */
+	 
 	unsigned int vol_reg;
 	unsigned int sleep_reg;
 	unsigned int en_reg;
 	unsigned int sleep_en_reg;
-	/* Voltage range and step(linear) */
+	 
 	unsigned int vsel_min;
 	unsigned int vsel_step;
 	unsigned int vsel_count;
-	/* Mode */
+	 
 	unsigned int mode_reg;
 	unsigned int mode_mask;
-	/* Sleep voltage cache */
+	 
 	unsigned int sleep_vol_cache;
-	/* Slew rate */
+	 
 	unsigned int slew_reg;
 	unsigned int slew_mask;
 	const unsigned int *ramp_delay_table;
@@ -164,8 +164,7 @@ static int fan53555_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 				 di->desc.vsel_mask, ret);
 	if (ret < 0)
 		return ret;
-	/* Cache the sleep voltage setting.
-	 * Might not be the real voltage which is rounded */
+	 
 	di->sleep_vol_cache = uV;
 
 	return 0;
@@ -257,7 +256,7 @@ static const struct regulator_ops fan53555_regulator_ops = {
 
 static int fan53526_voltages_setup_fairchild(struct fan53555_device_info *di)
 {
-	/* Init voltage range and step */
+	 
 	switch (di->chip_id) {
 	case FAN53526_CHIP_ID_01:
 		switch (di->chip_rev) {
@@ -289,7 +288,7 @@ static int fan53526_voltages_setup_fairchild(struct fan53555_device_info *di)
 
 static int fan53555_voltages_setup_fairchild(struct fan53555_device_info *di)
 {
-	/* Init voltage range and step */
+	 
 	switch (di->chip_id) {
 	case FAN53555_CHIP_ID_00:
 		switch (di->chip_rev) {
@@ -335,7 +334,7 @@ static int fan53555_voltages_setup_fairchild(struct fan53555_device_info *di)
 
 static int fan53555_voltages_setup_rockchip(struct fan53555_device_info *di)
 {
-	/* Init voltage range and step */
+	 
 	switch (di->chip_id) {
 	case RK8600_CHIP_ID_08:
 		di->vsel_min = 712500;
@@ -357,7 +356,7 @@ static int fan53555_voltages_setup_rockchip(struct fan53555_device_info *di)
 
 static int rk8602_voltages_setup_rockchip(struct fan53555_device_info *di)
 {
-	/* Init voltage range and step */
+	 
 	switch (di->chip_id) {
 	case RK8602_CHIP_ID_10:
 		di->vsel_min = 500000;
@@ -379,7 +378,7 @@ static int rk8602_voltages_setup_rockchip(struct fan53555_device_info *di)
 
 static int fan53555_voltages_setup_silergy(struct fan53555_device_info *di)
 {
-	/* Init voltage range and step */
+	 
 	switch (di->chip_id) {
 	case SILERGY_SYR82X:
 	case SILERGY_SYR83X:
@@ -410,7 +409,7 @@ static int fan53526_voltages_setup_tcs(struct fan53555_device_info *di)
 		di->ramp_delay_table = tcs_slew_rates;
 		di->n_ramp_values = ARRAY_SIZE(tcs_slew_rates);
 
-		/* Init voltage range and step */
+		 
 		di->vsel_min = 600000;
 		di->vsel_step = 6250;
 		di->vsel_count = FAN53526_NVOLTAGES;
@@ -423,17 +422,13 @@ static int fan53526_voltages_setup_tcs(struct fan53555_device_info *di)
 	return 0;
 }
 
-/* For 00,01,03,05 options:
- * VOUT = 0.60V + NSELx * 10mV, from 0.60 to 1.23V.
- * For 04 option:
- * VOUT = 0.603V + NSELx * 12.826mV, from 0.603 to 1.411V.
- * */
+ 
 static int fan53555_device_setup(struct fan53555_device_info *di,
 				struct fan53555_platform_data *pdata)
 {
 	int ret = 0;
 
-	/* Setup voltage control register */
+	 
 	switch (di->vendor) {
 	case FAN53526_VENDOR_FAIRCHILD:
 	case FAN53555_VENDOR_FAIRCHILD:
@@ -496,7 +491,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 		return -EINVAL;
 	}
 
-	/* Setup mode control register */
+	 
 	switch (di->vendor) {
 	case FAN53526_VENDOR_FAIRCHILD:
 		di->mode_reg = FAN53555_CONTROL;
@@ -545,7 +540,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 		return -EINVAL;
 	}
 
-	/* Setup voltage range */
+	 
 	switch (di->vendor) {
 	case FAN53526_VENDOR_FAIRCHILD:
 		ret = fan53526_voltages_setup_fairchild(di);
@@ -686,7 +681,7 @@ static int fan53555_regulator_probe(struct i2c_client *client)
 		di->vendor =
 			(unsigned long)of_device_get_match_data(&client->dev);
 	} else {
-		/* if no ramp constraint set, get the pdata ramp_delay */
+		 
 		if (!di->regulator->constraints.ramp_delay) {
 			if (pdata->slew_rate >= ARRAY_SIZE(slew_rates))
 				return dev_err_probe(&client->dev, -EINVAL,
@@ -706,13 +701,13 @@ static int fan53555_regulator_probe(struct i2c_client *client)
 
 	di->dev = &client->dev;
 	i2c_set_clientdata(client, di);
-	/* Get chip ID */
+	 
 	ret = regmap_read(regmap, FAN53555_ID1, &val);
 	if (ret < 0)
 		return dev_err_probe(&client->dev, ret, "Failed to get chip ID!\n");
 
 	di->chip_id = val & DIE_ID;
-	/* Get chip revision */
+	 
 	ret = regmap_read(regmap, FAN53555_ID2, &val);
 	if (ret < 0)
 		return dev_err_probe(&client->dev, ret, "Failed to get chip Rev!\n");
@@ -720,12 +715,12 @@ static int fan53555_regulator_probe(struct i2c_client *client)
 	di->chip_rev = val & DIE_REV;
 	dev_info(&client->dev, "FAN53555 Option[%d] Rev[%d] Detected!\n",
 				di->chip_id, di->chip_rev);
-	/* Device init */
+	 
 	ret = fan53555_device_setup(di, pdata);
 	if (ret < 0)
 		return dev_err_probe(&client->dev, ret, "Failed to setup device!\n");
 
-	/* Register regulator */
+	 
 	config.dev = di->dev;
 	config.init_data = di->regulator;
 	config.regmap = regmap;

@@ -1,25 +1,6 @@
-/*
- *   Copyright (c) 2011, 2012, Atheros Communications Inc.
- *   Copyright (c) 2014, I2SE GmbH
- *
- *   Permission to use, copy, modify, and/or distribute this software
- *   for any purpose with or without fee is hereby granted, provided
- *   that the above copyright notice and this permission notice appear
- *   in all copies.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
- *   WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- *   THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
- *   CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
- *   LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- *   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/*   Atheros ethernet framing. Every Ethernet frame is surrounded
- *   by an atheros frame while transmitted over a serial channel;
- */
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -62,16 +43,7 @@ qcafrm_create_footer(u8 *buf)
 }
 EXPORT_SYMBOL_GPL(qcafrm_create_footer);
 
-/*   Gather received bytes and try to extract a full ethernet frame by
- *   following a simple state machine.
- *
- * Return:   QCAFRM_GATHER       No ethernet frame fully received yet.
- *           QCAFRM_NOHEAD       Header expected but not found.
- *           QCAFRM_INVLEN       Atheros frame length is invalid
- *           QCAFRM_NOTAIL       Footer expected but not found.
- *           > 0                 Number of byte in the fully received
- *                               Ethernet frame
- */
+ 
 
 s32
 qcafrm_fsm_decode(struct qcafrm_handle *handle, u8 *buf, u16 buf_len, u8 recv_byte)
@@ -82,11 +54,11 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle, u8 *buf, u16 buf_len, u8 recv_by
 	switch (handle->state) {
 	case QCAFRM_HW_LEN0:
 	case QCAFRM_HW_LEN1:
-		/* by default, just go to next state */
+		 
 		handle->state--;
 
 		if (recv_byte != 0x00) {
-			/* first two bytes of length must be 0 */
+			 
 			handle->state = handle->init;
 		}
 		break;
@@ -94,7 +66,7 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle, u8 *buf, u16 buf_len, u8 recv_by
 	case QCAFRM_HW_LEN3:
 		handle->state--;
 		break;
-	/* 4 bytes header pattern */
+	 
 	case QCAFRM_WAIT_AA1:
 	case QCAFRM_WAIT_AA2:
 	case QCAFRM_WAIT_AA3:
@@ -106,8 +78,8 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle, u8 *buf, u16 buf_len, u8 recv_by
 			handle->state--;
 		}
 		break;
-		/* 2 bytes length. */
-		/* Borrow offset field to hold length for now. */
+		 
+		 
 	case QCAFRM_WAIT_LEN_BYTE0:
 		handle->offset = recv_byte;
 		handle->state = QCAFRM_WAIT_LEN_BYTE1;
@@ -126,12 +98,12 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle, u8 *buf, u16 buf_len, u8 recv_by
 			handle->state = handle->init;
 		} else {
 			handle->state = (enum qcafrm_state)(len + 1);
-			/* Remaining number of bytes. */
+			 
 			handle->offset = 0;
 		}
 		break;
 	default:
-		/* Receiving Ethernet frame itself. */
+		 
 		buf[handle->offset] = recv_byte;
 		handle->offset++;
 		handle->state--;
@@ -150,7 +122,7 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle, u8 *buf, u16 buf_len, u8 recv_by
 			handle->state = handle->init;
 		} else {
 			ret = handle->offset;
-			/* Frame is fully received. */
+			 
 			handle->state = handle->init;
 		}
 		break;

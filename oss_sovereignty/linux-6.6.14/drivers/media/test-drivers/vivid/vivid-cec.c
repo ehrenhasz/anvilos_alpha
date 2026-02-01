@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-cec.c - A Virtual Video Test Driver, cec emulation
- *
- * Copyright 2016 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <media/cec.h>
@@ -62,13 +58,7 @@ static bool xfer_ready(struct vivid_dev *dev)
 	return ready;
 }
 
-/*
- * If an adapter tries to send successive messages, it must wait for the
- * longest signal-free time between its transmissions. But, if another
- * adapter sends a message in the interim, then the wait can be reduced
- * because the messages are no longer successive. Make these adjustments
- * if necessary. Should be called holding cec_xfers_slock.
- */
+ 
 static void adjust_sfts(struct vivid_dev *dev)
 {
 	unsigned int i;
@@ -85,14 +75,7 @@ static void adjust_sfts(struct vivid_dev *dev)
 	}
 }
 
-/*
- * The main emulation of the bus on which CEC adapters attempt to send
- * messages to each other. The bus keeps track of how long it has been
- * signal-free and accepts a pending transmission only if the state of
- * the bus matches the transmission's signal-free requirements. It calls
- * cec_transmit_attempt_done() for all transmits that enter the bus and
- * cec_received_msg() for successful transmits.
- */
+ 
 int vivid_cec_bus_thread(void *_dev)
 {
 	u32 last_sft;
@@ -119,11 +102,7 @@ int vivid_cec_bus_thread(void *_dev)
 			break;
 		last_sft = dev->cec_sft;
 		dev->cec_sft = 0;
-		/*
-		 * Move the messages that are ready onto the bus. The adapter with
-		 * the most leading zeros will win control of the bus and any other
-		 * adapters will lose arbitration.
-		 */
+		 
 		spin_lock(&dev->cec_xfers_slock);
 		for (i = 0; i < ARRAY_SIZE(dev->xfers); i++) {
 			if (!dev->xfers[i].sft || dev->xfers[i].sft > last_sft)
@@ -137,11 +116,7 @@ int vivid_cec_bus_thread(void *_dev)
 			} else {
 				xfers_on_bus[i].adap = dev->xfers[i].adap;
 				xfers_on_bus[i].status = CEC_TX_STATUS_ARB_LOST;
-				/*
-				 * For simplicity wait for all 4 bits of the initiator's
-				 * address even though HDMI specification uses bit-level
-				 * precision.
-				 */
+				 
 				wait_arb_lost_us = 4 * CEC_DATA_BIT_US + CEC_START_BIT_US;
 			}
 			dev->xfers[i].sft = 0;
@@ -156,23 +131,17 @@ int vivid_cec_bus_thread(void *_dev)
 			valid_dest = find_dest_adap(dev, xfers_on_bus[first_idx].adap, dest);
 		if (valid_dest) {
 			first_status = CEC_TX_STATUS_OK;
-			/*
-			 * Message length is in bytes, but each byte is transmitted in
-			 * a block of 10 bits.
-			 */
+			 
 			wait_xfer_us = first_msg.len * 10 * CEC_DATA_BIT_US;
 		} else {
 			first_status = CEC_TX_STATUS_NACK;
-			/*
-			 * A message that is not acknowledged stops transmitting after
-			 * the header block of 10 bits.
-			 */
+			 
 			wait_xfer_us = 10 * CEC_DATA_BIT_US;
 		}
 		wait_xfer_us += CEC_START_BIT_US;
 		xfers_on_bus[first_idx].status = first_status;
 
-		/* Sleep as if sending messages on a real hardware bus. */
+		 
 		start = ktime_get();
 		if (wait_arb_lost_us) {
 			usleep_range(wait_arb_lost_us - CEC_MARGIN_US, wait_arb_lost_us);
@@ -198,24 +167,14 @@ int vivid_cec_bus_thread(void *_dev)
 					cec_received_msg(dev->cec_tx_adap[i], &first_msg);
 		}
 		end = ktime_get();
-		/*
-		 * If the emulated transfer took more or less time than it should
-		 * have, then compensate by adjusting the wait time needed for the
-		 * bus to be signal-free for 3 bit periods (the retry time).
-		 */
+		 
 		delta_us = div_s64(end - start, 1000);
 		delta_us -= wait_xfer_us + wait_arb_lost_us;
 		retry_us = CEC_SIGNAL_FREE_TIME_RETRY * CEC_DATA_BIT_US - delta_us;
 		if (retry_us > CEC_MARGIN_US)
 			usleep_range(retry_us - CEC_MARGIN_US, retry_us);
 		dev->cec_sft = CEC_SIGNAL_FREE_TIME_RETRY;
-		/*
-		 * If there are no messages that need to be retried, check if any
-		 * adapters that did not just transmit a message are ready to
-		 * transmit. If none of these adapters are ready, then increase
-		 * the signal-free time so that the bus is available to all
-		 * adapters and go back to waiting for a transmission.
-		 */
+		 
 		while (dev->cec_sft >= CEC_SIGNAL_FREE_TIME_RETRY &&
 		       dev->cec_sft < CEC_SIGNAL_FREE_TIME_NEXT_XFER &&
 		       !xfer_ready(dev) && !kthread_should_stop()) {

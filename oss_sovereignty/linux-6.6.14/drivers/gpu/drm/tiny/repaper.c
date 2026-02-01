@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DRM driver for Pervasive Displays RePaper branded e-ink panels
- *
- * Copyright 2013-2017 Pervasive Displays, Inc.
- * Copyright 2017 Noralf Trønnes
- *
- * The driver supports:
- * Material Film: Aurora Mb (V231)
- * Driver IC: G2 (eTC)
- *
- * The controller code was taken from the userspace driver:
- * https://github.com/repaper/gratis
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -41,18 +29,18 @@
 #define REPAPER_RID_G2_COG_ID	0x12
 
 enum repaper_model {
-	/* 0 is reserved to avoid clashing with NULL */
+	 
 	E1144CS021 = 1,
 	E1190CS021,
 	E2200CS021,
 	E2271CS021,
 };
 
-enum repaper_stage {         /* Image pixel -> Display pixel */
-	REPAPER_COMPENSATE,  /* B -> W, W -> B (Current Image) */
-	REPAPER_WHITE,       /* B -> N, W -> W (Current Image) */
-	REPAPER_INVERSE,     /* B -> N, W -> B (New Image) */
-	REPAPER_NORMAL       /* B -> B, W -> W (New Image) */
+enum repaper_stage {          
+	REPAPER_COMPENSATE,   
+	REPAPER_WHITE,        
+	REPAPER_INVERSE,      
+	REPAPER_NORMAL        
 };
 
 enum repaper_epd_border_byte {
@@ -114,7 +102,7 @@ static int repaper_spi_transfer(struct spi_device *spi, u8 header,
 	tr[0].tx_buf = headerbuf;
 	tr[0].len = 1;
 
-	/* Stack allocated tx? */
+	 
 	if (tx && len <= 32) {
 		txbuf = kmemdup(tx, len, GFP_KERNEL);
 		if (!txbuf) {
@@ -196,7 +184,7 @@ static void repaper_spi_mosi_low(struct spi_device *spi)
 	spi_write(spi, buf, 1);
 }
 
-/* pixels on display are numbered from 1 so even is actually bits 1,3,5,... */
+ 
 static void repaper_even_pixels(struct repaper_epd *epd, u8 **pp,
 				const u8 *data, u8 fixed_value, const u8 *mask,
 				enum repaper_stage stage)
@@ -215,16 +203,16 @@ static void repaper_even_pixels(struct repaper_epd *epd, u8 **pp,
 			}
 
 			switch (stage) {
-			case REPAPER_COMPENSATE: /* B -> W, W -> B (Current) */
+			case REPAPER_COMPENSATE:  
 				pixels = 0xaa | ((pixels ^ 0xaa) >> 1);
 				break;
-			case REPAPER_WHITE:      /* B -> N, W -> W (Current) */
+			case REPAPER_WHITE:       
 				pixels = 0x55 + ((pixels ^ 0xaa) >> 1);
 				break;
-			case REPAPER_INVERSE:    /* B -> N, W -> B (New) */
+			case REPAPER_INVERSE:     
 				pixels = 0x55 | (pixels ^ 0xaa);
 				break;
-			case REPAPER_NORMAL:     /* B -> B, W -> W (New) */
+			case REPAPER_NORMAL:      
 				pixels = 0xaa | (pixels >> 1);
 				break;
 			}
@@ -242,7 +230,7 @@ static void repaper_even_pixels(struct repaper_epd *epd, u8 **pp,
 	}
 }
 
-/* pixels on display are numbered from 1 so odd is actually bits 0,2,4,... */
+ 
 static void repaper_odd_pixels(struct repaper_epd *epd, u8 **pp,
 			       const u8 *data, u8 fixed_value, const u8 *mask,
 			       enum repaper_stage stage)
@@ -260,16 +248,16 @@ static void repaper_odd_pixels(struct repaper_epd *epd, u8 **pp,
 			}
 
 			switch (stage) {
-			case REPAPER_COMPENSATE: /* B -> W, W -> B (Current) */
+			case REPAPER_COMPENSATE:  
 				pixels = 0xaa | (pixels ^ 0x55);
 				break;
-			case REPAPER_WHITE:      /* B -> N, W -> W (Current) */
+			case REPAPER_WHITE:       
 				pixels = 0x55 + (pixels ^ 0x55);
 				break;
-			case REPAPER_INVERSE:    /* B -> N, W -> B (New) */
+			case REPAPER_INVERSE:     
 				pixels = 0x55 | ((pixels ^ 0x55) << 1);
 				break;
-			case REPAPER_NORMAL:     /* B -> B, W -> W (New) */
+			case REPAPER_NORMAL:      
 				pixels = 0xaa | pixels;
 				break;
 			}
@@ -282,7 +270,7 @@ static void repaper_odd_pixels(struct repaper_epd *epd, u8 **pp,
 	}
 }
 
-/* interleave bits: (byte)76543210 -> (16 bit).7.6.5.4.3.2.1 */
+ 
 static inline u16 repaper_interleave_bits(u16 value)
 {
 	value = (value | (value << 4)) & 0x0f0f;
@@ -292,7 +280,7 @@ static inline u16 repaper_interleave_bits(u16 value)
 	return value;
 }
 
-/* pixels on display are numbered from 1 */
+ 
 static void repaper_all_pixels(struct repaper_epd *epd, u8 **pp,
 			       const u8 *data, u8 fixed_value, const u8 *mask,
 			       enum repaper_stage stage)
@@ -312,16 +300,16 @@ static void repaper_all_pixels(struct repaper_epd *epd, u8 **pp,
 			}
 
 			switch (stage) {
-			case REPAPER_COMPENSATE: /* B -> W, W -> B (Current) */
+			case REPAPER_COMPENSATE:  
 				pixels = 0xaaaa | (pixels ^ 0x5555);
 				break;
-			case REPAPER_WHITE:      /* B -> N, W -> W (Current) */
+			case REPAPER_WHITE:       
 				pixels = 0x5555 + (pixels ^ 0x5555);
 				break;
-			case REPAPER_INVERSE:    /* B -> N, W -> B (New) */
+			case REPAPER_INVERSE:     
 				pixels = 0x5555 | ((pixels ^ 0x5555) << 1);
 				break;
-			case REPAPER_NORMAL:     /* B -> B, W -> W (New) */
+			case REPAPER_NORMAL:      
 				pixels = 0xaaaa | pixels;
 				break;
 			}
@@ -336,7 +324,7 @@ static void repaper_all_pixels(struct repaper_epd *epd, u8 **pp,
 	}
 }
 
-/* output one line of scan and data bytes to the display */
+ 
 static void repaper_one_line(struct repaper_epd *epd, unsigned int line,
 			     const u8 *data, u8 fixed_value, const u8 *mask,
 			     enum repaper_stage stage)
@@ -350,10 +338,10 @@ static void repaper_one_line(struct repaper_epd *epd, unsigned int line,
 		*p++ = 0x00;
 
 	if (epd->middle_scan) {
-		/* data bytes */
+		 
 		repaper_odd_pixels(epd, &p, data, fixed_value, mask, stage);
 
-		/* scan line */
+		 
 		for (b = epd->bytes_per_scan; b > 0; b--) {
 			if (line / 4 == b - 1)
 				*p++ = 0x03 << (2 * (line & 0x03));
@@ -361,13 +349,10 @@ static void repaper_one_line(struct repaper_epd *epd, unsigned int line,
 				*p++ = 0x00;
 		}
 
-		/* data bytes */
+		 
 		repaper_even_pixels(epd, &p, data, fixed_value, mask, stage);
 	} else {
-		/*
-		 * even scan line, but as lines on display are numbered from 1,
-		 * line: 1,3,5,...
-		 */
+		 
 		for (b = 0; b < epd->bytes_per_scan; b++) {
 			if (0 != (line & 0x01) && line / 8 == b)
 				*p++ = 0xc0 >> (line & 0x06);
@@ -375,13 +360,10 @@ static void repaper_one_line(struct repaper_epd *epd, unsigned int line,
 				*p++ = 0x00;
 		}
 
-		/* data bytes */
+		 
 		repaper_all_pixels(epd, &p, data, fixed_value, mask, stage);
 
-		/*
-		 * odd scan line, but as lines on display are numbered from 1,
-		 * line: 0,2,4,6,...
-		 */
+		 
 		for (b = epd->bytes_per_scan; b > 0; b--) {
 			if (0 == (line & 0x01) && line / 8 == b - 1)
 				*p++ = 0x03 << (line & 0x06);
@@ -415,7 +397,7 @@ static void repaper_one_line(struct repaper_epd *epd, unsigned int line,
 	repaper_write_buf(epd->spi, 0x0a, epd->line_buffer,
 			  p - epd->line_buffer);
 
-	/* Output data to panel */
+	 
 	repaper_write_val(epd->spi, 0x02, 0x07);
 
 	repaper_spi_mosi_low(epd->spi);
@@ -522,7 +504,7 @@ static int repaper_fb_dirty(struct drm_framebuffer *fb)
 	if (!drm_dev_enter(fb->dev, &idx))
 		return -ENODEV;
 
-	/* repaper can't do partial updates */
+	 
 	clip.x1 = 0;
 	clip.x2 = fb->width;
 	clip.y1 = 0;
@@ -562,13 +544,13 @@ static int repaper_fb_dirty(struct drm_framebuffer *fb)
 
 		epd->partial = true;
 	} else {
-		/* Clear display (anything -> white) */
+		 
 		repaper_frame_fixed_repeat(epd, 0xff, REPAPER_COMPENSATE);
 		repaper_frame_fixed_repeat(epd, 0xff, REPAPER_WHITE);
 		repaper_frame_fixed_repeat(epd, 0xaa, REPAPER_INVERSE);
 		repaper_frame_fixed_repeat(epd, 0xaa, REPAPER_NORMAL);
 
-		/* Assuming a clear (white) screen output an image */
+		 
 		repaper_frame_fixed_repeat(epd, 0xaa, REPAPER_COMPENSATE);
 		repaper_frame_fixed_repeat(epd, 0xaa, REPAPER_WHITE);
 		repaper_frame_data_repeat(epd, buf, NULL, REPAPER_INVERSE);
@@ -580,10 +562,7 @@ static int repaper_fb_dirty(struct drm_framebuffer *fb)
 
 	memcpy(epd->current_frame, buf, fb->width * fb->height / 8);
 
-	/*
-	 * An extra frame write is needed if pixels are set in the bottom line,
-	 * or else grey lines rises up from the pixels
-	 */
+	 
 	if (epd->pre_border_byte) {
 		unsigned int x;
 
@@ -606,16 +585,16 @@ out_exit:
 
 static void power_off(struct repaper_epd *epd)
 {
-	/* Turn off power and all signals */
+	 
 	gpiod_set_value_cansleep(epd->reset, 0);
 	gpiod_set_value_cansleep(epd->panel_on, 0);
 	if (epd->border)
 		gpiod_set_value_cansleep(epd->border, 0);
 
-	/* Ensure SPI MOSI and CLOCK are Low before CS Low */
+	 
 	repaper_spi_mosi_low(epd->spi);
 
-	/* Discharge pulse */
+	 
 	gpiod_set_value_cansleep(epd->discharge, 1);
 	msleep(150);
 	gpiod_set_value_cansleep(epd->discharge, 0);
@@ -645,7 +624,7 @@ static void repaper_pipe_enable(struct drm_simple_display_pipe *pipe,
 
 	DRM_DEBUG_DRIVER("\n");
 
-	/* Power up sequence */
+	 
 	gpiod_set_value_cansleep(epd->reset, 0);
 	gpiod_set_value_cansleep(epd->panel_on, 0);
 	gpiod_set_value_cansleep(epd->discharge, 0);
@@ -655,10 +634,7 @@ static void repaper_pipe_enable(struct drm_simple_display_pipe *pipe,
 	usleep_range(5000, 10000);
 
 	gpiod_set_value_cansleep(epd->panel_on, 1);
-	/*
-	 * This delay comes from the repaper.org userspace driver, it's not
-	 * mentioned in the datasheet.
-	 */
+	 
 	usleep_range(10000, 15000);
 	gpiod_set_value_cansleep(epd->reset, 1);
 	if (epd->border)
@@ -669,7 +645,7 @@ static void repaper_pipe_enable(struct drm_simple_display_pipe *pipe,
 	gpiod_set_value_cansleep(epd->reset, 1);
 	usleep_range(5000, 10000);
 
-	/* Wait for COG to become ready */
+	 
 	for (i = 100; i > 0; i--) {
 		if (!gpiod_get_value_cansleep(epd->busy))
 			break;
@@ -694,7 +670,7 @@ static void repaper_pipe_enable(struct drm_simple_display_pipe *pipe,
 		goto out_exit;
 	}
 
-	/* Disable OE */
+	 
 	repaper_write_val(spi, 0x02, 0x40);
 
 	ret = repaper_read_val(spi, 0x0f);
@@ -707,39 +683,39 @@ static void repaper_pipe_enable(struct drm_simple_display_pipe *pipe,
 		goto out_exit;
 	}
 
-	/* Power saving mode */
+	 
 	repaper_write_val(spi, 0x0b, 0x02);
-	/* Channel select */
+	 
 	repaper_write_buf(spi, 0x01, epd->channel_select, 8);
-	/* High power mode osc */
+	 
 	repaper_write_val(spi, 0x07, 0xd1);
-	/* Power setting */
+	 
 	repaper_write_val(spi, 0x08, 0x02);
-	/* Vcom level */
+	 
 	repaper_write_val(spi, 0x09, 0xc2);
-	/* Power setting */
+	 
 	repaper_write_val(spi, 0x04, 0x03);
-	/* Driver latch on */
+	 
 	repaper_write_val(spi, 0x03, 0x01);
-	/* Driver latch off */
+	 
 	repaper_write_val(spi, 0x03, 0x00);
 	usleep_range(5000, 10000);
 
-	/* Start chargepump */
+	 
 	for (i = 0; i < 4; ++i) {
-		/* Charge pump positive voltage on - VGH/VDL on */
+		 
 		repaper_write_val(spi, 0x05, 0x01);
 		msleep(240);
 
-		/* Charge pump negative voltage on - VGL/VDL on */
+		 
 		repaper_write_val(spi, 0x05, 0x03);
 		msleep(40);
 
-		/* Charge pump Vcom on - Vcom driver on */
+		 
 		repaper_write_val(spi, 0x05, 0x0f);
 		msleep(40);
 
-		/* check DC/DC */
+		 
 		ret = repaper_read_val(spi, 0x0f);
 		if (ret < 0) {
 			DRM_DEV_ERROR(dev, "failed to read chip (%d)\n", ret);
@@ -759,10 +735,7 @@ static void repaper_pipe_enable(struct drm_simple_display_pipe *pipe,
 		goto out_exit;
 	}
 
-	/*
-	 * Output enable to disable
-	 * The userspace driver sets this to 0x04, but the datasheet says 0x06
-	 */
+	 
 	repaper_write_val(spi, 0x02, 0x04);
 
 	epd->partial = false;
@@ -776,23 +749,18 @@ static void repaper_pipe_disable(struct drm_simple_display_pipe *pipe)
 	struct spi_device *spi = epd->spi;
 	unsigned int line;
 
-	/*
-	 * This callback is not protected by drm_dev_enter/exit since we want to
-	 * turn off the display on regular driver unload. It's highly unlikely
-	 * that the underlying SPI controller is gone should this be called after
-	 * unplug.
-	 */
+	 
 
 	DRM_DEBUG_DRIVER("\n");
 
-	/* Nothing frame */
+	 
 	for (line = 0; line < epd->height; line++)
 		repaper_one_line(epd, 0x7fffu, NULL, 0x00, NULL,
 				 REPAPER_COMPENSATE);
 
-	/* 2.7" */
+	 
 	if (epd->border) {
-		/* Dummy line */
+		 
 		repaper_one_line(epd, 0x7fffu, NULL, 0x00, NULL,
 				 REPAPER_COMPENSATE);
 		msleep(25);
@@ -800,26 +768,26 @@ static void repaper_pipe_disable(struct drm_simple_display_pipe *pipe)
 		msleep(200);
 		gpiod_set_value_cansleep(epd->border, 1);
 	} else {
-		/* Border dummy line */
+		 
 		repaper_one_line(epd, 0x7fffu, NULL, 0x00, NULL,
 				 REPAPER_NORMAL);
 		msleep(200);
 	}
 
-	/* not described in datasheet */
+	 
 	repaper_write_val(spi, 0x0b, 0x00);
-	/* Latch reset turn on */
+	 
 	repaper_write_val(spi, 0x03, 0x01);
-	/* Power off charge pump Vcom */
+	 
 	repaper_write_val(spi, 0x05, 0x03);
-	/* Power off charge pump neg voltage */
+	 
 	repaper_write_val(spi, 0x05, 0x01);
 	msleep(120);
-	/* Discharge internal */
+	 
 	repaper_write_val(spi, 0x04, 0x80);
-	/* turn off all charge pumps */
+	 
 	repaper_write_val(spi, 0x05, 0x00);
-	/* Turn off osc */
+	 
 	repaper_write_val(spi, 0x07, 0x01);
 	msleep(50);
 
@@ -955,7 +923,7 @@ static int repaper_probe(struct spi_device *spi)
 		model = (enum repaper_model)spi_id->driver_data;
 	}
 
-	/* The SPI device is used to allocate dma memory */
+	 
 	if (!dev->coherent_dma_mask) {
 		ret = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(32));
 		if (ret) {
@@ -1025,7 +993,7 @@ static int repaper_probe(struct spi_device *spi)
 		epd->channel_select = repaper_e1144cs021_cs;
 		epd->stage_time = 480;
 		epd->bytes_per_scan = 96 / 4;
-		epd->middle_scan = true; /* data-scan-data */
+		epd->middle_scan = true;  
 		epd->pre_border_byte = false;
 		epd->border_byte = REPAPER_BORDER_BYTE_ZERO;
 		break;
@@ -1035,7 +1003,7 @@ static int repaper_probe(struct spi_device *spi)
 		epd->channel_select = repaper_e1190cs021_cs;
 		epd->stage_time = 480;
 		epd->bytes_per_scan = 128 / 4 / 2;
-		epd->middle_scan = false; /* scan-data-scan */
+		epd->middle_scan = false;  
 		epd->pre_border_byte = false;
 		epd->border_byte = REPAPER_BORDER_BYTE_SET;
 		break;
@@ -1045,7 +1013,7 @@ static int repaper_probe(struct spi_device *spi)
 		epd->channel_select = repaper_e2200cs021_cs;
 		epd->stage_time = 480;
 		epd->bytes_per_scan = 96 / 4;
-		epd->middle_scan = true; /* data-scan-data */
+		epd->middle_scan = true;  
 		epd->pre_border_byte = true;
 		epd->border_byte = REPAPER_BORDER_BYTE_NONE;
 		break;
@@ -1063,7 +1031,7 @@ static int repaper_probe(struct spi_device *spi)
 		epd->channel_select = repaper_e2271cs021_cs;
 		epd->stage_time = 630;
 		epd->bytes_per_scan = 176 / 4;
-		epd->middle_scan = true; /* data-scan-data */
+		epd->middle_scan = true;  
 		epd->pre_border_byte = true;
 		epd->border_byte = REPAPER_BORDER_BYTE_NONE;
 		break;

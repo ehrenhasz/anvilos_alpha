@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 The Linux Foundation. All rights reserved.
- *
- * lpass-cdc-dma.c -- ALSA SoC CDC DMA CPU DAI driver for QTi LPASS
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>

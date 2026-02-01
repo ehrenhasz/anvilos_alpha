@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	"TEE" target extension for Xtables
- *	Copyright © Sebastian Claßen, 2007
- *	Jan Engelhardt, 2007-2010
- *
- *	based on ipt_ROUTE.c from Cédric de Launois
- *	<delaunois@info.ucl.be>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/route.h>
@@ -29,7 +22,7 @@ static const union nf_inet_addr tee_zero_address;
 
 struct tee_net {
 	struct list_head priv_list;
-	/* lock protects the priv_list */
+	 
 	struct mutex lock;
 };
 
@@ -95,7 +88,7 @@ static int tee_tg_check(const struct xt_tgchk_param *par)
 	struct xt_tee_tginfo *info = par->targinfo;
 	struct xt_tee_priv *priv;
 
-	/* 0.0.0.0 and :: not allowed */
+	 
 	if (memcmp(&info->gw, &tee_zero_address,
 		   sizeof(tee_zero_address)) == 0)
 		return -EINVAL;

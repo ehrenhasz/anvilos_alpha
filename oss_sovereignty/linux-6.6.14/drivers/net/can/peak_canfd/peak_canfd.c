@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2007, 2011 Wolfgang Grandegger <wg@grandegger.com>
- * Copyright (C) 2012 Stephane Grosjean <s.grosjean@peak-system.com>
- *
- * Copyright (C) 2016  PEAK System-Technik GmbH
- */
+
+ 
 
 #include <linux/can.h>
 #include <linux/can/dev.h>
@@ -11,10 +7,10 @@
 
 #include "peak_canfd_user.h"
 
-/* internal IP core cache size (used as default echo skbs max number) */
+ 
 #define PCANFD_ECHO_SKB_MAX		24
 
-/* bittiming ranges of the PEAK-System PC CAN-FD interfaces */
+ 
 static const struct can_bittiming_const peak_canfd_nominal_const = {
 	.name = "peak_canfd",
 	.tseg1_min = 1,
@@ -54,7 +50,7 @@ static void *pucan_add_cmd(struct peak_canfd_priv *priv, int cmd_op)
 
 	cmd = priv->cmd_buffer + priv->cmd_len;
 
-	/* reset all unused bit to default */
+	 
 	memset(cmd, 0, sizeof(*cmd));
 
 	cmd->opcode_channel = pucan_cmd_opcode_channel(priv->index, cmd_op);
@@ -83,7 +79,7 @@ static int pucan_write_cmd(struct peak_canfd_priv *priv)
 	return err;
 }
 
-/* uCAN commands interface functions */
+ 
 static int pucan_set_reset_mode(struct peak_canfd_priv *priv)
 {
 	pucan_add_cmd(pucan_init_cmd(priv), PUCAN_CMD_RESET_MODE);
@@ -128,7 +124,7 @@ static int pucan_set_timing_slow(struct peak_canfd_priv *priv,
 	cmd->tseg2 = PUCAN_TSLOW_TSEG2(pbt->phase_seg2 - 1);
 	cmd->brp = cpu_to_le16(PUCAN_TSLOW_BRP(pbt->brp - 1));
 
-	cmd->ewl = 96;	/* default */
+	cmd->ewl = 96;	 
 
 	netdev_dbg(priv->ndev,
 		   "nominal: brp=%u tseg1=%u tseg2=%u sjw=%u\n",
@@ -162,19 +158,12 @@ static int pucan_set_std_filter(struct peak_canfd_priv *priv, u8 row, u32 mask)
 
 	cmd = pucan_add_cmd(pucan_init_cmd(priv), PUCAN_CMD_SET_STD_FILTER);
 
-	/* all the 11-bits CAN ID values are represented by one bit in a
-	 * 64 rows array of 32 bits: the upper 6 bits of the CAN ID select the
-	 * row while the lowest 5 bits select the bit in that row.
-	 *
-	 * bit	filter
-	 * 1	passed
-	 * 0	discarded
-	 */
+	 
 
-	/* select the row */
+	 
 	cmd->idx = row;
 
-	/* set/unset bits in the row */
+	 
 	cmd->mask = cpu_to_le32(mask);
 
 	return pucan_write_cmd(priv);
@@ -241,13 +230,13 @@ static int pucan_netif_rx(struct sk_buff *skb, __le32 ts_low, __le32 ts_high)
 	ts_us = (u64)le32_to_cpu(ts_high) << 32;
 	ts_us |= le32_to_cpu(ts_low);
 
-	/* IP core timestamps are µs. */
+	 
 	hwts->hwtstamp = ns_to_ktime(ts_us * NSEC_PER_USEC);
 
 	return netif_rx(skb);
 }
 
-/* handle the reception of one CAN frame */
+ 
 static int pucan_handle_can_rx(struct peak_canfd_priv *priv,
 			       struct pucan_rx_msg *msg)
 {
@@ -262,32 +251,29 @@ static int pucan_handle_can_rx(struct peak_canfd_priv *priv,
 	else
 		cf_len = can_cc_dlc2len(pucan_msg_get_dlc(msg));
 
-	/* if this frame is an echo, */
+	 
 	if (rx_msg_flags & PUCAN_MSG_LOOPED_BACK) {
 		unsigned long flags;
 
 		spin_lock_irqsave(&priv->echo_lock, flags);
 
-		/* count bytes of the echo instead of skb */
+		 
 		stats->tx_bytes += can_get_echo_skb(priv->ndev, msg->client, NULL);
 		stats->tx_packets++;
 
-		/* restart tx queue (a slot is free) */
+		 
 		netif_wake_queue(priv->ndev);
 
 		spin_unlock_irqrestore(&priv->echo_lock, flags);
 
-		/* if this frame is only an echo, stop here. Otherwise,
-		 * continue to push this application self-received frame into
-		 * its own rx queue.
-		 */
+		 
 		if (!(rx_msg_flags & PUCAN_MSG_SELF_RECEIVE))
 			return 0;
 	}
 
-	/* otherwise, it should be pushed into rx fifo */
+	 
 	if (rx_msg_flags & PUCAN_MSG_EXT_DATA_LEN) {
-		/* CANFD frame case */
+		 
 		skb = alloc_canfd_skb(priv->ndev, &cf);
 		if (!skb)
 			return -ENOMEM;
@@ -298,7 +284,7 @@ static int pucan_handle_can_rx(struct peak_canfd_priv *priv,
 		if (rx_msg_flags & PUCAN_MSG_ERROR_STATE_IND)
 			cf->flags |= CANFD_ESI;
 	} else {
-		/* CAN 2.0 frame case */
+		 
 		skb = alloc_can_skb(priv->ndev, (struct can_frame **)&cf);
 		if (!skb)
 			return -ENOMEM;
@@ -324,7 +310,7 @@ static int pucan_handle_can_rx(struct peak_canfd_priv *priv,
 	return 0;
 }
 
-/* handle rx/tx error counters notification */
+ 
 static int pucan_handle_error(struct peak_canfd_priv *priv,
 			      struct pucan_error_msg *msg)
 {
@@ -334,7 +320,7 @@ static int pucan_handle_error(struct peak_canfd_priv *priv,
 	return 0;
 }
 
-/* handle status notification */
+ 
 static int pucan_handle_status(struct peak_canfd_priv *priv,
 			       struct pucan_status_msg *msg)
 {
@@ -343,7 +329,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
 	struct can_frame *cf;
 	struct sk_buff *skb;
 
-	/* this STATUS is the CNF of the RX_BARRIER: Tx path can be setup */
+	 
 	if (pucan_status_is_rx_barrier(msg)) {
 		if (priv->enable_tx_path) {
 			int err = priv->enable_tx_path(priv);
@@ -352,7 +338,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
 				return err;
 		}
 
-		/* wake network queue up (echo_skb array is empty) */
+		 
 		netif_wake_queue(ndev);
 
 		return 0;
@@ -360,7 +346,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
 
 	skb = alloc_can_err_skb(ndev, &cf);
 
-	/* test state error bits according to their priority */
+	 
 	if (pucan_status_is_busoff(msg)) {
 		netdev_dbg(ndev, "Bus-off entry status\n");
 		priv->can.state = CAN_STATE_BUS_OFF;
@@ -396,7 +382,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
 		}
 
 	} else if (priv->can.state != CAN_STATE_ERROR_ACTIVE) {
-		/* back to ERROR_ACTIVE */
+		 
 		netdev_dbg(ndev, "Error active status\n");
 		can_change_state(ndev, cf, CAN_STATE_ERROR_ACTIVE,
 				 CAN_STATE_ERROR_ACTIVE);
@@ -415,7 +401,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
 	return 0;
 }
 
-/* handle uCAN Rx overflow notification */
+ 
 static int pucan_handle_cache_critical(struct peak_canfd_priv *priv)
 {
 	struct net_device_stats *stats = &priv->ndev->stats;
@@ -442,7 +428,7 @@ static int pucan_handle_cache_critical(struct peak_canfd_priv *priv)
 	return 0;
 }
 
-/* handle a single uCAN message */
+ 
 int peak_canfd_handle_msg(struct peak_canfd_priv *priv,
 			  struct pucan_rx_msg *msg)
 {
@@ -451,7 +437,7 @@ int peak_canfd_handle_msg(struct peak_canfd_priv *priv,
 	int err;
 
 	if (!msg_size || !msg_type) {
-		/* null packet found: end of list */
+		 
 		goto exit;
 	}
 
@@ -479,7 +465,7 @@ exit:
 	return msg_size;
 }
 
-/* handle a list of rx_count messages from rx_msg memory address */
+ 
 int peak_canfd_handle_msgs_list(struct peak_canfd_priv *priv,
 				struct pucan_rx_msg *msg_list, int msg_count)
 {
@@ -489,7 +475,7 @@ int peak_canfd_handle_msgs_list(struct peak_canfd_priv *priv,
 	for (i = 0; i < msg_count; i++) {
 		msg_size = peak_canfd_handle_msg(priv, msg_ptr);
 
-		/* a null packet can be found at the end of a list */
+		 
 		if (msg_size <= 0)
 			break;
 
@@ -528,13 +514,13 @@ static void peak_canfd_stop(struct peak_canfd_priv *priv)
 {
 	int err;
 
-	/* go back to RESET mode */
+	 
 	err = pucan_set_reset_mode(priv);
 	if (err) {
 		netdev_err(priv->ndev, "channel %u reset failed\n",
 			   priv->index);
 	} else {
-		/* abort last Tx (MUST be done in RESET mode only!) */
+		 
 		pucan_tx_abort(priv, PUCAN_TX_ABORT_FLUSH);
 	}
 }
@@ -589,12 +575,12 @@ static int peak_canfd_open(struct net_device *ndev)
 			goto err_close;
 	}
 
-	/* set option: get rx/tx error counters */
+	 
 	err = pucan_set_options(priv, PUCAN_OPTION_ERROR);
 	if (err)
 		goto err_close;
 
-	/* accept all standard CAN ID */
+	 
 	for (i = 0; i <= PUCAN_FLTSTD_ROW_IDX_MAX; i++)
 		pucan_set_std_filter(priv, i, 0xffffffff);
 
@@ -602,7 +588,7 @@ static int peak_canfd_open(struct net_device *ndev)
 	if (err)
 		goto err_close;
 
-	/* receiving the RB status says when Tx path is ready */
+	 
 	err = pucan_setup_rx_barrier(priv);
 	if (!err)
 		goto err_exit;
@@ -657,9 +643,7 @@ static netdev_tx_t peak_canfd_start_xmit(struct sk_buff *skb,
 	msg_size = ALIGN(sizeof(*msg) + cf->len, 4);
 	msg = priv->alloc_tx_msg(priv, msg_size, &room_left);
 
-	/* should never happen except under bus-off condition and (auto-)restart
-	 * mechanism
-	 */
+	 
 	if (!msg) {
 		stats->tx_dropped++;
 		netif_stop_queue(ndev);
@@ -678,7 +662,7 @@ static netdev_tx_t peak_canfd_start_xmit(struct sk_buff *skb,
 	}
 
 	if (can_is_canfd_skb(skb)) {
-		/* CAN FD frame format */
+		 
 		len = can_fd_len2dlc(cf->len);
 
 		msg_flags |= PUCAN_MSG_EXT_DATA_LEN;
@@ -689,17 +673,17 @@ static netdev_tx_t peak_canfd_start_xmit(struct sk_buff *skb,
 		if (cf->flags & CANFD_ESI)
 			msg_flags |= PUCAN_MSG_ERROR_STATE_IND;
 	} else {
-		/* CAN 2.0 frame format */
+		 
 		len = cf->len;
 
 		if (cf->can_id & CAN_RTR_FLAG)
 			msg_flags |= PUCAN_MSG_RTR;
 	}
 
-	/* always ask loopback for echo management */
+	 
 	msg_flags |= PUCAN_MSG_LOOPED_BACK;
 
-	/* set driver specific bit to differentiate with application loopback */
+	 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
 		msg_flags |= PUCAN_MSG_SELF_RECEIVE;
 
@@ -707,24 +691,21 @@ static netdev_tx_t peak_canfd_start_xmit(struct sk_buff *skb,
 	msg->channel_dlc = PUCAN_MSG_CHANNEL_DLC(priv->index, len);
 	memcpy(msg->d, cf->data, cf->len);
 
-	/* struct msg client field is used as an index in the echo skbs ring */
+	 
 	msg->client = priv->echo_idx;
 
 	spin_lock_irqsave(&priv->echo_lock, flags);
 
-	/* prepare and save echo skb in internal slot */
+	 
 	can_put_echo_skb(skb, ndev, priv->echo_idx, 0);
 
-	/* move echo index to the next slot */
+	 
 	priv->echo_idx = (priv->echo_idx + 1) % priv->can.echo_skb_max;
 
-	/* if next slot is not free, stop network queue (no slot free in echo
-	 * skb ring means that the controller did not write these frames on
-	 * the bus: no need to continue).
-	 */
+	 
 	should_stop_tx_queue = !!(priv->can.echo_skb[priv->echo_idx]);
 
-	/* stop network tx queue if not enough room to save one more msg too */
+	 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_FD)
 		should_stop_tx_queue |= (room_left <
 					(sizeof(*msg) + CANFD_MAX_DLEN));
@@ -737,7 +718,7 @@ static netdev_tx_t peak_canfd_start_xmit(struct sk_buff *skb,
 
 	spin_unlock_irqrestore(&priv->echo_lock, flags);
 
-	/* write the skb on the interface */
+	 
 	priv->write_tx_msg(priv, msg);
 
 	return NETDEV_TX_OK;
@@ -748,7 +729,7 @@ static int peak_eth_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	struct hwtstamp_config hwts_cfg = { 0 };
 
 	switch (cmd) {
-	case SIOCSHWTSTAMP: /* set */
+	case SIOCSHWTSTAMP:  
 		if (copy_from_user(&hwts_cfg, ifr->ifr_data, sizeof(hwts_cfg)))
 			return -EFAULT;
 		if (hwts_cfg.tx_type == HWTSTAMP_TX_OFF &&
@@ -756,7 +737,7 @@ static int peak_eth_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 			return 0;
 		return -ERANGE;
 
-	case SIOCGHWTSTAMP: /* get */
+	case SIOCGHWTSTAMP:  
 		hwts_cfg.tx_type = HWTSTAMP_TX_OFF;
 		hwts_cfg.rx_filter = HWTSTAMP_FILTER_ALL;
 		if (copy_to_user(ifr->ifr_data, &hwts_cfg, sizeof(hwts_cfg)))
@@ -802,18 +783,18 @@ struct net_device *alloc_peak_canfd_dev(int sizeof_priv, int index,
 	struct net_device *ndev;
 	struct peak_canfd_priv *priv;
 
-	/* we DO support local echo */
+	 
 	if (echo_skb_max < 0)
 		echo_skb_max = PCANFD_ECHO_SKB_MAX;
 
-	/* allocate the candev object */
+	 
 	ndev = alloc_candev(sizeof_priv, echo_skb_max);
 	if (!ndev)
 		return NULL;
 
 	priv = netdev_priv(ndev);
 
-	/* complete now socket-can initialization side */
+	 
 	priv->can.state = CAN_STATE_STOPPED;
 	priv->can.bittiming_const = &peak_canfd_nominal_const;
 	priv->can.data_bittiming_const = &peak_canfd_data_const;

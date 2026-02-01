@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  include/linux/anon_inodes.h
- *
- *  Copyright (C) 2007  Davide Libenzi <davidel@xmailserver.org>
- *
- */
+ 
+ 
 
 #ifndef _LINUX_ANON_INODES_H
 #define _LINUX_ANON_INODES_H
@@ -26,5 +21,5 @@ int anon_inode_getfd_secure(const char *name,
 			    void *priv, int flags,
 			    const struct inode *context_inode);
 
-#endif /* _LINUX_ANON_INODES_H */
+#endif  
 

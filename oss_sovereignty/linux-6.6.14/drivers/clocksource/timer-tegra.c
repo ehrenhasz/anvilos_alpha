@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Google, Inc.
- *
- * Author:
- *	Colin Cross <ccross@google.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"tegra-timer: " fmt
 
@@ -56,15 +51,7 @@ static int tegra_timer_set_next_event(unsigned long cycles,
 {
 	void __iomem *reg_base = timer_of_base(to_timer_of(evt));
 
-	/*
-	 * Tegra's timer uses n+1 scheme for the counter, i.e. timer will
-	 * fire after one tick if 0 is loaded.
-	 *
-	 * The minimum and maximum numbers of oneshot ticks are defined
-	 * by clockevents_config_and_register(1, 0x1fffffff + 1) invocation
-	 * below in the code. Hence the cycles (ticks) can't be outside of
-	 * a range supportable by hardware.
-	 */
+	 
 	writel_relaxed(TIMER_PTV_EN | (cycles - 1), reg_base + TIMER_PTV);
 
 	return 0;
@@ -139,17 +126,10 @@ static int tegra_timer_setup(unsigned int cpu)
 	irq_force_affinity(to->clkevt.irq, cpumask_of(cpu));
 	enable_irq(to->clkevt.irq);
 
-	/*
-	 * Tegra's timer uses n+1 scheme for the counter, i.e. timer will
-	 * fire after one tick if 0 is loaded and thus minimum number of
-	 * ticks is 1. In result both of the clocksource's tick limits are
-	 * higher than a minimum and maximum that hardware register can
-	 * take by 1, this is then taken into account by set_next_event
-	 * callback.
-	 */
+	 
 	clockevents_config_and_register(&to->clkevt, timer_of_rate(to),
-					1, /* min */
-					0x1fffffff + 1); /* max 29 bits + 1 */
+					1,  
+					0x1fffffff + 1);  
 
 	return 0;
 }
@@ -185,12 +165,7 @@ static struct timer_of suspend_rtc_to = {
 	.flags = TIMER_OF_BASE | TIMER_OF_CLOCK,
 };
 
-/*
- * tegra_rtc_read - Reads the Tegra RTC registers
- * Care must be taken that this function is not called while the
- * tegra_rtc driver could be executing to avoid race conditions
- * on the RTC shadow register
- */
+ 
 static u64 tegra_rtc_read_ms(struct clocksource *cs)
 {
 	void __iomem *reg_base = timer_of_base(&suspend_rtc_to);
@@ -238,10 +213,7 @@ static inline unsigned int tegra_irq_idx_for_cpu(int cpu, bool tegra20)
 static inline unsigned long tegra_rate_for_timer(struct timer_of *to,
 						 bool tegra20)
 {
-	/*
-	 * TIMER1-9 are fixed to 1MHz, TIMER10-13 are running off the
-	 * parent clock.
-	 */
+	 
 	if (tegra20)
 		return TIMER_1MHz;
 
@@ -261,35 +233,31 @@ static int __init tegra_init_timer(struct device_node *np, bool tegra20,
 
 	timer_reg_base = timer_of_base(to);
 
-	/*
-	 * Configure microsecond timers to have 1MHz clock
-	 * Config register is 0xqqww, where qq is "dividend", ww is "divisor"
-	 * Uses n+1 scheme
-	 */
+	 
 	switch (timer_of_rate(to)) {
 	case 12000000:
-		usec_config = 0x000b; /* (11+1)/(0+1) */
+		usec_config = 0x000b;  
 		break;
 	case 12800000:
-		usec_config = 0x043f; /* (63+1)/(4+1) */
+		usec_config = 0x043f;  
 		break;
 	case 13000000:
-		usec_config = 0x000c; /* (12+1)/(0+1) */
+		usec_config = 0x000c;  
 		break;
 	case 16800000:
-		usec_config = 0x0453; /* (83+1)/(4+1) */
+		usec_config = 0x0453;  
 		break;
 	case 19200000:
-		usec_config = 0x045f; /* (95+1)/(4+1) */
+		usec_config = 0x045f;  
 		break;
 	case 26000000:
-		usec_config = 0x0019; /* (25+1)/(0+1) */
+		usec_config = 0x0019;  
 		break;
 	case 38400000:
-		usec_config = 0x04bf; /* (191+1)/(4+1) */
+		usec_config = 0x04bf;  
 		break;
 	case 48000000:
-		usec_config = 0x002f; /* (47+1)/(0+1) */
+		usec_config = 0x002f;  
 		break;
 	default:
 		ret = -EINVAL;
@@ -372,11 +340,7 @@ out:
 
 static int __init tegra210_init_timer(struct device_node *np)
 {
-	/*
-	 * Arch-timer can't survive across power cycle of CPU core and
-	 * after CPUPORESET signal due to a system design shortcoming,
-	 * hence tegra-timer is more preferable on Tegra210.
-	 */
+	 
 	return tegra_init_timer(np, false, 460);
 }
 TIMER_OF_DECLARE(tegra210_timer, "nvidia,tegra210-timer", tegra210_init_timer);
@@ -385,14 +349,7 @@ static int __init tegra20_init_timer(struct device_node *np)
 {
 	int rating;
 
-	/*
-	 * Tegra20 and Tegra30 have Cortex A9 CPU that has a TWD timer,
-	 * that timer runs off the CPU clock and hence is subjected to
-	 * a jitter caused by DVFS clock rate changes. Tegra-timer is
-	 * more preferable for older Tegra's, while later SoC generations
-	 * have arch-timer as a main per-CPU timer and it is not affected
-	 * by DVFS changes.
-	 */
+	 
 	if (of_machine_is_compatible("nvidia,tegra20") ||
 	    of_machine_is_compatible("nvidia,tegra30"))
 		rating = 460;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments CPSW Port's PHY Interface Mode selection Driver
- *
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
- *
- * Based on cpsw-phy-sel.c driver created by Mugunthan V N <mugunthanvnm@ti.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -17,12 +11,12 @@
 #include <linux/phy/phy.h>
 #include <linux/regmap.h>
 
-/* AM33xx SoC specific definitions for the CONTROL port */
+ 
 #define AM33XX_GMII_SEL_MODE_MII	0
 #define AM33XX_GMII_SEL_MODE_RMII	1
 #define AM33XX_GMII_SEL_MODE_RGMII	2
 
-/* J72xx SoC specific definitions for the CONTROL port */
+ 
 #define J72XX_GMII_SEL_MODE_SGMII	3
 #define J72XX_GMII_SEL_MODE_QSGMII	4
 #define J72XX_GMII_SEL_MODE_USXGMII	5
@@ -448,16 +442,10 @@ static int phy_gmii_sel_probe(struct platform_device *pdev)
 	priv->num_ports = priv->soc_data->num_ports;
 	priv->qsgmii_main_ports = 0;
 
-	/*
-	 * Based on the compatible, try to read the appropriate number of
-	 * QSGMII main ports from the "ti,qsgmii-main-ports" property from
-	 * the device-tree node.
-	 */
+	 
 	for (i = 0; i < soc_data->num_qsgmii_main_ports; i++) {
 		of_property_read_u32_index(node, "ti,qsgmii-main-ports", i, &main_ports);
-		/*
-		 * Ensure that main_ports is within bounds.
-		 */
+		 
 		if (main_ports < 1 || main_ports > soc_data->num_ports) {
 			dev_err(dev, "Invalid qsgmii main port provided\n");
 			return -EINVAL;

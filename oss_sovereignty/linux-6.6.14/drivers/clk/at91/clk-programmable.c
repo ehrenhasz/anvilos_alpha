@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>

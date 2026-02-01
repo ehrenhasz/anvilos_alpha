@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
+ 
+ 
 
 #include <sys/isa_defs.h>
 
@@ -240,12 +219,12 @@ typedef struct v {
 	switch (REG_CNT(r)) {						\
 	case 2:								\
 		__asm(							\
-		    /* lts for upper part */				\
+		     				\
 		    "movd %[mask], %%" _0f "\n"				\
 		    "pshufd $0x0, %%" _0f ", %%" _0f "\n"		\
 		    "movdqa 0x00(%[lt]), %%" _lt_mod_a "\n"		\
 		    "movdqa 0x10(%[lt]), %%" _lt_clmul_a "\n"		\
-		    /* upper part */					\
+		     					\
 		    "movdqa %%" VR0(r) ", %%" _a_save "\n"		\
 		    "movdqa %%" VR1(r) ", %%" _b_save "\n"		\
 		    "psraw $0x4, %%" VR0(r) "\n"			\
@@ -267,12 +246,12 @@ typedef struct v {
 		    "pxor %%" _lt_mod_b ",%%" _lt_clmul_b "\n"		\
 		    "movdqa %%" _lt_clmul_a ",%%" VR0(r) "\n"		\
 		    "movdqa %%" _lt_clmul_b ",%%" VR1(r) "\n"		\
-		    /* lts for lower part */				\
+		     				\
 		    "movdqa 0x20(%[lt]), %%" _lt_mod_a "\n"		\
 		    "movdqa 0x30(%[lt]), %%" _lt_clmul_a "\n"		\
 		    "movdqa %%" _lt_mod_a ", %%" _lt_mod_b "\n"		\
 		    "movdqa %%" _lt_clmul_a ", %%" _lt_clmul_b "\n"	\
-		    /* lower part */					\
+		     					\
 		    "pshufb %%" _a_save ",%%" _lt_mod_a "\n"		\
 		    "pshufb %%" _b_save ",%%" _lt_mod_b "\n"		\
 		    "pshufb %%" _a_save ",%%" _lt_clmul_a "\n"		\
@@ -414,12 +393,12 @@ const raidz_impl_ops_t vdev_raidz_ssse3_impl = {
 	.name = "ssse3"
 };
 
-#endif /* defined(__x86_64) && defined(HAVE_SSSE3) */
+#endif  
 
 
 #if defined(__x86_64)
 #if defined(HAVE_SSSE3) || defined(HAVE_AVX2) || defined(HAVE_AVX512BW)
-/* BEGIN CSTYLED */
+ 
 const uint8_t
 __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] =
 {
@@ -2472,6 +2451,6 @@ __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] =
 	{ 0x00, 0xff, 0xfe, 0x01, 0xfc, 0x03, 0x02, 0xfd,
 	    0xf8, 0x07, 0x06, 0xf9, 0x04, 0xfb, 0xfa, 0x05  }
 };
-/* END CSTYLED */
-#endif /* defined(HAVE_SSSE3) || defined(HAVE_AVX2) || defined(HAVE_AVX512BW) */
-#endif /* defined(__x86_64) */
+ 
+#endif  
+#endif  

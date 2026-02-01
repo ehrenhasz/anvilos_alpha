@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Nano River Technologies viperboard driver
- *
- *  This is the core driver for the viperboard. There are cell drivers
- *  available for I2C, ADC and both GPIOs. SPI is not yet supported.
- *  The drivers do not support all features the board exposes. See user
- *  manual of the viperboard.
- *
- *  (C) 2012 by Lemonage GmbH
- *  Author: Lars Poeschel <poeschel@lemonage.de>
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -26,8 +15,8 @@
 
 
 static const struct usb_device_id vprbrd_table[] = {
-	{ USB_DEVICE(0x2058, 0x1005) },   /* Nano River Technologies */
-	{ }                               /* Terminating entry */
+	{ USB_DEVICE(0x2058, 0x1005) },    
+	{ }                                
 };
 
 MODULE_DEVICE_TABLE(usb, vprbrd_table);
@@ -52,7 +41,7 @@ static int vprbrd_probe(struct usb_interface *interface,
 	u16 version = 0;
 	int pipe, ret;
 
-	/* allocate memory for our device state and initialize it */
+	 
 	vb = kzalloc(sizeof(*vb), GFP_KERNEL);
 	if (!vb)
 		return -ENOMEM;
@@ -61,11 +50,11 @@ static int vprbrd_probe(struct usb_interface *interface,
 
 	vb->usb_dev = usb_get_dev(interface_to_usbdev(interface));
 
-	/* save our data pointer in this interface device */
+	 
 	usb_set_intfdata(interface, vb);
 	dev_set_drvdata(&vb->pdev.dev, vb);
 
-	/* get version information, major first, minor then */
+	 
 	pipe = usb_rcvctrlpipe(vb->usb_dev, 0);
 	ret = usb_control_msg(vb->usb_dev, pipe, VPRBRD_USB_REQUEST_MAJOR,
 		VPRBRD_USB_TYPE_IN, 0x0000, 0x0000, vb->buf, 1,

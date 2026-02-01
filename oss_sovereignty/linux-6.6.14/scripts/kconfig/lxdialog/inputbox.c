@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  inputbox.c -- implements the input box
- *
- *  ORIGINAL AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
- *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcap@cfw.com)
- */
+
+ 
 
 #include "dialog.h"
 
 char dialog_input_result[MAX_LEN + 1];
 
-/*
- *  Print the termination buttons
- */
+ 
 static void print_buttons(WINDOW * dialog, int height, int width, int selected)
 {
 	int x = width / 2 - 11;
@@ -25,9 +18,7 @@ static void print_buttons(WINDOW * dialog, int height, int width, int selected)
 	wrefresh(dialog);
 }
 
-/*
- * Display a dialog box for inputing a string
- */
+ 
 int dialog_inputbox(const char *title, const char *prompt, int height, int width,
 		    const char *init)
 {
@@ -48,7 +39,7 @@ do_resize:
 	if (getmaxx(stdscr) <= (width - INPUTBOX_WIDTH_MIN))
 		return -ERRDISPLAYTOOSMALL;
 
-	/* center dialog box on screen */
+	 
 	x = (getmaxx(stdscr) - width) / 2;
 	y = (getmaxy(stdscr) - height) / 2;
 
@@ -71,7 +62,7 @@ do_resize:
 	wattrset(dialog, dlg.dialog.atr);
 	print_autowrap(dialog, prompt, width - 2, 1, 3);
 
-	/* Draw the input field box */
+	 
 	box_width = width - 6;
 	getyx(dialog, y, x);
 	box_y = y + 2;
@@ -81,7 +72,7 @@ do_resize:
 
 	print_buttons(dialog, height, width, 0);
 
-	/* Set up the initial value */
+	 
 	wmove(dialog, box_y, box_x);
 	wattrset(dialog, dlg.inputbox.atr);
 
@@ -106,15 +97,15 @@ do_resize:
 	while (key != KEY_ESC) {
 		key = wgetch(dialog);
 
-		if (button == -1) {	/* Input box selected */
+		if (button == -1) {	 
 			switch (key) {
 			case TAB:
 			case KEY_UP:
 			case KEY_DOWN:
 				break;
 			case KEY_BACKSPACE:
-			case 8:   /* ^H */
-			case 127: /* ^? */
+			case 8:    
+			case 127:  
 				if (pos) {
 					wattrset(dialog, dlg.inputbox.atr);
 					if (input_x == 0) {
@@ -213,7 +204,7 @@ do_resize:
 						wmove(dialog, box_y, input_x + box_x);
 						wrefresh(dialog);
 					} else
-						flash();	/* Alarm user about overflow */
+						flash();	 
 					continue;
 				}
 			}
@@ -231,17 +222,17 @@ do_resize:
 		case KEY_LEFT:
 			switch (button) {
 			case -1:
-				button = 1;	/* Indicates "Help" button is selected */
+				button = 1;	 
 				print_buttons(dialog, height, width, 1);
 				break;
 			case 0:
-				button = -1;	/* Indicates input box is selected */
+				button = -1;	 
 				print_buttons(dialog, height, width, 0);
 				wmove(dialog, box_y, box_x + input_x);
 				wrefresh(dialog);
 				break;
 			case 1:
-				button = 0;	/* Indicates "OK" button is selected */
+				button = 0;	 
 				print_buttons(dialog, height, width, 0);
 				break;
 			}
@@ -251,15 +242,15 @@ do_resize:
 		case KEY_RIGHT:
 			switch (button) {
 			case -1:
-				button = 0;	/* Indicates "OK" button is selected */
+				button = 0;	 
 				print_buttons(dialog, height, width, 0);
 				break;
 			case 0:
-				button = 1;	/* Indicates "Help" button is selected */
+				button = 1;	 
 				print_buttons(dialog, height, width, 1);
 				break;
 			case 1:
-				button = -1;	/* Indicates input box is selected */
+				button = -1;	 
 				print_buttons(dialog, height, width, 0);
 				wmove(dialog, box_y, box_x + input_x);
 				wrefresh(dialog);
@@ -285,5 +276,5 @@ do_resize:
 	}
 
 	delwin(dialog);
-	return KEY_ESC;		/* ESC pressed */
+	return KEY_ESC;		 
 }

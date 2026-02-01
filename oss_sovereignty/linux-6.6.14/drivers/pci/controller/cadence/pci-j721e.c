@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * pci-j721e - PCIe controller driver for TI's J721E SoCs
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -232,7 +227,7 @@ static int j721e_pcie_ctrl_init(struct j721e_pcie *pcie)
 		return PTR_ERR(syscon);
 	}
 
-	/* Do not error out to maintain old DT compatibility */
+	 
 	ret = of_parse_phandle_with_fixed_args(node, "ti,syscon-pcie-ctrl", 1,
 					       0, &args);
 	if (!ret)
@@ -496,14 +491,7 @@ static int j721e_pcie_probe(struct platform_device *pdev)
 		}
 		pcie->refclk = clk;
 
-		/*
-		 * "Power Sequencing and Reset Signal Timings" table in
-		 * PCI EXPRESS CARD ELECTROMECHANICAL SPECIFICATION, REV. 3.0
-		 * indicates PERST# should be deasserted after minimum of 100us
-		 * once REFCLK is stable. The REFCLK to the connector in RC
-		 * mode is selected while enabling the PHY. So deassert PERST#
-		 * after 100 us.
-		 */
+		 
 		if (gpiod) {
 			usleep_range(100, 200);
 			gpiod_set_value_cansleep(gpiod, 1);

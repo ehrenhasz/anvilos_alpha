@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *  Copyright (C) 2000, 2001, 2002 Andi Kleen SuSE Labs
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,27 +17,18 @@
 #include <asm/sigframe.h>
 #include <asm/signal.h>
 
-/*
- * If regs->ss will cause an IRET fault, change it.  Otherwise leave it
- * alone.  Using this generally makes no sense unless
- * user_64bit_mode(regs) would return true.
- */
+ 
 static void force_valid_ss(struct pt_regs *regs)
 {
 	u32 ar;
 	asm volatile ("lar %[old_ss], %[ar]\n\t"
-		      "jz 1f\n\t"		/* If invalid: */
-		      "xorl %[ar], %[ar]\n\t"	/* set ar = 0 */
+		      "jz 1f\n\t"		 
+		      "xorl %[ar], %[ar]\n\t"	 
 		      "1:"
 		      : [ar] "=r" (ar)
 		      : [old_ss] "rm" ((u16)regs->ss));
 
-	/*
-	 * For a valid 64-bit user context, we need DPL 3, type
-	 * read-write data or read-write exp-down data, and S and P
-	 * set.  We can't use VERW because VERW doesn't check the
-	 * P bit.
-	 */
+	 
 	ar &= AR_DPL_MASK | AR_S | AR_P | AR_TYPE_MASK;
 	if (ar != (AR_DPL3 | AR_S | AR_P | AR_TYPE_RWDATA) &&
 	    ar != (AR_DPL3 | AR_S | AR_P | AR_TYPE_RWDATA_EXPDOWN))
@@ -53,7 +41,7 @@ static bool restore_sigcontext(struct pt_regs *regs,
 {
 	struct sigcontext sc;
 
-	/* Always make any pending restarted system calls return -EINTR */
+	 
 	current->restart_block.fn = do_no_restart_syscall;
 
 	if (copy_from_user(&sc, usc, offsetof(struct sigcontext, reserved1)))
@@ -77,18 +65,15 @@ static bool restore_sigcontext(struct pt_regs *regs,
 	regs->r14 = sc.r14;
 	regs->r15 = sc.r15;
 
-	/* Get CS/SS and force CPL3 */
+	 
 	regs->cs = sc.cs | 0x03;
 	regs->ss = sc.ss | 0x03;
 
 	regs->flags = (regs->flags & ~FIX_EFLAGS) | (sc.flags & FIX_EFLAGS);
-	/* disable syscall checks */
+	 
 	regs->orig_ax = -1;
 
-	/*
-	 * Fix up SS if needed for the benefit of old DOSEMU and
-	 * CRIU.
-	 */
+	 
 	if (unlikely(!(uc_flags & UC_STRICT_RESTORE_SS) && user_64bit_mode(regs)))
 		force_valid_ss(regs);
 
@@ -127,7 +112,7 @@ __unsafe_setup_sigcontext(struct sigcontext __user *sc, void __user *fpstate,
 
 	unsafe_put_user(fpstate, (unsigned long __user *)&sc->fpstate, Efault);
 
-	/* non-iBCS2 extensions.. */
+	 
 	unsafe_put_user(mask, &sc->oldmask, Efault);
 	unsafe_put_user(current->thread.cr2, &sc->cr2, Efault);
 	return 0;
@@ -168,7 +153,7 @@ int x64_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs)
 	void __user *fp = NULL;
 	unsigned long uc_flags;
 
-	/* x86-64 should always use SA_RESTORER. */
+	 
 	if (!(ksig->ka.sa.sa_flags & SA_RESTORER))
 		return -EFAULT;
 
@@ -178,13 +163,12 @@ int x64_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs)
 	if (!user_access_begin(frame, sizeof(*frame)))
 		return -EFAULT;
 
-	/* Create the ucontext.  */
+	 
 	unsafe_put_user(uc_flags, &frame->uc.uc_flags, Efault);
 	unsafe_put_user(0, &frame->uc.uc_link, Efault);
 	unsafe_save_altstack(&frame->uc.uc_stack, regs->sp, Efault);
 
-	/* Set up to return from userspace.  If provided, use a stub
-	   already in userspace.  */
+	 
 	unsafe_put_user(ksig->ka.sa.sa_restorer, &frame->pretcode, Efault);
 	unsafe_put_sigcontext(&frame->uc.uc_mcontext, fp, regs, set, Efault);
 	unsafe_put_sigmask(set, frame, Efault);
@@ -198,36 +182,19 @@ int x64_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs)
 	if (setup_signal_shadow_stack(ksig))
 		return -EFAULT;
 
-	/* Set up registers for signal handler */
+	 
 	regs->di = ksig->sig;
-	/* In case the signal handler was declared without prototypes */
+	 
 	regs->ax = 0;
 
-	/* This also works for non SA_SIGINFO handlers because they expect the
-	   next argument after the signal number on the stack. */
+	 
 	regs->si = (unsigned long)&frame->info;
 	regs->dx = (unsigned long)&frame->uc;
 	regs->ip = (unsigned long) ksig->ka.sa.sa_handler;
 
 	regs->sp = (unsigned long)frame;
 
-	/*
-	 * Set up the CS and SS registers to run signal handlers in
-	 * 64-bit mode, even if the handler happens to be interrupting
-	 * 32-bit or 16-bit code.
-	 *
-	 * SS is subtle.  In 64-bit mode, we don't need any particular
-	 * SS descriptor, but we do need SS to be valid.  It's possible
-	 * that the old SS is entirely bogus -- this can happen if the
-	 * signal we're trying to deliver is #GP or #SS caused by a bad
-	 * SS value.  We also have a compatibility issue here: DOSEMU
-	 * relies on the contents of the SS register indicating the
-	 * SS value at the time of the signal, even though that code in
-	 * DOSEMU predates sigreturn's ability to restore SS.  (DOSEMU
-	 * avoids relying on sigreturn to restore SS; instead it uses
-	 * a trampoline.)  So we do our best: if the old SS was valid,
-	 * we keep it.  Otherwise we replace it.
-	 */
+	 
 	regs->cs = __USER_CS;
 
 	if (unlikely(regs->ss != __USER_DS))
@@ -240,9 +207,7 @@ Efault:
 	return -EFAULT;
 }
 
-/*
- * Do a signal return; undo the signal stack.
- */
+ 
 SYSCALL_DEFINE0(rt_sigreturn)
 {
 	struct pt_regs *regs = current_pt_regs();
@@ -318,7 +283,7 @@ int x32_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs)
 	if (!user_access_begin(frame, sizeof(*frame)))
 		return -EFAULT;
 
-	/* Create the ucontext.  */
+	 
 	unsafe_put_user(uc_flags, &frame->uc.uc_flags, Efault);
 	unsafe_put_user(0, &frame->uc.uc_link, Efault);
 	unsafe_compat_save_altstack(&frame->uc.uc_stack, regs->sp, Efault);
@@ -334,11 +299,11 @@ int x32_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs)
 			return -EFAULT;
 	}
 
-	/* Set up registers for signal handler */
+	 
 	regs->sp = (unsigned long) frame;
 	regs->ip = (unsigned long) ksig->ka.sa.sa_handler;
 
-	/* We use the x32 calling convention here... */
+	 
 	regs->di = ksig->sig;
 	regs->si = (unsigned long) &frame->info;
 	regs->dx = (unsigned long) &frame->uc;
@@ -386,7 +351,7 @@ badframe:
 	signal_fault(regs, frame, "x32 rt_sigreturn");
 	return 0;
 }
-#endif /* CONFIG_X86_X32_ABI */
+#endif  
 
 #ifdef CONFIG_COMPAT
 void sigaction_compat_abi(struct k_sigaction *act, struct k_sigaction *oact)
@@ -399,14 +364,9 @@ void sigaction_compat_abi(struct k_sigaction *act, struct k_sigaction *oact)
 	if (in_x32_syscall())
 		act->sa.sa_flags |= SA_X32_ABI;
 }
-#endif /* CONFIG_COMPAT */
+#endif  
 
-/*
-* If adding a new si_code, there is probably new data in
-* the siginfo.  Make sure folks bumping the si_code
-* limits also have to look at this code.  Make sure any
-* new fields are handled in copy_siginfo_to_user32()!
-*/
+ 
 static_assert(NSIGILL  == 11);
 static_assert(NSIGFPE  == 15);
 static_assert(NSIGSEGV == 10);
@@ -415,34 +375,18 @@ static_assert(NSIGTRAP == 6);
 static_assert(NSIGCHLD == 6);
 static_assert(NSIGSYS  == 2);
 
-/* This is part of the ABI and can never change in size: */
+ 
 static_assert(sizeof(siginfo_t) == 128);
 
-/* This is a part of the ABI and can never change in alignment */
+ 
 static_assert(__alignof__(siginfo_t) == 8);
 
-/*
-* The offsets of all the (unioned) si_fields are fixed
-* in the ABI, of course.  Make sure none of them ever
-* move and are always at the beginning:
-*/
+ 
 static_assert(offsetof(siginfo_t, si_signo) == 0);
 static_assert(offsetof(siginfo_t, si_errno) == 4);
 static_assert(offsetof(siginfo_t, si_code)  == 8);
 
-/*
-* Ensure that the size of each si_field never changes.
-* If it does, it is a sign that the
-* copy_siginfo_to_user32() code below needs to updated
-* along with the size in the CHECK_SI_SIZE().
-*
-* We repeat this check for both the generic and compat
-* siginfos.
-*
-* Note: it is OK for these to grow as long as the whole
-* structure stays within the padding size (checked
-* above).
-*/
+ 
 
 #define CHECK_SI_OFFSET(name)						\
 	static_assert(offsetof(siginfo_t, _sifields) == 		\
@@ -476,7 +420,7 @@ static_assert(offsetof(siginfo_t, si_utime)  == 0x20);
 static_assert(offsetof(siginfo_t, si_stime)  == 0x28);
 
 #ifdef CONFIG_X86_X32_ABI
-/* no _sigchld_x32 in the generic siginfo_t */
+ 
 static_assert(sizeof_field(compat_siginfo_t, _sifields._sigchld_x32) ==
 	      7*sizeof(int));
 static_assert(offsetof(compat_siginfo_t, _sifields) ==
@@ -513,4 +457,4 @@ static_assert(offsetof(siginfo_t, si_call_addr) == 0x10);
 static_assert(offsetof(siginfo_t, si_syscall)   == 0x18);
 static_assert(offsetof(siginfo_t, si_arch)      == 0x1C);
 
-/* any new si_fields should be added here */
+ 

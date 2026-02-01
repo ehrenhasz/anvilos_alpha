@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_HAL_RX_H
 #define ATH12K_HAL_RX_H
@@ -467,7 +464,7 @@ struct hal_rx_rxpcu_classification_overview {
 
 struct hal_rx_msdu_desc_info {
 	u32 msdu_flags;
-	u16 msdu_len; /* 14 bits for length */
+	u16 msdu_len;  
 };
 
 #define HAL_RX_NUM_MSDU_DESC 6
@@ -530,7 +527,7 @@ struct hal_rx_resp_req_info {
 #define HAL_RX_UL_OFDMA_USER_INFO_V0_W1_RU_START	GENMASK(15, 9)
 #define HAL_RX_UL_OFDMA_USER_INFO_V0_W1_RU_SIZE		GENMASK(18, 16)
 
-/* HE Radiotap data1 Mask */
+ 
 #define HE_SU_FORMAT_TYPE 0x0000
 #define HE_EXT_SU_FORMAT_TYPE 0x0001
 #define HE_MU_FORMAT_TYPE  0x0002
@@ -546,7 +543,7 @@ struct hal_rx_resp_req_info {
 #define HE_DOPPLER_KNOWN 0x8000
 #define HE_BSS_COLOR_KNOWN 0x0004
 
-/* HE Radiotap data2 Mask */
+ 
 #define HE_GI_KNOWN 0x0002
 #define HE_TXBF_KNOWN 0x0010
 #define HE_PE_DISAMBIGUITY_KNOWN 0x0020
@@ -555,7 +552,7 @@ struct hal_rx_resp_req_info {
 #define HE_PRE_FEC_PADDING_KNOWN 0x0008
 #define HE_MIDABLE_PERIODICITY_KNOWN 0x0080
 
-/* HE radiotap data3 shift values */
+ 
 #define HE_BEAM_CHANGE_SHIFT 6
 #define HE_DL_UL_SHIFT 7
 #define HE_TRANSMIT_MCS_SHIFT 8
@@ -564,10 +561,10 @@ struct hal_rx_resp_req_info {
 #define HE_LDPC_EXTRA_SYMBOL_SHIFT 14
 #define HE_STBC_SHIFT 15
 
-/* HE radiotap data4 shift values */
+ 
 #define HE_STA_ID_SHIFT 4
 
-/* HE radiotap data5 */
+ 
 #define HE_GI_SHIFT 4
 #define HE_LTF_SIZE_SHIFT 6
 #define HE_LTF_SYM_SHIFT 8
@@ -575,11 +572,11 @@ struct hal_rx_resp_req_info {
 #define HE_PE_DISAMBIGUITY_SHIFT 15
 #define HE_PRE_FEC_PAD_SHIFT 12
 
-/* HE radiotap data6 */
+ 
 #define HE_DOPPLER_SHIFT 4
 #define HE_TXOP_SHIFT 8
 
-/* HE radiotap HE-MU flags1 */
+ 
 #define HE_SIG_B_MCS_KNOWN 0x0010
 #define HE_SIG_B_DCM_KNOWN 0x0040
 #define HE_SIG_B_SYM_NUM_KNOWN 0x8000
@@ -591,7 +588,7 @@ struct hal_rx_resp_req_info {
 #define HE_SPATIAL_REUSE_MU_KNOWN 0x0100
 #define HE_SIG_B_COMPRESSION_FLAG_1_KNOWN 0x4000
 
-/* HE radiotap HE-MU flags2 */
+ 
 #define HE_SIG_B_COMPRESSION_FLAG_2_SHIFT 3
 #define HE_BW_KNOWN 0x0004
 #define HE_NUM_SIG_B_SYMBOLS_SHIFT 4
@@ -600,17 +597,17 @@ struct hal_rx_resp_req_info {
 #define HE_LTF_FLAG_2_SYMBOLS_SHIFT 12
 #define HE_LTF_KNOWN 0x8000
 
-/* HE radiotap per_user_1 */
+ 
 #define HE_STA_SPATIAL_SHIFT 11
 #define HE_TXBF_SHIFT 14
 #define HE_RESERVED_SET_TO_1_SHIFT 19
 #define HE_STA_CODING_SHIFT 20
 
-/* HE radiotap per_user_2 */
+ 
 #define HE_STA_MCS_SHIFT 4
 #define HE_STA_DCM_SHIFT 5
 
-/* HE radiotap per user known */
+ 
 #define HE_USER_FIELD_POSITION_KNOWN 0x01
 #define HE_STA_ID_PER_USER_KNOWN 0x02
 #define HE_STA_NSTS_KNOWN 0x04

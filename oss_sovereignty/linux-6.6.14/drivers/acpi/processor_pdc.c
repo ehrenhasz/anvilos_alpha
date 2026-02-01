@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005 Intel Corporation
- * Copyright (C) 2009 Hewlett-Packard Development Company, L.P.
- *
- *      Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
- *      - Added _PDC for platforms with Intel CPUs
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -21,7 +15,7 @@ static void acpi_set_pdc_bits(u32 *buf)
 	buf[1] = 1;
 	buf[2] = 0;
 
-	/* Twiddle arch-specific bits needed for _PDC */
+	 
 	arch_acpi_set_proc_cap_bits(&buf[2]);
 }
 
@@ -31,7 +25,7 @@ static struct acpi_object_list *acpi_processor_alloc_pdc(void)
 	union acpi_object *obj;
 	u32 *buf;
 
-	/* allocate and initialize pdc. It will be used later. */
+	 
 	obj_list = kmalloc(sizeof(struct acpi_object_list), GFP_KERNEL);
 	if (!obj_list)
 		goto out;
@@ -63,10 +57,7 @@ out:
 	return NULL;
 }
 
-/*
- * _PDC is required for a BIOS-OS handshake for most of the newer
- * ACPI processor features.
- */
+ 
 static acpi_status
 acpi_processor_eval_pdc(acpi_handle handle, struct acpi_object_list *pdc_in)
 {

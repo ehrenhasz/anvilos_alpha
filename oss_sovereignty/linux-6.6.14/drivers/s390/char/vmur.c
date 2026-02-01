@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Linux driver for System z and s390 unit record devices
- * (z/VM virtual punch, reader, printer)
- *
- * Copyright IBM Corp. 2001, 2009
- * Authors: Malcolm Beattie <beattiem@uk.ibm.com>
- *	    Michael Holzheu <holzheu@de.ibm.com>
- *	    Frank Munzert <munzert@de.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "vmur"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -26,20 +18,7 @@
 
 #include "vmur.h"
 
-/*
- * Driver overview
- *
- * Unit record device support is implemented as a character device driver.
- * We can fit at least 16 bits into a device minor number and use the
- * simple method of mapping a character device number with minor abcd
- * to the unit record device with devno abcd.
- * I/O to virtual unit record devices is handled as follows:
- * Reads: Diagnose code 0x14 (input spool file manipulation)
- * is used to read spool data page-wise.
- * Writes: The CCW used is WRITE_CCW_CMD (0x01). The device's record length
- * is available by reading sysfs attr reclen. Each write() to the device
- * must specify an integral multiple (maximal 511) of reclen.
- */
+ 
 
 static char ur_banner[] = "z/VM virtual unit record device driver";
 
@@ -51,11 +30,11 @@ static dev_t ur_first_dev_maj_min;
 static struct class *vmur_class;
 static struct debug_info *vmur_dbf;
 
-/* We put the device's record length (for writes) in the driver_info field */
+ 
 static struct ccw_device_id ur_ids[] = {
 	{ CCWDEV_CU_DI(READER_PUNCH_DEVTYPE, 80) },
 	{ CCWDEV_CU_DI(PRINTER_DEVTYPE, 132) },
-	{ /* end of list */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(ccw, ur_ids);
@@ -82,25 +61,7 @@ static DEFINE_MUTEX(vmur_mutex);
 
 static void ur_uevent(struct work_struct *ws);
 
-/*
- * Allocation, freeing, getting and putting of urdev structures
- *
- * Each ur device (urd) contains a reference to its corresponding ccw device
- * (cdev) using the urd->cdev pointer. Each ccw device has a reference to the
- * ur device using dev_get_drvdata(&cdev->dev) pointer.
- *
- * urd references:
- * - ur_probe gets a urd reference, ur_remove drops the reference
- *   dev_get_drvdata(&cdev->dev)
- * - ur_open gets a urd reference, ur_release drops the reference
- *   (urf->urd)
- *
- * cdev references:
- * - urdev_alloc get a cdev reference (urd->cdev)
- * - urdev_free drops the cdev reference (urd->cdev)
- *
- * Setting and clearing of dev_get_drvdata(&cdev->dev) is protected by the ccwdev lock
- */
+ 
 static struct urdev *urdev_alloc(struct ccw_device *cdev)
 {
 	struct urdev *urd;
@@ -167,28 +128,7 @@ static void urdev_put(struct urdev *urd)
 		urdev_free(urd);
 }
 
-/*
- * Low-level functions to do I/O to a ur device.
- *     alloc_chan_prog
- *     free_chan_prog
- *     do_ur_io
- *     ur_int_handler
- *
- * alloc_chan_prog allocates and builds the channel program
- * free_chan_prog frees memory of the channel program
- *
- * do_ur_io issues the channel program to the device and blocks waiting
- * on a completion event it publishes at urd->io_done. The function
- * serialises itself on the device's mutex so that only one I/O
- * is issued at a time (and that I/O is synchronous).
- *
- * ur_int_handler catches the "I/O done" interrupt, writes the
- * subchannel status word into the scsw member of the urdev structure
- * and complete()s the io_done to wake the waiting do_ur_io.
- *
- * The caller of do_ur_io is responsible for kfree()ing the channel program
- * address pointer that alloc_chan_prog returned.
- */
+ 
 
 static void free_chan_prog(struct ccw1 *cpa)
 {
@@ -201,14 +141,7 @@ static void free_chan_prog(struct ccw1 *cpa)
 	kfree(cpa);
 }
 
-/*
- * alloc_chan_prog
- * The channel program we use is write commands chained together
- * with a final NOP CCW command-chained on (which ensures that CE and DE
- * are presented together in a single interrupt instead of as separate
- * interrupts unless an incorrect length indication kicks in first). The
- * data length in each CCW is reclen.
- */
+ 
 static struct ccw1 *alloc_chan_prog(const char __user *ubuf, int rec_count,
 				    int reclen)
 {
@@ -218,11 +151,7 @@ static struct ccw1 *alloc_chan_prog(const char __user *ubuf, int rec_count,
 
 	TRACE("alloc_chan_prog(%p, %i, %i)\n", ubuf, rec_count, reclen);
 
-	/*
-	 * We chain a NOP onto the writes to force CE+DE together.
-	 * That means we allocate room for CCWs to cover count/reclen
-	 * records plus a NOP.
-	 */
+	 
 	cpa = kcalloc(rec_count + 1, sizeof(struct ccw1),
 		      GFP_KERNEL | GFP_DMA);
 	if (!cpa)
@@ -244,7 +173,7 @@ static struct ccw1 *alloc_chan_prog(const char __user *ubuf, int rec_count,
 		}
 		ubuf += reclen;
 	}
-	/* The following NOP CCW forces CE+DE to be presented together */
+	 
 	cpa[i].cmd_code = CCW_CMD_NOOP;
 	return cpa;
 }
@@ -284,7 +213,7 @@ static void ur_uevent(struct work_struct *ws)
 {
 	struct urdev *urd = container_of(ws, struct urdev, uevent_work);
 	char *envp[] = {
-		"EVENT=unsol_de",	/* Unsolicited device-end interrupt */
+		"EVENT=unsol_de",	 
 		NULL
 	};
 
@@ -292,9 +221,7 @@ static void ur_uevent(struct work_struct *ws)
 	urdev_put(urd);
 }
 
-/*
- * ur interrupt handler, called from the ccw_device layer
- */
+ 
 static void ur_int_handler(struct ccw_device *cdev, unsigned long intparm,
 			   struct irb *irb)
 {
@@ -310,17 +237,14 @@ static void ur_int_handler(struct ccw_device *cdev, unsigned long intparm,
 		TRACE("ur_int_handler: unsolicited interrupt\n");
 
 		if (scsw_dstat(&irb->scsw) & DEV_STAT_DEV_END) {
-			/*
-			 * Userspace might be interested in a transition to
-			 * device-ready state.
-			 */
+			 
 			urdev_get(urd);
 			schedule_work(&urd->uevent_work);
 		}
 
 		return;
 	}
-	/* On special conditions irb is an error pointer */
+	 
 	if (IS_ERR(irb))
 		urd->io_request_rc = PTR_ERR(irb);
 	else if (irb->scsw.cmd.dstat == (DEV_STAT_CHN_END | DEV_STAT_DEV_END))
@@ -331,9 +255,7 @@ static void ur_int_handler(struct ccw_device *cdev, unsigned long intparm,
 	complete(urd->io_done);
 }
 
-/*
- * reclen sysfs attribute - The record length to be used for write CCWs
- */
+ 
 static ssize_t ur_attr_reclen_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -360,13 +282,7 @@ static void ur_remove_attributes(struct device *dev)
 	device_remove_file(dev, &dev_attr_reclen);
 }
 
-/*
- * diagnose code 0x210 - retrieve device information
- * cc=0  normal completion, we have a real device
- * cc=1  CP paging error
- * cc=2  The virtual device exists, but is not associated with a real device
- * cc=3  Invalid device address, or the virtual device does not exist
- */
+ 
 static int get_urd_class(struct urdev *urd)
 {
 	static struct diag210 ur_diag210;
@@ -380,7 +296,7 @@ static int get_urd_class(struct urdev *urd)
 	case 0:
 		return -EOPNOTSUPP;
 	case 2:
-		return ur_diag210.vrdcvcla; /* virtual device class */
+		return ur_diag210.vrdcvcla;  
 	case 3:
 		return -ENODEV;
 	default:
@@ -388,9 +304,7 @@ static int get_urd_class(struct urdev *urd)
 	}
 }
 
-/*
- * Allocation and freeing of urfile structures
- */
+ 
 static struct urfile *urfile_alloc(struct urdev *urd)
 {
 	struct urfile *urf;
@@ -412,9 +326,7 @@ static void urfile_free(struct urfile *urf)
 	kfree(urf);
 }
 
-/*
- * The fops implementation of the character device driver
- */
+ 
 static ssize_t do_write(struct urdev *urd, const char __user *udata,
 			size_t count, size_t reclen, loff_t *ppos)
 {
@@ -452,7 +364,7 @@ static ssize_t ur_write(struct file *file, const char __user *udata,
 		return 0;
 
 	if (count % urf->dev_reclen)
-		return -EINVAL;	/* count must be a multiple of reclen */
+		return -EINVAL;	 
 
 	if (count > urf->dev_reclen * MAX_RECS_PER_IO)
 		count = urf->dev_reclen * MAX_RECS_PER_IO;
@@ -460,13 +372,7 @@ static ssize_t ur_write(struct file *file, const char __user *udata,
 	return do_write(urf->urd, udata, count, urf->dev_reclen, ppos);
 }
 
-/*
- * diagnose code 0x14 subcode 0x0028 - position spool file to designated
- *				       record
- * cc=0  normal completion
- * cc=2  no file active on the virtual reader or device not ready
- * cc=3  record specified is beyond EOF
- */
+ 
 static int diag_position_to_record(int devno, int record)
 {
 	int cc;
@@ -478,20 +384,13 @@ static int diag_position_to_record(int devno, int record)
 	case 2:
 		return -ENOMEDIUM;
 	case 3:
-		return -ENODATA; /* position beyond end of file */
+		return -ENODATA;  
 	default:
 		return -EIO;
 	}
 }
 
-/*
- * diagnose code 0x14 subcode 0x0000 - read next spool file buffer
- * cc=0  normal completion
- * cc=1  EOF reached
- * cc=2  no file active on the virtual reader, and no file eligible
- * cc=3  file already active on the virtual reader or specified virtual
- *	 reader does not exist or is not a reader
- */
+ 
 static int diag_read_file(int devno, char *buf)
 {
 	int cc;
@@ -579,12 +478,7 @@ static ssize_t ur_read(struct file *file, char __user *ubuf, size_t count,
 	return rc;
 }
 
-/*
- * diagnose code 0x14 subcode 0x0fff - retrieve next file descriptor
- * cc=0  normal completion
- * cc=1  no files on reader queue or no subsequent file
- * cc=2  spid specified is invalid
- */
+ 
 static int diag_read_next_file_info(struct file_control_block *buf, int spid)
 {
 	int cc;
@@ -608,28 +502,28 @@ static int verify_uri_device(struct urdev *urd)
 	if (!fcb)
 		return -ENOMEM;
 
-	/* check for empty reader device (beginning of chain) */
+	 
 	rc = diag_read_next_file_info(fcb, 0);
 	if (rc)
 		goto fail_free_fcb;
 
-	/* if file is in hold status, we do not read it */
+	 
 	if (fcb->file_stat & (FLG_SYSTEM_HOLD | FLG_USER_HOLD)) {
 		rc = -EPERM;
 		goto fail_free_fcb;
 	}
 
-	/* open file on virtual reader	*/
+	 
 	buf = (char *) __get_free_page(GFP_KERNEL | GFP_DMA);
 	if (!buf) {
 		rc = -ENOMEM;
 		goto fail_free_fcb;
 	}
 	rc = diag_read_file(urd->dev_id.devno, buf);
-	if ((rc != 0) && (rc != -ENODATA)) /* EOF does not hurt */
+	if ((rc != 0) && (rc != -ENODATA))  
 		goto fail_free_buf;
 
-	/* check if the file on top of the queue is open now */
+	 
 	rc = diag_read_next_file_info(fcb, 0);
 	if (rc)
 		goto fail_free_buf;
@@ -650,7 +544,7 @@ static int verify_device(struct urdev *urd)
 {
 	switch (urd->class) {
 	case DEV_CLASS_UR_O:
-		return 0; /* no check needed here */
+		return 0;  
 	case DEV_CLASS_UR_I:
 		return verify_uri_device(urd);
 	default:
@@ -703,10 +597,7 @@ static int ur_open(struct inode *inode, struct file *file)
 
 	if (accmode == O_RDWR)
 		return -EACCES;
-	/*
-	 * We treat the minor number as the devno of the ur device
-	 * to find in the driver tree.
-	 */
+	 
 	devno = iminor(file_inode(file));
 
 	urd = urdev_get_from_devno(devno);
@@ -787,9 +678,9 @@ static int ur_release(struct inode *inode, struct file *file)
 static loff_t ur_llseek(struct file *file, loff_t offset, int whence)
 {
 	if ((file->f_flags & O_ACCMODE) != O_RDONLY)
-		return -ESPIPE; /* seek allowed only for reader */
+		return -ESPIPE;  
 	if (offset % PAGE_SIZE)
-		return -ESPIPE; /* only multiples of 4K allowed */
+		return -ESPIPE;  
 	return no_seek_end_llseek(file, offset, whence);
 }
 
@@ -802,20 +693,7 @@ static const struct file_operations ur_fops = {
 	.llseek  = ur_llseek,
 };
 
-/*
- * ccw_device infrastructure:
- *     ur_probe creates the struct urdev (with refcount = 1), the device
- *     attributes, sets up the interrupt handler and validates the virtual
- *     unit record device.
- *     ur_remove removes the device attributes and drops the reference to
- *     struct urdev.
- *
- *     ur_probe, ur_remove, ur_set_online and ur_set_offline are serialized
- *     by the vmur_mutex lock.
- *
- *     urd->char_device is used as indication that the online function has
- *     been completed successfully.
- */
+ 
 static int ur_probe(struct ccw_device *cdev)
 {
 	struct urdev *urd;
@@ -836,7 +714,7 @@ static int ur_probe(struct ccw_device *cdev)
 		goto fail_urdev_put;
 	}
 
-	/* validate virtual unit record device */
+	 
 	urd->class = get_urd_class(urd);
 	if (urd->class < 0) {
 		rc = urd->class;
@@ -874,13 +752,13 @@ static int ur_set_online(struct ccw_device *cdev)
 	mutex_lock(&vmur_mutex);
 	urd = urdev_get_from_cdev(cdev);
 	if (!urd) {
-		/* ur_remove already deleted our urd */
+		 
 		rc = -ENODEV;
 		goto fail_unlock;
 	}
 
 	if (urd->char_device) {
-		/* Another ur_set_online was faster */
+		 
 		rc = -EBUSY;
 		goto fail_urdev_put;
 	}
@@ -941,21 +819,21 @@ static int ur_set_offline_force(struct ccw_device *cdev, int force)
 	TRACE("ur_set_offline: cdev=%p\n", cdev);
 	urd = urdev_get_from_cdev(cdev);
 	if (!urd)
-		/* ur_remove already deleted our urd */
+		 
 		return -ENODEV;
 	if (!urd->char_device) {
-		/* Another ur_set_offline was faster */
+		 
 		rc = -EBUSY;
 		goto fail_urdev_put;
 	}
 	if (!force && (refcount_read(&urd->ref_count) > 2)) {
-		/* There is still a user of urd (e.g. ur_open) */
+		 
 		TRACE("ur_set_offline: BUSY\n");
 		rc = -EBUSY;
 		goto fail_urdev_put;
 	}
 	if (cancel_work_sync(&urd->uevent_work)) {
-		/* Work not run yet - need to release reference here */
+		 
 		urdev_put(urd);
 	}
 	device_destroy(vmur_class, urd->char_device->dev);
@@ -999,9 +877,7 @@ static void ur_remove(struct ccw_device *cdev)
 	mutex_unlock(&vmur_mutex);
 }
 
-/*
- * Module initialisation and cleanup
- */
+ 
 static int __init ur_init(void)
 {
 	int rc;

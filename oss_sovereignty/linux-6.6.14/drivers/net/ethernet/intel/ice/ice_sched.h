@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_SCHED_H_
 #define _ICE_SCHED_H_
@@ -12,18 +12,14 @@
 #define ICE_VSI_LAYER_OFFSET	4
 #define ICE_AGG_LAYER_OFFSET	6
 #define ICE_SCHED_INVAL_LAYER_NUM	0xFF
-/* Burst size is a 12 bits register that is configured while creating the RL
- * profile(s). MSB is a granularity bit and tells the granularity type
- * 0 - LSB bits are in 64 bytes granularity
- * 1 - LSB bits are in 1K bytes granularity
- */
+ 
 #define ICE_64_BYTE_GRANULARITY			0
 #define ICE_KBYTE_GRANULARITY			BIT(11)
-#define ICE_MIN_BURST_SIZE_ALLOWED		64 /* In Bytes */
+#define ICE_MIN_BURST_SIZE_ALLOWED		64  
 #define ICE_MAX_BURST_SIZE_ALLOWED \
-	((BIT(11) - 1) * 1024) /* In Bytes */
+	((BIT(11) - 1) * 1024)  
 #define ICE_MAX_BURST_SIZE_64_BYTE_GRANULARITY \
-	((BIT(11) - 1) * 64) /* In Bytes */
+	((BIT(11) - 1) * 64)  
 #define ICE_MAX_BURST_SIZE_KBYTE_GRANULARITY	ICE_MAX_BURST_SIZE_ALLOWED
 
 #define ICE_RL_PROF_ACCURACY_BYTES 128
@@ -36,21 +32,19 @@
 #define ICE_PSM_CLK_446MHZ_IN_HZ 446428571
 #define ICE_PSM_CLK_390MHZ_IN_HZ 390625000
 
-/* BW rate limit profile parameters list entry along
- * with bandwidth maintained per layer in port info
- */
+ 
 struct ice_aqc_rl_profile_info {
 	struct ice_aqc_rl_profile_elem profile;
 	struct list_head list_entry;
-	u32 bw;			/* requested */
-	u16 prof_id_ref;	/* profile ID to node association ref count */
+	u32 bw;			 
+	u16 prof_id_ref;	 
 };
 
 struct ice_sched_agg_vsi_info {
 	struct list_head list_entry;
 	DECLARE_BITMAP(tc_bitmap, ICE_MAX_TRAFFIC_CLASS);
 	u16 vsi_handle;
-	/* save aggregator VSI TC bitmap */
+	 
 	DECLARE_BITMAP(replay_tc_bitmap, ICE_MAX_TRAFFIC_CLASS);
 };
 
@@ -60,13 +54,13 @@ struct ice_sched_agg_info {
 	DECLARE_BITMAP(tc_bitmap, ICE_MAX_TRAFFIC_CLASS);
 	u32 agg_id;
 	enum ice_agg_type agg_type;
-	/* bw_t_info saves aggregator BW information */
+	 
 	struct ice_bw_type_info bw_t_info[ICE_MAX_TRAFFIC_CLASS];
-	/* save aggregator TC bitmap */
+	 
 	DECLARE_BITMAP(replay_tc_bitmap, ICE_MAX_TRAFFIC_CLASS);
 };
 
-/* FW AQ command calls */
+ 
 int
 ice_aq_query_sched_elems(struct ice_hw *hw, u16 elems_req,
 			 struct ice_aqc_txsched_elem_data *buf, u16 buf_size,
@@ -122,7 +116,7 @@ ice_sched_cfg_vsi(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u16 maxqs,
 int ice_rm_vsi_lan_cfg(struct ice_port_info *pi, u16 vsi_handle);
 int ice_rm_vsi_rdma_cfg(struct ice_port_info *pi, u16 vsi_handle);
 
-/* Tx scheduler rate limiter functions */
+ 
 int
 ice_cfg_agg(struct ice_port_info *pi, u32 agg_id,
 	    enum ice_agg_type agg_type, u8 tc_bitmap);
@@ -167,4 +161,4 @@ ice_aq_move_sched_elems(struct ice_hw *hw, u16 grps_req,
 			u16 *grps_movd, struct ice_sq_cd *cd);
 int ice_replay_vsi_agg(struct ice_hw *hw, u16 vsi_handle);
 int ice_sched_replay_q_bw(struct ice_port_info *pi, struct ice_q_ctx *q_ctx);
-#endif /* _ICE_SCHED_H_ */
+#endif  

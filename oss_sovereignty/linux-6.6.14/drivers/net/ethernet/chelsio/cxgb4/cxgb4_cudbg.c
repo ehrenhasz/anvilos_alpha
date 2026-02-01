@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- */
+
+ 
 
 #include "t4_regs.h"
 #include "cxgb4.h"
@@ -93,7 +91,7 @@ u32 cxgb4_get_dump_length(struct adapter *adap, u32 flag)
 	if (flag & CXGB4_ETH_DUMP_FLASH)
 		len += adap->params.sf_size;
 
-	/* If compression is enabled, a smaller destination buffer is enough */
+	 
 	wsize = cudbg_get_workspace_size();
 	if (wsize && len > CUDBG_DUMP_BUFF_SIZE)
 		len = CUDBG_DUMP_BUFF_SIZE;
@@ -126,7 +124,7 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
 			cudbg_align_debug_buffer(dbg_buff, entity_hdr);
 		}
 
-		/* Log error and continue with next entity */
+		 
 		if (cudbg_err.sys_err)
 			ret = CUDBG_SYSTEM_ERROR;
 
@@ -197,11 +195,11 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
 
 	rc = cudbg_get_workspace_size();
 	if (rc) {
-		/* Zlib available.  So, use zlib deflate */
+		 
 		cudbg_init.compress_type = CUDBG_COMPRESSION_ZLIB;
 		rc = cudbg_alloc_compress_buff(&cudbg_init);
 		if (rc) {
-			/* Ignore error and continue without compression. */
+			 
 			dev_warn(adap->pdev_dev,
 				 "Fail allocating compression buffer ret: %d.  Continuing without compression.\n",
 				 rc);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GMA500 Backlight Interface
- *
- * Copyright (c) 2009-2011, Intel Corporation.
- *
- * Authors: Eric Knopp
- */
+
+ 
 
 #include <linux/backlight.h>
 
@@ -58,7 +52,7 @@ static int gma_backlight_update_status(struct backlight_device *bd)
 	struct drm_device *dev = bl_get_data(bd);
 	int level = backlight_get_brightness(bd);
 
-	/* Percentage 1-100% being valid */
+	 
 	if (level < 1)
 		level = 1;
 

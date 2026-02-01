@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Flash partitions described by the OF (or flattened) device tree
- *
- * Copyright © 2006 MontaVista Software Inc.
- * Author: Vitaly Wool <vwool@ru.mvista.com>
- *
- * Revised to handle newer style flash binding by:
- *   Copyright © 2007 David Gibson, IBM Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -52,37 +44,33 @@ static int parse_fixed_partitions(struct mtd_info *master,
 	int nr_parts, i, ret = 0;
 	bool dedicated = true;
 
-	/* Pull of_node from the master device node */
+	 
 	mtd_node = mtd_get_of_node(master);
 	if (!mtd_node)
 		return 0;
 
-	if (!master->parent) { /* Master */
+	if (!master->parent) {  
 		ofpart_node = of_get_child_by_name(mtd_node, "partitions");
 		if (!ofpart_node) {
-			/*
-			 * We might get here even when ofpart isn't used at all (e.g.,
-			 * when using another parser), so don't be louder than
-			 * KERN_DEBUG
-			 */
+			 
 			pr_debug("%s: 'partitions' subnode not found on %pOF. Trying to parse direct subnodes as partitions.\n",
 				master->name, mtd_node);
 			ofpart_node = mtd_node;
 			dedicated = false;
 		}
-	} else { /* Partition */
+	} else {  
 		ofpart_node = mtd_node;
 	}
 
 	of_id = of_match_node(parse_ofpart_match_table, ofpart_node);
 	if (dedicated && !of_id) {
-		/* The 'partitions' subnode might be used by another parser */
+		 
 		return 0;
 	}
 
 	quirks = of_id ? of_id->data : NULL;
 
-	/* First count the subnodes */
+	 
 	nr_parts = 0;
 	for_each_child_of_node(ofpart_node,  pp) {
 		if (!dedicated && node_has_compatible(pp))
@@ -123,20 +111,7 @@ static int parse_fixed_partitions(struct mtd_info *master,
 		a_cells = of_n_addr_cells(pp);
 		s_cells = of_n_size_cells(pp);
 		if (!dedicated && s_cells == 0) {
-			/*
-			 * This is a ugly workaround to not create
-			 * regression on devices that are still creating
-			 * partitions as direct children of the nand controller.
-			 * This can happen in case the nand controller node has
-			 * #size-cells equal to 0 and the firmware (e.g.
-			 * U-Boot) just add the partitions there assuming
-			 * 32-bit addressing.
-			 *
-			 * If you get this warning your firmware and/or DTS
-			 * should be really fixed.
-			 *
-			 * This is working only for devices smaller than 4GiB.
-			 */
+			 
 			pr_warn("%s: ofpart partition %pOF (%pOF) #size-cells is wrongly set to <0>, assuming <1> for parsing partitions.\n",
 				master->name, pp, mtd_node);
 			s_cells = 1;
@@ -189,9 +164,9 @@ ofpart_none:
 }
 
 static const struct of_device_id parse_ofpart_match_table[] = {
-	/* Generic */
+	 
 	{ .compatible = "fixed-partitions" },
-	/* Customized */
+	 
 	{ .compatible = "brcm,bcm4908-partitions", .data = &bcm4908_partitions_quirks, },
 	{ .compatible = "linksys,ns-partitions", .data = &linksys_ns_partitions_quirks, },
 	{},
@@ -216,14 +191,14 @@ static int parse_ofoldpart_partitions(struct mtd_info *master,
 	} *part;
 	const char *names;
 
-	/* Pull of_node from the master device node */
+	 
 	dp = mtd_get_of_node(master);
 	if (!dp)
 		return 0;
 
 	part = of_get_property(dp, "partitions", &plen);
 	if (!part)
-		return 0; /* No partitions found */
+		return 0;  
 
 	pr_warn("Device tree uses obsolete partition map binding: %pOF\n", dp);
 
@@ -238,7 +213,7 @@ static int parse_ofoldpart_partitions(struct mtd_info *master,
 	for (i = 0; i < nr_parts; i++) {
 		parts[i].offset = be32_to_cpu(part->offset);
 		parts[i].size   = be32_to_cpu(part->len) & ~1;
-		/* bit 0 set signifies read only partition */
+		 
 		if (be32_to_cpu(part->len) & 1)
 			parts[i].mask_flags = MTD_WRITEABLE;
 
@@ -283,10 +258,6 @@ module_exit(ofpart_parser_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Parser for MTD partitioning information in device tree");
 MODULE_AUTHOR("Vitaly Wool, David Gibson");
-/*
- * When MTD core cannot find the requested parser, it tries to load the module
- * with the same name. Since we provide the ofoldpart parser, we should have
- * the corresponding alias.
- */
+ 
 MODULE_ALIAS("fixed-partitions");
 MODULE_ALIAS("ofoldpart");

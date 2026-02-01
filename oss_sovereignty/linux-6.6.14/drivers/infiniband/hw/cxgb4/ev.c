@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/slab.h>
 #include <linux/mman.h>
 #include <net/sock.h>
@@ -75,10 +45,7 @@ static void dump_err_cqe(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 		 be64_to_cpu(p[3]), be64_to_cpu(p[4]), be64_to_cpu(p[5]),
 		 be64_to_cpu(p[6]), be64_to_cpu(p[7]));
 
-	/*
-	 * Ingress WRITE and READ_RESP errors provide
-	 * the offending stag, so parse and log it.
-	 */
+	 
 	if (RQ_TYPE(err_cqe) && (CQE_OPCODE(err_cqe) == FW_RI_RDMA_WRITE ||
 				 CQE_OPCODE(err_cqe) == FW_RI_READ_RESP))
 		print_tpte(dev, CQE_WRID_STAG(err_cqe));
@@ -154,7 +121,7 @@ void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 	refcount_inc(&chp->refcnt);
 	xa_unlock_irq(&dev->qps);
 
-	/* Bad incoming write */
+	 
 	if (RQ_TYPE(err_cqe) &&
 	    (CQE_OPCODE(err_cqe) == FW_RI_RDMA_WRITE)) {
 		post_qp_event(dev, chp, qhp, err_cqe, IB_EVENT_QP_REQ_ERR);
@@ -163,7 +130,7 @@ void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 
 	switch (CQE_STATUS(err_cqe)) {
 
-	/* Completion Events */
+	 
 	case T4_ERR_SUCCESS:
 		pr_err("AE with status 0!\n");
 		break;
@@ -179,14 +146,14 @@ void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 		post_qp_event(dev, chp, qhp, err_cqe, IB_EVENT_QP_ACCESS_ERR);
 		break;
 
-	/* Device Fatal Errors */
+	 
 	case T4_ERR_ECC:
 	case T4_ERR_ECC_PSTAG:
 	case T4_ERR_INTERNAL_ERR:
 		post_qp_event(dev, chp, qhp, err_cqe, IB_EVENT_DEVICE_FATAL);
 		break;
 
-	/* QP Fatal Errors */
+	 
 	case T4_ERR_OUT_OF_RQE:
 	case T4_ERR_PBL_ADDR_BOUND:
 	case T4_ERR_CRC:

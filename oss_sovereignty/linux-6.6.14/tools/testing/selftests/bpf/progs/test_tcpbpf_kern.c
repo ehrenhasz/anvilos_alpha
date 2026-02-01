@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stddef.h>
 #include <string.h>
 #include <netinet/in.h>
@@ -17,10 +17,7 @@
 
 struct tcpbpf_globals global = {};
 
-/**
- * SOL_TCP is defined in <netinet/tcp.h> while
- * TCP_SAVED_SYN is defined in already included <linux/tcp.h>
- */
+ 
 #ifndef SOL_TCP
 #define SOL_TCP 6
 #endif
@@ -51,7 +48,7 @@ int bpf_testcb(struct bpf_sock_ops *skops)
 	int v = 0;
 	int op;
 
-	/* Test reading fields in bpf_sock_ops using single register */
+	 
 	asm volatile (
 		"%[reuse] = *(u32 *)(%[reuse] +96)"
 		: [reuse] "+r"(reuse)
@@ -102,9 +99,9 @@ int bpf_testcb(struct bpf_sock_ops *skops)
 		global.window_clamp_client = get_tp_window_clamp(skops);
 		break;
 	case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
-		/* Test failure to set largest cb flag (assumes not defined) */
+		 
 		global.bad_cb_test_rv = bpf_sock_ops_cb_flags_set(skops, 0x80);
-		/* Set callback */
+		 
 		global.good_cb_test_rv = bpf_sock_ops_cb_flags_set(skops,
 						 BPF_SOCK_OPS_STATE_CB_FLAG);
 		break;
@@ -153,7 +150,7 @@ int bpf_testcb(struct bpf_sock_ops *skops)
 		bpf_sock_ops_cb_flags_set(skops, BPF_SOCK_OPS_STATE_CB_FLAG);
 		v = bpf_setsockopt(skops, IPPROTO_TCP, TCP_SAVE_SYN,
 				   &save_syn, sizeof(save_syn));
-		/* Update global map w/ result of setsock opt */
+		 
 		global.tcp_save_syn = v;
 		break;
 	default:

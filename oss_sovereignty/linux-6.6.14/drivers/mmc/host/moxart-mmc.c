@@ -1,17 +1,4 @@
-/*
- * MOXA ART MMC host driver.
- *
- * Copyright (C) 2014 Jonas Jensen
- *
- * Jonas Jensen <jonas.jensen@gmail.com>
- *
- * Based on code from
- * Moxa Technologies Co., Ltd. <www.moxa.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -53,7 +40,7 @@
 #define REG_FEATURE		68
 #define REG_REVISION		72
 
-/* REG_COMMAND */
+ 
 #define CMD_SDC_RESET		BIT(10)
 #define CMD_EN			BIT(9)
 #define CMD_APP_CMD		BIT(8)
@@ -61,11 +48,11 @@
 #define CMD_NEED_RSP		BIT(6)
 #define CMD_IDX_MASK		0x3f
 
-/* REG_RESPONSE_COMMAND */
+ 
 #define RSP_CMD_APP		BIT(6)
 #define RSP_CMD_IDX_MASK	0x3f
 
-/* REG_DATA_CONTROL */
+ 
 #define DCR_DATA_FIFO_RESET     BIT(8)
 #define DCR_DATA_THRES          BIT(7)
 #define DCR_DATA_EN		BIT(6)
@@ -73,13 +60,13 @@
 #define DCR_DATA_WRITE		BIT(4)
 #define DCR_BLK_SIZE		0x0f
 
-/* REG_DATA_LENGTH */
+ 
 #define DATA_LEN_MASK		0xffffff
 
-/* REG_STATUS */
+ 
 #define WRITE_PROT		BIT(12)
 #define CARD_DETECT		BIT(11)
-/* 1-10 below can be sent to either registers, interrupt or clear. */
+ 
 #define CARD_CHANGE		BIT(10)
 #define FIFO_ORUN		BIT(9)
 #define FIFO_URUN		BIT(8)
@@ -100,17 +87,17 @@
 
 #define MASK_INTR_PIO		(FIFO_URUN | FIFO_ORUN | CARD_CHANGE)
 
-/* REG_POWER_CONTROL */
+ 
 #define SD_POWER_ON		BIT(4)
 #define SD_POWER_MASK		0x0f
 
-/* REG_CLOCK_CONTROL */
+ 
 #define CLK_HISPD		BIT(9)
 #define CLK_OFF			BIT(8)
 #define CLK_SD			BIT(7)
 #define CLK_DIV_MASK		0x7f
 
-/* REG_BUS_WIDTH */
+ 
 #define BUS_WIDTH_4_SUPPORT	BIT(3)
 #define BUS_WIDTH_4		BIT(2)
 #define BUS_WIDTH_1		BIT(0)
@@ -422,7 +409,7 @@ static void moxart_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 			spin_unlock_irqrestore(&host->lock, flags);
 
-			/* PIO transfers start from interrupt. */
+			 
 			wait_for_completion_interruptible_timeout(&host->pio_complete,
 								  host->timeout);
 
@@ -604,9 +591,9 @@ static int moxart_probe(struct platform_device *pdev)
 	mmc->ops = &moxart_ops;
 	mmc->f_max = DIV_ROUND_CLOSEST(host->sysclk, 2);
 	mmc->f_min = DIV_ROUND_CLOSEST(host->sysclk, CLK_DIV_MASK * 2);
-	mmc->ocr_avail = 0xffff00;	/* Support 2.0v - 3.6v power. */
-	mmc->max_blk_size = 2048; /* Max. block length in REG_DATA_CONTROL */
-	mmc->max_req_size = DATA_LEN_MASK; /* bits 0-23 in REG_DATA_LENGTH */
+	mmc->ocr_avail = 0xffff00;	 
+	mmc->max_blk_size = 2048;  
+	mmc->max_req_size = DATA_LEN_MASK;  
 	mmc->max_blk_count = mmc->max_req_size / 512;
 
 	if (IS_ERR(host->dma_chan_tx) || IS_ERR(host->dma_chan_rx)) {

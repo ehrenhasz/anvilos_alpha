@@ -1,8 +1,4 @@
-/*
-** $Id: lfunc.c,v 2.30.1.1 2013/04/12 18:48:47 roberto Exp $
-** Auxiliary functions to manipulate prototypes and closures
-** See Copyright Notice in lua.h
-*/
+ 
 
 
 #define lfunc_c
@@ -51,17 +47,17 @@ UpVal *luaF_findupval (lua_State *L, StkId level) {
     GCObject *o = obj2gco(p);
     lua_assert(p->v != &p->u.value);
     lua_assert(!isold(o) || isold(obj2gco(L)));
-    if (p->v == level) {  /* found a corresponding upvalue? */
-      if (isdead(g, o))  /* is it dead? */
-        changewhite(o);  /* resurrect it */
+    if (p->v == level) {   
+      if (isdead(g, o))   
+        changewhite(o);   
       return p;
     }
     pp = &p->next;
   }
-  /* not found: create a new one */
+   
   uv = &luaC_newobj(L, LUA_TUPVAL, sizeof(UpVal), pp, 0)->uv;
-  uv->v = level;  /* current value lives in the stack */
-  uv->u.l.prev = &g->uvhead;  /* double link it in `uvhead' list */
+  uv->v = level;   
+  uv->u.l.prev = &g->uvhead;   
   uv->u.l.next = g->uvhead.u.l.next;
   uv->u.l.next->u.l.prev = uv;
   g->uvhead.u.l.next = uv;
@@ -72,15 +68,15 @@ UpVal *luaF_findupval (lua_State *L, StkId level) {
 
 static void unlinkupval (UpVal *uv) {
   lua_assert(uv->u.l.next->u.l.prev == uv && uv->u.l.prev->u.l.next == uv);
-  uv->u.l.next->u.l.prev = uv->u.l.prev;  /* remove from `uvhead' list */
+  uv->u.l.next->u.l.prev = uv->u.l.prev;   
   uv->u.l.prev->u.l.next = uv->u.l.next;
 }
 
 
 void luaF_freeupval (lua_State *L, UpVal *uv) {
-  if (uv->v != &uv->u.value)  /* is it open? */
-    unlinkupval(uv);  /* remove from open list */
-  luaM_free(L, uv);  /* free upvalue */
+  if (uv->v != &uv->u.value)   
+    unlinkupval(uv);   
+  luaM_free(L, uv);   
 }
 
 
@@ -90,14 +86,14 @@ void luaF_close (lua_State *L, StkId level) {
   while (L->openupval != NULL && (uv = gco2uv(L->openupval))->v >= level) {
     GCObject *o = obj2gco(uv);
     lua_assert(!isblack(o) && uv->v != &uv->u.value);
-    L->openupval = uv->next;  /* remove from `open' list */
+    L->openupval = uv->next;   
     if (isdead(g, o))
-      luaF_freeupval(L, uv);  /* free upvalue */
+      luaF_freeupval(L, uv);   
     else {
-      unlinkupval(uv);  /* remove upvalue from 'uvhead' list */
-      setobj(L, &uv->u.value, uv->v);  /* move value to upvalue slot */
-      uv->v = &uv->u.value;  /* now current value lives here */
-      gch(o)->next = g->allgc;  /* link upvalue into 'allgc' list */
+      unlinkupval(uv);   
+      setobj(L, &uv->u.value, uv->v);   
+      uv->v = &uv->u.value;   
+      gch(o)->next = g->allgc;   
       g->allgc = o;
       luaC_checkupvalcolor(g, uv);
     }
@@ -141,18 +137,15 @@ void luaF_freeproto (lua_State *L, Proto *f) {
 }
 
 
-/*
-** Look for n-th local variable at line `line' in function `func'.
-** Returns NULL if not found.
-*/
+ 
 const char *luaF_getlocalname (const Proto *f, int local_number, int pc) {
   int i;
   for (i = 0; i<f->sizelocvars && f->locvars[i].startpc <= pc; i++) {
-    if (pc < f->locvars[i].endpc) {  /* is variable active? */
+    if (pc < f->locvars[i].endpc) {   
       local_number--;
       if (local_number == 0)
         return getstr(f->locvars[i].varname);
     }
   }
-  return NULL;  /* not found */
+  return NULL;   
 }

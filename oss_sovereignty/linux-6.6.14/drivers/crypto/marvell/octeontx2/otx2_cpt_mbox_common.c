@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include "otx2_cpt_common.h"
 #include "otx2_cptlf.h"

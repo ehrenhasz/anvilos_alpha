@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	Support for the asynchronous serial interface (DUART) included
- *	in the BCM1250 and derived System-On-a-Chip (SOC) devices.
- *
- *	Copyright (c) 2007  Maciej W. Rozycki
- *
- *	Derived from drivers/char/sb1250_duart.c for which the following
- *	copyright applies:
- *
- *	Copyright (c) 2000, 2001, 2002, 2003, 2004  Broadcom Corporation
- *
- *	References:
- *
- *	"BCM1250/BCM1125/BCM1125H User Manual", Broadcom Corporation
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/console.h>
@@ -77,9 +63,7 @@ MODULE_LICENSE("GPL");
 #define DUART_MAX_CHIP 2
 #define DUART_MAX_SIDE 2
 
-/*
- * Per-port state.
- */
+ 
 struct sbd_port {
 	struct sbd_duart	*duart;
 	struct uart_port	port;
@@ -88,9 +72,7 @@ struct sbd_port {
 	int			initialised;
 };
 
-/*
- * Per-DUART state for the shared register space.
- */
+ 
 struct sbd_duart {
 	struct sbd_port		sport[2];
 	unsigned long		mapctrl;
@@ -102,17 +84,7 @@ struct sbd_duart {
 static struct sbd_duart sbd_duarts[DUART_MAX_CHIP];
 
 
-/*
- * Reading and writing SB1250 DUART registers.
- *
- * There are three register spaces: two per-channel ones and
- * a shared one.  We have to define accessors appropriately.
- * All registers are 64-bit and all but the Baud Rate Clock
- * registers only define 8 least significant bits.  There is
- * also a workaround to take into account.  Raw accessors use
- * the full register width, but cooked ones truncate it
- * intentionally so that the rest of the driver does not care.
- */
+ 
 static u64 __read_sbdchn(struct sbd_port *sport, int reg)
 {
 	void __iomem *csr = sport->port.membase + reg;
@@ -141,10 +113,7 @@ static void __write_sbdshr(struct sbd_port *sport, int reg, u64 value)
 	__raw_writeq(value, csr);
 }
 
-/*
- * In bug 1956, we get glitches that can mess up uart registers.  This
- * "read-mode-reg after any register access" is an accepted workaround.
- */
+ 
 static void __war_sbd1956(struct sbd_port *sport)
 {
 	__read_sbdchn(sport, R_DUART_MODE_REG_1);
@@ -291,12 +260,12 @@ static void sbd_start_tx(struct uart_port *uport)
 	struct sbd_port *sport = to_sport(uport);
 	unsigned int mask;
 
-	/* Enable tx interrupts.  */
+	 
 	mask = read_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2));
 	mask |= M_DUART_IMR_TX;
 	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2), mask);
 
-	/* Go!, go!, go!...  */
+	 
 	write_sbdchn(sport, R_DUART_CMD, M_DUART_TX_EN);
 	sport->tx_stopped = 0;
 };
@@ -386,7 +355,7 @@ static void sbd_transmit_chars(struct sbd_port *sport)
 	unsigned int mask;
 	int stop_tx;
 
-	/* XON/XOFF chars.  */
+	 
 	if (sport->port.x_char) {
 		write_sbdchn(sport, R_DUART_TX_HOLD, sport->port.x_char);
 		sport->port.icount.tx++;
@@ -394,10 +363,10 @@ static void sbd_transmit_chars(struct sbd_port *sport)
 		return;
 	}
 
-	/* If nothing to do or stopped or hardware stopped.  */
+	 
 	stop_tx = (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port));
 
-	/* Send char.  */
+	 
 	if (!stop_tx) {
 		write_sbdchn(sport, R_DUART_TX_HOLD, xmit->buf[xmit->tail]);
 		uart_xmit_advance(&sport->port, 1);
@@ -406,9 +375,9 @@ static void sbd_transmit_chars(struct sbd_port *sport)
 			uart_write_wakeup(&sport->port);
 	}
 
-	/* Are we are done?  */
+	 
 	if (stop_tx || uart_circ_empty(xmit)) {
-		/* Disable tx interrupts.  */
+		 
 		mask = read_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2));
 		mask &= ~M_DUART_IMR_TX;
 		write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2), mask);
@@ -476,23 +445,23 @@ static int sbd_startup(struct uart_port *uport)
 	if (ret)
 		return ret;
 
-	/* Clear the receive FIFO.  */
+	 
 	sbd_receive_drain(sport);
 
-	/* Clear the interrupt registers.  */
+	 
 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_BREAK_INT);
 	read_sbdshr(sport, R_DUART_INCHREG((uport->line) % 2));
 
-	/* Set rx/tx interrupt to FIFO available.  */
+	 
 	mode1 = read_sbdchn(sport, R_DUART_MODE_REG_1);
 	mode1 &= ~(M_DUART_RX_IRQ_SEL_RXFULL | M_DUART_TX_IRQ_SEL_TXEMPT);
 	write_sbdchn(sport, R_DUART_MODE_REG_1, mode1);
 
-	/* Disable tx, enable rx.  */
+	 
 	write_sbdchn(sport, R_DUART_CMD, M_DUART_TX_DIS | M_DUART_RX_EN);
 	sport->tx_stopped = 1;
 
-	/* Enable interrupts.  */
+	 
 	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2),
 		     M_DUART_IMR_IN | M_DUART_IMR_RX);
 
@@ -516,7 +485,7 @@ static void sbd_init_port(struct sbd_port *sport)
 	if (sport->initialised)
 		return;
 
-	/* There is no DUART reset feature, so just set some sane defaults.  */
+	 
 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_TX);
 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_RX);
 	write_sbdchn(sport, R_DUART_MODE_REG_1, V_DUART_BITS_PER_CHAR_8);
@@ -545,11 +514,11 @@ static void sbd_set_termios(struct uart_port *uport, struct ktermios *termios,
 	mode2mask |= ~M_DUART_STOP_BIT_LEN_2;
 	auxmask |= ~M_DUART_CTS_CHNG_ENA;
 
-	/* Byte size.  */
+	 
 	switch (termios->c_cflag & CSIZE) {
 	case CS5:
 	case CS6:
-		/* Unsupported, leave unchanged.  */
+		 
 		mode1mask |= M_DUART_PARITY_MODE;
 		break;
 	case CS7:
@@ -561,7 +530,7 @@ static void sbd_set_termios(struct uart_port *uport, struct ktermios *termios,
 		break;
 	}
 
-	/* Parity and stop bits.  */
+	 
 	if (termios->c_cflag & CSTOPB)
 		mode2 |= M_DUART_STOP_BIT_LEN_2;
 	else
@@ -577,7 +546,7 @@ static void sbd_set_termios(struct uart_port *uport, struct ktermios *termios,
 
 	baud = uart_get_baud_rate(uport, termios, old_termios, 1200, 5000000);
 	brg = V_DUART_BAUD_RATE(baud);
-	/* The actual lower bound is 1221bps, so compensate.  */
+	 
 	if (brg > M_DUART_CLK_COUNTER)
 		brg = M_DUART_CLK_COUNTER;
 
@@ -765,7 +734,7 @@ static const struct uart_ops sbd_ops = {
 	.verify_port	= sbd_verify_port,
 };
 
-/* Initialize SB1250 DUART port structures.  */
+ 
 static void __init sbd_probe_duarts(void)
 {
 	static int probed;
@@ -775,14 +744,14 @@ static void __init sbd_probe_duarts(void)
 	if (probed)
 		return;
 
-	/* Set the number of available units based on the SOC type.  */
+	 
 	switch (soc_type) {
 	case K_SYS_SOC_TYPE_BCM1x55:
 	case K_SYS_SOC_TYPE_BCM1x80:
 		max_lines = 4;
 		break;
 	default:
-		/* Assume at least two serial ports at the normal address.  */
+		 
 		max_lines = 2;
 		break;
 	}
@@ -815,11 +784,7 @@ static void __init sbd_probe_duarts(void)
 
 
 #ifdef CONFIG_SERIAL_SB1250_DUART_CONSOLE
-/*
- * Serial console stuff.  Very basic, polling driver for doing serial
- * console output.  The console_lock is held by the caller, so we
- * shouldn't be interrupted for more console activity.
- */
+ 
 static void sbd_console_putchar(struct uart_port *uport, unsigned char ch)
 {
 	struct sbd_port *sport = to_sport(uport);
@@ -838,7 +803,7 @@ static void sbd_console_write(struct console *co, const char *s,
 	unsigned long flags;
 	unsigned int mask;
 
-	/* Disable transmit interrupts and enable the transmitter. */
+	 
 	spin_lock_irqsave(&uport->lock, flags);
 	mask = read_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2));
 	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2),
@@ -848,7 +813,7 @@ static void sbd_console_write(struct console *co, const char *s,
 
 	uart_console_write(&sport->port, s, count, sbd_console_putchar);
 
-	/* Restore transmit interrupts and the transmitter enable. */
+	 
 	spin_lock_irqsave(&uport->lock, flags);
 	sbd_line_drain(sport);
 	if (sport->tx_stopped)
@@ -907,7 +872,7 @@ console_initcall(sbd_serial_console_init);
 #define SERIAL_SB1250_DUART_CONSOLE	&sbd_console
 #else
 #define SERIAL_SB1250_DUART_CONSOLE	NULL
-#endif /* CONFIG_SERIAL_SB1250_DUART_CONSOLE */
+#endif  
 
 
 static struct uart_driver sbd_reg = {
@@ -920,7 +885,7 @@ static struct uart_driver sbd_reg = {
 	.cons		= SERIAL_SB1250_DUART_CONSOLE,
 };
 
-/* Set up the driver and register it.  */
+ 
 static int __init sbd_init(void)
 {
 	int i, ret;
@@ -943,7 +908,7 @@ static int __init sbd_init(void)
 	return 0;
 }
 
-/* Unload the driver.  Unregister stuff, get ready to go away.  */
+ 
 static void __exit sbd_exit(void)
 {
 	int i;

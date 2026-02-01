@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 #ifndef BRCMFMAC_MSGBUF_H
 #define BRCMFMAC_MSGBUF_H
 
@@ -40,4 +38,4 @@ static inline int brcmf_proto_msgbuf_attach(struct brcmf_pub *drvr)
 static inline void brcmf_proto_msgbuf_detach(struct brcmf_pub *drvr) {}
 #endif
 
-#endif /* BRCMFMAC_MSGBUF_H */
+#endif  

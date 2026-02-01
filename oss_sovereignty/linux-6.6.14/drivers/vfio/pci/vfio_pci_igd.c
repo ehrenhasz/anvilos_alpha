@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO PCI Intel Graphics support
- *
- * Copyright (C) 2016 Red Hat, Inc.  All rights reserved.
- *	Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Register a device specific region through which to provide read-only
- * access to the Intel IGD opregion.  The register defining the opregion
- * address is also virtualized to prevent user modification.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/pci.h>
@@ -30,20 +21,7 @@ struct igd_opregion_vbt {
 	void *vbt_ex;
 };
 
-/**
- * igd_opregion_shift_copy() - Copy OpRegion to user buffer and shift position.
- * @dst: User buffer ptr to copy to.
- * @off: Offset to user buffer ptr. Increased by bytes on return.
- * @src: Source buffer to copy from.
- * @pos: Increased by bytes on return.
- * @remaining: Decreased by bytes on return.
- * @bytes: Bytes to copy and adjust off, pos and remaining.
- *
- * Copy OpRegion to offset from specific source ptr and shift the offset.
- *
- * Return: 0 on success, -EFAULT otherwise.
- *
- */
+ 
 static inline unsigned long igd_opregion_shift_copy(char __user *dst,
 						    loff_t *off,
 						    void *src,
@@ -76,7 +54,7 @@ static ssize_t vfio_pci_igd_rw(struct vfio_pci_core_device *vdev,
 	count = min_t(size_t, count, vdev->region[i].size - pos);
 	remaining = count;
 
-	/* Copy until OpRegion version */
+	 
 	if (remaining && pos < OPREGION_VERSION) {
 		size_t bytes = min_t(size_t, remaining, OPREGION_VERSION - pos);
 
@@ -86,14 +64,14 @@ static ssize_t vfio_pci_igd_rw(struct vfio_pci_core_device *vdev,
 			return -EFAULT;
 	}
 
-	/* Copy patched (if necessary) OpRegion version */
+	 
 	if (remaining && pos < OPREGION_VERSION + sizeof(__le16)) {
 		size_t bytes = min_t(size_t, remaining,
 				     OPREGION_VERSION + sizeof(__le16) - pos);
 		__le16 version = *(__le16 *)(opregionvbt->opregion +
 					     OPREGION_VERSION);
 
-		/* Patch to 2.1 if OpRegion 2.0 has extended VBT */
+		 
 		if (le16_to_cpu(version) == 0x0200 && opregionvbt->vbt_ex)
 			version = cpu_to_le16(0x0201);
 
@@ -104,7 +82,7 @@ static ssize_t vfio_pci_igd_rw(struct vfio_pci_core_device *vdev,
 			return -EFAULT;
 	}
 
-	/* Copy until RVDA */
+	 
 	if (remaining && pos < OPREGION_RVDA) {
 		size_t bytes = min_t(size_t, remaining, OPREGION_RVDA - pos);
 
@@ -114,7 +92,7 @@ static ssize_t vfio_pci_igd_rw(struct vfio_pci_core_device *vdev,
 			return -EFAULT;
 	}
 
-	/* Copy modified (if necessary) RVDA */
+	 
 	if (remaining && pos < OPREGION_RVDA + sizeof(__le64)) {
 		size_t bytes = min_t(size_t, remaining,
 				     OPREGION_RVDA + sizeof(__le64) - pos);
@@ -127,7 +105,7 @@ static ssize_t vfio_pci_igd_rw(struct vfio_pci_core_device *vdev,
 			return -EFAULT;
 	}
 
-	/* Copy the rest of OpRegion */
+	 
 	if (remaining && pos < OPREGION_SIZE) {
 		size_t bytes = min_t(size_t, remaining, OPREGION_SIZE - pos);
 
@@ -137,7 +115,7 @@ static ssize_t vfio_pci_igd_rw(struct vfio_pci_core_device *vdev,
 			return -EFAULT;
 	}
 
-	/* Copy extended VBT if exists */
+	 
 	if (remaining &&
 	    copy_to_user(buf + off, opregionvbt->vbt_ex + (pos - OPREGION_SIZE),
 			 remaining))
@@ -203,29 +181,9 @@ static int vfio_pci_igd_opregion_init(struct vfio_pci_core_device *vdev)
 		return -EINVAL;
 	}
 
-	size *= 1024; /* In KB */
+	size *= 1024;  
 
-	/*
-	 * OpRegion and VBT:
-	 * When VBT data doesn't exceed 6KB, it's stored in Mailbox #4.
-	 * When VBT data exceeds 6KB size, Mailbox #4 is no longer large enough
-	 * to hold the VBT data, the Extended VBT region is introduced since
-	 * OpRegion 2.0 to hold the VBT data. Since OpRegion 2.0, RVDA/RVDS are
-	 * introduced to define the extended VBT data location and size.
-	 * OpRegion 2.0: RVDA defines the absolute physical address of the
-	 *   extended VBT data, RVDS defines the VBT data size.
-	 * OpRegion 2.1 and above: RVDA defines the relative address of the
-	 *   extended VBT data to OpRegion base, RVDS defines the VBT data size.
-	 *
-	 * Due to the RVDA definition diff in OpRegion VBT (also the only diff
-	 * between 2.0 and 2.1), exposing OpRegion and VBT as a contiguous range
-	 * for OpRegion 2.0 and above makes it possible to support the
-	 * non-contiguous VBT through a single vfio region. From r/w ops view,
-	 * only contiguous VBT after OpRegion with version 2.1+ is exposed,
-	 * regardless the host OpRegion is 2.0 or non-contiguous 2.1+. The r/w
-	 * ops will on-the-fly shift the actural offset into VBT so that data at
-	 * correct position can be returned to the requester.
-	 */
+	 
 	version = le16_to_cpu(*(__le16 *)(opregionvbt->opregion +
 					  OPREGION_VERSION));
 	if (version >= 0x0200) {
@@ -234,15 +192,11 @@ static int vfio_pci_igd_opregion_init(struct vfio_pci_core_device *vdev)
 		u32 rvds = le32_to_cpu(*(__le32 *)(opregionvbt->opregion +
 						   OPREGION_RVDS));
 
-		/* The extended VBT is valid only when RVDA/RVDS are non-zero */
+		 
 		if (rvda && rvds) {
 			size += rvds;
 
-			/*
-			 * Extended VBT location by RVDA:
-			 * Absolute physical addr for 2.0.
-			 * Relative addr to OpRegion header for 2.1+.
-			 */
+			 
 			if (version == 0x0200)
 				addr = rvda;
 			else
@@ -270,7 +224,7 @@ static int vfio_pci_igd_opregion_init(struct vfio_pci_core_device *vdev)
 		return ret;
 	}
 
-	/* Fill vconfig with the hw value and virtualize register */
+	 
 	*dwordp = cpu_to_le32(addr);
 	memset(vdev->pci_config_map + OPREGION_PCI_ADDR,
 	       PCI_CAP_ID_INVALID_VIRT, 4);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device access for Basin Cove PMIC
- *
- * Copyright (c) 2019, Intel Corporation.
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/interrupt.h>
@@ -17,21 +12,15 @@
 
 #include <asm/intel_scu_ipc.h>
 
-/*
- * Level 2 IRQs
- *
- * Firmware on the systems with Basin Cove PMIC services Level 1 IRQs
- * without an assistance. Thus, each of the Level 1 IRQ is represented
- * as a separate RTE in IOAPIC.
- */
+ 
 static struct resource irq_level2_resources[] = {
-	DEFINE_RES_IRQ(0), /* power button */
-	DEFINE_RES_IRQ(0), /* TMU */
-	DEFINE_RES_IRQ(0), /* thermal */
-	DEFINE_RES_IRQ(0), /* BCU */
-	DEFINE_RES_IRQ(0), /* ADC */
-	DEFINE_RES_IRQ(0), /* charger */
-	DEFINE_RES_IRQ(0), /* GPIO */
+	DEFINE_RES_IRQ(0),  
+	DEFINE_RES_IRQ(0),  
+	DEFINE_RES_IRQ(0),  
+	DEFINE_RES_IRQ(0),  
+	DEFINE_RES_IRQ(0),  
+	DEFINE_RES_IRQ(0),  
+	DEFINE_RES_IRQ(0),  
 };
 
 static const struct mfd_cell bcove_dev[] = {

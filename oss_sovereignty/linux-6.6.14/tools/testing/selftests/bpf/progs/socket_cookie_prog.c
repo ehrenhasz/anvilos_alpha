@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
+
+
 
 #include "vmlinux.h"
 
@@ -21,14 +21,7 @@ struct {
 	__type(value, struct socket_cookie);
 } socket_cookies SEC(".maps");
 
-/*
- * These three programs get executed in a row on connect() syscalls. The
- * userspace side of the test creates a client socket, issues a connect() on it
- * and then checks that the local storage associated with this socket has:
- * cookie_value == local_port << 8 | 0xFF
- * The different parts of this cookie_value are appended by those hooks if they
- * all agree on the output of bpf_get_socket_cookie().
- */
+ 
 SEC("cgroup/connect6")
 int set_cookie(struct bpf_sock_addr *ctx)
 {

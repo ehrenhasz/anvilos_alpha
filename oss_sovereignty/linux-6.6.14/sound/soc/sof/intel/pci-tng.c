@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018-2021 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -18,7 +18,7 @@
 #include "../sof-pci-dev.h"
 #include "../sof-audio.h"
 
-/* platform specific devices */
+ 
 #include "shim.h"
 
 static struct snd_soc_acpi_mach sof_tng_machines[] = {
@@ -66,14 +66,14 @@ static int tangier_pci_probe(struct snd_sof_dev *sdev)
 
 	sdev->num_cores = chip->cores_num;
 
-	/* DSP DMA can only access low 31 bits of host memory */
+	 
 	ret = dma_coerce_mask_and_coherent(&pci->dev, DMA_BIT_MASK(31));
 	if (ret < 0) {
 		dev_err(sdev->dev, "error: failed to set DMA mask %d\n", ret);
 		return ret;
 	}
 
-	/* LPE base */
+	 
 	base = pci_resource_start(pci, desc->resindex_lpe_base) - IRAM_OFFSET;
 	size = PCI_BAR_SIZE;
 
@@ -86,14 +86,14 @@ static int tangier_pci_probe(struct snd_sof_dev *sdev)
 	}
 	dev_dbg(sdev->dev, "LPE VADDR %p\n", sdev->bar[DSP_BAR]);
 
-	/* IMR base - optional */
+	 
 	if (desc->resindex_imr_base == -1)
 		goto irq;
 
 	base = pci_resource_start(pci, desc->resindex_imr_base);
 	size = pci_resource_len(pci, desc->resindex_imr_base);
 
-	/* some BIOSes don't map IMR */
+	 
 	if (base == 0x55aa55aa || base == 0x0) {
 		dev_info(sdev->dev, "IMR not set by BIOS. Ignoring\n");
 		goto irq;
@@ -109,7 +109,7 @@ static int tangier_pci_probe(struct snd_sof_dev *sdev)
 	dev_dbg(sdev->dev, "IMR VADDR %p\n", sdev->bar[IMR_BAR]);
 
 irq:
-	/* register our IRQ */
+	 
 	sdev->ipc_irq = pci->irq;
 	dev_dbg(sdev->dev, "using IRQ %d\n", sdev->ipc_irq);
 	ret = devm_request_threaded_irq(sdev->dev, sdev->ipc_irq,
@@ -121,40 +121,40 @@ irq:
 		return ret;
 	}
 
-	/* enable BUSY and disable DONE Interrupt by default */
+	 
 	snd_sof_dsp_update_bits64(sdev, DSP_BAR, SHIM_IMRX,
 				  SHIM_IMRX_BUSY | SHIM_IMRX_DONE,
 				  SHIM_IMRX_DONE);
 
-	/* set default mailbox offset for FW ready message */
+	 
 	sdev->dsp_box.offset = MBOX_OFFSET;
 
 	return ret;
 }
 
 struct snd_sof_dsp_ops sof_tng_ops = {
-	/* device init */
+	 
 	.probe		= tangier_pci_probe,
 
-	/* DSP core boot / reset */
+	 
 	.run		= atom_run,
 	.reset		= atom_reset,
 
-	/* Register IO uses direct mmio */
+	 
 
-	/* Block IO */
+	 
 	.block_read	= sof_block_read,
 	.block_write	= sof_block_write,
 
-	/* Mailbox IO */
+	 
 	.mailbox_read	= sof_mailbox_read,
 	.mailbox_write	= sof_mailbox_write,
 
-	/* doorbell */
+	 
 	.irq_handler	= atom_irq_handler,
 	.irq_thread	= atom_irq_thread,
 
-	/* ipc */
+	 
 	.send_msg	= atom_send_msg,
 	.get_mailbox_offset = atom_get_mailbox_offset,
 	.get_window_offset = atom_get_window_offset,
@@ -162,30 +162,30 @@ struct snd_sof_dsp_ops sof_tng_ops = {
 	.ipc_msg_data	= sof_ipc_msg_data,
 	.set_stream_data_offset = sof_set_stream_data_offset,
 
-	/* machine driver */
+	 
 	.machine_select = atom_machine_select,
 	.machine_register = sof_machine_register,
 	.machine_unregister = sof_machine_unregister,
 	.set_mach_params = atom_set_mach_params,
 
-	/* debug */
+	 
 	.debug_map	= tng_debugfs,
 	.debug_map_count	= ARRAY_SIZE(tng_debugfs),
 	.dbg_dump	= atom_dump,
 	.debugfs_add_region_item = snd_sof_debugfs_add_region_item_iomem,
 
-	/* stream callbacks */
+	 
 	.pcm_open	= sof_stream_pcm_open,
 	.pcm_close	= sof_stream_pcm_close,
 
-	/*Firmware loading */
+	 
 	.load_firmware	= snd_sof_load_firmware_memcpy,
 
-	/* DAI drivers */
+	 
 	.drv = atom_dai,
-	.num_drv = 3, /* we have only 3 SSPs on byt*/
+	.num_drv = 3,  
 
-	/* ALSA HW info flags */
+	 
 	.hw_info =	SNDRV_PCM_INFO_MMAP |
 			SNDRV_PCM_INFO_MMAP_VALID |
 			SNDRV_PCM_INFO_INTERLEAVED |
@@ -203,7 +203,7 @@ const struct sof_intel_dsp_desc tng_chip_info = {
 
 static const struct sof_dev_desc tng_desc = {
 	.machines		= sof_tng_machines,
-	.resindex_lpe_base	= 3,	/* IRAM, but subtract IRAM offset */
+	.resindex_lpe_base	= 3,	 
 	.resindex_pcicfg_base	= -1,
 	.resindex_imr_base	= 0,
 	.irqindex_host_ipc	= -1,
@@ -223,14 +223,14 @@ static const struct sof_dev_desc tng_desc = {
 	.ops = &sof_tng_ops,
 };
 
-/* PCI IDs */
+ 
 static const struct pci_device_id sof_pci_ids[] = {
 	{ PCI_DEVICE_DATA(INTEL, SST_TNG, &tng_desc) },
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, sof_pci_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver snd_sof_pci_intel_tng_driver = {
 	.name = "sof-audio-pci-intel-tng",
 	.id_table = sof_pci_ids,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C Link Layer for PN544 HCI based Driver
- *
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,12 +24,12 @@
 #define PN544_I2C_FRAME_HEADROOM 1
 #define PN544_I2C_FRAME_TAILROOM 2
 
-/* GPIO names */
+ 
 #define PN544_GPIO_NAME_IRQ "pn544_irq"
 #define PN544_GPIO_NAME_FW  "pn544_fw"
 #define PN544_GPIO_NAME_EN  "pn544_en"
 
-/* framing in HCI mode */
+ 
 #define PN544_HCI_I2C_LLC_LEN		1
 #define PN544_HCI_I2C_LLC_CRC		2
 #define PN544_HCI_I2C_LLC_LEN_CRC	(PN544_HCI_I2C_LLC_LEN + \
@@ -59,11 +55,7 @@ MODULE_DEVICE_TABLE(acpi, pn544_hci_i2c_acpi_match);
 
 #define PN544_HCI_I2C_DRIVER_NAME "pn544_hci_i2c"
 
-/*
- * Exposed through the 4 most significant bytes
- * from the HCI SW_VERSION first byte, a.k.a.
- * SW RomLib.
- */
+ 
 #define PN544_HW_VARIANT_C2 0xa
 #define PN544_HW_VARIANT_C3 0xb
 
@@ -172,10 +164,7 @@ struct pn544_i2c_phy {
 	int powered;
 	int run_mode;
 
-	int hard_fault;		/*
-				 * < 0 if hardware error occured (e.g. i2c err)
-				 * and prevents normal operation.
-				 */
+	int hard_fault;		 
 };
 
 #define I2C_DUMP_SKB(info, skb)					\
@@ -193,22 +182,22 @@ static void pn544_hci_i2c_platform_init(struct pn544_i2c_phy *phy)
 
 	nfc_info(&phy->i2c_dev->dev, "Detecting nfc_en polarity\n");
 
-	/* Disable fw download */
+	 
 	gpiod_set_value_cansleep(phy->gpiod_fw, 0);
 
 	for (polarity = 0; polarity < 2; polarity++) {
 		phy->en_polarity = polarity;
 		retry = 3;
 		while (retry--) {
-			/* power off */
+			 
 			gpiod_set_value_cansleep(phy->gpiod_en, !phy->en_polarity);
 			usleep_range(10000, 15000);
 
-			/* power on */
+			 
 			gpiod_set_value_cansleep(phy->gpiod_en, phy->en_polarity);
 			usleep_range(10000, 15000);
 
-			/* send reset */
+			 
 			dev_dbg(&phy->i2c_dev->dev, "Sending reset cmd\n");
 			ret = i2c_master_send(phy->i2c_dev, rset_cmd, count);
 			if (ret == count) {
@@ -285,11 +274,7 @@ static void pn544_hci_i2c_remove_len_crc(struct sk_buff *skb)
 	skb_trim(skb, PN544_I2C_FRAME_TAILROOM);
 }
 
-/*
- * Writing a frame must not return the number of written bytes.
- * It must return either zero for success, or <0 for error.
- * In addition, it must not alter the skb
- */
+ 
 static int pn544_hci_i2c_write(void *phy_id, struct sk_buff *skb)
 {
 	int r;
@@ -307,7 +292,7 @@ static int pn544_hci_i2c_write(void *phy_id, struct sk_buff *skb)
 
 	r = i2c_master_send(client, skb->data, skb->len);
 
-	if (r == -EREMOTEIO) {	/* Retry, chip was in standby */
+	if (r == -EREMOTEIO) {	 
 		usleep_range(6000, 10000);
 		r = i2c_master_send(client, skb->data, skb->len);
 	}
@@ -344,15 +329,7 @@ static int check_crc(u8 *buf, int buflen)
 	return 0;
 }
 
-/*
- * Reads an shdlc frame and returns it in a newly allocated sk_buff. Guarantees
- * that i2c bus will be flushed and that next read will start on a new frame.
- * returned skb contains only LLC header and payload.
- * returns:
- * -EREMOTEIO : i2c read error (fatal)
- * -EBADMSG : frame was incorrect and discarded
- * -ENOMEM : cannot allocate skb, frame dropped
- */
+ 
 static int pn544_hci_i2c_read(struct pn544_i2c_phy *phy, struct sk_buff **skb)
 {
 	int r;
@@ -461,22 +438,7 @@ static int pn544_hci_i2c_fw_read_status(struct pn544_i2c_phy *phy)
 	}
 }
 
-/*
- * Reads an shdlc frame from the chip. This is not as straightforward as it
- * seems. There are cases where we could loose the frame start synchronization.
- * The frame format is len-data-crc, and corruption can occur anywhere while
- * transiting on i2c bus, such that we could read an invalid len.
- * In order to recover synchronization with the next frame, we must be sure
- * to read the real amount of data without using the len byte. We do this by
- * assuming the following:
- * - the chip will always present only one single complete frame on the bus
- *   before triggering the interrupt
- * - the chip will not present a new frame until we have completely read
- *   the previous one (or until we have handled the interrupt).
- * The tricky case is when we read a corrupted len that is less than the real
- * len. We must detect this here in order to determine that we need to flush
- * the bus. This is the reason why we check the crc here.
- */
+ 
 static irqreturn_t pn544_hci_i2c_irq_thread_fn(int irq, void *phy_id)
 {
 	struct pn544_i2c_phy *phy = phy_id;
@@ -603,7 +565,7 @@ static int pn544_hci_i2c_fw_check_cmd(struct i2c_client *client, u32 start_addr,
 	int r;
 	u16 crc;
 
-	/* calculate local crc for the data we want to check */
+	 
 	crc = crc_ccitt(0xffff, data, datalen);
 
 	frame.cmd = PN544_FW_CMD_CHECK;
@@ -612,17 +574,14 @@ static int pn544_hci_i2c_fw_check_cmd(struct i2c_client *client, u32 start_addr,
 			   sizeof(frame.be_datalen) + sizeof(frame.be_crc),
 			   &frame.be_length);
 
-	/* tell the chip the memory region to which our crc applies */
+	 
 	frame.be_start_addr[0] = (start_addr & 0xff0000) >> 16;
 	frame.be_start_addr[1] = (start_addr & 0xff00) >> 8;
 	frame.be_start_addr[2] = start_addr & 0xff;
 
 	put_unaligned_be16(datalen, &frame.be_datalen);
 
-	/*
-	 * and give our local crc. Chip will calculate its own crc for the
-	 * region and compare with ours.
-	 */
+	 
 	put_unaligned_be16(crc, &frame.be_crc);
 
 	r = i2c_master_send(client, (const char *) &frame, sizeof(frame));
@@ -694,12 +653,12 @@ static int pn544_hci_i2c_fw_secure_write_frame(struct pn544_i2c_phy *phy)
 		phy->fw_blob_size = get_unaligned_be16(&framep->be_datalen)
 				+ PN544_FW_SECURE_FRAME_HEADER_LEN;
 
-	/* Only secure write command can be chunked*/
+	 
 	if (phy->fw_blob_size > PN544_FW_I2C_MAX_PAYLOAD &&
 			framep->cmd != PN544_FW_CMD_SECURE_WRITE)
 		return -EINVAL;
 
-	/* The firmware also have other commands, we just send them directly */
+	 
 	if (phy->fw_blob_size < PN544_FW_I2C_MAX_PAYLOAD) {
 		r = i2c_master_send(phy->i2c_dev,
 			(const char *) phy->fw_blob_data, phy->fw_blob_size);
@@ -722,7 +681,7 @@ exit:
 	phy->fw_written += r;
 	phy->fw_work_state = FW_WORK_STATE_WAIT_SECURE_WRITE_ANSWER;
 
-	/* SW reset command will not trig any response from PN544 */
+	 
 	if (framep->cmd == PN544_FW_CMD_RESET) {
 		pn544_hci_i2c_enable_mode(phy, PN544_FW_MODE);
 		phy->fw_cmd_result = 0;
@@ -892,14 +851,14 @@ static int pn544_hci_i2c_probe(struct i2c_client *client)
 	if (r)
 		dev_dbg(dev, "Unable to add GPIO mapping table\n");
 
-	/* Get EN GPIO */
+	 
 	phy->gpiod_en = devm_gpiod_get(dev, "enable", GPIOD_OUT_LOW);
 	if (IS_ERR(phy->gpiod_en)) {
 		nfc_err(dev, "Unable to get EN GPIO\n");
 		return PTR_ERR(phy->gpiod_en);
 	}
 
-	/* Get FW GPIO */
+	 
 	phy->gpiod_fw = devm_gpiod_get(dev, "firmware", GPIOD_OUT_LOW);
 	if (IS_ERR(phy->gpiod_fw)) {
 		nfc_err(dev, "Unable to get FW GPIO\n");

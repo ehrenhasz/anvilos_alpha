@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -153,7 +150,7 @@ static const struct drm_panel_funcs tdo_tl070wsh30_panel_funcs = {
 
 static const struct of_device_id tdo_tl070wsh30_of_match[] = {
 	{ .compatible = "tdo,tl070wsh30", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tdo_tl070wsh30_of_match);
 

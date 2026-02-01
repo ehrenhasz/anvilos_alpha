@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linear Technology LTC4306 and LTC4305 I2C multiplexer/switch
- *
- * Copyright (C) 2017 Analog Devices Inc.
- *
- * Based on: i2c-mux-pca954x.c
- *
- * Datasheet: http://cds.linear.com/docs/en/datasheet/4306.pdf
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/driver.h>
@@ -168,7 +160,7 @@ static int ltc4306_gpio_init(struct ltc4306 *data)
 	data->gpiochip.set_config = ltc4306_gpio_set_config;
 	data->gpiochip.owner = THIS_MODULE;
 
-	/* gpiolib assumes all GPIOs default input */
+	 
 	regmap_write(data->regmap, LTC_REG_MODE, LTC_GPIO_ALL_INPUT);
 
 	return devm_gpiochip_add_data(dev, &data->gpiochip, data);
@@ -242,7 +234,7 @@ static int ltc4306_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Reset and enable the mux if an enable GPIO is specified. */
+	 
 	gpio = devm_gpiod_get_optional(&client->dev, "enable", GPIOD_OUT_LOW);
 	if (IS_ERR(gpio))
 		return PTR_ERR(gpio);
@@ -252,11 +244,7 @@ static int ltc4306_probe(struct i2c_client *client)
 		gpiod_set_value(gpio, 1);
 	}
 
-	/*
-	 * Write the mux register at addr to verify
-	 * that the mux is in fact present. This also
-	 * initializes the mux to disconnected state.
-	 */
+	 
 	if (regmap_write(data->regmap, LTC_REG_SWITCH, 0) < 0) {
 		dev_warn(&client->dev, "probe failed\n");
 		return -ENODEV;
@@ -277,7 +265,7 @@ static int ltc4306_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* Now create an adapter for each channel */
+	 
 	for (num = 0; num < chip->nchans; num++) {
 		ret = i2c_mux_add_adapter(muxc, 0, num, 0);
 		if (ret) {

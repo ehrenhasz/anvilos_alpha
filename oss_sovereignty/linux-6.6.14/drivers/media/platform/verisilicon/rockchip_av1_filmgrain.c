@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only or Apache-2.0
+
 
 #include "rockchip_av1_filmgrain.h"
 
@@ -284,7 +284,7 @@ void rockchip_av1_generate_luma_grain_block(s32 (*luma_grain_block)[73][82],
 		}
 }
 
-// Calculate chroma grain noise once per frame
+
 void rockchip_av1_generate_chroma_grain_block(s32 (*luma_grain_block)[73][82],
 					      s32 (*cb_grain_block)[38][44],
 					      s32 (*cr_grain_block)[38][44],

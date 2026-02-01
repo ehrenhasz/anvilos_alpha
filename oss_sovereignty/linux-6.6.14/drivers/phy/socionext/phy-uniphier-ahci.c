@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * phy-uniphier-ahci.c - PHY driver for UniPhier AHCI controller
- * Copyright 2016-2020, Socionext Inc.
- * Author: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -34,7 +30,7 @@ struct uniphier_ahciphy_soc_data {
 	bool is_phy_clk;
 };
 
-/* for Pro4 */
+ 
 #define CKCTRL0				0x0
 #define CKCTRL0_CK_OFF			BIT(9)
 #define CKCTRL0_NCY_MASK		GENMASK(8, 4)
@@ -53,7 +49,7 @@ struct uniphier_ahciphy_soc_data {
 #define RSTPWR				0x30
 #define RSTPWR_RX_EN_VAL		BIT(18)
 
-/* for PXs2/PXs3 */
+ 
 #define CKCTRL				0x0
 #define CKCTRL_P0_READY			BIT(15)
 #define CKCTRL_P0_RESET			BIT(10)
@@ -75,7 +71,7 @@ static int uniphier_ahciphy_pro4_init(struct uniphier_ahciphy_priv *priv)
 {
 	u32 val;
 
-	/* set phy MPLL parameters */
+	 
 	val = readl(priv->base + CKCTRL0);
 	val &= ~CKCTRL0_NCY_MASK;
 	val |= FIELD_PREP(CKCTRL0_NCY_MASK, 0x6);
@@ -85,7 +81,7 @@ static int uniphier_ahciphy_pro4_init(struct uniphier_ahciphy_priv *priv)
 	val |= FIELD_PREP(CKCTRL0_PRESCALE_MASK, 0x1);
 	writel(val, priv->base + CKCTRL0);
 
-	/* setup phy control parameters */
+	 
 	val = readl(priv->base + CKCTRL1);
 	val &= ~CKCTRL1_LOS_LVL_MASK;
 	val |= FIELD_PREP(CKCTRL1_LOS_LVL_MASK, 0x10);
@@ -114,17 +110,17 @@ static int uniphier_ahciphy_pro4_power_on(struct uniphier_ahciphy_priv *priv)
 	u32 val;
 	int ret;
 
-	/* enable reference clock for phy */
+	 
 	val = readl(priv->base + CKCTRL0);
 	val &= ~CKCTRL0_CK_OFF;
 	writel(val, priv->base + CKCTRL0);
 
-	/* enable TX clock */
+	 
 	val = readl(priv->base + RXTXCTRL);
 	val |= RXTXCTRL_TX_CKO_EN;
 	writel(val, priv->base + RXTXCTRL);
 
-	/* wait until RX is ready */
+	 
 	ret = readl_poll_timeout(priv->base + RSTPWR, val,
 				 !(val & RSTPWR_RX_EN_VAL), 200, 2000);
 	if (ret) {
@@ -132,7 +128,7 @@ static int uniphier_ahciphy_pro4_power_on(struct uniphier_ahciphy_priv *priv)
 		goto out_disable_clock;
 	}
 
-	/* release all reset */
+	 
 	ret = reset_control_deassert(priv->rst_pm);
 	if (ret) {
 		dev_err(priv->dev, "Failed to release PM reset\n");
@@ -159,12 +155,12 @@ out_reset_pm_assert:
 	reset_control_assert(priv->rst_pm);
 
 out_disable_clock:
-	/* disable TX clock */
+	 
 	val = readl(priv->base + RXTXCTRL);
 	val &= ~RXTXCTRL_TX_CKO_EN;
 	writel(val, priv->base + RXTXCTRL);
 
-	/* disable reference clock for phy */
+	 
 	val = readl(priv->base + CKCTRL0);
 	val |= CKCTRL0_CK_OFF;
 	writel(val, priv->base + CKCTRL0);
@@ -180,12 +176,12 @@ static int uniphier_ahciphy_pro4_power_off(struct uniphier_ahciphy_priv *priv)
 	reset_control_assert(priv->rst_tx);
 	reset_control_assert(priv->rst_pm);
 
-	/* disable TX clock */
+	 
 	val = readl(priv->base + RXTXCTRL);
 	val &= ~RXTXCTRL_TX_CKO_EN;
 	writel(val, priv->base + RXTXCTRL);
 
-	/* disable reference clock for phy */
+	 
 	val = readl(priv->base + CKCTRL0);
 	val |= CKCTRL0_CK_OFF;
 	writel(val, priv->base + CKCTRL0);
@@ -220,7 +216,7 @@ static int uniphier_ahciphy_pxs2_power_on(struct uniphier_ahciphy_priv *priv)
 
 	uniphier_ahciphy_pxs2_enable(priv, true);
 
-	/* wait until PLL is ready */
+	 
 	if (priv->data->is_ready_high)
 		ret = readl_poll_timeout(priv->base + CKCTRL, val,
 					 (val & CKCTRL_P0_READY), 200, 400);
@@ -247,7 +243,7 @@ static int uniphier_ahciphy_pxs3_init(struct uniphier_ahciphy_priv *priv)
 	int i;
 	u32 val;
 
-	/* setup port parameter */
+	 
 	val = readl(priv->base + TXCTRL0);
 	val &= ~TXCTRL0_AMP_G3_MASK;
 	val |= FIELD_PREP(TXCTRL0_AMP_G3_MASK, 0x73);
@@ -273,7 +269,7 @@ static int uniphier_ahciphy_pxs3_init(struct uniphier_ahciphy_priv *priv)
 	val &= ~RXCTRL_RX_EQ_MASK;
 	val |= FIELD_PREP(RXCTRL_RX_EQ_MASK, 0x1);
 
-	/* dummy read 25 times to make a wait time for the phy to stabilize */
+	 
 	for (i = 0; i < 25; i++)
 		readl(priv->base + CKCTRL);
 
@@ -496,7 +492,7 @@ static const struct of_device_id uniphier_ahciphy_match[] = {
 		.compatible = "socionext,uniphier-pxs3-ahci-phy",
 		.data = &uniphier_pxs3_data,
 	},
-	{ /* Sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, uniphier_ahciphy_match);
 

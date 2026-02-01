@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* CacheFiles path walking and related routines
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/namei.h>
 #include "internal.h"
 
-/*
- * Mark the backing file as being a cache file if it's not already in use.  The
- * mark tells the culling request command that it's not allowed to cull the
- * file or directory.  The caller must hold the inode lock.
- */
+ 
 static bool __cachefiles_mark_inode_in_use(struct cachefiles_object *object,
 					   struct inode *inode)
 {
@@ -41,9 +33,7 @@ static bool cachefiles_mark_inode_in_use(struct cachefiles_object *object,
 	return can_use;
 }
 
-/*
- * Unmark a backing inode.  The caller must hold the inode lock.
- */
+ 
 static void __cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
 					     struct inode *inode)
 {
@@ -59,10 +49,7 @@ static void cachefiles_do_unmark_inode_in_use(struct cachefiles_object *object,
 	inode_unlock(inode);
 }
 
-/*
- * Unmark a backing inode and tell cachefilesd that there's something that can
- * be culled.
- */
+ 
 void cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
 				    struct file *file)
 {
@@ -78,9 +65,7 @@ void cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
 	}
 }
 
-/*
- * get a subdirectory
- */
+ 
 struct dentry *cachefiles_get_directory(struct cachefiles_cache *cache,
 					struct dentry *dir,
 					const char *dirname,
@@ -92,7 +77,7 @@ struct dentry *cachefiles_get_directory(struct cachefiles_cache *cache,
 
 	_enter(",,%s", dirname);
 
-	/* search the current directory for the element name */
+	 
 	inode_lock_nested(d_inode(dir), I_MUTEX_PARENT);
 
 retry:
@@ -114,7 +99,7 @@ retry:
 	_debug("subdir -> %pd %s",
 	       subdir, d_backing_inode(subdir) ? "positive" : "negative");
 
-	/* we need to create the subdir if it doesn't exist yet */
+	 
 	if (d_is_negative(subdir)) {
 		ret = cachefiles_has_space(cache, 1, 0,
 					   cachefiles_has_space_for_create);
@@ -150,7 +135,7 @@ retry:
 			*_is_new = true;
 	}
 
-	/* Tell rmdir() it's not allowed to delete the subdir */
+	 
 	inode_lock(d_inode(subdir));
 	inode_unlock(d_inode(dir));
 
@@ -162,7 +147,7 @@ retry:
 
 	inode_unlock(d_inode(subdir));
 
-	/* we need to make sure the subdir is a directory */
+	 
 	ASSERT(d_backing_inode(subdir));
 
 	if (!d_can_lookup(subdir)) {
@@ -211,9 +196,7 @@ nomem_d_alloc:
 	return ERR_PTR(-ENOMEM);
 }
 
-/*
- * Put a subdirectory.
- */
+ 
 void cachefiles_put_directory(struct dentry *dir)
 {
 	if (dir) {
@@ -222,9 +205,7 @@ void cachefiles_put_directory(struct dentry *dir)
 	}
 }
 
-/*
- * Remove a regular file from the cache.
- */
+ 
 static int cachefiles_unlink(struct cachefiles_cache *cache,
 			     struct cachefiles_object *object,
 			     struct dentry *dir, struct dentry *dentry,
@@ -255,12 +236,7 @@ static int cachefiles_unlink(struct cachefiles_cache *cache,
 	return ret;
 }
 
-/*
- * Delete an object representation from the cache
- * - File backed objects are unlinked
- * - Directory backed objects are stuffed into the graveyard for userspace to
- *   delete
- */
+ 
 int cachefiles_bury_object(struct cachefiles_cache *cache,
 			   struct cachefiles_object *object,
 			   struct dentry *dir,
@@ -280,11 +256,9 @@ int cachefiles_bury_object(struct cachefiles_cache *cache,
 		return -ESTALE;
 	}
 
-	/* non-directories can just be unlinked */
+	 
 	if (!d_is_dir(rep)) {
-		dget(rep); /* Stop the dentry being negated if it's only pinned
-			    * by a file struct.
-			    */
+		dget(rep);  
 		ret = cachefiles_unlink(cache, object, dir, rep, why);
 		dput(rep);
 
@@ -293,23 +267,22 @@ int cachefiles_bury_object(struct cachefiles_cache *cache,
 		return ret;
 	}
 
-	/* directories have to be moved to the graveyard */
+	 
 	_debug("move stale object to graveyard");
 	inode_unlock(d_inode(dir));
 
 try_again:
-	/* first step is to make up a grave dentry in the graveyard */
+	 
 	sprintf(nbuffer, "%08x%08x",
 		(uint32_t) ktime_get_real_seconds(),
 		(uint32_t) atomic_inc_return(&cache->gravecounter));
 
-	/* do the multiway lock magic */
+	 
 	trap = lock_rename(cache->graveyard, dir);
 
-	/* do some checks before getting the grave dentry */
+	 
 	if (rep->d_parent != dir || IS_DEADDIR(d_inode(rep))) {
-		/* the entry was probably culled when we dropped the parent dir
-		 * lock */
+		 
 		unlock_rename(cache->graveyard, dir);
 		_leave(" = 0 [culled?]");
 		return 0;
@@ -364,7 +337,7 @@ try_again:
 		return -EIO;
 	}
 
-	/* target should not be an ancestor of source */
+	 
 	if (trap == grave) {
 		unlock_rename(cache->graveyard, dir);
 		dput(grave);
@@ -372,7 +345,7 @@ try_again:
 		return -EIO;
 	}
 
-	/* attempt the rename */
+	 
 	path.mnt = cache->mnt;
 	path.dentry = dir;
 	path_to_graveyard.mnt = cache->mnt;
@@ -408,9 +381,7 @@ try_again:
 	return 0;
 }
 
-/*
- * Delete a cache file.
- */
+ 
 int cachefiles_delete_object(struct cachefiles_object *object,
 			     enum fscache_why_object_killed why)
 {
@@ -421,7 +392,7 @@ int cachefiles_delete_object(struct cachefiles_object *object,
 
 	_enter(",OBJ%x{%pD}", object->debug_id, object->file);
 
-	/* Stop the dentry being negated if it's only pinned by a file struct. */
+	 
 	dget(dentry);
 
 	inode_lock_nested(d_backing_inode(fan), I_MUTEX_PARENT);
@@ -431,10 +402,7 @@ int cachefiles_delete_object(struct cachefiles_object *object,
 	return ret;
 }
 
-/*
- * Create a temporary file and leave it unattached and un-xattr'd until the
- * time comes to discard the object from memory.
- */
+ 
 struct file *cachefiles_create_tmpfile(struct cachefiles_object *object)
 {
 	struct cachefiles_volume *volume = object->volume;
@@ -467,7 +435,7 @@ struct file *cachefiles_create_tmpfile(struct cachefiles_object *object)
 
 	trace_cachefiles_tmpfile(object, file_inode(file));
 
-	/* This is a newly created file with no other possible user */
+	 
 	if (!cachefiles_mark_inode_in_use(object, file_inode(file)))
 		WARN_ON(1);
 
@@ -511,9 +479,7 @@ err:
 	goto out;
 }
 
-/*
- * Create a new file.
- */
+ 
 static bool cachefiles_create_file(struct cachefiles_object *object)
 {
 	struct file *file;
@@ -535,10 +501,7 @@ static bool cachefiles_create_file(struct cachefiles_object *object)
 	return true;
 }
 
-/*
- * Open an existing file, checking its attributes and replacing it if it is
- * stale.
- */
+ 
 static bool cachefiles_open_file(struct cachefiles_object *object,
 				 struct dentry *dentry)
 {
@@ -555,10 +518,7 @@ static bool cachefiles_open_file(struct cachefiles_object *object,
 		return false;
 	}
 
-	/* We need to open a file interface onto a data file now as we can't do
-	 * it on demand because writeback called from do_exit() sees
-	 * current->fs == NULL - which breaks d_path() called from ext4 open.
-	 */
+	 
 	path.mnt = cache->mnt;
 	path.dentry = dentry;
 	file = kernel_file_open(&path, O_RDWR | O_LARGEFILE | O_DIRECT,
@@ -589,10 +549,7 @@ static bool cachefiles_open_file(struct cachefiles_object *object,
 
 	object->file = file;
 
-	/* Always update the atime on an object we've just looked up (this is
-	 * used to keep track of culling, and atimes are only updated by read,
-	 * write and readdir but not lookup or open).
-	 */
+	 
 	touch_atime(&file->f_path);
 	dput(dentry);
 	return true;
@@ -614,10 +571,7 @@ error:
 	return false;
 }
 
-/*
- * walk from the parent object to the child object through the backing
- * filesystem, creating directories as we go
- */
+ 
 bool cachefiles_look_up_object(struct cachefiles_object *object)
 {
 	struct cachefiles_volume *volume = object->volume;
@@ -626,7 +580,7 @@ bool cachefiles_look_up_object(struct cachefiles_object *object)
 
 	_enter("OBJ%x,%s,", object->debug_id, object->d_name);
 
-	/* Look up path "cache/vol/fanout/file". */
+	 
 	ret = cachefiles_inject_read_error();
 	if (ret == 0)
 		dentry = lookup_positive_unlocked(object->d_name, fan,
@@ -664,9 +618,7 @@ new_file:
 	return cachefiles_create_file(object);
 }
 
-/*
- * Attempt to link a temporary file into its rightful place in the cache.
- */
+ 
 bool cachefiles_commit_tmpfile(struct cachefiles_cache *cache,
 			       struct cachefiles_object *object)
 {
@@ -726,7 +678,7 @@ bool cachefiles_commit_tmpfile(struct cachefiles_cache *cache,
 	} else {
 		trace_cachefiles_link(object, file_inode(object->file));
 		spin_lock(&object->lock);
-		/* TODO: Do we want to switch the file pointer to the new dentry? */
+		 
 		clear_bit(CACHEFILES_OBJECT_USING_TMPFILE, &object->flags);
 		spin_unlock(&object->lock);
 		success = true;
@@ -740,10 +692,7 @@ out_unlock:
 	return success;
 }
 
-/*
- * Look up an inode to be checked or culled.  Return -EBUSY if the inode is
- * marked in use.
- */
+ 
 static struct dentry *cachefiles_lookup_for_cull(struct cachefiles_cache *cache,
 						 struct dentry *dir,
 						 char *filename)
@@ -773,7 +722,7 @@ lookup_error:
 	inode_unlock(d_inode(dir));
 	ret = PTR_ERR(victim);
 	if (ret == -ENOENT)
-		return ERR_PTR(-ESTALE); /* Probably got retired by the netfs */
+		return ERR_PTR(-ESTALE);  
 
 	if (ret == -EIO) {
 		cachefiles_io_error(cache, "Lookup failed");
@@ -785,10 +734,7 @@ lookup_error:
 	return ERR_PTR(ret);
 }
 
-/*
- * Cull an object if it's not in use
- * - called only by cache manager daemon
- */
+ 
 int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
 		    char *filename)
 {
@@ -802,13 +748,13 @@ int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
 	if (IS_ERR(victim))
 		return PTR_ERR(victim);
 
-	/* check to see if someone is using this object */
+	 
 	inode = d_inode(victim);
 	inode_lock(inode);
 	if (inode->i_flags & S_KERNEL_FILE) {
 		ret = -EBUSY;
 	} else {
-		/* Stop the cache from picking it back up */
+		 
 		inode->i_flags |= S_KERNEL_FILE;
 		ret = 0;
 	}
@@ -831,7 +777,7 @@ error_unlock:
 error:
 	dput(victim);
 	if (ret == -ENOENT)
-		return -ESTALE; /* Probably got retired by the netfs */
+		return -ESTALE;  
 
 	if (ret != -ENOMEM) {
 		pr_err("Internal error: %d\n", ret);
@@ -842,11 +788,7 @@ error:
 	return ret;
 }
 
-/*
- * Find out if an object is in use or not
- * - called only by cache manager daemon
- * - returns -EBUSY or 0 to indicate whether an object is in use or not
- */
+ 
 int cachefiles_check_in_use(struct cachefiles_cache *cache, struct dentry *dir,
 			    char *filename)
 {

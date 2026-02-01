@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/******************************************************************************
- * This file contains error recovery level zero functions used by
- * the iSCSI Target driver.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/sched/signal.h>
 
@@ -23,19 +15,12 @@
 #include "iscsi_target_util.h"
 #include "iscsi_target.h"
 
-/*
- *	Used to set values in struct iscsit_cmd that iscsit_dataout_check_sequence()
- *	checks against to determine a PDU's Offset+Length is within the current
- *	DataOUT Sequence.  Used for DataSequenceInOrder=Yes only.
- */
+ 
 void iscsit_set_dataout_sequence_values(
 	struct iscsit_cmd *cmd)
 {
 	struct iscsit_conn *conn = cmd->conn;
-	/*
-	 * Still set seq_start_offset and seq_end_offset for Unsolicited
-	 * DataOUT, even if DataSequenceInOrder=No.
-	 */
+	 
 	if (cmd->unsolicited_data) {
 		cmd->seq_start_offset = cmd->write_data_done;
 		cmd->seq_end_offset = min(cmd->se_cmd.data_length,
@@ -70,18 +55,7 @@ static int iscsit_dataout_within_command_recovery_check(
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
-	/*
-	 * We do the within-command recovery checks here as it is
-	 * the first function called in iscsi_check_pre_dataout().
-	 * Basically, if we are in within-command recovery and
-	 * the PDU does not contain the offset the sequence needs,
-	 * dump the payload.
-	 *
-	 * This only applies to DataPDUInOrder=Yes, for
-	 * DataPDUInOrder=No we only re-request the failed PDU
-	 * and check that all PDUs in a sequence are received
-	 * upon end of sequence.
-	 */
+	 
 	if (conn->sess->sess_ops->DataSequenceInOrder) {
 		if ((cmd->cmd_flags & ICF_WITHIN_COMMAND_RECOVERY) &&
 		    cmd->write_data_done != be32_to_cpu(hdr->offset))
@@ -95,9 +69,7 @@ static int iscsit_dataout_within_command_recovery_check(
 					    payload_length);
 		if (!seq)
 			return DATAOUT_CANNOT_RECOVER;
-		/*
-		 * Set the struct iscsi_seq pointer to reuse later.
-		 */
+		 
 		cmd->seq_ptr = seq;
 
 		if (conn->sess->sess_ops->DataPDUInOrder) {
@@ -159,16 +131,9 @@ static int iscsit_dataout_check_unsolicited_sequence(
 		return DATAOUT_CANNOT_RECOVER;
 	}
 
-	/*
-	 * Perform various MaxBurstLength and ISCSI_FLAG_CMD_FINAL sanity
-	 * checks for the current Unsolicited DataOUT Sequence.
-	 */
+	 
 	if (hdr->flags & ISCSI_FLAG_CMD_FINAL) {
-		/*
-		 * Ignore ISCSI_FLAG_CMD_FINAL checks while DataPDUInOrder=No, end of
-		 * sequence checks are handled in
-		 * iscsit_dataout_datapduinorder_no_fbit().
-		 */
+		 
 		if (!conn->sess->sess_ops->DataPDUInOrder)
 			goto out;
 
@@ -213,19 +178,9 @@ static int iscsit_dataout_check_sequence(
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
-	/*
-	 * For DataSequenceInOrder=Yes: Check that the offset and offset+length
-	 * is within range as defined by iscsi_set_dataout_sequence_values().
-	 *
-	 * For DataSequenceInOrder=No: Check that an struct iscsi_seq exists for
-	 * offset+length tuple.
-	 */
+	 
 	if (conn->sess->sess_ops->DataSequenceInOrder) {
-		/*
-		 * Due to possibility of recovery DataOUT sent by the initiator
-		 * fullfilling an Recovery R2T, it's best to just dump the
-		 * payload here, instead of erroring out.
-		 */
+		 
 		if ((be32_to_cpu(hdr->offset) < cmd->seq_start_offset) ||
 		   ((be32_to_cpu(hdr->offset) + payload_length) > cmd->seq_end_offset)) {
 			pr_err("Command ITT: 0x%08x with Offset: %u,"
@@ -245,9 +200,7 @@ static int iscsit_dataout_check_sequence(
 					    payload_length);
 		if (!seq)
 			return DATAOUT_CANNOT_RECOVER;
-		/*
-		 * Set the struct iscsi_seq pointer to reuse later.
-		 */
+		 
 		cmd->seq_ptr = seq;
 
 		if (seq->status == DATAOUT_SEQUENCE_COMPLETE) {
@@ -268,16 +221,9 @@ static int iscsit_dataout_check_sequence(
 		return DATAOUT_CANNOT_RECOVER;
 	}
 
-	/*
-	 * Perform various MaxBurstLength and ISCSI_FLAG_CMD_FINAL sanity
-	 * checks for the current DataOUT Sequence.
-	 */
+	 
 	if (hdr->flags & ISCSI_FLAG_CMD_FINAL) {
-		/*
-		 * Ignore ISCSI_FLAG_CMD_FINAL checks while DataPDUInOrder=No, end of
-		 * sequence checks are handled in
-		 * iscsit_dataout_datapduinorder_no_fbit().
-		 */
+		 
 		if (!conn->sess->sess_ops->DataPDUInOrder)
 			goto out;
 
@@ -341,14 +287,7 @@ static int iscsit_dataout_check_datasn(
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
-	/*
-	 * Considering the target has no method of re-requesting DataOUT
-	 * by DataSN, if we receieve a greater DataSN than expected we
-	 * assume the functions for DataPDUInOrder=[Yes,No] below will
-	 * handle it.
-	 *
-	 * If the DataSN is less than expected, dump the payload.
-	 */
+	 
 	if (conn->sess->sess_ops->DataSequenceInOrder)
 		data_sn = cmd->data_sn;
 	else {
@@ -392,15 +331,7 @@ static int iscsit_dataout_pre_datapduinorder_yes(
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
-	/*
-	 * For DataSequenceInOrder=Yes: If the offset is greater than the global
-	 * DataPDUInOrder=Yes offset counter in struct iscsit_cmd a protcol error has
-	 * occurred and fail the connection.
-	 *
-	 * For DataSequenceInOrder=No: If the offset is greater than the per
-	 * sequence DataPDUInOrder=Yes offset counter in struct iscsi_seq a protocol
-	 * error has occurred and fail the connection.
-	 */
+	 
 	if (conn->sess->sess_ops->DataSequenceInOrder) {
 		if (be32_to_cpu(hdr->offset) != cmd->write_data_done) {
 			pr_err("Command ITT: 0x%08x, received offset"
@@ -651,9 +582,7 @@ static int iscsit_dataout_post_crc_failed(
 
 	if (conn->sess->sess_ops->DataPDUInOrder)
 		goto recover;
-	/*
-	 * The rest of this function is only called when DataPDUInOrder=No.
-	 */
+	 
 	pdu = cmd->pdu_ptr;
 
 	switch (pdu->status) {
@@ -674,10 +603,7 @@ recover:
 						payload_length);
 }
 
-/*
- *	Called from iscsit_handle_data_out() before DataOUT Payload is received
- *	and CRC computed.
- */
+ 
 int iscsit_check_pre_dataout(
 	struct iscsit_cmd *cmd,
 	unsigned char *buf)
@@ -712,10 +638,7 @@ int iscsit_check_pre_dataout(
 		iscsit_dataout_pre_datapduinorder_no(cmd, buf);
 }
 
-/*
- *	Called from iscsit_handle_data_out() after DataOUT Payload is received
- *	and CRC computed.
- */
+ 
 int iscsit_check_post_dataout(
 	struct iscsit_cmd *cmd,
 	unsigned char *buf,
@@ -771,10 +694,7 @@ void iscsit_handle_time2retain_timeout(struct timer_list *t)
 void iscsit_start_time2retain_handler(struct iscsit_session *sess)
 {
 	int tpg_active;
-	/*
-	 * Only start Time2Retain timer when the associated TPG is still in
-	 * an ACTIVE (eg: not disabled or shutdown) state.
-	 */
+	 
 	spin_lock(&sess->tpg->tpg_state_lock);
 	tpg_active = (sess->tpg->tpg_state == TPG_STATE_ACTIVE);
 	spin_unlock(&sess->tpg->tpg_state_lock);

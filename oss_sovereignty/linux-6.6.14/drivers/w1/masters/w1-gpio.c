@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * w1-gpio - GPIO w1 bus master driver
- *
- * Copyright (C) 2007 Ville Syrjala <syrjala@sci.fi>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -26,16 +22,10 @@ static u8 w1_gpio_set_pullup(void *data, int delay)
 		pdata->pullup_duration = delay;
 	} else {
 		if (pdata->pullup_duration) {
-			/*
-			 * This will OVERRIDE open drain emulation and force-pull
-			 * the line high for some time.
-			 */
+			 
 			gpiod_set_raw_value(pdata->gpiod, 1);
 			msleep(pdata->pullup_duration);
-			/*
-			 * This will simply set the line as input since we are doing
-			 * open drain emulation in the GPIO library.
-			 */
+			 
 			gpiod_set_value(pdata->gpiod, 1);
 		}
 		pdata->pullup_duration = 0;
@@ -72,7 +62,7 @@ static int w1_gpio_probe(struct platform_device *pdev)
 	struct w1_gpio_platform_data *pdata;
 	struct device *dev = &pdev->dev;
 	struct device_node *np = dev->of_node;
-	/* Enforce open drain mode by default */
+	 
 	enum gpiod_flags gflags = GPIOD_OUT_LOW_OPEN_DRAIN;
 	int err;
 
@@ -81,12 +71,7 @@ static int w1_gpio_probe(struct platform_device *pdev)
 		if (!pdata)
 			return -ENOMEM;
 
-		/*
-		 * This parameter means that something else than the gpiolib has
-		 * already set the line into open drain mode, so we should just
-		 * driver it high/low like we are in full control of the line and
-		 * open drain will happen transparently.
-		 */
+		 
 		if (of_property_present(np, "linux,open-drain"))
 			gflags = GPIOD_OUT_LOW;
 
@@ -123,12 +108,7 @@ static int w1_gpio_probe(struct platform_device *pdev)
 	gpiod_direction_output(pdata->gpiod, 1);
 	master->write_bit = w1_gpio_write_bit;
 
-	/*
-	 * If we are using open drain emulation from the GPIO library,
-	 * we need to use this pullup function that hammers the line
-	 * high using a raw accessor to provide pull-up for the w1
-	 * line.
-	 */
+	 
 	if (gflags == GPIOD_OUT_LOW_OPEN_DRAIN)
 		master->set_pullup = w1_gpio_set_pullup;
 

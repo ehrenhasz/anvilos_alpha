@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __SMU_V13_0_5_PMFW_H__
 #define __SMU_V13_0_5_PMFW_H__
@@ -30,8 +9,8 @@
 
 #define ENABLE_DEBUG_FEATURES
 
-// Firmware features
-// Feature Control Defines
+
+
 #define FEATURE_DATA_CALCULATION_BIT        0
 #define FEATURE_PPT_BIT                     1
 #define FEATURE_TDC_BIT                     2
@@ -85,7 +64,7 @@
 #define NUM_FEATURES                    50
 
 typedef struct {
-  // MP1_EXT_SCRATCH0
+  
   uint32_t CurrLevel_ACP     : 4;
   uint32_t CurrLevel_ISP     : 4;
   uint32_t CurrLevel_VCN     : 4;
@@ -94,7 +73,7 @@ typedef struct {
   uint32_t CurrLevel_FCLK    : 4;
   uint32_t CurrLevel_SOCCLK  : 4;
   uint32_t CurrLevel_DCFCLK : 4;
-  // MP1_EXT_SCRATCH1
+  
   uint32_t TargLevel_ACP     : 4;
   uint32_t TargLevel_ISP     : 4;
   uint32_t TargLevel_VCN     : 4;
@@ -103,7 +82,7 @@ typedef struct {
   uint32_t TargLevel_FCLK    : 4;
   uint32_t TargLevel_SOCCLK  : 4;
   uint32_t TargLevel_DCFCLK : 4;
-  // MP1_EXT_SCRATCH2
+  
   uint32_t CurrLevel_SHUBCLK  : 4;
   uint32_t TargLevel_SHUBCLK  : 4;
   uint32_t InUlv              : 1;
@@ -113,11 +92,11 @@ typedef struct {
   uint32_t RsmuCalBusyDpmIndex: 8;
   uint32_t DpmHandlerId       : 8;
   uint32_t DpmTimerId         : 4;
-  // MP1_EXT_SCRATCH3
+  
   uint32_t ReadWriteSmnRegAddr: 32;
-  // MP1_EXT_SCRATCH4
+  
   uint32_t Reserved1;
-  // MP1_EXT_SCRATCH5
+  
   uint32_t FeatureStatus[NUM_FEATURES / 32];
 } FwStatus_t;
 

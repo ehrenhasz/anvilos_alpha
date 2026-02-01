@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -38,18 +36,7 @@ static struct ccu_nkmp pll_core_clk = {
 	},
 };
 
-/*
- * The Audio PLL is supposed to have 4 outputs: 3 fixed factors from
- * the base (2x, 4x and 8x), and one variable divider (the one true
- * pll audio).
- *
- * With sigma-delta modulation for fractional-N on the audio PLL,
- * we have to use specific dividers. This means the variable divider
- * can no longer be used, as the audio codec requests the exact clock
- * rates we support through this mechanism. So we now hard code the
- * variable divider to 1. This means the clock rates will no longer
- * match the clock names.
- */
+ 
 #define SUN5I_PLL_AUDIO_REG	0x008
 
 static struct ccu_sdm_setting pll_audio_sdm_table[] = {
@@ -61,10 +48,7 @@ static struct ccu_nm pll_audio_base_clk = {
 	.enable		= BIT(31),
 	.n		= _SUNXI_CCU_MULT_OFFSET(8, 7, 0),
 
-	/*
-	 * The datasheet is wrong here, this doesn't have any
-	 * offset
-	 */
+	 
 	.m		= _SUNXI_CCU_DIV_OFFSET(0, 5, 0),
 	.sdm		= _SUNXI_CCU_SDM(pll_audio_sdm_table, 0,
 					 0x00c, BIT(31)),
@@ -223,16 +207,16 @@ static struct clk_div_table apb0_div_table[] = {
 	{ .val = 1, .div = 2 },
 	{ .val = 2, .div = 4 },
 	{ .val = 3, .div = 8 },
-	{ /* Sentinel */ },
+	{   },
 };
 static SUNXI_CCU_DIV_TABLE(apb0_clk, "apb0", "ahb",
 			   0x054, 8, 2, apb0_div_table, 0);
 
 static const char * const apb1_parents[] = { "hosc", "pll-periph", "osc32k" };
 static SUNXI_CCU_MP_WITH_MUX(apb1_clk, "apb1", apb1_parents, 0x058,
-			     0, 5,	/* M */
-			     16, 2,	/* P */
-			     24, 2,	/* mux */
+			     0, 5,	 
+			     16, 2,	 
+			     24, 2,	 
 			     0);
 
 static SUNXI_CCU_GATE(axi_dram_clk,	"axi-dram",	"axi",
@@ -325,73 +309,73 @@ static SUNXI_CCU_GATE(apb1_uart3_clk,	"apb1-uart3",	"apb1",
 static const char * const mod0_default_parents[] = { "hosc", "pll-periph",
 						     "pll-ddr-other" };
 static SUNXI_CCU_MP_WITH_MUX_GATE(nand_clk, "nand", mod0_default_parents, 0x080,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(mmc0_clk, "mmc0", mod0_default_parents, 0x088,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(mmc1_clk, "mmc1", mod0_default_parents, 0x08c,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(mmc2_clk, "mmc2", mod0_default_parents, 0x090,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(ts_clk, "ts", mod0_default_parents, 0x098,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(ss_clk, "ss", mod0_default_parents, 0x09c,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(spi0_clk, "spi0", mod0_default_parents, 0x0a0,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(spi1_clk, "spi1", mod0_default_parents, 0x0a4,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(spi2_clk, "spi2", mod0_default_parents, 0x0a8,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(ir_clk, "ir", mod0_default_parents, 0x0b0,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static const char * const i2s_parents[] = { "pll-audio-8x", "pll-audio-4x",
@@ -607,7 +591,7 @@ static const struct clk_hw *clk_parent_pll_audio[] = {
 	&pll_audio_base_clk.common.hw
 };
 
-/* We hardcode the divider to 1 for now */
+ 
 static CLK_FIXED_FACTOR_HWS(pll_audio_clk, "pll-audio",
 			    clk_parent_pll_audio,
 			    1, 1, CLK_SET_RATE_PARENT);
@@ -763,9 +747,7 @@ static const struct sunxi_ccu_desc sun5i_a10s_ccu_desc = {
 	.num_resets	= ARRAY_SIZE(sun5i_a10s_ccu_resets),
 };
 
-/*
- * The A13 is the A10s minus the TS, GPS, HDMI, I2S and the keypad
- */
+ 
 static struct clk_hw_onecell_data sun5i_a13_hw_clks = {
 	.hws	= {
 		[CLK_HOSC]		= &hosc_clk.common.hw,
@@ -869,9 +851,7 @@ static const struct sunxi_ccu_desc sun5i_a13_ccu_desc = {
 	.num_resets	= ARRAY_SIZE(sun5i_a10s_ccu_resets),
 };
 
-/*
- * The GR8 is the A10s CCU minus the HDMI and keypad, plus SPDIF
- */
+ 
 static struct clk_hw_onecell_data sun5i_gr8_hw_clks = {
 	.hws	= {
 		[CLK_HOSC]		= &hosc_clk.common.hw,
@@ -996,18 +976,12 @@ static void __init sun5i_ccu_init(struct device_node *node,
 		return;
 	}
 
-	/* Force the PLL-Audio-1x divider to 1 */
+	 
 	val = readl(reg + SUN5I_PLL_AUDIO_REG);
 	val &= ~GENMASK(29, 26);
 	writel(val | (0 << 26), reg + SUN5I_PLL_AUDIO_REG);
 
-	/*
-	 * Use the peripheral PLL as the AHB parent, instead of CPU /
-	 * AXI which have rate changes due to cpufreq.
-	 *
-	 * This is especially a big deal for the HS timer whose parent
-	 * clock is AHB.
-	 */
+	 
 	val = readl(reg + SUN5I_AHB_REG);
 	val &= ~GENMASK(7, 6);
 	writel(val | (2 << 6), reg + SUN5I_AHB_REG);

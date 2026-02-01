@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SPI bus driver for the Ingenic SoCs
- * Copyright (c) 2017-2021 Artur Rojek <contact@artur-rojek.eu>
- * Copyright (c) 2017-2021 Paul Cercueil <paul@crapouillou.net>
- * Copyright (c) 2022 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -206,7 +201,7 @@ static int spi_ingenic_tx##x(struct ingenic_spi *priv,				\
 	unsigned int i, val;							\
 	int err;								\
 										\
-	/* Fill up the TX fifo */						\
+	 						\
 	for (i = 0; i < prefill; i++) {						\
 		val = tx_buf ? tx_buf[i] : 0;					\
 										\

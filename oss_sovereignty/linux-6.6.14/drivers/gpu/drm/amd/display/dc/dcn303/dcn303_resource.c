@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2021 Advanced Micro Devices, Inc.
- *
- * Authors: AMD
- */
+
+ 
 
 #include "dcn303_init.h"
 #include "dcn303_resource.h"
@@ -70,12 +66,12 @@ static const struct dc_debug_options debug_defaults_drv = {
 		.disable_dcc = DCC_ENABLE,
 		.vsr_support = true,
 		.performance_trace = false,
-		.max_downscale_src_width = 7680,/*upto 8K*/
+		.max_downscale_src_width = 7680, 
 		.disable_pplib_wm_range = false,
 		.scl_reset_length10 = true,
 		.sanity_checks = false,
 		.underflow_assert_delay_us = 0xFFFFFFFF,
-		.dwb_fi_phase = -1, // -1 = disable,
+		.dwb_fi_phase = -1, 
 		.dmub_command_table = true,
 		.exit_idle_opt_for_cursor_updates = true,
 		.disable_idle_power_optimizations = false,
@@ -132,7 +128,7 @@ static const struct dc_plane_cap plane_cap = {
 		16
 };
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) \
 		NBIO_BASE__INST0_SEG ## seg
 
@@ -143,7 +139,7 @@ static const struct dc_plane_cap plane_cap = {
 		.reg_name = NBIO_BASE(mm ## reg_name ## _BASE_IDX) + \
 		mm ## reg_name
 
-/* DCN */
+ 
 #define BASE_INNER(seg) DCN_BASE__INST0_SEG ## seg
 
 #define BASE(seg) BASE_INNER(seg)
@@ -362,7 +358,7 @@ static struct stream_encoder *dcn303_stream_encoder_create(enum engine_id eng_id
 	int vpg_inst;
 	int afmt_inst;
 
-	/* Mapping of VPG, AFMT, DME register blocks to DIO block instance */
+	 
 	if (eng_id <= ENGINE_ID_DIGB) {
 		vpg_inst = eng_id;
 		afmt_inst = eng_id;
@@ -1129,20 +1125,18 @@ static bool dcn303_resource_construct(
 
 	pool->funcs = &dcn303_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->underlay_pipe_index = NO_UNDERLAY_PIPE;
 	pool->pipe_count = pool->res_cap->num_timing_generator;
 	pool->mpcc_count = pool->res_cap->num_timing_generator;
 	dc->caps.max_downscale_ratio = 600;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 5; /*1.4 w/a applied by derfault*/
+	dc->caps.i2c_speed_in_khz_hdcp = 5;  
 	dc->caps.max_cursor_size = 256;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dmdata_alloc_size = 2048;
 	dc->caps.mall_size_per_mem_channel = 4;
-	/* total size = mall per channel * num channels * 1024 * 1024 */
+	 
 	dc->caps.mall_size_total = dc->caps.mall_size_per_mem_channel *
 				   dc->ctx->dc_bios->vram_info.num_chans *
 				   1024 * 1024;
@@ -1155,11 +1149,11 @@ static bool dcn303_resource_construct(
 	dc->caps.dmcub_support = true;
 	dc->caps.max_v_total = (1 << 15) - 1;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 0;
 	dc->caps.color.dpp.icsc = 1;
-	dc->caps.color.dpp.dgam_ram = 0; // must use gamma_corr
+	dc->caps.color.dpp.dgam_ram = 0; 
 	dc->caps.color.dpp.dgam_rom_caps.srgb = 1;
 	dc->caps.color.dpp.dgam_rom_caps.bt2020 = 1;
 	dc->caps.color.dpp.dgam_rom_caps.gamma2_2 = 1;
@@ -1171,7 +1165,7 @@ static bool dcn303_resource_construct(
 
 	dc->caps.color.dpp.hw_3d_lut = 1;
 	dc->caps.color.dpp.ogam_ram = 1;
-	// no OGAM ROM on DCN3
+	
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 0;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 0;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -1180,7 +1174,7 @@ static bool dcn303_resource_construct(
 	dc->caps.color.dpp.ocsc = 0;
 
 	dc->caps.color.mpc.gamut_remap = 1;
-	dc->caps.color.mpc.num_3dluts = pool->res_cap->num_mpc_3dlut; //3
+	dc->caps.color.mpc.num_3dluts = pool->res_cap->num_mpc_3dlut; 
 	dc->caps.color.mpc.ogam_ram = 1;
 	dc->caps.color.mpc.ogam_rom_caps.srgb = 0;
 	dc->caps.color.mpc.ogam_rom_caps.bt2020 = 0;
@@ -1192,7 +1186,7 @@ static bool dcn303_resource_construct(
 	dc->caps.dp_hdmi21_pcon_support = true;
 
 	dc->config.dc_mode_clk_limit_support = true;
-	/* read VBIOS LTTPR caps */
+	 
 	if (ctx->dc_bios->funcs->get_lttpr_caps) {
 		enum bp_result bp_query_result;
 		uint8_t is_vbios_lttpr_enable = 0;
@@ -1212,15 +1206,13 @@ static bool dcn303_resource_construct(
 	if (dc->ctx->dce_environment == DCE_ENV_PRODUCTION_DRV)
 		dc->debug = debug_defaults_drv;
 
-	// Init the vm_helper
+	
 	if (dc->vm_helper)
 		vm_helper_init(dc->vm_helper, 16);
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
-	/* Clock Sources for Pixel Clock*/
+	 
 	pool->clock_sources[DCN303_CLK_SRC_PLL0] =
 			dcn303_clock_source_create(ctx, ctx->dc_bios,
 					CLOCK_SOURCE_COMBO_PHY_PLL0,
@@ -1232,7 +1224,7 @@ static bool dcn303_resource_construct(
 
 	pool->clk_src_count = DCN303_CLK_SRC_TOTAL;
 
-	/* todo: not reuse phy_pll registers */
+	 
 	pool->dp_clock_source =
 			dcn303_clock_source_create(ctx, ctx->dc_bios,
 					CLOCK_SOURCE_ID_DP_DTO,
@@ -1246,7 +1238,7 @@ static bool dcn303_resource_construct(
 		}
 	}
 
-	/* DCCG */
+	 
 	pool->dccg = dccg30_create(ctx, &dccg_regs, &dccg_shift, &dccg_mask);
 	if (pool->dccg == NULL) {
 		dm_error("DC: failed to create dccg!\n");
@@ -1254,19 +1246,19 @@ static bool dcn303_resource_construct(
 		goto create_fail;
 	}
 
-	/* PP Lib and SMU interfaces */
+	 
 	init_soc_bounding_box(dc, pool);
 
-	/* DML */
+	 
 	dml_init_instance(&dc->dml, &dcn3_03_soc, &dcn3_03_ip, DML_PROJECT_DCN30);
 
-	/* IRQ */
+	 
 	init_data.ctx = dc->ctx;
 	pool->irqs = dal_irq_service_dcn303_create(&init_data);
 	if (!pool->irqs)
 		goto create_fail;
 
-	/* HUBBUB */
+	 
 	pool->hubbub = dcn303_hubbub_create(ctx);
 	if (pool->hubbub == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -1274,7 +1266,7 @@ static bool dcn303_resource_construct(
 		goto create_fail;
 	}
 
-	/* HUBPs, DPPs, OPPs and TGs */
+	 
 	for (i = 0; i < pool->pipe_count; i++) {
 		pool->hubps[i] = dcn303_hubp_create(ctx, i);
 		if (pool->hubps[i] == NULL) {
@@ -1310,7 +1302,7 @@ static bool dcn303_resource_construct(
 	}
 	pool->timing_generator_count = i;
 
-	/* PSR */
+	 
 	pool->psr = dmub_psr_create(ctx);
 	if (pool->psr == NULL) {
 		dm_error("DC: failed to create psr!\n");
@@ -1318,7 +1310,7 @@ static bool dcn303_resource_construct(
 		goto create_fail;
 	}
 
-	/* ABM */
+	 
 	for (i = 0; i < pool->res_cap->num_timing_generator; i++) {
 		pool->multiple_abms[i] = dmub_abm_create(ctx, &abm_regs[i], &abm_shift, &abm_mask);
 		if (pool->multiple_abms[i] == NULL) {
@@ -1328,7 +1320,7 @@ static bool dcn303_resource_construct(
 		}
 	}
 
-	/* MPC and DSC */
+	 
 	pool->mpc = dcn303_mpc_create(ctx, pool->mpcc_count, pool->res_cap->num_mpc_3dlut);
 	if (pool->mpc == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -1345,7 +1337,7 @@ static bool dcn303_resource_construct(
 		}
 	}
 
-	/* DWB and MMHUBBUB */
+	 
 	if (!dcn303_dwbc_create(ctx, pool)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create dwbc!\n");
@@ -1358,7 +1350,7 @@ static bool dcn303_resource_construct(
 		goto create_fail;
 	}
 
-	/* AUX and I2C */
+	 
 	for (i = 0; i < pool->res_cap->num_ddc; i++) {
 		pool->engines[i] = dcn303_aux_engine_create(ctx, i);
 		if (pool->engines[i] == NULL) {
@@ -1375,12 +1367,12 @@ static bool dcn303_resource_construct(
 		pool->sw_i2cs[i] = NULL;
 	}
 
-	/* Audio, Stream Encoders including HPO and virtual, MPC 3D LUTs */
+	 
 	if (!resource_construct(num_virtual_links, dc, pool,
 			&res_create_funcs))
 		goto create_fail;
 
-	/* HW Sequencer and Plane caps */
+	 
 	dcn303_hw_sequencer_construct(dc);
 
 	dc->caps.max_planes =  pool->pipe_count;

@@ -1,39 +1,20 @@
-/* Retrieve information about a FILE stream.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include "freadptr.h"
 
 #include <stdlib.h>
 
 #include "stdio-impl.h"
 
-/* This file is not used on systems that have the __freadptr function,
-   namely musl libc.  */
+ 
 
 const char *
 freadptr (FILE *fp, size_t *sizep)
 {
   size_t size;
 
-  /* Keep this code in sync with freadahead!  */
+   
 #if defined _IO_EOF_SEEN || defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1
-  /* GNU libc, BeOS, Haiku, Linux libc5 */
+   
   if (fp->_IO_write_ptr > fp->_IO_write_base)
     return NULL;
   size = fp->_IO_read_end - fp->_IO_read_ptr;
@@ -42,7 +23,7 @@ freadptr (FILE *fp, size_t *sizep)
   *sizep = size;
   return (const char *) fp->_IO_read_ptr;
 #elif defined __sferror || defined __DragonFly__ || defined __ANDROID__
-  /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin, Minix 3, Android */
+   
   if ((fp_->_flags & __SWR) != 0 || fp_->_r < 0)
     return NULL;
   size = fp_->_r;
@@ -50,18 +31,17 @@ freadptr (FILE *fp, size_t *sizep)
     return NULL;
   *sizep = size;
   return (const char *) fp_->_p;
-#elif defined __EMX__               /* emx+gcc */
+#elif defined __EMX__                
   if ((fp->_flags & _IOWRT) != 0)
     return NULL;
-  /* Note: fp->_ungetc_count > 0 implies fp->_rcount <= 0,
-           fp->_ungetc_count = 0 implies fp->_rcount >= 0.  */
+   
   if (fp->_rcount <= 0)
     return NULL;
   if (!(fp->_ungetc_count == 0))
     abort ();
   *sizep = fp->_rcount;
   return fp->_ptr;
-#elif defined __minix               /* Minix */
+#elif defined __minix                
   if ((fp_->_flags & _IOWRITING) != 0)
     return NULL;
   size = fp_->_count;
@@ -69,7 +49,7 @@ freadptr (FILE *fp, size_t *sizep)
     return NULL;
   *sizep = size;
   return (const char *) fp_->_ptr;
-#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, UnixWare, mingw, MSVC, NonStop Kernel, OpenVMS */
+#elif defined _IOERR                 
   if ((fp_->_flag & _IOWRT) != 0)
     return NULL;
   size = fp_->_cnt;
@@ -77,7 +57,7 @@ freadptr (FILE *fp, size_t *sizep)
     return NULL;
   *sizep = size;
   return (const char *) fp_->_ptr;
-#elif defined __UCLIBC__            /* uClibc */
+#elif defined __UCLIBC__             
 # ifdef __STDIO_BUFFERS
   if (fp->__modeflags & __FLAG_WRITING)
     return NULL;
@@ -91,16 +71,16 @@ freadptr (FILE *fp, size_t *sizep)
 # else
   return NULL;
 # endif
-#elif defined __QNX__               /* QNX */
-  if ((fp->_Mode & 0x2000 /* _MWRITE */) != 0)
+#elif defined __QNX__                
+  if ((fp->_Mode & 0x2000  ) != 0)
     return NULL;
-  /* fp->_Buf <= fp->_Next <= fp->_Rend */
+   
   size = fp->_Rend - fp->_Next;
   if (size == 0)
     return NULL;
   *sizep = size;
   return (const char *) fp->_Next;
-#elif defined __MINT__              /* Atari FreeMiNT */
+#elif defined __MINT__               
   if (!fp->__mode.__read)
     return NULL;
   size = fp->__get_limit - fp->__bufp;
@@ -108,16 +88,15 @@ freadptr (FILE *fp, size_t *sizep)
     return NULL;
   *sizep = size;
   return fp->__bufp;
-#elif defined EPLAN9                /* Plan9 */
-  if (fp->state == 4 /* WR */)
+#elif defined EPLAN9                 
+  if (fp->state == 4  )
     return NULL;
   if (fp->rp >= fp->wp)
     return NULL;
   *sizep = fp->wp - fp->rp;
   return fp->rp;
-#elif defined SLOW_BUT_NO_HACKS     /* users can define this */
-  /* This implementation is correct on any ANSI C platform.  It is just
-     awfully slow.  */
+#elif defined SLOW_BUT_NO_HACKS      
+   
   return NULL;
 #else
  #error "Please port gnulib freadptr.c to your platform! Look at the definition of fflush, fread, getc, getc_unlocked on your system, then report this to bug-gnulib."

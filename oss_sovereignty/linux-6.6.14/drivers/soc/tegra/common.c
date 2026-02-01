@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #define dev_fmt(fmt)	"tegra-soc: " fmt
 
@@ -59,26 +57,19 @@ static int tegra_core_dev_init_opp_state(struct device *dev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Runtime PM of the device must be enabled in order to set up
-	 * GENPD's performance properly because GENPD core checks whether
-	 * device is suspended and this check doesn't work while RPM is
-	 * disabled. This makes sure the OPP vote below gets cached in
-	 * GENPD for the device. Instead, the vote is done the next time
-	 * the device gets runtime resumed.
-	 */
+	 
 	rpm_enabled = pm_runtime_enabled(dev);
 	if (!rpm_enabled)
 		pm_runtime_enable(dev);
 
-	/* should never happen in practice */
+	 
 	if (!pm_runtime_enabled(dev)) {
 		dev_WARN(dev, "failed to enable runtime PM\n");
 		pm_runtime_disable(dev);
 		return -EINVAL;
 	}
 
-	/* first dummy rate-setting initializes voltage vote */
+	 
 	err = dev_pm_opp_set_rate(dev, rate);
 
 	if (!rpm_enabled)
@@ -92,35 +83,16 @@ static int tegra_core_dev_init_opp_state(struct device *dev)
 	return 0;
 }
 
-/**
- * devm_tegra_core_dev_init_opp_table() - initialize OPP table
- * @dev: device for which OPP table is initialized
- * @params: pointer to the OPP table configuration
- *
- * This function will initialize OPP table and sync OPP state of a Tegra SoC
- * core device.
- *
- * Return: 0 on success or errorno.
- */
+ 
 int devm_tegra_core_dev_init_opp_table(struct device *dev,
 				       struct tegra_core_opp_params *params)
 {
 	u32 hw_version;
 	int err;
-	/*
-	 * The clk's connection id to set is NULL and this is a NULL terminated
-	 * array, hence two NULL entries.
-	 */
+	 
 	const char *clk_names[] = { NULL, NULL };
 	struct dev_pm_opp_config config = {
-		/*
-		 * For some devices we don't have any OPP table in the DT, and
-		 * in order to use the same code path for all the devices, we
-		 * create a dummy OPP table for them via this. The dummy OPP
-		 * table is only capable of doing clk_set_rate() on invocation
-		 * of dev_pm_opp_set_rate() and doesn't provide any other
-		 * functionality.
-		 */
+		 
 		.clk_names = clk_names,
 	};
 
@@ -140,17 +112,11 @@ int devm_tegra_core_dev_init_opp_table(struct device *dev,
 		return err;
 	}
 
-	/*
-	 * Tegra114+ doesn't support OPP yet, return early for non tegra20/30
-	 * case.
-	 */
+	 
 	if (!config.supported_hw)
 		return -ENODEV;
 
-	/*
-	 * Older device-trees have an empty OPP table, we will get
-	 * -ENODEV from devm_pm_opp_of_add_table() in this case.
-	 */
+	 
 	err = devm_pm_opp_of_add_table(dev);
 	if (err) {
 		if (err != -ENODEV)

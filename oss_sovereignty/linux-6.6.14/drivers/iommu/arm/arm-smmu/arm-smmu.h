@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * IOMMU API for ARM architected SMMU implementations.
- *
- * Copyright (C) 2013 ARM Limited
- *
- * Author: Will Deacon <will.deacon@arm.com>
- */
+ 
+ 
 
 #ifndef _ARM_SMMU_H
 #define _ARM_SMMU_H
@@ -23,7 +17,7 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 
-/* Configuration registers */
+ 
 #define ARM_SMMU_GR0_sCR0		0x0
 #define ARM_SMMU_sCR0_VMID16EN		BIT(31)
 #define ARM_SMMU_sCR0_BSU		GENMASK(15, 14)
@@ -38,10 +32,10 @@
 #define ARM_SMMU_sCR0_GFRE		BIT(1)
 #define ARM_SMMU_sCR0_CLIENTPD		BIT(0)
 
-/* Auxiliary Configuration register */
+ 
 #define ARM_SMMU_GR0_sACR		0x10
 
-/* Identification registers */
+ 
 #define ARM_SMMU_GR0_ID0		0x20
 #define ARM_SMMU_ID0_S1TS		BIT(30)
 #define ARM_SMMU_ID0_S2TS		BIT(29)
@@ -87,7 +81,7 @@
 #define ARM_SMMU_GR0_sGFSYNR1		0x54
 #define ARM_SMMU_GR0_sGFSYNR2		0x58
 
-/* Global TLB invalidation */
+ 
 #define ARM_SMMU_GR0_TLBIVMID		0x64
 #define ARM_SMMU_GR0_TLBIALLNSNH	0x68
 #define ARM_SMMU_GR0_TLBIALLH		0x6c
@@ -96,7 +90,7 @@
 #define ARM_SMMU_GR0_sTLBGSTATUS	0x74
 #define ARM_SMMU_sTLBGSTATUS_GSACTIVE	BIT(0)
 
-/* Stream mapping registers */
+ 
 #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
 #define ARM_SMMU_SMR_VALID		BIT(31)
 #define ARM_SMMU_SMR_MASK		GENMASK(31, 16)
@@ -119,7 +113,7 @@ enum arm_smmu_s2cr_type {
 #define ARM_SMMU_S2CR_EXIDVALID		BIT(10)
 #define ARM_SMMU_S2CR_CBNDX		GENMASK(7, 0)
 
-/* Context bank attribute registers */
+ 
 #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
 #define ARM_SMMU_CBAR_IRPTNDX		GENMASK(31, 24)
 #define ARM_SMMU_CBAR_TYPE		GENMASK(17, 16)
@@ -239,13 +233,13 @@ enum arm_smmu_cbar_type {
 #define ARM_SMMU_ATSR_ACTIVE		BIT(0)
 
 
-/* Maximum number of context banks per SMMU */
+ 
 #define ARM_SMMU_MAX_CBS		128
 
-#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
+#define TLB_LOOP_TIMEOUT		1000000	 
 #define TLB_SPIN_COUNT			10
 
-/* Shared driver definitions */
+ 
 enum arm_smmu_arch_version {
 	ARM_SMMU_V1,
 	ARM_SMMU_V1_64K,
@@ -326,7 +320,7 @@ struct arm_smmu_device {
 
 	spinlock_t			global_sync_lock;
 
-	/* IOMMU core code handle */
+	 
 	struct iommu_device		iommu;
 };
 
@@ -371,8 +365,8 @@ struct arm_smmu_domain {
 	const struct iommu_flush_ops	*flush_ops;
 	struct arm_smmu_cfg		cfg;
 	enum arm_smmu_domain_stage	stage;
-	struct mutex			init_mutex; /* Protects smmu pointer */
-	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+	struct mutex			init_mutex;  
+	spinlock_t			cb_lock;  
 	struct iommu_domain		domain;
 };
 
@@ -389,10 +383,7 @@ static inline u32 arm_smmu_lpae_tcr(const struct io_pgtable_cfg *cfg)
 		FIELD_PREP(ARM_SMMU_TCR_IRGN0, cfg->arm_lpae_s1_cfg.tcr.irgn) |
 		FIELD_PREP(ARM_SMMU_TCR_T0SZ, cfg->arm_lpae_s1_cfg.tcr.tsz);
 
-       /*
-	* When TTBR1 is selected shift the TCR fields by 16 bits and disable
-	* translation in TTBR0
-	*/
+        
 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1) {
 		tcr = (tcr << 16) & ~ARM_SMMU_TCR_A1;
 		tcr |= ARM_SMMU_TCR_EPD0;
@@ -420,7 +411,7 @@ static inline u32 arm_smmu_lpae_vtcr(const struct io_pgtable_cfg *cfg)
 	       FIELD_PREP(ARM_SMMU_VTCR_T0SZ, cfg->arm_lpae_s2_cfg.vtcr.tsz);
 }
 
-/* Implementation details, yay! */
+ 
 struct arm_smmu_impl {
 	u32 (*read_reg)(struct arm_smmu_device *smmu, int page, int offset);
 	void (*write_reg)(struct arm_smmu_device *smmu, int page, int offset,
@@ -531,4 +522,4 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
 void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx);
 int arm_mmu500_reset(struct arm_smmu_device *smmu);
 
-#endif /* _ARM_SMMU_H */
+#endif  

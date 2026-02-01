@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * arch/arm/mach-spear13xx/spear1310_clock.c
- *
- * SPEAr1310 machine clock framework source file
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- */
+
+ 
 
 #include <linux/clkdev.h>
 #include <linux/clk/spear.h>
@@ -15,9 +8,9 @@
 #include <linux/spinlock_types.h>
 #include "clk.h"
 
-/* PLL related registers and bit values */
+ 
 #define SPEAR1310_PLL_CFG			(misc_base + 0x210)
-	/* PLL_CFG bit values */
+	 
 	#define SPEAR1310_CLCD_SYNT_CLK_MASK		1
 	#define SPEAR1310_CLCD_SYNT_CLK_SHIFT		31
 	#define SPEAR1310_RAS_SYNT2_3_CLK_MASK		2
@@ -38,7 +31,7 @@
 #define SPEAR1310_PLL4_CTR			(misc_base + 0x238)
 #define SPEAR1310_PLL4_FRQ			(misc_base + 0x23C)
 #define SPEAR1310_PERIP_CLK_CFG			(misc_base + 0x244)
-	/* PERIP_CLK_CFG bit values */
+	 
 	#define SPEAR1310_GPT_OSC24_VAL			0
 	#define SPEAR1310_GPT_APB_VAL			1
 	#define SPEAR1310_GPT_CLK_MASK			1
@@ -68,7 +61,7 @@
 	#define SPEAR1310_GMAC_PHY_INPUT_CLK_SHIFT	1
 
 #define SPEAR1310_I2S_CLK_CFG			(misc_base + 0x24C)
-	/* I2S_CLK_CFG register mask */
+	 
 	#define SPEAR1310_I2S_SCLK_X_MASK		0x1F
 	#define SPEAR1310_I2S_SCLK_X_SHIFT		27
 	#define SPEAR1310_I2S_SCLK_Y_MASK		0x1F
@@ -97,10 +90,10 @@
 #define SPEAR1310_RAS_CLK_SYNT1			(misc_base + 0x288)
 #define SPEAR1310_RAS_CLK_SYNT2			(misc_base + 0x290)
 #define SPEAR1310_RAS_CLK_SYNT3			(misc_base + 0x298)
-	/* Check Fractional synthesizer reg masks */
+	 
 
 #define SPEAR1310_PERIP1_CLK_ENB		(misc_base + 0x300)
-	/* PERIP1_CLK_ENB register masks */
+	 
 	#define SPEAR1310_RTC_CLK_ENB			31
 	#define SPEAR1310_ADC_CLK_ENB			30
 	#define SPEAR1310_C3_CLK_ENB			29
@@ -133,7 +126,7 @@
 	#define SPEAR1310_BUS_CLK_ENB			0
 
 #define SPEAR1310_PERIP2_CLK_ENB		(misc_base + 0x304)
-	/* PERIP2_CLK_ENB register masks */
+	 
 	#define SPEAR1310_THSENS_CLK_ENB		8
 	#define SPEAR1310_I2S_REF_PAD_CLK_ENB		7
 	#define SPEAR1310_ACP_CLK_ENB			6
@@ -145,7 +138,7 @@
 	#define SPEAR1310_DDR_CTRL_CLK_ENB		0
 
 #define SPEAR1310_RAS_CLK_ENB			(misc_base + 0x310)
-	/* RAS_CLK_ENB register masks */
+	 
 	#define SPEAR1310_SYNT3_CLK_ENB			17
 	#define SPEAR1310_SYNT2_CLK_ENB			16
 	#define SPEAR1310_SYNT1_CLK_ENB			15
@@ -165,7 +158,7 @@
 	#define SPEAR1310_PCLK_CLK_ENB			1
 	#define SPEAR1310_ACLK_CLK_ENB			0
 
-/* RAS Area Control Register */
+ 
 #define SPEAR1310_RAS_CTRL_REG0			(ras_base + 0x000)
 	#define SPEAR1310_SSP1_CLK_MASK			3
 	#define SPEAR1310_SSP1_CLK_SHIFT		26
@@ -226,61 +219,61 @@
 
 static DEFINE_SPINLOCK(_lock);
 
-/* pll rate configuration table, in ascending order of rates */
+ 
 static struct pll_rate_tbl pll_rtbl[] = {
-	/* PCLK 24MHz */
-	{.mode = 0, .m = 0x83, .n = 0x04, .p = 0x5}, /* vco 1572, pll 49.125 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x3}, /* vco 1000, pll 125 MHz */
-	{.mode = 0, .m = 0x64, .n = 0x06, .p = 0x1}, /* vco 800, pll 400 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x1}, /* vco 1000, pll 500 MHz */
-	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x1}, /* vco 1328, pll 664 MHz */
-	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x1}, /* vco 1600, pll 800 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0}, /* vco 1, pll 1 GHz */
+	 
+	{.mode = 0, .m = 0x83, .n = 0x04, .p = 0x5},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x3},  
+	{.mode = 0, .m = 0x64, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0},  
 };
 
-/* vco-pll4 rate configuration table, in ascending order of rates */
+ 
 static struct pll_rate_tbl pll4_rtbl[] = {
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x2}, /* vco 1000, pll 250 MHz */
-	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x2}, /* vco 1328, pll 332 MHz */
-	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x2}, /* vco 1600, pll 400 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0}, /* vco 1, pll 1 GHz */
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x2},  
+	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x2},  
+	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x2},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0},  
 };
 
-/* aux rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl aux_rtbl[] = {
-	/* For VCO1div2 = 500 MHz */
-	{.xscale = 10, .yscale = 204, .eq = 0}, /* 12.29 MHz */
-	{.xscale = 4, .yscale = 21, .eq = 0}, /* 48 MHz */
-	{.xscale = 2, .yscale = 6, .eq = 0}, /* 83 MHz */
-	{.xscale = 2, .yscale = 4, .eq = 0}, /* 125 MHz */
-	{.xscale = 1, .yscale = 3, .eq = 1}, /* 166 MHz */
-	{.xscale = 1, .yscale = 2, .eq = 1}, /* 250 MHz */
+	 
+	{.xscale = 10, .yscale = 204, .eq = 0},  
+	{.xscale = 4, .yscale = 21, .eq = 0},  
+	{.xscale = 2, .yscale = 6, .eq = 0},  
+	{.xscale = 2, .yscale = 4, .eq = 0},  
+	{.xscale = 1, .yscale = 3, .eq = 1},  
+	{.xscale = 1, .yscale = 2, .eq = 1},  
 };
 
-/* gmac rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl gmac_rtbl[] = {
-	/* For gmac phy input clk */
-	{.xscale = 2, .yscale = 6, .eq = 0}, /* divided by 6 */
-	{.xscale = 2, .yscale = 4, .eq = 0}, /* divided by 4 */
-	{.xscale = 1, .yscale = 3, .eq = 1}, /* divided by 3 */
-	{.xscale = 1, .yscale = 2, .eq = 1}, /* divided by 2 */
+	 
+	{.xscale = 2, .yscale = 6, .eq = 0},  
+	{.xscale = 2, .yscale = 4, .eq = 0},  
+	{.xscale = 1, .yscale = 3, .eq = 1},  
+	{.xscale = 1, .yscale = 2, .eq = 1},  
 };
 
-/* clcd rate configuration table, in ascending order of rates */
+ 
 static struct frac_rate_tbl clcd_rtbl[] = {
-	{.div = 0x14000}, /* 25 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x1284B}, /* 27 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x0D8D3}, /* 58 Mhz , for vco1div4 = 393 MHz */
-	{.div = 0x0B72C}, /* 58 Mhz , for vco1div4 = 332 MHz */
-	{.div = 0x089EE}, /* 58 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x06f1C}, /* 72 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x06E58}, /* 58 Mhz , for vco1div4 = 200 MHz */
-	{.div = 0x06c1B}, /* 74 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x04A12}, /* 108 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x0378E}, /* 144 Mhz , for vc01div4 = 250 MHz*/
+	{.div = 0x14000},  
+	{.div = 0x1284B},  
+	{.div = 0x0D8D3},  
+	{.div = 0x0B72C},  
+	{.div = 0x089EE},  
+	{.div = 0x06f1C},  
+	{.div = 0x06E58},  
+	{.div = 0x06c1B},  
+	{.div = 0x04A12},  
+	{.div = 0x0378E},  
 };
 
-/* i2s prescaler1 masks */
+ 
 static const struct aux_clk_masks i2s_prs1_masks = {
 	.eq_sel_mask = AUX_EQ_SEL_MASK,
 	.eq_sel_shift = SPEAR1310_I2S_PRS1_EQ_SEL_SHIFT,
@@ -292,7 +285,7 @@ static const struct aux_clk_masks i2s_prs1_masks = {
 	.yscale_sel_shift = SPEAR1310_I2S_PRS1_CLK_Y_SHIFT,
 };
 
-/* i2s sclk (bit clock) syynthesizers masks */
+ 
 static struct aux_clk_masks i2s_sclk_masks = {
 	.eq_sel_mask = AUX_EQ_SEL_MASK,
 	.eq_sel_shift = SPEAR1310_I2S_SCLK_EQ_SEL_SHIFT,
@@ -305,53 +298,50 @@ static struct aux_clk_masks i2s_sclk_masks = {
 	.enable_bit = SPEAR1310_I2S_SCLK_SYNTH_ENB,
 };
 
-/* i2s prs1 aux rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl i2s_prs1_rtbl[] = {
-	/* For parent clk = 49.152 MHz */
-	{.xscale = 1, .yscale = 12, .eq = 0}, /* 2.048 MHz, smp freq = 8Khz */
-	{.xscale = 11, .yscale = 96, .eq = 0}, /* 2.816 MHz, smp freq = 11Khz */
-	{.xscale = 1, .yscale = 6, .eq = 0}, /* 4.096 MHz, smp freq = 16Khz */
-	{.xscale = 11, .yscale = 48, .eq = 0}, /* 5.632 MHz, smp freq = 22Khz */
+	 
+	{.xscale = 1, .yscale = 12, .eq = 0},  
+	{.xscale = 11, .yscale = 96, .eq = 0},  
+	{.xscale = 1, .yscale = 6, .eq = 0},  
+	{.xscale = 11, .yscale = 48, .eq = 0},  
 
-	/*
-	 * with parent clk = 49.152, freq gen is 8.192 MHz, smp freq = 32Khz
-	 * with parent clk = 12.288, freq gen is 2.048 MHz, smp freq = 8Khz
-	 */
+	 
 	{.xscale = 1, .yscale = 3, .eq = 0},
 
-	/* For parent clk = 49.152 MHz */
-	{.xscale = 17, .yscale = 37, .eq = 0}, /* 11.289 MHz, smp freq = 44Khz*/
+	 
+	{.xscale = 17, .yscale = 37, .eq = 0},  
 
-	{.xscale = 1, .yscale = 2, .eq = 0}, /* 12.288 MHz */
+	{.xscale = 1, .yscale = 2, .eq = 0},  
 };
 
-/* i2s sclk aux rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl i2s_sclk_rtbl[] = {
-	/* For i2s_ref_clk = 12.288MHz */
-	{.xscale = 1, .yscale = 4, .eq = 0}, /* 1.53 MHz */
-	{.xscale = 1, .yscale = 2, .eq = 0}, /* 3.07 Mhz */
+	 
+	{.xscale = 1, .yscale = 4, .eq = 0},  
+	{.xscale = 1, .yscale = 2, .eq = 0},  
 };
 
-/* adc rate configuration table, in ascending order of rates */
-/* possible adc range is 2.5 MHz to 20 MHz. */
+ 
+ 
 static struct aux_rate_tbl adc_rtbl[] = {
-	/* For ahb = 166.67 MHz */
-	{.xscale = 1, .yscale = 31, .eq = 0}, /* 2.68 MHz */
-	{.xscale = 2, .yscale = 21, .eq = 0}, /* 7.94 MHz */
-	{.xscale = 4, .yscale = 21, .eq = 0}, /* 15.87 MHz */
-	{.xscale = 10, .yscale = 42, .eq = 0}, /* 19.84 MHz */
+	 
+	{.xscale = 1, .yscale = 31, .eq = 0},  
+	{.xscale = 2, .yscale = 21, .eq = 0},  
+	{.xscale = 4, .yscale = 21, .eq = 0},  
+	{.xscale = 10, .yscale = 42, .eq = 0},  
 };
 
-/* General synth rate configuration table, in ascending order of rates */
+ 
 static struct frac_rate_tbl gen_rtbl[] = {
-	/* For vco1div4 = 250 MHz */
-	{.div = 0x14000}, /* 25 MHz */
-	{.div = 0x0A000}, /* 50 MHz */
-	{.div = 0x05000}, /* 100 MHz */
-	{.div = 0x02000}, /* 250 MHz */
+	 
+	{.div = 0x14000},  
+	{.div = 0x0A000},  
+	{.div = 0x05000},  
+	{.div = 0x02000},  
 };
 
-/* clock parents */
+ 
 static const char *vco_parents[] = { "osc_24m_clk", "osc_25m_clk", };
 static const char *gpt_parents[] = { "osc_24m_clk", "apb_clk", };
 static const char *uart0_parents[] = { "pll5_clk", "uart_syn_gclk", };
@@ -399,14 +389,14 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 				      12288000);
 	clk_register_clkdev(clk, "i2s_src_pad_clk", NULL);
 
-	/* clock derived from 32 KHz osc clk */
+	 
 	clk = clk_register_gate(NULL, "rtc-spear", "osc_32k_clk", 0,
 			SPEAR1310_PERIP1_CLK_ENB, SPEAR1310_RTC_CLK_ENB, 0,
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e0580000.rtc");
 
-	/* clock derived from 24 or 25 MHz osc clk */
-	/* vco-pll */
+	 
+	 
 	clk = clk_register_mux(NULL, "vco1_mclk", vco_parents,
 			ARRAY_SIZE(vco_parents), CLK_SET_RATE_NO_REPARENT,
 			SPEAR1310_PLL_CFG, SPEAR1310_PLL1_CLK_SHIFT,
@@ -454,7 +444,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			25000000);
 	clk_register_clkdev(clk, "pll6_clk", NULL);
 
-	/* vco div n clocks */
+	 
 	clk = clk_register_fixed_factor(NULL, "vco1div2_clk", "vco1_clk", 0, 1,
 			2);
 	clk_register_clkdev(clk, "vco1div2_clk", NULL);
@@ -471,7 +461,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			2);
 	clk_register_clkdev(clk, "vco3div2_clk", NULL);
 
-	/* peripherals */
+	 
 	clk_register_fixed_factor(NULL, "thermal_clk", "osc_24m_clk", 0, 1,
 			128);
 	clk = clk_register_gate(NULL, "thermal_gclk", "thermal_clk", 0,
@@ -479,12 +469,12 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "spear_thermal");
 
-	/* clock derived from pll4 clk */
+	 
 	clk = clk_register_fixed_factor(NULL, "ddr_clk", "pll4_clk", 0, 1,
 			1);
 	clk_register_clkdev(clk, "ddr_clk", NULL);
 
-	/* clock derived from pll1 clk */
+	 
 	clk = clk_register_fixed_factor(NULL, "cpu_clk", "pll1_clk",
 			CLK_SET_RATE_PARENT, 1, 2);
 	clk_register_clkdev(clk, "cpu_clk", NULL);
@@ -505,7 +495,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			12);
 	clk_register_clkdev(clk, "apb_clk", NULL);
 
-	/* gpt clocks */
+	 
 	clk = clk_register_mux(NULL, "gpt0_mclk", gpt_parents,
 			ARRAY_SIZE(gpt_parents), CLK_SET_RATE_NO_REPARENT,
 			SPEAR1310_PERIP_CLK_CFG, SPEAR1310_GPT0_CLK_SHIFT,
@@ -546,7 +536,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "gpt3");
 
-	/* others */
+	 
 	clk = clk_register_aux("uart_syn_clk", "uart_syn_gclk", "vco1div2_clk",
 			0, SPEAR1310_UART_CLK_SYNT, NULL, aux_rtbl,
 			ARRAY_SIZE(aux_rtbl), &_lock, &clk1);
@@ -606,7 +596,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "c3");
 
-	/* gmac */
+	 
 	clk = clk_register_mux(NULL, "phy_input_mclk", gmac_phy_input_parents,
 			ARRAY_SIZE(gmac_phy_input_parents),
 			CLK_SET_RATE_NO_REPARENT, SPEAR1310_GMAC_CLK_CFG,
@@ -626,7 +616,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			SPEAR1310_GMAC_PHY_CLK_MASK, 0, &_lock);
 	clk_register_clkdev(clk, "stmmacphy.0", NULL);
 
-	/* clcd */
+	 
 	clk = clk_register_mux(NULL, "clcd_syn_mclk", clcd_synth_parents,
 			ARRAY_SIZE(clcd_synth_parents),
 			CLK_SET_RATE_NO_REPARENT, SPEAR1310_CLCD_CLK_SYNT,
@@ -651,7 +641,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e1000000.clcd");
 
-	/* i2s */
+	 
 	clk = clk_register_mux(NULL, "i2s_src_mclk", i2s_src_parents,
 			ARRAY_SIZE(i2s_src_parents), CLK_SET_RATE_NO_REPARENT,
 			SPEAR1310_I2S_CLK_CFG, SPEAR1310_I2S_SRC_CLK_SHIFT,
@@ -682,7 +672,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 	clk_register_clkdev(clk, "i2s_sclk_clk", NULL);
 	clk_register_clkdev(clk1, "i2s_sclk_gclk", NULL);
 
-	/* clock derived from ahb clk */
+	 
 	clk = clk_register_gate(NULL, "i2c0_clk", "ahb_clk", 0,
 			SPEAR1310_PERIP1_CLK_ENB, SPEAR1310_I2C0_CLK_ENB, 0,
 			&_lock);
@@ -770,7 +760,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			SPEAR1310_ADC_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "e0080000.adc");
 
-	/* clock derived from apb clk */
+	 
 	clk = clk_register_gate(NULL, "ssp0_clk", "apb_clk", 0,
 			SPEAR1310_PERIP1_CLK_ENB, SPEAR1310_SSP_CLK_ENB, 0,
 			&_lock);
@@ -801,7 +791,7 @@ void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e0300000.kbd");
 
-	/* RAS clks */
+	 
 	clk = clk_register_mux(NULL, "gen_syn0_1_mclk", gen_synth0_1_parents,
 			ARRAY_SIZE(gen_synth0_1_parents),
 			CLK_SET_RATE_NO_REPARENT, SPEAR1310_PLL_CFG,

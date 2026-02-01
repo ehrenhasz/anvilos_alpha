@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -22,10 +19,7 @@
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 
-/*
- * The following routines are taken from page 170 of the 7th ARRL Computer
- * Networking Conference paper, as is the whole state machine.
- */
+ 
 
 void ax25_std_nr_error_recovery(ax25_cb *ax25)
 {

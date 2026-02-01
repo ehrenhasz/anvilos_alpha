@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #ifdef HAVE_GENHDR
 # include "autoconf.h"

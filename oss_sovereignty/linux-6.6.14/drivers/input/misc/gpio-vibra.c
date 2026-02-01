@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  GPIO vibrator driver
- *
- *  Copyright (C) 2019 Luca Weiss <luca@z3ntu.xyz>
- *
- *  Based on PWM vibrator driver:
- *  Copyright (C) 2017 Collabora Ltd.
- *
- *  Based on previous work from:
- *  Copyright (C) 2012 Dmitry Torokhov <dmitry.torokhov@gmail.com>
- *
- *  Based on PWM beeper driver:
- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/input.h>

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i9xx_wm.h"
@@ -9,39 +7,7 @@
 #include "intel_wm.h"
 #include "skl_watermark.h"
 
-/**
- * intel_update_watermarks - update FIFO watermark values based on current modes
- * @i915: i915 device
- *
- * Calculate watermark values for the various WM regs based on current mode
- * and plane configuration.
- *
- * There are several cases to deal with here:
- *   - normal (i.e. non-self-refresh)
- *   - self-refresh (SR) mode
- *   - lines are large relative to FIFO size (buffer can hold up to 2)
- *   - lines are small relative to FIFO size (buffer can hold more than 2
- *     lines), so need to account for TLB latency
- *
- *   The normal calculation is:
- *     watermark = dotclock * bytes per pixel * latency
- *   where latency is platform & configuration dependent (we assume pessimal
- *   values here).
- *
- *   The SR calculation is:
- *     watermark = (trunc(latency/line time)+1) * surface width *
- *       bytes per pixel
- *   where
- *     line time = htotal / dotclock
- *     surface width = hdisplay for normal plane and 64 for cursor
- *   and latency is assumed to be high, as above.
- *
- * The final value programmed to the register should always be rounded up,
- * and include an extra 2 entries to account for clock crossings.
- *
- * We don't use the sprite, so we can ignore that.  And on Crestline we have
- * to set the non-SR watermarks to 8.
- */
+ 
 void intel_update_watermarks(struct drm_i915_private *i915)
 {
 	if (i915->display.funcs.wm->update_wm)
@@ -125,18 +91,11 @@ bool intel_wm_plane_visible(const struct intel_crtc_state *crtc_state,
 {
 	struct intel_plane *plane = to_intel_plane(plane_state->uapi.plane);
 
-	/* FIXME check the 'enable' instead */
+	 
 	if (!crtc_state->hw.active)
 		return false;
 
-	/*
-	 * Treat cursor with fb as always visible since cursor updates
-	 * can happen faster than the vrefresh rate, and the current
-	 * watermark code doesn't handle that correctly. Cursor updates
-	 * which set/clear the fb or change the cursor size are going
-	 * to get throttled by intel_legacy_cursor_update() to work
-	 * around this problem with the watermark code.
-	 */
+	 
 	if (plane->id == PLANE_CURSOR)
 		return plane_state->hw.fb != NULL;
 	else
@@ -158,10 +117,7 @@ void intel_print_wm_latency(struct drm_i915_private *dev_priv,
 			continue;
 		}
 
-		/*
-		 * - latencies are in us on gen9.
-		 * - before then, WM1+ latency values are in 0.5us units
-		 */
+		 
 		if (DISPLAY_VER(dev_priv) >= 9)
 			latency *= 10;
 		else if (level > 0)
@@ -191,10 +147,7 @@ static void wm_latency_show(struct seq_file *m, const u16 wm[8])
 	for (level = 0; level < dev_priv->display.wm.num_levels; level++) {
 		unsigned int latency = wm[level];
 
-		/*
-		 * - WM1+ latency values in 0.5us units
-		 * - latencies are in us on gen9/vlv/chv
-		 */
+		 
 		if (DISPLAY_VER(dev_priv) >= 9 ||
 		    IS_VALLEYVIEW(dev_priv) ||
 		    IS_CHERRYVIEW(dev_priv) ||

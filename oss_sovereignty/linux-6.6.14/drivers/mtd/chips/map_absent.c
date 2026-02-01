@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Common code to handle absent "placeholder" devices
- * Copyright 2001 Resilience Corporation <ebrower@resilience.com>
- *
- * This map driver is used to allocate "placeholder" MTD
- * devices on systems that have socketed/removable media.
- * Use of this driver as a fallback preserves the expected
- * registration of MTD device nodes regardless of probe outcome.
- * A usage example is as follows:
- *
- *		my_dev[i] = do_map_probe("cfi", &my_map[i]);
- *		if(NULL == my_dev[i]) {
- *			my_dev[i] = do_map_probe("map_absent", &my_map[i]);
- *		}
- *
- * Any device 'probed' with this driver will return -ENODEV
- * upon open.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -86,12 +69,12 @@ static int map_absent_erase(struct mtd_info *mtd, struct erase_info *instr)
 
 static void map_absent_sync(struct mtd_info *mtd)
 {
-	/* nop */
+	 
 }
 
 static void map_absent_destroy(struct mtd_info *mtd)
 {
-	/* nop */
+	 
 }
 
 static int __init map_absent_init(void)

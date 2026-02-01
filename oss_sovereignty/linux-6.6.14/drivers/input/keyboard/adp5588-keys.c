@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * File: drivers/input/keyboard/adp5588_keys.c
- * Description:  keypad driver for ADP5588 and ADP5587
- *		 I2C QWERTY Keypad and IO Expander
- * Bugs: Enter bugs at http://blackfin.uclinux.org/
- *
- * Copyright (C) 2008-2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -28,72 +21,72 @@
 #include <linux/slab.h>
 #include <linux/timekeeping.h>
 
-#define DEV_ID 0x00		/* Device ID */
-#define CFG 0x01		/* Configuration Register1 */
-#define INT_STAT 0x02		/* Interrupt Status Register */
-#define KEY_LCK_EC_STAT 0x03	/* Key Lock and Event Counter Register */
-#define KEY_EVENTA 0x04		/* Key Event Register A */
-#define KEY_EVENTB 0x05		/* Key Event Register B */
-#define KEY_EVENTC 0x06		/* Key Event Register C */
-#define KEY_EVENTD 0x07		/* Key Event Register D */
-#define KEY_EVENTE 0x08		/* Key Event Register E */
-#define KEY_EVENTF 0x09		/* Key Event Register F */
-#define KEY_EVENTG 0x0A		/* Key Event Register G */
-#define KEY_EVENTH 0x0B		/* Key Event Register H */
-#define KEY_EVENTI 0x0C		/* Key Event Register I */
-#define KEY_EVENTJ 0x0D		/* Key Event Register J */
-#define KP_LCK_TMR 0x0E		/* Keypad Lock1 to Lock2 Timer */
-#define UNLOCK1 0x0F		/* Unlock Key1 */
-#define UNLOCK2 0x10		/* Unlock Key2 */
-#define GPIO_INT_STAT1 0x11	/* GPIO Interrupt Status */
-#define GPIO_INT_STAT2 0x12	/* GPIO Interrupt Status */
-#define GPIO_INT_STAT3 0x13	/* GPIO Interrupt Status */
-#define GPIO_DAT_STAT1 0x14	/* GPIO Data Status, Read twice to clear */
-#define GPIO_DAT_STAT2 0x15	/* GPIO Data Status, Read twice to clear */
-#define GPIO_DAT_STAT3 0x16	/* GPIO Data Status, Read twice to clear */
-#define GPIO_DAT_OUT1 0x17	/* GPIO DATA OUT */
-#define GPIO_DAT_OUT2 0x18	/* GPIO DATA OUT */
-#define GPIO_DAT_OUT3 0x19	/* GPIO DATA OUT */
-#define GPIO_INT_EN1 0x1A	/* GPIO Interrupt Enable */
-#define GPIO_INT_EN2 0x1B	/* GPIO Interrupt Enable */
-#define GPIO_INT_EN3 0x1C	/* GPIO Interrupt Enable */
-#define KP_GPIO1 0x1D		/* Keypad or GPIO Selection */
-#define KP_GPIO2 0x1E		/* Keypad or GPIO Selection */
-#define KP_GPIO3 0x1F		/* Keypad or GPIO Selection */
-#define GPI_EM1 0x20		/* GPI Event Mode 1 */
-#define GPI_EM2 0x21		/* GPI Event Mode 2 */
-#define GPI_EM3 0x22		/* GPI Event Mode 3 */
-#define GPIO_DIR1 0x23		/* GPIO Data Direction */
-#define GPIO_DIR2 0x24		/* GPIO Data Direction */
-#define GPIO_DIR3 0x25		/* GPIO Data Direction */
-#define GPIO_INT_LVL1 0x26	/* GPIO Edge/Level Detect */
-#define GPIO_INT_LVL2 0x27	/* GPIO Edge/Level Detect */
-#define GPIO_INT_LVL3 0x28	/* GPIO Edge/Level Detect */
-#define DEBOUNCE_DIS1 0x29	/* Debounce Disable */
-#define DEBOUNCE_DIS2 0x2A	/* Debounce Disable */
-#define DEBOUNCE_DIS3 0x2B	/* Debounce Disable */
-#define GPIO_PULL1 0x2C		/* GPIO Pull Disable */
-#define GPIO_PULL2 0x2D		/* GPIO Pull Disable */
-#define GPIO_PULL3 0x2E		/* GPIO Pull Disable */
-#define CMP_CFG_STAT 0x30	/* Comparator Configuration and Status Register */
-#define CMP_CONFG_SENS1 0x31	/* Sensor1 Comparator Configuration Register */
-#define CMP_CONFG_SENS2 0x32	/* L2 Light Sensor Reference Level, Output Falling for Sensor 1 */
-#define CMP1_LVL2_TRIP 0x33	/* L2 Light Sensor Hysteresis (Active when Output Rising) for Sensor 1 */
-#define CMP1_LVL2_HYS 0x34	/* L3 Light Sensor Reference Level, Output Falling For Sensor 1 */
-#define CMP1_LVL3_TRIP 0x35	/* L3 Light Sensor Hysteresis (Active when Output Rising) For Sensor 1 */
-#define CMP1_LVL3_HYS 0x36	/* Sensor 2 Comparator Configuration Register */
-#define CMP2_LVL2_TRIP 0x37	/* L2 Light Sensor Reference Level, Output Falling for Sensor 2 */
-#define CMP2_LVL2_HYS 0x38	/* L2 Light Sensor Hysteresis (Active when Output Rising) for Sensor 2 */
-#define CMP2_LVL3_TRIP 0x39	/* L3 Light Sensor Reference Level, Output Falling For Sensor 2 */
-#define CMP2_LVL3_HYS 0x3A	/* L3 Light Sensor Hysteresis (Active when Output Rising) For Sensor 2 */
-#define CMP1_ADC_DAT_R1 0x3B	/* Comparator 1 ADC data Register1 */
-#define CMP1_ADC_DAT_R2 0x3C	/* Comparator 1 ADC data Register2 */
-#define CMP2_ADC_DAT_R1 0x3D	/* Comparator 2 ADC data Register1 */
-#define CMP2_ADC_DAT_R2 0x3E	/* Comparator 2 ADC data Register2 */
+#define DEV_ID 0x00		 
+#define CFG 0x01		 
+#define INT_STAT 0x02		 
+#define KEY_LCK_EC_STAT 0x03	 
+#define KEY_EVENTA 0x04		 
+#define KEY_EVENTB 0x05		 
+#define KEY_EVENTC 0x06		 
+#define KEY_EVENTD 0x07		 
+#define KEY_EVENTE 0x08		 
+#define KEY_EVENTF 0x09		 
+#define KEY_EVENTG 0x0A		 
+#define KEY_EVENTH 0x0B		 
+#define KEY_EVENTI 0x0C		 
+#define KEY_EVENTJ 0x0D		 
+#define KP_LCK_TMR 0x0E		 
+#define UNLOCK1 0x0F		 
+#define UNLOCK2 0x10		 
+#define GPIO_INT_STAT1 0x11	 
+#define GPIO_INT_STAT2 0x12	 
+#define GPIO_INT_STAT3 0x13	 
+#define GPIO_DAT_STAT1 0x14	 
+#define GPIO_DAT_STAT2 0x15	 
+#define GPIO_DAT_STAT3 0x16	 
+#define GPIO_DAT_OUT1 0x17	 
+#define GPIO_DAT_OUT2 0x18	 
+#define GPIO_DAT_OUT3 0x19	 
+#define GPIO_INT_EN1 0x1A	 
+#define GPIO_INT_EN2 0x1B	 
+#define GPIO_INT_EN3 0x1C	 
+#define KP_GPIO1 0x1D		 
+#define KP_GPIO2 0x1E		 
+#define KP_GPIO3 0x1F		 
+#define GPI_EM1 0x20		 
+#define GPI_EM2 0x21		 
+#define GPI_EM3 0x22		 
+#define GPIO_DIR1 0x23		 
+#define GPIO_DIR2 0x24		 
+#define GPIO_DIR3 0x25		 
+#define GPIO_INT_LVL1 0x26	 
+#define GPIO_INT_LVL2 0x27	 
+#define GPIO_INT_LVL3 0x28	 
+#define DEBOUNCE_DIS1 0x29	 
+#define DEBOUNCE_DIS2 0x2A	 
+#define DEBOUNCE_DIS3 0x2B	 
+#define GPIO_PULL1 0x2C		 
+#define GPIO_PULL2 0x2D		 
+#define GPIO_PULL3 0x2E		 
+#define CMP_CFG_STAT 0x30	 
+#define CMP_CONFG_SENS1 0x31	 
+#define CMP_CONFG_SENS2 0x32	 
+#define CMP1_LVL2_TRIP 0x33	 
+#define CMP1_LVL2_HYS 0x34	 
+#define CMP1_LVL3_TRIP 0x35	 
+#define CMP1_LVL3_HYS 0x36	 
+#define CMP2_LVL2_TRIP 0x37	 
+#define CMP2_LVL2_HYS 0x38	 
+#define CMP2_LVL3_TRIP 0x39	 
+#define CMP2_LVL3_HYS 0x3A	 
+#define CMP1_ADC_DAT_R1 0x3B	 
+#define CMP1_ADC_DAT_R2 0x3C	 
+#define CMP2_ADC_DAT_R1 0x3D	 
+#define CMP2_ADC_DAT_R2 0x3E	 
 
 #define ADP5588_DEVICE_ID_MASK	0xF
 
- /* Configuration Register1 */
+  
 #define ADP5588_AUTO_INC	BIT(7)
 #define ADP5588_GPIEM_CFG	BIT(6)
 #define ADP5588_OVR_FLOW_M	BIT(5)
@@ -103,7 +96,7 @@
 #define ADP5588_GPI_IEN		BIT(1)
 #define ADP5588_KE_IEN		BIT(0)
 
-/* Interrupt Status Register */
+ 
 #define ADP5588_CMP2_INT	BIT(5)
 #define ADP5588_CMP1_INT	BIT(4)
 #define ADP5588_OVR_FLOW_INT	BIT(3)
@@ -111,7 +104,7 @@
 #define ADP5588_GPI_INT		BIT(1)
 #define ADP5588_KE_INT		BIT(0)
 
-/* Key Lock and Event Counter Register */
+ 
 #define ADP5588_K_LCK_EN	BIT(6)
 #define ADP5588_LCK21		0x30
 #define ADP5588_KEC		GENMASK(3, 0)
@@ -120,12 +113,9 @@
 #define ADP5588_BANK(offs)	((offs) >> 3)
 #define ADP5588_BIT(offs)	(1u << ((offs) & 0x7))
 
-/* Put one of these structures in i2c_board_info platform_data */
+ 
 
-/*
- * 128 so it fits matrix-keymap maximum number of keys when the full
- * 10cols * 8rows are used.
- */
+ 
 #define ADP5588_KEYMAPSIZE 128
 
 #define GPI_PIN_ROW0 97
@@ -160,19 +150,15 @@
 
 #define ADP5588_GPIMAPSIZE_MAX (GPI_PIN_END - GPI_PIN_BASE + 1)
 
-/* Key Event Register xy */
+ 
 #define KEY_EV_PRESSED		BIT(7)
 #define KEY_EV_MASK		GENMASK(6, 0)
 
-#define KP_SEL(x)		(BIT(x) - 1)	/* 2^x-1 */
+#define KP_SEL(x)		(BIT(x) - 1)	 
 
 #define KEYP_MAX_EVENT		10
 
-/*
- * Early pre 4.0 Silicon required to delay readout by at least 25ms,
- * since the Event Counter Register updated 25ms after the interrupt
- * asserted.
- */
+ 
 #define WA_DELAYED_READOUT_REVID(rev)		((rev) < 4)
 #define WA_DELAYED_READOUT_TIME			25
 
@@ -191,7 +177,7 @@ struct adp5588_kpad {
 	unsigned short keycode[ADP5588_KEYMAPSIZE];
 	unsigned char gpiomap[ADP5588_MAXGPIO];
 	struct gpio_chip gc;
-	struct mutex gpio_lock;	/* Protect cached dir, dat_out */
+	struct mutex gpio_lock;	 
 	u8 dat_out[3];
 	u8 dir[3];
 	u8 int_en[3];
@@ -479,7 +465,7 @@ static unsigned long adp5588_gpiomap_get_hwirq(struct device *dev,
 		if (map[hwirq] == gpio)
 			return hwirq;
 
-	/* should never happen */
+	 
 	dev_warn_ratelimited(dev, "could not find the hwirq for gpio(%u)\n", gpio);
 
 	return ADP5588_INVALID_HWIRQ;
@@ -512,10 +498,7 @@ static void adp5588_gpio_irq_handle(struct adp5588_kpad *kpad, int key_val,
 
 	irq_type = irqd_get_trigger_type(irqd);
 
-	/*
-	 * Default is active low which means key_press is asserted on
-	 * the falling edge.
-	 */
+	 
 	if ((irq_type & IRQ_TYPE_EDGE_RISING && !key_press) ||
 	    (irq_type & IRQ_TYPE_EDGE_FALLING && key_press))
 		handle_nested_irq(irq);
@@ -531,7 +514,7 @@ static void adp5588_report_events(struct adp5588_kpad *kpad, int ev_cnt)
 		int key_press = key & KEY_EV_PRESSED;
 
 		if (key_val >= GPI_PIN_BASE && key_val <= GPI_PIN_END) {
-			/* gpio line used as IRQ source */
+			 
 			adp5588_gpio_irq_handle(kpad, key_val, key_press);
 		} else {
 			int row = (key_val - 1) / ADP5588_COLS_MAX;
@@ -565,10 +548,7 @@ static irqreturn_t adp5588_thread_irq(int irq, void *handle)
 	unsigned long delay;
 	int status, ev_cnt;
 
-	/*
-	 * Readout needs to wait for at least 25ms after the notification
-	 * for REVID < 4.
-	 */
+	 
 	if (kpad->delay) {
 		target_time = ktime_add_ms(kpad->irq_time, kpad->delay);
 		now = ktime_get();
@@ -580,7 +560,7 @@ static irqreturn_t adp5588_thread_irq(int irq, void *handle)
 
 	status = adp5588_read(client, INT_STAT);
 
-	if (status & ADP5588_OVR_FLOW_INT)	/* Unlikely and should never happen */
+	if (status & ADP5588_OVR_FLOW_INT)	 
 		dev_err(&client->dev, "Event Overflow Error\n");
 
 	if (status & ADP5588_KE_INT) {
@@ -591,7 +571,7 @@ static irqreturn_t adp5588_thread_irq(int irq, void *handle)
 		}
 	}
 
-	adp5588_write(client, INT_STAT, status); /* Status is W1C */
+	adp5588_write(client, INT_STAT, status);  
 
 	return IRQ_HANDLED;
 }
@@ -634,7 +614,7 @@ static int adp5588_setup(struct adp5588_kpad *kpad)
 	ret = adp5588_write(client, INT_STAT,
 			    ADP5588_CMP2_INT | ADP5588_CMP1_INT |
 			    ADP5588_OVR_FLOW_INT | ADP5588_K_LCK_INT |
-			    ADP5588_GPI_INT | ADP5588_KE_INT); /* Status is W1C */
+			    ADP5588_GPI_INT | ADP5588_KE_INT);  
 	if (ret)
 		return ret;
 
@@ -671,7 +651,7 @@ static int adp5588_fw_parse(struct adp5588_kpad *kpad)
 	kpad->nkeys_unlock = device_property_count_u32(&client->dev,
 						       "adi,unlock-keys");
 	if (kpad->nkeys_unlock <= 0) {
-		/* so that we don't end up enabling key lock */
+		 
 		kpad->nkeys_unlock = 0;
 		return 0;
 	}
@@ -689,24 +669,14 @@ static int adp5588_fw_parse(struct adp5588_kpad *kpad)
 		return ret;
 
 	for (i = 0; i < kpad->nkeys_unlock; i++) {
-		/*
-		 * Even though it should be possible (as stated in the datasheet)
-		 * to use GPIs (which are part of the keys event) as unlock keys,
-		 * it was not working at all and was leading to overflow events
-		 * at some point. Hence, for now, let's just allow keys which are
-		 * part of keypad matrix to be used and if a reliable way of
-		 * using GPIs is found, this condition can be removed/lightened.
-		 */
+		 
 		if (kpad->unlock_keys[i] >= kpad->cols * kpad->rows) {
 			dev_err(&client->dev, "Invalid unlock key(%d)\n",
 				kpad->unlock_keys[i]);
 			return -EINVAL;
 		}
 
-		/*
-		 * Firmware properties keys start from 0 but on the device they
-		 * start from 1.
-		 */
+		 
 		kpad->unlock_keys[i] += 1;
 	}
 
@@ -808,7 +778,7 @@ static void adp5588_remove(struct i2c_client *client)
 {
 	adp5588_write(client, CFG, 0);
 
-	/* all resources will be freed by devm */
+	 
 }
 
 static int adp5588_suspend(struct device *dev)

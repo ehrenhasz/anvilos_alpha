@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_DCN31_HPO_DP_STREAM_ENCODER_H__
 #define __DAL_DCN31_HPO_DP_STREAM_ENCODER_H__
@@ -35,7 +12,7 @@
 	container_of(hpo_dp_stream_encoder, struct dcn31_hpo_dp_stream_encoder, base)
 
 
-/* Define MSA_DATA_LANE_[0-3] fields to make programming easier */
+ 
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_0__SHIFT   0x0
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_1__SHIFT   0x8
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_2__SHIFT   0x10
@@ -242,4 +219,4 @@ void dcn31_hpo_dp_stream_encoder_construct(
 	const struct dcn31_hpo_dp_stream_encoder_mask *hpo_se_mask);
 
 
-#endif   // __DAL_DCN31_HPO_STREAM_ENCODER_H__
+#endif   

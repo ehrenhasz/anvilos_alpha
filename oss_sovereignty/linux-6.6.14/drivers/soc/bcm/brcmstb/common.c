@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2014 NVIDIA Corporation
- * Copyright © 2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -46,9 +43,7 @@ static int __init brcmstb_soc_device_early_init(void)
 	void __iomem *sun_top_ctrl_base;
 	int ret = 0;
 
-	/* We could be on a multi-platform kernel, don't make this fatal but
-	 * bail out early
-	 */
+	 
 	sun_top_ctrl = of_find_matching_node(NULL, sun_top_ctrl_match);
 	if (!sun_top_ctrl)
 		return ret;
@@ -75,9 +70,7 @@ static int __init brcmstb_soc_device_init(void)
 	struct soc_device *soc_dev;
 	int ret = 0;
 
-	/* We could be on a multi-platform kernel, don't make this fatal but
-	 * bail out early
-	 */
+	 
 	sun_top_ctrl = of_find_matching_node(NULL, sun_top_ctrl_match);
 	if (!sun_top_ctrl)
 		return ret;

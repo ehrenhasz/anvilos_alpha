@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Pericom PI3USB30532 Type-C cross switch / mux driver
- *
- * Copyright (c) 2017-2018 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/kernel.h>
@@ -22,7 +18,7 @@
 
 struct pi3usb30532 {
 	struct i2c_client *client;
-	struct mutex lock; /* protects the cached conf register */
+	struct mutex lock;  
 	struct typec_switch_dev *sw;
 	struct typec_mux_dev *mux;
 	u8 conf;

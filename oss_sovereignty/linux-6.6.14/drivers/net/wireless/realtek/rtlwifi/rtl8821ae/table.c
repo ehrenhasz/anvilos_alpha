@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+
+ 
 
 #include <linux/kernel.h>
 #include "table.h"
@@ -2890,9 +2890,7 @@ u32 RTL8821AE_AGC_TAB_ARRAY[] = {
 
 u32 RTL8821AE_AGC_TAB_1TARRAYLEN = ARRAY_SIZE(RTL8821AE_AGC_TAB_ARRAY);
 
-/******************************************************************************
-*                           TXPWR_LMT.TXT
-******************************************************************************/
+ 
 
 const char *RTL8812AE_TXPWR_LMT[] = {
 	"FCC", "2.4G", "20M", "CCK", "1T", "01", "36",

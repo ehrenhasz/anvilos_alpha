@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * __put_user functions.
- *
- * (C) Copyright 2005 Linus Torvalds
- * (C) Copyright 2005 Andi Kleen
- * (C) Copyright 2008 Glauber Costa
- *
- * These functions have a non-standard call interface
- * to make them more efficient, especially as they
- * return an error value in addition to the "real"
- * return value.
- */
+ 
+ 
 #include <linux/linkage.h>
 #include <asm/thread_info.h>
 #include <asm/errno.h>
@@ -19,19 +8,7 @@
 #include <asm/export.h>
 
 
-/*
- * __put_user_X
- *
- * Inputs:	%eax[:%edx] contains the data
- *		%ecx contains the address
- *
- * Outputs:	%ecx is error code (0 or -EFAULT)
- *
- * Clobbers:	%ebx needed for task pointer
- *
- * These functions should not modify any other registers,
- * as they get called from within inline assembly.
- */
+ 
 
 .macro check_range size:req
 .if IS_ENABLED(CONFIG_X86_64)

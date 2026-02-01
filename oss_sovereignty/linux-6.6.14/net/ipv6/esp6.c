@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C)2002 USAGI/WIDE Project
- *
- * Authors
- *
- *	Mitsuru KANDA @USAGI       : IPv6 Support
- *	Kazunori MIYAZAWA @USAGI   :
- *	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
- *
- *	This file is derived from net/ipv4/esp.c
- */
+
+ 
 
 #define pr_fmt(fmt) "IPv6: " fmt
 
@@ -51,15 +41,7 @@ struct esp_output_extra {
 
 #define ESP_SKB_CB(__skb) ((struct esp_skb_cb *)&((__skb)->cb[0]))
 
-/*
- * Allocate an AEAD request structure with extra space for SG and IV.
- *
- * For alignment considerations the upper 32 bits of the sequence number are
- * placed at the front, if present. Followed by the IV, the request and finally
- * the SG list.
- *
- * TODO: Use spare space in skb for this where possible.
- */
+ 
 static void *esp_alloc_tmp(struct crypto_aead *aead, int nfrags, int seqihlen)
 {
 	unsigned int len;
@@ -126,9 +108,7 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
 	iv = esp_tmp_iv(aead, tmp, extralen);
 	req = esp_tmp_req(aead, iv);
 
-	/* Unref skb_frag_pages in the src scatterlist if necessary.
-	 * Skip the first sg which comes from skb->data.
-	 */
+	 
 	if (req->src != req->dst)
 		for (sg = sg_next(req->src); sg; sg = sg_next(sg))
 			put_page(sg_page(sg));
@@ -246,10 +226,7 @@ static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
 	err = xfrm_trans_queue_net(xs_net(x), skb, esp_output_tcp_encap_cb);
 	local_bh_enable();
 
-	/* EINPROGRESS just happens to do the right thing.  It
-	 * actually means that the skb has been consumed and
-	 * isn't coming back.
-	 */
+	 
 	return err ?: -EINPROGRESS;
 }
 #else
@@ -263,7 +240,7 @@ static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
 
 static void esp_output_encap_csum(struct sk_buff *skb)
 {
-	/* UDP encap with IPv6 requires a valid checksum */
+	 
 	if (*skb_mac_header(skb) == IPPROTO_UDP) {
 		struct udphdr *uh = udp_hdr(skb);
 		struct ipv6hdr *ip6h = ipv6_hdr(skb);
@@ -318,7 +295,7 @@ static void esp_output_done(void *data, int err)
 	}
 }
 
-/* Move ESP header back into place. */
+ 
 static void esp_restore_header(struct sk_buff *skb, unsigned int offset)
 {
 	struct ip_esp_hdr *esph = (void *)(skb->data + offset);
@@ -343,10 +320,7 @@ static struct ip_esp_hdr *esp_output_set_esn(struct sk_buff *skb,
 					     struct ip_esp_hdr *esph,
 					     struct esp_output_extra *extra)
 {
-	/* For ESN we move the header forward by 4 bytes to
-	 * accommodate the high bits.  We will move it back after
-	 * encryption.
-	 */
+	 
 	if ((x->props.flags & XFRM_STATE_ESN)) {
 		__u32 seqhi;
 		struct xfrm_offload *xo = xfrm_offload(skb);
@@ -634,7 +608,7 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info 
 
 		page = pfrag->page;
 		get_page(page);
-		/* replace page frags in skb with new page */
+		 
 		__skb_fill_page_desc(skb, 0, page, pfrag->offset, skb->data_len);
 		pfrag->offset = pfrag->offset + allocsize;
 		spin_unlock_bh(&x->lock);
@@ -702,7 +676,7 @@ static int esp6_output(struct xfrm_state *x, struct sk_buff *skb)
 	esp.proto = *skb_mac_header(skb);
 	*skb_mac_header(skb) = IPPROTO_ESP;
 
-	/* skb is pure payload to encrypt */
+	 
 
 	aead = x->data;
 	alen = crypto_aead_authsize(aead);
@@ -831,12 +805,7 @@ int esp6_input_done2(struct sk_buff *skb, int err)
 			goto out;
 		}
 
-		/*
-		 * 1) if the NAT-T peer's IP or port changed then
-		 *    advertise the change to the keying daemon.
-		 *    This is an inbound SA, so just compare
-		 *    SRC ports.
-		 */
+		 
 		if (!ipv6_addr_equal(&ip6h->saddr, &x->props.saddr.in6) ||
 		    source != encap->encap_sport) {
 			xfrm_address_t ipaddr;
@@ -844,22 +813,10 @@ int esp6_input_done2(struct sk_buff *skb, int err)
 			memcpy(&ipaddr.a6, &ip6h->saddr.s6_addr, sizeof(ipaddr.a6));
 			km_new_mapping(x, &ipaddr, source);
 
-			/* XXX: perhaps add an extra
-			 * policy check here, to see
-			 * if we should allow or
-			 * reject a packet from a
-			 * different source
-			 * address/port.
-			 */
+			 
 		}
 
-		/*
-		 * 2) ignore UDP/TCP checksums in case
-		 *    of NAT-T in Transport Mode, or
-		 *    perform other post-processing fixes
-		 *    as per draft-ietf-ipsec-udp-encaps-06,
-		 *    section 3.1.2
-		 */
+		 
 		if (x->props.mode == XFRM_MODE_TRANSPORT)
 			skb->ip_summed = CHECKSUM_UNNECESSARY;
 	}
@@ -872,7 +829,7 @@ int esp6_input_done2(struct sk_buff *skb, int err)
 	else
 		skb_set_transport_header(skb, -hdr_len);
 
-	/* RFC4303: Drop dummy packets without any error */
+	 
 	if (err == IPPROTO_NONE)
 		err = -EINVAL;
 
@@ -898,10 +855,7 @@ static void esp_input_set_header(struct sk_buff *skb, __be32 *seqhi)
 {
 	struct xfrm_state *x = xfrm_input_state(skb);
 
-	/* For ESN we move the header forward by 4 bytes to
-	 * accommodate the high bits.  We will move it back after
-	 * decryption.
-	 */
+	 
 	if ((x->props.flags & XFRM_STATE_ESN)) {
 		struct ip_esp_hdr *esph = skb_push(skb, 4);
 
@@ -1237,9 +1191,7 @@ static int esp6_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 			break;
 #ifdef CONFIG_INET6_ESPINTCP
 		case TCP_ENCAP_ESPINTCP:
-			/* only the length field, TCP encap is done by
-			 * the socket
-			 */
+			 
 			x->props.header_len += 2;
 			break;
 #endif

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <test_progs.h>
 #include <bpf/btf.h>
 #include "btf_helpers.h"
@@ -23,12 +23,12 @@ static void gen_btf(struct btf *btf)
 	str_off = btf__find_str(btf, "int");
 	ASSERT_EQ(str_off, 1, "int_str_found_off");
 
-	/* BTF_KIND_INT */
+	 
 	id = btf__add_int(btf, "int", 4,  BTF_INT_SIGNED);
 	ASSERT_EQ(id, 1, "int_id");
 
 	t = btf__type_by_id(btf, 1);
-	/* should re-use previously added "int" string */
+	 
 	ASSERT_EQ(t->name_off, str_off, "int_name_off");
 	ASSERT_STREQ(btf__str_by_offset(btf, t->name_off), "int", "int_name");
 	ASSERT_EQ(btf_kind(t), BTF_KIND_INT, "int_kind");
@@ -38,20 +38,20 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 1),
 		     "[1] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED", "raw_dump");
 
-	/* invalid int size */
+	 
 	id = btf__add_int(btf, "bad sz int", 7, 0);
 	ASSERT_ERR(id, "int_bad_sz");
-	/* invalid encoding */
+	 
 	id = btf__add_int(btf, "bad enc int", 4, 123);
 	ASSERT_ERR(id, "int_bad_enc");
-	/* NULL name */
+	 
 	id = btf__add_int(btf, NULL, 4, 0);
 	ASSERT_ERR(id, "int_bad_null_name");
-	/* empty name */
+	 
 	id = btf__add_int(btf, "", 4, 0);
 	ASSERT_ERR(id, "int_bad_empty_name");
 
-	/* PTR/CONST/VOLATILE/RESTRICT */
+	 
 	id = btf__add_ptr(btf, 1);
 	ASSERT_EQ(id, 2, "ptr_id");
 	t = btf__type_by_id(btf, 2);
@@ -60,7 +60,7 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 2),
 		     "[2] PTR '(anon)' type_id=1", "raw_dump");
 
-	id = btf__add_const(btf, 5); /* points forward to restrict */
+	id = btf__add_const(btf, 5);  
 	ASSERT_EQ(id, 3, "const_id");
 	t = btf__type_by_id(btf, 3);
 	ASSERT_EQ(btf_kind(t), BTF_KIND_CONST, "const_kind");
@@ -84,8 +84,8 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 5),
 		     "[5] RESTRICT '(anon)' type_id=4", "raw_dump");
 
-	/* ARRAY */
-	id = btf__add_array(btf, 1, 2, 10); /* int *[10] */
+	 
+	id = btf__add_array(btf, 1, 2, 10);  
 	ASSERT_EQ(id, 6, "array_id");
 	t = btf__type_by_id(btf, 6);
 	ASSERT_EQ(btf_kind(t), BTF_KIND_ARRAY, "array_kind");
@@ -95,7 +95,7 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 6),
 		     "[6] ARRAY '(anon)' type_id=2 index_type_id=1 nr_elems=10", "raw_dump");
 
-	/* STRUCT */
+	 
 	err = btf__add_field(btf, "field", 1, 0, 0);
 	ASSERT_ERR(err, "no_struct_field");
 	id = btf__add_struct(btf, "s1", 8);
@@ -126,11 +126,11 @@ static void gen_btf(struct btf *btf)
 		     "\t'f1' type_id=1 bits_offset=0\n"
 		     "\t'f2' type_id=1 bits_offset=32 bitfield_size=16", "raw_dump");
 
-	/* UNION */
+	 
 	id = btf__add_union(btf, "u1", 8);
 	ASSERT_EQ(id, 8, "union_id");
 
-	/* invalid, non-zero offset */
+	 
 	err = btf__add_field(btf, "field", 1, 1, 0);
 	ASSERT_ERR(err, "no_struct_field");
 
@@ -152,7 +152,7 @@ static void gen_btf(struct btf *btf)
 		     "[8] UNION 'u1' size=8 vlen=1\n"
 		     "\t'f1' type_id=1 bits_offset=0 bitfield_size=16", "raw_dump");
 
-	/* ENUM */
+	 
 	id = btf__add_enum(btf, "e1", 4);
 	ASSERT_EQ(id, 9, "enum_id");
 	err = btf__add_enum_value(btf, "v1", 1);
@@ -176,7 +176,7 @@ static void gen_btf(struct btf *btf)
 		     "\t'v1' val=1\n"
 		     "\t'v2' val=2", "raw_dump");
 
-	/* FWDs */
+	 
 	id = btf__add_fwd(btf, "struct_fwd", BTF_FWD_STRUCT);
 	ASSERT_EQ(id, 10, "struct_fwd_id");
 	t = btf__type_by_id(btf, 10);
@@ -205,7 +205,7 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 12),
 		     "[12] ENUM 'enum_fwd' encoding=UNSIGNED size=4 vlen=0", "raw_dump");
 
-	/* TYPEDEF */
+	 
 	id = btf__add_typedef(btf, "typedef1", 1);
 	ASSERT_EQ(id, 13, "typedef_fwd_id");
 	t = btf__type_by_id(btf, 13);
@@ -215,7 +215,7 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 13),
 		     "[13] TYPEDEF 'typedef1' type_id=1", "raw_dump");
 
-	/* FUNC & FUNC_PROTO */
+	 
 	id = btf__add_func(btf, "func1", BTF_FUNC_GLOBAL, 15);
 	ASSERT_EQ(id, 14, "func_id");
 	t = btf__type_by_id(btf, 14);
@@ -248,7 +248,7 @@ static void gen_btf(struct btf *btf)
 		     "\t'p1' type_id=1\n"
 		     "\t'p2' type_id=2", "raw_dump");
 
-	/* VAR */
+	 
 	id = btf__add_var(btf, "var1", BTF_VAR_GLOBAL_ALLOCATED, 1);
 	ASSERT_EQ(id, 16, "var_id");
 	t = btf__type_by_id(btf, 16);
@@ -259,7 +259,7 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 16),
 		     "[16] VAR 'var1' type_id=1, linkage=global-alloc", "raw_dump");
 
-	/* DATASECT */
+	 
 	id = btf__add_datasec(btf, "datasec1", 12);
 	ASSERT_EQ(id, 17, "datasec_id");
 	err = btf__add_datasec_var_info(btf, 1, 4, 8);
@@ -278,7 +278,7 @@ static void gen_btf(struct btf *btf)
 		     "[17] DATASEC 'datasec1' size=12 vlen=1\n"
 		     "\ttype_id=1 offset=4 size=8", "raw_dump");
 
-	/* DECL_TAG */
+	 
 	id = btf__add_decl_tag(btf, "tag1", 16, -1);
 	ASSERT_EQ(id, 18, "tag_id");
 	t = btf__type_by_id(btf, 18);
@@ -299,7 +299,7 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 19),
 		     "[19] DECL_TAG 'tag2' type_id=14 component_idx=1", "raw_dump");
 
-	/* TYPE_TAG */
+	 
 	id = btf__add_type_tag(btf, "tag1", 1);
 	ASSERT_EQ(id, 20, "tag_id");
 	t = btf__type_by_id(btf, 20);
@@ -309,12 +309,12 @@ static void gen_btf(struct btf *btf)
 	ASSERT_STREQ(btf_type_raw_dump(btf, 20),
 		     "[20] TYPE_TAG 'tag1' type_id=1", "raw_dump");
 
-	/* ENUM64 */
+	 
 	id = btf__add_enum64(btf, "e1", 8, true);
 	ASSERT_EQ(id, 21, "enum64_id");
 	err = btf__add_enum64_value(btf, "v1", -1);
 	ASSERT_OK(err, "v1_res");
-	err = btf__add_enum64_value(btf, "v2", 0x123456789); /* 4886718345 */
+	err = btf__add_enum64_value(btf, "v2", 0x123456789);  
 	ASSERT_OK(err, "v2_res");
 	t = btf__type_by_id(btf, 21);
 	ASSERT_STREQ(btf__str_by_offset(btf, t->name_off), "e1", "enum64_name");
@@ -336,7 +336,7 @@ static void gen_btf(struct btf *btf)
 
 	id = btf__add_enum64(btf, "e1", 8, false);
 	ASSERT_EQ(id, 22, "enum64_id");
-	err = btf__add_enum64_value(btf, "v1", 0xffffffffFFFFFFFF); /* 18446744073709551615 */
+	err = btf__add_enum64_value(btf, "v1", 0xffffffffFFFFFFFF);  
 	ASSERT_OK(err, "v1_res");
 	t = btf__type_by_id(btf, 22);
 	ASSERT_STREQ(btf__str_by_offset(btf, t->name_off), "e1", "enum64_name");
@@ -457,7 +457,7 @@ static void test_btf_add_btf()
 		"[22] ENUM64 'e1' encoding=UNSIGNED size=8 vlen=1\n"
 		"\t'v1' val=18446744073709551615",
 
-		/* types appended from the second BTF */
+		 
 		"[23] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED",
 		"[24] PTR '(anon)' type_id=23",
 		"[25] CONST '(anon)' type_id=27",

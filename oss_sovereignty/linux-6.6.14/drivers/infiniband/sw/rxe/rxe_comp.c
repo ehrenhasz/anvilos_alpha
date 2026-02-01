@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/skbuff.h>
 
@@ -25,8 +22,8 @@ enum comp_state {
 	COMPST_ERROR_RETRY,
 	COMPST_RNR_RETRY,
 	COMPST_ERROR,
-	COMPST_EXIT, /* We have an issue, and we want to rerun the completer */
-	COMPST_DONE, /* The completer finished successflly */
+	COMPST_EXIT,  
+	COMPST_DONE,  
 };
 
 static char *comp_state_name[] =  {
@@ -149,25 +146,23 @@ static inline enum comp_state get_wqe(struct rxe_qp *qp,
 {
 	struct rxe_send_wqe *wqe;
 
-	/* we come here whether or not we found a response packet to see if
-	 * there are any posted WQEs
-	 */
+	 
 	wqe = queue_head(qp->sq.queue, QUEUE_TYPE_FROM_CLIENT);
 	*wqe_p = wqe;
 
-	/* no WQE or requester has not started it yet */
+	 
 	if (!wqe || wqe->state == wqe_state_posted)
 		return pkt ? COMPST_DONE : COMPST_EXIT;
 
-	/* WQE does not require an ack */
+	 
 	if (wqe->state == wqe_state_done)
 		return COMPST_COMP_WQE;
 
-	/* WQE caused an error */
+	 
 	if (wqe->state == wqe_state_error)
 		return COMPST_ERROR;
 
-	/* we have a WQE, if we also have an ack check its PSN */
+	 
 	return pkt ? COMPST_CHECK_PSN : COMPST_EXIT;
 }
 
@@ -184,9 +179,7 @@ static inline enum comp_state check_psn(struct rxe_qp *qp,
 {
 	s32 diff;
 
-	/* check to see if response is past the oldest WQE. if it is, complete
-	 * send/write or error read/atomic
-	 */
+	 
 	diff = psn_compare(pkt->psn, wqe->last_psn);
 	if (diff > 0) {
 		if (wqe->state == wqe_state_pending) {
@@ -200,12 +193,10 @@ static inline enum comp_state check_psn(struct rxe_qp *qp,
 		}
 	}
 
-	/* compare response packet to expected response */
+	 
 	diff = psn_compare(pkt->psn, qp->comp.psn);
 	if (diff < 0) {
-		/* response is most likely a retried packet if it matches an
-		 * uncompleted WQE go complete it else ignore it
-		 */
+		 
 		if (pkt->psn == wqe->last_psn)
 			return COMPST_COMP_ACK;
 		else if (pkt->opcode == IB_OPCODE_RC_ACKNOWLEDGE &&
@@ -229,10 +220,10 @@ static inline enum comp_state check_ack(struct rxe_qp *qp,
 	u8 syn;
 	struct rxe_dev *rxe = to_rdev(qp->ibqp.device);
 
-	/* Check the sequence only */
+	 
 	switch (qp->comp.opcode) {
 	case -1:
-		/* Will catch all *_ONLY cases. */
+		 
 		if (!(mask & RXE_START_MASK))
 			return COMPST_ERROR;
 
@@ -240,15 +231,13 @@ static inline enum comp_state check_ack(struct rxe_qp *qp,
 
 	case IB_OPCODE_RC_RDMA_READ_RESPONSE_FIRST:
 	case IB_OPCODE_RC_RDMA_READ_RESPONSE_MIDDLE:
-		/* Check NAK code to handle a remote error */
+		 
 		if (pkt->opcode == IB_OPCODE_RC_ACKNOWLEDGE)
 			break;
 
 		if (pkt->opcode != IB_OPCODE_RC_RDMA_READ_RESPONSE_MIDDLE &&
 		    pkt->opcode != IB_OPCODE_RC_RDMA_READ_RESPONSE_LAST) {
-			/* read retries of partial data may restart from
-			 * read response first or response only.
-			 */
+			 
 			if ((pkt->psn == wqe->first_psn &&
 			     pkt->opcode ==
 			     IB_OPCODE_RC_RDMA_READ_RESPONSE_FIRST) ||
@@ -264,7 +253,7 @@ static inline enum comp_state check_ack(struct rxe_qp *qp,
 		WARN_ON_ONCE(1);
 	}
 
-	/* Check operation validity. */
+	 
 	switch (pkt->opcode) {
 	case IB_OPCODE_RC_RDMA_READ_RESPONSE_FIRST:
 	case IB_OPCODE_RC_RDMA_READ_RESPONSE_LAST:
@@ -278,8 +267,7 @@ static inline enum comp_state check_ack(struct rxe_qp *qp,
 			return COMPST_WRITE_SEND;
 
 		fallthrough;
-		/* (IB_OPCODE_RC_RDMA_READ_RESPONSE_MIDDLE doesn't have an AETH)
-		 */
+		 
 	case IB_OPCODE_RC_RDMA_READ_RESPONSE_MIDDLE:
 		if (wqe->wr.opcode != IB_WR_RDMA_READ &&
 		    wqe->wr.opcode != IB_WR_RDMA_READ_WITH_INV &&
@@ -316,9 +304,7 @@ static inline enum comp_state check_ack(struct rxe_qp *qp,
 		case AETH_NAK:
 			switch (syn) {
 			case AETH_NAK_PSN_SEQ_ERROR:
-				/* a nak implicitly acks all packets with psns
-				 * before
-				 */
+				 
 				if (psn_compare(pkt->psn, qp->comp.psn) > 0) {
 					rxe_counter_inc(rxe,
 							RXE_CNT_RCV_SEQ_ERR);
@@ -438,21 +424,14 @@ static void make_send_cqe(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
 	}
 }
 
-/*
- * IBA Spec. Section 10.7.3.1 SIGNALED COMPLETIONS
- * ---------8<---------8<-------------
- * ...Note that if a completion error occurs, a Work Completion
- * will always be generated, even if the signaling
- * indicator requests an Unsignaled Completion.
- * ---------8<---------8<-------------
- */
+ 
 static void do_complete(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
 {
 	struct rxe_dev *rxe = to_rdev(qp->ibqp.device);
 	struct rxe_cqe cqe;
 	bool post;
 
-	/* do we need to post a completion */
+	 
 	post = ((qp->sq_sig_type == IB_SIGNAL_ALL_WR) ||
 			(wqe->wr.send_flags & IB_SEND_SIGNALED) ||
 			wqe->status != IB_WC_SUCCESS);
@@ -470,10 +449,7 @@ static void do_complete(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
 	    wqe->wr.opcode == IB_WR_SEND_WITH_INV)
 		rxe_counter_inc(rxe, RXE_CNT_RDMA_SEND);
 
-	/*
-	 * we completed something so let req run again
-	 * if it is trying to fence
-	 */
+	 
 	if (qp->req.wait_fence) {
 		qp->req.wait_fence = 0;
 		rxe_sched_task(&qp->req.task);
@@ -550,7 +526,7 @@ static inline enum comp_state complete_wqe(struct rxe_qp *qp,
 	return COMPST_GET_WQE;
 }
 
-/* drain incoming response packet queue */
+ 
 static void drain_resp_pkts(struct rxe_qp *qp)
 {
 	struct sk_buff *skb;
@@ -562,7 +538,7 @@ static void drain_resp_pkts(struct rxe_qp *qp)
 	}
 }
 
-/* complete send wqe with flush error */
+ 
 static int flush_send_wqe(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
 {
 	struct rxe_cqe cqe = {};
@@ -587,17 +563,14 @@ static int flush_send_wqe(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
 	return err;
 }
 
-/* drain and optionally complete the send queue
- * if unable to complete a wqe, i.e. cq is full, stop
- * completing and flush the remaining wqes
- */
+ 
 static void flush_send_queue(struct rxe_qp *qp, bool notify)
 {
 	struct rxe_send_wqe *wqe;
 	struct rxe_queue *q = qp->sq.queue;
 	int err;
 
-	/* send queue never got created. nothing to do. */
+	 
 	if (!qp->sq.queue)
 		return;
 
@@ -622,14 +595,7 @@ static void free_pkt(struct rxe_pkt_info *pkt)
 	ib_device_put(dev);
 }
 
-/* reset the retry timer if
- * - QP is type RC
- * - there is a packet sent by the requester that
- *   might be acked (we still might get spurious
- *   timeouts but try to keep them as few as possible)
- * - the timeout parameter is set
- * - the QP is alive
- */
+ 
 static void reset_retry_timer(struct rxe_qp *qp)
 {
 	unsigned long flags;
@@ -756,21 +722,13 @@ int rxe_completer(struct rxe_qp *qp)
 			goto exit;
 
 		case COMPST_ERROR_RETRY:
-			/* we come here if the retry timer fired and we did
-			 * not receive a response packet. try to retry the send
-			 * queue if that makes sense and the limits have not
-			 * been exceeded. remember that some timeouts are
-			 * spurious since we do not reset the timer but kick
-			 * it down the road or let it expire
-			 */
+			 
 
-			/* there is nothing to retry in this case */
+			 
 			if (!wqe || (wqe->state == wqe_state_posted))
 				goto exit;
 
-			/* if we've started a retry, don't start another
-			 * retry sequence, unless this is a timeout.
-			 */
+			 
 			if (qp->comp.started_retry &&
 			    !qp->comp.timeout_retry)
 				goto done;
@@ -779,15 +737,10 @@ int rxe_completer(struct rxe_qp *qp)
 				if (qp->comp.retry_cnt != 7)
 					qp->comp.retry_cnt--;
 
-				/* no point in retrying if we have already
-				 * seen the last ack that the requester could
-				 * have caused
-				 */
+				 
 				if (psn_compare(qp->req.psn,
 						qp->comp.psn) > 0) {
-					/* tell the requester to retry the
-					 * send queue next time around
-					 */
+					 
 					rxe_counter_inc(rxe,
 							RXE_CNT_COMP_RETRY);
 					qp->req.need_retry = 1;
@@ -804,17 +757,15 @@ int rxe_completer(struct rxe_qp *qp)
 			break;
 
 		case COMPST_RNR_RETRY:
-			/* we come here if we received an RNR NAK */
+			 
 			if (qp->comp.rnr_retry > 0) {
 				if (qp->comp.rnr_retry != 7)
 					qp->comp.rnr_retry--;
 
-				/* don't start a retry flow until the
-				 * rnr timer has fired
-				 */
+				 
 				qp->req.wait_for_rnr_timer = 1;
 				rxe_dbg_qp(qp, "set rnr nak timer\n");
-				// TODO who protects from destroy_qp??
+				
 				mod_timer(&qp->rnr_nak_timer,
 					  jiffies + rnrnak_jiffies(aeth_syn(pkt)
 						& ~AETH_TYPE_MASK));
@@ -835,10 +786,7 @@ int rxe_completer(struct rxe_qp *qp)
 		}
 	}
 
-	/* A non-zero return value will cause rxe_do_task to
-	 * exit its loop and end the work item. A zero return
-	 * will continue looping and return to rxe_completer
-	 */
+	 
 done:
 	ret = 0;
 	goto out;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/nfs/read.c
- *
- * Block I/O for NFS
- *
- * Partial copy of Linus' read cache modifications to fs/nfs/file.c
- * modified for async RPC by okir@monad.swb.de
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/kernel.h>
@@ -83,7 +76,7 @@ void nfs_pageio_complete_read(struct nfs_pageio_descriptor *pgio)
 
 	nfs_pageio_complete(pgio);
 
-	/* It doesn't make sense to do mirrored reads! */
+	 
 	WARN_ON_ONCE(pgio->pg_mirror_count != 1);
 
 	pgm = &pgio->pg_mirrors[0];
@@ -102,7 +95,7 @@ void nfs_pageio_reset_read_mds(struct nfs_pageio_descriptor *pgio)
 
 	pgio->pg_ops = &nfs_pgio_rw_ops;
 
-	/* read path should never have more than one mirror */
+	 
 	WARN_ON_ONCE(pgio->pg_mirror_count != 1);
 
 	mirror = &pgio->pg_mirrors[0];
@@ -151,17 +144,13 @@ static void nfs_read_completion(struct nfs_pgio_header *hdr)
 		unsigned long end = req->wb_pgbase + req->wb_bytes;
 
 		if (test_bit(NFS_IOHDR_EOF, &hdr->flags)) {
-			/* note: regions of the page not covered by a
-			 * request are zeroed in nfs_read_add_folio
-			 */
+			 
 			if (bytes > hdr->good_bytes) {
-				/* nothing in this request was good, so zero
-				 * the full extent of the request */
+				 
 				folio_zero_segment(folio, start, end);
 
 			} else if (hdr->good_bytes - bytes < req->wb_bytes) {
-				/* part of this request has good bytes, but
-				 * not all. zero the bad bytes */
+				 
 				start += hdr->good_bytes - bytes;
 				WARN_ON(start < req->wb_pgbase);
 				folio_zero_segment(folio, start, end);
@@ -214,10 +203,7 @@ const struct nfs_pgio_completion_ops nfs_async_read_completion_ops = {
 	.completion = nfs_read_completion,
 };
 
-/*
- * This is the callback from RPC telling us whether a reply was
- * received or some error occurred (timeout or socket shutdown).
- */
+ 
 static int nfs_readpage_done(struct rpc_task *task,
 			     struct nfs_pgio_header *hdr,
 			     struct inode *inode)
@@ -242,23 +228,23 @@ static void nfs_readpage_retry(struct rpc_task *task,
 	struct nfs_pgio_args *argp = &hdr->args;
 	struct nfs_pgio_res  *resp = &hdr->res;
 
-	/* This is a short read! */
+	 
 	nfs_inc_stats(hdr->inode, NFSIOS_SHORTREAD);
 	trace_nfs_readpage_short(task, hdr);
 
-	/* Has the server at least made some progress? */
+	 
 	if (resp->count == 0) {
 		nfs_set_pgio_error(hdr, -EIO, argp->offset);
 		return;
 	}
 
-	/* For non rpc-based layout drivers, retry-through-MDS */
+	 
 	if (!task->tk_ops) {
 		hdr->pnfs_error = -EAGAIN;
 		return;
 	}
 
-	/* Yes, so retry the read at the end of the hdr */
+	 
 	hdr->mds_offset += resp->count;
 	argp->offset += resp->count;
 	argp->pgbase += resp->count;
@@ -321,12 +307,7 @@ out:
 	return error;
 }
 
-/*
- * Read a page over NFS.
- * We read the page synchronously in the following case:
- *  -	The error flag is set for this page. This happens only when a
- *	previous async read operation failed.
- */
+ 
 int nfs_read_folio(struct file *file, struct folio *folio)
 {
 	struct inode *inode = file_inode(file);
@@ -338,13 +319,7 @@ int nfs_read_folio(struct file *file, struct folio *folio)
 	nfs_inc_stats(inode, NFSIOS_VFSREADPAGE);
 	task_io_account_read(folio_size(folio));
 
-	/*
-	 * Try to flush any pending writes to the file..
-	 *
-	 * NOTE! Because we own the folio lock, there cannot
-	 * be any new pending writes generated at this point
-	 * for this folio (other folios can be written to).
-	 */
+	 
 	ret = nfs_wb_folio(inode, folio);
 	if (ret)
 		goto out_unlock;

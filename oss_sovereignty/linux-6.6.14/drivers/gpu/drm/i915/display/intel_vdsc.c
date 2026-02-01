@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2018 Intel Corporation
- *
- * Author: Gaurav K Singh <gaurav.k.singh@intel.com>
- *         Manasi Navare <manasi.d.navare@intel.com>
- */
+
+ 
 #include <linux/limits.h>
 
 #include <drm/display/drm_dsc_helper.h>
@@ -46,7 +41,7 @@ static bool is_pipe_dsc(struct intel_crtc *crtc, enum transcoder cpu_transcoder)
 	    cpu_transcoder == TRANSCODER_DSI_1)
 		return false;
 
-	/* There's no pipe A DSC engine on ICL */
+	 
 	drm_WARN_ON(&i915->drm, crtc->pipe == PIPE_A);
 
 	return true;
@@ -58,22 +53,14 @@ intel_vdsc_set_min_max_qp(struct drm_dsc_config *vdsc_cfg, int buf,
 {
 	int bpc = vdsc_cfg->bits_per_component;
 
-	/* Read range_minqp and range_max_qp from qp tables */
+	 
 	vdsc_cfg->rc_range_params[buf].range_min_qp =
 		intel_lookup_range_min_qp(bpc, buf, bpp, vdsc_cfg->native_420);
 	vdsc_cfg->rc_range_params[buf].range_max_qp =
 		intel_lookup_range_max_qp(bpc, buf, bpp, vdsc_cfg->native_420);
 }
 
-/*
- * We are using the method provided in DSC 1.2a C-Model in codec_main.c
- * Above method use a common formula to derive values for any combination of DSC
- * variables. The formula approach may yield slight differences in the derived PPS
- * parameters from the original parameter sets. These differences are not consequential
- * to the coding performance because all parameter sets have been shown to produce
- * visually lossless quality (provides the same PPS values as
- * DSCParameterValuesVESA V1-2 spreadsheet).
- */
+ 
 static void
 calculate_rc_params(struct drm_dsc_config *vdsc_cfg)
 {
@@ -88,16 +75,7 @@ calculate_rc_params(struct drm_dsc_config *vdsc_cfg)
 	else
 		vdsc_cfg->first_line_bpg_offset = 2 * (vdsc_cfg->slice_height - 1);
 
-	/*
-	 * According to DSC 1.2 spec in Section 4.1 if native_420 is set:
-	 * -second_line_bpg_offset is 12 in general and equal to 2*(slice_height-1) if slice
-	 * height < 8.
-	 * -second_line_offset_adj is 512 as shown by emperical values to yield best chroma
-	 * preservation in second line.
-	 * -nsl_bpg_offset is calculated as second_line_offset/slice_height -1 then rounded
-	 * up to 16 fractional bits, we left shift second line offset by 11 to preserve 11
-	 * fractional bits.
-	 */
+	 
 	if (vdsc_cfg->native_420) {
 		if (vdsc_cfg->slice_height >= 8)
 			vdsc_cfg->second_line_bpg_offset = 12;
@@ -110,7 +88,7 @@ calculate_rc_params(struct drm_dsc_config *vdsc_cfg)
 							vdsc_cfg->slice_height - 1);
 	}
 
-	/* Our hw supports only 444 modes as of today */
+	 
 	if (bpp >= 12)
 		vdsc_cfg->initial_offset = 2048;
 	else if (bpp >= 10)
@@ -120,7 +98,7 @@ calculate_rc_params(struct drm_dsc_config *vdsc_cfg)
 	else
 		vdsc_cfg->initial_offset = 6144;
 
-	/* initial_xmit_delay = rc_model_size/2/compression_bpp */
+	 
 	vdsc_cfg->initial_xmit_delay = DIV_ROUND_UP(DSC_RC_MODEL_SIZE_CONST, 2 * bpp);
 
 	vdsc_cfg->flatness_min_qp = 3 + qp_bpc_modifier;
@@ -149,7 +127,7 @@ calculate_rc_params(struct drm_dsc_config *vdsc_cfg)
 
 			intel_vdsc_set_min_max_qp(vdsc_cfg, buf_i, bpp_i);
 
-			/* Calculate range_bpg_offset */
+			 
 			if (bpp <= 8) {
 				range_bpg_offset = ofs_und4[buf_i];
 			} else if (bpp <= 10) {
@@ -191,7 +169,7 @@ calculate_rc_params(struct drm_dsc_config *vdsc_cfg)
 
 			intel_vdsc_set_min_max_qp(vdsc_cfg, buf_i, bpp_i);
 
-			/* Calculate range_bpg_offset */
+			 
 			if (bpp <= 6) {
 				range_bpg_offset = ofs_und6[buf_i];
 			} else if (bpp <= 8) {
@@ -257,29 +235,23 @@ int intel_dsc_compute_params(struct intel_crtc_state *pipe_config)
 		return err;
 	}
 
-	/*
-	 * According to DSC 1.2 specs if colorspace is YCbCr then convert_rgb is 0
-	 * else 1
-	 */
+	 
 	vdsc_cfg->convert_rgb = pipe_config->output_format != INTEL_OUTPUT_FORMAT_YCBCR420 &&
 				pipe_config->output_format != INTEL_OUTPUT_FORMAT_YCBCR444;
 
 	if (DISPLAY_VER(dev_priv) >= 14 &&
 	    pipe_config->output_format == INTEL_OUTPUT_FORMAT_YCBCR420)
 		vdsc_cfg->native_420 = true;
-	/* We do not support YcBCr422 as of now */
+	 
 	vdsc_cfg->native_422 = false;
 	vdsc_cfg->simple_422 = false;
-	/* Gen 11 does not support VBR */
+	 
 	vdsc_cfg->vbr_enable = false;
 
-	/* Gen 11 only supports integral values of bpp */
+	 
 	vdsc_cfg->bits_per_pixel = compressed_bpp << 4;
 
-	/*
-	 * According to DSC 1.2 specs in Section 4.1 if native_420 is set
-	 * we need to double the current bpp.
-	 */
+	 
 	if (vdsc_cfg->native_420)
 		vdsc_cfg->bits_per_pixel <<= 1;
 
@@ -287,11 +259,7 @@ int intel_dsc_compute_params(struct intel_crtc_state *pipe_config)
 
 	drm_dsc_set_rc_buf_thresh(vdsc_cfg);
 
-	/*
-	 * From XE_LPD onwards we supports compression bpps in steps of 1
-	 * upto uncompressed bpp-1, hence add calculations for all the rc
-	 * parameters
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 13) {
 		calculate_rc_params(vdsc_cfg);
 	} else {
@@ -308,17 +276,13 @@ int intel_dsc_compute_params(struct intel_crtc_state *pipe_config)
 			return ret;
 	}
 
-	/*
-	 * BitsPerComponent value determines mux_word_size:
-	 * When BitsPerComponent is less than or 10bpc, muxWordSize will be equal to
-	 * 48 bits otherwise 64
-	 */
+	 
 	if (vdsc_cfg->bits_per_component <= 10)
 		vdsc_cfg->mux_word_size = DSC_MUX_WORD_SIZE_8_10_BPC;
 	else
 		vdsc_cfg->mux_word_size = DSC_MUX_WORD_SIZE_12_BPC;
 
-	/* InitialScaleValue is a 6 bit value with 3 fractional bits (U3.3) */
+	 
 	vdsc_cfg->initial_scale_value = (vdsc_cfg->rc_model_size << 3) /
 		(vdsc_cfg->rc_model_size - vdsc_cfg->initial_offset);
 
@@ -331,17 +295,7 @@ intel_dsc_power_domain(struct intel_crtc *crtc, enum transcoder cpu_transcoder)
 	struct drm_i915_private *i915 = to_i915(crtc->base.dev);
 	enum pipe pipe = crtc->pipe;
 
-	/*
-	 * VDSC/joining uses a separate power well, PW2, and requires
-	 * POWER_DOMAIN_TRANSCODER_VDSC_PW2 power domain in two cases:
-	 *
-	 *  - ICL eDP/DSI transcoder
-	 *  - Display version 12 (except RKL) pipe A
-	 *
-	 * For any other pipe, VDSC/joining uses the power well associated with
-	 * the pipe in use. Hence another reference on the pipe power domain
-	 * will suffice. (Except no VDSC/joining on ICL pipe A.)
-	 */
+	 
 	if (DISPLAY_VER(i915) == 12 && !IS_ROCKETLAKE(i915) && pipe == PIPE_A)
 		return POWER_DOMAIN_TRANSCODER_VDSC_PW2;
 	else if (is_pipe_dsc(crtc, cpu_transcoder))
@@ -373,7 +327,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	int i = 0;
 	int num_vdsc_instances = intel_dsc_get_num_vdsc_instances(crtc_state);
 
-	/* Populate PICTURE_PARAMETER_SET_0 registers */
+	 
 	pps_val = DSC_VER_MAJ | vdsc_cfg->dsc_version_minor <<
 		DSC_VER_MIN_SHIFT |
 		vdsc_cfg->bits_per_component << DSC_BPC_SHIFT |
@@ -397,10 +351,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_0,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_0,
 				       pps_val);
@@ -414,17 +365,14 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_1 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_BPP(vdsc_cfg->bits_per_pixel);
 	drm_dbg_kms(&dev_priv->drm, "PPS1 = 0x%08x\n", pps_val);
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_1,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_1,
 				       pps_val);
@@ -438,7 +386,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_2 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_PIC_HEIGHT(vdsc_cfg->pic_height) |
 		DSC_PIC_WIDTH(vdsc_cfg->pic_width / num_vdsc_instances);
@@ -446,10 +394,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_2,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_2,
 				       pps_val);
@@ -463,7 +408,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_3 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_SLICE_HEIGHT(vdsc_cfg->slice_height) |
 		DSC_SLICE_WIDTH(vdsc_cfg->slice_width);
@@ -471,10 +416,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_3,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_3,
 				       pps_val);
@@ -488,7 +430,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_4 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_INITIAL_XMIT_DELAY(vdsc_cfg->initial_xmit_delay) |
 		DSC_INITIAL_DEC_DELAY(vdsc_cfg->initial_dec_delay);
@@ -496,10 +438,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_4,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_4,
 				       pps_val);
@@ -513,7 +452,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_5 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_SCALE_INC_INT(vdsc_cfg->scale_increment_interval) |
 		DSC_SCALE_DEC_INT(vdsc_cfg->scale_decrement_interval);
@@ -521,10 +460,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_5,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_5,
 				       pps_val);
@@ -538,7 +474,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_6 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_INITIAL_SCALE_VALUE(vdsc_cfg->initial_scale_value) |
 		DSC_FIRST_LINE_BPG_OFFSET(vdsc_cfg->first_line_bpg_offset) |
@@ -548,10 +484,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_6,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_6,
 				       pps_val);
@@ -565,7 +498,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_7 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_SLICE_BPG_OFFSET(vdsc_cfg->slice_bpg_offset) |
 		DSC_NFL_BPG_OFFSET(vdsc_cfg->nfl_bpg_offset);
@@ -573,10 +506,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_7,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_7,
 				       pps_val);
@@ -590,7 +520,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_8 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_FINAL_OFFSET(vdsc_cfg->final_offset) |
 		DSC_INITIAL_OFFSET(vdsc_cfg->initial_offset);
@@ -598,10 +528,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_8,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_8,
 				       pps_val);
@@ -615,7 +542,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_9 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_RC_MODEL_SIZE(vdsc_cfg->rc_model_size) |
 		DSC_RC_EDGE_FACTOR(DSC_RC_EDGE_FACTOR_CONST);
@@ -623,10 +550,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_9,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv, DSCC_PICTURE_PARAMETER_SET_9,
 				       pps_val);
@@ -640,7 +564,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate PICTURE_PARAMETER_SET_10 registers */
+	 
 	pps_val = 0;
 	pps_val |= DSC_RC_QUANT_INC_LIMIT0(vdsc_cfg->rc_quant_incr_limit0) |
 		DSC_RC_QUANT_INC_LIMIT1(vdsc_cfg->rc_quant_incr_limit1) |
@@ -650,10 +574,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_10,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv,
 				       DSCC_PICTURE_PARAMETER_SET_10, pps_val);
@@ -667,7 +588,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate Picture parameter set 16 */
+	 
 	pps_val = 0;
 	pps_val |= DSC_SLICE_CHUNK_SIZE(vdsc_cfg->slice_chunk_size) |
 		DSC_SLICE_PER_LINE((vdsc_cfg->pic_width / num_vdsc_instances) /
@@ -678,10 +599,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		intel_de_write(dev_priv, DSCA_PICTURE_PARAMETER_SET_16,
 			       pps_val);
-		/*
-		 * If 2 VDSC instances are needed, configure PPS for second
-		 * VDSC
-		 */
+		 
 		if (crtc_state->dsc.dsc_split)
 			intel_de_write(dev_priv,
 				       DSCC_PICTURE_PARAMETER_SET_16, pps_val);
@@ -696,7 +614,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 	}
 
 	if (DISPLAY_VER(dev_priv) >= 14) {
-		/* Populate PICTURE_PARAMETER_SET_17 registers */
+		 
 		pps_val = 0;
 		pps_val |= DSC_SL_BPG_OFFSET(vdsc_cfg->second_line_bpg_offset);
 		drm_dbg_kms(&dev_priv->drm, "PPS17 = 0x%08x\n", pps_val);
@@ -708,7 +626,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       MTL_DSC1_PICTURE_PARAMETER_SET_17(pipe),
 				       pps_val);
 
-		/* Populate PICTURE_PARAMETER_SET_18 registers */
+		 
 		pps_val = 0;
 		pps_val |= DSC_NSL_BPG_OFFSET(vdsc_cfg->nsl_bpg_offset) |
 			   DSC_SL_OFFSET_ADJ(vdsc_cfg->second_line_offset_adj);
@@ -722,7 +640,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 				       pps_val);
 	}
 
-	/* Populate the RC_BUF_THRESH registers */
+	 
 	memset(rc_buf_thresh_dword, 0, sizeof(rc_buf_thresh_dword));
 	for (i = 0; i < DSC_NUM_BUF_RANGES - 1; i++) {
 		rc_buf_thresh_dword[i / 4] |=
@@ -775,7 +693,7 @@ static void intel_dsc_pps_configure(const struct intel_crtc_state *crtc_state)
 		}
 	}
 
-	/* Populate the RC_RANGE_PARAMETERS registers */
+	 
 	memset(rc_range_params_dword, 0, sizeof(rc_range_params_dword));
 	for (i = 0; i < DSC_NUM_BUF_RANGES; i++) {
 		rc_range_params_dword[i / 2] |=
@@ -909,10 +827,10 @@ void intel_dsc_dp_pps_write(struct intel_encoder *encoder,
 	if (!crtc_state->dsc.compression_enable)
 		return;
 
-	/* Prepare DP SDP PPS header as per DP 1.4 spec, Table 2-123 */
+	 
 	drm_dsc_dp_pps_header_init(&dp_dsc_pps_sdp.pps_header);
 
-	/* Fill the PPS payload bytes as per DSC spec 1.2 Table 4-1 */
+	 
 	drm_dsc_pps_payload_pack(&dp_dsc_pps_sdp.pps_payload, vdsc_cfg);
 
 	dig_port->write_infoframe(encoder, crtc_state,
@@ -979,7 +897,7 @@ void intel_dsc_disable(const struct intel_crtc_state *old_crtc_state)
 	struct intel_crtc *crtc = to_intel_crtc(old_crtc_state->uapi.crtc);
 	struct drm_i915_private *dev_priv = to_i915(crtc->base.dev);
 
-	/* Disable only if either of them is enabled */
+	 
 	if (old_crtc_state->dsc.compression_enable ||
 	    old_crtc_state->bigjoiner_pipes) {
 		intel_de_write(dev_priv, dss_ctl1_reg(crtc, old_crtc_state->cpu_transcoder), 0);
@@ -1017,9 +935,9 @@ void intel_dsc_get_config(struct intel_crtc_state *crtc_state)
 	crtc_state->dsc.dsc_split = (dss_ctl2 & RIGHT_BRANCH_VDSC_ENABLE) &&
 		(dss_ctl1 & JOINER_ENABLE);
 
-	/* FIXME: add more state readout as needed */
+	 
 
-	/* PPS0 & PPS1 */
+	 
 	if (!is_pipe_dsc(crtc, cpu_transcoder)) {
 		pps1 = intel_de_read(dev_priv, DSCA_PICTURE_PARAMETER_SET_1);
 	} else {

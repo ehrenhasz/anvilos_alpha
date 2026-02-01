@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+ 
+ 
 
 #ifndef __RTSX_SYS_H
 #define __RTSX_SYS_H
@@ -32,5 +24,5 @@ static inline void rtsx_reset_detected_cards(struct rtsx_chip *chip, int flag)
 
 #define RTSX_MSG_IN_INT(x)
 
-#endif  /* __RTSX_SYS_H */
+#endif   
 

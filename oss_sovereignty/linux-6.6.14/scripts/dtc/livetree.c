@@ -1,20 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- */
+
+ 
 
 #include "dtc.h"
 #include "srcpos.h"
 
-/*
- * Tree building functions
- */
+ 
 
 void add_label(struct label **labels, char *label)
 {
 	struct label *new;
 
-	/* Make sure the label isn't already there */
+	 
 	for_each_label_withdel(*labels, new)
 		if (streq(new->label, label)) {
 			new->deleted = 0;
@@ -147,14 +143,13 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 
 	old_node->deleted = 0;
 
-	/* Add new node labels to old node */
+	 
 	for_each_label_withdel(new_node->labels, l)
 		add_label(&old_node->labels, l->label);
 
-	/* Move properties from the new node to the old node.  If there
-	 * is a collision, replace the old value with the new */
+	 
 	while (new_node->proplist) {
-		/* Pop the property off the list */
+		 
 		new_prop = new_node->proplist;
 		new_node->proplist = new_prop->next;
 		new_prop->next = NULL;
@@ -165,10 +160,10 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 			continue;
 		}
 
-		/* Look for a collision, set new value if there is */
+		 
 		for_each_property_withdel(old_node, old_prop) {
 			if (streq(old_prop->name, new_prop->name)) {
-				/* Add new labels to old property */
+				 
 				for_each_label_withdel(new_prop->labels, l)
 					add_label(&old_prop->labels, l->label);
 
@@ -182,15 +177,14 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 			}
 		}
 
-		/* if no collision occurred, add property to the old node. */
+		 
 		if (new_prop)
 			add_property(old_node, new_prop);
 	}
 
-	/* Move the override child nodes into the primary node.  If
-	 * there is a collision, then merge the nodes. */
+	 
 	while (new_node->children) {
-		/* Pop the child node off the list */
+		 
 		new_child = new_node->children;
 		new_node->children = new_child->next_sibling;
 		new_child->parent = NULL;
@@ -202,7 +196,7 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 			continue;
 		}
 
-		/* Search for a collision.  Merge if there is */
+		 
 		for_each_child_withdel(old_node, old_child) {
 			if (streq(old_child->name, new_child->name)) {
 				merge_nodes(old_child, new_child);
@@ -211,15 +205,14 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 			}
 		}
 
-		/* if no collision occurred, add child to the old node. */
+		 
 		if (new_child)
 			add_child(old_node, new_child);
 	}
 
 	old_node->srcpos = srcpos_extend(old_node->srcpos, new_node->srcpos);
 
-	/* The new node contents are now merged into the old node.  Free
-	 * the new node. */
+	 
 	free(new_node);
 
 	return old_node;
@@ -409,9 +402,7 @@ struct dt_info *build_dt_info(unsigned int dtsflags,
 	return dti;
 }
 
-/*
- * Tree accessor functions
- */
+ 
 
 const char *get_unitname(struct node *node)
 {
@@ -618,7 +609,7 @@ struct node *get_node_by_ref(struct node *tree, const char *ref)
 
 cell_t get_node_phandle(struct node *root, struct node *node)
 {
-	static cell_t phandle = 1; /* FIXME: ick, static local */
+	static cell_t phandle = 1;  
 	struct data d = empty_data;
 
 	if (phandle_is_valid(node->phandle))
@@ -640,9 +631,7 @@ cell_t get_node_phandle(struct node *root, struct node *node)
 	    && (phandle_format & PHANDLE_EPAPR))
 		add_property(node, build_property("phandle", d, NULL));
 
-	/* If the node *does* have a phandle property, we must
-	 * be dealing with a self-referencing phandle, which will be
-	 * fixed up momentarily in the caller */
+	 
 
 	return node->phandle;
 }
@@ -665,7 +654,7 @@ uint32_t guess_boot_cpuid(struct node *tree)
 	if (!reg || (reg->val.len != sizeof(uint32_t)))
 		return 0;
 
-	/* FIXME: Sanity check node? */
+	 
 
 	return propval_cell(reg);
 }
@@ -807,7 +796,7 @@ void sort_tree(struct dt_info *dti)
 	sort_node(dti->dt);
 }
 
-/* utility helper to avoid code duplication */
+ 
 static struct node *build_and_name_child_node(struct node *parent, char *name)
 {
 	struct node *node;
@@ -856,13 +845,13 @@ static void generate_label_tree_internal(struct dt_info *dti,
 	struct property *p;
 	struct label *l;
 
-	/* if there are labels */
+	 
 	if (node->labels) {
 
-		/* now add the label in the node */
+		 
 		for_each_label(node->labels, l) {
 
-			/* check whether the label already exists */
+			 
 			p = get_property(an, l->label);
 			if (p) {
 				fprintf(stderr, "WARNING: label %s already"
@@ -871,7 +860,7 @@ static void generate_label_tree_internal(struct dt_info *dti,
 				continue;
 			}
 
-			/* insert it */
+			 
 			p = build_property(l->label,
 				data_copy_escape_string(node->fullpath,
 						strlen(node->fullpath)),
@@ -879,7 +868,7 @@ static void generate_label_tree_internal(struct dt_info *dti,
 			add_property(an, p);
 		}
 
-		/* force allocation of a phandle for this node */
+		 
 		if (allocph)
 			(void)get_node_phandle(dt, node);
 	}
@@ -916,16 +905,15 @@ static void add_fixup_entry(struct dt_info *dti, struct node *fn,
 {
 	char *entry;
 
-	/* m->ref can only be a REF_PHANDLE, but check anyway */
+	 
 	assert(m->type == REF_PHANDLE);
 
-	/* The format only permits fixups for references to label, not
-	 * references to path */
+	 
 	if (strchr(m->ref, '/'))
 		die("Can't generate fixup for reference to path &{%s}\n",
 		    m->ref);
 
-	/* there shouldn't be any ':' in the arguments */
+	 
 	if (strchr(node->fullpath, ':') || strchr(prop->name, ':'))
 		die("arguments should not contain ':'\n");
 
@@ -986,26 +974,26 @@ static void add_local_fixup_entry(struct dt_info *dti,
 		struct property *prop, struct marker *m,
 		struct node *refnode)
 {
-	struct node *wn, *nwn;	/* local fixup node, walk node, new */
+	struct node *wn, *nwn;	 
 	fdt32_t value_32;
 	char **compp;
 	int i, depth;
 
-	/* walk back retrieving depth */
+	 
 	depth = 0;
 	for (wn = node; wn; wn = wn->parent)
 		depth++;
 
-	/* allocate name array */
+	 
 	compp = xmalloc(sizeof(*compp) * depth);
 
-	/* store names in the array */
+	 
 	for (wn = node, i = depth - 1; wn; wn = wn->parent, i--)
 		compp[i] = wn->name;
 
-	/* walk the path components creating nodes if they don't exist */
+	 
 	for (wn = lfn, i = 1; i < depth; i++, wn = nwn) {
-		/* if no node exists, create it */
+		 
 		nwn = get_subnode(wn, compp[i]);
 		if (!nwn)
 			nwn = build_and_name_child_node(wn, compp[i]);

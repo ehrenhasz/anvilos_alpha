@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lib/clz_ctz.c
- *
- * Copyright (C) 2013 Chanho Min <chanho.min@lge.com>
- *
- * The functions in this file aren't called directly, but are required by
- * GCC builtins such as __builtin_ctz, and therefore they can't be removed
- * despite appearing unreferenced in kernel source.
- *
- * __c[lt]z[sd]i2 can be overridden by linking arch-specific versions.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/kernel.h>

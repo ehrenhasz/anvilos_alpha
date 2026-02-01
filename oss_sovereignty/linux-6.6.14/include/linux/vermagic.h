@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_VERMAGIC_H
 #define _LINUX_VERMAGIC_H
 
@@ -9,7 +9,7 @@
 #include <generated/utsrelease.h>
 #include <asm/vermagic.h>
 
-/* Simply sanity version stamp for modules. */
+ 
 #ifdef CONFIG_SMP
 #define MODULE_VERMAGIC_SMP "SMP "
 #else
@@ -46,4 +46,4 @@
 	MODULE_ARCH_VERMAGIC						\
 	MODULE_RANDSTRUCT
 
-#endif /* _LINUX_VERMAGIC_H */
+#endif  

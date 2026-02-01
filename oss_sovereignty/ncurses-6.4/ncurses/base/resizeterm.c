@@ -1,44 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2015,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- *     and: Juergen Pfeifer                                                 *
- ****************************************************************************/
+ 
 
-/*
- * This is an extension to the curses library.  It provides callers with a hook
- * into the NCURSES data to resize windows, primarily for use by programs
- * running in an X Window terminal (e.g., xterm).  I abstracted this module
- * from my application library for NCURSES because it must be compiled with
- * the private data structures -- T.Dickey 1995/7/4.
- */
+ 
 
 #include <curses.priv.h>
 
@@ -48,9 +12,7 @@
 
 MODULE_ID("$Id: resizeterm.c,v 1.52 2021/10/23 17:12:33 tom Exp $")
 
-/*
- * If we're trying to be reentrant, do not want any local statics.
- */
+ 
 #if USE_REENTRANT
 #define EXTRA_ARGS ,     CurLines,     CurCols
 #define EXTRA_DCLS , int CurLines, int CurCols
@@ -59,14 +21,14 @@ static int current_lines;
 static int current_cols;
 #define CurLines current_lines
 #define CurCols  current_cols
-#define EXTRA_ARGS		/* nothing */
-#define EXTRA_DCLS		/* nothing */
+#define EXTRA_ARGS		 
+#define EXTRA_DCLS		 
 #endif
 
 #if NCURSES_SP_FUNCS && !defined(USE_SP_WINDOWLIST)
 #define UNUSED_SP  (void) sp
 #else
-#define UNUSED_SP		/* nothing */
+#define UNUSED_SP		 
 #endif
 
 #ifdef TRACE
@@ -95,10 +57,7 @@ show_window_sizes(const char *name)
 }
 #endif
 
-/*
- * Return true if the given dimensions do not match the internal terminal
- * structure's size.
- */
+ 
 NCURSES_EXPORT(bool)
 NCURSES_SP_NAME(is_term_resized) (NCURSES_SP_DCLx int ToLines, int ToCols)
 {
@@ -117,8 +76,7 @@ is_term_resized(int ToLines, int ToCols)
 }
 #endif
 
-/*
- */
+ 
 static ripoff_t *
 ripped_window(WINDOW *win)
 {
@@ -139,10 +97,7 @@ ripped_window(WINDOW *win)
     return result;
 }
 
-/*
- * Returns the number of lines from the bottom for the beginning of a ripped
- * off window.
- */
+ 
 static int
 ripped_bottom(WINDOW *win)
 {
@@ -166,9 +121,7 @@ ripped_bottom(WINDOW *win)
     return result;
 }
 
-/*
- * Return the number of levels of child-windows under the current window.
- */
+ 
 static int
 child_depth(WINDOW *cmp)
 {
@@ -191,9 +144,7 @@ child_depth(WINDOW *cmp)
     return depth;
 }
 
-/*
- * Return the number of levels of parent-windows above the current window.
- */
+ 
 static int
 parent_depth(WINDOW *cmp)
 {
@@ -209,9 +160,7 @@ parent_depth(WINDOW *cmp)
     return depth;
 }
 
-/*
- * FIXME: must adjust position so it is within the parent!
- */
+ 
 static int
 adjust_window(WINDOW *win, int ToLines, int ToCols, int stolen EXTRA_DCLS)
 {
@@ -230,10 +179,7 @@ adjust_window(WINDOW *win, int ToLines, int ToCols, int stolen EXTRA_DCLS)
        (long) getbegy(win) + win->_yoffset, (long) getbegx(win)));
 
     if (rop != 0 && rop->line < 0) {
-	/*
-	 * If it is a ripped-off window at the bottom of the screen, simply
-	 * move it to the same relative position.
-	 */
+	 
 	win->_begy = (NCURSES_SIZE_T) (ToLines - ripped_bottom(win) - 0 - win->_yoffset);
 	if (rop->hook == _nc_slk_initialize)
 	    _nc_format_slks(
@@ -242,10 +188,7 @@ adjust_window(WINDOW *win, int ToLines, int ToCols, int stolen EXTRA_DCLS)
 #endif
 			       ToCols);
     } else if (win->_begy >= bottom) {
-	/*
-	 * If it is below the bottom of the new screen, move up by the same
-	 * amount that the screen shrank.
-	 */
+	 
 	win->_begy = (NCURSES_SIZE_T) (win->_begy + (ToLines - CurLines));
     } else {
 	if (myLines == (CurLines - stolen)
@@ -272,10 +215,7 @@ adjust_window(WINDOW *win, int ToLines, int ToCols, int stolen EXTRA_DCLS)
     returnCode(result);
 }
 
-/*
- * If we're decreasing size, recursively search for windows that have no
- * children, decrease those to fit, then decrease the containing window, etc.
- */
+ 
 static int
 decrease_size(NCURSES_SP_DCLx int ToLines, int ToCols, int stolen EXTRA_DCLS)
 {
@@ -307,10 +247,7 @@ decrease_size(NCURSES_SP_DCLx int ToLines, int ToCols, int stolen EXTRA_DCLS)
     returnCode(OK);
 }
 
-/*
- * If we're increasing size, recursively search for windows that have no
- * parent, increase those to fit, then increase the contained window, etc.
- */
+ 
 static int
 increase_size(NCURSES_SP_DCLx int ToLines, int ToCols, int stolen EXTRA_DCLS)
 {
@@ -342,10 +279,7 @@ increase_size(NCURSES_SP_DCLx int ToLines, int ToCols, int stolen EXTRA_DCLS)
     returnCode(OK);
 }
 
-/*
- * This function reallocates NCURSES window structures, with no side-effects
- * such as ungetch().
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(resize_term) (NCURSES_SP_DCLx int ToLines, int ToCols)
 {
@@ -433,10 +367,7 @@ NCURSES_SP_NAME(resize_term) (NCURSES_SP_DCLx int ToLines, int ToCols)
     }
 
     if (result == OK) {
-	/*
-	 * Always update LINES, to allow for call from lib_doupdate.c which
-	 * needs to have the count adjusted by the stolen (ripped off) lines.
-	 */
+	 
 	SET_LINES(ToLines - was_stolen);
 	SET_COLS(ToCols);
     }
@@ -458,14 +389,7 @@ resize_term(int ToLines, int ToCols)
 }
 #endif
 
-/*
- * This function reallocates NCURSES window structures.  It is invoked in
- * response to a SIGWINCH interrupt.  Other user-defined windows may also need
- * to be reallocated.
- *
- * Because this performs memory allocation, it should not (in general) be
- * invoked directly from the signal handler.
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(resizeterm) (NCURSES_SP_DCLx int ToLines, int ToCols)
 {
@@ -494,15 +418,9 @@ NCURSES_SP_NAME(resizeterm) (NCURSES_SP_DCLx int ToLines, int ToCols)
 	    result = NCURSES_SP_NAME(resize_term) (NCURSES_SP_ARGx ToLines, ToCols);
 
 #if USE_SIGWINCH
-	    clearok(CurScreen(SP_PARM), TRUE);	/* screen contents are unknown */
+	    clearok(CurScreen(SP_PARM), TRUE);	 
 
-	    /* ripped-off lines are a special case: if we did not lengthen
-	     * them, we haven't moved them either.  repaint them, too.
-	     *
-	     * for the rest - stdscr and other windows - the client has to
-	     * decide which to repaint, since without panels, ncurses does
-	     * not know which are really on top.
-	     */
+	     
 	    for (each_ripoff(rop)) {
 		if (rop->win != StdScreen(SP_PARM)
 		    && rop->win != 0
@@ -515,7 +433,7 @@ NCURSES_SP_NAME(resizeterm) (NCURSES_SP_DCLx int ToLines, int ToCols)
 		}
 	    }
 
-	    /* soft-keys are a special case: we _know_ how to repaint them */
+	     
 	    if (slk_visible) {
 		NCURSES_SP_NAME(slk_restore) (NCURSES_SP_ARG);
 		NCURSES_SP_NAME(slk_touch) (NCURSES_SP_ARG);
@@ -524,7 +442,7 @@ NCURSES_SP_NAME(resizeterm) (NCURSES_SP_DCLx int ToLines, int ToCols)
 #endif
 	}
 #if USE_SIGWINCH
-	safe_ungetch(SP_PARM, KEY_RESIZE);	/* so application can know this */
+	safe_ungetch(SP_PARM, KEY_RESIZE);	 
 #endif
     }
 

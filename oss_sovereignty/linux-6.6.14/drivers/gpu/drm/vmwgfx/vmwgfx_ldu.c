@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_kms.h"
@@ -49,9 +25,7 @@ struct vmw_legacy_display {
 	struct vmw_framebuffer *fb;
 };
 
-/*
- * Display unit using the legacy register interface.
- */
+ 
 struct vmw_legacy_display_unit {
 	struct vmw_display_unit base;
 
@@ -66,9 +40,7 @@ static void vmw_ldu_destroy(struct vmw_legacy_display_unit *ldu)
 }
 
 
-/*
- * Legacy Display Unit CRTC functions
- */
+ 
 
 static void vmw_ldu_crtc_destroy(struct drm_crtc *crtc)
 {
@@ -83,9 +55,7 @@ static int vmw_ldu_commit_list(struct vmw_private *dev_priv)
 	struct drm_crtc *crtc = NULL;
 	int i;
 
-	/* If there is no display topology the host just assumes
-	 * that the guest will set the same layout as the host.
-	 */
+	 
 	if (!(dev_priv->capabilities & SVGA_CAP_DISPLAY_TOPOLOGY)) {
 		int w = 0, h = 0;
 		list_for_each_entry(entry, &lds->active, active) {
@@ -111,7 +81,7 @@ static int vmw_ldu_commit_list(struct vmw_private *dev_priv)
 				   fb->format->cpp[0] * 8, fb->format->depth);
 	}
 
-	/* Make sure we always show something. */
+	 
 	vmw_write(dev_priv, SVGA_REG_NUM_GUEST_DISPLAYS,
 		  lds->num_active ? lds->num_active : 1);
 
@@ -136,10 +106,7 @@ static int vmw_ldu_commit_list(struct vmw_private *dev_priv)
 	return 0;
 }
 
-/*
- * Pin the buffer in a location suitable for access by the
- * display system.
- */
+ 
 static int vmw_ldu_fb_pin(struct vmw_framebuffer *vfb)
 {
 	struct vmw_private *dev_priv = vmw_priv(vfb->base.dev);
@@ -184,7 +151,7 @@ static int vmw_ldu_del_active(struct vmw_private *vmw_priv,
 	if (list_empty(&ldu->active))
 		return 0;
 
-	/* Must init otherwise list_empty(&ldu->active) will not work. */
+	 
 	list_del_init(&ldu->active);
 	if (--(ld->num_active) == 0) {
 		BUG_ON(!ld->fb);
@@ -230,39 +197,18 @@ static int vmw_ldu_add_active(struct vmw_private *vmw_priv,
 	return 0;
 }
 
-/**
- * vmw_ldu_crtc_mode_set_nofb - Enable svga
- *
- * @crtc: CRTC associated with the new screen
- *
- * For LDU, just enable the svga
- */
+ 
 static void vmw_ldu_crtc_mode_set_nofb(struct drm_crtc *crtc)
 {
 }
 
-/**
- * vmw_ldu_crtc_atomic_enable - Noop
- *
- * @crtc: CRTC associated with the new screen
- * @state: Unused
- *
- * This is called after a mode set has been completed.  Here's
- * usually a good place to call vmw_ldu_add_active/vmw_ldu_del_active
- * but since for LDU the display plane is closely tied to the
- * CRTC, it makes more sense to do those at plane update time.
- */
+ 
 static void vmw_ldu_crtc_atomic_enable(struct drm_crtc *crtc,
 				       struct drm_atomic_state *state)
 {
 }
 
-/**
- * vmw_ldu_crtc_atomic_disable - Turns off CRTC
- *
- * @crtc: CRTC to be turned off
- * @state: Unused
- */
+ 
 static void vmw_ldu_crtc_atomic_disable(struct drm_crtc *crtc,
 					struct drm_atomic_state *state)
 {
@@ -279,9 +225,7 @@ static const struct drm_crtc_funcs vmw_legacy_crtc_funcs = {
 };
 
 
-/*
- * Legacy Display Unit encoder functions
- */
+ 
 
 static void vmw_ldu_encoder_destroy(struct drm_encoder *encoder)
 {
@@ -292,9 +236,7 @@ static const struct drm_encoder_funcs vmw_legacy_encoder_funcs = {
 	.destroy = vmw_ldu_encoder_destroy,
 };
 
-/*
- * Legacy Display Unit connector functions
- */
+ 
 
 static void vmw_ldu_connector_destroy(struct drm_connector *connector)
 {
@@ -321,9 +263,7 @@ static int vmw_kms_ldu_do_bo_dirty(struct vmw_private *dev_priv,
 				   struct drm_mode_rect *clips,
 				   unsigned int num_clips);
 
-/*
- * Legacy Display Plane Functions
- */
+ 
 
 static void
 vmw_ldu_primary_plane_atomic_update(struct drm_plane *plane,
@@ -395,9 +335,7 @@ static const struct drm_plane_funcs vmw_ldu_cursor_funcs = {
 	.atomic_destroy_state = vmw_du_plane_destroy_state,
 };
 
-/*
- * Atomic Helpers
- */
+ 
 static const struct
 drm_plane_helper_funcs vmw_ldu_cursor_plane_helper_funcs = {
 	.atomic_check = vmw_du_cursor_plane_atomic_check,
@@ -451,13 +389,10 @@ static int vmw_ldu_init(struct vmw_private *dev_priv, unsigned unit)
 	ldu->base.pref_height = dev_priv->initial_height;
 	ldu->base.pref_mode = NULL;
 
-	/*
-	 * Remove this after enabling atomic because property values can
-	 * only exist in a state object
-	 */
+	 
 	ldu->base.is_implicit = true;
 
-	/* Initialize primary plane */
+	 
 	ret = drm_universal_plane_init(dev, primary,
 				       0, &vmw_ldu_plane_funcs,
 				       vmw_primary_plane_formats,
@@ -470,11 +405,9 @@ static int vmw_ldu_init(struct vmw_private *dev_priv, unsigned unit)
 
 	drm_plane_helper_add(primary, &vmw_ldu_primary_plane_helper_funcs);
 
-	/*
-	 * We're going to be using traces and software cursors
-	 */
+	 
 	if (vmw_cmd_supported(dev_priv)) {
-		/* Initialize cursor plane */
+		 
 		ret = drm_universal_plane_init(dev, &cursor->base,
 					       0, &vmw_ldu_cursor_funcs,
 					       vmw_cursor_plane_formats,

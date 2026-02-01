@@ -1,39 +1,5 @@
-/* $OpenBSD: cipher.c,v 1.120 2023/10/10 06:49:54 tb Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- *
- *
- * Copyright (c) 1999 Niels Provos.  All rights reserved.
- * Copyright (c) 1999, 2000 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -60,7 +26,7 @@ struct sshcipher_ctx {
 	int	encrypt;
 	EVP_CIPHER_CTX *evp;
 	struct chachapoly_ctx *cp_ctx;
-	struct aesctr_ctx ac_ctx; /* XXX union with evp? */
+	struct aesctr_ctx ac_ctx;  
 	const struct sshcipher *cipher;
 };
 
@@ -68,14 +34,14 @@ struct sshcipher {
 	char	*name;
 	u_int	block_size;
 	u_int	key_len;
-	u_int	iv_len;		/* defaults to block_size */
+	u_int	iv_len;		 
 	u_int	auth_len;
 	u_int	flags;
 #define CFLAG_CBC		(1<<0)
 #define CFLAG_CHACHAPOLY	(1<<1)
 #define CFLAG_AESCTR		(1<<2)
 #define CFLAG_NONE		(1<<3)
-#define CFLAG_INTERNAL		CFLAG_NONE /* Don't use "none" for packets */
+#define CFLAG_INTERNAL		CFLAG_NONE  
 #ifdef WITH_OPENSSL
 	const EVP_CIPHER	*(*evptype)(void);
 #else
@@ -110,9 +76,9 @@ static const struct sshcipher ciphers[] = {
 	{ NULL,			0, 0, 0, 0, 0, NULL }
 };
 
-/*--*/
+ 
 
-/* Returns a comma-separated list of supported ciphers. */
+ 
 char *
 cipher_alg_list(char sep, int auth_only)
 {
@@ -179,10 +145,7 @@ cipher_authlen(const struct sshcipher *c)
 u_int
 cipher_ivlen(const struct sshcipher *c)
 {
-	/*
-	 * Default is cipher block size, except for chacha20+poly1305 that
-	 * needs no IV. XXX make iv_len == -1 default?
-	 */
+	 
 	return (c->iv_len != 0 || (c->flags & CFLAG_CHACHAPOLY) != 0) ?
 	    c->iv_len : c->block_size;
 }
@@ -238,7 +201,7 @@ cipher_warning_message(const struct sshcipher_ctx *cc)
 {
 	if (cc == NULL || cc->cipher == NULL)
 		return NULL;
-	/* XXX repurpose for CBC warning */
+	 
 	return NULL;
 }
 
@@ -286,7 +249,7 @@ cipher_init(struct sshcipher_ctx **ccp, const struct sshcipher *cipher,
 	}
 	ret = SSH_ERR_INVALID_ARGUMENT;
 	goto out;
-#else /* WITH_OPENSSL */
+#else  
 	type = (*cipher->evptype)();
 	if ((cc->evp = EVP_CIPHER_CTX_new()) == NULL) {
 		ret = SSH_ERR_ALLOC_FAIL;
@@ -315,32 +278,23 @@ cipher_init(struct sshcipher_ctx **ccp, const struct sshcipher *cipher,
 		goto out;
 	}
 	ret = 0;
-#endif /* WITH_OPENSSL */
+#endif  
  out:
 	if (ret == 0) {
-		/* success */
+		 
 		*ccp = cc;
 	} else {
 		if (cc != NULL) {
 #ifdef WITH_OPENSSL
 			EVP_CIPHER_CTX_free(cc->evp);
-#endif /* WITH_OPENSSL */
+#endif  
 			freezero(cc, sizeof(*cc));
 		}
 	}
 	return ret;
 }
 
-/*
- * cipher_crypt() operates as following:
- * Copy 'aadlen' bytes (without en/decryption) from 'src' to 'dest'.
- * These bytes are treated as additional authenticated data for
- * authenticated encryption modes.
- * En/Decrypt 'len' bytes at offset 'aadlen' from 'src' to 'dest'.
- * Use 'authlen' bytes at offset 'len'+'aadlen' as the authentication tag.
- * This tag is written on encryption and verified on decryption.
- * Both 'aadlen' and 'authlen' can be set to 0.
- */
+ 
 int
 cipher_crypt(struct sshcipher_ctx *cc, u_int seqnr, u_char *dest,
    const u_char *src, u_int len, u_int aadlen, u_int authlen)
@@ -368,11 +322,11 @@ cipher_crypt(struct sshcipher_ctx *cc, u_int seqnr, u_char *dest,
 
 		if (authlen != cipher_authlen(cc->cipher))
 			return SSH_ERR_INVALID_ARGUMENT;
-		/* increment IV */
+		 
 		if (!EVP_CIPHER_CTX_ctrl(cc->evp, EVP_CTRL_GCM_IV_GEN,
 		    1, lastiv))
 			return SSH_ERR_LIBCRYPTO_ERROR;
-		/* set tag on decyption */
+		 
 		if (!cc->encrypt &&
 		    !EVP_CIPHER_CTX_ctrl(cc->evp, EVP_CTRL_GCM_SET_TAG,
 		    authlen, (u_char *)src + aadlen + len))
@@ -390,7 +344,7 @@ cipher_crypt(struct sshcipher_ctx *cc, u_int seqnr, u_char *dest,
 	    len) < 0)
 		return SSH_ERR_LIBCRYPTO_ERROR;
 	if (authlen) {
-		/* compute tag (on encrypt) or verify tag (on decrypt) */
+		 
 		if (EVP_Cipher(cc->evp, NULL, NULL, 0) < 0)
 			return cc->encrypt ?
 			    SSH_ERR_LIBCRYPTO_ERROR : SSH_ERR_MAC_INVALID;
@@ -403,7 +357,7 @@ cipher_crypt(struct sshcipher_ctx *cc, u_int seqnr, u_char *dest,
 #endif
 }
 
-/* Extract the packet length, including any decryption necessary beforehand */
+ 
 int
 cipher_get_length(struct sshcipher_ctx *cc, u_int *plenp, u_int seqnr,
     const u_char *cp, u_int len)
@@ -494,7 +448,7 @@ cipher_set_keyiv(struct sshcipher_ctx *cc, const u_char *iv, size_t len)
 	if ((size_t)evplen != len)
 		return SSH_ERR_INVALID_ARGUMENT;
 	if (cipher_authlen(c)) {
-		/* XXX iv arg is const, but EVP_CIPHER_CTX_ctrl isn't */
+		 
 		if (!EVP_CIPHER_CTX_ctrl(cc->evp,
 		    EVP_CTRL_GCM_SET_IV_FIXED, -1, (void *)iv))
 			return SSH_ERR_LIBCRYPTO_ERROR;

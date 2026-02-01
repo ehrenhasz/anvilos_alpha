@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
+
+ 
 
 #include "mt76x0.h"
 #include "eeprom.h"
@@ -18,11 +13,7 @@ mt76x0_set_wlan_state(struct mt76x02_dev *dev, u32 val, bool enable)
 {
 	u32 mask = MT_CMB_CTRL_XTAL_RDY | MT_CMB_CTRL_PLL_LD;
 
-	/* Note: we don't turn off WLAN_CLK because that makes the device
-	 *	 not respond properly on the probe path.
-	 *	 In case anyone (PSM?) wants to use this function we can
-	 *	 bring the clock stuff back and fixup the probe path.
-	 */
+	 
 
 	if (enable)
 		val |= (MT_WLAN_FUN_CTRL_WLAN_EN |
@@ -33,10 +24,7 @@ mt76x0_set_wlan_state(struct mt76x02_dev *dev, u32 val, bool enable)
 	mt76_wr(dev, MT_WLAN_FUN_CTRL, val);
 	udelay(20);
 
-	/* Note: vendor driver tries to disable/enable wlan here and retry
-	 *       but the code which does it is so buggy it must have never
-	 *       triggered, so don't bother.
-	 */
+	 
 	if (enable && !mt76_poll(dev, MT_CMB_CTRL, mask, mask, 2000))
 		dev_err(dev->mt76.dev, "PLL and XTAL check failed\n");
 }
@@ -111,25 +99,18 @@ static void mt76x0_init_mac_registers(struct mt76x02_dev *dev)
 {
 	RANDOM_WRITE(dev, common_mac_reg_table);
 
-	/* Enable PBF and MAC clock SYS_CTRL[11:10] = 0x3 */
+	 
 	RANDOM_WRITE(dev, mt76x0_mac_reg_table);
 
-	/* Release BBP and MAC reset MAC_SYS_CTRL[1:0] = 0x0 */
+	 
 	mt76_clear(dev, MT_MAC_SYS_CTRL, 0x3);
 
-	/* Set 0x141C[15:12]=0xF */
+	 
 	mt76_set(dev, MT_EXT_CCA_CFG, 0xf000);
 
 	mt76_clear(dev, MT_FCE_L2_STUFF, MT_FCE_L2_STUFF_WR_MPDU_LEN_EN);
 
-	/*
-	 * tx_ring 9 is for mgmt frame
-	 * tx_ring 8 is for in-band command frame.
-	 * WMM_RG0_TXQMA: this register setting is for FCE to
-	 *		  define the rule of tx_ring 9
-	 * WMM_RG1_TXQMA: this register setting is for FCE to
-	 *		  define the rule of tx_ring 8
-	 */
+	 
 	mt76_rmw(dev, MT_WMM_CTRL, 0x3ff, 0x201);
 }
 
@@ -139,7 +120,7 @@ void mt76x0_mac_stop(struct mt76x02_dev *dev)
 
 	mt76_clear(dev, MT_TXOP_CTRL_CFG, MT_TXOP_ED_CCA_EN);
 
-	/* Page count on TxQ */
+	 
 	while (i-- && ((mt76_rr(dev, 0x0438) & 0xffffffff) ||
 		       (mt76_rr(dev, 0x0a30) & 0x000000ff) ||
 		       (mt76_rr(dev, 0x0a34) & 0x00ff00ff)))
@@ -151,7 +132,7 @@ void mt76x0_mac_stop(struct mt76x02_dev *dev)
 	mt76_clear(dev, MT_MAC_SYS_CTRL, MT_MAC_SYS_CTRL_ENABLE_RX |
 					 MT_MAC_SYS_CTRL_ENABLE_TX);
 
-	/* Page count on RxQ */
+	 
 	for (i = 0; i < 200; i++) {
 		if (!(mt76_rr(dev, MT_RXQ_STA) & 0x00ff0000) &&
 		    !mt76_rr(dev, 0x0a30) &&
@@ -175,7 +156,7 @@ int mt76x0_init_hardware(struct mt76x02_dev *dev)
 	if (!mt76x02_wait_for_wpdma(&dev->mt76, 1000))
 		return -EIO;
 
-	/* Wait for ASIC ready after FW load. */
+	 
 	if (!mt76x02_wait_for_mac(&dev->mt76))
 		return -ETIMEDOUT;
 

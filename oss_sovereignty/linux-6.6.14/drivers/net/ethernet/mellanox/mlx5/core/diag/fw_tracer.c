@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2018, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #define CREATE_TRACE_POINTS
 #include "lib/eq.h"
 #include "fw_tracer.h"
@@ -310,7 +280,7 @@ static void mlx5_tracer_read_strings_db(struct work_struct *work)
 			offset += STRINGS_DB_READ_SIZE_BYTES;
 		}
 
-		/* Strings database is aligned to 64, need to read leftovers*/
+		 
 		MLX5_SET(mtrc_stdb, in, read_size,
 			 STRINGS_DB_LEFTOVER_SIZE_BYTES);
 		for (j = 0; j < leftovers; j++) {
@@ -395,7 +365,7 @@ static struct tracer_string_format *mlx5_tracer_get_string(struct mlx5_fw_tracer
 		    str_ptr < tracer->str_db.base_address_out[i] +
 		    tracer->str_db.size_out[i]) {
 			offset = str_ptr - tracer->str_db.base_address_out[i];
-			/* add it to the hash */
+			 
 			cur_string = mlx5_tracer_message_insert(tracer, tracer_event);
 			if (!cur_string)
 				return NULL;
@@ -419,7 +389,7 @@ static int mlx5_tracer_get_num_of_params(char *str)
 	char *substr, *pstr = str;
 	int num_of_params = 0;
 
-	/* replace %llx with %x%x */
+	 
 	substr = strstr(pstr, VAL_PARM);
 	while (substr) {
 		memcpy(substr, REPLACE_64_VAL_PARM, 4);
@@ -427,7 +397,7 @@ static int mlx5_tracer_get_num_of_params(char *str)
 		substr = strstr(pstr, VAL_PARM);
 	}
 
-	/* count all the % characters */
+	 
 	substr = strstr(str, PARAM_CHAR);
 	while (substr) {
 		num_of_params += 1;
@@ -585,7 +555,7 @@ void mlx5_tracer_print_trace(struct tracer_string_format *str_frmt,
 	mlx5_fw_tracer_save_trace(dev->tracer, trace_timestamp,
 				  str_frmt->lost, str_frmt->event_id, tmp);
 
-	/* remove it from hash */
+	 
 	mlx5_tracer_clean_message(str_frmt);
 }
 
@@ -625,7 +595,7 @@ static int mlx5_tracer_handle_string_trace(struct mlx5_fw_tracer *tracer,
 		cur_string->tmsn = tracer_event->string_event.tmsn;
 		cur_string->timestamp = tracer_event->string_event.timestamp;
 		cur_string->lost = tracer_event->lost_event;
-		if (cur_string->num_of_params == 0) /* trace with no params */
+		if (cur_string->num_of_params == 0)  
 			list_add_tail(&cur_string->list, &tracer->ready_strings_list);
 	} else {
 		cur_string = mlx5_tracer_message_get(tracer, tracer_event);
@@ -641,7 +611,7 @@ static int mlx5_tracer_handle_string_trace(struct mlx5_fw_tracer *tracer,
 			list_add_tail(&cur_string->list, &tracer->ready_strings_list);
 			return 0;
 		}
-		/* keep the new parameter */
+		 
 		cur_string->params[cur_string->last_param_num - 1] =
 			tracer_event->string_event.string_param;
 		if (cur_string->last_param_num == cur_string->num_of_params)
@@ -709,7 +679,7 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
 	block_count = tracer->buff.size / TRACER_BLOCK_SIZE_BYTE;
 	start_offset = tracer->buff.consumer_index * TRACER_BLOCK_SIZE_BYTE;
 
-	/* Copy the block to local buffer to avoid HW override while being processed */
+	 
 	memcpy(tmp_trace_block, tracer->buff.log_buf + start_offset,
 	       TRACER_BLOCK_SIZE_BYTE);
 
@@ -717,14 +687,10 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
 		get_block_timestamp(tracer, &tmp_trace_block[TRACES_PER_BLOCK - 1]);
 
 	while (block_timestamp > tracer->last_timestamp) {
-		/* Check block override if it's not the first block */
+		 
 		if (tracer->last_timestamp) {
 			u64 *ts_event;
-			/* To avoid block override be the HW in case of buffer
-			 * wraparound, the time stamp of the previous block
-			 * should be compared to the last timestamp handled
-			 * by the driver.
-			 */
+			 
 			prev_consumer_index =
 				(tracer->buff.consumer_index - 1) & (block_count - 1);
 			prev_start_offset = prev_consumer_index * TRACER_BLOCK_SIZE_BYTE;
@@ -732,11 +698,7 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
 			ts_event = tracer->buff.log_buf + prev_start_offset +
 				   (TRACES_PER_BLOCK - 1) * trace_event_size;
 			last_block_timestamp = get_block_timestamp(tracer, ts_event);
-			/* If previous timestamp different from last stored
-			 * timestamp then there is a good chance that the
-			 * current buffer is overwritten and therefore should
-			 * not be parsed.
-			 */
+			 
 			if (tracer->last_timestamp != last_block_timestamp) {
 				mlx5_core_warn(dev, "FWTracer: Events were lost\n");
 				tracer->last_timestamp = block_timestamp;
@@ -746,7 +708,7 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
 			}
 		}
 
-		/* Parse events */
+		 
 		for (i = 0; i < TRACES_PER_BLOCK ; i++) {
 			poll_trace(tracer, &tracer_event, &tmp_trace_block[i]);
 			mlx5_tracer_handle_trace(tracer, &tracer_event);
@@ -816,7 +778,7 @@ static int mlx5_fw_tracer_start(struct mlx5_fw_tracer *tracer)
 	err = mlx5_fw_tracer_ownership_acquire(tracer);
 	if (err) {
 		mlx5_core_dbg(dev, "FWTracer: Ownership was not granted %d\n", err);
-		/* Don't fail since ownership can be acquired on a later FW event */
+		 
 		return 0;
 	}
 
@@ -826,7 +788,7 @@ static int mlx5_fw_tracer_start(struct mlx5_fw_tracer *tracer)
 		goto release_ownership;
 	}
 
-	/* enable tracer & trace events */
+	 
 	err = mlx5_fw_tracer_set_mtrc_ctrl(tracer, 1, 1);
 	if (err) {
 		mlx5_core_warn(dev, "FWTracer: Failed to enable tracer %d\n", err);
@@ -966,7 +928,7 @@ static void mlx5_fw_tracer_update_db(struct work_struct *work)
 	mlx5_fw_tracer_reload(tracer);
 }
 
-/* Create software resources (Buffers, etc ..) */
+ 
 struct mlx5_fw_tracer *mlx5_fw_tracer_create(struct mlx5_core_dev *dev)
 {
 	struct mlx5_fw_tracer *tracer = NULL;
@@ -1032,7 +994,7 @@ free_tracer:
 
 static int fw_tracer_event(struct notifier_block *nb, unsigned long action, void *data);
 
-/* Create HW resources + start tracer */
+ 
 int mlx5_fw_tracer_init(struct mlx5_fw_tracer *tracer)
 {
 	struct mlx5_core_dev *dev;
@@ -1085,7 +1047,7 @@ err_cancel_work:
 	return err;
 }
 
-/* Stop tracer + Cleanup HW resources */
+ 
 void mlx5_fw_tracer_cleanup(struct mlx5_fw_tracer *tracer)
 {
 	if (IS_ERR_OR_NULL(tracer))
@@ -1100,9 +1062,7 @@ void mlx5_fw_tracer_cleanup(struct mlx5_fw_tracer *tracer)
 	mlx5_eq_notifier_unregister(tracer->dev, &tracer->nb);
 	cancel_work_sync(&tracer->ownership_change_work);
 	cancel_work_sync(&tracer->handle_traces_work);
-	/* It is valid to get here from update_db_work. Hence, don't wait for
-	 * update_db_work to finished.
-	 */
+	 
 	cancel_work(&tracer->update_db_work);
 
 	if (tracer->owner)
@@ -1114,7 +1074,7 @@ unlock:
 	mutex_unlock(&tracer->state_lock);
 }
 
-/* Free software resources (Buffers, etc ..) */
+ 
 void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer)
 {
 	if (IS_ERR_OR_NULL(tracer))

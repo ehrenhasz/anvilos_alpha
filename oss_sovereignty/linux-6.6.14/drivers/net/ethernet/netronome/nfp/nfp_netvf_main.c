@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_netvf_main.c
- * Netronome virtual function network device driver: Main entry point
- * Author: Jason McMullan <jason.mcmullan@netronome.com>
- *         Rolf Neugebauer <rolf.neugebauer@netronome.com>
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -18,13 +13,7 @@
 #include "nfp_net.h"
 #include "nfp_main.h"
 
-/**
- * struct nfp_net_vf - NFP VF-specific device structure
- * @nn:		NFP Net structure for this device
- * @irq_entries: Pre-allocated array of MSI-X entries
- * @q_bar:	Pointer to mapped QC memory (NULL if TX/RX mapped directly)
- * @ddir:	Per-device debugfs directory
- */
+ 
 struct nfp_net_vf {
 	struct nfp_net *nn;
 
@@ -54,7 +43,7 @@ static const struct pci_device_id nfp_netvf_pci_device_ids[] = {
 	  PCI_VENDOR_ID_CORIGINE, PCI_ANY_ID,
 	  PCI_ANY_ID, 0, NFP_DEV_NFP6000_VF,
 	},
-	{ 0, } /* Required last entry. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, nfp_netvf_pci_device_ids);
 
@@ -114,12 +103,7 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
 	if (err)
 		goto err_pci_regions;
 
-	/* Map the Control BAR.
-	 *
-	 * Irrespective of the advertised BAR size we only map the
-	 * first NFP_NET_CFG_BAR_SZ of the BAR.  This keeps the code
-	 * the identical for PF and VF drivers.
-	 */
+	 
 	ctrl_bar = ioremap(pci_resource_start(pdev, NFP_NET_CTRL_BAR),
 				   NFP_NET_CFG_BAR_SZ);
 	if (!ctrl_bar) {
@@ -139,7 +123,7 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
 		goto err_ctrl_unmap;
 	}
 
-	/* Determine stride */
+	 
 	if (nfp_net_fw_ver_eq(&fw_ver, 0, 0, 0, 1)) {
 		stride = 2;
 		tx_bar_no = NFP_NET_Q0_BAR;
@@ -161,14 +145,14 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
 		}
 	}
 
-	/* Find out how many rings are supported */
+	 
 	max_tx_rings = readl(ctrl_bar + NFP_NET_CFG_MAX_TXRINGS);
 	max_rx_rings = readl(ctrl_bar + NFP_NET_CFG_MAX_RXRINGS);
 
 	tx_bar_sz = NFP_QCP_QUEUE_ADDR_SZ * max_tx_rings * stride;
 	rx_bar_sz = NFP_QCP_QUEUE_ADDR_SZ * max_rx_rings * stride;
 
-	/* Sanity checks */
+	 
 	if (tx_bar_sz > pci_resource_len(pdev, tx_bar_no)) {
 		dev_err(&pdev->dev,
 			"TX BAR too small for number of TX rings. Adjusting\n");
@@ -187,7 +171,7 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
 	startq = readl(ctrl_bar + NFP_NET_CFG_START_RXQ);
 	rx_bar_off = nfp_qcp_queue_offset(dev_info, startq);
 
-	/* Allocate and initialise the netdev */
+	 
 	nn = nfp_net_alloc(pdev, dev_info, ctrl_bar, true,
 			   max_tx_rings, max_rx_rings);
 	if (IS_ERR(nn)) {
@@ -204,7 +188,7 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
 		u32 bar_off, bar_sz;
 		resource_size_t map_addr;
 
-		/* Make a single overlapping BAR mapping */
+		 
 		if (tx_bar_off < rx_bar_off)
 			bar_off = tx_bar_off;
 		else
@@ -223,14 +207,14 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
 			goto err_netdev_free;
 		}
 
-		/* TX queues */
+		 
 		nn->tx_bar = vf->q_bar + (tx_bar_off - bar_off);
-		/* RX queues */
+		 
 		nn->rx_bar = vf->q_bar + (rx_bar_off - bar_off);
 	} else {
 		resource_size_t map_addr;
 
-		/* TX queues */
+		 
 		map_addr = pci_resource_start(pdev, tx_bar_no) + tx_bar_off;
 		nn->tx_bar = ioremap(map_addr, tx_bar_sz);
 		if (!nn->tx_bar) {
@@ -239,7 +223,7 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
 			goto err_netdev_free;
 		}
 
-		/* RX queues */
+		 
 		map_addr = pci_resource_start(pdev, rx_bar_no) + rx_bar_off;
 		nn->rx_bar = ioremap(map_addr, rx_bar_sz);
 		if (!nn->rx_bar) {
@@ -307,9 +291,7 @@ static void nfp_netvf_pci_remove(struct pci_dev *pdev)
 
 	nn = vf->nn;
 
-	/* Note, the order is slightly different from above as we need
-	 * to keep the nn pointer around till we have freed everything.
-	 */
+	 
 	nfp_net_debugfs_dir_clean(&nn->debugfs_dir);
 	nfp_net_debugfs_dir_clean(&vf->ddir);
 

@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * CompactPCI Hot Plug Core Functions
- *
- * Copyright (C) 2002 SOMA Networks, Inc.
- * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2001 IBM Corp.
- *
- * All rights reserved.
- *
- * Send feedback to <scottm@somanetworks.com>
- */
+ 
+ 
 
 #ifndef _CPCI_HOTPLUG_H
 #define _CPCI_HOTPLUG_H
@@ -18,7 +8,7 @@
 #include <linux/pci.h>
 #include <linux/pci_hotplug.h>
 
-/* PICMG 2.1 R2.0 HS CSR bits: */
+ 
 #define HS_CSR_INS	0x0080
 #define HS_CSR_EXT	0x0040
 #define HS_CSR_PI	0x0030
@@ -75,13 +65,10 @@ int cpci_hp_unregister_bus(struct pci_bus *bus);
 int cpci_hp_start(void);
 int cpci_hp_stop(void);
 
-/* Global variables */
+ 
 extern int cpci_debug;
 
-/*
- * Internal function prototypes, these functions should not be used by
- * board/chassis drivers.
- */
+ 
 u8 cpci_get_attention_status(struct slot *slot);
 u16 cpci_get_hs_csr(struct slot *slot);
 int cpci_set_attention_status(struct slot *slot, int status);
@@ -99,4 +86,4 @@ int cpci_hotplug_init(int debug);
 static inline int cpci_hotplug_init(int debug) { return 0; }
 #endif
 
-#endif	/* _CPCI_HOTPLUG_H */
+#endif	 

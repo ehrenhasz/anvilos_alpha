@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright 2021 Google LLC.
- */
+
+ 
 
 #include <test_progs.h>
 #include <cgroup_helpers.h>
@@ -27,9 +25,7 @@ static void test_setsockopt_set(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach setsockopt that sets EUNATCH, assert that
-	 * we actually get that error when we run setsockopt()
-	 */
+	 
 	link_set_eunatch = bpf_program__attach_cgroup(obj->progs.set_eunatch,
 						      cgroup_fd);
 	if (!ASSERT_OK_PTR(link_set_eunatch, "cg-attach-set_eunatch"))
@@ -63,9 +59,7 @@ static void test_setsockopt_set_and_get(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach setsockopt that sets EUNATCH, and one that gets the
-	 * previously set errno. Assert that we get the same errno back.
-	 */
+	 
 	link_set_eunatch = bpf_program__attach_cgroup(obj->progs.set_eunatch,
 						      cgroup_fd);
 	if (!ASSERT_OK_PTR(link_set_eunatch, "cg-attach-set_eunatch"))
@@ -106,9 +100,7 @@ static void test_setsockopt_default_zero(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach setsockopt that gets the previously set errno.
-	 * Assert that, without anything setting one, we get 0.
-	 */
+	 
 	link_get_retval = bpf_program__attach_cgroup(obj->progs.get_retval,
 						     cgroup_fd);
 	if (!ASSERT_OK_PTR(link_get_retval, "cg-attach-get_retval"))
@@ -142,10 +134,7 @@ static void test_setsockopt_default_zero_and_set(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach setsockopt that gets the previously set errno, and then
-	 * one that sets the errno to EUNATCH. Assert that the get does not
-	 * see EUNATCH set later, and does not prevent EUNATCH from being set.
-	 */
+	 
 	link_get_retval = bpf_program__attach_cgroup(obj->progs.get_retval,
 						     cgroup_fd);
 	if (!ASSERT_OK_PTR(link_get_retval, "cg-attach-get_retval"))
@@ -187,10 +176,7 @@ static void test_setsockopt_override(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach setsockopt that sets EUNATCH, then one that sets EISCONN,
-	 * and then one that gets the exported errno. Assert both the syscall
-	 * and the helper sees the last set errno.
-	 */
+	 
 	link_set_eunatch = bpf_program__attach_cgroup(obj->progs.set_eunatch,
 						      cgroup_fd);
 	if (!ASSERT_OK_PTR(link_set_eunatch, "cg-attach-set_eunatch"))
@@ -236,11 +222,7 @@ static void test_setsockopt_legacy_eperm(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach setsockopt that return a reject without setting errno
-	 * (legacy reject), and one that gets the errno. Assert that for
-	 * backward compatibility the syscall result in EPERM, and this
-	 * is also visible to the helper.
-	 */
+	 
 	link_legacy_eperm = bpf_program__attach_cgroup(obj->progs.legacy_eperm,
 						       cgroup_fd);
 	if (!ASSERT_OK_PTR(link_legacy_eperm, "cg-attach-legacy_eperm"))
@@ -282,12 +264,7 @@ static void test_setsockopt_legacy_no_override(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach setsockopt that sets EUNATCH, then one that return a reject
-	 * without setting errno, and then one that gets the exported errno.
-	 * Assert both the syscall and the helper's errno are unaffected by
-	 * the second prog (i.e. legacy rejects does not override the errno
-	 * to EPERM).
-	 */
+	 
 	link_set_eunatch = bpf_program__attach_cgroup(obj->progs.set_eunatch,
 						      cgroup_fd);
 	if (!ASSERT_OK_PTR(link_set_eunatch, "cg-attach-set_eunatch"))
@@ -335,9 +312,7 @@ static void test_getsockopt_get(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach getsockopt that gets previously set errno. Assert that the
-	 * error from kernel is in both ctx_retval_value and retval_value.
-	 */
+	 
 	link_get_retval = bpf_program__attach_cgroup(obj->progs.get_retval,
 						     cgroup_fd);
 	if (!ASSERT_OK_PTR(link_get_retval, "cg-attach-get_retval"))
@@ -377,9 +352,7 @@ static void test_getsockopt_override(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach getsockopt that sets retval to -EISCONN. Assert that this
-	 * overrides the value from kernel.
-	 */
+	 
 	link_set_eisconn = bpf_program__attach_cgroup(obj->progs.set_eisconn,
 						      cgroup_fd);
 	if (!ASSERT_OK_PTR(link_set_eisconn, "cg-attach-set_eisconn"))
@@ -416,10 +389,7 @@ static void test_getsockopt_retval_sync(int cgroup_fd, int sock_fd)
 
 	obj->bss->page_size = sysconf(_SC_PAGESIZE);
 
-	/* Attach getsockopt that sets retval to -EISCONN, and one that clears
-	 * ctx retval. Assert that the clearing ctx retval is synced to helper
-	 * and clears any errors both from kernel and BPF..
-	 */
+	 
 	link_set_eisconn = bpf_program__attach_cgroup(obj->progs.set_eisconn,
 						      cgroup_fd);
 	if (!ASSERT_OK_PTR(link_set_eisconn, "cg-attach-set_eisconn"))

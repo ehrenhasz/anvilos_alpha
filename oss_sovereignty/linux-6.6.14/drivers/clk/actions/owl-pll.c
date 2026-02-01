@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// OWL pll clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -69,7 +69,7 @@ static long owl_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 		return clkt->rate;
 	}
 
-	/* fixed frequency */
+	 
 	if (pll_hw->width == 0)
 		return pll_hw->bfreq;
 
@@ -95,7 +95,7 @@ static unsigned long owl_pll_recalc_rate(struct clk_hw *hw,
 		return _get_table_rate(pll_hw->table, val);
 	}
 
-	/* fixed frequency */
+	 
 	if (pll_hw->width == 0)
 		return pll_hw->bfreq;
 
@@ -161,7 +161,7 @@ static int owl_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	const struct clk_pll_table *clkt;
 	u32 val, reg;
 
-	/* fixed frequency */
+	 
 	if (pll_hw->width == 0)
 		return 0;
 

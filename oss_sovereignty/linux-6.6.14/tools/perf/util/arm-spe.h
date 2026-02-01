@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Arm Statistical Profiling Extensions (SPE) support
- * Copyright (c) 2017-2018, Arm Ltd.
- */
+ 
+ 
 
 #ifndef INCLUDE__PERF_ARM_SPE_H__
 #define INCLUDE__PERF_ARM_SPE_H__

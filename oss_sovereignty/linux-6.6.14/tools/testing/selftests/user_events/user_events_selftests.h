@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _USER_EVENTS_SELFTESTS_H
 #define _USER_EVENTS_SELFTESTS_H
@@ -25,7 +25,7 @@ static inline bool tracefs_enabled(char **message, bool *fail, bool *umount)
 	*fail = false;
 	*umount = false;
 
-	/* Ensure tracefs is installed */
+	 
 	ret = stat("/sys/kernel/tracing", &buf);
 
 	if (ret == -1) {
@@ -33,7 +33,7 @@ static inline bool tracefs_enabled(char **message, bool *fail, bool *umount)
 		return false;
 	}
 
-	/* Ensure mounted tracefs */
+	 
 	ret = stat("/sys/kernel/tracing/README", &buf);
 
 	if (ret == -1 && errno == ENOENT) {
@@ -75,7 +75,7 @@ static inline bool user_events_enabled(char **message, bool *fail, bool *umount)
 	if (!tracefs_enabled(message, fail, umount))
 		return false;
 
-	/* Ensure user_events is installed */
+	 
 	ret = stat("/sys/kernel/tracing/user_events_data", &buf);
 
 	if (ret == -1) {
@@ -111,4 +111,4 @@ static inline bool user_events_enabled(char **message, bool *fail, bool *umount)
 		tracefs_unmount(); \
 } while (0)
 
-#endif /* _USER_EVENTS_SELFTESTS_H */
+#endif  

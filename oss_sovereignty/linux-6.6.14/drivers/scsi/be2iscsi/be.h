@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2017 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Limited and/or its subsidiaries.
- *
- * Contact Information:
- * linux-drivers@broadcom.com
- */
+ 
+ 
 
 #ifndef BEISCSI_H
 #define BEISCSI_H
@@ -17,7 +11,7 @@
 #define MCC_Q_LEN	128
 #define MCC_CQ_LEN	256
 #define MAX_MCC_CMD	16
-/* BladeEngine Generation numbers */
+ 
 #define BE_GEN2 2
 #define BE_GEN3 3
 #define BE_GEN4	4
@@ -30,11 +24,11 @@ struct be_dma_mem {
 struct be_queue_info {
 	struct be_dma_mem dma_mem;
 	u16 len;
-	u16 entry_size;		/* Size of an element in the queue */
+	u16 entry_size;		 
 	u16 id;
 	u16 tail, head;
 	bool created;
-	u16 used;		/* Number of valid elements in the queue */
+	u16 used;		 
 };
 
 static inline u32 MODULO(u16 val, u16 limit)
@@ -73,11 +67,11 @@ static inline void queue_tail_inc(struct be_queue_info *q)
 	index_inc(&q->tail, q->len);
 }
 
-/*ISCSI */
+ 
 
-struct be_aic_obj {		/* Adaptive interrupt coalescing (AIC) info */
+struct be_aic_obj {		 
 	unsigned long jiffies;
-	u32 eq_prev;		/* Used to calculate eqe */
+	u32 eq_prev;		 
 	u32 prev_eqd;
 #define BEISCSI_EQ_DELAY_MIN	0
 #define BEISCSI_EQ_DELAY_DEF	32
@@ -89,7 +83,7 @@ struct be_eq_obj {
 	struct be_queue_info q;
 	struct beiscsi_hba *phba;
 	struct be_queue_info *cq;
-	struct work_struct mcc_work; /* Work Item */
+	struct work_struct mcc_work;  
 	struct irq_poll	iopoll;
 };
 
@@ -110,20 +104,19 @@ struct beiscsi_mcc_tag_state {
 
 struct be_ctrl_info {
 	u8 __iomem *csr;
-	u8 __iomem *db;		/* Door Bell */
-	u8 __iomem *pcicfg;	/* PCI config space */
+	u8 __iomem *db;		 
+	u8 __iomem *pcicfg;	 
 	struct pci_dev *pdev;
 
-	/* Mbox used for cmd request/response */
-	struct mutex mbox_lock;	/* For serializing mbox cmds to BE card */
+	 
+	struct mutex mbox_lock;	 
 	struct be_dma_mem mbox_mem;
-	/* Mbox mem is adjusted to align to 16 bytes. The allocated addr
-	 * is stored for freeing purpose */
+	 
 	struct be_dma_mem mbox_mem_alloced;
 
-	/* MCC Rings */
+	 
 	struct be_mcc_obj mcc_obj;
-	spinlock_t mcc_lock;	/* For serializing mcc cmds to BE card */
+	spinlock_t mcc_lock;	 
 
 	wait_queue_head_t mcc_wait[MAX_MCC_CMD + 1];
 	unsigned int mcc_tag[MAX_MCC_CMD];
@@ -137,25 +130,25 @@ struct be_ctrl_info {
 
 #include "be_cmds.h"
 
-/* WRB index mask for MCC_Q_LEN queue entries */
+ 
 #define MCC_Q_WRB_IDX_MASK	CQE_STATUS_WRB_MASK
 #define MCC_Q_WRB_IDX_SHIFT	CQE_STATUS_WRB_SHIFT
-/* TAG is from 1...MAX_MCC_CMD, MASK includes MAX_MCC_CMD */
+ 
 #define MCC_Q_CMD_TAG_MASK	((MAX_MCC_CMD << 1) - 1)
 
 #define PAGE_SHIFT_4K		12
 #define PAGE_SIZE_4K		(1 << PAGE_SHIFT_4K)
 
-/* Returns number of pages spanned by the data starting at the given addr */
+ 
 #define PAGES_4K_SPANNED(_address, size)				\
 		((u32)((((size_t)(_address) & (PAGE_SIZE_4K - 1)) +	\
 			(size) + (PAGE_SIZE_4K - 1)) >> PAGE_SHIFT_4K))
 
-/* Returns bit offset within a DWORD of a bitfield */
+ 
 #define AMAP_BIT_OFFSET(_struct, field)					\
 		(((size_t)&(((_struct *)0)->field))%32)
 
-/* Returns the bit mask of the field that is NOT shifted into location. */
+ 
 static inline u32 amap_mask(u32 bitsize)
 {
 	return (bitsize == 32 ? 0xFFFFFFFF : (1 << bitsize) - 1);
@@ -200,6 +193,6 @@ static inline void swap_dws(void *wrb, int len)
 		dw++;
 		len -= 4;
 	} while (len);
-#endif /* __BIG_ENDIAN */
+#endif  
 }
-#endif /* BEISCSI_H */
+#endif  

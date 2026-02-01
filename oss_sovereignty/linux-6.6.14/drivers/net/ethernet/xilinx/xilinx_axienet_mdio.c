@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MDIO bus driver for the Xilinx Axi Ethernet device
- *
- * Copyright (c) 2009 Secret Lab Technologies, Ltd.
- * Copyright (c) 2010 - 2011 Michal Simek <monstr@monstr.eu>
- * Copyright (c) 2010 - 2011 PetaLogix
- * Copyright (c) 2019 SED Systems, a division of Calian Ltd.
- * Copyright (c) 2010 - 2012 Xilinx, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/of_address.h>
@@ -17,10 +9,10 @@
 
 #include "xilinx_axienet.h"
 
-#define DEFAULT_MDIO_FREQ	2500000 /* 2.5 MHz */
-#define DEFAULT_HOST_CLOCK	150000000 /* 150 MHz */
+#define DEFAULT_MDIO_FREQ	2500000  
+#define DEFAULT_HOST_CLOCK	150000000  
 
-/* Wait till MDIO interface is ready to accept a new transaction.*/
+ 
 static int axienet_mdio_wait_until_ready(struct axienet_local *lp)
 {
 	u32 val;
@@ -30,14 +22,14 @@ static int axienet_mdio_wait_until_ready(struct axienet_local *lp)
 				  1, 20000);
 }
 
-/* Enable the MDIO MDC. Called prior to a read/write operation */
+ 
 static void axienet_mdio_mdc_enable(struct axienet_local *lp)
 {
 	axienet_iow(lp, XAE_MDIO_MC_OFFSET,
 		    ((u32)lp->mii_clk_div | XAE_MDIO_MC_MDIOEN_MASK));
 }
 
-/* Disable the MDIO MDC. Called after a read/write operation*/
+ 
 static void axienet_mdio_mdc_disable(struct axienet_local *lp)
 {
 	u32 mc_reg;
@@ -47,18 +39,7 @@ static void axienet_mdio_mdc_disable(struct axienet_local *lp)
 		    (mc_reg & ~XAE_MDIO_MC_MDIOEN_MASK));
 }
 
-/**
- * axienet_mdio_read - MDIO interface read function
- * @bus:	Pointer to mii bus structure
- * @phy_id:	Address of the PHY device
- * @reg:	PHY register to read
- *
- * Return:	The register contents on success, -ETIMEDOUT on a timeout
- *
- * Reads the contents of the requested register from the requested PHY
- * address by first writing the details into MCR register. After a while
- * the register MRD is read to obtain the PHY register content.
- */
+ 
 static int axienet_mdio_read(struct mii_bus *bus, int phy_id, int reg)
 {
 	u32 rc;
@@ -96,19 +77,7 @@ static int axienet_mdio_read(struct mii_bus *bus, int phy_id, int reg)
 	return rc;
 }
 
-/**
- * axienet_mdio_write - MDIO interface write function
- * @bus:	Pointer to mii bus structure
- * @phy_id:	Address of the PHY device
- * @reg:	PHY register to write to
- * @val:	Value to be written into the register
- *
- * Return:	0 on success, -ETIMEDOUT on a timeout
- *
- * Writes the value to the requested register by first writing the value
- * into MWD register. The MCR register is then appropriately setup
- * to finish the write operation.
- */
+ 
 static int axienet_mdio_write(struct mii_bus *bus, int phy_id, int reg,
 			      u16 val)
 {
@@ -144,17 +113,7 @@ static int axienet_mdio_write(struct mii_bus *bus, int phy_id, int reg,
 	return 0;
 }
 
-/**
- * axienet_mdio_enable - MDIO hardware setup function
- * @lp:		Pointer to axienet local data structure.
- * @np:		Pointer to mdio device tree node.
- *
- * Return:	0 on success, -ETIMEDOUT on a timeout, -EOVERFLOW on a clock
- *		divisor overflow.
- *
- * Sets up the MDIO interface by initializing the MDIO clock and enabling the
- * MDIO interface in hardware.
- **/
+ 
 static int axienet_mdio_enable(struct axienet_local *lp, struct device_node *np)
 {
 	u32 mdio_freq = DEFAULT_MDIO_FREQ;
@@ -169,9 +128,7 @@ static int axienet_mdio_enable(struct axienet_local *lp, struct device_node *np)
 	} else {
 		struct device_node *np1;
 
-		/* Legacy fallback: detect CPU clock frequency and use as AXI
-		 * bus clock frequency. This only works on certain platforms.
-		 */
+		 
 		np1 = of_find_node_by_name(NULL, "cpu");
 		if (!np1) {
 			netdev_warn(lp->ndev, "Could not find CPU device node.\n");
@@ -195,41 +152,14 @@ static int axienet_mdio_enable(struct axienet_local *lp, struct device_node *np)
 		netdev_info(lp->ndev, "Setting non-standard mdio bus frequency to %u Hz\n",
 			    mdio_freq);
 
-	/* clk_div can be calculated by deriving it from the equation:
-	 * fMDIO = fHOST / ((1 + clk_div) * 2)
-	 *
-	 * Where fMDIO <= 2500000, so we get:
-	 * fHOST / ((1 + clk_div) * 2) <= 2500000
-	 *
-	 * Then we get:
-	 * 1 / ((1 + clk_div) * 2) <= (2500000 / fHOST)
-	 *
-	 * Then we get:
-	 * 1 / (1 + clk_div) <= ((2500000 * 2) / fHOST)
-	 *
-	 * Then we get:
-	 * 1 / (1 + clk_div) <= (5000000 / fHOST)
-	 *
-	 * So:
-	 * (1 + clk_div) >= (fHOST / 5000000)
-	 *
-	 * And finally:
-	 * clk_div >= (fHOST / 5000000) - 1
-	 *
-	 * fHOST can be read from the flattened device tree as property
-	 * "clock-frequency" from the CPU
-	 */
+	 
 
 	clk_div = (host_clock / (mdio_freq * 2)) - 1;
-	/* If there is any remainder from the division of
-	 * fHOST / (mdio_freq * 2), then we need to add
-	 * 1 to the clock divisor or we will surely be
-	 * above the requested frequency
-	 */
+	 
 	if (host_clock % (mdio_freq * 2))
 		clk_div++;
 
-	/* Check for overflow of mii_clk_div */
+	 
 	if (clk_div & ~XAE_MDIO_MC_CLOCK_DIVIDE_MAX) {
 		netdev_warn(lp->ndev, "MDIO clock divisor overflow\n");
 		return -EOVERFLOW;
@@ -249,17 +179,7 @@ static int axienet_mdio_enable(struct axienet_local *lp, struct device_node *np)
 	return ret;
 }
 
-/**
- * axienet_mdio_setup - MDIO setup function
- * @lp:		Pointer to axienet local data structure.
- *
- * Return:	0 on success, -ETIMEDOUT on a timeout, -EOVERFLOW on a clock
- *		divisor overflow, -ENOMEM when mdiobus_alloc (to allocate
- *		memory for mii bus structure) fails.
- *
- * Sets up the MDIO interface by initializing the MDIO clock.
- * Register the MDIO interface.
- **/
+ 
 int axienet_mdio_setup(struct axienet_local *lp)
 {
 	struct device_node *mdio_node;
@@ -300,12 +220,7 @@ unregister:
 	return ret;
 }
 
-/**
- * axienet_mdio_teardown - MDIO remove function
- * @lp:		Pointer to axienet local data structure.
- *
- * Unregisters the MDIO and frees any associate memory for mii bus.
- */
+ 
 void axienet_mdio_teardown(struct axienet_local *lp)
 {
 	mdiobus_unregister(lp->mii_bus);

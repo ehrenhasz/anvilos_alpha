@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ADXL372 3-Axis Digital Accelerometer SPI driver
- *
- * Copyright 2018 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>

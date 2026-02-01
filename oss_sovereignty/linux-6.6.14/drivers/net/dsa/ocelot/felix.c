@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2019-2021 NXP
- *
- * This is an umbrella module for all network switches that are
- * register-compatible with Ocelot and that perform I/O to their host CPU
- * through an NPI (Node Processor Interface) Ethernet port.
- */
+
+ 
 #include <uapi/linux/if_bridge.h>
 #include <soc/mscc/ocelot_vcap.h>
 #include <soc/mscc/ocelot_qsys.h>
@@ -25,10 +20,7 @@
 #include <net/dsa.h>
 #include "felix.h"
 
-/* Translate the DSA database API into the ocelot switch library API,
- * which uses VID 0 for all ports that aren't part of a bridge,
- * and expects the bridge_dev to be NULL in that case.
- */
+ 
 static struct net_device *felix_classify_db(struct dsa_db db)
 {
 	switch (db.type) {
@@ -61,9 +53,7 @@ static int felix_cpu_port_for_master(struct dsa_switch *ds,
 	return cpu_dp->index;
 }
 
-/* Set up VCAP ES0 rules for pushing a tag_8021q VLAN towards the CPU such that
- * the tagger can perform RX source port identification.
- */
+ 
 static int felix_tag_8021q_vlan_add_rx(struct dsa_switch *ds, int port,
 				       int upstream, u16 vid)
 {
@@ -123,9 +113,7 @@ static int felix_tag_8021q_vlan_del_rx(struct dsa_switch *ds, int port,
 	return ocelot_vcap_filter_del(ocelot, outer_tagging_rule);
 }
 
-/* Set up VCAP IS1 rules for stripping the tag_8021q VLAN on TX and VCAP IS2
- * rules for steering those tagged packets towards the correct destination port
- */
+ 
 static int felix_tag_8021q_vlan_add_tx(struct dsa_switch *ds, int port,
 				       u16 vid)
 {
@@ -230,10 +218,7 @@ static int felix_tag_8021q_vlan_add(struct dsa_switch *ds, int port, u16 vid,
 	struct dsa_port *cpu_dp;
 	int err;
 
-	/* tag_8021q.c assumes we are implementing this via port VLAN
-	 * membership, which we aren't. So we don't need to add any VCAP filter
-	 * for the CPU port.
-	 */
+	 
 	if (!dsa_is_user_port(ds, port))
 		return 0;
 
@@ -298,10 +283,7 @@ static int felix_trap_get_cpu_port(struct dsa_switch *ds,
 	return dp->cpu_dp->index;
 }
 
-/* On switches with no extraction IRQ wired, trapped packets need to be
- * replicated over Ethernet as well, otherwise we'd get no notification of
- * their arrival when using the ocelot-8021q tagging protocol.
- */
+ 
 static int felix_update_trapping_destinations(struct dsa_switch *ds,
 					      bool using_tag_8021q)
 {
@@ -317,29 +299,22 @@ static int felix_update_trapping_destinations(struct dsa_switch *ds,
 	if (!felix->info->quirk_no_xtr_irq)
 		return 0;
 
-	/* We are sure that "cpu" was found, otherwise
-	 * dsa_tree_setup_default_cpu() would have failed earlier.
-	 */
+	 
 	block_vcap_is2 = &ocelot->block[VCAP_IS2];
 
-	/* Make sure all traps are set up for that destination */
+	 
 	list_for_each_entry(trap, &block_vcap_is2->rules, list) {
 		if (!trap->is_trap)
 			continue;
 
-		/* Figure out the current trapping destination */
+		 
 		if (using_tag_8021q) {
-			/* Redirect to the tag_8021q CPU port. If timestamps
-			 * are necessary, also copy trapped packets to the CPU
-			 * port module.
-			 */
+			 
 			mask_mode = OCELOT_MASK_MODE_REDIRECT;
 			port_mask = BIT(felix_trap_get_cpu_port(ds, trap));
 			cpu_copy_ena = !!trap->take_ts;
 		} else {
-			/* Trap packets only to the CPU port module, which is
-			 * redirected to the NPI port (the DSA CPU port)
-			 */
+			 
 			mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
 			port_mask = 0;
 			cpu_copy_ena = true;
@@ -362,12 +337,7 @@ static int felix_update_trapping_destinations(struct dsa_switch *ds,
 	return 0;
 }
 
-/* The CPU port module is connected to the Node Processor Interface (NPI). This
- * is the mode through which frames can be injected from and extracted to an
- * external CPU, over Ethernet. In NXP SoCs, the "external CPU" is the ARM CPU
- * running Linux, and this forms a DSA setup together with the enetc or fman
- * DSA master.
- */
+ 
 static void felix_npi_port_init(struct ocelot *ocelot, int port)
 {
 	ocelot->npi = port;
@@ -376,19 +346,19 @@ static void felix_npi_port_init(struct ocelot *ocelot, int port)
 		     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(port),
 		     QSYS_EXT_CPU_CFG);
 
-	/* NPI port Injection/Extraction configuration */
+	 
 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
 			    ocelot->npi_xtr_prefix);
 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
 			    ocelot->npi_inj_prefix);
 
-	/* Disable transmission of pause frames */
+	 
 	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
 }
 
 static void felix_npi_port_deinit(struct ocelot *ocelot, int port)
 {
-	/* Restore hardware defaults */
+	 
 	int unused_port = ocelot->num_phys_ports + 2;
 
 	ocelot->npi = -1;
@@ -401,7 +371,7 @@ static void felix_npi_port_deinit(struct ocelot *ocelot, int port)
 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
 			    OCELOT_TAG_PREFIX_DISABLED);
 
-	/* Enable transmission of pause frames */
+	 
 	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 1);
 }
 
@@ -454,10 +424,7 @@ static int felix_tag_npi_change_master(struct dsa_switch *ds, int port,
 		return -EOPNOTSUPP;
 	}
 
-	/* Changing the NPI port breaks user ports still assigned to the old
-	 * one, so only allow it while they're down, and don't allow them to
-	 * come back up until they're all changed to the new one.
-	 */
+	 
 	dsa_switch_for_each_user_port(other_dp, ds) {
 		struct net_device *slave = other_dp->slave;
 
@@ -475,13 +442,7 @@ static int felix_tag_npi_change_master(struct dsa_switch *ds, int port,
 	return 0;
 }
 
-/* Alternatively to using the NPI functionality, that same hardware MAC
- * connected internally to the enetc or fman DSA master can be configured to
- * use the software-defined tag_8021q frame format. As far as the hardware is
- * concerned, it thinks it is a "dumb switch" - the queues of the CPU port
- * module are now disconnected from it, but can still be accessed through
- * register-based MMIO.
- */
+ 
 static const struct felix_tag_proto_ops felix_tag_npi_proto_ops = {
 	.setup			= felix_tag_npi_setup,
 	.teardown		= felix_tag_npi_teardown,
@@ -507,27 +468,12 @@ static int felix_tag_8021q_setup(struct dsa_switch *ds)
 						 dp->cpu_dp->index);
 
 	dsa_switch_for_each_available_port(dp, ds)
-		/* This overwrites ocelot_init():
-		 * Do not forward BPDU frames to the CPU port module,
-		 * for 2 reasons:
-		 * - When these packets are injected from the tag_8021q
-		 *   CPU port, we want them to go out, not loop back
-		 *   into the system.
-		 * - STP traffic ingressing on a user port should go to
-		 *   the tag_8021q CPU port, not to the hardware CPU
-		 *   port module.
-		 */
+		 
 		ocelot_write_gix(ocelot,
 				 ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(0),
 				 ANA_PORT_CPU_FWD_BPDU_CFG, dp->index);
 
-	/* The ownership of the CPU port module's queues might have just been
-	 * transferred to the tag_8021q tagger from the NPI-based tagger.
-	 * So there might still be all sorts of crap in the queues. On the
-	 * other hand, the MMIO-based matching of PTP frames is very brittle,
-	 * so we need to be careful that there are no extra frames to be
-	 * dequeued over MMIO, since we would never know to discard them.
-	 */
+	 
 	ocelot_drain_cpu_queue(ocelot, 0);
 
 	return 0;
@@ -539,9 +485,7 @@ static void felix_tag_8021q_teardown(struct dsa_switch *ds)
 	struct dsa_port *dp;
 
 	dsa_switch_for_each_available_port(dp, ds)
-		/* Restore the logic from ocelot_init:
-		 * do not forward BPDU frames to the front ports.
-		 */
+		 
 		ocelot_write_gix(ocelot,
 				 ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(0xffff),
 				 ANA_PORT_CPU_FWD_BPDU_CFG,
@@ -634,11 +578,7 @@ static int felix_migrate_mdbs(struct dsa_switch *ds,
 	return ocelot_migrate_mdbs(ocelot, from, to);
 }
 
-/* Configure the shared hardware resources for a transition between
- * @old_proto_ops and @proto_ops.
- * Manual migration is needed because as far as DSA is concerned, no change of
- * the CPU port is taking place here, just of the tagging protocol.
- */
+ 
 static int
 felix_tag_proto_setup_shared(struct dsa_switch *ds,
 			     const struct felix_tag_proto_ops *proto_ops,
@@ -658,10 +598,7 @@ felix_tag_proto_setup_shared(struct dsa_switch *ds,
 	return 0;
 }
 
-/* This always leaves the switch in a consistent state, because although the
- * tag_8021q setup can fail, the NPI setup can't. So either the change is made,
- * or the restoration is guaranteed to work.
- */
+ 
 static int felix_change_tag_protocol(struct dsa_switch *ds,
 				     enum dsa_tag_protocol proto)
 {
@@ -949,7 +886,7 @@ static int felix_lag_join(struct dsa_switch *ds, int port,
 	if (err)
 		return err;
 
-	/* Update the logical LAG port that serves as tag_8021q CPU port */
+	 
 	if (!dsa_is_cpu_port(ds, port))
 		return 0;
 
@@ -963,7 +900,7 @@ static int felix_lag_leave(struct dsa_switch *ds, int port,
 
 	ocelot_port_lag_leave(ocelot, port, lag.dev);
 
-	/* Update the logical LAG port that serves as tag_8021q CPU port */
+	 
 	if (!dsa_is_cpu_port(ds, port))
 		return 0;
 
@@ -987,14 +924,7 @@ static int felix_vlan_prepare(struct dsa_switch *ds, int port,
 	struct ocelot *ocelot = ds->priv;
 	u16 flags = vlan->flags;
 
-	/* Ocelot switches copy frames as-is to the CPU, so the flags:
-	 * egress-untagged or not, pvid or not, make no difference. This
-	 * behavior is already better than what DSA just tries to approximate
-	 * when it installs the VLAN with the same flags on the CPU port.
-	 * Just accept any configuration, and don't let ocelot deny installing
-	 * multiple native VLANs on the NPI port, because the switch doesn't
-	 * look at the port tag settings towards the NPI interface anyway.
-	 */
+	 
 	if (port == ocelot->npi)
 		return 0;
 
@@ -1258,7 +1188,7 @@ static int felix_parse_ports_node(struct felix *felix,
 		u32 port;
 		int err;
 
-		/* Get switch port number from DT */
+		 
 		if (of_property_read_u32(child, "reg", &port) < 0) {
 			dev_err(dev, "Port number not defined in device tree "
 				"(property \"reg\")\n");
@@ -1266,7 +1196,7 @@ static int felix_parse_ports_node(struct felix *felix,
 			return -ENODEV;
 		}
 
-		/* Get PHY mode from DT */
+		 
 		err = of_get_phy_mode(child, &phy_mode);
 		if (err) {
 			dev_err(dev, "Failed to read phy-mode or "
@@ -1281,10 +1211,7 @@ static int felix_parse_ports_node(struct felix *felix,
 			dev_info(dev, "Unsupported PHY mode %s on port %d\n",
 				 phy_modes(phy_mode), port);
 
-			/* Leave port_phy_modes[port] = 0, which is also
-			 * PHY_INTERFACE_MODE_NA. This will perform a
-			 * best-effort to bring up as many ports as possible.
-			 */
+			 
 			continue;
 		}
 
@@ -1324,10 +1251,7 @@ static struct regmap *felix_request_regmap_by_name(struct felix *felix,
 	struct resource res;
 	int i;
 
-	/* In an MFD configuration, regmaps are registered directly to the
-	 * parent device before the child devices are probed, so there is no
-	 * need to initialize a new one.
-	 */
+	 
 	if (!felix->info->resources)
 		return dev_get_regmap(ocelot->dev->parent, resource_name);
 
@@ -1350,9 +1274,7 @@ static struct regmap *felix_request_regmap(struct felix *felix,
 {
 	const char *resource_name = felix->info->resource_names[target];
 
-	/* If the driver didn't provide a resource name for the target,
-	 * the resource is optional.
-	 */
+	 
 	if (!resource_name)
 		return NULL;
 
@@ -1577,9 +1499,7 @@ static int felix_setup(struct dsa_switch *ds)
 			felix->info->configure_serdes(ocelot, dp->index,
 						      dp->dn);
 
-		/* Set the default QoS Classification based on PCP and DEI
-		 * bits of vlan tag.
-		 */
+		 
 		felix_port_qos_map_init(ocelot, dp->index);
 	}
 
@@ -1587,9 +1507,7 @@ static int felix_setup(struct dsa_switch *ds)
 	if (err)
 		goto out_deinit_ports;
 
-	/* The initial tag protocol is NPI which won't fail during initial
-	 * setup, there's no real point in checking for errors.
-	 */
+	 
 	felix_change_tag_protocol(ds, felix->tag_proto);
 
 	ds->mtu_enforcement_ingress = true;
@@ -1679,12 +1597,7 @@ static bool felix_check_xtr_pkt(struct ocelot *ocelot)
 		if (err)
 			goto out;
 
-		/* We trap to the CPU port module all PTP frames, but
-		 * felix_rxtstamp() only gets called for event frames.
-		 * So we need to avoid sending duplicate general
-		 * message frames by running a second BPF classifier
-		 * here and dropping those.
-		 */
+		 
 		__skb_push(skb, ETH_HLEN);
 
 		type = ptp_classify_raw(skb);
@@ -1732,11 +1645,7 @@ static bool felix_rxtstamp(struct dsa_switch *ds, int port,
 		break;
 	}
 
-	/* If the "no XTR IRQ" workaround is in use, tell DSA to defer this skb
-	 * for RX timestamping. Then free it, and poll for its copy through
-	 * MMIO in the CPU port module, and inject that into the stack from
-	 * ocelot_xtr_poll().
-	 */
+	 
 	if (felix_check_xtr_pkt(ocelot)) {
 		kfree_skb(skb);
 		return true;

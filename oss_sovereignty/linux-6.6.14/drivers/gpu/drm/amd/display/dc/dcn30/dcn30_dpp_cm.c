@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "core_types.h"
@@ -47,7 +24,7 @@ static void dpp3_enable_cm_block(
 
 	unsigned int cm_bypass_mode = 0;
 
-	// debug option: put CM in bypass mode
+	
 	if (dpp_base->ctx->dc->debug.cm_in_bypass)
 		cm_bypass_mode = 1;
 
@@ -66,7 +43,7 @@ static enum dc_lut_mode dpp30_get_gamcor_current(struct dpp *dpp_base)
 	if (state_mode == 0)
 		mode = LUT_BYPASS;
 
-	if (state_mode == 2) {//Programmable RAM LUT
+	if (state_mode == 2) {
 		REG_GET(CM_GAMCOR_CONTROL, CM_GAMCOR_SELECT_CURRENT, &lut_mode);
 		if (lut_mode == 0)
 			mode = LUT_RAM_A;
@@ -89,9 +66,7 @@ static void dpp3_program_gammcor_lut(
 	uint32_t last_base_value_green = rgb[num-1].green_reg + rgb[num-1].delta_green_reg;
 	uint32_t last_base_value_blue = rgb[num-1].blue_reg + rgb[num-1].delta_blue_reg;
 
-	/*fill in the LUT with all base values to be used by pwl module
-	 * HW auto increments the LUT index: back-to-back write
-	 */
+	 
 	if (is_rgb_equal(rgb,  num)) {
 		for (i = 0 ; i < num; i++)
 			REG_SET(CM_GAMCOR_LUT_DATA, 0, CM_GAMCOR_LUT_DATA, rgb[i].red_reg);
@@ -225,7 +200,7 @@ bool dpp3_program_gamcor_lut(
 
 	dpp3_enable_cm_block(dpp_base);
 
-	if (params == NULL) { //bypass if we have no pwl data
+	if (params == NULL) { 
 		REG_SET(CM_GAMCOR_CONTROL, 0, CM_GAMCOR_MODE, 0);
 		if (dpp_base->ctx->dc->debug.enable_mem_low_power.bits.cm)
 			dpp3_power_on_gamcor_lut(dpp_base, false);
@@ -258,7 +233,7 @@ bool dpp3_program_gamcor_lut(
 		gam_regs.start_end_cntl2_r = REG(CM_GAMCOR_RAMB_END_CNTL2_R);
 		gam_regs.region_start = REG(CM_GAMCOR_RAMB_REGION_0_1);
 		gam_regs.region_end = REG(CM_GAMCOR_RAMB_REGION_32_33);
-		//New registers in DCN3AG/DCN GAMCOR block
+		
 		gam_regs.offset_b =  REG(CM_GAMCOR_RAMB_OFFSET_B);
 		gam_regs.offset_g =  REG(CM_GAMCOR_RAMB_OFFSET_G);
 		gam_regs.offset_r =  REG(CM_GAMCOR_RAMB_OFFSET_R);
@@ -280,7 +255,7 @@ bool dpp3_program_gamcor_lut(
 		gam_regs.start_end_cntl2_r = REG(CM_GAMCOR_RAMA_END_CNTL2_R);
 		gam_regs.region_start = REG(CM_GAMCOR_RAMA_REGION_0_1);
 		gam_regs.region_end = REG(CM_GAMCOR_RAMA_REGION_32_33);
-		//New registers in DCN3AG/DCN GAMCOR block
+		
 		gam_regs.offset_b =  REG(CM_GAMCOR_RAMA_OFFSET_B);
 		gam_regs.offset_g =  REG(CM_GAMCOR_RAMA_OFFSET_G);
 		gam_regs.offset_r =  REG(CM_GAMCOR_RAMA_OFFSET_R);
@@ -289,16 +264,16 @@ bool dpp3_program_gamcor_lut(
 		gam_regs.start_base_cntl_r = REG(CM_GAMCOR_RAMA_START_BASE_CNTL_R);
 	}
 
-	//get register fields
+	
 	dpp3_gamcor_reg_field(dpp, &gam_regs);
 
-	//program register set for LUTA/LUTB
+	
 	cm_helper_program_gamcor_xfer_func(dpp_base->ctx, params, &gam_regs);
 
 	dpp3_program_gammcor_lut(dpp_base, params->rgb_resulted, params->hw_points_num,
 				 next_mode == LUT_RAM_A);
 
-	//select Gamma LUT to use for next frame
+	
 	REG_UPDATE(CM_GAMCOR_CONTROL, CM_GAMCOR_SELECT, next_mode == LUT_RAM_A ? 0:1);
 
 	return true;
@@ -331,9 +306,7 @@ static void program_gamut_remap(
 	case GAMUT_REMAP_COEFF:
 		selection = 1;
 		break;
-		/*this corresponds to GAMUT_REMAP coefficients set B
-		 *we don't have common coefficient sets in dcn3ag/dcn3
-		 */
+		 
 	case GAMUT_REMAP_COMA_COEFF:
 		selection = 2;
 		break;
@@ -367,7 +340,7 @@ static void program_gamut_remap(
 				&gam_regs);
 
 	}
-	//select coefficient set to use
+	
 	REG_SET(
 			CM_GAMUT_REMAP_CONTROL, 0,
 			CM_GAMUT_REMAP_MODE, selection);
@@ -382,7 +355,7 @@ void dpp3_cm_set_gamut_remap(
 	int gamut_mode;
 
 	if (adjust->gamut_adjust_type != GRAPHICS_GAMUT_ADJUST_TYPE_SW)
-		/* Bypass if type is bypass or hw */
+		 
 		program_gamut_remap(dpp, NULL, GAMUT_REMAP_BYPASS);
 	else {
 		struct fixed31_32 arr_matrix[12];
@@ -394,17 +367,17 @@ void dpp3_cm_set_gamut_remap(
 		convert_float_matrix(
 			arr_reg_val, arr_matrix, 12);
 
-		//current coefficient set in use
+		
 		REG_GET(CM_GAMUT_REMAP_CONTROL, CM_GAMUT_REMAP_MODE_CURRENT, &gamut_mode);
 
 		if (gamut_mode == 0)
-			gamut_mode = 1; //use coefficient set A
+			gamut_mode = 1; 
 		else if (gamut_mode == 1)
 			gamut_mode = 2;
 		else
 			gamut_mode = 1;
 
-		//follow dcn2 approach for now - using only coefficient set A
+		
 		program_gamut_remap(dpp, arr_reg_val, gamut_mode);
 	}
 }

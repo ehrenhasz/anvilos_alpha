@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications Inc.
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -16,7 +13,7 @@ struct qrtr_smd_dev {
 	struct device *dev;
 };
 
-/* from smd to qrtr */
+ 
 static int qcom_smd_qrtr_callback(struct rpmsg_device *rpdev,
 				  void *data, int len, void *priv, u32 addr)
 {
@@ -29,14 +26,14 @@ static int qcom_smd_qrtr_callback(struct rpmsg_device *rpdev,
 	rc = qrtr_endpoint_post(&qdev->ep, data, len);
 	if (rc == -EINVAL) {
 		dev_err(qdev->dev, "invalid ipcrouter packet\n");
-		/* return 0 to let smd drop the packet */
+		 
 		rc = 0;
 	}
 
 	return rc;
 }
 
-/* from qrtr to smd */
+ 
 static int qcom_smd_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
 {
 	struct qrtr_smd_dev *qdev = container_of(ep, struct qrtr_smd_dev, ep);

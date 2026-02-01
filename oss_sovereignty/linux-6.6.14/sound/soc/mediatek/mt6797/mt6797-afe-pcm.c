@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Mediatek ALSA SoC AFE platform driver for 6797
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -173,7 +173,7 @@ static int mt6797_irq_fs(struct snd_pcm_substream *substream, unsigned int rate)
 			 SNDRV_PCM_FMTBIT_S32_LE)
 
 static struct snd_soc_dai_driver mt6797_memif_dai_driver[] = {
-	/* FE DAIs: memory intefaces to CPU */
+	 
 	{
 		.name = "DL1",
 		.id = MT6797_MEMIF_DL1,
@@ -272,7 +272,7 @@ static struct snd_soc_dai_driver mt6797_memif_dai_driver[] = {
 	},
 };
 
-/* dma widget & routes*/
+ 
 static const struct snd_kcontrol_new memif_ul1_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1", AFE_CONN21,
 				    I_ADDA_UL_CH1, 1, 0),
@@ -330,7 +330,7 @@ static const struct snd_kcontrol_new memif_ul_mono_2_mix[] = {
 };
 
 static const struct snd_soc_dapm_widget mt6797_memif_widgets[] = {
-	/* memif */
+	 
 	SND_SOC_DAPM_MIXER("UL1_CH1", SND_SOC_NOPM, 0, 0,
 			   memif_ul1_ch1_mix, ARRAY_SIZE(memif_ul1_ch1_mix)),
 	SND_SOC_DAPM_MIXER("UL1_CH2", SND_SOC_NOPM, 0, 0,
@@ -356,7 +356,7 @@ static const struct snd_soc_dapm_widget mt6797_memif_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route mt6797_memif_routes[] = {
-	/* capture */
+	 
 	{"UL1", NULL, "UL1_CH1"},
 	{"UL1", NULL, "UL1_CH2"},
 	{"UL1_CH1", "ADDA_UL_CH1", "ADDA Capture"},
@@ -609,7 +609,7 @@ static irqreturn_t mt6797_afe_irq_handler(int irq_id, void *dev)
 	int i;
 	irqreturn_t irq_ret = IRQ_HANDLED;
 
-	/* get irq that is sent to MCU */
+	 
 	regmap_read(afe->regmap, AFE_IRQ_MCU_EN, &mcu_en);
 
 	ret = regmap_read(afe->regmap, AFE_IRQ_MCU_STATUS, &status);
@@ -617,7 +617,7 @@ static irqreturn_t mt6797_afe_irq_handler(int irq_id, void *dev)
 		dev_err(afe->dev, "%s(), irq status err, ret %d, status 0x%x, mcu_en 0x%x\n",
 			__func__, ret, status, mcu_en);
 
-		/* only clear IRQ which is sent to MCU */
+		 
 		status = mcu_en & AFE_IRQ_STATUS_BITS;
 
 		irq_ret = IRQ_NONE;
@@ -637,7 +637,7 @@ static irqreturn_t mt6797_afe_irq_handler(int irq_id, void *dev)
 	}
 
 err_irq:
-	/* clear irq */
+	 
 	regmap_write(afe->regmap,
 		     AFE_IRQ_MCU_CLR,
 		     status & AFE_IRQ_STATUS_BITS);
@@ -651,7 +651,7 @@ static int mt6797_afe_runtime_suspend(struct device *dev)
 	unsigned int afe_on_retm;
 	int retry = 0;
 
-	/* disable AFE */
+	 
 	regmap_update_bits(afe->regmap, AFE_DAC_CON0, AFE_ON_MASK_SFT, 0x0);
 	do {
 		regmap_read(afe->regmap, AFE_DAC_CON0, &afe_on_retm);
@@ -664,7 +664,7 @@ static int mt6797_afe_runtime_suspend(struct device *dev)
 	if (retry)
 		dev_warn(afe->dev, "%s(), retry %d\n", __func__, retry);
 
-	/* make sure all irq status are cleared */
+	 
 	regmap_update_bits(afe->regmap, AFE_IRQ_MCU_CLR, 0xffff, 0xffff);
 
 	return mt6797_afe_disable_clock(afe);
@@ -679,24 +679,24 @@ static int mt6797_afe_runtime_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* irq signal to mcu only */
+	 
 	regmap_write(afe->regmap, AFE_IRQ_MCU_EN, AFE_IRQ_MCU_EN_MASK_SFT);
 
-	/* force all memif use normal mode */
+	 
 	regmap_update_bits(afe->regmap, AFE_MEMIF_HDALIGN,
 			   0x7ff << 16, 0x7ff << 16);
-	/* force cpu use normal mode when access sram data */
+	 
 	regmap_update_bits(afe->regmap, AFE_MEMIF_MSB,
 			   CPU_COMPACT_MODE_MASK_SFT, 0);
-	/* force cpu use 8_24 format when writing 32bit data */
+	 
 	regmap_update_bits(afe->regmap, AFE_MEMIF_MSB,
 			   CPU_HD_ALIGN_MASK_SFT, 0);
 
-	/* set all output port to 24bit */
+	 
 	regmap_update_bits(afe->regmap, AFE_CONN_24BIT,
 			   0x3fffffff, 0x3fffffff);
 
-	/* enable AFE */
+	 
 	regmap_update_bits(afe->regmap, AFE_DAC_CON0,
 			   AFE_ON_MASK_SFT,
 			   0x1 << AFE_ON_SFT);
@@ -764,14 +764,14 @@ static int mt6797_afe_pcm_dev_probe(struct platform_device *pdev)
 	afe->dev = &pdev->dev;
 	dev = afe->dev;
 
-	/* initial audio related clock */
+	 
 	ret = mt6797_init_clock(afe);
 	if (ret) {
 		dev_err(dev, "init clock error\n");
 		return ret;
 	}
 
-	/* regmap init */
+	 
 	afe->base_addr = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(afe->base_addr))
 		return PTR_ERR(afe->base_addr);
@@ -781,7 +781,7 @@ static int mt6797_afe_pcm_dev_probe(struct platform_device *pdev)
 	if (IS_ERR(afe->regmap))
 		return PTR_ERR(afe->regmap);
 
-	/* init memif */
+	 
 	afe->memif_size = MT6797_MEMIF_NUM;
 	afe->memif = devm_kcalloc(dev, afe->memif_size, sizeof(*afe->memif),
 				  GFP_KERNEL);
@@ -795,7 +795,7 @@ static int mt6797_afe_pcm_dev_probe(struct platform_device *pdev)
 
 	mutex_init(&afe->irq_alloc_lock);
 
-	/* irq initialize */
+	 
 	afe->irqs_size = MT6797_IRQ_NUM;
 	afe->irqs = devm_kcalloc(dev, afe->irqs_size, sizeof(*afe->irqs),
 				 GFP_KERNEL);
@@ -805,7 +805,7 @@ static int mt6797_afe_pcm_dev_probe(struct platform_device *pdev)
 	for (i = 0; i < afe->irqs_size; i++)
 		afe->irqs[i].irq_data = &irq_data[i];
 
-	/* request irq */
+	 
 	irq_id = platform_get_irq(pdev, 0);
 	if (irq_id < 0)
 		return irq_id;
@@ -817,7 +817,7 @@ static int mt6797_afe_pcm_dev_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* init sub_dais */
+	 
 	INIT_LIST_HEAD(&afe->sub_dais);
 
 	for (i = 0; i < ARRAY_SIZE(dai_register_cbs); i++) {
@@ -829,7 +829,7 @@ static int mt6797_afe_pcm_dev_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* init dai_driver and component_driver */
+	 
 	ret = mtk_afe_combine_sub_dai(afe);
 	if (ret) {
 		dev_warn(afe->dev, "mtk_afe_combine_sub_dai fail, ret %d\n",
@@ -851,7 +851,7 @@ static int mt6797_afe_pcm_dev_probe(struct platform_device *pdev)
 		goto err_pm_disable;
 	pm_runtime_get_sync(&pdev->dev);
 
-	/* register component */
+	 
 	ret = devm_snd_soc_register_component(dev, &mt6797_afe_component,
 					      NULL, 0);
 	if (ret) {

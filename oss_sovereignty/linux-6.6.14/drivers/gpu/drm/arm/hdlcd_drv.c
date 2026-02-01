@@ -1,13 +1,4 @@
-/*
- * Copyright (C) 2013-2015 ARM Limited
- * Author: Liviu Dudau <Liviu.Dudau@arm.com>
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- *
- *  ARM HDLCD Driver
- */
+ 
 
 #include <linux/module.h>
 #include <linux/spinlock.h>
@@ -62,7 +53,7 @@ static irqreturn_t hdlcd_irq(int irq, void *arg)
 	if (irq_status & HDLCD_INTERRUPT_VSYNC)
 		drm_crtc_handle_vblank(&hdlcd->crtc);
 
-	/* acknowledge interrupt(s) */
+	 
 	hdlcd_write(hdlcd, HDLCD_REG_INT_CLEAR, irq_status);
 
 	return IRQ_HANDLED;
@@ -72,7 +63,7 @@ static int hdlcd_irq_install(struct hdlcd_drm_private *hdlcd)
 {
 	int ret;
 
-	/* Ensure interrupts are disabled */
+	 
 	hdlcd_write(hdlcd, HDLCD_REG_INT_MASK, 0);
 	hdlcd_write(hdlcd, HDLCD_REG_INT_CLEAR, ~0);
 
@@ -81,7 +72,7 @@ static int hdlcd_irq_install(struct hdlcd_drm_private *hdlcd)
 		return ret;
 
 #ifdef CONFIG_DEBUG_FS
-	/* enable debug interrupts */
+	 
 	hdlcd_write(hdlcd, HDLCD_REG_INT_MASK, HDLCD_DEBUG_INT_MASK);
 #endif
 
@@ -90,7 +81,7 @@ static int hdlcd_irq_install(struct hdlcd_drm_private *hdlcd)
 
 static void hdlcd_irq_uninstall(struct hdlcd_drm_private *hdlcd)
 {
-	/* disable all the interrupts that we might have enabled */
+	 
 	hdlcd_write(hdlcd, HDLCD_REG_INT_MASK, 0);
 
 	free_irq(hdlcd->irq, hdlcd);
@@ -131,7 +122,7 @@ static int hdlcd_load(struct drm_device *drm, unsigned long flags)
 		(version & HDLCD_VERSION_MAJOR_MASK) >> 8,
 		version & HDLCD_VERSION_MINOR_MASK);
 
-	/* Get the optional framebuffer memory resource */
+	 
 	ret = of_reserved_mem_device_init(drm->dev);
 	if (ret && ret != -ENODEV)
 		return ret;
@@ -258,7 +249,7 @@ static int hdlcd_drm_bind(struct device *dev)
 	if (ret)
 		goto err_free;
 
-	/* Set the CRTC's port so that the encoder component can find it */
+	 
 	hdlcd->crtc.port = of_graph_get_port_by_id(dev->of_node, 0);
 
 	ret = component_bind_all(dev, drm);
@@ -279,10 +270,7 @@ static int hdlcd_drm_bind(struct device *dev)
 		goto err_vblank;
 	}
 
-	/*
-	 * If EFI left us running, take over from simple framebuffer
-	 * drivers. Read HDLCD_REG_COMMAND to see if we are enabled.
-	 */
+	 
 	if (hdlcd_read(hdlcd, HDLCD_REG_COMMAND)) {
 		hdlcd_write(hdlcd, HDLCD_REG_COMMAND, 0);
 		drm_aperture_remove_framebuffers(&hdlcd_driver);
@@ -355,7 +343,7 @@ static int hdlcd_probe(struct platform_device *pdev)
 	struct device_node *port;
 	struct component_match *match = NULL;
 
-	/* there is only one output port inside each device, find it */
+	 
 	port = of_graph_get_remote_node(pdev->dev.of_node, 0, 0);
 	if (!port)
 		return -ENODEV;

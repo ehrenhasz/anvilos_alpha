@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CPPC (Collaborative Processor Performance Control) methods used by CPUfreq drivers.
- *
- * (C) Copyright 2014, 2015 Linaro Ltd.
- * Author: Ashwin Chaugule <ashwin.chaugule@linaro.org>
- *
- * CPPC describes a few methods for controlling CPU performance using
- * information from a per CPU table called CPC. This table is described in
- * the ACPI v5.0+ specification. The table consists of a list of
- * registers which may be memory mapped or hardware registers and also may
- * include some static integer values.
- *
- * CPU performance is on an abstract continuous scale as against a discretized
- * P-state scale which is tied to CPU frequency only. In brief, the basic
- * operation involves:
- *
- * - OS makes a CPU performance request. (Can provide min and max bounds)
- *
- * - Platform (such as BMC) is free to optimize request within requested bounds
- *   depending on power/thermal budgets etc.
- *
- * - Platform conveys its decision back to OS
- *
- * The communication between OS and platform occurs through another medium
- * called (PCC) Platform Communication Channel. This is a generic mailbox like
- * mechanism which includes doorbell semantics to indicate register updates.
- * See drivers/mailbox/pcc.c for details on PCC.
- *
- * Finer details about the PCC and CPPC spec are available in the ACPI v5.1 and
- * above specifications.
- */
+
+ 
 
 #define pr_fmt(fmt)	"ACPI CPPC: " fmt
 
@@ -49,27 +19,14 @@ struct cppc_pcc_data {
 	unsigned int deadline_us;
 	unsigned int pcc_mpar, pcc_mrtt, pcc_nominal;
 
-	bool pending_pcc_write_cmd;	/* Any pending/batched PCC write cmds? */
-	bool platform_owns_pcc;		/* Ownership of PCC subspace */
-	unsigned int pcc_write_cnt;	/* Running count of PCC write commands */
+	bool pending_pcc_write_cmd;	 
+	bool platform_owns_pcc;		 
+	unsigned int pcc_write_cnt;	 
 
-	/*
-	 * Lock to provide controlled access to the PCC channel.
-	 *
-	 * For performance critical usecases(currently cppc_set_perf)
-	 *	We need to take read_lock and check if channel belongs to OSPM
-	 * before reading or writing to PCC subspace
-	 *	We need to take write_lock before transferring the channel
-	 * ownership to the platform via a Doorbell
-	 *	This allows us to batch a number of CPPC requests if they happen
-	 * to originate in about the same time
-	 *
-	 * For non-performance critical usecases(init)
-	 *	Take write_lock for all purposes which gives exclusive access
-	 */
+	 
 	struct rw_semaphore pcc_lock;
 
-	/* Wait queue for CPUs whose requests were batched */
+	 
 	wait_queue_head_t pcc_write_wait_q;
 	ktime_t last_cmd_cmpl_time;
 	ktime_t last_mpar_reset;
@@ -77,55 +34,45 @@ struct cppc_pcc_data {
 	int refcount;
 };
 
-/* Array to represent the PCC channel per subspace ID */
+ 
 static struct cppc_pcc_data *pcc_data[MAX_PCC_SUBSPACES];
-/* The cpu_pcc_subspace_idx contains per CPU subspace ID */
+ 
 static DEFINE_PER_CPU(int, cpu_pcc_subspace_idx);
 
-/*
- * The cpc_desc structure contains the ACPI register details
- * as described in the per CPU _CPC tables. The details
- * include the type of register (e.g. PCC, System IO, FFH etc.)
- * and destination addresses which lets us READ/WRITE CPU performance
- * information using the appropriate I/O methods.
- */
+ 
 static DEFINE_PER_CPU(struct cpc_desc *, cpc_desc_ptr);
 
-/* pcc mapped address + header size + offset within PCC subspace */
+ 
 #define GET_PCC_VADDR(offs, pcc_ss_id) (pcc_data[pcc_ss_id]->pcc_comm_addr + \
 						0x8 + (offs))
 
-/* Check if a CPC register is in PCC */
+ 
 #define CPC_IN_PCC(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&		\
 				(cpc)->cpc_entry.reg.space_id ==	\
 				ACPI_ADR_SPACE_PLATFORM_COMM)
 
-/* Check if a CPC register is in SystemMemory */
+ 
 #define CPC_IN_SYSTEM_MEMORY(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
 				(cpc)->cpc_entry.reg.space_id ==	\
 				ACPI_ADR_SPACE_SYSTEM_MEMORY)
 
-/* Check if a CPC register is in SystemIo */
+ 
 #define CPC_IN_SYSTEM_IO(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
 				(cpc)->cpc_entry.reg.space_id ==	\
 				ACPI_ADR_SPACE_SYSTEM_IO)
 
-/* Evaluates to True if reg is a NULL register descriptor */
+ 
 #define IS_NULL_REG(reg) ((reg)->space_id ==  ACPI_ADR_SPACE_SYSTEM_MEMORY && \
 				(reg)->address == 0 &&			\
 				(reg)->bit_width == 0 &&		\
 				(reg)->bit_offset == 0 &&		\
 				(reg)->access_width == 0)
 
-/* Evaluates to True if an optional cpc field is supported */
+ 
 #define CPC_SUPPORTED(cpc) ((cpc)->type == ACPI_TYPE_INTEGER ?		\
 				!!(cpc)->cpc_entry.int_value :		\
 				!IS_NULL_REG(&(cpc)->cpc_entry.reg))
-/*
- * Arbitrary Retries in case the remote processor is slow to respond
- * to PCC commands. Keeping it high enough to cover emulators where
- * the processors run painfully slow.
- */
+ 
 #define NUM_RETRIES 500ULL
 
 #define OVER_16BTS_MASK ~0xFFFFULL
@@ -208,10 +155,7 @@ static int check_pcc_chan(int pcc_ss_id, bool chk_err_bit)
 	if (!pcc_ss_data->platform_owns_pcc)
 		return 0;
 
-	/*
-	 * Poll PCC status register every 3us(delay_us) for maximum of
-	 * deadline_us(timeout_us) until PCC command complete bit is set(cond)
-	 */
+	 
 	ret = readw_relaxed_poll_timeout(&generic_comm_base->status, status,
 					status & PCC_CMD_COMPLETE_MASK, 3,
 					pcc_ss_data->deadline_us);
@@ -229,10 +173,7 @@ static int check_pcc_chan(int pcc_ss_id, bool chk_err_bit)
 	return ret;
 }
 
-/*
- * This function transfers the ownership of the PCC to the platform
- * So it must be called while holding write_lock(pcc_lock)
- */
+ 
 static int send_pcc_cmd(int pcc_ss_id, u16 cmd)
 {
 	int ret = -EIO, i;
@@ -241,30 +182,19 @@ static int send_pcc_cmd(int pcc_ss_id, u16 cmd)
 		pcc_ss_data->pcc_comm_addr;
 	unsigned int time_delta;
 
-	/*
-	 * For CMD_WRITE we know for a fact the caller should have checked
-	 * the channel before writing to PCC space
-	 */
+	 
 	if (cmd == CMD_READ) {
-		/*
-		 * If there are pending cpc_writes, then we stole the channel
-		 * before write completion, so first send a WRITE command to
-		 * platform
-		 */
+		 
 		if (pcc_ss_data->pending_pcc_write_cmd)
 			send_pcc_cmd(pcc_ss_id, CMD_WRITE);
 
 		ret = check_pcc_chan(pcc_ss_id, false);
 		if (ret)
 			goto end;
-	} else /* CMD_WRITE */
+	} else  
 		pcc_ss_data->pending_pcc_write_cmd = FALSE;
 
-	/*
-	 * Handle the Minimum Request Turnaround Time(MRTT)
-	 * "The minimum amount of time that OSPM must wait after the completion
-	 * of a command before issuing the next command, in microseconds"
-	 */
+	 
 	if (pcc_ss_data->pcc_mrtt) {
 		time_delta = ktime_us_delta(ktime_get(),
 					    pcc_ss_data->last_cmd_cmpl_time);
@@ -272,17 +202,7 @@ static int send_pcc_cmd(int pcc_ss_id, u16 cmd)
 			udelay(pcc_ss_data->pcc_mrtt - time_delta);
 	}
 
-	/*
-	 * Handle the non-zero Maximum Periodic Access Rate(MPAR)
-	 * "The maximum number of periodic requests that the subspace channel can
-	 * support, reported in commands per minute. 0 indicates no limitation."
-	 *
-	 * This parameter should be ideally zero or large enough so that it can
-	 * handle maximum number of requests that all the cores in the system can
-	 * collectively generate. If it is not, we will follow the spec and just
-	 * not send the request to the platform after hitting the MPAR limit in
-	 * any 60s window
-	 */
+	 
 	if (pcc_ss_data->pcc_mpar) {
 		if (pcc_ss_data->mpar_count == 0) {
 			time_delta = ktime_ms_delta(ktime_get(),
@@ -299,15 +219,15 @@ static int send_pcc_cmd(int pcc_ss_id, u16 cmd)
 		pcc_ss_data->mpar_count--;
 	}
 
-	/* Write to the shared comm region. */
+	 
 	writew_relaxed(cmd, &generic_comm_base->command);
 
-	/* Flip CMD COMPLETE bit */
+	 
 	writew_relaxed(0, &generic_comm_base->status);
 
 	pcc_ss_data->platform_owns_pcc = true;
 
-	/* Ring doorbell */
+	 
 	ret = mbox_send_message(pcc_ss_data->pcc_channel->mchan, &cmd);
 	if (ret < 0) {
 		pr_err("Err sending PCC mbox message. ss: %d cmd:%d, ret:%d\n",
@@ -315,7 +235,7 @@ static int send_pcc_cmd(int pcc_ss_id, u16 cmd)
 		goto end;
 	}
 
-	/* wait for completion and check for PCC error bit */
+	 
 	ret = check_pcc_chan(pcc_ss_id, true);
 
 	if (pcc_ss_data->pcc_mrtt)
@@ -373,7 +293,7 @@ static int acpi_get_psd(struct cpc_desc *cpc_ptr, acpi_handle handle)
 
 	status = acpi_evaluate_object_typed(handle, "_PSD", NULL,
 					    &buffer, ACPI_TYPE_PACKAGE);
-	if (status == AE_NOT_FOUND)	/* _PSD is optional */
+	if (status == AE_NOT_FOUND)	 
 		return 0;
 	if (ACPI_FAILURE(status))
 		return -ENODEV;
@@ -455,13 +375,7 @@ bool cppc_allow_fast_switch(void)
 }
 EXPORT_SYMBOL_GPL(cppc_allow_fast_switch);
 
-/**
- * acpi_get_psd_map - Map the CPUs in the freq domain of a given cpu
- * @cpu: Find all CPUs that share a domain with cpu.
- * @cpu_data: Pointer to CPU specific CPPC data including PSD info.
- *
- *	Return: 0 for success or negative value for err.
- */
+ 
 int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data)
 {
 	struct cpc_desc *cpc_ptr, *match_cpc_ptr;
@@ -469,10 +383,7 @@ int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data)
 	struct acpi_psd_package *pdomain;
 	int count_target, i;
 
-	/*
-	 * Now that we have _PSD data from all CPUs, let's setup P-state
-	 * domain info.
-	 */
+	 
 	cpc_ptr = per_cpu(cpc_desc_ptr, cpu);
 	if (!cpc_ptr)
 		return -EFAULT;
@@ -482,7 +393,7 @@ int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data)
 	if (pdomain->num_processors <= 1)
 		return 0;
 
-	/* Validate the Domain info */
+	 
 	count_target = pdomain->num_processors;
 	if (pdomain->coord_type == DOMAIN_COORD_TYPE_SW_ALL)
 		cpu_data->shared_type = CPUFREQ_SHARED_TYPE_ALL;
@@ -503,7 +414,7 @@ int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data)
 		if (match_pdomain->domain != pdomain->domain)
 			continue;
 
-		/* Here i and cpu are in the same domain */
+		 
 		if (match_pdomain->num_processors != count_target)
 			goto err_fault;
 
@@ -516,7 +427,7 @@ int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data)
 	return 0;
 
 err_fault:
-	/* Assume no coordination on any error parsing domain info */
+	 
 	cpumask_clear(cpu_data->shared_cpu_map);
 	cpumask_set_cpu(cpu, cpu_data->shared_cpu_map);
 	cpu_data->shared_type = CPUFREQ_SHARED_TYPE_NONE;
@@ -540,11 +451,7 @@ static int register_pcc_channel(int pcc_ss_idx)
 		}
 
 		pcc_data[pcc_ss_idx]->pcc_channel = pcc_chan;
-		/*
-		 * cppc_ss->latency is just a Nominal value. In reality
-		 * the remote processor could be much slower to reply.
-		 * So add an arbitrary amount of wait on top of Nominal.
-		 */
+		 
 		usecs_lat = NUM_RETRIES * pcc_chan->latency;
 		pcc_data[pcc_ss_idx]->deadline_us = usecs_lat;
 		pcc_data[pcc_ss_idx]->pcc_mrtt = pcc_chan->min_turnaround_time;
@@ -560,50 +467,26 @@ static int register_pcc_channel(int pcc_ss_idx)
 			return -ENOMEM;
 		}
 
-		/* Set flag so that we don't come here for each CPU. */
+		 
 		pcc_data[pcc_ss_idx]->pcc_channel_acquired = true;
 	}
 
 	return 0;
 }
 
-/**
- * cpc_ffh_supported() - check if FFH reading supported
- *
- * Check if the architecture has support for functional fixed hardware
- * read/write capability.
- *
- * Return: true for supported, false for not supported
- */
+ 
 bool __weak cpc_ffh_supported(void)
 {
 	return false;
 }
 
-/**
- * cpc_supported_by_cpu() - check if CPPC is supported by CPU
- *
- * Check if the architectural support for CPPC is present even
- * if the _OSC hasn't prescribed it
- *
- * Return: true for supported, false for not supported
- */
+ 
 bool __weak cpc_supported_by_cpu(void)
 {
 	return false;
 }
 
-/**
- * pcc_data_alloc() - Allocate the pcc_data memory for pcc subspace
- * @pcc_ss_id: PCC Subspace index as in the PCC client ACPI package.
- *
- * Check and allocate the cppc_pcc_data memory.
- * In some processor configurations it is possible that same subspace
- * is shared between multiple CPUs. This is seen especially in CPUs
- * with hardware multi-threading support.
- *
- * Return: 0 for success, errno for failure
- */
+ 
 static int pcc_data_alloc(int pcc_ss_id)
 {
 	if (pcc_ss_id < 0 || pcc_ss_id >= MAX_PCC_SUBSPACES)
@@ -622,45 +505,13 @@ static int pcc_data_alloc(int pcc_ss_id)
 	return 0;
 }
 
-/*
- * An example CPC table looks like the following.
- *
- *  Name (_CPC, Package() {
- *      17,							// NumEntries
- *      1,							// Revision
- *      ResourceTemplate() {Register(PCC, 32, 0, 0x120, 2)},	// Highest Performance
- *      ResourceTemplate() {Register(PCC, 32, 0, 0x124, 2)},	// Nominal Performance
- *      ResourceTemplate() {Register(PCC, 32, 0, 0x128, 2)},	// Lowest Nonlinear Performance
- *      ResourceTemplate() {Register(PCC, 32, 0, 0x12C, 2)},	// Lowest Performance
- *      ResourceTemplate() {Register(PCC, 32, 0, 0x130, 2)},	// Guaranteed Performance Register
- *      ResourceTemplate() {Register(PCC, 32, 0, 0x110, 2)},	// Desired Performance Register
- *      ResourceTemplate() {Register(SystemMemory, 0, 0, 0, 0)},
- *      ...
- *      ...
- *      ...
- *  }
- * Each Register() encodes how to access that specific register.
- * e.g. a sample PCC entry has the following encoding:
- *
- *  Register (
- *      PCC,	// AddressSpaceKeyword
- *      8,	// RegisterBitWidth
- *      8,	// RegisterBitOffset
- *      0x30,	// RegisterAddress
- *      9,	// AccessSize (subspace ID)
- *  )
- */
+ 
 
 #ifndef arch_init_invariance_cppc
 static inline void arch_init_invariance_cppc(void) { }
 #endif
 
-/**
- * acpi_cppc_processor_probe - Search for per CPU _CPC objects.
- * @pr: Ptr to acpi_processor containing this CPU's logical ID.
- *
- *	Return: 0 for success or negative value for err.
- */
+ 
 int acpi_cppc_processor_probe(struct acpi_processor *pr)
 {
 	struct acpi_buffer output = {ACPI_ALLOCATE_BUFFER, NULL};
@@ -680,7 +531,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 			return -ENODEV;
 	}
 
-	/* Parse the ACPI _CPC table for this CPU. */
+	 
 	status = acpi_evaluate_object_typed(handle, "_CPC", NULL, &output,
 			ACPI_TYPE_PACKAGE);
 	if (ACPI_FAILURE(status)) {
@@ -696,7 +547,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 		goto out_buf_free;
 	}
 
-	/* First entry is NumEntries. */
+	 
 	cpc_obj = &out_obj->package.elements[0];
 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
 		num_ent = cpc_obj->integer.value;
@@ -711,7 +562,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 		goto out_free;
 	}
 
-	/* Second entry should be revision. */
+	 
 	cpc_obj = &out_obj->package.elements[1];
 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
 		cpc_rev = cpc_obj->integer.value;
@@ -727,11 +578,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 		goto out_free;
 	}
 
-	/*
-	 * Disregard _CPC if the number of entries in the return pachage is not
-	 * as expected, but support future revisions being proper supersets of
-	 * the v3 and only causing more entries to be returned by _CPC.
-	 */
+	 
 	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
 	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
 	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
@@ -747,7 +594,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 	cpc_ptr->num_entries = num_ent;
 	cpc_ptr->version = cpc_rev;
 
-	/* Iterate through remaining entries in _CPC */
+	 
 	for (i = 2; i < num_ent; i++) {
 		cpc_obj = &out_obj->package.elements[i];
 
@@ -758,12 +605,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 			gas_t = (struct cpc_reg *)
 				cpc_obj->buffer.pointer;
 
-			/*
-			 * The PCC Subspace index is encoded inside
-			 * the CPC table entries. The same PCC index
-			 * will be used for all the PCC entries,
-			 * so extract it only once.
-			 */
+			 
 			if (gas_t->space_id == ACPI_ADR_SPACE_PLATFORM_COMM) {
 				if (pcc_subspace_id < 0) {
 					pcc_subspace_id = gas_t->access_width;
@@ -791,17 +633,13 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 				}
 			} else if (gas_t->space_id == ACPI_ADR_SPACE_SYSTEM_IO) {
 				if (gas_t->access_width < 1 || gas_t->access_width > 3) {
-					/*
-					 * 1 = 8-bit, 2 = 16-bit, and 3 = 32-bit.
-					 * SystemIO doesn't implement 64-bit
-					 * registers.
-					 */
+					 
 					pr_debug("Invalid access width %d for SystemIO register in _CPC\n",
 						 gas_t->access_width);
 					goto out_free;
 				}
 				if (gas_t->address & OVER_16BTS_MASK) {
-					/* SystemIO registers use 16-bit integer addresses */
+					 
 					pr_debug("Invalid IO port %llu for SystemIO register in _CPC\n",
 						 gas_t->address);
 					goto out_free;
@@ -813,7 +651,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 				}
 			} else {
 				if (gas_t->space_id != ACPI_ADR_SPACE_FIXED_HARDWARE || !cpc_ffh_supported()) {
-					/* Support only PCC, SystemMemory, SystemIO, and FFH type regs. */
+					 
 					pr_debug("Unsupported register type (%d) in _CPC\n",
 						 gas_t->space_id);
 					goto out_free;
@@ -830,26 +668,22 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 	}
 	per_cpu(cpu_pcc_subspace_idx, pr->id) = pcc_subspace_id;
 
-	/*
-	 * Initialize the remaining cpc_regs as unsupported.
-	 * Example: In case FW exposes CPPC v2, the below loop will initialize
-	 * LOWEST_FREQ and NOMINAL_FREQ regs as unsupported
-	 */
+	 
 	for (i = num_ent - 2; i < MAX_CPC_REG_ENT; i++) {
 		cpc_ptr->cpc_regs[i].type = ACPI_TYPE_INTEGER;
 		cpc_ptr->cpc_regs[i].cpc_entry.int_value = 0;
 	}
 
 
-	/* Store CPU Logical ID */
+	 
 	cpc_ptr->cpu_id = pr->id;
 
-	/* Parse PSD data for this CPU */
+	 
 	ret = acpi_get_psd(cpc_ptr, handle);
 	if (ret)
 		goto out_free;
 
-	/* Register PCC channel once for all PCC subspace ID. */
+	 
 	if (pcc_subspace_id >= 0 && !pcc_data[pcc_subspace_id]->pcc_channel_acquired) {
 		ret = register_pcc_channel(pcc_subspace_id);
 		if (ret)
@@ -859,17 +693,17 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 		init_waitqueue_head(&pcc_data[pcc_subspace_id]->pcc_write_wait_q);
 	}
 
-	/* Everything looks okay */
+	 
 	pr_debug("Parsed CPC struct for CPU: %d\n", pr->id);
 
-	/* Add per logical CPU nodes for reading its feedback counters. */
+	 
 	cpu_dev = get_cpu_device(pr->id);
 	if (!cpu_dev) {
 		ret = -EINVAL;
 		goto out_free;
 	}
 
-	/* Plug PSD data into this CPU's CPC descriptor. */
+	 
 	per_cpu(cpc_desc_ptr, pr->id) = cpc_ptr;
 
 	ret = kobject_init_and_add(&cpc_ptr->kobj, &cppc_ktype, &cpu_dev->kobj,
@@ -886,7 +720,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
 	return 0;
 
 out_free:
-	/* Free all the mapped sys mem areas for this CPU */
+	 
 	for (i = 2; i < cpc_ptr->num_entries; i++) {
 		void __iomem *addr = cpc_ptr->cpc_regs[i-2].sys_mem_vaddr;
 
@@ -901,12 +735,7 @@ out_buf_free:
 }
 EXPORT_SYMBOL_GPL(acpi_cppc_processor_probe);
 
-/**
- * acpi_cppc_processor_exit - Cleanup CPC structs.
- * @pr: Ptr to acpi_processor containing this CPU's logical ID.
- *
- * Return: Void
- */
+ 
 void acpi_cppc_processor_exit(struct acpi_processor *pr)
 {
 	struct cpc_desc *cpc_ptr;
@@ -929,7 +758,7 @@ void acpi_cppc_processor_exit(struct acpi_processor *pr)
 	if (!cpc_ptr)
 		return;
 
-	/* Free all the mapped sys mem areas for this CPU */
+	 
 	for (i = 2; i < cpc_ptr->num_entries; i++) {
 		addr = cpc_ptr->cpc_regs[i-2].sys_mem_vaddr;
 		if (addr)
@@ -941,41 +770,19 @@ void acpi_cppc_processor_exit(struct acpi_processor *pr)
 }
 EXPORT_SYMBOL_GPL(acpi_cppc_processor_exit);
 
-/**
- * cpc_read_ffh() - Read FFH register
- * @cpunum:	CPU number to read
- * @reg:	cppc register information
- * @val:	place holder for return value
- *
- * Read bit_width bits from a specified address and bit_offset
- *
- * Return: 0 for success and error code
- */
+ 
 int __weak cpc_read_ffh(int cpunum, struct cpc_reg *reg, u64 *val)
 {
 	return -ENOTSUPP;
 }
 
-/**
- * cpc_write_ffh() - Write FFH register
- * @cpunum:	CPU number to write
- * @reg:	cppc register information
- * @val:	value to write
- *
- * Write value of bit_width bits to a specified address and bit_offset
- *
- * Return: 0 for success and error code
- */
+ 
 int __weak cpc_write_ffh(int cpunum, struct cpc_reg *reg, u64 val)
 {
 	return -ENOTSUPP;
 }
 
-/*
- * Since cpc_read and cpc_write are called while holding pcc_lock, it should be
- * as fast as possible. We have already mapped the PCC subspace during init, so
- * we can directly write to it.
- */
+ 
 
 static int cpc_read(int cpu, struct cpc_register_resource *reg_res, u64 *val)
 {
@@ -1129,51 +936,27 @@ static int cppc_get_perf(int cpunum, enum cppc_regs reg_idx, u64 *perf)
 	return 0;
 }
 
-/**
- * cppc_get_desired_perf - Get the desired performance register value.
- * @cpunum: CPU from which to get desired performance.
- * @desired_perf: Return address.
- *
- * Return: 0 for success, -EIO otherwise.
- */
+ 
 int cppc_get_desired_perf(int cpunum, u64 *desired_perf)
 {
 	return cppc_get_perf(cpunum, DESIRED_PERF, desired_perf);
 }
 EXPORT_SYMBOL_GPL(cppc_get_desired_perf);
 
-/**
- * cppc_get_nominal_perf - Get the nominal performance register value.
- * @cpunum: CPU from which to get nominal performance.
- * @nominal_perf: Return address.
- *
- * Return: 0 for success, -EIO otherwise.
- */
+ 
 int cppc_get_nominal_perf(int cpunum, u64 *nominal_perf)
 {
 	return cppc_get_perf(cpunum, NOMINAL_PERF, nominal_perf);
 }
 
-/**
- * cppc_get_epp_perf - Get the epp register value.
- * @cpunum: CPU from which to get epp preference value.
- * @epp_perf: Return address.
- *
- * Return: 0 for success, -EIO otherwise.
- */
+ 
 int cppc_get_epp_perf(int cpunum, u64 *epp_perf)
 {
 	return cppc_get_perf(cpunum, ENERGY_PERF, epp_perf);
 }
 EXPORT_SYMBOL_GPL(cppc_get_epp_perf);
 
-/**
- * cppc_get_perf_caps - Get a CPU's performance capabilities.
- * @cpunum: CPU from which to get capabilities info.
- * @perf_caps: ptr to cppc_perf_caps. See cppc_acpi.h
- *
- * Return: 0 for success with perf_caps populated else -ERRNO.
- */
+ 
 int cppc_get_perf_caps(int cpunum, struct cppc_perf_caps *perf_caps)
 {
 	struct cpc_desc *cpc_desc = per_cpu(cpc_desc_ptr, cpunum);
@@ -1198,7 +981,7 @@ int cppc_get_perf_caps(int cpunum, struct cppc_perf_caps *perf_caps)
 	nom_freq_reg = &cpc_desc->cpc_regs[NOMINAL_FREQ];
 	guaranteed_reg = &cpc_desc->cpc_regs[GUARANTEED_PERF];
 
-	/* Are any of the regs PCC ?*/
+	 
 	if (CPC_IN_PCC(highest_reg) || CPC_IN_PCC(lowest_reg) ||
 		CPC_IN_PCC(lowest_non_linear_reg) || CPC_IN_PCC(nominal_reg) ||
 		CPC_IN_PCC(low_freq_reg) || CPC_IN_PCC(nom_freq_reg)) {
@@ -1209,7 +992,7 @@ int cppc_get_perf_caps(int cpunum, struct cppc_perf_caps *perf_caps)
 		pcc_ss_data = pcc_data[pcc_ss_id];
 		regs_in_pcc = 1;
 		down_write(&pcc_ss_data->pcc_lock);
-		/* Ring doorbell once to update PCC subspace */
+		 
 		if (send_pcc_cmd(pcc_ss_id, CMD_READ) < 0) {
 			ret = -EIO;
 			goto out_err;
@@ -1239,7 +1022,7 @@ int cppc_get_perf_caps(int cpunum, struct cppc_perf_caps *perf_caps)
 	if (!high || !low || !nom || !min_nonlinear)
 		ret = -EFAULT;
 
-	/* Read optional lowest and nominal frequencies if present */
+	 
 	if (CPC_SUPPORTED(low_freq_reg))
 		cpc_read(cpunum, low_freq_reg, &low_f);
 
@@ -1257,15 +1040,7 @@ out_err:
 }
 EXPORT_SYMBOL_GPL(cppc_get_perf_caps);
 
-/**
- * cppc_perf_ctrs_in_pcc - Check if any perf counters are in a PCC region.
- *
- * CPPC has flexibility about how CPU performance counters are accessed.
- * One of the choices is PCC regions, which can have a high access latency. This
- * routine allows callers of cppc_get_perf_ctrs() to know this ahead of time.
- *
- * Return: true if any of the counters are in PCC regions, false otherwise
- */
+ 
 bool cppc_perf_ctrs_in_pcc(void)
 {
 	int cpu;
@@ -1284,10 +1059,7 @@ bool cppc_perf_ctrs_in_pcc(void)
 
 		ref_perf_reg = &cpc_desc->cpc_regs[REFERENCE_PERF];
 
-		/*
-		 * If reference perf register is not supported then we should
-		 * use the nominal perf value
-		 */
+		 
 		if (!CPC_SUPPORTED(ref_perf_reg))
 			ref_perf_reg = &cpc_desc->cpc_regs[NOMINAL_PERF];
 
@@ -1299,13 +1071,7 @@ bool cppc_perf_ctrs_in_pcc(void)
 }
 EXPORT_SYMBOL_GPL(cppc_perf_ctrs_in_pcc);
 
-/**
- * cppc_get_perf_ctrs - Read a CPU's performance feedback counters.
- * @cpunum: CPU from which to read counters.
- * @perf_fb_ctrs: ptr to cppc_perf_fb_ctrs. See cppc_acpi.h
- *
- * Return: 0 for success with perf_fb_ctrs populated else -ERRNO.
- */
+ 
 int cppc_get_perf_ctrs(int cpunum, struct cppc_perf_fb_ctrs *perf_fb_ctrs)
 {
 	struct cpc_desc *cpc_desc = per_cpu(cpc_desc_ptr, cpunum);
@@ -1326,14 +1092,11 @@ int cppc_get_perf_ctrs(int cpunum, struct cppc_perf_fb_ctrs *perf_fb_ctrs)
 	ref_perf_reg = &cpc_desc->cpc_regs[REFERENCE_PERF];
 	ctr_wrap_reg = &cpc_desc->cpc_regs[CTR_WRAP_TIME];
 
-	/*
-	 * If reference perf register is not supported then we should
-	 * use the nominal perf value
-	 */
+	 
 	if (!CPC_SUPPORTED(ref_perf_reg))
 		ref_perf_reg = &cpc_desc->cpc_regs[NOMINAL_PERF];
 
-	/* Are any of the regs PCC ?*/
+	 
 	if (CPC_IN_PCC(delivered_reg) || CPC_IN_PCC(reference_reg) ||
 		CPC_IN_PCC(ctr_wrap_reg) || CPC_IN_PCC(ref_perf_reg)) {
 		if (pcc_ss_id < 0) {
@@ -1343,7 +1106,7 @@ int cppc_get_perf_ctrs(int cpunum, struct cppc_perf_fb_ctrs *perf_fb_ctrs)
 		pcc_ss_data = pcc_data[pcc_ss_id];
 		down_write(&pcc_ss_data->pcc_lock);
 		regs_in_pcc = 1;
-		/* Ring doorbell once to update PCC subspace */
+		 
 		if (send_pcc_cmd(pcc_ss_id, CMD_READ) < 0) {
 			ret = -EIO;
 			goto out_err;
@@ -1354,11 +1117,7 @@ int cppc_get_perf_ctrs(int cpunum, struct cppc_perf_fb_ctrs *perf_fb_ctrs)
 	cpc_read(cpunum, reference_reg, &reference);
 	cpc_read(cpunum, ref_perf_reg, &ref_perf);
 
-	/*
-	 * Per spec, if ctr_wrap_time optional register is unsupported, then the
-	 * performance counters are assumed to never wrap during the lifetime of
-	 * platform
-	 */
+	 
 	ctr_wrap_time = (u64)(~((u64)0));
 	if (CPC_SUPPORTED(ctr_wrap_reg))
 		cpc_read(cpunum, ctr_wrap_reg, &ctr_wrap_time);
@@ -1379,10 +1138,7 @@ out_err:
 }
 EXPORT_SYMBOL_GPL(cppc_get_perf_ctrs);
 
-/*
- * Set Energy Performance Preference Register value through
- * Performance Controls Interface
- */
+ 
 int cppc_set_epp_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls, bool enable)
 {
 	int pcc_ss_id = per_cpu(cpu_pcc_subspace_idx, cpu);
@@ -1421,7 +1177,7 @@ int cppc_set_epp_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls, bool enable)
 		pcc_ss_data = pcc_data[pcc_ss_id];
 
 		down_write(&pcc_ss_data->pcc_lock);
-		/* after writing CPC, transfer the ownership of PCC to platform */
+		 
 		ret = send_pcc_cmd(pcc_ss_id, CMD_WRITE);
 		up_write(&pcc_ss_data->pcc_lock);
 	} else {
@@ -1433,11 +1189,7 @@ int cppc_set_epp_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls, bool enable)
 }
 EXPORT_SYMBOL_GPL(cppc_set_epp_perf);
 
-/**
- * cppc_get_auto_sel_caps - Read autonomous selection register.
- * @cpunum : CPU from which to read register.
- * @perf_caps : struct where autonomous selection register value is updated.
- */
+ 
 int cppc_get_auto_sel_caps(int cpunum, struct cppc_perf_caps *perf_caps)
 {
 	struct cpc_desc *cpc_desc = per_cpu(cpc_desc_ptr, cpunum);
@@ -1482,11 +1234,7 @@ int cppc_get_auto_sel_caps(int cpunum, struct cppc_perf_caps *perf_caps)
 }
 EXPORT_SYMBOL_GPL(cppc_get_auto_sel_caps);
 
-/**
- * cppc_set_auto_sel - Write autonomous selection register.
- * @cpu    : CPU to which to write register.
- * @enable : the desired value of autonomous selection resiter to be updated.
- */
+ 
 int cppc_set_auto_sel(int cpu, bool enable)
 {
 	int pcc_ss_id = per_cpu(cpu_pcc_subspace_idx, cpu);
@@ -1517,7 +1265,7 @@ int cppc_set_auto_sel(int cpu, bool enable)
 		pcc_ss_data = pcc_data[pcc_ss_id];
 
 		down_write(&pcc_ss_data->pcc_lock);
-		/* after writing CPC, transfer the ownership of PCC to platform */
+		 
 		ret = send_pcc_cmd(pcc_ss_id, CMD_WRITE);
 		up_write(&pcc_ss_data->pcc_lock);
 	} else {
@@ -1529,14 +1277,7 @@ int cppc_set_auto_sel(int cpu, bool enable)
 }
 EXPORT_SYMBOL_GPL(cppc_set_auto_sel);
 
-/**
- * cppc_set_enable - Set to enable CPPC on the processor by writing the
- * Continuous Performance Control package EnableRegister field.
- * @cpu: CPU for which to enable CPPC register.
- * @enable: 0 - disable, 1 - enable CPPC feature on the processor.
- *
- * Return: 0 for success, -ERRNO or -EIO otherwise.
- */
+ 
 int cppc_set_enable(int cpu, bool enable)
 {
 	int pcc_ss_id = per_cpu(cpu_pcc_subspace_idx, cpu);
@@ -1564,7 +1305,7 @@ int cppc_set_enable(int cpu, bool enable)
 		pcc_ss_data = pcc_data[pcc_ss_id];
 
 		down_write(&pcc_ss_data->pcc_lock);
-		/* after writing CPC, transfer the ownership of PCC to platfrom */
+		 
 		ret = send_pcc_cmd(pcc_ss_id, CMD_WRITE);
 		up_write(&pcc_ss_data->pcc_lock);
 		return ret;
@@ -1574,13 +1315,7 @@ int cppc_set_enable(int cpu, bool enable)
 }
 EXPORT_SYMBOL_GPL(cppc_set_enable);
 
-/**
- * cppc_set_perf - Set a CPU's performance controls.
- * @cpu: CPU for which to set performance controls.
- * @perf_ctrls: ptr to cppc_perf_ctrls. See cppc_acpi.h
- *
- * Return: 0 for success, -ERRNO otherwise.
- */
+ 
 int cppc_set_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls)
 {
 	struct cpc_desc *cpc_desc = per_cpu(cpc_desc_ptr, cpu);
@@ -1598,20 +1333,14 @@ int cppc_set_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls)
 	min_perf_reg = &cpc_desc->cpc_regs[MIN_PERF];
 	max_perf_reg = &cpc_desc->cpc_regs[MAX_PERF];
 
-	/*
-	 * This is Phase-I where we want to write to CPC registers
-	 * -> We want all CPUs to be able to execute this phase in parallel
-	 *
-	 * Since read_lock can be acquired by multiple CPUs simultaneously we
-	 * achieve that goal here
-	 */
+	 
 	if (CPC_IN_PCC(desired_reg) || CPC_IN_PCC(min_perf_reg) || CPC_IN_PCC(max_perf_reg)) {
 		if (pcc_ss_id < 0) {
 			pr_debug("Invalid pcc_ss_id\n");
 			return -ENODEV;
 		}
 		pcc_ss_data = pcc_data[pcc_ss_id];
-		down_read(&pcc_ss_data->pcc_lock); /* BEGIN Phase-I */
+		down_read(&pcc_ss_data->pcc_lock);  
 		if (pcc_ss_data->platform_owns_pcc) {
 			ret = check_pcc_chan(pcc_ss_id, false);
 			if (ret) {
@@ -1619,10 +1348,7 @@ int cppc_set_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls)
 				return ret;
 			}
 		}
-		/*
-		 * Update the pending_write to make sure a PCC CMD_READ will not
-		 * arrive and steal the channel during the switch to write lock
-		 */
+		 
 		pcc_ss_data->pending_pcc_write_cmd = true;
 		cpc_desc->write_cmd_id = pcc_ss_data->pcc_write_cnt;
 		cpc_desc->write_cmd_status = 0;
@@ -1630,107 +1356,37 @@ int cppc_set_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls)
 
 	cpc_write(cpu, desired_reg, perf_ctrls->desired_perf);
 
-	/*
-	 * Only write if min_perf and max_perf not zero. Some drivers pass zero
-	 * value to min and max perf, but they don't mean to set the zero value,
-	 * they just don't want to write to those registers.
-	 */
+	 
 	if (perf_ctrls->min_perf)
 		cpc_write(cpu, min_perf_reg, perf_ctrls->min_perf);
 	if (perf_ctrls->max_perf)
 		cpc_write(cpu, max_perf_reg, perf_ctrls->max_perf);
 
 	if (CPC_IN_PCC(desired_reg) || CPC_IN_PCC(min_perf_reg) || CPC_IN_PCC(max_perf_reg))
-		up_read(&pcc_ss_data->pcc_lock);	/* END Phase-I */
-	/*
-	 * This is Phase-II where we transfer the ownership of PCC to Platform
-	 *
-	 * Short Summary: Basically if we think of a group of cppc_set_perf
-	 * requests that happened in short overlapping interval. The last CPU to
-	 * come out of Phase-I will enter Phase-II and ring the doorbell.
-	 *
-	 * We have the following requirements for Phase-II:
-	 *     1. We want to execute Phase-II only when there are no CPUs
-	 * currently executing in Phase-I
-	 *     2. Once we start Phase-II we want to avoid all other CPUs from
-	 * entering Phase-I.
-	 *     3. We want only one CPU among all those who went through Phase-I
-	 * to run phase-II
-	 *
-	 * If write_trylock fails to get the lock and doesn't transfer the
-	 * PCC ownership to the platform, then one of the following will be TRUE
-	 *     1. There is at-least one CPU in Phase-I which will later execute
-	 * write_trylock, so the CPUs in Phase-I will be responsible for
-	 * executing the Phase-II.
-	 *     2. Some other CPU has beaten this CPU to successfully execute the
-	 * write_trylock and has already acquired the write_lock. We know for a
-	 * fact it (other CPU acquiring the write_lock) couldn't have happened
-	 * before this CPU's Phase-I as we held the read_lock.
-	 *     3. Some other CPU executing pcc CMD_READ has stolen the
-	 * down_write, in which case, send_pcc_cmd will check for pending
-	 * CMD_WRITE commands by checking the pending_pcc_write_cmd.
-	 * So this CPU can be certain that its request will be delivered
-	 *    So in all cases, this CPU knows that its request will be delivered
-	 * by another CPU and can return
-	 *
-	 * After getting the down_write we still need to check for
-	 * pending_pcc_write_cmd to take care of the following scenario
-	 *    The thread running this code could be scheduled out between
-	 * Phase-I and Phase-II. Before it is scheduled back on, another CPU
-	 * could have delivered the request to Platform by triggering the
-	 * doorbell and transferred the ownership of PCC to platform. So this
-	 * avoids triggering an unnecessary doorbell and more importantly before
-	 * triggering the doorbell it makes sure that the PCC channel ownership
-	 * is still with OSPM.
-	 *   pending_pcc_write_cmd can also be cleared by a different CPU, if
-	 * there was a pcc CMD_READ waiting on down_write and it steals the lock
-	 * before the pcc CMD_WRITE is completed. send_pcc_cmd checks for this
-	 * case during a CMD_READ and if there are pending writes it delivers
-	 * the write command before servicing the read command
-	 */
+		up_read(&pcc_ss_data->pcc_lock);	 
+	 
 	if (CPC_IN_PCC(desired_reg) || CPC_IN_PCC(min_perf_reg) || CPC_IN_PCC(max_perf_reg)) {
-		if (down_write_trylock(&pcc_ss_data->pcc_lock)) {/* BEGIN Phase-II */
-			/* Update only if there are pending write commands */
+		if (down_write_trylock(&pcc_ss_data->pcc_lock)) { 
+			 
 			if (pcc_ss_data->pending_pcc_write_cmd)
 				send_pcc_cmd(pcc_ss_id, CMD_WRITE);
-			up_write(&pcc_ss_data->pcc_lock);	/* END Phase-II */
+			up_write(&pcc_ss_data->pcc_lock);	 
 		} else
-			/* Wait until pcc_write_cnt is updated by send_pcc_cmd */
+			 
 			wait_event(pcc_ss_data->pcc_write_wait_q,
 				   cpc_desc->write_cmd_id != pcc_ss_data->pcc_write_cnt);
 
-		/* send_pcc_cmd updates the status in case of failure */
+		 
 		ret = cpc_desc->write_cmd_status;
 	}
 	return ret;
 }
 EXPORT_SYMBOL_GPL(cppc_set_perf);
 
-/**
- * cppc_get_transition_latency - returns frequency transition latency in ns
- * @cpu_num: CPU number for per_cpu().
- *
- * ACPI CPPC does not explicitly specify how a platform can specify the
- * transition latency for performance change requests. The closest we have
- * is the timing information from the PCCT tables which provides the info
- * on the number and frequency of PCC commands the platform can handle.
- *
- * If desired_reg is in the SystemMemory or SystemIo ACPI address space,
- * then assume there is no latency.
- */
+ 
 unsigned int cppc_get_transition_latency(int cpu_num)
 {
-	/*
-	 * Expected transition latency is based on the PCCT timing values
-	 * Below are definition from ACPI spec:
-	 * pcc_nominal- Expected latency to process a command, in microseconds
-	 * pcc_mpar   - The maximum number of periodic requests that the subspace
-	 *              channel can support, reported in commands per minute. 0
-	 *              indicates no limitation.
-	 * pcc_mrtt   - The minimum amount of time that OSPM must wait after the
-	 *              completion of a command before issuing the next command,
-	 *              in microseconds.
-	 */
+	 
 	unsigned int latency_ns = 0;
 	struct cpc_desc *cpc_desc;
 	struct cpc_register_resource *desired_reg;

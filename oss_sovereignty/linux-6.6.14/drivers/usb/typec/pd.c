@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Power Delivery sysfs entries
- *
- * Copyright (C) 2022, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/usb/pd.h>
@@ -30,8 +25,8 @@ static void pdo_release(struct device *dev)
 	kfree(to_pdo(dev));
 }
 
-/* -------------------------------------------------------------------------- */
-/* Fixed Supply */
+ 
+ 
 
 static ssize_t
 dual_role_power_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -83,14 +78,7 @@ unchunked_extended_messages_supported_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(unchunked_extended_messages_supported);
 
-/*
- * REVISIT: Peak Current requires access also to the RDO.
-static ssize_t
-peak_current_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	...
-}
-*/
+ 
 
 static ssize_t
 fast_role_swap_current_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -105,13 +93,13 @@ static ssize_t voltage_show(struct device *dev, struct device_attribute *attr, c
 }
 static DEVICE_ATTR_RO(voltage);
 
-/* Shared with Variable supplies, both source and sink */
+ 
 static ssize_t current_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "%umA\n", pdo_max_current(to_pdo(dev)->pdo));
 }
 
-/* Shared with Variable type supplies */
+ 
 static struct device_attribute maximum_current_attr = {
 	.attr = {
 		.name = "maximum_current",
@@ -135,7 +123,7 @@ static struct attribute *source_fixed_supply_attrs[] = {
 	&dev_attr_usb_communication_capable.attr,
 	&dev_attr_dual_role_data.attr,
 	&dev_attr_unchunked_extended_messages_supported.attr,
-	/*&dev_attr_peak_current.attr,*/
+	 
 	&dev_attr_voltage.attr,
 	&maximum_current_attr.attr,
 	NULL
@@ -144,7 +132,7 @@ static struct attribute *source_fixed_supply_attrs[] = {
 static umode_t fixed_attr_is_visible(struct kobject *kobj, struct attribute *attr, int n)
 {
 	if (to_pdo(kobj_to_dev(kobj))->object_position &&
-	    /*attr != &dev_attr_peak_current.attr &&*/
+	     
 	    attr != &dev_attr_voltage.attr &&
 	    attr != &maximum_current_attr.attr &&
 	    attr != &operational_current_attr.attr)
@@ -190,8 +178,8 @@ static struct device_type sink_fixed_supply_type = {
 	.groups = sink_fixed_supply_groups,
 };
 
-/* -------------------------------------------------------------------------- */
-/* Variable Supply */
+ 
+ 
 
 static ssize_t
 maximum_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -235,8 +223,8 @@ static struct device_type sink_variable_supply_type = {
 	.groups = sink_variable_supply_groups,
 };
 
-/* -------------------------------------------------------------------------- */
-/* Battery */
+ 
+ 
 
 static ssize_t
 maximum_power_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -280,8 +268,8 @@ static struct device_type sink_battery_type = {
 	.groups = sink_battery_groups,
 };
 
-/* -------------------------------------------------------------------------- */
-/* Standard Power Range (SPR) Programmable Power Supply (PPS) */
+ 
+ 
 
 static ssize_t
 pps_power_limited_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -361,7 +349,7 @@ static struct device_type sink_pps_type = {
 	.groups = sink_pps_groups,
 };
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static const char * const supply_name[] = {
 	[PDO_TYPE_FIXED] = "fixed_supply",
@@ -393,7 +381,7 @@ static struct device_type *sink_apdo_type[] = {
 	[APDO_TYPE_PPS]  = &sink_pps_type,
 };
 
-/* REVISIT: Export when EPR_*_Capabilities need to be supported. */
+ 
 static int add_pdo(struct usb_power_delivery_capabilities *cap, u32 pdo, int position)
 {
 	struct device_type *type;
@@ -409,7 +397,7 @@ static int add_pdo(struct usb_power_delivery_capabilities *cap, u32 pdo, int pos
 	p->object_position = position;
 
 	if (pdo_type(pdo) == PDO_TYPE_APDO) {
-		/* FIXME: Only PPS supported for now! Skipping others. */
+		 
 		if (pdo_apdo_type(pdo) > APDO_TYPE_PPS) {
 			dev_warn(&cap->dev, "Unknown APDO type. PDO 0x%08x\n", pdo);
 			kfree(p);
@@ -450,7 +438,7 @@ static int remove_pdo(struct device *dev, void *data)
 	return 0;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static const char * const cap_name[] = {
 	[TYPEC_SINK]    = "sink-capabilities",
@@ -467,17 +455,7 @@ static struct device_type pd_capabilities_type = {
 	.release = pd_capabilities_release,
 };
 
-/**
- * usb_power_delivery_register_capabilities - Register a set of capabilities.
- * @pd: The USB PD instance that the capabilities belong to.
- * @desc: Description of the Capablities Message.
- *
- * This function registers a Capabilities Message described in @desc. The
- * capabilities will have their own sub-directory under @pd in sysfs.
- *
- * The function returns pointer to struct usb_power_delivery_capabilities, or
- * ERR_PRT(errno).
- */
+ 
 struct usb_power_delivery_capabilities *
 usb_power_delivery_register_capabilities(struct usb_power_delivery *pd,
 					 struct usb_power_delivery_capabilities_desc *desc)
@@ -515,10 +493,7 @@ usb_power_delivery_register_capabilities(struct usb_power_delivery *pd,
 }
 EXPORT_SYMBOL_GPL(usb_power_delivery_register_capabilities);
 
-/**
- * usb_power_delivery_unregister_capabilities - Unregister a set of capabilities
- * @cap: The capabilities
- */
+ 
 void usb_power_delivery_unregister_capabilities(struct usb_power_delivery_capabilities *cap)
 {
 	if (!cap)
@@ -529,7 +504,7 @@ void usb_power_delivery_unregister_capabilities(struct usb_power_delivery_capabi
 }
 EXPORT_SYMBOL_GPL(usb_power_delivery_unregister_capabilities);
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static ssize_t revision_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -592,22 +567,7 @@ struct usb_power_delivery *usb_power_delivery_find(const char *name)
 	return dev ? to_usb_power_delivery(dev) : NULL;
 }
 
-/**
- * usb_power_delivery_register - Register USB Power Delivery Support.
- * @parent: Parent device.
- * @desc: Description of the USB PD contract.
- *
- * This routine can be used to register USB Power Delivery capabilities that a
- * device or devices can support. These capabilities represent all the
- * capabilities that can be negotiated with a partner, so not only the Power
- * Capabilities that are negotiated using the USB PD Capabilities Message.
- *
- * The USB Power Delivery Support object that this routine generates can be used
- * as the parent object for all the actual USB Power Delivery Messages and
- * objects that can be negotiated with the partner.
- *
- * Returns handle to struct usb_power_delivery or ERR_PTR.
- */
+ 
 struct usb_power_delivery *
 usb_power_delivery_register(struct device *parent, struct usb_power_delivery_desc *desc)
 {
@@ -643,10 +603,7 @@ usb_power_delivery_register(struct device *parent, struct usb_power_delivery_des
 }
 EXPORT_SYMBOL_GPL(usb_power_delivery_register);
 
-/**
- * usb_power_delivery_unregister - Unregister USB Power Delivery Support.
- * @pd: The USB PD contract.
- */
+ 
 void usb_power_delivery_unregister(struct usb_power_delivery *pd)
 {
 	if (IS_ERR_OR_NULL(pd))
@@ -656,14 +613,7 @@ void usb_power_delivery_unregister(struct usb_power_delivery *pd)
 }
 EXPORT_SYMBOL_GPL(usb_power_delivery_unregister);
 
-/**
- * usb_power_delivery_link_device - Link device to its USB PD object.
- * @pd: The USB PD instance.
- * @dev: The device.
- *
- * This function can be used to create a symlink named "usb_power_delivery" for
- * @dev that points to @pd.
- */
+ 
 int usb_power_delivery_link_device(struct usb_power_delivery *pd, struct device *dev)
 {
 	int ret;
@@ -682,13 +632,7 @@ int usb_power_delivery_link_device(struct usb_power_delivery *pd, struct device 
 }
 EXPORT_SYMBOL_GPL(usb_power_delivery_link_device);
 
-/**
- * usb_power_delivery_unlink_device - Unlink device from its USB PD object.
- * @pd: The USB PD instance.
- * @dev: The device.
- *
- * Remove the symlink that was previously created with pd_link_device().
- */
+ 
 void usb_power_delivery_unlink_device(struct usb_power_delivery *pd, struct device *dev)
 {
 	if (IS_ERR_OR_NULL(pd) || !dev)
@@ -700,7 +644,7 @@ void usb_power_delivery_unlink_device(struct usb_power_delivery *pd, struct devi
 }
 EXPORT_SYMBOL_GPL(usb_power_delivery_unlink_device);
 
-/* -------------------------------------------------------------------------- */
+ 
 
 int __init usb_power_delivery_init(void)
 {

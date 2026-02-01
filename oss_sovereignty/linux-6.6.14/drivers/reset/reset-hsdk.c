@@ -1,12 +1,4 @@
-/*
- * Copyright (C) 2017 Synopsys.
- *
- * Synopsys HSDK Development platform reset driver.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -28,15 +20,15 @@ struct hsdk_rst {
 };
 
 static const u32 rst_map[] = {
-	BIT(16), /* APB_RST  */
-	BIT(17), /* AXI_RST  */
-	BIT(18), /* ETH_RST  */
-	BIT(19), /* USB_RST  */
-	BIT(20), /* SDIO_RST */
-	BIT(21), /* HDMI_RST */
-	BIT(22), /* GFX_RST  */
-	BIT(25), /* DMAC_RST */
-	BIT(31), /* EBI_RST  */
+	BIT(16),  
+	BIT(17),  
+	BIT(18),  
+	BIT(19),  
+	BIT(20),  
+	BIT(21),  
+	BIT(22),  
+	BIT(25),  
+	BIT(31),  
 };
 
 #define HSDK_MAX_RESETS			ARRAY_SIZE(rst_map)
@@ -64,7 +56,7 @@ static int hsdk_reset_do(struct hsdk_rst *rst)
 	reg |= CGU_IP_SW_RESET_RESET;
 	writel(reg, rst->regs_rst + CGU_IP_SW_RESET);
 
-	/* wait till reset bit is back to 0 */
+	 
 	return readl_poll_timeout_atomic(rst->regs_rst + CGU_IP_SW_RESET, reg,
 		!(reg & CGU_IP_SW_RESET_RESET), 5, SW_RESET_TIMEOUT);
 }

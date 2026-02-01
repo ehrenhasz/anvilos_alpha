@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the SGS-Thomson M48T35 Timekeeper RAM chip
- *
- * Copyright (C) 2000 Silicon Graphics, Inc.
- * Written by Ulf Carlsson (ulfc@engr.sgi.com)
- *
- * Copyright (C) 2008 Thomas Bogendoerfer
- *
- * Based on code written by Paul Gortmaker.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/rtc.h>
@@ -19,7 +10,7 @@
 #include <linux/err.h>
 
 struct m48t35_rtc {
-	u8	pad[0x7ff8];    /* starts at 0x7ff8 */
+	u8	pad[0x7ff8];     
 #ifdef CONFIG_SGI_IP27
 	u8	hour;
 	u8	min;
@@ -57,12 +48,7 @@ static int m48t35_read_time(struct device *dev, struct rtc_time *tm)
 	struct m48t35_priv *priv = dev_get_drvdata(dev);
 	u8 control;
 
-	/*
-	 * Only the values that we read from the RTC are set. We leave
-	 * tm_wday, tm_yday and tm_isdst untouched. Even though the
-	 * RTC has RTC_DAY_OF_WEEK, we ignore it, as it is only updated
-	 * by the RTC when initially set to a non-zero value.
-	 */
+	 
 	spin_lock_irq(&priv->lock);
 	control = readb(&priv->reg->control);
 	writeb(control | M48T35_RTC_READ, &priv->reg->control);
@@ -82,10 +68,7 @@ static int m48t35_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_mon = bcd2bin(tm->tm_mon);
 	tm->tm_year = bcd2bin(tm->tm_year);
 
-	/*
-	 * Account for differences between how the RTC uses the values
-	 * and how they are defined in a struct rtc_time;
-	 */
+	 
 	tm->tm_year += 70;
 	if (tm->tm_year <= 69)
 		tm->tm_year += 100;
@@ -102,7 +85,7 @@ static int m48t35_set_time(struct device *dev, struct rtc_time *tm)
 	u8 control;
 
 	yrs = tm->tm_year + 1900;
-	mon = tm->tm_mon + 1;   /* tm_mon starts at zero */
+	mon = tm->tm_mon + 1;    
 	day = tm->tm_mday;
 	hrs = tm->tm_hour;
 	min = tm->tm_min;
@@ -112,7 +95,7 @@ static int m48t35_set_time(struct device *dev, struct rtc_time *tm)
 		return -EINVAL;
 
 	yrs -= 1970;
-	if (yrs > 255)    /* They are unsigned */
+	if (yrs > 255)     
 		return -EINVAL;
 
 	if (yrs > 169)

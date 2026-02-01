@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+ 
+ 
 
 #ifndef _MLXSW_ROUTER_H_
 #define _MLXSW_ROUTER_H_
@@ -15,7 +15,7 @@ struct mlxsw_sp_router_nve_decap {
 	u8 valid:1;
 };
 
-/* gen_pool_alloc() returns 0 when allocation fails, so use an offset */
+ 
 #define MLXSW_SP_ROUTER_GENALLOC_OFFSET 0x100
 
 struct mlxsw_sp_router {
@@ -33,18 +33,18 @@ struct mlxsw_sp_router {
 	struct rhashtable nexthop_ht;
 	struct list_head nexthop_list;
 	struct {
-		/* One tree for each protocol: IPv4 and IPv6 */
+		 
 		struct mlxsw_sp_lpm_tree *proto_trees[2];
 		struct mlxsw_sp_lpm_tree *trees;
 		unsigned int tree_count;
 	} lpm;
 	struct {
 		struct delayed_work dw;
-		unsigned long interval;	/* ms */
+		unsigned long interval;	 
 		atomic_t neigh_count;
 	} neighs_update;
 	struct delayed_work nexthop_probe_dw;
-#define MLXSW_SP_UNRESOLVED_NH_PROBE_INTERVAL 5000 /* ms */
+#define MLXSW_SP_UNRESOLVED_NH_PROBE_INTERVAL 5000  
 	struct list_head nexthop_neighs_list;
 	struct list_head ipip_list;
 	struct notifier_block nexthop_nb;
@@ -58,7 +58,7 @@ struct mlxsw_sp_router {
 	const struct mlxsw_sp_rif_ops **rif_ops_arr;
 	const struct mlxsw_sp_ipip_ops **ipip_ops_arr;
 	struct mlxsw_sp_router_nve_decap nve_decap_config;
-	struct mutex lock; /* Protects shared router resources */
+	struct mutex lock;  
 	struct mlxsw_sp_fib_entry_op_ctx *ll_op_ctx;
 	struct mlxsw_sp_crif *lb_crif;
 	const struct mlxsw_sp_adj_grp_size_range *adj_grp_size_ranges;
@@ -74,7 +74,7 @@ struct mlxsw_sp_rif_ipip_lb;
 struct mlxsw_sp_rif_ipip_lb_config {
 	enum mlxsw_reg_ritr_loopback_ipip_type lb_ipipt;
 	u32 okey;
-	enum mlxsw_sp_l3proto ul_protocol; /* Underlay. */
+	enum mlxsw_sp_l3proto ul_protocol;  
 	union mlxsw_sp_l3addr saddr;
 };
 
@@ -186,4 +186,4 @@ int mlxsw_sp_netdevice_enslavement_replay(struct mlxsw_sp *mlxsw_sp,
 void mlxsw_sp_netdevice_deslavement_replay(struct mlxsw_sp *mlxsw_sp,
 					   struct net_device *dev);
 
-#endif /* _MLXSW_ROUTER_H_*/
+#endif  

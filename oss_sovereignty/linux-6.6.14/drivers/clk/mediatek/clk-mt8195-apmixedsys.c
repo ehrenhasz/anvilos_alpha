@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2021 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include "clk-fhctl.h"
 #include "clk-gate.h"

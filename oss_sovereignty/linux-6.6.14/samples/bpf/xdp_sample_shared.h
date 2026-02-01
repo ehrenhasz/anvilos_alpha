@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #ifndef _XDP_SAMPLE_SHARED_H
 #define _XDP_SAMPLE_SHARED_H
 

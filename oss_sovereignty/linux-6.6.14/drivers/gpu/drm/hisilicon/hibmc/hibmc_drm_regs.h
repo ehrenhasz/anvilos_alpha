@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Hisilicon Hibmc SoC drm driver
- *
- * Based on the bochs drm driver.
- *
- * Copyright (c) 2016 Huawei Limited.
- *
- * Author:
- *	Rongrong Zou <zourongrong@huawei.com>
- *	Rongrong Zou <zourongrong@gmail.com>
- *	Jianhua Li <lijianhua@huawei.com>
- */
+ 
+ 
 
 #ifndef HIBMC_DRM_HW_H
 #define HIBMC_DRM_HW_H
 
-/* register definition */
+ 
 #define HIBMC_MISC_CTRL				0x4
 
 #define HIBMC_MSCCTL_LOCALMEM_RESET(x)		((x) << 6)
@@ -136,7 +126,7 @@
 #define HIBMC_CRT_VERT_SYNC_START(x)		((x) << 0)
 #define HIBMC_CRT_VERT_SYNC_START_MASK		0x7FF
 
-/* Auto Centering */
+ 
 #define HIBMC_CRT_AUTO_CENTERING_TL		0x080280
 #define HIBMC_CRT_AUTO_CENTERING_TL_TOP(x)	((x) << 16)
 #define HIBMC_CRT_AUTO_CENTERING_TL_TOP_MASK	0x7FF0000
@@ -151,7 +141,7 @@
 #define HIBMC_CRT_AUTO_CENTERING_BR_RIGHT(x)	((x) << 0)
 #define HIBMC_CRT_AUTO_CENTERING_BR_RIGHT_MASK	0x7FF
 
-/* register to control panel output */
+ 
 #define HIBMC_DISPLAY_CONTROL_HISILE		0x80288
 #define HIBMC_DISPLAY_CONTROL_FPVDDEN(x)	((x) << 0)
 #define HIBMC_DISPLAY_CONTROL_PANELDATE(x)	((x) << 1)
@@ -166,7 +156,7 @@
 #define HIBMC_RAW_INTERRUPT_EN_VBLANK(x)	((x) << 2)
 #define HIBMC_RAW_INTERRUPT_EN_VBLANK_MASK	0x4
 
-/* register and values for PLL control */
+ 
 #define CRT_PLL1_HS				0x802a8
 #define CRT_PLL1_HS_OUTER_BYPASS(x)		((x) << 30)
 #define CRT_PLL1_HS_INTER_BYPASS(x)		((x) << 29)

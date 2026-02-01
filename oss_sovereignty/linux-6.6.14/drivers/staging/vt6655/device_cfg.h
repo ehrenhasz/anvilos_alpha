@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Driver configuration header
- * Author: Lyndon Chen
- *
- * Date: Dec 17, 2002
- *
- */
+ 
+ 
 
 #ifndef __DEVICE_CONFIG_H
 #define __DEVICE_CONFIG_H

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2006-2007 PA Semi, Inc
- *
- * SMBus host driver for PA Semi PWRficient
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -42,10 +38,7 @@ static int pasemi_smb_pci_probe(struct pci_dev *dev,
 	size = pci_resource_len(dev, 0);
 	smbus->clk_div = CLK_100K_DIV;
 
-	/*
-	 * The original PASemi PCI controllers don't have a register for
-	 * their HW revision.
-	 */
+	 
 	smbus->hw_rev = PASEMI_HW_REV_PCI;
 
 	if (!devm_request_region(&dev->dev, base, size,

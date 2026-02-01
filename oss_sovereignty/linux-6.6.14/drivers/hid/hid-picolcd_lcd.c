@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/***************************************************************************
- *   Copyright (C) 2010-2012 by Bruno Prémont <bonbons@linux-vserver.org>  *
- *                                                                         *
- *   Based on Logitech G13 driver (v0.4)                                   *
- *     Copyright (C) 2009 by Rick L. Vinyard, Jr. <rvinyard@cs.nmsu.edu>   *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #include <linux/hid.h>
 
@@ -14,9 +8,7 @@
 
 #include "hid-picolcd.h"
 
-/*
- * lcd class device
- */
+ 
 static int picolcd_get_contrast(struct lcd_device *ldev)
 {
 	struct picolcd_data *data = lcd_get_data(ldev);

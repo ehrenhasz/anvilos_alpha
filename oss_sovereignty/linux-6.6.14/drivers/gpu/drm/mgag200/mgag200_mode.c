@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2010 Matt Turner.
- * Copyright 2012 Red Hat
- *
- * Authors: Matthew Garrett
- *	    Matt Turner
- *	    Dave Airlie
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/iosys-map.h>
@@ -24,9 +17,7 @@
 
 #include "mgag200_drv.h"
 
-/*
- * This file contains setup code for the CRTC.
- */
+ 
 
 void mgag200_crtc_set_gamma_linear(struct mga_device *mdev,
 				   const struct drm_format_info *format)
@@ -37,13 +28,13 @@ void mgag200_crtc_set_gamma_linear(struct mga_device *mdev,
 
 	switch (format->format) {
 	case DRM_FORMAT_RGB565:
-		/* Use better interpolation, to take 32 values from 0 to 255 */
+		 
 		for (i = 0; i < MGAG200_LUT_SIZE / 8; i++) {
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, i * 8 + i / 4);
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, i * 4 + i / 16);
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, i * 8 + i / 4);
 		}
-		/* Green has one more bit, so add padding with 0 for red and blue. */
+		 
 		for (i = MGAG200_LUT_SIZE / 8; i < MGAG200_LUT_SIZE / 4; i++) {
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, 0);
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, i * 4 + i / 16);
@@ -75,13 +66,13 @@ void mgag200_crtc_set_gamma(struct mga_device *mdev,
 
 	switch (format->format) {
 	case DRM_FORMAT_RGB565:
-		/* Use better interpolation, to take 32 values from lut[0] to lut[255] */
+		 
 		for (i = 0; i < MGAG200_LUT_SIZE / 8; i++) {
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, lut[i * 8 + i / 4].red >> 8);
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, lut[i * 4 + i / 16].green >> 8);
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, lut[i * 8 + i / 4].blue >> 8);
 		}
-		/* Green has one more bit, so add padding with 0 for red and blue. */
+		 
 		for (i = MGAG200_LUT_SIZE / 8; i < MGAG200_LUT_SIZE / 4; i++) {
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, 0);
 			WREG8(DAC_INDEX + MGA1064_COL_PAL, lut[i * 4 + i / 16].green >> 8);
@@ -127,21 +118,7 @@ static inline void mga_wait_busy(struct mga_device *mdev)
 	} while ((status & 0x01) && time_before(jiffies, timeout));
 }
 
-/*
- * This is how the framebuffer base address is stored in g200 cards:
- *   * Assume @offset is the gpu_addr variable of the framebuffer object
- *   * Then addr is the number of _pixels_ (not bytes) from the start of
- *     VRAM to the first pixel we want to display. (divided by 2 for 32bit
- *     framebuffers)
- *   * addr is stored in the CRTCEXT0, CRTCC and CRTCD registers
- *      addr<20> -> CRTCEXT0<6>
- *      addr<19-16> -> CRTCEXT0<3-0>
- *      addr<15-8> -> CRTCC<7-0>
- *      addr<7-0> -> CRTCD<7-0>
- *
- *  CRTCEXT0 has to be programmed last to trigger an update and make the
- *  new addr variable take effect.
- */
+ 
 static void mgag200_set_startadd(struct mga_device *mdev,
 				 unsigned long offset)
 {
@@ -154,10 +131,7 @@ static void mgag200_set_startadd(struct mga_device *mdev,
 	if (startadd > 0)
 		drm_WARN_ON_ONCE(dev, mdev->info->bug_no_startadd);
 
-	/*
-	 * Can't store addresses any higher than that, but we also
-	 * don't have more than 16 MiB of memory, so it should be fine.
-	 */
+	 
 	drm_WARN_ON(dev, startadd > 0x1fffff);
 
 	RREG_ECRT(0x00, crtcext0);
@@ -211,7 +185,7 @@ void mgag200_set_mode_regs(struct mga_device *mdev, const struct drm_display_mod
 	hsyncend = mode->hsync_end / 8 - 1;
 	htotal = mode->htotal / 8 - 1;
 
-	/* Work around hardware quirk */
+	 
 	if ((htotal & 0x07) == 0x06 || (htotal & 0x07) == 0x04)
 		htotal++;
 
@@ -258,7 +232,7 @@ void mgag200_set_mode_regs(struct mga_device *mdev, const struct drm_display_mod
 		 ((vdisplay & 0x100) >> 7) |
 		 ((vsyncstart & 0x100) >> 6) |
 		 ((vdisplay & 0x100) >> 5) |
-		 ((vdisplay & 0x100) >> 4) | /* linecomp */
+		 ((vdisplay & 0x100) >> 4) |  
 		 ((vtotal & 0x200) >> 4) |
 		 ((vdisplay & 0x200) >> 3) |
 		 ((vsyncstart & 0x200) >> 2));
@@ -287,11 +261,7 @@ static u8 mgag200_get_bpp_shift(const struct drm_format_info *format)
 	return bpp_shift[format->cpp[0] - 1];
 }
 
-/*
- * Calculates the HW offset value from the framebuffer's pitch. The
- * offset is a multiple of the pixel size and depends on the display
- * format.
- */
+ 
 static u32 mgag200_calculate_offset(struct mga_device *mdev,
 				    const struct drm_framebuffer *fb)
 {
@@ -360,7 +330,7 @@ void mgag200_set_format_regs(struct mga_device *mdev, const struct drm_format_in
 		xmulctrl = MGA1064_MUL_CTL_32_24bits;
 		break;
 	default:
-		/* BUG: We should have caught this problem already. */
+		 
 		drm_WARN_ON(dev, "invalid format depth\n");
 		return;
 	}
@@ -376,9 +346,7 @@ void mgag200_set_format_regs(struct mga_device *mdev, const struct drm_format_in
 	WREG_GFX(3, 0x00);
 	WREG_GFX(4, 0x00);
 	WREG_GFX(5, 0x40);
-	/* GCTL6 should be 0x05, but we configure memmapsl to 0xb8000 (text mode),
-	 * so that it doesn't hang when running kexec/kdump on G200_SE rev42.
-	 */
+	 
 	WREG_GFX(6, 0x0d);
 	WREG_GFX(7, 0x0f);
 	WREG_GFX(8, 0x0f);
@@ -395,10 +363,7 @@ void mgag200_enable_display(struct mga_device *mdev)
 		MGAREG_SEQ0_ASYNCRST;
 	WREG_SEQ(0x00, seq0);
 
-	/*
-	 * TODO: replace busy waiting with vblank IRQ; put
-	 *       msleep(50) before changing SCROFF
-	 */
+	 
 	mga_wait_vsync(mdev);
 	mga_wait_busy(mdev);
 
@@ -416,10 +381,7 @@ static void mgag200_disable_display(struct mga_device *mdev)
 	seq0 &= ~MGAREG_SEQ0_SYNCRST;
 	WREG_SEQ(0x00, seq0);
 
-	/*
-	 * TODO: replace busy waiting with vblank IRQ; put
-	 *       msleep(50) before changing SCROFF
-	 */
+	 
 	mga_wait_vsync(mdev);
 	mga_wait_busy(mdev);
 
@@ -438,9 +400,7 @@ static void mgag200_handle_damage(struct mga_device *mdev, const struct iosys_ma
 	drm_fb_memcpy(&dst, fb->pitches, vmap, fb, clip);
 }
 
-/*
- * Primary plane
- */
+ 
 
 const uint32_t mgag200_primary_plane_formats[] = {
 	DRM_FORMAT_XRGB8888,
@@ -482,7 +442,7 @@ int mgag200_primary_plane_helper_atomic_check(struct drm_plane *plane,
 		fb = plane->state->fb;
 
 	if (!fb || (fb->format != new_fb->format))
-		new_crtc_state->mode_changed = true; /* update PLL settings */
+		new_crtc_state->mode_changed = true;  
 
 	new_mgag200_crtc_state = to_mgag200_crtc_state(new_crtc_state);
 	new_mgag200_crtc_state->format = new_fb->format;
@@ -507,7 +467,7 @@ void mgag200_primary_plane_helper_atomic_update(struct drm_plane *plane,
 		mgag200_handle_damage(mdev, shadow_plane_state->data, fb, &damage);
 	}
 
-	/* Always scanout image at VRAM offset 0 */
+	 
 	mgag200_set_startadd(mdev, (u32)0);
 	mgag200_set_offset(mdev, fb);
 }
@@ -538,9 +498,7 @@ void mgag200_primary_plane_helper_atomic_disable(struct drm_plane *plane,
 	msleep(20);
 }
 
-/*
- * CRTC
- */
+ 
 
 enum drm_mode_status mgag200_crtc_helper_mode_valid(struct drm_crtc *crtc,
 						    const struct drm_display_mode *mode)
@@ -548,10 +506,7 @@ enum drm_mode_status mgag200_crtc_helper_mode_valid(struct drm_crtc *crtc,
 	struct mga_device *mdev = to_mga_device(crtc->dev);
 	const struct mgag200_device_info *info = mdev->info;
 
-	/*
-	 * Some devices have additional limits on the size of the
-	 * display mode.
-	 */
+	 
 	if (mode->hdisplay > info->max_hdisplay)
 		return MODE_VIRTUAL_X;
 	if (mode->vdisplay > info->max_vdisplay)
@@ -710,19 +665,14 @@ void mgag200_crtc_atomic_destroy_state(struct drm_crtc *crtc, struct drm_crtc_st
 	kfree(mgag200_crtc_state);
 }
 
-/*
- * Connector
- */
+ 
 
 int mgag200_vga_connector_helper_get_modes(struct drm_connector *connector)
 {
 	struct mga_device *mdev = to_mga_device(connector->dev);
 	int ret;
 
-	/*
-	 * Protect access to I/O registers from concurrent modesetting
-	 * by acquiring the I/O-register lock.
-	 */
+	 
 	mutex_lock(&mdev->rmmio_lock);
 	ret = drm_connector_helper_get_modes_from_ddc(connector);
 	mutex_unlock(&mdev->rmmio_lock);
@@ -730,20 +680,13 @@ int mgag200_vga_connector_helper_get_modes(struct drm_connector *connector)
 	return ret;
 }
 
-/*
- * Mode config
- */
+ 
 
 static void mgag200_mode_config_helper_atomic_commit_tail(struct drm_atomic_state *state)
 {
 	struct mga_device *mdev = to_mga_device(state->dev);
 
-	/*
-	 * Concurrent operations could possibly trigger a call to
-	 * drm_connector_helper_funcs.get_modes by trying to read the
-	 * display modes. Protect access to I/O registers by acquiring
-	 * the I/O-register lock.
-	 */
+	 
 	mutex_lock(&mdev->rmmio_lock);
 	drm_atomic_helper_commit_tail(state);
 	mutex_unlock(&mdev->rmmio_lock);
@@ -753,7 +696,7 @@ static const struct drm_mode_config_helper_funcs mgag200_mode_config_helper_func
 	.atomic_commit_tail = mgag200_mode_config_helper_atomic_commit_tail,
 };
 
-/* Calculates a mode's required memory bandwidth (in KiB/sec). */
+ 
 static uint32_t mgag200_calculate_mode_bandwidth(const struct drm_display_mode *mode,
 						 unsigned int bits_per_pixel)
 {
@@ -781,7 +724,7 @@ static uint32_t mgag200_calculate_mode_bandwidth(const struct drm_display_mode *
 static enum drm_mode_status mgag200_mode_config_mode_valid(struct drm_device *dev,
 							   const struct drm_display_mode *mode)
 {
-	static const unsigned int max_bpp = 4; // DRM_FORMAT_XRGB8888
+	static const unsigned int max_bpp = 4;  
 	struct mga_device *mdev = to_mga_device(dev);
 	unsigned long fbsize, fbpages, max_fbpages;
 	const struct mgag200_device_info *info = mdev->info;
@@ -794,10 +737,7 @@ static enum drm_mode_status mgag200_mode_config_mode_valid(struct drm_device *de
 	if (fbpages > max_fbpages)
 		return MODE_MEM;
 
-	/*
-	 * Test the mode's required memory bandwidth if the device
-	 * specifies a maximum. Not all devices do though.
-	 */
+	 
 	if (info->max_mem_bandwidth) {
 		uint32_t mode_bandwidth = mgag200_calculate_mode_bandwidth(mode, max_bpp * 8);
 

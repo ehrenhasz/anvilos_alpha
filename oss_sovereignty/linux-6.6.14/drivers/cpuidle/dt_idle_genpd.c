@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PM domains for CPUs via genpd.
- *
- * Copyright (C) 2019 Linaro Ltd.
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- *
- * Copyright (c) 2021 Western Digital Corporation or its affiliates.
- * Copyright (c) 2022 Ventana Micro Systems Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) "dt-idle-genpd: " fmt
 
@@ -58,12 +50,12 @@ static int pd_parse_states(struct device_node *np,
 {
 	int ret;
 
-	/* Parse the domain idle states. */
+	 
 	ret = of_genpd_parse_idle_states(np, states, state_count);
 	if (ret)
 		return ret;
 
-	/* Fill out the dt specifics for each found state. */
+	 
 	ret = pd_parse_state_nodes(parse_state, *states, *state_count);
 	if (ret)
 		kfree(*states);
@@ -103,10 +95,7 @@ struct generic_pm_domain *dt_idle_pd_alloc(struct device_node *np,
 	if (!pd->name)
 		goto free_pd;
 
-	/*
-	 * Parse the domain idle states and let genpd manage the state selection
-	 * for those being compatible with "domain-idle-state".
-	 */
+	 
 	ret = pd_parse_states(np, parse_state, &states, &state_count);
 	if (ret)
 		goto free_name;

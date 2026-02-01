@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for
- *    Samsung S5H1420 and
- *    PnpNetwork PN1010 QPSK Demodulator
- *
- * Copyright (C) 2005 Andrew de Quincey <adq_dvb@lidskialf.net>
- * Copyright (C) 2005-8 Patrick Boettcher <pb@linuxtv.org>
- */
+ 
+ 
 #ifndef S5H1420_H
 #define S5H1420_H
 
@@ -14,14 +7,14 @@
 
 struct s5h1420_config
 {
-	/* the demodulator's i2c address */
+	 
 	u8 demod_address;
 
-	/* does the inversion require inversion? */
+	 
 	u8 invert:1;
 
 	u8 repeated_start_workaround:1;
-	u8 cdclk_polarity:1; /* 1 == falling edge, 0 == raising edge */
+	u8 cdclk_polarity:1;  
 
 	u8 serial_mpeg:1;
 };
@@ -42,6 +35,6 @@ static inline struct i2c_adapter *s5h1420_get_tuner_i2c_adapter(struct dvb_front
 {
 	return NULL;
 }
-#endif // CONFIG_DVB_S5H1420
+#endif 
 
-#endif // S5H1420_H
+#endif 

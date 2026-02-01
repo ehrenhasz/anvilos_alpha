@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * Copyright (C) 2019-2021 Paragon Software GmbH, All rights reserved.
- *
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/fs.h>
@@ -14,23 +10,21 @@
 #include "ntfs.h"
 #include "ntfs_fs.h"
 
-/*
- * LOG FILE structs
- */
+ 
 
-// clang-format off
+
 
 #define MaxLogFileSize     0x100000000ull
 #define DefaultLogPageSize 4096
 #define MinLogRecordPages  0x30
 
 struct RESTART_HDR {
-	struct NTFS_RECORD_HEADER rhdr; // 'RSTR'
-	__le32 sys_page_size; // 0x10: Page size of the system which initialized the log.
-	__le32 page_size;     // 0x14: Log page size used for this log file.
-	__le16 ra_off;        // 0x18:
-	__le16 minor_ver;     // 0x1A:
-	__le16 major_ver;     // 0x1C:
+	struct NTFS_RECORD_HEADER rhdr; 
+	__le32 sys_page_size; 
+	__le32 page_size;     
+	__le16 ra_off;        
+	__le16 minor_ver;     
+	__le16 major_ver;     
 	__le16 fixups[];
 };
 
@@ -39,50 +33,50 @@ struct RESTART_HDR {
 
 struct CLIENT_REC {
 	__le64 oldest_lsn;
-	__le64 restart_lsn; // 0x08:
-	__le16 prev_client; // 0x10:
-	__le16 next_client; // 0x12:
-	__le16 seq_num;     // 0x14:
-	u8 align[6];        // 0x16:
-	__le32 name_bytes;  // 0x1C: In bytes.
-	__le16 name[32];    // 0x20: Name of client.
+	__le64 restart_lsn; 
+	__le16 prev_client; 
+	__le16 next_client; 
+	__le16 seq_num;     
+	u8 align[6];        
+	__le32 name_bytes;  
+	__le16 name[32];    
 };
 
 static_assert(sizeof(struct CLIENT_REC) == 0x60);
 
-/* Two copies of these will exist at the beginning of the log file */
+ 
 struct RESTART_AREA {
-	__le64 current_lsn;    // 0x00: Current logical end of log file.
-	__le16 log_clients;    // 0x08: Maximum number of clients.
-	__le16 client_idx[2];  // 0x0A: Free/use index into the client record arrays.
-	__le16 flags;          // 0x0E: See RESTART_SINGLE_PAGE_IO.
-	__le32 seq_num_bits;   // 0x10: The number of bits in sequence number.
-	__le16 ra_len;         // 0x14:
-	__le16 client_off;     // 0x16:
-	__le64 l_size;         // 0x18: Usable log file size.
-	__le32 last_lsn_data_len; // 0x20:
-	__le16 rec_hdr_len;    // 0x24: Log page data offset.
-	__le16 data_off;       // 0x26: Log page data length.
-	__le32 open_log_count; // 0x28:
-	__le32 align[5];       // 0x2C:
-	struct CLIENT_REC clients[]; // 0x40:
+	__le64 current_lsn;    
+	__le16 log_clients;    
+	__le16 client_idx[2];  
+	__le16 flags;          
+	__le32 seq_num_bits;   
+	__le16 ra_len;         
+	__le16 client_off;     
+	__le64 l_size;         
+	__le32 last_lsn_data_len; 
+	__le16 rec_hdr_len;    
+	__le16 data_off;       
+	__le32 open_log_count; 
+	__le32 align[5];       
+	struct CLIENT_REC clients[]; 
 };
 
 struct LOG_REC_HDR {
-	__le16 redo_op;      // 0x00:  NTFS_LOG_OPERATION
-	__le16 undo_op;      // 0x02:  NTFS_LOG_OPERATION
-	__le16 redo_off;     // 0x04:  Offset to Redo record.
-	__le16 redo_len;     // 0x06:  Redo length.
-	__le16 undo_off;     // 0x08:  Offset to Undo record.
-	__le16 undo_len;     // 0x0A:  Undo length.
-	__le16 target_attr;  // 0x0C:
-	__le16 lcns_follow;  // 0x0E:
-	__le16 record_off;   // 0x10:
-	__le16 attr_off;     // 0x12:
-	__le16 cluster_off;  // 0x14:
-	__le16 reserved;     // 0x16:
-	__le64 target_vcn;   // 0x18:
-	__le64 page_lcns[];  // 0x20:
+	__le16 redo_op;      
+	__le16 undo_op;      
+	__le16 redo_off;     
+	__le16 redo_len;     
+	__le16 undo_off;     
+	__le16 undo_len;     
+	__le16 target_attr;  
+	__le16 lcns_follow;  
+	__le16 record_off;   
+	__le16 attr_off;     
+	__le16 cluster_off;  
+	__le16 reserved;     
+	__le64 target_vcn;   
+	__le64 page_lcns[];  
 };
 
 static_assert(sizeof(struct LOG_REC_HDR) == 0x20);
@@ -91,86 +85,83 @@ static_assert(sizeof(struct LOG_REC_HDR) == 0x20);
 #define RESTART_ENTRY_ALLOCATED_LE cpu_to_le32(0xFFFFFFFF)
 
 struct RESTART_TABLE {
-	__le16 size;       // 0x00: In bytes
-	__le16 used;       // 0x02: Entries
-	__le16 total;      // 0x04: Entries
-	__le16 res[3];     // 0x06:
-	__le32 free_goal;  // 0x0C:
-	__le32 first_free; // 0x10:
-	__le32 last_free;  // 0x14:
+	__le16 size;       
+	__le16 used;       
+	__le16 total;      
+	__le16 res[3];     
+	__le32 free_goal;  
+	__le32 first_free; 
+	__le32 last_free;  
 
 };
 
 static_assert(sizeof(struct RESTART_TABLE) == 0x18);
 
 struct ATTR_NAME_ENTRY {
-	__le16 off; // Offset in the Open attribute Table.
+	__le16 off; 
 	__le16 name_bytes;
 	__le16 name[];
 };
 
 struct OPEN_ATTR_ENRTY {
-	__le32 next;            // 0x00: RESTART_ENTRY_ALLOCATED if allocated
-	__le32 bytes_per_index; // 0x04:
-	enum ATTR_TYPE type;    // 0x08:
-	u8 is_dirty_pages;      // 0x0C:
-	u8 is_attr_name;        // 0x0B: Faked field to manage 'ptr'
-	u8 name_len;            // 0x0C: Faked field to manage 'ptr'
+	__le32 next;            
+	__le32 bytes_per_index; 
+	enum ATTR_TYPE type;    
+	u8 is_dirty_pages;      
+	u8 is_attr_name;        
+	u8 name_len;            
 	u8 res;
-	struct MFT_REF ref;     // 0x10: File Reference of file containing attribute
-	__le64 open_record_lsn; // 0x18:
-	void *ptr;              // 0x20:
+	struct MFT_REF ref;     
+	__le64 open_record_lsn; 
+	void *ptr;              
 };
 
-/* 32 bit version of 'struct OPEN_ATTR_ENRTY' */
+ 
 struct OPEN_ATTR_ENRTY_32 {
-	__le32 next;            // 0x00: RESTART_ENTRY_ALLOCATED if allocated
-	__le32 ptr;             // 0x04:
-	struct MFT_REF ref;     // 0x08:
-	__le64 open_record_lsn; // 0x10:
-	u8 is_dirty_pages;      // 0x18:
-	u8 is_attr_name;        // 0x19:
+	__le32 next;            
+	__le32 ptr;             
+	struct MFT_REF ref;     
+	__le64 open_record_lsn; 
+	u8 is_dirty_pages;      
+	u8 is_attr_name;        
 	u8 res1[2];
-	enum ATTR_TYPE type;    // 0x1C:
-	u8 name_len;            // 0x20: In wchar
+	enum ATTR_TYPE type;    
+	u8 name_len;            
 	u8 res2[3];
-	__le32 AttributeName;   // 0x24:
-	__le32 bytes_per_index; // 0x28:
+	__le32 AttributeName;   
+	__le32 bytes_per_index; 
 };
 
 #define SIZEOF_OPENATTRIBUTEENTRY0 0x2c
-// static_assert( 0x2C == sizeof(struct OPEN_ATTR_ENRTY_32) );
+
 static_assert(sizeof(struct OPEN_ATTR_ENRTY) < SIZEOF_OPENATTRIBUTEENTRY0);
 
-/*
- * One entry exists in the Dirty Pages Table for each page which is dirty at
- * the time the Restart Area is written.
- */
+ 
 struct DIR_PAGE_ENTRY {
-	__le32 next;         // 0x00: RESTART_ENTRY_ALLOCATED if allocated
-	__le32 target_attr;  // 0x04: Index into the Open attribute Table
-	__le32 transfer_len; // 0x08:
-	__le32 lcns_follow;  // 0x0C:
-	__le64 vcn;          // 0x10: Vcn of dirty page
-	__le64 oldest_lsn;   // 0x18:
-	__le64 page_lcns[];  // 0x20:
+	__le32 next;         
+	__le32 target_attr;  
+	__le32 transfer_len; 
+	__le32 lcns_follow;  
+	__le64 vcn;          
+	__le64 oldest_lsn;   
+	__le64 page_lcns[];  
 };
 
 static_assert(sizeof(struct DIR_PAGE_ENTRY) == 0x20);
 
-/* 32 bit version of 'struct DIR_PAGE_ENTRY' */
+ 
 struct DIR_PAGE_ENTRY_32 {
-	__le32 next;		// 0x00: RESTART_ENTRY_ALLOCATED if allocated
-	__le32 target_attr;	// 0x04: Index into the Open attribute Table
-	__le32 transfer_len;	// 0x08:
-	__le32 lcns_follow;	// 0x0C:
-	__le32 reserved;	// 0x10:
-	__le32 vcn_low;		// 0x14: Vcn of dirty page
-	__le32 vcn_hi;		// 0x18: Vcn of dirty page
-	__le32 oldest_lsn_low;	// 0x1C:
-	__le32 oldest_lsn_hi;	// 0x1C:
-	__le32 page_lcns_low;	// 0x24:
-	__le32 page_lcns_hi;	// 0x24:
+	__le32 next;		
+	__le32 target_attr;	
+	__le32 transfer_len;	
+	__le32 lcns_follow;	
+	__le32 reserved;	
+	__le32 vcn_low;		
+	__le32 vcn_hi;		
+	__le32 oldest_lsn_low;	
+	__le32 oldest_lsn_hi;	
+	__le32 page_lcns_low;	
+	__le32 page_lcns_hi;	
 };
 
 static_assert(offsetof(struct DIR_PAGE_ENTRY_32, vcn_low) == 0x14);
@@ -184,30 +175,30 @@ enum transact_state {
 };
 
 struct TRANSACTION_ENTRY {
-	__le32 next;          // 0x00: RESTART_ENTRY_ALLOCATED if allocated
-	u8 transact_state;    // 0x04:
-	u8 reserved[3];       // 0x05:
-	__le64 first_lsn;     // 0x08:
-	__le64 prev_lsn;      // 0x10:
-	__le64 undo_next_lsn; // 0x18:
-	__le32 undo_records;  // 0x20: Number of undo log records pending abort
-	__le32 undo_len;      // 0x24: Total undo size
+	__le32 next;          
+	u8 transact_state;    
+	u8 reserved[3];       
+	__le64 first_lsn;     
+	__le64 prev_lsn;      
+	__le64 undo_next_lsn; 
+	__le32 undo_records;  
+	__le32 undo_len;      
 };
 
 static_assert(sizeof(struct TRANSACTION_ENTRY) == 0x28);
 
 struct NTFS_RESTART {
-	__le32 major_ver;             // 0x00:
-	__le32 minor_ver;             // 0x04:
-	__le64 check_point_start;     // 0x08:
-	__le64 open_attr_table_lsn;   // 0x10:
-	__le64 attr_names_lsn;        // 0x18:
-	__le64 dirty_pages_table_lsn; // 0x20:
-	__le64 transact_table_lsn;    // 0x28:
-	__le32 open_attr_len;         // 0x30: In bytes
-	__le32 attr_names_len;        // 0x34: In bytes
-	__le32 dirty_pages_len;       // 0x38: In bytes
-	__le32 transact_table_len;    // 0x3C: In bytes
+	__le32 major_ver;             
+	__le32 minor_ver;             
+	__le64 check_point_start;     
+	__le64 open_attr_table_lsn;   
+	__le64 attr_names_lsn;        
+	__le64 dirty_pages_table_lsn; 
+	__le64 transact_table_lsn;    
+	__le32 open_attr_len;         
+	__le32 attr_names_len;        
+	__le32 dirty_pages_len;       
+	__le32 transact_table_len;    
 };
 
 static_assert(sizeof(struct NTFS_RESTART) == 0x40);
@@ -229,27 +220,27 @@ struct LCN_RANGE {
 	__le64 len;
 };
 
-/* The following type defines the different log record types. */
+ 
 #define LfsClientRecord  cpu_to_le32(1)
 #define LfsClientRestart cpu_to_le32(2)
 
-/* This is used to uniquely identify a client for a particular log file. */
+ 
 struct CLIENT_ID {
 	__le16 seq_num;
 	__le16 client_idx;
 };
 
-/* This is the header that begins every Log Record in the log file. */
+ 
 struct LFS_RECORD_HDR {
-	__le64 this_lsn;		// 0x00:
-	__le64 client_prev_lsn;		// 0x08:
-	__le64 client_undo_next_lsn;	// 0x10:
-	__le32 client_data_len;		// 0x18:
-	struct CLIENT_ID client;	// 0x1C: Owner of this log record.
-	__le32 record_type;		// 0x20: LfsClientRecord or LfsClientRestart.
-	__le32 transact_id;		// 0x24:
-	__le16 flags;			// 0x28: LOG_RECORD_MULTI_PAGE
-	u8 align[6];			// 0x2A:
+	__le64 this_lsn;		
+	__le64 client_prev_lsn;		
+	__le64 client_undo_next_lsn;	
+	__le32 client_data_len;		
+	struct CLIENT_ID client;	
+	__le32 record_type;		
+	__le32 transact_id;		
+	__le16 flags;			
+	u8 align[6];			
 };
 
 #define LOG_RECORD_MULTI_PAGE cpu_to_le16(1)
@@ -257,26 +248,26 @@ struct LFS_RECORD_HDR {
 static_assert(sizeof(struct LFS_RECORD_HDR) == 0x30);
 
 struct LFS_RECORD {
-	__le16 next_record_off;	// 0x00: Offset of the free space in the page,
-	u8 align[6];		// 0x02:
-	__le64 last_end_lsn;	// 0x08: lsn for the last log record which ends on the page,
+	__le16 next_record_off;	
+	u8 align[6];		
+	__le64 last_end_lsn;	
 };
 
 static_assert(sizeof(struct LFS_RECORD) == 0x10);
 
 struct RECORD_PAGE_HDR {
-	struct NTFS_RECORD_HEADER rhdr;	// 'RCRD'
-	__le32 rflags;			// 0x10: See LOG_PAGE_LOG_RECORD_END
-	__le16 page_count;		// 0x14:
-	__le16 page_pos;		// 0x16:
-	struct LFS_RECORD record_hdr;	// 0x18:
-	__le16 fixups[10];		// 0x28:
-	__le32 file_off;		// 0x3c: Used when major version >= 2
+	struct NTFS_RECORD_HEADER rhdr;	
+	__le32 rflags;			
+	__le16 page_count;		
+	__le16 page_pos;		
+	struct LFS_RECORD record_hdr;	
+	__le16 fixups[10];		
+	__le32 file_off;		
 };
 
-// clang-format on
 
-// Page contains the end of a log record.
+
+
 #define LOG_PAGE_LOG_RECORD_END cpu_to_le32(0x00000001)
 
 static inline bool is_log_record_end(const struct RECORD_PAGE_HDR *hdr)
@@ -286,11 +277,9 @@ static inline bool is_log_record_end(const struct RECORD_PAGE_HDR *hdr)
 
 static_assert(offsetof(struct RECORD_PAGE_HDR, file_off) == 0x3c);
 
-/*
- * END of NTFS LOG structures
- */
+ 
 
-/* Define some tuning parameters to keep the restart tables a reasonable size. */
+ 
 #define INITIAL_NUMBER_TRANSACTIONS 5
 
 enum NTFS_LOG_OPERATION {
@@ -332,16 +321,12 @@ enum NTFS_LOG_OPERATION {
 	UpdateRecordDataAllocation = 0x22,
 
 	UpdateRelativeDataInIndex =
-		0x23, // NtOfsRestartUpdateRelativeDataInIndex
+		0x23, 
 	UpdateRelativeDataInIndex2 = 0x24,
 	ZeroEndOfFileRecord = 0x25,
 };
 
-/*
- * Array for log records which require a target attribute.
- * A true indicates that the corresponding restart operation
- * requires a target attribute.
- */
+ 
 static const u8 AttributeRequired[] = {
 	0xFC, 0xFB, 0xFF, 0x10, 0x06,
 };
@@ -377,14 +362,14 @@ static inline bool can_skip_action(enum NTFS_LOG_OPERATION op)
 
 enum { lcb_ctx_undo_next, lcb_ctx_prev, lcb_ctx_next };
 
-/* Bytes per restart table. */
+ 
 static inline u32 bytes_per_rt(const struct RESTART_TABLE *rt)
 {
 	return le16_to_cpu(rt->used) * le16_to_cpu(rt->size) +
 	       sizeof(struct RESTART_TABLE);
 }
 
-/* Log record length. */
+ 
 static inline u32 lrh_length(const struct LOG_REC_HDR *lr)
 {
 	u16 t16 = le16_to_cpu(lr->lcns_follow);
@@ -393,11 +378,11 @@ static inline u32 lrh_length(const struct LOG_REC_HDR *lr)
 }
 
 struct lcb {
-	struct LFS_RECORD_HDR *lrh; // Log record header of the current lsn.
+	struct LFS_RECORD_HDR *lrh; 
 	struct LOG_REC_HDR *log_rec;
-	u32 ctx_mode; // lcb_ctx_undo_next/lcb_ctx_prev/lcb_ctx_next
+	u32 ctx_mode; 
 	struct CLIENT_ID client;
-	bool alloc; // If true the we should deallocate 'log_rec'.
+	bool alloc; 
 };
 
 static void lcb_put(struct lcb *lcb)
@@ -408,7 +393,7 @@ static void lcb_put(struct lcb *lcb)
 	kfree(lcb);
 }
 
-/* Find the oldest lsn from active clients. */
+ 
 static inline void oldest_client_lsn(const struct CLIENT_REC *ca,
 				     __le16 next_client, u64 *oldest_lsn)
 {
@@ -416,7 +401,7 @@ static inline void oldest_client_lsn(const struct CLIENT_REC *ca,
 		const struct CLIENT_REC *cr = ca + le16_to_cpu(next_client);
 		u64 lsn = le64_to_cpu(cr->oldest_lsn);
 
-		/* Ignore this block if it's oldest lsn is 0. */
+		 
 		if (lsn && lsn < *oldest_lsn)
 			*oldest_lsn = lsn;
 
@@ -437,11 +422,11 @@ static inline bool is_rst_page_hdr_valid(u32 file_off,
 		return false;
 	}
 
-	/* Check that if the file offset isn't 0, it is the system page size. */
+	 
 	if (file_off && file_off != sys_page)
 		return false;
 
-	/* Check support version 1.1+. */
+	 
 	if (le16_to_cpu(rhdr->major_ver) <= 1 && !rhdr->minor_ver)
 		return false;
 
@@ -489,26 +474,20 @@ static inline bool is_rst_area_valid(const struct RESTART_HDR *rhdr)
 	if (off > sys_page)
 		return false;
 
-	/*
-	 * Check the restart length field and whether the entire
-	 * restart area is contained that length.
-	 */
+	 
 	if (le16_to_cpu(rhdr->ra_off) + le16_to_cpu(ra->ra_len) > sys_page ||
 	    off > le16_to_cpu(ra->ra_len)) {
 		return false;
 	}
 
-	/*
-	 * As a final check make sure that the use list and the free list
-	 * are either empty or point to a valid client.
-	 */
+	 
 	fl = le16_to_cpu(ra->client_idx[0]);
 	ul = le16_to_cpu(ra->client_idx[1]);
 	if ((fl != LFS_NO_CLIENT && fl >= cl) ||
 	    (ul != LFS_NO_CLIENT && ul >= cl))
 		return false;
 
-	/* Make sure the sequence number bits match the log file size. */
+	 
 	l_size = le64_to_cpu(ra->l_size);
 
 	file_dat_bits = sizeof(u64) * 8 - le32_to_cpu(ra->seq_num_bits);
@@ -518,7 +497,7 @@ static inline bool is_rst_area_valid(const struct RESTART_HDR *rhdr)
 		return false;
 	}
 
-	/* The log page data offset and record header length must be quad-aligned. */
+	 
 	if (!IS_ALIGNED(le16_to_cpu(ra->data_off), 8) ||
 	    !IS_ALIGNED(le16_to_cpu(ra->rec_hdr_len), 8))
 		return false;
@@ -538,14 +517,10 @@ static inline bool is_client_area_valid(const struct RESTART_HDR *rhdr,
 	if (usa_error && ra_len + ro > SECTOR_SIZE - sizeof(short))
 		return false;
 
-	/* Find the start of the client array. */
+	 
 	ca = Add2Ptr(ra, le16_to_cpu(ra->client_off));
 
-	/*
-	 * Start with the free list.
-	 * Check that all the clients are valid and that there isn't a cycle.
-	 * Do the in-use list on the second pass.
-	 */
+	 
 	for (i = 0; i < 2; i++) {
 		u16 client_idx = le16_to_cpu(ra->client_idx[i]);
 		bool first_client = true;
@@ -574,11 +549,7 @@ static inline bool is_client_area_valid(const struct RESTART_HDR *rhdr,
 	return true;
 }
 
-/*
- * remove_client
- *
- * Remove a client record from a client record list an restart area.
- */
+ 
 static inline void remove_client(struct CLIENT_REC *ca,
 				 const struct CLIENT_REC *cr, __le16 *head)
 {
@@ -591,9 +562,7 @@ static inline void remove_client(struct CLIENT_REC *ca,
 		ca[le16_to_cpu(cr->next_client)].prev_client = cr->prev_client;
 }
 
-/*
- * add_client - Add a client record to the start of a list.
- */
+ 
 static inline void add_client(struct CLIENT_REC *ca, u16 index, __le16 *head)
 {
 	struct CLIENT_REC *cr = ca + index;
@@ -621,7 +590,7 @@ static inline void *enum_rstbl(struct RESTART_TABLE *t, void *c)
 		e = Add2Ptr(c, rsize);
 	}
 
-	/* Loop until we hit the first one allocated, or the end of the list. */
+	 
 	for (bprt = bytes_per_rt(t); PtrOffset(t, e) < bprt;
 	     e = Add2Ptr(e, rsize)) {
 		if (*e == RESTART_ENTRY_ALLOCATED_LE)
@@ -630,9 +599,7 @@ static inline void *enum_rstbl(struct RESTART_TABLE *t, void *c)
 	return NULL;
 }
 
-/*
- * find_dp - Search for a @vcn in Dirty Page Table.
- */
+ 
 static inline struct DIR_PAGE_ENTRY *find_dp(struct RESTART_TABLE *dptbl,
 					     u32 target_attr, u64 vcn)
 {
@@ -655,10 +622,10 @@ static inline u32 norm_file_page(u32 page_size, u32 *l_size, bool use_default)
 	if (use_default)
 		page_size = DefaultLogPageSize;
 
-	/* Round the file size down to a system page boundary. */
+	 
 	*l_size &= ~(page_size - 1);
 
-	/* File should contain at least 2 restart pages and MinLogRecordPages pages. */
+	 
 	if (*l_size < (MinLogRecordPages + 2) * page_size)
 		return 0;
 
@@ -728,10 +695,7 @@ static bool check_rstbl(const struct RESTART_TABLE *rt, size_t bytes)
 		return false;
 	}
 
-	/*
-	 * Verify each entry is either allocated or points
-	 * to a valid offset the table.
-	 */
+	 
 	for (i = 0; i < ne; i++) {
 		off = le32_to_cpu(*(__le32 *)Add2Ptr(
 			rt, i * rsize + sizeof(struct RESTART_TABLE)));
@@ -743,10 +707,7 @@ static bool check_rstbl(const struct RESTART_TABLE *rt, size_t bytes)
 		}
 	}
 
-	/*
-	 * Walk through the list headed by the first entry to make
-	 * sure none of the entries are currently being used.
-	 */
+	 
 	for (off = ff; off;) {
 		if (off == RESTART_ENTRY_ALLOCATED)
 			return false;
@@ -757,9 +718,7 @@ static bool check_rstbl(const struct RESTART_TABLE *rt, size_t bytes)
 	return true;
 }
 
-/*
- * free_rsttbl_idx - Free a previously allocated index a Restart Table.
- */
+ 
 static inline void free_rsttbl_idx(struct RESTART_TABLE *rt, u32 off)
 {
 	__le32 *e;
@@ -845,11 +804,7 @@ static inline struct RESTART_TABLE *extend_rsttbl(struct RESTART_TABLE *tbl,
 	return rt;
 }
 
-/*
- * alloc_rsttbl_idx
- *
- * Allocate an index from within a previously initialized Restart Table.
- */
+ 
 static inline void *alloc_rsttbl_idx(struct RESTART_TABLE **tbl)
 {
 	u32 off;
@@ -864,7 +819,7 @@ static inline void *alloc_rsttbl_idx(struct RESTART_TABLE **tbl)
 
 	off = le32_to_cpu(t->first_free);
 
-	/* Dequeue this entry and zero it. */
+	 
 	e = Add2Ptr(t, off);
 
 	t->first_free = *e;
@@ -873,7 +828,7 @@ static inline void *alloc_rsttbl_idx(struct RESTART_TABLE **tbl)
 
 	*e = RESTART_ENTRY_ALLOCATED_LE;
 
-	/* If list is going empty, then we fix the last_free as well. */
+	 
 	if (!t->first_free)
 		t->last_free = 0;
 
@@ -882,11 +837,7 @@ static inline void *alloc_rsttbl_idx(struct RESTART_TABLE **tbl)
 	return Add2Ptr(t, off);
 }
 
-/*
- * alloc_rsttbl_from_idx
- *
- * Allocate a specific index from within a previously initialized Restart Table.
- */
+ 
 static inline void *alloc_rsttbl_from_idx(struct RESTART_TABLE **tbl, u32 vbo)
 {
 	u32 off;
@@ -895,65 +846,50 @@ static inline void *alloc_rsttbl_from_idx(struct RESTART_TABLE **tbl, u32 vbo)
 	u32 bytes = bytes_per_rt(rt);
 	u16 esize = le16_to_cpu(rt->size);
 
-	/* If the entry is not the table, we will have to extend the table. */
+	 
 	if (vbo >= bytes) {
-		/*
-		 * Extend the size by computing the number of entries between
-		 * the existing size and the desired index and adding 1 to that.
-		 */
+		 
 		u32 bytes2idx = vbo - bytes;
 
-		/*
-		 * There should always be an integral number of entries
-		 * being added. Now extend the table.
-		 */
+		 
 		*tbl = rt = extend_rsttbl(rt, bytes2idx / esize + 1, bytes);
 		if (!rt)
 			return NULL;
 	}
 
-	/* See if the entry is already allocated, and just return if it is. */
+	 
 	e = Add2Ptr(rt, vbo);
 
 	if (*e == RESTART_ENTRY_ALLOCATED_LE)
 		return e;
 
-	/*
-	 * Walk through the table, looking for the entry we're
-	 * interested and the previous entry.
-	 */
+	 
 	off = le32_to_cpu(rt->first_free);
 	e = Add2Ptr(rt, off);
 
 	if (off == vbo) {
-		/* this is a match */
+		 
 		rt->first_free = *e;
 		goto skip_looking;
 	}
 
-	/*
-	 * Need to walk through the list looking for the predecessor
-	 * of our entry.
-	 */
+	 
 	for (;;) {
-		/* Remember the entry just found */
+		 
 		u32 last_off = off;
 		__le32 *last_e = e;
 
-		/* Should never run of entries. */
+		 
 
-		/* Lookup up the next entry the list. */
+		 
 		off = le32_to_cpu(*last_e);
 		e = Add2Ptr(rt, off);
 
-		/* If this is our match we are done. */
+		 
 		if (off == vbo) {
 			*last_e = *e;
 
-			/*
-			 * If this was the last entry, we update that
-			 * table as well.
-			 */
+			 
 			if (le32_to_cpu(rt->last_free) == off)
 				rt->last_free = cpu_to_le32(last_off);
 			break;
@@ -961,11 +897,11 @@ static inline void *alloc_rsttbl_from_idx(struct RESTART_TABLE **tbl, u32 vbo)
 	}
 
 skip_looking:
-	/* If the list is now empty, we fix the last_free as well. */
+	 
 	if (!rt->first_free)
 		rt->last_free = 0;
 
-	/* Zero this entry. */
+	 
 	memset(e, 0, esize);
 	*e = RESTART_ENTRY_ALLOCATED_LE;
 
@@ -982,7 +918,7 @@ skip_looking:
 #define NTFSLOG_REUSE_TAIL 0x00000010
 #define NTFSLOG_NO_OLDEST_LSN 0x00000020
 
-/* Helper struct to work with NTFS $LogFile. */
+ 
 struct ntfs_log {
 	struct ntfs_inode *ni;
 
@@ -990,7 +926,7 @@ struct ntfs_log {
 	u32 sys_page_size;
 	u32 sys_page_mask;
 	u32 page_size;
-	u32 page_mask; // page_size - 1
+	u32 page_mask; 
 	u8 page_bits;
 	struct RECORD_PAGE_HDR *one_page_buf;
 
@@ -1008,17 +944,14 @@ struct ntfs_log {
 	u64 seq_num;
 	u32 seq_num_bits;
 	u32 file_data_bits;
-	u32 seq_num_mask; /* (1 << file_data_bits) - 1 */
+	u32 seq_num_mask;  
 
-	struct RESTART_AREA *ra; /* In-memory image of the next restart area. */
-	u32 ra_size; /* The usable size of the restart area. */
+	struct RESTART_AREA *ra;  
+	u32 ra_size;  
 
-	/*
-	 * If true, then the in-memory restart area is to be written
-	 * to the first position on the disk.
-	 */
+	 
 	bool init_ra;
-	bool set_dirty; /* True if we need to set dirty flag. */
+	bool set_dirty;  
 
 	u64 oldest_lsn;
 
@@ -1035,8 +968,8 @@ struct ntfs_log {
 	short major_ver;
 	short minor_ver;
 
-	u32 l_flags; /* See NTFSLOG_XXX */
-	u32 current_openlog_count; /* On-disk value for open_log_count. */
+	u32 l_flags;  
+	u32 current_openlog_count;  
 
 	struct CLIENT_ID client_id;
 	u32 client_undo_commit;
@@ -1049,7 +982,7 @@ static inline u32 lsn_to_vbo(struct ntfs_log *log, const u64 lsn)
 	return vbo;
 }
 
-/* Compute the offset in the log file of the next log page. */
+ 
 static inline u32 next_page_off(struct ntfs_log *log, u32 off)
 {
 	off = (off & ~log->sys_page_mask) + log->page_size;
@@ -1155,8 +1088,8 @@ static int read_log_page(struct ntfs_log *log, u32 vbo,
 
 	if (usa_error)
 		*usa_error = bBAAD;
-	/* Check that the update sequence array for this page is valid */
-	/* If we don't allow errors, raise an error status */
+	 
+	 
 	else if (bBAAD)
 		err = -EINVAL;
 
@@ -1169,20 +1102,14 @@ out:
 	return err;
 }
 
-/*
- * log_read_rst
- *
- * It walks through 512 blocks of the file looking for a valid
- * restart page header. It will stop the first time we find a
- * valid page header.
- */
+ 
 static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
 			struct restart_info *info)
 {
 	u32 skip, vbo;
 	struct RESTART_HDR *r_page = NULL;
 
-	/* Determine which restart area we are looking for. */
+	 
 	if (first) {
 		vbo = 0;
 		skip = 512;
@@ -1191,20 +1118,20 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
 		skip = 0;
 	}
 
-	/* Loop continuously until we succeed. */
+	 
 	for (; vbo < l_size; vbo = 2 * vbo + skip, skip = 0) {
 		bool usa_error;
 		bool brst, bchk;
 		struct RESTART_AREA *ra;
 
-		/* Read a page header at the current offset. */
+		 
 		if (read_log_page(log, vbo, (struct RECORD_PAGE_HDR **)&r_page,
 				  &usa_error)) {
-			/* Ignore any errors. */
+			 
 			continue;
 		}
 
-		/* Exit if the signature is a log record page. */
+		 
 		if (r_page->rhdr.sign == NTFS_RCRD_SIGNATURE) {
 			info->initialized = true;
 			break;
@@ -1215,10 +1142,7 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
 
 		if (!bchk && !brst) {
 			if (r_page->rhdr.sign != NTFS_FFFF_SIGNATURE) {
-				/*
-				 * Remember if the signature does not
-				 * indicate uninitialized file.
-				 */
+				 
 				info->initialized = true;
 			}
 			continue;
@@ -1229,7 +1153,7 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
 		info->initialized = true;
 		info->vbo = vbo;
 
-		/* Let's check the restart area if this is a valid page. */
+		 
 		if (!is_rst_page_hdr_valid(vbo, r_page))
 			goto check_result;
 		ra = Add2Ptr(r_page, le16_to_cpu(r_page->ra_off));
@@ -1237,11 +1161,7 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
 		if (!is_rst_area_valid(r_page))
 			goto check_result;
 
-		/*
-		 * We have a valid restart page header and restart area.
-		 * If chkdsk was run or we have no clients then we have
-		 * no more checking to do.
-		 */
+		 
 		if (bchk || ra->client_idx[1] == LFS_NO_CLIENT_LE) {
 			info->valid_page = true;
 			goto check_result;
@@ -1253,10 +1173,7 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
 		}
 
 check_result:
-		/*
-		 * If chkdsk was run then update the caller's
-		 * values and return.
-		 */
+		 
 		if (r_page->rhdr.sign == NTFS_CHKD_SIGNATURE) {
 			info->chkdsk_was_run = true;
 			info->last_lsn = le64_to_cpu(r_page->rhdr.lsn);
@@ -1265,10 +1182,7 @@ check_result:
 			return 0;
 		}
 
-		/*
-		 * If we have a valid page then copy the values
-		 * we need from it.
-		 */
+		 
 		if (info->valid_page) {
 			info->last_lsn = le64_to_cpu(ra->current_lsn);
 			info->restart = true;
@@ -1282,9 +1196,7 @@ check_result:
 	return 0;
 }
 
-/*
- * Ilog_init_pg_hdr - Init @log from restart page header.
- */
+ 
 static void log_init_pg_hdr(struct ntfs_log *log, u32 sys_page_size,
 			    u32 page_size, u16 major_ver, u16 minor_ver)
 {
@@ -1305,14 +1217,12 @@ static void log_init_pg_hdr(struct ntfs_log *log, u32 sys_page_size,
 	log->minor_ver = minor_ver;
 }
 
-/*
- * log_create - Init @log in cases when we don't have a restart area to use.
- */
+ 
 static void log_create(struct ntfs_log *log, u32 l_size, const u64 last_lsn,
 		       u32 open_log_count, bool wrapped, bool use_multi_page)
 {
 	log->l_size = l_size;
-	/* All file offsets must be quadword aligned. */
+	 
 	log->file_data_bits = blksize_bits(l_size) - 3;
 	log->seq_num_mask = (8 << log->file_data_bits) - 1;
 	log->seq_num_bits = sizeof(u64) * 8 - log->file_data_bits;
@@ -1324,14 +1234,14 @@ static void log_create(struct ntfs_log *log, u32 l_size, const u64 last_lsn,
 
 	log->l_flags |= NTFSLOG_NO_LAST_LSN | NTFSLOG_NO_OLDEST_LSN;
 
-	/* Set the correct flags for the I/O and indicate if we have wrapped. */
+	 
 	if (wrapped)
 		log->l_flags |= NTFSLOG_WRAPPED;
 
 	if (use_multi_page)
 		log->l_flags |= NTFSLOG_MULTIPLE_PAGE_IO;
 
-	/* Compute the log page values. */
+	 
 	log->data_off = ALIGN(
 		offsetof(struct RECORD_PAGE_HDR, fixups) +
 			sizeof(short) * ((log->page_size >> SECTOR_SHIFT) + 1),
@@ -1339,10 +1249,10 @@ static void log_create(struct ntfs_log *log, u32 l_size, const u64 last_lsn,
 	log->data_size = log->page_size - log->data_off;
 	log->record_header_len = sizeof(struct LFS_RECORD_HDR);
 
-	/* Remember the different page sizes for reservation. */
+	 
 	log->reserved = log->data_size - log->record_header_len;
 
-	/* Compute the restart page values. */
+	 
 	log->ra_off = ALIGN(
 		offsetof(struct RESTART_HDR, fixups) +
 			sizeof(short) *
@@ -1352,26 +1262,17 @@ static void log_create(struct ntfs_log *log, u32 l_size, const u64 last_lsn,
 	log->ra_size = struct_size(log->ra, clients, 1);
 	log->current_openlog_count = open_log_count;
 
-	/*
-	 * The total available log file space is the number of
-	 * log file pages times the space available on each page.
-	 */
+	 
 	log->total_avail_pages = log->l_size - log->first_page;
 	log->total_avail = log->total_avail_pages >> log->page_bits;
 
-	/*
-	 * We assume that we can't use the end of the page less than
-	 * the file record size.
-	 * Then we won't need to reserve more than the caller asks for.
-	 */
+	 
 	log->max_current_avail = log->total_avail * log->reserved;
 	log->total_avail = log->total_avail * log->data_size;
 	log->current_avail = log->max_current_avail;
 }
 
-/*
- * log_create_ra - Fill a restart area from the values stored in @log.
- */
+ 
 static struct RESTART_AREA *log_create_ra(struct ntfs_log *log)
 {
 	struct CLIENT_REC *cr;
@@ -1410,13 +1311,10 @@ static u32 final_log_off(struct ntfs_log *log, u64 lsn, u32 data_len)
 
 	page_off -= 1;
 
-	/* Add the length of the header. */
+	 
 	data_len += log->record_header_len;
 
-	/*
-	 * If this lsn is contained this log page we are done.
-	 * Otherwise we need to walk through several log pages.
-	 */
+	 
 	if (data_len > tail) {
 		data_len -= tail;
 		tail = log->data_size;
@@ -1425,20 +1323,14 @@ static u32 final_log_off(struct ntfs_log *log, u64 lsn, u32 data_len)
 		for (;;) {
 			final_log_off = next_page_off(log, final_log_off);
 
-			/*
-			 * We are done if the remaining bytes
-			 * fit on this page.
-			 */
+			 
 			if (data_len <= tail)
 				break;
 			data_len -= tail;
 		}
 	}
 
-	/*
-	 * We add the remaining bytes to our starting position on this page
-	 * and then add that value to the file offset of this log page.
-	 */
+	 
 	return final_log_off + data_len + page_off;
 }
 
@@ -1454,23 +1346,18 @@ static int next_log_lsn(struct ntfs_log *log, const struct LFS_RECORD_HDR *rh,
 	u64 seq = this_lsn >> log->file_data_bits;
 	struct RECORD_PAGE_HDR *page = NULL;
 
-	/* Remember if we wrapped. */
+	 
 	if (end <= vbo)
 		seq += 1;
 
-	/* Log page header for this page. */
+	 
 	err = read_log_page(log, hdr_off, &page, NULL);
 	if (err)
 		return err;
 
-	/*
-	 * If the lsn we were given was not the last lsn on this page,
-	 * then the starting offset for the next lsn is on a quad word
-	 * boundary following the last file offset for the current lsn.
-	 * Otherwise the file offset is the start of the data on the next page.
-	 */
+	 
 	if (this_lsn == le64_to_cpu(page->rhdr.lsn)) {
-		/* If we wrapped, we need to increment the sequence number. */
+		 
 		hdr_off = next_page_off(log, hdr_off);
 		if (hdr_off == log->first_page)
 			seq += 1;
@@ -1480,13 +1367,10 @@ static int next_log_lsn(struct ntfs_log *log, const struct LFS_RECORD_HDR *rh,
 		vbo = ALIGN(end, 8);
 	}
 
-	/* Compute the lsn based on the file offset and the sequence count. */
+	 
 	*lsn = vbo_to_lsn(log, vbo, seq);
 
-	/*
-	 * If this lsn is within the legal range for the file, we return true.
-	 * Otherwise false indicates that there are no more lsn's.
-	 */
+	 
 	if (!is_lsn_in_file(log, *lsn))
 		*lsn = 0;
 
@@ -1495,44 +1379,31 @@ static int next_log_lsn(struct ntfs_log *log, const struct LFS_RECORD_HDR *rh,
 	return 0;
 }
 
-/*
- * current_log_avail - Calculate the number of bytes available for log records.
- */
+ 
 static u32 current_log_avail(struct ntfs_log *log)
 {
 	u32 oldest_off, next_free_off, free_bytes;
 
 	if (log->l_flags & NTFSLOG_NO_LAST_LSN) {
-		/* The entire file is available. */
+		 
 		return log->max_current_avail;
 	}
 
-	/*
-	 * If there is a last lsn the restart area then we know that we will
-	 * have to compute the free range.
-	 * If there is no oldest lsn then start at the first page of the file.
-	 */
+	 
 	oldest_off = (log->l_flags & NTFSLOG_NO_OLDEST_LSN) ?
 			     log->first_page :
 			     (log->oldest_lsn_off & ~log->sys_page_mask);
 
-	/*
-	 * We will use the next log page offset to compute the next free page.
-	 * If we are going to reuse this page go to the next page.
-	 * If we are at the first page then use the end of the file.
-	 */
+	 
 	next_free_off = (log->l_flags & NTFSLOG_REUSE_TAIL) ?
 				log->next_page + log->page_size :
 			log->next_page == log->first_page ? log->l_size :
 							    log->next_page;
 
-	/* If the two offsets are the same then there is no available space. */
+	 
 	if (oldest_off == next_free_off)
 		return 0;
-	/*
-	 * If the free offset follows the oldest offset then subtract
-	 * this range from the total available pages.
-	 */
+	 
 	free_bytes =
 		oldest_off < next_free_off ?
 			log->total_avail_pages - (next_free_off - oldest_off) :
@@ -1553,27 +1424,16 @@ static bool check_subseq_log_page(struct ntfs_log *log,
 	if (rhdr->sign == NTFS_FFFF_SIGNATURE || !rhdr->sign)
 		return false;
 
-	/*
-	 * If the last lsn on the page occurs was written after the page
-	 * that caused the original error then we have a fatal error.
-	 */
+	 
 	lsn_seq = lsn >> log->file_data_bits;
 
-	/*
-	 * If the sequence number for the lsn the page is equal or greater
-	 * than lsn we expect, then this is a subsequent write.
-	 */
+	 
 	return lsn_seq >= seq ||
 	       (lsn_seq == seq - 1 && log->first_page == vbo &&
 		vbo != (lsn_to_vbo(log, lsn) & ~log->page_mask));
 }
 
-/*
- * last_log_lsn
- *
- * Walks through the log pages for a file, searching for the
- * last log page written to the file.
- */
+ 
 static int last_log_lsn(struct ntfs_log *log)
 {
 	int err;
@@ -1611,7 +1471,7 @@ static int last_log_lsn(struct ntfs_log *log)
 		final_off = 0x02 * log->page_size;
 		second_off = 0x12 * log->page_size;
 
-		// 0x10 == 0x12 - 0x2
+		 
 		page_bufs = kmalloc(log->page_size * 0x10, GFP_NOFS);
 		if (!page_bufs)
 			return -ENOMEM;
@@ -1621,7 +1481,7 @@ static int last_log_lsn(struct ntfs_log *log)
 	}
 
 next_tail:
-	/* Read second tail page (at pos 3/0x12000). */
+	 
 	if (read_log_page(log, second_off, &second_tail, &usa_error) ||
 	    usa_error || second_tail->rhdr.sign != NTFS_RCRD_SIGNATURE) {
 		kfree(second_tail);
@@ -1633,7 +1493,7 @@ next_tail:
 		lsn2 = le64_to_cpu(second_tail->record_hdr.last_end_lsn);
 	}
 
-	/* Read first tail page (at pos 2/0x2000). */
+	 
 	if (read_log_page(log, final_off, &first_tail, &usa_error) ||
 	    usa_error || first_tail->rhdr.sign != NTFS_RCRD_SIGNATURE) {
 		kfree(first_tail);
@@ -1779,10 +1639,10 @@ tail_read:
 
 next_page:
 	tail_page = NULL;
-	/* Read the next log page. */
+	 
 	err = read_log_page(log, curpage_off, &page, &usa_error);
 
-	/* Compute the next log page offset the file. */
+	 
 	nextpage_off = next_page_off(log, curpage_off);
 	wrapped = nextpage_off == log->first_page;
 
@@ -1859,24 +1719,13 @@ use_cur_page:
 		goto next_page_1;
 	}
 
-	/*
-	 * If we are at the expected first page of a transfer check to see
-	 * if either tail copy is at this offset.
-	 * If this page is the last page of a transfer, check if we wrote
-	 * a subsequent tail copy.
-	 */
+	 
 	if (page_cnt == page_pos || page_cnt == page_pos + 1) {
-		/*
-		 * Check if the offset matches either the first or second
-		 * tail copy. It is possible it will match both.
-		 */
+		 
 		if (curpage_off == final_off)
 			tail_page = first_tail;
 
-		/*
-		 * If we already matched on the first page then
-		 * check the ending lsn's.
-		 */
+		 
 		if (curpage_off == second_off) {
 			if (!tail_page ||
 			    (second_tail &&
@@ -1890,76 +1739,47 @@ use_cur_page:
 
 use_tail_page:
 	if (tail_page) {
-		/* We have a candidate for a tail copy. */
+		 
 		lsn_cur = le64_to_cpu(tail_page->record_hdr.last_end_lsn);
 
 		if (last_ok_lsn < lsn_cur) {
-			/*
-			 * If the sequence number is not expected,
-			 * then don't use the tail copy.
-			 */
+			 
 			if (expected_seq != (lsn_cur >> log->file_data_bits))
 				tail_page = NULL;
 		} else if (last_ok_lsn > lsn_cur) {
-			/*
-			 * If the last lsn is greater than the one on
-			 * this page then forget this tail.
-			 */
+			 
 			tail_page = NULL;
 		}
 	}
 
-	/*
-	 *If we have an error on the current page,
-	 * we will break of this loop.
-	 */
+	 
 	if (err || usa_error)
 		goto check_tail;
 
-	/*
-	 * Done if the last lsn on this page doesn't match the previous known
-	 * last lsn or the sequence number is not expected.
-	 */
+	 
 	lsn_cur = le64_to_cpu(page->rhdr.lsn);
 	if (last_ok_lsn != lsn_cur &&
 	    expected_seq != (lsn_cur >> log->file_data_bits)) {
 		goto check_tail;
 	}
 
-	/*
-	 * Check that the page position and page count values are correct.
-	 * If this is the first page of a transfer the position must be 1
-	 * and the count will be unknown.
-	 */
+	 
 	if (page_cnt == page_pos) {
 		if (page->page_pos != cpu_to_le16(1) &&
 		    (!reuse_page || page->page_pos != page->page_count)) {
-			/*
-			 * If the current page is the first page we are
-			 * looking at and we are reusing this page then
-			 * it can be either the first or last page of a
-			 * transfer. Otherwise it can only be the first.
-			 */
+			 
 			goto check_tail;
 		}
 	} else if (le16_to_cpu(page->page_count) != page_cnt ||
 		   le16_to_cpu(page->page_pos) != page_pos + 1) {
-		/*
-		 * The page position better be 1 more than the last page
-		 * position and the page count better match.
-		 */
+		 
 		goto check_tail;
 	}
 
-	/*
-	 * We have a valid page the file and may have a valid page
-	 * the tail copy area.
-	 * If the tail page was written after the page the file then
-	 * break of the loop.
-	 */
+	 
 	if (tail_page &&
 	    le64_to_cpu(tail_page->record_hdr.last_end_lsn) > lsn_cur) {
-		/* Remember if we will replace the page. */
+		 
 		replace_page = true;
 		goto check_tail;
 	}
@@ -1967,19 +1787,13 @@ use_tail_page:
 	tail_page = NULL;
 
 	if (is_log_record_end(page)) {
-		/*
-		 * Since we have read this page we know the sequence number
-		 * is the same as our expected value.
-		 */
+		 
 		log->seq_num = expected_seq;
 		log->last_lsn = le64_to_cpu(page->record_hdr.last_end_lsn);
 		log->ra->current_lsn = page->record_hdr.last_end_lsn;
 		log->l_flags &= ~NTFSLOG_NO_LAST_LSN;
 
-		/*
-		 * If there is room on this page for another header then
-		 * remember we want to reuse the page.
-		 */
+		 
 		if (log->record_header_len <=
 		    log->page_size -
 			    le16_to_cpu(page->record_hdr.next_record_off)) {
@@ -1990,15 +1804,12 @@ use_tail_page:
 			log->next_page = nextpage_off;
 		}
 
-		/* Remember if we wrapped the log file. */
+		 
 		if (wrapped_file)
 			log->l_flags |= NTFSLOG_WRAPPED;
 	}
 
-	/*
-	 * Remember the last page count and position.
-	 * Also remember the last known lsn.
-	 */
+	 
 	page_cnt = le16_to_cpu(page->page_count);
 	page_pos = le16_to_cpu(page->page_pos);
 	last_ok_lsn = le64_to_cpu(page->rhdr.lsn);
@@ -2038,20 +1849,14 @@ check_tail:
 			log->l_flags |= NTFSLOG_WRAPPED;
 	}
 
-	/* Remember that the partial IO will start at the next page. */
+	 
 	second_off = nextpage_off;
 
-	/*
-	 * If the next page is the first page of the file then update
-	 * the sequence number for log records which begon the next page.
-	 */
+	 
 	if (wrapped)
 		expected_seq += 1;
 
-	/*
-	 * If we have a tail copy or are performing single page I/O we can
-	 * immediately look at the next page.
-	 */
+	 
 	if (replace_page || (log->ra->flags & RESTART_SINGLE_PAGE_IO)) {
 		page_cnt = 2;
 		page_pos = 1;
@@ -2060,10 +1865,7 @@ check_tail:
 
 	if (page_pos != page_cnt)
 		goto check_valid;
-	/*
-	 * If the next page causes us to wrap to the beginning of the log
-	 * file then we know which page to check next.
-	 */
+	 
 	if (wrapped) {
 		page_cnt = 2;
 		page_pos = 1;
@@ -2076,20 +1878,14 @@ next_test_page:
 	kfree(tst_page);
 	tst_page = NULL;
 
-	/* Walk through the file, reading log pages. */
+	 
 	err = read_log_page(log, nextpage_off, &tst_page, &usa_error);
 
-	/*
-	 * If we get a USA error then assume that we correctly found
-	 * the end of the original transfer.
-	 */
+	 
 	if (usa_error)
 		goto file_is_valid;
 
-	/*
-	 * If we were able to read the page, we examine it to see if it
-	 * is the same or different Io block.
-	 */
+	 
 	if (err)
 		goto next_test_page_1;
 
@@ -2119,7 +1915,7 @@ next_test_page_1:
 		goto next_test_page;
 
 check_valid:
-	/* Skip over the remaining pages this transfer. */
+	 
 	remain_pages = page_cnt - page_pos - 1;
 	part_io_count += remain_pages;
 
@@ -2131,7 +1927,7 @@ check_valid:
 			expected_seq += 1;
 	}
 
-	/* Call our routine to check this log page. */
+	 
 	kfree(tst_page);
 	tst_page = NULL;
 
@@ -2144,7 +1940,7 @@ check_valid:
 
 file_is_valid:
 
-	/* We have a valid file. */
+	 
 	if (page_off1 || tail_page) {
 		struct RECORD_PAGE_HDR *tmp_page;
 
@@ -2174,13 +1970,10 @@ file_is_valid:
 				}
 			}
 
-			/*
-			 * Correct page and copy the data from this page
-			 * into it and flush it to disk.
-			 */
+			 
 			memcpy(page, tmp_page, log->page_size);
 
-			/* Fill last flushed lsn value flush the page. */
+			 
 			if (log->major_ver < 2)
 				page->rhdr.lsn = page->record_hdr.last_end_lsn;
 			else
@@ -2223,11 +2016,7 @@ out:
 	return err;
 }
 
-/*
- * read_log_rec_buf - Copy a log record from the file to a buffer.
- *
- * The log record may span several log pages and may even wrap the file.
- */
+ 
 static int read_log_rec_buf(struct ntfs_log *log,
 			    const struct LFS_RECORD_HDR *rh, void *buffer)
 {
@@ -2238,10 +2027,7 @@ static int read_log_rec_buf(struct ntfs_log *log,
 	u32 off = lsn_to_page_off(log, lsn) + log->record_header_len;
 	u32 data_len = le32_to_cpu(rh->client_data_len);
 
-	/*
-	 * While there are more bytes to transfer,
-	 * we continue to attempt to perform the read.
-	 */
+	 
 	for (;;) {
 		bool usa_error;
 		u32 tail = log->page_size - off;
@@ -2255,10 +2041,7 @@ static int read_log_rec_buf(struct ntfs_log *log,
 		if (err)
 			goto out;
 
-		/*
-		 * The last lsn on this page better be greater or equal
-		 * to the lsn we are copying.
-		 */
+		 
 		if (lsn > le64_to_cpu(ph->rhdr.lsn)) {
 			err = -EINVAL;
 			goto out;
@@ -2266,7 +2049,7 @@ static int read_log_rec_buf(struct ntfs_log *log,
 
 		memcpy(buffer, Add2Ptr(ph, off), tail);
 
-		/* If there are no more bytes to transfer, we exit the loop. */
+		 
 		if (!data_len) {
 			if (!is_log_record_end(ph) ||
 			    lsn > le64_to_cpu(ph->record_hdr.last_end_lsn)) {
@@ -2285,10 +2068,7 @@ static int read_log_rec_buf(struct ntfs_log *log,
 		vbo = next_page_off(log, vbo);
 		off = log->data_off;
 
-		/*
-		 * Adjust our pointer the user's buffer to transfer
-		 * the next block to.
-		 */
+		 
 		buffer = Add2Ptr(buffer, tail);
 	}
 
@@ -2311,7 +2091,7 @@ static int read_rst_area(struct ntfs_log *log, struct NTFS_RESTART **rst_,
 	*lsn = 0;
 	*rst_ = NULL;
 
-	/* If the client doesn't have a restart area, go ahead and exit now. */
+	 
 	if (!lsnc)
 		return 0;
 
@@ -2324,7 +2104,7 @@ static int read_rst_area(struct ntfs_log *log, struct NTFS_RESTART **rst_,
 	lsnr = le64_to_cpu(rh->this_lsn);
 
 	if (lsnc != lsnr) {
-		/* If the lsn values don't match, then the disk is corrupt. */
+		 
 		err = -EINVAL;
 		goto out;
 	}
@@ -2348,7 +2128,7 @@ static int read_rst_area(struct ntfs_log *log, struct NTFS_RESTART **rst_,
 		goto out;
 	}
 
-	/* Copy the data into the 'rst' buffer. */
+	 
 	err = read_log_rec_buf(log, rh, rst);
 	if (err)
 		goto out;
@@ -2369,7 +2149,7 @@ static int find_log_rec(struct ntfs_log *log, u64 lsn, struct lcb *lcb)
 	struct LFS_RECORD_HDR *rh = lcb->lrh;
 	u32 rec_len, len;
 
-	/* Read the record header for this lsn. */
+	 
 	if (!rh) {
 		err = read_log_page(log, lsn_to_vbo(log, lsn),
 				    (struct RECORD_PAGE_HDR **)&rh, NULL);
@@ -2379,27 +2159,18 @@ static int find_log_rec(struct ntfs_log *log, u64 lsn, struct lcb *lcb)
 			return err;
 	}
 
-	/*
-	 * If the lsn the log record doesn't match the desired
-	 * lsn then the disk is corrupt.
-	 */
+	 
 	if (lsn != le64_to_cpu(rh->this_lsn))
 		return -EINVAL;
 
 	len = le32_to_cpu(rh->client_data_len);
 
-	/*
-	 * Check that the length field isn't greater than the total
-	 * available space the log file.
-	 */
+	 
 	rec_len = len + log->record_header_len;
 	if (rec_len >= log->total_avail)
 		return -EINVAL;
 
-	/*
-	 * If the entire log record is on this log page,
-	 * put a pointer to the log record the context block.
-	 */
+	 
 	if (rh->flags & LOG_RECORD_MULTI_PAGE) {
 		void *lr = kmalloc(len, GFP_NOFS);
 
@@ -2409,12 +2180,12 @@ static int find_log_rec(struct ntfs_log *log, u64 lsn, struct lcb *lcb)
 		lcb->log_rec = lr;
 		lcb->alloc = true;
 
-		/* Copy the data into the buffer returned. */
+		 
 		err = read_log_rec_buf(log, rh, lr);
 		if (err)
 			return err;
 	} else {
-		/* If beyond the end of the current page -> an error. */
+		 
 		u32 page_off = lsn_to_page_off(log, lsn);
 
 		if (page_off + len + log->record_header_len > log->page_size)
@@ -2427,9 +2198,7 @@ static int find_log_rec(struct ntfs_log *log, u64 lsn, struct lcb *lcb)
 	return 0;
 }
 
-/*
- * read_log_rec_lcb - Init the query operation.
- */
+ 
 static int read_log_rec_lcb(struct ntfs_log *log, u64 lsn, u32 ctx_mode,
 			    struct lcb **lcb_)
 {
@@ -2446,7 +2215,7 @@ static int read_log_rec_lcb(struct ntfs_log *log, u64 lsn, u32 ctx_mode,
 		return -EINVAL;
 	}
 
-	/* Check that the given lsn is the legal range for this client. */
+	 
 	cr = Add2Ptr(log->ra, le16_to_cpu(log->ra->client_off));
 
 	if (!verify_client_lsn(log, cr, lsn))
@@ -2458,7 +2227,7 @@ static int read_log_rec_lcb(struct ntfs_log *log, u64 lsn, u32 ctx_mode,
 	lcb->client = log->client_id;
 	lcb->ctx_mode = ctx_mode;
 
-	/* Find the log record indicated by the given lsn. */
+	 
 	err = find_log_rec(log, lsn, lcb);
 	if (err)
 		goto out;
@@ -2472,11 +2241,7 @@ out:
 	return err;
 }
 
-/*
- * find_client_next_lsn
- *
- * Attempt to find the next lsn to return to a client based on the context mode.
- */
+ 
 static int find_client_next_lsn(struct ntfs_log *log, struct lcb *lcb, u64 *lsn)
 {
 	int err;
@@ -2489,7 +2254,7 @@ static int find_client_next_lsn(struct ntfs_log *log, struct lcb *lcb, u64 *lsn)
 	if (lcb_ctx_next != lcb->ctx_mode)
 		goto check_undo_next;
 
-	/* Loop as long as another lsn can be found. */
+	 
 	for (;;) {
 		u64 current_lsn;
 
@@ -2511,7 +2276,7 @@ static int find_client_next_lsn(struct ntfs_log *log, struct lcb *lcb, u64 *lsn)
 
 		if (memcmp(&hdr->client, &lcb->client,
 			   sizeof(struct CLIENT_ID))) {
-			/*err = -EINVAL; */
+			 
 		} else if (LfsClientRecord == hdr->record_type) {
 			kfree(lcb->lrh);
 			lcb->lrh = hdr;
@@ -2676,7 +2441,7 @@ static inline bool check_attr(const struct MFT_REC *rec,
 	u64 dsize, svcn, evcn;
 	u16 run_off;
 
-	/* Check the fixed part of the attribute record header. */
+	 
 	if (asize >= sbi->record_size ||
 	    asize + PtrOffset(rec, attr) >= sbi->record_size ||
 	    (attr->name_len &&
@@ -2685,7 +2450,7 @@ static inline bool check_attr(const struct MFT_REC *rec,
 		return false;
 	}
 
-	/* Check the attribute fields. */
+	 
 	switch (attr->non_res) {
 	case 0:
 		rsize = le32_to_cpu(attr->res.data_size);
@@ -2771,7 +2536,7 @@ static inline bool check_file_record(const struct MFT_REC *rec,
 	u16 ao = le16_to_cpu(rec->attr_off);
 	u32 rs = sbi->record_size;
 
-	/* Check the file record header for consistency. */
+	 
 	if (rec->rhdr.sign != NTFS_FILE_SIGNATURE ||
 	    fo > (SECTOR_SIZE - ((rs >> SECTOR_SHIFT) + 1) * sizeof(short)) ||
 	    (fn - 1) * SECTOR_SIZE != rs || ao < MFTRECORD_FIXUP_OFFSET_1 ||
@@ -2780,7 +2545,7 @@ static inline bool check_file_record(const struct MFT_REC *rec,
 		return false;
 	}
 
-	/* Loop to check all of the attributes. */
+	 
 	for (attr = Add2Ptr(rec, ao); attr->type != ATTR_END;
 	     attr = Add2Ptr(attr, le32_to_cpu(attr->size))) {
 		if (check_attr(rec, attr, sbi))
@@ -2930,14 +2695,10 @@ struct OpenAttr {
 	struct runs_tree *run1;
 	struct runs_tree run0;
 	struct ntfs_inode *ni;
-	// CLST rno;
+	 
 };
 
-/*
- * cmp_type_and_name
- *
- * Return: 0 if 'attr' has the same type and name.
- */
+ 
 static inline int cmp_type_and_name(const struct ATTRIB *a1,
 				    const struct ATTRIB *a2)
 {
@@ -3009,10 +2770,7 @@ static struct ATTRIB *attr_create_nonres_log(struct ntfs_sb_info *sbi,
 	return attr;
 }
 
-/*
- * do_action - Common routine for the Redo and Undo Passes.
- * @rlsn: If it is NULL then undo.
- */
+ 
 static int do_action(struct ntfs_log *log, struct OPEN_ATTR_ENRTY *oe,
 		     const struct LOG_REC_HDR *lrh, u32 op, void *data,
 		     u32 dlen, u32 rec_len, const u64 *rlsn)
@@ -3048,12 +2806,9 @@ static int do_action(struct ntfs_log *log, struct OPEN_ATTR_ENRTY *oe,
 
 	oa = oe->ptr;
 
-	/* Big switch to prepare. */
+	 
 	switch (op) {
-	/* ============================================================
-	 * Process MFT records, as described by the current log record.
-	 * ============================================================
-	 */
+	 
 	case InitializeFileRecordSegment:
 	case DeallocateFileRecordSegment:
 	case WriteEndOfFileRecordSegment:
@@ -3080,7 +2835,7 @@ static int do_action(struct ntfs_log *log, struct OPEN_ATTR_ENRTY *oe,
 			if (err)
 				goto out;
 		} else {
-			/* Read from disk. */
+			 
 			err = mi_get(sbi, rno, &mi);
 			if (err)
 				return err;
@@ -3137,9 +2892,7 @@ skip_load_parent:
 		inode_parent = NULL;
 		break;
 
-	/*
-	 * Process attributes, as described by the current log record.
-	 */
+	 
 	case UpdateNonresidentValue:
 	case AddIndexEntryAllocation:
 	case DeleteIndexEntryAllocation:
@@ -3164,7 +2917,7 @@ skip_load_parent:
 
 		bytes += roff;
 		if (attr->type == ATTR_ALLOC)
-			bytes = (bytes + 511) & ~511; // align
+			bytes = (bytes + 511) & ~511;  
 
 		buffer_le = kmalloc(bytes, GFP_NOFS);
 		if (!buffer_le)
@@ -3183,7 +2936,7 @@ skip_load_parent:
 		WARN_ON(1);
 	}
 
-	/* Big switch to do operation. */
+	 
 	switch (op) {
 	case InitializeFileRecordSegment:
 		if (roff + dlen > record_size)
@@ -3238,7 +2991,7 @@ skip_load_parent:
 			void *p2 = kmemdup(attr, le32_to_cpu(attr->size),
 					   GFP_NOFS);
 			if (p2) {
-				// run_close(oa2->run1);
+				 
 				kfree(oa2->attr);
 				oa2->attr = p2;
 			}
@@ -3286,7 +3039,7 @@ skip_load_parent:
 
 		if (nsize < asize) {
 			memmove(Add2Ptr(attr, aoff), data, dlen);
-			data = NULL; // To skip below memmove().
+			data = NULL;  
 		}
 
 		memmove(Add2Ptr(attr, nsize), Add2Ptr(attr, asize),
@@ -3305,7 +3058,7 @@ move_data:
 			void *p2 = kmemdup(attr, le32_to_cpu(attr->size),
 					   GFP_NOFS);
 			if (p2) {
-				// run_close(&oa2->run0);
+				 
 				oa2->run1 = &oa2->run0;
 				kfree(oa2->attr);
 				oa2->attr = p2;
@@ -3451,7 +3204,7 @@ move_data:
 
 		e = Add2Ptr(attr, le16_to_cpu(lrh->attr_off));
 		fname = (struct ATTR_FILE_NAME *)(e + 1);
-		memmove(&fname->dup, data, sizeof(fname->dup)); //
+		memmove(&fname->dup, data, sizeof(fname->dup));  
 		mi->dirty = true;
 		break;
 
@@ -3707,13 +3460,7 @@ dirty_vol:
 	goto out;
 }
 
-/*
- * log_replay - Replays log and empties it.
- *
- * This function is called during mount operation.
- * It replays log and empties it.
- * Initialized is set false if logfile contains '-1'.
- */
+ 
 int log_replay(struct ntfs_inode *ni, bool *initialized)
 {
 	int err;
@@ -3758,7 +3505,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
 	u16 t16;
 	u32 t32;
 
-	/* Get the size of page. NOTE: To replay we can use default page. */
+	 
 #if PAGE_SIZE >= DefaultLogPageSize && PAGE_SIZE <= DefaultLogPageSize * 2
 	page_size = norm_file_page(PAGE_SIZE, &l_size, true);
 #else
@@ -3784,18 +3531,18 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
 	log->page_mask = page_size - 1;
 	log->page_bits = blksize_bits(page_size);
 
-	/* Look for a restart area on the disk. */
+	 
 	memset(&rst_info, 0, sizeof(struct restart_info));
 	err = log_read_rst(log, l_size, true, &rst_info);
 	if (err)
 		goto out;
 
-	/* remember 'initialized' */
+	 
 	*initialized = rst_info.initialized;
 
 	if (!rst_info.restart) {
 		if (rst_info.initialized) {
-			/* No restart area but the file is not initialized. */
+			 
 			err = -EINVAL;
 			goto out;
 		}
@@ -3816,10 +3563,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
 		goto process_log;
 	}
 
-	/*
-	 * If the restart offset above wasn't zero then we won't
-	 * look for a second restart.
-	 */
+	 
 	if (rst_info.vbo)
 		goto check_restart_area;
 
@@ -3828,7 +3572,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
 	if (err)
 		goto out;
 
-	/* Determine which restart area to use. */
+	 
 	if (!rst_info2.restart || rst_info2.last_lsn <= rst_info.last_lsn)
 		goto use_first_page;
 
@@ -3855,13 +3599,10 @@ use_first_page:
 	kfree(rst_info2.r_page);
 
 check_restart_area:
-	/*
-	 * If the restart area is at offset 0, we want
-	 * to write the second restart area first.
-	 */
+	 
 	log->init_ra = !!rst_info.vbo;
 
-	/* If we have a valid page then grab a pointer to the restart area. */
+	 
 	ra2 = rst_info.valid_page ?
 		      Add2Ptr(rst_info.r_page,
 			      le16_to_cpu(rst_info.r_page->ra_off)) :
@@ -3873,17 +3614,14 @@ check_restart_area:
 		bool use_multi_page = false;
 		u32 open_log_count;
 
-		/* Do some checks based on whether we have a valid log page. */
+		 
 		if (!rst_info.valid_page) {
 			open_log_count = get_random_u32();
 			goto init_log_instance;
 		}
 		open_log_count = le32_to_cpu(ra2->open_log_count);
 
-		/*
-		 * If the restart page size isn't changing then we want to
-		 * check how much work we need to do.
-		 */
+		 
 		if (page_size != le32_to_cpu(rst_info.r_page->sys_page_size))
 			goto init_log_instance;
 
@@ -3900,9 +3638,7 @@ init_log_instance:
 		}
 		log->ra = ra;
 
-		/* Put the restart areas and initialize
-		 * the log file as required.
-		 */
+		 
 		goto process_log;
 	}
 
@@ -3911,11 +3647,7 @@ init_log_instance:
 		goto out;
 	}
 
-	/*
-	 * If the log page or the system page sizes have changed, we can't
-	 * use the log file. We must use the system page size instead of the
-	 * default size if there is not a clean shutdown.
-	 */
+	 
 	t32 = le32_to_cpu(rst_info.r_page->sys_page_size);
 	if (page_size != t32) {
 		l_size = orig_file_size;
@@ -3929,7 +3661,7 @@ init_log_instance:
 		goto out;
 	}
 
-	/* If the file size has shrunk then we won't mount it. */
+	 
 	if (l_size < le64_to_cpu(ra2->l_size)) {
 		err = -EINVAL;
 		goto out;
@@ -3956,30 +3688,27 @@ init_log_instance:
 	vbo = lsn_to_vbo(log, log->last_lsn);
 
 	if (vbo < log->first_page) {
-		/* This is a pseudo lsn. */
+		 
 		log->l_flags |= NTFSLOG_NO_LAST_LSN;
 		log->next_page = log->first_page;
 		goto find_oldest;
 	}
 
-	/* Find the end of this log record. */
+	 
 	off = final_log_off(log, log->last_lsn,
 			    le32_to_cpu(ra2->last_lsn_data_len));
 
-	/* If we wrapped the file then increment the sequence number. */
+	 
 	if (off <= vbo) {
 		log->seq_num += 1;
 		log->l_flags |= NTFSLOG_WRAPPED;
 	}
 
-	/* Now compute the next log page to use. */
+	 
 	vbo &= ~log->sys_page_mask;
 	tail = log->page_size - (off & log->page_mask) - 1;
 
-	/*
-	 *If we can fit another log record on the page,
-	 * move back a page the log file.
-	 */
+	 
 	if (tail >= log->record_header_len) {
 		log->l_flags |= NTFSLOG_REUSE_TAIL;
 		log->next_page = vbo;
@@ -3988,10 +3717,7 @@ init_log_instance:
 	}
 
 find_oldest:
-	/*
-	 * Find the oldest client lsn. Use the last
-	 * flushed lsn as a starting point.
-	 */
+	 
 	log->oldest_lsn = log->last_lsn;
 	oldest_client_lsn(Add2Ptr(ra2, le16_to_cpu(ra2->client_off)),
 			  ra2->client_idx[1], &log->oldest_lsn);
@@ -4037,18 +3763,18 @@ find_oldest:
 
 	le32_add_cpu(&ra->open_log_count, 1);
 
-	/* Now we need to walk through looking for the last lsn. */
+	 
 	err = last_log_lsn(log);
 	if (err)
 		goto out;
 
 	log->current_avail = current_log_avail(log);
 
-	/* Remember which restart area to write first. */
+	 
 	log->init_ra = rst_info.vbo;
 
 process_log:
-	/* 1.0, 1.1, 2.0 log->major_ver/minor_ver - short values. */
+	 
 	switch ((log->major_ver << 16) + log->minor_ver) {
 	case 0x10000:
 	case 0x10001:
@@ -4062,12 +3788,12 @@ process_log:
 		goto out;
 	}
 
-	/* One client "NTFS" per logfile. */
+	 
 	ca = Add2Ptr(ra, le16_to_cpu(ra->client_off));
 
 	for (client = ra->client_idx[1];; client = cr->next_client) {
 		if (client == LFS_NO_CLIENT_LE) {
-			/* Insert "NTFS" client LogFile. */
+			 
 			client = ra->client_idx[0];
 			if (client == LFS_NO_CLIENT_LE) {
 				err = -EINVAL;
@@ -4101,7 +3827,7 @@ process_log:
 			break;
 	}
 
-	/* Update the client handle with the client block information. */
+	 
 	log->client_id.seq_num = cr->seq_num;
 	log->client_id.client_idx = client;
 
@@ -4118,7 +3844,7 @@ process_log:
 	if (!checkpt_lsn)
 		checkpt_lsn = ra_lsn;
 
-	/* Allocate and Read the Transaction Table. */
+	 
 	if (!rst->transact_table_len)
 		goto check_dirty_page_table;
 
@@ -4142,7 +3868,7 @@ process_log:
 	rt = Add2Ptr(lrh, t16);
 	t32 = rec_len - t16;
 
-	/* Now check that this is a valid restart table. */
+	 
 	if (!check_rstbl(rt, t32)) {
 		err = -EINVAL;
 		goto out;
@@ -4158,7 +3884,7 @@ process_log:
 	lcb = NULL;
 
 check_dirty_page_table:
-	/* The next record back should be the Dirty Pages Table. */
+	 
 	if (!rst->dirty_pages_len)
 		goto check_attribute_names;
 
@@ -4182,7 +3908,7 @@ check_dirty_page_table:
 	rt = Add2Ptr(lrh, t16);
 	t32 = rec_len - t16;
 
-	/* Now check that this is a valid restart table. */
+	 
 	if (!check_rstbl(rt, t32)) {
 		err = -EINVAL;
 		goto out;
@@ -4194,14 +3920,14 @@ check_dirty_page_table:
 		goto out;
 	}
 
-	/* Convert Ra version '0' into version '1'. */
+	 
 	if (rst->major_ver)
 		goto end_conv_1;
 
 	dp = NULL;
 	while ((dp = enum_rstbl(dptbl, dp))) {
 		struct DIR_PAGE_ENTRY_32 *dp0 = (struct DIR_PAGE_ENTRY_32 *)dp;
-		// NOTE: Danger. Check for of boundary.
+		
 		memmove(&dp->vcn, &dp0->vcn_low,
 			2 * sizeof(u64) +
 				le32_to_cpu(dp->lcns_follow) * sizeof(u64));
@@ -4211,10 +3937,7 @@ end_conv_1:
 	lcb_put(lcb);
 	lcb = NULL;
 
-	/*
-	 * Go through the table and remove the duplicates,
-	 * remembering the oldest lsn values.
-	 */
+	 
 	if (sbi->cluster_size <= log->page_size)
 		goto trace_dp_table;
 
@@ -4236,7 +3959,7 @@ end_conv_1:
 	}
 trace_dp_table:
 check_attribute_names:
-	/* The next record should be the Attribute Names. */
+	 
 	if (!rst->attr_names_len)
 		goto check_attr_table;
 
@@ -4268,7 +3991,7 @@ check_attribute_names:
 	lcb = NULL;
 
 check_attr_table:
-	/* The next record should be the attribute Table. */
+	 
 	if (!rst->open_attr_len)
 		goto check_attribute_names2;
 
@@ -4305,13 +4028,13 @@ check_attr_table:
 
 	log->open_attr_tbl = oatbl;
 
-	/* Clear all of the Attr pointers. */
+	 
 	oe = NULL;
 	while ((oe = enum_rstbl(oatbl, oe))) {
 		if (!rst->major_ver) {
 			struct OPEN_ATTR_ENRTY_32 oe0;
 
-			/* Really 'oe' points to OPEN_ATTR_ENRTY_32. */
+			 
 			memcpy(&oe0, oe, SIZEOF_OPENATTRIBUTEENTRY0);
 
 			oe->bytes_per_index = oe0.bytes_per_index;
@@ -4337,7 +4060,7 @@ check_attribute_names2:
 	if (!oatbl)
 		goto trace_attribute_table;
 	while (ane->off) {
-		/* TODO: Clear table on exit! */
+		 
 		oe = Add2Ptr(oatbl, le16_to_cpu(ane->off));
 		t16 = le16_to_cpu(ane->name_bytes);
 		oe->name_len = t16 / sizeof(short);
@@ -4347,10 +4070,7 @@ check_attribute_names2:
 	}
 
 trace_attribute_table:
-	/*
-	 * If the checkpt_lsn is zero, then this is a freshly
-	 * formatted disk and we have no work to do.
-	 */
+	 
 	if (!checkpt_lsn) {
 		err = 0;
 		goto out;
@@ -4366,15 +4086,15 @@ trace_attribute_table:
 
 	log->open_attr_tbl = oatbl;
 
-	/* Start the analysis pass from the Checkpoint lsn. */
+	 
 	rec_lsn = checkpt_lsn;
 
-	/* Read the first lsn. */
+	 
 	err = read_log_rec_lcb(log, checkpt_lsn, lcb_ctx_next, &lcb);
 	if (err)
 		goto out;
 
-	/* Loop to read all subsequent records to the end of the log file. */
+	 
 next_log_record_analyze:
 	err = read_next_log_rec(log, lcb, &rec_lsn);
 	if (err)
@@ -4393,20 +4113,14 @@ next_log_record_analyze:
 		goto out;
 	}
 
-	/*
-	 * The first lsn after the previous lsn remembered
-	 * the checkpoint is the first candidate for the rlsn.
-	 */
+	 
 	if (!rlsn)
 		rlsn = rec_lsn;
 
 	if (LfsClientRecord != frh->record_type)
 		goto next_log_record_analyze;
 
-	/*
-	 * Now update the Transaction Table for this transaction. If there
-	 * is no entry present or it is unallocated we allocate the entry.
-	 */
+	 
 	if (!trtbl) {
 		trtbl = init_rsttbl(sizeof(struct TRANSACTION_ENTRY),
 				    INITIAL_NUMBER_TRANSACTIONS);
@@ -4431,14 +4145,11 @@ next_log_record_analyze:
 
 	tr->prev_lsn = tr->undo_next_lsn = cpu_to_le64(rec_lsn);
 
-	/*
-	 * If this is a compensation log record, then change
-	 * the undo_next_lsn to be the undo_next_lsn of this record.
-	 */
+	 
 	if (lrh->undo_op == cpu_to_le16(CompensationLogRecord))
 		tr->undo_next_lsn = frh->client_undo_next_lsn;
 
-	/* Dispatch to handle log record depending on type. */
+	 
 	switch (le16_to_cpu(lrh->redo_op)) {
 	case InitializeFileRecordSegment:
 	case DeallocateFileRecordSegment:
@@ -4470,10 +4181,7 @@ next_log_record_analyze:
 		if (dp)
 			goto copy_lcns;
 
-		/*
-		 * Calculate the number of clusters per page the system
-		 * which wrote the checkpoint, possibly creating the table.
-		 */
+		 
 		if (dptbl) {
 			t32 = (le16_to_cpu(dptbl->size) -
 			       sizeof(struct DIR_PAGE_ENTRY)) /
@@ -4501,11 +4209,7 @@ next_log_record_analyze:
 		dp->oldest_lsn = cpu_to_le64(rec_lsn);
 
 copy_lcns:
-		/*
-		 * Copy the Lcns from the log record into the Dirty Page Entry.
-		 * TODO: For different page size support, must somehow make
-		 * whole routine a loop, case Lcns do not fit below.
-		 */
+		 
 		t16 = le16_to_cpu(lrh->lcns_follow);
 		for (i = 0; i < t16; i++) {
 			size_t j = (size_t)(le64_to_cpu(lrh->target_vcn) -
@@ -4521,7 +4225,7 @@ copy_lcns:
 		const struct LCN_RANGE *r =
 			Add2Ptr(lrh, le16_to_cpu(lrh->redo_off));
 
-		/* Loop through all of the Lcn ranges this log record. */
+		 
 		for (i = 0; i < range_count; i++, r++) {
 			u64 lcn0 = le64_to_cpu(r->lcn);
 			u64 lcn_e = lcn0 + le64_to_cpu(r->len) - 1;
@@ -4545,10 +4249,7 @@ copy_lcns:
 	case OpenNonresidentAttribute:
 		t16 = le16_to_cpu(lrh->target_attr);
 		if (t16 >= bytes_per_rt(oatbl)) {
-			/*
-			 * Compute how big the table needs to be.
-			 * Add 10 extra entries for some cushion.
-			 */
+			 
 			u32 new_e = t16 / le16_to_cpu(oatbl->size);
 
 			new_e += 10 - le16_to_cpu(oatbl->used);
@@ -4561,7 +4262,7 @@ copy_lcns:
 			}
 		}
 
-		/* Point to the entry being opened. */
+		 
 		oe = alloc_rsttbl_from_idx(&oatbl, t16);
 		log->open_attr_tbl = oatbl;
 		if (!oe) {
@@ -4569,16 +4270,16 @@ copy_lcns:
 			goto out;
 		}
 
-		/* Initialize this entry from the log record. */
+		 
 		t16 = le16_to_cpu(lrh->redo_off);
 		if (!rst->major_ver) {
-			/* Convert version '0' into version '1'. */
+			 
 			struct OPEN_ATTR_ENRTY_32 *oe0 = Add2Ptr(lrh, t16);
 
 			oe->bytes_per_index = oe0->bytes_per_index;
 			oe->type = oe0->type;
 			oe->is_dirty_pages = oe0->is_dirty_pages;
-			oe->name_len = 0; //oe0.name_len;
+			oe->name_len = 0; 
 			oe->ref = oe0->ref;
 			oe->open_record_lsn = oe0->open_record_lsn;
 		} else {
@@ -4640,14 +4341,11 @@ copy_lcns:
 	case AttributeNamesDump:
 	case DirtyPageTableDump:
 	case TransactionTableDump:
-		/* The following cases require no action the Analysis Pass. */
+		 
 		goto next_log_record_analyze;
 
 	default:
-		/*
-		 * All codes will be explicitly handled.
-		 * If we see a code we do not expect, then we are trouble.
-		 */
+		 
 		goto next_log_record_analyze;
 	}
 
@@ -4655,10 +4353,7 @@ end_log_records_enumerate:
 	lcb_put(lcb);
 	lcb = NULL;
 
-	/*
-	 * Scan the Dirty Page Table and Transaction Table for
-	 * the lowest lsn, and return it as the Redo lsn.
-	 */
+	 
 	dp = NULL;
 	while ((dp = enum_rstbl(dptbl, dp))) {
 		t64 = le64_to_cpu(dp->oldest_lsn);
@@ -4673,10 +4368,7 @@ end_log_records_enumerate:
 			rlsn = t64;
 	}
 
-	/*
-	 * Only proceed if the Dirty Page Table or Transaction
-	 * table are not empty.
-	 */
+	 
 	if ((!dptbl || !dptbl->total) && (!trtbl || !trtbl->total))
 		goto end_reply;
 
@@ -4684,7 +4376,7 @@ end_log_records_enumerate:
 	if (is_ro)
 		goto out;
 
-	/* Reopen all of the attributes with dirty pages. */
+	 
 	oe = NULL;
 next_open_attribute:
 
@@ -4785,10 +4477,7 @@ final_oe:
 
 	goto next_open_attribute;
 
-	/*
-	 * Now loop through the dirty page table to extract all of the Vcn/Lcn.
-	 * Mapping that we have, and insert it into the appropriate run.
-	 */
+	 
 next_dirty_page:
 	dp = enum_rstbl(dptbl, dp);
 	if (!dp)
@@ -4838,28 +4527,18 @@ next_dirty_page_vcn:
 	goto next_dirty_page_vcn;
 
 do_redo_1:
-	/*
-	 * Perform the Redo Pass, to restore all of the dirty pages to the same
-	 * contents that they had immediately before the crash. If the dirty
-	 * page table is empty, then we can skip the entire Redo Pass.
-	 */
+	 
 	if (!dptbl || !dptbl->total)
 		goto do_undo_action;
 
 	rec_lsn = rlsn;
 
-	/*
-	 * Read the record at the Redo lsn, before falling
-	 * into common code to handle each record.
-	 */
+	 
 	err = read_log_rec_lcb(log, rlsn, lcb_ctx_next, &lcb);
 	if (err)
 		goto out;
 
-	/*
-	 * Now loop to read all of our log records forwards, until
-	 * we hit the end of the file, cleaning up at the end.
-	 */
+	 
 do_action_next:
 	frh = lcb->lrh;
 
@@ -4875,7 +4554,7 @@ do_action_next:
 		goto out;
 	}
 
-	/* Ignore log records that do not update pages. */
+	 
 	if (lrh->lcns_follow)
 		goto find_dirty_page;
 
@@ -4920,11 +4599,11 @@ find_dirty_page:
 		goto read_next_log_do_action;
 	}
 
-	/* Point to the Redo data and get its length. */
+	 
 	data = Add2Ptr(lrh, le16_to_cpu(lrh->redo_off));
 	dlen = le16_to_cpu(lrh->redo_len);
 
-	/* Shorten length by any Lcns which were deleted. */
+	 
 	saved_len = dlen;
 
 	for (i = le16_to_cpu(lrh->lcns_follow); i; i--) {
@@ -4935,7 +4614,7 @@ find_dirty_page:
 		       le16_to_cpu(lrh->attr_off);
 		voff += le16_to_cpu(lrh->cluster_off) << SECTOR_SHIFT;
 
-		/* If the Vcn question is allocated, we can just get out. */
+		 
 		j = le64_to_cpu(lrh->target_vcn) - le64_to_cpu(dp->vcn);
 		if (dp->page_lcns[j + i - 1])
 			break;
@@ -4943,26 +4622,17 @@ find_dirty_page:
 		if (!saved_len)
 			saved_len = 1;
 
-		/*
-		 * Calculate the allocated space left relative to the
-		 * log record Vcn, after removing this unallocated Vcn.
-		 */
+		 
 		alen = (i - 1) << sbi->cluster_bits;
 
-		/*
-		 * If the update described this log record goes beyond
-		 * the allocated space, then we will have to reduce the length.
-		 */
+		 
 		if (voff >= alen)
 			dlen = 0;
 		else if (voff + dlen > alen)
 			dlen = alen - voff;
 	}
 
-	/*
-	 * If the resulting dlen from above is now zero,
-	 * we can skip this log record.
-	 */
+	 
 	if (!dlen && saved_len)
 		goto read_next_log_do_action;
 
@@ -4970,12 +4640,12 @@ find_dirty_page:
 	if (can_skip_action(t16))
 		goto read_next_log_do_action;
 
-	/* Apply the Redo operation a common routine. */
+	 
 	err = do_action(log, oe, lrh, t16, data, dlen, rec_len, &rec_lsn);
 	if (err)
 		goto out;
 
-	/* Keep reading and looping back until end of file. */
+	 
 read_next_log_do_action:
 	err = read_next_log_rec(log, lcb, &rec_lsn);
 	if (!err && rec_lsn)
@@ -4985,7 +4655,7 @@ read_next_log_do_action:
 	lcb = NULL;
 
 do_undo_action:
-	/* Scan Transaction Table. */
+	 
 	tr = NULL;
 transaction_table_next:
 	tr = enum_rstbl(trtbl, tr);
@@ -5000,22 +4670,16 @@ transaction_table_next:
 	log->transaction_id = PtrOffset(trtbl, tr);
 	undo_next_lsn = le64_to_cpu(tr->undo_next_lsn);
 
-	/*
-	 * We only have to do anything if the transaction has
-	 * something its undo_next_lsn field.
-	 */
+	 
 	if (!undo_next_lsn)
 		goto commit_undo;
 
-	/* Read the first record to be undone by this transaction. */
+	 
 	err = read_log_rec_lcb(log, undo_next_lsn, lcb_ctx_undo_next, &lcb);
 	if (err)
 		goto out;
 
-	/*
-	 * Now loop to read all of our log records forwards,
-	 * until we hit the end of the file, cleaning up at the end.
-	 */
+	 
 undo_action_next:
 
 	lrh = lcb->log_rec;
@@ -5041,11 +4705,7 @@ undo_action_next:
 	is_mapped = run_lookup_entry(oa->run1, le64_to_cpu(lrh->target_vcn),
 				     &lcn, &clen, NULL);
 
-	/*
-	 * If the mapping isn't already the table or the  mapping
-	 * corresponds to a hole the mapping, we need to make sure
-	 * there is no partial page already memory.
-	 */
+	 
 	if (is_mapped && lcn != SPARSE_LCN && clen >= t16)
 		goto add_allocated_vcns;
 
@@ -5072,18 +4732,15 @@ add_allocated_vcns:
 	if (can_skip_action(t16))
 		goto read_next_log_undo_action;
 
-	/* Point to the Redo data and get its length. */
+	 
 	data = Add2Ptr(lrh, le16_to_cpu(lrh->undo_off));
 	dlen = le16_to_cpu(lrh->undo_len);
 
-	/* It is time to apply the undo action. */
+	 
 	err = do_action(log, oe, lrh, t16, data, dlen, rec_len, NULL);
 
 read_next_log_undo_action:
-	/*
-	 * Keep reading and looping back until we have read the
-	 * last record for this transaction.
-	 */
+	 
 	err = read_next_log_rec(log, lcb, &rec_lsn);
 	if (err)
 		goto out;
@@ -5129,8 +4786,8 @@ end_reply:
 	t16 = ALIGN(offsetof(struct RESTART_HDR, fixups) + sizeof(short) * t16,
 		    8);
 	rh->ra_off = cpu_to_le16(t16);
-	rh->minor_ver = cpu_to_le16(1); // 0x1A:
-	rh->major_ver = cpu_to_le16(1); // 0x1C:
+	rh->minor_ver = cpu_to_le16(1); 
+	rh->major_ver = cpu_to_le16(1); 
 
 	ra2 = Add2Ptr(rh, t16);
 	memcpy(ra2, ra, sizeof(struct RESTART_AREA));
@@ -5157,10 +4814,7 @@ out:
 	if (lcb)
 		lcb_put(lcb);
 
-	/*
-	 * Scan the Open Attribute Table to close all of
-	 * the open attributes.
-	 */
+	 
 	oe = NULL;
 	while ((oe = enum_rstbl(oatbl, oe))) {
 		rno = ino_get(&oe->ref);

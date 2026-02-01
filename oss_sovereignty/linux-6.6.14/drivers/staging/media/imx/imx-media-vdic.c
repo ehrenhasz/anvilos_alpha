@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * V4L2 Deinterlacer Subdev for Freescale i.MX5/6 SOC
- *
- * Copyright (c) 2017 Mentor Graphics Inc.
- */
+
+ 
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
@@ -12,30 +8,7 @@
 #include <media/imx.h>
 #include "imx-media.h"
 
-/*
- * This subdev implements two different video pipelines:
- *
- * CSI -> VDIC
- *
- * In this pipeline, the CSI sends a single interlaced field F(n-1)
- * directly to the VDIC (and optionally the following field F(n)
- * can be sent to memory via IDMAC channel 13). This pipeline only works
- * in VDIC's high motion mode, which only requires a single field for
- * processing. The other motion modes (low and medium) require three
- * fields, so this pipeline does not work in those modes. Also, it is
- * not clear how this pipeline can deal with the various field orders
- * (sequential BT/TB, interlaced BT/TB).
- *
- * MEM -> CH8,9,10 -> VDIC
- *
- * In this pipeline, previous field F(n-1), current field F(n), and next
- * field F(n+1) are transferred to the VDIC via IDMAC channels 8,9,10.
- * These memory buffers can come from a video output or mem2mem device.
- * All motion modes are supported by this pipeline.
- *
- * The "direct" CSI->VDIC pipeline requires no DMA, but it can only be
- * used in high motion mode.
- */
+ 
 
 struct vdic_priv;
 
@@ -46,16 +19,14 @@ struct vdic_pipeline_ops {
 	void (*disable)(struct vdic_priv *priv);
 };
 
-/*
- * Min/Max supported width and heights.
- */
+ 
 #define MIN_W        32
 #define MIN_H        32
 #define MAX_W_VDIC  968
 #define MAX_H_VDIC 2048
-#define W_ALIGN    4 /* multiple of 16 pixels */
-#define H_ALIGN    1 /* multiple of 2 lines */
-#define S_ALIGN    1 /* multiple of 2 */
+#define W_ALIGN    4  
+#define H_ALIGN    1  
+#define S_ALIGN    1  
 
 struct vdic_priv {
 	struct device *ipu_dev;
@@ -64,48 +35,45 @@ struct vdic_priv {
 	struct v4l2_subdev   sd;
 	struct media_pad pad[VDIC_NUM_PADS];
 
-	/* lock to protect all members below */
+	 
 	struct mutex lock;
 
-	/* IPU units we require */
+	 
 	struct ipu_vdi *vdi;
 
 	int active_input_pad;
 
-	struct ipuv3_channel *vdi_in_ch_p; /* F(n-1) transfer channel */
-	struct ipuv3_channel *vdi_in_ch;   /* F(n) transfer channel */
-	struct ipuv3_channel *vdi_in_ch_n; /* F(n+1) transfer channel */
+	struct ipuv3_channel *vdi_in_ch_p;  
+	struct ipuv3_channel *vdi_in_ch;    
+	struct ipuv3_channel *vdi_in_ch_n;  
 
-	/* pipeline operations */
+	 
 	struct vdic_pipeline_ops *ops;
 
-	/* current and previous input buffers indirect path */
+	 
 	struct imx_media_buffer *curr_in_buf;
 	struct imx_media_buffer *prev_in_buf;
 
-	/*
-	 * translated field type, input line stride, and field size
-	 * for indirect path
-	 */
+	 
 	u32 fieldtype;
 	u32 in_stride;
 	u32 field_size;
 
-	/* the source (a video device or subdev) */
+	 
 	struct media_entity *src;
-	/* the sink that will receive the progressive out buffers */
+	 
 	struct v4l2_subdev *sink_sd;
 
 	struct v4l2_mbus_framefmt format_mbus[VDIC_NUM_PADS];
 	const struct imx_media_pixfmt *cc[VDIC_NUM_PADS];
 	struct v4l2_fract frame_interval[VDIC_NUM_PADS];
 
-	/* the video device at IDMAC input pad */
+	 
 	struct imx_media_video_dev *vdev;
 
-	bool csi_direct;  /* using direct CSI->VDIC->IC pipeline */
+	bool csi_direct;   
 
-	/* motion select control */
+	 
 	struct v4l2_ctrl_handler ctrl_hdlr;
 	enum ipu_motion_sel motion;
 
@@ -180,12 +148,7 @@ out:
 	return ret;
 }
 
-/*
- * This function is currently unused, but will be called when the
- * output/mem2mem device at the IDMAC input pad sends us a new
- * buffer. It kicks off the IDMAC read channels to bring in the
- * buffer fields from memory and begin the conversions.
- */
+ 
 static void __maybe_unused prepare_vdi_in_buffers(struct vdic_priv *priv,
 						  struct imx_media_buffer *curr)
 {
@@ -195,7 +158,7 @@ static void __maybe_unused prepare_vdi_in_buffers(struct vdic_priv *priv,
 	u32 fs = priv->field_size;
 	u32 is = priv->in_stride;
 
-	/* current input buffer is now previous */
+	 
 	priv->prev_in_buf = priv->curr_in_buf;
 	priv->curr_in_buf = curr;
 	prev = priv->prev_in_buf ? priv->prev_in_buf : curr;
@@ -218,10 +181,7 @@ static void __maybe_unused prepare_vdi_in_buffers(struct vdic_priv *priv,
 		next_phys = vb2_dma_contig_plane_dma_addr(curr_vb, 0) + is;
 		break;
 	default:
-		/*
-		 * can't get here, priv->fieldtype can only be one of
-		 * the above. This is to quiet smatch errors.
-		 */
+		 
 		return;
 	}
 
@@ -248,7 +208,7 @@ static int setup_vdi_channel(struct vdic_priv *priv,
 	memset(&image, 0, sizeof(image));
 	image.pix = vdev->fmt;
 	image.rect = vdev->compose;
-	/* one field to VDIC channels */
+	 
 	image.pix.height /= 2;
 	image.rect.height /= 2;
 	image.phys0 = phys0;
@@ -270,7 +230,7 @@ static int setup_vdi_channel(struct vdic_priv *priv,
 
 static int vdic_setup_direct(struct vdic_priv *priv)
 {
-	/* set VDIC to receive from CSI for direct path */
+	 
 	ipu_fsu_link(priv->ipu, IPUV3_CHANNEL_CSI_DIRECT,
 		     IPUV3_CHANNEL_CSI_VDI_PREV);
 
@@ -302,7 +262,7 @@ static int vdic_setup_indirect(struct vdic_priv *priv)
 
 	in_size = (infmt->width * incc->bpp * infmt->height) >> 3;
 
-	/* 1/2 full image size */
+	 
 	priv->field_size = in_size / 2;
 	priv->in_stride = incc->planar ?
 		infmt->width : (infmt->width * incc->bpp) >> 3;
@@ -312,7 +272,7 @@ static int vdic_setup_indirect(struct vdic_priv *priv)
 
 	priv->fieldtype = infmt->field;
 
-	/* init the vdi-in channels */
+	 
 	ret = setup_vdi_channel(priv, priv->vdi_in_ch_p, 0, 0);
 	if (ret)
 		return ret;
@@ -324,7 +284,7 @@ static int vdic_setup_indirect(struct vdic_priv *priv)
 
 static void vdic_start_indirect(struct vdic_priv *priv)
 {
-	/* enable the channels */
+	 
 	ipu_idmac_enable_channel(priv->vdi_in_ch_p);
 	ipu_idmac_enable_channel(priv->vdi_in_ch);
 	ipu_idmac_enable_channel(priv->vdi_in_ch_n);
@@ -332,7 +292,7 @@ static void vdic_start_indirect(struct vdic_priv *priv)
 
 static void vdic_stop_indirect(struct vdic_priv *priv)
 {
-	/* disable channels */
+	 
 	ipu_idmac_disable_channel(priv->vdi_in_ch_p);
 	ipu_idmac_disable_channel(priv->vdi_in_ch);
 	ipu_idmac_disable_channel(priv->vdi_in_ch_n);
@@ -369,13 +329,7 @@ static int vdic_start(struct vdic_priv *priv)
 	if (ret)
 		return ret;
 
-	/*
-	 * init the VDIC.
-	 *
-	 * note we don't give infmt->code to ipu_vdi_setup(). The VDIC
-	 * only supports 4:2:2 or 4:2:0, and this subdev will only
-	 * negotiate 4:2:2 at its sink pads.
-	 */
+	 
 	ipu_vdi_setup(priv->vdi, MEDIA_BUS_FMT_UYVY8_2X8,
 		      infmt->width, infmt->height);
 	ipu_vdi_set_field_order(priv->vdi, V4L2_STD_UNKNOWN, infmt->field);
@@ -405,9 +359,7 @@ static void vdic_stop(struct vdic_priv *priv)
 	vdic_put_ipu_resources(priv);
 }
 
-/*
- * V4L2 subdev operations.
- */
+ 
 
 static int vdic_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -422,7 +374,7 @@ static int vdic_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_DEINTERLACING_MODE:
 		motion = ctrl->val;
 		if (motion != priv->motion) {
-			/* can't change motion control mid-streaming */
+			 
 			if (priv->stream_count > 0) {
 				ret = -EBUSY;
 				goto out;
@@ -494,10 +446,7 @@ static int vdic_s_stream(struct v4l2_subdev *sd, int enable)
 	if (priv->csi_direct)
 		src_sd = media_entity_to_v4l2_subdev(priv->src);
 
-	/*
-	 * enable/disable streaming only if stream_count is
-	 * going from 0 to 1 / 1 to 0.
-	 */
+	 
 	if (priv->stream_count != !enable)
 		goto update_count;
 
@@ -512,7 +461,7 @@ static int vdic_s_stream(struct v4l2_subdev *sd, int enable)
 		goto out;
 
 	if (src_sd) {
-		/* start/stop upstream */
+		 
 		ret = v4l2_subdev_call(src_sd, video, s_stream, enable);
 		ret = (ret && ret != -ENOIOCTLCMD) ? ret : 0;
 		if (ret) {
@@ -600,7 +549,7 @@ static void vdic_try_fmt(struct vdic_priv *priv,
 	switch (sdformat->pad) {
 	case VDIC_SRC_PAD_DIRECT:
 		sdformat->format = *infmt;
-		/* output is always progressive! */
+		 
 		sdformat->format.field = V4L2_FIELD_NONE;
 		break;
 	case VDIC_SINK_PAD_DIRECT:
@@ -610,7 +559,7 @@ static void vdic_try_fmt(struct vdic_priv *priv,
 				      &sdformat->format.height,
 				      MIN_H, MAX_H_VDIC, H_ALIGN, S_ALIGN);
 
-		/* input must be interlaced! Choose SEQ_TB if not */
+		 
 		if (!V4L2_FIELD_HAS_BOTH(sdformat->format.field))
 			sdformat->format.field = V4L2_FIELD_SEQ_TB;
 		break;
@@ -643,7 +592,7 @@ static int vdic_set_fmt(struct v4l2_subdev *sd,
 	fmt = __vdic_get_fmt(priv, sd_state, sdformat->pad, sdformat->which);
 	*fmt = sdformat->format;
 
-	/* propagate format to source pad */
+	 
 	if (sdformat->pad == VDIC_SINK_PAD_DIRECT ||
 	    sdformat->pad == VDIC_SINK_PAD_IDMAC) {
 		const struct imx_media_pixfmt *outcc;
@@ -704,7 +653,7 @@ static int vdic_link_setup(struct media_entity *entity,
 		goto out;
 	}
 
-	/* this is a sink pad */
+	 
 
 	if (flags & MEDIA_LNK_FL_ENABLED) {
 		if (priv->src) {
@@ -737,7 +686,7 @@ static int vdic_link_setup(struct media_entity *entity,
 
 		remote_sd = media_entity_to_v4l2_subdev(remote->entity);
 
-		/* direct pad must connect to a CSI */
+		 
 		if (!(remote_sd->grp_id & IMX_MEDIA_GRP_ID_IPU_CSI) ||
 		    remote->index != CSI_SRC_PAD_DIRECT) {
 			ret = -EINVAL;
@@ -748,7 +697,7 @@ static int vdic_link_setup(struct media_entity *entity,
 	}
 
 	priv->src = remote->entity;
-	/* record which input pad is now active */
+	 
 	priv->active_input_pad = local->index;
 out:
 	mutex_unlock(&priv->lock);
@@ -812,22 +761,17 @@ static int vdic_s_frame_interval(struct v4l2_subdev *sd,
 	switch (fi->pad) {
 	case VDIC_SINK_PAD_DIRECT:
 	case VDIC_SINK_PAD_IDMAC:
-		/* No limits on valid input frame intervals */
+		 
 		if (fi->interval.numerator == 0 ||
 		    fi->interval.denominator == 0)
 			fi->interval = priv->frame_interval[fi->pad];
-		/* Reset output interval */
+		 
 		*output_fi = fi->interval;
 		if (priv->csi_direct)
 			output_fi->denominator *= 2;
 		break;
 	case VDIC_SRC_PAD_DIRECT:
-		/*
-		 * frame rate at output pad is double input
-		 * rate when using direct CSI->VDIC pipeline.
-		 *
-		 * TODO: implement VDIC frame skipping
-		 */
+		 
 		fi->interval = *input_fi;
 		if (priv->csi_direct)
 			fi->interval.denominator *= 2;
@@ -854,7 +798,7 @@ static int vdic_registered(struct v4l2_subdev *sd)
 		if (i != VDIC_SINK_PAD_IDMAC)
 			imx_media_enum_ipu_formats(&code, 0, PIXFMT_SEL_YUV);
 
-		/* set a default mbus format  */
+		 
 		ret = imx_media_init_mbus_fmt(&priv->format_mbus[i],
 					      IMX_MEDIA_DEF_PIX_WIDTH,
 					      IMX_MEDIA_DEF_PIX_HEIGHT, code,
@@ -862,7 +806,7 @@ static int vdic_registered(struct v4l2_subdev *sd)
 		if (ret)
 			return ret;
 
-		/* init default frame interval */
+		 
 		priv->frame_interval[i].numerator = 1;
 		priv->frame_interval[i].denominator = 30;
 		if (i == VDIC_SRC_PAD_DIRECT)

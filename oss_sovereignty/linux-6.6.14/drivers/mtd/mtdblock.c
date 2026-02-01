@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Direct MTD block device access
- *
- * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
- * Copyright © 2000-2003 Nicolas Pitre <nico@fluxnic.net>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/init.h>
@@ -31,15 +26,7 @@ struct mtdblk_dev {
 	enum { STATE_EMPTY, STATE_CLEAN, STATE_DIRTY } cache_state;
 };
 
-/*
- * Cache stuff...
- *
- * Since typical flash erasable sectors are much larger than what Linux's
- * buffer cache can handle, we must implement read-modify-write on flash
- * sectors for each block write requests.  To avoid over-erasing flash sectors
- * and to speed things up, we locally cache a whole flash sector while it is
- * being written to until a different sector is required.
- */
+ 
 
 static int erase_write (struct mtd_info *mtd, unsigned long pos,
 			unsigned int len, const char *buf)
@@ -48,9 +35,7 @@ static int erase_write (struct mtd_info *mtd, unsigned long pos,
 	size_t retlen;
 	int ret;
 
-	/*
-	 * First, let's erase the flash block.
-	 */
+	 
 	erase.addr = pos;
 	erase.len = len;
 
@@ -62,9 +47,7 @@ static int erase_write (struct mtd_info *mtd, unsigned long pos,
 		return ret;
 	}
 
-	/*
-	 * Next, write the data to flash.
-	 */
+	 
 
 	ret = mtd_write(mtd, pos, len, &retlen, buf);
 	if (ret)
@@ -90,17 +73,7 @@ static int write_cached_data (struct mtdblk_dev *mtdblk)
 	ret = erase_write (mtd, mtdblk->cache_offset,
 			   mtdblk->cache_size, mtdblk->cache_data);
 
-	/*
-	 * Here we could arguably set the cache state to STATE_CLEAN.
-	 * However this could lead to inconsistency since we will not
-	 * be notified if this content is altered on the flash by other
-	 * means.  Let's declare it empty and leave buffering tasks to
-	 * the buffer cache instead.
-	 *
-	 * If this cache_offset points to a bad block, data cannot be
-	 * written to the device. Clear cache_state to avoid writing to
-	 * bad blocks repeatedly.
-	 */
+	 
 	if (ret == 0 || ret == -EIO)
 		mtdblk->cache_state = STATE_EMPTY;
 	return ret;
@@ -129,16 +102,12 @@ static int do_cached_write (struct mtdblk_dev *mtdblk, unsigned long pos,
 			size = len;
 
 		if (size == sect_size) {
-			/*
-			 * We are covering a whole sector.  Thus there is no
-			 * need to bother with the cache while it may still be
-			 * useful for other partial writes.
-			 */
+			 
 			ret = erase_write (mtd, pos, size, buf);
 			if (ret)
 				return ret;
 		} else {
-			/* Partial sector: need to use the cache */
+			 
 
 			if (mtdblk->cache_state == STATE_DIRTY &&
 			    mtdblk->cache_offset != sect_start) {
@@ -149,7 +118,7 @@ static int do_cached_write (struct mtdblk_dev *mtdblk, unsigned long pos,
 
 			if (mtdblk->cache_state == STATE_EMPTY ||
 			    mtdblk->cache_offset != sect_start) {
-				/* fill the cache with the current sector */
+				 
 				mtdblk->cache_state = STATE_EMPTY;
 				ret = mtd_read(mtd, sect_start, sect_size,
 					       &retlen, mtdblk->cache_data);
@@ -163,7 +132,7 @@ static int do_cached_write (struct mtdblk_dev *mtdblk, unsigned long pos,
 				mtdblk->cache_state = STATE_CLEAN;
 			}
 
-			/* write data to our local cache */
+			 
 			memcpy (mtdblk->cache_data + offset, buf, size);
 			mtdblk->cache_state = STATE_DIRTY;
 		}
@@ -202,12 +171,7 @@ static int do_cached_read (struct mtdblk_dev *mtdblk, unsigned long pos,
 		if (size > len)
 			size = len;
 
-		/*
-		 * Check if the requested data is already cached
-		 * Read the requested amount of data from our internal cache if it
-		 * contains what we want, otherwise we read the data directly
-		 * from flash.
-		 */
+		 
 		if (mtdblk->cache_state != STATE_EMPTY &&
 		    mtdblk->cache_offset == sect_start) {
 			memcpy (buf, mtdblk->cache_data + offset, size);
@@ -242,10 +206,7 @@ static int mtdblock_writesect(struct mtd_blktrans_dev *dev,
 		mtdblk->cache_data = vmalloc(mtdblk->mbd.mtd->erasesize);
 		if (!mtdblk->cache_data)
 			return -EINTR;
-		/* -EINTR is not really correct, but it is the best match
-		 * documented in man 2 write for all cases.  We could also
-		 * return -EAGAIN sometimes, but why bother?
-		 */
+		 
 	}
 	return do_cached_write(mtdblk, block<<9, 512, buf);
 }
@@ -265,7 +226,7 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
 		pr_warn_ratelimited("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
 			mbd->tr->name, mbd->mtd->name);
 
-	/* OK, it's not open. Create cache info for it */
+	 
 	mtdblk->count = 1;
 	mutex_init(&mtdblk->cache_mutex);
 	mtdblk->cache_state = STATE_EMPTY;
@@ -290,10 +251,7 @@ static void mtdblock_release(struct mtd_blktrans_dev *mbd)
 	mutex_unlock(&mtdblk->cache_mutex);
 
 	if (!--mtdblk->count) {
-		/*
-		 * It was the last usage. Free the cache, but only sync if
-		 * opened for writing.
-		 */
+		 
 		if (mbd->writable)
 			mtd_sync(mbd->mtd);
 		vfree(mtdblk->cache_data);

@@ -1,17 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Reference program for verifying XDP metadata on real HW. Functional test
- * only, doesn't test the performance.
- *
- * RX:
- * - UDP 9091 packets are diverted into AF_XDP
- * - Metadata verified:
- *   - rx_timestamp
- *   - rx_hash
- *
- * TX:
- * - TBD
- */
+
+ 
 
 #include <test_progs.h>
 #include <network_helpers.h>
@@ -52,7 +41,7 @@ const char *ifname;
 int ifindex;
 int rxq;
 
-void test__fail(void) { /* for network_helpers.c */ }
+void test__fail(void) {   }
 
 static int open_xsk(int ifindex, struct xsk *xsk, __u32 queue_id)
 {
@@ -93,16 +82,14 @@ static int open_xsk(int ifindex, struct xsk *xsk, __u32 queue_id)
 	if (ret)
 		return ret;
 
-	/* First half of umem is for TX. This way address matches 1-to-1
-	 * to the completion queue index.
-	 */
+	 
 
 	for (i = 0; i < UMEM_NUM / 2; i++) {
 		addr = i * UMEM_FRAME_SIZE;
 		printf("%p: tx_desc[%d] -> %lx\n", xsk, i, addr);
 	}
 
-	/* Second half of umem is for RX. */
+	 
 
 	ret = xsk_ring_prod__reserve(&xsk->fill, UMEM_NUM / 2, &idx);
 	for (i = 0; i < UMEM_NUM / 2; i++) {
@@ -135,13 +122,13 @@ static void refill_rx(struct xsk *xsk, __u64 addr)
 	}
 }
 
-#define NANOSEC_PER_SEC 1000000000 /* 10^9 */
+#define NANOSEC_PER_SEC 1000000000  
 static __u64 gettime(clockid_t clock_id)
 {
 	struct timespec t;
 	int res;
 
-	/* See man clock_gettime(2) for type of clock_id's */
+	 
 	res = clock_gettime(clock_id, &t);
 
 	if (res < 0)
@@ -300,7 +287,7 @@ struct ethtool_channels {
 	__u32	combined_count;
 };
 
-#define ETHTOOL_GCHANNELS	0x0000003c /* Get no of channels */
+#define ETHTOOL_GCHANNELS	0x0000003c  
 
 static int rxq_num(const char *ifname)
 {
@@ -392,7 +379,7 @@ static void cleanup(void)
 
 static void handle_signal(int sig)
 {
-	/* interrupting poll() is all we need */
+	 
 }
 
 static void timestamping_enable(int fd, int val)

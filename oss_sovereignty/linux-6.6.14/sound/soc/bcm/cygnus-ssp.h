@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2014-2015 Broadcom Corporation */
+ 
+ 
 #ifndef __CYGNUS_SSP_H__
 #define __CYGNUS_SSP_H__
 
@@ -19,7 +19,7 @@
 
 #define CYGNUS_SSP_CLKSRC_PLL      0
 
-/* Max string length of our dt property names */
+ 
 #define PROP_LEN_MAX 40
 
 struct ringbuf_regs {
@@ -27,7 +27,7 @@ struct ringbuf_regs {
 	unsigned wraddr;
 	unsigned baseaddr;
 	unsigned endaddr;
-	unsigned fmark;   /* freemark for play, fullmark for caputure */
+	unsigned fmark;    
 	unsigned period_bytes;
 	unsigned buf_size;
 };
@@ -82,7 +82,7 @@ struct cygnus_aio_port {
 	int portnum;
 	int mode;
 	bool is_slave;
-	int streams_on;   /* will be 0 if both capture and play are off */
+	int streams_on;    
 	int fsync_width;
 	int port_type;
 

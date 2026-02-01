@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013-2015 Fujitsu Semiconductor Ltd.
- * Copyright (C) 2015 Linaro Ltd.
- * Author: Jassi Brar <jaswinder.singh@linaro.org>
- */
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/device.h>
@@ -117,7 +113,7 @@ static int mhu_probe(struct amba_device *adev, const struct amba_id *id)
 	if (!of_device_is_compatible(dev->of_node, "arm,mhu"))
 		return -ENODEV;
 
-	/* Allocate memory for device */
+	 
 	mhu = devm_kzalloc(dev, sizeof(*mhu), GFP_KERNEL);
 	if (!mhu)
 		return -ENOMEM;

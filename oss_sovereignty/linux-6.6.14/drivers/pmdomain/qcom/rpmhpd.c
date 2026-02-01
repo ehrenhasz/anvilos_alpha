@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, The Linux Foundation. All rights reserved.*/
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -20,27 +20,7 @@
 
 #define RPMH_ARC_MAX_LEVELS	16
 
-/**
- * struct rpmhpd - top level RPMh power domain resource data structure
- * @dev:		rpmh power domain controller device
- * @pd:			generic_pm_domain corresponding to the power domain
- * @parent:		generic_pm_domain corresponding to the parent's power domain
- * @peer:		A peer power domain in case Active only Voting is
- *			supported
- * @active_only:	True if it represents an Active only peer
- * @corner:		current corner
- * @active_corner:	current active corner
- * @enable_corner:	lowest non-zero corner
- * @level:		An array of level (vlvl) to corner (hlvl) mappings
- *			derived from cmd-db
- * @level_count:	Number of levels supported by the power domain. max
- *			being 16 (0 - 15)
- * @enabled:		true if the power domain is enabled
- * @res_name:		Resource name used for cmd-db lookup
- * @addr:		Resource address as looped up using resource name from
- *			cmd-db
- * @state_synced:	Indicator that sync_state has been invoked for the rpmhpd resource
- */
+ 
 struct rpmhpd {
 	struct device	*dev;
 	struct generic_pm_domain pd;
@@ -65,7 +45,7 @@ struct rpmhpd_desc {
 
 static DEFINE_MUTEX(rpmhpd_lock);
 
-/* RPMH powerdomains */
+ 
 
 static struct rpmhpd cx_ao;
 static struct rpmhpd mx;
@@ -202,7 +182,7 @@ static struct rpmhpd qphy = {
 	.res_name = "qphy.lvl",
 };
 
-/* SA8540P RPMH powerdomains */
+ 
 static struct rpmhpd *sa8540p_rpmhpds[] = {
 	[SC8280XP_CX] = &cx,
 	[SC8280XP_CX_AO] = &cx_ao,
@@ -222,7 +202,7 @@ static const struct rpmhpd_desc sa8540p_desc = {
 	.num_pds = ARRAY_SIZE(sa8540p_rpmhpds),
 };
 
-/* SA8775P RPMH power domains */
+ 
 static struct rpmhpd *sa8775p_rpmhpds[] = {
 	[SA8775P_CX] = &cx,
 	[SA8775P_CX_AO] = &cx_ao,
@@ -245,7 +225,7 @@ static const struct rpmhpd_desc sa8775p_desc = {
 	.num_pds = ARRAY_SIZE(sa8775p_rpmhpds),
 };
 
-/* SDM670 RPMH powerdomains */
+ 
 static struct rpmhpd *sdm670_rpmhpds[] = {
 	[SDM670_CX] = &cx_w_mx_parent,
 	[SDM670_CX_AO] = &cx_ao_w_mx_parent,
@@ -262,7 +242,7 @@ static const struct rpmhpd_desc sdm670_desc = {
 	.num_pds = ARRAY_SIZE(sdm670_rpmhpds),
 };
 
-/* SDM845 RPMH powerdomains */
+ 
 static struct rpmhpd *sdm845_rpmhpds[] = {
 	[SDM845_CX] = &cx_w_mx_parent,
 	[SDM845_CX_AO] = &cx_ao_w_mx_parent,
@@ -280,7 +260,7 @@ static const struct rpmhpd_desc sdm845_desc = {
 	.num_pds = ARRAY_SIZE(sdm845_rpmhpds),
 };
 
-/* SDX55 RPMH powerdomains */
+ 
 static struct rpmhpd *sdx55_rpmhpds[] = {
 	[SDX55_CX] = &cx_w_mx_parent,
 	[SDX55_MSS] = &mss,
@@ -292,7 +272,7 @@ static const struct rpmhpd_desc sdx55_desc = {
 	.num_pds = ARRAY_SIZE(sdx55_rpmhpds),
 };
 
-/* SDX65 RPMH powerdomains */
+ 
 static struct rpmhpd *sdx65_rpmhpds[] = {
 	[SDX65_CX] = &cx_w_mx_parent,
 	[SDX65_CX_AO] = &cx_ao_w_mx_parent,
@@ -307,7 +287,7 @@ static const struct rpmhpd_desc sdx65_desc = {
 	.num_pds = ARRAY_SIZE(sdx65_rpmhpds),
 };
 
-/* SDX75 RPMH powerdomains */
+ 
 static struct rpmhpd *sdx75_rpmhpds[] = {
 	[RPMHPD_CX] = &cx,
 	[RPMHPD_CX_AO] = &cx_ao,
@@ -322,7 +302,7 @@ static const struct rpmhpd_desc sdx75_desc = {
 	.num_pds = ARRAY_SIZE(sdx75_rpmhpds),
 };
 
-/* SM6350 RPMH powerdomains */
+ 
 static struct rpmhpd *sm6350_rpmhpds[] = {
 	[SM6350_CX] = &cx_w_mx_parent,
 	[SM6350_GFX] = &gfx,
@@ -337,7 +317,7 @@ static const struct rpmhpd_desc sm6350_desc = {
 	.num_pds = ARRAY_SIZE(sm6350_rpmhpds),
 };
 
-/* SM8150 RPMH powerdomains */
+ 
 static struct rpmhpd *sm8150_rpmhpds[] = {
 	[SM8150_CX] = &cx_w_mx_parent,
 	[SM8150_CX_AO] = &cx_ao_w_mx_parent,
@@ -372,7 +352,7 @@ static const struct rpmhpd_desc sa8155p_desc = {
 	.num_pds = ARRAY_SIZE(sa8155p_rpmhpds),
 };
 
-/* SM8250 RPMH powerdomains */
+ 
 static struct rpmhpd *sm8250_rpmhpds[] = {
 	[RPMHPD_CX] = &cx_w_mx_parent,
 	[RPMHPD_CX_AO] = &cx_ao_w_mx_parent,
@@ -391,7 +371,7 @@ static const struct rpmhpd_desc sm8250_desc = {
 	.num_pds = ARRAY_SIZE(sm8250_rpmhpds),
 };
 
-/* SM8350 Power domains */
+ 
 static struct rpmhpd *sm8350_rpmhpds[] = {
 	[RPMHPD_CX] = &cx_w_mx_parent,
 	[RPMHPD_CX_AO] = &cx_ao_w_mx_parent,
@@ -413,7 +393,7 @@ static const struct rpmhpd_desc sm8350_desc = {
 	.num_pds = ARRAY_SIZE(sm8350_rpmhpds),
 };
 
-/* SM8450 RPMH powerdomains */
+ 
 static struct rpmhpd *sm8450_rpmhpds[] = {
 	[RPMHPD_CX] = &cx,
 	[RPMHPD_CX_AO] = &cx_ao,
@@ -435,7 +415,7 @@ static const struct rpmhpd_desc sm8450_desc = {
 	.num_pds = ARRAY_SIZE(sm8450_rpmhpds),
 };
 
-/* SM8550 RPMH powerdomains */
+ 
 static struct rpmhpd *sm8550_rpmhpds[] = {
 	[RPMHPD_CX] = &cx,
 	[RPMHPD_CX_AO] = &cx_ao,
@@ -458,7 +438,7 @@ static const struct rpmhpd_desc sm8550_desc = {
 	.num_pds = ARRAY_SIZE(sm8550_rpmhpds),
 };
 
-/* QDU1000/QRU1000 RPMH powerdomains */
+ 
 static struct rpmhpd *qdu1000_rpmhpds[] = {
 	[QDU1000_CX] = &cx,
 	[QDU1000_EBI] = &ebi,
@@ -471,7 +451,7 @@ static const struct rpmhpd_desc qdu1000_desc = {
 	.num_pds = ARRAY_SIZE(qdu1000_rpmhpds),
 };
 
-/* SC7180 RPMH powerdomains */
+ 
 static struct rpmhpd *sc7180_rpmhpds[] = {
 	[SC7180_CX] = &cx_w_mx_parent,
 	[SC7180_CX_AO] = &cx_ao_w_mx_parent,
@@ -488,7 +468,7 @@ static const struct rpmhpd_desc sc7180_desc = {
 	.num_pds = ARRAY_SIZE(sc7180_rpmhpds),
 };
 
-/* SC7280 RPMH powerdomains */
+ 
 static struct rpmhpd *sc7280_rpmhpds[] = {
 	[SC7280_CX] = &cx,
 	[SC7280_CX_AO] = &cx_ao,
@@ -506,7 +486,7 @@ static const struct rpmhpd_desc sc7280_desc = {
 	.num_pds = ARRAY_SIZE(sc7280_rpmhpds),
 };
 
-/* SC8180x RPMH powerdomains */
+ 
 static struct rpmhpd *sc8180x_rpmhpds[] = {
 	[SC8180X_CX] = &cx_w_mx_parent,
 	[SC8180X_CX_AO] = &cx_ao_w_mx_parent,
@@ -526,7 +506,7 @@ static const struct rpmhpd_desc sc8180x_desc = {
 	.num_pds = ARRAY_SIZE(sc8180x_rpmhpds),
 };
 
-/* SC8280xp RPMH powerdomains */
+ 
 static struct rpmhpd *sc8280xp_rpmhpds[] = {
 	[SC8280XP_CX] = &cx,
 	[SC8280XP_CX_AO] = &cx_ao,
@@ -579,10 +559,7 @@ static int rpmhpd_send_corner(struct rpmhpd *pd, int state,
 		.data = corner,
 	};
 
-	/*
-	 * Wait for an ack only when we are increasing the
-	 * perf state of the power domain
-	 */
+	 
 	if (sync)
 		return rpmh_write(pd->dev, state, &cmd, 1);
 	else
@@ -600,15 +577,7 @@ static void to_active_sleep(struct rpmhpd *pd, unsigned int corner,
 		*sleep = *active;
 }
 
-/*
- * This function is used to aggregate the votes across the active only
- * resources and its peers. The aggregated votes are sent to RPMh as
- * ACTIVE_ONLY votes (which take effect immediately), as WAKE_ONLY votes
- * (applied by RPMh on system wakeup) and as SLEEP votes (applied by RPMh
- * on system sleep).
- * We send ACTIVE_ONLY votes for resources without any peers. For others,
- * which have an active only peer, all 3 votes are sent.
- */
+ 
 static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
 {
 	int ret;
@@ -620,7 +589,7 @@ static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
 	if (pd->state_synced) {
 		to_active_sleep(pd, corner, &this_active_corner, &this_sleep_corner);
 	} else {
-		/* Clamp to highest corner if sync_state hasn't happened */
+		 
 		this_active_corner = pd->level_count - 1;
 		this_sleep_corner = pd->level_count - 1;
 	}
@@ -701,15 +670,12 @@ static int rpmhpd_set_performance_state(struct generic_pm_domain *domain,
 		if (level <= pd->level[i])
 			break;
 
-	/*
-	 * If the level requested is more than that supported by the
-	 * max corner, just set it to max anyway.
-	 */
+	 
 	if (i == pd->level_count)
 		i--;
 
 	if (pd->enabled) {
-		/* Ensure that the domain isn't turn off */
+		 
 		if (i < pd->enable_corner)
 			i = pd->enable_corner;
 
@@ -740,7 +706,7 @@ static int rpmhpd_update_level_mapping(struct rpmhpd *rpmhpd)
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
 
-	/* 2 bytes used for each command DB aux data entry */
+	 
 	rpmhpd->level_count >>= 1;
 
 	if (rpmhpd->level_count > RPMH_ARC_MAX_LEVELS)
@@ -749,14 +715,11 @@ static int rpmhpd_update_level_mapping(struct rpmhpd *rpmhpd)
 	for (i = 0; i < rpmhpd->level_count; i++) {
 		rpmhpd->level[i] = buf[i];
 
-		/* Remember the first corner with non-zero level */
+		 
 		if (!rpmhpd->level[rpmhpd->enable_corner] && rpmhpd->level[i])
 			rpmhpd->enable_corner = i;
 
-		/*
-		 * The AUX data may be zero padded.  These 0 valued entries at
-		 * the end of the map must be ignored.
-		 */
+		 
 		if (i > 0 && rpmhpd->level[i] == 0) {
 			rpmhpd->level_count = i;
 			break;
@@ -826,7 +789,7 @@ static int rpmhpd_probe(struct platform_device *pdev)
 		data->domains[i] = &rpmhpds[i]->pd;
 	}
 
-	/* Add subdomains */
+	 
 	for (i = 0; i < num_pds; i++) {
 		if (!rpmhpds[i])
 			continue;

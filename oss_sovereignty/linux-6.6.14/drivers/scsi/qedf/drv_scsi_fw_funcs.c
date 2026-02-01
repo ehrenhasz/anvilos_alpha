@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* QLogic FCoE Offload Driver
- * Copyright (c) 2016-2018 Cavium Inc.
- */
+
+ 
 #include "drv_scsi_fw_funcs.h"
 
 #define SCSI_NUM_SGES_IN_CACHE 0x4
@@ -15,7 +13,7 @@ void init_scsi_sgl_context(struct scsi_sgl_params *ctx_sgl_params,
 			   struct scsi_cached_sges *ctx_data_desc,
 			   struct scsi_sgl_task_params *sgl_task_params)
 {
-	/* no need to check for sgl_task_params->sgl validity */
+	 
 	u8 num_sges_to_init = sgl_task_params->num_sges >
 			      SCSI_NUM_SGES_IN_CACHE ? SCSI_NUM_SGES_IN_CACHE :
 			      sgl_task_params->num_sges;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * omap-control-phy.c - The PHY part of control module.
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -16,11 +11,7 @@
 #include <linux/clk.h>
 #include <linux/phy/omap_control_phy.h>
 
-/**
- * omap_control_pcie_pcs - set the PCS delay count
- * @dev: the control module device
- * @delay: 8 bit delay value
- */
+ 
 void omap_control_pcie_pcs(struct device *dev, u8 delay)
 {
 	u32 val;
@@ -50,11 +41,7 @@ void omap_control_pcie_pcs(struct device *dev, u8 delay)
 }
 EXPORT_SYMBOL_GPL(omap_control_pcie_pcs);
 
-/**
- * omap_control_phy_power - power on/off the phy using control module reg
- * @dev: the control module device
- * @on: 0 or 1, based on powering on or off the PHY
- */
+ 
 void omap_control_phy_power(struct device *dev, int on)
 {
 	u32 val;
@@ -134,13 +121,7 @@ void omap_control_phy_power(struct device *dev, int on)
 }
 EXPORT_SYMBOL_GPL(omap_control_phy_power);
 
-/**
- * omap_control_usb_host_mode - set AVALID, VBUSVALID and ID pin in grounded
- * @ctrl_phy: struct omap_control_phy *
- *
- * Writes to the mailbox register to notify the usb core that a usb
- * device has been connected.
- */
+ 
 static void omap_control_usb_host_mode(struct omap_control_phy *ctrl_phy)
 {
 	u32 val;
@@ -151,14 +132,7 @@ static void omap_control_usb_host_mode(struct omap_control_phy *ctrl_phy)
 	writel(val, ctrl_phy->otghs_control);
 }
 
-/**
- * omap_control_usb_device_mode - set AVALID, VBUSVALID and ID pin in high
- * impedance
- * @ctrl_phy: struct omap_control_phy *
- *
- * Writes to the mailbox register to notify the usb core that it has been
- * connected to a usb host.
- */
+ 
 static void omap_control_usb_device_mode(struct omap_control_phy *ctrl_phy)
 {
 	u32 val;
@@ -170,14 +144,7 @@ static void omap_control_usb_device_mode(struct omap_control_phy *ctrl_phy)
 	writel(val, ctrl_phy->otghs_control);
 }
 
-/**
- * omap_control_usb_set_sessionend - Enable SESSIONEND and IDIG to high
- * impedance
- * @ctrl_phy: struct omap_control_phy *
- *
- * Writes to the mailbox register to notify the usb core it's now in
- * disconnected state.
- */
+ 
 static void omap_control_usb_set_sessionend(struct omap_control_phy *ctrl_phy)
 {
 	u32 val;
@@ -188,15 +155,7 @@ static void omap_control_usb_set_sessionend(struct omap_control_phy *ctrl_phy)
 	writel(val, ctrl_phy->otghs_control);
 }
 
-/**
- * omap_control_usb_set_mode - Calls to functions to set USB in one of host mode
- * or device mode or to denote disconnected state
- * @dev: the control module device
- * @mode: The mode to which usb should be configured
- *
- * This is an API to write to the mailbox register to notify the usb core that
- * a usb device has been connected.
- */
+ 
 void omap_control_usb_set_mode(struct device *dev,
 	enum omap_control_usb_mode mode)
 {

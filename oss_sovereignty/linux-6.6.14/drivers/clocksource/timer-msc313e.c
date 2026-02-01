@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MStar timer driver
- *
- * Copyright (C) 2021 Daniel Palmer
- * Copyright (C) 2021 Romain Perier
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2023 Marvell.
- *
- */
+ 
+ 
 #ifndef OTX2_QOS_H
 #define OTX2_QOS_H
 
@@ -40,28 +36,28 @@ struct otx2_qos_cfg {
 
 struct otx2_qos {
 	DECLARE_HASHTABLE(qos_hlist, order_base_2(OTX2_QOS_MAX_LEAF_NODES));
-	struct mutex qos_lock; /* child list lock */
+	struct mutex qos_lock;  
 	u16 qid_to_sqmap[OTX2_QOS_MAX_LEAF_NODES];
 	struct list_head qos_tree;
 	DECLARE_BITMAP(qos_sq_bmap, OTX2_QOS_MAX_LEAF_NODES);
 	u16 maj_id;
 	u16 defcls;
-	u8  link_cfg_lvl; /* LINKX_CFG CSRs mapped to TL3 or TL2's index ? */
+	u8  link_cfg_lvl;  
 };
 
 struct otx2_qos_node {
-	struct list_head list; /* list management */
+	struct list_head list;  
 	struct list_head child_list;
 	struct list_head child_schq_list;
 	struct hlist_node hlist;
 	DECLARE_BITMAP(prio_bmap, OTX2_QOS_MAX_PRIO + 1);
-	struct otx2_qos_node *parent;	/* parent qos node */
-	u64 rate; /* htb params */
+	struct otx2_qos_node *parent;	 
+	u64 rate;  
 	u64 ceil;
 	u32 classid;
 	u32 prio;
 	u32 quantum;
-	/* hw txschq */
+	 
 	u16 schq;
 	u16 qid;
 	u16 prio_anchor;
@@ -69,7 +65,7 @@ struct otx2_qos_node {
 	u16 child_dwrr_cnt;
 	u16 child_static_cnt;
 	u16 child_dwrr_prio;
-	u16 txschq_idx;			/* txschq allocation index */
+	u16 txschq_idx;			 
 	u8 level;
 	bool is_static;
 };

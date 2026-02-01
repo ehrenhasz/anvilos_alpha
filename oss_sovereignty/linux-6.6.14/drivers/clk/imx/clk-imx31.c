@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012 Sascha Hauer <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/clk.h>
@@ -124,7 +122,7 @@ static void __init _mx31_clocks_init(void __iomem *base, unsigned long fref)
 static void __init mx31_clocks_init_dt(struct device_node *np)
 {
 	struct device_node *osc_np;
-	u32 fref = 26000000; /* default */
+	u32 fref = 26000000;  
 	void __iomem *ccm;
 
 	for_each_compatible_node(osc_np, NULL, "fixed-clock") {

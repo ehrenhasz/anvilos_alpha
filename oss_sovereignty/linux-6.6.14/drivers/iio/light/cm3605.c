@@ -1,21 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CM3605 Ambient Light and Proximity Sensor
- *
- * Copyright (C) 2016 Linaro Ltd.
- * Author: Linus Walleij <linus.walleij@linaro.org>
- *
- * This hardware was found in the very first Nexus One handset from Google/HTC
- * and an early endavour into mobile light and proximity sensors.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 #include <linux/iio/events.h>
-#include <linux/iio/consumer.h> /* To get our ADC channel */
-#include <linux/iio/types.h> /* To deal with our ADC channel */
+#include <linux/iio/consumer.h>  
+#include <linux/iio/types.h>  
 #include <linux/init.h>
 #include <linux/leds.h>
 #include <linux/platform_device.h>
@@ -29,19 +21,10 @@
 #define CM3605_PROX_CHANNEL 0
 #define CM3605_ALS_CHANNEL 1
 #define CM3605_AOUT_TYP_MAX_MV 1550
-/* It should not go above 1.650V according to the data sheet */
+ 
 #define CM3605_AOUT_MAX_MV 1650
 
-/**
- * struct cm3605 - CM3605 state
- * @dev: pointer to parent device
- * @vdd: regulator controlling VDD
- * @aset: sleep enable GPIO, high = sleep
- * @aout: IIO ADC channel to convert the AOUT signal
- * @als_max: maximum LUX detection (depends on RSET)
- * @dir: proximity direction: start as FALLING
- * @led: trigger for the infrared LED used by the proximity sensor
- */
+ 
 struct cm3605 {
 	struct device *dev;
 	struct regulator *vdd;
@@ -62,7 +45,7 @@ static irqreturn_t cm3605_prox_irq(int irq, void *d)
 				  IIO_EV_TYPE_THRESH, cm3605->dir);
 	iio_push_event(indio_dev, ev, iio_get_time_ns(indio_dev));
 
-	/* Invert the edge for each event */
+	 
 	if (cm3605->dir == IIO_EV_DIR_RISING)
 		cm3605->dir = IIO_EV_DIR_FALLING;
 	else
@@ -82,21 +65,16 @@ static int cm3605_get_lux(struct cm3605 *cm3605)
 
 	dev_dbg(cm3605->dev, "read %d mV from ADC\n", res);
 
-	/*
-	 * AOUT has an offset of ~30mV then linear at dark
-	 * then goes from 2.54 up to 650 LUX yielding 1.55V
-	 * (1550 mV) so scale the returned value to this interval
-	 * using simple linear interpolation.
-	 */
+	 
 	if (res < 30)
 		return 0;
 	if (res > CM3605_AOUT_MAX_MV)
 		dev_err(cm3605->dev, "device out of range\n");
 
-	/* Remove bias */
+	 
 	lux = res - 30;
 
-	/* Linear interpolation between 0 and ALS typ max */
+	 
 	lux *= cm3605->als_max;
 	lux = div64_s64(lux, CM3605_AOUT_TYP_MAX_MV);
 
@@ -238,7 +216,7 @@ static int cm3605_probe(struct platform_device *pdev)
 		goto out_disable_aset;
 	}
 
-	/* Just name the trigger the same as the driver */
+	 
 	led_trigger_register_simple("cm3605", &cm3605->led);
 	led_trigger_event(cm3605->led, LED_FULL);
 

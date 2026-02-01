@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  selftest for the Ultravisor UAPI device
- *
- *  Copyright IBM Corp. 2022
- *  Author(s): Steffen Eiden <seiden@linux.ibm.com>
- */
+
+ 
 
 #include <stdint.h>
 #include <fcntl.h>
@@ -84,10 +79,7 @@ TEST_F(uvio_fixture, fault_uvio_arg)
 	ASSERT_EQ(errno_cache, EFAULT);
 }
 
-/*
- * Test to verify that IOCTLs with invalid values in the ioctl_control block
- * are rejected.
- */
+ 
 TEST_F(uvio_fixture, inval_ioctl_cb)
 {
 	int rc, errno_cache;
@@ -205,10 +197,7 @@ static void att_inval_sizes_test(uint32_t *size, uint32_t max_size, bool test_ze
 	*size = tmp;
 }
 
-/*
- * Test to verify that attestation IOCTLs with invalid values in the UVIO
- * attestation control block are rejected.
- */
+ 
 TEST_F(attest_fixture, att_inval_request)
 {
 	int rc, errno_cache;

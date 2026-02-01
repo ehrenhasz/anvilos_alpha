@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * rionet - Ethernet driver over RapidIO messaging services
- *
- * Copyright 2005 MontaVista Software, Inc.
- * Matt Porter <mporter@kernel.crashing.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -71,9 +66,9 @@ struct rionet_peer {
 struct rionet_net {
 	struct net_device *ndev;
 	struct list_head peers;
-	spinlock_t lock;	/* net info access lock */
+	spinlock_t lock;	 
 	struct rio_dev **active;
-	int nact;	/* number of active peers */
+	int nact;	 
 };
 
 static struct rionet_net nets[RIONET_MAX_NETS];
@@ -207,12 +202,7 @@ static netdev_tx_t rionet_start_xmit(struct sk_buff *skb,
 			rionet_queue_tx_msg(skb, ndev,
 					nets[rnet->mport->id].active[destid]);
 		else {
-			/*
-			 * If the target device was removed from the list of
-			 * active peers but we still have TX packets targeting
-			 * it just report sending a packet to the target
-			 * (without actual packet transfer).
-			 */
+			 
 			ndev->stats.tx_packets++;
 			ndev->stats.tx_bytes += skb->len;
 			dev_kfree_skb_any(skb);
@@ -292,7 +282,7 @@ static void rionet_outb_msg_event(struct rio_mport *mport, void *dev_id, int mbo
 		       DRV_NAME, mbox, slot);
 
 	while (rnet->tx_cnt && (rnet->ack_slot != slot)) {
-		/* dma unmap single */
+		 
 		dev_kfree_skb_irq(rnet->tx_skb[rnet->ack_slot]);
 		rnet->tx_skb[rnet->ack_slot] = NULL;
 		++rnet->ack_slot;
@@ -338,7 +328,7 @@ static int rionet_open(struct net_device *ndev)
 					rionet_outb_msg_event)) < 0)
 		goto out;
 
-	/* Initialize inbound message ring */
+	 
 	for (i = 0; i < RIONET_RX_RING_SIZE; i++)
 		rnet->rx_skb[i] = NULL;
 	rnet->rx_slot = 0;
@@ -353,7 +343,7 @@ static int rionet_open(struct net_device *ndev)
 
 	spin_lock_irqsave(&nets[netid].lock, flags);
 	list_for_each_entry(peer, &nets[netid].peers, node) {
-		/* Send a join message */
+		 
 		rio_send_doorbell(peer->rdev, RIONET_DOORBELL_JOIN);
 	}
 	spin_unlock_irqrestore(&nets[netid].lock, flags);
@@ -495,12 +485,12 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
 	}
 	memset((void *)nets[mport->id].active, 0, rionet_active_bytes);
 
-	/* Set up private area */
+	 
 	rnet = netdev_priv(ndev);
 	rnet->mport = mport;
 	rnet->open = false;
 
-	/* Set the default MAC address */
+	 
 	device_id = rio_local_get_device_id(mport);
 	addr[0] = 0x00;
 	addr[1] = 0x01;
@@ -512,7 +502,7 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
 
 	ndev->netdev_ops = &rionet_netdev_ops;
 	ndev->mtu = RIONET_MAX_MTU;
-	/* MTU range: 68 - 4082 */
+	 
 	ndev->min_mtu = ETH_MIN_MTU;
 	ndev->max_mtu = RIONET_MAX_MTU;
 	ndev->features = NETIF_F_LLTX;
@@ -555,11 +545,7 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 	if (netid >= RIONET_MAX_NETS)
 		return rc;
 
-	/*
-	 * If first time through this net, make sure local device is rionet
-	 * capable and setup netdev (this step will be skipped in later probes
-	 * on the same net).
-	 */
+	 
 	if (!nets[netid].ndev) {
 		rio_local_read_config_32(rdev->net->hport, RIO_SRC_OPS_CAR,
 					 &lsrc_ops);
@@ -572,7 +558,7 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 			goto out;
 		}
 
-		/* Allocate our net_device structure */
+		 
 		ndev = alloc_etherdev(sizeof(struct rionet_private));
 		if (ndev == NULL) {
 			rc = -ENOMEM;
@@ -593,10 +579,7 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 		nets[netid].ndev = ndev;
 	}
 
-	/*
-	 * If the remote device has mailbox/doorbell capabilities,
-	 * add it to the peer list.
-	 */
+	 
 	if (dev_rionet_capable(rdev)) {
 		struct rionet_private *rnet;
 		unsigned long flags;
@@ -625,7 +608,7 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 		pr_debug("%s: %s add peer %s\n",
 			 DRV_NAME, __func__, rio_name(rdev));
 
-		/* If netdev is already opened, send join request to new peer */
+		 
 		if (rnet->open)
 			rio_send_doorbell(peer->rdev, RIONET_DOORBELL_JOIN);
 	}
@@ -692,7 +675,7 @@ static void rionet_remove_mport(struct device *dev)
 #ifdef MODULE
 static struct rio_device_id rionet_id_table[] = {
 	{RIO_DEVICE(RIO_ANY_ID, RIO_ANY_ID)},
-	{ 0, }	/* terminate list */
+	{ 0, }	 
 };
 
 MODULE_DEVICE_TABLE(rapidio, rionet_id_table);
@@ -709,7 +692,7 @@ static struct notifier_block rionet_notifier = {
 	.notifier_call = rionet_shutdown,
 };
 
-/* the rio_mport_interface is used to handle local mport devices */
+ 
 static struct class_interface rio_mport_interface __refdata = {
 	.class = &rio_mport_class,
 	.add_dev = NULL,

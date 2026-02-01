@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Seccomp BPF helper functions
- *
- * Copyright (c) 2012 The Chromium OS Authors <chromium-os-dev@chromium.org>
- * Author: Will Drewry <wad@chromium.org>
- *
- * The code may be used by anyone for any purpose,
- * and can serve as a starting point for developing
- * applications using prctl(PR_ATTACH_SECCOMP_FILTER).
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,10 +14,7 @@ int bpf_resolve_jumps(struct bpf_labels *labels,
 
 	if (count < 1 || count > BPF_MAXINSNS)
 		return -1;
-	/*
-	* Walk it once, backwards, to build the label table and do fixups.
-	* Since backward jumps are disallowed by BPF, this is easy.
-	*/
+	 
 	for (i = 0; i < count; ++i) {
 		size_t offset = count - i - 1;
 		struct sock_filter *instr = &filter[offset];
@@ -51,7 +39,7 @@ int bpf_resolve_jumps(struct bpf_labels *labels,
 				return 1;
 			}
 			labels->labels[instr->k].location = offset;
-			instr->k = 0; /* fall through */
+			instr->k = 0;  
 			instr->jt = 0;
 			instr->jf = 0;
 			continue;
@@ -60,7 +48,7 @@ int bpf_resolve_jumps(struct bpf_labels *labels,
 	return 0;
 }
 
-/* Simple lookup table for labels. */
+ 
 __u32 seccomp_bpf_label(struct bpf_labels *labels, const char *label)
 {
 	struct __bpf_label *begin = labels->labels, *end;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-am62.c - TI specific Glue layer for AM62 DWC3 USB Controller
- *
- * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -19,7 +15,7 @@
 
 #include "core.h"
 
-/* USB WRAPPER register offsets */
+ 
 #define USBSS_PID			0x0
 #define USBSS_OVERCURRENT_CTRL		0x4
 #define USBSS_PHY_CONFIG		0x8
@@ -42,19 +38,19 @@
 #define USBSS_DEBUG_DATA		0x70c
 #define USBSS_HOST_HUB_CTRL		0x714
 
-/* PHY CONFIG register bits */
+ 
 #define USBSS_PHY_VBUS_SEL_MASK		GENMASK(2, 1)
 #define USBSS_PHY_VBUS_SEL_SHIFT	1
 #define USBSS_PHY_LANE_REVERSE		BIT(0)
 
-/* CORE STAT register bits */
+ 
 #define USBSS_CORE_OPERATIONAL_MODE_MASK	GENMASK(13, 12)
 #define USBSS_CORE_OPERATIONAL_MODE_SHIFT	12
 
-/* MODE CONTROL register bits */
+ 
 #define USBSS_MODE_VALID	BIT(0)
 
-/* WAKEUP CONFIG register bits */
+ 
 #define USBSS_WAKEUP_CFG_OVERCURRENT_EN	BIT(3)
 #define USBSS_WAKEUP_CFG_LINESTATE_EN	BIT(2)
 #define USBSS_WAKEUP_CFG_SESSVALID_EN	BIT(1)
@@ -67,37 +63,37 @@
 
 #define USBSS_WAKEUP_CFG_NONE	0
 
-/* WAKEUP STAT register bits */
+ 
 #define USBSS_WAKEUP_STAT_OVERCURRENT	BIT(4)
 #define USBSS_WAKEUP_STAT_LINESTATE	BIT(3)
 #define USBSS_WAKEUP_STAT_SESSVALID	BIT(2)
 #define USBSS_WAKEUP_STAT_VBUSVALID	BIT(1)
 #define USBSS_WAKEUP_STAT_CLR		BIT(0)
 
-/* IRQ_MISC_STATUS_RAW register bits */
+ 
 #define USBSS_IRQ_MISC_RAW_VBUSVALID	BIT(22)
 #define USBSS_IRQ_MISC_RAW_SESSVALID	BIT(20)
 
-/* IRQ_MISC_STATUS register bits */
+ 
 #define USBSS_IRQ_MISC_VBUSVALID	BIT(22)
 #define USBSS_IRQ_MISC_SESSVALID	BIT(20)
 
-/* IRQ_MISC_ENABLE_SET register bits */
+ 
 #define USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID	BIT(22)
 #define USBSS_IRQ_MISC_ENABLE_SET_SESSVALID	BIT(20)
 
-/* IRQ_MISC_ENABLE_CLR register bits */
+ 
 #define USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID	BIT(22)
 #define USBSS_IRQ_MISC_ENABLE_CLR_SESSVALID	BIT(20)
 
-/* IRQ_MISC_EOI register bits */
+ 
 #define USBSS_IRQ_MISC_EOI_VECTOR	BIT(0)
 
-/* VBUS_STAT register bits */
+ 
 #define USBSS_VBUS_STAT_SESSVALID	BIT(2)
 #define USBSS_VBUS_STAT_VBUSVALID	BIT(0)
 
-/* Mask for PHY PLL REFCLK */
+ 
 #define PHY_PLL_REFCLK_MASK	GENMASK(3, 0)
 
 #define DWC3_AM62_AUTOSUSPEND_DELAY	100
@@ -113,7 +109,7 @@ struct dwc3_am62 {
 	u32 wakeup_stat;
 };
 
-static const int dwc3_ti_rate_table[] = {	/* in KHZ */
+static const int dwc3_ti_rate_table[] = {	 
 	9600,
 	10000,
 	12000,
@@ -199,9 +195,9 @@ static int dwc3_ti_probe(struct platform_device *pdev)
 		return PTR_ERR(am62->usb2_refclk);
 	}
 
-	/* Calculate the rate code */
+	 
 	rate = clk_get_rate(am62->usb2_refclk);
-	rate /= 1000;	// To KHz
+	rate /= 1000;	
 	for (i = 0; i < ARRAY_SIZE(dwc3_ti_rate_table); i++) {
 		if (dwc3_ti_rate_table[i] == rate)
 			break;
@@ -214,12 +210,12 @@ static int dwc3_ti_probe(struct platform_device *pdev)
 
 	am62->rate_code = i;
 
-	/* Read the syscon property and set the rate code */
+	 
 	ret = phy_syscon_pll_refclk(am62);
 	if (ret)
 		return ret;
 
-	/* VBUS divider select */
+	 
 	am62->vbus_divider = device_property_read_bool(dev, "ti,vbus-divider");
 	reg = dwc3_ti_readl(am62, USBSS_PHY_CONFIG);
 	if (am62->vbus_divider)
@@ -229,9 +225,7 @@ static int dwc3_ti_probe(struct platform_device *pdev)
 
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
-	/*
-	 * Don't ignore its dependencies with its children
-	 */
+	 
 	pm_suspend_ignore_children(dev, false);
 	clk_prepare_enable(am62->usb2_refclk);
 	pm_runtime_get_noresume(dev);
@@ -242,18 +236,18 @@ static int dwc3_ti_probe(struct platform_device *pdev)
 		goto err_pm_disable;
 	}
 
-	/* Set mode valid bit to indicate role is valid */
+	 
 	reg = dwc3_ti_readl(am62, USBSS_MODE_CONTROL);
 	reg |= USBSS_MODE_VALID;
 	dwc3_ti_writel(am62, USBSS_MODE_CONTROL, reg);
 
-	/* Device has capability to wakeup system from sleep */
+	 
 	device_set_wakeup_capable(dev, true);
 	ret = device_wakeup_enable(dev);
 	if (ret)
 		dev_err(dev, "couldn't enable device as a wakeup source: %d\n", ret);
 
-	/* Setting up autosuspend */
+	 
 	pm_runtime_set_autosuspend_delay(dev, DWC3_AM62_AUTOSUSPEND_DELAY);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_mark_last_busy(dev);
@@ -283,7 +277,7 @@ static void dwc3_ti_remove(struct platform_device *pdev)
 
 	device_for_each_child(dev, NULL, dwc3_ti_remove_core);
 
-	/* Clear mode valid bit */
+	 
 	reg = dwc3_ti_readl(am62, USBSS_MODE_CONTROL);
 	reg &= ~USBSS_MODE_VALID;
 	dwc3_ti_writel(am62, USBSS_MODE_CONTROL, reg);
@@ -304,19 +298,16 @@ static int dwc3_ti_suspend_common(struct device *dev)
 		reg = dwc3_ti_readl(am62, USBSS_CORE_STAT);
 		current_prtcap_dir = (reg & USBSS_CORE_OPERATIONAL_MODE_MASK)
 				     >> USBSS_CORE_OPERATIONAL_MODE_SHIFT;
-		/* Set wakeup config enable bits */
+		 
 		reg = dwc3_ti_readl(am62, USBSS_WAKEUP_CONFIG);
 		if (current_prtcap_dir == DWC3_GCTL_PRTCAP_HOST) {
 			reg = USBSS_WAKEUP_CFG_LINESTATE_EN | USBSS_WAKEUP_CFG_OVERCURRENT_EN;
 		} else {
 			reg = USBSS_WAKEUP_CFG_VBUSVALID_EN | USBSS_WAKEUP_CFG_SESSVALID_EN;
-			/*
-			 * Enable LINESTATE wake up only if connected to bus
-			 * and in U2/L3 state else it causes spurious wake-up.
-			 */
+			 
 		}
 		dwc3_ti_writel(am62, USBSS_WAKEUP_CONFIG, reg);
-		/* clear wakeup status so we know what caused the wake up */
+		 
 		dwc3_ti_writel(am62, USBSS_WAKEUP_STAT, USBSS_WAKEUP_STAT_CLR);
 	}
 
@@ -333,7 +324,7 @@ static int dwc3_ti_resume_common(struct device *dev)
 	clk_prepare_enable(am62->usb2_refclk);
 
 	if (device_may_wakeup(dev)) {
-		/* Clear wakeup config enable bits */
+		 
 		dwc3_ti_writel(am62, USBSS_WAKEUP_CONFIG, USBSS_WAKEUP_CFG_NONE);
 	}
 
@@ -349,7 +340,7 @@ static UNIVERSAL_DEV_PM_OPS(dwc3_ti_pm_ops, dwc3_ti_suspend_common,
 #define DEV_PM_OPS	(&dwc3_ti_pm_ops)
 #else
 #define DEV_PM_OPS	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct of_device_id dwc3_ti_of_match[] = {
 	{ .compatible = "ti,am62-usb"},

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Bridge Multiple Spanning Tree Support
- *
- *	Authors:
- *	Tobias Waldekranz		<tobias@waldekranz.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <net/switchdev.h>
@@ -106,9 +101,7 @@ int br_mst_set_state(struct net_bridge_port *p, u16 msti, u8 state,
 	if (!vg)
 		return 0;
 
-	/* MSTI 0 (CST) state changes are notified via the regular
-	 * SWITCHDEV_ATTR_ID_PORT_STP_STATE.
-	 */
+	 
 	if (msti) {
 		err = switchdev_port_attr_set(p->dev, &attr, extack);
 		if (err && err != -EOPNOTSUPP)
@@ -131,17 +124,14 @@ static void br_mst_vlan_sync_state(struct net_bridge_vlan *pv, u16 msti)
 	struct net_bridge_vlan *v;
 
 	list_for_each_entry(v, &vg->vlan_list, vlist) {
-		/* If this port already has a defined state in this
-		 * MSTI (through some other VLAN membership), inherit
-		 * it.
-		 */
+		 
 		if (v != pv && v->brvlan->msti == msti) {
 			br_mst_vlan_set_state(pv->port, pv, v->state);
 			return;
 		}
 	}
 
-	/* Otherwise, start out in a new MSTI with all ports disabled. */
+	 
 	return br_mst_vlan_set_state(pv->port, pv, BR_STATE_DISABLED);
 }
 
@@ -182,7 +172,7 @@ int br_mst_vlan_set_msti(struct net_bridge_vlan *mv, u16 msti)
 
 void br_mst_vlan_init_state(struct net_bridge_vlan *v)
 {
-	/* VLANs always start out in MSTI 0 (CST) */
+	 
 	v->msti = 0;
 
 	if (br_vlan_is_master(v))
@@ -236,18 +226,18 @@ size_t br_mst_info_size(const struct net_bridge_vlan_group *vg)
 	const struct net_bridge_vlan *v;
 	size_t sz;
 
-	/* IFLA_BRIDGE_MST */
+	 
 	sz = nla_total_size(0);
 
 	list_for_each_entry_rcu(v, &vg->vlan_list, vlist) {
 		if (test_bit(v->brvlan->msti, seen))
 			continue;
 
-		/* IFLA_BRIDGE_MST_ENTRY */
+		 
 		sz += nla_total_size(0) +
-			/* IFLA_BRIDGE_MST_ENTRY_MSTI */
+			 
 			nla_total_size(sizeof(u16)) +
-			/* IFLA_BRIDGE_MST_ENTRY_STATE */
+			 
 			nla_total_size(sizeof(u8));
 
 		__set_bit(v->brvlan->msti, seen);
@@ -285,7 +275,7 @@ int br_mst_fill_info(struct sk_buff *skb,
 
 static const struct nla_policy br_mst_nl_policy[IFLA_BRIDGE_MST_ENTRY_MAX + 1] = {
 	[IFLA_BRIDGE_MST_ENTRY_MSTI] = NLA_POLICY_RANGE(NLA_U16,
-						   1, /* 0 reserved for CST */
+						   1,  
 						   VLAN_N_VID - 1),
 	[IFLA_BRIDGE_MST_ENTRY_STATE] = NLA_POLICY_RANGE(NLA_U8,
 						    BR_STATE_DISABLED,

@@ -1,38 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *    Dexuan Cui
- *
- * Contributors:
- *    Pei Zhang <pei.zhang@intel.com>
- *    Min He <min.he@intel.com>
- *    Niu Bing <bing.niu@intel.com>
- *    Yulei Zhang <yulei.zhang@intel.com>
- *    Zhenyu Wang <zhenyuw@linux.intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -116,16 +82,7 @@ static void free_vgpu_gm(struct intel_vgpu *vgpu)
 	mutex_unlock(&gt->ggtt->vm.mutex);
 }
 
-/**
- * intel_vgpu_write_fence - write fence registers owned by a vGPU
- * @vgpu: vGPU instance
- * @fence: vGPU fence register number
- * @value: Fence register value to be written
- *
- * This function is used to write fence registers owned by a vGPU. The vGPU
- * fence register number will be translated into HW fence register number.
- *
- */
+ 
 void intel_vgpu_write_fence(struct intel_vgpu *vgpu,
 		u32 fence, u64 value)
 {
@@ -198,7 +155,7 @@ static int alloc_vgpu_fence(struct intel_vgpu *vgpu)
 
 	wakeref = intel_runtime_pm_get(uncore->rpm);
 
-	/* Request fences from host */
+	 
 	mutex_lock(&gvt->gt->ggtt->vm.mutex);
 
 	for (i = 0; i < vgpu_fence_sz(vgpu); i++) {
@@ -217,7 +174,7 @@ static int alloc_vgpu_fence(struct intel_vgpu *vgpu)
 
 out_free_fence:
 	gvt_vgpu_err("Failed to alloc fences\n");
-	/* Return fences to host, if fail */
+	 
 	for (i = 0; i < vgpu_fence_sz(vgpu); i++) {
 		reg = vgpu->fence.regs[i];
 		if (!reg)
@@ -297,13 +254,7 @@ no_enough_resource:
 	return -ENOSPC;
 }
 
-/**
- * intel_vgpu_free_resource() - free HW resource owned by a vGPU
- * @vgpu: a vGPU
- *
- * This function is used to free the HW resource owned by a vGPU.
- *
- */
+ 
 void intel_vgpu_free_resource(struct intel_vgpu *vgpu)
 {
 	free_vgpu_gm(vgpu);
@@ -311,13 +262,7 @@ void intel_vgpu_free_resource(struct intel_vgpu *vgpu)
 	free_resource(vgpu);
 }
 
-/**
- * intel_vgpu_reset_resource - reset resource state owned by a vGPU
- * @vgpu: a vGPU
- *
- * This function is used to reset resource state owned by a vGPU.
- *
- */
+ 
 void intel_vgpu_reset_resource(struct intel_vgpu *vgpu)
 {
 	struct intel_gvt *gvt = vgpu->gvt;
@@ -327,18 +272,7 @@ void intel_vgpu_reset_resource(struct intel_vgpu *vgpu)
 		_clear_vgpu_fence(vgpu);
 }
 
-/**
- * intel_vgpu_alloc_resource() - allocate HW resource for a vGPU
- * @vgpu: vGPU
- * @conf: vGPU creation params
- *
- * This function is used to allocate HW resource for a vGPU. User specifies
- * the resource configuration through the creation params.
- *
- * Returns:
- * zero on success, negative error code if failed.
- *
- */
+ 
 int intel_vgpu_alloc_resource(struct intel_vgpu *vgpu,
 		const struct intel_vgpu_config *conf)
 {

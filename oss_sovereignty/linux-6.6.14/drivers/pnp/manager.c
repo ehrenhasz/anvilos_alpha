@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * manager.c - Resource Management, Conflict Resolution, Activation and Disabling of Devices
- *
- * based on isapnp.c resource management (c) Jaroslav Kysela <perex@perex.cz>
- * Copyright 2003 Adam Belay <ambx1@neo.rr.com>
- * Copyright (C) 2008 Hewlett-Packard Development Company, L.P.
- *	Bjorn Helgaas <bjorn.helgaas@hp.com>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -26,7 +19,7 @@ static struct resource *pnp_find_resource(struct pnp_dev *dev,
 {
 	struct resource *res = pnp_get_resource(dev, type, bar);
 
-	/* when the resource already exists, set its resource bits from rule */
+	 
 	if (res) {
 		res->flags &= ~IORESOURCE_BITS;
 		res->flags |= rule & IORESOURCE_BITS;
@@ -95,7 +88,7 @@ static int pnp_assign_mem(struct pnp_dev *dev, struct pnp_mem *rule, int idx)
 	res->start = 0;
 	res->end = 0;
 
-	/* ??? rule->flags restricted to 8 bits, all tests bogus ??? */
+	 
 	if (!(rule->flags & IORESOURCE_MEM_WRITEABLE))
 		res->flags |= IORESOURCE_READONLY;
 	if (rule->flags & IORESOURCE_MEM_RANGELENGTH)
@@ -134,7 +127,7 @@ static int pnp_assign_irq(struct pnp_dev *dev, struct pnp_irq *rule, int idx)
 	struct resource *res, local_res;
 	int i;
 
-	/* IRQ priority: this table is good for i386 */
+	 
 	static unsigned short xtab[16] = {
 		5, 10, 11, 12, 9, 14, 15, 7, 3, 4, 13, 0, 1, 6, 8, 2
 	};
@@ -157,7 +150,7 @@ static int pnp_assign_irq(struct pnp_dev *dev, struct pnp_irq *rule, int idx)
 		goto __add;
 	}
 
-	/* TBD: need check for >16 IRQ */
+	 
 	res->start = find_next_bit(rule->map.bits, PNP_IRQ_NR, 16);
 	if (res->start < PNP_IRQ_NR) {
 		res->end = res->start;
@@ -193,7 +186,7 @@ static int pnp_assign_dma(struct pnp_dev *dev, struct pnp_dma *rule, int idx)
 	struct resource *res, local_res;
 	int i;
 
-	/* DMA priority: this table is good for i386 */
+	 
 	static unsigned short xtab[8] = {
 		1, 3, 5, 6, 7, 0, 2, 4
 	};
@@ -231,7 +224,7 @@ __add:
 	pnp_add_dma_resource(dev, res->start, res->flags);
 	return 0;
 }
-#endif /* CONFIG_ISA_DMA_API */
+#endif  
 
 void pnp_init_resources(struct pnp_dev *dev)
 {
@@ -248,11 +241,7 @@ static void pnp_clean_resource_table(struct pnp_dev *dev)
 	}
 }
 
-/**
- * pnp_assign_resources - assigns resources to the device based on the specified dependent number
- * @dev: pointer to the desired device
- * @set: the dependent function number
- */
+ 
 static int pnp_assign_resources(struct pnp_dev *dev, int set)
 {
 	struct pnp_option *option;
@@ -301,10 +290,7 @@ static int pnp_assign_resources(struct pnp_dev *dev, int set)
 	return ret;
 }
 
-/**
- * pnp_auto_config_dev - automatically assigns resources to a device
- * @dev: pointer to the desired device
- */
+ 
 int pnp_auto_config_dev(struct pnp_dev *dev)
 {
 	int i, ret;
@@ -328,12 +314,7 @@ int pnp_auto_config_dev(struct pnp_dev *dev)
 	return ret;
 }
 
-/**
- * pnp_start_dev - low-level start of the PnP device
- * @dev: pointer to the desired device
- *
- * assumes that resources have already been allocated
- */
+ 
 int pnp_start_dev(struct pnp_dev *dev)
 {
 	if (!pnp_can_write(dev)) {
@@ -352,12 +333,7 @@ int pnp_start_dev(struct pnp_dev *dev)
 }
 EXPORT_SYMBOL(pnp_start_dev);
 
-/**
- * pnp_stop_dev - low-level disable of the PnP device
- * @dev: pointer to the desired device
- *
- * does not free resources
- */
+ 
 int pnp_stop_dev(struct pnp_dev *dev)
 {
 	if (!pnp_can_disable(dev)) {
@@ -374,12 +350,7 @@ int pnp_stop_dev(struct pnp_dev *dev)
 }
 EXPORT_SYMBOL(pnp_stop_dev);
 
-/**
- * pnp_activate_dev - activates a PnP device for use
- * @dev: pointer to the desired device
- *
- * does not validate or set resources so be careful.
- */
+ 
 int pnp_activate_dev(struct pnp_dev *dev)
 {
 	int error;
@@ -387,7 +358,7 @@ int pnp_activate_dev(struct pnp_dev *dev)
 	if (dev->active)
 		return 0;
 
-	/* ensure resources are allocated */
+	 
 	if (pnp_auto_config_dev(dev))
 		return -EBUSY;
 
@@ -400,12 +371,7 @@ int pnp_activate_dev(struct pnp_dev *dev)
 }
 EXPORT_SYMBOL(pnp_activate_dev);
 
-/**
- * pnp_disable_dev - disables device
- * @dev: pointer to the desired device
- *
- * inform the correct pnp protocol so that resources can be used by other devices
- */
+ 
 int pnp_disable_dev(struct pnp_dev *dev)
 {
 	int error;
@@ -419,7 +385,7 @@ int pnp_disable_dev(struct pnp_dev *dev)
 
 	dev->active = 0;
 
-	/* release the resources so that other devices can use them */
+	 
 	mutex_lock(&pnp_res_mutex);
 	pnp_clean_resource_table(dev);
 	mutex_unlock(&pnp_res_mutex);

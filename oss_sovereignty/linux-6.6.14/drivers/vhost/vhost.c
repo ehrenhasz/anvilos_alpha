@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2009 Red Hat, Inc.
- * Copyright (C) 2006 Rusty Russell IBM Corporation
- *
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * Inspiration, some code, and most witty comments come from
- * Documentation/virtual/lguest/lguest.c, by Rusty Russell
- *
- * Generic code for virtio server in host kernel.
- */
+
+ 
 
 #include <linux/eventfd.h>
 #include <linux/vhost.h>
@@ -103,11 +94,7 @@ static long vhost_get_vring_endian(struct vhost_virtqueue *vq, u32 idx,
 
 static void vhost_init_is_le(struct vhost_virtqueue *vq)
 {
-	/* Note for legacy virtio: user_be is initialized at reset time
-	 * according to the host endianness. If userspace does not set an
-	 * explicit endianness, the default behavior is native endian, as
-	 * expected by legacy virtio.
-	 */
+	 
 	vq->is_le = vhost_has_feature(vq, VIRTIO_F_VERSION_1) || !vq->user_be;
 }
 #else
@@ -131,7 +118,7 @@ static void vhost_init_is_le(struct vhost_virtqueue *vq)
 	vq->is_le = vhost_has_feature(vq, VIRTIO_F_VERSION_1)
 		|| virtio_legacy_is_little_endian();
 }
-#endif /* CONFIG_VHOST_CROSS_ENDIAN_LEGACY */
+#endif  
 
 static void vhost_reset_is_le(struct vhost_virtqueue *vq)
 {
@@ -185,7 +172,7 @@ void vhost_work_init(struct vhost_work *work, vhost_work_fn_t fn)
 }
 EXPORT_SYMBOL_GPL(vhost_work_init);
 
-/* Init poll structure */
+ 
 void vhost_poll_init(struct vhost_poll *poll, vhost_work_fn_t fn,
 		     __poll_t mask, struct vhost_dev *dev,
 		     struct vhost_virtqueue *vq)
@@ -201,8 +188,7 @@ void vhost_poll_init(struct vhost_poll *poll, vhost_work_fn_t fn,
 }
 EXPORT_SYMBOL_GPL(vhost_poll_init);
 
-/* Start polling a file. We add ourselves to file's wait queue. The caller must
- * keep a reference to a file until after vhost_poll_stop is called. */
+ 
 int vhost_poll_start(struct vhost_poll *poll, struct file *file)
 {
 	__poll_t mask;
@@ -222,8 +208,7 @@ int vhost_poll_start(struct vhost_poll *poll, struct file *file)
 }
 EXPORT_SYMBOL_GPL(vhost_poll_start);
 
-/* Stop polling a file. After this function returns, it becomes safe to drop the
- * file reference. You must also flush afterwards. */
+ 
 void vhost_poll_stop(struct vhost_poll *poll)
 {
 	if (poll->wqh) {
@@ -237,10 +222,7 @@ static void vhost_worker_queue(struct vhost_worker *worker,
 			       struct vhost_work *work)
 {
 	if (!test_and_set_bit(VHOST_WORK_QUEUED, &work->flags)) {
-		/* We can only add the work to the list after we're
-		 * sure it was not in the list.
-		 * test_and_set_bit() implies a memory barrier.
-		 */
+		 
 		llist_add(&work->node, &worker->work_list);
 		vhost_task_wake(worker->vtsk);
 	}
@@ -275,13 +257,7 @@ void vhost_vq_flush(struct vhost_virtqueue *vq)
 }
 EXPORT_SYMBOL_GPL(vhost_vq_flush);
 
-/**
- * vhost_worker_flush - flush a worker
- * @worker: worker to flush
- *
- * This does not use RCU to protect the worker, so the device or worker
- * mutex must be held.
- */
+ 
 static void vhost_worker_flush(struct vhost_worker *worker)
 {
 	struct vhost_flush_struct flush;
@@ -310,7 +286,7 @@ void vhost_dev_flush(struct vhost_dev *dev)
 }
 EXPORT_SYMBOL_GPL(vhost_dev_flush);
 
-/* A lockless hint for busy polling code to exit the loop */
+ 
 bool vhost_vq_has_work(struct vhost_virtqueue *vq)
 {
 	struct vhost_worker *worker;
@@ -403,7 +379,7 @@ static bool vhost_worker(void *data)
 		__set_current_state(TASK_RUNNING);
 
 		node = llist_reverse_order(node);
-		/* make sure flag is seen after deletion */
+		 
 		smp_wmb();
 		llist_for_each_entry_safe(work, work_next, node, node) {
 			clear_bit(VHOST_WORK_QUEUED, &work->flags);
@@ -427,7 +403,7 @@ static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
 	vq->heads = NULL;
 }
 
-/* Helper to allocate iovec buffers for all vqs. */
+ 
 static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
 {
 	struct vhost_virtqueue *vq;
@@ -543,15 +519,15 @@ void vhost_dev_init(struct vhost_dev *dev,
 }
 EXPORT_SYMBOL_GPL(vhost_dev_init);
 
-/* Caller should have device mutex */
+ 
 long vhost_dev_check_owner(struct vhost_dev *dev)
 {
-	/* Are you the owner? If not, I don't think you mean to do that */
+	 
 	return dev->mm == current->mm ? 0 : -EPERM;
 }
 EXPORT_SYMBOL_GPL(vhost_dev_check_owner);
 
-/* Caller should have device mutex */
+ 
 bool vhost_dev_has_owner(struct vhost_dev *dev)
 {
 	return dev->mm;
@@ -560,16 +536,11 @@ EXPORT_SYMBOL_GPL(vhost_dev_has_owner);
 
 static void vhost_attach_mm(struct vhost_dev *dev)
 {
-	/* No owner, become one */
+	 
 	if (dev->use_worker) {
 		dev->mm = get_task_mm(current);
 	} else {
-		/* vDPA device does not use worker thead, so there's
-		 * no need to hold the address space for mm. This help
-		 * to avoid deadlock in the case of mmap() which may
-		 * held the refcnt of the file and depends on release
-		 * method to remove vma.
-		 */
+		 
 		dev->mm = current->mm;
 		mmgrab(dev->mm);
 	}
@@ -610,10 +581,7 @@ static void vhost_workers_free(struct vhost_dev *dev)
 
 	for (i = 0; i < dev->nvqs; i++)
 		rcu_assign_pointer(dev->vqs[i]->worker, NULL);
-	/*
-	 * Free the default worker we created and cleanup workers userspace
-	 * created but couldn't clean up (it forgot or crashed).
-	 */
+	 
 	xa_for_each(&dev->worker_xa, i, worker)
 		vhost_worker_destroy(dev, worker);
 	xa_destroy(&dev->worker_xa);
@@ -658,7 +626,7 @@ free_worker:
 	return NULL;
 }
 
-/* Caller must have device mutex */
+ 
 static void __vhost_vq_attach_worker(struct vhost_virtqueue *vq,
 				     struct vhost_worker *worker)
 {
@@ -674,42 +642,29 @@ static void __vhost_vq_attach_worker(struct vhost_virtqueue *vq,
 
 	if (!old_worker)
 		return;
-	/*
-	 * Take the worker mutex to make sure we see the work queued from
-	 * device wide flushes which doesn't use RCU for execution.
-	 */
+	 
 	mutex_lock(&old_worker->mutex);
 	old_worker->attachment_cnt--;
-	/*
-	 * We don't want to call synchronize_rcu for every vq during setup
-	 * because it will slow down VM startup. If we haven't done
-	 * VHOST_SET_VRING_KICK and not done the driver specific
-	 * SET_ENDPOINT/RUNNUNG then we can skip the sync since there will
-	 * not be any works queued for scsi and net.
-	 */
+	 
 	mutex_lock(&vq->mutex);
 	if (!vhost_vq_get_backend(vq) && !vq->kick) {
 		mutex_unlock(&vq->mutex);
 		mutex_unlock(&old_worker->mutex);
-		/*
-		 * vsock can queue anytime after VHOST_VSOCK_SET_GUEST_CID.
-		 * Warn if it adds support for multiple workers but forgets to
-		 * handle the early queueing case.
-		 */
+		 
 		WARN_ON(!old_worker->attachment_cnt &&
 			!llist_empty(&old_worker->work_list));
 		return;
 	}
 	mutex_unlock(&vq->mutex);
 
-	/* Make sure new vq queue/flush/poll calls see the new worker */
+	 
 	synchronize_rcu();
-	/* Make sure whatever was queued gets run */
+	 
 	vhost_worker_flush(old_worker);
 	mutex_unlock(&old_worker->mutex);
 }
 
- /* Caller must have device mutex */
+  
 static int vhost_vq_attach_worker(struct vhost_virtqueue *vq,
 				  struct vhost_vring_worker *info)
 {
@@ -728,7 +683,7 @@ static int vhost_vq_attach_worker(struct vhost_virtqueue *vq,
 	return 0;
 }
 
-/* Caller must have device mutex */
+ 
 static int vhost_new_worker(struct vhost_dev *dev,
 			    struct vhost_worker_state *info)
 {
@@ -742,7 +697,7 @@ static int vhost_new_worker(struct vhost_dev *dev,
 	return 0;
 }
 
-/* Caller must have device mutex */
+ 
 static int vhost_free_worker(struct vhost_dev *dev,
 			     struct vhost_worker_state *info)
 {
@@ -785,7 +740,7 @@ static int vhost_get_vq_from_user(struct vhost_dev *dev, void __user *argp,
 	return 0;
 }
 
-/* Caller must have device mutex */
+ 
 long vhost_worker_ioctl(struct vhost_dev *dev, unsigned int ioctl,
 			void __user *argp)
 {
@@ -807,7 +762,7 @@ long vhost_worker_ioctl(struct vhost_dev *dev, unsigned int ioctl,
 		return ret;
 
 	switch (ioctl) {
-	/* dev worker ioctls */
+	 
 	case VHOST_NEW_WORKER:
 		ret = vhost_new_worker(dev, &state);
 		if (!ret && copy_to_user(argp, &state, sizeof(state)))
@@ -817,7 +772,7 @@ long vhost_worker_ioctl(struct vhost_dev *dev, unsigned int ioctl,
 		if (copy_from_user(&state, argp, sizeof(state)))
 			return -EFAULT;
 		return vhost_free_worker(dev, &state);
-	/* vring worker ioctls */
+	 
 	case VHOST_ATTACH_VRING_WORKER:
 	case VHOST_GET_VRING_WORKER:
 		break;
@@ -861,13 +816,13 @@ long vhost_worker_ioctl(struct vhost_dev *dev, unsigned int ioctl,
 }
 EXPORT_SYMBOL_GPL(vhost_worker_ioctl);
 
-/* Caller should have device mutex */
+ 
 long vhost_dev_set_owner(struct vhost_dev *dev)
 {
 	struct vhost_worker *worker;
 	int err, i;
 
-	/* Is there an owner already? */
+	 
 	if (vhost_dev_has_owner(dev)) {
 		err = -EBUSY;
 		goto err_mm;
@@ -880,12 +835,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
 		goto err_iovecs;
 
 	if (dev->use_worker) {
-		/*
-		 * This should be done last, because vsock can queue work
-		 * before VHOST_SET_OWNER so it simplifies the failure path
-		 * below since we don't have to worry about vsock queueing
-		 * while we free the worker.
-		 */
+		 
 		worker = vhost_worker_create(dev);
 		if (!worker) {
 			err = -ENOMEM;
@@ -919,7 +869,7 @@ struct vhost_iotlb *vhost_dev_reset_owner_prepare(void)
 }
 EXPORT_SYMBOL_GPL(vhost_dev_reset_owner_prepare);
 
-/* Caller should have device mutex */
+ 
 void vhost_dev_reset_owner(struct vhost_dev *dev, struct vhost_iotlb *umem)
 {
 	int i;
@@ -927,9 +877,7 @@ void vhost_dev_reset_owner(struct vhost_dev *dev, struct vhost_iotlb *umem)
 	vhost_dev_cleanup(dev);
 
 	dev->umem = umem;
-	/* We don't need VQ locks below since vhost_dev_cleanup makes sure
-	 * VQs aren't running.
-	 */
+	 
 	for (i = 0; i < dev->nvqs; ++i)
 		dev->vqs[i]->umem = umem;
 }
@@ -985,7 +933,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
 	if (dev->log_ctx)
 		eventfd_ctx_put(dev->log_ctx);
 	dev->log_ctx = NULL;
-	/* No one will access memory at this point */
+	 
 	vhost_iotlb_free(dev->umem);
 	dev->umem = NULL;
 	vhost_iotlb_free(dev->iotlb);
@@ -1001,7 +949,7 @@ static bool log_access_ok(void __user *log_base, u64 addr, unsigned long sz)
 {
 	u64 a = addr / VHOST_PAGE_SIZE / 8;
 
-	/* Make sure 64 bit math will not overflow. */
+	 
 	if (a > ULONG_MAX - (unsigned long)log_base ||
 	    a + (unsigned long)log_base > ULONG_MAX)
 		return false;
@@ -1010,7 +958,7 @@ static bool log_access_ok(void __user *log_base, u64 addr, unsigned long sz)
 			 (sz + VHOST_PAGE_SIZE * 8 - 1) / VHOST_PAGE_SIZE / 8);
 }
 
-/* Make sure 64 bit math will not overflow. */
+ 
 static bool vhost_overflow(u64 uaddr, u64 size)
 {
 	if (uaddr > ULONG_MAX || size > ULONG_MAX)
@@ -1022,7 +970,7 @@ static bool vhost_overflow(u64 uaddr, u64 size)
 	return uaddr > ULONG_MAX - size + 1;
 }
 
-/* Caller should have vq mutex and device mutex. */
+ 
 static bool vq_memory_access_ok(void __user *log_base, struct vhost_iotlb *umem,
 				int log_all)
 {
@@ -1060,8 +1008,8 @@ static inline void __user *vhost_vq_meta_fetch(struct vhost_virtqueue *vq,
 	return (void __user *)(uintptr_t)(map->addr + addr - map->start);
 }
 
-/* Can we switch to this memory table? */
-/* Caller should have device mutex but not vq mutex */
+ 
+ 
 static bool memory_access_ok(struct vhost_dev *d, struct vhost_iotlb *umem,
 			     int log_all)
 {
@@ -1073,7 +1021,7 @@ static bool memory_access_ok(struct vhost_dev *d, struct vhost_iotlb *umem,
 
 		mutex_lock(&d->vqs[i]->mutex);
 		log = log_all || vhost_has_feature(d->vqs[i], VHOST_F_LOG_ALL);
-		/* If ring is inactive, will check when it's enabled. */
+		 
 		if (d->vqs[i]->private_data)
 			ok = vq_memory_access_ok(d->vqs[i]->log_base,
 						 umem, log);
@@ -1097,11 +1045,7 @@ static int vhost_copy_to_user(struct vhost_virtqueue *vq, void __user *to,
 	if (!vq->iotlb)
 		return __copy_to_user(to, from, size);
 	else {
-		/* This function should be called after iotlb
-		 * prefetch, which means we're sure that all vq
-		 * could be access through iotlb. So -EAGAIN should
-		 * not happen in this case.
-		 */
+		 
 		struct iov_iter t;
 		void __user *uaddr = vhost_vq_meta_fetch(vq,
 				     (u64)(uintptr_t)to, size,
@@ -1132,11 +1076,7 @@ static int vhost_copy_from_user(struct vhost_virtqueue *vq, void *to,
 	if (!vq->iotlb)
 		return __copy_from_user(to, from, size);
 	else {
-		/* This function should be called after iotlb
-		 * prefetch, which means we're sure that vq
-		 * could be access through iotlb. So -EAGAIN should
-		 * not happen in this case.
-		 */
+		 
 		void __user *uaddr = vhost_vq_meta_fetch(vq,
 				     (u64)(uintptr_t)from, size,
 				     VHOST_ADDR_DESC);
@@ -1190,11 +1130,7 @@ static void __user *__vhost_get_user_slow(struct vhost_virtqueue *vq,
 	return vq->iotlb_iov[0].iov_base;
 }
 
-/* This function should be called after iotlb
- * prefetch, which means we're sure that vq
- * could be access through iotlb. So -EAGAIN should
- * not happen in this case.
- */
+ 
 static inline void __user *__vhost_get_user(struct vhost_virtqueue *vq,
 					    void __user *addr, unsigned int size,
 					    int type)
@@ -1352,7 +1288,7 @@ static bool umem_access_ok(u64 uaddr, u64 size, int access)
 {
 	unsigned long a = uaddr;
 
-	/* Make sure 64 bit math will not overflow. */
+	 
 	if (vhost_overflow(uaddr, size))
 		return false;
 
@@ -1429,9 +1365,7 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
 
 	switch (type) {
 	case VHOST_IOTLB_MSG:
-		/* There maybe a hole after type for V1 message type,
-		 * so skip it here.
-		 */
+		 
 		offset = offsetof(struct vhost_msg, iotlb) - sizeof(int);
 		break;
 	case VHOST_IOTLB_MSG_V2:
@@ -1594,8 +1528,7 @@ static bool vq_access_ok(struct vhost_virtqueue *vq, unsigned int num,
 			 vring_used_t __user *used)
 
 {
-	/* If an IOTLB device is present, the vring addresses are
-	 * GIOVAs. Access validation occurs at prefetch time. */
+	 
 	if (vq->iotlb)
 		return true;
 
@@ -1631,9 +1564,7 @@ static bool iotlb_access_ok(struct vhost_virtqueue *vq,
 			vhost_iotlb_miss(vq, addr, access);
 			return false;
 		} else if (!(map->perm & access)) {
-			/* Report the possible access violation by
-			 * request another translation from userspace.
-			 */
+			 
 			return false;
 		}
 
@@ -1666,8 +1597,8 @@ int vq_meta_prefetch(struct vhost_virtqueue *vq)
 }
 EXPORT_SYMBOL_GPL(vq_meta_prefetch);
 
-/* Can we log writes? */
-/* Caller should have device mutex but not vq mutex */
+ 
+ 
 bool vhost_log_access_ok(struct vhost_dev *dev)
 {
 	return memory_access_ok(dev, dev->umem, 1);
@@ -1679,8 +1610,7 @@ static bool vq_log_used_access_ok(struct vhost_virtqueue *vq,
 				  bool log_used,
 				  u64 log_addr)
 {
-	/* If an IOTLB device is present, log_addr is a GIOVA that
-	 * will never be logged by log_used(). */
+	 
 	if (vq->iotlb)
 		return true;
 
@@ -1688,8 +1618,8 @@ static bool vq_log_used_access_ok(struct vhost_virtqueue *vq,
 					  vhost_get_used_size(vq, vq->num));
 }
 
-/* Verify access for write logging. */
-/* Caller should have vq mutex and device mutex */
+ 
+ 
 static bool vq_log_access_ok(struct vhost_virtqueue *vq,
 			     void __user *log_base)
 {
@@ -1698,8 +1628,8 @@ static bool vq_log_access_ok(struct vhost_virtqueue *vq,
 		vq_log_used_access_ok(vq, log_base, vq->log_used, vq->log_addr);
 }
 
-/* Can we start vq? */
-/* Caller should have vq mutex and device mutex */
+ 
+ 
 bool vhost_vq_access_ok(struct vhost_virtqueue *vq)
 {
 	if (!vq_log_access_ok(vq, vq->log_base))
@@ -1759,7 +1689,7 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
 	oldumem = d->umem;
 	d->umem = newumem;
 
-	/* All memory accesses are done under some VQ mutex. */
+	 
 	for (i = 0; i < d->nvqs; ++i) {
 		mutex_lock(&d->vqs[i]->mutex);
 		d->vqs[i]->umem = newumem;
@@ -1782,8 +1712,7 @@ static long vhost_vring_set_num(struct vhost_dev *d,
 {
 	struct vhost_vring_state s;
 
-	/* Resizing ring with an active backend?
-	 * You don't want to do that. */
+	 
 	if (vq->private_data)
 		return -EBUSY;
 
@@ -1808,14 +1737,13 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
 	if (a.flags & ~(0x1 << VHOST_VRING_F_LOG))
 		return -EOPNOTSUPP;
 
-	/* For 32bit, verify that the top 32bits of the user
-	   data are set to zero. */
+	 
 	if ((u64)(unsigned long)a.desc_user_addr != a.desc_user_addr ||
 	    (u64)(unsigned long)a.used_user_addr != a.used_user_addr ||
 	    (u64)(unsigned long)a.avail_user_addr != a.avail_user_addr)
 		return -EFAULT;
 
-	/* Make sure it's safe to cast pointers to vring types. */
+	 
 	BUILD_BUG_ON(__alignof__ *vq->avail > VRING_AVAIL_ALIGN_SIZE);
 	BUILD_BUG_ON(__alignof__ *vq->used > VRING_USED_ALIGN_SIZE);
 	if ((a.avail_user_addr & (VRING_AVAIL_ALIGN_SIZE - 1)) ||
@@ -1823,9 +1751,7 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
 	    (a.log_guest_addr & (VRING_USED_ALIGN_SIZE - 1)))
 		return -EINVAL;
 
-	/* We only verify access here if backend is configured.
-	 * If it is not, we don't as size might not have been setup.
-	 * We will verify when backend is configured. */
+	 
 	if (vq->private_data) {
 		if (!vq_access_ok(vq, vq->num,
 			(void __user *)(unsigned long)a.desc_user_addr,
@@ -1833,7 +1759,7 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
 			(void __user *)(unsigned long)a.used_user_addr))
 			return -EINVAL;
 
-		/* Also validate log access for used ring if enabled. */
+		 
 		if (!vq_log_used_access_ok(vq, vq->log_base,
 				a.flags & (0x1 << VHOST_VRING_F_LOG),
 				a.log_guest_addr))
@@ -1897,8 +1823,7 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 
 	switch (ioctl) {
 	case VHOST_SET_VRING_BASE:
-		/* Moving base with an active backend?
-		 * You don't want to do that. */
+		 
 		if (vq->private_data) {
 			r = -EBUSY;
 			break;
@@ -1917,7 +1842,7 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 			}
 			vq->last_avail_idx = s.num;
 		}
-		/* Forget the cached index value. */
+		 
 		vq->avail_idx = vq->last_avail_idx;
 		break;
 	case VHOST_GET_VRING_BASE:
@@ -2039,7 +1964,7 @@ int vhost_init_device_iotlb(struct vhost_dev *d)
 }
 EXPORT_SYMBOL_GPL(vhost_init_device_iotlb);
 
-/* Caller must have device mutex */
+ 
 long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
 {
 	struct eventfd_ctx *ctx;
@@ -2047,13 +1972,13 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
 	long r;
 	int i, fd;
 
-	/* If you are not the owner, you can become one */
+	 
 	if (ioctl == VHOST_SET_OWNER) {
 		r = vhost_dev_set_owner(d);
 		goto done;
 	}
 
-	/* You must be the owner to do anything else */
+	 
 	r = vhost_dev_check_owner(d);
 	if (r)
 		goto done;
@@ -2076,7 +2001,7 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
 			void __user *base = (void __user *)(unsigned long)p;
 			vq = d->vqs[i];
 			mutex_lock(&vq->mutex);
-			/* If ring is inactive, will check when it's enabled. */
+			 
 			if (vq->private_data && !vq_log_access_ok(vq, base))
 				r = -EFAULT;
 			else
@@ -2111,10 +2036,7 @@ done:
 }
 EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
 
-/* TODO: This is really inefficient.  We need something like get_user()
- * (instruction directly accesses the data, with an exception table entry
- * returning -EFAULT). See Documentation/arch/x86/exception-tables.rst.
- */
+ 
 static int set_bit_to_user(int nr, void __user *addr)
 {
 	unsigned long log = (unsigned long)addr;
@@ -2170,9 +2092,7 @@ static int log_write_hva(struct vhost_virtqueue *vq, u64 hva, u64 len)
 
 	while (len) {
 		min = len;
-		/* More than one GPAs can be mapped into a single HVA. So
-		 * iterate all possible umems here to be safe.
-		 */
+		 
 		list_for_each_entry(u, &umem->list, link) {
 			if (u->addr > hva - 1 + len ||
 			    u->addr - 1 + u->size < hva)
@@ -2227,7 +2147,7 @@ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
 {
 	int i, r;
 
-	/* Make sure data written is seen before log. */
+	 
 	smp_wmb();
 
 	if (vq->iotlb) {
@@ -2252,7 +2172,7 @@ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
 			return 0;
 		}
 	}
-	/* Length written exceeds what we have stored. This is a bug. */
+	 
 	BUG();
 	return 0;
 }
@@ -2264,9 +2184,9 @@ static int vhost_update_used_flags(struct vhost_virtqueue *vq)
 	if (vhost_put_used_flags(vq))
 		return -EFAULT;
 	if (unlikely(vq->log_used)) {
-		/* Make sure the flag is seen before log. */
+		 
 		smp_wmb();
-		/* Log used flag write. */
+		 
 		used = &vq->used->flags;
 		log_used(vq, (used - (void __user *)vq->used),
 			 sizeof vq->used->flags);
@@ -2282,9 +2202,9 @@ static int vhost_update_avail_event(struct vhost_virtqueue *vq)
 		return -EFAULT;
 	if (unlikely(vq->log_used)) {
 		void __user *used;
-		/* Make sure the event is seen before log. */
+		 
 		smp_wmb();
-		/* Log avail event write */
+		 
 		used = vhost_avail_event(vq);
 		log_used(vq, (used - (void __user *)vq->used),
 			 sizeof *vhost_avail_event(vq));
@@ -2374,18 +2294,16 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
 	return ret;
 }
 
-/* Each buffer in the virtqueues is actually a chain of descriptors.  This
- * function returns the next descriptor in the chain,
- * or -1U if we're at the end. */
+ 
 static unsigned next_desc(struct vhost_virtqueue *vq, struct vring_desc *desc)
 {
 	unsigned int next;
 
-	/* If this descriptor says it doesn't chain, we're done. */
+	 
 	if (!(desc->flags & cpu_to_vhost16(vq, VRING_DESC_F_NEXT)))
 		return -1U;
 
-	/* Check they're not leading us off end of descriptors. */
+	 
 	next = vhost16_to_cpu(vq, READ_ONCE(desc->next));
 	return next;
 }
@@ -2402,7 +2320,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
 	struct iov_iter from;
 	int ret, access;
 
-	/* Sanity check */
+	 
 	if (unlikely(len % sizeof desc)) {
 		vq_err(vq, "Invalid length in indirect descriptor: "
 		       "len 0x%llx not multiple of 0x%zx\n",
@@ -2420,8 +2338,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
 	}
 	iov_iter_init(&from, ITER_SOURCE, vq->indirect, ret, len);
 	count = len / sizeof desc;
-	/* Buffers are chained via a 16 bit next field, so
-	 * we can have at most 2^16 of these. */
+	 
 	if (unlikely(count > USHRT_MAX + 1)) {
 		vq_err(vq, "Indirect buffer length too big: %d\n",
 		       indirect->len);
@@ -2461,7 +2378,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
 					ret, i);
 			return ret;
 		}
-		/* If this is an input descriptor, increment that count. */
+		 
 		if (access == VHOST_ACCESS_WO) {
 			*in_num += ret;
 			if (unlikely(log && ret)) {
@@ -2470,8 +2387,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
 				++*log_num;
 			}
 		} else {
-			/* If it's an output descriptor, they're all supposed
-			 * to come before any input descriptors. */
+			 
 			if (unlikely(*in_num)) {
 				vq_err(vq, "Indirect descriptor "
 				       "has out after in: idx %d\n", i);
@@ -2483,14 +2399,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
 	return 0;
 }
 
-/* This looks in the virtqueue and for the first available buffer, and converts
- * it to an iovec for convenient access.  Since descriptors consist of some
- * number of output then some number of input descriptors, it's actually two
- * iovecs, but we pack them into one and note how many of each there were.
- *
- * This function returns the descriptor number found, or vq->num (which is
- * never a valid descriptor number) if none was found.  A negative code is
- * returned on error. */
+ 
 int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 		      struct iovec iov[], unsigned int iov_size,
 		      unsigned int *out_num, unsigned int *in_num,
@@ -2503,7 +2412,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 	__virtio16 ring_head;
 	int ret, access;
 
-	/* Check it isn't doing very strange things with descriptor numbers. */
+	 
 	last_avail_idx = vq->last_avail_idx;
 
 	if (vq->avail_idx == vq->last_avail_idx) {
@@ -2520,20 +2429,15 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 			return -EFAULT;
 		}
 
-		/* If there's nothing new since last we looked, return
-		 * invalid.
-		 */
+		 
 		if (vq->avail_idx == last_avail_idx)
 			return vq->num;
 
-		/* Only get avail ring entries after they have been
-		 * exposed by guest.
-		 */
+		 
 		smp_rmb();
 	}
 
-	/* Grab the next descriptor number they're advertising, and increment
-	 * the index we've seen. */
+	 
 	if (unlikely(vhost_get_avail_head(vq, &ring_head, last_avail_idx))) {
 		vq_err(vq, "Failed to read head: idx %d address %p\n",
 		       last_avail_idx,
@@ -2543,14 +2447,14 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 
 	head = vhost16_to_cpu(vq, ring_head);
 
-	/* If their number is silly, that's an error. */
+	 
 	if (unlikely(head >= vq->num)) {
 		vq_err(vq, "Guest says index %u > %u is available",
 		       head, vq->num);
 		return -EINVAL;
 	}
 
-	/* When we start there are none of either input nor output. */
+	 
 	*out_num = *in_num = 0;
 	if (unlikely(log))
 		*log_num = 0;
@@ -2602,8 +2506,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 			return ret;
 		}
 		if (access == VHOST_ACCESS_WO) {
-			/* If this is an input descriptor,
-			 * increment that count. */
+			 
 			*in_num += ret;
 			if (unlikely(log && ret)) {
 				log[*log_num].addr = vhost64_to_cpu(vq, desc.addr);
@@ -2611,8 +2514,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 				++*log_num;
 			}
 		} else {
-			/* If it's an output descriptor, they're all supposed
-			 * to come before any input descriptors. */
+			 
 			if (unlikely(*in_num)) {
 				vq_err(vq, "Descriptor has out after in: "
 				       "idx %d\n", i);
@@ -2622,25 +2524,23 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 		}
 	} while ((i = next_desc(vq, &desc)) != -1);
 
-	/* On success, increment avail index. */
+	 
 	vq->last_avail_idx++;
 
-	/* Assume notifications from guest are disabled at this point,
-	 * if they aren't we would need to update avail_event index. */
+	 
 	BUG_ON(!(vq->used_flags & VRING_USED_F_NO_NOTIFY));
 	return head;
 }
 EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
 
-/* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
+ 
 void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
 {
 	vq->last_avail_idx -= n;
 }
 EXPORT_SYMBOL_GPL(vhost_discard_vq_desc);
 
-/* After we've used one of their buffers, we tell them about it.  We'll then
- * want to notify the guest, using eventfd. */
+ 
 int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
 {
 	struct vring_used_elem heads = {
@@ -2667,25 +2567,21 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
 		return -EFAULT;
 	}
 	if (unlikely(vq->log_used)) {
-		/* Make sure data is seen before log. */
+		 
 		smp_wmb();
-		/* Log used ring entry write. */
+		 
 		log_used(vq, ((void __user *)used - (void __user *)vq->used),
 			 count * sizeof *used);
 	}
 	old = vq->last_used_idx;
 	new = (vq->last_used_idx += count);
-	/* If the driver never bothers to signal in a very long while,
-	 * used index might wrap around. If that happens, invalidate
-	 * signalled_used index we stored. TODO: make sure driver
-	 * signals at least once in 2^16 and remove this. */
+	 
 	if (unlikely((u16)(new - vq->signalled_used) < (u16)(new - old)))
 		vq->signalled_used_valid = false;
 	return 0;
 }
 
-/* After we've used one of their buffers, we tell them about it.  We'll then
- * want to notify the guest, using eventfd. */
+ 
 int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
 		     unsigned count)
 {
@@ -2702,16 +2598,16 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
 	}
 	r = __vhost_add_used_n(vq, heads, count);
 
-	/* Make sure buffer is written before we update index. */
+	 
 	smp_wmb();
 	if (vhost_put_used_idx(vq)) {
 		vq_err(vq, "Failed to increment used idx");
 		return -EFAULT;
 	}
 	if (unlikely(vq->log_used)) {
-		/* Make sure used idx is seen before log. */
+		 
 		smp_wmb();
-		/* Log used index update. */
+		 
 		log_used(vq, offsetof(struct vring_used, idx),
 			 sizeof vq->used->idx);
 		if (vq->log_ctx)
@@ -2726,9 +2622,7 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 	__u16 old, new;
 	__virtio16 event;
 	bool v;
-	/* Flush out used index updates. This is paired
-	 * with the barrier that the Guest executes when enabling
-	 * interrupts. */
+	 
 	smp_mb();
 
 	if (vhost_has_feature(vq, VIRTIO_F_NOTIFY_ON_EMPTY) &&
@@ -2758,16 +2652,16 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 	return vring_need_event(vhost16_to_cpu(vq, event), new, old);
 }
 
-/* This actually signals the guest, using eventfd. */
+ 
 void vhost_signal(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 {
-	/* Signal the Guest tell them we used something up. */
+	 
 	if (vq->call_ctx.ctx && vhost_notify(dev, vq))
 		eventfd_signal(vq->call_ctx.ctx, 1);
 }
 EXPORT_SYMBOL_GPL(vhost_signal);
 
-/* And here's the combo meal deal.  Supersize me! */
+ 
 void vhost_add_used_and_signal(struct vhost_dev *dev,
 			       struct vhost_virtqueue *vq,
 			       unsigned int head, int len)
@@ -2777,7 +2671,7 @@ void vhost_add_used_and_signal(struct vhost_dev *dev,
 }
 EXPORT_SYMBOL_GPL(vhost_add_used_and_signal);
 
-/* multi-buffer version of vhost_add_used_and_signal */
+ 
 void vhost_add_used_and_signal_n(struct vhost_dev *dev,
 				 struct vhost_virtqueue *vq,
 				 struct vring_used_elem *heads, unsigned count)
@@ -2787,7 +2681,7 @@ void vhost_add_used_and_signal_n(struct vhost_dev *dev,
 }
 EXPORT_SYMBOL_GPL(vhost_add_used_and_signal_n);
 
-/* return true if we're sure that avaiable ring is empty */
+ 
 bool vhost_vq_avail_empty(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 {
 	__virtio16 avail_idx;
@@ -2805,7 +2699,7 @@ bool vhost_vq_avail_empty(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 }
 EXPORT_SYMBOL_GPL(vhost_vq_avail_empty);
 
-/* OK, now we need to know about added descriptors. */
+ 
 bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 {
 	__virtio16 avail_idx;
@@ -2829,8 +2723,7 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 			return false;
 		}
 	}
-	/* They could have slipped one in as we were doing that: make
-	 * sure it's written, then check again. */
+	 
 	smp_mb();
 	r = vhost_get_avail_idx(vq, &avail_idx);
 	if (r) {
@@ -2844,7 +2737,7 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 }
 EXPORT_SYMBOL_GPL(vhost_enable_notify);
 
-/* We don't need to be notified again. */
+ 
 void vhost_disable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 {
 	int r;
@@ -2861,10 +2754,10 @@ void vhost_disable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 }
 EXPORT_SYMBOL_GPL(vhost_disable_notify);
 
-/* Create a new message. */
+ 
 struct vhost_msg_node *vhost_new_msg(struct vhost_virtqueue *vq, int type)
 {
-	/* Make sure all padding within the structure is initialized. */
+	 
 	struct vhost_msg_node *node = kzalloc(sizeof(*node), GFP_KERNEL);
 	if (!node)
 		return NULL;

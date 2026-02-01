@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
+ 
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/*          Greg Joyce <greg@opengridcomputing.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
-/* Copyright (c) 2017, Open Grid Computing, Inc. */
+ 
+ 
+ 
+ 
 
 #ifndef _SIW_CM_H
 #define _SIW_CM_H
@@ -25,7 +25,7 @@ enum siw_cep_state {
 };
 
 struct siw_mpa_info {
-	struct mpa_rr hdr; /* peer mpa hdr in host byte order */
+	struct mpa_rr hdr;  
 	struct mpa_v2_data v2_ctrl;
 	struct mpa_v2_data v2_ctrl_req;
 	char *pdata;
@@ -58,27 +58,22 @@ struct siw_cep {
 	int ird;
 	bool enhanced_rdma_conn_est;
 
-	/* Saved upcalls of socket */
+	 
 	void (*sk_state_change)(struct sock *sk);
 	void (*sk_data_ready)(struct sock *sk);
 	void (*sk_write_space)(struct sock *sk);
 	void (*sk_error_report)(struct sock *sk);
 };
 
-/*
- * Connection initiator waits 10 seconds to receive an
- * MPA reply after sending out MPA request. Reponder waits for
- * 5 seconds for MPA request to arrive if new TCP connection
- * was set up.
- */
+ 
 #define MPAREQ_TIMEOUT (HZ * 10)
 #define MPAREP_TIMEOUT (HZ * 5)
 
 enum siw_work_type {
 	SIW_CM_WORK_ACCEPT = 1,
 	SIW_CM_WORK_READ_MPAHDR,
-	SIW_CM_WORK_CLOSE_LLP, /* close socket */
-	SIW_CM_WORK_PEER_CLOSE, /* socket indicated peer close */
+	SIW_CM_WORK_CLOSE_LLP,  
+	SIW_CM_WORK_PEER_CLOSE,  
 	SIW_CM_WORK_MPATIMEOUT
 };
 
@@ -124,9 +119,7 @@ int siw_cm_queue_work(struct siw_cep *cep, enum siw_work_type type);
 int siw_cm_init(void);
 void siw_cm_exit(void);
 
-/*
- * TCP socket interface
- */
+ 
 #define sk_to_qp(sk) (((struct siw_cep *)((sk)->sk_user_data))->qp)
 #define sk_to_cep(sk) ((struct siw_cep *)((sk)->sk_user_data))
 

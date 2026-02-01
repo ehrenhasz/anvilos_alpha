@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas SoC Identification
- *
- * Copyright (C) 2014-2016 Glider bvba
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -15,22 +11,22 @@
 
 struct renesas_family {
 	const char name[16];
-	u32 reg;			/* CCCR or PRR, if not in DT */
+	u32 reg;			 
 };
 
 static const struct renesas_family fam_rcar_gen1 __initconst __maybe_unused = {
 	.name	= "R-Car Gen1",
-	.reg	= 0xff000044,		/* PRR (Product Register) */
+	.reg	= 0xff000044,		 
 };
 
 static const struct renesas_family fam_rcar_gen2 __initconst __maybe_unused = {
 	.name	= "R-Car Gen2",
-	.reg	= 0xff000044,		/* PRR (Product Register) */
+	.reg	= 0xff000044,		 
 };
 
 static const struct renesas_family fam_rcar_gen3 __initconst __maybe_unused = {
 	.name	= "R-Car Gen3",
-	.reg	= 0xfff00044,		/* PRR (Product Register) */
+	.reg	= 0xfff00044,		 
 };
 
 static const struct renesas_family fam_rcar_gen4 __initconst __maybe_unused = {
@@ -39,7 +35,7 @@ static const struct renesas_family fam_rcar_gen4 __initconst __maybe_unused = {
 
 static const struct renesas_family fam_rmobile __initconst __maybe_unused = {
 	.name	= "R-Mobile",
-	.reg	= 0xe600101c,		/* CCCR (Common Chip Code Register) */
+	.reg	= 0xe600101c,		 
 };
 
 static const struct renesas_family fam_rza1 __initconst __maybe_unused = {
@@ -56,12 +52,12 @@ static const struct renesas_family fam_rzfive __initconst __maybe_unused = {
 
 static const struct renesas_family fam_rzg1 __initconst __maybe_unused = {
 	.name	= "RZ/G1",
-	.reg	= 0xff000044,		/* PRR (Product Register) */
+	.reg	= 0xff000044,		 
 };
 
 static const struct renesas_family fam_rzg2 __initconst __maybe_unused = {
 	.name	= "RZ/G2",
-	.reg	= 0xfff00044,		/* PRR (Product Register) */
+	.reg	= 0xfff00044,		 
 };
 
 static const struct renesas_family fam_rzg2l __initconst __maybe_unused = {
@@ -82,7 +78,7 @@ static const struct renesas_family fam_rzv2m __initconst __maybe_unused = {
 
 static const struct renesas_family fam_shmobile __initconst __maybe_unused = {
 	.name	= "SH-Mobile",
-	.reg	= 0xe600101c,		/* CCCR (Common Chip Code Register) */
+	.reg	= 0xe600101c,		 
 };
 
 
@@ -392,7 +388,7 @@ static const struct of_device_id renesas_socs[] __initconst __maybe_unused = {
 #ifdef CONFIG_ARCH_SH73A0
 	{ .compatible = "renesas,sh73a0",	.data = &soc_shmobile_ag5 },
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 
 struct renesas_id {
@@ -403,10 +399,7 @@ struct renesas_id {
 static const struct renesas_id id_bsid __initconst = {
 	.offset = 0,
 	.mask = 0xff0000,
-	/*
-	 * TODO: Upper 4 bits of BSID are for chip version, but the format is
-	 * not known at this time so we don't know how to specify eshi and eslo
-	 */
+	 
 };
 
 static const struct renesas_id id_rzg2l __initconst = {
@@ -431,7 +424,7 @@ static const struct of_device_id renesas_ids[] __initconst = {
 	{ .compatible = "renesas,r9a07g054-sysc",	.data = &id_rzg2l },
 	{ .compatible = "renesas,r9a09g011-sys",	.data = &id_rzv2m },
 	{ .compatible = "renesas,prr",			.data = &id_prr },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init renesas_soc_init(void)
@@ -463,7 +456,7 @@ static int __init renesas_soc_init(void)
 		chipid = of_iomap(np, 0);
 		of_node_put(np);
 	} else if (soc->id && family->reg) {
-		/* Try hardcoded CCCR/PRR fallback */
+		 
 		id = &id_prr;
 		chipid = ioremap(family->reg, 4);
 	}
@@ -487,10 +480,10 @@ static int __init renesas_soc_init(void)
 		iounmap(chipid);
 
 		if (id == &id_prr) {
-			/* R-Car M3-W ES1.1 incorrectly identifies as ES2.0 */
+			 
 			if ((product & 0x7fff) == 0x5210)
 				product ^= 0x11;
-			/* R-Car M3-W ES1.3 incorrectly identifies as ES2.1 */
+			 
 			if ((product & 0x7fff) == 0x5211)
 				product ^= 0x12;
 

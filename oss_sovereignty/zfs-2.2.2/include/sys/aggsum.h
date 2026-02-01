@@ -1,20 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2017 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #ifndef	_SYS_AGGSUM_H
 #define	_SYS_AGGSUM_H
@@ -33,9 +18,7 @@ struct aggsum_bucket {
 	uint64_t asc_borrowed;
 } ____cacheline_aligned;
 
-/*
- * Fan out over FANOUT cpus.
- */
+ 
 typedef struct aggsum {
 	kmutex_t as_lock;
 	int64_t as_lower_bound;
@@ -57,4 +40,4 @@ void aggsum_add(aggsum_t *, int64_t);
 }
 #endif
 
-#endif /* _SYS_AGGSUM_H */
+#endif  

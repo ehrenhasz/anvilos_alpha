@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "cgroup_helpers.h"
 #include "network_helpers.h"
@@ -115,11 +115,11 @@ static int run_test(int cgroup_fd, int server_fd)
 	}
 
 	err += verify_sk(map_fd, client_fd, "syn-ack",
-			 /*invoked=*/1,
-			 /*dsack_dups=*/0,
-			 /*delivered=*/1,
-			 /*delivered_ce=*/0,
-			 /*icsk_retransmits=*/0);
+			  1,
+			  0,
+			  1,
+			  0,
+			  0);
 
 	send_byte(client_fd);
 	if (wait_for_ack(client_fd, 100) < 0) {
@@ -129,11 +129,11 @@ static int run_test(int cgroup_fd, int server_fd)
 
 
 	err += verify_sk(map_fd, client_fd, "first payload byte",
-			 /*invoked=*/2,
-			 /*dsack_dups=*/0,
-			 /*delivered=*/2,
-			 /*delivered_ce=*/0,
-			 /*icsk_retransmits=*/0);
+			  2,
+			  0,
+			  2,
+			  0,
+			  0);
 
 close_client_fd:
 	close(client_fd);

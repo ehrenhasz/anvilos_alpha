@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * skl-sst-ipc.c - Intel skl IPC Support
- *
- * Copyright (C) 2014-15, Intel Corporation.
- */
+
+ 
 #include <linux/device.h>
 
 #include "../common/sst-dsp.h"
@@ -16,12 +12,12 @@
 
 #define IPC_IXC_STATUS_BITS		24
 
-/* Global Message - Generic */
+ 
 #define IPC_GLB_TYPE_SHIFT		24
 #define IPC_GLB_TYPE_MASK		(0xf << IPC_GLB_TYPE_SHIFT)
 #define IPC_GLB_TYPE(x)			((x) << IPC_GLB_TYPE_SHIFT)
 
-/* Global Message - Reply */
+ 
 #define IPC_GLB_REPLY_STATUS_SHIFT	24
 #define IPC_GLB_REPLY_STATUS_MASK	((0x1 << IPC_GLB_REPLY_STATUS_SHIFT) - 1)
 #define IPC_GLB_REPLY_STATUS(x)		((x) << IPC_GLB_REPLY_STATUS_SHIFT)
@@ -44,7 +40,7 @@
 #define IPC_MSG_DIR_MASK		0x1
 #define IPC_MSG_DIR(x)			(((x) & IPC_MSG_DIR_MASK) \
 					<< IPC_MSG_DIR_SHIFT)
-/* Global Notification Message */
+ 
 #define IPC_GLB_NOTIFY_TYPE_SHIFT	16
 #define IPC_GLB_NOTIFY_TYPE_MASK	0xFF
 #define IPC_GLB_NOTIFY_TYPE(x)		(((x) >> IPC_GLB_NOTIFY_TYPE_SHIFT) \
@@ -60,9 +56,9 @@
 #define IPC_GLB_NOTIFY_RSP_TYPE(x)	(((x) >> IPC_GLB_NOTIFY_RSP_SHIFT) \
 					& IPC_GLB_NOTIFY_RSP_MASK)
 
-/* Pipeline operations */
+ 
 
-/* Create pipeline message */
+ 
 #define IPC_PPL_MEM_SIZE_SHIFT		0
 #define IPC_PPL_MEM_SIZE_MASK		0x7FF
 #define IPC_PPL_MEM_SIZE(x)		(((x) & IPC_PPL_MEM_SIZE_MASK) \
@@ -83,13 +79,13 @@
 #define IPC_PPL_LP_MODE(x)              (((x) & IPC_PPL_LP_MODE_MASK) \
 					<< IPC_PPL_LP_MODE_SHIFT)
 
-/* Set pipeline state message */
+ 
 #define IPC_PPL_STATE_SHIFT		0
 #define IPC_PPL_STATE_MASK		0x1F
 #define IPC_PPL_STATE(x)		(((x) & IPC_PPL_STATE_MASK) \
 					<< IPC_PPL_STATE_SHIFT)
 
-/* Module operations primary register */
+ 
 #define IPC_MOD_ID_SHIFT		0
 #define IPC_MOD_ID_MASK		0xFFFF
 #define IPC_MOD_ID(x)		(((x) & IPC_MOD_ID_MASK) \
@@ -100,7 +96,7 @@
 #define IPC_MOD_INSTANCE_ID(x)	(((x) & IPC_MOD_INSTANCE_ID_MASK) \
 					<< IPC_MOD_INSTANCE_ID_SHIFT)
 
-/* Init instance message extension register */
+ 
 #define IPC_PARAM_BLOCK_SIZE_SHIFT	0
 #define IPC_PARAM_BLOCK_SIZE_MASK	0xFFFF
 #define IPC_PARAM_BLOCK_SIZE(x)		(((x) & IPC_PARAM_BLOCK_SIZE_MASK) \
@@ -121,7 +117,7 @@
 #define IPC_DOMAIN(x)                   (((x) & IPC_DOMAIN_MASK) \
 					<< IPC_DOMAIN_SHIFT)
 
-/* Bind/Unbind message extension register */
+ 
 #define IPC_DST_MOD_ID_SHIFT		0
 #define IPC_DST_MOD_ID(x)		(((x) & IPC_MOD_ID_MASK) \
 					<< IPC_DST_MOD_ID_SHIFT)
@@ -139,18 +135,18 @@
 #define IPC_SRC_QUEUE_MASK		0x7
 #define IPC_SRC_QUEUE(x)		(((x) & IPC_SRC_QUEUE_MASK) \
 					<< IPC_SRC_QUEUE_SHIFT)
-/* Load Module count */
+ 
 #define IPC_LOAD_MODULE_SHIFT		0
 #define IPC_LOAD_MODULE_MASK		0xFF
 #define IPC_LOAD_MODULE_CNT(x)		(((x) & IPC_LOAD_MODULE_MASK) \
 					<< IPC_LOAD_MODULE_SHIFT)
 
-/* Save pipeline messgae extension register */
+ 
 #define IPC_DMA_ID_SHIFT		0
 #define IPC_DMA_ID_MASK			0x1F
 #define IPC_DMA_ID(x)			(((x) & IPC_DMA_ID_MASK) \
 					<< IPC_DMA_ID_SHIFT)
-/* Large Config message extension register */
+ 
 #define IPC_DATA_OFFSET_SZ_SHIFT	0
 #define IPC_DATA_OFFSET_SZ_MASK		0xFFFFF
 #define IPC_DATA_OFFSET_SZ(x)		(((x) & IPC_DATA_OFFSET_SZ_MASK) \
@@ -174,7 +170,7 @@
 					<< IPC_INITIAL_BLOCK_SHIFT)
 #define IPC_INITIAL_BLOCK_CLEAR		~(IPC_INITIAL_BLOCK_MASK \
 					  << IPC_INITIAL_BLOCK_SHIFT)
-/* Set D0ix IPC extension register */
+ 
 #define IPC_D0IX_WAKE_SHIFT		0
 #define IPC_D0IX_WAKE_MASK		0x1
 #define IPC_D0IX_WAKE(x)		(((x) & IPC_D0IX_WAKE_MASK) \
@@ -196,9 +192,9 @@ enum skl_ipc_msg_direction {
 	IPC_MSG_REPLY = 1
 };
 
-/* Global Message Types */
+ 
 enum skl_ipc_glb_type {
-	IPC_GLB_GET_FW_VERSION = 0, /* Retrieves firmware version */
+	IPC_GLB_GET_FW_VERSION = 0,  
 	IPC_GLB_LOAD_MULTIPLE_MODS = 15,
 	IPC_GLB_UNLOAD_MULTIPLE_MODS = 16,
 	IPC_GLB_CREATE_PPL = 17,
@@ -210,7 +206,7 @@ enum skl_ipc_glb_type {
 	IPC_GLB_RESTORE_PPL = 23,
 	IPC_GLB_LOAD_LIBRARY = 24,
 	IPC_GLB_NOTIFY = 26,
-	IPC_GLB_MAX_IPC_MSG_NUMBER = 31 /* Maximum message number */
+	IPC_GLB_MAX_IPC_MSG_NUMBER = 31  
 };
 
 enum skl_ipc_glb_reply {
@@ -264,7 +260,7 @@ enum skl_ipc_notification_type {
 	IPC_GLB_NOTIFY_FW_READY = 8
 };
 
-/* Module Message Types */
+ 
 enum skl_ipc_module_msg {
 	IPC_MOD_INIT_INSTANCE = 0,
 	IPC_MOD_CONFIG_GET = 1,
@@ -292,7 +288,7 @@ static bool skl_ipc_is_dsp_busy(struct sst_dsp *dsp)
 	return (hipci & SKL_ADSP_REG_HIPCI_BUSY);
 }
 
-/* Lock to be held by caller */
+ 
 static void skl_ipc_tx_msg(struct sst_generic_ipc *ipc, struct ipc_message *msg)
 {
 	struct skl_ipc_header *header = (struct skl_ipc_header *)(&msg->tx.header);
@@ -309,11 +305,11 @@ int skl_ipc_check_D0i0(struct sst_dsp *dsp, bool state)
 {
 	int ret;
 
-	/* check D0i3 support */
+	 
 	if (!dsp->fw_ops.set_state_D0i0)
 		return 0;
 
-	/* Attempt D0i0 or D0i3 based on state */
+	 
 	if (state)
 		ret = dsp->fw_ops.set_state_D0i0(dsp);
 	else
@@ -367,12 +363,7 @@ int skl_ipc_process_notification(struct sst_generic_ipc *ipc,
 		case IPC_GLB_NOTIFY_PHRASE_DETECTED:
 			dev_dbg(ipc->dev, "***** Phrase Detected **********\n");
 
-			/*
-			 * Per HW recomendation, After phrase detection,
-			 * clear the CGCTL.MISCBDCGE.
-			 *
-			 * This will be set back on stream closure
-			 */
+			 
 			skl->enable_miscbdcge(ipc->dev, false);
 			skl->miscbdcg_disabled = true;
 			break;
@@ -448,10 +439,10 @@ void skl_ipc_process_reply(struct sst_generic_ipc *ipc,
 	}
 
 	msg->rx.header = *ipc_header;
-	/* first process the header */
+	 
 	if (reply == IPC_GLB_REPLY_SUCCESS) {
 		dev_dbg(ipc->dev, "ipc FW reply %x: success\n", header.primary);
-		/* copy the rx data from the mailbox */
+		 
 		sst_dsp_inbox_read(ipc->dsp, msg->rx.data, msg->rx.size);
 		switch (IPC_GLB_NOTIFY_MSG_TYPE(header.primary)) {
 		case IPC_GLB_LOAD_MULTIPLE_MODS:
@@ -498,7 +489,7 @@ irqreturn_t skl_dsp_irq_thread_handler(int irq, void *context)
 	if (dsp->intr_status & SKL_ADSPIS_CL_DMA)
 		skl_cldma_process_intr(dsp);
 
-	/* Here we handle IPC interrupts only */
+	 
 	if (!(dsp->intr_status & SKL_ADSPIS_IPC))
 		return IRQ_NONE;
 
@@ -506,23 +497,23 @@ irqreturn_t skl_dsp_irq_thread_handler(int irq, void *context)
 	hipct = sst_dsp_shim_read_unlocked(dsp, SKL_ADSP_REG_HIPCT);
 	hipcte = sst_dsp_shim_read_unlocked(dsp, SKL_ADSP_REG_HIPCTE);
 
-	/* reply message from DSP */
+	 
 	if (hipcie & SKL_ADSP_REG_HIPCIE_DONE) {
 		sst_dsp_shim_update_bits(dsp, SKL_ADSP_REG_HIPCCTL,
 			SKL_ADSP_REG_HIPCCTL_DONE, 0);
 
-		/* clear DONE bit - tell DSP we have completed the operation */
+		 
 		sst_dsp_shim_update_bits_forced(dsp, SKL_ADSP_REG_HIPCIE,
 			SKL_ADSP_REG_HIPCIE_DONE, SKL_ADSP_REG_HIPCIE_DONE);
 
 		ipc_irq = 1;
 
-		/* unmask Done interrupt */
+		 
 		sst_dsp_shim_update_bits(dsp, SKL_ADSP_REG_HIPCCTL,
 			SKL_ADSP_REG_HIPCCTL_DONE, SKL_ADSP_REG_HIPCCTL_DONE);
 	}
 
-	/* New message from DSP */
+	 
 	if (hipct & SKL_ADSP_REG_HIPCT_BUSY) {
 		header.primary = hipct;
 		header.extension = hipcte;
@@ -532,13 +523,13 @@ irqreturn_t skl_dsp_irq_thread_handler(int irq, void *context)
 						header.extension);
 
 		if (IPC_GLB_NOTIFY_RSP_TYPE(header.primary)) {
-			/* Handle Immediate reply from DSP Core */
+			 
 			skl_ipc_process_reply(ipc, header);
 		} else {
 			dev_dbg(dsp->dev, "IPC irq: Notification from firmware\n");
 			skl_ipc_process_notification(ipc, header);
 		}
-		/* clear  busy interrupt */
+		 
 		sst_dsp_shim_update_bits_forced(dsp, SKL_ADSP_REG_HIPCT,
 			SKL_ADSP_REG_HIPCT_BUSY, SKL_ADSP_REG_HIPCT_BUSY);
 		ipc_irq = 1;
@@ -549,7 +540,7 @@ irqreturn_t skl_dsp_irq_thread_handler(int irq, void *context)
 
 	skl_ipc_int_enable(dsp);
 
-	/* continue to send any remaining messages... */
+	 
 	schedule_work(&ipc->kwork);
 
 	return IRQ_HANDLED;
@@ -569,22 +560,22 @@ void skl_ipc_int_disable(struct sst_dsp *ctx)
 
 void skl_ipc_op_int_enable(struct sst_dsp *ctx)
 {
-	/* enable IPC DONE interrupt */
+	 
 	sst_dsp_shim_update_bits(ctx, SKL_ADSP_REG_HIPCCTL,
 		SKL_ADSP_REG_HIPCCTL_DONE, SKL_ADSP_REG_HIPCCTL_DONE);
 
-	/* Enable IPC BUSY interrupt */
+	 
 	sst_dsp_shim_update_bits(ctx, SKL_ADSP_REG_HIPCCTL,
 		SKL_ADSP_REG_HIPCCTL_BUSY, SKL_ADSP_REG_HIPCCTL_BUSY);
 }
 
 void skl_ipc_op_int_disable(struct sst_dsp *ctx)
 {
-	/* disable IPC DONE interrupt */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, SKL_ADSP_REG_HIPCCTL,
 					SKL_ADSP_REG_HIPCCTL_DONE, 0);
 
-	/* Disable IPC BUSY interrupt */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, SKL_ADSP_REG_HIPCCTL,
 					SKL_ADSP_REG_HIPCCTL_BUSY, 0);
 
@@ -621,11 +612,11 @@ int skl_ipc_init(struct device *dev, struct skl_dev *skl)
 
 void skl_ipc_free(struct sst_generic_ipc *ipc)
 {
-	/* Disable IPC DONE interrupt */
+	 
 	sst_dsp_shim_update_bits(ipc->dsp, SKL_ADSP_REG_HIPCCTL,
 		SKL_ADSP_REG_HIPCCTL_DONE, 0);
 
-	/* Disable IPC BUSY interrupt */
+	 
 	sst_dsp_shim_update_bits(ipc->dsp, SKL_ADSP_REG_HIPCCTL,
 		SKL_ADSP_REG_HIPCCTL_BUSY, 0);
 
@@ -792,7 +783,7 @@ int skl_ipc_init_instance(struct sst_generic_ipc *ipc,
 	struct sst_ipc_message request;
 	int ret;
 	u32 *buffer = (u32 *)param_data;
-	 /* param_block_size must be in dwords */
+	  
 	u16 param_block_size = msg->param_data_size / sizeof(u32);
 
 	print_hex_dump_debug("Param data:", DUMP_PREFIX_NONE,
@@ -858,12 +849,7 @@ int skl_ipc_bind_unbind(struct sst_generic_ipc *ipc,
 }
 EXPORT_SYMBOL_GPL(skl_ipc_bind_unbind);
 
-/*
- * In order to load a module we need to send IPC to initiate that. DMA will
- * performed to load the module memory. The FW supports multiple module load
- * at single shot, so we can send IPC with N modules represented by
- * module_cnt
- */
+ 
 int skl_ipc_load_modules(struct sst_generic_ipc *ipc,
 				u8 module_cnt, void *data)
 {
@@ -956,10 +942,10 @@ int skl_ipc_set_large_config(struct sst_generic_ipc *ipc,
 		sz_remaining -= tx_size;
 		data_offset = msg->param_data_size - sz_remaining;
 
-		/* clear the fields */
+		 
 		header.extension &= IPC_INITIAL_BLOCK_CLEAR;
 		header.extension &= IPC_DATA_OFFSET_SZ_CLEAR;
-		/* fill the fields */
+		 
 		header.extension |= IPC_INITIAL_BLOCK(0);
 		header.extension |= IPC_DATA_OFFSET_SZ(data_offset);
 	}
@@ -1059,9 +1045,7 @@ int skl_ipc_set_d0ix(struct sst_generic_ipc *ipc, struct skl_ipc_d0ix_msg *msg)
 	dev_dbg(ipc->dev, "In %s primary=%x ext=%x\n", __func__,
 			header.primary,	header.extension);
 
-	/*
-	 * Use the nopm IPC here as we dont want it checking for D0iX
-	 */
+	 
 	ret = sst_ipc_tx_message_nopm(ipc, request, NULL);
 	if (ret < 0)
 		dev_err(ipc->dev, "ipc: set d0ix failed, err %d\n", ret);

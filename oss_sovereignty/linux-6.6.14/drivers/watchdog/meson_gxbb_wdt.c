@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -14,7 +10,7 @@
 #include <linux/types.h>
 #include <linux/watchdog.h>
 
-#define DEFAULT_TIMEOUT	30	/* seconds */
+#define DEFAULT_TIMEOUT	30	 
 
 #define GXBB_WDT_CTRL_REG			0x0
 #define GXBB_WDT_TCNT_REG			0x8
@@ -154,7 +150,7 @@ static const struct wdt_params t7_params = {
 static const struct of_device_id meson_gxbb_wdt_dt_ids[] = {
 	 { .compatible = "amlogic,meson-gxbb-wdt", .data = &gxbb_params, },
 	 { .compatible = "amlogic,t7-wdt", .data = &t7_params, },
-	 { /* sentinel */ },
+	 {   },
 };
 MODULE_DEVICE_TABLE(of, meson_gxbb_wdt_dt_ids);
 
@@ -195,15 +191,13 @@ static int meson_gxbb_wdt_probe(struct platform_device *pdev)
 				GXBB_WDT_CTRL_EN;
 
 	if (ctrl_reg) {
-		/* Watchdog is running - keep it running but extend timeout
-		 * to the maximum while setting the timebase
-		 */
+		 
 		set_bit(WDOG_HW_RUNNING, &data->wdt_dev.status);
 		meson_gxbb_wdt_set_timeout(&data->wdt_dev,
 				GXBB_WDT_TCNT_SETUP_MASK / 1000);
 	}
 
-	/* Setup with 1ms timebase */
+	 
 	ctrl_reg |= ((clk_get_rate(data->clk) / 1000) &
 			GXBB_WDT_CTRL_DIV_MASK) |
 			params->rst |

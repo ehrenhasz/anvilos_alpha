@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Toshiba Visconti clock controller
- *
- * Copyright (c) 2021 TOSHIBA CORPORATION
- * Copyright (c) 2021 Toshiba Electronic Devices & Storage Corporation
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+ 
+ 
 
 #ifndef _VISCONTI_CLKC_H_
 #define _VISCONTI_CLKC_H_
@@ -76,4 +69,4 @@ int visconti_clk_register_gates(struct visconti_clk_provider *data,
 
 #define NO_RESET 0xFF
 
-#endif /* _VISCONTI_CLKC_H_ */
+#endif  

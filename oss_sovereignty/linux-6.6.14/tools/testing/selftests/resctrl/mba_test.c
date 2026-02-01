@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Memory Bandwidth Allocation (MBA) test
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include "resctrl.h"
 
 #define RESULT_FILE_NAME	"result_mba"
@@ -17,11 +9,7 @@
 #define ALLOCATION_MIN		10
 #define ALLOCATION_STEP		10
 
-/*
- * Change schemata percentage from 100 to 10%. Write schemata to specified
- * con_mon grp, mon_grp in resctrl FS.
- * For each allocation, run 5 times in order to get average values.
- */
+ 
 static int mba_setup(struct resctrl_val_param *p)
 {
 	static int runs_per_allocation, allocation = 100;
@@ -31,7 +19,7 @@ static int mba_setup(struct resctrl_val_param *p)
 	if (runs_per_allocation >= NUM_OF_RUNS)
 		runs_per_allocation = 0;
 
-	/* Only set up schemata once every NUM_OF_RUNS of allocations */
+	 
 	if (runs_per_allocation++ != 0)
 		return 0;
 
@@ -56,7 +44,7 @@ static bool show_mba_info(unsigned long *bw_imc, unsigned long *bw_resc)
 	bool ret = false;
 
 	ksft_print_msg("Results are displayed in (MB)\n");
-	/* Memory bandwidth from 100% down to 10% */
+	 
 	for (allocation = 0; allocation < ALLOCATION_MAX / ALLOCATION_STEP;
 	     allocation++) {
 		unsigned long avg_bw_imc, avg_bw_resc;
@@ -64,10 +52,7 @@ static bool show_mba_info(unsigned long *bw_imc, unsigned long *bw_resc)
 		int avg_diff_per;
 		float avg_diff;
 
-		/*
-		 * The first run is discarded due to inaccurate value from
-		 * phase transition.
-		 */
+		 
 		for (runs = NUM_OF_RUNS * allocation + 1;
 		     runs < NUM_OF_RUNS * allocation + NUM_OF_RUNS ; runs++) {
 			sum_bw_imc += bw_imc[runs];
@@ -124,9 +109,9 @@ static int check_results(void)
 			token = strtok(NULL, ":\t");
 		}
 
-		/* Field 3 is perf imc value */
+		 
 		bw_imc[runs] = strtoul(token_array[3], NULL, 0);
-		/* Field 5 is resctrl value */
+		 
 		bw_resc[runs] = strtoul(token_array[5], NULL, 0);
 		runs++;
 	}

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
- *
- *  Based on Len Brown's <lenb@kernel.org> turbostat tool.
- */
+
+ 
 
 #if defined(__i386__) || defined(__x86_64__)
 
@@ -54,7 +50,7 @@ static unsigned long long tsc_at_measure_start;
 static unsigned long long tsc_at_measure_end;
 static unsigned long long *previous_count[SNB_CSTATE_COUNT];
 static unsigned long long *current_count[SNB_CSTATE_COUNT];
-/* valid flag for all CPUs. If a MSR read failed it will be zero */
+ 
 static int *is_valid;
 
 static int snb_get_count(enum intel_snb_id id, unsigned long long *val,
@@ -150,14 +146,14 @@ static struct cpuidle_monitor *snb_register(void)
 		return NULL;
 
 	switch (cpupower_cpu_info.model) {
-	case 0x2A: /* SNB */
-	case 0x2D: /* SNB Xeon */
-	case 0x3A: /* IVB */
-	case 0x3E: /* IVB Xeon */
-	case 0x3C: /* HSW */
-	case 0x3F: /* HSW */
-	case 0x45: /* HSW */
-	case 0x46: /* HSW */
+	case 0x2A:  
+	case 0x2D:  
+	case 0x3A:  
+	case 0x3E:  
+	case 0x3C:  
+	case 0x3F:  
+	case 0x45:  
+	case 0x46:  
 		break;
 	default:
 		return NULL;
@@ -193,7 +189,6 @@ struct cpuidle_monitor intel_snb_monitor = {
 	.do_register		= snb_register,
 	.unregister		= snb_unregister,
 	.flags.needs_root	= 1,
-	.overflow_s		= 922000000 /* 922337203 seconds TSC overflow
-					       at 20GHz */
+	.overflow_s		= 922000000  
 };
-#endif /* defined(__i386__) || defined(__x86_64__) */
+#endif  

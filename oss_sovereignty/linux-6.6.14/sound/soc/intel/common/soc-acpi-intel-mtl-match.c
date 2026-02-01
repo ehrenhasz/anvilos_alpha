@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-acpi-intel-mtl-match.c - tables and support for MTL ACPI enumeration.
- *
- * Copyright (c) 2022, Intel Corporation.
- *
- */
+
+ 
 
 #include <sound/soc-acpi.h>
 #include <sound/soc-acpi-intel-match.h>
@@ -72,7 +67,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_mtl_machines[] = {
 	{
 		.comp_ids = &mtl_essx_83x6,
 		.drv_name = "sof-essx8336",
-		.sof_tplg_filename = "sof-mtl-es8336", /* the tplg suffix is added at run time */
+		.sof_tplg_filename = "sof-mtl-es8336",  
 		.tplg_quirk_mask = SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER |
 					SND_SOC_ACPI_TPLG_INTEL_SSP_MSB |
 					SND_SOC_ACPI_TPLG_INTEL_DMIC_NUMBER,
@@ -237,7 +232,7 @@ static const struct snd_soc_acpi_link_adr mtl_712_only[] = {
 };
 
 static const struct snd_soc_acpi_link_adr rt5682_link2_max98373_link0[] = {
-	/* Expected order: jack -> amp */
+	 
 	{
 		.mask = BIT(2),
 		.num_adr = ARRAY_SIZE(rt5682_2_adr),
@@ -328,7 +323,7 @@ static const struct snd_soc_acpi_adr_device cs42l42_0_adr[] = {
 };
 
 static const struct snd_soc_acpi_link_adr cs42l42_link0_max98363_link2[] = {
-	/* Expected order: jack -> amp */
+	 
 	{
 		.mask = BIT(0),
 		.num_adr = ARRAY_SIZE(cs42l42_0_adr),
@@ -342,9 +337,9 @@ static const struct snd_soc_acpi_link_adr cs42l42_link0_max98363_link2[] = {
 	{}
 };
 
-/* this table is used when there is no I2S codec present */
+ 
 struct snd_soc_acpi_mach snd_soc_acpi_intel_mtl_sdw_machines[] = {
-	/* mockup tests need to be first */
+	 
 	{
 		.link_mask = GENMASK(3, 0),
 		.links = sdw_mockup_headset_2amps_mic,

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Kevin Chen <kevin-cw.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -87,7 +84,7 @@ static const struct mtk_clk_desc mm_desc = {
 
 static const struct platform_device_id clk_mt6797_mm_id_table[] = {
 	{ .name = "clk-mt6797-mm", .driver_data = (kernel_ulong_t)&mm_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, clk_mt6797_mm_id_table);
 

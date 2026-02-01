@@ -1,14 +1,4 @@
-/*
- * Ceph - scalable distributed file system
- *
- * Copyright (C) 2015 Intel Corporation All Rights Reserved
- *
- * This is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License version 2.1, as published by the Free Software
- * Foundation.  See file COPYING.
- *
- */
+ 
 
 #ifdef __KERNEL__
 # include <linux/string.h>
@@ -26,19 +16,11 @@
 #endif
 #include "crush_ln_table.h"
 
-#define dprintk(args...) /* printf(args) */
+#define dprintk(args...)  
 
-/*
- * Implement the core CRUSH mapping algorithm.
- */
+ 
 
-/**
- * crush_find_rule - find a crush_rule id for a given ruleset, type, and size.
- * @map: the crush_map
- * @ruleset: the storage ruleset id (user defined)
- * @type: storage ruleset type (user defined)
- * @size: output set size
- */
+ 
 int crush_find_rule(const struct crush_map *map, int ruleset, int type, int size)
 {
 	__u32 i;
@@ -54,23 +36,9 @@ int crush_find_rule(const struct crush_map *map, int ruleset, int type, int size
 	return -1;
 }
 
-/*
- * bucket choose methods
- *
- * For each bucket algorithm, we have a "choose" method that, given a
- * crush input @x and replica position (usually, position in output set) @r,
- * will produce an item in the bucket.
- */
+ 
 
-/*
- * Choose based on a random permutation of the bucket.
- *
- * We used to use some prime number arithmetic to do this, but it
- * wasn't very random, and had some other bad behaviors.  Instead, we
- * calculate an actual random permutation of the bucket members.
- * Since this is expensive, we optimize for the r=0 case, which
- * captures the vast majority of calls.
- */
+ 
 static int bucket_perm_choose(const struct crush_bucket *bucket,
 			      struct crush_work_bucket *work,
 			      int x, int r)
@@ -78,17 +46,17 @@ static int bucket_perm_choose(const struct crush_bucket *bucket,
 	unsigned int pr = r % bucket->size;
 	unsigned int i, s;
 
-	/* start a new permutation if @x has changed */
+	 
 	if (work->perm_x != (__u32)x || work->perm_n == 0) {
 		dprintk("bucket %d new x=%d\n", bucket->id, x);
 		work->perm_x = x;
 
-		/* optimize common r=0 case */
+		 
 		if (pr == 0) {
 			s = crush_hash32_3(bucket->hash, x, bucket->id, 0) %
 				bucket->size;
 			work->perm[0] = s;
-			work->perm_n = 0xffff;   /* magic value, see below */
+			work->perm_n = 0xffff;    
 			goto out;
 		}
 
@@ -96,19 +64,19 @@ static int bucket_perm_choose(const struct crush_bucket *bucket,
 			work->perm[i] = i;
 		work->perm_n = 0;
 	} else if (work->perm_n == 0xffff) {
-		/* clean up after the r=0 case above */
+		 
 		for (i = 1; i < bucket->size; i++)
 			work->perm[i] = i;
 		work->perm[work->perm[0]] = 0;
 		work->perm_n = 1;
 	}
 
-	/* calculate permutation up to pr */
+	 
 	for (i = 0; i < work->perm_n; i++)
 		dprintk(" perm_choose have %d: %d\n", i, work->perm[i]);
 	while (work->perm_n <= pr) {
 		unsigned int p = work->perm_n;
-		/* no point in swapping the final entry */
+		 
 		if (p < bucket->size - 1) {
 			i = crush_hash32_3(bucket->hash, x, bucket->id, p) %
 				(bucket->size - p);
@@ -131,14 +99,14 @@ out:
 	return bucket->items[s];
 }
 
-/* uniform */
+ 
 static int bucket_uniform_choose(const struct crush_bucket_uniform *bucket,
 				 struct crush_work_bucket *work, int x, int r)
 {
 	return bucket_perm_choose(&bucket->h, work, x, r);
 }
 
-/* list */
+ 
 static int bucket_list_choose(const struct crush_bucket_list *bucket,
 			      int x, int r)
 {
@@ -154,7 +122,7 @@ static int bucket_list_choose(const struct crush_bucket_list *bucket,
 			bucket->sum_weights[i], w);
 		w *= bucket->sum_weights[i];
 		w = w >> 16;
-		/*dprintk(" scaled %llx\n", w);*/
+		 
 		if (w < bucket->item_weights[i]) {
 			return bucket->h.items[i];
 		}
@@ -165,7 +133,7 @@ static int bucket_list_choose(const struct crush_bucket_list *bucket,
 }
 
 
-/* (binary) tree */
+ 
 static int height(int n)
 {
 	int h = 0;
@@ -200,18 +168,18 @@ static int bucket_tree_choose(const struct crush_bucket_tree *bucket,
 	__u32 w;
 	__u64 t;
 
-	/* start at root */
+	 
 	n = bucket->num_nodes >> 1;
 
 	while (!terminal(n)) {
 		int l;
-		/* pick point in [0, w) */
+		 
 		w = bucket->node_weights[n];
 		t = (__u64)crush_hash32_4(bucket->h.hash, x, n, r,
 					  bucket->h.id) * (__u64)w;
 		t = t >> 32;
 
-		/* descend to the left or right? */
+		 
 		l = left(n);
 		if (t < bucket->node_weights[l])
 			n = l;
@@ -223,7 +191,7 @@ static int bucket_tree_choose(const struct crush_bucket_tree *bucket,
 }
 
 
-/* straw */
+ 
 
 static int bucket_straw_choose(const struct crush_bucket_straw *bucket,
 			       int x, int r)
@@ -245,7 +213,7 @@ static int bucket_straw_choose(const struct crush_bucket_straw *bucket,
 	return bucket->h.items[high];
 }
 
-/* compute 2^44*log2(input+1) */
+ 
 static __u64 crush_ln(unsigned int xin)
 {
 	unsigned int x = xin;
@@ -254,13 +222,10 @@ static __u64 crush_ln(unsigned int xin)
 
 	x++;
 
-	/* normalize input */
+	 
 	iexpon = 15;
 
-	/*
-	 * figure out number of bits we need to shift and
-	 * do it in one step instead of iteratively
-	 */
+	 
 	if (!(x & 0x18000)) {
 		int bits = __builtin_clz(x & 0x1FFFF) - 16;
 		x <<= bits;
@@ -268,12 +233,12 @@ static __u64 crush_ln(unsigned int xin)
 	}
 
 	index1 = (x >> 8) << 1;
-	/* RH ~ 2^56/index1 */
+	 
 	RH = __RH_LH_tbl[index1 - 256];
-	/* LH ~ 2^48 * log2(index1/256) */
+	 
 	LH = __RH_LH_tbl[index1 + 1 - 256];
 
-	/* RH*x ~ 2^48 * (2^15 + xf), xf<2^8 */
+	 
 	xl64 = (__s64)x * RH;
 	xl64 >>= 48;
 
@@ -281,7 +246,7 @@ static __u64 crush_ln(unsigned int xin)
 	result <<= (12 + 32);
 
 	index2 = xl64 & 0xff;
-	/* LL ~ 2^48*log2(1.0+index2/2^15) */
+	 
 	LL = __LL_tbl[index2];
 
 	LH = LH + LL;
@@ -293,14 +258,7 @@ static __u64 crush_ln(unsigned int xin)
 }
 
 
-/*
- * straw2
- *
- * for reference, see:
- *
- * https://en.wikipedia.org/wiki/Exponential_distribution#Distribution_of_the_minimum_of_exponential_random_variables
- *
- */
+ 
 
 static __u32 *get_choose_arg_weights(const struct crush_bucket_straw2 *bucket,
 				     const struct crush_choose_arg *arg,
@@ -340,24 +298,10 @@ static int bucket_straw2_choose(const struct crush_bucket_straw2 *bucket,
 			u = crush_hash32_3(bucket->h.hash, x, ids[i], r);
 			u &= 0xffff;
 
-			/*
-			 * for some reason slightly less than 0x10000 produces
-			 * a slightly more accurate distribution... probably a
-			 * rounding effect.
-			 *
-			 * the natural log lookup table maps [0,0xffff]
-			 * (corresponding to real numbers [1/0x10000, 1] to
-			 * [0, 0xffffffffffff] (corresponding to real numbers
-			 * [-11.090355,0]).
-			 */
+			 
 			ln = crush_ln(u) - 0x1000000000000ll;
 
-			/*
-			 * divide by 16.16 fixed-point weight.  note
-			 * that the ln value is negative, so a larger
-			 * weight means a larger (less negative) value
-			 * for draw.
-			 */
+			 
 			draw = div64_s64(ln, weights[i]);
 		} else {
 			draw = S64_MIN;
@@ -406,10 +350,7 @@ static int crush_bucket_choose(const struct crush_bucket *in,
 	}
 }
 
-/*
- * true if device is marked "out" (failed, fully offloaded)
- * of the cluster
- */
+ 
 static int is_out(const struct crush_map *map,
 		  const __u32 *weight, int weight_max,
 		  int item, int x)
@@ -426,26 +367,7 @@ static int is_out(const struct crush_map *map,
 	return 1;
 }
 
-/**
- * crush_choose_firstn - choose numrep distinct items of given type
- * @map: the crush_map
- * @bucket: the bucket we are choose an item from
- * @x: crush input value
- * @numrep: the number of items to choose
- * @type: the type of item to choose
- * @out: pointer to output vector
- * @outpos: our position in that vector
- * @out_size: size of the out vector
- * @tries: number of attempts to make
- * @recurse_tries: number of attempts to have recursive chooseleaf make
- * @local_retries: localized retries
- * @local_fallback_retries: localized fallback retries
- * @recurse_to_leaf: true if we want one device under each item of given type (chooseleaf instead of choose)
- * @stable: stable mode starts rep=0 in the recursive call for all replicas
- * @vary_r: pass r to recursive calls
- * @out2: second output vector for leaf items (if @recurse_to_leaf)
- * @parent_r: r value passed from the parent
- */
+ 
 static int crush_choose_firstn(const struct crush_map *map,
 			       struct crush_work *work,
 			       const struct crush_bucket *bucket,
@@ -482,23 +404,23 @@ static int crush_choose_firstn(const struct crush_map *map,
 		parent_r, stable);
 
 	for (rep = stable ? 0 : outpos; rep < numrep && count > 0 ; rep++) {
-		/* keep trying until we get a non-out, non-colliding item */
+		 
 		ftotal = 0;
 		skip_rep = 0;
 		do {
 			retry_descent = 0;
-			in = bucket;               /* initial bucket */
+			in = bucket;                
 
-			/* choose through intervening buckets */
+			 
 			flocal = 0;
 			do {
 				collide = 0;
 				retry_bucket = 0;
 				r = rep + parent_r;
-				/* r' = r + f_total */
+				 
 				r += ftotal;
 
-				/* bucket choose */
+				 
 				if (in->size == 0) {
 					reject = 1;
 					goto reject;
@@ -522,14 +444,14 @@ static int crush_choose_firstn(const struct crush_map *map,
 					break;
 				}
 
-				/* desired type? */
+				 
 				if (item < 0)
 					itemtype = map->buckets[-1-item]->type;
 				else
 					itemtype = 0;
 				dprintk("  item %d type %d\n", item, itemtype);
 
-				/* keep going? */
+				 
 				if (itemtype != type) {
 					if (item >= 0 ||
 					    (-1-item) >= map->max_buckets) {
@@ -542,7 +464,7 @@ static int crush_choose_firstn(const struct crush_map *map,
 					continue;
 				}
 
-				/* collision? */
+				 
 				for (i = 0; i < outpos; i++) {
 					if (out[i] == item) {
 						collide = 1;
@@ -574,16 +496,16 @@ static int crush_choose_firstn(const struct crush_map *map,
 							    NULL,
 							    sub_r,
 							    choose_args) <= outpos)
-							/* didn't get leaf */
+							 
 							reject = 1;
 					} else {
-						/* we already have a leaf! */
+						 
 						out2[outpos] = item;
 					}
 				}
 
 				if (!reject && !collide) {
-					/* out? */
+					 
 					if (itemtype == 0)
 						reject = is_out(map, weight,
 								weight_max,
@@ -596,17 +518,17 @@ reject:
 					flocal++;
 
 					if (collide && flocal <= local_retries)
-						/* retry locally a few times */
+						 
 						retry_bucket = 1;
 					else if (local_fallback_retries > 0 &&
 						 flocal <= in->size + local_fallback_retries)
-						/* exhaustive bucket search */
+						 
 						retry_bucket = 1;
 					else if (ftotal < tries)
-						/* then retry descent */
+						 
 						retry_descent = 1;
 					else
-						/* else give up */
+						 
 						skip_rep = 1;
 					dprintk("  reject %d  collide %d  "
 						"ftotal %u  flocal %u\n",
@@ -636,10 +558,7 @@ reject:
 }
 
 
-/**
- * crush_choose_indep: alternative breadth-first positionally stable mapping
- *
- */
+ 
 static void crush_choose_indep(const struct crush_map *map,
 			       struct crush_work *work,
 			       const struct crush_bucket *bucket,
@@ -666,7 +585,7 @@ static void crush_choose_indep(const struct crush_map *map,
 	dprintk("CHOOSE%s INDEP bucket %d x %d outpos %d numrep %d\n", recurse_to_leaf ? "_LEAF" : "",
 		bucket->id, x, outpos, numrep);
 
-	/* initially my result is undefined */
+	 
 	for (rep = outpos; rep < endpos; rep++) {
 		out[rep] = CRUSH_ITEM_UNDEF;
 		if (out2)
@@ -692,30 +611,23 @@ static void crush_choose_indep(const struct crush_map *map,
 			if (out[rep] != CRUSH_ITEM_UNDEF)
 				continue;
 
-			in = bucket;  /* initial bucket */
+			in = bucket;   
 
-			/* choose through intervening buckets */
+			 
 			for (;;) {
-				/* note: we base the choice on the position
-				 * even in the nested call.  that means that
-				 * if the first layer chooses the same bucket
-				 * in a different position, we will tend to
-				 * choose a different item in that bucket.
-				 * this will involve more devices in data
-				 * movement and tend to distribute the load.
-				 */
+				 
 				r = rep + parent_r;
 
-				/* be careful */
+				 
 				if (in->alg == CRUSH_BUCKET_UNIFORM &&
 				    in->size % numrep == 0)
-					/* r'=r+(n+1)*f_total */
+					 
 					r += (numrep+1) * ftotal;
 				else
-					/* r' = r + n*f_total */
+					 
 					r += numrep * ftotal;
 
-				/* bucket choose */
+				 
 				if (in->size == 0) {
 					dprintk("   empty bucket\n");
 					break;
@@ -736,14 +648,14 @@ static void crush_choose_indep(const struct crush_map *map,
 					break;
 				}
 
-				/* desired type? */
+				 
 				if (item < 0)
 					itemtype = map->buckets[-1-item]->type;
 				else
 					itemtype = 0;
 				dprintk("  item %d type %d\n", item, itemtype);
 
-				/* keep going? */
+				 
 				if (itemtype != type) {
 					if (item >= 0 ||
 					    (-1-item) >= map->max_buckets) {
@@ -759,7 +671,7 @@ static void crush_choose_indep(const struct crush_map *map,
 					continue;
 				}
 
-				/* collision? */
+				 
 				collide = 0;
 				for (i = outpos; i < endpos; i++) {
 					if (out[i] == item) {
@@ -783,21 +695,21 @@ static void crush_choose_indep(const struct crush_map *map,
 							0, NULL, r,
 							choose_args);
 						if (out2[rep] == CRUSH_ITEM_NONE) {
-							/* placed nothing; no leaf */
+							 
 							break;
 						}
 					} else {
-						/* we already have a leaf! */
+						 
 						out2[rep] = item;
 					}
 				}
 
-				/* out? */
+				 
 				if (itemtype == 0 &&
 				    is_out(map, weight, weight_max, item, x))
 					break;
 
-				/* yay! */
+				 
 				out[rep] = item;
 				left--;
 				break;
@@ -833,31 +745,13 @@ static void crush_choose_indep(const struct crush_map *map,
 }
 
 
-/*
- * This takes a chunk of memory and sets it up to be a shiny new
- * working area for a CRUSH placement computation. It must be called
- * on any newly allocated memory before passing it in to
- * crush_do_rule. It may be used repeatedly after that, so long as the
- * map has not changed. If the map /has/ changed, you must make sure
- * the working size is no smaller than what was allocated and re-run
- * crush_init_workspace.
- *
- * If you do retain the working space between calls to crush, make it
- * thread-local.
- */
+ 
 void crush_init_workspace(const struct crush_map *map, void *v)
 {
 	struct crush_work *w = v;
 	__s32 b;
 
-	/*
-	 * We work by moving through the available space and setting
-	 * values and pointers as we go.
-	 *
-	 * It's a bit like Forth's use of the 'allot' word since we
-	 * set the pointer first and then reserve the space for it to
-	 * point to by incrementing the point.
-	 */
+	 
 	v += sizeof(struct crush_work);
 	w->work = v;
 	v += map->max_buckets * sizeof(struct crush_work_bucket *);
@@ -879,18 +773,7 @@ void crush_init_workspace(const struct crush_map *map, void *v)
 	BUG_ON(v - (void *)w != map->working_size);
 }
 
-/**
- * crush_do_rule - calculate a mapping with the given input and rule
- * @map: the crush_map
- * @ruleno: the rule id
- * @x: hash input
- * @result: pointer to result vector
- * @result_max: maximum result size
- * @weight: weight vector (for map leaves)
- * @weight_max: size of weight vector
- * @cwin: pointer to at least crush_work_size() bytes of memory
- * @choose_args: weights and ids for each known bucket
- */
+ 
 int crush_do_rule(const struct crush_map *map,
 		  int ruleno, int x, int *result, int result_max,
 		  const __u32 *weight, int weight_max,
@@ -911,16 +794,10 @@ int crush_do_rule(const struct crush_map *map,
 	int i, j;
 	int numrep;
 	int out_size;
-	/*
-	 * the original choose_total_tries value was off by one (it
-	 * counted "retries" and not "tries").  add one.
-	 */
+	 
 	int choose_tries = map->choose_total_tries + 1;
 	int choose_leaf_tries = 0;
-	/*
-	 * the local tries values were counted as "retries", though,
-	 * and need no adjustment
-	 */
+	 
 	int choose_local_retries = map->choose_local_tries;
 	int choose_local_fallback_retries = map->choose_local_fallback_tries;
 
@@ -998,7 +875,7 @@ int crush_do_rule(const struct crush_map *map,
 				curstep->op ==
 				CRUSH_RULE_CHOOSELEAF_INDEP;
 
-			/* reset output */
+			 
 			osize = 0;
 
 			for (i = 0; i < wsize; i++) {
@@ -1010,10 +887,10 @@ int crush_do_rule(const struct crush_map *map,
 						continue;
 				}
 				j = 0;
-				/* make sure bucket id is valid */
+				 
 				bno = -1 - w[i];
 				if (bno < 0 || bno >= map->max_buckets) {
-					/* w[i] is probably CRUSH_ITEM_NONE */
+					 
 					dprintk("  bad w[i] %d\n", w[i]);
 					continue;
 				}
@@ -1068,10 +945,10 @@ int crush_do_rule(const struct crush_map *map,
 			}
 
 			if (recurse_to_leaf)
-				/* copy final _leaf_ values to output set */
+				 
 				memcpy(o, c, osize*sizeof(*o));
 
-			/* swap o and w arrays */
+			 
 			swap(o, w);
 			wsize = osize;
 			break;

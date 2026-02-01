@@ -1,15 +1,4 @@
-/*
- * mmio_warning_test
- *
- * Copyright (C) 2019, Google LLC.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
- * Test that we don't get a kernel warning when we call KVM_RUN after a
- * triple fault occurs.  To get the triple fault to occur we call KVM_RUN
- * on a VCPU that hasn't been properly setup.
- *
- */
+ 
 
 #define _GNU_SOURCE
 #include <fcntl.h>

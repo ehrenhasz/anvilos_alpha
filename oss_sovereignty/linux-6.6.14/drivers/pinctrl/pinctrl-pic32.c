@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PIC32 pinctrl driver
- *
- * Joshua Henderson, <joshua.henderson@microchip.com>
- * Copyright (C) 2015 Microchip Technology Inc.  All rights reserved.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -2036,27 +2031,27 @@ static int pic32_gpio_irq_set_type(struct irq_data *data, unsigned int type)
 
 	switch (type & IRQ_TYPE_SENSE_MASK) {
 	case IRQ_TYPE_EDGE_RISING:
-		/* enable RISE */
+		 
 		writel(mask, bank->reg_base + PIC32_SET(CNEN_REG));
-		/* disable FALL */
+		 
 		writel(mask, bank->reg_base + PIC32_CLR(CNNE_REG));
-		/* enable EDGE */
+		 
 		writel(BIT(PIC32_CNCON_EDGE), bank->reg_base + PIC32_SET(CNCON_REG));
 		break;
 	case IRQ_TYPE_EDGE_FALLING:
-		/* disable RISE */
+		 
 		writel(mask, bank->reg_base + PIC32_CLR(CNEN_REG));
-		/* enable FALL */
+		 
 		writel(mask, bank->reg_base + PIC32_SET(CNNE_REG));
-		/* enable EDGE */
+		 
 		writel(BIT(PIC32_CNCON_EDGE), bank->reg_base + PIC32_SET(CNCON_REG));
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
-		/* enable RISE */
+		 
 		writel(mask, bank->reg_base + PIC32_SET(CNEN_REG));
-		/* enable FALL */
+		 
 		writel(mask, bank->reg_base + PIC32_SET(CNNE_REG));
-		/* enable EDGE */
+		 
 		writel(BIT(PIC32_CNCON_EDGE), bank->reg_base + PIC32_SET(CNCON_REG));
 		break;
 	default:

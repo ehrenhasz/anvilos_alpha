@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <sound/compress_driver.h>
 #include <sound/hdaudio_ext.h>
@@ -22,12 +22,9 @@ static int avs_dsp_init_probe(struct avs_dev *adev, union avs_connector_node_id 
 
 	avs_get_module_entry(adev, &AVS_PROBE_MOD_UUID, &mentry);
 
-	/*
-	 * Probe module uses no cycles, audio data format and input and output
-	 * frame sizes are unused. It is also not owned by any pipeline.
-	 */
+	 
 	cfg.base.ibs = 1;
-	/* BSS module descriptor is always segment of index=2. */
+	 
 	cfg.base.is_pages = mentry.segments[2].flags.length;
 	cfg.gtw_cfg.node_id = node_id;
 	cfg.gtw_cfg.dma_buffer_size = buffer_size;
@@ -42,7 +39,7 @@ static void avs_dsp_delete_probe(struct avs_dev *adev)
 
 	avs_get_module_entry(adev, &AVS_PROBE_MOD_UUID, &mentry);
 
-	/* There is only ever one probe module instance. */
+	 
 	avs_dsp_delete_module(adev, mentry.module_id, 0, INVALID_PIPELINE_ID, 0);
 }
 
@@ -80,12 +77,12 @@ static int avs_probe_compr_free(struct snd_compr_stream *cstream, struct snd_soc
 	struct hdac_ext_stream *host_stream = avs_compr_get_host_stream(cstream);
 	struct avs_dev *adev = to_avs_dev(dai->dev);
 	struct avs_probe_point_desc *desc;
-	/* Extractor node identifier. */
+	 
 	unsigned int vindex = INVALID_NODE_ID.vindex;
 	size_t num_desc;
 	int i, ret;
 
-	/* Disconnect all probe points. */
+	 
 	ret = avs_ipc_probe_get_points(adev, &desc, &num_desc);
 	if (ret) {
 		dev_err(dai->dev, "get probe points failed: %d\n", ret);
@@ -123,7 +120,7 @@ static int avs_probe_compr_set_params(struct snd_compr_stream *cstream,
 	struct hdac_ext_stream *host_stream = avs_compr_get_host_stream(cstream);
 	struct snd_compr_runtime *rtd = cstream->runtime;
 	struct avs_dev *adev = to_avs_dev(dai->dev);
-	/* compr params do not store bit depth, default to S32_LE. */
+	 
 	snd_pcm_format_t format = SNDRV_PCM_FORMAT_S32_LE;
 	unsigned int format_val;
 	int bps, ret;
@@ -154,7 +151,7 @@ static int avs_probe_compr_set_params(struct snd_compr_stream *cstream,
 	if (!adev->num_probe_streams) {
 		union avs_connector_node_id node_id;
 
-		/* D0ix not allowed during probing. */
+		 
 		ret = avs_dsp_disable_d0ix(adev);
 		if (ret)
 			return ret;
@@ -284,7 +281,7 @@ static struct snd_soc_dai_driver probe_cpu_dais[] = {
 static const struct snd_soc_component_driver avs_probe_component_driver = {
 	.name			= "avs-probe-compr",
 	.compress_ops		= &avs_probe_compress_ops,
-	.module_get_upon_open	= 1, /* increment refcount when a stream is opened */
+	.module_get_upon_open	= 1,  
 };
 
 int avs_probe_platform_register(struct avs_dev *adev, const char *name)

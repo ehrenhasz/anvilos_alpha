@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Handling of a single switch port
- *
- * Copyright (c) 2017 Savoir-faire Linux Inc.
- *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- */
+
+ 
 
 #include <linux/if_bridge.h>
 #include <linux/netdevice.h>
@@ -18,18 +13,7 @@
 #include "switch.h"
 #include "tag_8021q.h"
 
-/**
- * dsa_port_notify - Notify the switching fabric of changes to a port
- * @dp: port on which change occurred
- * @e: event, must be of type DSA_NOTIFIER_*
- * @v: event-specific value.
- *
- * Notify all switches in the DSA tree that this port's switch belongs to,
- * including this switch itself, of an event. Allows the other switches to
- * reconfigure themselves for cross-chip operations. Can also be used to
- * reconfigure ports without net_devices (CPU ports, DSA links) whenever
- * a user port's state changes.
- */
+ 
 static int dsa_port_notify(const struct dsa_port *dp, unsigned long e, void *v)
 {
 	return dsa_tree_notify(dp->ds->dst, e, v);
@@ -42,9 +26,7 @@ static void dsa_port_notify_bridge_fdb_flush(const struct dsa_port *dp, u16 vid)
 		.vid = vid,
 	};
 
-	/* When the port becomes standalone it has already left the bridge.
-	 * Don't notify the bridge in that case.
-	 */
+	 
 	if (!brport_dev)
 		return;
 
@@ -61,7 +43,7 @@ static void dsa_port_fast_age(const struct dsa_port *dp)
 
 	ds->ops->port_fast_age(ds, dp->index);
 
-	/* flush all VLANs */
+	 
 	dsa_port_notify_bridge_fdb_flush(dp, 0);
 }
 
@@ -123,11 +105,7 @@ bool dsa_port_supports_hwtstamp(struct dsa_port *dp)
 	if (!ds->ops->port_hwtstamp_get || !ds->ops->port_hwtstamp_set)
 		return false;
 
-	/* "See through" shim implementations of the "get" method.
-	 * Since we can't cook up a complete ioctl request structure, this will
-	 * fail in copy_to_user() with -EFAULT, which hopefully is enough to
-	 * detect a valid implementation.
-	 */
+	 
 	err = ds->ops->port_hwtstamp_get(ds, dp->index, &ifr);
 	return err != -EOPNOTSUPP;
 }
@@ -144,13 +122,7 @@ int dsa_port_set_state(struct dsa_port *dp, u8 state, bool do_fast_age)
 
 	if (!dsa_port_can_configure_learning(dp) ||
 	    (do_fast_age && dp->learning)) {
-		/* Fast age FDB entries or flush appropriate forwarding database
-		 * for the given port, if we are moving it from Learning or
-		 * Forwarding state, to Disabled or Blocking or Listening state.
-		 * Ports that were standalone before the STP state change don't
-		 * need to fast age the FDB, since address learning is off in
-		 * standalone mode.
-		 */
+		 
 
 		if ((dp->stp_state == BR_STATE_LEARNING ||
 		     dp->stp_state == BR_STATE_FORWARDING) &&
@@ -288,14 +260,7 @@ static void dsa_port_reset_vlan_filtering(struct dsa_port *dp,
 		vlan_filtering = false;
 	}
 
-	/* If the bridge was vlan_filtering, the bridge core doesn't trigger an
-	 * event for changing vlan_filtering setting upon slave ports leaving
-	 * it. That is a good thing, because that lets us handle it and also
-	 * handle the case where the switch's vlan_filtering setting is global
-	 * (not per port). When that happens, the correct moment to trigger the
-	 * vlan_filtering callback is only when the last port leaves the last
-	 * VLAN-aware bridge.
-	 */
+	 
 	if (change_vlan_filtering && ds->vlan_filtering_is_global) {
 		dsa_switch_for_each_port(other_dp, ds) {
 			struct net_device *br = dsa_port_bridge_dev_get(other_dp);
@@ -396,29 +361,15 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
 static void dsa_port_switchdev_unsync_attrs(struct dsa_port *dp,
 					    struct dsa_bridge bridge)
 {
-	/* Configure the port for standalone mode (no address learning,
-	 * flood everything).
-	 * The bridge only emits SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS events
-	 * when the user requests it through netlink or sysfs, but not
-	 * automatically at port join or leave, so we need to handle resetting
-	 * the brport flags ourselves. But we even prefer it that way, because
-	 * otherwise, some setups might never get the notification they need,
-	 * for example, when a port leaves a LAG that offloads the bridge,
-	 * it becomes standalone, but as far as the bridge is concerned, no
-	 * port ever left.
-	 */
+	 
 	dsa_port_clear_brport_flags(dp);
 
-	/* Port left the bridge, put in BR_STATE_DISABLED by the bridge layer,
-	 * so allow it to be in BR_STATE_FORWARDING to be kept functional
-	 */
+	 
 	dsa_port_set_state_now(dp, BR_STATE_FORWARDING, true);
 
 	dsa_port_reset_vlan_filtering(dp, bridge);
 
-	/* Ageing time may be global to the switch chip, so don't change it
-	 * here because we have no good reason (or value) to change it to.
-	 */
+	 
 }
 
 static int dsa_port_bridge_create(struct dsa_port *dp,
@@ -496,9 +447,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
 	if (br_mst_enabled(br) && !dsa_port_supports_mst(dp))
 		return -EOPNOTSUPP;
 
-	/* Here the interface is already bridged. Reflect the current
-	 * configuration so that drivers can program their chips accordingly.
-	 */
+	 
 	err = dsa_port_bridge_create(dp, br, extack);
 	if (err)
 		return err;
@@ -510,7 +459,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
 	if (err)
 		goto out_rollback;
 
-	/* Drivers which support bridge TX forwarding should set this */
+	 
 	dp->bridge->tx_fwd_offload = info.tx_fwd_offload;
 
 	err = switchdev_bridge_port_offload(brport_dev, dev, dp,
@@ -542,7 +491,7 @@ void dsa_port_pre_bridge_leave(struct dsa_port *dp, struct net_device *br)
 {
 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
 
-	/* Don't try to unoffload something that is not offloaded */
+	 
 	if (!brport_dev)
 		return;
 
@@ -560,17 +509,13 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
 	};
 	int err;
 
-	/* If the port could not be offloaded to begin with, then
-	 * there is nothing to do.
-	 */
+	 
 	if (!dp->bridge)
 		return;
 
 	info.bridge = *dp->bridge;
 
-	/* Here the port is already unbridged. Reflect the current configuration
-	 * so that drivers can program their chips accordingly.
-	 */
+	 
 	dsa_port_bridge_destroy(dp, br);
 
 	err = dsa_broadcast(DSA_NOTIFIER_BRIDGE_LEAVE, &info);
@@ -593,11 +538,7 @@ int dsa_port_lag_change(struct dsa_port *dp,
 	if (!dp->lag)
 		return 0;
 
-	/* On statically configured aggregates (e.g. loadbalance
-	 * without LACP) ports will always be tx_enabled, even if the
-	 * link is down. Thus we require both link_up and tx_enabled
-	 * in order to include it in the tx set.
-	 */
+	 
 	tx_enabled = linfo->link_up && linfo->tx_enabled;
 
 	if (tx_enabled == dp->lag_tx_enabled)
@@ -708,9 +649,7 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev)
 	if (!dp->lag)
 		return;
 
-	/* Port might have been part of a LAG that in turn was
-	 * attached to a bridge.
-	 */
+	 
 	if (br)
 		dsa_port_bridge_leave(dp, br);
 
@@ -725,7 +664,7 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev)
 			dp->index, ERR_PTR(err));
 }
 
-/* Must be called under rcu_read_lock() */
+ 
 static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
 					      bool vlan_filtering,
 					      struct netlink_ext_ack *extack)
@@ -734,11 +673,7 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
 	struct dsa_port *other_dp;
 	int err;
 
-	/* VLAN awareness was off, so the question is "can we turn it on".
-	 * We may have had 8021q uppers, those need to go. Make sure we don't
-	 * enter an inconsistent state: deny changing the VLAN awareness state
-	 * as long as we have 8021q uppers.
-	 */
+	 
 	if (vlan_filtering && dsa_port_is_user(dp)) {
 		struct net_device *br = dsa_port_bridge_dev_get(dp);
 		struct net_device *upper_dev, *slave = dp->slave;
@@ -753,10 +688,7 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
 
 			vid = vlan_dev_vlan_id(upper_dev);
 
-			/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
-			 * device, respectively the VID is not found, returning
-			 * 0 means success, which is a failure for us here.
-			 */
+			 
 			err = br_vlan_get_info(br, vid, &br_info);
 			if (err == 0) {
 				NL_SET_ERR_MSG_MOD(extack,
@@ -769,17 +701,11 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
 	if (!ds->vlan_filtering_is_global)
 		return true;
 
-	/* For cases where enabling/disabling VLAN awareness is global to the
-	 * switch, we need to handle the case where multiple bridges span
-	 * different ports of the same switch device and one of them has a
-	 * different setting than what is being requested.
-	 */
+	 
 	dsa_switch_for_each_port(other_dp, ds) {
 		struct net_device *other_br = dsa_port_bridge_dev_get(other_dp);
 
-		/* If it's the same bridge, it also has same
-		 * vlan_filtering setting => no need to check
-		 */
+		 
 		if (!other_br || other_br == dsa_port_bridge_dev_get(dp))
 			continue;
 
@@ -803,10 +729,7 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
 	if (!ds->ops->port_vlan_filtering)
 		return -EOPNOTSUPP;
 
-	/* We are called from dsa_slave_switchdev_blocking_event(),
-	 * which is not under rcu_read_lock(), unlike
-	 * dsa_slave_switchdev_event().
-	 */
+	 
 	rcu_read_lock();
 	apply = dsa_port_can_apply_vlan_filtering(dp, vlan_filtering, extack);
 	rcu_read_unlock();
@@ -829,9 +752,7 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
 		dsa_switch_for_each_user_port(other_dp, ds) {
 			struct net_device *slave = other_dp->slave;
 
-			/* We might be called in the unbind path, so not
-			 * all slave devices might still be registered.
-			 */
+			 
 			if (!slave)
 				continue;
 
@@ -862,9 +783,7 @@ restore:
 	return err;
 }
 
-/* This enforces legacy behavior for switch drivers which assume they can't
- * receive VLAN configuration when enslaved to a bridge with vlan_filtering=0
- */
+ 
 bool dsa_port_skip_vlan_configuration(struct dsa_port *dp)
 {
 	struct net_device *br = dsa_port_bridge_dev_get(dp);
@@ -990,10 +909,7 @@ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
 		},
 	};
 
-	/* Refcounting takes bridge.num as a key, and should be global for all
-	 * bridges in the absence of FDB isolation, and per bridge otherwise.
-	 * Force the bridge.num to zero here in the absence of FDB isolation.
-	 */
+	 
 	if (!dp->ds->fdb_isolation)
 		info.db.bridge.num = 0;
 
@@ -1057,10 +973,7 @@ int dsa_port_bridge_host_fdb_add(struct dsa_port *dp,
 	if (!dp->ds->fdb_isolation)
 		db.bridge.num = 0;
 
-	/* Avoid a call to __dev_set_promiscuity() on the master, which
-	 * requires rtnl_lock(), since we can't guarantee that is held here,
-	 * and we can't take it either.
-	 */
+	 
 	if (master->priv_flags & IFF_UNICAST_FLT) {
 		err = dev_uc_add(master, addr);
 		if (err)
@@ -1420,14 +1333,7 @@ static int dsa_port_assign_master(struct dsa_port *dp,
 	return 0;
 }
 
-/* Change the dp->cpu_dp affinity for a user port. Note that both cross-chip
- * notifiers and drivers have implicit assumptions about user-to-CPU-port
- * mappings, so we unfortunately cannot delay the deletion of the objects
- * (switchdev, standalone addresses, standalone VLANs) on the old CPU port
- * until the new CPU port has been set up. So we need to completely tear down
- * the old CPU port before changing it, and restore it on errors during the
- * bringup of the new one.
- */
+ 
 int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
 			   struct netlink_ext_ack *extack)
 {
@@ -1438,20 +1344,13 @@ int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
 	bool vlan_filtering;
 	int err, tmp;
 
-	/* Bridges may hold host FDB, MDB and VLAN objects. These need to be
-	 * migrated, so dynamically unoffload and later reoffload the bridge
-	 * port.
-	 */
+	 
 	if (bridge_dev) {
 		dsa_port_pre_bridge_leave(dp, bridge_dev);
 		dsa_port_bridge_leave(dp, bridge_dev);
 	}
 
-	/* The port might still be VLAN filtering even if it's no longer
-	 * under a bridge, either due to ds->vlan_filtering_is_global or
-	 * ds->needs_standalone_vlan_filtering. In turn this means VLANs
-	 * on the CPU port.
-	 */
+	 
 	vlan_filtering = dsa_port_is_vlan_filtering(dp);
 	if (vlan_filtering) {
 		err = dsa_slave_manage_vlan_filtering(dev, false);
@@ -1462,9 +1361,7 @@ int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
 		}
 	}
 
-	/* Standalone addresses, and addresses of upper interfaces like
-	 * VLAN, LAG, HSR need to be migrated.
-	 */
+	 
 	dsa_slave_unsync_ha(dev);
 
 	err = dsa_port_assign_master(dp, master, extack, true);
@@ -1502,7 +1399,7 @@ rewind_new_addrs:
 
 	dsa_port_assign_master(dp, old_master, NULL, false);
 
-/* Restore the objects on the old CPU port */
+ 
 rewind_old_addrs:
 	dsa_slave_sync_ha(dev);
 
@@ -1558,12 +1455,7 @@ static void dsa_port_phylink_validate(struct phylink_config *config,
 				      unsigned long *supported,
 				      struct phylink_link_state *state)
 {
-	/* Skip call for drivers which don't yet set mac_capabilities,
-	 * since validating in that case would mean their PHY will advertise
-	 * nothing. In turn, skipping validation makes them advertise
-	 * everything that the PHY supports, so those drivers should be
-	 * converted ASAP.
-	 */
+	 
 	if (config->mac_capabilities)
 		phylink_generic_validate(config, supported, state);
 }
@@ -1689,7 +1581,7 @@ int dsa_port_phylink_create(struct dsa_port *dp)
 	if (ds->ops->phylink_get_caps) {
 		ds->ops->phylink_get_caps(ds, dp->index, &dp->pl_config);
 	} else {
-		/* For legacy drivers */
+		 
 		if (mode != PHY_INTERFACE_MODE_NA) {
 			__set_bit(mode, dp->pl_config.supported_interfaces);
 		} else {
@@ -1816,41 +1708,7 @@ err_phy_connect:
 	return err;
 }
 
-/* During the initial DSA driver migration to OF, port nodes were sometimes
- * added to device trees with no indication of how they should operate from a
- * link management perspective (phy-handle, fixed-link, etc). Additionally, the
- * phy-mode may be absent. The interpretation of these port OF nodes depends on
- * their type.
- *
- * User ports with no phy-handle or fixed-link are expected to connect to an
- * internal PHY located on the ds->slave_mii_bus at an MDIO address equal to
- * the port number. This description is still actively supported.
- *
- * Shared (CPU and DSA) ports with no phy-handle or fixed-link are expected to
- * operate at the maximum speed that their phy-mode is capable of. If the
- * phy-mode is absent, they are expected to operate using the phy-mode
- * supported by the port that gives the highest link speed. It is unspecified
- * if the port should use flow control or not, half duplex or full duplex, or
- * if the phy-mode is a SERDES link, whether in-band autoneg is expected to be
- * enabled or not.
- *
- * In the latter case of shared ports, omitting the link management description
- * from the firmware node is deprecated and strongly discouraged. DSA uses
- * phylink, which rejects the firmware nodes of these ports for lacking
- * required properties.
- *
- * For switches in this table, DSA will skip enforcing validation and will
- * later omit registering a phylink instance for the shared ports, if they lack
- * a fixed-link, a phy-handle, or a managed = "in-band-status" property.
- * It becomes the responsibility of the driver to ensure that these ports
- * operate at the maximum speed (whatever this means) and will interoperate
- * with the DSA master or other cascade port, since phylink methods will not be
- * invoked for them.
- *
- * If you are considering expanding this table for newly introduced switches,
- * think again. It is OK to remove switches from this table if there aren't DT
- * blobs in circulation which rely on defaulting the shared ports.
- */
+ 
 static const char * const dsa_switches_apply_workarounds[] = {
 #if IS_ENABLED(CONFIG_NET_DSA_XRS700X)
 	"arrow,xrs7003e",
@@ -1948,9 +1806,7 @@ static void dsa_shared_port_validate_of(struct dsa_port *dp,
 			dn, dsa_port_is_cpu(dp) ? "CPU" : "DSA", dp->index);
 	}
 
-	/* Note: of_phy_is_fixed_link() also returns true for
-	 * managed = "in-band-status"
-	 */
+	 
 	if (of_phy_is_fixed_link(dn))
 		return;
 

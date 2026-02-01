@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Monitoring code for network dropped packet alerts
- *
- * Copyright (C) 2009 Neil Horman <nhorman@tuxdriver.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -42,18 +38,11 @@
 #define TRACE_ON 1
 #define TRACE_OFF 0
 
-/*
- * Globals, our netlink socket pointer
- * and the work handle that will send up
- * netlink alerts
- */
+ 
 static int trace_state = TRACE_OFF;
 static bool monitor_hw;
 
-/* net_dm_mutex
- *
- * An overall lock guarding every operation coming from userspace.
- */
+ 
 static DEFINE_MUTEX(net_dm_mutex);
 
 struct net_dm_stats {
@@ -74,9 +63,7 @@ struct net_dm_hw_entries {
 };
 
 struct per_cpu_dm_data {
-	spinlock_t		lock;	/* Protects 'skb', 'hw_entries' and
-					 * 'send_timer'
-					 */
+	spinlock_t		lock;	 
 	union {
 		struct sk_buff			*skb;
 		struct net_dm_hw_entries	*hw_entries;
@@ -200,11 +187,7 @@ static void send_dm_alert(struct work_struct *work)
 				  0, GFP_KERNEL);
 }
 
-/*
- * This is the timer function to delay the sending of an alert
- * in the event that more drops will arrive during the
- * hysteresis period.
- */
+ 
 static void sched_send_work(struct timer_list *t)
 {
 	struct per_cpu_dm_data *data = from_timer(data, t, send_timer);
@@ -244,9 +227,7 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
 	}
 	if (msg->entries == dm_hit_limit)
 		goto out;
-	/*
-	 * We need to create a new entry
-	 */
+	 
 	__nla_reserve_nohdr(dskb, sizeof(struct net_dm_drop_point));
 	nla->nla_len += NLA_ALIGN(sizeof(struct net_dm_drop_point));
 	memcpy(point->pc, &location, sizeof(void *));
@@ -274,20 +255,14 @@ static void trace_napi_poll_hit(void *ignore, struct napi_struct *napi,
 {
 	struct net_device *dev = napi->dev;
 	struct dm_hw_stat_delta *stat;
-	/*
-	 * Don't check napi structures with no associated device
-	 */
+	 
 	if (!dev)
 		return;
 
 	rcu_read_lock();
 	stat = rcu_dereference(dev->dm_private);
 	if (stat) {
-		/*
-		 * only add a note to our monitor buffer if:
-		 * 1) its after the last_rx delta
-		 * 2) our rx_dropped count has gone up
-		 */
+		 
 		if (time_after(jiffies, stat->last_rx + dm_hw_check_delta) &&
 		    (dev->stats.rx_dropped != stat->last_drop_val)) {
 			trace_drop_common(NULL, NULL);
@@ -307,10 +282,7 @@ net_dm_hw_reset_per_cpu_data(struct per_cpu_dm_data *hw_data)
 	hw_entries = kzalloc(struct_size(hw_entries, entries, dm_hit_limit),
 			     GFP_KERNEL);
 	if (!hw_entries) {
-		/* If the memory allocation failed, we try to perform another
-		 * allocation in 1/10 second. Otherwise, the probe function
-		 * will constantly bail out.
-		 */
+		 
 		mod_timer(&hw_data->send_timer, jiffies + HZ / 10);
 	}
 
@@ -385,9 +357,7 @@ net_dm_hw_summary_report_fill(struct sk_buff *msg,
 	if (!hdr)
 		return -EMSGSIZE;
 
-	/* We need to put the ancillary header in order not to break user
-	 * space.
-	 */
+	 
 	if (nla_put(msg, NLA_UNSPEC, sizeof(anc_hdr), &anc_hdr))
 		goto nla_put_failure;
 
@@ -509,9 +479,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
 	cb = NET_DM_SKB_CB(nskb);
 	cb->reason = reason;
 	cb->pc = location;
-	/* Override the timestamp because we care about the time when the
-	 * packet was dropped.
-	 */
+	 
 	nskb->tstamp = tstamp;
 
 	data = this_cpu_ptr(&dm_cpu_data);
@@ -543,11 +511,11 @@ static void net_dm_packet_trace_napi_poll_hit(void *ignore,
 
 static size_t net_dm_in_port_size(void)
 {
-	       /* NET_DM_ATTR_IN_PORT nest */
+	        
 	return nla_total_size(0) +
-	       /* NET_DM_ATTR_PORT_NETDEV_IFINDEX */
+	        
 	       nla_total_size(sizeof(u32)) +
-	       /* NET_DM_ATTR_PORT_NETDEV_NAME */
+	        
 	       nla_total_size(IFNAMSIZ + 1);
 }
 
@@ -561,23 +529,23 @@ static size_t net_dm_packet_report_size(size_t payload_len)
 	size = nlmsg_msg_size(GENL_HDRLEN + net_drop_monitor_family.hdrsize);
 
 	return NLMSG_ALIGN(size) +
-	       /* NET_DM_ATTR_ORIGIN */
+	        
 	       nla_total_size(sizeof(u16)) +
-	       /* NET_DM_ATTR_PC */
+	        
 	       nla_total_size(sizeof(u64)) +
-	       /* NET_DM_ATTR_SYMBOL */
+	        
 	       nla_total_size(NET_DM_MAX_SYMBOL_LEN + 1) +
-	       /* NET_DM_ATTR_IN_PORT */
+	        
 	       net_dm_in_port_size() +
-	       /* NET_DM_ATTR_TIMESTAMP */
+	        
 	       nla_total_size(sizeof(u64)) +
-	       /* NET_DM_ATTR_ORIG_LEN */
+	        
 	       nla_total_size(sizeof(u32)) +
-	       /* NET_DM_ATTR_PROTO */
+	        
 	       nla_total_size(sizeof(u16)) +
-	       /* NET_DM_ATTR_REASON */
+	        
 	       nla_total_size(NET_DM_MAX_REASON_LEN + 1) +
-	       /* NET_DM_ATTR_PAYLOAD */
+	        
 	       nla_total_size(payload_len);
 }
 
@@ -693,13 +661,13 @@ static void net_dm_packet_report(struct sk_buff *skb)
 	size_t payload_len;
 	int rc;
 
-	/* Make sure we start copying the packet from the MAC header */
+	 
 	if (skb->data > skb_mac_header(skb))
 		skb_push(skb, skb->data - skb_mac_header(skb));
 	else
 		skb_pull(skb, skb_mac_header(skb) - skb->data);
 
-	/* Ensure packet fits inside a single netlink attribute */
+	 
 	payload_len = min_t(size_t, skb->len, NET_DM_MAX_PACKET_SIZE);
 	if (net_dm_trunc_len)
 		payload_len = min_t(size_t, net_dm_trunc_len, payload_len);
@@ -755,23 +723,23 @@ net_dm_hw_packet_report_size(size_t payload_len,
 	size = nlmsg_msg_size(GENL_HDRLEN + net_drop_monitor_family.hdrsize);
 
 	return NLMSG_ALIGN(size) +
-	       /* NET_DM_ATTR_ORIGIN */
+	        
 	       nla_total_size(sizeof(u16)) +
-	       /* NET_DM_ATTR_HW_TRAP_GROUP_NAME */
+	        
 	       nla_total_size(strlen(hw_metadata->trap_group_name) + 1) +
-	       /* NET_DM_ATTR_HW_TRAP_NAME */
+	        
 	       nla_total_size(strlen(hw_metadata->trap_name) + 1) +
-	       /* NET_DM_ATTR_IN_PORT */
+	        
 	       net_dm_in_port_size() +
-	       /* NET_DM_ATTR_FLOW_ACTION_COOKIE */
+	        
 	       net_dm_flow_action_cookie_size(hw_metadata) +
-	       /* NET_DM_ATTR_TIMESTAMP */
+	        
 	       nla_total_size(sizeof(u64)) +
-	       /* NET_DM_ATTR_ORIG_LEN */
+	        
 	       nla_total_size(sizeof(u32)) +
-	       /* NET_DM_ATTR_PROTO */
+	        
 	       nla_total_size(sizeof(u16)) +
-	       /* NET_DM_ATTR_PAYLOAD */
+	        
 	       nla_total_size(payload_len);
 }
 
@@ -1151,10 +1119,7 @@ static int net_dm_trace_on_set(struct netlink_ext_ack *extack)
 
 		INIT_WORK(&data->dm_alert_work, ops->work_item_func);
 		timer_setup(&data->send_timer, sched_send_work, 0);
-		/* Allocate a new per-CPU skb for the summary alert message and
-		 * free the old one which might contain stale data from
-		 * previous tracing.
-		 */
+		 
 		skb = reset_per_cpu_data(data);
 		consume_skb(skb);
 	}
@@ -1201,9 +1166,7 @@ static void net_dm_trace_off_set(void)
 
 	tracepoint_synchronize_unregister();
 
-	/* Make sure we do not send notifications to user space after request
-	 * to stop tracing returns.
-	 */
+	 
 	for_each_possible_cpu(cpu) {
 		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
 		struct sk_buff *skb;
@@ -1371,9 +1334,7 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
 	bool set_hw = !!info->attrs[NET_DM_ATTR_HW_DROPS];
 	struct netlink_ext_ack *extack = info->extack;
 
-	/* To maintain backward compatibility, we start / stop monitoring of
-	 * software drops if no flag is specified.
-	 */
+	 
 	if (!set_sw && !set_hw)
 		set_sw = true;
 
@@ -1696,9 +1657,7 @@ static void net_dm_cpu_data_fini(int cpu)
 	struct per_cpu_dm_data *data;
 
 	data = &per_cpu(dm_cpu_data, cpu);
-	/* At this point, we should have exclusive access
-	 * to this struct and can free the skb inside it.
-	 */
+	 
 	consume_skb(data->skb);
 	__net_dm_cpu_data_fini(data);
 }
@@ -1765,10 +1724,7 @@ static void exit_net_drop_monitor(void)
 
 	BUG_ON(unregister_netdevice_notifier(&dropmon_net_notifier));
 
-	/*
-	 * Because of the module_get/put we do in the trace state change path
-	 * we are guaranteed not to have any current users when we get here
-	 */
+	 
 
 	for_each_possible_cpu(cpu) {
 		net_dm_hw_cpu_data_fini(cpu);

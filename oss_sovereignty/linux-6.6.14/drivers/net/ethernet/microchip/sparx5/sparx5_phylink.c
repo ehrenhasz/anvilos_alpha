@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/phylink.h>
@@ -39,7 +36,7 @@ static void sparx5_phylink_mac_config(struct phylink_config *config,
 				      unsigned int mode,
 				      const struct phylink_link_state *state)
 {
-	/* Currently not used */
+	 
 }
 
 static void sparx5_phylink_mac_link_up(struct phylink_config *config,
@@ -59,7 +56,7 @@ static void sparx5_phylink_mac_link_up(struct phylink_config *config,
 	conf.pause |= tx_pause ? MLO_PAUSE_TX : 0;
 	conf.pause |= rx_pause ? MLO_PAUSE_RX : 0;
 	conf.speed = speed;
-	/* Configure the port to speed/duplex/pause */
+	 
 	err = sparx5_port_config(port->sparx5, port, &conf);
 	if (err)
 		netdev_err(port->ndev, "port config failed: %d\n", err);
@@ -69,7 +66,7 @@ static void sparx5_phylink_mac_link_down(struct phylink_config *config,
 					 unsigned int mode,
 					 phy_interface_t interface)
 {
-	/* Currently not used */
+	 
 }
 
 static struct sparx5_port *sparx5_pcs_to_port(struct phylink_pcs *pcs)
@@ -119,7 +116,7 @@ static int sparx5_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 	}
 	if (!port_conf_has_changed(&port->conf, &conf))
 		return ret;
-	/* Enable the PCS matching this interface type */
+	 
 	ret = sparx5_port_pcs_set(port->sparx5, port, &conf);
 	if (ret)
 		netdev_err(port->ndev, "port PCS config failed: %d\n", ret);
@@ -128,7 +125,7 @@ static int sparx5_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 
 static void sparx5_pcs_aneg_restart(struct phylink_pcs *pcs)
 {
-	/* Currently not used */
+	 
 }
 
 const struct phylink_pcs_ops sparx5_phylink_pcs_ops = {

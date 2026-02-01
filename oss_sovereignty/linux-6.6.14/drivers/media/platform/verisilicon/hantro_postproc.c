@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro G1 post-processor support
- *
- * Copyright (C) 2019 Collabora, Ltd.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/types.h>
@@ -71,7 +67,7 @@ static void hantro_postproc_g1_enable(struct hantro_ctx *ctx)
 	u32 src_pp_fmt, dst_pp_fmt;
 	dma_addr_t dst_dma;
 
-	/* Turn on pipeline mode. Must be done first. */
+	 
 	HANTRO_PP_REG_WRITE(vpu, pipeline_en, 0x1);
 
 	src_pp_fmt = VPU_PP_IN_NV12;
@@ -157,10 +153,7 @@ static void hantro_postproc_g2_enable(struct hantro_ctx *ctx)
 static int hantro_postproc_g2_enum_framesizes(struct hantro_ctx *ctx,
 					      struct v4l2_frmsizeenum *fsize)
 {
-	/**
-	 * G2 scaler can scale down by 0, 2, 4 or 8
-	 * use fsize->index has power of 2 diviser
-	 **/
+	 
 	if (fsize->index > 3)
 		return -EINVAL;
 
@@ -200,7 +193,7 @@ int hantro_postproc_alloc(struct hantro_ctx *ctx)
 	const struct hantro_fmt *fmt;
 	unsigned int i, buf_size;
 
-	/* this should always pick native format */
+	 
 	fmt = hantro_get_default_fmt(ctx, false, ctx->bit_depth, HANTRO_AUTO_POSTPROC);
 	if (!fmt)
 		return -EINVAL;
@@ -224,10 +217,7 @@ int hantro_postproc_alloc(struct hantro_ctx *ctx)
 	for (i = 0; i < num_buffers; ++i) {
 		struct hantro_aux_buf *priv = &ctx->postproc.dec_q[i];
 
-		/*
-		 * The buffers on this queue are meant as intermediate
-		 * buffers for the decoder, so no mapping is needed.
-		 */
+		 
 		priv->attrs = DMA_ATTR_NO_KERNEL_MAPPING;
 		priv->cpu = dma_alloc_attrs(vpu->dev, buf_size, &priv->dma,
 					    GFP_KERNEL, priv->attrs);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2017-2019 NXP */
+
+ 
 
 #include "enetc.h"
 
@@ -13,7 +13,7 @@ int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw, int bd_count,
 	if (!cbdr->bd_base)
 		return -ENOMEM;
 
-	/* h/w requires 128B alignment */
+	 
 	if (!IS_ALIGNED(cbdr->bd_dma_base, 128)) {
 		dma_free_coherent(dev, size, cbdr->bd_base,
 				  cbdr->bd_dma_base);
@@ -29,7 +29,7 @@ int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw, int bd_count,
 	cbdr->cir = hw->reg + ENETC_SICBDRCIR;
 	cbdr->mr = hw->reg + ENETC_SICBDRMR;
 
-	/* set CBDR cache attributes */
+	 
 	enetc_wr(hw, ENETC_SICAR2,
 		 ENETC_SICAR_RD_COHERENT | ENETC_SICAR_WR_COHERENT);
 
@@ -39,7 +39,7 @@ int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw, int bd_count,
 
 	enetc_wr_reg(cbdr->pir, cbdr->next_to_clean);
 	enetc_wr_reg(cbdr->cir, cbdr->next_to_use);
-	/* enable ring */
+	 
 	enetc_wr_reg(cbdr->mr, BIT(31));
 
 	return 0;
@@ -50,7 +50,7 @@ void enetc_teardown_cbdr(struct enetc_cbdr *cbdr)
 {
 	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
 
-	/* disable ring */
+	 
 	enetc_wr_reg(cbdr->mr, 0);
 
 	dma_free_coherent(cbdr->dma_dev, size, cbdr->bd_base,
@@ -104,25 +104,25 @@ int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd)
 	i = ring->next_to_use;
 	dest_cbd = ENETC_CBD(*ring, i);
 
-	/* copy command to the ring */
+	 
 	*dest_cbd = *cbd;
 	i = (i + 1) % ring->bd_count;
 
 	ring->next_to_use = i;
-	/* let H/W know BD ring has been updated */
+	 
 	enetc_wr_reg(ring->pir, i);
 
 	do {
 		if (enetc_rd_reg(ring->cir) == i)
 			break;
-		udelay(10); /* cannot sleep, rtnl_lock() */
+		udelay(10);  
 		timeout -= 10;
 	} while (timeout);
 
 	if (!timeout)
 		return -EBUSY;
 
-	/* CBD may writeback data, feedback up level */
+	 
 	*cbd = *dest_cbd;
 
 	enetc_clean_cbdr(ring);
@@ -154,12 +154,12 @@ int enetc_set_mac_flt_entry(struct enetc_si *si, int index,
 
 	memset(&cbd, 0, sizeof(cbd));
 
-	/* fill up the "set" descriptor */
+	 
 	cbd.cls = 1;
 	cbd.status_flags = ENETC_CBD_FLAGS_SF;
 	cbd.index = cpu_to_le16(index);
 	cbd.opt[3] = cpu_to_le32(si_map);
-	/* enable entry */
+	 
 	cbd.opt[0] = cpu_to_le32(BIT(31));
 
 	upper = *(const u32 *)mac_addr;
@@ -171,7 +171,7 @@ int enetc_set_mac_flt_entry(struct enetc_si *si, int index,
 }
 EXPORT_SYMBOL_GPL(enetc_set_mac_flt_entry);
 
-/* Set entry in RFS table */
+ 
 int enetc_set_fs_entry(struct enetc_si *si, struct enetc_cmd_rfse *rfse,
 		       int index)
 {
@@ -181,11 +181,11 @@ int enetc_set_fs_entry(struct enetc_si *si, struct enetc_cmd_rfse *rfse,
 	dma_addr_t dma;
 	int err;
 
-	/* fill up the "set" descriptor */
+	 
 	cbd.cmd = 0;
 	cbd.cls = 4;
 	cbd.index = cpu_to_le16(index);
-	cbd.opt[3] = cpu_to_le32(0); /* SI */
+	cbd.opt[3] = cpu_to_le32(0);  
 
 	tmp = enetc_cbd_alloc_data_mem(si, &cbd, sizeof(*rfse),
 				       &dma, &tmp_align);
@@ -214,7 +214,7 @@ static int enetc_cmd_rss_table(struct enetc_si *si, u32 *table, int count,
 	int err, i;
 
 	if (count < ENETC_CBD_DATA_MEM_ALIGN)
-		/* HW only takes in a full 64 entry table */
+		 
 		return -EINVAL;
 
 	tmp = enetc_cbd_alloc_data_mem(si, &cbd, count,
@@ -226,7 +226,7 @@ static int enetc_cmd_rss_table(struct enetc_si *si, u32 *table, int count,
 		for (i = 0; i < count; i++)
 			tmp_align[i] = (u8)(table[i]);
 
-	/* fill up the descriptor */
+	 
 	cbd.cmd = read ? 2 : 1;
 	cbd.cls = 3;
 
@@ -243,14 +243,14 @@ static int enetc_cmd_rss_table(struct enetc_si *si, u32 *table, int count,
 	return err;
 }
 
-/* Get RSS table */
+ 
 int enetc_get_rss_table(struct enetc_si *si, u32 *table, int count)
 {
 	return enetc_cmd_rss_table(si, table, count, true);
 }
 EXPORT_SYMBOL_GPL(enetc_get_rss_table);
 
-/* Set RSS table */
+ 
 int enetc_set_rss_table(struct enetc_si *si, const u32 *table, int count)
 {
 	return enetc_cmd_rss_table(si, (u32 *)table, count, false);

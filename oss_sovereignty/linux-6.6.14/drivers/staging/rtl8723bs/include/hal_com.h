@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __HAL_COMMON_H__
 #define __HAL_COMMON_H__
 
@@ -14,19 +10,19 @@
 #include "hal_com_reg.h"
 #include "hal_com_phycfg.h"
 
-/*------------------------------ Tx Desc definition Macro ------------------------*/
-/* pragma mark -- Tx Desc related definition. -- */
-/*  */
-/*  */
-/* 	Rate */
-/*  */
-/*  CCK Rates, TxHT = 0 */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 #define DESC_RATE1M					0x00
 #define DESC_RATE2M					0x01
 #define DESC_RATE5_5M				0x02
 #define DESC_RATE11M				0x03
 
-/*  OFDM Rates, TxHT = 0 */
+ 
 #define DESC_RATE6M					0x04
 #define DESC_RATE9M					0x05
 #define DESC_RATE12M				0x06
@@ -36,7 +32,7 @@
 #define DESC_RATE48M				0x0a
 #define DESC_RATE54M				0x0b
 
-/*  MCS Rates, TxHT = 1 */
+ 
 #define DESC_RATEMCS0				0x0c
 #define DESC_RATEMCS1				0x0d
 #define DESC_RATEMCS2				0x0e
@@ -77,15 +73,15 @@ enum rt_media_status {
 	RT_MEDIA_CONNECT       = 1
 };
 
-#define MAX_DLFW_PAGE_SIZE			4096	/*  @ page : 4k bytes */
+#define MAX_DLFW_PAGE_SIZE			4096	 
 
-/*  BK, BE, VI, VO, HCCA, MANAGEMENT, COMMAND, HIGH, BEACON. */
-/* define MAX_TX_QUEUE		9 */
+ 
+ 
 
-#define TX_SELE_HQ			BIT(0)		/*  High Queue */
-#define TX_SELE_LQ			BIT(1)		/*  Low Queue */
-#define TX_SELE_NQ			BIT(2)		/*  Normal Queue */
-#define TX_SELE_EQ			BIT(3)		/*  Extern Queue */
+#define TX_SELE_HQ			BIT(0)		 
+#define TX_SELE_LQ			BIT(1)		 
+#define TX_SELE_NQ			BIT(2)		 
+#define TX_SELE_EQ			BIT(3)		 
 
 #define PageNum_128(_Len)		((u32)(((_Len) >> 7) + ((_Len) & 0x7F ? 1 : 0)))
 
@@ -94,12 +90,12 @@ void rtw_hal_data_deinit(struct adapter *padapter);
 
 void dump_chip_info(struct hal_version	ChipVersion);
 
-u8 /* return the final channel plan decision */
+u8  
 hal_com_config_channel_plan(
 struct adapter *padapter,
-u8 	hw_channel_plan,	/* channel plan from HW (efuse/eeprom) */
-u8 	sw_channel_plan,	/* channel plan from SW (registry/module param) */
-u8 	def_channel_plan,	/* channel plan used when the former two is invalid */
+u8 	hw_channel_plan,	 
+u8 	sw_channel_plan,	 
+u8 	def_channel_plan,	 
 bool		AutoLoadFail
 	);
 
@@ -167,4 +163,4 @@ void SetHalODMVar(
 	enum hal_odm_variable		eVariable,
 	void *pValue1,
 	bool					bSet);
-#endif /* __HAL_COMMON_H__ */
+#endif  

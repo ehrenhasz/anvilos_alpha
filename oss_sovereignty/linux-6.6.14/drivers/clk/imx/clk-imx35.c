@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- */
+
+ 
 #include <linux/mm.h>
 #include <linux/delay.h>
 #include <linux/clk.h>
@@ -61,22 +59,22 @@ static const char *std_sel[] = {"ppll", "arm"};
 static const char *ipg_per_sel[] = {"ahb_per_div", "arm_per_div"};
 
 enum mx35_clks {
-	/*  0 */ ckih, mpll, ppll, mpll_075, arm, hsp, hsp_div, hsp_sel, ahb,
-	/*  9 */ ipg, arm_per_div, ahb_per_div, ipg_per, uart_sel, uart_div,
-	/* 15 */ esdhc_sel, esdhc1_div, esdhc2_div, esdhc3_div, spdif_sel,
-	/* 20 */ spdif_div_pre, spdif_div_post, ssi_sel, ssi1_div_pre,
-	/* 24 */ ssi1_div_post, ssi2_div_pre, ssi2_div_post, usb_sel, usb_div,
-	/* 29 */ nfc_div, asrc_gate, pata_gate, audmux_gate, can1_gate,
-	/* 34 */ can2_gate, cspi1_gate, cspi2_gate, ect_gate, edio_gate,
-	/* 39 */ emi_gate, epit1_gate, epit2_gate, esai_gate, esdhc1_gate,
-	/* 44 */ esdhc2_gate, esdhc3_gate, fec_gate, gpio1_gate, gpio2_gate,
-	/* 49 */ gpio3_gate, gpt_gate, i2c1_gate, i2c2_gate, i2c3_gate,
-	/* 54 */ iomuxc_gate, ipu_gate, kpp_gate, mlb_gate, mshc_gate,
-	/* 59 */ owire_gate, pwm_gate, rngc_gate, rtc_gate, rtic_gate, scc_gate,
-	/* 65 */ sdma_gate, spba_gate, spdif_gate, ssi1_gate, ssi2_gate,
-	/* 70 */ uart1_gate, uart2_gate, uart3_gate, usbotg_gate, wdog_gate,
-	/* 75 */ max_gate, admux_gate, csi_gate, csi_div, csi_sel, iim_gate,
-	/* 81 */ gpu2d_gate, ckil, clk_max
+	  ckih, mpll, ppll, mpll_075, arm, hsp, hsp_div, hsp_sel, ahb,
+	  ipg, arm_per_div, ahb_per_div, ipg_per, uart_sel, uart_div,
+	  esdhc_sel, esdhc1_div, esdhc2_div, esdhc3_div, spdif_sel,
+	  spdif_div_pre, spdif_div_post, ssi_sel, ssi1_div_pre,
+	  ssi1_div_post, ssi2_div_pre, ssi2_div_post, usb_sel, usb_div,
+	  nfc_div, asrc_gate, pata_gate, audmux_gate, can1_gate,
+	  can2_gate, cspi1_gate, cspi2_gate, ect_gate, edio_gate,
+	  emi_gate, epit1_gate, epit2_gate, esai_gate, esdhc1_gate,
+	  esdhc2_gate, esdhc3_gate, fec_gate, gpio1_gate, gpio2_gate,
+	  gpio3_gate, gpt_gate, i2c1_gate, i2c2_gate, i2c3_gate,
+	  iomuxc_gate, ipu_gate, kpp_gate, mlb_gate, mshc_gate,
+	  owire_gate, pwm_gate, rngc_gate, rtc_gate, rtic_gate, scc_gate,
+	  sdma_gate, spba_gate, spdif_gate, ssi1_gate, ssi2_gate,
+	  uart1_gate, uart2_gate, uart3_gate, usbotg_gate, wdog_gate,
+	  max_gate, admux_gate, csi_gate, csi_div, csi_sel, iim_gate,
+	  gpu2d_gate, ckil, clk_max
 };
 
 static struct clk *clk[clk_max];
@@ -96,10 +94,7 @@ static void __init _mx35_clocks_init(void)
 	aad = &clk_consumer[consumer_sel];
 	if (!aad->arm) {
 		pr_err("i.MX35 clk: illegal consumer mux selection 0x%x\n", consumer_sel);
-		/*
-		 * We are basically stuck. Continue with a default entry and hope we
-		 * get far enough to actually show the above message
-		 */
+		 
 		aad = &clk_consumer[0];
 	}
 
@@ -144,7 +139,7 @@ static void __init _mx35_clocks_init(void)
 	clk[esdhc3_div] = imx_clk_divider("esdhc3_div", "esdhc_sel", base + MX35_CCM_PDR3, 16, 6);
 
 	clk[spdif_sel] = imx_clk_mux("spdif_sel", base + MX35_CCM_PDR3, 22, 1, std_sel, ARRAY_SIZE(std_sel));
-	clk[spdif_div_pre] = imx_clk_divider("spdif_div_pre", "spdif_sel", base + MX35_CCM_PDR3, 29, 3); /* divide by 1 not allowed */ 
+	clk[spdif_div_pre] = imx_clk_divider("spdif_div_pre", "spdif_sel", base + MX35_CCM_PDR3, 29, 3);   
 	clk[spdif_div_post] = imx_clk_divider("spdif_div_post", "spdif_div_pre", base + MX35_CCM_PDR3, 23, 6);
 
 	clk[ssi_sel] = imx_clk_mux("ssi_sel", base + MX35_CCM_PDR2, 6, 1, std_sel, ARRAY_SIZE(std_sel));
@@ -226,12 +221,7 @@ static void __init _mx35_clocks_init(void)
 	clk_prepare_enable(clk[max_gate]);
 	clk_prepare_enable(clk[iomuxc_gate]);
 
-	/*
-	 * SCC is needed to boot via mmc after a watchdog reset. The clock code
-	 * before conversion to common clk also enabled UART1 (which isn't
-	 * handled here and not needed for mmc) and IIM (which is enabled
-	 * unconditionally above).
-	 */
+	 
 	clk_prepare_enable(clk[scc_gate]);
 
 	imx_register_uart_clocks();

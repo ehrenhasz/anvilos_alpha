@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include "msm_gpu.h"
 #include "msm_gpu_trace.h"
@@ -12,9 +9,7 @@
 #include <linux/math64.h>
 #include <linux/units.h>
 
-/*
- * Power Management:
- */
+ 
 
 static int msm_devfreq_target(struct device *dev, unsigned long *freq,
 		u32 flags)
@@ -23,20 +18,14 @@ static int msm_devfreq_target(struct device *dev, unsigned long *freq,
 	struct msm_gpu_devfreq *df = &gpu->devfreq;
 	struct dev_pm_opp *opp;
 
-	/*
-	 * Note that devfreq_recommended_opp() can modify the freq
-	 * to something that actually is in the opp table:
-	 */
+	 
 	opp = devfreq_recommended_opp(dev, freq, flags);
 	if (IS_ERR(opp))
 		return PTR_ERR(opp);
 
 	trace_msm_gpu_freq_change(dev_pm_opp_get_freq(opp));
 
-	/*
-	 * If the GPU is idle, devfreq is not aware, so just stash
-	 * the new target freq (to use when we return to active)
-	 */
+	 
 	if (df->idle_freq) {
 		df->idle_freq = *freq;
 		dev_pm_opp_put(opp);
@@ -60,11 +49,7 @@ static unsigned long get_freq(struct msm_gpu *gpu)
 {
 	struct msm_gpu_devfreq *df = &gpu->devfreq;
 
-	/*
-	 * If the GPU is idle, use the shadow/saved freq to avoid
-	 * confusing devfreq (which is unaware that we are switching
-	 * to lowest freq until the device is active again)
-	 */
+	 
 	if (df->idle_freq)
 		return df->idle_freq;
 
@@ -141,16 +126,11 @@ void msm_devfreq_init(struct msm_gpu *gpu)
 	struct msm_gpu_devfreq *df = &gpu->devfreq;
 	struct msm_drm_private *priv = gpu->dev->dev_private;
 
-	/* We need target support to do devfreq */
+	 
 	if (!gpu->funcs->gpu_busy)
 		return;
 
-	/*
-	 * Setup default values for simple_ondemand governor tuning.  We
-	 * want to throttle up at 50% load for the double-buffer case,
-	 * where due to stalling waiting for vblank we could get stuck
-	 * at (for ex) 30fps at 50% utilization.
-	 */
+	 
 	priv->gpu_devfreq_config.upthreshold = 50;
 	priv->gpu_devfreq_config.downdifferential = 10;
 
@@ -161,12 +141,7 @@ void msm_devfreq_init(struct msm_gpu *gpu)
 
 	msm_devfreq_profile.initial_freq = gpu->fast_rate;
 
-	/*
-	 * Don't set the freq_table or max_state and let devfreq build the table
-	 * from OPP
-	 * After a deferred probe, these may have be left to non-zero values,
-	 * so set them back to zero before creating the devfreq device
-	 */
+	 
 	msm_devfreq_profile.freq_table = NULL;
 	msm_devfreq_profile.max_state = 0;
 
@@ -272,10 +247,7 @@ void msm_devfreq_boost(struct msm_gpu *gpu, unsigned factor)
 	freq = get_freq(gpu);
 	freq *= factor;
 
-	/*
-	 * A nice little trap is that PM QoS operates in terms of KHz,
-	 * while devfreq operates in terms of Hz:
-	 */
+	 
 	do_div(freq, HZ_PER_KHZ);
 
 	dev_pm_qos_update_request(&df->boost_freq, freq);
@@ -294,15 +266,10 @@ void msm_devfreq_active(struct msm_gpu *gpu)
 	if (!has_devfreq(gpu))
 		return;
 
-	/*
-	 * Cancel any pending transition to idle frequency:
-	 */
+	 
 	cancel_idle_work(df);
 
-	/*
-	 * Hold devfreq lock to synchronize with get_dev_status()/
-	 * target() callbacks
-	 */
+	 
 	mutex_lock(&df->devfreq->lock);
 
 	target_freq = df->idle_freq;
@@ -311,21 +278,13 @@ void msm_devfreq_active(struct msm_gpu *gpu)
 
 	df->idle_freq = 0;
 
-	/*
-	 * We could have become active again before the idle work had a
-	 * chance to run, in which case the df->idle_freq would have
-	 * still been zero.  In this case, no need to change freq.
-	 */
+	 
 	if (target_freq)
 		msm_devfreq_target(&gpu->pdev->dev, &target_freq, 0);
 
 	mutex_unlock(&df->devfreq->lock);
 
-	/*
-	 * If we've been idle for a significant fraction of a polling
-	 * interval, then we won't meet the threshold of busyness for
-	 * the governor to ramp up the freq.. so give some boost
-	 */
+	 
 	if (idle_time > msm_devfreq_profile.polling_ms) {
 		msm_devfreq_boost(gpu, 2);
 	}
@@ -340,10 +299,7 @@ static void msm_devfreq_idle_work(struct kthread_work *work)
 	struct msm_drm_private *priv = gpu->dev->dev_private;
 	unsigned long idle_freq, target_freq = 0;
 
-	/*
-	 * Hold devfreq lock to synchronize with get_dev_status()/
-	 * target() callbacks
-	 */
+	 
 	mutex_lock(&df->devfreq->lock);
 
 	idle_freq = get_freq(gpu);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __SOC_QCOM_RPMH_H__
 #define __SOC_QCOM_RPMH_H__
@@ -42,6 +40,6 @@ static inline void rpmh_invalidate(const struct device *dev)
 {
 }
 
-#endif /* CONFIG_QCOM_RPMH */
+#endif  
 
-#endif /* __SOC_QCOM_RPMH_H__ */
+#endif  

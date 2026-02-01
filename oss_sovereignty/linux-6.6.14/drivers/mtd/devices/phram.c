@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) ????		Jochen Schäuble <psionic@psionic.de>
- * Copyright (c) 2003-2004	Joern Engel <joern@wh.fh-wedel.de>
- *
- * Usage:
- *
- * one commend line parameter per device, each in the form:
- *   phram=<name>,<start>,<len>[,<erasesize>]
- * <name> may be up to 63 characters.
- * <start>, <len>, and <erasesize> can be octal, decimal or hexadecimal.  If followed
- * by "ki", "Mi" or "Gi", the numbers will be interpreted as kilo, mega or
- * gigabytes. <erasesize> is optional and defaults to PAGE_SIZE.
- *
- * Example:
- *	phram=swap,64Mi,128Mi phram=test,900Mi,1Mi,64Ki
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -185,7 +170,7 @@ static int parse_num64(uint64_t *num64, char *token)
 	int ret;
 
 	len = strlen(token);
-	/* By dwmw2 editorial decree, "ki", "Mi" or "Gi" are to be used. */
+	 
 	if (len > 2) {
 		if (token[len - 1] == 'i') {
 			switch (token[len - 2]) {
@@ -245,14 +230,7 @@ static inline void kill_final_newline(char *str)
 
 #ifndef MODULE
 static int phram_init_called;
-/*
- * This shall contain the module parameter if any. It is of the form:
- * - phram=<device>,<address>,<size>[,<erasesize>] for module case
- * - phram.phram=<device>,<address>,<size>[,<erasesize>] for built-in case
- * We leave 64 bytes for the device name, 20 for the address , 20 for the
- * size and 20 for the erasesize.
- * Example: phram.phram=rootfs,0xa0000000,512Mi,65536
- */
+ 
 static char phram_paramline[64 + 20 + 20 + 20];
 #endif
 
@@ -337,24 +315,12 @@ static int phram_param_call(const char *val, const struct kernel_param *kp)
 #ifdef MODULE
 	return phram_setup(val);
 #else
-	/*
-	 * If more parameters are later passed in via
-	 * /sys/module/phram/parameters/phram
-	 * and init_phram() has already been called,
-	 * we can parse the argument now.
-	 */
+	 
 
 	if (phram_init_called)
 		return phram_setup(val);
 
-	/*
-	 * During early boot stage, we only save the parameters
-	 * here. We must parse them later: if the param passed
-	 * from kernel boot command line, phram_param_call() is
-	 * called so early that it is not possible to resolve
-	 * the device (even kmalloc() fails). Defer that work to
-	 * phram_setup().
-	 */
+	 
 
 	if (strlen(val) >= sizeof(phram_paramline))
 		return -ENOSPC;
@@ -383,7 +349,7 @@ static int phram_probe(struct platform_device *pdev)
 	if (!res)
 		return -ENOMEM;
 
-	/* mtd_set_of_node() reads name from "label" */
+	 
 	return register_device(pdev, NULL, res->start, resource_size(res),
 			       PAGE_SIZE);
 }

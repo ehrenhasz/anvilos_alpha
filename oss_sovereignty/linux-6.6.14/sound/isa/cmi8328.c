@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for C-Media CMI8328-based soundcards, such as AudioExcel AV500
- * Copyright (c) 2012 Ondrej Zary
- *
- * AudioExcel AV500 card consists of:
- *  - CMI8328 - main chip (SB Pro emulation, gameport, OPL3, MPU401, CD-ROM)
- *  - CS4231A - WSS codec
- *  - Dream SAM9233+GMS950400+RAM+ROM: Wavetable MIDI, connected to MPU401
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/isa.h>
@@ -31,7 +23,7 @@ MODULE_LICENSE("GPL");
 #define SUPPORT_JOYSTICK 1
 #endif
 
-/* I/O port is configured by jumpers on the card to one of these */
+ 
 static const int cmi8328_ports[] = { 0x530, 0xe80, 0xf40, 0x604 };
 #define CMI8328_MAX	ARRAY_SIZE(cmi8328_ports)
 
@@ -81,35 +73,16 @@ struct snd_cmi8328 {
 #endif
 };
 
-/* CMI8328 configuration registers */
+ 
 #define CFG1 0x61
 #define CFG1_SB_DISABLE	(1 << 0)
 #define CFG1_GAMEPORT	(1 << 1)
-/*
- * bit 0:    SB: 0=enabled, 1=disabled
- * bit 1:    gameport: 0=disabled, 1=enabled
- * bits 2-4: SB IRQ: 001=3, 010=5, 011=7, 100=9, 101=10, 110=11
- * bits 5-6: SB DMA: 00=disabled (when SB disabled), 01=DMA0, 10=DMA1, 11=DMA3
- * bit 7:    SB port: 0=0x220, 1=0x240
- */
+ 
 #define CFG2 0x62
 #define CFG2_MPU_ENABLE (1 << 2)
-/*
- * bits 0-1: CD-ROM mode: 00=disabled, 01=Panasonic, 10=Sony/Mitsumi/Wearnes,
-			  11=IDE
- * bit 2:    MPU401: 0=disabled, 1=enabled
- * bits 3-4: MPU401 IRQ: 00=3, 01=5, 10=7, 11=9,
- * bits 5-7: MPU401 port: 000=0x300, 001=0x310, 010=0x320, 011=0x330, 100=0x332,
-			  101=0x334, 110=0x336
- */
+ 
 #define CFG3 0x63
-/*
- * bits 0-2: CD-ROM IRQ: 000=disabled, 001=3, 010=5, 011=7, 100=9, 101=10,
-			 110=11
- * bits 3-4: CD-ROM DMA: 00=disabled, 01=DMA0, 10=DMA1, 11=DMA3
- * bits 5-7: CD-ROM port: 000=0x300, 001=0x310, 010=0x320, 011=0x330, 100=0x340,
-			  101=0x350, 110=0x360, 111=0x370
- */
+ 
 
 static u8 snd_cmi8328_cfg_read(u16 port, u8 reg)
 {
@@ -124,7 +97,7 @@ static void snd_cmi8328_cfg_write(u16 port, u8 reg, u8 val)
 	outb(0x43, port + 3);
 	outb(0x21, port + 3);
 	outb(reg, port + 3);
-	outb(val, port + 3);	/* yes, value goes to the same port as index */
+	outb(val, port + 3);	 
 }
 
 #ifdef CONFIG_PM
@@ -141,7 +114,7 @@ static void snd_cmi8328_cfg_restore(u16 port, u8 cfg[])
 	snd_cmi8328_cfg_write(port, CFG2, cfg[1]);
 	snd_cmi8328_cfg_write(port, CFG3, cfg[2]);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static int snd_cmi8328_mixer(struct snd_wss *chip)
 {
@@ -154,7 +127,7 @@ static int snd_cmi8328_mixer(struct snd_wss *chip)
 	memset(&id1, 0, sizeof(id1));
 	memset(&id2, 0, sizeof(id2));
 	id1.iface = id2.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-	/* rename AUX0 switch to CD */
+	 
 	strcpy(id1.name, "Aux Playback Switch");
 	strcpy(id2.name, "CD Playback Switch");
 	err = snd_ctl_rename_id(card, &id1, &id2);
@@ -162,7 +135,7 @@ static int snd_cmi8328_mixer(struct snd_wss *chip)
 		snd_printk(KERN_ERR "error renaming control\n");
 		return err;
 	}
-	/* rename AUX0 volume to CD */
+	 
 	strcpy(id1.name, "Aux Playback Volume");
 	strcpy(id2.name, "CD Playback Volume");
 	err = snd_ctl_rename_id(card, &id1, &id2);
@@ -170,7 +143,7 @@ static int snd_cmi8328_mixer(struct snd_wss *chip)
 		snd_printk(KERN_ERR "error renaming control\n");
 		return err;
 	}
-	/* rename AUX1 switch to Synth */
+	 
 	strcpy(id1.name, "Aux Playback Switch");
 	id1.index = 1;
 	strcpy(id2.name, "Synth Playback Switch");
@@ -179,7 +152,7 @@ static int snd_cmi8328_mixer(struct snd_wss *chip)
 		snd_printk(KERN_ERR "error renaming control\n");
 		return err;
 	}
-	/* rename AUX1 volume to Synth */
+	 
 	strcpy(id1.name, "Aux Playback Volume");
 	id1.index = 1;
 	strcpy(id2.name, "Synth Playback Volume");
@@ -192,7 +165,7 @@ static int snd_cmi8328_mixer(struct snd_wss *chip)
 	return 0;
 }
 
-/* find index of an item in "-1"-ended array */
+ 
 static int array_find(const int array[], int item)
 {
 	int i;
@@ -203,7 +176,7 @@ static int array_find(const int array[], int item)
 
 	return -1;
 }
-/* the same for long */
+ 
 static int array_find_l(const long array[], long item)
 {
 	int i;
@@ -237,16 +210,16 @@ static int snd_cmi8328_probe(struct device *pdev, unsigned int ndev)
 	u16 port = cmi8328_ports[ndev];
 	u8 val;
 
-	/* 0xff is invalid configuration (but settable - hope it isn't set) */
+	 
 	if (snd_cmi8328_cfg_read(port, CFG1) == 0xff)
 		return -ENODEV;
-	/* the SB disable bit must NEVER EVER be cleared or the WSS dies */
+	 
 	snd_cmi8328_cfg_write(port, CFG1, CFG1_SB_DISABLE);
 	if (snd_cmi8328_cfg_read(port, CFG1) != CFG1_SB_DISABLE)
 		return -ENODEV;
-	/* disable everything first */
-	snd_cmi8328_cfg_write(port, CFG2, 0);	/* disable CDROM and MPU401 */
-	snd_cmi8328_cfg_write(port, CFG3, 0);	/* disable CDROM IRQ and DMA */
+	 
+	snd_cmi8328_cfg_write(port, CFG2, 0);	 
+	snd_cmi8328_cfg_write(port, CFG3, 0);	 
 
 	if (irq[ndev] == SNDRV_AUTO_IRQ) {
 		irq[ndev] = snd_legacy_find_free_irq(irqs);
@@ -269,28 +242,28 @@ static int snd_cmi8328_probe(struct device *pdev, unsigned int ndev)
 			dma2[ndev] = -1;
 		}
 	}
-	/* configure WSS IRQ... */
+	 
 	pos = array_find(irqs, irq[ndev]);
 	if (pos < 0) {
 		snd_printk(KERN_ERR "invalid IRQ %d\n", irq[ndev]);
 		return -EINVAL;
 	}
 	val = irq_bits[pos] << 3;
-	/* ...and DMA... */
+	 
 	pos = array_find(dma1s, dma1[ndev]);
 	if (pos < 0) {
 		snd_printk(KERN_ERR "invalid DMA1 %d\n", dma1[ndev]);
 		return -EINVAL;
 	}
 	val |= dma_bits[pos];
-	/* ...and DMA2 */
+	 
 	if (dma2[ndev] >= 0 && dma1[ndev] != dma2[ndev]) {
 		pos = array_find(dma2s[dma1[ndev]], dma2[ndev]);
 		if (pos < 0) {
 			snd_printk(KERN_ERR "invalid DMA2 %d\n", dma2[ndev]);
 			return -EINVAL;
 		}
-		val |= 0x04; /* enable separate capture DMA */
+		val |= 0x04;  
 	}
 	outb(val, port);
 
@@ -332,7 +305,7 @@ static int snd_cmi8328_probe(struct device *pdev, unsigned int ndev)
 		if (mpuirq[ndev] < 0)
 			snd_printk(KERN_ERR "unable to find a free MPU401 IRQ\n");
 	}
-	/* enable and configure MPU401 */
+	 
 	if (mpuport[ndev] > 0 && mpuirq[ndev] > 0) {
 		val = CFG2_MPU_ENABLE;
 		pos = array_find_l(mpu_ports, mpuport[ndev]);
@@ -355,7 +328,7 @@ static int snd_cmi8328_probe(struct device *pdev, unsigned int ndev)
 			}
 		}
 	}
-	/* OPL3 is hardwired to 0x388 and cannot be disabled */
+	 
 	if (snd_opl3_create(card, 0x388, 0x38a, OPL3_HW_AUTO, 0, &opl3) < 0)
 		snd_printk(KERN_ERR "error initializing OPL3\n");
 	else
@@ -375,7 +348,7 @@ static int snd_cmi8328_probe(struct device *pdev, unsigned int ndev)
 #ifdef SUPPORT_JOYSTICK
 	if (!gameport[ndev])
 		return 0;
-	/* gameport is hardwired to 0x200 */
+	 
 	res = devm_request_region(pdev, 0x200, 8, "CMI8328 gameport");
 	if (!res)
 		snd_printk(KERN_WARNING "unable to allocate gameport I/O port\n");
@@ -386,7 +359,7 @@ static int snd_cmi8328_probe(struct device *pdev, unsigned int ndev)
 			gameport_set_phys(gp, "%s/gameport0", dev_name(pdev));
 			gameport_set_dev_parent(gp, pdev);
 			gp->io = 0x200;
-			/* Enable gameport */
+			 
 			snd_cmi8328_cfg_write(port, CFG1,
 					CFG1_SB_DISABLE | CFG1_GAMEPORT);
 			gameport_register_port(gp);
@@ -405,7 +378,7 @@ static void snd_cmi8328_remove(struct device *pdev, unsigned int dev)
 	if (cmi->gameport)
 		gameport_unregister_port(cmi->gameport);
 #endif
-	/* disable everything */
+	 
 	snd_cmi8328_cfg_write(cmi->port, CFG1, CFG1_SB_DISABLE);
 	snd_cmi8328_cfg_write(cmi->port, CFG2, 0);
 	snd_cmi8328_cfg_write(cmi->port, CFG3, 0);
@@ -418,7 +391,7 @@ static int snd_cmi8328_suspend(struct device *pdev, unsigned int n,
 	struct snd_card *card = dev_get_drvdata(pdev);
 	struct snd_cmi8328 *cmi;
 
-	if (!card)	/* ignore absent devices */
+	if (!card)	 
 		return 0;
 	cmi = card->private_data;
 	snd_cmi8328_cfg_save(cmi->port, cmi->cfg);
@@ -433,7 +406,7 @@ static int snd_cmi8328_resume(struct device *pdev, unsigned int n)
 	struct snd_card *card = dev_get_drvdata(pdev);
 	struct snd_cmi8328 *cmi;
 
-	if (!card)	/* ignore absent devices */
+	if (!card)	 
 		return 0;
 	cmi = card->private_data;
 	snd_cmi8328_cfg_restore(cmi->port, cmi->cfg);

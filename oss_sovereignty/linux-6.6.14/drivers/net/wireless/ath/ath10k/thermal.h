@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2014-2016 Qualcomm Atheros, Inc.
- */
+ 
+ 
 #ifndef _THERMAL_
 #define _THERMAL_
 
@@ -16,12 +14,10 @@ struct ath10k_thermal {
 	struct thermal_cooling_device *cdev;
 	struct completion wmi_sync;
 
-	/* protected by conf_mutex */
+	 
 	u32 throttle_state;
 	u32 quiet_period;
-	/* temperature value in Celsius degree
-	 * protected by data_lock
-	 */
+	 
 	int temperature;
 };
 
@@ -50,4 +46,4 @@ static inline void ath10k_thermal_set_throttling(struct ath10k *ar)
 }
 
 #endif
-#endif /* _THERMAL_ */
+#endif  

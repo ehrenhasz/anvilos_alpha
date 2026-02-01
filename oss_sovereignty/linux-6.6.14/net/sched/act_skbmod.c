@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_skbmod.c  skb data modifier
- *
- * Copyright (c) 2016 Jamal Hadi Salim <jhs@mojatatu.com>
-*/
+
+ 
 
 #include <linux/module.h>
 #include <linux/if_arp.h>
@@ -42,13 +38,7 @@ TC_INDIRECT_SCOPE int tcf_skbmod_act(struct sk_buff *skb,
 	p = rcu_dereference_bh(d->skbmod_p);
 	flags = p->flags;
 
-	/* tcf_skbmod_init() guarantees "flags" to be one of the following:
-	 *	1. a combination of SKBMOD_F_{DMAC,SMAC,ETYPE}
-	 *	2. SKBMOD_F_SWAPMAC
-	 *	3. SKBMOD_F_ECN
-	 * SKBMOD_F_ECN only works with IP packets; all other flags only work with Ethernet
-	 * packets.
-	 */
+	 
 	if (flags == SKBMOD_F_ECN) {
 		switch (skb_protocol(skb, true)) {
 		case cpu_to_be16(ETH_P_IP):
@@ -63,7 +53,7 @@ TC_INDIRECT_SCOPE int tcf_skbmod_act(struct sk_buff *skb,
 	}
 
 	err = skb_ensure_writable(skb, max_edit_len);
-	if (unlikely(err)) /* best policy is to drop on the floor */
+	if (unlikely(err))  
 		goto drop;
 
 	if (flags & SKBMOD_F_DMAC)
@@ -74,8 +64,8 @@ TC_INDIRECT_SCOPE int tcf_skbmod_act(struct sk_buff *skb,
 		eth_hdr(skb)->h_proto = p->eth_type;
 
 	if (flags & SKBMOD_F_SWAPMAC) {
-		u16 tmpaddr[ETH_ALEN / 2]; /* ether_addr_copy() requirement */
-		/*XXX: I am sure we can come up with more efficient swapping*/
+		u16 tmpaddr[ETH_ALEN / 2];  
+		 
 		ether_addr_copy((u8 *)tmpaddr, eth_hdr(skb)->h_dest);
 		ether_addr_copy(eth_hdr(skb)->h_dest, eth_hdr(skb)->h_source);
 		ether_addr_copy(eth_hdr(skb)->h_source, (u8 *)tmpaddr);
@@ -196,7 +186,7 @@ static int tcf_skbmod_init(struct net *net, struct nlattr *nla,
 
 	if (ovr)
 		spin_lock_bh(&d->tcf_lock);
-	/* Protected by tcf_lock if overwriting existing action. */
+	 
 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
 	p_old = rcu_dereference_protected(d->skbmod_p, 1);
 

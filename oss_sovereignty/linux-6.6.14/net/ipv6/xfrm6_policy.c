@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xfrm6_policy.c: based on xfrm4_policy.c
- *
- * Authors:
- *	Mitsuru KANDA @USAGI
- *	Kazunori MIYAZAWA @USAGI
- *	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
- *		IPv6 support
- *	YOSHIFUJI Hideaki
- *		Split up af-specific portion
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -81,8 +70,7 @@ static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 		return -ENODEV;
 	}
 
-	/* Sheit... I remember I did this right. Apparently,
-	 * it was magically lost, so this code needs audit */
+	 
 	xdst->u.rt6.rt6i_flags = rt->rt6i_flags & (RTF_ANYCAST |
 						   RTF_LOCAL);
 	xdst->route_cookie = rt6_get_cookie(rt);
@@ -228,7 +216,7 @@ static void __net_exit xfrm6_net_sysctl_exit(struct net *net)
 	if (!net_eq(net, &init_net))
 		kfree(table);
 }
-#else /* CONFIG_SYSCTL */
+#else  
 static inline int xfrm6_net_sysctl_init(struct net *net)
 {
 	return 0;

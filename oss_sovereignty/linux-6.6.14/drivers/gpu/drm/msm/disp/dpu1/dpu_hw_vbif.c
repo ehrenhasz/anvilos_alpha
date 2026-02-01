@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dpu_hwio.h"
 #include "dpu_hw_catalog.h"
@@ -60,10 +59,7 @@ static void dpu_hw_set_mem_type(struct dpu_hw_vbif *vbif,
 	u32 bit_off;
 	u32 reg_val;
 
-	/*
-	 * Assume 4 bits per bit field, 8 fields per 32-bit register so
-	 * 16 bit fields maximum across two registers
-	 */
+	 
 	if (!vbif || xin_id >= MAX_XIN_COUNT || xin_id >= 16)
 		return;
 
@@ -223,14 +219,12 @@ struct dpu_hw_vbif *dpu_hw_vbif_init(const struct dpu_vbif_cfg *cfg,
 	c->hw.blk_addr = addr + cfg->base;
 	c->hw.log_mask = DPU_DBG_MASK_VBIF;
 
-	/*
-	 * Assign ops
-	 */
+	 
 	c->idx = cfg->id;
 	c->cap = cfg;
 	_setup_vbif_ops(&c->ops, c->cap->features);
 
-	/* no need to register sub-range in dpu dbg, dump entire vbif io base */
+	 
 
 	return c;
 }

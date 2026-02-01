@@ -1,17 +1,4 @@
-/*
- * TI Touch Screen driver
- *
- * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 
 #include <linux/kernel.h>
@@ -77,10 +64,7 @@ static int titsc_config_wires(struct titsc *ts_dev)
 	int i, bit_cfg;
 
 	for (i = 0; i < 4; i++) {
-		/*
-		 * Get the order in which TSC wires are attached
-		 * w.r.t. each of the analog input lines on the EVM.
-		 */
+		 
 		analog_line[i] = (ts_dev->config_inp[i] & 0xF0) >> 4;
 		wire_order[i] = ts_dev->config_inp[i] & 0x0F;
 		if (WARN_ON(analog_line[i] > 7))
@@ -148,7 +132,7 @@ static void titsc_step_config(struct titsc *ts_dev)
 
 	tsc_steps = ts_dev->coordinate_readouts * 2 + 2;
 	first_step = TOTAL_STEPS - tsc_steps;
-	/* Steps 16 to 16-coordinate_readouts is for X */
+	 
 	end_step = first_step + tsc_steps;
 	n = 0;
 	for (i = end_step - ts_dev->coordinate_readouts; i < end_step; i++) {
@@ -174,7 +158,7 @@ static void titsc_step_config(struct titsc *ts_dev)
 		break;
 	}
 
-	/* 1 ... coordinate_readouts is for Y */
+	 
 	end_step = first_step + ts_dev->coordinate_readouts;
 	n = 0;
 	for (i = first_step; i < end_step; i++) {
@@ -183,13 +167,13 @@ static void titsc_step_config(struct titsc *ts_dev)
 			     n++ == 0 ? STEPCONFIG_OPENDLY : 0);
 	}
 
-	/* Make CHARGECONFIG same as IDLECONFIG */
+	 
 
 	config = titsc_readl(ts_dev, REG_IDLECONFIG);
 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
 	titsc_writel(ts_dev, REG_CHARGEDELAY, ts_dev->charge_delay);
 
-	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
+	 
 	config = STEPCONFIG_MODE_HWSYNC |
 			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
 			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
@@ -207,7 +191,7 @@ static void titsc_step_config(struct titsc *ts_dev)
 	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
 			STEPCONFIG_OPENDLY);
 
-	/* The steps end ... end - readouts * 2 + 2 and bit 0 for TS_Charge */
+	 
 	stepenable = 1;
 	for (i = 0; i < tsc_steps; i++)
 		stepenable |= 1 << (first_step + i + 1);
@@ -243,13 +227,7 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
 		xvals[i] &= 0xfff;
 	}
 
-	/*
-	 * If co-ordinates readouts is less than 4 then
-	 * report the average. In case of 4 or more
-	 * readouts, sort the co-ordinate samples, drop
-	 * min and max values and report the average of
-	 * remaining values.
-	 */
+	 
 	if (creads <=  3) {
 		for (i = 0; i < creads; i++) {
 			ysum += yvals[i];
@@ -305,20 +283,13 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 	if (status & IRQENB_EOS)
 		irqclr |= IRQENB_EOS;
 
-	/*
-	 * ADC and touchscreen share the IRQ line.
-	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
-	 */
+	 
 	if (status & IRQENB_FIFO0THRES) {
 
 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
 
 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
-			/*
-			 * Calculate pressure using formula
-			 * Resistance(touch) = x plate resistance *
-			 * x position/4096 * ((z2 / z1) - 1)
-			 */
+			 
 			z = z1 - z2;
 			z *= x;
 			z *= ts_dev->x_plate_resistance;
@@ -371,10 +342,7 @@ static int titsc_parse_dt(struct platform_device *pdev,
 	if (err < 0)
 		return err;
 
-	/*
-	 * Try with the new binding first. If it fails, try again with
-	 * bogus, miss-spelled version.
-	 */
+	 
 	err = of_property_read_u32(node, "ti,coordinate-readouts",
 			&ts_dev->coordinate_readouts);
 	if (err < 0) {
@@ -394,10 +362,7 @@ static int titsc_parse_dt(struct platform_device *pdev,
 
 	err = of_property_read_u32(node, "ti,charge-delay",
 				   &ts_dev->charge_delay);
-	/*
-	 * If ti,charge-delay value is not specified, then use
-	 * CHARGEDLY_OPENDLY as the default value.
-	 */
+	 
 	if (err < 0) {
 		ts_dev->charge_delay = CHARGEDLY_OPENDLY;
 		dev_warn(&pdev->dev, "ti,charge-delay not specified\n");
@@ -407,9 +372,7 @@ static int titsc_parse_dt(struct platform_device *pdev,
 			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
 }
 
-/*
- * The functions for inserting/removing driver as a module.
- */
+ 
 
 static int titsc_probe(struct platform_device *pdev)
 {
@@ -418,7 +381,7 @@ static int titsc_probe(struct platform_device *pdev)
 	struct ti_tscadc_dev *tscadc_dev = ti_tscadc_dev_get(pdev);
 	int err;
 
-	/* Allocate memory for device */
+	 
 	ts_dev = kzalloc(sizeof(*ts_dev), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!ts_dev || !input_dev) {
@@ -473,7 +436,7 @@ static int titsc_probe(struct platform_device *pdev)
 	input_set_abs_params(input_dev, ABS_Y, 0, MAX_12BIT, 0, 0);
 	input_set_abs_params(input_dev, ABS_PRESSURE, 0, MAX_12BIT, 0, 0);
 
-	/* register to the input system */
+	 
 	err = input_register_device(input_dev);
 	if (err)
 		goto err_free_irq;
@@ -500,7 +463,7 @@ static int titsc_remove(struct platform_device *pdev)
 	device_init_wakeup(&pdev->dev, false);
 	free_irq(ts_dev->irq, ts_dev);
 
-	/* total steps followed by the enable mask */
+	 
 	steps = 2 * ts_dev->coordinate_readouts + 2;
 	steps = (1 << steps) - 1;
 	am335x_tsc_se_clr(ts_dev->mfd_tscadc, steps);

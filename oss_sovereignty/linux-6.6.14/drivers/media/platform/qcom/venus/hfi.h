@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+ 
+ 
 #ifndef __HFI_H__
 #define __HFI_H__
 
@@ -48,13 +45,13 @@ union hfi_get_property {
 	struct hfi_buffer_requirements bufreq[HFI_BUFFER_TYPE_MAX];
 };
 
-/* HFI events */
+ 
 #define EVT_SYS_EVENT_CHANGE			1
 #define EVT_SYS_WATCHDOG_TIMEOUT		2
 #define EVT_SYS_ERROR				3
 #define EVT_SESSION_ERROR			4
 
-/* HFI event callback structure */
+ 
 struct hfi_event_data {
 	u32 error;
 	u32 height;
@@ -65,7 +62,7 @@ struct hfi_event_data {
 	u32 tag;
 	u32 profile;
 	u32 level;
-	/* the following properties start appear from v4 onwards */
+	 
 	u32 bit_depth;
 	u32 pic_struct;
 	u32 colour_space;
@@ -77,11 +74,11 @@ struct hfi_event_data {
 	} input_crop;
 };
 
-/* define core states */
+ 
 #define CORE_UNINIT				0
 #define CORE_INIT				1
 
-/* define instance states */
+ 
 #define INST_UNINIT				2
 #define INST_INIT				3
 #define INST_LOAD_RESOURCES			4
@@ -138,7 +135,7 @@ struct hfi_ops {
 	int (*resume)(struct venus_core *core);
 	int (*suspend)(struct venus_core *core);
 
-	/* interrupt operations */
+	 
 	irqreturn_t (*isr)(struct venus_core *core);
 	irqreturn_t (*isr_thread)(struct venus_core *core);
 };

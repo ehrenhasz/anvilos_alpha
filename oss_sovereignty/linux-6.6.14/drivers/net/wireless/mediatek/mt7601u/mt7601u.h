@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+ 
+ 
 
 #ifndef MT7601U_H
 #define MT7601U_H
@@ -27,8 +24,8 @@
 
 #define MT_BBP_REG_VERSION		0x00
 
-#define MT_USB_AGGR_SIZE_LIMIT		28 /* * 1024B */
-#define MT_USB_AGGR_TIMEOUT		0x80 /* * 33ns */
+#define MT_USB_AGGR_SIZE_LIMIT		28  
+#define MT_USB_AGGR_TIMEOUT		0x80  
 #define MT_RX_ORDER			3
 #define MT_RX_URB_SIZE			(PAGE_SIZE << MT_RX_ORDER)
 
@@ -95,13 +92,7 @@ struct mt7601u_tx_queue {
 	unsigned int fifo_seq;
 };
 
-/* WCID allocation:
- *     0: mcast wcid
- *     1: bssid wcid
- *  1...: STAs
- * ...7e: group wcids
- *    7f: reserved
- */
+ 
 #define N_WCIDS		128
 #define GROUP_WCID(idx)	(N_WCIDS - 2 - idx)
 
@@ -133,22 +124,7 @@ enum {
 
 DECLARE_EWMA(rssi, 10, 4);
 
-/**
- * struct mt7601u_dev - adapter structure
- * @lock:		protects @wcid->tx_rate.
- * @mac_lock:		locks out mac80211's tx status and rx paths.
- * @tx_lock:		protects @tx_q and changes of MT7601U_STATE_*_STATS
- *			flags in @state.
- * @rx_lock:		protects @rx_q.
- * @con_mon_lock:	protects @ap_bssid, @bcn_*, @avg_rssi.
- * @mutex:		ensures exclusive access from mac80211 callbacks.
- * @vendor_req_mutex:	protects @vend_buf, ensures atomicity of read/write
- *			accesses
- * @reg_atomic_mutex:	ensures atomicity of indirect register accesses
- *			(accesses to RF and BBP).
- * @hw_atomic_mutex:	ensures exclusive access to HW during critical
- *			operations (power management, channel switch).
- */
+ 
 struct mt7601u_dev {
 	struct ieee80211_hw *hw;
 	struct device *dev;
@@ -195,7 +171,7 @@ struct mt7601u_dev {
 	u16 out_max_packet;
 	u16 in_max_packet;
 
-	/* TX */
+	 
 	spinlock_t tx_lock;
 	struct tasklet_struct tx_tasklet;
 	struct mt7601u_tx_queue *tx_q;
@@ -203,12 +179,12 @@ struct mt7601u_dev {
 
 	atomic_t avg_ampdu_len;
 
-	/* RX */
+	 
 	spinlock_t rx_lock;
 	struct tasklet_struct rx_tasklet;
 	struct mt7601u_rx_queue rx_q;
 
-	/* Connection monitoring things */
+	 
 	spinlock_t con_mon_lock;
 	u8 ap_bssid[ETH_ALEN];
 
@@ -238,7 +214,7 @@ struct mt7601u_dev {
 	u8 bw;
 	bool chan_ext_below;
 
-	/* PA mode */
+	 
 	u32 rf_pa_mode[2];
 
 	struct mac_stats stats;
@@ -293,7 +269,7 @@ bool mt76_poll(struct mt7601u_dev *dev, u32 offset, u32 mask, u32 val,
 bool mt76_poll_msec(struct mt7601u_dev *dev, u32 offset, u32 mask, u32 val,
 		    int timeout);
 
-/* Compatibility with mt76 */
+ 
 #define mt76_rmw_field(_dev, _reg, _field, _val)	\
 	mt76_rmw(_dev, _reg, _field, FIELD_PREP(_field, _val))
 
@@ -329,7 +305,7 @@ int mt7601u_burst_write_regs(struct mt7601u_dev *dev, u32 offset,
 			     const u32 *data, int n);
 void mt7601u_addr_wr(struct mt7601u_dev *dev, const u32 offset, const u8 *addr);
 
-/* Init */
+ 
 struct mt7601u_dev *mt7601u_alloc_device(struct device *dev);
 int mt7601u_init_hardware(struct mt7601u_dev *dev);
 int mt7601u_register_device(struct mt7601u_dev *dev);
@@ -338,7 +314,7 @@ void mt7601u_cleanup(struct mt7601u_dev *dev);
 int mt7601u_mac_start(struct mt7601u_dev *dev);
 void mt7601u_mac_stop(struct mt7601u_dev *dev);
 
-/* PHY */
+ 
 int mt7601u_phy_init(struct mt7601u_dev *dev);
 int mt7601u_wait_bbp_ready(struct mt7601u_dev *dev);
 void mt7601u_set_rx_path(struct mt7601u_dev *dev, u8 path);
@@ -354,7 +330,7 @@ int mt7601u_phy_get_rssi(struct mt7601u_dev *dev,
 void mt7601u_phy_con_cal_onoff(struct mt7601u_dev *dev,
 			       struct ieee80211_bss_conf *info);
 
-/* MAC */
+ 
 void mt7601u_mac_work(struct work_struct *work);
 void mt7601u_mac_set_protection(struct mt7601u_dev *dev, bool legacy_prot,
 				int ht_mode);
@@ -364,7 +340,7 @@ void
 mt7601u_mac_wcid_setup(struct mt7601u_dev *dev, u8 idx, u8 vif_idx, u8 *mac);
 void mt7601u_mac_set_ampdu_factor(struct mt7601u_dev *dev);
 
-/* TX */
+ 
 void mt7601u_tx(struct ieee80211_hw *hw, struct ieee80211_tx_control *control,
 		struct sk_buff *skb);
 int mt7601u_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
@@ -373,7 +349,7 @@ int mt7601u_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 void mt7601u_tx_status(struct mt7601u_dev *dev, struct sk_buff *skb);
 void mt7601u_tx_stat(struct work_struct *work);
 
-/* util */
+ 
 void mt76_remove_hdr_pad(struct sk_buff *skb);
 int mt76_insert_hdr_pad(struct sk_buff *skb);
 

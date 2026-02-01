@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sim710.c - Copyright (C) 1999 Richard Hirst <richard@sleepie.demon.co.uk>
- *
- *----------------------------------------------------------------------------
- *----------------------------------------------------------------------------
- *
- * MCA card detection code by Trent McNair. (now deleted)
- * Fixes to not explicitly nul bss data from Xavier Bestel.
- * Some multiboard fixes from Rolf Eike Beer.
- * Auto probing of EISA config space from Trevor Hemsley.
- *
- * Rewritten to use 53c700.c by James.Bottomley@SteelEye.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -29,11 +17,11 @@
 #include "53c700.h"
 
 
-/* Must be enough for EISA */
+ 
 #define MAX_SLOTS 8
 static __u8 __initdata id_array[MAX_SLOTS] = { [0 ... MAX_SLOTS-1] = 7 };
 
-static char *sim710;		/* command line passed by insmod */
+static char *sim710;		 
 
 MODULE_AUTHOR("Richard Hirst");
 MODULE_DESCRIPTION("Simple NCR53C710 driver");
@@ -104,14 +92,14 @@ static int sim710_probe_common(struct device *dev, unsigned long base_addr,
 		goto out_free;
 	}
 
-	/* Fill in the three required pieces of hostdata */
+	 
 	hostdata->base = ioport_map(base_addr, 64);
 	hostdata->differential = differential;
 	hostdata->clock = clock;
 	hostdata->chip710 = 1;
 	hostdata->burst_length = 8;
 
-	/* and register the chip */
+	 
 	if((host = NCR_700_detect(&sim710_driver_template, hostdata, dev))
 	   == NULL) {
 		printk(KERN_ERR "sim710: No host detected; card configuration problem?\n");
@@ -209,7 +197,7 @@ static struct eisa_driver sim710_eisa_driver = {
 		.remove		= sim710_device_remove,
 	},
 };
-#endif /* CONFIG_EISA */
+#endif  
 
 static int __init sim710_init(void)
 {
@@ -219,11 +207,7 @@ static int __init sim710_init(void)
 #endif
 
 #ifdef CONFIG_EISA
-	/*
-	 * FIXME: We'd really like to return -ENODEV if no devices have actually
-	 * been found.  However eisa_driver_register() only reports problems
-	 * with kobject_register() so simply return success for now.
-	 */
+	 
 	eisa_driver_register(&sim710_eisa_driver);
 #endif
 	return 0;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 1997-1998 Transmeta Corporation -- All Rights Reserved
- * Copyright 2005-2006 Ian Kent <raven@themaw.net>
- */
+
+ 
 
 #include <linux/seq_file.h>
 #include <linux/pagemap.h>
@@ -41,14 +38,9 @@ void autofs_kill_sb(struct super_block *sb)
 {
 	struct autofs_sb_info *sbi = autofs_sbi(sb);
 
-	/*
-	 * In the event of a failure in get_sb_nodev the superblock
-	 * info is not present so nothing else has been setup, so
-	 * just call kill_anon_super when we are called from
-	 * deactivate_super.
-	 */
+	 
 	if (sbi) {
-		/* Free wait queues, close pipe */
+		 
 		autofs_catatonic_mode(sbi);
 		put_pid(sbi->oz_pgrp);
 	}
@@ -261,9 +253,7 @@ int autofs_fill_super(struct super_block *s, void *data, int silent)
 	s->s_d_op = &autofs_dentry_operations;
 	s->s_time_gran = 1;
 
-	/*
-	 * Get the root inode and dentry, but defer checking for errors.
-	 */
+	 
 	ino = autofs_new_ino(sbi);
 	if (!ino) {
 		ret = -ENOMEM;
@@ -279,13 +269,13 @@ int autofs_fill_super(struct super_block *s, void *data, int silent)
 
 	root->d_fsdata = ino;
 
-	/* Can this call block? */
+	 
 	if (parse_options(data, root_inode, &pgrp, &pgrp_set, sbi)) {
 		pr_err("called with bogus options\n");
 		goto fail_dput;
 	}
 
-	/* Test versions first */
+	 
 	if (sbi->max_proto < AUTOFS_MIN_PROTO_VERSION ||
 	    sbi->min_proto > AUTOFS_MAX_PROTO_VERSION) {
 		pr_err("kernel does not match daemon version "
@@ -295,7 +285,7 @@ int autofs_fill_super(struct super_block *s, void *data, int silent)
 		goto fail_dput;
 	}
 
-	/* Establish highest kernel protocol version */
+	 
 	if (sbi->max_proto > AUTOFS_MAX_PROTO_VERSION)
 		sbi->version = AUTOFS_MAX_PROTO_VERSION;
 	else
@@ -333,15 +323,11 @@ int autofs_fill_super(struct super_block *s, void *data, int silent)
 	sbi->pipe = pipe;
 	sbi->flags &= ~AUTOFS_SBI_CATATONIC;
 
-	/*
-	 * Success! Install the root dentry now to indicate completion.
-	 */
+	 
 	s->s_root = root;
 	return 0;
 
-	/*
-	 * Failure ... clean up.
-	 */
+	 
 fail_fput:
 	pr_err("pipe file descriptor does not contain proper ops\n");
 	fput(pipe);

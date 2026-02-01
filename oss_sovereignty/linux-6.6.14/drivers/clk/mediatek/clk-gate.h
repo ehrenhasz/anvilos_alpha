@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+ 
+ 
 
 #ifndef __DRV_CLK_GATE_H
 #define __DRV_CLK_GATE_H
@@ -57,4 +54,4 @@ int mtk_clk_register_gates(struct device *dev, struct device_node *node,
 void mtk_clk_unregister_gates(const struct mtk_gate *clks, int num,
 			      struct clk_hw_onecell_data *clk_data);
 
-#endif /* __DRV_CLK_GATE_H */
+#endif  

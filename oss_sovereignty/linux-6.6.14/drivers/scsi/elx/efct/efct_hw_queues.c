@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include "efct_driver.h"
 #include "efct_hw.h"
@@ -30,7 +27,7 @@ efct_hw_init_queues(struct efct_hw *hw)
 	INIT_LIST_HEAD(&hw->eq_list);
 
 	for (i = 0; i < hw->config.n_eq; i++) {
-		/* Create EQ */
+		 
 		eq = efct_hw_new_eq(hw, EFCT_HW_EQ_DEPTH);
 		if (!eq) {
 			efct_hw_queue_teardown(hw);
@@ -39,7 +36,7 @@ efct_hw_init_queues(struct efct_hw *hw)
 
 		eqs[i] = eq;
 
-		/* Create one MQ */
+		 
 		if (!i) {
 			cq = efct_hw_new_cq(eq,
 					    hw->num_qentries[SLI4_QTYPE_CQ]);
@@ -55,7 +52,7 @@ efct_hw_init_queues(struct efct_hw *hw)
 			}
 		}
 
-		/* Create WQ */
+		 
 		cq = efct_hw_new_cq(eq, hw->num_qentries[SLI4_QTYPE_CQ]);
 		if (!cq) {
 			efct_hw_queue_teardown(hw);
@@ -69,13 +66,13 @@ efct_hw_init_queues(struct efct_hw *hw)
 		}
 	}
 
-	/* Create CQ set */
+	 
 	if (efct_hw_new_cq_set(eqs, cqs, i, hw->num_qentries[SLI4_QTYPE_CQ])) {
 		efct_hw_queue_teardown(hw);
 		return -EIO;
 	}
 
-	/* Create RQ set */
+	 
 	if (efct_hw_new_rq_set(cqs, rqs, i, EFCT_HW_RQ_ENTRIES_DEF)) {
 		efct_hw_queue_teardown(hw);
 		return -EIO;
@@ -98,7 +95,7 @@ efct_hw_map_wq_cpu(struct efct_hw *hw)
 	struct efct *efct = hw->os;
 	u32 cpu = 0, i;
 
-	/* Init cpu_map array */
+	 
 	hw->wq_cpu_array = kcalloc(num_possible_cpus(), sizeof(void *),
 				   GFP_KERNEL);
 	if (!hw->wq_cpu_array)
@@ -107,14 +104,14 @@ efct_hw_map_wq_cpu(struct efct_hw *hw)
 	for (i = 0; i < hw->config.n_eq; i++) {
 		const struct cpumask *maskp;
 
-		/* Get a CPU mask for all CPUs affinitized to this vector */
+		 
 		maskp = pci_irq_get_affinity(efct->pci, i);
 		if (!maskp) {
 			efc_log_debug(efct, "maskp null for vector:%d\n", i);
 			continue;
 		}
 
-		/* Loop through all CPUs associated with vector idx */
+		 
 		for_each_cpu_and(cpu, maskp, cpu_present_mask) {
 			efc_log_debug(efct, "CPU:%d irq vector:%d\n", cpu, i);
 			hw->wq_cpu_array[cpu] = hw->hw_wq[i];
@@ -199,7 +196,7 @@ efct_hw_new_cq_set(struct hw_eq *eqs[], struct hw_cq *cqs[],
 	struct sli4_queue *qs[SLI4_MAX_CQ_SET_COUNT];
 	struct sli4_queue *assefct[SLI4_MAX_CQ_SET_COUNT];
 
-	/* Initialise CQS pointers to NULL */
+	 
 	for (i = 0; i < num_cqs; i++)
 		cqs[i] = NULL;
 
@@ -315,14 +312,11 @@ efct_hw_new_rq_set(struct hw_cq *cqs[], struct hw_rq *rqs[],
 	struct sli4_queue *qs[SLI4_MAX_RQ_SET_COUNT * 2] = { NULL };
 	u32 i, q_count, size;
 
-	/* Initialise RQS pointers */
+	 
 	for (i = 0; i < num_rq_pairs; i++)
 		rqs[i] = NULL;
 
-	/*
-	 * Allocate an RQ object SET, where each element in set
-	 * encapsulates 2 SLI queues (for rq pair)
-	 */
+	 
 	for (i = 0, q_count = 0; i < num_rq_pairs; i++, q_count += 2) {
 		rq = kzalloc(sizeof(*rq), GFP_KERNEL);
 		if (!rq)
@@ -334,14 +328,14 @@ efct_hw_new_rq_set(struct hw_cq *cqs[], struct hw_rq *rqs[],
 		rq->type = SLI4_QTYPE_RQ;
 		rq->entry_count = entry_count;
 
-		/* Header RQ */
+		 
 		rq->hdr = &hw->rq[hw->rq_count];
 		rq->hdr_entry_size = EFCT_HW_RQ_HEADER_SIZE;
 		hw->hw_rq_lookup[hw->rq_count] = rq->instance;
 		hw->rq_count++;
 		qs[q_count] = rq->hdr;
 
-		/* Data RQ */
+		 
 		rq->data = &hw->rq[hw->rq_count];
 		rq->data_entry_size = hw->config.rq_default_buffer_size;
 		hw->hw_rq_lookup[hw->rq_count] = rq->instance;
@@ -458,7 +452,7 @@ efct_hw_del_rq(struct hw_rq *rq)
 
 	if (!rq)
 		return;
-	/* Free RQ tracker */
+	 
 	kfree(rq->rq_tracker);
 	rq->rq_tracker = NULL;
 	list_del(&rq->list_entry);
@@ -501,7 +495,7 @@ efct_hw_rqpair_get(struct efct_hw *hw, u16 rqindex, u16 bufindex)
 		return NULL;
 	}
 
-	/* rq_hdr lock also covers rqindex+1 queue */
+	 
 	spin_lock_irqsave(&rq_hdr->lock, flags);
 
 	seq = rq->rq_tracker[bufindex];
@@ -536,7 +530,7 @@ efct_hw_rqpair_process_rq(struct efct_hw *hw, struct hw_cq *cq,
 		switch (rq_status) {
 		case SLI4_FC_ASYNC_RQ_BUF_LEN_EXCEEDED:
 		case SLI4_FC_ASYNC_RQ_DMA_FAILURE:
-			/* just get RQ buffer then return to chip */
+			 
 			rqindex = efct_hw_rqpair_find(hw, rq_id);
 			if (rqindex < 0) {
 				efc_log_debug(hw->os,
@@ -545,10 +539,10 @@ efct_hw_rqpair_process_rq(struct efct_hw *hw, struct hw_cq *cq,
 				break;
 			}
 
-			/* get RQ buffer */
+			 
 			seq = efct_hw_rqpair_get(hw, rqindex, index);
 
-			/* return to chip */
+			 
 			if (efct_hw_rqpair_sequence_free(hw, seq)) {
 				efc_log_debug(hw->os,
 					      "status=%#x,fail rtrn buf to RQ\n",
@@ -558,10 +552,7 @@ efct_hw_rqpair_process_rq(struct efct_hw *hw, struct hw_cq *cq,
 			break;
 		case SLI4_FC_ASYNC_RQ_INSUFF_BUF_NEEDED:
 		case SLI4_FC_ASYNC_RQ_INSUFF_BUF_FRM_DISC:
-			/*
-			 * since RQ buffers were not consumed, cannot return
-			 * them to chip
-			 */
+			 
 			efc_log_debug(hw->os, "Warning: RCQE status=%#x,\n",
 				      rq_status);
 			fallthrough;
@@ -611,20 +602,16 @@ efct_hw_rqpair_put(struct efct_hw *hw, struct efc_hw_sequence *seq)
 	int qindex_payload;
 	unsigned long flags = 0;
 
-	/* Update the RQ verification lookup tables */
+	 
 	phys_hdr[0] = upper_32_bits(seq->header->dma.phys);
 	phys_hdr[1] = lower_32_bits(seq->header->dma.phys);
 	phys_payload[0] = upper_32_bits(seq->payload->dma.phys);
 	phys_payload[1] = lower_32_bits(seq->payload->dma.phys);
 
-	/* rq_hdr lock also covers payload / header->rqindex+1 queue */
+	 
 	spin_lock_irqsave(&rq_hdr->lock, flags);
 
-	/*
-	 * Note: The header must be posted last for buffer pair mode because
-	 *       posting on the header queue posts the payload queue as well.
-	 *       We do not ring the payload queue independently in RQ pair mode.
-	 */
+	 
 	qindex_payload = sli_rq_write(&hw->sli, rq_payload,
 				      (void *)phys_payload);
 	qindex_hdr = sli_rq_write(&hw->sli, rq_hdr, (void *)phys_hdr);
@@ -635,10 +622,10 @@ efct_hw_rqpair_put(struct efct_hw *hw, struct efc_hw_sequence *seq)
 		return -EIO;
 	}
 
-	/* ensure the indexes are the same */
+	 
 	WARN_ON(qindex_hdr != qindex_payload);
 
-	/* Update the lookup table */
+	 
 	if (!rq->rq_tracker[qindex_hdr]) {
 		rq->rq_tracker[qindex_hdr] = seq;
 	} else {
@@ -656,10 +643,7 @@ efct_hw_rqpair_sequence_free(struct efct_hw *hw, struct efc_hw_sequence *seq)
 {
 	int rc = 0;
 
-	/*
-	 * Post the data buffer first. Because in RQ pair mode, ringing the
-	 * doorbell of the header ring will post the data buffer as well.
-	 */
+	 
 	if (efct_hw_rqpair_put(hw, seq)) {
 		efc_log_err(hw->os, "error writing buffers\n");
 		return -EIO;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB GPIO Based Connection Detection Driver
- *
- * Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- *
- * Some code borrowed from drivers/extcon/extcon-usb-gpio.c
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/consumer.h>
@@ -21,8 +13,8 @@
 #include <linux/regulator/consumer.h>
 #include <linux/usb/role.h>
 
-#define USB_GPIO_DEB_MS		20	/* ms */
-#define USB_GPIO_DEB_US		((USB_GPIO_DEB_MS) * 1000)	/* us */
+#define USB_GPIO_DEB_MS		20	 
+#define USB_GPIO_DEB_US		((USB_GPIO_DEB_MS) * 1000)	 
 
 #define USB_CONN_IRQF	\
 	(IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING | IRQF_ONESHOT)
@@ -45,23 +37,7 @@ struct usb_conn_info {
 	bool initial_detection;
 };
 
-/*
- * "DEVICE" = VBUS and "HOST" = !ID, so we have:
- * Both "DEVICE" and "HOST" can't be set as active at the same time
- * so if "HOST" is active (i.e. ID is 0)  we keep "DEVICE" inactive
- * even if VBUS is on.
- *
- *  Role          |   ID  |  VBUS
- * ------------------------------------
- *  [1] DEVICE    |   H   |   H
- *  [2] NONE      |   H   |   L
- *  [3] HOST      |   L   |   H
- *  [4] HOST      |   L   |   L
- *
- * In case we have only one of these signals:
- * - VBUS only - we want to distinguish between [1] and [2], so ID is always 1
- * - ID only - we want to distinguish between [1] and [4], so VBUS = ID
- */
+ 
 static void usb_conn_detect_cable(struct work_struct *work)
 {
 	struct usb_conn_info *info;
@@ -71,7 +47,7 @@ static void usb_conn_detect_cable(struct work_struct *work)
 	info = container_of(to_delayed_work(work),
 			    struct usb_conn_info, dw_det);
 
-	/* check ID and VBUS */
+	 
 	id = info->id_gpiod ?
 		gpiod_get_value_cansleep(info->id_gpiod) : 1;
 	vbus = info->vbus_gpiod ?
@@ -260,7 +236,7 @@ static int usb_conn_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, info);
 	device_set_wakeup_capable(&pdev->dev, true);
 
-	/* Perform initial detection */
+	 
 	info->initial_detection = true;
 	usb_conn_queue_dwork(info, 0);
 

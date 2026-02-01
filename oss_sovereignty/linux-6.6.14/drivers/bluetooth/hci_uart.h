@@ -1,25 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *
- *  Bluetooth HCI UART driver
- *
- *  Copyright (C) 2000-2001  Qualcomm Incorporated
- *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
- *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
- */
+ 
+ 
 
 #ifndef N_HCI
 #define N_HCI	15
 #endif
 
-/* Ioctls */
+ 
 #define HCIUARTSETPROTO		_IOW('U', 200, int)
 #define HCIUARTGETPROTO		_IOR('U', 201, int)
 #define HCIUARTGETDEVICE	_IOR('U', 202, int)
 #define HCIUARTSETFLAGS		_IOW('U', 203, int)
 #define HCIUARTGETFLAGS		_IOR('U', 204, int)
 
-/* UART protocols */
+ 
 #define HCI_UART_MAX_PROTO	12
 
 #define HCI_UART_H4	0
@@ -72,7 +65,7 @@ struct hci_uart {
 	struct work_struct	write_work;
 
 	const struct hci_uart_proto *proto;
-	struct percpu_rw_semaphore proto_lock;	/* Stop work for proto close */
+	struct percpu_rw_semaphore proto_lock;	 
 	void			*priv;
 
 	struct sk_buff		*tx_skb;
@@ -85,13 +78,13 @@ struct hci_uart {
 	u8			padding;
 };
 
-/* HCI_UART proto flag bits */
+ 
 #define HCI_UART_PROTO_SET		0
 #define HCI_UART_REGISTERED		1
 #define HCI_UART_PROTO_READY		2
 #define HCI_UART_NO_SUSPEND_NOTIFIER	3
 
-/* TX states  */
+ 
 #define HCI_UART_SENDING	1
 #define HCI_UART_TX_WAKEUP	2
 
@@ -115,11 +108,11 @@ int h4_init(void);
 int h4_deinit(void);
 
 struct h4_recv_pkt {
-	u8  type;	/* Packet type */
-	u8  hlen;	/* Header length */
-	u8  loff;	/* Data length offset in header */
-	u8  lsize;	/* Data length field size */
-	u16 maxlen;	/* Max overall packet length */
+	u8  type;	 
+	u8  hlen;	 
+	u8  loff;	 
+	u8  lsize;	 
+	u16 maxlen;	 
 	int (*recv)(struct hci_dev *hdev, struct sk_buff *skb);
 };
 

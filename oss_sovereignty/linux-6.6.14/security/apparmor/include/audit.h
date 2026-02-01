@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor auditing function definitions.
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+ 
+ 
 
 #ifndef __AA_AUDIT_H
 #define __AA_AUDIT_H
@@ -23,11 +16,11 @@
 extern const char *const audit_mode_names[];
 #define AUDIT_MAX_INDEX 5
 enum audit_mode {
-	AUDIT_NORMAL,		/* follow normal auditing of accesses */
-	AUDIT_QUIET_DENIED,	/* quiet all denied access messages */
-	AUDIT_QUIET,		/* quiet all messages */
-	AUDIT_NOQUIET,		/* do not quiet audit messages */
-	AUDIT_ALL		/* audit all accesses */
+	AUDIT_NORMAL,		 
+	AUDIT_QUIET_DENIED,	 
+	AUDIT_QUIET,		 
+	AUDIT_NOQUIET,		 
+	AUDIT_ALL		 
 };
 
 enum audit_type {
@@ -116,7 +109,7 @@ struct apparmor_audit_data {
 	u32 request;
 	u32 denied;
 	union {
-		/* these entries require a custom callback fn */
+		 
 		struct {
 			struct aa_label *peer;
 			union {
@@ -157,12 +150,12 @@ struct apparmor_audit_data {
 	struct common_audit_data common;
 };
 
-/* macros for dealing with  apparmor_audit_data structure */
+ 
 #define aad(SA) (container_of(SA, struct apparmor_audit_data, common))
 #define aad_of_va(VA) aad((struct common_audit_data *)(VA))
 
 #define DEFINE_AUDIT_DATA(NAME, T, C, X)				\
-	/* TODO: cleanup audit init so we don't need _aad = {0,} */	\
+	 	\
 	struct apparmor_audit_data NAME = {				\
 		.class = (C),						\
 		.op = (X),                                              \
@@ -197,4 +190,4 @@ int aa_audit_rule_init(u32 field, u32 op, char *rulestr, void **vrule);
 int aa_audit_rule_known(struct audit_krule *rule);
 int aa_audit_rule_match(u32 sid, u32 field, u32 op, void *vrule);
 
-#endif /* __AA_AUDIT_H */
+#endif  

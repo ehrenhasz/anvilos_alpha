@@ -1,30 +1,5 @@
-/*
- * Copyright 2023 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-/* FILE POLICY AND INTENDED USAGE:
- * This file implements accessors to link resource.
- */
+ 
+ 
 
 #include "link_resource.h"
 #include "protocols/link_dp_capability.h"
@@ -63,9 +38,7 @@ void link_get_cur_res_map(const struct dc *dc, uint32_t *map)
 			if (link->link_status.link_active &&
 					link_dp_get_encoding_format(&link->reported_link_cap) == DP_128b_132b_ENCODING &&
 					link_dp_get_encoding_format(&link->cur_link_settings) != DP_128b_132b_ENCODING)
-				/* hpo dp link encoder is considered as recycled, when RX reports 128b/132b encoding capability
-				 * but current link doesn't use it.
-				 */
+				 
 				hpo_dp_recycle_map |= (1 << i);
 		}
 		*map |= (hpo_dp_recycle_map << LINK_RES_HPO_DP_REC_MAP__SHIFT);
@@ -82,7 +55,7 @@ void link_restore_res_map(const struct dc *dc, uint32_t *map)
 
 	if (dc->caps.dp_hpo) {
 		available_hpo_dp_count = dc->res_pool->hpo_dp_link_enc_count;
-		/* remove excess 128b/132b encoding support for not recycled links */
+		 
 		for (i = 0; i < dc->caps.max_links; i++) {
 			if ((hpo_dp_recycle_map & (1 << i)) == 0) {
 				link = dc->links[i];
@@ -91,12 +64,12 @@ void link_restore_res_map(const struct dc *dc, uint32_t *map)
 					if (available_hpo_dp_count > 0)
 						available_hpo_dp_count--;
 					else
-						/* remove 128b/132b encoding capability by limiting verified link rate to HBR3 */
+						 
 						link->verified_link_cap.link_rate = LINK_RATE_HIGH3;
 				}
 			}
 		}
-		/* remove excess 128b/132b encoding support for recycled links */
+		 
 		for (i = 0; i < dc->caps.max_links; i++) {
 			if ((hpo_dp_recycle_map & (1 << i)) != 0) {
 				link = dc->links[i];
@@ -105,7 +78,7 @@ void link_restore_res_map(const struct dc *dc, uint32_t *map)
 					if (available_hpo_dp_count > 0)
 						available_hpo_dp_count--;
 					else
-						/* remove 128b/132b encoding capability by limiting verified link rate to HBR3 */
+						 
 						link->verified_link_cap.link_rate = LINK_RATE_HIGH3;
 				}
 			}

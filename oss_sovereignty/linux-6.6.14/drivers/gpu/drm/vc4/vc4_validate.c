@@ -1,47 +1,6 @@
-/*
- * Copyright © 2014 Broadcom
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
-/**
- * DOC: Command list validator for VC4.
- *
- * Since the VC4 has no IOMMU between it and system memory, a user
- * with access to execute command lists could escalate privilege by
- * overwriting system memory (drawing to it as a framebuffer) or
- * reading system memory it shouldn't (reading it as a vertex buffer
- * or index buffer)
- *
- * We validate binner command lists to ensure that all accesses are
- * within the bounds of the GEM objects referenced by the submitted
- * job.  It explicitly whitelists packets, and looks at the offsets in
- * any address fields to make sure they're contained within the BOs
- * they reference.
- *
- * Note that because CL validation is already reading the
- * user-submitted CL and writing the validated copy out to the memory
- * that the GPU will actually read, this is also where GEM relocation
- * processing (turning BO references into actual addresses for the GPU
- * to use) happens.
- */
+ 
 
 #include "uapi/drm/vc4_drm.h"
 #include "vc4_drv.h"
@@ -52,7 +11,7 @@
 	void *validated,				\
 	void *untrusted
 
-/** Return the width in pixels of a 64-byte microtile. */
+ 
 static uint32_t
 utile_width(int cpp)
 {
@@ -70,7 +29,7 @@ utile_width(int cpp)
 	}
 }
 
-/** Return the height in pixels of a 64-byte microtile. */
+ 
 static uint32_t
 utile_height(int cpp)
 {
@@ -87,14 +46,7 @@ utile_height(int cpp)
 	}
 }
 
-/**
- * size_is_lt() - Returns whether a miplevel of the given size will
- * use the lineartile (LT) tiling layout rather than the normal T
- * tiling layout.
- * @width: Width in pixels of the miplevel
- * @height: Height in pixels of the miplevel
- * @cpp: Bytes per pixel of the pixel format
- */
+ 
 static bool
 size_is_lt(uint32_t width, uint32_t height, int cpp)
 {
@@ -138,9 +90,7 @@ vc4_use_handle(struct vc4_exec_info *exec, uint32_t gem_handles_packet_index)
 static bool
 validate_bin_pos(struct vc4_exec_info *exec, void *untrusted, uint32_t pos)
 {
-	/* Note that the untrusted pointer passed to these functions is
-	 * incremented past the packet byte.
-	 */
+	 
 	return (untrusted - 1 == exec->bin_u + pos);
 }
 
@@ -172,13 +122,7 @@ vc4_check_tex_size(struct vc4_exec_info *exec, struct drm_gem_dma_object *fbo,
 	if (WARN_ON_ONCE(vc4->is_vc5))
 		return false;
 
-	/* The shaded vertex format stores signed 12.4 fixed point
-	 * (-2048,2047) offsets from the viewport center, so we should
-	 * never have a render target larger than 4096.  The texture
-	 * unit can only sample from 2048x2048, so it's even more
-	 * restricted.  This lets us avoid worrying about overflow in
-	 * our math.
-	 */
+	 
 	if (width > 4096 || height > 4096) {
 		DRM_DEBUG("Surface dimensions (%d,%d) too large",
 			  width, height);
@@ -270,7 +214,7 @@ validate_indexed_prim_list(VALIDATE_ARGS)
 	uint32_t index_size = (*(uint8_t *)(untrusted + 0) >> 4) ? 2 : 1;
 	struct vc4_shader_state *shader_state;
 
-	/* Check overflow condition */
+	 
 	if (exec->shader_state_count == 0) {
 		DRM_DEBUG("shader state must precede primitives\n");
 		return -EINVAL;
@@ -307,7 +251,7 @@ validate_gl_array_primitive(VALIDATE_ARGS)
 	uint32_t max_index;
 	struct vc4_shader_state *shader_state;
 
-	/* Check overflow condition */
+	 
 	if (exec->shader_state_count == 0) {
 		DRM_DEBUG("shader state must precede primitives\n");
 		return -EINVAL;
@@ -396,18 +340,14 @@ validate_tile_binning_config(VALIDATE_ARGS)
 		return bin_slot;
 	}
 
-	/* The slot we allocated will only be used by this job, and is
-	 * free when the job completes rendering.
-	 */
+	 
 	exec->bin_slots |= BIT(bin_slot);
 	bin_addr = vc4->bin_bo->base.dma_addr + bin_slot * vc4->bin_alloc_size;
 
-	/* The tile state data array is 48 bytes per tile, and we put it at
-	 * the start of a BO containing both it and the tile alloc.
-	 */
+	 
 	tile_state_size = 48 * tile_count;
 
-	/* Since the tile alloc array will follow us, align. */
+	 
 	exec->tile_alloc_offset = bin_addr + roundup(tile_state_size, 4096);
 
 	*(uint8_t *)(validated + 14) =
@@ -419,12 +359,12 @@ validate_tile_binning_config(VALIDATE_ARGS)
 		 VC4_SET_FIELD(VC4_BIN_CONFIG_ALLOC_BLOCK_SIZE_128,
 			       VC4_BIN_CONFIG_ALLOC_BLOCK_SIZE));
 
-	/* tile alloc address. */
+	 
 	*(uint32_t *)(validated + 0) = exec->tile_alloc_offset;
-	/* tile alloc size. */
+	 
 	*(uint32_t *)(validated + 4) = (bin_addr + vc4->bin_alloc_size -
 					exec->tile_alloc_offset);
-	/* tile state address. */
+	 
 	*(uint32_t *)(validated + 8) = bin_addr;
 
 	return 0;
@@ -473,9 +413,7 @@ static const struct cmd_info {
 	VC4_DEFINE_PACKET(VC4_PACKET_CLIP_WINDOW, NULL),
 	VC4_DEFINE_PACKET(VC4_PACKET_VIEWPORT_OFFSET, NULL),
 	VC4_DEFINE_PACKET(VC4_PACKET_CLIPPER_XY_SCALING, NULL),
-	/* Note: The docs say this was also 105, but it was 106 in the
-	 * initial userland code drop.
-	 */
+	 
 	VC4_DEFINE_PACKET(VC4_PACKET_CLIPPER_Z_SCALING, NULL),
 
 	VC4_DEFINE_PACKET(VC4_PACKET_TILE_BINNING_MODE_CONFIG,
@@ -537,11 +475,11 @@ vc4_validate_bin_cl(struct drm_device *dev,
 		}
 
 		src_offset += info->len;
-		/* GEM handle loading doesn't produce HW packets. */
+		 
 		if (cmd != VC4_PACKET_GEM_HANDLES)
 			dst_offset += info->len;
 
-		/* When the CL hits halt, it'll stop reading anything else. */
+		 
 		if (cmd == VC4_PACKET_HALT)
 			break;
 	}
@@ -553,13 +491,7 @@ vc4_validate_bin_cl(struct drm_device *dev,
 		return -EINVAL;
 	}
 
-	/* The bin CL must be ended with INCREMENT_SEMAPHORE and FLUSH.  The
-	 * semaphore is used to trigger the render CL to start up, and the
-	 * FLUSH is what caps the bin lists with
-	 * VC4_PACKET_RETURN_FROM_SUB_LIST (so they jump back to the main
-	 * render CL when they get called to) and actually triggers the queued
-	 * semaphore increment.
-	 */
+	 
 	if (!exec->found_increment_semaphore_packet || !exec->found_flush) {
 		DRM_DEBUG("Bin CL missing VC4_PACKET_INCREMENT_SEMAPHORE + "
 			  "VC4_PACKET_FLUSH\n");
@@ -659,9 +591,7 @@ reloc_tex(struct vc4_exec_info *exec,
 		cpp = 1;
 		break;
 	case VC4_TEXTURE_TYPE_ETC1:
-		/* ETC1 is arranged as 64-bit blocks, where each block is 4x4
-		 * pixels.
-		 */
+		 
 		cpp = 8;
 		width = (width + 3) >> 2;
 		height = (height + 3) >> 2;
@@ -692,16 +622,14 @@ reloc_tex(struct vc4_exec_info *exec,
 		goto fail;
 	}
 
-	/* The mipmap levels are stored before the base of the texture.  Make
-	 * sure there is actually space in the BO.
-	 */
+	 
 	for (i = 1; i <= miplevels; i++) {
 		uint32_t level_width = max(width >> i, 1u);
 		uint32_t level_height = max(height >> i, 1u);
 		uint32_t aligned_width, aligned_height;
 		uint32_t level_size;
 
-		/* Once the levels get small enough, they drop from T to LT. */
+		 
 		if (tiling_format == VC4_TILING_FORMAT_T &&
 		    size_is_lt(level_width, level_height, cpp)) {
 			tiling_format = VC4_TILING_FORMAT_LT;
@@ -760,9 +688,9 @@ validate_gl_shader_rec(struct drm_device *dev,
 	uint32_t *src_handles;
 	void *pkt_u, *pkt_v;
 	static const uint32_t shader_reloc_offsets[] = {
-		4, /* fs */
-		16, /* vs */
-		28, /* cs */
+		4,  
+		16,  
+		28,  
 	};
 	uint32_t shader_reloc_count = ARRAY_SIZE(shader_reloc_offsets);
 	struct drm_gem_dma_object *bo[ARRAY_SIZE(shader_reloc_offsets) + 8];
@@ -795,11 +723,7 @@ validate_gl_shader_rec(struct drm_device *dev,
 	pkt_v = exec->shader_rec_v;
 	memcpy(pkt_v, pkt_u, packet_size);
 	exec->shader_rec_u += packet_size;
-	/* Shader recs have to be aligned to 16 bytes (due to the attribute
-	 * flags being in the low bytes), so round the next validated shader
-	 * rec address up.  This should be safe, since we've got so many
-	 * relocations in a shader rec packet.
-	 */
+	 
 	BUG_ON(roundup(packet_size, 16) - packet_size > nr_relocs * 4);
 	exec->shader_rec_v += roundup(packet_size, 16);
 	exec->shader_rec_size -= packet_size;
@@ -877,10 +801,7 @@ validate_gl_shader_rec(struct drm_device *dev,
 			}
 		}
 
-		/* Fill in the uniform slots that need this shader's
-		 * start-of-uniforms address (used for resetting the uniform
-		 * stream in the presence of control flow).
-		 */
+		 
 		for (uni = 0;
 		     uni < validated_shader->num_uniform_addr_offsets;
 		     uni++) {

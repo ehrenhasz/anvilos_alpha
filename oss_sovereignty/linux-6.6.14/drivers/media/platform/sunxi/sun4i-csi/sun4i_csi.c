@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 NextThing Co
- * Copyright (C) 2016-2019 Bootlin
- *
- * Author: Maxime Ripard <maxime.ripard@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -80,7 +75,7 @@ static int sun4i_csi_notify_complete(struct v4l2_async_notifier *notifier)
 	if (ret)
 		return ret;
 
-	/* Create link from subdev to main device */
+	 
 	ret = media_create_pad_link(&subdev->entity, CSI_SUBDEV_SOURCE,
 				    &vdev->entity, 0,
 				    MEDIA_LNK_FL_ENABLED |
@@ -209,7 +204,7 @@ static int sun4i_csi_probe(struct platform_device *pdev)
 		return PTR_ERR(csi->rst);
 	}
 
-	/* Initialize subdev */
+	 
 	v4l2_subdev_init(subdev, &sun4i_csi_subdev_ops);
 	subdev->flags = V4L2_SUBDEV_FL_HAS_DEVNODE | V4L2_SUBDEV_FL_HAS_EVENTS;
 	subdev->entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
@@ -287,7 +282,7 @@ static const struct sun4i_csi_traits sun7i_a20_csi0_traits = {
 static const struct of_device_id sun4i_csi_of_match[] = {
 	{ .compatible = "allwinner,sun4i-a10-csi1", .data = &sun4i_a10_csi1_traits },
 	{ .compatible = "allwinner,sun7i-a20-csi0", .data = &sun7i_a20_csi0_traits },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sun4i_csi_of_match);
 

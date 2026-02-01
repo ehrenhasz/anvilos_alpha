@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * HD audio interface patch for Cirrus Logic CS8409 HDA bridge chip
- *
- * Copyright (C) 2021 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- */
+ 
+ 
 
 #ifndef __CS8409_PATCH_H
 #define __CS8409_PATCH_H
@@ -19,7 +14,7 @@
 #include "hda_jack.h"
 #include "hda_generic.h"
 
-/* CS8409 Specific Definitions */
+ 
 
 enum cs8409_pins {
 	CS8409_PIN_ROOT,
@@ -196,13 +191,13 @@ enum cs8409_coefficient_index_registers {
 	CS8409_SPI_TX_DATA,
 	CS8409_SPI_RX_DATA,
 	CS8409_SPI_STS,
-	CS8409_PFE_COEF_W1, /* Parametric filter engine coefficient write 1*/
+	CS8409_PFE_COEF_W1,  
 	CS8409_PFE_COEF_W2,
 	CS8409_PFE_CTRL1,
 	CS8409_PFE_CTRL2,
 	CS8409_PRE_SCALE_ATTN1,
 	CS8409_PRE_SCALE_ATTN2,
-	CS8409_PFE_COEF_MON1, /* Parametric filter engine coefficient monitor 1*/
+	CS8409_PFE_COEF_MON1,  
 	CS8409_PFE_COEF_MON2,
 	CS8409_ASP1_INTRN_STS,
 	CS8409_ASP2_INTRN_STS,
@@ -212,10 +207,10 @@ enum cs8409_coefficient_index_registers {
 	CS8409_ASP2_TX_SCLK_COUNT,
 	CS8409_ASP_UNS_RESP_MASK,
 	CS8409_LOOPBACK_CTRL = 0x80,
-	CS8409_PAD_CFG_SLW_RATE_CTRL = 0x82, /* Pad Config and Slew Rate Control (CIR = 0x0082) */
+	CS8409_PAD_CFG_SLW_RATE_CTRL = 0x82,  
 };
 
-/* CS42L42 Specific Definitions */
+ 
 
 #define CS8409_MAX_CODECS			8
 #define CS42L42_VOLUMES				(4U)
@@ -234,20 +229,20 @@ enum cs8409_coefficient_index_registers {
 #define CS42L42_FULL_SCALE_VOL_0DB		(1)
 #define CS42L42_FULL_SCALE_VOL_MINUS6DB		(0)
 
-/* Dell BULLSEYE / WARLOCK / CYBORG Specific Definitions */
+ 
 
 #define CS42L42_I2C_ADDR			(0x48 << 1)
-#define CS8409_CS42L42_RESET			GENMASK(5, 5) /* CS8409_GPIO5 */
-#define CS8409_CS42L42_INT			GENMASK(4, 4) /* CS8409_GPIO4 */
-#define CS8409_CYBORG_SPEAKER_PDN		GENMASK(2, 2) /* CS8409_GPIO2 */
-#define CS8409_WARLOCK_SPEAKER_PDN		GENMASK(1, 1) /* CS8409_GPIO1 */
+#define CS8409_CS42L42_RESET			GENMASK(5, 5)  
+#define CS8409_CS42L42_INT			GENMASK(4, 4)  
+#define CS8409_CYBORG_SPEAKER_PDN		GENMASK(2, 2)  
+#define CS8409_WARLOCK_SPEAKER_PDN		GENMASK(1, 1)  
 #define CS8409_CS42L42_HP_PIN_NID		CS8409_PIN_ASP1_TRANSMITTER_A
 #define CS8409_CS42L42_SPK_PIN_NID		CS8409_PIN_ASP2_TRANSMITTER_A
 #define CS8409_CS42L42_AMIC_PIN_NID		CS8409_PIN_ASP1_RECEIVER_A
 #define CS8409_CS42L42_DMIC_PIN_NID		CS8409_PIN_DMIC1_IN
 #define CS8409_CS42L42_DMIC_ADC_PIN_NID		CS8409_PIN_DMIC1
 
-/* Dolphin */
+ 
 
 #define DOLPHIN_C0_I2C_ADDR			(0x48 << 1)
 #define DOLPHIN_C1_I2C_ADDR			(0x49 << 1)
@@ -341,7 +336,7 @@ struct cs8409_spec {
 	unsigned int init_done:1;
 	unsigned int build_ctrl_done:1;
 
-	/* verb exec op override */
+	 
 	int (*exec_verb)(struct hdac_device *dev, unsigned int cmd, unsigned int flags,
 			 unsigned int *res);
 };

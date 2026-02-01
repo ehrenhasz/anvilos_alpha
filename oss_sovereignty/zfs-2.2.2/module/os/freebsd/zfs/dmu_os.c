@@ -1,29 +1,4 @@
-/*
- * Copyright (c) 2020 iXsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -223,11 +198,7 @@ dmu_read_pages(objset_t *os, uint64_t object, vm_page_t *ma, int count,
 			    db->db_offset + bufoff);
 		}
 
-		/*
-		 * We do not need to clamp the copy size by the file
-		 * size as the last block is zero-filled beyond the
-		 * end of file anyway.
-		 */
+		 
 		tocpy = MIN(db->db_size - bufoff, PAGESIZE - pgoff);
 		ASSERT3S(tocpy, >=, 0);
 		if (m != bogus_page)
@@ -257,18 +228,7 @@ dmu_read_pages(objset_t *os, uint64_t object, vm_page_t *ma, int count,
 	}
 
 #ifdef ZFS_DEBUG
-	/*
-	 * Three possibilities:
-	 * - last requested page ends at a buffer boundary and , thus,
-	 *   all pages and buffers have been iterated;
-	 * - all requested pages are filled, but the last buffer
-	 *   has not been exhausted;
-	 *   the read-ahead is possible only in this case;
-	 * - all buffers have been read, but the last page has not been
-	 *   fully filled;
-	 *   this is only possible if the file has only a single buffer
-	 *   with a size that is not a multiple of the page size.
-	 */
+	 
 	if (mi == count) {
 		ASSERT3S(di, >=, numbufs - 1);
 		IMPLY(*rahead != 0, di == numbufs - 1);

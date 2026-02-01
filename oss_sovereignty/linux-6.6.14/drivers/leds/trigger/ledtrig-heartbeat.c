@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED Heartbeat Trigger
- *
- * Copyright (C) 2006 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
- *
- * Based on Richard Purdie's ledtrig-timer.c and some arch's
- * CONFIG_HEARTBEAT code.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -48,15 +41,10 @@ static void led_heartbeat_function(struct timer_list *t)
 	if (test_and_clear_bit(LED_BLINK_BRIGHTNESS_CHANGE, &led_cdev->work_flags))
 		led_cdev->blink_brightness = led_cdev->new_blink_brightness;
 
-	/* acts like an actual heart beat -- ie thump-thump-pause... */
+	 
 	switch (heartbeat_data->phase) {
 	case 0:
-		/*
-		 * The hyperbolic function below modifies the
-		 * heartbeat period length in dependency of the
-		 * current (1min) load. It goes through the points
-		 * f(0)=1260, f(1)=860, f(5)=510, f(inf)->300.
-		 */
+		 
 		heartbeat_data->period = 300 +
 			(6720 << FSHIFT) / (5 * avenrun[0] + (7 << FSHIFT));
 		heartbeat_data->period =

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * processor thermal device RFIM control
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,7 +20,7 @@ static int rapl_mmio_cpu_online(unsigned int cpu)
 {
 	struct rapl_package *rp;
 
-	/* mmio rapl supports package 0 only for now */
+	 
 	if (topology_physical_package_id(cpu))
 		return 0;
 

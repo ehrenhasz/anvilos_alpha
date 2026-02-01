@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Atmel PIO4 controller
- *
- * Copyright (C) 2015 Atmel,
- *               2015 Ludovic Desroches <ludovic.desroches@atmel.com>
- */
+
+ 
 
 #include <dt-bindings/pinctrl/at91.h>
 
@@ -27,12 +22,7 @@
 #include "pinconf.h"
 #include "pinctrl-utils.h"
 
-/*
- * Warning:
- * In order to not introduce confusion between Atmel PIO groups and pinctrl
- * framework groups, Atmel PIO groups will be called banks, line is kept to
- * designed the pin id into this bank.
- */
+ 
 
 #define ATMEL_PIO_MSKR		0x0000
 #define ATMEL_PIO_CFGR		0x0004
@@ -73,16 +63,10 @@
 #define ATMEL_GET_PIN_FUNC(pinfunc)	((pinfunc >> 16) & 0xf)
 #define ATMEL_GET_PIN_IOSET(pinfunc)	((pinfunc >> 20) & 0xf)
 
-/* Custom pinconf parameters */
+ 
 #define ATMEL_PIN_CONFIG_DRIVE_STRENGTH	(PIN_CONFIG_END + 1)
 
-/**
- * struct atmel_pioctrl_data - Atmel PIO controller (pinmux + gpio) data struct
- * @nbanks: number of PIO banks
- * @last_bank_count: number of lines in the last bank (can be less than
- *	the rest of the banks).
- * @slew_rate_support: slew rate support
- */
+ 
 struct atmel_pioctrl_data {
 	unsigned int nbanks;
 	unsigned int last_bank_count;
@@ -103,29 +87,7 @@ struct atmel_pin {
 	const char *device;
 };
 
-/**
- * struct atmel_pioctrl - Atmel PIO controller (pinmux + gpio)
- * @reg_base: base address of the controller.
- * @clk: clock of the controller.
- * @nbanks: number of PIO groups, it can vary depending on the SoC.
- * @pinctrl_dev: pinctrl device registered.
- * @groups: groups table to provide group name and pin in the group to pinctrl.
- * @group_names: group names table to provide all the group/pin names to
- *     pinctrl or gpio.
- * @pins: pins table used for both pinctrl and gpio. pin_id, bank and line
- *     fields are set at probe time. Other ones are set when parsing dt
- *     pinctrl.
- * @npins: number of pins.
- * @gpio_chip: gpio chip registered.
- * @irq_domain: irq domain for the gpio controller.
- * @irqs: table containing the hw irq number of the bank. The index of the
- *     table is the bank id.
- * @pm_wakeup_sources: bitmap of wakeup sources (lines)
- * @pm_suspend_backup: backup/restore register values on suspend/resume
- * @dev: device entry for the Atmel PIO controller.
- * @node: node of the Atmel PIO controller.
- * @slew_rate_support: slew rate support
- */
+ 
 struct atmel_pioctrl {
 	void __iomem		*reg_base;
 	struct clk		*clk;
@@ -157,7 +119,7 @@ static const struct pinconf_generic_params atmel_custom_bindings[] = {
 	{"atmel,drive-strength", ATMEL_PIN_CONFIG_DRIVE_STRENGTH, 0},
 };
 
-/* --- GPIO --- */
+ 
 static unsigned int atmel_gpio_read(struct atmel_pioctrl *atmel_pioctrl,
 				    unsigned int bank, unsigned int reg)
 {
@@ -175,10 +137,7 @@ static void atmel_gpio_write(struct atmel_pioctrl *atmel_pioctrl,
 
 static void atmel_gpio_irq_ack(struct irq_data *d)
 {
-	/*
-	 * Nothing to do, interrupt is cleared when reading the status
-	 * register.
-	 */
+	 
 }
 
 static int atmel_gpio_irq_set_type(struct irq_data *d, unsigned int type)
@@ -247,7 +206,7 @@ static int atmel_gpio_irq_set_wake(struct irq_data *d, unsigned int on)
 	int bank = ATMEL_PIO_BANK(d->hwirq);
 	int line = ATMEL_PIO_LINE(d->hwirq);
 
-	/* The gpio controller has one interrupt line per bank. */
+	 
 	irq_set_irq_wake(atmel_pioctrl->irqs[bank], on);
 
 	if (on)
@@ -282,7 +241,7 @@ static void atmel_gpio_irq_handler(struct irq_desc *desc)
 	unsigned long isr;
 	int n, bank = -1;
 
-	/* Find from which bank is the irq received. */
+	 
 	for (n = 0; n < atmel_pioctrl->nbanks; n++) {
 		if (atmel_pioctrl->irqs[n] == irq) {
 			bank = n;
@@ -410,10 +369,7 @@ static void atmel_gpio_set_multiple(struct gpio_chip *chip, unsigned long *mask,
 		unsigned int bitmask;
 		unsigned int word = bank;
 
-/*
- * On a 64-bit platform, BITS_PER_LONG is 64 so it is necessary to iterate over
- * two 32bit words to handle the whole  bitmask
- */
+ 
 #if ATMEL_PIO_NPINS_PER_BANK != BITS_PER_LONG
 		word = BIT_WORD(bank * ATMEL_PIO_NPINS_PER_BANK);
 #endif
@@ -444,7 +400,7 @@ static struct gpio_chip atmel_gpio_chip = {
 	.base                   = 0,
 };
 
-/* --- PINCTRL --- */
+ 
 static unsigned int atmel_pin_config_read(struct pinctrl_dev *pctldev,
 					  unsigned int pin_id)
 {
@@ -455,7 +411,7 @@ static unsigned int atmel_pin_config_read(struct pinctrl_dev *pctldev,
 			     + bank * ATMEL_PIO_BANK_OFFSET;
 
 	writel_relaxed(BIT(line), addr + ATMEL_PIO_MSKR);
-	/* Have to set MSKR first, to access the right pin CFGR. */
+	 
 	wmb();
 
 	return readl_relaxed(addr + ATMEL_PIO_CFGR);
@@ -471,7 +427,7 @@ static void atmel_pin_config_write(struct pinctrl_dev *pctldev,
 			     + bank * ATMEL_PIO_BANK_OFFSET;
 
 	writel_relaxed(BIT(line), addr + ATMEL_PIO_MSKR);
-	/* Have to set MSKR first, to access the right pin CFGR. */
+	 
 	wmb();
 	writel_relaxed(conf, addr + ATMEL_PIO_CFGR);
 }
@@ -544,7 +500,7 @@ static int atmel_pctl_xlate_pinfunc(struct pinctrl_dev *pctldev,
 
 	atmel_pioctrl->pins[pin_id]->mux = func_id;
 	atmel_pioctrl->pins[pin_id]->ioset = ATMEL_GET_PIN_IOSET(pinfunc);
-	/* Want the device name not the group one. */
+	 
 	if (np->parent == atmel_pioctrl->node)
 		atmel_pioctrl->pins[pin_id]->device = np->name;
 	else
@@ -584,10 +540,7 @@ static int atmel_pctl_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 		goto exit;
 	}
 
-	/*
-	 * Reserve maps, at least there is a mux map and an optional conf
-	 * map for each pin.
-	 */
+	 
 	reserve = 1;
 	if (num_configs)
 		reserve++;
@@ -640,11 +593,7 @@ static int atmel_pctl_dt_node_to_map(struct pinctrl_dev *pctldev,
 	*num_maps = 0;
 	reserved_maps = 0;
 
-	/*
-	 * If all the pins of a device have the same configuration (or no one),
-	 * it is useless to add a subnode, so directly parse node referenced by
-	 * phandle.
-	 */
+	 
 	ret = atmel_pctl_dt_subnode_to_map(pctldev, np_config, map,
 					   &reserved_maps, num_maps);
 	if (ret) {
@@ -807,7 +756,7 @@ static int atmel_conf_pin_config_group_set(struct pinctrl_dev *pctldev,
 
 	conf = atmel_pin_config_read(pctldev, pin_id);
 
-	/* Keep slew rate enabled by default. */
+	 
 	if (atmel_pioctrl->slew_rate_support)
 		conf |= ATMEL_PIO_SR_MASK;
 
@@ -848,13 +797,7 @@ static int atmel_conf_pin_config_group_set(struct pinctrl_dev *pctldev,
 				conf &= (~ATMEL_PIO_IFEN_MASK);
 				conf &= (~ATMEL_PIO_IFSCEN_MASK);
 			} else {
-				/*
-				 * We don't care about the debounce value for several reasons:
-				 * - can't have different debounce periods inside a same group,
-				 * - the register to configure this period is a secure register.
-				 * The debouncing filter can filter a pulse with a duration of less
-				 * than 1/2 slow clock period.
-				 */
+				 
 				conf |= ATMEL_PIO_IFEN_MASK;
 				conf |= ATMEL_PIO_IFSCEN_MASK;
 			}
@@ -878,7 +821,7 @@ static int atmel_conf_pin_config_group_set(struct pinctrl_dev *pctldev,
 		case PIN_CONFIG_SLEW_RATE:
 			if (!atmel_pioctrl->slew_rate_support)
 				break;
-			/* And remove it if explicitly requested. */
+			 
 			if (arg == 0)
 				conf &= ~ATMEL_PIO_SR_MASK;
 			break;
@@ -966,7 +909,7 @@ static void atmel_conf_pin_config_dbg_show(struct pinctrl_dev *pctldev,
 		case ATMEL_PIO_DRVSTR_HI:
 			seq_printf(s, "%s ", "high-drive");
 			break;
-		/* ATMEL_PIO_DRVSTR_LO and 0 which is the default value at reset */
+		 
 		default:
 			seq_printf(s, "%s ", "low-drive");
 		}
@@ -993,10 +936,7 @@ static int __maybe_unused atmel_pctrl_suspend(struct device *dev)
 	struct atmel_pioctrl *atmel_pioctrl = dev_get_drvdata(dev);
 	int i, j;
 
-	/*
-	 * For each bank, save IMR to restore it later and disable all GPIO
-	 * interrupts excepting the ones marked as wakeup sources.
-	 */
+	 
 	for (i = 0; i < atmel_pioctrl->nbanks; i++) {
 		atmel_pioctrl->pm_suspend_backup[i].imr =
 			atmel_gpio_read(atmel_pioctrl, i, ATMEL_PIO_IMR);
@@ -1041,10 +981,7 @@ static const struct dev_pm_ops atmel_pctrl_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(atmel_pctrl_suspend, atmel_pctrl_resume)
 };
 
-/*
- * The number of banks can be different from a SoC to another one.
- * We can have up to 16 banks.
- */
+ 
 static const struct atmel_pioctrl_data atmel_sama5d2_pioctrl_data = {
 	.nbanks			= 4,
 	.last_bank_count	= ATMEL_PIO_NPINS_PER_BANK,
@@ -1052,7 +989,7 @@ static const struct atmel_pioctrl_data atmel_sama5d2_pioctrl_data = {
 
 static const struct atmel_pioctrl_data microchip_sama7g5_pioctrl_data = {
 	.nbanks			= 5,
-	.last_bank_count	= 8, /* sama7g5 has only PE0 to PE7 */
+	.last_bank_count	= 8,  
 	.slew_rate_support	= 1,
 };
 
@@ -1064,14 +1001,11 @@ static const struct of_device_id atmel_pctrl_of_match[] = {
 		.compatible = "microchip,sama7g5-pinctrl",
 		.data = &microchip_sama7g5_pioctrl_data,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 
-/*
- * This lock class allows to tell lockdep that parent IRQ and children IRQ do
- * not share the same class so it does not raise false positive
- */
+ 
 static struct lock_class_key atmel_lock_key;
 static struct lock_class_key atmel_request_key;
 
@@ -1097,7 +1031,7 @@ static int atmel_pinctrl_probe(struct platform_device *pdev)
 
 	atmel_pioctrl->nbanks = atmel_pioctrl_data->nbanks;
 	atmel_pioctrl->npins = atmel_pioctrl->nbanks * ATMEL_PIO_NPINS_PER_BANK;
-	/* if last bank has limited number of pins, adjust accordingly */
+	 
 	if (atmel_pioctrl_data->last_bank_count != ATMEL_PIO_NPINS_PER_BANK) {
 		atmel_pioctrl->npins -= ATMEL_PIO_NPINS_PER_BANK;
 		atmel_pioctrl->npins += atmel_pioctrl_data->last_bank_count;
@@ -1128,7 +1062,7 @@ static int atmel_pinctrl_probe(struct platform_device *pdev)
 	atmel_pinctrl_desc.num_custom_params = ARRAY_SIZE(atmel_custom_bindings);
 	atmel_pinctrl_desc.custom_params = atmel_custom_bindings;
 
-	/* One pin is one group since a pin can achieve all functions. */
+	 
 	group_names = devm_kcalloc(dev,
 				   atmel_pioctrl->npins, sizeof(*group_names),
 				   GFP_KERNEL);
@@ -1156,7 +1090,7 @@ static int atmel_pinctrl_probe(struct platform_device *pdev)
 		atmel_pioctrl->pins[i]->line = line;
 
 		pin_desc[i].number = i;
-		/* Pin naming convention: P(bank_name)(bank_pin_number). */
+		 
 		pin_desc[i].name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "P%c%u",
 						  bank + 'A', line);
 		if (!pin_desc[i].name)
@@ -1196,7 +1130,7 @@ static int atmel_pinctrl_probe(struct platform_device *pdev)
 	if (!atmel_pioctrl->irqs)
 		return -ENOMEM;
 
-	/* There is one controller but each bank has its own irq line. */
+	 
 	for (i = 0; i < atmel_pioctrl->nbanks; i++) {
 		ret = platform_get_irq(pdev, i);
 		if (ret < 0) {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Microsemi SoCs FDMA driver
- *
- * Copyright (c) 2021 Microchip
- *
- * Page recycling code is mostly taken from gianfar driver.
- */
+
+ 
 
 #include <linux/align.h>
 #include <linux/bitops.h>
@@ -86,9 +80,7 @@ static void ocelot_fdma_activate_chan(struct ocelot *ocelot, dma_addr_t dma,
 				      int chan)
 {
 	ocelot_fdma_writel(ocelot, MSCC_FDMA_DCB_LLP(chan), dma);
-	/* Barrier to force memory writes to DCB to be completed before starting
-	 * the channel.
-	 */
+	 
 	wmb();
 	ocelot_fdma_writel(ocelot, MSCC_FDMA_CH_ACTIVATE, BIT(chan));
 }
@@ -158,7 +150,7 @@ static int ocelot_fdma_alloc_rx_buffs(struct ocelot *ocelot, u16 alloc_cnt)
 
 	while (alloc_cnt--) {
 		rxb = &rx_ring->bufs[idx];
-		/* try reuse page */
+		 
 		if (unlikely(!rxb->page)) {
 			if (unlikely(!ocelot_fdma_rx_alloc_page(ocelot, rxb))) {
 				dev_err_ratelimited(ocelot->dev,
@@ -173,7 +165,7 @@ static int ocelot_fdma_alloc_rx_buffs(struct ocelot *ocelot, u16 alloc_cnt)
 		ocelot_fdma_dcb_set_data(dcb, dma_addr, OCELOT_FDMA_RXB_SIZE);
 
 		idx = ocelot_fdma_idx_next(idx, OCELOT_FDMA_RX_RING_SIZE);
-		/* Chain the DCB to the next one */
+		 
 		dcb->llp = ocelot_fdma_idx_dma(rx_ring->dcbs_dma, idx);
 	}
 
@@ -209,7 +201,7 @@ static bool ocelot_fdma_check_stop_rx(struct ocelot *ocelot)
 {
 	u32 llp;
 
-	/* Check if the FDMA hits the DCB with LLP == NULL */
+	 
 	llp = ocelot_fdma_readl(ocelot, MSCC_FDMA_DCB_LLP(MSCC_FDMA_XTR_CHAN));
 	if (unlikely(llp))
 		return false;
@@ -251,19 +243,16 @@ static void ocelot_fdma_rx_restart(struct ocelot *ocelot)
 
 	ocelot_fdma_rx_set_llp(rx_ring);
 
-	/* FDMA stopped on the last DCB that contained a NULL LLP, since
-	 * we processed some DCBs in RX, there is free space, and  we must set
-	 * DCB_LLP to point to the next DCB
-	 */
+	 
 	llp_prev = ocelot_fdma_readl(ocelot, MSCC_FDMA_DCB_LLP_PREV(chan));
 	dma_base = rx_ring->dcbs_dma;
 
-	/* Get the next DMA addr located after LLP == NULL DCB */
+	 
 	idx = ocelot_fdma_dma_idx(dma_base, llp_prev);
 	idx = ocelot_fdma_idx_next(idx, OCELOT_FDMA_RX_RING_SIZE);
 	new_llp = ocelot_fdma_idx_dma(dma_base, idx);
 
-	/* Finally reactivate the channel */
+	 
 	ocelot_fdma_activate_chan(ocelot, new_llp, chan);
 }
 
@@ -280,11 +269,11 @@ static bool ocelot_fdma_add_rx_frag(struct ocelot_fdma_rx_buf *rxb, u32 stat,
 				rxb->page_offset, size, OCELOT_FDMA_RX_SIZE);
 	}
 
-	/* Try to reuse page */
+	 
 	if (unlikely(page_ref_count(page) != 1 || page_is_pfmemalloc(page)))
 		return false;
 
-	/* Change offset to the other half */
+	 
 	rxb->page_offset ^= OCELOT_FDMA_RX_SIZE;
 
 	page_ref_inc(page);
@@ -302,10 +291,10 @@ static void ocelot_fdma_reuse_rx_page(struct ocelot *ocelot,
 	rx_ring->next_to_alloc = ocelot_fdma_idx_next(rx_ring->next_to_alloc,
 						      OCELOT_FDMA_RX_RING_SIZE);
 
-	/* Copy page reference */
+	 
 	*new_rxb = *old_rxb;
 
-	/* Sync for use by the device */
+	 
 	dma_sync_single_range_for_device(ocelot->dev, old_rxb->dma_addr,
 					 old_rxb->page_offset,
 					 OCELOT_FDMA_RX_SIZE, DMA_FROM_DEVICE);
@@ -317,7 +306,7 @@ static struct sk_buff *ocelot_fdma_get_skb(struct ocelot *ocelot, u32 stat,
 {
 	bool first = false;
 
-	/* Allocate skb head and data */
+	 
 	if (likely(!skb)) {
 		void *buff_addr = page_address(rxb->page) +
 				  rxb->page_offset;
@@ -336,15 +325,15 @@ static struct sk_buff *ocelot_fdma_get_skb(struct ocelot *ocelot, u32 stat,
 				      DMA_FROM_DEVICE);
 
 	if (ocelot_fdma_add_rx_frag(rxb, stat, skb, first)) {
-		/* Reuse the free half of the page for the next_to_alloc DCB*/
+		 
 		ocelot_fdma_reuse_rx_page(ocelot, rxb);
 	} else {
-		/* page cannot be reused, unmap it */
+		 
 		dma_unmap_page(ocelot->dev, rxb->dma_addr, PAGE_SIZE,
 			       DMA_FROM_DEVICE);
 	}
 
-	/* clear rx buff content */
+	 
 	rxb->page = NULL;
 
 	return skb;
@@ -409,16 +398,14 @@ static int ocelot_fdma_rx_get(struct ocelot *ocelot, int budget)
 		if (MSCC_FDMA_DCB_STAT_BLOCKL(stat) == 0)
 			break;
 
-		/* New packet is a start of frame but we already got a skb set,
-		 * we probably lost an EOF packet, free skb
-		 */
+		 
 		if (unlikely(skb && (stat & MSCC_FDMA_DCB_STAT_SOF))) {
 			dev_kfree_skb(skb);
 			skb = NULL;
 		}
 
 		rxb = &rx_ring->bufs[idx];
-		/* Fetch next to clean buffer from the rx_ring */
+		 
 		skb = ocelot_fdma_get_skb(ocelot, stat, rxb, skb);
 		if (unlikely(!skb))
 			break;
@@ -438,9 +425,7 @@ static int ocelot_fdma_rx_get(struct ocelot *ocelot, int budget)
 			continue;
 		}
 
-		/* We still need to process the other fragment of the packet
-		 * before delivering it to the network stack
-		 */
+		 
 		if (!(stat & MSCC_FDMA_DCB_STAT_EOF))
 			continue;
 
@@ -494,9 +479,7 @@ static void ocelot_fdma_tx_cleanup(struct ocelot *ocelot, int budget)
 
 	tx_ring = &fdma->tx_ring;
 
-	/* Purge the TX packets that have been sent up to the NULL llp or the
-	 * end of done list.
-	 */
+	 
 	while (!ocelot_fdma_tx_ring_empty(fdma)) {
 		ntc = tx_ring->next_to_clean;
 		dcb = &tx_ring->dcbs[ntc];
@@ -510,24 +493,22 @@ static void ocelot_fdma_tx_cleanup(struct ocelot *ocelot, int budget)
 		napi_consume_skb(skb, budget);
 		dcb_llp = dcb->llp;
 
-		/* Only update after accessing all dcb fields */
+		 
 		tx_ring->next_to_clean = ocelot_fdma_idx_next(ntc,
 							      OCELOT_FDMA_TX_RING_SIZE);
 
-		/* If we hit the NULL LLP, stop, we might need to reload FDMA */
+		 
 		if (dcb_llp == 0) {
 			end_of_list = true;
 			break;
 		}
 	}
 
-	/* No need to try to wake if there were no TX cleaned_cnt up. */
+	 
 	if (ocelot_fdma_tx_ring_free(fdma))
 		ocelot_fdma_wakeup_netdev(ocelot);
 
-	/* If there is still some DCBs to be processed by the FDMA or if the
-	 * pending list is empty, there is no need to restart the FDMA.
-	 */
+	 
 	if (!end_of_list || ocelot_fdma_tx_ring_empty(fdma))
 		return;
 
@@ -538,7 +519,7 @@ static void ocelot_fdma_tx_cleanup(struct ocelot *ocelot, int budget)
 		return;
 	}
 
-	/* Set NULL LLP to be the last DCB used */
+	 
 	new_null_llp_idx = ocelot_fdma_idx_prev(tx_ring->next_to_use,
 						OCELOT_FDMA_TX_RING_SIZE);
 	dcb = &tx_ring->dcbs[new_null_llp_idx];
@@ -624,13 +605,13 @@ static void ocelot_fdma_send_skb(struct ocelot *ocelot,
 					OCELOT_FDMA_TX_RING_SIZE);
 	skb_tx_timestamp(skb);
 
-	/* If the FDMA TX chan is empty, then enqueue the DCB directly */
+	 
 	if (ocelot_fdma_tx_ring_empty(fdma)) {
 		dma = ocelot_fdma_idx_dma(tx_ring->dcbs_dma,
 					  tx_ring->next_to_use);
 		ocelot_fdma_activate_chan(ocelot, dma, MSCC_FDMA_INJ_CHAN);
 	} else {
-		/* Chain the DCBs */
+		 
 		dcb->llp = ocelot_fdma_idx_dma(tx_ring->dcbs_dma, next_idx);
 	}
 
@@ -706,7 +687,7 @@ static void ocelot_fdma_free_rx_ring(struct ocelot *ocelot)
 	rx_ring = &fdma->rx_ring;
 	idx = rx_ring->next_to_clean;
 
-	/* Free the pages held in the RX ring */
+	 
 	while (idx != rx_ring->next_to_use) {
 		rxb = &rx_ring->bufs[idx];
 		dma_unmap_page(ocelot->dev, rxb->dma_addr, PAGE_SIZE,
@@ -748,14 +729,14 @@ static int ocelot_fdma_rings_alloc(struct ocelot *ocelot)
 	dma_addr_t dcbs_dma;
 	int ret;
 
-	/* Create a pool of consistent memory blocks for hardware descriptors */
+	 
 	fdma->dcbs_base = dmam_alloc_coherent(ocelot->dev,
 					      OCELOT_DCBS_HW_ALLOC_SIZE,
 					      &fdma->dcbs_dma_base, GFP_KERNEL);
 	if (!fdma->dcbs_base)
 		return -ENOMEM;
 
-	/* DCBs must be aligned on a 32bit boundary */
+	 
 	dcbs = fdma->dcbs_base;
 	dcbs_dma = fdma->dcbs_dma_base;
 	if (!IS_ALIGNED(dcbs_dma, 4)) {
@@ -764,12 +745,12 @@ static int ocelot_fdma_rings_alloc(struct ocelot *ocelot)
 		dcbs = (void *)dcbs + adjust;
 	}
 
-	/* TX queue */
+	 
 	fdma->tx_ring.dcbs = dcbs;
 	fdma->tx_ring.dcbs_dma = dcbs_dma;
 	spin_lock_init(&fdma->tx_ring.xmit_lock);
 
-	/* RX queue */
+	 
 	fdma->rx_ring.dcbs = dcbs + OCELOT_FDMA_TX_RING_SIZE;
 	fdma->rx_ring.dcbs_dma = dcbs_dma + OCELOT_FDMA_TX_DCB_SIZE;
 	ret = ocelot_fdma_alloc_rx_buffs(ocelot,
@@ -779,9 +760,7 @@ static int ocelot_fdma_rings_alloc(struct ocelot *ocelot)
 		return ret;
 	}
 
-	/* Set the last DCB LLP as NULL, this is normally done when restarting
-	 * the RX chan, but this is for the first run
-	 */
+	 
 	ocelot_fdma_rx_set_llp(&fdma->rx_ring);
 
 	return 0;
@@ -854,7 +833,7 @@ void ocelot_fdma_start(struct ocelot *ocelot)
 {
 	struct ocelot_fdma *fdma = ocelot->fdma;
 
-	/* Reconfigure for extraction and injection using DMA */
+	 
 	ocelot_write_rix(ocelot, QS_INJ_GRP_CFG_MODE(2), QS_INJ_GRP_CFG, 0);
 	ocelot_write_rix(ocelot, QS_INJ_CTRL_GAP_SIZE(0), QS_INJ_CTRL, 0);
 

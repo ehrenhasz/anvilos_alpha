@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Serial core controller driver
- *
- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tony Lindgren <tony@atomide.com>
- *
- * This driver manages the serial core controller struct device instances.
- * The serial core controller devices are children of the physical serial
- * port device.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -32,10 +23,7 @@ static int serial_ctrl_remove(struct device *dev)
 	return 0;
 }
 
-/*
- * Serial core controller device init functions. Note that the physical
- * serial port device driver may not have completed probe at this point.
- */
+ 
 int serial_ctrl_register_port(struct uart_driver *drv, struct uart_port *port)
 {
 	return serial_core_register_port(drv, port);

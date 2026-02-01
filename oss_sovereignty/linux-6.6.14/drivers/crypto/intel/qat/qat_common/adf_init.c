@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/mutex.h>
 #include <linux/list.h>
 #include <linux/bitops.h>
@@ -49,15 +49,7 @@ int adf_service_unregister(struct service_hndl *service)
 	return 0;
 }
 
-/**
- * adf_dev_init() - Init data structures and services for the given accel device
- * @accel_dev: Pointer to acceleration device.
- *
- * Initialize the ring data structures and the admin comms and arbitration
- * services.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 static int adf_dev_init(struct adf_accel_dev *accel_dev)
 {
 	struct service_hndl *service;
@@ -135,11 +127,7 @@ static int adf_dev_init(struct adf_accel_dev *accel_dev)
 
 	adf_heartbeat_init(accel_dev);
 
-	/*
-	 * Subservice initialisation is divided into two stages: init and start.
-	 * This is to facilitate any ordering dependencies between services
-	 * prior to starting any of the accelerators.
-	 */
+	 
 	list_for_each(list_itr, &service_table) {
 		service = list_entry(list_itr, struct service_hndl, list);
 		if (service->event_hld(accel_dev, ADF_EVENT_INIT)) {
@@ -154,16 +142,7 @@ static int adf_dev_init(struct adf_accel_dev *accel_dev)
 	return 0;
 }
 
-/**
- * adf_dev_start() - Start acceleration service for the given accel device
- * @accel_dev:    Pointer to acceleration device.
- *
- * Function notifies all the registered services that the acceleration device
- * is ready to be used.
- * To be used by QAT device specific drivers.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 static int adf_dev_start(struct adf_accel_dev *accel_dev)
 {
 	struct adf_hw_device_data *hw_data = accel_dev->hw_device;
@@ -192,11 +171,11 @@ static int adf_dev_start(struct adf_accel_dev *accel_dev)
 		}
 	}
 
-	/* Set ssm watch dog timer */
+	 
 	if (hw_data->set_ssm_wdtimer)
 		hw_data->set_ssm_wdtimer(accel_dev);
 
-	/* Enable Power Management */
+	 
 	if (hw_data->enable_pm && hw_data->enable_pm(accel_dev)) {
 		dev_err(&GET_DEV(accel_dev), "Failed to configure Power Management\n");
 		return -EFAULT;
@@ -250,16 +229,7 @@ static int adf_dev_start(struct adf_accel_dev *accel_dev)
 	return 0;
 }
 
-/**
- * adf_dev_stop() - Stop acceleration service for the given accel device
- * @accel_dev:    Pointer to acceleration device.
- *
- * Function notifies all the registered services that the acceleration device
- * is shuting down.
- * To be used by QAT device specific drivers.
- *
- * Return: void
- */
+ 
 static void adf_dev_stop(struct adf_accel_dev *accel_dev)
 {
 	struct adf_hw_device_data *hw_data = accel_dev->hw_device;
@@ -316,13 +286,7 @@ static void adf_dev_stop(struct adf_accel_dev *accel_dev)
 	}
 }
 
-/**
- * adf_dev_shutdown() - shutdown acceleration services and data strucutures
- * @accel_dev: Pointer to acceleration device
- *
- * Cleanup the ring data structures and the admin comms and arbitration
- * services.
- */
+ 
 static void adf_dev_shutdown(struct adf_accel_dev *accel_dev)
 {
 	struct adf_hw_device_data *hw_data = accel_dev->hw_device;
@@ -370,7 +334,7 @@ static void adf_dev_shutdown(struct adf_accel_dev *accel_dev)
 		clear_bit(ADF_STATUS_IRQ_ALLOCATED, &accel_dev->status);
 	}
 
-	/* Delete configuration only if not restarting */
+	 
 	if (!test_bit(ADF_STATUS_RESTARTING, &accel_dev->status))
 		adf_cfg_del_all(accel_dev);
 
@@ -507,7 +471,7 @@ int adf_dev_restart(struct adf_accel_dev *accel_dev)
 	adf_dev_down(accel_dev, false);
 
 	ret = adf_dev_up(accel_dev, false);
-	/* if device is already up return success*/
+	 
 	if (ret == -EALREADY)
 		return 0;
 

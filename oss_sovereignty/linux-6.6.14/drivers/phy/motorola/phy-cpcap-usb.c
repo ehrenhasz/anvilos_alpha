@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Motorola CPCAP PMIC USB PHY driver
- * Copyright (C) 2017 Tony Lindgren <tony@atomide.com>
- *
- * Some parts based on earlier Motorola Linux kernel tree code in
- * board-mapphone-usb.c and cpcap-usb-det.c:
- * Copyright (C) 2007 - 2011 Motorola, Inc.
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/clk.h>
@@ -29,7 +22,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/usb/musb.h>
 
-/* CPCAP_REG_USBC1 register bits */
+ 
 #define CPCAP_BIT_IDPULSE		BIT(15)
 #define CPCAP_BIT_ID100KPU		BIT(14)
 #define CPCAP_BIT_IDPUCNTRL		BIT(13)
@@ -47,7 +40,7 @@
 #define CPCAP_BIT_DP1K5PU		BIT(1)
 #define CPCAP_BIT_DP150KPU		BIT(0)
 
-/* CPCAP_REG_USBC2 register bits */
+ 
 #define CPCAP_BIT_ZHSDRV1		BIT(15)
 #define CPCAP_BIT_ZHSDRV0		BIT(14)
 #define CPCAP_BIT_DPLLCLKREQ		BIT(13)
@@ -65,7 +58,7 @@
 #define CPCAP_BIT_EMUMODE1		BIT(1)
 #define CPCAP_BIT_EMUMODE0		BIT(0)
 
-/* CPCAP_REG_USBC3 register bits */
+ 
 #define CPCAP_BIT_SPARE_898_15		BIT(15)
 #define CPCAP_BIT_IHSTX03		BIT(14)
 #define CPCAP_BIT_IHSTX02		BIT(13)
@@ -107,7 +100,7 @@ struct cpcap_usb_ints_state {
 enum cpcap_gpio_mode {
 	CPCAP_DM_DP,
 	CPCAP_MDM_RX_TX,
-	CPCAP_UNKNOWN_DISABLED,	/* Seems to disable USB lines */
+	CPCAP_UNKNOWN_DISABLED,	 
 	CPCAP_OTG_DM_DP,
 };
 
@@ -228,7 +221,7 @@ static void cpcap_usb_detect(struct work_struct *work)
 
 	vbus = cpcap_usb_vbus_valid(ddata);
 
-	/* We need to kick the VBUS as USB A-host */
+	 
 	if (s.id_ground && ddata->vbus_provider) {
 		dev_dbg(ddata->dev, "still in USB A-host mode, kicking VBUS\n");
 
@@ -252,7 +245,7 @@ static void cpcap_usb_detect(struct work_struct *work)
 		return;
 	}
 
-	/* No VBUS needed with docks */
+	 
 	if (vbus && s.id_ground && !ddata->vbus_provider) {
 		dev_dbg(ddata->dev, "connected to a dock\n");
 
@@ -264,11 +257,7 @@ static void cpcap_usb_detect(struct work_struct *work)
 
 		cpcap_usb_try_musb_mailbox(ddata, MUSB_ID_GROUND);
 
-		/*
-		 * Force check state again after musb has reoriented,
-		 * otherwise devices won't enumerate after loading PHY
-		 * driver.
-		 */
+		 
 		schedule_delayed_work(&ddata->detect_work,
 				      msecs_to_jiffies(1000));
 
@@ -304,7 +293,7 @@ static void cpcap_usb_detect(struct work_struct *work)
 
 	vbus = cpcap_usb_vbus_valid(ddata);
 
-	/* Otherwise assume we're connected to a USB host */
+	 
 	if (vbus) {
 		dev_dbg(ddata->dev, "connected to USB host\n");
 		error = cpcap_usb_set_usb_mode(ddata);
@@ -319,7 +308,7 @@ static void cpcap_usb_detect(struct work_struct *work)
 	ddata->docked = false;
 	cpcap_usb_try_musb_mailbox(ddata, MUSB_VBUS_OFF);
 
-	/* Default to debug UART mode */
+	 
 	error = cpcap_usb_set_uart_mode(ddata);
 	if (error)
 		goto out_err;
@@ -370,13 +359,13 @@ static int cpcap_usb_init_irq(struct platform_device *pdev,
 }
 
 static const char * const cpcap_phy_irqs[] = {
-	/* REG_INT_0 */
+	 
 	"id_ground", "id_float",
 
-	/* REG_INT1 */
+	 
 	"se0conn", "vbusvld", "sessvld", "sessend", "se1",
 
-	/* REG_INT_3 */
+	 
 	"dm", "dp",
 };
 
@@ -394,11 +383,7 @@ static int cpcap_usb_init_interrupts(struct platform_device *pdev,
 	return 0;
 }
 
-/*
- * Optional pins and modes. At least Motorola mapphone devices
- * are using two GPIOs and dynamic pinctrl to multiplex PHY pins
- * to UART, ULPI or UTMI mode.
- */
+ 
 
 static int cpcap_usb_gpio_set_mode(struct cpcap_phy_ddata *ddata,
 				   enum cpcap_gpio_mode mode)
@@ -416,7 +401,7 @@ static int cpcap_usb_set_uart_mode(struct cpcap_phy_ddata *ddata)
 {
 	int error;
 
-	/* Disable lines to prevent glitches from waking up mdm6600 */
+	 
 	error = cpcap_usb_gpio_set_mode(ddata, CPCAP_UNKNOWN_DISABLED);
 	if (error)
 		goto out_err;
@@ -444,7 +429,7 @@ static int cpcap_usb_set_uart_mode(struct cpcap_phy_ddata *ddata)
 	if (error)
 		goto out_err;
 
-	/* Enable UART mode */
+	 
 	error = cpcap_usb_gpio_set_mode(ddata, CPCAP_DM_DP);
 	if (error)
 		goto out_err;
@@ -461,7 +446,7 @@ static int cpcap_usb_set_usb_mode(struct cpcap_phy_ddata *ddata)
 {
 	int error;
 
-	/* Disable lines to prevent glitches from waking up mdm6600 */
+	 
 	error = cpcap_usb_gpio_set_mode(ddata, CPCAP_UNKNOWN_DISABLED);
 	if (error)
 		return error;
@@ -496,7 +481,7 @@ static int cpcap_usb_set_usb_mode(struct cpcap_phy_ddata *ddata)
 	if (error)
 		goto out_err;
 
-	/* Enable USB mode */
+	 
 	error = cpcap_usb_gpio_set_mode(ddata, CPCAP_OTG_DM_DP);
 	if (error)
 		goto out_err;

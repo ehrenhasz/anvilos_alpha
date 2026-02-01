@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 
 #include <stdint.h>
 #include <string.h>
@@ -13,8 +13,8 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 #endif
 
-/* tcp_mem sysctl has only 3 ints, but this test is doing TCP_MEM_LOOPS */
-#define TCP_MEM_LOOPS 20  /* because 30 doesn't fit into 512 bytes of stack */
+ 
+#define TCP_MEM_LOOPS 20   
 #define MAX_ULONG_STR_LEN 7
 #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
 

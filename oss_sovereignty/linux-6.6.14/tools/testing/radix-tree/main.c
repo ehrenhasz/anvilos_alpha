@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -54,7 +54,7 @@ void __big_gang_check(void)
 	do {
 		unsigned long old_start;
 
-//		printf("0x%08lx\n", start);
+
 		__gang_check(start, rand() % 113 + 1, rand() % 71,
 				rand() % 157, rand() % 91 + 1);
 		old_start = start;
@@ -128,8 +128,7 @@ void check_copied_tags(struct radix_tree_root *tree, unsigned long start, unsign
 	int i;
 
 	for (i = 0; i < count; i++) {
-/*		if (i % 1000 == 0)
-			putchar('.'); */
+ 
 		if (idx[i] < start || idx[i] > end) {
 			if (item_tag_get(tree, idx[i], totag)) {
 				printv(2, "%lu-%lu: %lu, tags %d-%d\n", start,
@@ -160,7 +159,7 @@ void copy_tag_check(void)
 	unsigned long start, end, count = 0, tagged, cur, tmp;
 	int i;
 
-//	printf("generating radix tree indices...\n");
+
 	start = rand();
 	end = rand();
 	if (start > end && (rand() % 10)) {
@@ -168,8 +167,7 @@ void copy_tag_check(void)
 		start = end;
 		end = cur;
 	}
-	/* Specifically create items around the start and the end of the range
-	 * with high probability to check for off by one errors */
+	 
 	cur = rand();
 	if (cur & 1) {
 		item_insert(&tree, start);
@@ -209,30 +207,29 @@ void copy_tag_check(void)
 			if (idx[i] >= start && idx[i] <= end)
 				count++;
 		}
-/*		if (i % 1000 == 0)
-			putchar('.'); */
+ 
 	}
 
-//	printf("\ncopying tags...\n");
+
 	tagged = tag_tagged_items(&tree, start, end, ITEMS, XA_MARK_0, XA_MARK_1);
 
-//	printf("checking copied tags\n");
+
 	assert(tagged == count);
 	check_copied_tags(&tree, start, end, idx, ITEMS, 0, 1);
 
-	/* Copy tags in several rounds */
-//	printf("\ncopying tags...\n");
+	 
+
 	tmp = rand() % (count / 10 + 2);
 	tagged = tag_tagged_items(&tree, start, end, tmp, XA_MARK_0, XA_MARK_2);
 	assert(tagged == count);
 
-//	printf("%lu %lu %lu\n", tagged, tmp, count);
-//	printf("checking copied tags\n");
+
+
 	check_copied_tags(&tree, start, end, idx, ITEMS, 0, 2);
 	verify_tag_consistency(&tree, 0);
 	verify_tag_consistency(&tree, 1);
 	verify_tag_consistency(&tree, 2);
-//	printf("\n");
+
 	item_kill_tree(&tree);
 }
 
@@ -314,7 +311,7 @@ int main(int argc, char **argv)
 	iteration_test2(10 + 90 * long_run);
 	single_thread_tests(long_run);
 
-	/* Free any remaining preallocated nodes */
+	 
 	radix_tree_cpu_dead(0);
 
 	benchmark();

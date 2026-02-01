@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/kfifo.h>
@@ -25,7 +25,7 @@ static unsigned int __kfifo_fromio(struct kfifo *fifo, const void __iomem *src, 
 
 	memcpy_fromio(__fifo->data + off, src, l);
 	memcpy_fromio(__fifo->data, src + l, len - l);
-	/* Make sure data copied from SRAM is visible to all CPUs. */
+	 
 	smp_mb();
 	__fifo->in += len;
 
@@ -104,7 +104,7 @@ static ssize_t probe_points_read(struct file *file, char __user *to, size_t coun
 	char *buf;
 	int i, ret;
 
-	/* Prevent chaining, send and dump IPC value just once. */
+	 
 	if (*ppos)
 		return 0;
 
@@ -260,7 +260,7 @@ static int strace_release(struct inode *inode, struct file *file)
 
 	spin_lock_irqsave(&adev->trace_lock, flags);
 
-	/* Gather any remaining logs. */
+	 
 	for_each_set_bit(i, &resource_mask, num_cores) {
 		msg.log.core = i;
 		avs_dsp_op(adev, log_buffer_status, &msg);
@@ -286,7 +286,7 @@ static int enable_logs(struct avs_dev *adev, u32 resource_mask, u32 *priorities)
 {
 	int ret;
 
-	/* Logging demands D0i0 state from DSP. */
+	 
 	if (!adev->logged_resources) {
 		pm_runtime_get_sync(adev->dev);
 
@@ -324,20 +324,17 @@ static int disable_logs(struct avs_dev *adev, u32 resource_mask)
 {
 	int ret;
 
-	/* Check if there's anything to do. */
+	 
 	if (!adev->logged_resources)
 		return 0;
 
 	ret = avs_dsp_op(adev, enable_logs, AVS_LOG_DISABLE, DISABLE_TIMERS, DISABLE_TIMERS,
 			 resource_mask, NULL);
 
-	/*
-	 * If IPC fails causing recovery, logged_resources is already zero
-	 * so unsetting bits is still safe.
-	 */
+	 
 	adev->logged_resources &= ~resource_mask;
 
-	/* If that's the last resource, allow for D3. */
+	 
 	if (!adev->logged_resources) {
 		avs_dsp_enable_d0ix(adev);
 		pm_runtime_mark_last_busy(adev->dev);
@@ -373,12 +370,7 @@ static ssize_t trace_control_write(struct file *file, const char __user *from, s
 	num_elems = *array;
 	resource_mask = array[1];
 
-	/*
-	 * Disable if just resource mask is provided - no log priority flags.
-	 *
-	 * Enable input format:   mask, prio1, .., prioN
-	 * Where 'N' equals number of bits set in the 'mask'.
-	 */
+	 
 	if (num_elems == 1) {
 		ret = disable_logs(adev, resource_mask);
 	} else {
@@ -411,7 +403,7 @@ void avs_debugfs_init(struct avs_dev *adev)
 
 	adev->debugfs_root = debugfs_create_dir("avs", snd_soc_debugfs_root);
 
-	/* Initialize timer periods with recommended defaults. */
+	 
 	adev->aging_timer_period = 10;
 	adev->fifo_full_timer_period = 10;
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018 Facebook */
+ 
+ 
 
 #ifndef _LINUX_BTF_H
 #define _LINUX_BTF_H 1
@@ -14,80 +14,24 @@
 #define BTF_TYPE_EMIT(type) ((void)(type *)0)
 #define BTF_TYPE_EMIT_ENUM(enum_val) ((void)enum_val)
 
-/* These need to be macros, as the expressions are used in assembler input */
-#define KF_ACQUIRE	(1 << 0) /* kfunc is an acquire function */
-#define KF_RELEASE	(1 << 1) /* kfunc is a release function */
-#define KF_RET_NULL	(1 << 2) /* kfunc returns a pointer that may be NULL */
-/* Trusted arguments are those which are guaranteed to be valid when passed to
- * the kfunc. It is used to enforce that pointers obtained from either acquire
- * kfuncs, or from the main kernel on a tracepoint or struct_ops callback
- * invocation, remain unmodified when being passed to helpers taking trusted
- * args.
- *
- * Consider, for example, the following new task tracepoint:
- *
- *	SEC("tp_btf/task_newtask")
- *	int BPF_PROG(new_task_tp, struct task_struct *task, u64 clone_flags)
- *	{
- *		...
- *	}
- *
- * And the following kfunc:
- *
- *	BTF_ID_FLAGS(func, bpf_task_acquire, KF_ACQUIRE | KF_TRUSTED_ARGS)
- *
- * All invocations to the kfunc must pass the unmodified, unwalked task:
- *
- *	bpf_task_acquire(task);		    // Allowed
- *	bpf_task_acquire(task->last_wakee); // Rejected, walked task
- *
- * Programs may also pass referenced tasks directly to the kfunc:
- *
- *	struct task_struct *acquired;
- *
- *	acquired = bpf_task_acquire(task);	// Allowed, same as above
- *	bpf_task_acquire(acquired);		// Allowed
- *	bpf_task_acquire(task);			// Allowed
- *	bpf_task_acquire(acquired->last_wakee); // Rejected, walked task
- *
- * Programs may _not_, however, pass a task from an arbitrary fentry/fexit, or
- * kprobe/kretprobe to the kfunc, as BPF cannot guarantee that all of these
- * pointers are guaranteed to be safe. For example, the following BPF program
- * would be rejected:
- *
- * SEC("kretprobe/free_task")
- * int BPF_PROG(free_task_probe, struct task_struct *tsk)
- * {
- *	struct task_struct *acquired;
- *
- *	acquired = bpf_task_acquire(acquired); // Rejected, not a trusted pointer
- *	bpf_task_release(acquired);
- *
- *	return 0;
- * }
- */
-#define KF_TRUSTED_ARGS (1 << 4) /* kfunc only takes trusted pointer arguments */
-#define KF_SLEEPABLE    (1 << 5) /* kfunc may sleep */
-#define KF_DESTRUCTIVE  (1 << 6) /* kfunc performs destructive actions */
-#define KF_RCU          (1 << 7) /* kfunc takes either rcu or trusted pointer arguments */
-/* only one of KF_ITER_{NEW,NEXT,DESTROY} could be specified per kfunc */
-#define KF_ITER_NEW     (1 << 8) /* kfunc implements BPF iter constructor */
-#define KF_ITER_NEXT    (1 << 9) /* kfunc implements BPF iter next method */
-#define KF_ITER_DESTROY (1 << 10) /* kfunc implements BPF iter destructor */
+ 
+#define KF_ACQUIRE	(1 << 0)  
+#define KF_RELEASE	(1 << 1)  
+#define KF_RET_NULL	(1 << 2)  
+ 
+#define KF_TRUSTED_ARGS (1 << 4)  
+#define KF_SLEEPABLE    (1 << 5)  
+#define KF_DESTRUCTIVE  (1 << 6)  
+#define KF_RCU          (1 << 7)  
+ 
+#define KF_ITER_NEW     (1 << 8)  
+#define KF_ITER_NEXT    (1 << 9)  
+#define KF_ITER_DESTROY (1 << 10)  
 
-/*
- * Tag marking a kernel function as a kfunc. This is meant to minimize the
- * amount of copy-paste that kfunc authors have to include for correctness so
- * as to avoid issues such as the compiler inlining or eliding either a static
- * kfunc, or a global kfunc in an LTO build.
- */
+ 
 #define __bpf_kfunc __used noinline
 
-/*
- * Return the name of the passed struct, if exists, or halt the build if for
- * example the structure gets renamed. In this way, developers have to revisit
- * the code using that structure name, and update it accordingly.
- */
+ 
 #define stringify_struct(x)			\
 	({ BUILD_BUG_ON(sizeof(struct x) < 0);	\
 	   __stringify(x); })
@@ -132,42 +76,12 @@ struct btf *btf_get_by_fd(int fd);
 int btf_get_info_by_fd(const struct btf *btf,
 		       const union bpf_attr *attr,
 		       union bpf_attr __user *uattr);
-/* Figure out the size of a type_id.  If type_id is a modifier
- * (e.g. const), it will be resolved to find out the type with size.
- *
- * For example:
- * In describing "const void *",  type_id is "const" and "const"
- * refers to "void *".  The return type will be "void *".
- *
- * If type_id is a simple "int", then return type will be "int".
- *
- * @btf: struct btf object
- * @type_id: Find out the size of type_id. The type_id of the return
- *           type is set to *type_id.
- * @ret_size: It can be NULL.  If not NULL, the size of the return
- *            type is set to *ret_size.
- * Return: The btf_type (resolved to another type with size info if needed).
- *         NULL is returned if type_id itself does not have size info
- *         (e.g. void) or it cannot be resolved to another type that
- *         has size info.
- *         *type_id and *ret_size will not be changed in the
- *         NULL return case.
- */
+ 
 const struct btf_type *btf_type_id_size(const struct btf *btf,
 					u32 *type_id,
 					u32 *ret_size);
 
-/*
- * Options to control show behaviour.
- *	- BTF_SHOW_COMPACT: no formatting around type information
- *	- BTF_SHOW_NONAME: no struct/union member names/types
- *	- BTF_SHOW_PTR_RAW: show raw (unobfuscated) pointer values;
- *	  equivalent to %px.
- *	- BTF_SHOW_ZERO: show zero-valued struct/union members; they
- *	  are not displayed by default
- *	- BTF_SHOW_UNSAFE: skip use of bpf_probe_read() to safely read
- *	  data before displaying it.
- */
+ 
 #define BTF_SHOW_COMPACT	BTF_F_COMPACT
 #define BTF_SHOW_NONAME		BTF_F_NONAME
 #define BTF_SHOW_PTR_RAW	BTF_F_PTR_RAW
@@ -179,19 +93,7 @@ void btf_type_seq_show(const struct btf *btf, u32 type_id, void *obj,
 int btf_type_seq_show_flags(const struct btf *btf, u32 type_id, void *obj,
 			    struct seq_file *m, u64 flags);
 
-/*
- * Copy len bytes of string representation of obj of BTF type_id into buf.
- *
- * @btf: struct btf object
- * @type_id: type id of type obj points to
- * @obj: pointer to typed data
- * @buf: buffer to write to
- * @len: maximum length to write to buf
- * @flags: show options (see above)
- *
- * Return: length that would have been/was copied as per snprintf, or
- *	   negative error.
- */
+ 
 int btf_type_snprintf_show(const struct btf *btf, u32 type_id, void *obj,
 			   char *buf, int len, u64 flags);
 
@@ -361,9 +263,7 @@ static inline bool btf_type_is_type_tag(const struct btf_type *t)
 	return BTF_INFO_KIND(t->info) == BTF_KIND_TYPE_TAG;
 }
 
-/* union is only a special case of struct:
- * all its offsetof(member) == 0
- */
+ 
 static inline bool btf_type_is_struct(const struct btf_type *t)
 {
 	u8 kind = BTF_INFO_KIND(t->info);

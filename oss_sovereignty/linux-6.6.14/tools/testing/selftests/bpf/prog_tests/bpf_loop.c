@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <network_helpers.h>
@@ -13,7 +13,7 @@ static void check_nr_loops(struct bpf_loop *skel)
 	if (!ASSERT_OK_PTR(link, "link"))
 		return;
 
-	/* test 0 loops */
+	 
 	skel->bss->nr_loops = 0;
 
 	usleep(1);
@@ -21,7 +21,7 @@ static void check_nr_loops(struct bpf_loop *skel)
 	ASSERT_EQ(skel->bss->nr_loops_returned, skel->bss->nr_loops,
 		  "0 loops");
 
-	/* test 500 loops */
+	 
 	skel->bss->nr_loops = 500;
 
 	usleep(1);
@@ -30,7 +30,7 @@ static void check_nr_loops(struct bpf_loop *skel)
 		  "500 loops");
 	ASSERT_EQ(skel->bss->g_output, (500 * 499) / 2, "g_output");
 
-	/* test exceeding the max limit */
+	 
 	skel->bss->nr_loops = -1;
 
 	usleep(1);
@@ -48,7 +48,7 @@ static void check_callback_fn_stop(struct bpf_loop *skel)
 	if (!ASSERT_OK_PTR(link, "link"))
 		return;
 
-	/* testing that loop is stopped when callback_fn returns 1 */
+	 
 	skel->bss->nr_loops = 400;
 	skel->data->stop_index = 50;
 
@@ -66,7 +66,7 @@ static void check_null_callback_ctx(struct bpf_loop *skel)
 {
 	struct bpf_link *link;
 
-	/* check that user is able to pass in a null callback_ctx */
+	 
 	link = bpf_program__attach(skel->progs.prog_null_ctx);
 	if (!ASSERT_OK_PTR(link, "link"))
 		return;
@@ -85,7 +85,7 @@ static void check_invalid_flags(struct bpf_loop *skel)
 {
 	struct bpf_link *link;
 
-	/* check that passing in non-zero flags returns -EINVAL */
+	 
 	link = bpf_program__attach(skel->progs.prog_invalid_flags);
 	if (!ASSERT_OK_PTR(link, "link"))
 		return;
@@ -102,7 +102,7 @@ static void check_nested_calls(struct bpf_loop *skel)
 	__u32 nr_loops = 100, nested_callback_nr_loops = 4;
 	struct bpf_link *link;
 
-	/* check that nested calls are supported */
+	 
 	link = bpf_program__attach(skel->progs.prog_nested_calls);
 	if (!ASSERT_OK_PTR(link, "link"))
 		return;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Toshiba CT-90405 remote controller keytable
- *
- * Copyright (C) 2021 Alexander Voronov <avv.0@ya.ru>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>

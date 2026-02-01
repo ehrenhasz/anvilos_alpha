@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef _QTN_FMAC_CORE_H_
 #define _QTN_FMAC_CORE_H_
@@ -103,7 +103,7 @@ struct qtnf_wmac {
 	struct qtnf_mac_info macinfo;
 	struct qtnf_vif iflist[QTNF_MAX_INTF];
 	struct cfg80211_scan_request *scan_req;
-	struct mutex mac_lock;	/* lock during wmac speicific ops */
+	struct mutex mac_lock;	 
 	struct delayed_work scan_timeout;
 	struct ieee80211_regdomain *rd;
 	struct platform_device *pdev;
@@ -157,4 +157,4 @@ static inline bool qtnf_hwcap_is_set(const struct qtnf_hw_info *info,
 				     sizeof(info->hw_capab));
 }
 
-#endif /* _QTN_FMAC_CORE_H_ */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Extensible Firmware Interface
- *
- * Based on Extensible Firmware Interface Specification version 2.4
- *
- * Copyright (C) 2013, 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/efi.h>
@@ -80,11 +74,7 @@ static bool __init efi_virtmap_init(void)
 	return true;
 }
 
-/*
- * Enable the UEFI Runtime Services if all prerequisites are in place, i.e.,
- * non-early mapping of the UEFI system table and virtual mappings for all
- * EFI_MEMORY_RUNTIME regions.
- */
+ 
 static int __init arm_enable_runtime_services(void)
 {
 	u64 mapsize;
@@ -144,7 +134,7 @@ static int __init arm_enable_runtime_services(void)
 		return -ENOMEM;
 	}
 
-	/* Set up runtime services function pointers */
+	 
 	efi_native_runtime_setup();
 	set_bit(EFI_RUNTIME_SERVICES, &efi.flags);
 
@@ -167,11 +157,7 @@ void efi_virtmap_unload(void)
 
 static int __init arm_dmi_init(void)
 {
-	/*
-	 * On arm64/ARM, DMI depends on UEFI, and dmi_setup() needs to
-	 * be called early because dmi_id_init(), which is an arch_initcall
-	 * itself, depends on dmi_scan_machine() having been called already.
-	 */
+	 
 	dmi_setup();
 	return 0;
 }

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm Technology Inc. ADSP Peripheral Image Loader for SDM845.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -31,19 +28,19 @@
 #include "qcom_q6v5.h"
 #include "remoteproc_internal.h"
 
-/* time out value */
+ 
 #define ACK_TIMEOUT			1000
 #define ACK_TIMEOUT_US			1000000
 #define BOOT_FSM_TIMEOUT		10000
-/* mask values */
+ 
 #define EVB_MASK			GENMASK(27, 4)
-/*QDSP6SS register offsets*/
+ 
 #define RST_EVB_REG			0x10
 #define CORE_START_REG			0x400
 #define BOOT_CMD_REG			0x404
 #define BOOT_STATUS_REG			0x408
 #define RET_CFG_REG			0x1C
-/*TCSR register offsets*/
+ 
 #define LPASS_MASTER_IDLE_REG		0x8
 #define LPASS_HALTACK_REG		0x4
 #define LPASS_PWR_ON_REG		0x10
@@ -131,7 +128,7 @@ static int qcom_rproc_pds_attach(struct device *dev, struct qcom_adsp *adsp,
 	if (!pd_names)
 		return 0;
 
-	/* Handle single power domain */
+	 
 	if (dev->pm_domain) {
 		devs[0] = dev;
 		pm_runtime_enable(dev);
@@ -167,7 +164,7 @@ static void qcom_rproc_pds_detach(struct qcom_adsp *adsp, struct device **pds,
 	struct device *dev = adsp->dev;
 	int i;
 
-	/* Handle single power domain */
+	 
 	if (dev->pm_domain && pd_count) {
 		pm_runtime_disable(dev);
 		return;
@@ -220,24 +217,24 @@ static int qcom_wpss_shutdown(struct qcom_adsp *adsp)
 
 	regmap_write(adsp->halt_map, adsp->halt_lpass + LPASS_HALTREQ_REG, 1);
 
-	/* Wait for halt ACK from QDSP6 */
+	 
 	regmap_read_poll_timeout(adsp->halt_map,
 				 adsp->halt_lpass + LPASS_HALTACK_REG, val,
 				 val, 1000, ACK_TIMEOUT_US);
 
-	/* Assert the WPSS PDC Reset */
+	 
 	reset_control_assert(adsp->pdc_sync_reset);
 
-	/* Place the WPSS processor into reset */
+	 
 	reset_control_assert(adsp->restart);
 
-	/* wait after asserting subsystem restart from AOSS */
+	 
 	usleep_range(200, 205);
 
-	/* Remove the WPSS reset */
+	 
 	reset_control_deassert(adsp->restart);
 
-	/* De-assert the WPSS PDC Reset */
+	 
 	reset_control_deassert(adsp->pdc_sync_reset);
 
 	usleep_range(100, 105);
@@ -246,7 +243,7 @@ static int qcom_wpss_shutdown(struct qcom_adsp *adsp)
 
 	regmap_write(adsp->halt_map, adsp->halt_lpass + LPASS_HALTREQ_REG, 0);
 
-	/* Wait for halt ACK from QDSP6 */
+	 
 	regmap_read_poll_timeout(adsp->halt_map,
 				 adsp->halt_lpass + LPASS_HALTACK_REG, val,
 				 !val, 1000, ACK_TIMEOUT_US);
@@ -260,14 +257,14 @@ static int qcom_adsp_shutdown(struct qcom_adsp *adsp)
 	unsigned int val;
 	int ret;
 
-	/* Reset the retention logic */
+	 
 	val = readl(adsp->qdsp6ss_base + RET_CFG_REG);
 	val |= 0x1;
 	writel(val, adsp->qdsp6ss_base + RET_CFG_REG);
 
 	clk_bulk_disable_unprepare(adsp->num_clks, adsp->clks);
 
-	/* QDSP6 master port needs to be explicitly halted */
+	 
 	ret = regmap_read(adsp->halt_map,
 			adsp->halt_lpass + LPASS_PWR_ON_REG, &val);
 	if (ret || !val)
@@ -282,7 +279,7 @@ static int qcom_adsp_shutdown(struct qcom_adsp *adsp)
 	regmap_write(adsp->halt_map,
 			adsp->halt_lpass + LPASS_HALTREQ_REG, 1);
 
-	/* Wait for halt ACK from QDSP6 */
+	 
 	timeout = jiffies + msecs_to_jiffies(ACK_TIMEOUT);
 	for (;;) {
 		ret = regmap_read(adsp->halt_map,
@@ -299,21 +296,21 @@ static int qcom_adsp_shutdown(struct qcom_adsp *adsp)
 		dev_err(adsp->dev, "port failed halt\n");
 
 reset:
-	/* Assert the LPASS PDC Reset */
+	 
 	reset_control_assert(adsp->pdc_sync_reset);
-	/* Place the LPASS processor into reset */
+	 
 	reset_control_assert(adsp->restart);
-	/* wait after asserting subsystem restart from AOSS */
+	 
 	usleep_range(200, 300);
 
-	/* Clear the halt request for the AXIM and AHBM for Q6 */
+	 
 	regmap_write(adsp->halt_map, adsp->halt_lpass + LPASS_HALTREQ_REG, 0);
 
-	/* De-assert the LPASS PDC Reset */
+	 
 	reset_control_deassert(adsp->pdc_sync_reset);
-	/* Remove the LPASS reset */
+	 
 	reset_control_deassert(adsp->restart);
-	/* wait after de-asserting subsystem restart from AOSS */
+	 
 	usleep_range(200, 300);
 
 	return 0;
@@ -363,7 +360,7 @@ static int adsp_map_carveout(struct rproc *rproc)
 
 	sid = args.args[0] & SID_MASK_DEFAULT;
 
-	/* Add SID configuration for ADSP Firmware to SMMU */
+	 
 	iova =  adsp->mem_phys | (sid << 32);
 
 	ret = iommu_map(rproc->domain, iova, adsp->mem_phys,
@@ -408,28 +405,28 @@ static int adsp_start(struct rproc *rproc)
 		goto disable_power_domain;
 	}
 
-	/* Enable the XO clock */
+	 
 	writel(1, adsp->qdsp6ss_base + QDSP6SS_XO_CBCR);
 
-	/* Enable the QDSP6SS sleep clock */
+	 
 	writel(1, adsp->qdsp6ss_base + QDSP6SS_SLEEP_CBCR);
 
-	/* Enable the QDSP6 core clock */
+	 
 	writel(1, adsp->qdsp6ss_base + QDSP6SS_CORE_CBCR);
 
-	/* Program boot address */
+	 
 	writel(adsp->mem_phys >> 4, adsp->qdsp6ss_base + RST_EVB_REG);
 
 	if (adsp->lpass_efuse)
 		writel(LPASS_EFUSE_Q6SS_EVB_SEL, adsp->lpass_efuse);
 
-	/* De-assert QDSP6 stop core. QDSP6 will execute after out of reset */
+	 
 	writel(LPASS_BOOT_CORE_START, adsp->qdsp6ss_base + CORE_START_REG);
 
-	/* Trigger boot FSM to start QDSP6 */
+	 
 	writel(LPASS_BOOT_CMD_START, adsp->qdsp6ss_base + BOOT_CMD_REG);
 
-	/* Wait for core to come out of reset */
+	 
 	ret = readl_poll_timeout(adsp->qdsp6ss_base + BOOT_STATUS_REG,
 			val, (val & BIT(0)) != 0, 10, BOOT_FSM_TIMEOUT);
 	if (ret) {
@@ -578,7 +575,7 @@ static int adsp_init_reset(struct qcom_adsp *adsp)
 
 	adsp->restart = devm_reset_control_get_optional_exclusive(adsp->dev, "restart");
 
-	/* Fall back to the  old "cc_lpass" if "restart" is absent */
+	 
 	if (!adsp->restart)
 		adsp->restart = devm_reset_control_get_exclusive(adsp->dev, "cc_lpass");
 

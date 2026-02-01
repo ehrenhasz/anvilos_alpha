@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * INT3406 thermal driver for display participant device
- *
- * Copyright (C) 2016, Intel Corporation
- * Authors: Aaron Lu <aaron.lu@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -24,16 +19,7 @@ struct int3406_thermal_data {
 	struct thermal_cooling_device *cooling_dev;
 };
 
-/*
- * According to the ACPI spec,
- * "Each brightness level is represented by a number between 0 and 100,
- * and can be thought of as a percentage. For example, 50 can be 50%
- * power consumption or 50% brightness, as defined by the OEM."
- *
- * As int3406 device uses this value to communicate with the native
- * graphics driver, we make the assumption that it represents
- * the percentage of brightness only
- */
+ 
 #define ACPI_TO_RAW(v, d) (d->raw_bd->props.max_brightness * v / 100)
 #define RAW_TO_ACPI(v, d) (v * 100 / d->raw_bd->props.max_brightness)
 
@@ -74,11 +60,7 @@ int3406_thermal_get_cur_state(struct thermal_cooling_device *cooling_dev,
 
 	acpi_level = RAW_TO_ACPI(d->raw_bd->props.brightness, d);
 
-	/*
-	 * There is no 1:1 mapping between the firmware interface level
-	 * with the raw interface level, we will have to find one that is
-	 * right above it.
-	 */
+	 
 	for (index = d->lower_limit; index < d->upper_limit; index++) {
 		if (acpi_level <= d->br->levels[index])
 			break;
@@ -120,7 +102,7 @@ static void int3406_thermal_get_limit(struct int3406_thermal_data *d)
 		d->upper_limit = int3406_thermal_get_index(d->br->levels,
 					d->br->count, upper_limit);
 
-	/* lower_limit and upper_limit should be always set */
+	 
 	d->lower_limit = d->lower_limit > 0 ? d->lower_limit : 2;
 	d->upper_limit = d->upper_limit > 0 ? d->upper_limit : d->br->count - 1;
 }

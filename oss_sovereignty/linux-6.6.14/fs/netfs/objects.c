@@ -1,16 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Object lifetime handling and tracing.
- *
- * Copyright (C) 2022 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include "internal.h"
 
-/*
- * Allocate an I/O request and initialise it.
- */
+ 
 struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
 					     struct file *file,
 					     loff_t start, size_t len,
@@ -105,9 +99,7 @@ void netfs_put_request(struct netfs_io_request *rreq, bool was_async,
 	}
 }
 
-/*
- * Allocate and partially initialise an I/O request structure.
- */
+ 
 struct netfs_io_subrequest *netfs_alloc_subrequest(struct netfs_io_request *rreq)
 {
 	struct netfs_io_subrequest *subreq;

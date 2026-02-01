@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2016, Analogix Semiconductor.
- *
- * Based on anx7808 driver obtained from chromeos with copyright:
- * Copyright(c) 2013, Google Inc.
- */
+ 
+ 
 #include <linux/regmap.h>
 
 #include <drm/display/drm_dp_helper.h>
@@ -54,7 +49,7 @@ static int anx_dp_aux_wait(struct regmap *map_dptx)
 		usleep_range(1000, 2000);
 	}
 
-	/* Read the AUX channel access status */
+	 
 	err = regmap_read(map_dptx, SP_AUX_CH_STATUS_REG, &status);
 	if (err < 0) {
 		DRM_ERROR("Failed to read from AUX channel: %d\n", err);
@@ -83,11 +78,7 @@ static int anx_dp_aux_address(struct regmap *map_dptx, unsigned int addr)
 	if (err)
 		return err;
 
-	/*
-	 * DP AUX CH Address Register #2, only update bits[3:0]
-	 * [7:4] RESERVED
-	 * [3:0] AUX_ADDR[19:16], Register control AUX CH address.
-	 */
+	 
 	err = regmap_update_bits(map_dptx, SP_AUX_ADDR_19_16_REG,
 				 SP_AUX_ADDR_19_16_MASK,
 				 (addr & 0xf0000) >> 16);
@@ -106,18 +97,18 @@ ssize_t anx_dp_aux_transfer(struct regmap *map_dptx,
 	u8 *buffer = msg->buffer;
 	int err;
 
-	/* The DP AUX transmit and receive buffer has 16 bytes. */
+	 
 	if (WARN_ON(msg->size > AUX_CH_BUFFER_SIZE))
 		return -E2BIG;
 
-	/* Zero-sized messages specify address-only transactions. */
+	 
 	if (msg->size < 1)
 		ctrl2 |= SP_ADDR_ONLY;
-	else	/* For non-zero-sized set the length field. */
+	else	 
 		ctrl1 |= (msg->size - 1) << SP_AUX_LENGTH_SHIFT;
 
 	if ((msg->size > 0) && ((msg->request & DP_AUX_I2C_READ) == 0)) {
-		/* When WRITE | MOT write values to data buffer */
+		 
 		err = regmap_bulk_write(map_dptx,
 					SP_DP_BUF_DATA0_REG, buffer,
 					msg->size);
@@ -125,7 +116,7 @@ ssize_t anx_dp_aux_transfer(struct regmap *map_dptx,
 			return err;
 	}
 
-	/* Write address and request */
+	 
 	err = anx_dp_aux_address(map_dptx, msg->address);
 	if (err)
 		return err;
@@ -134,7 +125,7 @@ ssize_t anx_dp_aux_transfer(struct regmap *map_dptx,
 	if (err)
 		return err;
 
-	/* Start transaction */
+	 
 	err = regmap_update_bits(map_dptx, SP_DP_AUX_CH_CTRL2_REG,
 				 SP_ADDR_ONLY | SP_AUX_EN, ctrl2);
 	if (err)
@@ -147,7 +138,7 @@ ssize_t anx_dp_aux_transfer(struct regmap *map_dptx,
 	msg->reply = DP_AUX_I2C_REPLY_ACK;
 
 	if ((msg->size > 0) && (msg->request & DP_AUX_I2C_READ)) {
-		/* Read values from data buffer */
+		 
 		err = regmap_bulk_read(map_dptx,
 				       SP_DP_BUF_DATA0_REG, buffer,
 				       msg->size);

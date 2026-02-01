@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/em_cmp.c	Simple packet data comparison ematch
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -41,9 +37,7 @@ static int em_cmp_match(struct sk_buff *skb, struct tcf_ematch *em,
 		break;
 
 	case TCF_EM_ALIGN_U32:
-		/* Worth checking boundaries? The branching seems
-		 * to get worse. Visit again.
-		 */
+		 
 		val = get_unaligned_be32(ptr);
 
 		if (cmp_needs_transformation(cmp))

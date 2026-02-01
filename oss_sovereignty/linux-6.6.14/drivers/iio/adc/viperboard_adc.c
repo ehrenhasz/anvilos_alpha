@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Nano River Technologies viperboard IIO ADC driver
- *
- *  (C) 2012 by Lemonage GmbH
- *  Author: Lars Poeschel <poeschel@lemonage.de>
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -111,7 +105,7 @@ static int vprbrd_adc_probe(struct platform_device *pdev)
 	struct iio_dev *indio_dev;
 	int ret;
 
-	/* registering iio */
+	 
 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
 	if (!indio_dev) {
 		dev_err(&pdev->dev, "failed allocating iio device\n");

@@ -1,25 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0+
-// asus-ps3-100.h - Keytable for asus_ps3_100 Remote Controller
-//
-// Copyright (c) 2012 by Mauro Carvalho Chehab
-//
-// Based on a previous patch from Remi Schwartz <remi.schwartz@gmail.com>
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table asus_ps3_100[] = {
-	{ 0x081c, KEY_HOME },             /* home */
-	{ 0x081e, KEY_TV },               /* tv */
-	{ 0x0803, KEY_TEXT },             /* teletext */
-	{ 0x0829, KEY_POWER },            /* close */
+	{ 0x081c, KEY_HOME },              
+	{ 0x081e, KEY_TV },                
+	{ 0x0803, KEY_TEXT },              
+	{ 0x0829, KEY_POWER },             
 
-	{ 0x080b, KEY_RED },              /* red */
-	{ 0x080d, KEY_YELLOW },           /* yellow */
-	{ 0x0806, KEY_BLUE },             /* blue */
-	{ 0x0807, KEY_GREEN },            /* green */
+	{ 0x080b, KEY_RED },               
+	{ 0x080d, KEY_YELLOW },            
+	{ 0x0806, KEY_BLUE },              
+	{ 0x0807, KEY_GREEN },             
 
-	/* Keys 0 to 9 */
+	 
 	{ 0x082a, KEY_NUMERIC_0 },
 	{ 0x0816, KEY_NUMERIC_1 },
 	{ 0x0812, KEY_NUMERIC_2 },
@@ -33,31 +33,31 @@ static struct rc_map_table asus_ps3_100[] = {
 
 	{ 0x0815, KEY_VOLUMEUP },
 	{ 0x0826, KEY_VOLUMEDOWN },
-	{ 0x0835, KEY_CHANNELUP },        /* channel / program + */
-	{ 0x0824, KEY_CHANNELDOWN },      /* channel / program - */
+	{ 0x0835, KEY_CHANNELUP },         
+	{ 0x0824, KEY_CHANNELDOWN },       
 
 	{ 0x0808, KEY_UP },
 	{ 0x0804, KEY_DOWN },
 	{ 0x0818, KEY_LEFT },
 	{ 0x0810, KEY_RIGHT },
-	{ 0x0825, KEY_ENTER },            /* enter */
+	{ 0x0825, KEY_ENTER },             
 
-	{ 0x0822, KEY_EXIT },             /* back */
-	{ 0x082c, KEY_AB },               /* recall */
+	{ 0x0822, KEY_EXIT },              
+	{ 0x082c, KEY_AB },                
 
-	{ 0x0820, KEY_AUDIO },            /* TV audio */
-	{ 0x0837, KEY_SCREEN },           /* snapshot */
-	{ 0x082e, KEY_ZOOM },             /* full screen */
-	{ 0x0802, KEY_MUTE },             /* mute */
+	{ 0x0820, KEY_AUDIO },             
+	{ 0x0837, KEY_SCREEN },            
+	{ 0x082e, KEY_ZOOM },              
+	{ 0x0802, KEY_MUTE },              
 
-	{ 0x0831, KEY_REWIND },           /* backward << */
-	{ 0x0811, KEY_RECORD },           /* recording */
+	{ 0x0831, KEY_REWIND },            
+	{ 0x0811, KEY_RECORD },            
 	{ 0x0809, KEY_STOP },
-	{ 0x0805, KEY_FASTFORWARD },      /* forward >> */
-	{ 0x0821, KEY_PREVIOUS },         /* rew */
-	{ 0x081a, KEY_PAUSE },            /* pause */
-	{ 0x0839, KEY_PLAY },             /* play */
-	{ 0x0819, KEY_NEXT },             /* forward */
+	{ 0x0805, KEY_FASTFORWARD },       
+	{ 0x0821, KEY_PREVIOUS },          
+	{ 0x081a, KEY_PAUSE },             
+	{ 0x0839, KEY_PLAY },              
+	{ 0x0819, KEY_NEXT },              
 };
 
 static struct rc_map_list asus_ps3_100_map = {

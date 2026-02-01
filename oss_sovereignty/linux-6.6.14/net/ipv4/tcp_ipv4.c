@@ -1,49 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Implementation of the Transmission Control Protocol(TCP).
- *
- *		IPv4 specific functions
- *
- *		code split from:
- *		linux/ipv4/tcp.c
- *		linux/ipv4/tcp_input.c
- *		linux/ipv4/tcp_output.c
- *
- *		See tcp.c for author information
- */
 
-/*
- * Changes:
- *		David S. Miller	:	New socket lookup architecture.
- *					This code is dedicated to John Dyson.
- *		David S. Miller :	Change semantics of established hash,
- *					half is devoted to TIME_WAIT sockets
- *					and the rest go in the other half.
- *		Andi Kleen :		Add support for syncookies and fixed
- *					some bugs: ip options weren't passed to
- *					the TCP layer, missed a check for an
- *					ACK bit.
- *		Andi Kleen :		Implemented fast path mtu discovery.
- *	     				Fixed many serious bugs in the
- *					request_sock handling and moved
- *					most of it into the af independent code.
- *					Added tail drop and some other bugfixes.
- *					Added new listen semantics.
- *		Mike McLagan	:	Routing by source
- *	Juan Jose Ciarlante:		ip_dynaddr bits
- *		Andi Kleen:		various fixes.
- *	Vitaly E. Lavrov	:	Transparent proxy revived after year
- *					coma.
- *	Andi Kleen		:	Fix new listen.
- *	Andi Kleen		:	Fix accept error reporting.
- *	YOSHIFUJI Hideaki @USAGI and:	Support IPV6_V6ONLY socket option, which
- *	Alexey Kuznetsov		allow both IPv4 and IPv6 sockets to bind
- *					a single port at the same time.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) "TCP: " fmt
 
@@ -115,10 +73,7 @@ int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
 	struct tcp_sock *tp = tcp_sk(sk);
 
 	if (reuse == 2) {
-		/* Still does not detect *everything* that goes through
-		 * lo, since we require a loopback src or dst address
-		 * or direct binding to 'lo' interface.
-		 */
+		 
 		bool loopback = false;
 		if (tw->tw_bound_dev_if == LOOPBACK_IFINDEX)
 			loopback = true;
@@ -140,31 +95,11 @@ int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
 			reuse = 0;
 	}
 
-	/* With PAWS, it is safe from the viewpoint
-	   of data integrity. Even without PAWS it is safe provided sequence
-	   spaces do not overlap i.e. at data rates <= 80Mbit/sec.
-
-	   Actually, the idea is close to VJ's one, only timestamp cache is
-	   held not per host, but per port pair and TW bucket is used as state
-	   holder.
-
-	   If TW bucket has been already destroyed we fall back to VJ's scheme
-	   and use initial timestamp retrieved from peer table.
-	 */
+	 
 	if (tcptw->tw_ts_recent_stamp &&
 	    (!twp || (reuse && time_after32(ktime_get_seconds(),
 					    tcptw->tw_ts_recent_stamp)))) {
-		/* In case of repair and re-using TIME-WAIT sockets we still
-		 * want to be sure that it is safe as above but honor the
-		 * sequence numbers and time stamps set as part of the repair
-		 * process.
-		 *
-		 * Without this check re-using a TIME-WAIT socket with TCP
-		 * repair would accumulate a -1 on the repair assigned
-		 * sequence number. The first time it is reused the sequence
-		 * is -1, the second time -2, etc. This fixes that issue
-		 * without appearing to create any others.
-		 */
+		 
 		if (likely(!tp->repair)) {
 			u32 seq = tcptw->tw_snd_nxt + 65535 + 2;
 
@@ -185,10 +120,7 @@ EXPORT_SYMBOL_GPL(tcp_twsk_unique);
 static int tcp_v4_pre_connect(struct sock *sk, struct sockaddr *uaddr,
 			      int addr_len)
 {
-	/* This check is replicated from tcp_v4_connect() and intended to
-	 * prevent BPF program called below from accessing bytes that are out
-	 * of the bound specified by user in addr_len.
-	 */
+	 
 	if (addr_len < sizeof(struct sockaddr_in))
 		return -EINVAL;
 
@@ -197,7 +129,7 @@ static int tcp_v4_pre_connect(struct sock *sk, struct sockaddr *uaddr,
 	return BPF_CGROUP_RUN_PROG_INET4_CONNECT(sk, uaddr);
 }
 
-/* This will initiate an outgoing connection. */
+ 
 int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 {
 	struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
@@ -261,7 +193,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	}
 
 	if (tp->rx_opt.ts_recent_stamp && inet->inet_daddr != daddr) {
-		/* Reset inherited state */
+		 
 		tp->rx_opt.ts_recent	   = 0;
 		tp->rx_opt.ts_recent_stamp = 0;
 		if (likely(!tp->repair))
@@ -277,11 +209,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 
 	tp->rx_opt.mss_clamp = TCP_MSS_DEFAULT;
 
-	/* Socket identity is still unknown (sport may be zero).
-	 * However we set state to SYN-SENT and not releasing socket
-	 * lock select source port, enter ourselves into the hash tables and
-	 * complete initialization after this.
-	 */
+	 
 	tcp_set_state(sk, TCP_SYN_SENT);
 	err = inet_hash_connect(tcp_death_row, sk);
 	if (err)
@@ -296,7 +224,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 		rt = NULL;
 		goto failure;
 	}
-	/* OK, now commit destination to socket.  */
+	 
 	sk->sk_gso_type = SKB_GSO_TCPV4;
 	sk_setup_caps(sk, &rt->dst);
 	rt = NULL;
@@ -328,10 +256,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	return 0;
 
 failure:
-	/*
-	 * This unhashes the socket and releases the local port,
-	 * if necessary.
-	 */
+	 
 	tcp_set_state(sk, TCP_CLOSE);
 	inet_bhash2_reset_saddr(sk);
 	ip_rt_put(rt);
@@ -341,11 +266,7 @@ failure:
 }
 EXPORT_SYMBOL(tcp_v4_connect);
 
-/*
- * This routine reacts to ICMP_FRAG_NEEDED mtu indications as defined in RFC1191.
- * It can be called through tcp_release_cb() if socket was owned by user
- * at the time tcp_v4_err() was called to handle ICMP message.
- */
+ 
 void tcp_v4_mtu_reduced(struct sock *sk)
 {
 	struct inet_sock *inet = inet_sk(sk);
@@ -359,9 +280,7 @@ void tcp_v4_mtu_reduced(struct sock *sk)
 	if (!dst)
 		return;
 
-	/* Something is about to be wrong... Remember soft error
-	 * for the case, if this connection will not able to recover.
-	 */
+	 
 	if (mtu < dst_mtu(dst) && ip_dont_fragment(sk, dst))
 		WRITE_ONCE(sk->sk_err_soft, EMSGSIZE);
 
@@ -372,13 +291,9 @@ void tcp_v4_mtu_reduced(struct sock *sk)
 	    inet_csk(sk)->icsk_pmtu_cookie > mtu) {
 		tcp_sync_mss(sk, mtu);
 
-		/* Resend the TCP packet because it's
-		 * clear that the old packet has been
-		 * dropped. This is the new "fast" path mtu
-		 * discovery.
-		 */
+		 
 		tcp_simple_retransmit(sk);
-	} /* else let the usual retransmit timer handle it */
+	}  
 }
 EXPORT_SYMBOL(tcp_v4_mtu_reduced);
 
@@ -391,24 +306,17 @@ static void do_redirect(struct sk_buff *skb, struct sock *sk)
 }
 
 
-/* handle ICMP messages on TCP_NEW_SYN_RECV request sockets */
+ 
 void tcp_req_err(struct sock *sk, u32 seq, bool abort)
 {
 	struct request_sock *req = inet_reqsk(sk);
 	struct net *net = sock_net(sk);
 
-	/* ICMPs are not backlogged, hence we cannot get
-	 * an established socket here.
-	 */
+	 
 	if (seq != tcp_rsk(req)->snt_isn) {
 		__NET_INC_STATS(net, LINUX_MIB_OUTOFWINDOWICMPS);
 	} else if (abort) {
-		/*
-		 * Still in SYN_RECV, just remove it silently.
-		 * There is no good way to pass the error to the newly
-		 * created socket, and POSIX does not want network
-		 * errors returned from accept().
-		 */
+		 
 		inet_csk_reqsk_queue_drop(req->rsk_listener, req);
 		tcp_listendrop(req->rsk_listener);
 	}
@@ -416,7 +324,7 @@ void tcp_req_err(struct sock *sk, u32 seq, bool abort)
 }
 EXPORT_SYMBOL(tcp_req_err);
 
-/* TCP-LD (RFC 6069) logic */
+ 
 void tcp_ld_RTO_revert(struct sock *sk, u32 seq)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
@@ -448,29 +356,13 @@ void tcp_ld_RTO_revert(struct sock *sk, u32 seq)
 		inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
 					  remaining, TCP_RTO_MAX);
 	} else {
-		/* RTO revert clocked out retransmission.
-		 * Will retransmit now.
-		 */
+		 
 		tcp_retransmit_timer(sk);
 	}
 }
 EXPORT_SYMBOL(tcp_ld_RTO_revert);
 
-/*
- * This routine is called by the ICMP module when it gets some
- * sort of error condition.  If err < 0 then the socket should
- * be closed and the error returned to the user.  If err > 0
- * it's just the icmp type << 8 | icmp code.  After adjustment
- * header points to the first 8 bytes of the tcp header.  We need
- * to find the appropriate port.
- *
- * The locking strategy used here is very "optimistic". When
- * someone else accesses the socket the ICMP is just dropped
- * and for some paths there is no check at all.
- * A more general error queue to queue errors for later handling
- * is probably better.
- *
- */
+ 
 
 int tcp_v4_err(struct sk_buff *skb, u32 info)
 {
@@ -507,11 +399,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 	}
 
 	bh_lock_sock(sk);
-	/* If too many ICMPs get dropped on busy
-	 * servers this needs to be solved differently.
-	 * We do take care of PMTU discovery (RFC1191) special case :
-	 * we can receive locally generated ICMP messages while socket is held.
-	 */
+	 
 	if (sock_owned_by_user(sk)) {
 		if (!(type == ICMP_DEST_UNREACH && code == ICMP_FRAG_NEEDED))
 			__NET_INC_STATS(net, LINUX_MIB_LOCKDROPPEDICMPS);
@@ -520,7 +408,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 		goto out;
 
 	if (static_branch_unlikely(&ip4_min_ttl)) {
-		/* min_ttl can be changed concurrently from do_ip_setsockopt() */
+		 
 		if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
 			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
 			goto out;
@@ -528,7 +416,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 	}
 
 	tp = tcp_sk(sk);
-	/* XXX (TFO) - tp->snd_una should be ISN (tcp_create_openreq_child() */
+	 
 	fastopen = rcu_dereference(tp->fastopen_rsk);
 	snd_una = fastopen ? tcp_rsk(fastopen)->snt_isn : tp->snd_una;
 	if (sk->sk_state != TCP_LISTEN &&
@@ -543,7 +431,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 			do_redirect(skb, sk);
 		goto out;
 	case ICMP_SOURCE_QUENCH:
-		/* Just silently ignore these. */
+		 
 		goto out;
 	case ICMP_PARAMETERPROB:
 		err = EPROTO;
@@ -552,11 +440,8 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 		if (code > NR_ICMP_UNREACH)
 			goto out;
 
-		if (code == ICMP_FRAG_NEEDED) { /* PMTU discovery (RFC1191) */
-			/* We are not interested in TCP_LISTEN and open_requests
-			 * (SYN-ACKs send out by Linux are always <576bytes so
-			 * they should go through unfragmented).
-			 */
+		if (code == ICMP_FRAG_NEEDED) {  
+			 
 			if (sk->sk_state == TCP_LISTEN)
 				goto out;
 
@@ -571,9 +456,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 		}
 
 		err = icmp_err_convert[code].errno;
-		/* check if this ICMP message allows revert of backoff.
-		 * (see RFC 6069)
-		 */
+		 
 		if (!fastopen &&
 		    (code == ICMP_NET_UNREACH || code == ICMP_HOST_UNREACH))
 			tcp_ld_RTO_revert(sk, seq);
@@ -588,9 +471,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 	switch (sk->sk_state) {
 	case TCP_SYN_SENT:
 	case TCP_SYN_RECV:
-		/* Only in fast or simultaneous open. If a fast open socket is
-		 * already accepted it is treated as a connected one below.
-		 */
+		 
 		if (fastopen && !fastopen->sk)
 			break;
 
@@ -608,27 +489,13 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
 		goto out;
 	}
 
-	/* If we've already connected we will keep trying
-	 * until we time out, or the user gives up.
-	 *
-	 * rfc1122 4.2.3.9 allows to consider as hard errors
-	 * only PROTO_UNREACH and PORT_UNREACH (well, FRAG_FAILED too,
-	 * but it is obsoleted by pmtu discovery).
-	 *
-	 * Note, that in modern internet, where routing is unreliable
-	 * and in each dark corner broken firewalls sit, sending random
-	 * errors ordered by their masters even this two messages finally lose
-	 * their original sense (even Linux sends invalid PORT_UNREACHs)
-	 *
-	 * Now we are in compliance with RFCs.
-	 *							--ANK (980905)
-	 */
+	 
 
 	if (!sock_owned_by_user(sk) &&
 	    inet_test_bit(RECVERR, sk)) {
 		WRITE_ONCE(sk->sk_err, err);
 		sk_error_report(sk);
-	} else	{ /* Only an error on timeout */
+	} else	{  
 		WRITE_ONCE(sk->sk_err_soft, err);
 	}
 
@@ -647,7 +514,7 @@ void __tcp_v4_send_check(struct sk_buff *skb, __be32 saddr, __be32 daddr)
 	skb->csum_offset = offsetof(struct tcphdr, check);
 }
 
-/* This routine computes an IPv4 TCP checksum. */
+ 
 void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb)
 {
 	const struct inet_sock *inet = inet_sk(sk);
@@ -656,18 +523,7 @@ void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb)
 }
 EXPORT_SYMBOL(tcp_v4_send_check);
 
-/*
- *	This routine will send an RST to the other tcp.
- *
- *	Someone asks: why I NEVER use socket parameters (TOS, TTL etc.)
- *		      for reset.
- *	Answer: if a packet caused RST, it is not for a socket
- *		existing in our system, if it is matched to a socket,
- *		it is just duplicate segment or bug in other side's TCP.
- *		So that we build reply only basing on parameters
- *		arrived with segment.
- *	Exception: precedence violation. We do not implement it in any case.
- */
+ 
 
 #ifdef CONFIG_TCP_MD5SIG
 #define OPTION_BYTES TCPOLEN_MD5SIG_ALIGNED
@@ -695,17 +551,15 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
 	struct net *net;
 	u32 txhash = 0;
 
-	/* Never send a reset in response to a reset. */
+	 
 	if (th->rst)
 		return;
 
-	/* If sk not NULL, it means we did a successful lookup and incoming
-	 * route had to be correct. prequeue might have dropped our dst.
-	 */
+	 
 	if (!sk && skb_rtable(skb)->rt_type != RTN_LOCAL)
 		return;
 
-	/* Swap the send and the receive. */
+	 
 	memset(&rep, 0, sizeof(rep));
 	rep.th.dest   = th->source;
 	rep.th.source = th->dest;
@@ -732,9 +586,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
 		const union tcp_md5_addr *addr;
 		int l3index;
 
-		/* sdif set, means packet ingressed via a device
-		 * in an L3 domain and inet_iif is set to it.
-		 */
+		 
 		l3index = tcp_v4_sdif(skb) ? inet_iif(skb) : 0;
 		addr = (union tcp_md5_addr *)&ip_hdr(skb)->saddr;
 		key = tcp_md5_do_lookup(sk, l3index, addr, AF_INET);
@@ -744,24 +596,16 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
 		int dif = inet_iif(skb);
 		int l3index;
 
-		/*
-		 * active side is lost. Try to find listening socket through
-		 * source port, and then find md5 key through listening socket.
-		 * we are not loose security here:
-		 * Incoming packet is checked with md5 hash with finding key,
-		 * no RST generated if md5 hash doesn't match.
-		 */
+		 
 		sk1 = __inet_lookup_listener(net, net->ipv4.tcp_death_row.hashinfo,
 					     NULL, 0, ip_hdr(skb)->saddr,
 					     th->source, ip_hdr(skb)->daddr,
 					     ntohs(th->source), dif, sdif);
-		/* don't send rst if it can't find key */
+		 
 		if (!sk1)
 			goto out;
 
-		/* sdif set, means packet ingressed via a device
-		 * in an L3 domain and dif is set to it.
-		 */
+		 
 		l3index = sdif ? dif : 0;
 		addr = (union tcp_md5_addr *)&ip_hdr(skb)->saddr;
 		key = tcp_md5_do_lookup(sk1, l3index, addr, AF_INET);
@@ -780,7 +624,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
 				   (TCPOPT_NOP << 16) |
 				   (TCPOPT_MD5SIG << 8) |
 				   TCPOLEN_MD5SIG);
-		/* Update length and the length the header thinks exists */
+		 
 		arg.iov[0].iov_len += TCPOLEN_MD5SIG_ALIGNED;
 		rep.th.doff = arg.iov[0].iov_len / 4;
 
@@ -789,7 +633,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
 				     ip_hdr(skb)->daddr, &rep.th);
 	}
 #endif
-	/* Can't co-exist with TCPMD5, hence check rep.opt[0] */
+	 
 	if (rep.opt[0] == 0) {
 		__be32 mrst = mptcp_reset_option(skb);
 
@@ -801,15 +645,12 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
 	}
 
 	arg.csum = csum_tcpudp_nofold(ip_hdr(skb)->daddr,
-				      ip_hdr(skb)->saddr, /* XXX */
+				      ip_hdr(skb)->saddr,  
 				      arg.iov[0].iov_len, IPPROTO_TCP, 0);
 	arg.csumoffset = offsetof(struct tcphdr, check) / 2;
 	arg.flags = (sk && inet_sk_transparent(sk)) ? IP_REPLY_ARG_NOSRCCHECK : 0;
 
-	/* When socket is gone, all binding information is lost.
-	 * routing might fail in this case. No choice here, if we choose to force
-	 * input interface, we will misroute in case of asymmetric route.
-	 */
+	 
 	if (sk) {
 		arg.bound_dev_if = sk->sk_bound_dev_if;
 		if (sk_fullsock(sk))
@@ -855,9 +696,7 @@ out:
 #endif
 }
 
-/* The code following below sending ACKs in SYN-RECV and TIME-WAIT states
-   outside socket context is ugly, certainly. What can I do?
- */
+ 
 
 static void tcp_v4_send_ack(const struct sock *sk,
 			    struct sk_buff *skb, u32 seq, u32 ack,
@@ -893,7 +732,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
 		arg.iov[0].iov_len += TCPOLEN_TSTAMP_ALIGNED;
 	}
 
-	/* Swap the send and the receive. */
+	 
 	rep.th.dest    = th->source;
 	rep.th.source  = th->dest;
 	rep.th.doff    = arg.iov[0].iov_len / 4;
@@ -920,7 +759,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
 #endif
 	arg.flags = reply_flags;
 	arg.csum = csum_tcpudp_nofold(ip_hdr(skb)->daddr,
-				      ip_hdr(skb)->saddr, /* XXX */
+				      ip_hdr(skb)->saddr,  
 				      arg.iov[0].iov_len, IPPROTO_TCP, 0);
 	arg.csumoffset = offsetof(struct tcphdr, check) / 2;
 	if (oif)
@@ -972,17 +811,11 @@ static void tcp_v4_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
 	const union tcp_md5_addr *addr;
 	int l3index;
 
-	/* sk->sk_state == TCP_LISTEN -> for regular TCP_SYN_RECV
-	 * sk->sk_state == TCP_SYN_RECV -> for Fast Open.
-	 */
+	 
 	u32 seq = (sk->sk_state == TCP_LISTEN) ? tcp_rsk(req)->snt_isn + 1 :
 					     tcp_sk(sk)->snd_nxt;
 
-	/* RFC 7323 2.3
-	 * The window field (SEG.WND) of every outgoing segment, with the
-	 * exception of <SYN> segments, MUST be right-shifted by
-	 * Rcv.Wind.Shift bits:
-	 */
+	 
 	addr = (union tcp_md5_addr *)&ip_hdr(skb)->saddr;
 	l3index = tcp_v4_sdif(skb) ? inet_iif(skb) : 0;
 	tcp_v4_send_ack(sk, skb, seq,
@@ -997,11 +830,7 @@ static void tcp_v4_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
 			READ_ONCE(tcp_rsk(req)->txhash));
 }
 
-/*
- *	Send a SYN-ACK after having received a SYN.
- *	This still operates on a request_sock only, not on a big
- *	socket.
- */
+ 
 static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
 			      struct flowi *fl,
 			      struct request_sock *req,
@@ -1015,7 +844,7 @@ static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
 	struct sk_buff *skb;
 	u8 tos;
 
-	/* First, grab a route. */
+	 
 	if (!dst && (dst = inet_csk_route_req(sk, &fl4, req)) == NULL)
 		return -1;
 
@@ -1045,20 +874,14 @@ static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
 	return err;
 }
 
-/*
- *	IPv4 request_sock destructor.
- */
+ 
 static void tcp_v4_reqsk_destructor(struct request_sock *req)
 {
 	kfree(rcu_dereference_protected(inet_rsk(req)->ireq_opt, 1));
 }
 
 #ifdef CONFIG_TCP_MD5SIG
-/*
- * RFC2385 MD5 checksumming requires a mapping of
- * IP address->MD5 Key.
- * We need to maintain these in the sk structure.
- */
+ 
 
 DEFINE_STATIC_KEY_DEFERRED_FALSE(tcp_md5_needed, HZ);
 EXPORT_SYMBOL(tcp_md5_needed);
@@ -1068,7 +891,7 @@ static bool better_md5_match(struct tcp_md5sig_key *old, struct tcp_md5sig_key *
 	if (!old)
 		return true;
 
-	/* l3index always overrides non-l3index */
+	 
 	if (old->l3index && new->l3index == 0)
 		return false;
 	if (old->l3index == 0 && new->l3index)
@@ -1077,7 +900,7 @@ static bool better_md5_match(struct tcp_md5sig_key *old, struct tcp_md5sig_key *
 	return old->prefixlen < new->prefixlen;
 }
 
-/* Find the Key structure for an address.  */
+ 
 struct tcp_md5sig_key *__tcp_md5_do_lookup(const struct sock *sk, int l3index,
 					   const union tcp_md5_addr *addr,
 					   int family)
@@ -1089,7 +912,7 @@ struct tcp_md5sig_key *__tcp_md5_do_lookup(const struct sock *sk, int l3index,
 	struct tcp_md5sig_key *best_match = NULL;
 	bool match;
 
-	/* caller either holds rcu_read_lock() or socket lock */
+	 
 	md5sig = rcu_dereference_check(tp->md5sig_info,
 				       lockdep_sock_is_held(sk));
 	if (!md5sig)
@@ -1131,7 +954,7 @@ static struct tcp_md5sig_key *tcp_md5_do_lookup_exact(const struct sock *sk,
 	unsigned int size = sizeof(struct in_addr);
 	const struct tcp_md5sig_info *md5sig;
 
-	/* caller either holds rcu_read_lock() or socket lock */
+	 
 	md5sig = rcu_dereference_check(tp->md5sig_info,
 				       lockdep_sock_is_held(sk));
 	if (!md5sig)
@@ -1183,31 +1006,22 @@ static int tcp_md5sig_info_add(struct sock *sk, gfp_t gfp)
 	return 0;
 }
 
-/* This can be called on a newly created socket, from other files */
+ 
 static int __tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
 			    int family, u8 prefixlen, int l3index, u8 flags,
 			    const u8 *newkey, u8 newkeylen, gfp_t gfp)
 {
-	/* Add Key to the list */
+	 
 	struct tcp_md5sig_key *key;
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct tcp_md5sig_info *md5sig;
 
 	key = tcp_md5_do_lookup_exact(sk, addr, family, prefixlen, l3index, flags);
 	if (key) {
-		/* Pre-existing entry - just update that one.
-		 * Note that the key might be used concurrently.
-		 * data_race() is telling kcsan that we do not care of
-		 * key mismatches, since changing MD5 key on live flows
-		 * can lead to packet drops.
-		 */
+		 
 		data_race(memcpy(key->key, newkey, newkeylen));
 
-		/* Pairs with READ_ONCE() in tcp_md5_hash_key().
-		 * Also note that a reader could catch new key->keylen value
-		 * but old key->key[], this is the reason we use __GFP_ZERO
-		 * at sock_kmalloc() time below these lines.
-		 */
+		 
 		WRITE_ONCE(key->keylen, newkeylen);
 
 		return 0;
@@ -1359,9 +1173,7 @@ static int tcp_v4_parse_md5_keys(struct sock *sk, int optname,
 
 		rcu_read_unlock();
 
-		/* ok to reference set/not set outside of rcu;
-		 * right now device MUST be an L3 master
-		 */
+		 
 		if (!dev || !l3index)
 			return -EINVAL;
 	}
@@ -1443,7 +1255,7 @@ int tcp_v4_md5_hash_skb(char *md5_hash, const struct tcp_md5sig_key *key,
 	const struct tcphdr *th = tcp_hdr(skb);
 	__be32 saddr, daddr;
 
-	if (sk) { /* valid for establish/request sockets */
+	if (sk) {  
 		saddr = sk->sk_rcv_saddr;
 		daddr = sk->sk_daddr;
 	} else {
@@ -1535,7 +1347,7 @@ const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
 
 int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
 {
-	/* Never answer to SYNs send to broadcast or multicast */
+	 
 	if (skb_rtable(skb)->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))
 		goto drop;
 
@@ -1549,10 +1361,7 @@ drop:
 EXPORT_SYMBOL(tcp_v4_conn_request);
 
 
-/*
- * The three way handshake has completed - we got a valid synack -
- * now create the new socket.
- */
+ 
 struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
 				  struct request_sock *req,
 				  struct dst_entry *dst,
@@ -1598,9 +1407,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
 		inet_csk(newsk)->icsk_ext_hdr_len = inet_opt->opt.optlen;
 	atomic_set(&newinet->inet_id, get_random_u16());
 
-	/* Set ToS of the new socket based upon the value of incoming SYN.
-	 * ECT bits are set later in tcp_init_transfer().
-	 */
+	 
 	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos))
 		newinet->tos = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
 
@@ -1609,7 +1416,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
 		if (!dst)
 			goto put_and_exit;
 	} else {
-		/* syncookie case : see end of cookie_v4_check() */
+		 
 	}
 	sk_setup_caps(newsk, dst);
 
@@ -1622,7 +1429,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
 
 #ifdef CONFIG_TCP_MD5SIG
 	l3index = l3mdev_master_ifindex_by_index(sock_net(sk), ireq->ir_iif);
-	/* Copy over the MD5 key from the original socket */
+	 
 	addr = (union tcp_md5_addr *)&newinet->inet_daddr;
 	key = tcp_md5_do_lookup(sk, l3index, addr, AF_INET);
 	if (key) {
@@ -1643,9 +1450,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
 		newinet->inet_opt = NULL;
 
 		if (!req_unhash && found_dup_sk) {
-			/* This code path should only be executed in the
-			 * syncookie case only
-			 */
+			 
 			bh_unlock_sock(newsk);
 			sock_put(newsk);
 			newsk = NULL;
@@ -1696,20 +1501,13 @@ u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
 
 INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
 							   u32));
-/* The socket must have it's spinlock held when we get
- * here, unless it is a TCP_LISTEN socket.
- *
- * We have a potential double-lock case here, so even when
- * doing backlog processing we use the BH locking scheme.
- * This is because we cannot sleep with the original spinlock
- * held.
- */
+ 
 int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
 {
 	enum skb_drop_reason reason;
 	struct sock *rsk;
 
-	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
+	if (sk->sk_state == TCP_ESTABLISHED) {  
 		struct dst_entry *dst;
 
 		dst = rcu_dereference_protected(sk->sk_rx_dst,
@@ -1758,11 +1556,7 @@ reset:
 	tcp_v4_send_reset(rsk, skb);
 discard:
 	kfree_skb_reason(skb, reason);
-	/* Be careful here. If this function gets more complicated and
-	 * gcc suffers from register pressure on the x86, sk (in %ebx)
-	 * might be destroyed here. This current version compiles correctly,
-	 * but you have been warned.
-	 */
+	 
 	return 0;
 
 csum_err:
@@ -1827,12 +1621,7 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
 	u32 gso_size;
 	int delta;
 
-	/* In case all data was pulled from skb frags (in __pskb_pull_tail()),
-	 * we can fix skb->truesize to its real value to avoid future drops.
-	 * This is valid because skb is not yet charged to the socket.
-	 * It has been noticed pure SACK packets were sometimes dropped
-	 * (if cooked by drivers without copybreak feature).
-	 */
+	 
 	skb_condense(skb);
 
 	skb_dst_drop(skb);
@@ -1846,10 +1635,7 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
 		return true;
 	}
 
-	/* Attempt coalescing to last skb in backlog, even if we are
-	 * above the limits.
-	 * This is okay because skb capacity is limited to MAX_SKB_FRAGS.
-	 */
+	 
 	th = (const struct tcphdr *)skb->data;
 	hdrlen = th->doff * 4;
 
@@ -1892,14 +1678,7 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
 			thtail->window = th->window;
 		}
 
-		/* We have to update both TCP_SKB_CB(tail)->tcp_flags and
-		 * thtail->fin, so that the fast path in tcp_rcv_established()
-		 * is not entered if we append a packet with a FIN.
-		 * SYN, RST, URG are not present.
-		 * ACK is set on both packets.
-		 * PSH : we do not really care in TCP stack,
-		 *       at least for 'GRO' packets.
-		 */
+		 
 		thtail->fin |= th->fin;
 		TCP_SKB_CB(tail)->tcp_flags |= TCP_SKB_CB(skb)->tcp_flags;
 
@@ -1909,7 +1688,7 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
 			skb_hwtstamps(tail)->hwtstamp = skb_hwtstamps(skb)->hwtstamp;
 		}
 
-		/* Not as strict as GRO. We only need to carry mss max value */
+		 
 		shinfo->gso_size = max(gso_size, tail_gso_size);
 		shinfo->gso_segs = min_t(u32, gso_segs + tail_gso_segs, 0xFFFF);
 
@@ -1924,10 +1703,7 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
 no_coalesce:
 	limit = (u32)READ_ONCE(sk->sk_rcvbuf) + (u32)(READ_ONCE(sk->sk_sndbuf) >> 1);
 
-	/* Only socket owner can try to collapse/prune rx queues
-	 * to reduce memory overhead, so add a little headroom here.
-	 * Few sockets backlog are possibly concurrently non empty.
-	 */
+	 
 	limit += 64 * 1024;
 
 	if (unlikely(sk_add_backlog(sk, skb, limit))) {
@@ -1957,9 +1733,7 @@ static void tcp_v4_restore_cb(struct sk_buff *skb)
 static void tcp_v4_fill_cb(struct sk_buff *skb, const struct iphdr *iph,
 			   const struct tcphdr *th)
 {
-	/* This is tricky : We move IPCB at its correct location into TCP_SKB_CB()
-	 * barrier() makes sure compiler wont play fool^Waliasing games.
-	 */
+	 
 	memmove(&TCP_SKB_CB(skb)->header.h4, IPCB(skb),
 		sizeof(struct inet_skb_parm));
 	barrier();
@@ -1976,9 +1750,7 @@ static void tcp_v4_fill_cb(struct sk_buff *skb, const struct iphdr *iph,
 			skb->tstamp || skb_hwtstamps(skb)->hwtstamp;
 }
 
-/*
- *	From tcp_input.c
- */
+ 
 
 int tcp_v4_rcv(struct sk_buff *skb)
 {
@@ -1996,7 +1768,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
 	if (skb->pkt_type != PACKET_HOST)
 		goto discard_it;
 
-	/* Count it even if it's bad */
+	 
 	__TCP_INC_STATS(net, TCP_MIB_INSEGS);
 
 	if (!pskb_may_pull(skb, sizeof(struct tcphdr)))
@@ -2011,10 +1783,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
 	if (!pskb_may_pull(skb, th->doff * 4))
 		goto discard_it;
 
-	/* An explanation is required here, I think.
-	 * Packet length and doff are validated by header prediction,
-	 * provided case of th->doff==0 is eliminated.
-	 * So, we defer the checks. */
+	 
 
 	if (skb_checksum_init(skb, IPPROTO_TCP, inet_compute_pseudo))
 		goto csum_error;
@@ -2060,13 +1829,9 @@ process:
 				goto lookup;
 			}
 			sk = nsk;
-			/* reuseport_migrate_sock() has already held one sk_refcnt
-			 * before returning.
-			 */
+			 
 		} else {
-			/* We own a reference on the listener, increase it again
-			 * as we might lose it too soon.
-			 */
+			 
 			sock_hold(sk);
 		}
 		refcounted = true;
@@ -2082,11 +1847,7 @@ process:
 		if (!nsk) {
 			reqsk_put(req);
 			if (req_stolen) {
-				/* Another cpu got exclusive access to req
-				 * and created a full blown socket.
-				 * Try to feed this packet to this socket
-				 * instead of discarding it.
-				 */
+				 
 				tcp_v4_restore_cb(skb);
 				sock_put(sk);
 				goto lookup;
@@ -2107,7 +1868,7 @@ process:
 	}
 
 	if (static_branch_unlikely(&ip4_min_ttl)) {
-		/* min_ttl can be changed concurrently from do_ip_setsockopt() */
+		 
 		if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
 			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
 			drop_reason = SKB_DROP_REASON_TCP_MINTTL;
@@ -2181,7 +1942,7 @@ bad_packet:
 
 discard_it:
 	SKB_DR_OR(drop_reason, NOT_SPECIFIED);
-	/* Discard frame. */
+	 
 	kfree_skb_reason(skb, drop_reason);
 	return 0;
 
@@ -2221,7 +1982,7 @@ do_time_wait:
 			goto process;
 		}
 	}
-		/* to ACK */
+		 
 		fallthrough;
 	case TCP_TW_ACK:
 		tcp_v4_timewait_ack(sk, skb);
@@ -2276,9 +2037,7 @@ static const struct tcp_sock_af_ops tcp_sock_ipv4_specific = {
 };
 #endif
 
-/* NOTE: A lot of things set to zero explicitly by call to
- *       sk_alloc() so need not be done here.
- */
+ 
 static int tcp_v4_init_sock(struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
@@ -2306,17 +2065,17 @@ void tcp_v4_destroy_sock(struct sock *sk)
 
 	tcp_cleanup_ulp(sk);
 
-	/* Cleanup up the write buffer. */
+	 
 	tcp_write_queue_purge(sk);
 
-	/* Check if we want to disable active TFO */
+	 
 	tcp_fastopen_active_disable_ofo_check(sk);
 
-	/* Cleans up our, hopefully empty, out_of_order_queue. */
+	 
 	skb_rbtree_purge(&tp->out_of_order_queue);
 
 #ifdef CONFIG_TCP_MD5SIG
-	/* Clean up the MD5 key list, if any */
+	 
 	if (tp->md5sig_info) {
 		tcp_clear_md5_list(sk);
 		kfree_rcu(rcu_dereference_protected(tp->md5sig_info, 1), rcu);
@@ -2325,13 +2084,13 @@ void tcp_v4_destroy_sock(struct sock *sk)
 	}
 #endif
 
-	/* Clean up a referenced TCP bind bucket. */
+	 
 	if (inet_csk(sk)->icsk_bind_hash)
 		inet_put_port(sk);
 
 	BUG_ON(rcu_access_pointer(tp->fastopen_rsk));
 
-	/* If socket is aborted during connect operation */
+	 
 	tcp_free_fastopen_req(tp);
 	tcp_fastopen_destroy_cipher(sk);
 	tcp_saved_syn_free(tp);
@@ -2341,7 +2100,7 @@ void tcp_v4_destroy_sock(struct sock *sk)
 EXPORT_SYMBOL(tcp_v4_destroy_sock);
 
 #ifdef CONFIG_PROC_FS
-/* Proc filesystem TCP sock list dumping. */
+ 
 
 static unsigned short seq_file_family(const struct seq_file *seq);
 
@@ -2349,14 +2108,12 @@ static bool seq_sk_match(struct seq_file *seq, const struct sock *sk)
 {
 	unsigned short family = seq_file_family(seq);
 
-	/* AF_UNSPEC is used as a match all */
+	 
 	return ((family == AF_UNSPEC || family == sk->sk_family) &&
 		net_eq(sock_net(sk), seq_file_net(seq)));
 }
 
-/* Find a non empty bucket (starting from st->bucket)
- * and return the first sk from it.
- */
+ 
 static void *listening_get_first(struct seq_file *seq)
 {
 	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row.hashinfo;
@@ -2383,11 +2140,7 @@ static void *listening_get_first(struct seq_file *seq)
 	return NULL;
 }
 
-/* Find the next sk of "cur" within the same bucket (i.e. st->bucket).
- * If "cur" is the last one in the st->bucket,
- * call listening_get_first() to return the first sk of the next
- * non empty bucket.
- */
+ 
 static void *listening_get_next(struct seq_file *seq, void *cur)
 {
 	struct tcp_iter_state *st = seq->private;
@@ -2434,10 +2187,7 @@ static inline bool empty_bucket(struct inet_hashinfo *hinfo,
 	return hlist_nulls_empty(&hinfo->ehash[st->bucket].chain);
 }
 
-/*
- * Get first established socket starting from bucket given in st->bucket.
- * If st->bucket is zero, the very first socket in the hash is returned.
- */
+ 
 static void *established_get_first(struct seq_file *seq)
 {
 	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row.hashinfo;
@@ -2451,7 +2201,7 @@ static void *established_get_first(struct seq_file *seq)
 
 		cond_resched();
 
-		/* Lockless fast path for the common case of empty buckets */
+		 
 		if (empty_bucket(hinfo, st))
 			continue;
 
@@ -2639,14 +2389,14 @@ static void get_openreq4(const struct request_sock *req,
 		ireq->ir_rmt_addr,
 		ntohs(ireq->ir_rmt_port),
 		TCP_SYN_RECV,
-		0, 0, /* could print option size, but that is af dependent. */
-		1,    /* timers active (only the expire timer) */
+		0, 0,  
+		1,     
 		jiffies_delta_to_clock_t(delta),
 		req->num_timeout,
 		from_kuid_munged(seq_user_ns(f),
 				 sock_i_uid(req->rsk_listener)),
-		0,  /* non standard timer */
-		0, /* open_requests have no inode */
+		0,   
+		0,  
 		0,
 		req);
 }
@@ -2686,9 +2436,7 @@ static void get_tcp4_sock(struct sock *sk, struct seq_file *f, int i)
 	if (state == TCP_LISTEN)
 		rx_queue = READ_ONCE(sk->sk_ack_backlog);
 	else
-		/* Because we don't lock the socket,
-		 * we might find a transient negative value.
-		 */
+		 
 		rx_queue = max_t(int, READ_ONCE(tp->rcv_nxt) -
 				      READ_ONCE(tp->copied_seq), 0);
 
@@ -2780,7 +2528,7 @@ static int tcp_prog_seq_show(struct bpf_prog *prog, struct bpf_iter_meta *meta,
 {
 	struct bpf_iter__tcp ctx;
 
-	meta->seq_num--;  /* skip SEQ_START_TOKEN */
+	meta->seq_num--;   
 	ctx.meta = meta;
 	ctx.sk_common = sk_common;
 	ctx.uid = uid;
@@ -2876,11 +2624,7 @@ static struct sock *bpf_iter_tcp_batch(struct seq_file *seq)
 	bool resized = false;
 	struct sock *sk;
 
-	/* The st->bucket is done.  Directly advance to the next
-	 * bucket instead of having the tcp_seek_last_pos() to skip
-	 * one by one in the current bucket and eventually find out
-	 * it has to advance to the next bucket.
-	 */
+	 
 	if (iter->st_bucket_done) {
 		st->offset = 0;
 		st->bucket++;
@@ -2892,14 +2636,14 @@ static struct sock *bpf_iter_tcp_batch(struct seq_file *seq)
 	}
 
 again:
-	/* Get a new batch */
+	 
 	iter->cur_sk = 0;
 	iter->end_sk = 0;
 	iter->st_bucket_done = false;
 
 	sk = tcp_seek_last_pos(seq);
 	if (!sk)
-		return NULL; /* Done */
+		return NULL;  
 
 	if (st->state == TCP_SEQ_STATE_LISTENING)
 		expected = bpf_iter_tcp_listening_batch(seq, sk);
@@ -2921,9 +2665,7 @@ again:
 
 static void *bpf_iter_tcp_seq_start(struct seq_file *seq, loff_t *pos)
 {
-	/* bpf iter does not support lseek, so it always
-	 * continue from where it was stop()-ped.
-	 */
+	 
 	if (*pos)
 		return bpf_iter_tcp_batch(seq);
 
@@ -2936,20 +2678,11 @@ static void *bpf_iter_tcp_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	struct tcp_iter_state *st = &iter->state;
 	struct sock *sk;
 
-	/* Whenever seq_next() is called, the iter->cur_sk is
-	 * done with seq_show(), so advance to the next sk in
-	 * the batch.
-	 */
+	 
 	if (iter->cur_sk < iter->end_sk) {
-		/* Keeping st->num consistent in tcp_iter_state.
-		 * bpf_iter_tcp does not use st->num.
-		 * meta.seq_num is used instead.
-		 */
+		 
 		st->num++;
-		/* Move st->offset to the next sk in the bucket such that
-		 * the future start() will resume at st->offset in
-		 * st->bucket.  See tcp_seek_last_pos().
-		 */
+		 
 		st->offset++;
 		sock_gen_put(iter->batch[iter->cur_sk++]);
 	}
@@ -2960,9 +2693,7 @@ static void *bpf_iter_tcp_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 		sk = bpf_iter_tcp_batch(seq);
 
 	++*pos;
-	/* Keeping st->last_pos consistent in tcp_iter_state.
-	 * bpf iter does not do lseek, so st->last_pos always equals to *pos.
-	 */
+	 
 	st->last_pos = *pos;
 	return sk;
 }
@@ -3039,12 +2770,12 @@ static unsigned short seq_file_family(const struct seq_file *seq)
 	const struct tcp_seq_afinfo *afinfo;
 
 #ifdef CONFIG_BPF_SYSCALL
-	/* Iterated from bpf_iter.  Let the bpf prog to filter instead. */
+	 
 	if (seq->op == &bpf_iter_tcp_seq_ops)
 		return AF_UNSPEC;
 #endif
 
-	/* Iterated from proc fs */
+	 
 	afinfo = pde_data(file_inode(seq->file));
 	return afinfo->family;
 }
@@ -3087,12 +2818,9 @@ void tcp4_proc_exit(void)
 {
 	unregister_pernet_subsys(&tcp4_net_ops);
 }
-#endif /* CONFIG_PROC_FS */
+#endif  
 
-/* @wake is one when sk_stream_write_space() calls us.
- * This sends EPOLLOUT only if notsent_bytes is half the limit.
- * This mimics the strategy used in sock_def_write_space().
- */
+ 
 bool tcp_stream_memory_free(const struct sock *sk, int wake)
 {
 	const struct tcp_sock *tp = tcp_sk(sk);
@@ -3227,7 +2955,7 @@ static int __net_init tcp_sk_init(struct net *net)
 	net->ipv4.sysctl_tcp_timestamps = 1;
 	net->ipv4.sysctl_tcp_early_retrans = 3;
 	net->ipv4.sysctl_tcp_recovery = TCP_RACK_LOSS_DETECTION;
-	net->ipv4.sysctl_tcp_slow_start_after_idle = 1; /* By default, RFC2861 behavior.  */
+	net->ipv4.sysctl_tcp_slow_start_after_idle = 1;  
 	net->ipv4.sysctl_tcp_retrans_collapse = 1;
 	net->ipv4.sysctl_tcp_max_reordering = 300;
 	net->ipv4.sysctl_tcp_dsack = 1;
@@ -3235,19 +2963,16 @@ static int __net_init tcp_sk_init(struct net *net)
 	net->ipv4.sysctl_tcp_adv_win_scale = 1;
 	net->ipv4.sysctl_tcp_frto = 2;
 	net->ipv4.sysctl_tcp_moderate_rcvbuf = 1;
-	/* This limits the percentage of the congestion window which we
-	 * will allow a single TSO frame to consume.  Building TSO frames
-	 * which are too large can cause TCP streams to be bursty.
-	 */
+	 
 	net->ipv4.sysctl_tcp_tso_win_divisor = 3;
-	/* Default TSQ limit of 16 TSO segments */
+	 
 	net->ipv4.sysctl_tcp_limit_output_bytes = 16 * 65536;
 
-	/* rfc5961 challenge ack rate limiting, per net-ns, disabled by default. */
+	 
 	net->ipv4.sysctl_tcp_challenge_ack_limit = INT_MAX;
 
 	net->ipv4.sysctl_tcp_min_tso_segs = 2;
-	net->ipv4.sysctl_tcp_tso_rtt_log = 9;  /* 2^9 = 512 usec */
+	net->ipv4.sysctl_tcp_tso_rtt_log = 9;   
 	net->ipv4.sysctl_tcp_min_rtt_wlen = 300;
 	net->ipv4.sysctl_tcp_autocorking = 1;
 	net->ipv4.sysctl_tcp_invalid_ratelimit = HZ/2;
@@ -3268,15 +2993,15 @@ static int __net_init tcp_sk_init(struct net *net)
 	net->ipv4.sysctl_tcp_fastopen_blackhole_timeout = 0;
 	atomic_set(&net->ipv4.tfo_active_disable_times, 0);
 
-	/* Set default values for PLB */
-	net->ipv4.sysctl_tcp_plb_enabled = 0; /* Disabled by default */
+	 
+	net->ipv4.sysctl_tcp_plb_enabled = 0;  
 	net->ipv4.sysctl_tcp_plb_idle_rehash_rounds = 3;
 	net->ipv4.sysctl_tcp_plb_rehash_rounds = 12;
 	net->ipv4.sysctl_tcp_plb_suspend_rto_sec = 60;
-	/* Default congestion threshold for PLB to mark a round is 50% */
+	 
 	net->ipv4.sysctl_tcp_plb_cong_thresh = (1 << TCP_PLB_SCALE) / 2;
 
-	/* Reno is always built in */
+	 
 	if (!net_eq(net, &init_net) &&
 	    bpf_try_module_get(init_net.ipv4.tcp_congestion_control,
 			       init_net.ipv4.tcp_congestion_control->owner))
@@ -3395,9 +3120,7 @@ void __init tcp_v4_init(void)
 			panic("Failed to create the TCP control socket.\n");
 		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
 
-		/* Please enforce IP_DF and IPID==0 for RST and
-		 * ACK sent in SYN-RECV and TIME-WAIT state.
-		 */
+		 
 		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DO;
 
 		per_cpu(ipv4_tcp_sk, cpu) = sk;

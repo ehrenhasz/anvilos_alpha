@@ -1,16 +1,4 @@
-/*
- * This file is part of the ZFS Event Daemon (ZED).
- *
- * Developed at Lawrence Livermore National Laboratory (LLNL-CODE-403049).
- * Copyright (C) 2013-2014 Lawrence Livermore National Security, LLC.
- * Refer to the OpenZFS git commit log for authoritative copyright attribution.
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License Version 1.0 (CDDL-1.0).
- * You can obtain a copy of the license from the top-level file
- * "OPENSOLARIS.LICENSE" or at <http://opensource.org/licenses/CDDL-1.0>.
- * You may not use this file except in compliance with the license.
- */
+ 
 
 #include <assert.h>
 #include <errno.h>
@@ -33,9 +21,7 @@ static struct {
 	int pipe_fd[2];
 } _ctx;
 
-/*
- * Initialize the logging subsystem.
- */
+ 
 void
 zed_log_init(const char *identity)
 {
@@ -49,9 +35,7 @@ zed_log_init(const char *identity)
 	_ctx.pipe_fd[1] = -1;
 }
 
-/*
- * Shutdown the logging subsystem.
- */
+ 
 void
 zed_log_fini(void)
 {
@@ -59,10 +43,7 @@ zed_log_fini(void)
 	zed_log_syslog_close();
 }
 
-/*
- * Create pipe for communicating daemonization status between the parent and
- * child processes across the double-fork().
- */
+ 
 void
 zed_log_pipe_open(void)
 {
@@ -75,12 +56,7 @@ zed_log_pipe_open(void)
 		    (int)getpid(), strerror(errno));
 }
 
-/*
- * Close the read-half of the daemonize pipe.
- *
- * This should be called by the child after fork()ing from the parent since
- * the child will never read from this pipe.
- */
+ 
 void
 zed_log_pipe_close_reads(void)
 {
@@ -97,15 +73,7 @@ zed_log_pipe_close_reads(void)
 	_ctx.pipe_fd[0] = -1;
 }
 
-/*
- * Close the write-half of the daemonize pipe.
- *
- * This should be called by the parent after fork()ing its child since the
- * parent will never write to this pipe.
- *
- * This should also be called by the child once initialization is complete
- * in order to signal the parent that it can safely exit.
- */
+ 
 void
 zed_log_pipe_close_writes(void)
 {
@@ -122,13 +90,7 @@ zed_log_pipe_close_writes(void)
 	_ctx.pipe_fd[1] = -1;
 }
 
-/*
- * Block on reading from the daemonize pipe until signaled by the child
- * (via zed_log_pipe_close_writes()) that initialization is complete.
- *
- * This should only be called by the parent while waiting to exit after
- * fork()ing the child.
- */
+ 
 void
 zed_log_pipe_wait(void)
 {
@@ -154,10 +116,7 @@ zed_log_pipe_wait(void)
 	}
 }
 
-/*
- * Start logging messages at the syslog [priority] level or higher to stderr.
- * Refer to syslog(3) for valid priority values.
- */
+ 
 void
 zed_log_stderr_open(int priority)
 {
@@ -165,9 +124,7 @@ zed_log_stderr_open(int priority)
 	_ctx.priority = priority;
 }
 
-/*
- * Stop logging messages to stderr.
- */
+ 
 void
 zed_log_stderr_close(void)
 {
@@ -175,10 +132,7 @@ zed_log_stderr_close(void)
 		_ctx.do_stderr = 0;
 }
 
-/*
- * Start logging messages to syslog.
- * Refer to syslog(3) for valid option/facility values.
- */
+ 
 void
 zed_log_syslog_open(int facility)
 {
@@ -186,9 +140,7 @@ zed_log_syslog_open(int facility)
 	openlog(_ctx.identity, LOG_NDELAY | LOG_PID, facility);
 }
 
-/*
- * Stop logging messages to syslog.
- */
+ 
 void
 zed_log_syslog_close(void)
 {
@@ -198,9 +150,7 @@ zed_log_syslog_close(void)
 	}
 }
 
-/*
- * Auxiliary function to log a message to syslog and/or stderr.
- */
+ 
 static void
 _zed_log_aux(int priority, const char *fmt, va_list vargs)
 {
@@ -223,10 +173,7 @@ _zed_log_aux(int priority, const char *fmt, va_list vargs)
 		fprintf(stderr, "%s\n", buf);
 }
 
-/*
- * Log a message at the given [priority] level specified by the printf-style
- * format string [fmt].
- */
+ 
 void
 zed_log_msg(int priority, const char *fmt, ...)
 {
@@ -239,9 +186,7 @@ zed_log_msg(int priority, const char *fmt, ...)
 	}
 }
 
-/*
- * Log a fatal error message specified by the printf-style format string [fmt].
- */
+ 
 void
 zed_log_die(const char *fmt, ...)
 {

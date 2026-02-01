@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Free Electrons
- * Copyright (C) 2014 Atmel
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -64,7 +59,7 @@ static int atmel_hlcdc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			do_div(clk_period_ns, clk_freq);
 		}
 
-		/* Errata: cannot use slow clk on some IP revisions */
+		 
 		if ((atmel->errata && atmel->errata->slow_clk_erratum) ||
 		    clk_period_ns > state->period) {
 			new_clk = hlcdc->sys_clk;
@@ -77,7 +72,7 @@ static int atmel_hlcdc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		}
 
 		for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
-		/* Errata: cannot divide by 1 on some IP revisions */
+		 
 			if (!pres && atmel->errata &&
 			    atmel->errata->div1_clk_erratum)
 				continue;
@@ -115,12 +110,7 @@ static int atmel_hlcdc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 		do_div(pwmcval, state->period);
 
-		/*
-		 * The PWM duty cycle is configurable from 0/256 to 255/256 of
-		 * the period cycle. Hence we can't set a duty cycle occupying
-		 * the whole period cycle if we're asked to.
-		 * Set it to 255 if pwmcval is greater than 256.
-		 */
+		 
 		if (pwmcval > 255)
 			pwmcval = 255;
 
@@ -186,7 +176,7 @@ static int atmel_hlcdc_pwm_suspend(struct device *dev)
 {
 	struct atmel_hlcdc_pwm *atmel = dev_get_drvdata(dev);
 
-	/* Keep the periph clock enabled if the PWM is still running. */
+	 
 	if (pwm_is_enabled(&atmel->chip.pwms[0]))
 		clk_disable_unprepare(atmel->hlcdc->periph_clk);
 
@@ -201,7 +191,7 @@ static int atmel_hlcdc_pwm_resume(struct device *dev)
 
 	pwm_get_state(&atmel->chip.pwms[0], &state);
 
-	/* Re-enable the periph clock it was stopped during suspend. */
+	 
 	if (!state.enabled) {
 		ret = clk_prepare_enable(atmel->hlcdc->periph_clk);
 		if (ret)
@@ -219,7 +209,7 @@ static SIMPLE_DEV_PM_OPS(atmel_hlcdc_pwm_pm_ops,
 static const struct of_device_id atmel_hlcdc_dt_ids[] = {
 	{
 		.compatible = "atmel,at91sam9n12-hlcdc",
-		/* 9n12 has same errata as 9x5 HLCDC PWM */
+		 
 		.data = &atmel_hlcdc_pwm_at91sam9x5_errata,
 	},
 	{
@@ -238,7 +228,7 @@ static const struct of_device_id atmel_hlcdc_dt_ids[] = {
 		.data = &atmel_hlcdc_pwm_sama5d3_errata,
 	},
 	{	.compatible = "microchip,sam9x60-hlcdc", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, atmel_hlcdc_dt_ids);
 
@@ -291,7 +281,7 @@ static void atmel_hlcdc_pwm_remove(struct platform_device *pdev)
 
 static const struct of_device_id atmel_hlcdc_pwm_dt_ids[] = {
 	{ .compatible = "atmel,hlcdc-pwm" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver atmel_hlcdc_pwm_driver = {

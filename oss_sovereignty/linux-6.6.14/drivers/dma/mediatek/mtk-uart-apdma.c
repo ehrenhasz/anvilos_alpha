@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek UART APDMA driver.
- *
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Long Cheng <long.cheng@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dmaengine.h>
@@ -24,16 +19,16 @@
 
 #include "../virt-dma.h"
 
-/* The default number of virtual channel */
+ 
 #define MTK_UART_APDMA_NR_VCHANS	8
 
 #define VFF_EN_B		BIT(0)
 #define VFF_STOP_B		BIT(0)
 #define VFF_FLUSH_B		BIT(0)
 #define VFF_4G_EN_B		BIT(0)
-/* rx valid size >=  vff thre */
+ 
 #define VFF_RX_INT_EN_B		(BIT(0) | BIT(1))
-/* tx left size >= vff thre */
+ 
 #define VFF_TX_INT_EN_B		BIT(0)
 #define VFF_WARM_RST_B		BIT(0)
 #define VFF_RX_INT_CLR_B	(BIT(0) | BIT(1))
@@ -43,17 +38,13 @@
 #define VFF_INT_EN_CLR_B	0
 #define VFF_4G_SUPPORT_CLR_B	0
 
-/*
- * interrupt trigger level for tx
- * if threshold is n, no polling is required to start tx.
- * otherwise need polling VFF_FLUSH.
- */
+ 
 #define VFF_TX_THRE(n)		(n)
-/* interrupt trigger level for rx */
+ 
 #define VFF_RX_THRE(n)		((n) * 3 / 4)
 
 #define VFF_RING_SIZE	0xffff
-/* invert this bit when wrap ring head again */
+ 
 #define VFF_RING_WRAP	0x10000
 
 #define VFF_INT_FLAG		0x00
@@ -67,9 +58,9 @@
 #define VFF_THRE		0x28
 #define VFF_WPT			0x2c
 #define VFF_RPT			0x30
-/* TX: the buffer size HW can read. RX: the buffer size SW can read. */
+ 
 #define VFF_VALID_SIZE		0x3c
-/* TX: the buffer size SW can write. RX: the buffer size HW can write. */
+ 
 #define VFF_LEFT_SIZE		0x40
 #define VFF_DEBUG_STATUS	0x50
 #define VFF_4G_SUPPORT		0x54
@@ -167,10 +158,10 @@ static void mtk_uart_apdma_start_tx(struct mtk_chan *c)
 	if ((wpt & VFF_RING_SIZE) == vff_sz)
 		wpt = (wpt & VFF_RING_WRAP) ^ VFF_RING_WRAP;
 
-	/* Let DMA start moving data */
+	 
 	mtk_uart_apdma_write(c, VFF_WPT, wpt);
 
-	/* HW auto set to 0 when left size >= threshold */
+	 
 	mtk_uart_apdma_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
 	if (!mtk_uart_apdma_read(c, VFF_FLUSH))
 		mtk_uart_apdma_write(c, VFF_FLUSH, VFF_FLUSH_B);
@@ -227,10 +218,7 @@ static void mtk_uart_apdma_rx_handler(struct mtk_chan *c)
 	wg = mtk_uart_apdma_read(c, VFF_WPT);
 	cnt = (wg & VFF_RING_SIZE) - (rg & VFF_RING_SIZE);
 
-	/*
-	 * The buffer is ring buffer. If wrap bit different,
-	 * represents the start of the next cycle for WPT
-	 */
+	 
 	if ((rg ^ wg) & VFF_RING_WRAP)
 		cnt += len;
 
@@ -335,10 +323,7 @@ static enum dma_status mtk_uart_apdma_tx_status(struct dma_chan *chan,
 	return ret;
 }
 
-/*
- * dmaengine_prep_slave_single will call the function. and sglen is 1.
- * 8250 uart using one ring buffer, and deal with one sg.
- */
+ 
 static struct dma_async_tx_descriptor *mtk_uart_apdma_prep_slave_sg
 	(struct dma_chan *chan, struct scatterlist *sgl,
 	unsigned int sglen, enum dma_transfer_direction dir,
@@ -350,7 +335,7 @@ static struct dma_async_tx_descriptor *mtk_uart_apdma_prep_slave_sg
 	if (!is_slave_direction(dir) || sglen != 1)
 		return NULL;
 
-	/* Now allocate and setup the descriptor */
+	 
 	d = kzalloc(sizeof(*d), GFP_NOWAIT);
 	if (!d)
 		return NULL;
@@ -408,12 +393,7 @@ static int mtk_uart_apdma_terminate_all(struct dma_chan *chan)
 		dev_err(c->vc.chan.device->dev, "flush: fail, status=0x%x\n",
 			mtk_uart_apdma_read(c, VFF_DEBUG_STATUS));
 
-	/*
-	 * Stop need 3 steps.
-	 * 1. set stop to 1
-	 * 2. wait en to 0
-	 * 3. set stop as 0
-	 */
+	 
 	mtk_uart_apdma_write(c, VFF_STOP, VFF_STOP_B);
 	ret = readx_poll_timeout(readl, c->base + VFF_EN,
 			  status, !status, 10, 100);
@@ -469,7 +449,7 @@ static void mtk_uart_apdma_free(struct mtk_uart_apdmadev *mtkd)
 
 static const struct of_device_id mtk_uart_apdma_match[] = {
 	{ .compatible = "mediatek,mt6577-uart-dma", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mtk_uart_apdma_match);
 
@@ -556,7 +536,7 @@ static int mtk_uart_apdma_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, mtkd);
 
-	/* Device-tree DMA controller registration */
+	 
 	rc = of_dma_controller_register(np, of_dma_xlate_by_chan_id, mtkd);
 	if (rc)
 		goto dma_remove;
@@ -611,7 +591,7 @@ static int mtk_uart_apdma_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int mtk_uart_apdma_runtime_suspend(struct device *dev)
@@ -629,7 +609,7 @@ static int mtk_uart_apdma_runtime_resume(struct device *dev)
 
 	return clk_prepare_enable(mtkd->clk);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops mtk_uart_apdma_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(mtk_uart_apdma_suspend, mtk_uart_apdma_resume)

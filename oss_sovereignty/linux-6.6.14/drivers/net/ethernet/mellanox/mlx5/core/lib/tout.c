@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <linux/mlx5/driver.h>
 #include "lib/tout.h"
@@ -52,22 +52,13 @@ void mlx5_tout_cleanup(struct mlx5_core_dev *dev)
 	kfree(dev->timeouts);
 }
 
-/* Time register consists of two fields to_multiplier(time out multiplier)
- * and to_value(time out value). to_value is the quantity of the time units and
- * to_multiplier is the type and should be one off these four values.
- * 0x0: millisecond
- * 0x1: seconds
- * 0x2: minutes
- * 0x3: hours
- * this function converts the time stored in the two register fields into
- * millisecond.
- */
+ 
 static u64 tout_convert_reg_field_to_ms(u32 to_mul, u32 to_val)
 {
 	u64 msec = to_val;
 
 	to_mul &= 0x3;
-	/* convert hours/minutes/seconds to miliseconds */
+	 
 	if (to_mul)
 		msec *= 1000 * int_pow(60, to_mul - 1);
 

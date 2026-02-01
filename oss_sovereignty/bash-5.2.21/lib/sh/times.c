@@ -1,22 +1,6 @@
-/* times.c - times(3) library function */
+ 
 
-/* Copyright (C) 1999-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -28,7 +12,7 @@
 
 #if defined (HAVE_SYS_RESOURCE_H) && defined (HAVE_GETRUSAGE)
 #  include <sys/resource.h>
-#endif /* HAVE_SYS_RESOURCE_H && HAVE_GETRUSAGE */
+#endif  
 
 extern long	get_clk_tck PARAMS((void));
 
@@ -61,17 +45,17 @@ times(tms)
 	if (gettimeofday(&tv, NULL) < 0)
 		return ((clock_t)-1);
 	rv = (clock_t)(CONVTCK(tv));
-#else /* !HAVE_GETRUSAGE */
+#else  
 	if (clk_tck == -1)
 		clk_tck = get_clk_tck();
 
-	/* We can't do anything. */
+	 
 	tms->tms_utime = tms->tms_stime = (clock_t)0;
 	tms->tms_cutime = tms->tms_cstime = (clock_t)0;
 
 	rv = (clock_t)time((time_t *)0) * clk_tck;
-# endif /* HAVE_GETRUSAGE */
+# endif  
 
 	return rv;
 }
-#endif /* !HAVE_TIMES */
+#endif  

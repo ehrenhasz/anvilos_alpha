@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * vimc-sensor.c Virtual Media Controller Driver
- *
- * Copyright (C) 2015-2017 Helen Koike <helen.fornazier@gmail.com>
- */
+
+ 
 
 #include <linux/v4l2-mediabus.h>
 #include <linux/vmalloc.h>
@@ -27,7 +23,7 @@ struct vimc_sensor_device {
 	u8 *frame;
 	enum vimc_sensor_osd_mode osd_value;
 	u64 start_stream_ts;
-	/* The active format */
+	 
 	struct v4l2_mbus_framefmt mbus_format;
 	struct v4l2_ctrl_handler hdl;
 	struct media_pad pad;
@@ -79,7 +75,7 @@ static int vimc_sensor_enum_frame_size(struct v4l2_subdev *sd,
 	if (fse->index)
 		return -EINVAL;
 
-	/* Only accept code in the pix map table */
+	 
 	vpix = vimc_pix_map_by_code(fse->code);
 	if (!vpix)
 		return -EINVAL;
@@ -116,7 +112,7 @@ static void vimc_sensor_tpg_s_format(struct vimc_sensor_device *vsensor)
 	tpg_s_bytesperline(&vsensor->tpg, 0, vsensor->mbus_format.width * vpix->bpp);
 	tpg_s_buf_height(&vsensor->tpg, vsensor->mbus_format.height);
 	tpg_s_fourcc(&vsensor->tpg, vpix->pixelformat);
-	/* TODO: add support for V4L2_FIELD_ALTERNATE */
+	 
 	tpg_s_field(&vsensor->tpg, vsensor->mbus_format.field, false);
 	tpg_s_colorspace(&vsensor->tpg, vsensor->mbus_format.colorspace);
 	tpg_s_ycbcr_enc(&vsensor->tpg, vsensor->mbus_format.ycbcr_enc);
@@ -128,7 +124,7 @@ static void vimc_sensor_adjust_fmt(struct v4l2_mbus_framefmt *fmt)
 {
 	const struct vimc_pix_map *vpix;
 
-	/* Only accept code in the pix map table */
+	 
 	vpix = vimc_pix_map_by_code(fmt->code);
 	if (!vpix)
 		fmt->code = fmt_default.code;
@@ -138,7 +134,7 @@ static void vimc_sensor_adjust_fmt(struct v4l2_mbus_framefmt *fmt)
 	fmt->height = clamp_t(u32, fmt->height, VIMC_FRAME_MIN_HEIGHT,
 			      VIMC_FRAME_MAX_HEIGHT) & ~1;
 
-	/* TODO: add support for V4L2_FIELD_ALTERNATE */
+	 
 	if (fmt->field == V4L2_FIELD_ANY || fmt->field == V4L2_FIELD_ALTERNATE)
 		fmt->field = fmt_default.field;
 
@@ -153,7 +149,7 @@ static int vimc_sensor_set_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *mf;
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
-		/* Do not change the format while stream is on */
+		 
 		if (vsensor->frame)
 			return -EBUSY;
 
@@ -162,17 +158,17 @@ static int vimc_sensor_set_fmt(struct v4l2_subdev *sd,
 		mf = v4l2_subdev_get_try_format(sd, sd_state, fmt->pad);
 	}
 
-	/* Set the new format */
+	 
 	vimc_sensor_adjust_fmt(&fmt->format);
 
 	dev_dbg(vsensor->ved.dev, "%s: format update: "
 		"old:%dx%d (0x%x, %d, %d, %d, %d) "
 		"new:%dx%d (0x%x, %d, %d, %d, %d)\n", vsensor->sd.name,
-		/* old */
+		 
 		mf->width, mf->height, mf->code,
 		mf->colorspace,	mf->quantization,
 		mf->xfer_func, mf->ycbcr_enc,
-		/* new */
+		 
 		fmt->format.width, fmt->format.height, fmt->format.code,
 		fmt->format.colorspace, fmt->format.quantization,
 		fmt->format.xfer_func, fmt->format.ycbcr_enc);
@@ -253,20 +249,17 @@ static int vimc_sensor_s_stream(struct v4l2_subdev *sd, int enable)
 
 		vsensor->start_stream_ts = ktime_get_ns();
 
-		/* Calculate the frame size */
+		 
 		vpix = vimc_pix_map_by_code(vsensor->mbus_format.code);
 		frame_size = vsensor->mbus_format.width * vpix->bpp *
 			     vsensor->mbus_format.height;
 
-		/*
-		 * Allocate the frame buffer. Use vmalloc to be able to
-		 * allocate a large amount of memory
-		 */
+		 
 		vsensor->frame = vmalloc(frame_size);
 		if (!vsensor->frame)
 			return -ENOMEM;
 
-		/* configure the test pattern generator */
+		 
 		vimc_sensor_tpg_s_format(vsensor);
 
 	} else {
@@ -345,7 +338,7 @@ static void vimc_sensor_release(struct vimc_ent_device *ved)
 	kfree(vsensor);
 }
 
-/* Image Processing Controls */
+ 
 static const struct v4l2_ctrl_config vimc_sensor_ctrl_class = {
 	.flags = V4L2_CTRL_FLAG_READ_ONLY | V4L2_CTRL_FLAG_WRITE_ONLY,
 	.id = VIMC_CID_VIMC_CLASS,
@@ -385,7 +378,7 @@ static struct vimc_ent_device *vimc_sensor_add(struct vimc_device *vimc,
 	struct vimc_sensor_device *vsensor;
 	int ret;
 
-	/* Allocate the vsensor struct */
+	 
 	vsensor = kzalloc(sizeof(*vsensor), GFP_KERNEL);
 	if (!vsensor)
 		return ERR_PTR(-ENOMEM);
@@ -413,14 +406,14 @@ static struct vimc_ent_device *vimc_sensor_add(struct vimc_device *vimc,
 		goto err_free_vsensor;
 	}
 
-	/* Initialize the test pattern generator */
+	 
 	tpg_init(&vsensor->tpg, vsensor->mbus_format.width,
 		 vsensor->mbus_format.height);
 	ret = tpg_alloc(&vsensor->tpg, VIMC_FRAME_MAX_WIDTH);
 	if (ret)
 		goto err_free_hdl;
 
-	/* Initialize ved and sd */
+	 
 	vsensor->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = vimc_ent_sd_register(&vsensor->ved, &vsensor->sd, v4l2_dev,
 				   vcfg_name,
@@ -432,7 +425,7 @@ static struct vimc_ent_device *vimc_sensor_add(struct vimc_device *vimc,
 	vsensor->ved.process_frame = vimc_sensor_process_frame;
 	vsensor->ved.dev = vimc->mdev.dev;
 
-	/* Initialize the frame format */
+	 
 	vsensor->mbus_format = fmt_default;
 
 	return &vsensor->ved;

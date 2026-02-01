@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015-2018, Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) "aspeed-kcs-bmc: " fmt
 
@@ -28,16 +26,7 @@
 
 #define KCS_CHANNEL_MAX     4
 
-/*
- * Field class descriptions
- *
- * LPCyE	Enable LPC channel y
- * IBFIEy	Input Buffer Full IRQ Enable for LPC channel y
- * IRQxEy	Assert SerIRQ x for LPC channel y (Deprecated, use IDyIRQX, IRQXEy)
- * IDyIRQX	Use the specified 4-bit SerIRQ for LPC channel y
- * SELyIRQX	SerIRQ polarity for LPC channel y (low: 0, high: 1)
- * IRQXEy	Assert the SerIRQ specified in IDyIRQX for LPC channel y
- */
+ 
 
 #define LPC_TYIRQX_LOW       0b00
 #define LPC_TYIRQX_HIGH      0b01
@@ -56,7 +45,7 @@
 #define     LPC_HICR4_LADR12AS       BIT(7)
 #define     LPC_HICR4_KCSENBL        BIT(2)
 #define LPC_SIRQCR0	     0x070
-/* IRQ{12,1}E1 are deprecated as of AST2600 A3 but necessary for prior chips */
+ 
 #define     LPC_SIRQCR0_IRQ12E1	     BIT(1)
 #define     LPC_SIRQCR0_IRQ1E1	     BIT(0)
 #define LPC_HICR5	     0x080
@@ -152,7 +141,7 @@ static void aspeed_kcs_outb(struct kcs_bmc_device *kcs_bmc, u32 reg, u8 data)
 	rc = regmap_write(priv->map, reg, data);
 	WARN(rc != 0, "regmap_write() failed: %d\n", rc);
 
-	/* Trigger the upstream IRQ on ODR writes, if enabled */
+	 
 
 	switch (reg) {
 	case LPC_ODR1:
@@ -205,26 +194,7 @@ static void aspeed_kcs_updateb(struct kcs_bmc_device *kcs_bmc, u32 reg, u8 mask,
 	WARN(rc != 0, "regmap_update_bits() failed: %d\n", rc);
 }
 
-/*
- * We note D for Data, and C for Cmd/Status, default rules are
- *
- * 1. Only the D address is given:
- *   A. KCS1/KCS2 (D/C: X/X+4)
- *      D/C: CA0h/CA4h
- *      D/C: CA8h/CACh
- *   B. KCS3 (D/C: XX2/XX3h)
- *      D/C: CA2h/CA3h
- *   C. KCS4 (D/C: X/X+1)
- *      D/C: CA4h/CA5h
- *
- * 2. Both the D/C addresses are given:
- *   A. KCS1/KCS2/KCS4 (D/C: X/Y)
- *      D/C: CA0h/CA1h
- *      D/C: CA8h/CA9h
- *      D/C: CA4h/CA5h
- *   B. KCS3 (D/C: XX2/XX3h)
- *      D/C: CA2h/CA3h
- */
+ 
 static int aspeed_kcs_set_address(struct kcs_bmc_device *kcs_bmc, u32 addrs[2], int nr_addrs)
 {
 	struct aspeed_kcs_bmc *priv = to_aspeed_kcs_bmc(kcs_bmc);
@@ -317,7 +287,7 @@ static int aspeed_kcs_config_upstream_irq(struct aspeed_kcs_bmc *priv, u32 id, u
 
 	switch (priv->kcs_bmc.channel) {
 	case 1:
-		/* Needs IRQxE1 rather than (ID1IRQX, SEL1IRQX, IRQXE1) before AST2600 A3 */
+		 
 		break;
 	case 2:
 		if (!(hw_type == LPC_TYIRQX_LOW || hw_type == LPC_TYIRQX_HIGH))
@@ -408,23 +378,14 @@ static void aspeed_kcs_irq_mask_update(struct kcs_bmc_device *kcs_bmc, u8 mask, 
 	int rc;
 	u8 str;
 
-	/* We don't have an OBE IRQ, emulate it */
+	 
 	if (mask & KCS_BMC_EVENT_TYPE_OBE) {
 		if (KCS_BMC_EVENT_TYPE_OBE & state) {
-			/*
-			 * Given we don't have an OBE IRQ, delay by polling briefly to see if we can
-			 * observe such an event before returning to the caller. This is not
-			 * incorrect because OBF may have already become clear before enabling the
-			 * IRQ if we had one, under which circumstance no event will be propagated
-			 * anyway.
-			 *
-			 * The onus is on the client to perform a race-free check that it hasn't
-			 * missed the event.
-			 */
+			 
 			rc = read_poll_timeout_atomic(aspeed_kcs_inb, str,
 						      !(str & KCS_BMC_STR_OBF), 1, 100, false,
 						      &priv->kcs_bmc, priv->kcs_bmc.ioreg.str);
-			/* Time for the slow path? */
+			 
 			if (rc == -ETIMEDOUT)
 				mod_timer(&priv->obe.timer, jiffies + OBE_POLL_PERIOD);
 		} else {
@@ -503,7 +464,7 @@ static int aspeed_kcs_of_get_channel(struct platform_device *pdev)
 
 	np = pdev->dev.of_node;
 
-	/* Don't translate addresses, we want offsets for the regmaps */
+	 
 	reg = of_get_address(np, 0, NULL, NULL);
 	if (!reg)
 		return -EINVAL;
@@ -610,12 +571,12 @@ static int aspeed_kcs_probe(struct platform_device *pdev)
 	if (rc)
 		return rc;
 
-	/* Host to BMC IRQ */
+	 
 	rc = aspeed_kcs_config_downstream_irq(kcs_bmc, pdev);
 	if (rc)
 		return rc;
 
-	/* BMC to Host IRQ */
+	 
 	if (have_upstream_irq) {
 		rc = aspeed_kcs_config_upstream_irq(priv, upstream_irq[0], upstream_irq[1]);
 		if (rc < 0)
@@ -651,7 +612,7 @@ static int aspeed_kcs_remove(struct platform_device *pdev)
 	aspeed_kcs_enable_channel(kcs_bmc, false);
 	aspeed_kcs_irq_mask_update(kcs_bmc, (KCS_BMC_EVENT_TYPE_IBF | KCS_BMC_EVENT_TYPE_OBE), 0);
 
-	/* Make sure it's proper dead */
+	 
 	spin_lock_irq(&priv->obe.lock);
 	priv->obe.remove = true;
 	spin_unlock_irq(&priv->obe.lock);

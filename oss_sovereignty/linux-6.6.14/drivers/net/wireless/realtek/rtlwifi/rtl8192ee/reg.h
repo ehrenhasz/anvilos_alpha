@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92E_REG_H__
 #define __RTL92E_REG_H__
@@ -103,12 +103,7 @@
 #define REG_HMEBOX_EXT_2			0x01F8
 #define REG_HMEBOX_EXT_3			0x01FC
 
-/*-----------------------------------------------------
- *
- *	0x0200h ~ 0x027Fh	TXDMA Configuration
- *
- *-----------------------------------------------------
- */
+ 
 #define REG_RQPN				0x0200
 #define REG_FIFOPAGE				0x0204
 #define REG_DWBCN0_CTRL				0x0208
@@ -118,12 +113,7 @@
 #define REG_AUTO_LLT				0x0224
 #define REG_DWBCN1_CTRL				0x0228
 
-/*-----------------------------------------------------
- *
- *	0x0280h ~ 0x02FFh	RXDMA Configuration
- *
- *-----------------------------------------------------
- */
+ 
 #define REG_RXDMA_AGG_PG_TH			0x0280
 #define REG_FW_UPD_RDPTR			0x0284
 #define REG_RXDMA_CONTROL			0x0286
@@ -134,12 +124,7 @@
 #define REG_RSVD5				0x02F0
 #define REG_RSVD6				0x02F4
 
-/*-----------------------------------------------------
- *
- *	0x0300h ~ 0x03FFh	PCIe
- *
- *-----------------------------------------------------
- */
+ 
 #define	REG_PCIE_CTRL_REG			0x0300
 #define	REG_INT_MIG				0x0304
 #define	REG_BCNQ_DESA				0x0308
@@ -172,7 +157,7 @@
 #define	REG_HI6Q_TXBD_NUM			0x0398
 #define	REG_HI7Q_TXBD_NUM			0x039A
 #define	REG_TSFTIMER_HCI			0x039C
-/*Read Write Point*/
+ 
 #define	REG_VOQ_TXBD_IDX			0x03A0
 #define	REG_VIQ_TXBD_IDX			0x03A4
 #define	REG_BEQ_TXBD_IDX			0x03A8
@@ -202,13 +187,7 @@
 
 #define	REG_HDAQ_DESA_NODEF			0x0000
 #define	REG_CMDQ_DESA_NODEF			0x0000
-/* spec version 11
- *-----------------------------------------------------
- *
- *	0x0400h ~ 0x047Fh	Protocol Configuration
- *
- *-----------------------------------------------------
- */
+ 
 #define REG_VOQ_INFORMATION			0x0400
 #define REG_VIQ_INFORMATION			0x0404
 #define REG_BEQ_INFORMATION			0x0408
@@ -253,12 +232,7 @@
 #define REG_RA_TRY_RATE_AGG_LMT			0x04CF
 #define REG_MACID_PKT_DROP0			0x04D0
 
-/*-----------------------------------------------------
- *
- *	0x0500h ~ 0x05FFh	EDCA Configuration
- *
- *-----------------------------------------------------
- */
+ 
 #define REG_EDCA_VO_PARAM			0x0500
 #define REG_EDCA_VI_PARAM			0x0504
 #define REG_EDCA_BE_PARAM			0x0508
@@ -297,12 +271,7 @@
 #define REG_BCN_PREDL_ITV			0x058F
 #define REG_ACMHWCTRL				0x05C0
 
-/*-----------------------------------------------------
- *
- *	0x0600h ~ 0x07FFh	WMAC Configuration
- *
- *-----------------------------------------------------
- */
+ 
 #define REG_MAC_CR				0x0600
 #define REG_BWOPMODE				0x0603
 #define REG_TCR					0x0604
@@ -326,14 +295,14 @@
 
 #define	REG_NAV_UPPER				0x0652
 
-/* Security*/
+ 
 #define REG_CAMCMD				0x0670
 #define REG_CAMWRITE				0x0674
 #define REG_CAMREAD				0x0678
 #define REG_CAMDBG				0x067C
 #define REG_SECCFG				0x0680
 
-/* Power*/
+ 
 #define REG_WOW_CTRL				0x0690
 #define REG_PS_RX_INFO				0x0692
 #define REG_UAPSD_TID				0x0693
@@ -349,7 +318,7 @@
 #define REG_CSI_RPT_PARAM_BW20			0x06F4
 #define REG_CSI_RPT_PARAM_BW40			0x06F8
 #define REG_CSI_RPT_PARAM_BW80			0x06FC
-/* Hardware Port 2*/
+ 
 #define REG_MACID1				0x0700
 #define REG_BSSID1				0x0708
 #define REG_BFMEE_SEL				0x0714
@@ -517,11 +486,9 @@
 #define	SCR_TXSEC_ENABLE			0x02
 #define	SCR_RXSEC_ENABLE			0x04
 
-/*********************************************
-*       8192EE IMR/ISR bits
-**********************************************/
+ 
 #define	IMR_DISABLED				0x0
-/* IMR DW0(0x0060-0063) Bit 0-31 */
+ 
 #define	IMR_TIMER2				BIT(31)
 #define	IMR_TIMER1				BIT(30)
 #define	IMR_PSTIMEOUT				BIT(29)
@@ -547,7 +514,7 @@
 #define	IMR_RDU					BIT(1)
 #define	IMR_ROK					BIT(0)
 
-/* IMR DW1(0x00B4-00B7) Bit 0-31 */
+ 
 #define	IMR_MCUERR				BIT(28)
 #define	IMR_BCNDMAINT7				BIT(27)
 #define	IMR_BCNDMAINT6				BIT(26)
@@ -1313,7 +1280,7 @@
 #define	RCCK0_FACOUNTERUPPER			0xa58
 #define	RCCK0_CCA_CNT				0xa60
 
-/* PageB(0xB00) */
+ 
 #define	RPDP_ANTA				0xb00
 #define	RPDP_ANTA_4				0xb04
 #define	RPDP_ANTA_8				0xb08
@@ -1359,7 +1326,7 @@
 #define	RPM_RX2_ANTB				0xbf4
 #define	RPM_RX3_ANTB				0xbf8
 
-/*Page C*/
+ 
 #define	ROFDM0_LSTF				0xc00
 
 #define	ROFDM0_TRXPATHENABLE			0xc04
@@ -2196,7 +2163,7 @@
 
 #define	REG_UN_used_register			0x01bf
 
-/* WOL bit information */
+ 
 #define	HAL92C_WOL_PTK_UPDATE_EVENT		BIT(0)
 #define	HAL92C_WOL_GTK_UPDATE_EVENT		BIT(1)
 #define	HAL92C_WOL_DISASSOC_EVENT		BIT(2)

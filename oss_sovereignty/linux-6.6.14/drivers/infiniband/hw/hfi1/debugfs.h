@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015, 2016, 2018 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _HFI1_DEBUGFS_H
 #define _HFI1_DEBUGFS_H
@@ -67,4 +65,4 @@ static inline void hfi1_dbg_exit(void)
 }
 #endif
 
-#endif                          /* _HFI1_DEBUGFS_H */
+#endif                           

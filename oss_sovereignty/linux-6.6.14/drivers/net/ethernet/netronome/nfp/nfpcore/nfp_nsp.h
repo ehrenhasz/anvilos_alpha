@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef NSP_NSP_H
 #define NSP_NSP_H 1
@@ -102,7 +102,7 @@ enum nfp_eth_fec {
 	NFP_FEC_DISABLED_BIT,
 };
 
-/* link modes about RJ45 haven't been used, so there's no mapping to them */
+ 
 enum nfp_ethtool_link_mode_list {
 	NFP_MEDIA_W0_RJ45_10M,
 	NFP_MEDIA_W0_RJ45_10M_HD,
@@ -151,55 +151,22 @@ enum nfp_ethtool_link_mode_list {
 #define NFP_FEC_REED_SOLOMON	BIT(NFP_FEC_REED_SOLOMON_BIT)
 #define NFP_FEC_DISABLED	BIT(NFP_FEC_DISABLED_BIT)
 
-/* Defines the valid values of the 'abi_drv_reset' hwinfo key */
+ 
 #define NFP_NSP_DRV_RESET_DISK			0
 #define NFP_NSP_DRV_RESET_ALWAYS		1
 #define NFP_NSP_DRV_RESET_NEVER			2
 #define NFP_NSP_DRV_RESET_DEFAULT		"0"
 
-/* Defines the valid values of the 'app_fw_from_flash' hwinfo key */
+ 
 #define NFP_NSP_APP_FW_LOAD_DISK		0
 #define NFP_NSP_APP_FW_LOAD_FLASH		1
 #define NFP_NSP_APP_FW_LOAD_PREF		2
 #define NFP_NSP_APP_FW_LOAD_DEFAULT		"2"
 
-/* Define the default value for the 'abi_drv_load_ifc' key */
+ 
 #define NFP_NSP_DRV_LOAD_IFC_DEFAULT		"0x10ff"
 
-/**
- * struct nfp_eth_table - ETH table information
- * @count:	number of table entries
- * @max_index:	max of @index fields of all @ports
- * @ports:	table of ports
- *
- * @ports.eth_index:	port index according to legacy ethX numbering
- * @ports.index:	chip-wide first channel index
- * @ports.nbi:		NBI index
- * @ports.base:		first channel index (within NBI)
- * @ports.lanes:	number of channels
- * @ports.speed:	interface speed (in Mbps)
- * @ports.interface:	interface (module) plugged in
- * @ports.media:	media type of the @interface
- * @ports.fec:		forward error correction mode
- * @ports.act_fec:	active forward error correction mode
- * @ports.aneg:		auto negotiation mode
- * @ports.mac_addr:	interface MAC address
- * @ports.label_port:	port id
- * @ports.label_subport:  id of interface within port (for split ports)
- * @ports.enabled:	is enabled?
- * @ports.tx_enabled:	is TX enabled?
- * @ports.rx_enabled:	is RX enabled?
- * @ports.override_changed: is media reconfig pending?
- *
- * @ports.port_type:	one of %PORT_* defines for ethtool
- * @ports.port_lanes:	total number of lanes on the port (sum of lanes of all
- *			subports)
- * @ports.is_split:	is interface part of a split port
- * @ports.fec_modes_supported:	bitmap of FEC modes supported
- *
- * @ports.link_modes_supp:	bitmap of link modes supported
- * @ports.link_modes_ad:	bitmap of link modes advertised
- */
+ 
 struct nfp_eth_table {
 	unsigned int count;
 	unsigned int max_index;
@@ -230,7 +197,7 @@ struct nfp_eth_table {
 
 		bool override_changed;
 
-		/* Computed fields */
+		 
 		u8 port_type;
 
 		unsigned int port_lanes;
@@ -275,18 +242,7 @@ int __nfp_eth_set_aneg(struct nfp_nsp *nsp, enum nfp_eth_aneg mode);
 int __nfp_eth_set_speed(struct nfp_nsp *nsp, unsigned int speed);
 int __nfp_eth_set_split(struct nfp_nsp *nsp, unsigned int lanes);
 
-/**
- * struct nfp_nsp_identify - NSP static information
- * @version:      opaque version string
- * @flags:        version flags
- * @br_primary:   branch id of primary bootloader
- * @br_secondary: branch id of secondary bootloader
- * @br_nsp:       branch id of NSP
- * @primary:      version of primarary bootloader
- * @secondary:    version id of secondary bootloader
- * @nsp:          version id of NSP
- * @sensor_mask:  mask of present sensors available on NIC
- */
+ 
 struct nfp_nsp_identify {
 	char version[40];
 	u8 flags;
@@ -320,7 +276,7 @@ struct nfp_eth_media_buf {
 
 int nfp_nsp_read_media(struct nfp_nsp *state, void *buf, unsigned int size);
 
-#define NFP_NSP_VERSION_BUFSZ	1024 /* reasonable size, not in the ABI */
+#define NFP_NSP_VERSION_BUFSZ	1024  
 
 enum nfp_nsp_versions {
 	NFP_VERSIONS_BSP,

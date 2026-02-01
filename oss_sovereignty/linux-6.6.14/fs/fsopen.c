@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Filesystem access-by-fd.
- *
- * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/fs_context.h>
 #include <linux/fs_parser.h>
@@ -18,9 +14,7 @@
 #include "internal.h"
 #include "mount.h"
 
-/*
- * Allow the user to read back any error, warning or informational messages.
- */
+ 
 static ssize_t fscontext_read(struct file *file,
 			      char __user *_buf, size_t len, loff_t *pos)
 {
@@ -81,9 +75,7 @@ const struct file_operations fscontext_fops = {
 	.llseek		= no_llseek,
 };
 
-/*
- * Attach a filesystem context to a file and an fd.
- */
+ 
 static int fscontext_create_fd(struct fs_context *fc, unsigned int o_flags)
 {
 	int fd;
@@ -105,13 +97,7 @@ static int fscontext_alloc_log(struct fs_context *fc)
 	return 0;
 }
 
-/*
- * Open a filesystem by name so that it can be configured for mounting.
- *
- * We are allowed to specify a container in which the filesystem will be
- * opened, thereby indicating which namespaces will be used (notably, which
- * network namespace will be used for network filesystems).
- */
+ 
 SYSCALL_DEFINE2(fsopen, const char __user *, _fs_name, unsigned int, flags)
 {
 	struct file_system_type *fs_type;
@@ -152,9 +138,7 @@ err_fc:
 	return ret;
 }
 
-/*
- * Pick a superblock into a context for reconfiguration.
- */
+ 
 SYSCALL_DEFINE3(fspick, int, dfd, const char __user *, path, unsigned int, flags)
 {
 	struct fs_context *fc;
@@ -220,7 +204,7 @@ static int vfs_cmd_create(struct fs_context *fc, bool exclusive)
 	if (!mount_capable(fc))
 		return -EPERM;
 
-	/* require the new mount api */
+	 
 	if (exclusive && fc->ops == &legacy_fs_context_ops)
 		return -EOPNOTSUPP;
 
@@ -241,7 +225,7 @@ static int vfs_cmd_create(struct fs_context *fc, bool exclusive)
 		return ret;
 	}
 
-	/* vfs_get_tree() callchains will have grabbed @s_umount */
+	 
 	up_write(&sb->s_umount);
 	fc->phase = FS_CONTEXT_AWAITING_MOUNT;
 	return 0;
@@ -275,10 +259,7 @@ static int vfs_cmd_reconfigure(struct fs_context *fc)
 	return 0;
 }
 
-/*
- * Check the state and apply the configuration.  Note that this function is
- * allowed to 'steal' the value by setting param->xxx to NULL before returning.
- */
+ 
 static int vfs_fsconfig_locked(struct fs_context *fc, int cmd,
 			       struct fs_parameter *param)
 {
@@ -303,49 +284,7 @@ static int vfs_fsconfig_locked(struct fs_context *fc, int cmd,
 	}
 }
 
-/**
- * sys_fsconfig - Set parameters and trigger actions on a context
- * @fd: The filesystem context to act upon
- * @cmd: The action to take
- * @_key: Where appropriate, the parameter key to set
- * @_value: Where appropriate, the parameter value to set
- * @aux: Additional information for the value
- *
- * This system call is used to set parameters on a context, including
- * superblock settings, data source and security labelling.
- *
- * Actions include triggering the creation of a superblock and the
- * reconfiguration of the superblock attached to the specified context.
- *
- * When setting a parameter, @cmd indicates the type of value being proposed
- * and @_key indicates the parameter to be altered.
- *
- * @_value and @aux are used to specify the value, should a value be required:
- *
- * (*) fsconfig_set_flag: No value is specified.  The parameter must be boolean
- *     in nature.  The key may be prefixed with "no" to invert the
- *     setting. @_value must be NULL and @aux must be 0.
- *
- * (*) fsconfig_set_string: A string value is specified.  The parameter can be
- *     expecting boolean, integer, string or take a path.  A conversion to an
- *     appropriate type will be attempted (which may include looking up as a
- *     path).  @_value points to a NUL-terminated string and @aux must be 0.
- *
- * (*) fsconfig_set_binary: A binary blob is specified.  @_value points to the
- *     blob and @aux indicates its size.  The parameter must be expecting a
- *     blob.
- *
- * (*) fsconfig_set_path: A non-empty path is specified.  The parameter must be
- *     expecting a path object.  @_value points to a NUL-terminated string that
- *     is the path and @aux is a file descriptor at which to start a relative
- *     lookup or AT_FDCWD.
- *
- * (*) fsconfig_set_path_empty: As fsconfig_set_path, but with AT_EMPTY_PATH
- *     implied.
- *
- * (*) fsconfig_set_fd: An open file descriptor is specified.  @_value must be
- *     NULL and @aux indicates the file descriptor.
- */
+ 
 SYSCALL_DEFINE5(fsconfig,
 		int, fd,
 		unsigned int, cmd,
@@ -476,10 +415,7 @@ SYSCALL_DEFINE5(fsconfig,
 		mutex_unlock(&fc->uapi_mutex);
 	}
 
-	/* Clean up the our record of any value that we obtained from
-	 * userspace.  Note that the value may have been stolen by the LSM or
-	 * filesystem, in which case the value pointer will have been cleared.
-	 */
+	 
 	switch (cmd) {
 	case FSCONFIG_SET_STRING:
 	case FSCONFIG_SET_BINARY:

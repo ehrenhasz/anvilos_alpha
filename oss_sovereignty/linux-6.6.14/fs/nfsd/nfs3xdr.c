@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * XDR support for nfsd/protocol version 3.
- *
- * Copyright (C) 1995, 1996, 1997 Olaf Kirch <okir@monad.swb.de>
- *
- * 2003-08-09 Jamie Lokier: Use htonl() for nanoseconds, not htons()!
- */
+
+ 
 
 #include <linux/namei.h>
 #include <linux/sunrpc/svc_xprt.h>
@@ -14,25 +8,18 @@
 #include "netns.h"
 #include "vfs.h"
 
-/*
- * Force construction of an empty post-op attr
- */
+ 
 static const struct svc_fh nfs3svc_null_fh = {
 	.fh_no_wcc	= true,
 };
 
-/*
- * time_delta. {1, 0} means the server is accurate only
- * to the nearest second.
- */
+ 
 static const struct timespec64 nfs3svc_time_delta = {
 	.tv_sec		= 1,
 	.tv_nsec	= 0,
 };
 
-/*
- * Mapping of S_IF* types to NFS file types
- */
+ 
 static const u32 nfs3_ftypes[] = {
 	NF3NON,  NF3FIFO, NF3CHR, NF3BAD,
 	NF3DIR,  NF3BAD,  NF3BLK, NF3BAD,
@@ -41,9 +28,7 @@ static const u32 nfs3_ftypes[] = {
 };
 
 
-/*
- * Basic NFSv3 data types (RFC 1813 Sections 2.5 and 2.6)
- */
+ 
 
 static __be32 *
 encode_nfstime3(__be32 *p, const struct timespec64 *time)
@@ -68,15 +53,7 @@ svcxdr_decode_nfstime3(struct xdr_stream *xdr, struct timespec64 *timep)
 	return true;
 }
 
-/**
- * svcxdr_decode_nfs_fh3 - Decode an NFSv3 file handle
- * @xdr: XDR stream positioned at an undecoded NFSv3 FH
- * @fhp: OUT: filled-in server file handle
- *
- * Return values:
- *  %false: The encoded file handle was not valid
- *  %true: @fhp has been initialized
- */
+ 
 bool
 svcxdr_decode_nfs_fh3(struct xdr_stream *xdr, struct svc_fh *fhp)
 {
@@ -97,15 +74,7 @@ svcxdr_decode_nfs_fh3(struct xdr_stream *xdr, struct svc_fh *fhp)
 	return true;
 }
 
-/**
- * svcxdr_encode_nfsstat3 - Encode an NFSv3 status code
- * @xdr: XDR stream
- * @status: status value to encode
- *
- * Return values:
- *   %false: Send buffer space was exhausted
- *   %true: Success
- */
+ 
 bool
 svcxdr_encode_nfsstat3(struct xdr_stream *xdr, __be32 status)
 {
@@ -356,10 +325,10 @@ svcxdr_encode_fattr3(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	else
 		p = xdr_encode_hyper(p, (u64)stat->size);
 
-	/* used */
+	 
 	p = xdr_encode_hyper(p, ((u64)stat->blocks) << 9);
 
-	/* rdev */
+	 
 	*p++ = cpu_to_be32((u32)MAJOR(stat->rdev));
 	*p++ = cpu_to_be32((u32)MINOR(stat->rdev));
 
@@ -376,7 +345,7 @@ svcxdr_encode_fattr3(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	}
 	p = xdr_encode_hyper(p, fsid);
 
-	/* fileid */
+	 
 	p = xdr_encode_hyper(p, stat->ino);
 
 	p = encode_nfstime3(p, &stat->atime);
@@ -415,16 +384,7 @@ svcxdr_encode_pre_op_attr(struct xdr_stream *xdr, const struct svc_fh *fhp)
 	return svcxdr_encode_wcc_attr(xdr, fhp);
 }
 
-/**
- * svcxdr_encode_post_op_attr - Encode NFSv3 post-op attributes
- * @rqstp: Context of a completed RPC transaction
- * @xdr: XDR stream
- * @fhp: File handle to encode
- *
- * Return values:
- *   %false: Send buffer space was exhausted
- *   %true: Success
- */
+ 
 bool
 svcxdr_encode_post_op_attr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 			   const struct svc_fh *fhp)
@@ -432,11 +392,7 @@ svcxdr_encode_post_op_attr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	struct dentry *dentry = fhp->fh_dentry;
 	struct kstat stat;
 
-	/*
-	 * The inode may be NULL if the call failed because of a
-	 * stale file handle. In this case, no attributes are
-	 * returned.
-	 */
+	 
 	if (fhp->fh_no_wcc || !dentry || !d_really_is_positive(dentry))
 		goto no_post_op_attrs;
 	if (fh_getattr(fhp, &stat) != nfs_ok)
@@ -454,9 +410,7 @@ no_post_op_attrs:
 	return xdr_stream_encode_item_absent(xdr) > 0;
 }
 
-/*
- * Encode weak cache consistency data
- */
+ 
 static bool
 svcxdr_encode_wcc_data(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 		       const struct svc_fh *fhp)
@@ -466,11 +420,11 @@ svcxdr_encode_wcc_data(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	if (!dentry || !d_really_is_positive(dentry) || !fhp->fh_post_saved)
 		goto neither;
 
-	/* before */
+	 
 	if (!svcxdr_encode_pre_op_attr(xdr, fhp))
 		return false;
 
-	/* after */
+	 
 	if (xdr_stream_encode_item_present(xdr) < 0)
 		return false;
 	if (!svcxdr_encode_fattr3(rqstp, xdr, fhp, &fhp->fh_post_attr))
@@ -487,9 +441,7 @@ neither:
 	return true;
 }
 
-/*
- * XDR decode functions
- */
+ 
 
 bool
 nfs3svc_decode_fhandleargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
@@ -560,11 +512,11 @@ nfs3svc_decode_writeargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	if (xdr_stream_decode_u32(xdr, &args->stable) < 0)
 		return false;
 
-	/* opaque data */
+	 
 	if (xdr_stream_decode_u32(xdr, &args->len) < 0)
 		return false;
 
-	/* request sanity */
+	 
 	if (args->count != args->len)
 		return false;
 	if (args->count > max_blocksize) {
@@ -622,7 +574,7 @@ nfs3svc_decode_symlinkargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	if (xdr_stream_decode_u32(xdr, &args->tlen) < 0)
 		return false;
 
-	/* symlink_data */
+	 
 	args->first.iov_len = head->iov_len - xdr_stream_pos(xdr);
 	args->first.iov_base = xdr_inline_decode(xdr, args->tlen);
 	return args->first.iov_base != NULL;
@@ -647,7 +599,7 @@ nfs3svc_decode_mknodargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	case NF3REG:
 	case NF3DIR:
 	case NF3LNK:
-		/* Valid XDR but illegal file types */
+		 
 		break;
 	default:
 		return false;
@@ -708,7 +660,7 @@ nfs3svc_decode_readdirplusargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	args->verf = xdr_inline_decode(xdr, NFS3_COOKIEVERFSIZE);
 	if (!args->verf)
 		return false;
-	/* dircount is ignored */
+	 
 	if (xdr_stream_decode_u32(xdr, &dircount) < 0)
 		return false;
 	if (xdr_stream_decode_u32(xdr, &args->count) < 0)
@@ -732,11 +684,9 @@ nfs3svc_decode_commitargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/*
- * XDR encode functions
- */
+ 
 
-/* GETATTR */
+ 
 bool
 nfs3svc_encode_getattrres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -755,7 +705,7 @@ nfs3svc_encode_getattrres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* SETATTR, REMOVE, RMDIR */
+ 
 bool
 nfs3svc_encode_wccstat(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -765,7 +715,7 @@ nfs3svc_encode_wccstat(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		svcxdr_encode_wcc_data(rqstp, xdr, &resp->fh);
 }
 
-/* LOOKUP */
+ 
 bool
 nfs3svc_encode_lookupres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -790,7 +740,7 @@ nfs3svc_encode_lookupres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* ACCESS */
+ 
 bool
 nfs3svc_encode_accessres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -813,7 +763,7 @@ nfs3svc_encode_accessres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* READLINK */
+ 
 bool
 nfs3svc_encode_readlinkres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -841,7 +791,7 @@ nfs3svc_encode_readlinkres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* READ */
+ 
 bool
 nfs3svc_encode_readres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -874,7 +824,7 @@ nfs3svc_encode_readres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* WRITE */
+ 
 bool
 nfs3svc_encode_writeres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -901,7 +851,7 @@ nfs3svc_encode_writeres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* CREATE, MKDIR, SYMLINK, MKNOD */
+ 
 bool
 nfs3svc_encode_createres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -926,7 +876,7 @@ nfs3svc_encode_createres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* RENAME */
+ 
 bool
 nfs3svc_encode_renameres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -937,7 +887,7 @@ nfs3svc_encode_renameres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		svcxdr_encode_wcc_data(rqstp, xdr, &resp->tfh);
 }
 
-/* LINK */
+ 
 bool
 nfs3svc_encode_linkres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -948,7 +898,7 @@ nfs3svc_encode_linkres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		svcxdr_encode_wcc_data(rqstp, xdr, &resp->tfh);
 }
 
-/* READDIR */
+ 
 bool
 nfs3svc_encode_readdirres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -965,7 +915,7 @@ nfs3svc_encode_readdirres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 			return false;
 		svcxdr_encode_opaque_pages(rqstp, xdr, dirlist->pages, 0,
 					   dirlist->len);
-		/* no more entries */
+		 
 		if (xdr_stream_encode_item_absent(xdr) < 0)
 			return false;
 		if (xdr_stream_encode_bool(xdr, resp->common.err == nfserr_eof) < 0)
@@ -993,10 +943,7 @@ compose_entry_fh(struct nfsd3_readdirres *cd, struct svc_fh *fhp,
 	if (isdotent(name, namlen)) {
 		if (namlen == 2) {
 			dchild = dget_parent(dparent);
-			/*
-			 * Don't return filehandle for ".." if we're at
-			 * the filesystem or export root:
-			 */
+			 
 			if (dchild == dparent)
 				goto out;
 			if (dparent == exp->ex_path.dentry)
@@ -1017,14 +964,7 @@ out:
 	return rv;
 }
 
-/**
- * nfs3svc_encode_cookie3 - Encode a directory offset cookie
- * @resp: readdir result context
- * @offset: offset cookie to encode
- *
- * The buffer space for the offset cookie has already been reserved
- * by svcxdr_encode_entry3_common().
- */
+ 
 void nfs3svc_encode_cookie3(struct nfsd3_readdirres *resp, u64 offset)
 {
 	__be64 cookie = cpu_to_be64(offset);
@@ -1045,13 +985,13 @@ svcxdr_encode_entry3_common(struct nfsd3_readdirres *resp, const char *name,
 
 	if (xdr_stream_encode_item_present(xdr) < 0)
 		return false;
-	/* fileid */
+	 
 	if (xdr_stream_encode_u64(xdr, ino) < 0)
 		return false;
-	/* name */
+	 
 	if (xdr_stream_encode_opaque(xdr, name, min(namlen, NFS3_MAXNAMLEN)) < 0)
 		return false;
-	/* cookie */
+	 
 	resp->cookie_offset = dirlist->len;
 	if (xdr_stream_encode_u64(xdr, OFFSET_MAX) < 0)
 		return false;
@@ -1059,24 +999,7 @@ svcxdr_encode_entry3_common(struct nfsd3_readdirres *resp, const char *name,
 	return true;
 }
 
-/**
- * nfs3svc_encode_entry3 - encode one NFSv3 READDIR entry
- * @data: directory context
- * @name: name of the object to be encoded
- * @namlen: length of that name, in bytes
- * @offset: the offset of the previous entry
- * @ino: the fileid of this entry
- * @d_type: unused
- *
- * Return values:
- *   %0: Entry was successfully encoded.
- *   %-EINVAL: An encoding problem occured, secondary status code in resp->common.err
- *
- * On exit, the following fields are updated:
- *   - resp->xdr
- *   - resp->common.err
- *   - resp->cookie_offset
- */
+ 
 int nfs3svc_encode_entry3(void *data, const char *name, int namlen,
 			  loff_t offset, u64 ino, unsigned int d_type)
 {
@@ -1086,7 +1009,7 @@ int nfs3svc_encode_entry3(void *data, const char *name, int namlen,
 						     common);
 	unsigned int starting_length = resp->dirlist.len;
 
-	/* The offset cookie for the previous entry */
+	 
 	nfs3svc_encode_cookie3(resp, offset);
 
 	if (!svcxdr_encode_entry3_common(resp, name, namlen, offset, ino))
@@ -1134,24 +1057,7 @@ out_noattrs:
 	return true;
 }
 
-/**
- * nfs3svc_encode_entryplus3 - encode one NFSv3 READDIRPLUS entry
- * @data: directory context
- * @name: name of the object to be encoded
- * @namlen: length of that name, in bytes
- * @offset: the offset of the previous entry
- * @ino: the fileid of this entry
- * @d_type: unused
- *
- * Return values:
- *   %0: Entry was successfully encoded.
- *   %-EINVAL: An encoding problem occured, secondary status code in resp->common.err
- *
- * On exit, the following fields are updated:
- *   - resp->xdr
- *   - resp->common.err
- *   - resp->cookie_offset
- */
+ 
 int nfs3svc_encode_entryplus3(void *data, const char *name, int namlen,
 			      loff_t offset, u64 ino, unsigned int d_type)
 {
@@ -1161,7 +1067,7 @@ int nfs3svc_encode_entryplus3(void *data, const char *name, int namlen,
 						     common);
 	unsigned int starting_length = resp->dirlist.len;
 
-	/* The offset cookie for the previous entry */
+	 
 	nfs3svc_encode_cookie3(resp, offset);
 
 	if (!svcxdr_encode_entry3_common(resp, name, namlen, offset, ino))
@@ -1191,18 +1097,18 @@ svcxdr_encode_fsstat3resok(struct xdr_stream *xdr,
 	p = xdr_reserve_space(xdr, XDR_UNIT * 13);
 	if (!p)
 		return false;
-	p = xdr_encode_hyper(p, bs * s->f_blocks);	/* total bytes */
-	p = xdr_encode_hyper(p, bs * s->f_bfree);	/* free bytes */
-	p = xdr_encode_hyper(p, bs * s->f_bavail);	/* user available bytes */
-	p = xdr_encode_hyper(p, s->f_files);		/* total inodes */
-	p = xdr_encode_hyper(p, s->f_ffree);		/* free inodes */
-	p = xdr_encode_hyper(p, s->f_ffree);		/* user available inodes */
-	*p = cpu_to_be32(resp->invarsec);		/* mean unchanged time */
+	p = xdr_encode_hyper(p, bs * s->f_blocks);	 
+	p = xdr_encode_hyper(p, bs * s->f_bfree);	 
+	p = xdr_encode_hyper(p, bs * s->f_bavail);	 
+	p = xdr_encode_hyper(p, s->f_files);		 
+	p = xdr_encode_hyper(p, s->f_ffree);		 
+	p = xdr_encode_hyper(p, s->f_ffree);		 
+	*p = cpu_to_be32(resp->invarsec);		 
 
 	return true;
 }
 
-/* FSSTAT */
+ 
 bool
 nfs3svc_encode_fsstatres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -1248,7 +1154,7 @@ svcxdr_encode_fsinfo3resok(struct xdr_stream *xdr,
 	return true;
 }
 
-/* FSINFO */
+ 
 bool
 nfs3svc_encode_fsinfores(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -1290,7 +1196,7 @@ svcxdr_encode_pathconf3resok(struct xdr_stream *xdr,
 	return true;
 }
 
-/* PATHCONF */
+ 
 bool
 nfs3svc_encode_pathconfres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -1313,7 +1219,7 @@ nfs3svc_encode_pathconfres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/* COMMIT */
+ 
 bool
 nfs3svc_encode_commitres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
@@ -1336,9 +1242,7 @@ nfs3svc_encode_commitres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/*
- * XDR release functions
- */
+ 
 void
 nfs3svc_release_fhandle(struct svc_rqst *rqstp)
 {

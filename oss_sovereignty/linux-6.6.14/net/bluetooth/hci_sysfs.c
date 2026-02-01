@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Bluetooth HCI driver model support. */
+
+ 
 
 #include <linux/module.h>
 
@@ -21,11 +21,7 @@ static const struct device_type bt_link = {
 	.release = bt_link_release,
 };
 
-/*
- * The rfcomm tty device will possibly retain even when conn
- * is down, and sysfs doesn't support move zombie device,
- * so we should move the device before conn device is destroyed.
- */
+ 
 static int __match_tty(struct device *dev, void *data)
 {
 	return !strncmp(dev_name(dev), "rfcomm", 6);
@@ -66,9 +62,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn)
 	bt_dev_dbg(hdev, "conn %p", conn);
 
 	if (!device_is_registered(&conn->dev)) {
-		/* If device_add() has *not* succeeded, use *only* put_device()
-		 * to drop the reference count.
-		 */
+		 
 		put_device(&conn->dev);
 		return;
 	}

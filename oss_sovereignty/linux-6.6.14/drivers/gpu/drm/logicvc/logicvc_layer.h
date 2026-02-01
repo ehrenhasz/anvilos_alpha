@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2019-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _LOGICVC_LAYER_H_
 #define _LOGICVC_LAYER_H_

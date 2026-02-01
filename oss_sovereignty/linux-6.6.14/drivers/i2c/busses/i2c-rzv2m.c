@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Renesas RZ/V2M I2C unit
- *
- * Copyright (C) 2016-2022 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -22,33 +18,33 @@
 #include <linux/pm_runtime.h>
 #include <linux/reset.h>
 
-/* Register offsets */
-#define IICB0DAT	0x00		/* Data Register */
-#define IICB0CTL0	0x08		/* Control Register 0 */
-#define IICB0TRG	0x0C		/* Trigger Register */
-#define IICB0STR0	0x10		/* Status Register 0 */
-#define IICB0CTL1	0x20		/* Control Register 1 */
-#define IICB0WL		0x24		/* Low Level Width Setting Reg */
-#define IICB0WH		0x28		/* How Level Width Setting Reg */
+ 
+#define IICB0DAT	0x00		 
+#define IICB0CTL0	0x08		 
+#define IICB0TRG	0x0C		 
+#define IICB0STR0	0x10		 
+#define IICB0CTL1	0x20		 
+#define IICB0WL		0x24		 
+#define IICB0WH		0x28		 
 
-/* IICB0CTL0 */
-#define IICB0IICE	BIT(7)		/* I2C Enable */
-#define IICB0SLWT	BIT(1)		/* Interrupt Request Timing */
-#define IICB0SLAC	BIT(0)		/* Acknowledge */
+ 
+#define IICB0IICE	BIT(7)		 
+#define IICB0SLWT	BIT(1)		 
+#define IICB0SLAC	BIT(0)		 
 
-/* IICB0TRG */
-#define IICB0WRET	BIT(2)		/* Quit Wait Trigger */
-#define IICB0STT	BIT(1)		/* Create Start Condition Trigger */
-#define IICB0SPT	BIT(0)		/* Create Stop Condition Trigger */
+ 
+#define IICB0WRET	BIT(2)		 
+#define IICB0STT	BIT(1)		 
+#define IICB0SPT	BIT(0)		 
 
-/* IICB0STR0 */
-#define IICB0SSAC	BIT(8)		/* Ack Flag */
-#define IICB0SSBS	BIT(6)		/* Bus Flag */
-#define IICB0SSSP	BIT(4)		/* Stop Condition Flag */
+ 
+#define IICB0SSAC	BIT(8)		 
+#define IICB0SSBS	BIT(6)		 
+#define IICB0SSSP	BIT(4)		 
 
-/* IICB0CTL1 */
-#define IICB0MDSC	BIT(7)		/* Bus Mode */
-#define IICB0SLSE	BIT(1)		/* Start condition output */
+ 
+#define IICB0MDSC	BIT(7)		 
+#define IICB0SLSE	BIT(1)		 
 
 struct rzv2m_i2c_priv {
 	void __iomem *base;
@@ -94,7 +90,7 @@ static irqreturn_t rzv2m_i2c_tia_irq_handler(int this_irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* Calculate IICB0WL and IICB0WH */
+ 
 static int rzv2m_i2c_clock_calculate(struct device *dev,
 				     struct rzv2m_i2c_priv *priv)
 {
@@ -114,7 +110,7 @@ static int rzv2m_i2c_clock_calculate(struct device *dev,
 	trf_ns = t.scl_rise_ns + t.scl_fall_ns;
 	trf_pclks = mul_u64_u32_div(pclk_hz, trf_ns, NSEC_PER_SEC);
 
-	/* Config setting */
+	 
 	switch (t.bus_freq_hz) {
 	case I2C_MAX_FAST_MODE_FREQ:
 		priv->bus_mode = RZV2M_I2C_400K;
@@ -128,21 +124,17 @@ static int rzv2m_i2c_clock_calculate(struct device *dev,
 	}
 	config = &bitrate_configs[priv->bus_mode];
 
-	/* IICB0WL = (percent_low / Transfer clock) x PCLK */
+	 
 	priv->iicb0wl = total_pclks * config->percent_low / 100;
 	if (priv->iicb0wl > (BIT(10) - 1))
 		return -EINVAL;
 
-	/* IICB0WH = ((percent_high / Transfer clock) x PCLK) - (tR + tF) */
+	 
 	priv->iicb0wh = total_pclks - priv->iicb0wl - trf_pclks;
 	if (priv->iicb0wh > (BIT(10) - 1))
 		return -EINVAL;
 
-	/*
-	 * Data hold time must be less than 0.9us in fast mode and
-	 * 3.45us in standard mode.
-	 * Data hold time = IICB0WL[9:2] / PCLK
-	 */
+	 
 	hold_time_ns = div64_ul((u64)(priv->iicb0wl >> 2) * NSEC_PER_SEC, pclk_hz);
 	if (hold_time_ns > config->min_hold_time_ns) {
 		dev_err(dev, "data hold time %dns is over %dns\n",
@@ -158,20 +150,20 @@ static void rzv2m_i2c_init(struct rzv2m_i2c_priv *priv)
 	u32 i2c_ctl0;
 	u32 i2c_ctl1;
 
-	/* i2c disable */
+	 
 	writel(0, priv->base + IICB0CTL0);
 
-	/* IICB0CTL1 setting */
+	 
 	i2c_ctl1 = IICB0SLSE;
 	if (priv->bus_mode == RZV2M_I2C_400K)
 		i2c_ctl1 |= IICB0MDSC;
 	writel(i2c_ctl1, priv->base + IICB0CTL1);
 
-	/* IICB0WL IICB0WH setting */
+	 
 	writel(priv->iicb0wl, priv->base + IICB0WL);
 	writel(priv->iicb0wh, priv->base + IICB0WH);
 
-	/* i2c enable after setting */
+	 
 	i2c_ctl0 = IICB0SLWT | IICB0SLAC | IICB0IICE;
 	writel(i2c_ctl0, priv->base + IICB0CTL0);
 }
@@ -189,7 +181,7 @@ static int rzv2m_i2c_write_with_ack(struct rzv2m_i2c_priv *priv, u32 data)
 	if (!time_left)
 		return -ETIMEDOUT;
 
-	/* Confirm ACK */
+	 
 	if ((readl(priv->base + IICB0STR0) & IICB0SSAC) != IICB0SSAC)
 		return -ENXIO;
 
@@ -204,41 +196,41 @@ static int rzv2m_i2c_read_with_ack(struct rzv2m_i2c_priv *priv, u8 *data,
 
 	reinit_completion(&priv->msg_tia_done);
 
-	/* Interrupt request timing : 8th clock */
+	 
 	bit_clrl(priv->base + IICB0CTL0, IICB0SLWT);
 
-	/* Exit the wait state */
+	 
 	writel(IICB0WRET, priv->base + IICB0TRG);
 
-	/* Wait for transaction */
+	 
 	time_left = wait_for_completion_timeout(&priv->msg_tia_done,
 						priv->adap.timeout);
 	if (!time_left)
 		return -ETIMEDOUT;
 
 	if (last) {
-		/* Disable ACK */
+		 
 		bit_clrl(priv->base + IICB0CTL0, IICB0SLAC);
 
-		/* Read data*/
+		 
 		data_tmp = readl(priv->base + IICB0DAT);
 
-		/* Interrupt request timing : 9th clock */
+		 
 		bit_setl(priv->base + IICB0CTL0, IICB0SLWT);
 
-		/* Exit the wait state */
+		 
 		writel(IICB0WRET, priv->base + IICB0TRG);
 
-		/* Wait for transaction */
+		 
 		time_left = wait_for_completion_timeout(&priv->msg_tia_done,
 							priv->adap.timeout);
 		if (!time_left)
 			return -ETIMEDOUT;
 
-		/* Enable ACK */
+		 
 		bit_setl(priv->base + IICB0CTL0, IICB0SLAC);
 	} else {
-		/* Read data */
+		 
 		data_tmp = readl(priv->base + IICB0DAT);
 	}
 
@@ -287,22 +279,18 @@ static int rzv2m_i2c_send_address(struct rzv2m_i2c_priv *priv,
 	int ret;
 
 	if (msg->flags & I2C_M_TEN) {
-		/*
-		 * 10-bit address
-		 *   addr_1: 5'b11110 | addr[9:8] | (R/nW)
-		 *   addr_2: addr[7:0]
-		 */
+		 
 		addr = 0xf0 | ((msg->addr & GENMASK(9, 8)) >> 7);
 		addr |= !!(msg->flags & I2C_M_RD);
-		/* Send 1st address(extend code) */
+		 
 		ret = rzv2m_i2c_write_with_ack(priv, addr);
 		if (ret)
 			return ret;
 
-		/* Send 2nd address */
+		 
 		ret = rzv2m_i2c_write_with_ack(priv, msg->addr & 0xff);
 	} else {
-		/* 7-bit address */
+		 
 		addr = i2c_8bit_addr_from_msg(msg);
 		ret = rzv2m_i2c_write_with_ack(priv, addr);
 	}
@@ -314,7 +302,7 @@ static int rzv2m_i2c_stop_condition(struct rzv2m_i2c_priv *priv)
 {
 	u32 value;
 
-	/* Send stop condition */
+	 
 	writel(IICB0SPT, priv->base + IICB0TRG);
 	return readl_poll_timeout(priv->base + IICB0STR0,
 				  value, value & IICB0SSSP,
@@ -327,7 +315,7 @@ static int rzv2m_i2c_master_xfer_msg(struct rzv2m_i2c_priv *priv,
 	unsigned int count = 0;
 	int ret, read = !!(msg->flags & I2C_M_RD);
 
-	/* Send start condition */
+	 
 	writel(IICB0STT, priv->base + IICB0TRG);
 
 	ret = rzv2m_i2c_send_address(priv, msg);
@@ -368,7 +356,7 @@ static int rzv2m_i2c_master_xfer(struct i2c_adapter *adap,
 		goto out;
 	}
 
-	/* I2C main transfer */
+	 
 	for (i = 0; i < num; i++) {
 		ret = rzv2m_i2c_master_xfer_msg(priv, &msgs[i], i == (num - 1));
 		if (ret < 0)
@@ -436,10 +424,7 @@ static int rzv2m_i2c_probe(struct platform_device *pdev)
 	rstc = devm_reset_control_get_shared(dev, NULL);
 	if (IS_ERR(rstc))
 		return dev_err_probe(dev, PTR_ERR(rstc), "Missing reset ctrl\n");
-	/*
-	 * The reset also affects other HW that is not under the control
-	 * of Linux. Therefore, all we can do is deassert the reset.
-	 */
+	 
 	reset_control_deassert(rstc);
 
 	irq = platform_get_irq(pdev, 0);

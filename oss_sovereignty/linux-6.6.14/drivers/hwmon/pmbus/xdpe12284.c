@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Infineon Multi-phase Digital VR Controllers
- *
- * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -14,10 +10,10 @@
 
 #include "pmbus.h"
 
-#define XDPE122_PROT_VR12_5MV		0x01 /* VR12.0 mode, 5-mV DAC */
-#define XDPE122_PROT_VR12_5_10MV	0x02 /* VR12.5 mode, 10-mV DAC */
-#define XDPE122_PROT_IMVP9_10MV		0x03 /* IMVP9 mode, 10-mV DAC */
-#define XDPE122_AMD_625MV		0x10 /* AMD mode 6.25mV */
+#define XDPE122_PROT_VR12_5MV		0x01  
+#define XDPE122_PROT_VR12_5_10MV	0x02  
+#define XDPE122_PROT_IMVP9_10MV		0x03  
+#define XDPE122_AMD_625MV		0x10  
 #define XDPE122_PAGE_NUM		2
 
 static int xdpe122_read_word_data(struct i2c_client *client, int page,
@@ -36,7 +32,7 @@ static int xdpe122_read_word_data(struct i2c_client *client, int page,
 		if (ret < 0)
 			return ret;
 
-		/* Convert register value to LINEAR11 data. */
+		 
 		exponent = ((s16)ret) >> 11;
 		mantissa = ((s16)((ret & GENMASK(10, 0)) << 5)) >> 5;
 		val = mantissa * 1000L;
@@ -45,7 +41,7 @@ static int xdpe122_read_word_data(struct i2c_client *client, int page,
 		else
 			val >>= -exponent;
 
-		/* Convert data to VID register. */
+		 
 		switch (info->vrm_version[page]) {
 		case vr13:
 			if (val >= 500)
@@ -96,7 +92,7 @@ static int xdpe122_identify(struct i2c_client *client,
 	}
 
 	for (i = 0; i < XDPE122_PAGE_NUM; i++) {
-		/* Read the register with VOUT scaling value.*/
+		 
 		ret = pmbus_read_byte_data(client, i, PMBUS_VOUT_MODE);
 		if (ret < 0)
 			return ret;

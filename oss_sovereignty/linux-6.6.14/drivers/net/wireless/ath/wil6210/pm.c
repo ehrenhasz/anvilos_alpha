@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014,2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "wil6210.h"
 #include <linux/jiffies.h>
@@ -49,7 +46,7 @@ wil_can_suspend_vif(struct wil6210_priv *wil, struct wil6210_vif *vif,
 		wil_dbg_pm(wil, "Sniffer\n");
 		return false;
 
-	/* for STA-like interface, don't runtime suspend */
+	 
 	case NL80211_IFTYPE_STATION:
 	case NL80211_IFTYPE_P2P_CLIENT:
 		if (test_bit(wil_vif_fwconnecting, vif->status)) {
@@ -61,7 +58,7 @@ wil_can_suspend_vif(struct wil6210_priv *wil, struct wil6210_vif *vif,
 			return false;
 		}
 		break;
-	/* AP-like interface - can't suspend */
+	 
 	default:
 		wil_dbg_pm(wil, "AP-like interface\n");
 		return false;
@@ -95,7 +92,7 @@ int wil_can_suspend(struct wil6210_priv *wil, bool is_runtime)
 	mutex_unlock(&wil->vif_mutex);
 
 	if (!active_ifaces) {
-		/* can always sleep when down */
+		 
 		wil_dbg_pm(wil, "Interface is down\n");
 		goto out;
 	}
@@ -110,7 +107,7 @@ int wil_can_suspend(struct wil6210_priv *wil, bool is_runtime)
 		goto out;
 	}
 
-	/* interface is running */
+	 
 	mutex_lock(&wil->vif_mutex);
 	for (i = 0; i < GET_MAX_VIFS(wil); i++) {
 		struct wil6210_vif *vif = wil->vifs[i];
@@ -139,9 +136,7 @@ static int wil_resume_keep_radio_on(struct wil6210_priv *wil)
 {
 	int rc = 0;
 
-	/* wil_status_resuming will be cleared when getting
-	 * WMI_TRAFFIC_RESUME_EVENTID
-	 */
+	 
 	set_bit(wil_status_resuming, wil->status);
 	clear_bit(wil_status_suspended, wil->status);
 	wil_c(wil, RGF_USER_CLKS_CTL_0, BIT_USER_CLKS_RST_PWGD);
@@ -149,7 +144,7 @@ static int wil_resume_keep_radio_on(struct wil6210_priv *wil)
 
 	wil6210_bus_request(wil, wil->bus_request_kbps_pre_suspend);
 
-	/* Send WMI resume request to the device */
+	 
 	rc = wmi_resume(wil);
 	if (rc) {
 		wil_err(wil, "device failed to resume (%d)\n", rc);
@@ -167,7 +162,7 @@ static int wil_resume_keep_radio_on(struct wil6210_priv *wil)
 		}
 	}
 
-	/* Wake all queues */
+	 
 	wil_pm_wake_connected_net_queues(wil);
 
 out:
@@ -183,7 +178,7 @@ static int wil_suspend_keep_radio_on(struct wil6210_priv *wil)
 
 	wil_dbg_pm(wil, "suspend keep radio on\n");
 
-	/* Prevent handling of new tx and wmi commands */
+	 
 	rc = down_write_trylock(&wil->mem_lock);
 	if (!rc) {
 		wil_err(wil,
@@ -216,7 +211,7 @@ static int wil_suspend_keep_radio_on(struct wil6210_priv *wil)
 		goto reject_suspend;
 	}
 
-	/* Send WMI suspend request to the device */
+	 
 	rc = wmi_suspend(wil);
 	if (rc) {
 		wil_dbg_pm(wil, "wmi_suspend failed, reject suspend (%d)\n",
@@ -224,7 +219,7 @@ static int wil_suspend_keep_radio_on(struct wil6210_priv *wil)
 		goto reject_suspend;
 	}
 
-	/* Wait for completion of the pending RX packets */
+	 
 	data_comp_to = jiffies + msecs_to_jiffies(WIL_DATA_COMPLETION_TO_MS);
 	if (test_bit(wil_status_napi_en, wil->status)) {
 		while (!wil->txrx_ops.is_rx_idle(wil)) {
@@ -242,11 +237,7 @@ static int wil_suspend_keep_radio_on(struct wil6210_priv *wil)
 		}
 	}
 
-	/* In case of pending WMI events, reject the suspend
-	 * and resume the device.
-	 * This can happen if the device sent the WMI events before
-	 * approving the suspend.
-	 */
+	 
 	if (!wil_is_wmi_idle(wil)) {
 		wil_err(wil, "suspend failed due to pending WMI events\n");
 		wil->suspend_stats.r_on.failed_suspends++;
@@ -255,7 +246,7 @@ static int wil_suspend_keep_radio_on(struct wil6210_priv *wil)
 
 	wil_mask_irq(wil);
 
-	/* Disable device reset on PERST */
+	 
 	wil_s(wil, RGF_USER_CLKS_CTL_0, BIT_USER_CLKS_RST_PWGD);
 
 	if (wil->platform_ops.suspend) {
@@ -270,7 +261,7 @@ static int wil_suspend_keep_radio_on(struct wil6210_priv *wil)
 		}
 	}
 
-	/* Save the current bus request to return to the same in resume */
+	 
 	wil->bus_request_kbps_pre_suspend = wil->bus_request_kbps;
 	wil6210_bus_request(wil, 0);
 
@@ -283,7 +274,7 @@ resume_after_fail:
 	set_bit(wil_status_resuming, wil->status);
 	clear_bit(wil_status_suspending, wil->status);
 	rc = wmi_resume(wil);
-	/* if resume succeeded, reject the suspend */
+	 
 	if (!rc) {
 		rc = -EBUSY;
 		wil_pm_wake_connected_net_queues(wil);
@@ -315,7 +306,7 @@ static int wil_suspend_radio_off(struct wil6210_priv *wil)
 	set_bit(wil_status_suspending, wil->status);
 	up_write(&wil->mem_lock);
 
-	/* if netif up, hardware is alive, shut it down */
+	 
 	mutex_lock(&wil->vif_mutex);
 	active_ifaces = wil_has_active_ifaces(wil, true, false);
 	mutex_unlock(&wil->vif_mutex);
@@ -329,7 +320,7 @@ static int wil_suspend_radio_off(struct wil6210_priv *wil)
 		}
 	}
 
-	/* Disable PCIe IRQ to prevent sporadic IRQs when PCIe is suspending */
+	 
 	wil_dbg_pm(wil, "Disabling PCIe IRQ before suspending\n");
 	wil_disable_irq(wil);
 
@@ -358,11 +349,7 @@ static int wil_resume_radio_off(struct wil6210_priv *wil)
 
 	wil_dbg_pm(wil, "Enabling PCIe IRQ\n");
 	wil_enable_irq(wil);
-	/* if any netif up, bring hardware up
-	 * During open(), IFF_UP set after actual device method
-	 * invocation. This prevent recursive call to wil_up()
-	 * wil_status_suspended will be cleared in wil_reset
-	 */
+	 
 	mutex_lock(&wil->vif_mutex);
 	active_ifaces = wil_has_active_ifaces(wil, true, false);
 	mutex_unlock(&wil->vif_mutex);

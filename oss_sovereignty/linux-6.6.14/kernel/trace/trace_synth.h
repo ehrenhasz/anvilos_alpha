@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef __TRACE_SYNTH_H
 #define __TRACE_SYNTH_H
 
@@ -7,7 +7,7 @@
 #define SYNTH_SYSTEM		"synthetic"
 #define SYNTH_FIELDS_MAX	64
 
-#define STR_VAR_LEN_MAX		MAX_FILTER_STR_VAL /* must be multiple of sizeof(u64) */
+#define STR_VAR_LEN_MAX		MAX_FILTER_STR_VAL  
 
 struct synth_field {
 	char *type;
@@ -38,4 +38,4 @@ struct synth_event {
 
 extern struct synth_event *find_synth_event(const char *name);
 
-#endif /* __TRACE_SYNTH_H */
+#endif  

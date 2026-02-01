@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _DVB_USB_CXUSB_H_
 #define _DVB_USB_CXUSB_H_
 
@@ -25,7 +25,7 @@
 #define CXUSB_VIDEO_MAX_FRAME_SIZE (CXUSB_VIDEO_MAX_FRAME_PKTS * \
 					CXUSB_VIDEO_PKT_SIZE)
 
-/* usb commands - some of it are guesses, don't have a reference yet */
+ 
 #define CMD_BLUEBIRD_GPIO_RW 0x05
 
 #define CMD_I2C_WRITE     0x08
@@ -63,7 +63,7 @@
 #define CXUSB_BT656_SEAV_EAV BIT(4)
 #define CXUSB_BT656_SEAV_SAV 0
 
-/* Max transfer size done by I2C transfer functions */
+ 
 #define MAX_XFER_SIZE  80
 
 struct cxusb_state {
@@ -111,7 +111,7 @@ struct cxusb_bt656_params {
 };
 
 struct cxusb_medion_dev {
-	/* has to be the first one */
+	 
 	struct cxusb_state state;
 
 	struct dvb_usb_device *dvbdev;
@@ -156,7 +156,7 @@ struct cxusb_medion_vbuffer {
 	struct list_head list;
 };
 
-/* defines for "debug" module parameter */
+ 
 #define CXUSB_DBG_RC BIT(0)
 #define CXUSB_DBG_I2C BIT(1)
 #define CXUSB_DBG_MISC BIT(2)

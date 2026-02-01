@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Industrial I/O - generic interrupt based trigger support
- *
- * Copyright (c) 2008-2013 Jonathan Cameron
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -70,7 +66,7 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
 
 	return 0;
 
-/* First clean up the partly allocated trigger */
+ 
 error_release_irq:
 	free_irq(irq, trig);
 error_free_trig_info:

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hfs/bfind.c
- *
- * Copyright (C) 2001
- * Brad Boyer (flar@allandria.com)
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- *
- * Search routines for btrees
- */
+
+ 
 
 #include <linux/slab.h>
 #include "btree.h"
@@ -51,7 +43,7 @@ void hfs_find_exit(struct hfs_find_data *fd)
 	fd->tree = NULL;
 }
 
-/* Find the record in bnode that best matches key (not greater than...)*/
+ 
 int __hfs_brec_find(struct hfs_bnode *bnode, struct hfs_find_data *fd)
 {
 	int cmpval;
@@ -102,8 +94,8 @@ fail:
 	return res;
 }
 
-/* Traverse a B*Tree from the root to a leaf finding best fit to key */
-/* Return allocated copy of node found, set recnum to best record */
+ 
+ 
 int hfs_brec_find(struct hfs_find_data *fd)
 {
 	struct hfs_btree *tree;

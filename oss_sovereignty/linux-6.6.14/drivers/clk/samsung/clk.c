@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Copyright (c) 2013 Linaro Ltd.
- * Author: Thomas Abraham <thomas.ab@samsung.com>
- *
- * This file includes utility functions to register clocks to common
- * clock framework for Samsung platforms.
-*/
+
+ 
 
 #include <linux/slab.h>
 #include <linux/clkdev.h>
@@ -53,17 +46,7 @@ struct samsung_clk_reg_dump *samsung_clk_alloc_reg_dump(
 	return rd;
 }
 
-/**
- * samsung_clk_init() - Create and initialize a clock provider object
- * @dev:	CMU device to enable runtime PM, or NULL if RPM is not needed
- * @base:	Start address (mapped) of CMU registers
- * @nr_clks:	Total clock count to allocate in clock provider object
- *
- * Setup the essentials required to support clock lookup using Common Clock
- * Framework.
- *
- * Return: Allocated and initialized clock provider object.
- */
+ 
 struct samsung_clk_provider * __init samsung_clk_init(struct device *dev,
 			void __iomem *base, unsigned long nr_clks)
 {
@@ -95,7 +78,7 @@ void __init samsung_clk_of_add_provider(struct device_node *np,
 	}
 }
 
-/* add a clock instance to the clock lookup table used for dt based lookup */
+ 
 void samsung_clk_add_lookup(struct samsung_clk_provider *ctx,
 			    struct clk_hw *clk_hw, unsigned int id)
 {
@@ -103,7 +86,7 @@ void samsung_clk_add_lookup(struct samsung_clk_provider *ctx,
 		ctx->clk_data.hws[id] = clk_hw;
 }
 
-/* register a list of aliases */
+ 
 void __init samsung_clk_register_alias(struct samsung_clk_provider *ctx,
 				const struct samsung_clock_alias *list,
 				unsigned int nr_clk)
@@ -133,7 +116,7 @@ void __init samsung_clk_register_alias(struct samsung_clk_provider *ctx,
 	}
 }
 
-/* register a list of fixed clocks */
+ 
 void __init samsung_clk_register_fixed_rate(struct samsung_clk_provider *ctx,
 		const struct samsung_fixed_rate_clock *list,
 		unsigned int nr_clk)
@@ -152,10 +135,7 @@ void __init samsung_clk_register_fixed_rate(struct samsung_clk_provider *ctx,
 
 		samsung_clk_add_lookup(ctx, clk_hw, list->id);
 
-		/*
-		 * Unconditionally add a clock lookup for the fixed rate clocks.
-		 * There are not many of these on any of Samsung platforms.
-		 */
+		 
 		ret = clk_hw_register_clkdev(clk_hw, list->name, NULL);
 		if (ret)
 			pr_err("%s: failed to register clock lookup for %s",
@@ -163,7 +143,7 @@ void __init samsung_clk_register_fixed_rate(struct samsung_clk_provider *ctx,
 	}
 }
 
-/* register a list of fixed factor clocks */
+ 
 void __init samsung_clk_register_fixed_factor(struct samsung_clk_provider *ctx,
 		const struct samsung_fixed_factor_clock *list, unsigned int nr_clk)
 {
@@ -183,7 +163,7 @@ void __init samsung_clk_register_fixed_factor(struct samsung_clk_provider *ctx,
 	}
 }
 
-/* register a list of mux clocks */
+ 
 void __init samsung_clk_register_mux(struct samsung_clk_provider *ctx,
 				const struct samsung_mux_clock *list,
 				unsigned int nr_clk)
@@ -206,7 +186,7 @@ void __init samsung_clk_register_mux(struct samsung_clk_provider *ctx,
 	}
 }
 
-/* register a list of div clocks */
+ 
 void __init samsung_clk_register_div(struct samsung_clk_provider *ctx,
 				const struct samsung_div_clock *list,
 				unsigned int nr_clk)
@@ -236,7 +216,7 @@ void __init samsung_clk_register_div(struct samsung_clk_provider *ctx,
 	}
 }
 
-/* register a list of gate clocks */
+ 
 void __init samsung_clk_register_gate(struct samsung_clk_provider *ctx,
 				const struct samsung_gate_clock *list,
 				unsigned int nr_clk)
@@ -258,10 +238,7 @@ void __init samsung_clk_register_gate(struct samsung_clk_provider *ctx,
 	}
 }
 
-/*
- * obtain the clock speed of all external fixed clock sources from device
- * tree and register it
- */
+ 
 void __init samsung_clk_of_register_fixed_ext(struct samsung_clk_provider *ctx,
 			struct samsung_fixed_rate_clock *fixed_rate_clk,
 			unsigned int nr_fixed_rate_clk,
@@ -335,11 +312,7 @@ void samsung_clk_extended_sleep_init(void __iomem *reg_base,
 }
 #endif
 
-/**
- * samsung_cmu_register_clocks() - Register all clocks provided in CMU object
- * @ctx: Clock provider object
- * @cmu: CMU object with clocks to register
- */
+ 
 void __init samsung_cmu_register_clocks(struct samsung_clk_provider *ctx,
 					const struct samsung_cmu_info *cmu)
 {
@@ -362,10 +335,7 @@ void __init samsung_cmu_register_clocks(struct samsung_clk_provider *ctx,
 		samsung_clk_register_cpu(ctx, cmu->cpu_clks, cmu->nr_cpu_clks);
 }
 
-/*
- * Common function which registers plls, muxes, dividers and gates
- * for each CMU. It also add CMU register list to register cache.
- */
+ 
 struct samsung_clk_provider * __init samsung_cmu_register_one(
 			struct device_node *np,
 			const struct samsung_cmu_info *cmu)

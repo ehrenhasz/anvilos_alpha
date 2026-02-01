@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_SPRITE_H__
 #define __INTEL_SPRITE_H__
@@ -30,4 +28,4 @@ int hsw_plane_min_cdclk(const struct intel_crtc_state *crtc_state,
 int vlv_plane_min_cdclk(const struct intel_crtc_state *crtc_state,
 			const struct intel_plane_state *plane_state);
 
-#endif /* __INTEL_SPRITE_H__ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/iopoll.h>
@@ -165,7 +163,7 @@
 #define MT8195_MUTEX_MOD_DISP1_DPI1		26
 #define MT8195_MUTEX_MOD_DISP1_DP_INTF0		27
 
-/* VPPSYS0 */
+ 
 #define MT8195_MUTEX_MOD_MDP_RDMA0             0
 #define MT8195_MUTEX_MOD_MDP_FG0               1
 #define MT8195_MUTEX_MOD_MDP_STITCH0           2
@@ -179,7 +177,7 @@
 #define MT8195_MUTEX_MOD_MDP_TCC0              10
 #define MT8195_MUTEX_MOD_MDP_WROT0             11
 
-/* VPPSYS1 */
+ 
 #define MT8195_MUTEX_MOD_MDP_TCC1              3
 #define MT8195_MUTEX_MOD_MDP_RDMA1             4
 #define MT8195_MUTEX_MOD_MDP_RDMA2             5
@@ -268,8 +266,8 @@
 #define MT8195_MUTEX_SOF_DSI1			2
 #define MT8195_MUTEX_SOF_DP_INTF0		3
 #define MT8195_MUTEX_SOF_DP_INTF1		4
-#define MT8195_MUTEX_SOF_DPI0			6 /* for HDMI_TX */
-#define MT8195_MUTEX_SOF_DPI1			5 /* for digital video out */
+#define MT8195_MUTEX_SOF_DPI0			6  
+#define MT8195_MUTEX_SOF_DPI1			5  
 
 #define MT8183_MUTEX_EOF_DSI0			(MT8183_MUTEX_SOF_DSI0 << 6)
 #define MT8183_MUTEX_EOF_DPI0			(MT8183_MUTEX_SOF_DPI0 << 6)
@@ -578,7 +576,7 @@ static const unsigned int mt8167_mutex_sof[DDP_MUTEX_SOF_MAX] = {
 	[MUTEX_SOF_DPI1] = MT8167_MUTEX_SOF_DPI1,
 };
 
-/* Add EOF setting so overlay hardware can receive frame done irq */
+ 
 static const unsigned int mt8183_mutex_sof[DDP_MUTEX_SOF_MAX] = {
 	[MUTEX_SOF_SINGLE_MODE] = MUTEX_SOF_SINGLE_MODE,
 	[MUTEX_SOF_DSI0] = MUTEX_SOF_DSI0 | MT8183_MUTEX_EOF_DSI0,
@@ -591,14 +589,7 @@ static const unsigned int mt8186_mutex_sof[MUTEX_SOF_DSI3 + 1] = {
 	[MUTEX_SOF_DPI0] = MT8186_MUTEX_SOF_DPI0 | MT8186_MUTEX_EOF_DPI0,
 };
 
-/*
- * To support refresh mode(video mode), DISP_REG_MUTEX_SOF should
- * select the EOF source and configure the EOF plus timing from the
- * module that provides the timing signal.
- * So that MUTEX can not only send a STREAM_DONE event to GCE
- * but also detect the error at end of frame(EAEOF) when EOF signal
- * arrives.
- */
+ 
 static const unsigned int mt8188_mutex_sof[DDP_MUTEX_SOF_MAX] = {
 	[MUTEX_SOF_SINGLE_MODE] = MUTEX_SOF_SINGLE_MODE,
 	[MUTEX_SOF_DSI0] =
@@ -935,18 +926,7 @@ int mtk_mutex_write_mod(struct mtk_mutex *mutex,
 		return -EINVAL;
 	}
 
-	/*
-	 * Some SoCs may have multiple MUTEX_MOD registers as more than 32 mods
-	 * are present, hence requiring multiple 32-bits registers.
-	 *
-	 * The mutex_table_mod fully represents that by defining the number of
-	 * the mod sequentially, later used as a bit number, which can be more
-	 * than 0..31.
-	 *
-	 * In order to retain compatibility with older SoCs, we perform R/W on
-	 * the single 32 bits registers, but this requires us to translate the
-	 * mutex ID bit accordingly.
-	 */
+	 
 	if (mtx->data->mutex_table_mod[idx] < 32) {
 		reg_offset = DISP_REG_MUTEX_MOD(mtx->data->mutex_mod_reg,
 						mutex->id);
@@ -1018,7 +998,7 @@ static int mtk_mutex_probe(struct platform_device *pdev)
 	}
 	mtx->addr = regs->start;
 
-	/* CMDQ is optional */
+	 
 	ret = cmdq_dev_get_client_reg(dev, &mtx->cmdq_reg, 0);
 	if (ret)
 		dev_dbg(dev, "No mediatek,gce-client-reg!\n");
@@ -1042,7 +1022,7 @@ static const struct of_device_id mutex_driver_dt_match[] = {
 	{ .compatible = "mediatek,mt8195-disp-mutex", .data = &mt8195_mutex_driver_data },
 	{ .compatible = "mediatek,mt8195-vpp-mutex",  .data = &mt8195_vpp_mutex_driver_data },
 	{ .compatible = "mediatek,mt8365-disp-mutex", .data = &mt8365_mutex_driver_data },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mutex_driver_dt_match);
 

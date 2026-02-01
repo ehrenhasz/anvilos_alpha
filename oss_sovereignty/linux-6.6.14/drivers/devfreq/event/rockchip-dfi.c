@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Fuzhou Rockchip Electronics Co., Ltd
- * Author: Lin Huang <hl@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/devfreq-event.h>
@@ -22,7 +19,7 @@
 
 #define RK3399_DMC_NUM_CH	2
 
-/* DDRMON_CTRL */
+ 
 #define DDRMON_CTRL	0x04
 #define CLR_DDRMON_CTRL	(0x1f0000 << 0)
 #define LPDDR4_EN	(0x10001 << 4)
@@ -42,11 +39,7 @@ struct dmc_usage {
 	u32 total;
 };
 
-/*
- * The dfi controller can monitor DDR load. It has an upper and lower threshold
- * for the operating points. Whenever the usage leaves these bounds an event is
- * generated to indicate the DDR frequency should be changed.
- */
+ 
 struct rockchip_dfi {
 	struct devfreq_event_dev *edev;
 	struct devfreq_event_desc *desc;
@@ -64,21 +57,21 @@ static void rockchip_dfi_start_hardware_counter(struct devfreq_event_dev *edev)
 	u32 val;
 	u32 ddr_type;
 
-	/* get ddr type */
+	 
 	regmap_read(info->regmap_pmu, RK3399_PMUGRF_OS_REG2, &val);
 	ddr_type = (val >> RK3399_PMUGRF_DDRTYPE_SHIFT) &
 		    RK3399_PMUGRF_DDRTYPE_MASK;
 
-	/* clear DDRMON_CTRL setting */
+	 
 	writel_relaxed(CLR_DDRMON_CTRL, dfi_regs + DDRMON_CTRL);
 
-	/* set ddr type to dfi */
+	 
 	if (ddr_type == RK3399_PMUGRF_DDRTYPE_LPDDR3)
 		writel_relaxed(LPDDR3_EN, dfi_regs + DDRMON_CTRL);
 	else if (ddr_type == RK3399_PMUGRF_DDRTYPE_LPDDR4)
 		writel_relaxed(LPDDR4_EN, dfi_regs + DDRMON_CTRL);
 
-	/* enable count, use software mode */
+	 
 	writel_relaxed(SOFTWARE_EN, dfi_regs + DDRMON_CTRL);
 }
 
@@ -99,7 +92,7 @@ static int rockchip_dfi_get_busier_ch(struct devfreq_event_dev *edev)
 
 	rockchip_dfi_stop_hardware_counter(edev);
 
-	/* Find out which channel is busier */
+	 
 	for (i = 0; i < RK3399_DMC_NUM_CH; i++) {
 		info->ch_usage[i].access = readl_relaxed(dfi_regs +
 				DDRMON_CH0_DFI_ACCESS_NUM + i * 20) * 4;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Red Hat, Inc
- */
+
+ 
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -44,13 +42,7 @@ static void psmouse_smbus_check_adapter(struct i2c_adapter *adapter)
 		if (smbdev->client)
 			continue;
 
-		/*
-		 * Here would be a good place to check if device is actually
-		 * present, but it seems that SMBus will not respond unless we
-		 * fully reset PS/2 connection.  So cross our fingers, and try
-		 * to switch over, hopefully our system will not have too many
-		 * "host notify" I2C adapters.
-		 */
+		 
 		psmouse_dbg(smbdev->psmouse,
 			    "SMBus candidate adapter appeared, triggering rescan\n");
 		serio_rescan(smbdev->psmouse->ps2dev.serio);
@@ -144,16 +136,7 @@ static void psmouse_smbus_remove_i2c_device(struct work_struct *work)
 	kfree(rwork);
 }
 
-/*
- * This schedules removal of SMBus companion device. We have to do
- * it in a separate tread to avoid deadlocking on psmouse_mutex in
- * case the device has a trackstick (which is also driven by psmouse).
- *
- * Note that this may be racing with i2c adapter removal, but we
- * can't do anything about that: i2c automatically destroys clients
- * attached to an adapter that is being removed. This has to be
- * fixed in i2c core.
- */
+ 
 static void psmouse_smbus_schedule_remove(struct i2c_client *client)
 {
 	struct psmouse_smbus_removal_work *rwork;
@@ -210,7 +193,7 @@ static int psmouse_smbus_create_companion(struct device *dev, void *data)
 	if (IS_ERR(client))
 		return 0;
 
-	/* We have our(?) device, stop iterating i2c bus. */
+	 
 	smbdev->client = client;
 	return 1;
 }
@@ -271,11 +254,11 @@ int psmouse_smbus_init(struct psmouse *psmouse,
 	list_add_tail(&smbdev->node, &psmouse_smbus_list);
 	mutex_unlock(&psmouse_smbus_mutex);
 
-	/* Bind to already existing adapters right away */
+	 
 	error = i2c_for_each_dev(smbdev, psmouse_smbus_create_companion);
 
 	if (smbdev->client) {
-		/* We have our companion device */
+		 
 		if (!device_link_add(&smbdev->client->dev,
 				     &psmouse->ps2dev.serio->dev,
 				     DL_FLAG_STATELESS))
@@ -285,10 +268,7 @@ int psmouse_smbus_init(struct psmouse *psmouse,
 		return 0;
 	}
 
-	/*
-	 * If we did not create i2c device we will not need platform
-	 * data even if we are leaving breadcrumbs.
-	 */
+	 
 	kfree(smbdev->board.platform_data);
 	smbdev->board.platform_data = NULL;
 

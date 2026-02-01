@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI ADDA Control
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <linux/delay.h>
@@ -14,8 +14,8 @@
 enum {
 	AUDIO_SDM_LEVEL_MUTE = 0,
 	AUDIO_SDM_LEVEL_NORMAL = 0x1d,
-	/* if you change level normal */
-	/* you need to change formula of hp impedance and dc trim too */
+	 
+	 
 };
 
 enum {
@@ -103,7 +103,7 @@ static unsigned int adda_ul_rate_transform(struct mtk_base_afe *afe,
 	}
 }
 
-/* dai component */
+ 
 static const struct snd_kcontrol_new mtk_adda_dl_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1", AFE_CONN3, I_DL1_CH1, 1, 0),
 	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH1", AFE_CONN3, I_DL2_CH1, 1, 0),
@@ -152,13 +152,13 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* update setting to dmic */
+		 
 		if (afe_priv->mtkaif_dmic) {
-			/* mtkaif_rxif_data_mode = 1, dmic */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG0,
 					   0x1, 0x1);
 
-			/* dmic mode, 3.25M*/
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG0,
 					   0x0, 0xf << 20);
 			regmap_update_bits(afe->regmap, AFE_ADDA_UL_SRC_CON0,
@@ -166,7 +166,7 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 			regmap_update_bits(afe->regmap, AFE_ADDA_UL_SRC_CON0,
 					   0x0, 0x3 << 14);
 
-			/* turn on dmic, ch1, ch2 */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_UL_SRC_CON0,
 					   0x1 << 1, 0x1 << 1);
 			regmap_update_bits(afe->regmap, AFE_ADDA_UL_SRC_CON0,
@@ -174,7 +174,7 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		break;
 	default:
@@ -184,7 +184,7 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* mtkaif dmic */
+ 
 static const char * const mt8183_adda_off_on_str[] = {
 	"Off", "On"
 };
@@ -237,7 +237,7 @@ enum {
 };
 
 static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
-	/* adda */
+	 
 	SND_SOC_DAPM_MIXER("ADDA_DL_CH1", SND_SOC_NOPM, 0, 0,
 			   mtk_adda_dl_ch1_mix,
 			   ARRAY_SIZE(mtk_adda_dl_ch1_mix)),
@@ -267,7 +267,7 @@ static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
-	/* playback */
+	 
 	{"ADDA_DL_CH1", "DL1_CH1", "DL1"},
 	{"ADDA_DL_CH2", "DL1_CH1", "DL1"},
 	{"ADDA_DL_CH2", "DL1_CH2", "DL1"},
@@ -283,13 +283,13 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 	{"ADDA Playback", NULL, "ADDA_DL_CH1"},
 	{"ADDA Playback", NULL, "ADDA_DL_CH2"},
 
-	/* adda enable */
+	 
 	{"ADDA Playback", NULL, "ADDA Enable"},
 	{"ADDA Playback", NULL, "ADDA Playback Enable"},
 	{"ADDA Capture", NULL, "ADDA Enable"},
 	{"ADDA Capture", NULL, "ADDA Capture Enable"},
 
-	/* clk */
+	 
 	{"ADDA Playback", NULL, "mtkaif_26m_clk"},
 	{"ADDA Playback", NULL, "aud_dac_clk"},
 	{"ADDA Playback", NULL, "aud_dac_predis_clk"},
@@ -308,7 +308,7 @@ static int set_mtkaif_rx(struct mtk_base_afe *afe)
 	case MT8183_MTKAIF_PROTOCOL_2_CLK_P2:
 		regmap_write(afe->regmap, AFE_AUD_PAD_TOP, 0x38);
 		regmap_write(afe->regmap, AFE_AUD_PAD_TOP, 0x39);
-		/* mtkaif_rxif_clkinv_adc inverse for calibration */
+		 
 		regmap_write(afe->regmap, AFE_ADDA_MTKAIF_CFG0,
 			     0x80010000);
 
@@ -349,7 +349,7 @@ static int set_mtkaif_rx(struct mtk_base_afe *afe)
 	return 0;
 }
 
-/* dai ops */
+ 
 static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params *params,
 				  struct snd_soc_dai *dai)
@@ -364,57 +364,57 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 		unsigned int dl_src2_con0 = 0;
 		unsigned int dl_src2_con1 = 0;
 
-		/* clean predistortion */
+		 
 		regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON0, 0);
 		regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON1, 0);
 
-		/* set sampling rate */
+		 
 		dl_src2_con0 = adda_dl_rate_transform(afe, rate) << 28;
 
-		/* set output mode */
+		 
 		switch (rate) {
 		case 192000:
-			dl_src2_con0 |= (0x1 << 24); /* UP_SAMPLING_RATE_X2 */
+			dl_src2_con0 |= (0x1 << 24);  
 			dl_src2_con0 |= 1 << 14;
 			break;
 		case 96000:
-			dl_src2_con0 |= (0x2 << 24); /* UP_SAMPLING_RATE_X4 */
+			dl_src2_con0 |= (0x2 << 24);  
 			dl_src2_con0 |= 1 << 14;
 			break;
 		default:
-			dl_src2_con0 |= (0x3 << 24); /* UP_SAMPLING_RATE_X8 */
+			dl_src2_con0 |= (0x3 << 24);  
 			break;
 		}
 
-		/* turn off mute function */
+		 
 		dl_src2_con0 |= (0x03 << 11);
 
-		/* set voice input data if input sample rate is 8k or 16k */
+		 
 		if (rate == 8000 || rate == 16000)
 			dl_src2_con0 |= 0x01 << 5;
 
-		/* SA suggest apply -0.3db to audio/speech path */
+		 
 		dl_src2_con1 = 0xf74f0000;
 
-		/* turn on down-link gain */
+		 
 		dl_src2_con0 = dl_src2_con0 | (0x01 << 1);
 
 		regmap_write(afe->regmap, AFE_ADDA_DL_SRC2_CON0, dl_src2_con0);
 		regmap_write(afe->regmap, AFE_ADDA_DL_SRC2_CON1, dl_src2_con1);
 
-		/* set sdm gain */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_ADDA_DL_SDM_DCCOMP_CON,
 				   ATTGAIN_CTL_MASK_SFT,
 				   AUDIO_SDM_LEVEL_NORMAL << ATTGAIN_CTL_SFT);
 	} else {
 		unsigned int voice_mode = 0;
-		unsigned int ul_src_con0 = 0;	/* default value */
+		unsigned int ul_src_con0 = 0;	 
 
-		/* set mtkaif protocol */
+		 
 		set_mtkaif_rx(afe);
 
-		/* Using Internal ADC */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_ADDA_TOP_CON0,
 				   0x1 << 0,
@@ -424,11 +424,11 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 
 		ul_src_con0 |= (voice_mode << 17) & (0x7 << 17);
 
-		/* enable iir */
+		 
 		ul_src_con0 |= (1 << UL_IIR_ON_TMP_CTL_SFT) &
 			       UL_IIR_ON_TMP_CTL_MASK_SFT;
 
-		/* 35Hz @ 48k */
+		 
 		regmap_write(afe->regmap, AFE_ADDA_IIR_COEF_02_01, 0x00000000);
 		regmap_write(afe->regmap, AFE_ADDA_IIR_COEF_04_03, 0x00003FB8);
 		regmap_write(afe->regmap, AFE_ADDA_IIR_COEF_06_05, 0x3FB80000);
@@ -437,7 +437,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 
 		regmap_write(afe->regmap, AFE_ADDA_UL_SRC_CON0, ul_src_con0);
 
-		/* mtkaif_rxif_data_mode = 0, amic */
+		 
 		regmap_update_bits(afe->regmap,
 				   AFE_ADDA_MTKAIF_RX_CFG0,
 				   0x1 << 0,
@@ -451,7 +451,7 @@ static const struct snd_soc_dai_ops mtk_dai_adda_ops = {
 	.hw_params = mtk_dai_adda_hw_params,
 };
 
-/* dai driver */
+ 
 #define MTK_ADDA_PLAYBACK_RATES (SNDRV_PCM_RATE_8000_48000 |\
 				 SNDRV_PCM_RATE_96000 |\
 				 SNDRV_PCM_RATE_192000)

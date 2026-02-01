@@ -1,40 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2009,2010 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Juergen Pfeifer                                                 *
- *     and: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
-/*
- * TODO - GetMousePos(POINT * result) from ntconio.c
- */
+ 
 
 #include <curses.priv.h>
 
@@ -104,10 +72,7 @@ static const LONG ansi_keys[] =
 #define FKEYS 24
 #define MAPSIZE (FKEYS + N_INI)
 
-/*   A process can only have a single console, so it is safe
-     to maintain all the information about it in a single
-     static structure.
- */
+ 
 NCURSES_EXPORT_VAR(ConsoleInfo) _nc_CONSOLE;
 static bool console_initialized = FALSE;
 
@@ -116,10 +81,7 @@ static bool console_initialized = FALSE;
 #define REQUIRED_MAX_V (DWORD)10
 #define REQUIRED_MIN_V (DWORD)0
 #define REQUIRED_BUILD (DWORD)17763
-/*
-  This function returns 0 if the Windows version has no support for
-  the modern Console interface, otherwise it returns 1
- */
+ 
 NCURSES_EXPORT(int)
 _nc_console_vt_supported(void)
 {
@@ -164,9 +126,7 @@ _nc_console_size(int* Lines, int* Cols)
   }
 }
 
-/* Convert a file descriptor into a HANDLE
-   That's not necessarily a console HANDLE
-*/
+ 
 NCURSES_EXPORT(HANDLE)
 _nc_console_handle(int fd)
 {
@@ -174,9 +134,7 @@ _nc_console_handle(int fd)
     return (HANDLE) value;
 }
 
-/* Validate that a HANDLE is actually a
-   console HANDLE
-*/
+ 
 static BOOL
 IsConsoleHandle(HANDLE hdl)
 {
@@ -196,12 +154,7 @@ IsConsoleHandle(HANDLE hdl)
     returnBool(result);
 }
 
-/*   This is used when running in terminfo mode to discover,
-     whether or not the "terminal" is actually a Windows
-     Console. It is the responsibility of the console to deal
-     with the terminal escape sequences that are sent by
-     terminfo.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_console_test(int fd)
 {
@@ -380,13 +333,7 @@ _nc_console_MapColor(bool fore, int color)
 }
 
 
-/*
- * Attempt to save the screen contents.  PDCurses does this if
- * PDC_RESTORE_SCREEN is set, giving the same visual appearance on
- * restoration as if the library had allocated a console buffer.  MSDN
- * says that the data which can be read is limited to 64Kb (and may be
- * less).
- */
+ 
 static bool
 save_original_screen(void)
 {
@@ -534,9 +481,7 @@ _nc_console_get_SBI(void)
 #define MIN_WIDE 80
 #define MIN_HIGH 24
 
-/*
- * In "normal" mode, reset the buffer- and window-sizes back to their original values.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_console_set_scrollback(bool normal, CONSOLE_SCREEN_BUFFER_INFO * info)
 {
@@ -602,8 +547,8 @@ _nc_console_set_scrollback(bool normal, CONSOLE_SCREEN_BUFFER_INFO * info)
         T(("... rect %d,%d - %d,%d",
            rect.Top, rect.Left,
            rect.Bottom, rect.Right));
-        SetConsoleScreenBufferSize(WINCONSOLE.hdl, coord);      /* dwSize */
-        SetConsoleWindowInfo(WINCONSOLE.hdl, TRUE, &rect);      /* srWindow */
+        SetConsoleScreenBufferSize(WINCONSOLE.hdl, coord);       
+        SetConsoleWindowInfo(WINCONSOLE.hdl, TRUE, &rect);       
         _nc_console_get_SBI();
     }
     returnVoid;
@@ -692,10 +637,7 @@ handle_mouse(SCREEN *sp, MOUSE_EVENT_RECORD mer)
     sp->_drv_mouse_old_buttons = sp->_drv_mouse_new_buttons;
     sp->_drv_mouse_new_buttons = mer.dwButtonState & BUTTON_MASK;
 
-    /*
-     * We're only interested if the button is pressed or released.
-     * FIXME: implement continuous event-tracking.
-     */
+     
     if (sp->_drv_mouse_new_buttons != sp->_drv_mouse_old_buttons) {
         memset(&work, 0, sizeof(work));
 
@@ -704,7 +646,7 @@ handle_mouse(SCREEN *sp, MOUSE_EVENT_RECORD mer)
                 (mmask_t) decode_mouse(sp,
                                        sp->_drv_mouse_new_buttons);
         } else {
-            /* cf: BUTTON_PRESSED, BUTTON_RELEASED */
+             
             work.bstate |=
                 (mmask_t) (decode_mouse(sp,
                                         sp->_drv_mouse_old_buttons)
@@ -861,7 +803,7 @@ _nc_console_twait(
     bool isNoDelay = (milliseconds == 0);
 
 #ifdef NCURSES_WGETCH_EVENTS
-    (void) evl;                 /* TODO: implement wgetch-events */
+    (void) evl;                  
 #endif
 
 #define IGNORE_CTRL_KEYS (SHIFT_PRESSED|LEFT_ALT_PRESSED|RIGHT_ALT_PRESSED| \
@@ -978,7 +920,7 @@ _nc_console_twait(
                                 goto end;
                             }
                             continue;
-                            /* e.g., FOCUS_EVENT */
+                             
                         default:
                             T(("twait:event Tyoe %d", inp_rec.EventType));
                             CONSUME();
@@ -1063,11 +1005,7 @@ _nc_console_read(
                     continue;
                 *buf = (int) inp_rec.Event.KeyEvent.uChar.AsciiChar;
                 vk = inp_rec.Event.KeyEvent.wVirtualKeyCode;
-                /*
-                 * There are 24 virtual function-keys, and typically
-                 * 12 function-keys on a keyboard.  Use the shift-modifier
-                 * to provide the remaining 12 keys.
-                 */
+                 
                 if (vk >= VK_F1 && vk <= VK_F12) {
                     if (inp_rec.Event.KeyEvent.dwControlKeyState &
                         SHIFT_PRESSED) {
@@ -1099,15 +1037,7 @@ _nc_console_read(
     returnCode(rc);
 }
 
-/*   Our replacement for the systems _isatty to include also
-     a test for mintty. This is called from the NC_ISATTY macro
-     defined in curses.priv.h
-
-     Return codes:
-     - 0 : Not a TTY
-     - 1 : A Windows character device detected by _isatty
-     - 2 : A future implementation may return 2 for mintty
- */
+ 
 NCURSES_EXPORT(int)
 _nc_console_isatty(int fd)
 {
@@ -1141,7 +1071,7 @@ _nc_console_checkinit(bool initFlag, bool assumeTermInfo)
     if (!initFlag) {
         res = console_initialized;
     } else {
-        /* initialize once, or not at all */
+         
         if (!console_initialized) {
             int i;
             DWORD num_buttons;
@@ -1221,13 +1151,7 @@ _nc_console_checkinit(bool initFlag, bool assumeTermInfo)
                 }
             }
 
-            /* We set binary I/O even when using the console
-               driver to cover the situation, that the
-               TERM variable is set to #win32con, but actually
-               Windows supports virtual terminal processing.
-               So if terminfo functions are used in this setup,
-               they actually may work.
-            */
+             
             _setmode(fileno(stdin), _O_BINARY);
             _setmode(fileno(stdout), _O_BINARY);
 
@@ -1253,4 +1177,4 @@ _nc_console_checkinit(bool initFlag, bool assumeTermInfo)
     returnBool(res);
 }
 
-#endif // _NC_WINDOWS
+#endif 

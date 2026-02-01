@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/clk.h>
@@ -32,13 +30,7 @@
 
 #define MAX_CID_CONTROLS		3
 
-/**
- * struct tegra_vi_graph_entity - Entity in the video graph
- *
- * @asd: subdev asynchronous registration information
- * @entity: media entity from the corresponding V4L2 subdev
- * @subdev: V4L2 subdev
- */
+ 
 struct tegra_vi_graph_entity {
 	struct v4l2_async_connection asd;
 	struct media_entity *entity;
@@ -99,9 +91,7 @@ tegra_get_format_by_fourcc(struct tegra_vi *vi, u32 fourcc)
 	return NULL;
 }
 
-/*
- * videobuf2 queue operations
- */
+ 
 
 static int tegra_channel_queue_setup(struct vb2_queue *vq,
 				     unsigned int *nbuffers,
@@ -151,12 +141,12 @@ static void tegra_channel_buffer_queue(struct vb2_buffer *vb)
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
 	struct tegra_channel_buffer *buf = to_tegra_channel_buffer(vbuf);
 
-	/* put buffer into the capture queue */
+	 
 	spin_lock(&chan->start_lock);
 	list_add_tail(&buf->queue, &chan->capture);
 	spin_unlock(&chan->start_lock);
 
-	/* wait up kthread for capture */
+	 
 	wake_up_interruptible(&chan->start_wait);
 }
 
@@ -172,9 +162,7 @@ tegra_channel_get_remote_csi_subdev(struct tegra_vi_channel *chan)
 	return media_entity_to_v4l2_subdev(pad->entity);
 }
 
-/*
- * Walk up the chain until the initial source (e.g. image sensor)
- */
+ 
 struct v4l2_subdev *
 tegra_channel_get_remote_source_subdev(struct tegra_vi_channel *chan)
 {
@@ -293,9 +281,7 @@ static const struct vb2_ops tegra_channel_queue_qops = {
 	.stop_streaming = tegra_channel_stop_streaming,
 };
 
-/*
- * V4L2 ioctl operations
- */
+ 
 static int tegra_channel_querycap(struct file *file, void *fh,
 				  struct v4l2_capability *cap)
 {
@@ -445,18 +431,12 @@ static int __tegra_channel_try_format(struct tegra_vi_channel *chan,
 	if (!subdev)
 		return -ENODEV;
 
-	/*
-	 * FIXME: Drop this call, drivers are not supposed to use
-	 * __v4l2_subdev_state_alloc().
-	 */
+	 
 	sd_state = __v4l2_subdev_state_alloc(subdev, "tegra:state->lock",
 					     &key);
 	if (IS_ERR(sd_state))
 		return PTR_ERR(sd_state);
-	/*
-	 * Retrieve the format information and if requested format isn't
-	 * supported, keep the current format.
-	 */
+	 
 	fmtinfo = tegra_get_format_by_fourcc(chan->vi, pix->pixelformat);
 	if (!fmtinfo) {
 		pix->pixelformat = chan->format.pixelformat;
@@ -469,10 +449,7 @@ static int __tegra_channel_try_format(struct tegra_vi_channel *chan,
 	fmt.pad = 0;
 	v4l2_fill_mbus_format(&fmt.format, pix, fmtinfo->code);
 
-	/*
-	 * Attempt to obtain the format size from subdev.
-	 * If not available, try to get crop boundary from subdev.
-	 */
+	 
 	fse.code = fmtinfo->code;
 	ret = v4l2_subdev_call(subdev, pad, enum_frame_size, sd_state, &fse);
 	if (ret) {
@@ -536,7 +513,7 @@ static int tegra_channel_set_format(struct file *file, void *fh,
 	if (vb2_is_busy(&chan->queue))
 		return -EBUSY;
 
-	/* get supported format by try_fmt */
+	 
 	ret = __tegra_channel_try_format(chan, pix);
 	if (ret)
 		return ret;
@@ -568,10 +545,7 @@ static int tegra_channel_set_subdev_active_fmt(struct tegra_vi_channel *chan)
 		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
 	};
 
-	/*
-	 * Initialize channel format to the sub-device active format if there
-	 * is corresponding match in the Tegra supported video formats.
-	 */
+	 
 	subdev = tegra_channel_get_remote_source_subdev(chan);
 	ret = v4l2_subdev_call(subdev, pad, get_fmt, NULL, &fmt);
 	if (ret)
@@ -625,10 +599,7 @@ static int tegra_channel_g_selection(struct file *file, void *priv,
 
 	if (sel->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		return -EINVAL;
-	/*
-	 * Try the get selection operation and fallback to get format if not
-	 * implemented.
-	 */
+	 
 	ret = v4l2_subdev_call(subdev, pad, get_selection, NULL, &sdsel);
 	if (!ret)
 		sel->r = sdsel.r;
@@ -673,11 +644,7 @@ static int tegra_channel_s_selection(struct file *file, void *fh,
 	ret = v4l2_subdev_call(subdev, pad, set_selection, NULL, &sdsel);
 	if (!ret) {
 		sel->r = sdsel.r;
-		/*
-		 * Subdev active format resolution may have changed during
-		 * set selection operation. So, update channel format to
-		 * the sub-device active format.
-		 */
+		 
 		return tegra_channel_set_subdev_active_fmt(chan);
 	}
 
@@ -882,9 +849,7 @@ static const struct v4l2_ioctl_ops tegra_channel_ioctl_ops = {
 	.vidioc_log_status		= tegra_channel_log_status,
 };
 
-/*
- * V4L2 file operations
- */
+ 
 static const struct v4l2_file_operations tegra_channel_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl	= video_ioctl2,
@@ -895,9 +860,7 @@ static const struct v4l2_file_operations tegra_channel_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/*
- * V4L2 control operations
- */
+ 
 static int vi_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct tegra_vi_channel *chan = container_of(ctrl->handler,
@@ -906,7 +869,7 @@ static int vi_s_ctrl(struct v4l2_ctrl *ctrl)
 
 	switch (ctrl->id) {
 	case V4L2_CID_TEST_PATTERN:
-		/* pattern change takes effect on next stream */
+		 
 		chan->pg_mode = ctrl->val + 1;
 		break;
 	case V4L2_CID_TEGRA_SYNCPT_TIMEOUT_RETRY:
@@ -952,7 +915,7 @@ static int tegra_channel_setup_ctrl_handler(struct tegra_vi_channel *chan)
 	int ret;
 
 #if IS_ENABLED(CONFIG_VIDEO_TEGRA_TPG)
-	/* add test pattern control handler to v4l2 device */
+	 
 	v4l2_ctrl_new_std_menu_items(&chan->ctrl_handler, &vi_ctrl_ops,
 				     V4L2_CID_TEST_PATTERN,
 				     ARRAY_SIZE(vi_pattern_strings) - 1,
@@ -966,7 +929,7 @@ static int tegra_channel_setup_ctrl_handler(struct tegra_vi_channel *chan)
 #else
 	struct v4l2_subdev *subdev;
 
-	/* custom control */
+	 
 	v4l2_ctrl_new_custom(&chan->ctrl_handler, &syncpt_timeout_ctrl, NULL);
 	if (chan->ctrl_handler.error) {
 		dev_err(chan->vi->dev, "failed to add %s ctrl handler: %d\n",
@@ -997,7 +960,7 @@ static int tegra_channel_setup_ctrl_handler(struct tegra_vi_channel *chan)
 
 #endif
 
-	/* setup the controls */
+	 
 	ret = v4l2_ctrl_handler_setup(&chan->ctrl_handler);
 	if (ret < 0) {
 		dev_err(chan->vi->dev,
@@ -1008,7 +971,7 @@ static int tegra_channel_setup_ctrl_handler(struct tegra_vi_channel *chan)
 	return 0;
 }
 
-/* VI only support 2 formats in TPG mode */
+ 
 static void vi_tpg_fmts_bitmap_init(struct tegra_vi_channel *chan)
 {
 	int index;
@@ -1035,11 +998,7 @@ static int vi_fmts_bitmap_init(struct tegra_vi_channel *chan)
 
 	bitmap_zero(chan->fmts_bitmap, MAX_FORMAT_NUM);
 
-	/*
-	 * Set the bitmap bits based on all the matched formats between the
-	 * available media bus formats of sub-device and the pre-defined Tegra
-	 * supported video formats.
-	 */
+	 
 	subdev = tegra_channel_get_remote_source_subdev(chan);
 	while (1) {
 		ret = v4l2_subdev_call(subdev, pad, enum_mbus_code,
@@ -1052,7 +1011,7 @@ static int vi_fmts_bitmap_init(struct tegra_vi_channel *chan)
 			bitmap_set(chan->fmts_bitmap, index, 1);
 			if (!match_code)
 				match_code = code.code;
-			/* look for other formats with same mbus code */
+			 
 			index = tegra_get_format_idx_by_code(chan->vi,
 							     code.code,
 							     index + 1);
@@ -1061,10 +1020,7 @@ static int vi_fmts_bitmap_init(struct tegra_vi_channel *chan)
 		code.index++;
 	}
 
-	/*
-	 * Set the bitmap bit corresponding to default tegra video format if
-	 * there are no matched formats.
-	 */
+	 
 	if (!match_code) {
 		match_code = chan->vi->soc->default_video_format->code;
 		index = tegra_get_format_idx_by_code(chan->vi, match_code, 0);
@@ -1074,7 +1030,7 @@ static int vi_fmts_bitmap_init(struct tegra_vi_channel *chan)
 		bitmap_set(chan->fmts_bitmap, index, 1);
 	}
 
-	/* initialize channel format to the sub-device active format */
+	 
 	tegra_channel_set_subdev_active_fmt(chan);
 
 	return 0;
@@ -1116,7 +1072,7 @@ static int tegra_channel_init(struct tegra_vi_channel *chan)
 	init_waitqueue_head(&chan->start_wait);
 	init_waitqueue_head(&chan->done_wait);
 
-	/* initialize the video format */
+	 
 	chan->fmtinfo = chan->vi->soc->default_video_format;
 	chan->format.pixelformat = chan->fmtinfo->fourcc;
 	chan->format.colorspace = V4L2_COLORSPACE_SRGB;
@@ -1131,7 +1087,7 @@ static int tegra_channel_init(struct tegra_vi_channel *chan)
 	if (ret)
 		return ret;
 
-	/* initialize the media entity */
+	 
 	chan->pad.flags = MEDIA_PAD_FL_SINK;
 	ret = media_entity_pads_init(&chan->video.entity, 1, &chan->pad);
 	if (ret < 0) {
@@ -1147,7 +1103,7 @@ static int tegra_channel_init(struct tegra_vi_channel *chan)
 		goto cleanup_media;
 	}
 
-	/* initialize the video_device */
+	 
 	chan->video.fops = &tegra_channel_fops;
 	chan->video.v4l2_dev = &vid->v4l2_dev;
 	chan->video.release = video_device_release_empty;
@@ -1200,22 +1156,14 @@ static int tegra_vi_channel_alloc(struct tegra_vi *vi, unsigned int port_num,
 	struct tegra_vi_channel *chan;
 	unsigned int i;
 
-	/*
-	 * Do not use devm_kzalloc as memory is freed immediately
-	 * when device instance is unbound but application might still
-	 * be holding the device node open. Channel memory allocated
-	 * with kzalloc is freed during video device release callback.
-	 */
+	 
 	chan = kzalloc(sizeof(*chan), GFP_KERNEL);
 	if (!chan)
 		return -ENOMEM;
 
 	chan->vi = vi;
 	chan->portnos[0] = port_num;
-	/*
-	 * For data lanes more than maximum csi lanes per brick, multiple of
-	 * x4 ports are used simultaneously for capture.
-	 */
+	 
 	if (lanes <= CSI_LANES_PER_BRICK)
 		chan->totalports = 1;
 	else
@@ -1454,9 +1402,7 @@ static int __maybe_unused vi_runtime_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * Find the entity matching a given fwnode in an v4l2_async_notifier list
- */
+ 
 static struct tegra_vi_graph_entity *
 tegra_vi_graph_find_entity(struct list_head *list,
 			   const struct fwnode_handle *fwnode)
@@ -1512,19 +1458,14 @@ static int tegra_vi_graph_build(struct tegra_vi_channel *chan,
 		}
 
 		local_pad = &local->pads[link.local_port];
-		/* Remote node is vi node. So use channel video entity and pad
-		 * as remote/sink.
-		 */
+		 
 		if (link.remote_node == of_fwnode_handle(vi->dev->of_node)) {
 			remote = &chan->video.entity;
 			remote_pad = &chan->pad;
 			goto create_link;
 		}
 
-		/*
-		 * Skip sink ports, they will be processed from the other end
-		 * of the link.
-		 */
+		 
 		if (local_pad->flags & MEDIA_PAD_FL_SINK) {
 			dev_dbg(vi->dev, "skipping sink port %pOF:%u\n",
 				to_of_node(link.local_node), link.local_port);
@@ -1532,7 +1473,7 @@ static int tegra_vi_graph_build(struct tegra_vi_channel *chan,
 			continue;
 		}
 
-		/* find the remote entity from notifier list */
+		 
 		ent = tegra_vi_graph_find_entity(&chan->notifier.done_list,
 						 link.remote_node);
 		if (!ent) {
@@ -1591,17 +1532,7 @@ static int tegra_vi_graph_notify_complete(struct v4l2_async_notifier *notifier)
 
 	dev_dbg(vi->dev, "notify complete, all subdevs registered\n");
 
-	/*
-	 * Video device node should be created at the end of all the device
-	 * related initialization/setup.
-	 * Current video_register_device() does both initialize and register
-	 * video device in same API.
-	 *
-	 * TODO: Update v4l2-dev driver to split initialize and register into
-	 * separate APIs and then update Tegra video driver to do video device
-	 * initialize followed by all video device related setup and then
-	 * register the video device.
-	 */
+	 
 	ret = video_register_device(&chan->video, VFL_TYPE_VIDEO, -1);
 	if (ret < 0) {
 		dev_err(vi->dev,
@@ -1609,7 +1540,7 @@ static int tegra_vi_graph_notify_complete(struct v4l2_async_notifier *notifier)
 		goto unregister_video;
 	}
 
-	/* create links between the entities */
+	 
 	list_for_each_entry(asd, &chan->notifier.done_list, asc_entry) {
 		entity = to_tegra_vi_graph_entity(asd);
 		ret = tegra_vi_graph_build(chan, entity);
@@ -1662,10 +1593,7 @@ static int tegra_vi_graph_notify_bound(struct v4l2_async_notifier *notifier,
 	chan = container_of(notifier, struct tegra_vi_channel, notifier);
 	vi = chan->vi;
 
-	/*
-	 * Locate the entity corresponding to the bound subdev and store the
-	 * subdev pointer.
-	 */
+	 
 	entity = tegra_vi_graph_find_entity(&chan->notifier.waiting_list,
 					    subdev->fwnode);
 	if (!entity) {
@@ -1703,7 +1631,7 @@ static int tegra_vi_graph_parse_one(struct tegra_vi_channel *chan,
 
 	dev_dbg(vi->dev, "parsing node %pOF\n", to_of_node(fwnode));
 
-	/* parse all the remote entities and put them into the list */
+	 
 	for_each_endpoint_of_node(to_of_node(fwnode), node) {
 		ep = of_fwnode_handle(node);
 		remote = fwnode_graph_get_remote_port_parent(ep);
@@ -1714,7 +1642,7 @@ static int tegra_vi_graph_parse_one(struct tegra_vi_channel *chan,
 			goto cleanup;
 		}
 
-		/* skip entities that are already processed */
+		 
 		if (device_match_fwnode(vi->dev, remote) ||
 		    tegra_vi_graph_find_entity(&chan->notifier.waiting_list,
 					       remote)) {
@@ -1756,15 +1684,7 @@ static int tegra_vi_graph_init(struct tegra_vi *vi)
 	struct fwnode_handle *fwnode = dev_fwnode(vi->dev);
 	int ret;
 
-	/*
-	 * Walk the links to parse the full graph. Each channel will have
-	 * one endpoint of the composite node. Start by parsing the
-	 * composite node and parse the remote entities in turn.
-	 * Each channel will register a v4l2 async notifier to make the graph
-	 * independent between the channels so we can skip the current channel
-	 * in case of something wrong during graph parsing and continue with
-	 * the next channels.
-	 */
+	 
 	list_for_each_entry(chan, &vi->vi_chans, list) {
 		struct fwnode_handle *ep, *remote;
 
@@ -1855,12 +1775,7 @@ static int tegra_vi_exit(struct host1x_client *client)
 {
 	struct tegra_vi *vi = host1x_client_to_vi(client);
 
-	/*
-	 * Do not cleanup the channels here as application might still be
-	 * holding video device nodes. Channels cleanup will happen during
-	 * v4l2_device release callback which gets called after all video
-	 * device nodes are released.
-	 */
+	 
 
 	if (!IS_ENABLED(CONFIG_VIDEO_TEGRA_TPG))
 		tegra_vi_graph_cleanup(vi);
@@ -1920,7 +1835,7 @@ static int tegra_vi_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, vi);
 	pm_runtime_enable(&pdev->dev);
 
-	/* initialize host1x interface */
+	 
 	INIT_LIST_HEAD(&vi->client.list);
 	vi->client.ops = &vi_client_ops;
 	vi->client.dev = &pdev->dev;

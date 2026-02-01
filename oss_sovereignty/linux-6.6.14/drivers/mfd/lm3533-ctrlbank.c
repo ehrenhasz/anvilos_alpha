@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lm3533-ctrlbank.c -- LM3533 Generic Control Bank interface
- *
- * Copyright (C) 2011-2012 Texas Instruments
- *
- * Author: Johan Hovold <jhovold@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -63,11 +57,7 @@ int lm3533_ctrlbank_disable(struct lm3533_ctrlbank *cb)
 }
 EXPORT_SYMBOL_GPL(lm3533_ctrlbank_disable);
 
-/*
- * Full-scale current.
- *
- * imax		5000 - 29800 uA (800 uA step)
- */
+ 
 int lm3533_ctrlbank_set_max_current(struct lm3533_ctrlbank *cb, u16 imax)
 {
 	u8 reg;
@@ -116,16 +106,7 @@ int lm3533_ctrlbank_get_brightness(struct lm3533_ctrlbank *cb, u8 *val)
 }
 EXPORT_SYMBOL_GPL(lm3533_ctrlbank_get_brightness);
 
-/*
- * PWM-input control mask:
- *
- *   bit 5 - PWM-input enabled in Zone 4
- *   bit 4 - PWM-input enabled in Zone 3
- *   bit 3 - PWM-input enabled in Zone 2
- *   bit 2 - PWM-input enabled in Zone 1
- *   bit 1 - PWM-input enabled in Zone 0
- *   bit 0 - PWM-input enabled
- */
+ 
 int lm3533_ctrlbank_set_pwm(struct lm3533_ctrlbank *cb, u8 val)
 {
 	u8 reg;

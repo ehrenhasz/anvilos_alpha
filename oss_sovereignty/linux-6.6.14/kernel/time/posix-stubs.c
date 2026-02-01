@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Dummy stubs used when CONFIG_POSIX_TIMERS=n
- *
- * Created by:  Nicolas Pitre, July 2016
- * Copyright:   (C) 2016 Linaro Limited
- */
+
+ 
 
 #include <linux/linkage.h>
 #include <linux/kernel.h>
@@ -17,11 +12,7 @@
 #include <linux/time_namespace.h>
 #include <linux/compat.h>
 
-/*
- * We preserve minimal support for CLOCK_REALTIME and CLOCK_MONOTONIC
- * as it is easy to remain compatible with little code. CLOCK_BOOTTIME
- * is also included for convenience as at least systemd uses it.
- */
+ 
 
 SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
 		const struct __kernel_timespec __user *, tp)

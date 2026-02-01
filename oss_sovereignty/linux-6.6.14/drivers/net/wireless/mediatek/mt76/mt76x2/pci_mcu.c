@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
@@ -61,7 +59,7 @@ mt76pci_load_rom_patch(struct mt76x02_dev *dev)
 
 	mt76_wr(dev, MT_MCU_PCIE_REMAP_BASE4, 0);
 
-	/* Trigger ROM */
+	 
 	mt76_wr(dev, MT_MCU_INT_LEVEL, 4);
 
 	if (!mt76_poll_msec(dev, patch_reg, patch_mask, patch_mask, 2000)) {
@@ -70,7 +68,7 @@ mt76pci_load_rom_patch(struct mt76x02_dev *dev)
 	}
 
 out:
-	/* release semaphore */
+	 
 	if (rom_protect)
 		mt76_wr(dev, MT_MCU_SEMAPHORE_03, 1);
 	release_firmware(fw);
@@ -133,7 +131,7 @@ mt76pci_load_firmware(struct mt76x02_dev *dev)
 	if (FIELD_GET(MT_EE_NIC_CONF_2_XTAL_OPTION, val) == 1)
 		mt76_set(dev, MT_MCU_COM_REG0, BIT(30));
 
-	/* trigger firmware */
+	 
 	mt76_wr(dev, MT_MCU_INT_LEVEL, 2);
 	if (!mt76_poll_msec(dev, MT_MCU_COM_REG0, 1, 1, 200)) {
 		dev_err(dev->mt76.dev, "Firmware failed to start\n");

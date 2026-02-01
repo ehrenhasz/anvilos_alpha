@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * XRS700x tag format handling
- * Copyright (c) 2008-2009 Marvell Semiconductor
- * Copyright (c) 2020 NovaTech LLC
- */
+
+ 
 
 #include <linux/bitops.h>
 
@@ -46,7 +42,7 @@ static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev)
 	if (pskb_trim_rcsum(skb, skb->len - 1))
 		return NULL;
 
-	/* Frame is forwarded by hardware, don't forward in software. */
+	 
 	dsa_default_offload_fwd_mark(skb);
 
 	return skb;

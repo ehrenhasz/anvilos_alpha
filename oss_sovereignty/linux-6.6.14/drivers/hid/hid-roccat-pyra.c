@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat Pyra driver for Linux
- *
- * Copyright (c) 2010 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
 
-/*
- * Roccat Pyra is a mobile gamer mouse which comes in wired and wireless
- * variant. Wireless variant is not tested.
- * Userland tools can be found at http://sourceforge.net/projects/roccat
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -363,7 +354,7 @@ static const struct attribute_group *pyra_groups[] = {
 	NULL,
 };
 
-/* pyra_class is used for creating sysfs attributes via roccat char device */
+ 
 static const struct class pyra_class = {
 	.name = "pyra",
 	.dev_groups = pyra_groups,
@@ -532,10 +523,7 @@ static void pyra_report_to_chrdev(struct pyra_device const *pyra,
 		if (button_event->data2 == PYRA_MOUSE_EVENT_BUTTON_PRESS) {
 			roccat_report.type = button_event->type;
 			roccat_report.key = button_event->data1;
-			/*
-			 * pyra reports profile numbers with range 1-5.
-			 * Keeping this behaviour.
-			 */
+			 
 			roccat_report.value = pyra->actual_profile + 1;
 			roccat_report_event(pyra->chrdev_minor,
 					(uint8_t const *)&roccat_report);
@@ -587,7 +575,7 @@ static int __init pyra_init(void)
 {
 	int retval;
 
-	/* class name has to be same as driver name */
+	 
 	retval = class_register(&pyra_class);
 	if (retval)
 		return retval;

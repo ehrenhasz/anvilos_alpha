@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include "radeon.h"
 #include "radeon_asic.h"
@@ -119,7 +97,7 @@ static void rv770_enable_pll_sleep_in_l1(struct radeon_device *rdev)
 	tmp |= LC_L1_INACTIVITY(8);
 	WREG32_PCIE_PORT(PCIE_LC_CNTL, tmp);
 
-	/* NOTE, this is a PCIE indirect reg, not PCIE PORT */
+	 
 	tmp = RREG32_PCIE(PCIE_P_CNTL);
 	tmp |= P_PLL_PWRDN_IN_L1L23;
 	tmp &= ~P_PLL_BUF_PDNB;
@@ -1734,7 +1712,7 @@ void rv770_program_response_times(struct radeon_device *rdev)
 	rv770_write_smc_soft_register(rdev,
 				      RV770_SMC_SOFT_REGISTER_mclk_chg_timeout, vbi_dly);
 #if 0
-	/* XXX look up hw revision */
+	 
 	if (WEKIVA_A21)
 		rv770_write_smc_soft_register(rdev,
 					      RV770_SMC_SOFT_REGISTER_baby_step_timer,
@@ -2217,7 +2195,7 @@ static void rv7xx_parse_pplib_clock_info(struct radeon_device *rdev,
 	pl->mclk = mclk;
 	pl->sclk = sclk;
 
-	/* patch up vddc if necessary */
+	 
 	if (pl->vddc == 0xff01) {
 		if (pi->max_vddc)
 			pl->vddc = pi->max_vddc;
@@ -2246,7 +2224,7 @@ static void rv7xx_parse_pplib_clock_info(struct radeon_device *rdev,
 	if (pi->max_vddc_in_table < pl->vddc)
 		pi->max_vddc_in_table = pl->vddc;
 
-	/* patch up boot state */
+	 
 	if (rps->class & ATOM_PPLIB_CLASSIFICATION_BOOT) {
 		u16 vddc, vddci, mvdd;
 		radeon_atombios_get_default_voltages(rdev, &vddc, &vddci, &mvdd);
@@ -2481,7 +2459,7 @@ void rv770_dpm_debugfs_print_current_performance_level(struct radeon_device *rde
 			pl = &ps->low;
 		else if (current_index == 1)
 			pl = &ps->medium;
-		else /* current_index == 2 */
+		else  
 			pl = &ps->high;
 		seq_printf(m, "uvd    vclk: %d dclk: %d\n", rps->vclk, rps->dclk);
 		if (rdev->family >= CHIP_CEDAR) {
@@ -2510,7 +2488,7 @@ u32 rv770_dpm_get_current_sclk(struct radeon_device *rdev)
 			pl = &ps->low;
 		else if (current_index == 1)
 			pl = &ps->medium;
-		else /* current_index == 2 */
+		else  
 			pl = &ps->high;
 		return  pl->sclk;
 	}
@@ -2532,7 +2510,7 @@ u32 rv770_dpm_get_current_mclk(struct radeon_device *rdev)
 			pl = &ps->low;
 		else if (current_index == 1)
 			pl = &ps->medium;
-		else /* current_index == 2 */
+		else  
 			pl = &ps->high;
 		return  pl->mclk;
 	}
@@ -2572,13 +2550,13 @@ u32 rv770_dpm_get_mclk(struct radeon_device *rdev, bool low)
 bool rv770_dpm_vblank_too_short(struct radeon_device *rdev)
 {
 	u32 vblank_time = r600_dpm_get_vblank_time(rdev);
-	u32 switch_limit = 200; /* 300 */
+	u32 switch_limit = 200;  
 
-	/* RV770 */
-	/* mclk switching doesn't seem to work reliably on desktop RV770s */
+	 
+	 
 	if ((rdev->family == CHIP_RV770) &&
 	    !(rdev->flags & RADEON_IS_MOBILITY))
-		switch_limit = 0xffffffff; /* disable mclk switching */
+		switch_limit = 0xffffffff;  
 
 	if (vblank_time < switch_limit)
 		return true;

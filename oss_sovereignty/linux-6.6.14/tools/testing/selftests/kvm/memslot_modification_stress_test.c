@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KVM memslot modification stress test
- * Adapted from demand_paging_test.c
- *
- * Copyright (C) 2018, Red Hat, Inc.
- * Copyright (C) 2020, Google, Inc.
- */
 
-#define _GNU_SOURCE /* for program_invocation_name */
+ 
+
+#define _GNU_SOURCE  
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +36,7 @@ static void vcpu_worker(struct memstress_vcpu_args *vcpu_args)
 
 	run = vcpu->run;
 
-	/* Let the guest access its memory until a stop signal is received */
+	 
 	while (!READ_ONCE(memstress_args.stop_vcpus)) {
 		ret = _vcpu_run(vcpu);
 		TEST_ASSERT(ret == 0, "vcpu_run failed: %d\n", ret);
@@ -69,10 +63,7 @@ static void add_remove_memslot(struct kvm_vm *vm, useconds_t delay,
 	uint64_t gpa;
 	int i;
 
-	/*
-	 * Add the dummy memslot just below the memstress memslot, which is
-	 * at the top of the guest physical address space.
-	 */
+	 
 	gpa = memstress_args.gpa - pages * vm->page_size;
 
 	for (i = 0; i < nr_modifications; i++) {

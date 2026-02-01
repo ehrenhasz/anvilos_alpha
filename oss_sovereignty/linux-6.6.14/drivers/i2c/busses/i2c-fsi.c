@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FSI-attached I2C master algorithm
- *
- * Copyright 2018 IBM Corporation
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -29,7 +20,7 @@
 
 #define I2C_DEFAULT_CLK_DIV	6
 
-/* i2c registers */
+ 
 #define I2C_FSI_FIFO		0x00
 #define I2C_FSI_CMD		0x04
 #define I2C_FSI_MODE		0x08
@@ -50,7 +41,7 @@
 #define I2C_FSI_SET_SDA		0x30
 #define I2C_FSI_RESET_SDA	0x34
 
-/* cmd register */
+ 
 #define I2C_CMD_WITH_START	BIT(31)
 #define I2C_CMD_WITH_ADDR	BIT(30)
 #define I2C_CMD_RD_CONT		BIT(29)
@@ -60,7 +51,7 @@
 #define I2C_CMD_READ		BIT(16)
 #define I2C_CMD_LEN		GENMASK(15, 0)
 
-/* mode register */
+ 
 #define I2C_MODE_CLKDIV		GENMASK(31, 16)
 #define I2C_MODE_PORT		GENMASK(15, 10)
 #define I2C_MODE_ENHANCED	BIT(3)
@@ -68,14 +59,14 @@
 #define I2C_MODE_PACE_ALLOW	BIT(1)
 #define I2C_MODE_WRAP		BIT(0)
 
-/* watermark register */
+ 
 #define I2C_WATERMARK_HI	GENMASK(15, 12)
 #define I2C_WATERMARK_LO	GENMASK(7, 4)
 
 #define I2C_FIFO_HI_LVL		4
 #define I2C_FIFO_LO_LVL		4
 
-/* interrupt register */
+ 
 #define I2C_INT_INV_CMD		BIT(15)
 #define I2C_INT_PARITY		BIT(14)
 #define I2C_INT_BE_OVERRUN	BIT(13)
@@ -88,7 +79,7 @@
 #define I2C_INT_BUSY		BIT(6)
 #define I2C_INT_IDLE		BIT(5)
 
-/* status register */
+ 
 #define I2C_STAT_INV_CMD	BIT(31)
 #define I2C_STAT_PARITY		BIT(30)
 #define I2C_STAT_BE_OVERRUN	BIT(29)
@@ -117,7 +108,7 @@
 				 I2C_STAT_DAT_REQ |			\
 				 I2C_STAT_CMD_COMP)
 
-/* extended status register */
+ 
 #define I2C_ESTAT_FIFO_SZ	GENMASK(31, 24)
 #define I2C_ESTAT_SCL_IN_SY	BIT(15)
 #define I2C_ESTAT_SDA_IN_SY	BIT(14)
@@ -131,18 +122,18 @@
 #define I2C_ESTAT_SELF_BUSY	BIT(6)
 #define I2C_ESTAT_VERSION	GENMASK(4, 0)
 
-/* port busy register */
+ 
 #define I2C_PORT_BUSY_RESET	BIT(31)
 
-/* wait for command complete or data request */
+ 
 #define I2C_CMD_SLEEP_MAX_US	500
 #define I2C_CMD_SLEEP_MIN_US	50
 
-/* wait after reset; choose time from legacy driver */
+ 
 #define I2C_RESET_SLEEP_MAX_US	2000
 #define I2C_RESET_SLEEP_MIN_US	1000
 
-/* choose timeout length from legacy driver; it's well tested */
+ 
 #define I2C_ABORT_TIMEOUT	msecs_to_jiffies(100)
 
 struct fsi_i2c_master {
@@ -189,7 +180,7 @@ static int fsi_i2c_dev_init(struct fsi_i2c_master *i2c)
 	u32 mode = I2C_MODE_ENHANCED, extended_status, watermark;
 	u32 interrupt = 0;
 
-	/* since we use polling, disable interrupts */
+	 
 	rc = fsi_i2c_write_reg(i2c->fsi, I2C_FSI_INT_MASK, &interrupt);
 	if (rc)
 		return rc;
@@ -229,7 +220,7 @@ static int fsi_i2c_set_port(struct fsi_i2c_port *port)
 	if (rc)
 		return rc;
 
-	/* reset engine when port is changed */
+	 
 	return fsi_i2c_write_reg(fsi, I2C_FSI_RESET_ERR, &dummy);
 }
 
@@ -255,7 +246,7 @@ static int fsi_i2c_start(struct fsi_i2c_port *port, struct i2c_msg *msg,
 
 static int fsi_i2c_get_op_bytes(int op_bytes)
 {
-	/* fsi is limited to max 4 byte aligned ops */
+	 
 	if (op_bytes > 4)
 		return 4;
 	else if (op_bytes == 3)
@@ -313,7 +304,7 @@ static int fsi_i2c_read_fifo(struct fsi_i2c_port *port, struct i2c_msg *msg,
 			port->xfrd += read;
 			xfr_remaining -= read;
 		} else {
-			/* no more buffer but data in fifo, need to clear it */
+			 
 			rc = fsi_device_read(i2c->fsi, I2C_FSI_FIFO, &dummy,
 					     read);
 			if (rc)
@@ -408,15 +399,15 @@ static int fsi_i2c_reset_bus(struct fsi_i2c_master *i2c,
 	int rc;
 	u32 stat, dummy = 0;
 
-	/* force bus reset, ignore errors */
+	 
 	i2c_recover_bus(&port->adapter);
 
-	/* reset errors */
+	 
 	rc = fsi_i2c_write_reg(i2c->fsi, I2C_FSI_RESET_ERR, &dummy);
 	if (rc)
 		return rc;
 
-	/* wait for command complete */
+	 
 	usleep_range(I2C_RESET_SLEEP_MIN_US, I2C_RESET_SLEEP_MAX_US);
 
 	rc = fsi_i2c_read_reg(i2c->fsi, I2C_FSI_STAT, &stat);
@@ -426,12 +417,12 @@ static int fsi_i2c_reset_bus(struct fsi_i2c_master *i2c,
 	if (stat & I2C_STAT_CMD_COMP)
 		return 0;
 
-	/* failed to get command complete; reset engine again */
+	 
 	rc = fsi_i2c_write_reg(i2c->fsi, I2C_FSI_RESET_I2C, &dummy);
 	if (rc)
 		return rc;
 
-	/* re-init engine again */
+	 
 	return fsi_i2c_dev_init(i2c);
 }
 
@@ -440,12 +431,12 @@ static int fsi_i2c_reset_engine(struct fsi_i2c_master *i2c, u16 port)
 	int rc;
 	u32 mode, dummy = 0;
 
-	/* reset engine */
+	 
 	rc = fsi_i2c_write_reg(i2c->fsi, I2C_FSI_RESET_I2C, &dummy);
 	if (rc)
 		return rc;
 
-	/* re-init engine */
+	 
 	rc = fsi_i2c_dev_init(i2c);
 	if (rc)
 		return rc;
@@ -454,7 +445,7 @@ static int fsi_i2c_reset_engine(struct fsi_i2c_master *i2c, u16 port)
 	if (rc)
 		return rc;
 
-	/* set port; default after reset is 0 */
+	 
 	if (port) {
 		mode &= ~I2C_MODE_PORT;
 		mode |= FIELD_PREP(I2C_MODE_PORT, port);
@@ -463,7 +454,7 @@ static int fsi_i2c_reset_engine(struct fsi_i2c_master *i2c, u16 port)
 			return rc;
 	}
 
-	/* reset busy register; hw workaround */
+	 
 	dummy = I2C_PORT_BUSY_RESET;
 	rc = fsi_i2c_write_reg(i2c->fsi, I2C_FSI_PORT_BUSY, &dummy);
 	if (rc)
@@ -489,23 +480,23 @@ static int fsi_i2c_abort(struct fsi_i2c_port *port, u32 status)
 	if (rc)
 		return rc;
 
-	/* if sda is low, peform full bus reset */
+	 
 	if (!(stat & I2C_STAT_SDA_IN)) {
 		rc = fsi_i2c_reset_bus(i2c, port);
 		if (rc)
 			return rc;
 	}
 
-	/* skip final stop command for these errors */
+	 
 	if (status & (I2C_STAT_PARITY | I2C_STAT_LOST_ARB | I2C_STAT_STOP_ERR))
 		return 0;
 
-	/* write stop command */
+	 
 	rc = fsi_i2c_write_reg(fsi, I2C_FSI_CMD, &cmd);
 	if (rc)
 		return rc;
 
-	/* wait until we see command complete in the master */
+	 
 	start = jiffies;
 
 	do {
@@ -589,11 +580,11 @@ static int fsi_i2c_wait(struct fsi_i2c_port *port, struct i2c_msg *msg,
 			if (rc < 0)
 				return rc;
 
-			/* cmd complete and all data xfrd */
+			 
 			if (rc == msg->len)
 				return 0;
 
-			/* need to xfr more data, but maybe don't need wait */
+			 
 			continue;
 		}
 

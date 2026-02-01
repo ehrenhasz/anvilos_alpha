@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VP9 codec driver
- *
- * Copyright (C) 2021 Collabora Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <media/v4l2-mem2mem.h>
@@ -26,7 +22,7 @@ static size_t hantro_vp9_tile_filter_size(unsigned int height)
 	h = roundup(height, 8);
 
 	height32 = roundup(h, 64);
-	size = 24 * height32 * (MAX_NUM_TILE_COLS - 1); /* luma: 8, chroma: 8 + 8 */
+	size = 24 * height32 * (MAX_NUM_TILE_COLS - 1);  
 
 	return size;
 }
@@ -124,12 +120,7 @@ static void init_v4l2_vp9_count_tbl(struct hantro_ctx *ctx)
 	vp9_ctx->cnts.skip = &cnts->mbskip_count;
 	vp9_ctx->cnts.intra_inter = &cnts->intra_inter_count;
 	vp9_ctx->cnts.tx32p = &cnts->tx32x32_count;
-	/*
-	 * g2 hardware uses tx16x16_count[2][3], while the api
-	 * expects tx16p[2][4], so this must be explicitly copied
-	 * into vp9_ctx->cnts.tx16p when passing the data to the
-	 * vp9 library function
-	 */
+	 
 	vp9_ctx->cnts.tx8p = &cnts->tx8x8_count;
 
 	vp9_ctx->cnts.y_mode = &cnts->sb_ymode_counts;
@@ -191,7 +182,7 @@ int hantro_vp9_dec_init(struct hantro_ctx *ctx)
 
 	size = hantro_vp9_segment_map_size(max_width, max_height);
 	vp9_dec->segment_map_size = size;
-	size *= 2; /* we need two areas of this size, used alternately */
+	size *= 2;  
 
 	segment_map->cpu = dma_alloc_coherent(vpu->dev, size, &segment_map->dma, GFP_KERNEL);
 	if (!segment_map->cpu)

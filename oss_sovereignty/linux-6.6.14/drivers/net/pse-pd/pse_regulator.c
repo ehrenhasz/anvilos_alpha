@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Driver for the regulator based Ethernet Power Sourcing Equipment, without
-// auto classification support.
-//
-// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -14,7 +14,7 @@
 
 struct pse_reg_priv {
 	struct pse_controller_dev pcdev;
-	struct regulator *ps; /*power source */
+	struct regulator *ps;  
 	enum ethtool_podl_pse_admin_state admin_state;
 };
 

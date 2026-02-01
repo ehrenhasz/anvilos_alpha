@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2012, Intel Corporation.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -16,16 +13,7 @@
 
 #define HID_SENSOR_HUB_ENUM_QUIRK	0x01
 
-/**
- * struct sensor_hub_data - Hold a instance data for a HID hub device
- * @mutex:		Mutex to serialize synchronous request.
- * @lock:		Spin lock to protect pending request structure.
- * @dyn_callback_list:	Holds callback function
- * @dyn_callback_lock:	spin lock to protect callback list
- * @hid_sensor_hub_client_devs:	Stores all MFD cells for a hub instance.
- * @hid_sensor_client_cnt: Number of MFD cells, (no of sensors attached).
- * @ref_cnt:		Number of MFD clients have opened this device
- */
+ 
 struct sensor_hub_data {
 	struct mutex mutex;
 	spinlock_t lock;
@@ -36,14 +24,7 @@ struct sensor_hub_data {
 	int ref_cnt;
 };
 
-/**
- * struct hid_sensor_hub_callbacks_list - Stores callback list
- * @list:		list head.
- * @usage_id:		usage id for a physical device.
- * @hsdev:		Stored hid instance for current hub device.
- * @usage_callback:	Stores registered callback functions.
- * @priv:		Private data for a physical device.
- */
+ 
 struct hid_sensor_hub_callbacks_list {
 	struct list_head list;
 	u32 usage_id;
@@ -148,14 +129,7 @@ int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
 	callback->usage_callback = usage_callback;
 	callback->usage_id = usage_id;
 	callback->priv = NULL;
-	/*
-	 * If there is a handler registered for the collection type, then
-	 * it will handle all reports for sensors in this collection. If
-	 * there is also an individual sensor handler registration, then
-	 * we want to make sure that the reports are directed to collection
-	 * handler, as this may be a fusion sensor. So add collection handlers
-	 * to the beginning of the list, so that they are matched first.
-	 */
+	 
 	if (usage_id == HID_USAGE_SENSOR_COLLECTION)
 		list_add(&callback->list, &pdata->dyn_callback_list);
 	else
@@ -258,7 +232,7 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
 	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
 	hid_hw_wait(hsdev->hdev);
 
-	/* calculate number of bytes required to read this field */
+	 
 	report_size = DIV_ROUND_UP(report->field[field_index]->report_size,
 				   8) *
 				   report->field[field_index]->report_count;
@@ -384,7 +358,7 @@ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
 	struct hid_report_enum *report_enum;
 	struct hid_device *hdev = hsdev->hdev;
 
-	/* Initialize with defaults */
+	 
 	info->usage_id = usage_id;
 	info->attrib_id = attr_usage_id;
 	info->report_id = -1;
@@ -465,9 +439,7 @@ static int sensor_hub_reset_resume(struct hid_device *hdev)
 }
 #endif
 
-/*
- * Handle raw report as sent by device
- */
+ 
 static int sensor_hub_raw_event(struct hid_device *hdev,
 		struct hid_report *report, u8 *raw_data, int size)
 {
@@ -489,7 +461,7 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
 
 	ptr = raw_data;
 	if (report->id)
-		ptr++; /* Skip report id */
+		ptr++;  
 
 	spin_lock_irqsave(&pdata->lock, flags);
 
@@ -583,16 +555,13 @@ EXPORT_SYMBOL_GPL(sensor_hub_device_close);
 static __u8 *sensor_hub_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
-	/*
-	 * Checks if the report descriptor of Thinkpad Helix 2 has a logical
-	 * minimum for magnetic flux axis greater than the maximum.
-	 */
+	 
 	if (hdev->product == USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA &&
 		*rsize == 2558 && rdesc[913] == 0x17 && rdesc[914] == 0x40 &&
 		rdesc[915] == 0x81 && rdesc[916] == 0x08 &&
 		rdesc[917] == 0x00 && rdesc[918] == 0x27 &&
 		rdesc[921] == 0x07 && rdesc[922] == 0x00) {
-		/* Sets negative logical minimum for mag x, y and z */
+		 
 		rdesc[914] = rdesc[935] = rdesc[956] = 0xc0;
 		rdesc[915] = rdesc[936] = rdesc[957] = 0x7e;
 		rdesc[916] = rdesc[937] = rdesc[958] = 0xf7;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "edac_module.h"
 
 static struct dentry *edac_debugfs;
@@ -79,7 +79,7 @@ void edac_create_debugfs_nodes(struct mem_ctl_info *mci)
 	mci->debugfs = parent;
 }
 
-/* Create a toplevel dir under EDAC's debugfs hierarchy */
+ 
 struct dentry *edac_debugfs_create_dir(const char *dirname)
 {
 	if (!edac_debugfs)
@@ -89,7 +89,7 @@ struct dentry *edac_debugfs_create_dir(const char *dirname)
 }
 EXPORT_SYMBOL_GPL(edac_debugfs_create_dir);
 
-/* Create a toplevel dir under EDAC's debugfs hierarchy with parent @parent */
+ 
 struct dentry *
 edac_debugfs_create_dir_at(const char *dirname, struct dentry *parent)
 {
@@ -97,15 +97,7 @@ edac_debugfs_create_dir_at(const char *dirname, struct dentry *parent)
 }
 EXPORT_SYMBOL_GPL(edac_debugfs_create_dir_at);
 
-/*
- * Create a file under EDAC's hierarchy or a sub-hierarchy:
- *
- * @name: file name
- * @mode: file permissions
- * @parent: parent dentry. If NULL, it becomes the toplevel EDAC dir
- * @data: private data of caller
- * @fops: file operations of this file
- */
+ 
 struct dentry *
 edac_debugfs_create_file(const char *name, umode_t mode, struct dentry *parent,
 			 void *data, const struct file_operations *fops)
@@ -117,7 +109,7 @@ edac_debugfs_create_file(const char *name, umode_t mode, struct dentry *parent,
 }
 EXPORT_SYMBOL_GPL(edac_debugfs_create_file);
 
-/* Wrapper for debugfs_create_x8() */
+ 
 void edac_debugfs_create_x8(const char *name, umode_t mode,
 			    struct dentry *parent, u8 *value)
 {
@@ -128,7 +120,7 @@ void edac_debugfs_create_x8(const char *name, umode_t mode,
 }
 EXPORT_SYMBOL_GPL(edac_debugfs_create_x8);
 
-/* Wrapper for debugfs_create_x16() */
+ 
 void edac_debugfs_create_x16(const char *name, umode_t mode,
 			     struct dentry *parent, u16 *value)
 {
@@ -139,7 +131,7 @@ void edac_debugfs_create_x16(const char *name, umode_t mode,
 }
 EXPORT_SYMBOL_GPL(edac_debugfs_create_x16);
 
-/* Wrapper for debugfs_create_x32() */
+ 
 void edac_debugfs_create_x32(const char *name, umode_t mode,
 			     struct dentry *parent, u32 *value)
 {

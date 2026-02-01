@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014-2016 Christoph Hellwig.
- */
+
+ 
 #include <linux/exportfs.h>
 #include <linux/iomap.h>
 #include <linux/slab.h>
@@ -34,10 +32,7 @@ nfsd4_block_proc_layoutget(struct inode *inode, const struct svc_fh *fhp,
 		goto out_layoutunavailable;
 	}
 
-	/*
-	 * Some clients barf on non-zero block numbers for NONE or INVALID
-	 * layouts, so make sure to zero the whole structure.
-	 */
+	 
 	error = -ENOMEM;
 	bex = kzalloc(sizeof(*bex), GFP_KERNEL);
 	if (!bex)
@@ -68,9 +63,7 @@ nfsd4_block_proc_layoutget(struct inode *inode, const struct svc_fh *fhp,
 		break;
 	case IOMAP_UNWRITTEN:
 		if (seg->iomode & IOMODE_RW) {
-			/*
-			 * Crack monkey special case from section 2.3.1.
-			 */
+			 
 			if (args->lg_minlength == 0) {
 				dprintk("pnfsd: no soup for you!\n");
 				goto out_layoutunavailable;
@@ -188,15 +181,7 @@ nfsd4_block_proc_layoutcommit(struct inode *inode,
 }
 
 const struct nfsd4_layout_ops bl_layout_ops = {
-	/*
-	 * Pretend that we send notification to the client.  This is a blatant
-	 * lie to force recent Linux clients to cache our device IDs.
-	 * We rarely ever change the device ID, so the harm of leaking deviceids
-	 * for a while isn't too bad.  Unfortunately RFC5661 is a complete mess
-	 * in this regard, but I filed errata 4119 for this a while ago, and
-	 * hopefully the Linux client will eventually start caching deviceids
-	 * without this again.
-	 */
+	 
 	.notify_types		=
 			NOTIFY_DEVICEID4_DELETE | NOTIFY_DEVICEID4_CHANGE,
 	.proc_getdeviceinfo	= nfsd4_block_proc_getdeviceinfo,
@@ -205,15 +190,12 @@ const struct nfsd4_layout_ops bl_layout_ops = {
 	.encode_layoutget	= nfsd4_block_encode_layoutget,
 	.proc_layoutcommit	= nfsd4_block_proc_layoutcommit,
 };
-#endif /* CONFIG_NFSD_BLOCKLAYOUT */
+#endif  
 
 #ifdef CONFIG_NFSD_SCSILAYOUT
 #define NFSD_MDS_PR_KEY		0x0100000000000000ULL
 
-/*
- * We use the client ID as a unique key for the reservations.
- * This allows us to easily fence a client when recalls fail.
- */
+ 
 static u64 nfsd4_scsi_pr_key(struct nfs4_client *clp)
 {
 	return ((u64)clp->cl_clientid.cl_boot << 32) | clp->cl_clientid.cl_id;
@@ -337,15 +319,7 @@ nfsd4_scsi_fence_client(struct nfs4_layout_stateid *ls)
 }
 
 const struct nfsd4_layout_ops scsi_layout_ops = {
-	/*
-	 * Pretend that we send notification to the client.  This is a blatant
-	 * lie to force recent Linux clients to cache our device IDs.
-	 * We rarely ever change the device ID, so the harm of leaking deviceids
-	 * for a while isn't too bad.  Unfortunately RFC5661 is a complete mess
-	 * in this regard, but I filed errata 4119 for this a while ago, and
-	 * hopefully the Linux client will eventually start caching deviceids
-	 * without this again.
-	 */
+	 
 	.notify_types		=
 			NOTIFY_DEVICEID4_DELETE | NOTIFY_DEVICEID4_CHANGE,
 	.proc_getdeviceinfo	= nfsd4_scsi_proc_getdeviceinfo,
@@ -355,4 +329,4 @@ const struct nfsd4_layout_ops scsi_layout_ops = {
 	.proc_layoutcommit	= nfsd4_scsi_proc_layoutcommit,
 	.fence_client		= nfsd4_scsi_fence_client,
 };
-#endif /* CONFIG_NFSD_SCSILAYOUT */
+#endif  

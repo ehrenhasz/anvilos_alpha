@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -35,9 +11,9 @@
 #include "py/nativeglue.h"
 #include "py/gc.h"
 
-#if MICROPY_DEBUG_VERBOSE // print debugging info
+#if MICROPY_DEBUG_VERBOSE 
 #define DEBUG_printf DEBUG_printf
-#else // don't print debugging info
+#else 
 #define DEBUG_printf(...) (void)0
 #endif
 
@@ -66,7 +42,7 @@ int mp_native_type_from_qstr(qstr qst) {
     }
 }
 
-// convert a MicroPython object to a valid native value based on type
+
 mp_uint_t mp_native_from_obj(mp_obj_t obj, mp_uint_t type) {
     DEBUG_printf("mp_native_from_obj(%p, " UINT_FMT ")\n", obj, type);
     switch (type & 0xf) {
@@ -77,12 +53,12 @@ mp_uint_t mp_native_from_obj(mp_obj_t obj, mp_uint_t type) {
         case MP_NATIVE_TYPE_INT:
         case MP_NATIVE_TYPE_UINT:
             return mp_obj_get_int_truncated(obj);
-        default: { // cast obj to a pointer
+        default: { 
             mp_buffer_info_t bufinfo;
             if (mp_get_buffer(obj, &bufinfo, MP_BUFFER_READ)) {
                 return (mp_uint_t)bufinfo.buf;
             } else {
-                // assume obj is an integer that represents an address
+                
                 return mp_obj_get_int_truncated(obj);
             }
         }
@@ -93,7 +69,7 @@ mp_uint_t mp_native_from_obj(mp_obj_t obj, mp_uint_t type) {
 
 #if MICROPY_EMIT_MACHINE_CODE
 
-// convert a native value to a MicroPython object based on type
+
 mp_obj_t mp_native_to_obj(mp_uint_t val, mp_uint_t type) {
     DEBUG_printf("mp_native_to_obj(" UINT_FMT ", " UINT_FMT ")\n", val, type);
     switch (type & 0xf) {
@@ -107,8 +83,8 @@ mp_obj_t mp_native_to_obj(mp_uint_t val, mp_uint_t type) {
             return mp_obj_new_int_from_uint(val);
         case MP_NATIVE_TYPE_QSTR:
             return MP_OBJ_NEW_QSTR(val);
-        default: // a pointer
-            // we return just the value of the pointer as an integer
+        default: 
+            
             return mp_obj_new_int_from_uint(val);
     }
 }
@@ -142,40 +118,40 @@ mp_obj_t mp_obj_new_slice(mp_obj_t ostart, mp_obj_t ostop, mp_obj_t ostep) {
 
 static mp_obj_dict_t *mp_native_swap_globals(mp_obj_dict_t *new_globals) {
     if (new_globals == NULL) {
-        // Globals were the originally the same so don't restore them
+        
         return NULL;
     }
     mp_obj_dict_t *old_globals = mp_globals_get();
     if (old_globals == new_globals) {
-        // Don't set globals if they are the same, and return NULL to indicate this
+        
         return NULL;
     }
     mp_globals_set(new_globals);
     return old_globals;
 }
 
-// wrapper that accepts n_args and n_kw in one argument
-// (native emitter can only pass at most 3 arguments to a function)
+
+
 static mp_obj_t mp_native_call_function_n_kw(mp_obj_t fun_in, size_t n_args_kw, const mp_obj_t *args) {
     return mp_call_function_n_kw(fun_in, n_args_kw & 0xff, (n_args_kw >> 8) & 0xff, args);
 }
 
-// wrapper that makes raise obj and raises it
-// END_FINALLY opcode requires that we don't raise if o==None
+
+
 static void mp_native_raise(mp_obj_t o) {
     if (o != MP_OBJ_NULL && o != mp_const_none) {
         nlr_raise(mp_make_raise_obj(o));
     }
 }
 
-// wrapper that handles iterator buffer
+
 static mp_obj_t mp_native_getiter(mp_obj_t obj, mp_obj_iter_buf_t *iter) {
     if (iter == NULL) {
         return mp_getiter(obj, NULL);
     } else {
         obj = mp_getiter(obj, iter);
         if (obj != MP_OBJ_FROM_PTR(iter)) {
-            // Iterator didn't use the stack so indicate that with MP_OBJ_NULL.
+            
             iter->base.type = MP_OBJ_NULL;
             iter->buf[0] = obj;
         }
@@ -183,7 +159,7 @@ static mp_obj_t mp_native_getiter(mp_obj_t obj, mp_obj_iter_buf_t *iter) {
     }
 }
 
-// wrapper that handles iterator buffer
+
 static mp_obj_t mp_native_iternext(mp_obj_iter_buf_t *iter) {
     mp_obj_t obj;
     if (iter->base.type == MP_OBJ_NULL) {
@@ -254,7 +230,7 @@ static double mp_obj_get_float_to_d(mp_obj_t o) {
 
 #endif
 
-// these must correspond to the respective enum in nativeglue.h
+
 const mp_fun_table_t mp_fun_table = {
     mp_const_none,
     mp_const_false,
@@ -314,7 +290,7 @@ const mp_fun_table_t mp_fun_table = {
     #else
     NULL,
     #endif
-    // Additional entries for dynamic runtime, starts at index 50
+    
     memset,
     memmove,
     gc_realloc,
@@ -358,4 +334,4 @@ const mp_fun_table_t mp_fun_table = {
 
 const int mp_fun_table;
 
-#endif // MICROPY_EMIT_NATIVE
+#endif 

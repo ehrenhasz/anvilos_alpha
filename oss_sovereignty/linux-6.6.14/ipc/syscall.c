@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sys_ipc() is the old de-multiplexer for the SysV IPC calls.
- *
- * This is really horribly ugly, and new architectures should just wire up
- * the individual syscalls instead.
- */
+
+ 
 #include <linux/unistd.h>
 #include <linux/syscalls.h>
 #include <linux/security.h>
@@ -22,7 +17,7 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
 {
 	int version, ret;
 
-	version = call >> 16; /* hack for backward compatibility */
+	version = call >> 16;  
 	call &= 0xffff;
 
 	switch (call) {
@@ -89,10 +84,7 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
 			return put_user(raddr, (unsigned long __user *) third);
 		}
 		case 1:
-			/*
-			 * This was the entry point for kernel-originating calls
-			 * from iBCS2 in 2.2 days.
-			 */
+			 
 			return -EINVAL;
 		}
 	case SHMDT:
@@ -133,12 +125,12 @@ int compat_ksys_ipc(u32 call, int first, int second,
 	int version;
 	u32 pad;
 
-	version = call >> 16; /* hack for backward compatibility */
+	version = call >> 16;  
 	call &= 0xffff;
 
 	switch (call) {
 	case SEMOP:
-		/* struct sembuf is the same on 32 and 64bit :)) */
+		 
 		return ksys_semtimedop(first, compat_ptr(ptr), second, NULL);
 	case SEMTIMEDOP:
 		if (!IS_ENABLED(CONFIG_COMPAT_32BIT_TIME))

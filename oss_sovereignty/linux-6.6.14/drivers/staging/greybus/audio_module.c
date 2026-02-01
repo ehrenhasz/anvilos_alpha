@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus audio driver
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -13,9 +9,7 @@
 #include "audio_apbridgea.h"
 #include "audio_manager.h"
 
-/*
- * gb_snd management functions
- */
+ 
 
 static int gbaudio_request_jack(struct gbaudio_module_info *module,
 				struct gb_audio_jack_event_request *req)
@@ -83,7 +77,7 @@ static int gbaudio_request_button(struct gbaudio_module_info *module,
 			     "Button Event received: id: %u, event: %u\n",
 			     req->button_id, req->event);
 
-	/* currently supports 4 buttons only */
+	 
 	if (!module->jack_type) {
 		dev_err_ratelimited(module->dev,
 				    "Jack not present. Bogus event!!\n");
@@ -180,7 +174,7 @@ static int gb_audio_add_mgmt_connection(struct gbaudio_module_info *gbmodule,
 {
 	struct gb_connection *connection;
 
-	/* Management Cport */
+	 
 	if (gbmodule->mgmt_connection) {
 		dev_err(&bundle->dev,
 			"Can't have multiple Management connections\n");
@@ -226,9 +220,7 @@ static int gb_audio_add_data_connection(struct gbaudio_module_info *gbmodule,
 	return 0;
 }
 
-/*
- * This is the basic hook get things initialized and registered w/ gb
- */
+ 
 
 static int gb_audio_probe(struct gb_bundle *bundle,
 			  const struct greybus_bundle_id *id)
@@ -241,14 +233,11 @@ static int gb_audio_probe(struct gb_bundle *bundle,
 	int ret, i;
 	struct gb_audio_topology *topology;
 
-	/* There should be at least one Management and one Data cport */
+	 
 	if (bundle->num_cports < 2)
 		return -ENODEV;
 
-	/*
-	 * There can be only one Management connection and any number of data
-	 * connections.
-	 */
+	 
 	gbmodule = devm_kzalloc(dev, sizeof(*gbmodule), GFP_KERNEL);
 	if (!gbmodule)
 		return -ENOMEM;
@@ -264,7 +253,7 @@ static int gb_audio_probe(struct gb_bundle *bundle,
 		 dev_name(dev));
 	greybus_set_drvdata(bundle, gbmodule);
 
-	/* Create all connections */
+	 
 	for (i = 0; i < bundle->num_cports; i++) {
 		cport_desc = &bundle->cport_desc[i];
 
@@ -289,14 +278,14 @@ static int gb_audio_probe(struct gb_bundle *bundle,
 		}
 	}
 
-	/* There must be a management cport */
+	 
 	if (!gbmodule->mgmt_connection) {
 		ret = -EINVAL;
 		dev_err(dev, "Missing management connection\n");
 		goto destroy_connections;
 	}
 
-	/* Initialize management connection */
+	 
 	ret = gb_connection_enable(gbmodule->mgmt_connection);
 	if (ret) {
 		dev_err(dev, "%d: Error while enabling mgmt connection\n", ret);
@@ -304,17 +293,14 @@ static int gb_audio_probe(struct gb_bundle *bundle,
 	}
 	gbmodule->dev_id = gbmodule->mgmt_connection->intf->interface_id;
 
-	/*
-	 * FIXME: malloc for topology happens via audio_gb driver
-	 * should be done within codec driver itself
-	 */
+	 
 	ret = gb_audio_gb_get_topology(gbmodule->mgmt_connection, &topology);
 	if (ret) {
 		dev_err(dev, "%d:Error while fetching topology\n", ret);
 		goto disable_connection;
 	}
 
-	/* process topology data */
+	 
 	ret = gbaudio_tplg_parse_data(gbmodule, topology);
 	if (ret) {
 		dev_err(dev, "%d:Error while parsing topology data\n",
@@ -323,7 +309,7 @@ static int gb_audio_probe(struct gb_bundle *bundle,
 	}
 	gbmodule->topology = topology;
 
-	/* Initialize data connections */
+	 
 	list_for_each_entry(dai, &gbmodule->data_list, list) {
 		ret = gb_connection_enable(dai->connection);
 		if (ret) {
@@ -334,17 +320,17 @@ static int gb_audio_probe(struct gb_bundle *bundle,
 		}
 	}
 
-	/* register module with gbcodec */
+	 
 	ret = gbaudio_register_module(gbmodule);
 	if (ret)
 		goto disable_data_connection;
 
-	/* inform above layer for uevent */
+	 
 	dev_dbg(dev, "Inform set_event:%d to above layer\n", 1);
-	/* prepare for the audio manager */
+	 
 	strscpy(desc.name, gbmodule->name, sizeof(desc.name));
-	desc.vid = 2; /* todo */
-	desc.pid = 3; /* todo */
+	desc.vid = 2;  
+	desc.pid = 3;  
 	desc.intf_id = gbmodule->dev_id;
 	desc.op_devices = gbmodule->op_devices;
 	desc.ip_devices = gbmodule->ip_devices;
@@ -390,10 +376,10 @@ static void gb_audio_disconnect(struct gb_bundle *bundle)
 
 	gb_pm_runtime_get_sync(bundle);
 
-	/* cleanup module related resources first */
+	 
 	gbaudio_unregister_module(gbmodule);
 
-	/* inform uevent to above layers */
+	 
 	gb_audio_manager_remove(gbmodule->manager_id);
 
 	gbaudio_tplg_release(gbmodule);

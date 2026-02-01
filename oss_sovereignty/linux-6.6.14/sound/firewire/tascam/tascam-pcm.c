@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tascam-pcm.c - a part of driver for TASCAM FireWire series
- *
- * Copyright (c) 2015 Takashi Sakamoto
- */
+
+ 
 
 #include "tascam.h"
 
@@ -61,9 +57,9 @@ static int pcm_open(struct snd_pcm_substream *substream)
 
 	mutex_lock(&tscm->mutex);
 
-	// When source of clock is not internal or any stream is reserved for
-	// transmission of PCM frames, the available sampling rate is limited
-	// at current one.
+	
+	
+	
 	if (clock != SND_TSCM_CLOCK_INTERNAL || tscm->substreams_counter > 0) {
 		unsigned int frames_per_period = d->events_per_period;
 		unsigned int frames_per_buffer = d->events_per_buffer;

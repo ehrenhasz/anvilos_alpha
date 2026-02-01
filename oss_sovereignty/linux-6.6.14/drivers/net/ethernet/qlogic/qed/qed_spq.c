@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -31,9 +28,7 @@
 #include "qed_sriov.h"
 #include "qed_rdma.h"
 
-/***************************************************************************
- * Structures & Definitions
- ***************************************************************************/
+ 
 
 #define SPQ_HIGH_PRI_RESERVE_DEFAULT    (1)
 
@@ -42,9 +37,7 @@
 #define SPQ_BLOCK_SLEEP_MAX_ITER        (1000)
 #define SPQ_BLOCK_SLEEP_MS              (5)
 
-/***************************************************************************
- * Blocking Imp. (BLOCK/EBLOCK mode)
- ***************************************************************************/
+ 
 static void qed_spq_blocking_cb(struct qed_hwfn *p_hwfn,
 				void *cookie,
 				union event_ring_data *data, u8 fw_return_code)
@@ -55,7 +48,7 @@ static void qed_spq_blocking_cb(struct qed_hwfn *p_hwfn,
 
 	comp_done->fw_return_code = fw_return_code;
 
-	/* Make sure completion done is visible on waiting thread */
+	 
 	smp_store_release(&comp_done->done, 0x1);
 }
 
@@ -71,8 +64,8 @@ static int __qed_spq_block(struct qed_hwfn *p_hwfn,
 				      : SPQ_BLOCK_DELAY_MAX_ITER;
 
 	while (iter_cnt--) {
-		/* Validate we receive completion update */
-		if (smp_load_acquire(&comp_done->done) == 1) { /* ^^^ */
+		 
+		if (smp_load_acquire(&comp_done->done) == 1) {  
 			if (p_fw_ret)
 				*p_fw_ret = comp_done->fw_return_code;
 			return 0;
@@ -95,16 +88,14 @@ static int qed_spq_block(struct qed_hwfn *p_hwfn,
 	struct qed_ptt *p_ptt;
 	int rc;
 
-	/* A relatively short polling period w/o sleeping, to allow the FW to
-	 * complete the ramrod and thus possibly to avoid the following sleeps.
-	 */
+	 
 	if (!skip_quick_poll) {
 		rc = __qed_spq_block(p_hwfn, p_ent, p_fw_ret, false);
 		if (!rc)
 			return 0;
 	}
 
-	/* Move to polling with a sleeping period between iterations */
+	 
 	rc = __qed_spq_block(p_hwfn, p_ent, p_fw_ret, true);
 	if (!rc)
 		return 0;
@@ -123,7 +114,7 @@ static int qed_spq_block(struct qed_hwfn *p_hwfn,
 		goto err;
 	}
 
-	/* Retry after drain */
+	 
 	rc = __qed_spq_block(p_hwfn, p_ent, p_fw_ret, true);
 	if (!rc)
 		return 0;
@@ -152,9 +143,7 @@ err:
 	return -EBUSY;
 }
 
-/***************************************************************************
- * SPQ entries inner API
- ***************************************************************************/
+ 
 static int qed_spq_fill_entry(struct qed_hwfn *p_hwfn,
 			      struct qed_spq_entry *p_ent)
 {
@@ -190,9 +179,7 @@ static int qed_spq_fill_entry(struct qed_hwfn *p_hwfn,
 	return 0;
 }
 
-/***************************************************************************
- * HSI access
- ***************************************************************************/
+ 
 static void qed_spq_hw_initialize(struct qed_hwfn *p_hwfn,
 				  struct qed_spq *p_spq)
 {
@@ -220,7 +207,7 @@ static void qed_spq_hw_initialize(struct qed_hwfn *p_hwfn,
 	SET_FIELD(p_cxt->xstorm_ag_context.flags9,
 		  XSTORM_CORE_CONN_AG_CTX_CONSOLID_PROD_CF_EN, 1);
 
-	/* QM physical queue */
+	 
 	physical_q = qed_get_cm_pq_idx(p_hwfn, PQ_FLAGS_LB);
 	p_cxt->xstorm_ag_context.physical_q0 = cpu_to_le16(physical_q);
 
@@ -245,17 +232,17 @@ static int qed_spq_hw_post(struct qed_hwfn *p_hwfn,
 		return -EINVAL;
 	}
 
-	*elem = p_ent->elem; /* struct assignment */
+	*elem = p_ent->elem;  
 
-	/* send a doorbell on the slow hwfn session */
+	 
 	p_db_data->spq_prod = cpu_to_le16(qed_chain_get_prod_idx(p_chain));
 
-	/* make sure the SPQE is updated before the doorbell */
+	 
 	wmb();
 
 	DOORBELL(p_hwfn, p_spq->db_addr_offset, *(u32 *)p_db_data);
 
-	/* make sure doorbell is rang */
+	 
 	wmb();
 
 	DP_VERBOSE(p_hwfn, QED_MSG_SPQ,
@@ -268,9 +255,7 @@ static int qed_spq_hw_post(struct qed_hwfn *p_hwfn,
 	return 0;
 }
 
-/***************************************************************************
- * Asynchronous events
- ***************************************************************************/
+ 
 static int
 qed_async_event_completion(struct qed_hwfn *p_hwfn,
 			   struct event_ring_entry *p_eqe)
@@ -324,9 +309,7 @@ qed_spq_unregister_async_cb(struct qed_hwfn *p_hwfn,
 	p_hwfn->p_spq->async_comp_cb[protocol_id] = NULL;
 }
 
-/***************************************************************************
- * EQ API
- ***************************************************************************/
+ 
 void qed_eq_prod_update(struct qed_hwfn *p_hwfn, u16 prod)
 {
 	u32 addr = GET_GTT_REG_ADDR(GTT_BAR0_MAP_REG_USDM_RAM,
@@ -341,19 +324,17 @@ int qed_eq_completion(struct qed_hwfn *p_hwfn, void *cookie)
 	struct qed_chain *p_chain = &p_eq->chain;
 	int rc = 0;
 
-	/* take a snapshot of the FW consumer */
+	 
 	u16 fw_cons_idx = le16_to_cpu(*p_eq->p_fw_cons);
 
 	DP_VERBOSE(p_hwfn, QED_MSG_SPQ, "fw_cons_idx %x\n", fw_cons_idx);
 
-	/* Need to guarantee the fw_cons index we use points to a usuable
-	 * element (to comply with our chain), so our macros would comply
-	 */
+	 
 	if ((fw_cons_idx & qed_chain_get_usable_per_page(p_chain)) ==
 	    qed_chain_get_usable_per_page(p_chain))
 		fw_cons_idx += qed_chain_get_unusable_per_page(p_chain);
 
-	/* Complete current segment of eq entries */
+	 
 	while (fw_cons_idx != qed_chain_get_cons_idx(p_chain)) {
 		struct event_ring_entry *p_eqe = qed_chain_consume(p_chain);
 
@@ -386,7 +367,7 @@ int qed_eq_completion(struct qed_hwfn *p_hwfn, void *cookie)
 
 	qed_eq_prod_update(p_hwfn, qed_chain_get_prod_idx(p_chain));
 
-	/* Attempt to post pending requests */
+	 
 	spin_lock_bh(&p_hwfn->p_spq->lock);
 	rc = qed_spq_pend_post(p_hwfn);
 	spin_unlock_bh(&p_hwfn->p_spq->lock);
@@ -406,7 +387,7 @@ int qed_eq_alloc(struct qed_hwfn *p_hwfn, u16 num_elem)
 	struct qed_eq *p_eq;
 	int ret;
 
-	/* Allocate EQ struct */
+	 
 	p_eq = kzalloc(sizeof(*p_eq), GFP_KERNEL);
 	if (!p_eq)
 		return -ENOMEM;
@@ -417,7 +398,7 @@ int qed_eq_alloc(struct qed_hwfn *p_hwfn, u16 num_elem)
 		goto eq_allocate_fail;
 	}
 
-	/* register EQ completion on the SP SB */
+	 
 	qed_int_register_cb(p_hwfn, qed_eq_completion,
 			    p_eq, &p_eq->eq_sb_index, &p_eq->p_fw_cons);
 
@@ -446,9 +427,7 @@ void qed_eq_free(struct qed_hwfn *p_hwfn)
 	p_hwfn->p_eq = NULL;
 }
 
-/***************************************************************************
- * CQE API - manipulate EQ functionality
- ***************************************************************************/
+ 
 static int qed_cqe_completion(struct qed_hwfn *p_hwfn,
 			      struct eth_slow_path_rx_cqe *cqe,
 			      enum protocol_type protocol)
@@ -456,10 +435,7 @@ static int qed_cqe_completion(struct qed_hwfn *p_hwfn,
 	if (IS_VF(p_hwfn->cdev))
 		return 0;
 
-	/* @@@tmp - it's possible we'll eventually want to handle some
-	 * actual commands that can arrive here, but for now this is only
-	 * used to complete the ramrod using the echo value on the cqe
-	 */
+	 
 	return qed_spq_completion(p_hwfn, cqe->echo, 0, NULL);
 }
 
@@ -477,9 +453,7 @@ int qed_eth_cqe_completion(struct qed_hwfn *p_hwfn,
 	return rc;
 }
 
-/***************************************************************************
- * Slow hwfn Queue (spq)
- ***************************************************************************/
+ 
 void qed_spq_setup(struct qed_hwfn *p_hwfn)
 {
 	struct qed_spq *p_spq = p_hwfn->p_spq;
@@ -496,7 +470,7 @@ void qed_spq_setup(struct qed_hwfn *p_hwfn)
 	INIT_LIST_HEAD(&p_spq->unlimited_pending);
 	spin_lock_init(&p_spq->lock);
 
-	/* SPQ empty pool */
+	 
 	p_phys	= p_spq->p_phys + offsetof(struct qed_spq_entry, ramrod);
 	p_virt	= p_spq->p_virt;
 
@@ -510,7 +484,7 @@ void qed_spq_setup(struct qed_hwfn *p_hwfn)
 		p_phys += sizeof(struct qed_spq_entry);
 	}
 
-	/* Statistics */
+	 
 	p_spq->normal_count		= 0;
 	p_spq->comp_count		= 0;
 	p_spq->comp_sent_count		= 0;
@@ -519,14 +493,14 @@ void qed_spq_setup(struct qed_hwfn *p_hwfn)
 	bitmap_zero(p_spq->p_comp_bitmap, SPQ_RING_SIZE);
 	p_spq->comp_bitmap_idx = 0;
 
-	/* SPQ cid, cannot fail */
+	 
 	qed_cxt_acquire_cid(p_hwfn, PROTOCOLID_CORE, &p_spq->cid);
 	qed_spq_hw_initialize(p_hwfn, p_spq);
 
-	/* reset the chain itself */
+	 
 	qed_chain_reset(&p_spq->chain);
 
-	/* Initialize the address/data of the SPQ doorbell */
+	 
 	p_spq->db_addr_offset = qed_db_addr(p_spq->cid, DQ_DEMS_LEGACY);
 	p_db_data = &p_spq->db_data;
 	memset(p_db_data, 0, sizeof(*p_db_data));
@@ -536,7 +510,7 @@ void qed_spq_setup(struct qed_hwfn *p_hwfn)
 		  DQ_XCM_CORE_SPQ_PROD_CMD);
 	p_db_data->agg_flags = DQ_XCM_CORE_DQ_CF_CMD;
 
-	/* Register the SPQ doorbell with the doorbell recovery mechanism */
+	 
 	db_addr = (void __iomem *)((u8 __iomem *)p_hwfn->doorbells +
 				   p_spq->db_addr_offset);
 	rc = qed_db_recovery_add(p_hwfn->cdev, db_addr, &p_spq->db_data,
@@ -561,19 +535,19 @@ int qed_spq_alloc(struct qed_hwfn *p_hwfn)
 	u32 capacity;
 	int ret;
 
-	/* SPQ struct */
+	 
 	p_spq = kzalloc(sizeof(*p_spq), GFP_KERNEL);
 	if (!p_spq)
 		return -ENOMEM;
 
-	/* SPQ ring */
+	 
 	ret = qed_chain_alloc(cdev, &p_spq->chain, &params);
 	if (ret) {
 		DP_NOTICE(p_hwfn, "Failed to allocate SPQ chain\n");
 		goto spq_chain_alloc_fail;
 	}
 
-	/* allocate and fill the SPQ elements (incl. ramrod data list) */
+	 
 	capacity = qed_chain_get_capacity(&p_spq->chain);
 	ret = -ENOMEM;
 
@@ -606,7 +580,7 @@ void qed_spq_free(struct qed_hwfn *p_hwfn)
 	if (!p_spq)
 		return;
 
-	/* Delete the SPQ doorbell from the doorbell recovery mechanism */
+	 
 	db_addr = (void __iomem *)((u8 __iomem *)p_hwfn->doorbells +
 				   p_spq->db_addr_offset);
 	qed_db_recovery_del(p_hwfn->cdev, db_addr, &p_spq->db_data);
@@ -655,7 +629,7 @@ out_unlock:
 	return rc;
 }
 
-/* Locked variant; Should be called while the SPQ lock is taken */
+ 
 static void __qed_spq_return_entry(struct qed_hwfn *p_hwfn,
 				   struct qed_spq_entry *p_ent)
 {
@@ -669,20 +643,7 @@ void qed_spq_return_entry(struct qed_hwfn *p_hwfn, struct qed_spq_entry *p_ent)
 	spin_unlock_bh(&p_hwfn->p_spq->lock);
 }
 
-/**
- * qed_spq_add_entry() - Add a new entry to the pending list.
- *                       Should be used while lock is being held.
- *
- * @p_hwfn: HW device data.
- * @p_ent: An entry to add.
- * @priority: Desired priority.
- *
- * Adds an entry to the pending list is there is room (an empty
- * element is available in the free_pool), or else places the
- * entry in the unlimited_pending pool.
- *
- * Return: zero on success, -EINVAL on invalid @priority.
- */
+ 
 static int qed_spq_add_entry(struct qed_hwfn *p_hwfn,
 			     struct qed_spq_entry *p_ent,
 			     enum spq_priority priority)
@@ -702,15 +663,12 @@ static int qed_spq_add_entry(struct qed_hwfn *p_hwfn,
 						 struct qed_spq_entry, list);
 			list_del(&p_en2->list);
 
-			/* Copy the ring element physical pointer to the new
-			 * entry, since we are about to override the entire ring
-			 * entry and don't want to lose the pointer.
-			 */
+			 
 			p_ent->elem.data_ptr = p_en2->elem.data_ptr;
 
 			*p_en2 = *p_ent;
 
-			/* EBLOCK responsible to free the allocated p_ent */
+			 
 			if (p_ent->comp_mode != QED_SPQ_MODE_EBLOCK)
 				kfree(p_ent);
 			else
@@ -720,7 +678,7 @@ static int qed_spq_add_entry(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* entry is to be placed in 'pending' queue */
+	 
 	switch (priority) {
 	case QED_SPQ_PRIORITY_NORMAL:
 		list_add_tail(&p_ent->list, &p_spq->pending);
@@ -737,19 +695,15 @@ static int qed_spq_add_entry(struct qed_hwfn *p_hwfn,
 	return 0;
 }
 
-/***************************************************************************
- * Accessor
- ***************************************************************************/
+ 
 u32 qed_spq_get_cid(struct qed_hwfn *p_hwfn)
 {
 	if (!p_hwfn->p_spq)
-		return 0xffffffff;      /* illegal */
+		return 0xffffffff;       
 	return p_hwfn->p_spq->cid;
 }
 
-/***************************************************************************
- * Posting new Ramrods
- ***************************************************************************/
+ 
 static int qed_spq_post_list(struct qed_hwfn *p_hwfn,
 			     struct list_head *head, u32 keep_reserve)
 {
@@ -808,10 +762,7 @@ static void qed_spq_recov_set_ret_code(struct qed_spq_entry *p_ent,
 		*fw_return_code = RDMA_RETURN_OK;
 }
 
-/* Avoid overriding of SPQ entries when getting out-of-order completions, by
- * marking the completions in a bitmap and increasing the chain consumer only
- * for the first successive completed entries.
- */
+ 
 static void qed_spq_comp_bmap_update(struct qed_hwfn *p_hwfn, __le16 echo)
 {
 	u16 pos = le16_to_cpu(echo) % SPQ_RING_SIZE;
@@ -853,36 +804,31 @@ int qed_spq_post(struct qed_hwfn *p_hwfn,
 			   qed_get_protocol_type_str(p_ent->elem.hdr.protocol_id),
 			   p_ent->elem.hdr.protocol_id);
 
-		/* Let the flow complete w/o any error handling */
+		 
 		qed_spq_recov_set_ret_code(p_ent, fw_return_code);
 		return 0;
 	}
 
-	/* Complete the entry */
+	 
 	rc = qed_spq_fill_entry(p_hwfn, p_ent);
 
 	spin_lock_bh(&p_spq->lock);
 
-	/* Check return value after LOCK is taken for cleaner error flow */
+	 
 	if (rc)
 		goto spq_post_fail;
 
-	/* Check if entry is in block mode before qed_spq_add_entry,
-	 * which might kfree p_ent.
-	 */
+	 
 	eblock = (p_ent->comp_mode == QED_SPQ_MODE_EBLOCK);
 
-	/* Add the request to the pending queue */
+	 
 	rc = qed_spq_add_entry(p_hwfn, p_ent, p_ent->priority);
 	if (rc)
 		goto spq_post_fail;
 
 	rc = qed_spq_pend_post(p_hwfn);
 	if (rc) {
-		/* Since it's possible that pending failed for a different
-		 * entry [although unlikely], the failed entry was already
-		 * dealt with; No need to return it here.
-		 */
+		 
 		b_ret_ent = false;
 		goto spq_post_fail;
 	}
@@ -890,11 +836,7 @@ int qed_spq_post(struct qed_hwfn *p_hwfn,
 	spin_unlock_bh(&p_spq->lock);
 
 	if (eblock) {
-		/* For entries in QED BLOCK mode, the completion code cannot
-		 * perform the necessary cleanup - if it did, we couldn't
-		 * access p_ent here to see whether it's successful or not.
-		 * Thus, after gaining the answer perform the cleanup here.
-		 */
+		 
 		rc = qed_spq_block(p_hwfn, p_ent, fw_return_code,
 				   p_ent->queue == &p_spq->unlimited_pending);
 
@@ -903,14 +845,14 @@ int qed_spq_post(struct qed_hwfn *p_hwfn,
 
 			kfree(p_ent);
 
-			/* Return the entry which was actually posted */
+			 
 			p_ent = p_post_ent;
 		}
 
 		if (rc)
 			goto spq_post_fail2;
 
-		/* return to pool */
+		 
 		qed_spq_return_entry(p_hwfn, p_ent);
 	}
 	return rc;
@@ -921,7 +863,7 @@ spq_post_fail2:
 	qed_spq_comp_bmap_update(p_hwfn, p_ent->elem.hdr.echo);
 
 spq_post_fail:
-	/* return to the free pool */
+	 
 	if (b_ret_ent)
 		__qed_spq_return_entry(p_hwfn, p_ent);
 	spin_unlock_bh(&p_spq->lock);
@@ -956,18 +898,14 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
 			break;
 		}
 
-		/* This is relatively uncommon - depends on scenarios
-		 * which have mutliple per-PF sent ramrods.
-		 */
+		 
 		DP_VERBOSE(p_hwfn, QED_MSG_SPQ,
 			   "Got completion for echo %04x - doesn't match echo %04x in completion pending list\n",
 			   le16_to_cpu(echo),
 			   le16_to_cpu(p_ent->elem.hdr.echo));
 	}
 
-	/* Release lock before callback, as callback may post
-	 * an additional ramrod.
-	 */
+	 
 	spin_unlock_bh(&p_spq->lock);
 
 	if (!found) {
@@ -990,9 +928,7 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
 			   "Got a completion without a callback function\n");
 
 	if (found->comp_mode != QED_SPQ_MODE_EBLOCK)
-		/* EBLOCK  is responsible for returning its own entry into the
-		 * free list.
-		 */
+		 
 		qed_spq_return_entry(p_hwfn, found);
 
 	return 0;
@@ -1012,12 +948,12 @@ int qed_consq_alloc(struct qed_hwfn *p_hwfn)
 	struct qed_consq *p_consq;
 	int ret;
 
-	/* Allocate ConsQ struct */
+	 
 	p_consq = kzalloc(sizeof(*p_consq), GFP_KERNEL);
 	if (!p_consq)
 		return -ENOMEM;
 
-	/* Allocate and initialize ConsQ chain */
+	 
 	ret = qed_chain_alloc(p_hwfn->cdev, &p_consq->chain, &params);
 	if (ret) {
 		DP_NOTICE(p_hwfn, "Failed to allocate ConsQ chain");

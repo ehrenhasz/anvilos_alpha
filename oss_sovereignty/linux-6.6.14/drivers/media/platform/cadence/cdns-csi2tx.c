@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Cadence MIPI-CSI2 TX Controller
- *
- * Copyright (C) 2017-2019 Cadence Design Systems Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -53,7 +49,7 @@
 #define CSI2TX_STREAM_IF_CFG_REG(n)	(0x100 + (n) * 4)
 #define CSI2TX_STREAM_IF_CFG_FILL_LEVEL(n)	((n) & 0x1f)
 
-/* CSI2TX V2 Registers */
+ 
 #define CSI2TX_V2_DPHY_CFG_REG			0x28
 #define CSI2TX_V2_DPHY_CFG_RESET		BIT(16)
 #define CSI2TX_V2_DPHY_CFG_CLOCK_MODE		BIT(10)
@@ -84,7 +80,7 @@ struct csi2tx_fmt {
 
 struct csi2tx_priv;
 
-/* CSI2TX Variant Operations */
+ 
 struct csi2tx_vops {
 	void (*dphy_setup)(struct csi2tx_priv *csi2tx);
 };
@@ -93,10 +89,7 @@ struct csi2tx_priv {
 	struct device			*dev;
 	unsigned int			count;
 
-	/*
-	 * Used to prevent race conditions between multiple,
-	 * concurrent calls to start and stop.
-	 */
+	 
 	struct mutex			lock;
 
 	void __iomem			*base;
@@ -188,7 +181,7 @@ static int csi2tx_get_pad_format(struct v4l2_subdev *subdev,
 {
 	const struct v4l2_mbus_framefmt *format;
 
-	/* Multiplexed pad? */
+	 
 	if (fmt->pad == CSI2TX_PAD_SOURCE)
 		return -EINVAL;
 
@@ -208,7 +201,7 @@ static int csi2tx_set_pad_format(struct v4l2_subdev *subdev,
 	const struct v4l2_mbus_framefmt *src_format = &fmt->format;
 	struct v4l2_mbus_framefmt *dst_format;
 
-	/* Multiplexed pad? */
+	 
 	if (fmt->pad == CSI2TX_PAD_SOURCE)
 		return -EINVAL;
 
@@ -230,24 +223,21 @@ static const struct v4l2_subdev_pad_ops csi2tx_pad_ops = {
 	.set_fmt	= csi2tx_set_pad_format,
 };
 
-/* Set Wake Up value in the D-PHY */
+ 
 static void csi2tx_dphy_set_wakeup(struct csi2tx_priv *csi2tx)
 {
 	writel(CSI2TX_DPHY_CLK_WAKEUP_ULPS_CYCLES(32),
 	       csi2tx->base + CSI2TX_DPHY_CLK_WAKEUP_REG);
 }
 
-/*
- * Finishes the D-PHY initialization
- * reg dphy cfg value to be used
- */
+ 
 static void csi2tx_dphy_init_finish(struct csi2tx_priv *csi2tx, u32 reg)
 {
 	unsigned int i;
 
 	udelay(10);
 
-	/* Enable our (clock and data) lanes */
+	 
 	reg |= CSI2TX_DPHY_CFG_CLK_ENABLE;
 	for (i = 0; i < csi2tx->num_lanes; i++)
 		reg |= CSI2TX_DPHY_CFG_LANE_ENABLE(csi2tx->lanes[i] - 1);
@@ -255,13 +245,13 @@ static void csi2tx_dphy_init_finish(struct csi2tx_priv *csi2tx, u32 reg)
 
 	udelay(10);
 
-	/* Switch to HS mode */
+	 
 	reg &= ~CSI2TX_DPHY_CFG_MODE_MASK;
 	writel(reg | CSI2TX_DPHY_CFG_MODE_HS,
 	       csi2tx->base + CSI2TX_DPHY_CFG_REG);
 }
 
-/* Configures D-PHY in CSIv1.3 */
+ 
 static void csi2tx_dphy_setup(struct csi2tx_priv *csi2tx)
 {
 	u32 reg;
@@ -269,7 +259,7 @@ static void csi2tx_dphy_setup(struct csi2tx_priv *csi2tx)
 
 	csi2tx_dphy_set_wakeup(csi2tx);
 
-	/* Put our lanes (clock and data) out of reset */
+	 
 	reg = CSI2TX_DPHY_CFG_CLK_RESET | CSI2TX_DPHY_CFG_MODE_LPDT;
 	for (i = 0; i < csi2tx->num_lanes; i++)
 		reg |= CSI2TX_DPHY_CFG_LANE_RESET(csi2tx->lanes[i] - 1);
@@ -278,14 +268,14 @@ static void csi2tx_dphy_setup(struct csi2tx_priv *csi2tx)
 	csi2tx_dphy_init_finish(csi2tx, reg);
 }
 
-/* Configures D-PHY in CSIv2 */
+ 
 static void csi2tx_v2_dphy_setup(struct csi2tx_priv *csi2tx)
 {
 	u32 reg;
 
 	csi2tx_dphy_set_wakeup(csi2tx);
 
-	/* Put our lanes (clock and data) out of reset */
+	 
 	reg = CSI2TX_V2_DPHY_CFG_RESET | CSI2TX_V2_DPHY_CFG_MODE_LPDT;
 	writel(reg, csi2tx->base + CSI2TX_V2_DPHY_CFG_REG);
 
@@ -316,24 +306,14 @@ static int csi2tx_start(struct csi2tx_priv *csi2tx)
 		udelay(10);
 	}
 
-	/*
-	 * Create a static mapping between the CSI virtual channels
-	 * and the input streams.
-	 *
-	 * This should be enhanced, but v4l2 lacks the support for
-	 * changing that mapping dynamically at the moment.
-	 *
-	 * We're protected from the userspace setting up links at the
-	 * same time by the upper layer having called
-	 * media_pipeline_start().
-	 */
+	 
 	list_for_each_entry(link, &entity->links, list) {
 		struct v4l2_mbus_framefmt *mfmt;
 		const struct csi2tx_fmt *fmt;
 		unsigned int stream;
 		int pad_idx = -1;
 
-		/* Only consider our enabled input pads */
+		 
 		for (i = CSI2TX_PAD_SINK_STREAM0; i < CSI2TX_PAD_MAX; i++) {
 			struct media_pad *pad = &csi2tx->pads[i];
 
@@ -354,13 +334,7 @@ static int csi2tx_start(struct csi2tx_priv *csi2tx)
 
 		stream = pad_idx - CSI2TX_PAD_SINK_STREAM0;
 
-		/*
-		 * We use the stream ID there, but it's wrong.
-		 *
-		 * A stream could very well send a data type that is
-		 * not equal to its stream ID. We need to find a
-		 * proper way to address it.
-		 */
+		 
 		writel(CSI2TX_DT_CFG_DT(fmt->dt),
 		       csi2tx->base + CSI2TX_DT_CFG_REG(stream));
 
@@ -368,15 +342,12 @@ static int csi2tx_start(struct csi2tx_priv *csi2tx)
 		       CSI2TX_DT_FORMAT_MAX_LINE_NUM(mfmt->height + 1),
 		       csi2tx->base + CSI2TX_DT_FORMAT_REG(stream));
 
-		/*
-		 * TODO: This needs to be calculated based on the
-		 * output CSI2 clock rate.
-		 */
+		 
 		writel(CSI2TX_STREAM_IF_CFG_FILL_LEVEL(4),
 		       csi2tx->base + CSI2TX_STREAM_IF_CFG_REG(stream));
 	}
 
-	/* Disable the configuration mode */
+	 
 	writel(0, csi2tx->base + CSI2TX_CONFIG_REG);
 
 	return 0;
@@ -396,10 +367,7 @@ static int csi2tx_s_stream(struct v4l2_subdev *subdev, int enable)
 	mutex_lock(&csi2tx->lock);
 
 	if (enable) {
-		/*
-		 * If we're not the first users, there's no need to
-		 * enable the whole controller.
-		 */
+		 
 		if (!csi2tx->count) {
 			ret = csi2tx_start(csi2tx);
 			if (ret)
@@ -410,9 +378,7 @@ static int csi2tx_s_stream(struct v4l2_subdev *subdev, int enable)
 	} else {
 		csi2tx->count--;
 
-		/*
-		 * Let the last user turn off the lights.
-		 */
+		 
 		if (!csi2tx->count)
 			csi2tx_stop(csi2tx);
 	}
@@ -599,18 +565,13 @@ static int csi2tx_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_free_priv;
 
-	/* Create our media pads */
+	 
 	csi2tx->subdev.entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
 	csi2tx->pads[CSI2TX_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
 	for (i = CSI2TX_PAD_SINK_STREAM0; i < CSI2TX_PAD_MAX; i++)
 		csi2tx->pads[i].flags = MEDIA_PAD_FL_SINK;
 
-	/*
-	 * Only the input pads are considered to have a format at the
-	 * moment. The CSI link can multiplex various streams with
-	 * different formats, and we can't expose this in v4l2 right
-	 * now.
-	 */
+	 
 	for (i = CSI2TX_PAD_SINK_STREAM0; i < CSI2TX_PAD_MAX; i++)
 		csi2tx->pad_fmts[i] = fmt_default;
 

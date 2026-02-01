@@ -1,24 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cnl-sst-dsp.c - CNL SST library generic function
- *
- * Copyright (C) 2016-17, Intel Corporation.
- * Author: Guneshwor Singh <guneshwor.o.singh@intel.com>
- *
- * Modified from:
- *	SKL SST library generic function
- *	Copyright (C) 2014-15, Intel Corporation.
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/device.h>
 #include "../common/sst-dsp.h"
 #include "../common/sst-ipc.h"
 #include "../common/sst-dsp-priv.h"
 #include "cnl-sst-dsp.h"
 
-/* various timeout values */
+ 
 #define CNL_DSP_PU_TO		50
 #define CNL_DSP_PD_TO		50
 #define CNL_DSP_RESET_TO	50
@@ -26,12 +14,12 @@
 static int
 cnl_dsp_core_set_reset_state(struct sst_dsp *ctx, unsigned int core_mask)
 {
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx,
 			CNL_ADSP_REG_ADSPCS, CNL_ADSPCS_CRST(core_mask),
 			CNL_ADSPCS_CRST(core_mask));
 
-	/* poll with timeout to check if operation successful */
+	 
 	return sst_dsp_register_poll(ctx,
 			CNL_ADSP_REG_ADSPCS,
 			CNL_ADSPCS_CRST(core_mask),
@@ -43,11 +31,11 @@ cnl_dsp_core_set_reset_state(struct sst_dsp *ctx, unsigned int core_mask)
 static int
 cnl_dsp_core_unset_reset_state(struct sst_dsp *ctx, unsigned int core_mask)
 {
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, CNL_ADSP_REG_ADSPCS,
 					CNL_ADSPCS_CRST(core_mask), 0);
 
-	/* poll with timeout to check if operation successful */
+	 
 	return sst_dsp_register_poll(ctx,
 			CNL_ADSP_REG_ADSPCS,
 			CNL_ADSPCS_CRST(core_mask),
@@ -76,12 +64,12 @@ static bool is_cnl_dsp_core_enable(struct sst_dsp *ctx, unsigned int core_mask)
 
 static int cnl_dsp_reset_core(struct sst_dsp *ctx, unsigned int core_mask)
 {
-	/* stall core */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, CNL_ADSP_REG_ADSPCS,
 			CNL_ADSPCS_CSTALL(core_mask),
 			CNL_ADSPCS_CSTALL(core_mask));
 
-	/* set reset state */
+	 
 	return cnl_dsp_core_set_reset_state(ctx, core_mask);
 }
 
@@ -89,12 +77,12 @@ static int cnl_dsp_start_core(struct sst_dsp *ctx, unsigned int core_mask)
 {
 	int ret;
 
-	/* unset reset state */
+	 
 	ret = cnl_dsp_core_unset_reset_state(ctx, core_mask);
 	if (ret < 0)
 		return ret;
 
-	/* run core */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, CNL_ADSP_REG_ADSPCS,
 				CNL_ADSPCS_CSTALL(core_mask), 0);
 
@@ -110,12 +98,12 @@ static int cnl_dsp_start_core(struct sst_dsp *ctx, unsigned int core_mask)
 
 static int cnl_dsp_core_power_up(struct sst_dsp *ctx, unsigned int core_mask)
 {
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, CNL_ADSP_REG_ADSPCS,
 					  CNL_ADSPCS_SPA(core_mask),
 					  CNL_ADSPCS_SPA(core_mask));
 
-	/* poll with timeout to check if operation successful */
+	 
 	return sst_dsp_register_poll(ctx, CNL_ADSP_REG_ADSPCS,
 				    CNL_ADSPCS_CPA(core_mask),
 				    CNL_ADSPCS_CPA(core_mask),
@@ -125,11 +113,11 @@ static int cnl_dsp_core_power_up(struct sst_dsp *ctx, unsigned int core_mask)
 
 static int cnl_dsp_core_power_down(struct sst_dsp *ctx, unsigned int core_mask)
 {
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, CNL_ADSP_REG_ADSPCS,
 					CNL_ADSPCS_SPA(core_mask), 0);
 
-	/* poll with timeout to check if operation successful */
+	 
 	return sst_dsp_register_poll(ctx,
 			CNL_ADSP_REG_ADSPCS,
 			CNL_ADSPCS_CPA(core_mask),
@@ -142,7 +130,7 @@ int cnl_dsp_enable_core(struct sst_dsp *ctx, unsigned int core_mask)
 {
 	int ret;
 
-	/* power up */
+	 
 	ret = cnl_dsp_core_power_up(ctx, core_mask);
 	if (ret < 0) {
 		dev_dbg(ctx->dev, "DSP core mask %#x power up failed",
@@ -164,7 +152,7 @@ int cnl_dsp_disable_core(struct sst_dsp *ctx, unsigned int core_mask)
 		return ret;
 	}
 
-	/* power down core*/
+	 
 	ret = cnl_dsp_core_power_down(ctx, core_mask);
 	if (ret < 0) {
 		dev_err(ctx->dev, "DSP core mask %#x power down failed\n",
@@ -231,12 +219,12 @@ void cnl_ipc_int_disable(struct sst_dsp *ctx)
 
 void cnl_ipc_op_int_enable(struct sst_dsp *ctx)
 {
-	/* enable IPC DONE interrupt */
+	 
 	sst_dsp_shim_update_bits(ctx, CNL_ADSP_REG_HIPCCTL,
 				 CNL_ADSP_REG_HIPCCTL_DONE,
 				 CNL_ADSP_REG_HIPCCTL_DONE);
 
-	/* enable IPC BUSY interrupt */
+	 
 	sst_dsp_shim_update_bits(ctx, CNL_ADSP_REG_HIPCCTL,
 				 CNL_ADSP_REG_HIPCCTL_BUSY,
 				 CNL_ADSP_REG_HIPCCTL_BUSY);
@@ -244,11 +232,11 @@ void cnl_ipc_op_int_enable(struct sst_dsp *ctx)
 
 void cnl_ipc_op_int_disable(struct sst_dsp *ctx)
 {
-	/* disable IPC DONE interrupt */
+	 
 	sst_dsp_shim_update_bits(ctx, CNL_ADSP_REG_HIPCCTL,
 				 CNL_ADSP_REG_HIPCCTL_DONE, 0);
 
-	/* disable IPC BUSY interrupt */
+	 
 	sst_dsp_shim_update_bits(ctx, CNL_ADSP_REG_HIPCCTL,
 				 CNL_ADSP_REG_HIPCCTL_BUSY, 0);
 }

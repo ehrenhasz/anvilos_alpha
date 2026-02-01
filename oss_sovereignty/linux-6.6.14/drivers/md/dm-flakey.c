@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2003 Sistina Software (UK) Limited.
- * Copyright (C) 2004, 2010-2011 Red Hat, Inc. All rights reserved.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include <linux/device-mapper.h>
 
@@ -21,10 +16,7 @@
 #define all_corrupt_bio_flags_match(bio, fc)	\
 	(((bio)->bi_opf & (fc)->corrupt_bio_flags) == (fc)->corrupt_bio_flags)
 
-/*
- * Flakey: Used for testing only, simulates intermittent,
- * catastrophic device failure.
- */
+ 
 struct flakey_c {
 	struct dm_dev *dev;
 	unsigned long start_time;
@@ -65,7 +57,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 		{0, PROBABILITY_BASE, "Invalid random corrupt argument"},
 	};
 
-	/* No feature arguments supplied. */
+	 
 	if (!as->argc)
 		return 0;
 
@@ -82,9 +74,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			return -EINVAL;
 		}
 
-		/*
-		 * error_reads
-		 */
+		 
 		if (!strcasecmp(arg_name, "error_reads")) {
 			if (test_and_set_bit(ERROR_READS, &fc->flags)) {
 				ti->error = "Feature error_reads duplicated";
@@ -93,9 +83,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			continue;
 		}
 
-		/*
-		 * drop_writes
-		 */
+		 
 		if (!strcasecmp(arg_name, "drop_writes")) {
 			if (test_and_set_bit(DROP_WRITES, &fc->flags)) {
 				ti->error = "Feature drop_writes duplicated";
@@ -108,9 +96,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			continue;
 		}
 
-		/*
-		 * error_writes
-		 */
+		 
 		if (!strcasecmp(arg_name, "error_writes")) {
 			if (test_and_set_bit(ERROR_WRITES, &fc->flags)) {
 				ti->error = "Feature error_writes duplicated";
@@ -124,9 +110,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			continue;
 		}
 
-		/*
-		 * corrupt_bio_byte <Nth_byte> <direction> <value> <bio_flags>
-		 */
+		 
 		if (!strcasecmp(arg_name, "corrupt_bio_byte")) {
 			if (!argc) {
 				ti->error = "Feature corrupt_bio_byte requires parameters";
@@ -138,9 +122,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 				return r;
 			argc--;
 
-			/*
-			 * Direction r or w?
-			 */
+			 
 			arg_name = dm_shift_arg(as);
 			if (arg_name && !strcasecmp(arg_name, "w"))
 				fc->corrupt_bio_rw = WRITE;
@@ -152,17 +134,13 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			}
 			argc--;
 
-			/*
-			 * Value of byte (0-255) to write in place of correct one.
-			 */
+			 
 			r = dm_read_arg(_args + 2, as, &fc->corrupt_bio_value, &ti->error);
 			if (r)
 				return r;
 			argc--;
 
-			/*
-			 * Only corrupt bios with these flags set.
-			 */
+			 
 			BUILD_BUG_ON(sizeof(fc->corrupt_bio_flags) !=
 				     sizeof(unsigned int));
 			r = dm_read_arg(_args + 3, as,
@@ -224,18 +202,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 	return 0;
 }
 
-/*
- * Construct a flakey mapping:
- * <dev_path> <offset> <up interval> <down interval> [<#feature args> [<arg>]*]
- *
- *   Feature args:
- *     [drop_writes]
- *     [corrupt_bio_byte <Nth_byte> <direction> <value> <bio_flags>]
- *
- *   Nth_byte starts from 1 for the first byte.
- *   Direction is r for READ or w for WRITE.
- *   bio_flags is ignored if 0.
- */
+ 
 static int flakey_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	static const struct dm_arg _args[] = {
@@ -344,10 +311,7 @@ static void corrupt_bio_common(struct bio *bio, unsigned int corrupt_bio_byte,
 	struct bvec_iter iter;
 	struct bio_vec bvec;
 
-	/*
-	 * Overwrite the Nth byte of the bio's data, on whichever page
-	 * it falls.
-	 */
+	 
 	bio_for_each_segment(bvec, bio, iter) {
 		if (bio_iter_len(bio, iter) > corrupt_bio_byte) {
 			unsigned char *segment = bvec_kmap_local(&bvec);
@@ -393,7 +357,7 @@ static void clone_free(struct bio *clone)
 {
 	struct folio_iter fi;
 
-	if (clone->bi_vcnt > 0) { /* bio_for_each_folio_all crashes with an empty bio */
+	if (clone->bi_vcnt > 0) {  
 		bio_for_each_folio_all(fi, clone)
 			folio_put(fi.folio);
 	}
@@ -486,28 +450,21 @@ static int flakey_map(struct dm_target *ti, struct bio *bio)
 	if (op_is_zone_mgmt(bio_op(bio)))
 		goto map_bio;
 
-	/* Are we alive ? */
+	 
 	elapsed = (jiffies - fc->start_time) / HZ;
 	if (elapsed % (fc->up_interval + fc->down_interval) >= fc->up_interval) {
 		bool corrupt_fixed, corrupt_random;
-		/*
-		 * Flag this bio as submitted while down.
-		 */
+		 
 		pb->bio_submitted = true;
 
-		/*
-		 * Error reads if neither corrupt_bio_byte or drop_writes or error_writes are set.
-		 * Otherwise, flakey_end_io() will decide if the reads should be modified.
-		 */
+		 
 		if (bio_data_dir(bio) == READ) {
 			if (test_bit(ERROR_READS, &fc->flags))
 				return DM_MAPIO_KILL;
 			goto map_bio;
 		}
 
-		/*
-		 * Drop or error writes?
-		 */
+		 
 		if (test_bit(DROP_WRITES, &fc->flags)) {
 			bio_endio(bio);
 			return DM_MAPIO_SUBMITTED;
@@ -516,9 +473,7 @@ static int flakey_map(struct dm_target *ti, struct bio *bio)
 			return DM_MAPIO_SUBMITTED;
 		}
 
-		/*
-		 * Corrupt matching writes.
-		 */
+		 
 		corrupt_fixed = false;
 		corrupt_random = false;
 		if (fc->corrupt_bio_byte && fc->corrupt_bio_rw == WRITE) {
@@ -563,9 +518,7 @@ static int flakey_end_io(struct dm_target *ti, struct bio *bio,
 		if (fc->corrupt_bio_byte) {
 			if ((fc->corrupt_bio_rw == READ) &&
 			    all_corrupt_bio_flags_match(bio, fc)) {
-				/*
-				 * Corrupt successful matching READs while in down state.
-				 */
+				 
 				corrupt_bio_data(bio, fc);
 			}
 		}
@@ -576,10 +529,7 @@ static int flakey_end_io(struct dm_target *ti, struct bio *bio,
 				corrupt_bio_random(bio);
 		}
 		if (test_bit(ERROR_READS, &fc->flags)) {
-			/*
-			 * Error read during the down_interval if drop_writes
-			 * and error_writes were not configured.
-			 */
+			 
 			*error = BLK_STS_IOERR;
 		}
 	}
@@ -644,9 +594,7 @@ static int flakey_prepare_ioctl(struct dm_target *ti, struct block_device **bdev
 
 	*bdev = fc->dev->bdev;
 
-	/*
-	 * Only pass ioctls through if the device sizes match exactly.
-	 */
+	 
 	if (fc->start || ti->len != bdev_nr_sectors((*bdev)))
 		return 1;
 	return 0;

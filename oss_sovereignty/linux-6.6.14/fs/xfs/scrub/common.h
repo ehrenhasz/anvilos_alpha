@@ -1,26 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #ifndef __XFS_SCRUB_COMMON_H__
 #define __XFS_SCRUB_COMMON_H__
 
-/*
- * We /could/ terminate a scrub/repair operation early.  If we're not
- * in a good place to continue (fatal signal, etc.) then bail out.
- * Note that we're careful not to make any judgements about *error.
- */
+ 
 static inline bool
 xchk_should_terminate(
 	struct xfs_scrub	*sc,
 	int			*error)
 {
-	/*
-	 * If preemption is disabled, we need to yield to the scheduler every
-	 * few seconds so that we don't run afoul of the soft lockup watchdog
-	 * or RCU stall detector.
-	 */
+	 
 	cond_resched();
 
 	if (fatal_signal_pending(current)) {
@@ -69,11 +58,11 @@ void xchk_fblock_set_warning(struct xfs_scrub *sc, int whichfork,
 void xchk_set_incomplete(struct xfs_scrub *sc);
 int xchk_checkpoint_log(struct xfs_mount *mp);
 
-/* Are we set up for a cross-referencing check? */
+ 
 bool xchk_should_check_xref(struct xfs_scrub *sc, int *error,
 			   struct xfs_btree_cur **curpp);
 
-/* Setup functions */
+ 
 int xchk_setup_agheader(struct xfs_scrub *sc);
 int xchk_setup_fs(struct xfs_scrub *sc);
 int xchk_setup_ag_allocbt(struct xfs_scrub *sc);
@@ -117,11 +106,7 @@ void xchk_ag_free(struct xfs_scrub *sc, struct xchk_ag *sa);
 int xchk_ag_init(struct xfs_scrub *sc, xfs_agnumber_t agno,
 		struct xchk_ag *sa);
 
-/*
- * Grab all AG resources, treating the inability to grab the perag structure as
- * a fs corruption.  This is intended for callers checking an ondisk reference
- * to a given AG, which means that the AG must still exist.
- */
+ 
 static inline int
 xchk_ag_init_existing(
 	struct xfs_scrub	*sc,
@@ -157,10 +142,7 @@ int xchk_iget_agi(struct xfs_scrub *sc, xfs_ino_t inum,
 void xchk_irele(struct xfs_scrub *sc, struct xfs_inode *ip);
 int xchk_install_handle_inode(struct xfs_scrub *sc, struct xfs_inode *ip);
 
-/*
- * Don't bother cross-referencing if we already found corruption or cross
- * referencing discrepancies.
- */
+ 
 static inline bool xchk_skip_xref(struct xfs_scrub_metadata *sm)
 {
 	return sm->sm_flags & (XFS_SCRUB_OFLAG_CORRUPT |
@@ -168,7 +150,7 @@ static inline bool xchk_skip_xref(struct xfs_scrub_metadata *sm)
 }
 
 #ifdef CONFIG_XFS_ONLINE_REPAIR
-/* Decide if a repair is required. */
+ 
 static inline bool xchk_needs_repair(const struct xfs_scrub_metadata *sm)
 {
 	return sm->sm_flags & (XFS_SCRUB_OFLAG_CORRUPT |
@@ -177,25 +159,16 @@ static inline bool xchk_needs_repair(const struct xfs_scrub_metadata *sm)
 }
 #else
 # define xchk_needs_repair(sc)		(false)
-#endif /* CONFIG_XFS_ONLINE_REPAIR */
+#endif  
 
 int xchk_metadata_inode_forks(struct xfs_scrub *sc);
 
-/*
- * Helper macros to allocate and format xfile description strings.
- * Callers must kfree the pointer returned.
- */
+ 
 #define xchk_xfile_descr(sc, fmt, ...) \
 	kasprintf(XCHK_GFP_FLAGS, "XFS (%s): " fmt, \
 			(sc)->mp->m_super->s_id, ##__VA_ARGS__)
 
-/*
- * Setting up a hook to wait for intents to drain is costly -- we have to take
- * the CPU hotplug lock and force an i-cache flush on all CPUs once to set it
- * up, and again to tear it down.  These costs add up quickly, so we only want
- * to enable the drain waiter if the drain actually detected a conflict with
- * running intent chains.
- */
+ 
 static inline bool xchk_need_intent_drain(struct xfs_scrub *sc)
 {
 	return sc->flags & XCHK_NEED_DRAIN;
@@ -206,4 +179,4 @@ void xchk_fsgates_enable(struct xfs_scrub *sc, unsigned int scrub_fshooks);
 int xchk_inode_is_allocated(struct xfs_scrub *sc, xfs_agino_t agino,
 		bool *inuse);
 
-#endif	/* __XFS_SCRUB_COMMON_H__ */
+#endif	 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/ieee80211.h>
 #include <linux/kernel.h>
@@ -244,7 +241,7 @@ static int ath12k_dp_purge_mon_ring(struct ath12k_base *ab)
 							     DP_MON_SERVICE_BUDGET,
 							     ATH12K_DP_RX_MONITOR_MODE);
 
-		/* nothing more to reap */
+		 
 		if (reaped < DP_MON_SERVICE_BUDGET)
 			return 0;
 
@@ -255,7 +252,7 @@ static int ath12k_dp_purge_mon_ring(struct ath12k_base *ab)
 	return -ETIMEDOUT;
 }
 
-/* Returns number of Rx buffers replenished */
+ 
 int ath12k_dp_rx_bufs_replenish(struct ath12k_base *ab, int mac_id,
 				struct dp_rxdma_ring *rx_ring,
 				int req_entries,
@@ -310,12 +307,7 @@ int ath12k_dp_rx_bufs_replenish(struct ath12k_base *ab, int mac_id,
 		if (hw_cc) {
 			spin_lock_bh(&dp->rx_desc_lock);
 
-			/* Get desc from free list and store in used list
-			 * for cleanup purposes
-			 *
-			 * TODO: pass the removed descs rather than
-			 * add/read to optimize
-			 */
+			 
 			rx_desc = list_first_entry_or_null(&dp->rx_desc_free_list,
 							   struct ath12k_rx_desc_info,
 							   list);
@@ -394,9 +386,7 @@ static int ath12k_dp_rxdma_buf_ring_free(struct ath12k_base *ab,
 	spin_lock_bh(&rx_ring->idr_lock);
 	idr_for_each_entry(&rx_ring->bufs_idr, skb, buf_id) {
 		idr_remove(&rx_ring->bufs_idr, buf_id);
-		/* TODO: Understand where internal driver does this dma_unmap
-		 * of rxdma_buffer.
-		 */
+		 
 		dma_unmap_single(ab->dev, ATH12K_SKB_RXCB(skb)->paddr,
 				 skb->len + skb_tailroom(skb), DMA_FROM_DEVICE);
 		dev_kfree_skb_any(skb);
@@ -616,21 +606,18 @@ static int ath12k_dp_reo_cmd_send(struct ath12k_base *ab, struct ath12k_dp_rx_ti
 	cmd_ring = &ab->hal.srng_list[dp->reo_cmd_ring.ring_id];
 	cmd_num = ath12k_hal_reo_cmd_send(ab, cmd_ring, type, cmd);
 
-	/* cmd_num should start from 1, during failure return the error code */
+	 
 	if (cmd_num < 0)
 		return cmd_num;
 
-	/* reo cmd ring descriptors has cmd_num starting from 1 */
+	 
 	if (cmd_num == 0)
 		return -EINVAL;
 
 	if (!cb)
 		return 0;
 
-	/* Can this be optimized so that we keep the pending command list only
-	 * for tid delete command to free up the resource on the command status
-	 * indication?
-	 */
+	 
 	dp_cmd = kzalloc(sizeof(*dp_cmd), GFP_ATOMIC);
 
 	if (!dp_cmd)
@@ -697,7 +684,7 @@ static void ath12k_dp_rx_tid_del_func(struct ath12k_dp *dp, void *ctx,
 	if (status == HAL_REO_CMD_DRAIN) {
 		goto free_desc;
 	} else if (status != HAL_REO_CMD_SUCCESS) {
-		/* Shouldn't happen! Cleanup in case of other failure? */
+		 
 		ath12k_warn(ab, "failed to delete rx tid %d hw descriptor %d\n",
 			    rx_tid->tid, status);
 		return;
@@ -714,7 +701,7 @@ static void ath12k_dp_rx_tid_del_func(struct ath12k_dp *dp, void *ctx,
 	list_add_tail(&elem->list, &dp->reo_cmd_cache_flush_list);
 	dp->reo_cmd_cache_flush_count++;
 
-	/* Flush and invalidate aged REO desc from HW cache */
+	 
 	list_for_each_entry_safe(elem, tmp, &dp->reo_cmd_cache_flush_list,
 				 list) {
 		if (dp->reo_cmd_cache_flush_count > ATH12K_DP_RX_REO_DESC_FREE_THRES ||
@@ -723,14 +710,7 @@ static void ath12k_dp_rx_tid_del_func(struct ath12k_dp *dp, void *ctx,
 			list_del(&elem->list);
 			dp->reo_cmd_cache_flush_count--;
 
-			/* Unlock the reo_cmd_lock before using ath12k_dp_reo_cmd_send()
-			 * within ath12k_dp_reo_cache_flush. The reo_cmd_cache_flush_list
-			 * is used in only two contexts, one is in this function called
-			 * from napi and the other in ath12k_dp_free during core destroy.
-			 * Before dp_free, the irqs would be disabled and would wait to
-			 * synchronize. Hence there wouldn’t be any race against add or
-			 * delete to this list. Hence unlock-lock is safe here.
-			 */
+			 
 			spin_unlock_bh(&dp->reo_cmd_lock);
 
 			ath12k_dp_reo_cache_flush(ab, &elem->data);
@@ -757,9 +737,7 @@ static void ath12k_peer_rx_tid_qref_setup(struct ath12k_base *ab, u16 peer_id, u
 	if (!ab->hw_params->reoq_lut_support)
 		return;
 
-	/* TODO: based on ML peer or not, select the LUT. below assumes non
-	 * ML peer
-	 */
+	 
 	qref = (struct ath12k_reo_queue_ref *)dp->reoq_lut.vaddr +
 			(peer_id * (IEEE80211_NUM_TIDS + 1) + tid);
 
@@ -778,9 +756,7 @@ static void ath12k_peer_rx_tid_qref_reset(struct ath12k_base *ab, u16 peer_id, u
 	if (!ab->hw_params->reoq_lut_support)
 		return;
 
-	/* TODO: based on ML peer or not, select the LUT. below assumes non
-	 * ML peer
-	 */
+	 
 	qref = (struct ath12k_reo_queue_ref *)dp->reoq_lut.vaddr +
 			(peer_id * (IEEE80211_NUM_TIDS + 1) + tid);
 
@@ -820,10 +796,7 @@ void ath12k_dp_rx_peer_tid_delete(struct ath12k *ar,
 	rx_tid->active = false;
 }
 
-/* TODO: it's strange (and ugly) that struct hal_reo_dest_ring is converted
- * to struct hal_wbm_release_ring, I couldn't figure out the logic behind
- * that.
- */
+ 
 static int ath12k_dp_rx_link_desc_return(struct ath12k_base *ab,
 					 struct hal_reo_dest_ring *ring,
 					 enum hal_wbm_rel_bm_act action)
@@ -967,7 +940,7 @@ int ath12k_dp_rx_peer_tid_setup(struct ath12k *ar, const u8 *peer_mac, int vdev_
 	}
 
 	rx_tid = &peer->rx_tid[tid];
-	/* Update the tid queue if it is already setup */
+	 
 	if (rx_tid->active) {
 		paddr = rx_tid->paddr;
 		ret = ath12k_peer_rx_tid_reo_update(ar, peer, rx_tid,
@@ -997,9 +970,7 @@ int ath12k_dp_rx_peer_tid_setup(struct ath12k *ar, const u8 *peer_mac, int vdev_
 
 	rx_tid->ba_win_sz = ba_win_sz;
 
-	/* TODO: Optimize the memory allocation for qos tid based on
-	 * the actual BA window size in REO tid update path.
-	 */
+	 
 	if (tid == HAL_DESC_REO_NON_QOS_TID)
 		hw_desc_sz = ath12k_hal_reo_qdesc_size(ba_win_sz, tid);
 	else
@@ -1031,9 +1002,7 @@ int ath12k_dp_rx_peer_tid_setup(struct ath12k *ar, const u8 *peer_mac, int vdev_
 	rx_tid->active = true;
 
 	if (ab->hw_params->reoq_lut_support) {
-		/* Update the REO queue LUT at the corresponding peer id
-		 * and tid with qaddr.
-		 */
+		 
 		ath12k_peer_rx_tid_qref_setup(ab, peer->peer_id, tid, paddr);
 		spin_unlock_bh(&ab->base_lock);
 	} else {
@@ -1117,10 +1086,7 @@ int ath12k_dp_rx_peer_pn_replay_config(struct ath12k_vif *arvif,
 	u8 tid;
 	int ret = 0;
 
-	/* NOTE: Enable PN/TSC replay check offload only for unicast frames.
-	 * We use mac80211 PN/TSC replay check functionality for bcast/mcast
-	 * for now.
-	 */
+	 
 	if (!(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return 0;
 
@@ -1369,10 +1335,7 @@ ath12k_update_per_peer_tx_stats(struct ath12k *ar,
 	sgi = HTT_USR_RATE_GI(user_rate->rate_flags);
 	dcm = HTT_USR_RATE_DCM(user_rate->rate_flags);
 
-	/* Note: If host configured fixed rates and in some other special
-	 * cases, the broadcast/management frames are sent in different rates.
-	 * Firmware rate's control to be skipped for this?
-	 */
+	 
 
 	if (flags == WMI_RATE_PREAMBLE_HE && mcs > ATH12K_HE_MCS_MAX) {
 		ath12k_warn(ab, "Invalid HE mcs %d peer stats",  mcs);
@@ -1450,9 +1413,7 @@ ath12k_update_per_peer_tx_stats(struct ath12k *ar,
 	arsta->tx_duration += tx_duration;
 	memcpy(&arsta->last_txrate, &arsta->txrate, sizeof(struct rate_info));
 
-	/* PPDU stats reported for mgmt packet doesn't have valid tx bytes.
-	 * So skip peer stats update for mgmt packets.
-	 */
+	 
 	if (tid < HTT_PPDU_STATS_NON_QOS_TID) {
 		memset(peer_stats, 0, sizeof(*peer_stats));
 		peer_stats->succ_pkts = succ_pkts;
@@ -1600,7 +1561,7 @@ static int ath12k_htt_pull_ppdu_stats(struct ath12k_base *ab,
 		goto exit;
 	}
 
-	/* back up data rate tlv for all peers */
+	 
 	if (ppdu_info->frame_type == HTT_STATS_PPDU_FTYPE_DATA &&
 	    (ppdu_info->tlv_bitmap & (1 << HTT_PPDU_STATS_TAG_USR_COMMON)) &&
 	    ppdu_info->delay_ba) {
@@ -1620,7 +1581,7 @@ static int ath12k_htt_pull_ppdu_stats(struct ath12k_base *ab,
 		}
 	}
 
-	/* restore all peers' data rate tlv to mu-bar tlv */
+	 
 	if (ppdu_info->frame_type == HTT_STATS_PPDU_FTYPE_BAR &&
 	    (ppdu_info->tlv_bitmap & (1 << HTT_PPDU_STATS_TAG_USR_COMMON))) {
 		for (i = 0; i < ppdu_info->bar_num_users; i++) {
@@ -1708,7 +1669,7 @@ void ath12k_dp_htt_htc_t2h_msg_handler(struct ath12k_base *ab,
 						      HTT_T2H_VERSION_CONF_MINOR);
 		complete(&dp->htt_tgt_version_received);
 		break;
-	/* TODO: remove unused peer map versions after testing */
+	 
 	case HTT_T2H_MSG_TYPE_PEER_MAP:
 		vdev_id = le32_get_bits(resp->peer_map_ev.info,
 					HTT_T2H_PEER_MAP_INFO_VDEV_ID);
@@ -1784,10 +1745,7 @@ static int ath12k_dp_rx_msdu_coalesce(struct ath12k *ar,
 	int space_extra, rem_len, buf_len;
 	u32 hal_rx_desc_sz = ar->ab->hw_params->hal_desc_sz;
 
-	/* As the msdu is spread across multiple rx buffers,
-	 * find the offset to the start of msdu for computing
-	 * the length of the msdu in the first buffer.
-	 */
+	 
 	buf_first_hdr_len = hal_rx_desc_sz + l3pad_bytes;
 	buf_first_len = DP_RX_BUFFER_SIZE - buf_first_hdr_len;
 
@@ -1801,22 +1759,17 @@ static int ath12k_dp_rx_msdu_coalesce(struct ath12k *ar,
 	rxcb->is_first_msdu = ath12k_dp_rx_h_first_msdu(ab, ldesc);
 	rxcb->is_last_msdu = ath12k_dp_rx_h_last_msdu(ab, ldesc);
 
-	/* MSDU spans over multiple buffers because the length of the MSDU
-	 * exceeds DP_RX_BUFFER_SIZE - HAL_RX_DESC_SIZE. So assume the data
-	 * in the first buf is of length DP_RX_BUFFER_SIZE - HAL_RX_DESC_SIZE.
-	 */
+	 
 	skb_put(first, DP_RX_BUFFER_SIZE);
 	skb_pull(first, buf_first_hdr_len);
 
-	/* When an MSDU spread over multiple buffers MSDU_END
-	 * tlvs are valid only in the last buffer. Copy those tlvs.
-	 */
+	 
 	ath12k_dp_rx_desc_end_tlv_copy(ab, rxcb->rx_desc, ldesc);
 
 	space_extra = msdu_len - (buf_first_len + skb_tailroom(first));
 	if (space_extra > 0 &&
 	    (pskb_expand_head(first, 0, space_extra, GFP_ATOMIC) < 0)) {
-		/* Free up all buffers of the MSDU */
+		 
 		while ((skb = __skb_dequeue(msdu_list)) != NULL) {
 			rxcb = ATH12K_SKB_RXCB(skb);
 			if (!rxcb->is_continuation) {
@@ -1980,15 +1933,15 @@ static void ath12k_dp_rx_h_undecap_nwifi(struct ath12k *ar,
 	u8 *crypto_hdr;
 	u16 qos_ctl;
 
-	/* pull decapped header */
+	 
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	hdr_len = ieee80211_hdrlen(hdr->frame_control);
 	skb_pull(msdu, hdr_len);
 
-	/*  Rebuild qos header */
+	 
 	hdr->frame_control |= __cpu_to_le16(IEEE80211_STYPE_QOS_DATA);
 
-	/* Reset the order bit as the HT_Control header is stripped */
+	 
 	hdr->frame_control &= ~(__cpu_to_le16(IEEE80211_FCTL_ORDER));
 
 	qos_ctl = rxcb->tid;
@@ -1996,12 +1949,12 @@ static void ath12k_dp_rx_h_undecap_nwifi(struct ath12k *ar,
 	if (ath12k_dp_rx_h_mesh_ctl_present(ab, rxcb->rx_desc))
 		qos_ctl |= IEEE80211_QOS_CTL_MESH_CONTROL_PRESENT;
 
-	/* TODO: Add other QoS ctl fields when required */
+	 
 
-	/* copy decap header before overwriting for reuse below */
+	 
 	memcpy(decap_hdr, hdr, hdr_len);
 
-	/* Rebuild crypto header for mac80211 use */
+	 
 	if (!(status->flag & RX_FLAG_IV_STRIPPED)) {
 		crypto_hdr = skb_push(msdu, ath12k_dp_rx_crypto_param_len(ar, enctype));
 		ath12k_dp_rx_desc_get_crypto_header(ar->ab,
@@ -2038,7 +1991,7 @@ static void ath12k_dp_rx_h_undecap_raw(struct ath12k *ar, struct sk_buff *msdu,
 
 	hdr = (void *)msdu->data;
 
-	/* Tail */
+	 
 	if (status->flag & RX_FLAG_IV_STRIPPED) {
 		skb_trim(msdu, msdu->len -
 			 ath12k_dp_rx_crypto_mic_len(ar, enctype));
@@ -2046,24 +1999,24 @@ static void ath12k_dp_rx_h_undecap_raw(struct ath12k *ar, struct sk_buff *msdu,
 		skb_trim(msdu, msdu->len -
 			 ath12k_dp_rx_crypto_icv_len(ar, enctype));
 	} else {
-		/* MIC */
+		 
 		if (status->flag & RX_FLAG_MIC_STRIPPED)
 			skb_trim(msdu, msdu->len -
 				 ath12k_dp_rx_crypto_mic_len(ar, enctype));
 
-		/* ICV */
+		 
 		if (status->flag & RX_FLAG_ICV_STRIPPED)
 			skb_trim(msdu, msdu->len -
 				 ath12k_dp_rx_crypto_icv_len(ar, enctype));
 	}
 
-	/* MMIC */
+	 
 	if ((status->flag & RX_FLAG_MMIC_STRIPPED) &&
 	    !ieee80211_has_morefrags(hdr->frame_control) &&
 	    enctype == HAL_ENCRYPT_TYPE_TKIP_MIC)
 		skb_trim(msdu, msdu->len - IEEE80211_CCMP_MIC_LEN);
 
-	/* Head */
+	 
 	if (status->flag & RX_FLAG_IV_STRIPPED) {
 		hdr_len = ieee80211_hdrlen(hdr->frame_control);
 		crypto_len = ath12k_dp_rx_crypto_param_len(ar, enctype);
@@ -2099,19 +2052,19 @@ static void ath12k_get_dot11_hdr_from_rx_desc(struct ath12k *ar,
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	hdr->frame_control = fc;
 
-	/* Get wifi header from rx_desc */
+	 
 	ath12k_dp_rx_desc_get_dot11_hdr(ab, rx_desc, hdr);
 
 	if (rxcb->is_mcbc)
 		status->flag &= ~RX_FLAG_PN_VALIDATED;
 
-	/* Add QOS header */
+	 
 	if (ieee80211_is_data_qos(hdr->frame_control)) {
 		qos_ctl = rxcb->tid;
 		if (ath12k_dp_rx_h_mesh_ctl_present(ab, rx_desc))
 			qos_ctl |= IEEE80211_QOS_CTL_MESH_CONTROL_PRESENT;
 
-		/* TODO: Add other QoS ctl fields when required */
+		 
 		memcpy(msdu->data + (hdr_len - IEEE80211_QOS_CTL_LEN),
 		       &qos_ctl, IEEE80211_QOS_CTL_LEN);
 	}
@@ -2138,9 +2091,7 @@ static void ath12k_dp_rx_h_undecap_eth(struct ath12k *ar,
 	       sizeof(rfc));
 	ath12k_get_dot11_hdr_from_rx_desc(ar, msdu, rxcb, status, enctype);
 
-	/* original 802.11 header has a different DA and in
-	 * case of 4addr it may also have different SA
-	 */
+	 
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	ether_addr_copy(ieee80211_get_DA(hdr), da);
 	ether_addr_copy(ieee80211_get_SA(hdr), sa);
@@ -2169,21 +2120,19 @@ static void ath12k_dp_rx_h_undecap(struct ath12k *ar, struct sk_buff *msdu,
 	case DP_RX_DECAP_TYPE_ETHERNET2_DIX:
 		ehdr = (struct ethhdr *)msdu->data;
 
-		/* mac80211 allows fast path only for authorized STA */
+		 
 		if (ehdr->h_proto == cpu_to_be16(ETH_P_PAE)) {
 			ATH12K_SKB_RXCB(msdu)->is_eapol = true;
 			ath12k_dp_rx_h_undecap_eth(ar, msdu, enctype, status);
 			break;
 		}
 
-		/* PN for mcast packets will be validated in mac80211;
-		 * remove eth header and add 802.11 header.
-		 */
+		 
 		if (ATH12K_SKB_RXCB(msdu)->is_mcbc && decrypted)
 			ath12k_dp_rx_h_undecap_eth(ar, msdu, enctype, status);
 		break;
 	case DP_RX_DECAP_TYPE_8023:
-		/* TODO: Handle undecap for these formats */
+		 
 		break;
 	}
 }
@@ -2226,7 +2175,7 @@ static void ath12k_dp_rx_h_mpdu(struct ath12k *ar,
 	struct ath12k_peer *peer;
 	u32 err_bitmap;
 
-	/* PN for multicast packets will be checked in mac80211 */
+	 
 	rxcb = ATH12K_SKB_RXCB(msdu);
 	fill_crypto_hdr = ath12k_dp_rx_h_is_da_mcbc(ar->ab, rx_desc);
 	rxcb->is_mcbc = fill_crypto_hdr;
@@ -2250,7 +2199,7 @@ static void ath12k_dp_rx_h_mpdu(struct ath12k *ar,
 	if (enctype != HAL_ENCRYPT_TYPE_OPEN && !err_bitmap)
 		is_decrypted = ath12k_dp_rx_h_is_decrypted(ab, rx_desc);
 
-	/* Clear per-MPDU flags while leaving per-PPDU flags intact */
+	 
 	rx_status->flag &= ~(RX_FLAG_FAILED_FCS_CRC |
 			     RX_FLAG_MMIC_ERROR |
 			     RX_FLAG_DECRYPTED |
@@ -2467,13 +2416,9 @@ static void ath12k_dp_rx_deliver_msdu(struct ath12k *ar, struct napi_struct *nap
 	rx_status = IEEE80211_SKB_RXCB(msdu);
 	*rx_status = *status;
 
-	/* TODO: trace rx packet */
+	 
 
-	/* PN for multicast packets are not validate in HW,
-	 * so skip 802.3 rx path
-	 * Also, fast_rx expects the STA to be authorized, hence
-	 * eapol packets are sent in slow path.
-	 */
+	 
 	if (decap == DP_RX_DECAP_TYPE_ETHERNET2_DIX && !is_eapol &&
 	    !(is_mcbc && rx_status->flag & RX_FLAG_DECRYPTED))
 		rx_status->flag |= RX_FLAG_8023;
@@ -2636,7 +2581,7 @@ try_again:
 			   le32_to_cpu(desc->buf_va_lo));
 		desc_info = (struct ath12k_rx_desc_info *)((unsigned long)desc_va);
 
-		/* retry manual desc retrieval */
+		 
 		if (!desc_info) {
 			desc_info = ath12k_dp_get_rx_desc(ab, cookie);
 			if (!desc_info) {
@@ -2696,12 +2641,7 @@ try_again:
 			break;
 	}
 
-	/* Hw might have updated the head pointer after we cached it.
-	 * In this case, even though there are entries in the ring we'll
-	 * get rx_desc NULL. Give the read another try with updated cached
-	 * head pointer so that we can reap complete MPDU in the current
-	 * rx processing.
-	 */
+	 
 	if (!done && ath12k_hal_srng_dst_num_free(ab, srng, true)) {
 		ath12k_hal_srng_access_end(ab, srng);
 		goto try_again;
@@ -2714,7 +2654,7 @@ try_again:
 	if (!total_msdu_reaped)
 		goto exit;
 
-	/* TODO: Move to implicit BM? */
+	 
 	ath12k_dp_rx_bufs_replenish(ab, 0, rx_ring, num_buffs_reaped,
 				    ab->hw_params->hal_params->rx_buf_rbm, true);
 
@@ -2796,7 +2736,7 @@ static int ath12k_dp_rx_h_michael_mic(struct crypto_shash *tfm, u8 *key,
 	if (ret)
 		goto out;
 
-	/* TKIP MIC header */
+	 
 	memcpy(mic_hdr, ieee80211_get_DA(hdr), ETH_ALEN);
 	memcpy(mic_hdr + ETH_ALEN, ieee80211_get_SA(hdr), ETH_ALEN);
 	if (ieee80211_is_data_qos(hdr->frame_control))
@@ -2937,7 +2877,7 @@ static int ath12k_dp_rx_h_defrag(struct ath12k *ar,
 					 RX_FLAG_MIC_STRIPPED;
 		}
 
-		/* RX fragments are always raw packets */
+		 
 		if (skb != last_frag)
 			skb_trim(skb, skb->len - FCS_LEN);
 		ath12k_dp_rx_h_undecap_frag(ar, skb, enctype, flags);
@@ -3016,7 +2956,7 @@ static int ath12k_dp_rx_h_defrag_reo_reinject(struct ath12k *ar,
 	msdu0->rx_msdu_info.info0 = cpu_to_le32(msdu_info);
 	msdu0->rx_msdu_ext_info.info0 = cpu_to_le32(msdu_ext_info);
 
-	/* change msdu len in hal rx desc */
+	 
 	ath12k_dp_rxdesc_set_msdu_len(ab, rx_desc, defrag_skb->len - hal_rx_desc_sz);
 
 	buf_paddr = dma_map_single(ab->dev, defrag_skb->data,
@@ -3048,7 +2988,7 @@ static int ath12k_dp_rx_h_defrag_reo_reinject(struct ath12k *ar,
 					desc_info->cookie,
 					HAL_RX_BUF_RBM_SW3_BM);
 
-	/* Fill mpdu details into reo entrance ring */
+	 
 	srng = &ab->hal.srng_list[dp->reo_reinject_ring.ring_id];
 
 	spin_lock_bh(&srng->lock);
@@ -3077,11 +3017,7 @@ static int ath12k_dp_rx_h_defrag_reo_reinject(struct ath12k *ar,
 	reo_ent_ring->rx_mpdu_info.peer_meta_data =
 		reo_dest_ring->rx_mpdu_info.peer_meta_data;
 
-	/* Firmware expects physical address to be filled in queue_addr_lo in
-	 * the MLO scenario and in case of non MLO peer meta data needs to be
-	 * filled.
-	 * TODO: Need to handle for MLO scenario.
-	 */
+	 
 	reo_ent_ring->queue_addr_lo = reo_dest_ring->rx_mpdu_info.peer_meta_data;
 	reo_ent_ring->info0 = le32_encode_bits(dst_ind,
 					       HAL_REO_ENTR_RING_INFO0_DEST_IND);
@@ -3219,11 +3155,7 @@ static int ath12k_dp_rx_frag_h_mpdu(struct ath12k *ar,
 	    tid > IEEE80211_NUM_TIDS)
 		return -EINVAL;
 
-	/* received unfragmented packet in reo
-	 * exception ring, this shouldn't happen
-	 * as these packets typically come from
-	 * reo2sw srngs.
-	 */
+	 
 	if (WARN_ON_ONCE(!frag_no && !more_frags))
 		return -EINVAL;
 
@@ -3247,13 +3179,13 @@ static int ath12k_dp_rx_frag_h_mpdu(struct ath12k *ar,
 
 	if ((!skb_queue_empty(&rx_tid->rx_frags) && seqno != rx_tid->cur_sn) ||
 	    skb_queue_empty(&rx_tid->rx_frags)) {
-		/* Flush stored fragments and start a new sequence */
+		 
 		ath12k_dp_rx_frags_cleanup(rx_tid, true);
 		rx_tid->cur_sn = seqno;
 	}
 
 	if (rx_tid->rx_frag_bitmap & BIT(frag_no)) {
-		/* Fragment already present */
+		 
 		ret = -EINVAL;
 		goto out_unlock;
 	}
@@ -3335,7 +3267,7 @@ ath12k_dp_process_rx_err_buf(struct ath12k *ar, struct hal_reo_dest_ring *desc,
 		   le32_to_cpu(desc->buf_va_lo));
 	desc_info = (struct ath12k_rx_desc_info *)((unsigned long)desc_va);
 
-	/* retry manual desc retrieval */
+	 
 	if (!desc_info) {
 		desc_info = ath12k_dp_get_rx_desc(ab, cookie);
 		if (!desc_info) {
@@ -3457,12 +3389,10 @@ int ath12k_dp_rx_process_err(struct ath12k_base *ab, struct napi_struct *napi,
 		is_frag = !!(le32_to_cpu(reo_desc->rx_mpdu_info.info0) &
 			     RX_MPDU_DESC_INFO0_FRAG_FLAG);
 
-		/* Process only rx fragments with one msdu per link desc below, and drop
-		 * msdu's indicated due to error reasons.
-		 */
+		 
 		if (!is_frag || num_msdus > 1) {
 			drop = true;
-			/* Return the link desc back to wbm idle list */
+			 
 			ath12k_dp_rx_link_desc_return(ab, reo_desc,
 						      HAL_WBM_REL_BM_ACT_PUT_IN_IDLE);
 		}
@@ -3548,16 +3478,13 @@ static int ath12k_dp_rx_h_null_q_desc(struct ath12k *ar, struct sk_buff *msdu,
 	spin_unlock(&ab->base_lock);
 
 	if (!rxcb->is_frag && ((msdu_len + hal_rx_desc_sz) > DP_RX_BUFFER_SIZE)) {
-		/* First buffer will be freed by the caller, so deduct it's length */
+		 
 		msdu_len = msdu_len - (DP_RX_BUFFER_SIZE - hal_rx_desc_sz);
 		ath12k_dp_rx_null_q_desc_sg_drop(ar, msdu_len, msdu_list);
 		return -EINVAL;
 	}
 
-	/* Even after cleaning up the sg buffers in the msdu list with above check
-	 * any msdu received with continuation flag needs to be dropped as invalid.
-	 * This protects against some random err frame with continuation flag.
-	 */
+	 
 	if (rxcb->is_continuation)
 		return -EINVAL;
 
@@ -3568,14 +3495,7 @@ static int ath12k_dp_rx_h_null_q_desc(struct ath12k *ar, struct sk_buff *msdu,
 		return -EIO;
 	}
 
-	/* Handle NULL queue descriptor violations arising out a missing
-	 * REO queue for a given peer or a given TID. This typically
-	 * may happen if a packet is received on a QOS enabled TID before the
-	 * ADDBA negotiation for that TID, when the TID queue is setup. Or
-	 * it may also happen for MC/BC frames if they are not routed to the
-	 * non-QOS TID queue, in the absence of any other default TID queue.
-	 * This error can show up both in a REO destination or WBM release ring.
-	 */
+	 
 
 	if (rxcb->is_frag) {
 		skb_pull(msdu, hal_rx_desc_sz);
@@ -3594,9 +3514,7 @@ static int ath12k_dp_rx_h_null_q_desc(struct ath12k *ar, struct sk_buff *msdu,
 
 	rxcb->tid = ath12k_dp_rx_h_tid(ab, desc);
 
-	/* Please note that caller will having the access to msdu and completing
-	 * rx with mac80211. Need not worry about cleaning up amsdu_list.
-	 */
+	 
 
 	return 0;
 }
@@ -3616,15 +3534,10 @@ static bool ath12k_dp_rx_h_reo_err(struct ath12k *ar, struct sk_buff *msdu,
 			drop = true;
 		break;
 	case HAL_REO_DEST_RING_ERROR_CODE_PN_CHECK_FAILED:
-		/* TODO: Do not drop PN failed packets in the driver;
-		 * instead, it is good to drop such packets in mac80211
-		 * after incrementing the replay counters.
-		 */
+		 
 		fallthrough;
 	default:
-		/* TODO: Review other errors and process them to mac80211
-		 * as appropriate.
-		 */
+		 
 		drop = true;
 		break;
 	}
@@ -3680,9 +3593,7 @@ static bool ath12k_dp_rx_h_rxdma_err(struct ath12k *ar,  struct sk_buff *msdu,
 		}
 		fallthrough;
 	default:
-		/* TODO: Review other rxdma error code to check if anything is
-		 * worth reporting to mac80211
-		 */
+		 
 		drop = true;
 		break;
 	}
@@ -3707,7 +3618,7 @@ static void ath12k_dp_rx_wbm_err(struct ath12k *ar,
 		drop = ath12k_dp_rx_h_rxdma_err(ar, msdu, &rxs);
 		break;
 	default:
-		/* msdu will get freed */
+		 
 		break;
 	}
 
@@ -3761,7 +3672,7 @@ int ath12k_dp_rx_process_wbm_err(struct ath12k_base *ab,
 
 		desc_info = (struct ath12k_rx_desc_info *)err_info.rx_desc;
 
-		/* retry manual desc retrieval if hw cc is not done */
+		 
 		if (!desc_info) {
 			desc_info = ath12k_dp_get_rx_desc(ab, err_info.cookie);
 			if (!desc_info) {
@@ -3770,9 +3681,7 @@ int ath12k_dp_rx_process_wbm_err(struct ath12k_base *ab,
 			}
 		}
 
-		/* FIXME: Extract mac id correctly. Since descs are not tied
-		 * to mac, we can extract from vdev id in ring desc.
-		 */
+		 
 		mac_id = 0;
 
 		if (desc_info->magic != ATH12K_DP_RX_DESC_MAGIC)
@@ -3973,10 +3882,7 @@ int ath12k_dp_rxdma_ring_sel_config_qcn9274(struct ath12k_base *ab)
 	tlv_filter.rx_msdu_end_offset =
 		ab->hw_params->hal_ops->rx_desc_get_msdu_end_offset();
 
-	/* TODO: Selectively subscribe to required qwords within msdu_end
-	 * and mpdu_start and setup the mask in below msg
-	 * and modify the rx_desc struct
-	 */
+	 
 	ret = ath12k_dp_tx_htt_rx_filter_setup(ab, ring_id, 0,
 					       HAL_RXDMA_BUF,
 					       DP_RXDMA_REFILL_RING_SIZE,
@@ -4011,10 +3917,7 @@ int ath12k_dp_rxdma_ring_sel_config_wcn7850(struct ath12k_base *ab)
 	tlv_filter.rx_msdu_end_offset =
 		ab->hw_params->hal_ops->rx_desc_get_msdu_end_offset();
 
-	/* TODO: Selectively subscribe to required qwords within msdu_end
-	 * and mpdu_start and setup the mask in below msg
-	 * and modify the rx_desc struct
-	 */
+	 
 
 	for (i = 0; i < ab->hw_params->num_rxmda_per_pdev; i++) {
 		ring_id = dp->rx_mac_buf_ring[i].ring_id;
@@ -4033,7 +3936,7 @@ int ath12k_dp_rx_htt_setup(struct ath12k_base *ab)
 	u32 ring_id;
 	int i, ret;
 
-	/* TODO: Need to verify the HTT setup for QCN9224 */
+	 
 	ring_id = dp->rx_refill_buf_ring.refill_buf_ring.ring_id;
 	ret = ath12k_dp_tx_htt_srng_setup(ab, ring_id, 0, HAL_RXDMA_BUF);
 	if (ret) {
@@ -4241,9 +4144,7 @@ int ath12k_dp_rx_pdev_mon_attach(struct ath12k *ar)
 		return ret;
 	}
 
-	/* if rxdma1_enable is false, no need to setup
-	 * rxdma_mon_desc_ring.
-	 */
+	 
 	if (!ar->ab->hw_params->rxdma1_enable)
 		return 0;
 
@@ -4256,7 +4157,7 @@ int ath12k_dp_rx_pdev_mon_attach(struct ath12k *ar)
 
 int ath12k_dp_rx_pktlog_start(struct ath12k_base *ab)
 {
-	/* start reap timer */
+	 
 	mod_timer(&ab->mon_reap_timer,
 		  jiffies + msecs_to_jiffies(ATH12K_MON_TIMER_INTERVAL));
 
@@ -4270,7 +4171,7 @@ int ath12k_dp_rx_pktlog_stop(struct ath12k_base *ab, bool stop_timer)
 	if (stop_timer)
 		del_timer_sync(&ab->mon_reap_timer);
 
-	/* reap all the monitor related rings */
+	 
 	ret = ath12k_dp_purge_mon_ring(ab);
 	if (ret) {
 		ath12k_warn(ab, "failed to purge dp mon ring: %d\n", ret);

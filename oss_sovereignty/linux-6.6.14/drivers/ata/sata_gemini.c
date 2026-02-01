@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cortina Systems Gemini SATA bridge add-on to Faraday FTIDE010
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -20,18 +17,7 @@
 
 #define DRV_NAME "gemini_sata_bridge"
 
-/**
- * struct sata_gemini - a state container for a Gemini SATA bridge
- * @dev: the containing device
- * @base: remapped I/O memory base
- * @muxmode: the current muxing mode
- * @ide_pins: if the device is using the plain IDE interface pins
- * @sata_bridge: if the device enables the SATA bridge
- * @sata0_reset: SATA0 reset handler
- * @sata1_reset: SATA1 reset handler
- * @sata0_pclk: SATA0 PCLK handler
- * @sata1_pclk: SATA1 PCLK handler
- */
+ 
 struct sata_gemini {
 	struct device *dev;
 	void __iomem *base;
@@ -44,37 +30,9 @@ struct sata_gemini {
 	struct clk *sata1_pclk;
 };
 
-/* Miscellaneous Control Register */
+ 
 #define GEMINI_GLOBAL_MISC_CTRL		0x30
-/*
- * Values of IDE IOMUX bits in the misc control register
- *
- * Bits 26:24 are "IDE IO Select", which decides what SATA
- * adapters are connected to which of the two IDE/ATA
- * controllers in the Gemini. We can connect the two IDE blocks
- * to one SATA adapter each, both acting as master, or one IDE
- * blocks to two SATA adapters so the IDE block can act in a
- * master/slave configuration.
- *
- * We also bring out different blocks on the actual IDE
- * pins (not SATA pins) if (and only if) these are muxed in.
- *
- * 111-100 - Reserved
- * Mode 0: 000 - ata0 master <-> sata0
- *               ata1 master <-> sata1
- *               ata0 slave interface brought out on IDE pads
- * Mode 1: 001 - ata0 master <-> sata0
- *               ata1 master <-> sata1
- *               ata1 slave interface brought out on IDE pads
- * Mode 2: 010 - ata1 master <-> sata1
- *               ata1 slave  <-> sata0
- *               ata0 master and slave interfaces brought out
- *                    on IDE pads
- * Mode 3: 011 - ata0 master <-> sata0
- *               ata1 slave  <-> sata1
- *               ata1 master and slave interfaces brought out
- *                    on IDE pads
- */
+ 
 #define GEMINI_IDE_IOMUX_MASK			(7 << 24)
 #define GEMINI_IDE_IOMUX_MODE0			(0 << 24)
 #define GEMINI_IDE_IOMUX_MODE1			(1 << 24)
@@ -82,9 +40,7 @@ struct sata_gemini {
 #define GEMINI_IDE_IOMUX_MODE3			(3 << 24)
 #define GEMINI_IDE_IOMUX_SHIFT			(24)
 
-/*
- * Registers directly controlling the PATA<->SATA adapters
- */
+ 
 #define GEMINI_SATA_ID				0x00
 #define GEMINI_SATA_PHY_ID			0x04
 #define GEMINI_SATA0_STATUS			0x08
@@ -107,11 +63,7 @@ struct sata_gemini {
 #define GEMINI_SATA_CTRL_SLAVE_EN		BIT(1)
 #define GEMINI_SATA_CTRL_EN			BIT(0)
 
-/*
- * There is only ever one instance of this bridge on a system,
- * so create a singleton so that the FTIDE010 instances can grab
- * a reference to it.
- */
+ 
 static struct sata_gemini *sg_singleton;
 
 struct sata_gemini *gemini_sata_bridge_get(void)
@@ -126,10 +78,7 @@ bool gemini_sata_bridge_enabled(struct sata_gemini *sg, bool is_ata1)
 {
 	if (!sg->sata_bridge)
 		return false;
-	/*
-	 * In muxmode 2 and 3 one of the ATA controllers is
-	 * actually not connected to any SATA bridge.
-	 */
+	 
 	if ((sg->muxmode == GEMINI_MUXMODE_2) &&
 	    !is_ata1)
 		return false;
@@ -156,22 +105,22 @@ static int gemini_sata_setup_bridge(struct sata_gemini *sg,
 
 	if (bridge == 0) {
 		val = GEMINI_SATA_CTRL_HOTPLUG_DETECT_EN | GEMINI_SATA_CTRL_EN;
-		/* SATA0 slave mode is only used in muxmode 2 */
+		 
 		if (sg->muxmode == GEMINI_MUXMODE_2)
 			val |= GEMINI_SATA_CTRL_SLAVE_EN;
 		writel(val, sg->base + GEMINI_SATA0_CTRL);
 	} else {
 		val = GEMINI_SATA_CTRL_HOTPLUG_DETECT_EN | GEMINI_SATA_CTRL_EN;
-		/* SATA1 slave mode is only used in muxmode 3 */
+		 
 		if (sg->muxmode == GEMINI_MUXMODE_3)
 			val |= GEMINI_SATA_CTRL_SLAVE_EN;
 		writel(val, sg->base + GEMINI_SATA1_CTRL);
 	}
 
-	/* Vendor code waits 10 ms here */
+	 
 	msleep(10);
 
-	/* Wait for PHY to become ready */
+	 
 	do {
 		msleep(100);
 
@@ -203,7 +152,7 @@ int gemini_sata_start_bridge(struct sata_gemini *sg, unsigned int bridge)
 	clk_enable(pclk);
 	msleep(10);
 
-	/* Do not keep clocking a bridge that is not online */
+	 
 	ret = gemini_sata_setup_bridge(sg, bridge);
 	if (ret)
 		clk_disable(pclk);
@@ -337,7 +286,7 @@ static int gemini_sata_probe(struct platform_device *pdev)
 		return PTR_ERR(map);
 	}
 
-	/* Set up the SATA bridge if need be */
+	 
 	if (of_property_read_bool(np, "cortina,gemini-enable-sata-bridge")) {
 		ret = gemini_sata_bridge_init(sg);
 		if (ret)
@@ -374,11 +323,7 @@ static int gemini_sata_probe(struct platform_device *pdev)
 		goto out_unprep_clk;
 	}
 
-	/*
-	 * Route out the IDE pins if desired.
-	 * This is done by looking up a special pin control state called
-	 * "ide" that will route out the IDE pins.
-	 */
+	 
 	if (sg->ide_pins) {
 		ret = gemini_setup_ide_pins(dev);
 		if (ret)
@@ -412,7 +357,7 @@ static void gemini_sata_remove(struct platform_device *pdev)
 
 static const struct of_device_id gemini_sata_of_match[] = {
 	{ .compatible = "cortina,gemini-sata-bridge", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver gemini_sata_driver = {

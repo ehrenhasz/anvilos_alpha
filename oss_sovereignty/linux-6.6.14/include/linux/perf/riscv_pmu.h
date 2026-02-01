@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 SiFive
- * Copyright (C) 2018 Andes Technology Corporation
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- *
- */
+ 
+ 
 
 #ifndef _RISCV_PMU_H
 #define _RISCV_PMU_H
@@ -15,9 +10,7 @@
 
 #ifdef CONFIG_RISCV_PMU
 
-/*
- * The RISCV_MAX_COUNTERS parameter should be specified.
- */
+ 
 
 #define RISCV_MAX_COUNTERS	64
 #define RISCV_OP_UNSUPP		(-EOPNOTSUPP)
@@ -29,15 +22,15 @@
 #define RISCV_PMU_CONFIG1_GUEST_EVENTS 0x1
 
 struct cpu_hw_events {
-	/* currently enabled events */
+	 
 	int			n_events;
-	/* Counter overflow interrupt */
+	 
 	int		irq;
-	/* currently enabled events */
+	 
 	struct perf_event	*events[RISCV_MAX_COUNTERS];
-	/* currently enabled hardware counters */
+	 
 	DECLARE_BITMAP(used_hw_ctrs, RISCV_MAX_COUNTERS);
-	/* currently enabled firmware counters */
+	 
 	DECLARE_BITMAP(used_fw_ctrs, RISCV_MAX_COUNTERS);
 };
 
@@ -83,6 +76,6 @@ struct riscv_pmu *riscv_pmu_alloc(void);
 int riscv_pmu_get_hpm_info(u32 *hw_ctr_width, u32 *num_hw_ctr);
 #endif
 
-#endif /* CONFIG_RISCV_PMU */
+#endif  
 
-#endif /* _RISCV_PMU_H */
+#endif  

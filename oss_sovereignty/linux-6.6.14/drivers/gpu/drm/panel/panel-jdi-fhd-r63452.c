@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 Raffaele Tranquillini <raffaele.tranquillini@gmail.com>
- *
- * Generated using linux-mdss-dsi-panel-driver-generator from Lineage OS device tree:
- * https://github.com/LineageOS/android_kernel_xiaomi_msm8996/blob/lineage-18.1/arch/arm/boot/dts/qcom/a1-msm8996-mtp.dtsi
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -286,7 +281,7 @@ static void jdi_fhd_r63452_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id jdi_fhd_r63452_of_match[] = {
 	{ .compatible = "jdi,fhd-r63452" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jdi_fhd_r63452_of_match);
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/of.h>
@@ -24,7 +21,7 @@
 #include "tidss_kms.h"
 #include "tidss_irq.h"
 
-/* Power management */
+ 
 
 int tidss_runtime_get(struct tidss_device *tidss)
 {
@@ -93,7 +90,7 @@ static __maybe_unused const struct dev_pm_ops tidss_pm_ops = {
 	SET_RUNTIME_PM_OPS(tidss_pm_runtime_suspend, tidss_pm_runtime_resume, NULL)
 };
 
-/* DRM device Information */
+ 
 
 static void tidss_release(struct drm_device *ddev)
 {
@@ -145,7 +142,7 @@ static int tidss_probe(struct platform_device *pdev)
 	pm_runtime_enable(dev);
 
 #ifndef CONFIG_PM
-	/* If we don't have PM, we need to call resume manually */
+	 
 	dispc_runtime_resume(tidss->dispc);
 #endif
 
@@ -212,12 +209,12 @@ static void tidss_remove(struct platform_device *pdev)
 	tidss_irq_uninstall(ddev);
 
 #ifndef CONFIG_PM
-	/* If we don't have PM, we need to call suspend manually */
+	 
 	dispc_runtime_suspend(tidss->dispc);
 #endif
 	pm_runtime_disable(dev);
 
-	/* devm allocated dispc goes away with the dev so mark it NULL */
+	 
 	dispc_remove(tidss);
 
 	dev_dbg(dev, "%s done\n", __func__);

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of the Emulex Linux Device Driver for Enterprise iSCSI
- * Host Bus Adapters. Refer to the README file included with this package
- * for driver version and adapter compatibility.
- *
- * Copyright (c) 2018 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
- *
- * Contact Information:
- * linux-drivers@broadcom.com
- */
+
+ 
 
 #include <scsi/libiscsi.h>
 #include <scsi/scsi_transport_iscsi.h>
@@ -25,13 +15,7 @@
 
 extern struct iscsi_transport beiscsi_iscsi_transport;
 
-/**
- * beiscsi_session_create - creates a new iscsi session
- * @ep: pointer to iscsi ep
- * @cmds_max: max commands supported
- * @qdepth: max queue depth supported
- * @initial_cmdsn: initial iscsi CMDSN
- */
+ 
 struct iscsi_cls_session *beiscsi_session_create(struct iscsi_endpoint *ep,
 						 u16 cmds_max,
 						 u16 qdepth,
@@ -95,13 +79,7 @@ destroy_sess:
 	return NULL;
 }
 
-/**
- * beiscsi_session_destroy - destroys iscsi session
- * @cls_session:	pointer to iscsi cls session
- *
- * Destroys iSCSI session instance and releases
- * resources allocated for it.
- */
+ 
 void beiscsi_session_destroy(struct iscsi_cls_session *cls_session)
 {
 	struct iscsi_session *sess = cls_session->dd_data;
@@ -112,21 +90,14 @@ void beiscsi_session_destroy(struct iscsi_cls_session *cls_session)
 	iscsi_session_teardown(cls_session);
 }
 
-/**
- * beiscsi_session_fail(): Closing session with appropriate error
- * @cls_session: ptr to session
- **/
+ 
 void beiscsi_session_fail(struct iscsi_cls_session *cls_session)
 {
 	iscsi_session_failure(cls_session->dd_data, ISCSI_ERR_CONN_FAILED);
 }
 
 
-/**
- * beiscsi_conn_create - create an instance of iscsi connection
- * @cls_session: ptr to iscsi_cls_session
- * @cid: iscsi cid
- */
+ 
 struct iscsi_cls_conn *
 beiscsi_conn_create(struct iscsi_cls_session *cls_session, u32 cid)
 {
@@ -160,15 +131,7 @@ beiscsi_conn_create(struct iscsi_cls_session *cls_session, u32 cid)
 	return cls_conn;
 }
 
-/**
- * beiscsi_conn_bind - Binds iscsi session/connection with TCP connection
- * @cls_session: pointer to iscsi cls session
- * @cls_conn: pointer to iscsi cls conn
- * @transport_fd: EP handle(64 bit)
- * @is_leading: indicate if this is the session leading connection (MCS)
- *
- * This function binds the TCP Conn with iSCSI Connection and Session.
- */
+ 
 int beiscsi_conn_bind(struct iscsi_cls_session *cls_session,
 		      struct iscsi_cls_conn *cls_conn,
 		      u64 transport_fd, int is_leading)
@@ -220,10 +183,7 @@ int beiscsi_conn_bind(struct iscsi_cls_session *cls_session,
 	beiscsi_conn->beiscsi_conn_cid = beiscsi_ep->ep_cid;
 	beiscsi_conn->ep = beiscsi_ep;
 	beiscsi_ep->conn = beiscsi_conn;
-	/**
-	 * Each connection is associated with a WRBQ kept in wrb_context.
-	 * Store doorbell offset for transmit path.
-	 */
+	 
 	pwrb_context = &phwi_ctrlr->wrb_context[cri_index];
 	beiscsi_conn->doorbell_offset = pwrb_context->doorbell_offset;
 	beiscsi_log(phba, KERN_INFO, BEISCSI_LOG_CONFIG,
@@ -301,18 +261,7 @@ void beiscsi_iface_destroy_default(struct beiscsi_hba *phba)
 	}
 }
 
-/**
- * beiscsi_iface_config_vlan()- Set the VLAN TAG
- * @shost: Scsi Host for the driver instance
- * @iface_param: Interface paramters
- *
- * Set the VLAN TAG for the adapter or disable
- * the VLAN config
- *
- * returns
- *	Success: 0
- *	Failure: Non-Zero Value
- **/
+ 
 static int
 beiscsi_iface_config_vlan(struct Scsi_Host *shost,
 			  struct iscsi_iface_param_info *iface_param)
@@ -345,7 +294,7 @@ beiscsi_iface_config_ipv4(struct Scsi_Host *shost,
 	struct nlattr *nla;
 	int ret = -EPERM;
 
-	/* Check the param */
+	 
 	switch (info->param) {
 	case ISCSI_NET_PARAM_IFACE_ENABLE:
 		if (info->value[0] == ISCSI_IFACE_ENABLE)
@@ -363,7 +312,7 @@ beiscsi_iface_config_ipv4(struct Scsi_Host *shost,
 		if (info->value[0] == ISCSI_BOOTPROTO_DHCP)
 			ret = beiscsi_if_en_dhcp(phba, BEISCSI_IP_TYPE_V4);
 		else if (info->value[0] == ISCSI_BOOTPROTO_STATIC)
-			/* release DHCP IP address */
+			 
 			ret = beiscsi_if_en_static(phba, BEISCSI_IP_TYPE_V4,
 						   NULL, NULL);
 		else
@@ -382,10 +331,7 @@ beiscsi_iface_config_ipv4(struct Scsi_Host *shost,
 					   ip, subnet);
 		break;
 	case ISCSI_NET_PARAM_IPV4_SUBNET:
-		/*
-		 * OPCODE_COMMON_ISCSI_NTWK_MODIFY_IP_ADDR ioctl needs IP
-		 * and subnet both. Find IP to be applied for this subnet.
-		 */
+		 
 		subnet = info->value;
 		nla = nla_find(data, dt_len, ISCSI_NET_PARAM_IPV4_ADDR);
 		if (nla) {
@@ -441,7 +387,7 @@ int beiscsi_iface_set_param(struct Scsi_Host *shost,
 		return -EBUSY;
 	}
 
-	/* update interface_handle */
+	 
 	ret = beiscsi_if_get_handle(phba);
 	if (ret) {
 		beiscsi_log(phba, KERN_ERR, BEISCSI_LOG_CONFIG,
@@ -450,7 +396,7 @@ int beiscsi_iface_set_param(struct Scsi_Host *shost,
 	}
 
 	nla_for_each_attr(attrib, data, dt_len, rm_len) {
-		/* ignore nla_type as it is never used */
+		 
 		if (nla_len(attrib) < sizeof(*iface_param))
 			return -EINVAL;
 
@@ -459,9 +405,7 @@ int beiscsi_iface_set_param(struct Scsi_Host *shost,
 		if (iface_param->param_type != ISCSI_NET_PARAM)
 			continue;
 
-		/*
-		 * BE2ISCSI only supports 1 interface
-		 */
+		 
 		if (iface_param->iface_num) {
 			beiscsi_log(phba, KERN_ERR, BEISCSI_LOG_CONFIG,
 				    "BS_%d : Invalid iface_num %d."
@@ -617,14 +561,7 @@ int beiscsi_iface_get_param(struct iscsi_iface *iface,
 	return len;
 }
 
-/**
- * beiscsi_ep_get_param - get the iscsi parameter
- * @ep: pointer to iscsi ep
- * @param: parameter type identifier
- * @buf: buffer pointer
- *
- * returns iscsi parameter
- */
+ 
 int beiscsi_ep_get_param(struct iscsi_endpoint *ep,
 			   enum iscsi_param param, char *buf)
 {
@@ -668,10 +605,7 @@ int beiscsi_set_param(struct iscsi_cls_conn *cls_conn,
 	ret = iscsi_set_param(cls_conn, param, buf, buflen);
 	if (ret)
 		return ret;
-	/*
-	 * If userspace tried to set the value to higher than we can
-	 * support override here.
-	 */
+	 
 	switch (param) {
 	case ISCSI_PARAM_FIRST_BURST:
 		if (session->first_burst > 8192)
@@ -696,11 +630,7 @@ int beiscsi_set_param(struct iscsi_cls_conn *cls_conn,
 	return 0;
 }
 
-/**
- * beiscsi_get_port_state - Get the Port State
- * @shost : pointer to scsi_host structure
- *
- */
+ 
 static void beiscsi_get_port_state(struct Scsi_Host *shost)
 {
 	struct beiscsi_hba *phba = iscsi_host_priv(shost);
@@ -710,11 +640,7 @@ static void beiscsi_get_port_state(struct Scsi_Host *shost)
 		ISCSI_PORT_STATE_UP : ISCSI_PORT_STATE_DOWN;
 }
 
-/**
- * beiscsi_get_port_speed  - Get the Port Speed from Adapter
- * @shost : pointer to scsi_host structure
- *
- */
+ 
 static void beiscsi_get_port_speed(struct Scsi_Host *shost)
 {
 	struct beiscsi_hba *phba = iscsi_host_priv(shost);
@@ -744,13 +670,7 @@ static void beiscsi_get_port_speed(struct Scsi_Host *shost)
 	}
 }
 
-/**
- * beiscsi_get_host_param - get the iscsi parameter
- * @shost: pointer to scsi_host structure
- * @param: parameter type identifier
- * @buf: buffer pointer
- *
- */
+ 
 int beiscsi_get_host_param(struct Scsi_Host *shost,
 			   enum iscsi_host_param param, char *buf)
 {
@@ -775,7 +695,7 @@ int beiscsi_get_host_param(struct Scsi_Host *shost,
 		}
 		break;
 	case ISCSI_HOST_PARAM_INITIATOR_NAME:
-		/* try fetching user configured name first */
+		 
 		status = beiscsi_get_initiator_name(phba, buf, true);
 		if (status < 0) {
 			status = beiscsi_get_initiator_name(phba, buf, false);
@@ -818,13 +738,7 @@ int beiscsi_get_macaddr(char *buf, struct beiscsi_hba *phba)
 	return sysfs_format_mac(buf, phba->mac_address, ETH_ALEN);
 }
 
-/**
- * beiscsi_conn_get_stats - get the iscsi stats
- * @cls_conn: pointer to iscsi cls conn
- * @stats: pointer to iscsi_stats structure
- *
- * returns iscsi stats
- */
+ 
 void beiscsi_conn_get_stats(struct iscsi_cls_conn *cls_conn,
 			    struct iscsi_stats *stats)
 {
@@ -851,11 +765,7 @@ void beiscsi_conn_get_stats(struct iscsi_cls_conn *cls_conn,
 	stats->custom[0].value = conn->eh_abort_cnt;
 }
 
-/**
- * beiscsi_set_params_for_offld - get the parameters for offload
- * @beiscsi_conn: pointer to beiscsi_conn
- * @params: pointer to offload_params structure
- */
+ 
 static void  beiscsi_set_params_for_offld(struct beiscsi_conn *beiscsi_conn,
 					  struct beiscsi_offload_params *params)
 {
@@ -895,10 +805,7 @@ static void  beiscsi_set_params_for_offld(struct beiscsi_conn *beiscsi_conn,
 
 }
 
-/**
- * beiscsi_conn_start - offload of session to chip
- * @cls_conn: pointer to beiscsi_conn
- */
+ 
 int beiscsi_conn_start(struct iscsi_cls_conn *cls_conn)
 {
 	struct iscsi_conn *conn = cls_conn->dd_data;
@@ -931,28 +838,21 @@ int beiscsi_conn_start(struct iscsi_cls_conn *cls_conn)
 	return 0;
 }
 
-/**
- * beiscsi_get_cid - Allocate a cid
- * @phba: The phba instance
- */
+ 
 static int beiscsi_get_cid(struct beiscsi_hba *phba)
 {
 	uint16_t cid_avlbl_ulp0, cid_avlbl_ulp1;
 	unsigned short cid, cid_from_ulp;
 	struct ulp_cid_info *cid_info;
 
-	/* Find the ULP which has more CID available */
+	 
 	cid_avlbl_ulp0 = (phba->cid_array_info[BEISCSI_ULP0]) ?
 			  BEISCSI_ULP0_AVLBL_CID(phba) : 0;
 	cid_avlbl_ulp1 = (phba->cid_array_info[BEISCSI_ULP1]) ?
 			  BEISCSI_ULP1_AVLBL_CID(phba) : 0;
 	cid_from_ulp = (cid_avlbl_ulp0 > cid_avlbl_ulp1) ?
 			BEISCSI_ULP0 : BEISCSI_ULP1;
-	/**
-	 * If iSCSI protocol is loaded only on ULP 0, and when cid_avlbl_ulp
-	 * is ZERO for both, ULP 1 is returned.
-	 * Check if ULP is loaded before getting new CID.
-	 */
+	 
 	if (!test_bit(cid_from_ulp, (void *)&phba->fw_config.ulp_supported))
 		return BE_INVALID_CID;
 
@@ -964,7 +864,7 @@ static int beiscsi_get_cid(struct beiscsi_hba *phba)
 				cid_info->avlbl_cids, cid_info->cid_free);
 		return BE_INVALID_CID;
 	}
-	/* empty the slot */
+	 
 	cid_info->cid_array[cid_info->cid_alloc++] = BE_INVALID_CID;
 	if (cid_info->cid_alloc == BEISCSI_GET_CID_COUNT(phba, cid_from_ulp))
 		cid_info->cid_alloc = 0;
@@ -972,11 +872,7 @@ static int beiscsi_get_cid(struct beiscsi_hba *phba)
 	return cid;
 }
 
-/**
- * beiscsi_put_cid - Free the cid
- * @phba: The phba for which the cid is being freed
- * @cid: The cid to free
- */
+ 
 static void beiscsi_put_cid(struct beiscsi_hba *phba, unsigned short cid)
 {
 	uint16_t cri_index = BE_GET_CRI_FROM_CID(cid);
@@ -990,7 +886,7 @@ static void beiscsi_put_cid(struct beiscsi_hba *phba, unsigned short cid)
 	cid_post_ulp = pwrb_context->ulp_num;
 
 	cid_info = phba->cid_array_info[cid_post_ulp];
-	/* fill only in empty slot */
+	 
 	if (cid_info->cid_array[cid_info->cid_free] != BE_INVALID_CID) {
 		__beiscsi_log(phba, KERN_ERR,
 			      "BS_%d : failed to put cid %u: available %u:%u\n",
@@ -1003,10 +899,7 @@ static void beiscsi_put_cid(struct beiscsi_hba *phba, unsigned short cid)
 	cid_info->avlbl_cids++;
 }
 
-/**
- * beiscsi_free_ep - free endpoint
- * @beiscsi_ep: pointer to device endpoint struct
- */
+ 
 static void beiscsi_free_ep(struct beiscsi_endpoint *beiscsi_ep)
 {
 	struct beiscsi_hba *phba = beiscsi_ep->phba;
@@ -1014,22 +907,15 @@ static void beiscsi_free_ep(struct beiscsi_endpoint *beiscsi_ep)
 
 	beiscsi_put_cid(phba, beiscsi_ep->ep_cid);
 	beiscsi_ep->phba = NULL;
-	/* clear this to track freeing in beiscsi_ep_disconnect */
+	 
 	phba->ep_array[BE_GET_CRI_FROM_CID(beiscsi_ep->ep_cid)] = NULL;
 
-	/**
-	 * Check if any connection resource allocated by driver
-	 * is to be freed.This case occurs when target redirection
-	 * or connection retry is done.
-	 **/
+	 
 	if (!beiscsi_ep->conn)
 		return;
 
 	beiscsi_conn = beiscsi_ep->conn;
-	/**
-	 * Break ep->conn link here so that completions after
-	 * this are ignored.
-	 */
+	 
 	beiscsi_ep->conn = NULL;
 	if (beiscsi_conn->login_in_progress) {
 		beiscsi_free_mgmt_task_handles(beiscsi_conn,
@@ -1038,15 +924,7 @@ static void beiscsi_free_ep(struct beiscsi_endpoint *beiscsi_ep)
 	}
 }
 
-/**
- * beiscsi_open_conn - Ask FW to open a TCP connection
- * @ep: pointer to device endpoint struct
- * @src_addr: The source IP address
- * @dst_addr: The Destination  IP address
- * @non_blocking: blocking or non-blocking call
- *
- * Asks the FW to open a TCP connection
- */
+ 
 static int beiscsi_open_conn(struct iscsi_endpoint *ep,
 			     struct sockaddr *src_addr,
 			     struct sockaddr *dst_addr, int non_blocking)
@@ -1135,14 +1013,7 @@ static int beiscsi_open_conn(struct iscsi_endpoint *ep,
 	return 0;
 }
 
-/**
- * beiscsi_ep_connect - Ask chip to create TCP Conn
- * @shost: Pointer to scsi_host structure
- * @dst_addr: The IP address of Target
- * @non_blocking: blocking or non-blocking call
- *
- * This routines first asks chip to create a connection and then allocates an EP
- */
+ 
 struct iscsi_endpoint *
 beiscsi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
 		   int non_blocking)
@@ -1195,13 +1066,7 @@ free_ep:
 	return ERR_PTR(ret);
 }
 
-/**
- * beiscsi_ep_poll - Poll to see if connection is established
- * @ep:	endpoint to be used
- * @timeout_ms: timeout specified in millisecs
- *
- * Poll to see if TCP connection established
- */
+ 
 int beiscsi_ep_poll(struct iscsi_endpoint *ep, int timeout_ms)
 {
 	struct beiscsi_endpoint *beiscsi_ep = ep->dd_data;
@@ -1215,13 +1080,7 @@ int beiscsi_ep_poll(struct iscsi_endpoint *ep, int timeout_ms)
 		return 0;
 }
 
-/**
- * beiscsi_flush_cq()- Flush the CQ created.
- * @phba: ptr device priv structure.
- *
- * Before the connection resource are freed flush
- * all the CQ enteries
- **/
+ 
 static void beiscsi_flush_cq(struct beiscsi_hba *phba)
 {
 	uint16_t i;
@@ -1240,22 +1099,14 @@ static void beiscsi_flush_cq(struct beiscsi_hba *phba)
 	}
 }
 
-/**
- * beiscsi_conn_close - Invalidate and upload connection
- * @beiscsi_ep: pointer to device endpoint struct
- *
- * Returns 0 on success,  -1 on failure.
- */
+ 
 static int beiscsi_conn_close(struct beiscsi_endpoint *beiscsi_ep)
 {
 	struct beiscsi_hba *phba = beiscsi_ep->phba;
 	unsigned int tag, attempts;
 	int ret;
 
-	/**
-	 * Without successfully invalidating and uploading connection
-	 * driver can't reuse the CID so attempt more than once.
-	 */
+	 
 	attempts = 0;
 	while (attempts++ < 3) {
 		tag = beiscsi_invalidate_cxn(phba, beiscsi_ep);
@@ -1269,9 +1120,9 @@ static int beiscsi_conn_close(struct beiscsi_endpoint *beiscsi_ep)
 		}
 	}
 
-	/* wait for all completions to arrive, then process them */
+	 
 	msleep(250);
-	/* flush CQ entries */
+	 
 	beiscsi_flush_cq(phba);
 
 	if (attempts > 3)
@@ -1295,12 +1146,7 @@ static int beiscsi_conn_close(struct beiscsi_endpoint *beiscsi_ep)
 	return 0;
 }
 
-/**
- * beiscsi_ep_disconnect - Tears down the TCP connection
- * @ep:	endpoint to be used
- *
- * Tears down the TCP connection
- */
+ 
 void beiscsi_ep_disconnect(struct iscsi_endpoint *ep)
 {
 	struct beiscsi_endpoint *beiscsi_ep;
@@ -1326,10 +1172,7 @@ void beiscsi_ep_disconnect(struct iscsi_endpoint *ep)
 		beiscsi_log(phba, KERN_INFO, BEISCSI_LOG_CONFIG,
 			    "BS_%d : HBA in error 0x%lx\n", phba->state);
 	} else {
-		/**
-		 * Make CID available even if close fails.
-		 * If not freed, FW might fail open using the CID.
-		 */
+		 
 		if (beiscsi_conn_close(beiscsi_ep) < 0)
 			__beiscsi_log(phba, KERN_ERR,
 				      "BS_%d : close conn failed cid %d\n",

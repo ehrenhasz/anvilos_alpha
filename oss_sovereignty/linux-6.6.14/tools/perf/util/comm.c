@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "comm.h"
 #include <errno.h>
 #include <stdlib.h>
@@ -15,7 +15,7 @@ struct comm_str {
 	refcount_t refcnt;
 };
 
-/* Should perhaps be moved to struct machine */
+ 
 static struct rb_root comm_str_root;
 static struct rw_semaphore comm_str_lock = {.lock = PTHREAD_RWLOCK_INITIALIZER,};
 
@@ -69,11 +69,7 @@ struct comm_str *__comm_str__findnew(const char *str, struct rb_root *root)
 		parent = *p;
 		iter = rb_entry(parent, struct comm_str, rb_node);
 
-		/*
-		 * If we race with comm_str__put, iter->refcnt is 0
-		 * and it will be removed within comm_str__put call
-		 * shortly, ignore it in this search.
-		 */
+		 
 		cmp = strcmp(str, iter->str);
 		if (!cmp && comm_str__get(iter))
 			return iter;

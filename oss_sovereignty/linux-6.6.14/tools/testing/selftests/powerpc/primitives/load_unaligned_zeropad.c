@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Userspace test harness for load_unaligned_zeropad. Creates two
- * pages and uses mprotect to prevent access to the second page and
- * a SEGV handler that walks the exception tables and runs the fixup
- * routine.
- *
- * The results are compared against a normal load that is that is
- * performed while access to the second page is enabled via mprotect.
- *
- * Copyright (C) 2014 Anton Blanchard <anton@au.ibm.com>, IBM
- */
+
+ 
 
 #include <stdlib.h>
 #include <string.h>

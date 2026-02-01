@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains KASAN shadow initialization code.
- *
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
- * Author: Andrey Ryabinin <ryabinin.a.a@gmail.com>
- */
+
+ 
 
 #include <linux/memblock.h>
 #include <linux/init.h>
@@ -19,13 +14,7 @@
 
 #include "kasan.h"
 
-/*
- * This page serves two purposes:
- *   - It used as early shadow memory. The entire shadow region populated
- *     with this page, before we will be able to setup normal shadow memory.
- *   - Latter it reused it as zero shadow to cover large ranges of memory
- *     that allowed to access, but not handled by kasan (vmalloc/vmemmap ...).
- */
+ 
 unsigned char kasan_early_shadow_page[PAGE_SIZE] __page_aligned_bss;
 
 #if CONFIG_PGTABLE_LEVELS > 4
@@ -227,12 +216,7 @@ static int __ref zero_p4d_populate(pgd_t *pgd, unsigned long addr,
 	return 0;
 }
 
-/**
- * kasan_populate_early_shadow - populate shadow memory region with
- *                               kasan_early_shadow_page
- * @shadow_start: start of the memory range to populate
- * @shadow_end: end of the memory range to populate
- */
+ 
 int __ref kasan_populate_early_shadow(const void *shadow_start,
 					const void *shadow_end)
 {
@@ -249,14 +233,7 @@ int __ref kasan_populate_early_shadow(const void *shadow_start,
 			pud_t *pud;
 			pmd_t *pmd;
 
-			/*
-			 * kasan_early_shadow_pud should be populated with pmds
-			 * at this moment.
-			 * [pud,pmd]_populate*() below needed only for
-			 * 3,2 - level page tables where we don't have
-			 * puds,pmds, so pgd_populate(), pud_populate()
-			 * is noops.
-			 */
+			 
 			pgd_populate(&init_mm, pgd,
 					lm_alias(kasan_early_shadow_p4d));
 			p4d = p4d_offset(pgd, addr);

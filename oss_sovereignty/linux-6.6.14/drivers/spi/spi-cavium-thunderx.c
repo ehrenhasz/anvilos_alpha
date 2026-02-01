@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cavium ThunderX SPI driver.
- *
- * Copyright (C) 2016 Cavium Inc.
- * Authors: Jan Glauber <jglauber@cavium.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -14,7 +9,7 @@
 
 #define DRV_NAME "spi-thunderx"
 
-#define SYS_FREQ_DEFAULT 700000000 /* 700 Mhz */
+#define SYS_FREQ_DEFAULT 700000000  
 
 static int thunderx_spi_probe(struct pci_dev *pdev,
 			      const struct pci_device_id *ent)
@@ -99,7 +94,7 @@ static void thunderx_spi_remove(struct pci_dev *pdev)
 
 	clk_disable_unprepare(p->clk);
 	pci_release_regions(pdev);
-	/* Put everything in a known state. */
+	 
 	writeq(0, p->register_base + OCTEON_SPI_CFG(p));
 }
 

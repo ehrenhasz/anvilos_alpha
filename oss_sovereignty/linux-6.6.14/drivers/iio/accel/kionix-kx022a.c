@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 ROHM Semiconductors
- *
- * ROHM/KIONIX KX022A accelerometer driver
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -26,19 +22,13 @@
 
 #include "kionix-kx022a.h"
 
-/*
- * The KX022A has FIFO which can store 43 samples of HiRes data from 2
- * channels. This equals to 43 (samples) * 3 (channels) * 2 (bytes/sample) to
- * 258 bytes of sample data. The quirk to know is that the amount of bytes in
- * the FIFO is advertised via 8 bit register (max value 255). The thing to note
- * is that full 258 bytes of data is indicated using the max value 255.
- */
+ 
 #define KX022A_FIFO_LENGTH			43
 #define KX022A_FIFO_FULL_VALUE			255
 #define KX022A_SOFT_RESET_WAIT_TIME_US		(5 * USEC_PER_MSEC)
 #define KX022A_SOFT_RESET_TOTAL_WAIT_TIME_US	(500 * USEC_PER_MSEC)
 
-/* 3 axis, 2 bytes of data for each of the axis */
+ 
 #define KX022A_FIFO_SAMPLES_SIZE_BYTES		6
 #define KX022A_FIFO_MAX_BYTES					\
 	(KX022A_FIFO_LENGTH * KX022A_FIFO_SAMPLES_SIZE_BYTES)
@@ -48,7 +38,7 @@ enum {
 	KX022A_STATE_FIFO,
 };
 
-/* Regmap configs */
+ 
 static const struct regmap_range kx022a_volatile_ranges[] = {
 	{
 		.range_min = KX022A_REG_XHP_L,
@@ -57,7 +47,7 @@ static const struct regmap_range kx022a_volatile_ranges[] = {
 		.range_min = KX022A_REG_TSCP,
 		.range_max = KX022A_REG_INT_REL,
 	}, {
-		/* The reset bit will be cleared by sensor */
+		 
 		.range_min = KX022A_REG_CNTL2,
 		.range_max = KX022A_REG_CNTL2,
 	}, {
@@ -83,10 +73,7 @@ static const struct regmap_access_table kx022a_precious_regs = {
 	.n_yes_ranges = ARRAY_SIZE(kx022a_precious_ranges),
 };
 
-/*
- * The HW does not set WHO_AM_I reg as read-only but we don't want to write it
- * so we still include it in the read-only ranges.
- */
+ 
 static const struct regmap_range kx022a_read_only_ranges[] = {
 	{
 		.range_min = KX022A_REG_XHP_L,
@@ -166,16 +153,11 @@ struct kx022a_data {
 	unsigned int odr_ns;
 
 	bool trigger_enabled;
-	/*
-	 * Prevent toggling the sensor stby/active state (PC1 bit) in the
-	 * middle of a configuration, or when the fifo is enabled. Also,
-	 * protect the data stored/retrieved from this structure from
-	 * concurrent accesses.
-	 */
+	 
 	struct mutex mutex;
 	u8 watermark;
 
-	/* 3 x 16bit accel data + timestamp */
+	 
 	__le16 buffer[8] __aligned(IIO_DMA_MINALIGN);
 	struct {
 		__le16 channels[3];
@@ -237,12 +219,7 @@ static const struct iio_chan_spec kx022a_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(3),
 };
 
-/*
- * The sensor HW can support ODR up to 1600 Hz, which is beyond what most of the
- * Linux CPUs can handle without dropping samples. Also, the low power mode is
- * not available for higher sample rates. Thus, the driver only supports 200 Hz
- * and slower ODRs. The slowest is 0.78 Hz.
- */
+ 
 static const int kx022a_accel_samp_freq_table[][2] = {
 	{ 0, 780000 },
 	{ 1, 563000 },
@@ -267,18 +244,7 @@ static const unsigned int kx022a_odrs[] = {
 	5 * MEGA,
 };
 
-/*
- * range is typically +-2G/4G/8G/16G, distributed over the amount of bits.
- * The scale table can be calculated using
- *	(range / 2^bits) * g = (range / 2^bits) * 9.80665 m/s^2
- *	=> KX022A uses 16 bit (HiRes mode - assume the low 8 bits are zeroed
- *	in low-power mode(?) )
- *	=> +/-2G  => 4 / 2^16 * 9,80665
- *	=> +/-2G  - 0.000598550415
- *	   +/-4G  - 0.00119710083
- *	   +/-8G  - 0.00239420166
- *	   +/-16G - 0.00478840332
- */
+ 
 static const int kx022a_scale_table[][2] = {
 	{ 0, 598550 },
 	{ 0, 1197101 },
@@ -387,15 +353,7 @@ static int kx022a_write_raw(struct iio_dev *idev,
 	struct kx022a_data *data = iio_priv(idev);
 	int ret, n;
 
-	/*
-	 * We should not allow changing scale or frequency when FIFO is running
-	 * as it will mess the timestamp/scale for samples existing in the
-	 * buffer. If this turns out to be an issue we can later change logic
-	 * to internally flush the fifo before reconfiguring so the samples in
-	 * fifo keep matching the freq/scale settings. (Such setup could cause
-	 * issues if users trust the watermark to be reached within known
-	 * time-limit).
-	 */
+	 
 	ret = iio_device_claim_direct_mode(idev);
 	if (ret)
 		return ret;
@@ -585,15 +543,7 @@ static const struct iio_dev_attr *kx022a_fifo_attributes[] = {
 
 static int kx022a_drop_fifo_contents(struct kx022a_data *data)
 {
-	/*
-	 * We must clear the old time-stamp to avoid computing the timestamps
-	 * based on samples acquired when buffer was last enabled.
-	 *
-	 * We don't need to protect the timestamp as long as we are only
-	 * called from fifo-disable where we can guarantee the sensor is not
-	 * triggering interrupts and where the mutex is locked to prevent the
-	 * user-space access.
-	 */
+	 
 	data->timestamp = 0;
 
 	return regmap_write(data->regmap, KX022A_REG_BUF_CLEAR, 0x0);
@@ -617,7 +567,7 @@ static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int samples,
 		return ret;
 	}
 
-	/* Let's not overflow if we for some reason get bogus value from i2c */
+	 
 	if (fifo_bytes == KX022A_FIFO_FULL_VALUE)
 		fifo_bytes = KX022A_FIFO_MAX_BYTES;
 
@@ -628,24 +578,9 @@ static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int samples,
 	if (!count)
 		return 0;
 
-	/*
-	 * If we are being called from IRQ handler we know the stored timestamp
-	 * is fairly accurate for the last stored sample. Otherwise, if we are
-	 * called as a result of a read operation from userspace and hence
-	 * before the watermark interrupt was triggered, take a timestamp
-	 * now. We can fall anywhere in between two samples so the error in this
-	 * case is at most one sample period.
-	 */
+	 
 	if (!irq) {
-		/*
-		 * We need to have the IRQ disabled or we risk of messing-up
-		 * the timestamps. If we are ran from IRQ, then the
-		 * IRQF_ONESHOT has us covered - but if we are ran by the
-		 * user-space read we need to disable the IRQ to be on a safe
-		 * side. We do this usng synchronous disable so that if the
-		 * IRQ thread is being ran on other CPU we wait for it to be
-		 * finished.
-		 */
+		 
 		disable_irq(data->irq);
 		renable = true;
 
@@ -653,17 +588,7 @@ static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int samples,
 		data->timestamp = iio_get_time_ns(idev);
 	}
 
-	/*
-	 * Approximate timestamps for each of the sample based on the sampling
-	 * frequency, timestamp for last sample and number of samples.
-	 *
-	 * We'd better not use the current bandwidth settings to compute the
-	 * sample period. The real sample rate varies with the device and
-	 * small variation adds when we store a large number of samples.
-	 *
-	 * To avoid this issue we compute the actual sample period ourselves
-	 * based on the timestamp delta between the last two flush operations.
-	 */
+	 
 	if (data->old_timestamp) {
 		sample_period = data->timestamp - data->old_timestamp;
 		do_div(sample_period, count);
@@ -673,11 +598,7 @@ static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int samples,
 	tstamp = data->timestamp - (count - 1) * sample_period;
 
 	if (samples && count > samples) {
-		/*
-		 * Here we leave some old samples to the buffer. We need to
-		 * adjust the timestamp to match the first sample in the buffer
-		 * or we will miscalculate the sample_period at next round.
-		 */
+		 
 		data->timestamp -= (count - samples) * sample_period;
 		count = samples;
 	}
@@ -746,7 +667,7 @@ static int kx022a_set_drdy_irq(struct kx022a_data *data, bool en)
 
 static int kx022a_prepare_irq_pin(struct kx022a_data *data)
 {
-	/* Enable IRQ1 pin. Set polarity to active low */
+	 
 	int mask = KX022A_MASK_IEN | KX022A_MASK_IPOL |
 		   KX022A_MASK_ITYP;
 	int val = KX022A_MASK_IEN | KX022A_IPOL_LOW |
@@ -757,7 +678,7 @@ static int kx022a_prepare_irq_pin(struct kx022a_data *data)
 	if (ret)
 		return ret;
 
-	/* We enable WMI to IRQ pin only at buffer_enable */
+	 
 	mask = KX022A_MASK_INS2_DRDY;
 
 	return regmap_set_bits(data->regmap, data->ien_reg, mask);
@@ -810,12 +731,12 @@ static int kx022a_fifo_enable(struct kx022a_data *data)
 	if (ret)
 		return ret;
 
-	/* Update watermark to HW */
+	 
 	ret = kx022a_fifo_set_wmi(data);
 	if (ret)
 		goto unlock_out;
 
-	/* Enable buffer */
+	 
 	ret = regmap_set_bits(data->regmap, KX022A_REG_BUF_CNTL2,
 			      KX022A_MASK_BUF_EN);
 	if (ret)
@@ -839,11 +760,7 @@ static int kx022a_buffer_postenable(struct iio_dev *idev)
 {
 	struct kx022a_data *data = iio_priv(idev);
 
-	/*
-	 * If we use data-ready trigger, then the IRQ masks should be handled by
-	 * trigger enable and the hardware buffer is not used but we just update
-	 * results to the IIO fifo when data-ready triggers.
-	 */
+	 
 	if (iio_device_get_current_mode(idev) == INDIO_BUFFER_TRIGGERED)
 		return 0;
 
@@ -874,7 +791,7 @@ err_read:
 	return IRQ_HANDLED;
 }
 
-/* Get timestamps and wake the thread if we need to read data */
+ 
 static irqreturn_t kx022a_irq_handler(int irq, void *private)
 {
 	struct iio_dev *idev = private;
@@ -889,11 +806,7 @@ static irqreturn_t kx022a_irq_handler(int irq, void *private)
 	return IRQ_NONE;
 }
 
-/*
- * WMI and data-ready IRQs are acked when results are read. If we add
- * TILT/WAKE or other IRQs - then we may need to implement the acking
- * (which is racy).
- */
+ 
 static irqreturn_t kx022a_irq_thread_handler(int irq, void *private)
 {
 	struct iio_dev *idev = private;
@@ -962,15 +875,12 @@ static int kx022a_chip_init(struct kx022a_data *data)
 {
 	int ret, val;
 
-	/* Reset the senor */
+	 
 	ret = regmap_write(data->regmap, KX022A_REG_CNTL2, KX022A_MASK_SRST);
 	if (ret)
 		return ret;
 
-	/*
-	 * I've seen I2C read failures if we poll too fast after the sensor
-	 * reset. Slight delay gives I2C block the time to recover.
-	 */
+	 
 	msleep(1);
 
 	ret = regmap_read_poll_timeout(data->regmap, KX022A_REG_CNTL2, val,
@@ -989,7 +899,7 @@ static int kx022a_chip_init(struct kx022a_data *data)
 		return ret;
 	}
 
-	/* set data res 16bit */
+	 
 	ret = regmap_set_bits(data->regmap, KX022A_REG_BUF_CNTL2,
 			      KX022A_MASK_BRES16);
 	if (ret) {
@@ -1028,10 +938,7 @@ int kx022a_probe_internal(struct device *dev)
 
 	data = iio_priv(idev);
 
-	/*
-	 * VDD is the analog and digital domain voltage supply and
-	 * IO_VDD is the digital I/O voltage supply.
-	 */
+	 
 	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(regulator_names),
 					     regulator_names);
 	if (ret && ret != -ENODEV)
@@ -1072,12 +979,12 @@ int kx022a_probe_internal(struct device *dev)
 	idev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
 	idev->available_scan_masks = kx022a_scan_masks;
 
-	/* Read the mounting matrix, if present */
+	 
 	ret = iio_read_mount_matrix(dev, &data->orientation);
 	if (ret)
 		return ret;
 
-	/* The sensor must be turned off for configuration */
+	 
 	ret = kx022a_turn_off_lock(data);
 	if (ret)
 		return ret;
@@ -1112,10 +1019,7 @@ int kx022a_probe_internal(struct device *dev)
 	indio_trig->ops = &kx022a_trigger_ops;
 	iio_trigger_set_drvdata(indio_trig, data);
 
-	/*
-	 * No need to check for NULL. request_threaded_irq() defaults to
-	 * dev_name() should the alloc fail.
-	 */
+	 
 	name = devm_kasprintf(data->dev, GFP_KERNEL, "%s-kx022a",
 			      dev_name(data->dev));
 

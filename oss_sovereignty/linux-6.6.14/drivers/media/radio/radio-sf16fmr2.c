@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* SF16-FMR2 and SF16-FMD2 radio driver for Linux
- * Copyright (c) 2011 Ondrej Zary
- *
- * Original driver was (c) 2000-2002 Ziglio Frediano, freddy77@angelfire.com
- * but almost nothing remained here after conversion to generic TEA575x
- * implementation
- */
+
+ 
 
 #include <linux/delay.h>
-#include <linux/module.h>	/* Modules			*/
-#include <linux/init.h>		/* Initdata			*/
+#include <linux/module.h>	 
+#include <linux/init.h>		 
 #include <linux/slab.h>
-#include <linux/ioport.h>	/* request_region		*/
-#include <linux/io.h>		/* outb, outb_p			*/
+#include <linux/ioport.h>	 
+#include <linux/io.h>		 
 #include <linux/isa.h>
 #include <linux/pnp.h>
 #include <media/drv-intf/tea575x.h>
@@ -21,7 +15,7 @@ MODULE_AUTHOR("Ondrej Zary");
 MODULE_DESCRIPTION("MediaForte SF16-FMR2 and SF16-FMD2 FM radio card driver");
 MODULE_LICENSE("GPL");
 
-/* these cards can only use two different ports (0x384 and 0x284) */
+ 
 #define FMR2_MAX 2
 
 static int radio_nr[FMR2_MAX] = { [0 ... (FMR2_MAX - 1)] = -1 };
@@ -42,19 +36,19 @@ static struct fmr2 *fmr2_cards[FMR2_MAX];
 static bool isa_registered;
 static bool pnp_registered;
 
-/* the port is hardwired on SF16-FMR2 */
+ 
 #define FMR2_PORT	0x384
 
-/* TEA575x tuner pins */
+ 
 #define STR_DATA	(1 << 0)
 #define STR_CLK		(1 << 1)
 #define STR_WREN	(1 << 2)
 #define STR_MOST	(1 << 3)
-/* PT2254A/TC9154A volume control pins */
+ 
 #define PT_ST		(1 << 4)
 #define PT_CK		(1 << 5)
 #define PT_DATA		(1 << 6)
-/* volume control presence pin */
+ 
 #define FMR2_HASVOL	(1 << 7)
 
 static void fmr2_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
@@ -64,7 +58,7 @@ static void fmr2_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
 
 	bits |= (pins & TEA575X_DATA) ? STR_DATA : 0;
 	bits |= (pins & TEA575X_CLK)  ? STR_CLK  : 0;
-	/* WRITE_ENABLE is inverted, DATA must be high during read */
+	 
 	bits |= (pins & TEA575X_WREN) ? 0 : STR_WREN | STR_DATA;
 
 	outb(bits, fmr2->io);
@@ -89,9 +83,9 @@ static const struct snd_tea575x_ops fmr2_tea_ops = {
 	.set_direction = fmr2_tea575x_set_direction,
 };
 
-/* TC9154A/PT2254A volume control */
+ 
 
-/* 18-bit shift register bit definitions */
+ 
 #define TC9154A_ATT_MAJ_0DB	(1 << 0)
 #define TC9154A_ATT_MAJ_10DB	(1 << 1)
 #define TC9154A_ATT_MAJ_20DB	(1 << 2)
@@ -105,10 +99,10 @@ static const struct snd_tea575x_ops fmr2_tea_ops = {
 #define TC9154A_ATT_MIN_4DB	(1 << 9)
 #define TC9154A_ATT_MIN_6DB	(1 << 10)
 #define TC9154A_ATT_MIN_8DB	(1 << 11)
-/* bit 12 is ignored */
+ 
 #define TC9154A_CHANNEL_LEFT	(1 << 13)
 #define TC9154A_CHANNEL_RIGHT	(1 << 14)
-/* bits 15, 16, 17 must be 0 */
+ 
 
 #define	TC9154A_ATT_MAJ(x)	(1 << x)
 #define TC9154A_ATT_MIN(x)	(1 << (7 + x))
@@ -129,7 +123,7 @@ static void tc9154a_set_attenuation(struct fmr2 *fmr2, int att, u32 channel)
 
 	reg = TC9154A_ATT_MAJ(att / 10) | TC9154A_ATT_MIN((att % 10) / 2);
 	reg |= channel;
-	/* write 18-bit shift register, LSB first */
+	 
 	for (i = 0; i < 18; i++) {
 		bit = reg & (1 << i) ? PT_DATA : 0;
 		tc9154a_set_pins(fmr2, bit);
@@ -139,7 +133,7 @@ static void tc9154a_set_attenuation(struct fmr2 *fmr2, int att, u32 channel)
 		tc9154a_set_pins(fmr2, bit);
 	}
 
-	/* latch register data */
+	 
 	udelay(5);
 	tc9154a_set_pins(fmr2, PT_ST);
 	udelay(5);
@@ -185,7 +179,7 @@ static int fmr2_tea_ext_init(struct snd_tea575x *tea)
 {
 	struct fmr2 *fmr2 = tea->private_data;
 
-	/* FMR2 can have volume control, FMD2 can't (uses SB16 mixer) */
+	 
 	if (!fmr2->is_fmd2 && inb(fmr2->io) & FMR2_HASVOL) {
 		fmr2->volume = v4l2_ctrl_new_std(&tea->ctrl_handler, &fmr2_ctrl_ops, V4L2_CID_AUDIO_VOLUME, 0, 68, 2, 56);
 		fmr2->balance = v4l2_ctrl_new_std(&tea->ctrl_handler, &fmr2_ctrl_ops, V4L2_CID_AUDIO_BALANCE, -68, 68, 2, 0);
@@ -199,7 +193,7 @@ static int fmr2_tea_ext_init(struct snd_tea575x *tea)
 }
 
 static const struct pnp_device_id fmr2_pnp_ids[] = {
-	{ .id = "MFRad13" }, /* tuner subdevice of SF16-FMD2 */
+	{ .id = "MFRad13" },  
 	{ .id = "" }
 };
 MODULE_DEVICE_TABLE(pnp, fmr2_pnp_ids);
@@ -209,7 +203,7 @@ static int fmr2_probe(struct fmr2 *fmr2, struct device *pdev, int io)
 	int err, i;
 	char *card_name = fmr2->is_fmd2 ? "SF16-FMD2" : "SF16-FMR2";
 
-	/* avoid errors if a card was already registered at given port */
+	 
 	for (i = 0; i < num_fmr2_cards; i++)
 		if (io == fmr2_cards[i]->io)
 			return -EBUSY;

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for the pin muxing portions of the pin control subsystem
- *
- * Copyright (C) 2011-2012 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- * Based on bits of regulator core, gpio core and clk core
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- *
- * Copyright (C) 2012 NVIDIA CORPORATION. All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) "pinmux core: " fmt
 
 #include <linux/ctype.h>
@@ -38,7 +28,7 @@ int pinmux_check_ops(struct pinctrl_dev *pctldev)
 	unsigned nfuncs;
 	unsigned selector = 0;
 
-	/* Check that we implement required operations */
+	 
 	if (!ops ||
 	    !ops->get_functions_count ||
 	    !ops->get_function_name ||
@@ -47,7 +37,7 @@ int pinmux_check_ops(struct pinctrl_dev *pctldev)
 		dev_err(pctldev->dev, "pinmux ops lacks necessary functions\n");
 		return -EINVAL;
 	}
-	/* Check that all functions registered have names */
+	 
 	nfuncs = ops->get_functions_count(pctldev);
 	while (selector < nfuncs) {
 		const char *fname = ops->get_function_name(pctldev,
@@ -74,22 +64,13 @@ int pinmux_validate_map(const struct pinctrl_map *map, int i)
 	return 0;
 }
 
-/**
- * pinmux_can_be_used_for_gpio() - check if a specific pin
- *	is either muxed to a different function or used as gpio.
- *
- * @pctldev: the associated pin controller device
- * @pin: the pin number in the global pin space
- *
- * Controllers not defined as strict will always return true,
- * menaning that the gpio can be used.
- */
+ 
 bool pinmux_can_be_used_for_gpio(struct pinctrl_dev *pctldev, unsigned pin)
 {
 	struct pin_desc *desc = pin_desc_get(pctldev, pin);
 	const struct pinmux_ops *ops = pctldev->desc->pmxops;
 
-	/* Can't inspect pin, assume it can be used */
+	 
 	if (!desc || !ops)
 		return true;
 
@@ -99,15 +80,7 @@ bool pinmux_can_be_used_for_gpio(struct pinctrl_dev *pctldev, unsigned pin)
 	return !(ops->strict && !!desc->gpio_owner);
 }
 
-/**
- * pin_request() - request a single pin to be muxed in, typically for GPIO
- * @pctldev: the associated pin controller device
- * @pin: the pin number in the global pin space
- * @owner: a representation of the owner of this pin; typically the device
- *	name that controls its mux function, or the requested GPIO name
- * @gpio_range: the range matching the GPIO pin if this is a request for a
- *	single GPIO pin
- */
+ 
 static int pin_request(struct pinctrl_dev *pctldev,
 		       int pin, const char *owner,
 		       struct pinctrl_gpio_range *gpio_range)
@@ -152,7 +125,7 @@ static int pin_request(struct pinctrl_dev *pctldev,
 		desc->mux_owner = owner;
 	}
 
-	/* Let each pin increase references to this module */
+	 
 	if (!try_module_get(pctldev->owner)) {
 		dev_err(pctldev->dev,
 			"could not increase module refcount for pin %d\n",
@@ -161,12 +134,9 @@ static int pin_request(struct pinctrl_dev *pctldev,
 		goto out_free_pin;
 	}
 
-	/*
-	 * If there is no kind of request function for the pin we just assume
-	 * we got it by default and proceed.
-	 */
+	 
 	if (gpio_range && ops->gpio_request_enable)
-		/* This requests and enables a single GPIO pin */
+		 
 		status = ops->gpio_request_enable(pctldev, gpio_range, pin);
 	else if (ops->request)
 		status = ops->request(pctldev, pin);
@@ -196,17 +166,7 @@ out:
 	return status;
 }
 
-/**
- * pin_free() - release a single muxed in pin so something else can be muxed
- * @pctldev: pin controller device handling this pin
- * @pin: the pin to free
- * @gpio_range: the range matching the GPIO pin if this is a request for a
- *	single GPIO pin
- *
- * This function returns a pointer to the previous owner. This is used
- * for callers that dynamically allocate an owner name so it can be freed
- * once the pin is free. This is done for GPIO request functions.
- */
+ 
 static const char *pin_free(struct pinctrl_dev *pctldev, int pin,
 			    struct pinctrl_gpio_range *gpio_range)
 {
@@ -222,9 +182,7 @@ static const char *pin_free(struct pinctrl_dev *pctldev, int pin,
 	}
 
 	if (!gpio_range) {
-		/*
-		 * A pin should not be freed more times than allocated.
-		 */
+		 
 		if (WARN_ON(!desc->mux_usecount))
 			return NULL;
 		desc->mux_usecount--;
@@ -232,10 +190,7 @@ static const char *pin_free(struct pinctrl_dev *pctldev, int pin,
 			return NULL;
 	}
 
-	/*
-	 * If there is no kind of request function for the pin we just assume
-	 * we got it by default and proceed.
-	 */
+	 
 	if (gpio_range && ops->gpio_disable_free)
 		ops->gpio_disable_free(pctldev, gpio_range, pin);
 	else if (ops->free)
@@ -255,13 +210,7 @@ static const char *pin_free(struct pinctrl_dev *pctldev, int pin,
 	return owner;
 }
 
-/**
- * pinmux_request_gpio() - request pinmuxing for a GPIO pin
- * @pctldev: pin controller device affected
- * @pin: the pin to mux in for GPIO
- * @range: the applicable GPIO range
- * @gpio: number of requested GPIO
- */
+ 
 int pinmux_request_gpio(struct pinctrl_dev *pctldev,
 			struct pinctrl_gpio_range *range,
 			unsigned pin, unsigned gpio)
@@ -269,7 +218,7 @@ int pinmux_request_gpio(struct pinctrl_dev *pctldev,
 	const char *owner;
 	int ret;
 
-	/* Conjure some name stating what chip and pin this is taken by */
+	 
 	owner = kasprintf(GFP_KERNEL, "%s:%d", range->name, gpio);
 	if (!owner)
 		return -ENOMEM;
@@ -281,12 +230,7 @@ int pinmux_request_gpio(struct pinctrl_dev *pctldev,
 	return ret;
 }
 
-/**
- * pinmux_free_gpio() - release a pin from GPIO muxing
- * @pctldev: the pin controller device for the pin
- * @pin: the affected currently GPIO-muxed in pin
- * @range: applicable GPIO range
- */
+ 
 void pinmux_free_gpio(struct pinctrl_dev *pctldev, unsigned pin,
 		      struct pinctrl_gpio_range *range)
 {
@@ -296,13 +240,7 @@ void pinmux_free_gpio(struct pinctrl_dev *pctldev, unsigned pin,
 	kfree(owner);
 }
 
-/**
- * pinmux_gpio_direction() - set the direction of a single muxed-in GPIO pin
- * @pctldev: the pin controller handling this pin
- * @range: applicable GPIO range
- * @pin: the affected GPIO pin in this controller
- * @input: true if we set the pin as input, false for output
- */
+ 
 int pinmux_gpio_direction(struct pinctrl_dev *pctldev,
 			  struct pinctrl_gpio_range *range,
 			  unsigned pin, bool input)
@@ -327,7 +265,7 @@ static int pinmux_func_name_to_selector(struct pinctrl_dev *pctldev,
 	unsigned nfuncs = ops->get_functions_count(pctldev);
 	unsigned selector = 0;
 
-	/* See if this pctldev has this function */
+	 
 	while (selector < nfuncs) {
 		const char *fname = ops->get_function_name(pctldev, selector);
 
@@ -402,7 +340,7 @@ int pinmux_map_to_setting(const struct pinctrl_map *map,
 
 void pinmux_free_setting(const struct pinctrl_setting *setting)
 {
-	/* This function is currently unused */
+	 
 }
 
 int pinmux_enable_setting(const struct pinctrl_setting *setting)
@@ -423,7 +361,7 @@ int pinmux_enable_setting(const struct pinctrl_setting *setting)
 	if (ret) {
 		const char *gname;
 
-		/* errors only affect debug data, so just warn */
+		 
 		gname = pctlops->get_group_name(pctldev,
 						setting->data.mux.group);
 		dev_warn(pctldev->dev,
@@ -432,7 +370,7 @@ int pinmux_enable_setting(const struct pinctrl_setting *setting)
 		num_pins = 0;
 	}
 
-	/* Try to allocate all pins in this group, one by one */
+	 
 	for (i = 0; i < num_pins; i++) {
 		ret = pin_request(pctldev, pins[i], setting->dev_name, NULL);
 		if (ret) {
@@ -452,7 +390,7 @@ int pinmux_enable_setting(const struct pinctrl_setting *setting)
 		}
 	}
 
-	/* Now that we have acquired the pins, encode the mux setting */
+	 
 	for (i = 0; i < num_pins; i++) {
 		desc = pin_desc_get(pctldev, pins[i]);
 		if (desc == NULL) {
@@ -479,7 +417,7 @@ err_set_mux:
 			desc->mux_setting = NULL;
 	}
 err_pin_request:
-	/* On error release all taken pins */
+	 
 	while (--i >= 0)
 		pin_free(pctldev, pins[i], NULL);
 
@@ -502,7 +440,7 @@ void pinmux_disable_setting(const struct pinctrl_setting *setting)
 	if (ret) {
 		const char *gname;
 
-		/* errors only affect debug data, so just warn */
+		 
 		gname = pctlops->get_group_name(pctldev,
 						setting->data.mux.group);
 		dev_warn(pctldev->dev,
@@ -511,7 +449,7 @@ void pinmux_disable_setting(const struct pinctrl_setting *setting)
 		num_pins = 0;
 	}
 
-	/* Flag the descs that no setting is active */
+	 
 	for (i = 0; i < num_pins; i++) {
 		desc = pin_desc_get(pctldev, pins[i]);
 		if (desc == NULL) {
@@ -538,7 +476,7 @@ void pinmux_disable_setting(const struct pinctrl_setting *setting)
 
 #ifdef CONFIG_DEBUG_FS
 
-/* Called from pincontrol core */
+ 
 static int pinmux_functions_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_dev *pctldev = s->private;
@@ -601,14 +539,14 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 
 	mutex_lock(&pctldev->mutex);
 
-	/* The pin number can be retrived from the pin controller descriptor */
+	 
 	for (i = 0; i < pctldev->desc->npins; i++) {
 		struct pin_desc *desc;
 		bool is_hog = false;
 
 		pin = pctldev->desc->pins[i].number;
 		desc = pin_desc_get(pctldev, pin);
-		/* Skip if we cannot search the pin */
+		 
 		if (desc == NULL)
 			continue;
 
@@ -628,7 +566,7 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 				seq_printf(s, "pin %d (%s): UNCLAIMED",
 					   pin, desc->name);
 		} else {
-			/* For non-strict controllers */
+			 
 			seq_printf(s, "pin %d (%s): %s %s%s", pin, desc->name,
 				   desc->mux_owner ? desc->mux_owner
 				   : "(MUX UNCLAIMED)",
@@ -637,7 +575,7 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 				   is_hog ? " (HOG)" : "");
 		}
 
-		/* If mux: print function+group claiming the pin */
+		 
 		if (desc->mux_setting)
 			seq_printf(s, " function %s group %s\n",
 				   pmxops->get_function_name(pctldev,
@@ -692,14 +630,14 @@ static ssize_t pinmux_select(struct file *file, const char __user *user_buf,
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
 
-	/* remove leading and trailing spaces of input buffer */
+	 
 	gname = strstrip(buf);
 	if (*gname == '\0') {
 		ret = -EINVAL;
 		goto exit_free_buf;
 	}
 
-	/* find a separator which is a spacelike character */
+	 
 	for (fname = gname; !isspace(*fname); fname++) {
 		if (*fname == '\0') {
 			ret = -EINVAL;
@@ -708,7 +646,7 @@ static ssize_t pinmux_select(struct file *file, const char __user *user_buf,
 	}
 	*fname = '\0';
 
-	/* drop extra spaces between function and group names */
+	 
 	fname = skip_spaces(fname + 1);
 	if (*fname == '\0') {
 		ret = -EINVAL;
@@ -776,25 +714,18 @@ void pinmux_init_device_debugfs(struct dentry *devroot,
 			    devroot, pctldev, &pinmux_select_ops);
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 #ifdef CONFIG_GENERIC_PINMUX_FUNCTIONS
 
-/**
- * pinmux_generic_get_function_count() - returns number of functions
- * @pctldev: pin controller device
- */
+ 
 int pinmux_generic_get_function_count(struct pinctrl_dev *pctldev)
 {
 	return pctldev->num_functions;
 }
 EXPORT_SYMBOL_GPL(pinmux_generic_get_function_count);
 
-/**
- * pinmux_generic_get_function_name() - returns the function name
- * @pctldev: pin controller device
- * @selector: function number
- */
+ 
 const char *
 pinmux_generic_get_function_name(struct pinctrl_dev *pctldev,
 				 unsigned int selector)
@@ -810,13 +741,7 @@ pinmux_generic_get_function_name(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinmux_generic_get_function_name);
 
-/**
- * pinmux_generic_get_function_groups() - gets the function groups
- * @pctldev: pin controller device
- * @selector: function number
- * @groups: array of pin groups
- * @num_groups: number of pin groups
- */
+ 
 int pinmux_generic_get_function_groups(struct pinctrl_dev *pctldev,
 				       unsigned int selector,
 				       const char * const **groups,
@@ -838,11 +763,7 @@ int pinmux_generic_get_function_groups(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinmux_generic_get_function_groups);
 
-/**
- * pinmux_generic_get_function() - returns a function based on the number
- * @pctldev: pin controller device
- * @selector: function number
- */
+ 
 struct function_desc *pinmux_generic_get_function(struct pinctrl_dev *pctldev,
 						  unsigned int selector)
 {
@@ -857,14 +778,7 @@ struct function_desc *pinmux_generic_get_function(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinmux_generic_get_function);
 
-/**
- * pinmux_generic_add_function() - adds a function group
- * @pctldev: pin controller device
- * @name: name of the function
- * @groups: array of pin groups
- * @num_groups: number of pin groups
- * @data: pin controller driver specific data
- */
+ 
 int pinmux_generic_add_function(struct pinctrl_dev *pctldev,
 				const char *name,
 				const char * const *groups,
@@ -902,13 +816,7 @@ int pinmux_generic_add_function(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinmux_generic_add_function);
 
-/**
- * pinmux_generic_remove_function() - removes a numbered function
- * @pctldev: pin controller device
- * @selector: function number
- *
- * Note that the caller must take care of locking.
- */
+ 
 int pinmux_generic_remove_function(struct pinctrl_dev *pctldev,
 				   unsigned int selector)
 {
@@ -928,14 +836,7 @@ int pinmux_generic_remove_function(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinmux_generic_remove_function);
 
-/**
- * pinmux_generic_free_functions() - removes all functions
- * @pctldev: pin controller device
- *
- * Note that the caller must take care of locking. The pinctrl
- * functions are allocated with devm_kzalloc() so no need to free
- * them here.
- */
+ 
 void pinmux_generic_free_functions(struct pinctrl_dev *pctldev)
 {
 	struct radix_tree_iter iter;
@@ -947,4 +848,4 @@ void pinmux_generic_free_functions(struct pinctrl_dev *pctldev)
 	pctldev->num_functions = 0;
 }
 
-#endif /* CONFIG_GENERIC_PINMUX_FUNCTIONS */
+#endif  

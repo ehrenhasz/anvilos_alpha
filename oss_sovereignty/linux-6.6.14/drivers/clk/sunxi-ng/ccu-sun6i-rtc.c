@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2021 Samuel Holland <samuel@sholland.org>
-//
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -21,7 +21,7 @@
 
 #include "ccu-sun6i-rtc.h"
 
-#define IOSC_ACCURACY			300000000 /* 30% */
+#define IOSC_ACCURACY			300000000  
 #define IOSC_RATE			16000000
 
 #define LOSC_RATE			32768
@@ -83,10 +83,7 @@ static unsigned long ccu_iosc_recalc_rate(struct clk_hw *hw,
 	if (have_iosc_calibration) {
 		u32 reg = readl(cm->base + IOSC_CLK_CALI_REG);
 
-		/*
-		 * Recover the IOSC frequency by shifting the ones place of
-		 * (fixed-point divider * 32768) into bit zero.
-		 */
+		 
 		if (reg & IOSC_CLK_CALI_EN)
 			return reg >> (IOSC_CLK_CALI_DIV_ONES - LOSC_RATE_SHIFT);
 	}
@@ -151,7 +148,7 @@ static unsigned long ccu_iosc_32k_recalc_rate(struct clk_hw *hw,
 	if (have_iosc_calibration) {
 		val = readl(cm->base + IOSC_CLK_CALI_REG);
 
-		/* Assume the calibrated 32k clock is accurate. */
+		 
 		if (val & IOSC_CLK_CALI_SRC_SEL)
 			return LOSC_RATE;
 	}
@@ -170,7 +167,7 @@ static unsigned long ccu_iosc_32k_recalc_accuracy(struct clk_hw *hw,
 	if (have_iosc_calibration) {
 		val = readl(cm->base + IOSC_CLK_CALI_REG);
 
-		/* Assume the calibrated 32k clock is accurate. */
+		 
 		if (val & IOSC_CLK_CALI_SRC_SEL)
 			return 0;
 	}
@@ -191,7 +188,7 @@ static struct ccu_common iosc_32k_clk = {
 					 CLK_GET_RATE_NOCACHE),
 };
 
-static const struct clk_hw *ext_osc32k[] = { NULL }; /* updated during probe */
+static const struct clk_hw *ext_osc32k[] = { NULL };  
 
 static SUNXI_CCU_GATE_HWS(ext_osc32k_gate_clk, "ext-osc32k-gate",
 			  ext_osc32k, 0x0, BIT(4), 0);
@@ -205,7 +202,7 @@ static struct clk_init_data osc32k_init_data = {
 	.name		= "osc32k",
 	.ops		= &ccu_mux_ops,
 	.parent_hws	= osc32k_parents,
-	.num_parents	= ARRAY_SIZE(osc32k_parents), /* updated during probe */
+	.num_parents	= ARRAY_SIZE(osc32k_parents),  
 };
 
 static struct ccu_mux osc32k_clk = {
@@ -217,7 +214,7 @@ static struct ccu_mux osc32k_clk = {
 	},
 };
 
-/* This falls back to the global name for fwnodes without a named reference. */
+ 
 static const struct clk_parent_data osc24M[] = {
 	{ .fw_name = "hosc", .name = "osc24M" }
 };
@@ -242,7 +239,7 @@ static struct clk_init_data rtc_32k_init_data = {
 	.name		= "rtc-32k",
 	.ops		= &ccu_mux_ops,
 	.parent_hws	= rtc_32k_parents,
-	.num_parents	= ARRAY_SIZE(rtc_32k_parents), /* updated during probe */
+	.num_parents	= ARRAY_SIZE(rtc_32k_parents),  
 	.flags		= CLK_IS_CRITICAL,
 };
 
@@ -258,7 +255,7 @@ static struct ccu_mux rtc_32k_clk = {
 static struct clk_init_data osc32k_fanout_init_data = {
 	.name		= "osc32k-fanout",
 	.ops		= &ccu_mux_ops,
-	/* parents are set during probe */
+	 
 };
 
 static struct ccu_mux osc32k_fanout_clk = {
@@ -343,7 +340,7 @@ int sun6i_rtc_ccu_probe(struct device *dev, void __iomem *reg)
 	struct clk *ext_osc32k_clk = NULL;
 	const struct of_device_id *match;
 
-	/* This driver is only used for newer variants of the hardware. */
+	 
 	match = of_match_device(sun6i_rtc_ccu_match, dev);
 	if (!match)
 		return 0;
@@ -354,7 +351,7 @@ int sun6i_rtc_ccu_probe(struct device *dev, void __iomem *reg)
 	if (data->have_ext_osc32k) {
 		const char *fw_name;
 
-		/* ext-osc32k was the only input clock in the old binding. */
+		 
 		fw_name = of_property_read_bool(dev->of_node, "clock-names")
 			? "ext-osc32k" : NULL;
 		ext_osc32k_clk = devm_clk_get_optional(dev, fw_name);
@@ -363,10 +360,10 @@ int sun6i_rtc_ccu_probe(struct device *dev, void __iomem *reg)
 	}
 
 	if (ext_osc32k_clk) {
-		/* Link ext-osc32k-gate to its parent. */
+		 
 		*ext_osc32k = __clk_get_hw(ext_osc32k_clk);
 	} else {
-		/* ext-osc32k-gate is an orphan, so do not register it. */
+		 
 		sun6i_rtc_ccu_hw_clks.hws[CLK_EXT_OSC32K_GATE] = NULL;
 		osc32k_init_data.num_parents = 1;
 	}

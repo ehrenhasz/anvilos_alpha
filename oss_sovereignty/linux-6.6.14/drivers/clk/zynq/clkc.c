@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Zynq clock controller
- *
- *  Copyright (C) 2012 - 2013 Xilinx
- *
- *  Sören Brinkmann <soren.brinkmann@xilinx.com>
- */
+
+ 
 
 #include <linux/clk/zynq.h>
 #include <linux/clk.h>
@@ -226,7 +220,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 
 	pr_info("Zynq clock init\n");
 
-	/* get clock output names from DT */
+	 
 	for (i = 0; i < clk_max; i++) {
 		if (of_property_read_string_index(np, "clock-output-names",
 				  i, &clk_output_name[i])) {
@@ -245,7 +239,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 
 	of_property_read_u32(np, "fclk-enable", &fclk_enable);
 
-	/* ps_clk */
+	 
 	ret = of_property_read_u32(np, "ps-clk-frequency", &tmp);
 	if (ret) {
 		pr_warn("ps_clk frequency not specified, using 33 MHz.\n");
@@ -253,7 +247,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 	}
 	ps_clk = clk_register_fixed_rate(NULL, "ps_clk", NULL, 0, tmp);
 
-	/* PLLs */
+	 
 	clk_register_zynq_pll("armpll_int", "ps_clk", SLCR_ARMPLL_CTRL,
 			SLCR_PLL_STATUS, 0, &armpll_lock);
 	clks[armpll] = clk_register_mux(NULL, clk_output_name[armpll],
@@ -272,7 +266,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 			iopll_parents, 2, CLK_SET_RATE_NO_REPARENT,
 			SLCR_IOPLL_CTRL, 4, 1, 0, &iopll_lock);
 
-	/* CPU clocks */
+	 
 	tmp = readl(SLCR_621_TRUE) & 1;
 	clk_register_mux(NULL, "cpu_mux", cpu_parents, 4,
 			CLK_SET_RATE_NO_REPARENT, SLCR_ARM_CLK_CTRL, 4, 2, 0,
@@ -304,7 +298,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 			"cpu_1x_div", CLK_IGNORE_UNUSED, SLCR_ARM_CLK_CTRL, 27,
 			0, &armclk_lock);
 
-	/* Timers */
+	 
 	swdt_ext_clk_mux_parents[0] = clk_output_name[cpu_1x];
 	for (i = 0; i < ARRAY_SIZE(swdt_ext_clk_input_names); i++) {
 		int idx = of_property_match_string(np, "clock-names",
@@ -320,7 +314,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 			CLK_SET_RATE_NO_REPARENT, SLCR_SWDT_CLK_SEL, 0, 1, 0,
 			&swdtclk_lock);
 
-	/* DDR clocks */
+	 
 	clk_register_divider(NULL, "ddr2x_div", "ddrpll", 0,
 			SLCR_DDR_CLK_CTRL, 26, 6, CLK_DIVIDER_ONE_BASED |
 			CLK_DIVIDER_ALLOW_ZERO, &ddrclk_lock);
@@ -346,7 +340,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 			&dciclk_lock);
 	clk_prepare_enable(clks[dci]);
 
-	/* Peripheral clocks */
+	 
 	for (i = fclk0; i <= fclk3; i++) {
 		int enable = !!(fclk_enable & BIT(i - fclk0));
 
@@ -496,7 +490,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 			clk_output_name[cpu_1x], 0, SLCR_DBG_CLK_CTRL, 1, 0,
 			&dbgclk_lock);
 
-	/* leave debug clocks in the state the bootloader set them up to */
+	 
 	tmp = readl(SLCR_DBG_CLK_CTRL);
 	if (tmp & DBG_CLK_CTRL_CLKACT_TRC)
 		if (clk_prepare_enable(clks[dbg_trc]))
@@ -505,7 +499,7 @@ static void __init zynq_clk_setup(struct device_node *np)
 		if (clk_prepare_enable(clks[dbg_apb]))
 			pr_warn("%s: debug APB clk enable failed\n", __func__);
 
-	/* One gated clock for all APER clocks. */
+	 
 	clks[dma] = clk_register_gate(NULL, clk_output_name[dma],
 			clk_output_name[cpu_2x], 0, SLCR_APER_CLK_CTRL, 0, 0,
 			&aperclk_lock);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Silicon Labs Si514 Programmable Oscillator
- *
- * Copyright (C) 2015 Topic Embedded Products
- *
- * Author: Mike Looijmans <mike.looijmans@topic.nl>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -14,7 +8,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* I2C registers */
+ 
 #define SI514_REG_LP		0
 #define SI514_REG_M_FRAC1	5
 #define SI514_REG_M_FRAC2	6
@@ -27,7 +21,7 @@
 #define SI514_REG_RESET		128
 #define SI514_REG_CONTROL	132
 
-/* Register values */
+ 
 #define SI514_RESET_RST		BIT(7)
 
 #define SI514_CONTROL_FCAL	BIT(0)
@@ -50,15 +44,15 @@ struct clk_si514 {
 };
 #define to_clk_si514(_hw)	container_of(_hw, struct clk_si514, hw)
 
-/* Multiplier/divider settings */
+ 
 struct clk_si514_muldiv {
-	u32 m_frac;  /* 29-bit Fractional part of multiplier M */
-	u8 m_int; /* Integer part of multiplier M, 65..78 */
-	u8 ls_div_bits; /* 2nd divider, as 2^x */
-	u16 hs_div; /* 1st divider, must be even and 10<=x<=1022 */
+	u32 m_frac;   
+	u8 m_int;  
+	u8 ls_div_bits;  
+	u16 hs_div;  
 };
 
-/* Enables or disables the output driver */
+ 
 static int si514_enable_output(struct clk_si514 *data, bool enable)
 {
 	return regmap_update_bits(data->regmap, SI514_REG_CONTROL,
@@ -92,7 +86,7 @@ static int si514_is_prepared(struct clk_hw *hw)
 	return !!(val & SI514_CONTROL_OE);
 }
 
-/* Retrieve clock multiplier and dividers from hardware */
+ 
 static int si514_get_muldiv(struct clk_si514 *data,
 	struct clk_si514_muldiv *settings)
 {
@@ -119,20 +113,20 @@ static int si514_set_muldiv(struct clk_si514 *data,
 	u8 reg[7];
 	int err;
 
-	/* Calculate LP1/LP2 according to table 13 in the datasheet */
-	/* 65.259980246 */
+	 
+	 
 	if (settings->m_int < 65 ||
 		(settings->m_int == 65 && settings->m_frac <= 139575831))
 		lp = 0x22;
-	/* 67.859763463 */
+	 
 	else if (settings->m_int < 67 ||
 		(settings->m_int == 67 && settings->m_frac <= 461581994))
 		lp = 0x23;
-	/* 72.937624981 */
+	 
 	else if (settings->m_int < 72 ||
 		(settings->m_int == 72 && settings->m_frac <= 503383578))
 		lp = 0x33;
-	/* 75.843265046 */
+	 
 	else if (settings->m_int < 75 ||
 		(settings->m_int == 75 && settings->m_frac <= 452724474))
 		lp = 0x34;
@@ -154,14 +148,11 @@ static int si514_set_muldiv(struct clk_si514 *data,
 	err = regmap_bulk_write(data->regmap, SI514_REG_HS_DIV, reg + 5, 2);
 	if (err < 0)
 		return err;
-	/*
-	 * Writing to SI514_REG_M_INT_FRAC triggers the clock change, so that
-	 * must be written last
-	 */
+	 
 	return regmap_bulk_write(data->regmap, SI514_REG_M_FRAC1, reg, 5);
 }
 
-/* Calculate divider settings for a given frequency */
+ 
 static int si514_calc_muldiv(struct clk_si514_muldiv *settings,
 	unsigned long frequency)
 {
@@ -173,7 +164,7 @@ static int si514_calc_muldiv(struct clk_si514_muldiv *settings,
 	if ((frequency < SI514_MIN_FREQ) || (frequency > SI514_MAX_FREQ))
 		return -EINVAL;
 
-	/* Determine the minimum value of LS_DIV and resulting target freq. */
+	 
 	ls_freq = frequency;
 	if (frequency >= (FVCO_MIN / HS_DIV_MAX))
 		settings->ls_div_bits = 0;
@@ -190,10 +181,10 @@ static int si514_calc_muldiv(struct clk_si514_muldiv *settings,
 		ls_freq = frequency << res;
 	}
 
-	/* Determine minimum HS_DIV, round up to even number */
+	 
 	settings->hs_div = DIV_ROUND_UP(FVCO_MIN >> 1, ls_freq) << 1;
 
-	/* M = LS_DIV x HS_DIV x frequency / F_XO (in fixed-point) */
+	 
 	m = ((u64)(ls_freq * settings->hs_div) << 29) + (FXO / 2);
 	do_div(m, FXO);
 	settings->m_frac = (u32)m & (BIT(29) - 1);
@@ -202,7 +193,7 @@ static int si514_calc_muldiv(struct clk_si514_muldiv *settings,
 	return 0;
 }
 
-/* Calculate resulting frequency given the register settings */
+ 
 static unsigned long si514_calc_rate(struct clk_si514_muldiv *settings)
 {
 	u64 m = settings->m_frac | ((u64)settings->m_int << 29);
@@ -243,11 +234,7 @@ static long si514_round_rate(struct clk_hw *hw, unsigned long rate,
 	return si514_calc_rate(&settings);
 }
 
-/*
- * Update output frequency for big frequency changes (> 1000 ppm).
- * The chip supports <1000ppm changes "on the fly", we haven't implemented
- * that here.
- */
+ 
 static int si514_set_rate(struct clk_hw *hw, unsigned long rate,
 		unsigned long parent_rate)
 {
@@ -268,14 +255,14 @@ static int si514_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	err = si514_set_muldiv(data, &settings);
 	if (err < 0)
-		return err; /* Undefined state now, best to leave disabled */
+		return err;  
 
-	/* Trigger calibration */
+	 
 	err = regmap_write(data->regmap, SI514_REG_CONTROL, SI514_CONTROL_FCAL);
 	if (err < 0)
 		return err;
 
-	/* Applying a new frequency can take up to 10ms */
+	 
 	usleep_range(10000, 12000);
 
 	if (old_oe_state & SI514_CONTROL_OE)

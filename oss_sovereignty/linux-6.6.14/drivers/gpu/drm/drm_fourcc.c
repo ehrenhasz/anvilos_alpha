@@ -1,26 +1,4 @@
-/*
- * Copyright (c) 2016 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *
- * DRM core format related functions
- *
- * Permission to use, copy, modify, distribute, and sell this software and its
- * documentation for any purpose is hereby granted without fee, provided that
- * the above copyright notice appear in all copies and that both that copyright
- * notice and this permission notice appear in supporting documentation, and
- * that the name of the copyright holders not be used in advertising or
- * publicity pertaining to distribution of the software without specific,
- * written prior permission.  The copyright holders make no representations
- * about the suitability of this software for any purpose.  It is provided "as
- * is" without express or implied warranty.
- *
- * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
- * EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
- * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
- * OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/bug.h>
 #include <linux/ctype.h>
@@ -30,14 +8,7 @@
 #include <drm/drm_device.h>
 #include <drm/drm_fourcc.h>
 
-/**
- * drm_mode_legacy_fb_format - compute drm fourcc code from legacy description
- * @bpp: bits per pixels
- * @depth: bit depth per pixel
- *
- * Computes a drm fourcc pixel format code for the given @bpp/@depth values.
- * Useful in fbdev emulation code, since that deals in those values.
- */
+ 
 uint32_t drm_mode_legacy_fb_format(uint32_t bpp, uint32_t depth)
 {
 	uint32_t fmt = DRM_FORMAT_INVALID;
@@ -105,17 +76,7 @@ uint32_t drm_mode_legacy_fb_format(uint32_t bpp, uint32_t depth)
 }
 EXPORT_SYMBOL(drm_mode_legacy_fb_format);
 
-/**
- * drm_driver_legacy_fb_format - compute drm fourcc code from legacy description
- * @dev: DRM device
- * @bpp: bits per pixels
- * @depth: bit depth per pixel
- *
- * Computes a drm fourcc pixel format code for the given @bpp/@depth values.
- * Unlike drm_mode_legacy_fb_format() this looks at the drivers mode_config,
- * and depending on the &drm_mode_config.quirk_addfb_prefer_host_byte_order flag
- * it returns little endian byte order or host byte order framebuffer formats.
- */
+ 
 uint32_t drm_driver_legacy_fb_format(struct drm_device *dev,
 				     uint32_t bpp, uint32_t depth)
 {
@@ -140,10 +101,7 @@ uint32_t drm_driver_legacy_fb_format(struct drm_device *dev,
 }
 EXPORT_SYMBOL(drm_driver_legacy_fb_format);
 
-/*
- * Internal function to query information for a given format. See
- * drm_format_info() for the public API.
- */
+ 
 const struct drm_format_info *__drm_format_info(u32 format)
 {
 	static const struct drm_format_info formats[] = {
@@ -322,17 +280,7 @@ const struct drm_format_info *__drm_format_info(u32 format)
 	return NULL;
 }
 
-/**
- * drm_format_info - query information for a given format
- * @format: pixel format (DRM_FORMAT_*)
- *
- * The caller should only pass a supported pixel format to this function.
- * Unsupported pixel formats will generate a warning in the kernel log.
- *
- * Returns:
- * The instance of struct drm_format_info that describes the pixel format, or
- * NULL if the format is unsupported.
- */
+ 
 const struct drm_format_info *drm_format_info(u32 format)
 {
 	const struct drm_format_info *info;
@@ -343,15 +291,7 @@ const struct drm_format_info *drm_format_info(u32 format)
 }
 EXPORT_SYMBOL(drm_format_info);
 
-/**
- * drm_get_format_info - query information for a given framebuffer configuration
- * @dev: DRM device
- * @mode_cmd: metadata from the userspace fb creation request
- *
- * Returns:
- * The instance of struct drm_format_info that describes the pixel format, or
- * NULL if the format is unsupported.
- */
+ 
 const struct drm_format_info *
 drm_get_format_info(struct drm_device *dev,
 		    const struct drm_mode_fb_cmd2 *mode_cmd)
@@ -368,14 +308,7 @@ drm_get_format_info(struct drm_device *dev,
 }
 EXPORT_SYMBOL(drm_get_format_info);
 
-/**
- * drm_format_info_block_width - width in pixels of block.
- * @info: pixel format info
- * @plane: plane index
- *
- * Returns:
- * The width in pixels of a block, depending on the plane index.
- */
+ 
 unsigned int drm_format_info_block_width(const struct drm_format_info *info,
 					 int plane)
 {
@@ -388,14 +321,7 @@ unsigned int drm_format_info_block_width(const struct drm_format_info *info,
 }
 EXPORT_SYMBOL(drm_format_info_block_width);
 
-/**
- * drm_format_info_block_height - height in pixels of a block
- * @info: pixel format info
- * @plane: plane index
- *
- * Returns:
- * The height in pixels of a block, depending on the plane index.
- */
+ 
 unsigned int drm_format_info_block_height(const struct drm_format_info *info,
 					  int plane)
 {
@@ -408,14 +334,7 @@ unsigned int drm_format_info_block_height(const struct drm_format_info *info,
 }
 EXPORT_SYMBOL(drm_format_info_block_height);
 
-/**
- * drm_format_info_bpp - number of bits per pixel
- * @info: pixel format info
- * @plane: plane index
- *
- * Returns:
- * The actual number of bits per pixel, depending on the plane index.
- */
+ 
 unsigned int drm_format_info_bpp(const struct drm_format_info *info, int plane)
 {
 	if (!info || plane < 0 || plane >= info->num_planes)
@@ -427,16 +346,7 @@ unsigned int drm_format_info_bpp(const struct drm_format_info *info, int plane)
 }
 EXPORT_SYMBOL(drm_format_info_bpp);
 
-/**
- * drm_format_info_min_pitch - computes the minimum required pitch in bytes
- * @info: pixel format info
- * @plane: plane index
- * @buffer_width: buffer width in pixels
- *
- * Returns:
- * The minimum required pitch in bytes for a buffer by taking into consideration
- * the pixel format information and the buffer width.
- */
+ 
 uint64_t drm_format_info_min_pitch(const struct drm_format_info *info,
 				   int plane, unsigned int buffer_width)
 {

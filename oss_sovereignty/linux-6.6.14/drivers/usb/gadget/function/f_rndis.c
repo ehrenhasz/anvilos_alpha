@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * f_rndis.c -- RNDIS link function driver
- *
- * Copyright (C) 2003-2005,2008 David Brownell
- * Copyright (C) 2003-2004 Robert Schwebel, Benedikt Spranger
- * Copyright (C) 2008 Nokia Corporation
- * Copyright (C) 2009 Samsung Electronics
- *                    Author: Michal Nazarewicz (mina86@mina86.com)
- */
 
-/* #define VERBOSE_DEBUG */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -25,46 +17,7 @@
 #include "rndis.h"
 #include "configfs.h"
 
-/*
- * This function is an RNDIS Ethernet port -- a Microsoft protocol that's
- * been promoted instead of the standard CDC Ethernet.  The published RNDIS
- * spec is ambiguous, incomplete, and needlessly complex.  Variants such as
- * ActiveSync have even worse status in terms of specification.
- *
- * In short:  it's a protocol controlled by (and for) Microsoft, not for an
- * Open ecosystem or markets.  Linux supports it *only* because Microsoft
- * doesn't support the CDC Ethernet standard.
- *
- * The RNDIS data transfer model is complex, with multiple Ethernet packets
- * per USB message, and out of band data.  The control model is built around
- * what's essentially an "RNDIS RPC" protocol.  It's all wrapped in a CDC ACM
- * (modem, not Ethernet) veneer, with those ACM descriptors being entirely
- * useless (they're ignored).  RNDIS expects to be the only function in its
- * configuration, so it's no real help if you need composite devices; and
- * it expects to be the first configuration too.
- *
- * There is a single technical advantage of RNDIS over CDC Ethernet, if you
- * discount the fluff that its RPC can be made to deliver: it doesn't need
- * a NOP altsetting for the data interface.  That lets it work on some of the
- * "so smart it's stupid" hardware which takes over configuration changes
- * from the software, and adds restrictions like "no altsettings".
- *
- * Unfortunately MSFT's RNDIS drivers are buggy.  They hang or oops, and
- * have all sorts of contrary-to-specification oddities that can prevent
- * them from working sanely.  Since bugfixes (or accurate specs, letting
- * Linux work around those bugs) are unlikely to ever come from MSFT, you
- * may want to avoid using RNDIS on purely operational grounds.
- *
- * Omissions from the RNDIS 1.0 specification include:
- *
- *   - Power management ... references data that's scattered around lots
- *     of other documentation, which is incorrect/incomplete there too.
- *
- *   - There are various undocumented protocol requirements, like the need
- *     to send garbage in some control-OUT messages.
- *
- *   - MS-Windows drivers sometimes emit undocumented requests.
- */
+ 
 
 struct f_rndis {
 	struct gether			port;
@@ -84,28 +37,27 @@ static inline struct f_rndis *func_to_rndis(struct usb_function *f)
 	return container_of(f, struct f_rndis, port.func);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- */
+ 
 
 #define RNDIS_STATUS_INTERVAL_MS	32
-#define STATUS_BYTECOUNT		8	/* 8 bytes data */
+#define STATUS_BYTECOUNT		8	 
 
 
-/* interface descriptor: */
+ 
 
 static struct usb_interface_descriptor rndis_control_intf = {
 	.bLength =		sizeof rndis_control_intf,
 	.bDescriptorType =	USB_DT_INTERFACE,
 
-	/* .bInterfaceNumber = DYNAMIC */
-	/* status endpoint is optional; this could be patched later */
+	 
+	 
 	.bNumEndpoints =	1,
 	.bInterfaceClass =	USB_CLASS_COMM,
 	.bInterfaceSubClass =   USB_CDC_SUBCLASS_ACM,
 	.bInterfaceProtocol =   USB_CDC_ACM_PROTO_VENDOR,
-	/* .iInterface = DYNAMIC */
+	 
 };
 
 static struct usb_cdc_header_desc header_desc = {
@@ -137,22 +89,22 @@ static struct usb_cdc_union_desc rndis_union_desc = {
 	.bLength =		sizeof(rndis_union_desc),
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_UNION_TYPE,
-	/* .bMasterInterface0 =	DYNAMIC */
-	/* .bSlaveInterface0 =	DYNAMIC */
+	 
+	 
 };
 
-/* the data interface has two bulk endpoints */
+ 
 
 static struct usb_interface_descriptor rndis_data_intf = {
 	.bLength =		sizeof rndis_data_intf,
 	.bDescriptorType =	USB_DT_INTERFACE,
 
-	/* .bInterfaceNumber = DYNAMIC */
+	 
 	.bNumEndpoints =	2,
 	.bInterfaceClass =	USB_CLASS_CDC_DATA,
 	.bInterfaceSubClass =	0,
 	.bInterfaceProtocol =	0,
-	/* .iInterface = DYNAMIC */
+	 
 };
 
 
@@ -161,15 +113,15 @@ rndis_iad_descriptor = {
 	.bLength =		sizeof rndis_iad_descriptor,
 	.bDescriptorType =	USB_DT_INTERFACE_ASSOCIATION,
 
-	.bFirstInterface =	0, /* XXX, hardcoded */
-	.bInterfaceCount = 	2,	// control + data
+	.bFirstInterface =	0,  
+	.bInterfaceCount = 	2,	
 	.bFunctionClass =	USB_CLASS_COMM,
 	.bFunctionSubClass =	USB_CDC_SUBCLASS_ETHERNET,
 	.bFunctionProtocol =	USB_CDC_PROTO_NONE,
-	/* .iFunction = DYNAMIC */
+	 
 };
 
-/* full speed support: */
+ 
 
 static struct usb_endpoint_descriptor fs_notify_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -200,7 +152,7 @@ static struct usb_endpoint_descriptor fs_out_desc = {
 static struct usb_descriptor_header *eth_fs_function[] = {
 	(struct usb_descriptor_header *) &rndis_iad_descriptor,
 
-	/* control interface matches ACM, not Ethernet */
+	 
 	(struct usb_descriptor_header *) &rndis_control_intf,
 	(struct usb_descriptor_header *) &header_desc,
 	(struct usb_descriptor_header *) &call_mgmt_descriptor,
@@ -208,14 +160,14 @@ static struct usb_descriptor_header *eth_fs_function[] = {
 	(struct usb_descriptor_header *) &rndis_union_desc,
 	(struct usb_descriptor_header *) &fs_notify_desc,
 
-	/* data interface has no altsetting */
+	 
 	(struct usb_descriptor_header *) &rndis_data_intf,
 	(struct usb_descriptor_header *) &fs_in_desc,
 	(struct usb_descriptor_header *) &fs_out_desc,
 	NULL,
 };
 
-/* high speed support: */
+ 
 
 static struct usb_endpoint_descriptor hs_notify_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -248,7 +200,7 @@ static struct usb_endpoint_descriptor hs_out_desc = {
 static struct usb_descriptor_header *eth_hs_function[] = {
 	(struct usb_descriptor_header *) &rndis_iad_descriptor,
 
-	/* control interface matches ACM, not Ethernet */
+	 
 	(struct usb_descriptor_header *) &rndis_control_intf,
 	(struct usb_descriptor_header *) &header_desc,
 	(struct usb_descriptor_header *) &call_mgmt_descriptor,
@@ -256,14 +208,14 @@ static struct usb_descriptor_header *eth_hs_function[] = {
 	(struct usb_descriptor_header *) &rndis_union_desc,
 	(struct usb_descriptor_header *) &hs_notify_desc,
 
-	/* data interface has no altsetting */
+	 
 	(struct usb_descriptor_header *) &rndis_data_intf,
 	(struct usb_descriptor_header *) &hs_in_desc,
 	(struct usb_descriptor_header *) &hs_out_desc,
 	NULL,
 };
 
-/* super speed support: */
+ 
 
 static struct usb_endpoint_descriptor ss_notify_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -279,9 +231,9 @@ static struct usb_ss_ep_comp_descriptor ss_intr_comp_desc = {
 	.bLength =		sizeof ss_intr_comp_desc,
 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
 
-	/* the following 3 values can be tweaked if necessary */
-	/* .bMaxBurst =		0, */
-	/* .bmAttributes =	0, */
+	 
+	 
+	 
 	.wBytesPerInterval =	cpu_to_le16(STATUS_BYTECOUNT),
 };
 
@@ -307,15 +259,15 @@ static struct usb_ss_ep_comp_descriptor ss_bulk_comp_desc = {
 	.bLength =		sizeof ss_bulk_comp_desc,
 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
 
-	/* the following 2 values can be tweaked if necessary */
-	/* .bMaxBurst =		0, */
-	/* .bmAttributes =	0, */
+	 
+	 
+	 
 };
 
 static struct usb_descriptor_header *eth_ss_function[] = {
 	(struct usb_descriptor_header *) &rndis_iad_descriptor,
 
-	/* control interface matches ACM, not Ethernet */
+	 
 	(struct usb_descriptor_header *) &rndis_control_intf,
 	(struct usb_descriptor_header *) &header_desc,
 	(struct usb_descriptor_header *) &call_mgmt_descriptor,
@@ -324,7 +276,7 @@ static struct usb_descriptor_header *eth_ss_function[] = {
 	(struct usb_descriptor_header *) &ss_notify_desc,
 	(struct usb_descriptor_header *) &ss_intr_comp_desc,
 
-	/* data interface has no altsetting */
+	 
 	(struct usb_descriptor_header *) &rndis_data_intf,
 	(struct usb_descriptor_header *) &ss_in_desc,
 	(struct usb_descriptor_header *) &ss_bulk_comp_desc,
@@ -333,17 +285,17 @@ static struct usb_descriptor_header *eth_ss_function[] = {
 	NULL,
 };
 
-/* string descriptors: */
+ 
 
 static struct usb_string rndis_string_defs[] = {
 	[0].s = "RNDIS Communications Control",
 	[1].s = "RNDIS Ethernet Data",
 	[2].s = "RNDIS",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings rndis_string_table = {
-	.language =		0x0409,	/* en-us */
+	.language =		0x0409,	 
 	.strings =		rndis_string_defs,
 };
 
@@ -352,7 +304,7 @@ static struct usb_gadget_strings *rndis_strings[] = {
 	NULL,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static struct sk_buff *rndis_add_header(struct gether *port,
 					struct sk_buff *skb)
@@ -380,11 +332,7 @@ static void rndis_response_available(void *_rndis)
 	if (atomic_inc_return(&rndis->notify_count) != 1)
 		return;
 
-	/* Send RNDIS RESPONSE_AVAILABLE notification; a
-	 * USB_CDC_NOTIFY_RESPONSE_AVAILABLE "should" work too
-	 *
-	 * This is the only notification defined by RNDIS.
-	 */
+	 
 	data[0] = cpu_to_le32(1);
 	data[1] = cpu_to_le32(0);
 
@@ -401,14 +349,11 @@ static void rndis_response_complete(struct usb_ep *ep, struct usb_request *req)
 	struct usb_composite_dev	*cdev = rndis->port.func.config->cdev;
 	int				status = req->status;
 
-	/* after TX:
-	 *  - USB_CDC_GET_ENCAPSULATED_RESPONSE (ep0/control)
-	 *  - RNDIS_RESPONSE_AVAILABLE (status/irq)
-	 */
+	 
 	switch (status) {
 	case -ECONNRESET:
 	case -ESHUTDOWN:
-		/* connection gone */
+		 
 		atomic_set(&rndis->notify_count, 0);
 		break;
 	default:
@@ -420,9 +365,7 @@ static void rndis_response_complete(struct usb_ep *ep, struct usb_request *req)
 		if (ep != rndis->notify)
 			break;
 
-		/* handle multiple pending RNDIS_RESPONSE_AVAILABLE
-		 * notifications by resending until we're done
-		 */
+		 
 		if (atomic_dec_and_test(&rndis->notify_count))
 			break;
 		status = usb_ep_queue(rndis->notify, req, GFP_ATOMIC);
@@ -439,13 +382,13 @@ static void rndis_command_complete(struct usb_ep *ep, struct usb_request *req)
 	struct f_rndis			*rndis = req->context;
 	int				status;
 
-	/* received RNDIS command from USB_CDC_SEND_ENCAPSULATED_COMMAND */
-//	spin_lock(&dev->lock);
+	 
+ 
 	status = rndis_msg_parser(rndis->params, (u8 *) req->buf);
 	if (status < 0)
 		pr_err("RNDIS command error %d, %d/%d\n",
 			status, req->actual, req->length);
-//	spin_unlock(&dev->lock);
+ 
 }
 
 static int
@@ -459,23 +402,19 @@ rndis_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 	u16			w_value = le16_to_cpu(ctrl->wValue);
 	u16			w_length = le16_to_cpu(ctrl->wLength);
 
-	/* composite driver infrastructure handles everything except
-	 * CDC class messages; interface activation uses set_alt().
-	 */
+	 
 	switch ((ctrl->bRequestType << 8) | ctrl->bRequest) {
 
-	/* RNDIS uses the CDC command encapsulation mechanism to implement
-	 * an RPC scheme, with much getting/setting of attributes by OID.
-	 */
+	 
 	case ((USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE) << 8)
 			| USB_CDC_SEND_ENCAPSULATED_COMMAND:
 		if (w_value || w_index != rndis->ctrl_id)
 			goto invalid;
-		/* read the request; process it later */
+		 
 		value = w_length;
 		req->complete = rndis_command_complete;
 		req->context = rndis;
-		/* later, rndis_response_available() sends a notification */
+		 
 		break;
 
 	case ((USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE) << 8)
@@ -486,7 +425,7 @@ rndis_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 			u8 *buf;
 			u32 n;
 
-			/* return the result */
+			 
 			buf = rndis_get_next_response(rndis->params, &n);
 			if (buf) {
 				memcpy(req->buf, buf, n);
@@ -495,7 +434,7 @@ rndis_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 				rndis_free_response(rndis->params, buf);
 				value = n;
 			}
-			/* else stalls ... spec says to avoid that */
+			 
 		}
 		break;
 
@@ -506,7 +445,7 @@ invalid:
 			w_value, w_index, w_length);
 	}
 
-	/* respond with data transfer or status phase? */
+	 
 	if (value >= 0) {
 		DBG(cdev, "rndis req%02x.%02x v%04x i%04x l%d\n",
 			ctrl->bRequestType, ctrl->bRequest,
@@ -518,7 +457,7 @@ invalid:
 			ERROR(cdev, "rndis response on err %d\n", value);
 	}
 
-	/* device either stalls (value < 0) or reports success */
+	 
 	return value;
 }
 
@@ -528,7 +467,7 @@ static int rndis_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 	struct f_rndis		*rndis = func_to_rndis(f);
 	struct usb_composite_dev *cdev = f->config->cdev;
 
-	/* we know alt == 0 */
+	 
 
 	if (intf == rndis->ctrl_id) {
 		VDBG(cdev, "reset rndis control %d\n", intf);
@@ -561,21 +500,10 @@ static int rndis_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 			}
 		}
 
-		/* Avoid ZLPs; they can be troublesome. */
+		 
 		rndis->port.is_zlp_ok = false;
 
-		/* RNDIS should be in the "RNDIS uninitialized" state,
-		 * either never activated or after rndis_uninit().
-		 *
-		 * We don't want data to flow here until a nonzero packet
-		 * filter is set, at which point it enters "RNDIS data
-		 * initialized" state ... but we do want the endpoints
-		 * to be activated.  It's a strange little state.
-		 *
-		 * REVISIT the RNDIS gadget code has done this wrong for a
-		 * very long time.  We need another call to the link layer
-		 * code -- gether_updown(...bool) maybe -- to do it right.
-		 */
+		 
 		rndis->port.cdc_filter = 0;
 
 		DBG(cdev, "RNDIS RX/TX early activation ... \n");
@@ -610,14 +538,9 @@ static void rndis_disable(struct usb_function *f)
 	rndis->notify->desc = NULL;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- * This isn't quite the same mechanism as CDC Ethernet, since the
- * notification scheme passes less data, but the same set of link
- * states must be tested.  A key difference is that altsettings are
- * not used to tell whether the link should send packets or not.
- */
+ 
 
 static void rndis_open(struct gether *geth)
 {
@@ -641,16 +564,16 @@ static void rndis_close(struct gether *geth)
 	rndis_signal_disconnect(rndis->params);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* Some controllers can't support RNDIS ... */
+ 
 static inline bool can_support_rndis(struct usb_configuration *c)
 {
-	/* everything else is *presumably* fine */
+	 
 	return true;
 }
 
-/* ethernet function driver setup/binding */
+ 
 
 static int
 rndis_bind(struct usb_configuration *c, struct usb_function *f)
@@ -681,13 +604,7 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 	rndis_iad_descriptor.bFunctionSubClass = rndis_opts->subclass;
 	rndis_iad_descriptor.bFunctionProtocol = rndis_opts->protocol;
 
-	/*
-	 * in drivers/usb/gadget/configfs.c:configfs_composite_bind()
-	 * configurations are bound in sequence with list_for_each_entry,
-	 * in each configuration its functions are bound in sequence
-	 * with list_for_each_entry, so we assume no race condition
-	 * with regard to rndis_opts->bound access
-	 */
+	 
 	if (!rndis_opts->bound) {
 		gether_set_gadget(rndis_opts->net, cdev->gadget);
 		status = gether_register_netdev(rndis_opts->net);
@@ -706,7 +623,7 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 	rndis_data_intf.iInterface = us[1].id;
 	rndis_iad_descriptor.iFunction = us[2].id;
 
-	/* allocate instance-specific interface IDs */
+	 
 	status = usb_interface_id(c, f);
 	if (status < 0)
 		goto fail;
@@ -730,7 +647,7 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 
 	status = -ENODEV;
 
-	/* allocate instance-specific endpoints */
+	 
 	ep = usb_ep_autoconfig(cdev->gadget, &fs_in_desc);
 	if (!ep)
 		goto fail;
@@ -741,10 +658,7 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 		goto fail;
 	rndis->port.out_ep = ep;
 
-	/* NOTE:  a status/notification endpoint is, strictly speaking,
-	 * optional.  We don't treat it that way though!  It's simpler,
-	 * and some newer profiles don't treat it as optional.
-	 */
+	 
 	ep = usb_ep_autoconfig(cdev->gadget, &fs_notify_desc);
 	if (!ep)
 		goto fail;
@@ -752,7 +666,7 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 
 	status = -ENOMEM;
 
-	/* allocate notification request and buffer */
+	 
 	rndis->notify_req = usb_ep_alloc_request(ep, GFP_KERNEL);
 	if (!rndis->notify_req)
 		goto fail;
@@ -763,10 +677,7 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 	rndis->notify_req->context = rndis;
 	rndis->notify_req->complete = rndis_response_complete;
 
-	/* support all relevant hardware speeds... we expect that when
-	 * hardware is dual speed, all bulk-capable endpoints work at
-	 * both speeds
-	 */
+	 
 	hs_in_desc.bEndpointAddress = fs_in_desc.bEndpointAddress;
 	hs_out_desc.bEndpointAddress = fs_out_desc.bEndpointAddress;
 	hs_notify_desc.bEndpointAddress = fs_notify_desc.bEndpointAddress;
@@ -793,10 +704,7 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 		goto fail_free_descs;
 	}
 
-	/* NOTE:  all that is done without knowing or caring about
-	 * the network link ... which is unavailable to this code
-	 * until we're activated via set_alt().
-	 */
+	 
 
 	DBG(cdev, "RNDIS: IN/%s OUT/%s NOTIFY/%s\n",
 			rndis->port.in_ep->name, rndis->port.out_ep->name,
@@ -839,28 +747,28 @@ static inline struct f_rndis_opts *to_f_rndis_opts(struct config_item *item)
 			    func_inst.group);
 }
 
-/* f_rndis_item_ops */
+ 
 USB_ETHERNET_CONFIGFS_ITEM(rndis);
 
-/* f_rndis_opts_dev_addr */
+ 
 USB_ETHERNET_CONFIGFS_ITEM_ATTR_DEV_ADDR(rndis);
 
-/* f_rndis_opts_host_addr */
+ 
 USB_ETHERNET_CONFIGFS_ITEM_ATTR_HOST_ADDR(rndis);
 
-/* f_rndis_opts_qmult */
+ 
 USB_ETHERNET_CONFIGFS_ITEM_ATTR_QMULT(rndis);
 
-/* f_rndis_opts_ifname */
+ 
 USB_ETHERNET_CONFIGFS_ITEM_ATTR_IFNAME(rndis);
 
-/* f_rndis_opts_class */
+ 
 USB_ETHER_CONFIGFS_ITEM_ATTR_U8_RW(rndis, class);
 
-/* f_rndis_opts_subclass */
+ 
 USB_ETHER_CONFIGFS_ITEM_ATTR_U8_RW(rndis, subclass);
 
-/* f_rndis_opts_protocol */
+ 
 USB_ETHER_CONFIGFS_ITEM_ATTR_U8_RW(rndis, protocol);
 
 static struct configfs_attribute *rndis_attrs[] = {
@@ -892,7 +800,7 @@ static void rndis_free_inst(struct usb_function_instance *f)
 			free_netdev(opts->net);
 	}
 
-	kfree(opts->rndis_interf_group);	/* single VLA chunk */
+	kfree(opts->rndis_interf_group);	 
 	kfree(opts);
 }
 
@@ -970,7 +878,7 @@ static struct usb_function *rndis_alloc(struct usb_function_instance *fi)
 	struct f_rndis_opts *opts;
 	struct rndis_params *params;
 
-	/* allocate and initialize one new instance */
+	 
 	rndis = kzalloc(sizeof(*rndis), GFP_KERNEL);
 	if (!rndis)
 		return ERR_PTR(-ENOMEM);
@@ -985,16 +893,16 @@ static struct usb_function *rndis_alloc(struct usb_function_instance *fi)
 
 	rndis->port.ioport = netdev_priv(opts->net);
 	mutex_unlock(&opts->lock);
-	/* RNDIS activates when the host changes this filter */
+	 
 	rndis->port.cdc_filter = 0;
 
-	/* RNDIS has special (and complex) framing */
+	 
 	rndis->port.header_len = sizeof(struct rndis_packet_msg_type);
 	rndis->port.wrap = rndis_add_header;
 	rndis->port.unwrap = rndis_rm_hdr;
 
 	rndis->port.func.name = "rndis";
-	/* descriptors are per-instance copies */
+	 
 	rndis->port.func.bind = rndis_bind;
 	rndis->port.func.unbind = rndis_unbind;
 	rndis->port.func.set_alt = rndis_set_alt;

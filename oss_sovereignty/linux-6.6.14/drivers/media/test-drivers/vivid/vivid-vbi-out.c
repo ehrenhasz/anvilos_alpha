@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-vbi-out.c - vbi output support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -48,10 +44,7 @@ static int vbi_out_buf_prepare(struct vb2_buffer *vb)
 	dprintk(dev, 1, "%s\n", __func__);
 
 	if (dev->buf_prepare_error) {
-		/*
-		 * Error injection: test what happens if buf_prepare() returns
-		 * an error.
-		 */
+		 
 		dev->buf_prepare_error = false;
 		return -EINVAL;
 	}
@@ -103,7 +96,7 @@ static int vbi_out_start_streaming(struct vb2_queue *vq, unsigned count)
 	return err;
 }
 
-/* abort streaming and wait for last buffer */
+ 
 static void vbi_out_stop_streaming(struct vb2_queue *vq)
 {
 	struct vivid_dev *dev = vb2_get_drv_priv(vq);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * XCR0 cpuid test
- *
- * Copyright (C) 2022, Google LLC.
- */
+
+ 
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,10 +11,7 @@
 #include "kvm_util.h"
 #include "processor.h"
 
-/*
- * Assert that architectural dependency rules are satisfied, e.g. that AVX is
- * supported if and only if SSE is supported.
- */
+ 
 #define ASSERT_XFEATURE_DEPENDENCIES(supported_xcr0, xfeatures, dependencies)		\
 do {											\
 	uint64_t __supported = (supported_xcr0) & ((xfeatures) | (dependencies));	\
@@ -29,14 +22,7 @@ do {											\
 		       __supported, (xfeatures), (dependencies));			\
 } while (0)
 
-/*
- * Assert that KVM reports a sane, usable as-is XCR0.  Architecturally, a CPU
- * isn't strictly required to _support_ all XFeatures related to a feature, but
- * at the same time XSETBV will #GP if bundled XFeatures aren't enabled and
- * disabled coherently.  E.g. a CPU can technically enumerate supported for
- * XTILE_CFG but not XTILE_DATA, but attempting to enable XTILE_CFG without
- * XTILE_DATA will #GP.
- */
+ 
 #define ASSERT_ALL_OR_NONE_XFEATURE(supported_xcr0, xfeatures)		\
 do {									\
 	uint64_t __supported = (supported_xcr0) & (xfeatures);		\
@@ -59,23 +45,23 @@ static void guest_code(void)
 
 	GUEST_ASSERT(xcr0_reset == XFEATURE_MASK_FP);
 
-	/* Check AVX */
+	 
 	ASSERT_XFEATURE_DEPENDENCIES(supported_xcr0,
 				     XFEATURE_MASK_YMM,
 				     XFEATURE_MASK_SSE);
 
-	/* Check MPX */
+	 
 	ASSERT_ALL_OR_NONE_XFEATURE(supported_xcr0,
 				    XFEATURE_MASK_BNDREGS | XFEATURE_MASK_BNDCSR);
 
-	/* Check AVX-512 */
+	 
 	ASSERT_XFEATURE_DEPENDENCIES(supported_xcr0,
 				     XFEATURE_MASK_AVX512,
 				     XFEATURE_MASK_SSE | XFEATURE_MASK_YMM);
 	ASSERT_ALL_OR_NONE_XFEATURE(supported_xcr0,
 				    XFEATURE_MASK_AVX512);
 
-	/* Check AMX */
+	 
 	ASSERT_ALL_OR_NONE_XFEATURE(supported_xcr0,
 				    XFEATURE_MASK_XTILE);
 

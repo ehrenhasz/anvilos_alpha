@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max30102.c - Support for MAX30102 heart rate and pulse oximeter sensor
- *
- * Copyright (C) 2017 Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * Support for MAX30105 optical particle sensor
- * Copyright (C) 2017 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
- *
- * 7-bit I2C chip address: 0x57
- * TODO: proximity power saving feature
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -68,13 +58,13 @@ enum max3012_led_idx {
 
 #define MAX30102_REG_MODE_CONFIG		0x09
 #define MAX30102_REG_MODE_CONFIG_MODE_NONE	0x00
-#define MAX30102_REG_MODE_CONFIG_MODE_HR	0x02 /* red LED */
-#define MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2	0x03 /* red + IR LED */
-#define MAX30102_REG_MODE_CONFIG_MODE_MULTI	0x07 /* multi-LED mode */
+#define MAX30102_REG_MODE_CONFIG_MODE_HR	0x02  
+#define MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2	0x03  
+#define MAX30102_REG_MODE_CONFIG_MODE_MULTI	0x07  
 #define MAX30102_REG_MODE_CONFIG_MODE_MASK	GENMASK(2, 0)
 #define MAX30102_REG_MODE_CONFIG_PWR		BIT(7)
 
-#define MAX30102_REG_MODE_CONTROL_SLOT21	0x11 /* multi-LED control */
+#define MAX30102_REG_MODE_CONTROL_SLOT21	0x11  
 #define MAX30102_REG_MODE_CONTROL_SLOT43	0x12
 #define MAX30102_REG_MODE_CONTROL_SLOT_MASK	(GENMASK(6, 4) | GENMASK(2, 0))
 #define MAX30102_REG_MODE_CONTROL_SLOT_SHIFT	4
@@ -108,7 +98,7 @@ struct max30102_data {
 	enum max30102_chip_id chip_id;
 
 	u8 buffer[12];
-	__be32 processed_buffer[3]; /* 3 x 18-bit (padded to 32-bits) */
+	__be32 processed_buffer[3];  
 };
 
 static const struct regmap_config max30102_regmap_config = {
@@ -246,7 +236,7 @@ static inline int max30102_fifo_count(struct max30102_data *data)
 	if (ret)
 		return ret;
 
-	/* FIFO has one sample slot left */
+	 
 	if (val & MAX30102_REG_INT_STATUS_FIFO_RDY)
 		return 1;
 
@@ -314,7 +304,7 @@ static irqreturn_t max30102_interrupt_handler(int irq, void *private)
 
 static int max30102_get_current_idx(unsigned int val, int *reg)
 {
-	/* each step is 0.200 mA */
+	 
 	*reg = val / 200;
 
 	return *reg > 0xff ? -EINVAL : 0;
@@ -330,7 +320,7 @@ static int max30102_led_init(struct max30102_data *data)
 	if (ret) {
 		dev_info(dev, "no red-led-current-microamp set\n");
 
-		/* Default to 7 mA RED LED */
+		 
 		val = 7000;
 	}
 
@@ -350,7 +340,7 @@ static int max30102_led_init(struct max30102_data *data)
 		if (ret) {
 			dev_info(dev, "no green-led-current-microamp set\n");
 
-			/* Default to 7 mA green LED */
+			 
 			val = 7000;
 		}
 
@@ -371,7 +361,7 @@ static int max30102_led_init(struct max30102_data *data)
 	if (ret) {
 		dev_info(dev, "no ir-led-current-microamp set\n");
 
-		/* Default to 7 mA IR LED */
+		 
 		val = 7000;
 	}
 
@@ -388,12 +378,12 @@ static int max30102_chip_init(struct max30102_data *data)
 {
 	int ret;
 
-	/* setup LED current settings */
+	 
 	ret = max30102_led_init(data);
 	if (ret)
 		return ret;
 
-	/* configure 18-bit HR + SpO2 readings at 400Hz */
+	 
 	ret = regmap_write(data->regmap, MAX30102_REG_SPO2_CONFIG,
 				(MAX30102_REG_SPO2_CONFIG_ADC_4096_STEPS
 				 << MAX30102_REG_SPO2_CONFIG_ADC_MASK_SHIFT) |
@@ -403,7 +393,7 @@ static int max30102_chip_init(struct max30102_data *data)
 	if (ret)
 		return ret;
 
-	/* average 4 samples + generate FIFO interrupt */
+	 
 	ret = regmap_write(data->regmap, MAX30102_REG_FIFO_CONFIG,
 				(MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES
 				 << MAX30102_REG_FIFO_CONFIG_AVG_SHIFT) |
@@ -411,7 +401,7 @@ static int max30102_chip_init(struct max30102_data *data)
 	if (ret)
 		return ret;
 
-	/* enable FIFO interrupt */
+	 
 	return regmap_update_bits(data->regmap, MAX30102_REG_INT_ENABLE,
 				 MAX30102_REG_INT_ENABLE_MASK,
 				 MAX30102_REG_INT_ENABLE_FIFO_EN);
@@ -447,7 +437,7 @@ static int max30102_get_temp(struct max30102_data *data, int *val, bool en)
 			return ret;
 	}
 
-	/* start acquisition */
+	 
 	ret = regmap_update_bits(data->regmap, MAX30102_REG_TEMP_CONFIG,
 				 MAX30102_REG_TEMP_CONFIG_TEMP_EN,
 				 MAX30102_REG_TEMP_CONFIG_TEMP_EN);
@@ -473,18 +463,10 @@ static int max30102_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * Temperature reading can only be acquired when not in
-		 * shutdown; leave shutdown briefly when buffer not running
-		 */
+		 
 any_mode_retry:
 		if (iio_device_claim_buffer_mode(indio_dev)) {
-			/*
-			 * This one is a *bit* hacky. If we cannot claim buffer
-			 * mode, then try direct mode so that we make sure
-			 * things cannot concurrently change. And we just keep
-			 * trying until we get one of the modes...
-			 */
+			 
 			if (iio_device_claim_direct_mode(indio_dev))
 				goto any_mode_retry;
 
@@ -500,7 +482,7 @@ any_mode_retry:
 		ret = IIO_VAL_INT;
 		break;
 	case IIO_CHAN_INFO_SCALE:
-		*val = 1000;  /* 62.5 */
+		*val = 1000;   
 		*val2 = 16;
 		ret = IIO_VAL_FRACTIONAL;
 		break;
@@ -563,20 +545,20 @@ static int max30102_probe(struct i2c_client *client)
 		return PTR_ERR(data->regmap);
 	}
 
-	/* check part ID */
+	 
 	ret = regmap_read(data->regmap, MAX30102_REG_PART_ID, &reg);
 	if (ret)
 		return ret;
 	if (reg != MAX30102_PART_NUMBER)
 		return -ENODEV;
 
-	/* show revision ID */
+	 
 	ret = regmap_read(data->regmap, MAX30102_REG_REV_ID, &reg);
 	if (ret)
 		return ret;
 	dev_dbg(&client->dev, "max3010x revision %02x\n", reg);
 
-	/* clear mode setting, chip shutdown */
+	 
 	ret = max30102_set_powermode(data, MAX30102_REG_MODE_CONFIG_MODE_NONE,
 				     false);
 	if (ret)

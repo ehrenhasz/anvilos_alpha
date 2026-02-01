@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <cap-ng.h>
 #include <linux/capability.h>
 #include <stdbool.h>
@@ -37,10 +37,7 @@ int main(int argc, char **argv)
 {
 	const char *atsec = "";
 
-	/*
-	 * Be careful just in case a setgid or setcapped copy of this
-	 * helper gets out.
-	 */
+	 
 
 	if (argc != 5)
 		ksft_exit_fail_msg("wrong argc\n");

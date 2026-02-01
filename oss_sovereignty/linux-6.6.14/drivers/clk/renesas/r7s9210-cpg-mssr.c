@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R7S9210 Clock Pulse Generator / Module Standby
- *
- * Based on r8a7795-cpg-mssr.c
- *
- * Copyright (C) 2018 Chris Brandt
- * Copyright (C) 2018 Renesas Electronics Corp.
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -19,19 +11,19 @@
 
 static u8 cpg_mode;
 
-/* Internal Clock ratio table */
+ 
 static const struct {
 	unsigned int i;
 	unsigned int g;
 	unsigned int b;
 	unsigned int p1;
-	/* p0 is always 32 */;
-} ratio_tab[5] = {	/* I,  G,  B, P1 */
-			{  2,  4,  8, 16},	/* FRQCR = 0x012 */
-			{  4,  4,  8, 16},	/* FRQCR = 0x112 */
-			{  8,  4,  8, 16},	/* FRQCR = 0x212 */
-			{ 16,  8, 16, 16},	/* FRQCR = 0x322 */
-			{ 16, 16, 32, 32},	/* FRQCR = 0x333 */
+	 ;
+} ratio_tab[5] = {	 
+			{  2,  4,  8, 16},	 
+			{  4,  4,  8, 16},	 
+			{  8,  4,  8, 16},	 
+			{ 16,  8, 16, 16},	 
+			{ 16, 16, 32, 32},	 
 			};
 
 enum rz_clk_types {
@@ -40,29 +32,29 @@ enum rz_clk_types {
 };
 
 enum clk_ids {
-	/* Core Clock Outputs exported to DT */
+	 
 	LAST_DT_CORE_CLK = R7S9210_CLK_P0,
 
-	/* External Input Clocks */
+	 
 	CLK_EXTAL,
 
-	/* Internal Core Clocks */
+	 
 	CLK_MAIN,
 	CLK_PLL,
 
-	/* Module Clocks */
+	 
 	MOD_CLK_BASE
 };
 
 static struct cpg_core_clk r7s9210_early_core_clks[] = {
-	/* External Clock Inputs */
+	 
 	DEF_INPUT("extal",     CLK_EXTAL),
 
-	/* Internal Core Clocks */
+	 
 	DEF_BASE(".main",       CLK_MAIN, CLK_TYPE_RZA_MAIN, CLK_EXTAL),
 	DEF_BASE(".pll",       CLK_PLL, CLK_TYPE_RZA_PLL, CLK_MAIN),
 
-	/* Core Clock Outputs */
+	 
 	DEF_FIXED("p1c",    R7S9210_CLK_P1C,   CLK_PLL,         16, 1),
 };
 
@@ -73,7 +65,7 @@ static const struct mssr_mod_clk r7s9210_early_mod_clks[] __initconst = {
 };
 
 static struct cpg_core_clk r7s9210_core_clks[] = {
-	/* Core Clock Outputs */
+	 
 	DEF_FIXED("i",      R7S9210_CLK_I,     CLK_PLL,          2, 1),
 	DEF_FIXED("g",      R7S9210_CLK_G,     CLK_PLL,          4, 1),
 	DEF_FIXED("b",      R7S9210_CLK_B,     CLK_PLL,          8, 1),
@@ -109,7 +101,7 @@ static const struct mssr_mod_clk r7s9210_mod_clks[] __initconst = {
 	DEF_MOD_STB("sdhi00",	103,	R7S9210_CLK_B),
 };
 
-/* The clock dividers in the table vary based on DT and register settings */
+ 
 static void __init r7s9210_update_clk_table(struct clk *extal_clk,
 					    void __iomem *base)
 {
@@ -117,7 +109,7 @@ static void __init r7s9210_update_clk_table(struct clk *extal_clk,
 	u16 frqcr;
 	u8 index;
 
-	/* If EXTAL is above 12MHz, then we know it is Mode 1 */
+	 
 	if (clk_get_rate(extal_clk) > 12000000)
 		cpg_mode = 1;
 
@@ -133,7 +125,7 @@ static void __init r7s9210_update_clk_table(struct clk *extal_clk,
 	else if (frqcr == 0x333)
 		index = 4;
 	else
-		BUG_ON(1);	/* Illegal FRQCR value */
+		BUG_ON(1);	 
 
 	for (i = 0; i < ARRAY_SIZE(r7s9210_core_clks); i++) {
 		switch (r7s9210_core_clks[i].id) {
@@ -176,9 +168,9 @@ static struct clk * __init rza2_cpg_clk_register(struct device *dev,
 
 	case CLK_PLL:
 		if (cpg_mode)
-			mult = 44;	/* Divider 1 is 1/2 */
+			mult = 44;	 
 		else
-			mult = 88;	/* Divider 1 is 1 */
+			mult = 88;	 
 		break;
 
 	default:
@@ -193,27 +185,27 @@ static struct clk * __init rza2_cpg_clk_register(struct device *dev,
 }
 
 const struct cpg_mssr_info r7s9210_cpg_mssr_info __initconst = {
-	/* Early Clocks */
+	 
 	.early_core_clks = r7s9210_early_core_clks,
 	.num_early_core_clks = ARRAY_SIZE(r7s9210_early_core_clks),
 	.early_mod_clks = r7s9210_early_mod_clks,
 	.num_early_mod_clks = ARRAY_SIZE(r7s9210_early_mod_clks),
 
-	/* Core Clocks */
+	 
 	.core_clks = r7s9210_core_clks,
 	.num_core_clks = ARRAY_SIZE(r7s9210_core_clks),
 	.last_dt_core_clk = LAST_DT_CORE_CLK,
 	.num_total_core_clks = MOD_CLK_BASE,
 
-	/* Module Clocks */
+	 
 	.mod_clks = r7s9210_mod_clks,
 	.num_mod_clks = ARRAY_SIZE(r7s9210_mod_clks),
-	.num_hw_mod_clks = 11 * 32, /* includes STBCR0 which doesn't exist */
+	.num_hw_mod_clks = 11 * 32,  
 
-	/* Callbacks */
+	 
 	.cpg_clk_register = rza2_cpg_clk_register,
 
-	/* RZ/A2 has Standby Control Registers */
+	 
 	.reg_layout = CLK_REG_LAYOUT_RZ_A,
 };
 

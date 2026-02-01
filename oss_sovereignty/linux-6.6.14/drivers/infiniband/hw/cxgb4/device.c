@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer in the documentation and/or other materials
- *	  provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/debugfs.h>
@@ -337,10 +307,7 @@ static int qp_open(struct inode *inode, struct file *file)
 	qpd->devp = inode->i_private;
 	qpd->pos = 0;
 
-	/*
-	 * No need to lock; we drop the lock to call vmalloc so it's racy
-	 * anyway.  Someone who cares should switch this over to seq_file
-	 */
+	 
 	xa_for_each(&qpd->devp->qps, index, qp)
 		count++;
 
@@ -780,7 +747,7 @@ void c4iw_init_dev_ucontext(struct c4iw_rdev *rdev,
 	mutex_init(&uctx->lock);
 }
 
-/* Caller takes care of locking if needed */
+ 
 static int c4iw_rdev_open(struct c4iw_rdev *rdev)
 {
 	int err;
@@ -788,11 +755,7 @@ static int c4iw_rdev_open(struct c4iw_rdev *rdev)
 
 	c4iw_init_dev_ucontext(rdev, &rdev->uctx);
 
-	/*
-	 * This implementation assumes udb_density == ucq_density!  Eventually
-	 * we might need to support this but for now fail the open. Also the
-	 * cqid and qpid range must match for now.
-	 */
+	 
 	if (rdev->lldi.udb_density != rdev->lldi.ucq_density) {
 		pr_err("%s: unsupported udb/ucq densities %u/%u\n",
 		       pci_name(rdev->lldi.pdev), rdev->lldi.udb_density,
@@ -808,7 +771,7 @@ static int c4iw_rdev_open(struct c4iw_rdev *rdev)
 		return -EINVAL;
 	}
 
-	/* This implementation requires a sge_host_page_size <= PAGE_SIZE. */
+	 
 	if (rdev->lldi.sge_host_page_size > PAGE_SIZE) {
 		pr_err("%s: unsupported sge host page size %u\n",
 		       pci_name(rdev->lldi.pdev),
@@ -986,7 +949,7 @@ static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
 	}
 	devp->rdev.lldi = *infop;
 
-	/* init various hw-queue params based on lld info */
+	 
 	pr_debug("Ing. padding boundary is %d, egrsstatuspagesize = %d\n",
 		 devp->rdev.lldi.sge_ingpadboundary,
 		 devp->rdev.lldi.sge_egrstatuspagesize);
@@ -1007,11 +970,7 @@ static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
 	devp->rdev.hw_queue.t4_stat_len =
 		devp->rdev.lldi.sge_egrstatuspagesize;
 
-	/*
-	 * For T5/T6 devices, we map all of BAR2 with WC.
-	 * For T4 devices with onchip qp mem, we map only that part
-	 * of BAR2 with WC.
-	 */
+	 
 	devp->rdev.bar2_pa = pci_resource_start(devp->rdev.lldi.pdev, 2);
 	if (!is_t4(devp->rdev.lldi.adapter_type)) {
 		devp->rdev.bar2_kva = ioremap_wc(devp->rdev.bar2_pa,
@@ -1107,13 +1066,7 @@ static inline struct sk_buff *copy_gl_to_skb_pkt(const struct pkt_gl *gl,
 {
 	struct sk_buff *skb;
 
-	/*
-	 * Allocate space for cpl_pass_accept_req which will be synthesized by
-	 * driver. Once the driver synthesizes the request the skb will go
-	 * through the regular cpl_pass_accept_req processing.
-	 * The math here assumes sizeof cpl_pass_accept_req >= sizeof
-	 * cpl_rx_pkt.
-	 */
+	 
 	skb = alloc_skb(gl->tot_len + sizeof(struct cpl_pass_accept_req) +
 			sizeof(struct rss_header) - pktshift, GFP_ATOMIC);
 	if (unlikely(!skb))
@@ -1122,14 +1075,7 @@ static inline struct sk_buff *copy_gl_to_skb_pkt(const struct pkt_gl *gl,
 	__skb_put(skb, gl->tot_len + sizeof(struct cpl_pass_accept_req) +
 		  sizeof(struct rss_header) - pktshift);
 
-	/*
-	 * This skb will contain:
-	 *   rss_header from the rspq descriptor (1 flit)
-	 *   cpl_rx_pkt struct from the rspq descriptor (2 flits)
-	 *   space for the difference between the size of an
-	 *      rx_pkt and pass_accept_req cpl (1 flit)
-	 *   the packet data from the gl
-	 */
+	 
 	skb_copy_to_linear_data(skb, rsp, sizeof(struct cpl_pass_accept_req) +
 				sizeof(struct rss_header));
 	skb_copy_to_linear_data_offset(skb, sizeof(struct rss_header) +
@@ -1172,7 +1118,7 @@ static int c4iw_uld_rx_handler(void *handle, const __be64 *rsp,
 	u8 opcode;
 
 	if (gl == NULL) {
-		/* omit RSS and rsp_ctrl at end of descriptor */
+		 
 		unsigned int len = 64 - sizeof(struct rsp_ctrl) - 8;
 
 		skb = alloc_skb(256, GFP_ATOMIC);
@@ -1404,7 +1350,7 @@ static void recover_lost_dbs(struct uld_ctx *ctx, struct qp_list *qp_list)
 		spin_unlock(&qp->lock);
 		xa_unlock_irq(&qp->rhp->qps);
 
-		/* Wait for the dbfifo to drain */
+		 
 		while (cxgb4_dbfifo_count(qp->rhp->rdev.lldi.ports[0], 1) > 0) {
 			set_current_state(TASK_UNINTERRUPTIBLE);
 			schedule_timeout(usecs_to_jiffies(10));
@@ -1420,11 +1366,11 @@ static void recover_queues(struct uld_ctx *ctx)
 	struct qp_list qp_list;
 	int ret;
 
-	/* slow everybody down */
+	 
 	set_current_state(TASK_UNINTERRUPTIBLE);
 	schedule_timeout(usecs_to_jiffies(1000));
 
-	/* flush the SGE contexts */
+	 
 	ret = cxgb4_flush_eq_cache(ctx->dev->rdev.lldi.ports[0]);
 	if (ret) {
 		pr_err("%s: Fatal error - DB overflow recovery failed\n",
@@ -1432,7 +1378,7 @@ static void recover_queues(struct uld_ctx *ctx)
 		return;
 	}
 
-	/* Count active queues so we can build a list of queues to recover */
+	 
 	xa_lock_irq(&ctx->dev->qps);
 	WARN_ON(ctx->dev->db_state != STOPPED);
 	ctx->dev->db_state = RECOVERY;
@@ -1446,7 +1392,7 @@ static void recover_queues(struct uld_ctx *ctx)
 	}
 	qp_list.idx = 0;
 
-	/* add and ref each qp so it doesn't get freed */
+	 
 	xa_for_each(&ctx->dev->qps, index, qp) {
 		c4iw_qp_add_ref(&qp->ibqp);
 		qp_list.qps[qp_list.idx++] = qp;
@@ -1454,10 +1400,10 @@ static void recover_queues(struct uld_ctx *ctx)
 
 	xa_unlock_irq(&ctx->dev->qps);
 
-	/* now traverse the list in a safe context to recover the db state*/
+	 
 	recover_lost_dbs(ctx, &qp_list);
 
-	/* we're almost done!  deref the qps and clean up */
+	 
 	deref_qps(&qp_list);
 	kfree(qp_list.qps);
 

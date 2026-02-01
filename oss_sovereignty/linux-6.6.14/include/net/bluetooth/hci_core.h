@@ -1,27 +1,4 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-   Copyright (c) 2000-2001, 2010, Code Aurora Forum. All rights reserved.
-   Copyright 2023 NXP
-
-   Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
+ 
 
 #ifndef __HCI_CORE_H
 #define __HCI_CORE_H
@@ -35,13 +12,13 @@
 #include <net/bluetooth/hci_sock.h>
 #include <net/bluetooth/coredump.h>
 
-/* HCI priority */
+ 
 #define HCI_PRIO_MAX	7
 
-/* HCI maximum id value */
+ 
 #define HCI_MAX_ID 10000
 
-/* HCI Core structures */
+ 
 struct inquiry_data {
 	bdaddr_t	bdaddr;
 	__u8		pscan_rep_mode;
@@ -54,8 +31,8 @@ struct inquiry_data {
 };
 
 struct inquiry_entry {
-	struct list_head	all;		/* inq_cache.all */
-	struct list_head	list;		/* unknown or resolve */
+	struct list_head	all;		 
+	struct list_head	list;		 
 	enum {
 		NAME_NOT_KNOWN,
 		NAME_NEEDED,
@@ -75,9 +52,9 @@ struct discovery_state {
 		DISCOVERY_RESOLVING,
 		DISCOVERY_STOPPING,
 	} state;
-	struct list_head	all;	/* All devices found during inquiry */
-	struct list_head	unknown;	/* Name state not known */
-	struct list_head	resolve;	/* Name needs to be resolved */
+	struct list_head	all;	 
+	struct list_head	unknown;	 
+	struct list_head	resolve;	 
 	__u32			timestamp;
 	bdaddr_t		last_adv_addr;
 	u8			last_adv_addr_type;
@@ -96,7 +73,7 @@ struct discovery_state {
 	unsigned long		name_resolve_timeout;
 };
 
-#define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
+#define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000)  
 
 enum suspend_tasks {
 	SUSPEND_PAUSE_DISCOVERY,
@@ -158,7 +135,7 @@ struct bdaddr_list_with_irk {
 	u8 local_irk[16];
 };
 
-/* Bitmask of connection flags */
+ 
 enum hci_conn_flags {
 	HCI_CONN_FLAG_REMOTE_WAKEUP = 1,
 	HCI_CONN_FLAG_DEVICE_PRIVACY = 2,
@@ -329,16 +306,16 @@ struct adv_monitor {
 #define HCI_CONN_HANDLE_MAX		0x0eff
 #define HCI_CONN_HANDLE_UNSET(_handle)	(_handle > HCI_CONN_HANDLE_MAX)
 
-/* Min encryption key size to match with SMP */
+ 
 #define HCI_MIN_ENC_KEY_SIZE		7
 
-/* Default LE RPA expiry time, 15 minutes */
+ 
 #define HCI_DEFAULT_RPA_TIMEOUT		(15 * 60)
 
-/* Default min/max age of connection information (1s/3s) */
+ 
 #define DEFAULT_CONN_INFO_MIN_AGE	1000
 #define DEFAULT_CONN_INFO_MAX_AGE	3000
-/* Default authenticated payload timeout 30s */
+ 
 #define DEFAULT_AUTH_PAYLOAD_TIMEOUT   0x0bb8
 
 struct amp_assoc {
@@ -827,7 +804,7 @@ struct hci_conn_params {
 
 	struct hci_conn *conn;
 	bool explicit_connect;
-	/* Accessed without hdev->lock: */
+	 
 	hci_conn_flags_t flags;
 	u8  privacy_mode;
 };
@@ -856,11 +833,11 @@ extern struct mutex hci_cb_list_lock;
 
 #define hci_dev_le_state_simultaneous(hdev) \
 	(test_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks) && \
-	 (hdev->le_states[4] & 0x08) &&	/* Central */ \
-	 (hdev->le_states[4] & 0x40) &&	/* Peripheral */ \
-	 (hdev->le_states[3] & 0x10))	/* Simultaneous */
+	 (hdev->le_states[4] & 0x08) &&	  \
+	 (hdev->le_states[4] & 0x40) &&	  \
+	 (hdev->le_states[3] & 0x10))	 
 
-/* ----- HCI interface to upper protocols ----- */
+ 
 int l2cap_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr);
 int l2cap_disconn_ind(struct hci_conn *hcon);
 void l2cap_recv_acldata(struct hci_conn *hcon, struct sk_buff *skb, u16 flags);
@@ -895,9 +872,9 @@ static inline void iso_recv(struct hci_conn *hcon, struct sk_buff *skb,
 }
 #endif
 
-/* ----- Inquiry cache ----- */
-#define INQUIRY_CACHE_AGE_MAX   (HZ*30)   /* 30 seconds */
-#define INQUIRY_ENTRY_AGE_MAX   (HZ*60)   /* 60 seconds */
+ 
+#define INQUIRY_CACHE_AGE_MAX   (HZ*30)    
+#define INQUIRY_ENTRY_AGE_MAX   (HZ*60)    
 
 static inline void discovery_init(struct hci_dev *hdev)
 {
@@ -954,7 +931,7 @@ u32 hci_inquiry_cache_update(struct hci_dev *hdev, struct inquiry_data *data,
 			     bool name_known);
 void hci_inquiry_cache_flush(struct hci_dev *hdev);
 
-/* ----- HCI Connections ----- */
+ 
 enum {
 	HCI_CONN_AUTH_PEND,
 	HCI_CONN_ENCRYPT_PEND,
@@ -1230,15 +1207,15 @@ static inline struct hci_conn *hci_conn_hash_lookup_cis(struct hci_dev *hdev,
 		if (c->type != ISO_LINK || !bacmp(&c->dst, BDADDR_ANY))
 			continue;
 
-		/* Match CIG ID if set */
+		 
 		if (cig != c->iso_qos.ucast.cig)
 			continue;
 
-		/* Match CIS ID if set */
+		 
 		if (id != c->iso_qos.ucast.cis)
 			continue;
 
-		/* Match destination address if set */
+		 
 		if (!ba || (ba_type == c->dst_type && !bacmp(&c->dst, ba))) {
 			rcu_read_unlock();
 			return c;
@@ -1426,7 +1403,7 @@ static inline struct hci_conn *hci_lookup_le_connect(struct hci_dev *hdev)
 	return NULL;
 }
 
-/* Returns true if an le connection is in the scanning state */
+ 
 static inline bool hci_is_le_conn_scanning(struct hci_dev *hdev)
 {
 	struct hci_conn_hash *h = &hdev->conn_hash;
@@ -1505,26 +1482,7 @@ void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active);
 void hci_conn_failed(struct hci_conn *conn, u8 status);
 u8 hci_conn_set_handle(struct hci_conn *conn, u16 handle);
 
-/*
- * hci_conn_get() and hci_conn_put() are used to control the life-time of an
- * "hci_conn" object. They do not guarantee that the hci_conn object is running,
- * working or anything else. They just guarantee that the object is available
- * and can be dereferenced. So you can use its locks, local variables and any
- * other constant data.
- * Before accessing runtime data, you _must_ lock the object and then check that
- * it is still running. As soon as you release the locks, the connection might
- * get dropped, though.
- *
- * On the other hand, hci_conn_hold() and hci_conn_drop() are used to control
- * how long the underlying connection is held. So every channel that runs on the
- * hci_conn object calls this to prevent the connection from disappearing. As
- * long as you hold a device, you must also guarantee that you have a valid
- * reference to the device via hci_conn_get() (or the initial reference from
- * hci_conn_add()).
- * The hold()/drop() ref-count is known to drop below 0 sometimes, which doesn't
- * break because nobody cares for that. But this means, we cannot use
- * _get()/_drop() in it, but require the caller to have a valid ref (FIXME).
- */
+ 
 
 static inline struct hci_conn *hci_conn_get(struct hci_conn *conn)
 {
@@ -1582,7 +1540,7 @@ static inline void hci_conn_drop(struct hci_conn *conn)
 	}
 }
 
-/* ----- HCI Devices ----- */
+ 
 static inline void hci_dev_put(struct hci_dev *d)
 {
 	BT_DBG("%s orig refcnt %d", d->name,
@@ -1791,7 +1749,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
 #define SET_HCIDEV_DEV(hdev, pdev) ((hdev)->dev.parent = (pdev))
 #define GET_HCIDEV_DEV(hdev) ((hdev)->dev.parent)
 
-/* ----- LMP capabilities ----- */
+ 
 #define lmp_encrypt_capable(dev)   ((dev)->features[0][0] & LMP_ENCRYPT)
 #define lmp_rswitch_capable(dev)   ((dev)->features[0][0] & LMP_RSWITCH)
 #define lmp_hold_capable(dev)      ((dev)->features[0][0] & LMP_HOLD)
@@ -1817,7 +1775,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
 #define lmp_edr_3slot_capable(dev) ((dev)->features[0][4] & LMP_EDR_3SLOT)
 #define lmp_edr_5slot_capable(dev) ((dev)->features[0][5] & LMP_EDR_5SLOT)
 
-/* ----- Extended LMP capabilities ----- */
+ 
 #define lmp_cpb_central_capable(dev) ((dev)->features[2][0] & LMP_CPB_CENTRAL)
 #define lmp_cpb_peripheral_capable(dev) ((dev)->features[2][0] & LMP_CPB_PERIPHERAL)
 #define lmp_sync_train_capable(dev) ((dev)->features[2][0] & LMP_SYNC_TRAIN)
@@ -1825,7 +1783,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
 #define lmp_sc_capable(dev)         ((dev)->features[2][1] & LMP_SC)
 #define lmp_ping_capable(dev)       ((dev)->features[2][1] & LMP_PING)
 
-/* ----- Host capabilities ----- */
+ 
 #define lmp_host_ssp_capable(dev)  ((dev)->features[1][0] & LMP_HOST_SSP)
 #define lmp_host_sc_capable(dev)   ((dev)->features[1][0] & LMP_HOST_SC)
 #define lmp_host_le_capable(dev)   (!!((dev)->features[1][0] & LMP_HOST_LE))
@@ -1857,47 +1815,41 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
 
 #define ll_privacy_capable(dev) ((dev)->le_features[0] & HCI_LE_LL_PRIVACY)
 
-/* Use LL Privacy based address resolution if supported */
+ 
 #define use_ll_privacy(dev) (ll_privacy_capable(dev) && \
 			     hci_dev_test_flag(dev, HCI_ENABLE_LL_PRIVACY))
 
 #define privacy_mode_capable(dev) (use_ll_privacy(dev) && \
 				   (hdev->commands[39] & 0x04))
 
-/* Use enhanced synchronous connection if command is supported and its quirk
- * has not been set.
- */
+ 
 #define enhanced_sync_conn_capable(dev) \
 	(((dev)->commands[29] & 0x08) && \
 	 !test_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &(dev)->quirks))
 
-/* Use ext scanning if set ext scan param and ext scan enable is supported */
+ 
 #define use_ext_scan(dev) (((dev)->commands[37] & 0x20) && \
 			   ((dev)->commands[37] & 0x40) && \
 			   !test_bit(HCI_QUIRK_BROKEN_EXT_SCAN, &(dev)->quirks))
 
-/* Use ext create connection if command is supported */
+ 
 #define use_ext_conn(dev) ((dev)->commands[37] & 0x80)
 
-/* Extended advertising support */
+ 
 #define ext_adv_capable(dev) (((dev)->le_features[1] & HCI_LE_EXT_ADV))
 
-/* Maximum advertising length */
+ 
 #define max_adv_len(dev) \
 	(ext_adv_capable(dev) ? HCI_MAX_EXT_AD_LENGTH : HCI_MAX_AD_LENGTH)
 
-/* BLUETOOTH CORE SPECIFICATION Version 5.3 | Vol 4, Part E page 1789:
- *
- * C24: Mandatory if the LE Controller supports Connection State and either
- * LE Feature (LL Privacy) or LE Feature (Extended Advertising) is supported
- */
+ 
 #define use_enhanced_conn_complete(dev) (ll_privacy_capable(dev) || \
 					 ext_adv_capable(dev))
 
-/* Periodic advertising support */
+ 
 #define per_adv_capable(dev) (((dev)->le_features[1] & HCI_LE_PERIODIC_ADV))
 
-/* CIS Master/Slave and BIS support */
+ 
 #define iso_capable(dev) (cis_capable(dev) || bis_capable(dev))
 #define cis_capable(dev) \
 	(cis_central_capable(dev) || cis_peripheral_capable(dev))
@@ -1911,7 +1863,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
 #define mws_transport_config_capable(dev) (((dev)->commands[30] & 0x08) && \
 	(!test_bit(HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG, &(dev)->quirks)))
 
-/* ----- HCI protocols ----- */
+ 
 #define HCI_PROTO_DEFER             0x01
 
 static inline int hci_proto_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr,
@@ -1942,7 +1894,7 @@ static inline int hci_proto_disconn_ind(struct hci_conn *conn)
 	return l2cap_disconn_ind(conn);
 }
 
-/* ----- HCI callbacks ----- */
+ 
 struct hci_cb {
 	struct list_head list;
 
@@ -2088,7 +2040,7 @@ static inline bool hci_is_identity_address(bdaddr_t *addr, u8 addr_type)
 	if (addr_type == ADDR_LE_DEV_PUBLIC)
 		return true;
 
-	/* Check for Random Static address type */
+	 
 	if ((addr->b[5] & 0xc0) == 0xc0)
 		return true;
 
@@ -2142,7 +2094,7 @@ void *hci_recv_event_data(struct hci_dev *hdev, __u8 event);
 
 u32 hci_conn_get_phy(struct hci_conn *conn);
 
-/* ----- HCI Sockets ----- */
+ 
 void hci_send_to_sock(struct hci_dev *hdev, struct sk_buff *skb);
 void hci_send_to_channel(unsigned short channel, struct sk_buff *skb,
 			 int flag, struct sock *skip_sk);
@@ -2177,7 +2129,7 @@ struct hci_mgmt_chan {
 int hci_mgmt_chan_register(struct hci_mgmt_chan *c);
 void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
 
-/* Management interface */
+ 
 #define DISCOV_TYPE_BREDR		(BIT(BDADDR_BREDR))
 #define DISCOV_TYPE_LE			(BIT(BDADDR_LE_PUBLIC) | \
 					 BIT(BDADDR_LE_RANDOM))
@@ -2185,25 +2137,23 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
 					 BIT(BDADDR_LE_PUBLIC) | \
 					 BIT(BDADDR_LE_RANDOM))
 
-/* These LE scan and inquiry parameters were chosen according to LE General
- * Discovery Procedure specification.
- */
+ 
 #define DISCOV_LE_SCAN_WIN		0x12
 #define DISCOV_LE_SCAN_INT		0x12
-#define DISCOV_LE_TIMEOUT		10240	/* msec */
-#define DISCOV_INTERLEAVED_TIMEOUT	5120	/* msec */
+#define DISCOV_LE_TIMEOUT		10240	 
+#define DISCOV_INTERLEAVED_TIMEOUT	5120	 
 #define DISCOV_INTERLEAVED_INQUIRY_LEN	0x04
 #define DISCOV_BREDR_INQUIRY_LEN	0x08
-#define DISCOV_LE_RESTART_DELAY		msecs_to_jiffies(200)	/* msec */
-#define DISCOV_LE_FAST_ADV_INT_MIN	0x00A0	/* 100 msec */
-#define DISCOV_LE_FAST_ADV_INT_MAX	0x00F0	/* 150 msec */
-#define DISCOV_LE_PER_ADV_INT_MIN	0x00A0	/* 200 msec */
-#define DISCOV_LE_PER_ADV_INT_MAX	0x00A0	/* 200 msec */
-#define DISCOV_LE_ADV_MESH_MIN		0x00A0  /* 100 msec */
-#define DISCOV_LE_ADV_MESH_MAX		0x00A0  /* 100 msec */
+#define DISCOV_LE_RESTART_DELAY		msecs_to_jiffies(200)	 
+#define DISCOV_LE_FAST_ADV_INT_MIN	0x00A0	 
+#define DISCOV_LE_FAST_ADV_INT_MAX	0x00F0	 
+#define DISCOV_LE_PER_ADV_INT_MIN	0x00A0	 
+#define DISCOV_LE_PER_ADV_INT_MAX	0x00A0	 
+#define DISCOV_LE_ADV_MESH_MIN		0x00A0   
+#define DISCOV_LE_ADV_MESH_MAX		0x00A0   
 #define INTERVAL_TO_MS(x)		(((x) * 10) / 0x10)
 
-#define NAME_RESOLVE_DURATION		msecs_to_jiffies(10240)	/* 10.24 sec */
+#define NAME_RESOLVE_DURATION		msecs_to_jiffies(10240)	 
 
 void mgmt_fill_version_info(void *ver);
 int mgmt_new_settings(struct hci_dev *hdev);
@@ -2299,4 +2249,4 @@ void hci_copy_identity_address(struct hci_dev *hdev, bdaddr_t *bdaddr,
 
 #define TRANSPORT_TYPE_MAX	0x04
 
-#endif /* __HCI_CORE_H */
+#endif  

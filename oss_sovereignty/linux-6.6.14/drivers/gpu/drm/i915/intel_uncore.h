@@ -1,26 +1,4 @@
-/*
- * Copyright © 2017 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __INTEL_UNCORE_H__
 #define __INTEL_UNCORE_H__
@@ -40,7 +18,7 @@ struct intel_uncore;
 struct intel_gt;
 
 struct intel_uncore_mmio_debug {
-	spinlock_t lock; /** lock is also taken in irq contexts. */
+	spinlock_t lock;  
 	int unclaimed_mmio_check;
 	int saved_mmio_check;
 	u32 suspend_count;
@@ -48,7 +26,7 @@ struct intel_uncore_mmio_debug {
 
 enum forcewake_domain_id {
 	FW_DOMAIN_ID_RENDER = 0,
-	FW_DOMAIN_ID_GT,        /* also includes blitter engine */
+	FW_DOMAIN_ID_GT,         
 	FW_DOMAIN_ID_MEDIA,
 	FW_DOMAIN_ID_MEDIA_VDBOX0,
 	FW_DOMAIN_ID_MEDIA_VDBOX1,
@@ -123,7 +101,7 @@ struct intel_forcewake_range {
 	enum forcewake_domains domains;
 };
 
-/* Other register ranges (e.g., shadow tables, MCR tables, etc.) */
+ 
 struct i915_range {
 	u32 start;
 	u32 end;
@@ -136,16 +114,9 @@ struct intel_uncore {
 	struct intel_gt *gt;
 	struct intel_runtime_pm *rpm;
 
-	spinlock_t lock; /** lock is also taken in irq contexts. */
+	spinlock_t lock;  
 
-	/*
-	 * Do we need to apply an additional offset to reach the beginning
-	 * of the basic non-engine GT registers (referred to as "GSI" on
-	 * newer platforms, or "GT block" on older platforms)?  If so, we'll
-	 * track that here and apply it transparently to registers in the
-	 * appropriate range to maintain compatibility with our existing
-	 * register definitions and GT code.
-	 */
+	 
 	u32 gsi_offset;
 
 	unsigned int flags;
@@ -158,10 +129,7 @@ struct intel_uncore {
 	const struct intel_forcewake_range *fw_domains_table;
 	unsigned int fw_domains_table_entries;
 
-	/*
-	 * Shadowed registers are special cases where we can safely write
-	 * to the register *without* grabbing forcewake.
-	 */
+	 
 	const struct i915_range *shadowed_reg_table;
 	unsigned int shadowed_reg_table_entries;
 
@@ -174,7 +142,7 @@ struct intel_uncore {
 	enum forcewake_domains fw_domains;
 	enum forcewake_domains fw_domains_active;
 	enum forcewake_domains fw_domains_timer;
-	enum forcewake_domains fw_domains_saved; /* user domains saved for S3 */
+	enum forcewake_domains fw_domains_saved;  
 
 	struct intel_uncore_forcewake_domain {
 		struct intel_uncore *uncore;
@@ -192,7 +160,7 @@ struct intel_uncore {
 	struct intel_uncore_mmio_debug *debug;
 };
 
-/* Iterate over initialised fw domains */
+ 
 #define for_each_fw_domain_masked(domain__, mask__, uncore__, tmp__) \
 	for (tmp__ = (mask__); tmp__ ;) \
 		for_each_if(domain__ = (uncore__)->fw_domain[__mask_next_bit(tmp__)])
@@ -271,10 +239,7 @@ void intel_uncore_forcewake_put_delayed(struct intel_uncore *uncore,
 void intel_uncore_forcewake_flush(struct intel_uncore *uncore,
 				  enum forcewake_domains fw_domains);
 
-/*
- * Like above but the caller must manage the uncore.lock itself.
- * Must be used with intel_uncore_read_fw() and friends.
- */
+ 
 void intel_uncore_forcewake_get__locked(struct intel_uncore *uncore,
 					enum forcewake_domains domains);
 void intel_uncore_forcewake_put__locked(struct intel_uncore *uncore,
@@ -321,7 +286,7 @@ intel_wait_for_register_fw(struct intel_uncore *uncore,
 
 #define IS_GSI_REG(reg) ((reg) < 0x40000)
 
-/* register access functions */
+ 
 #define __raw_read(x__, s__) \
 static inline u##x__ __raw_uncore_read##x__(const struct intel_uncore *uncore, \
 					    i915_reg_t reg) \
@@ -379,20 +344,7 @@ __uncore_write(write16, 16, w, true)
 __uncore_write(write, 32, l, true)
 __uncore_write(write_notrace, 32, l, false)
 
-/* Be very careful with read/write 64-bit values. On 32-bit machines, they
- * will be implemented using 2 32-bit writes in an arbitrary order with
- * an arbitrary delay between them. This can cause the hardware to
- * act upon the intermediate value, possibly leading to corruption and
- * machine death. For this reason we do not support intel_uncore_write64,
- * or uncore->funcs.mmio_writeq.
- *
- * When reading a 64-bit value as two 32-bit values, the delay may cause
- * the two reads to mismatch, e.g. a timestamp overflowing. Also note that
- * occasionally a 64-bit register does not actually support a full readq
- * and must be read using two 32-bit reads.
- *
- * You have been warned.
- */
+ 
 __uncore_read(read64, 64, q, true)
 
 #define intel_uncore_posting_read(...) ((void)intel_uncore_read_notrace(__VA_ARGS__))
@@ -401,32 +353,7 @@ __uncore_read(read64, 64, q, true)
 #undef __uncore_read
 #undef __uncore_write
 
-/* These are untraced mmio-accessors that are only valid to be used inside
- * critical sections, such as inside IRQ handlers, where forcewake is explicitly
- * controlled.
- *
- * Think twice, and think again, before using these.
- *
- * As an example, these accessors can possibly be used between:
- *
- * spin_lock_irq(&uncore->lock);
- * intel_uncore_forcewake_get__locked();
- *
- * and
- *
- * intel_uncore_forcewake_put__locked();
- * spin_unlock_irq(&uncore->lock);
- *
- *
- * Note: some registers may not need forcewake held, so
- * intel_uncore_forcewake_{get,put} can be omitted, see
- * intel_uncore_forcewake_for_reg().
- *
- * Certain architectures will die if the same cacheline is concurrently accessed
- * by different clients (e.g. on Ivybridge). Access to registers should
- * therefore generally be serialised, by either the dev_priv->uncore.lock or
- * a more localised lock guarding all access to that bank of registers.
- */
+ 
 #define intel_uncore_read_fw(...) __raw_uncore_read32(__VA_ARGS__)
 #define intel_uncore_write_fw(...) __raw_uncore_write32(__VA_ARGS__)
 #define intel_uncore_write64_fw(...) __raw_uncore_write64(__VA_ARGS__)
@@ -501,21 +428,10 @@ static inline void __iomem *intel_uncore_regs(struct intel_uncore *uncore)
 	return uncore->regs;
 }
 
-/*
- * The raw_reg_{read,write} macros are intended as a micro-optimization for
- * interrupt handlers so that the pointer indirection on uncore->regs can
- * be computed once (and presumably cached in a register) instead of generating
- * extra load instructions for each MMIO access.
- *
- * Given that these macros are only intended for non-GSI interrupt registers
- * (and the goal is to avoid extra instructions generated by the compiler),
- * these macros do not account for uncore->gsi_offset.  Any caller that needs
- * to use these macros on a GSI register is responsible for adding the
- * appropriate GSI offset to the 'base' parameter.
- */
+ 
 #define raw_reg_read(base, reg) \
 	readl(base + i915_mmio_reg_offset(reg))
 #define raw_reg_write(base, reg, value) \
 	writel(value, base + i915_mmio_reg_offset(reg))
 
-#endif /* !__INTEL_UNCORE_H__ */
+#endif  

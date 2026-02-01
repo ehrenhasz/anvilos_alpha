@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2015 Naveen N. Rao, IBM Corporation
- */
+
+ 
 
 #include "dso.h"
 #include "symbol.h"
@@ -16,12 +13,12 @@ int arch__choose_best_symbol(struct symbol *syma,
 	char *sym = syma->name;
 
 #if !defined(_CALL_ELF) || _CALL_ELF != 2
-	/* Skip over any initial dot */
+	 
 	if (*sym == '.')
 		sym++;
 #endif
 
-	/* Avoid "SyS" kernel syscall aliases */
+	 
 	if (strlen(sym) >= 3 && !strncmp(sym, "SyS", 3))
 		return SYMBOL_B;
 	if (strlen(sym) >= 10 && !strncmp(sym, "compat_SyS", 10))
@@ -31,10 +28,10 @@ int arch__choose_best_symbol(struct symbol *syma,
 }
 
 #if !defined(_CALL_ELF) || _CALL_ELF != 2
-/* Allow matching against dot variants */
+ 
 int arch__compare_symbol_names(const char *namea, const char *nameb)
 {
-	/* Skip over initial dot */
+	 
 	if (*namea == '.')
 		namea++;
 	if (*nameb == '.')
@@ -46,7 +43,7 @@ int arch__compare_symbol_names(const char *namea, const char *nameb)
 int arch__compare_symbol_names_n(const char *namea, const char *nameb,
 				 unsigned int n)
 {
-	/* Skip over initial dot */
+	 
 	if (*namea == '.')
 		namea++;
 	if (*nameb == '.')
@@ -57,7 +54,7 @@ int arch__compare_symbol_names_n(const char *namea, const char *nameb,
 
 const char *arch__normalize_symbol_name(const char *name)
 {
-	/* Skip over initial dot */
+	 
 	if (name && *name == '.')
 		name++;
 	return name;
@@ -81,20 +78,11 @@ void arch__fix_tev_from_maps(struct perf_probe_event *pev,
 {
 	int lep_offset;
 
-	/*
-	 * When probing at a function entry point, we normally always want the
-	 * LEP since that catches calls to the function through both the GEP and
-	 * the LEP. Hence, we would like to probe at an offset of 8 bytes if
-	 * the user only specified the function entry.
-	 *
-	 * However, if the user specifies an offset, we fall back to using the
-	 * GEP since all userspace applications (objdump/readelf) show function
-	 * disassembly with offsets from the GEP.
-	 */
+	 
 	if (pev->point.offset || !map || !sym)
 		return;
 
-	/* For kretprobes, add an offset only if the kernel supports it */
+	 
 	if (!pev->uprobes && pev->point.retprobe) {
 #ifdef HAVE_LIBELF_SUPPORT
 		if (!kretprobe_offset_is_supported())
@@ -138,6 +126,6 @@ void arch__post_process_probe_trace_events(struct perf_probe_event *pev,
 		}
 	}
 }
-#endif /* HAVE_LIBELF_SUPPORT */
+#endif  
 
 #endif

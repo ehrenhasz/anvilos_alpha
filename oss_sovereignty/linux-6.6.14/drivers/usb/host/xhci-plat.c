@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xhci-plat.c - xHCI host controller driver platform Bus Glue.
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com
- * Author: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- *
- * A lot of code borrowed from the Linux xHCI driver.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -81,7 +74,7 @@ static void xhci_plat_quirks(struct device *dev, struct xhci_hcd *xhci)
 	xhci->quirks |= priv->quirks;
 }
 
-/* called during probe() after chip reset completes */
+ 
 static int xhci_plat_setup(struct usb_hcd *hcd)
 {
 	int ret;
@@ -191,10 +184,7 @@ int xhci_plat_probe(struct platform_device *pdev, struct device *sysdev, const s
 
 	xhci->allow_single_roothub = 1;
 
-	/*
-	 * Not all platforms have clks so it is not an error if the
-	 * clock do not exist.
-	 */
+	 
 	xhci->reg_clk = devm_clk_get_optional(&pdev->dev, "reg");
 	if (IS_ERR(xhci->reg_clk)) {
 		ret = PTR_ERR(xhci->reg_clk);
@@ -227,7 +217,7 @@ int xhci_plat_probe(struct platform_device *pdev, struct device *sysdev, const s
 
 	if (priv_match) {
 		priv = hcd_to_xhci_priv(hcd);
-		/* Just copy data for now */
+		 
 		*priv = *priv_match;
 	}
 
@@ -235,10 +225,10 @@ int xhci_plat_probe(struct platform_device *pdev, struct device *sysdev, const s
 
 	xhci->main_hcd = hcd;
 
-	/* imod_interval is the interrupt moderation value in nanoseconds. */
+	 
 	xhci->imod_interval = 40000;
 
-	/* Iterate over all parent nodes for finding quirks */
+	 
 	for (tmpdev = &pdev->dev; tmpdev; tmpdev = tmpdev->parent) {
 
 		if (device_property_read_bool(tmpdev, "usb2-lpm-disable"))
@@ -254,10 +244,7 @@ int xhci_plat_probe(struct platform_device *pdev, struct device *sysdev, const s
 					 &xhci->imod_interval);
 	}
 
-	/*
-	 * Drivers such as dwc3 manages PHYs themself (and rely on driver name
-	 * matching for the xhci platform device).
-	 */
+	 
 	of_match = of_match_device(pdev->dev.driver->of_match_table, &pdev->dev);
 	if (of_match) {
 		hcd->usb_phy = devm_usb_get_phy_by_phandle(sysdev, "usb-phy", 0);
@@ -322,10 +309,7 @@ int xhci_plat_probe(struct platform_device *pdev, struct device *sysdev, const s
 	device_enable_async_suspend(&pdev->dev);
 	pm_runtime_put_noidle(&pdev->dev);
 
-	/*
-	 * Prevent runtime pm from being on as default, users should enable
-	 * runtime pm using power/control in sysfs.
-	 */
+	 
 	pm_runtime_forbid(&pdev->dev);
 
 	return 0;
@@ -366,13 +350,7 @@ static int xhci_generic_plat_probe(struct platform_device *pdev)
 	struct device *sysdev;
 	int ret;
 
-	/*
-	 * sysdev must point to a device that is known to the system firmware
-	 * or PCI hardware. We handle these three cases here:
-	 * 1. xhci_plat comes from firmware
-	 * 2. xhci_plat is child of a device from firmware (dwc3-plat)
-	 * 3. xhci_plat is grandchild of a pci device (dwc3-pci)
-	 */
+	 
 	for (sysdev = &pdev->dev; sysdev; sysdev = sysdev->parent) {
 		if (is_of_node(sysdev->fwnode) ||
 			is_acpi_device_node(sysdev->fwnode))
@@ -385,7 +363,7 @@ static int xhci_generic_plat_probe(struct platform_device *pdev)
 		sysdev = &pdev->dev;
 
 	if (WARN_ON(!sysdev->dma_mask)) {
-		/* Platform did not initialize dma_mask */
+		 
 		ret = dma_coerce_mask_and_coherent(sysdev, DMA_BIT_MASK(64));
 		if (ret)
 			return ret;
@@ -445,10 +423,7 @@ static int __maybe_unused xhci_plat_suspend(struct device *dev)
 	ret = xhci_priv_suspend_quirk(hcd);
 	if (ret)
 		return ret;
-	/*
-	 * xhci_suspend() needs `do_wakeup` to know whether host is allowed
-	 * to do wakeup during suspend.
-	 */
+	 
 	ret = xhci_suspend(xhci, device_may_wakeup(dev));
 	if (ret)
 		return ret;
@@ -534,7 +509,7 @@ EXPORT_SYMBOL_GPL(xhci_plat_pm_ops);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id usb_xhci_acpi_match[] = {
-	/* XHCI-compliant USB Controller */
+	 
 	{ "PNP0D10", },
 	{ }
 };

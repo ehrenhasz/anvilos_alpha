@@ -1,28 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Authors:
- * Alexander Aring <aar@pengutronix.de>
- *
- * Based on: net/mac80211/util.c
- */
+
+ 
 
 #include "ieee802154_i.h"
 #include "driver-ops.h"
 
-/* privid for wpan_phys to determine whether they belong to us or not */
+ 
 const void *const mac802154_wpan_phy_privid = &mac802154_wpan_phy_privid;
 
-/**
- * ieee802154_wake_queue - wake ieee802154 queue
- * @hw: main hardware object
- *
- * Tranceivers usually have either one transmit framebuffer or one framebuffer
- * for both transmitting and receiving. Hence, the core currently only handles
- * one frame at a time for each phy, which means we had to stop the queue to
- * avoid new skb to come during the transmission. The queue then needs to be
- * woken up after the operation.
- */
+ 
 static void ieee802154_wake_queue(struct ieee802154_hw *hw)
 {
 	struct ieee802154_local *local = hw_to_local(hw);
@@ -39,16 +24,7 @@ static void ieee802154_wake_queue(struct ieee802154_hw *hw)
 	rcu_read_unlock();
 }
 
-/**
- * ieee802154_stop_queue - stop ieee802154 queue
- * @hw: main hardware object
- *
- * Tranceivers usually have either one transmit framebuffer or one framebuffer
- * for both transmitting and receiving. Hence, the core currently only handles
- * one frame at a time for each phy, which means we need to tell upper layers to
- * stop giving us new skbs while we are busy with the transmitted one. The queue
- * must then be stopped before transmitting.
- */
+ 
 static void ieee802154_stop_queue(struct ieee802154_hw *hw)
 {
 	struct ieee802154_local *local = hw_to_local(hw);
@@ -118,10 +94,7 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
 	if (ifs_handling) {
 		u8 max_sifs_size;
 
-		/* If transceiver sets CRC on his own we need to use lifs
-		 * threshold len above 16 otherwise 18, because it's not
-		 * part of skb->len.
-		 */
+		 
 		if (hw->flags & IEEE802154_HW_TX_OMIT_CKSUM)
 			max_sifs_size = IEEE802154_MAX_SIFS_FRAME_SIZE -
 					IEEE802154_FCS_LEN;

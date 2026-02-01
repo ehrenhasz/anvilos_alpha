@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Axis Communications AB
- *
- * Driver for Texas Instruments TPS6287x PMIC.
- * Datasheet: https://www.ti.com/lit/ds/symlink/tps62873.pdf
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>

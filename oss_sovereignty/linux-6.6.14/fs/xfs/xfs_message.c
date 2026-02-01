@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011 Red Hat, Inc.  All Rights Reserved.
- */
+
+ 
 
 #include "xfs.h"
 #include "xfs_fs.h"
@@ -11,9 +9,7 @@
 #include "xfs_trans_resv.h"
 #include "xfs_mount.h"
 
-/*
- * XFS logging functions
- */
+ 
 static void
 __xfs_printk(
 	const char		*level,
@@ -121,7 +117,7 @@ xfs_buf_alert_ratelimited(
 	struct va_format	vaf;
 	va_list			args;
 
-	/* use the more aggressive per-target rate limit for buffers */
+	 
 	if (!___ratelimit(&bp->b_target->bt_ioerror_rl, rlmsg))
 		return;
 

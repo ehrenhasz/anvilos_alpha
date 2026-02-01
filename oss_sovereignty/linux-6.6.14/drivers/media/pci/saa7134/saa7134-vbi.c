@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * device driver for philips saa7134 based TV cards
- * video4linux video interface
- *
- * (c) 2001,02 Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]
- */
+
+ 
 
 #include "saa7134.h"
 #include "saa7134-reg.h"
@@ -15,7 +9,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 
-/* ------------------------------------------------------------------ */
+ 
 
 static unsigned int vbi_debug;
 module_param(vbi_debug, int, 0644);
@@ -30,7 +24,7 @@ MODULE_PARM_DESC(vbibufs,"number of vbi buffers, range 2-32");
 		printk(KERN_DEBUG pr_fmt("vbi: " fmt), ## arg); \
 	} while (0)
 
-/* ------------------------------------------------------------------ */
+ 
 
 #define VBI_LINE_COUNT     17
 #define VBI_LINE_LENGTH  2048
@@ -41,7 +35,7 @@ static void task_init(struct saa7134_dev *dev, struct saa7134_buf *buf,
 {
 	struct saa7134_tvnorm *norm = dev->tvnorm;
 
-	/* setup video scaler */
+	 
 	saa_writeb(SAA7134_VBI_H_START1(task), norm->h_start     &  0xff);
 	saa_writeb(SAA7134_VBI_H_START2(task), norm->h_start     >> 8);
 	saa_writeb(SAA7134_VBI_H_STOP1(task),  norm->h_stop      &  0xff);
@@ -64,7 +58,7 @@ static void task_init(struct saa7134_dev *dev, struct saa7134_buf *buf,
 	saa_andorb(SAA7134_DATA_PATH(task), 0xc0, 0x00);
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int buffer_activate(struct saa7134_dev *dev,
 			   struct saa7134_buf *buf,
@@ -81,7 +75,7 @@ static int buffer_activate(struct saa7134_dev *dev,
 	saa_writeb(SAA7134_OFMT_DATA_A, 0x06);
 	saa_writeb(SAA7134_OFMT_DATA_B, 0x06);
 
-	/* DMA: setup channel 2+3 (= VBI Task A+B) */
+	 
 	base    = saa7134_buffer_base(buf);
 	control = SAA7134_RS_CONTROL_BURST_16 |
 		SAA7134_RS_CONTROL_ME |
@@ -95,7 +89,7 @@ static int buffer_activate(struct saa7134_dev *dev,
 	saa_writel(SAA7134_RS_PITCH(3), dev->vbi_hlen);
 	saa_writel(SAA7134_RS_CONTROL(3), control);
 
-	/* start DMA */
+	 
 	saa7134_set_dmabits(dev);
 	mod_timer(&dmaq->timeout, jiffies + BUFFER_TIMEOUT);
 
@@ -167,7 +161,7 @@ const struct vb2_ops saa7134_vbi_qops = {
 	.stop_streaming = saa7134_vb2_stop_streaming,
 };
 
-/* ------------------------------------------------------------------ */
+ 
 
 int saa7134_vbi_init1(struct saa7134_dev *dev)
 {
@@ -184,7 +178,7 @@ int saa7134_vbi_init1(struct saa7134_dev *dev)
 
 int saa7134_vbi_fini(struct saa7134_dev *dev)
 {
-	/* nothing */
+	 
 	del_timer_sync(&dev->vbi_q.timeout);
 	return 0;
 }
@@ -193,7 +187,7 @@ void saa7134_irq_vbi_done(struct saa7134_dev *dev, unsigned long status)
 {
 	spin_lock(&dev->slock);
 	if (dev->vbi_q.curr) {
-		/* make sure we have seen both fields */
+		 
 		if ((status & 0x10) == 0x00) {
 			dev->vbi_q.curr->top_seen = 1;
 			goto done;

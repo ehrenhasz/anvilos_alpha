@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DRM_OF_H__
 #define __DRM_OF_H__
 
@@ -18,13 +18,7 @@ struct device_node;
 struct mipi_dsi_device_info;
 struct mipi_dsi_host;
 
-/**
- * enum drm_lvds_dual_link_pixels - Pixel order of an LVDS dual-link connection
- * @DRM_LVDS_DUAL_LINK_EVEN_ODD_PIXELS: Even pixels are expected to be generated
- *    from the first port, odd pixels from the second port
- * @DRM_LVDS_DUAL_LINK_ODD_EVEN_PIXELS: Odd pixels are expected to be generated
- *    from the first port, even pixels from the second port
- */
+ 
 enum drm_lvds_dual_link_pixels {
 	DRM_LVDS_DUAL_LINK_EVEN_ODD_PIXELS = 0,
 	DRM_LVDS_DUAL_LINK_ODD_EVEN_PIXELS = 1,
@@ -139,16 +133,9 @@ mipi_dsi_host *drm_of_get_dsi_bus(struct device *dev)
 {
 	return ERR_PTR(-EINVAL);
 }
-#endif /* CONFIG_OF && CONFIG_DRM_MIPI_DSI */
+#endif  
 
-/*
- * drm_of_panel_bridge_remove - remove panel bridge
- * @np: device tree node containing panel bridge output ports
- *
- * Remove the panel bridge of a given DT node's port and endpoint number
- *
- * Returns zero if successful, or one of the standard error codes if it fails.
- */
+ 
 static inline int drm_of_panel_bridge_remove(const struct device_node *np,
 					     int port, int endpoint)
 {
@@ -189,4 +176,4 @@ static inline int drm_of_encoder_active_port_id(struct device_node *node,
 	return ret ?: endpoint.port;
 }
 
-#endif /* __DRM_OF_H__ */
+#endif  

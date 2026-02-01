@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020 Linaro Ltd
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- */
+ 
+ 
 #ifndef ___DTPM_H__
 #define ___DTPM_H__
 

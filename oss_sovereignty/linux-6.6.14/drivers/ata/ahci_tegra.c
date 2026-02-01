@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/ata/ahci_tegra.c
- *
- * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author:
- *	Mikko Perttunen <mperttunen@nvidia.com>
- */
+
+ 
 
 #include <linux/ahci_platform.h>
 #include <linux/errno.h>
@@ -119,7 +112,7 @@
 #define T_SATA0_CHX_PHY_CTRL21_0			0x6f8
 #define T_SATA0_CHX_PHY_CTRL21_0_RX_EQ_CTRL_H_GEN2	0x1
 
-/* AUX Registers */
+ 
 #define SATA_AUX_MISC_CNTL_1_0				0x8
 #define SATA_AUX_MISC_CNTL_1_0_DEVSLP_OVERRIDE		BIT(17)
 #define SATA_AUX_MISC_CNTL_1_0_SDS_SUPPORT		BIT(13)
@@ -173,7 +166,7 @@ struct tegra_ahci_priv {
 	struct reset_control	   *sata_rst;
 	struct reset_control	   *sata_oob_rst;
 	struct reset_control	   *sata_cold_rst;
-	/* Needs special handling, cannot use ahci_platform */
+	 
 	struct clk		   *sata_clk;
 	struct regulator_bulk_data *supplies;
 	const struct tegra_ahci_soc *soc;
@@ -198,7 +191,7 @@ static int tegra124_ahci_init(struct ahci_host_priv *hpriv)
 	int ret;
 	u32 val;
 
-	/* Pad calibration */
+	 
 	ret = tegra_fuse_readl(FUSE_SATA_CALIB, &val);
 	if (ret)
 		return ret;
@@ -307,21 +300,18 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 		return ret;
 	}
 
-	/*
-	 * Program the following SATA IPFS registers to allow SW accesses to
-	 * SATA's MMIO register range.
-	 */
+	 
 	val = readl(tegra->sata_regs + SATA_FPCI_BAR5);
 	val &= ~(SATA_FPCI_BAR5_START_MASK | SATA_FPCI_BAR5_ACCESS_TYPE);
 	val |= SATA_FPCI_BAR5_START | SATA_FPCI_BAR5_ACCESS_TYPE;
 	writel(val, tegra->sata_regs + SATA_FPCI_BAR5);
 
-	/* Program the following SATA IPFS register to enable the SATA */
+	 
 	val = readl(tegra->sata_regs + SATA_CONFIGURATION_0);
 	val |= SATA_CONFIGURATION_0_EN_FPCI;
 	writel(val, tegra->sata_regs + SATA_CONFIGURATION_0);
 
-	/* Electrical settings for better link stability */
+	 
 	val = T_SATA0_CHX_PHY_CTRL17_0_RX_EQ_CTRL_L_GEN1;
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_CHX_PHY_CTRL17_0);
 	val = T_SATA0_CHX_PHY_CTRL18_0_RX_EQ_CTRL_L_GEN2;
@@ -331,7 +321,7 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 	val = T_SATA0_CHX_PHY_CTRL21_0_RX_EQ_CTRL_H_GEN2;
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_CHX_PHY_CTRL21_0);
 
-	/* For SQUELCH Filter & Gen3 drive getting detected as Gen1 drive */
+	 
 
 	val = readl(tegra->sata_regs + SCFG_OFFSET + T_SATA_CFG_PHY_0);
 	val |= T_SATA_CFG_PHY_0_MASK_SQUELCH;
@@ -347,9 +337,7 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 		T_SATA0_NVOOB_SQUELCH_FILTER_MODE);
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_NVOOB);
 
-	/*
-	 * Change CFG2NVOOB_2_COMWAKE_IDLE_CNT_LOW from 83.3 ns to 58.8ns
-	 */
+	 
 	val = readl(tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG2NVOOB_2);
 	val &= ~T_SATA0_CFG2NVOOB_2_COMWAKE_IDLE_CNT_LOW_MASK;
 	val |= T_SATA0_CFG2NVOOB_2_COMWAKE_IDLE_CNT_LOW;
@@ -358,10 +346,7 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 	if (tegra->soc->ops && tegra->soc->ops->init)
 		tegra->soc->ops->init(hpriv);
 
-	/*
-	 * Program the following SATA configuration registers to
-	 * initialize SATA
-	 */
+	 
 	val = readl(tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG_1);
 	val |= (T_SATA0_CFG_1_IO_SPACE | T_SATA0_CFG_1_MEMORY_SPACE |
 		T_SATA0_CFG_1_BUS_MASTER | T_SATA0_CFG_1_SERR);
@@ -369,7 +354,7 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 	val = T_SATA0_CFG_9_BASE_ADDRESS;
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG_9);
 
-	/* Program Class Code and Programming interface for SATA */
+	 
 	val = readl(tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG_SATA);
 	val |= T_SATA0_CFG_SATA_BACKDOOR_PROG_IF_EN;
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG_SATA);
@@ -385,7 +370,7 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 	val &= ~T_SATA0_CFG_SATA_BACKDOOR_PROG_IF_EN;
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG_SATA);
 
-	/* Enabling LPM capabilities through Backdoor Programming */
+	 
 	val = readl(tegra->sata_regs + SCFG_OFFSET + T_SATA0_AHCI_HBA_CAP_BKDR);
 	val |= (T_SATA0_AHCI_HBA_CAP_BKDR_PARTIAL_ST_CAP |
 		T_SATA0_AHCI_HBA_CAP_BKDR_SLUMBER_ST_CAP |
@@ -393,10 +378,7 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 		T_SATA0_AHCI_HBA_CAP_BKDR_SUPP_PM);
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_AHCI_HBA_CAP_BKDR);
 
-	/* SATA Second Level Clock Gating configuration
-	 * Enabling Gating of Tx/Rx clocks and driving Pad IDDQ and Lane
-	 * IDDQ Signals
-	 */
+	 
 	val = readl(tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG_35);
 	val &= ~T_SATA0_CFG_35_IDP_INDEX_MASK;
 	val |= T_SATA0_CFG_35_IDP_INDEX;
@@ -410,14 +392,14 @@ static int tegra_ahci_controller_init(struct ahci_host_priv *hpriv)
 		T_SATA0_CFG_PHY_1_PAD_PLL_IDDQ_EN);
 	writel(val, tegra->sata_regs + SCFG_OFFSET + T_SATA0_CFG_PHY_1);
 
-	/* Enabling IPFS Clock Gating */
+	 
 	val = readl(tegra->sata_regs + SATA_CONFIGURATION_0);
 	val &= ~SATA_CONFIGURATION_0_CLK_OVERRIDE;
 	writel(val, tegra->sata_regs + SATA_CONFIGURATION_0);
 
 	tegra_ahci_handle_quirks(hpriv);
 
-	/* Unmask SATA interrupts */
+	 
 
 	val = readl(tegra->sata_regs + SATA_INTR_MASK);
 	val |= SATA_INTR_MASK_IP_INT_MASK;
@@ -534,9 +516,7 @@ static int tegra_ahci_probe(struct platform_device *pdev)
 	if (IS_ERR(tegra->sata_regs))
 		return PTR_ERR(tegra->sata_regs);
 
-	/*
-	 * AUX registers is optional.
-	 */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
 	if (res) {
 		tegra->sata_aux_regs = devm_ioremap_resource(&pdev->dev, res);
@@ -613,7 +593,7 @@ static struct platform_driver tegra_ahci_driver = {
 		.name = DRV_NAME,
 		.of_match_table = tegra_ahci_of_match,
 	},
-	/* LP0 suspend support not implemented */
+	 
 };
 module_platform_driver(tegra_ahci_driver);
 

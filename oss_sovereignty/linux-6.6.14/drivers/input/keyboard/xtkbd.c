@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 1999-2001 Vojtech Pavlik
- */
 
-/*
- * XT keyboard driver for Linux
- */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>

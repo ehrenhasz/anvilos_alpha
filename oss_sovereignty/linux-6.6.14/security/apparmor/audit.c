@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor auditing functions
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+
+ 
 
 #include <linux/audit.h>
 #include <linux/socket.h>
@@ -73,22 +66,9 @@ static const char *const aa_class_names[] = {
 };
 
 
-/*
- * Currently AppArmor auditing is fed straight into the audit framework.
- *
- * TODO:
- * netlink interface for complain mode
- * user auditing, - send user auditing to netlink interface
- * system control of whether user audit messages go to system log
- */
+ 
 
-/**
- * audit_pre() - core AppArmor function.
- * @ab: audit buffer to fill (NOT NULL)
- * @va: audit structure containing data to audit (NOT NULL)
- *
- * Record common AppArmor audit data from @va
- */
+ 
 static void audit_pre(struct audit_buffer *ab, void *va)
 {
 	struct apparmor_audit_data *ad = aad_of_va(va);
@@ -139,12 +119,7 @@ static void audit_pre(struct audit_buffer *ab, void *va)
 	}
 }
 
-/**
- * aa_audit_msg - Log a message to the audit subsystem
- * @type: audit type for the message
- * @ad: audit event structure (NOT NULL)
- * @cb: optional callback fn for type specific fields (MAYBE NULL)
- */
+ 
 void aa_audit_msg(int type, struct apparmor_audit_data *ad,
 		  void (*cb) (struct audit_buffer *, void *))
 {
@@ -152,17 +127,7 @@ void aa_audit_msg(int type, struct apparmor_audit_data *ad,
 	common_lsm_audit(&ad->common, audit_pre, cb);
 }
 
-/**
- * aa_audit - Log a profile based audit event to the audit subsystem
- * @type: audit type for the message
- * @profile: profile to check against (NOT NULL)
- * @ad: audit event (NOT NULL)
- * @cb: optional callback fn for type specific fields (MAYBE NULL)
- *
- * Handle default message switching based off of audit mode flags
- *
- * Returns: error on failure
- */
+ 
 int aa_audit(int type, struct aa_profile *profile,
 	     struct apparmor_audit_data *ad,
 	     void (*cb) (struct audit_buffer *, void *))
@@ -235,7 +200,7 @@ int aa_audit_rule_init(u32 field, u32 op, char *rulestr, void **vrule)
 	if (!rule)
 		return -ENOMEM;
 
-	/* Currently rules are treated as coming from the root ns */
+	 
 	rule->label = aa_label_parse(&root_ns->unconfined->label, rulestr,
 				     GFP_KERNEL, true, false);
 	if (IS_ERR(rule->label)) {

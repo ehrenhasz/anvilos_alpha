@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OpenFirmware bindings for the MMC-over-SPI driver
- *
- * Copyright (c) MontaVista Software, Inc. 2008.
- *
- * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

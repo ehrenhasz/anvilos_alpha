@@ -1,24 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Uncore Frequency Control: Common code implementation
- * Copyright (c) 2022, Intel Corporation.
- * All rights reserved.
- *
- */
+
+ 
 #include <linux/cpu.h>
 #include <linux/module.h>
 #include "uncore-frequency-common.h"
 
-/* Mutex to control all mutual exclusions */
+ 
 static DEFINE_MUTEX(uncore_lock);
-/* Root of the all uncore sysfs kobjs */
+ 
 static struct kobject *uncore_root_kobj;
-/* uncore instance count */
+ 
 static int uncore_instance_count;
 
 static DEFINE_IDA(intel_uncore_ida);
 
-/* callbacks for actual HW read/write */
+ 
 static int (*uncore_read)(struct uncore_data *data, unsigned int *min, unsigned int *max);
 static int (*uncore_write)(struct uncore_data *data, unsigned int input, unsigned int min_max);
 static int (*uncore_read_freq)(struct uncore_data *data, unsigned int *freq);
@@ -222,7 +217,7 @@ int uncore_freq_add_entry(struct uncore_data *data, int cpu)
 
 	mutex_lock(&uncore_lock);
 	if (data->valid) {
-		/* control cpu changed */
+		 
 		data->control_cpu = cpu;
 		goto uncore_unlock;
 	}

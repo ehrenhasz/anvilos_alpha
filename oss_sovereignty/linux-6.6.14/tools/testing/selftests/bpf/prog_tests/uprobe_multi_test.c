@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <unistd.h>
 #include <test_progs.h>
@@ -59,7 +59,7 @@ static struct child *spawn_child(void)
 	int err;
 	int c;
 
-	/* pipe to notify child to execute the trigger functions */
+	 
 	if (pipe(child.go))
 		return NULL;
 
@@ -70,11 +70,11 @@ static struct child *spawn_child(void)
 		return NULL;
 	}
 
-	/* child */
+	 
 	if (child.pid == 0) {
 		close(child.go[1]);
 
-		/* wait for parent's kick */
+		 
 		err = read(child.go[0], &c, 1);
 		if (err != 1)
 			exit(err);
@@ -97,25 +97,18 @@ static void uprobe_multi_test_run(struct uprobe_multi *skel, struct child *child
 
 	skel->bss->user_ptr = test_data;
 
-	/*
-	 * Disable pid check in bpf program if we are pid filter test,
-	 * because the probe should be executed only by child->pid
-	 * passed at the probe attach.
-	 */
+	 
 	skel->bss->pid = child ? 0 : getpid();
 
 	if (child)
 		kick_child(child);
 
-	/* trigger all probes */
+	 
 	uprobe_multi_func_1();
 	uprobe_multi_func_2();
 	uprobe_multi_func_3();
 
-	/*
-	 * There are 2 entry and 2 exit probe called for each uprobe_multi_func_[123]
-	 * function and each slepable probe (6) increments uprobe_multi_sleep_result.
-	 */
+	 
 	ASSERT_EQ(skel->bss->uprobe_multi_func_1_result, 2, "uprobe_multi_func_1_result");
 	ASSERT_EQ(skel->bss->uprobe_multi_func_2_result, 2, "uprobe_multi_func_2_result");
 	ASSERT_EQ(skel->bss->uprobe_multi_func_3_result, 2, "uprobe_multi_func_3_result");
@@ -201,10 +194,10 @@ test_attach_api(const char *binary, const char *pattern, struct bpf_uprobe_multi
 {
 	struct child *child;
 
-	/* no pid filter */
+	 
 	__test_attach_api(binary, pattern, opts, NULL);
 
-	/* pid filter */
+	 
 	child = spawn_child();
 	if (!ASSERT_OK_PTR(child, "spawn_child"))
 		return;
@@ -315,10 +308,10 @@ void test_link_api(void)
 {
 	struct child *child;
 
-	/* no pid filter */
+	 
 	__test_link_api(NULL);
 
-	/* pid filter */
+	 
 	child = spawn_child();
 	if (!ASSERT_OK_PTR(child, "spawn_child"))
 		return;

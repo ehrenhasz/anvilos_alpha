@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Analog Devices 1889 audio driver
- *
- * This is a driver for the AD1889 PCI audio chipset found
- * on the HP PA-RISC [BCJ]-xxx0 workstations.
- *
- * Copyright (C) 2004-2005, Kyle McMartin <kyle@parisc-linux.org>
- * Copyright (C) 2005, Thibaut Varene <varenet@parisc-linux.org>
- *   Based on the OSS AD1889 driver by Randolph Chung <tausq@debian.org>
- *
- * TODO:
- *	Do we need to take care of CCS register?
- *	Maybe we could use finer grained locking (separate locks for pb/cap)?
- * Wishlist:
- *	Control Interface (mixer) support
- *	Better AC97 support (VSR...)?
- *	PM support
- *	MIDI support
- *	Game Port support
- *	SG DMA support (this will need *a lot* of work)
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/pci.h>
@@ -63,11 +44,11 @@ MODULE_PARM_DESC(ac97_quirk, "AC'97 workaround for strange hardware.");
 #define DEVNAME "ad1889"
 #define PFX	DEVNAME ": "
 
-/* keep track of some hw registers */
+ 
 struct ad1889_register_state {
-	u16 reg;	/* reg setup */
-	u32 addr;	/* dma base address */
-	unsigned long size;	/* DMA buffer size */
+	u16 reg;	 
+	u32 addr;	 
+	unsigned long size;	 
 };
 
 struct snd_ad1889 {
@@ -86,7 +67,7 @@ struct snd_ad1889 {
 	struct snd_pcm_substream *psubs;
 	struct snd_pcm_substream *csubs;
 
-	/* playback register state */
+	 
 	struct ad1889_register_state wave;
 	struct ad1889_register_state ramc;
 
@@ -184,28 +165,28 @@ ad1889_channel_reset(struct snd_ad1889 *chip, unsigned int channel)
 	u16 reg;
 	
 	if (channel & AD_CHAN_WAV) {
-		/* Disable wave channel */
+		 
 		reg = ad1889_readw(chip, AD_DS_WSMC) & ~AD_DS_WSMC_WAEN;
 		ad1889_writew(chip, AD_DS_WSMC, reg);
 		chip->wave.reg = reg;
 		
-		/* disable IRQs */
+		 
 		reg = ad1889_readw(chip, AD_DMA_WAV);
 		reg &= AD_DMA_IM_DIS;
 		reg &= ~AD_DMA_LOOP;
 		ad1889_writew(chip, AD_DMA_WAV, reg);
 
-		/* clear IRQ and address counters and pointers */
+		 
 		ad1889_load_wave_buffer_address(chip, 0x0);
 		ad1889_load_wave_buffer_count(chip, 0x0);
 		ad1889_load_wave_interrupt_count(chip, 0x0);
 
-		/* flush */
+		 
 		ad1889_readw(chip, AD_DMA_WAV);
 	}
 	
 	if (channel & AD_CHAN_ADC) {
-		/* Disable ADC channel */
+		 
 		reg = ad1889_readw(chip, AD_DS_RAMC) & ~AD_DS_RAMC_ADEN;
 		ad1889_writew(chip, AD_DS_RAMC, reg);
 		chip->ramc.reg = reg;
@@ -219,7 +200,7 @@ ad1889_channel_reset(struct snd_ad1889 *chip, unsigned int channel)
 		ad1889_load_adc_buffer_count(chip, 0x0);
 		ad1889_load_adc_interrupt_count(chip, 0x0);
 
-		/* flush */
+		 
 		ad1889_readw(chip, AD_DMA_ADC);
 	}
 }
@@ -241,7 +222,7 @@ snd_ad1889_ac97_write(struct snd_ac97 *ac97, unsigned short reg, unsigned short 
 static int
 snd_ad1889_ac97_ready(struct snd_ad1889 *chip)
 {
-	int retry = 400; /* average needs 352 msec */
+	int retry = 400;  
 	
 	while (!(ad1889_readw(chip, AD_AC97_ACIC) & AD_AC97_ACIC_ACRDY) 
 			&& --retry)
@@ -261,7 +242,7 @@ static const struct snd_pcm_hardware snd_ad1889_playback_hw = {
 		SNDRV_PCM_INFO_MMAP_VALID | SNDRV_PCM_INFO_BLOCK_TRANSFER,
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	.rates = SNDRV_PCM_RATE_CONTINUOUS | SNDRV_PCM_RATE_8000_48000,
-	.rate_min = 8000,	/* docs say 7000, but we're lazy */
+	.rate_min = 8000,	 
 	.rate_max = 48000,
 	.channels_min = 1,
 	.channels_max = 2,
@@ -270,7 +251,7 @@ static const struct snd_pcm_hardware snd_ad1889_playback_hw = {
 	.period_bytes_max = PERIOD_BYTES_MAX,
 	.periods_min = PERIODS_MIN,
 	.periods_max = PERIODS_MAX,
-	/*.fifo_size = 0,*/
+	 
 };
 
 static const struct snd_pcm_hardware snd_ad1889_capture_hw = {
@@ -278,7 +259,7 @@ static const struct snd_pcm_hardware snd_ad1889_capture_hw = {
 		SNDRV_PCM_INFO_MMAP_VALID | SNDRV_PCM_INFO_BLOCK_TRANSFER,
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	.rates = SNDRV_PCM_RATE_48000,
-	.rate_min = 48000,	/* docs say we could to VSR, but we're lazy */
+	.rate_min = 48000,	 
 	.rate_max = 48000,
 	.channels_min = 1,
 	.channels_max = 2,
@@ -287,7 +268,7 @@ static const struct snd_pcm_hardware snd_ad1889_capture_hw = {
 	.period_bytes_max = PERIOD_BYTES_MAX,
 	.periods_min = PERIODS_MIN,
 	.periods_max = PERIODS_MAX,
-	/*.fifo_size = 0,*/
+	 
 };
 
 static int
@@ -343,7 +324,7 @@ snd_ad1889_playback_prepare(struct snd_pcm_substream *ss)
 
 	reg = ad1889_readw(chip, AD_DS_WSMC);
 	
-	/* Mask out 16-bit / Stereo */
+	 
 	reg &= ~(AD_DS_WSMC_WA16 | AD_DS_WSMC_WAST);
 
 	if (snd_pcm_format_width(rt->format) == 16)
@@ -352,7 +333,7 @@ snd_ad1889_playback_prepare(struct snd_pcm_substream *ss)
 	if (rt->channels > 1)
 		reg |= AD_DS_WSMC_WAST;
 
-	/* let's make sure we don't clobber ourselves */
+	 
 	spin_lock_irq(&chip->lock);
 	
 	chip->wave.size = size;
@@ -361,15 +342,15 @@ snd_ad1889_playback_prepare(struct snd_pcm_substream *ss)
 
 	ad1889_writew(chip, AD_DS_WSMC, chip->wave.reg);
 	
-	/* Set sample rates on the codec */
+	 
 	ad1889_writew(chip, AD_DS_WAS, rt->rate);
 
-	/* Set up DMA */
+	 
 	ad1889_load_wave_buffer_address(chip, chip->wave.addr);
 	ad1889_load_wave_buffer_count(chip, size);
 	ad1889_load_wave_interrupt_count(chip, count);
 
-	/* writes flush */
+	 
 	ad1889_readw(chip, AD_DS_WSMC);
 	
 	spin_unlock_irq(&chip->lock);
@@ -393,7 +374,7 @@ snd_ad1889_capture_prepare(struct snd_pcm_substream *ss)
 	
 	reg = ad1889_readw(chip, AD_DS_RAMC);
 
-	/* Mask out 16-bit / Stereo */
+	 
 	reg &= ~(AD_DS_RAMC_AD16 | AD_DS_RAMC_ADST);
 
 	if (snd_pcm_format_width(rt->format) == 16)
@@ -402,7 +383,7 @@ snd_ad1889_capture_prepare(struct snd_pcm_substream *ss)
 	if (rt->channels > 1)
 		reg |= AD_DS_RAMC_ADST;
 
-	/* let's make sure we don't clobber ourselves */
+	 
 	spin_lock_irq(&chip->lock);
 	
 	chip->ramc.size = size;
@@ -411,12 +392,12 @@ snd_ad1889_capture_prepare(struct snd_pcm_substream *ss)
 
 	ad1889_writew(chip, AD_DS_RAMC, chip->ramc.reg);
 
-	/* Set up DMA */
+	 
 	ad1889_load_adc_buffer_address(chip, chip->ramc.addr);
 	ad1889_load_adc_buffer_count(chip, size);
 	ad1889_load_adc_interrupt_count(chip, count);
 
-	/* writes flush */
+	 
 	ad1889_readw(chip, AD_DS_RAMC);
 	
 	spin_unlock_irq(&chip->lock);
@@ -427,10 +408,7 @@ snd_ad1889_capture_prepare(struct snd_pcm_substream *ss)
 	return 0;
 }
 
-/* this is called in atomic context with IRQ disabled.
-   Must be as fast as possible and not sleep.
-   DMA should be *triggered* by this call.
-   The WSMC "WAEN" bit triggers DMA Wave On/Off */
+ 
 static int
 snd_ad1889_playback_trigger(struct snd_pcm_substream *ss, int cmd)
 {
@@ -441,10 +419,10 @@ snd_ad1889_playback_trigger(struct snd_pcm_substream *ss, int cmd)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* enable DMA loop & interrupts */
+		 
 		ad1889_writew(chip, AD_DMA_WAV, AD_DMA_LOOP | AD_DMA_IM_CNT);
 		wsmc |= AD_DS_WSMC_WAEN;
-		/* 1 to clear CHSS bit */
+		 
 		ad1889_writel(chip, AD_DMA_CHSS, AD_DMA_CHSS_WAVS);
 		ad1889_unmute(chip);
 		break;
@@ -459,19 +437,16 @@ snd_ad1889_playback_trigger(struct snd_pcm_substream *ss, int cmd)
 	
 	chip->wave.reg = wsmc;
 	ad1889_writew(chip, AD_DS_WSMC, wsmc);	
-	ad1889_readw(chip, AD_DS_WSMC);	/* flush */
+	ad1889_readw(chip, AD_DS_WSMC);	 
 
-	/* reset the chip when STOP - will disable IRQs */
+	 
 	if (cmd == SNDRV_PCM_TRIGGER_STOP)
 		ad1889_channel_reset(chip, AD_CHAN_WAV);
 
 	return 0;
 }
 
-/* this is called in atomic context with IRQ disabled.
-   Must be as fast as possible and not sleep.
-   DMA should be *triggered* by this call.
-   The RAMC "ADEN" bit triggers DMA ADC On/Off */
+ 
 static int
 snd_ad1889_capture_trigger(struct snd_pcm_substream *ss, int cmd)
 {
@@ -482,10 +457,10 @@ snd_ad1889_capture_trigger(struct snd_pcm_substream *ss, int cmd)
 	
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* enable DMA loop & interrupts */
+		 
 		ad1889_writew(chip, AD_DMA_ADC, AD_DMA_LOOP | AD_DMA_IM_CNT);
 		ramc |= AD_DS_RAMC_ADEN;
-		/* 1 to clear CHSS bit */
+		 
 		ad1889_writel(chip, AD_DMA_CHSS, AD_DMA_CHSS_ADCS);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
@@ -497,16 +472,16 @@ snd_ad1889_capture_trigger(struct snd_pcm_substream *ss, int cmd)
 	
 	chip->ramc.reg = ramc;
 	ad1889_writew(chip, AD_DS_RAMC, ramc);	
-	ad1889_readw(chip, AD_DS_RAMC);	/* flush */
+	ad1889_readw(chip, AD_DS_RAMC);	 
 	
-	/* reset the chip when STOP - will disable IRQs */
+	 
 	if (cmd == SNDRV_PCM_TRIGGER_STOP)
 		ad1889_channel_reset(chip, AD_CHAN_ADC);
 		
 	return 0;
 }
 
-/* Called in atomic context with IRQ disabled */
+ 
 static snd_pcm_uframes_t
 snd_ad1889_playback_pointer(struct snd_pcm_substream *ss)
 {
@@ -525,7 +500,7 @@ snd_ad1889_playback_pointer(struct snd_pcm_substream *ss)
 	return bytes_to_frames(ss->runtime, ptr);
 }
 
-/* Called in atomic context with IRQ disabled */
+ 
 static snd_pcm_uframes_t
 snd_ad1889_capture_pointer(struct snd_pcm_substream *ss)
 {
@@ -568,7 +543,7 @@ snd_ad1889_interrupt(int irq, void *dev_id)
 
 	st = ad1889_readl(chip, AD_DMA_DISR);
 
-	/* clear ISR */
+	 
 	ad1889_writel(chip, AD_DMA_DISR, st);
 
 	st &= AD_INTR_MASK;
@@ -632,7 +607,7 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	snd_iprintf(buffer, "Wave Quality: %d-bit linear\n",
 			(reg & AD_DS_WSMC_WA16) ? 16 : 8);
 	
-	/* WARQ is at offset 12 */
+	 
 	tmp = (reg & AD_DS_WSMC_WARQ) ?
 		((((reg & AD_DS_WSMC_WARQ) >> 12) & 0x01) ? 12 : 18) : 4;
 	tmp /= (reg & AD_DS_WSMC_WAST) ? 2 : 1;
@@ -644,7 +619,7 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	snd_iprintf(buffer, "Synthesis output: %s\n",
 			reg & AD_DS_WSMC_SYEN ? "enabled" : "disabled");
 	
-	/* SYRQ is at offset 4 */
+	 
 	tmp = (reg & AD_DS_WSMC_SYRQ) ?
 		((((reg & AD_DS_WSMC_SYRQ) >> 4) & 0x01) ? 12 : 18) : 4;
 	tmp /= (reg & AD_DS_WSMC_WAST) ? 2 : 1;
@@ -660,7 +635,7 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	snd_iprintf(buffer, "ADC Quality: %d-bit linear\n",
 			(reg & AD_DS_RAMC_AD16) ? 16 : 8);
 	
-	/* ACRQ is at offset 4 */
+	 
 	tmp = (reg & AD_DS_RAMC_ACRQ) ?
 		((((reg & AD_DS_RAMC_ACRQ) >> 4) & 0x01) ? 12 : 18) : 4;
 	tmp /= (reg & AD_DS_RAMC_ADST) ? 2 : 1;
@@ -671,7 +646,7 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	snd_iprintf(buffer, "Resampler input: %s\n",
 			reg & AD_DS_RAMC_REEN ? "enabled" : "disabled");
 			
-	/* RERQ is at offset 12 */
+	 
 	tmp = (reg & AD_DS_RAMC_RERQ) ?
 		((((reg & AD_DS_RAMC_RERQ) >> 12) & 0x01) ? 12 : 18) : 4;
 	tmp /= (reg & AD_DS_RAMC_ADST) ? 2 : 1;
@@ -680,9 +655,7 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 			(reg & AD_DS_WSMC_WAST) ? "stereo" : "mono");
 				
 	
-	/* doc says LSB represents -1.5dB, but the max value (-94.5dB)
-	suggests that LSB is -3dB, which is more coherent with the logarithmic
-	nature of the dB scale */
+	 
 	reg = ad1889_readw(chip, AD_DS_WADA);
 	snd_iprintf(buffer, "Left: %s, -%d dB\n",
 			(reg & AD_DS_WADA_LWAM) ? "mute" : "unmute",
@@ -707,13 +680,13 @@ snd_ad1889_proc_init(struct snd_ad1889 *chip)
 
 static const struct ac97_quirk ac97_quirks[] = {
 	{
-		.subvendor = 0x11d4,	/* AD */
-		.subdevice = 0x1889,	/* AD1889 */
+		.subvendor = 0x11d4,	 
+		.subdevice = 0x1889,	 
 		.codec_id = AC97_ID_AD1819,
 		.name = "AD1889",
 		.type = AC97_TUNE_HP_ONLY
 	},
-	{ } /* terminator */
+	{ }  
 };
 
 static void
@@ -722,21 +695,21 @@ snd_ad1889_ac97_xinit(struct snd_ad1889 *chip)
 	u16 reg;
 
 	reg = ad1889_readw(chip, AD_AC97_ACIC);
-	reg |= AD_AC97_ACIC_ACRD;		/* Reset Disable */
+	reg |= AD_AC97_ACIC_ACRD;		 
 	ad1889_writew(chip, AD_AC97_ACIC, reg);
-	ad1889_readw(chip, AD_AC97_ACIC);	/* flush posted write */
+	ad1889_readw(chip, AD_AC97_ACIC);	 
 	udelay(10);
-	/* Interface Enable */
+	 
 	reg |= AD_AC97_ACIC_ACIE;
 	ad1889_writew(chip, AD_AC97_ACIC, reg);
 	
 	snd_ad1889_ac97_ready(chip);
 
-	/* Audio Stream Output | Variable Sample Rate Mode */
+	 
 	reg = ad1889_readw(chip, AD_AC97_ACIC);
 	reg |= AD_AC97_ACIC_ASOE | AD_AC97_ACIC_VSRM;
 	ad1889_writew(chip, AD_AC97_ACIC, reg);
-	ad1889_readw(chip, AD_AC97_ACIC); /* flush posted write */
+	ad1889_readw(chip, AD_AC97_ACIC);  
 
 }
 
@@ -750,7 +723,7 @@ snd_ad1889_ac97_init(struct snd_ad1889 *chip, const char *quirk_override)
 		.read = snd_ad1889_ac97_read,
 	};
 
-	/* doing that here, it works. */
+	 
 	snd_ad1889_ac97_xinit(chip);
 
 	err = snd_ac97_bus(chip->card, 0, &ops, chip, &chip->ac97_bus);
@@ -779,12 +752,12 @@ snd_ad1889_free(struct snd_card *card)
 
 	ad1889_mute(chip);
 
-	/* Turn off interrupt on count and zero DMA registers */
+	 
 	ad1889_channel_reset(chip, AD_CHAN_WAV | AD_CHAN_ADC);
 
-	/* clear DISR. If we don't, we'd better jump off the Eiffel Tower */
+	 
 	ad1889_writel(chip, AD_DMA_DISR, AD_DMA_DISR_PTAI | AD_DMA_DISR_PMAI);
-	ad1889_readl(chip, AD_DMA_DISR);	/* flush, dammit! */
+	ad1889_readl(chip, AD_DMA_DISR);	 
 
 	spin_unlock_irq(&chip->lock);
 }
@@ -799,7 +772,7 @@ snd_ad1889_create(struct snd_card *card, struct pci_dev *pci)
 	if (err < 0)
 		return err;
 
-	/* check PCI availability (32bit DMA) */
+	 
 	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(32))) {
 		dev_err(card->dev, "error setting 32-bit DMA mask.\n");
 		return -ENXIO;
@@ -809,7 +782,7 @@ snd_ad1889_create(struct snd_card *card, struct pci_dev *pci)
 	chip->pci = pci;
 	chip->irq = -1;
 
-	/* (1) PCI resource allocation */
+	 
 	err = pcim_iomap_regions(pci, 1 << 0, card->driver);
 	if (err < 0)
 		return err;
@@ -819,7 +792,7 @@ snd_ad1889_create(struct snd_card *card, struct pci_dev *pci)
 	
 	pci_set_master(pci);
 
-	spin_lock_init(&chip->lock);	/* only now can we call ad1889_free */
+	spin_lock_init(&chip->lock);	 
 
 	if (devm_request_irq(&pci->dev, pci->irq, snd_ad1889_interrupt,
 			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
@@ -831,13 +804,13 @@ snd_ad1889_create(struct snd_card *card, struct pci_dev *pci)
 	card->sync_irq = chip->irq;
 	card->private_free = snd_ad1889_free;
 
-	/* (2) initialization of the chip hardware */
-	ad1889_writew(chip, AD_DS_CCS, AD_DS_CCS_CLKEN); /* turn on clock */
-	ad1889_readw(chip, AD_DS_CCS);	/* flush posted write */
+	 
+	ad1889_writew(chip, AD_DS_CCS, AD_DS_CCS_CLKEN);  
+	ad1889_readw(chip, AD_DS_CCS);	 
 
 	usleep_range(10000, 11000);
 
-	/* enable Master and Target abort interrupts */
+	 
 	ad1889_writel(chip, AD_DMA_DISR, AD_DMA_DISR_PMAE | AD_DMA_DISR_PTAE);
 
 	return 0;
@@ -852,7 +825,7 @@ __snd_ad1889_probe(struct pci_dev *pci,
 	struct snd_card *card;
 	struct snd_ad1889 *chip;
 
-	/* (1) */
+	 
 	if (devno >= SNDRV_CARDS)
 		return -ENODEV;
 	if (!enable[devno]) {
@@ -860,7 +833,7 @@ __snd_ad1889_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
-	/* (2) */
+	 
 	err = snd_devm_card_new(&pci->dev, index[devno], id[devno], THIS_MODULE,
 				sizeof(*chip), &card);
 	if (err < 0)
@@ -870,17 +843,17 @@ __snd_ad1889_probe(struct pci_dev *pci,
 	strcpy(card->driver, "AD1889");
 	strcpy(card->shortname, "Analog Devices AD1889");
 
-	/* (3) */
+	 
 	err = snd_ad1889_create(card, pci);
 	if (err < 0)
 		return err;
 
-	/* (4) */
+	 
 	sprintf(card->longname, "%s at 0x%lx irq %i",
 		card->shortname, chip->bar, chip->irq);
 
-	/* (5) */
-	/* register AC97 mixer */
+	 
+	 
 	err = snd_ad1889_ac97_init(chip, ac97_quirk[devno]);
 	if (err < 0)
 		return err;
@@ -889,15 +862,15 @@ __snd_ad1889_probe(struct pci_dev *pci,
 	if (err < 0)
 		return err;
 
-	/* register proc interface */
+	 
 	snd_ad1889_proc_init(chip);
 
-	/* (6) */
+	 
 	err = snd_card_register(card);
 	if (err < 0)
 		return err;
 
-	/* (7) */
+	 
 	pci_set_drvdata(pci, card);
 
 	devno++;

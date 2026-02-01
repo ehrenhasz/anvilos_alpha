@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/host1x.h>
 #include <linux/module.h>
@@ -17,7 +15,7 @@ static void tegra_v4l2_dev_release(struct v4l2_device *v4l2_dev)
 
 	vid = container_of(v4l2_dev, struct tegra_video_device, v4l2_dev);
 
-	/* cleanup channels here as all video device nodes are released */
+	 
 	tegra_channels_cleanup(vid->vi);
 
 	v4l2_device_unregister(v4l2_dev);
@@ -79,10 +77,7 @@ static int host1x_video_probe(struct host1x_device *dev)
 		goto unregister_v4l2;
 
 	if (IS_ENABLED(CONFIG_VIDEO_TEGRA_TPG)) {
-		/*
-		 * Both vi and csi channels are available now.
-		 * Register v4l2 nodes and create media links for TPG.
-		 */
+		 
 		ret = tegra_v4l2_nodes_setup_tpg(vid);
 		if (ret < 0) {
 			dev_err(&dev->dev,
@@ -95,7 +90,7 @@ static int host1x_video_probe(struct host1x_device *dev)
 
 device_exit:
 	host1x_device_exit(dev);
-	/* vi exit ops does not clean channels, so clean them here */
+	 
 	tegra_channels_cleanup(vid->vi);
 unregister_v4l2:
 	v4l2_device_unregister(&vid->v4l2_dev);
@@ -116,7 +111,7 @@ static int host1x_video_remove(struct host1x_device *dev)
 
 	host1x_device_exit(dev);
 
-	/* This calls v4l2_dev release callback on last reference */
+	 
 	v4l2_device_put(&vid->v4l2_dev);
 
 	return 0;

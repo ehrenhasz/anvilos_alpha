@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
- /*
-  * iio/adc/max1363.c
-  * Copyright (C) 2008-2010 Jonathan Cameron
-  *
-  * based on linux/drivers/i2c/chips/max123x
-  * Copyright (C) 2002-2004 Stefan Eletzhofer
-  *
-  * based on linux/drivers/acron/char/pcf8583.c
-  * Copyright (C) 2000 Russell King
-  *
-  * Driver for max1363 and similar chips.
-  */
+
+  
 
 #include <linux/interrupt.h>
 #include <linux/device.h>
@@ -35,12 +24,10 @@
 
 #define MAX1363_SETUP_BYTE(a) ((a) | 0x80)
 
-/* There is a fair bit more defined here than currently
- * used, but the intention is to support everything these
- * chips do in the long run */
+ 
 
-/* see data sheets */
-/* max1363 and max1236, max1237, max1238, max1239 */
+ 
+ 
 #define MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_VDD	0x00
 #define MAX1363_SETUP_AIN3_IS_REF_EXT_TO_REF	0x20
 #define MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_INT	0x40
@@ -48,26 +35,22 @@
 #define MAX1363_SETUP_POWER_UP_INT_REF		0x10
 #define MAX1363_SETUP_POWER_DOWN_INT_REF	0x00
 
-/* think about including max11600 etc - more settings */
+ 
 #define MAX1363_SETUP_EXT_CLOCK			0x08
 #define MAX1363_SETUP_INT_CLOCK			0x00
 #define MAX1363_SETUP_UNIPOLAR			0x00
 #define MAX1363_SETUP_BIPOLAR			0x04
 #define MAX1363_SETUP_RESET			0x00
 #define MAX1363_SETUP_NORESET			0x02
-/* max1363 only - though don't care on others.
- * For now monitor modes are not implemented as the relevant
- * line is not connected on my test board.
- * The definitions are here as I intend to add this soon.
- */
+ 
 #define MAX1363_SETUP_MONITOR_SETUP		0x01
 
-/* Specific to the max1363 */
+ 
 #define MAX1363_MON_RESET_CHAN(a) (1 << ((a) + 4))
 #define MAX1363_MON_INT_ENABLE			0x01
 
-/* defined for readability reasons */
-/* All chips */
+ 
+ 
 #define MAX1363_CONFIG_BYTE(a) ((a))
 
 #define MAX1363_CONFIG_SE			0x01
@@ -76,59 +59,45 @@
 #define MAX1363_CONFIG_SCAN_SINGLE_8		0x20
 #define MAX1363_CONFIG_SCAN_MONITOR_MODE	0x40
 #define MAX1363_CONFIG_SCAN_SINGLE_1		0x60
-/* max123{6-9} only */
+ 
 #define MAX1236_SCAN_MID_TO_CHANNEL		0x40
 
-/* max1363 only - merely part of channel selects or don't care for others */
+ 
 #define MAX1363_CONFIG_EN_MON_MODE_READ 0x18
 
 #define MAX1363_CHANNEL_SEL(a) ((a) << 1)
 
-/* max1363 strictly 0x06 - but doesn't matter */
+ 
 #define MAX1363_CHANNEL_SEL_MASK		0x1E
 #define MAX1363_SCAN_MASK			0x60
 #define MAX1363_SE_DE_MASK			0x01
 
 #define MAX1363_MAX_CHANNELS 25
-/**
- * struct max1363_mode - scan mode information
- * @conf:	The corresponding value of the configuration register
- * @modemask:	Bit mask corresponding to channels enabled in this mode
- */
+ 
 struct max1363_mode {
 	int8_t		conf;
 	DECLARE_BITMAP(modemask, MAX1363_MAX_CHANNELS);
 };
 
-/* This must be maintained along side the max1363_mode_table in max1363_core */
+ 
 enum max1363_modes {
-	/* Single read of a single channel */
+	 
 	_s0, _s1, _s2, _s3, _s4, _s5, _s6, _s7, _s8, _s9, _s10, _s11,
-	/* Differential single read */
+	 
 	d0m1, d2m3, d4m5, d6m7, d8m9, d10m11,
 	d1m0, d3m2, d5m4, d7m6, d9m8, d11m10,
-	/* Scan to channel and mid to channel where overlapping */
+	 
 	s0to1, s0to2, s2to3, s0to3, s0to4, s0to5, s0to6,
 	s6to7, s0to7, s6to8, s0to8, s6to9,
 	s0to9, s6to10, s0to10, s6to11, s0to11,
-	/* Differential scan to channel and mid to channel where overlapping */
+	 
 	d0m1to2m3, d0m1to4m5, d0m1to6m7, d6m7to8m9,
 	d0m1to8m9, d6m7to10m11, d0m1to10m11, d1m0to3m2,
 	d1m0to5m4, d1m0to7m6, d7m6to9m8, d1m0to9m8,
 	d7m6to11m10, d1m0to11m10,
 };
 
-/**
- * struct max1363_chip_info - chip specifc information
- * @info:		iio core function callbacks structure
- * @channels:		channel specification
- * @num_channels:       number of channels
- * @mode_list:		array of available scan modes
- * @default_mode:	the scan mode in which the chip starts up
- * @int_vref_mv:	the internal reference voltage
- * @num_modes:		number of modes
- * @bits:		accuracy of the adc in bits
- */
+ 
 struct max1363_chip_info {
 	const struct iio_info		*info;
 	const struct iio_chan_spec	*channels;
@@ -140,26 +109,7 @@ struct max1363_chip_info {
 	u8				bits;
 };
 
-/**
- * struct max1363_state - driver instance specific data
- * @client:		i2c_client
- * @setupbyte:		cache of current device setup byte
- * @configbyte:		cache of current device config byte
- * @chip_info:		chip model specific constants, available modes, etc.
- * @current_mode:	the scan mode of this chip
- * @requestedmask:	a valid requested set of channels
- * @lock:		lock to ensure state is consistent
- * @monitor_on:		whether monitor mode is enabled
- * @monitor_speed:	parameter corresponding to device monitor speed setting
- * @mask_high:		bitmask for enabled high thresholds
- * @mask_low:		bitmask for enabled low thresholds
- * @thresh_high:	high threshold values
- * @thresh_low:		low threshold values
- * @vref:		Reference voltage regulator
- * @vref_uv:		Actual (external or internal) reference voltage
- * @send:		function used to send data to the chip
- * @recv:		function used to receive data from the chip
- */
+ 
 struct max1363_state {
 	struct i2c_client		*client;
 	u8				setupbyte;
@@ -169,13 +119,12 @@ struct max1363_state {
 	u32				requestedmask;
 	struct mutex			lock;
 
-	/* Using monitor modes and buffer at the same time is
-	   currently not supported */
+	 
 	bool				monitor_on;
 	unsigned int			monitor_speed:3;
 	u8				mask_high;
 	u8				mask_low;
-	/* 4x unipolar first then the fours bipolar ones */
+	 
 	s16				thresh_high[8];
 	s16				thresh_low[8];
 	struct regulator		*vref;
@@ -200,7 +149,7 @@ struct max1363_state {
 			.modemask[0] = _mask,				\
 			}
 
-/* note not available for max1363 hence naming */
+ 
 #define MAX1236_MODE_SCAN_MID_TO_CHANNEL(_mid, _num, _mask) {		\
 		.conf = MAX1363_CHANNEL_SEL(_num)			\
 			| MAX1236_SCAN_MID_TO_CHANNEL			\
@@ -215,7 +164,7 @@ struct max1363_state {
 			.modemask[0] = _mask				\
 			}
 
-/* Can't think how to automate naming so specify for now */
+ 
 #define MAX1363_MODE_DIFF_SCAN_TO_CHANNEL(_num, _numvals, _mask) {	\
 		.conf = MAX1363_CHANNEL_SEL(_num)			\
 			| MAX1363_CONFIG_SCAN_TO_CS			\
@@ -223,7 +172,7 @@ struct max1363_state {
 			.modemask[0] = _mask				\
 			}
 
-/* note only available for max1363 hence naming */
+ 
 #define MAX1236_MODE_DIFF_SCAN_MID_TO_CHANNEL(_num, _numvals, _mask) {	\
 		.conf = MAX1363_CHANNEL_SEL(_num)			\
 			| MAX1236_SCAN_MID_TO_CHANNEL			\
@@ -232,7 +181,7 @@ struct max1363_state {
 }
 
 static const struct max1363_mode max1363_mode_table[] = {
-	/* All of the single channel options first */
+	 
 	MAX1363_MODE_SINGLE(0, 1 << 0),
 	MAX1363_MODE_SINGLE(1, 1 << 1),
 	MAX1363_MODE_SINGLE(2, 1 << 2),
@@ -259,7 +208,7 @@ static const struct max1363_mode max1363_mode_table[] = {
 	MAX1363_MODE_DIFF_SINGLE(9, 8, 1 << 22),
 	MAX1363_MODE_DIFF_SINGLE(11, 10, 1 << 23),
 
-	/* The multichannel scans next */
+	 
 	MAX1363_MODE_SCAN_TO_CHANNEL(1, 0x003),
 	MAX1363_MODE_SCAN_TO_CHANNEL(2, 0x007),
 	MAX1236_MODE_SCAN_MID_TO_CHANNEL(2, 3, 0x00C),
@@ -368,28 +317,22 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
 		return ret;
 	mutex_lock(&st->lock);
 
-	/*
-	 * If monitor mode is enabled, the method for reading a single
-	 * channel will have to be rather different and has not yet
-	 * been implemented.
-	 *
-	 * Also, cannot read directly if buffered capture enabled.
-	 */
+	 
 	if (st->monitor_on) {
 		ret = -EBUSY;
 		goto error_ret;
 	}
 
-	/* Check to see if current scan mode is correct */
+	 
 	if (st->current_mode != &max1363_mode_table[chan->address]) {
-		/* Update scan mode if needed */
+		 
 		st->current_mode = &max1363_mode_table[chan->address];
 		ret = max1363_set_scan_mode(st);
 		if (ret < 0)
 			goto error_ret;
 	}
 	if (st->chip_info->bits != 8) {
-		/* Get reading */
+		 
 		data = st->recv(client, rxbuf, 2);
 		if (data < 0) {
 			ret = data;
@@ -398,7 +341,7 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
 		data = (rxbuf[1] | rxbuf[0] << 8) &
 		  ((1 << st->chip_info->bits) - 1);
 	} else {
-		/* Get reading */
+		 
 		data = st->recv(client, rxbuf, 1);
 		if (data < 0) {
 			ret = data;
@@ -440,7 +383,7 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
 	return 0;
 }
 
-/* Applies to max1363 */
+ 
 static const enum max1363_modes max1363_mode_list[] = {
 	_s0, _s1, _s2, _s3,
 	s0to1, s0to2, s0to3,
@@ -482,7 +425,7 @@ static const struct iio_event_spec max1363_events[] = {
 		.num_event_specs = num_ev_spec,				\
 	}
 
-/* bipolar channel */
+ 
 #define MAX1363_CHAN_B(num, num2, addr, si, bits, ev_spec, num_ev_spec)	\
 	{								\
 		.type = IIO_VOLTAGE,					\
@@ -528,7 +471,7 @@ static const struct iio_chan_spec max1361_channels[] =
 static const struct iio_chan_spec max1363_channels[] =
 	MAX1363_4X_CHANS(12, max1363_events, ARRAY_SIZE(max1363_events));
 
-/* Applies to max1236, max1237 */
+ 
 static const enum max1363_modes max1236_mode_list[] = {
 	_s0, _s1, _s2, _s3,
 	s0to1, s0to2, s0to3,
@@ -537,7 +480,7 @@ static const enum max1363_modes max1236_mode_list[] = {
 	s2to3,
 };
 
-/* Applies to max1238, max1239 */
+ 
 static const enum max1363_modes max1238_mode_list[] = {
 	_s0, _s1, _s2, _s3, _s4, _s5, _s6, _s7, _s8, _s9, _s10, _s11,
 	s0to1, s0to2, s0to3, s0to4, s0to5, s0to6,
@@ -743,7 +686,7 @@ static int max1363_write_thresh(struct iio_dev *indio_dev,
 	int val2)
 {
 	struct max1363_state *st = iio_priv(indio_dev);
-	/* make it handle signed correctly as well */
+	 
 	switch (st->chip_info->bits) {
 	case 10:
 		if (val > 0x3FF)
@@ -834,14 +777,14 @@ static int max1363_monitor_mode_update(struct max1363_state *st, int enabled)
 	const long *modemask;
 
 	if (!enabled) {
-		/* transition to buffered capture is not currently supported */
+		 
 		st->setupbyte &= ~MAX1363_SETUP_MONITOR_SETUP;
 		st->configbyte &= ~MAX1363_SCAN_MASK;
 		st->monitor_on = false;
 		return max1363_write_basic_config(st);
 	}
 
-	/* Ensure we are in the relevant mode */
+	 
 	st->setupbyte |= MAX1363_SETUP_MONITOR_SETUP;
 	st->configbyte &= ~(MAX1363_CHANNEL_SEL_MASK
 			    | MAX1363_SCAN_MASK
@@ -868,13 +811,10 @@ static int max1363_monitor_mode_update(struct max1363_state *st, int enabled)
 	tx_buf[1] = st->setupbyte;
 	tx_buf[2] = (st->monitor_speed << 1);
 
-	/*
-	 * So we need to do yet another bit of nefarious scan mode
-	 * setup to match what we need.
-	 */
+	 
 	for (j = 0; j < 8; j++)
 		if (test_bit(j, modemask)) {
-			/* Establish the mode is in the scan */
+			 
 			if (st->mask_low & (1 << j)) {
 				tx_buf[i] = (st->thresh_low[j] >> 4) & 0xFF;
 				tx_buf[i + 1] = (st->thresh_low[j] << 4) & 0xF0;
@@ -908,13 +848,7 @@ static int max1363_monitor_mode_update(struct max1363_state *st, int enabled)
 		goto error_ret;
 	}
 
-	/*
-	 * Now that we hopefully have sensible thresholds in place it is
-	 * time to turn the interrupts on.
-	 * It is unclear from the data sheet if this should be necessary
-	 * (i.e. whether monitor mode setup is atomic) but it appears to
-	 * be in practice.
-	 */
+	 
 	tx_buf[0] = st->setupbyte;
 	tx_buf[1] = MAX1363_MON_INT_ENABLE | (st->monitor_speed << 1) | 0xF0;
 	ret = st->send(st->client, tx_buf, 2);
@@ -933,15 +867,12 @@ error_ret:
 	return ret;
 }
 
-/*
- * To keep this manageable we always use one of 3 scan modes.
- * Scan 0...3, 0-1,2-3 and 1-0,3-2
- */
+ 
 
 static inline int __max1363_check_event_mask(int thismask, int checkmask)
 {
 	int ret = 0;
-	/* Is it unipolar */
+	 
 	if (thismask < 4) {
 		if (checkmask & ~0x0F) {
 			ret = -EBUSY;
@@ -1004,10 +935,7 @@ error_ret:
 	return ret;
 }
 
-/*
- * As with scan_elements, only certain sets of these can
- * be combined.
- */
+ 
 static struct attribute *max1363_event_attributes[] = {
 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
@@ -1023,10 +951,7 @@ static int max1363_update_scan_mode(struct iio_dev *indio_dev,
 {
 	struct max1363_state *st = iio_priv(indio_dev);
 
-	/*
-	 * Need to figure out the current mode based upon the requested
-	 * scan mask in iio_dev
-	 */
+	 
 	st->current_mode = max1363_match_mode(scan_mask, st->chip_info);
 	if (!st->current_mode)
 		return -EINVAL;
@@ -1049,7 +974,7 @@ static const struct iio_info max1363_info = {
 	.event_attrs = &max1363_event_attribute_group,
 };
 
-/* max1363 and max1368 tested - rest from data sheet */
+ 
 static const struct max1363_chip_info max1363_chip_info_tbl[] = {
 	[max1361] = {
 		.bits = 10,
@@ -1445,7 +1370,7 @@ static int max1363_initial_setup(struct max1363_state *st)
 		st->setupbyte |= MAX1363_SETUP_POWER_UP_INT_REF
 		  | MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_INT;
 
-	/* Set scan mode writes the config anyway so wait until then */
+	 
 	st->setupbyte = MAX1363_SETUP_BYTE(st->setupbyte);
 	st->current_mode = &max1363_mode_table[st->chip_info->default_mode];
 	st->configbyte = MAX1363_CONFIG_BYTE(st->configbyte);
@@ -1488,7 +1413,7 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
 	unsigned long numvals = bitmap_weight(st->current_mode->modemask,
 					      MAX1363_MAX_CHANNELS);
 
-	/* Ensure the timestamp is 8 byte aligned */
+	 
 	if (st->chip_info->bits != 8)
 		d_size = numvals*2;
 	else
@@ -1498,10 +1423,7 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
 		if (d_size % sizeof(s64))
 			d_size += sizeof(s64) - (d_size % sizeof(s64));
 	}
-	/* Monitor mode prevents reading. Whilst not currently implemented
-	 * might as well have this test in here in the meantime as it does
-	 * no harm.
-	 */
+	 
 	if (numvals == 0)
 		goto done;
 
@@ -1570,7 +1492,7 @@ static const struct of_device_id max1363_of_match[] = {
 	MAX1363_COMPATIBLE("maxim,max11645", max11645),
 	MAX1363_COMPATIBLE("maxim,max11646", max11646),
 	MAX1363_COMPATIBLE("maxim,max11647", max11647),
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, max1363_of_match);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * rcar-fcp.c  --  R-Car Frame Compression Processor Driver
- *
- * Copyright (C) 2016 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -27,20 +21,9 @@ struct rcar_fcp_device {
 static LIST_HEAD(fcp_devices);
 static DEFINE_MUTEX(fcp_lock);
 
-/* -----------------------------------------------------------------------------
- * Public API
- */
+ 
 
-/**
- * rcar_fcp_get - Find and acquire a reference to an FCP instance
- * @np: Device node of the FCP instance
- *
- * Search the list of registered FCP instances for the instance corresponding to
- * the given device node.
- *
- * Return a pointer to the FCP instance, or an ERR_PTR if the instance can't be
- * found.
- */
+ 
 struct rcar_fcp_device *rcar_fcp_get(const struct device_node *np)
 {
 	struct rcar_fcp_device *fcp;
@@ -63,12 +46,7 @@ done:
 }
 EXPORT_SYMBOL_GPL(rcar_fcp_get);
 
-/**
- * rcar_fcp_put - Release a reference to an FCP instance
- * @fcp: The FCP instance
- *
- * Release the FCP instance acquired by a call to rcar_fcp_get().
- */
+ 
 void rcar_fcp_put(struct rcar_fcp_device *fcp)
 {
 	if (fcp)
@@ -82,18 +60,7 @@ struct device *rcar_fcp_get_device(struct rcar_fcp_device *fcp)
 }
 EXPORT_SYMBOL_GPL(rcar_fcp_get_device);
 
-/**
- * rcar_fcp_enable - Enable an FCP
- * @fcp: The FCP instance
- *
- * Before any memory access through an FCP is performed by a module, the FCP
- * must be enabled by a call to this function. The enable calls are reference
- * counted, each successful call must be followed by one rcar_fcp_disable()
- * call when no more memory transfer can occur through the FCP.
- *
- * Return 0 on success or a negative error code if an error occurs. The enable
- * reference count isn't increased when this function returns an error.
- */
+ 
 int rcar_fcp_enable(struct rcar_fcp_device *fcp)
 {
 	if (!fcp)
@@ -103,13 +70,7 @@ int rcar_fcp_enable(struct rcar_fcp_device *fcp)
 }
 EXPORT_SYMBOL_GPL(rcar_fcp_enable);
 
-/**
- * rcar_fcp_disable - Disable an FCP
- * @fcp: The FCP instance
- *
- * This function is the counterpart of rcar_fcp_enable(). As enable calls are
- * reference counted a disable call may not disable the FCP synchronously.
- */
+ 
 void rcar_fcp_disable(struct rcar_fcp_device *fcp)
 {
 	if (fcp)
@@ -117,9 +78,7 @@ void rcar_fcp_disable(struct rcar_fcp_device *fcp)
 }
 EXPORT_SYMBOL_GPL(rcar_fcp_disable);
 
-/* -----------------------------------------------------------------------------
- * Platform Driver
- */
+ 
 
 static int rcar_fcp_probe(struct platform_device *pdev)
 {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Author:	Sjur Brendeland
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
 
@@ -125,7 +122,7 @@ static bool cfctrl_req_eq(const struct cfctrl_request_info *r1,
 		return r1->channel_id == r2->channel_id;
 }
 
-/* Insert request at the end */
+ 
 static void cfctrl_insert_req(struct cfctrl *ctrl,
 			      struct cfctrl_request_info *req)
 {
@@ -136,7 +133,7 @@ static void cfctrl_insert_req(struct cfctrl *ctrl,
 	spin_unlock_bh(&ctrl->info_list_lock);
 }
 
-/* Compare and remove request */
+ 
 static struct cfctrl_request_info *cfctrl_remove_req(struct cfctrl *ctrl,
 						struct cfctrl_request_info *req)
 {
@@ -216,7 +213,7 @@ int cfctrl_linkup_request(struct cflayer *layer,
 	}
 
 	if (cfctrl_cancel_req(layer, user_layer) > 0) {
-		/* Slight Paranoia, check if already connecting */
+		 
 		pr_err("Duplicate connect request for same client\n");
 		WARN_ON(1);
 		return -EALREADY;
@@ -243,12 +240,10 @@ int cfctrl_linkup_request(struct cflayer *layer,
 		cfpkt_add_body(pkt, &tmp32, 4);
 		break;
 	case CFCTRL_SRV_RFM:
-		/* Construct a frame, convert DatagramConnectionID to network
-		 * format long and copy it out...
-		 */
+		 
 		tmp32 = cpu_to_le32(param->u.rfm.connid);
 		cfpkt_add_body(pkt, &tmp32, 4);
-		/* Add volume name, including zero termination... */
+		 
 		cfpkt_add_body(pkt, param->u.rfm.volume,
 			       strlen(param->u.rfm.volume) + 1);
 		break;
@@ -283,11 +278,7 @@ int cfctrl_linkup_request(struct cflayer *layer,
 	req->param = *param;
 	cfctrl_insert_req(cfctrl, req);
 	init_info(cfpkt_info(pkt), cfctrl);
-	/*
-	 * NOTE:Always send linkup and linkdown request on the same
-	 *	device as the payload. Otherwise old queued up payload
-	 *	might arrive with the newly allocated channel ID.
-	 */
+	 
 	cfpkt_info(pkt)->dev_info->id = param->phyid;
 	cfpkt_set_prio(pkt, TC_PRIO_CONTROL);
 	ret =
@@ -408,7 +399,7 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 			case CFCTRL_SRV_DBG:
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
-				/* Link ID */
+				 
 				linkid = cfpkt_extr_head_u8(pkt);
 				break;
 			case CFCTRL_SRV_VIDEO:
@@ -416,7 +407,7 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				linkparam.u.video.connid = tmp;
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
-				/* Link ID */
+				 
 				linkid = cfpkt_extr_head_u8(pkt);
 				break;
 
@@ -425,14 +416,11 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				    cfpkt_extr_head_u32(pkt);
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
-				/* Link ID */
+				 
 				linkid = cfpkt_extr_head_u8(pkt);
 				break;
 			case CFCTRL_SRV_RFM:
-				/* Construct a frame, convert
-				 * DatagramConnectionID
-				 * to network format long and copy it out...
-				 */
+				 
 				linkparam.u.rfm.connid =
 				    cfpkt_extr_head_u32(pkt);
 				cp = (u8 *) linkparam.u.rfm.volume;
@@ -444,22 +432,19 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
-				/* Link ID */
+				 
 				linkid = cfpkt_extr_head_u8(pkt);
 
 				break;
 			case CFCTRL_SRV_UTIL:
-				/* Construct a frame, convert
-				 * DatagramConnectionID
-				 * to network format long and copy it out...
-				 */
-				/* Fifosize KB */
+				 
+				 
 				linkparam.u.utility.fifosize_kb =
 				    cfpkt_extr_head_u16(pkt);
-				/* Fifosize bufs */
+				 
 				linkparam.u.utility.fifosize_bufs =
 				    cfpkt_extr_head_u16(pkt);
-				/* name */
+				 
 				cp = (u8 *) linkparam.u.utility.name;
 				caif_assert(sizeof(linkparam.u.utility.name)
 					     >= UTILITY_NAME_LENGTH);
@@ -469,10 +454,10 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 					tmp = cfpkt_extr_head_u8(pkt);
 					*cp++ = tmp;
 				}
-				/* Length */
+				 
 				len = cfpkt_extr_head_u8(pkt);
 				linkparam.u.utility.paramlen = len;
-				/* Param Data */
+				 
 				cp = linkparam.u.utility.params;
 				while (cfpkt_more(pkt) && len--) {
 					tmp = cfpkt_extr_head_u8(pkt);
@@ -480,11 +465,11 @@ static int cfctrl_recv(struct cflayer *layer, struct cfpkt *pkt)
 				}
 				if (CFCTRL_ERR_BIT & cmdrsp)
 					break;
-				/* Link ID */
+				 
 				linkid = cfpkt_extr_head_u8(pkt);
-				/* Length */
+				 
 				len = cfpkt_extr_head_u8(pkt);
-				/* Param Data */
+				 
 				cfpkt_extr_head(pkt, &param, len);
 				break;
 			default:
@@ -567,7 +552,7 @@ static void cfctrl_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
 	case _CAIF_CTRLCMD_PHYIF_DOWN_IND: {
 		struct cfctrl_request_info *p, *tmp;
 
-		/* Find all connect request and report failure */
+		 
 		spin_lock_bh(&this->info_list_lock);
 		list_for_each_entry_safe(p, tmp, &this->list, list) {
 			if (p->param.phyid == phyid) {

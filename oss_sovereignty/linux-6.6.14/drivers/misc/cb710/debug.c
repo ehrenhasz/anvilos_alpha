@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cb710/debug.c
- *
- *  Copyright by Michał Mirosław, 2008-2009
- */
+
+ 
 #include <linux/cb710.h>
 #include <linux/kernel.h>
 #include <linux/module.h>

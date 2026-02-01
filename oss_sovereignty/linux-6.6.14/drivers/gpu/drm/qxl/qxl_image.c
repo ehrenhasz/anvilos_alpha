@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alon Levy
- */
+ 
 
 #include <linux/gfp.h>
 #include <linux/slab.h>
@@ -113,16 +90,14 @@ qxl_image_init_helper(struct qxl_device *qdev,
 	int linesize = width * depth / 8;
 	struct qxl_bo *chunk_bo, *image_bo;
 	void *ptr;
-	/* Chunk */
-	/* FIXME: Check integer overflow */
-	/* TODO: variable number of chunks */
+	 
+	 
+	 
 
 	drv_chunk = list_first_entry(&dimage->chunk_list, struct qxl_drm_chunk, head);
 
 	chunk_bo = drv_chunk->bo;
-	chunk_stride = stride; /* TODO: should use linesize, but it renders
-				  wrong (check the bitmaps are sent correctly
-				  first) */
+	chunk_stride = stride;  
 
 	ptr = qxl_bo_kmap_atomic_page(qdev, chunk_bo, 0);
 	chunk = ptr;
@@ -201,7 +176,7 @@ qxl_image_init_helper(struct qxl_device *qdev,
 
 	switch (depth) {
 	case 1:
-		/* TODO: BE? check by arch? */
+		 
 		image->u.bitmap.format = SPICE_BITMAP_FMT_1BIT_BE;
 		break;
 	case 24:

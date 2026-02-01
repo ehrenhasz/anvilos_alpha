@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Chenglin Xu <chenglin.xu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __LINUX_REGULATOR_mt6380_H
 #define __LINUX_REGULATOR_mt6380_H
@@ -21,4 +18,4 @@ enum {
 
 #define MT6380_MAX_REGULATOR	MT6380_ID_RG_MAX
 
-#endif /* __LINUX_REGULATOR_mt6380_H */
+#endif  

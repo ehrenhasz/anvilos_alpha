@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include "core.h"
 #include "debug.h"
 #include "mac.h"
@@ -15,9 +11,9 @@
 #include "testmode.h"
 #include <linux/bitfield.h>
 
-/***************/
-/* TLV helpers */
-/**************/
+ 
+ 
+ 
 
 struct wmi_tlv_policy {
 	size_t min_len;
@@ -162,9 +158,9 @@ static u16 ath10k_wmi_tlv_len(const void *ptr)
 	return __le16_to_cpu((((const struct wmi_tlv *)ptr) - 1)->len);
 }
 
-/**************/
-/* TLV events */
-/**************/
+ 
+ 
+ 
 static int ath10k_wmi_tlv_event_bcn_tx_status(struct ath10k *ar,
 					      struct sk_buff *skb)
 {
@@ -196,9 +192,7 @@ static int ath10k_wmi_tlv_event_bcn_tx_status(struct ath10k *ar,
 	case WMI_TLV_BCN_TX_STATUS_XRETRY:
 	case WMI_TLV_BCN_TX_STATUS_DROP:
 	case WMI_TLV_BCN_TX_STATUS_FILTERED:
-		/* FIXME: It's probably worth telling mac80211 to stop the
-		 * interface as it is crippled.
-		 */
+		 
 		ath10k_warn(ar, "received bcn tmpl tx status on vdev %i: %d",
 			    vdev_id, tx_status);
 		break;
@@ -535,7 +529,7 @@ static void ath10k_wmi_tlv_event_rfkill_state_change(struct ath10k *ar,
 
 	spin_unlock_bh(&ar->data_lock);
 
-	/* notify cfg80211 radio state change */
+	 
 	ath10k_mac_rfkill_enable_radio(ar, radio);
 	wiphy_rfkill_set_hw_state(ar->hw->wiphy, !radio);
 }
@@ -627,9 +621,9 @@ static int ath10k_wmi_tlv_event_peer_delete_resp(struct ath10k *ar,
 	return 0;
 }
 
-/***********/
-/* TLV ops */
-/***********/
+ 
+ 
+ 
 
 static void ath10k_wmi_tlv_op_rx(struct ath10k *ar, struct sk_buff *skb)
 {
@@ -647,10 +641,7 @@ static void ath10k_wmi_tlv_op_rx(struct ath10k *ar, struct sk_buff *skb)
 
 	consumed = ath10k_tm_event_wmi(ar, id, skb);
 
-	/* Ready event must be handled normally also in UTF mode so that we
-	 * know the UTF firmware has booted, others we are just bypass WMI
-	 * events to testmode.
-	 */
+	 
 	if (consumed && id != WMI_TLV_READY_EVENTID) {
 		ath10k_dbg(ar, ATH10K_DBG_WMI,
 			   "wmi tlv testmode consumed 0x%x\n", id);
@@ -660,7 +651,7 @@ static void ath10k_wmi_tlv_op_rx(struct ath10k *ar, struct sk_buff *skb)
 	switch (id) {
 	case WMI_TLV_MGMT_RX_EVENTID:
 		ath10k_wmi_event_mgmt_rx(ar, skb);
-		/* mgmt_rx() owns the skb now! */
+		 
 		return;
 	case WMI_TLV_SCAN_EVENTID:
 		ath10k_wmi_event_scan(ar, skb);
@@ -979,7 +970,7 @@ static int ath10k_wmi_tlv_op_pull_mgmt_rx_ev(struct ath10k *ar,
 		return -EPROTO;
 	}
 
-	/* shift the sk_buff to point to `frame` */
+	 
 	skb_trim(skb, 0);
 	skb_put(skb, frame - skb->data);
 	skb_pull(skb, frame - skb->data);
@@ -1331,9 +1322,7 @@ static int ath10k_wmi_tlv_op_pull_svc_rdy_ev(struct ath10k *ar,
 	if (!ev || !reg || !svc_bmap || !mem_reqs)
 		return -EPROTO;
 
-	/* This is an internal ABI compatibility check for WMI TLV so check it
-	 * here instead of the generic WMI code.
-	 */
+	 
 	ath10k_dbg(ar, ATH10K_DBG_WMI,
 		   "wmi tlv abi 0x%08x ?= 0x%08x, 0x%08x ?= 0x%08x, 0x%08x ?= 0x%08x, 0x%08x ?= 0x%08x, 0x%08x ?= 0x%08x\n",
 		   __le32_to_cpu(ev->abi.abi_ver0), WMI_TLV_ABI_VER0,
@@ -2012,9 +2001,7 @@ ath10k_wmi_tlv_op_gen_start_scan(struct ath10k *ar,
 	ether_addr_copy(cmd->mac_addr.addr, arg->mac_addr.addr);
 	ether_addr_copy(cmd->mac_mask.addr, arg->mac_mask.addr);
 
-	/* FIXME: There are some scan flag inconsistencies across firmwares,
-	 * e.g. WMI-TLV inverts the logic behind the following flag.
-	 */
+	 
 	cmd->common.scan_ctrl_flags ^= __cpu_to_le32(WMI_SCAN_FILTER_PROBE_REQ);
 
 	ptr += sizeof(*tlv);
@@ -2238,9 +2225,7 @@ ath10k_wmi_tlv_op_gen_vdev_start(struct ath10k *ar,
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_STRUCT);
 	tlv->len = 0;
 
-	/* Note: This is a nested TLV containing:
-	 * [wmi_tlv][wmi_p2p_noa_descriptor][wmi_tlv]..
-	 */
+	 
 
 	ptr += sizeof(*tlv);
 	ptr += 0;
@@ -2968,7 +2953,7 @@ ath10k_wmi_tlv_op_gen_pdev_set_wmm(struct ath10k *ar,
 	tlv->len = __cpu_to_le16(sizeof(*cmd));
 	cmd = (void *)tlv->value;
 
-	/* nothing to set here */
+	 
 
 	ptr += sizeof(*tlv);
 	ptr += sizeof(*cmd);
@@ -3217,7 +3202,7 @@ ath10k_wmi_tlv_op_gen_dbglog_cfg(struct ath10k *ar, u64 module_enable,
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_UINT32);
 	tlv->len = __cpu_to_le16(bmap_len);
 
-	/* nothing to do here */
+	 
 
 	ptr += sizeof(*tlv);
 	ptr += sizeof(bmap_len);
@@ -3336,11 +3321,7 @@ ath10k_wmi_tlv_op_gen_bcn_tmpl(struct ath10k *ar, u32 vdev_id,
 	ptr += sizeof(*tlv);
 	ptr += sizeof(*cmd);
 
-	/* FIXME: prb_ies_len should be probably aligned to 4byte boundary but
-	 * then it is then impossible to pass original ie len.
-	 * This chunk is not used yet so if setting probe resp template yields
-	 * problems with beaconing or crashes firmware look here.
-	 */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_STRUCT_BCN_PRB_INFO);
 	tlv->len = __cpu_to_le16(sizeof(*info) + prb_ies_len);
@@ -3358,7 +3339,7 @@ ath10k_wmi_tlv_op_gen_bcn_tmpl(struct ath10k *ar, u32 vdev_id,
 	tlv->len = __cpu_to_le16(roundup(bcn->len, 4));
 	memcpy(tlv->value, bcn->data, bcn->len);
 
-	/* FIXME: Adjust TSF? */
+	 
 
 	ath10k_dbg(ar, ATH10K_DBG_WMI, "wmi tlv bcn tmpl vdev_id %i\n",
 		   vdev_id);
@@ -3463,17 +3444,13 @@ ath10k_wmi_tlv_op_gen_update_fw_tdls_state(struct ath10k *ar, u32 vdev_id,
 	struct sk_buff *skb;
 	void *ptr;
 	size_t len;
-	/* Set to options from wmi_tlv_tdls_options,
-	 * for now none of them are enabled.
-	 */
+	 
 	u32 options = 0;
 
 	if (test_bit(WMI_SERVICE_TDLS_UAPSD_BUFFER_STA, ar->wmi.svc_map))
 		options |=  WMI_TLV_TDLS_BUFFER_STA_EN;
 
-	/* WMI_TDLS_ENABLE_ACTIVE_EXTERNAL_CONTROL means firm will handle TDLS
-	 * link inactivity detecting logic.
-	 */
+	 
 	if (state == WMI_TDLS_ENABLE_ACTIVE)
 		state = WMI_TDLS_ENABLE_ACTIVE_EXTERNAL_CONTROL;
 
@@ -3630,7 +3607,7 @@ ath10k_wmi_tlv_op_gen_pdev_set_quiet_mode(struct ath10k *ar, u32 period,
 	tlv->len = __cpu_to_le16(sizeof(*cmd));
 	cmd = (void *)tlv->value;
 
-	/* vdev_id is not in use, set to 0 */
+	 
 	cmd->vdev_id = __cpu_to_le32(0);
 	cmd->period = __cpu_to_le32(period);
 	cmd->duration = __cpu_to_le32(duration);
@@ -3735,19 +3712,19 @@ ath10k_wmi_tlv_op_gen_wow_add_pattern(struct ath10k *ar, u32 vdev_id,
 	size_t len;
 
 	len = sizeof(*tlv) + sizeof(*cmd) +
-	      sizeof(*tlv) +			/* array struct */
-	      sizeof(*tlv) + sizeof(*bitmap) +  /* bitmap */
-	      sizeof(*tlv) +			/* empty ipv4 sync */
-	      sizeof(*tlv) +			/* empty ipv6 sync */
-	      sizeof(*tlv) +			/* empty magic */
-	      sizeof(*tlv) +			/* empty info timeout */
-	      sizeof(*tlv) + sizeof(u32);	/* ratelimit interval */
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) + sizeof(*bitmap) +   
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) + sizeof(u32);	 
 
 	skb = ath10k_wmi_alloc_skb(ar, len);
 	if (!skb)
 		return ERR_PTR(-ENOMEM);
 
-	/* cmd */
+	 
 	ptr = (void *)skb->data;
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_STRUCT_WOW_ADD_PATTERN_CMD);
@@ -3761,7 +3738,7 @@ ath10k_wmi_tlv_op_gen_wow_add_pattern(struct ath10k *ar, u32 vdev_id,
 	ptr += sizeof(*tlv);
 	ptr += sizeof(*cmd);
 
-	/* bitmap */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_STRUCT);
 	tlv->len = __cpu_to_le16(sizeof(*tlv) + sizeof(*bitmap));
@@ -3783,35 +3760,35 @@ ath10k_wmi_tlv_op_gen_wow_add_pattern(struct ath10k *ar, u32 vdev_id,
 	ptr += sizeof(*tlv);
 	ptr += sizeof(*bitmap);
 
-	/* ipv4 sync */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_STRUCT);
 	tlv->len = __cpu_to_le16(0);
 
 	ptr += sizeof(*tlv);
 
-	/* ipv6 sync */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_STRUCT);
 	tlv->len = __cpu_to_le16(0);
 
 	ptr += sizeof(*tlv);
 
-	/* magic */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_STRUCT);
 	tlv->len = __cpu_to_le16(0);
 
 	ptr += sizeof(*tlv);
 
-	/* pattern info timeout */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_UINT32);
 	tlv->len = __cpu_to_le16(0);
 
 	ptr += sizeof(*tlv);
 
-	/* ratelimit interval */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_UINT32);
 	tlv->len = __cpu_to_le16(sizeof(u32));
@@ -3849,7 +3826,7 @@ ath10k_wmi_tlv_op_gen_wow_del_pattern(struct ath10k *ar, u32 vdev_id,
 	return skb;
 }
 
-/* Request FW to start PNO operation */
+ 
 static struct sk_buff *
 ath10k_wmi_tlv_op_gen_config_pno_start(struct ath10k *ar,
 				       u32 vdev_id,
@@ -3867,11 +3844,9 @@ ath10k_wmi_tlv_op_gen_config_pno_start(struct ath10k *ar,
 
 	len = sizeof(*tlv) + sizeof(*cmd) +
 	      sizeof(*tlv) +
-	      /* TLV place holder for array of structures
-	       * nlo_configured_parameters(nlo_list)
-	       */
+	       
 	      sizeof(*tlv);
-	      /* TLV place holder for array of uint32 channel_list */
+	       
 
 	len += sizeof(u32) * min_t(u8, pno->a_networks[0].channel_count,
 				   WMI_NLO_MAX_CHAN);
@@ -3888,18 +3863,18 @@ ath10k_wmi_tlv_op_gen_config_pno_start(struct ath10k *ar,
 	tlv->len = __cpu_to_le16(sizeof(*cmd));
 	cmd = (void *)tlv->value;
 
-	/* wmi_tlv_wow_nlo_config_cmd parameters*/
+	 
 	cmd->vdev_id = __cpu_to_le32(pno->vdev_id);
 	cmd->flags = __cpu_to_le32(WMI_NLO_CONFIG_START | WMI_NLO_CONFIG_SSID_HIDE_EN);
 
-	/* current FW does not support min-max range for dwell time */
+	 
 	cmd->active_dwell_time = __cpu_to_le32(pno->active_max_time);
 	cmd->passive_dwell_time = __cpu_to_le32(pno->passive_max_time);
 
 	if (pno->do_passive_scan)
 		cmd->flags |= __cpu_to_le32(WMI_NLO_CONFIG_SCAN_PASSIVE);
 
-	/* copy scan interval */
+	 
 	cmd->fast_scan_period = __cpu_to_le32(pno->fast_scan_period);
 	cmd->slow_scan_period = __cpu_to_le32(pno->slow_scan_period);
 	cmd->fast_scan_max_cycles = __cpu_to_le32(pno->fast_scan_max_cycles);
@@ -3915,7 +3890,7 @@ ath10k_wmi_tlv_op_gen_config_pno_start(struct ath10k *ar,
 	ptr += sizeof(*tlv);
 	ptr += sizeof(*cmd);
 
-	/* nlo_configured_parameters(nlo_list) */
+	 
 	cmd->no_of_ssids = __cpu_to_le32(min_t(u8, pno->uc_networks_count,
 					       WMI_NLO_MAX_SSIDS));
 	tlv_len = __le32_to_cpu(cmd->no_of_ssids) *
@@ -3933,14 +3908,14 @@ ath10k_wmi_tlv_op_gen_config_pno_start(struct ath10k *ar,
 		tlv->len = __cpu_to_le16(sizeof(struct nlo_configured_parameters) -
 					 sizeof(*tlv));
 
-		/* copy ssid and it's length */
+		 
 		nlo_list[i].ssid.valid = __cpu_to_le32(true);
 		nlo_list[i].ssid.ssid.ssid_len = pno->a_networks[i].ssid.ssid_len;
 		memcpy(nlo_list[i].ssid.ssid.ssid,
 		       pno->a_networks[i].ssid.ssid,
 		       __le32_to_cpu(nlo_list[i].ssid.ssid.ssid_len));
 
-		/* copy rssi threshold */
+		 
 		if (pno->a_networks[i].rssi_threshold &&
 		    pno->a_networks[i].rssi_threshold > -300) {
 			nlo_list[i].rssi_cond.valid = __cpu_to_le32(true);
@@ -3955,7 +3930,7 @@ ath10k_wmi_tlv_op_gen_config_pno_start(struct ath10k *ar,
 
 	ptr += __le32_to_cpu(cmd->no_of_ssids) * sizeof(struct nlo_configured_parameters);
 
-	/* copy channel info */
+	 
 	cmd->num_of_channels = __cpu_to_le32(min_t(u8,
 						   pno->a_networks[0].channel_count,
 						   WMI_NLO_MAX_CHAN));
@@ -3976,7 +3951,7 @@ ath10k_wmi_tlv_op_gen_config_pno_start(struct ath10k *ar,
 	return skb;
 }
 
-/* Request FW to stop ongoing PNO operation */
+ 
 static struct sk_buff *ath10k_wmi_tlv_op_gen_config_pno_stop(struct ath10k *ar,
 							     u32 vdev_id)
 {
@@ -3988,11 +3963,9 @@ static struct sk_buff *ath10k_wmi_tlv_op_gen_config_pno_stop(struct ath10k *ar,
 
 	len = sizeof(*tlv) + sizeof(*cmd) +
 	      sizeof(*tlv) +
-	      /* TLV place holder for array of structures
-	       * nlo_configured_parameters(nlo_list)
-	       */
+	       
 	      sizeof(*tlv);
-	      /* TLV place holder for array of uint32 channel_list */
+	       
 	skb = ath10k_wmi_alloc_skb(ar, len);
 	if (!skb)
 		return ERR_PTR(-ENOMEM);
@@ -4009,14 +3982,14 @@ static struct sk_buff *ath10k_wmi_tlv_op_gen_config_pno_stop(struct ath10k *ar,
 	ptr += sizeof(*tlv);
 	ptr += sizeof(*cmd);
 
-	/* nlo_configured_parameters(nlo_list) */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_STRUCT);
 	tlv->len = __cpu_to_le16(0);
 
 	ptr += sizeof(*tlv);
 
-	/* channel list */
+	 
 	tlv = ptr;
 	tlv->tag = __cpu_to_le16(WMI_TLV_TAG_ARRAY_UINT32);
 	tlv->len = __cpu_to_le16(0);
@@ -4161,9 +4134,9 @@ ath10k_wmi_tlv_op_gen_vdev_spectral_enable(struct ath10k *ar, u32 vdev_id,
 	return skb;
 }
 
-/****************/
-/* TLV mappings */
-/****************/
+ 
+ 
+ 
 
 static struct wmi_cmd_map wmi_tlv_cmd_map = {
 	.init_cmdid = WMI_TLV_INIT_CMDID,
@@ -4570,7 +4543,7 @@ static const struct wmi_ops wmi_tlv_ops = {
 	.gen_request_stats = ath10k_wmi_tlv_op_gen_request_stats,
 	.gen_request_peer_stats_info = ath10k_wmi_tlv_op_gen_request_peer_stats_info,
 	.gen_force_fw_hang = ath10k_wmi_tlv_op_gen_force_fw_hang,
-	/* .gen_mgmt_tx = not implemented; HTT is used */
+	 
 	.gen_mgmt_tx_send = ath10k_wmi_tlv_op_gen_mgmt_tx_send,
 	.cleanup_mgmt_tx_send = ath10k_wmi_tlv_op_cleanup_mgmt_tx_send,
 	.gen_dbglog_cfg = ath10k_wmi_tlv_op_gen_dbglog_cfg,
@@ -4578,10 +4551,10 @@ static const struct wmi_ops wmi_tlv_ops = {
 	.gen_pktlog_disable = ath10k_wmi_tlv_op_gen_pktlog_disable,
 	.gen_pdev_set_quiet_mode = ath10k_wmi_tlv_op_gen_pdev_set_quiet_mode,
 	.gen_pdev_get_temperature = ath10k_wmi_tlv_op_gen_pdev_get_temperature,
-	/* .gen_addba_clear_resp not implemented */
-	/* .gen_addba_send not implemented */
-	/* .gen_addba_set_resp not implemented */
-	/* .gen_delba_send not implemented */
+	 
+	 
+	 
+	 
 	.gen_bcn_tmpl = ath10k_wmi_tlv_op_gen_bcn_tmpl,
 	.gen_prb_tmpl = ath10k_wmi_tlv_op_gen_prb_tmpl,
 	.gen_p2p_go_bcn_ie = ath10k_wmi_tlv_op_gen_p2p_go_bcn_ie,
@@ -4622,9 +4595,9 @@ static const struct wmi_peer_flags_map wmi_tlv_peer_flags_map = {
 	.bw160 = WMI_TLV_PEER_160MHZ,
 };
 
-/************/
-/* TLV init */
-/************/
+ 
+ 
+ 
 
 void ath10k_wmi_tlv_attach(struct ath10k *ar)
 {

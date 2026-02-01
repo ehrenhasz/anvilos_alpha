@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -122,7 +120,7 @@ void mt7601u_vendor_reset(struct mt7601u_dev *dev)
 			       MT_VEND_DEV_MODE_RESET, 0, NULL, 0);
 }
 
-/* should be called with vendor_req_mutex held */
+ 
 static u32 __mt7601u_rr(struct mt7601u_dev *dev, u32 offset)
 {
 	int ret;
@@ -153,7 +151,7 @@ u32 mt7601u_rr(struct mt7601u_dev *dev, u32 offset)
 	return ret;
 }
 
-/* should be called with vendor_req_mutex held */
+ 
 static int __mt7601u_vendor_single_wr(struct mt7601u_dev *dev, const u8 req,
 				      const u16 offset, const u32 val)
 {
@@ -242,9 +240,7 @@ static int mt7601u_assign_pipes(struct usb_interface *usb_intf,
 		    ep_i++ < __MT_EP_IN_MAX) {
 			dev->in_eps[ep_i - 1] = usb_endpoint_num(ep_desc);
 			dev->in_max_packet = usb_endpoint_maxp(ep_desc);
-			/* Note: this is ignored by usb sub-system but vendor
-			 *	 code does it. We can drop this at some point.
-			 */
+			 
 			dev->in_eps[ep_i - 1] |= USB_DIR_IN;
 		} else if (usb_endpoint_is_bulk_out(ep_desc) &&
 			   ep_o++ < __MT_EP_OUT_MAX) {
@@ -301,7 +297,7 @@ static int mt7601u_probe(struct usb_interface *usb_intf,
 		goto err;
 	}
 
-	/* Note: vendor driver skips this check for MT7601U */
+	 
 	if (!(mt7601u_rr(dev, MT_EFUSE_CTRL) & MT_EFUSE_CTRL_SEL))
 		dev_warn(dev->dev, "Warning: eFUSE not present\n");
 

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Compaq Hot Plug Controller Driver
- *
- * Copyright (c) 1995,2001 Compaq Computer Corporation
- * Copyright (c) 2001,2003 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (c) 2001 IBM Corp.
- *
- * All rights reserved.
- *
- * Send feedback to <greg@kroah.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -19,7 +8,7 @@
 #include "shpchp.h"
 
 
-/* A few routines that create sysfs entries for the hot plug controller */
+ 
 
 static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char *buf)
 {

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016-2017 Hisilicon Limited.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/etherdevice.h>
@@ -80,7 +50,7 @@ static const struct {
 	  HNS_ROCE_CMD_READ_MPT_BT0, HNS_ROCE_CMD_WRITE_MPT_BT0 },
 	{ "ECC_RESOURCE_SRQC",
 	  HNS_ROCE_CMD_READ_SRQC_BT0, HNS_ROCE_CMD_WRITE_SRQC_BT0 },
-	/* ECC_RESOURCE_GMV is handled by cmdq, not mailbox */
+	 
 	{ "ECC_RESOURCE_GMV",
 	  0, 0 },
 	{ "ECC_RESOURCE_QPC_TIMER",
@@ -99,13 +69,7 @@ static inline void set_data_seg_v2(struct hns_roce_v2_wqe_data_seg *dseg,
 	dseg->len  = cpu_to_le32(sg->length);
 }
 
-/*
- * mapped-value = 1 + real-value
- * The hns wr opcode real value is start from 0, In order to distinguish between
- * initialized and uninitialized map values, we plus 1 to the actual value when
- * defining the mapping, so that the validity can be identified by checking the
- * mapped value is greater than 0.
- */
+ 
 #define HR_OPC_MAP(ib_key, hr_key) \
 		[IB_WR_ ## ib_key] = 1 + HNS_ROCE_V2_WQE_OP_ ## hr_key
 
@@ -140,7 +104,7 @@ static void set_frmr_seg(struct hns_roce_v2_rc_send_wqe *rc_sq_wqe,
 	struct hns_roce_mr *mr = to_hr_mr(wr->mr);
 	u64 pbl_ba;
 
-	/* use ib_access_flags */
+	 
 	hr_reg_write_bool(fseg, FRMR_BIND_EN, wr->access & IB_ACCESS_MW_BIND);
 	hr_reg_write_bool(fseg, FRMR_ATOMIC,
 			  wr->access & IB_ACCESS_REMOTE_ATOMIC);
@@ -148,7 +112,7 @@ static void set_frmr_seg(struct hns_roce_v2_rc_send_wqe *rc_sq_wqe,
 	hr_reg_write_bool(fseg, FRMR_RW, wr->access & IB_ACCESS_REMOTE_WRITE);
 	hr_reg_write_bool(fseg, FRMR_LW, wr->access & IB_ACCESS_LOCAL_WRITE);
 
-	/* Data structure reuse may lead to confusion */
+	 
 	pbl_ba = mr->pbl_mtr.hem_cfg.root_ba;
 	rc_sq_wqe->msg_len = cpu_to_le32(lower_32_bits(pbl_ba));
 	rc_sq_wqe->inv_key = cpu_to_le32(upper_32_bits(pbl_ba));
@@ -210,11 +174,7 @@ static int fill_ext_sge_inl_data(struct hns_roce_qp *qp,
 	len = wr->sg_list[0].length;
 	addr = (void *)(unsigned long)(wr->sg_list[0].addr);
 
-	/* When copying data to extended sge space, the left length in page may
-	 * not long enough for current user's sge. So the data should be
-	 * splited into several parts, one in the first page, and the others in
-	 * the subsequent pages.
-	 */
+	 
 	while (1) {
 		if (len <= left_len_in_pg) {
 			memcpy(dseg, addr, len);
@@ -505,12 +465,7 @@ static inline int set_ud_wqe(struct hns_roce_qp *qp,
 
 	set_extend_sge(qp, wr->sg_list, &curr_idx, valid_num_sge);
 
-	/*
-	 * The pipeline can sequentially post all valid WQEs into WQ buffer,
-	 * including new WQEs waiting for the doorbell to update the PI again.
-	 * Therefore, the owner bit of WQE MUST be updated after all fields
-	 * and extSGEs have been written into DDR instead of cache.
-	 */
+	 
 	if (qp->en_flags & HNS_ROCE_QP_CAP_OWNER_DB)
 		dma_wmb();
 
@@ -601,12 +556,7 @@ static inline int set_rc_wqe(struct hns_roce_qp *qp,
 		ret = set_rwqe_data_seg(&qp->ibqp, wr, rc_sq_wqe,
 					&curr_idx, valid_num_sge);
 
-	/*
-	 * The pipeline can sequentially post all valid WQEs into WQ buffer,
-	 * including new WQEs waiting for the doorbell to update the PI again.
-	 * Therefore, the owner bit of WQE MUST be updated after all fields
-	 * and extSGEs have been written into DDR instead of cache.
-	 */
+	 
 	if (qp->en_flags & HNS_ROCE_QP_CAP_OWNER_DB)
 		dma_wmb();
 
@@ -675,7 +625,7 @@ static void write_dwqe(struct hns_roce_dev *hr_dev, struct hns_roce_qp *qp,
 #define HNS_ROCE_SL_SHIFT 2
 	struct hns_roce_v2_rc_send_wqe *rc_sq_wqe = wqe;
 
-	/* All kinds of DirectWQE have the same header field layout */
+	 
 	hr_reg_enable(rc_sq_wqe, RC_SEND_WQE_FLAG);
 	hr_reg_write(rc_sq_wqe, RC_SEND_WQE_DB_SL_L, qp->sl);
 	hr_reg_write(rc_sq_wqe, RC_SEND_WQE_DB_SL_H,
@@ -733,7 +683,7 @@ static int hns_roce_v2_post_send(struct ib_qp *ibqp,
 		owner_bit =
 		       ~(((qp->sq.head + nreq) >> ilog2(qp->sq.wqe_cnt)) & 0x1);
 
-		/* Corresponding to the QP type, wqe process separately */
+		 
 		if (ibqp->qp_type == IB_QPT_RC)
 			ret = set_rc_wqe(qp, wr, wqe, &sge_idx, owner_bit);
 		else
@@ -781,20 +731,20 @@ static void fill_recv_sge_to_wqe(const struct ib_recv_wr *wr, void *wqe,
 	u32 i, cnt;
 
 	for (i = 0, cnt = 0; i < wr->num_sge; i++) {
-		/* Skip zero-length sge */
+		 
 		if (!wr->sg_list[i].length)
 			continue;
 		set_data_seg_v2(dseg + cnt, wr->sg_list + i);
 		cnt++;
 	}
 
-	/* Fill a reserved sge to make hw stop reading remaining segments */
+	 
 	if (rsv) {
 		dseg[cnt].lkey = cpu_to_le32(HNS_ROCE_INVALID_LKEY);
 		dseg[cnt].addr = 0;
 		dseg[cnt].len = cpu_to_le32(HNS_ROCE_INVALID_SGE_LENGTH);
 	} else {
-		/* Clear remaining segments to make ROCEE ignore sges */
+		 
 		if (cnt < max_sge)
 			memset(dseg + cnt, 0,
 			       (max_sge - cnt) * HNS_ROCE_SGE_SIZE);
@@ -876,7 +826,7 @@ static void *get_idx_buf(struct hns_roce_idx_que *idx_que, u32 n)
 
 static void hns_roce_free_srq_wqe(struct hns_roce_srq *srq, u32 wqe_index)
 {
-	/* always called with interrupts disabled. */
+	 
 	spin_lock(&srq->lock);
 
 	bitmap_clear(srq->idx_que.bitmap, wqe_index, 1);
@@ -999,15 +949,7 @@ static u32 hns_roce_v2_cmd_hw_reseted(struct hns_roce_dev *hr_dev,
 				      unsigned long instance_stage,
 				      unsigned long reset_stage)
 {
-	/* When hardware reset has been completed once or more, we should stop
-	 * sending mailbox&cmq&doorbell to hardware. If now in .init_instance()
-	 * function, we should exit with error. If now at HNAE3_INIT_CLIENT
-	 * stage of soft reset process, we should exit with error, and then
-	 * HNAE3_INIT_CLIENT related process can rollback the operation like
-	 * notifing hardware to free resources, HNAE3_INIT_CLIENT related
-	 * process will exit with error to notify NIC driver to reschedule soft
-	 * reset process once again.
-	 */
+	 
 	hr_dev->is_reset = true;
 	hr_dev->dis_db = true;
 
@@ -1031,15 +973,7 @@ static u32 hns_roce_v2_cmd_hw_resetting(struct hns_roce_dev *hr_dev,
 	unsigned long val;
 	int ret;
 
-	/* When hardware reset is detected, we should stop sending mailbox&cmq&
-	 * doorbell to hardware. If now in .init_instance() function, we should
-	 * exit with error. If now at HNAE3_INIT_CLIENT stage of soft reset
-	 * process, we should exit with error, and then HNAE3_INIT_CLIENT
-	 * related process can rollback the operation like notifing hardware to
-	 * free resources, HNAE3_INIT_CLIENT related process will exit with
-	 * error to notify NIC driver to reschedule soft reset process once
-	 * again.
-	 */
+	 
 	hr_dev->dis_db = true;
 
 	ret = read_poll_timeout(ops->ae_dev_reset_cnt, val,
@@ -1061,10 +995,7 @@ static u32 hns_roce_v2_cmd_sw_resetting(struct hns_roce_dev *hr_dev)
 	struct hnae3_handle *handle = priv->handle;
 	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
 
-	/* When software reset is detected at .init_instance() function, we
-	 * should stop sending mailbox&cmq&doorbell to hardware, and exit
-	 * with error.
-	 */
+	 
 	hr_dev->dis_db = true;
 	if (ops->ae_dev_reset_cnt(handle) != hr_dev->reset_cnt)
 		hr_dev->is_reset = true;
@@ -1076,19 +1007,13 @@ static u32 check_aedev_reset_status(struct hns_roce_dev *hr_dev,
 				    struct hnae3_handle *handle)
 {
 	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
-	unsigned long instance_stage; /* the current instance stage */
-	unsigned long reset_stage; /* the current reset stage */
+	unsigned long instance_stage;  
+	unsigned long reset_stage;  
 	unsigned long reset_cnt;
 	bool sw_resetting;
 	bool hw_resetting;
 
-	/* Get information about reset from NIC driver or RoCE driver itself,
-	 * the meaning of the following variables from NIC driver are described
-	 * as below:
-	 * reset_cnt -- The count value of completed hardware reset.
-	 * hw_resetting -- Whether hardware device is resetting now.
-	 * sw_resetting -- Whether NIC's software reset process is running now.
-	 */
+	 
 	instance_stage = handle->rinfo.instance_state;
 	reset_stage = handle->rinfo.reset_state;
 	reset_cnt = ops->ae_dev_reset_cnt(handle);
@@ -1185,7 +1110,7 @@ static int init_csq(struct hns_roce_dev *hr_dev,
 	roce_write(hr_dev, ROCEE_TX_CMQ_DEPTH_REG,
 		   (u32)csq->desc_num >> HNS_ROCE_CMQ_DESC_NUM_S);
 
-	/* Make sure to write CI first and then PI */
+	 
 	roce_write(hr_dev, ROCEE_TX_CMQ_CI_REG, 0);
 	roce_write(hr_dev, ROCEE_TX_CMQ_PI_REG, 0);
 
@@ -1289,7 +1214,7 @@ static int __hns_roce_cmq_send(struct hns_roce_dev *hr_dev,
 			csq->head = 0;
 	}
 
-	/* Write to hardware */
+	 
 	roce_write(hr_dev, ROCEE_TX_CMQ_PI_REG, csq->head);
 
 	do {
@@ -1301,7 +1226,7 @@ static int __hns_roce_cmq_send(struct hns_roce_dev *hr_dev,
 	if (hns_roce_cmq_csq_done(hr_dev)) {
 		ret = 0;
 		for (i = 0; i < num; i++) {
-			/* check the result of hardware write back */
+			 
 			desc[i] = csq->desc[tail++];
 			if (tail == csq->desc_num)
 				tail = 0;
@@ -1316,7 +1241,7 @@ static int __hns_roce_cmq_send(struct hns_roce_dev *hr_dev,
 			ret = hns_roce_cmd_err_convert_errno(desc_ret);
 		}
 	} else {
-		/* FW/HW reset or incorrect number of desc */
+		 
 		tail = roce_read(hr_dev, ROCEE_TX_CMQ_CI_REG);
 		dev_warn(hr_dev->dev, "CMDQ move tail from %u to %u.\n",
 			 csq->head, tail);
@@ -1975,14 +1900,14 @@ static void set_hem_page_size(struct hns_roce_dev *hr_dev)
 {
 	struct hns_roce_caps *caps = &hr_dev->caps;
 
-	/* EQ */
+	 
 	caps->eqe_ba_pg_sz = 0;
 	caps->eqe_buf_pg_sz = 0;
 
-	/* Link Table */
+	 
 	caps->llm_buf_pg_sz = 0;
 
-	/* MR */
+	 
 	caps->mpt_ba_pg_sz = 0;
 	caps->mpt_buf_pg_sz = 0;
 	caps->pbl_ba_pg_sz = HNS_ROCE_BA_PG_SZ_SUPPORTED_16K;
@@ -1991,7 +1916,7 @@ static void set_hem_page_size(struct hns_roce_dev *hr_dev)
 		   caps->mpt_bt_num, &caps->mpt_buf_pg_sz, &caps->mpt_ba_pg_sz,
 		   HEM_TYPE_MTPT);
 
-	/* QP */
+	 
 	caps->qpc_ba_pg_sz = 0;
 	caps->qpc_buf_pg_sz = 0;
 	caps->qpc_timer_ba_pg_sz = 0;
@@ -2009,7 +1934,7 @@ static void set_hem_page_size(struct hns_roce_dev *hr_dev)
 			   caps->sccc_bt_num, &caps->sccc_buf_pg_sz,
 			   &caps->sccc_ba_pg_sz, HEM_TYPE_SCCC);
 
-	/* CQ */
+	 
 	caps->cqc_ba_pg_sz = 0;
 	caps->cqc_buf_pg_sz = 0;
 	caps->cqc_timer_ba_pg_sz = 0;
@@ -2022,7 +1947,7 @@ static void set_hem_page_size(struct hns_roce_dev *hr_dev)
 	calc_pg_sz(caps->max_cqes, caps->cqe_sz, caps->cqe_hop_num,
 		   1, &caps->cqe_buf_pg_sz, &caps->cqe_ba_pg_sz, HEM_TYPE_CQE);
 
-	/* SRQ */
+	 
 	if (caps->flags & HNS_ROCE_CAP_FLAG_SRQ) {
 		caps->srqc_ba_pg_sz = 0;
 		caps->srqc_buf_pg_sz = 0;
@@ -2042,18 +1967,18 @@ static void set_hem_page_size(struct hns_roce_dev *hr_dev)
 			   &caps->idx_ba_pg_sz, HEM_TYPE_IDX);
 	}
 
-	/* GMV */
+	 
 	caps->gmv_ba_pg_sz = 0;
 	caps->gmv_buf_pg_sz = 0;
 }
 
-/* Apply all loaded caps before setting to hardware */
+ 
 static void apply_func_caps(struct hns_roce_dev *hr_dev)
 {
 	struct hns_roce_caps *caps = &hr_dev->caps;
 	struct hns_roce_v2_priv *priv = hr_dev->priv;
 
-	/* The following configurations don't need to be got from firmware. */
+	 
 	caps->qpc_timer_entry_sz = HNS_ROCE_V2_QPC_TIMER_ENTRY_SZ;
 	caps->cqc_timer_entry_sz = HNS_ROCE_V2_CQC_TIMER_ENTRY_SZ;
 	caps->mtt_entry_sz = HNS_ROCE_V2_MTT_ENTRY_SZ;
@@ -2076,12 +2001,12 @@ static void apply_func_caps(struct hns_roce_dev *hr_dev)
 		caps->ceqe_size = HNS_ROCE_V3_EQE_SIZE;
 		caps->aeqe_size = HNS_ROCE_V3_EQE_SIZE;
 
-		/* The following configurations will be overwritten */
+		 
 		caps->qpc_sz = HNS_ROCE_V3_QPC_SZ;
 		caps->cqe_sz = HNS_ROCE_V3_CQE_SIZE;
 		caps->sccc_sz = HNS_ROCE_V3_SCCC_SZ;
 
-		/* The following configurations are not got from firmware */
+		 
 		caps->gmv_entry_sz = HNS_ROCE_V3_GMV_ENTRY_SZ;
 
 		caps->gmv_hop_num = HNS_ROCE_HOP_NUM_0;
@@ -2355,7 +2280,7 @@ static int hns_roce_v2_pf_profile(struct hns_roce_dev *hr_dev)
 		return ret;
 	}
 
-	/* Configure the size of QPC, SCCC, etc. */
+	 
 	return hns_roce_config_entry_size(hr_dev);
 }
 
@@ -2452,13 +2377,13 @@ alloc_link_table_buf(struct hns_roce_dev *hr_dev)
 	size = hr_dev->caps.num_qps * HNS_ROCE_V2_EXT_LLM_ENTRY_SZ;
 	min_size = HNS_ROCE_EXT_LLM_MIN_PAGES(hr_dev->caps.sl_num) << pg_shift;
 
-	/* Alloc data table */
+	 
 	size = max(size, min_size);
 	link_tbl->buf = hns_roce_buf_alloc(hr_dev, size, pg_shift, 0);
 	if (IS_ERR(link_tbl->buf))
 		return ERR_PTR(-ENOMEM);
 
-	/* Alloc config table */
+	 
 	size = link_tbl->buf->npages * sizeof(u64);
 	link_tbl->table.buf = dma_alloc_coherent(hr_dev->dev, size,
 						 &link_tbl->table.map,
@@ -2736,7 +2661,7 @@ static int free_mr_modify_rsv_qp(struct hns_roce_dev *hr_dev,
 	}
 
 	loopback = hr_dev->loop_idc;
-	/* Set qpc lbi = 1 incidate loopback IO */
+	 
 	hr_dev->loop_idc = 1;
 
 	mask = IB_QP_STATE | IB_QP_AV | IB_QP_PATH_MTU | IB_QP_DEST_QPN |
@@ -2826,7 +2751,7 @@ static int get_hem_table(struct hns_roce_dev *hr_dev)
 	int ret;
 	int i;
 
-	/* Alloc memory for source address table buffer space chunk */
+	 
 	for (gmv_count = 0; gmv_count < hr_dev->caps.gmv_entry_num;
 	     gmv_count++) {
 		ret = hns_roce_table_get(hr_dev, &hr_dev->gmv_table, gmv_count);
@@ -2837,7 +2762,7 @@ static int get_hem_table(struct hns_roce_dev *hr_dev)
 	if (hr_dev->is_vf)
 		return 0;
 
-	/* Alloc memory for QPC Timer buffer space chunk */
+	 
 	for (qpc_count = 0; qpc_count < hr_dev->caps.qpc_timer_bt_num;
 	     qpc_count++) {
 		ret = hns_roce_table_get(hr_dev, &hr_dev->qpc_timer_table,
@@ -2848,7 +2773,7 @@ static int get_hem_table(struct hns_roce_dev *hr_dev)
 		}
 	}
 
-	/* Alloc memory for CQC Timer buffer space chunk */
+	 
 	for (cqc_count = 0; cqc_count < hr_dev->caps.cqc_timer_bt_num;
 	     cqc_count++) {
 		ret = hns_roce_table_get(hr_dev, &hr_dev->cqc_timer_table,
@@ -2897,7 +2822,7 @@ static int hns_roce_v2_init(struct hns_roce_dev *hr_dev)
 {
 	int ret;
 
-	/* The hns ROCEE requires the extdb info to be cleared before using */
+	 
 	ret = hns_roce_clear_extdb_list_info(hr_dev);
 	if (ret)
 		return ret;
@@ -2975,7 +2900,7 @@ static int v2_wait_mbox_complete(struct hns_roce_dev *hr_dev, u32 timeout,
 		ret = __hns_roce_cmq_send(hr_dev, &desc, 1);
 		if (!ret) {
 			status = le32_to_cpu(mb_st->mb_status_hw_run);
-			/* No pending message exists in ROCEE mbox. */
+			 
 			if (!(status & MB_ST_HW_RUN_M))
 				break;
 		} else if (!v2_chk_mbox_is_avail(hr_dev, &busy)) {
@@ -2996,7 +2921,7 @@ static int v2_wait_mbox_complete(struct hns_roce_dev *hr_dev, u32 timeout,
 	if (!ret) {
 		*complete_status = (u8)(status & MB_ST_COMPLETE_M);
 	} else if (!v2_chk_mbox_is_avail(hr_dev, &busy)) {
-		/* Ignore all errors if the mbox is unavailable. */
+		 
 		ret = 0;
 		*complete_status = MB_ST_COMPLETE_M;
 	}
@@ -3010,7 +2935,7 @@ static int v2_post_mbox(struct hns_roce_dev *hr_dev,
 	u8 status = 0;
 	int ret;
 
-	/* Waiting for the mbox to be idle */
+	 
 	ret = v2_wait_mbox_complete(hr_dev, HNS_ROCE_V2_GO_BIT_TIMEOUT_MSECS,
 				    &status);
 	if (unlikely(ret)) {
@@ -3020,7 +2945,7 @@ static int v2_post_mbox(struct hns_roce_dev *hr_dev,
 		return ret;
 	}
 
-	/* Post new message to mbox */
+	 
 	ret = hns_roce_mbox_post(hr_dev, mbox_msg);
 	if (ret)
 		dev_err_ratelimited(hr_dev->dev,
@@ -3189,7 +3114,7 @@ static int set_mtpt_pbl(struct hns_roce_dev *hr_dev,
 		return -ENOBUFS;
 	}
 
-	/* Aligned to the hardware address access unit */
+	 
 	for (i = 0; i < count; i++)
 		pages[i] >>= 6;
 
@@ -3398,10 +3323,7 @@ static void free_mr_send_cmd_to_hw(struct hns_roce_dev *hr_dev)
 	int ret;
 	int i;
 
-	/*
-	 * If the device initialization is not complete or in the uninstall
-	 * process, then there is no need to execute free mr.
-	 */
+	 
 	if (priv->handle->rinfo.reset_state == HNS_ROCE_STATE_RST_INIT ||
 	    priv->handle->rinfo.instance_state == HNS_ROCE_STATE_INIT ||
 	    hr_dev->state == HNS_ROCE_DEVICE_STATE_UNINIT)
@@ -3461,7 +3383,7 @@ static void *get_sw_cqe_v2(struct hns_roce_cq *hr_cq, unsigned int n)
 {
 	struct hns_roce_v2_cqe *cqe = get_cqe_v2(hr_cq, n & hr_cq->ib_cq.cqe);
 
-	/* Get cqe when Owner bit is Conversely with the MSB of cons_idx */
+	 
 	return (hr_reg_read(cqe, CQE_OWNER) ^ !!(n & hr_cq->cq_depth)) ? cqe :
 									 NULL;
 }
@@ -3499,10 +3421,7 @@ static void __hns_roce_v2_cq_clean(struct hns_roce_cq *hr_cq, u32 qpn,
 			break;
 	}
 
-	/*
-	 * Now backwards through the CQ, removing CQ entries
-	 * that match our QP by overwriting them with next entries.
-	 */
+	 
 	while ((int) --prod_index - (int) hr_cq->cons_index >= 0) {
 		cqe = get_cqe_v2(hr_cq, prod_index & hr_cq->ib_cq.cqe);
 		if (hr_reg_read(cqe, CQE_LCL_QPN) == qpn) {
@@ -3591,10 +3510,7 @@ static int hns_roce_v2_req_notify_cq(struct ib_cq *ibcq,
 	struct hns_roce_v2_db cq_db = {};
 	u32 notify_flag;
 
-	/*
-	 * flags = 0, then notify_flag : next
-	 * flags = 1, then notify flag : solocited
-	 */
+	 
 	notify_flag = (flags & IB_CQ_SOLICITED_MASK) == IB_CQ_SOLICITED ?
 		      V2_CQ_DB_REQ_NOT : V2_CQ_DB_REQ_NOT_SOL;
 
@@ -3703,11 +3619,7 @@ static void get_cqe_status(struct hns_roce_dev *hr_dev, struct hns_roce_qp *qp,
 		       cq->cqe_size, false);
 	wc->vendor_err = hr_reg_read(cqe, CQE_SUB_STATUS);
 
-	/*
-	 * For hns ROCEE, GENERAL_ERR is an error type that is not defined in
-	 * the standard protocol, the driver must ignore it and needn't to set
-	 * the QP to an error state.
-	 */
+	 
 	if (cqe_status == HNS_ROCE_CQE_V2_GENERAL_ERR)
 		return;
 
@@ -3737,13 +3649,7 @@ static int get_cur_qp(struct hns_roce_cq *hr_cq, struct hns_roce_v2_cqe *cqe,
 	return 0;
 }
 
-/*
- * mapped-value = 1 + real-value
- * The ib wc opcode's real value is start from 0, In order to distinguish
- * between initialized and uninitialized map values, we plus 1 to the actual
- * value when defining the mapping, so that the validity can be identified by
- * checking whether the mapped value is greater than 0.
- */
+ 
 #define HR_WC_OP_MAP(hr_key, ib_key) \
 		[HNS_ROCE_V2_WQE_OP_ ## hr_key] = 1 + IB_WC_ ## ib_key
 
@@ -3884,7 +3790,7 @@ static int hns_roce_v2_poll_one(struct hns_roce_cq *hr_cq,
 		return -EAGAIN;
 
 	++hr_cq->cons_index;
-	/* Memory barrier */
+	 
 	rmb();
 
 	ret = get_cur_qp(hr_cq, cqe, &qp);
@@ -3900,9 +3806,7 @@ static int hns_roce_v2_poll_one(struct hns_roce_cq *hr_cq,
 	if (is_send) {
 		wq = &qp->sq;
 
-		/* If sg_signal_bit is set, tail pointer will be updated to
-		 * the WQE corresponding to the current CQE.
-		 */
+		 
 		if (qp->sq_signal_bits)
 			wq->tail += (wqe_idx - (u16)wq->tail) &
 				    (wq->wqe_cnt - 1);
@@ -3943,13 +3847,7 @@ static int hns_roce_v2_poll_cq(struct ib_cq *ibcq, int num_entries,
 
 	spin_lock_irqsave(&hr_cq->lock, flags);
 
-	/*
-	 * When the device starts to reset, the state is RST_DOWN. At this time,
-	 * there may still be some valid CQEs in the hardware that are not
-	 * polled. Therefore, it is not allowed to switch to the software mode
-	 * immediately. When the state changes to UNINIT, CQE no longer exists
-	 * in the hardware, and then switch to software mode.
-	 */
+	 
 	if (hr_dev->state == HNS_ROCE_DEVICE_STATE_UNINIT) {
 		npolled = hns_roce_v2_sw_poll_cq(hr_cq, num_entries, wc);
 		goto out;
@@ -4162,7 +4060,7 @@ static int hns_roce_v2_qp_modify(struct hns_roce_dev *hr_dev,
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
 
-	/* The qpc size of HIP08 is only 256B, which is half of HIP09 */
+	 
 	qpc_size = hr_dev->caps.qpc_sz;
 	memcpy(mailbox->buf, context, qpc_size);
 	memcpy(mailbox->buf + qpc_size, qpc_mask, qpc_size);
@@ -4239,12 +4137,7 @@ static void modify_qp_reset_to_init(struct ib_qp *ibqp,
 	struct hns_roce_dev *hr_dev = to_hr_dev(ibqp->device);
 	struct hns_roce_qp *hr_qp = to_hr_qp(ibqp);
 
-	/*
-	 * In v2 engine, software pass context and context mask to hardware
-	 * when modifying qp. If software need modify some fields in context,
-	 * we should set all bits of the relevant fields in context mask to
-	 * 0 at the same time, else set them to 0x1.
-	 */
+	 
 	hr_reg_write(context, QPC_TST, to_hr_qp_type(ibqp->qp_type));
 
 	hr_reg_write(context, QPC_PD, get_pdn(ibqp->pd));
@@ -4253,7 +4146,7 @@ static void modify_qp_reset_to_init(struct ib_qp *ibqp,
 
 	set_qpc_wqe_cnt(hr_qp, context, qpc_mask);
 
-	/* No VLAN need to set 0xFFF */
+	 
 	hr_reg_write(context, QPC_VLAN_ID, 0xfff);
 
 	if (ibqp->qp_type == IB_QPT_XRC_TGT) {
@@ -4296,12 +4189,7 @@ static void modify_qp_init_to_init(struct ib_qp *ibqp,
 				   struct hns_roce_v2_qp_context *context,
 				   struct hns_roce_v2_qp_context *qpc_mask)
 {
-	/*
-	 * In v2 engine, software pass context and context mask to hardware
-	 * when modifying qp. If software need modify some fields in context,
-	 * we should set all bits of the relevant fields in context mask to
-	 * 0 at the same time, else set them to 0x1.
-	 */
+	 
 	hr_reg_write(context, QPC_TST, to_hr_qp_type(ibqp->qp_type));
 	hr_reg_clear(qpc_mask, QPC_TST);
 
@@ -4331,7 +4219,7 @@ static int config_qp_rq_buf(struct hns_roce_dev *hr_dev,
 	u64 wqe_sge_ba;
 	int count;
 
-	/* Search qp buf's mtts */
+	 
 	count = hns_roce_mtr_find(hr_dev, &hr_qp->mtr, hr_qp->rq.offset, mtts,
 				  MTT_MIN_COUNT, &wqe_sge_ba);
 	if (hr_qp->rq.wqe_cnt && count < 1) {
@@ -4343,12 +4231,7 @@ static int config_qp_rq_buf(struct hns_roce_dev *hr_dev,
 	context->wqe_sge_ba = cpu_to_le32(wqe_sge_ba >> 3);
 	qpc_mask->wqe_sge_ba = 0;
 
-	/*
-	 * In v2 engine, software pass context and context mask to hardware
-	 * when modifying qp. If software need modify some fields in context,
-	 * we should set all bits of the relevant fields in context mask to
-	 * 0 at the same time, else set them to 0x1.
-	 */
+	 
 	hr_reg_write(context, QPC_WQE_SGE_BA_H, wqe_sge_ba >> (32 + 3));
 	hr_reg_clear(qpc_mask, QPC_WQE_SGE_BA_H);
 
@@ -4403,7 +4286,7 @@ static int config_qp_sq_buf(struct hns_roce_dev *hr_dev,
 	u64 sq_cur_blk = 0;
 	int count;
 
-	/* search qp buf's mtts */
+	 
 	count = hns_roce_mtr_find(hr_dev, &hr_qp->mtr, 0, &sq_cur_blk, 1, NULL);
 	if (count < 1) {
 		ibdev_err(ibdev, "failed to find QP(0x%lx) SQ buf.\n",
@@ -4421,12 +4304,7 @@ static int config_qp_sq_buf(struct hns_roce_dev *hr_dev,
 		}
 	}
 
-	/*
-	 * In v2 engine, software pass context and context mask to hardware
-	 * when modifying qp. If software need modify some fields in context,
-	 * we should set all bits of the relevant fields in context mask to
-	 * 0 at the same time, else set them to 0x1.
-	 */
+	 
 	hr_reg_write(context, QPC_SQ_CUR_BLK_ADDR_L,
 		     lower_32_bits(to_hr_hw_page_addr(sq_cur_blk)));
 	hr_reg_write(context, QPC_SQ_CUR_BLK_ADDR_H,
@@ -4488,7 +4366,7 @@ static int modify_qp_init_to_rtr(struct ib_qp *ibqp,
 		return ret;
 	}
 
-	/* Search IRRL's mtts */
+	 
 	mtts = hns_roce_table_find(hr_dev, &hr_dev->qp_table.irrl_table,
 				   hr_qp->qpn, &irrl_ba);
 	if (!mtts) {
@@ -4496,7 +4374,7 @@ static int modify_qp_init_to_rtr(struct ib_qp *ibqp,
 		return -EINVAL;
 	}
 
-	/* Search TRRL's mtts */
+	 
 	mtts = hns_roce_table_find(hr_dev, &hr_dev->qp_table.trrl_table,
 				   hr_qp->qpn, &trrl_ba);
 	if (!mtts) {
@@ -4532,7 +4410,7 @@ static int modify_qp_init_to_rtr(struct ib_qp *ibqp,
 
 	smac = (const u8 *)hr_dev->dev_addr[port];
 	dmac = (u8 *)attr->ah_attr.roce.dmac;
-	/* when dmac equals smac or loop_idc is 1, it should loopback */
+	 
 	if (ether_addr_equal_unaligned(dmac, smac) ||
 	    hr_dev->loop_idc == 0x1) {
 		hr_reg_write(context, QPC_LBI, hr_dev->loop_idc);
@@ -4556,7 +4434,7 @@ static int modify_qp_init_to_rtr(struct ib_qp *ibqp,
 	if (WARN_ON(mtu <= 0))
 		return -EINVAL;
 #define MIN_LP_MSG_LEN 1024
-	/* mtu * (2 ^ lp_pktn_ini) should be in the range of 1024 to mtu */
+	 
 	lp_pktn_ini = ilog2(max(mtu, MIN_LP_MSG_LEN) / mtu);
 
 	if (attr_mask & IB_QP_PATH_MTU) {
@@ -4567,7 +4445,7 @@ static int modify_qp_init_to_rtr(struct ib_qp *ibqp,
 	hr_reg_write(context, QPC_LP_PKTN_INI, lp_pktn_ini);
 	hr_reg_clear(qpc_mask, QPC_LP_PKTN_INI);
 
-	/* ACK_REQ_FREQ should be larger than or equal to LP_PKTN_INI */
+	 
 	hr_reg_write(context, QPC_ACK_REQ_FREQ, lp_pktn_ini);
 	hr_reg_clear(qpc_mask, QPC_ACK_REQ_FREQ);
 
@@ -4581,7 +4459,7 @@ static int modify_qp_init_to_rtr(struct ib_qp *ibqp,
 	hr_reg_clear(qpc_mask, QPC_TRRL_HEAD_MAX);
 	hr_reg_clear(qpc_mask, QPC_TRRL_TAIL_MAX);
 
-	/* rocee send 2^lp_sgen_ini segs every time */
+	 
 	hr_reg_write(context, QPC_LP_SGEN_INI, 3);
 	hr_reg_clear(qpc_mask, QPC_LP_SGEN_INI);
 
@@ -4618,7 +4496,7 @@ static int modify_qp_rtr_to_rts(struct ib_qp *ibqp,
 	struct ib_device *ibdev = &hr_dev->ib_dev;
 	int ret;
 
-	/* Not support alternate path and path migration */
+	 
 	if (attr_mask & (IB_QP_ALT_PATH | IB_QP_PATH_MIG_STATE)) {
 		ibdev_err(ibdev, "RTR2RTS attr_mask (0x%x)error\n", attr_mask);
 		return -EINVAL;
@@ -4630,11 +4508,7 @@ static int modify_qp_rtr_to_rts(struct ib_qp *ibqp,
 		return ret;
 	}
 
-	/*
-	 * Set some fields in context to zero, Because the default values
-	 * of all fields in context are zero, we need not set them to 0 again.
-	 * but we should set the relevant fields of context mask to 0.
-	 */
+	 
 	hr_reg_clear(qpc_mask, QPC_IRRL_SGE_IDX);
 
 	hr_reg_clear(qpc_mask, QPC_RX_ACK_MSN);
@@ -4680,9 +4554,7 @@ static int get_dip_ctx_idx(struct ib_qp *ibqp, const struct ib_qp_attr *attr,
 		}
 	}
 
-	/* If no dgid is found, a new dip and a mapping between dgid and
-	 * dip_idx will be created.
-	 */
+	 
 	hr_dip = kzalloc(sizeof(*hr_dip), GFP_ATOMIC);
 	if (!hr_dip) {
 		ret = -ENOMEM;
@@ -4732,7 +4604,7 @@ static int check_cong_type(struct ib_qp *ibqp,
 	if (ibqp->qp_type == IB_QPT_UD)
 		hr_dev->caps.cong_type = CONG_TYPE_DCQCN;
 
-	/* different congestion types match different configurations */
+	 
 	switch (hr_dev->caps.cong_type) {
 	case CONG_TYPE_DCQCN:
 		cong_alg->alg_sel = CONG_DCQCN;
@@ -4806,7 +4678,7 @@ static int fill_cong_field(struct ib_qp *ibqp, const struct ib_qp_attr *attr,
 		     cong_field.wnd_mode_sel);
 	hr_reg_clear(&qpc_mask->ext, QPCEX_SQ_RQ_NOT_FORBID_EN);
 
-	/* if dip is disabled, there is no need to set dip idx */
+	 
 	if (cong_field.dip_vld == 0)
 		return 0;
 
@@ -4850,11 +4722,7 @@ static int hns_roce_v2_set_path(struct ib_qp *ibqp,
 		return -EINVAL;
 	}
 
-	/*
-	 * If free_mr_en of qp is set, it means that this qp comes from
-	 * free mr. This qp will perform the loopback operation.
-	 * In the loopback scenario, only sl needs to be set.
-	 */
+	 
 	if (hr_qp->free_mr_en) {
 		hr_reg_write(context, QPC_SL, sl);
 		hr_reg_clear(qpc_mask, QPC_SL);
@@ -4876,7 +4744,7 @@ static int hns_roce_v2_set_path(struct ib_qp *ibqp,
 		is_udp = (gid_attr->gid_type == IB_GID_TYPE_ROCE_UDP_ENCAP);
 	}
 
-	/* Only HIP08 needs to set the vlan_en bits in QPC */
+	 
 	if (vlan_id < VLAN_N_VID &&
 	    hr_dev->pci_dev->revision == PCI_REVISION_ID_HIP08) {
 		hr_reg_enable(context, QPC_RQ_VLAN_EN);
@@ -5173,7 +5041,7 @@ static void v2_set_flushed_fields(struct ib_qp *ibqp,
 	hr_qp->state = IB_QPS_ERR;
 	spin_unlock_irqrestore(&hr_qp->sq.lock, sq_flag);
 
-	if (ibqp->srq || ibqp->qp_type == IB_QPT_XRC_INI) /* no RQ */
+	if (ibqp->srq || ibqp->qp_type == IB_QPT_XRC_INI)  
 		return;
 
 	spin_lock_irqsave(&hr_qp->rq.lock, rq_flag);
@@ -5198,12 +5066,7 @@ static int hns_roce_v2_modify_qp(struct ib_qp *ibqp,
 	if (attr_mask & ~IB_QP_ATTR_STANDARD_BITS)
 		return -EOPNOTSUPP;
 
-	/*
-	 * In v2 engine, software pass context and context mask to hardware
-	 * when modifying qp. If software need modify some fields in context,
-	 * we should set all bits of the relevant fields in context mask to
-	 * 0 at the same time, else set them to 0x1.
-	 */
+	 
 	memset(context, 0, hr_dev->caps.qpc_sz);
 	memset(qpc_mask, 0xff, hr_dev->caps.qpc_sz);
 
@@ -5212,11 +5075,11 @@ static int hns_roce_v2_modify_qp(struct ib_qp *ibqp,
 	if (ret)
 		goto out;
 
-	/* When QP state is err, SQ and RQ WQE should be flushed */
+	 
 	if (new_state == IB_QPS_ERR)
 		v2_set_flushed_fields(ibqp, context, qpc_mask);
 
-	/* Configure the optional fields */
+	 
 	ret = hns_roce_v2_set_opt_fields(ibqp, attr, attr_mask, context,
 					 qpc_mask);
 	if (ret)
@@ -5227,11 +5090,11 @@ static int hns_roce_v2_modify_qp(struct ib_qp *ibqp,
 			  ibqp->srq);
 	hr_reg_clear(qpc_mask, QPC_INV_CREDIT);
 
-	/* Every status migrate must change state */
+	 
 	hr_reg_write(context, QPC_QP_ST, new_state);
 	hr_reg_clear(qpc_mask, QPC_QP_ST);
 
-	/* SW pass context to HW */
+	 
 	ret = hns_roce_v2_qp_modify(hr_dev, context, qpc_mask, hr_qp);
 	if (ret) {
 		ibdev_err(ibdev, "failed to modify QP, ret = %d.\n", ret);
@@ -5421,7 +5284,7 @@ static int hns_roce_v2_destroy_qp_common(struct hns_roce_dev *hr_dev,
 	int ret = 0;
 
 	if (modify_qp_is_ok(hr_qp)) {
-		/* Modify qp to reset before destroying qp */
+		 
 		ret = hns_roce_v2_modify_qp(&hr_qp->ibqp, NULL, 0,
 					    hr_qp->state, IB_QPS_RESET, udata);
 		if (ret)
@@ -5486,7 +5349,7 @@ static int hns_roce_v2_qp_flow_control_init(struct hns_roce_dev *hr_dev,
 
 	mutex_lock(&hr_dev->qp_table.scc_mutex);
 
-	/* set scc ctx clear done flag */
+	 
 	hns_roce_cmq_setup_basic_desc(&desc, HNS_ROCE_OPC_RESET_SCCC, false);
 	ret =  hns_roce_cmq_send(hr_dev, &desc, 1);
 	if (ret) {
@@ -5494,7 +5357,7 @@ static int hns_roce_v2_qp_flow_control_init(struct hns_roce_dev *hr_dev,
 		goto out;
 	}
 
-	/* clear scc context */
+	 
 	hns_roce_cmq_setup_basic_desc(&desc, HNS_ROCE_OPC_CLR_SCCC, false);
 	clr = (struct hns_roce_sccc_clr *)desc.data;
 	clr->qpn = cpu_to_le32(hr_qp->qpn);
@@ -5504,7 +5367,7 @@ static int hns_roce_v2_qp_flow_control_init(struct hns_roce_dev *hr_dev,
 		goto out;
 	}
 
-	/* query scc context clear is done or not */
+	 
 	resp = (struct hns_roce_sccc_clr_done *)desc.data;
 	for (i = 0; i <= HNS_ROCE_CMQ_SCC_CLR_DONE_CNT; i++) {
 		hns_roce_cmq_setup_basic_desc(&desc,
@@ -5543,7 +5406,7 @@ static int hns_roce_v2_write_srqc_index_queue(struct hns_roce_srq *srq,
 	dma_addr_t dma_handle_idx = 0;
 	int ret;
 
-	/* Get physical address of idx que buf */
+	 
 	ret = hns_roce_mtr_find(hr_dev, &idx_que->mtr, 0, mtts_idx,
 				ARRAY_SIZE(mtts_idx), &dma_handle_idx);
 	if (ret < 1) {
@@ -5588,7 +5451,7 @@ static int hns_roce_v2_write_srqc(struct hns_roce_srq *srq, void *mb_buf)
 
 	memset(ctx, 0, sizeof(*ctx));
 
-	/* Get the physical address of srq buf */
+	 
 	ret = hns_roce_mtr_find(hr_dev, &srq->buf_mtr, 0, mtts_wqe,
 				ARRAY_SIZE(mtts_wqe), &dma_handle_wqe);
 	if (ret < 1) {
@@ -5636,7 +5499,7 @@ static int hns_roce_v2_modify_srq(struct ib_srq *ibsrq,
 	struct hns_roce_cmd_mailbox *mailbox;
 	int ret;
 
-	/* Resizing SRQs is not supported yet */
+	 
 	if (srq_attr_mask & IB_SRQ_MAX_WR)
 		return -EOPNOTSUPP;
 
@@ -5931,9 +5794,7 @@ static irqreturn_t hns_roce_v2_aeq_int(struct hns_roce_dev *hr_dev,
 	int sub_type;
 
 	while (aeqe) {
-		/* Make sure we read AEQ entry after we have checked the
-		 * ownership bit
-		 */
+		 
 		dma_rmb();
 
 		event_type = hr_reg_read(aeqe, AEQE_EVENT_TYPE);
@@ -6011,9 +5872,7 @@ static irqreturn_t hns_roce_v2_ceq_int(struct hns_roce_dev *hr_dev,
 	u32 cqn;
 
 	while (ceqe) {
-		/* Make sure we read CEQ entry after we have checked the
-		 * ownership bit
-		 */
+		 
 		dma_rmb();
 
 		cqn = hr_reg_read(ceqe, CEQE_CQN);
@@ -6038,10 +5897,10 @@ static irqreturn_t hns_roce_v2_msix_interrupt_eq(int irq, void *eq_ptr)
 	irqreturn_t int_work;
 
 	if (eq->type_flag == HNS_ROCE_CEQ)
-		/* Completion event interrupt */
+		 
 		int_work = hns_roce_v2_ceq_int(hr_dev, eq);
 	else
-		/* Asynchronous event interrupt */
+		 
 		int_work = hns_roce_v2_aeq_int(hr_dev, eq);
 
 	return IRQ_RETVAL(int_work);
@@ -6064,7 +5923,7 @@ static irqreturn_t abnormal_interrupt_basic(struct hns_roce_dev *hr_dev,
 		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG,
 			   1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S);
 
-		/* Set reset level for reset_event() */
+		 
 		if (ops->set_default_reset_request)
 			ops->set_default_reset_request(ae_dev,
 						       HNAE3_FUNC_RESET);
@@ -6295,7 +6154,7 @@ static int config_eqc(struct hns_roce_dev *hr_dev, struct hns_roce_eq *eq,
 
 	init_eq_config(hr_dev, eq);
 
-	/* if not multi-hop, eqe buffer only use one trunk */
+	 
 	count = hns_roce_mtr_find(hr_dev, &eq->mtr, 0, eqe_ba, MTT_MIN_COUNT,
 				  &bt_ba);
 	if (count < 1) {
@@ -6373,7 +6232,7 @@ static int hns_roce_v2_create_eq(struct hns_roce_dev *hr_dev,
 	struct hns_roce_cmd_mailbox *mailbox;
 	int ret;
 
-	/* Allocate mailbox memory */
+	 
 	mailbox = hns_roce_alloc_cmd_mailbox(hr_dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
@@ -6421,7 +6280,7 @@ static int __hns_roce_request_irq(struct hns_roce_dev *hr_dev, int irq_num,
 		}
 	}
 
-	/* irq contains: abnormal + AEQ + CEQ */
+	 
 	for (j = 0; j < other_num; j++)
 		snprintf((char *)hr_dev->irq_names[j], HNS_ROCE_INT_NAME_LEN,
 			 "hns-abn-%d", j);
@@ -6517,13 +6376,13 @@ static int hns_roce_v2_init_eq_table(struct hns_roce_dev *hr_dev)
 	if (!eq_table->eq)
 		return -ENOMEM;
 
-	/* create eq */
+	 
 	for (i = 0; i < eq_num; i++) {
 		eq = &eq_table->eq[i];
 		eq->hr_dev = hr_dev;
 		eq->eqn = i;
 		if (i < comp_num) {
-			/* CEQ */
+			 
 			eq_cmd = HNS_ROCE_CMD_CREATE_CEQC;
 			eq->type_flag = HNS_ROCE_CEQ;
 			eq->entries = hr_dev->caps.ceqe_depth;
@@ -6532,7 +6391,7 @@ static int hns_roce_v2_init_eq_table(struct hns_roce_dev *hr_dev)
 			eq->eq_max_cnt = HNS_ROCE_CEQ_DEFAULT_BURST_NUM;
 			eq->eq_period = HNS_ROCE_CEQ_DEFAULT_INTERVAL;
 		} else {
-			/* AEQ */
+			 
 			eq_cmd = HNS_ROCE_CMD_CREATE_AEQC;
 			eq->type_flag = HNS_ROCE_AEQ;
 			eq->entries = hr_dev->caps.aeqe_depth;
@@ -6565,7 +6424,7 @@ static int hns_roce_v2_init_eq_table(struct hns_roce_dev *hr_dev)
 		goto err_request_irq_fail;
 	}
 
-	/* enable irq */
+	 
 	hns_roce_v2_int_mask_enable(hr_dev, eq_num, EQ_ENABLE);
 
 	return 0;
@@ -6589,7 +6448,7 @@ static void hns_roce_v2_cleanup_eq_table(struct hns_roce_dev *hr_dev)
 
 	eq_num = hr_dev->caps.num_comp_vectors + hr_dev->caps.num_aeq_vectors;
 
-	/* Disable irq */
+	 
 	hns_roce_v2_int_mask_enable(hr_dev, eq_num, EQ_DISABLE);
 
 	__hns_roce_free_irq(hr_dev);
@@ -6661,7 +6520,7 @@ static const struct pci_device_id hns_roce_hw_v2_pci_tbl[] = {
 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_200G_RDMA), 0},
 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_RDMA_DCB_PFC_VF),
 	 HNAE3_DEV_SUPPORT_ROCE_DCB_BITS},
-	/* required last entry */
+	 
 	{0, }
 };
 
@@ -6682,7 +6541,7 @@ static void hns_roce_hw_v2_get_cfg(struct hns_roce_dev *hr_dev,
 	hr_dev->sdb_offset = ROCEE_DB_SQ_L_0_REG;
 	hr_dev->odb_offset = hr_dev->sdb_offset;
 
-	/* Get info from NIC driver. */
+	 
 	hr_dev->reg_base = handle->rinfo.roce_io_base;
 	hr_dev->mem_base = handle->rinfo.roce_mem_base;
 	hr_dev->caps.num_ports = 1;
@@ -6696,7 +6555,7 @@ static void hns_roce_hw_v2_get_cfg(struct hns_roce_dev *hr_dev,
 		hr_dev->irq[i] = pci_irq_vector(handle->pdev,
 						i + handle->rinfo.base_vector);
 
-	/* cmd issue mode: 0 is poll, 1 is event */
+	 
 	hr_dev->cmd_mod = 1;
 	hr_dev->loop_idc = 0;
 
@@ -6866,10 +6725,7 @@ static int hns_roce_hw_v2_reset_notify_init(struct hnae3_handle *handle)
 	dev_info(&handle->pdev->dev, "In reset process RoCE client reinit.\n");
 	ret = __hns_roce_hw_v2_init_instance(handle);
 	if (ret) {
-		/* when reset notify type is HNAE3_INIT_CLIENT In reset notify
-		 * callback function, RoCE Engine reinitialize. If RoCE reinit
-		 * failed, we should inform NIC driver.
-		 */
+		 
 		handle->priv = NULL;
 		dev_err(dev, "In reset process RoCE reinit failed %d.\n", ret);
 	} else {

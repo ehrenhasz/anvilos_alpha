@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sdhci-pci-arasan.c - Driver for Arasan PCI Controller with
- * integrated phy.
- *
- * Copyright (C) 2017 Arasan Chip Systems Inc.
- *
- * Author: Atul Garg <agarg@arasan.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -14,7 +7,7 @@
 #include "sdhci.h"
 #include "sdhci-pci.h"
 
-/* Extra registers for Arasan SD/SDIO/MMC Host Controller with PHY */
+ 
 #define PHY_ADDR_REG	0x300
 #define PHY_DAT_REG	0x304
 
@@ -22,7 +15,7 @@
 #define PHY_BUSY	BIT(9)
 #define DATA_MASK	0xFF
 
-/* PHY Specific Registers */
+ 
 #define DLL_STATUS	0x00
 #define IPAD_CTRL1	0x01
 #define IPAD_CTRL2	0x02
@@ -67,16 +60,13 @@
 #define DLL_RDY_MASK	0x10
 #define MAX_CLK_BUF	0x7
 
-/* Mode Controls */
+ 
 #define ENHSTRB_MODE	BIT(0)
 #define HS400_MODE	BIT(1)
 #define LEGACY_MODE	BIT(2)
 #define DDR50_MODE	BIT(3)
 
-/*
- * Controller has no specific bits for HS200/HS.
- * Used BIT(4), BIT(5) for software programming.
- */
+ 
 #define HS200_MODE	BIT(4)
 #define HISPD_MODE	BIT(5)
 
@@ -85,7 +75,7 @@
 #define FREQSEL(x)	(((x) << 5) | DLL_ENBL)
 #define IOPAD(x, y)	((x) | ((y) << 2))
 
-/* Arasan private data */
+ 
 struct arasan_host {
 	u32 chg_clk;
 };
@@ -121,7 +111,7 @@ static int arasan_phy_read(struct sdhci_host *host, u8 offset, u8 *data)
 	sdhci_writew(host, offset, PHY_ADDR_REG);
 	ret = arasan_phy_addr_poll(host, PHY_ADDR_REG, PHY_BUSY);
 
-	/* Masking valid data bits */
+	 
 	*data = sdhci_readw(host, PHY_DAT_REG) & DATA_MASK;
 	return ret;
 }
@@ -145,13 +135,13 @@ static int arasan_phy_sts_poll(struct sdhci_host *host, u32 offset, u32 mask)
 	}
 }
 
-/* Initialize the Arasan PHY */
+ 
 static int arasan_phy_init(struct sdhci_host *host)
 {
 	int ret;
 	u8 val;
 
-	/* Program IOPADs and wait for calibration to be done */
+	 
 	if (arasan_phy_read(host, IPAD_CTRL1, &val) ||
 	    arasan_phy_write(host, val | RETB_ENBL | PDB_ENBL, IPAD_CTRL1) ||
 	    arasan_phy_read(host, IPAD_CTRL2, &val) ||
@@ -161,7 +151,7 @@ static int arasan_phy_init(struct sdhci_host *host)
 	if (ret)
 		return -EBUSY;
 
-	/* Program CMD/Data lines */
+	 
 	if (arasan_phy_read(host, IOREN_CTRL1, &val) ||
 	    arasan_phy_write(host, val | REN_CMND | REN_STRB, IOREN_CTRL1) ||
 	    arasan_phy_read(host, IOPU_CTRL1, &val) ||
@@ -185,7 +175,7 @@ static int arasan_phy_init(struct sdhci_host *host)
 	return 0;
 }
 
-/* Set Arasan PHY for different modes */
+ 
 static int arasan_phy_set(struct sdhci_host *host, u8 mode, u8 otap,
 			  u8 drv_type, u8 itap, u8 trim, u8 clk)
 {
@@ -312,7 +302,7 @@ static void arasan_sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
 {
 	sdhci_set_clock(host, clock);
 
-	/* Change phy settings for the new clock */
+	 
 	arasan_select_phy_clock(host);
 }
 

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2022 Pengutronix, Lucas Stach <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -100,17 +98,17 @@ static int clk_hsio_pll_prepare(struct clk_hw *hw)
 	struct clk_hsio_pll *clk = to_clk_hsio_pll(hw);
 	u32 val;
 
-	/* set the PLL configuration */
+	 
 	regmap_update_bits(clk->regmap, GPR_REG2,
 			   P_PLL_MASK | M_PLL_MASK | S_PLL_MASK,
 			   FIELD_PREP(P_PLL_MASK, 12) |
 			   FIELD_PREP(M_PLL_MASK, 800) |
 			   FIELD_PREP(S_PLL_MASK, 4));
 
-	/* de-assert PLL reset */
+	 
 	regmap_update_bits(clk->regmap, GPR_REG3, PLL_RST, PLL_RST);
 
-	/* enable PLL */
+	 
 	regmap_update_bits(clk->regmap, GPR_REG3, PLL_CKE, PLL_CKE);
 
 	return regmap_read_poll_timeout(clk->regmap, GPR_REG1, val,
@@ -220,10 +218,7 @@ static int imx8mp_hsio_power_notifier(struct notifier_block *nb,
 
 	switch (action) {
 	case GENPD_NOTIFY_ON:
-		/*
-		 * enable USB clock for a moment for the power-on ADB handshake
-		 * to proceed
-		 */
+		 
 		ret = clk_bulk_prepare_enable(num_clks, usb_clk);
 		if (ret)
 			return NOTIFY_BAD;
@@ -235,7 +230,7 @@ static int imx8mp_hsio_power_notifier(struct notifier_block *nb,
 		clk_bulk_disable_unprepare(num_clks, usb_clk);
 		break;
 	case GENPD_NOTIFY_PRE_OFF:
-		/* enable USB clock for the power-down ADB handshake to work */
+		 
 		ret = clk_bulk_prepare_enable(num_clks, usb_clk);
 		if (ret)
 			return NOTIFY_BAD;
@@ -425,12 +420,7 @@ static int imx8mp_hdmi_power_notifier(struct notifier_block *nb,
 	if (action != GENPD_NOTIFY_ON)
 		return NOTIFY_OK;
 
-	/*
-	 * Contrary to other blk-ctrls the reset and clock don't clear when the
-	 * power domain is powered down. To ensure the proper reset pulsing,
-	 * first clear them all to asserted state, then enable the bus clocks
-	 * and then release the ADB reset.
-	 */
+	 
 	regmap_write(bc->regmap, HDMI_RTX_RESET_CTL0, 0x0);
 	regmap_write(bc->regmap, HDMI_RTX_CLK_CTL0, 0x0);
 	regmap_write(bc->regmap, HDMI_RTX_CLK_CTL1, 0x0);
@@ -438,11 +428,7 @@ static int imx8mp_hdmi_power_notifier(struct notifier_block *nb,
 			BIT(0) | BIT(1) | BIT(10));
 	regmap_set_bits(bc->regmap, HDMI_RTX_RESET_CTL0, BIT(0));
 
-	/*
-	 * On power up we have no software backchannel to the GPC to
-	 * wait for the ADB handshake to happen, so we just delay for a
-	 * bit. On power down the GPC driver waits for the handshake.
-	 */
+	 
 	udelay(5);
 
 	return NOTIFY_OK;
@@ -527,24 +513,24 @@ static int imx8mp_blk_ctrl_power_on(struct generic_pm_domain *genpd)
 	struct imx8mp_blk_ctrl *bc = domain->bc;
 	int ret;
 
-	/* make sure bus domain is awake */
+	 
 	ret = pm_runtime_resume_and_get(bc->bus_power_dev);
 	if (ret < 0) {
 		dev_err(bc->dev, "failed to power up bus domain\n");
 		return ret;
 	}
 
-	/* enable upstream clocks */
+	 
 	ret = clk_bulk_prepare_enable(data->num_clks, domain->clks);
 	if (ret) {
 		dev_err(bc->dev, "failed to enable clocks\n");
 		goto bus_put;
 	}
 
-	/* domain specific blk-ctrl manipulation */
+	 
 	bc->power_on(bc, domain);
 
-	/* power up upstream GPC domain */
+	 
 	ret = pm_runtime_resume_and_get(domain->power_dev);
 	if (ret < 0) {
 		dev_err(bc->dev, "failed to power up peripheral domain\n");
@@ -580,15 +566,15 @@ static int imx8mp_blk_ctrl_power_off(struct generic_pm_domain *genpd)
 		return ret;
 	}
 
-	/* domain specific blk-ctrl manipulation */
+	 
 	bc->power_off(bc, domain);
 
 	clk_bulk_disable_unprepare(data->num_clks, domain->clks);
 
-	/* power down upstream GPC domain */
+	 
 	pm_runtime_put(domain->power_dev);
 
-	/* allow bus domain to suspend */
+	 
 	pm_runtime_put(bc->bus_power_dev);
 
 	return 0;
@@ -663,7 +649,7 @@ static int imx8mp_blk_ctrl_probe(struct platform_device *pdev)
 
 		for (j = 0; j < data->num_paths; j++) {
 			domain->paths[j].name = data->path_names[j];
-			/* Fake value for now, just let ICC could configure NoC mode/priority */
+			 
 			domain->paths[j].avg_bw = 1;
 			domain->paths[j].peak_bw = 1;
 		}
@@ -708,16 +694,7 @@ static int imx8mp_blk_ctrl_probe(struct platform_device *pdev)
 			goto cleanup_pds;
 		}
 
-		/*
-		 * We use runtime PM to trigger power on/off of the upstream GPC
-		 * domain, as a strict hierarchical parent/child power domain
-		 * setup doesn't allow us to meet the sequencing requirements.
-		 * This means we have nested locking of genpd locks, without the
-		 * nesting being visible at the genpd level, so we need a
-		 * separate lock class to make lockdep aware of the fact that
-		 * this are separate domain locks that can be nested without a
-		 * self-deadlock.
-		 */
+		 
 		lockdep_set_class(&domain->genpd.mlock,
 				  &blk_ctrl_genpd_lock_class);
 
@@ -787,14 +764,7 @@ static int imx8mp_blk_ctrl_suspend(struct device *dev)
 	struct imx8mp_blk_ctrl *bc = dev_get_drvdata(dev);
 	int ret, i;
 
-	/*
-	 * This may look strange, but is done so the generic PM_SLEEP code
-	 * can power down our domains and more importantly power them up again
-	 * after resume, without tripping over our usage of runtime PM to
-	 * control the upstream GPC domains. Things happen in the right order
-	 * in the system suspend/resume paths due to the device parent/child
-	 * hierarchy.
-	 */
+	 
 	ret = pm_runtime_get_sync(bc->bus_power_dev);
 	if (ret < 0) {
 		pm_runtime_put_noidle(bc->bus_power_dev);
@@ -849,7 +819,7 @@ static const struct of_device_id imx8mp_blk_ctrl_of_match[] = {
 		.compatible = "fsl,imx8mp-hdmi-blk-ctrl",
 		.data = &imx8mp_hdmi_blk_ctl_dev_data,
 	}, {
-		/* Sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, imx8mp_blk_ctrl_of_match);

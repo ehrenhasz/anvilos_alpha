@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**
- * timer-ti-32k.c - OMAP2 32k Timer Support
- *
- * Copyright (C) 2009 Nokia Corporation
- *
- * Update to use new clocksource/clockevent layers
- * Author: Kevin Hilman, MontaVista Software, Inc. <source@mvista.com>
- * Copyright (C) 2007 MontaVista Software, Inc.
- *
- * Original driver:
- * Copyright (C) 2005 Nokia Corporation
- * Author: Paul Mundt <paul.mundt@nokia.com>
- *         Juha Yrjölä <juha.yrjola@nokia.com>
- * OMAP Dual-mode timer framework support by Timo Teras
- *
- * Some parts based off of TI's 24xx code:
- *
- * Copyright (C) 2004-2009 Texas Instruments, Inc.
- *
- * Roughly modelled after the OMAP1 MPU timer code.
- * Added OMAP4 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -32,12 +9,7 @@
 #include <linux/of.h>
 #include <linux/of_address.h>
 
-/*
- * 32KHz clocksource ... always available, on pretty most chips except
- * OMAP 730 and 1510.  Other timers could be used as clocksources, with
- * higher resolution in free-running counter modes (e.g. 12 MHz xtal),
- * but systems won't necessarily want to spend resources that way.
- */
+ 
 
 #define OMAP2_32KSYNCNT_REV_OFF		0x0
 #define OMAP2_32KSYNCNT_REV_SCHEME	(0x3 << 30)
@@ -85,7 +57,7 @@ static void __init ti_32k_timer_enable_clock(struct device_node *np,
 
 	clock = of_clk_get_by_name(np->parent, name);
 	if (IS_ERR(clock)) {
-		/* Only some SoCs have a separate interface clock */
+		 
 		if (PTR_ERR(clock) == -EINVAL && !strncmp("ick", name, 3))
 			return;
 
@@ -113,10 +85,7 @@ static void __init ti_32k_timer_module_init(struct device_node *np,
 	ti_32k_timer_enable_clock(np, "fck");
 	ti_32k_timer_enable_clock(np, "ick");
 
-	/*
-	 * Force idle module as wkup domain is active with MPU.
-	 * No need to tag the module disabled for ti-sysc probe.
-	 */
+	 
 	writel_relaxed(0, sysc);
 }
 
@@ -136,13 +105,7 @@ static int __init ti_32k_timer_init(struct device_node *np)
 	ti_32k_timer.counter = ti_32k_timer.base;
 	ti_32k_timer_module_init(np, ti_32k_timer.base);
 
-	/*
-	 * 32k sync Counter IP register offsets vary between the highlander
-	 * version and the legacy ones.
-	 *
-	 * The 'SCHEME' bits(30-31) of the revision register is used to identify
-	 * the version.
-	 */
+	 
 	if (readl_relaxed(ti_32k_timer.base + OMAP2_32KSYNCNT_REV_OFF) &
 			OMAP2_32KSYNCNT_REV_SCHEME)
 		ti_32k_timer.counter += OMAP2_32KSYNCNT_CR_OFF_HIGH;

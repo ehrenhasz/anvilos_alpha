@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
- *
- * This module is not a complete tagger implementation. It only provides
- * primitives for taggers that rely on 802.1Q VLAN tags to use.
- */
+
+ 
 #include <linux/if_vlan.h>
 #include <linux/dsa/8021q.h>
 
@@ -12,28 +8,7 @@
 #include "tag.h"
 #include "tag_8021q.h"
 
-/* Binary structure of the fake 12-bit VID field (when the TPID is
- * ETH_P_DSA_8021Q):
- *
- * | 11  | 10  |  9  |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
- * +-----------+-----+-----------------+-----------+-----------------------+
- * |    RSV    | VBID|    SWITCH_ID    |   VBID    |          PORT         |
- * +-----------+-----+-----------------+-----------+-----------------------+
- *
- * RSV - VID[11:10]:
- *	Reserved. Must be set to 3 (0b11).
- *
- * SWITCH_ID - VID[8:6]:
- *	Index of switch within DSA tree. Must be between 0 and 7.
- *
- * VBID - { VID[9], VID[5:4] }:
- *	Virtual bridge ID. If between 1 and 7, packet targets the broadcast
- *	domain of a bridge. If transmitted as zero, packet targets a single
- *	port.
- *
- * PORT - VID[3:0]:
- *	Index of switch port. Must be between 0 and 15.
- */
+ 
 
 #define DSA_8021Q_RSV_VAL		3
 #define DSA_8021Q_RSV_SHIFT		10
@@ -73,22 +48,18 @@ struct dsa_tag_8021q_vlan {
 struct dsa_8021q_context {
 	struct dsa_switch *ds;
 	struct list_head vlans;
-	/* EtherType of RX VID, used for filtering on master interface */
+	 
 	__be16 proto;
 };
 
 u16 dsa_tag_8021q_bridge_vid(unsigned int bridge_num)
 {
-	/* The VBID value of 0 is reserved for precise TX, but it is also
-	 * reserved/invalid for the bridge_num, so all is well.
-	 */
+	 
 	return DSA_8021Q_RSV | DSA_8021Q_VBID(bridge_num);
 }
 EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_vid);
 
-/* Returns the VID that will be installed as pvid for this switch port, sent as
- * tagged egress towards the CPU port and decoded by the rcv function.
- */
+ 
 u16 dsa_tag_8021q_standalone_vid(const struct dsa_port *dp)
 {
 	return DSA_8021Q_RSV | DSA_8021Q_SWITCH_ID(dp->ds->index) |
@@ -96,21 +67,21 @@ u16 dsa_tag_8021q_standalone_vid(const struct dsa_port *dp)
 }
 EXPORT_SYMBOL_GPL(dsa_tag_8021q_standalone_vid);
 
-/* Returns the decoded switch ID from the RX VID. */
+ 
 int dsa_8021q_rx_switch_id(u16 vid)
 {
 	return (vid & DSA_8021Q_SWITCH_ID_MASK) >> DSA_8021Q_SWITCH_ID_SHIFT;
 }
 EXPORT_SYMBOL_GPL(dsa_8021q_rx_switch_id);
 
-/* Returns the decoded port ID from the RX VID. */
+ 
 int dsa_8021q_rx_source_port(u16 vid)
 {
 	return (vid & DSA_8021Q_PORT_MASK) >> DSA_8021Q_PORT_SHIFT;
 }
 EXPORT_SYMBOL_GPL(dsa_8021q_rx_source_port);
 
-/* Returns the decoded VBID from the RX VID. */
+ 
 static int dsa_tag_8021q_rx_vbid(u16 vid)
 {
 	u16 vbid_hi = (vid & DSA_8021Q_VBID_HI_MASK) >> DSA_8021Q_VBID_HI_SHIFT;
@@ -148,7 +119,7 @@ static int dsa_port_do_tag_8021q_vlan_add(struct dsa_port *dp, u16 vid,
 	int port = dp->index;
 	int err;
 
-	/* No need to bother with refcounting for user ports */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
 		return ds->ops->tag_8021q_vlan_add(ds, port, vid, flags);
 
@@ -184,7 +155,7 @@ static int dsa_port_do_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid)
 	int port = dp->index;
 	int err;
 
-	/* No need to bother with refcounting for user ports */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
 		return ds->ops->tag_8021q_vlan_del(ds, port, vid);
 
@@ -220,11 +191,7 @@ int dsa_switch_tag_8021q_vlan_add(struct dsa_switch *ds,
 	struct dsa_port *dp;
 	int err;
 
-	/* Since we use dsa_broadcast(), there might be other switches in other
-	 * trees which don't support tag_8021q, so don't return an error.
-	 * Or they might even support tag_8021q but have not registered yet to
-	 * use it (maybe they use another tagger currently).
-	 */
+	 
 	if (!ds->ops->tag_8021q_vlan_add || !ds->tag_8021q_ctx)
 		return 0;
 
@@ -266,25 +233,7 @@ int dsa_switch_tag_8021q_vlan_del(struct dsa_switch *ds,
 	return 0;
 }
 
-/* There are 2 ways of offloading tag_8021q VLANs.
- *
- * One is to use a hardware TCAM to push the port's standalone VLAN into the
- * frame when forwarding it to the CPU, as an egress modification rule on the
- * CPU port. This is preferable because it has no side effects for the
- * autonomous forwarding path, and accomplishes tag_8021q's primary goal of
- * identifying the source port of each packet based on VLAN ID.
- *
- * The other is to commit the tag_8021q VLAN as a PVID to the VLAN table, and
- * to configure the port as VLAN-unaware. This is less preferable because
- * unique source port identification can only be done for standalone ports;
- * under a VLAN-unaware bridge, all ports share the same tag_8021q VLAN as
- * PVID, and under a VLAN-aware bridge, packets received by software will not
- * have tag_8021q VLANs appended, just bridge VLANs.
- *
- * For tag_8021q implementations of the second type, this method is used to
- * replace the standalone tag_8021q VLAN of a port with the tag_8021q VLAN to
- * be used for VLAN-unaware bridging.
- */
+ 
 int dsa_tag_8021q_bridge_join(struct dsa_switch *ds, int port,
 			      struct dsa_bridge bridge)
 {
@@ -292,9 +241,7 @@ int dsa_tag_8021q_bridge_join(struct dsa_switch *ds, int port,
 	u16 standalone_vid, bridge_vid;
 	int err;
 
-	/* Delete the standalone VLAN of the port and replace it with a
-	 * bridging VLAN
-	 */
+	 
 	standalone_vid = dsa_tag_8021q_standalone_vid(dp);
 	bridge_vid = dsa_tag_8021q_bridge_vid(bridge.num);
 
@@ -315,9 +262,7 @@ void dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,
 	u16 standalone_vid, bridge_vid;
 	int err;
 
-	/* Delete the bridging VLAN of the port and replace it with a
-	 * standalone VLAN
-	 */
+	 
 	standalone_vid = dsa_tag_8021q_standalone_vid(dp);
 	bridge_vid = dsa_tag_8021q_bridge_vid(bridge.num);
 
@@ -332,7 +277,7 @@ void dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,
 }
 EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_leave);
 
-/* Set up a port's standalone tag_8021q VLAN */
+ 
 static int dsa_tag_8021q_port_setup(struct dsa_switch *ds, int port)
 {
 	struct dsa_8021q_context *ctx = ds->tag_8021q_ctx;
@@ -341,9 +286,7 @@ static int dsa_tag_8021q_port_setup(struct dsa_switch *ds, int port)
 	struct net_device *master;
 	int err;
 
-	/* The CPU port is implicitly configured by
-	 * configuring the front-panel ports
-	 */
+	 
 	if (!dsa_port_is_user(dp))
 		return 0;
 
@@ -357,7 +300,7 @@ static int dsa_tag_8021q_port_setup(struct dsa_switch *ds, int port)
 		return err;
 	}
 
-	/* Add the VLAN to the master's RX filter. */
+	 
 	vlan_vid_add(master, ctx->proto, vid);
 
 	return err;
@@ -370,9 +313,7 @@ static void dsa_tag_8021q_port_teardown(struct dsa_switch *ds, int port)
 	u16 vid = dsa_tag_8021q_standalone_vid(dp);
 	struct net_device *master;
 
-	/* The CPU port is implicitly configured by
-	 * configuring the front-panel ports
-	 */
+	 
 	if (!dsa_port_is_user(dp))
 		return;
 
@@ -461,9 +402,7 @@ EXPORT_SYMBOL_GPL(dsa_tag_8021q_unregister);
 struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
 			       u16 tpid, u16 tci)
 {
-	/* skb->data points at the MAC header, which is fine
-	 * for vlan_insert_tag().
-	 */
+	 
 	return vlan_insert_tag(skb, htons(tpid), tci);
 }
 EXPORT_SYMBOL_GPL(dsa_8021q_xmit);

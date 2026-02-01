@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HWDEP Interface for HD-audio codec
- *
- * Copyright (c) 2007 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -15,9 +11,7 @@
 #include <sound/hda_hwdep.h>
 #include <sound/minors.h>
 
-/*
- * write/read an out-of-bound verb
- */
+ 
 static int verb_write_ioctl(struct hda_codec *codec,
 			    struct hda_verb_ioctl __user *arg)
 {
@@ -39,7 +33,7 @@ static int get_wcap_ioctl(struct hda_codec *codec,
 	
 	if (get_user(verb, &arg->verb))
 		return -EFAULT;
-	/* open-code get_wcaps(verb>>24) with nospec */
+	 
 	verb >>= 24;
 	if (verb < codec->core.start_nid ||
 	    verb >= codec->core.start_nid + codec->core.num_nodes) {
@@ -55,8 +49,7 @@ static int get_wcap_ioctl(struct hda_codec *codec,
 }
 
 
-/*
- */
+ 
 static int hda_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 			   unsigned int cmd, unsigned long arg)
 {
@@ -113,7 +106,7 @@ int snd_hda_create_hwdep(struct hda_codec *codec)
 	hwdep->ops.ioctl_compat = hda_hwdep_ioctl_compat;
 #endif
 
-	/* for sysfs */
+	 
 	hwdep->dev->groups = snd_hda_dev_attr_groups;
 	dev_set_drvdata(hwdep->dev, codec);
 

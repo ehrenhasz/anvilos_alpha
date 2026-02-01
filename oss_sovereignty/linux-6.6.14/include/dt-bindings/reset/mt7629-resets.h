@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT7629
 #define _DT_BINDINGS_RESET_CONTROLLER_MT7629
 
-/* INFRACFG resets */
+ 
 #define MT7629_INFRA_EMI_MPU_RST		0
 #define MT7629_INFRA_UART5_RST			2
 #define MT7629_INFRA_CIRQ_EINT_RST		3
@@ -28,7 +26,7 @@
 #define MT7629_INFRA_I2C_SRAM_RST		41
 #define MT7629_INFRA_IOMMU_RST			47
 
-/* PERICFG resets */
+ 
 #define MT7629_PERI_UART0_SW_RST		0
 #define MT7629_PERI_UART1_SW_RST		1
 #define MT7629_PERI_UART2_SW_RST		2
@@ -41,7 +39,7 @@
 #define MT7629_PERI_SPI1_SW_RST			34
 #define MT7629_PERI_FLASHIF_SW_RST		36
 
-/* PCIe Subsystem resets */
+ 
 #define MT7629_PCIE1_CORE_RST			19
 #define MT7629_PCIE1_MMIO_RST			20
 #define MT7629_PCIE1_HRST			21
@@ -53,11 +51,11 @@
 #define MT7629_PCIE0_USER_RST			30
 #define MT7629_PCIE0_PIPE_RST			31
 
-/* SSUSB Subsystem resets */
+ 
 #define MT7629_SSUSB_PHY_PWR_RST		3
 #define MT7629_SSUSB_MAC_PWR_RST		4
 
-/* ETH Subsystem resets */
+ 
 #define MT7629_ETHSYS_SYS_RST			0
 #define MT7629_ETHSYS_MCM_RST			2
 #define MT7629_ETHSYS_HSDMA_RST			5
@@ -68,4 +66,4 @@
 #define MT7629_ETHSYS_CRYPTO_RST		29
 #define MT7629_ETHSYS_PPE_RST			31
 
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT7629 */
+#endif   

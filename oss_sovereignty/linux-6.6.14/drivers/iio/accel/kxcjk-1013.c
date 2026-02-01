@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KXCJK-1013 3-axis accelerometer driver
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -35,11 +32,7 @@
 #define KXTF9_REG_HP_ZOUT_H		0x05
 
 #define KXCJK1013_REG_XOUT_L		0x06
-/*
- * From low byte X axis register, all the other addresses of Y and Z can be
- * obtained by just applying axis offset. The following axis defines are just
- * provide clarity, but not used.
- */
+ 
 #define KXCJK1013_REG_XOUT_H		0x07
 #define KXCJK1013_REG_YOUT_L		0x08
 #define KXCJK1013_REG_YOUT_H		0x09
@@ -79,7 +72,7 @@
 #define KXTF9_REG_HYST_SET		0x5F
 #define KXCJK1013_REG_WAKE_THRES	0x6A
 
-/* Everything up to 0x11 is equal to KXCJK1013/KXTF9 above */
+ 
 #define KX023_REG_INS1			0x12
 #define KX023_REG_INS2			0x13
 #define KX023_REG_INS3			0x14
@@ -125,7 +118,7 @@
 #define KXCJK1013_REG_CTRL1_BIT_GSEL0	BIT(3)
 #define KXCJK1013_REG_CTRL1_BIT_WUFE	BIT(1)
 
-#define KXCJK1013_REG_INT_CTRL1_BIT_IEU	BIT(2)	/* KXTF9 */
+#define KXCJK1013_REG_INT_CTRL1_BIT_IEU	BIT(2)	 
 #define KXCJK1013_REG_INT_CTRL1_BIT_IEL	BIT(3)
 #define KXCJK1013_REG_INT_CTRL1_BIT_IEA	BIT(4)
 #define KXCJK1013_REG_INT_CTRL1_BIT_IEN	BIT(5)
@@ -142,15 +135,15 @@
 
 #define KXCJK1013_SLEEP_DELAY_MS	2000
 
-#define KXCJK1013_REG_INT_SRC1_BIT_TPS	BIT(0)	/* KXTF9 */
+#define KXCJK1013_REG_INT_SRC1_BIT_TPS	BIT(0)	 
 #define KXCJK1013_REG_INT_SRC1_BIT_WUFS	BIT(1)
-#define KXCJK1013_REG_INT_SRC1_MASK_TDTS	(BIT(2) | BIT(3))	/* KXTF9 */
+#define KXCJK1013_REG_INT_SRC1_MASK_TDTS	(BIT(2) | BIT(3))	 
 #define KXCJK1013_REG_INT_SRC1_TAP_NONE		0
 #define KXCJK1013_REG_INT_SRC1_TAP_SINGLE		BIT(2)
 #define KXCJK1013_REG_INT_SRC1_TAP_DOUBLE		BIT(3)
 #define KXCJK1013_REG_INT_SRC1_BIT_DRDY	BIT(4)
 
-/* KXCJK: INT_SOURCE2: motion detect, KXTF9: INT_SRC_REG1: tap detect */
+ 
 #define KXCJK1013_REG_INT_SRC2_BIT_ZP	BIT(0)
 #define KXCJK1013_REG_INT_SRC2_BIT_ZN	BIT(1)
 #define KXCJK1013_REG_INT_SRC2_BIT_YP	BIT(2)
@@ -158,7 +151,7 @@
 #define KXCJK1013_REG_INT_SRC2_BIT_XP	BIT(4)
 #define KXCJK1013_REG_INT_SRC2_BIT_XN	BIT(5)
 
-/* KX023 interrupt routing to INT1. INT2 can be configured with INC6 */
+ 
 #define KX023_REG_INC4_BFI1		BIT(6)
 #define KX023_REG_INC4_WMI1		BIT(5)
 #define KX023_REG_INC4_DRDY1		BIT(4)
@@ -174,7 +167,7 @@ enum kx_chipset {
 	KXTJ21009,
 	KXTF9,
 	KX0231025,
-	KX_MAX_CHIPS /* this must be last */
+	KX_MAX_CHIPS  
 };
 
 enum kx_acpi_type {
@@ -208,9 +201,9 @@ static const struct kx_chipset_regs kxcjk1013_regs = {
 };
 
 static const struct kx_chipset_regs kxtf9_regs = {
-	/* .int_src1 was moved to INT_SRC2 on KXTF9 */
+	 
 	.int_src1	= KXTF9_REG_INT_SRC2,
-	/* .int_src2 is not available */
+	 
 	.int_rel	= KXCJK1013_REG_INT_REL,
 	.ctrl1		= KXCJK1013_REG_CTRL1,
 	.wuf_ctrl	= KXTF9_REG_CTRL3,
@@ -220,7 +213,7 @@ static const struct kx_chipset_regs kxtf9_regs = {
 	.wake_thres	= KXTF9_REG_WAKE_THRESH,
 };
 
-/* The registers have totally different names but the bits are compatible */
+ 
 static const struct kx_chipset_regs kx0231025_regs = {
 	.int_src1	= KX023_REG_INS2,
 	.int_src2	= KX023_REG_INS3,
@@ -246,7 +239,7 @@ struct kxcjk1013_data {
 	struct iio_trigger *motion_trig;
 	struct iio_mount_matrix orientation;
 	struct mutex mutex;
-	/* Ensure timestamp naturally aligned */
+	 
 	struct {
 		s16 chans[AXIS_MAX];
 		s64 timestamp __aligned(8);
@@ -313,12 +306,12 @@ static const struct kx_odr_map kxtf9_samp_freq_table[] = {
 static const char *const kxtf9_samp_freq_avail =
 	"25 50 100 200 400 800";
 
-/* Refer to section 4 of the specification */
+ 
 static __maybe_unused const struct {
 	int odr_bits;
 	int usec;
 } odr_start_up_times[KX_MAX_CHIPS][12] = {
-	/* KXCJK-1013 */
+	 
 	{
 		{0x08, 100000},
 		{0x09, 100000},
@@ -333,7 +326,7 @@ static __maybe_unused const struct {
 		{0x06, 2700},
 		{0x07, 2100},
 	},
-	/* KXCJ9-1008 */
+	 
 	{
 		{0x08, 100000},
 		{0x09, 100000},
@@ -348,7 +341,7 @@ static __maybe_unused const struct {
 		{0x06, 2700},
 		{0x07, 2100},
 	},
-	/* KXCTJ2-1009 */
+	 
 	{
 		{0x08, 1240000},
 		{0x09, 621000},
@@ -363,7 +356,7 @@ static __maybe_unused const struct {
 		{0x06, 3000},
 		{0x07, 2000},
 	},
-	/* KXTF9 */
+	 
 	{
 		{0x01, 81000},
 		{0x02, 41000},
@@ -372,9 +365,9 @@ static __maybe_unused const struct {
 		{0x05, 5100},
 		{0x06, 2700},
 	},
-	/* KX023-1025 */
+	 
 	{
-		/* First 4 are not in datasheet, taken from KXCTJ2-1009 */
+		 
 		{0x08, 1240000},
 		{0x09, 621000},
 		{0x0A, 309000},
@@ -500,7 +493,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
 
 #ifdef CONFIG_ACPI
 	if (data->acpi_type == ACPI_KIOX010A) {
-		/* Make sure the kbd and touchpad on 2-in-1s using 2 KXCJ91008-s work */
+		 
 		kiox010a_dsm(&data->client->dev, KIOX010A_SET_LAPTOP_MODE);
 	}
 #endif
@@ -523,7 +516,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
 		return ret;
 	}
 
-	/* Set 12 bit mode */
+	 
 	ret |= KXCJK1013_REG_CTRL1_BIT_RES;
 
 	ret = i2c_smbus_write_byte_data(data->client, data->regs->ctrl1, ret);
@@ -532,7 +525,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
 		return ret;
 	}
 
-	/* Setting range to 4G */
+	 
 	ret = kxcjk1013_set_range(data, KXCJK1013_RANGE_4G);
 	if (ret < 0)
 		return ret;
@@ -545,7 +538,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
 
 	data->odr_bits = ret;
 
-	/* Set up INT polarity */
+	 
 	ret = i2c_smbus_read_byte_data(data->client, data->regs->int_ctrl1);
 	if (ret < 0) {
 		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
@@ -563,7 +556,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
 		return ret;
 	}
 
-	/* On KX023, route all used interrupts to INT1 for now */
+	 
 	if (data->chipset == KX0231025 && data->client->irq > 0) {
 		ret = i2c_smbus_write_byte_data(data->client, KX023_REG_INC4,
 						KX023_REG_INC4_DRDY1 |
@@ -651,7 +644,7 @@ static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* This is requirement by spec to change state to STANDBY */
+	 
 	ret = kxcjk1013_set_mode(data, STANDBY);
 	if (ret < 0)
 		return ret;
@@ -713,7 +706,7 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* This is requirement by spec to change state to STANDBY */
+	 
 	ret = kxcjk1013_set_mode(data, STANDBY);
 	if (ret < 0)
 		return ret;
@@ -813,7 +806,7 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
 	if (IS_ERR(odr_setting))
 		return PTR_ERR(odr_setting);
 
-	/* To change ODR, the chip must be set to STANDBY as per spec */
+	 
 	ret = kxcjk1013_set_mode(data, STANDBY);
 	if (ret < 0)
 		return ret;
@@ -1061,15 +1054,7 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
 		return 0;
 	}
 
-	/*
-	 * We will expect the enable and disable to do operation in
-	 * reverse order. This will happen here anyway as our
-	 * resume operation uses sync mode runtime pm calls, the
-	 * suspend operation will be delayed by autosuspend delay
-	 * So the disable operation will still happen in reverse of
-	 * enable operation. When runtime pm is disabled the mode
-	 * is always on so sequence doesn't matter
-	 */
+	 
 	ret = kxcjk1013_set_power_state(data, state);
 	if (ret < 0) {
 		mutex_unlock(&data->mutex);
@@ -1447,7 +1432,7 @@ static int kxcjk1013_probe(struct i2c_client *client)
 		data->active_high_intr = pdata->active_high_intr;
 		data->orientation = pdata->orientation;
 	} else {
-		data->active_high_intr = true; /* default polarity */
+		data->active_high_intr = true;  
 
 		ret = iio_read_mount_matrix(&client->dev, &data->orientation);
 		if (ret)
@@ -1460,11 +1445,7 @@ static int kxcjk1013_probe(struct i2c_client *client)
 	if (ret)
 		return dev_err_probe(&client->dev, ret, "Failed to get regulators\n");
 
-	/*
-	 * A typical delay of 10ms is required for powering up
-	 * according to the data sheets of supported chips.
-	 * Hence double that to play safe.
-	 */
+	 
 	msleep(20);
 
 	if (id) {
@@ -1694,8 +1675,8 @@ static const struct acpi_device_id kx_acpi_match[] = {
 	{"KIOX0008", KXCJ91008},
 	{"KIOX0009", KXTJ21009},
 	{"KIOX000A", KXCJ91008},
-	{"KIOX010A", KXCJ91008}, /* KXCJ91008 in the display of a yoga 2-in-1 */
-	{"KIOX020A", KXCJ91008}, /* KXCJ91008 in the base of a yoga 2-in-1 */
+	{"KIOX010A", KXCJ91008},  
+	{"KIOX020A", KXCJ91008},  
 	{"KXTJ1009", KXTJ21009},
 	{"KXJ2109",  KXTJ21009},
 	{"SMO8500",  KXCJ91008},

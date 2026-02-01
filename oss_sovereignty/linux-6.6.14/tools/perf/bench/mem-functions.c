@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mem-memcpy.c
- *
- * Simple memcpy() and memset() benchmarks
- *
- * Written by Hitoshi Mitake <mitake@dcl.info.waseda.ac.jp>
- */
+
+ 
 
 #include "debug.h"
 #include "../perf-sys.h"
@@ -225,13 +219,10 @@ static int bench_mem_common(int argc, const char **argv, struct bench_mem_info *
 
 static void memcpy_prefault(memcpy_t fn, size_t size, void *src, void *dst)
 {
-	/* Make sure to always prefault zero pages even if MMAP_THRESH is crossed: */
+	 
 	memset(src, 0, size);
 
-	/*
-	 * We prefault the freshly allocated memory range here,
-	 * to not measure page fault overhead:
-	 */
+	 
 	fn(dst, src, size);
 }
 
@@ -307,10 +298,7 @@ static u64 do_memset_cycles(const struct function *r, size_t size, void *src __m
 	memset_t fn = r->fn.memset;
 	int i;
 
-	/*
-	 * We prefault the freshly allocated memory range here,
-	 * to not measure page fault overhead:
-	 */
+	 
 	fn(dst, -1, size);
 
 	cycle_start = get_cycles();
@@ -327,10 +315,7 @@ static double do_memset_gettimeofday(const struct function *r, size_t size, void
 	memset_t fn = r->fn.memset;
 	int i;
 
-	/*
-	 * We prefault the freshly allocated memory range here,
-	 * to not measure page fault overhead:
-	 */
+	 
 	fn(dst, -1, size);
 
 	BUG_ON(gettimeofday(&tv_start, NULL));

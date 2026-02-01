@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DT_MESON_AIU_H
 #define __DT_MESON_AIU_H
 
@@ -15,4 +15,4 @@
 #define CTRL_PCM		1
 #define CTRL_OUT		2
 
-#endif /* __DT_MESON_AIU_H */
+#endif  

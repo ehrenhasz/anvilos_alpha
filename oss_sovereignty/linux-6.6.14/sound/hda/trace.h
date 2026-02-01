@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hda
 
@@ -89,9 +89,9 @@ DEFINE_EVENT(hdac_stream, snd_hdac_stream_stop,
 	TP_ARGS(bus, azx_dev)
 );
 
-#endif /* __HDAC_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 

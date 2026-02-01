@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- *
- * Based on the TPS65912 driver
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_TPS65086_H
 #define __LINUX_MFD_TPS65086_H
@@ -12,7 +7,7 @@
 #include <linux/device.h>
 #include <linux/regmap.h>
 
-/* List of registers for TPS65086 */
+ 
 #define TPS65086_DEVICEID1		0x00
 #define TPS65086_DEVICEID2		0x01
 #define TPS65086_IRQ		0x02
@@ -71,28 +66,28 @@
 #define TPS65086_TEMPHOT		0xB5
 #define TPS65086_OC_STATUS		0xB6
 
-/* IRQ Register field definitions */
+ 
 #define TPS65086_IRQ_DIETEMP_MASK	BIT(0)
 #define TPS65086_IRQ_SHUTDN_MASK	BIT(3)
 #define TPS65086_IRQ_FAULT_MASK		BIT(7)
 
-/* DEVICEID1 Register field definitions */
+ 
 #define TPS6508640_ID			0x00
 #define TPS65086401_ID			0x01
 #define TPS6508641_ID			0x10
 #define TPS65086470_ID			0x70
 
-/* DEVICEID2 Register field definitions */
+ 
 #define TPS65086_DEVICEID2_PART_MASK	GENMASK(3, 0)
 #define TPS65086_DEVICEID2_OTP_MASK	GENMASK(5, 4)
 #define TPS65086_DEVICEID2_REV_MASK	GENMASK(7, 6)
 
-/* VID Masks */
+ 
 #define BUCK_VID_MASK			GENMASK(7, 1)
 #define VDOA1_VID_MASK			GENMASK(4, 1)
 #define VDOA23_VID_MASK			GENMASK(3, 0)
 
-/* Define the TPS65086 IRQ numbers */
+ 
 enum tps65086_irqs {
 	TPS65086_IRQ_DIETEMP,
 	TPS65086_IRQ_SHUTDN,
@@ -101,20 +96,16 @@ enum tps65086_irqs {
 
 struct tps65086_regulator_config;
 
-/**
- * struct tps65086 - state holder for the tps65086 driver
- *
- * Device data may be used to access the TPS65086 chip
- */
+ 
 struct tps65086 {
 	struct device *dev;
 	struct regmap *regmap;
 	unsigned int chip_id;
 	const struct tps65086_regulator_config *reg_config;
 
-	/* IRQ Data */
+	 
 	int irq;
 	struct regmap_irq_chip_data *irq_data;
 };
 
-#endif /* __LINUX_MFD_TPS65086_H */
+#endif  

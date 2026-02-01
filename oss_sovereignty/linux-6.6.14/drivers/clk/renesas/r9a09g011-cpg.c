@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RZ/V2M Clock Pulse Generator / Module Standby and Software Reset
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- *
- * Based on r9a07g044-cpg.c
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -36,13 +30,13 @@
 #define SEL_W0		SEL_PLL_PACK(0x32C, 0, 1)
 
 enum clk_ids {
-	/* Core Clock Outputs exported to DT */
+	 
 	LAST_DT_CORE_CLK = 0,
 
-	/* External Input Clocks */
+	 
 	CLK_EXTAL,
 
-	/* Internal Core Clocks */
+	 
 	CLK_MAIN,
 	CLK_MAIN_24,
 	CLK_MAIN_2,
@@ -67,11 +61,11 @@ enum clk_ids {
 	CLK_SEL_SDI,
 	CLK_SEL_W0,
 
-	/* Module Clocks */
+	 
 	MOD_CLK_BASE
 };
 
-/* Divider tables */
+ 
 static const struct clk_div_table dtable_diva[] = {
 	{0, 1},
 	{1, 2},
@@ -110,7 +104,7 @@ static const struct clk_div_table dtable_divw[] = {
 	{0, 0},
 };
 
-/* Mux clock tables */
+ 
 static const char * const sel_b[] = { ".main", ".divb" };
 static const char * const sel_csi[] = { ".main_24", ".main" };
 static const char * const sel_d[] = { ".main", ".divd" };
@@ -119,10 +113,10 @@ static const char * const sel_w[] = { ".main", ".divw" };
 static const char * const sel_sdi[] = { ".main", ".pll2_200" };
 
 static const struct cpg_core_clk r9a09g011_core_clks[] __initconst = {
-	/* External Clock Inputs */
+	 
 	DEF_INPUT("extal",	CLK_EXTAL),
 
-	/* Internal Core Clocks */
+	 
 	DEF_FIXED(".main",	CLK_MAIN,	CLK_EXTAL,	1,	1),
 	DEF_FIXED(".main_24",	CLK_MAIN_24,	CLK_MAIN,	1,	2),
 	DEF_FIXED(".main_2",	CLK_MAIN_2,	CLK_MAIN,	1,	24),
@@ -246,22 +240,22 @@ static const unsigned int r9a09g011_crit_mod_clks[] __initconst = {
 };
 
 const struct rzg2l_cpg_info r9a09g011_cpg_info = {
-	/* Core Clocks */
+	 
 	.core_clks = r9a09g011_core_clks,
 	.num_core_clks = ARRAY_SIZE(r9a09g011_core_clks),
 	.last_dt_core_clk = LAST_DT_CORE_CLK,
 	.num_total_core_clks = MOD_CLK_BASE,
 
-	/* Critical Module Clocks */
+	 
 	.crit_mod_clks = r9a09g011_crit_mod_clks,
 	.num_crit_mod_clks = ARRAY_SIZE(r9a09g011_crit_mod_clks),
 
-	/* Module Clocks */
+	 
 	.mod_clks = r9a09g011_mod_clks,
 	.num_mod_clks = ARRAY_SIZE(r9a09g011_mod_clks),
 	.num_hw_mod_clks = R9A09G011_CA53_CLK + 1,
 
-	/* Resets */
+	 
 	.resets = r9a09g011_resets,
 	.num_resets = ARRAY_SIZE(r9a09g011_resets),
 

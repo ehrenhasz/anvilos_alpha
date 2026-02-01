@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lattice FPGA sysCONFIG interface functions independent of port type.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/fpga/fpga-mgr.h>
@@ -93,7 +91,7 @@ static int sysconfig_gpio_refresh(struct sysconfig_priv *priv)
 	struct gpio_desc *done = priv->done;
 	int ret;
 
-	/* Enter init mode */
+	 
 	gpiod_set_value(program, 1);
 
 	ret = sysconfig_poll_gpio(init, true);
@@ -103,7 +101,7 @@ static int sysconfig_gpio_refresh(struct sysconfig_priv *priv)
 	if (ret)
 		return ret;
 
-	/* Enter program mode */
+	 
 	gpiod_set_value(program, 0);
 
 	return sysconfig_poll_gpio(init, false);
@@ -282,21 +280,21 @@ static int sysconfig_ops_write_init(struct fpga_manager *mgr,
 		return -EOPNOTSUPP;
 	}
 
-	/* Enter program mode */
+	 
 	ret = sysconfig_refresh(priv);
 	if (ret) {
 		dev_err(dev, "Failed to go to program mode\n");
 		return ret;
 	}
 
-	/* Enter ISC mode */
+	 
 	ret = sysconfig_isc_init(priv);
 	if (ret) {
 		dev_err(dev, "Failed to go to ISC mode\n");
 		return ret;
 	}
 
-	/* Initialize the Address Shift Register */
+	 
 	ret = sysconfig_lsc_init_addr(priv);
 	if (ret) {
 		dev_err(dev,
@@ -304,7 +302,7 @@ static int sysconfig_ops_write_init(struct fpga_manager *mgr,
 		return ret;
 	}
 
-	/* Prepare for bitstream burst write */
+	 
 	ret = sysconfig_burst_write_init(priv);
 	if (ret)
 		dev_err(dev, "Failed to prepare for bitstream burst write\n");

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Macronix International Co., Ltd.
- *
- * Author:
- *	Mason Yang <masonccyang@mxic.com.tw>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -240,20 +235,10 @@ static int mxic_nfc_clk_setup(struct mxic_nand_ctlr *nfc, unsigned long freq)
 	if (ret)
 		return ret;
 
-	/*
-	 * A constant delay range from 0x0 ~ 0x1F for input delay,
-	 * the unit is 78 ps, the max input delay is 2.418 ns.
-	 */
+	 
 	mxic_nfc_set_input_delay(nfc, 0xf);
 
-	/*
-	 * Phase degree = 360 * freq * output-delay
-	 * where output-delay is a constant value 1 ns in FPGA.
-	 *
-	 * Get Phase degree = 360 * freq * 1 ns
-	 *                  = 360 * freq * 1 sec / 1000000000
-	 *                  = 9 * freq / 25000000
-	 */
+	 
 	ret = clk_set_phase(nfc->send_dly_clk, 9 * freq / 25000000);
 	if (ret)
 		return ret;

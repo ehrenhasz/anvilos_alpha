@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARC PGU DRM driver.
- *
- * Copyright (C) 2016 Synopsys, Inc. (www.synopsys.com)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <drm/drm_atomic_helper.h>
@@ -142,7 +138,7 @@ static enum drm_mode_status arc_pgu_mode_valid(struct drm_simple_display_pipe *p
 {
 	struct arcpgu_drm_private *arcpgu = pipe_to_arcpgu_priv(pipe);
 	long rate, clk_rate = mode->clock * 1000;
-	long diff = clk_rate / 200; /* +-0.5% allowed by HDMI spec */
+	long diff = clk_rate / 200;  
 
 	rate = clk_round_rate(arcpgu->clk, clk_rate);
 	if ((max(rate, clk_rate) - min(rate, clk_rate) < diff) && (rate > 0))
@@ -276,7 +272,7 @@ static int arcpgu_load(struct arcpgu_drm_private *arcpgu)
 	dev_info(drm->dev, "arc_pgu ID: 0x%x\n",
 		 arc_pgu_read(arcpgu, ARCPGU_REG_ID));
 
-	/* Get the optional framebuffer memory resource */
+	 
 	ret = of_reserved_mem_device_init(drm->dev);
 	if (ret && ret != -ENODEV)
 		return ret;
@@ -284,10 +280,7 @@ static int arcpgu_load(struct arcpgu_drm_private *arcpgu)
 	if (dma_set_mask_and_coherent(drm->dev, DMA_BIT_MASK(32)))
 		return -ENODEV;
 
-	/*
-	 * There is only one output port inside each device. It is linked with
-	 * encoder endpoint.
-	 */
+	 
 	endpoint_node = of_graph_get_next_endpoint(pdev->dev.of_node, NULL);
 	if (endpoint_node) {
 		encoder_node = of_graph_get_remote_port_parent(endpoint_node);
@@ -310,7 +303,7 @@ static int arcpgu_load(struct arcpgu_drm_private *arcpgu)
 	if (encoder_node) {
 		struct drm_bridge *bridge;
 
-		/* Locate drm bridge from the hdmi encoder DT node */
+		 
 		bridge = of_drm_find_bridge(encoder_node);
 		if (!bridge)
 			return -EPROBE_DEFER;

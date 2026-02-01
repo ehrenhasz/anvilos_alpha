@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include "efclib.h"
 #include "../libefc_sli/sli4.h"
@@ -14,17 +11,17 @@ efc_nport_free_resources(struct efc_nport *nport, int evt, void *data)
 {
 	struct efc *efc = nport->efc;
 
-	/* Clear the nport attached flag */
+	 
 	nport->attached = false;
 
-	/* Free the service parameters buffer */
+	 
 	if (nport->dma.virt) {
 		dma_free_coherent(&efc->pci->dev, nport->dma.size,
 				  nport->dma.virt, nport->dma.phys);
 		memset(&nport->dma, 0, sizeof(struct efc_dma));
 	}
 
-	/* Free the SLI resources */
+	 
 	sli_resource_free(efc->sli, SLI4_RSRC_VPI, nport->indicator);
 
 	efc_nport_cb(efc, evt, nport);
@@ -89,14 +86,14 @@ efc_nport_send_evt(struct efc_nport *nport, int evt, void *data)
 {
 	struct efc *efc = nport->efc;
 
-	/* Now inform the registered callbacks */
+	 
 	efc_nport_cb(efc, evt, nport);
 
-	/* Set the nport attached flag */
+	 
 	if (evt == EFC_EVT_NPORT_ATTACH_OK)
 		nport->attached = true;
 
-	/* If there is a pending free request, then handle it now */
+	 
 	if (nport->free_req_pending)
 		efc_nport_free_unreg_vpi(nport);
 }
@@ -122,7 +119,7 @@ efc_nport_alloc_init_vpi(struct efc_nport *nport)
 	u8 data[SLI4_BMBX_SIZE];
 	int rc;
 
-	/* If there is a pending free request, then handle it now */
+	 
 	if (nport->free_req_pending) {
 		efc_nport_free_resources(nport, EFC_EVT_NPORT_FREE_OK, data);
 		return;
@@ -175,7 +172,7 @@ efc_nport_alloc_read_sparm64(struct efc *efc, struct efc_nport *nport)
 	u8 data[SLI4_BMBX_SIZE];
 	int rc;
 
-	/* Allocate memory for the service parameters */
+	 
 	nport->dma.size = EFC_SPARAM_DMA_SZ;
 	nport->dma.virt = dma_alloc_coherent(&efc->pci->dev,
 					     nport->dma.size, &nport->dma.phys,
@@ -214,10 +211,7 @@ efc_cmd_nport_alloc(struct efc *efc, struct efc_nport *nport,
 	if (wwpn)
 		memcpy(&nport->sli_wwpn, wwpn, sizeof(nport->sli_wwpn));
 
-	/*
-	 * allocate a VPI object for the port and stores it in the
-	 * indicator field of the port object.
-	 */
+	 
 	if (sli_resource_alloc(efc->sli, SLI4_RSRC_VPI,
 			       &nport->indicator, &index)) {
 		efc_log_err(efc, "VPI allocation failure\n");
@@ -225,16 +219,13 @@ efc_cmd_nport_alloc(struct efc *efc, struct efc_nport *nport,
 	}
 
 	if (domain) {
-		/*
-		 * If the WWPN is NULL, fetch the default
-		 * WWPN and WWNN before initializing the VPI
-		 */
+		 
 		if (!wwpn)
 			efc_nport_alloc_read_sparm64(efc, nport);
 		else
 			efc_nport_alloc_init_vpi(nport);
 	} else if (!wwpn) {
-		/* domain NULL and wwpn non-NULL */
+		 
 		efc_log_err(efc, "need WWN for physical port\n");
 		sli_resource_free(efc->sli, SLI4_RSRC_VPI, nport->indicator);
 		return -EIO;
@@ -272,7 +263,7 @@ efc_cmd_nport_attach(struct efc *efc, struct efc_nport *nport, u32 fc_id)
 
 	nport->fc_id = fc_id;
 
-	/* register previously-allocated VPI with the device */
+	 
 	rc = sli_cmd_reg_vpi(efc->sli, buf, nport->fc_id,
 			     nport->sli_wwpn, nport->indicator,
 			    nport->domain->indicator, false);
@@ -302,7 +293,7 @@ efc_cmd_nport_free(struct efc *efc, struct efc_nport *nport)
 		return -EIO;
 	}
 
-	/* Issue the UNREG_VPI command to free the assigned VPI context */
+	 
 	if (nport->attached)
 		efc_nport_free_unreg_vpi(nport);
 	else if (nport->attaching)
@@ -335,7 +326,7 @@ efc_domain_free_resources(struct efc_domain *domain, int evt, void *data)
 {
 	struct efc *efc = domain->efc;
 
-	/* Free the service parameters buffer */
+	 
 	if (domain->dma.virt) {
 		dma_free_coherent(&efc->pci->dev,
 				  domain->dma.size, domain->dma.virt,
@@ -343,7 +334,7 @@ efc_domain_free_resources(struct efc_domain *domain, int evt, void *data)
 		memset(&domain->dma, 0, sizeof(struct efc_dma));
 	}
 
-	/* Free the SLI resources */
+	 
 	sli_resource_free(efc->sli, SLI4_RSRC_VFI, domain->indicator);
 
 	efc_domain_cb(efc, evt, domain);
@@ -355,10 +346,10 @@ efc_domain_send_nport_evt(struct efc_domain *domain,
 {
 	struct efc *efc = domain->efc;
 
-	/* Send alloc/attach ok to the physical nport */
+	 
 	efc_nport_send_evt(domain->nport, port_evt, NULL);
 
-	/* Now inform the registered callbacks */
+	 
 	efc_domain_cb(efc, domain_evt, domain);
 }
 
@@ -427,10 +418,7 @@ efc_domain_alloc_init_vfi(struct efc_domain *domain)
 	u8 data[SLI4_BMBX_SIZE];
 	int rc;
 
-	/*
-	 * For FC, the HW alread registered an FCFI.
-	 * Copy FCF information into the domain and jump to INIT_VFI.
-	 */
+	 
 	domain->fcf_indicator = efc->fcfi;
 	rc = sli_cmd_init_vfi(efc->sli, data, domain->indicator,
 			      domain->fcf_indicator, nport->indicator);
@@ -462,7 +450,7 @@ efc_cmd_domain_alloc(struct efc *efc, struct efc_domain *domain, u32 fcf)
 		return -EIO;
 	}
 
-	/* allocate memory for the service parameters */
+	 
 	domain->dma.size = EFC_SPARAM_DMA_SZ;
 	domain->dma.virt = dma_alloc_coherent(&efc->pci->dev,
 					      domain->dma.size,
@@ -606,7 +594,7 @@ int
 efc_cmd_node_alloc(struct efc *efc, struct efc_remote_node *rnode, u32 fc_addr,
 		   struct efc_nport *nport)
 {
-	/* Check for invalid indicator */
+	 
 	if (rnode->indicator != U32_MAX) {
 		efc_log_err(efc,
 			    "RPI allocation failure addr=%#x rpi=%#x\n",
@@ -614,7 +602,7 @@ efc_cmd_node_alloc(struct efc *efc, struct efc_remote_node *rnode, u32 fc_addr,
 		return -EIO;
 	}
 
-	/* NULL SLI port indicates an unallocated remote node */
+	 
 	rnode->nport = NULL;
 
 	if (sli_resource_alloc(efc->sli, SLI4_RSRC_RPI,
@@ -666,16 +654,13 @@ efc_cmd_node_attach(struct efc *efc, struct efc_remote_node *rnode,
 		return -EIO;
 	}
 
-	/*
-	 * If the attach count is non-zero, this RPI has already been reg'd.
-	 * Otherwise, register the RPI
-	 */
+	 
 	if (rnode->index == U32_MAX) {
 		efc_log_err(efc, "bad parameter rnode->index invalid\n");
 		return -EIO;
 	}
 
-	/* Update a remote node object with the remote port's service params */
+	 
 	if (!sli_cmd_reg_rpi(efc->sli, buf, rnode->indicator,
 			     rnode->nport->indicator, rnode->fc_id, sparms, 0, 0))
 		rc = efc->tt.issue_mbox_rqst(efc->base, buf,
@@ -729,12 +714,7 @@ efc_cmd_node_free_cb(struct efc *efc, int status, u8 *mqe, void *arg)
 		efc_log_debug(efc, "bad status cqe=%#x mqe=%#x\n", status,
 			      le16_to_cpu(hdr->status));
 
-		/*
-		 * In certain cases, a non-zero MQE status is OK (all must be
-		 * true):
-		 *   - node is attached
-		 *   - status is 0x1400
-		 */
+		 
 		if (!rnode->attached ||
 		    (le16_to_cpu(hdr->status) != SLI4_MBX_STATUS_RPI_NOT_REG))
 			rc = -EIO;

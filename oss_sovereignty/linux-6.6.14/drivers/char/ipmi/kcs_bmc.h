@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015-2018, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __KCS_BMC_H__
 #define __KCS_BMC_H__
@@ -15,11 +13,7 @@
 #define KCS_BMC_STR_IBF		BIT(1)
 #define KCS_BMC_STR_CMD_DAT	BIT(3)
 
-/* IPMI 2.0 - 9.5, KCS Interface Registers
- * @idr: Input Data Register
- * @odr: Output Data Register
- * @str: Status Register
- */
+ 
 struct kcs_ioreg {
 	u32 idr;
 	u32 odr;
@@ -43,4 +37,4 @@ struct kcs_bmc_device {
 	struct kcs_bmc_client *client;
 };
 
-#endif /* __KCS_BMC_H__ */
+#endif  

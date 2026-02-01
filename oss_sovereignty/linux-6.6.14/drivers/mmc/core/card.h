@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Private header for the mmc subsystem
- *
- * Copyright (C) 2016 Linaro Ltd
- *
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+ 
+ 
 
 #ifndef _MMC_CORE_CARD_H
 #define _MMC_CORE_CARD_H
@@ -16,13 +10,13 @@
 #define mmc_card_id(c)		(dev_name(&(c)->dev))
 #define mmc_dev_to_card(d)	container_of(d, struct mmc_card, dev)
 
-/* Card states */
-#define MMC_STATE_PRESENT	(1<<0)		/* present in sysfs */
-#define MMC_STATE_READONLY	(1<<1)		/* card is read-only */
-#define MMC_STATE_BLOCKADDR	(1<<2)		/* card uses block-addressing */
-#define MMC_CARD_SDXC		(1<<3)		/* card is SDXC */
-#define MMC_CARD_REMOVED	(1<<4)		/* card has been removed */
-#define MMC_STATE_SUSPENDED	(1<<5)		/* card is suspended */
+ 
+#define MMC_STATE_PRESENT	(1<<0)		 
+#define MMC_STATE_READONLY	(1<<1)		 
+#define MMC_STATE_BLOCKADDR	(1<<2)		 
+#define MMC_CARD_SDXC		(1<<3)		 
+#define MMC_CARD_REMOVED	(1<<4)		 
+#define MMC_STATE_SUSPENDED	(1<<5)		 
 
 #define mmc_card_present(c)	((c)->state & MMC_STATE_PRESENT)
 #define mmc_card_readonly(c)	((c)->state & MMC_STATE_READONLY)
@@ -39,31 +33,28 @@
 #define mmc_card_set_suspended(c) ((c)->state |= MMC_STATE_SUSPENDED)
 #define mmc_card_clr_suspended(c) ((c)->state &= ~MMC_STATE_SUSPENDED)
 
-/*
- * The world is not perfect and supplies us with broken mmc/sdio devices.
- * For at least some of these bugs we need a work-around.
- */
+ 
 struct mmc_fixup {
-	/* CID-specific fields. */
+	 
 	const char *name;
 
-	/* Valid revision range */
+	 
 	u64 rev_start, rev_end;
 
 	unsigned int manfid;
 	unsigned short oemid;
 
-	/* Manufacturing date */
+	 
 	unsigned short year;
 	unsigned char month;
 
-	/* SDIO-specific fields. You can use SDIO_ANY_ID here of course */
+	 
 	u16 cis_vendor, cis_device;
 
-	/* for MMC cards */
+	 
 	unsigned int ext_csd_rev;
 
-	/* Match against functions declared in device tree */
+	 
 	const char *of_compatible;
 
 	void (*vendor_fixup)(struct mmc_card *card, int data);
@@ -161,9 +152,7 @@ struct mmc_fixup {
 		    card->cid.year,		\
 		    card->cid.month)
 
-/*
- * Unconditionally quirk add/remove.
- */
+ 
 static inline void __maybe_unused add_quirk(struct mmc_card *card, int data)
 {
 	card->quirks |= data;
@@ -183,11 +172,7 @@ static inline void __maybe_unused add_limit_rate_quirk(struct mmc_card *card,
 static inline void __maybe_unused wl1251_quirk(struct mmc_card *card,
 					       int data)
 {
-	/*
-	 * We have TI wl1251 attached to this mmc. Pass this
-	 * information to the SDIO core because it can't be
-	 * probed by normal methods.
-	 */
+	 
 
 	dev_info(card->host->parent, "found wl1251\n");
 	card->quirks |= MMC_QUIRK_NONSTD_SDIO;
@@ -198,9 +183,7 @@ static inline void __maybe_unused wl1251_quirk(struct mmc_card *card,
 	card->cis.max_dtr = 24000000;
 }
 
-/*
- * Quirk add/remove for MMC products.
- */
+ 
 static inline void __maybe_unused add_quirk_mmc(struct mmc_card *card, int data)
 {
 	if (mmc_card_mmc(card))
@@ -214,9 +197,7 @@ static inline void __maybe_unused remove_quirk_mmc(struct mmc_card *card,
 		card->quirks &= ~data;
 }
 
-/*
- * Quirk add/remove for SD products.
- */
+ 
 static inline void __maybe_unused add_quirk_sd(struct mmc_card *card, int data)
 {
 	if (mmc_card_sd(card))

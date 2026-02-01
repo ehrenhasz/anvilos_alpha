@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Universal Interface for Intel High Definition Audio Codec
- *
- * HD audio interface patch for C-Media CMI9880
- *
- * Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -21,9 +15,7 @@ struct cmi_spec {
 	struct hda_gen_spec gen;
 };
 
-/*
- * stuff for auto-parser
- */
+ 
 static const struct hda_codec_ops cmi_auto_patch_ops = {
 	.build_controls = snd_hda_gen_build_controls,
 	.build_pcms = snd_hda_gen_build_pcms,
@@ -76,9 +68,7 @@ static int patch_cmi8888(struct hda_codec *codec)
 	cfg = &spec->gen.autocfg;
 	snd_hda_gen_spec_init(&spec->gen);
 
-	/* mask NID 0x10 from the playback volume selection;
-	 * it's a headphone boost volume handled manually below
-	 */
+	 
 	spec->gen.out_vol_mask = (1ULL << 0x10);
 
 	err = snd_hda_parse_pin_defcfg(codec, cfg, NULL, 0);
@@ -106,14 +96,12 @@ static int patch_cmi8888(struct hda_codec *codec)
 	return err;
 }
 
-/*
- * patch entries
- */
+ 
 static const struct hda_device_id snd_hda_id_cmedia[] = {
 	HDA_CODEC_ENTRY(0x13f68888, "CMI8888", patch_cmi8888),
 	HDA_CODEC_ENTRY(0x13f69880, "CMI9880", patch_cmi9880),
 	HDA_CODEC_ENTRY(0x434d4980, "CMI9880", patch_cmi9880),
-	{} /* terminator */
+	{}  
 };
 MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_cmedia);
 

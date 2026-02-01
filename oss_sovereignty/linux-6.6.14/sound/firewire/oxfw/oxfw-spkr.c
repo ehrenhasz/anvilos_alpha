@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * oxfw-spkr.c - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include "oxfw.h"
 
@@ -37,21 +33,21 @@ static int avc_audio_feature_mute(struct fw_unit *unit, u8 fb_id, bool *value,
 		return -ENOMEM;
 
 	if (action == CTL_READ) {
-		buf[0] = 0x01;		/* AV/C, STATUS */
-		response_ok = 0x0c;	/*       STABLE */
+		buf[0] = 0x01;		 
+		response_ok = 0x0c;	 
 	} else {
-		buf[0] = 0x00;		/* AV/C, CONTROL */
-		response_ok = 0x09;	/*       ACCEPTED */
+		buf[0] = 0x00;		 
+		response_ok = 0x09;	 
 	}
-	buf[1] = 0x08;			/* audio unit 0 */
-	buf[2] = 0xb8;			/* FUNCTION BLOCK */
-	buf[3] = 0x81;			/* function block type: feature */
-	buf[4] = fb_id;			/* function block ID */
-	buf[5] = 0x10;			/* control attribute: current */
-	buf[6] = 0x02;			/* selector length */
-	buf[7] = 0x00;			/* audio channel number */
-	buf[8] = 0x01;			/* control selector: mute */
-	buf[9] = 0x01;			/* control data length */
+	buf[1] = 0x08;			 
+	buf[2] = 0xb8;			 
+	buf[3] = 0x81;			 
+	buf[4] = fb_id;			 
+	buf[5] = 0x10;			 
+	buf[6] = 0x02;			 
+	buf[7] = 0x00;			 
+	buf[8] = 0x01;			 
+	buf[9] = 0x01;			 
 	if (action == CTL_READ)
 		buf[10] = 0xff;
 	else
@@ -95,21 +91,21 @@ static int avc_audio_feature_volume(struct fw_unit *unit, u8 fb_id, s16 *value,
 		return -ENOMEM;
 
 	if (action == CTL_READ) {
-		buf[0] = 0x01;		/* AV/C, STATUS */
-		response_ok = 0x0c;	/*       STABLE */
+		buf[0] = 0x01;		 
+		response_ok = 0x0c;	 
 	} else {
-		buf[0] = 0x00;		/* AV/C, CONTROL */
-		response_ok = 0x09;	/*       ACCEPTED */
+		buf[0] = 0x00;		 
+		response_ok = 0x09;	 
 	}
-	buf[1] = 0x08;			/* audio unit 0 */
-	buf[2] = 0xb8;			/* FUNCTION BLOCK */
-	buf[3] = 0x81;			/* function block type: feature */
-	buf[4] = fb_id;			/* function block ID */
-	buf[5] = attribute;		/* control attribute */
-	buf[6] = 0x02;			/* selector length */
-	buf[7] = channel;		/* audio channel number */
-	buf[8] = 0x02;			/* control selector: volume */
-	buf[9] = 0x02;			/* control data length */
+	buf[1] = 0x08;			 
+	buf[2] = 0xb8;			 
+	buf[3] = 0x81;			 
+	buf[4] = fb_id;			 
+	buf[5] = attribute;		 
+	buf[6] = 0x02;			 
+	buf[7] = channel;		 
+	buf[8] = 0x02;			 
+	buf[9] = 0x02;			 
 	if (action == CTL_READ) {
 		buf[10] = 0xff;
 		buf[11] = 0xff;

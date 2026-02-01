@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
-/* ****************** SDIO CARD Interface Functions **************************/
+
+ 
+ 
 
 #include <linux/types.h>
 #include <linux/netdevice.h>
@@ -46,10 +44,10 @@
 #define SDIO_4373_FUNC2_BLOCKSIZE	256
 #define SDIO_435X_FUNC2_BLOCKSIZE	256
 #define SDIO_4329_FUNC2_BLOCKSIZE	128
-/* Maximum milliseconds to wait for F2 to come up */
+ 
 #define SDIO_WAIT_F2RDY	3000
 
-#define BRCMF_DEFAULT_RXGLOM_SIZE	32  /* max rx frames in glom chain */
+#define BRCMF_DEFAULT_RXGLOM_SIZE	32   
 
 struct brcmf_sdiod_freezer {
 	atomic_t freezing;
@@ -66,9 +64,7 @@ static irqreturn_t brcmf_sdiod_oob_irqhandler(int irq, void *dev_id)
 
 	brcmf_dbg(INTR, "OOB intr triggered\n");
 
-	/* out-of-band interrupt is level-triggered which won't
-	 * be cleared until dpc
-	 */
+	 
 	if (sdiodev->irq_en) {
 		disable_irq_nosync(irq);
 		sdiodev->irq_en = false;
@@ -89,7 +85,7 @@ static void brcmf_sdiod_ib_irqhandler(struct sdio_func *func)
 	brcmf_sdio_isr(sdiodev->bus, false);
 }
 
-/* dummy handler for SDIO function 2 interrupt */
+ 
 static void brcmf_sdiod_dummy_irqhandler(struct sdio_func *func)
 {
 }
@@ -127,7 +123,7 @@ int brcmf_sdiod_intr_register(struct brcmf_sdio_dev *sdiodev)
 		sdio_claim_host(sdiodev->func1);
 
 		if (sdiodev->bus_if->chip == BRCM_CC_43362_CHIP_ID) {
-			/* assign GPIO to SDIO core */
+			 
 			addr = brcmf_chip_enum_base(sdiodev->func1->device);
 			addr = CORE_CC_REG(addr, gpiocontrol);
 			gpiocontrol = brcmf_sdiod_readl(sdiodev, addr, &ret);
@@ -140,13 +136,13 @@ int brcmf_sdiod_intr_register(struct brcmf_sdio_dev *sdiodev)
 			brcmf_sdiod_writeb(sdiodev, SBSDIO_GPIO_EN, 0x2, &ret);
 		}
 
-		/* must configure SDIO_CCCR_IENx to enable irq */
+		 
 		data = brcmf_sdiod_func0_rb(sdiodev, SDIO_CCCR_IENx, &ret);
 		data |= SDIO_CCCR_IEN_FUNC1 | SDIO_CCCR_IEN_FUNC2 |
 			SDIO_CCCR_IEN_FUNC0;
 		brcmf_sdiod_func0_wb(sdiodev, SDIO_CCCR_IENx, data, &ret);
 
-		/* redirect, configure and enable io for interrupt signal */
+		 
 		data = SDIO_CCCR_BRCM_SEPINT_MASK | SDIO_CCCR_BRCM_SEPINT_OE;
 		if (pdata->oob_irq_flags & IRQF_TRIGGER_HIGH)
 			data |= SDIO_CCCR_BRCM_SEPINT_ACT_HI;
@@ -206,11 +202,11 @@ void brcmf_sdiod_change_state(struct brcmf_sdio_dev *sdiodev,
 	brcmf_dbg(TRACE, "%d -> %d\n", sdiodev->state, state);
 	switch (sdiodev->state) {
 	case BRCMF_SDIOD_DATA:
-		/* any other state means bus interface is down */
+		 
 		brcmf_bus_change_state(sdiodev->bus_if, BRCMF_BUS_DOWN);
 		break;
 	case BRCMF_SDIOD_DOWN:
-		/* transition from DOWN to DATA means bus interface is up */
+		 
 		if (state == BRCMF_SDIOD_DATA)
 			brcmf_bus_change_state(sdiodev->bus_if, BRCMF_BUS_UP);
 		break;
@@ -288,7 +284,7 @@ static int brcmf_sdiod_skbuff_read(struct brcmf_sdio_dev *sdiodev,
 	unsigned int req_sz;
 	int err;
 
-	/* Single skb use the standard mmc interface */
+	 
 	req_sz = skb->len + 3;
 	req_sz &= (uint)~3;
 
@@ -301,7 +297,7 @@ static int brcmf_sdiod_skbuff_read(struct brcmf_sdio_dev *sdiodev,
 		err = sdio_readsb(func, ((u8 *)(skb->data)), addr, req_sz);
 		break;
 	default:
-		/* bail out as things are really fishy here */
+		 
 		WARN(1, "invalid sdio function number: %d\n", func->num);
 		err = -ENOMEDIUM;
 	}
@@ -319,7 +315,7 @@ static int brcmf_sdiod_skbuff_write(struct brcmf_sdio_dev *sdiodev,
 	unsigned int req_sz;
 	int err;
 
-	/* Single skb use the standard mmc interface */
+	 
 	req_sz = skb->len + 3;
 	req_sz &= (uint)~3;
 
@@ -341,9 +337,9 @@ static int mmc_submit_one(struct mmc_data *md, struct mmc_request *mr,
 
 	md->sg_len = sg_cnt;
 	md->blocks = req_sz / func_blk_sz;
-	mc->arg |= (*addr & 0x1FFFF) << 9;	/* address */
-	mc->arg |= md->blocks & 0x1FF;	/* block count */
-	/* incrementing addr for function 1 */
+	mc->arg |= (*addr & 0x1FFFF) << 9;	 
+	mc->arg |= md->blocks & 0x1FF;	 
+	 
 	if (func->num == 1)
 		*addr += req_sz;
 
@@ -362,18 +358,7 @@ static int mmc_submit_one(struct mmc_data *md, struct mmc_request *mr,
 	return ret;
 }
 
-/**
- * brcmf_sdiod_sglist_rw - SDIO interface function for block data access
- * @sdiodev: brcmfmac sdio device
- * @func: SDIO function
- * @write: direction flag
- * @addr: dongle memory address as source/destination
- * @pktlist: skb buffer head pointer
- *
- * This function takes the respbonsibility as the interface function to MMC
- * stack for block data access. It assumes that the skb passed down by the
- * caller has already been padded and aligned.
- */
+ 
 static int brcmf_sdiod_sglist_rw(struct brcmf_sdio_dev *sdiodev,
 				 struct sdio_func *func,
 				 bool write, u32 addr,
@@ -395,7 +380,7 @@ static int brcmf_sdiod_sglist_rw(struct brcmf_sdio_dev *sdiodev,
 		return -EINVAL;
 
 	target_list = pktlist;
-	/* for host with broken sg support, prepare a page aligned list */
+	 
 	__skb_queue_head_init(&local_list);
 	if (!write && sdiodev->settings->bus.sdio.broken_sg_support) {
 		req_sz = 0;
@@ -433,10 +418,10 @@ static int brcmf_sdiod_sglist_rw(struct brcmf_sdio_dev *sdiodev,
 	mmc_dat.blksz = func_blk_sz;
 	mmc_dat.flags = write ? MMC_DATA_WRITE : MMC_DATA_READ;
 	mmc_cmd.opcode = SD_IO_RW_EXTENDED;
-	mmc_cmd.arg = write ? 1<<31 : 0;	/* write flag  */
-	mmc_cmd.arg |= (func->num & 0x7) << 28;	/* SDIO func num */
-	mmc_cmd.arg |= 1 << 27;			/* block mode */
-	/* for function 1 the addr will be incremented */
+	mmc_cmd.arg = write ? 1<<31 : 0;	 
+	mmc_cmd.arg |= (func->num & 0x7) << 28;	 
+	mmc_cmd.arg |= 1 << 27;			 
+	 
 	mmc_cmd.arg |= (func->num == 1) ? 1 << 26 : 0;
 	mmc_cmd.flags = MMC_RSP_SPI_R5 | MMC_RSP_R5 | MMC_CMD_ADTC;
 	mmc_req.cmd = &mmc_cmd;
@@ -484,9 +469,7 @@ exit_queue_walk:
 		skb_queue_walk(pktlist, pkt_next) {
 			dst_offset = 0;
 
-			/* This is safe because we must have enough SKB data
-			 * in the local list to cover everything in pktlist.
-			 */
+			 
 			while (1) {
 				req_sz = pkt_next->len - dst_offset;
 				if (req_sz > src->len - src_offset)
@@ -677,7 +660,7 @@ brcmf_sdiod_ramrw(struct brcmf_sdio_dev *sdiodev, bool write, u32 address,
 	}
 	pkt->priority = 0;
 
-	/* Determine initial transfer parameters */
+	 
 	sdaddr = address & SBSDIO_SB_OFT_ADDR_MASK;
 	if ((sdaddr + size) & SBSDIO_SBWINDOW_MASK)
 		dsize = (SBSDIO_SB_OFT_ADDR_LIMIT - sdaddr);
@@ -686,9 +669,9 @@ brcmf_sdiod_ramrw(struct brcmf_sdio_dev *sdiodev, bool write, u32 address,
 
 	sdio_claim_host(sdiodev->func1);
 
-	/* Do the transfer(s) */
+	 
 	while (size) {
-		/* Set the backplane window to include the start address */
+		 
 		err = brcmf_sdiod_set_backplane_window(sdiodev, address);
 		if (err)
 			break;
@@ -719,7 +702,7 @@ brcmf_sdiod_ramrw(struct brcmf_sdio_dev *sdiodev, bool write, u32 address,
 			memcpy(data, pkt->data, dsize);
 		skb_trim(pkt, 0);
 
-		/* Adjust for next transfer (if any) */
+		 
 		size -= dsize;
 		if (size) {
 			data += dsize;
@@ -740,7 +723,7 @@ int brcmf_sdiod_abort(struct brcmf_sdio_dev *sdiodev, struct sdio_func *func)
 {
 	brcmf_dbg(SDIO, "Enter\n");
 
-	/* Issue abort cmd52 command through F0 */
+	 
 	brcmf_sdiod_func0_wb(sdiodev, SDIO_CCCR_ABORT, func->num, NULL);
 
 	brcmf_dbg(SDIO, "Exit\n");
@@ -871,7 +854,7 @@ int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
 
 	brcmf_sdiod_freezer_detach(sdiodev);
 
-	/* Disable functions 2 then 1. */
+	 
 	sdio_claim_host(sdiodev->func1);
 	sdio_disable_func(sdiodev->func2);
 	sdio_disable_func(sdiodev->func1);
@@ -886,9 +869,9 @@ int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
 
 static void brcmf_sdiod_host_fixup(struct mmc_host *host)
 {
-	/* runtime-pm powers off the device */
+	 
 	pm_runtime_forbid(host->parent);
-	/* avoid removal detection upon resume */
+	 
 	host->caps |= MMC_CAP_NONREMOVABLE;
 }
 
@@ -930,10 +913,10 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
 		brcmf_dbg(SDIO, "set F2 blocksize to %d\n", f2_blksz);
 	}
 
-	/* increase F2 timeout */
+	 
 	sdiodev->func2->enable_timeout = SDIO_WAIT_F2RDY;
 
-	/* Enable Function 1 */
+	 
 	ret = sdio_enable_func(sdiodev->func1);
 	sdio_release_host(sdiodev->func1);
 	if (ret) {
@@ -945,7 +928,7 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
 	if (ret)
 		goto out;
 
-	/* try to attach to the target device */
+	 
 	sdiodev->bus = brcmf_sdio_probe(sdiodev);
 	if (!sdiodev->bus) {
 		ret = -ENODEV;
@@ -971,7 +954,7 @@ out:
 		.driver_data = BRCMF_FWVENDOR_ ## fw_vend \
 	}
 
-/* devices we support, null terminated */
+ 
 static const struct sdio_device_id brcmf_sdmmc_ids[] = {
 	BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43143, WCC),
 	BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43241, WCC),
@@ -996,7 +979,7 @@ static const struct sdio_device_id brcmf_sdmmc_ids[] = {
 	BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43752, CYW),
 	BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_89359, CYW),
 	CYW_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43439, CYW),
-	{ /* end: all zeroes */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(sdio, brcmf_sdmmc_ids);
 
@@ -1050,14 +1033,14 @@ static int brcmf_ops_sdio_probe(struct sdio_func *func,
 	brcmf_dbg(SDIO, "sdio device ID: 0x%04x\n", func->device);
 	brcmf_dbg(SDIO, "Function#: %d\n", func->num);
 
-	/* Set MMC_QUIRK_LENIENT_FN0 for this card */
+	 
 	func->card->quirks |= MMC_QUIRK_LENIENT_FN0;
 
-	/* Consume func num 1 but dont do anything with it. */
+	 
 	if (func->num == 1)
 		return 0;
 
-	/* Ignore anything but func 2 */
+	 
 	if (func->num != 2)
 		return -ENODEV;
 
@@ -1070,9 +1053,7 @@ static int brcmf_ops_sdio_probe(struct sdio_func *func,
 		return -ENOMEM;
 	}
 
-	/* store refs to functions used. mmc_card does
-	 * not hold the F0 function pointer.
-	 */
+	 
 	sdiodev->func1 = func->card->sdio_func[0];
 	sdiodev->func2 = func;
 
@@ -1119,13 +1100,13 @@ static void brcmf_ops_sdio_remove(struct sdio_func *func)
 	if (bus_if) {
 		sdiodev = bus_if->bus_priv.sdio;
 
-		/* start by unregistering irqs */
+		 
 		brcmf_sdiod_intr_unregister(sdiodev);
 
 		if (func->num != 1)
 			return;
 
-		/* only proceed with rest of cleanup if func 1 */
+		 
 		brcmf_sdiod_remove(sdiodev);
 
 		dev_set_drvdata(&sdiodev->func1->dev, NULL);
@@ -1144,13 +1125,13 @@ void brcmf_sdio_wowl_config(struct device *dev, bool enabled)
 	struct brcmf_sdio_dev *sdiodev = bus_if->bus_priv.sdio;
 	mmc_pm_flag_t pm_caps = sdio_get_host_pm_caps(sdiodev->func1);
 
-	/* Power must be preserved to be able to support WOWL. */
+	 
 	if (!(pm_caps & MMC_PM_KEEP_POWER))
 		goto notsup;
 
 	if (sdiodev->settings->bus.sdio.oob_irq_supported ||
 	    pm_caps & MMC_PM_WAKE_SDIO_IRQ) {
-		/* Stop ACPI from turning off the device when wowl is enabled */
+		 
 		brcmf_sdiod_acpi_set_power_manageable(sdiodev, !enabled);
 		sdiodev->wowl_enabled = enabled;
 		brcmf_dbg(SDIO, "Configuring WOWL, enabled=%d\n", enabled);
@@ -1192,7 +1173,7 @@ static int brcmf_ops_sdio_suspend(struct device *dev)
 			brcmf_err("Failed to set pm_flags %x\n", sdio_flags);
 
 	} else {
-		/* power will be cut so remove device, probe again in resume */
+		 
 		brcmf_sdiod_intr_unregister(sdiodev);
 		ret = brcmf_sdiod_remove(sdiodev);
 		if (ret)
@@ -1214,7 +1195,7 @@ static int brcmf_ops_sdio_resume(struct device *dev)
 		return 0;
 
 	if (!sdiodev->wowl_enabled) {
-		/* bus was powered off and device removed, probe again */
+		 
 		ret = brcmf_sdiod_probe(sdiodev);
 		if (ret)
 			brcmf_err("Failed to probe device on resume\n");

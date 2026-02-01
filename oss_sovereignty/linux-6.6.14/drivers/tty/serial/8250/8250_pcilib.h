@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * 8250 PCI library header file.
- *
- * Copyright (C) 2001 Russell King, All Rights Reserved.
- */
+ 
+ 
 
 #include <linux/types.h>
 

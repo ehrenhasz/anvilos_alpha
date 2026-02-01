@@ -1,20 +1,4 @@
-/* Test of POSIX compatible vasprintf() and asprintf() functions.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
+ 
 
 #include <config.h>
 
@@ -33,7 +17,7 @@
 #include "infinity.h"
 #include "nan.h"
 
-/* The SGI MIPS floating-point format does not distinguish 0.0 and -0.0.  */
+ 
 static int
 have_minus_zero ()
 {
@@ -42,8 +26,7 @@ have_minus_zero ()
   return memcmp (&plus_zero, &minus_zero, sizeof (double)) != 0;
 }
 
-/* Representation of an 80-bit 'long double' as an initializer for a sequence
-   of 'unsigned int' words.  */
+ 
 #ifdef WORDS_BIGENDIAN
 # define LDBL80_WORDS(exponent,manthi,mantlo) \
     { ((unsigned int) (exponent) << 16) | ((unsigned int) (manthi) >> 16), \
@@ -66,8 +49,7 @@ strmatch (const char *pattern, const char *string)
   return 1;
 }
 
-/* Test whether string[start_index..end_index-1] is a valid textual
-   representation of NaN.  */
+ 
 static int
 strisnan (const char *string, size_t start_index, size_t end_index, int uppercase)
 {
@@ -92,7 +74,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
 {
   int repeat;
 
-  /* Test return value convention.  */
+   
 
   for (repeat = 0; repeat <= 8; repeat++)
     {
@@ -104,7 +86,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       free (result);
     }
 
-  /* Test support of size specifiers as in C99.  */
+   
 
   {
     char *result;
@@ -146,10 +128,9 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the 'a' and 'A' conversion specifier for hexadecimal
-     output of floating-point numbers.  */
+   
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%a %d", 3.1416015625, 33, 44, 55);
@@ -162,7 +143,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%A %d", -3.1416015625, 33, 44, 55);
@@ -175,7 +156,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%a %d", 0.0, 33, 44, 55);
@@ -185,7 +166,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%a %d", minus_zerod, 33, 44, 55);
@@ -196,7 +177,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%a %d", Infinityd (), 33, 44, 55);
@@ -206,7 +187,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%a %d", - Infinityd (), 33, 44, 55);
@@ -216,7 +197,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%a %d", NaNd (), 33, 44, 55);
@@ -228,7 +209,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding near the decimal point.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0a %d", 1.5, 33, 44, 55);
@@ -242,7 +223,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 0.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0a %d", 1.51, 33, 44, 55);
@@ -256,7 +237,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 1.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.1a %d", 1.51, 33, 44, 55);
@@ -269,7 +250,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 2.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2a %d", 1.51, 33, 44, 55);
@@ -282,7 +263,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 3.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.3a %d", 1.51, 33, 44, 55);
@@ -295,7 +276,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding can turn a ...FFF into a ...000.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.3a %d", 1.49999, 33, 44, 55);
@@ -308,8 +289,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding can turn a ...FFF into a ...000.
-       This shows a Mac OS X 10.3.9 (Darwin 7.9) bug.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.1a %d", 1.999, 33, 44, 55);
@@ -322,7 +302,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10a %d", 1.75, 33, 44, 55);
@@ -335,7 +315,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*a %d", 10, 1.75, 33, 44, 55);
@@ -348,7 +328,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*a %d", -10, 1.75, 33, 44, 55);
@@ -361,7 +341,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.10a %d", 1.75, 33, 44, 55);
@@ -374,7 +354,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Large precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.50a %d", 1.75, 33, 44, 55);
@@ -387,7 +367,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10a %d", 1.75, 33, 44, 55);
@@ -400,7 +380,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+a %d", 1.75, 33, 44, 55);
@@ -413,7 +393,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% a %d", 1.75, 33, 44, 55);
@@ -426,7 +406,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#a %d", 1.75, 33, 44, 55);
@@ -439,7 +419,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#a %d", 1.0, 33, 44, 55);
@@ -452,7 +432,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%010a %d", 1.75, 33, 44, 55);
@@ -465,33 +445,17 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%010a %d", Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
-    /* "0000000inf 33" is not a valid result; see
-       <https://lists.gnu.org/r/bug-gnulib/2007-04/msg00107.html> */
-    ASSERT (strcmp (result, "       inf 33") == 0);
-    ASSERT (retval == strlen (result));
-    free (result);
-  }
-
-  { /* FLAG_ZERO with NaN.  */
+     
     char *result;
     int retval =
       my_asprintf (&result, "%050a %d", NaNd (), 33, 44, 55);
     ASSERT (result != NULL);
-    /* "0000000nan 33" is not a valid result; see
-       <https://lists.gnu.org/r/bug-gnulib/2007-04/msg00107.html> */
-    ASSERT (strlen (result) == 50 + 3
-            && strisnan (result, strspn (result, " "), strlen (result) - 3, 0)
-            && strcmp (result + strlen (result) - 3, " 33") == 0);
-    ASSERT (retval == strlen (result));
-    free (result);
-  }
-
-  { /* A positive number.  */
+     
     char *result;
     int retval =
       my_asprintf (&result, "%La %d", 3.1416015625L, 33, 44, 55);
@@ -504,7 +468,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LA %d", -3.1416015625L, 33, 44, 55);
@@ -517,7 +481,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%La %d", 0.0L, 33, 44, 55);
@@ -527,7 +491,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%La %d", minus_zerol, 33, 44, 55);
@@ -538,19 +502,12 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%La %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
-    /* Note: This assertion fails under valgrind.
-       Reported at <https://bugs.kde.org/show_bug.cgi?id=424044>.  */
-    ASSERT (strcmp (result, "inf 33") == 0);
-    ASSERT (retval == strlen (result));
-    free (result);
-  }
-
-  { /* Negative infinity.  */
+     
     char *result;
     int retval =
       my_asprintf (&result, "%La %d", - Infinityl (), 33, 44, 55);
@@ -560,7 +517,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%La %d", NaNl (), 33, 44, 55);
@@ -572,7 +529,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 #if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
-  { /* Quiet NaN.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
     char *result;
@@ -586,7 +543,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
   {
-    /* Signalling NaN.  */
+     
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x83333333, 0x00000000) };
     char *result;
@@ -599,8 +556,8 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (retval == strlen (result));
     free (result);
   }
-  /* asprintf should print something for noncanonical values.  */
-  { /* Pseudo-NaN.  */
+   
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x40000001, 0x00000000) };
     char *result;
@@ -611,7 +568,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Infinity.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x00000000, 0x00000000) };
     char *result;
@@ -622,7 +579,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Zero.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4004, 0x00000000, 0x00000000) };
     char *result;
@@ -633,7 +590,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Unnormalized number.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4000, 0x63333333, 0x00000000) };
     char *result;
@@ -644,7 +601,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Denormal.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x0000, 0x83333333, 0x00000000) };
     char *result;
@@ -657,7 +614,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
   }
 #endif
 
-  { /* Rounding near the decimal point.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0La %d", 1.5L, 33, 44, 55);
@@ -670,7 +627,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 0.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0La %d", 1.51L, 33, 44, 55);
@@ -683,7 +640,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 1.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.1La %d", 1.51L, 33, 44, 55);
@@ -696,7 +653,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 2.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2La %d", 1.51L, 33, 44, 55);
@@ -709,7 +666,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding with precision 3.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.3La %d", 1.51L, 33, 44, 55);
@@ -722,7 +679,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding can turn a ...FFF into a ...000.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.3La %d", 1.49999L, 33, 44, 55);
@@ -735,22 +692,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Rounding can turn a ...FFF into a ...000.
-       This shows a Mac OS X 10.3.9 (Darwin 7.9) bug and a
-       glibc 2.4 bug <https://sourceware.org/bugzilla/show_bug.cgi?id=2908>.  */
-    char *result;
-    int retval =
-      my_asprintf (&result, "%.1La %d", 1.999L, 33, 44, 55);
-    ASSERT (result != NULL);
-    ASSERT (strcmp (result, "0x1.0p+1 33") == 0
-            || strcmp (result, "0x2.0p+0 33") == 0
-            || strcmp (result, "0x4.0p-1 33") == 0
-            || strcmp (result, "0x8.0p-2 33") == 0);
-    ASSERT (retval == strlen (result));
-    free (result);
-  }
-
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10La %d", 1.75L, 33, 44, 55);
@@ -763,7 +705,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*La %d", 10, 1.75L, 33, 44, 55);
@@ -776,7 +718,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*La %d", -10, 1.75L, 33, 44, 55);
@@ -789,7 +731,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.10La %d", 1.75L, 33, 44, 55);
@@ -802,7 +744,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Large precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.50La %d", 1.75L, 33, 44, 55);
@@ -815,7 +757,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10La %d", 1.75L, 33, 44, 55);
@@ -828,7 +770,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+La %d", 1.75L, 33, 44, 55);
@@ -841,7 +783,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% La %d", 1.75L, 33, 44, 55);
@@ -854,7 +796,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#La %d", 1.75L, 33, 44, 55);
@@ -867,7 +809,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#La %d", 1.0L, 33, 44, 55);
@@ -880,7 +822,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%010La %d", 1.75L, 33, 44, 55);
@@ -893,35 +835,19 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%010La %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
-    /* "0000000inf 33" is not a valid result; see
-       <https://lists.gnu.org/r/bug-gnulib/2007-04/msg00107.html> */
-    ASSERT (strcmp (result, "       inf 33") == 0);
-    ASSERT (retval == strlen (result));
-    free (result);
-  }
-
-  { /* FLAG_ZERO with NaN.  */
+     
     char *result;
     int retval =
       my_asprintf (&result, "%050La %d", NaNl (), 33, 44, 55);
     ASSERT (result != NULL);
-    /* "0000000nan 33" is not a valid result; see
-       <https://lists.gnu.org/r/bug-gnulib/2007-04/msg00107.html> */
-    ASSERT (strlen (result) == 50 + 3
-            && strisnan (result, strspn (result, " "), strlen (result) - 3, 0)
-            && strcmp (result + strlen (result) - 3, " 33") == 0);
-    ASSERT (retval == strlen (result));
-    free (result);
-  }
+     
 
-  /* Test the support of the %f format directive.  */
-
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", 12.75, 33, 44, 55);
@@ -931,7 +857,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", 1234567.0, 33, 44, 55);
@@ -941,7 +867,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small and large positive numbers.  */
+  {  
     static struct { double value; const char *string; } data[] =
       {
         { 1.234321234321234e-37, "0.000000" },
@@ -1032,7 +958,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       }
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", -0.03125, 33, 44, 55);
@@ -1042,7 +968,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", 0.0, 33, 44, 55);
@@ -1052,7 +978,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", minus_zerod, 33, 44, 55);
@@ -1063,7 +989,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", Infinityd (), 33, 44, 55);
@@ -1074,7 +1000,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", - Infinityd (), 33, 44, 55);
@@ -1085,7 +1011,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%f %d", NaNd (), 33, 44, 55);
@@ -1097,7 +1023,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10f %d", 1.75, 33, 44, 55);
@@ -1107,7 +1033,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*f %d", 10, 1.75, 33, 44, 55);
@@ -1117,7 +1043,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*f %d", -10, 1.75, 33, 44, 55);
@@ -1127,7 +1053,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10f %d", 1.75, 33, 44, 55);
@@ -1137,7 +1063,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+f %d", 1.75, 33, 44, 55);
@@ -1147,7 +1073,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% f %d", 1.75, 33, 44, 55);
@@ -1157,7 +1083,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#f %d", 1.75, 33, 44, 55);
@@ -1167,7 +1093,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.f %d", 1.75, 33, 44, 55);
@@ -1177,7 +1103,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015f %d", 1234.0, 33, 44, 55);
@@ -1187,7 +1113,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015f %d", - Infinityd (), 33, 44, 55);
@@ -1198,7 +1124,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%050f %d", NaNd (), 33, 44, 55);
@@ -1210,7 +1136,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.f %d", 1234.0, 33, 44, 55);
@@ -1220,7 +1146,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2f %d", 999.951, 33, 44, 55);
@@ -1230,7 +1156,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2f %d", 999.996, 33, 44, 55);
@@ -1240,7 +1166,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", 12.75L, 33, 44, 55);
@@ -1250,7 +1176,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", 1234567.0L, 33, 44, 55);
@@ -1260,7 +1186,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small and large positive numbers.  */
+  {  
     static struct { long double value; const char *string; } data[] =
       {
         { 1.234321234321234e-37L, "0.000000" },
@@ -1351,7 +1277,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       }
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", -0.03125L, 33, 44, 55);
@@ -1361,7 +1287,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", 0.0L, 33, 44, 55);
@@ -1371,7 +1297,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", minus_zerol, 33, 44, 55);
@@ -1382,7 +1308,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", Infinityl (), 33, 44, 55);
@@ -1393,7 +1319,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", - Infinityl (), 33, 44, 55);
@@ -1404,7 +1330,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lf %d", NaNl (), 33, 44, 55);
@@ -1416,7 +1342,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 #if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
-  { /* Quiet NaN.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
     char *result;
@@ -1430,7 +1356,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
   {
-    /* Signalling NaN.  */
+     
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x83333333, 0x00000000) };
     char *result;
@@ -1443,8 +1369,8 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (retval == strlen (result));
     free (result);
   }
-  /* asprintf should print something for noncanonical values.  */
-  { /* Pseudo-NaN.  */
+   
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x40000001, 0x00000000) };
     char *result;
@@ -1455,7 +1381,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Infinity.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x00000000, 0x00000000) };
     char *result;
@@ -1466,7 +1392,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Zero.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4004, 0x00000000, 0x00000000) };
     char *result;
@@ -1477,7 +1403,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Unnormalized number.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4000, 0x63333333, 0x00000000) };
     char *result;
@@ -1488,7 +1414,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Denormal.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x0000, 0x83333333, 0x00000000) };
     char *result;
@@ -1501,7 +1427,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
   }
 #endif
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10Lf %d", 1.75L, 33, 44, 55);
@@ -1511,7 +1437,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*Lf %d", 10, 1.75L, 33, 44, 55);
@@ -1521,7 +1447,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*Lf %d", -10, 1.75L, 33, 44, 55);
@@ -1531,7 +1457,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10Lf %d", 1.75L, 33, 44, 55);
@@ -1541,7 +1467,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+Lf %d", 1.75L, 33, 44, 55);
@@ -1551,7 +1477,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% Lf %d", 1.75L, 33, 44, 55);
@@ -1561,7 +1487,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#Lf %d", 1.75L, 33, 44, 55);
@@ -1571,7 +1497,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.Lf %d", 1.75L, 33, 44, 55);
@@ -1581,7 +1507,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015Lf %d", 1234.0L, 33, 44, 55);
@@ -1591,7 +1517,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015Lf %d", - Infinityl (), 33, 44, 55);
@@ -1602,7 +1528,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%050Lf %d", NaNl (), 33, 44, 55);
@@ -1614,7 +1540,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.Lf %d", 1234.0L, 33, 44, 55);
@@ -1624,7 +1550,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2Lf %d", 999.951L, 33, 44, 55);
@@ -1634,7 +1560,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2Lf %d", 999.996L, 33, 44, 55);
@@ -1644,9 +1570,9 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the %F format directive.  */
+   
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", 12.75, 33, 44, 55);
@@ -1656,7 +1582,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", 1234567.0, 33, 44, 55);
@@ -1666,7 +1592,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", -0.03125, 33, 44, 55);
@@ -1676,7 +1602,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", 0.0, 33, 44, 55);
@@ -1686,7 +1612,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", minus_zerod, 33, 44, 55);
@@ -1697,7 +1623,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", Infinityd (), 33, 44, 55);
@@ -1708,7 +1634,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", - Infinityd (), 33, 44, 55);
@@ -1719,7 +1645,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%F %d", NaNd (), 33, 44, 55);
@@ -1731,7 +1657,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015F %d", 1234.0, 33, 44, 55);
@@ -1741,7 +1667,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015F %d", - Infinityd (), 33, 44, 55);
@@ -1752,7 +1678,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.F %d", 1234.0, 33, 44, 55);
@@ -1762,7 +1688,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2F %d", 999.951, 33, 44, 55);
@@ -1772,7 +1698,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2F %d", 999.996, 33, 44, 55);
@@ -1782,7 +1708,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", 12.75L, 33, 44, 55);
@@ -1792,7 +1718,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", 1234567.0L, 33, 44, 55);
@@ -1802,7 +1728,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", -0.03125L, 33, 44, 55);
@@ -1812,7 +1738,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", 0.0L, 33, 44, 55);
@@ -1822,7 +1748,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", minus_zerol, 33, 44, 55);
@@ -1833,7 +1759,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", Infinityl (), 33, 44, 55);
@@ -1844,7 +1770,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", - Infinityl (), 33, 44, 55);
@@ -1855,7 +1781,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%LF %d", NaNl (), 33, 44, 55);
@@ -1867,7 +1793,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015LF %d", 1234.0L, 33, 44, 55);
@@ -1877,7 +1803,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015LF %d", - Infinityl (), 33, 44, 55);
@@ -1888,7 +1814,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.LF %d", 1234.0L, 33, 44, 55);
@@ -1898,7 +1824,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2LF %d", 999.951L, 33, 44, 55);
@@ -1908,7 +1834,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.2LF %d", 999.996L, 33, 44, 55);
@@ -1918,9 +1844,9 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the %e format directive.  */
+   
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", 12.75, 33, 44, 55);
@@ -1931,7 +1857,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", 1234567.0, 33, 44, 55);
@@ -1942,7 +1868,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small and large positive numbers.  */
+  {  
     static struct { double value; const char *string; } data[] =
       {
         { 1.234321234321234e-37, "1.234321e-37" },
@@ -2029,7 +1955,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
         const char *expected = data[k].string;
         ASSERT (result != NULL);
         ASSERT (strcmp (result, expected) == 0
-                /* Some implementations produce exponents with 3 digits.  */
+                 
                 || (strlen (result) == strlen (expected) + 1
                     && memcmp (result, expected, strlen (expected) - 2) == 0
                     && result[strlen (expected) - 2] == '0'
@@ -2041,7 +1967,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       }
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", -0.03125, 33, 44, 55);
@@ -2052,7 +1978,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", 0.0, 33, 44, 55);
@@ -2063,7 +1989,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", minus_zerod, 33, 44, 55);
@@ -2075,7 +2001,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", Infinityd (), 33, 44, 55);
@@ -2086,7 +2012,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", - Infinityd (), 33, 44, 55);
@@ -2097,7 +2023,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%e %d", NaNd (), 33, 44, 55);
@@ -2109,7 +2035,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%15e %d", 1.75, 33, 44, 55);
@@ -2120,7 +2046,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*e %d", 15, 1.75, 33, 44, 55);
@@ -2131,7 +2057,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*e %d", -15, 1.75, 33, 44, 55);
@@ -2142,7 +2068,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-15e %d", 1.75, 33, 44, 55);
@@ -2153,7 +2079,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+e %d", 1.75, 33, 44, 55);
@@ -2164,7 +2090,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% e %d", 1.75, 33, 44, 55);
@@ -2175,7 +2101,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#e %d", 1.75, 33, 44, 55);
@@ -2186,7 +2112,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.e %d", 1.75, 33, 44, 55);
@@ -2197,7 +2123,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.e %d", 9.75, 33, 44, 55);
@@ -2208,7 +2134,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015e %d", 1234.0, 33, 44, 55);
@@ -2219,7 +2145,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015e %d", - Infinityd (), 33, 44, 55);
@@ -2230,7 +2156,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%050e %d", NaNd (), 33, 44, 55);
@@ -2242,7 +2168,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.e %d", 1234.0, 33, 44, 55);
@@ -2253,7 +2179,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.4e %d", 999.951, 33, 44, 55);
@@ -2264,7 +2190,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.4e %d", 999.996, 33, 44, 55);
@@ -2275,7 +2201,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", 12.75L, 33, 44, 55);
@@ -2286,7 +2212,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", 1234567.0L, 33, 44, 55);
@@ -2297,7 +2223,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small and large positive numbers.  */
+  {  
     static struct { long double value; const char *string; } data[] =
       {
         { 1.234321234321234e-37L, "1.234321e-37" },
@@ -2384,7 +2310,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
         const char *expected = data[k].string;
         ASSERT (result != NULL);
         ASSERT (strcmp (result, expected) == 0
-                /* Some implementations produce exponents with 3 digits.  */
+                 
                 || (strlen (result) == strlen (expected) + 1
                     && memcmp (result, expected, strlen (expected) - 2) == 0
                     && result[strlen (expected) - 2] == '0'
@@ -2396,7 +2322,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       }
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", -0.03125L, 33, 44, 55);
@@ -2407,7 +2333,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", 0.0L, 33, 44, 55);
@@ -2418,7 +2344,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", minus_zerol, 33, 44, 55);
@@ -2430,7 +2356,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", Infinityl (), 33, 44, 55);
@@ -2441,7 +2367,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", - Infinityl (), 33, 44, 55);
@@ -2452,7 +2378,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Le %d", NaNl (), 33, 44, 55);
@@ -2464,7 +2390,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 #if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
-  { /* Quiet NaN.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
     char *result;
@@ -2478,7 +2404,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
   {
-    /* Signalling NaN.  */
+     
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x83333333, 0x00000000) };
     char *result;
@@ -2491,8 +2417,8 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (retval == strlen (result));
     free (result);
   }
-  /* asprintf should print something for noncanonical values.  */
-  { /* Pseudo-NaN.  */
+   
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x40000001, 0x00000000) };
     char *result;
@@ -2503,7 +2429,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Infinity.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x00000000, 0x00000000) };
     char *result;
@@ -2514,7 +2440,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Zero.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4004, 0x00000000, 0x00000000) };
     char *result;
@@ -2525,7 +2451,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Unnormalized number.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4000, 0x63333333, 0x00000000) };
     char *result;
@@ -2536,7 +2462,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Denormal.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x0000, 0x83333333, 0x00000000) };
     char *result;
@@ -2549,7 +2475,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
   }
 #endif
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%15Le %d", 1.75L, 33, 44, 55);
@@ -2560,7 +2486,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*Le %d", 15, 1.75L, 33, 44, 55);
@@ -2571,7 +2497,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*Le %d", -15, 1.75L, 33, 44, 55);
@@ -2582,7 +2508,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-15Le %d", 1.75L, 33, 44, 55);
@@ -2593,7 +2519,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+Le %d", 1.75L, 33, 44, 55);
@@ -2604,7 +2530,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% Le %d", 1.75L, 33, 44, 55);
@@ -2615,7 +2541,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#Le %d", 1.75L, 33, 44, 55);
@@ -2626,7 +2552,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.Le %d", 1.75L, 33, 44, 55);
@@ -2637,7 +2563,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.Le %d", 9.75L, 33, 44, 55);
@@ -2648,7 +2574,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015Le %d", 1234.0L, 33, 44, 55);
@@ -2659,7 +2585,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015Le %d", - Infinityl (), 33, 44, 55);
@@ -2670,7 +2596,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%050Le %d", NaNl (), 33, 44, 55);
@@ -2682,7 +2608,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.Le %d", 1234.0L, 33, 44, 55);
@@ -2693,7 +2619,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.4Le %d", 999.951L, 33, 44, 55);
@@ -2704,7 +2630,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.4Le %d", 999.996L, 33, 44, 55);
@@ -2715,9 +2641,9 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the %g format directive.  */
+   
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", 12.75, 33, 44, 55);
@@ -2727,7 +2653,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", 1234567.0, 33, 44, 55);
@@ -2738,7 +2664,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small and large positive numbers.  */
+  {  
     static struct { double value; const char *string; } data[] =
       {
         { 1.234321234321234e-37, "1.23432e-37" },
@@ -2825,7 +2751,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
         const char *expected = data[k].string;
         ASSERT (result != NULL);
         ASSERT (strcmp (result, expected) == 0
-                /* Some implementations produce exponents with 3 digits.  */
+                 
                 || (expected[strlen (expected) - 4] == 'e'
                     && strlen (result) == strlen (expected) + 1
                     && memcmp (result, expected, strlen (expected) - 2) == 0
@@ -2838,7 +2764,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       }
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", -0.03125, 33, 44, 55);
@@ -2848,7 +2774,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", 0.0, 33, 44, 55);
@@ -2858,7 +2784,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", minus_zerod, 33, 44, 55);
@@ -2869,7 +2795,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", Infinityd (), 33, 44, 55);
@@ -2880,7 +2806,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", - Infinityd (), 33, 44, 55);
@@ -2891,7 +2817,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%g %d", NaNd (), 33, 44, 55);
@@ -2903,7 +2829,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10g %d", 1.75, 33, 44, 55);
@@ -2913,7 +2839,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*g %d", 10, 1.75, 33, 44, 55);
@@ -2923,7 +2849,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*g %d", -10, 1.75, 33, 44, 55);
@@ -2933,7 +2859,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10g %d", 1.75, 33, 44, 55);
@@ -2943,7 +2869,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+g %d", 1.75, 33, 44, 55);
@@ -2953,7 +2879,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% g %d", 1.75, 33, 44, 55);
@@ -2963,7 +2889,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#g %d", 1.75, 33, 44, 55);
@@ -2973,7 +2899,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.g %d", 1.75, 33, 44, 55);
@@ -2983,7 +2909,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.g %d", 9.75, 33, 44, 55);
@@ -2994,7 +2920,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%010g %d", 1234.0, 33, 44, 55);
@@ -3004,7 +2930,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015g %d", - Infinityd (), 33, 44, 55);
@@ -3015,7 +2941,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%050g %d", NaNd (), 33, 44, 55);
@@ -3027,7 +2953,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.g %d", 1234.0, 33, 44, 55);
@@ -3038,7 +2964,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.5g %d", 999.951, 33, 44, 55);
@@ -3048,7 +2974,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.5g %d", 999.996, 33, 44, 55);
@@ -3058,7 +2984,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", 12.75L, 33, 44, 55);
@@ -3068,7 +2994,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A larger positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", 1234567.0L, 33, 44, 55);
@@ -3079,7 +3005,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Small and large positive numbers.  */
+  {  
     static struct { long double value; const char *string; } data[] =
       {
         { 1.234321234321234e-37L, "1.23432e-37" },
@@ -3166,7 +3092,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
         const char *expected = data[k].string;
         ASSERT (result != NULL);
         ASSERT (strcmp (result, expected) == 0
-                /* Some implementations produce exponents with 3 digits.  */
+                 
                 || (expected[strlen (expected) - 4] == 'e'
                     && strlen (result) == strlen (expected) + 1
                     && memcmp (result, expected, strlen (expected) - 2) == 0
@@ -3179,7 +3105,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       }
   }
 
-  { /* A negative number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", -0.03125L, 33, 44, 55);
@@ -3189,7 +3115,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", 0.0L, 33, 44, 55);
@@ -3199,7 +3125,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", minus_zerol, 33, 44, 55);
@@ -3210,7 +3136,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Positive infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", Infinityl (), 33, 44, 55);
@@ -3221,7 +3147,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative infinity.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", - Infinityl (), 33, 44, 55);
@@ -3232,7 +3158,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%Lg %d", NaNl (), 33, 44, 55);
@@ -3244,7 +3170,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 #if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
-  { /* Quiet NaN.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
     char *result;
@@ -3258,7 +3184,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
   {
-    /* Signalling NaN.  */
+     
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x83333333, 0x00000000) };
     char *result;
@@ -3271,8 +3197,8 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (retval == strlen (result));
     free (result);
   }
-  /* asprintf should print something for noncanonical values.  */
-  { /* Pseudo-NaN.  */
+   
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x40000001, 0x00000000) };
     char *result;
@@ -3283,7 +3209,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Infinity.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0x00000000, 0x00000000) };
     char *result;
@@ -3294,7 +3220,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Zero.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4004, 0x00000000, 0x00000000) };
     char *result;
@@ -3305,7 +3231,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Unnormalized number.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x4000, 0x63333333, 0x00000000) };
     char *result;
@@ -3316,7 +3242,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     ASSERT (3 < retval && strcmp (result + retval - 3, " 33") == 0);
     free (result);
   }
-  { /* Pseudo-Denormal.  */
+  {  
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0x0000, 0x83333333, 0x00000000) };
     char *result;
@@ -3329,7 +3255,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
   }
 #endif
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10Lg %d", 1.75L, 33, 44, 55);
@@ -3339,7 +3265,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*Lg %d", 10, 1.75L, 33, 44, 55);
@@ -3349,7 +3275,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*Lg %d", -10, 1.75L, 33, 44, 55);
@@ -3359,7 +3285,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10Lg %d", 1.75L, 33, 44, 55);
@@ -3369,7 +3295,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SHOWSIGN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%+Lg %d", 1.75L, 33, 44, 55);
@@ -3379,7 +3305,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_SPACE.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "% Lg %d", 1.75L, 33, 44, 55);
@@ -3389,7 +3315,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#Lg %d", 1.75L, 33, 44, 55);
@@ -3399,7 +3325,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.Lg %d", 1.75L, 33, 44, 55);
@@ -3409,7 +3335,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.Lg %d", 9.75L, 33, 44, 55);
@@ -3420,7 +3346,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with finite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%010Lg %d", 1234.0L, 33, 44, 55);
@@ -3430,7 +3356,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with infinite number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015Lg %d", - Infinityl (), 33, 44, 55);
@@ -3441,7 +3367,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ZERO with NaN.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%050Lg %d", NaNl (), 33, 44, 55);
@@ -3453,7 +3379,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.Lg %d", 1234.0L, 33, 44, 55);
@@ -3464,7 +3390,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with no rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.5Lg %d", 999.951L, 33, 44, 55);
@@ -3474,7 +3400,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision with rounding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.5Lg %d", 999.996L, 33, 44, 55);
@@ -3484,7 +3410,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the %n format directive.  */
+   
 
   {
     int count = -1;
@@ -3498,7 +3424,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the POSIX/XSI format strings with positions.  */
+   
 
   {
     char *result;
@@ -3510,7 +3436,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the grouping flag.  */
+   
 
   {
     char *result;
@@ -3522,7 +3448,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the left-adjust flag.  */
+   
 
   {
     char *result;
@@ -3554,7 +3480,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of large precision.  */
+   
 
   {
     char *result;
@@ -3697,9 +3623,9 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of the %s format directive.  */
+   
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10s %d", "xyz", 33, 44, 55);
@@ -3709,7 +3635,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*s %d", 10, "xyz", 33, 44, 55);
@@ -3719,7 +3645,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*s %d", -10, "xyz", 33, 44, 55);
@@ -3729,7 +3655,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10s %d", "xyz", 33, 44, 55);
@@ -3742,7 +3668,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
 #if HAVE_WCHAR_T
   static wchar_t L_xyz[4] = { 'x', 'y', 'z', 0 };
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10ls %d", L_xyz, 33, 44, 55);
@@ -3752,7 +3678,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*ls %d", 10, L_xyz, 33, 44, 55);
@@ -3762,7 +3688,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*ls %d", -10, L_xyz, 33, 44, 55);
@@ -3772,7 +3698,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10ls %d", L_xyz, 33, 44, 55);
@@ -3783,9 +3709,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
   }
 #endif
 
-  /* To verify that these tests succeed, it is necessary to run them under
-     a tool that checks against invalid memory accesses, such as ElectricFence
-     or "valgrind --tool=memcheck".  */
+   
   {
     size_t i;
 
@@ -3831,9 +3755,9 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
   }
 #endif
 
-  /* Test the support of the %c format directive.  */
+   
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10c %d", (unsigned char) 'x', 33, 44, 55);
@@ -3843,7 +3767,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*c %d", 10, (unsigned char) 'x', 33, 44, 55);
@@ -3853,7 +3777,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*c %d", -10, (unsigned char) 'x', 33, 44, 55);
@@ -3863,7 +3787,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10c %d", (unsigned char) 'x', 33, 44, 55);
@@ -3873,7 +3797,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision is ignored.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0c %d", (unsigned char) 'x', 33, 44, 55);
@@ -3882,7 +3806,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NUL character.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "a%cz %d", '\0', 33, 44, 55);
@@ -3894,7 +3818,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
 #if HAVE_WCHAR_T
   static wint_t L_x = (wchar_t) 'x';
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10lc %d", L_x, 33, 44, 55);
@@ -3904,7 +3828,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*lc %d", 10, L_x, 33, 44, 55);
@@ -3914,7 +3838,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*lc %d", -10, L_x, 33, 44, 55);
@@ -3924,7 +3848,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10lc %d", L_x, 33, 44, 55);
@@ -3934,7 +3858,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision is ignored.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0lc %d", L_x, 33, 44, 55);
@@ -3943,13 +3867,11 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* NUL character.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "a%lcz %d", (wint_t) L'\0', 33, 44, 55);
-    /* No NUL byte between 'a' and 'z'.  This is surprising, but is a
-       consequence of how POSIX:2018 and ISO C 23 specify the handling
-       of %lc.  */
+     
     ASSERT (memcmp (result, "az 33\0", 5 + 1) == 0);
     ASSERT (retval == 5);
     free (result);
@@ -3957,8 +3879,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
 
   static wint_t L_invalid = (wchar_t) 0x76543210;
 
-  { /* Invalid wide character.
-       The conversion may succeed or may fail, but it should not abort.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%lc %d", L_invalid, 33, 44, 55);
@@ -3966,8 +3887,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
       free (result);
   }
 
-  { /* Invalid wide character and width.
-       The conversion may succeed or may fail, but it should not abort.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10lc %d", L_invalid, 33, 44, 55);
@@ -3976,10 +3896,9 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
   }
 #endif
 
-  /* Test the support of the 'x' conversion specifier for hexadecimal output of
-     integers.  */
+   
 
-  { /* Zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%x %d", 0, 33, 44, 55);
@@ -3989,7 +3908,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%x %d", 12348, 33, 44, 55);
@@ -3999,7 +3918,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A large positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%x %d", 0xFFFFFFFEU, 33, 44, 55);
@@ -4009,7 +3928,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%10x %d", 12348, 33, 44, 55);
@@ -4019,7 +3938,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*x %d", 10, 12348, 33, 44, 55);
@@ -4029,7 +3948,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*x %d", -10, 12348, 33, 44, 55);
@@ -4039,7 +3958,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.10x %d", 12348, 33, 44, 55);
@@ -4049,7 +3968,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Zero precision and a positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0x %d", 12348, 33, 44, 55);
@@ -4059,19 +3978,18 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Zero precision and a zero number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0x %d", 0, 33, 44, 55);
     ASSERT (result != NULL);
-    /* ISO C and POSIX specify that "The result of converting a zero value
-       with a precision of zero is no characters."  */
+     
     ASSERT (strcmp (result, " 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  { /* Width and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%15.10x %d", 12348, 33, 44, 55);
@@ -4081,19 +3999,18 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Padding and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%015.10x %d", 12348, 33, 44, 55);
     ASSERT (result != NULL);
-    /* ISO C 99 § 7.19.6.1.(6) says: "For d, i, o, u, x, and X conversions, if a
-       precision is specified, the 0 flag is ignored."  */
+     
     ASSERT (strcmp (result, "     000000303c 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-10x %d", 12348, 33, 44, 55);
@@ -4103,7 +4020,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#x %d", 0, 33, 44, 55);
@@ -4113,7 +4030,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#x %d", 12348, 33, 44, 55);
@@ -4123,7 +4040,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#10x %d", 12348, 33, 44, 55);
@@ -4133,7 +4050,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and padding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%0#10x %d", 12348, 33, 44, 55);
@@ -4143,7 +4060,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%0#.10x %d", 12348, 33, 44, 55);
@@ -4153,7 +4070,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and width and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#15.10x %d", 12348, 33, 44, 55);
@@ -4163,32 +4080,29 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and padding and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%0#15.10x %d", 12348, 33, 44, 55);
     ASSERT (result != NULL);
-    /* ISO C 99 § 7.19.6.1.(6) says: "For d, i, o, u, x, and X conversions, if a
-       precision is specified, the 0 flag is ignored."  */
+     
     ASSERT (strcmp (result, "   0x000000303c 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  { /* FLAG_ALT with a zero precision and a zero number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.0x %d", 0, 33, 44, 55);
     ASSERT (result != NULL);
-    /* ISO C and POSIX specify that "The result of converting a zero value
-       with a precision of zero is no characters.", and the prefix is added
-       only for non-zero values.  */
+     
     ASSERT (strcmp (result, " 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  { /* Uppercase 'X'.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%X %d", 12348, 33, 44, 55);
@@ -4198,7 +4112,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Uppercase 'X' with FLAG_ALT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#X %d", 12348, 33, 44, 55);
@@ -4208,23 +4122,20 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Uppercase 'X' with FLAG_ALT and zero precision and a zero number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.0X %d", 0, 33, 44, 55);
     ASSERT (result != NULL);
-    /* ISO C and POSIX specify that "The result of converting a zero value
-       with a precision of zero is no characters.", and the prefix is added
-       only for non-zero values.  */
+     
     ASSERT (strcmp (result, " 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  /* Test the support of the 'b' conversion specifier for binary output of
-     integers.  */
+   
 
-  { /* Zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%b %d", 0, 33, 44, 55);
@@ -4234,7 +4145,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%b %d", 12345, 33, 44, 55);
@@ -4244,7 +4155,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* A large positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%b %d", 0xFFFFFFFEU, 33, 44, 55);
@@ -4254,7 +4165,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%20b %d", 12345, 33, 44, 55);
@@ -4264,7 +4175,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Width given as argument.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*b %d", 20, 12345, 33, 44, 55);
@@ -4274,7 +4185,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Negative width given as argument (cf. FLAG_LEFT below).  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%*b %d", -20, 12345, 33, 44, 55);
@@ -4284,7 +4195,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.20b %d", 12345, 33, 44, 55);
@@ -4294,7 +4205,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Zero precision and a positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0b %d", 12345, 33, 44, 55);
@@ -4304,19 +4215,18 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Zero precision and a zero number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%.0b %d", 0, 33, 44, 55);
     ASSERT (result != NULL);
-    /* ISO C and POSIX specify that "The result of converting a zero value
-       with a precision of zero is no characters."  */
+     
     ASSERT (strcmp (result, " 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  { /* Width and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%25.20b %d", 12345, 33, 44, 55);
@@ -4326,19 +4236,18 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* Padding and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%025.20b %d", 12345, 33, 44, 55);
     ASSERT (result != NULL);
-    /* Neither ISO C nor POSIX specify that the '0' flag is ignored when
-       a width and a precision are both present.  But implementations do so.  */
+     
     ASSERT (strcmp (result, "     00000011000000111001 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  { /* FLAG_LEFT.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%-20b %d", 12345, 33, 44, 55);
@@ -4348,7 +4257,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with zero.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#b %d", 0, 33, 44, 55);
@@ -4358,7 +4267,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#b %d", 12345, 33, 44, 55);
@@ -4368,7 +4277,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and width.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#20b %d", 12345, 33, 44, 55);
@@ -4378,7 +4287,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and padding.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%0#20b %d", 12345, 33, 44, 55);
@@ -4388,7 +4297,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%0#.20b %d", 12345, 33, 44, 55);
@@ -4398,7 +4307,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and width and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#25.20b %d", 12345, 33, 44, 55);
@@ -4408,33 +4317,29 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  { /* FLAG_ALT with a positive number and padding and precision.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%0#25.20b %d", 12345, 33, 44, 55);
     ASSERT (result != NULL);
-    /* Neither ISO C nor POSIX specify that the '0' flag is ignored when
-       a width and a precision are both present.  But implementations do so.  */
+     
     ASSERT (strcmp (result, "   0b00000011000000111001 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  { /* FLAG_ALT with a zero precision and a zero number.  */
+  {  
     char *result;
     int retval =
       my_asprintf (&result, "%#.0b %d", 0, 33, 44, 55);
     ASSERT (result != NULL);
-    /* ISO C and POSIX specify that "The result of converting a zero value
-       with a precision of zero is no characters.", and the prefix is added
-       only for non-zero values.  */
+     
     ASSERT (strcmp (result, " 33") == 0);
     ASSERT (retval == strlen (result));
     free (result);
   }
 
-  /* Test the support of argument type/size specifiers for signed integer
-     conversions.  */
+   
 
   {
     char *result;
@@ -4553,8 +4458,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of argument type/size specifiers for unsigned integer
-     conversions: %u  */
+   
 
   {
     char *result;
@@ -4673,8 +4577,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of argument type/size specifiers for unsigned integer
-     conversions: %b  */
+   
 
   {
     char *result;
@@ -4793,8 +4696,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of argument type/size specifiers for unsigned integer
-     conversions: %o  */
+   
 
   {
     char *result;
@@ -4913,8 +4815,7 @@ test_function (int (*my_asprintf) (char **, const char *, ...))
     free (result);
   }
 
-  /* Test the support of argument type/size specifiers for unsigned integer
-     conversions: %x  */
+   
 
   {
     char *result;

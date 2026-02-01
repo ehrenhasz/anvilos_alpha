@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2019-2022 Intel Corporation. All rights reserved.
-//
-// Author: Jyri Sarha <jyri.sarha@intel.com>
-//
+
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/sof/ipc4/header.h>
@@ -57,14 +57,7 @@ struct sof_ipc4_probe_point {
 
 #define INVALID_PIPELINE_ID      0xFF
 
-/**
- * sof_ipc4_probe_get_module_info - Get IPC4 module info for probe module
- * @cdev:		SOF client device
- * @return:		Pointer to IPC4 probe module info
- *
- * Look up the IPC4 probe module info based on the hard coded uuid and
- * store the value for the future calls.
- */
+ 
 static struct sof_man4_module *sof_ipc4_probe_get_module_info(struct sof_client_dev *cdev)
 {
 	struct sof_probes_priv *priv = cdev->data;
@@ -88,21 +81,7 @@ static struct sof_man4_module *sof_ipc4_probe_get_module_info(struct sof_client_
 	return (struct sof_man4_module *)priv->ipc_priv;
 }
 
-/**
- * ipc4_probes_init - initialize data probing
- * @cdev:		SOF client device
- * @stream_tag:		Extractor stream tag
- * @buffer_size:	DMA buffer size to set for extractor
- * @return:		0 on success, negative error code on error
- *
- * Host chooses whether extraction is supported or not by providing
- * valid stream tag to DSP. Once specified, stream described by that
- * tag will be tied to DSP for extraction for the entire lifetime of
- * probe.
- *
- * Probing is initialized only once and each INIT request must be
- * matched by DEINIT call.
- */
+ 
 static int ipc4_probes_init(struct sof_client_dev *cdev, u32 stream_tag,
 			    size_t buffer_size)
 {
@@ -132,15 +111,7 @@ static int ipc4_probes_init(struct sof_client_dev *cdev, u32 stream_tag,
 	return sof_client_ipc_tx_message_no_reply(cdev, &msg);
 }
 
-/**
- * ipc4_probes_deinit - cleanup after data probing
- * @cdev:		SOF client device
- * @return:		0 on success, negative error code on error
- *
- * Host sends DEINIT request to free previously initialized probe
- * on DSP side once it is no longer needed. DEINIT only when there
- * are no probes connected and with all injectors detached.
- */
+ 
 static int ipc4_probes_deinit(struct sof_client_dev *cdev)
 {
 	struct sof_man4_module *mentry = sof_ipc4_probe_get_module_info(cdev);
@@ -162,35 +133,18 @@ static int ipc4_probes_deinit(struct sof_client_dev *cdev)
 	return sof_client_ipc_tx_message_no_reply(cdev, &msg);
 }
 
-/**
- * ipc4_probes_points_info - retrieve list of active probe points
- * @cdev:	SOF client device
- * @desc:	Returned list of active probes
- * @num_desc:	Returned count of active probes
- * @return:	0 on success, negative error code on error
- *
- * Dummy implementation returning empty list of probes.
- */
+ 
 static int ipc4_probes_points_info(struct sof_client_dev *cdev,
 				   struct sof_probe_point_desc **desc,
 				   size_t *num_desc)
 {
-	/* TODO: Firmware side implementation needed first */
+	 
 	*desc = NULL;
 	*num_desc = 0;
 	return 0;
 }
 
-/**
- * ipc4_probes_points_add - connect specified probes
- * @cdev:	SOF client device
- * @desc:	List of probe points to connect
- * @num_desc:	Number of elements in @desc
- * @return:	0 on success, negative error code on error
- *
- * Translates the generic probe point presentation to an IPC4
- * message to dynamically connect the provided set of endpoints.
- */
+ 
 static int ipc4_probes_points_add(struct sof_client_dev *cdev,
 				  struct sof_probe_point_desc *desc,
 				  size_t num_desc)
@@ -203,12 +157,7 @@ static int ipc4_probes_points_add(struct sof_client_dev *cdev,
 	if (!mentry)
 		return -ENODEV;
 
-	/* The sof_probe_point_desc and sof_ipc4_probe_point structs
-	 * are of same size and even the integers are the same in the
-	 * same order, and similar meaning, but since there is no
-	 * performance issue I wrote the conversion explicitly open for
-	 * future development.
-	 */
+	 
 	points = kcalloc(num_desc, sizeof(*points), GFP_KERNEL);
 	if (!points)
 		return -ENOMEM;
@@ -235,16 +184,7 @@ static int ipc4_probes_points_add(struct sof_client_dev *cdev,
 	return ret;
 }
 
-/**
- * ipc4_probes_points_remove - disconnect specified probes
- * @cdev:		SOF client device
- * @buffer_id:		List of probe points to disconnect
- * @num_buffer_id:	Number of elements in @desc
- * @return:		0 on success, negative error code on error
- *
- * Converts the generic buffer_id to IPC4 probe_point_id and remove
- * the probe points with an IPC4 for message.
- */
+ 
 static int ipc4_probes_points_remove(struct sof_client_dev *cdev,
 				     unsigned int *buffer_id, size_t num_buffer_id)
 {

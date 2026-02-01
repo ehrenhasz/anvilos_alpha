@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for SoundBlaster 1.0/2.0/Pro soundcards and compatible
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -18,12 +15,12 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Sound Blaster 1.0/2.0/Pro");
 MODULE_LICENSE("GPL");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE;	/* Enable this card */
-static long port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	/* 0x220,0x240,0x260 */
-static int irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	/* 5,7,9,10 */
-static int dma8[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	/* 1,3 */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE;	 
+static long port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	 
+static int irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	 
+static int dma8[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	 
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for Sound Blaster soundcard.");
@@ -39,7 +36,7 @@ module_param_hw_array(dma8, int, dma, NULL, 0444);
 MODULE_PARM_DESC(dma8, "8-bit DMA # for SB8 driver.");
 
 struct snd_sb8 {
-	struct resource *fm_res;	/* used to block FM i/o region for legacy cards */
+	struct resource *fm_res;	 
 	struct snd_sb *chip;
 };
 
@@ -83,11 +80,7 @@ static int snd_sb8_probe(struct device *pdev, unsigned int dev)
 		return err;
 	acard = card->private_data;
 
-	/*
-	 * Block the 0x388 port to avoid PnP conflicts.
-	 * No need to check this value after request_region,
-	 * as we never do anything with it.
-	 */
+	 
 	acard->fm_res = devm_request_region(card->dev, 0x388, 4,
 					    "SoundBlaster FM");
 
@@ -98,7 +91,7 @@ static int snd_sb8_probe(struct device *pdev, unsigned int dev)
 		if (err < 0)
 			return err;
 	} else {
-		/* auto-probe legacy ports */
+		 
 		static const unsigned long possible_ports[] = {
 			0x220, 0x240, 0x260,
 		};

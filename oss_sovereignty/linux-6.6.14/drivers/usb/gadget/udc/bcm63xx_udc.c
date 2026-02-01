@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * bcm63xx_udc.c -- BCM63xx UDC high/full speed USB device controller
- *
- * Copyright (C) 2012 Kevin Cernekee <cernekee@gmail.com>
- * Copyright (C) 2012 Broadcom Corporation
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bug.h>
@@ -69,25 +64,7 @@ static bool use_fullspeed;
 module_param(use_fullspeed, bool, S_IRUGO);
 MODULE_PARM_DESC(use_fullspeed, "true for fullspeed only");
 
-/*
- * RX IRQ coalescing options:
- *
- * false (default) - one IRQ per DATAx packet.  Slow but reliable.  The
- * driver is able to pass the "testusb" suite and recover from conditions like:
- *
- *   1) Device queues up a 2048-byte RX IUDMA transaction on an OUT bulk ep
- *   2) Host sends 512 bytes of data
- *   3) Host decides to reconfigure the device and sends SET_INTERFACE
- *   4) Device shuts down the endpoint and cancels the RX transaction
- *
- * true - one IRQ per transfer, for transfers <= 2048B.  Generates
- * considerably fewer IRQs, but error recovery is less robust.  Does not
- * reliably pass "testusb".
- *
- * TX always uses coalescing, because we can cancel partially complete TX
- * transfers by repeatedly flushing the FIFO.  The hardware doesn't allow
- * this on RX.
- */
+ 
 static bool irq_coalesce;
 module_param(irq_coalesce, bool, S_IRUGO);
 MODULE_PARM_DESC(irq_coalesce, "take one IRQ per RX transfer");
@@ -142,16 +119,7 @@ static const char __maybe_unused bcm63xx_ep0_state_names[][32] = {
 	"SHUTDOWN",
 };
 
-/**
- * struct iudma_ch_cfg - Static configuration for an IUDMA channel.
- * @ep_num: USB endpoint number.
- * @n_bds: Number of buffer descriptors in the ring.
- * @ep_type: Endpoint type (control, bulk, interrupt).
- * @dir: Direction (in, out).
- * @n_fifo_slots: Number of FIFO entries to allocate for this channel.
- * @max_pkt_hs: Maximum packet size in high speed mode.
- * @max_pkt_fs: Maximum packet size in full speed mode.
- */
+ 
 struct iudma_ch_cfg {
 	int				ep_num;
 	int				n_bds;
@@ -164,15 +132,7 @@ struct iudma_ch_cfg {
 
 static const struct iudma_ch_cfg iudma_defaults[] = {
 
-	/* This controller was designed to support a CDC/RNDIS application.
-	   It may be possible to reconfigure some of the endpoints, but
-	   the hardware limitations (FIFO sizing and number of DMA channels)
-	   may significantly impact flexibility and/or stability.  Change
-	   these values at your own risk.
-
-	      ep_num       ep_type           n_fifo_slots    max_pkt_fs
-	idx      |  n_bds     |         dir       |  max_pkt_hs  |
-	 |       |    |       |          |        |      |       |       */
+	 
 	[0] = { -1,   4, BCMEP_CTRL, BCMEP_OUT,  32,    64,     64 },
 	[1] = {  0,   4, BCMEP_CTRL, BCMEP_OUT,  32,    64,     64 },
 	[2] = {  2,  16, BCMEP_BULK, BCMEP_OUT, 128,   512,     64 },
@@ -183,30 +143,7 @@ static const struct iudma_ch_cfg iudma_defaults[] = {
 
 struct bcm63xx_udc;
 
-/**
- * struct iudma_ch - Represents the current state of a single IUDMA channel.
- * @ch_idx: IUDMA channel index (0 to BCM63XX_NUM_IUDMA-1).
- * @ep_num: USB endpoint number.  -1 for ep0 RX.
- * @enabled: Whether bcm63xx_ep_enable() has been called.
- * @max_pkt: "Chunk size" on the USB interface.  Based on interface speed.
- * @is_tx: true for TX, false for RX.
- * @bep: Pointer to the associated endpoint.  NULL for ep0 RX.
- * @udc: Reference to the device controller.
- * @read_bd: Next buffer descriptor to reap from the hardware.
- * @write_bd: Next BD available for a new packet.
- * @end_bd: Points to the final BD in the ring.
- * @n_bds_used: Number of BD entries currently occupied.
- * @bd_ring: Base pointer to the BD ring.
- * @bd_ring_dma: Physical (DMA) address of bd_ring.
- * @n_bds: Total number of BDs in the ring.
- *
- * ep0 has two IUDMA channels (IUDMA_EP0_RXCHAN and IUDMA_EP0_TXCHAN), as it is
- * bidirectional.  The "struct usb_ep" associated with ep0 is for TX (IN)
- * only.
- *
- * Each bulk/intr endpoint has a single IUDMA channel and a single
- * struct usb_ep.
- */
+ 
 struct iudma_ch {
 	unsigned int			ch_idx;
 	int				ep_num;
@@ -226,15 +163,7 @@ struct iudma_ch {
 	unsigned int			n_bds;
 };
 
-/**
- * struct bcm63xx_ep - Internal (driver) state of a single endpoint.
- * @ep_num: USB endpoint number.
- * @iudma: Pointer to IUDMA channel state.
- * @ep: USB gadget layer representation of the EP.
- * @udc: Reference to the device controller.
- * @queue: Linked list of outstanding requests for this EP.
- * @halted: 1 if the EP is stalled; 0 otherwise.
- */
+ 
 struct bcm63xx_ep {
 	unsigned int			ep_num;
 	struct iudma_ch			*iudma;
@@ -244,51 +173,16 @@ struct bcm63xx_ep {
 	unsigned			halted:1;
 };
 
-/**
- * struct bcm63xx_req - Internal (driver) state of a single request.
- * @queue: Links back to the EP's request list.
- * @req: USB gadget layer representation of the request.
- * @offset: Current byte offset into the data buffer (next byte to queue).
- * @bd_bytes: Number of data bytes in outstanding BD entries.
- * @iudma: IUDMA channel used for the request.
- */
+ 
 struct bcm63xx_req {
-	struct list_head		queue;		/* ep's requests */
+	struct list_head		queue;		 
 	struct usb_request		req;
 	unsigned int			offset;
 	unsigned int			bd_bytes;
 	struct iudma_ch			*iudma;
 };
 
-/**
- * struct bcm63xx_udc - Driver/hardware private context.
- * @lock: Spinlock to mediate access to this struct, and (most) HW regs.
- * @dev: Generic Linux device structure.
- * @pd: Platform data (board/port info).
- * @usbd_clk: Clock descriptor for the USB device block.
- * @usbh_clk: Clock descriptor for the USB host block.
- * @gadget: USB device.
- * @driver: Driver for USB device.
- * @usbd_regs: Base address of the USBD/USB20D block.
- * @iudma_regs: Base address of the USBD's associated IUDMA block.
- * @bep: Array of endpoints, including ep0.
- * @iudma: Array of all IUDMA channels used by this controller.
- * @cfg: USB configuration number, from SET_CONFIGURATION wValue.
- * @iface: USB interface number, from SET_INTERFACE wIndex.
- * @alt_iface: USB alt interface number, from SET_INTERFACE wValue.
- * @ep0_ctrl_req: Request object for bcm63xx_udc-initiated ep0 transactions.
- * @ep0_ctrl_buf: Data buffer for ep0_ctrl_req.
- * @ep0state: Current state of the ep0 state machine.
- * @ep0_wq: Workqueue struct used to wake up the ep0 state machine.
- * @wedgemap: Bitmap of wedged endpoints.
- * @ep0_req_reset: USB reset is pending.
- * @ep0_req_set_cfg: Need to spoof a SET_CONFIGURATION packet.
- * @ep0_req_set_iface: Need to spoof a SET_INTERFACE packet.
- * @ep0_req_shutdown: Driver is shutting down; requesting ep0 to halt activity.
- * @ep0_req_completed: ep0 request has completed; worker has not seen it yet.
- * @ep0_reply: Pending reply from gadget driver.
- * @ep0_request: Outstanding ep0 request.
- */
+ 
 struct bcm63xx_udc {
 	spinlock_t			lock;
 
@@ -330,9 +224,7 @@ struct bcm63xx_udc {
 
 static const struct usb_ep_ops bcm63xx_udc_ep_ops;
 
-/***********************************************************************
- * Convenience functions
- ***********************************************************************/
+ 
 
 static inline struct bcm63xx_udc *gadget_to_udc(struct usb_gadget *g)
 {
@@ -407,19 +299,9 @@ static inline void set_clocks(struct bcm63xx_udc *udc, bool is_enabled)
 	}
 }
 
-/***********************************************************************
- * Low-level IUDMA / FIFO operations
- ***********************************************************************/
+ 
 
-/**
- * bcm63xx_ep_dma_select - Helper function to set up the init_sel signal.
- * @udc: Reference to the device controller.
- * @idx: Desired init_sel value.
- *
- * The "init_sel" signal is used as a selection index for both endpoints
- * and IUDMA channels.  Since these do not map 1:1, the use of this signal
- * depends on the context.
- */
+ 
 static void bcm63xx_ep_dma_select(struct bcm63xx_udc *udc, int idx)
 {
 	u32 val = usbd_readl(udc, USBD_CONTROL_REG);
@@ -429,15 +311,7 @@ static void bcm63xx_ep_dma_select(struct bcm63xx_udc *udc, int idx)
 	usbd_writel(udc, val, USBD_CONTROL_REG);
 }
 
-/**
- * bcm63xx_set_stall - Enable/disable stall on one endpoint.
- * @udc: Reference to the device controller.
- * @bep: Endpoint on which to operate.
- * @is_stalled: true to enable stall, false to disable.
- *
- * See notes in bcm63xx_update_wedge() regarding automatic clearing of
- * halt/stall conditions.
- */
+ 
 static void bcm63xx_set_stall(struct bcm63xx_udc *udc, struct bcm63xx_ep *bep,
 	bool is_stalled)
 {
@@ -449,19 +323,13 @@ static void bcm63xx_set_stall(struct bcm63xx_udc *udc, struct bcm63xx_ep *bep,
 	usbd_writel(udc, val, USBD_STALL_REG);
 }
 
-/**
- * bcm63xx_fifo_setup - (Re)initialize FIFO boundaries and settings.
- * @udc: Reference to the device controller.
- *
- * These parameters depend on the USB link speed.  Settings are
- * per-IUDMA-channel-pair.
- */
+ 
 static void bcm63xx_fifo_setup(struct bcm63xx_udc *udc)
 {
 	int is_hs = udc->gadget.speed == USB_SPEED_HIGH;
 	u32 i, val, rx_fifo_slot, tx_fifo_slot;
 
-	/* set up FIFO boundaries and packet sizes; this is done in pairs */
+	 
 	rx_fifo_slot = tx_fifo_slot = 0;
 	for (i = 0; i < BCM63XX_NUM_IUDMA; i += 2) {
 		const struct iudma_ch_cfg *rx_cfg = &iudma_defaults[i];
@@ -491,11 +359,7 @@ static void bcm63xx_fifo_setup(struct bcm63xx_udc *udc)
 	}
 }
 
-/**
- * bcm63xx_fifo_reset_ep - Flush a single endpoint's FIFO.
- * @udc: Reference to the device controller.
- * @ep_num: Endpoint number.
- */
+ 
 static void bcm63xx_fifo_reset_ep(struct bcm63xx_udc *udc, int ep_num)
 {
 	u32 val;
@@ -508,10 +372,7 @@ static void bcm63xx_fifo_reset_ep(struct bcm63xx_udc *udc, int ep_num)
 	usbd_readl(udc, USBD_CONTROL_REG);
 }
 
-/**
- * bcm63xx_fifo_reset - Flush all hardware FIFOs.
- * @udc: Reference to the device controller.
- */
+ 
 static void bcm63xx_fifo_reset(struct bcm63xx_udc *udc)
 {
 	int i;
@@ -520,10 +381,7 @@ static void bcm63xx_fifo_reset(struct bcm63xx_udc *udc)
 		bcm63xx_fifo_reset_ep(udc, i);
 }
 
-/**
- * bcm63xx_ep_init - Initial (one-time) endpoint initialization.
- * @udc: Reference to the device controller.
- */
+ 
 static void bcm63xx_ep_init(struct bcm63xx_udc *udc)
 {
 	u32 i, val;
@@ -541,12 +399,7 @@ static void bcm63xx_ep_init(struct bcm63xx_udc *udc)
 	}
 }
 
-/**
- * bcm63xx_ep_setup - Configure per-endpoint settings.
- * @udc: Reference to the device controller.
- *
- * This needs to be rerun if the speed/cfg/intf/altintf changes.
- */
+ 
 static void bcm63xx_ep_setup(struct bcm63xx_udc *udc)
 {
 	u32 val, i;
@@ -576,19 +429,7 @@ static void bcm63xx_ep_setup(struct bcm63xx_udc *udc)
 	}
 }
 
-/**
- * iudma_write - Queue a single IUDMA transaction.
- * @udc: Reference to the device controller.
- * @iudma: IUDMA channel to use.
- * @breq: Request containing the transaction data.
- *
- * For RX IUDMA, this will queue a single buffer descriptor, as RX IUDMA
- * does not honor SOP/EOP so the handling of multiple buffers is ambiguous.
- * So iudma_write() may be called several times to fulfill a single
- * usb_request.
- *
- * For TX IUDMA, this can queue multiple buffer descriptors if needed.
- */
+ 
 static void iudma_write(struct bcm63xx_udc *udc, struct iudma_ch *iudma,
 	struct bcm63xx_req *breq)
 {
@@ -630,10 +471,7 @@ static void iudma_write(struct bcm63xx_udc *udc, struct iudma_ch *iudma,
 			first_bd = 0;
 		}
 
-		/*
-		 * extra_zero_pkt forces one more iteration through the loop
-		 * after all data is queued up, to send the zero packet
-		 */
+		 
 		if (extra_zero_pkt && !bytes_left)
 			extra_zero_pkt = 0;
 
@@ -656,15 +494,7 @@ static void iudma_write(struct bcm63xx_udc *udc, struct iudma_ch *iudma,
 			ENETDMAC_CHANCFG_REG, iudma->ch_idx);
 }
 
-/**
- * iudma_read - Check for IUDMA buffer completion.
- * @udc: Reference to the device controller.
- * @iudma: IUDMA channel to use.
- *
- * This checks to see if ALL of the outstanding BDs on the DMA channel
- * have been filled.  If so, it returns the actual transfer length;
- * otherwise it returns -EBUSY.
- */
+ 
 static int iudma_read(struct bcm63xx_udc *udc, struct iudma_ch *iudma)
 {
 	int i, actual_len = 0;
@@ -694,11 +524,7 @@ static int iudma_read(struct bcm63xx_udc *udc, struct iudma_ch *iudma)
 	return actual_len;
 }
 
-/**
- * iudma_reset_channel - Stop DMA on a single channel.
- * @udc: Reference to the device controller.
- * @iudma: IUDMA channel to reset.
- */
+ 
 static void iudma_reset_channel(struct bcm63xx_udc *udc, struct iudma_ch *iudma)
 {
 	int timeout = IUDMA_RESET_TIMEOUT_US;
@@ -708,14 +534,14 @@ static void iudma_reset_channel(struct bcm63xx_udc *udc, struct iudma_ch *iudma)
 	if (!iudma->is_tx)
 		bcm63xx_fifo_reset_ep(udc, max(0, iudma->ep_num));
 
-	/* stop DMA, then wait for the hardware to wrap up */
+	 
 	usb_dmac_writel(udc, 0, ENETDMAC_CHANCFG_REG, ch_idx);
 
 	while (usb_dmac_readl(udc, ENETDMAC_CHANCFG_REG, ch_idx) &
 				   ENETDMAC_CHANCFG_EN_MASK) {
 		udelay(1);
 
-		/* repeatedly flush the FIFO data until the BD completes */
+		 
 		if (iudma->is_tx && iudma->ep_num >= 0)
 			bcm63xx_fifo_reset_ep(udc, iudma->ep_num);
 
@@ -733,7 +559,7 @@ static void iudma_reset_channel(struct bcm63xx_udc *udc, struct iudma_ch *iudma)
 	}
 	usb_dmac_writel(udc, ~0, ENETDMAC_IR_REG, ch_idx);
 
-	/* don't leave "live" HW-owned entries for the next guy to step on */
+	 
 	for (d = iudma->bd_ring; d <= iudma->end_bd; d++)
 		d->len_stat = 0;
 	mb();
@@ -741,7 +567,7 @@ static void iudma_reset_channel(struct bcm63xx_udc *udc, struct iudma_ch *iudma)
 	iudma->read_bd = iudma->write_bd = iudma->bd_ring;
 	iudma->n_bds_used = 0;
 
-	/* set up IRQs, UBUS burst size, and BD base for this channel */
+	 
 	usb_dmac_writel(udc, ENETDMAC_IR_BUFDONE_MASK,
 			ENETDMAC_IRMASK_REG, ch_idx);
 	usb_dmac_writel(udc, 8, ENETDMAC_MAXBURST_REG, ch_idx);
@@ -750,11 +576,7 @@ static void iudma_reset_channel(struct bcm63xx_udc *udc, struct iudma_ch *iudma)
 	usb_dmas_writel(udc, 0, ENETDMAS_SRAM2_REG, ch_idx);
 }
 
-/**
- * iudma_init_channel - One-time IUDMA channel initialization.
- * @udc: Reference to the device controller.
- * @ch_idx: Channel to initialize.
- */
+ 
 static int iudma_init_channel(struct bcm63xx_udc *udc, unsigned int ch_idx)
 {
 	struct iudma_ch *iudma = &udc->iudma[ch_idx];
@@ -774,7 +596,7 @@ static int iudma_init_channel(struct bcm63xx_udc *udc, unsigned int ch_idx)
 	iudma->bep = bep;
 	iudma->udc = udc;
 
-	/* ep0 is always active; others are controlled by the gadget driver */
+	 
 	if (iudma->ep_num <= 0)
 		iudma->enabled = true;
 
@@ -789,12 +611,7 @@ static int iudma_init_channel(struct bcm63xx_udc *udc, unsigned int ch_idx)
 	return 0;
 }
 
-/**
- * iudma_init - One-time initialization of all IUDMA channels.
- * @udc: Reference to the device controller.
- *
- * Enable DMA, flush channels, and enable global IUDMA IRQs.
- */
+ 
 static int iudma_init(struct bcm63xx_udc *udc)
 {
 	int i, rc;
@@ -812,12 +629,7 @@ static int iudma_init(struct bcm63xx_udc *udc)
 	return 0;
 }
 
-/**
- * iudma_uninit - Uninitialize IUDMA channels.
- * @udc: Reference to the device controller.
- *
- * Kill global IUDMA IRQs, flush channels, and kill DMA.
- */
+ 
 static void iudma_uninit(struct bcm63xx_udc *udc)
 {
 	int i;
@@ -830,15 +642,9 @@ static void iudma_uninit(struct bcm63xx_udc *udc)
 	usb_dma_writel(udc, 0, ENETDMA_CFG_REG);
 }
 
-/***********************************************************************
- * Other low-level USBD operations
- ***********************************************************************/
+ 
 
-/**
- * bcm63xx_set_ctrl_irqs - Mask/unmask control path interrupts.
- * @udc: Reference to the device controller.
- * @enable_irqs: true to enable, false to disable.
- */
+ 
 static void bcm63xx_set_ctrl_irqs(struct bcm63xx_udc *udc, bool enable_irqs)
 {
 	u32 val;
@@ -854,23 +660,13 @@ static void bcm63xx_set_ctrl_irqs(struct bcm63xx_udc *udc, bool enable_irqs)
 	usbd_writel(udc, val, USBD_EVENT_IRQ_STATUS_REG);
 }
 
-/**
- * bcm63xx_select_phy_mode - Select between USB device and host mode.
- * @udc: Reference to the device controller.
- * @is_device: true for device, false for host.
- *
- * This should probably be reworked to use the drivers/usb/otg
- * infrastructure.
- *
- * By default, the AFE/pullups are disabled in device mode, until
- * bcm63xx_select_pullup() is called.
- */
+ 
 static void bcm63xx_select_phy_mode(struct bcm63xx_udc *udc, bool is_device)
 {
 	u32 val, portmask = BIT(udc->pd->port_no);
 
 	if (BCMCPU_IS_6328()) {
-		/* configure pinmux to sense VBUS signal */
+		 
 		val = bcm_gpio_readl(GPIO_PINMUX_OTHR_REG);
 		val &= ~GPIO_PINMUX_OTHR_6328_USB_MASK;
 		val |= is_device ? GPIO_PINMUX_OTHR_6328_USB_DEV :
@@ -896,15 +692,7 @@ static void bcm63xx_select_phy_mode(struct bcm63xx_udc *udc, bool is_device)
 	bcm_rset_writel(RSET_USBH_PRIV, val, USBH_PRIV_SWAP_6368_REG);
 }
 
-/**
- * bcm63xx_select_pullup - Enable/disable the pullup on D+
- * @udc: Reference to the device controller.
- * @is_on: true to enable the pullup, false to disable.
- *
- * If the pullup is active, the host will sense a FS/HS device connected to
- * the port.  If the pullup is inactive, the host will think the USB
- * device has been disconnected.
- */
+ 
 static void bcm63xx_select_pullup(struct bcm63xx_udc *udc, bool is_on)
 {
 	u32 val, portmask = BIT(udc->pd->port_no);
@@ -917,13 +705,7 @@ static void bcm63xx_select_pullup(struct bcm63xx_udc *udc, bool is_on)
 	bcm_rset_writel(RSET_USBH_PRIV, val, USBH_PRIV_UTMI_CTL_6368_REG);
 }
 
-/**
- * bcm63xx_uninit_udc_hw - Shut down the hardware prior to driver removal.
- * @udc: Reference to the device controller.
- *
- * This just masks the IUDMA IRQs and releases the clocks.  It is assumed
- * that bcm63xx_udc_stop() has already run, and the clocks are stopped.
- */
+ 
 static void bcm63xx_uninit_udc_hw(struct bcm63xx_udc *udc)
 {
 	set_clocks(udc, true);
@@ -934,10 +716,7 @@ static void bcm63xx_uninit_udc_hw(struct bcm63xx_udc *udc)
 	clk_put(udc->usbh_clk);
 }
 
-/**
- * bcm63xx_init_udc_hw - Initialize the controller hardware and data structures.
- * @udc: Reference to the device controller.
- */
+ 
 static int bcm63xx_init_udc_hw(struct bcm63xx_udc *udc)
 {
 	int i, rc = 0;
@@ -1015,18 +794,9 @@ static int bcm63xx_init_udc_hw(struct bcm63xx_udc *udc)
 	return 0;
 }
 
-/***********************************************************************
- * Standard EP gadget operations
- ***********************************************************************/
+ 
 
-/**
- * bcm63xx_ep_enable - Enable one endpoint.
- * @ep: Endpoint to enable.
- * @desc: Contains max packet, direction, etc.
- *
- * Most of the endpoint parameters are fixed in this controller, so there
- * isn't much for this function to do.
- */
+ 
 static int bcm63xx_ep_enable(struct usb_ep *ep,
 	const struct usb_endpoint_descriptor *desc)
 {
@@ -1063,10 +833,7 @@ static int bcm63xx_ep_enable(struct usb_ep *ep,
 	return 0;
 }
 
-/**
- * bcm63xx_ep_disable - Disable one endpoint.
- * @ep: Endpoint to disable.
- */
+ 
 static int bcm63xx_ep_disable(struct usb_ep *ep)
 {
 	struct bcm63xx_ep *bep = our_ep(ep);
@@ -1105,11 +872,7 @@ static int bcm63xx_ep_disable(struct usb_ep *ep)
 	return 0;
 }
 
-/**
- * bcm63xx_udc_alloc_request - Allocate a new request.
- * @ep: Endpoint associated with the request.
- * @mem_flags: Flags to pass to kzalloc().
- */
+ 
 static struct usb_request *bcm63xx_udc_alloc_request(struct usb_ep *ep,
 	gfp_t mem_flags)
 {
@@ -1121,11 +884,7 @@ static struct usb_request *bcm63xx_udc_alloc_request(struct usb_ep *ep,
 	return &breq->req;
 }
 
-/**
- * bcm63xx_udc_free_request - Free a request.
- * @ep: Endpoint associated with the request.
- * @req: Request to free.
- */
+ 
 static void bcm63xx_udc_free_request(struct usb_ep *ep,
 	struct usb_request *req)
 {
@@ -1133,20 +892,7 @@ static void bcm63xx_udc_free_request(struct usb_ep *ep,
 	kfree(breq);
 }
 
-/**
- * bcm63xx_udc_queue - Queue up a new request.
- * @ep: Endpoint associated with the request.
- * @req: Request to add.
- * @mem_flags: Unused.
- *
- * If the queue is empty, start this request immediately.  Otherwise, add
- * it to the list.
- *
- * ep0 replies are sent through this function from the gadget driver, but
- * they are treated differently because they need to be handled by the ep0
- * state machine.  (Sometimes they are replies to control requests that
- * were spoofed by this driver, and so they shouldn't be transmitted at all.)
- */
+ 
 static int bcm63xx_udc_queue(struct usb_ep *ep, struct usb_request *req,
 	gfp_t mem_flags)
 {
@@ -1164,7 +910,7 @@ static int bcm63xx_udc_queue(struct usb_ep *ep, struct usb_request *req,
 	breq->offset = 0;
 
 	if (bep == &udc->bep[0]) {
-		/* only one reply per request, please */
+		 
 		if (udc->ep0_reply)
 			return -EINVAL;
 
@@ -1191,15 +937,7 @@ out:
 	return rc;
 }
 
-/**
- * bcm63xx_udc_dequeue - Remove a pending request from the queue.
- * @ep: Endpoint associated with the request.
- * @req: Request to remove.
- *
- * If the request is not at the head of the queue, this is easy - just nuke
- * it.  If the request is at the head of the queue, we'll need to stop the
- * DMA transaction and then queue up the successor.
- */
+ 
 static int bcm63xx_udc_dequeue(struct usb_ep *ep, struct usb_request *req)
 {
 	struct bcm63xx_ep *bep = our_ep(ep);
@@ -1241,13 +979,7 @@ out:
 	return rc;
 }
 
-/**
- * bcm63xx_udc_set_halt - Enable/disable STALL flag in the hardware.
- * @ep: Endpoint to halt.
- * @value: Zero to clear halt; nonzero to set halt.
- *
- * See comments in bcm63xx_update_wedge().
- */
+ 
 static int bcm63xx_udc_set_halt(struct usb_ep *ep, int value)
 {
 	struct bcm63xx_ep *bep = our_ep(ep);
@@ -1262,12 +994,7 @@ static int bcm63xx_udc_set_halt(struct usb_ep *ep, int value)
 	return 0;
 }
 
-/**
- * bcm63xx_udc_set_wedge - Stall the endpoint until the next reset.
- * @ep: Endpoint to wedge.
- *
- * See comments in bcm63xx_update_wedge().
- */
+ 
 static int bcm63xx_udc_set_wedge(struct usb_ep *ep)
 {
 	struct bcm63xx_ep *bep = our_ep(ep);
@@ -1296,15 +1023,9 @@ static const struct usb_ep_ops bcm63xx_udc_ep_ops = {
 	.set_wedge	= bcm63xx_udc_set_wedge,
 };
 
-/***********************************************************************
- * EP0 handling
- ***********************************************************************/
+ 
 
-/**
- * bcm63xx_ep0_setup_callback - Drop spinlock to invoke ->setup callback.
- * @udc: Reference to the device controller.
- * @ctrl: 8-byte SETUP request.
- */
+ 
 static int bcm63xx_ep0_setup_callback(struct bcm63xx_udc *udc,
 	struct usb_ctrlrequest *ctrl)
 {
@@ -1316,18 +1037,7 @@ static int bcm63xx_ep0_setup_callback(struct bcm63xx_udc *udc,
 	return rc;
 }
 
-/**
- * bcm63xx_ep0_spoof_set_cfg - Synthesize a SET_CONFIGURATION request.
- * @udc: Reference to the device controller.
- *
- * Many standard requests are handled automatically in the hardware, but
- * we still need to pass them to the gadget driver so that it can
- * reconfigure the interfaces/endpoints if necessary.
- *
- * Unfortunately we are not able to send a STALL response if the host
- * requests an invalid configuration.  If this happens, we'll have to be
- * content with printing a warning.
- */
+ 
 static int bcm63xx_ep0_spoof_set_cfg(struct bcm63xx_udc *udc)
 {
 	struct usb_ctrlrequest ctrl;
@@ -1348,10 +1058,7 @@ static int bcm63xx_ep0_spoof_set_cfg(struct bcm63xx_udc *udc)
 	return rc;
 }
 
-/**
- * bcm63xx_ep0_spoof_set_iface - Synthesize a SET_INTERFACE request.
- * @udc: Reference to the device controller.
- */
+ 
 static int bcm63xx_ep0_spoof_set_iface(struct bcm63xx_udc *udc)
 {
 	struct usb_ctrlrequest ctrl;
@@ -1372,12 +1079,7 @@ static int bcm63xx_ep0_spoof_set_iface(struct bcm63xx_udc *udc)
 	return rc;
 }
 
-/**
- * bcm63xx_ep0_map_write - dma_map and iudma_write a single request.
- * @udc: Reference to the device controller.
- * @ch_idx: IUDMA channel number.
- * @req: USB gadget layer representation of the request.
- */
+ 
 static void bcm63xx_ep0_map_write(struct bcm63xx_udc *udc, int ch_idx,
 	struct usb_request *req)
 {
@@ -1393,12 +1095,7 @@ static void bcm63xx_ep0_map_write(struct bcm63xx_udc *udc, int ch_idx,
 	iudma_write(udc, iudma, breq);
 }
 
-/**
- * bcm63xx_ep0_complete - Set completion status and "stage" the callback.
- * @udc: Reference to the device controller.
- * @req: USB gadget layer representation of the request.
- * @status: Status to return to the gadget driver.
- */
+ 
 static void bcm63xx_ep0_complete(struct bcm63xx_udc *udc,
 	struct usb_request *req, int status)
 {
@@ -1412,12 +1109,7 @@ static void bcm63xx_ep0_complete(struct bcm63xx_udc *udc,
 	}
 }
 
-/**
- * bcm63xx_ep0_nuke_reply - Abort request from the gadget driver due to
- *   reset/shutdown.
- * @udc: Reference to the device controller.
- * @is_tx: Nonzero for TX (IN), zero for RX (OUT).
- */
+ 
 static void bcm63xx_ep0_nuke_reply(struct bcm63xx_udc *udc, int is_tx)
 {
 	struct usb_request *req = udc->ep0_reply;
@@ -1431,11 +1123,7 @@ static void bcm63xx_ep0_nuke_reply(struct bcm63xx_udc *udc, int is_tx)
 	bcm63xx_ep0_complete(udc, req, -ESHUTDOWN);
 }
 
-/**
- * bcm63xx_ep0_read_complete - Close out the pending ep0 request; return
- *   transfer len.
- * @udc: Reference to the device controller.
- */
+ 
 static int bcm63xx_ep0_read_complete(struct bcm63xx_udc *udc)
 {
 	struct usb_request *req = udc->ep0_request;
@@ -1446,15 +1134,7 @@ static int bcm63xx_ep0_read_complete(struct bcm63xx_udc *udc)
 	return req->actual;
 }
 
-/**
- * bcm63xx_ep0_internal_request - Helper function to submit an ep0 request.
- * @udc: Reference to the device controller.
- * @ch_idx: IUDMA channel number.
- * @length: Number of bytes to TX/RX.
- *
- * Used for simple transfers performed by the ep0 worker.  This will always
- * use ep0_ctrl_req / ep0_ctrl_buf.
- */
+ 
 static void bcm63xx_ep0_internal_request(struct bcm63xx_udc *udc, int ch_idx,
 	int length)
 {
@@ -1467,14 +1147,7 @@ static void bcm63xx_ep0_internal_request(struct bcm63xx_udc *udc, int ch_idx,
 	bcm63xx_ep0_map_write(udc, ch_idx, req);
 }
 
-/**
- * bcm63xx_ep0_do_setup - Parse new SETUP packet and decide how to handle it.
- * @udc: Reference to the device controller.
- *
- * EP0_IDLE probably shouldn't ever happen.  EP0_REQUEUE means we're ready
- * for the next packet.  Anything else means the transaction requires multiple
- * stages of handling.
- */
+ 
 static enum bcm63xx_ep0_state bcm63xx_ep0_do_setup(struct bcm63xx_udc *udc)
 {
 	int rc;
@@ -1487,22 +1160,18 @@ static enum bcm63xx_ep0_state bcm63xx_ep0_do_setup(struct bcm63xx_udc *udc)
 		return EP0_IDLE;
 	}
 
-	/*
-	 * Handle 0-byte IN STATUS acknowledgement.  The hardware doesn't
-	 * ALWAYS deliver these 100% of the time, so if we happen to see one,
-	 * just throw it away.
-	 */
+	 
 	if (rc == 0)
 		return EP0_REQUEUE;
 
-	/* Drop malformed SETUP packets */
+	 
 	if (rc != sizeof(*ctrl)) {
 		dev_warn_ratelimited(udc->dev,
 			"malformed SETUP packet (%d bytes)\n", rc);
 		return EP0_REQUEUE;
 	}
 
-	/* Process new SETUP packet arriving on ep0 */
+	 
 	rc = bcm63xx_ep0_setup_callback(udc, ctrl);
 	if (rc < 0) {
 		bcm63xx_set_stall(udc, &udc->bep[0], true);
@@ -1517,17 +1186,7 @@ static enum bcm63xx_ep0_state bcm63xx_ep0_do_setup(struct bcm63xx_udc *udc)
 		return EP0_OUT_DATA_PHASE_SETUP;
 }
 
-/**
- * bcm63xx_ep0_do_idle - Check for outstanding requests if ep0 is idle.
- * @udc: Reference to the device controller.
- *
- * In state EP0_IDLE, the RX descriptor is either pending, or has been
- * filled with a SETUP packet from the host.  This function handles new
- * SETUP packets, control IRQ events (which can generate fake SETUP packets),
- * and reset/shutdown events.
- *
- * Returns 0 if work was done; -EAGAIN if nothing to do.
- */
+ 
 static int bcm63xx_ep0_do_idle(struct bcm63xx_udc *udc)
 {
 	if (udc->ep0_req_reset) {
@@ -1551,15 +1210,11 @@ static int bcm63xx_ep0_do_idle(struct bcm63xx_udc *udc)
 		usb_gadget_unmap_request(&udc->gadget,
 			&udc->ep0_ctrl_req.req, 0);
 
-		/* bcm63xx_udc_pullup() is waiting for this */
+		 
 		mb();
 		udc->ep0state = EP0_SHUTDOWN;
 	} else if (udc->ep0_reply) {
-		/*
-		 * This could happen if a USB RESET shows up during an ep0
-		 * transaction (especially if a laggy driver like gadgetfs
-		 * is in use).
-		 */
+		 
 		dev_warn(udc->dev, "nuking unexpected reply\n");
 		bcm63xx_ep0_nuke_reply(udc, 0);
 	} else {
@@ -1569,12 +1224,7 @@ static int bcm63xx_ep0_do_idle(struct bcm63xx_udc *udc)
 	return 0;
 }
 
-/**
- * bcm63xx_ep0_one_round - Handle the current ep0 state.
- * @udc: Reference to the device controller.
- *
- * Returns 0 if work was done; -EAGAIN if nothing to do.
- */
+ 
 static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 {
 	enum bcm63xx_ep0_state ep0state = udc->ep0state;
@@ -1582,7 +1232,7 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 
 	switch (udc->ep0state) {
 	case EP0_REQUEUE:
-		/* set up descriptor to receive SETUP packet */
+		 
 		bcm63xx_ep0_internal_request(udc, IUDMA_EP0_RXCHAN,
 					     BCM63XX_MAX_CTRL_PKT);
 		ep0state = EP0_IDLE;
@@ -1590,15 +1240,7 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 	case EP0_IDLE:
 		return bcm63xx_ep0_do_idle(udc);
 	case EP0_IN_DATA_PHASE_SETUP:
-		/*
-		 * Normal case: TX request is in ep0_reply (queued by the
-		 * callback), or will be queued shortly.  When it's here,
-		 * send it to the HW and go to EP0_IN_DATA_PHASE_COMPLETE.
-		 *
-		 * Shutdown case: Stop waiting for the reply.  Just
-		 * REQUEUE->IDLE.  The gadget driver is NOT expected to
-		 * queue anything else now.
-		 */
+		 
 		if (udc->ep0_reply) {
 			bcm63xx_ep0_map_write(udc, IUDMA_EP0_TXCHAN,
 					      udc->ep0_reply);
@@ -1608,20 +1250,11 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 		}
 		break;
 	case EP0_IN_DATA_PHASE_COMPLETE: {
-		/*
-		 * Normal case: TX packet (ep0_reply) is in flight; wait for
-		 * it to finish, then go back to REQUEUE->IDLE.
-		 *
-		 * Shutdown case: Reset the TX channel, send -ESHUTDOWN
-		 * completion to the gadget driver, then REQUEUE->IDLE.
-		 */
+		 
 		if (udc->ep0_req_completed) {
 			udc->ep0_reply = NULL;
 			bcm63xx_ep0_read_complete(udc);
-			/*
-			 * the "ack" sometimes gets eaten (see
-			 * bcm63xx_ep0_do_idle)
-			 */
+			 
 			ep0state = EP0_REQUEUE;
 		} else if (shutdown) {
 			iudma_reset_channel(udc, &udc->iudma[IUDMA_EP0_TXCHAN]);
@@ -1631,7 +1264,7 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 		break;
 	}
 	case EP0_OUT_DATA_PHASE_SETUP:
-		/* Similar behavior to EP0_IN_DATA_PHASE_SETUP */
+		 
 		if (udc->ep0_reply) {
 			bcm63xx_ep0_map_write(udc, IUDMA_EP0_RXCHAN,
 					      udc->ep0_reply);
@@ -1641,12 +1274,12 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 		}
 		break;
 	case EP0_OUT_DATA_PHASE_COMPLETE: {
-		/* Similar behavior to EP0_IN_DATA_PHASE_COMPLETE */
+		 
 		if (udc->ep0_req_completed) {
 			udc->ep0_reply = NULL;
 			bcm63xx_ep0_read_complete(udc);
 
-			/* send 0-byte ack to host */
+			 
 			bcm63xx_ep0_internal_request(udc, IUDMA_EP0_TXCHAN, 0);
 			ep0state = EP0_OUT_STATUS_PHASE;
 		} else if (shutdown) {
@@ -1657,14 +1290,7 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 		break;
 	}
 	case EP0_OUT_STATUS_PHASE:
-		/*
-		 * Normal case: 0-byte OUT ack packet is in flight; wait
-		 * for it to finish, then go back to REQUEUE->IDLE.
-		 *
-		 * Shutdown case: just cancel the transmission.  Don't bother
-		 * calling the completion, because it originated from this
-		 * function anyway.  Then go back to REQUEUE->IDLE.
-		 */
+		 
 		if (udc->ep0_req_completed) {
 			bcm63xx_ep0_read_complete(udc);
 			ep0state = EP0_REQUEUE;
@@ -1675,20 +1301,7 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 		}
 		break;
 	case EP0_IN_FAKE_STATUS_PHASE: {
-		/*
-		 * Normal case: we spoofed a SETUP packet and are now
-		 * waiting for the gadget driver to send a 0-byte reply.
-		 * This doesn't actually get sent to the HW because the
-		 * HW has already sent its own reply.  Once we get the
-		 * response, return to IDLE.
-		 *
-		 * Shutdown case: return to IDLE immediately.
-		 *
-		 * Note that the ep0 RX descriptor has remained queued
-		 * (and possibly unfilled) during this entire transaction.
-		 * The HW datapath (IUDMA) never even sees SET_CONFIGURATION
-		 * or SET_INTERFACE transactions.
-		 */
+		 
 		struct usb_request *r = udc->ep0_reply;
 
 		if (!r) {
@@ -1713,20 +1326,7 @@ static int bcm63xx_ep0_one_round(struct bcm63xx_udc *udc)
 	return 0;
 }
 
-/**
- * bcm63xx_ep0_process - ep0 worker thread / state machine.
- * @w: Workqueue struct.
- *
- * bcm63xx_ep0_process is triggered any time an event occurs on ep0.  It
- * is used to synchronize ep0 events and ensure that both HW and SW events
- * occur in a well-defined order.  When the ep0 IUDMA queues are idle, it may
- * synthesize SET_CONFIGURATION / SET_INTERFACE requests that were consumed
- * by the USBD hardware.
- *
- * The worker function will continue iterating around the state machine
- * until there is nothing left to do.  Usually "nothing left to do" means
- * that we're waiting for a new event from the hardware.
- */
+ 
 static void bcm63xx_ep0_process(struct work_struct *w)
 {
 	struct bcm63xx_udc *udc = container_of(w, struct bcm63xx_udc, ep0_wq);
@@ -1736,14 +1336,9 @@ static void bcm63xx_ep0_process(struct work_struct *w)
 	spin_unlock_irq(&udc->lock);
 }
 
-/***********************************************************************
- * Standard UDC gadget operations
- ***********************************************************************/
+ 
 
-/**
- * bcm63xx_udc_get_frame - Read current SOF frame number from the HW.
- * @gadget: USB device.
- */
+ 
 static int bcm63xx_udc_get_frame(struct usb_gadget *gadget)
 {
 	struct bcm63xx_udc *udc = gadget_to_udc(gadget);
@@ -1752,13 +1347,7 @@ static int bcm63xx_udc_get_frame(struct usb_gadget *gadget)
 		USBD_STATUS_SOF_MASK) >> USBD_STATUS_SOF_SHIFT;
 }
 
-/**
- * bcm63xx_udc_pullup - Enable/disable pullup on D+ line.
- * @gadget: USB device.
- * @is_on: 0 to disable pullup, 1 to enable.
- *
- * See notes in bcm63xx_select_pullup().
- */
+ 
 static int bcm63xx_udc_pullup(struct usb_gadget *gadget, int is_on)
 {
 	struct bcm63xx_udc *udc = gadget_to_udc(gadget);
@@ -1801,11 +1390,7 @@ static int bcm63xx_udc_pullup(struct usb_gadget *gadget, int is_on)
 	return rc;
 }
 
-/**
- * bcm63xx_udc_start - Start the controller.
- * @gadget: USB device.
- * @driver: Driver for USB device.
- */
+ 
 static int bcm63xx_udc_start(struct usb_gadget *gadget,
 		struct usb_gadget_driver *driver)
 {
@@ -1837,11 +1422,7 @@ static int bcm63xx_udc_start(struct usb_gadget *gadget,
 	return 0;
 }
 
-/**
- * bcm63xx_udc_stop - Shut down the controller.
- * @gadget: USB device.
- * @driver: Driver for USB device.
- */
+ 
 static int bcm63xx_udc_stop(struct usb_gadget *gadget)
 {
 	struct bcm63xx_udc *udc = gadget_to_udc(gadget);
@@ -1851,12 +1432,7 @@ static int bcm63xx_udc_stop(struct usb_gadget *gadget)
 
 	udc->driver = NULL;
 
-	/*
-	 * If we switch the PHY too abruptly after dropping D+, the host
-	 * will often complain:
-	 *
-	 *     hub 1-0:1.0: port 1 disabled by hub (EMI?), re-enabling...
-	 */
+	 
 	msleep(100);
 
 	bcm63xx_select_phy_mode(udc, false);
@@ -1874,19 +1450,9 @@ static const struct usb_gadget_ops bcm63xx_udc_ops = {
 	.udc_stop	= bcm63xx_udc_stop,
 };
 
-/***********************************************************************
- * IRQ handling
- ***********************************************************************/
+ 
 
-/**
- * bcm63xx_update_cfg_iface - Read current configuration/interface settings.
- * @udc: Reference to the device controller.
- *
- * This controller intercepts SET_CONFIGURATION and SET_INTERFACE messages.
- * The driver never sees the raw control packets coming in on the ep0
- * IUDMA channel, but at least we get an interrupt event to tell us that
- * new values are waiting in the USBD_STATUS register.
- */
+ 
 static void bcm63xx_update_cfg_iface(struct bcm63xx_udc *udc)
 {
 	u32 reg = usbd_readl(udc, USBD_STATUS_REG);
@@ -1898,13 +1464,7 @@ static void bcm63xx_update_cfg_iface(struct bcm63xx_udc *udc)
 	bcm63xx_ep_setup(udc);
 }
 
-/**
- * bcm63xx_update_link_speed - Check to see if the link speed has changed.
- * @udc: Reference to the device controller.
- *
- * The link speed update coincides with a SETUP IRQ.  Returns 1 if the
- * speed has changed, so that the caller can update the endpoint settings.
- */
+ 
 static int bcm63xx_update_link_speed(struct bcm63xx_udc *udc)
 {
 	u32 reg = usbd_readl(udc, USBD_STATUS_REG);
@@ -1918,7 +1478,7 @@ static int bcm63xx_update_link_speed(struct bcm63xx_udc *udc)
 		udc->gadget.speed = USB_SPEED_FULL;
 		break;
 	default:
-		/* this should never happen */
+		 
 		udc->gadget.speed = USB_SPEED_UNKNOWN;
 		dev_err(udc->dev,
 			"received SETUP packet with invalid link speed\n");
@@ -1934,17 +1494,7 @@ static int bcm63xx_update_link_speed(struct bcm63xx_udc *udc)
 	}
 }
 
-/**
- * bcm63xx_update_wedge - Iterate through wedged endpoints.
- * @udc: Reference to the device controller.
- * @new_status: true to "refresh" wedge status; false to clear it.
- *
- * On a SETUP interrupt, we need to manually "refresh" the wedge status
- * because the controller hardware is designed to automatically clear
- * stalls in response to a CLEAR_FEATURE request from the host.
- *
- * On a RESET interrupt, we do want to restore all wedged endpoints.
- */
+ 
 static void bcm63xx_update_wedge(struct bcm63xx_udc *udc, bool new_status)
 {
 	int i;
@@ -1956,14 +1506,7 @@ static void bcm63xx_update_wedge(struct bcm63xx_udc *udc, bool new_status)
 	}
 }
 
-/**
- * bcm63xx_udc_ctrl_isr - ISR for control path events (USBD).
- * @irq: IRQ number (unused).
- * @dev_id: Reference to the device controller.
- *
- * This is where we handle link (VBUS) down, USB reset, speed changes,
- * SET_CONFIGURATION, and SET_INTERFACE events.
- */
+ 
 static irqreturn_t bcm63xx_udc_ctrl_isr(int irq, void *dev_id)
 {
 	struct bcm63xx_udc *udc = dev_id;
@@ -1977,7 +1520,7 @@ static irqreturn_t bcm63xx_udc_ctrl_isr(int irq, void *dev_id)
 
 	spin_lock(&udc->lock);
 	if (stat & BIT(USBD_EVENT_IRQ_USB_LINK)) {
-		/* VBUS toggled */
+		 
 
 		if (!(usbd_readl(udc, USBD_EVENTS_REG) &
 		      USBD_EVENTS_USB_LINK_MASK) &&
@@ -2025,16 +1568,7 @@ static irqreturn_t bcm63xx_udc_ctrl_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * bcm63xx_udc_data_isr - ISR for data path events (IUDMA).
- * @irq: IRQ number (unused).
- * @dev_id: Reference to the IUDMA channel that generated the interrupt.
- *
- * For the two ep0 channels, we have special handling that triggers the
- * ep0 worker thread.  For normal bulk/intr channels, either queue up
- * the next buffer descriptor for the transaction (incomplete transaction),
- * or invoke the completion callback (complete transactions).
- */
+ 
 static irqreturn_t bcm63xx_udc_data_isr(int irq, void *dev_id)
 {
 	struct iudma_ch *iudma = dev_id;
@@ -2052,13 +1586,13 @@ static irqreturn_t bcm63xx_udc_data_isr(int irq, void *dev_id)
 	bep = iudma->bep;
 	rc = iudma_read(udc, iudma);
 
-	/* special handling for EP0 RX (0) and TX (1) */
+	 
 	if (iudma->ch_idx == IUDMA_EP0_RXCHAN ||
 	    iudma->ch_idx == IUDMA_EP0_TXCHAN) {
 		req = udc->ep0_request;
 		breq = our_req(req);
 
-		/* a single request could require multiple submissions */
+		 
 		if (rc >= 0) {
 			req->actual += rc;
 
@@ -2067,10 +1601,10 @@ static irqreturn_t bcm63xx_udc_data_isr(int irq, void *dev_id)
 				is_done = true;
 				schedule_work(&udc->ep0_wq);
 
-				/* "actual" on a ZLP is 1 byte */
+				 
 				req->actual = min(req->actual, req->length);
 			} else {
-				/* queue up the next BD (same request) */
+				 
 				iudma_write(udc, iudma, breq);
 			}
 		}
@@ -2110,17 +1644,9 @@ static irqreturn_t bcm63xx_udc_data_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/***********************************************************************
- * Debug filesystem
- ***********************************************************************/
+ 
 
-/*
- * bcm63xx_usbd_dbg_show - Show USBD controller state.
- * @s: seq_file to which the information will be written.
- * @p: Unused.
- *
- * This file nominally shows up as /sys/kernel/debug/bcm63xx_udc/usbd
- */
+ 
 static int bcm63xx_usbd_dbg_show(struct seq_file *s, void *p)
 {
 	struct bcm63xx_udc *udc = s->private;
@@ -2153,13 +1679,7 @@ static int bcm63xx_usbd_dbg_show(struct seq_file *s, void *p)
 }
 DEFINE_SHOW_ATTRIBUTE(bcm63xx_usbd_dbg);
 
-/*
- * bcm63xx_iudma_dbg_show - Show IUDMA status and descriptors.
- * @s: seq_file to which the information will be written.
- * @p: Unused.
- *
- * This file nominally shows up as /sys/kernel/debug/bcm63xx_udc/iudma
- */
+ 
 static int bcm63xx_iudma_dbg_show(struct seq_file *s, void *p)
 {
 	struct bcm63xx_udc *udc = s->private;
@@ -2229,10 +1749,7 @@ static int bcm63xx_iudma_dbg_show(struct seq_file *s, void *p)
 }
 DEFINE_SHOW_ATTRIBUTE(bcm63xx_iudma_dbg);
 
-/**
- * bcm63xx_udc_init_debugfs - Create debugfs entries.
- * @udc: Reference to the device controller.
- */
+ 
 static void bcm63xx_udc_init_debugfs(struct bcm63xx_udc *udc)
 {
 	struct dentry *root;
@@ -2245,28 +1762,15 @@ static void bcm63xx_udc_init_debugfs(struct bcm63xx_udc *udc)
 	debugfs_create_file("iudma", 0400, root, udc, &bcm63xx_iudma_dbg_fops);
 }
 
-/**
- * bcm63xx_udc_cleanup_debugfs - Remove debugfs entries.
- * @udc: Reference to the device controller.
- *
- * debugfs_remove() is safe to call with a NULL argument.
- */
+ 
 static void bcm63xx_udc_cleanup_debugfs(struct bcm63xx_udc *udc)
 {
 	debugfs_lookup_and_remove(udc->gadget.name, usb_debug_root);
 }
 
-/***********************************************************************
- * Driver init/exit
- ***********************************************************************/
+ 
 
-/**
- * bcm63xx_udc_probe - Initialize a new instance of the UDC.
- * @pdev: Platform device struct from the bcm63xx BSP code.
- *
- * Note that platform data is required, because pd.port_no varies from chip
- * to chip and is used to switch the correct USB port to device mode.
- */
+ 
 static int bcm63xx_udc_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -2306,14 +1810,14 @@ static int bcm63xx_udc_probe(struct platform_device *pdev)
 	else
 		udc->gadget.max_speed = USB_SPEED_FULL;
 
-	/* request clocks, allocate buffers, and clear any pending IRQs */
+	 
 	rc = bcm63xx_init_udc_hw(udc);
 	if (rc)
 		return rc;
 
 	rc = -ENXIO;
 
-	/* IRQ resource #0: control interrupt (VBUS, speed, etc.) */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		rc = irq;
@@ -2323,7 +1827,7 @@ static int bcm63xx_udc_probe(struct platform_device *pdev)
 			     dev_name(dev), udc) < 0)
 		goto report_request_failure;
 
-	/* IRQ resources #1-6: data interrupts for IUDMA channels 0-5 */
+	 
 	for (i = 0; i < BCM63XX_NUM_IUDMA; i++) {
 		irq = platform_get_irq(pdev, i + 1);
 		if (irq < 0) {
@@ -2350,10 +1854,7 @@ report_request_failure:
 	goto out_uninit;
 }
 
-/**
- * bcm63xx_udc_remove - Remove the device from the system.
- * @pdev: Platform device struct from the bcm63xx BSP code.
- */
+ 
 static void bcm63xx_udc_remove(struct platform_device *pdev)
 {
 	struct bcm63xx_udc *udc = platform_get_drvdata(pdev);

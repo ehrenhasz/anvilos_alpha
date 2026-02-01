@@ -1,118 +1,4 @@
-/*
- * AMD 10Gb Ethernet driver
- *
- * This file is available to you under your choice of the following two
- * licenses:
- *
- * License 1: GPLv2
- *
- * Copyright (c) 2016 Advanced Micro Devices, Inc.
- *
- * This file is free software; you may copy, redistribute and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or (at
- * your option) any later version.
- *
- * This file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- * License 2: Modified BSD
- *
- * Copyright (c) 2016 Advanced Micro Devices, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -225,7 +111,7 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	pdata->pcidev = pdev;
 	pci_set_drvdata(pdev, pdata);
 
-	/* Get the version data */
+	 
 	pdata->vdata = (struct xgbe_version_data *)id->driver_data;
 
 	ret = pcim_enable_device(pdev);
@@ -234,7 +120,7 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_pci_enable;
 	}
 
-	/* Obtain the mmio areas for the device */
+	 
 	bar_mask = pci_select_bars(pdev, IORESOURCE_MEM);
 	ret = pcim_iomap_regions(pdev, bar_mask, XGBE_DRV_NAME);
 	if (ret) {
@@ -272,7 +158,7 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (netif_msg_probe(pdata))
 		dev_dbg(dev, "xpcs_regs  = %p\n", pdata->xpcs_regs);
 
-	/* Set the PCS indirect addressing definition registers */
+	 
 	rdev = pci_get_domain_bus_and_slot(0, 0, PCI_DEVFN(0, 0));
 	if (rdev &&
 	    (rdev->vendor == PCI_VENDOR_ID_AMD) && (rdev->device == 0x15d0)) {
@@ -283,10 +169,10 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		pdata->xpcs_window_def_reg = PCS_V2_YC_WINDOW_DEF;
 		pdata->xpcs_window_sel_reg = PCS_V2_YC_WINDOW_SELECT;
 
-		/* Yellow Carp devices do not need cdr workaround */
+		 
 		pdata->vdata->an_cdr_workaround = 0;
 
-		/* Yellow Carp devices do not need rrc */
+		 
 		pdata->vdata->enable_rrc = 0;
 	} else {
 		pdata->xpcs_window_def_reg = PCS_V2_WINDOW_DEF;
@@ -294,7 +180,7 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 	pci_dev_put(rdev);
 
-	/* Configure the PCS indirect addressing support */
+	 
 	reg = XPCS32_IOREAD(pdata, pdata->xpcs_window_def_reg);
 	pdata->xpcs_window = XPCS_GET_BITS(reg, PCS_V2_WINDOW_DEF, OFFSET);
 	pdata->xpcs_window <<= 6;
@@ -316,10 +202,10 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	pci_set_master(pdev);
 
-	/* Enable all interrupts in the hardware */
+	 
 	XP_IOWRITE(pdata, XP_INT_EN, 0x1fffff);
 
-	/* Retrieve the MAC address */
+	 
 	ma_lo = XP_IOREAD(pdata, XP_MAC_ADDR_LO);
 	ma_hi = XP_IOREAD(pdata, XP_MAC_ADDR_HI);
 	pdata->mac_addr[0] = ma_lo & 0xff;
@@ -335,17 +221,17 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_pci_enable;
 	}
 
-	/* Clock settings */
+	 
 	pdata->sysclk_rate = XGBE_V2_DMA_CLOCK_FREQ;
 	pdata->ptpclk_rate = XGBE_V2_PTP_CLOCK_FREQ;
 
-	/* Set the DMA coherency values */
+	 
 	pdata->coherent = 1;
 	pdata->arcr = XGBE_DMA_PCI_ARCR;
 	pdata->awcr = XGBE_DMA_PCI_AWCR;
 	pdata->awarcr = XGBE_DMA_PCI_AWARCR;
 
-	/* Read the port property registers */
+	 
 	pdata->pp0 = XP_IOREAD(pdata, XP_PROP_0);
 	pdata->pp1 = XP_IOREAD(pdata, XP_PROP_1);
 	pdata->pp2 = XP_IOREAD(pdata, XP_PROP_2);
@@ -359,7 +245,7 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		dev_dbg(dev, "port property 4 = %#010x\n", pdata->pp4);
 	}
 
-	/* Set the maximum channels and queues */
+	 
 	pdata->tx_max_channel_count = XP_GET_BITS(pdata->pp1, XP_PROP_1,
 						  MAX_TX_DMA);
 	pdata->rx_max_channel_count = XP_GET_BITS(pdata->pp1, XP_PROP_1,
@@ -376,10 +262,10 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 			pdata->tx_max_q_count, pdata->rx_max_q_count);
 	}
 
-	/* Set the hardware channel and queue counts */
+	 
 	xgbe_set_counts(pdata);
 
-	/* Set the maximum fifo amounts */
+	 
 	pdata->tx_max_fifo_size = XP_GET_BITS(pdata->pp2, XP_PROP_2,
 					      TX_FIFO_SIZE);
 	pdata->tx_max_fifo_size *= 16384;
@@ -394,12 +280,12 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		dev_dbg(dev, "max tx/rx max fifo size = %u/%u\n",
 			pdata->tx_max_fifo_size, pdata->rx_max_fifo_size);
 
-	/* Configure interrupt support */
+	 
 	ret = xgbe_config_irqs(pdata);
 	if (ret)
 		goto err_pci_enable;
 
-	/* Configure the netdev resource */
+	 
 	ret = xgbe_config_netdev(pdata);
 	if (ret)
 		goto err_irq_vectors;
@@ -428,7 +314,7 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
 
 	pci_free_irq_vectors(pdata->pcidev);
 
-	/* Disable all interrupts in the hardware */
+	 
 	XP_IOWRITE(pdata, XP_INT_EN, 0x0);
 
 	xgbe_free_pdata(pdata);
@@ -464,9 +350,7 @@ static int __maybe_unused xgbe_pci_resume(struct device *dev)
 	if (netif_running(netdev)) {
 		ret = xgbe_powerup(netdev, XGMAC_DRIVER_CONTEXT);
 
-		/* Schedule a restart in case the link or phy state changed
-		 * while we were powered down.
-		 */
+		 
 		schedule_work(&pdata->restart_work);
 	}
 
@@ -510,7 +394,7 @@ static const struct pci_device_id xgbe_pci_table[] = {
 	  .driver_data = (kernel_ulong_t)&xgbe_v2a },
 	{ PCI_VDEVICE(AMD, 0x1459),
 	  .driver_data = (kernel_ulong_t)&xgbe_v2b },
-	/* Last entry must be zero */
+	 
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, xgbe_pci_table);

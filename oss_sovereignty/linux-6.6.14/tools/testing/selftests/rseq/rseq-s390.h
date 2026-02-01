@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
+ 
 
-/*
- * RSEQ_SIG uses the trap4 instruction. As Linux does not make use of the
- * access-register mode nor the linkage stack this instruction will always
- * cause a special-operation exception (the trap-enabled bit in the DUCT
- * is and will stay 0). The instruction pattern is
- *	b2 ff 0f ff	trap4	4095(%r0)
- */
+ 
 #define RSEQ_SIG	0xB2FF0FFF
 
 #define rseq_smp_mb()	__asm__ __volatile__ ("bcr 15,0" ::: "memory")
@@ -50,14 +44,7 @@ do {									\
 		".quad " __rseq_str(label) "b\n\t"			\
 		".popsection\n\t"
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+ 
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)			\
 		".pushsection __rseq_exit_point_array, \"aw\"\n\t"	\
 		".quad " __rseq_str(start_ip) ", " __rseq_str(exit_ip) "\n\t" \
@@ -77,14 +64,7 @@ do {									\
 		".long 0x0, " __rseq_str(label) "b\n\t"			\
 		".popsection\n\t"
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+ 
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)			\
 		".pushsection __rseq_exit_point_array, \"aw\"\n\t"	\
 		".long 0x0, " __rseq_str(start_ip) ", 0x0, " __rseq_str(exit_ip) "\n\t" \
@@ -130,7 +110,7 @@ do {									\
 		"jg %l[" __rseq_str(cmpfail_label) "]\n\t"		\
 		".popsection\n\t"
 
-/* Per-cpu-id indexing. */
+ 
 
 #define RSEQ_TEMPLATE_CPU_ID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -142,7 +122,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_CPU_ID
 
-/* Per-mm-cid indexing. */
+ 
 
 #define RSEQ_TEMPLATE_MM_CID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -154,7 +134,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_MM_CID
 
-/* APIs which are not based on cpu ids. */
+ 
 
 #define RSEQ_TEMPLATE_CPU_ID_NONE
 #define RSEQ_TEMPLATE_MO_RELAXED

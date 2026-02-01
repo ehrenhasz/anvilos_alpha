@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 MediaTek Inc.
- *               Chun-Jie Chen <chun-jie.chen@mediatek.com>
- * Copyright (c) 2023 Collabora Ltd.
- *               AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8192-clk.h>
 #include <linux/module.h>
@@ -145,7 +140,7 @@ static struct mtk_pllfh_data pllfhs[] = {
 
 static const struct of_device_id of_match_clk_mt8192_apmixed[] = {
 	{ .compatible = "mediatek,mt8192-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8192_apmixed);
 

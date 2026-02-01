@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Panel driver for the TPO TPG110 400CH LTPS TFT LCD Single Chip
- * Digital Driver.
- *
- * This chip drives a TFT LCD, so it does not know what kind of
- * display is actually connected to it, so the width and height of that
- * display needs to be supplied from the machine configuration.
- *
- * Author:
- * Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
@@ -31,72 +21,43 @@
 #define TPG110_RES_640X480		0x06
 #define TPG110_RES_480X272		0x05
 #define TPG110_RES_480X640		0x04
-#define TPG110_RES_480X272_D		0x01 /* Dual scan: outputs 800x480 */
-#define TPG110_RES_400X240_D		0x00 /* Dual scan: outputs 800x480 */
+#define TPG110_RES_480X272_D		0x01  
+#define TPG110_RES_400X240_D		0x00  
 #define TPG110_CTRL2			0x03
 #define TPG110_CTRL2_PM			BIT(0)
 #define TPG110_CTRL2_RES_PM_CTRL	BIT(7)
 
-/**
- * struct tpg110_panel_mode - lookup struct for the supported modes
- */
+ 
 struct tpg110_panel_mode {
-	/**
-	 * @name: the name of this panel
-	 */
+	 
 	const char *name;
-	/**
-	 * @magic: the magic value from the detection register
-	 */
+	 
 	u32 magic;
-	/**
-	 * @mode: the DRM display mode for this panel
-	 */
+	 
 	struct drm_display_mode mode;
-	/**
-	 * @bus_flags: the DRM bus flags for this panel e.g. inverted clock
-	 */
+	 
 	u32 bus_flags;
 };
 
-/**
- * struct tpg110 - state container for the TPG110 panel
- */
+ 
 struct tpg110 {
-	/**
-	 * @dev: the container device
-	 */
+	 
 	struct device *dev;
-	/**
-	 * @spi: the corresponding SPI device
-	 */
+	 
 	struct spi_device *spi;
-	/**
-	 * @panel: the DRM panel instance for this device
-	 */
+	 
 	struct drm_panel panel;
-	/**
-	 * @panel_mode: the panel mode as detected
-	 */
+	 
 	const struct tpg110_panel_mode *panel_mode;
-	/**
-	 * @width: the width of this panel in mm
-	 */
+	 
 	u32 width;
-	/**
-	 * @height: the height of this panel in mm
-	 */
+	 
 	u32 height;
-	/**
-	 * @grestb: reset GPIO line
-	 */
+	 
 	struct gpio_desc *grestb;
 };
 
-/*
- * TPG110 modes, these are the simple modes, the dualscan modes that
- * take 400x240 or 480x272 in and display as 800x480 are not listed.
- */
+ 
 static const struct tpg110_panel_mode tpg110_modes[] = {
 	{
 		.name = "800x480 RGB",
@@ -198,11 +159,7 @@ static u8 tpg110_readwrite_reg(struct tpg110 *tpg, bool write,
 	memset(t, 0, sizeof(t));
 
 	if (write) {
-		/*
-		 * Clear address bit 0, 1 when writing, just to be sure
-		 * The actual bit indicating a write here is bit 1, bit
-		 * 0 is just surplus to pad it up to 8 bits.
-		 */
+		 
 		buf[0] = address << 2;
 		buf[0] &= ~0x03;
 		buf[1] = outval;
@@ -215,15 +172,11 @@ static u8 tpg110_readwrite_reg(struct tpg110 *tpg, bool write,
 		t[1].len = 1;
 		t[1].bits_per_word = 8;
 	} else {
-		/* Set address bit 0 to 1 to read */
+		 
 		buf[0] = address << 1;
 		buf[0] |= 0x01;
 
-		/*
-		 * The last bit/clock is Hi-Z turnaround cycle, so we need
-		 * to send only 7 bits here. The 8th bit is the high impedance
-		 * turn-around cycle.
-		 */
+		 
 		t[0].bits_per_word = 7;
 		t[0].tx_buf = &buf[0];
 		t[0].len = 1;
@@ -242,7 +195,7 @@ static u8 tpg110_readwrite_reg(struct tpg110 *tpg, bool write,
 	}
 	if (write)
 		return 0;
-	/* Read */
+	 
 	return buf[1];
 }
 
@@ -261,12 +214,12 @@ static int tpg110_startup(struct tpg110 *tpg)
 	u8 val;
 	int i;
 
-	/* De-assert the reset signal */
+	 
 	gpiod_set_value_cansleep(tpg->grestb, 0);
 	usleep_range(1000, 2000);
 	dev_dbg(tpg->dev, "de-asserted GRESTB\n");
 
-	/* Test display communication */
+	 
 	tpg110_write_reg(tpg, TPG110_TEST, 0x55);
 	val = tpg110_read_reg(tpg, TPG110_TEST);
 	if (val != 0x55) {
@@ -278,7 +231,7 @@ static int tpg110_startup(struct tpg110 *tpg)
 	dev_info(tpg->dev, "TPG110 chip ID: %d version: %d\n",
 		 val >> 4, val & 0x0f);
 
-	/* Show display resolution */
+	 
 	val = tpg110_read_reg(tpg, TPG110_CTRL1);
 	val &= TPG110_RES_MASK;
 	switch (val) {
@@ -305,7 +258,7 @@ static int tpg110_startup(struct tpg110 *tpg)
 		break;
 	}
 
-	/* From the producer side, this is the same resolution */
+	 
 	if (val == TPG110_RES_480X272_D)
 		val = TPG110_RES_480X272;
 
@@ -326,7 +279,7 @@ static int tpg110_startup(struct tpg110 *tpg)
 	val = tpg110_read_reg(tpg, TPG110_CTRL2);
 	dev_info(tpg->dev, "resolution and standby is controlled by %s\n",
 		 (val & TPG110_CTRL2_RES_PM_CTRL) ? "software" : "hardware");
-	/* Take control over resolution and standby */
+	 
 	val |= TPG110_CTRL2_RES_PM_CTRL;
 	tpg110_write_reg(tpg, TPG110_CTRL2, val);
 
@@ -338,7 +291,7 @@ static int tpg110_disable(struct drm_panel *panel)
 	struct tpg110 *tpg = to_tpg110(panel);
 	u8 val;
 
-	/* Put chip into standby */
+	 
 	val = tpg110_read_reg(tpg, TPG110_CTRL2_PM);
 	val &= ~TPG110_CTRL2_PM;
 	tpg110_write_reg(tpg, TPG110_CTRL2_PM, val);
@@ -351,7 +304,7 @@ static int tpg110_enable(struct drm_panel *panel)
 	struct tpg110 *tpg = to_tpg110(panel);
 	u8 val;
 
-	/* Take chip out of standby */
+	 
 	val = tpg110_read_reg(tpg, TPG110_CTRL2_PM);
 	val |= TPG110_CTRL2_PM;
 	tpg110_write_reg(tpg, TPG110_CTRL2_PM, val);
@@ -359,15 +312,7 @@ static int tpg110_enable(struct drm_panel *panel)
 	return 0;
 }
 
-/**
- * tpg110_get_modes() - return the appropriate mode
- * @panel: the panel to get the mode for
- * @connector: reference to the central DRM connector control structure
- *
- * This currently does not present a forest of modes, instead it
- * presents the mode that is configured for the system under use,
- * and which is detected by reading the registers of the display.
- */
+ 
 static int tpg110_get_modes(struct drm_panel *panel,
 			    struct drm_connector *connector)
 {
@@ -410,7 +355,7 @@ static int tpg110_probe(struct spi_device *spi)
 		return -ENOMEM;
 	tpg->dev = dev;
 
-	/* We get the physical display dimensions from the DT */
+	 
 	ret = of_property_read_u32(np, "width-mm", &tpg->width);
 	if (ret)
 		dev_err(dev, "no panel width specified\n");
@@ -418,7 +363,7 @@ static int tpg110_probe(struct spi_device *spi)
 	if (ret)
 		dev_err(dev, "no panel height specified\n");
 
-	/* This asserts the GRESTB signal, putting the display into reset */
+	 
 	tpg->grestb = devm_gpiod_get(dev, "grestb", GPIOD_OUT_HIGH);
 	if (IS_ERR(tpg->grestb)) {
 		dev_err(dev, "no GRESTB GPIO\n");

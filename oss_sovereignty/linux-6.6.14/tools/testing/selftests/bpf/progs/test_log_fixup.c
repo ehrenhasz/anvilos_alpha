@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -23,7 +23,7 @@ static __noinline int bad_subprog(void)
 {
 	static struct task_struct___bad *t;
 
-	/* ugliness below is a field offset relocation */
+	 
 	return (void *)&t->fake_field_subprog - (void *)t;
 }
 

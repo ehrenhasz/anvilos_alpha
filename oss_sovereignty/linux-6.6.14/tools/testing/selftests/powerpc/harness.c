@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <errno.h>
 #include <signal.h>
@@ -21,7 +19,7 @@
 
 #define KILL_TIMEOUT	5
 
-/* Setting timeout to -1 disables the alarm */
+ 
 static uint64_t timeout = 120;
 
 int run_test(int (test_function)(void), const char *name)
@@ -30,7 +28,7 @@ int run_test(int (test_function)(void), const char *name)
 	int rc, status;
 	pid_t pid;
 
-	/* Make sure output is flushed before forking */
+	 
 	fflush(stdout);
 
 	pid = fork();
@@ -45,7 +43,7 @@ int run_test(int (test_function)(void), const char *name)
 	setpgid(pid, pid);
 
 	if (timeout != -1)
-		/* Wake us up in timeout seconds */
+		 
 		alarm(timeout);
 	terminated = false;
 
@@ -70,7 +68,7 @@ wait:
 		}
 	}
 
-	/* Kill anything else in the process group that is still running */
+	 
 	kill(-pid, SIGTERM);
 
 	if (WIFEXITED(status))
@@ -81,7 +79,7 @@ wait:
 		else
 			printf("!! child died by unknown cause\n");
 
-		status = 1; /* Signal or other */
+		status = 1;  
 	}
 
 	return status;
@@ -89,7 +87,7 @@ wait:
 
 static void sig_handler(int signum)
 {
-	/* Just wake us up from waitpid */
+	 
 }
 
 static struct sigaction sig_action = {
@@ -124,7 +122,7 @@ int test_harness(int (test_function)(void), const char *name)
 
 	if (rc == MAGIC_SKIP_RETURN_VALUE) {
 		test_skip(name);
-		/* so that skipped test is not marked as failed */
+		 
 		rc = 0;
 	} else
 		test_finish(name, rc);

@@ -1,38 +1,15 @@
-/* Copyright (C) 2006-2023 Free Software Foundation, Inc.
-   Written by Paul Eggert, Bruno Haible, Derek Price.
-   This file is part of gnulib.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/*
- * ISO C 99 <inttypes.h> for platforms that lack it.
- * <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/inttypes.h.html>
- */
+ 
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
 @PRAGMA_COLUMNS@
 
-/* Include the original <inttypes.h> if it exists, and if this file
-   has not been included yet or if this file includes gnulib stdint.h
-   which in turn includes this file.
-   The include_next requires a split double-inclusion guard.  */
+ 
 #if ! defined INTTYPES_H || defined _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 # if @HAVE_INTTYPES_H@
 
-   /* Some pre-C++11 <stdint.h> implementations need this.  */
+    
 #  if defined __cplusplus && ! defined __STDC_FORMAT_MACROS
 #   define __STDC_FORMAT_MACROS 1
 #  endif
@@ -46,19 +23,18 @@
 #if ! defined INTTYPES_H && ! defined _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 #define INTTYPES_H
 
-/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* Include <stdint.h> or the gnulib replacement.
-   But avoid namespace pollution on glibc systems.  */
+ 
 #ifndef __GLIBC__
 # include <stdint.h>
 #endif
-/* Get CHAR_BIT, INT_MAX, LONG_MAX, etc.  */
+ 
 #include <limits.h>
-/* On mingw, __USE_MINGW_ANSI_STDIO only works if <stdio.h> is also included */
+ 
 #if defined _WIN32 && ! defined __CYGWIN__
 # include <stdio.h>
 #endif
@@ -67,17 +43,16 @@
 # error "This file assumes that 'int' is 32-bit two's complement. Please report your platform and compiler to <bug-gnulib@gnu.org>."
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
-/* 7.8.1 Macros for format specifiers */
+ 
 
 #if defined _TNS_R_TARGET
-   /* Tandem NonStop R series and compatible platforms released before
-      July 2005 support %Ld but not %lld.  */
+    
 # define _LONG_LONG_FORMAT_PREFIX "L"
 #else
 # define _LONG_LONG_FORMAT_PREFIX "ll"
@@ -901,7 +876,7 @@
 # endif
 #endif
 
-/* 7.8.2 Functions for greatest-width integer types */
+ 
 
 #ifdef __cplusplus
 extern "C" {
@@ -1023,11 +998,10 @@ _GL_WARN_ON_USE (strtoumax, "strtoumax is unportable - "
 # endif
 #endif
 
-/* Don't bother defining or declaring wcstoimax and wcstoumax, since
-   wide-character functions like this are hardly ever useful.  */
+ 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !defined INTTYPES_H && !defined _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H */
+#endif  

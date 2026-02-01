@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-radio-tx.h - radio transmitter support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _VIVID_RADIO_TX_H_
 #define _VIVID_RADIO_TX_H_

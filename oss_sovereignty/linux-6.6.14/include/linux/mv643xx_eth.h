@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MV-643XX ethernet platform device data definition file.
- */
+ 
+ 
 
 #ifndef __LINUX_MV643XX_ETH_H
 #define __LINUX_MV643XX_ETH_H
@@ -22,10 +20,7 @@
 
 struct mv643xx_eth_shared_platform_data {
 	struct mbus_dram_target_info	*dram;
-	/*
-	 * Max packet size for Tx IP/Layer 4 checksum, when set to 0, default
-	 * limit of 9KiB will be used.
-	 */
+	 
 	int			tx_csum_limit;
 };
 
@@ -35,50 +30,31 @@ struct mv643xx_eth_shared_platform_data {
 
 struct device_node;
 struct mv643xx_eth_platform_data {
-	/*
-	 * Pointer back to our parent instance, and our port number.
-	 */
+	 
 	struct platform_device	*shared;
 	int			port_number;
 
-	/*
-	 * Whether a PHY is present, and if yes, at which address.
-	 */
+	 
 	int			phy_addr;
 	struct device_node	*phy_node;
 
-	/*
-	 * Use this MAC address if it is valid, overriding the
-	 * address that is already in the hardware.
-	 */
+	 
 	u8			mac_addr[ETH_ALEN];
 
-	/*
-	 * If speed is 0, autonegotiation is enabled.
-	 *   Valid values for speed: 0, SPEED_10, SPEED_100, SPEED_1000.
-	 *   Valid values for duplex: DUPLEX_HALF, DUPLEX_FULL.
-	 */
+	 
 	int			speed;
 	int			duplex;
 	phy_interface_t		interface;
 
-	/*
-	 * How many RX/TX queues to use.
-	 */
+	 
 	int			rx_queue_count;
 	int			tx_queue_count;
 
-	/*
-	 * Override default RX/TX queue sizes if nonzero.
-	 */
+	 
 	int			rx_queue_size;
 	int			tx_queue_size;
 
-	/*
-	 * Use on-chip SRAM for RX/TX descriptors if size is nonzero
-	 * and sufficient to contain all descriptors for the requested
-	 * ring sizes.
-	 */
+	 
 	unsigned long		rx_sram_addr;
 	int			rx_sram_size;
 	unsigned long		tx_sram_addr;

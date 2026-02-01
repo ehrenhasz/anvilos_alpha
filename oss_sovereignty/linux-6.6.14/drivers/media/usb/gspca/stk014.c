@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Syntek DV4000 (STK014) subdriver
- *
- * Copyright (C) 2008 Jean-Francois Moine (http://moinejf.free.fr)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -18,9 +14,9 @@ MODULE_LICENSE("GPL");
 
 #define QUALITY 50
 
-/* specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev;	/* !! must be the first item */
+	struct gspca_dev gspca_dev;	 
 	u8 jpeg_hdr[JPEG_HDR_SZ];
 };
 
@@ -37,7 +33,7 @@ static const struct v4l2_pix_format vga_mode[] = {
 		.priv = 0},
 };
 
-/* -- read a register -- */
+ 
 static u8 reg_r(struct gspca_dev *gspca_dev,
 			__u16 index)
 {
@@ -61,7 +57,7 @@ static u8 reg_r(struct gspca_dev *gspca_dev,
 	return gspca_dev->usb_buf[0];
 }
 
-/* -- write a register -- */
+ 
 static void reg_w(struct gspca_dev *gspca_dev,
 			__u16 index, __u16 value)
 {
@@ -84,7 +80,7 @@ static void reg_w(struct gspca_dev *gspca_dev,
 	}
 }
 
-/* -- get a bulk value (4 bytes) -- */
+ 
 static void rcv_val(struct gspca_dev *gspca_dev,
 			int ads)
 {
@@ -95,8 +91,8 @@ static void rcv_val(struct gspca_dev *gspca_dev,
 	reg_w(gspca_dev, 0x635, (ads >> 8) & 0xff);
 	reg_w(gspca_dev, 0x636, ads & 0xff);
 	reg_w(gspca_dev, 0x637, 0);
-	reg_w(gspca_dev, 0x638, 4);	/* len & 0xff */
-	reg_w(gspca_dev, 0x639, 0);	/* len >> 8 */
+	reg_w(gspca_dev, 0x638, 4);	 
+	reg_w(gspca_dev, 0x639, 0);	 
 	reg_w(gspca_dev, 0x63a, 0);
 	reg_w(gspca_dev, 0x63b, 0);
 	reg_w(gspca_dev, 0x630, 5);
@@ -105,16 +101,16 @@ static void rcv_val(struct gspca_dev *gspca_dev,
 	ret = usb_bulk_msg(dev,
 			usb_rcvbulkpipe(dev, 0x05),
 			gspca_dev->usb_buf,
-			4,		/* length */
+			4,		 
 			&alen,
-			500);		/* timeout in milliseconds */
+			500);		 
 	if (ret < 0) {
 		pr_err("rcv_val err %d\n", ret);
 		gspca_dev->usb_err = ret;
 	}
 }
 
-/* -- send a bulk value -- */
+ 
 static void snd_val(struct gspca_dev *gspca_dev,
 			int ads,
 			unsigned int val)
@@ -134,7 +130,7 @@ static void snd_val(struct gspca_dev *gspca_dev,
 	reg_w(gspca_dev, 0x655, (ads >> 8) & 0xff);
 	reg_w(gspca_dev, 0x656, ads & 0xff);
 	reg_w(gspca_dev, 0x657, 0);
-	reg_w(gspca_dev, 0x658, 0x04);	/* size */
+	reg_w(gspca_dev, 0x658, 0x04);	 
 	reg_w(gspca_dev, 0x659, 0);
 	reg_w(gspca_dev, 0x65a, 0);
 	reg_w(gspca_dev, 0x65b, 0);
@@ -150,7 +146,7 @@ static void snd_val(struct gspca_dev *gspca_dev,
 			gspca_dev->usb_buf,
 			4,
 			&alen,
-			500);	/* timeout in milliseconds */
+			500);	 
 	if (ret < 0) {
 		pr_err("snd_val err %d\n", ret);
 		gspca_dev->usb_err = ret;
@@ -163,7 +159,7 @@ static void snd_val(struct gspca_dev *gspca_dev,
 	}
 }
 
-/* set a camera parameter */
+ 
 static void set_par(struct gspca_dev *gspca_dev,
 		   int parval)
 {
@@ -174,7 +170,7 @@ static void setbrightness(struct gspca_dev *gspca_dev, s32 val)
 {
 	int parval;
 
-	parval = 0x06000000		/* whiteness */
+	parval = 0x06000000		 
 		+ (val << 16);
 	set_par(gspca_dev, parval);
 }
@@ -183,7 +179,7 @@ static void setcontrast(struct gspca_dev *gspca_dev, s32 val)
 {
 	int parval;
 
-	parval = 0x07000000		/* contrast */
+	parval = 0x07000000		 
 		+ (val << 16);
 	set_par(gspca_dev, parval);
 }
@@ -192,7 +188,7 @@ static void setcolors(struct gspca_dev *gspca_dev, s32 val)
 {
 	int parval;
 
-	parval = 0x08000000		/* saturation */
+	parval = 0x08000000		 
 		+ (val << 16);
 	set_par(gspca_dev, parval);
 }
@@ -200,11 +196,11 @@ static void setcolors(struct gspca_dev *gspca_dev, s32 val)
 static void setlightfreq(struct gspca_dev *gspca_dev, s32 val)
 {
 	set_par(gspca_dev, val == 1
-			? 0x33640000		/* 50 Hz */
-			: 0x33780000);		/* 60 Hz */
+			? 0x33640000		 
+			: 0x33780000);		 
 }
 
-/* this function is called at probe time */
+ 
 static int sd_config(struct gspca_dev *gspca_dev,
 			const struct usb_device_id *id)
 {
@@ -213,12 +209,12 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	return 0;
 }
 
-/* this function is called at probe and resume time */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	u8 ret;
 
-	/* check if the device responds */
+	 
 	usb_set_interface(gspca_dev->dev, gspca_dev->iface, 1);
 	ret = reg_r(gspca_dev, 0x0740);
 	if (gspca_dev->usb_err >= 0) {
@@ -230,19 +226,19 @@ static int sd_init(struct gspca_dev *gspca_dev)
 	return gspca_dev->usb_err;
 }
 
-/* -- start the camera -- */
+ 
 static int sd_start(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 	int ret, value;
 
-	/* create the JPEG header */
+	 
 	jpeg_define(sd->jpeg_hdr, gspca_dev->pixfmt.height,
 			gspca_dev->pixfmt.width,
-			0x22);		/* JPEG 411 */
+			0x22);		 
 	jpeg_set_qual(sd->jpeg_hdr, QUALITY);
 
-	/* work on alternate 1 */
+	 
 	usb_set_interface(gspca_dev->dev, gspca_dev->iface, 1);
 
 	set_par(gspca_dev, 0x10000000);
@@ -250,9 +246,9 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	set_par(gspca_dev, 0x8002e001);
 	set_par(gspca_dev, 0x14000000);
 	if (gspca_dev->pixfmt.width > 320)
-		value = 0x8002e001;		/* 640x480 */
+		value = 0x8002e001;		 
 	else
-		value = 0x4001f000;		/* 320x240 */
+		value = 0x4001f000;		 
 	set_par(gspca_dev, value);
 	ret = usb_set_interface(gspca_dev->dev,
 					gspca_dev->iface,
@@ -264,7 +260,7 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		goto out;
 	}
 	reg_r(gspca_dev, 0x0630);
-	rcv_val(gspca_dev, 0x000020);	/* << (value ff ff ff ff) */
+	rcv_val(gspca_dev, 0x000020);	 
 	reg_r(gspca_dev, 0x0650);
 	snd_val(gspca_dev, 0x000020, 0xffffffff);
 	reg_w(gspca_dev, 0x0620, 0);
@@ -272,12 +268,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	reg_w(gspca_dev, 0x0640, 0);
 	reg_w(gspca_dev, 0x0650, 0);
 	reg_w(gspca_dev, 0x0660, 0);
-	set_par(gspca_dev, 0x09800000);		/* Red ? */
-	set_par(gspca_dev, 0x0a800000);		/* Green ? */
-	set_par(gspca_dev, 0x0b800000);		/* Blue ? */
-	set_par(gspca_dev, 0x0d030000);		/* Gamma ? */
+	set_par(gspca_dev, 0x09800000);		 
+	set_par(gspca_dev, 0x0a800000);		 
+	set_par(gspca_dev, 0x0b800000);		 
+	set_par(gspca_dev, 0x0d030000);		 
 
-	/* start the video flow */
+	 
 	set_par(gspca_dev, 0x01000000);
 	set_par(gspca_dev, 0x01000000);
 	if (gspca_dev->usb_err >= 0)
@@ -295,7 +291,7 @@ static void sd_stopN(struct gspca_dev *gspca_dev)
 	set_par(gspca_dev, 0x02000000);
 	usb_set_interface(dev, gspca_dev->iface, 1);
 	reg_r(gspca_dev, 0x0630);
-	rcv_val(gspca_dev, 0x000020);	/* << (value ff ff ff ff) */
+	rcv_val(gspca_dev, 0x000020);	 
 	reg_r(gspca_dev, 0x0650);
 	snd_val(gspca_dev, 0x000020, 0xffffffff);
 	reg_w(gspca_dev, 0x0620, 0);
@@ -307,30 +303,22 @@ static void sd_stopN(struct gspca_dev *gspca_dev)
 }
 
 static void sd_pkt_scan(struct gspca_dev *gspca_dev,
-			u8 *data,			/* isoc packet */
-			int len)			/* iso packet length */
+			u8 *data,			 
+			int len)			 
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 	static unsigned char ffd9[] = {0xff, 0xd9};
 
-	/* a frame starts with:
-	 *	- 0xff 0xfe
-	 *	- 0x08 0x00	- length (little endian ?!)
-	 *	- 4 bytes = size of whole frame (BE - including header)
-	 *	- 0x00 0x0c
-	 *	- 0xff 0xd8
-	 *	- ..	JPEG image with escape sequences (ff 00)
-	 *		(without ending - ff d9)
-	 */
+	 
 	if (data[0] == 0xff && data[1] == 0xfe) {
 		gspca_frame_add(gspca_dev, LAST_PACKET,
 				ffd9, 2);
 
-		/* put the JPEG 411 header */
+		 
 		gspca_frame_add(gspca_dev, FIRST_PACKET,
 			sd->jpeg_hdr, JPEG_HDR_SZ);
 
-		/* beginning of the frame */
+		 
 #define STKHDRSZ 12
 		data += STKHDRSZ;
 		len -= STKHDRSZ;
@@ -393,7 +381,7 @@ static int sd_init_controls(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* sub-driver description */
+ 
 static const struct sd_desc sd_desc = {
 	.name = MODULE_NAME,
 	.config = sd_config,
@@ -404,14 +392,14 @@ static const struct sd_desc sd_desc = {
 	.pkt_scan = sd_pkt_scan,
 };
 
-/* -- module initialisation -- */
+ 
 static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x05e1, 0x0893)},
 	{}
 };
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* -- device connect -- */
+ 
 static int sd_probe(struct usb_interface *intf,
 			const struct usb_device_id *id)
 {

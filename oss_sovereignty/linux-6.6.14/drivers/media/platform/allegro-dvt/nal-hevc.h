@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Convert NAL units between raw byte sequence payloads (RBSP) and C structs.
- */
+ 
+ 
 
 #ifndef __NAL_HEVC_H__
 #define __NAL_HEVC_H__
@@ -44,7 +40,7 @@ struct nal_hevc_profile_tier_level {
 		};
 		struct {
 			unsigned int general_reserved_zero_7bits;
-			/* unsigned int general_one_picture_only_constraint_flag; */
+			 
 			unsigned int general_reserved_zero_35bits;
 		};
 		unsigned int general_reserved_zero_43bits;
@@ -56,12 +52,7 @@ struct nal_hevc_profile_tier_level {
 	unsigned int general_level_idc;
 };
 
-/*
- * struct nal_hevc_vps - Video parameter set
- *
- * C struct representation of the video parameter set NAL unit as defined by
- * Rec. ITU-T H.265 (02/2018) 7.3.2.1 Video parameter set RBSP syntax
- */
+ 
 struct nal_hevc_vps {
 	unsigned int video_parameter_set_id;
 	unsigned int base_layer_internal_flag;
@@ -90,7 +81,7 @@ struct nal_hevc_vps {
 			unsigned int hrd_layer_set_idx[0];
 			unsigned int cprms_present_flag[0];
 		};
-		/* hrd_parameters( cprms_present_flag[ i ], max_sub_layers_minus1 ) */
+		 
 	};
 	unsigned int extension_flag;
 	unsigned int extension_data_flag;
@@ -131,12 +122,7 @@ struct nal_hevc_hrd_parameters {
 	};
 };
 
-/*
- * struct nal_hevc_vui_parameters - VUI parameters
- *
- * C struct representation of the VUI parameters as defined by Rec. ITU-T
- * H.265 (02/2018) E.2.1 VUI parameters syntax.
- */
+ 
 struct nal_hevc_vui_parameters {
 	unsigned int aspect_ratio_info_present_flag;
 	struct {
@@ -194,12 +180,7 @@ struct nal_hevc_vui_parameters {
 	};
 };
 
-/*
- * struct nal_hevc_sps - Sequence parameter set
- *
- * C struct representation of the video parameter set NAL unit as defined by
- * Rec. ITU-T H.265 (02/2018) 7.3.2.2 Sequence parameter set RBSP syntax
- */
+ 
 struct nal_hevc_sps {
 	unsigned int video_parameter_set_id;
 	unsigned int max_sub_layers_minus1;
@@ -320,15 +301,7 @@ struct nal_hevc_pps {
 	};
 };
 
-/**
- * nal_hevc_profile() - Get profile_idc for v4l2 hevc profile
- * @profile: the profile as &enum v4l2_mpeg_video_hevc_profile
- *
- * Convert the &enum v4l2_mpeg_video_hevc_profile to profile_idc as specified
- * in Rec. ITU-T H.265 (02/2018) A.3.
- *
- * Return: the profile_idc for the passed level
- */
+ 
 static inline int nal_hevc_profile(enum v4l2_mpeg_video_hevc_profile profile)
 {
 	switch (profile) {
@@ -343,15 +316,7 @@ static inline int nal_hevc_profile(enum v4l2_mpeg_video_hevc_profile profile)
 	}
 }
 
-/**
- * nal_hevc_tier() - Get tier_flag for v4l2 hevc tier
- * @tier: the tier as &enum v4l2_mpeg_video_hevc_tier
- *
- * Convert the &enum v4l2_mpeg_video_hevc_tier to tier_flag as specified
- * in Rec. ITU-T H.265 (02/2018) A.4.1.
- *
- * Return: the tier_flag for the passed tier
- */
+ 
 static inline int nal_hevc_tier(enum v4l2_mpeg_video_hevc_tier tier)
 {
 	switch (tier) {
@@ -364,22 +329,10 @@ static inline int nal_hevc_tier(enum v4l2_mpeg_video_hevc_tier tier)
 	}
 }
 
-/**
- * nal_hevc_level() - Get level_idc for v4l2 hevc level
- * @level: the level as &enum v4l2_mpeg_video_hevc_level
- *
- * Convert the &enum v4l2_mpeg_video_hevc_level to level_idc as specified in
- * Rec. ITU-T H.265 (02/2018) A.4.1.
- *
- * Return: the level_idc for the passed level
- */
+ 
 static inline int nal_hevc_level(enum v4l2_mpeg_video_hevc_level level)
 {
-	/*
-	 * T-Rec-H.265 p. 280: general_level_idc and sub_layer_level_idc[ i ]
-	 * shall be set equal to a value of 30 times the level number
-	 * specified in Table A.6.
-	 */
+	 
 	int factor = 30 / 10;
 
 	switch (level) {
@@ -516,4 +469,4 @@ ssize_t nal_hevc_read_pps(const struct device *dev,
 ssize_t nal_hevc_write_filler(const struct device *dev, void *dest, size_t n);
 ssize_t nal_hevc_read_filler(const struct device *dev, void *src, size_t n);
 
-#endif /* __NAL_HEVC_H__ */
+#endif  

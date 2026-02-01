@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "selftest_llc.h"
 #include "intel_rps.h"

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The base64 encode/decode code was copied from fscrypt:
- * Copyright (C) 2015, Google, Inc.
- * Copyright (C) 2015, Motorola Mobility
- * Written by Uday Savagaonkar, 2014.
- * Modified by Jaegeuk Kim, 2015.
- */
+
+ 
 #include <linux/ceph/ceph_debug.h>
 #include <linux/xattr.h>
 #include <linux/fscrypt.h>
@@ -15,12 +9,7 @@
 #include "mds_client.h"
 #include "crypto.h"
 
-/*
- * The base64url encoding used by fscrypt includes the '_' character, which may
- * cause problems in snapshot names (which can not start with '_').  Thus, we
- * used the base64 encoding defined for IMAP mailbox names (RFC 3501) instead,
- * which replaces '-' and '_' by '+' and ','.
- */
+ 
 static const char base64_table[65] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,";
 
@@ -74,11 +63,11 @@ static int ceph_crypt_get_context(struct inode *inode, void *ctx, size_t len)
 	struct ceph_fscrypt_auth *cfa = (struct ceph_fscrypt_auth *)ci->fscrypt_auth;
 	u32 ctxlen;
 
-	/* Non existent or too short? */
+	 
 	if (!cfa || (ci->fscrypt_auth_len < (offsetof(struct ceph_fscrypt_auth, cfa_blob) + 1)))
 		return -ENOBUFS;
 
-	/* Some format we don't recognize? */
+	 
 	if (le32_to_cpu(cfa->cfa_version) != CEPH_FSCRYPT_AUTH_VERSION)
 		return -ENOBUFS;
 
@@ -193,21 +182,7 @@ void ceph_fscrypt_as_ctx_to_req(struct ceph_mds_request *req,
 	swap(req->r_fscrypt_auth, as->fscrypt_auth);
 }
 
-/*
- * User-created snapshots can't start with '_'.  Snapshots that start with this
- * character are special (hint: there aren't real snapshots) and use the
- * following format:
- *
- *   _<SNAPSHOT-NAME>_<INODE-NUMBER>
- *
- * where:
- *  - <SNAPSHOT-NAME> - the real snapshot name that may need to be decrypted,
- *  - <INODE-NUMBER> - the inode number (in decimal) for the actual snapshot
- *
- * This function parses these snapshot names and returns the inode
- * <INODE-NUMBER>.  'name_len' will also bet set with the <SNAPSHOT-NAME>
- * length.
- */
+ 
 static struct inode *parse_longname(const struct inode *parent,
 				    const char *name, int *name_len)
 {
@@ -218,7 +193,7 @@ static struct inode *parse_longname(const struct inode *parent,
 	int orig_len = *name_len;
 	int ret = -EIO;
 
-	/* Skip initial '_' */
+	 
 	name++;
 	name_end = strrchr(name, '_');
 	if (!name_end) {
@@ -231,7 +206,7 @@ static struct inode *parse_longname(const struct inode *parent,
 		return ERR_PTR(-EIO);
 	}
 
-	/* Get the inode number */
+	 
 	inode_number = kmemdup_nul(name_end + 1,
 				   orig_len - *name_len - 2,
 				   GFP_KERNEL);
@@ -244,10 +219,10 @@ static struct inode *parse_longname(const struct inode *parent,
 		goto out;
 	}
 
-	/* And finally the inode */
+	 
 	dir = ceph_find_inode(parent->i_sb, vino);
 	if (!dir) {
-		/* This can happen if we're not mounting cephfs on the root */
+		 
 		dir = ceph_get_inode(parent->i_sb, vino, NULL);
 		if (IS_ERR(dir))
 			dout("Can't find inode %s (%s)\n", inode_number, name);
@@ -272,13 +247,13 @@ int ceph_encode_encrypted_dname(struct inode *parent, struct qstr *d_name,
 	iname.name = d_name->name;
 	name_len = d_name->len;
 
-	/* Handle the special case of snapshot names that start with '_' */
+	 
 	if ((ceph_snap(dir) == CEPH_SNAPDIR) && (name_len > 0) &&
 	    (iname.name[0] == '_')) {
 		dir = parse_longname(parent, iname.name, &name_len);
 		if (IS_ERR(dir))
 			return PTR_ERR(dir);
-		iname.name++; /* skip initial '_' */
+		iname.name++;  
 	}
 	iname.len = name_len;
 
@@ -288,18 +263,13 @@ int ceph_encode_encrypted_dname(struct inode *parent, struct qstr *d_name,
 		goto out;
 	}
 
-	/*
-	 * Convert cleartext d_name to ciphertext. If result is longer than
-	 * CEPH_NOHASH_NAME_MAX, sha256 the remaining bytes
-	 *
-	 * See: fscrypt_setup_filename
-	 */
+	 
 	if (!fscrypt_fname_encrypted_size(dir, iname.len, NAME_MAX, &len)) {
 		elen = -ENAMETOOLONG;
 		goto out;
 	}
 
-	/* Allocate a buffer appropriate to hold the result */
+	 
 	cryptbuf = kmalloc(len > CEPH_NOHASH_NAME_MAX ? NAME_MAX : len,
 			   GFP_KERNEL);
 	if (!cryptbuf) {
@@ -313,25 +283,22 @@ int ceph_encode_encrypted_dname(struct inode *parent, struct qstr *d_name,
 		goto out;
 	}
 
-	/* hash the end if the name is long enough */
+	 
 	if (len > CEPH_NOHASH_NAME_MAX) {
 		u8 hash[SHA256_DIGEST_SIZE];
 		u8 *extra = cryptbuf + CEPH_NOHASH_NAME_MAX;
 
-		/*
-		 * hash the extra bytes and overwrite crypttext beyond that
-		 * point with it
-		 */
+		 
 		sha256(extra, len - CEPH_NOHASH_NAME_MAX, hash);
 		memcpy(extra, hash, SHA256_DIGEST_SIZE);
 		len = CEPH_NOHASH_NAME_MAX + SHA256_DIGEST_SIZE;
 	}
 
-	/* base64 encode the encrypted name */
+	 
 	elen = ceph_base64_encode(cryptbuf, len, buf);
 	dout("base64-encoded ciphertext name = %.*s\n", elen, buf);
 
-	/* To understand the 240 limit, see CEPH_NOHASH_NAME_MAX comments */
+	 
 	WARN_ON(elen > 240);
 	if ((elen > 0) && (dir != parent)) {
 		char tmp_buf[NAME_MAX];
@@ -360,21 +327,7 @@ int ceph_encode_encrypted_fname(struct inode *parent, struct dentry *dentry,
 	return ceph_encode_encrypted_dname(parent, &dentry->d_name, buf);
 }
 
-/**
- * ceph_fname_to_usr - convert a filename for userland presentation
- * @fname: ceph_fname to be converted
- * @tname: temporary name buffer to use for conversion (may be NULL)
- * @oname: where converted name should be placed
- * @is_nokey: set to true if key wasn't available during conversion (may be NULL)
- *
- * Given a filename (usually from the MDS), format it for presentation to
- * userland. If @parent is not encrypted, just pass it back as-is.
- *
- * Otherwise, base64 decode the string, and then ask fscrypt to format it
- * for userland presentation.
- *
- * Returns 0 on success or negative error code on error.
- */
+ 
 int ceph_fname_to_usr(const struct ceph_fname *fname, struct fscrypt_str *tname,
 		      struct fscrypt_str *oname, bool *is_nokey)
 {
@@ -385,17 +338,17 @@ int ceph_fname_to_usr(const struct ceph_fname *fname, struct fscrypt_str *tname,
 	int name_len = fname->name_len;
 	int ret;
 
-	/* Sanity check that the resulting name will fit in the buffer */
+	 
 	if (fname->name_len > NAME_MAX || fname->ctext_len > NAME_MAX)
 		return -EIO;
 
-	/* Handle the special case of snapshot names that start with '_' */
+	 
 	if ((ceph_snap(dir) == CEPH_SNAPDIR) && (name_len > 0) &&
 	    (name[0] == '_')) {
 		dir = parse_longname(dir, name, &name_len);
 		if (IS_ERR(dir))
 			return PTR_ERR(dir);
-		name++; /* skip initial '_' */
+		name++;  
 	}
 
 	if (!IS_ENCRYPTED(dir)) {
@@ -409,10 +362,7 @@ int ceph_fname_to_usr(const struct ceph_fname *fname, struct fscrypt_str *tname,
 	if (ret)
 		goto out_inode;
 
-	/*
-	 * Use the raw dentry name as sent by the MDS instead of
-	 * generating a nokey name via fscrypt.
-	 */
+	 
 	if (!fscrypt_has_encryption_key(dir)) {
 		if (fname->no_copy)
 			oname->name = fname->name;
@@ -469,18 +419,7 @@ out_inode:
 	return ret;
 }
 
-/**
- * ceph_fscrypt_prepare_readdir - simple __fscrypt_prepare_readdir() wrapper
- * @dir: directory inode for readdir prep
- *
- * Simple wrapper around __fscrypt_prepare_readdir() that will mark directory as
- * non-complete if this call results in having the directory unlocked.
- *
- * Returns:
- *     1 - if directory was locked and key is now loaded (i.e. dir is unlocked)
- *     0 - if directory is still locked
- *   < 0 - if __fscrypt_prepare_readdir() fails
- */
+ 
 int ceph_fscrypt_prepare_readdir(struct inode *dir)
 {
 	bool had_key = fscrypt_has_encryption_key(dir);
@@ -493,7 +432,7 @@ int ceph_fscrypt_prepare_readdir(struct inode *dir)
 	if (err)
 		return err;
 	if (!had_key && fscrypt_has_encryption_key(dir)) {
-		/* directory just got unlocked, mark it as not complete */
+		 
 		ceph_dir_clear_complete(dir);
 		return 1;
 	}
@@ -518,21 +457,7 @@ int ceph_fscrypt_encrypt_block_inplace(const struct inode *inode,
 					     gfp_flags);
 }
 
-/**
- * ceph_fscrypt_decrypt_pages - decrypt an array of pages
- * @inode: pointer to inode associated with these pages
- * @page: pointer to page array
- * @off: offset into the file that the read data starts
- * @len: max length to decrypt
- *
- * Decrypt an array of fscrypt'ed pages and return the amount of
- * data decrypted. Any data in the page prior to the start of the
- * first complete block in the read is ignored. Any incomplete
- * crypto blocks at the end of the array are ignored (and should
- * probably be zeroed by the caller).
- *
- * Returns the length of the decrypted data or a negative errno.
- */
+ 
 int ceph_fscrypt_decrypt_pages(struct inode *inode, struct page **page,
 			       u64 off, int len)
 {
@@ -540,13 +465,10 @@ int ceph_fscrypt_decrypt_pages(struct inode *inode, struct page **page,
 	u64 baseblk = off >> CEPH_FSCRYPT_BLOCK_SHIFT;
 	int ret = 0;
 
-	/*
-	 * We can't deal with partial blocks on an encrypted file, so mask off
-	 * the last bit.
-	 */
+	 
 	num_blocks = ceph_fscrypt_blocks(off, len & CEPH_FSCRYPT_BLOCK_MASK);
 
-	/* Decrypt each block */
+	 
 	for (i = 0; i < num_blocks; ++i) {
 		int blkoff = i << CEPH_FSCRYPT_BLOCK_SHIFT;
 		int pgidx = blkoff >> PAGE_SHIFT;
@@ -566,18 +488,7 @@ int ceph_fscrypt_decrypt_pages(struct inode *inode, struct page **page,
 	return ret;
 }
 
-/**
- * ceph_fscrypt_decrypt_extents: decrypt received extents in given buffer
- * @inode: inode associated with pages being decrypted
- * @page: pointer to page array
- * @off: offset into the file that the data in page[0] starts
- * @map: pointer to extent array
- * @ext_cnt: length of extent array
- *
- * Given an extent map and a page array, decrypt the received data in-place,
- * skipping holes. Returns the offset into buffer of end of last decrypted
- * block.
- */
+ 
 int ceph_fscrypt_decrypt_extents(struct inode *inode, struct page **page,
 				 u64 off, struct ceph_sparse_extent *map,
 				 u32 ext_cnt)
@@ -587,7 +498,7 @@ int ceph_fscrypt_decrypt_extents(struct inode *inode, struct page **page,
 	u64 objno, objoff;
 	u32 xlen;
 
-	/* Nothing to do for empty array */
+	 
 	if (ext_cnt == 0) {
 		dout("%s: empty array, ret 0\n", __func__);
 		return 0;
@@ -622,21 +533,7 @@ int ceph_fscrypt_decrypt_extents(struct inode *inode, struct page **page,
 	return ret;
 }
 
-/**
- * ceph_fscrypt_encrypt_pages - encrypt an array of pages
- * @inode: pointer to inode associated with these pages
- * @page: pointer to page array
- * @off: offset into the file that the data starts
- * @len: max length to encrypt
- * @gfp: gfp flags to use for allocation
- *
- * Decrypt an array of cleartext pages and return the amount of
- * data encrypted. Any data in the page prior to the start of the
- * first complete block in the read is ignored. Any incomplete
- * crypto blocks at the end of the array are ignored.
- *
- * Returns the length of the encrypted data or a negative errno.
- */
+ 
 int ceph_fscrypt_encrypt_pages(struct inode *inode, struct page **page, u64 off,
 				int len, gfp_t gfp)
 {
@@ -644,13 +541,10 @@ int ceph_fscrypt_encrypt_pages(struct inode *inode, struct page **page, u64 off,
 	u64 baseblk = off >> CEPH_FSCRYPT_BLOCK_SHIFT;
 	int ret = 0;
 
-	/*
-	 * We can't deal with partial blocks on an encrypted file, so mask off
-	 * the last bit.
-	 */
+	 
 	num_blocks = ceph_fscrypt_blocks(off, len & CEPH_FSCRYPT_BLOCK_MASK);
 
-	/* Encrypt each block */
+	 
 	for (i = 0; i < num_blocks; ++i) {
 		int blkoff = i << CEPH_FSCRYPT_BLOCK_SHIFT;
 		int pgidx = blkoff >> PAGE_SHIFT;

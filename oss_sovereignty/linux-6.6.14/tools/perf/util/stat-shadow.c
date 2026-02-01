@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <math.h>
 #include <stdio.h>
 #include "evsel.h"
@@ -78,7 +78,7 @@ void perf_stat__reset_shadow_stats(void)
 
 static enum stat_type evsel__stat_type(const struct evsel *evsel)
 {
-	/* Fake perf_hw_cache_op_id values for use with evsel__match. */
+	 
 	u64 PERF_COUNT_hw_cache_l1d_miss = PERF_COUNT_HW_CACHE_L1D |
 		((PERF_COUNT_HW_CACHE_OP_READ) << 8) |
 		((PERF_COUNT_HW_CACHE_RESULT_MISS) << 16);
@@ -158,21 +158,21 @@ static double find_stat(const struct evsel *evsel, int aggr_idx, enum stat_type 
 	evlist__for_each_entry(evsel->evlist, cur) {
 		struct perf_stat_aggr *aggr;
 
-		/* Ignore the evsel that is being searched from. */
+		 
 		if (evsel == cur)
 			continue;
 
-		/* Ignore evsels that are part of different groups. */
+		 
 		if (evsel->core.leader->nr_members > 1 &&
 		    evsel->core.leader != cur->core.leader)
 			continue;
-		/* Ignore evsels with mismatched modifiers. */
+		 
 		if (evsel_ctx != evsel_context(cur))
 			continue;
-		/* Ignore if not the cgroup we're looking for. */
+		 
 		if (evsel->cgrp != cur->cgrp)
 			continue;
-		/* Ignore if not the stat we're looking for. */
+		 
 		if (type != evsel__stat_type(cur))
 			continue;
 
@@ -404,21 +404,11 @@ static int prepare_metric(struct evsel **metric_events,
 				break;
 
                         if (!metric_events[i]->supported) {
-				/*
-				 * Not supported events will have a count of 0,
-				 * which can be confusing in a
-				 * metric. Explicitly set the value to NAN. Not
-				 * counted events (enable time of 0) are read as
-				 * 0.
-				 */
+				 
 				val = NAN;
 				source_count = 0;
 			} else {
-				/*
-				 * If an event was scaled during stat gathering,
-				 * reverse the scale before computing the
-				 * metric.
-				 */
+				 
 				val = aggr->counts.val * (1.0 / metric_events[i]->scale);
 				source_count = evsel__source_count(metric_events[i]);
 			}
@@ -506,12 +496,12 @@ static void generic_metric(struct perf_stat_config *config,
 					ratio);
 			}
 		} else {
-			print_metric(config, ctxp, color, /*unit=*/NULL,
+			print_metric(config, ctxp, color,  NULL,
 				     out->force_header ?
 				     (metric_name ? metric_name : name) : "", 0);
 		}
 	} else {
-		print_metric(config, ctxp, color, /*unit=*/NULL,
+		print_metric(config, ctxp, color,  NULL,
 			     out->force_header ?
 			     (metric_name ? metric_name : name) : "", 0);
 	}
@@ -550,13 +540,7 @@ static void perf_stat__print_metricgroup_header(struct perf_stat_config *config,
 	static const char *last_pmu;
 	char full_name[64];
 
-	/*
-	 * A metricgroup may have several metric events,
-	 * e.g.,TopdownL1 on e-core of ADL.
-	 * The name has been output by the first metric
-	 * event. Only align with other metics from
-	 * different metric events.
-	 */
+	 
 	if (last_name && !strcmp(last_name, name)) {
 		if (!need_full_name || !strcmp(last_pmu, evsel->pmu_name)) {
 			out->print_metricgroup_header(config, ctxp, NULL);
@@ -575,17 +559,7 @@ static void perf_stat__print_metricgroup_header(struct perf_stat_config *config,
 	last_pmu = evsel->pmu_name;
 }
 
-/**
- * perf_stat__print_shadow_stats_metricgroup - Print out metrics associated with the evsel
- *					       For the non-default, all metrics associated
- *					       with the evsel are printed.
- *					       For the default mode, only the metrics from
- *					       the same metricgroup and the name of the
- *					       metricgroup are printed. To print the metrics
- *					       from the next metricgroup (if available),
- *					       invoke the function with correspoinding
- *					       metric_expr.
- */
+ 
 void *perf_stat__print_shadow_stats_metricgroup(struct perf_stat_config *config,
 						struct evsel *evsel,
 						int aggr_idx,
@@ -608,19 +582,14 @@ void *perf_stat__print_shadow_stats_metricgroup(struct perf_stat_config *config,
 		mexp = list_first_entry(&me->head, typeof(*mexp), nd);
 
 	list_for_each_entry_from(mexp, &me->head, nd) {
-		/* Print the display name of the Default metricgroup */
+		 
 		if (!config->metric_only && me->is_default) {
 			if (!name)
 				name = mexp->default_metricgroup_name;
-			/*
-			 * Two or more metricgroup may share the same metric
-			 * event, e.g., TopdownL1 and TopdownL2 on SPR.
-			 * Return and print the prefix, e.g., noise, running
-			 * for the next metricgroup.
-			 */
+			 
 			if (strcmp(name, mexp->default_metricgroup_name))
 				return (void *)mexp;
-			/* Only print the name of the metricgroup once */
+			 
 			if (!header_printed) {
 				header_printed = true;
 				perf_stat__print_metricgroup_header(config, evsel, ctxp,
@@ -698,10 +667,7 @@ void perf_stat__print_shadow_stats(struct perf_stat_config *config,
 		print_metric(config, ctxp, NULL, NULL, NULL, 0);
 }
 
-/**
- * perf_stat__skip_metric_event - Skip the evsel in the Default metricgroup,
- *				  if it's not running or not the metric event.
- */
+ 
 bool perf_stat__skip_metric_event(struct evsel *evsel,
 				  struct rblist *metric_events,
 				  u64 ena, u64 run)

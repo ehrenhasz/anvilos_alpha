@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2007
- *
- *  Author: Eric Biederman <ebiederm@xmision.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ipc.h>
@@ -60,9 +56,7 @@ static int proc_ipc_sem_dointvec(struct ctl_table *table, int write,
 	if (!ret)
 		ret = sem_check_semmni(ns);
 
-	/*
-	 * Reset the semmni value if an error happens.
-	 */
+	 
 	if (ret)
 		ns->sem_ctls[3] = semmni;
 	return ret;

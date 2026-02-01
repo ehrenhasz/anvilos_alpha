@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -27,10 +24,7 @@ static unsigned int meson_clk_degrees_to_val(int degrees, unsigned int width)
 {
 	unsigned int val = DIV_ROUND_CLOSEST(degrees, phase_step(width));
 
-	/*
-	 * This last calculation is here for cases when degrees is rounded
-	 * to 360, in which case val == (1 << width).
-	 */
+	 
 	return val % (1 << width);
 }
 
@@ -63,15 +57,7 @@ const struct clk_ops meson_clk_phase_ops = {
 };
 EXPORT_SYMBOL_GPL(meson_clk_phase_ops);
 
-/*
- * This is a special clock for the audio controller.
- * The phase of mst_sclk clock output can be controlled independently
- * for the outside world (ph0), the tdmout (ph1) and tdmin (ph2).
- * Controlling these 3 phases as just one makes things simpler and
- * give the same clock view to all the element on the i2s bus.
- * If necessary, we can still control the phase in the tdm block
- * which makes these independent control redundant.
- */
+ 
 static inline struct meson_clk_triphase_data *
 meson_clk_triphase_data(struct clk_regmap *clk)
 {
@@ -84,7 +70,7 @@ static int meson_clk_triphase_sync(struct clk_hw *hw)
 	struct meson_clk_triphase_data *tph = meson_clk_triphase_data(clk);
 	unsigned int val;
 
-	/* Get phase 0 and sync it to phase 1 and 2 */
+	 
 	val = meson_parm_read(clk->map, &tph->ph0);
 	meson_parm_write(clk->map, &tph->ph1, val);
 	meson_parm_write(clk->map, &tph->ph2, val);
@@ -98,7 +84,7 @@ static int meson_clk_triphase_get_phase(struct clk_hw *hw)
 	struct meson_clk_triphase_data *tph = meson_clk_triphase_data(clk);
 	unsigned int val;
 
-	/* Phase are in sync, reading phase 0 is enough */
+	 
 	val = meson_parm_read(clk->map, &tph->ph0);
 
 	return meson_clk_degrees_from_val(val, tph->ph0.width);
@@ -125,12 +111,7 @@ const struct clk_ops meson_clk_triphase_ops = {
 };
 EXPORT_SYMBOL_GPL(meson_clk_triphase_ops);
 
-/*
- * This is a special clock for the audio controller.
- * This drive a bit clock inverter for which the
- * opposite value of the inverter bit needs to be manually
- * set into another bit
- */
+ 
 static inline struct meson_sclk_ws_inv_data *
 meson_sclk_ws_inv_data(struct clk_regmap *clk)
 {
@@ -143,7 +124,7 @@ static int meson_sclk_ws_inv_sync(struct clk_hw *hw)
 	struct meson_sclk_ws_inv_data *tph = meson_sclk_ws_inv_data(clk);
 	unsigned int val;
 
-	/* Get phase and sync the inverted value to ws */
+	 
 	val = meson_parm_read(clk->map, &tph->ph);
 	meson_parm_write(clk->map, &tph->ws, val ? 0 : 1);
 

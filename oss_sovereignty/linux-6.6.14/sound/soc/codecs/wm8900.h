@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8900.h  --  WM890 Soc Audio driver
- */
+ 
+ 
 
 #ifndef _WM8900_H
 #define _WM8900_H

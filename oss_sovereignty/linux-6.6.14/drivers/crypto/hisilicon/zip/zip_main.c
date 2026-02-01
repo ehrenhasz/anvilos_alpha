@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+ 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
@@ -97,7 +97,7 @@
 #define HZIP_DELAY_1_US		1
 #define HZIP_POLL_TIMEOUT_US	1000
 
-/* clock gating */
+ 
 #define HZIP_PEH_CFG_AUTO_GATE		0x3011A8
 #define HZIP_PEH_CFG_AUTO_GATE_EN	BIT(0)
 #define HZIP_CORE_GATED_EN		GENMASK(15, 8)
@@ -105,7 +105,7 @@
 #define HZIP_CLOCK_GATED_EN		(HZIP_CORE_GATED_EN | \
 					 HZIP_CORE_GATED_OOO_EN)
 
-/* zip comp high performance */
+ 
 #define HZIP_HIGH_PERF_OFFSET		0x301208
 
 enum {
@@ -167,7 +167,7 @@ static const struct hisi_zip_hw_error zip_hw_error[] = {
 	{ .int_msk = BIT(10), .msg = "zip_pre_out_err" },
 	{ .int_msk = BIT(11), .msg = "zip_axi_poison_err" },
 	{ .int_msk = BIT(12), .msg = "zip_sva_err" },
-	{ /* sentinel */ }
+	{   }
 };
 
 enum ctrl_debug_file_index {
@@ -185,12 +185,7 @@ struct ctrl_debug_file {
 	struct hisi_zip_ctrl *ctrl;
 };
 
-/*
- * One ZIP controller has one PF and multiple VFs, some global configurations
- * which PF has need this structure.
- *
- * Just relevant for PF.
- */
+ 
 struct hisi_zip_ctrl {
 	struct hisi_zip *hisi_zip;
 	struct ctrl_debug_file files[HZIP_DEBUG_FILE_NUM];
@@ -331,7 +326,7 @@ static const struct debugfs_reg32 hzip_dump_dfx_regs[] = {
 	{"HZIP_MAX_DELAY                 ",  0x20ull},
 };
 
-/* define the ZIP's dfx regs region and region length */
+ 
 static struct dfx_diff_registers hzip_diff_regs[] = {
 	{
 		.reg_offset = HZIP_CORE_DFX_BASE,
@@ -395,11 +390,7 @@ static const struct kernel_param_ops zip_com_perf_ops = {
 	.get = param_get_int,
 };
 
-/*
- * perf_mode = 0 means enable high compression rate mode,
- * perf_mode = 1 means enable high compression performance mode.
- * These two modes only apply to the compression direction.
- */
+ 
 static u32 perf_mode = HZIP_HIGH_COMP_RATE;
 module_param_cb(perf_mode, &zip_com_perf_ops, &perf_mode, 0444);
 MODULE_PARM_DESC(perf_mode, "ZIP high perf mode 0(default), 1(enable)");
@@ -409,10 +400,7 @@ static const struct kernel_param_ops zip_uacce_mode_ops = {
 	.get = param_get_int,
 };
 
-/*
- * uacce_mode = 0 means zip only register to crypto,
- * uacce_mode = 1 means zip both register to crypto and uacce.
- */
+ 
 static u32 uacce_mode = UACCE_MODE_NOUACCE;
 module_param_cb(uacce_mode, &zip_uacce_mode_ops, &uacce_mode, 0444);
 MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
@@ -480,7 +468,7 @@ static int hisi_zip_set_high_perf(struct hisi_qm *qm)
 	else
 		val &= ~HZIP_HIGH_COMP_PERF;
 
-	/* Set perf mode */
+	 
 	writel(val, qm->io_base + HZIP_HIGH_PERF_OFFSET);
 	ret = readl_relaxed_poll_timeout(qm->io_base + HZIP_HIGH_PERF_OFFSET,
 					 val, val == perf_mode, HZIP_DELAY_1_US,
@@ -499,7 +487,7 @@ static void hisi_zip_open_sva_prefetch(struct hisi_qm *qm)
 	if (!test_bit(QM_SUPPORT_SVA_PREFETCH, &qm->caps))
 		return;
 
-	/* Enable prefetch */
+	 
 	val = readl_relaxed(qm->io_base + HZIP_PREFETCH_CFG);
 	val &= HZIP_PREFETCH_ENABLE;
 	writel(val, qm->io_base + HZIP_PREFETCH_CFG);
@@ -551,28 +539,28 @@ static int hisi_zip_set_user_domain_and_cache(struct hisi_qm *qm)
 	void __iomem *base = qm->io_base;
 	u32 dcomp_bm, comp_bm;
 
-	/* qm user domain */
+	 
 	writel(AXUSER_BASE, base + QM_ARUSER_M_CFG_1);
 	writel(ARUSER_M_CFG_ENABLE, base + QM_ARUSER_M_CFG_ENABLE);
 	writel(AXUSER_BASE, base + QM_AWUSER_M_CFG_1);
 	writel(AWUSER_M_CFG_ENABLE, base + QM_AWUSER_M_CFG_ENABLE);
 	writel(WUSER_M_CFG_ENABLE, base + QM_WUSER_M_CFG_ENABLE);
 
-	/* qm cache */
+	 
 	writel(AXI_M_CFG, base + QM_AXI_M_CFG);
 	writel(AXI_M_CFG_ENABLE, base + QM_AXI_M_CFG_ENABLE);
 
-	/* disable FLR triggered by BME(bus master enable) */
+	 
 	writel(PEH_AXUSER_CFG, base + QM_PEH_AXUSER_CFG);
 	writel(PEH_AXUSER_CFG_ENABLE, base + QM_PEH_AXUSER_CFG_ENABLE);
 
-	/* cache */
+	 
 	writel(HZIP_CACHE_ALL_EN, base + HZIP_PORT_ARCA_CHE_0);
 	writel(HZIP_CACHE_ALL_EN, base + HZIP_PORT_ARCA_CHE_1);
 	writel(HZIP_CACHE_ALL_EN, base + HZIP_PORT_AWCA_CHE_0);
 	writel(HZIP_CACHE_ALL_EN, base + HZIP_PORT_AWCA_CHE_1);
 
-	/* user domain configurations */
+	 
 	writel(AXUSER_BASE, base + HZIP_BD_RUSER_32_63);
 	writel(AXUSER_BASE, base + HZIP_BD_WUSER_32_63);
 
@@ -586,12 +574,12 @@ static int hisi_zip_set_user_domain_and_cache(struct hisi_qm *qm)
 		writel(AXUSER_BASE, base + HZIP_SGL_RUSER_32_63);
 	}
 
-	/* let's open all compression/decompression cores */
+	 
 	dcomp_bm = qm->cap_tables.dev_cap_table[ZIP_DECOMP_ENABLE_BITMAP_IDX].cap_val;
 	comp_bm = qm->cap_tables.dev_cap_table[ZIP_COMP_ENABLE_BITMAP_IDX].cap_val;
 	writel(HZIP_DECOMP_CHECK_ENABLE | dcomp_bm | comp_bm, base + HZIP_CLOCK_GATE_CTRL);
 
-	/* enable sqc,cqc writeback */
+	 
 	writel(SQC_CACHE_ENABLE | CQC_CACHE_ENABLE | SQC_CACHE_WB_ENABLE |
 	       CQC_CACHE_WB_ENABLE | FIELD_PREP(SQC_CACHE_WB_THRD, 1) |
 	       FIELD_PREP(CQC_CACHE_WB_THRD, 1), base + QM_CACHE_CTL);
@@ -635,17 +623,17 @@ static void hisi_zip_hw_error_enable(struct hisi_qm *qm)
 	nfe = hisi_qm_get_hw_info(qm, zip_basic_cap_info, ZIP_NFE_MASK_CAP, qm->cap_ver);
 	ce = hisi_qm_get_hw_info(qm, zip_basic_cap_info, ZIP_CE_MASK_CAP, qm->cap_ver);
 
-	/* clear ZIP hw error source if having */
+	 
 	writel(ce | nfe | HZIP_CORE_INT_RAS_FE_ENB_MASK, qm->io_base + HZIP_CORE_INT_SOURCE);
 
-	/* configure error type */
+	 
 	writel(ce, qm->io_base + HZIP_CORE_INT_RAS_CE_ENB);
 	writel(HZIP_CORE_INT_RAS_FE_ENB_MASK, qm->io_base + HZIP_CORE_INT_RAS_FE_ENB);
 	writel(nfe, qm->io_base + HZIP_CORE_INT_RAS_NFE_ENB);
 
 	hisi_zip_master_ooo_ctrl(qm, true);
 
-	/* enable ZIP hw error interrupts */
+	 
 	writel(0, qm->io_base + HZIP_CORE_INT_MASK_REG);
 }
 
@@ -653,7 +641,7 @@ static void hisi_zip_hw_error_disable(struct hisi_qm *qm)
 {
 	u32 nfe, ce;
 
-	/* disable ZIP hw error interrupts */
+	 
 	nfe = hisi_qm_get_hw_info(qm, zip_basic_cap_info, ZIP_NFE_MASK_CAP, qm->cap_ver);
 	ce = hisi_qm_get_hw_info(qm, zip_basic_cap_info, ZIP_CE_MASK_CAP, qm->cap_ver);
 	writel(ce | nfe | HZIP_CORE_INT_RAS_FE_ENB_MASK, qm->io_base + HZIP_CORE_INT_MASK_REG);
@@ -919,19 +907,19 @@ debugfs_remove:
 	return ret;
 }
 
-/* hisi_zip_debug_regs_clear() - clear the zip debug regs */
+ 
 static void hisi_zip_debug_regs_clear(struct hisi_qm *qm)
 {
 	int i, j;
 
-	/* enable register read_clear bit */
+	 
 	writel(HZIP_RD_CNT_CLR_CE_EN, qm->io_base + HZIP_SOFT_CTRL_CNT_CLR_CE);
 	for (i = 0; i < ARRAY_SIZE(core_offsets); i++)
 		for (j = 0; j < ARRAY_SIZE(hzip_dfx_regs); j++)
 			readl(qm->io_base + core_offsets[i] +
 			      hzip_dfx_regs[j].offset);
 
-	/* disable register read_clear bit */
+	 
 	writel(0x0, qm->io_base + HZIP_SOFT_CTRL_CNT_CLR_CE);
 
 	hisi_qm_debug_regs_clear(qm);
@@ -1026,7 +1014,7 @@ static void hisi_zip_show_last_dfx_regs(struct hisi_qm *qm)
 		base = qm->io_base + core_offsets[i];
 
 		pci_info(qm->pdev, "==>%s:\n", buf);
-		/* dump last word for dfx regs during control resetting */
+		 
 		for (j = 0; j < core_dfx_regs_num; j++) {
 			idx = com_dfx_regs_num + i * core_dfx_regs_num + j;
 			val = readl_relaxed(base + hzip_dump_dfx_regs[j].offset);
@@ -1092,12 +1080,12 @@ static void hisi_zip_close_axi_master_ooo(struct hisi_qm *qm)
 {
 	u32 nfe_enb;
 
-	/* Disable ECC Mbit error report. */
+	 
 	nfe_enb = readl(qm->io_base + HZIP_CORE_INT_RAS_NFE_ENB);
 	writel(nfe_enb & ~HZIP_CORE_INT_STATUS_M_ECC,
 	       qm->io_base + HZIP_CORE_INT_RAS_NFE_ENB);
 
-	/* Inject zip ECC Mbit error to block master ooo. */
+	 
 	writel(HZIP_CORE_INT_STATUS_M_ECC,
 	       qm->io_base + HZIP_CORE_INT_SET);
 }
@@ -1215,13 +1203,7 @@ static int hisi_zip_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
 		if (pf_q_num_flag)
 			set_bit(QM_MODULE_PARAM, &qm->misc_ctl);
 	} else if (qm->fun_type == QM_HW_VF && qm->ver == QM_HW_V1) {
-		/*
-		 * have no way to get qm configure in VM in v1 hardware,
-		 * so currently force PF to uses HZIP_PF_DEF_Q_NUM, and force
-		 * to trigger only one VF in v1 hardware.
-		 *
-		 * v2 hardware has no such problem.
-		 */
+		 
 		qm->qp_base = HZIP_PF_DEF_Q_NUM;
 		qm->qp_num = HZIP_QUEUE_NUM_V1 - HZIP_PF_DEF_Q_NUM;
 	}
@@ -1232,7 +1214,7 @@ static int hisi_zip_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
 		return ret;
 	}
 
-	/* Fetch and save the value of capability registers */
+	 
 	ret = zip_pre_store_cap_reg(qm);
 	if (ret) {
 		pci_err(qm->pdev, "Failed to pre-store capability registers!\n");
@@ -1265,11 +1247,11 @@ static int hisi_zip_probe_init(struct hisi_zip *hisi_zip)
 		ret = hisi_zip_pf_probe_init(hisi_zip);
 		if (ret)
 			return ret;
-		/* enable shaper type 0 */
+		 
 		if (qm->ver >= QM_HW_V3) {
 			type_rate |= QM_SHAPER_ENABLE;
 
-			/* ZIP need to enable shaper type 1 */
+			 
 			type_rate |= HZIP_SHAPER_RATE_DECOMPRESS << QM_SHAPER_TYPE1_OFFSET;
 			qm->type_rate = type_rate;
 		}

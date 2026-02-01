@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * SECO X86 Boards CEC register defines
- *
- * Author:  Ettore Chimenti <ek5.chimenti@gmail.com>
- * Copyright (C) 2018, SECO Spa.
- * Copyright (C) 2018, Aidilab Srl.
- */
+ 
+ 
 
 #ifndef __SECO_CEC_H__
 #define __SECO_CEC_H__
@@ -23,9 +17,7 @@
 #define CMD_BYTE_DATA			0
 #define CMD_WORD_DATA			1
 
-/*
- * SMBus definitons for Braswell
- */
+ 
 
 #define BRA_DONE_STATUS			BIT(7)
 #define BRA_INUSE_STS			BIT(6)
@@ -58,15 +50,11 @@
 #define HDAT0              (BRA_SMB_BASE_ADDR + 5)
 #define HDAT1              (BRA_SMB_BASE_ADDR + 6)
 
-/*
- * Microcontroller Address
- */
+ 
 
 #define SECOCEC_MICRO_ADDRESS		0x40
 
-/*
- * STM32 SMBus Registers
- */
+ 
 
 #define SECOCEC_VERSION			0x00
 #define SECOCEC_ENABLE_REG_1		0x01
@@ -99,9 +87,7 @@
 
 #define SECOCEC_IR_READ_DATA		0x3e
 
-/*
- * IR
- */
+ 
 
 #define SECOCEC_IR_COMMAND_MASK		0x007F
 #define SECOCEC_IR_COMMAND_SHL		0
@@ -110,25 +96,19 @@
 #define SECOCEC_IR_TOGGLE_MASK		0x8000
 #define SECOCEC_IR_TOGGLE_SHL		15
 
-/*
- * Enabling register
- */
+ 
 
 #define SECOCEC_ENABLE_REG_1_CEC		0x1000
 #define SECOCEC_ENABLE_REG_1_IR			0x2000
 #define SECOCEC_ENABLE_REG_1_IR_PASSTHROUGH	0x4000
 
-/*
- * Status register
- */
+ 
 
 #define SECOCEC_STATUS_REG_1_CEC	SECOCEC_ENABLE_REG_1_CEC
 #define SECOCEC_STATUS_REG_1_IR		SECOCEC_ENABLE_REG_1_IR
 #define SECOCEC_STATUS_REG_1_IR_PASSTHR	SECOCEC_ENABLE_REG_1_IR_PASSTHR
 
-/*
- * Status data
- */
+ 
 
 #define SECOCEC_STATUS_MSG_RECEIVED_MASK	BIT(0)
 #define SECOCEC_STATUS_RX_ERROR_MASK		BIT(1)
@@ -138,4 +118,4 @@
 #define SECOCEC_STATUS_TX_NACK_ERROR		BIT(4)
 #define SECOCEC_STATUS_RX_OVERFLOW_MASK		BIT(5)
 
-#endif /* __SECO_CEC_H__ */
+#endif  

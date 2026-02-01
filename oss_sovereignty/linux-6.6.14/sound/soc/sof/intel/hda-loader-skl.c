@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018-2022 Intel Corporation. All rights reserved.
-//
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -24,55 +24,55 @@
 #include "../ops.h"
 #include "hda.h"
 
-#define HDA_SKL_WAIT_TIMEOUT		500	/* 500 msec */
+#define HDA_SKL_WAIT_TIMEOUT		500	 
 #define HDA_SKL_CLDMA_MAX_BUFFER_SIZE	(32 * PAGE_SIZE)
 
-/* Stream Reset */
+ 
 #define HDA_CL_SD_CTL_SRST_SHIFT	0
 #define HDA_CL_SD_CTL_SRST(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_SRST_SHIFT)
 
-/* Stream Run */
+ 
 #define HDA_CL_SD_CTL_RUN_SHIFT		1
 #define HDA_CL_SD_CTL_RUN(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_RUN_SHIFT)
 
-/* Interrupt On Completion Enable */
+ 
 #define HDA_CL_SD_CTL_IOCE_SHIFT	2
 #define HDA_CL_SD_CTL_IOCE(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_IOCE_SHIFT)
 
-/* FIFO Error Interrupt Enable */
+ 
 #define HDA_CL_SD_CTL_FEIE_SHIFT	3
 #define HDA_CL_SD_CTL_FEIE(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_FEIE_SHIFT)
 
-/* Descriptor Error Interrupt Enable */
+ 
 #define HDA_CL_SD_CTL_DEIE_SHIFT	4
 #define HDA_CL_SD_CTL_DEIE(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_DEIE_SHIFT)
 
-/* FIFO Limit Change */
+ 
 #define HDA_CL_SD_CTL_FIFOLC_SHIFT	5
 #define HDA_CL_SD_CTL_FIFOLC(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_FIFOLC_SHIFT)
 
-/* Stripe Control */
+ 
 #define HDA_CL_SD_CTL_STRIPE_SHIFT	16
 #define HDA_CL_SD_CTL_STRIPE(x)		(((x) & 0x3) << \
 					HDA_CL_SD_CTL_STRIPE_SHIFT)
 
-/* Traffic Priority */
+ 
 #define HDA_CL_SD_CTL_TP_SHIFT		18
 #define HDA_CL_SD_CTL_TP(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_TP_SHIFT)
 
-/* Bidirectional Direction Control */
+ 
 #define HDA_CL_SD_CTL_DIR_SHIFT		19
 #define HDA_CL_SD_CTL_DIR(x)		(((x) & 0x1) << \
 					HDA_CL_SD_CTL_DIR_SHIFT)
 
-/* Stream Number */
+ 
 #define HDA_CL_SD_CTL_STRM_SHIFT	20
 #define HDA_CL_SD_CTL_STRM(x)		(((x) & 0xf) << \
 					HDA_CL_SD_CTL_STRM_SHIFT)
@@ -90,18 +90,18 @@
 #define DMA_ADDRESS_128_BITS_ALIGNMENT	7
 #define BDL_ALIGN(x)			((x) >> DMA_ADDRESS_128_BITS_ALIGNMENT)
 
-/* Buffer Descriptor List Lower Base Address */
+ 
 #define HDA_CL_SD_BDLPLBA_SHIFT		7
 #define HDA_CL_SD_BDLPLBA_MASK		GENMASK(31, 7)
 #define HDA_CL_SD_BDLPLBA(x)		\
 	((BDL_ALIGN(lower_32_bits(x)) << HDA_CL_SD_BDLPLBA_SHIFT) & \
 	 HDA_CL_SD_BDLPLBA_MASK)
 
-/* Buffer Descriptor List Upper Base Address */
+ 
 #define HDA_CL_SD_BDLPUBA(x)		\
 			(upper_32_bits(x))
 
-/* Software Position in Buffer Enable */
+ 
 #define HDA_CL_SPBFIFO_SPBFCCTL_SPIBE_SHIFT	0
 #define HDA_CL_SPBFIFO_SPBFCCTL_SPIBE_MASK	\
 			(1 << HDA_CL_SPBFIFO_SPBFCCTL_SPIBE_SHIFT)
@@ -119,17 +119,13 @@ static int cl_skl_cldma_setup_bdle(struct snd_sof_dev *sdev,
 	phys_addr_t addr = virt_to_phys(dmab_data->area);
 	__le32 *bdl = *bdlp;
 
-	/*
-	 * This code is simplified by using one fragment of physical memory and assuming
-	 * all the code fits. This could be improved with scatter-gather but the firmware
-	 * size is limited by DSP memory anyways
-	 */
+	 
 	bdl[0] = cpu_to_le32(lower_32_bits(addr));
 	bdl[1] = cpu_to_le32(upper_32_bits(addr));
 	bdl[2] = cpu_to_le32(size);
 	bdl[3] = (!with_ioc) ? 0 : cpu_to_le32(0x01);
 
-	return 1; /* one fragment */
+	return 1;  
 }
 
 static void cl_skl_cldma_stream_run(struct snd_sof_dev *sdev, bool enable)
@@ -147,7 +143,7 @@ static void cl_skl_cldma_stream_run(struct snd_sof_dev *sdev, bool enable)
 	do {
 		udelay(3);
 
-		/* waiting for hardware to report the stream Run bit set */
+		 
 		val = snd_sof_dsp_read(sdev, HDA_DSP_BAR,
 				       sd_offset + SOF_HDA_ADSP_REG_SD_CTL);
 		val &= HDA_CL_SD_CTL_RUN(1);
@@ -166,12 +162,10 @@ static void cl_skl_cldma_stream_clear(struct snd_sof_dev *sdev)
 {
 	int sd_offset = SOF_HDA_ADSP_LOADER_BASE;
 
-	/* make sure Run bit is cleared before setting stream register */
+	 
 	cl_skl_cldma_stream_run(sdev, 0);
 
-	/* Disable the Interrupt On Completion, FIFO Error Interrupt,
-	 * Descriptor Error Interrupt and set the cldma stream number to 0.
-	 */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_BAR,
 				sd_offset + SOF_HDA_ADSP_REG_SD_CTL,
 				HDA_CL_SD_CTL_INT_MASK, HDA_CL_SD_CTL_INT(0));
@@ -184,10 +178,10 @@ static void cl_skl_cldma_stream_clear(struct snd_sof_dev *sdev)
 	snd_sof_dsp_write(sdev, HDA_DSP_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPU, 0);
 
-	/* Set the Cyclic Buffer Length to 0. */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_CBL, 0);
-	/* Set the Last Valid Index. */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_LVI, 0);
 }
@@ -234,10 +228,10 @@ static void cl_skl_cldma_setup_controller(struct snd_sof_dev *sdev,
 {
 	int sd_offset = SOF_HDA_ADSP_LOADER_BASE;
 
-	/* Clear the stream first and then set it. */
+	 
 	cl_skl_cldma_stream_clear(sdev);
 
-	/* setting the stream register */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPL,
 			  HDA_CL_SD_BDLPLBA(dmab_bdl->addr));
@@ -245,16 +239,14 @@ static void cl_skl_cldma_setup_controller(struct snd_sof_dev *sdev,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPU,
 			  HDA_CL_SD_BDLPUBA(dmab_bdl->addr));
 
-	/* Set the Cyclic Buffer Length. */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_CBL, max_size);
-	/* Set the Last Valid Index. */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_LVI, count - 1);
 
-	/* Set the Interrupt On Completion, FIFO Error Interrupt,
-	 * Descriptor Error Interrupt and the cldma stream number.
-	 */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_BAR,
 				sd_offset + SOF_HDA_ADSP_REG_SD_CTL,
 				HDA_CL_SD_CTL_INT_MASK, HDA_CL_SD_CTL_INT(1));
@@ -314,11 +306,9 @@ static int cl_dsp_init_skl(struct snd_sof_dev *sdev,
 	u32 flags;
 	int ret;
 
-	/* check if the init_core is already enabled, if yes, reset and make it run,
-	 * if not, powerdown and enable it again.
-	 */
+	 
 	if (hda_dsp_core_is_enabled(sdev, chip->init_core_mask)) {
-		/* if enabled, reset it, and run the init_core. */
+		 
 		ret = hda_dsp_core_stall_reset(sdev, chip->init_core_mask);
 		if (ret < 0)
 			goto err;
@@ -329,9 +319,7 @@ static int cl_dsp_init_skl(struct snd_sof_dev *sdev,
 			goto err;
 		}
 	} else {
-		/* if not enabled, power down it first and then powerup and run
-		 * the init_core.
-		 */
+		 
 		ret = hda_dsp_core_reset_power_down(sdev, chip->init_core_mask);
 		if (ret < 0) {
 			dev_err(sdev->dev, "%s: dsp core0 disable fail: %d\n", __func__, ret);
@@ -344,28 +332,28 @@ static int cl_dsp_init_skl(struct snd_sof_dev *sdev,
 		}
 	}
 
-	/* prepare DMA for code loader stream */
+	 
 	ret = cl_stream_prepare_skl(sdev, dmab, dmab_bdl);
 	if (ret < 0) {
 		dev_err(sdev->dev, "%s: dma prepare fw loading err: %x\n", __func__, ret);
 		return ret;
 	}
 
-	/* enable the interrupt */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_BAR, HDA_DSP_REG_ADSPIC,
 				HDA_DSP_ADSPIC_IPC, HDA_DSP_ADSPIC_IPC);
 
-	/* enable IPC DONE interrupt */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_BAR, chip->ipc_ctl,
 				HDA_DSP_REG_HIPCCTL_DONE,
 				HDA_DSP_REG_HIPCCTL_DONE);
 
-	/* enable IPC BUSY interrupt */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_BAR, chip->ipc_ctl,
 				HDA_DSP_REG_HIPCCTL_BUSY,
 				HDA_DSP_REG_HIPCCTL_BUSY);
 
-	/* polling the ROM init status information. */
+	 
 	ret = snd_sof_dsp_read_poll_timeout(sdev, HDA_DSP_BAR,
 					    chip->rom_status_reg, status,
 					    (FSR_TO_STATE_CODE(status)
@@ -396,22 +384,22 @@ static void cl_skl_cldma_fill_buffer(struct snd_sof_dev *sdev,
 {
 	struct sof_intel_hda_dev *hda = sdev->pdata->hw_pdata;
 
-	/* copy the image into the buffer with the maximum buffer size. */
+	 
 	unsigned int size = (bufsize == copysize) ? bufsize : copysize;
 
 	memcpy(dmab->area, curr_pos, size);
 
-	/* Set the wait condition for every load. */
+	 
 	hda->code_loading = 1;
 
-	/* Set the interrupt. */
+	 
 	if (intr_enable)
 		cl_skl_cldma_set_intr(sdev, true);
 
-	/* Set the SPB. */
+	 
 	cl_skl_cldma_setup_spb(sdev, size, true);
 
-	/* Trigger the code loading stream. */
+	 
 	cl_skl_cldma_stream_run(sdev, true);
 }
 
@@ -423,10 +411,7 @@ static int cl_skl_cldma_wait_interruptible(struct snd_sof_dev *sdev,
 	int sd_offset = SOF_HDA_ADSP_LOADER_BASE;
 	u8 cl_dma_intr_status;
 
-	/*
-	 * Wait for CLDMA interrupt to inform the binary segment transfer is
-	 * complete.
-	 */
+	 
 	if (!wait_event_timeout(hda->waitq, !hda->code_loading,
 				msecs_to_jiffies(HDA_SKL_WAIT_TIMEOUT))) {
 		dev_err(sdev->dev, "cldma copy timeout\n");
@@ -436,7 +421,7 @@ static int cl_skl_cldma_wait_interruptible(struct snd_sof_dev *sdev,
 		return -EIO;
 	}
 
-	/* now check DMA interrupt status */
+	 
 	cl_dma_intr_status = snd_sof_dsp_read(sdev, HDA_DSP_BAR,
 					      sd_offset + SOF_HDA_ADSP_REG_SD_STS);
 
@@ -523,7 +508,7 @@ int hda_dsp_cl_boot_firmware_skl(struct snd_sof_dev *sdev)
 
 	ret = cl_dsp_init_skl(sdev, &dmab, &dmab_bdl);
 
-	/* retry enabling core and ROM load. seemed to help */
+	 
 	if (ret < 0) {
 		ret = cl_dsp_init_skl(sdev, &dmab, &dmab_bdl);
 		if (ret < 0) {
@@ -537,9 +522,7 @@ int hda_dsp_cl_boot_firmware_skl(struct snd_sof_dev *sdev)
 
 	dev_dbg(sdev->dev, "ROM init successful\n");
 
-	/* at this point DSP ROM has been initialized and should be ready for
-	 * code loading and firmware boot
-	 */
+	 
 	ret = cl_copy_fw_skl(sdev, &dmab);
 	if (ret < 0) {
 		dev_err(sdev->dev, "%s: load firmware failed : %d\n", __func__, ret);
@@ -568,7 +551,7 @@ err:
 
 	snd_sof_dsp_dbg_dump(sdev, "Boot failed\n", flags);
 
-	/* power down DSP */
+	 
 	hda_dsp_core_reset_power_down(sdev, chip->init_core_mask);
 	cl_skl_cldma_stream_run(sdev, false);
 	cl_cleanup_skl(sdev, &dmab, &dmab_bdl);

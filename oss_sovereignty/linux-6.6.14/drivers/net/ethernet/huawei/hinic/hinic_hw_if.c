@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/device.h>
@@ -23,18 +20,7 @@
 
 #define HINIC_SELFTEST_RESULT 0x883C
 
-/**
- * hinic_msix_attr_set - set message attribute for msix entry
- * @hwif: the HW interface of a pci function device
- * @msix_index: msix_index
- * @pending_limit: the maximum pending interrupt events (unit 8)
- * @coalesc_timer: coalesc period for interrupt (unit 8 us)
- * @lli_timer: replenishing period for low latency credit (unit 8 us)
- * @lli_credit_limit: maximum credits for low latency msix messages (unit 8)
- * @resend_timer: maximum wait for resending msix (unit coalesc period)
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_msix_attr_set(struct hinic_hwif *hwif, u16 msix_index,
 			u8 pending_limit, u8 coalesc_timer,
 			u8 lli_timer, u8 lli_credit_limit,
@@ -57,13 +43,7 @@ int hinic_msix_attr_set(struct hinic_hwif *hwif, u16 msix_index,
 	return 0;
 }
 
-/**
- * hinic_msix_attr_cnt_clear - clear message attribute counters for msix entry
- * @hwif: the HW interface of a pci function device
- * @msix_index: msix_index
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_msix_attr_cnt_clear(struct hinic_hwif *hwif, u16 msix_index)
 {
 	u32 msix_ctrl, addr;
@@ -78,11 +58,7 @@ int hinic_msix_attr_cnt_clear(struct hinic_hwif *hwif, u16 msix_index)
 	return 0;
 }
 
-/**
- * hinic_set_pf_action - set action on pf channel
- * @hwif: the HW interface of a pci function device
- * @action: action on pf channel
- **/
+ 
 void hinic_set_pf_action(struct hinic_hwif *hwif, enum hinic_pf_action action)
 {
 	u32 attr5;
@@ -149,12 +125,7 @@ void hinic_set_msix_state(struct hinic_hwif *hwif, u16 msix_idx,
 	writel(mask_bits, hwif->intr_regs_base + offset);
 }
 
-/**
- * hwif_ready - test if the HW is ready for use
- * @hwif: the HW interface of a pci function device
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int hwif_ready(struct hinic_hwif *hwif)
 {
 	u32 addr, attr1;
@@ -190,13 +161,7 @@ static int wait_hwif_ready(struct hinic_hwif *hwif)
 	return -EBUSY;
 }
 
-/**
- * set_hwif_attr - set the attributes in the relevant members in hwif
- * @hwif: the HW interface of a pci function device
- * @attr0: the first attribute that was read from the hw
- * @attr1: the second attribute that was read from the hw
- * @attr2: the third attribute that was read from the hw
- **/
+ 
 static void set_hwif_attr(struct hinic_hwif *hwif, u32 attr0, u32 attr1,
 			  u32 attr2)
 {
@@ -213,10 +178,7 @@ static void set_hwif_attr(struct hinic_hwif *hwif, u32 attr0, u32 attr1,
 						      GLOBAL_VF_ID_OF_PF);
 }
 
-/**
- * read_hwif_attr - read the attributes and set members in hwif
- * @hwif: the HW interface of a pci function device
- **/
+ 
 static void read_hwif_attr(struct hinic_hwif *hwif)
 {
 	u32 addr, attr0, attr1, attr2;
@@ -233,16 +195,13 @@ static void read_hwif_attr(struct hinic_hwif *hwif)
 	set_hwif_attr(hwif, attr0, attr1, attr2);
 }
 
-/**
- * set_ppf - try to set hwif as ppf and set the type of hwif in this case
- * @hwif: the HW interface of a pci function device
- **/
+ 
 static void set_ppf(struct hinic_hwif *hwif)
 {
 	struct hinic_func_attr *attr = &hwif->attr;
 	u32 addr, val, ppf_election;
 
-	/* Read Modify Write */
+	 
 	addr = HINIC_CSR_PPF_ELECTION_ADDR(HINIC_HWIF_PCI_INTF(hwif));
 
 	val = hinic_hwif_read_reg(hwif, addr);
@@ -253,7 +212,7 @@ static void set_ppf(struct hinic_hwif *hwif)
 	val |= ppf_election;
 	hinic_hwif_write_reg(hwif, addr, val);
 
-	/* check PPF */
+	 
 	val = hinic_hwif_read_reg(hwif, addr);
 
 	attr->ppf_idx = HINIC_PPF_ELECTION_GET(val, IDX);
@@ -261,16 +220,7 @@ static void set_ppf(struct hinic_hwif *hwif)
 		attr->func_type = HINIC_PPF;
 }
 
-/**
- * set_dma_attr - set the dma attributes in the HW
- * @hwif: the HW interface of a pci function device
- * @entry_idx: the entry index in the dma table
- * @st: PCIE TLP steering tag
- * @at: PCIE TLP AT field
- * @ph: PCIE TLP Processing Hint field
- * @no_snooping: PCIE TLP No snooping
- * @tph_en: PCIE TLP Processing Hint Enable
- **/
+ 
 static void set_dma_attr(struct hinic_hwif *hwif, u32 entry_idx,
 			 u8 st, u8 at, u8 ph,
 			 enum hinic_pcie_nosnoop no_snooping,
@@ -278,7 +228,7 @@ static void set_dma_attr(struct hinic_hwif *hwif, u32 entry_idx,
 {
 	u32 addr, val, dma_attr_entry;
 
-	/* Read Modify Write */
+	 
 	addr = HINIC_CSR_DMA_ATTR_ADDR(entry_idx);
 
 	val = hinic_hwif_read_reg(hwif, addr);
@@ -298,10 +248,7 @@ static void set_dma_attr(struct hinic_hwif *hwif, u32 entry_idx,
 	hinic_hwif_write_reg(hwif, addr, val);
 }
 
-/**
- * dma_attr_init - initialize the default dma attributes
- * @hwif: the HW interface of a pci function device
- **/
+ 
 static void dma_attr_init(struct hinic_hwif *hwif)
 {
 	set_dma_attr(hwif, PCIE_ATTR_ENTRY, HINIC_PCIE_ST_DISABLE,
@@ -357,13 +304,7 @@ static void __print_selftest_reg(struct hinic_hwif *hwif)
 			hinic_hwif_read_reg(hwif, HINIC_SELFTEST_RESULT));
 }
 
-/**
- * hinic_init_hwif - initialize the hw interface
- * @hwif: the HW interface of a pci function device
- * @pdev: the pci device for accessing PCI resources
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_init_hwif(struct hinic_hwif *hwif, struct pci_dev *pdev)
 {
 	int err;
@@ -395,7 +336,7 @@ int hinic_init_hwif(struct hinic_hwif *hwif, struct pci_dev *pdev)
 	if (HINIC_IS_PF(hwif))
 		set_ppf(hwif);
 
-	/* No transactionss before DMA is initialized */
+	 
 	dma_attr_init(hwif);
 	return 0;
 
@@ -408,10 +349,7 @@ err_map_intr_bar:
 	return err;
 }
 
-/**
- * hinic_free_hwif - free the HW interface
- * @hwif: the HW interface of a pci function device
- **/
+ 
 void hinic_free_hwif(struct hinic_hwif *hwif)
 {
 	iounmap(hwif->intr_regs_base);

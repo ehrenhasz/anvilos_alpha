@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* speakup_soft.c - speakup driver to register and make available
- * a user space device for software synthesizers.  written by: Kirk
- * Reiser <kirk@braille.uwo.ca>
- *
- * Copyright (C) 2003  Kirk Reiser.
- *
- * this code is specifically written as a driver for the speakup screenreview
- * package and is not a general device driver.
- */
+
+ 
 
 #include <linux/unistd.h>
-#include <linux/miscdevice.h>	/* for misc_register, and MISC_DYNAMIC_MINOR */
-#include <linux/poll.h>		/* for poll_wait() */
+#include <linux/miscdevice.h>	 
+#include <linux/poll.h>		 
 
-/* schedule(), signal_pending(), TASK_INTERRUPTIBLE */
+ 
 #include <linux/sched/signal.h>
 
 #include "spk_priv.h"
@@ -60,7 +52,7 @@ static struct var_t vars[NB_ID] = {
 	V_LAST_VAR
 };
 
-/* These attributes will appear in /sys/accessibility/speakup/soft. */
+ 
 
 static struct kobj_attribute caps_start_attribute =
 	__ATTR(caps_start, 0644, spk_var_show, spk_var_store);
@@ -83,12 +75,7 @@ static struct kobj_attribute voice_attribute =
 static struct kobj_attribute vol_attribute =
 	__ATTR(vol, 0644, spk_var_show, spk_var_store);
 
-/*
- * We should uncomment the following definition, when we agree on a
- * method of passing a language designation to the software synthesizer.
- * static struct kobj_attribute lang_attribute =
- *	__ATTR(lang, 0644, spk_var_show, spk_var_store);
- */
+ 
 
 static struct kobj_attribute delay_time_attribute =
 	__ATTR(delay_time, 0644, spk_var_show, spk_var_store);
@@ -101,15 +88,12 @@ static struct kobj_attribute jiffy_delta_attribute =
 static struct kobj_attribute trigger_time_attribute =
 	__ATTR(trigger_time, 0644, spk_var_show, spk_var_store);
 
-/*
- * Create a group of attributes so that we can create and destroy them all
- * at once.
- */
+ 
 static struct attribute *synth_attrs[] = {
 	&caps_start_attribute.attr,
 	&caps_stop_attribute.attr,
 	&freq_attribute.attr,
-/*	&lang_attribute.attr, */
+ 
 	&pitch_attribute.attr,
 	&inflection_attribute.attr,
 	&punct_attribute.attr,
@@ -122,7 +106,7 @@ static struct attribute *synth_attrs[] = {
 	&full_time_attribute.attr,
 	&jiffy_delta_attribute.attr,
 	&trigger_time_attribute.attr,
-	NULL,	/* need to NULL terminate the list of attributes */
+	NULL,	 
 };
 
 static struct spk_synth synth_soft = {
@@ -190,8 +174,8 @@ static char *get_initstring(void)
 static int softsynth_open(struct inode *inode, struct file *fp)
 {
 	unsigned long flags;
-	/*if ((fp->f_flags & O_ACCMODE) != O_RDONLY) */
-	/*	return -EPERM; */
+	 
+	 
 	spin_lock_irqsave(&speakup_info.spinlock, flags);
 	if (synth_soft.alive) {
 		spin_unlock_irqrestore(&speakup_info.spinlock, flags);
@@ -210,7 +194,7 @@ static int softsynth_close(struct inode *inode, struct file *fp)
 	synth_soft.alive = 0;
 	init_pos = 0;
 	spin_unlock_irqrestore(&speakup_info.spinlock, flags);
-	/* Make sure we let applications go before leaving */
+	 
 	speakup_start_ttys();
 	return 0;
 }
@@ -257,7 +241,7 @@ static ssize_t softsynthx_read(struct file *fp, char __user *buf, size_t count,
 	cp = buf;
 	init = get_initstring();
 
-	/* Keep 3 bytes available for a 16bit UTF-8-encoded character */
+	 
 	while (chars_sent <= count - bytes_per_ch) {
 		if (synth_current() != &synth_soft)
 			break;
@@ -446,8 +430,7 @@ static int softsynth_adjust(struct spk_synth *synth, struct st_var_header *var)
 	if (var->var_id != PUNC_LEVEL)
 		return 0;
 
-	/* We want to set the the speech synthesis punctuation level
-	 * accordingly, so it properly tunes speaking A_PUNC characters */
+	 
 	var_data = var->data;
 	if (!var_data)
 		return 0;

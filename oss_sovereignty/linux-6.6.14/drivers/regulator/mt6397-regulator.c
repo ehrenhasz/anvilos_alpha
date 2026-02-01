@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2014 MediaTek Inc.
-// Author: Flora Fu <flora.fu@mediatek.com>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -15,15 +15,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <dt-bindings/regulator/mediatek,mt6397-regulator.h>
 
-/*
- * MT6397 regulators' information
- *
- * @desc: standard fields of regulator description.
- * @qi: Mask for query enable signal status of regulators
- * @vselon_reg: Register sections for hardware control mode of bucks
- * @vselctrl_reg: Register for controlling the buck control mode.
- * @vselctrl_mask: Mask for query buck's voltage control mode.
- */
+ 
 struct mt6397_regulator_info {
 	struct regulator_desc desc;
 	u32 qi;
@@ -264,7 +256,7 @@ static const struct regulator_ops mt6397_volt_fixed_ops = {
 	.get_status = mt6397_get_status,
 };
 
-/* The array is indexed by id(MT6397_ID_XXX) */
+ 
 static struct mt6397_regulator_info mt6397_regulators[] = {
 	MT6397_BUCK("buck_vpca15", VPCA15, 700000, 1493750, 6250,
 		buck_volt_range1, MT6397_VCA15_CON7, MT6397_VCA15_CON9, 0x7f,
@@ -354,11 +346,11 @@ static int mt6397_regulator_probe(struct platform_device *pdev)
 	int i;
 	u32 reg_value, version;
 
-	/* Query buck controller to select activated voltage register part */
+	 
 	if (mt6397_set_buck_vosel_reg(pdev))
 		return -EIO;
 
-	/* Read PMIC chip revision to update constraints and voltage table */
+	 
 	if (regmap_read(mt6397->regmap, MT6397_CID, &reg_value) < 0) {
 		dev_err(&pdev->dev, "Failed to read Chip ID\n");
 		return -EIO;
@@ -393,13 +385,13 @@ static int mt6397_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id mt6397_platform_ids[] = {
 	{"mt6397-regulator", 0},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mt6397_platform_ids);
 
 static const struct of_device_id mt6397_of_match[] __maybe_unused = {
 	{ .compatible = "mediatek,mt6397-regulator", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mt6397_of_match);
 

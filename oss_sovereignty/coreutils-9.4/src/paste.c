@@ -1,39 +1,6 @@
-/* paste - merge lines of files
-   Copyright (C) 1997-2023 Free Software Foundation, Inc.
-   Copyright (C) 1984 David M. Ihnat
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David Ihnat.  */
-
-/* The list of valid escape sequences has been expanded over the Unix
-   version, to include \b, \f, \r, and \v.
-
-   POSIX changes, bug fixes, long-named options, and cleanup
-   by David MacKenzie <djm@gnu.ai.mit.edu>.
-
-   Options:
-   --serial
-   -s				Paste one file at a time rather than
-                                one line from each file.
-   --delimiters=delim-list
-   -d delim-list		Consecutively use the characters in
-                                DELIM-LIST instead of tab to separate
-                                merged lines.  When DELIM-LIST is exhausted,
-                                start again at its beginning.
-   A FILE of '-' means standard input.
-   If no FILEs are given, standard input is used. */
+ 
 
 #include <config.h>
 
@@ -43,27 +10,26 @@
 #include "system.h"
 #include "fadvise.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "paste"
 
 #define AUTHORS \
   proper_name ("David M. Ihnat"), \
   proper_name ("David MacKenzie")
 
-/* Indicates that no delimiter should be added in the current position. */
+ 
 #define EMPTY_DELIM '\0'
 
-/* If nonzero, we have read standard input at some point. */
+ 
 static bool have_read_stdin;
 
-/* If nonzero, merge subsequent lines of each file rather than
-   corresponding lines from each file in parallel. */
+ 
 static bool serial_merge;
 
-/* The delimiters between lines of input files (used cyclically). */
+ 
 static char *delims;
 
-/* A pointer to the character after the end of 'delims'. */
+ 
 static char const *delim_end;
 
 static unsigned char line_delim = '\n';
@@ -78,13 +44,7 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Set globals delims and delim_end.  Copy STRPTR to DELIMS, converting
-   backslash representations of special characters in STRPTR to their actual
-   values. The set of possible backslash characters has been expanded beyond
-   that recognized by the Unix version.
-   Return 0 upon success.
-   If the string ends in an odd number of backslashes, ignore the
-   final backslash and return nonzero.  */
+ 
 
 static int
 collapse_escapes (char const *strptr)
@@ -96,8 +56,8 @@ collapse_escapes (char const *strptr)
 
   while (*strptr)
     {
-      if (*strptr != '\\')	/* Is it an escape character? */
-        *strout++ = *strptr++;	/* No, just transfer it. */
+      if (*strptr != '\\')	 
+        *strout++ = *strptr++;	 
       else
         {
           switch (*++strptr)
@@ -152,7 +112,7 @@ collapse_escapes (char const *strptr)
   return backslash_at_end ? 1 : 0;
 }
 
-/* Output a single byte, reporting any write errors.  */
+ 
 
 static inline void
 xputchar (char c)
@@ -161,33 +121,25 @@ xputchar (char c)
     write_error ();
 }
 
-/* Perform column paste on the NFILES files named in FNAMPTR.
-   Return true if successful, false if one or more files could not be
-   opened or read. */
+ 
 
 static bool
 paste_parallel (size_t nfiles, char **fnamptr)
 {
   bool ok = true;
-  /* If all files are just ready to be closed, or will be on this
-     round, the string of delimiters must be preserved.
-     delbuf[0] through delbuf[nfiles]
-     store the delimiters for closed files. */
+   
   char *delbuf = xmalloc (nfiles + 2);
 
-  /* Streams open to the files to process; null if the corresponding
-     stream is closed.  */
+   
   FILE **fileptr = xnmalloc (nfiles + 1, sizeof *fileptr);
 
-  /* Number of files still open to process.  */
+   
   size_t files_open;
 
-  /* True if any fopen got fd == STDIN_FILENO.  */
+   
   bool opened_stdin = false;
 
-  /* Attempt to open all files.  This could be expanded to an infinite
-     number of files, but at the (considerable) expense of remembering
-     each file and its current offset, then opening/reading/closing.  */
+   
 
   for (files_open = 0; files_open < nfiles; ++files_open)
     {
@@ -210,22 +162,20 @@ paste_parallel (size_t nfiles, char **fnamptr)
   if (opened_stdin && have_read_stdin)
     error (EXIT_FAILURE, 0, _("standard input is closed"));
 
-  /* Read a line from each file and output it to stdout separated by a
-     delimiter, until we go through the loop without successfully
-     reading from any of the files. */
+   
 
   while (files_open)
     {
-      /* Set up for the next line. */
+       
       bool somedone = false;
       char const *delimptr = delims;
-      size_t delims_saved = 0;	/* Number of delims saved in 'delbuf'. */
+      size_t delims_saved = 0;	 
 
       for (size_t i = 0; i < nfiles && files_open; i++)
         {
-          int chr;			/* Input character. */
-          int err;			/* Input errno value.  */
-          bool sometodo = false;	/* Input chars to process.  */
+          int chr;			 
+          int err;			 
+          bool sometodo = false;	 
 
           if (fileptr[i])
             {
@@ -251,14 +201,13 @@ paste_parallel (size_t nfiles, char **fnamptr)
 
           if (! sometodo)
             {
-              /* EOF, read error, or closed file.
-                 If an EOF or error, close the file.  */
+               
               if (fileptr[i])
                 {
                   if (!ferror (fileptr[i]))
                     err = 0;
                   if (fileptr[i] == stdin)
-                    clearerr (fileptr[i]); /* Also clear EOF. */
+                    clearerr (fileptr[i]);  
                   else if (fclose (fileptr[i]) == EOF && !err)
                     err = errno;
                   if (err)
@@ -273,11 +222,10 @@ paste_parallel (size_t nfiles, char **fnamptr)
 
               if (i + 1 == nfiles)
                 {
-                  /* End of this output line.
-                     Is this the end of the whole thing? */
+                   
                   if (somedone)
                     {
-                      /* No.  Some files were not closed for this line. */
+                       
                       if (delims_saved)
                         {
                           if (fwrite (delbuf, 1, delims_saved, stdout)
@@ -287,11 +235,11 @@ paste_parallel (size_t nfiles, char **fnamptr)
                         }
                       xputchar (line_delim);
                     }
-                  continue;	/* Next read of files, or exit. */
+                  continue;	 
                 }
               else
                 {
-                  /* Closed file; add delimiter to 'delbuf'. */
+                   
                   if (*delimptr != EMPTY_DELIM)
                     delbuf[delims_saved++] = *delimptr;
                   if (++delimptr == delim_end)
@@ -300,10 +248,10 @@ paste_parallel (size_t nfiles, char **fnamptr)
             }
           else
             {
-              /* Some data read. */
+               
               somedone = true;
 
-              /* Except for last file, replace last newline with delim. */
+               
               if (i + 1 != nfiles)
                 {
                   if (chr != line_delim && chr != EOF)
@@ -315,8 +263,7 @@ paste_parallel (size_t nfiles, char **fnamptr)
                 }
               else
                 {
-                  /* If the last line of the last file lacks a newline,
-                     print one anyhow.  POSIX requires this.  */
+                   
                   char c = (chr == EOF ? line_delim : chr);
                   xputchar (c);
                 }
@@ -328,17 +275,15 @@ paste_parallel (size_t nfiles, char **fnamptr)
   return ok;
 }
 
-/* Perform serial paste on the NFILES files named in FNAMPTR.
-   Return true if no errors, false if one or more files could not be
-   opened or read. */
+ 
 
 static bool
 paste_serial (size_t nfiles, char **fnamptr)
 {
-  bool ok = true;	/* false if open or read errors occur. */
-  int charnew, charold; /* Current and previous char read. */
-  char const *delimptr;	/* Current delimiter char. */
-  FILE *fileptr;	/* Open for reading current file. */
+  bool ok = true;	 
+  int charnew, charold;  
+  char const *delimptr;	 
+  FILE *fileptr;	 
 
   for (; nfiles; nfiles--, fnamptr++)
     {
@@ -361,21 +306,17 @@ paste_serial (size_t nfiles, char **fnamptr)
           fadvise (fileptr, FADVISE_SEQUENTIAL);
         }
 
-      delimptr = delims;	/* Set up for delimiter string. */
+      delimptr = delims;	 
 
       charold = getc (fileptr);
       saved_errno = errno;
       if (charold != EOF)
         {
-          /* 'charold' is set up.  Hit it!
-             Keep reading characters, stashing them in 'charnew';
-             output 'charold', converting to the appropriate delimiter
-             character if needed.  After the EOF, output 'charold'
-             if it's a newline; otherwise, output it and then a newline. */
+           
 
           while ((charnew = getc (fileptr)) != EOF)
             {
-              /* Process the old character. */
+               
               if (charold == line_delim)
                 {
                   if (*delimptr != EMPTY_DELIM)
@@ -391,7 +332,7 @@ paste_serial (size_t nfiles, char **fnamptr)
             }
           saved_errno = errno;
 
-          /* Hit EOF.  Process that last character. */
+           
           xputchar (charold);
         }
 
@@ -401,7 +342,7 @@ paste_serial (size_t nfiles, char **fnamptr)
       if (!ferror (fileptr))
         saved_errno = 0;
       if (is_stdin)
-        clearerr (fileptr);	/* Also clear EOF. */
+        clearerr (fileptr);	 
       else if (fclose (fileptr) != 0 && !saved_errno)
         saved_errno = errno;
       if (saved_errno)

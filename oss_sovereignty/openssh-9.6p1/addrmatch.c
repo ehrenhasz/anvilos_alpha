@@ -1,20 +1,6 @@
-/*	$OpenBSD: addrmatch.c,v 1.17 2021/04/03 06:18:40 djm Exp $ */
+ 
 
-/*
- * Copyright (c) 2004-2008 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -33,18 +19,7 @@
 #include "match.h"
 #include "log.h"
 
-/*
- * Match "addr" against list pattern list "_list", which may contain a
- * mix of CIDR addresses and old-school wildcards.
- *
- * If addr is NULL, then no matching is performed, but _list is parsed
- * and checked for well-formedness.
- *
- * Returns 1 on match found (never returned when addr == NULL).
- * Returns 0 on if no match found, or no errors found when addr == NULL.
- * Returns -1 on negated match found (never returned when addr == NULL).
- * Returns -2 on invalid list entry.
- */
+ 
 int
 addr_match_list(const char *addr, const char *_list)
 {
@@ -67,7 +42,7 @@ addr_match_list(const char *addr, const char *_list)
 			ret = -2;
 			break;
 		}
-		/* Prefer CIDR address matching */
+		 
 		r = addr_pton_cidr(cp, &match_addr, &masklen);
 		if (r == -2) {
 			debug2_f("inconsistent mask length for "
@@ -86,7 +61,7 @@ addr_match_list(const char *addr, const char *_list)
 			}
 			continue;
 		} else {
-			/* If CIDR parse failed, try wildcard string match */
+			 
 			if (addr != NULL && match_pattern(addr, cp) == 1)
 				goto foundit;
 		}
@@ -96,15 +71,7 @@ addr_match_list(const char *addr, const char *_list)
 	return ret;
 }
 
-/*
- * Match "addr" against list CIDR list "_list". Lexical wildcards and
- * negation are not supported. If "addr" == NULL, will verify structure
- * of "_list".
- *
- * Returns 1 on match found (never returned when addr == NULL).
- * Returns 0 on if no match found, or no errors found when addr == NULL.
- * Returns -1 on error
- */
+ 
 int
 addr_match_cidr_list(const char *addr, const char *_list)
 {
@@ -126,13 +93,9 @@ addr_match_cidr_list(const char *addr, const char *_list)
 			break;
 		}
 
-		/*
-		 * NB. This function is called in pre-auth with untrusted data,
-		 * so be extra paranoid about junk reaching getaddrino (via
-		 * addr_pton_cidr).
-		 */
+		 
 
-		/* Stop junk from reaching getaddrinfo. +3 is for masklen */
+		 
 		if (strlen(cp) > INET6_ADDRSTRLEN + 3) {
 			error_f("list entry \"%.100s\" too long", cp);
 			ret = -1;
@@ -145,7 +108,7 @@ addr_match_cidr_list(const char *addr, const char *_list)
 			ret = -1;
 		}
 
-		/* Prefer CIDR address matching */
+		 
 		r = addr_pton_cidr(cp, &match_addr, &masklen);
 		if (r == -1) {
 			error("Invalid network entry \"%.100s\"", cp);

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains core generic KASAN code.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Andrey Ryabinin <ryabinin.a.a@gmail.com>
- *
- * Some code borrowed from https://github.com/xairy/kasan-prototype by
- *        Andrey Konovalov <andreyknvl@gmail.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/interrupt.h>
@@ -34,11 +26,7 @@
 #include "kasan.h"
 #include "../slab.h"
 
-/*
- * All functions below always inlined so compiler could
- * perform better optimizations in each of __asan_loadX/__assn_storeX
- * depending on memory access size X.
- */
+ 
 
 static __always_inline bool memory_is_poisoned_1(const void *addr)
 {
@@ -57,10 +45,7 @@ static __always_inline bool memory_is_poisoned_2_4_8(const void *addr,
 {
 	u8 *shadow_addr = (u8 *)kasan_mem_to_shadow(addr);
 
-	/*
-	 * Access crosses 8(shadow size)-byte boundary. Such access maps
-	 * into 2 shadow bytes, so we need to check them both.
-	 */
+	 
 	if (unlikely((((unsigned long)addr + size - 1) & KASAN_GRANULE_MASK) < size - 1))
 		return *shadow_addr || memory_is_poisoned_1(addr + size - 1);
 
@@ -71,7 +56,7 @@ static __always_inline bool memory_is_poisoned_16(const void *addr)
 {
 	u16 *shadow_addr = (u16 *)kasan_mem_to_shadow(addr);
 
-	/* Unaligned 16-bytes access maps into 3 shadow bytes. */
+	 
 	if (unlikely(!IS_ALIGNED((unsigned long)addr, KASAN_GRANULE_SIZE)))
 		return *shadow_addr || memory_is_poisoned_1(addr + 15);
 
@@ -280,11 +265,11 @@ __alias(__asan_storeN)
 void __asan_storeN_noabort(void *, ssize_t);
 EXPORT_SYMBOL(__asan_storeN_noabort);
 
-/* to shut up compiler complaints */
+ 
 void __asan_handle_no_return(void) {}
 EXPORT_SYMBOL(__asan_handle_no_return);
 
-/* Emitted by compiler to poison alloca()ed objects. */
+ 
 void __asan_alloca_poison(void *addr, ssize_t size)
 {
 	size_t rounded_up_size = round_up(size, KASAN_GRANULE_SIZE);
@@ -307,7 +292,7 @@ void __asan_alloca_poison(void *addr, ssize_t size)
 }
 EXPORT_SYMBOL(__asan_alloca_poison);
 
-/* Emitted by compiler to unpoison alloca()ed areas when the stack unwinds. */
+ 
 void __asan_allocas_unpoison(void *stack_top, ssize_t stack_bottom)
 {
 	if (unlikely(!stack_top || stack_top > (void *)stack_bottom))
@@ -317,7 +302,7 @@ void __asan_allocas_unpoison(void *stack_top, ssize_t stack_bottom)
 }
 EXPORT_SYMBOL(__asan_allocas_unpoison);
 
-/* Emitted by the compiler to [un]poison local variables. */
+ 
 #define DEFINE_ASAN_SET_SHADOW(byte) \
 	void __asan_set_shadow_##byte(const void *addr, ssize_t size)	\
 	{								\
@@ -332,7 +317,7 @@ DEFINE_ASAN_SET_SHADOW(f3);
 DEFINE_ASAN_SET_SHADOW(f5);
 DEFINE_ASAN_SET_SHADOW(f8);
 
-/* Only allow cache merging when no per-object metadata is present. */
+ 
 slab_flags_t kasan_never_merge(void)
 {
 	if (!kasan_requires_meta())
@@ -340,10 +325,7 @@ slab_flags_t kasan_never_merge(void)
 	return SLAB_KASAN;
 }
 
-/*
- * Adaptive redzone policy taken from the userspace AddressSanitizer runtime.
- * For larger allocations larger redzones are used.
- */
+ 
 static inline unsigned int optimal_redzone(unsigned int object_size)
 {
 	return
@@ -365,45 +347,23 @@ void kasan_cache_create(struct kmem_cache *cache, unsigned int *size,
 	if (!kasan_requires_meta())
 		return;
 
-	/*
-	 * SLAB_KASAN is used to mark caches that are sanitized by KASAN
-	 * and that thus have per-object metadata.
-	 * Currently this flag is used in two places:
-	 * 1. In slab_ksize() to account for per-object metadata when
-	 *    calculating the size of the accessible memory within the object.
-	 * 2. In slab_common.c via kasan_never_merge() to prevent merging of
-	 *    caches with per-object metadata.
-	 */
+	 
 	*flags |= SLAB_KASAN;
 
 	ok_size = *size;
 
-	/* Add alloc meta into redzone. */
+	 
 	cache->kasan_info.alloc_meta_offset = *size;
 	*size += sizeof(struct kasan_alloc_meta);
 
-	/*
-	 * If alloc meta doesn't fit, don't add it.
-	 * This can only happen with SLAB, as it has KMALLOC_MAX_SIZE equal
-	 * to KMALLOC_MAX_CACHE_SIZE and doesn't fall back to page_alloc for
-	 * larger sizes.
-	 */
+	 
 	if (*size > KMALLOC_MAX_SIZE) {
 		cache->kasan_info.alloc_meta_offset = 0;
 		*size = ok_size;
-		/* Continue, since free meta might still fit. */
+		 
 	}
 
-	/*
-	 * Add free meta into redzone when it's not possible to store
-	 * it in the object. This is the case when:
-	 * 1. Object is SLAB_TYPESAFE_BY_RCU, which means that it can
-	 *    be touched after it was freed, or
-	 * 2. Object has a constructor, which means it's expected to
-	 *    retain its content until the next allocation, or
-	 * 3. Object is too small.
-	 * Otherwise cache->kasan_info.free_meta_offset = 0 is implied.
-	 */
+	 
 	if ((cache->flags & SLAB_TYPESAFE_BY_RCU) || cache->ctor ||
 	    cache->object_size < sizeof(struct kasan_free_meta)) {
 		ok_size = *size;
@@ -411,19 +371,19 @@ void kasan_cache_create(struct kmem_cache *cache, unsigned int *size,
 		cache->kasan_info.free_meta_offset = *size;
 		*size += sizeof(struct kasan_free_meta);
 
-		/* If free meta doesn't fit, don't add it. */
+		 
 		if (*size > KMALLOC_MAX_SIZE) {
 			cache->kasan_info.free_meta_offset = KASAN_NO_FREE_META;
 			*size = ok_size;
 		}
 	}
 
-	/* Calculate size with optimal redzone. */
+	 
 	optimal_size = cache->object_size + optimal_redzone(cache->object_size);
-	/* Limit it with KMALLOC_MAX_SIZE (relevant for SLAB only). */
+	 
 	if (optimal_size > KMALLOC_MAX_SIZE)
 		optimal_size = KMALLOC_MAX_SIZE;
-	/* Use optimal size if the size with added metas is not large enough. */
+	 
 	if (*size < optimal_size)
 		*size = optimal_size;
 }
@@ -520,6 +480,6 @@ void kasan_save_free_info(struct kmem_cache *cache, void *object)
 		return;
 
 	kasan_set_track(&free_meta->free_track, 0);
-	/* The object was freed and has free track set. */
+	 
 	*(u8 *)kasan_mem_to_shadow(object) = KASAN_SLAB_FREETRACK;
 }

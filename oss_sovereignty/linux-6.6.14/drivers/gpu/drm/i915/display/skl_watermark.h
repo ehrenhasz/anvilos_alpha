@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __SKL_WATERMARK_H__
 #define __SKL_WATERMARK_H__
@@ -73,5 +71,5 @@ void intel_dbuf_pre_plane_update(struct intel_atomic_state *state);
 void intel_dbuf_post_plane_update(struct intel_atomic_state *state);
 void intel_mbus_dbox_update(struct intel_atomic_state *state);
 
-#endif /* __SKL_WATERMARK_H__ */
+#endif  
 

@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright 2010
- *  by Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
- *
- * This code provides a IOMMU for Xen PV guests with PCI passthrough.
- *
- * PV guests under Xen are running in an non-contiguous memory architecture.
- *
- * When PCI pass-through is utilized, this necessitates an IOMMU for
- * translating bus (DMA) to virtual and vice-versa and also providing a
- * mechanism to have contiguous pages for device drivers operations (say DMA
- * operations).
- *
- * Specifically, under Xen the Linux idea of pages is an illusion. It
- * assumes that pages start at zero and go up to the available memory. To
- * help with that, the Linux Xen MMU provides a lookup mechanism to
- * translate the page frame numbers (PFN) to machine frame numbers (MFN)
- * and vice-versa. The MFN are the "real" frame numbers. Furthermore
- * memory is not contiguous. Xen hypervisor stitches memory for guests
- * from different pools, which means there is no guarantee that PFN==MFN
- * and PFN+1==MFN+1. Lastly with Xen 4.0, pages (in debug mode) are
- * allocated in descending order (high to low), meaning the guest might
- * never get any MFN's under the 4GB mark.
- */
+
+ 
 
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
@@ -40,9 +17,7 @@
 #include <trace/events/swiotlb.h>
 #define MAX_DMA_BITS 32
 
-/*
- * Quick lookup value of the bus address of the IOTLB.
- */
+ 
 
 static inline phys_addr_t xen_phys_to_bus(struct device *dev, phys_addr_t paddr)
 {
@@ -94,10 +69,7 @@ static int is_xen_swiotlb_buffer(struct device *dev, dma_addr_t dma_addr)
 	unsigned long xen_pfn = bfn_to_local_pfn(bfn);
 	phys_addr_t paddr = (phys_addr_t)xen_pfn << XEN_PAGE_SHIFT;
 
-	/* If the address is outside our domain, it CAN
-	 * have the same virtual address as another address
-	 * in our domain. Therefore _only_ check address within our domain.
-	 */
+	 
 	if (pfn_valid(PFN_DOWN(paddr)))
 		return is_swiotlb_buffer(dev, paddr);
 	return 0;
@@ -139,7 +111,7 @@ xen_swiotlb_alloc_coherent(struct device *dev, size_t size,
 	phys_addr_t phys;
 	void *ret;
 
-	/* Align the allocation to the Xen page size */
+	 
 	size = 1UL << (order + XEN_PAGE_SHIFT);
 
 	ret = (void *)__get_free_pages(flags, get_order(size));
@@ -171,7 +143,7 @@ xen_swiotlb_free_coherent(struct device *dev, size_t size, void *vaddr,
 	phys_addr_t phys = virt_to_phys(vaddr);
 	int order = get_order(size);
 
-	/* Convert the size to actually allocated. */
+	 
 	size = 1UL << (order + XEN_PAGE_SHIFT);
 
 	if (WARN_ON_ONCE(dma_handle + size - 1 > dev->coherent_dma_mask) ||
@@ -182,15 +154,9 @@ xen_swiotlb_free_coherent(struct device *dev, size_t size, void *vaddr,
 		xen_destroy_contiguous_region(phys, order);
 	free_pages((unsigned long)vaddr, get_order(size));
 }
-#endif /* CONFIG_X86 */
+#endif  
 
-/*
- * Map a single buffer of the indicated size for DMA in streaming mode.  The
- * physical address to use is returned.
- *
- * Once the device is given the dma address, the device owns this memory until
- * either xen_swiotlb_unmap_page or xen_swiotlb_dma_sync_single is performed.
- */
+ 
 static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
 				unsigned long offset, size_t size,
 				enum dma_data_direction dir,
@@ -200,20 +166,14 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
 	dma_addr_t dev_addr = xen_phys_to_dma(dev, phys);
 
 	BUG_ON(dir == DMA_NONE);
-	/*
-	 * If the address happens to be in the device's DMA window,
-	 * we can safely return the device addr and not worry about bounce
-	 * buffering it.
-	 */
+	 
 	if (dma_capable(dev, dev_addr, size, true) &&
 	    !range_straddles_page_boundary(phys, size) &&
 		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
 		!is_swiotlb_force_bounce(dev))
 		goto done;
 
-	/*
-	 * Oh well, have to allocate and map a bounce buffer.
-	 */
+	 
 	trace_swiotlb_bounced(dev, dev_addr, size);
 
 	map = swiotlb_tbl_map_single(dev, phys, size, size, 0, dir, attrs);
@@ -223,9 +183,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
 	phys = map;
 	dev_addr = xen_phys_to_dma(dev, map);
 
-	/*
-	 * Ensure that the address returned is DMA'ble
-	 */
+	 
 	if (unlikely(!dma_capable(dev, dev_addr, size, true))) {
 		swiotlb_tbl_unmap_single(dev, map, size, dir,
 				attrs | DMA_ATTR_SKIP_CPU_SYNC);
@@ -242,14 +200,7 @@ done:
 	return dev_addr;
 }
 
-/*
- * Unmap a single streaming mode DMA translation.  The dma_addr and size must
- * match what was provided for in a previous xen_swiotlb_map_page call.  All
- * other usages are undefined.
- *
- * After this call, reads by the cpu to the buffer are guaranteed to see
- * whatever the device wrote there.
- */
+ 
 static void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
 		size_t size, enum dma_data_direction dir, unsigned long attrs)
 {
@@ -264,7 +215,7 @@ static void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
 			xen_dma_sync_for_cpu(hwdev, dev_addr, size, dir);
 	}
 
-	/* NOTE: We use dev_addr here, not paddr! */
+	 
 	if (is_xen_swiotlb_buffer(hwdev, dev_addr))
 		swiotlb_tbl_unmap_single(hwdev, paddr, size, dir, attrs);
 }
@@ -303,10 +254,7 @@ xen_swiotlb_sync_single_for_device(struct device *dev, dma_addr_t dma_addr,
 	}
 }
 
-/*
- * Unmap a set of streaming mode DMA translations.  Again, cpu read rules
- * concerning calls here are the same as for swiotlb_unmap_page() above.
- */
+ 
 static void
 xen_swiotlb_unmap_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
 		enum dma_data_direction dir, unsigned long attrs)
@@ -372,12 +320,7 @@ xen_swiotlb_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
 	}
 }
 
-/*
- * Return whether the given device DMA address mask can be supported
- * properly.  For example, if your device can only drive the low 24-bits
- * during bus mastering, then you would pass 0x00ffffff as the mask to
- * this function.
- */
+ 
 static int
 xen_swiotlb_dma_supported(struct device *hwdev, u64 mask)
 {

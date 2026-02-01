@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2011 Thomas Renninger <trenn@suse.de>, Novell Inc.
- */
+
+ 
 
 
 #include <unistd.h>
@@ -51,7 +49,7 @@ int cmd_info(int argc, char **argv)
 	setlocale(LC_ALL, "");
 	textdomain(PACKAGE);
 
-	/* parameter parsing */
+	 
 	while ((ret = getopt_long(argc, argv, "b", set_opts, NULL)) != -1) {
 		switch (ret) {
 		case 'b':
@@ -67,11 +65,11 @@ int cmd_info(int argc, char **argv)
 	if (!params.params)
 		params.params = 0x7;
 
-	/* Default is: show output of base_cpu only */
+	 
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setbit(cpus_chosen, base_cpu);
 
-	/* Add more per cpu options here */
+	 
 	if (!params.perf_bias)
 		return ret;
 
@@ -86,7 +84,7 @@ int cmd_info(int argc, char **argv)
 		}
 	}
 
-	/* loop over CPUs */
+	 
 	for (cpu = bitmask_first(cpus_chosen);
 	     cpu <= bitmask_last(cpus_chosen); cpu++) {
 

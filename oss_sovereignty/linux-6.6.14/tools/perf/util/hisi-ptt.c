@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HiSilicon PCIe Trace and Tuning (PTT) support
- * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <byteswap.h>
 #include <endian.h>
@@ -175,7 +172,7 @@ int hisi_ptt_process_auxtrace_info(union perf_event *event,
 		return -ENOMEM;
 
 	ptt->session = session;
-	ptt->machine = &session->machines.host; /* No kvm support */
+	ptt->machine = &session->machines.host;  
 	ptt->auxtrace_type = auxtrace_info->type;
 	ptt->pmu_type = auxtrace_info->priv[0];
 

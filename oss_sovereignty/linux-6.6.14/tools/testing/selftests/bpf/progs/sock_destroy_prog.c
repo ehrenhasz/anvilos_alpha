@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -63,7 +63,7 @@ int iter_tcp6_client(struct bpf_iter__tcp *ctx)
 	val = bpf_map_lookup_elem(&tcp_conn_sockets, &key);
 	if (!val)
 		return 0;
-	/* Destroy connected client sockets. */
+	 
 	if (sock_cookie == *val)
 		bpf_sock_destroy(sk_common);
 
@@ -93,7 +93,7 @@ int iter_tcp6_server(struct bpf_iter__tcp *ctx)
 	inet = &icsk->icsk_inet;
 	srcp = inet->inet_sport;
 
-	/* Destroy server sockets. */
+	 
 	if (srcp == serv_port)
 		bpf_sock_destroy(sk_common);
 
@@ -116,7 +116,7 @@ int iter_udp6_client(struct bpf_iter__udp *ctx)
 	val = bpf_map_lookup_elem(&udp_conn_sockets, &key);
 	if (!val)
 		return 0;
-	/* Destroy connected client sockets. */
+	 
 	if (sock_cookie == *val)
 		bpf_sock_destroy((struct sock_common *)sk);
 

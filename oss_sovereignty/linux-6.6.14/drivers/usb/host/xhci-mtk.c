@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek xHCI Host Controller Driver
- *
- * Copyright (c) 2015 MediaTek Inc.
- * Author:
- *  Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/dma-mapping.h>
@@ -24,16 +18,16 @@
 #include "xhci.h"
 #include "xhci-mtk.h"
 
-/* ip_pw_ctrl0 register */
+ 
 #define CTRL0_IP_SW_RST	BIT(0)
 
-/* ip_pw_ctrl1 register */
+ 
 #define CTRL1_IP_HOST_PDN	BIT(0)
 
-/* ip_pw_ctrl2 register */
+ 
 #define CTRL2_IP_DEV_PDN	BIT(0)
 
-/* ip_pw_sts1 register */
+ 
 #define STS1_IP_SLEEP_STS	BIT(30)
 #define STS1_U3_MAC_RST	BIT(16)
 #define STS1_XHCI_RST		BIT(11)
@@ -41,24 +35,24 @@
 #define STS1_REF_RST		BIT(8)
 #define STS1_SYSPLL_STABLE	BIT(0)
 
-/* ip_xhci_cap register */
+ 
 #define CAP_U3_PORT_NUM(p)	((p) & 0xff)
 #define CAP_U2_PORT_NUM(p)	(((p) >> 8) & 0xff)
 
-/* u3_ctrl_p register */
+ 
 #define CTRL_U3_PORT_HOST_SEL	BIT(2)
 #define CTRL_U3_PORT_PDN	BIT(1)
 #define CTRL_U3_PORT_DIS	BIT(0)
 
-/* u2_ctrl_p register */
+ 
 #define CTRL_U2_PORT_HOST_SEL	BIT(2)
 #define CTRL_U2_PORT_PDN	BIT(1)
 #define CTRL_U2_PORT_DIS	BIT(0)
 
-/* u2_phy_pll register */
+ 
 #define CTRL_U2_FORCE_PLL_STB	BIT(28)
 
-/* xHCI CSR */
+ 
 #define LS_EOF_CFG		0x930
 #define LSEOF_OFFSET		0x89
 
@@ -82,27 +76,27 @@
 
 #define XSEOF_OFFSET_MASK	GENMASK(11, 0)
 
-/* usb remote wakeup registers in syscon */
+ 
 
-/* mt8173 etc */
+ 
 #define PERI_WK_CTRL1	0x4
-#define WC1_IS_C(x)	(((x) & 0xf) << 26)  /* cycle debounce */
+#define WC1_IS_C(x)	(((x) & 0xf) << 26)   
 #define WC1_IS_EN	BIT(25)
-#define WC1_IS_P	BIT(6)  /* polarity for ip sleep */
+#define WC1_IS_P	BIT(6)   
 
-/* mt8183 */
+ 
 #define PERI_WK_CTRL0	0x0
-#define WC0_IS_C(x)	((u32)(((x) & 0xf) << 28))  /* cycle debounce */
-#define WC0_IS_P	BIT(12)	/* polarity */
+#define WC0_IS_C(x)	((u32)(((x) & 0xf) << 28))   
+#define WC0_IS_P	BIT(12)	 
 #define WC0_IS_EN	BIT(6)
 
-/* mt8192 */
+ 
 #define WC0_SSUSB0_CDEN		BIT(6)
 #define WC0_IS_SPM_EN		BIT(1)
 
-/* mt8195 */
+ 
 #define PERI_WK_CTRL0_8195	0x04
-#define WC0_IS_P_95		BIT(30)	/* polarity */
+#define WC0_IS_P_95		BIT(30)	 
 #define WC0_IS_C_95(x)		((u32)(((x) & 0x7) << 27))
 #define WC0_IS_EN_P3_95		BIT(26)
 #define WC0_IS_EN_P2_95		BIT(25)
@@ -113,7 +107,7 @@
 #define WC1_IS_P_95		BIT(12)
 #define WC1_IS_EN_P0_95		BIT(6)
 
-/* mt2712 etc */
+ 
 #define PERI_SSUSB_SPM_CTRL	0x0
 #define SSC_IP_SLEEP_EN	BIT(4)
 #define SSC_SPM_INT_EN		BIT(1)
@@ -123,19 +117,15 @@
 enum ssusb_uwk_vers {
 	SSUSB_UWK_V1 = 1,
 	SSUSB_UWK_V2,
-	SSUSB_UWK_V1_1 = 101,	/* specific revision 1.01 */
-	SSUSB_UWK_V1_2,		/* specific revision 1.2 */
-	SSUSB_UWK_V1_3,		/* mt8195 IP0 */
-	SSUSB_UWK_V1_4,		/* mt8195 IP1 */
-	SSUSB_UWK_V1_5,		/* mt8195 IP2 */
-	SSUSB_UWK_V1_6,		/* mt8195 IP3 */
+	SSUSB_UWK_V1_1 = 101,	 
+	SSUSB_UWK_V1_2,		 
+	SSUSB_UWK_V1_3,		 
+	SSUSB_UWK_V1_4,		 
+	SSUSB_UWK_V1_5,		 
+	SSUSB_UWK_V1_6,		 
 };
 
-/*
- * MT8195 has 4 controllers, the controller1~3's default SOF/ITP interval
- * is calculated from the frame counter clock 24M, but in fact, the clock
- * is 48M, add workaround for it.
- */
+ 
 static void xhci_mtk_set_frame_interval(struct xhci_hcd_mtk *mtk)
 {
 	struct device *dev = mtk->dev;
@@ -171,11 +161,7 @@ static void xhci_mtk_set_frame_interval(struct xhci_hcd_mtk *mtk)
 	writel(value, hcd->regs + SS_GEN2_EOF_CFG);
 }
 
-/*
- * workaround: usb3.2 gen1 isoc rx hw issue
- * host send out unexpected ACK afer device fininsh a burst transfer with
- * a short packet.
- */
+ 
 static void xhci_mtk_rxfifo_depth_set(struct xhci_hcd_mtk *mtk)
 {
 	struct usb_hcd *hcd = mtk->hcd;
@@ -193,10 +179,10 @@ static void xhci_mtk_rxfifo_depth_set(struct xhci_hcd_mtk *mtk)
 
 static void xhci_mtk_init_quirk(struct xhci_hcd_mtk *mtk)
 {
-	/* workaround only for mt8195 */
+	 
 	xhci_mtk_set_frame_interval(mtk);
 
-	/* workaround for SoCs using SSUSB about before IPM v1.6.0 */
+	 
 	xhci_mtk_rxfifo_depth_set(mtk);
 }
 
@@ -211,12 +197,12 @@ static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
 	if (!mtk->has_ippc)
 		return 0;
 
-	/* power on host ip */
+	 
 	value = readl(&ippc->ip_pw_ctr1);
 	value &= ~CTRL1_IP_HOST_PDN;
 	writel(value, &ippc->ip_pw_ctr1);
 
-	/* power on and enable u3 ports except skipped ones */
+	 
 	for (i = 0; i < mtk->num_u3_ports; i++) {
 		if ((0x1 << i) & mtk->u3p_dis_msk) {
 			u3_ports_disabled++;
@@ -229,7 +215,7 @@ static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
 		writel(value, &ippc->u3_ctrl_p[i]);
 	}
 
-	/* power on and enable all u2 ports except skipped ones */
+	 
 	for (i = 0; i < mtk->num_u2_ports; i++) {
 		if (BIT(i) & mtk->u2p_dis_msk)
 			continue;
@@ -240,10 +226,7 @@ static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
 		writel(value, &ippc->u2_ctrl_p[i]);
 	}
 
-	/*
-	 * wait for clocks to be stable, and clock domains reset to
-	 * be inactive after power on and enable ports
-	 */
+	 
 	check_val = STS1_SYSPLL_STABLE | STS1_REF_RST |
 			STS1_SYS125_RST | STS1_XHCI_RST;
 
@@ -270,7 +253,7 @@ static int xhci_mtk_host_disable(struct xhci_hcd_mtk *mtk)
 	if (!mtk->has_ippc)
 		return 0;
 
-	/* power down u3 ports except skipped ones */
+	 
 	for (i = 0; i < mtk->num_u3_ports; i++) {
 		if ((0x1 << i) & mtk->u3p_dis_msk)
 			continue;
@@ -280,7 +263,7 @@ static int xhci_mtk_host_disable(struct xhci_hcd_mtk *mtk)
 		writel(value, &ippc->u3_ctrl_p[i]);
 	}
 
-	/* power down all u2 ports except skipped ones */
+	 
 	for (i = 0; i < mtk->num_u2_ports; i++) {
 		if (BIT(i) & mtk->u2p_dis_msk)
 			continue;
@@ -290,17 +273,17 @@ static int xhci_mtk_host_disable(struct xhci_hcd_mtk *mtk)
 		writel(value, &ippc->u2_ctrl_p[i]);
 	}
 
-	/* power down host ip */
+	 
 	value = readl(&ippc->ip_pw_ctr1);
 	value |= CTRL1_IP_HOST_PDN;
 	writel(value, &ippc->ip_pw_ctr1);
 
-	/* wait for host ip to sleep */
+	 
 	ret = readl_poll_timeout(&ippc->ip_pw_sts1, value,
 			  (value & STS1_IP_SLEEP_STS), 100, 100000);
 	if (ret)
 		dev_err(mtk->dev, "ip sleep failed!!!\n");
-	else /* workaound for platforms using low level latch */
+	else  
 		usleep_range(100, 200);
 
 	return ret;
@@ -314,7 +297,7 @@ static int xhci_mtk_ssusb_config(struct xhci_hcd_mtk *mtk)
 	if (!mtk->has_ippc)
 		return 0;
 
-	/* reset whole ip */
+	 
 	value = readl(&ippc->ip_pw_ctr0);
 	value |= CTRL0_IP_SW_RST;
 	writel(value, &ippc->ip_pw_ctr0);
@@ -323,10 +306,7 @@ static int xhci_mtk_ssusb_config(struct xhci_hcd_mtk *mtk)
 	value &= ~CTRL0_IP_SW_RST;
 	writel(value, &ippc->ip_pw_ctr0);
 
-	/*
-	 * device ip is default power-on in fact
-	 * power down device ip, otherwise ip-sleep will fail
-	 */
+	 
 	value = readl(&ippc->ip_pw_ctr2);
 	value |= CTRL2_IP_DEV_PDN;
 	writel(value, &ippc->ip_pw_ctr2);
@@ -340,7 +320,7 @@ static int xhci_mtk_ssusb_config(struct xhci_hcd_mtk *mtk)
 	return xhci_mtk_host_enable(mtk);
 }
 
-/* only clocks can be turn off for ip-sleep wakeup mode */
+ 
 static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
 {
 	u32 reg, msk, val;
@@ -398,7 +378,7 @@ static int usb_wakeup_of_property_parse(struct xhci_hcd_mtk *mtk,
 	struct of_phandle_args args;
 	int ret;
 
-	/* Wakeup function is optional */
+	 
 	mtk->uwk_en = of_property_read_bool(dn, "wakeup-source");
 	if (!mtk->uwk_en)
 		return 0;
@@ -454,25 +434,19 @@ static void xhci_mtk_quirks(struct device *dev, struct xhci_hcd *xhci)
 	struct xhci_hcd_mtk *mtk = hcd_to_mtk(hcd);
 
 	xhci->quirks |= XHCI_MTK_HOST;
-	/*
-	 * MTK host controller gives a spurious successful event after a
-	 * short transfer. Ignore it.
-	 */
+	 
 	xhci->quirks |= XHCI_SPURIOUS_SUCCESS;
 	if (mtk->lpm_support)
 		xhci->quirks |= XHCI_LPM_SUPPORT;
 	if (mtk->u2_lpm_disable)
 		xhci->quirks |= XHCI_HW_LPM_DISABLE;
 
-	/*
-	 * MTK xHCI 0.96: PSA is 1 by default even if doesn't support stream,
-	 * and it's 3 when support it.
-	 */
+	 
 	if (xhci->hci_version < 0x100 && HCC_MAX_PSA(xhci->hcc_params) == 4)
 		xhci->quirks |= XHCI_BROKEN_STREAMS;
 }
 
-/* called during probe() after chip reset completes */
+ 
 static int xhci_mtk_setup(struct usb_hcd *hcd)
 {
 	struct xhci_hcd_mtk *mtk = hcd_to_mtk(hcd);
@@ -543,7 +517,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
 		if (irq == -EPROBE_DEFER)
 			return irq;
 
-		/* for backward compatibility */
+		 
 		irq = platform_get_irq(pdev, 0);
 		if (irq < 0)
 			return irq;
@@ -555,7 +529,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
 
 	mtk->lpm_support = of_property_read_bool(node, "usb3-lpm-capable");
 	mtk->u2_lpm_disable = of_property_read_bool(node, "usb2-lpm-disable");
-	/* optional property, ignore the error if it does not exist */
+	 
 	of_property_read_u32(node, "mediatek,u3p-dis-msk",
 			     &mtk->u3p_dis_msk);
 	of_property_read_u32(node, "mediatek,u2p-dis-msk",
@@ -595,10 +569,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
 		goto disable_clk;
 	}
 
-	/*
-	 * USB 2.0 roothub is stored in the platform_device.
-	 * Swap it with mtk HCD.
-	 */
+	 
 	mtk->hcd = platform_get_drvdata(pdev);
 	platform_set_drvdata(pdev, mtk);
 
@@ -612,7 +583,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
 	hcd->rsrc_len = resource_size(res);
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ippc");
-	if (res) {	/* ippc register is optional */
+	if (res) {	 
 		mtk->ippc_regs = devm_ioremap_resource(dev, res);
 		if (IS_ERR(mtk->ippc_regs)) {
 			ret = PTR_ERR(mtk->ippc_regs);
@@ -628,11 +599,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
 	xhci->main_hcd = hcd;
 	xhci->allow_single_roothub = 1;
 
-	/*
-	 * imod_interval is the interrupt moderation value in nanoseconds.
-	 * The increment interval is 8 times as much as that defined in
-	 * the xHCI spec on MTK's controller.
-	 */
+	 
 	xhci->imod_interval = 5000;
 	device_property_read_u32(dev, "imod-interval-ns", &xhci->imod_interval);
 
@@ -816,7 +783,7 @@ static int __maybe_unused xhci_mtk_runtime_suspend(struct device *dev)
 	if (device_may_wakeup(dev))
 		ret = xhci_mtk_suspend(dev);
 
-	/* -EBUSY: let PM automatically reschedule another autosuspend */
+	 
 	return ret ? -EBUSY : 0;
 }
 

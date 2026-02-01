@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  REINER SCT cyberJack pinpad/e-com USB Chipcard Reader Driver
- *
- *  Copyright (C) 2001  REINER SCT
- *  Author: Matthias Bruestle
- *
- *  Contact: support@reiner-sct.com (see MAINTAINERS)
- *
- *  This program is largely derived from work by the linux-usb group
- *  and associated source files.  Please see the usb/serial files for
- *  individual credits and copyrights.
- *
- *  Thanks to Greg Kroah-Hartman (greg@kroah.com) for his help and
- *  patience.
- *
- *  In case of problems, please write to the contact e-mail address
- *  mentioned above.
- *
- *  Please note that later models of the cyberjack reader family are
- *  supported by a libusb-based userspace device driver.
- *
- *  Homepage: http://www.reiner-sct.de/support/treiber_cyberjack.php#linux
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -45,7 +23,7 @@
 #define CYBERJACK_VENDOR_ID	0x0C4B
 #define CYBERJACK_PRODUCT_ID	0x0100
 
-/* Function prototypes */
+ 
 static int cyberjack_port_probe(struct usb_serial_port *port);
 static void cyberjack_port_remove(struct usb_serial_port *port);
 static int  cyberjack_open(struct tty_struct *tty,
@@ -60,7 +38,7 @@ static void cyberjack_write_bulk_callback(struct urb *urb);
 
 static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(CYBERJACK_VENDOR_ID, CYBERJACK_PRODUCT_ID) },
-	{ }			/* Terminating entry */
+	{ }			 
 };
 
 MODULE_DEVICE_TABLE(usb, id_table);
@@ -90,11 +68,11 @@ static struct usb_serial_driver * const serial_drivers[] = {
 };
 
 struct cyberjack_private {
-	spinlock_t	lock;		/* Lock for SMP */
-	short		rdtodo;		/* Bytes still to read */
-	unsigned char	wrbuf[5*64];	/* Buffer for collecting data to write */
-	short		wrfilled;	/* Overall data size we already got */
-	short		wrsent;		/* Data already sent */
+	spinlock_t	lock;		 
+	short		rdtodo;		 
+	unsigned char	wrbuf[5*64];	 
+	short		wrfilled;	 
+	short		wrsent;		 
 };
 
 static int cyberjack_port_probe(struct usb_serial_port *port)
@@ -177,14 +155,14 @@ static int cyberjack_write(struct tty_struct *tty,
 	spin_lock_irqsave(&priv->lock, flags);
 
 	if (count+priv->wrfilled > sizeof(priv->wrbuf)) {
-		/* To much data for buffer. Reset buffer. */
+		 
 		priv->wrfilled = 0;
 		spin_unlock_irqrestore(&priv->lock, flags);
 		set_bit(0, &port->write_urbs_free);
 		return 0;
 	}
 
-	/* Copy data */
+	 
 	memcpy(priv->wrbuf + priv->wrfilled, buf, count);
 
 	usb_serial_debug_data(dev, __func__, count, priv->wrbuf + priv->wrfilled);
@@ -197,7 +175,7 @@ static int cyberjack_write(struct tty_struct *tty,
 		wrexpected = sizeof(priv->wrbuf);
 
 	if (priv->wrfilled >= wrexpected) {
-		/* We have enough data to begin transmission */
+		 
 		int length;
 
 		dev_dbg(dev, "%s - transmitting data (frame 1)\n", __func__);
@@ -207,16 +185,16 @@ static int cyberjack_write(struct tty_struct *tty,
 		memcpy(port->write_urb->transfer_buffer, priv->wrbuf, length);
 		priv->wrsent = length;
 
-		/* set up our urb */
+		 
 		port->write_urb->transfer_buffer_length = length;
 
-		/* send the data out the bulk port */
+		 
 		result = usb_submit_urb(port->write_urb, GFP_ATOMIC);
 		if (result) {
 			dev_err(&port->dev,
 				"%s - failed submitting write urb, error %d\n",
 				__func__, result);
-			/* Throw away data. No better idea what to do with it. */
+			 
 			priv->wrfilled = 0;
 			priv->wrsent = 0;
 			spin_unlock_irqrestore(&priv->lock, flags);
@@ -242,7 +220,7 @@ static int cyberjack_write(struct tty_struct *tty,
 
 static unsigned int cyberjack_write_room(struct tty_struct *tty)
 {
-	/* FIXME: .... */
+	 
 	return CYBERJACK_LOCAL_BUF_SIZE;
 }
 
@@ -256,17 +234,17 @@ static void cyberjack_read_int_callback(struct urb *urb)
 	unsigned long flags;
 	int result;
 
-	/* the urb might have been killed. */
+	 
 	if (status)
 		return;
 
 	usb_serial_debug_data(dev, __func__, urb->actual_length, data);
 
-	/* React only to interrupts signaling a bulk_in transfer */
+	 
 	if (urb->actual_length == 4 && data[0] == 0x01) {
 		short old_rdtodo;
 
-		/* This is a announcement of coming bulk_ins. */
+		 
 		unsigned short size = ((unsigned short)data[3]<<8)+data[2]+3;
 
 		spin_lock_irqsave(&priv->lock, flags);
@@ -279,7 +257,7 @@ static void cyberjack_read_int_callback(struct urb *urb)
 			goto resubmit;
 		}
 
-		/* "+=" is probably more fault tolerant than "=" */
+		 
 		priv->rdtodo += size;
 
 		dev_dbg(dev, "%s - rdtodo: %d\n", __func__, priv->rdtodo);
@@ -327,9 +305,9 @@ static void cyberjack_read_bulk_callback(struct urb *urb)
 
 	spin_lock_irqsave(&priv->lock, flags);
 
-	/* Reduce urbs to do by one. */
+	 
 	priv->rdtodo -= urb->actual_length;
-	/* Just to be sure */
+	 
 	if (priv->rdtodo < 0)
 		priv->rdtodo = 0;
 	todo = priv->rdtodo;
@@ -338,8 +316,8 @@ static void cyberjack_read_bulk_callback(struct urb *urb)
 
 	dev_dbg(dev, "%s - rdtodo: %d\n", __func__, todo);
 
-	/* Continue to read if we have still urbs to do. */
-	if (todo /* || (urb->actual_length==port->bulk_in_endpointAddress)*/) {
+	 
+	if (todo  ) {
 		result = usb_submit_urb(port->read_urb, GFP_ATOMIC);
 		if (result)
 			dev_err(dev, "%s - failed resubmitting read urb, error %d\n",
@@ -366,7 +344,7 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 
 	spin_lock_irqsave(&priv->lock, flags);
 
-	/* only do something if we have more data to send */
+	 
 	if (priv->wrfilled) {
 		int length, blksize, result;
 
@@ -379,15 +357,15 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 					priv->wrbuf + priv->wrsent, length);
 		priv->wrsent += length;
 
-		/* set up our urb */
+		 
 		port->write_urb->transfer_buffer_length = length;
 
-		/* send the data out the bulk port */
+		 
 		result = usb_submit_urb(port->write_urb, GFP_ATOMIC);
 		if (result) {
 			dev_err(dev, "%s - failed submitting write urb, error %d\n",
 				__func__, result);
-			/* Throw away data. No better idea what to do with it. */
+			 
 			priv->wrfilled = 0;
 			priv->wrsent = 0;
 			goto exit;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/ethtool_netlink.h>
 #include <net/udp_tunnel.h>
@@ -28,8 +28,8 @@ static ssize_t ethnl_udp_table_reply_size(unsigned int types, bool compact)
 		return size;
 
 	return size +
-		nla_total_size(0) + /* _UDP_TABLE */
-		nla_total_size(sizeof(u32)); /* _UDP_TABLE_SIZE */
+		nla_total_size(0) +  
+		nla_total_size(sizeof(u32));  
 }
 
 static ssize_t
@@ -49,7 +49,7 @@ ethnl_tunnel_info_reply_size(const struct ethnl_req_info *req_base,
 		return -EOPNOTSUPP;
 	}
 
-	size =	nla_total_size(0); /* _INFO_UDP_PORTS */
+	size =	nla_total_size(0);  
 
 	for (i = 0; i < UDP_TUNNEL_NIC_MAX_TABLES; i++) {
 		if (!info->tables[i].n_entries)
@@ -70,9 +70,9 @@ ethnl_tunnel_info_reply_size(const struct ethnl_req_info *req_base,
 			return ret;
 		size += ret;
 
-		size += nla_total_size(0) +		 /* _TABLE_ENTRY */
-			nla_total_size(sizeof(__be16)) + /* _ENTRY_PORT */
-			nla_total_size(sizeof(u32));	 /* _ENTRY_TYPE */
+		size += nla_total_size(0) +		  
+			nla_total_size(sizeof(__be16)) +  
+			nla_total_size(sizeof(u32));	  
 	}
 
 	return size;

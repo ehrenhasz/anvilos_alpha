@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/font.h>
@@ -33,10 +25,9 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 					  - SOLO_CAP_PAGE_SIZE) >> 16)
 		       | SOLO_CAP_BASE_ADDR(SOLO_CAP_EXT_ADDR(solo_dev) >> 16));
 
-	/* XXX: Undocumented bits at b17 and b24 */
+	 
 	if (solo_dev->type == SOLO_DEV_6110) {
-		/* NOTE: Ref driver has (62 << 24) here as well, but it causes
-		 * wacked out frame timing on 4-port 6110. */
+		 
 		solo_reg_write(solo_dev, SOLO_CAP_BTW,
 			       (1 << 17) | SOLO_CAP_PROG_BANDWIDTH(2) |
 			       SOLO_CAP_MAX_BANDWIDTH(36));
@@ -46,7 +37,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 			       SOLO_CAP_MAX_BANDWIDTH(32));
 	}
 
-	/* Set scale 1, 9 dimension */
+	 
 	width = solo_dev->video_hsize;
 	height = solo_dev->video_vsize;
 	solo_reg_write(solo_dev, SOLO_DIM_SCALE1,
@@ -54,7 +45,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 		       SOLO_DIM_V_MB_NUM_FRAME(height / 8) |
 		       SOLO_DIM_V_MB_NUM_FIELD(height / 16));
 
-	/* Set scale 2, 10 dimension */
+	 
 	width = solo_dev->video_hsize / 2;
 	height = solo_dev->video_vsize;
 	solo_reg_write(solo_dev, SOLO_DIM_SCALE2,
@@ -62,7 +53,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 		       SOLO_DIM_V_MB_NUM_FRAME(height / 8) |
 		       SOLO_DIM_V_MB_NUM_FIELD(height / 16));
 
-	/* Set scale 3, 11 dimension */
+	 
 	width = solo_dev->video_hsize / 2;
 	height = solo_dev->video_vsize / 2;
 	solo_reg_write(solo_dev, SOLO_DIM_SCALE3,
@@ -70,7 +61,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 		       SOLO_DIM_V_MB_NUM_FRAME(height / 8) |
 		       SOLO_DIM_V_MB_NUM_FIELD(height / 16));
 
-	/* Set scale 4, 12 dimension */
+	 
 	width = solo_dev->video_hsize / 3;
 	height = solo_dev->video_vsize / 3;
 	solo_reg_write(solo_dev, SOLO_DIM_SCALE4,
@@ -78,7 +69,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 		       SOLO_DIM_V_MB_NUM_FRAME(height / 8) |
 		       SOLO_DIM_V_MB_NUM_FIELD(height / 16));
 
-	/* Set scale 5, 13 dimension */
+	 
 	width = solo_dev->video_hsize / 4;
 	height = solo_dev->video_vsize / 2;
 	solo_reg_write(solo_dev, SOLO_DIM_SCALE5,
@@ -86,7 +77,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 		       SOLO_DIM_V_MB_NUM_FRAME(height / 8) |
 		       SOLO_DIM_V_MB_NUM_FIELD(height / 16));
 
-	/* Progressive */
+	 
 	width = VI_PROG_HSIZE;
 	height = VI_PROG_VSIZE;
 	solo_reg_write(solo_dev, SOLO_DIM_PROG,
@@ -94,7 +85,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 		       SOLO_DIM_V_MB_NUM_FRAME(height / 16) |
 		       SOLO_DIM_V_MB_NUM_FIELD(height / 16));
 
-	/* Clear OSD */
+	 
 	solo_reg_write(solo_dev, SOLO_VE_OSD_CH, 0);
 	solo_reg_write(solo_dev, SOLO_VE_OSD_BASE, SOLO_EOSD_EXT_ADDR >> 16);
 	solo_reg_write(solo_dev, SOLO_VE_OSD_CLR,
@@ -107,7 +98,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 		solo_reg_write(solo_dev, SOLO_VE_OSD_OPT, SOLO_VE_OSD_V_DOUBLE
 			       | SOLO_VE_OSD_H_SHADOW | SOLO_VE_OSD_V_SHADOW);
 
-	/* Clear OSG buffer */
+	 
 	buf = kzalloc(SOLO_EOSD_EXT_SIZE(solo_dev), GFP_KERNEL);
 	if (!buf)
 		return;
@@ -123,7 +114,7 @@ static void solo_capture_config(struct solo_dev *solo_dev)
 
 #define SOLO_OSD_WRITE_SIZE (16 * OSD_TEXT_MAX)
 
-/* Should be called with enable_lock held */
+ 
 int solo_osd_print(struct solo_enc_dev *solo_enc)
 {
 	struct solo_dev *solo_dev = solo_enc->solo_dev;
@@ -139,7 +130,7 @@ int solo_osd_print(struct solo_enc_dev *solo_enc)
 
 	reg = solo_reg_read(solo_dev, SOLO_VE_OSD_CH);
 	if (!*str) {
-		/* Disable OSD on this channel */
+		 
 		reg &= ~(1 << solo_enc->ch);
 		goto out;
 	}
@@ -158,7 +149,7 @@ int solo_osd_print(struct solo_enc_dev *solo_enc)
 		     SOLO_EOSD_EXT_ADDR_CHAN(solo_dev, solo_enc->ch),
 		     SOLO_OSD_WRITE_SIZE, 0, 0);
 
-	/* Enable OSD on this channel */
+	 
 	reg |= (1 << solo_enc->ch);
 
 out:
@@ -166,9 +157,7 @@ out:
 	return 0;
 }
 
-/*
- * Set channel Quality Profile (0-3).
- */
+ 
 void solo_s_jpeg_qp(struct solo_dev *solo_dev, unsigned int ch,
 		    unsigned int qp)
 {
@@ -236,7 +225,7 @@ static void solo_jpeg_config(struct solo_dev *solo_dev)
 
 	spin_lock_init(&solo_dev->jpeg_qp_lock);
 
-	/* Initialize Quality Profile for all channels */
+	 
 	solo_dev->jpeg_qp[0] = solo_dev->jpeg_qp[1] = SOLO_QP_INIT;
 	solo_reg_write(solo_dev, SOLO_VE_JPEG_QP_CH_L, SOLO_QP_INIT);
 	solo_reg_write(solo_dev, SOLO_VE_JPEG_QP_CH_H, SOLO_QP_INIT);

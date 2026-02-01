@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -1012,7 +1010,7 @@ static const struct freq_tbl ftbl_axi_clk_src[] = {
 	{ }
 };
 
-/* RO to linux */
+ 
 static struct clk_rcg2 axi_clk_src = {
 	.cmd_rcgr = 0xd000,
 	.hid_width = 5,

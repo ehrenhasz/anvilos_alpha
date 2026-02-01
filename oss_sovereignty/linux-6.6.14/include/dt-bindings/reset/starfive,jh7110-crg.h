@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_RESET_STARFIVE_JH7110_CRG_H__
 #define __DT_BINDINGS_RESET_STARFIVE_JH7110_CRG_H__
 
-/* SYSCRG resets */
+ 
 #define JH7110_SYSRST_JTAG_APB			0
 #define JH7110_SYSRST_SYSCON_APB		1
 #define JH7110_SYSRST_IOMUX_APB			2
@@ -140,7 +137,7 @@
 
 #define JH7110_SYSRST_END			126
 
-/* AONCRG resets */
+ 
 #define JH7110_AONRST_GMAC0_AXI			0
 #define JH7110_AONRST_GMAC0_AHB			1
 #define JH7110_AONRST_IOMUX			2
@@ -152,7 +149,7 @@
 
 #define JH7110_AONRST_END			8
 
-/* STGCRG resets */
+ 
 #define JH7110_STGRST_SYSCON			0
 #define JH7110_STGRST_HIFI4_CORE		1
 #define JH7110_STGRST_HIFI4_AXI			2
@@ -179,7 +176,7 @@
 
 #define JH7110_STGRST_END			23
 
-/* ISPCRG resets */
+ 
 #define JH7110_ISPRST_ISPV2_TOP_WRAPPER_P	0
 #define JH7110_ISPRST_ISPV2_TOP_WRAPPER_C	1
 #define JH7110_ISPRST_M31DPHY_HW		2
@@ -195,7 +192,7 @@
 
 #define JH7110_ISPRST_END			12
 
-/* VOUTCRG resets */
+ 
 #define JH7110_VOUTRST_DC8200_AXI		0
 #define JH7110_VOUTRST_DC8200_AHB		1
 #define JH7110_VOUTRST_DC8200_CORE		2
@@ -211,4 +208,4 @@
 
 #define JH7110_VOUTRST_END			12
 
-#endif /* __DT_BINDINGS_RESET_STARFIVE_JH7110_CRG_H__ */
+#endif  

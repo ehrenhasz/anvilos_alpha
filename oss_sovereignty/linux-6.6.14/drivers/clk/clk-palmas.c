@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Clock driver for Palmas device.
- *
- * Copyright (c) 2013, NVIDIA Corporation.
- * Copyright (c) 2013-2014 Texas Instruments, Inc.
- *
- * Author:	Laxman Dewangan <ldewangan@nvidia.com>
- *		Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -72,10 +64,7 @@ static void palmas_clks_unprepare(struct clk_hw *hw)
 	struct palmas_clock_info *cinfo = to_palmas_clks_info(hw);
 	int ret;
 
-	/*
-	 * Clock can be disabled through external pin if it is externally
-	 * controlled.
-	 */
+	 
 	if (cinfo->ext_control_pin)
 		return;
 

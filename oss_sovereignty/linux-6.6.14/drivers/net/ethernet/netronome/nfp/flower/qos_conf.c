@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/hash.h>
 #include <linux/hashtable.h>
@@ -31,40 +31,7 @@ enum NFP_FL_QOS_TYPES {
 	NFP_FL_QOS_TYPE_MAX,
 };
 
-/* Police cmsg for configuring a trTCM traffic conditioner (8W/32B)
- * See RFC 2698 for more details.
- * ----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |             Reserved          |p|         Reserved            |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                          Port Ingress                         |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                        Token Bucket Peak                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                     Token Bucket Committed                    |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                         Peak Burst Size                       |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                      Committed Burst Size                     |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                      Peak Information Rate                    |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                    Committed Information Rate                 |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * Word[0](FLag options):
- * [15] p(pps) 1 for pps, 0 for bps
- *
- * Meter control message
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-------------------------------+-+---+-----+-+---------+-+---+-+
- * |            Reserved           |p| Y |TYPE |E|TSHFV    |P| PC|R|
- * +-------------------------------+-+---+-----+-+---------+-+---+-+
- * |                            meter ID                           |
- * +-------------------------------+-------------------------------+
- *
- */
+ 
 struct nfp_police_config {
 	struct nfp_police_cfg_head head;
 	__be32 bkt_tkn_p;
@@ -253,7 +220,7 @@ nfp_flower_install_rate_limiter(struct nfp_app *app, struct net_device *netdev,
 	}
 
 	for (i = 0 ; i < action_num; i++) {
-		/* Set QoS data for this interface */
+		 
 		action = paction + i;
 		if (action->police.rate_bytes_ps > 0) {
 			rate = action->police.rate_bytes_ps;
@@ -320,12 +287,7 @@ nfp_flower_remove_rate_limiter(struct nfp_app *app, struct net_device *netdev,
 	for (i = 0 ; i < NFP_FL_QOS_TYPE_MAX; i++) {
 		if (i == NFP_FL_QOS_TYPE_PPS && !pps_support)
 			break;
-		/* 0:bps 1:pps
-		 * Clear QoS data for this interface.
-		 * There is no need to check if a specific QOS_TYPE was
-		 * configured as the firmware handles clearing a QoS entry
-		 * safely, even if it wasn't explicitly added.
-		 */
+		 
 		skb = nfp_flower_cmsg_alloc(repr->app, sizeof(struct nfp_police_config),
 					    NFP_FLOWER_CMSG_TYPE_QOS_DEL, GFP_KERNEL);
 		if (!skb)
@@ -550,7 +512,7 @@ int nfp_flower_setup_qos_offload(struct nfp_app *app, struct net_device *netdev,
 	return ret;
 }
 
-/* Offload tc action, currently only for tc police */
+ 
 
 static const struct rhashtable_params stats_meter_table_params = {
 	.key_offset	= offsetof(struct nfp_meter_entry, meter_id),
@@ -707,7 +669,7 @@ nfp_act_install_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
 	pps_support = !!(fl_priv->flower_ext_feats & NFP_FL_FEATS_QOS_PPS);
 
 	for (i = 0 ; i < action_num; i++) {
-		/* Set qos associate data for this interface */
+		 
 		action = paction + i;
 		if (action->id != FLOW_ACTION_POLICE) {
 			NL_SET_ERR_MSG_MOD(extack,
@@ -758,7 +720,7 @@ nfp_act_remove_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
 	u32 meter_id;
 	bool pps;
 
-	/* Delete qos associate data for this interface */
+	 
 	if (fl_act->id != FLOW_ACTION_POLICE) {
 		NL_SET_ERR_MSG_MOD(extack,
 				   "unsupported offload: qos rate limit offload requires police action");

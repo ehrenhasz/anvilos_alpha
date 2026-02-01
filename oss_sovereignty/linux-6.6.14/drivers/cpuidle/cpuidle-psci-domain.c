@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PM domains for CPUs via genpd - managed by cpuidle-psci.
- *
- * Copyright (C) 2019 Linaro Ltd.
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "CPUidle PSCI: " fmt
 
@@ -40,7 +34,7 @@ static int psci_pd_power_off(struct generic_pm_domain *pd)
 	if (!psci_pd_allow_domain_state)
 		return -EBUSY;
 
-	/* OSI mode is enabled, set the corresponding domain state. */
+	 
 	pd_state = state->data;
 	psci_set_domain_state(*pd_state);
 
@@ -64,16 +58,13 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
 
 	pd->flags |= GENPD_FLAG_IRQ_SAFE | GENPD_FLAG_CPU_DOMAIN;
 
-	/*
-	 * Allow power off when OSI has been successfully enabled.
-	 * PREEMPT_RT is not yet ready to enter domain idle states.
-	 */
+	 
 	if (use_osi && !IS_ENABLED(CONFIG_PREEMPT_RT))
 		pd->power_off = psci_pd_power_off;
 	else
 		pd->flags |= GENPD_FLAG_ALWAYS_ON;
 
-	/* Use governor for CPU PM domains if it has some states to manage. */
+	 
 	pd_gov = pd->states ? &pm_domain_cpu_gov : NULL;
 
 	ret = pm_genpd_init(pd, pd_gov, false);
@@ -122,10 +113,7 @@ static void psci_pd_remove(void)
 
 static void psci_cpuidle_domain_sync_state(struct device *dev)
 {
-	/*
-	 * All devices have now been attached/probed to the PM domain topology,
-	 * hence it's fine to allow domain states to be picked.
-	 */
+	 
 	psci_pd_allow_domain_state = true;
 }
 
@@ -144,10 +132,7 @@ static int psci_cpuidle_domain_probe(struct platform_device *pdev)
 	if (!np)
 		return -ENODEV;
 
-	/*
-	 * Parse child nodes for the "#power-domain-cells" property and
-	 * initialize a genpd/genpd-of-provider pair when it's found.
-	 */
+	 
 	for_each_child_of_node(np, node) {
 		if (!of_property_present(node, "#power-domain-cells"))
 			continue;
@@ -161,16 +146,16 @@ static int psci_cpuidle_domain_probe(struct platform_device *pdev)
 		pd_count++;
 	}
 
-	/* Bail out if not using the hierarchical CPU topology. */
+	 
 	if (!pd_count)
 		return 0;
 
-	/* Link genpd masters/subdomains to model the CPU topology. */
+	 
 	ret = dt_idle_pd_init_topology(np);
 	if (ret)
 		goto remove_pd;
 
-	/* let's try to enable OSI. */
+	 
 	ret = psci_set_osi_mode(use_osi);
 	if (ret)
 		goto remove_pd;

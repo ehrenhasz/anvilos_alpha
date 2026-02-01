@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2021 Intel Corporation
+
+
 
 #include <linux/auxiliary_bus.h>
 #include <linux/bitfield.h>
@@ -17,7 +17,7 @@
 
 #define DIMM_MASK_CHECK_DELAY_JIFFIES	msecs_to_jiffies(5000)
 
-/* Max number of channel ranks and DIMM index per channel */
+ 
 #define CHAN_RANK_MAX_ON_HSX	8
 #define DIMM_IDX_MAX_ON_HSX	3
 #define CHAN_RANK_MAX_ON_BDX	4
@@ -127,7 +127,7 @@ static int update_thresholds(struct peci_dimmtemp *priv, int dimm_no)
 		return 0;
 
 	ret = priv->gen_info->read_thresholds(priv, dimm_order, chan_rank, &data);
-	if (ret == -ENODATA) /* Use default or previous value */
+	if (ret == -ENODATA)  
 		return 0;
 	if (ret)
 		return ret;
@@ -239,12 +239,7 @@ static int check_populated_dimms(struct peci_dimmtemp *priv)
 	for (chan_rank = 0; chan_rank < chan_rank_max; chan_rank++) {
 		ret = peci_pcs_read(priv->peci_dev, PECI_PCS_DDR_DIMM_TEMP, chan_rank, &pcs);
 		if (ret) {
-			/*
-			 * Overall, we expect either success or -EINVAL in
-			 * order to determine whether DIMM is populated or not.
-			 * For anything else we fall back to deferring the
-			 * detection to be performed at a later point in time.
-			 */
+			 
 			if (ret == -EINVAL) {
 				bitmap_set(chan_rank_empty, chan_rank, 1);
 				continue;
@@ -258,12 +253,7 @@ static int check_populated_dimms(struct peci_dimmtemp *priv)
 				bitmap_set(dimm_mask, chan_rank * dimm_idx_max + dimm_idx, 1);
 	}
 
-	/*
-	 * If we got all -EINVALs, it means that the CPU doesn't have any
-	 * DIMMs. Unfortunately, it may also happen at the very start of
-	 * host platform boot. Retrying a couple of times lets us make sure
-	 * that the state is persistent.
-	 */
+	 
 	if (bitmap_full(chan_rank_empty, chan_rank_max)) {
 		if (priv->no_dimm_retry_count < NO_DIMM_RETRY_COUNT_MAX) {
 			priv->no_dimm_retry_count++;
@@ -274,10 +264,7 @@ static int check_populated_dimms(struct peci_dimmtemp *priv)
 		return -ENODEV;
 	}
 
-	/*
-	 * It's possible that memory training is not done yet. In this case we
-	 * defer the detection to be performed at a later point in time.
-	 */
+	 
 	if (bitmap_empty(dimm_mask, DIMM_NUMS_MAX)) {
 		priv->no_dimm_retry_count = 0;
 		return -EAGAIN;
@@ -323,12 +310,7 @@ static int create_dimm_temp_info(struct peci_dimmtemp *priv)
 	int ret, i, channels;
 	struct device *dev;
 
-	/*
-	 * We expect to either find populated DIMMs and carry on with creating
-	 * sensors, or find out that there are no DIMMs populated.
-	 * All other states mean that the platform never reached the state that
-	 * allows to check DIMM state - causing us to retry later on.
-	 */
+	 
 	ret = check_populated_dimms(priv);
 	if (ret == -ENODEV) {
 		dev_dbg(priv->dev, "No DIMMs found\n");
@@ -397,11 +379,7 @@ static int peci_dimmtemp_probe(struct auxiliary_device *adev, const struct auxil
 	priv->peci_dev = peci_dev;
 	priv->gen_info = (const struct dimm_info *)id->driver_data;
 
-	/*
-	 * This is just a sanity check. Since we're using commands that are
-	 * guaranteed to be supported on a given platform, we should never see
-	 * revision lower than expected.
-	 */
+	 
 	if (peci_dev->info.peci_revision < priv->gen_info->min_peci_revision)
 		dev_warn(priv->dev,
 			 "Unexpected PECI revision %#x, some features may be unavailable\n",
@@ -428,16 +406,7 @@ read_thresholds_hsx(struct peci_dimmtemp *priv, int dimm_order, int chan_rank, u
 	u16 reg;
 	int ret;
 
-	/*
-	 * Device 20, Function 0: IMC 0 channel 0 -> rank 0
-	 * Device 20, Function 1: IMC 0 channel 1 -> rank 1
-	 * Device 21, Function 0: IMC 0 channel 2 -> rank 2
-	 * Device 21, Function 1: IMC 0 channel 3 -> rank 3
-	 * Device 23, Function 0: IMC 1 channel 0 -> rank 4
-	 * Device 23, Function 1: IMC 1 channel 1 -> rank 5
-	 * Device 24, Function 0: IMC 1 channel 2 -> rank 6
-	 * Device 24, Function 1: IMC 1 channel 3 -> rank 7
-	 */
+	 
 	dev = 20 + chan_rank / 2 + chan_rank / 4;
 	func = chan_rank % 2;
 	reg = 0x120 + dimm_order * 4;
@@ -456,12 +425,7 @@ read_thresholds_bdxd(struct peci_dimmtemp *priv, int dimm_order, int chan_rank, 
 	u16 reg;
 	int ret;
 
-	/*
-	 * Device 10, Function 2: IMC 0 channel 0 -> rank 0
-	 * Device 10, Function 6: IMC 0 channel 1 -> rank 1
-	 * Device 12, Function 2: IMC 1 channel 0 -> rank 2
-	 * Device 12, Function 6: IMC 1 channel 1 -> rank 3
-	 */
+	 
 	dev = 10 + chan_rank / 2 * 2;
 	func = (chan_rank % 2) ? 6 : 2;
 	reg = 0x120 + dimm_order * 4;
@@ -480,14 +444,7 @@ read_thresholds_skx(struct peci_dimmtemp *priv, int dimm_order, int chan_rank, u
 	u16 reg;
 	int ret;
 
-	/*
-	 * Device 10, Function 2: IMC 0 channel 0 -> rank 0
-	 * Device 10, Function 6: IMC 0 channel 1 -> rank 1
-	 * Device 11, Function 2: IMC 0 channel 2 -> rank 2
-	 * Device 12, Function 2: IMC 1 channel 0 -> rank 3
-	 * Device 12, Function 6: IMC 1 channel 1 -> rank 4
-	 * Device 13, Function 2: IMC 1 channel 2 -> rank 5
-	 */
+	 
 	dev = 10 + chan_rank / 3 * 2 + (chan_rank % 3 == 2 ? 1 : 0);
 	func = chan_rank % 3 == 1 ? 6 : 2;
 	reg = 0x120 + dimm_order * 4;
@@ -509,22 +466,13 @@ read_thresholds_icx(struct peci_dimmtemp *priv, int dimm_order, int chan_rank, u
 
 	ret = peci_ep_pci_local_read(priv->peci_dev, 0, 13, 0, 2, 0xd4, &reg_val);
 	if (ret || !(reg_val & BIT(31)))
-		return -ENODATA; /* Use default or previous value */
+		return -ENODATA;  
 
 	ret = peci_ep_pci_local_read(priv->peci_dev, 0, 13, 0, 2, 0xd0, &reg_val);
 	if (ret)
-		return -ENODATA; /* Use default or previous value */
+		return -ENODATA;  
 
-	/*
-	 * Device 26, Offset 224e0: IMC 0 channel 0 -> rank 0
-	 * Device 26, Offset 264e0: IMC 0 channel 1 -> rank 1
-	 * Device 27, Offset 224e0: IMC 1 channel 0 -> rank 2
-	 * Device 27, Offset 264e0: IMC 1 channel 1 -> rank 3
-	 * Device 28, Offset 224e0: IMC 2 channel 0 -> rank 4
-	 * Device 28, Offset 264e0: IMC 2 channel 1 -> rank 5
-	 * Device 29, Offset 224e0: IMC 3 channel 0 -> rank 6
-	 * Device 29, Offset 264e0: IMC 3 channel 1 -> rank 7
-	 */
+	 
 	dev = 26 + chan_rank / 2;
 	offset = 0x224e0 + dimm_order * 4 + (chan_rank % 2) * 0x4000;
 
@@ -546,22 +494,13 @@ read_thresholds_spr(struct peci_dimmtemp *priv, int dimm_order, int chan_rank, u
 
 	ret = peci_ep_pci_local_read(priv->peci_dev, 0, 30, 0, 2, 0xd4, &reg_val);
 	if (ret || !(reg_val & BIT(31)))
-		return -ENODATA; /* Use default or previous value */
+		return -ENODATA;  
 
 	ret = peci_ep_pci_local_read(priv->peci_dev, 0, 30, 0, 2, 0xd0, &reg_val);
 	if (ret)
-		return -ENODATA; /* Use default or previous value */
+		return -ENODATA;  
 
-	/*
-	 * Device 26, Offset 219a8: IMC 0 channel 0 -> rank 0
-	 * Device 26, Offset 299a8: IMC 0 channel 1 -> rank 1
-	 * Device 27, Offset 219a8: IMC 1 channel 0 -> rank 2
-	 * Device 27, Offset 299a8: IMC 1 channel 1 -> rank 3
-	 * Device 28, Offset 219a8: IMC 2 channel 0 -> rank 4
-	 * Device 28, Offset 299a8: IMC 2 channel 1 -> rank 5
-	 * Device 29, Offset 219a8: IMC 3 channel 0 -> rank 6
-	 * Device 29, Offset 299a8: IMC 3 channel 1 -> rank 7
-	 */
+	 
 	dev = 26 + chan_rank / 2;
 	offset = 0x219a8 + dimm_order * 4 + (chan_rank % 2) * 0x8000;
 

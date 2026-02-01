@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sys/mman.h>
 #include <stdint.h>
@@ -154,7 +154,7 @@ static bool is_vma_lock_on_fault(unsigned long addr)
 	vma_size = get_value_for_name(addr, SIZE);
 	vma_rss = get_value_for_name(addr, RSS);
 
-	/* only one page is faulted in */
+	 
 	return (vma_rss < vma_size);
 }
 
@@ -212,7 +212,7 @@ static int test_mlock_lock()
 	if (!lock_check((unsigned long)map))
 		goto unmap;
 
-	/* Now unlock and recheck attributes */
+	 
 	if (munlock(map, 2 * page_size)) {
 		perror("munlock()");
 		goto unmap;
@@ -275,7 +275,7 @@ static int test_mlock_onfault()
 	if (onfault_check(map))
 		goto unmap;
 
-	/* Now unlock and recheck attributes */
+	 
 	if (munlock(map, 2 * page_size)) {
 		if (errno == ENOSYS) {
 			printf("Cannot call new mlock family, skipping test\n");
@@ -438,11 +438,7 @@ static int test_vma_management(bool call_mlock)
 		goto out;
 	}
 
-	/*
-	 * Before we unlock a portion, we need to that all three pages are in
-	 * the same VMA.  If they are not we abort this test (Note that this is
-	 * not a failure)
-	 */
+	 
 	if (page1.start != page2.start || page2.start != page3.start) {
 		printf("VMAs are not merged to start, aborting test\n");
 		ret = 0;
@@ -461,13 +457,13 @@ static int test_vma_management(bool call_mlock)
 		goto out;
 	}
 
-	/* All three VMAs should be different */
+	 
 	if (page1.start == page2.start || page2.start == page3.start) {
 		printf("failed to split VMA for munlock\n");
 		goto out;
 	}
 
-	/* Now unlock the first and third page and check the VMAs again */
+	 
 	if (munlock(map, page_size * 3)) {
 		perror("munlock()");
 		goto out;
@@ -480,7 +476,7 @@ static int test_vma_management(bool call_mlock)
 		goto out;
 	}
 
-	/* Now all three VMAs should be the same */
+	 
 	if (page1.start != page2.start || page2.start != page3.start) {
 		printf("failed to merge VMAs after munlock\n");
 		goto out;

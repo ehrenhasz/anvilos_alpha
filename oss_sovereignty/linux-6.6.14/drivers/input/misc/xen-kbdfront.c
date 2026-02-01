@@ -1,15 +1,4 @@
-/*
- * Xen para-virtual input device
- *
- * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
- * Copyright (C) 2006-2008 Red Hat, Inc., Markus Armbruster <armbru@redhat.com>
- *
- *  Based on linux/drivers/input/mouse/sermouse.c
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License. See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -41,7 +30,7 @@ struct xenkbd_info {
 	int irq;
 	struct xenbus_device *xbdev;
 	char phys[32];
-	/* current MT slot/contact ID we are injecting events in */
+	 
 	int mtouch_cur_contact_id;
 };
 
@@ -55,10 +44,7 @@ static void xenkbd_remove(struct xenbus_device *);
 static int xenkbd_connect_backend(struct xenbus_device *, struct xenkbd_info *);
 static void xenkbd_disconnect_backend(struct xenkbd_info *);
 
-/*
- * Note: if you need to send out events, see xenfb_do_update() for how
- * to do that.
- */
+ 
 
 static void xenkbd_handle_motion_event(struct xenkbd_info *info,
 				       struct xenkbd_motion *motion)
@@ -97,7 +83,7 @@ static void xenkbd_handle_key_event(struct xenkbd_info *info,
 	} else if (test_bit(key->keycode, info->kbd->keybit)) {
 		dev = info->kbd;
 		if (key->pressed && test_bit(key->keycode, info->kbd->key))
-			value = 2; /* Mark as autorepeat */
+			value = 2;  
 	} else {
 		pr_warn("unhandled keycode 0x%x\n", key->keycode);
 		return;
@@ -187,10 +173,10 @@ static irqreturn_t input_handler(int rq, void *dev_id)
 	prod = page->in_prod;
 	if (prod == page->in_cons)
 		return IRQ_HANDLED;
-	rmb();			/* ensure we see ring contents up to prod */
+	rmb();			 
 	for (cons = page->in_cons; cons != prod; cons++)
 		xenkbd_handle_event(info, &XENKBD_IN_RING_REF(page, cons));
-	mb();			/* ensure we got ring contents */
+	mb();			 
 	page->in_cons = cons;
 	notify_remote_via_irq(info->irq);
 
@@ -220,17 +206,14 @@ static int xenkbd_probe(struct xenbus_device *dev,
 	if (!info->page)
 		goto error_nomem;
 
-	/*
-	 * The below are reverse logic, e.g. if the feature is set, then
-	 * do not expose the corresponding virtual device.
-	 */
+	 
 	with_kbd = !xenbus_read_unsigned(dev->otherend,
 					 XENKBD_FIELD_FEAT_DSBL_KEYBRD, 0);
 
 	with_ptr = !xenbus_read_unsigned(dev->otherend,
 					 XENKBD_FIELD_FEAT_DSBL_POINTER, 0);
 
-	/* Direct logic: if set, then create multi-touch device. */
+	 
 	with_mtouch = xenbus_read_unsigned(dev->otherend,
 					   XENKBD_FIELD_FEAT_MTOUCH, 0);
 	if (with_mtouch) {
@@ -242,7 +225,7 @@ static int xenkbd_probe(struct xenbus_device *dev,
 		}
 	}
 
-	/* keyboard */
+	 
 	if (with_kbd) {
 		kbd = input_allocate_device();
 		if (!kbd)
@@ -269,11 +252,11 @@ static int xenkbd_probe(struct xenbus_device *dev,
 		info->kbd = kbd;
 	}
 
-	/* pointing device */
+	 
 	if (with_ptr) {
 		unsigned int abs;
 
-		/* Set input abs params to match backend screen res */
+		 
 		abs = xenbus_read_unsigned(dev->otherend,
 					   XENKBD_FIELD_FEAT_ABS_POINTER, 0);
 		ptr_size[KPARAM_X] = xenbus_read_unsigned(dev->otherend,
@@ -326,7 +309,7 @@ static int xenkbd_probe(struct xenbus_device *dev,
 		info->ptr = ptr;
 	}
 
-	/* multi-touch device */
+	 
 	if (with_mtouch) {
 		int num_cont, width, height;
 
@@ -511,11 +494,7 @@ static void xenkbd_backend_changed(struct xenbus_device *dev,
 		break;
 
 	case XenbusStateConnected:
-		/*
-		 * Work around xenbus race condition: If backend goes
-		 * through InitWait to Connected fast enough, we can
-		 * get Connected twice here.
-		 */
+		 
 		if (dev->state != XenbusStateConnected)
 			xenbus_switch_state(dev, XenbusStateConnected);
 		break;
@@ -523,7 +502,7 @@ static void xenkbd_backend_changed(struct xenbus_device *dev,
 	case XenbusStateClosed:
 		if (dev->state == XenbusStateClosed)
 			break;
-		fallthrough;	/* Missed the backend's CLOSING state */
+		fallthrough;	 
 	case XenbusStateClosing:
 		xenbus_frontend_closed(dev);
 		break;
@@ -549,7 +528,7 @@ static int __init xenkbd_init(void)
 	if (!xen_domain())
 		return -ENODEV;
 
-	/* Nothing to do if running in dom0. */
+	 
 	if (xen_initial_domain())
 		return -ENODEV;
 

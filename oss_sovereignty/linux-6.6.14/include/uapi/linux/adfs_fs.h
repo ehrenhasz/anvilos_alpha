@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_ADFS_FS_H
 #define _UAPI_ADFS_FS_H
 
 #include <linux/types.h>
 #include <linux/magic.h>
 
-/*
- * Disc Record at disc address 0xc00
- */
+ 
 struct adfs_discrecord {
     __u8  log2secsize;
     __u8  secspertrack;
@@ -42,4 +40,4 @@ struct adfs_discrecord {
 #define ADFS_DR_SIZE		 60
 #define ADFS_DR_SIZE_BITS	(ADFS_DR_SIZE << 3)
 
-#endif /* _UAPI_ADFS_FS_H */
+#endif  

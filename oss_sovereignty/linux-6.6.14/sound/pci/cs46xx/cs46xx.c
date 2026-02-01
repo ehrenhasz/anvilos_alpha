@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  The driver for the Cirrus Logic's Sound Fusion CS46XX based soundcards
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
 
-/*
-  NOTES:
-  - sometimes the sound is metallic and sibilant, unloading and 
-    reloading the module may solve this.
-*/
+ 
+
+ 
 
 #include <linux/pci.h>
 #include <linux/time.h>
@@ -22,9 +15,9 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Cirrus Logic Sound Fusion CS46XX");
 MODULE_LICENSE("GPL");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	 
 static bool external_amp[SNDRV_CARDS];
 static bool thinkpad[SNDRV_CARDS];
 static bool mmap_valid[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 1};
@@ -43,9 +36,9 @@ module_param_array(mmap_valid, bool, NULL, 0444);
 MODULE_PARM_DESC(mmap_valid, "Support OSS mmap.");
 
 static const struct pci_device_id snd_cs46xx_ids[] = {
-	{ PCI_VDEVICE(CIRRUS, 0x6001), 0, },   /* CS4280 */
-	{ PCI_VDEVICE(CIRRUS, 0x6003), 0, },   /* CS4612 */
-	{ PCI_VDEVICE(CIRRUS, 0x6004), 0, },   /* CS4615 */
+	{ PCI_VDEVICE(CIRRUS, 0x6001), 0, },    
+	{ PCI_VDEVICE(CIRRUS, 0x6003), 0, },    
+	{ PCI_VDEVICE(CIRRUS, 0x6004), 0, },    
 	{ 0, }
 };
 

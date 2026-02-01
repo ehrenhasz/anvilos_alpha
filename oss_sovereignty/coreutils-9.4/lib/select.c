@@ -1,30 +1,8 @@
-/* Emulation for select(2)
-   Contributed by Paolo Bonzini.
-
-   Copyright 2008-2023 Free Software Foundation, Inc.
-
-   This file is part of gnulib.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <sys/select.h>
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* Native Windows.  */
+ 
 
 #include <alloca.h>
 #include <assert.h>
@@ -39,7 +17,7 @@
 #include <conio.h>
 #include <time.h>
 
-/* Get the overridden 'struct timeval'.  */
+ 
 #include <sys/time.h>
 
 #if GNULIB_MSVC_NOTHROW
@@ -50,7 +28,7 @@
 
 #undef select
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 #undef GetModuleHandle
 #define GetModuleHandle GetModuleHandleA
 #undef PeekConsoleInput
@@ -62,7 +40,7 @@
 #undef DispatchMessage
 #define DispatchMessage DispatchMessageA
 
-/* Avoid warnings from gcc -Wcast-function-type.  */
+ 
 #define GetProcAddress \
   (void *) GetProcAddress
 
@@ -71,7 +49,7 @@ struct bitset {
   unsigned char out[FD_SETSIZE / CHAR_BIT];
 };
 
-/* Declare data structures for ntdll functions.  */
+ 
 typedef struct _FILE_PIPE_LOCAL_INFORMATION {
   ULONG NamedPipeType;
   ULONG NamedPipeConfiguration;
@@ -119,15 +97,13 @@ IsSocketHandle (HANDLE h)
   if (IsConsoleHandle (h))
     return FALSE;
 
-  /* Under Wine, it seems that getsockopt returns 0 for pipes too.
-     WSAEnumNetworkEvents instead distinguishes the two correctly.  */
+   
   ev.lNetworkEvents = 0xDEADBEEF;
   WSAEnumNetworkEvents ((SOCKET) h, NULL, &ev);
   return ev.lNetworkEvents != 0xDEADBEEF;
 }
 
-/* Compute output fd_sets for libc descriptor FD (whose Windows handle is
-   H).  */
+ 
 
 static int
 windows_poll_handle (HANDLE h, int fd,
@@ -172,14 +148,7 @@ windows_poll_handle (HANDLE h, int fd,
 
       else
         {
-          /* It was the write-end of the pipe.  Check if it is writable.
-             If NtQueryInformationFile fails, optimistically assume the pipe is
-             writable.  This could happen on Windows 9x, where
-             NtQueryInformationFile is not available, or if we inherit a pipe
-             that doesn't permit FILE_READ_ATTRIBUTES access on the write end
-             (I think this should not happen since Windows XP SP2; WINE seems
-             fine too).  Otherwise, ensure that enough space is available for
-             atomic writes.  */
+           
           memset (&iosb, 0, sizeof (iosb));
           memset (&fpli, 0, sizeof (fpli));
 
@@ -210,7 +179,7 @@ windows_poll_handle (HANDLE h, int fd,
           nbuffer = avail = 0;
           bRet = GetNumberOfConsoleInputEvents (h, &nbuffer);
 
-          /* Screen buffers handles are filtered earlier.  */
+           
           assert (bRet);
           if (nbuffer == 0)
             {
@@ -291,7 +260,7 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
     {
       wait_timeout = timeout->tv_sec * 1000 + timeout->tv_usec / 1000;
 
-      /* select is also used as a portable usleep.  */
+       
       if (!rfds && !wfds && !xfds)
         {
           Sleep (wait_timeout);
@@ -306,10 +275,7 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
   nhandles = 1;
   nsock = 0;
 
-  /* Copy descriptors to bitsets.  At the same time, eliminate
-     bits in the "wrong" direction for console input buffers
-     and screen buffers, because screen buffers are waitable
-     and they will block until a character is available.  */
+   
   memset (&rbits, 0, sizeof (rbits));
   memset (&wbits, 0, sizeof (wbits));
   memset (&xbits, 0, sizeof (xbits));
@@ -354,7 +320,7 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
   else
     xfds = (fd_set *) alloca (sizeof (fd_set));
 
-  /* Zero all the fd_sets, including the application's.  */
+   
   FD_ZERO (rfds);
   FD_ZERO (wfds);
   FD_ZERO (xfds);
@@ -362,7 +328,7 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
   FD_ZERO (&handle_wfds);
   FD_ZERO (&handle_xfds);
 
-  /* Classify handles.  Create fd sets for sockets, poll the others. */
+   
   for (i = 0; i < nfds; i++)
     {
       if ((anyfds_in[i / CHAR_BIT] & (1 << (i & (CHAR_BIT - 1)))) == 0)
@@ -379,8 +345,7 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
         {
           int requested = FD_CLOSE;
 
-          /* See above; socket handles are mapped onto select, but we
-             need to map descriptors to handles.  */
+           
           if (rbits.in[i / CHAR_BIT] & (1 << (i & (CHAR_BIT - 1))))
             {
               requested |= FD_READ | FD_ACCEPT;
@@ -407,17 +372,17 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
         {
           handle_array[nhandles++] = h;
 
-          /* Poll now.  If we get an event, do not wait below.  */
+           
           if (wait_timeout != 0
               && windows_poll_handle (h, i, &rbits, &wbits, &xbits))
             wait_timeout = 0;
         }
     }
 
-  /* Place a sentinel at the end of the array.  */
+   
   handle_array[nhandles] = NULL;
 
-  /* When will the waiting period expire?  */
+   
   if (wait_timeout != INFINITE)
     tend = clock () + wait_timeout;
 
@@ -426,13 +391,11 @@ restart:
     rc = 0;
   else
     {
-      /* See if we need to wait in the loop below.  If any select is ready,
-         do MsgWaitForMultipleObjects anyway to dispatch messages, but
-         no need to call select again.  */
+       
       rc = select (0, &handle_rfds, &handle_wfds, &handle_xfds, &tv0);
       if (rc == 0)
         {
-          /* Restore the fd_sets for the other select we do below.  */
+           
           memcpy (&handle_rfds, rfds, sizeof (fd_set));
           memcpy (&handle_wfds, wfds, sizeof (fd_set));
           memcpy (&handle_xfds, xfds, sizeof (fd_set));
@@ -441,7 +404,7 @@ restart:
         wait_timeout = 0;
     }
 
-  /* How much is left to wait?  */
+   
   if (wait_timeout != INFINITE)
     {
       clock_t tnow = clock ();
@@ -458,7 +421,7 @@ restart:
 
       if (ret == WAIT_OBJECT_0 + nhandles)
         {
-          /* new input of some other kind */
+           
           BOOL bRet;
           while ((bRet = PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) != 0)
             {
@@ -470,13 +433,13 @@ restart:
         break;
     }
 
-  /* If we haven't done it yet, check the status of the sockets.  */
+   
   if (rc == 0 && nsock > 0)
     rc = select (0, &handle_rfds, &handle_wfds, &handle_xfds, &tv0);
 
   if (nhandles > 1)
     {
-      /* Count results that are not counted in the return value of select.  */
+       
       nhandles = 1;
       for (i = 0; i < nfds; i++)
         {
@@ -486,7 +449,7 @@ restart:
           h = (HANDLE) _get_osfhandle (i);
           if (h == handle_array[nhandles])
             {
-              /* Not a socket.  */
+               
               nhandles++;
               windows_poll_handle (h, i, &rbits, &wbits, &xbits);
               if (rbits.out[i / CHAR_BIT] & (1 << (i & (CHAR_BIT - 1)))
@@ -498,17 +461,10 @@ restart:
 
       if (rc == 0
           && (wait_timeout == INFINITE
-              /* If NHANDLES > 1, but no bits are set, it means we've
-                 been told incorrectly that some handle was signaled.
-                 This happens with anonymous pipes, which always cause
-                 MsgWaitForMultipleObjects to exit immediately, but no
-                 data is found ready to be read by windows_poll_handle.
-                 To avoid a total failure (whereby we return zero and
-                 don't wait at all), let's poll in a more busy loop.  */
+               
               || (wait_timeout != 0 && nhandles > 1)))
         {
-          /* Sleep 1 millisecond to avoid busy wait and retry with the
-             original fd_sets.  */
+           
           memcpy (&handle_rfds, rfds, sizeof (fd_set));
           memcpy (&handle_wfds, wfds, sizeof (fd_set));
           memcpy (&handle_xfds, xfds, sizeof (fd_set));
@@ -519,7 +475,7 @@ restart:
         timeout->tv_sec = timeout->tv_usec = 0;
     }
 
-  /* Now fill in the results.  */
+   
   FD_ZERO (rfds);
   FD_ZERO (wfds);
   FD_ZERO (xfds);
@@ -532,7 +488,7 @@ restart:
       h = (HANDLE) _get_osfhandle (i);
       if (h != handle_array[nhandles])
         {
-          /* Perform handle->descriptor mapping.  */
+           
           SOCKET s = (SOCKET) h;
           WSAEventSelect (s, NULL, 0);
           if (FD_ISSET (s, &handle_rfds))
@@ -544,7 +500,7 @@ restart:
         }
       else
         {
-          /* Not a socket.  */
+           
           nhandles++;
           if (rbits.out[i / CHAR_BIT] & (1 << (i & (CHAR_BIT - 1))))
             FD_SET (i, rfds);
@@ -558,9 +514,9 @@ restart:
   return rc;
 }
 
-#else /* ! Native Windows.  */
+#else  
 
-#include <stddef.h> /* NULL */
+#include <stddef.h>  
 #include <errno.h>
 #include <unistd.h>
 
@@ -572,7 +528,7 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
 {
   int i;
 
-  /* FreeBSD 8.2 has a bug: it does not always detect invalid fds.  */
+   
   if (nfds < 0 || nfds > FD_SETSIZE)
     {
       errno = EINVAL;
@@ -587,7 +543,7 @@ rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
         return -1;
     }
 
-  /* Interix 3.5 has a bug: it does not support nfds == 0.  */
+   
   if (nfds == 0)
     {
       nfds = 1;

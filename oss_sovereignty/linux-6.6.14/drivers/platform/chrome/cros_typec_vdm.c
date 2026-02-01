@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * USB Power Delivery Vendor Defined Message (VDM) support code.
- *
- * Copyright 2023 Google LLC
- * Author: Prashant Malani <pmalani@chromium.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_data/cros_ec_commands.h>
@@ -13,10 +8,7 @@
 #include "cros_ec_typec.h"
 #include "cros_typec_vdm.h"
 
-/*
- * Retrieves pending VDM attention messages from the EC and forwards them to the altmode driver
- * based on SVID.
- */
+ 
 void cros_typec_handle_vdm_attention(struct cros_typec_data *typec, int port_num)
 {
 	struct ec_response_typec_vdm_response resp;
@@ -53,9 +45,7 @@ void cros_typec_handle_vdm_attention(struct cros_typec_data *typec, int port_num
 	} while (resp.vdm_attention_left);
 }
 
-/*
- * Retrieves a VDM response from the EC and forwards it to the altmode driver based on SVID.
- */
+ 
 void cros_typec_handle_vdm_response(struct cros_typec_data *typec, int port_num)
 {
 	struct ec_response_typec_vdm_response resp;

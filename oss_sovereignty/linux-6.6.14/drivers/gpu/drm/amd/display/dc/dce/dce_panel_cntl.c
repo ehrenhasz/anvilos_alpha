@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "core_types.h"
@@ -92,10 +69,7 @@ static uint32_t dce_panel_cntl_hw_init(struct panel_cntl *panel_cntl)
 	uint32_t value;
 	uint32_t current_backlight;
 
-	/* It must not be 0, so we have to restore them
-	 * Bios bug w/a - period resets to zero,
-	 * restoring to cache values which is always correct
-	 */
+	 
 	REG_GET(BL_PWM_CNTL, BL_ACTIVE_INT_FRAC_CNT, &value);
 
 	if (panel_cntl->stored_backlight_registers.BL_PWM_CNTL != 0) {
@@ -119,23 +93,21 @@ static uint32_t dce_panel_cntl_hw_init(struct panel_cntl *panel_cntl)
 		REG_GET(PWRSEQ_REF_DIV, BL_PWM_REF_DIV,
 				&panel_cntl->stored_backlight_registers.LVTMA_PWRSEQ_REF_DIV_BL_PWM_REF_DIV);
 	} else {
-		/* TODO: Note: This should not really happen since VBIOS
-		 * should have initialized PWM registers on boot.
-		 */
+		 
 		REG_WRITE(BL_PWM_CNTL, 0x8000FA00);
 		REG_WRITE(BL_PWM_PERIOD_CNTL, 0x000C0FA0);
 	}
 
-	// Have driver take backlight control
-	// TakeBacklightControl(true)
+	
+	
 	value = REG_READ(BIOS_SCRATCH_2);
 	value |= ATOM_S2_VRI_BRIGHT_ENABLE;
 	REG_WRITE(BIOS_SCRATCH_2, value);
 
-	// Enable the backlight output
+	
 	REG_UPDATE(BL_PWM_CNTL, BL_PWM_EN, 1);
 
-	// Unlock group 2 backlight registers
+	
 	REG_UPDATE(BL_PWM_GRP1_REG_LOCK,
 			BL_PWM_GRP1_REG_LOCK, 0);
 
@@ -195,13 +167,9 @@ static void dce_driver_set_backlight(struct panel_cntl *panel_cntl,
 	uint32_t pwm_period_bitcnt;
 	struct dce_panel_cntl *dce_panel_cntl = TO_DCE_PANEL_CNTL(panel_cntl);
 
-	/*
-	 * 1. Find  16 bit backlight active duty cycle, where 0 <= backlight
-	 * active duty cycle <= backlight period
-	 */
+	 
 
-	/* 1.1 Apply bitmask for backlight period value based on value of BITCNT
-	 */
+	 
 	REG_GET_2(BL_PWM_PERIOD_CNTL,
 			BL_PWM_PERIOD_BITCNT, &pwm_period_bitcnt,
 			BL_PWM_PERIOD, &masked_pwm_period);
@@ -211,41 +179,33 @@ static void dce_driver_set_backlight(struct panel_cntl *panel_cntl,
 	else
 		bit_count = pwm_period_bitcnt;
 
-	/* e.g. maskedPwmPeriod = 0x24 when bitCount is 6 */
+	 
 	masked_pwm_period = masked_pwm_period & ((1 << bit_count) - 1);
 
-	/* 1.2 Calculate integer active duty cycle required upper 16 bits
-	 * contain integer component, lower 16 bits contain fractional component
-	 * of active duty cycle e.g. 0x21BDC0 = 0xEFF0 * 0x24
-	 */
+	 
 	active_duty_cycle = backlight_pwm_u16_16 * masked_pwm_period;
 
-	/* 1.3 Calculate 16 bit active duty cycle from integer and fractional
-	 * components shift by bitCount then mask 16 bits and add rounding bit
-	 * from MSB of fraction e.g. 0x86F7 = ((0x21BDC0 >> 6) & 0xFFF) + 0
-	 */
+	 
 	backlight_16bit = active_duty_cycle >> bit_count;
 	backlight_16bit &= 0xFFFF;
 	backlight_16bit += (active_duty_cycle >> (bit_count - 1)) & 0x1;
 
-	/*
-	 * 2. Program register with updated value
-	 */
+	 
 
-	/* 2.1 Lock group 2 backlight registers */
+	 
 
 	REG_UPDATE_2(BL_PWM_GRP1_REG_LOCK,
 			BL_PWM_GRP1_IGNORE_MASTER_LOCK_EN, 1,
 			BL_PWM_GRP1_REG_LOCK, 1);
 
-	// 2.2 Write new active duty cycle
+	
 	REG_UPDATE(BL_PWM_CNTL, BL_ACTIVE_INT_FRAC_CNT, backlight_16bit);
 
-	/* 2.3 Unlock group 2 backlight registers */
+	 
 	REG_UPDATE(BL_PWM_GRP1_REG_LOCK,
 			BL_PWM_GRP1_REG_LOCK, 0);
 
-	/* 3 Wait for pending bit to be cleared */
+	 
 	REG_WAIT(BL_PWM_GRP1_REG_LOCK,
 			BL_PWM_GRP1_REG_UPDATE_PENDING, 0,
 			1, 10000);

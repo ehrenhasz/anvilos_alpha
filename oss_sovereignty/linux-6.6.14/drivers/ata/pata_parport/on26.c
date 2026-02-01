@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1997-1998  Grant R. Guenther <grant@torque.net>
- *
- * on26.c is a low-level protocol driver for the
- * OnSpec 90c26 parallel to IDE adapter chip.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -15,13 +10,7 @@
 #include <asm/io.h>
 #include "pata_parport.h"
 
-/*
- * mode codes:  0  nybble reads, 8-bit writes
- *		1  8-bit reads and writes
- *		2  8-bit EPP mode
- *		3  EPP-16
- *		4  EPP-32
- */
+ 
 
 #define j44(a, b)	(((a >> 4) & 0x0f) | (b & 0xf0))
 
@@ -35,10 +24,7 @@
 		w2(5); w2(7); w2(5); w2(4);	\
 	} while (0)
 
-/*
- * cont = 0 - access the IDE register file
- * cont = 1 - access the IDE command set
- */
+ 
 
 static int on26_read_regr(struct pi_adapter *pi, int cont, int regr)
 {
@@ -128,7 +114,7 @@ static void on26_disconnect(struct pi_adapter *pi)
 
 #define	RESET_WAIT  200
 
-/* hard reset */
+ 
 static int on26_test_port(struct pi_adapter *pi)
 {
 	int i, m, d, x = 0, y = 0;

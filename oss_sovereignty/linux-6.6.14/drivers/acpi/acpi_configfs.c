@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI configfs support
- *
- * Copyright (c) 2016 Intel Corporation
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI configfs: " fmt
 

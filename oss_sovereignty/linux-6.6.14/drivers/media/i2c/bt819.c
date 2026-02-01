@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  bt819 - BT819A VideoStream Decoder (Rockwell Part)
- *
- * Copyright (C) 1999 Mike Bernson <mike@mlb.org>
- * Copyright (C) 1998 Dave Perks <dperks@ibm.net>
- *
- * Modifications for LML33/DC10plus unified driver
- * Copyright (C) 2000 Serguei Miridonov <mirsev@cicese.mx>
- *
- * Changes by Ronald Bultje <rbultje@ronald.bitfreak.net>
- *    - moved over to linux>=2.4.x i2c protocol (9/9/2002)
- *
- * This code was modify/ported from the saa7111 driver written
- * by Dave Perks.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -35,7 +21,7 @@ module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "Debug level (0-1)");
 
 
-/* ----------------------------------------------------------------------- */
+ 
 
 struct bt819 {
 	struct v4l2_subdev sd;
@@ -66,13 +52,13 @@ struct timing {
 	int vscale;
 };
 
-/* for values, see the bt819 datasheet */
+ 
 static struct timing timing_data[] = {
 	{864 - 24, 20, 625 - 2, 1, 0x0504, 0x0000},
 	{858 - 24, 20, 525 - 2, 1, 0x00f8, 0x0000},
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static inline int bt819_write(struct bt819 *decoder, u8 reg, u8 value)
 {
@@ -94,10 +80,9 @@ static int bt819_write_block(struct bt819 *decoder, const u8 *data, unsigned int
 	int ret = -1;
 	u8 reg;
 
-	/* the bt819 has an autoincrement function, use it if
-	 * the adapter understands raw I2C */
+	 
 	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-		/* do raw I2C, not smbus compatible */
+		 
 		u8 block_data[32];
 		int block_len;
 
@@ -115,7 +100,7 @@ static int bt819_write_block(struct bt819 *decoder, const u8 *data, unsigned int
 				break;
 		}
 	} else {
-		/* do some slow I2C emulation kind of thing */
+		 
 		while (len >= 2) {
 			reg = *data++;
 			ret = bt819_write(decoder, reg, *data++);
@@ -138,37 +123,29 @@ static inline int bt819_read(struct bt819 *decoder, u8 reg)
 static int bt819_init(struct v4l2_subdev *sd)
 {
 	static unsigned char init[] = {
-		/*0x1f, 0x00,*/     /* Reset */
-		0x01, 0x59,	/* 0x01 input format */
-		0x02, 0x00,	/* 0x02 temporal decimation */
-		0x03, 0x12,	/* 0x03 Cropping msb */
-		0x04, 0x16,	/* 0x04 Vertical Delay, lsb */
-		0x05, 0xe0,	/* 0x05 Vertical Active lsb */
-		0x06, 0x80,	/* 0x06 Horizontal Delay lsb */
-		0x07, 0xd0,	/* 0x07 Horizontal Active lsb */
-		0x08, 0x00,	/* 0x08 Horizontal Scaling msb */
-		0x09, 0xf8,	/* 0x09 Horizontal Scaling lsb */
-		0x0a, 0x00,	/* 0x0a Brightness control */
-		0x0b, 0x30,	/* 0x0b Miscellaneous control */
-		0x0c, 0xd8,	/* 0x0c Luma Gain lsb */
-		0x0d, 0xfe,	/* 0x0d Chroma Gain (U) lsb */
-		0x0e, 0xb4,	/* 0x0e Chroma Gain (V) msb */
-		0x0f, 0x00,	/* 0x0f Hue control */
-		0x12, 0x04,	/* 0x12 Output Format */
-		0x13, 0x20,	/* 0x13 Vertical Scaling msb 0x00
-					   chroma comb OFF, line drop scaling, interlace scaling
-					   BUG? Why does turning the chroma comb on screw up color?
-					   Bug in the bt819 stepping on my board?
-					*/
-		0x14, 0x00,	/* 0x14 Vertical Scaling lsb */
-		0x16, 0x07,	/* 0x16 Video Timing Polarity
-					   ACTIVE=active low
-					   FIELD: high=odd,
-					   vreset=active high,
-					   hreset=active high */
-		0x18, 0x68,	/* 0x18 AGC Delay */
-		0x19, 0x5d,	/* 0x19 Burst Gate Delay */
-		0x1a, 0x80,	/* 0x1a ADC Interface */
+		       
+		0x01, 0x59,	 
+		0x02, 0x00,	 
+		0x03, 0x12,	 
+		0x04, 0x16,	 
+		0x05, 0xe0,	 
+		0x06, 0x80,	 
+		0x07, 0xd0,	 
+		0x08, 0x00,	 
+		0x09, 0xf8,	 
+		0x0a, 0x00,	 
+		0x0b, 0x30,	 
+		0x0c, 0xd8,	 
+		0x0d, 0xfe,	 
+		0x0e, 0xb4,	 
+		0x0f, 0x00,	 
+		0x12, 0x04,	 
+		0x13, 0x20,	 
+		0x14, 0x00,	 
+		0x16, 0x07,	 
+		0x18, 0x68,	 
+		0x19, 0x5d,	 
+		0x1a, 0x80,	 
 	};
 
 	struct bt819 *decoder = to_bt819(sd);
@@ -185,17 +162,17 @@ static int bt819_init(struct v4l2_subdev *sd)
 	init[0x07 * 2 - 1] = timing->hactive & 0xff;
 	init[0x08 * 2 - 1] = timing->hscale >> 8;
 	init[0x09 * 2 - 1] = timing->hscale & 0xff;
-	/* 0x15 in array is address 0x19 */
-	init[0x15 * 2 - 1] = (decoder->norm & V4L2_STD_625_50) ? 115 : 93;	/* Chroma burst delay */
-	/* reset */
+	 
+	init[0x15 * 2 - 1] = (decoder->norm & V4L2_STD_625_50) ? 115 : 93;	 
+	 
 	bt819_write(decoder, 0x1f, 0x00);
 	mdelay(1);
 
-	/* init */
+	 
 	return bt819_write_block(decoder, init, sizeof(init));
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int bt819_status(struct v4l2_subdev *sd, u32 *pstatus, v4l2_std_id *pstd)
 {
@@ -249,7 +226,7 @@ static int bt819_s_std(struct v4l2_subdev *sd, v4l2_std_id std)
 		bt819_setbit(decoder, 0x01, 5, 0);
 		bt819_write(decoder, 0x18, 0x68);
 		bt819_write(decoder, 0x19, 0x5d);
-		/* bt819_setbit(decoder, 0x1a,  5, 1); */
+		 
 		timing = &timing_data[1];
 	} else if (std & V4L2_STD_PAL) {
 		v4l2_subdev_notify(sd, BT819_FIFO_RESET_LOW, NULL);
@@ -258,7 +235,7 @@ static int bt819_s_std(struct v4l2_subdev *sd, v4l2_std_id std)
 		bt819_setbit(decoder, 0x01, 5, 1);
 		bt819_write(decoder, 0x18, 0x7f);
 		bt819_write(decoder, 0x19, 0x72);
-		/* bt819_setbit(decoder, 0x1a,  5, 0); */
+		 
 		timing = &timing_data[0];
 	} else {
 		v4l2_dbg(1, debug, sd, "unsupported norm %llx\n",
@@ -297,7 +274,7 @@ static int bt819_s_routing(struct v4l2_subdev *sd,
 	if (decoder->input != input) {
 		v4l2_subdev_notify(sd, BT819_FIFO_RESET_LOW, NULL);
 		decoder->input = input;
-		/* select mode */
+		 
 		if (decoder->input == 0) {
 			bt819_setbit(decoder, 0x0b, 6, 0);
 			bt819_setbit(decoder, 0x1a, 1, 1);
@@ -343,8 +320,7 @@ static int bt819_s_ctrl(struct v4l2_ctrl *ctrl)
 		bt819_write(decoder, 0x0d, (ctrl->val >> 7) & 0xff);
 		bt819_setbit(decoder, 0x0b, 1, ((ctrl->val >> 15) & 0x01));
 
-		/* Ratio between U gain and V gain must stay the same as
-		   the ratio between the default U and V gain values. */
+		 
 		temp = (ctrl->val * 180) / 254;
 		bt819_write(decoder, 0x0e, (temp >> 7) & 0xff);
 		bt819_setbit(decoder, 0x0b, 0, (temp >> 15) & 0x01);
@@ -360,7 +336,7 @@ static int bt819_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_ctrl_ops bt819_ctrl_ops = {
 	.s_ctrl = bt819_s_ctrl,
@@ -378,7 +354,7 @@ static const struct v4l2_subdev_ops bt819_ops = {
 	.video = &bt819_video_ops,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int bt819_probe(struct i2c_client *client)
 {
@@ -387,7 +363,7 @@ static int bt819_probe(struct i2c_client *client)
 	struct v4l2_subdev *sd;
 	const char *name;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
@@ -454,7 +430,7 @@ static void bt819_remove(struct i2c_client *client)
 	v4l2_ctrl_handler_free(&decoder->hdl);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct i2c_device_id bt819_id[] = {
 	{ "bt819a", 0 },

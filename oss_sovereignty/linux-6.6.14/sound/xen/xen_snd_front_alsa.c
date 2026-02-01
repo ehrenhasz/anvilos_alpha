@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- * Xen para-virtual sound device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 
@@ -26,7 +20,7 @@ struct xen_snd_front_pcm_stream_info {
 	struct xen_snd_front_info *front_info;
 	struct xen_snd_front_evtchnl_pair *evt_pair;
 
-	/* This is the shared buffer with its backing storage. */
+	 
 	struct xen_front_pgdir_shbuf shbuf;
 	u8 *buffer;
 	size_t buffer_sz;
@@ -38,11 +32,11 @@ struct xen_snd_front_pcm_stream_info {
 	bool is_open;
 	struct snd_pcm_hardware pcm_hw;
 
-	/* Number of processed frames as reported by the backend. */
+	 
 	snd_pcm_uframes_t be_cur_frame;
-	/* Current HW pointer to be reported via .period callback. */
+	 
 	atomic_t hw_ptr;
-	/* Modulo of the number of processed frames - for period detection. */
+	 
 	u32 out_frames;
 };
 
@@ -277,7 +271,7 @@ static int alsa_hw_rule(struct snd_pcm_hw_params *params,
 	u64 sndif_formats;
 	int changed, ret;
 
-	/* Collect all the values we need for the query. */
+	 
 
 	req.formats = to_sndif_formats_mask((u64)formats->bits[0] |
 					    (u64)(formats->bits[1]) << 32);
@@ -297,13 +291,13 @@ static int alsa_hw_rule(struct snd_pcm_hw_params *params,
 	ret = xen_snd_front_stream_query_hw_param(&stream->evt_pair->req,
 						  &req, &resp);
 	if (ret < 0) {
-		/* Check if this is due to backend communication error. */
+		 
 		if (ret == -EIO || ret == -ETIMEDOUT)
 			dev_err(dev, "Failed to query ALSA HW parameters\n");
 		return ret;
 	}
 
-	/* Refine HW parameters after the query. */
+	 
 	changed  = 0;
 
 	sndif_formats = to_alsa_formats_mask(resp.formats);
@@ -361,10 +355,7 @@ static int alsa_open(struct snd_pcm_substream *substream)
 	struct device *dev = &front_info->xb_dev->dev;
 	int ret;
 
-	/*
-	 * Return our HW properties: override defaults with those configured
-	 * via XenStore.
-	 */
+	 
 	runtime->hw = stream->pcm_hw;
 	runtime->hw.info &= ~(SNDRV_PCM_INFO_MMAP |
 			      SNDRV_PCM_INFO_MMAP_VALID |
@@ -466,10 +457,7 @@ static int alsa_hw_params(struct snd_pcm_substream *substream,
 	struct xen_front_pgdir_shbuf_cfg buf_cfg;
 	int ret;
 
-	/*
-	 * This callback may be called multiple times,
-	 * so free the previously allocated shared buffer if any.
-	 */
+	 
 	stream_free(stream);
 	ret = shbuf_setup_backstore(stream, params_buffer_bytes(params));
 	if (ret < 0)
@@ -650,12 +638,7 @@ static int alsa_pb_fill_silence(struct snd_pcm_substream *substream,
 	return xen_snd_front_stream_write(&stream->evt_pair->req, pos, count);
 }
 
-/*
- * FIXME: The mmaped data transfer is asynchronous and there is no
- * ack signal from user-space when it is done. This is the
- * reason it is not implemented in the PV driver as we do need
- * to know when the buffer can be transferred to the backend.
- */
+ 
 
 static const struct snd_pcm_ops snd_drv_alsa_playback_ops = {
 	.open		= alsa_open,
@@ -747,7 +730,7 @@ static int new_pcm_instance(struct xen_snd_front_card_info *card_info,
 
 	pcm->private_data = pcm_instance_info;
 	pcm->info_flags = 0;
-	/* we want to handle all PCM operations in non-atomic context */
+	 
 	pcm->nonatomic = true;
 	strscpy(pcm->name, "Virtual card PCM", sizeof(pcm->name));
 
@@ -833,6 +816,6 @@ void xen_snd_front_alsa_fini(struct xen_snd_front_info *front_info)
 		card->number);
 	snd_card_free(card);
 
-	/* Card_info will be freed when destroying front_info->xb_dev->dev. */
+	 
 	card_info->card = NULL;
 }

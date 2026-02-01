@@ -1,22 +1,6 @@
-/*
- * Copyright (c) 2009-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/*
- * Module for common driver code between ath9k and ath9k_htc
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -27,7 +11,7 @@ MODULE_AUTHOR("Atheros Communications");
 MODULE_DESCRIPTION("Shared library for Atheros wireless 802.11n LAN cards.");
 MODULE_LICENSE("Dual BSD/GPL");
 
-/* Assumes you've already done the endian to CPU conversion */
+ 
 bool ath9k_cmn_rx_accept(struct ath_common *common,
 			 struct ieee80211_hdr *hdr,
 			 struct ieee80211_rx_status *rxs,
@@ -50,11 +34,7 @@ bool ath9k_cmn_rx_accept(struct ath_common *common,
 		(ATH9K_RXERR_DECRYPT | ATH9K_RXERR_CRC | ATH9K_RXERR_MIC |
 		 ATH9K_RXERR_KEYMISS));
 
-	/*
-	 * Key miss events are only relevant for pairwise keys where the
-	 * descriptor does contain a valid key index. This has been observed
-	 * mostly with CCMP encryption.
-	 */
+	 
 	if (rx_stats->rs_keyix == ATH9K_RXKEYIX_INVALID ||
 	    !test_bit(rx_stats->rs_keyix, common->ccmp_keymap))
 		rx_stats->rs_status &= ~ATH9K_RXERR_KEYMISS;
@@ -64,12 +44,7 @@ bool ath9k_cmn_rx_accept(struct ath_common *common,
 		!(le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_FRAG) &&
 		(rx_stats->rs_status & ATH9K_RXERR_MIC);
 
-	/*
-	 * The rx_stats->rs_status will not be set until the end of the
-	 * chained descriptors so it can be ignored if rs_more is set. The
-	 * rs_more will be false at the last element of the chained
-	 * descriptors.
-	 */
+	 
 	if (rx_stats->rs_status != 0) {
 		u8 status_mask;
 
@@ -85,11 +60,7 @@ bool ath9k_cmn_rx_accept(struct ath_common *common,
 		}
 
 
-		/*
-		 * Reject error frames with the exception of
-		 * decryption and MIC failures. For monitor mode,
-		 * we also ignore the CRC error.
-		 */
+		 
 		status_mask = ATH9K_RXERR_DECRYPT | ATH9K_RXERR_MIC |
 			      ATH9K_RXERR_KEYMISS;
 
@@ -100,12 +71,7 @@ bool ath9k_cmn_rx_accept(struct ath_common *common,
 			return false;
 	}
 
-	/*
-	 * For unicast frames the MIC error bit can have false positives,
-	 * so all MIC error reports need to be validated in software.
-	 * False negatives are not common, so skip software verification
-	 * if the hardware considers the MIC valid.
-	 */
+	 
 	if (strip_mic)
 		rxs->flag |= RX_FLAG_MMIC_STRIPPED;
 	else if (is_mc && mic_error)
@@ -127,20 +93,13 @@ void ath9k_cmn_rx_skb_postprocess(struct ath_common *common,
 	u8 keyix;
 	__le16 fc;
 
-	/* see if any padding is done by the hw and remove it */
+	 
 	hdr = (struct ieee80211_hdr *) skb->data;
 	hdrlen = ieee80211_get_hdrlen_from_skb(skb);
 	fc = hdr->frame_control;
 	padpos = ieee80211_hdrlen(fc);
 
-	/* The MAC header is padded to have 32-bit boundary if the
-	 * packet payload is non-zero. The general calculation for
-	 * padsize would take into account odd header lengths:
-	 * padsize = (4 - padpos % 4) % 4; However, since only
-	 * even-length headers are used, padding can only be 0 or 2
-	 * bytes and we can optimize this a bit. In addition, we must
-	 * not try to remove padding from short control frames that do
-	 * not have payload. */
+	 
 	padsize = padpos & 3;
 	if (padsize && skb->len>=padpos+padsize+FCS_LEN) {
 		memmove(skb->data + padsize, skb->data, padpos);
@@ -162,7 +121,7 @@ void ath9k_cmn_rx_skb_postprocess(struct ath_common *common,
 	if (ah->sw_mgmt_crypto_rx &&
 	    (rxs->flag & RX_FLAG_DECRYPTED) &&
 	    ieee80211_is_mgmt(fc))
-		/* Use software decrypt for management frames. */
+		 
 		rxs->flag &= ~RX_FLAG_DECRYPTED;
 }
 EXPORT_SYMBOL(ath9k_cmn_rx_skb_postprocess);
@@ -186,7 +145,7 @@ int ath9k_cmn_process_rate(struct ath_common *common,
 		rxs->bw = RATE_INFO_BW_10;
 
 	if (rx_stats->rs_rate & 0x80) {
-		/* HT rate */
+		 
 		rxs->encoding = RX_ENC_HT;
 		rxs->enc_flags |= rx_stats->enc_flags;
 		rxs->bw = rx_stats->bw;
@@ -220,18 +179,13 @@ void ath9k_cmn_process_rssi(struct ath_common *common,
 	int rssi = rx_stats->rs_rssi;
 	int i, j;
 
-	/*
-	 * RSSI is not available for subframes in an A-MPDU.
-	 */
+	 
 	if (rx_stats->rs_moreaggr) {
 		rxs->flag |= RX_FLAG_NO_SIGNAL_VAL;
 		return;
 	}
 
-	/*
-	 * Check if the RSSI for the last subframe in an A-MPDU
-	 * or an unaggregated frame is valid.
-	 */
+	 
 	if (rx_stats->rs_rssi == ATH9K_RSSI_BAD) {
 		rxs->flag |= RX_FLAG_NO_SIGNAL_VAL;
 		return;
@@ -251,9 +205,7 @@ void ath9k_cmn_process_rssi(struct ath_common *common,
 		j++;
 	}
 
-	/*
-	 * Update Beacon RSSI, this is used by ANI.
-	 */
+	 
 	if (rx_stats->is_mybeacon &&
 	    ((ah->opmode == NL80211_IFTYPE_STATION) ||
 	     (ah->opmode == NL80211_IFTYPE_ADHOC))) {
@@ -294,9 +246,7 @@ int ath9k_cmn_get_hw_crypto_keytype(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(ath9k_cmn_get_hw_crypto_keytype);
 
-/*
- * Update internal channel flags.
- */
+ 
 static void ath9k_cmn_update_ichannel(struct ath9k_channel *ichan,
 				      struct cfg80211_chan_def *chandef)
 {
@@ -334,9 +284,7 @@ static void ath9k_cmn_update_ichannel(struct ath9k_channel *ichan,
 	ichan->channelFlags = flags;
 }
 
-/*
- * Get the internal channel reference.
- */
+ 
 struct ath9k_channel *ath9k_cmn_get_channel(struct ieee80211_hw *hw,
 					    struct ath_hw *ah,
 					    struct cfg80211_chan_def *chandef)
@@ -372,7 +320,7 @@ void ath9k_cmn_update_txpow(struct ath_hw *ah, u16 cur_txpow,
 	if (ah->curchan && reg->power_limit != new_txpow)
 		ath9k_hw_set_txpowerlimit(ah, new_txpow, false);
 
-	/* read back in case value is clamped */
+	 
 	*txpower = reg->max_power_level;
 }
 EXPORT_SYMBOL(ath9k_cmn_update_txpow);
@@ -382,22 +330,14 @@ void ath9k_cmn_init_crypto(struct ath_hw *ah)
 	struct ath_common *common = ath9k_hw_common(ah);
 	int i = 0;
 
-	/* Get the hardware key cache size. */
+	 
 	common->keymax = AR_KEYTABLE_SIZE;
 
-	/*
-	 * Check whether the separate key cache entries
-	 * are required to handle both tx+rx MIC keys.
-	 * With split mic keys the number of stations is limited
-	 * to 27 otherwise 59.
-	 */
+	 
 	if (ah->misc_mode & AR_PCU_MIC_NEW_LOC_ENA)
 		common->crypt_caps |= ATH_CRYPT_CAP_MIC_COMBINED;
 
-	/*
-	 * Reset the key cache since some parts do not
-	 * reset the contents on initial power up.
-	 */
+	 
 	for (i = 0; i < common->keymax; i++)
 		ath_hw_keyreset(common, (u16) i);
 }

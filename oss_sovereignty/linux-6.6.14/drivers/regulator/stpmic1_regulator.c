@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) STMicroelectronics 2018
-// Author: Pascal Paillet <p.paillet@st.com> for STMicroelectronics.
+
+
+
 
 #include <linux/interrupt.h>
 #include <linux/mfd/stpmic1.h>
@@ -14,14 +14,7 @@
 
 #include <dt-bindings/mfd/st,stpmic1.h>
 
-/**
- * struct stpmic1 regulator description: this structure is used as driver data
- * @desc: regulator framework description
- * @mask_reset_reg: mask reset register address
- * @mask_reset_mask: mask rank and mask reset register mask
- * @icc_reg: icc register address
- * @icc_mask: icc register mask
- */
+ 
 struct stpmic1_regulator_cfg {
 	struct regulator_desc desc;
 	u8 mask_reset_reg;
@@ -53,9 +46,9 @@ enum {
 	STPMIC1_SW_OUT = 13,
 };
 
-/* Enable time worst case is 5000mV/(2250uV/uS) */
+ 
 #define PMIC_ENABLE_TIME_US 2200
-/* Ramp delay worst case is (2250uV/uS) */
+ 
 #define PMIC_RAMP_DELAY 2200
 
 static const struct linear_range buck1_ranges[] = {
@@ -114,7 +107,7 @@ static const struct linear_range ldo3_ranges[] = {
 	REGULATOR_LINEAR_RANGE(1700000, 0, 7, 0),
 	REGULATOR_LINEAR_RANGE(1700000, 8, 24, 100000),
 	REGULATOR_LINEAR_RANGE(3300000, 25, 30, 0),
-	/* with index 31 LDO3 is in DDR mode */
+	 
 	REGULATOR_LINEAR_RANGE(500000, 31, 31, 0),
 };
 
@@ -498,21 +491,11 @@ static int stpmic1_set_icc(struct regulator_dev *rdev, int lim, int severity,
 	struct stpmic1_regulator_cfg *cfg = rdev_get_drvdata(rdev);
 	struct regmap *regmap = rdev_get_regmap(rdev);
 
-	/*
-	 * The code seems like one bit in a register controls whether OCP is
-	 * enabled. So we might be able to turn it off here is if that
-	 * was requested. I won't support this because I don't have the HW.
-	 * Feel free to try and implement if you have the HW and need kernel
-	 * to disable this.
-	 *
-	 * Also, I don't know if limit can be configured or if we support
-	 * error/warning instead of protect. So I just keep existing logic
-	 * and assume no.
-	 */
+	 
 	if (lim || severity != REGULATOR_SEVERITY_PROT || !enable)
 		return -EINVAL;
 
-	/* enable switch off in case of over current */
+	 
 	return regmap_update_bits(regmap, cfg->icc_reg, cfg->icc_mask,
 				  cfg->icc_mask);
 }
@@ -521,7 +504,7 @@ static irqreturn_t stpmic1_curlim_irq_handler(int irq, void *data)
 {
 	struct regulator_dev *rdev = (struct regulator_dev *)data;
 
-	/* Send an overcurrent notification */
+	 
 	regulator_notifier_call_chain(rdev,
 				      REGULATOR_EVENT_OVER_CURRENT,
 				      NULL);
@@ -575,7 +558,7 @@ static int stpmic1_regulator_register(struct platform_device *pdev, int id,
 		return PTR_ERR(rdev);
 	}
 
-	/* set mask reset */
+	 
 	if (of_property_read_bool(config.of_node, "st,mask-reset") &&
 	    cfg->mask_reset_reg != 0) {
 		ret = regmap_update_bits(pmic_dev->regmap,
@@ -588,7 +571,7 @@ static int stpmic1_regulator_register(struct platform_device *pdev, int id,
 		}
 	}
 
-	/* setup an irq handler for over-current detection */
+	 
 	irq = of_irq_get(config.of_node, 0);
 	if (irq > 0) {
 		ret = devm_request_threaded_irq(&pdev->dev,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sched.h>
 #include <stdio.h>
@@ -189,7 +189,7 @@ bool test_unpriv_remount(const char *fstype, const char *mount_options,
 		die("fork failed: %s\n",
 			strerror(errno));
 	}
-	if (child != 0) { /* parent */
+	if (child != 0) {  
 		pid_t pid;
 		int status;
 		pid = waitpid(child, &status, 0);
@@ -229,14 +229,14 @@ bool test_unpriv_remount(const char *fstype, const char *mount_options,
 
 	if (mount("/tmp", "/tmp", "none",
 		  MS_REMOUNT | MS_BIND | remount_flags, NULL) != 0) {
-		/* system("cat /proc/self/mounts"); */
+		 
 		die("remount of /tmp failed: %s\n",
 		    strerror(errno));
 	}
 
 	if (mount("/tmp", "/tmp", "none",
 		  MS_REMOUNT | MS_BIND | invalid_flags, NULL) == 0) {
-		/* system("cat /proc/self/mounts"); */
+		 
 		die("remount of /tmp with invalid flags "
 		    "succeeded unexpectedly\n");
 	}
@@ -267,7 +267,7 @@ static bool test_priv_mount_unpriv_remount(void)
 		die("fork failed: %s\n",
 			strerror(errno));
 	}
-	if (child != 0) { /* parent */
+	if (child != 0) {  
 		pid_t pid;
 		int status;
 		pid = waitpid(child, &status, 0);
@@ -303,7 +303,7 @@ static bool test_priv_mount_unpriv_remount(void)
 	ret = mount(dest_path, dest_path, "none",
 		    MS_REMOUNT | MS_BIND | orig_mnt_flags , NULL);
 	if (ret != 0) {
-		/* system("cat /proc/self/mounts"); */
+		 
 		die("remount of /tmp failed: %s\n",
 		    strerror(errno));
 	}

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Component Authentication Protocol (CAP) Driver.
- *
- * Copyright 2016 Google Inc.
- * Copyright 2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/greybus.h>
 #include <linux/cdev.h>
@@ -17,10 +12,7 @@
 
 #define CAP_TIMEOUT_MS		1000
 
-/*
- * Number of minor devices this driver supports.
- * There will be exactly one required per Interface.
- */
+ 
 #define NUM_MINORS		U8_MAX
 
 struct gb_cap {
@@ -28,7 +20,7 @@ struct gb_cap {
 	struct gb_connection	*connection;
 	struct kref		kref;
 	struct list_head	node;
-	bool			disabled; /* connection getting disabled */
+	bool			disabled;  
 
 	struct mutex		mutex;
 	struct cdev		cdev;
@@ -49,17 +41,13 @@ static void cap_kref_release(struct kref *kref)
 	kfree(cap);
 }
 
-/*
- * All users of cap take a reference (from within list_mutex lock), before
- * they get a pointer to play with. And the structure will be freed only after
- * the last user has put the reference to it.
- */
+ 
 static void put_cap(struct gb_cap *cap)
 {
 	kref_put(&cap->kref, cap_kref_release);
 }
 
-/* Caller must call put_cap() after using struct gb_cap */
+ 
 static struct gb_cap *get_cap(struct cdev *cdev)
 {
 	struct gb_cap *cap;
@@ -177,13 +165,13 @@ done:
 	return ret;
 }
 
-/* Char device fops */
+ 
 
 static int cap_open(struct inode *inode, struct file *file)
 {
 	struct gb_cap *cap = get_cap(inode->i_cdev);
 
-	/* cap structure can't get freed until file descriptor is closed */
+	 
 	if (cap) {
 		file->private_data = cap;
 		return 0;
@@ -265,16 +253,7 @@ static long cap_ioctl_unlocked(struct file *file, unsigned int cmd,
 	struct gb_bundle *bundle = cap->connection->bundle;
 	int ret = -ENODEV;
 
-	/*
-	 * Serialize ioctls.
-	 *
-	 * We don't want the user to do multiple authentication operations in
-	 * parallel.
-	 *
-	 * This is also used to protect ->disabled, which is used to check if
-	 * the connection is getting disconnected, so that we don't start any
-	 * new operations.
-	 */
+	 
 	mutex_lock(&cap->mutex);
 	if (!cap->disabled) {
 		ret = gb_pm_runtime_get_sync(bundle);
@@ -327,7 +306,7 @@ int gb_cap_connection_init(struct gb_connection *connection)
 		goto err_connection_disable;
 	}
 
-	/* Add a char device to allow userspace to interact with cap */
+	 
 	cap->dev_num = MKDEV(MAJOR(cap_dev_num), minor);
 	cdev_init(&cap->cdev, &cap_fops);
 
@@ -335,7 +314,7 @@ int gb_cap_connection_init(struct gb_connection *connection)
 	if (ret)
 		goto err_remove_ida;
 
-	/* Add a soft link to the previously added char-dev within the bundle */
+	 
 	cap->class_device = device_create(cap_class, cap->parent, cap->dev_num,
 					  NULL, "gb-authenticate-%d", minor);
 	if (IS_ERR(cap->class_device)) {
@@ -374,27 +353,20 @@ void gb_cap_connection_exit(struct gb_connection *connection)
 	cdev_del(&cap->cdev);
 	ida_simple_remove(&cap_minors_map, MINOR(cap->dev_num));
 
-	/*
-	 * Disallow any new ioctl operations on the char device and wait for
-	 * existing ones to finish.
-	 */
+	 
 	mutex_lock(&cap->mutex);
 	cap->disabled = true;
 	mutex_unlock(&cap->mutex);
 
-	/* All pending greybus operations should have finished by now */
+	 
 	gb_connection_disable(cap->connection);
 
-	/* Disallow new users to get access to the cap structure */
+	 
 	mutex_lock(&list_mutex);
 	list_del(&cap->node);
 	mutex_unlock(&list_mutex);
 
-	/*
-	 * All current users of cap would have taken a reference to it by
-	 * now, we can drop our reference and wait the last user will get
-	 * cap freed.
-	 */
+	 
 	put_cap(cap);
 }
 

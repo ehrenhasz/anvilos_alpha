@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PIC32 deadman timer driver
- *
- * Purna Chandra Mandal <purna.mandal@microchip.com>
- * Copyright (c) 2016, Microchip Technology Inc.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -18,7 +13,7 @@
 
 #include <asm/mach-pic32/pic32.h>
 
-/* Deadman Timer Regs */
+ 
 #define DMTCON_REG	0x00
 #define DMTPRECLR_REG	0x10
 #define DMTCLR_REG	0x20
@@ -27,7 +22,7 @@
 #define DMTPSCNT_REG	0x60
 #define DMTPSINTV_REG	0x70
 
-/* Deadman Timer Regs fields */
+ 
 #define DMT_ON			BIT(15)
 #define DMT_STEP1_KEY		BIT(6)
 #define DMT_STEP2_KEY		BIT(3)
@@ -36,7 +31,7 @@
 #define DMTSTAT_BAD2		BIT(6)
 #define DMTSTAT_BAD1		BIT(7)
 
-/* Reset Control Register fields for watchdog */
+ 
 #define RESETCON_DMT_TIMEOUT	BIT(5)
 
 struct pic32_dmt {
@@ -52,10 +47,7 @@ static inline void dmt_enable(struct pic32_dmt *dmt)
 static inline void dmt_disable(struct pic32_dmt *dmt)
 {
 	writel(DMT_ON, PIC32_CLR(dmt->regs + DMTCON_REG));
-	/*
-	 * Cannot touch registers in the CPU cycle following clearing the
-	 * ON bit.
-	 */
+	 
 	nop();
 }
 
@@ -76,20 +68,20 @@ static inline int dmt_keepalive(struct pic32_dmt *dmt)
 	u32 v;
 	u32 timeout = 500;
 
-	/* set pre-clear key */
+	 
 	writel(DMT_STEP1_KEY << 8, dmt->regs + DMTPRECLR_REG);
 
-	/* wait for DMT window to open */
+	 
 	while (--timeout) {
 		v = readl(dmt->regs + DMTSTAT_REG) & DMTSTAT_WINOPN;
 		if (v == DMTSTAT_WINOPN)
 			break;
 	}
 
-	/* apply key2 */
+	 
 	writel(DMT_STEP2_KEY, dmt->regs + DMTCLR_REG);
 
-	/* check whether keys are latched correctly */
+	 
 	return dmt_bad_status(dmt);
 }
 
@@ -207,7 +199,7 @@ static int pic32_dmt_probe(struct platform_device *pdev)
 
 static const struct of_device_id pic32_dmt_of_ids[] = {
 	{ .compatible = "microchip,pic32mzda-dmt",},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pic32_dmt_of_ids);
 

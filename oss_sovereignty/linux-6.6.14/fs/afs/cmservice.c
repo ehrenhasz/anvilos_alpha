@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS Cache Manager Service
- *
- * Copyright (C) 2002 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -31,9 +27,7 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *);
 
 static int afs_deliver_yfs_cb_callback(struct afs_call *);
 
-/*
- * CB.CallBack operation type
- */
+ 
 static const struct afs_call_type afs_SRXCBCallBack = {
 	.name		= "CB.CallBack",
 	.deliver	= afs_deliver_cb_callback,
@@ -41,9 +35,7 @@ static const struct afs_call_type afs_SRXCBCallBack = {
 	.work		= SRXAFSCB_CallBack,
 };
 
-/*
- * CB.InitCallBackState operation type
- */
+ 
 static const struct afs_call_type afs_SRXCBInitCallBackState = {
 	.name		= "CB.InitCallBackState",
 	.deliver	= afs_deliver_cb_init_call_back_state,
@@ -51,9 +43,7 @@ static const struct afs_call_type afs_SRXCBInitCallBackState = {
 	.work		= SRXAFSCB_InitCallBackState,
 };
 
-/*
- * CB.InitCallBackState3 operation type
- */
+ 
 static const struct afs_call_type afs_SRXCBInitCallBackState3 = {
 	.name		= "CB.InitCallBackState3",
 	.deliver	= afs_deliver_cb_init_call_back_state3,
@@ -61,9 +51,7 @@ static const struct afs_call_type afs_SRXCBInitCallBackState3 = {
 	.work		= SRXAFSCB_InitCallBackState,
 };
 
-/*
- * CB.Probe operation type
- */
+ 
 static const struct afs_call_type afs_SRXCBProbe = {
 	.name		= "CB.Probe",
 	.deliver	= afs_deliver_cb_probe,
@@ -71,9 +59,7 @@ static const struct afs_call_type afs_SRXCBProbe = {
 	.work		= SRXAFSCB_Probe,
 };
 
-/*
- * CB.ProbeUuid operation type
- */
+ 
 static const struct afs_call_type afs_SRXCBProbeUuid = {
 	.name		= "CB.ProbeUuid",
 	.deliver	= afs_deliver_cb_probe_uuid,
@@ -81,9 +67,7 @@ static const struct afs_call_type afs_SRXCBProbeUuid = {
 	.work		= SRXAFSCB_ProbeUuid,
 };
 
-/*
- * CB.TellMeAboutYourself operation type
- */
+ 
 static const struct afs_call_type afs_SRXCBTellMeAboutYourself = {
 	.name		= "CB.TellMeAboutYourself",
 	.deliver	= afs_deliver_cb_tell_me_about_yourself,
@@ -91,9 +75,7 @@ static const struct afs_call_type afs_SRXCBTellMeAboutYourself = {
 	.work		= SRXAFSCB_TellMeAboutYourself,
 };
 
-/*
- * YFS CB.CallBack operation type
- */
+ 
 static const struct afs_call_type afs_SRXYFSCB_CallBack = {
 	.name		= "YFSCB.CallBack",
 	.deliver	= afs_deliver_yfs_cb_callback,
@@ -101,10 +83,7 @@ static const struct afs_call_type afs_SRXYFSCB_CallBack = {
 	.work		= SRXAFSCB_CallBack,
 };
 
-/*
- * route an incoming cache manager call
- * - return T if supported, F if not
- */
+ 
 bool afs_cm_incoming_call(struct afs_call *call)
 {
 	_enter("{%u, CB.OP %u}", call->service_id, call->operation_ID);
@@ -138,10 +117,7 @@ bool afs_cm_incoming_call(struct afs_call *call)
 	}
 }
 
-/*
- * Find the server record by peer address and record a probe to the cache
- * manager from a server.
- */
+ 
 static int afs_find_cm_server_by_peer(struct afs_call *call)
 {
 	struct sockaddr_rxrpc srx;
@@ -159,10 +135,7 @@ static int afs_find_cm_server_by_peer(struct afs_call *call)
 	return 0;
 }
 
-/*
- * Find the server record by server UUID and record a probe to the cache
- * manager from a server.
- */
+ 
 static int afs_find_cm_server_by_uuid(struct afs_call *call,
 				      struct afs_uuid *uuid)
 {
@@ -180,18 +153,14 @@ static int afs_find_cm_server_by_uuid(struct afs_call *call,
 	return 0;
 }
 
-/*
- * Clean up a cache manager call.
- */
+ 
 static void afs_cm_destructor(struct afs_call *call)
 {
 	kfree(call->buffer);
 	call->buffer = NULL;
 }
 
-/*
- * Abort a service call from within an action function.
- */
+ 
 static void afs_abort_service_call(struct afs_call *call, u32 abort_code, int error,
 				   enum rxrpc_abort_reason why)
 {
@@ -200,19 +169,14 @@ static void afs_abort_service_call(struct afs_call *call, u32 abort_code, int er
 	afs_set_call_complete(call, error, 0);
 }
 
-/*
- * The server supplied a list of callbacks that it wanted to break.
- */
+ 
 static void SRXAFSCB_CallBack(struct work_struct *work)
 {
 	struct afs_call *call = container_of(work, struct afs_call, work);
 
 	_enter("");
 
-	/* We need to break the callbacks before sending the reply as the
-	 * server holds up change visibility till it receives our reply so as
-	 * to maintain cache coherency.
-	 */
+	 
 	if (call->server) {
 		trace_afs_server(call->server->debug_id,
 				 refcount_read(&call->server->ref),
@@ -226,9 +190,7 @@ static void SRXAFSCB_CallBack(struct work_struct *work)
 	_leave("");
 }
 
-/*
- * deliver request data to a CB.CallBack call
- */
+ 
 static int afs_deliver_cb_callback(struct afs_call *call)
 {
 	struct afs_callback_break *cb;
@@ -242,7 +204,7 @@ static int afs_deliver_cb_callback(struct afs_call *call)
 		afs_extract_to_tmp(call);
 		call->unmarshall++;
 
-		/* extract the FID array and its count in two steps */
+		 
 		fallthrough;
 	case 1:
 		_debug("extract FID count");
@@ -287,7 +249,7 @@ static int afs_deliver_cb_callback(struct afs_call *call)
 		afs_extract_to_tmp(call);
 		call->unmarshall++;
 
-		/* extract the callback array and its count in two steps */
+		 
 		fallthrough;
 	case 3:
 		_debug("extract CB count");
@@ -322,14 +284,11 @@ static int afs_deliver_cb_callback(struct afs_call *call)
 	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
 		return afs_io_error(call, afs_io_error_cm_reply);
 
-	/* we'll need the file server record as that tells us which set of
-	 * vnodes to operate upon */
+	 
 	return afs_find_cm_server_by_peer(call);
 }
 
-/*
- * allow the fileserver to request callback state (re-)initialisation
- */
+ 
 static void SRXAFSCB_InitCallBackState(struct work_struct *work)
 {
 	struct afs_call *call = container_of(work, struct afs_call, work);
@@ -343,9 +302,7 @@ static void SRXAFSCB_InitCallBackState(struct work_struct *work)
 	_leave("");
 }
 
-/*
- * deliver request data to a CB.InitCallBackState call
- */
+ 
 static int afs_deliver_cb_init_call_back_state(struct afs_call *call)
 {
 	int ret;
@@ -357,14 +314,11 @@ static int afs_deliver_cb_init_call_back_state(struct afs_call *call)
 	if (ret < 0)
 		return ret;
 
-	/* we'll need the file server record as that tells us which set of
-	 * vnodes to operate upon */
+	 
 	return afs_find_cm_server_by_peer(call);
 }
 
-/*
- * deliver request data to a CB.InitCallBackState3 call
- */
+ 
 static int afs_deliver_cb_init_call_back_state3(struct afs_call *call)
 {
 	struct afs_uuid *r;
@@ -420,14 +374,11 @@ static int afs_deliver_cb_init_call_back_state3(struct afs_call *call)
 	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
 		return afs_io_error(call, afs_io_error_cm_reply);
 
-	/* we'll need the file server record as that tells us which set of
-	 * vnodes to operate upon */
+	 
 	return afs_find_cm_server_by_uuid(call, call->request);
 }
 
-/*
- * allow the fileserver to see if the cache manager is still alive
- */
+ 
 static void SRXAFSCB_Probe(struct work_struct *work)
 {
 	struct afs_call *call = container_of(work, struct afs_call, work);
@@ -438,9 +389,7 @@ static void SRXAFSCB_Probe(struct work_struct *work)
 	_leave("");
 }
 
-/*
- * deliver request data to a CB.Probe call
- */
+ 
 static int afs_deliver_cb_probe(struct afs_call *call)
 {
 	int ret;
@@ -457,10 +406,7 @@ static int afs_deliver_cb_probe(struct afs_call *call)
 	return afs_find_cm_server_by_peer(call);
 }
 
-/*
- * Allow the fileserver to quickly find out if the cache manager has been
- * rebooted.
- */
+ 
 static void SRXAFSCB_ProbeUuid(struct work_struct *work)
 {
 	struct afs_call *call = container_of(work, struct afs_call, work);
@@ -477,9 +423,7 @@ static void SRXAFSCB_ProbeUuid(struct work_struct *work)
 	_leave("");
 }
 
-/*
- * deliver request data to a CB.ProbeUuid call
- */
+ 
 static int afs_deliver_cb_probe_uuid(struct afs_call *call)
 {
 	struct afs_uuid *r;
@@ -535,23 +479,21 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call)
 	return afs_find_cm_server_by_peer(call);
 }
 
-/*
- * allow the fileserver to ask about the cache manager's capabilities
- */
+ 
 static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
 {
 	struct afs_call *call = container_of(work, struct afs_call, work);
 	int loop;
 
 	struct {
-		struct /* InterfaceAddr */ {
+		struct   {
 			__be32 nifs;
 			__be32 uuid[11];
 			__be32 ifaddr[32];
 			__be32 netmask[32];
 			__be32 mtu[32];
 		} ia;
-		struct /* Capabilities */ {
+		struct   {
 			__be32 capcount;
 			__be32 caps[1];
 		} cap;
@@ -576,9 +518,7 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
 	_leave("");
 }
 
-/*
- * deliver request data to a CB.TellMeAboutYourself call
- */
+ 
 static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call)
 {
 	int ret;
@@ -595,9 +535,7 @@ static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call)
 	return afs_find_cm_server_by_peer(call);
 }
 
-/*
- * deliver request data to a YFS CB.CallBack call
- */
+ 
 static int afs_deliver_yfs_cb_callback(struct afs_call *call)
 {
 	struct afs_callback_break *cb;
@@ -612,7 +550,7 @@ static int afs_deliver_yfs_cb_callback(struct afs_call *call)
 		afs_extract_to_tmp(call);
 		call->unmarshall++;
 
-		/* extract the FID array and its count in two steps */
+		 
 		fallthrough;
 	case 1:
 		_debug("extract FID count");
@@ -667,8 +605,6 @@ static int afs_deliver_yfs_cb_callback(struct afs_call *call)
 	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
 		return afs_io_error(call, afs_io_error_cm_reply);
 
-	/* We'll need the file server record as that tells us which set of
-	 * vnodes to operate upon.
-	 */
+	 
 	return afs_find_cm_server_by_peer(call);
 }

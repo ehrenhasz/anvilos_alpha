@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_SSEU_H__
 #define __INTEL_SSEU_H__
@@ -15,33 +13,22 @@ struct drm_i915_private;
 struct intel_gt;
 struct drm_printer;
 
-/*
- * Maximum number of slices on older platforms.  Slices no longer exist
- * starting on Xe_HP ("gslices," "cslices," etc. are a different concept and
- * are not expressed through fusing).
- */
+ 
 #define GEN_MAX_HSW_SLICES		3
 
-/*
- * Maximum number of subslices that can exist within a HSW-style slice.  This
- * is only relevant to pre-Xe_HP platforms (Xe_HP and beyond use the
- * I915_MAX_SS_FUSE_BITS value below).
- */
+ 
 #define GEN_MAX_SS_PER_HSW_SLICE	8
 
-/*
- * Maximum number of 32-bit registers used by hardware to express the
- * enabled/disabled subslices.
- */
+ 
 #define I915_MAX_SS_FUSE_REGS	2
 #define I915_MAX_SS_FUSE_BITS	(I915_MAX_SS_FUSE_REGS * 32)
 
-/* Maximum number of EUs that can exist within a subslice or DSS. */
+ 
 #define GEN_MAX_EUS_PER_SS		16
 
 #define SSEU_MAX(a, b)			((a) > (b) ? (a) : (b))
 
-/* The maximum number of bits needed to express each subslice/DSS independently */
+ 
 #define GEN_SS_MASK_SIZE		SSEU_MAX(I915_MAX_SS_FUSE_BITS, \
 						 GEN_MAX_HSW_SLICES * GEN_MAX_SS_PER_HSW_SLICE)
 
@@ -59,7 +46,7 @@ struct drm_printer;
 typedef union {
 	u8 hsw[GEN_MAX_HSW_SLICES];
 
-	/* Bitmap compatible with linux/bitmap.h; may exceed size of u64 */
+	 
 	unsigned long xehp[BITS_TO_LONGS(I915_MAX_SS_FUSE_BITS)];
 } intel_sseu_ss_mask_t;
 
@@ -78,26 +65,21 @@ struct sseu_dev_info {
 	u16 eu_total;
 	u8 eu_per_subslice;
 	u8 min_eu_in_pool;
-	/* For each slice, which subslice(s) has(have) 7 EUs (bitfield)? */
+	 
 	u8 subslice_7eu[3];
 	u8 has_slice_pg:1;
 	u8 has_subslice_pg:1;
 	u8 has_eu_pg:1;
-	/*
-	 * For Xe_HP and beyond, the hardware no longer has traditional slices
-	 * so we just report the entire DSS pool under a fake "slice 0."
-	 */
+	 
 	u8 has_xehp_dss:1;
 
-	/* Topology fields */
+	 
 	u8 max_slices;
 	u8 max_subslices;
 	u8 max_eus_per_subslice;
 };
 
-/*
- * Powergating configuration for a particular (context,engine).
- */
+ 
 struct intel_sseu {
 	u8 slice_mask;
 	u8 subslice_mask;
@@ -132,11 +114,7 @@ intel_sseu_has_subslice(const struct sseu_dev_info *sseu, int slice,
 		return sseu->subslice_mask.hsw[slice] & BIT(subslice);
 }
 
-/*
- * Used to obtain the index of the first DSS.  Can start searching from the
- * beginning of a specific dss group (e.g., gslice, cslice, etc.) if
- * groupsize and groupnum are non-zero.
- */
+ 
 static inline unsigned int
 intel_sseu_find_first_xehp_dss(const struct sseu_dev_info *sseu, int groupsize,
 			       int groupnum)
@@ -179,4 +157,4 @@ void intel_sseu_print_ss_info(const char *type,
 			      const struct sseu_dev_info *sseu,
 			      struct seq_file *m);
 
-#endif /* __INTEL_SSEU_H__ */
+#endif  

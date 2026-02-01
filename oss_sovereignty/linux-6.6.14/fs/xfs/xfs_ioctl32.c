@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2004-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include <linux/mount.h>
 #include <linux/fsmap.h>
 #include "xfs.h"
@@ -37,7 +34,7 @@ xfs_compat_ioc_fsgeometry_v1(
 	struct xfs_fsop_geom	  fsgeo;
 
 	xfs_fs_geometry(mp, &fsgeo, 3);
-	/* The 32-bit variant simply has some padding at the end */
+	 
 	if (copy_to_user(arg32, &fsgeo, sizeof(struct compat_xfs_fsop_geom_v1)))
 		return -EFAULT;
 	return 0;
@@ -86,14 +83,14 @@ xfs_fsinumbers_fmt_compat(
 
 #else
 #define xfs_fsinumbers_fmt_compat xfs_fsinumbers_fmt
-#endif	/* BROKEN_X86_ALIGNMENT */
+#endif	 
 
 STATIC int
 xfs_ioctl32_bstime_copyin(
 	xfs_bstime_t		*bstime,
 	compat_xfs_bstime_t	__user *bstime32)
 {
-	old_time32_t		sec32;	/* tv_sec differs on 64 vs. 32 */
+	old_time32_t		sec32;	 
 
 	if (get_user(sec32,		&bstime32->tv_sec)	||
 	    get_user(bstime->tv_nsec,	&bstime32->tv_nsec))
@@ -102,10 +99,7 @@ xfs_ioctl32_bstime_copyin(
 	return 0;
 }
 
-/*
- * struct xfs_bstat has differing alignment on intel, & bstime_t sizes
- * everywhere
- */
+ 
 STATIC int
 xfs_ioctl32_bstat_copyin(
 	struct xfs_bstat		*bstat,
@@ -137,7 +131,7 @@ xfs_ioctl32_bstat_copyin(
 	return 0;
 }
 
-/* XFS_IOC_FSBULKSTAT and friends */
+ 
 
 STATIC int
 xfs_bstime_store_compat(
@@ -153,7 +147,7 @@ xfs_bstime_store_compat(
 	return 0;
 }
 
-/* Return 0 on success or positive error (to xfs_bulkstat()) */
+ 
 STATIC int
 xfs_fsbulkstat_one_fmt_compat(
 	struct xfs_ibulk		*breq,
@@ -192,7 +186,7 @@ xfs_fsbulkstat_one_fmt_compat(
 	return xfs_ibulk_advance(breq, sizeof(struct compat_xfs_bstat));
 }
 
-/* copied from xfs_ioctl.c */
+ 
 STATIC int
 xfs_compat_ioc_fsbulkstat(
 	struct file		*file,
@@ -210,32 +204,20 @@ xfs_compat_ioc_fsbulkstat(
 	xfs_ino_t		lastino;
 	int			error;
 
-	/*
-	 * Output structure handling functions.  Depending on the command,
-	 * either the xfs_bstat and xfs_inogrp structures are written out
-	 * to userpace memory via bulkreq.ubuffer.  Normally the compat
-	 * functions and structure size are the correct ones to use ...
-	 */
+	 
 	inumbers_fmt_pf		inumbers_func = xfs_fsinumbers_fmt_compat;
 	bulkstat_one_fmt_pf	bs_one_func = xfs_fsbulkstat_one_fmt_compat;
 
 #ifdef CONFIG_X86_X32_ABI
 	if (in_x32_syscall()) {
-		/*
-		 * ... but on x32 the input xfs_fsop_bulkreq has pointers
-		 * which must be handled in the "compat" (32-bit) way, while
-		 * the xfs_bstat and xfs_inogrp structures follow native 64-
-		 * bit layout convention.  So adjust accordingly, otherwise
-		 * the data written out in compat layout will not match what
-		 * x32 userspace expects.
-		 */
+		 
 		inumbers_func = xfs_fsinumbers_fmt;
 		bs_one_func = xfs_fsbulkstat_one_fmt;
 	}
 #endif
 
-	/* done = 1 if there are more stats to get and if bulkstat */
-	/* should be called again (unused here, but used in dmapi) */
+	 
+	 
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -266,17 +248,7 @@ xfs_compat_ioc_fsbulkstat(
 	breq.ubuffer = bulkreq.ubuffer;
 	breq.icount = bulkreq.icount;
 
-	/*
-	 * FSBULKSTAT_SINGLE expects that *lastip contains the inode number
-	 * that we want to stat.  However, FSINUMBERS and FSBULKSTAT expect
-	 * that *lastip contains either zero or the number of the last inode to
-	 * be examined by the previous call and return results starting with
-	 * the next inode after that.  The new bulk request back end functions
-	 * take the inode to start with, so we have to compute the startino
-	 * parameter from lastino to maintain correct function.  lastino == 0
-	 * is a special case because it has traditionally meant "first inode
-	 * in filesystem".
-	 */
+	 
 	if (cmd == XFS_IOC_FSINUMBERS_32) {
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_inumbers(&breq, inumbers_func);
@@ -379,7 +351,7 @@ xfs_compat_attrmulti_by_handle(
 			   sizeof(compat_xfs_fsop_attrmulti_handlereq_t)))
 		return -EFAULT;
 
-	/* overflow check */
+	 
 	if (am_hreq.opcount >= INT_MAX / sizeof(compat_xfs_attr_multiop_t))
 		return -E2BIG;
 
@@ -458,7 +430,7 @@ xfs_file_compat_ioctl(
 		return error;
 	}
 #endif
-	/* long changes size, but xfs only copiese out 32 bits */
+	 
 	case XFS_IOC_GETVERSION_32:
 		cmd = _NATIVE_IOC(cmd, long);
 		return xfs_file_ioctl(filp, cmd, p);
@@ -466,7 +438,7 @@ xfs_file_compat_ioctl(
 		struct xfs_swapext	  sxp;
 		struct compat_xfs_swapext __user *sxu = arg;
 
-		/* Bulk copy in up to the sx_stat field, then copy bstat */
+		 
 		if (copy_from_user(&sxp, sxu,
 				   offsetof(struct xfs_swapext, sx_stat)) ||
 		    xfs_ioctl32_bstat_copyin(&sxp.sx_stat, &sxu->sx_stat))
@@ -511,7 +483,7 @@ xfs_file_compat_ioctl(
 	case XFS_IOC_ATTRMULTI_BY_HANDLE_32:
 		return xfs_compat_attrmulti_by_handle(filp, arg);
 	default:
-		/* try the native version */
+		 
 		return xfs_file_ioctl(filp, cmd, (unsigned long)arg);
 	}
 }

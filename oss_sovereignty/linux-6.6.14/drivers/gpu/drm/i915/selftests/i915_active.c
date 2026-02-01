@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #include <linux/kref.h>
 #include <linux/string_helpers.h>
@@ -148,7 +144,7 @@ static int live_active_wait(void *arg)
 	struct live_active *active;
 	int err = 0;
 
-	/* Check that we get a callback when requests retire upon waiting */
+	 
 
 	active = __live_active_setup(i915);
 	if (IS_ERR(active))
@@ -178,13 +174,13 @@ static int live_active_retire(void *arg)
 	struct live_active *active;
 	int err = 0;
 
-	/* Check that we get a callback when requests are indirectly retired */
+	 
 
 	active = __live_active_setup(i915);
 	if (IS_ERR(active))
 		return PTR_ERR(active);
 
-	/* waits for & retires all requests */
+	 
 	if (igt_flush_test(i915))
 		err = -EIO;
 
@@ -209,7 +205,7 @@ static int live_active_barrier(void *arg)
 	struct live_active *active;
 	int err = 0;
 
-	/* Check that we get a callback when requests retire upon waiting */
+	 
 
 	active = __live_alloc(i915);
 	if (!active)
@@ -269,7 +265,7 @@ static struct intel_engine_cs *node_to_barrier(struct active_node *it)
 		return NULL;
 
 	engine = __barrier_to_engine(it);
-	smp_rmb(); /* serialise with add_active_barriers */
+	smp_rmb();  
 	if (!is_barrier(&it->base))
 		return NULL;
 
@@ -323,7 +319,7 @@ static void active_flush(struct i915_active *ref,
 
 	spin_lock_irq(fence->lock);
 	__list_del_entry(&active->cb.node);
-	spin_unlock_irq(fence->lock); /* serialise with fence->cb_list */
+	spin_unlock_irq(fence->lock);  
 	atomic_dec(&ref->count);
 
 	GEM_BUG_ON(!test_bit(DMA_FENCE_FLAG_SIGNALED_BIT, &fence->flags));
@@ -334,7 +330,7 @@ void i915_active_unlock_wait(struct i915_active *ref)
 	if (i915_active_acquire_if_busy(ref)) {
 		struct active_node *it, *n;
 
-		/* Wait for all active callbacks */
+		 
 		rcu_read_lock();
 		active_flush(ref, &ref->excl);
 		rbtree_postorder_for_each_entry_safe(it, n, &ref->tree, node)
@@ -344,9 +340,9 @@ void i915_active_unlock_wait(struct i915_active *ref)
 		i915_active_release(ref);
 	}
 
-	/* And wait for the retire callback */
+	 
 	spin_unlock_wait(&ref->tree_lock);
 
-	/* ... which may have been on a thread instead */
+	 
 	flush_work(&ref->work);
 }

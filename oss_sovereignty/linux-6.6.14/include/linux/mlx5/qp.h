@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef MLX5_QP_H
 #define MLX5_QP_H
@@ -37,7 +7,7 @@
 #include <linux/mlx5/driver.h>
 
 #define MLX5_TERMINATE_SCATTER_LIST_LKEY cpu_to_be32(0x100)
-/* UMR (3 WQE_BB's) + SIG (3 WQE_BB's) + PSV (mem) + PSV (wire) */
+ 
 #define MLX5_SIG_WQE_SIZE	(MLX5_SEND_WQE_BB * 8)
 #define MLX5_DIF_SIZE		8
 #define MLX5_STRIDE_BLOCK_OP	0x400
@@ -129,13 +99,13 @@ enum {
 	MLX5_ZERO_LEN_RQ	= 0x3
 };
 
-/* TODO REM */
+ 
 enum {
-	/* params1 */
+	 
 	MLX5_QP_BIT_SRE				= 1 << 15,
 	MLX5_QP_BIT_SWE				= 1 << 14,
 	MLX5_QP_BIT_SAE				= 1 << 13,
-	/* params2 */
+	 
 	MLX5_QP_BIT_RRE				= 1 << 15,
 	MLX5_QP_BIT_RWE				= 1 << 14,
 	MLX5_QP_BIT_RAE				= 1 << 13,
@@ -217,7 +187,7 @@ struct mlx5_wqe_ctrl_seg {
 		__be32		tis_tir_num;
 	};
 
-	); /* end of trailer group */
+	);  
 };
 
 #define MLX5_WQE_CTRL_DS_MASK 0x3f
@@ -510,7 +480,7 @@ struct mlx5_wqe_header_modify_argument_update_seg {
 };
 
 struct mlx5_core_qp {
-	struct mlx5_core_rsc_common	common; /* must be first */
+	struct mlx5_core_rsc_common	common;  
 	void (*event)		(struct mlx5_core_qp *, int);
 	int			qpn;
 	struct mlx5_rsc_debug	*dbg;
@@ -578,4 +548,4 @@ static inline int mlx5_get_qp_default_ts(struct mlx5_core_dev *dev)
 		       MLX5_TIMESTAMP_FORMAT_DEFAULT;
 }
 
-#endif /* MLX5_QP_H */
+#endif  

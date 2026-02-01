@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/ref_tracking.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -7,7 +7,7 @@
 #include "bpf_misc.h"
 
 #define BPF_SK_LOOKUP(func) \
-	/* struct bpf_sock_tuple tuple = {} */ \
+	  \
 	"r2 = 0;"			\
 	"*(u32*)(r10 - 8) = r2;"	\
 	"*(u64*)(r10 - 16) = r2;"	\
@@ -15,7 +15,7 @@
 	"*(u64*)(r10 - 32) = r2;"	\
 	"*(u64*)(r10 - 40) = r2;"	\
 	"*(u64*)(r10 - 48) = r2;"	\
-	/* sk = func(ctx, &tuple, sizeof tuple, 0, 0) */ \
+	  \
 	"r2 = r10;"			\
 	"r2 += -48;"			\
 	"r3 = %[sizeof_bpf_sock_tuple];"\
@@ -29,11 +29,7 @@ extern void bpf_key_put(struct bpf_key *key) __ksym;
 extern struct bpf_key *bpf_lookup_system_key(__u64 id) __ksym;
 extern struct bpf_key *bpf_lookup_user_key(__u32 serial, __u64 flags) __ksym;
 
-/* BTF FUNC records are not generated for kfuncs referenced
- * from inline assembly. These records are necessary for
- * libbpf to link the program. The function below is a hack
- * to ensure that BTF FUNC records are generated.
- */
+ 
 void __kfunc_btf_root(void)
 {
 	bpf_key_put(0);
@@ -114,7 +110,7 @@ __naked void reference_tracking_leak_potential_reference(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	r6 = r0;		/* leak reference */	\
+"	r6 = r0;		 	\
 	exit;						\
 "	:
 	: __imm(bpf_sk_lookup_tcp),
@@ -129,7 +125,7 @@ __naked void potential_reference_to_sock_common_1(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_skc_lookup_tcp)
-"	r6 = r0;		/* leak reference */	\
+"	r6 = r0;		 	\
 	exit;						\
 "	:
 	: __imm(bpf_skc_lookup_tcp),
@@ -182,7 +178,7 @@ __naked void reference_tracking_zero_potential_reference(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	r0 = 0;			/* leak reference */	\
+"	r0 = 0;			 	\
 	exit;						\
 "	:
 	: __imm(bpf_sk_lookup_tcp),
@@ -197,7 +193,7 @@ __naked void potential_reference_to_sock_common_2(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_skc_lookup_tcp)
-"	r0 = 0;			/* leak reference */	\
+"	r0 = 0;			 	\
 	exit;						\
 "	:
 	: __imm(bpf_skc_lookup_tcp),
@@ -214,7 +210,7 @@ __naked void copy_and_zero_potential_references(void)
 	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	r7 = r0;					\
 	r0 = 0;						\
-	r7 = 0;			/* leak reference */	\
+	r7 = 0;			 	\
 	exit;						\
 "	:
 	: __imm(bpf_sk_lookup_tcp),
@@ -349,7 +345,7 @@ __naked void tracking_release_reference_without_check(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	/* reference in r0 may be NULL */		\
+"	 		\
 	r1 = r0;					\
 	r2 = 0;						\
 	call %[bpf_sk_release];				\
@@ -368,7 +364,7 @@ __naked void to_sock_common_without_check(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_skc_lookup_tcp)
-"	/* reference in r0 may be NULL */		\
+"	 		\
 	r1 = r0;					\
 	r2 = 0;						\
 	call %[bpf_sk_release];				\
@@ -465,7 +461,7 @@ __naked void release_reference_twice_inside_branch(void)
 	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	r1 = r0;					\
 	r6 = r0;					\
-	if r0 == 0 goto l0_%=;		/* goto end */	\
+	if r0 == 0 goto l0_%=;		 	\
 	call %[bpf_sk_release];				\
 	r1 = r6;					\
 	call %[bpf_sk_release];				\
@@ -488,15 +484,15 @@ __naked void check_free_in_one_subbranch(void)
 	r3 = *(u32*)(r1 + %[__sk_buff_data_end]);	\
 	r0 = r2;					\
 	r0 += 16;					\
-	/* if (offsetof(skb, mark) > data_len) exit; */	\
+	 	\
 	if r0 <= r3 goto l0_%=;				\
 	exit;						\
 l0_%=:	r6 = *(u32*)(r2 + %[__sk_buff_mark]);		\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	if r6 == 0 goto l1_%=;		/* mark == 0? */\
-	/* Leak reference in R0 */			\
+"	if r6 == 0 goto l1_%=;		 \
+	 			\
 	exit;						\
-l1_%=:	if r0 == 0 goto l2_%=;		/* sk NULL? */	\
+l1_%=:	if r0 == 0 goto l2_%=;		 	\
 	r1 = r0;					\
 	call %[bpf_sk_release];				\
 l2_%=:	exit;						\
@@ -520,17 +516,17 @@ __naked void check_free_in_both_subbranches(void)
 	r3 = *(u32*)(r1 + %[__sk_buff_data_end]);	\
 	r0 = r2;					\
 	r0 += 16;					\
-	/* if (offsetof(skb, mark) > data_len) exit; */	\
+	 	\
 	if r0 <= r3 goto l0_%=;				\
 	exit;						\
 l0_%=:	r6 = *(u32*)(r2 + %[__sk_buff_mark]);		\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	if r6 == 0 goto l1_%=;		/* mark == 0? */\
-	if r0 == 0 goto l2_%=;		/* sk NULL? */	\
+"	if r6 == 0 goto l1_%=;		 \
+	if r0 == 0 goto l2_%=;		 	\
 	r1 = r0;					\
 	call %[bpf_sk_release];				\
 l2_%=:	exit;						\
-l1_%=:	if r0 == 0 goto l3_%=;		/* sk NULL? */	\
+l1_%=:	if r0 == 0 goto l3_%=;		 	\
 	r1 = r0;					\
 	call %[bpf_sk_release];				\
 l3_%=:	exit;						\
@@ -551,7 +547,7 @@ __naked void call_free_reference_in_subprog(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	r1 = r0;	/* unchecked reference */	\
+"	r1 = r0;	 	\
 	call call_free_reference_in_subprog__1;		\
 	r0 = 0;						\
 	exit;						\
@@ -565,7 +561,7 @@ static __naked __noinline __attribute__((used))
 void call_free_reference_in_subprog__1(void)
 {
 	asm volatile ("					\
-	/* subprog 1 */					\
+	 					\
 	r2 = r1;					\
 	if r2 == 0 goto l0_%=;				\
 	call %[bpf_sk_release];				\
@@ -582,7 +578,7 @@ __naked void reference_in_subprog_and_outside(void)
 {
 	asm volatile (
 	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	r1 = r0;	/* unchecked reference */	\
+"	r1 = r0;	 	\
 	r6 = r0;					\
 	call reference_in_subprog_and_outside__1;	\
 	r1 = r6;					\
@@ -599,7 +595,7 @@ static __naked __noinline __attribute__((used))
 void reference_in_subprog_and_outside__1(void)
 {
 	asm volatile ("					\
-	/* subprog 1 */					\
+	 					\
 	r2 = r1;					\
 	if r2 == 0 goto l0_%=;				\
 	call %[bpf_sk_release];				\
@@ -628,10 +624,10 @@ static __naked __noinline __attribute__((used))
 void alloc_leak_reference_in_subprog__1(void)
 {
 	asm volatile ("					\
-	/* subprog 1 */					\
+	 					\
 	r6 = r4;					\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	/* spill unchecked sk_ptr into stack of caller */\
+"	 \
 	*(u64*)(r6 + 0) = r0;				\
 	r1 = r0;					\
 	exit;						\
@@ -662,9 +658,9 @@ static __naked __noinline __attribute__((used))
 void alloc_in_subprog_release_outside__1(void)
 {
 	asm volatile ("					\
-	/* subprog 1 */					\
+	 					\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	exit;				/* return sk */	\
+"	exit;				 	\
 "	:
 	: __imm(bpf_sk_lookup_tcp),
 	  __imm_const(sizeof_bpf_sock_tuple, sizeof(struct bpf_sock_tuple))
@@ -689,12 +685,12 @@ static __naked __noinline __attribute__((used))
 void ptr_leak_into_caller_stack__1(void)
 {
 	asm volatile ("					\
-	/* subprog 1 */					\
+	 					\
 	r5 = r10;					\
 	r5 += -8;					\
 	*(u64*)(r5 + 0) = r4;				\
 	call ptr_leak_into_caller_stack__2;		\
-	/* spill unchecked sk_ptr into stack of caller */\
+	 \
 	r5 = r10;					\
 	r5 += -8;					\
 	r4 = *(u64*)(r5 + 0);				\
@@ -707,7 +703,7 @@ static __naked __noinline __attribute__((used))
 void ptr_leak_into_caller_stack__2(void)
 {
 	asm volatile ("					\
-	/* subprog 2 */					\
+	 					\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	exit;						\
 "	:
@@ -734,18 +730,18 @@ static __naked __noinline __attribute__((used))
 void ptr_spill_into_caller_stack__1(void)
 {
 	asm volatile ("					\
-	/* subprog 1 */					\
+	 					\
 	r5 = r10;					\
 	r5 += -8;					\
 	*(u64*)(r5 + 0) = r4;				\
 	call ptr_spill_into_caller_stack__2;		\
-	/* spill unchecked sk_ptr into stack of caller */\
+	 \
 	r5 = r10;					\
 	r5 += -8;					\
 	r4 = *(u64*)(r5 + 0);				\
 	*(u64*)(r4 + 0) = r0;				\
 	if r0 == 0 goto l0_%=;				\
-	/* now the sk_ptr is verified, free the reference */\
+	 \
 	r1 = *(u64*)(r4 + 0);				\
 	call %[bpf_sk_release];				\
 l0_%=:	exit;						\
@@ -758,7 +754,7 @@ static __naked __noinline __attribute__((used))
 void ptr_spill_into_caller_stack__2(void)
 {
 	asm volatile ("					\
-	/* subprog 2 */					\
+	 					\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	exit;						\
 "	:
@@ -866,10 +862,10 @@ __naked void check_reference_or_tail_call(void)
 	asm volatile ("					\
 	r7 = r1;					\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	/* if (sk) bpf_sk_release() */			\
+"	 			\
 	r1 = r0;					\
 	if r1 != 0 goto l0_%=;				\
-	/* bpf_tail_call() */				\
+	 				\
 	r3 = 3;						\
 	r2 = %[map_prog1_tc] ll;			\
 	r1 = r7;					\
@@ -895,11 +891,11 @@ __naked void release_reference_then_tail_call(void)
 	asm volatile ("					\
 	r7 = r1;					\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	/* if (sk) bpf_sk_release() */			\
+"	 			\
 	r1 = r0;					\
 	if r1 == 0 goto l0_%=;				\
 	call %[bpf_sk_release];				\
-l0_%=:	/* bpf_tail_call() */				\
+l0_%=:	 				\
 	r3 = 3;						\
 	r2 = %[map_prog1_tc] ll;			\
 	r1 = r7;					\
@@ -922,16 +918,16 @@ __naked void possible_reference_over_tail_call(void)
 {
 	asm volatile ("					\
 	r7 = r1;					\
-	/* Look up socket and store in REG_6 */		\
+	 		\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
-"	/* bpf_tail_call() */				\
+"	 				\
 	r6 = r0;					\
 	r3 = 3;						\
 	r2 = %[map_prog1_tc] ll;			\
 	r1 = r7;					\
 	call %[bpf_tail_call];				\
 	r0 = 0;						\
-	/* if (sk) bpf_sk_release() */			\
+	 			\
 	r1 = r6;					\
 	if r1 == 0 goto l0_%=;				\
 	call %[bpf_sk_release];				\
@@ -952,12 +948,12 @@ __naked void checked_reference_over_tail_call(void)
 {
 	asm volatile ("					\
 	r7 = r1;					\
-	/* Look up socket and store in REG_6 */		\
+	 		\
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	r6 = r0;					\
-	/* if (!sk) goto end */				\
+	 				\
 	if r0 == 0 goto l0_%=;				\
-	/* bpf_tail_call() */				\
+	 				\
 	r3 = 0;						\
 	r2 = %[map_prog1_tc] ll;			\
 	r1 = r7;					\
@@ -1102,13 +1098,13 @@ __success __retval(0)
 __naked void tracking_direct_access_for_lookup(void)
 {
 	asm volatile ("					\
-	/* Check that the packet is at least 64B long */\
+	 \
 	r2 = *(u32*)(r1 + %[__sk_buff_data]);		\
 	r3 = *(u32*)(r1 + %[__sk_buff_data_end]);	\
 	r0 = r2;					\
 	r0 += 64;					\
 	if r0 > r3 goto l0_%=;				\
-	/* sk = sk_lookup_tcp(ctx, skb->data, ...) */	\
+	 	\
 	r3 = %[sizeof_bpf_sock_tuple];			\
 	r4 = 0;						\
 	r5 = 0;						\

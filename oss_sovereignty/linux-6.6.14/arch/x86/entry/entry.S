@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common place for both 32- and 64-bit entry routines.
- */
+ 
+ 
 
 #include <linux/linkage.h>
 #include <asm/export.h>
@@ -16,7 +14,7 @@ SYM_FUNC_START(entry_ibpb)
 	wrmsr
 	RET
 SYM_FUNC_END(entry_ibpb)
-/* For KVM */
+ 
 EXPORT_SYMBOL_GPL(entry_ibpb);
 
 .popsection

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FOTG210 UDC Driver supports Bulk transfer so far
- *
- * Copyright (C) 2013 Faraday Technology Corporation
- *
- * Author : Yuan-Hsin Chen <yhchen@faraday-tech.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -72,7 +66,7 @@ static void fotg210_done(struct fotg210_ep *ep, struct fotg210_request *req,
 {
 	list_del_init(&req->queue);
 
-	/* don't modify queue heads during completion callback */
+	 
 	if (ep->fotg210->gadget.speed == USB_SPEED_UNKNOWN)
 		req->req.status = -ESHUTDOWN;
 	else
@@ -96,23 +90,21 @@ static void fotg210_fifo_ep_mapping(struct fotg210_ep *ep, u32 epnum,
 	struct fotg210_udc *fotg210 = ep->fotg210;
 	u32 val;
 
-	/* Driver should map an ep to a fifo and then map the fifo
-	 * to the ep. What a brain-damaged design!
-	 */
+	 
 
-	/* map a fifo to an ep */
+	 
 	val = ioread32(fotg210->reg + FOTG210_EPMAP);
 	val &= ~EPMAP_FIFONOMSK(epnum, dir_in);
 	val |= EPMAP_FIFONO(epnum, dir_in);
 	iowrite32(val, fotg210->reg + FOTG210_EPMAP);
 
-	/* map the ep to the fifo */
+	 
 	val = ioread32(fotg210->reg + FOTG210_FIFOMAP);
 	val &= ~FIFOMAP_EPNOMSK(epnum);
 	val |= FIFOMAP_EPNO(epnum);
 	iowrite32(val, fotg210->reg + FOTG210_FIFOMAP);
 
-	/* enable fifo */
+	 
 	val = ioread32(fotg210->reg + FOTG210_FIFOCF);
 	val |= FIFOCF_FIFO_EN(epnum - 1);
 	iowrite32(val, fotg210->reg + FOTG210_FIFOCF);
@@ -192,9 +184,7 @@ static void fotg210_reset_tseq(struct fotg210_udc *fotg210, u8 epnum)
 		fotg210->reg + FOTG210_INEPMPSR(epnum) :
 		fotg210->reg + FOTG210_OUTEPMPSR(epnum);
 
-	/* Note: Driver needs to set and clear INOUTEPMPSR_RESET_TSEQ
-	 *	 bit. Controller wouldn't clear this bit. WTF!!!
-	 */
+	 
 
 	value = ioread32(reg);
 	value |= INOUTEPMPSR_RESET_TSEQ;
@@ -268,13 +258,13 @@ static void fotg210_enable_dma(struct fotg210_ep *ep,
 	u32 value;
 	struct fotg210_udc *fotg210 = ep->fotg210;
 
-	/* set transfer length and direction */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMACPSR1);
 	value &= ~(DMACPSR1_DMA_LEN(0xFFFF) | DMACPSR1_DMA_TYPE(1));
 	value |= DMACPSR1_DMA_LEN(len) | DMACPSR1_DMA_TYPE(ep->dir_in);
 	iowrite32(value, fotg210->reg + FOTG210_DMACPSR1);
 
-	/* set device DMA target FIFO number */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMATFNR);
 	if (ep->epnum)
 		value |= DMATFNR_ACC_FN(ep->epnum - 1);
@@ -282,15 +272,15 @@ static void fotg210_enable_dma(struct fotg210_ep *ep,
 		value |= DMATFNR_ACC_CXF;
 	iowrite32(value, fotg210->reg + FOTG210_DMATFNR);
 
-	/* set DMA memory address */
+	 
 	iowrite32(d, fotg210->reg + FOTG210_DMACPSR2);
 
-	/* enable MDMA_EROR and MDMA_CMPLT interrupt */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMISGR2);
 	value &= ~(DMISGR2_MDMA_CMPLT | DMISGR2_MDMA_ERROR);
 	iowrite32(value, fotg210->reg + FOTG210_DMISGR2);
 
-	/* start DMA */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMACPSR1);
 	value |= DMACPSR1_DMA_START;
 	iowrite32(value, fotg210->reg + FOTG210_DMACPSR1);
@@ -320,7 +310,7 @@ dma_reset:
 	value |= DMACPSR1_DMA_ABORT;
 	iowrite32(value, ep->fotg210->reg + FOTG210_DMACPSR1);
 
-	/* reset fifo */
+	 
 	if (ep->epnum) {
 		value = ioread32(ep->fotg210->reg +
 				FOTG210_FIBCR(ep->epnum - 1));
@@ -371,12 +361,12 @@ static void fotg210_start_dma(struct fotg210_ep *ep,
 
 	fotg210_enable_dma(ep, d, length);
 
-	/* check if dma is done */
+	 
 	fotg210_wait_dma_done(ep);
 
 	fotg210_disable_dma(ep);
 
-	/* update actual transfer length */
+	 
 	req->req.actual += length;
 
 	dma_unmap_single(dev, d, length, DMA_TO_DEVICE);
@@ -389,11 +379,11 @@ static void fotg210_ep0_queue(struct fotg210_ep *ep,
 		fotg210_done(ep, req, 0);
 		return;
 	}
-	if (ep->dir_in) { /* if IN */
+	if (ep->dir_in) {  
 		fotg210_start_dma(ep, req);
 		if (req->req.length == req->req.actual)
 			fotg210_done(ep, req, 0);
-	} else { /* OUT */
+	} else {  
 		u32 value = ioread32(ep->fotg210->reg + FOTG210_DMISGR0);
 
 		value &= ~DMISGR0_MCX_OUT_INT;
@@ -425,7 +415,7 @@ static int fotg210_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 	req->req.actual = 0;
 	req->req.status = -EINPROGRESS;
 
-	if (!ep->epnum) /* ep0 */
+	if (!ep->epnum)  
 		fotg210_ep0_queue(ep, req);
 	else if (request && !ep->stall)
 		fotg210_enable_fifo_int(ep);
@@ -458,7 +448,7 @@ static void fotg210_set_epnstall(struct fotg210_ep *ep)
 	u32 value;
 	void __iomem *reg;
 
-	/* check if IN FIFO is empty before stall */
+	 
 	if (ep->dir_in) {
 		do {
 			value = ioread32(fotg210->reg + FOTG210_DCFESR);
@@ -564,7 +554,7 @@ static void fotg210_clear_rx0byte(struct fotg210_udc *fotg210)
 	iowrite32(value, fotg210->reg + FOTG210_RX0BYTE);
 }
 
-/* read 8-byte setup packet only */
+ 
 static void fotg210_rdsetupp(struct fotg210_udc *fotg210,
 		   u8 *buffer)
 {
@@ -717,7 +707,7 @@ static int fotg210_is_epnstall(struct fotg210_ep *ep)
 	return value & INOUTEPMPSR_STL_EP ? 1 : 0;
 }
 
-/* For EP0 requests triggered by this driver (currently GET_STATUS response) */
+ 
 static void fotg210_ep0_complete(struct usb_ep *_ep, struct usb_request *req)
 {
 	struct fotg210_ep *ep;
@@ -755,7 +745,7 @@ static void fotg210_get_status(struct fotg210_udc *fotg210,
 
 	default:
 		fotg210_request_error(fotg210);
-		return;		/* exit */
+		return;		 
 	}
 
 	fotg210->ep0_req->buf = &fotg210->ep0_data;
@@ -782,7 +772,7 @@ static int fotg210_setup_packet(struct fotg210_udc *fotg210,
 				USB_SPEED_HIGH : USB_SPEED_FULL;
 	}
 
-	/* check request */
+	 
 	if ((ctrl->bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD) {
 		switch (ctrl->bRequest) {
 		case USB_REQ_GET_STATUS:
@@ -870,9 +860,7 @@ static void fotg210_out_fifo_handler(struct fotg210_ep *ep)
 
 	fotg210_start_dma(ep, req);
 
-	/* Complete the request when it's full or a short packet arrived.
-	 * Like other drivers, short_not_ok isn't handled.
-	 */
+	 
 
 	if (req->req.length == req->req.actual ||
 	    (disgr1 & DISGR1_SPK_INT(ep->epnum - 1)))
@@ -941,7 +929,7 @@ static irqreturn_t fotg210_irq(int irq, void *_fotg210)
 
 		int_grp0 &= ~int_msk0;
 
-		/* the highest priority in this source register */
+		 
 		if (int_grp0 & DISGR0_CX_COMABT_INT) {
 			fotg210_ack_int(fotg210, FOTG210_DISGR0, DISGR0_CX_COMABT_INT);
 			pr_info("fotg210 CX command abort\n");
@@ -1009,7 +997,7 @@ static int fotg210_udc_start(struct usb_gadget *g,
 	u32 value;
 	int ret;
 
-	/* hook up the driver */
+	 
 	fotg210->driver = driver;
 	fotg210->gadget.dev.of_node = fotg210->dev->of_node;
 	fotg210->gadget.speed = USB_SPEED_UNKNOWN;
@@ -1023,12 +1011,12 @@ static int fotg210_udc_start(struct usb_gadget *g,
 			dev_err(fotg210->dev, "can't bind to phy\n");
 	}
 
-	/* chip enable */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMCR);
 	value |= DMCR_CHIP_EN;
 	iowrite32(value, fotg210->reg + FOTG210_DMCR);
 
-	/* enable device global interrupt */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMCR);
 	value |= DMCR_GLINT_EN;
 	iowrite32(value, fotg210->reg + FOTG210_DMCR);
@@ -1040,34 +1028,34 @@ static void fotg210_init(struct fotg210_udc *fotg210)
 {
 	u32 value;
 
-	/* disable global interrupt and set int polarity to active high */
+	 
 	iowrite32(GMIR_MHC_INT | GMIR_MOTG_INT | GMIR_INT_POLARITY,
 		  fotg210->reg + FOTG210_GMIR);
 
-	/* mask interrupts for groups other than 0-2 */
+	 
 	iowrite32(~(DMIGR_MINT_G0 | DMIGR_MINT_G1 | DMIGR_MINT_G2),
 		  fotg210->reg + FOTG210_DMIGR);
 
-	/* udc software reset */
+	 
 	iowrite32(DMCR_SFRST, fotg210->reg + FOTG210_DMCR);
-	/* Better wait a bit, but without a datasheet, no idea how long. */
+	 
 	usleep_range(100, 200);
 
-	/* disable device global interrupt */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMCR);
 	value &= ~DMCR_GLINT_EN;
 	iowrite32(value, fotg210->reg + FOTG210_DMCR);
 
-	/* enable only grp2 irqs we handle */
+	 
 	iowrite32(~(DISGR2_DMA_ERROR | DISGR2_RX0BYTE_INT | DISGR2_TX0BYTE_INT
 		    | DISGR2_ISO_SEQ_ABORT_INT | DISGR2_ISO_SEQ_ERR_INT
 		    | DISGR2_RESM_INT | DISGR2_SUSP_INT | DISGR2_USBRST_INT),
 		  fotg210->reg + FOTG210_DMISGR2);
 
-	/* disable all fifo interrupt */
+	 
 	iowrite32(~(u32)0, fotg210->reg + FOTG210_DMISGR1);
 
-	/* disable cmd end */
+	 
 	value = ioread32(fotg210->reg + FOTG210_DMISGR0);
 	value |= DMISGR0_MCX_COMEND;
 	iowrite32(value, fotg210->reg + FOTG210_DMISGR0);
@@ -1092,18 +1080,12 @@ static int fotg210_udc_stop(struct usb_gadget *g)
 	return 0;
 }
 
-/**
- * fotg210_vbus_session - Called by external transceiver to enable/disable udc
- * @_gadget: usb gadget
- * @is_active: 0 if should disable UDC VBUS, 1 if should enable
- *
- * Returns 0
- */
+ 
 static int fotg210_vbus_session(struct usb_gadget *g, int is_active)
 {
 	struct fotg210_udc *fotg210 = gadget_to_fotg210(g);
 
-	/* Call down to core integration layer to drive or disable VBUS */
+	 
 	fotg210_vbus(fotg210->fotg, is_active);
 	return 0;
 }
@@ -1114,16 +1096,7 @@ static const struct usb_gadget_ops fotg210_gadget_ops = {
 	.vbus_session		= fotg210_vbus_session,
 };
 
-/**
- * fotg210_phy_event - Called by phy upon VBus event
- * @nb: notifier block
- * @action: phy action, is vbus connect or disconnect
- * @data: the usb_gadget structure in fotg210
- *
- * Called by the USB Phy when a cable connect or disconnect is sensed.
- *
- * Returns NOTIFY_OK or NOTIFY_DONE
- */
+ 
 static int fotg210_phy_event(struct notifier_block *nb, unsigned long action,
 			     void *data)
 {
@@ -1182,7 +1155,7 @@ int fotg210_udc_probe(struct platform_device *pdev, struct fotg210 *fotg)
 	if (irq < 0)
 		return irq;
 
-	/* initialize udc */
+	 
 	fotg210 = kzalloc(sizeof(struct fotg210_udc), GFP_KERNEL);
 	if (fotg210 == NULL)
 		return -ENOMEM;

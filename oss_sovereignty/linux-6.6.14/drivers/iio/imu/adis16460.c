@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ADIS16460 IMU driver
- *
- * Copyright 2019 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
@@ -205,13 +201,13 @@ static int adis16460_read_raw(struct iio_dev *indio_dev,
 			*val2 = st->chip_info->accel_max_val;
 			return IIO_VAL_FRACTIONAL;
 		case IIO_TEMP:
-			*val = 50; /* 50 milli degrees Celsius/LSB */
+			*val = 50;  
 			return IIO_VAL_INT;
 		default:
 			return -EINVAL;
 		}
 	case IIO_CHAN_INFO_OFFSET:
-		*val = 500; /* 25 degrees Celsius = 0x0000 */
+		*val = 500;  
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SAMP_FREQ:
 		return adis16460_get_freq(indio_dev, val, val2);
@@ -301,11 +297,7 @@ static const struct iio_chan_spec adis16460_channels[] = {
 static const struct adis16460_chip_info adis16460_chip_info = {
 	.channels = adis16460_channels,
 	.num_channels = ARRAY_SIZE(adis16460_channels),
-	/*
-	 * storing the value in rad/degree and the scale in degree
-	 * gives us the result in rad and better precession than
-	 * storing the scale directly in rad.
-	 */
+	 
 	.gyro_max_val = IIO_RAD_TO_DEGREE(200 << 16),
 	.gyro_max_scale = 1,
 	.accel_max_val = IIO_M_S_2_TO_G(20000 << 16),

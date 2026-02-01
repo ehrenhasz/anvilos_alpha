@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -36,10 +36,7 @@ static unsigned int pri_mux_map[] = {
 	0,
 };
 
-/*
- * Notifier function for switching the muxes to safe parent
- * while the hfpll is getting reprogrammed.
- */
+ 
 static int krait_notifier_cb(struct notifier_block *nb,
 			     unsigned long event,
 			     void *data)
@@ -47,16 +44,12 @@ static int krait_notifier_cb(struct notifier_block *nb,
 	int ret = 0;
 	struct krait_mux_clk *mux = container_of(nb, struct krait_mux_clk,
 						 clk_nb);
-	/* Switch to safe parent */
+	 
 	if (event == PRE_RATE_CHANGE) {
 		mux->old_index = krait_mux_clk_ops.get_parent(&mux->hw);
 		ret = krait_mux_clk_ops.set_parent(&mux->hw, mux->safe_sel);
 		mux->reparent = false;
-	/*
-	 * By the time POST_RATE_CHANGE notifier is called,
-	 * clk framework itself would have changed the parent for the new rate.
-	 * Only otherwise, put back to the old parent.
-	 */
+	 
 	} else if (event == POST_RATE_CHANGE) {
 		if (!mux->reparent)
 			ret = krait_mux_clk_ops.set_parent(&mux->hw,
@@ -125,7 +118,7 @@ krait_add_div(struct device *dev, int id, const char *s, unsigned int offset)
 
 	clk = &div->hw;
 
-	/* clk-krait ignore any rate change if mux is not flagged as enabled */
+	 
 	if (id < 0)
 		for_each_online_cpu(cpu)
 			clk_prepare_enable(div->hw.clk);
@@ -171,10 +164,7 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
 	mux->hw.init = &init;
 	mux->safe_sel = 0;
 
-	/* Checking for qcom,krait-cc-v1 or qcom,krait-cc-v2 is not
-	 * enough to limit this to apq/ipq8064. Directly check machine
-	 * compatible to correctly handle this errata.
-	 */
+	 
 	if (of_machine_is_compatible("qcom,ipq8064") ||
 	    of_machine_is_compatible("qcom,apq8064"))
 		mux->disable_sec_src_gating = true;
@@ -209,7 +199,7 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
 		goto err_clk;
 	}
 
-	/* clk-krait ignore any rate change if mux is not flagged as enabled */
+	 
 	if (id < 0)
 		for_each_online_cpu(cpu)
 			clk_prepare_enable(mux->hw.clk);
@@ -287,7 +277,7 @@ err_hfpll:
 	return clk;
 }
 
-/* id < 0 for L2, otherwise id == physical CPU number */
+ 
 static struct clk_hw *krait_add_clks(struct device *dev, int id, bool unique_aux)
 {
 	struct clk_hw *hfpll_div, *sec_mux, *pri_mux;
@@ -357,7 +347,7 @@ static int krait_cc_probe(struct platform_device *pdev)
 	if (!id)
 		return -ENODEV;
 
-	/* Rate is 1 because 0 causes problems for __clk_mux_determine_rate */
+	 
 	clk = clk_register_fixed_rate(dev, "qsb", NULL, 0, 1);
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
@@ -369,7 +359,7 @@ static int krait_cc_probe(struct platform_device *pdev)
 			return PTR_ERR(clk);
 	}
 
-	/* Krait configurations have at most 4 CPUs and one L2 */
+	 
 	clks = devm_kcalloc(dev, clks_max, sizeof(*clks), GFP_KERNEL);
 	if (!clks)
 		return -ENOMEM;
@@ -386,30 +376,14 @@ static int krait_cc_probe(struct platform_device *pdev)
 		return PTR_ERR(l2_pri_mux);
 	clks[l2_mux] = l2_pri_mux->clk;
 
-	/*
-	 * We don't want the CPU or L2 clocks to be turned off at late init
-	 * if CPUFREQ or HOTPLUG configs are disabled. So, bump up the
-	 * refcount of these clocks. Any cpufreq/hotplug manager can assume
-	 * that the clocks have already been prepared and enabled by the time
-	 * they take over.
-	 */
+	 
 	for_each_online_cpu(cpu) {
 		clk_prepare_enable(clks[l2_mux]);
 		WARN(clk_prepare_enable(clks[cpu]),
 		     "Unable to turn on CPU%d clock", cpu);
 	}
 
-	/*
-	 * Force reinit of HFPLLs and muxes to overwrite any potential
-	 * incorrect configuration of HFPLLs and muxes by the bootloader.
-	 * While at it, also make sure the cores are running at known rates
-	 * and print the current rate.
-	 *
-	 * The clocks are set to aux clock rate first to make sure the
-	 * secondary mux is not sourcing off of QSB. The rate is then set to
-	 * two different rates to force a HFPLL reinit under all
-	 * circumstances.
-	 */
+	 
 	cur_rate = clk_get_rate(clks[l2_mux]);
 	aux_rate = 384000000;
 	if (cur_rate < aux_rate) {

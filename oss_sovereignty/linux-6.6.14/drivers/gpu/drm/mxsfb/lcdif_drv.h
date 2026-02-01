@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- *
- * i.MX8MP/i.MXRT LCDIFv3 LCD controller driver.
- */
+ 
+ 
 
 #ifndef __LCDIF_DRV_H__
 #define __LCDIF_DRV_H__
@@ -16,7 +12,7 @@
 struct clk;
 
 struct lcdif_drm_private {
-	void __iomem			*base;	/* registers */
+	void __iomem			*base;	 
 	struct clk			*clk;
 	struct clk			*clk_axi;
 	struct clk			*clk_disp_axi;
@@ -26,7 +22,7 @@ struct lcdif_drm_private {
 	struct drm_device		*drm;
 	struct {
 		struct drm_plane	primary;
-		/* i.MXRT does support overlay planes, add them here. */
+		 
 	} planes;
 	struct drm_crtc			crtc;
 };
@@ -39,4 +35,4 @@ to_lcdif_drm_private(struct drm_device *drm)
 
 int lcdif_kms_init(struct lcdif_drm_private *lcdif);
 
-#endif /* __LCDIF_DRV_H__ */
+#endif  

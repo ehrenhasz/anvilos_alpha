@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * recv_linux.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>.
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _RECV_OSDEP_C_
 
@@ -27,8 +14,8 @@
 #include <linux/if_arp.h>
 #include "usb_ops.h"
 
-/*init os related resource in struct recv_priv*/
-/*alloc os related resource in union recv_frame*/
+ 
+ 
 void r8712_os_recv_resource_alloc(struct _adapter *padapter,
 				  union recv_frame *precvframe)
 {
@@ -36,7 +23,7 @@ void r8712_os_recv_resource_alloc(struct _adapter *padapter,
 	precvframe->u.hdr.pkt = NULL;
 }
 
-/*alloc os related resource in struct recv_buf*/
+ 
 int r8712_os_recvbuf_resource_alloc(struct _adapter *padapter,
 				    struct recv_buf *precvbuf)
 {
@@ -58,7 +45,7 @@ int r8712_os_recvbuf_resource_alloc(struct _adapter *padapter,
 	return res;
 }
 
-/*free os related resource in struct recv_buf*/
+ 
 void r8712_os_recvbuf_resource_free(struct _adapter *padapter,
 				    struct recv_buf *precvbuf)
 {
@@ -112,13 +99,11 @@ void r8712_recv_indicatepkt(struct _adapter *adapter,
 	skb->dev = adapter->pnetdev;
 	skb->protocol = eth_type_trans(skb, adapter->pnetdev);
 	netif_rx(skb);
-	recvframe->u.hdr.pkt = NULL; /* pointers to NULL before
-				      * r8712_free_recvframe()
-				      */
+	recvframe->u.hdr.pkt = NULL;  
 	r8712_free_recvframe(recvframe, free_recv_queue);
 	return;
 _recv_indicatepkt_drop:
-	 /*enqueue back to free_recv_queue*/
+	  
 	if (recvframe)
 		r8712_free_recvframe(recvframe, free_recv_queue);
 	recvpriv->rx_drop++;

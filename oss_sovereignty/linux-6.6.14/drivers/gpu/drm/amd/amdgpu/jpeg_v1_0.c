@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_jpeg.h"
@@ -56,37 +35,37 @@ static void jpeg_v1_0_decode_ring_set_patch_ring(struct amdgpu_ring *ring, uint3
 
 	uint32_t reg, reg_offset, val, mask, i;
 
-	// 1st: program mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_LOW
+	
 	reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_LOW);
 	reg_offset = (reg << 2);
 	val = lower_32_bits(ring->gpu_addr);
 	jpeg_v1_0_decode_ring_patch_wreg(ring, &ptr, reg_offset, val);
 
-	// 2nd: program mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_HIGH
+	
 	reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_HIGH);
 	reg_offset = (reg << 2);
 	val = upper_32_bits(ring->gpu_addr);
 	jpeg_v1_0_decode_ring_patch_wreg(ring, &ptr, reg_offset, val);
 
-	// 3rd to 5th: issue MEM_READ commands
+	
 	for (i = 0; i <= 2; i++) {
 		ring->ring[ptr++] = PACKETJ(0, 0, 0, PACKETJ_TYPE2);
 		ring->ring[ptr++] = 0;
 	}
 
-	// 6th: program mmUVD_JRBC_RB_CNTL register to enable NO_FETCH and RPTR write ability
+	
 	reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_JRBC_RB_CNTL);
 	reg_offset = (reg << 2);
 	val = 0x13;
 	jpeg_v1_0_decode_ring_patch_wreg(ring, &ptr, reg_offset, val);
 
-	// 7th: program mmUVD_JRBC_RB_REF_DATA
+	
 	reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_JRBC_RB_REF_DATA);
 	reg_offset = (reg << 2);
 	val = 0x1;
 	jpeg_v1_0_decode_ring_patch_wreg(ring, &ptr, reg_offset, val);
 
-	// 8th: issue conditional register read mmUVD_JRBC_RB_CNTL
+	
 	reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_JRBC_RB_CNTL);
 	reg_offset = (reg << 2);
 	val = 0x1;
@@ -107,32 +86,26 @@ static void jpeg_v1_0_decode_ring_set_patch_ring(struct amdgpu_ring *ring, uint3
 	}
 	ring->ring[ptr++] = mask;
 
-	//9th to 21st: insert no-op
+	
 	for (i = 0; i <= 12; i++) {
 		ring->ring[ptr++] = PACKETJ(0, 0, 0, PACKETJ_TYPE6);
 		ring->ring[ptr++] = 0;
 	}
 
-	//22nd: reset mmUVD_JRBC_RB_RPTR
+	
 	reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_JRBC_RB_RPTR);
 	reg_offset = (reg << 2);
 	val = 0;
 	jpeg_v1_0_decode_ring_patch_wreg(ring, &ptr, reg_offset, val);
 
-	//23rd: program mmUVD_JRBC_RB_CNTL to disable no_fetch
+	
 	reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_JRBC_RB_CNTL);
 	reg_offset = (reg << 2);
 	val = 0x12;
 	jpeg_v1_0_decode_ring_patch_wreg(ring, &ptr, reg_offset, val);
 }
 
-/**
- * jpeg_v1_0_decode_ring_get_rptr - get read pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware read pointer
- */
+ 
 static uint64_t jpeg_v1_0_decode_ring_get_rptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -140,13 +113,7 @@ static uint64_t jpeg_v1_0_decode_ring_get_rptr(struct amdgpu_ring *ring)
 	return RREG32_SOC15(JPEG, 0, mmUVD_JRBC_RB_RPTR);
 }
 
-/**
- * jpeg_v1_0_decode_ring_get_wptr - get write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware write pointer
- */
+ 
 static uint64_t jpeg_v1_0_decode_ring_get_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -154,13 +121,7 @@ static uint64_t jpeg_v1_0_decode_ring_get_wptr(struct amdgpu_ring *ring)
 	return RREG32_SOC15(JPEG, 0, mmUVD_JRBC_RB_WPTR);
 }
 
-/**
- * jpeg_v1_0_decode_ring_set_wptr - set write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Commits the write pointer to the hardware
- */
+ 
 static void jpeg_v1_0_decode_ring_set_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -168,13 +129,7 @@ static void jpeg_v1_0_decode_ring_set_wptr(struct amdgpu_ring *ring)
 	WREG32_SOC15(JPEG, 0, mmUVD_JRBC_RB_WPTR, lower_32_bits(ring->wptr));
 }
 
-/**
- * jpeg_v1_0_decode_ring_insert_start - insert a start command
- *
- * @ring: amdgpu_ring pointer
- *
- * Write a start command to the ring.
- */
+ 
 static void jpeg_v1_0_decode_ring_insert_start(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -187,13 +142,7 @@ static void jpeg_v1_0_decode_ring_insert_start(struct amdgpu_ring *ring)
 	amdgpu_ring_write(ring, 0x80010000);
 }
 
-/**
- * jpeg_v1_0_decode_ring_insert_end - insert a end command
- *
- * @ring: amdgpu_ring pointer
- *
- * Write a end command to the ring.
- */
+ 
 static void jpeg_v1_0_decode_ring_insert_end(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -206,16 +155,7 @@ static void jpeg_v1_0_decode_ring_insert_end(struct amdgpu_ring *ring)
 	amdgpu_ring_write(ring, 0x00010000);
 }
 
-/**
- * jpeg_v1_0_decode_ring_emit_fence - emit an fence & trap command
- *
- * @ring: amdgpu_ring pointer
- * @addr: address
- * @seq: sequence number
- * @flags: fence related flags
- *
- * Write a fence and a trap command to the ring.
- */
+ 
 static void jpeg_v1_0_decode_ring_emit_fence(struct amdgpu_ring *ring, u64 addr, u64 seq,
 				     unsigned flags)
 {
@@ -275,21 +215,12 @@ static void jpeg_v1_0_decode_ring_emit_fence(struct amdgpu_ring *ring, u64 addr,
 		PACKETJ(0, 0, 0, PACKETJ_TYPE0));
 	amdgpu_ring_write(ring, 0x1);
 
-	/* emit trap */
+	 
 	amdgpu_ring_write(ring, PACKETJ(0, 0, 0, PACKETJ_TYPE7));
 	amdgpu_ring_write(ring, 0);
 }
 
-/**
- * jpeg_v1_0_decode_ring_emit_ib - execute indirect buffer
- *
- * @ring: amdgpu_ring pointer
- * @job: job to retrieve vmid from
- * @ib: indirect buffer to execute
- * @flags: unused
- *
- * Write ring commands to execute the indirect buffer.
- */
+ 
 static void jpeg_v1_0_decode_ring_emit_ib(struct amdgpu_ring *ring,
 					struct amdgpu_job *job,
 					struct amdgpu_ib *ib,
@@ -381,7 +312,7 @@ static void jpeg_v1_0_decode_ring_emit_vm_flush(struct amdgpu_ring *ring,
 
 	pd_addr = amdgpu_gmc_emit_flush_gpu_tlb(ring, vmid, pd_addr);
 
-	/* wait for register write */
+	 
 	data0 = hub->ctx0_ptb_addr_lo32 + vmid * hub->ctx_addr_distance;
 	data1 = lower_32_bits(pd_addr);
 	mask = 0xffffffff;
@@ -448,13 +379,7 @@ static int jpeg_v1_0_process_interrupt(struct amdgpu_device *adev,
 	return 0;
 }
 
-/**
- * jpeg_v1_0_early_init - set function pointers
- *
- * @handle: amdgpu_device pointer
- *
- * Set ring and irq function pointers
- */
+ 
 int jpeg_v1_0_early_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -468,19 +393,14 @@ int jpeg_v1_0_early_init(void *handle)
 	return 0;
 }
 
-/**
- * jpeg_v1_0_sw_init - sw init for JPEG block
- *
- * @handle: amdgpu_device pointer
- *
- */
+ 
 int jpeg_v1_0_sw_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 	struct amdgpu_ring *ring;
 	int r;
 
-	/* JPEG TRAP */
+	 
 	r = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_VCN, 126, &adev->jpeg.inst->irq);
 	if (r)
 		return r;
@@ -499,13 +419,7 @@ int jpeg_v1_0_sw_init(void *handle)
 	return 0;
 }
 
-/**
- * jpeg_v1_0_sw_fini - sw fini for JPEG block
- *
- * @handle: amdgpu_device pointer
- *
- * JPEG free up sw allocation
- */
+ 
 void jpeg_v1_0_sw_fini(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -513,14 +427,7 @@ void jpeg_v1_0_sw_fini(void *handle)
 	amdgpu_ring_fini(adev->jpeg.inst->ring_dec);
 }
 
-/**
- * jpeg_v1_0_start - start JPEG block
- *
- * @adev: amdgpu_device pointer
- * @mode: SPG or DPG mode
- *
- * Setup and start the JPEG block
- */
+ 
 void jpeg_v1_0_start(struct amdgpu_device *adev, int mode)
 {
 	struct amdgpu_ring *ring = adev->jpeg.inst->ring_dec;
@@ -536,10 +443,10 @@ void jpeg_v1_0_start(struct amdgpu_device *adev, int mode)
 		WREG32_SOC15(JPEG, 0, mmUVD_JRBC_RB_CNTL, UVD_JRBC_RB_CNTL__RB_RPTR_WR_EN_MASK);
 	}
 
-	/* initialize wptr */
+	 
 	ring->wptr = RREG32_SOC15(JPEG, 0, mmUVD_JRBC_RB_WPTR);
 
-	/* copy patch commands to the jpeg ring */
+	 
 	jpeg_v1_0_decode_ring_set_patch_ring(ring,
 		(ring->wptr + ring->max_dw * amdgpu_sched_hw_submission));
 }
@@ -555,13 +462,13 @@ static const struct amdgpu_ring_funcs jpeg_v1_0_decode_ring_vm_funcs = {
 	.get_wptr = jpeg_v1_0_decode_ring_get_wptr,
 	.set_wptr = jpeg_v1_0_decode_ring_set_wptr,
 	.emit_frame_size =
-		6 + 6 + /* hdp invalidate / flush */
+		6 + 6 +  
 		SOC15_FLUSH_GPU_TLB_NUM_WREG * 6 +
 		SOC15_FLUSH_GPU_TLB_NUM_REG_WAIT * 8 +
-		8 + /* jpeg_v1_0_decode_ring_emit_vm_flush */
-		26 + 26 + /* jpeg_v1_0_decode_ring_emit_fence x2 vm fence */
+		8 +  
+		26 + 26 +  
 		6,
-	.emit_ib_size = 22, /* jpeg_v1_0_decode_ring_emit_ib */
+	.emit_ib_size = 22,  
 	.emit_ib = jpeg_v1_0_decode_ring_emit_ib,
 	.emit_fence = jpeg_v1_0_decode_ring_emit_fence,
 	.emit_vm_flush = jpeg_v1_0_decode_ring_emit_vm_flush,

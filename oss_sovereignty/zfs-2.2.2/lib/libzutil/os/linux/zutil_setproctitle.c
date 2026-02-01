@@ -1,28 +1,4 @@
-/*
- * Copyright © 2013 Guillem Jover <guillem@hadrons.org>
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
- * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
- * THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <errno.h>
 #include <stddef.h>
@@ -36,13 +12,13 @@
 #include <libzutil.h>
 
 static struct {
-	/* Original value. */
+	 
 	const char *arg0;
 
-	/* Title space available. */
+	 
 	char *base, *end;
 
-	/* Pointer to original nul character within base. */
+	 
 	char *nul;
 
 	boolean_t warned;
@@ -82,10 +58,7 @@ spt_min(size_t a, size_t b)
 	return ((a < b) ? a : b);
 }
 
-/*
- * For discussion on the portability of the various methods, see
- * https://lists.freebsd.org/pipermail/freebsd-stable/2008-June/043136.html
- */
+ 
 static int
 spt_clearenv(void)
 {
@@ -112,12 +85,7 @@ spt_copyenv(int envc, char *envp[])
 	if (environ != envp)
 		return (0);
 
-	/*
-	 * Make a copy of the old environ array of pointers, in case
-	 * clearenv() or setenv() is implemented to free the internal
-	 * environ array, because we will need to access the old environ
-	 * contents to make the new copy.
-	 */
+	 
 	envsize = (envc + 1) * sizeof (char *);
 	envcopy = malloc(envsize);
 	if (envcopy == NULL)
@@ -148,10 +116,7 @@ spt_copyenv(int envc, char *envp[])
 		}
 	}
 
-	/*
-	 * Dispose of the shallow copy, now that we've finished transfering
-	 * the old environment.
-	 */
+	 
 	free(envcopy);
 
 	return (0);
@@ -183,7 +148,7 @@ zfs_setproctitle_init(int argc, char *argv[], char *envp[])
 	char *base, *end, *nul, *tmp;
 	int i, envc, error;
 
-	/* Try to make sure we got called with main() arguments. */
+	 
 	if (argc < 0)
 		return;
 
@@ -242,7 +207,7 @@ zfs_setproctitle_init(int argc, char *argv[], char *envp[])
 void
 zfs_setproctitle(const char *fmt, ...)
 {
-	/* Use buffer in case argv[0] is passed. */
+	 
 	char buf[SPT_MAXTITLE + 1];
 	va_list ap;
 	char *nul;
@@ -258,11 +223,11 @@ zfs_setproctitle(const char *fmt, ...)
 
 	if (fmt) {
 		if (fmt[0] == '-') {
-			/* Skip program name prefix. */
+			 
 			fmt++;
 			len = 0;
 		} else {
-			/* Print program name heading for grep. */
+			 
 			snprintf(buf, sizeof (buf), "%s: ", getprogname());
 			len = strlen(buf);
 		}

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
- *
- * Copyright (c) 2003-2010 Cavium Networks
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -13,14 +9,7 @@
 #include "ethernet-mem.h"
 #include "ethernet-defines.h"
 
-/**
- * cvm_oct_fill_hw_skbuff - fill the supplied hardware pool with skbuffs
- * @pool:     Pool to allocate an skbuff for
- * @size:     Size of the buffer needed for the pool
- * @elements: Number of buffers to allocate
- *
- * Returns the actual number of buffers allocated.
- */
+ 
 static int cvm_oct_fill_hw_skbuff(int pool, int size, int elements)
 {
 	int freed = elements;
@@ -38,12 +27,7 @@ static int cvm_oct_fill_hw_skbuff(int pool, int size, int elements)
 	return elements - freed;
 }
 
-/**
- * cvm_oct_free_hw_skbuff- free hardware pool skbuffs
- * @pool:     Pool to allocate an skbuff for
- * @size:     Size of the buffer needed for the pool
- * @elements: Number of buffers to allocate
- */
+ 
 static void cvm_oct_free_hw_skbuff(int pool, int size, int elements)
 {
 	char *memory;
@@ -66,14 +50,7 @@ static void cvm_oct_free_hw_skbuff(int pool, int size, int elements)
 			pool, elements);
 }
 
-/**
- * cvm_oct_fill_hw_memory - fill a hardware pool with memory.
- * @pool:     Pool to populate
- * @size:     Size of each buffer in the pool
- * @elements: Number of buffers to allocate
- *
- * Returns the actual number of buffers allocated.
- */
+ 
 static int cvm_oct_fill_hw_memory(int pool, int size, int elements)
 {
 	char *memory;
@@ -81,16 +58,7 @@ static int cvm_oct_fill_hw_memory(int pool, int size, int elements)
 	int freed = elements;
 
 	while (freed) {
-		/*
-		 * FPA memory must be 128 byte aligned.  Since we are
-		 * aligning we need to save the original pointer so we
-		 * can feed it to kfree when the memory is returned to
-		 * the kernel.
-		 *
-		 * We allocate an extra 256 bytes to allow for
-		 * alignment and space for the original pointer saved
-		 * just before the block.
-		 */
+		 
 		memory = kmalloc(size + 256, GFP_ATOMIC);
 		if (unlikely(!memory)) {
 			pr_warn("Unable to allocate %u bytes for FPA pool %d\n",
@@ -105,12 +73,7 @@ static int cvm_oct_fill_hw_memory(int pool, int size, int elements)
 	return elements - freed;
 }
 
-/**
- * cvm_oct_free_hw_memory - Free memory allocated by cvm_oct_fill_hw_memory
- * @pool:     FPA pool to free
- * @size:     Size of each buffer in the pool
- * @elements: Number of buffers that should be in the pool
- */
+ 
 static void cvm_oct_free_hw_memory(int pool, int size, int elements)
 {
 	char *memory;

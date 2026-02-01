@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2019 Chelsio Communications.  All rights reserved. */
+
+ 
 
 #include "cxgb4.h"
 #include "cxgb4_tc_matchall.h"
@@ -82,7 +82,7 @@ static int cxgb4_matchall_egress_validate(struct net_device *dev,
 		return -EINVAL;
 	}
 
-	/* Convert from Mbps to bps */
+	 
 	max_link_rate = (u64)speed * 1000 * 1000;
 
 	flow_action_for_each(i, entry, actions) {
@@ -92,7 +92,7 @@ static int cxgb4_matchall_egress_validate(struct net_device *dev,
 			if (ret)
 				return ret;
 
-			/* Convert bytes per second to bits per second */
+			 
 			if (entry->police.rate_bytes_ps * 8 > max_link_rate) {
 				NL_SET_ERR_MSG_MOD(extack,
 						   "Specified policing max rate is larger than underlying link speed");
@@ -194,7 +194,7 @@ static int cxgb4_matchall_alloc_tc(struct net_device *dev,
 	if (ret)
 		return ret;
 
-	/* Convert from bytes per second to Kbps */
+	 
 	p.u.params.maxrate = div_u64(entry->police.rate_bytes_ps * 8, 1000);
 	p.u.params.channel = pi->tx_chan;
 	e = cxgb4_sched_class_alloc(dev, &p);
@@ -307,10 +307,7 @@ static int cxgb4_matchall_add_filter(struct net_device *dev,
 	struct ch_filter_specification *fs;
 	int ret, fidx;
 
-	/* Get a free filter entry TID, where we can insert this new
-	 * rule. Only insert rule if its prio doesn't conflict with
-	 * existing rules.
-	 */
+	 
 	fidx = cxgb4_get_free_ftid(dev, filter_type ? PF_INET6 : PF_INET,
 				   false, cls->common.prio);
 	if (fidx < 0) {
@@ -451,10 +448,7 @@ int cxgb4_tc_matchall_destroy(struct net_device *dev,
 
 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
 	if (ingress) {
-		/* All the filter types of this matchall rule save the
-		 * same cookie. So, checking for the first one is
-		 * enough.
-		 */
+		 
 		if (cls_matchall->cookie !=
 		    tc_port_matchall->ingress.fs[0].tc_cookie)
 			return -ENOENT;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a7779 Core CPG Clocks
- *
- * Copyright (C) 2013, 2014 Horms Solutions Ltd.
- *
- * Contact: Simon Horman <horms@verge.net.au>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk/renesas.h>
@@ -21,28 +15,9 @@
 
 #define CPG_NUM_CLOCKS			(R8A7779_CLK_OUT + 1)
 
-/* -----------------------------------------------------------------------------
- * CPG Clock Data
- */
+ 
 
-/*
- *		MD1 = 1			MD1 = 0
- *		(PLLA = 1500)		(PLLA = 1600)
- *		(MHz)			(MHz)
- *------------------------------------------------+--------------------
- * clkz		1000   (2/3)		800   (1/2)
- * clkzs	 250   (1/6)		200   (1/8)
- * clki		 750   (1/2)		800   (1/2)
- * clks		 250   (1/6)		200   (1/8)
- * clks1	 125   (1/12)		100   (1/16)
- * clks3	 187.5 (1/8)		200   (1/8)
- * clks4	  93.7 (1/16)		100   (1/16)
- * clkp		  62.5 (1/24)		 50   (1/32)
- * clkg		  62.5 (1/24)		 66.6 (1/24)
- * clkb, CLKOUT
- * (MD2 = 0)	  62.5 (1/24)		 66.6 (1/24)
- * (MD2 = 1)	  41.6 (1/36)		 50   (1/32)
- */
+ 
 
 #define CPG_CLK_CONFIG_INDEX(md)	(((md) & (BIT(2)|BIT(1))) >> 1)
 
@@ -62,23 +37,13 @@ static const struct cpg_clk_config cpg_clk_configs[4] __initconst = {
 	{ 2, 3, 6, 12, 24, 36 },
 };
 
-/*
- *   MD		PLLA Ratio
- * 12 11
- *------------------------
- * 0  0		x42
- * 0  1		x48
- * 1  0		x56
- * 1  1		x64
- */
+ 
 
 #define CPG_PLLA_MULT_INDEX(md)	(((md) & (BIT(12)|BIT(11))) >> 11)
 
 static const unsigned int cpg_plla_mult[4] __initconst = { 42, 48, 56, 64 };
 
-/* -----------------------------------------------------------------------------
- * Initialization
- */
+ 
 
 static struct clk * __init
 r8a7779_cpg_register_clock(struct device_node *np,
@@ -131,9 +96,7 @@ static void __init r8a7779_cpg_clocks_init(struct device_node *np)
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	clks = kcalloc(CPG_NUM_CLOCKS, sizeof(*clks), GFP_KERNEL);
 	if (data == NULL || clks == NULL) {
-		/* We're leaking memory on purpose, there's no point in cleaning
-		 * up as the system won't boot anyway.
-		 */
+		 
 		return;
 	}
 

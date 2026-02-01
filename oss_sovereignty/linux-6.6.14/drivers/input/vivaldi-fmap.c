@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helpers for ChromeOS Vivaldi keyboard function row mapping
- *
- * Copyright (C) 2022 Google, Inc
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/input/vivaldi-fmap.h>
@@ -11,11 +7,7 @@
 #include <linux/module.h>
 #include <linux/types.h>
 
-/**
- * vivaldi_function_row_physmap_show - Print vivaldi function row physmap attribute
- * @data: The vivaldi function row map
- * @buf: Buffer to print the function row phsymap to
- */
+ 
 ssize_t vivaldi_function_row_physmap_show(const struct vivaldi_data *data,
 					  char *buf)
 {

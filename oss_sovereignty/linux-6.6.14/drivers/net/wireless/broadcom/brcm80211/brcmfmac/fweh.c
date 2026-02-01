@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012 Broadcom Corporation
- */
+
+ 
 #include <linux/netdevice.h>
 
 #include "brcmu_wifi.h"
@@ -15,17 +13,7 @@
 #include "fwil.h"
 #include "proto.h"
 
-/**
- * struct brcmf_fweh_queue_item - event item on event queue.
- *
- * @q: list element for queuing.
- * @code: event code.
- * @ifidx: interface index related to this event.
- * @ifaddr: ethernet address for interface.
- * @emsg: common parameters of the firmware event message.
- * @datalen: length of the data array
- * @data: event specific data part of the firmware event.
- */
+ 
 struct brcmf_fweh_queue_item {
 	struct list_head q;
 	enum brcmf_fweh_event_code code;
@@ -36,9 +24,7 @@ struct brcmf_fweh_queue_item {
 	u8 data[];
 };
 
-/*
- * struct brcmf_fweh_event_name - code, name mapping entry.
- */
+ 
 struct brcmf_fweh_event_name {
 	enum brcmf_fweh_event_code code;
 	const char *name;
@@ -48,17 +34,13 @@ struct brcmf_fweh_event_name {
 #define BRCMF_ENUM_DEF(id, val) \
 	{ val, #id },
 
-/* array for mapping code to event name */
+ 
 static struct brcmf_fweh_event_name fweh_event_names[] = {
 	BRCMF_FWEH_EVENT_ENUM_DEFLIST
 };
 #undef BRCMF_ENUM_DEF
 
-/**
- * brcmf_fweh_event_name() - returns name for given event code.
- *
- * @code: code to lookup.
- */
+ 
 const char *brcmf_fweh_event_name(enum brcmf_fweh_event_code code)
 {
 	int i;
@@ -75,12 +57,7 @@ const char *brcmf_fweh_event_name(enum brcmf_fweh_event_code code)
 }
 #endif
 
-/**
- * brcmf_fweh_queue_event() - create and queue event.
- *
- * @fweh: firmware event handling info.
- * @event: event queue entry.
- */
+ 
 static void brcmf_fweh_queue_event(struct brcmf_fweh_info *fweh,
 				   struct brcmf_fweh_queue_item *event)
 {
@@ -104,7 +81,7 @@ static int brcmf_fweh_call_event_handler(struct brcmf_pub *drvr,
 	if (ifp) {
 		fweh = &ifp->drvr->fweh;
 
-		/* handle the event if valid interface and handler */
+		 
 		if (fweh->evt_handler[code])
 			err = fweh->evt_handler[code](ifp, emsg, data);
 		else
@@ -115,13 +92,7 @@ static int brcmf_fweh_call_event_handler(struct brcmf_pub *drvr,
 	return err;
 }
 
-/**
- * brcmf_fweh_handle_if_event() - handle IF event.
- *
- * @drvr: driver information object.
- * @emsg: event message object.
- * @data: event object.
- */
+ 
 static void brcmf_fweh_handle_if_event(struct brcmf_pub *drvr,
 				       struct brcmf_event_msg *emsg,
 				       void *data)
@@ -134,11 +105,7 @@ static void brcmf_fweh_handle_if_event(struct brcmf_pub *drvr,
 		  ifevent->action, ifevent->ifidx, ifevent->bsscfgidx,
 		  ifevent->flags, ifevent->role);
 
-	/* The P2P Device interface event must not be ignored contrary to what
-	 * firmware tells us. Older firmware uses p2p noif, with sta role.
-	 * This should be accepted when p2pdev_setup is ongoing. TDLS setup will
-	 * use the same ifevent and should be ignored.
-	 */
+	 
 	is_p2pdev = ((ifevent->flags & BRCMF_E_IF_FLAG_NOIF) &&
 		     (ifevent->role == BRCMF_E_IF_ROLE_P2P_CLIENT ||
 		      ((ifevent->role == BRCMF_E_IF_ROLE_STA) &&
@@ -177,17 +144,13 @@ static void brcmf_fweh_handle_if_event(struct brcmf_pub *drvr,
 	if (ifp && ifevent->action == BRCMF_E_IF_DEL) {
 		bool armed = brcmf_cfg80211_vif_event_armed(drvr->config);
 
-		/* Default handling in case no-one waits for this event */
+		 
 		if (!armed)
 			brcmf_remove_interface(ifp, false);
 	}
 }
 
-/**
- * brcmf_fweh_dequeue_event() - get event from the queue.
- *
- * @fweh: firmware event handling info.
- */
+ 
 static struct brcmf_fweh_queue_item *
 brcmf_fweh_dequeue_event(struct brcmf_fweh_info *fweh)
 {
@@ -205,11 +168,7 @@ brcmf_fweh_dequeue_event(struct brcmf_fweh_info *fweh)
 	return event;
 }
 
-/**
- * brcmf_fweh_event_worker() - firmware event worker.
- *
- * @work: worker object.
- */
+ 
 static void brcmf_fweh_event_worker(struct work_struct *work)
 {
 	struct brcmf_pub *drvr;
@@ -233,7 +192,7 @@ static void brcmf_fweh_event_worker(struct work_struct *work)
 			goto event_free;
 		}
 
-		/* convert event message */
+		 
 		emsg_be = &event->emsg;
 		emsg.version = be16_to_cpu(emsg_be->version);
 		emsg.flags = be16_to_cpu(emsg_be->flags);
@@ -253,7 +212,7 @@ static void brcmf_fweh_event_worker(struct work_struct *work)
 				   min_t(u32, emsg.datalen, 64),
 				   "event payload, len=%d\n", emsg.datalen);
 
-		/* special handling of interface event */
+		 
 		if (event->code == BRCMF_E_IF) {
 			brcmf_fweh_handle_if_event(drvr, &emsg, event->data);
 			goto event_free;
@@ -275,22 +234,13 @@ event_free:
 	}
 }
 
-/**
- * brcmf_fweh_p2pdev_setup() - P2P device setup ongoing (or not).
- *
- * @ifp: ifp on which setup is taking place or finished.
- * @ongoing: p2p device setup in progress (or not).
- */
+ 
 void brcmf_fweh_p2pdev_setup(struct brcmf_if *ifp, bool ongoing)
 {
 	ifp->drvr->fweh.p2pdev_setup_ongoing = ongoing;
 }
 
-/**
- * brcmf_fweh_attach() - initialize firmware event handling.
- *
- * @drvr: driver information object.
- */
+ 
 void brcmf_fweh_attach(struct brcmf_pub *drvr)
 {
 	struct brcmf_fweh_info *fweh = &drvr->fweh;
@@ -299,16 +249,12 @@ void brcmf_fweh_attach(struct brcmf_pub *drvr)
 	INIT_LIST_HEAD(&fweh->event_q);
 }
 
-/**
- * brcmf_fweh_detach() - cleanup firmware event handling.
- *
- * @drvr: driver information object.
- */
+ 
 void brcmf_fweh_detach(struct brcmf_pub *drvr)
 {
 	struct brcmf_fweh_info *fweh = &drvr->fweh;
 
-	/* cancel the worker if initialized */
+	 
 	if (fweh->event_work.func) {
 		cancel_work_sync(&fweh->event_work);
 		WARN_ON(!list_empty(&fweh->event_q));
@@ -316,13 +262,7 @@ void brcmf_fweh_detach(struct brcmf_pub *drvr)
 	}
 }
 
-/**
- * brcmf_fweh_register() - register handler for given event code.
- *
- * @drvr: driver information object.
- * @code: event code.
- * @handler: handler for the given event code.
- */
+ 
 int brcmf_fweh_register(struct brcmf_pub *drvr, enum brcmf_fweh_event_code code,
 			brcmf_fweh_handler_t handler)
 {
@@ -336,12 +276,7 @@ int brcmf_fweh_register(struct brcmf_pub *drvr, enum brcmf_fweh_event_code code,
 	return 0;
 }
 
-/**
- * brcmf_fweh_unregister() - remove handler for given code.
- *
- * @drvr: driver information object.
- * @code: event code.
- */
+ 
 void brcmf_fweh_unregister(struct brcmf_pub *drvr,
 			   enum brcmf_fweh_event_code code)
 {
@@ -350,11 +285,7 @@ void brcmf_fweh_unregister(struct brcmf_pub *drvr,
 	drvr->fweh.evt_handler[code] = NULL;
 }
 
-/**
- * brcmf_fweh_activate_events() - enables firmware events registered.
- *
- * @ifp: primary interface object.
- */
+ 
 int brcmf_fweh_activate_events(struct brcmf_if *ifp)
 {
 	struct brcmf_pub *drvr = ifp->drvr;
@@ -370,7 +301,7 @@ int brcmf_fweh_activate_events(struct brcmf_if *ifp)
 		}
 	}
 
-	/* want to handle IF event as well */
+	 
 	brcmf_dbg(EVENT, "enable event IF\n");
 	setbit(eventmask, BRCMF_E_IF);
 
@@ -382,17 +313,7 @@ int brcmf_fweh_activate_events(struct brcmf_if *ifp)
 	return err;
 }
 
-/**
- * brcmf_fweh_process_event() - process skb as firmware event.
- *
- * @drvr: driver information object.
- * @event_packet: event packet to process.
- * @packet_len: length of the packet
- * @gfp: memory allocation flags.
- *
- * If the packet buffer contains a firmware event message it will
- * dispatch the event to a registered handler (using worker).
- */
+ 
 void brcmf_fweh_process_event(struct brcmf_pub *drvr,
 			      struct brcmf_event *event_packet,
 			      u32 packet_len, gfp_t gfp)
@@ -403,7 +324,7 @@ void brcmf_fweh_process_event(struct brcmf_pub *drvr,
 	void *data;
 	u32 datalen;
 
-	/* get event info */
+	 
 	code = get_unaligned_be32(&event_packet->msg.event_type);
 	datalen = get_unaligned_be32(&event_packet->msg.datalen);
 	data = &event_packet[1];
@@ -425,7 +346,7 @@ void brcmf_fweh_process_event(struct brcmf_pub *drvr,
 	event->code = code;
 	event->ifidx = event_packet->msg.ifidx;
 
-	/* use memcpy to get aligned event message */
+	 
 	memcpy(&event->emsg, &event_packet->msg, sizeof(event->emsg));
 	memcpy(event->data, data, datalen);
 	event->datalen = datalen;

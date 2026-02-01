@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -20,44 +20,31 @@ enum mlxsw_afa_set_type {
 	MLXSW_AFA_SET_TYPE_GOTO,
 };
 
-/* afa_set_type
- * Type of the record at the end of the action set.
- */
+ 
 MLXSW_ITEM32(afa, set, type, 0xA0, 28, 4);
 
-/* afa_set_next_action_set_ptr
- * A pointer to the next action set in the KVD Centralized database.
- */
+ 
 MLXSW_ITEM32(afa, set, next_action_set_ptr, 0xA4, 0, 24);
 
-/* afa_set_goto_g
- * group - When set, the binding is of an ACL group. When cleared,
- * the binding is of an ACL.
- * Must be set to 1 for Spectrum.
- */
+ 
 MLXSW_ITEM32(afa, set, goto_g, 0xA4, 29, 1);
 
 enum mlxsw_afa_set_goto_binding_cmd {
-	/* continue go the next binding point */
+	 
 	MLXSW_AFA_SET_GOTO_BINDING_CMD_NONE,
-	/* jump to the next binding point no return */
+	 
 	MLXSW_AFA_SET_GOTO_BINDING_CMD_JUMP,
-	/* terminate the acl binding */
+	 
 	MLXSW_AFA_SET_GOTO_BINDING_CMD_TERM = 4,
 };
 
-/* afa_set_goto_binding_cmd */
+ 
 MLXSW_ITEM32(afa, set, goto_binding_cmd, 0xA4, 24, 3);
 
-/* afa_set_goto_next_binding
- * ACL/ACL group identifier. If the g bit is set, this field should hold
- * the acl_group_id, else it should hold the acl_id.
- */
+ 
 MLXSW_ITEM32(afa, set, goto_next_binding, 0xA4, 0, 16);
 
-/* afa_all_action_type
- * Action Type.
- */
+ 
 MLXSW_ITEM32(afa, all, action_type, 0x00, 24, 6);
 
 struct mlxsw_afa {
@@ -75,34 +62,22 @@ struct mlxsw_afa {
 #define MLXSW_AFA_SET_LEN 0xA8
 
 struct mlxsw_afa_set_ht_key {
-	char enc_actions[MLXSW_AFA_SET_LEN]; /* Encoded set */
+	char enc_actions[MLXSW_AFA_SET_LEN];  
 	bool is_first;
 };
 
-/* Set structure holds one action set record. It contains up to three
- * actions (depends on size of particular actions). The set is either
- * put directly to a rule, or it is stored in KVD linear area.
- * To prevent duplicate entries in KVD linear area, a hashtable is
- * used to track sets that were previously inserted and may be shared.
- */
+ 
 
 struct mlxsw_afa_set {
 	struct rhash_head ht_node;
 	struct mlxsw_afa_set_ht_key ht_key;
 	u32 kvdl_index;
-	u8 shared:1, /* Inserted in hashtable (doesn't mean that
-		      * kvdl_index is valid).
-		      */
+	u8 shared:1,  
 	   has_trap:1,
 	   has_police:1;
 	unsigned int ref_count;
-	struct mlxsw_afa_set *next; /* Pointer to the next set. */
-	struct mlxsw_afa_set *prev; /* Pointer to the previous set,
-				     * note that set may have multiple
-				     * sets from multiple blocks
-				     * pointing at it. This is only
-				     * usable until commit.
-				     */
+	struct mlxsw_afa_set *next;  
+	struct mlxsw_afa_set *prev;  
 };
 
 static const struct rhashtable_params mlxsw_afa_set_ht_params = {
@@ -181,7 +156,7 @@ static const struct rhashtable_params mlxsw_afa_cookie_ht_params = {
 
 struct mlxsw_afa_policer {
 	struct rhash_head ht_node;
-	struct list_head list; /* Member of policer_list */
+	struct list_head list;  
 	refcount_t ref_count;
 	u32 fa_index;
 	u16 policer_index;
@@ -279,7 +254,7 @@ static struct mlxsw_afa_set *mlxsw_afa_set_create(bool is_first)
 	set = kzalloc(sizeof(*set), GFP_KERNEL);
 	if (!set)
 		return NULL;
-	/* Need to initialize the set to pass by default */
+	 
 	mlxsw_afa_set_goto_set(set, MLXSW_AFA_SET_GOTO_BINDING_CMD_TERM, 0);
 	set->ht_key.is_first = is_first;
 	set->ref_count = 1;
@@ -343,10 +318,7 @@ static struct mlxsw_afa_set *mlxsw_afa_set_get(struct mlxsw_afa *mlxsw_afa,
 	struct mlxsw_afa_set *set;
 	int err;
 
-	/* There is a hashtable of sets maintained. If a set with the exact
-	 * same encoding exists, we reuse it. Otherwise, the current set
-	 * is shared by making it available to others using the hash table.
-	 */
+	 
 	set = rhashtable_lookup_fast(&mlxsw_afa->set_ht, &orig_set->ht_key,
 				     mlxsw_afa_set_ht_params);
 	if (set) {
@@ -361,19 +333,15 @@ static struct mlxsw_afa_set *mlxsw_afa_set_get(struct mlxsw_afa *mlxsw_afa,
 	return set;
 }
 
-/* Block structure holds a list of action sets. One action block
- * represents one chain of actions executed upon match of a rule.
- */
+ 
 
 struct mlxsw_afa_block {
 	struct mlxsw_afa *afa;
 	bool finished;
 	struct mlxsw_afa_set *first_set;
 	struct mlxsw_afa_set *cur_set;
-	unsigned int cur_act_index; /* In current set. */
-	struct list_head resource_list; /* List of resources held by actions
-					 * in this block.
-					 */
+	unsigned int cur_act_index;  
+	struct list_head resource_list;  
 };
 
 struct mlxsw_afa_resource {
@@ -412,14 +380,12 @@ struct mlxsw_afa_block *mlxsw_afa_block_create(struct mlxsw_afa *mlxsw_afa)
 	INIT_LIST_HEAD(&block->resource_list);
 	block->afa = mlxsw_afa;
 
-	/* At least one action set is always present, so just create it here */
+	 
 	block->first_set = mlxsw_afa_set_create(true);
 	if (!block->first_set)
 		goto err_first_set_create;
 
-	/* In case user instructs to have dummy first set, we leave it
-	 * empty here and create another, real, set right away.
-	 */
+	 
 	if (mlxsw_afa->ops->dummy_first_set) {
 		block->cur_set = mlxsw_afa_set_create(false);
 		if (!block->cur_set)
@@ -463,19 +429,12 @@ int mlxsw_afa_block_commit(struct mlxsw_afa_block *block)
 	block->cur_set = NULL;
 	block->finished = true;
 
-	/* Go over all linked sets starting from last
-	 * and try to find existing set in the hash table.
-	 * In case it is not there, assign a KVD linear index
-	 * and insert it.
-	 */
+	 
 	do {
 		prev_set = set->prev;
 		set = mlxsw_afa_set_get(block->afa, set);
 		if (IS_ERR(set))
-			/* No rollback is needed since the chain is
-			 * in consistent state and mlxsw_afa_block_destroy
-			 * will take care of putting it away.
-			 */
+			 
 			return PTR_ERR(set);
 		if (prev_set) {
 			prev_set->next = set;
@@ -503,9 +462,7 @@ EXPORT_SYMBOL(mlxsw_afa_block_cur_set);
 
 u32 mlxsw_afa_block_first_kvdl_index(struct mlxsw_afa_block *block)
 {
-	/* First set is never in KVD linear. So the first set
-	 * with valid KVD linear index is always the second one.
-	 */
+	 
 	if (WARN_ON(!block->first_set->next))
 		return 0;
 	return block->first_set->next->kvdl_index;
@@ -719,9 +676,7 @@ err_counter_index_get:
 	return ERR_PTR(err);
 }
 
-/* 20 bits is a maximum that hardware can handle in trap with userdef action
- * and carry along with the trapped packet.
- */
+ 
 #define MLXSW_AFA_COOKIE_INDEX_BITS 20
 #define MLXSW_AFA_COOKIE_INDEX_MAX ((1 << MLXSW_AFA_COOKIE_INDEX_BITS) - 1)
 
@@ -746,10 +701,7 @@ mlxsw_afa_cookie_create(struct mlxsw_afa *mlxsw_afa,
 	if (err)
 		goto err_rhashtable_insert;
 
-	/* Start cookie indexes with 1. Leave the 0 index unused. Packets
-	 * that come from the HW which are not dropped by drop-with-cookie
-	 * action are going to pass cookie_index 0 to lookup.
-	 */
+	 
 	cookie_index = 1;
 	err = idr_alloc_u32(&mlxsw_afa->cookie_idr, cookie, &cookie_index,
 			    MLXSW_AFA_COOKIE_INDEX_MAX, GFP_KERNEL);
@@ -798,13 +750,13 @@ static void mlxsw_afa_cookie_put(struct mlxsw_afa *mlxsw_afa,
 	mlxsw_afa_cookie_destroy(mlxsw_afa, cookie);
 }
 
-/* RCU read lock must be held */
+ 
 const struct flow_action_cookie *
 mlxsw_afa_cookie_lookup(struct mlxsw_afa *mlxsw_afa, u32 cookie_index)
 {
 	struct mlxsw_afa_cookie *cookie;
 
-	/* 0 index means no cookie */
+	 
 	if (!cookie_index)
 		return NULL;
 	cookie = idr_find(&mlxsw_afa->cookie_idr, cookie_index);
@@ -1011,11 +963,7 @@ mlxsw_afa_block_need_split(const struct mlxsw_afa_block *block,
 {
 	struct mlxsw_afa_set *cur_set = block->cur_set;
 
-	/* Due to a hardware limitation, police action cannot be in the same
-	 * action set with MLXSW_AFA_TRAP_CODE or MLXSW_AFA_TRAPWU_CODE
-	 * actions. Work around this limitation by creating a new action set
-	 * and place the new action there.
-	 */
+	 
 	return (cur_set->has_trap && type == MLXSW_AFA_ACTION_TYPE_POLICE) ||
 	       (cur_set->has_police && type == MLXSW_AFA_ACTION_TYPE_TRAP);
 }
@@ -1033,9 +981,7 @@ static char *mlxsw_afa_block_append_action_ext(struct mlxsw_afa_block *block,
 	    mlxsw_afa_block_need_split(block, type)) {
 		struct mlxsw_afa_set *set;
 
-		/* The appended action won't fit into the current action set,
-		 * so create a new set.
-		 */
+		 
 		set = mlxsw_afa_set_create(false);
 		if (!set)
 			return ERR_PTR(-ENOBUFS);
@@ -1071,12 +1017,7 @@ static char *mlxsw_afa_block_append_action(struct mlxsw_afa_block *block,
 						 MLXSW_AFA_ACTION_TYPE_OTHER);
 }
 
-/* VLAN Action
- * -----------
- * VLAN action is used for manipulating VLANs. It can be used to implement QinQ,
- * VLAN translation, change of PCP bits of the VLAN tag, push, pop as swap VLANs
- * and more.
- */
+ 
 
 #define MLXSW_AFA_VLAN_CODE 0x02
 #define MLXSW_AFA_VLAN_SIZE 1
@@ -1096,29 +1037,25 @@ enum mlxsw_afa_vlan_cmd {
 	MLXSW_AFA_VLAN_CMD_SWAP,
 };
 
-/* afa_vlan_vlan_tag_cmd
- * Tag command: push, pop, nop VLAN header.
- */
+ 
 MLXSW_ITEM32(afa, vlan, vlan_tag_cmd, 0x00, 29, 3);
 
-/* afa_vlan_vid_cmd */
+ 
 MLXSW_ITEM32(afa, vlan, vid_cmd, 0x04, 29, 3);
 
-/* afa_vlan_vid */
+ 
 MLXSW_ITEM32(afa, vlan, vid, 0x04, 0, 12);
 
-/* afa_vlan_ethertype_cmd */
+ 
 MLXSW_ITEM32(afa, vlan, ethertype_cmd, 0x08, 29, 3);
 
-/* afa_vlan_ethertype
- * Index to EtherTypes in Switch VLAN EtherType Register (SVER).
- */
+ 
 MLXSW_ITEM32(afa, vlan, ethertype, 0x08, 24, 3);
 
-/* afa_vlan_pcp_cmd */
+ 
 MLXSW_ITEM32(afa, vlan, pcp_cmd, 0x08, 13, 3);
 
-/* afa_vlan_pcp */
+ 
 MLXSW_ITEM32(afa, vlan, pcp, 0x08, 8, 3);
 
 static inline void
@@ -1157,18 +1094,7 @@ int mlxsw_afa_block_append_vlan_modify(struct mlxsw_afa_block *block,
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_vlan_modify);
 
-/* Trap Action / Trap With Userdef Action
- * --------------------------------------
- * The Trap action enables trapping / mirroring packets to the CPU
- * as well as discarding packets.
- * The ACL Trap / Discard separates the forward/discard control from CPU
- * trap control. In addition, the Trap / Discard action enables activating
- * SPAN (port mirroring).
- *
- * The Trap with userdef action has the same functionality as
- * the Trap action with addition of user defined value that can be set
- * and used by higher layer applications.
- */
+ 
 
 #define MLXSW_AFA_TRAP_CODE 0x03
 #define MLXSW_AFA_TRAP_SIZE 1
@@ -1181,9 +1107,7 @@ enum mlxsw_afa_trap_trap_action {
 	MLXSW_AFA_TRAP_TRAP_ACTION_TRAP = 2,
 };
 
-/* afa_trap_trap_action
- * Trap Action.
- */
+ 
 MLXSW_ITEM32(afa, trap, trap_action, 0x00, 24, 4);
 
 enum mlxsw_afa_trap_forward_action {
@@ -1191,33 +1115,19 @@ enum mlxsw_afa_trap_forward_action {
 	MLXSW_AFA_TRAP_FORWARD_ACTION_DISCARD = 3,
 };
 
-/* afa_trap_forward_action
- * Forward Action.
- */
+ 
 MLXSW_ITEM32(afa, trap, forward_action, 0x00, 0, 4);
 
-/* afa_trap_trap_id
- * Trap ID to configure.
- */
+ 
 MLXSW_ITEM32(afa, trap, trap_id, 0x04, 0, 9);
 
-/* afa_trap_mirror_agent
- * Mirror agent.
- */
+ 
 MLXSW_ITEM32(afa, trap, mirror_agent, 0x08, 29, 3);
 
-/* afa_trap_mirror_enable
- * Mirror enable.
- */
+ 
 MLXSW_ITEM32(afa, trap, mirror_enable, 0x08, 24, 1);
 
-/* user_def_val
- * Value for the SW usage. Can be used to pass information of which
- * rule has caused a trap. This may be overwritten by later traps.
- * This field does a set on the packet's user_def_val only if this
- * is the first trap_id or if the trap_id has replaced the previous
- * packet's trap_id.
- */
+ 
 MLXSW_ITEM32(afa, trap, user_def_val, 0x0C, 0, 20);
 
 static inline void
@@ -1451,67 +1361,52 @@ err_append_allocated_mirror:
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_mirror);
 
-/* QoS Action
- * ----------
- * The QOS_ACTION is used for manipulating the QoS attributes of a packet. It
- * can be used to change the DCSP, ECN, Color and Switch Priority of the packet.
- * Note that PCP field can be changed using the VLAN action.
- */
+ 
 
 #define MLXSW_AFA_QOS_CODE 0x06
 #define MLXSW_AFA_QOS_SIZE 1
 
 enum mlxsw_afa_qos_ecn_cmd {
-	/* Do nothing */
+	 
 	MLXSW_AFA_QOS_ECN_CMD_NOP,
-	/* Set ECN to afa_qos_ecn */
+	 
 	MLXSW_AFA_QOS_ECN_CMD_SET,
 };
 
-/* afa_qos_ecn_cmd
- */
+ 
 MLXSW_ITEM32(afa, qos, ecn_cmd, 0x04, 29, 3);
 
-/* afa_qos_ecn
- * ECN value.
- */
+ 
 MLXSW_ITEM32(afa, qos, ecn, 0x04, 24, 2);
 
 enum mlxsw_afa_qos_dscp_cmd {
-	/* Do nothing */
+	 
 	MLXSW_AFA_QOS_DSCP_CMD_NOP,
-	/* Set DSCP 3 LSB bits according to dscp[2:0] */
+	 
 	MLXSW_AFA_QOS_DSCP_CMD_SET_3LSB,
-	/* Set DSCP 3 MSB bits according to dscp[5:3] */
+	 
 	MLXSW_AFA_QOS_DSCP_CMD_SET_3MSB,
-	/* Set DSCP 6 bits according to dscp[5:0] */
+	 
 	MLXSW_AFA_QOS_DSCP_CMD_SET_ALL,
 };
 
-/* afa_qos_dscp_cmd
- * DSCP command.
- */
+ 
 MLXSW_ITEM32(afa, qos, dscp_cmd, 0x04, 14, 2);
 
-/* afa_qos_dscp
- * DSCP value.
- */
+ 
 MLXSW_ITEM32(afa, qos, dscp, 0x04, 0, 6);
 
 enum mlxsw_afa_qos_switch_prio_cmd {
-	/* Do nothing */
+	 
 	MLXSW_AFA_QOS_SWITCH_PRIO_CMD_NOP,
-	/* Set Switch Priority to afa_qos_switch_prio */
+	 
 	MLXSW_AFA_QOS_SWITCH_PRIO_CMD_SET,
 };
 
-/* afa_qos_switch_prio_cmd
- */
+ 
 MLXSW_ITEM32(afa, qos, switch_prio_cmd, 0x08, 14, 2);
 
-/* afa_qos_switch_prio
- * Switch Priority.
- */
+ 
 MLXSW_ITEM32(afa, qos, switch_prio, 0x08, 0, 4);
 
 enum mlxsw_afa_qos_dscp_rw {
@@ -1520,9 +1415,7 @@ enum mlxsw_afa_qos_dscp_rw {
 	MLXSW_AFA_QOS_DSCP_RW_CLEAR,
 };
 
-/* afa_qos_dscp_rw
- * DSCP Re-write Enable. Controlling the rewrite_enable for DSCP.
- */
+ 
 MLXSW_ITEM32(afa, qos, dscp_rw, 0x0C, 30, 2);
 
 static inline void
@@ -1624,34 +1517,25 @@ int mlxsw_afa_block_append_qos_switch_prio(struct mlxsw_afa_block *block,
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_qos_switch_prio);
 
-/* Forwarding Action
- * -----------------
- * Forwarding Action can be used to implement Policy Based Switching (PBS)
- * as well as OpenFlow related "Output" action.
- */
+ 
 
 #define MLXSW_AFA_FORWARD_CODE 0x07
 #define MLXSW_AFA_FORWARD_SIZE 1
 
 enum mlxsw_afa_forward_type {
-	/* PBS, Policy Based Switching */
+	 
 	MLXSW_AFA_FORWARD_TYPE_PBS,
-	/* Output, OpenFlow output type */
+	 
 	MLXSW_AFA_FORWARD_TYPE_OUTPUT,
 };
 
-/* afa_forward_type */
+ 
 MLXSW_ITEM32(afa, forward, type, 0x00, 24, 2);
 
-/* afa_forward_pbs_ptr
- * A pointer to the PBS entry configured by PPBS register.
- * Reserved when in_port is set.
- */
+ 
 MLXSW_ITEM32(afa, forward, pbs_ptr, 0x08, 0, 24);
 
-/* afa_forward_in_port
- * Packet is forwarded back to the ingress port.
- */
+ 
 MLXSW_ITEM32(afa, forward, in_port, 0x0C, 0, 1);
 
 static inline void
@@ -1700,11 +1584,7 @@ err_append_action:
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_fwd);
 
-/* Policing and Counting Action
- * ----------------------------
- * Policing and Counting action is used for binding policer and counter
- * to ACL rules.
- */
+ 
 
 #define MLXSW_AFA_POLCNT_CODE 0x08
 #define MLXSW_AFA_POLCNT_SIZE 1
@@ -1714,37 +1594,25 @@ enum {
 	MLXSW_AFA_POLCNT_POLICER,
 };
 
-/* afa_polcnt_c_p
- * Counter or policer.
- * Indicates whether the action binds a policer or a counter to the flow.
- * 0: Counter
- * 1: Policer
- */
+ 
 MLXSW_ITEM32(afa, polcnt, c_p, 0x00, 31, 1);
 
 enum mlxsw_afa_polcnt_counter_set_type {
-	/* No count */
+	 
 	MLXSW_AFA_POLCNT_COUNTER_SET_TYPE_NO_COUNT = 0x00,
-	/* Count packets and bytes */
+	 
 	MLXSW_AFA_POLCNT_COUNTER_SET_TYPE_PACKETS_BYTES = 0x03,
-	/* Count only packets */
+	 
 	MLXSW_AFA_POLCNT_COUNTER_SET_TYPE_PACKETS = 0x05,
 };
 
-/* afa_polcnt_counter_set_type
- * Counter set type for flow counters.
- */
+ 
 MLXSW_ITEM32(afa, polcnt, counter_set_type, 0x04, 24, 8);
 
-/* afa_polcnt_counter_index
- * Counter index for flow counters.
- */
+ 
 MLXSW_ITEM32(afa, polcnt, counter_index, 0x04, 0, 24);
 
-/* afa_polcnt_pid
- * Policer ID.
- * Reserved when c_p = 0
- */
+ 
 MLXSW_ITEM32(afa, polcnt, pid, 0x08, 0, 14);
 
 static inline void
@@ -1840,28 +1708,22 @@ err_append_action:
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_police);
 
-/* Virtual Router and Forwarding Domain Action
- * -------------------------------------------
- * Virtual Switch action is used for manipulate the Virtual Router (VR),
- * MPLS label space and the Forwarding Identifier (FID).
- */
+ 
 
 #define MLXSW_AFA_VIRFWD_CODE 0x0E
 #define MLXSW_AFA_VIRFWD_SIZE 1
 
 enum mlxsw_afa_virfwd_fid_cmd {
-	/* Do nothing */
+	 
 	MLXSW_AFA_VIRFWD_FID_CMD_NOOP,
-	/* Set the Forwarding Identifier (FID) to fid */
+	 
 	MLXSW_AFA_VIRFWD_FID_CMD_SET,
 };
 
-/* afa_virfwd_fid_cmd */
+ 
 MLXSW_ITEM32(afa, virfwd, fid_cmd, 0x08, 29, 3);
 
-/* afa_virfwd_fid
- * The FID value.
- */
+ 
 MLXSW_ITEM32(afa, virfwd, fid, 0x08, 0, 16);
 
 static inline void mlxsw_afa_virfwd_pack(char *payload,
@@ -1887,24 +1749,15 @@ int mlxsw_afa_block_append_fid_set(struct mlxsw_afa_block *block, u16 fid,
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_fid_set);
 
-/* Ignore Action
- * -------------
- * The ignore action is used to ignore basic switching functions such as
- * learning on a per-packet basis.
- */
+ 
 
 #define MLXSW_AFA_IGNORE_CODE 0x0F
 #define MLXSW_AFA_IGNORE_SIZE 1
 
-/* afa_ignore_disable_learning
- * Disable learning on ingress.
- */
+ 
 MLXSW_ITEM32(afa, ignore, disable_learning, 0x00, 29, 1);
 
-/* afa_ignore_disable_security
- * Disable security lookup on ingress.
- * Reserved when Spectrum-1.
- */
+ 
 MLXSW_ITEM32(afa, ignore, disable_security, 0x00, 28, 1);
 
 static void mlxsw_afa_ignore_pack(char *payload, bool disable_learning,
@@ -1927,11 +1780,7 @@ int mlxsw_afa_block_append_ignore(struct mlxsw_afa_block *block,
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_ignore);
 
-/* MC Routing Action
- * -----------------
- * The Multicast router action. Can be used by RMFT_V2 - Router Multicast
- * Forwarding Table Version 2 Register.
- */
+ 
 
 #define MLXSW_AFA_MCROUTER_CODE 0x10
 #define MLXSW_AFA_MCROUTER_SIZE 2
@@ -1942,13 +1791,13 @@ enum mlxsw_afa_mcrouter_rpf_action {
 	MLXSW_AFA_MCROUTER_RPF_ACTION_DISCARD_ERROR,
 };
 
-/* afa_mcrouter_rpf_action */
+ 
 MLXSW_ITEM32(afa, mcrouter, rpf_action, 0x00, 28, 3);
 
-/* afa_mcrouter_expected_irif */
+ 
 MLXSW_ITEM32(afa, mcrouter, expected_irif, 0x00, 0, 16);
 
-/* afa_mcrouter_min_mtu */
+ 
 MLXSW_ITEM32(afa, mcrouter, min_mtu, 0x08, 0, 16);
 
 enum mlxsw_afa_mrouter_vrmid {
@@ -1956,17 +1805,10 @@ enum mlxsw_afa_mrouter_vrmid {
 	MLXSW_AFA_MCROUTER_VRMID_VALID
 };
 
-/* afa_mcrouter_vrmid
- * Valid RMID: rigr_rmid_index is used as RMID
- */
+ 
 MLXSW_ITEM32(afa, mcrouter, vrmid, 0x0C, 31, 1);
 
-/* afa_mcrouter_rigr_rmid_index
- * When the vrmid field is set to invalid, the field is used as pointer to
- * Router Interface Group (RIGR) Table in the KVD linear.
- * When the vrmid is set to valid, the field is used as RMID index, ranged
- * from 0 to max_mid - 1. The index is to the Port Group Table.
- */
+ 
 MLXSW_ITEM32(afa, mcrouter, rigr_rmid_index, 0x0C, 0, 24);
 
 static inline void
@@ -1998,49 +1840,35 @@ int mlxsw_afa_block_append_mcrouter(struct mlxsw_afa_block *block,
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_mcrouter);
 
-/* SIP DIP Action
- * --------------
- * The SIP_DIP_ACTION is used for modifying the SIP and DIP fields of the
- * packet, e.g. for NAT. The L3 checksum is updated. Also, if the L4 is TCP or
- * if the L4 is UDP and the checksum field is not zero, then the L4 checksum is
- * updated.
- */
+ 
 
 #define MLXSW_AFA_IP_CODE 0x11
 #define MLXSW_AFA_IP_SIZE 2
 
 enum mlxsw_afa_ip_s_d {
-	/* ip refers to dip */
+	 
 	MLXSW_AFA_IP_S_D_DIP,
-	/* ip refers to sip */
+	 
 	MLXSW_AFA_IP_S_D_SIP,
 };
 
-/* afa_ip_s_d
- * Source or destination.
- */
+ 
 MLXSW_ITEM32(afa, ip, s_d, 0x00, 31, 1);
 
 enum mlxsw_afa_ip_m_l {
-	/* LSB: ip[63:0] refers to ip[63:0] */
+	 
 	MLXSW_AFA_IP_M_L_LSB,
-	/* MSB: ip[63:0] refers to ip[127:64] */
+	 
 	MLXSW_AFA_IP_M_L_MSB,
 };
 
-/* afa_ip_m_l
- * MSB or LSB.
- */
+ 
 MLXSW_ITEM32(afa, ip, m_l, 0x00, 30, 1);
 
-/* afa_ip_ip_63_32
- * Bits [63:32] in the IP address to change to.
- */
+ 
 MLXSW_ITEM32(afa, ip, ip_63_32, 0x08, 0, 32);
 
-/* afa_ip_ip_31_0
- * Bits [31:0] in the IP address to change to.
- */
+ 
 MLXSW_ITEM32(afa, ip, ip_31_0, 0x0C, 0, 32);
 
 static void mlxsw_afa_ip_pack(char *payload, enum mlxsw_afa_ip_s_d s_d,
@@ -2075,30 +1903,22 @@ int mlxsw_afa_block_append_ip(struct mlxsw_afa_block *block, bool is_dip,
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_ip);
 
-/* L4 Port Action
- * --------------
- * The L4_PORT_ACTION is used for modifying the sport and dport fields of the packet, e.g. for NAT.
- * If (the L4 is TCP) or if (the L4 is UDP and checksum field!=0) then the L4 checksum is updated.
- */
+ 
 
 #define MLXSW_AFA_L4PORT_CODE 0x12
 #define MLXSW_AFA_L4PORT_SIZE 1
 
 enum mlxsw_afa_l4port_s_d {
-	/* configure src_l4_port */
+	 
 	MLXSW_AFA_L4PORT_S_D_SRC,
-	/* configure dst_l4_port */
+	 
 	MLXSW_AFA_L4PORT_S_D_DST,
 };
 
-/* afa_l4port_s_d
- * Source or destination.
- */
+ 
 MLXSW_ITEM32(afa, l4port, s_d, 0x00, 31, 1);
 
-/* afa_l4port_l4_port
- * Number of port to change to.
- */
+ 
 MLXSW_ITEM32(afa, l4port, l4_port, 0x08, 0, 16);
 
 static void mlxsw_afa_l4port_pack(char *payload, enum mlxsw_afa_l4port_s_d s_d, u16 l4_port)
@@ -2126,25 +1946,17 @@ int mlxsw_afa_block_append_l4port(struct mlxsw_afa_block *block, bool is_dport, 
 }
 EXPORT_SYMBOL(mlxsw_afa_block_append_l4port);
 
-/* Mirror Sampler Action
- * ---------------------
- * The SAMPLER_ACTION is used to mirror packets with a probability (sampling).
- */
+ 
 
 #define MLXSW_AFA_SAMPLER_CODE 0x13
 #define MLXSW_AFA_SAMPLER_SIZE 1
 
-/* afa_sampler_mirror_agent
- * Mirror (SPAN) agent.
- */
+ 
 MLXSW_ITEM32(afa, sampler, mirror_agent, 0x04, 0, 3);
 
 #define MLXSW_AFA_SAMPLER_RATE_MAX (BIT(24) - 1)
 
-/* afa_sampler_mirror_probability_rate
- * Mirroring probability.
- * Valid values are 1 to 2^24 - 1
- */
+ 
 MLXSW_ITEM32(afa, sampler, mirror_probability_rate, 0x08, 0, 24);
 
 static void mlxsw_afa_sampler_pack(char *payload, u8 mirror_agent, u32 rate)

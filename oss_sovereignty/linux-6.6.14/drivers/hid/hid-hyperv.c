@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (c) 2009, Citrix Systems, Inc.
- *  Copyright (c) 2010, Microsoft Corporation.
- *  Copyright (c) 2011, Novell Inc.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -22,13 +18,7 @@ struct hv_input_dev_info {
 	unsigned short reserved[11];
 };
 
-/*
- * Current version
- *
- * History:
- * Beta, RC < 2008/1/22        1,0
- * RC > 2008/1/22              2,0
- */
+ 
 #define SYNTHHID_INPUT_VERSION_MAJOR	2
 #define SYNTHHID_INPUT_VERSION_MINOR	0
 #define SYNTHHID_INPUT_VERSION		(SYNTHHID_INPUT_VERSION_MINOR | \
@@ -36,9 +26,7 @@ struct hv_input_dev_info {
 
 
 #pragma pack(push, 1)
-/*
- * Message types in the synthetic input protocol
- */
+ 
 enum synthhid_msg_type {
 	SYNTH_HID_PROTOCOL_REQUEST,
 	SYNTH_HID_PROTOCOL_RESPONSE,
@@ -48,9 +36,7 @@ enum synthhid_msg_type {
 	SYNTH_HID_MAX
 };
 
-/*
- * Basic message structures.
- */
+ 
 struct synthhid_msg_hdr {
 	enum synthhid_msg_type type;
 	u32 size;
@@ -64,9 +50,7 @@ union synthhid_version {
 	u32 version;
 };
 
-/*
- * Protocol messages
- */
+ 
 struct synthhid_protocol_request {
 	struct synthhid_msg_hdr header;
 	union synthhid_version version_requested;
@@ -123,16 +107,14 @@ struct  mousevsc_prt_msg {
 	};
 };
 
-/*
- * Represents an mousevsc device
- */
+ 
 struct mousevsc_dev {
 	struct hv_device	*device;
 	bool			init_complete;
 	bool			connected;
 	struct mousevsc_prt_msg	protocol_req;
 	struct mousevsc_prt_msg	protocol_resp;
-	/* Synchronize the request/response if needed */
+	 
 	struct completion	wait_event;
 	int			dev_info_status;
 
@@ -184,7 +166,7 @@ static void mousevsc_on_receive_device_info(struct mousevsc_dev *input_device,
 	if (desc->bLength == 0)
 		goto cleanup;
 
-	/* The pointer is not NULL when we resume from hibernation */
+	 
 	kfree(input_device->hid_desc);
 	input_device->hid_desc = kmemdup(desc, desc->bLength, GFP_ATOMIC);
 
@@ -198,7 +180,7 @@ static void mousevsc_on_receive_device_info(struct mousevsc_dev *input_device,
 		goto cleanup;
 	}
 
-	/* The pointer is not NULL when we resume from hibernation */
+	 
 	kfree(input_device->report_desc);
 	input_device->report_desc = kzalloc(input_device->report_desc_size,
 					  GFP_ATOMIC);
@@ -212,7 +194,7 @@ static void mousevsc_on_receive_device_info(struct mousevsc_dev *input_device,
 	       ((unsigned char *)desc) + desc->bLength,
 	       le16_to_cpu(desc->desc[0].wDescriptorLength));
 
-	/* Send the ack */
+	 
 	memset(&ack, 0, sizeof(struct mousevsc_prt_msg));
 
 	ack.type = PIPE_MESSAGE_DATA;
@@ -260,11 +242,7 @@ static void mousevsc_on_receive(struct hv_device *device,
 	case SYNTH_HID_PROTOCOL_RESPONSE:
 		len = struct_size(pipe_msg, data, pipe_msg->size);
 
-		/*
-		 * While it will be impossible for us to protect against
-		 * malicious/buggy hypervisor/host, add a check here to
-		 * ensure we don't corrupt memory.
-		 */
+		 
 		if (WARN_ON(len > sizeof(struct mousevsc_prt_msg)))
 			break;
 
@@ -275,10 +253,7 @@ static void mousevsc_on_receive(struct hv_device *device,
 	case SYNTH_HID_INITIAL_DEVICE_INFO:
 		WARN_ON(pipe_msg->size < sizeof(struct hv_input_dev_info));
 
-		/*
-		 * Parse out the device info into device attr,
-		 * hid desc and report desc
-		 */
+		 
 		mousevsc_on_receive_device_info(input_dev,
 			(struct synthhid_device_info *)pipe_msg->data);
 		break;
@@ -376,10 +351,7 @@ static int mousevsc_connect_to_vsp(struct hv_device *device)
 		goto cleanup;
 	}
 
-	/*
-	 * We should have gotten the device attr, hid desc and report
-	 * desc at this point
-	 */
+	 
 	ret = input_dev->dev_info_status;
 
 cleanup:
@@ -462,7 +434,7 @@ static int mousevsc_probe(struct hv_device *device,
 	if (ret)
 		goto probe_err1;
 
-	/* workaround SA-167 */
+	 
 	if (input_dev->report_desc[14] == 0x25)
 		input_dev->report_desc[14] = 0x29;
 
@@ -558,7 +530,7 @@ static int mousevsc_resume(struct hv_device *dev)
 }
 
 static const struct hv_vmbus_device_id id_table[] = {
-	/* Mouse guid */
+	 
 	{ HV_MOUSE_GUID, },
 	{ },
 };

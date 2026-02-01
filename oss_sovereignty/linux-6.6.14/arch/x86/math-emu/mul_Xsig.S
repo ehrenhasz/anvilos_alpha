@@ -1,24 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*---------------------------------------------------------------------------+
- |  mul_Xsig.S                                                               |
- |                                                                           |
- | Multiply a 12 byte fixed point number by another fixed point number.      |
- |                                                                           |
- | Copyright (C) 1992,1994,1995                                              |
- |                       W. Metzenthen, 22 Parker St, Ormond, Vic 3163,      |
- |                       Australia.  E-mail billm@jacobi.maths.monash.edu.au |
- |                                                                           |
- | Call from C as:                                                           |
- |   void mul32_Xsig(Xsig *x, unsigned b)                                    |
- |                                                                           |
- |   void mul64_Xsig(Xsig *x, unsigned long long *b)                         |
- |                                                                           |
- |   void mul_Xsig_Xsig(Xsig *x, unsigned *b)                                |
- |                                                                           |
- | The result is neither rounded nor normalized, and the ls bit or so may    |
- | be wrong.                                                                 |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+ 
+ 
 	.file	"mul_Xsig.S"
 
 
@@ -38,18 +19,18 @@ SYM_FUNC_START(mul32_Xsig)
 	movl %eax,-4(%ebp)
 	movl %eax,-8(%ebp)
 
-	movl (%esi),%eax        /* lsl of Xsig */
-	mull %ecx		/* msl of b */
+	movl (%esi),%eax         
+	mull %ecx		 
 	movl %edx,-12(%ebp)
 
-	movl 4(%esi),%eax	/* midl of Xsig */
-	mull %ecx		/* msl of b */
+	movl 4(%esi),%eax	 
+	mull %ecx		 
 	addl %eax,-12(%ebp)
 	adcl %edx,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 8(%esi),%eax	/* msl of Xsig */
-	mull %ecx		/* msl of b */
+	movl 8(%esi),%eax	 
+	mull %ecx		 
 	addl %eax,-8(%ebp)
 	adcl %edx,-4(%ebp)
 
@@ -79,30 +60,30 @@ SYM_FUNC_START(mul64_Xsig)
 	movl %eax,-4(%ebp)
 	movl %eax,-8(%ebp)
 
-	movl (%esi),%eax        /* lsl of Xsig */
-	mull 4(%ecx)		/* msl of b */
+	movl (%esi),%eax         
+	mull 4(%ecx)		 
 	movl %edx,-12(%ebp)
 
-	movl 4(%esi),%eax	/* midl of Xsig */
-	mull (%ecx)		/* lsl of b */
+	movl 4(%esi),%eax	 
+	mull (%ecx)		 
 	addl %edx,-12(%ebp)
 	adcl $0,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 4(%esi),%eax	/* midl of Xsig */
-	mull 4(%ecx)		/* msl of b */
+	movl 4(%esi),%eax	 
+	mull 4(%ecx)		 
 	addl %eax,-12(%ebp)
 	adcl %edx,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 8(%esi),%eax	/* msl of Xsig */
-	mull (%ecx)		/* lsl of b */
+	movl 8(%esi),%eax	 
+	mull (%ecx)		 
 	addl %eax,-12(%ebp)
 	adcl %edx,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 8(%esi),%eax	/* msl of Xsig */
-	mull 4(%ecx)		/* msl of b */
+	movl 8(%esi),%eax	 
+	mull 4(%ecx)		 
 	addl %eax,-8(%ebp)
 	adcl %edx,-4(%ebp)
 
@@ -133,36 +114,36 @@ SYM_FUNC_START(mul_Xsig_Xsig)
 	movl %eax,-4(%ebp)
 	movl %eax,-8(%ebp)
 
-	movl (%esi),%eax        /* lsl of Xsig */
-	mull 8(%ecx)		/* msl of b */
+	movl (%esi),%eax         
+	mull 8(%ecx)		 
 	movl %edx,-12(%ebp)
 
-	movl 4(%esi),%eax	/* midl of Xsig */
-	mull 4(%ecx)		/* midl of b */
+	movl 4(%esi),%eax	 
+	mull 4(%ecx)		 
 	addl %edx,-12(%ebp)
 	adcl $0,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 8(%esi),%eax	/* msl of Xsig */
-	mull (%ecx)		/* lsl of b */
+	movl 8(%esi),%eax	 
+	mull (%ecx)		 
 	addl %edx,-12(%ebp)
 	adcl $0,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 4(%esi),%eax	/* midl of Xsig */
-	mull 8(%ecx)		/* msl of b */
+	movl 4(%esi),%eax	 
+	mull 8(%ecx)		 
 	addl %eax,-12(%ebp)
 	adcl %edx,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 8(%esi),%eax	/* msl of Xsig */
-	mull 4(%ecx)		/* midl of b */
+	movl 8(%esi),%eax	 
+	mull 4(%ecx)		 
 	addl %eax,-12(%ebp)
 	adcl %edx,-8(%ebp)
 	adcl $0,-4(%ebp)
 
-	movl 8(%esi),%eax	/* msl of Xsig */
-	mull 8(%ecx)		/* msl of b */
+	movl 8(%esi),%eax	 
+	mull 8(%ecx)		 
 	addl %eax,-8(%ebp)
 	adcl %edx,-4(%ebp)
 

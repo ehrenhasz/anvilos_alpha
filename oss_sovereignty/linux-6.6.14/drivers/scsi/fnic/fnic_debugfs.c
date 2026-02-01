@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2012 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -27,15 +27,7 @@ struct fc_trace_flag_type {
 
 static struct fc_trace_flag_type *fc_trc_flag;
 
-/*
- * fnic_debugfs_init - Initialize debugfs for fnic debug logging
- *
- * Description:
- * When Debugfs is configured this routine sets up the fnic debugfs
- * file system. If not already created, this routine will create the
- * fnic directory and statistics directory for trace buffer and
- * stats logging.
- */
+ 
 int fnic_debugfs_init(void)
 {
 	fnic_trace_debugfs_root = debugfs_create_dir("fnic", NULL);
@@ -43,7 +35,7 @@ int fnic_debugfs_init(void)
 	fnic_stats_debugfs_root = debugfs_create_dir("statistics",
 						fnic_trace_debugfs_root);
 
-	/* Allocate memory to structure */
+	 
 	fc_trc_flag = vmalloc(sizeof(struct fc_trace_flag_type));
 
 	if (fc_trc_flag) {
@@ -58,13 +50,7 @@ int fnic_debugfs_init(void)
 	return -ENOMEM;
 }
 
-/*
- * fnic_debugfs_terminate - Tear down debugfs infrastructure
- *
- * Description:
- * When Debugfs is configured this routine removes debugfs file system
- * elements that are specific to fnic.
- */
+ 
 void fnic_debugfs_terminate(void)
 {
 	debugfs_remove(fnic_stats_debugfs_root);
@@ -76,25 +62,7 @@ void fnic_debugfs_terminate(void)
 	vfree(fc_trc_flag);
 }
 
-/*
- * fnic_trace_ctrl_read -
- *          Read  trace_enable ,fc_trace_enable
- *              or fc_trace_clear debugfs file
- * @filp: The file pointer to read from.
- * @ubuf: The buffer to copy the data to.
- * @cnt: The number of bytes to read.
- * @ppos: The position in the file to start reading from.
- *
- * Description:
- * This routine reads value of variable fnic_tracing_enabled or
- * fnic_fc_tracing_enabled or fnic_fc_trace_cleared
- * and stores into local @buf.
- * It will start reading file at @ppos and
- * copy up to @cnt of data to @ubuf from @buf.
- *
- * Returns:
- * This function returns the amount of data that was read.
- */
+ 
 static ssize_t fnic_trace_ctrl_read(struct file *filp,
 				  char __user *ubuf,
 				  size_t cnt, loff_t *ppos)
@@ -116,23 +84,7 @@ static ssize_t fnic_trace_ctrl_read(struct file *filp,
 	return simple_read_from_buffer(ubuf, cnt, ppos, buf, len);
 }
 
-/*
- * fnic_trace_ctrl_write -
- * Write to trace_enable, fc_trace_enable or
- *         fc_trace_clear debugfs file
- * @filp: The file pointer to write from.
- * @ubuf: The buffer to copy the data from.
- * @cnt: The number of bytes to write.
- * @ppos: The position in the file to start writing to.
- *
- * Description:
- * This routine writes data from user buffer @ubuf to buffer @buf and
- * sets fc_trace_enable ,tracing_enable or fnic_fc_trace_cleared
- * value as per user input.
- *
- * Returns:
- * This function returns the amount of data that was written.
- */
+ 
 static ssize_t fnic_trace_ctrl_write(struct file *filp,
 				  const char __user *ubuf,
 				  size_t cnt, loff_t *ppos)
@@ -176,21 +128,7 @@ static const struct file_operations fnic_trace_ctrl_fops = {
 	.write = fnic_trace_ctrl_write,
 };
 
-/*
- * fnic_trace_debugfs_open - Open the fnic trace log
- * @inode: The inode pointer
- * @file: The file pointer to attach the log output
- *
- * Description:
- * This routine is the entry point for the debugfs open file operation.
- * It allocates the necessary buffer for the log, fills the buffer from
- * the in-memory log and then returns a pointer to that log in
- * the private_data field in @file.
- *
- * Returns:
- * This function returns zero if successful. On error it will return
- * a negative error value.
- */
+ 
 static int fnic_trace_debugfs_open(struct inode *inode,
 				  struct file *file)
 {
@@ -225,23 +163,7 @@ static int fnic_trace_debugfs_open(struct inode *inode,
 	return 0;
 }
 
-/*
- * fnic_trace_debugfs_lseek - Seek through a debugfs file
- * @file: The file pointer to seek through.
- * @offset: The offset to seek to or the amount to seek by.
- * @howto: Indicates how to seek.
- *
- * Description:
- * This routine is the entry point for the debugfs lseek file operation.
- * The @howto parameter indicates whether @offset is the offset to directly
- * seek to, or if it is a value to seek forward or reverse by. This function
- * figures out what the new offset of the debugfs file will be and assigns
- * that value to the f_pos field of @file.
- *
- * Returns:
- * This function returns the new offset if successful and returns a negative
- * error if unable to process the seek.
- */
+ 
 static loff_t fnic_trace_debugfs_lseek(struct file *file,
 					loff_t offset,
 					int howto)
@@ -251,22 +173,7 @@ static loff_t fnic_trace_debugfs_lseek(struct file *file,
 				fnic_dbg_prt->buffer_len);
 }
 
-/*
- * fnic_trace_debugfs_read - Read a debugfs file
- * @file: The file pointer to read from.
- * @ubuf: The buffer to copy the data to.
- * @nbytes: The number of bytes to read.
- * @pos: The position in the file to start reading from.
- *
- * Description:
- * This routine reads data from the buffer indicated in the private_data
- * field of @file. It will start reading at @pos and copy up to @nbytes of
- * data to @ubuf.
- *
- * Returns:
- * This function returns the amount of data that was read (this could be
- * less than @nbytes if the end of the file was reached).
- */
+ 
 static ssize_t fnic_trace_debugfs_read(struct file *file,
 					char __user *ubuf,
 					size_t nbytes,
@@ -280,19 +187,7 @@ static ssize_t fnic_trace_debugfs_read(struct file *file,
 	return rc;
 }
 
-/*
- * fnic_trace_debugfs_release - Release the buffer used to store
- * debugfs file data
- * @inode: The inode pointer
- * @file: The file pointer that contains the buffer to release
- *
- * Description:
- * This routine frees the buffer that was allocated when the debugfs
- * file was opened.
- *
- * Returns:
- * This function returns zero.
- */
+ 
 static int fnic_trace_debugfs_release(struct inode *inode,
 					  struct file *file)
 {
@@ -311,16 +206,7 @@ static const struct file_operations fnic_trace_debugfs_fops = {
 	.release = fnic_trace_debugfs_release,
 };
 
-/*
- * fnic_trace_debugfs_init - Initialize debugfs for fnic trace logging
- *
- * Description:
- * When Debugfs is configured this routine sets up the fnic debugfs
- * file system. If not already created, this routine will create the
- * create file trace to log fnic trace buffer output into debugfs and
- * it will also create file trace_enable to control enable/disable of
- * trace logging into trace buffer.
- */
+ 
 void fnic_trace_debugfs_init(void)
 {
 	fnic_trace_enable = debugfs_create_file("tracing_enable",
@@ -336,13 +222,7 @@ void fnic_trace_debugfs_init(void)
 					&fnic_trace_debugfs_fops);
 }
 
-/*
- * fnic_trace_debugfs_terminate - Tear down debugfs infrastructure
- *
- * Description:
- * When Debugfs is configured this routine removes debugfs file system
- * elements that are specific to fnic trace logging.
- */
+ 
 void fnic_trace_debugfs_terminate(void)
 {
 	debugfs_remove(fnic_trace_debugfs_file);
@@ -352,17 +232,7 @@ void fnic_trace_debugfs_terminate(void)
 	fnic_trace_enable = NULL;
 }
 
-/*
- * fnic_fc_trace_debugfs_init -
- * Initialize debugfs for fnic control frame trace logging
- *
- * Description:
- * When Debugfs is configured this routine sets up the fnic_fc debugfs
- * file system. If not already created, this routine will create the
- * create file trace to log fnic fc trace buffer output into debugfs and
- * it will also create file fc_trace_enable to control enable/disable of
- * trace logging into trace buffer.
- */
+ 
 
 void fnic_fc_trace_debugfs_init(void)
 {
@@ -393,13 +263,7 @@ void fnic_fc_trace_debugfs_init(void)
 				    &fnic_trace_debugfs_fops);
 }
 
-/*
- * fnic_fc_trace_debugfs_terminate - Tear down debugfs infrastructure
- *
- * Description:
- * When Debugfs is configured this routine removes debugfs file system
- * elements that are specific to fnic_fc trace logging.
- */
+ 
 
 void fnic_fc_trace_debugfs_terminate(void)
 {
@@ -416,19 +280,7 @@ void fnic_fc_trace_debugfs_terminate(void)
 	fnic_fc_trace_clear = NULL;
 }
 
-/*
- * fnic_reset_stats_open - Open the reset_stats file
- * @inode: The inode pointer.
- * @file: The file pointer to attach the stats reset flag.
- *
- * Description:
- * This routine opens a debugsfs file reset_stats and stores i_private data
- * to debug structure to retrieve later for while performing other
- * file oprations.
- *
- * Returns:
- * This function returns zero if successful.
- */
+ 
 static int fnic_reset_stats_open(struct inode *inode, struct file *file)
 {
 	struct stats_debug_info *debug;
@@ -444,21 +296,7 @@ static int fnic_reset_stats_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/*
- * fnic_reset_stats_read - Read a reset_stats debugfs file
- * @filp: The file pointer to read from.
- * @ubuf: The buffer to copy the data to.
- * @cnt: The number of bytes to read.
- * @ppos: The position in the file to start reading from.
- *
- * Description:
- * This routine reads value of variable reset_stats
- * and stores into local @buf. It will start reading file at @ppos and
- * copy up to @cnt of data to @ubuf from @buf.
- *
- * Returns:
- * This function returns the amount of data that was read.
- */
+ 
 static ssize_t fnic_reset_stats_read(struct file *file,
 					char __user *ubuf,
 					size_t cnt, loff_t *ppos)
@@ -473,20 +311,7 @@ static ssize_t fnic_reset_stats_read(struct file *file,
 	return simple_read_from_buffer(ubuf, cnt, ppos, buf, len);
 }
 
-/*
- * fnic_reset_stats_write - Write to reset_stats debugfs file
- * @filp: The file pointer to write from.
- * @ubuf: The buffer to copy the data from.
- * @cnt: The number of bytes to write.
- * @ppos: The position in the file to start writing to.
- *
- * Description:
- * This routine writes data from user buffer @ubuf to buffer @buf and
- * resets cumulative stats of fnic.
- *
- * Returns:
- * This function returns the amount of data that was written.
- */
+ 
 static ssize_t fnic_reset_stats_write(struct file *file,
 					const char __user *ubuf,
 					size_t cnt, loff_t *ppos)
@@ -515,10 +340,7 @@ static ssize_t fnic_reset_stats_write(struct file *file,
 	fnic->reset_stats = val;
 
 	if (fnic->reset_stats) {
-		/* Skip variable is used to avoid descrepancies to Num IOs
-		 * and IO Completions stats. Skip incrementing No IO Compls
-		 * for pending active IOs after reset stats
-		 */
+		 
 		atomic64_set(&fnic->io_cmpl_skip,
 			atomic64_read(&stats->io_stats.active_ios));
 		memset(&stats->abts_stats, 0, sizeof(struct abort_stats));
@@ -538,19 +360,7 @@ static ssize_t fnic_reset_stats_write(struct file *file,
 	return cnt;
 }
 
-/*
- * fnic_reset_stats_release - Release the buffer used to store
- * debugfs file data
- * @inode: The inode pointer
- * @file: The file pointer that contains the buffer to release
- *
- * Description:
- * This routine frees the buffer that was allocated when the debugfs
- * file was opened.
- *
- * Returns:
- * This function returns zero.
- */
+ 
 static int fnic_reset_stats_release(struct inode *inode,
 					struct file *file)
 {
@@ -559,19 +369,7 @@ static int fnic_reset_stats_release(struct inode *inode,
 	return 0;
 }
 
-/*
- * fnic_stats_debugfs_open - Open the stats file for specific host
- * and get fnic stats.
- * @inode: The inode pointer.
- * @file: The file pointer to attach the specific host statistics.
- *
- * Description:
- * This routine opens a debugsfs file stats of specific host and print
- * fnic stats.
- *
- * Returns:
- * This function returns zero if successful.
- */
+ 
 static int fnic_stats_debugfs_open(struct inode *inode,
 					struct file *file)
 {
@@ -599,22 +397,7 @@ static int fnic_stats_debugfs_open(struct inode *inode,
 	return 0;
 }
 
-/*
- * fnic_stats_debugfs_read - Read a debugfs file
- * @file: The file pointer to read from.
- * @ubuf: The buffer to copy the data to.
- * @nbytes: The number of bytes to read.
- * @pos: The position in the file to start reading from.
- *
- * Description:
- * This routine reads data from the buffer indicated in the private_data
- * field of @file. It will start reading at @pos and copy up to @nbytes of
- * data to @ubuf.
- *
- * Returns:
- * This function returns the amount of data that was read (this could be
- * less than @nbytes if the end of the file was reached).
- */
+ 
 static ssize_t fnic_stats_debugfs_read(struct file *file,
 					char __user *ubuf,
 					size_t nbytes,
@@ -628,19 +411,7 @@ static ssize_t fnic_stats_debugfs_read(struct file *file,
 	return rc;
 }
 
-/*
- * fnic_stats_stats_release - Release the buffer used to store
- * debugfs file data
- * @inode: The inode pointer
- * @file: The file pointer that contains the buffer to release
- *
- * Description:
- * This routine frees the buffer that was allocated when the debugfs
- * file was opened.
- *
- * Returns:
- * This function returns zero.
- */
+ 
 static int fnic_stats_debugfs_release(struct inode *inode,
 					struct file *file)
 {
@@ -665,14 +436,7 @@ static const struct file_operations fnic_reset_debugfs_fops = {
 	.release = fnic_reset_stats_release,
 };
 
-/*
- * fnic_stats_init - Initialize stats struct and create stats file per fnic
- *
- * Description:
- * When Debugfs is configured this routine sets up the stats file per fnic
- * It will create file stats and reset_stats under statistics/host# directory
- * to log per fnic stats.
- */
+ 
 void fnic_stats_debugfs_init(struct fnic *fnic)
 {
 	char name[16];
@@ -695,13 +459,7 @@ void fnic_stats_debugfs_init(struct fnic *fnic)
 						&fnic_reset_debugfs_fops);
 }
 
-/*
- * fnic_stats_debugfs_remove - Tear down debugfs infrastructure of stats
- *
- * Description:
- * When Debugfs is configured this routine removes debugfs file system
- * elements that are specific to fnic stats.
- */
+ 
 void fnic_stats_debugfs_remove(struct fnic *fnic)
 {
 	if (!fnic)

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 #include "kfree_skb.skel.h"
@@ -27,7 +27,7 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
 		return;
 	if (CHECK(meta->ifindex != 1, "check_meta_ifindex",
 		  "meta->ifindex = %d\n", meta->ifindex))
-		/* spurious kfree_skb not on loopback device */
+		 
 		return;
 	if (CHECK(meta->cb8_0 != cb.cb8[0], "check_cb8_0", "cb8_0 %x != %x\n",
 		  meta->cb8_0, cb.cb8[0]))
@@ -49,7 +49,7 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
 	*(bool *)ctx = true;
 }
 
-/* TODO: fix kernel panic caused by this test in parallel mode */
+ 
 void serial_test_kfree_skb(void)
 {
 	struct __sk_buff skb = {};
@@ -93,7 +93,7 @@ void serial_test_kfree_skb(void)
 		goto close_prog;
 	skel->links.fexit_eth_type_trans = link;
 
-	/* set up perf buffer */
+	 
 	pb = perf_buffer__new(bpf_map__fd(skel->maps.perf_buf_map), 1,
 			      on_sample, NULL, &passed, NULL);
 	if (!ASSERT_OK_PTR(pb, "perf_buf__new"))
@@ -104,14 +104,12 @@ void serial_test_kfree_skb(void)
 	ASSERT_OK(err, "ipv6 test_run");
 	ASSERT_OK(topts.retval, "ipv6 test_run retval");
 
-	/* read perf buffer */
+	 
 	err = perf_buffer__poll(pb, 100);
 	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
 		goto close_prog;
 
-	/* make sure kfree_skb program was triggered
-	 * and it sent expected skb into ring buffer
-	 */
+	 
 	ASSERT_TRUE(passed, "passed");
 
 	err = bpf_map_lookup_elem(bpf_map__fd(skel->maps.bss), &zero, test_ok);

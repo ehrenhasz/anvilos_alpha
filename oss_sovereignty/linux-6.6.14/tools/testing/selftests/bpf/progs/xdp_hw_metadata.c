@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <vmlinux.h>
 #include "xdp_metadata.h"
@@ -55,7 +55,7 @@ int rx(struct xdp_md *ctx)
 		return XDP_PASS;
 	}
 
-	/* Forwarding UDP:9091 to AF_XDP */
+	 
 	if (udp->dest != bpf_htons(9091)) {
 		__sync_add_and_fetch(&pkts_skip, 1);
 		return XDP_PASS;
@@ -80,11 +80,11 @@ int rx(struct xdp_md *ctx)
 	if (!err)
 		meta->xdp_timestamp = bpf_ktime_get_tai_ns();
 	else
-		meta->rx_timestamp = 0; /* Used by AF_XDP as not avail signal */
+		meta->rx_timestamp = 0;  
 
 	err = bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash, &meta->rx_hash_type);
 	if (err < 0)
-		meta->rx_hash_err = err; /* Used by AF_XDP as no hash signal */
+		meta->rx_hash_err = err;  
 
 	__sync_add_and_fetch(&pkts_redir, 1);
 	return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);

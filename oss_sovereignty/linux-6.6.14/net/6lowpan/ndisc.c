@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Authors:
- * (C) 2016 Pengutronix, Alexander Aring <aar@pengutronix.de>
- */
+
+ 
 
 #include <net/6lowpan.h>
 #include <net/addrconf.h>
@@ -32,7 +28,7 @@ static int lowpan_ndisc_parse_802154_options(const struct net_device *dev,
 			ndopts->nd_802154_opt_array[nd_opt->nd_opt_type] = nd_opt;
 		return 1;
 	default:
-		/* all others will be handled by ndisc IPv6 option parsing */
+		 
 		return 0;
 	}
 }
@@ -106,7 +102,7 @@ static void lowpan_ndisc_update(const struct net_device *dev,
 	if (!lowpan_is_ll(dev, LOWPAN_LLTYPE_IEEE802154))
 		return;
 
-	/* react on overrides only. TODO check if this is really right. */
+	 
 	if (flags & NEIGH_UPDATE_F_OVERRIDE)
 		lowpan_ndisc_802154_update(n, flags, icmp6_type, ndopts);
 }
@@ -206,7 +202,7 @@ static void lowpan_ndisc_prefix_rcv_add_addr(struct net *net,
 {
 	int err;
 
-	/* generates short based address for RA PIO's */
+	 
 	if (lowpan_is_ll(dev, LOWPAN_LLTYPE_IEEE802154) && dev_addr_generated &&
 	    !addrconf_ifid_802154_6lowpan(addr->s6_addr + 8, dev)) {
 		err = addrconf_prefix_rcv_add_addr(net, dev, pinfo, in6_dev,

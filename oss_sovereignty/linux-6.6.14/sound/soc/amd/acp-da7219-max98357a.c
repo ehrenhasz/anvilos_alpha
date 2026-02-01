@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: MIT
-//
-// Machine driver for AMD ACP Audio engine using DA7219, RT5682 & MAX98357 codec
-//
-//Copyright 2017-2021 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <sound/core.h>
 #include <sound/soc.h>
@@ -108,12 +108,7 @@ static int da7219_clk_enable(struct snd_pcm_substream *substream)
 	int ret = 0;
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 
-	/*
-	 * Set wclk to 48000 because the rate constraint of this driver is
-	 * 48000. ADAU7002 spec: "The ADAU7002 requires a BCLK rate that is
-	 * minimum of 64x the LRCLK sample rate." DA7219 is the only clk
-	 * source so for all codecs we have to limit bclk to 64X lrclk.
-	 */
+	 
 	clk_set_rate(da7219_dai_wclk, 48000);
 	clk_set_rate(da7219_dai_bclk, 48000 * 64);
 	ret = clk_prepare_enable(da7219_dai_bclk);
@@ -139,7 +134,7 @@ static int cz_rt5682_init(struct snd_soc_pcm_runtime *rtd)
 
 	dev_info(codec_dai->dev, "codec dai name = %s\n", codec_dai->name);
 
-	/* Set codec sysclk */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, RT5682_SCLK_S_PLL2,
 				     RT5682_PLL_FREQ, SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -147,7 +142,7 @@ static int cz_rt5682_init(struct snd_soc_pcm_runtime *rtd)
 			"Failed to set rt5682 SYSCLK: %d\n", ret);
 		return ret;
 	}
-	/* set codec PLL */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, RT5682_PLL2, RT5682_PLL2_S_MCLK,
 				  CZ_PLAT_CLK, RT5682_PLL_FREQ);
 	if (ret < 0) {
@@ -193,12 +188,7 @@ static int rt5682_clk_enable(struct snd_pcm_substream *substream)
 	int ret;
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 
-	/*
-	 * Set wclk to 48000 because the rate constraint of this driver is
-	 * 48000. ADAU7002 spec: "The ADAU7002 requires a BCLK rate that is
-	 * minimum of 64x the LRCLK sample rate." RT5682 is the only clk
-	 * source so for all codecs we have to limit bclk to 64X lrclk.
-	 */
+	 
 	ret = clk_set_rate(rt5682_dai_wclk, 48000);
 	if (ret) {
 		dev_err(rtd->dev, "Error setting wclk rate: %d\n", ret);
@@ -249,9 +239,7 @@ static int cz_da7219_play_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -270,9 +258,7 @@ static int cz_da7219_cap_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -292,9 +278,7 @@ static int cz_max_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -313,9 +297,7 @@ static int cz_dmic0_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -334,9 +316,7 @@ static int cz_dmic1_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -361,9 +341,7 @@ static int cz_rt5682_play_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -382,9 +360,7 @@ static int cz_rt5682_cap_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -404,9 +380,7 @@ static int cz_rt5682_max_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -425,9 +399,7 @@ static int cz_rt5682_dmic0_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -446,9 +418,7 @@ static int cz_rt5682_dmic1_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct acp_platform_info *machine = snd_soc_card_get_drvdata(card);
 
-	/*
-	 * On this platform for PCM device we support stereo
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -568,7 +538,7 @@ static struct snd_soc_dai_link cz_dai_7219_98357[] = {
 		SND_SOC_DAILINK_REG(designware3, mx, platform),
 	},
 	{
-		/* C panel DMIC */
+		 
 		.name = "dmic0",
 		.stream_name = "DMIC0 Capture",
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
@@ -579,7 +549,7 @@ static struct snd_soc_dai_link cz_dai_7219_98357[] = {
 		SND_SOC_DAILINK_REG(designware3, adau, platform),
 	},
 	{
-		/* A/B panel DMIC */
+		 
 		.name = "dmic1",
 		.stream_name = "DMIC1 Capture",
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
@@ -624,7 +594,7 @@ static struct snd_soc_dai_link cz_dai_5682_98357[] = {
 		SND_SOC_DAILINK_REG(designware3, mx, platform),
 	},
 	{
-		/* C panel DMIC */
+		 
 		.name = "dmic0",
 		.stream_name = "DMIC0 Capture",
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
@@ -635,7 +605,7 @@ static struct snd_soc_dai_link cz_dai_5682_98357[] = {
 		SND_SOC_DAILINK_REG(designware3, adau, platform),
 	},
 	{
-		/* A/B panel DMIC */
+		 
 		.name = "dmic1",
 		.stream_name = "DMIC1 Capture",
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
@@ -741,7 +711,7 @@ static const struct regulator_desc acp_da7219_desc = {
 	.type = REGULATOR_VOLTAGE,
 	.owner = THIS_MODULE,
 	.ops = &acp_da7219_ops,
-	.fixed_uV = 1800000, /* 1.8V */
+	.fixed_uV = 1800000,  
 	.n_voltages = 1,
 };
 

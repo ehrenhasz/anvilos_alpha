@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -185,7 +185,7 @@ static int rt4801_probe(struct i2c_client *i2c)
 		return -ENOMEM;
 
 	priv->dev = &i2c->dev;
-	/* bootloader will on, driver only reconfigure enable to all output high */
+	 
 	priv->enable_flag = DSVALL_ENABLE;
 
 	regmap = devm_regmap_init_i2c(i2c, &rt4801_regmap_config);
@@ -213,7 +213,7 @@ static int rt4801_probe(struct i2c_client *i2c)
 		unsigned int val;
 		int ret;
 
-		/* initialize volt_sel variable */
+		 
 		ret = regmap_read(regmap, desc->vsel_reg, &val);
 		if (ret)
 			return ret;

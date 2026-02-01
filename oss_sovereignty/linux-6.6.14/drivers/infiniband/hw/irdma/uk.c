@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "osdep.h"
 #include "defs.h"
 #include "user.h"
 #include "irdma.h"
 
-/**
- * irdma_set_fragment - set fragment in wqe
- * @wqe: wqe for setting fragment
- * @offset: offset value
- * @sge: sge length and stag
- * @valid: The wqe valid
- */
+ 
 static void irdma_set_fragment(__le64 *wqe, u32 offset, struct ib_sge *sge,
 			       u8 valid)
 {
@@ -29,13 +23,7 @@ static void irdma_set_fragment(__le64 *wqe, u32 offset, struct ib_sge *sge,
 	}
 }
 
-/**
- * irdma_set_fragment_gen_1 - set fragment in wqe
- * @wqe: wqe for setting fragment
- * @offset: offset value
- * @sge: sge length and stag
- * @valid: wqe valid flag
- */
+ 
 static void irdma_set_fragment_gen_1(__le64 *wqe, u32 offset,
 				     struct ib_sge *sge, u8 valid)
 {
@@ -51,10 +39,7 @@ static void irdma_set_fragment_gen_1(__le64 *wqe, u32 offset,
 	}
 }
 
-/**
- * irdma_nop_1 - insert a NOP wqe
- * @qp: hw qp ptr
- */
+ 
 static int irdma_nop_1(struct irdma_qp_uk *qp)
 {
 	u64 hdr;
@@ -78,7 +63,7 @@ static int irdma_nop_1(struct irdma_qp_uk *qp)
 	      FIELD_PREP(IRDMAQPSQ_SIGCOMPL, signaled) |
 	      FIELD_PREP(IRDMAQPSQ_VALID, qp->swqe_polarity);
 
-	/* make sure WQE is written before valid bit is set */
+	 
 	dma_wmb();
 
 	set_64bit_val(wqe, 24, hdr);
@@ -86,11 +71,7 @@ static int irdma_nop_1(struct irdma_qp_uk *qp)
 	return 0;
 }
 
-/**
- * irdma_clr_wqes - clear next 128 sq entries
- * @qp: hw qp ptr
- * @qp_wqe_idx: wqe_idx
- */
+ 
 void irdma_clr_wqes(struct irdma_qp_uk *qp, u32 qp_wqe_idx)
 {
 	struct irdma_qp_quanta *sq;
@@ -108,20 +89,17 @@ void irdma_clr_wqes(struct irdma_qp_uk *qp, u32 qp_wqe_idx)
 	}
 }
 
-/**
- * irdma_uk_qp_post_wr - ring doorbell
- * @qp: hw qp ptr
- */
+ 
 void irdma_uk_qp_post_wr(struct irdma_qp_uk *qp)
 {
 	u64 temp;
 	u32 hw_sq_tail;
 	u32 sw_sq_head;
 
-	/* valid bit is written and loads completed before reading shadow */
+	 
 	mb();
 
-	/* read the doorbell shadow area */
+	 
 	get_64bit_val(qp->shadow_area, 0, &temp);
 
 	hw_sq_tail = (u32)FIELD_GET(IRDMA_QP_DBSA_HW_SQ_TAIL, temp);
@@ -143,14 +121,7 @@ void irdma_uk_qp_post_wr(struct irdma_qp_uk *qp)
 	qp->initial_ring.head = qp->sq_ring.head;
 }
 
-/**
- * irdma_qp_get_next_send_wqe - pad with NOP if needed, return where next WR should go
- * @qp: hw qp ptr
- * @wqe_idx: return wqe index
- * @quanta: size of WR in quanta
- * @total_size: size of WR in bytes
- * @info: info on WR
- */
+ 
 __le64 *irdma_qp_get_next_send_wqe(struct irdma_qp_uk *qp, u32 *wqe_idx,
 				   u16 quanta, u32 total_size,
 				   struct irdma_post_sq_info *info)
@@ -164,11 +135,11 @@ __le64 *irdma_qp_get_next_send_wqe(struct irdma_qp_uk *qp, u32 *wqe_idx,
 		       (IRDMA_RING_CURRENT_HEAD(qp->sq_ring) %
 		       qp->uk_attrs->max_hw_sq_chunk);
 	if (quanta <= avail_quanta) {
-		/* WR fits in current chunk */
+		 
 		if (quanta > IRDMA_SQ_RING_FREE_QUANTA(qp->sq_ring))
 			return NULL;
 	} else {
-		/* Need to pad with NOP */
+		 
 		if (quanta + avail_quanta >
 			IRDMA_SQ_RING_FREE_QUANTA(qp->sq_ring))
 			return NULL;
@@ -198,11 +169,7 @@ __le64 *irdma_qp_get_next_send_wqe(struct irdma_qp_uk *qp, u32 *wqe_idx,
 	return wqe;
 }
 
-/**
- * irdma_qp_get_next_recv_wqe - get next qp's rcv wqe
- * @qp: hw qp ptr
- * @wqe_idx: return wqe index
- */
+ 
 __le64 *irdma_qp_get_next_recv_wqe(struct irdma_qp_uk *qp, u32 *wqe_idx)
 {
 	__le64 *wqe;
@@ -217,18 +184,13 @@ __le64 *irdma_qp_get_next_recv_wqe(struct irdma_qp_uk *qp, u32 *wqe_idx)
 
 	if (!*wqe_idx)
 		qp->rwqe_polarity = !qp->rwqe_polarity;
-	/* rq_wqe_size_multiplier is no of 32 byte quanta in one rq wqe */
+	 
 	wqe = qp->rq_base[*wqe_idx * qp->rq_wqe_size_multiplier].elem;
 
 	return wqe;
 }
 
-/**
- * irdma_uk_rdma_write - rdma write operation
- * @qp: hw qp ptr
- * @info: post sq information
- * @post_sq: flag to post sq
- */
+ 
 int irdma_uk_rdma_write(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 			bool post_sq)
 {
@@ -288,7 +250,7 @@ int irdma_uk_rdma_write(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 		byte_off += 16;
 	}
 
-	/* if not an odd number set valid bit in next fragment */
+	 
 	if (qp->uk_attrs->hw_rev >= IRDMA_GEN_2 && !(frag_cnt & 0x01) &&
 	    frag_cnt) {
 		qp->wqe_ops.iw_set_fragment(wqe, byte_off, NULL,
@@ -307,7 +269,7 @@ int irdma_uk_rdma_write(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 	      FIELD_PREP(IRDMAQPSQ_SIGCOMPL, info->signaled) |
 	      FIELD_PREP(IRDMAQPSQ_VALID, qp->swqe_polarity);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -317,13 +279,7 @@ int irdma_uk_rdma_write(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 	return 0;
 }
 
-/**
- * irdma_uk_rdma_read - rdma read command
- * @qp: hw qp ptr
- * @info: post sq information
- * @inv_stag: flag for inv_stag
- * @post_sq: flag to post sq
- */
+ 
 int irdma_uk_rdma_read(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 		       bool inv_stag, bool post_sq)
 {
@@ -368,7 +324,7 @@ int irdma_uk_rdma_read(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 		byte_off += 16;
 	}
 
-	/* if not an odd number set valid bit in next fragment */
+	 
 	if (qp->uk_attrs->hw_rev >= IRDMA_GEN_2 &&
 	    !(op_info->num_lo_sges & 0x01) && op_info->num_lo_sges) {
 		qp->wqe_ops.iw_set_fragment(wqe, byte_off, NULL,
@@ -388,7 +344,7 @@ int irdma_uk_rdma_read(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 	      FIELD_PREP(IRDMAQPSQ_SIGCOMPL, info->signaled) |
 	      FIELD_PREP(IRDMAQPSQ_VALID, qp->swqe_polarity);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -398,12 +354,7 @@ int irdma_uk_rdma_read(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 	return 0;
 }
 
-/**
- * irdma_uk_send - rdma send command
- * @qp: hw qp ptr
- * @info: post sq information
- * @post_sq: flag to post sq
- */
+ 
 int irdma_uk_send(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 		  bool post_sq)
 {
@@ -457,7 +408,7 @@ int irdma_uk_send(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 		byte_off += 16;
 	}
 
-	/* if not an odd number set valid bit in next fragment */
+	 
 	if (qp->uk_attrs->hw_rev >= IRDMA_GEN_2 && !(frag_cnt & 0x01) &&
 	    frag_cnt) {
 		qp->wqe_ops.iw_set_fragment(wqe, byte_off, NULL,
@@ -483,7 +434,7 @@ int irdma_uk_send(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 	      FIELD_PREP(IRDMAQPSQ_L4LEN, info->l4len) |
 	      FIELD_PREP(IRDMAQPSQ_VALID, qp->swqe_polarity);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -493,11 +444,7 @@ int irdma_uk_send(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 	return 0;
 }
 
-/**
- * irdma_set_mw_bind_wqe_gen_1 - set mw bind wqe
- * @wqe: wqe for setting fragment
- * @op_info: info for setting bind wqe values
- */
+ 
 static void irdma_set_mw_bind_wqe_gen_1(__le64 *wqe,
 					struct irdma_bind_window *op_info)
 {
@@ -508,13 +455,7 @@ static void irdma_set_mw_bind_wqe_gen_1(__le64 *wqe,
 	set_64bit_val(wqe, 16, op_info->bind_len);
 }
 
-/**
- * irdma_copy_inline_data_gen_1 - Copy inline data to wqe
- * @wqe: pointer to wqe
- * @sge_list: table of pointers to inline data
- * @num_sges: Total inline data length
- * @polarity: compatibility parameter
- */
+ 
 static void irdma_copy_inline_data_gen_1(u8 *wqe, struct ib_sge *sge_list,
 					 u32 num_sges, u8 polarity)
 {
@@ -536,7 +477,7 @@ static void irdma_copy_inline_data_gen_1(u8 *wqe, struct ib_sge *sge_list,
 			sge_len -= bytes_copied;
 
 			if (!quanta_bytes_remaining) {
-				/* Remaining inline bytes reside after hdr */
+				 
 				wqe += 16;
 				quanta_bytes_remaining = 32;
 			}
@@ -544,22 +485,13 @@ static void irdma_copy_inline_data_gen_1(u8 *wqe, struct ib_sge *sge_list,
 	}
 }
 
-/**
- * irdma_inline_data_size_to_quanta_gen_1 - based on inline data, quanta
- * @data_size: data size for inline
- *
- * Gets the quanta based on inline and immediate data.
- */
+ 
 static inline u16 irdma_inline_data_size_to_quanta_gen_1(u32 data_size)
 {
 	return data_size <= 16 ? IRDMA_QP_WQE_MIN_QUANTA : 2;
 }
 
-/**
- * irdma_set_mw_bind_wqe - set mw bind in wqe
- * @wqe: wqe for setting mw bind
- * @op_info: info for setting wqe values
- */
+ 
 static void irdma_set_mw_bind_wqe(__le64 *wqe,
 				  struct irdma_bind_window *op_info)
 {
@@ -570,13 +502,7 @@ static void irdma_set_mw_bind_wqe(__le64 *wqe,
 	set_64bit_val(wqe, 16, op_info->bind_len);
 }
 
-/**
- * irdma_copy_inline_data - Copy inline data to wqe
- * @wqe: pointer to wqe
- * @sge_list: table of pointers to inline data
- * @num_sges: number of SGE's
- * @polarity: polarity of wqe valid bit
- */
+ 
 static void irdma_copy_inline_data(u8 *wqe, struct ib_sge *sge_list,
 				   u32 num_sges, u8 polarity)
 {
@@ -604,7 +530,7 @@ static void irdma_copy_inline_data(u8 *wqe, struct ib_sge *sge_list,
 			if (!quanta_bytes_remaining) {
 				quanta_bytes_remaining = 31;
 
-				/* Remaining inline bytes reside after hdr */
+				 
 				if (first_quanta) {
 					first_quanta = false;
 					wqe += 16;
@@ -619,12 +545,7 @@ static void irdma_copy_inline_data(u8 *wqe, struct ib_sge *sge_list,
 		*(wqe + quanta_bytes_remaining) = inline_valid;
 }
 
-/**
- * irdma_inline_data_size_to_quanta - based on inline data, quanta
- * @data_size: data size for inline
- *
- * Gets the quanta based on inline and immediate data.
- */
+ 
 static u16 irdma_inline_data_size_to_quanta(u32 data_size)
 {
 	if (data_size <= 8)
@@ -645,12 +566,7 @@ static u16 irdma_inline_data_size_to_quanta(u32 data_size)
 		return 8;
 }
 
-/**
- * irdma_uk_inline_rdma_write - inline rdma write operation
- * @qp: hw qp ptr
- * @info: post sq information
- * @post_sq: flag to post sq
- */
+ 
 int irdma_uk_inline_rdma_write(struct irdma_qp_uk *qp,
 			       struct irdma_post_sq_info *info, bool post_sq)
 {
@@ -703,7 +619,7 @@ int irdma_uk_inline_rdma_write(struct irdma_qp_uk *qp,
 	qp->wqe_ops.iw_copy_inline_data((u8 *)wqe, op_info->lo_sg_list,
 					op_info->num_lo_sges,
 					qp->swqe_polarity);
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -713,12 +629,7 @@ int irdma_uk_inline_rdma_write(struct irdma_qp_uk *qp,
 	return 0;
 }
 
-/**
- * irdma_uk_inline_send - inline send operation
- * @qp: hw qp ptr
- * @info: post sq information
- * @post_sq: flag to post sq
- */
+ 
 int irdma_uk_inline_send(struct irdma_qp_uk *qp,
 			 struct irdma_post_sq_info *info, bool post_sq)
 {
@@ -775,7 +686,7 @@ int irdma_uk_inline_send(struct irdma_qp_uk *qp,
 	qp->wqe_ops.iw_copy_inline_data((u8 *)wqe, op_info->sg_list,
 					op_info->num_sges, qp->swqe_polarity);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -785,12 +696,7 @@ int irdma_uk_inline_send(struct irdma_qp_uk *qp,
 	return 0;
 }
 
-/**
- * irdma_uk_stag_local_invalidate - stag invalidate operation
- * @qp: hw qp ptr
- * @info: post sq information
- * @post_sq: flag to post sq
- */
+ 
 int irdma_uk_stag_local_invalidate(struct irdma_qp_uk *qp,
 				   struct irdma_post_sq_info *info,
 				   bool post_sq)
@@ -823,7 +729,7 @@ int irdma_uk_stag_local_invalidate(struct irdma_qp_uk *qp,
 	      FIELD_PREP(IRDMAQPSQ_SIGCOMPL, info->signaled) |
 	      FIELD_PREP(IRDMAQPSQ_VALID, qp->swqe_polarity);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -833,11 +739,7 @@ int irdma_uk_stag_local_invalidate(struct irdma_qp_uk *qp,
 	return 0;
 }
 
-/**
- * irdma_uk_post_receive - post receive wqe
- * @qp: hw qp ptr
- * @info: post rq information
- */
+ 
 int irdma_uk_post_receive(struct irdma_qp_uk *qp,
 			  struct irdma_post_rq_info *info)
 {
@@ -864,7 +766,7 @@ int irdma_uk_post_receive(struct irdma_qp_uk *qp,
 		byte_off += 16;
 	}
 
-	/* if not an odd number set valid bit in next fragment */
+	 
 	if (qp->uk_attrs->hw_rev >= IRDMA_GEN_2 && !(info->num_sges & 0x01) &&
 	    info->num_sges) {
 		qp->wqe_ops.iw_set_fragment(wqe, byte_off, NULL,
@@ -877,19 +779,14 @@ int irdma_uk_post_receive(struct irdma_qp_uk *qp,
 	hdr = FIELD_PREP(IRDMAQPSQ_ADDFRAGCNT, addl_frag_cnt) |
 	      FIELD_PREP(IRDMAQPSQ_VALID, qp->rwqe_polarity);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
 	return 0;
 }
 
-/**
- * irdma_uk_cq_resize - reset the cq buffer info
- * @cq: cq to resize
- * @cq_base: new cq buffer addr
- * @cq_size: number of cqes
- */
+ 
 void irdma_uk_cq_resize(struct irdma_cq_uk *cq, void *cq_base, int cq_size)
 {
 	cq->cq_base = cq_base;
@@ -898,11 +795,7 @@ void irdma_uk_cq_resize(struct irdma_cq_uk *cq, void *cq_base, int cq_size)
 	cq->polarity = 1;
 }
 
-/**
- * irdma_uk_cq_set_resized_cnt - record the count of the resized buffers
- * @cq: cq to resize
- * @cq_cnt: the count of the resized cq buffers
- */
+ 
 void irdma_uk_cq_set_resized_cnt(struct irdma_cq_uk *cq, u16 cq_cnt)
 {
 	u64 temp_val;
@@ -928,11 +821,7 @@ void irdma_uk_cq_set_resized_cnt(struct irdma_cq_uk *cq, u16 cq_cnt)
 	set_64bit_val(cq->shadow_area, 32, temp_val);
 }
 
-/**
- * irdma_uk_cq_request_notification - cq notification request (door bell)
- * @cq: hw cq
- * @cq_notify: notification type
- */
+ 
 void irdma_uk_cq_request_notification(struct irdma_cq_uk *cq,
 				      enum irdma_cmpl_notify cq_notify)
 {
@@ -957,16 +846,12 @@ void irdma_uk_cq_request_notification(struct irdma_cq_uk *cq,
 
 	set_64bit_val(cq->shadow_area, 32, temp_val);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	writel(cq->cq_id, cq->cqe_alloc_db);
 }
 
-/**
- * irdma_uk_cq_poll_cmpl - get cq completion info
- * @cq: hw cq
- * @info: cq poll information returned
- */
+ 
 int irdma_uk_cq_poll_cmpl(struct irdma_cq_uk *cq,
 			  struct irdma_cq_poll_info *info)
 {
@@ -991,7 +876,7 @@ int irdma_uk_cq_poll_cmpl(struct irdma_cq_uk *cq,
 	if (polarity != cq->polarity)
 		return -ENOENT;
 
-	/* Ensure CQE contents are read after valid bit is checked */
+	 
 	dma_rmb();
 
 	ext_valid = (bool)FIELD_GET(IRDMA_CQ_EXTCQE, qword3);
@@ -1014,7 +899,7 @@ int irdma_uk_cq_poll_cmpl(struct irdma_cq_uk *cq,
 		if (polarity != cq->polarity)
 			return -ENOENT;
 
-		/* Ensure ext CQE contents are read after ext valid bit is checked */
+		 
 		dma_rmb();
 
 		info->imm_valid = (bool)FIELD_GET(IRDMA_CQ_IMMVALID, qword7);
@@ -1053,7 +938,7 @@ int irdma_uk_cq_poll_cmpl(struct irdma_cq_uk *cq,
 		info->minor_err = FIELD_GET(IRDMA_CQ_MINERR, qword3);
 		if (info->major_err == IRDMA_FLUSH_MAJOR_ERR) {
 			info->comp_status = IRDMA_COMPL_STATUS_FLUSHED;
-			/* Set the min error to standard flush error code for remaining cqes */
+			 
 			if (info->minor_err != FLUSH_GENERAL_ERR) {
 				qword3 &= ~IRDMA_CQ_MINERR;
 				qword3 |= FIELD_PREP(IRDMA_CQ_MINERR, FLUSH_GENERAL_ERR);
@@ -1120,7 +1005,7 @@ int irdma_uk_cq_poll_cmpl(struct irdma_cq_uk *cq,
 				move_cq_head = false;
 		}
 		pring = &qp->rq_ring;
-	} else { /* q_type is IRDMA_CQE_QTYPE_SQ */
+	} else {  
 		if (qp->first_sq_wq) {
 			if (wqe_idx + 1 >= qp->conn_wqes)
 				qp->first_sq_wq = false;
@@ -1209,10 +1094,7 @@ exit:
 	return ret_code;
 }
 
-/**
- * irdma_qp_round_up - return round up qp wq depth
- * @wqdepth: wq depth in quanta to round up
- */
+ 
 static int irdma_qp_round_up(u32 wqdepth)
 {
 	int scount = 1;
@@ -1223,20 +1105,7 @@ static int irdma_qp_round_up(u32 wqdepth)
 	return ++wqdepth;
 }
 
-/**
- * irdma_get_wqe_shift - get shift count for maximum wqe size
- * @uk_attrs: qp HW attributes
- * @sge: Maximum Scatter Gather Elements wqe
- * @inline_data: Maximum inline data size
- * @shift: Returns the shift needed based on sge
- *
- * Shift can be used to left shift the wqe size based on number of SGEs and inlind data size.
- * For 1 SGE or inline data <= 8, shift = 0 (wqe size of 32
- * bytes). For 2 or 3 SGEs or inline data <= 39, shift = 1 (wqe
- * size of 64 bytes).
- * For 4-7 SGE's and inline <= 101 Shift of 2 otherwise (wqe
- * size of 256 bytes).
- */
+ 
 void irdma_get_wqe_shift(struct irdma_uk_attrs *uk_attrs, u32 sge,
 			 u32 inline_data, u8 *shift)
 {
@@ -1255,14 +1124,7 @@ void irdma_get_wqe_shift(struct irdma_uk_attrs *uk_attrs, u32 sge,
 	}
 }
 
-/*
- * irdma_get_sqdepth - get SQ depth (quanta)
- * @uk_attrs: qp HW attributes
- * @sq_size: SQ size
- * @shift: shift which determines size of WQE
- * @sqdepth: depth of SQ
- *
- */
+ 
 int irdma_get_sqdepth(struct irdma_uk_attrs *uk_attrs, u32 sq_size, u8 shift,
 		      u32 *sqdepth)
 {
@@ -1278,13 +1140,7 @@ int irdma_get_sqdepth(struct irdma_uk_attrs *uk_attrs, u32 sq_size, u8 shift,
 	return 0;
 }
 
-/*
- * irdma_get_rqdepth - get RQ depth (quanta)
- * @uk_attrs: qp HW attributes
- * @rq_size: RQ size
- * @shift: shift which determines size of WQE
- * @rqdepth: depth of RQ
- */
+ 
 int irdma_get_rqdepth(struct irdma_uk_attrs *uk_attrs, u32 rq_size, u8 shift,
 		      u32 *rqdepth)
 {
@@ -1314,12 +1170,7 @@ static const struct irdma_wqe_uk_ops iw_wqe_uk_ops_gen_1 = {
 	.iw_set_mw_bind_wqe = irdma_set_mw_bind_wqe_gen_1,
 };
 
-/**
- * irdma_setup_connection_wqes - setup WQEs necessary to complete
- * connection.
- * @qp: hw qp (user and kernel)
- * @info: qp initialization info
- */
+ 
 static void irdma_setup_connection_wqes(struct irdma_qp_uk *qp,
 					struct irdma_qp_uk_init_info *info)
 {
@@ -1335,12 +1186,7 @@ static void irdma_setup_connection_wqes(struct irdma_qp_uk *qp,
 	IRDMA_RING_MOVE_HEAD_BY_COUNT_NOCHECK(qp->initial_ring, move_cnt);
 }
 
-/**
- * irdma_uk_calc_shift_wq - calculate WQE shift for both SQ and RQ
- * @ukinfo: qp initialization info
- * @sq_shift: Returns shift of SQ
- * @rq_shift: Returns shift of RQ
- */
+ 
 void irdma_uk_calc_shift_wq(struct irdma_qp_uk_init_info *ukinfo, u8 *sq_shift,
 			    u8 *rq_shift)
 {
@@ -1360,12 +1206,7 @@ void irdma_uk_calc_shift_wq(struct irdma_qp_uk_init_info *ukinfo, u8 *sq_shift,
 	}
 }
 
-/**
- * irdma_uk_calc_depth_shift_sq - calculate depth and shift for SQ size.
- * @ukinfo: qp initialization info
- * @sq_depth: Returns depth of SQ
- * @sq_shift: Returns shift of SQ
- */
+ 
 int irdma_uk_calc_depth_shift_sq(struct irdma_qp_uk_init_info *ukinfo,
 				 u32 *sq_depth, u8 *sq_shift)
 {
@@ -1382,12 +1223,7 @@ int irdma_uk_calc_depth_shift_sq(struct irdma_qp_uk_init_info *ukinfo,
 	return status;
 }
 
-/**
- * irdma_uk_calc_depth_shift_rq - calculate depth and shift for RQ size.
- * @ukinfo: qp initialization info
- * @rq_depth: Returns depth of RQ
- * @rq_shift: Returns shift of RQ
- */
+ 
 int irdma_uk_calc_depth_shift_rq(struct irdma_qp_uk_init_info *ukinfo,
 				 u32 *rq_depth, u8 *rq_shift)
 {
@@ -1407,16 +1243,7 @@ int irdma_uk_calc_depth_shift_rq(struct irdma_qp_uk_init_info *ukinfo,
 	return status;
 }
 
-/**
- * irdma_uk_qp_init - initialize shared qp
- * @qp: hw qp (user and kernel)
- * @info: qp initialization info
- *
- * initializes the vars used in both user and kernel mode.
- * size of the wqe depends on numbers of max. fragements
- * allowed. Then size of wqe * the number of wqes should be the
- * amount of memory allocated for sq and rq.
- */
+ 
 int irdma_uk_qp_init(struct irdma_qp_uk *qp, struct irdma_qp_uk_init_info *info)
 {
 	int ret_code = 0;
@@ -1464,11 +1291,7 @@ int irdma_uk_qp_init(struct irdma_qp_uk *qp, struct irdma_qp_uk_init_info *info)
 	return ret_code;
 }
 
-/**
- * irdma_uk_cq_init - initialize shared cq (user and kernel)
- * @cq: hw cq
- * @info: hw cq initialization info
- */
+ 
 void irdma_uk_cq_init(struct irdma_cq_uk *cq,
 		      struct irdma_cq_uk_init_info *info)
 {
@@ -1483,11 +1306,7 @@ void irdma_uk_cq_init(struct irdma_cq_uk *cq,
 	cq->polarity = 1;
 }
 
-/**
- * irdma_uk_clean_cq - clean cq entries
- * @q: completion context
- * @cq: cq to clean
- */
+ 
 void irdma_uk_clean_cq(void *q, struct irdma_cq_uk *cq)
 {
 	__le64 *cqe;
@@ -1508,7 +1327,7 @@ void irdma_uk_clean_cq(void *q, struct irdma_cq_uk *cq)
 		if (polarity != temp)
 			break;
 
-		/* Ensure CQE contents are read after valid bit is checked */
+		 
 		dma_rmb();
 
 		get_64bit_val(cqe, 8, &comp_ctx);
@@ -1521,13 +1340,7 @@ void irdma_uk_clean_cq(void *q, struct irdma_cq_uk *cq)
 	} while (true);
 }
 
-/**
- * irdma_nop - post a nop
- * @qp: hw qp ptr
- * @wr_id: work request id
- * @signaled: signaled for completion
- * @post_sq: ring doorbell
- */
+ 
 int irdma_nop(struct irdma_qp_uk *qp, u64 wr_id, bool signaled, bool post_sq)
 {
 	__le64 *wqe;
@@ -1551,7 +1364,7 @@ int irdma_nop(struct irdma_qp_uk *qp, u64 wr_id, bool signaled, bool post_sq)
 	      FIELD_PREP(IRDMAQPSQ_SIGCOMPL, signaled) |
 	      FIELD_PREP(IRDMAQPSQ_VALID, qp->swqe_polarity);
 
-	dma_wmb(); /* make sure WQE is populated before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 	if (post_sq)
@@ -1560,11 +1373,7 @@ int irdma_nop(struct irdma_qp_uk *qp, u64 wr_id, bool signaled, bool post_sq)
 	return 0;
 }
 
-/**
- * irdma_fragcnt_to_quanta_sq - calculate quanta based on fragment count for SQ
- * @frag_cnt: number of fragments
- * @quanta: quanta for frag_cnt
- */
+ 
 int irdma_fragcnt_to_quanta_sq(u32 frag_cnt, u16 *quanta)
 {
 	switch (frag_cnt) {
@@ -1597,7 +1406,7 @@ int irdma_fragcnt_to_quanta_sq(u32 frag_cnt, u16 *quanta)
 		*quanta = 7;
 		break;
 	case 14:
-	case 15: /* when immediate data is present */
+	case 15:  
 		*quanta = 8;
 		break;
 	default:
@@ -1607,11 +1416,7 @@ int irdma_fragcnt_to_quanta_sq(u32 frag_cnt, u16 *quanta)
 	return 0;
 }
 
-/**
- * irdma_fragcnt_to_wqesize_rq - calculate wqe size based on fragment count for RQ
- * @frag_cnt: number of fragments
- * @wqe_size: size in bytes given frag_cnt
- */
+ 
 int irdma_fragcnt_to_wqesize_rq(u32 frag_cnt, u16 *wqe_size)
 {
 	switch (frag_cnt) {

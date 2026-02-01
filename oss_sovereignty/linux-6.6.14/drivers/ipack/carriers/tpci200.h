@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * driver for the carrier TEWS TPCI-200
- *
- * Copyright (C) 2009-2012 CERN (www.cern.ch)
- * Author: Nicolas Serafini, EIC2 SA
- * Author: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
- */
+ 
+ 
 
 #ifndef _TPCI200_H_
 #define _TPCI200_H_
@@ -33,8 +27,7 @@
 
 struct tpci200_regs {
 	__le16	revision;
-	/* writes to control should occur with the mutex held to protect
-	 * read-modify-write operations */
+	 
 	__le16  control[4];
 	__le16	reset;
 	__le16	status;
@@ -59,7 +52,7 @@ struct tpci200_regs {
 #define TPCI200_MEM16_SPACE_INTERVAL  0x00800000
 #define TPCI200_MEM16_SPACE_SIZE      0x00800000
 
-/* control field in tpci200_regs */
+ 
 #define TPCI200_INT0_EN               0x0040
 #define TPCI200_INT1_EN               0x0080
 #define TPCI200_INT0_EDGE             0x0010
@@ -69,13 +62,13 @@ struct tpci200_regs {
 #define TPCI200_RECOVER_EN            0x0002
 #define TPCI200_CLK32                 0x0001
 
-/* reset field in tpci200_regs */
+ 
 #define TPCI200_A_RESET               0x0001
 #define TPCI200_B_RESET               0x0002
 #define TPCI200_C_RESET               0x0004
 #define TPCI200_D_RESET               0x0008
 
-/* status field in tpci200_regs */
+ 
 #define TPCI200_A_TIMEOUT             0x1000
 #define TPCI200_B_TIMEOUT             0x2000
 #define TPCI200_C_TIMEOUT             0x4000
@@ -97,23 +90,17 @@ struct tpci200_regs {
 
 #define TPCI200_SLOT_INT_MASK         0x00FF
 
-/* PCI Configuration registers. The PCI bridge is a PLX Technology PCI9030. */
+ 
 #define LAS1_DESC		      0x2C
 #define LAS2_DESC		      0x30
 
-/* Bits in the LAS?_DESC registers */
+ 
 #define LAS_BIT_BIGENDIAN	      24
 
 #define VME_IOID_SPACE  "IOID"
 #define VME_MEM_SPACE  "MEM"
 
-/**
- * struct slot_irq - slot IRQ definition.
- * @vector	Vector number
- * @handler	Handler called when IRQ arrives
- * @arg		Handler argument
- *
- */
+ 
 struct slot_irq {
 	struct ipack_device *holder;
 	int		vector;
@@ -121,28 +108,12 @@ struct slot_irq {
 	void		*arg;
 };
 
-/**
- * struct tpci200_slot - data specific to the tpci200 slot.
- * @slot_id	Slot identification gived to external interface
- * @irq		Slot IRQ infos
- * @io_phys	IO physical base address register of the slot
- * @id_phys	ID physical base address register of the slot
- * @int_phys	INT physical base address register of the slot
- * @mem_phys	MEM physical base address register of the slot
- *
- */
+ 
 struct tpci200_slot {
 	struct slot_irq	    *irq;
 };
 
-/**
- * struct tpci200_infos - informations specific of the TPCI200 tpci200.
- * @pci_dev		PCI device
- * @interface_regs	Pointer to IP interface space (Bar 2)
- * @ioidint_space	Pointer to IP ID, IO and INT space (Bar 3)
- * @mem8_space		Pointer to MEM space (Bar 4)
- *
- */
+ 
 struct tpci200_infos {
 	struct pci_dev			*pdev;
 	struct pci_device_id		*id_table;
@@ -159,4 +130,4 @@ struct tpci200_board {
 	phys_addr_t             mod_mem[IPACK_SPACE_COUNT];
 };
 
-#endif /* _TPCI200_H_ */
+#endif  

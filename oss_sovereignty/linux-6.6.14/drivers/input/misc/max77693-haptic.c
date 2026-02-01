@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MAXIM MAX77693/MAX77843 Haptic device driver
- *
- * Copyright (C) 2014,2015 Samsung Electronics
- * Jaewon Kim <jaewon02.kim@samsung.com>
- * Krzysztof Kozlowski <krzk@kernel.org>
- *
- * This program is not provided / owned by Maxim Integrated Products.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -240,11 +232,7 @@ static int max77693_haptic_play_effect(struct input_dev *dev, void *data,
 	if (!haptic->magnitude)
 		haptic->magnitude = effect->u.rumble.weak_magnitude;
 
-	/*
-	 * The magnitude comes from force-feedback interface.
-	 * The formula to convert magnitude to pwm_duty as follows:
-	 * - pwm_duty = (magnitude * pwm_period) / MAX_MAGNITUDE(0xFFFF)
-	 */
+	 
 	pwm_get_args(haptic->pwm_dev, &pargs);
 	period_mag_multi = (u64)pargs.period * haptic->magnitude;
 	haptic->pwm_duty = (unsigned int)(period_mag_multi >>
@@ -306,7 +294,7 @@ static int max77693_haptic_probe(struct platform_device *pdev)
 	haptic->mode = MAX77693_HAPTIC_EXTERNAL_MODE;
 	haptic->suspend_state = false;
 
-	/* Variant-specific init */
+	 
 	haptic->dev_type = platform_get_device_id(pdev)->driver_data;
 	switch (haptic->dev_type) {
 	case TYPE_MAX77693:
@@ -323,17 +311,14 @@ static int max77693_haptic_probe(struct platform_device *pdev)
 
 	INIT_WORK(&haptic->work, max77693_haptic_play_work);
 
-	/* Get pwm and regulatot for haptic device */
+	 
 	haptic->pwm_dev = devm_pwm_get(&pdev->dev, NULL);
 	if (IS_ERR(haptic->pwm_dev)) {
 		dev_err(&pdev->dev, "failed to get pwm device\n");
 		return PTR_ERR(haptic->pwm_dev);
 	}
 
-	/*
-	 * FIXME: pwm_apply_args() should be removed when switching to the
-	 * atomic PWM API.
-	 */
+	 
 	pwm_apply_args(haptic->pwm_dev);
 
 	haptic->motor_reg = devm_regulator_get(&pdev->dev, "haptic");
@@ -342,7 +327,7 @@ static int max77693_haptic_probe(struct platform_device *pdev)
 		return PTR_ERR(haptic->motor_reg);
 	}
 
-	/* Initialize input device for haptic device */
+	 
 	haptic->input_dev = devm_input_allocate_device(&pdev->dev);
 	if (!haptic->input_dev) {
 		dev_err(&pdev->dev, "failed to allocate input device\n");

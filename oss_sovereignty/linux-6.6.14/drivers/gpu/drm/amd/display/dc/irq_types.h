@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_IRQ_TYPES_H__
 #define __DAL_IRQ_TYPES_H__
@@ -35,10 +12,9 @@ typedef void (*interrupt_handler)(void *);
 typedef void *irq_handler_idx;
 #define DAL_INVALID_IRQ_HANDLER_IDX NULL
 
-/* The order of the IRQ sources is important and MUST match the one's
-of base driver */
+ 
 enum dc_irq_source {
-	/* Use as mask to specify invalid irq source */
+	 
 	DC_IRQ_SOURCE_INVALID = 0,
 
 	DC_IRQ_SOURCE_HPD1,
@@ -167,11 +143,11 @@ enum irq_type
 #define DAL_VALID_IRQ_SRC_NUM(src) \
 	((src) < DAL_IRQ_SOURCES_NUMBER && (src) > DC_IRQ_SOURCE_INVALID)
 
-/* Number of Page Flip IRQ Sources. */
+ 
 #define DAL_PFLIP_IRQ_SRC_NUM \
 	(DC_IRQ_SOURCE_PFLIP_LAST - DC_IRQ_SOURCE_PFLIP_FIRST + 1)
 
-/* the number of contexts may be expanded in the future based on needs */
+ 
 enum dc_interrupt_context {
 	INTERRUPT_LOW_IRQ_CONTEXT = 0,
 	INTERRUPT_HIGH_IRQ_CONTEXT,
@@ -196,14 +172,9 @@ struct dc_timer_interrupt_params {
 };
 
 struct dc_interrupt_params {
-	/* The polarity *change* which will trigger an interrupt.
-	 * If 'requested_polarity == INTERRUPT_POLARITY_BOTH', then
-	 * 'current_polarity' must be initialised. */
+	 
 	enum dc_interrupt_porlarity requested_polarity;
-	/* If 'requested_polarity == INTERRUPT_POLARITY_BOTH',
-	 * 'current_polarity' should contain the current state, which means
-	 * the interrupt will be triggered when state changes from what is,
-	 * in 'current_polarity'. */
+	 
 	enum dc_interrupt_porlarity current_polarity;
 	enum dc_irq_source irq_source;
 	enum dc_interrupt_context int_context;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Verify that using an instruction not supported in streaming mode
- * traps when in streaming mode.
- */
+
+ 
 
 #include <signal.h>
 #include <ucontext.h>
@@ -20,7 +15,7 @@ static union {
 
 static void enable_za(void)
 {
-	/* smstart za; real data is TODO */
+	 
 	asm volatile(".inst 0xd503457f" : : : );
 }
 
@@ -31,10 +26,7 @@ int zt_regs_run(struct tdescr *td, siginfo_t *si, ucontext_t *uc)
 	struct zt_context *zt;
 	char *zeros;
 
-	/*
-	 * Get a signal context which should have a ZT frame and registers
-	 * in it.
-	 */
+	 
 	enable_za();
 	if (!get_current_context(td, &context.uc, sizeof(context)))
 		return 1;
@@ -54,7 +46,7 @@ int zt_regs_run(struct tdescr *td, siginfo_t *si, ucontext_t *uc)
 	fprintf(stderr, "Got expected size %u for %d registers\n",
 		head->size, zt->nregs);
 
-	/* We didn't load any data into ZT so it should be all zeros */
+	 
 	zeros = malloc(ZT_SIG_REGS_SIZE(zt->nregs));
 	if (!zeros) {
 		fprintf(stderr, "Out of memory, nregs=%u\n", zt->nregs);

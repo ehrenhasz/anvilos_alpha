@@ -1,14 +1,4 @@
-/*
- * Marvell 37xx SoC pinctrl driver
- *
- * Copyright (C) 2017 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2 or later. This program is licensed "as is"
- * without any warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/mfd/syscon.h>
@@ -41,22 +31,7 @@
 #define NB_FUNCS 3
 #define GPIO_PER_REG	32
 
-/**
- * struct armada_37xx_pin_group: represents group of pins of a pinmux function.
- * The pins of a pinmux groups are composed of one or two groups of contiguous
- * pins.
- * @name:	Name of the pin group, used to lookup the group.
- * @start_pin:	Index of the first pin of the main range of pins belonging to
- *		the group
- * @npins:	Number of pins included in the first range
- * @reg_mask:	Bit mask matching the group in the selection register
- * @val:	Value to write to the registers for a given function
- * @extra_pin:	Index of the first pin of the optional second range of pins
- *		belonging to the group
- * @extra_npins:Number of pins included in the second optional range
- * @funcs:	A list of pinmux functions that can be selected for this group.
- * @pins:	List of the pins included in the group
- */
+ 
 struct armada_37xx_pin_group {
 	const char	*name;
 	unsigned int	start_pin;
@@ -198,7 +173,7 @@ static struct armada_37xx_pin_group armada_37xx_sb_groups[] = {
 	PIN_GRP_GPIO("sdio_sb", 24, 6, BIT(2), "sdio"),
 	PIN_GRP_GPIO("rgmii", 6, 12, BIT(3), "mii"),
 	PIN_GRP_GPIO("smi", 18, 2, BIT(4), "smi"),
-	PIN_GRP_GPIO("pcie1", 3, 1, BIT(5), "pcie"), /* this actually controls "pcie1_reset" */
+	PIN_GRP_GPIO("pcie1", 3, 1, BIT(5), "pcie"),  
 	PIN_GRP_GPIO("pcie1_clkreq", 4, 1, BIT(9), "pcie"),
 	PIN_GRP_GPIO("pcie1_wakeup", 5, 1, BIT(10), "pcie"),
 	PIN_GRP_GPIO("ptp", 20, 1, BIT(11), "ptp"),
@@ -227,7 +202,7 @@ static const struct armada_37xx_pin_data armada_37xx_pin_sb = {
 static inline void armada_37xx_update_reg(unsigned int *reg,
 					  unsigned int *offset)
 {
-	/* We never have more than 2 registers */
+	 
 	if (*offset >= GPIO_PER_REG) {
 		*offset -= GPIO_PER_REG;
 		*reg += sizeof(u32);
@@ -308,9 +283,7 @@ static const struct pinctrl_ops armada_37xx_pctrl_ops = {
 	.dt_free_map		= pinctrl_utils_free_map,
 };
 
-/*
- * Pinmux_ops handling
- */
+ 
 
 static int armada_37xx_pmx_get_funcs_count(struct pinctrl_dev *pctldev)
 {
@@ -607,11 +580,11 @@ static int armada_37xx_irq_set_type(struct irq_data *d, unsigned int type)
 		armada_37xx_irq_update_reg(&in_reg, d);
 		regmap_read(info->regmap, in_reg, &in_val);
 
-		/* Set initial polarity based on current input level. */
+		 
 		if (in_val & BIT(d->hwirq % GPIO_PER_REG))
-			val |= BIT(d->hwirq % GPIO_PER_REG);	/* falling */
+			val |= BIT(d->hwirq % GPIO_PER_REG);	 
 		else
-			val &= ~(BIT(d->hwirq % GPIO_PER_REG));	/* rising */
+			val &= ~(BIT(d->hwirq % GPIO_PER_REG));	 
 		break;
 	}
 	default:
@@ -637,21 +610,12 @@ static int armada_37xx_edge_both_irq_swap_pol(struct armada_37xx_pinctrl *info,
 	raw_spin_lock_irqsave(&info->irq_lock, flags);
 	p = readl(info->base + IRQ_POL + 4 * reg_idx);
 	if ((p ^ l) & (1 << bit_num)) {
-		/*
-		 * For the gpios which are used for both-edge irqs, when their
-		 * interrupts happen, their input levels are changed,
-		 * yet their interrupt polarities are kept in old values, we
-		 * should synchronize their interrupt polarities; for example,
-		 * at first a gpio's input level is low and its interrupt
-		 * polarity control is "Detect rising edge", then the gpio has
-		 * a interrupt , its level turns to high, we should change its
-		 * polarity control to "Detect falling edge" correspondingly.
-		 */
+		 
 		p ^= 1 << bit_num;
 		writel(p, info->base + IRQ_POL + 4 * reg_idx);
 		ret = 0;
 	} else {
-		/* Spurious irq */
+		 
 		ret = -1;
 	}
 
@@ -674,7 +638,7 @@ static void armada_37xx_irq_handler(struct irq_desc *desc)
 
 		raw_spin_lock_irqsave(&info->irq_lock, flags);
 		status = readl_relaxed(info->base + IRQ_STATUS + 4 * i);
-		/* Manage only the interrupt that was enabled */
+		 
 		status &= readl_relaxed(info->base + IRQ_EN + 4 * i);
 		raw_spin_unlock_irqrestore(&info->irq_lock, flags);
 		while (status) {
@@ -684,14 +648,10 @@ static void armada_37xx_irq_handler(struct irq_desc *desc)
 			u32 t = irq_get_trigger_type(virq);
 
 			if ((t & IRQ_TYPE_SENSE_MASK) == IRQ_TYPE_EDGE_BOTH) {
-				/* Swap polarity (race with GPIO line) */
+				 
 				if (armada_37xx_edge_both_irq_swap_pol(info,
 					hwirq + i * GPIO_PER_REG)) {
-					/*
-					 * For spurious irq, which gpio level
-					 * is not as expected after incoming
-					 * edge, just ack the gpio irq.
-					 */
+					 
 					writel(1 << hwirq,
 					       info->base +
 					       IRQ_STATUS + 4 * i);
@@ -702,11 +662,11 @@ static void armada_37xx_irq_handler(struct irq_desc *desc)
 			generic_handle_irq(virq);
 
 update_status:
-			/* Update status in case a new IRQ appears */
+			 
 			raw_spin_lock_irqsave(&info->irq_lock, flags);
 			status = readl_relaxed(info->base +
 					       IRQ_STATUS + 4 * i);
-			/* Manage only the interrupt that was enabled */
+			 
 			status &= readl_relaxed(info->base + IRQ_EN + 4 * i);
 			raw_spin_unlock_irqrestore(&info->irq_lock, flags);
 		}
@@ -716,12 +676,7 @@ update_status:
 
 static unsigned int armada_37xx_irq_startup(struct irq_data *d)
 {
-	/*
-	 * The mask field is a "precomputed bitmask for accessing the
-	 * chip registers" which was introduced for the generic
-	 * irqchip framework. As we don't use this framework, we can
-	 * reuse this field for our own usage.
-	 */
+	 
 	d->mask = BIT(d->hwirq % GPIO_PER_REG);
 
 	armada_37xx_irq_unmask(d);
@@ -772,11 +727,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
 
 	gpio_irq_chip_set_chip(girq, &armada_37xx_irqchip);
 	girq->parent_handler = armada_37xx_irq_handler;
-	/*
-	 * Many interrupts are connected to the parent interrupt
-	 * controller. But we do not take advantage of this and use
-	 * the chained irq with all of them.
-	 */
+	 
 	girq->num_parents = nr_irq_parent;
 	girq->parents = devm_kcalloc(dev, nr_irq_parent, sizeof(*girq->parents), GFP_KERNEL);
 	if (!girq->parents)
@@ -822,15 +773,7 @@ static int armada_37xx_gpiochip_register(struct platform_device *pdev,
 	return devm_gpiochip_add_data(dev, gc, info);
 }
 
-/**
- * armada_37xx_add_function() - Add a new function to the list
- * @funcs: array of function to add the new one
- * @funcsize: size of the remaining space for the function
- * @name: name of the function to add
- *
- * If it is a new function then create it by adding its name else
- * increment the number of group associated to this function.
- */
+ 
 static int armada_37xx_add_function(struct armada_37xx_pmx_func *funcs,
 				    int *funcsize, const char *name)
 {
@@ -840,7 +783,7 @@ static int armada_37xx_add_function(struct armada_37xx_pmx_func *funcs,
 		return -EOVERFLOW;
 
 	while (funcs->ngroups) {
-		/* function already there */
+		 
 		if (strcmp(funcs->name, name) == 0) {
 			funcs->ngroups++;
 
@@ -850,7 +793,7 @@ static int armada_37xx_add_function(struct armada_37xx_pmx_func *funcs,
 		i++;
 	}
 
-	/* append new unique function */
+	 
 	funcs->name = name;
 	funcs->ngroups = 1;
 	(*funcsize)--;
@@ -858,15 +801,7 @@ static int armada_37xx_add_function(struct armada_37xx_pmx_func *funcs,
 	return 0;
 }
 
-/**
- * armada_37xx_fill_group() - complete the group array
- * @info: info driver instance
- *
- * Based on the data available from the armada_37xx_pin_group array
- * completes the last member of the struct for each function: the list
- * of the groups associated to this function.
- *
- */
+ 
 static int armada_37xx_fill_group(struct armada_37xx_pinctrl *info)
 {
 	int n, num = 0, funcsize = info->data->nr_pins;
@@ -890,7 +825,7 @@ static int armada_37xx_fill_group(struct armada_37xx_pinctrl *info)
 
 		for (f = 0; (f < NB_FUNCS) && grp->funcs[f]; f++) {
 			int ret;
-			/* check for unique functions and count groups */
+			 
 			ret = armada_37xx_add_function(info->funcs, &funcsize,
 					    grp->funcs[f]);
 			if (ret == -EOVERFLOW)
@@ -907,16 +842,7 @@ static int armada_37xx_fill_group(struct armada_37xx_pinctrl *info)
 	return 0;
 }
 
-/**
- * armada_37xx_fill_func() - complete the funcs array
- * @info: info driver instance
- *
- * Based on the data available from the armada_37xx_pin_group array
- * completes the last two member of the struct for each group:
- * - the list of the pins included in the group
- * - the list of pinmux functions that can be selected for this group
- *
- */
+ 
 static int armada_37xx_fill_func(struct armada_37xx_pinctrl *info)
 {
 	struct armada_37xx_pmx_func *funcs = info->funcs;
@@ -988,10 +914,7 @@ static int armada_37xx_pinctrl_register(struct platform_device *pdev,
 		pdesc++;
 	}
 
-	/*
-	 * we allocate functions for number of pins and hope there are
-	 * fewer unique functions than pins available
-	 */
+	 
 	info->funcs = devm_kcalloc(dev, pin_data->nr_pins, sizeof(*info->funcs), GFP_KERNEL);
 	if (!info->funcs)
 		return -ENOMEM;
@@ -1015,7 +938,7 @@ static int armada_3700_pinctrl_suspend(struct device *dev)
 {
 	struct armada_37xx_pinctrl *info = dev_get_drvdata(dev);
 
-	/* Save GPIO state */
+	 
 	regmap_read(info->regmap, OUTPUT_EN, &info->pm.out_en_l);
 	regmap_read(info->regmap, OUTPUT_EN + sizeof(u32), &info->pm.out_en_h);
 	regmap_read(info->regmap, OUTPUT_VAL, &info->pm.out_val_l);
@@ -1027,7 +950,7 @@ static int armada_3700_pinctrl_suspend(struct device *dev)
 	info->pm.irq_pol_l = readl(info->base + IRQ_POL);
 	info->pm.irq_pol_h = readl(info->base + IRQ_POL + sizeof(u32));
 
-	/* Save pinctrl state */
+	 
 	regmap_read(info->regmap, SELECTION, &info->pm.selection);
 
 	return 0;
@@ -1040,7 +963,7 @@ static int armada_3700_pinctrl_resume(struct device *dev)
 	struct irq_domain *d;
 	int i;
 
-	/* Restore GPIO state */
+	 
 	regmap_write(info->regmap, OUTPUT_EN, info->pm.out_en_l);
 	regmap_write(info->regmap, OUTPUT_EN + sizeof(u32),
 		     info->pm.out_en_h);
@@ -1048,12 +971,7 @@ static int armada_3700_pinctrl_resume(struct device *dev)
 	regmap_write(info->regmap, OUTPUT_VAL + sizeof(u32),
 		     info->pm.out_val_h);
 
-	/*
-	 * Input levels may change during suspend, which is not monitored at
-	 * that time. GPIOs used for both-edge IRQs may not be synchronized
-	 * anymore with their polarities (rising/falling edge) and must be
-	 * re-configured manually.
-	 */
+	 
 	gc = &info->gpio_chip;
 	d = gc->irq.domain;
 	for (i = 0; i < gc->ngpio; i++) {
@@ -1076,11 +994,7 @@ static int armada_3700_pinctrl_resume(struct device *dev)
 		virq = irq_find_mapping(d, i);
 		type = irq_get_trigger_type(virq);
 
-		/*
-		 * Synchronize level and polarity for both-edge irqs:
-		 *     - a high input level expects a falling edge,
-		 *     - a low input level exepects a rising edge.
-		 */
+		 
 		if ((type & IRQ_TYPE_SENSE_MASK) ==
 		    IRQ_TYPE_EDGE_BOTH) {
 			regmap_read(info->regmap, input_reg, &level);
@@ -1094,16 +1008,13 @@ static int armada_3700_pinctrl_resume(struct device *dev)
 	writel(info->pm.irq_pol_l, info->base + IRQ_POL);
 	writel(info->pm.irq_pol_h, info->base + IRQ_POL + sizeof(u32));
 
-	/* Restore pinctrl state */
+	 
 	regmap_write(info->regmap, SELECTION, info->pm.selection);
 
 	return 0;
 }
 
-/*
- * Since pinctrl is an infrastructure module, its resume should be issued prior
- * to other IO drivers.
- */
+ 
 static DEFINE_NOIRQ_DEV_PM_OPS(armada_3700_pinctrl_pm_ops,
 			       armada_3700_pinctrl_suspend, armada_3700_pinctrl_resume);
 

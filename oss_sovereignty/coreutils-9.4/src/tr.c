@@ -1,20 +1,4 @@
-/* tr -- a filter to translate characters
-   Copyright (C) 1991-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering */
+ 
 
 #include <config.h>
 
@@ -30,41 +14,26 @@
 #include "xbinary-io.h"
 #include "xstrtol.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "tr"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
 enum { N_CHARS = UCHAR_MAX + 1 };
 
-/* An unsigned integer type big enough to hold a repeat count or an
-   unsigned character.  POSIX requires support for repeat counts as
-   high as 2**31 - 1.  Since repeat counts might need to expand to
-   match the length of an argument string, we need at least size_t to
-   avoid arbitrary internal limits.  It doesn't cost much to use
-   uintmax_t, though.  */
+ 
 typedef uintmax_t count;
 
-/* The value for Spec_list->state that indicates to
-   get_next that it should initialize the tail pointer.
-   Its value should be as large as possible to avoid conflict
-   a valid value for the state field -- and that may be as
-   large as any valid repeat_count.  */
+ 
 #define BEGIN_STATE (UINTMAX_MAX - 1)
 
-/* The value for Spec_list->state that indicates to
-   get_next that the element pointed to by Spec_list->tail is
-   being considered for the first time on this pass through the
-   list -- it indicates that get_next should make any necessary
-   initializations.  */
+ 
 #define NEW_ELEMENT (BEGIN_STATE + 1)
 
-/* The maximum possible repeat count.  Due to how the states are
-   implemented, it can be as much as BEGIN_STATE.  */
+ 
 #define REPEAT_COUNT_MAXIMUM BEGIN_STATE
 
-/* The following (but not CC_NO_CLASS) are indices into the array of
-   valid character class strings.  */
+ 
 enum Char_class
   {
     CC_ALNUM = 0, CC_ALPHA = 1, CC_BLANK = 2, CC_CNTRL = 3,
@@ -73,12 +42,7 @@ enum Char_class
     CC_NO_CLASS = 9999
   };
 
-/* Character class to which a character (returned by get_next) belonged;
-   but it is set only if the construct from which the character was obtained
-   was one of the character classes [:upper:] or [:lower:].  The value
-   is used only when translating and then, only to make sure that upper
-   and lower class constructs have the same relative positions in string1
-   and string2.  */
+ 
 enum Upper_Lower_class
   {
     UL_LOWER,
@@ -86,7 +50,7 @@ enum Upper_Lower_class
     UL_NONE
   };
 
-/* The type of a List_element.  See build_spec_list for more details.  */
+ 
 enum Range_element_type
   {
     RE_NORMAL_CHAR,
@@ -96,11 +60,7 @@ enum Range_element_type
     RE_REPEATED_CHAR
   };
 
-/* One construct in one of tr's argument strings.
-   For example, consider the POSIX version of the classic tr command:
-       tr -cs 'a-zA-Z_' '[\n*]'
-   String1 has 3 constructs, two of which are ranges (a-z and A-Z),
-   and a single normal character, '_'.  String2 has one construct.  */
+ 
 struct List_element
   {
     enum Range_element_type type;
@@ -108,7 +68,7 @@ struct List_element
     union
       {
         unsigned char normal_char;
-        struct			/* unnamed */
+        struct			 
           {
             unsigned char first_char;
             unsigned char last_char;
@@ -116,7 +76,7 @@ struct List_element
         range;
         enum Char_class char_class;
         unsigned char equiv_code;
-        struct			/* unnamed */
+        struct			 
           {
             unsigned char the_repeated_char;
             count repeat_count;
@@ -126,59 +86,38 @@ struct List_element
     u;
   };
 
-/* Each of tr's argument strings is parsed into a form that is easier
-   to work with: a linked list of constructs (struct List_element).
-   Each Spec_list structure also encapsulates various attributes of
-   the corresponding argument string.  The attributes are used mainly
-   to verify that the strings are valid in the context of any options
-   specified (like -s, -d, or -c).  The main exception is the member
-   'tail', which is first used to construct the list.  After construction,
-   it is used by get_next to save its state when traversing the list.
-   The member 'state' serves a similar function.  */
+ 
 struct Spec_list
   {
-    /* Points to the head of the list of range elements.
-       The first struct is a dummy; its members are never used.  */
+     
     struct List_element *head;
 
-    /* When appending, points to the last element.  When traversing via
-       get_next(), points to the element to process next.  Setting
-       Spec_list.state to the value BEGIN_STATE before calling get_next
-       signals get_next to initialize tail to point to head->next.  */
+     
     struct List_element *tail;
 
-    /* Used to save state between calls to get_next.  */
+     
     count state;
 
-    /* Length, in the sense that length ('a-z[:digit:]123abc')
-       is 42 ( = 26 + 10 + 6).  */
+     
     count length;
 
-    /* The number of [c*] and [c*0] constructs that appear in this spec.  */
+     
     size_t n_indefinite_repeats;
 
-    /* If n_indefinite_repeats is nonzero, this points to the List_element
-       corresponding to the last [c*] or [c*0] construct encountered in
-       this spec.  Otherwise it is undefined.  */
+     
     struct List_element *indefinite_repeat_element;
 
-    /* True if this spec contains at least one equivalence
-       class construct e.g. [=c=].  */
+     
     bool has_equiv_class;
 
-    /* True if this spec contains at least one character class
-       construct.  E.g. [:digit:].  */
+     
     bool has_char_class;
 
-    /* True if this spec contains at least one of the character class
-       constructs (all but upper and lower) that aren't allowed in s2.  */
+     
     bool has_restricted_char_class;
   };
 
-/* A representation for escaped string1 or string2.  As a string is parsed,
-   any backslash-escaped characters (other than octal or \a, \b, \f, \n,
-   etc.) are marked as such in this structure by setting the corresponding
-   entry in the ESCAPED vector.  */
+ 
 struct E_string
 {
   char *s;
@@ -186,57 +125,26 @@ struct E_string
   size_t len;
 };
 
-/* Return nonzero if the Ith character of escaped string ES matches C
-   and is not escaped itself.  */
+ 
 static inline bool
 es_match (struct E_string const *es, size_t i, char c)
 {
   return es->s[i] == c && !es->escaped[i];
 }
 
-/* When true, each sequence in the input of a repeated character
-   (call it c) is replaced (in the output) by a single occurrence of c
-   for every c in the squeeze set.  */
+ 
 static bool squeeze_repeats = false;
 
-/* When true, removes characters in the delete set from input.  */
+ 
 static bool delete = false;
 
-/* Use the complement of set1 in place of set1.  */
+ 
 static bool complement = false;
 
-/* When tr is performing translation and string1 is longer than string2,
-   POSIX says that the result is unspecified.  That gives the implementer
-   of a POSIX conforming version of tr two reasonable choices for the
-   semantics of this case.
-
-   * The BSD tr pads string2 to the length of string1 by
-   repeating the last character in string2.
-
-   * System V tr ignores characters in string1 that have no
-   corresponding character in string2.  That is, string1 is effectively
-   truncated to the length of string2.
-
-   When nonzero, this flag causes GNU tr to imitate the behavior
-   of System V tr when translating with string1 longer than string2.
-   The default is to emulate BSD tr.  This flag is ignored in modes where
-   no translation is performed.  Emulating the System V tr
-   in this exceptional case causes the relatively common BSD idiom:
-
-       tr -cs A-Za-z0-9 '\012'
-
-   to break (it would convert only zero bytes, rather than all
-   non-alphanumerics, to newlines).
-
-   WARNING: This switch does not provide general BSD or System V
-   compatibility.  For example, it doesn't disable the interpretation
-   of the POSIX constructs [:alpha:], [=c=], and [c*10], so if by
-   some unfortunate coincidence you use such constructs in scripts
-   expecting to use some other version of tr, the scripts will break.  */
+ 
 static bool truncate_set1 = false;
 
-/* An alias for (!delete && non_option_args == 2).
-   It is set in main and used there and in validate().  */
+ 
 static bool translating;
 
 static char io_buf[BUFSIZ];
@@ -247,21 +155,13 @@ static char const *const char_class_name[] =
   "lower", "print", "punct", "space", "upper", "xdigit"
 };
 
-/* Array of boolean values.  A character 'c' is a member of the
-   squeeze set if and only if in_squeeze_set[c] is true.  The squeeze
-   set is defined by the last (possibly, the only) string argument
-   on the command line when the squeeze option is given.  */
+ 
 static bool in_squeeze_set[N_CHARS];
 
-/* Array of boolean values.  A character 'c' is a member of the
-   delete set if and only if in_delete_set[c] is true.  The delete
-   set is defined by the first (or only) string argument on the
-   command line when the delete option is given.  */
+ 
 static bool in_delete_set[N_CHARS];
 
-/* Array of character values defining the translation (if any) that
-   tr is to perform.  Translation is performed only when there are
-   two specification strings and the delete switch is not given.  */
+ 
 static char xlate[N_CHARS];
 
 static struct option const long_options[] =

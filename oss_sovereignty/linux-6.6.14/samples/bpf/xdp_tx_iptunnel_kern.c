@@ -1,13 +1,4 @@
-/* Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program shows how to use bpf_xdp_adjust_head() by
- * encapsulating the incoming packet in an IPv4/v6 header
- * and then XDP_TX it out.
- */
+ 
 #define KBUILD_MODNAME "foo"
 #include <uapi/linux/bpf.h>
 #include <linux/in.h>
@@ -103,11 +94,11 @@ static __always_inline int handle_ipv4(struct xdp_md *xdp)
 	payload_len = ntohs(iph->tot_len);
 
 	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-	/* It only does v4-in-v4 */
+	 
 	if (!tnl || tnl->family != AF_INET)
 		return XDP_PASS;
 
-	/* The vip key is found.  Add an IP header and send it out */
+	 
 
 	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct iphdr)))
 		return XDP_DROP;
@@ -175,11 +166,11 @@ static __always_inline int handle_ipv6(struct xdp_md *xdp)
 	payload_len = ip6h->payload_len;
 
 	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-	/* It only does v6-in-v6 */
+	 
 	if (!tnl || tnl->family != AF_INET6)
 		return XDP_PASS;
 
-	/* The vip key is found.  Add an IP header and send it out */
+	 
 
 	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct ipv6hdr)))
 		return XDP_DROP;

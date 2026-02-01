@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Link Layer Control manager public interface
- *
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __NFC_LLC_H_
 #define __NFC_LLC_H_
@@ -34,4 +30,4 @@ int nfc_llc_xmit_from_hci(struct nfc_llc *llc, struct sk_buff *skb);
 int nfc_llc_init(void);
 void nfc_llc_exit(void);
 
-#endif /* __NFC_LLC_H_ */
+#endif  

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell OcteonTX CPT driver
- *
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 
 #include "otx_cpt_common.h"
 #include "otx_cptpf.h"
@@ -74,15 +67,12 @@ static void dump_mbox_msg(struct otx_cpt_mbox *mbox_msg, int vf_id)
 static void otx_cpt_send_msg_to_vf(struct otx_cpt_device *cpt, int vf,
 				   struct otx_cpt_mbox *mbx)
 {
-	/* Writing mbox(0) causes interrupt */
+	 
 	writeq(mbx->data, cpt->reg_base + OTX_CPT_PF_VFX_MBOXX(vf, 1));
 	writeq(mbx->msg, cpt->reg_base + OTX_CPT_PF_VFX_MBOXX(vf, 0));
 }
 
-/*
- * ACKs VF's mailbox message
- * @vf: VF to which ACK to be sent
- */
+ 
 static void otx_cpt_mbox_send_ack(struct otx_cpt_device *cpt, int vf,
 			      struct otx_cpt_mbox *mbx)
 {
@@ -91,7 +81,7 @@ static void otx_cpt_mbox_send_ack(struct otx_cpt_device *cpt, int vf,
 	otx_cpt_send_msg_to_vf(cpt, vf, mbx);
 }
 
-/* NACKs VF's mailbox message that PF is not able to complete the action */
+ 
 static void otx_cptpf_mbox_send_nack(struct otx_cpt_device *cpt, int vf,
 				     struct otx_cpt_mbox *mbx)
 {
@@ -102,13 +92,11 @@ static void otx_cptpf_mbox_send_nack(struct otx_cpt_device *cpt, int vf,
 
 static void otx_cpt_clear_mbox_intr(struct otx_cpt_device *cpt, u32 vf)
 {
-	/* W1C for the VF */
+	 
 	writeq(1ull << vf, cpt->reg_base + OTX_CPT_PF_MBOX_INTX(0));
 }
 
-/*
- * Configure QLEN/Chunk sizes for VF
- */
+ 
 static void otx_cpt_cfg_qlen_for_vf(struct otx_cpt_device *cpt, int vf,
 				    u32 size)
 {
@@ -120,9 +108,7 @@ static void otx_cpt_cfg_qlen_for_vf(struct otx_cpt_device *cpt, int vf,
 	writeq(pf_qx_ctl.u, cpt->reg_base + OTX_CPT_PF_QX_CTL(vf));
 }
 
-/*
- * Configure VQ priority
- */
+ 
 static void otx_cpt_cfg_vq_priority(struct otx_cpt_device *cpt, int vf, u32 pri)
 {
 	union otx_cptx_pf_qx_ctl pf_qx_ctl;
@@ -174,16 +160,13 @@ static int otx_cpt_bind_vq_to_grp(struct otx_cpt_device *cpt, u8 q, u8 grp)
 		return BAD_OTX_CPTVF_TYPE;
 }
 
-/* Interrupt handler to handle mailbox messages from VFs */
+ 
 static void otx_cpt_handle_mbox_intr(struct otx_cpt_device *cpt, int vf)
 {
 	int vftype = 0;
 	struct otx_cpt_mbox mbx = {};
 	struct device *dev = &cpt->pdev->dev;
-	/*
-	 * MBOX[0] contains msg
-	 * MBOX[1] contains data
-	 */
+	 
 	mbx.msg  = readq(cpt->reg_base + OTX_CPT_PF_VFX_MBOXX(vf, 0));
 	mbx.data = readq(cpt->reg_base + OTX_CPT_PF_VFX_MBOXX(vf, 1));
 
@@ -201,7 +184,7 @@ static void otx_cpt_handle_mbox_intr(struct otx_cpt_device *cpt, int vf)
 		otx_cpt_send_msg_to_vf(cpt, vf, &mbx);
 		break;
 	case OTX_CPT_MSG_VF_DOWN:
-		/* First msg in VF teardown sequence */
+		 
 		otx_cpt_mbox_send_ack(cpt, vf, &mbx);
 		break;
 	case OTX_CPT_MSG_QLEN:

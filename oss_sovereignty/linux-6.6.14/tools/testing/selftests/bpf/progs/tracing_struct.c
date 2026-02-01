@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -48,14 +48,14 @@ SEC("fexit/bpf_testmod_test_struct_arg_1")
 int BPF_PROG2(test_struct_arg_2, struct bpf_testmod_struct_arg_2, a, int, b, int, c, int, ret)
 {
 	t1_nregs =  bpf_get_func_arg_cnt(ctx);
-	/* a.a */
+	 
 	bpf_get_func_arg(ctx, 0, &t1_reg0);
-	/* a.b */
+	 
 	bpf_get_func_arg(ctx, 1, &t1_reg1);
-	/* b */
+	 
 	bpf_get_func_arg(ctx, 2, &t1_reg2);
 	t1_reg2 = (int)t1_reg2;
-	/* c */
+	 
 	bpf_get_func_arg(ctx, 3, &t1_reg3);
 	t1_reg3 = (int)t1_reg3;
 

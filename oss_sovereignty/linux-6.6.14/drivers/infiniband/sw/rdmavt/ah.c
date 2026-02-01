@@ -1,22 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2016 - 2019 Intel Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include "ah.h"
-#include "vt.h" /* for prints */
+#include "vt.h"  
 
-/**
- * rvt_check_ah - validate the attributes of AH
- * @ibdev: the ib device
- * @ah_attr: the attributes of the AH
- *
- * If driver supports a more detailed check_ah function call back to it
- * otherwise just check the basics.
- *
- * Return: 0 on success
- */
+ 
 int rvt_check_ah(struct ib_device *ibdev,
 		 struct rdma_ah_attr *ah_attr)
 {
@@ -45,16 +34,7 @@ int rvt_check_ah(struct ib_device *ibdev,
 }
 EXPORT_SYMBOL(rvt_check_ah);
 
-/**
- * rvt_create_ah - create an address handle
- * @ibah: the IB address handle
- * @init_attr: the attributes of the AH
- * @udata: pointer to user's input output buffer information.
- *
- * This may be called from interrupt context.
- *
- * Return: 0 on success
- */
+ 
 int rvt_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
 		  struct ib_udata *udata)
 {
@@ -83,12 +63,7 @@ int rvt_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
 	return 0;
 }
 
-/**
- * rvt_destroy_ah - Destroy an address handle
- * @ibah: address handle
- * @destroy_flags: destroy address handle flags (see enum rdma_destroy_ah_flags)
- * Return: 0 on success
- */
+ 
 int rvt_destroy_ah(struct ib_ah *ibah, u32 destroy_flags)
 {
 	struct rvt_dev_info *dev = ib_to_rvt(ibah->device);
@@ -103,13 +78,7 @@ int rvt_destroy_ah(struct ib_ah *ibah, u32 destroy_flags)
 	return 0;
 }
 
-/**
- * rvt_modify_ah - modify an ah with given attrs
- * @ibah: address handle to modify
- * @ah_attr: attrs to apply
- *
- * Return: 0 on success
- */
+ 
 int rvt_modify_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr)
 {
 	struct rvt_ah *ah = ibah_to_rvtah(ibah);
@@ -122,13 +91,7 @@ int rvt_modify_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr)
 	return 0;
 }
 
-/**
- * rvt_query_ah - return attrs for ah
- * @ibah: address handle to query
- * @ah_attr: return info in this
- *
- * Return: always 0
- */
+ 
 int rvt_query_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr)
 {
 	struct rvt_ah *ah = ibah_to_rvtah(ibah);

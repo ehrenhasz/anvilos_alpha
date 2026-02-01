@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPEAr3xx machines clock framework source file
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -22,12 +17,12 @@ static DEFINE_SPINLOCK(_lock);
 #define PLL2_CTR			(misc_base + 0x014)
 #define PLL2_FRQ			(misc_base + 0x018)
 #define PLL_CLK_CFG			(misc_base + 0x020)
-	/* PLL_CLK_CFG register masks */
+	 
 	#define MCTR_CLK_SHIFT		28
 	#define MCTR_CLK_MASK		3
 
 #define CORE_CLK_CFG			(misc_base + 0x024)
-	/* CORE CLK CFG register masks */
+	 
 	#define GEN_SYNTH2_3_CLK_SHIFT	18
 	#define GEN_SYNTH2_3_CLK_MASK	1
 
@@ -37,7 +32,7 @@ static DEFINE_SPINLOCK(_lock);
 	#define PCLK_RATIO_MASK		2
 
 #define PERIP_CLK_CFG			(misc_base + 0x028)
-	/* PERIP_CLK_CFG register masks */
+	 
 	#define UART_CLK_SHIFT		4
 	#define UART_CLK_MASK		1
 	#define FIRDA_CLK_SHIFT		5
@@ -48,7 +43,7 @@ static DEFINE_SPINLOCK(_lock);
 	#define GPT_CLK_MASK		1
 
 #define PERIP1_CLK_ENB			(misc_base + 0x02C)
-	/* PERIP1_CLK_ENB register masks */
+	 
 	#define UART_CLK_ENB		3
 	#define SSP_CLK_ENB		5
 	#define I2C_CLK_ENB		7
@@ -94,37 +89,37 @@ static DEFINE_SPINLOCK(_lock);
 #define GEN2_CLK_SYNT			(misc_base + 0x074)
 #define GEN3_CLK_SYNT			(misc_base + 0x078)
 
-/* pll rate configuration table, in ascending order of rates */
+ 
 static struct pll_rate_tbl pll_rtbl[] = {
-	{.mode = 0, .m = 0x53, .n = 0x0C, .p = 0x1}, /* vco 332 & pll 166 MHz */
-	{.mode = 0, .m = 0x85, .n = 0x0C, .p = 0x1}, /* vco 532 & pll 266 MHz */
-	{.mode = 0, .m = 0xA6, .n = 0x0C, .p = 0x1}, /* vco 664 & pll 332 MHz */
+	{.mode = 0, .m = 0x53, .n = 0x0C, .p = 0x1},  
+	{.mode = 0, .m = 0x85, .n = 0x0C, .p = 0x1},  
+	{.mode = 0, .m = 0xA6, .n = 0x0C, .p = 0x1},  
 };
 
-/* aux rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl aux_rtbl[] = {
-	/* For PLL1 = 332 MHz */
-	{.xscale = 1, .yscale = 81, .eq = 0}, /* 2.049 MHz */
-	{.xscale = 1, .yscale = 59, .eq = 0}, /* 2.822 MHz */
-	{.xscale = 2, .yscale = 81, .eq = 0}, /* 4.098 MHz */
-	{.xscale = 3, .yscale = 89, .eq = 0}, /* 5.644 MHz */
-	{.xscale = 4, .yscale = 81, .eq = 0}, /* 8.197 MHz */
-	{.xscale = 4, .yscale = 59, .eq = 0}, /* 11.254 MHz */
-	{.xscale = 2, .yscale = 27, .eq = 0}, /* 12.296 MHz */
-	{.xscale = 2, .yscale = 8, .eq = 0}, /* 41.5 MHz */
-	{.xscale = 2, .yscale = 4, .eq = 0}, /* 83 MHz */
-	{.xscale = 1, .yscale = 2, .eq = 1}, /* 166 MHz */
+	 
+	{.xscale = 1, .yscale = 81, .eq = 0},  
+	{.xscale = 1, .yscale = 59, .eq = 0},  
+	{.xscale = 2, .yscale = 81, .eq = 0},  
+	{.xscale = 3, .yscale = 89, .eq = 0},  
+	{.xscale = 4, .yscale = 81, .eq = 0},  
+	{.xscale = 4, .yscale = 59, .eq = 0},  
+	{.xscale = 2, .yscale = 27, .eq = 0},  
+	{.xscale = 2, .yscale = 8, .eq = 0},  
+	{.xscale = 2, .yscale = 4, .eq = 0},  
+	{.xscale = 1, .yscale = 2, .eq = 1},  
 };
 
-/* gpt rate configuration table, in ascending order of rates */
+ 
 static struct gpt_rate_tbl gpt_rtbl[] = {
-	/* For pll1 = 332 MHz */
-	{.mscale = 4, .nscale = 0}, /* 41.5 MHz */
-	{.mscale = 2, .nscale = 0}, /* 55.3 MHz */
-	{.mscale = 1, .nscale = 0}, /* 83 MHz */
+	 
+	{.mscale = 4, .nscale = 0},  
+	{.mscale = 2, .nscale = 0},  
+	{.mscale = 1, .nscale = 0},  
 };
 
-/* clock parents */
+ 
 static const char *uart0_parents[] = { "pll3_clk", "uart_syn_gclk", };
 static const char *firda_parents[] = { "pll3_clk", "firda_syn_gclk",
 };
@@ -164,7 +159,7 @@ static void __init spear300_clk_init(void)
 static inline void spear300_clk_init(void) { }
 #endif
 
-/* array of all spear 310 clock lookups */
+ 
 #ifdef CONFIG_MACH_SPEAR310
 static void __init spear310_clk_init(void)
 {
@@ -206,7 +201,7 @@ static void __init spear310_clk_init(void)
 static inline void spear310_clk_init(void) { }
 #endif
 
-/* array of all spear 320 clock lookups */
+ 
 #ifdef CONFIG_MACH_SPEAR320
 
 #define SPEAR320_CONTROL_REG		(soc_config_base + 0x0010)
@@ -341,7 +336,7 @@ static void __init spear320_clk_init(void __iomem *soc_config_base,
 			SPEAR320_CONTROL_REG, UART1_PCLK_SHIFT, UART1_PCLK_MASK,
 			0, &_lock);
 	clk_register_clkdev(clk, NULL, "a3000000.serial");
-	/* Enforce ras_apb_clk */
+	 
 	clk_set_parent(clk, ras_apb_clk);
 
 	clk = clk_register_mux(NULL, "uart2_clk", uartx_parents,
@@ -350,7 +345,7 @@ static void __init spear320_clk_init(void __iomem *soc_config_base,
 			SPEAR320_EXT_CTRL_REG, SPEAR320_UART2_PCLK_SHIFT,
 			SPEAR320_UARTX_PCLK_MASK, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "a4000000.serial");
-	/* Enforce ras_apb_clk */
+	 
 	clk_set_parent(clk, ras_apb_clk);
 
 	clk = clk_register_mux(NULL, "uart3_clk", uartx_parents,
@@ -395,12 +390,12 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 	clk = clk_register_fixed_rate(NULL, "osc_24m_clk", NULL, 0, 24000000);
 	clk_register_clkdev(clk, "osc_24m_clk", NULL);
 
-	/* clock derived from 32 KHz osc clk */
+	 
 	clk = clk_register_gate(NULL, "rtc-spear", "osc_32k_clk", 0,
 			PERIP1_CLK_ENB, RTC_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "fc900000.rtc");
 
-	/* clock derived from 24 MHz osc clk */
+	 
 	clk = clk_register_fixed_rate(NULL, "pll3_clk", "osc_24m_clk", 0,
 			48000000);
 	clk_register_clkdev(clk, "pll3_clk", NULL);
@@ -421,7 +416,7 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 	clk_register_clkdev(clk, "vco2_clk", NULL);
 	clk_register_clkdev(clk1, "pll2_clk", NULL);
 
-	/* clock derived from pll1 clk */
+	 
 	clk = clk_register_fixed_factor(NULL, "cpu_clk", "pll1_clk",
 			CLK_SET_RATE_PARENT, 1, 1);
 	clk_register_clkdev(clk, "cpu_clk", NULL);
@@ -467,7 +462,7 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 			&_lock);
 	clk_register_clkdev(clk, NULL, "firda");
 
-	/* gpt clocks */
+	 
 	clk_register_gpt("gpt0_syn_clk", "pll1_clk", 0, PRSC0_CLK_CFG, gpt_rtbl,
 			ARRAY_SIZE(gpt_rtbl), &_lock);
 	clk = clk_register_mux(NULL, "gpt0_clk", gpt0_parents,
@@ -500,7 +495,7 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 			&_lock);
 	clk_register_clkdev(clk, NULL, "gpt2");
 
-	/* general synths clocks */
+	 
 	clk = clk_register_aux("gen0_syn_clk", "gen0_syn_gclk", "pll1_clk",
 			0, GEN0_CLK_SYNT, NULL, aux_rtbl, ARRAY_SIZE(aux_rtbl),
 			&_lock, &clk1);
@@ -531,7 +526,7 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 	clk_register_clkdev(clk, "gen3_syn_clk", NULL);
 	clk_register_clkdev(clk1, "gen3_syn_gclk", NULL);
 
-	/* clock derived from pll3 clk */
+	 
 	clk = clk_register_gate(NULL, "usbh_clk", "pll3_clk", 0, PERIP1_CLK_ENB,
 			USBH_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "e1800000.ehci");
@@ -550,7 +545,7 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 			USBD_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "e1100000.usbd");
 
-	/* clock derived from ahb clk */
+	 
 	clk = clk_register_fixed_factor(NULL, "ahbmult2_clk", "ahb_clk", 0, 2,
 			1);
 	clk_register_clkdev(clk, "ahbmult2_clk", NULL);
@@ -593,7 +588,7 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 			SMI_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "fc000000.flash");
 
-	/* clock derived from apb clk */
+	 
 	clk = clk_register_gate(NULL, "adc_clk", "apb_clk", 0, PERIP1_CLK_ENB,
 			ADC_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "d0080000.adc");
@@ -606,7 +601,7 @@ void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_
 			SSP_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "d0100000.spi");
 
-	/* RAS clk enable */
+	 
 	clk = clk_register_gate(NULL, "ras_ahb_clk", "ahb_clk", 0, RAS_CLK_ENB,
 			RAS_AHB_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, "ras_ahb_clk", NULL);

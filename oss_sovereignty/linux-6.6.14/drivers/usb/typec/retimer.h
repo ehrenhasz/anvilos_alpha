@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __USB_TYPEC_RETIMER__
 #define __USB_TYPEC_RETIMER__
@@ -16,4 +16,4 @@ extern const struct device_type typec_retimer_dev_type;
 
 #define is_typec_retimer(dev) ((dev)->type == &typec_retimer_dev_type)
 
-#endif /* __USB_TYPEC_RETIMER__ */
+#endif  

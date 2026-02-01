@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-bench.c
- *
- * General benchmarking collections provided by perf
- *
- * Copyright (C) 2009, Hitoshi Mitake <mitake@dcl.info.waseda.ac.jp>
- */
 
-/*
- * Available benchmark collection list:
- *
- *  sched ... scheduler and IPC performance
- *  syscall ... System call performance
- *  mem   ... memory access performance
- *  numa  ... NUMA scheduling and MM performance
- *  futex ... Futex performance
- *  epoll ... Event poll performance
- */
+ 
+
+ 
 #include <subcmd/parse-options.h>
 #include "builtin.h"
 #include "bench/bench.h"
@@ -74,7 +59,7 @@ static struct bench futex_benchmarks[] = {
 	{ "wake",	"Benchmark for futex wake calls",               bench_futex_wake	},
 	{ "wake-parallel", "Benchmark for parallel futex wake calls",   bench_futex_wake_parallel },
 	{ "requeue",	"Benchmark for futex requeue calls",            bench_futex_requeue	},
-	/* pi-futexes */
+	 
 	{ "lock-pi",	"Benchmark for futex lock_pi calls",            bench_futex_lock_pi	},
 	{ "all",	"Run all futex benchmarks",			NULL			},
 	{ NULL,		NULL,						NULL			}
@@ -87,7 +72,7 @@ static struct bench epoll_benchmarks[] = {
 	{ "all",	"Run all futex benchmarks",			NULL			},
 	{ NULL,		NULL,						NULL			}
 };
-#endif // HAVE_EVENTFD_SUPPORT
+#endif 
 
 static struct bench internals_benchmarks[] = {
 	{ "synthesize", "Benchmark perf event synthesis",	bench_synthesize	},
@@ -136,11 +121,11 @@ static struct collection collections[] = {
 	{ NULL,		NULL,						NULL			}
 };
 
-/* Iterate over all benchmark collections: */
+ 
 #define for_each_collection(coll) \
 	for (coll = collections; coll->name; coll++)
 
-/* Iterate over all benchmarks within a collection: */
+ 
 #define for_each_bench(coll, bench) \
 	for (bench = coll->benchmarks; bench && bench->name; bench++)
 
@@ -158,9 +143,9 @@ static void dump_benchmarks(struct collection *coll)
 
 static const char *bench_format_str;
 
-/* Output/formatting style, exported to benchmark modules: */
+ 
 int bench_format = BENCH_FORMAT_DEFAULT;
-unsigned int bench_repeat = 10; /* default number of times to repeat the run */
+unsigned int bench_repeat = 10;  
 
 static const struct option bench_options[] = {
 	OPT_STRING('f', "format", &bench_format_str, "default|simple", "Specify the output formatting style"),
@@ -203,10 +188,7 @@ static int bench_str2int(const char *str)
 	return BENCH_FORMAT_UNKNOWN;
 }
 
-/*
- * Run a specific benchmark but first rename the running task's ->comm[]
- * to something meaningful:
- */
+ 
 static int run_bench(const char *coll_name, const char *bench_name, bench_fn_t fn,
 		     int argc, const char **argv)
 {
@@ -237,13 +219,7 @@ static void run_collection(struct collection *coll)
 	const char *argv[2];
 
 	argv[1] = NULL;
-	/*
-	 * TODO:
-	 *
-	 * Preparing preset parameters for
-	 * embedded, ordinary PC, HPC, etc...
-	 * would be helpful.
-	 */
+	 
 	for_each_bench(coll, bench) {
 		if (!bench->fn)
 			break;
@@ -268,12 +244,12 @@ int cmd_bench(int argc, const char **argv)
 	struct collection *coll;
 	int ret = 0;
 
-	/* Unbuffered output */
+	 
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setlocale(LC_ALL, "");
 
 	if (argc < 2) {
-		/* No collection specified. */
+		 
 		print_usage();
 		goto end;
 	}
@@ -309,7 +285,7 @@ int cmd_bench(int argc, const char **argv)
 			continue;
 
 		if (argc < 2) {
-			/* No bench specified. */
+			 
 			dump_benchmarks(coll);
 			goto end;
 		}

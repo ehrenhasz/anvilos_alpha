@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tmp006.c - Support for TI TMP006 IR thermopile sensor
- *
- * Copyright (c) 2013 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * Driver for the Texas Instruments I2C 16-bit IR thermopile sensor
- *
- * (7-bit I2C slave address 0x40, changeable via ADR pins)
- *
- * TODO: data ready irq
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -82,13 +72,13 @@ static int tmp006_read_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
 		if (channel->type == IIO_VOLTAGE) {
-			/* LSB is 156.25 nV */
+			 
 			ret = tmp006_read_measurement(data, TMP006_VOBJECT);
 			if (ret < 0)
 				return ret;
 			*val = sign_extend32(ret, 15);
 		} else if (channel->type == IIO_TEMP) {
-			/* LSB is 0.03125 degrees Celsius */
+			 
 			ret = tmp006_read_measurement(data, TMP006_TAMBIENT);
 			if (ret < 0)
 				return ret;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2023, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/io.h>
@@ -69,12 +67,7 @@ bool tegra_is_silicon(void)
 		return false;
 	}
 
-	/*
-	 * Chips prior to Tegra194 have a different way of determining whether
-	 * they are silicon or not. Since we never supported simulation on the
-	 * older Tegra chips, don't bother extracting the information and just
-	 * report that we're running on silicon.
-	 */
+	 
 	return true;
 }
 
@@ -98,11 +91,7 @@ u32 tegra_read_ram_code(void)
 }
 EXPORT_SYMBOL_GPL(tegra_read_ram_code);
 
-/*
- * The function sets ERD(Error Response Disable) bit.
- * This allows to mask inband errors and always send an
- * OKAY response from CBB to the master which caused error.
- */
+ 
 int tegra194_miscreg_mask_serror(void)
 {
 	if (!apbmisc_base)
@@ -168,21 +157,14 @@ void __init tegra_init_apbmisc(void)
 
 	np = of_find_matching_node(NULL, apbmisc_match);
 	if (!np) {
-		/*
-		 * Fall back to legacy initialization for 32-bit ARM only. All
-		 * 64-bit ARM device tree files for Tegra are required to have
-		 * an APBMISC node.
-		 *
-		 * This is for backwards-compatibility with old device trees
-		 * that didn't contain an APBMISC node.
-		 */
+		 
 		if (IS_ENABLED(CONFIG_ARM) && soc_is_tegra()) {
-			/* APBMISC registers (chip revision, ...) */
+			 
 			apbmisc.start = 0x70000800;
 			apbmisc.end = 0x70000863;
 			apbmisc.flags = IORESOURCE_MEM;
 
-			/* strapping options */
+			 
 			if (of_machine_is_compatible("nvidia,tegra124")) {
 				straps.start = 0x7000e864;
 				straps.end = 0x7000e867;
@@ -197,17 +179,11 @@ void __init tegra_init_apbmisc(void)
 			pr_warn("Using strapping options registers %pR\n",
 				&straps);
 		} else {
-			/*
-			 * At this point we're not running on Tegra, so play
-			 * nice with multi-platform kernels.
-			 */
+			 
 			return;
 		}
 	} else {
-		/*
-		 * Extract information from the device tree if we've found a
-		 * matching node.
-		 */
+		 
 		if (of_address_to_resource(np, 0, &apbmisc) < 0) {
 			pr_err("failed to get APBMISC registers\n");
 			goto put;

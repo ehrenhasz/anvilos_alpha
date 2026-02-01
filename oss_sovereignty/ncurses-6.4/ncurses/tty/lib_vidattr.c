@@ -1,68 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2019,2020 Thomas E. Dickey                                *
- * Copyright 1998-2014,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*
- *	vidputs(newmode, outc)
- *
- *	newmode is taken to be the logical 'or' of the symbols in curses.h
- *	representing graphic renditions.  The terminal is set to be in all of
- *	the given modes, if possible.
- *
- *	if the new attribute is normal
- *		if exit-alt-char-set exists
- *			emit it
- *		emit exit-attribute-mode
- *	else if set-attributes exists
- *		use it to set exactly what you want
- *	else
- *		if exit-attribute-mode exists
- *			turn off everything
- *		else
- *			turn off those which can be turned off and aren't in
- *			newmode.
- *		turn on each mode which should be on and isn't, one by one
- *
- *	NOTE that this algorithm won't achieve the desired mix of attributes
- *	in some cases, but those are probably just those cases in which it is
- *	actually impossible, anyway, so...
- *
- * 	NOTE that we cannot assume that there's no interaction between color
- *	and other attribute resets.  So each time we reset color (or other
- *	attributes) we'll have to be prepared to restore the other.
- */
+ 
 
 #include <curses.priv.h>
 
@@ -89,7 +29,7 @@ MODULE_ID("$Id: lib_vidattr.c,v 1.78 2020/05/27 23:56:32 tom Exp $")
 	    turn_off &= ~mask; \
 	}
 
-	/* if there is no current screen, assume we *can* do color */
+	 
 #define SetColorsIf(why, old_attr) \
 	if (can_color && (why)) { \
 		int old_pair = PairNumber(old_attr); \
@@ -128,7 +68,7 @@ NCURSES_SP_NAME(vidputs) (NCURSES_SP_DCLx
     if (!IsValidTIScreen(SP_PARM))
 	returnCode(ERR);
 
-    /* this allows us to go on whether or not newterm() has been called */
+     
     if (SP_PARM)
 	PreviousAttr = AttrOf(SCREEN_ATTRS(SP_PARM));
 
@@ -153,17 +93,14 @@ NCURSES_SP_NAME(vidputs) (NCURSES_SP_DCLx
 	};
 	unsigned n;
 	int used = 0;
-#ifdef max_attributes		/* not in U/Win */
+#ifdef max_attributes		 
 	int limit = (max_attributes <= 0) ? 1 : max_attributes;
 #else
 	int limit = 1;
 #endif
 	chtype retain = 0;
 
-	/*
-	 * Limit the number of attribute bits set in the newmode according to
-	 * the terminfo max_attributes value.
-	 */
+	 
 	for (n = 0; n < SIZEOF(table); ++n) {
 	    if ((table[n] & SP_PARM->_ok_attributes) == 0) {
 		newmode &= ~table[n];
@@ -183,25 +120,11 @@ NCURSES_SP_NAME(vidputs) (NCURSES_SP_DCLx
 	TR(TRACE_ATTRS, ("suppressed attribute is %s", _traceattr(newmode)));
     }
 
-    /*
-     * If we have a terminal that cannot combine color with video
-     * attributes, use the colors in preference.
-     */
+     
     if (((newmode & A_COLOR) != 0
 	 || fix_pair0)
 	&& (no_color_video > 0)) {
-	/*
-	 * If we had chosen the A_xxx definitions to correspond to the
-	 * no_color_video mask, we could simply shift it up and mask off the
-	 * attributes.  But we did not (actually copied Solaris' definitions).
-	 * However, this is still simpler/faster than a lookup table.
-	 *
-	 * The 63 corresponds to A_STANDOUT, A_UNDERLINE, A_REVERSE, A_BLINK,
-	 * A_DIM, A_BOLD which are 1:1 with no_color_video.  The bits that
-	 * correspond to A_INVIS, A_PROTECT (192) must be shifted up 1 and
-	 * A_ALTCHARSET (256) down 2 to line up.  We use the NCURSES_BITS
-	 * macro so this will work properly for the wide-character layout.
-	 */
+	 
 	unsigned value = (unsigned) no_color_video;
 	attr_t mask = NCURSES_BITS((value & 63)
 				   | ((value & 192) << 1)
@@ -307,7 +230,7 @@ NCURSES_SP_NAME(vidputs) (NCURSES_SP_DCLx
 	SetColorsIf((pair != 0) || fix_pair0, PreviousAttr);
 
 	TR(TRACE_ATTRS, ("turning %s on", _traceattr(turn_on)));
-	/* *INDENT-OFF* */
+	 
 	TurnOn(A_ALTCHARSET,	enter_alt_charset_mode);
 	TurnOn(A_BLINK,		enter_blink_mode);
 	TurnOn(A_BOLD,		enter_bold_mode);
@@ -328,7 +251,7 @@ NCURSES_SP_NAME(vidputs) (NCURSES_SP_DCLx
 	TurnOn(A_TOP,		enter_top_hl_mode);
 	TurnOn(A_VERTICAL,	enter_vertical_hl_mode);
 #endif
-	/* *INDENT-ON* */
+	 
     }
 
     if (reverse)
@@ -380,7 +303,7 @@ NCURSES_SP_NAME(termattrs) (NCURSES_SP_DCL0)
     if (HasTerminal(SP_PARM)) {
 #ifdef USE_TERM_DRIVER
 	attrs = CallDriver(SP_PARM, td_conattr);
-#else /* ! USE_TERM_DRIVER */
+#else  
 
 	if (enter_alt_charset_mode)
 	    attrs |= A_ALTCHARSET;
@@ -417,7 +340,7 @@ NCURSES_SP_NAME(termattrs) (NCURSES_SP_DCL0)
 	    attrs |= A_ITALIC;
 #endif
 
-#endif /* USE_TERM_DRIVER */
+#endif  
     }
     returnChtype(attrs);
 }

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2013 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
@@ -124,10 +124,7 @@ static void enic_get_drvinfo(struct net_device *netdev,
 	int err;
 
 	err = enic_dev_fw_info(enic, &fw_info);
-	/* return only when dma_alloc_coherent fails in vnic_dev_fw_info
-	 * For other failures, like devcmd failure, we return previously
-	 * recorded info.
-	 */
+	 
 	if (err == -ENOMEM)
 		return;
 
@@ -216,9 +213,9 @@ static int enic_set_ringparam(struct net_device *netdev,
 	if (running)
 		dev_close(netdev);
 	c->rq_desc_count =
-		ring->rx_pending & 0xffffffe0; /* must be aligned to groups of 32 */
+		ring->rx_pending & 0xffffffe0;  
 	c->wq_desc_count =
-		ring->tx_pending & 0xffffffe0; /* must be aligned to groups of 32 */
+		ring->tx_pending & 0xffffffe0;  
 	enic_free_vnic_resources(enic);
 	err = enic_alloc_vnic_resources(enic);
 	if (err) {
@@ -259,10 +256,7 @@ static void enic_get_ethtool_stats(struct net_device *netdev,
 	int err;
 
 	err = enic_dev_stats_dump(enic, &vstats);
-	/* return only when dma_alloc_coherent fails in vnic_dev_stats_dump
-	 * For other failures, like devcmd failure, we return previously
-	 * recorded stats.
-	 */
+	 
 	if (err == -ENOMEM)
 		return;
 

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * cs4265.h -- CS4265 ALSA SoC audio driver
- *
- * Copyright 2014 Cirrus Logic, Inc.
- *
- * Author: Paul Handrigan <paul.handrigan@cirrus.com>
- */
+ 
+ 
 
 #ifndef __CS4265_H__
 #define __CS4265_H__

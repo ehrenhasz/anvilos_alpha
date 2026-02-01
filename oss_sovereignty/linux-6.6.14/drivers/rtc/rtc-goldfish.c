@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* drivers/rtc/rtc-goldfish.c
- *
- * Copyright (C) 2007 Google, Inc.
- * Copyright (C) 2017 Imagination Technologies Ltd.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -65,11 +61,7 @@ static int goldfish_rtc_set_alarm(struct device *dev,
 		gf_iowrite32(rtc_alarm64, base + TIMER_ALARM_LOW);
 		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
 	} else {
-		/*
-		 * if this function was called with enabled=0
-		 * then it could mean that the application is
-		 * trying to cancel an ongoing alarm
-		 */
+		 
 		rtc_status_reg = gf_ioread32(base + TIMER_ALARM_STATUS);
 		if (rtc_status_reg)
 			gf_iowrite32(1, base + TIMER_CLEAR_ALARM);

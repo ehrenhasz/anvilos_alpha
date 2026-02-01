@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra_audio_graph_card.c - Audio Graph based Tegra Machine Driver
-//
-// Copyright (c) 2020-2021 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/math64.h>
 #include <linux/module.h>
@@ -18,16 +18,10 @@
 		container_of(simple, struct tegra_audio_priv, simple)
 
 enum srate_type {
-	/*
-	 * Sample rates multiple of 8000 Hz and below are supported:
-	 * ( 8000, 16000, 32000, 48000, 96000, 192000 Hz )
-	 */
+	 
 	x8_RATE,
 
-	/*
-	 * Sample rates multiple of 11025 Hz and below are supported:
-	 * ( 11025, 22050, 44100, 88200, 176400 Hz )
-	 */
+	 
 	x11_RATE,
 
 	NUM_RATE_TYPE,
@@ -39,7 +33,7 @@ struct tegra_audio_priv {
 	struct clk *clk_plla;
 };
 
-/* Tegra audio chip data */
+ 
 struct tegra_audio_cdata {
 	unsigned int plla_rates[NUM_RATE_TYPE];
 	unsigned int plla_out0_rates[NUM_RATE_TYPE];
@@ -60,7 +54,7 @@ static bool need_clk_update(struct snd_soc_dai *dai)
 	return false;
 }
 
-/* Setup PLL clock as per the given sample rate */
+ 
 static int tegra_audio_graph_update_pll(struct snd_pcm_substream *substream,
 					struct snd_pcm_hw_params *params)
 {
@@ -97,29 +91,7 @@ static int tegra_audio_graph_update_pll(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/*
-	 * Below is the clock relation:
-	 *
-	 *	PLLA
-	 *	  |
-	 *	  |--> PLLA_OUT0
-	 *		  |
-	 *		  |---> I2S modules
-	 *		  |
-	 *		  |---> DMIC modules
-	 *		  |
-	 *		  |---> DSPK modules
-	 *
-	 *
-	 * Default PLLA_OUT0 rate might be too high when I/O is running
-	 * at minimum PCM configurations. This may result in incorrect
-	 * clock rates and glitchy audio. The maximum divider is 128
-	 * and any thing higher than that won't work. Thus reduce PLLA_OUT0
-	 * to work for lower configurations.
-	 *
-	 * This problem is seen for I2S only, as DMIC and DSPK minimum
-	 * clock requirements are under allowed divider limits.
-	 */
+	 
 	bclk = srate * params_channels(params) * params_width(params);
 	if (div_u64(plla_out0_rate, bclk) > MAX_PLLA_OUT0_DIV)
 		plla_out0_rate >>= 1;
@@ -128,7 +100,7 @@ static int tegra_audio_graph_update_pll(struct snd_pcm_substream *substream,
 		"Update clock rates: PLLA(= %u Hz) and PLLA_OUT0(= %u Hz)\n",
 		plla_rate, plla_out0_rate);
 
-	/* Set PLLA rate */
+	 
 	err = clk_set_rate(priv->clk_plla, plla_rate);
 	if (err) {
 		dev_err(rtd->card->dev,
@@ -137,7 +109,7 @@ static int tegra_audio_graph_update_pll(struct snd_pcm_substream *substream,
 		return err;
 	}
 
-	/* Set PLLA_OUT0 rate */
+	 
 	err = clk_set_rate(priv->clk_plla_out0, plla_out0_rate);
 	if (err) {
 		dev_err(rtd->card->dev,
@@ -206,7 +178,7 @@ static int tegra_audio_graph_probe(struct platform_device *pdev)
 
 	card->probe = tegra_audio_graph_card_probe;
 
-	/* audio_graph_parse_of() depends on below */
+	 
 	card->component_chaining = 1;
 	priv->simple.ops = &tegra_audio_graph_ops;
 	priv->simple.force_dpcm = 1;
@@ -215,19 +187,19 @@ static int tegra_audio_graph_probe(struct platform_device *pdev)
 }
 
 static const struct tegra_audio_cdata tegra210_data = {
-	/* PLLA */
+	 
 	.plla_rates[x8_RATE] = 368640000,
 	.plla_rates[x11_RATE] = 338688000,
-	/* PLLA_OUT0 */
+	 
 	.plla_out0_rates[x8_RATE] = 49152000,
 	.plla_out0_rates[x11_RATE] = 45158400,
 };
 
 static const struct tegra_audio_cdata tegra186_data = {
-	/* PLLA */
+	 
 	.plla_rates[x8_RATE] = 245760000,
 	.plla_rates[x11_RATE] = 270950400,
-	/* PLLA_OUT0 */
+	 
 	.plla_out0_rates[x8_RATE] = 49152000,
 	.plla_out0_rates[x11_RATE] = 45158400,
 };

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for TWL4030/6030 Generic Pulse Width Modulator
- *
- * Copyright (C) 2012 Texas Instruments
- * Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -13,31 +8,27 @@
 #include <linux/mfd/twl.h>
 #include <linux/slab.h>
 
-/*
- * This driver handles the PWMs of TWL4030 and TWL6030.
- * The TRM names for the PWMs on TWL4030 are: PWM0, PWM1
- * TWL6030 also have two PWMs named in the TRM as PWM1, PWM2
- */
+ 
 
 #define TWL_PWM_MAX		0x7f
 
-/* Registers, bits and macro for TWL4030 */
+ 
 #define TWL4030_GPBR1_REG	0x0c
 #define TWL4030_PMBR1_REG	0x0d
 
-/* GPBR1 register bits */
+ 
 #define TWL4030_PWMXCLK_ENABLE	(1 << 0)
 #define TWL4030_PWMX_ENABLE	(1 << 2)
 #define TWL4030_PWMX_BITS	(TWL4030_PWMX_ENABLE | TWL4030_PWMXCLK_ENABLE)
 #define TWL4030_PWM_TOGGLE(pwm, x)	((x) << (pwm))
 
-/* PMBR1 register bits */
+ 
 #define TWL4030_GPIO6_PWM0_MUTE_MASK		(0x03 << 2)
 #define TWL4030_GPIO6_PWM0_MUTE_PWM0		(0x01 << 2)
 #define TWL4030_GPIO7_VIBRASYNC_PWM1_MASK	(0x03 << 4)
 #define TWL4030_GPIO7_VIBRASYNC_PWM1_PWM1	(0x03 << 4)
 
-/* Register, bits and macro for TWL6030 */
+ 
 #define TWL6030_TOGGLE3_REG	0x92
 
 #define TWL6030_PWMXR		(1 << 0)
@@ -64,17 +55,7 @@ static int twl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	u8 pwm_config[2] = { 1, 0 };
 	int base, ret;
 
-	/*
-	 * To configure the duty period:
-	 * On-cycle is set to 1 (the minimum allowed value)
-	 * The off time of 0 is not configurable, so the mapping is:
-	 * 0 -> off cycle = 2,
-	 * 1 -> off cycle = 2,
-	 * 2 -> off cycle = 3,
-	 * 126 - > off cycle 127,
-	 * 127 - > off cycle 1
-	 * When on cycle == off cycle the PWM will be always on
-	 */
+	 
 	if (duty_cycle == 1)
 		duty_cycle = 2;
 	else if (duty_cycle > TWL_PWM_MAX)
@@ -171,11 +152,11 @@ static int twl4030_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 		goto out;
 	}
 
-	/* Save the current MUX configuration for the PWM */
+	 
 	twl->twl4030_pwm_mux &= ~mask;
 	twl->twl4030_pwm_mux |= (val & mask);
 
-	/* Select PWM functionality */
+	 
 	val &= ~mask;
 	val |= bits;
 
@@ -206,7 +187,7 @@ static void twl4030_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
 		goto out;
 	}
 
-	/* Restore the MUX configuration for the PWM */
+	 
 	val &= ~mask;
 	val |= (twl->twl4030_pwm_mux & mask);
 

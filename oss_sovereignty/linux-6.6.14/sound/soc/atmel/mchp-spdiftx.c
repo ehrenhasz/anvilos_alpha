@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for Microchip S/PDIF TX Controller
-//
-// Copyright (C) 2020 Microchip Technology Inc. and its subsidiaries
-//
-// Author: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -18,79 +18,71 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 
-/*
- * ---- S/PDIF Transmitter Controller Register map ----
- */
-#define SPDIFTX_CR			0x00	/* Control Register */
-#define SPDIFTX_MR			0x04	/* Mode Register */
-#define SPDIFTX_CDR			0x0C	/* Common Data Register */
+ 
+#define SPDIFTX_CR			0x00	 
+#define SPDIFTX_MR			0x04	 
+#define SPDIFTX_CDR			0x0C	 
 
-#define SPDIFTX_IER			0x14	/* Interrupt Enable Register */
-#define SPDIFTX_IDR			0x18	/* Interrupt Disable Register */
-#define SPDIFTX_IMR			0x1C	/* Interrupt Mask Register */
-#define SPDIFTX_ISR			0x20	/* Interrupt Status Register */
+#define SPDIFTX_IER			0x14	 
+#define SPDIFTX_IDR			0x18	 
+#define SPDIFTX_IMR			0x1C	 
+#define SPDIFTX_ISR			0x20	 
 
-#define SPDIFTX_CH1UD(reg)	(0x50 + (reg) * 4)	/* User Data 1 Register x */
-#define SPDIFTX_CH1S(reg)	(0x80 + (reg) * 4)	/* Channel Status 1 Register x */
+#define SPDIFTX_CH1UD(reg)	(0x50 + (reg) * 4)	 
+#define SPDIFTX_CH1S(reg)	(0x80 + (reg) * 4)	 
 
 #define SPDIFTX_VERSION			0xF0
 
-/*
- * ---- Control Register (Write-only) ----
- */
-#define SPDIFTX_CR_SWRST		BIT(0)	/* Software Reset */
-#define SPDIFTX_CR_FCLR			BIT(1)	/* FIFO clear */
+ 
+#define SPDIFTX_CR_SWRST		BIT(0)	 
+#define SPDIFTX_CR_FCLR			BIT(1)	 
 
-/*
- * ---- Mode Register (Read/Write) ----
- */
-/* Transmit Enable */
+ 
+ 
 #define SPDIFTX_MR_TXEN_MASK		GENMASK(0, 0)
 #define SPDIFTX_MR_TXEN_DISABLE		(0 << 0)
 #define SPDIFTX_MR_TXEN_ENABLE		(1 << 0)
 
-/* Multichannel Transfer */
+ 
 #define SPDIFTX_MR_MULTICH_MASK		GENAMSK(1, 1)
 #define SPDIFTX_MR_MULTICH_MONO		(0 << 1)
 #define SPDIFTX_MR_MULTICH_DUAL		(1 << 1)
 
-/* Data Word Endian Mode */
+ 
 #define SPDIFTX_MR_ENDIAN_MASK		GENMASK(2, 2)
 #define SPDIFTX_MR_ENDIAN_LITTLE	(0 << 2)
 #define SPDIFTX_MR_ENDIAN_BIG		(1 << 2)
 
-/* Data Justification */
+ 
 #define SPDIFTX_MR_JUSTIFY_MASK		GENMASK(3, 3)
 #define SPDIFTX_MR_JUSTIFY_LSB		(0 << 3)
 #define SPDIFTX_MR_JUSTIFY_MSB		(1 << 3)
 
-/* Common Audio Register Transfer Mode */
+ 
 #define SPDIFTX_MR_CMODE_MASK			GENMASK(5, 4)
 #define SPDIFTX_MR_CMODE_INDEX_ACCESS		(0 << 4)
 #define SPDIFTX_MR_CMODE_TOGGLE_ACCESS		(1 << 4)
 #define SPDIFTX_MR_CMODE_INTERLVD_ACCESS	(2 << 4)
 
-/* Valid Bits per Sample */
+ 
 #define SPDIFTX_MR_VBPS_MASK		GENMASK(13, 8)
 
-/* Chunk Size */
+ 
 #define SPDIFTX_MR_CHUNK_MASK		GENMASK(19, 16)
 
-/* Validity Bits for Channels 1 and 2 */
+ 
 #define SPDIFTX_MR_VALID1			BIT(24)
 #define SPDIFTX_MR_VALID2			BIT(25)
 
-/* Disable Null Frame on underrun */
+ 
 #define SPDIFTX_MR_DNFR_MASK		GENMASK(27, 27)
 #define SPDIFTX_MR_DNFR_INVALID		(0 << 27)
 #define SPDIFTX_MR_DNFR_VALID		(1 << 27)
 
-/* Bytes per Sample */
+ 
 #define SPDIFTX_MR_BPS_MASK		GENMASK(29, 28)
 
-/*
- * ---- Interrupt Enable/Disable/Mask/Status Register (Write/Read-only) ----
- */
+ 
 #define SPDIFTX_IR_TXRDY		BIT(0)
 #define SPDIFTX_IR_TXEMPTY		BIT(1)
 #define SPDIFTX_IR_TXFULL		BIT(2)
@@ -184,7 +176,7 @@ static const struct regmap_config mchp_spdiftx_regmap_config = {
 struct mchp_spdiftx_mixer_control {
 	unsigned char				ch_stat[SPDIFTX_CS_BITS / 8];
 	unsigned char				user_data[SPDIFTX_UD_BITS / 8];
-	spinlock_t				lock; /* exclusive access to control data */
+	spinlock_t				lock;  
 };
 
 struct mchp_spdiftx_dev {
@@ -285,7 +277,7 @@ static int mchp_spdiftx_dai_startup(struct snd_pcm_substream *substream,
 {
 	struct mchp_spdiftx_dev *dev = snd_soc_dai_get_drvdata(dai);
 
-	/* Software reset the IP */
+	 
 	regmap_write(dev->regmap, SPDIFTX_CR,
 		     SPDIFTX_CR_SWRST | SPDIFTX_CR_FCLR);
 
@@ -297,7 +289,7 @@ static void mchp_spdiftx_dai_shutdown(struct snd_pcm_substream *substream,
 {
 	struct mchp_spdiftx_dev *dev = snd_soc_dai_get_drvdata(dai);
 
-	/* Disable interrupts */
+	 
 	regmap_write(dev->regmap, SPDIFTX_IDR, 0xffffffff);
 }
 
@@ -308,7 +300,7 @@ static int mchp_spdiftx_trigger(struct snd_pcm_substream *substream, int cmd,
 	struct mchp_spdiftx_mixer_control *ctrl = &dev->control;
 	int ret;
 
-	/* do not start/stop while channel status or user data is updated */
+	 
 	spin_lock(&ctrl->lock);
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_RESUME:
@@ -370,7 +362,7 @@ static int mchp_spdiftx_hw_params(struct snd_pcm_substream *substream,
 		return -EBUSY;
 	}
 
-	/* Defaults: Toggle mode, justify to LSB, chunksize 1 */
+	 
 	mr = SPDIFTX_MR_CMODE_TOGGLE_ACCESS | SPDIFTX_MR_JUSTIFY_LSB;
 	dev->playback.maxburst = 1;
 	switch (params_channels(params)) {
@@ -482,7 +474,7 @@ static int mchp_spdiftx_hw_params(struct snd_pcm_substream *substream,
 	mchp_spdiftx_channel_status_write(dev);
 	spin_unlock_irqrestore(&ctrl->lock, flags);
 
-	/* GCLK is enabled by runtime PM. */
+	 
 	clk_disable_unprepare(dev->gclk);
 
 	ret = clk_set_rate(dev->gclk, params_rate(params) *
@@ -576,12 +568,9 @@ static int mchp_spdiftx_cs_put(struct snd_kcontrol *kcontrol,
 	}
 
 	if (changed) {
-		/* don't enable IP while we copy the channel status */
+		 
 		if (mchp_spdiftx_is_running(dev)) {
-			/*
-			 * if SPDIF is running, wait for interrupt to write
-			 * channel status
-			 */
+			 
 			regmap_write(dev->regmap, SPDIFTX_IER,
 				     SPDIFTX_IR_CSRDY);
 		} else {
@@ -637,10 +626,7 @@ static int mchp_spdiftx_subcode_put(struct snd_kcontrol *kcontrol,
 	}
 	if (changed) {
 		if (mchp_spdiftx_is_running(dev)) {
-			/*
-			 * if SPDIF is running, wait for interrupt to write
-			 * user data
-			 */
+			 
 			regmap_write(dev->regmap, SPDIFTX_IER,
 				     SPDIFTX_IR_UDRDY);
 		} else {
@@ -653,7 +639,7 @@ static int mchp_spdiftx_subcode_put(struct snd_kcontrol *kcontrol,
 }
 
 static struct snd_kcontrol_new mchp_spdiftx_ctrls[] = {
-	/* Channel status controller */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = SNDRV_CTL_NAME_IEC958("", PLAYBACK, DEFAULT),
@@ -671,7 +657,7 @@ static struct snd_kcontrol_new mchp_spdiftx_ctrls[] = {
 		.info = mchp_spdiftx_info,
 		.get = mchp_spdiftx_cs_mask,
 	},
-	/* User bits controller */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = "IEC958 Subcode Playback Default",
@@ -688,7 +674,7 @@ static int mchp_spdiftx_dai_probe(struct snd_soc_dai *dai)
 
 	snd_soc_dai_init_dma_data(dai, &dev->playback, NULL);
 
-	/* Add controls */
+	 
 	snd_soc_add_dai_controls(dai, mchp_spdiftx_ctrls,
 				 ARRAY_SIZE(mchp_spdiftx_ctrls));
 
@@ -725,7 +711,7 @@ static const struct of_device_id mchp_spdiftx_dt_ids[] = {
 	{
 		.compatible = "microchip,sama7g5-spdiftx",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mchp_spdiftx_dt_ids);
 
@@ -788,12 +774,12 @@ static int mchp_spdiftx_probe(struct platform_device *pdev)
 	int irq;
 	int err;
 
-	/* Get memory for driver data. */
+	 
 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
 
-	/* Map I/O registers. */
+	 
 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -803,7 +789,7 @@ static int mchp_spdiftx_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Request IRQ */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -813,7 +799,7 @@ static int mchp_spdiftx_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Get the peripheral clock */
+	 
 	dev->pclk = devm_clk_get(&pdev->dev, "pclk");
 	if (IS_ERR(dev->pclk)) {
 		err = PTR_ERR(dev->pclk);
@@ -822,7 +808,7 @@ static int mchp_spdiftx_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* Get the generic clock */
+	 
 	dev->gclk = devm_clk_get(&pdev->dev, "gclk");
 	if (IS_ERR(dev->gclk)) {
 		err = PTR_ERR(dev->gclk);
@@ -834,7 +820,7 @@ static int mchp_spdiftx_probe(struct platform_device *pdev)
 	ctrl = &dev->control;
 	spin_lock_init(&ctrl->lock);
 
-	/* Init channel status */
+	 
 	ctrl->ch_stat[0] = IEC958_AES0_CON_NOT_COPYRIGHT |
 			   IEC958_AES0_CON_EMPHASIS_NONE;
 

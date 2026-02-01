@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -16,7 +13,7 @@
 #include <linux/io.h>
 #include <linux/iio/iio.h>
 
-/* Register definitions */
+ 
 #define MT6577_AUXADC_CON0                    0x00
 #define MT6577_AUXADC_CON1                    0x04
 #define MT6577_AUXADC_CON2                    0x10
@@ -87,9 +84,9 @@ static const struct iio_chan_spec mt6577_auxadc_iio_channels[] = {
 	MT6577_AUXADC_CHANNEL(15),
 };
 
-/* For Voltage calculation */
-#define VOLTAGE_FULL_RANGE  1500	/* VA voltage */
-#define AUXADC_PRECISE      4096	/* 12 bits */
+ 
+#define VOLTAGE_FULL_RANGE  1500	 
+#define AUXADC_PRECISE      4096	 
 
 static int mt_auxadc_get_cali_data(int rawdata, bool enable_cali)
 {
@@ -123,7 +120,7 @@ static int mt6577_auxadc_read(struct iio_dev *indio_dev,
 	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_CON1,
 			      0, 1 << chan->channel);
 
-	/* read channel and make sure old ready bit == 0 */
+	 
 	ret = readl_poll_timeout(reg_channel, val,
 				 ((val & MT6577_AUXADC_RDY0) == 0),
 				 MT6577_AUXADC_SLEEP_US,
@@ -135,15 +132,15 @@ static int mt6577_auxadc_read(struct iio_dev *indio_dev,
 		goto err_timeout;
 	}
 
-	/* set bit to trigger sample */
+	 
 	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_CON1,
 			      1 << chan->channel, 0);
 
-	/* we must delay here for hardware sample channel data */
+	 
 	udelay(MT6577_AUXADC_SAMPLE_READY_US);
 
 	if (adc_dev->dev_comp->check_global_idle) {
-		/* check MTK_AUXADC_CON2 if auxadc is idle */
+		 
 		ret = readl_poll_timeout(adc_dev->reg_base + MT6577_AUXADC_CON2,
 					 val, ((val & MT6577_AUXADC_STA) == 0),
 					 MT6577_AUXADC_SLEEP_US,
@@ -155,7 +152,7 @@ static int mt6577_auxadc_read(struct iio_dev *indio_dev,
 		}
 	}
 
-	/* read channel and make sure ready bit == 1 */
+	 
 	ret = readl_poll_timeout(reg_channel, val,
 				 ((val & MT6577_AUXADC_RDY0) != 0),
 				 MT6577_AUXADC_SLEEP_US,
@@ -167,7 +164,7 @@ static int mt6577_auxadc_read(struct iio_dev *indio_dev,
 		goto err_timeout;
 	}
 
-	/* read data */
+	 
 	val = readl(reg_channel) & MT6577_AUXADC_DAT_MASK;
 
 	mutex_unlock(&adc_dev->lock);
@@ -201,7 +198,7 @@ static int mt6577_auxadc_read_raw(struct iio_dev *indio_dev,
 		if (adc_dev->dev_comp->sample_data_cali)
 			*val = mt_auxadc_get_cali_data(*val, true);
 
-		/* Convert adc raw data to voltage: 0 - 1500 mV */
+		 
 		*val = *val * VOLTAGE_FULL_RANGE / AUXADC_PRECISE;
 
 		return IIO_VAL_INT;

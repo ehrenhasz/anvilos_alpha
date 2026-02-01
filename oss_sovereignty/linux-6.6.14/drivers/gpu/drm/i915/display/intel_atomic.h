@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_ATOMIC_H__
 #define __INTEL_ATOMIC_H__
@@ -52,4 +50,4 @@ struct intel_crtc_state *
 intel_atomic_get_crtc_state(struct drm_atomic_state *state,
 			    struct intel_crtc *crtc);
 
-#endif /* __INTEL_ATOMIC_H__ */
+#endif  

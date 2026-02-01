@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -13,7 +13,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
-/* Register Map */
+ 
 
 #define ZINITIX_SWRESET_CMD			0x0000
 #define ZINITIX_WAKEUP_CMD			0x0001
@@ -31,7 +31,7 @@
 
 #define ZINITIX_LARGE_PALM_REJECT_AREA_TH	0x003F
 
-#define ZINITIX_DEBUG_REG			0x0115 /* 0~7 */
+#define ZINITIX_DEBUG_REG			0x0115  
 
 #define ZINITIX_TOUCH_MODE			0x0010
 #define ZINITIX_CHIP_REVISION			0x0011
@@ -91,7 +91,7 @@
 #define ZINITIX_I2C_CHECKSUM_WCNT		0x016a
 #define ZINITIX_I2C_CHECKSUM_RESULT		0x016c
 
-/* Interrupt & status register flags */
+ 
 
 #define BIT_PT_CNT_CHANGE			BIT(0)
 #define BIT_DOWN				BIT(1)
@@ -120,15 +120,15 @@
 #define DEFAULT_TOUCH_POINT_MODE		2
 #define MAX_SUPPORTED_FINGER_NUM		5
 
-#define CHIP_ON_DELAY				15 // ms
-#define FIRMWARE_ON_DELAY			40 // ms
+#define CHIP_ON_DELAY				15 
+#define FIRMWARE_ON_DELAY			40 
 
 struct point_coord {
 	__le16	x;
 	__le16	y;
 	u8	width;
 	u8	sub_status;
-	// currently unused, but needed as padding:
+	
 	u8	minor_width;
 	u8	angle;
 };
@@ -154,7 +154,7 @@ static int zinitix_read_data(struct i2c_client *client,
 	__le16 reg_le = cpu_to_le16(reg);
 	int ret;
 
-	/* A single i2c_transfer() transaction does not work here. */
+	 
 	ret = i2c_master_send(client, (u8 *)&reg_le, sizeof(reg_le));
 	if (ret != sizeof(reg_le))
 		return ret < 0 ? ret : -EIO;
@@ -209,7 +209,7 @@ static int zinitix_init_touch(struct bt541_ts_data *bt541)
 		return error;
 	}
 
-	/* initialize */
+	 
 	error = zinitix_write_u16(client, ZINITIX_X_RESOLUTION,
 				  bt541->prop.max_x);
 	if (error)
@@ -241,7 +241,7 @@ static int zinitix_init_touch(struct bt541_ts_data *bt541)
 	if (error)
 		return error;
 
-	/* clear queue */
+	 
 	for (i = 0; i < 10; i++) {
 		zinitix_write_cmd(client, ZINITIX_CLEAR_INT_STATUS_CMD);
 		udelay(10);
@@ -255,16 +255,12 @@ static int zinitix_init_regulators(struct bt541_ts_data *bt541)
 	struct device *dev = &bt541->client->dev;
 	int error;
 
-	/*
-	 * Some older device trees have erroneous names for the regulators,
-	 * so check if "vddo" is present and in that case use these names.
-	 * Else use the proper supply names on the component.
-	 */
+	 
 	if (of_property_present(dev->of_node, "vddo-supply")) {
 		bt541->supplies[0].supply = "vdd";
 		bt541->supplies[1].supply = "vddo";
 	} else {
-		/* Else use the proper supply names */
+		 
 		bt541->supplies[0].supply = "vcca";
 		bt541->supplies[1].supply = "vdd";
 	}
@@ -372,7 +368,7 @@ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
 	for_each_set_bit(i, &finger_mask, MAX_SUPPORTED_FINGER_NUM) {
 		const struct point_coord *p = &touch_event.point_coord[i];
 
-		/* Only process contacts that are actually reported */
+		 
 		if (p->sub_status & SUB_BIT_EXIST)
 			zinitix_report_finger(bt541, i, p);
 	}
@@ -544,15 +540,12 @@ static int zinitix_ts_probe(struct i2c_client *client)
 	error = device_property_read_u32(&client->dev, "zinitix,mode",
 					 &bt541->zinitix_mode);
 	if (error < 0) {
-		/* fall back to mode 2 */
+		 
 		bt541->zinitix_mode = DEFAULT_TOUCH_POINT_MODE;
 	}
 
 	if (bt541->zinitix_mode != 2) {
-		/*
-		 * If there are devices that don't support mode 2, support
-		 * for other modes (0, 1) will be needed.
-		 */
+		 
 		dev_err(&client->dev,
 			"Malformed zinitix,mode property, must be 2 (supplied: %d)\n",
 			bt541->zinitix_mode);

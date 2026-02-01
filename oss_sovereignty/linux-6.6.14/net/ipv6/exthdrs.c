@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Extension Header handling for IPv6
- *	Linux INET6 implementation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- *	Andi Kleen		<ak@muc.de>
- *	Alexey Kuznetsov	<kuznet@ms2.inr.ac.ru>
- */
 
-/* Changes:
- *	yoshfuji		: ensure not to overrun while parsing
- *				  tlv options.
- *	Mitsuru KANDA @USAGI and: Remove ipv6_parse_exthdrs().
- *	YOSHIFUJI Hideaki @USAGI  Register inbound extension header
- *				  handlers as inet6_protocol{}.
- */
+ 
+
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -55,41 +41,32 @@
 
 #include <linux/uaccess.h>
 
-/*********************
-  Generic functions
- *********************/
+ 
 
-/* An unknown option is detected, decide what to do */
+ 
 
 static bool ip6_tlvopt_unknown(struct sk_buff *skb, int optoff,
 			       bool disallow_unknowns)
 {
 	if (disallow_unknowns) {
-		/* If unknown TLVs are disallowed by configuration
-		 * then always silently drop packet. Note this also
-		 * means no ICMP parameter problem is sent which
-		 * could be a good property to mitigate a reflection DOS
-		 * attack.
-		 */
+		 
 
 		goto drop;
 	}
 
 	switch ((skb_network_header(skb)[optoff] & 0xC0) >> 6) {
-	case 0: /* ignore */
+	case 0:  
 		return true;
 
-	case 1: /* drop packet */
+	case 1:  
 		break;
 
-	case 3: /* Send ICMP if not a multicast address and drop packet */
-		/* Actually, it is redundant check. icmp_send
-		   will recheck in any case.
-		 */
+	case 3:  
+		 
 		if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr))
 			break;
 		fallthrough;
-	case 2: /* send ICMP PARM PROB regardless and drop packet */
+	case 2:  
 		icmpv6_param_prob_reason(skb, ICMPV6_UNK_OPTION, optoff,
 					 SKB_DROP_REASON_UNHANDLED_PROTO);
 		return false;
@@ -108,7 +85,7 @@ static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff);
 static bool ipv6_dest_hao(struct sk_buff *skb, int optoff);
 #endif
 
-/* Parse tlv encoded option header (hop-by-hop or destination) */
+ 
 
 static bool ip6_parse_tlv(bool hopbyhop,
 			  struct sk_buff *skb,
@@ -147,18 +124,11 @@ static bool ip6_parse_tlv(bool hopbyhop,
 			goto bad;
 
 		if (nh[off] == IPV6_TLV_PADN) {
-			/* RFC 2460 states that the purpose of PadN is
-			 * to align the containing header to multiples
-			 * of 8. 7 is therefore the highest valid value.
-			 * See also RFC 4942, Section 2.1.9.5.
-			 */
+			 
 			padlen += optlen;
 			if (padlen > 7)
 				goto bad;
-			/* RFC 4942 recommends receiving hosts to
-			 * actively check PadN payload to contain
-			 * only zeroes.
-			 */
+			 
 			for (i = 2; i < optlen; i++) {
 				if (nh[off + i] != 0)
 					goto bad;
@@ -220,9 +190,7 @@ bad:
 	return false;
 }
 
-/*****************************
-  Destination options header.
- *****************************/
+ 
 
 #if IS_ENABLED(CONFIG_IPV6_MIP6)
 static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
@@ -267,7 +235,7 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
 		if (pskb_expand_head(skb, 0, 0, GFP_ATOMIC))
 			goto discard;
 
-		/* update all variable using below by copied skbuff */
+		 
 		hao = (struct ipv6_destopt_hao *)(skb_network_header(skb) +
 						  optoff);
 		ipv6h = ipv6_hdr(skb);
@@ -340,9 +308,7 @@ static void seg6_update_csum(struct sk_buff *skb)
 	struct in6_addr *addr;
 	__be32 from, to;
 
-	/* srh is at transport offset and seg_left is already decremented
-	 * but daddr is not yet updated with next segment
-	 */
+	 
 
 	hdr = (struct ipv6_sr_hdr *)skb_transport_header(skb);
 	addr = hdr->segments + hdr->segments_left;
@@ -353,11 +319,11 @@ static void seg6_update_csum(struct sk_buff *skb)
 	hdr->segments_left--;
 	to = *(__be32 *)hdr;
 
-	/* update skb csum with diff resulting from seg_left decrement */
+	 
 
 	update_csum_diff4(skb, from, to);
 
-	/* compute csum diff between current and next segment and update */
+	 
 
 	update_csum_diff16(skb, (__be32 *)(&ipv6_hdr(skb)->daddr),
 			   (__be32 *)addr);
@@ -534,10 +500,7 @@ looped_back:
 
 	n = (hdr->hdrlen << 3) - hdr->pad - (16 - hdr->cmpre);
 	r = do_div(n, (16 - hdr->cmpri));
-	/* checks if calculation was without remainder and n fits into
-	 * unsigned char which is segments_left field. Should not be
-	 * higher than that.
-	 */
+	 
 	if (r || (n + 1) > 255) {
 		kfree_skb(skb);
 		return -1;
@@ -638,11 +601,9 @@ looped_back:
 	return -1;
 }
 
-/********************************
-  Routing header.
- ********************************/
+ 
 
-/* called with rcu_read_lock() */
+ 
 static int ipv6_rthdr_rcv(struct sk_buff *skb)
 {
 	struct inet6_dev *idev = __in6_dev_get(skb->dev);
@@ -676,10 +637,10 @@ static int ipv6_rthdr_rcv(struct sk_buff *skb)
 
 	switch (hdr->type) {
 	case IPV6_SRCRT_TYPE_4:
-		/* segment routing */
+		 
 		return ipv6_srh_rcv(skb);
 	case IPV6_SRCRT_TYPE_3:
-		/* rpl segment routing */
+		 
 		return ipv6_rpl_srh_rcv(skb);
 	default:
 		break;
@@ -690,9 +651,7 @@ looped_back:
 		switch (hdr->type) {
 #if IS_ENABLED(CONFIG_IPV6_MIP6)
 		case IPV6_SRCRT_TYPE_2:
-			/* Silently discard type 2 header unless it was
-			 * processed by own
-			 */
+			 
 			if (!addr) {
 				__IP6_INC_STATS(net, idev,
 						IPSTATS_MIB_INADDRERRORS);
@@ -718,7 +677,7 @@ looped_back:
 	case IPV6_SRCRT_TYPE_2:
 		if (accept_source_route < 0)
 			goto unknown_rh;
-		/* Silently discard invalid RTH type 2 */
+		 
 		if (hdr->hdrlen != 2 || hdr->segments_left != 1) {
 			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
 			kfree_skb(skb);
@@ -730,10 +689,7 @@ looped_back:
 		goto unknown_rh;
 	}
 
-	/*
-	 *	This is the routing header forwarding algorithm from
-	 *	RFC 2460, page 16.
-	 */
+	 
 
 	n = hdr->hdrlen >> 1;
 
@@ -745,11 +701,9 @@ looped_back:
 		return -1;
 	}
 
-	/* We are about to mangle packet header. Be careful!
-	   Do not damage packets queued somewhere.
-	 */
+	 
 	if (skb_cloned(skb)) {
-		/* the copy is a forwarded packet */
+		 
 		if (pskb_expand_head(skb, 0, 0, GFP_ATOMIC)) {
 			__IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)),
 					IPSTATS_MIB_OUTDISCARDS);
@@ -874,19 +828,15 @@ void ipv6_exthdrs_exit(void)
 	inet6_del_protocol(&rthdr_protocol, IPPROTO_ROUTING);
 }
 
-/**********************************
-  Hop-by-hop options.
- **********************************/
+ 
 
-/*
- * Note: we cannot rely on skb_dst(skb) before we assign it in ip6_route_input().
- */
+ 
 static inline struct net *ipv6_skb_net(struct sk_buff *skb)
 {
 	return skb_dst(skb) ? dev_net(skb_dst(skb)->dev) : dev_net(skb->dev);
 }
 
-/* Router Alert as of RFC 2711 */
+ 
 
 static bool ipv6_hop_ra(struct sk_buff *skb, int optoff)
 {
@@ -903,7 +853,7 @@ static bool ipv6_hop_ra(struct sk_buff *skb, int optoff)
 	return false;
 }
 
-/* IOAM */
+ 
 
 static bool ipv6_hop_ioam(struct sk_buff *skb, int optoff)
 {
@@ -911,31 +861,31 @@ static bool ipv6_hop_ioam(struct sk_buff *skb, int optoff)
 	struct ioam6_namespace *ns;
 	struct ioam6_hdr *hdr;
 
-	/* Bad alignment (must be 4n-aligned) */
+	 
 	if (optoff & 3)
 		goto drop;
 
-	/* Ignore if IOAM is not enabled on ingress */
+	 
 	if (!__in6_dev_get(skb->dev)->cnf.ioam6_enabled)
 		goto ignore;
 
-	/* Truncated Option header */
+	 
 	hdr = (struct ioam6_hdr *)(skb_network_header(skb) + optoff);
 	if (hdr->opt_len < 2)
 		goto drop;
 
 	switch (hdr->type) {
 	case IOAM6_TYPE_PREALLOC:
-		/* Truncated Pre-allocated Trace header */
+		 
 		if (hdr->opt_len < 2 + sizeof(*trace))
 			goto drop;
 
-		/* Malformed Pre-allocated Trace header */
+		 
 		trace = (struct ioam6_trace_hdr *)((u8 *)hdr + sizeof(*hdr));
 		if (hdr->opt_len < 2 + sizeof(*trace) + trace->remlen * 4)
 			goto drop;
 
-		/* Ignore if the IOAM namespace is unknown */
+		 
 		ns = ioam6_namespace(ipv6_skb_net(skb), trace->namespace_id);
 		if (!ns)
 			goto ignore;
@@ -957,7 +907,7 @@ drop:
 	return false;
 }
 
-/* Jumbo payload */
+ 
 
 static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff)
 {
@@ -1000,7 +950,7 @@ drop:
 	return false;
 }
 
-/* CALIPSO RFC 5570 */
+ 
 
 static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
 {
@@ -1028,12 +978,7 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
 	struct net *net = dev_net(skb->dev);
 	int extlen;
 
-	/*
-	 * skb_network_header(skb) is equal to skb->data, and
-	 * skb_network_header_len(skb) is always equal to
-	 * sizeof(struct ipv6hdr) by definition of
-	 * hop-by-hop options.
-	 */
+	 
 	if (!pskb_may_pull(skb, sizeof(struct ipv6hdr) + 8) ||
 	    !pskb_may_pull(skb, (sizeof(struct ipv6hdr) +
 				 ((skb_transport_header(skb)[1] + 1) << 3)))) {
@@ -1056,15 +1001,7 @@ fail_and_free:
 	return -1;
 }
 
-/*
- *	Creating outbound headers.
- *
- *	"build" functions work when skb is filled from head to tail (datagram)
- *	"push"	functions work when headers are added from tail to head (tcp)
- *
- *	In both cases we assume, that caller reserved enough room
- *	for headers.
- */
+ 
 
 static void ipv6_push_rthdr0(struct sk_buff *skb, u8 *proto,
 			     struct ipv6_rt_hdr *opt,
@@ -1173,10 +1110,7 @@ void ipv6_push_nfrag_opts(struct sk_buff *skb, struct ipv6_txoptions *opt,
 {
 	if (opt->srcrt) {
 		ipv6_push_rthdr(skb, proto, opt->srcrt, daddr, saddr);
-		/*
-		 * IPV6_RTHDRDSTOPTS is ignored
-		 * unless IPV6_RTHDR is set (RFC3542).
-		 */
+		 
 		if (opt->dst0opt)
 			ipv6_push_exthdr(skb, proto, NEXTHDR_DEST, opt->dst0opt);
 	}
@@ -1231,26 +1165,7 @@ static void ipv6_renew_option(int renewtype,
 	*p += CMSG_ALIGN(ipv6_optlen(*dest));
 }
 
-/**
- * ipv6_renew_options - replace a specific ext hdr with a new one.
- *
- * @sk: sock from which to allocate memory
- * @opt: original options
- * @newtype: option type to replace in @opt
- * @newopt: new option of type @newtype to replace (user-mem)
- *
- * Returns a new set of options which is a copy of @opt with the
- * option type @newtype replaced with @newopt.
- *
- * @opt may be NULL, in which case a new set of options is returned
- * containing just @newopt.
- *
- * @newopt may be NULL, in which case the specified option type is
- * not copied into the new set of options.
- *
- * The new set of options is allocated from the socket option memory
- * buffer of @sk.
- */
+ 
 struct ipv6_txoptions *
 ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
 		   int newtype, struct ipv6_opt_hdr *newopt)
@@ -1311,10 +1226,7 @@ ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
 struct ipv6_txoptions *__ipv6_fixup_options(struct ipv6_txoptions *opt_space,
 					    struct ipv6_txoptions *opt)
 {
-	/*
-	 * ignore the dest before srcrt unless srcrt is being included.
-	 * --yoshfuji
-	 */
+	 
 	if (opt->dst0opt && !opt->srcrt) {
 		if (opt_space != opt) {
 			memcpy(opt_space, opt, sizeof(*opt_space));
@@ -1328,17 +1240,7 @@ struct ipv6_txoptions *__ipv6_fixup_options(struct ipv6_txoptions *opt_space,
 }
 EXPORT_SYMBOL_GPL(__ipv6_fixup_options);
 
-/**
- * fl6_update_dst - update flowi destination address with info given
- *                  by srcrt option, if any.
- *
- * @fl6: flowi6 for which daddr is to be updated
- * @opt: struct ipv6_txoptions in which to look for srcrt opt
- * @orig: copy of original daddr address if modified
- *
- * Returns NULL if no txoptions or no srcrt, otherwise returns orig
- * and initial value of fl6->daddr set in orig
- */
+ 
 struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
 				const struct ipv6_txoptions *opt,
 				struct in6_addr *orig)

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Common code for Intel Running Average Power Limit (RAPL) support.
- * Copyright (c) 2019, Intel Corporation.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -26,7 +23,7 @@
 #include <asm/cpu_device_id.h>
 #include <asm/intel-family.h>
 
-/* bitmasks for RAPL MSRs, used by primitive access functions */
+ 
 #define ENERGY_STATUS_MASK      0xffffffff
 
 #define POWER_LIMIT1_MASK       0x7FFF
@@ -61,11 +58,7 @@
 #define PERF_STATUS_THROTTLE_TIME_MASK 0xffffffff
 #define PP_POLICY_MASK         0x1F
 
-/*
- * SPR has different layout for Psys Domain PowerLimit registers.
- * There are 17 bits of PL1 and PL2 instead of 15 bits.
- * The Enable bits and TimeWindow bits are also shifted as a result.
- */
+ 
 #define PSYS_POWER_LIMIT1_MASK       0x1FFFF
 #define PSYS_POWER_LIMIT1_ENABLE     BIT(17)
 
@@ -75,7 +68,7 @@
 #define PSYS_TIME_WINDOW1_MASK       (0x7FULL<<19)
 #define PSYS_TIME_WINDOW2_MASK       (0x7FULL<<51)
 
-/* bitmasks for RAPL TPMI, used by primitive access functions */
+ 
 #define TPMI_POWER_LIMIT_MASK	0x3FFFF
 #define TPMI_POWER_LIMIT_ENABLE	BIT_ULL(62)
 #define TPMI_TIME_WINDOW_MASK	(0x7FULL<<18)
@@ -84,21 +77,21 @@
 #define TPMI_INFO_MAX_MASK	(0x3FFFFULL << 36)
 #define TPMI_INFO_MAX_TIME_WIN_MASK	(0x7FULL << 54)
 
-/* Non HW constants */
-#define RAPL_PRIMITIVE_DERIVED       BIT(1)	/* not from raw data */
+ 
+#define RAPL_PRIMITIVE_DERIVED       BIT(1)	 
 #define RAPL_PRIMITIVE_DUMMY         BIT(2)
 
 #define TIME_WINDOW_MAX_MSEC 40000
 #define TIME_WINDOW_MIN_MSEC 250
-#define ENERGY_UNIT_SCALE    1000	/* scale from driver unit to powercap unit */
+#define ENERGY_UNIT_SCALE    1000	 
 enum unit_type {
-	ARBITRARY_UNIT,		/* no translation */
+	ARBITRARY_UNIT,		 
 	POWER_UNIT,
 	ENERGY_UNIT,
 	TIME_UNIT,
 };
 
-/* per domain data, some are optional */
+ 
 #define NR_RAW_PRIMITIVES (NR_RAPL_PRIMITIVES - 2)
 
 #define	DOMAIN_STATE_INACTIVE           BIT(0)
@@ -137,14 +130,11 @@ static int get_pl_lock_prim(struct rapl_domain *rd, int pl)
 			return PL4_LOCK;
 	}
 
-	/* MSR/MMIO Interface doesn't have Lock bit for PL4 */
+	 
 	if (pl == POWER_LIMIT4)
 		return -EINVAL;
 
-	/*
-	 * Power Limit register that supports two power limits has a different
-	 * bit position for the Lock bit.
-	 */
+	 
 	if (rd->rp->priv->limits[rd->id] & BIT(POWER_LIMIT2))
 		return FW_HIGH_LOCK;
 	return FW_LOCK;
@@ -186,7 +176,7 @@ static int get_pl_prim(struct rapl_domain *rd, int pl, enum pl_prims prim)
 			return POWER_LIMIT4;
 		if (prim == PL_ENABLE)
 			return PL4_ENABLE;
-		/* PL4 would be around two times PL2, use same prim as PL2. */
+		 
 		if (prim == PL_MAX_POWER)
 			return MAX_POWER;
 		if (prim == PL_LOCK)
@@ -218,16 +208,14 @@ static struct rapl_defaults *get_defaults(struct rapl_package *rp)
 	return rp->priv->defaults;
 }
 
-/* Sideband MBI registers */
+ 
 #define IOSF_CPU_POWER_BUDGET_CTL_BYT (0x2)
 #define IOSF_CPU_POWER_BUDGET_CTL_TNG (0xdf)
 
 #define PACKAGE_PLN_INT_SAVED   BIT(0)
 #define MAX_PRIM_NAME (32)
 
-/* per domain data. used to describe individual knobs such that access function
- * can be consolidated into one instead of many inline functions.
- */
+ 
 struct rapl_primitive_info {
 	const char *name;
 	u64 mask;
@@ -263,7 +251,7 @@ static u64 rapl_unit_xlate(struct rapl_domain *rd,
 			   enum unit_type type, u64 value, int to_raw);
 static void package_power_limit_irq_save(struct rapl_package *rp);
 
-static LIST_HEAD(rapl_packages);	/* guarded by CPU hotplug lock */
+static LIST_HEAD(rapl_packages);	 
 
 static const char *const rapl_domain_names[] = {
 	"package",
@@ -279,9 +267,7 @@ static int get_energy_counter(struct powercap_zone *power_zone,
 	struct rapl_domain *rd;
 	u64 energy_now;
 
-	/* prevent CPU hotplug, make sure the RAPL domain does not go
-	 * away while reading the counter.
-	 */
+	 
 	cpus_read_lock();
 	rd = power_zone_to_rapl_domain(power_zone);
 
@@ -309,9 +295,7 @@ static int release_zone(struct powercap_zone *power_zone)
 	struct rapl_domain *rd = power_zone_to_rapl_domain(power_zone);
 	struct rapl_package *rp = rd->rp;
 
-	/* package zone is the last zone of a package, we can free
-	 * memory here since all children has been unregistered.
-	 */
+	 
 	if (rd->id == RAPL_DOMAIN_PACKAGE) {
 		kfree(rd);
 		rp->domains = NULL;
@@ -367,9 +351,9 @@ static int get_domain_enable(struct powercap_zone *power_zone, bool *mode)
 	return ret;
 }
 
-/* per RAPL domain ops, in the order of rapl_domain_type */
+ 
 static const struct powercap_zone_ops zone_ops[] = {
-	/* RAPL_DOMAIN_PACKAGE */
+	 
 	{
 	 .get_energy_uj = get_energy_counter,
 	 .get_max_energy_range_uj = get_max_energy_counter,
@@ -377,7 +361,7 @@ static const struct powercap_zone_ops zone_ops[] = {
 	 .set_enable = set_domain_enable,
 	 .get_enable = get_domain_enable,
 	 },
-	/* RAPL_DOMAIN_PP0 */
+	 
 	{
 	 .get_energy_uj = get_energy_counter,
 	 .get_max_energy_range_uj = get_max_energy_counter,
@@ -385,7 +369,7 @@ static const struct powercap_zone_ops zone_ops[] = {
 	 .set_enable = set_domain_enable,
 	 .get_enable = get_domain_enable,
 	 },
-	/* RAPL_DOMAIN_PP1 */
+	 
 	{
 	 .get_energy_uj = get_energy_counter,
 	 .get_max_energy_range_uj = get_max_energy_counter,
@@ -393,7 +377,7 @@ static const struct powercap_zone_ops zone_ops[] = {
 	 .set_enable = set_domain_enable,
 	 .get_enable = get_domain_enable,
 	 },
-	/* RAPL_DOMAIN_DRAM */
+	 
 	{
 	 .get_energy_uj = get_energy_counter,
 	 .get_max_energy_range_uj = get_max_energy_counter,
@@ -401,7 +385,7 @@ static const struct powercap_zone_ops zone_ops[] = {
 	 .set_enable = set_domain_enable,
 	 .get_enable = get_domain_enable,
 	 },
-	/* RAPL_DOMAIN_PLATFORM */
+	 
 	{
 	 .get_energy_uj = get_energy_counter,
 	 .get_max_energy_range_uj = get_max_energy_counter,
@@ -411,11 +395,7 @@ static const struct powercap_zone_ops zone_ops[] = {
 	 },
 };
 
-/*
- * Constraint index used by powercap can be different than power limit (PL)
- * index in that some  PLs maybe missing due to non-existent MSRs. So we
- * need to convert here by finding the valid PLs only (name populated).
- */
+ 
 static int contraint_to_pl(struct rapl_domain *rd, int cid)
 {
 	int i, j;
@@ -539,7 +519,7 @@ static int get_max_power(struct powercap_zone *power_zone, int cid, u64 *data)
 	if (!ret)
 		*data = val;
 
-	/* As a generalization rule, PL4 would be around two times PL2. */
+	 
 	if (id == POWER_LIMIT4)
 		*data = *data * 2;
 
@@ -557,13 +537,13 @@ static const struct powercap_zone_constraint_ops constraint_ops = {
 	.get_name = get_constraint_name,
 };
 
-/* Return the id used for read_raw/write_raw callback */
+ 
 static int get_rid(struct rapl_package *rp)
 {
 	return rp->lead_cpu >= 0 ? rp->lead_cpu : rp->id;
 }
 
-/* called after domain detection and package level data are set */
+ 
 static void rapl_init_domains(struct rapl_package *rp)
 {
 	enum rapl_domain_type i;
@@ -590,7 +570,7 @@ static void rapl_init_domains(struct rapl_package *rp)
 
 		rd->id = i;
 
-		/* PL1 is supported by default */
+		 
 		rp->priv->limits[i] |= BIT(POWER_LIMIT1);
 
 		for (t = POWER_LIMIT1; t < NR_POWER_LIMITS; t++) {
@@ -635,9 +615,9 @@ static u64 rapl_unit_xlate(struct rapl_domain *rd, enum unit_type type,
 	return div64_u64(value, scale);
 }
 
-/* RAPL primitives for MSR and MMIO I/F */
+ 
 static struct rapl_primitive_info rpi_msr[NR_RAPL_PRIMITIVES] = {
-	/* name, mask, shift, msr index, unit divisor */
+	 
 	[POWER_LIMIT1] = PRIMITIVE_INFO_INIT(POWER_LIMIT1, POWER_LIMIT1_MASK, 0,
 			    RAPL_DOMAIN_REG_LIMIT, POWER_UNIT, 0),
 	[POWER_LIMIT2] = PRIMITIVE_INFO_INIT(POWER_LIMIT2, POWER_LIMIT2_MASK, 32,
@@ -686,14 +666,14 @@ static struct rapl_primitive_info rpi_msr[NR_RAPL_PRIMITIVES] = {
 			    RAPL_DOMAIN_REG_LIMIT, TIME_UNIT, 0),
 	[PSYS_TIME_WINDOW2] = PRIMITIVE_INFO_INIT(PSYS_TIME_WINDOW2, PSYS_TIME_WINDOW2_MASK, 51,
 			    RAPL_DOMAIN_REG_LIMIT, TIME_UNIT, 0),
-	/* non-hardware */
+	 
 	[AVERAGE_POWER] = PRIMITIVE_INFO_INIT(AVERAGE_POWER, 0, 0, 0, POWER_UNIT,
 			    RAPL_PRIMITIVE_DERIVED),
 };
 
-/* RAPL primitives for TPMI I/F */
+ 
 static struct rapl_primitive_info rpi_tpmi[NR_RAPL_PRIMITIVES] = {
-	/* name, mask, shift, msr index, unit divisor */
+	 
 	[POWER_LIMIT1] = PRIMITIVE_INFO_INIT(POWER_LIMIT1, TPMI_POWER_LIMIT_MASK, 0,
 		RAPL_DOMAIN_REG_LIMIT, POWER_UNIT, 0),
 	[POWER_LIMIT2] = PRIMITIVE_INFO_INIT(POWER_LIMIT2, TPMI_POWER_LIMIT_MASK, 0,
@@ -728,7 +708,7 @@ static struct rapl_primitive_info rpi_tpmi[NR_RAPL_PRIMITIVES] = {
 		RAPL_DOMAIN_REG_INFO, TIME_UNIT, 0),
 	[THROTTLED_TIME] = PRIMITIVE_INFO_INIT(THROTTLED_TIME, PERF_STATUS_THROTTLE_TIME_MASK, 0,
 		RAPL_DOMAIN_REG_PERF, TIME_UNIT, 0),
-	/* non-hardware */
+	 
 	[AVERAGE_POWER] = PRIMITIVE_INFO_INIT(AVERAGE_POWER, 0, 0, 0,
 		POWER_UNIT, RAPL_PRIMITIVE_DERIVED),
 };
@@ -746,7 +726,7 @@ static struct rapl_primitive_info *get_rpi(struct rapl_package *rp, int prim)
 static int rapl_config(struct rapl_package *rp)
 {
 	switch (rp->priv->type) {
-	/* MMIO I/F shares the same register layout as MSR registers */
+	 
 	case RAPL_IF_MMIO:
 	case RAPL_IF_MSR:
 		rp->priv->defaults = (void *)defaults_msr;
@@ -791,19 +771,7 @@ prim_fixups(struct rapl_domain *rd, enum rapl_primitives prim)
 	}
 }
 
-/* Read primitive data based on its related struct rapl_primitive_info.
- * if xlate flag is set, return translated data based on data units, i.e.
- * time, energy, and power.
- * RAPL MSRs are non-architectual and are laid out not consistently across
- * domains. Here we use primitive info to allow writing consolidated access
- * functions.
- * For a given primitive, it is processed by MSR mask and shift. Unit conversion
- * is pre-assigned based on RAPL unit MSRs read at init time.
- * 63-------------------------- 31--------------------------- 0
- * |                           xxxxx (mask)                   |
- * |                                |<- shift ----------------|
- * 63-------------------------- 31--------------------------- 0
- */
+ 
 static int rapl_read_data_raw(struct rapl_domain *rd,
 			      enum rapl_primitives prim, bool xlate, u64 *data)
 {
@@ -819,7 +787,7 @@ static int rapl_read_data_raw(struct rapl_domain *rd,
 	if (!ra.reg.val)
 		return -EINVAL;
 
-	/* non-hardware data are collected by the polling thread */
+	 
 	if (rpi->flag & RAPL_PRIMITIVE_DERIVED) {
 		*data = rd->rdd.primitives[prim];
 		return 0;
@@ -842,7 +810,7 @@ static int rapl_read_data_raw(struct rapl_domain *rd,
 	return 0;
 }
 
-/* Similar use of primitive info in the read counterpart */
+ 
 static int rapl_write_data_raw(struct rapl_domain *rd,
 			       enum rapl_primitives prim,
 			       unsigned long long value)
@@ -898,17 +866,7 @@ static int rapl_write_pl_data(struct rapl_domain *rd, int pl,
 
 	return rapl_write_data_raw(rd, prim, value);
 }
-/*
- * Raw RAPL data stored in MSRs are in certain scales. We need to
- * convert them into standard units based on the units reported in
- * the RAPL unit MSRs. This is specific to CPUs as the method to
- * calculate units differ on different CPUs.
- * We convert the units to below format based on CPUs.
- * i.e.
- * energy unit: picoJoules  : Represented in picoJoules by default
- * power unit : microWatts  : Represented in milliWatts by default
- * time unit  : microseconds: Represented in seconds by default
- */
+ 
 static int rapl_check_unit_core(struct rapl_domain *rd)
 {
 	struct reg_action ra;
@@ -970,7 +928,7 @@ static void power_limit_irq_save_cpu(void *info)
 	u32 l, h = 0;
 	struct rapl_package *rp = (struct rapl_package *)info;
 
-	/* save the state of PLN irq mask bit before disabling it */
+	 
 	rdmsr_safe(MSR_IA32_PACKAGE_THERM_INTERRUPT, &l, &h);
 	if (!(rp->power_limit_irq & PACKAGE_PLN_INT_SAVED)) {
 		rp->power_limit_irq = l & PACKAGE_THERM_INT_PLN_ENABLE;
@@ -980,15 +938,7 @@ static void power_limit_irq_save_cpu(void *info)
 	wrmsr_safe(MSR_IA32_PACKAGE_THERM_INTERRUPT, l, h);
 }
 
-/* REVISIT:
- * When package power limit is set artificially low by RAPL, LVT
- * thermal interrupt for package power limit should be ignored
- * since we are not really exceeding the real limit. The intention
- * is to avoid excessive interrupts while we are trying to save power.
- * A useful feature might be routing the package_power_limit interrupt
- * to userspace via eventfd. once we have a usecase, this is simple
- * to do by adding an atomic notifier.
- */
+ 
 
 static void package_power_limit_irq_save(struct rapl_package *rp)
 {
@@ -1001,10 +951,7 @@ static void package_power_limit_irq_save(struct rapl_package *rp)
 	smp_call_function_single(rp->lead_cpu, power_limit_irq_save_cpu, rp, 1);
 }
 
-/*
- * Restore per package power limit interrupt enable state. Called from cpu
- * hotplug code on package removal.
- */
+ 
 static void package_power_limit_irq_restore(struct rapl_package *rp)
 {
 	u32 l, h;
@@ -1015,7 +962,7 @@ static void package_power_limit_irq_restore(struct rapl_package *rp)
 	if (!boot_cpu_has(X86_FEATURE_PTS) || !boot_cpu_has(X86_FEATURE_PLN))
 		return;
 
-	/* irq enable state not saved, nothing to restore */
+	 
 	if (!(rp->power_limit_irq & PACKAGE_PLN_INT_SAVED))
 		return;
 
@@ -1033,9 +980,7 @@ static void set_floor_freq_default(struct rapl_domain *rd, bool mode)
 {
 	int i;
 
-	/* always enable clamp such that p-state can go below OS requested
-	 * range. power capping priority over guranteed frequency.
-	 */
+	 
 	rapl_write_pl_data(rd, POWER_LIMIT1, PL_CLAMP, mode);
 
 	for (i = POWER_LIMIT2; i < NR_POWER_LIMITS; i++) {
@@ -1071,12 +1016,9 @@ static void set_floor_freq_atom(struct rapl_domain *rd, bool enable)
 static u64 rapl_compute_time_window_core(struct rapl_domain *rd, u64 value,
 					 bool to_raw)
 {
-	u64 f, y;		/* fraction and exp. used for time unit */
+	u64 f, y;		 
 
-	/*
-	 * Special processing based on 2^Y*(1+F/4), refer
-	 * to Intel Software Developer's manual Vol.3B: CH 14.9.3.
-	 */
+	 
 	if (!to_raw) {
 		f = (value & 0x60) >> 5;
 		y = value & 0x1f;
@@ -1088,10 +1030,7 @@ static u64 rapl_compute_time_window_core(struct rapl_domain *rd, u64 value,
 		do_div(value, rd->time_unit);
 		y = ilog2(value);
 
-		/*
-		 * The target hardware field is 7 bits wide, so return all ones
-		 * if the exponent is too large.
-		 */
+		 
 		if (y > 0x1f)
 			return 0x7f;
 
@@ -1104,10 +1043,7 @@ static u64 rapl_compute_time_window_core(struct rapl_domain *rd, u64 value,
 static u64 rapl_compute_time_window_atom(struct rapl_domain *rd, u64 value,
 					 bool to_raw)
 {
-	/*
-	 * Atom time unit encoding is straight forward val * time_unit,
-	 * where time_unit is default to 1 sec. Never 0.
-	 */
+	 
 	if (!to_raw)
 		return (value) ? value * rd->time_unit : rd->time_unit;
 
@@ -1116,7 +1052,7 @@ static u64 rapl_compute_time_window_atom(struct rapl_domain *rd, u64 value,
 	return value;
 }
 
-/* TPMI Unit register has different layout */
+ 
 #define TPMI_POWER_UNIT_OFFSET	POWER_UNIT_OFFSET
 #define TPMI_POWER_UNIT_MASK	POWER_UNIT_MASK
 #define TPMI_ENERGY_UNIT_OFFSET	0x06
@@ -1154,7 +1090,7 @@ static int rapl_check_unit_tpmi(struct rapl_domain *rd)
 
 static const struct rapl_defaults defaults_tpmi = {
 	.check_unit = rapl_check_unit_tpmi,
-	/* Reuse existing logic, ignore the PL_CLAMP failures and enable all Power Limits */
+	 
 	.set_floor_freq = set_floor_freq_default,
 	.compute_time_window = rapl_compute_time_window_core,
 };
@@ -1279,7 +1215,7 @@ static const struct x86_cpu_id rapl_ids[] __initconst = {
 };
 MODULE_DEVICE_TABLE(x86cpu, rapl_ids);
 
-/* Read once for all raw primitive data for domains */
+ 
 static void rapl_update_domain_data(struct rapl_package *rp)
 {
 	int dmn, prim;
@@ -1288,7 +1224,7 @@ static void rapl_update_domain_data(struct rapl_package *rp)
 	for (dmn = 0; dmn < rp->nr_domains; dmn++) {
 		pr_debug("update %s domain %s data\n", rp->name,
 			 rp->domains[dmn].name);
-		/* exclude non-raw primitives */
+		 
 		for (prim = 0; prim < NR_RAW_PRIMITIVES; prim++) {
 			struct rapl_primitive_info *rpi = get_rpi(rp, prim);
 
@@ -1306,10 +1242,10 @@ static int rapl_package_register_powercap(struct rapl_package *rp)
 	struct powercap_zone *power_zone = NULL;
 	int nr_pl, ret;
 
-	/* Update the domain data of the new package */
+	 
 	rapl_update_domain_data(rp);
 
-	/* first we register package domain as the parent zone */
+	 
 	for (rd = rp->domains; rd < rp->domains + rp->nr_domains; rd++) {
 		if (rd->id == RAPL_DOMAIN_PACKAGE) {
 			nr_pl = find_nr_power_limit(rd);
@@ -1323,9 +1259,9 @@ static int rapl_package_register_powercap(struct rapl_package *rp)
 					 rp->name);
 				return PTR_ERR(power_zone);
 			}
-			/* track parent zone in per package/socket data */
+			 
 			rp->power_zone = power_zone;
-			/* done, only one package domain per socket */
+			 
 			break;
 		}
 	}
@@ -1333,7 +1269,7 @@ static int rapl_package_register_powercap(struct rapl_package *rp)
 		pr_err("no package domain found, unknown topology!\n");
 		return -ENODEV;
 	}
-	/* now register domains as children of the socket/package */
+	 
 	for (rd = rp->domains; rd < rp->domains + rp->nr_domains; rd++) {
 		struct powercap_zone *parent = rp->power_zone;
 
@@ -1341,7 +1277,7 @@ static int rapl_package_register_powercap(struct rapl_package *rp)
 			continue;
 		if (rd->id == RAPL_DOMAIN_PLATFORM)
 			parent = NULL;
-		/* number of power limits per domain varies */
+		 
 		nr_pl = find_nr_power_limit(rd);
 		power_zone = powercap_register_zone(&rd->power_zone,
 						    rp->priv->control_type,
@@ -1359,10 +1295,7 @@ static int rapl_package_register_powercap(struct rapl_package *rp)
 	return 0;
 
 err_cleanup:
-	/*
-	 * Clean up previously initialized domains within the package if we
-	 * failed after the first domain setup.
-	 */
+	 
 	while (--rd >= rp->domains) {
 		pr_debug("unregister %s domain %s\n", rp->name, rd->name);
 		powercap_unregister_zone(rp->priv->control_type,
@@ -1388,9 +1321,7 @@ static int rapl_check_domain(int domain, struct rapl_package *rp)
 		pr_err("invalid domain id %d\n", domain);
 		return -EINVAL;
 	}
-	/* make sure domain counters are available and contains non-zero
-	 * values, otherwise skip it.
-	 */
+	 
 
 	ra.mask = ENERGY_STATUS_MASK;
 	if (rp->priv->read_raw(get_rid(rp), &ra) || !ra.value)
@@ -1399,11 +1330,7 @@ static int rapl_check_domain(int domain, struct rapl_package *rp)
 	return 0;
 }
 
-/*
- * Get per domain energy/power/time unit.
- * RAPL Interfaces without per domain unit register will use the package
- * scope unit register to set per domain units.
- */
+ 
 static int rapl_get_domain_unit(struct rapl_domain *rd)
 {
 	struct rapl_defaults *defaults = get_defaults(rd->rp);
@@ -1433,15 +1360,7 @@ static int rapl_get_domain_unit(struct rapl_domain *rd)
 	return 0;
 }
 
-/*
- * Check if power limits are available. Two cases when they are not available:
- * 1. Locked by BIOS, in this case we still provide read-only access so that
- *    users can see what limit is set by the BIOS.
- * 2. Some CPUs make some domains monitoring only which means PLx MSRs may not
- *    exist at all. In this case, we do not show the constraints in powercap.
- *
- * Called after domains are detected and initialized.
- */
+ 
 static void rapl_detect_powerlimit(struct rapl_domain *rd)
 {
 	u64 val64;
@@ -1461,16 +1380,14 @@ static void rapl_detect_powerlimit(struct rapl_domain *rd)
 	}
 }
 
-/* Detect active and valid domains for the given CPU, caller must
- * ensure the CPU belongs to the targeted package and CPU hotlug is disabled.
- */
+ 
 static int rapl_detect_domains(struct rapl_package *rp)
 {
 	struct rapl_domain *rd;
 	int i;
 
 	for (i = 0; i < RAPL_DOMAIN_MAX; i++) {
-		/* use physical package id to read counters */
+		 
 		if (!rapl_check_domain(i, rp)) {
 			rp->domain_map |= 1 << i;
 			pr_info("Found RAPL domain %s\n", rapl_domain_names[i]);
@@ -1498,7 +1415,7 @@ static int rapl_detect_domains(struct rapl_package *rp)
 	return 0;
 }
 
-/* called from CPU hotplug notifier, hotplug lock held */
+ 
 void rapl_remove_package(struct rapl_package *rp)
 {
 	struct rapl_domain *rd, *rd_package = NULL;
@@ -1522,7 +1439,7 @@ void rapl_remove_package(struct rapl_package *rp)
 		powercap_unregister_zone(rp->priv->control_type,
 					 &rd->power_zone);
 	}
-	/* do parent zone last */
+	 
 	powercap_unregister_zone(rp->priv->control_type,
 				 &rd_package->power_zone);
 	list_del(&rp->plist);
@@ -1530,7 +1447,7 @@ void rapl_remove_package(struct rapl_package *rp)
 }
 EXPORT_SYMBOL_GPL(rapl_remove_package);
 
-/* caller to ensure CPU hotplug lock is held */
+ 
 struct rapl_package *rapl_find_package_domain(int id, struct rapl_if_priv *priv, bool id_is_cpu)
 {
 	struct rapl_package *rp;
@@ -1551,7 +1468,7 @@ struct rapl_package *rapl_find_package_domain(int id, struct rapl_if_priv *priv,
 }
 EXPORT_SYMBOL_GPL(rapl_find_package_domain);
 
-/* called from CPU hotplug notifier, hotplug lock held */
+ 
 struct rapl_package *rapl_add_package(int id, struct rapl_if_priv *priv, bool id_is_cpu)
 {
 	struct rapl_package *rp;
@@ -1581,7 +1498,7 @@ struct rapl_package *rapl_add_package(int id, struct rapl_if_priv *priv, bool id
 	if (ret)
 		goto err_free_package;
 
-	/* check if the package contains valid domains */
+	 
 	if (rapl_detect_domains(rp)) {
 		ret = -ENODEV;
 		goto err_free_package;

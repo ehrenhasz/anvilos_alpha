@@ -1,32 +1,18 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef MCI_H
 #define MCI_H
 
 #include "ar9003_mci.h"
 
-#define ATH_MCI_SCHED_BUF_SIZE		(16 * 16) /* 16 entries, 4 dword each */
+#define ATH_MCI_SCHED_BUF_SIZE		(16 * 16)  
 #define ATH_MCI_GPM_MAX_ENTRY		16
 #define ATH_MCI_GPM_BUF_SIZE		(ATH_MCI_GPM_MAX_ENTRY * 16)
 #define ATH_MCI_DEF_BT_PERIOD		40
 #define ATH_MCI_BDR_DUTY_CYCLE		20
 #define ATH_MCI_MAX_DUTY_CYCLE		90
 
-#define ATH_MCI_DEF_AGGR_LIMIT		6 /* in 0.24 ms */
+#define ATH_MCI_DEF_AGGR_LIMIT		6  
 #define ATH_MCI_MAX_ACL_PROFILE		7
 #define ATH_MCI_MAX_SCO_PROFILE		1
 #define ATH_MCI_MAX_PROFILE		(ATH_MCI_MAX_ACL_PROFILE +\
@@ -113,9 +99,9 @@ struct ath_mci_profile_info {
 	bool master;
 	bool edr;
 	u8 voice_type;
-	u16 T;		/* Voice: Tvoice, HID: Tsniff,        in slots */
-	u8 W;		/* Voice: Wvoice, HID: Sniff timeout, in slots */
-	u8 A;		/*		  HID: Sniff attempt, in slots */
+	u16 T;		 
+	u8 W;		 
+	u8 A;		 
 	struct list_head list;
 };
 
@@ -140,9 +126,9 @@ struct ath_mci_profile {
 };
 
 struct ath_mci_buf {
-	void *bf_addr;		/* virtual addr of desc */
-	dma_addr_t bf_paddr;    /* physical addr of buffer */
-	u32 bf_len;		/* len of data */
+	void *bf_addr;		 
+	dma_addr_t bf_paddr;     
+	u32 bf_len;		 
 };
 
 struct ath_mci_coex {
@@ -173,6 +159,6 @@ static inline void ath9k_mci_set_txpower(struct ath_softc *sc, bool setchannel,
 					 bool concur_tx)
 {
 }
-#endif /* CONFIG_ATH9K_BTCOEX_SUPPORT */
+#endif  
 
-#endif /* MCI_H*/
+#endif  

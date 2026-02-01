@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* ASN.1 Object identifier (OID) registry
- *
- * Copyright (C) 2012 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/export.h>
@@ -18,11 +14,7 @@ MODULE_DESCRIPTION("OID Registry");
 MODULE_AUTHOR("Red Hat, Inc.");
 MODULE_LICENSE("GPL");
 
-/**
- * look_up_OID - Find an OID registration for the specified data
- * @data: Binary representation of the OID
- * @datasize: Size of the binary representation
- */
+ 
 enum OID look_up_OID(const void *data, size_t datasize)
 {
 	const unsigned char *octets = data;
@@ -31,7 +23,7 @@ enum OID look_up_OID(const void *data, size_t datasize)
 	unsigned i, j, k, hash;
 	size_t len;
 
-	/* Hash the OID data */
+	 
 	hash = datasize - 1;
 
 	for (i = 0; i < datasize; i++)
@@ -39,10 +31,7 @@ enum OID look_up_OID(const void *data, size_t datasize)
 	hash = (hash >> 24) ^ (hash >> 16) ^ (hash >> 8) ^ hash;
 	hash &= 0xff;
 
-	/* Binary search the OID registry.  OIDs are stored in ascending order
-	 * of hash value then ascending order of size and then in ascending
-	 * order of reverse value.
-	 */
+	 
 	i = 0;
 	k = OID__NR;
 	while (i < k) {
@@ -69,9 +58,7 @@ enum OID look_up_OID(const void *data, size_t datasize)
 			continue;
 		}
 
-		/* Variation is most likely to be at the tail end of the
-		 * OID, so do the comparison in reverse.
-		 */
+		 
 		while (len > 0) {
 			unsigned char a = oid_data[oid_index[oid] + --len];
 			unsigned char b = octets[len];
@@ -93,21 +80,12 @@ enum OID look_up_OID(const void *data, size_t datasize)
 }
 EXPORT_SYMBOL_GPL(look_up_OID);
 
-/**
- * parse_OID - Parse an OID from a bytestream
- * @data: Binary representation of the header + OID
- * @datasize: Size of the binary representation
- * @oid: Pointer to oid to return result
- *
- * Parse an OID from a bytestream that holds the OID in the format
- * ASN1_OID | length | oid. The length indicator must equal to datasize - 2.
- * -EBADMSG is returned if the bytestream is too short.
- */
+ 
 int parse_OID(const void *data, size_t datasize, enum OID *oid)
 {
 	const unsigned char *v = data;
 
-	/* we need 2 bytes of header and at least 1 byte for oid */
+	 
 	if (datasize < 3 || v[0] != ASN1_OID || v[1] != datasize - 2)
 		return -EBADMSG;
 
@@ -116,17 +94,7 @@ int parse_OID(const void *data, size_t datasize, enum OID *oid)
 }
 EXPORT_SYMBOL_GPL(parse_OID);
 
-/*
- * sprint_OID - Print an Object Identifier into a buffer
- * @data: The encoded OID to print
- * @datasize: The size of the encoded OID
- * @buffer: The buffer to render into
- * @bufsize: The size of the buffer
- *
- * The OID is rendered into the buffer in "a.b.c.d" format and the number of
- * bytes is returned.  -EBADMSG is returned if the data could not be interpreted
- * and -ENOBUFS if the buffer was too small.
- */
+ 
 int sprint_oid(const void *data, size_t datasize, char *buffer, size_t bufsize)
 {
 	const unsigned char *v = data, *end = v + datasize;
@@ -174,15 +142,7 @@ bad:
 }
 EXPORT_SYMBOL_GPL(sprint_oid);
 
-/**
- * sprint_OID - Print an Object Identifier into a buffer
- * @oid: The OID to print
- * @buffer: The buffer to render into
- * @bufsize: The size of the buffer
- *
- * The OID is rendered into the buffer in "a.b.c.d" format and the number of
- * bytes is returned.
- */
+ 
 int sprint_OID(enum OID oid, char *buffer, size_t bufsize)
 {
 	int ret;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim Integrated MAX5481-MAX5484 digital potentiometer driver
- * Copyright 2016 Rockwell Collins
- *
- * Datasheet:
- * https://datasheets.maximintegrated.com/en/ds/MAX5481-MAX5484.pdf
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
@@ -14,11 +8,11 @@
 #include <linux/property.h>
 #include <linux/spi/spi.h>
 
-/* write wiper reg */
+ 
 #define MAX5481_WRITE_WIPER (0 << 4)
-/* copy wiper reg to NV reg */
+ 
 #define MAX5481_COPY_AB_TO_NV (2 << 4)
-/* copy NV reg to wiper reg */
+ 
 #define MAX5481_COPY_NV_TO_AB (3 << 4)
 
 #define MAX5481_MAX_POS    1023
@@ -152,12 +146,12 @@ static int max5481_probe(struct spi_device *spi)
 	indio_dev->name = id->name;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
-	/* variant specific configuration */
+	 
 	indio_dev->info = &max5481_info;
 	indio_dev->channels = max5481_channels;
 	indio_dev->num_channels = ARRAY_SIZE(max5481_channels);
 
-	/* restore wiper from NV */
+	 
 	ret = max5481_write_cmd(data, MAX5481_COPY_NV_TO_AB, 0);
 	if (ret < 0)
 		return ret;

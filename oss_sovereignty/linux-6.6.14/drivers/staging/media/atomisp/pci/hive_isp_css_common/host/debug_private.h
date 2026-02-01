@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __DEBUG_PRIVATE_H_INCLUDED__
 #define __DEBUG_PRIVATE_H_INCLUDED__
@@ -52,7 +40,7 @@ STORAGE_CLASS_DEBUG_C void debug_synch_queue(void)
 {
 	u32 remote_tail = sp_dmem_load_uint32(SP0_ID,
 					      debug_buffer_address + DEBUG_DATA_TAIL_ADDR);
-	/* We could move the remote head after the upload, but we would have to limit the upload w.r.t. the local head. This is easier */
+	 
 	if (remote_tail > debug_data_ptr->tail) {
 		size_t	delta = remote_tail - debug_data_ptr->tail;
 
@@ -68,7 +56,7 @@ STORAGE_CLASS_DEBUG_C void debug_synch_queue(void)
 		sp_dmem_load(SP0_ID, debug_buffer_address + DEBUG_DATA_BUF_ADDR,
 			     (void *)&debug_data_ptr->buf[0],
 			     remote_tail * sizeof(uint32_t));
-	} /* else we are up to date */
+	}  
 	debug_data_ptr->tail = remote_tail;
 }
 
@@ -76,7 +64,7 @@ STORAGE_CLASS_DEBUG_C void debug_synch_queue_isp(void)
 {
 	u32 remote_tail = isp_dmem_load_uint32(ISP0_ID,
 					       DEBUG_BUFFER_ISP_DMEM_ADDR + DEBUG_DATA_TAIL_ADDR);
-	/* We could move the remote head after the upload, but we would have to limit the upload w.r.t. the local head. This is easier */
+	 
 	if (remote_tail > debug_data_ptr->tail) {
 		size_t	delta = remote_tail - debug_data_ptr->tail;
 
@@ -92,7 +80,7 @@ STORAGE_CLASS_DEBUG_C void debug_synch_queue_isp(void)
 		isp_dmem_load(ISP0_ID, DEBUG_BUFFER_ISP_DMEM_ADDR + DEBUG_DATA_BUF_ADDR,
 			      (void *)&debug_data_ptr->buf[0],
 			      remote_tail * sizeof(uint32_t));
-	} /* else we are up to date */
+	}  
 	debug_data_ptr->tail = remote_tail;
 }
 
@@ -102,7 +90,7 @@ STORAGE_CLASS_DEBUG_C void debug_synch_queue_ddr(void)
 
 	hmm_load(debug_buffer_ddr_address + DEBUG_DATA_TAIL_DDR_ADDR, &remote_tail,
 		  sizeof(uint32_t));
-	/* We could move the remote head after the upload, but we would have to limit the upload w.r.t. the local head. This is easier */
+	 
 	if (remote_tail > debug_data_ptr->tail) {
 		size_t	delta = remote_tail - debug_data_ptr->tail;
 
@@ -118,8 +106,8 @@ STORAGE_CLASS_DEBUG_C void debug_synch_queue_ddr(void)
 		hmm_load(debug_buffer_ddr_address + DEBUG_DATA_BUF_DDR_ADDR,
 			  (void *)&debug_data_ptr->buf[0],
 			  remote_tail * sizeof(uint32_t));
-	} /* else we are up to date */
+	}  
 	debug_data_ptr->tail = remote_tail;
 }
 
-#endif /* __DEBUG_PRIVATE_H_INCLUDED__ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -9,7 +9,7 @@
 char _license[] SEC("license") = "GPL";
 
 struct bpf_testmod_test_read_ctx {
-	/* field order is mixed up */
+	 
 	size_t len;
 	char *buf;
 	loff_t off;
@@ -30,7 +30,7 @@ struct core_reloc_module_output {
 	bool buf_exists;
 	bool len_exists;
 	bool off_exists;
-	/* we have test_progs[-flavor], so cut flavor part */
+	 
 	char comm[sizeof("test_progs")];
 	int comm_len;
 };

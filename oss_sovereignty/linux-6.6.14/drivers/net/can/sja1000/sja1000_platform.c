@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005 Sascha Hauer, Pengutronix
- * Copyright (C) 2007 Wolfgang Grandegger <wg@grandegger.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -112,7 +109,7 @@ static void sp_populate(struct sja1000_priv *priv,
 			struct sja1000_platform_data *pdata,
 			unsigned long resource_mem_flags)
 {
-	/* The CAN clock frequency is half the oscillator clock frequency */
+	 
 	priv->can.clock.freq = pdata->osc_freq / 2;
 	priv->ocr = pdata->ocr;
 	priv->cdr = pdata->cdr;
@@ -141,7 +138,7 @@ static void sp_populate_of(struct sja1000_priv *priv, struct device_node *of)
 
 	err = of_property_read_u32(of, "reg-io-width", &prop);
 	if (err)
-		prop = 1; /* 8 bit is default */
+		prop = 1;  
 
 	switch (prop) {
 	case 4:
@@ -163,20 +160,20 @@ static void sp_populate_of(struct sja1000_priv *priv, struct device_node *of)
 		if (!err)
 			priv->can.clock.freq = prop / 2;
 		else
-			priv->can.clock.freq = SP_CAN_CLOCK; /* default */
+			priv->can.clock.freq = SP_CAN_CLOCK;  
 	}
 
 	err = of_property_read_u32(of, "nxp,tx-output-mode", &prop);
 	if (!err)
 		priv->ocr |= prop & OCR_MODE_MASK;
 	else
-		priv->ocr |= OCR_MODE_NORMAL; /* default */
+		priv->ocr |= OCR_MODE_NORMAL;  
 
 	err = of_property_read_u32(of, "nxp,tx-output-config", &prop);
 	if (!err)
 		priv->ocr |= (prop << OCR_TX_SHIFT) & OCR_TX_MASK;
 	else
-		priv->ocr |= OCR_TX0_PULLDOWN; /* default */
+		priv->ocr |= OCR_TX0_PULLDOWN;  
 
 	err = of_property_read_u32(of, "nxp,clock-out-frequency", &prop);
 	if (!err && prop) {
@@ -187,11 +184,11 @@ static void sp_populate_of(struct sja1000_priv *priv, struct device_node *of)
 		else
 			priv->cdr |= CDR_CLKOUT_MASK;
 	} else {
-		priv->cdr |= CDR_CLK_OFF; /* default */
+		priv->cdr |= CDR_CLK_OFF;  
 	}
 
 	if (!of_property_read_bool(of, "nxp,no-comparator-bypass"))
-		priv->cdr |= CDR_CBP; /* default */
+		priv->cdr |= CDR_CBP;  
 }
 
 static struct sja1000_of_data technologic_data = {
@@ -207,7 +204,7 @@ static const struct of_device_id sp_of_table[] = {
 	{ .compatible = "nxp,sja1000", .data = NULL, },
 	{ .compatible = "renesas,rzn1-sja1000", .data = &renesas_data, },
 	{ .compatible = "technologic,sja1000", .data = &technologic_data, },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, sp_of_table);
 

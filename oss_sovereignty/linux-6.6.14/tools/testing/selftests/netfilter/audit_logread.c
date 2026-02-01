@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -39,7 +39,7 @@ int audit_recv(int fd, struct audit_message *rep)
 	if (ret < 0 ||
 	    addrlen != sizeof(addr) ||
 	    addr.nl_pid != 0 ||
-	    rep->nlh.nlmsg_type == NLMSG_ERROR) /* short-cut for now */
+	    rep->nlh.nlmsg_type == NLMSG_ERROR)  
 		return -1;
 
 	return ret;
@@ -104,19 +104,19 @@ int readlog(int fd)
 	if (rep.nlh.nlmsg_type != AUDIT_NETFILTER_CFG)
 		return 0;
 
-	/* skip the initial "audit(...): " part */
+	 
 	strtok(rep.u.data, " ");
 
 	while ((k = strtok(NULL, "="))) {
 		v = strtok(NULL, " ");
 
-		/* these vary and/or are uninteresting, ignore */
+		 
 		if (!strcmp(k, "pid") ||
 		    !strcmp(k, "comm") ||
 		    !strcmp(k, "subj"))
 			continue;
 
-		/* strip the varying sequence number */
+		 
 		if (!strcmp(k, "table"))
 			*strchrnul(v, ':') = '\0';
 

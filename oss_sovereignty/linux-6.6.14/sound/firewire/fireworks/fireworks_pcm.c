@@ -1,41 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks_pcm.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2009-2010 Clemens Ladisch
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 #include "./fireworks.h"
 
-/*
- * NOTE:
- * Fireworks changes its AMDTP channels for PCM data according to its sampling
- * rate. There are three modes. Here _XX is either _rx or _tx.
- *  0:  32.0- 48.0 kHz then snd_efw_hwinfo.amdtp_XX_pcm_channels applied
- *  1:  88.2- 96.0 kHz then snd_efw_hwinfo.amdtp_XX_pcm_channels_2x applied
- *  2: 176.4-192.0 kHz then snd_efw_hwinfo.amdtp_XX_pcm_channels_4x applied
- *
- * The number of PCM channels for analog input and output are always fixed but
- * the number of PCM channels for digital input and output are differed.
- *
- * Additionally, according to "AudioFire Owner's Manual Version 2.2", in some
- * model, the number of PCM channels for digital input has more restriction
- * depending on which digital interface is selected.
- *  - S/PDIF coaxial and optical	: use input 1-2
- *  - ADAT optical at 32.0-48.0 kHz	: use input 1-8
- *  - ADAT optical at 88.2-96.0 kHz	: use input 1-4 (S/MUX format)
- *
- * The data in AMDTP channels for blank PCM channels are zero.
- */
+ 
 static const unsigned int freq_table[] = {
-	/* multiplier mode 0 */
+	 
 	[0] = 32000,
 	[1] = 44100,
 	[2] = 48000,
-	/* multiplier mode 1 */
+	 
 	[3] = 88200,
 	[4] = 96000,
-	/* multiplier mode 2 */
+	 
 	[5] = 176400,
 	[6] = 192000,
 };
@@ -147,7 +123,7 @@ pcm_init_hw_params(struct snd_efw *efw,
 		pcm_channels = efw->pcm_playback_channels;
 	}
 
-	/* limit rates */
+	 
 	runtime->hw.rates = efw->supported_sampling_rate;
 	snd_pcm_limit_hw_rates(runtime);
 
@@ -191,9 +167,9 @@ static int pcm_open(struct snd_pcm_substream *substream)
 
 	mutex_lock(&efw->mutex);
 
-	// When source of clock is not internal or any stream is reserved for
-	// transmission of PCM frames, the available sampling rate is limited
-	// at current one.
+	
+	
+	
 	if ((clock_source != SND_EFW_CLOCK_SOURCE_INTERNAL) ||
 	    (efw->substreams_counter > 0 && d->events_per_period > 0)) {
 		unsigned int frames_per_period = d->events_per_period;

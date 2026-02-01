@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dice_stream.c - a part of driver for DICE based devices
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- * Copyright (c) 2014 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include "dice.h"
 
@@ -17,14 +12,14 @@ struct reg_params {
 };
 
 const unsigned int snd_dice_rates[SND_DICE_RATES_COUNT] = {
-	/* mode 0 */
+	 
 	[0] =  32000,
 	[1] =  44100,
 	[2] =  48000,
-	/* mode 1 */
+	 
 	[3] =  88200,
 	[4] =  96000,
-	/* mode 2 */
+	 
 	[5] = 176400,
 	[6] = 192000,
 };
@@ -32,7 +27,7 @@ const unsigned int snd_dice_rates[SND_DICE_RATES_COUNT] = {
 int snd_dice_stream_get_rate_mode(struct snd_dice *dice, unsigned int rate,
 				  enum snd_dice_rate_mode *mode)
 {
-	/* Corresponding to each entry in snd_dice_rates. */
+	 
 	static const enum snd_dice_rate_mode modes[] = {
 		[0] = SND_DICE_RATE_MODE_LOW,
 		[1] = SND_DICE_RATE_MODE_LOW,
@@ -160,14 +155,14 @@ static int keep_resources(struct snd_dice *dice, struct amdtp_stream *stream,
 	unsigned int i;
 	int err;
 
-	// At 176.4/192.0 kHz, Dice has a quirk to transfer two PCM frames in
-	// one data block of AMDTP packet. Thus sampling transfer frequency is
-	// a half of PCM sampling frequency, i.e. PCM frames at 192.0 kHz are
-	// transferred on AMDTP packets at 96 kHz. Two successive samples of a
-	// channel are stored consecutively in the packet. This quirk is called
-	// as 'Dual Wire'.
-	// For this quirk, blocking mode is required and PCM buffer size should
-	// be aligned to SYT_INTERVAL.
+	
+	
+	
+	
+	
+	
+	
+	
 	double_pcm_frames = (rate > 96000 && !dice->disable_double_pcm_frames);
 	if (double_pcm_frames) {
 		rate /= 2;
@@ -236,7 +231,7 @@ static int keep_dual_resources(struct snd_dice *dice, unsigned int rate,
 		pcm_chs = be32_to_cpu(reg[0]);
 		midi_ports = be32_to_cpu(reg[1]);
 
-		// These are important for developer of this driver.
+		
 		if (pcm_chs != pcm_cache) {
 			dev_info(&dice->unit->device,
 				 "cache mismatch: pcm: %u:%u, midi: %u\n",
@@ -269,7 +264,7 @@ int snd_dice_stream_reserve_duplex(struct snd_dice *dice, unsigned int rate,
 	unsigned int curr_rate;
 	int err;
 
-	// Check sampling transmission frequency.
+	
 	err = snd_dice_transaction_get_rate(dice, &curr_rate);
 	if (err < 0)
 		return err;
@@ -288,15 +283,15 @@ int snd_dice_stream_reserve_duplex(struct snd_dice *dice, unsigned int rate,
 
 		release_resources(dice);
 
-		// Just after owning the unit (GLOBAL_OWNER), the unit can
-		// return invalid stream formats. Selecting clock parameters
-		// have an effect for the unit to refine it.
+		
+		
+		
 		err = select_clock(dice, rate);
 		if (err < 0)
 			return err;
 
-		// After changing sampling transfer frequency, the value of
-		// register can be changed.
+		
+		
 		err = get_register_params(dice, &tx_params, &rx_params);
 		if (err < 0)
 			return err;
@@ -374,11 +369,7 @@ static int start_streams(struct snd_dice *dice, enum amdtp_stream_direction dir,
 	return 0;
 }
 
-/*
- * MEMO: After this function, there're two states of streams:
- *  - None streams are running.
- *  - All streams are running.
- */
+ 
 int snd_dice_stream_start_duplex(struct snd_dice *dice)
 {
 	unsigned int generation = dice->rx_resources[0].generation;
@@ -395,7 +386,7 @@ int snd_dice_stream_start_duplex(struct snd_dice *dice)
 	if (err < 0)
 		return err;
 
-	// Check error of packet streaming.
+	 
 	for (i = 0; i < MAX_STREAMS; ++i) {
 		if (amdtp_streaming_error(&dice->tx_stream[i]) ||
 		    amdtp_streaming_error(&dice->rx_stream[i])) {
@@ -414,7 +405,7 @@ int snd_dice_stream_start_duplex(struct snd_dice *dice)
 		}
 	}
 
-	// Check required streams are running or not.
+	 
 	err = snd_dice_transaction_get_rate(dice, &rate);
 	if (err < 0)
 		return err;
@@ -430,7 +421,7 @@ int snd_dice_stream_start_duplex(struct snd_dice *dice)
 			break;
 	}
 	if (i < MAX_STREAMS) {
-		// Start both streams.
+		 
 		err = start_streams(dice, AMDTP_IN_STREAM, rate, &tx_params);
 		if (err < 0)
 			goto error;
@@ -446,10 +437,10 @@ int snd_dice_stream_start_duplex(struct snd_dice *dice)
 			goto error;
 		}
 
-		// MEMO: The device immediately starts packet transmission when enabled. Some
-		// devices are strictly to generate any discontinuity in the sequence of tx packet
-		// when they receives invalid sequence of presentation time in CIP header. The
-		// sequence replay for media clock recovery can suppress the behaviour.
+		 
+		 
+		 
+		 
 		err = amdtp_domain_start(&dice->domain, 0, true, false);
 		if (err < 0)
 			goto error;
@@ -467,11 +458,7 @@ error:
 	return err;
 }
 
-/*
- * MEMO: After this function, there're two states of streams:
- *  - None streams are running.
- *  - All streams are running.
- */
+ 
 void snd_dice_stream_stop_duplex(struct snd_dice *dice)
 {
 	struct reg_params tx_params, rx_params;
@@ -514,10 +501,7 @@ end:
 	return err;
 }
 
-/*
- * This function should be called before starting streams or after stopping
- * streams.
- */
+ 
 static void destroy_stream(struct snd_dice *dice,
 			   enum amdtp_stream_direction dir,
 			   unsigned int index)
@@ -588,14 +572,7 @@ void snd_dice_stream_update_duplex(struct snd_dice *dice)
 {
 	struct reg_params tx_params, rx_params;
 
-	/*
-	 * On a bus reset, the DICE firmware disables streaming and then goes
-	 * off contemplating its own navel for hundreds of milliseconds before
-	 * it can react to any of our attempts to reenable streaming.  This
-	 * means that we lose synchronization anyway, so we force our streams
-	 * to stop so that the application can restart them in an orderly
-	 * manner.
-	 */
+	 
 	dice->global_enabled = false;
 
 	if (get_register_params(dice, &tx_params, &rx_params) == 0) {
@@ -615,15 +592,12 @@ int snd_dice_stream_detect_current_formats(struct snd_dice *dice)
 	int i;
 	int err;
 
-	/* If extended protocol is available, detect detail spec. */
+	 
 	err = snd_dice_detect_extension_formats(dice);
 	if (err >= 0)
 		return err;
 
-	/*
-	 * Available stream format is restricted at current mode of sampling
-	 * clock.
-	 */
+	 
 	err = snd_dice_transaction_get_rate(dice, &rate);
 	if (err < 0)
 		return err;
@@ -632,11 +606,7 @@ int snd_dice_stream_detect_current_formats(struct snd_dice *dice)
 	if (err < 0)
 		return err;
 
-	/*
-	 * Just after owning the unit (GLOBAL_OWNER), the unit can return
-	 * invalid stream formats. Selecting clock parameters have an effect
-	 * for the unit to refine it.
-	 */
+	 
 	err = select_clock(dice, rate);
 	if (err < 0)
 		return err;

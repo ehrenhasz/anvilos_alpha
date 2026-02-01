@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012-2013 Avionic Design GmbH
- * Copyright (C) 2012 NVIDIA CORPORATION.  All rights reserved.
- *
- * Based on the KMS/FB DMA helpers
- *   Copyright (C) 2012 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/fb.h>
@@ -45,7 +39,7 @@ static void tegra_fbdev_fb_destroy(struct fb_info *info)
 
 	drm_fb_helper_fini(helper);
 
-	/* Undo the special mapping we made in fbdev probe. */
+	 
 	if (bo->pages) {
 		vunmap(bo->vaddr);
 		bo->vaddr = NULL;
@@ -149,9 +143,7 @@ static const struct drm_fb_helper_funcs tegra_fb_helper_funcs = {
 	.fb_probe = tegra_fbdev_probe,
 };
 
-/*
- * struct drm_client
- */
+ 
 
 static void tegra_fbdev_client_unregister(struct drm_client_dev *client)
 {

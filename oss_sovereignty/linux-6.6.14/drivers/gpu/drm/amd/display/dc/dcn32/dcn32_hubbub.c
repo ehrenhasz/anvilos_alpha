@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dcn30/dcn30_hubbub.h"
@@ -41,10 +18,7 @@
 #define FN(reg_name, field_name) \
 	hubbub2->shifts->field_name, hubbub2->masks->field_name
 
-/**
- * DCN32_CRB_SEGMENT_SIZE_KB: Maximum Configurable Return Buffer size for
- *                            DCN32
- */
+ 
 #define DCN32_CRB_SEGMENT_SIZE_KB 64
 
 static void dcn32_init_crb(struct hubbub *hubbub)
@@ -78,8 +52,8 @@ void hubbub32_set_request_limit(struct hubbub *hubbub, int memory_channel_count,
 
 	uint32_t request_limit = 3 * memory_channel_count * words_per_channel / 4;
 
-	ASSERT((request_limit & (~0xFFF)) == 0); //field is only 24 bits long
-	ASSERT(request_limit > 0); //field is only 24 bits long
+	ASSERT((request_limit & (~0xFFF)) == 0); 
+	ASSERT(request_limit > 0); 
 
 	if (request_limit > 0xFFF)
 		request_limit = 0xFFF;
@@ -121,7 +95,7 @@ void dcn32_program_det_size(struct hubbub *hubbub, int hubp_inst, unsigned int d
 	}
 	if (hubbub2->det0_size + hubbub2->det1_size + hubbub2->det2_size
 			+ hubbub2->det3_size + hubbub2->compbuf_size_segments > hubbub2->crb_size_segs) {
-		/* This may happen during seamless transition from ODM 2:1 to ODM4:1 */
+		 
 		DC_LOG_WARNING("CRB Config Warning: DET size (%d,%d,%d,%d) + Compbuf size (%d) >  CRB segments (%d)\n",
 						hubbub2->det0_size, hubbub2->det1_size, hubbub2->det2_size, hubbub2->det3_size,
 						hubbub2->compbuf_size_segments, hubbub2->crb_size_segs);
@@ -140,7 +114,7 @@ static void dcn32_program_compbuf_size(struct hubbub *hubbub, unsigned int compb
 			REG_WAIT(DCHUBBUB_DET2_CTRL, DET2_SIZE_CURRENT, hubbub2->det2_size, 1, 100);
 			REG_WAIT(DCHUBBUB_DET3_CTRL, DET3_SIZE_CURRENT, hubbub2->det3_size, 1, 100);
 		}
-		/* Should never be hit, if it is we have an erroneous hw config*/
+		 
 		ASSERT(hubbub2->det0_size + hubbub2->det1_size + hubbub2->det2_size
 				+ hubbub2->det3_size + compbuf_size_segments <= hubbub2->crb_size_segs);
 		REG_UPDATE(DCHUBBUB_COMPBUF_CTRL, COMPBUF_SIZE, compbuf_size_segments);
@@ -175,8 +149,8 @@ bool hubbub32_program_urgent_watermarks(
 	uint32_t prog_wm_value;
 	bool wm_pending = false;
 
-	/* Repeat for water mark set A, B, C and D. */
-	/* clock state A */
+	 
+	 
 	if (safe_to_lower || watermarks->a.urgent_ns > hubbub2->watermarks.a.urgent_ns) {
 		hubbub2->watermarks.a.urgent_ns = watermarks->a.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->a.urgent_ns,
@@ -190,7 +164,7 @@ bool hubbub32_program_urgent_watermarks(
 	} else if (watermarks->a.urgent_ns < hubbub2->watermarks.a.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->a.frac_urg_bw_flip
 			> hubbub2->watermarks.a.frac_urg_bw_flip) {
 		hubbub2->watermarks.a.frac_urg_bw_flip = watermarks->a.frac_urg_bw_flip;
@@ -220,7 +194,7 @@ bool hubbub32_program_urgent_watermarks(
 	} else if (watermarks->a.urgent_latency_ns < hubbub2->watermarks.a.urgent_latency_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.urgent_ns > hubbub2->watermarks.b.urgent_ns) {
 		hubbub2->watermarks.b.urgent_ns = watermarks->b.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->b.urgent_ns,
@@ -234,7 +208,7 @@ bool hubbub32_program_urgent_watermarks(
 	} else if (watermarks->b.urgent_ns < hubbub2->watermarks.b.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->b.frac_urg_bw_flip
 			> hubbub2->watermarks.b.frac_urg_bw_flip) {
 		hubbub2->watermarks.b.frac_urg_bw_flip = watermarks->b.frac_urg_bw_flip;
@@ -264,7 +238,7 @@ bool hubbub32_program_urgent_watermarks(
 	} else if (watermarks->b.urgent_latency_ns < hubbub2->watermarks.b.urgent_latency_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.urgent_ns > hubbub2->watermarks.c.urgent_ns) {
 		hubbub2->watermarks.c.urgent_ns = watermarks->c.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->c.urgent_ns,
@@ -278,7 +252,7 @@ bool hubbub32_program_urgent_watermarks(
 	} else if (watermarks->c.urgent_ns < hubbub2->watermarks.c.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->c.frac_urg_bw_flip
 			> hubbub2->watermarks.c.frac_urg_bw_flip) {
 		hubbub2->watermarks.c.frac_urg_bw_flip = watermarks->c.frac_urg_bw_flip;
@@ -308,7 +282,7 @@ bool hubbub32_program_urgent_watermarks(
 	} else if (watermarks->c.urgent_latency_ns < hubbub2->watermarks.c.urgent_latency_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.urgent_ns > hubbub2->watermarks.d.urgent_ns) {
 		hubbub2->watermarks.d.urgent_ns = watermarks->d.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->d.urgent_ns,
@@ -322,7 +296,7 @@ bool hubbub32_program_urgent_watermarks(
 	} else if (watermarks->d.urgent_ns < hubbub2->watermarks.d.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->d.frac_urg_bw_flip
 			> hubbub2->watermarks.d.frac_urg_bw_flip) {
 		hubbub2->watermarks.d.frac_urg_bw_flip = watermarks->d.frac_urg_bw_flip;
@@ -365,7 +339,7 @@ bool hubbub32_program_stutter_watermarks(
 	uint32_t prog_wm_value;
 	bool wm_pending = false;
 
-	/* clock state A */
+	 
 	if (safe_to_lower || watermarks->a.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub2->watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub2->watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -398,7 +372,7 @@ bool hubbub32_program_stutter_watermarks(
 			< hubbub2->watermarks.a.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub2->watermarks.b.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub2->watermarks.b.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -431,7 +405,7 @@ bool hubbub32_program_stutter_watermarks(
 			< hubbub2->watermarks.b.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub2->watermarks.c.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub2->watermarks.c.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -464,7 +438,7 @@ bool hubbub32_program_stutter_watermarks(
 			< hubbub2->watermarks.c.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub2->watermarks.d.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub2->watermarks.d.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -512,8 +486,8 @@ bool hubbub32_program_pstate_watermarks(
 
 	bool wm_pending = false;
 
-	/* Section for UCLK_PSTATE_CHANGE_WATERMARKS */
-	/* clock state A */
+	 
+	 
 	if (safe_to_lower || watermarks->a.cstate_pstate.pstate_change_ns
 			> hubbub2->watermarks.a.cstate_pstate.pstate_change_ns) {
 		hubbub2->watermarks.a.cstate_pstate.pstate_change_ns =
@@ -530,7 +504,7 @@ bool hubbub32_program_pstate_watermarks(
 			< hubbub2->watermarks.a.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.cstate_pstate.pstate_change_ns
 			> hubbub2->watermarks.b.cstate_pstate.pstate_change_ns) {
 		hubbub2->watermarks.b.cstate_pstate.pstate_change_ns =
@@ -547,7 +521,7 @@ bool hubbub32_program_pstate_watermarks(
 			< hubbub2->watermarks.b.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.cstate_pstate.pstate_change_ns
 			> hubbub2->watermarks.c.cstate_pstate.pstate_change_ns) {
 		hubbub2->watermarks.c.cstate_pstate.pstate_change_ns =
@@ -564,7 +538,7 @@ bool hubbub32_program_pstate_watermarks(
 			< hubbub2->watermarks.c.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.cstate_pstate.pstate_change_ns
 			> hubbub2->watermarks.d.cstate_pstate.pstate_change_ns) {
 		hubbub2->watermarks.d.cstate_pstate.pstate_change_ns =
@@ -581,8 +555,8 @@ bool hubbub32_program_pstate_watermarks(
 			< hubbub2->watermarks.d.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* Section for FCLK_PSTATE_CHANGE_WATERMARKS */
-	/* clock state A */
+	 
+	 
 	if (safe_to_lower || watermarks->a.cstate_pstate.fclk_pstate_change_ns
 			> hubbub2->watermarks.a.cstate_pstate.fclk_pstate_change_ns) {
 		hubbub2->watermarks.a.cstate_pstate.fclk_pstate_change_ns =
@@ -599,7 +573,7 @@ bool hubbub32_program_pstate_watermarks(
 			< hubbub2->watermarks.a.cstate_pstate.fclk_pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.cstate_pstate.fclk_pstate_change_ns
 			> hubbub2->watermarks.b.cstate_pstate.fclk_pstate_change_ns) {
 		hubbub2->watermarks.b.cstate_pstate.fclk_pstate_change_ns =
@@ -616,7 +590,7 @@ bool hubbub32_program_pstate_watermarks(
 			< hubbub2->watermarks.b.cstate_pstate.fclk_pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.cstate_pstate.fclk_pstate_change_ns
 			> hubbub2->watermarks.c.cstate_pstate.fclk_pstate_change_ns) {
 		hubbub2->watermarks.c.cstate_pstate.fclk_pstate_change_ns =
@@ -633,7 +607,7 @@ bool hubbub32_program_pstate_watermarks(
 			< hubbub2->watermarks.c.cstate_pstate.fclk_pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.cstate_pstate.fclk_pstate_change_ns
 			> hubbub2->watermarks.d.cstate_pstate.fclk_pstate_change_ns) {
 		hubbub2->watermarks.d.cstate_pstate.fclk_pstate_change_ns =
@@ -665,7 +639,7 @@ bool hubbub32_program_usr_watermarks(
 
 	bool wm_pending = false;
 
-	/* clock state A */
+	 
 	if (safe_to_lower || watermarks->a.usr_retraining_ns
 			> hubbub2->watermarks.a.usr_retraining_ns) {
 		hubbub2->watermarks.a.usr_retraining_ns = watermarks->a.usr_retraining_ns;
@@ -681,7 +655,7 @@ bool hubbub32_program_usr_watermarks(
 			< hubbub2->watermarks.a.usr_retraining_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.usr_retraining_ns
 			> hubbub2->watermarks.b.usr_retraining_ns) {
 		hubbub2->watermarks.b.usr_retraining_ns = watermarks->b.usr_retraining_ns;
@@ -697,7 +671,7 @@ bool hubbub32_program_usr_watermarks(
 			< hubbub2->watermarks.b.usr_retraining_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.usr_retraining_ns
 			> hubbub2->watermarks.c.usr_retraining_ns) {
 		hubbub2->watermarks.c.usr_retraining_ns =
@@ -714,7 +688,7 @@ bool hubbub32_program_usr_watermarks(
 			< hubbub2->watermarks.c.usr_retraining_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.usr_retraining_ns
 			> hubbub2->watermarks.d.usr_retraining_ns) {
 		hubbub2->watermarks.d.usr_retraining_ns =
@@ -738,10 +712,7 @@ void hubbub32_force_usr_retraining_allow(struct hubbub *hubbub, bool allow)
 {
 	struct dcn20_hubbub *hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
-	/*
-	 * DCHUBBUB_ARB_ALLOW_USR_RETRAINING_FORCE_ENABLE = 1 means enabling forcing value
-	 * DCHUBBUB_ARB_ALLOW_USR_RETRAINING_FORCE_VALUE = 1 or 0,  means value to be forced when force enable
-	 */
+	 
 
 	REG_UPDATE_2(DCHUBBUB_ARB_USR_RETRAINING_CNTL,
 			DCHUBBUB_ARB_ALLOW_USR_RETRAINING_FORCE_VALUE, allow,
@@ -768,23 +739,8 @@ static bool hubbub32_program_watermarks(
 	if (hubbub32_program_usr_watermarks(hubbub, watermarks, refclk_mhz, safe_to_lower))
 		wm_pending = true;
 
-	/*
-	 * The DCHub arbiter has a mechanism to dynamically rate limit the DCHub request stream to the fabric.
-	 * If the memory controller is fully utilized and the DCHub requestors are
-	 * well ahead of their amortized schedule, then it is safe to prevent the next winner
-	 * from being committed and sent to the fabric.
-	 * The utilization of the memory controller is approximated by ensuring that
-	 * the number of outstanding requests is greater than a threshold specified
-	 * by the ARB_MIN_REQ_OUTSTANDING. To determine that the DCHub requestors are well ahead of the amortized schedule,
-	 * the slack of the next winner is compared with the ARB_SAT_LEVEL in DLG RefClk cycles.
-	 *
-	 * TODO: Revisit request limit after figure out right number. request limit for RM isn't decided yet, set maximum value (0x1FF)
-	 * to turn off it for now.
-	 */
-	/*REG_SET(DCHUBBUB_ARB_SAT_LEVEL, 0,
-			DCHUBBUB_ARB_SAT_LEVEL, 60 * refclk_mhz);
-	REG_UPDATE(DCHUBBUB_ARB_DF_REQ_OUTSTAND,
-			DCHUBBUB_ARB_MIN_REQ_OUTSTAND, 0x1FF);*/
+	 
+	 
 
 	hubbub1_allow_self_refresh_control(hubbub, !hubbub->ctx->dc->debug.disable_stutter);
 
@@ -793,7 +749,7 @@ static bool hubbub32_program_watermarks(
 	return wm_pending;
 }
 
-/* Copy values from WM set A to all other sets */
+ 
 static void hubbub32_init_watermarks(struct hubbub *hubbub)
 {
 	struct dcn20_hubbub *hubbub2 = TO_DCN20_HUBBUB(hubbub);
@@ -949,26 +905,22 @@ void hubbub32_init(struct hubbub *hubbub)
 {
 	struct dcn20_hubbub *hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
-	/* Enable clock gate*/
+	 
 	if (hubbub->ctx->dc->debug.disable_clock_gate) {
-		/*done in hwseq*/
-		/*REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);*/
+		 
+		 
 
 		REG_UPDATE_2(DCHUBBUB_CLOCK_CNTL,
 			DISPCLK_R_DCHUBBUB_GATE_DIS, 1,
 			DCFCLK_R_DCHUBBUB_GATE_DIS, 1);
 	}
-	/*
-	ignore the "df_pre_cstate_req" from the SDP port control.
-	only the DCN will determine when to connect the SDP port
-	*/
+	 
 	REG_UPDATE(DCHUBBUB_SDPIF_CFG0,
 			SDPIF_PORT_CONTROL, 1);
-	/*Set SDP's max outstanding request to 512
-	must set the register back to 0 (max outstanding = 256) in zero frame buffer mode*/
+	 
 	REG_UPDATE(DCHUBBUB_SDPIF_CFG1,
 			SDPIF_MAX_NUM_OUTSTANDING, 1);
-	/*must set the registers back to 256 in zero frame buffer mode*/
+	 
 	REG_UPDATE_2(DCHUBBUB_ARB_DF_REQ_OUTSTAND,
 			DCHUBBUB_ARB_MAX_REQ_OUTSTAND, 512,
 			DCHUBBUB_ARB_MIN_REQ_OUTSTAND, 512);

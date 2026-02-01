@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) driver
- *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
- *
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/ccp.h>
 
 #include "ccp-dev.h"
 
-/* DebugFS helpers */
+ 
 #define	OBUFP		(obuf + oboff)
 #define	OBUFLEN		512
 #define	OBUFSPC		(OBUFLEN - oboff)
@@ -91,9 +85,7 @@ static ssize_t ccp5_debugfs_info_read(struct file *filp, char __user *ubuf,
 	return ret;
 }
 
-/* Return a formatted buffer containing the current
- * statistics across all queues for a CCP.
- */
+ 
 static ssize_t ccp5_debugfs_stats_read(struct file *filp, char __user *ubuf,
 				       size_t count, loff_t *offp)
 {
@@ -153,8 +145,7 @@ static ssize_t ccp5_debugfs_stats_read(struct file *filp, char __user *ubuf,
 	return ret;
 }
 
-/* Reset the counters in a queue
- */
+ 
 static void ccp5_debugfs_reset_queue_stats(struct ccp_cmd_queue *cmd_q)
 {
 	cmd_q->total_ops = 0L;
@@ -167,10 +158,7 @@ static void ccp5_debugfs_reset_queue_stats(struct ccp_cmd_queue *cmd_q)
 	cmd_q->total_ecc_ops = 0L;
 }
 
-/* A value was written to the stats variable, which
- * should be used to reset the queue counters across
- * that device.
- */
+ 
 static ssize_t ccp5_debugfs_stats_write(struct file *filp,
 					const char __user *ubuf,
 					size_t count, loff_t *offp)
@@ -185,9 +173,7 @@ static ssize_t ccp5_debugfs_stats_write(struct file *filp,
 	return count;
 }
 
-/* Return a formatted buffer containing the current information
- * for that queue
- */
+ 
 static ssize_t ccp5_debugfs_queue_read(struct file *filp, char __user *ubuf,
 				       size_t count, loff_t *offp)
 {
@@ -239,9 +225,7 @@ static ssize_t ccp5_debugfs_queue_read(struct file *filp, char __user *ubuf,
 	return ret;
 }
 
-/* A value was written to the stats variable for a
- * queue. Reset the queue counters to this value.
- */
+ 
 static ssize_t ccp5_debugfs_queue_write(struct file *filp,
 					const char __user *ubuf,
 					size_t count, loff_t *offp)

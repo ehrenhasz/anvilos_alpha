@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for HiSilicon PCIe tune and trace device
- *
- * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
- * Author: Yicong Yang <yangyicong@hisilicon.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -21,7 +16,7 @@
 
 #include "hisi_ptt.h"
 
-/* Dynamic CPU hotplug state used by PTT */
+ 
 static enum cpuhp_state hisi_ptt_pmu_online;
 
 static bool hisi_ptt_wait_tuning_finish(struct hisi_ptt *hisi_ptt)
@@ -55,7 +50,7 @@ static ssize_t hisi_ptt_tune_attr_show(struct device *dev,
 			  desc->event_code);
 	writel(reg, hisi_ptt->iobase + HISI_PTT_TUNING_CTRL);
 
-	/* Write all 1 to indicates it's the read process */
+	 
 	writel(~0U, hisi_ptt->iobase + HISI_PTT_TUNING_DATA);
 
 	if (!hisi_ptt_wait_tuning_finish(hisi_ptt)) {
@@ -121,12 +116,7 @@ static ssize_t hisi_ptt_tune_attr_store(struct device *dev,
 			   hisi_ptt_tune_attr_show,	\
 			   hisi_ptt_tune_attr_store)
 
-/*
- * The value of the tuning event are composed of two parts: main event code
- * in BIT[0,15] and subevent code in BIT[16,23]. For example, qox_tx_cpl is
- * a subevent of 'Tx path QoS control' which for tuning the weight of Tx
- * completion TLPs. See hisi_ptt.rst documentation for more information.
- */
+ 
 #define HISI_PTT_TUNE_QOS_TX_CPL		(0x4 | (3 << 16))
 #define HISI_PTT_TUNE_QOS_TX_NP			(0x4 | (4 << 16))
 #define HISI_PTT_TUNE_QOS_TX_P			(0x4 | (5 << 16))
@@ -192,7 +182,7 @@ static int hisi_ptt_trace_start(struct hisi_ptt *hisi_ptt)
 	u32 val;
 	int i;
 
-	/* Check device idle before start trace */
+	 
 	if (!hisi_ptt_wait_trace_hw_idle(hisi_ptt)) {
 		pci_err(hisi_ptt->pdev, "Failed to start trace, the device is still busy\n");
 		return -EBUSY;
@@ -200,7 +190,7 @@ static int hisi_ptt_trace_start(struct hisi_ptt *hisi_ptt)
 
 	ctrl->started = true;
 
-	/* Reset the DMA before start tracing */
+	 
 	val = readl(hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
 	val |= HISI_PTT_TRACE_CTRL_RST;
 	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
@@ -211,18 +201,18 @@ static int hisi_ptt_trace_start(struct hisi_ptt *hisi_ptt)
 	val &= ~HISI_PTT_TRACE_CTRL_RST;
 	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
 
-	/* Reset the index of current buffer */
+	 
 	hisi_ptt->trace_ctrl.buf_index = 0;
 
-	/* Zero the trace buffers */
+	 
 	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; i++)
 		memset(ctrl->trace_buf[i].addr, 0, HISI_PTT_TRACE_BUF_SIZE);
 
-	/* Clear the interrupt status */
+	 
 	writel(HISI_PTT_TRACE_INT_STAT_MASK, hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
 	writel(0, hisi_ptt->iobase + HISI_PTT_TRACE_INT_MASK);
 
-	/* Set the trace control register */
+	 
 	val = FIELD_PREP(HISI_PTT_TRACE_CTRL_TYPE_SEL, ctrl->type);
 	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_RXTX_SEL, ctrl->direction);
 	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_DATA_FORMAT, ctrl->format);
@@ -230,7 +220,7 @@ static int hisi_ptt_trace_start(struct hisi_ptt *hisi_ptt)
 	if (!hisi_ptt->trace_ctrl.is_port)
 		val |= HISI_PTT_TRACE_CTRL_FILTER_MODE;
 
-	/* Start the Trace */
+	 
 	val |= HISI_PTT_TRACE_CTRL_EN;
 	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
 
@@ -252,11 +242,7 @@ static int hisi_ptt_update_aux(struct hisi_ptt *hisi_ptt, int index, bool stop)
 
 	addr = ctrl->trace_buf[ctrl->buf_index].addr;
 
-	/*
-	 * If we're going to stop, read the size of already traced data from
-	 * HISI_PTT_TRACE_WR_STS. Otherwise we're coming from the interrupt,
-	 * the data size is always HISI_PTT_TRACE_BUF_SIZE.
-	 */
+	 
 	if (stop) {
 		u32 reg;
 
@@ -269,11 +255,7 @@ static int hisi_ptt_update_aux(struct hisi_ptt *hisi_ptt, int index, bool stop)
 	memcpy(buf->base + buf->pos, addr, size);
 	buf->pos += size;
 
-	/*
-	 * Just commit the traced data if we're going to stop. Otherwise if the
-	 * resident AUX buffer cannot contain the data of next trace buffer,
-	 * apply a new one.
-	 */
+	 
 	if (stop) {
 		perf_aux_output_end(handle, buf->pos);
 	} else if (buf->length - buf->pos < HISI_PTT_TRACE_BUF_SIZE) {
@@ -304,15 +286,10 @@ static irqreturn_t hisi_ptt_isr(int irq, void *context)
 
 	buf_idx = ffs(status) - 1;
 
-	/* Clear the interrupt status of buffer @buf_idx */
+	 
 	writel(status, hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
 
-	/*
-	 * Update the AUX buffer and cache the current buffer index,
-	 * as we need to know this and save the data when the trace
-	 * is ended out of the interrupt handler. End the trace
-	 * if the updating fails.
-	 */
+	 
 	if (hisi_ptt_update_aux(hisi_ptt, buf_idx, false))
 		hisi_ptt_trace_end(hisi_ptt);
 	else
@@ -396,7 +373,7 @@ hisi_ptt_alloc_add_filter(struct hisi_ptt *hisi_ptt, u16 devid, bool is_port)
 	if (filter->is_port) {
 		list_add_tail(&filter->list, &hisi_ptt->port_filters);
 
-		/* Update the available port mask */
+		 
 		hisi_ptt->port_mask |= hisi_ptt_get_filter_val(filter->devid, true);
 	} else {
 		list_add_tail(&filter->list, &hisi_ptt->req_filters);
@@ -425,7 +402,7 @@ static int hisi_ptt_create_rp_filter_attr(struct hisi_ptt *hisi_ptt,
 
 	sysfs_attr_init(&filter->attr.attr);
 	filter->attr.attr.name = filter->name;
-	filter->attr.attr.mode = 0400; /* DEVICE_ATTR_ADMIN_RO */
+	filter->attr.attr.mode = 0400;  
 	filter->attr.show = hisi_ptt_filter_show;
 
 	return sysfs_add_file_to_group(kobj, &filter->attr.attr,
@@ -448,7 +425,7 @@ static int hisi_ptt_create_req_filter_attr(struct hisi_ptt *hisi_ptt,
 
 	sysfs_attr_init(&filter->attr.attr);
 	filter->attr.attr.name = filter->name;
-	filter->attr.attr.mode = 0400; /* DEVICE_ATTR_ADMIN_RO */
+	filter->attr.attr.mode = 0400;  
 	filter->attr.show = hisi_ptt_filter_show;
 
 	return sysfs_add_file_to_group(kobj, &filter->attr.attr,
@@ -514,11 +491,7 @@ static int hisi_ptt_init_filter_attributes(struct hisi_ptt *hisi_ptt)
 
 	mutex_lock(&hisi_ptt->filter_lock);
 
-	/*
-	 * Register the reset callback in the first stage. In reset we traverse
-	 * the filters list to remove the sysfs attributes so the callback can
-	 * be called safely even without below filter attributes creation.
-	 */
+	 
 	ret = devm_add_action(&hisi_ptt->pdev->dev,
 			      hisi_ptt_remove_all_filter_attributes,
 			      hisi_ptt);
@@ -559,21 +532,12 @@ static void hisi_ptt_update_filters(struct work_struct *work)
 
 	while (kfifo_get(&hisi_ptt->filter_update_kfifo, &info)) {
 		if (info.is_add) {
-			/*
-			 * Notify the users if failed to add this filter, others
-			 * still work and available. See the comments in
-			 * hisi_ptt_init_filters().
-			 */
+			 
 			filter = hisi_ptt_alloc_add_filter(hisi_ptt, info.devid, info.is_port);
 			if (!filter)
 				continue;
 
-			/*
-			 * If filters' sysfs entries hasn't been initialized,
-			 * then we're still at probe stage. Add the filters to
-			 * the list and later hisi_ptt_init_filter_attributes()
-			 * will create sysfs attributes for all the filters.
-			 */
+			 
 			if (hisi_ptt->sysfs_inited &&
 			    hisi_ptt_create_filter_attr(hisi_ptt, filter)) {
 				hisi_ptt_del_free_filter(hisi_ptt, filter);
@@ -600,10 +564,7 @@ static void hisi_ptt_update_filters(struct work_struct *work)
 	mutex_unlock(&hisi_ptt->filter_lock);
 }
 
-/*
- * A PCI bus notifier is used here for dynamically updating the filter
- * list.
- */
+ 
 static int hisi_ptt_notifier_call(struct notifier_block *nb, unsigned long action,
 				  void *data)
 {
@@ -637,12 +598,7 @@ static int hisi_ptt_notifier_call(struct notifier_block *nb, unsigned long actio
 		return 0;
 	}
 
-	/*
-	 * The FIFO size is 16 which is sufficient for almost all the cases,
-	 * since each PCIe core will have most 8 Root Ports (typically only
-	 * 1~4 Root Ports). On failure log the failed filter and let user
-	 * handle it.
-	 */
+	 
 	if (kfifo_in_spinlocked(&hisi_ptt->filter_update_kfifo, &info, 1,
 				&hisi_ptt->filter_update_lock))
 		schedule_delayed_work(&hisi_ptt->work, 0);
@@ -669,11 +625,7 @@ static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
 	    port_devid > hisi_ptt->upper_bdf)
 		return 0;
 
-	/*
-	 * We won't fail the probe if filter allocation failed here. The filters
-	 * should be partial initialized and users would know which filter fails
-	 * through the log. Other functions of PTT device are still available.
-	 */
+	 
 	filter = hisi_ptt_alloc_add_filter(hisi_ptt, pci_dev_id(pdev),
 					    pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT);
 	if (!filter)
@@ -713,7 +665,7 @@ static int hisi_ptt_config_trace_buf(struct hisi_ptt *hisi_ptt)
 			return -ENOMEM;
 	}
 
-	/* Configure the trace DMA buffer */
+	 
 	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; i++) {
 		writel(lower_32_bits(ctrl->trace_buf[i].dma),
 		       hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_BASE_LO_0 +
@@ -746,15 +698,7 @@ static int hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
 	if (ret)
 		return ret;
 
-	/*
-	 * The device range register provides the information about the root
-	 * ports which the RCiEP can control and trace. The RCiEP and the root
-	 * ports which it supports are on the same PCIe core, with same domain
-	 * number but maybe different bus number. The device range register
-	 * will tell us which root ports we can support, Bit[31:16] indicates
-	 * the upper BDF numbers of the root port, while Bit[15:0] indicates
-	 * the lower.
-	 */
+	 
 	reg = readl(hisi_ptt->iobase + HISI_PTT_DEVICE_RANGE);
 	hisi_ptt->upper_bdf = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
 	hisi_ptt->lower_bdf = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
@@ -790,14 +734,7 @@ static const struct attribute_group hisi_ptt_cpumask_attr_group = {
 	.attrs = hisi_ptt_cpumask_attrs,
 };
 
-/*
- * Bit 19 indicates the filter type, 1 for Root Port filter and 0 for Requester
- * filter. Bit[15:0] indicates the filter value, for Root Port filter it's
- * a bit mask of desired ports and for Requester filter it's the Requester ID
- * of the desired PCIe function. Bit[18:16] is reserved for extension.
- *
- * See hisi_ptt.rst documentation for detailed information.
- */
+ 
 PMU_FORMAT_ATTR(filter,		"config:0-19");
 PMU_FORMAT_ATTR(direction,	"config:20-23");
 PMU_FORMAT_ATTR(type,		"config:24-31");
@@ -873,16 +810,12 @@ static const struct attribute_group *hisi_ptt_pmu_groups[] = {
 
 static int hisi_ptt_trace_valid_direction(u32 val)
 {
-	/*
-	 * The direction values have different effects according to the data
-	 * format (specified in the parentheses). TLP set A/B means different
-	 * set of TLP types. See hisi_ptt.rst documentation for more details.
-	 */
+	 
 	static const u32 hisi_ptt_trace_available_direction[] = {
-		0,	/* inbound(4DW) or reserved(8DW) */
-		1,	/* outbound(4DW) */
-		2,	/* {in, out}bound(4DW) or inbound(8DW), TLP set A */
-		3,	/* {in, out}bound(4DW) or inbound(8DW), TLP set B */
+		0,	 
+		1,	 
+		2,	 
+		3,	 
 	};
 	int i;
 
@@ -896,22 +829,18 @@ static int hisi_ptt_trace_valid_direction(u32 val)
 
 static int hisi_ptt_trace_valid_type(u32 val)
 {
-	/* Different types can be set simultaneously */
+	 
 	static const u32 hisi_ptt_trace_available_type[] = {
-		1,	/* posted_request */
-		2,	/* non-posted_request */
-		4,	/* completion */
+		1,	 
+		2,	 
+		4,	 
 	};
 	int i;
 
 	if (!val)
 		return -EINVAL;
 
-	/*
-	 * Walk the available list and clear the valid bits of
-	 * the config. If there is any resident bit after the
-	 * walk then the config is invalid.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(hisi_ptt_trace_available_type); i++)
 		val &= ~hisi_ptt_trace_available_type[i];
 
@@ -924,8 +853,8 @@ static int hisi_ptt_trace_valid_type(u32 val)
 static int hisi_ptt_trace_valid_format(u32 val)
 {
 	static const u32 hisi_ptt_trace_availble_format[] = {
-		0,	/* 4DW */
-		1,	/* 8DW */
+		0,	 
+		1,	 
 	};
 	int i;
 
@@ -946,15 +875,7 @@ static int hisi_ptt_trace_valid_filter(struct hisi_ptt *hisi_ptt, u64 config)
 	hisi_ptt->trace_ctrl.is_port = FIELD_GET(HISI_PTT_PMU_FILTER_IS_PORT, config);
 	val = FIELD_GET(HISI_PTT_PMU_FILTER_VAL_MASK, config);
 
-	/*
-	 * Port filters are defined as bit mask. For port filters, check
-	 * the bits in the @val are within the range of hisi_ptt->port_mask
-	 * and whether it's empty or not, otherwise user has specified
-	 * some unsupported root ports.
-	 *
-	 * For Requester ID filters, walk the available filter list to see
-	 * whether we have one matched.
-	 */
+	 
 	mutex_lock(&hisi_ptt->filter_lock);
 	if (!hisi_ptt->trace_ctrl.is_port) {
 		list_for_each_entry(filter, &hisi_ptt->req_filters, list) {
@@ -1036,7 +957,7 @@ static void *hisi_ptt_pmu_setup_aux(struct perf_event *event, void **pages,
 		return NULL;
 	}
 
-	/* If the pages size less than buffers, we cannot start trace */
+	 
 	if (nr_pages < HISI_PTT_TRACE_TOTAL_BUF_SIZE / PAGE_SIZE)
 		return NULL;
 
@@ -1088,19 +1009,14 @@ static void hisi_ptt_pmu_start(struct perf_event *event, int flags)
 
 	hwc->state = 0;
 
-	/* Serialize the perf process if user specified several CPUs */
+	 
 	spin_lock(&hisi_ptt->pmu_lock);
 	if (hisi_ptt->trace_ctrl.started) {
 		dev_dbg(dev, "trace has already started\n");
 		goto stop;
 	}
 
-	/*
-	 * Handle the interrupt on the same cpu which starts the trace to avoid
-	 * context mismatch. Otherwise we'll trigger the WARN from the perf
-	 * core in event_function_local(). If CPU passed is offline we'll fail
-	 * here, just log it since we can do nothing here.
-	 */
+	 
 	ret = irq_set_affinity(hisi_ptt->trace_irq, cpumask_of(cpu));
 	if (ret)
 		dev_warn(dev, "failed to set the affinity of trace interrupt\n");
@@ -1161,7 +1077,7 @@ static int hisi_ptt_pmu_add(struct perf_event *event, int flags)
 	struct hw_perf_event *hwc = &event->hw;
 	int cpu = event->cpu;
 
-	/* Only allow the cpus on the device's node to add the event */
+	 
 	if (!cpumask_test_cpu(cpu, cpumask_of_node(dev_to_node(&hisi_ptt->pdev->dev))))
 		return 0;
 
@@ -1255,11 +1171,11 @@ static void hisi_ptt_unregister_filter_update_notifier(void *data)
 
 	bus_unregister_notifier(&pci_bus_type, &hisi_ptt->hisi_ptt_nb);
 
-	/* Cancel any work that has been queued */
+	 
 	cancel_delayed_work_sync(&hisi_ptt->work);
 }
 
-/* Register the bus notifier for dynamically updating the filter list */
+ 
 static int hisi_ptt_register_filter_update_notifier(struct hisi_ptt *hisi_ptt)
 {
 	int ret;
@@ -1274,15 +1190,7 @@ static int hisi_ptt_register_filter_update_notifier(struct hisi_ptt *hisi_ptt)
 					hisi_ptt);
 }
 
-/*
- * The DMA of PTT trace can only use direct mappings due to some
- * hardware restriction. Check whether there is no IOMMU or the
- * policy of the IOMMU domain is passthrough, otherwise the trace
- * cannot work.
- *
- * The PTT device is supposed to behind an ARM SMMUv3, which
- * should have passthrough the device by a quirk.
- */
+ 
 static int hisi_ptt_check_iommu_mapping(struct pci_dev *pdev)
 {
 	struct iommu_domain *iommu_domain;
@@ -1397,10 +1305,7 @@ static int hisi_ptt_cpu_teardown(unsigned int cpu, struct hlist_node *node)
 
 	perf_pmu_migrate_context(&hisi_ptt->hisi_ptt_pmu, src, target);
 
-	/*
-	 * Also make sure the interrupt bind to the migrated CPU as well. Warn
-	 * the user on failure here.
-	 */
+	 
 	if (irq_set_affinity(hisi_ptt->trace_irq, cpumask_of(target)))
 		dev_warn(dev, "failed to set the affinity of trace interrupt\n");
 

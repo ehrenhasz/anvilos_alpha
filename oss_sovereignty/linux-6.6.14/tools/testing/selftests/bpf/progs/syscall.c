@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <linux/stddef.h>
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -43,10 +43,10 @@ static int btf_load(void)
 			.str_len = sizeof(__u32),
 		},
 		.types = {
-			/* long */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 64, 8),  /* [1] */
-			/* unsigned long */
-			BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),  /* [2] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 64, 8),   
+			 
+			BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),   
 		},
 	};
 	static union bpf_attr btf_load_attr = {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2023 Yafang Shao <laoar.shao@gmail.com> */
+
+ 
 
 #include <string.h>
 #include <linux/bpf.h>
@@ -24,7 +24,7 @@ static __u64 kprobe_addr;
 
 #define UPROBE_FILE "/proc/self/exe"
 static ssize_t uprobe_offset;
-/* uprobe attach point */
+ 
 static noinline void uprobe_func(void)
 {
 	asm volatile ("");
@@ -56,7 +56,7 @@ again:
 	case BPF_PERF_EVENT_KRETPROBE:
 		ASSERT_EQ(info.perf_event.kprobe.offset, offset, "kprobe_offset");
 
-		/* In case kernel.kptr_restrict is not permitted or MAX_SYMS is reached */
+		 
 		if (addr)
 			ASSERT_EQ(info.perf_event.kprobe.addr, addr + entry_offset,
 				  "kprobe_addr");
@@ -114,7 +114,7 @@ static void kprobe_fill_invalid_user_buffer(int fd)
 
 	memset(&info, 0, sizeof(info));
 
-	info.perf_event.kprobe.func_name = 0x1; /* invalid address */
+	info.perf_event.kprobe.func_name = 0x1;  
 	err = bpf_link_get_info_by_fd(fd, &info, &len);
 	ASSERT_EQ(err, -EINVAL, "invalid_buff_and_len");
 
@@ -149,7 +149,7 @@ static void test_kprobe_fill_link_info(struct test_fill_link_info *skel,
 
 	link_fd = bpf_link__fd(skel->links.kprobe_run);
 	if (!invalid) {
-		/* See also arch_adjust_kprobe_addr(). */
+		 
 		if (skel->kconfig->CONFIG_X86_KERNEL_IBT)
 			entry_offset = 4;
 		err = verify_perf_link_info(link_fd, type, kprobe_addr, 0, entry_offset);
@@ -181,7 +181,7 @@ static void test_uprobe_fill_link_info(struct test_fill_link_info *skel,
 
 	skel->links.uprobe_run = bpf_program__attach_uprobe(skel->progs.uprobe_run,
 							    type == BPF_PERF_EVENT_URETPROBE,
-							    0, /* self pid */
+							    0,  
 							    UPROBE_FILE, uprobe_offset);
 	if (!ASSERT_OK_PTR(skel->links.uprobe_run, "attach_uprobe"))
 		return;
@@ -261,7 +261,7 @@ static void verify_kmulti_invalid_user_buffer(int fd)
 		ASSERT_EQ(addrs[i], kmulti_addrs[i], "kmulti_addrs");
 
 	info.kprobe_multi.count = KMULTI_CNT;
-	info.kprobe_multi.addrs = 0x1; /* invalid addr */
+	info.kprobe_multi.addrs = 0x1;  
 	err = bpf_link_get_info_by_fd(fd, &info, &len);
 	ASSERT_EQ(err, -EFAULT, "invalid_buff");
 }
@@ -307,7 +307,7 @@ void test_fill_link_info(void)
 	if (!ASSERT_OK_PTR(skel, "skel_open"))
 		return;
 
-	/* load kallsyms to compare the addr */
+	 
 	if (!ASSERT_OK(load_kallsyms_refresh(), "load_kallsyms_refresh"))
 		goto cleanup;
 

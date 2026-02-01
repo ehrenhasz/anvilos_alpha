@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Persistent Storage - ramfs parts.
- *
- * Copyright (C) 2010 Intel Corporation <tony.luck@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -174,10 +170,7 @@ static const struct file_operations pstore_file_operations = {
 	.release	= seq_release,
 };
 
-/*
- * When a file is unlinked from our file system we call the
- * platform driver to erase the record from persistent store.
- */
+ 
 static int pstore_unlink(struct inode *dir, struct dentry *dentry)
 {
 	struct pstore_private *p = d_inode(dentry)->i_private;
@@ -187,7 +180,7 @@ static int pstore_unlink(struct inode *dir, struct dentry *dentry)
 	if (!record->psi->erase)
 		return -EPERM;
 
-	/* Make sure we can't race while removing this file. */
+	 
 	mutex_lock(&records_list_lock);
 	if (!list_empty(&p->list))
 		list_del_init(&p->list);
@@ -262,9 +255,7 @@ static void parse_options(char *options)
 	}
 }
 
-/*
- * Display the mount options in /proc/mounts.
- */
+ 
 static int pstore_show_options(struct seq_file *m, struct dentry *root)
 {
 	if (kmsg_bytes != CONFIG_PSTORE_DEFAULT_KMSG_BYTES)
@@ -293,10 +284,7 @@ static struct dentry *psinfo_lock_root(void)
 	struct dentry *root;
 
 	mutex_lock(&pstore_sb_lock);
-	/*
-	 * Having no backend is fine -- no records appear.
-	 * Not being mounted is fine -- nothing to do.
-	 */
+	 
 	if (!psinfo || !pstore_sb) {
 		mutex_unlock(&pstore_sb_lock);
 		return NULL;
@@ -338,11 +326,7 @@ int pstore_put_backend_records(struct pstore_info *psi)
 	return rc;
 }
 
-/*
- * Make a regular file in the root directory of our file system.
- * Load it up with "size" bytes of data from "buf".
- * Set the mtime & ctime to the date that this record was originally stored.
- */
+ 
 int pstore_mkfile(struct dentry *root, struct pstore_record *record)
 {
 	struct dentry		*dentry;
@@ -356,7 +340,7 @@ int pstore_mkfile(struct dentry *root, struct pstore_record *record)
 		return -EINVAL;
 
 	rc = -EEXIST;
-	/* Skip records that are already present in the filesystem. */
+	 
 	mutex_lock(&records_list_lock);
 	list_for_each_entry(pos, &records_list, list) {
 		if (pos->record->type == record->type &&
@@ -408,12 +392,7 @@ fail:
 	return rc;
 }
 
-/*
- * Read all the records from the persistent store. Create
- * files in our filesystem.  Don't warn about -EEXIST errors
- * when we are re-scanning the backing store looking to add new
- * error records.
- */
+ 
 void pstore_get_records(int quiet)
 {
 	struct dentry *root;
@@ -491,7 +470,7 @@ int __init pstore_init_fs(void)
 {
 	int err;
 
-	/* Create a convenient mount point for people to access pstore */
+	 
 	err = sysfs_create_mount_point(fs_kobj, "pstore");
 	if (err)
 		goto out;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Axis Communications AB
- *
- * Driver for Texas Instruments' ADC084S021 ADC chip.
- * Datasheets can be found here:
- * https://www.ti.com/lit/ds/symlink/adc084s021.pdf
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/spi/spi.h>
@@ -26,17 +20,14 @@ struct adc084s021 {
 	struct spi_transfer spi_trans;
 	struct regulator *reg;
 	struct mutex lock;
-	/* Buffer used to align data */
+	 
 	struct {
 		__be16 channels[4];
 		s64 ts __aligned(8);
 	} scan;
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache line.
-	 */
+	 
 	u16 tx_buf[4] __aligned(IIO_DMA_MINALIGN);
-	__be16 rx_buf[5]; /* First 16-bits are trash */
+	__be16 rx_buf[5];  
 };
 
 #define ADC084S021_VOLTAGE_CHANNEL(num)                  \
@@ -64,18 +55,13 @@ static const struct iio_chan_spec adc084s021_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(4),
 };
 
-/**
- * adc084s021_adc_conversion() - Read an ADC channel and return its value.
- *
- * @adc: The ADC SPI data.
- * @data: Buffer for converted data.
- */
+ 
 static int adc084s021_adc_conversion(struct adc084s021 *adc, __be16 *data)
 {
-	int n_words = (adc->spi_trans.len >> 1) - 1; /* Discard first word */
+	int n_words = (adc->spi_trans.len >> 1) - 1;  
 	int ret, i = 0;
 
-	/* Do the transfer */
+	 
 	ret = spi_sync(adc->spi, &adc->message);
 	if (ret < 0)
 		return ret;
@@ -135,12 +121,7 @@ static int adc084s021_read_raw(struct iio_dev *indio_dev,
 	}
 }
 
-/**
- * adc084s021_buffer_trigger_handler() - Read ADC channels and push to buffer.
- *
- * @irq: The interrupt number (not used).
- * @pollfunc: Pointer to the poll func.
- */
+ 
 static irqreturn_t adc084s021_buffer_trigger_handler(int irq, void *pollfunc)
 {
 	struct iio_poll_func *pf = pollfunc;
@@ -172,7 +153,7 @@ static int adc084s021_buffer_preenable(struct iio_dev *indio_dev)
 			&indio_dev->channels[scan_index];
 		adc->tx_buf[i++] = channel->channel << 3;
 	}
-	adc->spi_trans.len = 2 + (i * sizeof(__be16)); /* Trash + channels */
+	adc->spi_trans.len = 2 + (i * sizeof(__be16));  
 
 	return regulator_enable(adc->reg);
 }
@@ -181,7 +162,7 @@ static int adc084s021_buffer_postdisable(struct iio_dev *indio_dev)
 {
 	struct adc084s021 *adc = iio_priv(indio_dev);
 
-	adc->spi_trans.len = 4; /* Trash + single channel */
+	adc->spi_trans.len = 4;  
 
 	return regulator_disable(adc->reg);
 }
@@ -210,17 +191,17 @@ static int adc084s021_probe(struct spi_device *spi)
 	adc = iio_priv(indio_dev);
 	adc->spi = spi;
 
-	/* Initiate the Industrial I/O device */
+	 
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->info = &adc084s021_info;
 	indio_dev->channels = adc084s021_channels;
 	indio_dev->num_channels = ARRAY_SIZE(adc084s021_channels);
 
-	/* Create SPI transfer for channel reads */
+	 
 	adc->spi_trans.tx_buf = adc->tx_buf;
 	adc->spi_trans.rx_buf = adc->rx_buf;
-	adc->spi_trans.len = 4; /* Trash + single channel */
+	adc->spi_trans.len = 4;  
 	spi_message_init_with_transfers(&adc->message, &adc->spi_trans, 1);
 
 	adc->reg = devm_regulator_get(&spi->dev, "vref");
@@ -229,7 +210,7 @@ static int adc084s021_probe(struct spi_device *spi)
 
 	mutex_init(&adc->lock);
 
-	/* Setup triggered buffer with pollfunction */
+	 
 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
 					    adc084s021_buffer_trigger_handler,
 					    &adc084s021_buffer_setup_ops);

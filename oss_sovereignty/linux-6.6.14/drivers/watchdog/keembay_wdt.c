@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for Intel Keem Bay non-secure watchdog.
- *
- * Copyright (C) 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/bits.h>
@@ -17,7 +13,7 @@
 #include <linux/reboot.h>
 #include <linux/watchdog.h>
 
-/* Non-secure watchdog register offsets */
+ 
 #define TIM_WATCHDOG		0x0
 #define TIM_WATCHDOG_INT_THRES	0x4
 #define TIM_WDOG_EN		0x8
@@ -137,10 +133,7 @@ static unsigned int keembay_wdt_get_timeleft(struct watchdog_device *wdog)
 	return keembay_wdt_readl(wdt, TIM_WATCHDOG) / wdt->rate;
 }
 
-/*
- * SMC call is used to clear the interrupt bits, because the TIM_GEN_CONFIG
- * register is in the secure bank.
- */
+ 
 static irqreturn_t keembay_wdt_to_isr(int irq, void *dev_id)
 {
 	struct keembay_wdt *wdt = dev_id;
@@ -199,7 +192,7 @@ static int keembay_wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(wdt->base))
 		return PTR_ERR(wdt->base);
 
-	/* we do not need to enable the clock as it is enabled by default */
+	 
 	wdt->clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(wdt->clk))
 		return dev_err_probe(dev, PTR_ERR(wdt->clk), "Failed to get clock\n");

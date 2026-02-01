@@ -19,10 +19,7 @@ bool libdw__arch_set_initial_registers(Dwfl_Thread *thread, void *arg)
 	perf_reg_value(&val, user_regs, PERF_REG_S390_##r);	\
 	val;							\
 })
-	/*
-	 * For DWARF register mapping details,
-	 * see also perf/arch/s390/include/dwarf-regs-table.h
-	 */
+	 
 	dwarf_regs[0]  = REG(R0);
 	dwarf_regs[1]  = REG(R1);
 	dwarf_regs[2]  = REG(R2);

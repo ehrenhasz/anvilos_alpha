@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -16,7 +16,7 @@
 #define PLL_BYPASSNL	BIT(1)
 #define PLL_RESET_N	BIT(2)
 
-/* Initialize a HFPLL at a given rate and enable it. */
+ 
 static void __clk_hfpll_init_once(struct clk_hw *hw)
 {
 	struct clk_hfpll *h = to_clk_hfpll(hw);
@@ -26,7 +26,7 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 	if (likely(h->init_done))
 		return;
 
-	/* Configure PLL parameters for integer mode. */
+	 
 	if (hd->config_val)
 		regmap_write(regmap, hd->config_reg, hd->config_val);
 	regmap_write(regmap, hd->m_reg, 0);
@@ -38,7 +38,7 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 
 		rate = clk_hw_get_rate(hw);
 
-		/* Pick the right VCO. */
+		 
 		if (hd->user_vco_mask && rate > hd->low_vco_max_rate)
 			regval |= hd->user_vco_mask;
 		regmap_write(regmap, hd->user_reg, regval);
@@ -59,35 +59,29 @@ static void __clk_hfpll_enable(struct clk_hw *hw)
 
 	__clk_hfpll_init_once(hw);
 
-	/* Disable PLL bypass mode. */
+	 
 	regmap_update_bits(regmap, hd->mode_reg, PLL_BYPASSNL, PLL_BYPASSNL);
 
-	/*
-	 * H/W requires a 5us delay between disabling the bypass and
-	 * de-asserting the reset. Delay 10us just to be safe.
-	 */
+	 
 	udelay(10);
 
-	/* De-assert active-low PLL reset. */
+	 
 	regmap_update_bits(regmap, hd->mode_reg, PLL_RESET_N, PLL_RESET_N);
 
-	/* Wait for PLL to lock. */
+	 
 	if (hd->status_reg)
-		/*
-		 * Busy wait. Should never timeout, we add a timeout to
-		 * prevent any sort of stall.
-		 */
+		 
 		regmap_read_poll_timeout(regmap, hd->status_reg, val,
 					 !(val & BIT(hd->lock_bit)), 0,
 					 100 * USEC_PER_MSEC);
 	else
 		udelay(60);
 
-	/* Enable PLL output. */
+	 
 	regmap_update_bits(regmap, hd->mode_reg, PLL_OUTCTRL, PLL_OUTCTRL);
 }
 
-/* Enable an already-configured HFPLL. */
+ 
 static int clk_hfpll_enable(struct clk_hw *hw)
 {
 	unsigned long flags;
@@ -110,10 +104,7 @@ static void __clk_hfpll_disable(struct clk_hfpll *h)
 	struct hfpll_data const *hd = h->d;
 	struct regmap *regmap = h->clkr.regmap;
 
-	/*
-	 * Disable the PLL output, disable test mode, enable the bypass mode,
-	 * and assert the reset.
-	 */
+	 
 	regmap_update_bits(regmap, hd->mode_reg,
 			   PLL_BYPASSNL | PLL_RESET_N | PLL_OUTCTRL, 0);
 }
@@ -144,10 +135,7 @@ static int clk_hfpll_determine_rate(struct clk_hw *hw, struct clk_rate_request *
 	return 0;
 }
 
-/*
- * For optimization reasons, assumes no downstream clocks are actively using
- * it.
- */
+ 
 static int clk_hfpll_set_rate(struct clk_hw *hw, unsigned long rate,
 			      unsigned long parent_rate)
 {
@@ -166,7 +154,7 @@ static int clk_hfpll_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (enabled)
 		__clk_hfpll_disable(h);
 
-	/* Pick the right VCO. */
+	 
 	if (hd->user_reg && hd->user_vco_mask) {
 		regmap_read(regmap, hd->user_reg, &val);
 		if (rate <= hd->low_vco_max_rate)

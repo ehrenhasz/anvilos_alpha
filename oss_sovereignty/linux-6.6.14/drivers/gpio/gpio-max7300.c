@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009 Wolfram Sang, Pengutronix
- *
- * Check max730x.c for further details.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>

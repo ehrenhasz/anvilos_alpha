@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Combined GPIO and pin controller support for Renesas RZ/A1 (r7s72100) SoC
- *
- * Copyright (C) 2017 Jacopo Mondi
- */
 
-/*
- * This pin controller/gpio combined driver supports Renesas devices of RZ/A1
- * family.
- * This includes SoCs which are sub- or super- sets of this particular line,
- * as RZ/A1H (r7s721000), RZ/A1M (r7s721010) and RZ/A1L (r7s721020).
- */
+ 
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -52,10 +43,7 @@
 #define RZA1_PIN_ID_TO_PORT(id)		((id) / RZA1_PINS_PER_PORT)
 #define RZA1_PIN_ID_TO_PIN(id)		((id) % RZA1_PINS_PER_PORT)
 
-/*
- * Use 16 lower bits [15:0] for pin identifier
- * Use 16 higher bits [31:16] for pin mux function
- */
+ 
 #define MUX_PIN_ID_MASK			GENMASK(15, 0)
 #define MUX_FUNC_MASK			GENMASK(31, 16)
 
@@ -66,35 +54,26 @@
 #define MUX_FUNC_PFCE_MASK		BIT(1)
 #define MUX_FUNC_PFCEA_MASK		BIT(2)
 
-/* Pin mux flags */
+ 
 #define MUX_FLAGS_BIDIR			BIT(0)
 #define MUX_FLAGS_SWIO_INPUT		BIT(1)
 #define MUX_FLAGS_SWIO_OUTPUT		BIT(2)
 
-/* ----------------------------------------------------------------------------
- * RZ/A1 pinmux flags
- */
+ 
 
-/*
- * rza1_bidir_pin - describe a single pin that needs bidir flag applied.
- */
+ 
 struct rza1_bidir_pin {
 	u8 pin: 4;
 	u8 func: 4;
 };
 
-/*
- * rza1_bidir_entry - describe a list of pins that needs bidir flag applied.
- *		      Each struct rza1_bidir_entry describes a port.
- */
+ 
 struct rza1_bidir_entry {
 	const unsigned int npins;
 	const struct rza1_bidir_pin *pins;
 };
 
-/*
- * rza1_swio_pin - describe a single pin that needs swio flag applied.
- */
+ 
 struct rza1_swio_pin {
 	u16 pin: 4;
 	u16 port: 4;
@@ -102,25 +81,19 @@ struct rza1_swio_pin {
 	u16 input: 1;
 };
 
-/*
- * rza1_swio_entry - describe a list of pins that needs swio flag applied
- */
+ 
 struct rza1_swio_entry {
 	const unsigned int npins;
 	const struct rza1_swio_pin *pins;
 };
 
-/*
- * rza1_pinmux_conf - group together bidir and swio pinmux flag tables
- */
+ 
 struct rza1_pinmux_conf {
 	const struct rza1_bidir_entry *bidir_entries;
 	const struct rza1_swio_entry *swio_entries;
 };
 
-/* ----------------------------------------------------------------------------
- * RZ/A1H (r7s72100) pinmux flags
- */
+ 
 
 static const struct rza1_bidir_pin rza1h_bidir_pins_p1[] = {
 	{ .pin = 0, .func = 1 },
@@ -293,15 +266,13 @@ static const struct rza1_swio_entry rza1h_swio_entries[] = {
 	[0] = { ARRAY_SIZE(rza1h_swio_pins), rza1h_swio_pins },
 };
 
-/* RZ/A1H (r7s72100x) pinmux flags table */
+ 
 static const struct rza1_pinmux_conf rza1h_pmx_conf = {
 	.bidir_entries	= rza1h_bidir_entries,
 	.swio_entries	= rza1h_swio_entries,
 };
 
-/* ----------------------------------------------------------------------------
- * RZ/A1L (r7s72102) pinmux flags
- */
+ 
 
 static const struct rza1_bidir_pin rza1l_bidir_pins_p1[] = {
 	{ .pin = 0, .func = 1 },
@@ -421,25 +392,14 @@ static const struct rza1_swio_entry rza1l_swio_entries[] = {
 	[0] = { ARRAY_SIZE(rza1l_swio_pins), rza1l_swio_pins },
 };
 
-/* RZ/A1L (r7s72102x) pinmux flags table */
+ 
 static const struct rza1_pinmux_conf rza1l_pmx_conf = {
 	.bidir_entries	= rza1l_bidir_entries,
 	.swio_entries	= rza1l_swio_entries,
 };
 
-/* ----------------------------------------------------------------------------
- * RZ/A1 types
- */
-/**
- * struct rza1_mux_conf - describes a pin multiplexing operation
- *
- * @id: the pin identifier from 0 to RZA1_NPINS
- * @port: the port where pin sits on
- * @pin: pin id
- * @mux_func: alternate function id number
- * @mux_flags: alternate function flags
- * @value: output value to set the pin to
- */
+ 
+ 
 struct rza1_mux_conf {
 	u16 id;
 	u8 port;
@@ -449,16 +409,7 @@ struct rza1_mux_conf {
 	u8 value;
 };
 
-/**
- * struct rza1_port - describes a pin port
- *
- * This is mostly useful to lock register writes per-bank and not globally.
- *
- * @lock: protect access to HW registers
- * @id: port number
- * @base: logical address base
- * @pins: pins sitting on this port
- */
+ 
 struct rza1_port {
 	spinlock_t lock;
 	unsigned int id;
@@ -466,19 +417,7 @@ struct rza1_port {
 	struct pinctrl_pin_desc *pins;
 };
 
-/**
- * struct rza1_pinctrl - RZ pincontroller device
- *
- * @dev: parent device structure
- * @mutex: protect [pinctrl|pinmux]_generic functions
- * @base: logical address base
- * @nport: number of pin controller ports
- * @ports: pin controller banks
- * @pins: pin array for pinctrl core
- * @desc: pincontroller desc for pinctrl core
- * @pctl: pinctrl device
- * @data: device specific data
- */
+ 
 struct rza1_pinctrl {
 	struct device *dev;
 
@@ -496,9 +435,7 @@ struct rza1_pinctrl {
 	const void *data;
 };
 
-/* ----------------------------------------------------------------------------
- * RZ/A1 pinmux flags
- */
+ 
 static inline bool rza1_pinmux_get_bidir(unsigned int port,
 					 unsigned int pin,
 					 unsigned int func,
@@ -536,9 +473,7 @@ static inline int rza1_pinmux_get_swio(unsigned int port,
 	return -ENOENT;
 }
 
-/*
- * rza1_pinmux_get_flags() - return pinmux flags associated to a pin
- */
+ 
 static unsigned int rza1_pinmux_get_flags(unsigned int port, unsigned int pin,
 					  unsigned int func,
 					  struct rza1_pinctrl *rza1_pctl)
@@ -562,14 +497,9 @@ static unsigned int rza1_pinmux_get_flags(unsigned int port, unsigned int pin,
 	return pmx_flags;
 }
 
-/* ----------------------------------------------------------------------------
- * RZ/A1 SoC operations
- */
+ 
 
-/*
- * rza1_set_bit() - un-locked set/clear a single bit in pin configuration
- *		    registers
- */
+ 
 static inline void rza1_set_bit(struct rza1_port *port, unsigned int reg,
 				unsigned int bit, bool set)
 {
@@ -592,17 +522,7 @@ static inline unsigned int rza1_get_bit(struct rza1_port *port,
 	return ioread16(mem) & BIT(bit);
 }
 
-/**
- * rza1_pin_reset() - reset a pin to default initial state
- *
- * Reset pin state disabling input buffer and bi-directional control,
- * and configure it as input port.
- * Note that pin is now configured with direction as input but with input
- * buffer disabled. This implies the pin value cannot be read in this state.
- *
- * @port: port where pin sits on
- * @pin: pin offset
- */
+ 
 static void rza1_pin_reset(struct rza1_port *port, unsigned int pin)
 {
 	unsigned long irqflags;
@@ -617,16 +537,7 @@ static void rza1_pin_reset(struct rza1_port *port, unsigned int pin)
 	spin_unlock_irqrestore(&port->lock, irqflags);
 }
 
-/**
- * rza1_pin_set_direction() - set I/O direction on a pin in port mode
- *
- * When running in output port mode keep PBDC enabled to allow reading the
- * pin value from PPR.
- *
- * @port: port where pin sits on
- * @pin: pin offset
- * @input: input enable/disable flag
- */
+ 
 static inline void rza1_pin_set_direction(struct rza1_port *port,
 					  unsigned int pin, bool input)
 {
@@ -661,12 +572,7 @@ static inline int rza1_pin_get(struct rza1_port *port, unsigned int pin)
 	return rza1_get_bit(port, RZA1_PPR_REG, pin);
 }
 
-/**
- * rza1_pin_mux_single() - configure pin multiplexing on a single pin
- *
- * @rza1_pctl: RZ/A1 pin controller device
- * @mux_conf: pin multiplexing descriptor
- */
+ 
 static int rza1_pin_mux_single(struct rza1_pinctrl *rza1_pctl,
 			       struct rza1_mux_conf *mux_conf)
 {
@@ -678,7 +584,7 @@ static int rza1_pin_mux_single(struct rza1_pinctrl *rza1_pctl,
 
 	rza1_pin_reset(port, pin);
 
-	/* SWIO pinmux flags coming from DT are high precedence */
+	 
 	mux_flags_from_table = rza1_pinmux_get_flags(port->id, pin, mux_func,
 						     rza1_pctl);
 	if (mux_flags)
@@ -689,39 +595,13 @@ static int rza1_pin_mux_single(struct rza1_pinctrl *rza1_pctl,
 	if (mux_flags & MUX_FLAGS_BIDIR)
 		rza1_set_bit(port, RZA1_PBDC_REG, pin, 1);
 
-	/*
-	 * Enable alternate function mode and select it.
-	 *
-	 * Be careful here: the pin mux sub-nodes in device tree
-	 * enumerate alternate functions from 1 to 8;
-	 * subtract 1 before using macros to match registers configuration
-	 * which expects numbers from 0 to 7 instead.
-	 *
-	 * ----------------------------------------------------
-	 * Alternate mode selection table:
-	 *
-	 * PMC	PFC	PFCE	PFCAE	(mux_func - 1)
-	 * 1	0	0	0	0
-	 * 1	1	0	0	1
-	 * 1	0	1	0	2
-	 * 1	1	1	0	3
-	 * 1	0	0	1	4
-	 * 1	1	0	1	5
-	 * 1	0	1	1	6
-	 * 1	1	1	1	7
-	 * ----------------------------------------------------
-	 */
+	 
 	mux_func -= 1;
 	rza1_set_bit(port, RZA1_PFC_REG, pin, mux_func & MUX_FUNC_PFC_MASK);
 	rza1_set_bit(port, RZA1_PFCE_REG, pin, mux_func & MUX_FUNC_PFCE_MASK);
 	rza1_set_bit(port, RZA1_PFCEA_REG, pin, mux_func & MUX_FUNC_PFCEA_MASK);
 
-	/*
-	 * All alternate functions except a few need PIPCn = 1.
-	 * If PIPCn has to stay disabled (SW IO mode), configure PMn according
-	 * to I/O direction specified by pin configuration -after- PMC has been
-	 * set to one.
-	 */
+	 
 	if (mux_flags & (MUX_FLAGS_SWIO_INPUT | MUX_FLAGS_SWIO_OUTPUT))
 		rza1_set_bit(port, RZA1_PM_REG, pin,
 			     mux_flags & MUX_FLAGS_SWIO_INPUT);
@@ -733,20 +613,9 @@ static int rza1_pin_mux_single(struct rza1_pinctrl *rza1_pctl,
 	return 0;
 }
 
-/* ----------------------------------------------------------------------------
- * gpio operations
- */
+ 
 
-/**
- * rza1_gpio_request() - configure pin in port mode
- *
- * Configure a pin as gpio (port mode).
- * After reset, the pin is in input mode with input buffer disabled.
- * To use the pin as input or output, set_direction shall be called first
- *
- * @chip: gpio chip where the gpio sits on
- * @gpio: gpio offset
- */
+ 
 static int rza1_gpio_request(struct gpio_chip *chip, unsigned int gpio)
 {
 	struct rza1_port *port = gpiochip_get_data(chip);
@@ -756,16 +625,7 @@ static int rza1_gpio_request(struct gpio_chip *chip, unsigned int gpio)
 	return 0;
 }
 
-/**
- * rza1_gpio_free() - reset a pin
- *
- * Surprisingly, freeing a gpio is equivalent to requesting it.
- * Reset pin to port mode, with input buffer disabled. This overwrites all
- * port direction settings applied with set_direction
- *
- * @chip: gpio chip where the gpio sits on
- * @gpio: gpio offset
- */
+ 
 static void rza1_gpio_free(struct gpio_chip *chip, unsigned int gpio)
 {
 	struct rza1_port *port = gpiochip_get_data(chip);
@@ -799,23 +659,14 @@ static int rza1_gpio_direction_output(struct gpio_chip *chip,
 {
 	struct rza1_port *port = gpiochip_get_data(chip);
 
-	/* Set value before driving pin direction */
+	 
 	rza1_pin_set(port, gpio, value);
 	rza1_pin_set_direction(port, gpio, false);
 
 	return 0;
 }
 
-/**
- * rza1_gpio_get() - read a gpio pin value
- *
- * Read gpio pin value through PPR register.
- * Requires bi-directional mode to work when reading the value of a pin
- * in output mode
- *
- * @chip: gpio chip where the gpio sits on
- * @gpio: gpio offset
- */
+ 
 static int rza1_gpio_get(struct gpio_chip *chip, unsigned int gpio)
 {
 	struct rza1_port *port = gpiochip_get_data(chip);
@@ -840,16 +691,9 @@ static const struct gpio_chip rza1_gpiochip_template = {
 	.get			= rza1_gpio_get,
 	.set			= rza1_gpio_set,
 };
-/* ----------------------------------------------------------------------------
- * pinctrl operations
- */
+ 
 
-/**
- * rza1_dt_node_pin_count() - Count number of pins in a dt node or in all its
- *			      children sub-nodes
- *
- * @np: device tree node to parse
- */
+ 
 static int rza1_dt_node_pin_count(struct device_node *np)
 {
 	struct device_node *child;
@@ -874,14 +718,7 @@ static int rza1_dt_node_pin_count(struct device_node *np)
 	return npins;
 }
 
-/**
- * rza1_parse_pinmux_node() - parse a pin mux sub-node
- *
- * @rza1_pctl: RZ/A1 pin controller device
- * @np: of pmx sub-node
- * @mux_confs: array of pin mux configurations to fill with parsed info
- * @grpins: array of pin ids to mux
- */
+ 
 static int rza1_parse_pinmux_node(struct rza1_pinctrl *rza1_pctl,
 				  struct device_node *np,
 				  struct rza1_mux_conf *mux_confs,
@@ -904,10 +741,7 @@ static int rza1_parse_pinmux_node(struct rza1_pinctrl *rza1_pctl,
 	}
 	npins = of_pins->length / sizeof(u32);
 
-	/*
-	 * Collect pin configuration properties: they apply to all pins in
-	 * this sub-node
-	 */
+	 
 	ret = pinconf_generic_parse_dt_config(np, pctldev, &pin_configs,
 					      &npin_configs);
 	if (ret) {
@@ -917,18 +751,14 @@ static int rza1_parse_pinmux_node(struct rza1_pinctrl *rza1_pctl,
 		return ret;
 	}
 
-	/*
-	 * Create a mask with pinmux flags from pin configuration;
-	 * very few pins (TIOC[0-4][A|B|C|D] require SWIO direction
-	 * specified in device tree.
-	 */
+	 
 	pinmux_flags = 0;
 	for (i = 0; i < npin_configs && pinmux_flags == 0; i++)
 		switch (pinconf_to_config_param(pin_configs[i])) {
 		case PIN_CONFIG_INPUT_ENABLE:
 			pinmux_flags |= MUX_FLAGS_SWIO_INPUT;
 			break;
-		case PIN_CONFIG_OUTPUT:	/* for DT backwards compatibility */
+		case PIN_CONFIG_OUTPUT:	 
 		case PIN_CONFIG_OUTPUT_ENABLE:
 			pinmux_flags |= MUX_FLAGS_SWIO_OUTPUT;
 			break;
@@ -939,7 +769,7 @@ static int rza1_parse_pinmux_node(struct rza1_pinctrl *rza1_pctl,
 
 	kfree(pin_configs);
 
-	/* Collect pin positions and their mux settings. */
+	 
 	for (i = 0; i < npins; ++i) {
 		u32 of_pinconf;
 		struct rza1_mux_conf *mux_conf = &mux_confs[i];
@@ -968,16 +798,7 @@ static int rza1_parse_pinmux_node(struct rza1_pinctrl *rza1_pctl,
 	return npins;
 }
 
-/**
- * rza1_dt_node_to_map() - map a pin mux node to a function/group
- *
- * Parse and register a pin mux function.
- *
- * @pctldev: pin controller device
- * @np: device tree node to parse
- * @map: pointer to pin map (output)
- * @num_maps: number of collected maps (output)
- */
+ 
 static int rza1_dt_node_to_map(struct pinctrl_dev *pctldev,
 			       struct device_node *np,
 			       struct pinctrl_map **map,
@@ -998,12 +819,7 @@ static int rza1_dt_node_to_map(struct pinctrl_dev *pctldev,
 		return -EINVAL;
 	}
 
-	/*
-	 * Functions are made of 1 group only;
-	 * in fact, functions and groups are identical for this pin controller
-	 * except that functions carry an array of per-pin mux configuration
-	 * settings.
-	 */
+	 
 	mux_confs = devm_kcalloc(rza1_pctl->dev, npins, sizeof(*mux_confs),
 				 GFP_KERNEL);
 	grpins = devm_kcalloc(rza1_pctl->dev, npins, sizeof(*grpins),
@@ -1013,11 +829,7 @@ static int rza1_dt_node_to_map(struct pinctrl_dev *pctldev,
 	if (!mux_confs || !grpins || !fngrps)
 		return -ENOMEM;
 
-	/*
-	 * Parse the pinmux node.
-	 * If the node does not contain "pinmux" property (-ENOENT)
-	 * that property shall be specified in all its children sub-nodes.
-	 */
+	 
 	mux_conf = &mux_confs[0];
 	grpin = &grpins[0];
 
@@ -1037,7 +849,7 @@ static int rza1_dt_node_to_map(struct pinctrl_dev *pctldev,
 	else if (ret < 0)
 		return ret;
 
-	/* Register pin group and function name to pinctrl_generic */
+	 
 	grpname	= np->name;
 	fngrps[0] = grpname;
 
@@ -1059,7 +871,7 @@ static int rza1_dt_node_to_map(struct pinctrl_dev *pctldev,
 	dev_info(rza1_pctl->dev, "Parsed function and group %s with %d pins\n",
 				 grpname, npins);
 
-	/* Create map where to retrieve function and mux settings from */
+	 
 	*num_maps = 0;
 	*map = kzalloc(sizeof(**map), GFP_KERNEL);
 	if (!*map) {
@@ -1102,17 +914,9 @@ static const struct pinctrl_ops rza1_pinctrl_ops = {
 	.dt_free_map		= rza1_dt_free_map,
 };
 
-/* ----------------------------------------------------------------------------
- * pinmux operations
- */
+ 
 
-/**
- * rza1_set_mux() - retrieve pins from a group and apply their mux settings
- *
- * @pctldev: pin controller device
- * @selector: function selector
- * @group: group selector
- */
+ 
 static int rza1_set_mux(struct pinctrl_dev *pctldev, unsigned int selector,
 			   unsigned int group)
 {
@@ -1150,21 +954,9 @@ static const struct pinmux_ops rza1_pinmux_ops = {
 	.strict			= true,
 };
 
-/* ----------------------------------------------------------------------------
- * RZ/A1 pin controller driver operations
- */
+ 
 
-/**
- * rza1_parse_gpiochip() - parse and register a gpio chip and pin range
- *
- * The gpio controller subnode shall provide a "gpio-ranges" list property as
- * defined by gpio device tree binding documentation.
- *
- * @rza1_pctl: RZ/A1 pin controller device
- * @fwnode: gpio-controller firmware node
- * @chip: gpio chip to register to gpiolib
- * @range: pin range to register to pinctrl core
- */
+ 
 static int rza1_parse_gpiochip(struct rza1_pinctrl *rza1_pctl,
 			       struct fwnode_handle *fwnode,
 			       struct gpio_chip *chip,
@@ -1183,10 +975,7 @@ static int rza1_parse_gpiochip(struct rza1_pinctrl *rza1_pctl,
 		return ret;
 	}
 
-	/*
-	 * Find out on which port this gpio-chip maps to by inspecting the
-	 * second argument of the "gpio-ranges" property.
-	 */
+	 
 	pinctrl_base = args.args[1];
 	gpioport = RZA1_PIN_ID_TO_PORT(pinctrl_base);
 	if (gpioport >= RZA1_NPORTS) {
@@ -1224,11 +1013,7 @@ static int rza1_parse_gpiochip(struct rza1_pinctrl *rza1_pctl,
 	return 0;
 }
 
-/**
- * rza1_gpio_register() - parse DT to collect gpio-chips and gpio-ranges
- *
- * @rza1_pctl: RZ/A1 pin controller device
- */
+ 
 static int rza1_gpio_register(struct rza1_pinctrl *rza1_pctl)
 {
 	struct pinctrl_gpio_range *gpio_ranges;
@@ -1268,12 +1053,7 @@ static int rza1_gpio_register(struct rza1_pinctrl *rza1_pctl)
 	return 0;
 }
 
-/**
- * rza1_pinctrl_register() - Enumerate pins, ports and gpiochips; register
- *			     them to pinctrl and gpio cores.
- *
- * @rza1_pctl: RZ/A1 pin controller device
- */
+ 
 static int rza1_pinctrl_register(struct rza1_pinctrl *rza1_pctl)
 {
 	struct pinctrl_pin_desc *pins;
@@ -1304,10 +1084,7 @@ static int rza1_pinctrl_register(struct rza1_pinctrl *rza1_pctl)
 			return -ENOMEM;
 
 		if (i % RZA1_PINS_PER_PORT == 0) {
-			/*
-			 * Setup ports;
-			 * they provide per-port lock and logical base address.
-			 */
+			 
 			unsigned int port_id = RZA1_PIN_ID_TO_PORT(i);
 
 			ports[port_id].id	= port_id;
@@ -1378,16 +1155,16 @@ static int rza1_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id rza1_pinctrl_of_match[] = {
 	{
-		/* RZ/A1H, RZ/A1M */
+		 
 		.compatible	= "renesas,r7s72100-ports",
 		.data		= &rza1h_pmx_conf,
 	},
 	{
-		/* RZ/A1L */
+		 
 		.compatible	= "renesas,r7s72102-ports",
 		.data		= &rza1l_pmx_conf,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver rza1_pinctrl_driver = {

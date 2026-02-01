@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// Copyright 2021 NXP
-//
-// Author: Daniel Baluta <daniel.baluta@nxp.com>
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/sof.h>
@@ -42,9 +42,7 @@ void snd_sof_compr_init_elapsed_work(struct work_struct *work)
 	INIT_WORK(work, snd_sof_compr_fragment_elapsed_work);
 }
 
-/*
- * sof compr fragment elapse, this could be called in irq thread context
- */
+ 
 void snd_sof_compr_fragment_elapsed(struct snd_compr_stream *cstream)
 {
 	struct snd_soc_pcm_runtime *rtd;
@@ -71,7 +69,7 @@ void snd_sof_compr_fragment_elapsed(struct snd_compr_stream *cstream)
 	sof_set_transferred_bytes(sstream, spcm->stream[cstream->direction].posn.host_posn,
 				  crtd->buffer_size);
 
-	/* use the same workqueue-based solution as for PCM, cf. snd_sof_pcm_elapsed */
+	 
 	schedule_work(&spcm->stream[cstream->direction].period_elapsed_work);
 }
 
@@ -259,9 +257,7 @@ out:
 static int sof_compr_get_params(struct snd_soc_component *component,
 				struct snd_compr_stream *cstream, struct snd_codec *params)
 {
-	/* TODO: we don't query the supported codecs for now, if the
-	 * application asks for an unsupported codec the set_params() will fail.
-	 */
+	 
 	return 0;
 }
 

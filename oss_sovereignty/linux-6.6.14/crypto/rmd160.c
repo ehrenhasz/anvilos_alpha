@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * RIPEMD-160 - RACE Integrity Primitives Evaluation Message Digest.
- *
- * Based on the reference implementation by Antoon Bosselaers, ESAT-COSIC
- *
- * Copyright (c) 2008 Adrian-Ken Rueegsegger <ken@codelabs.ch>
- */
+
+ 
 #include <crypto/internal/hash.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -34,10 +26,10 @@ struct rmd160_ctx {
 #define KK4 RMD_K9
 #define KK5 RMD_K1
 
-#define F1(x, y, z) (x ^ y ^ z)		/* XOR */
-#define F2(x, y, z) (z ^ (x & (y ^ z)))	/* x ? y : z */
+#define F1(x, y, z) (x ^ y ^ z)		 
+#define F2(x, y, z) (z ^ (x & (y ^ z)))	 
 #define F3(x, y, z) ((x | ~y) ^ z)
-#define F4(x, y, z) (y ^ (z & (x ^ y)))	/* z ? x : y */
+#define F4(x, y, z) (y ^ (z & (x ^ y)))	 
 #define F5(x, y, z) (x ^ (y | ~z))
 
 #define ROUND(a, b, c, d, e, f, k, x, s)  { \
@@ -50,21 +42,21 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 {
 	u32 aa, bb, cc, dd, ee, aaa, bbb, ccc, ddd, eee;
 
-	/* Initialize left lane */
+	 
 	aa = state[0];
 	bb = state[1];
 	cc = state[2];
 	dd = state[3];
 	ee = state[4];
 
-	/* Initialize right lane */
+	 
 	aaa = state[0];
 	bbb = state[1];
 	ccc = state[2];
 	ddd = state[3];
 	eee = state[4];
 
-	/* round 1: left lane */
+	 
 	ROUND(aa, bb, cc, dd, ee, F1, K1, in[0],  11);
 	ROUND(ee, aa, bb, cc, dd, F1, K1, in[1],  14);
 	ROUND(dd, ee, aa, bb, cc, F1, K1, in[2],  15);
@@ -82,7 +74,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(bb, cc, dd, ee, aa, F1, K1, in[14],  9);
 	ROUND(aa, bb, cc, dd, ee, F1, K1, in[15],  8);
 
-	/* round 2: left lane" */
+	 
 	ROUND(ee, aa, bb, cc, dd, F2, K2, in[7],   7);
 	ROUND(dd, ee, aa, bb, cc, F2, K2, in[4],   6);
 	ROUND(cc, dd, ee, aa, bb, F2, K2, in[13],  8);
@@ -100,7 +92,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(aa, bb, cc, dd, ee, F2, K2, in[11], 13);
 	ROUND(ee, aa, bb, cc, dd, F2, K2, in[8],  12);
 
-	/* round 3: left lane" */
+	 
 	ROUND(dd, ee, aa, bb, cc, F3, K3, in[3],  11);
 	ROUND(cc, dd, ee, aa, bb, F3, K3, in[10], 13);
 	ROUND(bb, cc, dd, ee, aa, F3, K3, in[14],  6);
@@ -118,7 +110,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(ee, aa, bb, cc, dd, F3, K3, in[5],   7);
 	ROUND(dd, ee, aa, bb, cc, F3, K3, in[12],  5);
 
-	/* round 4: left lane" */
+	 
 	ROUND(cc, dd, ee, aa, bb, F4, K4, in[1],  11);
 	ROUND(bb, cc, dd, ee, aa, F4, K4, in[9],  12);
 	ROUND(aa, bb, cc, dd, ee, F4, K4, in[11], 14);
@@ -136,7 +128,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(dd, ee, aa, bb, cc, F4, K4, in[6],   5);
 	ROUND(cc, dd, ee, aa, bb, F4, K4, in[2],  12);
 
-	/* round 5: left lane" */
+	 
 	ROUND(bb, cc, dd, ee, aa, F5, K5, in[4],   9);
 	ROUND(aa, bb, cc, dd, ee, F5, K5, in[0],  15);
 	ROUND(ee, aa, bb, cc, dd, F5, K5, in[5],   5);
@@ -154,7 +146,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(cc, dd, ee, aa, bb, F5, K5, in[15],  5);
 	ROUND(bb, cc, dd, ee, aa, F5, K5, in[13],  6);
 
-	/* round 1: right lane */
+	 
 	ROUND(aaa, bbb, ccc, ddd, eee, F5, KK1, in[5],   8);
 	ROUND(eee, aaa, bbb, ccc, ddd, F5, KK1, in[14],  9);
 	ROUND(ddd, eee, aaa, bbb, ccc, F5, KK1, in[7],   9);
@@ -172,7 +164,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(bbb, ccc, ddd, eee, aaa, F5, KK1, in[3],  12);
 	ROUND(aaa, bbb, ccc, ddd, eee, F5, KK1, in[12],  6);
 
-	/* round 2: right lane */
+	 
 	ROUND(eee, aaa, bbb, ccc, ddd, F4, KK2, in[6],   9);
 	ROUND(ddd, eee, aaa, bbb, ccc, F4, KK2, in[11], 13);
 	ROUND(ccc, ddd, eee, aaa, bbb, F4, KK2, in[3],  15);
@@ -190,7 +182,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(aaa, bbb, ccc, ddd, eee, F4, KK2, in[1],  13);
 	ROUND(eee, aaa, bbb, ccc, ddd, F4, KK2, in[2],  11);
 
-	/* round 3: right lane */
+	 
 	ROUND(ddd, eee, aaa, bbb, ccc, F3, KK3, in[15],  9);
 	ROUND(ccc, ddd, eee, aaa, bbb, F3, KK3, in[5],   7);
 	ROUND(bbb, ccc, ddd, eee, aaa, F3, KK3, in[1],  15);
@@ -208,7 +200,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(eee, aaa, bbb, ccc, ddd, F3, KK3, in[4],   7);
 	ROUND(ddd, eee, aaa, bbb, ccc, F3, KK3, in[13],  5);
 
-	/* round 4: right lane */
+	 
 	ROUND(ccc, ddd, eee, aaa, bbb, F2, KK4, in[8],  15);
 	ROUND(bbb, ccc, ddd, eee, aaa, F2, KK4, in[6],   5);
 	ROUND(aaa, bbb, ccc, ddd, eee, F2, KK4, in[4],   8);
@@ -226,7 +218,7 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(ddd, eee, aaa, bbb, ccc, F2, KK4, in[10], 15);
 	ROUND(ccc, ddd, eee, aaa, bbb, F2, KK4, in[14],  8);
 
-	/* round 5: right lane */
+	 
 	ROUND(bbb, ccc, ddd, eee, aaa, F1, KK5, in[12],  8);
 	ROUND(aaa, bbb, ccc, ddd, eee, F1, KK5, in[15],  5);
 	ROUND(eee, aaa, bbb, ccc, ddd, F1, KK5, in[10], 12);
@@ -244,8 +236,8 @@ static void rmd160_transform(u32 *state, const __le32 *in)
 	ROUND(ccc, ddd, eee, aaa, bbb, F1, KK5, in[9],  11);
 	ROUND(bbb, ccc, ddd, eee, aaa, F1, KK5, in[11], 11);
 
-	/* combine results */
-	ddd += cc + state[1];		/* final result for state[0] */
+	 
+	ddd += cc + state[1];		 
 	state[1] = state[2] + dd + eee;
 	state[2] = state[3] + ee + aaa;
 	state[3] = state[4] + aa + bbb;
@@ -278,7 +270,7 @@ static int rmd160_update(struct shash_desc *desc, const u8 *data,
 
 	rctx->byte_count += len;
 
-	/* Enough space in buffer? If so copy and we're done */
+	 
 	if (avail > len) {
 		memcpy((char *)rctx->buffer + (sizeof(rctx->buffer) - avail),
 		       data, len);
@@ -305,7 +297,7 @@ out:
 	return 0;
 }
 
-/* Add padding and return the message digest. */
+ 
 static int rmd160_final(struct shash_desc *desc, u8 *out)
 {
 	struct rmd160_ctx *rctx = shash_desc_ctx(desc);
@@ -316,19 +308,19 @@ static int rmd160_final(struct shash_desc *desc, u8 *out)
 
 	bits = cpu_to_le64(rctx->byte_count << 3);
 
-	/* Pad out to 56 mod 64 */
+	 
 	index = rctx->byte_count & 0x3f;
 	padlen = (index < 56) ? (56 - index) : ((64+56) - index);
 	rmd160_update(desc, padding, padlen);
 
-	/* Append length */
+	 
 	rmd160_update(desc, (const u8 *)&bits, sizeof(bits));
 
-	/* Store state in digest */
+	 
 	for (i = 0; i < 5; i++)
 		dst[i] = cpu_to_le32p(&rctx->state[i]);
 
-	/* Wipe context */
+	 
 	memset(rctx, 0, sizeof(*rctx));
 
 	return 0;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * arch/powerpc/sysdev/qe_lib/qe_ic.c
- *
- * Copyright (C) 2006 Freescale Semiconductor, Inc.  All rights reserved.
- *
- * Author: Li Yang <leoli@freescale.com>
- * Based on code from Shlomi Gridish <gridish@freescale.com>
- *
- * QUICC ENGINE Interrupt Controller
- */
+
+ 
 
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
@@ -30,7 +21,7 @@
 
 #define NR_QE_IC_INTS		64
 
-/* QE IC registers offset */
+ 
 #define QEIC_CICR		0x00
 #define QEIC_CIVEC		0x04
 #define QEIC_CIPXCC		0x10
@@ -44,37 +35,32 @@
 #define QEIC_CHIVEC		0x60
 
 struct qe_ic {
-	/* Control registers offset */
+	 
 	__be32 __iomem *regs;
 
-	/* The remapper for this QEIC */
+	 
 	struct irq_domain *irqhost;
 
-	/* The "linux" controller struct */
+	 
 	struct irq_chip hc_irq;
 
-	/* VIRQ numbers of QE high/low irqs */
+	 
 	int virq_high;
 	int virq_low;
 };
 
-/*
- * QE interrupt controller internal structure
- */
+ 
 struct qe_ic_info {
-	/* Location of this source at the QIMR register */
+	 
 	u32	mask;
 
-	/* Mask register offset */
+	 
 	u32	mask_reg;
 
-	/*
-	 * For grouped interrupts sources - the interrupt code as
-	 * appears at the group priority register
-	 */
+	 
 	u8	pri_code;
 
-	/* Group priority register offset */
+	 
 	u32	pri_reg;
 };
 
@@ -271,14 +257,7 @@ static void qe_ic_mask_irq(struct irq_data *d)
 	qe_ic_write(qe_ic->regs, qe_ic_info[src].mask_reg,
 		    temp & ~qe_ic_info[src].mask);
 
-	/* Flush the above write before enabling interrupts; otherwise,
-	 * spurious interrupts will sometimes happen.  To be 100% sure
-	 * that the write has reached the device before interrupts are
-	 * enabled, the mask register would have to be read back; however,
-	 * this is not required for correctness, only to avoid wasting
-	 * time on a large number of spurious interrupts.  In testing,
-	 * a sync reduced the observed spurious interrupts to zero.
-	 */
+	 
 	mb();
 
 	raw_spin_unlock_irqrestore(&qe_ic_lock, flags);
@@ -294,7 +273,7 @@ static struct irq_chip qe_ic_irq_chip = {
 static int qe_ic_host_match(struct irq_domain *h, struct device_node *node,
 			    enum irq_domain_bus_token bus_token)
 {
-	/* Exact match, unless qe_ic node is NULL */
+	 
 	struct device_node *of_node = irq_domain_get_of_node(h);
 	return of_node == NULL || of_node == node;
 }
@@ -314,7 +293,7 @@ static int qe_ic_host_map(struct irq_domain *h, unsigned int virq,
 		printk(KERN_ERR "Can't map reserved IRQ\n");
 		return -EINVAL;
 	}
-	/* Default chip */
+	 
 	chip = &qe_ic->hc_irq;
 
 	irq_set_chip_data(virq, qe_ic);
@@ -331,14 +310,14 @@ static const struct irq_domain_ops qe_ic_host_ops = {
 	.xlate = irq_domain_xlate_onetwocell,
 };
 
-/* Return an interrupt vector or 0 if no interrupt is pending. */
+ 
 static unsigned int qe_ic_get_low_irq(struct qe_ic *qe_ic)
 {
 	int irq;
 
 	BUG_ON(qe_ic == NULL);
 
-	/* get the interrupt source vector. */
+	 
 	irq = qe_ic_read(qe_ic->regs, QEIC_CIVEC) >> 26;
 
 	if (irq == 0)
@@ -347,14 +326,14 @@ static unsigned int qe_ic_get_low_irq(struct qe_ic *qe_ic)
 	return irq_linear_revmap(qe_ic->irqhost, irq);
 }
 
-/* Return an interrupt vector or 0 if no interrupt is pending. */
+ 
 static unsigned int qe_ic_get_high_irq(struct qe_ic *qe_ic)
 {
 	int irq;
 
 	BUG_ON(qe_ic == NULL);
 
-	/* get the interrupt source vector. */
+	 
 	irq = qe_ic_read(qe_ic->regs, QEIC_CHIVEC) >> 26;
 
 	if (irq == 0)

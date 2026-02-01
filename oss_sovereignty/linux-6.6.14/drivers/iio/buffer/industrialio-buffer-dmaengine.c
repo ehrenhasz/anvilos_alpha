@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014-2015 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -19,15 +16,7 @@
 #include <linux/iio/buffer-dma.h>
 #include <linux/iio/buffer-dmaengine.h>
 
-/*
- * The IIO DMAengine buffer combines the generic IIO DMA buffer infrastructure
- * with the DMAengine framework. The generic IIO DMA buffer infrastructure is
- * used to manage the buffer memory and implement the IIO buffer operations
- * while the DMAengine framework is used to perform the DMA transfers. Combined
- * this results in a device independent fully functional DMA buffer
- * implementation that can be used by device drivers for peripherals which are
- * connected to a DMA controller which has a DMAengine driver implementation.
- */
+ 
 
 struct dmaengine_buffer {
 	struct iio_dma_buffer_queue queue;
@@ -147,18 +136,7 @@ static const struct iio_dev_attr *iio_dmaengine_buffer_attrs[] = {
 	NULL,
 };
 
-/**
- * iio_dmaengine_buffer_alloc() - Allocate new buffer which uses DMAengine
- * @dev: Parent device for the buffer
- * @channel: DMA channel name, typically "rx".
- *
- * This allocates a new IIO buffer which internally uses the DMAengine framework
- * to perform its transfers. The parent device will be used to request the DMA
- * channel.
- *
- * Once done using the buffer iio_dmaengine_buffer_free() should be used to
- * release it.
- */
+ 
 static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
 	const char *channel)
 {
@@ -182,7 +160,7 @@ static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
 	if (ret < 0)
 		goto err_free;
 
-	/* Needs to be aligned to the maximum of the minimums */
+	 
 	if (caps.src_addr_widths)
 		src_width = __ffs(caps.src_addr_widths);
 	else
@@ -211,12 +189,7 @@ err_free:
 	return ERR_PTR(ret);
 }
 
-/**
- * iio_dmaengine_buffer_free() - Free dmaengine buffer
- * @buffer: Buffer to free
- *
- * Frees a buffer previously allocated with iio_dmaengine_buffer_alloc().
- */
+ 
 static void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
 {
 	struct dmaengine_buffer *dmaengine_buffer =
@@ -233,17 +206,7 @@ static void __devm_iio_dmaengine_buffer_free(void *buffer)
 	iio_dmaengine_buffer_free(buffer);
 }
 
-/**
- * devm_iio_dmaengine_buffer_alloc() - Resource-managed iio_dmaengine_buffer_alloc()
- * @dev: Parent device for the buffer
- * @channel: DMA channel name, typically "rx".
- *
- * This allocates a new IIO buffer which internally uses the DMAengine framework
- * to perform its transfers. The parent device will be used to request the DMA
- * channel.
- *
- * The buffer will be automatically de-allocated once the device gets destroyed.
- */
+ 
 static struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
 	const char *channel)
 {
@@ -262,17 +225,7 @@ static struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
 	return buffer;
 }
 
-/**
- * devm_iio_dmaengine_buffer_setup() - Setup a DMA buffer for an IIO device
- * @dev: Parent device for the buffer
- * @indio_dev: IIO device to which to attach this buffer.
- * @channel: DMA channel name, typically "rx".
- *
- * This allocates a new IIO buffer with devm_iio_dmaengine_buffer_alloc()
- * and attaches it to an IIO device with iio_device_attach_buffer().
- * It also appends the INDIO_BUFFER_HARDWARE mode to the supported modes of the
- * IIO device.
- */
+ 
 int devm_iio_dmaengine_buffer_setup(struct device *dev,
 				    struct iio_dev *indio_dev,
 				    const char *channel)

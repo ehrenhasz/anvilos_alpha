@@ -1,17 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Jason-JH Lin <jason0jh.lin@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_GCE_MT8195_H
 #define _DT_BINDINGS_GCE_MT8195_H
 
-/* assign timeout 0 also means default */
+ 
 #define CMDQ_NO_TIMEOUT		0xffffffff
 #define CMDQ_TIMEOUT_DEFAULT	1000
 
-/* GCE thread priority */
+ 
 #define CMDQ_THR_PRIO_LOWEST	0
 #define CMDQ_THR_PRIO_1		1
 #define CMDQ_THR_PRIO_2		2
@@ -21,10 +18,10 @@
 #define CMDQ_THR_PRIO_6		6
 #define CMDQ_THR_PRIO_HIGHEST	7
 
-/* CPR count in 32bit register */
+ 
 #define GCE_CPR_COUNT		1312
 
-/* GCE subsys table */
+ 
 #define SUBSYS_1400XXXX		0
 #define SUBSYS_1401XXXX		1
 #define SUBSYS_1402XXXX		2
@@ -52,7 +49,7 @@
 #define SUBSYS_1c50XXXX		24
 #define SUBSYS_1c60XXXX		25
 
-/* GCE General Purpose Register (GPR) support */
+ 
 #define GCE_GPR_R00		0x0
 #define GCE_GPR_R01		0x1
 #define GCE_GPR_R02		0x2
@@ -70,7 +67,7 @@
 #define GCE_GPR_R14		0xe
 #define GCE_GPR_R15		0xf
 
-/* GCE hw event id */
+ 
 #define CMDQ_EVENT_CQ_THR_DONE_TRAW0_0	1
 #define CMDQ_EVENT_CQ_THR_DONE_TRAW0_1	2
 #define CMDQ_EVENT_CQ_THR_DONE_TRAW0_2	3
@@ -806,7 +803,7 @@
 #define CMDQ_EVENT_OUTPIN_0	1018
 #define CMDQ_EVENT_OUTPIN_1	1019
 
-/* end of hw event */
+ 
 #define CMDQ_MAX_HW_EVENT				1019
 
 #endif

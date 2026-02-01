@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2013 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __OSDEP_LINUX_SERVICE_H_
 #define __OSDEP_LINUX_SERVICE_H_
 
@@ -15,7 +11,7 @@
 	#include <linux/slab.h>
 	#include <linux/module.h>
 	#include <linux/kref.h>
-	/* include <linux/smp_lock.h> */
+	 
 	#include <linux/netdevice.h>
 	#include <linux/skbuff.h>
 	#include <linux/uaccess.h>
@@ -30,13 +26,13 @@
 	#include <linux/if_arp.h>
 	#include <linux/rtnetlink.h>
 	#include <linux/delay.h>
-	#include <linux/interrupt.h>	/*  for struct tasklet_struct */
+	#include <linux/interrupt.h>	 
 	#include <linux/ip.h>
 	#include <linux/kthread.h>
 	#include <linux/list.h>
 	#include <linux/vmalloc.h>
 
-/* 	#include <linux/ieee80211.h> */
+ 
         #include <net/ieee80211_radiotap.h>
 	#include <net/cfg80211.h>
 

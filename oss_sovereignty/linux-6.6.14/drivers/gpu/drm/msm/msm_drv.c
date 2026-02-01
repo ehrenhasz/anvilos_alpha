@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2018, 2020-2021 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/fault-inject.h>
@@ -32,24 +28,7 @@
 #include "msm_mmu.h"
 #include "adreno/adreno_gpu.h"
 
-/*
- * MSM driver version:
- * - 1.0.0 - initial interface
- * - 1.1.0 - adds madvise, and support for submits with > 4 cmd buffers
- * - 1.2.0 - adds explicit fence support for submit ioctl
- * - 1.3.0 - adds GMEM_BASE + NR_RINGS params, SUBMITQUEUE_NEW +
- *           SUBMITQUEUE_CLOSE ioctls, and MSM_INFO_IOVA flag for
- *           MSM_GEM_INFO ioctl.
- * - 1.4.0 - softpin, MSM_RELOC_BO_DUMP, and GEM_INFO support to set/get
- *           GEM object's debug name
- * - 1.5.0 - Add SUBMITQUERY_QUERY ioctl
- * - 1.6.0 - Syncobj support
- * - 1.7.0 - Add MSM_PARAM_SUSPENDS to access suspend count
- * - 1.8.0 - Add MSM_BO_CACHED_COHERENT for supported GPUs (a6xx)
- * - 1.9.0 - Add MSM_SUBMIT_FENCE_SN_IN
- * - 1.10.0 - Add MSM_SUBMIT_BO_NO_IMPLICIT
- * - 1.11.0 - Add wait boost (MSM_WAIT_FENCE_BOOST, MSM_PREP_BOOST)
- */
+ 
 #define MSM_VERSION_MAJOR	1
 #define MSM_VERSION_MINOR	10
 #define MSM_VERSION_PATCHLEVEL	0
@@ -203,26 +182,17 @@ static int msm_drm_uninit(struct device *dev)
 	struct msm_kms *kms = priv->kms;
 	int i;
 
-	/*
-	 * Shutdown the hw if we're far enough along where things might be on.
-	 * If we run this too early, we'll end up panicking in any variety of
-	 * places. Since we don't register the drm device until late in
-	 * msm_drm_init, drm_dev->registered is used as an indicator that the
-	 * shutdown will be successful.
-	 */
+	 
 	if (ddev->registered) {
 		drm_dev_unregister(ddev);
 		drm_atomic_helper_shutdown(ddev);
 	}
 
-	/* We must cancel and cleanup any pending vblank enable/disable
-	 * work before msm_irq_uninstall() to avoid work re-enabling an
-	 * irq after uninstall has disabled it.
-	 */
+	 
 
 	flush_workqueue(priv->wq);
 
-	/* clean up event worker threads */
+	 
 	for (i = 0; i < priv->num_crtcs; i++) {
 		if (priv->event_thread[i].worker)
 			kthread_destroy_worker(priv->event_thread[i].worker);
@@ -273,10 +243,7 @@ struct msm_gem_address_space *msm_kms_init_aspace(struct drm_device *dev)
 	struct device *mdss_dev = mdp_dev->parent;
 	struct device *iommu_dev;
 
-	/*
-	 * IOMMUs can be a part of MDSS device tree binding, or the
-	 * MDP/DPU device.
-	 */
+	 
 	if (device_iommu_mapped(mdp_dev))
 		iommu_dev = mdp_dev;
 	else
@@ -305,11 +272,7 @@ bool msm_use_mmu(struct drm_device *dev)
 {
 	struct msm_drm_private *priv = dev->dev_private;
 
-	/*
-	 * a2xx comes with its own MMU
-	 * On other platforms IOMMU can be declared specified either for the
-	 * MDP/DPU device or for its parent, MDSS device.
-	 */
+	 
 	return priv->is_a2xx ||
 		device_iommu_mapped(dev->dev) ||
 		device_iommu_mapped(dev->dev->parent);
@@ -322,22 +285,7 @@ static int msm_init_vram(struct drm_device *dev)
 	unsigned long size = 0;
 	int ret = 0;
 
-	/* In the device-tree world, we could have a 'memory-region'
-	 * phandle, which gives us a link to our "vram".  Allocating
-	 * is all nicely abstracted behind the dma api, but we need
-	 * to know the entire size to allocate it all in one go. There
-	 * are two cases:
-	 *  1) device with no IOMMU, in which case we need exclusive
-	 *     access to a VRAM carveout big enough for all gpu
-	 *     buffers
-	 *  2) device with IOMMU, but where the bootloader puts up
-	 *     a splash screen.  In this case, the VRAM carveout
-	 *     need only be large enough for fbdev fb.  But we need
-	 *     exclusive access to the buffer to avoid the kernel
-	 *     using those pages for other purposes (which appears
-	 *     as corruption on screen before we have a chance to
-	 *     load and do initial modeset)
-	 */
+	 
 
 	node = of_parse_phandle(dev->dev->of_node, "memory-region", 0);
 	if (node) {
@@ -349,10 +297,7 @@ static int msm_init_vram(struct drm_device *dev)
 		size = r.end - r.start + 1;
 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
 
-		/* if we have no IOMMU, then we need to use carveout allocator.
-		 * Grab the entire DMA chunk carved out in early startup in
-		 * mach-msm:
-		 */
+		 
 	} else if (!msm_use_mmu(dev)) {
 		DRM_INFO("using %s VRAM carveout\n", vram);
 		size = memparse(vram, NULL);
@@ -370,9 +315,7 @@ static int msm_init_vram(struct drm_device *dev)
 		attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
 		attrs |= DMA_ATTR_WRITE_COMBINE;
 
-		/* note that for no-kernel-mapping, the vaddr returned
-		 * is bogus, but non-null if allocation succeeded:
-		 */
+		 
 		p = dma_alloc_attrs(dev->dev, size,
 				&priv->vram.paddr, GFP_KERNEL, attrs);
 		if (!p) {
@@ -430,16 +373,14 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
 	INIT_LIST_HEAD(&priv->objects);
 	mutex_init(&priv->obj_lock);
 
-	/*
-	 * Initialize the LRUs:
-	 */
+	 
 	mutex_init(&priv->lru.lock);
 	drm_gem_lru_init(&priv->lru.unbacked, &priv->lru.lock);
 	drm_gem_lru_init(&priv->lru.pinned,   &priv->lru.lock);
 	drm_gem_lru_init(&priv->lru.willneed, &priv->lru.lock);
 	drm_gem_lru_init(&priv->lru.dontneed, &priv->lru.lock);
 
-	/* Teach lockdep about lock ordering wrt. shrinker: */
+	 
 	fs_reclaim_acquire(GFP_KERNEL);
 	might_lock(&priv->lru.lock);
 	fs_reclaim_release(GFP_KERNEL);
@@ -452,12 +393,12 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
 
 	dma_set_max_seg_size(dev, UINT_MAX);
 
-	/* Bind all our sub-components: */
+	 
 	ret = component_bind_all(dev, ddev);
 	if (ret)
 		goto err_deinit_vram;
 
-	/* the fw fb could be anywhere in memory */
+	 
 	ret = drm_aperture_remove_framebuffers(drv);
 	if (ret)
 		goto err_msm_uninit;
@@ -473,12 +414,12 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
 		}
 		kms = priv->kms;
 	} else {
-		/* valid only for the dummy headless case, where of_node=NULL */
+		 
 		WARN_ON(dev->of_node);
 		kms = NULL;
 	}
 
-	/* Enable normalization of plane zpos */
+	 
 	ddev->mode_config.normalize_zpos = true;
 
 	if (kms) {
@@ -498,7 +439,7 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
 	drm_for_each_crtc(crtc, ddev) {
 		struct msm_drm_thread *ev_thread;
 
-		/* initialize event thread */
+		 
 		ev_thread = &priv->event_thread[drm_crtc_index(crtc)];
 		ev_thread->dev = ddev;
 		ev_thread->worker = kthread_create_worker(0, "crtc_event:%d", crtc->base.id);
@@ -566,9 +507,7 @@ err_put_dev:
 	return ret;
 }
 
-/*
- * DRM operations:
- */
+ 
 
 static void load_gpu(struct drm_device *dev)
 {
@@ -609,9 +548,7 @@ static int context_init(struct drm_device *dev, struct drm_file *file)
 
 static int msm_open(struct drm_device *dev, struct drm_file *file)
 {
-	/* For now, load gpu on open.. to avoid the requirement of having
-	 * firmware in the initrd.
-	 */
+	 
 	load_gpu(dev);
 
 	return context_init(dev, file);
@@ -628,10 +565,7 @@ static void msm_postclose(struct drm_device *dev, struct drm_file *file)
 	struct msm_drm_private *priv = dev->dev_private;
 	struct msm_file_private *ctx = file->driver_priv;
 
-	/*
-	 * It is not possible to set sysprof param to non-zero if gpu
-	 * is not initialized:
-	 */
+	 
 	if (priv->gpu)
 		msm_file_private_set_sysprof(ctx, priv->gpu, 0);
 
@@ -660,9 +594,7 @@ void msm_crtc_disable_vblank(struct drm_crtc *crtc)
 	vblank_ctrl_queue_work(priv, crtc, false);
 }
 
-/*
- * DRM ioctls:
- */
+ 
 
 static int msm_ioctl_get_param(struct drm_device *dev, void *data,
 		struct drm_file *file)
@@ -671,9 +603,7 @@ static int msm_ioctl_get_param(struct drm_device *dev, void *data,
 	struct drm_msm_param *args = data;
 	struct msm_gpu *gpu;
 
-	/* for now, we just have 3d pipe.. eventually this would need to
-	 * be more clever to dispatch to appropriate gpu module:
-	 */
+	 
 	if ((args->pipe != MSM_PIPE_3D0) || (args->pad != 0))
 		return -EINVAL;
 
@@ -716,13 +646,7 @@ static int msm_ioctl_gem_new(struct drm_device *dev, void *data,
 		return -EINVAL;
 	}
 
-	/*
-	 * Uncached CPU mappings are deprecated, as of:
-	 *
-	 * 9ef364432db4 ("drm/msm: deprecate MSM_BO_UNCACHED (map as writecombine instead)")
-	 *
-	 * So promote them to WC.
-	 */
+	 
 	if (flags & MSM_BO_UNCACHED) {
 		flags &= ~MSM_BO_CACHED;
 		flags |= MSM_BO_WC;
@@ -795,10 +719,7 @@ static int msm_ioctl_gem_info_iova(struct drm_device *dev,
 	if (should_fail(&fail_gem_iova, obj->size))
 		return -ENOMEM;
 
-	/*
-	 * Don't pin the memory here - just get an address so that userspace can
-	 * be productive
-	 */
+	 
 	return msm_gem_get_iova(obj, ctx->aspace, iova);
 }
 
@@ -812,7 +733,7 @@ static int msm_ioctl_gem_info_set_iova(struct drm_device *dev,
 	if (!priv->gpu)
 		return -EINVAL;
 
-	/* Only supported if per-process address space is supported: */
+	 
 	if (priv->gpu->aspace == ctx->aspace)
 		return -EOPNOTSUPP;
 
@@ -838,7 +759,7 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
 	case MSM_INFO_GET_IOVA:
 	case MSM_INFO_SET_IOVA:
 	case MSM_INFO_GET_FLAGS:
-		/* value returned as immediate, not pointer, so len==0: */
+		 
 		if (args->len)
 			return -EINVAL;
 		break;
@@ -870,12 +791,12 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
 			ret = -EINVAL;
 			break;
 		}
-		/* Hide internal kernel-only flags: */
+		 
 		args->value = to_msm_bo(obj)->flags & MSM_BO_FLAGS;
 		ret = 0;
 		break;
 	case MSM_INFO_SET_NAME:
-		/* length check should leave room for terminating null: */
+		 
 		if (args->len >= sizeof(msm_obj->name)) {
 			ret = -EINVAL;
 			break;
@@ -925,14 +846,7 @@ static int wait_fence(struct msm_gpu_submitqueue *queue, uint32_t fence_id,
 		return -EINVAL;
 	}
 
-	/*
-	 * Map submitqueue scoped "seqno" (which is actually an idr key)
-	 * back to underlying dma-fence
-	 *
-	 * The fence is removed from the fence_idr when the submit is
-	 * retired, so if the fence is not found it means there is nothing
-	 * to wait for
-	 */
+	 
 	spin_lock(&queue->idr_lock);
 	fence = idr_find(&queue->fence_idr, fence_id);
 	if (fence)
@@ -1129,16 +1043,9 @@ static const struct dev_pm_ops msm_pm_ops = {
 	.complete = msm_pm_complete,
 };
 
-/*
- * Componentized driver support:
- */
+ 
 
-/*
- * Identify what components need to be added by parsing what remote-endpoints
- * our MDP output ports are connected to. In the case of LVDS on MDP4, there
- * is no external component that we need to add since LVDS is within MDP4
- * itself.
- */
+ 
 static int add_components_mdp(struct device *master_dev,
 			      struct component_match **matchptr)
 {
@@ -1157,19 +1064,12 @@ static int add_components_mdp(struct device *master_dev,
 			return ret;
 		}
 
-		/*
-		 * The LCDC/LVDS port on MDP4 is a speacial case where the
-		 * remote-endpoint isn't a component that we need to add
-		 */
+		 
 		if (of_device_is_compatible(np, "qcom,mdp4") &&
 		    ep.port == 0)
 			continue;
 
-		/*
-		 * It's okay if some of the ports don't have a remote endpoint
-		 * specified. It just means that the port isn't connected to
-		 * any external interface.
-		 */
+		 
 		intf = of_graph_get_remote_port_parent(ep_node);
 		if (!intf)
 			continue;
@@ -1184,11 +1084,7 @@ static int add_components_mdp(struct device *master_dev,
 	return 0;
 }
 
-/*
- * We don't know what's the best binding to link the gpu with the drm device.
- * Fow now, we just hunt for all the possible gpus that we support, and add them
- * as components.
- */
+ 
 static const struct of_device_id msm_gpu_match[] = {
 	{ .compatible = "qcom,adreno" },
 	{ .compatible = "qcom,adreno-3xx" },
@@ -1243,7 +1139,7 @@ int msm_drv_probe(struct device *master_dev,
 	priv->kms_init = kms_init;
 	dev_set_drvdata(master_dev, priv);
 
-	/* Add mdp components if we have KMS. */
+	 
 	if (kms_init) {
 		ret = add_components_mdp(master_dev, &match);
 		if (ret)
@@ -1254,9 +1150,7 @@ int msm_drv_probe(struct device *master_dev,
 	if (ret)
 		return ret;
 
-	/* on all devices that I am aware of, iommu's which can map
-	 * any address the cpu can see are used:
-	 */
+	 
 	ret = dma_set_mask_and_coherent(master_dev, ~0);
 	if (ret)
 		return ret;
@@ -1268,10 +1162,7 @@ int msm_drv_probe(struct device *master_dev,
 	return 0;
 }
 
-/*
- * Platform driver:
- * Used only for headlesss GPU instances
- */
+ 
 
 static int msm_pdev_probe(struct platform_device *pdev)
 {
@@ -1290,13 +1181,7 @@ void msm_drv_shutdown(struct platform_device *pdev)
 	struct msm_drm_private *priv = platform_get_drvdata(pdev);
 	struct drm_device *drm = priv ? priv->dev : NULL;
 
-	/*
-	 * Shutdown the hw if we're far enough along where things might be on.
-	 * If we run this too early, we'll end up panicking in any variety of
-	 * places. Since we don't register the drm device until late in
-	 * msm_drm_init, drm_dev->registered is used as an indicator that the
-	 * shutdown will be successful.
-	 */
+	 
 	if (drm && drm->registered && priv->kms)
 		drm_atomic_helper_shutdown(drm);
 }

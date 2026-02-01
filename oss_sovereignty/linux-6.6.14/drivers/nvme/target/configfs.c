@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Configfs interface for the NVMe target.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/kstrtox.h>
 #include <linux/kernel.h>
@@ -56,10 +53,7 @@ static bool nvmet_is_port_enabled(struct nvmet_port *p, const char *caller)
 	return p->enabled;
 }
 
-/*
- * nvmet_port Generic ConfigFS definitions.
- * Used in any place in the ConfigFS tree that refers to an address.
- */
+ 
 static ssize_t nvmet_addr_adrfam_show(struct config_item *item, char *page)
 {
 	u8 adrfam = to_nvmet_port(item)->disc_addr.adrfam;
@@ -331,9 +325,7 @@ found:
 
 CONFIGFS_ATTR(nvmet_, addr_trtype);
 
-/*
- * Namespace structures & file operation functions below
- */
+ 
 static ssize_t nvmet_ns_device_path_show(struct config_item *item, char *page)
 {
 	return sprintf(page, "%s\n", to_nvmet_ns(item)->device_path);
@@ -413,7 +405,7 @@ out_unlock:
 }
 
 CONFIGFS_ATTR(nvmet_ns_, p2pmem);
-#endif /* CONFIG_PCI_P2PDMA */
+#endif  
 
 static ssize_t nvmet_ns_device_uuid_show(struct config_item *item, char *page)
 {
@@ -822,13 +814,13 @@ static void nvmet_add_passthru_group(struct nvmet_subsys *subsys)
 				   &subsys->group);
 }
 
-#else /* CONFIG_NVME_TARGET_PASSTHRU */
+#else  
 
 static void nvmet_add_passthru_group(struct nvmet_subsys *subsys)
 {
 }
 
-#endif /* CONFIG_NVME_TARGET_PASSTHRU */
+#endif  
 
 static int nvmet_port_subsys_allow_link(struct config_item *parent,
 		struct config_item *target)
@@ -1056,7 +1048,7 @@ nvmet_subsys_attr_version_store_locked(struct nvmet_subsys *subsys,
 		return -EINVAL;
 	}
 
-	/* passthru subsystems use the underlying controller's version */
+	 
 	if (nvmet_is_passthru_subsys(subsys))
 		return -EINVAL;
 
@@ -1085,7 +1077,7 @@ static ssize_t nvmet_subsys_attr_version_store(struct config_item *item,
 }
 CONFIGFS_ATTR(nvmet_subsys_, attr_version);
 
-/* See Section 1.5 of NVMe 1.4 */
+ 
 static bool nvmet_is_ascii(const char c)
 {
 	return c >= 0x20 && c <= 0x7e;
@@ -1419,7 +1411,7 @@ static ssize_t nvmet_subsys_attr_qid_max_store(struct config_item *item,
 	down_write(&nvmet_config_sem);
 	subsys->max_qid = qid_max;
 
-	/* Force reconnect */
+	 
 	list_for_each_entry(ctrl, &subsys->ctrls, subsys_entry)
 		ctrl->ops->delete_ctrl(ctrl);
 	up_write(&nvmet_config_sem);
@@ -1444,9 +1436,7 @@ static struct configfs_attribute *nvmet_subsys_attrs[] = {
 	NULL,
 };
 
-/*
- * Subsystem structures & folder operation functions below
- */
+ 
 static void nvmet_subsys_release(struct config_item *item)
 {
 	struct nvmet_subsys *subsys = to_subsys(item);
@@ -1533,9 +1523,7 @@ inval:
 
 CONFIGFS_ATTR(nvmet_referral_, enable);
 
-/*
- * Discovery Service subsystem definitions
- */
+ 
 static struct configfs_attribute *nvmet_referral_attrs[] = {
 	&nvmet_attr_addr_adrfam,
 	&nvmet_attr_addr_portid,
@@ -1723,14 +1711,12 @@ static const struct config_item_type nvmet_ana_groups_type = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/*
- * Ports definitions.
- */
+ 
 static void nvmet_port_release(struct config_item *item)
 {
 	struct nvmet_port *port = to_nvmet_port(item);
 
-	/* Let inflight controllers teardown complete */
+	 
 	flush_workqueue(nvmet_wq);
 	list_del(&port->global_entry);
 
@@ -1794,7 +1780,7 @@ static struct config_group *nvmet_ports_make(struct config_group *group,
 	INIT_LIST_HEAD(&port->entry);
 	INIT_LIST_HEAD(&port->subsystems);
 	INIT_LIST_HEAD(&port->referrals);
-	port->inline_data_size = -1;	/* < 0 == let the transport choose */
+	port->inline_data_size = -1;	 
 
 	port->disc_addr.portid = cpu_to_le16(portid);
 	port->disc_addr.adrfam = NVMF_ADDR_FAMILY_MAX;
@@ -1854,11 +1840,7 @@ static ssize_t nvmet_host_dhchap_key_store(struct config_item *item,
 	int ret;
 
 	ret = nvmet_auth_set_key(host, page, false);
-	/*
-	 * Re-authentication is a soft state, so keep the
-	 * current authentication valid until the host
-	 * requests re-authentication.
-	 */
+	 
 	return ret < 0 ? ret : count;
 }
 
@@ -1881,11 +1863,7 @@ static ssize_t nvmet_host_dhchap_ctrl_key_store(struct config_item *item,
 	int ret;
 
 	ret = nvmet_auth_set_key(host, page, true);
-	/*
-	 * Re-authentication is a soft state, so keep the
-	 * current authentication valid until the host
-	 * requests re-authentication.
-	 */
+	 
 	return ret < 0 ? ret : count;
 }
 
@@ -1954,7 +1932,7 @@ static struct configfs_attribute *nvmet_host_attrs[] = {
 	&nvmet_host_attr_dhchap_dhgroup,
 	NULL,
 };
-#endif /* CONFIG_NVME_TARGET_AUTH */
+#endif  
 
 static void nvmet_host_release(struct config_item *item)
 {
@@ -1989,7 +1967,7 @@ static struct config_group *nvmet_hosts_make_group(struct config_group *group,
 		return ERR_PTR(-ENOMEM);
 
 #ifdef CONFIG_NVME_TARGET_AUTH
-	/* Default to SHA256 */
+	 
 	host->dhchap_hash_id = NVME_AUTH_HASH_SHA256;
 #endif
 

@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
 
-/*
- * All common (i.e. transport-independent) SLI-4 functions are implemented
- * in this file.
- */
+ 
+
+ 
 #include "sli4.h"
 
 static struct sli4_asic_entry_t sli4_asic_table[] = {
@@ -21,7 +15,7 @@ static struct sli4_asic_entry_t sli4_asic_table[] = {
 	{ SLI4_ASIC_REV_A0, SLI4_ASIC_GEN_7},
 };
 
-/* Convert queue type enum (SLI_QTYPE_*) into a string */
+ 
 static char *SLI4_QNAME[] = {
 	"Event Queue",
 	"Completion Queue",
@@ -31,15 +25,7 @@ static char *SLI4_QNAME[] = {
 	"Undefined"
 };
 
-/**
- * sli_config_cmd_init() - Write a SLI_CONFIG command to the provided buffer.
- *
- * @sli4: SLI context pointer.
- * @buf: Destination buffer for the command.
- * @length: Length in bytes of attached command.
- * @dma: DMA buffer for non-embedded commands.
- * Return: Command payload buffer.
- */
+ 
 static void *
 sli_config_cmd_init(struct sli4 *sli4, void *buf, u32 length,
 		    struct efc_dma *dma)
@@ -74,20 +60,12 @@ sli_config_cmd_init(struct sli4 *sli4, void *buf, u32 length,
 	config->payload.mem.length =
 				cpu_to_le32(dma->size & SLI4_SLICONF_PMD_LEN);
 	config->payload_len = cpu_to_le32(dma->size);
-	/* save pointer to DMA for BMBX dumping purposes */
+	 
 	sli4->bmbx_non_emb_pmd = dma;
 	return dma->virt;
 }
 
-/**
- * sli_cmd_common_create_cq() - Write a COMMON_CREATE_CQ V2 command.
- *
- * @sli4: SLI context pointer.
- * @buf: Destination buffer for the command.
- * @qmem: DMA memory for queue.
- * @eq_id: EQ id assosiated with this cq.
- * Return: status -EIO/0.
- */
+ 
 static int
 sli_cmd_common_create_cq(struct sli4 *sli4, void *buf, struct efc_dma *qmem,
 			 u16 eq_id)
@@ -103,7 +81,7 @@ sli_cmd_common_create_cq(struct sli4 *sli4, void *buf, struct efc_dma *qmem,
 	u16 dw6w1_arm = 0;
 	__le32 len;
 
-	/* First calculate number of pages and the mailbox cmd length */
+	 
 	n_cqe = qmem->size / SLI4_CQE_BYTES;
 	switch (n_cqe) {
 	case 256:
@@ -132,7 +110,7 @@ sli_cmd_common_create_cq(struct sli4 *sli4, void *buf, struct efc_dma *qmem,
 			 CMD_V2, len);
 	cqv2->page_size = page_size / SLI_PAGE_SIZE;
 
-	/* valid values for number of pages: 1, 2, 4, 8 (sec 4.4.3) */
+	 
 	cqv2->num_pages = cpu_to_le16(num_pages);
 	if (!num_pages || num_pages > SLI4_CREATE_CQV2_MAX_PAGES)
 		return -EIO;
@@ -197,7 +175,7 @@ sli_cmd_common_create_eq(struct sli4 *sli4, void *buf, struct efc_dma *qmem)
 	sli_cmd_fill_hdr(&eq->hdr, SLI4_CMN_CREATE_EQ, SLI4_SUBSYSTEM_COMMON,
 			 ver, SLI4_RQST_PYLD_LEN(cmn_create_eq));
 
-	/* valid values for number of pages: 1, 2, 4 (sec 4.4.3) */
+	 
 	num_pages = qmem->size / SLI_PAGE_SIZE;
 	eq->num_pages = cpu_to_le16(num_pages);
 
@@ -256,7 +234,7 @@ sli_cmd_common_create_mq_ext(struct sli4 *sli4, void *buf, struct efc_dma *qmem,
 			 SLI4_SUBSYSTEM_COMMON, CMD_V0,
 			 SLI4_RQST_PYLD_LEN(cmn_create_mq_ext));
 
-	/* valid values for number of pages: 1, 2, 4, 8 (sec 4.4.12) */
+	 
 	num_pages = qmem->size / SLI_PAGE_SIZE;
 	mq->num_pages = cpu_to_le16(num_pages);
 	switch (num_pages) {
@@ -339,7 +317,7 @@ sli_cmd_wq_create(struct sli4 *sli4, void *buf, struct efc_dma *qmem, u16 cq_id)
 		return -EIO;
 	}
 
-	/* valid values for number of pages(num_pages): 1-8 */
+	 
 	num_pages = sli_page_count(qmem->size, page_size);
 	wq->num_pages = cpu_to_le16(num_pages);
 	if (!num_pages || num_pages > SLI4_WQ_CREATE_MAX_PAGES)
@@ -380,10 +358,10 @@ sli_cmd_rq_create_v1(struct sli4 *sli4, void *buf, struct efc_dma *qmem,
 
 	sli_cmd_fill_hdr(&rq->hdr, SLI4_OPC_RQ_CREATE, SLI4_SUBSYSTEM_FC,
 			 CMD_V1, SLI4_RQST_PYLD_LEN(rq_create_v1));
-	/* Disable "no buffer warnings" to avoid Lancer bug */
+	 
 	rq->dim_dfd_dnb |= SLI4_RQ_CREATE_V1_DNB;
 
-	/* valid values for number of pages: 1-8 (sec 4.5.6) */
+	 
 	num_pages = sli_page_count(qmem->size, SLI_PAGE_SIZE);
 	rq->num_pages = cpu_to_le16(num_pages);
 	if (!num_pages ||
@@ -393,9 +371,7 @@ sli_cmd_rq_create_v1(struct sli4 *sli4, void *buf, struct efc_dma *qmem,
 		return -EIO;
 	}
 
-	/*
-	 * RQE count is the total number of entries (note not lg2(# entries))
-	 */
+	 
 	rq->rqe_count = cpu_to_le16(qmem->size / SLI4_RQE_SIZE);
 
 	rq->rqe_size_byte |= SLI4_RQE_SIZE_8;
@@ -438,7 +414,7 @@ sli_cmd_rq_create_v2(struct sli4 *sli4, u32 num_rqs,
 
 	page_count =  sli_page_count(qs[0]->dma.size, SLI_PAGE_SIZE) * num_rqs;
 
-	/* Payload length must accommodate both request and response */
+	 
 	payload_size = max(SLI4_RQST_CMDSZ(rq_create_v2) +
 			   SZ_DMAADDR * page_count,
 			   sizeof(struct sli4_rsp_cmn_create_queue_set));
@@ -458,7 +434,7 @@ sli_cmd_rq_create_v2(struct sli4 *sli4, u32 num_rqs,
 	len =  SLI4_RQST_PYLD_LEN_VAR(rq_create_v2, SZ_DMAADDR * page_count);
 	sli_cmd_fill_hdr(&req->hdr, SLI4_OPC_RQ_CREATE, SLI4_SUBSYSTEM_FC,
 			 CMD_V2, len);
-	/* Fill Payload fields */
+	 
 	req->dim_dfd_dnb |= SLI4_RQCREATEV2_DNB;
 	num_pages = sli_page_count(qs[0]->dma.size, SLI_PAGE_SIZE);
 	req->num_pages = cpu_to_le16(num_pages);
@@ -524,13 +500,11 @@ __sli_queue_init(struct sli4 *sli4, struct sli4_queue *q, u32 qtype,
 	q->length = n_entries;
 
 	if (q->type == SLI4_QTYPE_EQ || q->type == SLI4_QTYPE_CQ) {
-		/* For prism, phase will be flipped after
-		 * a sweep through eq and cq
-		 */
+		 
 		q->phase = 1;
 	}
 
-	/* Limit to hwf the queue size per interrupt */
+	 
 	q->proc_limit = n_entries / 2;
 
 	if (q->type == SLI4_QTYPE_EQ)
@@ -650,7 +624,7 @@ sli_res_sli_config(struct sli4 *sli4, void *buf)
 {
 	struct sli4_cmd_sli_config *sli_config = buf;
 
-	/* sanity check */
+	 
 	if (!buf || sli_config->hdr.command !=
 		    SLI4_MBX_CMD_SLI_CONFIG) {
 		efc_log_err(sli4, "bad parameter buf=%p cmd=%#x\n", buf,
@@ -767,7 +741,7 @@ sli_queue_alloc(struct sli4 *sli4, u32 qtype,
 	int size;
 	u32 align = 0;
 
-	/* get queue size */
+	 
 	size = sli_get_queue_entry_size(sli4, qtype);
 	if (size < 0)
 		return -EIO;
@@ -897,7 +871,7 @@ static int sli_cmd_cq_set_create(struct sli4 *sli4,
 
 	req->num_cq_req = cpu_to_le16(num_cqs);
 
-	/* Fill page addresses of all the CQs. */
+	 
 	for (i = 0; i < num_cqs; i++) {
 		req->eq_id[i] = cpu_to_le16(eqs[i]->id);
 		for (p = 0, addr = qs[i]->dma.phys; p < num_pages_cq;
@@ -922,7 +896,7 @@ sli_cq_alloc_set(struct sli4 *sli4, struct sli4_queue *qs[],
 	struct sli4_rsp_cmn_create_queue_set *res;
 	void __iomem *db_regaddr;
 
-	/* Align the queue DMA memory */
+	 
 	for (i = 0; i < num_cqs; i++) {
 		if (__sli_queue_init(sli4, qs[i], SLI4_QTYPE_CQ, SLI4_CQE_BYTES,
 				     n_entries, SLI_PAGE_SIZE))
@@ -947,12 +921,12 @@ sli_cq_alloc_set(struct sli4 *sli4, struct sli4_queue *qs[],
 		goto error;
 	}
 
-	/* Check if we got all requested CQs. */
+	 
 	if (le16_to_cpu(res->num_q_allocated) != num_cqs) {
 		efc_log_crit(sli4, "Requested count CQs doesn't match.\n");
 		goto error;
 	}
-	/* Fill the resp cq ids. */
+	 
 	for (i = 0; i < num_cqs; i++) {
 		qs[i]->id = le16_to_cpu(res->q_id) + i;
 		qs[i]->db_regaddr = db_regaddr;
@@ -978,7 +952,7 @@ sli_cmd_common_destroy_q(struct sli4 *sli4, u8 opc, u8 subsystem, u16 q_id)
 {
 	struct sli4_rqst_cmn_destroy_q *req;
 
-	/* Payload length must accommodate both request and response */
+	 
 	req = sli_config_cmd_init(sli4, sli4->bmbx.virt,
 				  SLI4_CFG_PYLD_LENGTH(cmn_destroy_q), NULL);
 	if (!req)
@@ -1176,12 +1150,7 @@ sli_rq_write(struct sli4 *sli4, struct sli4_queue *q, u8 *entry)
 
 	memcpy(qe, entry, q->size);
 
-	/*
-	 * In RQ-pair, an RQ either contains the FC header
-	 * (i.e. is_hdr == TRUE) or the payload.
-	 *
-	 * Don't ring doorbell for payload RQ
-	 */
+	 
 	if (!(q->u.flag & SLI4_QUEUE_FLAG_HDR))
 		goto skip;
 
@@ -1204,7 +1173,7 @@ sli_eq_read(struct sli4 *sli4, struct sli4_queue *q, u8 *entry)
 
 	qe += q->index * q->size;
 
-	/* Check if eqe is valid */
+	 
 	wflags = le16_to_cpu(((struct sli4_eqe *)qe)->dw0w0_flags);
 
 	if ((wflags & SLI4_EQE_VALID) != q->phase) {
@@ -1220,12 +1189,7 @@ sli_eq_read(struct sli4 *sli4, struct sli4_queue *q, u8 *entry)
 	memcpy(entry, qe, q->size);
 	q->index = (q->index + 1) & (q->length - 1);
 	q->n_posted++;
-	/*
-	 * For prism, the phase value will be used
-	 * to check the validity of eq/cq entries.
-	 * The value toggles after a complete sweep
-	 * through the queue.
-	 */
+	 
 
 	if (sli4->if_type == SLI4_INTF_IF_TYPE_6 && q->index == 0)
 		q->phase ^= (u16)0x1;
@@ -1247,7 +1211,7 @@ sli_cq_read(struct sli4 *sli4, struct sli4_queue *q, u8 *entry)
 
 	qe += q->index * q->size;
 
-	/* Check if cqe is valid */
+	 
 	dwflags = le32_to_cpu(((struct sli4_mcqe *)qe)->dw3_flags);
 	valid_bit_set = (dwflags & SLI4_MCQE_VALID) != 0;
 
@@ -1264,12 +1228,7 @@ sli_cq_read(struct sli4 *sli4, struct sli4_queue *q, u8 *entry)
 	memcpy(entry, qe, q->size);
 	q->index = (q->index + 1) & (q->length - 1);
 	q->n_posted++;
-	/*
-	 * For prism, the phase value will be used
-	 * to check the validity of eq/cq entries.
-	 * The value toggles after a complete sweep
-	 * through the queue.
-	 */
+	 
 
 	if (sli4->if_type == SLI4_INTF_IF_TYPE_6 && q->index == 0)
 		q->phase ^= (u16)0x1;
@@ -1289,7 +1248,7 @@ sli_mq_read(struct sli4 *sli4, struct sli4_queue *q, u8 *entry)
 
 	qe += q->u.r_idx * q->size;
 
-	/* Check if mqe is valid */
+	 
 	if (q->index == q->u.r_idx) {
 		spin_unlock_irqrestore(&q->lock, flags);
 		return -EIO;
@@ -1350,7 +1309,7 @@ sli_cq_parse(struct sli4 *sli4, struct sli4_queue *cq, u8 *cqe,
 		return -EINVAL;
 	}
 
-	/* Parse a CQ entry to retrieve the event type and the queue id */
+	 
 	if (cq->u.flag & SLI4_QUEUE_FLAG_MQ) {
 		struct sli4_mcqe	*mcqe = (void *)cqe;
 
@@ -1398,7 +1357,7 @@ sli_abort_wqe(struct sli4 *sli, void *buf, enum sli4_abort_type type,
 
 	abort->ia_ir_byte |= send_abts ? 0 : 1;
 
-	/* Suppress ABTS retries */
+	 
 	abort->ia_ir_byte |= SLI4_ABRT_WQE_IR;
 
 	abort->t_mask = cpu_to_le32(mask);
@@ -1462,7 +1421,7 @@ sli_els_request64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 
 	els->qosd_xbl_hlm_iod_dbde_wqes |= SLI4_REQ_WQE_QOSD;
 
-	/* figure out the ELS_ID value from the request buffer */
+	 
 
 	switch (params->cmd) {
 	case ELS_LOGO:
@@ -1500,14 +1459,7 @@ sli_els_request64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 		els->ct_byte |=
 			SLI4_GENERIC_CONTEXT_VPI << SLI4_REQ_WQE_CT_SHFT;
 		els->context_tag = cpu_to_le16(params->vpi);
-		/*
-		 * Set SP here ... we haven't done a REG_VPI yet
-		 * need to maybe not set this when we have
-		 * completed VFI/VPI registrations ...
-		 *
-		 * Use the FC_ID of the SPORT if it has been allocated,
-		 * otherwise use an S_ID of zero.
-		 */
+		 
 		els->sid_sp_dword |= cpu_to_le32(1 << SLI4_REQ_WQE_SP_SHFT);
 		if (params->s_id != U32_MAX)
 			els->sid_sp_dword |= cpu_to_le32(params->s_id);
@@ -1606,7 +1558,7 @@ sli_fcp_icmnd64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl, u16 xri,
 	icmnd->context_tag = cpu_to_le16(rpi);
 	icmnd->timer = timeout;
 
-	/* WQE word 4 contains read transfer length */
+	 
 	icmnd->class_pu_byte |= 2 << SLI4_ICMD_WQE_PU_SHFT;
 	icmnd->class_pu_byte |= SLI4_GENERIC_CLASS_CLASS_3;
 	icmnd->command = SLI4_WQE_FCP_ICMND64;
@@ -1669,11 +1621,7 @@ sli_fcp_iread64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 		bptr->u.blp.high =
 				cpu_to_le32(upper_32_bits(sgl->phys));
 
-		/*
-		 * fill out fcp_cmnd buffer len and change resp buffer to be of
-		 * type "skip" (note: response will still be written to sge[1]
-		 * if necessary)
-		 */
+		 
 		len = le32_to_cpu(sge[0].buffer_length);
 		iread->fcp_cmd_buffer_length = cpu_to_le16(len);
 
@@ -1693,7 +1641,7 @@ sli_fcp_iread64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 
 	iread->timer = timeout;
 
-	/* WQE word 4 contains read transfer length */
+	 
 	iread->class_pu_byte |= 2 << SLI4_IR_WQE_PU_SHFT;
 	iread->class_pu_byte |= SLI4_GENERIC_CLASS_CLASS_3;
 	iread->command = SLI4_WQE_FCP_IREAD64;
@@ -1764,11 +1712,7 @@ sli_fcp_iwrite64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 		bptr->u.blp.low  = cpu_to_le32(lower_32_bits(sgl->phys));
 		bptr->u.blp.high = cpu_to_le32(upper_32_bits(sgl->phys));
 
-		/*
-		 * fill out fcp_cmnd buffer len and change resp buffer to be of
-		 * type "skip" (note: response will still be written to sge[1]
-		 * if necessary)
-		 */
+		 
 		len = le32_to_cpu(sge[0].buffer_length);
 		iwrite->fcp_cmd_buffer_length = cpu_to_le16(len);
 		sge_flags = le32_to_cpu(sge[1].dw2_flags);
@@ -1788,7 +1732,7 @@ sli_fcp_iwrite64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 	iwrite->context_tag = cpu_to_le16(rpi);
 
 	iwrite->timer = timeout;
-	/* WQE word 4 contains read transfer length */
+	 
 	iwrite->class_pu_byte |= 2 << SLI4_IWR_WQE_PU_SHFT;
 	iwrite->class_pu_byte |= SLI4_GENERIC_CLASS_CLASS_3;
 	iwrite->command = SLI4_WQE_FCP_IWRITE64;
@@ -1855,7 +1799,7 @@ sli_fcp_treceive64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 	} else {
 		trecv->qosd_xbl_hlm_iod_dbde_wqes |= SLI4_TRCV_WQE_XBL;
 
-		/* if data is a single physical address, use a BDE */
+		 
 		if (!dif &&
 		    params->xmit_len <= le32_to_cpu(sge[2].buffer_length)) {
 			trecv->qosd_xbl_hlm_iod_dbde_wqes |= SLI4_TRCV_WQE_DBDE;
@@ -1885,7 +1829,7 @@ sli_fcp_treceive64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 
 	trecv->context_tag = cpu_to_le16(params->rpi);
 
-	/* WQE uses relative offset */
+	 
 	trecv->class_ar_pu_byte |= 1 << SLI4_TRCV_WQE_PU_SHFT;
 
 	if (params->flags & SLI4_IO_AUTO_GOOD_RESPONSE)
@@ -1922,7 +1866,7 @@ sli_fcp_treceive64_wqe(struct sli4 *sli, void *buf, struct efc_dma *sgl,
 		bptr->u.data.high = sge[first_data_sge].buffer_address_high;
 	}
 
-	/* The upper 7 bits of csctl is the priority */
+	 
 	if (params->cs_ctl & SLI4_MASK_CCP) {
 		trecv->eat_xc_ccpe |= SLI4_TRCV_WQE_CCPE;
 		trecv->ccp = (params->cs_ctl & SLI4_MASK_CCP);
@@ -2007,7 +1951,7 @@ sli_fcp_trsp64_wqe(struct sli4 *sli4, void *buf, struct efc_dma *sgl,
 	trsp->cq_id = cpu_to_le16(cq_id);
 	trsp->cmd_type_byte = SLI4_CMD_FCP_TRSP64_WQE;
 
-	/* The upper 7 bits of csctl is the priority */
+	 
 	if (params->cs_ctl & SLI4_MASK_CCP) {
 		trsp->eat_xc_ccpe |= SLI4_TRSP_WQE_CCPE;
 		trsp->ccp = (params->cs_ctl & SLI4_MASK_CCP);
@@ -2052,15 +1996,13 @@ sli_fcp_tsend64_wqe(struct sli4 *sli4, void *buf, struct efc_dma *sgl,
 				   (le32_to_cpu(sge[2].buffer_length) &
 				    SLI4_BDE_LEN_MASK));
 
-		/* TSEND64_WQE specifies first two SGE are skipped (3rd is
-		 * valid)
-		 */
+		 
 		bptr->u.data.low  = sge[2].buffer_address_low;
 		bptr->u.data.high = sge[2].buffer_address_high;
 	} else {
 		tsend->ll_qd_xbl_hlm_iod_dbde |= SLI4_TSEND_WQE_XBL;
 
-		/* if data is a single physical address, use a BDE */
+		 
 		if (!dif &&
 		    params->xmit_len <= le32_to_cpu(sge[2].buffer_length)) {
 			tsend->ll_qd_xbl_hlm_iod_dbde |= SLI4_TSEND_WQE_DBDE;
@@ -2069,10 +2011,7 @@ sli_fcp_tsend64_wqe(struct sli4 *sli4, void *buf, struct efc_dma *sgl,
 			    cpu_to_le32((SLI4_BDE_TYPE_VAL(64)) |
 					(le32_to_cpu(sge[2].buffer_length) &
 					SLI4_BDE_LEN_MASK));
-			/*
-			 * TSEND64_WQE specifies first two SGE are skipped
-			 * (i.e. 3rd is valid)
-			 */
+			 
 			bptr->u.data.low =
 				sge[2].buffer_address_low;
 			bptr->u.data.high =
@@ -2097,7 +2036,7 @@ sli_fcp_tsend64_wqe(struct sli4 *sli4, void *buf, struct efc_dma *sgl,
 	tsend->xri_tag = cpu_to_le16(params->xri);
 
 	tsend->rpi = cpu_to_le16(params->rpi);
-	/* WQE uses relative offset */
+	 
 	tsend->class_pu_ar_byte |= 1 << SLI4_TSEND_WQE_PU_SHFT;
 
 	if (params->flags & SLI4_IO_AUTO_GOOD_RESPONSE)
@@ -2133,7 +2072,7 @@ sli_fcp_tsend64_wqe(struct sli4 *sli4, void *buf, struct efc_dma *sgl,
 			sge[first_data_sge].buffer_address_high;
 	}
 
-	/* The upper 7 bits of csctl is the priority */
+	 
 	if (params->cs_ctl & SLI4_MASK_CCP) {
 		tsend->dw10byte2 |= SLI4_TSEND_CCPE;
 		tsend->ccp = (params->cs_ctl & SLI4_MASK_CCP);
@@ -2236,7 +2175,7 @@ sli_send_frame_wqe(struct sli4 *sli, void *buf, u8 sof, u8 eof, u32 *hdr,
 	sf->bde.u.data.low = cpu_to_le32(lower_32_bits(payload->phys));
 	sf->bde.u.data.high = cpu_to_le32(upper_32_bits(payload->phys));
 
-	/* Copy FC header */
+	 
 	sf->fc_header_0_1[0] = cpu_to_le32(hdr[0]);
 	sf->fc_header_0_1[1] = cpu_to_le32(hdr[1]);
 	sf->fc_header_2_5[0] = cpu_to_le32(hdr[2]);
@@ -2279,9 +2218,7 @@ sli_xmit_bls_rsp64_wqe(struct sli4 *sli, void *buf,
 	struct sli4_xmit_bls_rsp_wqe *bls = buf;
 	u32 dw_ridflags = 0;
 
-	/*
-	 * Callers can either specify RPI or S_ID, but not both
-	 */
+	 
 	if (params->rpi_registered && params->s_id != U32_MAX) {
 		efc_log_info(sli, "S_ID specified for attached remote node %d\n",
 			     params->rpi);
@@ -2434,13 +2371,11 @@ sli_xmit_sequence64_wqe(struct sli4 *sli4, void *buf, struct efc_dma *payload,
 
 	xmit->relative_offset = 0;
 
-	/* sequence initiative - this matches what is seen from
-	 * FC switches in response to FCGS commands
-	 */
+	 
 	xmit->dw5flags0 &= (~SLI4_SEQ_WQE_SI);
-	xmit->dw5flags0 &= (~SLI4_SEQ_WQE_FT);/* force transmit */
-	xmit->dw5flags0 &= (~SLI4_SEQ_WQE_XO);/* exchange responder */
-	xmit->dw5flags0 |= SLI4_SEQ_WQE_LS;/* last in seqence */
+	xmit->dw5flags0 &= (~SLI4_SEQ_WQE_FT); 
+	xmit->dw5flags0 &= (~SLI4_SEQ_WQE_XO); 
+	xmit->dw5flags0 |= SLI4_SEQ_WQE_LS; 
 	xmit->df_ctl = params->df_ctl;
 	xmit->type = params->type;
 	xmit->r_ctl = params->r_ctl;
@@ -2581,7 +2516,7 @@ sli_fc_cqe_parse(struct sli4 *sli4, struct sli4_queue *cq,
 		*r_id = le16_to_cpu(wcqe->request_tag);
 		rc = wcqe->status;
 
-		/* Flag errors except for FCP_RSP_FAILURE */
+		 
 		if (rc && rc != SLI4_FC_WCQE_STATUS_FCP_RSP_FAILURE) {
 			efc_log_info(sli4, "WCQE: status=%#x hw_status=%#x tag=%#x\n",
 				     wcqe->status, wcqe->hw_status,
@@ -2632,7 +2567,7 @@ sli_fc_cqe_parse(struct sli4 *sli4, struct sli4_queue *cq,
 		*r_id = le16_to_cpu(dcqe->xri);
 		rc = dcqe->status;
 
-		/* Flag errors */
+		 
 		if (rc != SLI4_FC_WCQE_STATUS_SUCCESS) {
 			efc_log_info(sli4, "Optimized DATA CQE: status=%#x\n",
 				     dcqe->status);
@@ -2754,7 +2689,7 @@ sli_fc_rqe_rqid_and_index(struct sli4 *sli4, u8 *cqe, u16 *rq_id, u32 *index)
 
 	code = cqe[SLI4_CQE_CODE_OFFSET];
 
-	/* Retrieve the RQ index from the completion */
+	 
 	if (code == SLI4_CQE_CODE_RQ_ASYNC) {
 		struct sli4_fc_async_rcqe *rcqe = (void *)cqe;
 
@@ -2867,7 +2802,7 @@ sli_bmbx_wait(struct sli4 *sli4, u32 msec)
 	u32 val;
 	unsigned long end;
 
-	/* Wait for the bootstrap mailbox to report "ready" */
+	 
 	end = jiffies + msecs_to_jiffies(msec);
 	do {
 		val = readl(sli4->reg[0] + SLI4_BMBX_REG);
@@ -2885,7 +2820,7 @@ sli_bmbx_write(struct sli4 *sli4)
 {
 	u32 val;
 
-	/* write buffer location to bootstrap mailbox register */
+	 
 	val = sli_bmbx_write_hi(sli4->bmbx.phys);
 	writel(val, (sli4->reg[0] + SLI4_BMBX_REG));
 
@@ -2896,7 +2831,7 @@ sli_bmbx_write(struct sli4 *sli4)
 	val = sli_bmbx_write_lo(sli4->bmbx.phys);
 	writel(val, (sli4->reg[0] + SLI4_BMBX_REG));
 
-	/* wait for SLI Port to set ready bit */
+	 
 	return sli_bmbx_wait(sli4, SLI4_BMBX_TIMEOUT_MSEC);
 }
 
@@ -2914,14 +2849,14 @@ sli_bmbx_command(struct sli4 *sli4)
 		return -EIO;
 	}
 
-	/* Submit a command to the bootstrap mailbox and check the status */
+	 
 	if (sli_bmbx_write(sli4)) {
 		efc_log_crit(sli4, "bmbx write fail phys=%pad reg=%#x\n",
 			     &sli4->bmbx.phys, readl(sli4->reg[0] + SLI4_BMBX_REG));
 		return -EIO;
 	}
 
-	/* check completion queue entry status */
+	 
 	if (le32_to_cpu(((struct sli4_mcqe *)cqe)->dw3_flags) &
 	    SLI4_MCQE_VALID) {
 		return sli_cqe_mq(sli4, cqe);
@@ -2939,7 +2874,7 @@ sli_cmd_config_link(struct sli4 *sli4, void *buf)
 
 	config_link->hdr.command = SLI4_MBX_CMD_CONFIG_LINK;
 
-	/* Port interprets zero in a field as "use default value" */
+	 
 
 	return 0;
 }
@@ -2953,7 +2888,7 @@ sli_cmd_down_link(struct sli4 *sli4, void *buf)
 
 	hdr->command = SLI4_MBX_CMD_DOWN_LINK;
 
-	/* Port interprets zero in a field as "use default value" */
+	 
 
 	return 0;
 }
@@ -3072,7 +3007,7 @@ sli_cmd_init_link(struct sli4 *sli4, void *buf, u32 speed, u8 reset_alpa)
 
 	switch (sli4->topology) {
 	case SLI4_READ_CFG_TOPO_FC:
-		/* Attempt P2P but failover to FC-AL */
+		 
 		flags |= SLI4_INIT_LINK_F_FAIL_OVER;
 		flags |= SLI4_INIT_LINK_F_P2P_FAIL_OVER;
 		break;
@@ -3119,10 +3054,7 @@ sli_cmd_init_vfi(struct sli4 *sli4, void *buf, u16 vfi, u16 fcfi, u16 vpi)
 	init_vfi->vfi = cpu_to_le16(vfi);
 	init_vfi->fcfi = cpu_to_le16(fcfi);
 
-	/*
-	 * If the VPI is valid, initialize it at the same time as
-	 * the VFI
-	 */
+	 
 	if (vpi != U16_MAX) {
 		flags |= SLI4_INIT_VFI_FLAG_VP;
 		init_vfi->flags0_word = cpu_to_le16(flags);
@@ -3611,7 +3543,7 @@ sli_cmd_unreg_vpi(struct sli4 *sli4, void *buf, u16 indicator, u32 which)
 		flags |= SLI4_UNREG_VPI_II_FCFI;
 		break;
 	case SLI4_UNREG_TYPE_ALL:
-		/* override indicator */
+		 
 		unreg_vpi->index = cpu_to_le16(U32_MAX);
 		flags |= SLI4_UNREG_VPI_II_FCFI;
 		break;
@@ -3770,7 +3702,7 @@ sli_cmd_common_get_port_name(struct sli4 *sli4, void *buf)
 			 SLI4_SUBSYSTEM_COMMON, CMD_V1,
 			 SLI4_RQST_PYLD_LEN(cmn_get_port_name));
 
-	/* Set the port type value (ethernet=0, FC=1) for V1 commands */
+	 
 	pname->port_type = SLI4_PORT_TYPE_FC;
 
 	return 0;
@@ -3809,7 +3741,7 @@ sli_cmd_common_write_object(struct sli4 *sli4, void *buf, u16 noc,
 
 	bde = (struct sli4_bde *)wr_obj->host_buffer_descriptor;
 
-	/* Setup to transfer xfer_size bytes to device */
+	 
 	bde->bde_type_buflen =
 		cpu_to_le32((SLI4_BDE_TYPE_VAL(64)) |
 			    (desired_write_length & SLI4_BDE_LEN_MASK));
@@ -3861,7 +3793,7 @@ sli_cmd_common_read_object(struct sli4 *sli4, void *buf, u32 desired_read_len,
 
 	bde = (struct sli4_bde *)rd_obj->host_buffer_descriptor;
 
-	/* Setup to transfer xfer_size bytes to device */
+	 
 	bde->bde_type_buflen =
 		cpu_to_le32((SLI4_BDE_TYPE_VAL(64)) |
 			    (desired_read_len & SLI4_BDE_LEN_MASK));
@@ -3969,11 +3901,7 @@ sli_cqe_mq(struct sli4 *sli4, void *buf)
 {
 	struct sli4_mcqe *mcqe = buf;
 	u32 dwflags = le32_to_cpu(mcqe->dw3_flags);
-	/*
-	 * Firmware can split mbx completions into two MCQEs: first with only
-	 * the "consumed" bit set and a second with the "complete" bit set.
-	 * Thus, ignore MCQE unless "complete" is set.
-	 */
+	 
 	if (!(dwflags & SLI4_MCQE_COMPLETED))
 		return SLI4_MCQE_STATUS_NOT_COMPLETED;
 
@@ -4030,7 +3958,7 @@ sli_fw_ready(struct sli4 *sli4)
 {
 	u32 val;
 
-	/* Determine if the chip FW is in a ready state */
+	 
 	val = sli_reg_read_status(sli4);
 	return (val & SLI4_PORT_STATUS_RDY) ? 1 : 0;
 }
@@ -4059,7 +3987,7 @@ sli_sliport_reset(struct sli4 *sli4)
 	u32 val;
 
 	val = SLI4_PORT_CTRL_IP;
-	/* Initialize port, endian */
+	 
 	writel(val, (sli4->reg[0] + SLI4_PORT_CTRL_REG));
 
 	rc = sli_wait_for_fw_ready(sli4, SLI4_FW_READY_TIMEOUT_MSEC);
@@ -4072,17 +4000,13 @@ sli_sliport_reset(struct sli4 *sli4)
 static bool
 sli_fw_init(struct sli4 *sli4)
 {
-	/*
-	 * Is firmware ready for operation?
-	 */
+	 
 	if (!sli_wait_for_fw_ready(sli4, SLI4_FW_READY_TIMEOUT_MSEC)) {
 		efc_log_crit(sli4, "FW status is NOT ready\n");
 		return false;
 	}
 
-	/*
-	 * Reset port to a known state
-	 */
+	 
 	return sli_sliport_reset(sli4);
 }
 
@@ -4123,10 +4047,7 @@ sli_calc_max_qentries(struct sli4 *sli4)
 						  sli4->qinfo.count_mask[q]);
 	}
 
-	/* single, contiguous DMA allocations will be called for each queue
-	 * of size (max_qentries * queue entry size); since these can be large,
-	 * check against the OS max DMA allocation size
-	 */
+	 
 	for (q = SLI4_QTYPE_EQ; q < SLI4_QTYPE_MAX; q++) {
 		qentries = sli4->qinfo.max_qentries[q];
 
@@ -4234,11 +4155,7 @@ sli_get_read_config(struct sli4 *sli4)
 	sli4->qinfo.max_qcount[SLI4_QTYPE_WQ] =	le16_to_cpu(conf->wq_count);
 	sli4->qinfo.max_qcount[SLI4_QTYPE_RQ] =	le16_to_cpu(conf->rq_count);
 
-	/*
-	 * READ_CONFIG doesn't give the max number of MQ. Applications
-	 * will typically want 1, but we may need another at some future
-	 * date. Dummy up a "max" MQ count here.
-	 */
+	 
 	sli4->qinfo.max_qcount[SLI4_QTYPE_MQ] = SLI4_USER_MQ_COUNT;
 	return 0;
 }
@@ -4305,7 +4222,7 @@ sli_get_sli4_parameters(struct sli4 *sli4)
 	sli4->qinfo.qpage_count[SLI4_QTYPE_RQ] =
 		(dw_rq_pg_cnt & SLI4_PARAM_RQ_PAGE_CNT_MASK);
 
-	/* save count methods and masks for each queue type */
+	 
 
 	sli4->qinfo.count_mask[SLI4_QTYPE_EQ] =
 			le16_to_cpu(parms->eqe_count_mask);
@@ -4332,21 +4249,21 @@ sli_get_sli4_parameters(struct sli4 *sli4)
 	sli4->qinfo.count_method[SLI4_QTYPE_RQ] =
 			GET_Q_CNT_METHOD(dw_rq_pg_cnt);
 
-	/* now calculate max queue entries */
+	 
 	sli_calc_max_qentries(sli4);
 
 	dw_sgl_pg_cnt = le32_to_cpu(parms->dw18_sgl_page_cnt);
 
-	/* max # of pages */
+	 
 	sli4->max_sgl_pages = (dw_sgl_pg_cnt & SLI4_PARAM_SGL_PAGE_CNT_MASK);
 
-	/* bit map of available sizes */
+	 
 	sli4->sgl_page_sizes = (dw_sgl_pg_cnt &
 				SLI4_PARAM_SGL_PAGE_SZS_MASK) >> 8;
-	/* ignore HLM here. Use value from REQUEST_FEATURES */
+	 
 	sli4->sge_supported_length = le32_to_cpu(parms->sge_supported_length);
 	sli4->params.sgl_pre_reg_required = (dw_loopback & SLI4_PARAM_SGLR);
-	/* default to using pre-registered SGL's */
+	 
 	sli4->params.sgl_pre_registered = true;
 
 	sli4->params.perf_hint = dw_loopback & SLI4_PARAM_PHON;
@@ -4355,7 +4272,7 @@ sli_get_sli4_parameters(struct sli4 *sli4)
 	sli4->rq_batch = (le16_to_cpu(parms->dw15w1_rq_db_window) &
 			  SLI4_PARAM_RQ_DB_WINDOW_MASK) >> 12;
 
-	/* Use the highest available WQE size. */
+	 
 	if (((dw_wq_pg_cnt & SLI4_PARAM_WQE_SZS_MASK) >> 8) &
 	    SLI4_128BYTE_WQE_SUPPORT)
 		sli4->wqe_size = SLI4_WQE_EXT_BYTES;
@@ -4373,11 +4290,7 @@ sli_get_ctrl_attributes(struct sli4 *sli4)
 	struct efc_dma data;
 	u32 psize;
 
-	/*
-	 * Issue COMMON_GET_CNTL_ATTRIBUTES to get port_number. Temporarily
-	 * uses VPD DMA buffer as the response won't fit in the embedded
-	 * buffer.
-	 */
+	 
 	memset(sli4->vpd_data.virt, 0, sli4->vpd_data.size);
 	if (sli_cmd_common_get_cntl_attributes(sli4, sli4->bmbx.virt,
 					       &sli4->vpd_data)) {
@@ -4405,7 +4318,7 @@ sli_get_ctrl_attributes(struct sli4 *sli4)
 	memcpy(sli4->bios_version_string, attr->bios_version_str,
 	       sizeof(sli4->bios_version_string));
 
-	/* get additional attributes */
+	 
 	psize = sizeof(struct sli4_rsp_cmn_get_cntl_addl_attributes);
 	data.size = psize;
 	data.virt = dma_alloc_coherent(&sli4->pci->dev, data.size,
@@ -4489,7 +4402,7 @@ sli_get_fw_rev(struct sli4 *sli4)
 		     le32_to_cpu(read_rev->first_hw_rev),
 		     le32_to_cpu(read_rev->second_hw_rev));
 
-	/* Check that all VPD data was returned */
+	 
 	if (le32_to_cpu(read_rev->returned_vpd_length) !=
 	    le32_to_cpu(read_rev->actual_vpd_length)) {
 		efc_log_info(sli4, "VPD length: avail=%d return=%d actual=%d\n",
@@ -4508,9 +4421,7 @@ sli_get_config(struct sli4 *sli4)
 	struct sli4_rsp_cmn_get_port_name *port_name;
 	struct sli4_cmd_read_nvparms *read_nvparms;
 
-	/*
-	 * Read the device configuration
-	 */
+	 
 	if (sli_get_read_config(sli4))
 		return -EIO;
 
@@ -4587,10 +4498,7 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 
 	for (i = 0; i < 6; i++)
 		sli4->reg[i] = reg[i];
-	/*
-	 * Read the SLI_INTF register to discover the register layout
-	 * and other capability information
-	 */
+	 
 	if (pci_read_config_dword(pdev, SLI4_INTF_REG, &intf))
 		return -EIO;
 
@@ -4599,7 +4507,7 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 		return -EIO;
 	}
 
-	/* driver only support SLI-4 */
+	 
 	if ((intf & SLI4_INTF_REV_MASK) != SLI4_INTF_REV_S4) {
 		efc_log_err(sli4, "Unsupported SLI revision (intf=%#x)\n", intf);
 		return -EIO;
@@ -4613,9 +4521,7 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 		     sli_reg_read_err1(sli4),
 		     sli_reg_read_err2(sli4));
 
-	/*
-	 * set the ASIC type and revision
-	 */
+	 
 	if (pci_read_config_dword(pdev, PCI_CLASS_REVISION, &pci_class_rev))
 		return -EIO;
 
@@ -4634,19 +4540,14 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 			break;
 		}
 	}
-	/* Fail if no matching asic type/rev was found */
+	 
 	if (!sli4->asic_type) {
 		efc_log_err(sli4, "no matching asic family/rev found: %02x/%02x\n",
 			    family, rev_id);
 		return -EIO;
 	}
 
-	/*
-	 * The bootstrap mailbox is equivalent to a MQ with a single 256 byte
-	 * entry, a CQ with a single 16 byte entry, and no event queue.
-	 * Alignment must be 16 bytes as the low order address bits in the
-	 * address register are also control / status.
-	 */
+	 
 	sli4->bmbx.size = SLI4_BMBX_SIZE + sizeof(struct sli4_mcqe);
 	sli4->bmbx.virt = dma_alloc_coherent(&pdev->dev, sli4->bmbx.size,
 					     &sli4->bmbx.phys, GFP_KERNEL);
@@ -4665,7 +4566,7 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 		     upper_32_bits(sli4->bmbx.phys),
 		     lower_32_bits(sli4->bmbx.phys), sli4->bmbx.size);
 
-	/* 4096 is arbitrary. What should this value actually be? */
+	 
 	sli4->vpd_data.size = 4096;
 	sli4->vpd_data.virt = dma_alloc_coherent(&pdev->dev,
 						 sli4->vpd_data.size,
@@ -4673,7 +4574,7 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 						 GFP_KERNEL);
 	if (!sli4->vpd_data.virt) {
 		memset(&sli4->vpd_data, 0, sizeof(struct efc_dma));
-		/* Note that failure isn't fatal in this specific case */
+		 
 		efc_log_info(sli4, "VPD buffer allocation failed\n");
 	}
 
@@ -4682,10 +4583,7 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 		return -EIO;
 	}
 
-	/*
-	 * Set one of fcpi(initiator), fcpt(target), fcpc(combined) to true
-	 * in addition to any other desired features
-	 */
+	 
 	sli4->features = (SLI4_REQFEAT_IAAB | SLI4_REQFEAT_NPIV |
 				 SLI4_REQFEAT_DIF | SLI4_REQFEAT_VF |
 				 SLI4_REQFEAT_FCPC | SLI4_REQFEAT_IAAR |
@@ -4693,7 +4591,7 @@ sli_setup(struct sli4 *sli4, void *os, struct pci_dev  *pdev,
 				 SLI4_REQFEAT_RXSEQ | SLI4_REQFEAT_RXRI |
 				 SLI4_REQFEAT_MRQP);
 
-	/* use performance hints if available */
+	 
 	if (sli4->params.perf_hint)
 		sli4->features |= SLI4_REQFEAT_PERFH;
 
@@ -4749,18 +4647,16 @@ sli_reset(struct sli4 *sli4)
 int
 sli_fw_reset(struct sli4 *sli4)
 {
-	/*
-	 * Firmware must be ready before issuing the reset.
-	 */
+	 
 	if (!sli_wait_for_fw_ready(sli4, SLI4_FW_READY_TIMEOUT_MSEC)) {
 		efc_log_crit(sli4, "FW status is NOT ready\n");
 		return -EIO;
 	}
 
-	/* Lancer uses PHYDEV_CONTROL */
+	 
 	writel(SLI4_PHYDEV_CTRL_FRST, (sli4->reg[0] + SLI4_PHYDEV_CTRL_REG));
 
-	/* wait for the FW to become ready after the reset */
+	 
 	if (!sli_wait_for_fw_ready(sli4, SLI4_FW_READY_TIMEOUT_MSEC)) {
 		efc_log_crit(sli4, "Failed to be ready after firmware reset\n");
 		return -EIO;
@@ -4895,19 +4791,11 @@ sli_resource_free(struct sli4 *sli4, enum sli4_resource rtype, u32 rid)
 	case SLI4_RSRC_VPI:
 	case SLI4_RSRC_RPI:
 	case SLI4_RSRC_XRI:
-		/*
-		 * Figure out which extent contains the resource ID. I.e. find
-		 * the extent such that
-		 *   extent->base <= resource ID < extent->base + extent->size
-		 */
+		 
 		base = sli4->ext[rtype].base;
 		size = sli4->ext[rtype].size;
 
-		/*
-		 * In the case of FW reset, this may be cleared
-		 * but the force_free path will still attempt to
-		 * free the resource. Prevent a NULL pointer access.
-		 */
+		 
 		if (!base)
 			break;
 
@@ -4974,10 +4862,7 @@ int sli_dump_is_ready(struct sli4 *sli4)
 	u32 port_val;
 	u32 bmbx_val;
 
-	/*
-	 * Ensure that the port is ready AND the mailbox is
-	 * ready before signaling that the dump is ready to go.
-	 */
+	 
 	port_val = sli_reg_read_status(sli4);
 	bmbx_val = readl(sli4->reg[0] + SLI4_BMBX_REG);
 
@@ -5014,11 +4899,11 @@ sli_cmd_post_sgl_pages(struct sli4 *sli4, void *buf, u16 xri,
 	if (!post)
 		return -EIO;
 
-	/* payload size calculation */
-	/* 4 = xri_start + xri_count */
-	/* xri_count = # of XRI's registered */
-	/* sizeof(uint64_t) = physical address size */
-	/* 2 = # of physical addresses per page set */
+	 
+	 
+	 
+	 
+	 
 	req_len = cpu_to_le32(4 + (xri_count * (sizeof(uint64_t) * 2)));
 	sli_cmd_fill_hdr(&post->hdr, SLI4_OPC_POST_SGL_PAGES, SLI4_SUBSYSTEM_FC,
 			 CMD_V0, req_len);
@@ -5059,10 +4944,7 @@ sli_cmd_post_hdr_templates(struct sli4 *sli4, void *buf, struct efc_dma *dma,
 		(page_count * SZ_DMAADDR)) - sizeof(struct sli4_rqst_hdr));
 
 	if (page_count > 16) {
-		/*
-		 * We can't fit more than 16 descriptors into an embedded mbox
-		 * command, it has to be non-embedded
-		 */
+		 
 		payload_dma->size = payload_size;
 		payload_dma->virt = dma_alloc_coherent(&sli4->pci->dev,
 						       payload_dma->size,
@@ -5105,9 +4987,9 @@ sli_fc_get_rpi_requirements(struct sli4 *sli4, u32 n_rpi)
 {
 	u32 bytes = 0;
 
-	/* Check if header templates needed */
+	 
 	if (sli4->params.hdr_template_req)
-		/* round up to a page */
+		 
 		bytes = round_up(n_rpi * SLI4_HDR_TEMPLATE_SIZE, SLI_PAGE_SIZE);
 
 	return bytes;

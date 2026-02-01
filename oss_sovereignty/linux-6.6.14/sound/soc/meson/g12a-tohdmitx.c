@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2019 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -57,7 +57,7 @@ static int g12a_tohdmitx_i2s_mux_put_enum(struct snd_kcontrol *kcontrol,
 	if (!changed)
 		return 0;
 
-	/* Force disconnect of the mux while updating */
+	 
 	snd_soc_dapm_mux_update_power(dapm, kcontrol, 0, NULL, NULL);
 
 	snd_soc_component_update_bits(component, e->reg,
@@ -107,7 +107,7 @@ static int g12a_tohdmitx_spdif_mux_put_enum(struct snd_kcontrol *kcontrol,
 	if (!changed)
 		return 0;
 
-	/* Force disconnect of the mux while updating */
+	 
 	snd_soc_dapm_mux_update_power(dapm, kcontrol, 0, NULL, NULL);
 
 	snd_soc_component_update_bits(component, TOHDMITX_CTRL0,
@@ -208,7 +208,7 @@ static struct snd_soc_dai_driver g12a_tohdmitx_dai_drv[] = {
 
 static int g12a_tohdmi_component_probe(struct snd_soc_component *c)
 {
-	/* Initialize the static clock parameters */
+	 
 	return snd_soc_component_write(c, TOHDMITX_CTRL0,
 		     CTRL0_I2S_BLK_CAP_INV | CTRL0_SPDIF_CLK_CAP_INV);
 }

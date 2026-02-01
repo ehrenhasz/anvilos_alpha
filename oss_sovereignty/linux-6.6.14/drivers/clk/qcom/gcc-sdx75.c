@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -2936,11 +2934,7 @@ static int gcc_sdx75_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Keep clocks always enabled:
-	 * gcc_ahb_pcie_link_clk
-	 * gcc_xo_pcie_link_clk
-	 */
+	 
 	regmap_update_bits(regmap, 0x3e004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x3e008, BIT(0), BIT(0));
 

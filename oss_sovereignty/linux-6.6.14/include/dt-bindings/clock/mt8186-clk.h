@@ -1,20 +1,17 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_MT8186_H
 #define _DT_BINDINGS_CLK_MT8186_H
 
-/* MCUSYS */
+ 
 
 #define CLK_MCU_ARMPLL_LL_SEL		0
 #define CLK_MCU_ARMPLL_BL_SEL		1
 #define CLK_MCU_ARMPLL_BUS_SEL		2
 #define CLK_MCU_NR_CLK			3
 
-/* TOPCKGEN */
+ 
 
 #define CLK_TOP_AXI			0
 #define CLK_TOP_SCP			1
@@ -154,7 +151,7 @@
 #define CLK_TOP_APLL12_CK_DIV_TDMOUT_M	135
 #define CLK_TOP_NR_CLK			136
 
-/* INFRACFG_AO */
+ 
 
 #define CLK_INFRA_AO_PMIC_TMR		0
 #define CLK_INFRA_AO_PMIC_AP		1
@@ -259,7 +256,7 @@
 #define CLK_INFRA_AO_FLASHIF_66M	100
 #define CLK_INFRA_AO_NR_CLK		101
 
-/* APMIXEDSYS */
+ 
 
 #define CLK_APMIXED_ARMPLL_LL		0
 #define CLK_APMIXED_ARMPLL_BL		1
@@ -277,7 +274,7 @@
 #define CLK_APMIXED_APLL2		13
 #define CLK_APMIXED_NR_CLK		14
 
-/* IMP_IIC_WRAP */
+ 
 
 #define CLK_IMP_IIC_WRAP_AP_CLOCK_I2C0	0
 #define CLK_IMP_IIC_WRAP_AP_CLOCK_I2C1	1
@@ -291,12 +288,12 @@
 #define CLK_IMP_IIC_WRAP_AP_CLOCK_I2C9	9
 #define CLK_IMP_IIC_WRAP_NR_CLK		10
 
-/* MFGCFG */
+ 
 
 #define CLK_MFG_BG3D			0
 #define CLK_MFG_NR_CLK			1
 
-/* MMSYS */
+ 
 
 #define CLK_MM_DISP_MUTEX0		0
 #define CLK_MM_APB_MM_BUS		1
@@ -325,7 +322,7 @@
 #define CLK_MM_DISP_26M			24
 #define CLK_MM_NR_CLK			25
 
-/* WPESYS */
+ 
 
 #define CLK_WPE_CK_EN			0
 #define CLK_WPE_SMI_LARB8_CK_EN		1
@@ -333,7 +330,7 @@
 #define CLK_WPE_SMI_LARB8_PCLK_EN	3
 #define CLK_WPE_NR_CLK			4
 
-/* IMGSYS1 */
+ 
 
 #define CLK_IMG1_LARB9_IMG1		0
 #define CLK_IMG1_LARB10_IMG1		1
@@ -341,7 +338,7 @@
 #define CLK_IMG1_GALS_IMG1		3
 #define CLK_IMG1_NR_CLK			4
 
-/* IMGSYS2 */
+ 
 
 #define CLK_IMG2_LARB9_IMG2		0
 #define CLK_IMG2_LARB10_IMG2		1
@@ -351,7 +348,7 @@
 #define CLK_IMG2_GALS_IMG2		5
 #define CLK_IMG2_NR_CLK			6
 
-/* VDECSYS */
+ 
 
 #define CLK_VDEC_LARB1_CKEN		0
 #define CLK_VDEC_LAT_CKEN		1
@@ -363,7 +360,7 @@
 #define CLK_VDEC_CKEN_ENG		7
 #define CLK_VDEC_NR_CLK			8
 
-/* VENCSYS */
+ 
 
 #define CLK_VENC_CKE0_LARB		0
 #define CLK_VENC_CKE1_VENC		1
@@ -371,7 +368,7 @@
 #define CLK_VENC_CKE5_GALS		3
 #define CLK_VENC_NR_CLK			4
 
-/* CAMSYS */
+ 
 
 #define CLK_CAM_LARB13			0
 #define CLK_CAM_DFP_VAD			1
@@ -390,21 +387,21 @@
 #define CLK_CAM2MM_GALS			14
 #define CLK_CAM_NR_CLK			15
 
-/* CAMSYS_RAWA */
+ 
 
 #define CLK_CAM_RAWA_LARBX_RAWA		0
 #define CLK_CAM_RAWA			1
 #define CLK_CAM_RAWA_CAMTG_RAWA		2
 #define CLK_CAM_RAWA_NR_CLK		3
 
-/* CAMSYS_RAWB */
+ 
 
 #define CLK_CAM_RAWB_LARBX_RAWB		0
 #define CLK_CAM_RAWB			1
 #define CLK_CAM_RAWB_CAMTG_RAWB		2
 #define CLK_CAM_RAWB_NR_CLK		3
 
-/* MDPSYS */
+ 
 
 #define CLK_MDP_RDMA0			0
 #define CLK_MDP_TDSHP0			1
@@ -430,7 +427,7 @@
 #define CLK_MDP_IMG_DL_RELAY2_ASYNC2	21
 #define CLK_MDP_NR_CLK			22
 
-/* IPESYS */
+ 
 
 #define CLK_IPE_LARB19			0
 #define CLK_IPE_LARB20			1
@@ -442,4 +439,4 @@
 #define CLK_IPE_GALS_IPE		7
 #define CLK_IPE_NR_CLK			8
 
-#endif /* _DT_BINDINGS_CLK_MT8186_H */
+#endif  

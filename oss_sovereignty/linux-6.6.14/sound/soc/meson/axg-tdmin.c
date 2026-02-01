@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -47,7 +47,7 @@ static const char * const axg_tdmin_sel_texts[] = {
 	"IN 8", "IN 9", "IN 10", "IN 11", "IN 12", "IN 13", "IN 14", "IN 15",
 };
 
-/* Change to special mux control to reset dapm */
+ 
 static SOC_ENUM_SINGLE_DECL(axg_tdmin_sel_enum, TDMIN_CTRL,
 			    TDMIN_CTRL_SEL_SHIFT, axg_tdmin_sel_texts);
 
@@ -88,17 +88,17 @@ axg_tdmin_get_tdm_stream(struct snd_soc_dapm_widget *w)
 
 static void axg_tdmin_enable(struct regmap *map)
 {
-	/* Apply both reset */
+	 
 	regmap_update_bits(map, TDMIN_CTRL,
 			   TDMIN_CTRL_RST_OUT | TDMIN_CTRL_RST_IN, 0);
 
-	/* Clear out reset before in reset */
+	 
 	regmap_update_bits(map, TDMIN_CTRL,
 			   TDMIN_CTRL_RST_OUT, TDMIN_CTRL_RST_OUT);
 	regmap_update_bits(map, TDMIN_CTRL,
 			   TDMIN_CTRL_RST_IN,  TDMIN_CTRL_RST_IN);
 
-	/* Actually enable tdmin */
+	 
 	regmap_update_bits(map, TDMIN_CTRL,
 			   TDMIN_CTRL_ENABLE, TDMIN_CTRL_ENABLE);
 }
@@ -114,7 +114,7 @@ static int axg_tdmin_prepare(struct regmap *map,
 {
 	unsigned int val, skew = quirks->skew_offset;
 
-	/* Set stream skew */
+	 
 	switch (ts->iface->fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 	case SND_SOC_DAIFMT_DSP_A:
@@ -133,7 +133,7 @@ static int axg_tdmin_prepare(struct regmap *map,
 
 	val = TDMIN_CTRL_IN_BIT_SKEW(skew);
 
-	/* Set stream format mode */
+	 
 	switch (ts->iface->fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 	case SND_SOC_DAIFMT_LEFT_J:
@@ -142,23 +142,20 @@ static int axg_tdmin_prepare(struct regmap *map,
 		break;
 	}
 
-	/* If the sample clock is inverted, invert it back for the formatter */
+	 
 	if (axg_tdm_lrclk_invert(ts->iface->fmt))
 		val |= TDMIN_CTRL_WS_INV;
 
-	/* Set the slot width */
+	 
 	val |= TDMIN_CTRL_BITNUM(ts->iface->slot_width - 1);
 
-	/*
-	 * The following also reset LSB_FIRST which result in the formatter
-	 * placing the first bit received at bit 31
-	 */
+	 
 	regmap_update_bits(map, TDMIN_CTRL,
 			   (TDMIN_CTRL_IN_BIT_SKEW_MASK | TDMIN_CTRL_WS_INV |
 			    TDMIN_CTRL_I2S_MODE | TDMIN_CTRL_LSB_FIRST |
 			    TDMIN_CTRL_BITNUM_MASK), val);
 
-	/* Set static swap mask configuration */
+	 
 	regmap_write(map, TDMIN_SWAP, 0x76543210);
 
 	return axg_tdm_formatter_set_channel_masks(map, ts, TDMIN_MASK0);

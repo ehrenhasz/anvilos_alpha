@@ -1,30 +1,8 @@
-/*
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- */
+ 
 
-/*
- * Copyright (c) 2014 by Chunwei Chen. All rights reserved.
- * Copyright (c) 2016 by Delphix. All rights reserved.
- */
+ 
 
-/*
- * See abd.c for a general overview of the arc buffered data (ABD).
- *
- * Using a large proportion of scattered ABDs decreases ARC fragmentation since
- * when we are at the limit of allocatable space, using equal-size chunks will
- * allow us to quickly reclaim enough space for a new large allocation (assuming
- * it is also scattered).
- *
- * ABDs are allocated scattered by default unless the caller uses
- * abd_alloc_linear() or zfs_abd_scatter_enabled is disabled.
- */
+ 
 
 #include <sys/abd_impl.h>
 #include <sys/param.h>
@@ -43,29 +21,17 @@ typedef struct abd_stats {
 } abd_stats_t;
 
 static abd_stats_t abd_stats = {
-	/* Amount of memory occupied by all of the abd_t struct allocations */
+	 
 	{ "struct_size",			KSTAT_DATA_UINT64 },
-	/*
-	 * The number of scatter ABDs which are currently allocated, excluding
-	 * ABDs which don't own their data (for instance the ones which were
-	 * allocated through abd_get_offset()).
-	 */
+	 
 	{ "scatter_cnt",			KSTAT_DATA_UINT64 },
-	/* Amount of data stored in all scatter ABDs tracked by scatter_cnt */
+	 
 	{ "scatter_data_size",			KSTAT_DATA_UINT64 },
-	/*
-	 * The amount of space wasted at the end of the last chunk across all
-	 * scatter ABDs tracked by scatter_cnt.
-	 */
+	 
 	{ "scatter_chunk_waste",		KSTAT_DATA_UINT64 },
-	/*
-	 * The number of linear ABDs which are currently allocated, excluding
-	 * ABDs which don't own their data (for instance the ones which were
-	 * allocated through abd_get_offset() and abd_get_from_buf()). If an
-	 * ABD takes ownership of its buf then it will become tracked.
-	 */
+	 
 	{ "linear_cnt",				KSTAT_DATA_UINT64 },
-	/* Amount of data stored in all linear ABDs tracked by linear_cnt */
+	 
 	{ "linear_data_size",			KSTAT_DATA_UINT64 },
 };
 
@@ -78,21 +44,7 @@ struct {
 	wmsum_t abdstat_linear_data_size;
 } abd_sums;
 
-/*
- * zfs_abd_scatter_min_size is the minimum allocation size to use scatter
- * ABD's for.  Smaller allocations will use linear ABD's which use
- * zio_[data_]buf_alloc().
- *
- * Scatter ABD's use at least one page each, so sub-page allocations waste
- * some space when allocated as scatter (e.g. 2KB scatter allocation wastes
- * half of each page).  Using linear ABD's for small allocations means that
- * they will be put on slabs which contain many allocations.
- *
- * Linear ABDs for multi-page allocations are easier to use, and in some cases
- * it allows to avoid buffer copying.  But allocation and especially free
- * of multi-page linear ABDs are expensive operations due to KVA mapping and
- * unmapping, and with time they cause KVA fragmentations.
- */
+ 
 static size_t zfs_abd_scatter_min_size = PAGE_SIZE + 1;
 
 #if defined(_KERNEL)
@@ -107,11 +59,7 @@ SYSCTL_ULONG(_vfs_zfs, OID_AUTO, abd_scatter_min_size, CTLFLAG_RWTUN,
 kmem_cache_t *abd_chunk_cache;
 static kstat_t *abd_ksp;
 
-/*
- * We use a scattered SPA_MAXBLOCKSIZE sized ABD whose chunks are
- * just a single zero'd page-sized buffer. This allows us to conserve
- * memory by only using a single zero buffer for the scatter chunks.
- */
+ 
 abd_t *abd_zero_scatter = NULL;
 
 static uint_t
@@ -171,10 +119,7 @@ abd_verify_scatter(abd_t *abd)
 {
 	uint_t i, n;
 
-	/*
-	 * There is no scatter linear pages in FreeBSD so there is
-	 * an error if the ABD has been marked as a linear page.
-	 */
+	 
 	ASSERT(!abd_is_linear_page(abd));
 	ASSERT3U(ABD_SCATTER(abd).abd_offset, <, PAGE_SIZE);
 	n = abd_scatter_chunkcnt(abd);
@@ -211,13 +156,7 @@ abd_t *
 abd_alloc_struct_impl(size_t size)
 {
 	uint_t chunkcnt = abd_chunkcnt_for_bytes(size);
-	/*
-	 * In the event we are allocating a gang ABD, the size passed in
-	 * will be 0. We must make sure to set abd_size to the size of an
-	 * ABD struct as opposed to an ABD scatter with 0 chunks. The gang
-	 * ABD struct allocation accounts for an additional 24 bytes over
-	 * a scatter ABD with 0 chunks.
-	 */
+	 
 	size_t abd_size = MAX(sizeof (abd_t),
 	    offsetof(abd_t, abd_u.abd_scatter.abd_chunks[chunkcnt]));
 	abd_t *abd = kmem_alloc(abd_size, KM_PUSHPAGE);
@@ -238,10 +177,7 @@ abd_free_struct_impl(abd_t *abd)
 	ABDSTAT_INCR(abdstat_struct_size, -size);
 }
 
-/*
- * Allocate scatter ABD of size SPA_MAXBLOCKSIZE, where
- * each chunk in the scatterlist will be set to the same area.
- */
+ 
 _Static_assert(ZERO_REGION_SIZE >= PAGE_SIZE, "zero_region too small");
 static void
 abd_alloc_zero_scatter(void)
@@ -344,23 +280,11 @@ abd_fini(void)
 void
 abd_free_linear_page(abd_t *abd)
 {
-	/*
-	 * FreeBSD does not have scatter linear pages
-	 * so there is an error.
-	 */
+	 
 	VERIFY(0);
 }
 
-/*
- * If we're going to use this ABD for doing I/O using the block layer, the
- * consumer of the ABD data doesn't care if it's scattered or not, and we don't
- * plan to store this ABD in memory for a long period of time, we should
- * allocate the ABD type that requires the least data copying to do the I/O.
- *
- * Currently this is linear ABDs, however if ldi_strategy() can ever issue I/Os
- * using a scatter/gather list we should switch to that and replace this call
- * with vanilla abd_alloc().
- */
+ 
 abd_t *
 abd_alloc_for_io(size_t size, boolean_t is_metadata)
 {
@@ -380,10 +304,7 @@ abd_get_offset_scatter(abd_t *abd, abd_t *sabd, size_t off,
 
 	ASSERT3U(chunkcnt, <=, abd_scatter_chunkcnt(sabd));
 
-	/*
-	 * If an abd struct is provided, it is only the minimum size.  If we
-	 * need additional chunks, we need to allocate a new struct.
-	 */
+	 
 	if (abd != NULL &&
 	    offsetof(abd_t, abd_u.abd_scatter.abd_chunks[chunkcnt]) >
 	    sizeof (abd_t)) {
@@ -393,15 +314,11 @@ abd_get_offset_scatter(abd_t *abd, abd_t *sabd, size_t off,
 	if (abd == NULL)
 		abd = abd_alloc_struct(chunkcnt << PAGE_SHIFT);
 
-	/*
-	 * Even if this buf is filesystem metadata, we only track that
-	 * if we own the underlying data buffer, which is not true in
-	 * this case. Therefore, we don't ever use ABD_FLAG_META here.
-	 */
+	 
 
 	ABD_SCATTER(abd).abd_offset = new_offset & PAGE_MASK;
 
-	/* Copy the scatterlist starting at the correct offset */
+	 
 	(void) memcpy(&ABD_SCATTER(abd).abd_chunks,
 	    &ABD_SCATTER(sabd).abd_chunks[new_offset >> PAGE_SHIFT],
 	    chunkcnt * sizeof (void *));
@@ -409,9 +326,7 @@ abd_get_offset_scatter(abd_t *abd, abd_t *sabd, size_t off,
 	return (abd);
 }
 
-/*
- * Initialize the abd_iter.
- */
+ 
 void
 abd_iter_init(struct abd_iter *aiter, abd_t *abd)
 {
@@ -423,38 +338,28 @@ abd_iter_init(struct abd_iter *aiter, abd_t *abd)
 	aiter->iter_mapsize = 0;
 }
 
-/*
- * This is just a helper function to see if we have exhausted the
- * abd_iter and reached the end.
- */
+ 
 boolean_t
 abd_iter_at_end(struct abd_iter *aiter)
 {
 	return (aiter->iter_pos == aiter->iter_abd->abd_size);
 }
 
-/*
- * Advance the iterator by a certain amount. Cannot be called when a chunk is
- * in use. This can be safely called when the aiter has already exhausted, in
- * which case this does nothing.
- */
+ 
 void
 abd_iter_advance(struct abd_iter *aiter, size_t amount)
 {
 	ASSERT3P(aiter->iter_mapaddr, ==, NULL);
 	ASSERT0(aiter->iter_mapsize);
 
-	/* There's nothing left to advance to, so do nothing */
+	 
 	if (abd_iter_at_end(aiter))
 		return;
 
 	aiter->iter_pos += amount;
 }
 
-/*
- * Map the current chunk into aiter. This can be safely called when the aiter
- * has already exhausted, in which case this does nothing.
- */
+ 
 void
 abd_iter_map(struct abd_iter *aiter)
 {
@@ -463,7 +368,7 @@ abd_iter_map(struct abd_iter *aiter)
 	ASSERT3P(aiter->iter_mapaddr, ==, NULL);
 	ASSERT0(aiter->iter_mapsize);
 
-	/* There's nothing left to iterate over, so do nothing */
+	 
 	if (abd_iter_at_end(aiter))
 		return;
 
@@ -482,10 +387,7 @@ abd_iter_map(struct abd_iter *aiter)
 	aiter->iter_mapaddr = (char *)paddr + offset;
 }
 
-/*
- * Unmap the current chunk from aiter. This can be safely called when the aiter
- * has already exhausted, in which case this does nothing.
- */
+ 
 void
 abd_iter_unmap(struct abd_iter *aiter)
 {

@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/verity.c: fs-verity support for f2fs
- *
- * Copyright 2019 Google LLC
- */
 
-/*
- * Implementation of fsverity_operations for f2fs.
- *
- * Like ext4, f2fs stores the verity metadata (Merkle tree and
- * fsverity_descriptor) past the end of the file, starting at the first 64K
- * boundary beyond i_size.  This approach works because (a) verity files are
- * readonly, and (b) pages fully beyond i_size aren't visible to userspace but
- * can be read/written internally by f2fs with only some relatively small
- * changes to f2fs.  Extended attributes cannot be used because (a) f2fs limits
- * the total size of an inode's xattr entries to 4096 bytes, which wouldn't be
- * enough for even a single Merkle tree block, and (b) f2fs encryption doesn't
- * encrypt xattrs, yet the verity metadata *must* be encrypted when the file is
- * because it contains hashes of the plaintext data.
- *
- * Using a 64K boundary rather than a 4K one keeps things ready for
- * architectures with 64K pages, and it doesn't necessarily waste space on-disk
- * since there can be a hole between i_size and the start of the Merkle tree.
- */
+ 
+
+ 
 
 #include <linux/f2fs_fs.h>
 
@@ -36,10 +15,7 @@ static inline loff_t f2fs_verity_metadata_pos(const struct inode *inode)
 	return round_up(inode->i_size, 65536);
 }
 
-/*
- * Read some verity metadata from the inode.  __vfs_read() can't be used because
- * we need to read beyond i_size.
- */
+ 
 static int pagecache_read(struct inode *inode, void *buf, size_t count,
 			  loff_t pos)
 {
@@ -64,10 +40,7 @@ static int pagecache_read(struct inode *inode, void *buf, size_t count,
 	return 0;
 }
 
-/*
- * Write some verity metadata to the inode for FS_IOC_ENABLE_VERITY.
- * kernel_write() can't be used because the file descriptor is readonly.
- */
+ 
 static int pagecache_write(struct inode *inode, const void *buf, size_t count,
 			   loff_t pos)
 {
@@ -103,12 +76,7 @@ static int pagecache_write(struct inode *inode, const void *buf, size_t count,
 	return 0;
 }
 
-/*
- * Format of f2fs verity xattr.  This points to the location of the verity
- * descriptor within the file data rather than containing it directly because
- * the verity descriptor *must* be encrypted when f2fs encryption is used.  But,
- * f2fs encryption does not encrypt xattrs.
- */
+ 
 struct fsverity_descriptor_location {
 	__le32 version;
 	__le32 size;
@@ -126,11 +94,7 @@ static int f2fs_begin_enable_verity(struct file *filp)
 	if (f2fs_is_atomic_file(inode))
 		return -EOPNOTSUPP;
 
-	/*
-	 * Since the file was opened readonly, we have to initialize the quotas
-	 * here and not rely on ->open() doing it.  This must be done before
-	 * evicting the inline data.
-	 */
+	 
 	err = f2fs_dquot_initialize(inode);
 	if (err)
 		return err;
@@ -156,36 +120,28 @@ static int f2fs_end_enable_verity(struct file *filp, const void *desc,
 	};
 	int err = 0, err2 = 0;
 
-	/*
-	 * If an error already occurred (which fs/verity/ signals by passing
-	 * desc == NULL), then only clean-up is needed.
-	 */
+	 
 	if (desc == NULL)
 		goto cleanup;
 
-	/* Append the verity descriptor. */
+	 
 	err = pagecache_write(inode, desc, desc_size, desc_pos);
 	if (err)
 		goto cleanup;
 
-	/*
-	 * Write all pages (both data and verity metadata).  Note that this must
-	 * happen before clearing FI_VERITY_IN_PROGRESS; otherwise pages beyond
-	 * i_size won't be written properly.  For crash consistency, this also
-	 * must happen before the verity inode flag gets persisted.
-	 */
+	 
 	err = filemap_write_and_wait(inode->i_mapping);
 	if (err)
 		goto cleanup;
 
-	/* Set the verity xattr. */
+	 
 	err = f2fs_setxattr(inode, F2FS_XATTR_INDEX_VERITY,
 			    F2FS_XATTR_NAME_VERITY, &dloc, sizeof(dloc),
 			    NULL, XATTR_CREATE);
 	if (err)
 		goto cleanup;
 
-	/* Finally, set the verity inode flag. */
+	 
 	file_set_verity(inode);
 	f2fs_set_inode_flags(inode);
 	f2fs_mark_inode_dirty_sync(inode, true);
@@ -194,15 +150,7 @@ static int f2fs_end_enable_verity(struct file *filp, const void *desc,
 	return 0;
 
 cleanup:
-	/*
-	 * Verity failed to be enabled, so clean up by truncating any verity
-	 * metadata that was written beyond i_size (both from cache and from
-	 * disk) and clearing FI_VERITY_IN_PROGRESS.
-	 *
-	 * Taking i_gc_rwsem[WRITE] is needed to stop f2fs garbage collection
-	 * from re-instantiating cached pages we are truncating (since unlike
-	 * normal file accesses, garbage collection isn't limited by i_size).
-	 */
+	 
 	f2fs_down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
 	truncate_inode_pages(inode->i_mapping, inode->i_size);
 	err2 = f2fs_truncate(inode);
@@ -224,7 +172,7 @@ static int f2fs_get_verity_descriptor(struct inode *inode, void *buf,
 	u32 size;
 	u64 pos;
 
-	/* Get the descriptor location */
+	 
 	res = f2fs_getxattr(inode, F2FS_XATTR_INDEX_VERITY,
 			    F2FS_XATTR_NAME_VERITY, &dloc, sizeof(dloc), NULL);
 	if (res < 0 && res != -ERANGE)
@@ -236,7 +184,7 @@ static int f2fs_get_verity_descriptor(struct inode *inode, void *buf,
 	size = le32_to_cpu(dloc.size);
 	pos = le64_to_cpu(dloc.pos);
 
-	/* Get the descriptor */
+	 
 	if (pos + size < pos || pos + size > inode->i_sb->s_maxbytes ||
 	    pos < f2fs_verity_metadata_pos(inode) || size > INT_MAX) {
 		f2fs_warn(F2FS_I_SB(inode), "invalid verity xattr");

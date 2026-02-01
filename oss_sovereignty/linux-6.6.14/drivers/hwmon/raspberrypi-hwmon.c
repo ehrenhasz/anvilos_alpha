@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Raspberry Pi voltage sensor driver
- *
- * Based on firmware/raspberrypi.c by Noralf Trønnes
- *
- * Copyright (C) 2018 Stefan Wahren <stefan.wahren@i2se.com>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/devm-helpers.h>
 #include <linux/err.h>
@@ -30,7 +24,7 @@ static void rpi_firmware_get_throttled(struct rpi_hwmon_data *data)
 	u32 new_uv, old_uv, value;
 	int ret;
 
-	/* Request firmware to clear sticky bits */
+	 
 	value = 0xffff;
 
 	ret = rpi_firmware_property(data->fw, RPI_FIRMWARE_GET_THROTTLED,
@@ -65,10 +59,7 @@ static void get_values_poll(struct work_struct *work)
 
 	rpi_firmware_get_throttled(data);
 
-	/*
-	 * We can't run faster than the sticky shift (100ms) since we get
-	 * flipping in the sticky bits that are cleared.
-	 */
+	 
 	schedule_delayed_work(&data->get_values_poll_work, 2 * HZ);
 }
 
@@ -113,7 +104,7 @@ static int rpi_hwmon_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENOMEM;
 
-	/* Parent driver assure that firmware is correct */
+	 
 	data->fw = dev_get_drvdata(dev->parent);
 
 	data->hwmon_dev = devm_hwmon_device_register_with_info(dev, "rpi_volt",

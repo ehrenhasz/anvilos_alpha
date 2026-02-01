@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -46,7 +43,7 @@ static const struct pll_vco fabia_vco[] = {
 	{ 249600000, 2000000000, 0 },
 };
 
-/* 506MHz Configuration*/
+ 
 static const struct alpha_pll_config gpu_cc_pll0_config = {
 	.l = 0x1A,
 	.alpha = 0x5AAA,
@@ -90,7 +87,7 @@ static struct clk_fixed_factor crc_div = {
 	},
 };
 
-/* 514MHz Configuration*/
+ 
 static const struct alpha_pll_config gpu_cc_pll1_config = {
 	.l = 0x1A,
 	.alpha = 0xC555,
@@ -496,7 +493,7 @@ static int gpu_cc_sm6350_probe(struct platform_device *pdev)
 	clk_fabia_pll_configure(&gpu_cc_pll0, regmap, &gpu_cc_pll0_config);
 	clk_fabia_pll_configure(&gpu_cc_pll1, regmap, &gpu_cc_pll1_config);
 
-	/* Configure gpu_cc_cx_gmu_clk with recommended wakeup/sleep settings */
+	 
 	mask = CX_GMU_CBCR_WAKE_MASK << CX_GMU_CBCR_WAKE_SHIFT;
 	mask |= CX_GMU_CBCR_SLEEP_MASK << CX_GMU_CBCR_SLEEP_SHIFT;
 	value = 0xF << CX_GMU_CBCR_WAKE_SHIFT | 0xF << CX_GMU_CBCR_SLEEP_SHIFT;

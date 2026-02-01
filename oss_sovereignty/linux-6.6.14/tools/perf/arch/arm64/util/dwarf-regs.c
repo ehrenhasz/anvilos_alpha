@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mapping of DWARF debug register numbers into register names.
- *
- * Copyright (C) 2010 Will Deacon, ARM Ltd.
- */
+
+ 
 
 #include <errno.h>
 #include <stddef.h>
 #include <string.h>
 #include <dwarf-regs.h>
-#include <linux/ptrace.h> /* for struct user_pt_regs */
+#include <linux/ptrace.h>  
 #include <linux/stringify.h>
 
 struct pt_regs_dwarfnum {
@@ -24,10 +20,7 @@ struct pt_regs_dwarfnum {
 #define DWARFNUM2OFFSET(index) \
 	(index * sizeof((struct user_pt_regs *)0)->regs[0])
 
-/*
- * Reference:
- * http://infocenter.arm.com/help/topic/com.arm.doc.ihi0057b/IHI0057B_aadwarf64.pdf
- */
+ 
 static const struct pt_regs_dwarfnum regdwarfnum_table[] = {
 	GPR_DWARFNUM_NAME(0),
 	GPR_DWARFNUM_NAME(1),
@@ -64,14 +57,7 @@ static const struct pt_regs_dwarfnum regdwarfnum_table[] = {
 	REG_DWARFNUM_END,
 };
 
-/**
- * get_arch_regstr() - lookup register name from it's DWARF register number
- * @n:	the DWARF register number
- *
- * get_arch_regstr() returns the name of the register in struct
- * regdwarfnum_table from it's DWARF register number. If the register is not
- * found in the table, this returns NULL;
- */
+ 
 const char *get_arch_regstr(unsigned int n)
 {
 	const struct pt_regs_dwarfnum *roff;

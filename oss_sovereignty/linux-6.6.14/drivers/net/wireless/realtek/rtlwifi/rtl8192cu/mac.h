@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92C_MAC_H__
 #define __RTL92C_MAC_H__
@@ -18,9 +18,7 @@ void rtl92c_enable_interrupt(struct ieee80211_hw *hw);
 void rtl92c_disable_interrupt(struct ieee80211_hw *hw);
 void rtl92c_set_qos(struct ieee80211_hw *hw, int aci);
 
-/*---------------------------------------------------------------
- *	Hardware init functions
- *---------------------------------------------------------------*/
+ 
 void rtl92c_init_interrupt(struct ieee80211_hw *hw);
 void rtl92c_init_driver_info_size(struct ieee80211_hw *hw, u8 size);
 
@@ -79,7 +77,7 @@ struct rx_desc_92c {
 	u32 firstseg:1;
 	u32 eor:1;
 	u32 own:1;
-	u32 macid:5;	/* word 1 */
+	u32 macid:5;	 
 	u32 tid:4;
 	u32 hwrsvd:5;
 	u32 paggr:1;
@@ -93,12 +91,12 @@ struct rx_desc_92c {
 	u32 type:2;
 	u32 mc:1;
 	u32 bc:1;
-	u32 seq:12;	/* word 2 */
+	u32 seq:12;	 
 	u32 frag:4;
 	u32 nextpktlen:14;
 	u32 nextind:1;
 	u32 rsvd:1;
-	u32 rxmcs:6;	/* word 3 */
+	u32 rxmcs:6;	 
 	u32 rxht:1;
 	u32 amsdu:1;
 	u32 splcp:1;
@@ -110,10 +108,10 @@ struct rx_desc_92c {
 	u32 hwpcerr:1;
 	u32 hwpcind:1;
 	u32 iv0:16;
-	u32 iv1;	/* word 4 */
-	u32 tsfl;	/* word 5 */
-	u32 bufferaddress;	/* word 6 */
-	u32 bufferaddress64;	/* word 7 */
+	u32 iv1;	 
+	u32 tsfl;	 
+	u32 bufferaddress;	 
+	u32 bufferaddress64;	 
 } __packed;
 
 enum rtl_desc_qsel rtl92c_map_hwqueue_to_fwqueue(u16 fc,
@@ -125,8 +123,6 @@ void rtl92c_translate_rx_signal_stuff(struct ieee80211_hw *hw,
 				      struct rx_desc_92c *pdesc,
 				      struct rx_fwinfo_92c *p_drvinfo);
 
-/*---------------------------------------------------------------
- *	Card disable functions
- *---------------------------------------------------------------*/
+ 
 
 #endif

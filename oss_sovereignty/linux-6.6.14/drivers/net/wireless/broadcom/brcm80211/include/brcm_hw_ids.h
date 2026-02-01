@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #ifndef	_BRCM_HW_IDS_H_
 #define	_BRCM_HW_IDS_H_
@@ -15,7 +13,7 @@
 #define CY_USB_VENDOR_ID_CYPRESS	0x04b4
 #define BRCM_PCIE_VENDOR_ID_BROADCOM	PCI_VENDOR_ID_BROADCOM
 
-/* Chipcommon Core Chip IDs */
+ 
 #define BRCM_CC_43143_CHIP_ID		43143
 #define BRCM_CC_43235_CHIP_ID		43235
 #define BRCM_CC_43236_CHIP_ID		43236
@@ -60,7 +58,7 @@
 #define CY_CC_43439_CHIP_ID		43439
 #define CY_CC_43752_CHIP_ID		43752
 
-/* USB Device IDs */
+ 
 #define BRCM_USB_43143_DEVICE_ID	0xbd1e
 #define BRCM_USB_43235_LINKSYS_DEVICE_ID	0x0039
 #define BRCM_USB_43236_DEVICE_ID	0xbd17
@@ -70,7 +68,7 @@
 #define BRCM_USB_BCMFW_DEVICE_ID	0x0bdc
 #define CY_USB_4373_DEVICE_ID		0xbd29
 
-/* PCIE Device IDs */
+ 
 #define BRCM_PCIE_4350_DEVICE_ID	0x43a3
 #define BRCM_PCIE_4354_DEVICE_ID	0x43df
 #define BRCM_PCIE_4354_RAW_DEVICE_ID	0x4354
@@ -98,15 +96,15 @@
 #define BRCM_PCIE_4378_DEVICE_ID	0x4425
 #define BRCM_PCIE_4387_DEVICE_ID	0x4433
 
-/* brcmsmac IDs */
-#define BCM4313_D11N2G_ID	0x4727	/* 4313 802.11n 2.4G device */
-#define BCM43224_D11N_ID	0x4353	/* 43224 802.11n dualband device */
-#define BCM43224_D11N_ID_VEN1	0x0576	/* Vendor specific 43224 802.11n db */
-#define BCM43225_D11N2G_ID	0x4357	/* 43225 802.11n 2.4GHz device */
-#define BCM43236_D11N_ID	0x4346	/* 43236 802.11n dualband device */
-#define BCM43236_D11N2G_ID	0x4347	/* 43236 802.11n 2.4GHz device */
+ 
+#define BCM4313_D11N2G_ID	0x4727	 
+#define BCM43224_D11N_ID	0x4353	 
+#define BCM43224_D11N_ID_VEN1	0x0576	 
+#define BCM43225_D11N2G_ID	0x4357	 
+#define BCM43236_D11N_ID	0x4346	 
+#define BCM43236_D11N2G_ID	0x4347	 
 
 #define BCM4313_CHIP_ID		0x4313
 #define BCM43224_CHIP_ID	43224
 
-#endif				/* _BRCM_HW_IDS_H_ */
+#endif				 

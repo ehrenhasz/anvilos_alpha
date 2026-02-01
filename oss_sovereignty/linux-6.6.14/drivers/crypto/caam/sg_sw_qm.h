@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/*
- * Copyright 2013-2016 Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
- */
+ 
+ 
 
 #ifndef __SG_SW_QM_H
 #define __SG_SW_QM_H
@@ -49,10 +46,7 @@ static inline void dma_to_qm_sg_one_last_ext(struct qm_sg_entry *qm_sg_ptr,
 				     (len & QM_SG_LEN_MASK));
 }
 
-/*
- * convert scatterlist to h/w link table format
- * but does not have final bit; instead, returns last entry
- */
+ 
 static inline struct qm_sg_entry *
 sg_to_qm_sg(struct scatterlist *sg, int len,
 	    struct qm_sg_entry *qm_sg_ptr, u16 offset)
@@ -71,10 +65,7 @@ sg_to_qm_sg(struct scatterlist *sg, int len,
 	return qm_sg_ptr - 1;
 }
 
-/*
- * convert scatterlist to h/w link table format
- * scatterlist must have been previously dma mapped
- */
+ 
 static inline void sg_to_qm_sg_last(struct scatterlist *sg, int len,
 				    struct qm_sg_entry *qm_sg_ptr, u16 offset)
 {
@@ -82,4 +73,4 @@ static inline void sg_to_qm_sg_last(struct scatterlist *sg, int len,
 	qm_sg_entry_set_f(qm_sg_ptr, qm_sg_entry_get_len(qm_sg_ptr));
 }
 
-#endif /* __SG_SW_QM_H */
+#endif  

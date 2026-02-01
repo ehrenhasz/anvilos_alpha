@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for MT9M001 CMOS Image Sensor from Micron
- *
- * Copyright (C) 2008, Guennadi Liakhovetski <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,11 +16,9 @@
 #include <media/v4l2-event.h>
 #include <media/v4l2-subdev.h>
 
-/*
- * mt9m001 i2c address 0x5d
- */
+ 
 
-/* mt9m001 selected register addresses */
+ 
 #define MT9M001_CHIP_VERSION		0x00
 #define MT9M001_ROW_START		0x01
 #define MT9M001_COLUMN_START		0x02
@@ -51,13 +45,13 @@
 #define MT9M001_DEFAULT_HBLANK		9
 #define MT9M001_DEFAULT_VBLANK		25
 
-/* MT9M001 has only one fixed colorspace per pixelcode */
+ 
 struct mt9m001_datafmt {
 	u32	code;
 	enum v4l2_colorspace		colorspace;
 };
 
-/* Find a data format by a pixel code in an array */
+ 
 static const struct mt9m001_datafmt *mt9m001_find_datafmt(
 	u32 code, const struct mt9m001_datafmt *fmt,
 	int n)
@@ -71,16 +65,13 @@ static const struct mt9m001_datafmt *mt9m001_find_datafmt(
 }
 
 static const struct mt9m001_datafmt mt9m001_colour_fmts[] = {
-	/*
-	 * Order important: first natively supported,
-	 * second supported with a GPIO extender
-	 */
+	 
 	{MEDIA_BUS_FMT_SBGGR10_1X10, V4L2_COLORSPACE_SRGB},
 	{MEDIA_BUS_FMT_SBGGR8_1X8, V4L2_COLORSPACE_SRGB},
 };
 
 static const struct mt9m001_datafmt mt9m001_monochrome_fmts[] = {
-	/* Order important - see above */
+	 
 	{MEDIA_BUS_FMT_Y10_1X10, V4L2_COLORSPACE_JPEG},
 	{MEDIA_BUS_FMT_Y8_1X8, V4L2_COLORSPACE_JPEG},
 };
@@ -89,13 +80,13 @@ struct mt9m001 {
 	struct v4l2_subdev subdev;
 	struct v4l2_ctrl_handler hdl;
 	struct {
-		/* exposure/auto-exposure cluster */
+		 
 		struct v4l2_ctrl *autoexposure;
 		struct v4l2_ctrl *exposure;
 	};
 	bool streaming;
 	struct mutex mutex;
-	struct v4l2_rect rect;	/* Sensor window */
+	struct v4l2_rect rect;	 
 	struct clk *clk;
 	struct gpio_desc *standby_gpio;
 	struct gpio_desc *reset_gpio;
@@ -103,7 +94,7 @@ struct mt9m001 {
 	const struct mt9m001_datafmt *fmts;
 	int num_fmts;
 	unsigned int total_h;
-	unsigned short y_skip_top;	/* Lines to skip at the top */
+	unsigned short y_skip_top;	 
 	struct media_pad pad;
 };
 
@@ -168,13 +159,10 @@ static int multi_reg_write(struct i2c_client *client,
 static int mt9m001_init(struct i2c_client *client)
 {
 	static const struct mt9m001_reg init_regs[] = {
-		/*
-		 * Issue a soft reset. This returns all registers to their
-		 * default values.
-		 */
+		 
 		{ MT9M001_RESET, 1 },
 		{ MT9M001_RESET, 0 },
-		/* Disable chip, synchronous option update */
+		 
 		{ MT9M001_OUTPUT_CONTROL, 0 }
 	};
 
@@ -188,13 +176,10 @@ static int mt9m001_apply_selection(struct v4l2_subdev *sd)
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct mt9m001 *mt9m001 = to_mt9m001(client);
 	const struct mt9m001_reg regs[] = {
-		/* Blanking and start values - default... */
+		 
 		{ MT9M001_HORIZONTAL_BLANKING, MT9M001_DEFAULT_HBLANK },
 		{ MT9M001_VERTICAL_BLANKING, MT9M001_DEFAULT_VBLANK },
-		/*
-		 * The caller provides a supported format, as verified per
-		 * call to .set_fmt(FORMAT_TRY).
-		 */
+		 
 		{ MT9M001_COLUMN_START, mt9m001->rect.left },
 		{ MT9M001_ROW_START, mt9m001->rect.top },
 		{ MT9M001_WINDOW_WIDTH, mt9m001->rect.width - 1 },
@@ -229,12 +214,12 @@ static int mt9m001_s_stream(struct v4l2_subdev *sd, int enable)
 		if (ret)
 			goto put_unlock;
 
-		/* Switch to master "normal" mode */
+		 
 		ret = reg_write(client, MT9M001_OUTPUT_CONTROL, 2);
 		if (ret < 0)
 			goto put_unlock;
 	} else {
-		/* Switch to master stop sensor readout */
+		 
 		reg_write(client, MT9M001_OUTPUT_CONTROL, 0);
 		pm_runtime_put(&client->dev);
 	}
@@ -266,13 +251,10 @@ static int mt9m001_set_selection(struct v4l2_subdev *sd,
 		return -EINVAL;
 
 	if (mt9m001->fmts == mt9m001_colour_fmts)
-		/*
-		 * Bayer format - even number of rows for simplicity,
-		 * but let the user play with the top row.
-		 */
+		 
 		rect.height = ALIGN(rect.height, 2);
 
-	/* Datasheet requirement: see register description */
+	 
 	rect.width = ALIGN(rect.width, 2);
 	rect.left = ALIGN(rect.left, 2);
 
@@ -364,7 +346,7 @@ static int mt9m001_s_fmt(struct v4l2_subdev *sd,
 	};
 	int ret;
 
-	/* No support for scaling so far, just crop. TODO: use skipping */
+	 
 	ret = mt9m001_set_selection(sd, NULL, &sel);
 	if (!ret) {
 		mf->width	= mt9m001->rect.width;
@@ -523,17 +505,17 @@ static int mt9m001_s_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_GAIN:
-		/* See Datasheet Table 7, Gain settings. */
+		 
 		if (ctrl->val <= ctrl->default_value) {
-			/* Pack it into 0..1 step 0.125, register values 0..8 */
+			 
 			unsigned long range = ctrl->default_value - ctrl->minimum;
 			data = ((ctrl->val - (s32)ctrl->minimum) * 8 + range / 2) / range;
 
 			dev_dbg(&client->dev, "Setting gain %d\n", data);
 			ret = reg_write(client, MT9M001_GLOBAL_GAIN, data);
 		} else {
-			/* Pack it into 1.125..15 variable step, register values 9..67 */
-			/* We assume qctrl->maximum - qctrl->default_value - 1 > 0 */
+			 
+			 
 			unsigned long range = ctrl->maximum - ctrl->default_value - 1;
 			unsigned long gain = ((ctrl->val - (s32)ctrl->default_value - 1) *
 					       111 + range / 2) / range + 9;
@@ -578,24 +560,21 @@ static int mt9m001_s_ctrl(struct v4l2_ctrl *ctrl)
 	return ret;
 }
 
-/*
- * Interface active, can use i2c. If it fails, it can indeed mean, that
- * this wasn't our capture interface, so, we wait for the right one
- */
+ 
 static int mt9m001_video_probe(struct i2c_client *client)
 {
 	struct mt9m001 *mt9m001 = to_mt9m001(client);
 	s32 data;
 	int ret;
 
-	/* Enable the chip */
+	 
 	data = reg_write(client, MT9M001_CHIP_ENABLE, 1);
 	dev_dbg(&client->dev, "write: %d\n", data);
 
-	/* Read out the chip version register */
+	 
 	data = reg_read(client, MT9M001_CHIP_VERSION);
 
-	/* must be 0x8411 or 0x8421 for colour sensor and 8431 for bw */
+	 
 	switch (data) {
 	case 0x8411:
 	case 0x8421:
@@ -624,7 +603,7 @@ static int mt9m001_video_probe(struct i2c_client *client)
 		goto done;
 	}
 
-	/* mt9m001_init() has reset the chip, returning registers to defaults */
+	 
 	ret = v4l2_ctrl_handler_setup(&mt9m001->hdl);
 
 done:
@@ -694,7 +673,7 @@ static int mt9m001_get_mbus_config(struct v4l2_subdev *sd,
 				   unsigned int pad,
 				   struct v4l2_mbus_config *cfg)
 {
-	/* MT9M001 has all capture_format parameters fixed */
+	 
 	cfg->type = V4L2_MBUS_PARALLEL;
 	cfg->bus.parallel.flags = V4L2_MBUS_PCLK_SAMPLE_FALLING |
 				  V4L2_MBUS_HSYNC_ACTIVE_HIGH |
@@ -770,10 +749,7 @@ static int mt9m001_probe(struct i2c_client *client)
 			V4L2_CID_GAIN, 0, 127, 1, 64);
 	mt9m001->exposure = v4l2_ctrl_new_std(&mt9m001->hdl, &mt9m001_ctrl_ops,
 			V4L2_CID_EXPOSURE, 1, 255, 1, 255);
-	/*
-	 * Simulated autoexposure. If enabled, we calculate shutter width
-	 * ourselves in the driver based on vertical blanking and frame width
-	 */
+	 
 	mt9m001->autoexposure = v4l2_ctrl_new_std_menu(&mt9m001->hdl,
 			&mt9m001_ctrl_ops, V4L2_CID_EXPOSURE_AUTO, 1, 0,
 			V4L2_EXPOSURE_AUTO);
@@ -787,7 +763,7 @@ static int mt9m001_probe(struct i2c_client *client)
 	mutex_init(&mt9m001->mutex);
 	mt9m001->hdl.lock = &mt9m001->mutex;
 
-	/* Second stage probe - when a capture adapter is there */
+	 
 	mt9m001->y_skip_top	= 0;
 	mt9m001->rect.left	= MT9M001_COLUMN_SKIP;
 	mt9m001->rect.top	= MT9M001_ROW_SKIP;
@@ -837,10 +813,7 @@ static void mt9m001_remove(struct i2c_client *client)
 {
 	struct mt9m001 *mt9m001 = to_mt9m001(client);
 
-	/*
-	 * As it increments RPM usage_count even on errors, we don't need to
-	 * check the returned code here.
-	 */
+	 
 	pm_runtime_get_sync(&client->dev);
 
 	v4l2_async_unregister_subdev(&mt9m001->subdev);
@@ -867,7 +840,7 @@ static const struct dev_pm_ops mt9m001_pm_ops = {
 
 static const struct of_device_id mt9m001_of_match[] = {
 	{ .compatible = "onnn,mt9m001", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mt9m001_of_match);
 

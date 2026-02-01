@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the High Speed UART DMA
- *
- * Copyright (C) 2015 Intel Corporation
- *
- * Partially based on the bits found in drivers/tty/serial/mfd.c.
- */
+ 
+ 
 
 #ifndef __DMA_HSU_H__
 #define __DMA_HSU_H__
@@ -19,15 +13,15 @@
 
 #include "../virt-dma.h"
 
-#define HSU_CH_SR		0x00			/* channel status */
-#define HSU_CH_CR		0x04			/* channel control */
-#define HSU_CH_DCR		0x08			/* descriptor control */
-#define HSU_CH_BSR		0x10			/* FIFO buffer size */
-#define HSU_CH_MTSR		0x14			/* minimum transfer size */
-#define HSU_CH_DxSAR(x)		(0x20 + 8 * (x))	/* desc start addr */
-#define HSU_CH_DxTSR(x)		(0x24 + 8 * (x))	/* desc transfer size */
-#define HSU_CH_D0SAR		0x20			/* desc 0 start addr */
-#define HSU_CH_D0TSR		0x24			/* desc 0 transfer size */
+#define HSU_CH_SR		0x00			 
+#define HSU_CH_CR		0x04			 
+#define HSU_CH_DCR		0x08			 
+#define HSU_CH_BSR		0x10			 
+#define HSU_CH_MTSR		0x14			 
+#define HSU_CH_DxSAR(x)		(0x20 + 8 * (x))	 
+#define HSU_CH_DxTSR(x)		(0x24 + 8 * (x))	 
+#define HSU_CH_D0SAR		0x20			 
+#define HSU_CH_D0TSR		0x24			 
 #define HSU_CH_D1SAR		0x28
 #define HSU_CH_D1TSR		0x2c
 #define HSU_CH_D2SAR		0x30
@@ -38,7 +32,7 @@
 #define HSU_DMA_CHAN_NR_DESC	4
 #define HSU_DMA_CHAN_LENGTH	0x40
 
-/* Bits in HSU_CH_SR */
+ 
 #define HSU_CH_SR_DESCTO(x)	BIT(8 + (x))
 #define HSU_CH_SR_DESCTO_ANY	GENMASK(11, 8)
 #define HSU_CH_SR_CHE		BIT(15)
@@ -46,11 +40,11 @@
 #define HSU_CH_SR_DESCE_ANY	GENMASK(19, 16)
 #define HSU_CH_SR_CDESC_ANY	GENMASK(31, 30)
 
-/* Bits in HSU_CH_CR */
+ 
 #define HSU_CH_CR_CHA		BIT(0)
 #define HSU_CH_CR_CHD		BIT(1)
 
-/* Bits in HSU_CH_DCR */
+ 
 #define HSU_CH_DCR_DESCA(x)	BIT(0 + (x))
 #define HSU_CH_DCR_CHSOD(x)	BIT(8 + (x))
 #define HSU_CH_DCR_CHSOTO	BIT(14)
@@ -59,7 +53,7 @@
 #define HSU_CH_DCR_CHEI		BIT(23)
 #define HSU_CH_DCR_CHTOI(x)	BIT(24 + (x))
 
-/* Bits in HSU_CH_DxTSR */
+ 
 #define HSU_CH_DxTSR_MASK	GENMASK(15, 0)
 #define HSU_CH_DxTSR_TSR(x)	((x) & HSU_CH_DxTSR_MASK)
 
@@ -88,7 +82,7 @@ struct hsu_dma_chan {
 
 	void __iomem *reg;
 
-	/* hardware configuration */
+	 
 	enum dma_transfer_direction direction;
 	struct dma_slave_config config;
 
@@ -114,7 +108,7 @@ static inline void hsu_chan_writel(struct hsu_dma_chan *hsuc, int offset,
 struct hsu_dma {
 	struct dma_device		dma;
 
-	/* channels */
+	 
 	struct hsu_dma_chan		*chan;
 	unsigned short			nr_channels;
 };
@@ -124,4 +118,4 @@ static inline struct hsu_dma *to_hsu_dma(struct dma_device *ddev)
 	return container_of(ddev, struct hsu_dma, dma);
 }
 
-#endif /* __DMA_HSU_H__ */
+#endif  

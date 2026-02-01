@@ -1,38 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Video for Linux Two
- *
- *	A generic video device interface for the LINUX operating system
- *	using a set of device structures/vectors for low level operations.
- *
- *	This file replaces the videodev.c file that comes with the
- *	regular kernel distribution.
- *
- * Author:	Bill Dirks <bill@thedirks.org>
- *		based on code by Alan Cox, <alan@cymru.net>
- */
 
-/*
- * Video capture interface for Linux
- *
- *	A generic video device interface for the LINUX operating system
- *	using a set of device structures/vectors for low level operations.
- *
- * Author:	Alan Cox, <alan@lxorguk.ukuu.org.uk>
- *
- * Fixes:
- */
+ 
 
-/*
- * Video4linux 1/2 integration by Justin Schoeman
- * <justin@suntiger.ee.up.ac.za>
- * 2.4 PROCFS support ported from 2.4 kernels by
- *  Iñaki García Etxebarria <garetxe@euskalnet.net>
- * Makefile fix by "W. Michael Petullo" <mike@flyn.org>
- * 2.4 devfs support ported from 2.4 kernels by
- *  Dan Merillat <dan@merillat.org>
- * Added Gerd Knorrs v4l1 enhancements (Justin Schoeman)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -49,19 +20,13 @@
 
 #include <linux/videodev2.h>
 
-/*
- *
- *	V 4 L 2   D R I V E R   H E L P E R   A P I
- *
- */
+ 
 
-/*
- *  Video Standard Operations (contributed by Michael Schimek)
- */
+ 
 
-/* Helper functions for control handling			     */
+ 
 
-/* Fill in a struct v4l2_queryctrl */
+ 
 int v4l2_ctrl_query_fill(struct v4l2_queryctrl *qctrl, s32 _min, s32 _max, s32 _step, s32 _def)
 {
 	const char *name;
@@ -86,20 +51,17 @@ int v4l2_ctrl_query_fill(struct v4l2_queryctrl *qctrl, s32 _min, s32 _max, s32 _
 }
 EXPORT_SYMBOL(v4l2_ctrl_query_fill);
 
-/* Clamp x to be between min and max, aligned to a multiple of 2^align.  min
- * and max don't have to be aligned, but there must be at least one valid
- * value.  E.g., min=17,max=31,align=4 is not allowed as there are no multiples
- * of 16 between 17 and 31.  */
+ 
 static unsigned int clamp_align(unsigned int x, unsigned int min,
 				unsigned int max, unsigned int align)
 {
-	/* Bits that must be zero to be aligned */
+	 
 	unsigned int mask = ~((1 << align) - 1);
 
-	/* Clamp to aligned min and max */
+	 
 	x = clamp(x, (min + ~mask) & mask, max & mask);
 
-	/* Round to nearest aligned value */
+	 
 	if (align)
 		x = (x + (1 << (align - 1))) & mask;
 
@@ -124,21 +86,21 @@ void v4l_bound_align_image(u32 *w, unsigned int wmin, unsigned int wmax,
 	*w = clamp_align(*w, wmin, wmax, walign);
 	*h = clamp_align(*h, hmin, hmax, halign);
 
-	/* Usually we don't need to align the size and are done now. */
+	 
 	if (!salign)
 		return;
 
-	/* How much alignment do we have? */
+	 
 	walign = __ffs(*w);
 	halign = __ffs(*h);
-	/* Enough to satisfy the image alignment? */
+	 
 	if (walign + halign < salign) {
-		/* Max walign where there is still a valid width */
+		 
 		unsigned int wmaxa = __fls(wmax ^ (wmin - 1));
-		/* Max halign where there is still a valid height */
+		 
 		unsigned int hmaxa = __fls(hmax ^ (hmin - 1));
 
-		/* up the smaller alignment until we have enough */
+		 
 		do {
 			if (halign >= hmaxa ||
 			    (walign <= halign && walign < wmaxa)) {
@@ -234,7 +196,7 @@ EXPORT_SYMBOL_GPL(v4l2_s_parm_cap);
 const struct v4l2_format_info *v4l2_format_info(u32 format)
 {
 	static const struct v4l2_format_info formats[] = {
-		/* RGB formats */
+		 
 		{ .format = V4L2_PIX_FMT_BGR24,   .pixel_enc = V4L2_PIXEL_ENC_RGB, .mem_planes = 1, .comp_planes = 1, .bpp = { 3, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_RGB24,   .pixel_enc = V4L2_PIXEL_ENC_RGB, .mem_planes = 1, .comp_planes = 1, .bpp = { 3, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_HSV24,   .pixel_enc = V4L2_PIXEL_ENC_RGB, .mem_planes = 1, .comp_planes = 1, .bpp = { 3, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
@@ -255,7 +217,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
 		{ .format = V4L2_PIX_FMT_BGR48_12, .pixel_enc = V4L2_PIXEL_ENC_RGB, .mem_planes = 1, .comp_planes = 1, .bpp = { 6, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_ABGR64_12, .pixel_enc = V4L2_PIXEL_ENC_RGB, .mem_planes = 1, .comp_planes = 1, .bpp = { 8, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
 
-		/* YUV packed formats */
+		 
 		{ .format = V4L2_PIX_FMT_YUYV,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 1, .bpp = { 2, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_YVYU,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 1, .bpp = { 2, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_UYVY,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 1, .bpp = { 2, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
@@ -267,7 +229,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
 		{ .format = V4L2_PIX_FMT_MT2110R, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 2, .comp_planes = 2, .bpp = { 5, 10, 0, 0 }, .bpp_div = { 4, 4, 1, 1 }, .hdiv = 2, .vdiv = 2,
 		  .block_w = { 16, 8, 0, 0 }, .block_h = { 32, 16, 0, 0 }},
 
-		/* YUV planar formats */
+		 
 		{ .format = V4L2_PIX_FMT_NV12,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2 },
 		{ .format = V4L2_PIX_FMT_NV21,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2 },
 		{ .format = V4L2_PIX_FMT_NV16,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
@@ -285,13 +247,13 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
 		{ .format = V4L2_PIX_FMT_YUV422P, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_GREY,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 1, .bpp = { 1, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
 
-		/* Tiled YUV formats */
+		 
 		{ .format = V4L2_PIX_FMT_NV12_4L4, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2 },
 		{ .format = V4L2_PIX_FMT_NV15_4L4, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 5, 10, 0, 0 }, .bpp_div = { 4, 4, 1, 1 }, .hdiv = 2, .vdiv = 2,
 		  .block_w = { 4, 2, 0, 0 }, .block_h = { 1, 1, 0, 0 }},
 		{ .format = V4L2_PIX_FMT_P010_4L4, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 4, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2 },
 
-		/* YUV planar formats, non contiguous variant */
+		 
 		{ .format = V4L2_PIX_FMT_YUV420M, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 3, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2 },
 		{ .format = V4L2_PIX_FMT_YVU420M, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 3, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2 },
 		{ .format = V4L2_PIX_FMT_YUV422M, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 3, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
@@ -305,7 +267,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
 		{ .format = V4L2_PIX_FMT_NV61M,   .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 2, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_P012M,   .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 2, .comp_planes = 2, .bpp = { 2, 4, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2 },
 
-		/* Bayer RGB formats */
+		 
 		{ .format = V4L2_PIX_FMT_SBGGR8,	.pixel_enc = V4L2_PIXEL_ENC_BAYER, .mem_planes = 1, .comp_planes = 1, .bpp = { 1, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_SGBRG8,	.pixel_enc = V4L2_PIXEL_ENC_BAYER, .mem_planes = 1, .comp_planes = 1, .bpp = { 1, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
 		{ .format = V4L2_PIX_FMT_SGRBG8,	.pixel_enc = V4L2_PIXEL_ENC_BAYER, .mem_planes = 1, .comp_planes = 1, .bpp = { 1, 0, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
@@ -356,10 +318,7 @@ void v4l2_apply_frmsize_constraints(u32 *width, u32 *height,
 	if (!frmsize)
 		return;
 
-	/*
-	 * Clamp width/height to meet min/max constraints and round it up to
-	 * macroblock alignment.
-	 */
+	 
 	*width = clamp_roundup(*width, frmsize->min_width, frmsize->max_width,
 			       frmsize->step_width);
 	*height = clamp_roundup(*height, frmsize->min_height, frmsize->max_height,
@@ -432,7 +391,7 @@ int v4l2_fill_pixfmt(struct v4l2_pix_format *pixfmt, u32 pixelformat,
 	if (!info)
 		return -EINVAL;
 
-	/* Single planar API cannot be used for multi plane formats. */
+	 
 	if (info->mem_planes > 1)
 		return -EINVAL;
 
@@ -497,14 +456,7 @@ s64 v4l2_get_link_freq(struct v4l2_ctrl_handler *handler, unsigned int mul,
 }
 EXPORT_SYMBOL_GPL(v4l2_get_link_freq);
 
-/*
- * Simplify a fraction using a simple continued fraction decomposition. The
- * idea here is to convert fractions such as 333333/10000000 to 1/30 using
- * 32 bit arithmetic only. The algorithm is not perfect and relies upon two
- * arbitrary parameters to remove non-significative terms from the simple
- * continued fraction decomposition. Using 8 and 333 for n_terms and threshold
- * respectively seems to give nice results.
- */
+ 
 void v4l2_simplify_fraction(u32 *numerator, u32 *denominator,
 		unsigned int n_terms, unsigned int threshold)
 {
@@ -516,12 +468,7 @@ void v4l2_simplify_fraction(u32 *numerator, u32 *denominator,
 	if (an == NULL)
 		return;
 
-	/*
-	 * Convert the fraction to a simple continued fraction. See
-	 * https://en.wikipedia.org/wiki/Continued_fraction
-	 * Stop if the current term is bigger than or equal to the given
-	 * threshold.
-	 */
+	 
 	x = *numerator;
 	y = *denominator;
 
@@ -538,7 +485,7 @@ void v4l2_simplify_fraction(u32 *numerator, u32 *denominator,
 		y = r;
 	}
 
-	/* Expand the simple continued fraction back to an integer fraction. */
+	 
 	x = 0;
 	y = 1;
 
@@ -554,25 +501,17 @@ void v4l2_simplify_fraction(u32 *numerator, u32 *denominator,
 }
 EXPORT_SYMBOL_GPL(v4l2_simplify_fraction);
 
-/*
- * Convert a fraction to a frame interval in 100ns multiples. The idea here is
- * to compute numerator / denominator * 10000000 using 32 bit fixed point
- * arithmetic only.
- */
+ 
 u32 v4l2_fraction_to_interval(u32 numerator, u32 denominator)
 {
 	u32 multiplier;
 
-	/* Saturate the result if the operation would overflow. */
+	 
 	if (denominator == 0 ||
 	    numerator/denominator >= ((u32)-1)/10000000)
 		return (u32)-1;
 
-	/*
-	 * Divide both the denominator and the multiplier by two until
-	 * numerator * multiplier doesn't overflow. If anyone knows a better
-	 * algorithm please let me know.
-	 */
+	 
 	multiplier = 10000000;
 	while (numerator > ((u32)-1)/multiplier) {
 		multiplier /= 2;

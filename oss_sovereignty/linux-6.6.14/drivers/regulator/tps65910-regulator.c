@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * tps65910.c  --  TI tps65910
- *
- * Copyright 2010 Texas Instruments Inc.
- *
- * Author: Graeme Gregory <gg@slimlogic.co.uk>
- * Author: Jorge Eduardo Candelaria <jedu@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,64 +19,64 @@
 			TPS65910_SLEEP_CONTROL_EXT_INPUT_EN3 |		\
 			TPS65911_SLEEP_CONTROL_EXT_INPUT_SLEEP)
 
-/* supported VIO voltages in microvolts */
+ 
 static const unsigned int VIO_VSEL_table[] = {
 	1500000, 1800000, 2500000, 3300000,
 };
 
-/* VSEL tables for TPS65910 specific LDOs and dcdc's */
+ 
 
-/* supported VRTC voltages in microvolts */
+ 
 static const unsigned int VRTC_VSEL_table[] = {
 	1800000,
 };
 
-/* supported VDD3 voltages in microvolts */
+ 
 static const unsigned int VDD3_VSEL_table[] = {
 	5000000,
 };
 
-/* supported VDIG1 voltages in microvolts */
+ 
 static const unsigned int VDIG1_VSEL_table[] = {
 	1200000, 1500000, 1800000, 2700000,
 };
 
-/* supported VDIG2 voltages in microvolts */
+ 
 static const unsigned int VDIG2_VSEL_table[] = {
 	1000000, 1100000, 1200000, 1800000,
 };
 
-/* supported VPLL voltages in microvolts */
+ 
 static const unsigned int VPLL_VSEL_table[] = {
 	1000000, 1100000, 1800000, 2500000,
 };
 
-/* supported VDAC voltages in microvolts */
+ 
 static const unsigned int VDAC_VSEL_table[] = {
 	1800000, 2600000, 2800000, 2850000,
 };
 
-/* supported VAUX1 voltages in microvolts */
+ 
 static const unsigned int VAUX1_VSEL_table[] = {
 	1800000, 2500000, 2800000, 2850000,
 };
 
-/* supported VAUX2 voltages in microvolts */
+ 
 static const unsigned int VAUX2_VSEL_table[] = {
 	1800000, 2800000, 2900000, 3300000,
 };
 
-/* supported VAUX33 voltages in microvolts */
+ 
 static const unsigned int VAUX33_VSEL_table[] = {
 	1800000, 2000000, 2800000, 3300000,
 };
 
-/* supported VMMC voltages in microvolts */
+ 
 static const unsigned int VMMC_VSEL_table[] = {
 	1800000, 2800000, 3000000, 3300000,
 };
 
-/* supported BBCH voltages in microvolts */
+ 
 static const unsigned int VBB_VSEL_table[] = {
 	3000000, 2520000, 3150000, 5000000,
 };
@@ -486,12 +479,12 @@ static int tps65910_get_voltage_dcdc_sel(struct regulator_dev *dev)
 		break;
 	}
 
-	/* multiplier 0 == 1 but 2,3 normal */
+	 
 	if (!mult)
 		mult = 1;
 
 	if (sr) {
-		/* normalise to valid range */
+		 
 		if (srvsel < 3)
 			srvsel = 3;
 		if (srvsel > vselmax)
@@ -499,7 +492,7 @@ static int tps65910_get_voltage_dcdc_sel(struct regulator_dev *dev)
 		return srvsel - 3;
 	} else {
 
-		/* normalise to valid range*/
+		 
 		if (opvsel < 3)
 			opvsel = 3;
 		if (opvsel > vselmax)
@@ -727,7 +720,7 @@ static int tps65911_list_voltage(struct regulator_dev *dev, unsigned selector)
 	case TPS65911_REG_LDO1:
 	case TPS65911_REG_LDO2:
 	case TPS65911_REG_LDO4:
-		/* The first 5 values of the selector correspond to 1V */
+		 
 		if (selector < 5)
 			selector = 0;
 		else
@@ -740,7 +733,7 @@ static int tps65911_list_voltage(struct regulator_dev *dev, unsigned selector)
 	case TPS65911_REG_LDO6:
 	case TPS65911_REG_LDO7:
 	case TPS65911_REG_LDO8:
-		/* The first 3 values of the selector correspond to 1V */
+		 
 		if (selector < 3)
 			selector = 0;
 		else
@@ -757,7 +750,7 @@ static int tps65911_list_voltage(struct regulator_dev *dev, unsigned selector)
 	return (LDO_MIN_VOLT + selector * step_mv) * 1000;
 }
 
-/* Regulator ops (except VRTC) */
+ 
 static const struct regulator_ops tps65910_ops_dcdc = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -826,10 +819,7 @@ static int tps65910_set_ext_sleep_config(struct tps65910_reg *pmic,
 	u8 bit_pos = (1 << pmic->ext_sleep_control[id] & 0xFF);
 	int ret;
 
-	/*
-	 * Regulator can not be control from multiple external input EN1, EN2
-	 * and EN3 together.
-	 */
+	 
 	if (ext_sleep_config & EXT_SLEEP_CONTROL) {
 		int en_count;
 		en_count = ((ext_sleep_config &
@@ -849,7 +839,7 @@ static int tps65910_set_ext_sleep_config(struct tps65910_reg *pmic,
 
 	pmic->board_ext_control[id] = ext_sleep_config;
 
-	/* External EN1 control */
+	 
 	if (ext_sleep_config & TPS65910_SLEEP_CONTROL_EXT_INPUT_EN1)
 		ret = regmap_set_bits(mfd->regmap,
 				TPS65910_EN1_LDO_ASS + regoffs, bit_pos);
@@ -862,7 +852,7 @@ static int tps65910_set_ext_sleep_config(struct tps65910_reg *pmic,
 		return ret;
 	}
 
-	/* External EN2 control */
+	 
 	if (ext_sleep_config & TPS65910_SLEEP_CONTROL_EXT_INPUT_EN2)
 		ret = regmap_set_bits(mfd->regmap,
 				TPS65910_EN2_LDO_ASS + regoffs, bit_pos);
@@ -875,7 +865,7 @@ static int tps65910_set_ext_sleep_config(struct tps65910_reg *pmic,
 		return ret;
 	}
 
-	/* External EN3 control for TPS65910 LDO only */
+	 
 	if ((tps65910_chip_id(mfd) == TPS65910) &&
 			(id >= TPS65910_REG_VDIG1)) {
 		if (ext_sleep_config & TPS65910_SLEEP_CONTROL_EXT_INPUT_EN3)
@@ -891,9 +881,9 @@ static int tps65910_set_ext_sleep_config(struct tps65910_reg *pmic,
 		}
 	}
 
-	/* Return if no external control is selected */
+	 
 	if (!(ext_sleep_config & EXT_SLEEP_CONTROL)) {
-		/* Clear all sleep controls */
+		 
 		ret = regmap_clear_bits(mfd->regmap,
 			TPS65910_SLEEP_KEEP_LDO_ON + regoffs, bit_pos);
 		if (!ret)
@@ -905,11 +895,7 @@ static int tps65910_set_ext_sleep_config(struct tps65910_reg *pmic,
 		return ret;
 	}
 
-	/*
-	 * For regulator that has separate operational and sleep register make
-	 * sure that operational is used and clear sleep register to turn
-	 * regulator off when external control is inactive
-	 */
+	 
 	if ((id == TPS65910_REG_VDD1) ||
 		(id == TPS65910_REG_VDD2) ||
 			((id == TPS65911_REG_VDDCTRL) &&
@@ -1096,7 +1082,7 @@ static int tps65910_probe(struct platform_device *pdev)
 	pmic->mfd = tps65910;
 	platform_set_drvdata(pdev, pmic);
 
-	/* Give control of all register to control port */
+	 
 	err = regmap_set_bits(pmic->mfd->regmap, TPS65910_DEVCTRL,
 				DEVCTRL_SR_CTL_I2C_SEL_MASK);
 	if (err < 0)
@@ -1109,10 +1095,7 @@ static int tps65910_probe(struct platform_device *pdev)
 		pmic->num_regulators = ARRAY_SIZE(tps65910_regs);
 		pmic->ext_sleep_control = tps65910_ext_sleep_control;
 		info = tps65910_regs;
-		/* Work around silicon erratum SWCZ010: output programmed
-		 * voltage level can go higher than expected or crash
-		 * Workaround: use no synchronization of DCDC clocks
-		 */
+		 
 		regmap_clear_bits(pmic->mfd->regmap, TPS65910_DCDCCTRL,
 					DCDCCTRL_DCDCCKSYNC_MASK);
 		break;
@@ -1150,7 +1133,7 @@ static int tps65910_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	for (i = 0; i < pmic->num_regulators; i++, info++) {
-		/* Register the regulators */
+		 
 		pmic->info[i] = info;
 
 		pmic->desc[i].name = info->name;
@@ -1187,10 +1170,7 @@ static int tps65910_probe(struct platform_device *pdev)
 
 		err = tps65910_set_ext_sleep_config(pmic, i,
 				pmic_plat_data->regulator_ext_sleep_control[i]);
-		/*
-		 * Failing on regulator for configuring externally control
-		 * is not a serious issue, just throw warning.
-		 */
+		 
 		if (err < 0)
 			dev_warn(tps65910->dev,
 				"Failed to initialise ext control config\n");
@@ -1215,7 +1195,7 @@ static int tps65910_probe(struct platform_device *pdev)
 					     "failed to register %s regulator\n",
 					     pdev->name);
 
-		/* Save regulator for cleanup */
+		 
 		pmic->rdev[i] = rdev;
 	}
 	return 0;
@@ -1226,19 +1206,7 @@ static void tps65910_shutdown(struct platform_device *pdev)
 	struct tps65910_reg *pmic = platform_get_drvdata(pdev);
 	int i;
 
-	/*
-	 * Before bootloader jumps to kernel, it makes sure that required
-	 * external control signals are in desired state so that given rails
-	 * can be configure accordingly.
-	 * If rails are configured to be controlled from external control
-	 * then before shutting down/rebooting the system, the external
-	 * control configuration need to be remove from the rails so that
-	 * its output will be available as per register programming even
-	 * if external controls are removed. This is require when the POR
-	 * value of the control signals are not in active state and before
-	 * bootloader initializes it, the system requires the rail output
-	 * to be active for booting.
-	 */
+	 
 	for (i = 0; i < pmic->num_regulators; i++) {
 		int err;
 		if (!pmic->rdev[i])

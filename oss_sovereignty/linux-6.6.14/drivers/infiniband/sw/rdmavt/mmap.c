@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -9,10 +7,7 @@
 #include <rdma/uverbs_ioctl.h>
 #include "mmap.h"
 
-/**
- * rvt_mmap_init - init link list and lock for mem map
- * @rdi: rvt dev struct
- */
+ 
 void rvt_mmap_init(struct rvt_dev_info *rdi)
 {
 	INIT_LIST_HEAD(&rdi->pending_mmaps);
@@ -21,10 +16,7 @@ void rvt_mmap_init(struct rvt_dev_info *rdi)
 	spin_lock_init(&rdi->mmap_offset_lock);
 }
 
-/**
- * rvt_release_mmap_info - free mmap info structure
- * @ref: a pointer to the kref within struct rvt_mmap_info
- */
+ 
 void rvt_release_mmap_info(struct kref *ref)
 {
 	struct rvt_mmap_info *ip =
@@ -58,13 +50,7 @@ static const struct vm_operations_struct rvt_vm_ops = {
 	.close = rvt_vma_close,
 };
 
-/**
- * rvt_mmap - create a new mmap region
- * @context: the IB user context of the process making the mmap() call
- * @vma: the VMA to be initialized
- *
- * Return: zero if the mmap is OK. Otherwise, return an errno.
- */
+ 
 int rvt_mmap(struct ib_ucontext *context, struct vm_area_struct *vma)
 {
 	struct rvt_dev_info *rdi = ib_to_rvt(context->device);
@@ -73,18 +59,14 @@ int rvt_mmap(struct ib_ucontext *context, struct vm_area_struct *vma)
 	struct rvt_mmap_info *ip, *pp;
 	int ret = -EINVAL;
 
-	/*
-	 * Search the device's list of objects waiting for a mmap call.
-	 * Normally, this list is very short since a call to create a
-	 * CQ, QP, or SRQ is soon followed by a call to mmap().
-	 */
+	 
 	spin_lock_irq(&rdi->pending_lock);
 	list_for_each_entry_safe(ip, pp, &rdi->pending_mmaps,
 				 pending_mmaps) {
-		/* Only the creator is allowed to mmap the object */
+		 
 		if (context != ip->context || (__u64)offset != ip->offset)
 			continue;
-		/* Don't allow a mmap larger than the object. */
+		 
 		if (size > ip->size)
 			break;
 
@@ -104,15 +86,7 @@ done:
 	return ret;
 }
 
-/**
- * rvt_create_mmap_info - allocate information for hfi1_mmap
- * @rdi: rvt dev struct
- * @size: size in bytes to map
- * @udata: user data (must be valid!)
- * @obj: opaque pointer to a cq, wq etc
- *
- * Return: rvt_mmap struct on success, ERR_PTR on failure
- */
+ 
 struct rvt_mmap_info *rvt_create_mmap_info(struct rvt_dev_info *rdi, u32 size,
 					   struct ib_udata *udata, void *obj)
 {
@@ -145,13 +119,7 @@ struct rvt_mmap_info *rvt_create_mmap_info(struct rvt_dev_info *rdi, u32 size,
 	return ip;
 }
 
-/**
- * rvt_update_mmap_info - update a mem map
- * @rdi: rvt dev struct
- * @ip: mmap info pointer
- * @size: size to grow by
- * @obj: opaque pointer to cq, wq, etc.
- */
+ 
 void rvt_update_mmap_info(struct rvt_dev_info *rdi, struct rvt_mmap_info *ip,
 			  u32 size, void *obj)
 {

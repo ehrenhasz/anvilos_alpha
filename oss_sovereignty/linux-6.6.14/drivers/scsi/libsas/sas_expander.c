@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Serial Attached SCSI (SAS) Expander discovery and configuration
- *
- * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
- * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
- *
- * This file is licensed under GPLv2.
- */
+
+ 
 
 #include <linux/scatterlist.h>
 #include <linux/blkdev.h>
@@ -26,9 +19,9 @@ static int sas_configure_phy(struct domain_device *dev, int phy_id,
 			     u8 *sas_addr, int include);
 static int sas_disable_routing(struct domain_device *dev,  u8 *sas_addr);
 
-/* ---------- SMP task management ---------- */
+ 
 
-/* Give it some long enough timeout. In seconds. */
+ 
 #define SMP_TIMEOUT 10
 
 static int smp_execute_task_sg(struct domain_device *dev,
@@ -89,8 +82,7 @@ static int smp_execute_task_sg(struct domain_device *dev,
 		}
 		if (task->task_status.resp == SAS_TASK_COMPLETE &&
 		    task->task_status.stat == SAS_DATA_UNDERRUN) {
-			/* no error, but return the number of bytes of
-			 * underrun */
+			 
 			res = task->task_status.residual;
 			break;
 		}
@@ -131,7 +123,7 @@ static int smp_execute_task(struct domain_device *dev, void *req, int req_size,
 	return smp_execute_task_sg(dev, &req_sg, &resp_sg);
 }
 
-/* ---------- Allocations ---------- */
+ 
 
 static inline void *alloc_smp_req(int size)
 {
@@ -165,9 +157,7 @@ static char sas_route_char(struct domain_device *dev, struct ex_phy *phy)
 
 static enum sas_device_type to_dev_type(struct discover_resp *dr)
 {
-	/* This is detecting a failure to transmit initial dev to host
-	 * FIS as described in section J.5 of sas-2 r16
-	 */
+	 
 	if (dr->attached_dev_type == SAS_PHY_UNUSED && dr->attached_sata_dev &&
 	    dr->linkrate >= SAS_LINK_RATE_1_5_GBPS)
 		return SAS_SATA_PENDING;
@@ -194,7 +184,7 @@ static void sas_set_ex_phy(struct domain_device *dev, int phy_id,
 			return;
 		phy->phy = sas_phy_alloc(&rphy->dev, phy_id);
 
-		/* FIXME: error_handling */
+		 
 		BUG_ON(!phy->phy);
 	}
 
@@ -206,16 +196,16 @@ static void sas_set_ex_phy(struct domain_device *dev, int phy_id,
 		phy->phy_state = PHY_NOT_PRESENT;
 		break;
 	case SMP_RESP_FUNC_ACC:
-		phy->phy_state = PHY_EMPTY; /* do not know yet */
+		phy->phy_state = PHY_EMPTY;  
 		break;
 	}
 
-	/* check if anything important changed to squelch debug */
+	 
 	dev_type = phy->attached_dev_type;
 	linkrate  = phy->linkrate;
 	memcpy(sas_addr, phy->attached_sas_addr, SAS_ADDR_SIZE);
 
-	/* Handle vacant phy - rest of dr data is not valid so skip it */
+	 
 	if (phy->phy_state == PHY_VACANT) {
 		memset(phy->attached_sas_addr, 0, SAS_ADDR_SIZE);
 		phy->attached_dev_type = SAS_PHY_UNUSED;
@@ -236,9 +226,7 @@ static void sas_set_ex_phy(struct domain_device *dev, int phy_id,
 	phy->attached_sata_ps   = dr->attached_sata_ps;
 	phy->attached_iproto = dr->iproto << 1;
 	phy->attached_tproto = dr->tproto << 1;
-	/* help some expanders that fail to zero sas_address in the 'no
-	 * device' case
-	 */
+	 
 	if (phy->attached_dev_type == SAS_PHY_UNUSED ||
 	    phy->linkrate < SAS_LINK_RATE_1_5_GBPS)
 		memset(phy->attached_sas_addr, 0, SAS_ADDR_SIZE);
@@ -300,20 +288,15 @@ static void sas_set_ex_phy(struct domain_device *dev, int phy_id,
 		type = "unknown";
 	}
 
-	/* this routine is polled by libata error recovery so filter
-	 * unimportant messages
-	 */
+	 
 	if (new_phy || phy->attached_dev_type != dev_type ||
 	    phy->linkrate != linkrate ||
 	    SAS_ADDR(phy->attached_sas_addr) != SAS_ADDR(sas_addr))
-		/* pass */;
+		 ;
 	else
 		return;
 
-	/* if the attached device type changed and ata_eh is active,
-	 * make sure we run revalidation when eh completes (see:
-	 * sas_enable_revalidation)
-	 */
+	 
 	if (test_bit(SAS_HA_ATA_EH_ACTIVE, &ha->state))
 		set_bit(DISCE_REVALIDATE_DOMAIN, &dev->port->disc.pending);
 
@@ -324,7 +307,7 @@ static void sas_set_ex_phy(struct domain_device *dev, int phy_id,
 		 SAS_ADDR(phy->attached_sas_addr), type);
 }
 
-/* check if we have an existing attached ata device on this expander phy */
+ 
 struct domain_device *sas_ex_to_ata(struct domain_device *ex_dev, int phy_id)
 {
 	struct ex_phy *ex_phy = &ex_dev->ex_dev.ex_phy[phy_id];
@@ -694,11 +677,7 @@ int sas_get_report_phy_sata(struct domain_device *dev, int phy_id,
 	res = smp_execute_task(dev, rps_req, RPS_REQ_SIZE,
 			       rps_resp, RPS_RESP_SIZE);
 
-	/* 0x34 is the FIS type for the D2H fis.  There's a potential
-	 * standards cockup here.  sas-2 explicitly specifies the FIS
-	 * should be encoded so that FIS type is in resp[24].
-	 * However, some expanders endian reverse this.  Undo the
-	 * reversal here */
+	 
 	if (!res && resp[27] == 0x34 && resp[24] != 0x34) {
 		int i;
 
@@ -843,7 +822,7 @@ static struct domain_device *sas_ex_discover_end_dev(
 	return NULL;
 }
 
-/* See if this phy is part of a wide port */
+ 
 static bool sas_ex_join_wide_port(struct domain_device *parent, int phy_id)
 {
 	struct ex_phy *phy = &parent->ex_dev.ex_phy[phy_id];
@@ -890,7 +869,7 @@ static struct domain_device *sas_ex_discover_expander(
 		return NULL;
 
 	phy->port = sas_port_alloc(&parent->rphy->dev, phy_id);
-	/* FIXME: better error handling */
+	 
 	BUG_ON(sas_port_add(phy->port) != 0);
 
 
@@ -904,7 +883,7 @@ static struct domain_device *sas_ex_discover_expander(
 					  SAS_FANOUT_EXPANDER_DEVICE);
 		break;
 	default:
-		rphy = NULL;	/* shut gcc up */
+		rphy = NULL;	 
 		BUG();
 	}
 	port = parent->port;
@@ -953,7 +932,7 @@ static int sas_ex_discover_dev(struct domain_device *dev, int phy_id)
 	struct domain_device *child = NULL;
 	int res = 0;
 
-	/* Phy state */
+	 
 	if (ex_phy->linkrate == SAS_SATA_SPINUP_HOLD) {
 		if (!sas_smp_phy_control(dev, phy_id, PHY_FUNC_LINK_RESET, NULL))
 			res = sas_ex_phy_discover(dev, phy_id);
@@ -961,7 +940,7 @@ static int sas_ex_discover_dev(struct domain_device *dev, int phy_id)
 			return res;
 	}
 
-	/* Parent and domain coherency */
+	 
 	if (!dev->parent && sas_phy_match_port_addr(dev->port, ex_phy)) {
 		sas_add_parent_port(dev, phy_id);
 		return 0;
@@ -1094,14 +1073,7 @@ static int sas_check_level_subtractive_boundary(struct domain_device *dev)
 	}
 	return 0;
 }
-/**
- * sas_ex_discover_devices - discover devices attached to this expander
- * @dev: pointer to the expander domain device
- * @single: if you want to do a single phy, else set to -1;
- *
- * Configure this expander for use with its devices and register the
- * devices of this expander.
- */
+ 
 static int sas_ex_discover_devices(struct domain_device *dev, int single)
 {
 	struct expander_device *ex = &dev->ex_dev;
@@ -1461,13 +1433,7 @@ static int sas_configure_phy(struct domain_device *dev, int phy_id,
 	return res;
 }
 
-/**
- * sas_configure_parent - configure routing table of parent
- * @parent: parent expander
- * @child: child expander
- * @sas_addr: SAS port identifier of device directly attached to child
- * @include: whether or not to include @child in the expander routing table
- */
+ 
 static int sas_configure_parent(struct domain_device *parent,
 				struct domain_device *child,
 				u8 *sas_addr, int include)
@@ -1503,11 +1469,7 @@ static int sas_configure_parent(struct domain_device *parent,
 	return res;
 }
 
-/**
- * sas_configure_routing - configure routing
- * @dev: expander device
- * @sas_addr: port identifier of device directly attached to the expander device
- */
+ 
 static int sas_configure_routing(struct domain_device *dev, u8 *sas_addr)
 {
 	if (dev->parent)
@@ -1522,12 +1484,7 @@ static int sas_disable_routing(struct domain_device *dev,  u8 *sas_addr)
 	return 0;
 }
 
-/**
- * sas_discover_expander - expander discovery
- * @dev: pointer to expander domain device
- *
- * See comment in sas_discover_sata().
- */
+ 
 static int sas_discover_expander(struct domain_device *dev)
 {
 	int res;
@@ -1604,7 +1561,7 @@ int sas_discover_root_expander(struct domain_device *dev)
 	if (res)
 		goto out_err;
 
-	ex->level = dev->port->disc.max_level; /* 0 */
+	ex->level = dev->port->disc.max_level;  
 	res = sas_discover_expander(dev);
 	if (res)
 		goto out_err2;
@@ -1619,7 +1576,7 @@ out_err:
 	return res;
 }
 
-/* ---------- Domain revalidation ---------- */
+ 
 
 static int sas_get_phy_discover(struct domain_device *dev,
 				int phy_id, struct smp_disc_resp *disc_resp)
@@ -1750,20 +1707,7 @@ out:
 	kfree(rg_req);
 	return res;
 }
-/**
- * sas_find_bcast_dev -  find the device issue BROADCAST(CHANGE).
- * @dev:domain device to be detect.
- * @src_dev: the device which originated BROADCAST(CHANGE).
- *
- * Add self-configuration expander support. Suppose two expander cascading,
- * when the first level expander is self-configuring, hotplug the disks in
- * second level expander, BROADCAST(CHANGE) will not only be originated
- * in the second level expander, but also be originated in the first level
- * expander (see SAS protocol SAS 2r-14, 7.11 for detail), it is to say,
- * expander changed count in two level expanders will all increment at least
- * once, but the phy which chang count has changed is the source device which
- * we concerned.
- */
+ 
 
 static int sas_find_bcast_dev(struct domain_device *dev,
 			      struct domain_device **src_dev)
@@ -1778,10 +1722,7 @@ static int sas_find_bcast_dev(struct domain_device *dev,
 	if (res)
 		goto out;
 	if (ex_change_count != -1 && ex_change_count != ex->ex_change_count) {
-		/* Just detect if this expander phys phy change count changed,
-		* in order to determine if this expander originate BROADCAST,
-		* and do not update phy change count field in our structure.
-		*/
+		 
 		res = sas_find_bcast_phy(dev, &phy_id, 0, false);
 		if (phy_id != -1) {
 			*src_dev = dev;
@@ -1924,9 +1865,7 @@ static bool dev_type_flutter(enum sas_device_type new, enum sas_device_type old)
 	if (old == new)
 		return true;
 
-	/* treat device directed resets as flutter, if we went
-	 * SAS_END_DEVICE to SAS_SATA_PENDING the link needs recovery
-	 */
+	 
 	if ((old == SAS_SATA_PENDING && new == SAS_END_DEVICE) ||
 	    (old == SAS_END_DEVICE && new == SAS_SATA_PENDING))
 		return true;
@@ -1972,10 +1911,7 @@ static int sas_rediscover_dev(struct domain_device *dev, int phy_id,
 	if ((SAS_ADDR(sas_addr) == 0) || (res == -ECOMM)) {
 		phy->phy_state = PHY_EMPTY;
 		sas_unregister_devs_sas_addr(dev, phy_id, last);
-		/*
-		 * Even though the PHY is empty, for convenience we discover
-		 * the PHY to update the PHY info, like negotiated linkrate.
-		 */
+		 
 		sas_ex_phy_discover(dev, phy_id);
 		return res;
 	} else if (SAS_ADDR(sas_addr) == SAS_ADDR(phy->attached_sas_addr) &&
@@ -1992,7 +1928,7 @@ static int sas_rediscover_dev(struct domain_device *dev, int phy_id,
 		return res;
 	}
 
-	/* we always have to delete the old device when we went here */
+	 
 	pr_info("ex %016llx phy%02d replace %016llx\n",
 		SAS_ADDR(dev->sas_addr), phy_id,
 		SAS_ADDR(phy->attached_sas_addr));
@@ -2001,27 +1937,14 @@ static int sas_rediscover_dev(struct domain_device *dev, int phy_id,
 	return sas_discover_new(dev, phy_id);
 }
 
-/**
- * sas_rediscover - revalidate the domain.
- * @dev:domain device to be detect.
- * @phy_id: the phy id will be detected.
- *
- * NOTE: this process _must_ quit (return) as soon as any connection
- * errors are encountered.  Connection recovery is done elsewhere.
- * Discover process only interrogates devices in order to discover the
- * domain.For plugging out, we un-register the device only when it is
- * the last phy in the port, for other phys in this port, we just delete it
- * from the port.For inserting, we do discovery when it is the
- * first phy,for other phys in this port, we add it to the port to
- * forming the wide-port.
- */
+ 
 static int sas_rediscover(struct domain_device *dev, const int phy_id)
 {
 	struct expander_device *ex = &dev->ex_dev;
 	struct ex_phy *changed_phy = &ex->ex_phy[phy_id];
 	int res = 0;
 	int i;
-	bool last = true;	/* is this the last phy of the port */
+	bool last = true;	 
 
 	pr_debug("ex %016llx phy%02d originated BROADCAST(CHANGE)\n",
 		 SAS_ADDR(dev->sas_addr), phy_id);
@@ -2043,15 +1966,7 @@ static int sas_rediscover(struct domain_device *dev, const int phy_id)
 	return res;
 }
 
-/**
- * sas_ex_revalidate_domain - revalidate the domain
- * @port_dev: port domain device.
- *
- * NOTE: this process _must_ quit (return) as soon as any connection
- * errors are encountered.  Connection recovery is done elsewhere.
- * Discover process only interrogates devices in order to discover the
- * domain.
- */
+ 
 int sas_ex_revalidate_domain(struct domain_device *port_dev)
 {
 	int res;
@@ -2097,7 +2012,7 @@ void sas_smp_handler(struct bsg_job *job, struct Scsi_Host *shost,
 	unsigned int rcvlen = 0;
 	int ret = -EINVAL;
 
-	/* no rphy means no smp target support (ie aic94xx host) */
+	 
 	if (!rphy)
 		return sas_smp_host_handler(job, shost);
 
@@ -2117,7 +2032,7 @@ void sas_smp_handler(struct bsg_job *job, struct Scsi_Host *shost,
 		goto out;
 	}
 
-	/* do we need to support multiple segments? */
+	 
 	if (job->request_payload.sg_cnt > 1 ||
 	    job->reply_payload.sg_cnt > 1) {
 		pr_info("%s: multiple segments req %u, rsp %u\n",
@@ -2129,7 +2044,7 @@ void sas_smp_handler(struct bsg_job *job, struct Scsi_Host *shost,
 	ret = smp_execute_task_sg(dev, job->request_payload.sg_list,
 			job->reply_payload.sg_list);
 	if (ret >= 0) {
-		/* bsg_job_done() requires the length received  */
+		 
 		rcvlen = job->reply_payload.payload_len - ret;
 		ret = 0;
 	}

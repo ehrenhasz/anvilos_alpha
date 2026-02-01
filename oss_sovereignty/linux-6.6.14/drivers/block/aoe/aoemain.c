@@ -1,8 +1,5 @@
-/* Copyright (c) 2012 Coraid, Inc.  See COPYING for GPL terms. */
-/*
- * aoemain.c
- * Module initialization routines, discover timer
- */
+ 
+ 
 
 #include <linux/hdreg.h>
 #include <linux/blkdev.h>
@@ -20,7 +17,7 @@ struct workqueue_struct *aoe_wq;
 
 static void discover_timer(struct timer_list *t)
 {
-	mod_timer(t, jiffies + HZ * 60); /* one minute */
+	mod_timer(t, jiffies + HZ * 60);  
 
 	aoecmd_cfg(0xffff, 0xff);
 }
@@ -35,7 +32,7 @@ aoe_exit(void)
 	aoecmd_exit();
 	aoechr_exit();
 	aoedev_exit();
-	aoeblk_exit();		/* free cache after de-allocating bufs */
+	aoeblk_exit();		 
 	destroy_workqueue(aoe_wq);
 }
 

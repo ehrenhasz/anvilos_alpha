@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Message SMC/HVC
- * Transport driver
- *
- * Copyright 2020 NXP
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/atomic.h>
@@ -20,43 +15,20 @@
 
 #include "common.h"
 
-/*
- * The shmem address is split into 4K page and offset.
- * This is to make sure the parameters fit in 32bit arguments of the
- * smc/hvc call to keep it uniform across smc32/smc64 conventions.
- * This however limits the shmem address to 44 bit.
- *
- * These optional parameters can be used to distinguish among multiple
- * scmi instances that are using the same smc-id.
- * The page parameter is passed in r1/x1/w1 register and the offset parameter
- * is passed in r2/x2/w2 register.
- */
+ 
 
 #define SHMEM_SIZE (SZ_4K)
 #define SHMEM_SHIFT 12
 #define SHMEM_PAGE(x) (_UL((x) >> SHMEM_SHIFT))
 #define SHMEM_OFFSET(x) ((x) & (SHMEM_SIZE - 1))
 
-/**
- * struct scmi_smc - Structure representing a SCMI smc transport
- *
- * @irq: An optional IRQ for completion
- * @cinfo: SCMI channel info
- * @shmem: Transmit/Receive shared memory area
- * @shmem_lock: Lock to protect access to Tx/Rx shared memory area.
- *		Used when NOT operating in atomic mode.
- * @inflight: Atomic flag to protect access to Tx/Rx shared memory area.
- *	      Used when operating in atomic mode.
- * @func_id: smc/hvc call function id
- * @param_page: 4K page number of the shmem channel
- * @param_offset: Offset within the 4K page of the shmem channel
- */
+ 
 
 struct scmi_smc {
 	int irq;
 	struct scmi_chan_info *cinfo;
 	struct scmi_shared_mem __iomem *shmem;
-	/* Protect access to shmem area */
+	 
 	struct mutex shmem_lock;
 #define INFLIGHT_NONE	MSG_TOKEN_MAX
 	atomic_t inflight;
@@ -166,11 +138,7 @@ static int smc_chan_setup(struct scmi_chan_info *cinfo, struct device *dev,
 		scmi_info->param_page = SHMEM_PAGE(res.start);
 		scmi_info->param_offset = SHMEM_OFFSET(res.start);
 	}
-	/*
-	 * If there is an interrupt named "a2p", then the service and
-	 * completion of a message is signaled by an interrupt rather than by
-	 * the return of the SMC call.
-	 */
+	 
 	scmi_info->irq = of_irq_get_byname(cdev->of_node, "a2p");
 	if (scmi_info->irq > 0) {
 		ret = request_irq(scmi_info->irq, smc_msg_done_isr,
@@ -196,7 +164,7 @@ static int smc_chan_free(int id, void *p, void *data)
 	struct scmi_chan_info *cinfo = p;
 	struct scmi_smc *scmi_info = cinfo->transport_info;
 
-	/* Ignore any possible further reception on the IRQ path */
+	 
 	if (scmi_info->irq > 0)
 		free_irq(scmi_info->irq, scmi_info);
 
@@ -214,10 +182,7 @@ static int smc_send_message(struct scmi_chan_info *cinfo,
 	unsigned long page = scmi_info->param_page;
 	unsigned long offset = scmi_info->param_offset;
 
-	/*
-	 * Channel will be released only once response has been
-	 * surely fully retrieved, so after .mark_txdone()
-	 */
+	 
 	smc_channel_lock_acquire(scmi_info, xfer);
 
 	shmem_tx_prepare(scmi_info->shmem, xfer, cinfo);
@@ -225,7 +190,7 @@ static int smc_send_message(struct scmi_chan_info *cinfo,
 	arm_smccc_1_1_invoke(scmi_info->func_id, page, offset, 0, 0, 0, 0, 0,
 			     &res);
 
-	/* Only SMCCC_RET_NOT_SUPPORTED is valid error code */
+	 
 	if (res.a0) {
 		smc_channel_lock_release(scmi_info);
 		return -EOPNOTSUPP;
@@ -264,14 +229,7 @@ const struct scmi_desc scmi_smc_desc = {
 	.max_rx_timeout_ms = 30,
 	.max_msg = 20,
 	.max_msg_size = 128,
-	/*
-	 * Setting .sync_cmds_atomic_replies to true for SMC assumes that,
-	 * once the SMC instruction has completed successfully, the issued
-	 * SCMI command would have been already fully processed by the SCMI
-	 * platform firmware and so any possible response value expected
-	 * for the issued command will be immmediately ready to be fetched
-	 * from the shared memory area.
-	 */
+	 
 	.sync_cmds_completed_on_ret = true,
 	.atomic_enabled = IS_ENABLED(CONFIG_ARM_SCMI_TRANSPORT_SMC_ATOMIC_ENABLE),
 };

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A driver for the I2C members of the Abracon AB x8xx RTC family,
- * and compatible: AB 1805 and AB 0805
- *
- * Copyright 2014-2015 Macq S.A.
- *
- * Author: Philippe De Muyter <phdm@macqel.be>
- * Author: Alexandre Belloni <alexandre.belloni@bootlin.com>
- *
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/bitfield.h>
@@ -158,10 +149,7 @@ static int abx80x_enable_trickle_charger(struct i2c_client *client,
 {
 	int err;
 
-	/*
-	 * Write the configuration key register to enable access to the Trickle
-	 * register
-	 */
+	 
 	if (abx80x_write_config_key(client, ABX8XX_CFG_KEY_MISC) < 0)
 		return -EIO;
 
@@ -182,7 +170,7 @@ static int abx80x_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	unsigned char buf[8];
 	int err, flags, rc_mode = 0;
 
-	/* Read the Oscillator Failure only in XT mode */
+	 
 	rc_mode = abx80x_is_rc_mode(client);
 	if (rc_mode < 0)
 		return rc_mode;
@@ -241,7 +229,7 @@ static int abx80x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		return -EIO;
 	}
 
-	/* Clear the OF bit of Oscillator Status Register */
+	 
 	flags = i2c_smbus_read_byte_data(client, ABX8XX_REG_OSS);
 	if (flags < 0)
 		return flags;
@@ -270,10 +258,7 @@ static irqreturn_t abx80x_handle_irq(int irq, void *dev_id)
 	if (status & ABX8XX_STATUS_AF)
 		rtc_update_irq(rtc, 1, RTC_AF | RTC_IRQF);
 
-	/*
-	 * It is unclear if we'll get an interrupt before the external
-	 * reset kicks in.
-	 */
+	 
 	if (status & ABX8XX_STATUS_WDT)
 		dev_alert(&client->dev, "watchdog timeout interrupt.\n");
 
@@ -367,15 +352,15 @@ static int abx80x_rtc_set_autocalibration(struct device *dev,
 	if (autocalibration == 0) {
 		flags &= ~(ABX8XX_OSC_ACAL_512 | ABX8XX_OSC_ACAL_1024);
 	} else if (autocalibration == 1024) {
-		/* 1024 autocalibration is 0x10 */
+		 
 		flags |= ABX8XX_OSC_ACAL_1024;
 		flags &= ~(ABX8XX_OSC_ACAL_512);
 	} else {
-		/* 512 autocalibration is 0x11 */
+		 
 		flags |= (ABX8XX_OSC_ACAL_1024 | ABX8XX_OSC_ACAL_512);
 	}
 
-	/* Unlock write access to Oscillator Control Register */
+	 
 	if (abx80x_write_config_key(client, ABX8XX_CFG_KEY_OSC) < 0)
 		return -EIO;
 
@@ -463,7 +448,7 @@ static ssize_t oscillator_store(struct device *dev,
 	else
 		flags |= (ABX8XX_OSC_OSEL);
 
-	/* Unlock write access on Oscillator Control register */
+	 
 	if (abx80x_write_config_key(client, ABX8XX_CFG_KEY_OSC) < 0)
 		return -EIO;
 
@@ -616,10 +601,7 @@ static int __abx80x_wdog_set_timeout(struct watchdog_device *wdog,
 	struct abx80x_priv *priv = watchdog_get_drvdata(wdog);
 	u8 val = ABX8XX_WDT_WDS | timeout_bits(timeout);
 
-	/*
-	 * Writing any timeout to the WDT register resets the watchdog timer.
-	 * Writing 0 disables it.
-	 */
+	 
 	return i2c_smbus_write_byte_data(priv->client, ABX8XX_REG_WDT, val);
 }
 
@@ -810,14 +792,9 @@ static int abx80x_probe(struct i2c_client *client)
 		return -EIO;
 	}
 
-	/* Configure RV1805 specifics */
+	 
 	if (part == RV1805) {
-		/*
-		 * Avoid accidentally entering test mode. This can happen
-		 * on the RV1805 in case the reserved bit 5 in control2
-		 * register is set. RV-1805-C3 datasheet indicates that
-		 * the bit should be cleared in section 11h - Control2.
-		 */
+		 
 		data = i2c_smbus_read_byte_data(client, ABX8XX_REG_CTRL2);
 		if (data < 0) {
 			dev_err(&client->dev,
@@ -833,11 +810,7 @@ static int abx80x_probe(struct i2c_client *client)
 			return -EIO;
 		}
 
-		/*
-		 * Avoid extra power leakage. The RV1805 uses smaller
-		 * 10pin package and the EXTI input is not present.
-		 * Disable it to avoid leakage.
-		 */
+		 
 		data = i2c_smbus_read_byte_data(client, ABX8XX_REG_OUT_CTRL);
 		if (data < 0) {
 			dev_err(&client->dev,
@@ -845,10 +818,7 @@ static int abx80x_probe(struct i2c_client *client)
 			return -EIO;
 		}
 
-		/*
-		 * Write the configuration key register to enable access to
-		 * the config2 register
-		 */
+		 
 		if (abx80x_write_config_key(client, ABX8XX_CFG_KEY_MISC) < 0)
 			return -EIO;
 
@@ -861,7 +831,7 @@ static int abx80x_probe(struct i2c_client *client)
 		}
 	}
 
-	/* part autodetection */
+	 
 	if (part == ABX80X) {
 		for (i = 0; abx80x_caps[i].pn; i++)
 			if (partnumber == abx80x_caps[i].pn)

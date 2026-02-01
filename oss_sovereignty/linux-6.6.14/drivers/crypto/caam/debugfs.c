@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2019, 2023 NXP */
+
+ 
 
 #include <linux/debugfs.h>
 #include "compat.h"
@@ -23,11 +23,7 @@ DEFINE_DEBUGFS_ATTRIBUTE(caam_fops_u32_ro, caam_debugfs_u32_get, NULL, "%llu\n")
 DEFINE_DEBUGFS_ATTRIBUTE(caam_fops_u64_ro, caam_debugfs_u64_get, NULL, "%llu\n");
 
 #ifdef CONFIG_CAAM_QI
-/*
- * This is a counter for the number of times the congestion group (where all
- * the request and response queueus are) reached congestion. Incremented
- * each time the congestion callback is called with congested == true.
- */
+ 
 static u64 times_congested;
 
 void caam_debugfs_qi_congested(void)
@@ -46,11 +42,7 @@ void caam_debugfs_init(struct caam_drv_private *ctrlpriv,
 		       struct caam_perfmon __force *perfmon,
 		       struct dentry *root)
 {
-	/*
-	 * FIXME: needs better naming distinction, as some amalgamation of
-	 * "caam" and nprop->full_name. The OF name isn't distinctive,
-	 * but does separate instances
-	 */
+	 
 
 	ctrlpriv->ctl = debugfs_create_dir("ctl", root);
 
@@ -69,7 +61,7 @@ void caam_debugfs_init(struct caam_drv_private *ctrlpriv,
 	debugfs_create_file("ib_bytes_validated", 0444, ctrlpriv->ctl,
 			    &perfmon->ib_valid_bytes, &caam_fops_u64_ro);
 
-	/* Controller level - global status values */
+	 
 	debugfs_create_file("fault_addr", 0444, ctrlpriv->ctl,
 			    &perfmon->faultaddr, &caam_fops_u32_ro);
 	debugfs_create_file("fault_detail", 0444, ctrlpriv->ctl,
@@ -80,7 +72,7 @@ void caam_debugfs_init(struct caam_drv_private *ctrlpriv,
 	if (ctrlpriv->optee_en)
 		return;
 
-	/* Internal covering keys (useful in non-secure mode only) */
+	 
 	ctrlpriv->ctl_kek_wrap.data = (__force void *)&ctrlpriv->ctrl->kek[0];
 	ctrlpriv->ctl_kek_wrap.size = KEK_KEY_SIZE * sizeof(u32);
 	debugfs_create_blob("kek", 0444, ctrlpriv->ctl,

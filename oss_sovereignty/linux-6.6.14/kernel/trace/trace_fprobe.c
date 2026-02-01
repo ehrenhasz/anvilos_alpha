@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Fprobe-based tracing events
- * Copyright (C) 2022 Google LLC.
- */
+
+ 
 #define pr_fmt(fmt)	"trace_fprobe: " fmt
 
 #include <linux/fprobe.h>
@@ -36,9 +33,7 @@ static struct dyn_event_operations trace_fprobe_ops = {
 	.match = trace_fprobe_match,
 };
 
-/*
- * Fprobe event core functions
- */
+ 
 struct trace_fprobe {
 	struct dyn_event	devent;
 	struct fprobe		fp;
@@ -58,11 +53,7 @@ static struct trace_fprobe *to_trace_fprobe(struct dyn_event *ev)
 	return container_of(ev, struct trace_fprobe, devent);
 }
 
-/**
- * for_each_trace_fprobe - iterate over the trace_fprobe list
- * @pos:	the struct trace_fprobe * for each entry
- * @dpos:	the struct dyn_event * to use as a loop cursor
- */
+ 
 #define for_each_trace_fprobe(pos, dpos)	\
 	for_each_dyn_event(dpos)		\
 		if (is_trace_fprobe(dpos) && (pos = to_trace_fprobe(dpos)))
@@ -124,10 +115,7 @@ static bool trace_fprobe_is_registered(struct trace_fprobe *tf)
 	return fprobe_is_registered(&tf->fp);
 }
 
-/*
- * Note that we don't verify the fetch_insn code, since it does not come
- * from user space.
- */
+ 
 static int
 process_fetch_insn(struct fetch_insn *code, void *rec, void *dest,
 		   void *base)
@@ -137,7 +125,7 @@ process_fetch_insn(struct fetch_insn *code, void *rec, void *dest,
 	int ret;
 
 retry:
-	/* 1st stage: get value from context */
+	 
 	switch (code->op) {
 	case FETCH_OP_STACK:
 		val = regs_get_kernel_stack_nth(regs, code->param);
@@ -153,7 +141,7 @@ retry:
 		val = regs_get_kernel_argument(regs, code->param);
 		break;
 #endif
-	case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
+	case FETCH_NOP_SYMBOL:	 
 		code++;
 		goto retry;
 	default:
@@ -167,7 +155,7 @@ retry:
 }
 NOKPROBE_SYMBOL(process_fetch_insn)
 
-/* function entry handler */
+ 
 static nokprobe_inline void
 __fentry_trace_func(struct trace_fprobe *tf, unsigned long entry_ip,
 		    struct pt_regs *regs,
@@ -210,7 +198,7 @@ fentry_trace_func(struct trace_fprobe *tf, unsigned long entry_ip,
 }
 NOKPROBE_SYMBOL(fentry_trace_func);
 
-/* Kretprobe handler */
+ 
 static nokprobe_inline void
 __fexit_trace_func(struct trace_fprobe *tf, unsigned long entry_ip,
 		   unsigned long ret_ip, struct pt_regs *regs,
@@ -317,7 +305,7 @@ fexit_perf_func(struct trace_fprobe *tf, unsigned long entry_ip,
 			      head, NULL);
 }
 NOKPROBE_SYMBOL(fexit_perf_func);
-#endif	/* CONFIG_PERF_EVENTS */
+#endif	 
 
 static int fentry_dispatcher(struct fprobe *fp, unsigned long entry_ip,
 			     unsigned long ret_ip, struct pt_regs *regs,
@@ -360,9 +348,7 @@ static void free_trace_fprobe(struct trace_fprobe *tf)
 	}
 }
 
-/*
- * Allocate new trace_probe and initialize it (including fprobe).
- */
+ 
 static struct trace_fprobe *alloc_trace_fprobe(const char *group,
 					       const char *event,
 					       const char *symbol,
@@ -432,10 +418,7 @@ static void __disable_trace_fprobe(struct trace_probe *tp)
 	}
 }
 
-/*
- * Enable trace_probe
- * if the file is NULL, enable "perf" handler, or enable "trace" handler.
- */
+ 
 static int enable_trace_fprobe(struct trace_event_call *call,
 			       struct trace_event_file *file)
 {
@@ -449,7 +432,7 @@ static int enable_trace_fprobe(struct trace_event_call *call,
 		return -ENODEV;
 	enabled = trace_probe_is_enabled(tp);
 
-	/* This also changes "enabled" state */
+	 
 	if (file) {
 		ret = trace_probe_add_file(tp, file);
 		if (ret)
@@ -459,7 +442,7 @@ static int enable_trace_fprobe(struct trace_event_call *call,
 
 	if (!enabled) {
 		list_for_each_entry(tf, trace_probe_probe_list(tp), tp.list) {
-			/* TODO: check the fprobe is gone */
+			 
 			__enable_trace_fprobe(tf);
 		}
 	}
@@ -467,10 +450,7 @@ static int enable_trace_fprobe(struct trace_event_call *call,
 	return 0;
 }
 
-/*
- * Disable trace_probe
- * if the file is NULL, disable "perf" handler, or disable "trace" handler.
- */
+ 
 static int disable_trace_fprobe(struct trace_event_call *call,
 				struct trace_event_file *file)
 {
@@ -494,18 +474,13 @@ static int disable_trace_fprobe(struct trace_event_call *call,
 
  out:
 	if (file)
-		/*
-		 * Synchronization is done in below function. For perf event,
-		 * file == NULL and perf_trace_event_unreg() calls
-		 * tracepoint_synchronize_unregister() to ensure synchronize
-		 * event. We don't need to care about it.
-		 */
+		 
 		trace_probe_remove_file(tp, file);
 
 	return 0;
 }
 
-/* Event entry printers */
+ 
 static enum print_line_t
 print_fentry_event(struct trace_iterator *iter, int flags,
 		   struct trace_event *event)
@@ -654,12 +629,12 @@ static int unregister_fprobe_event(struct trace_fprobe *tf)
 	return trace_probe_unregister_event_call(&tf->tp);
 }
 
-/* Internal register function - just handle fprobe and flags */
+ 
 static int __register_trace_fprobe(struct trace_fprobe *tf)
 {
 	int i, ret;
 
-	/* Should we need new LOCKDOWN flag for fprobe? */
+	 
 	ret = security_locked_down(LOCKDOWN_KPROBES);
 	if (ret)
 		return ret;
@@ -673,7 +648,7 @@ static int __register_trace_fprobe(struct trace_fprobe *tf)
 			return ret;
 	}
 
-	/* Set/clear disabled flag according to tp->flag */
+	 
 	if (trace_probe_is_enabled(&tf->tp))
 		tf->fp.flags &= ~FPROBE_FL_DISABLED;
 	else
@@ -682,11 +657,7 @@ static int __register_trace_fprobe(struct trace_fprobe *tf)
 	if (trace_fprobe_is_tracepoint(tf)) {
 		struct tracepoint *tpoint = tf->tpoint;
 		unsigned long ip = (unsigned long)tpoint->probestub;
-		/*
-		 * Here, we do 2 steps to enable fprobe on a tracepoint.
-		 * At first, put __probestub_##TP function on the tracepoint
-		 * and put a fprobe on the stub function.
-		 */
+		 
 		ret = tracepoint_probe_register_prio_may_exist(tpoint,
 					tpoint->probestub, NULL, 0);
 		if (ret < 0)
@@ -694,11 +665,11 @@ static int __register_trace_fprobe(struct trace_fprobe *tf)
 		return register_fprobe_ips(&tf->fp, &ip, 1);
 	}
 
-	/* TODO: handle filter, nofilter or symbol list */
+	 
 	return register_fprobe(&tf->fp, tf->symbol, NULL);
 }
 
-/* Internal unregister function - just handle fprobe and flags */
+ 
 static void __unregister_trace_fprobe(struct trace_fprobe *tf)
 {
 	if (trace_fprobe_is_registered(tf)) {
@@ -713,23 +684,23 @@ static void __unregister_trace_fprobe(struct trace_fprobe *tf)
 	}
 }
 
-/* TODO: make this trace_*probe common function */
-/* Unregister a trace_probe and probe_event */
+ 
+ 
 static int unregister_trace_fprobe(struct trace_fprobe *tf)
 {
-	/* If other probes are on the event, just unregister fprobe */
+	 
 	if (trace_probe_has_sibling(&tf->tp))
 		goto unreg;
 
-	/* Enabled event can not be unregistered */
+	 
 	if (trace_probe_is_enabled(&tf->tp))
 		return -EBUSY;
 
-	/* If there's a reference to the dynamic event */
+	 
 	if (trace_event_dyn_busy(trace_probe_event_call(&tf->tp)))
 		return -EBUSY;
 
-	/* Will fail if probe is being used by ftrace or perf */
+	 
 	if (unregister_fprobe_event(tf))
 		return -EBUSY;
 
@@ -752,10 +723,7 @@ static bool trace_fprobe_has_same_fprobe(struct trace_fprobe *orig,
 			   trace_fprobe_symbol(comp)))
 			continue;
 
-		/*
-		 * trace_probe_compare_arg_type() ensured that nr_args and
-		 * each argument name and type are same. Let's compare comm.
-		 */
+		 
 		for (i = 0; i < orig->tp.nr_args; i++) {
 			if (strcmp(orig->tp.args[i].comm,
 				   comp->tp.args[i].comm))
@@ -781,7 +749,7 @@ static int append_trace_fprobe(struct trace_fprobe *tf, struct trace_fprobe *to)
 	}
 	ret = trace_probe_compare_arg_type(&tf->tp, &to->tp);
 	if (ret) {
-		/* Note that argument starts index = 2 */
+		 
 		trace_probe_log_set_index(ret + 1);
 		trace_probe_log_err(0, DIFF_ARG_TYPE);
 		return -EEXIST;
@@ -792,7 +760,7 @@ static int append_trace_fprobe(struct trace_fprobe *tf, struct trace_fprobe *to)
 		return -EEXIST;
 	}
 
-	/* Append to existing event */
+	 
 	ret = trace_probe_append(&tf->tp, &to->tp);
 	if (ret)
 		return ret;
@@ -806,7 +774,7 @@ static int append_trace_fprobe(struct trace_fprobe *tf, struct trace_fprobe *to)
 	return ret;
 }
 
-/* Register a trace_probe and probe_event */
+ 
 static int register_trace_fprobe(struct trace_fprobe *tf)
 {
 	struct trace_fprobe *old_tf;
@@ -821,7 +789,7 @@ static int register_trace_fprobe(struct trace_fprobe *tf)
 		goto end;
 	}
 
-	/* Register new event */
+	 
 	ret = register_fprobe_event(tf);
 	if (ret) {
 		if (ret == -EEXIST) {
@@ -832,7 +800,7 @@ static int register_trace_fprobe(struct trace_fprobe *tf)
 		goto end;
 	}
 
-	/* Register fprobe */
+	 
 	ret = __register_trace_fprobe(tf);
 	if (ret < 0)
 		unregister_fprobe_event(tf);
@@ -872,7 +840,7 @@ static int __tracepoint_probe_module_cb(struct notifier_block *self,
 static struct notifier_block tracepoint_module_nb = {
 	.notifier_call = __tracepoint_probe_module_cb,
 };
-#endif /* CONFIG_MODULES */
+#endif  
 
 struct __find_tracepoint_cb_data {
 	const char *tp_name;
@@ -923,7 +891,7 @@ static int parse_symbol_and_return(int argc, const char *argv[],
 	if (*is_return)
 		return 0;
 
-	/* If there is $retval, this should be a return fprobe. */
+	 
 	for (i = 2; i < argc; i++) {
 		tmp = strstr(argv[i], "$retval");
 		if (tmp && !isalnum(tmp[7]) && tmp[7] != '_') {
@@ -941,30 +909,7 @@ static int parse_symbol_and_return(int argc, const char *argv[],
 
 static int __trace_fprobe_create(int argc, const char *argv[])
 {
-	/*
-	 * Argument syntax:
-	 *  - Add fentry probe:
-	 *      f[:[GRP/][EVENT]] [MOD:]KSYM [FETCHARGS]
-	 *  - Add fexit probe:
-	 *      f[N][:[GRP/][EVENT]] [MOD:]KSYM%return [FETCHARGS]
-	 *  - Add tracepoint probe:
-	 *      t[:[GRP/][EVENT]] TRACEPOINT [FETCHARGS]
-	 *
-	 * Fetch args:
-	 *  $retval	: fetch return value
-	 *  $stack	: fetch stack address
-	 *  $stackN	: fetch Nth entry of stack (N:0-)
-	 *  $argN	: fetch Nth argument (N:1-)
-	 *  $comm       : fetch current task comm
-	 *  @ADDR	: fetch memory at ADDR (ADDR should be in kernel)
-	 *  @SYM[+|-offs] : fetch memory at SYM +|- offs (SYM is a data symbol)
-	 * Dereferencing memory fetch:
-	 *  +|-offs(ARG) : fetch memory at ARG +|- offs address.
-	 * Alias name of args:
-	 *  NAME=FETCHARG : set NAME as alias of FETCHARG.
-	 * Type of args:
-	 *  FETCHARG:TYPE : use TYPE instead of unsigned long.
-	 */
+	 
 	struct trace_fprobe *tf = NULL;
 	int i, len, new_argc = 0, ret = 0;
 	bool is_return = false;
@@ -1012,9 +957,7 @@ static int __trace_fprobe_create(int argc, const char *argv[])
 			trace_probe_log_err(1, BAD_MAXACT);
 			goto parse_error;
 		}
-		/* fprobe rethook instances are iterated over via a list. The
-		 * maximum should stay reasonable.
-		 */
+		 
 		if (maxactive > RETHOOK_MAXACTIVE_MAX) {
 			trace_probe_log_err(1, MAXACT_TOO_BIG);
 			goto parse_error;
@@ -1023,7 +966,7 @@ static int __trace_fprobe_create(int argc, const char *argv[])
 
 	trace_probe_log_set_index(1);
 
-	/* a symbol(or tracepoint) must be specified */
+	 
 	ret = parse_symbol_and_return(argc, argv, &symbol, &is_return, is_tracepoint);
 	if (ret < 0)
 		goto parse_error;
@@ -1043,7 +986,7 @@ static int __trace_fprobe_create(int argc, const char *argv[])
 	}
 
 	if (!event) {
-		/* Make a new event name */
+		 
 		if (is_tracepoint)
 			snprintf(buf, MAX_EVENT_NAME_LEN, "%s%s",
 				 isdigit(*symbol) ? "_" : "", symbol);
@@ -1086,27 +1029,27 @@ static int __trace_fprobe_create(int argc, const char *argv[])
 		argv = new_argv;
 	}
 
-	/* setup a probe */
+	 
 	tf = alloc_trace_fprobe(group, event, symbol, tpoint, maxactive,
 				argc, is_return);
 	if (IS_ERR(tf)) {
 		ret = PTR_ERR(tf);
-		/* This must return -ENOMEM, else there is a bug */
+		 
 		WARN_ON_ONCE(ret != -ENOMEM);
-		goto out;	/* We know tf is not allocated */
+		goto out;	 
 	}
 
 	if (is_tracepoint)
 		tf->mod = __module_text_address(
 				(unsigned long)tf->tpoint->probestub);
 
-	/* parse arguments */
+	 
 	for (i = 0; i < argc && i < MAX_TRACE_ARGS; i++) {
 		trace_probe_log_set_index(i + 2);
 		ctx.offset = 0;
 		ret = traceprobe_parse_probe_arg(&tf->tp, i, argv[i], &ctx);
 		if (ret)
-			goto error;	/* This can be -ENOMEM */
+			goto error;	 
 	}
 
 	ret = traceprobe_set_print_fmt(&tf->tp,
@@ -1179,9 +1122,7 @@ static int trace_fprobe_show(struct seq_file *m, struct dyn_event *ev)
 	return 0;
 }
 
-/*
- * called by perf_trace_init() or __ftrace_set_clr_event() under event_mutex.
- */
+ 
 static int fprobe_register(struct trace_event_call *event,
 			   enum trace_reg type, void *data)
 {
@@ -1208,10 +1149,7 @@ static int fprobe_register(struct trace_event_call *event,
 	return 0;
 }
 
-/*
- * Register dynevent at core_initcall. This allows kernel to setup fprobe
- * events in postcore_initcall without tracefs.
- */
+ 
 static __init int init_fprobe_trace_early(void)
 {
 	int ret;

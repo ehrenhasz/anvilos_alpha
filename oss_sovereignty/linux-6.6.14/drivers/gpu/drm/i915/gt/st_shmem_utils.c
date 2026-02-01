@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
 
-/* Just a quick and causal check of the shmem_utils API */
+ 
+
+ 
 
 static int igt_shmem_basic(void *ignored)
 {

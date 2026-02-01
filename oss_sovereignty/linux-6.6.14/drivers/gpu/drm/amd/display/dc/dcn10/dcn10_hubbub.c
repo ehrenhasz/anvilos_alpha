@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dcn10_hubp.h"
@@ -91,10 +68,7 @@ void hubbub1_wm_read_state(struct hubbub *hubbub,
 void hubbub1_allow_self_refresh_control(struct hubbub *hubbub, bool allow)
 {
 	struct dcn10_hubbub *hubbub1 = TO_DCN10_HUBBUB(hubbub);
-	/*
-	 * DCHUBBUB_ARB_ALLOW_SELF_REFRESH_FORCE_ENABLE = 1 means do not allow stutter
-	 * DCHUBBUB_ARB_ALLOW_SELF_REFRESH_FORCE_ENABLE = 0 means allow stutter
-	 */
+	 
 
 	REG_UPDATE_2(DCHUBBUB_ARB_DRAM_STATE_CNTL,
 			DCHUBBUB_ARB_ALLOW_SELF_REFRESH_FORCE_VALUE, 0,
@@ -118,69 +92,24 @@ bool hubbub1_verify_allow_pstate_change_high(
 {
 	struct dcn10_hubbub *hubbub1 = TO_DCN10_HUBBUB(hubbub);
 
-	/* pstate latency is ~20us so if we wait over 40us and pstate allow
-	 * still not asserted, we are probably stuck and going to hang
-	 *
-	 * TODO: Figure out why it takes ~100us on linux
-	 * pstate takes around ~100us (up to 200us) on linux. Unknown currently
-	 * as to why it takes that long on linux
-	 */
+	 
 	const unsigned int pstate_wait_timeout_us = 200;
 	const unsigned int pstate_wait_expected_timeout_us = 180;
-	static unsigned int max_sampled_pstate_wait_us; /* data collection */
-	static bool forced_pstate_allow; /* help with revert wa */
+	static unsigned int max_sampled_pstate_wait_us;  
+	static bool forced_pstate_allow;  
 
 	unsigned int debug_data;
 	unsigned int i;
 
 	if (forced_pstate_allow) {
-		/* we hacked to force pstate allow to prevent hang last time
-		 * we verify_allow_pstate_change_high.  so disable force
-		 * here so we can check status
-		 */
+		 
 		REG_UPDATE_2(DCHUBBUB_ARB_DRAM_STATE_CNTL,
 			     DCHUBBUB_ARB_ALLOW_PSTATE_CHANGE_FORCE_VALUE, 0,
 			     DCHUBBUB_ARB_ALLOW_PSTATE_CHANGE_FORCE_ENABLE, 0);
 		forced_pstate_allow = false;
 	}
 
-	/* The following table only applies to DCN1 and DCN2,
-	 * for newer DCNs, need to consult with HW IP folks to read RTL
-	 * HUBBUB:DCHUBBUB_TEST_ARB_DEBUG10 DCHUBBUBDEBUGIND:0xB
-	 * description
-	 * 0:     Pipe0 Plane0 Allow Pstate Change
-	 * 1:     Pipe0 Plane1 Allow Pstate Change
-	 * 2:     Pipe0 Cursor0 Allow Pstate Change
-	 * 3:     Pipe0 Cursor1 Allow Pstate Change
-	 * 4:     Pipe1 Plane0 Allow Pstate Change
-	 * 5:     Pipe1 Plane1 Allow Pstate Change
-	 * 6:     Pipe1 Cursor0 Allow Pstate Change
-	 * 7:     Pipe1 Cursor1 Allow Pstate Change
-	 * 8:     Pipe2 Plane0 Allow Pstate Change
-	 * 9:     Pipe2 Plane1 Allow Pstate Change
-	 * 10:    Pipe2 Cursor0 Allow Pstate Change
-	 * 11:    Pipe2 Cursor1 Allow Pstate Change
-	 * 12:    Pipe3 Plane0 Allow Pstate Change
-	 * 13:    Pipe3 Plane1 Allow Pstate Change
-	 * 14:    Pipe3 Cursor0 Allow Pstate Change
-	 * 15:    Pipe3 Cursor1 Allow Pstate Change
-	 * 16:    Pipe4 Plane0 Allow Pstate Change
-	 * 17:    Pipe4 Plane1 Allow Pstate Change
-	 * 18:    Pipe4 Cursor0 Allow Pstate Change
-	 * 19:    Pipe4 Cursor1 Allow Pstate Change
-	 * 20:    Pipe5 Plane0 Allow Pstate Change
-	 * 21:    Pipe5 Plane1 Allow Pstate Change
-	 * 22:    Pipe5 Cursor0 Allow Pstate Change
-	 * 23:    Pipe5 Cursor1 Allow Pstate Change
-	 * 24:    Pipe6 Plane0 Allow Pstate Change
-	 * 25:    Pipe6 Plane1 Allow Pstate Change
-	 * 26:    Pipe6 Cursor0 Allow Pstate Change
-	 * 27:    Pipe6 Cursor1 Allow Pstate Change
-	 * 28:    WB0 Allow Pstate Change
-	 * 29:    WB1 Allow Pstate Change
-	 * 30:    Arbiter's allow_pstate_change
-	 * 31:    SOC pstate change request
-	 */
+	 
 
 	REG_WRITE(DCHUBBUB_TEST_DEBUG_INDEX, hubbub1->debug_test_index_pstate);
 
@@ -201,9 +130,7 @@ bool hubbub1_verify_allow_pstate_change_high(
 		udelay(1);
 	}
 
-	/* force pstate allow to prevent system hang
-	 * and break to debugger to investigate
-	 */
+	 
 	REG_UPDATE_2(DCHUBBUB_ARB_DRAM_STATE_CNTL,
 		     DCHUBBUB_ARB_ALLOW_PSTATE_CHANGE_FORCE_VALUE, 1,
 		     DCHUBBUB_ARB_ALLOW_PSTATE_CHANGE_FORCE_ENABLE, 1);
@@ -250,8 +177,8 @@ bool hubbub1_program_urgent_watermarks(
 	uint32_t prog_wm_value;
 	bool wm_pending = false;
 
-	/* Repeat for water mark set A, B, C and D. */
-	/* clock state A */
+	 
+	 
 	if (safe_to_lower || watermarks->a.urgent_ns > hubbub1->watermarks.a.urgent_ns) {
 		hubbub1->watermarks.a.urgent_ns = watermarks->a.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->a.urgent_ns,
@@ -276,7 +203,7 @@ bool hubbub1_program_urgent_watermarks(
 	} else if (watermarks->a.pte_meta_urgent_ns < hubbub1->watermarks.a.pte_meta_urgent_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.urgent_ns > hubbub1->watermarks.b.urgent_ns) {
 		hubbub1->watermarks.b.urgent_ns = watermarks->b.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->b.urgent_ns,
@@ -301,7 +228,7 @@ bool hubbub1_program_urgent_watermarks(
 	} else if (watermarks->b.pte_meta_urgent_ns < hubbub1->watermarks.b.pte_meta_urgent_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.urgent_ns > hubbub1->watermarks.c.urgent_ns) {
 		hubbub1->watermarks.c.urgent_ns = watermarks->c.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->c.urgent_ns,
@@ -326,7 +253,7 @@ bool hubbub1_program_urgent_watermarks(
 	} else if (watermarks->c.pte_meta_urgent_ns < hubbub1->watermarks.c.pte_meta_urgent_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.urgent_ns > hubbub1->watermarks.d.urgent_ns) {
 		hubbub1->watermarks.d.urgent_ns = watermarks->d.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->d.urgent_ns,
@@ -364,7 +291,7 @@ bool hubbub1_program_stutter_watermarks(
 	uint32_t prog_wm_value;
 	bool wm_pending = false;
 
-	/* clock state A */
+	 
 	if (safe_to_lower || watermarks->a.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -397,7 +324,7 @@ bool hubbub1_program_stutter_watermarks(
 			< hubbub1->watermarks.a.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.b.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.b.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -430,7 +357,7 @@ bool hubbub1_program_stutter_watermarks(
 			< hubbub1->watermarks.b.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.c.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.c.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -463,7 +390,7 @@ bool hubbub1_program_stutter_watermarks(
 			< hubbub1->watermarks.c.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.d.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.d.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -509,7 +436,7 @@ bool hubbub1_program_pstate_watermarks(
 	uint32_t prog_wm_value;
 	bool wm_pending = false;
 
-	/* clock state A */
+	 
 	if (safe_to_lower || watermarks->a.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.a.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.a.cstate_pstate.pstate_change_ns =
@@ -526,7 +453,7 @@ bool hubbub1_program_pstate_watermarks(
 			< hubbub1->watermarks.a.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.b.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.b.cstate_pstate.pstate_change_ns =
@@ -543,7 +470,7 @@ bool hubbub1_program_pstate_watermarks(
 			< hubbub1->watermarks.b.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.c.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.c.cstate_pstate.pstate_change_ns =
@@ -560,7 +487,7 @@ bool hubbub1_program_pstate_watermarks(
 			< hubbub1->watermarks.c.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.d.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.d.cstate_pstate.pstate_change_ns =
@@ -588,10 +515,7 @@ bool hubbub1_program_watermarks(
 {
 	struct dcn10_hubbub *hubbub1 = TO_DCN10_HUBBUB(hubbub);
 	bool wm_pending = false;
-	/*
-	 * Need to clamp to max of the register values (i.e. no wrap)
-	 * for dcn1, all wm registers are 21-bit wide
-	 */
+	 
 	if (hubbub1_program_urgent_watermarks(hubbub, watermarks, refclk_mhz, safe_to_lower))
 		wm_pending = true;
 
@@ -624,13 +548,13 @@ void hubbub1_update_dchub(
 
 	if (REG(DCHUBBUB_SDPIF_FB_TOP) == 0) {
 		ASSERT(false);
-		/*should not come here*/
+		 
 		return;
 	}
-	/* TODO: port code from dal2 */
+	 
 	switch (dh_data->fb_mode) {
 	case FRAME_BUFFER_MODE_ZFB_ONLY:
-		/*For ZFB case need to put DCHUB FB BASE and TOP upside down to indicate ZFB mode*/
+		 
 		REG_UPDATE(DCHUBBUB_SDPIF_FB_TOP,
 				SDPIF_FB_TOP, 0);
 
@@ -648,7 +572,7 @@ void hubbub1_update_dchub(
 						dh_data->zfb_size_in_byte - 1) >> 22);
 		break;
 	case FRAME_BUFFER_MODE_MIXED_ZFB_AND_LOCAL:
-		/*Should not touch FB LOCATION (done by VBIOS on AsicInit table)*/
+		 
 
 		REG_UPDATE(DCHUBBUB_SDPIF_AGP_BASE,
 				SDPIF_AGP_BASE, dh_data->zfb_phys_addr_base >> 22);
@@ -661,7 +585,7 @@ void hubbub1_update_dchub(
 						dh_data->zfb_size_in_byte - 1) >> 22);
 		break;
 	case FRAME_BUFFER_MODE_LOCAL_ONLY:
-		/*Should not touch FB LOCATION (done by VBIOS on AsicInit table)*/
+		 
 		REG_UPDATE(DCHUBBUB_SDPIF_AGP_BASE,
 				SDPIF_AGP_BASE, 0);
 
@@ -770,7 +694,7 @@ static bool hubbub1_dcc_support_pixel_format(
 		enum surface_pixel_format format,
 		unsigned int *bytes_per_element)
 {
-	/* DML: get_bytes_per_element */
+	 
 	switch (format) {
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB1555:
 	case SURFACE_PIXEL_FORMAT_GRPH_RGB565:
@@ -796,8 +720,8 @@ static bool hubbub1_dcc_support_pixel_format(
 static void hubbub1_get_blk256_size(unsigned int *blk256_width, unsigned int *blk256_height,
 		unsigned int bytes_per_element)
 {
-	/* copied from DML.  might want to refactor DML to leverage from DML */
-	/* DML : get_blk256_size */
+	 
+	 
 	if (bytes_per_element == 1) {
 		*blk256_width = 16;
 		*blk256_height = 16;
@@ -820,7 +744,7 @@ static void hubbub1_det_request_size(
 		bool *req128_horz_wc,
 		bool *req128_vert_wc)
 {
-	unsigned int detile_buf_size = 164 * 1024;  /* 164KB for DCN1.0 */
+	unsigned int detile_buf_size = 164 * 1024;   
 
 	unsigned int blk256_height = 0;
 	unsigned int blk256_width = 0;
@@ -832,12 +756,12 @@ static void hubbub1_det_request_size(
 	swath_bytes_vert_wc = height * blk256_width * bpe;
 
 	*req128_horz_wc = (2 * swath_bytes_horz_wc <= detile_buf_size) ?
-			false : /* full 256B request */
-			true; /* half 128b request */
+			false :  
+			true;  
 
 	*req128_vert_wc = (2 * swath_bytes_vert_wc <= detile_buf_size) ?
-			false : /* full 256B request */
-			true; /* half 128b request */
+			false :  
+			true;  
 }
 
 static bool hubbub1_get_dcc_compression_cap(struct hubbub *hubbub,
@@ -847,7 +771,7 @@ static bool hubbub1_get_dcc_compression_cap(struct hubbub *hubbub,
 	struct dcn10_hubbub *hubbub1 = TO_DCN10_HUBBUB(hubbub);
 	struct dc *dc = hubbub1->base.ctx->dc;
 
-	/* implement section 1.6.2.1 of DCN1_Programming_Guide.docx */
+	 
 	enum dcc_control dcc_control;
 	unsigned int bpe;
 	enum segment_order segment_order_horz, segment_order_vert;
@@ -889,12 +813,10 @@ static bool hubbub1_get_dcc_compression_cap(struct hubbub *hubbub,
 			segment_order_horz == segment_order__non_contiguous) ||
 			(req128_vert_wc &&
 			segment_order_vert == segment_order__non_contiguous))
-			/* access_dir not known, must use most constraining */
+			 
 			dcc_control = dcc_control__256_64_64;
 		else
-			/* reg128 is true for either horz and vert
-			 * but segment_order is contiguous
-			 */
+			 
 			dcc_control = dcc_control__128_128_xxx;
 	}
 

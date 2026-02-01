@@ -1,32 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0+
-// ir-imon-decoder.c - handle iMon protocol
-//
-// Copyright (C) 2018 by Sean Young <sean@mess.org>
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
-#define IMON_UNIT		416 /* us */
+#define IMON_UNIT		416  
 #define IMON_BITS		30
 #define IMON_CHKBITS		(BIT(30) | BIT(25) | BIT(24) | BIT(22) | \
 				 BIT(21) | BIT(20) | BIT(19) | BIT(18) | \
 				 BIT(17) | BIT(16) | BIT(14) | BIT(13) | \
 				 BIT(12) | BIT(11) | BIT(10) | BIT(9))
 
-/*
- * This protocol has 30 bits. The format is one IMON_UNIT header pulse,
- * followed by 30 bits. Each bit is one IMON_UNIT check field, and then
- * one IMON_UNIT field with the actual bit (1=space, 0=pulse).
- * The check field is always space for some bits, for others it is pulse if
- * both the preceding and current bit are zero, else space. IMON_CHKBITS
- * defines which bits are of type check.
- *
- * There is no way to distinguish an incomplete message from one where
- * the lower bits are all set, iow. the last pulse is for the lowest
- * bit which is 0.
- */
+ 
 enum imon_state {
 	STATE_INACTIVE,
 	STATE_BIT_CHK,
@@ -39,7 +28,7 @@ static void ir_imon_decode_scancode(struct rc_dev *dev)
 {
 	struct imon_dec *imon = &dev->raw->imon;
 
-	/* Keyboard/Mouse toggle */
+	 
 	if (imon->bits == 0x299115b7)
 		imon->stick_keyboard = !imon->stick_keyboard;
 
@@ -61,12 +50,12 @@ static void ir_imon_decode_scancode(struct rc_dev *dev)
 		if (rel_x && rel_y && imon->stick_keyboard) {
 			if (abs(rel_y) > abs(rel_x))
 				imon->bits = rel_y > 0 ?
-					0x289515b7 : /* KEY_DOWN */
-					0x2aa515b7;  /* KEY_UP */
+					0x289515b7 :  
+					0x2aa515b7;   
 			else
 				imon->bits = rel_x > 0 ?
-					0x2ba515b7 : /* KEY_RIGHT */
-					0x29a515b7;  /* KEY_LEFT */
+					0x2ba515b7 :  
+					0x29a515b7;   
 		}
 
 		if (!imon->stick_keyboard) {
@@ -83,13 +72,7 @@ static void ir_imon_decode_scancode(struct rc_dev *dev)
 	rc_keydown(dev, RC_PROTO_IMON, imon->bits, 0);
 }
 
-/**
- * ir_imon_decode() - Decode one iMON pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:		the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_imon_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct imon_dec *data = &dev->raw->imon;
@@ -104,16 +87,7 @@ static int ir_imon_decode(struct rc_dev *dev, struct ir_raw_event ev)
 		"iMON decode started at state %d bitno %d (%uus %s)\n",
 		data->state, data->count, ev.duration, TO_STR(ev.pulse));
 
-	/*
-	 * Since iMON protocol is a series of bits, if at any point
-	 * we encounter an error, make sure that any remaining bits
-	 * aren't parsed as a scancode made up of less bits.
-	 *
-	 * Note that if the stick is held, then the remote repeats
-	 * the scancode with about 12ms between them. So, make sure
-	 * we have at least 10ms of space after an error. That way,
-	 * we're at a new scancode.
-	 */
+	 
 	if (data->state == STATE_ERROR) {
 		if (!ev.pulse && ev.duration > MS_TO_US(10))
 			data->state = STATE_INACTIVE;
@@ -175,18 +149,7 @@ err_out:
 	return -EINVAL;
 }
 
-/**
- * ir_imon_encode() - Encode a scancode as a stream of raw events
- *
- * @protocol:	protocol to encode
- * @scancode:	scancode to encode
- * @events:	array of raw ir events to write into
- * @max:	maximum size of @events
- *
- * Returns:	The number of events written.
- *		-ENOBUFS if there isn't enough space in the array to fit the
- *		encoding. In this case all @max events will have been written.
- */
+ 
 static int ir_imon_encode(enum rc_proto protocol, u32 scancode,
 			  struct ir_raw_event *events, unsigned int max)
 {

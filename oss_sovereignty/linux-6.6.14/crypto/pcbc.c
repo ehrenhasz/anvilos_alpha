@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PCBC: Propagating Cipher Block Chaining mode
- *
- * Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * Derived from cbc.c
- * - Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/cipher.h>

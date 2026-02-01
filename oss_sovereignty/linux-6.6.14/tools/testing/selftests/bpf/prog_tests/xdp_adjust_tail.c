@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
@@ -25,7 +25,7 @@ static void test_xdp_adjust_tail_shrink(void)
 	ASSERT_OK(err, "ipv4");
 	ASSERT_EQ(topts.retval, XDP_DROP, "ipv4 retval");
 
-	expect_sz = sizeof(pkt_v6) - 20;  /* Test shrink with 20 bytes */
+	expect_sz = sizeof(pkt_v6) - 20;   
 	topts.data_in = &pkt_v6;
 	topts.data_size_in = sizeof(pkt_v6);
 	topts.data_size_out = sizeof(buf);
@@ -41,7 +41,7 @@ static void test_xdp_adjust_tail_grow(void)
 {
 	const char *file = "./test_xdp_adjust_tail_grow.bpf.o";
 	struct bpf_object *obj;
-	char buf[4096]; /* avoid segfault: large buf to hold grow results */
+	char buf[4096];  
 	__u32 expect_sz;
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts,
@@ -60,7 +60,7 @@ static void test_xdp_adjust_tail_grow(void)
 	ASSERT_OK(err, "ipv4");
 	ASSERT_EQ(topts.retval, XDP_DROP, "ipv4 retval");
 
-	expect_sz = sizeof(pkt_v6) + 40; /* Test grow with 40 bytes */
+	expect_sz = sizeof(pkt_v6) + 40;  
 	topts.data_in = &pkt_v6;
 	topts.data_size_in = sizeof(pkt_v6);
 	topts.data_size_out = sizeof(buf);
@@ -75,11 +75,11 @@ static void test_xdp_adjust_tail_grow(void)
 static void test_xdp_adjust_tail_grow2(void)
 {
 	const char *file = "./test_xdp_adjust_tail_grow.bpf.o";
-	char buf[4096]; /* avoid segfault: large buf to hold grow results */
+	char buf[4096];  
 	struct bpf_object *obj;
 	int err, cnt, i;
 	int max_grow, prog_fd;
-	/* SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) */
+	 
 #if defined(__s390x__)
 	int tailroom = 512;
 #else
@@ -90,51 +90,51 @@ static void test_xdp_adjust_tail_grow2(void)
 		.repeat		= 1,
 		.data_in	= &buf,
 		.data_out	= &buf,
-		.data_size_in	= 0, /* Per test */
-		.data_size_out	= 0, /* Per test */
+		.data_size_in	= 0,  
+		.data_size_out	= 0,  
 	);
 
 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
 	if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
 		return;
 
-	/* Test case-64 */
+	 
 	memset(buf, 1, sizeof(buf));
-	tattr.data_size_in  =  64; /* Determine test case via pkt size */
-	tattr.data_size_out = 128; /* Limit copy_size */
-	/* Kernel side alloc packet memory area that is zero init */
+	tattr.data_size_in  =  64;  
+	tattr.data_size_out = 128;  
+	 
 	err = bpf_prog_test_run_opts(prog_fd, &tattr);
 
-	ASSERT_EQ(errno, ENOSPC, "case-64 errno"); /* Due limit copy_size in bpf_test_finish */
+	ASSERT_EQ(errno, ENOSPC, "case-64 errno");  
 	ASSERT_EQ(tattr.retval, XDP_TX, "case-64 retval");
-	ASSERT_EQ(tattr.data_size_out, 192, "case-64 data_size_out"); /* Expected grow size */
+	ASSERT_EQ(tattr.data_size_out, 192, "case-64 data_size_out");  
 
-	/* Extra checks for data contents */
-	ASSERT_EQ(buf[0], 1, "case-64-data buf[0]"); /*  0-63  memset to 1 */
+	 
+	ASSERT_EQ(buf[0], 1, "case-64-data buf[0]");  
 	ASSERT_EQ(buf[63], 1, "case-64-data buf[63]");
-	ASSERT_EQ(buf[64], 0, "case-64-data buf[64]"); /* 64-127 memset to 0 */
+	ASSERT_EQ(buf[64], 0, "case-64-data buf[64]");  
 	ASSERT_EQ(buf[127], 0, "case-64-data buf[127]");
-	ASSERT_EQ(buf[128], 1, "case-64-data buf[128]"); /* 128-191 memset to 1 */
+	ASSERT_EQ(buf[128], 1, "case-64-data buf[128]");  
 	ASSERT_EQ(buf[191], 1, "case-64-data buf[191]");
 
-	/* Test case-128 */
+	 
 	memset(buf, 2, sizeof(buf));
-	tattr.data_size_in  = 128; /* Determine test case via pkt size */
-	tattr.data_size_out = sizeof(buf);   /* Copy everything */
+	tattr.data_size_in  = 128;  
+	tattr.data_size_out = sizeof(buf);    
 	err = bpf_prog_test_run_opts(prog_fd, &tattr);
 
-	max_grow = 4096 - XDP_PACKET_HEADROOM -	tailroom; /* 3520 */
+	max_grow = 4096 - XDP_PACKET_HEADROOM -	tailroom;  
 	ASSERT_OK(err, "case-128");
 	ASSERT_EQ(tattr.retval, XDP_TX, "case-128 retval");
-	ASSERT_EQ(tattr.data_size_out, max_grow, "case-128 data_size_out"); /* Expect max grow */
+	ASSERT_EQ(tattr.data_size_out, max_grow, "case-128 data_size_out");  
 
-	/* Extra checks for data content: Count grow size, will contain zeros */
+	 
 	for (i = 0, cnt = 0; i < sizeof(buf); i++) {
 		if (buf[i] == 0)
 			cnt++;
 	}
-	ASSERT_EQ(cnt, max_grow - tattr.data_size_in, "case-128-data cnt"); /* Grow increase */
-	ASSERT_EQ(tattr.data_size_out, max_grow, "case-128-data data_size_out"); /* Total grow */
+	ASSERT_EQ(cnt, max_grow - tattr.data_size_in, "case-128-data cnt");  
+	ASSERT_EQ(tattr.data_size_out, max_grow, "case-128-data data_size_out");  
 
 	bpf_object__close(obj);
 }
@@ -149,9 +149,7 @@ static void test_xdp_adjust_frags_tail_shrink(void)
 	__u8 *buf;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* For the individual test cases, the first byte in the packet
-	 * indicates which test will be run.
-	 */
+	 
 	obj = bpf_object__open(file);
 	if (libbpf_get_error(obj))
 		return;
@@ -168,8 +166,8 @@ static void test_xdp_adjust_frags_tail_shrink(void)
 
 	memset(buf, 0, 9000);
 
-	/* Test case removing 10 bytes from last frag, NOT freeing it */
-	exp_size = 8990; /* 9000 - 10 */
+	 
+	exp_size = 8990;  
 	topts.data_in = buf;
 	topts.data_out = buf;
 	topts.data_size_in = 9000;
@@ -180,21 +178,21 @@ static void test_xdp_adjust_frags_tail_shrink(void)
 	ASSERT_EQ(topts.retval, XDP_TX, "9Kb-10b retval");
 	ASSERT_EQ(topts.data_size_out, exp_size, "9Kb-10b size");
 
-	/* Test case removing one of two pages, assuming 4K pages */
+	 
 	buf[0] = 1;
-	exp_size = 4900; /* 9000 - 4100 */
+	exp_size = 4900;  
 
-	topts.data_size_out = 9000; /* reset from previous invocation */
+	topts.data_size_out = 9000;  
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 
 	ASSERT_OK(err, "9Kb-4Kb");
 	ASSERT_EQ(topts.retval, XDP_TX, "9Kb-4Kb retval");
 	ASSERT_EQ(topts.data_size_out, exp_size, "9Kb-4Kb size");
 
-	/* Test case removing two pages resulting in a linear xdp_buff */
+	 
 	buf[0] = 2;
-	exp_size = 800; /* 9000 - 8200 */
-	topts.data_size_out = 9000; /* reset from previous invocation */
+	exp_size = 800;  
+	topts.data_size_out = 9000;  
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 
 	ASSERT_OK(err, "9Kb-9Kb");
@@ -230,7 +228,7 @@ static void test_xdp_adjust_frags_tail_grow(void)
 	if (!ASSERT_OK_PTR(buf, "alloc buf 16Kb"))
 		goto out;
 
-	/* Test case add 10 bytes to last frag */
+	 
 	memset(buf, 1, 16384);
 	exp_size = 9000 + 10;
 
@@ -253,7 +251,7 @@ static void test_xdp_adjust_frags_tail_grow(void)
 	for (i = 9010; i < 16384; i++)
 		ASSERT_EQ(buf[i], 1, "9Kb+10b-untouched");
 
-	/* Test a too large grow */
+	 
 	memset(buf, 1, 16384);
 	exp_size = 9001;
 

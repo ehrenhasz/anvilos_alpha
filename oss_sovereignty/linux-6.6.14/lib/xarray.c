@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * XArray implementation
- * Copyright (c) 2017-2018 Microsoft Corporation
- * Copyright (c) 2018-2020 Oracle
- * Author: Matthew Wilcox <willy@infradead.org>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/export.h>
@@ -14,21 +9,7 @@
 
 #include "radix-tree.h"
 
-/*
- * Coding conventions in this file:
- *
- * @xa is used to refer to the entire xarray.
- * @xas is the 'xarray operation state'.  It may be either a pointer to
- * an xa_state, or an xa_state stored on the stack.  This is an unfortunate
- * ambiguity.
- * @index is the index of the entry being operated on
- * @mark is an xa_mark_t; a small number indicating one of the mark bits.
- * @node refers to an xa_node; usually the primary one being operated on by
- * this function.
- * @offset is the index into the slots array inside an xa_node.
- * @parent refers to the @xa_node closer to the head than @node.
- * @entry refers to something stored in a slot in the xarray
- */
+ 
 
 static inline unsigned int xa_lock_type(const struct xarray *xa)
 {
@@ -88,14 +69,14 @@ static inline bool node_get_mark(struct xa_node *node,
 	return test_bit(offset, node_marks(node, mark));
 }
 
-/* returns true if the bit was set */
+ 
 static inline bool node_set_mark(struct xa_node *node, unsigned int offset,
 				xa_mark_t mark)
 {
 	return __test_and_set_bit(offset, node_marks(node, mark));
 }
 
-/* returns true if the bit was set */
+ 
 static inline bool node_clear_mark(struct xa_node *node, unsigned int offset,
 				xa_mark_t mark)
 {
@@ -116,13 +97,7 @@ static inline void node_mark_all(struct xa_node *node, xa_mark_t mark)
 	mark = (__force xa_mark_t)((__force unsigned)(mark) + 1); \
 } while (0)
 
-/*
- * xas_squash_marks() - Merge all marks to the first entry
- * @xas: Array operation state.
- *
- * Set a mark on the first entry if any entry has it set.  Clear marks on
- * all sibling entries.
- */
+ 
 static void xas_squash_marks(const struct xa_state *xas)
 {
 	unsigned int mark = 0;
@@ -140,7 +115,7 @@ static void xas_squash_marks(const struct xa_state *xas)
 	} while (mark++ != (__force unsigned)XA_MARK_MAX);
 }
 
-/* extracts the offset within this node from the index */
+ 
 static unsigned int get_offset(unsigned long index, struct xa_node *node)
 {
 	return (index >> node->shift) & XA_CHUNK_MASK;
@@ -151,7 +126,7 @@ static void xas_set_offset(struct xa_state *xas)
 	xas->xa_offset = get_offset(xas->xa_index, xas->xa_node);
 }
 
-/* move the index either forwards (find) or backwards (sibling slot) */
+ 
 static void xas_move_index(struct xa_state *xas, unsigned long offset)
 {
 	unsigned int shift = xas->xa_node->shift;
@@ -171,13 +146,7 @@ static void *set_bounds(struct xa_state *xas)
 	return NULL;
 }
 
-/*
- * Starts a walk.  If the @xas is already valid, we assume that it's on
- * the right path and just return where we've got to.  If we're in an
- * error state, return NULL.  If the index is outside the current scope
- * of the xarray, return NULL without changing @xas->xa_node.  Otherwise
- * set @xas->xa_node to NULL and return the current head of the array.
- */
+ 
 static void *xas_start(struct xa_state *xas)
 {
 	void *entry;
@@ -217,21 +186,7 @@ static void *xas_descend(struct xa_state *xas, struct xa_node *node)
 	return entry;
 }
 
-/**
- * xas_load() - Load an entry from the XArray (advanced).
- * @xas: XArray operation state.
- *
- * Usually walks the @xas to the appropriate state to load the entry
- * stored at xa_index.  However, it will do nothing and return %NULL if
- * @xas is in an error state.  xas_load() will never expand the tree.
- *
- * If the xa_state is set up to operate on a multi-index entry, xas_load()
- * may return %NULL or an internal entry, even if there are entries
- * present within the range specified by @xas.
- *
- * Context: Any context.  The caller should hold the xa_lock or the RCU lock.
- * Return: Usually an entry in the XArray, but see description for exceptions.
- */
+ 
 void *xas_load(struct xa_state *xas)
 {
 	void *entry = xas_start(xas);
@@ -258,13 +213,7 @@ static void xa_node_free(struct xa_node *node)
 	call_rcu(&node->rcu_head, radix_tree_node_rcu_free);
 }
 
-/*
- * xas_destroy() - Free any resources allocated during the XArray operation.
- * @xas: XArray operation state.
- *
- * Most users will not need to call this function; it is called for you
- * by xas_nomem().
- */
+ 
 void xas_destroy(struct xa_state *xas)
 {
 	struct xa_node *next, *node = xas->xa_alloc;
@@ -277,24 +226,7 @@ void xas_destroy(struct xa_state *xas)
 	}
 }
 
-/**
- * xas_nomem() - Allocate memory if needed.
- * @xas: XArray operation state.
- * @gfp: Memory allocation flags.
- *
- * If we need to add new nodes to the XArray, we try to allocate memory
- * with GFP_NOWAIT while holding the lock, which will usually succeed.
- * If it fails, @xas is flagged as needing memory to continue.  The caller
- * should drop the lock and call xas_nomem().  If xas_nomem() succeeds,
- * the caller should retry the operation.
- *
- * Forward progress is guaranteed as one node is allocated here and
- * stored in the xa_state where it will be found by xas_alloc().  More
- * nodes will likely be found in the slab allocator, but we do not tie
- * them up here.
- *
- * Return: true if memory was needed, and was successfully allocated.
- */
+ 
 bool xas_nomem(struct xa_state *xas, gfp_t gfp)
 {
 	if (xas->xa_node != XA_ERROR(-ENOMEM)) {
@@ -313,15 +245,7 @@ bool xas_nomem(struct xa_state *xas, gfp_t gfp)
 }
 EXPORT_SYMBOL_GPL(xas_nomem);
 
-/*
- * __xas_nomem() - Drop locks and allocate memory if needed.
- * @xas: XArray operation state.
- * @gfp: Memory allocation flags.
- *
- * Internal variant of xas_nomem().
- *
- * Return: true if memory was needed, and was successfully allocated.
- */
+ 
 static bool __xas_nomem(struct xa_state *xas, gfp_t gfp)
 	__must_hold(xas->xa->xa_lock)
 {
@@ -397,19 +321,14 @@ static void *xas_alloc(struct xa_state *xas, unsigned int shift)
 }
 
 #ifdef CONFIG_XARRAY_MULTI
-/* Returns the number of indices covered by a given xa_state */
+ 
 static unsigned long xas_size(const struct xa_state *xas)
 {
 	return (xas->xa_sibs + 1UL) << xas->xa_shift;
 }
 #endif
 
-/*
- * Use this to calculate the maximum index that will need to be created
- * in order to add the entry described by @xas.  Because we cannot store a
- * multi-index entry at index 0, the calculation is a little more complex
- * than you might expect.
- */
+ 
 static unsigned long xas_max(struct xa_state *xas)
 {
 	unsigned long max = xas->xa_index;
@@ -426,7 +345,7 @@ static unsigned long xas_max(struct xa_state *xas)
 	return max;
 }
 
-/* The maximum index that can be contained in the array without expanding it */
+ 
 static unsigned long max_index(void *entry)
 {
 	if (!xa_is_node(entry))
@@ -471,13 +390,7 @@ static void xas_shrink(struct xa_state *xas)
 	}
 }
 
-/*
- * xas_delete_node() - Attempt to delete an xa_node
- * @xas: Array operation state.
- *
- * Attempts to delete the @xas->xa_node.  This will fail if xa->node has
- * a non-zero reference count.
- */
+ 
 static void xas_delete_node(struct xa_state *xas)
 {
 	struct xa_node *node = xas->xa_node;
@@ -511,15 +424,7 @@ static void xas_delete_node(struct xa_state *xas)
 		xas_shrink(xas);
 }
 
-/**
- * xas_free_nodes() - Free this node and all nodes that it references
- * @xas: Array operation state.
- * @top: Node to free
- *
- * This node has been removed from the tree.  We must now free it and all
- * of its subnodes.  There may be RCU walkers with references into the tree,
- * so we must replace all entries with retry markers.
- */
+ 
 static void xas_free_nodes(struct xa_state *xas, struct xa_node *top)
 {
 	unsigned int offset = 0;
@@ -552,10 +457,7 @@ static void xas_free_nodes(struct xa_state *xas, struct xa_node *top)
 	}
 }
 
-/*
- * xas_expand adds nodes to the head of the tree until it has reached
- * sufficient height to be able to contain @xas->xa_index
- */
+ 
 static int xas_expand(struct xa_state *xas, void *head)
 {
 	struct xarray *xa = xas->xa;
@@ -588,7 +490,7 @@ static int xas_expand(struct xa_state *xas, void *head)
 			node->nr_values = 1;
 		RCU_INIT_POINTER(node->slots[0], head);
 
-		/* Propagate the aggregated mark info to the new child */
+		 
 		for (;;) {
 			if (xa_track_free(xa) && mark == XA_FREE_MARK) {
 				node_mark_all(node, XA_FREE_MARK);
@@ -604,10 +506,7 @@ static int xas_expand(struct xa_state *xas, void *head)
 			mark_inc(mark);
 		}
 
-		/*
-		 * Now that the new node is fully initialised, we can add
-		 * it to the tree
-		 */
+		 
 		if (xa_is_node(head)) {
 			xa_to_node(head)->offset = 0;
 			rcu_assign_pointer(xa_to_node(head)->parent, node);
@@ -623,19 +522,7 @@ static int xas_expand(struct xa_state *xas, void *head)
 	return shift;
 }
 
-/*
- * xas_create() - Create a slot to store an entry in.
- * @xas: XArray operation state.
- * @allow_root: %true if we can store the entry in the root directly
- *
- * Most users will not need to call this function directly, as it is called
- * by xas_store().  It is useful for doing conditional store operations
- * (see the xa_cmpxchg() implementation for an example).
- *
- * Return: If the slot already existed, returns the contents of this slot.
- * If the slot was newly created, returns %NULL.  If it failed to create the
- * slot, returns %NULL and indicates the error in @xas.
- */
+ 
 static void *xas_create(struct xa_state *xas, bool allow_root)
 {
 	struct xarray *xa = xas->xa;
@@ -692,15 +579,7 @@ static void *xas_create(struct xa_state *xas, bool allow_root)
 	return entry;
 }
 
-/**
- * xas_create_range() - Ensure that stores to this range will succeed
- * @xas: XArray operation state.
- *
- * Creates all of the slots in the range covered by @xas.  Sets @xas to
- * create single-index entries and positions it at the beginning of the
- * range.  This is for the benefit of users which have not yet been
- * converted to use multi-index entries.
- */
+ 
 void xas_create_range(struct xa_state *xas)
 {
 	unsigned long index = xas->xa_index;
@@ -759,19 +638,7 @@ static void update_node(struct xa_state *xas, struct xa_node *node,
 		xas_delete_node(xas);
 }
 
-/**
- * xas_store() - Store this entry in the XArray.
- * @xas: XArray operation state.
- * @entry: New entry.
- *
- * If @xas is operating on a multi-index entry, the entry returned by this
- * function is essentially meaningless (it may be an internal entry or it
- * may be %NULL, even if there are non-NULL entries at some of the indices
- * covered by the range).  This is not a problem for any current users,
- * and can be changed if needed.
- *
- * Return: The old entry at this index.
- */
+ 
 void *xas_store(struct xa_state *xas, void *entry)
 {
 	struct xa_node *node;
@@ -809,13 +676,7 @@ void *xas_store(struct xa_state *xas, void *entry)
 		xas_init_marks(xas);
 
 	for (;;) {
-		/*
-		 * Must clear the marks before setting the entry to NULL,
-		 * otherwise xas_for_each_marked may find a NULL entry and
-		 * stop early.  rcu_assign_pointer contains a release barrier
-		 * so the mark clearing will appear to happen before the
-		 * entry is set to NULL.
-		 */
+		 
 		rcu_assign_pointer(*slot, entry);
 		if (xa_is_node(next) && (!node || node->shift))
 			xas_free_nodes(xas, xa_to_node(next));
@@ -846,14 +707,7 @@ void *xas_store(struct xa_state *xas, void *entry)
 }
 EXPORT_SYMBOL_GPL(xas_store);
 
-/**
- * xas_get_mark() - Returns the state of this mark.
- * @xas: XArray operation state.
- * @mark: Mark number.
- *
- * Return: true if the mark is set, false if the mark is clear or @xas
- * is in an error state.
- */
+ 
 bool xas_get_mark(const struct xa_state *xas, xa_mark_t mark)
 {
 	if (xas_invalid(xas))
@@ -864,15 +718,7 @@ bool xas_get_mark(const struct xa_state *xas, xa_mark_t mark)
 }
 EXPORT_SYMBOL_GPL(xas_get_mark);
 
-/**
- * xas_set_mark() - Sets the mark on this entry and its parents.
- * @xas: XArray operation state.
- * @mark: Mark number.
- *
- * Sets the specified mark on this entry, and walks up the tree setting it
- * on all the ancestor entries.  Does nothing if @xas has not been walked to
- * an entry, or is in an error state.
- */
+ 
 void xas_set_mark(const struct xa_state *xas, xa_mark_t mark)
 {
 	struct xa_node *node = xas->xa_node;
@@ -893,15 +739,7 @@ void xas_set_mark(const struct xa_state *xas, xa_mark_t mark)
 }
 EXPORT_SYMBOL_GPL(xas_set_mark);
 
-/**
- * xas_clear_mark() - Clears the mark on this entry and its parents.
- * @xas: XArray operation state.
- * @mark: Mark number.
- *
- * Clears the specified mark on this entry, and walks back to the head
- * attempting to clear it on all the ancestor entries.  Does nothing if
- * @xas has not been walked to an entry, or is in an error state.
- */
+ 
 void xas_clear_mark(const struct xa_state *xas, xa_mark_t mark)
 {
 	struct xa_node *node = xas->xa_node;
@@ -925,17 +763,7 @@ void xas_clear_mark(const struct xa_state *xas, xa_mark_t mark)
 }
 EXPORT_SYMBOL_GPL(xas_clear_mark);
 
-/**
- * xas_init_marks() - Initialise all marks for the entry
- * @xas: Array operations state.
- *
- * Initialise all marks for the entry specified by @xas.  If we're tracking
- * free entries with a mark, we need to set it on all entries.  All other
- * marks are cleared.
- *
- * This implementation is not as efficient as it could be; we may walk
- * up the tree multiple times.
- */
+ 
 void xas_init_marks(const struct xa_state *xas)
 {
 	xa_mark_t mark = 0;
@@ -986,27 +814,14 @@ static void node_set_marks(struct xa_node *node, unsigned int offset,
 	}
 }
 
-/**
- * xas_split_alloc() - Allocate memory for splitting an entry.
- * @xas: XArray operation state.
- * @entry: New entry which will be stored in the array.
- * @order: Current entry order.
- * @gfp: Memory allocation flags.
- *
- * This function should be called before calling xas_split().
- * If necessary, it will allocate new nodes (and fill them with @entry)
- * to prepare for the upcoming split of an entry of @order size into
- * entries of the order stored in the @xas.
- *
- * Context: May sleep if @gfp flags permit.
- */
+ 
 void xas_split_alloc(struct xa_state *xas, void *entry, unsigned int order,
 		gfp_t gfp)
 {
 	unsigned int sibs = (1 << (order % XA_CHUNK_SHIFT)) - 1;
 	unsigned int mask = xas->xa_sibs;
 
-	/* XXX: no support for splitting really large entries yet */
+	 
 	if (WARN_ON(xas->xa_shift + 2 * XA_CHUNK_SHIFT < order))
 		goto nomem;
 	if (xas->xa_shift + XA_CHUNK_SHIFT > order)
@@ -1040,17 +855,7 @@ nomem:
 }
 EXPORT_SYMBOL_GPL(xas_split_alloc);
 
-/**
- * xas_split() - Split a multi-index entry into smaller entries.
- * @xas: XArray operation state.
- * @entry: New entry to store in the array.
- * @order: Current entry order.
- *
- * The size of the new entries is set in @xas.  The value in @entry is
- * copied to all the replacement entries.
- *
- * Context: Any context.  The caller should hold the xa_lock.
- */
+ 
 void xas_split(struct xa_state *xas, void *entry, unsigned int order)
 {
 	unsigned int sibs = (1 << (order % XA_CHUNK_SHIFT)) - 1;
@@ -1102,21 +907,7 @@ void xas_split(struct xa_state *xas, void *entry, unsigned int order)
 EXPORT_SYMBOL_GPL(xas_split);
 #endif
 
-/**
- * xas_pause() - Pause a walk to drop a lock.
- * @xas: XArray operation state.
- *
- * Some users need to pause a walk and drop the lock they're holding in
- * order to yield to a higher priority thread or carry out an operation
- * on an entry.  Those users should call this function before they drop
- * the lock.  It resets the @xas to be suitable for the next iteration
- * of the loop after the user has reacquired the lock.  If most entries
- * found during a walk require you to call xas_pause(), the xa_for_each()
- * iterator may be more appropriate.
- *
- * Note that xas_pause() only works for forward iteration.  If a user needs
- * to pause a reverse iteration, we will need a xas_pause_rev().
- */
+ 
 void xas_pause(struct xa_state *xas)
 {
 	struct xa_node *node = xas->xa_node;
@@ -1140,13 +931,7 @@ void xas_pause(struct xa_state *xas)
 }
 EXPORT_SYMBOL_GPL(xas_pause);
 
-/*
- * __xas_prev() - Find the previous entry in the XArray.
- * @xas: XArray operation state.
- *
- * Helper function for xas_prev() which handles all the complex cases
- * out of line.
- */
+ 
 void *__xas_prev(struct xa_state *xas)
 {
 	void *entry;
@@ -1179,13 +964,7 @@ void *__xas_prev(struct xa_state *xas)
 }
 EXPORT_SYMBOL_GPL(__xas_prev);
 
-/*
- * __xas_next() - Find the next entry in the XArray.
- * @xas: XArray operation state.
- *
- * Helper function for xas_next() which handles all the complex cases
- * out of line.
- */
+ 
 void *__xas_next(struct xa_state *xas)
 {
 	void *entry;
@@ -1218,22 +997,7 @@ void *__xas_next(struct xa_state *xas)
 }
 EXPORT_SYMBOL_GPL(__xas_next);
 
-/**
- * xas_find() - Find the next present entry in the XArray.
- * @xas: XArray operation state.
- * @max: Highest index to return.
- *
- * If the @xas has not yet been walked to an entry, return the entry
- * which has an index >= xas.xa_index.  If it has been walked, the entry
- * currently being pointed at has been processed, and so we move to the
- * next entry.
- *
- * If no entry is found and the array is smaller than @max, the iterator
- * is set to the smallest index not yet in the array.  This allows @xas
- * to be immediately passed to xas_store().
- *
- * Return: The entry, if found, otherwise %NULL.
- */
+ 
 void *xas_find(struct xa_state *xas, unsigned long max)
 {
 	void *entry;
@@ -1282,27 +1046,7 @@ void *xas_find(struct xa_state *xas, unsigned long max)
 }
 EXPORT_SYMBOL_GPL(xas_find);
 
-/**
- * xas_find_marked() - Find the next marked entry in the XArray.
- * @xas: XArray operation state.
- * @max: Highest index to return.
- * @mark: Mark number to search for.
- *
- * If the @xas has not yet been walked to an entry, return the marked entry
- * which has an index >= xas.xa_index.  If it has been walked, the entry
- * currently being pointed at has been processed, and so we return the
- * first marked entry with an index > xas.xa_index.
- *
- * If no marked entry is found and the array is smaller than @max, @xas is
- * set to the bounds state and xas->xa_index is set to the smallest index
- * not yet in the array.  This allows @xas to be immediately passed to
- * xas_store().
- *
- * If no entry is found before @max is reached, @xas is set to the restart
- * state.
- *
- * Return: The entry, if found, otherwise %NULL.
- */
+ 
 void *xas_find_marked(struct xa_state *xas, unsigned long max, xa_mark_t mark)
 {
 	bool advance = true;
@@ -1355,7 +1099,7 @@ void *xas_find_marked(struct xa_state *xas, unsigned long max, xa_mark_t mark)
 		if (offset > xas->xa_offset) {
 			advance = false;
 			xas_move_index(xas, offset);
-			/* Mind the wrap */
+			 
 			if ((xas->xa_index - 1) >= max)
 				goto max;
 			xas->xa_offset = offset;
@@ -1382,15 +1126,7 @@ max:
 }
 EXPORT_SYMBOL_GPL(xas_find_marked);
 
-/**
- * xas_find_conflict() - Find the next present entry in a range.
- * @xas: XArray operation state.
- *
- * The @xas describes both a range and a position within that range.
- *
- * Context: Any context.  Expects xa_lock to be held.
- * Return: The next entry in the range covered by @xas or %NULL.
- */
+ 
 void *xas_find_conflict(struct xa_state *xas)
 {
 	void *curr;
@@ -1443,14 +1179,7 @@ void *xas_find_conflict(struct xa_state *xas)
 }
 EXPORT_SYMBOL_GPL(xas_find_conflict);
 
-/**
- * xa_load() - Load an entry from an XArray.
- * @xa: XArray.
- * @index: index into array.
- *
- * Context: Any context.  Takes and releases the RCU lock.
- * Return: The entry at @index in @xa.
- */
+ 
 void *xa_load(struct xarray *xa, unsigned long index)
 {
 	XA_STATE(xas, xa, index);
@@ -1477,18 +1206,7 @@ static void *xas_result(struct xa_state *xas, void *curr)
 	return curr;
 }
 
-/**
- * __xa_erase() - Erase this entry from the XArray while locked.
- * @xa: XArray.
- * @index: Index into array.
- *
- * After this function returns, loading from @index will return %NULL.
- * If the index is part of a multi-index entry, all indices will be erased
- * and none of the entries will be part of a multi-index entry.
- *
- * Context: Any context.  Expects xa_lock to be held on entry.
- * Return: The entry which used to be at this index.
- */
+ 
 void *__xa_erase(struct xarray *xa, unsigned long index)
 {
 	XA_STATE(xas, xa, index);
@@ -1496,18 +1214,7 @@ void *__xa_erase(struct xarray *xa, unsigned long index)
 }
 EXPORT_SYMBOL(__xa_erase);
 
-/**
- * xa_erase() - Erase this entry from the XArray.
- * @xa: XArray.
- * @index: Index of entry.
- *
- * After this function returns, loading from @index will return %NULL.
- * If the index is part of a multi-index entry, all indices will be erased
- * and none of the entries will be part of a multi-index entry.
- *
- * Context: Any context.  Takes and releases the xa_lock.
- * Return: The entry which used to be at this index.
- */
+ 
 void *xa_erase(struct xarray *xa, unsigned long index)
 {
 	void *entry;
@@ -1520,21 +1227,7 @@ void *xa_erase(struct xarray *xa, unsigned long index)
 }
 EXPORT_SYMBOL(xa_erase);
 
-/**
- * __xa_store() - Store this entry in the XArray.
- * @xa: XArray.
- * @index: Index into array.
- * @entry: New entry.
- * @gfp: Memory allocation flags.
- *
- * You must already be holding the xa_lock when calling this function.
- * It will drop the lock if needed to allocate memory, and then reacquire
- * it afterwards.
- *
- * Context: Any context.  Expects xa_lock to be held on entry.  May
- * release and reacquire xa_lock if @gfp flags permit.
- * Return: The old entry at this index or xa_err() if an error happened.
- */
+ 
 void *__xa_store(struct xarray *xa, unsigned long index, void *entry, gfp_t gfp)
 {
 	XA_STATE(xas, xa, index);
@@ -1555,23 +1248,7 @@ void *__xa_store(struct xarray *xa, unsigned long index, void *entry, gfp_t gfp)
 }
 EXPORT_SYMBOL(__xa_store);
 
-/**
- * xa_store() - Store this entry in the XArray.
- * @xa: XArray.
- * @index: Index into array.
- * @entry: New entry.
- * @gfp: Memory allocation flags.
- *
- * After this function returns, loads from this index will return @entry.
- * Storing into an existing multi-index entry updates the entry of every index.
- * The marks associated with @index are unaffected unless @entry is %NULL.
- *
- * Context: Any context.  Takes and releases the xa_lock.
- * May sleep if the @gfp flags permit.
- * Return: The old entry at this index on success, xa_err(-EINVAL) if @entry
- * cannot be stored in an XArray, or xa_err(-ENOMEM) if memory allocation
- * failed.
- */
+ 
 void *xa_store(struct xarray *xa, unsigned long index, void *entry, gfp_t gfp)
 {
 	void *curr;
@@ -1584,22 +1261,7 @@ void *xa_store(struct xarray *xa, unsigned long index, void *entry, gfp_t gfp)
 }
 EXPORT_SYMBOL(xa_store);
 
-/**
- * __xa_cmpxchg() - Store this entry in the XArray.
- * @xa: XArray.
- * @index: Index into array.
- * @old: Old value to test against.
- * @entry: New entry.
- * @gfp: Memory allocation flags.
- *
- * You must already be holding the xa_lock when calling this function.
- * It will drop the lock if needed to allocate memory, and then reacquire
- * it afterwards.
- *
- * Context: Any context.  Expects xa_lock to be held on entry.  May
- * release and reacquire xa_lock if @gfp flags permit.
- * Return: The old entry at this index or xa_err() if an error happened.
- */
+ 
 void *__xa_cmpxchg(struct xarray *xa, unsigned long index,
 			void *old, void *entry, gfp_t gfp)
 {
@@ -1622,22 +1284,7 @@ void *__xa_cmpxchg(struct xarray *xa, unsigned long index,
 }
 EXPORT_SYMBOL(__xa_cmpxchg);
 
-/**
- * __xa_insert() - Store this entry in the XArray if no entry is present.
- * @xa: XArray.
- * @index: Index into array.
- * @entry: New entry.
- * @gfp: Memory allocation flags.
- *
- * Inserting a NULL entry will store a reserved entry (like xa_reserve())
- * if no entry is present.  Inserting will fail if a reserved entry is
- * present, even though loading from this index will return NULL.
- *
- * Context: Any context.  Expects xa_lock to be held on entry.  May
- * release and reacquire xa_lock if @gfp flags permit.
- * Return: 0 if the store succeeded.  -EBUSY if another entry was present.
- * -ENOMEM if memory could not be allocated.
- */
+ 
 int __xa_insert(struct xarray *xa, unsigned long index, void *entry, gfp_t gfp)
 {
 	XA_STATE(xas, xa, index);
@@ -1695,24 +1342,7 @@ static void xas_set_range(struct xa_state *xas, unsigned long first,
 	xas->xa_sibs = sibs;
 }
 
-/**
- * xa_store_range() - Store this entry at a range of indices in the XArray.
- * @xa: XArray.
- * @first: First index to affect.
- * @last: Last index to affect.
- * @entry: New entry.
- * @gfp: Memory allocation flags.
- *
- * After this function returns, loads from any index between @first and @last,
- * inclusive will return @entry.
- * Storing into an existing multi-index entry updates the entry of every index.
- * The marks associated with @index are unaffected unless @entry is %NULL.
- *
- * Context: Process context.  Takes and releases the xa_lock.  May sleep
- * if the @gfp flags permit.
- * Return: %NULL on success, xa_err(-EINVAL) if @entry cannot be stored in
- * an XArray, or xa_err(-ENOMEM) if memory allocation failed.
- */
+ 
 void *xa_store_range(struct xarray *xa, unsigned long first,
 		unsigned long last, void *entry, gfp_t gfp)
 {
@@ -1749,13 +1379,7 @@ unlock:
 }
 EXPORT_SYMBOL(xa_store_range);
 
-/**
- * xa_get_order() - Get the order of an entry.
- * @xa: XArray.
- * @index: Index of the entry.
- *
- * Return: A number between 0 and 63 indicating the order of the entry.
- */
+ 
 int xa_get_order(struct xarray *xa, unsigned long index)
 {
 	XA_STATE(xas, xa, index);
@@ -1788,28 +1412,9 @@ unlock:
 	return order;
 }
 EXPORT_SYMBOL(xa_get_order);
-#endif /* CONFIG_XARRAY_MULTI */
+#endif  
 
-/**
- * __xa_alloc() - Find somewhere to store this entry in the XArray.
- * @xa: XArray.
- * @id: Pointer to ID.
- * @limit: Range for allocated ID.
- * @entry: New entry.
- * @gfp: Memory allocation flags.
- *
- * Finds an empty entry in @xa between @limit.min and @limit.max,
- * stores the index into the @id pointer, then stores the entry at
- * that index.  A concurrent lookup will not see an uninitialised @id.
- *
- * Must only be operated on an xarray initialized with flag XA_FLAGS_ALLOC set
- * in xa_init_flags().
- *
- * Context: Any context.  Expects xa_lock to be held on entry.  May
- * release and reacquire xa_lock if @gfp flags permit.
- * Return: 0 on success, -ENOMEM if memory could not be allocated or
- * -EBUSY if there are no free entries in @limit.
- */
+ 
 int __xa_alloc(struct xarray *xa, u32 *id, void *entry,
 		struct xa_limit limit, gfp_t gfp)
 {
@@ -1838,30 +1443,7 @@ int __xa_alloc(struct xarray *xa, u32 *id, void *entry,
 }
 EXPORT_SYMBOL(__xa_alloc);
 
-/**
- * __xa_alloc_cyclic() - Find somewhere to store this entry in the XArray.
- * @xa: XArray.
- * @id: Pointer to ID.
- * @entry: New entry.
- * @limit: Range of allocated ID.
- * @next: Pointer to next ID to allocate.
- * @gfp: Memory allocation flags.
- *
- * Finds an empty entry in @xa between @limit.min and @limit.max,
- * stores the index into the @id pointer, then stores the entry at
- * that index.  A concurrent lookup will not see an uninitialised @id.
- * The search for an empty entry will start at @next and will wrap
- * around if necessary.
- *
- * Must only be operated on an xarray initialized with flag XA_FLAGS_ALLOC set
- * in xa_init_flags().
- *
- * Context: Any context.  Expects xa_lock to be held on entry.  May
- * release and reacquire xa_lock if @gfp flags permit.
- * Return: 0 if the allocation succeeded without wrapping.  1 if the
- * allocation succeeded after wrapping, -ENOMEM if memory could not be
- * allocated or -EBUSY if there are no free entries in @limit.
- */
+ 
 int __xa_alloc_cyclic(struct xarray *xa, u32 *id, void *entry,
 		struct xa_limit limit, u32 *next, gfp_t gfp)
 {
@@ -1891,16 +1473,7 @@ int __xa_alloc_cyclic(struct xarray *xa, u32 *id, void *entry,
 }
 EXPORT_SYMBOL(__xa_alloc_cyclic);
 
-/**
- * __xa_set_mark() - Set this mark on this entry while locked.
- * @xa: XArray.
- * @index: Index of entry.
- * @mark: Mark number.
- *
- * Attempting to set a mark on a %NULL entry does not succeed.
- *
- * Context: Any context.  Expects xa_lock to be held on entry.
- */
+ 
 void __xa_set_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 {
 	XA_STATE(xas, xa, index);
@@ -1911,14 +1484,7 @@ void __xa_set_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 }
 EXPORT_SYMBOL(__xa_set_mark);
 
-/**
- * __xa_clear_mark() - Clear this mark on this entry while locked.
- * @xa: XArray.
- * @index: Index of entry.
- * @mark: Mark number.
- *
- * Context: Any context.  Expects xa_lock to be held on entry.
- */
+ 
 void __xa_clear_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 {
 	XA_STATE(xas, xa, index);
@@ -1929,18 +1495,7 @@ void __xa_clear_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 }
 EXPORT_SYMBOL(__xa_clear_mark);
 
-/**
- * xa_get_mark() - Inquire whether this mark is set on this entry.
- * @xa: XArray.
- * @index: Index of entry.
- * @mark: Mark number.
- *
- * This function uses the RCU read lock, so the result may be out of date
- * by the time it returns.  If you need the result to be stable, use a lock.
- *
- * Context: Any context.  Takes and releases the RCU lock.
- * Return: True if the entry at @index has this mark set, false if it doesn't.
- */
+ 
 bool xa_get_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 {
 	XA_STATE(xas, xa, index);
@@ -1961,16 +1516,7 @@ bool xa_get_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 }
 EXPORT_SYMBOL(xa_get_mark);
 
-/**
- * xa_set_mark() - Set this mark on this entry.
- * @xa: XArray.
- * @index: Index of entry.
- * @mark: Mark number.
- *
- * Attempting to set a mark on a %NULL entry does not succeed.
- *
- * Context: Process context.  Takes and releases the xa_lock.
- */
+ 
 void xa_set_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 {
 	xa_lock(xa);
@@ -1979,16 +1525,7 @@ void xa_set_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 }
 EXPORT_SYMBOL(xa_set_mark);
 
-/**
- * xa_clear_mark() - Clear this mark on this entry.
- * @xa: XArray.
- * @index: Index of entry.
- * @mark: Mark number.
- *
- * Clearing a mark always succeeds.
- *
- * Context: Process context.  Takes and releases the xa_lock.
- */
+ 
 void xa_clear_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 {
 	xa_lock(xa);
@@ -1997,23 +1534,7 @@ void xa_clear_mark(struct xarray *xa, unsigned long index, xa_mark_t mark)
 }
 EXPORT_SYMBOL(xa_clear_mark);
 
-/**
- * xa_find() - Search the XArray for an entry.
- * @xa: XArray.
- * @indexp: Pointer to an index.
- * @max: Maximum index to search to.
- * @filter: Selection criterion.
- *
- * Finds the entry in @xa which matches the @filter, and has the lowest
- * index that is at least @indexp and no more than @max.
- * If an entry is found, @indexp is updated to be the index of the entry.
- * This function is protected by the RCU read lock, so it may not find
- * entries which are being simultaneously added.  It will not return an
- * %XA_RETRY_ENTRY; if you need to see retry entries, use xas_find().
- *
- * Context: Any context.  Takes and releases the RCU lock.
- * Return: The entry, if found, otherwise %NULL.
- */
+ 
 void *xa_find(struct xarray *xa, unsigned long *indexp,
 			unsigned long max, xa_mark_t filter)
 {
@@ -2047,23 +1568,7 @@ static bool xas_sibling(struct xa_state *xas)
 		((unsigned long)xas->xa_offset << node->shift);
 }
 
-/**
- * xa_find_after() - Search the XArray for a present entry.
- * @xa: XArray.
- * @indexp: Pointer to an index.
- * @max: Maximum index to search to.
- * @filter: Selection criterion.
- *
- * Finds the entry in @xa which matches the @filter and has the lowest
- * index that is above @indexp and no more than @max.
- * If an entry is found, @indexp is updated to be the index of the entry.
- * This function is protected by the RCU read lock, so it may miss entries
- * which are being simultaneously added.  It will not return an
- * %XA_RETRY_ENTRY; if you need to see retry entries, use xas_find().
- *
- * Context: Any context.  Takes and releases the RCU lock.
- * Return: The pointer, if found, otherwise %NULL.
- */
+ 
 void *xa_find_after(struct xarray *xa, unsigned long *indexp,
 			unsigned long max, xa_mark_t filter)
 {
@@ -2133,34 +1638,7 @@ static unsigned int xas_extract_marked(struct xa_state *xas, void **dst,
 	return i;
 }
 
-/**
- * xa_extract() - Copy selected entries from the XArray into a normal array.
- * @xa: The source XArray to copy from.
- * @dst: The buffer to copy entries into.
- * @start: The first index in the XArray eligible to be selected.
- * @max: The last index in the XArray eligible to be selected.
- * @n: The maximum number of entries to copy.
- * @filter: Selection criterion.
- *
- * Copies up to @n entries that match @filter from the XArray.  The
- * copied entries will have indices between @start and @max, inclusive.
- *
- * The @filter may be an XArray mark value, in which case entries which are
- * marked with that mark will be copied.  It may also be %XA_PRESENT, in
- * which case all entries which are not %NULL will be copied.
- *
- * The entries returned may not represent a snapshot of the XArray at a
- * moment in time.  For example, if another thread stores to index 5, then
- * index 10, calling xa_extract() may return the old contents of index 5
- * and the new contents of index 10.  Indices not modified while this
- * function is running will not be skipped.
- *
- * If you need stronger guarantees, holding the xa_lock across calls to this
- * function will prevent concurrent modification.
- *
- * Context: Any context.  Takes and releases the RCU lock.
- * Return: The number of entries copied.
- */
+ 
 unsigned int xa_extract(struct xarray *xa, void **dst, unsigned long start,
 			unsigned long max, unsigned int n, xa_mark_t filter)
 {
@@ -2175,13 +1653,7 @@ unsigned int xa_extract(struct xarray *xa, void **dst, unsigned long start,
 }
 EXPORT_SYMBOL(xa_extract);
 
-/**
- * xa_delete_node() - Private interface for workingset code.
- * @node: Node to be removed from the tree.
- * @update: Function to call to update ancestor nodes.
- *
- * Context: xa_lock must be held on entry and will not be released.
- */
+ 
 void xa_delete_node(struct xa_node *node, xa_update_node_t update)
 {
 	struct xa_state xas = {
@@ -2196,18 +1668,9 @@ void xa_delete_node(struct xa_node *node, xa_update_node_t update)
 
 	xas_store(&xas, NULL);
 }
-EXPORT_SYMBOL_GPL(xa_delete_node);	/* For the benefit of the test suite */
+EXPORT_SYMBOL_GPL(xa_delete_node);	 
 
-/**
- * xa_destroy() - Free all internal data structures.
- * @xa: XArray.
- *
- * After calling this function, the XArray is empty and has freed all memory
- * allocated for its internal data structures.  You are responsible for
- * freeing the objects referenced by the XArray.
- *
- * Context: Any context.  Takes and releases the xa_lock, interrupt-safe.
- */
+ 
 void xa_destroy(struct xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
@@ -2221,7 +1684,7 @@ void xa_destroy(struct xarray *xa)
 	xas_init_marks(&xas);
 	if (xa_zero_busy(xa))
 		xa_mark_clear(xa, XA_FREE_MARK);
-	/* lockdep checks we're still holding the lock in xas_free_nodes() */
+	 
 	if (xa_is_node(entry))
 		xas_free_nodes(&xas, xa_to_node(entry));
 	xas_unlock_irqrestore(&xas, flags);

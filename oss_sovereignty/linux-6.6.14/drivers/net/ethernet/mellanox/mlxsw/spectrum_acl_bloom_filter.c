@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gfp.h>
@@ -11,53 +11,26 @@
 #include "spectrum_acl_tcam.h"
 
 struct mlxsw_sp_acl_bf {
-	struct mutex lock; /* Protects Bloom Filter updates. */
+	struct mutex lock;  
 	unsigned int bank_size;
 	refcount_t refcnt[];
 };
 
-/* Bloom filter uses a crc-16 hash over chunks of data which contain 4 key
- * blocks, eRP ID and region ID. In Spectrum-2 and above, region key is combined
- * of up to 12 key blocks, so there can be up to 3 chunks in the Bloom filter
- * key, depending on the actual number of key blocks used in the region.
- * The layout of the Bloom filter key is as follows:
- *
- * +-------------------------+------------------------+------------------------+
- * | Chunk 2 Key blocks 11-8 | Chunk 1 Key blocks 7-4 | Chunk 0 Key blocks 3-0 |
- * +-------------------------+------------------------+------------------------+
- */
+ 
 #define MLXSW_BLOOM_KEY_CHUNKS 3
 
-/* Spectrum-2 and Spectrum-3 chunks */
+ 
 #define MLXSW_SP2_BLOOM_KEY_LEN 69
 
-/* Each chunk size is 23 bytes. 18 bytes of it contain 4 key blocks, each is
- * 36 bits, 2 bytes which hold eRP ID and region ID, and 3 bytes of zero
- * padding.
- * The layout of each chunk is as follows:
- *
- * +---------+----------------------+-----------------------------------+
- * | 3 bytes |        2 bytes       |              18 bytes             |
- * +---------+-----------+----------+-----------------------------------+
- * | 183:158 |  157:148  | 147:144  |               143:0               |
- * +---------+-----------+----------+-----------------------------------+
- * |    0    | region ID |  eRP ID  |      4 Key blocks (18 Bytes)      |
- * +---------+-----------+----------+-----------------------------------+
- */
+ 
 #define MLXSW_SP2_BLOOM_CHUNK_PAD_BYTES 3
 #define MLXSW_SP2_BLOOM_CHUNK_KEY_BYTES 18
 #define MLXSW_SP2_BLOOM_KEY_CHUNK_BYTES 23
 
-/* The offset of the key block within a chunk is 5 bytes as it comes after
- * 3 bytes of zero padding and 16 bits of region ID and eRP ID.
- */
+ 
 #define MLXSW_SP2_BLOOM_CHUNK_KEY_OFFSET 5
 
-/* This table is just the CRC of each possible byte which is used for
- * Spectrum-{2-3}. It is computed, Msbit first, for the Bloom filter
- * polynomial which is 0x8529 (1 + x^3 + x^5 + x^8 + x^10 + x^15 and
- * the implicit x^16).
- */
+ 
 static const u16 mlxsw_sp2_acl_bf_crc16_tab[256] = {
 0x0000, 0x8529, 0x8f7b, 0x0a52, 0x9bdf, 0x1ef6, 0x14a4, 0x918d,
 0xb297, 0x37be, 0x3dec, 0xb8c5, 0x2948, 0xac61, 0xa633, 0x231a,
@@ -93,42 +66,21 @@ static const u16 mlxsw_sp2_acl_bf_crc16_tab[256] = {
 0x0c4c, 0x8965, 0x8337, 0x061e, 0x9793, 0x12ba, 0x18e8, 0x9dc1,
 };
 
-/* Spectrum-4 chunks */
+ 
 #define MLXSW_SP4_BLOOM_KEY_LEN 60
 
-/* In Spectrum-4, there is no padding. Each chunk size is 20 bytes.
- * 18 bytes of it contain 4 key blocks, each is 36 bits, and 2 bytes which hold
- * eRP ID and region ID.
- * The layout of each chunk is as follows:
- *
- * +----------------------+-----------------------------------+
- * |        2 bytes       |              18 bytes             |
- * +-----------+----------+-----------------------------------+
- * |  157:148  | 147:144  |               143:0               |
- * +---------+-----------+----------+-------------------------+
- * | region ID |  eRP ID  |      4 Key blocks (18 Bytes)      |
- * +-----------+----------+-----------------------------------+
- */
+ 
 
 #define MLXSW_SP4_BLOOM_CHUNK_PAD_BYTES 0
 #define MLXSW_SP4_BLOOM_CHUNK_KEY_BYTES 18
 #define MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES 20
 
-/* The offset of the key block within a chunk is 2 bytes as it comes after
- * 16 bits of region ID and eRP ID.
- */
+ 
 #define MLXSW_SP4_BLOOM_CHUNK_KEY_OFFSET 2
 
-/* For Spectrum-4, two hash functions are used, CRC-10 and CRC-6 based.
- * The result is combination of the two calculations -
- * 6 bit column are MSB (result of CRC-6),
- * 10 bit row are LSB (result of CRC-10).
- */
+ 
 
-/* This table is just the CRC of each possible byte which is used for
- * Spectrum-4. It is computed, Msbit first, for the Bloom filter
- * polynomial which is 0x1b (1 + x^1 + x^3 + x^4 and the implicit x^10).
- */
+ 
 static const u16 mlxsw_sp4_acl_bf_crc10_tab[256] = {
 0x0000, 0x001b, 0x0036, 0x002d, 0x006c, 0x0077, 0x005a, 0x0041,
 0x00d8, 0x00c3, 0x00ee, 0x00f5, 0x00b4, 0x00af, 0x0082, 0x0099,
@@ -164,10 +116,7 @@ static const u16 mlxsw_sp4_acl_bf_crc10_tab[256] = {
 0x017e, 0x0165, 0x0148, 0x0153, 0x0112, 0x0109, 0x0124, 0x013f,
 };
 
-/* This table is just the CRC of each possible byte which is used for
- * Spectrum-4. It is computed, Msbit first, for the Bloom filter
- * polynomial which is 0x2d (1 + x^2+ x^3 + x^5 and the implicit x^6).
- */
+ 
 static const u8 mlxsw_sp4_acl_bf_crc6_tab[256] = {
 0x00, 0x2d, 0x37, 0x1a, 0x03, 0x2e, 0x34, 0x19,
 0x06, 0x2b, 0x31, 0x1c, 0x05, 0x28, 0x32, 0x1f,
@@ -203,15 +152,7 @@ static const u8 mlxsw_sp4_acl_bf_crc6_tab[256] = {
 0x2f, 0x02, 0x18, 0x35, 0x2c, 0x01, 0x1b, 0x36,
 };
 
-/* Each chunk contains 4 key blocks. Chunk 2 uses key blocks 11-8,
- * and we need to populate it with 4 key blocks copied from the entry encoded
- * key. The original keys layout is same for Spectrum-{2,3,4}.
- * Since the encoded key contains a 2 bytes padding, key block 11 starts at
- * offset 2. block 7 that is used in chunk 1 starts at offset 20 as 4 key blocks
- * take 18 bytes. See 'MLXSW_SP2_AFK_BLOCK_LAYOUT' for more details.
- * This array defines key offsets for easy access when copying key blocks from
- * entry key to Bloom filter chunk.
- */
+ 
 static const u8 chunk_key_offsets[MLXSW_BLOOM_KEY_CHUNKS] = {2, 20, 38};
 
 static u16 mlxsw_sp2_acl_bf_crc16_byte(u16 crc, u8 c)
@@ -307,7 +248,7 @@ static u16 mlxsw_sp4_acl_bf_crc(const u8 *buffer, size_t len)
 
 	crc_col >>= 2;
 
-	/* 6 bit column are MSB, 10 bit row are LSB */
+	 
 	return (crc_col << 10) | crc_row;
 }
 
@@ -320,11 +261,7 @@ static void right_shift_array(char *arr, u8 len, u8 shift_bits)
 		return;
 
 	for (i = len - 1; i >= 0; i--) {
-		/* The first iteration looks like out-of-bounds access,
-		 * but actually references a buffer that the array is shifted
-		 * into. This move is legal as we never send the last chunk to
-		 * this function.
-		 */
+		 
 		arr[i + 1] &= byte_mask;
 		arr[i + 1] |= arr[i] << (8 - shift_bits);
 		arr[i] = arr[i] >> shift_bits;
@@ -333,33 +270,14 @@ static void right_shift_array(char *arr, u8 len, u8 shift_bits)
 
 static void mlxsw_sp4_bf_key_shift_chunks(u8 chunk_count, char *output)
 {
-	/* The chunks are suppoosed to be continuous, with no padding.
-	 * Since region ID and eRP ID use 14 bits, and not fully 2 bytes,
-	 * and in Spectrum-4 there is no padding, it is necessary to shift some
-	 * chunks 2 bits right.
-	 */
+	 
 	switch (chunk_count) {
 	case 2:
-		/* The chunks are copied as follow:
-		 * +-------------+-----------------+
-		 * | Chunk 0     |   Chunk 1       |
-		 * | IDs  | keys |(**) IDs  | keys |
-		 * +-------------+-----------------+
-		 * In (**), there are two unused bits, therefore, chunk 0 needs
-		 * to be shifted two bits right.
-		 */
+		 
 		right_shift_array(output, MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES, 2);
 		break;
 	case 3:
-		/* The chunks are copied as follow:
-		 * +-------------+-----------------+-----------------+
-		 * | Chunk 0     |   Chunk 1       |   Chunk 2       |
-		 * | IDs  | keys |(**) IDs  | keys |(**) IDs  | keys |
-		 * +-------------+-----------------+-----------------+
-		 * In (**), there are two unused bits, therefore, chunk 1 needs
-		 * to be shifted two bits right and chunk 0 needs to be shifted
-		 * four bits right.
-		 */
+		 
 		right_shift_array(output + MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES,
 				  MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES, 2);
 		right_shift_array(output, MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES, 4);
@@ -492,9 +410,7 @@ mlxsw_sp_acl_bf_init(struct mlxsw_sp *mlxsw_sp, unsigned int num_erp_banks)
 	if (!MLXSW_CORE_RES_VALID(mlxsw_sp->core, ACL_MAX_BF_LOG))
 		return ERR_PTR(-EIO);
 
-	/* Bloom filter size per erp_table_bank
-	 * is 2^ACL_MAX_BF_LOG
-	 */
+	 
 	bf_bank_size = 1 << MLXSW_CORE_RES_GET(mlxsw_sp->core, ACL_MAX_BF_LOG);
 	bf = kzalloc(struct_size(bf, refcnt, size_mul(bf_bank_size, num_erp_banks)),
 		     GFP_KERNEL);

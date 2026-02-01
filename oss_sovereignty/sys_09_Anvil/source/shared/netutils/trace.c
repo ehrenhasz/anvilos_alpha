@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mphal.h"
 #include "shared/netutils/netutils.h"
@@ -42,7 +18,7 @@ static void dump_hex_bytes(const mp_print_t *print, size_t len, const uint8_t *b
 }
 
 static const char *ethertype_str(uint16_t type) {
-    // A value between 0x0000 - 0x05dc (inclusive) indicates a length, not type
+    
     switch (type) {
         case 0x0800:
             return "IPv4";
@@ -70,7 +46,7 @@ void netutils_ethernet_trace(const mp_print_t *print, size_t len, const uint8_t 
         len -= 14;
         buf += 14;
         if (buf[-2] == 0x08 && buf[-1] == 0x00 && buf[0] == 0x45) {
-            // IPv4 packet
+            
             len = get_be16(buf + 2);
             mp_printf(print, " srcip=%u.%u.%u.%u dstip=%u.%u.%u.%u",
                 buf[12], buf[13], buf[14], buf[15],
@@ -79,7 +55,7 @@ void netutils_ethernet_trace(const mp_print_t *print, size_t len, const uint8_t 
             buf += 20;
             len -= 20;
             if (prot == 6) {
-                // TCP packet
+                
                 uint16_t srcport = get_be16(buf);
                 uint16_t dstport = get_be16(buf + 2);
                 uint32_t seqnum = get_be32(buf + 4);
@@ -98,14 +74,14 @@ void netutils_ethernet_trace(const mp_print_t *print, size_t len, const uint8_t 
                     len -= opts_len;
                 }
             } else if (prot == 17) {
-                // UDP packet
+                
                 uint16_t srcport = get_be16(buf);
                 uint16_t dstport = get_be16(buf + 2);
                 mp_printf(print, " UDP srcport=%u dstport=%u", srcport, dstport);
                 len = get_be16(buf + 4);
                 buf += 8;
                 if ((srcport == 67 && dstport == 68) || (srcport == 68 && dstport == 67)) {
-                    // DHCP
+                    
                     if (srcport == 67) {
                         mp_printf(print, " DHCPS");
                     } else {
@@ -144,11 +120,11 @@ void netutils_ethernet_trace(const mp_print_t *print, size_t len, const uint8_t 
                     }
                 }
             } else {
-                // Non-UDP packet
+                
                 mp_printf(print, " prot=%u", prot);
             }
         } else if (buf[-2] == 0x86 && buf[-1] == 0xdd && (buf[0] >> 4) == 6) {
-            // IPv6 packet
+            
             uint32_t h = get_be32(buf);
             uint16_t l = get_be16(buf + 4);
             mp_printf(print, " tclass=%u flow=%u len=%u nexthdr=%u hoplimit=%u", (unsigned)((h >> 20) & 0xff), (unsigned)(h & 0xfffff), l, buf[6], buf[7]);

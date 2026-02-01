@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013-2015 ARM Limited, All Rights Reserved.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- */
+
+ 
 
 #include <linux/acpi_iort.h>
 #include <linux/device.h>
@@ -19,7 +16,7 @@ static int of_pmsi_get_dev_id(struct irq_domain *domain, struct device *dev,
 {
 	int ret, index = 0;
 
-	/* Suck the DeviceID out of the msi-parent property */
+	 
 	do {
 		struct of_phandle_args args;
 
@@ -59,10 +56,10 @@ static int its_pmsi_prepare(struct irq_domain *domain, struct device *dev,
 	if (ret)
 		return ret;
 
-	/* ITS specific DeviceID, as the core ITS ignores dev. */
+	 
 	info->scratchpad[0].ul = dev_id;
 
-	/* Allocate at least 32 MSIs, and always as a power of 2 */
+	 
 	nvec = max_t(int, 32, roundup_pow_of_two(nvec));
 	return msi_info->ops->msi_prepare(domain->parent,
 					  dev, nvec, info);

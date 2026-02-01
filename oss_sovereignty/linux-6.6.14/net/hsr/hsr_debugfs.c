@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * debugfs code for HSR & PRP
- * Copyright (C) 2019 Texas Instruments Incorporated
- *
- * Author(s):
- *	Murali Karicheri <m-karicheri2@ti.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/debugfs.h>
@@ -14,7 +8,7 @@
 
 static struct dentry *hsr_debugfs_root_dir;
 
-/* hsr_node_table_show - Formats and prints node_table entries */
+ 
 static int
 hsr_node_table_show(struct seq_file *sfp, void *data)
 {
@@ -32,7 +26,7 @@ hsr_node_table_show(struct seq_file *sfp, void *data)
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(node, &priv->node_db, mac_list) {
-		/* skip self node */
+		 
 		if (hsr_addr_is_self(priv, node->macaddress_A))
 			continue;
 		seq_printf(sfp, "%pM ", &node->macaddress_A[0]);
@@ -67,13 +61,7 @@ void hsr_debugfs_rename(struct net_device *dev)
 		priv->node_tbl_root = d;
 }
 
-/* hsr_debugfs_init - create hsr node_table file for dumping
- * the node table
- *
- * Description:
- * When debugfs is configured this routine sets up the node_table file per
- * hsr device for dumping the node_table entries
- */
+ 
 void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
 {
 	struct dentry *de = NULL;
@@ -97,12 +85,7 @@ void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
 	}
 }
 
-/* hsr_debugfs_term - Tear down debugfs intrastructure
- *
- * Description:
- * When Debugfs is configured this routine removes debugfs file system
- * elements that are specific to hsr
- */
+ 
 void
 hsr_debugfs_term(struct hsr_priv *priv)
 {
@@ -121,6 +104,6 @@ void hsr_debugfs_create_root(void)
 
 void hsr_debugfs_remove_root(void)
 {
-	/* debugfs_remove() internally checks NULL and ERROR */
+	 
 	debugfs_remove(hsr_debugfs_root_dir);
 }

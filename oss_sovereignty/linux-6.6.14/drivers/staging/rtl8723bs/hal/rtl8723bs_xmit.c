@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
@@ -25,7 +21,7 @@ static u8 rtw_sdio_wait_enough_TxOQT_space(struct adapter *padapter, u8 agg_num)
 
 		if ((++n % 60) == 0) {
 			msleep(1);
-			/* yield(); */
+			 
 		}
 	}
 
@@ -58,7 +54,7 @@ static s32 rtl8723_dequeue_writeport(struct adapter *padapter)
 
 	deviceId = ffaddr2deviceId(pdvobjpriv, pxmitbuf->ff_hwaddr);
 
-	/*  translate fifo addr to queue index */
+	 
 	switch (deviceId) {
 	case WLAN_TX_HIQ_DEVICE_ID:
 		PageIdx = HI_QUEUE_IDX;
@@ -74,10 +70,10 @@ static s32 rtl8723_dequeue_writeport(struct adapter *padapter)
 	}
 
 query_free_page:
-	/*  check if hardware tx fifo page is enough */
+	 
 	if (!rtw_hal_sdio_query_tx_freepage(pri_padapter, PageIdx, pxmitbuf->pg_num)) {
 		if (!bUpdatePageNum) {
-			/*  Total number of page is NOT available, so update current FIFO status */
+			 
 			HalQueryTxBufferStatus8723BSdio(padapter);
 			bUpdatePageNum = true;
 			goto query_free_page;
@@ -104,21 +100,14 @@ query_free_page:
 	rtw_hal_sdio_update_tx_freepage(pri_padapter, PageIdx, pxmitbuf->pg_num);
 
 free_xmitbuf:
-	/* rtw_free_xmitframe(pxmitpriv, pframe); */
-	/* pxmitbuf->priv_data = NULL; */
+	 
+	 
 	rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
 
 	return _FAIL;
 }
 
-/*
- * Description
- *Transmit xmitbuf to hardware tx fifo
- *
- * Return
- *_SUCCESS	ok
- *_FAIL		something error
- */
+ 
 s32 rtl8723bs_xmit_buf_handler(struct adapter *padapter)
 {
 	struct xmit_priv *pxmitpriv;
@@ -150,7 +139,7 @@ s32 rtl8723bs_xmit_buf_handler(struct adapter *padapter)
 
 	do {
 		queue_empty = rtl8723_dequeue_writeport(padapter);
-/* 	dump secondary adapter xmitbuf */
+ 
 	} while (!queue_empty);
 
 	rtw_unregister_tx_alive(padapter);
@@ -158,15 +147,7 @@ s32 rtl8723bs_xmit_buf_handler(struct adapter *padapter)
 	return _SUCCESS;
 }
 
-/*
- * Description:
- *Aggregation packets and send to hardware
- *
- * Return:
- *0	Success
- *-1	Hardware resource(TX FIFO) not ready
- *-2	Software resource(xmitbuf) not ready
- */
+ 
 static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv)
 {
 	s32 err, ret;
@@ -200,7 +181,7 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 		inx[3] = 3;
 	}
 
-	/*  0(VO), 1(VI), 2(BE), 3(BK) */
+	 
 	for (idx = 0; idx < hwentry; idx++) {
 		phwxmit = hwxmits + inx[idx];
 
@@ -219,8 +200,8 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 		spin_lock_bh(&pxmitpriv->lock);
 
 		sta_phead = get_list_head(phwxmit->sta_queue);
-		/* because stop_sta_xmit may delete sta_plist at any time */
-		/* so we should add lock here, or while loop can not exit */
+		 
+		 
 		list_for_each_safe(sta_plist, tmp, sta_phead) {
 			ptxservq = list_entry(sta_plist, struct tx_servq,
 					      tx_pending);
@@ -233,14 +214,14 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 				frame_plist = get_next(frame_phead);
 				pxmitframe = container_of(frame_plist, struct xmit_frame, list);
 
-				/*  check xmit_buf size enough or not */
+				 
 				txlen = txdesc_size + rtw_wlan_pkt_size(pxmitframe);
 				if (!pxmitbuf ||
 					((_RND(pxmitbuf->len, 8) + txlen) > max_xmit_len) ||
 					(k >= (rtw_hal_sdio_max_txoqt_free_space(padapter) - 1))
 				) {
 					if (pxmitbuf) {
-						/* pxmitbuf->priv_data will be NULL, and will crash here */
+						 
 						if (pxmitbuf->len > 0 &&
 						    pxmitbuf->priv_data) {
 							struct xmit_frame *pframe;
@@ -251,8 +232,8 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 							rtw_free_xmitframe(pxmitpriv, pframe);
 							pxmitbuf->priv_data = NULL;
 							enqueue_pending_xmitbuf(pxmitpriv, pxmitbuf);
-							/* can not yield under lock */
-							/* yield(); */
+							 
+							 
 						} else
 							rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
 					}
@@ -271,7 +252,7 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 					k = 0;
 				}
 
-				/*  ok to send, remove frame from queue */
+				 
 				if (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true)
 					if (
 						(pxmitframe->attrib.psta->state & WIFI_SLEEP_STATE) &&
@@ -288,7 +269,7 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 					pxmitbuf->priv_data = (u8 *)pxmitframe;
 				}
 
-				/*  coalesce the xmitframe to xmitbuf */
+				 
 				pxmitframe->pxmitbuf = pxmitbuf;
 				pxmitframe->buf_addr = pxmitbuf->ptail;
 
@@ -297,7 +278,7 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 					netdev_err(padapter->pnetdev,
 						   "%s: coalesce FAIL!",
 						   __func__);
-					/*  Todo: error handler */
+					 
 				} else {
 					k++;
 					if (k != 1)
@@ -307,7 +288,7 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 					txlen = txdesc_size + pxmitframe->attrib.last_txcmdsz;
 					pxmitframe->pg_num = (txlen + 127) / 128;
 					pxmitbuf->pg_num += (txlen + 127) / 128;
-					pxmitbuf->ptail += _RND(txlen, 8); /*  round to 8 bytes alignment */
+					pxmitbuf->ptail += _RND(txlen, 8);  
 					pxmitbuf->len = _RND(pxmitbuf->len, 8) + txlen;
 				}
 
@@ -324,7 +305,7 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 		}
 		spin_unlock_bh(&pxmitpriv->lock);
 
-		/*  dump xmit_buf to hw tx fifo */
+		 
 		if (pxmitbuf) {
 			if (pxmitbuf->len > 0) {
 				struct xmit_frame *pframe;
@@ -348,14 +329,7 @@ static s32 xmit_xmitframes(struct adapter *padapter, struct xmit_priv *pxmitpriv
 	return err;
 }
 
-/*
- * Description
- *Transmit xmitframe from queue
- *
- * Return
- *_SUCCESS	ok
- *_FAIL		something error
- */
+ 
 static s32 rtl8723bs_xmit_handler(struct adapter *padapter)
 {
 	struct xmit_priv *pxmitpriv;
@@ -384,12 +358,12 @@ next:
 		return _SUCCESS;
 	}
 
-	/*  dequeue frame and write to hardware */
+	 
 
 	ret = xmit_xmitframes(padapter, pxmitpriv);
 	if (ret == -2) {
-		/* here sleep 1ms will cause big TP loss of TX */
-		/* from 50+ to 40+ */
+		 
+		 
 		if (padapter->registrypriv.wifi_spec)
 			msleep(1);
 		else
@@ -451,7 +425,7 @@ s32 rtl8723bs_mgnt_xmit(
 	rtl8723b_update_txdesc(pmgntframe, pmgntframe->buf_addr);
 
 	pxmitbuf->len = txdesc_size + pattrib->last_txcmdsz;
-	pxmitbuf->pg_num = (pxmitbuf->len + 127) / 128; /*  128 is tx page size */
+	pxmitbuf->pg_num = (pxmitbuf->len + 127) / 128;  
 	pxmitbuf->ptail = pmgntframe->buf_addr + pxmitbuf->len;
 	pxmitbuf->ff_hwaddr = rtw_get_ff_hwaddr(pmgntframe);
 
@@ -461,7 +435,7 @@ s32 rtl8723bs_mgnt_xmit(
 
 	pxmitbuf->priv_data = NULL;
 
-	if (GetFrameSubType(pframe) == WIFI_BEACON) { /* dump beacon directly */
+	if (GetFrameSubType(pframe) == WIFI_BEACON) {  
 		ret = rtw_write_port(padapter, pdvobjpriv->Queue2Pipe[pxmitbuf->ff_hwaddr], pxmitbuf->len, (u8 *)pxmitbuf);
 		if (ret != _SUCCESS)
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_WRITE_PORT_ERR);
@@ -473,14 +447,7 @@ s32 rtl8723bs_mgnt_xmit(
 	return ret;
 }
 
-/*
- * Description:
- *Handle xmitframe(packet) come from rtw_xmit()
- *
- * Return:
- *true	dump packet directly ok
- *false	enqueue, temporary can't transmit packets to hardware
- */
+ 
 s32 rtl8723bs_hal_xmit(
 	struct adapter *padapter, struct xmit_frame *pxmitframe
 )
@@ -537,12 +504,7 @@ s32	rtl8723bs_hal_xmitframe_enqueue(
 
 }
 
-/*
- * Return
- *_SUCCESS	start thread ok
- *_FAIL		start thread fail
- *
- */
+ 
 s32 rtl8723bs_init_xmit_priv(struct adapter *padapter)
 {
 	struct xmit_priv *xmitpriv = &padapter->xmitpriv;
@@ -574,8 +536,8 @@ void rtl8723bs_free_xmit_priv(struct adapter *padapter)
 
 	spin_lock_bh(&pqueue->lock);
 	if (!list_empty(&pqueue->queue)) {
-		/*  Insert tmplist to end of queue, and delete phead */
-		/*  then tmplist become head of queue. */
+		 
+		 
 		list_add_tail(&tmplist, phead);
 		list_del_init(phead);
 	}

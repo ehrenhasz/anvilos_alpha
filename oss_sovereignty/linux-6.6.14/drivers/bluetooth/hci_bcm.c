@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Bluetooth HCI UART driver for Broadcom devices
- *
- *  Copyright (C) 2015  Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -45,18 +40,11 @@
 #define BCM_TYPE52_PKT 0x34
 #define BCM_TYPE52_SIZE 0
 
-#define BCM_AUTOSUSPEND_DELAY	5000 /* default autosleep delay */
+#define BCM_AUTOSUSPEND_DELAY	5000  
 
 #define BCM_NUM_SUPPLIES 2
 
-/**
- * struct bcm_device_data - device specific data
- * @no_early_set_baudrate: Disallow set baudrate before driver setup()
- * @drive_rts_on_open: drive RTS signal on ->open() when platform requires it
- * @no_uart_clock_set: UART clock set command for >3Mbps mode is unavailable
- * @max_autobaud_speed: max baudrate supported by device in autobaud mode
- * @max_speed: max baudrate supported
- */
+ 
 struct bcm_device_data {
 	bool	no_early_set_baudrate;
 	bool	drive_rts_on_open;
@@ -65,52 +53,9 @@ struct bcm_device_data {
 	u32	max_speed;
 };
 
-/**
- * struct bcm_device - device driver resources
- * @serdev_hu: HCI UART controller struct
- * @list: bcm_device_list node
- * @dev: physical UART slave
- * @name: device name logged by bt_dev_*() functions
- * @device_wakeup: BT_WAKE pin,
- *	assert = Bluetooth device must wake up or remain awake,
- *	deassert = Bluetooth device may sleep when sleep criteria are met
- * @shutdown: BT_REG_ON pin,
- *	power up or power down Bluetooth device internal regulators
- * @reset: BT_RST_N pin,
- *	active low resets the Bluetooth logic core
- * @set_device_wakeup: callback to toggle BT_WAKE pin
- *	either by accessing @device_wakeup or by calling @btlp
- * @set_shutdown: callback to toggle BT_REG_ON pin
- *	either by accessing @shutdown or by calling @btpu/@btpd
- * @btlp: Apple ACPI method to toggle BT_WAKE pin ("Bluetooth Low Power")
- * @btpu: Apple ACPI method to drive BT_REG_ON pin high ("Bluetooth Power Up")
- * @btpd: Apple ACPI method to drive BT_REG_ON pin low ("Bluetooth Power Down")
- * @gpio_count: internal counter for GPIO resources associated with ACPI device
- * @gpio_int_idx: index in _CRS for GpioInt() resource
- * @txco_clk: external reference frequency clock used by Bluetooth device
- * @lpo_clk: external LPO clock used by Bluetooth device
- * @supplies: VBAT and VDDIO supplies used by Bluetooth device
- * @res_enabled: whether clocks and supplies are prepared and enabled
- * @init_speed: default baudrate of Bluetooth device;
- *	the host UART is initially set to this baudrate so that
- *	it can configure the Bluetooth device for @oper_speed
- * @oper_speed: preferred baudrate of Bluetooth device;
- *	set to 0 if @init_speed is already the preferred baudrate
- * @irq: interrupt triggered by HOST_WAKE_BT pin
- * @irq_active_low: whether @irq is active low
- * @irq_acquired: flag to show if IRQ handler has been assigned
- * @hu: pointer to HCI UART controller struct,
- *	used to disable flow control during runtime suspend and system sleep
- * @is_suspended: whether flow control is currently disabled
- * @no_early_set_baudrate: don't set_baudrate before setup()
- * @drive_rts_on_open: drive RTS signal on ->open() when platform requires it
- * @no_uart_clock_set: UART clock set command for >3Mbps mode is unavailable
- * @pcm_int_params: keep the initial PCM configuration
- * @use_autobaud_mode: start Bluetooth device in autobaud mode
- * @max_autobaud_speed: max baudrate supported by device in autobaud mode
- */
+ 
 struct bcm_device {
-	/* Must be the first member, hci_serdev.c expects this. */
+	 
 	struct hci_uart		serdev_hu;
 	struct list_head	list;
 
@@ -151,7 +96,7 @@ struct bcm_device {
 	u32			max_autobaud_speed;
 };
 
-/* generic bcm uart resources */
+ 
 struct bcm_data {
 	struct sk_buff		*rx_skb;
 	struct sk_buff_head	txq;
@@ -159,7 +104,7 @@ struct bcm_data {
 	struct bcm_device	*dev;
 };
 
-/* List of BCM BT UART devices */
+ 
 static DEFINE_MUTEX(bcm_device_lock);
 static LIST_HEAD(bcm_device_list);
 
@@ -189,9 +134,7 @@ static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 
 		bt_dev_dbg(hdev, "Set Controller clock (%d)", clock.type);
 
-		/* This Broadcom specific command changes the UART's controller
-		 * clock for baud rate > 3000000.
-		 */
+		 
 		skb = __hci_cmd_sync(hdev, 0xfc45, 1, &clock, HCI_INIT_TIMEOUT);
 		if (IS_ERR(skb)) {
 			int err = PTR_ERR(skb);
@@ -208,9 +151,7 @@ static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	param.zero = cpu_to_le16(0);
 	param.baud_rate = cpu_to_le32(speed);
 
-	/* This Broadcom specific command changes the UART's controller baud
-	 * rate.
-	 */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfc18, sizeof(param), &param,
 			     HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
@@ -225,13 +166,13 @@ static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	return 0;
 }
 
-/* bcm_device_exists should be protected by bcm_device_lock */
+ 
 static bool bcm_device_exists(struct bcm_device *device)
 {
 	struct list_head *p;
 
 #ifdef CONFIG_PM
-	/* Devices using serdev always exist */
+	 
 	if (device && device->hu && device->hu->serdev)
 		return true;
 #endif
@@ -251,9 +192,7 @@ static int bcm_gpio_set_power(struct bcm_device *dev, bool powered)
 	int err;
 
 	if (powered && !dev->res_enabled) {
-		/* Intel Macs use bcm_apple_get_resources() and don't
-		 * have regulator supplies configured.
-		 */
+		 
 		if (dev->supplies[0].supply) {
 			err = regulator_bulk_enable(BCM_NUM_SUPPLIES,
 						    dev->supplies);
@@ -261,7 +200,7 @@ static int bcm_gpio_set_power(struct bcm_device *dev, bool powered)
 				return err;
 		}
 
-		/* LPO clock needs to be 32.768 kHz */
+		 
 		err = clk_set_rate(dev->lpo_clk, 32768);
 		if (err) {
 			dev_err(dev->dev, "Could not set LPO clock rate\n");
@@ -289,15 +228,13 @@ static int bcm_gpio_set_power(struct bcm_device *dev, bool powered)
 		clk_disable_unprepare(dev->txco_clk);
 		clk_disable_unprepare(dev->lpo_clk);
 
-		/* Intel Macs use bcm_apple_get_resources() and don't
-		 * have regulator supplies configured.
-		 */
+		 
 		if (dev->supplies[0].supply)
 			regulator_bulk_disable(BCM_NUM_SUPPLIES,
 					       dev->supplies);
 	}
 
-	/* wait for device to power on and come out of reset */
+	 
 	usleep_range(100000, 120000);
 
 	dev->res_enabled = powered;
@@ -374,15 +311,15 @@ unlock:
 }
 
 static const struct bcm_set_sleep_mode default_sleep_params = {
-	.sleep_mode = 1,	/* 0=Disabled, 1=UART, 2=Reserved, 3=USB */
-	.idle_host = 2,		/* idle threshold HOST, in 300ms */
-	.idle_dev = 2,		/* idle threshold device, in 300ms */
-	.bt_wake_active = 1,	/* BT_WAKE active mode: 1 = high, 0 = low */
-	.host_wake_active = 0,	/* HOST_WAKE active mode: 1 = high, 0 = low */
-	.allow_host_sleep = 1,	/* Allow host sleep in SCO flag */
-	.combine_modes = 1,	/* Combine sleep and LPM flag */
-	.tristate_control = 0,	/* Allow tri-state control of UART tx flag */
-	/* Irrelevant USB flags */
+	.sleep_mode = 1,	 
+	.idle_host = 2,		 
+	.idle_dev = 2,		 
+	.bt_wake_active = 1,	 
+	.host_wake_active = 0,	 
+	.allow_host_sleep = 1,	 
+	.combine_modes = 1,	 
+	.tristate_control = 0,	 
+	 
 	.usb_auto_sleep = 0,
 	.usb_resume_timeout = 0,
 	.break_to_host = 0,
@@ -470,10 +407,7 @@ static int bcm_open(struct hci_uart *hu)
 	list_for_each(p, &bcm_device_list) {
 		struct bcm_device *dev = list_entry(p, struct bcm_device, list);
 
-		/* Retrieve saved bcm_device based on parent of the
-		 * platform device (saved during device probe) and
-		 * parent of tty device used by hci_uart
-		 */
+		 
 		if (hu->tty->dev->parent == dev->dev->parent) {
 			bcm->dev = dev;
 #ifdef CONFIG_PM
@@ -486,7 +420,7 @@ static int bcm_open(struct hci_uart *hu)
 out:
 	if (bcm->dev) {
 		if (bcm->dev->use_autobaud_mode)
-			hci_uart_set_flow_control(hu, false);	/* Assert BT_UART_CTS_N */
+			hci_uart_set_flow_control(hu, false);	 
 		else if (bcm->dev->drive_rts_on_open)
 			hci_uart_set_flow_control(hu, true);
 
@@ -495,9 +429,7 @@ out:
 		else
 			hu->init_speed = bcm->dev->init_speed;
 
-		/* If oper_speed is set, ldisc/serdev will set the baudrate
-		 * before calling setup()
-		 */
+		 
 		if (!bcm->dev->no_early_set_baudrate && !bcm->dev->use_autobaud_mode)
 			hu->oper_speed = bcm->dev->oper_speed;
 
@@ -532,7 +464,7 @@ static int bcm_close(struct hci_uart *hu)
 
 	bt_dev_dbg(hu->hdev, "hu %p", hu);
 
-	/* Protect bcm->dev against removal of the device or driver */
+	 
 	mutex_lock(&bcm_device_lock);
 
 	if (hu->serdev) {
@@ -598,7 +530,7 @@ static int bcm_setup(struct hci_uart *hu)
 	if (!fw_load_done)
 		return 0;
 
-	/* Init speed if any */
+	 
 	if (bcm->dev && bcm->dev->init_speed)
 		speed = bcm->dev->init_speed;
 	else if (hu->proto->init_speed)
@@ -609,7 +541,7 @@ static int bcm_setup(struct hci_uart *hu)
 	if (speed)
 		host_set_baudrate(hu, speed);
 
-	/* Operational speed if any */
+	 
 	if (hu->oper_speed)
 		speed = hu->oper_speed;
 	else if (bcm->dev && bcm->dev->oper_speed)
@@ -625,7 +557,7 @@ static int bcm_setup(struct hci_uart *hu)
 			host_set_baudrate(hu, speed);
 	}
 
-	/* PCM parameters if provided */
+	 
 	if (bcm->dev && bcm->dev->pcm_int_params[0] != 0xff) {
 		struct bcm_set_pcm_int_params params;
 
@@ -639,10 +571,7 @@ static int bcm_setup(struct hci_uart *hu)
 	if (err)
 		return err;
 
-	/* Some devices ship with the controller default address.
-	 * Allow the bootloader to set a valid address through the
-	 * device tree.
-	 */
+	 
 	if (test_bit(HCI_QUIRK_INVALID_BDADDR, &hu->hdev->quirks))
 		set_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hu->hdev->quirks);
 
@@ -706,7 +635,7 @@ static int bcm_recv(struct hci_uart *hu, const void *data, int count)
 		bcm->rx_skb = NULL;
 		return err;
 	} else if (!bcm->rx_skb) {
-		/* Delay auto-suspend when receiving completed packet */
+		 
 		mutex_lock(&bcm_device_lock);
 		if (bcm->dev && bcm_device_exists(bcm->dev)) {
 			pm_runtime_get(bcm->dev->dev);
@@ -725,7 +654,7 @@ static int bcm_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 
 	bt_dev_dbg(hu->hdev, "hu %p skb %p", hu, skb);
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 	skb_queue_tail(&bcm->txq, skb);
 
@@ -743,7 +672,7 @@ static struct sk_buff *bcm_dequeue(struct hci_uart *hu)
 	if (bcm_device_exists(bcm->dev)) {
 		bdev = bcm->dev;
 		pm_runtime_get_sync(bdev->dev);
-		/* Shall be resumed here */
+		 
 	}
 
 	skb = skb_dequeue(&bcm->txq);
@@ -769,11 +698,11 @@ static int bcm_suspend_device(struct device *dev)
 	if (!bdev->is_suspended && bdev->hu) {
 		hci_uart_set_flow_control(bdev->hu, true);
 
-		/* Once this returns, driver suspends BT via GPIO */
+		 
 		bdev->is_suspended = true;
 	}
 
-	/* Suspend the device */
+	 
 	err = bdev->set_device_wakeup(bdev, false);
 	if (err) {
 		if (bdev->is_suspended && bdev->hu) {
@@ -805,7 +734,7 @@ static int bcm_resume_device(struct device *dev)
 	bt_dev_dbg(bdev, "resume, delaying 15 ms");
 	msleep(15);
 
-	/* When this executes, the device has woken up already */
+	 
 	if (bdev->is_suspended && bdev->hu) {
 		bdev->is_suspended = false;
 
@@ -817,7 +746,7 @@ static int bcm_resume_device(struct device *dev)
 #endif
 
 #ifdef CONFIG_PM_SLEEP
-/* suspend callback */
+ 
 static int bcm_suspend(struct device *dev)
 {
 	struct bcm_device *bdev = dev_get_drvdata(dev);
@@ -825,12 +754,7 @@ static int bcm_suspend(struct device *dev)
 
 	bt_dev_dbg(bdev, "suspend: is_suspended %d", bdev->is_suspended);
 
-	/*
-	 * When used with a device instantiated as platform_device, bcm_suspend
-	 * can be called at any time as long as the platform device is bound,
-	 * so it should use bcm_device_lock to protect access to hci_uart
-	 * and device_wake-up GPIO.
-	 */
+	 
 	mutex_lock(&bcm_device_lock);
 
 	if (!bdev->hu)
@@ -851,7 +775,7 @@ unlock:
 	return 0;
 }
 
-/* resume callback */
+ 
 static int bcm_resume(struct device *dev)
 {
 	struct bcm_device *bdev = dev_get_drvdata(dev);
@@ -859,12 +783,7 @@ static int bcm_resume(struct device *dev)
 
 	bt_dev_dbg(bdev, "resume: is_suspended %d", bdev->is_suspended);
 
-	/*
-	 * When used with a device instantiated as platform_device, bcm_resume
-	 * can be called at any time as long as platform device is bound,
-	 * so it should use bcm_device_lock to protect access to hci_uart
-	 * and device_wake-up GPIO.
-	 */
+	 
 	mutex_lock(&bcm_device_lock);
 
 	if (!bdev->hu)
@@ -890,7 +809,7 @@ unlock:
 }
 #endif
 
-/* Some firmware reports an IRQ which does not work (wrong pin in fw table?) */
+ 
 static struct gpiod_lookup_table irq_on_int33fc02_pin17_gpios = {
 	.dev_id = "serial0-0",
 	.table = {
@@ -922,7 +841,7 @@ static const struct dmi_system_id bcm_broken_irq_dmi_table[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Intel Corp."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "VALLEYVIEW C0 PLATFORM"),
 			DMI_MATCH(DMI_BOARD_NAME, "BYT-T FFD8"),
-			/* Partial match on beginning of BIOS version */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "BLADE_21"),
 		},
 		.driver_data = &irq_on_int33fc02_pin17_gpios,
@@ -1039,7 +958,7 @@ static inline int bcm_apple_get_resources(struct bcm_device *dev)
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_ACPI */
+#endif  
 
 static int bcm_gpio_set_device_wakeup(struct bcm_device *dev, bool awake)
 {
@@ -1051,33 +970,27 @@ static int bcm_gpio_set_shutdown(struct bcm_device *dev, bool powered)
 {
 	gpiod_set_value_cansleep(dev->shutdown, powered);
 	if (dev->reset)
-		/*
-		 * The reset line is asserted on powerdown and deasserted
-		 * on poweron so the inverse of powered is used. Notice
-		 * that the GPIO line BT_RST_N needs to be specified as
-		 * active low in the device tree or similar system
-		 * description.
-		 */
+		 
 		gpiod_set_value_cansleep(dev->reset, !powered);
 	return 0;
 }
 
-/* Try a bunch of names for TXCO */
+ 
 static struct clk *bcm_get_txco(struct device *dev)
 {
 	struct clk *clk;
 
-	/* New explicit name */
+	 
 	clk = devm_clk_get(dev, "txco");
 	if (!IS_ERR(clk) || PTR_ERR(clk) == -EPROBE_DEFER)
 		return clk;
 
-	/* Deprecated name */
+	 
 	clk = devm_clk_get(dev, "extclk");
 	if (!IS_ERR(clk) || PTR_ERR(clk) == -EPROBE_DEFER)
 		return clk;
 
-	/* Original code used no name at all */
+	 
 	return devm_clk_get(dev, NULL);
 }
 
@@ -1094,11 +1007,11 @@ static int bcm_get_resources(struct bcm_device *dev)
 
 	dev->txco_clk = bcm_get_txco(dev->dev);
 
-	/* Handle deferred probing */
+	 
 	if (dev->txco_clk == ERR_PTR(-EPROBE_DEFER))
 		return PTR_ERR(dev->txco_clk);
 
-	/* Ignore all other errors as before */
+	 
 	if (IS_ERR(dev->txco_clk))
 		dev->txco_clk = NULL;
 
@@ -1109,7 +1022,7 @@ static int bcm_get_resources(struct bcm_device *dev)
 	if (IS_ERR(dev->lpo_clk))
 		dev->lpo_clk = NULL;
 
-	/* Check if we accidentally fetched the lpo clock twice */
+	 
 	if (dev->lpo_clk && clk_is_match(dev->lpo_clk, dev->txco_clk)) {
 		devm_clk_put(dev->dev, dev->txco_clk);
 		dev->txco_clk = NULL;
@@ -1148,7 +1061,7 @@ static int bcm_get_resources(struct bcm_device *dev)
 		dev->irq = 0;
 	}
 
-	/* IRQ can be declared in ACPI table as Interrupt or GpioInt */
+	 
 	if (dev->irq <= 0) {
 		struct gpio_desc *gpio;
 
@@ -1181,7 +1094,7 @@ static int bcm_acpi_probe(struct bcm_device *dev)
 	struct resource_entry *entry;
 	int ret;
 
-	/* Retrieve UART ACPI info */
+	 
 	dev->gpio_int_idx = -1;
 	ret = acpi_dev_get_resources(ACPI_COMPANION(dev->dev),
 				     &resources, bcm_resource, dev);
@@ -1196,10 +1109,7 @@ static int bcm_acpi_probe(struct bcm_device *dev)
 	}
 	acpi_dev_free_resource_list(&resources);
 
-	/* If the DSDT uses an Interrupt resource for the IRQ, then there are
-	 * only 2 GPIO resources, we use the irq-last mapping for this, since
-	 * we already have an irq the 3th / last mapping will not be used.
-	 */
+	 
 	if (dev->irq)
 		gpio_mapping = acpi_bcm_int_last_gpios;
 	else if (dev->gpio_int_idx == 0)
@@ -1210,7 +1120,7 @@ static int bcm_acpi_probe(struct bcm_device *dev)
 		dev_warn(dev->dev, "Unexpected ACPI gpio_int_idx: %d\n",
 			 dev->gpio_int_idx);
 
-	/* Warn if our expectations are not met. */
+	 
 	if (dev->gpio_count != (dev->irq ? 2 : 3))
 		dev_warn(dev->dev, "Unexpected number of ACPI GPIOs: %d\n",
 			 dev->gpio_count);
@@ -1232,7 +1142,7 @@ static int bcm_acpi_probe(struct bcm_device *dev)
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_ACPI */
+#endif  
 
 static int bcm_of_probe(struct bcm_device *bdev)
 {
@@ -1264,7 +1174,7 @@ static int bcm_probe(struct platform_device *pdev)
 
 	dev->irq = ret;
 
-	/* Initialize routing field to an unused value */
+	 
 	dev->pcm_int_params[0] = 0xff;
 
 	if (has_acpi_companion(&pdev->dev)) {
@@ -1281,7 +1191,7 @@ static int bcm_probe(struct platform_device *pdev)
 
 	dev_info(&pdev->dev, "%s device registered.\n", dev->name);
 
-	/* Place this instance on the device list */
+	 
 	mutex_lock(&bcm_device_lock);
 	list_add_tail(&dev->list, &bcm_device_list);
 	mutex_unlock(&bcm_device_lock);
@@ -1323,7 +1233,7 @@ static const struct hci_uart_proto bcm_proto = {
 
 #ifdef CONFIG_ACPI
 
-/* bcm43430a0/a1 BT does not support 48MHz UART clock, limit to 2000000 baud */
+ 
 static struct bcm_device_data bcm43430_device_data = {
 	.max_speed = 2000000,
 };
@@ -1501,7 +1411,7 @@ static const struct acpi_device_id bcm_acpi_match[] = {
 MODULE_DEVICE_TABLE(acpi, bcm_acpi_match);
 #endif
 
-/* suspend and resume callbacks */
+ 
 static const struct dev_pm_ops bcm_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(bcm_suspend, bcm_resume)
 	SET_RUNTIME_PM_OPS(bcm_suspend_device, bcm_resume_device, NULL)
@@ -1534,7 +1444,7 @@ static int bcm_serdev_probe(struct serdev_device *serdev)
 	bcmdev->serdev_hu.serdev = serdev;
 	serdev_device_set_drvdata(serdev, bcmdev);
 
-	/* Initialize routing field to an unused value */
+	 
 	bcmdev->pcm_int_params[0] = 0xff;
 
 	if (has_acpi_companion(&serdev->dev))
@@ -1627,9 +1537,7 @@ static struct serdev_device_driver bcm_serdev_driver = {
 
 int __init bcm_init(void)
 {
-	/* For now, we need to keep both platform device
-	 * driver (ACPI generated) and serdev driver (DT).
-	 */
+	 
 	platform_driver_register(&bcm_driver);
 	serdev_device_driver_register(&bcm_serdev_driver);
 

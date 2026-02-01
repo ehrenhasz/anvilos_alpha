@@ -1,22 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+ 
 
 #include "fs_ft_pool.h"
 
-/* Firmware currently has 4 pool of 4 sizes that it supports (FT_POOLS),
- * and a virtual memory region of 16M (MLX5_FT_SIZE), this region is duplicated
- * for each flow table pool. We can allocate up to 16M of each pool,
- * and we keep track of how much we used via mlx5_ft_pool_get_avail_sz.
- * Firmware doesn't report any of this for now.
- * ESW_POOL is expected to be sorted from large to small and match firmware
- * pools.
- */
+ 
 #define FT_SIZE (16 * 1024 * 1024)
 static const unsigned int FT_POOLS[] = { 4 * 1024 * 1024,
 					 1 * 1024 * 1024,
 					 64 * 1024,
 					 128,
-					 1 /* size for termination tables */ };
+					 1   };
 struct mlx5_ft_pool {
 	int ft_left[ARRAY_SIZE(FT_POOLS)];
 };

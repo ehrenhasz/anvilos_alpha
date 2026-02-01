@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include <crypto/internal/blake2s.h>
 
@@ -28,7 +26,7 @@ static __ro_after_init DEFINE_STATIC_KEY_FALSE(blake2s_use_avx512);
 void blake2s_compress(struct blake2s_state *state, const u8 *block,
 		      size_t nblocks, const u32 inc)
 {
-	/* SIMD disables preemption, so relax after processing each page. */
+	 
 	BUILD_BUG_ON(SZ_4K / BLAKE2S_BLOCK_SIZE < 8);
 
 	if (!static_branch_likely(&blake2s_use_ssse3) || !may_use_simd()) {

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2010 Juergen Beisert, Pengutronix
- * Copyright (C) 2016 Marek Vasut <marex@denx.de>
- *
- * i.MX23/i.MX28/i.MX6SX MXSFB LCD controller driver.
- */
+ 
+ 
 
 #ifndef __MXSFB_REGS_H__
 #define __MXSFB_REGS_H__
@@ -97,8 +92,8 @@
 #define SET_VERT_WAIT_CNT(x)		((x) & 0xffff)
 #define GET_VERT_WAIT_CNT(x)		((x) & 0xffff)
 
-#define VDCTRL4_SET_DOTCLK_DLY(x)	(((x) & 0x7) << 29) /* v4 only */
-#define VDCTRL4_GET_DOTCLK_DLY(x)	(((x) >> 29) & 0x7) /* v4 only */
+#define VDCTRL4_SET_DOTCLK_DLY(x)	(((x) & 0x7) << 29)  
+#define VDCTRL4_GET_DOTCLK_DLY(x)	(((x) >> 29) & 0x7)  
 #define VDCTRL4_SYNC_SIGNALS_ON		BIT(18)
 #define SET_DOTCLK_H_VALID_DATA_CNT(x)	((x) & 0x3ffff)
 
@@ -127,4 +122,4 @@
 #define MXSFB_MAX_XRES			0xffff
 #define MXSFB_MAX_YRES			0xffff
 
-#endif /* __MXSFB_REGS_H__ */
+#endif  

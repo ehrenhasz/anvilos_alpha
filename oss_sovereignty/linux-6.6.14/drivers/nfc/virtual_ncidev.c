@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtual NCI device simulation driver
- *
- * Copyright (C) 2020 Samsung Electrnoics
- * Bongsu Jeon <bongsu.jeon@samsung.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

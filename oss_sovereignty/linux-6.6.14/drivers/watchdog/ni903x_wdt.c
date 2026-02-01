@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 National Instruments Corp.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -158,7 +156,7 @@ static acpi_status ni903x_resources(struct acpi_resource *res, void *data)
 
 	case ACPI_RESOURCE_TYPE_END_TAG:
 	default:
-		/* Ignore unsupported resources, e.g. IRQ */
+		 
 		return AE_OK;
 	}
 }
@@ -214,7 +212,7 @@ static int ni903x_acpi_add(struct acpi_device *device)
 	if (ret)
 		return ret;
 
-	/* Switch from boot mode to user mode */
+	 
 	outb(NIWD_CONTROL_RESET | NIWD_CONTROL_MODE,
 	     wdt->io_base + NIWD_CONTROL);
 

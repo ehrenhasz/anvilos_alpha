@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* -------------------------------------------------------------------------
- * Copyright (C) 2014-2016, Intel Corporation
- *
- * -------------------------------------------------------------------------
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -38,7 +34,7 @@
 
 static void fdp_nci_i2c_reset(const struct fdp_i2c_phy *phy)
 {
-	/* Reset RST/WakeUP for at least 100 micro-second */
+	 
 	gpiod_set_value_cansleep(phy->power_gpio, FDP_POWER_OFF);
 	usleep_range(1000, 4000);
 	gpiod_set_value_cansleep(phy->power_gpio, FDP_POWER_ON);
@@ -66,12 +62,12 @@ static void fdp_nci_i2c_add_len_lrc(struct sk_buff *skb)
 	u8 lrc = 0;
 	u16 len, i;
 
-	/* Add length header */
+	 
 	len = skb->len;
 	*(u8 *)skb_push(skb, 1) = len & 0xff;
 	*(u8 *)skb_push(skb, 1) = len >> 8;
 
-	/* Compute and add lrc */
+	 
 	for (i = 0; i < len + 2; i++)
 		lrc ^= skb->data[i];
 
@@ -97,7 +93,7 @@ static int fdp_nci_i2c_write(void *phy_id, struct sk_buff *skb)
 	fdp_nci_i2c_dump_skb(&client->dev, "fdp_wr", skb);
 
 	r = i2c_master_send(client, skb->data, skb->len);
-	if (r == -EREMOTEIO) {  /* Retry, chip was in standby */
+	if (r == -EREMOTEIO) {   
 		usleep_range(1000, 4000);
 		r = i2c_master_send(client, skb->data, skb->len);
 	}
@@ -135,7 +131,7 @@ static int fdp_nci_i2c_read(struct fdp_i2c_phy *phy, struct sk_buff **skb)
 
 	*skb = NULL;
 
-	/* Read the length packet and the data packet */
+	 
 	for (k = 0; k < 2; k++) {
 
 		len = phy->next_read_size;
@@ -147,15 +143,11 @@ static int fdp_nci_i2c_read(struct fdp_i2c_phy *phy, struct sk_buff **skb)
 			goto flush;
 		}
 
-		/* Check packet integruty */
+		 
 		for (lrc = i = 0; i < r; i++)
 			lrc ^= tmp[i];
 
-		/*
-		 * LRC check failed. This may due to transmission error or
-		 * desynchronization between driver and FDP. Drop the packet
-		 * and force resynchronization
-		 */
+		 
 		if (lrc) {
 			dev_dbg(&client->dev, "%s: corrupted packet\n",
 				__func__);
@@ -163,7 +155,7 @@ static int fdp_nci_i2c_read(struct fdp_i2c_phy *phy, struct sk_buff **skb)
 			goto flush;
 		}
 
-		/* Packet that contains a length */
+		 
 		if (tmp[0] == 0 && tmp[1] == 0) {
 			phy->next_read_size = (tmp[2] << 8) + tmp[3] + 3;
 		} else {
@@ -185,7 +177,7 @@ static int fdp_nci_i2c_read(struct fdp_i2c_phy *phy, struct sk_buff **skb)
 	return 0;
 
 flush:
-	/* Flush the remaining data */
+	 
 	if (i2c_master_recv(client, tmp, sizeof(tmp)) < 0)
 		r = -EREMOTEIO;
 
@@ -240,7 +232,7 @@ static void fdp_nci_i2c_read_device_properties(struct device *dev,
 		if (r || len <= 0)
 			goto vsc_read_err;
 
-		/* Add 1 to the length to inclue the length byte itself */
+		 
 		len++;
 
 		*fw_vsc_cfg = devm_kmalloc_array(dev,
@@ -289,7 +281,7 @@ static int fdp_nci_i2c_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* Checking if we have an irq */
+	 
 	if (client->irq <= 0) {
 		nfc_err(dev, "IRQ not present\n");
 		return -ENODEV;
@@ -317,18 +309,18 @@ static int fdp_nci_i2c_probe(struct i2c_client *client)
 	if (r)
 		dev_dbg(dev, "Unable to add GPIO mapping table\n");
 
-	/* Requesting the power gpio */
+	 
 	phy->power_gpio = devm_gpiod_get(dev, "power", GPIOD_OUT_LOW);
 	if (IS_ERR(phy->power_gpio)) {
 		nfc_err(dev, "Power GPIO request failed\n");
 		return PTR_ERR(phy->power_gpio);
 	}
 
-	/* read device properties to get the clock and production settings */
+	 
 	fdp_nci_i2c_read_device_properties(dev, &clock_type, &clock_freq,
 					   &fw_vsc_cfg);
 
-	/* Call the NFC specific probe function */
+	 
 	r = fdp_nci_probe(phy, &i2c_phy_ops, &phy->ndev,
 			  FDP_FRAME_HEADROOM, FDP_FRAME_TAILROOM,
 			  clock_type, clock_freq, fw_vsc_cfg);

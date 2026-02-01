@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Support for hardware buffer manager.
- *
- * Copyright (C) 2016 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/printk.h>
 #include <linux/skbuff.h>
@@ -19,7 +14,7 @@ void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf)
 }
 EXPORT_SYMBOL_GPL(hwbm_buf_free);
 
-/* Refill processing for HW buffer management */
+ 
 int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp)
 {
 	int frag_size = bm_pool->frag_size;
@@ -74,7 +69,7 @@ int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num)
 			break;
 	}
 
-	/* Update BM driver with number of buffers added to pool */
+	 
 	bm_pool->buf_num += i;
 
 	pr_debug("hwpm pool: %d of %d buffers added\n", i, buf_num);

@@ -1,23 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include "sparx5_main_regs.h"
 #include "sparx5_main.h"
 
 struct sparx5_sdlb_group sdlb_groups[SPX5_SDLB_GROUP_CNT] = {
-	{ SPX5_SDLB_GROUP_RATE_MAX,    8192 / 1, 64 }, /*  25 G */
-	{ 15000000000ULL,              8192 / 1, 64 }, /*  15 G */
-	{ 10000000000ULL,              8192 / 1, 64 }, /*  10 G */
-	{  5000000000ULL,              8192 / 1, 64 }, /*   5 G */
-	{  2500000000ULL,              8192 / 1, 64 }, /* 2.5 G */
-	{  1000000000ULL,              8192 / 2, 64 }, /*   1 G */
-	{   500000000ULL,              8192 / 2, 64 }, /* 500 M */
-	{   100000000ULL,              8192 / 4, 64 }, /* 100 M */
-	{    50000000ULL,              8192 / 4, 64 }, /*  50 M */
-	{     5000000ULL,              8192 / 8, 64 }  /*   5 M */
+	{ SPX5_SDLB_GROUP_RATE_MAX,    8192 / 1, 64 },  
+	{ 15000000000ULL,              8192 / 1, 64 },  
+	{ 10000000000ULL,              8192 / 1, 64 },  
+	{  5000000000ULL,              8192 / 1, 64 },  
+	{  2500000000ULL,              8192 / 1, 64 },  
+	{  1000000000ULL,              8192 / 2, 64 },  
+	{   500000000ULL,              8192 / 2, 64 },  
+	{   100000000ULL,              8192 / 4, 64 },  
+	{    50000000ULL,              8192 / 4, 64 },  
+	{     5000000ULL,              8192 / 8, 64 }   
 };
 
 int sparx5_sdlb_clk_hz_get(struct sparx5 *sparx5)
@@ -149,10 +146,10 @@ static int sparx5_sdlb_group_get_adjacent(struct sparx5 *sparx5, u32 group,
 		*next = sparx5_sdlb_group_get_next(sparx5, group, itr);
 
 		if (itr == idx)
-			return 0; /* Found it */
+			return 0;  
 
 		if (itr == *next)
-			return -EINVAL; /* Was not found */
+			return -EINVAL;  
 
 		*prev = itr;
 		itr = *next;
@@ -189,10 +186,7 @@ int sparx5_sdlb_group_get_by_rate(struct sparx5 *sparx5, u32 rate, u32 burst)
 
 		count = sparx5_sdlb_group_get_count(sparx5, i);
 
-		/* Check that this group is not full.
-		 * According to LB group configuration rules: the number of XLBs
-		 * in a group must not exceed PUP_INTERVAL/4 - 1.
-		 */
+		 
 		if (count > ((group->pup_interval / 4) - 1))
 			continue;
 
@@ -219,10 +213,10 @@ int sparx5_sdlb_group_get_by_index(struct sparx5 *sparx5, u32 idx, u32 *group)
 
 			if (itr == idx) {
 				*group = i;
-				return 0; /* Found it */
+				return 0;  
 			}
 			if (itr == next)
-				break; /* Was not found */
+				break;  
 
 			itr = next;
 		}
@@ -234,22 +228,22 @@ int sparx5_sdlb_group_get_by_index(struct sparx5 *sparx5, u32 idx, u32 *group)
 static int sparx5_sdlb_group_link(struct sparx5 *sparx5, u32 group, u32 idx,
 				  u32 first, u32 next, bool empty)
 {
-	/* Stop leaking */
+	 
 	sparx5_sdlb_group_disable(sparx5, group);
 
 	if (empty)
 		return 0;
 
-	/* Link insertion lb to next lb */
+	 
 	spx5_wr(ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT_SET(next) |
 			ANA_AC_SDLB_XLB_NEXT_LBGRP_SET(group),
 		sparx5, ANA_AC_SDLB_XLB_NEXT(idx));
 
-	/* Set the first lb */
+	 
 	spx5_wr(ANA_AC_SDLB_XLB_START_LBSET_START_SET(first), sparx5,
 		ANA_AC_SDLB_XLB_START(group));
 
-	/* Start leaking */
+	 
 	sparx5_sdlb_group_enable(sparx5, group);
 
 	return 0;
@@ -259,7 +253,7 @@ int sparx5_sdlb_group_add(struct sparx5 *sparx5, u32 group, u32 idx)
 {
 	u32 first, next;
 
-	/* We always add to head of the list */
+	 
 	first = idx;
 
 	if (sparx5_sdlb_group_is_empty(sparx5, group))
@@ -285,15 +279,15 @@ int sparx5_sdlb_group_del(struct sparx5 *sparx5, u32 group, u32 idx)
 	if (sparx5_sdlb_group_is_singular(sparx5, group)) {
 		empty = true;
 	} else if (sparx5_sdlb_group_is_last(sparx5, group, idx)) {
-		/* idx is removed, prev is now last */
+		 
 		idx = prev;
 		next = prev;
 	} else if (sparx5_sdlb_group_is_first(sparx5, group, idx)) {
-		/* idx is removed and points to itself, first is next */
+		 
 		first = next;
 		next = idx;
 	} else {
-		/* Next is not touched */
+		 
 		idx = prev;
 	}
 
@@ -309,7 +303,7 @@ void sparx5_sdlb_group_init(struct sparx5 *sparx5, u64 max_rate, u32 min_burst,
 
 	group = &sdlb_groups[idx];
 
-	/* Number of positions to right-shift LB's threshold value. */
+	 
 	while ((min_burst & mask) == 0) {
 		power++;
 		mask <<= 1;

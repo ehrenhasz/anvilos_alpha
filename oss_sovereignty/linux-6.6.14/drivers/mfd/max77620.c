@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim MAX77620 MFD Driver
- *
- * Copyright (C) 2016 NVIDIA CORPORATION. All rights reserved.
- *
- * Author:
- *	Laxman Dewangan <ldewangan@nvidia.com>
- *	Chaitanya Bandi <bandik@nvidia.com>
- *	Mallikarjun Kasoju <mkasoju@nvidia.com>
- */
 
-/****************** Teminology used in driver ********************
- * Here are some terminology used from datasheet for quick reference:
- * Flexible Power Sequence (FPS):
- * The Flexible Power Sequencer (FPS) allows each regulator to power up under
- * hardware or software control. Additionally, each regulator can power on
- * independently or among a group of other regulators with an adjustable
- * power-up and power-down delays (sequencing). GPIO1, GPIO2, and GPIO3 can
- * be programmed to be part of a sequence allowing external regulators to be
- * sequenced along with internal regulators. 32KHz clock can be programmed to
- * be part of a sequence.
- * There is 3 FPS confguration registers and all resources are configured to
- * any of these FPS or no FPS.
- */
+ 
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -219,14 +198,7 @@ static const struct regmap_config max77663_regmap_config = {
 	.volatile_table = &max77620_volatile_table,
 };
 
-/*
- * MAX77620 and MAX20024 has the following steps of the interrupt handling
- * for TOP interrupts:
- * 1. When interrupt occurs from PMIC, mask the PMIC interrupt by setting GLBLM.
- * 2. Read IRQTOP and service the interrupt.
- * 3. Once all interrupts has been checked and serviced, the interrupt service
- *    routine un-masks the hardware interrupt line by clearing GLBLM.
- */
+ 
 static int max77620_irq_global_mask(void *irq_drv_data)
 {
 	struct max77620_chip *chip = irq_drv_data;
@@ -264,17 +236,7 @@ static struct regmap_irq_chip max77620_top_irq_chip = {
 	.handle_post_irq = max77620_irq_global_unmask,
 };
 
-/* max77620_get_fps_period_reg_value:  Get FPS bit field value from
- *				       requested periods.
- * MAX77620 supports the FPS period of 40, 80, 160, 320, 540, 1280, 2560
- * and 5120 microseconds. MAX20024 supports the FPS period of 20, 40, 80,
- * 160, 320, 540, 1280 and 2560 microseconds.
- * The FPS register has 3 bits field to set the FPS period as
- * bits		max77620		max20024
- * 000		40			20
- * 001		80			40
- * :::
-*/
+ 
 static int max77620_get_fps_period_reg_value(struct max77620_chip *chip,
 					     int tperiod)
 {
@@ -304,9 +266,7 @@ static int max77620_get_fps_period_reg_value(struct max77620_chip *chip,
 	return i;
 }
 
-/* max77620_config_fps: Configure FPS configuration registers
- *			based on platform specific information.
- */
+ 
 static int max77620_config_fps(struct max77620_chip *chip,
 			       struct device_node *fps_np)
 {
@@ -436,7 +396,7 @@ skip_fps:
 	if (chip->chip_id == MAX77663)
 		return 0;
 
-	/* Enable wake on EN0 pin */
+	 
 	ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG2,
 				 MAX77620_ONOFFCNFG2_WK_EN0,
 				 MAX77620_ONOFFCNFG2_WK_EN0);
@@ -445,7 +405,7 @@ skip_fps:
 		return ret;
 	}
 
-	/* For MAX20024, SLPEN will be POR reset if CLRSE is b11 */
+	 
 	if ((chip->chip_id == MAX20024) && chip->sleep_enable) {
 		config = MAX77620_ONOFFCNFG1_SLPEN | MAX20024_ONOFFCNFG1_CLRSE;
 		ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG1,
@@ -477,7 +437,7 @@ static int max77620_read_es_version(struct max77620_chip *chip)
 		cid_val[i - MAX77620_REG_CID0] = val;
 	}
 
-	/* CID4 is OTP Version  and CID5 is ES version */
+	 
 	dev_info(chip->dev, "PMIC Version OTP:0x%02X and ES:0x%X\n",
 		 cid_val[4], MAX77620_CID5_DIDM(cid_val[5]));
 
@@ -610,10 +570,7 @@ static int max77620_i2c_suspend(struct device *dev)
 			return ret;
 	}
 
-	/*
-	 * For MAX20024: No need to configure SLPEN on suspend as
-	 * it will be configured on Init.
-	 */
+	 
 	if (chip->chip_id == MAX20024)
 		goto out;
 
@@ -629,7 +586,7 @@ static int max77620_i2c_suspend(struct device *dev)
 	if (chip->chip_id == MAX77663)
 		goto out;
 
-	/* Disable WK_EN0 */
+	 
 	ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG2,
 				 MAX77620_ONOFFCNFG2_WK_EN0, 0);
 	if (ret < 0) {
@@ -660,14 +617,11 @@ static int max77620_i2c_resume(struct device *dev)
 			return ret;
 	}
 
-	/*
-	 * For MAX20024: No need to configure WKEN0 on resume as
-	 * it is configured on Init.
-	 */
+	 
 	if (chip->chip_id == MAX20024 || chip->chip_id == MAX77663)
 		goto out;
 
-	/* Enable WK_EN0 */
+	 
 	ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG2,
 				 MAX77620_ONOFFCNFG2_WK_EN0,
 				 MAX77620_ONOFFCNFG2_WK_EN0);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiaEn Wu <chiaen_wu@richtek.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/bitfield.h>
@@ -135,7 +131,7 @@ static int mt6370_init_backlight_properties(struct mt6370_priv *priv,
 	unsigned int mask, val;
 	int ret;
 
-	/* Vendor optional properties */
+	 
 	val = 0;
 	if (device_property_read_bool(dev, "mediatek,bled-pwm-enable"))
 		val |= MT6370_BL_PWM_EN_MASK;
@@ -193,7 +189,7 @@ static int mt6370_init_backlight_properties(struct mt6370_priv *priv,
 	if (ret)
 		return ret;
 
-	/* Common properties */
+	 
 	ret = device_property_read_u32(dev, "max-brightness", &brightness);
 	if (ret)
 		brightness = priv->def_max_brightness;
@@ -238,13 +234,7 @@ static int mt6370_init_backlight_properties(struct mt6370_priv *priv,
 
 static int mt6370_check_vendor_info(struct mt6370_priv *priv)
 {
-	/*
-	 * Because MT6372 uses 14 bits to control the brightness,
-	 * MT6370 and MT6371 use 11 bits. This function is used
-	 * to check the vendor's ID and set the relative hardware
-	 * mask, shift and default maximum brightness value that
-	 * should be used.
-	 */
+	 
 	unsigned int dev_info, hw_vid, of_vid;
 	int ret;
 

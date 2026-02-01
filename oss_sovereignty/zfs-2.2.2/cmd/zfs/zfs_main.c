@@ -1,37 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2020 by Delphix. All rights reserved.
- * Copyright 2012 Milan Jurik. All rights reserved.
- * Copyright (c) 2012, Joyent, Inc. All rights reserved.
- * Copyright (c) 2013 Steven Hartland.  All rights reserved.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>.
- * Copyright 2016 Nexenta Systems, Inc.
- * Copyright (c) 2019 Datto Inc.
- * Copyright (c) 2019, loli10K <ezomori.nozomu@gmail.com>
- * Copyright 2019 Joyent, Inc.
- * Copyright (c) 2019, 2020 by Christian Schwarz. All rights reserved.
- */
+ 
 
 #include <assert.h>
 #include <ctype.h>
@@ -75,7 +44,7 @@
 #ifdef HAVE_IDMAP
 #include <aclutils.h>
 #include <directory.h>
-#endif /* HAVE_IDMAP */
+#endif  
 
 #include "zfs_iter.h"
 #include "zfs_util.h"
@@ -134,21 +103,19 @@ static int zfs_do_unzone(int argc, char **argv);
 
 static int zfs_do_help(int argc, char **argv);
 
-/*
- * Enable a reasonable set of defaults for libumem debugging on DEBUG builds.
- */
+ 
 
 #ifdef DEBUG
 const char *
 _umem_debug_init(void)
 {
-	return ("default,verbose"); /* $UMEM_DEBUG setting */
+	return ("default,verbose");  
 }
 
 const char *
 _umem_logging_init(void)
 {
-	return ("fail,contents"); /* $UMEM_LOGGING setting */
+	return ("fail,contents");  
 }
 #endif
 
@@ -201,15 +168,7 @@ typedef struct zfs_command {
 	zfs_help_t	usage;
 } zfs_command_t;
 
-/*
- * Master command table.  Each ZFS command has a name, associated function, and
- * usage message.  The usage messages need to be internationalized, so we have
- * to have a function to return the usage message based on a command index.
- *
- * These commands are organized according to how they are displayed in the usage
- * message.  An empty command (one with a NULL name) indicates an empty line in
- * the generic usage message.
- */
+ 
 static zfs_command_t command_table[] = {
 	{ "version",	zfs_do_version, 	HELP_VERSION		},
 	{ NULL },
@@ -445,9 +404,7 @@ nomem(void)
 	exit(1);
 }
 
-/*
- * Utility function to guarantee malloc() success.
- */
+ 
 
 void *
 safe_malloc(size_t size)
@@ -483,10 +440,7 @@ safe_strdup(const char *str)
 	return (dupstr);
 }
 
-/*
- * Callback routine that will print out information for each of
- * the properties.
- */
+ 
 static int
 usage_prop_cb(int prop, void *cb)
 {
@@ -509,11 +463,7 @@ usage_prop_cb(int prop, void *cb)
 	return (ZPROP_CONT);
 }
 
-/*
- * Display usage message.  If we're inside a command, display only the usage for
- * that command.  Otherwise, iterate over the entire command table and display
- * a complete usage message.
- */
+ 
 static __attribute__((noreturn)) void
 usage(boolean_t requested)
 {
@@ -556,7 +506,7 @@ usage(boolean_t requested)
 		(void) fprintf(fp, "\n\t%-14s %s  %s   %s\n\n",
 		    "PROPERTY", "EDIT", "INHERIT", "VALUES");
 
-		/* Iterate over all properties */
+		 
 		(void) zprop_iter(usage_prop_cb, fp, B_FALSE, B_TRUE,
 		    ZFS_TYPE_DATASET);
 
@@ -613,9 +563,7 @@ usage(boolean_t requested)
 		    "run: %s\n"), "zfs help [<topic>]");
 	}
 
-	/*
-	 * See comments at end of main().
-	 */
+	 
 	if (getenv("ZFS_ABORT") != NULL) {
 		(void) printf("dumping core by request\n");
 		abort();
@@ -624,10 +572,7 @@ usage(boolean_t requested)
 	exit(requested ? 0 : 2);
 }
 
-/*
- * Take a property=value argument string and add it to the given nvlist.
- * Modifies the argument inplace.
- */
+ 
 static boolean_t
 parseprop(nvlist_t *props, char *propname)
 {
@@ -650,10 +595,7 @@ parseprop(nvlist_t *props, char *propname)
 	return (B_TRUE);
 }
 
-/*
- * Take a property name argument and add it to the given nvlist.
- * Modifies the argument inplace.
- */
+ 
 static boolean_t
 parsepropname(nvlist_t *props, char *propname)
 {
@@ -693,7 +635,7 @@ parse_depth(char *opt, int *flags)
 	return (depth);
 }
 
-#define	PROGRESS_DELAY 2		/* seconds */
+#define	PROGRESS_DELAY 2		 
 
 static const char *pt_reverse =
 	"\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
@@ -758,23 +700,13 @@ zfs_mount_and_share(libzfs_handle_t *hdl, const char *dataset, zfs_type_t type)
 	if (zhp == NULL)
 		return (1);
 
-	/*
-	 * Volumes may neither be mounted or shared.  Potentially in the
-	 * future filesystems detected on these volumes could be mounted.
-	 */
+	 
 	if (zfs_get_type(zhp) == ZFS_TYPE_VOLUME) {
 		zfs_close(zhp);
 		return (0);
 	}
 
-	/*
-	 * Mount and/or share the new filesystem as appropriate.  We provide a
-	 * verbose error message to let the user know that their filesystem was
-	 * in fact created, even if we failed to mount or share it.
-	 *
-	 * If the user doesn't want the dataset automatically mounted, then
-	 * skip the mount/share step
-	 */
+	 
 	if (zfs_prop_valid_for_type(ZFS_PROP_CANMOUNT, type, B_FALSE) &&
 	    zfs_prop_get_int(zhp, ZFS_PROP_CANMOUNT) == ZFS_CANMOUNT_ON) {
 		if (zfs_mount_delegation_check()) {
@@ -799,16 +731,7 @@ zfs_mount_and_share(libzfs_handle_t *hdl, const char *dataset, zfs_type_t type)
 	return (ret);
 }
 
-/*
- * zfs clone [-p] [-o prop=value] ... <snap> <fs | vol>
- *
- * Given an existing dataset, create a writable copy whose initial contents
- * are the same as the source.  The newly created dataset maintains a
- * dependency on the original; the original cannot be destroyed so long as
- * the clone exists.
- *
- * The '-p' flag creates all the non-existing ancestors of the target first.
- */
+ 
 static int
 zfs_do_clone(int argc, char **argv)
 {
@@ -821,7 +744,7 @@ zfs_do_clone(int argc, char **argv)
 	if (nvlist_alloc(&props, NV_UNIQUE_NAME, 0) != 0)
 		nomem();
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "o:p")) != -1) {
 		switch (c) {
 		case 'o':
@@ -843,7 +766,7 @@ zfs_do_clone(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing source dataset "
 		    "argument\n"));
@@ -859,7 +782,7 @@ zfs_do_clone(int argc, char **argv)
 		goto usage;
 	}
 
-	/* open the source dataset */
+	 
 	if ((zhp = zfs_open(g_zfs, argv[0], ZFS_TYPE_SNAPSHOT)) == NULL) {
 		nvlist_free(props);
 		return (1);
@@ -867,11 +790,7 @@ zfs_do_clone(int argc, char **argv)
 
 	if (parents && zfs_name_valid(argv[1], ZFS_TYPE_FILESYSTEM |
 	    ZFS_TYPE_VOLUME)) {
-		/*
-		 * Now create the ancestors of the target dataset.  If the
-		 * target already exists and '-p' option was used we should not
-		 * complain.
-		 */
+		 
 		if (zfs_dataset_exists(g_zfs, argv[1], ZFS_TYPE_FILESYSTEM |
 		    ZFS_TYPE_VOLUME)) {
 			zfs_close(zhp);
@@ -885,10 +804,10 @@ zfs_do_clone(int argc, char **argv)
 		}
 	}
 
-	/* pass to libzfs */
+	 
 	ret = zfs_clone(zhp, argv[1], props);
 
-	/* create the mountpoint if necessary */
+	 
 	if (ret == 0) {
 		if (log_history) {
 			(void) zpool_log_history(g_zfs, history_str);
@@ -910,11 +829,7 @@ usage:
 	return (-1);
 }
 
-/*
- * Return a default volblocksize for the pool which always uses more than
- * half of the data sectors.  This primarily applies to dRAID which always
- * writes full stripe widths.
- */
+ 
 static uint64_t
 default_volblocksize(zpool_handle_t *zhp, nvlist_t *props)
 {
@@ -939,42 +854,22 @@ default_volblocksize(zpool_handle_t *zhp, nvlist_t *props)
 
 		if (nvlist_lookup_uint64(nv, ZPOOL_CONFIG_DRAID_NDATA,
 		    &ndata) == 0) {
-			/* dRAID minimum allocation width */
+			 
 			asize = MAX(asize, ndata * (1ULL << ashift));
 		} else if (nvlist_lookup_uint64(nv, ZPOOL_CONFIG_NPARITY,
 		    &nparity) == 0) {
-			/* raidz minimum allocation width */
+			 
 			if (nparity == 1)
 				asize = MAX(asize, 2 * (1ULL << ashift));
 			else
 				asize = MAX(asize, 4 * (1ULL << ashift));
 		} else {
-			/* mirror or (non-redundant) leaf vdev */
+			 
 			asize = MAX(asize, 1ULL << ashift);
 		}
 	}
 
-	/*
-	 * Calculate the target volblocksize such that more than half
-	 * of the asize is used. The following table is for 4k sectors.
-	 *
-	 * n   asize   blksz  used  |   n   asize   blksz  used
-	 * -------------------------+---------------------------------
-	 * 1   4,096   8,192  100%  |   9  36,864  32,768   88%
-	 * 2   8,192   8,192  100%  |  10  40,960  32,768   80%
-	 * 3  12,288   8,192   66%  |  11  45,056  32,768   72%
-	 * 4  16,384  16,384  100%  |  12  49,152  32,768   66%
-	 * 5  20,480  16,384   80%  |  13  53,248  32,768   61%
-	 * 6  24,576  16,384   66%  |  14  57,344  32,768   57%
-	 * 7  28,672  16,384   57%  |  15  61,440  32,768   53%
-	 * 8  32,768  32,768  100%  |  16  65,536  65,636  100%
-	 *
-	 * This is primarily a concern for dRAID which always allocates
-	 * a full stripe width.  For dRAID the default stripe width is
-	 * n=8 in which case the volblocksize is set to 32k. Ignoring
-	 * compression there are no unused sectors.  This same reasoning
-	 * applies to raidz[2,3] so target 4 sectors to minimize waste.
-	 */
+	 
 	uint64_t tgt_volblocksize = ZVOL_DEFAULT_BLOCKSIZE;
 	while (tgt_volblocksize * 2 <= asize)
 		tgt_volblocksize *= 2;
@@ -982,7 +877,7 @@ default_volblocksize(zpool_handle_t *zhp, nvlist_t *props)
 	const char *prop = zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE);
 	if (nvlist_lookup_uint64(props, prop, &volblocksize) == 0) {
 
-		/* Issue a warning when a non-optimal size is requested. */
+		 
 		if (volblocksize < ZVOL_DEFAULT_BLOCKSIZE) {
 			(void) fprintf(stderr, gettext("Warning: "
 			    "volblocksize (%llu) is less than the default "
@@ -1011,31 +906,7 @@ default_volblocksize(zpool_handle_t *zhp, nvlist_t *props)
 	return (volblocksize);
 }
 
-/*
- * zfs create [-Pnpv] [-o prop=value] ... fs
- * zfs create [-Pnpsv] [-b blocksize] [-o prop=value] ... -V vol size
- *
- * Create a new dataset.  This command can be used to create filesystems
- * and volumes.  Snapshot creation is handled by 'zfs snapshot'.
- * For volumes, the user must specify a size to be used.
- *
- * The '-s' flag applies only to volumes, and indicates that we should not try
- * to set the reservation for this volume.  By default we set a reservation
- * equal to the size for any volume.  For pools with SPA_VERSION >=
- * SPA_VERSION_REFRESERVATION, we set a refreservation instead.
- *
- * The '-p' flag creates all the non-existing ancestors of the target first.
- *
- * The '-n' flag is no-op (dry run) mode.  This will perform a user-space sanity
- * check of arguments and properties, but does not check for permissions,
- * available space, etc.
- *
- * The '-u' flag prevents the newly created file system from being mounted.
- *
- * The '-v' flag is for verbose output.
- *
- * The '-P' flag is used for parseable output.  It implies '-v'.
- */
+ 
 static int
 zfs_do_create(int argc, char **argv)
 {
@@ -1059,7 +930,7 @@ zfs_do_create(int argc, char **argv)
 	if (nvlist_alloc(&props, NV_UNIQUE_NAME, 0) != 0)
 		nomem();
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, ":PV:b:nso:puv")) != -1) {
 		switch (c) {
 		case 'V':
@@ -1138,7 +1009,7 @@ zfs_do_create(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc == 0) {
 		(void) fprintf(stderr, gettext("missing %s argument\n"),
 		    zfs_type_to_name(type));
@@ -1186,10 +1057,7 @@ zfs_do_create(int argc, char **argv)
 			free(tmp);
 		}
 
-		/*
-		 * If volsize is not a multiple of volblocksize, round it
-		 * up to the nearest multiple of the volblocksize.
-		 */
+		 
 		if (volsize % volblocksize) {
 			volsize = P2ROUNDUP_TYPED(volsize, volblocksize,
 			    uint64_t);
@@ -1231,11 +1099,7 @@ zfs_do_create(int argc, char **argv)
 	}
 
 	if (parents && zfs_name_valid(argv[0], type)) {
-		/*
-		 * Now create the ancestors of target dataset.  If the target
-		 * already exists and '-p' option was used we should not
-		 * complain.
-		 */
+		 
 		if (zfs_dataset_exists(g_zfs, argv[0], type)) {
 			ret = 0;
 			goto error;
@@ -1286,7 +1150,7 @@ zfs_do_create(int argc, char **argv)
 		goto error;
 	}
 
-	/* pass to libzfs */
+	 
 	if (zfs_create(g_zfs, argv[0], type, props) != 0)
 		goto error;
 
@@ -1310,19 +1174,7 @@ badusage:
 	return (2);
 }
 
-/*
- * zfs destroy [-rRf] <fs, vol>
- * zfs destroy [-rRd] <snap>
- *
- *	-r	Recursively destroy all children
- *	-R	Recursively destroy all dependents, including clones
- *	-f	Force unmounting of any dependents
- *	-d	If we can't destroy now, mark for deferred destruction
- *
- * Destroys the given dataset.  By default, it will unmount any filesystems,
- * and refuse to destroy a dataset that has any dependents.  A dependent can
- * either be a child, or a clone of a child.
- */
+ 
 typedef struct destroy_cbdata {
 	boolean_t	cb_first;
 	boolean_t	cb_force;
@@ -1337,9 +1189,9 @@ typedef struct destroy_cbdata {
 	nvlist_t	*cb_nvl;
 	nvlist_t	*cb_batchedsnaps;
 
-	/* first snap in contiguous run */
+	 
 	char		*cb_firstsnap;
-	/* previous snap in contiguous run */
+	 
 	char		*cb_prevsnap;
 	int64_t		cb_snapused;
 	char		*cb_snapspec;
@@ -1347,9 +1199,7 @@ typedef struct destroy_cbdata {
 	uint64_t	cb_snap_count;
 } destroy_cbdata_t;
 
-/*
- * Check for any dependents based on the '-r' or '-R' flags.
- */
+ 
 static int
 destroy_check_dependent(zfs_handle_t *zhp, void *data)
 {
@@ -1359,10 +1209,7 @@ destroy_check_dependent(zfs_handle_t *zhp, void *data)
 
 	if (strncmp(tname, name, strlen(tname)) == 0 &&
 	    (name[strlen(tname)] == '/' || name[strlen(tname)] == '@')) {
-		/*
-		 * This is a direct descendant, not a clone somewhere else in
-		 * the hierarchy.
-		 */
+		 
 		if (cbp->cb_recurse)
 			goto out;
 
@@ -1379,10 +1226,7 @@ destroy_check_dependent(zfs_handle_t *zhp, void *data)
 
 		(void) fprintf(stderr, "%s\n", zfs_get_name(zhp));
 	} else {
-		/*
-		 * This is a clone.  We only want to report this if the '-r'
-		 * wasn't specified, or the target is a snapshot.
-		 */
+		 
 		if (!cbp->cb_recurse &&
 		    zfs_get_type(cbp->cb_target) != ZFS_TYPE_SNAPSHOT)
 			goto out;
@@ -1436,10 +1280,7 @@ destroy_callback(zfs_handle_t *zhp, void *data)
 		}
 	}
 
-	/*
-	 * Ignore pools (which we've already flagged as an error before getting
-	 * here).
-	 */
+	 
 	if (strchr(zfs_get_name(zhp), '/') == NULL &&
 	    zfs_get_type(zhp) == ZFS_TYPE_FILESYSTEM) {
 		zfs_close(zhp);
@@ -1450,12 +1291,7 @@ destroy_callback(zfs_handle_t *zhp, void *data)
 		return (0);
 	}
 
-	/*
-	 * We batch up all contiguous snapshots (even of different
-	 * filesystems) and destroy them with one ioctl.  We can't
-	 * simply do all snap deletions and then all fs deletions,
-	 * because we must delete a clone before its origin.
-	 */
+	 
 	if (zfs_get_type(zhp) == ZFS_TYPE_SNAPSHOT) {
 		cb->cb_snap_count++;
 		fnvlist_add_boolean(cb->cb_batchedsnaps, name);
@@ -1472,11 +1308,7 @@ destroy_callback(zfs_handle_t *zhp, void *data)
 		    zfs_unmount(zhp, NULL, cb->cb_force ? MS_FORCE : 0) != 0 ||
 		    zfs_destroy(zhp, cb->cb_defer_destroy) != 0) {
 			zfs_close(zhp);
-			/*
-			 * When performing a recursive destroy we ignore errors
-			 * so that the recursive destroy could continue
-			 * destroying past problem datasets
-			 */
+			 
 			if (cb->cb_recurse) {
 				cb->cb_error = B_TRUE;
 				return (0);
@@ -1501,7 +1333,7 @@ destroy_print_cb(zfs_handle_t *zhp, void *arg)
 			cb->cb_firstsnap = strdup(name);
 		if (cb->cb_prevsnap != NULL)
 			free(cb->cb_prevsnap);
-		/* this snap continues the current range */
+		 
 		cb->cb_prevsnap = strdup(name);
 		if (cb->cb_firstsnap == NULL || cb->cb_prevsnap == NULL)
 			nomem();
@@ -1517,7 +1349,7 @@ destroy_print_cb(zfs_handle_t *zhp, void *arg)
 			}
 		}
 	} else if (cb->cb_firstsnap != NULL) {
-		/* end of this range */
+		 
 		uint64_t used = 0;
 		err = lzc_snaprange_space(cb->cb_firstsnap,
 		    cb->cb_prevsnap, &used);
@@ -1560,7 +1392,7 @@ snapshot_to_nvl_cb(zfs_handle_t *zhp, void *arg)
 	destroy_cbdata_t *cb = arg;
 	int err = 0;
 
-	/* Check for clones. */
+	 
 	if (!cb->cb_doclones && !cb->cb_defer_destroy) {
 		cb->cb_target = zhp;
 		cb->cb_first = B_TRUE;
@@ -1616,10 +1448,7 @@ destroy_clones(destroy_cbdata_t *cb)
 			boolean_t defer = cb->cb_defer_destroy;
 			int err;
 
-			/*
-			 * We can't defer destroy non-snapshots, so set it to
-			 * false while destroying the clones.
-			 */
+			 
 			cb->cb_defer_destroy = B_FALSE;
 			err = zfs_iter_dependents_v2(zhp, 0, B_FALSE,
 			    destroy_callback, cb);
@@ -1643,7 +1472,7 @@ zfs_do_destroy(int argc, char **argv)
 	char *at, *pound;
 	zfs_type_t type = ZFS_TYPE_DATASET;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "vpndfrR")) != -1) {
 		switch (c) {
 		case 'v':
@@ -1681,7 +1510,7 @@ zfs_do_destroy(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc == 0) {
 		(void) fprintf(stderr, gettext("missing dataset argument\n"));
 		usage(B_FALSE);
@@ -1695,7 +1524,7 @@ zfs_do_destroy(int argc, char **argv)
 	pound = strchr(argv[0], '#');
 	if (at != NULL) {
 
-		/* Build the list of snaps to destroy in cb_nvl. */
+		 
 		cb.cb_nvl = fnvlist_alloc();
 
 		*at = '\0';
@@ -1778,13 +1607,7 @@ zfs_do_destroy(int argc, char **argv)
 			return (-1);
 		}
 
-		/*
-		 * Unfortunately, zfs_bookmark() doesn't honor the
-		 * casesensitivity setting.  However, we can't simply
-		 * remove this check, because lzc_destroy_bookmarks()
-		 * ignores non-existent bookmarks, so this is necessary
-		 * to get a proper error message.
-		 */
+		 
 		if (!zfs_bookmark_exists(argv[0])) {
 			(void) fprintf(stderr, gettext("bookmark '%s' "
 			    "does not exist.\n"), argv[0]);
@@ -1804,15 +1627,13 @@ zfs_do_destroy(int argc, char **argv)
 
 		return (err);
 	} else {
-		/* Open the given dataset */
+		 
 		if ((zhp = zfs_open(g_zfs, argv[0], type)) == NULL)
 			return (1);
 
 		cb.cb_target = zhp;
 
-		/*
-		 * Perform an explicit check for pools before going any further.
-		 */
+		 
 		if (!cb.cb_recurse && strchr(zfs_get_name(zhp), '/') == NULL &&
 		    zfs_get_type(zhp) == ZFS_TYPE_FILESYSTEM) {
 			(void) fprintf(stderr, gettext("cannot destroy '%s': "
@@ -1827,9 +1648,7 @@ zfs_do_destroy(int argc, char **argv)
 			goto out;
 		}
 
-		/*
-		 * Check for any dependents and/or clones.
-		 */
+		 
 		cb.cb_first = B_TRUE;
 		if (!cb.cb_doclones && zfs_iter_dependents_v2(zhp, 0, B_TRUE,
 		    destroy_check_dependent, &cb) != 0) {
@@ -1848,10 +1667,7 @@ zfs_do_destroy(int argc, char **argv)
 			goto out;
 		}
 
-		/*
-		 * Do the real thing.  The callback will close the
-		 * handle regardless of whether it succeeds or not.
-		 */
+		 
 		err = destroy_callback(zhp, &cb);
 		zhp = NULL;
 		if (err == 0) {
@@ -1883,28 +1699,9 @@ is_recvd_column(zprop_get_cbdata_t *cbp)
 	return (B_FALSE);
 }
 
-/*
- * zfs get [-rHp] [-o all | field[,field]...] [-s source[,source]...]
- *	< all | property[,property]... > < fs | snap | vol > ...
- *
- *	-r	recurse over any child datasets
- *	-H	scripted mode.  Headers are stripped, and fields are separated
- *		by tabs instead of spaces.
- *	-o	Set of fields to display.  One of "name,property,value,
- *		received,source". Default is "name,property,value,source".
- *		"all" is an alias for all five.
- *	-s	Set of sources to allow.  One of
- *		"local,default,inherited,received,temporary,none".  Default is
- *		all six.
- *	-p	Display values in parsable (literal) format.
- *
- *  Prints properties for the given datasets.  The user can control which
- *  columns to display as well as which property types to allow.
- */
+ 
 
-/*
- * Invoked to display the properties for a single dataset.
- */
+ 
 static int
 get_callback(zfs_handle_t *zhp, void *data)
 {
@@ -1922,10 +1719,7 @@ get_callback(zfs_handle_t *zhp, void *data)
 
 	for (; pl != NULL; pl = pl->pl_next) {
 		char *recvdval = NULL;
-		/*
-		 * Skip the special fake placeholder.  This will also skip over
-		 * the name property when 'all' is specified.
-		 */
+		 
 		if (pl->pl_prop == ZFS_PROP_NAME &&
 		    pl == cbp->cb_proplist)
 			continue;
@@ -2029,9 +1823,7 @@ zfs_do_get(int argc, char **argv)
 	int limit = 0;
 	zprop_list_t fake_name = { 0 };
 
-	/*
-	 * Set up default columns and sources.
-	 */
+	 
 	cb.cb_sources = ZPROP_SRC_ALL;
 	cb.cb_columns[0] = GET_COL_NAME;
 	cb.cb_columns[1] = GET_COL_PROPERTY;
@@ -2039,7 +1831,7 @@ zfs_do_get(int argc, char **argv)
 	cb.cb_columns[3] = GET_COL_SOURCE;
 	cb.cb_type = ZFS_TYPE_DATASET;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, ":d:o:s:rt:Hp")) != -1) {
 		switch (c) {
 		case 'p':
@@ -2060,10 +1852,7 @@ zfs_do_get(int argc, char **argv)
 			usage(B_FALSE);
 			break;
 		case 'o':
-			/*
-			 * Process the set of columns to display.  We zero out
-			 * the structure to give us a blank slate.
-			 */
+			 
 			memset(&cb.cb_columns, 0, sizeof (cb.cb_columns));
 
 			i = 0;
@@ -2186,10 +1975,7 @@ found3:;
 
 	fields = argv[0];
 
-	/*
-	 * Handle users who want to get all snapshots or bookmarks
-	 * of a dataset (ex. 'zfs get -t snapshot refer <dataset>').
-	 */
+	 
 	if ((types == ZFS_TYPE_SNAPSHOT || types == ZFS_TYPE_BOOKMARK) &&
 	    argc > 1 && (flags & ZFS_ITER_RECURSE) == 0 && limit == 0) {
 		flags |= (ZFS_ITER_DEPTH_LIMIT | ZFS_ITER_RECURSE);
@@ -2203,14 +1989,7 @@ found3:;
 	argc--;
 	argv++;
 
-	/*
-	 * As part of zfs_expand_proplist(), we keep track of the maximum column
-	 * width for each property.  For the 'NAME' (and 'SOURCE') columns, we
-	 * need to know the maximum name length.  However, the user likely did
-	 * not specify 'name' as one of the properties to fetch, so we need to
-	 * make sure we always include at least this property for
-	 * print_get_headers() to work properly.
-	 */
+	 
 	if (cb.cb_proplist != NULL) {
 		fake_name.pl_prop = ZFS_PROP_NAME;
 		fake_name.pl_width = strlen(gettext("NAME"));
@@ -2220,7 +1999,7 @@ found3:;
 
 	cb.cb_first = B_TRUE;
 
-	/* run for each object */
+	 
 	ret = zfs_for_each(argc, argv, flags, types, NULL,
 	    &cb.cb_proplist, limit, get_callback, &cb);
 
@@ -2232,18 +2011,7 @@ found3:;
 	return (ret);
 }
 
-/*
- * inherit [-rS] <property> <fs|vol> ...
- *
- *	-r	Recurse over all children
- *	-S	Revert to received value, if any
- *
- * For each dataset specified on the command line, inherit the given property
- * from its parent.  Inheriting a property at the pool level will cause it to
- * use the default value.  The '-r' flag will recurse over all children, and is
- * useful for setting a property on a hierarchy-wide basis, regardless of any
- * local modifications for each dataset.
- */
+ 
 
 typedef struct inherit_cbdata {
 	const char *cb_propname;
@@ -2256,10 +2024,7 @@ inherit_recurse_cb(zfs_handle_t *zhp, void *data)
 	inherit_cbdata_t *cb = data;
 	zfs_prop_t prop = zfs_name_to_prop(cb->cb_propname);
 
-	/*
-	 * If we're doing it recursively, then ignore properties that
-	 * are not valid for this type of dataset.
-	 */
+	 
 	if (prop != ZPROP_INVAL &&
 	    !zfs_prop_valid_for_type(prop, zfs_get_type(zhp), B_FALSE))
 		return (0);
@@ -2286,7 +2051,7 @@ zfs_do_inherit(int argc, char **argv)
 	int flags = 0;
 	boolean_t received = B_FALSE;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "rS")) != -1) {
 		switch (c) {
 		case 'r':
@@ -2306,7 +2071,7 @@ zfs_do_inherit(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing property argument\n"));
 		usage(B_FALSE);
@@ -2396,7 +2161,7 @@ upgrade_list_callback(zfs_handle_t *zhp, void *data)
 	upgrade_cbdata_t *cb = data;
 	int version = zfs_prop_get_int(zhp, ZFS_PROP_VERSION);
 
-	/* list if it's old/new */
+	 
 	if ((!cb->cb_newer && version < ZPL_VERSION) ||
 	    (cb->cb_newer && version > ZPL_VERSION)) {
 		char *str;
@@ -2443,7 +2208,7 @@ upgrade_set_callback(zfs_handle_t *zhp, void *data)
 		return (-1);
 
 	if (spa_version < needed_spa_version) {
-		/* can't upgrade */
+		 
 		(void) printf(gettext("%s: can not be "
 		    "upgraded; the pool version needs to first "
 		    "be upgraded\nto version %d\n\n"),
@@ -2452,18 +2217,13 @@ upgrade_set_callback(zfs_handle_t *zhp, void *data)
 		return (0);
 	}
 
-	/* upgrade */
+	 
 	if (version < cb->cb_version) {
 		char verstr[24];
 		(void) snprintf(verstr, sizeof (verstr),
 		    "%llu", (u_longlong_t)cb->cb_version);
 		if (cb->cb_lastfs[0] && !same_pool(zhp, cb->cb_lastfs)) {
-			/*
-			 * If they did "zfs upgrade -a", then we could
-			 * be doing ioctls to different pools.  We need
-			 * to log this history once to each pool, and bypass
-			 * the normal history logging that happens in main().
-			 */
+			 
 			(void) zpool_log_history(g_zfs, history_str);
 			log_history = B_FALSE;
 		}
@@ -2474,7 +2234,7 @@ upgrade_set_callback(zfs_handle_t *zhp, void *data)
 		(void) strlcpy(cb->cb_lastfs, zfs_get_name(zhp),
 		    sizeof (cb->cb_lastfs));
 	} else if (version > cb->cb_version) {
-		/* can't downgrade */
+		 
 		(void) printf(gettext("%s: can not be downgraded; "
 		    "it is already at version %u\n"),
 		    zfs_get_name(zhp), version);
@@ -2485,11 +2245,7 @@ upgrade_set_callback(zfs_handle_t *zhp, void *data)
 	return (0);
 }
 
-/*
- * zfs upgrade
- * zfs upgrade -v
- * zfs upgrade [-r] [-V <version>] <-a | filesystem>
- */
+ 
 static int
 zfs_do_upgrade(int argc, char **argv)
 {
@@ -2500,7 +2256,7 @@ zfs_do_upgrade(int argc, char **argv)
 	int c;
 	int flags = ZFS_ITER_ARGS_CAN_BE_PATHS;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "rvV:a")) != -1) {
 		switch (c) {
 		case 'r':
@@ -2542,7 +2298,7 @@ zfs_do_upgrade(int argc, char **argv)
 		usage(B_FALSE);
 
 	if (showversions) {
-		/* Show info on available versions. */
+		 
 		(void) printf(gettext("The following filesystem versions are "
 		    "supported:\n\n"));
 		(void) printf(gettext("VER  DESCRIPTION\n"));
@@ -2560,7 +2316,7 @@ zfs_do_upgrade(int argc, char **argv)
 		(void) printf("see the ZFS Administration Guide.\n\n");
 		ret = 0;
 	} else if (argc || all) {
-		/* Upgrade filesystems */
+		 
 		if (cb.cb_version == 0)
 			cb.cb_version = ZPL_VERSION;
 		ret = zfs_for_each(argc, argv, flags, ZFS_TYPE_FILESYSTEM,
@@ -2575,7 +2331,7 @@ zfs_do_upgrade(int argc, char **argv)
 		if (cb.cb_numfailed != 0)
 			ret = 1;
 	} else {
-		/* List old-version filesystems */
+		 
 		boolean_t found;
 		(void) printf(gettext("This system is currently running "
 		    "ZFS filesystem version %llu.\n\n"), ZPL_VERSION);
@@ -2600,30 +2356,9 @@ zfs_do_upgrade(int argc, char **argv)
 	return (ret);
 }
 
-/*
- * zfs userspace [-Hinp] [-o field[,...]] [-s field [-s field]...]
- *               [-S field [-S field]...] [-t type[,...]]
- *               filesystem | snapshot | path
- * zfs groupspace [-Hinp] [-o field[,...]] [-s field [-s field]...]
- *                [-S field [-S field]...] [-t type[,...]]
- *                filesystem | snapshot | path
- * zfs projectspace [-Hp] [-o field[,...]] [-s field [-s field]...]
- *                [-S field [-S field]...] filesystem | snapshot | path
- *
- *	-H      Scripted mode; elide headers and separate columns by tabs.
- *	-i	Translate SID to POSIX ID.
- *	-n	Print numeric ID instead of user/group name.
- *	-o      Control which fields to display.
- *	-p	Use exact (parsable) numeric output.
- *	-s      Specify sort columns, descending order.
- *	-S      Specify sort columns, ascending order.
- *	-t      Control which object types to display.
- *
- *	Displays space consumed by, and quotas on, each user in the specified
- *	filesystem or snapshot.
- */
+ 
 
-/* us_field_types, us_field_hdr and us_field_names should be kept in sync */
+ 
 enum us_field_types {
 	USFIELD_TYPE,
 	USFIELD_NAME,
@@ -2771,11 +2506,7 @@ compare_nums:
 		}
 	}
 
-	/*
-	 * If entries still seem to be the same, check if they are of the same
-	 * type (smbentity is added only if we are doing SID to POSIX ID
-	 * translation where we can have duplicate type/name combinations).
-	 */
+	 
 	if (nvlist_lookup_boolean_value(lnvl, "smbentity", &lvb) == 0 &&
 	    nvlist_lookup_boolean_value(rnvl, "smbentity", &rvb) == 0 &&
 	    lvb != rvb)
@@ -2856,7 +2587,7 @@ userspace_cb(void *arg, const char *domain, uid_t rid, uint64_t space)
 
 	if (domain != NULL && domain[0] != '\0') {
 #ifdef HAVE_IDMAP
-		/* SMB */
+		 
 		char sid[MAXNAMELEN + 32];
 		uid_t id;
 		uint64_t classes;
@@ -2891,11 +2622,11 @@ userspace_cb(void *arg, const char *domain, uid_t rid, uint64_t space)
 		free(node);
 
 		return (-1);
-#endif /* HAVE_IDMAP */
+#endif  
 	}
 
 	if (cb->cb_sid2posix || domain == NULL || domain[0] == '\0') {
-		/* POSIX or -i */
+		 
 		if (zfs_prop_is_group(prop)) {
 			type = USTYPE_PSX_GRP;
 			if (!cb->cb_numname) {
@@ -2917,16 +2648,12 @@ userspace_cb(void *arg, const char *domain, uid_t rid, uint64_t space)
 		}
 	}
 
-	/*
-	 * Make sure that the type/name combination is unique when doing
-	 * SID to POSIX ID translation (hence changing the type from SMB to
-	 * POSIX).
-	 */
+	 
 	if (cb->cb_sid2posix &&
 	    nvlist_add_boolean_value(props, "smbentity", smbentity) != 0)
 		nomem();
 
-	/* Calculate/update width of TYPE field */
+	 
 	typestr = us_type2str(type);
 	typelen = strlen(gettext(typestr));
 	typeidx = us_field_index("type");
@@ -2935,7 +2662,7 @@ userspace_cb(void *arg, const char *domain, uid_t rid, uint64_t space)
 	if (nvlist_add_uint32(props, "type", type) != 0)
 		nomem();
 
-	/* Calculate/update width of NAME field */
+	 
 	if ((cb->cb_numname && cb->cb_sid2posix) || name == NULL) {
 		if (nvlist_add_uint64(props, "name", rid) != 0)
 			nomem();
@@ -2949,10 +2676,7 @@ userspace_cb(void *arg, const char *domain, uid_t rid, uint64_t space)
 	if (nameidx >= 0 && namelen > cb->cb_width[nameidx])
 		cb->cb_width[nameidx] = namelen;
 
-	/*
-	 * Check if this type/name combination is in the list and update it;
-	 * otherwise add new node to the list.
-	 */
+	 
 	if ((n = uu_avl_find(avl, node, &sortinfo, &idx)) == NULL) {
 		uu_avl_insert(avl, node, idx);
 	} else {
@@ -2962,7 +2686,7 @@ userspace_cb(void *arg, const char *domain, uid_t rid, uint64_t space)
 		props = node->usn_nvl;
 	}
 
-	/* Calculate/update width of USED/QUOTA fields */
+	 
 	if (cb->cb_nicenum) {
 		if (prop == ZFS_PROP_USERUSED || prop == ZFS_PROP_GROUPUSED ||
 		    prop == ZFS_PROP_USERQUOTA || prop == ZFS_PROP_GROUPQUOTA ||
@@ -3022,7 +2746,7 @@ print_us_node(boolean_t scripted, boolean_t parsable, int *fields, int types,
 	int field;
 	uint32_t ustype;
 
-	/* Check type */
+	 
 	(void) nvlist_lookup_uint32(nvl, "type", &ustype);
 	if (!(ustype & types))
 		return;
@@ -3193,7 +2917,7 @@ zfs_do_userspace(int argc, char **argv)
 		usage(B_FALSE);
 
 	if (strcmp(argv[0], "groupspace") == 0) {
-		/* Toggle default group types */
+		 
 		types = USTYPE_PSX_GRP | USTYPE_SMB_GRP;
 	} else if (strcmp(argv[0], "projectspace") == 0) {
 		types = USTYPE_PROJ;
@@ -3268,7 +2992,7 @@ zfs_do_userspace(int argc, char **argv)
 		usage(B_FALSE);
 	}
 
-	/* Use default output fields if not specified using -o */
+	 
 	if (ofield == NULL)
 		ofield = deffields;
 	do {
@@ -3284,7 +3008,7 @@ zfs_do_userspace(int argc, char **argv)
 	} while (delim != NULL);
 	fields[cfield] = USFIELD_LAST;
 
-	/* Override output types (-t option) */
+	 
 	if (tfield != NULL) {
 		types = 0;
 
@@ -3327,7 +3051,7 @@ zfs_do_userspace(int argc, char **argv)
 	if ((avl_tree = uu_avl_create(avl_pool, NULL, UU_DEFAULT)) == NULL)
 		nomem();
 
-	/* Always add default sorting columns */
+	 
 	(void) zfs_add_sort_column(&sortcol, "type", B_FALSE);
 	(void) zfs_add_sort_column(&sortcol, "name", B_FALSE);
 
@@ -3357,7 +3081,7 @@ zfs_do_userspace(int argc, char **argv)
 	}
 	zfs_close(zhp);
 
-	/* Sort the list */
+	 
 	if ((node = uu_avl_first(avl_tree)) == NULL)
 		return (0);
 
@@ -3387,13 +3111,13 @@ zfs_do_userspace(int argc, char **argv)
 	uu_list_destroy(list);
 	uu_list_pool_destroy(listpool);
 
-	/* Print and free node nvlist memory */
+	 
 	print_us(scripted, parsable, fields, types, cb.cb_width, B_TRUE,
 	    cb.cb_avl);
 
 	zfs_free_sort_columns(sortcol);
 
-	/* Clean up the AVL tree */
+	 
 	if ((walk = uu_avl_walk_start(cb.cb_avl, UU_WALK_ROBUST)) == NULL)
 		nomem();
 
@@ -3409,23 +3133,7 @@ zfs_do_userspace(int argc, char **argv)
 	return (ret);
 }
 
-/*
- * list [-Hp][-r|-d max] [-o property[,...]] [-s property] ... [-S property]
- *      [-t type[,...]] [filesystem|volume|snapshot] ...
- *
- *	-H	Scripted mode; elide headers and separate columns by tabs
- *	-p	Display values in parsable (literal) format.
- *	-r	Recurse over all children
- *	-d	Limit recursion by depth.
- *	-o	Control which fields to display.
- *	-s	Specify sort columns, descending order.
- *	-S	Specify sort columns, ascending order.
- *	-t	Control which object types to display.
- *
- * When given no arguments, list all filesystems in the system.
- * Otherwise, list the specified datasets, optionally recursing down them if
- * '-r' is specified.
- */
+ 
 typedef struct list_cbdata {
 	boolean_t	cb_first;
 	boolean_t	cb_literal;
@@ -3433,9 +3141,7 @@ typedef struct list_cbdata {
 	zprop_list_t	*cb_proplist;
 } list_cbdata_t;
 
-/*
- * Given a list of columns to display, output appropriate headers for each one.
- */
+ 
 static void
 print_header(list_cbdata_t *cb)
 {
@@ -3479,11 +3185,7 @@ print_header(list_cbdata_t *cb)
 	(void) printf("\n");
 }
 
-/*
- * Decides on the color that the avail value should be printed in.
- * > 80% used = yellow
- * > 90% used = red
- */
+ 
 static const char *
 zfs_list_avail_color(zfs_handle_t *zhp)
 {
@@ -3499,10 +3201,7 @@ zfs_list_avail_color(zfs_handle_t *zhp)
 		return (ANSI_RED);
 }
 
-/*
- * Given a dataset and a list of fields, print out all the properties according
- * to the described layout.
- */
+ 
 static void
 print_dataset(zfs_handle_t *zhp, list_cbdata_t *cb)
 {
@@ -3561,27 +3260,19 @@ print_dataset(zfs_handle_t *zhp, list_cbdata_t *cb)
 			right_justify = B_FALSE;
 		}
 
-		/*
-		 * zfs_list_avail_color() needs ZFS_PROP_AVAILABLE + USED
-		 * - so we need another for() search for the USED part
-		 * - when no colors wanted, we can skip the whole thing
-		 */
+		 
 		if (use_color() && pl->pl_prop == ZFS_PROP_AVAILABLE) {
 			zprop_list_t *pl2 = cb->cb_proplist;
 			for (; pl2 != NULL; pl2 = pl2->pl_next) {
 				if (pl2->pl_prop == ZFS_PROP_USED) {
 					color_start(zfs_list_avail_color(zhp));
-					/* found it, no need for more loops */
+					 
 					break;
 				}
 			}
 		}
 
-		/*
-		 * If this is being called in scripted mode, or if this is the
-		 * last column and it is left-justified, don't include a width
-		 * format specifier.
-		 */
+		 
 		if (cb->cb_scripted || (pl->pl_next == NULL && !right_justify))
 			(void) fputs(propstr, stdout);
 		else if (right_justify)
@@ -3596,9 +3287,7 @@ print_dataset(zfs_handle_t *zhp, list_cbdata_t *cb)
 	(void) putchar('\n');
 }
 
-/*
- * Generic callback function to list a dataset or snapshot.
- */
+ 
 static int
 list_callback(zfs_handle_t *zhp, void *data)
 {
@@ -3630,7 +3319,7 @@ zfs_do_list(int argc, char **argv)
 	zfs_sort_column_t *sortcol = NULL;
 	int flags = ZFS_ITER_PROP_LISTSNAPS | ZFS_ITER_ARGS_CAN_BE_PATHS;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "HS:d:o:prs:t:")) != -1) {
 		switch (c) {
 		case 'o':
@@ -3709,38 +3398,25 @@ found3:;
 	argc -= optind;
 	argv += optind;
 
-	/*
-	 * If "-o space" and no types were specified, don't display snapshots.
-	 */
+	 
 	if (strcmp(fields, "space") == 0 && types_specified == B_FALSE)
 		types &= ~ZFS_TYPE_SNAPSHOT;
 
-	/*
-	 * Handle users who want to list all snapshots or bookmarks
-	 * of the current dataset (ex. 'zfs list -t snapshot <dataset>').
-	 */
+	 
 	if ((types == ZFS_TYPE_SNAPSHOT || types == ZFS_TYPE_BOOKMARK) &&
 	    argc > 0 && (flags & ZFS_ITER_RECURSE) == 0 && limit == 0) {
 		flags |= (ZFS_ITER_DEPTH_LIMIT | ZFS_ITER_RECURSE);
 		limit = 1;
 	}
 
-	/*
-	 * If the user specifies '-o all', the zprop_get_list() doesn't
-	 * normally include the name of the dataset.  For 'zfs list', we always
-	 * want this property to be first.
-	 */
+	 
 	if (zprop_get_list(g_zfs, fields, &cb.cb_proplist, ZFS_TYPE_DATASET)
 	    != 0)
 		usage(B_FALSE);
 
 	cb.cb_first = B_TRUE;
 
-	/*
-	 * If we are only going to list and sort by properties that are "fast"
-	 * then we can use "simple" mode and avoid populating the properties
-	 * nvlist.
-	 */
+	 
 	if (zfs_list_only_by_fast(cb.cb_proplist) &&
 	    zfs_sort_only_by_fast(sortcol))
 		flags |= ZFS_ITER_SIMPLE;
@@ -3757,16 +3433,7 @@ found3:;
 	return (ret);
 }
 
-/*
- * zfs rename [-fu] <fs | snap | vol> <fs | snap | vol>
- * zfs rename [-f] -p <fs | vol> <fs | vol>
- * zfs rename [-u] -r <snap> <snap>
- *
- * Renames the given dataset to another of the same type.
- *
- * The '-p' flag creates all the non-existing ancestors of the target first.
- * The '-u' flag prevents file systems from being remounted during rename.
- */
+ 
 static int
 zfs_do_rename(int argc, char **argv)
 {
@@ -3777,7 +3444,7 @@ zfs_do_rename(int argc, char **argv)
 	int types;
 	boolean_t parents = B_FALSE;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "pruf")) != -1) {
 		switch (c) {
 		case 'p':
@@ -3803,7 +3470,7 @@ zfs_do_rename(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing source dataset "
 		    "argument\n"));
@@ -3847,7 +3514,7 @@ zfs_do_rename(int argc, char **argv)
 	if ((zhp = zfs_open(g_zfs, argv[0], types)) == NULL)
 		return (1);
 
-	/* If we were asked and the name looks good, try to create ancestors. */
+	 
 	if (parents && zfs_name_valid(argv[1], zfs_get_type(zhp)) &&
 	    zfs_create_ancestors(g_zfs, argv[1]) != 0) {
 		zfs_close(zhp);
@@ -3860,25 +3527,21 @@ zfs_do_rename(int argc, char **argv)
 	return (ret);
 }
 
-/*
- * zfs promote <fs>
- *
- * Promotes the given clone fs to be the parent
- */
+ 
 static int
 zfs_do_promote(int argc, char **argv)
 {
 	zfs_handle_t *zhp;
 	int ret = 0;
 
-	/* check options */
+	 
 	if (argc > 1 && argv[1][0] == '-') {
 		(void) fprintf(stderr, gettext("invalid option '%c'\n"),
 		    argv[1][1]);
 		usage(B_FALSE);
 	}
 
-	/* check number of arguments */
+	 
 	if (argc < 2) {
 		(void) fprintf(stderr, gettext("missing clone filesystem"
 		    " argument\n"));
@@ -3991,17 +3654,7 @@ zfs_do_redact(int argc, char **argv)
 	return (err);
 }
 
-/*
- * zfs rollback [-rRf] <snapshot>
- *
- *	-r	Delete any intervening snapshots before doing rollback
- *	-R	Delete any snapshots and their clones
- *	-f	ignored for backwards compatibility
- *
- * Given a filesystem, rollback to a specific snapshot, discarding any changes
- * since then and making it the active dataset.  If more recent snapshots exist,
- * the command will complain unless the '-r' flag is given.
- */
+ 
 typedef struct rollback_cbdata {
 	uint64_t	cb_create;
 	uint8_t		cb_younger_ds_printed;
@@ -4035,20 +3688,12 @@ rollback_check_dependent(zfs_handle_t *zhp, void *data)
 }
 
 
-/*
- * Report some snapshots/bookmarks more recent than the one specified.
- * Used when '-r' is not specified. We reuse this same callback for the
- * snapshot dependents - if 'cb_dependent' is set, then this is a
- * dependent and we should report it without checking the transaction group.
- */
+ 
 static int
 rollback_check(zfs_handle_t *zhp, void *data)
 {
 	rollback_cbdata_t *cbp = data;
-	/*
-	 * Max number of younger snapshots and/or bookmarks to display before
-	 * we stop the iteration.
-	 */
+	 
 	const uint8_t max_younger = 32;
 
 	if (cbp->cb_doclones) {
@@ -4084,14 +3729,7 @@ rollback_check(zfs_handle_t *zhp, void *data)
 	zfs_close(zhp);
 
 	if (cbp->cb_younger_ds_printed == max_younger) {
-		/*
-		 * This non-recursive rollback is going to fail due to the
-		 * presence of snapshots and/or bookmarks that are younger than
-		 * the rollback target.
-		 * We printed some of the offending objects, now we stop
-		 * zfs_iter_snapshot/bookmark iteration so we can fail fast and
-		 * avoid iterating over the rest of the younger objects
-		 */
+		 
 		(void) fprintf(stderr, gettext("Output limited to %d "
 		    "snapshots/bookmarks\n"), max_younger);
 		return (-1);
@@ -4111,7 +3749,7 @@ zfs_do_rollback(int argc, char **argv)
 	char *delim;
 	uint64_t min_txg = 0;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "rRf")) != -1) {
 		switch (c) {
 		case 'r':
@@ -4134,7 +3772,7 @@ zfs_do_rollback(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing dataset argument\n"));
 		usage(B_FALSE);
@@ -4144,11 +3782,11 @@ zfs_do_rollback(int argc, char **argv)
 		usage(B_FALSE);
 	}
 
-	/* open the snapshot */
+	 
 	if ((snap = zfs_open(g_zfs, argv[0], ZFS_TYPE_SNAPSHOT)) == NULL)
 		return (1);
 
-	/* open the parent dataset */
+	 
 	(void) strlcpy(parentname, argv[0], sizeof (parentname));
 	verify((delim = strrchr(parentname, '@')) != NULL);
 	*delim = '\0';
@@ -4157,10 +3795,7 @@ zfs_do_rollback(int argc, char **argv)
 		return (1);
 	}
 
-	/*
-	 * Check for more recent snapshots and/or clones based on the presence
-	 * of '-r' and '-R'.
-	 */
+	 
 	cb.cb_target = argv[0];
 	cb.cb_create = zfs_prop_get_int(snap, ZFS_PROP_CREATETXG);
 	cb.cb_first = B_TRUE;
@@ -4178,9 +3813,7 @@ zfs_do_rollback(int argc, char **argv)
 	if ((ret = cb.cb_error) != 0)
 		goto out;
 
-	/*
-	 * Rollback parent to the given snapshot.
-	 */
+	 
 	ret = zfs_rollback(zhp, snap, force);
 
 out:
@@ -4193,11 +3826,7 @@ out:
 		return (1);
 }
 
-/*
- * zfs set property=value ... { fs | snap | vol } ...
- *
- * Sets the given properties for all datasets specified on the command line.
- */
+ 
 
 static int
 set_callback(zfs_handle_t *zhp, void *data)
@@ -4224,11 +3853,11 @@ static int
 zfs_do_set(int argc, char **argv)
 {
 	zprop_set_cbdata_t cb = { 0 };
-	int ds_start = -1; /* argv idx of first dataset arg */
+	int ds_start = -1;  
 	int ret = 0;
 	int i, c;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "u")) != -1) {
 		switch (c) {
 		case 'u':
@@ -4245,7 +3874,7 @@ zfs_do_set(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing arguments\n"));
 		usage(B_FALSE);
@@ -4261,11 +3890,11 @@ zfs_do_set(int argc, char **argv)
 		usage(B_FALSE);
 	}
 
-	/* validate argument order:  prop=val args followed by dataset args */
+	 
 	for (i = 0; i < argc; i++) {
 		if (strchr(argv[i], '=') != NULL) {
 			if (ds_start > 0) {
-				/* out-of-order prop=val argument */
+				 
 				(void) fprintf(stderr, gettext("invalid "
 				    "argument order\n"));
 				usage(B_FALSE);
@@ -4279,7 +3908,7 @@ zfs_do_set(int argc, char **argv)
 		usage(B_FALSE);
 	}
 
-	/* Populate a list of property settings */
+	 
 	if (nvlist_alloc(&cb.cb_proplist, NV_UNIQUE_NAME, 0) != 0)
 		nomem();
 	for (i = 0; i < ds_start; i++) {
@@ -4329,12 +3958,7 @@ zfs_snapshot_cb(zfs_handle_t *zhp, void *arg)
 	return (rv);
 }
 
-/*
- * zfs snapshot [-r] [-o prop=value] ... <fs@snap>
- *
- * Creates a snapshot with the given name.  While functionally equivalent to
- * 'zfs create', it is a separate command to differentiate intent.
- */
+ 
 static int
 zfs_do_snapshot(int argc, char **argv)
 {
@@ -4349,7 +3973,7 @@ zfs_do_snapshot(int argc, char **argv)
 	if (nvlist_alloc(&sd.sd_nvl, NV_UNIQUE_NAME, 0) != 0)
 		nomem();
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "ro:")) != -1) {
 		switch (c) {
 		case 'o':
@@ -4373,7 +3997,7 @@ zfs_do_snapshot(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing snapshot argument\n"));
 		goto usage;
@@ -4412,11 +4036,7 @@ usage:
 	return (-1);
 }
 
-/*
- * Array of prefixes to exclude –
- * a linear search, even if executed for each dataset,
- * is plenty good enough.
- */
+ 
 typedef struct zfs_send_exclude_arg {
 	size_t count;
 	const char **list;
@@ -4438,9 +4058,7 @@ zfs_do_send_exclude(zfs_handle_t *zhp, void *context)
 	return (B_TRUE);
 }
 
-/*
- * Send a backup stream to stdout.
- */
+ 
 static int
 zfs_do_send(int argc, char **argv)
 {
@@ -4477,7 +4095,7 @@ zfs_do_send(int argc, char **argv)
 		{0, 0, 0, 0}
 	};
 
-	/* check options */
+	 
 	while ((c = getopt_long(argc, argv, ":i:I:RsDpVvnPLeht:cwbd:SX:",
 	    long_options, NULL)) != -1) {
 		switch (c) {
@@ -4565,14 +4183,7 @@ zfs_do_send(int argc, char **argv)
 			flags.saved = B_TRUE;
 			break;
 		case ':':
-			/*
-			 * If a parameter was not passed, optopt contains the
-			 * value that would normally lead us into the
-			 * appropriate case statement.  If it's > 256, then this
-			 * must be a longopt and we should look at argv to get
-			 * the string.  Otherwise it's just the character, so we
-			 * should use it directly.
-			 */
+			 
 			if (optopt <= UINT8_MAX) {
 				(void) fprintf(stderr,
 				    gettext("missing argument for '%c' "
@@ -4587,11 +4198,7 @@ zfs_do_send(int argc, char **argv)
 			break;
 		case '?':
 		default:
-			/*
-			 * If an invalid flag was passed, optopt contains the
-			 * character if it was a short flag, or 0 if it was a
-			 * longopt.
-			 */
+			 
 			if (optopt != 0) {
 				(void) fprintf(stderr,
 				    gettext("invalid option '%c'\n"), optopt);
@@ -4710,18 +4317,13 @@ zfs_do_send(int argc, char **argv)
 		usage(B_FALSE);
 	}
 
-	/*
-	 * For everything except -R and -I, use the new, cleaner code path.
-	 */
+	 
 	if (!(flags.replicate || flags.doall)) {
 		char frombuf[ZFS_MAX_DATASET_NAME_LEN];
 
 		if (fromname != NULL && (strchr(fromname, '#') == NULL &&
 		    strchr(fromname, '@') == NULL)) {
-			/*
-			 * Neither bookmark or snapshot was specified.  Print a
-			 * warning, and assume snapshot.
-			 */
+			 
 			(void) fprintf(stderr, "Warning: incremental source "
 			    "didn't specify type, assuming snapshot. Use '@' "
 			    "or '#' prefix to avoid ambiguity.\n");
@@ -4731,10 +4333,7 @@ zfs_do_send(int argc, char **argv)
 		}
 		if (fromname != NULL &&
 		    (fromname[0] == '#' || fromname[0] == '@')) {
-			/*
-			 * Incremental source name begins with # or @.
-			 * Default to same fs as target.
-			 */
+			 
 			char tmpbuf[ZFS_MAX_DATASET_NAME_LEN];
 			(void) strlcpy(tmpbuf, fromname, sizeof (tmpbuf));
 			(void) strlcpy(frombuf, argv[0], sizeof (frombuf));
@@ -4787,11 +4386,7 @@ zfs_do_send(int argc, char **argv)
 		return (1);
 	}
 
-	/*
-	 * If they specified the full path to the snapshot, chop off
-	 * everything except the short name of the snapshot, but special
-	 * case if they specify the origin.
-	 */
+	 
 	if (fromname && (cp = strchr(fromname, '@')) != NULL) {
 		char origin[ZFS_MAX_DATASET_NAME_LEN];
 		zprop_source_t src;
@@ -4831,11 +4426,7 @@ zfs_do_send(int argc, char **argv)
 	    &excludes, flags.verbosity >= 3 ? &dbgnv : NULL);
 
 	if (flags.verbosity >= 3 && dbgnv != NULL) {
-		/*
-		 * dump_nvlist prints to stdout, but that's been
-		 * redirected to a file.  Make it print to stderr
-		 * instead.
-		 */
+		 
 		(void) dup2(STDERR_FILENO, STDOUT_FILENO);
 		dump_nvlist(dbgnv, 0);
 		nvlist_free(dbgnv);
@@ -4846,9 +4437,7 @@ zfs_do_send(int argc, char **argv)
 	return (err != 0);
 }
 
-/*
- * Restore a backup stream from stdin.
- */
+ 
 static int
 zfs_do_receive(int argc, char **argv)
 {
@@ -4860,7 +4449,7 @@ zfs_do_receive(int argc, char **argv)
 	if (nvlist_alloc(&props, NV_UNIQUE_NAME, 0) != 0)
 		nomem();
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, ":o:x:dehMnuvFsAc")) != -1) {
 		switch (c) {
 		case 'o':
@@ -4935,11 +4524,11 @@ zfs_do_receive(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* zfs recv -e (use "tail" name) implies -d (remove dataset "head") */
+	 
 	if (flags.istail)
 		flags.isprefix = B_TRUE;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing snapshot argument\n"));
 		usage(B_FALSE);
@@ -5007,10 +4596,8 @@ zfs_do_receive(int argc, char **argv)
 	return (err != 0);
 }
 
-/*
- * allow/unallow stuff
- */
-/* copied from zfs/sys/dsl_deleg.h */
+ 
+ 
 #define	ZFS_DELEG_PERM_CREATE		"create"
 #define	ZFS_DELEG_PERM_DESTROY		"destroy"
 #define	ZFS_DELEG_PERM_SNAPSHOT		"snapshot"
@@ -5024,7 +4611,7 @@ zfs_do_receive(int argc, char **argv)
 #define	ZFS_DELEG_PERM_RECEIVE		"receive"
 #define	ZFS_DELEG_PERM_ALLOW		"allow"
 #define	ZFS_DELEG_PERM_USERPROP		"userprop"
-#define	ZFS_DELEG_PERM_VSCAN		"vscan" /* ??? */
+#define	ZFS_DELEG_PERM_VSCAN		"vscan"  
 #define	ZFS_DELEG_PERM_USERQUOTA	"userquota"
 #define	ZFS_DELEG_PERM_GROUPQUOTA	"groupquota"
 #define	ZFS_DELEG_PERM_USERUSED		"userused"
@@ -5084,7 +4671,7 @@ static zfs_deleg_perm_tab_t zfs_deleg_perm_tbl[] = {
 	{ NULL, ZFS_DELEG_NOTE_NONE }
 };
 
-/* permission structure */
+ 
 typedef struct deleg_perm {
 	zfs_deleg_who_type_t	dp_who_type;
 	const char		*dp_name;
@@ -5092,7 +4679,7 @@ typedef struct deleg_perm {
 	boolean_t		dp_descend;
 } deleg_perm_t;
 
-/* */
+ 
 typedef struct deleg_perm_node {
 	deleg_perm_t		dpn_perm;
 
@@ -5101,34 +4688,34 @@ typedef struct deleg_perm_node {
 
 typedef struct fs_perm fs_perm_t;
 
-/* permissions set */
+ 
 typedef struct who_perm {
 	zfs_deleg_who_type_t	who_type;
-	const char		*who_name;		/* id */
-	char			who_ug_name[256];	/* user/group name */
-	fs_perm_t		*who_fsperm;		/* uplink */
+	const char		*who_name;		 
+	char			who_ug_name[256];	 
+	fs_perm_t		*who_fsperm;		 
 
-	uu_avl_t		*who_deleg_perm_avl;	/* permissions */
+	uu_avl_t		*who_deleg_perm_avl;	 
 } who_perm_t;
 
-/* */
+ 
 typedef struct who_perm_node {
 	who_perm_t	who_perm;
 	uu_avl_node_t	who_avl_node;
 } who_perm_node_t;
 
 typedef struct fs_perm_set fs_perm_set_t;
-/* fs permissions */
+ 
 struct fs_perm {
 	const char		*fsp_name;
 
-	uu_avl_t		*fsp_sc_avl;	/* sets,create */
-	uu_avl_t		*fsp_uge_avl;	/* user,group,everyone */
+	uu_avl_t		*fsp_sc_avl;	 
+	uu_avl_t		*fsp_uge_avl;	 
 
-	fs_perm_set_t		*fsp_set;	/* uplink */
+	fs_perm_set_t		*fsp_set;	 
 };
 
-/* */
+ 
 typedef struct fs_perm_node {
 	fs_perm_t	fspn_fsperm;
 	uu_avl_t	*fspn_avl;
@@ -5136,10 +4723,10 @@ typedef struct fs_perm_node {
 	uu_list_node_t	fspn_list_node;
 } fs_perm_node_t;
 
-/* top level structure */
+ 
 struct fs_perm_set {
 	uu_list_pool_t	*fsps_list_pool;
-	uu_list_t	*fsps_list; /* list of fs_perms */
+	uu_list_t	*fsps_list;  
 
 	uu_avl_pool_t	*fsps_named_set_avl_pool;
 	uu_avl_pool_t	*fsps_who_perm_avl_pool;
@@ -5149,10 +4736,10 @@ struct fs_perm_set {
 static inline const char *
 deleg_perm_type(zfs_deleg_note_t note)
 {
-	/* subcommands */
+	 
 	switch (note) {
-		/* SUBCOMMANDS */
-		/* OTHER */
+		 
+		 
 	case ZFS_DELEG_NOTE_GROUPQUOTA:
 	case ZFS_DELEG_NOTE_GROUPUSED:
 	case ZFS_DELEG_NOTE_USERPROP:
@@ -5166,7 +4753,7 @@ deleg_perm_type(zfs_deleg_note_t note)
 	case ZFS_DELEG_NOTE_PROJECTQUOTA:
 	case ZFS_DELEG_NOTE_PROJECTOBJUSED:
 	case ZFS_DELEG_NOTE_PROJECTOBJQUOTA:
-		/* other */
+		 
 		return (gettext("other"));
 	default:
 		return (gettext("subcommand"));
@@ -5423,7 +5010,7 @@ set_deleg_perm_node(uu_avl_t *avl, deleg_perm_node_t *node,
 	case ZFS_DELEG_NA:
 		break;
 	default:
-		assert(B_FALSE); /* invalid locality */
+		assert(B_FALSE);  
 	}
 }
 
@@ -5536,7 +5123,7 @@ parse_fs_perm(fs_perm_t *fsperm, nvlist_t *nvl)
 					    node->who_perm.who_ug_name,
 					    nice_name, 256);
 				} else {
-					/* User or group unknown */
+					 
 					(void) snprintf(
 					    node->who_perm.who_ug_name,
 					    sizeof (node->who_perm.who_ug_name),
@@ -5596,9 +5183,9 @@ deleg_perm_comment(zfs_deleg_note_t note)
 {
 	const char *str = "";
 
-	/* subcommands */
+	 
 	switch (note) {
-		/* SUBCOMMANDS */
+		 
 	case ZFS_DELEG_NOTE_ALLOW:
 		str = gettext("Must also have the permission that is being"
 		    "\n\t\t\t\tallowed");
@@ -5659,12 +5246,8 @@ deleg_perm_comment(zfs_deleg_note_t note)
 	case ZFS_DELEG_NOTE_CHANGE_KEY:
 		str = gettext("Allows changing or adding an encryption key");
 		break;
-/*
- *	case ZFS_DELEG_NOTE_VSCAN:
- *		str = gettext("");
- *		break;
- */
-		/* OTHER */
+ 
+		 
 	case ZFS_DELEG_NOTE_GROUPQUOTA:
 		str = gettext("Allows accessing any groupquota@... property");
 		break;
@@ -5707,7 +5290,7 @@ deleg_perm_comment(zfs_deleg_note_t note)
 		str = gettext("Allows accessing any \n\t\t\t\t"
 		    "projectobjused@... property");
 		break;
-		/* other */
+		 
 	default:
 		str = "";
 	}
@@ -5723,7 +5306,7 @@ struct allow_opts {
 	boolean_t everyone;
 	boolean_t create;
 	boolean_t set;
-	boolean_t recursive; /* unallow only */
+	boolean_t recursive;  
 	boolean_t prt_usage;
 
 	boolean_t prt_perms;
@@ -5752,7 +5335,7 @@ allow_usage(boolean_t un, boolean_t requested, const char *msg)
 		"-e", gettext("set permission for everyone"),
 		"-c", gettext("set create time permission"),
 		"-s", gettext("define permission set"),
-		/* unallow only */
+		 
 		"-r", gettext("remove permissions recursively"),
 	};
 	size_t unallow_size = sizeof (opt_desc) / sizeof (char *);
@@ -6316,7 +5899,7 @@ zfs_do_allow_unallow_impl(int argc, char **argv, boolean_t un)
 
 	const char *optstr = un ? "ldugecsrh" : "ldugecsh";
 
-	/* check opts */
+	 
 	while ((c = getopt(argc, argv, optstr)) != -1) {
 		switch (c) {
 		case 'l':
@@ -6361,10 +5944,10 @@ zfs_do_allow_unallow_impl(int argc, char **argv, boolean_t un)
 	argc -= optind;
 	argv += optind;
 
-	/* check arguments */
+	 
 	parse_allow_args(argc, argv, un, &opts);
 
-	/* try to open the dataset */
+	 
 	if ((zhp = zfs_open(g_zfs, opts.dataset, ZFS_TYPE_FILESYSTEM |
 	    ZFS_TYPE_VOLUME)) == NULL) {
 		(void) fprintf(stderr, "Failed to open dataset: %s\n",
@@ -6431,7 +6014,7 @@ zfs_do_hold_rele_impl(int argc, char **argv, boolean_t holding)
 	const char *opts = holding ? "rt" : "r";
 	int c;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, opts)) != -1) {
 		switch (c) {
 		case 'r':
@@ -6447,7 +6030,7 @@ zfs_do_hold_rele_impl(int argc, char **argv, boolean_t holding)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 2)
 		usage(B_FALSE);
 
@@ -6456,7 +6039,7 @@ zfs_do_hold_rele_impl(int argc, char **argv, boolean_t holding)
 	++argv;
 
 	if (holding && tag[0] == '.') {
-		/* tags starting with '.' are reserved for libzfs */
+		 
 		(void) fprintf(stderr, gettext("tag may not start with '.'\n"));
 		usage(B_FALSE);
 	}
@@ -6496,26 +6079,14 @@ zfs_do_hold_rele_impl(int argc, char **argv, boolean_t holding)
 	return (errors != 0);
 }
 
-/*
- * zfs hold [-r] [-t] <tag> <snap> ...
- *
- *	-r	Recursively hold
- *
- * Apply a user-hold with the given tag to the list of snapshots.
- */
+ 
 static int
 zfs_do_hold(int argc, char **argv)
 {
 	return (zfs_do_hold_rele_impl(argc, argv, B_TRUE));
 }
 
-/*
- * zfs release [-r] <tag> <snap> ...
- *
- *	-r	Recursively release
- *
- * Release a user-hold with the given tag from the list of snapshots.
- */
+ 
 static int
 zfs_do_release(int argc, char **argv)
 {
@@ -6532,9 +6103,7 @@ typedef struct holds_cbdata {
 
 #define	STRFTIME_FMT_STR "%a %b %e %H:%M %Y"
 #define	DATETIME_BUF_LEN (32)
-/*
- *
- */
+ 
 static void
 print_holds(boolean_t scripted, int nwidth, int tagwidth, nvlist_t *nvl,
     boolean_t parsable)
@@ -6596,9 +6165,7 @@ print_holds(boolean_t scripted, int nwidth, int tagwidth, nvlist_t *nvl,
 	}
 }
 
-/*
- * Generic callback function to list a dataset or snapshot.
- */
+ 
 static int
 holds_callback(zfs_handle_t *zhp, void *data)
 {
@@ -6636,13 +6203,7 @@ holds_callback(zfs_handle_t *zhp, void *data)
 	return (nvlist_add_nvlist(top_nvl, zname, nvl));
 }
 
-/*
- * zfs holds [-rHp] <snap> ...
- *
- *	-r	Lists holds that are set on the named snapshots recursively.
- *	-H	Scripted mode; elide headers and separate columns by tabs.
- *	-p	Display values in parsable (literal) format.
- */
+ 
 static int
 zfs_do_holds(int argc, char **argv)
 {
@@ -6659,7 +6220,7 @@ zfs_do_holds(int argc, char **argv)
 	int ret = 0;
 	int flags = 0;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "rHp")) != -1) {
 		switch (c) {
 		case 'r':
@@ -6686,7 +6247,7 @@ zfs_do_holds(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1)
 		usage(B_FALSE);
 
@@ -6712,18 +6273,14 @@ zfs_do_holds(int argc, char **argv)
 		cb.cb_snapname = snapname;
 		cb.cb_nvlp = &nvl;
 
-		/*
-		 *  1. collect holds data, set format options
-		 */
+		 
 		ret = zfs_for_each(1, argv + i, flags, types, NULL, NULL, limit,
 		    holds_callback, &cb);
 		if (ret != 0)
 			errors = B_TRUE;
 	}
 
-	/*
-	 *  2. print holds data
-	 */
+	 
 	print_holds(scripted, cb.cb_max_namelen, cb.cb_max_taglen, nvl,
 	    parsable);
 
@@ -6736,8 +6293,8 @@ zfs_do_holds(int argc, char **argv)
 }
 
 #define	CHECK_SPINNER 30
-#define	SPINNER_TIME 3		/* seconds */
-#define	MOUNT_TIME 1		/* seconds */
+#define	SPINNER_TIME 3		 
+#define	MOUNT_TIME 1		 
 
 typedef struct get_all_state {
 	boolean_t	ga_verbose;
@@ -6765,17 +6322,13 @@ get_one_dataset(zfs_handle_t *zhp, void *data)
 		}
 	}
 
-	/*
-	 * Iterate over any nested datasets.
-	 */
+	 
 	if (zfs_iter_filesystems_v2(zhp, 0, get_one_dataset, data) != 0) {
 		zfs_close(zhp);
 		return (1);
 	}
 
-	/*
-	 * Skip any datasets whose type does not match.
-	 */
+	 
 	if ((type & ZFS_TYPE_FILESYSTEM) == 0) {
 		zfs_close(zhp);
 		return (0);
@@ -6802,11 +6355,7 @@ get_all_datasets(get_all_cb_t *cbp, boolean_t verbose)
 		finish_progress(gettext("done."));
 }
 
-/*
- * Generic callback for sharing or mounting filesystems.  Because the code is so
- * similar, we have a common function with an extra parameter to determine which
- * mode we are using.
- */
+ 
 typedef enum { OP_SHARE, OP_MOUNT } share_mount_op_t;
 
 typedef struct share_mount_state {
@@ -6814,16 +6363,14 @@ typedef struct share_mount_state {
 	boolean_t	sm_verbose;
 	int	sm_flags;
 	char	*sm_options;
-	enum sa_protocol	sm_proto; /* only valid for OP_SHARE */
-	pthread_mutex_t	sm_lock; /* protects the remaining fields */
-	uint_t	sm_total; /* number of filesystems to process */
-	uint_t	sm_done; /* number of filesystems processed */
-	int	sm_status; /* -1 if any of the share/mount operations failed */
+	enum sa_protocol	sm_proto;  
+	pthread_mutex_t	sm_lock;  
+	uint_t	sm_total;  
+	uint_t	sm_done;  
+	int	sm_status;  
 } share_mount_state_t;
 
-/*
- * Share or mount a dataset.
- */
+ 
 static int
 share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
     boolean_t explicit, const char *options)
@@ -6838,12 +6385,7 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 
 	assert(zfs_get_type(zhp) & ZFS_TYPE_FILESYSTEM);
 
-	/*
-	 * Check to make sure we can mount/share this dataset.  If we
-	 * are in the global zone and the filesystem is exported to a
-	 * local zone, or if we are in a local zone and the
-	 * filesystem is not exported, then it is an error.
-	 */
+	 
 	zoned = zfs_prop_get_int(zhp, ZFS_PROP_ZONED);
 
 	if (zoned && getzoneid() == GLOBAL_ZONEID) {
@@ -6865,11 +6407,7 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 		return (1);
 	}
 
-	/*
-	 * Ignore any filesystems which don't apply to us. This
-	 * includes those with a legacy mountpoint, or those with
-	 * legacy share options.
-	 */
+	 
 	verify(zfs_prop_get(zhp, ZFS_PROP_MOUNTPOINT, mountpoint,
 	    sizeof (mountpoint), NULL, NULL, 0, B_FALSE) == 0);
 	verify(zfs_prop_get(zhp, ZFS_PROP_SHARENFS, shareopts,
@@ -6890,11 +6428,7 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 		return (1);
 	}
 
-	/*
-	 * We cannot share or mount legacy filesystems. If the
-	 * shareopts is non-legacy but the mountpoint is legacy, we
-	 * treat it as a legacy share.
-	 */
+	 
 	if (strcmp(mountpoint, "legacy") == 0) {
 		if (!explicit)
 			return (0);
@@ -6915,15 +6449,7 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 		return (1);
 	}
 
-	/*
-	 * canmount	explicit	outcome
-	 * on		no		pass through
-	 * on		yes		pass through
-	 * off		no		return 0
-	 * off		yes		display error, return 1
-	 * noauto	no		return 0
-	 * noauto	yes		pass through
-	 */
+	 
 	canmount = zfs_prop_get_int(zhp, ZFS_PROP_CANMOUNT);
 	if (canmount == ZFS_CANMOUNT_OFF) {
 		if (!explicit)
@@ -6934,24 +6460,17 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 		    zfs_get_name(zhp));
 		return (1);
 	} else if (canmount == ZFS_CANMOUNT_NOAUTO && !explicit) {
-		/*
-		 * When performing a 'zfs mount -a', we skip any mounts for
-		 * datasets that have 'noauto' set. Sharing a dataset with
-		 * 'noauto' set is only allowed if it's mounted.
-		 */
+		 
 		if (op == OP_MOUNT)
 			return (0);
 		if (op == OP_SHARE && !zfs_is_mounted(zhp, NULL)) {
-			/* also purge it from existing exports */
+			 
 			zfs_unshare(zhp, mountpoint, NULL);
 			return (0);
 		}
 	}
 
-	/*
-	 * If this filesystem is encrypted and does not have
-	 * a loaded key, we can not mount it.
-	 */
+	 
 	if ((flags & MS_CRYPT) == 0 &&
 	    zfs_prop_get_int(zhp, ZFS_PROP_ENCRYPTION) != ZIO_CRYPT_OFF &&
 	    zfs_prop_get_int(zhp, ZFS_PROP_KEYSTATUS) ==
@@ -6964,10 +6483,7 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 		return (1);
 	}
 
-	/*
-	 * If this filesystem is inconsistent and has a receive resume
-	 * token, we can not mount it.
-	 */
+	 
 	if (zfs_prop_get_int(zhp, ZFS_PROP_INCONSISTENT) &&
 	    zfs_prop_get(zhp, ZFS_PROP_RECEIVE_RESUME_TOKEN,
 	    NULL, 0, NULL, NULL, 0, B_TRUE) == 0) {
@@ -6993,13 +6509,7 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 		return (1);
 	}
 
-	/*
-	 * At this point, we have verified that the mountpoint and/or
-	 * shareopts are appropriate for auto management. If the
-	 * filesystem is already mounted or shared, return (failing
-	 * for explicit requests); otherwise mount or share the
-	 * filesystem.
-	 */
+	 
 	switch (op) {
 	case OP_SHARE: {
 		enum sa_protocol prot[] = {SA_PROTOCOL_NFS, SA_NO_PROTOCOL};
@@ -7054,9 +6564,7 @@ share_mount_one(zfs_handle_t *zhp, int op, int flags, enum sa_protocol protocol,
 	return (0);
 }
 
-/*
- * Reports progress in the form "(current/total)".  Not thread-safe.
- */
+ 
 static void
 report_mount_progress(int current, int total)
 {
@@ -7064,11 +6572,11 @@ report_mount_progress(int current, int total)
 	time_t now = time(NULL);
 	char info[32];
 
-	/* display header if we're here for the first time */
+	 
 	if (current == 1) {
 		set_progress_header(gettext("Mounting ZFS filesystems"));
 	} else if (current != total && last_progress_time + MOUNT_TIME >= now) {
-		/* too soon to report again */
+		 
 		return;
 	}
 
@@ -7082,10 +6590,7 @@ report_mount_progress(int current, int total)
 		update_progress(info);
 }
 
-/*
- * zfs_foreach_mountpoint() callback that mounts or shares one filesystem and
- * updates the progress meter.
- */
+ 
 static int
 share_mount_one_cb(zfs_handle_t *zhp, void *arg)
 {
@@ -7110,7 +6615,7 @@ append_options(char *mntopts, char *newopts)
 {
 	int len = strlen(mntopts);
 
-	/* original length plus new string to append plus 1 for the comma */
+	 
 	if (len + 1 + strlen(newopts) >= MNT_LINE_MAX) {
 		(void) fprintf(stderr, gettext("the opts argument for "
 		    "'%s' option is too long (more than %d chars)\n"),
@@ -7149,7 +6654,7 @@ share_mount(int op, int argc, char **argv)
 	char *options = NULL;
 	int flags = 0;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, op == OP_MOUNT ? ":alvo:Of" : "al"))
 	    != -1) {
 		switch (c) {
@@ -7172,7 +6677,7 @@ share_mount(int op, int argc, char **argv)
 			if (options == NULL)
 				options = safe_malloc(MNT_LINE_MAX + 1);
 
-			/* option validation is done later */
+			 
 			append_options(options, optarg);
 			break;
 		case 'O':
@@ -7196,7 +6701,7 @@ share_mount(int op, int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (do_all) {
 		enum sa_protocol protocol = SA_NO_PROTOCOL;
 
@@ -7229,15 +6734,10 @@ share_mount(int op, int argc, char **argv)
 		share_mount_state.sm_total = cb.cb_used;
 		pthread_mutex_init(&share_mount_state.sm_lock, NULL);
 
-		/* For a 'zfs share -a' operation start with a clean slate. */
+		 
 		zfs_truncate_shares(NULL);
 
-		/*
-		 * libshare isn't mt-safe, so only do the operation in parallel
-		 * if we're mounting. Additionally, the key-loading option must
-		 * be serialized so that we can prompt the user for their keys
-		 * in a consistent manner.
-		 */
+		 
 		zfs_foreach_mountpoint(g_zfs, cb.cb_handles, cb.cb_used,
 		    share_mount_one_cb, &share_mount_state,
 		    op == OP_MOUNT && !(flags & MS_CRYPT));
@@ -7258,12 +6758,7 @@ share_mount(int op, int argc, char **argv)
 			usage(B_FALSE);
 		}
 
-		/*
-		 * When mount is given no arguments, go through
-		 * /proc/self/mounts and display any active ZFS mounts.
-		 * We hide any snapshots, since they are controlled
-		 * automatically.
-		 */
+		 
 
 		if ((mnttab = fopen(MNTTAB, "re")) == NULL) {
 			free(options);
@@ -7304,24 +6799,14 @@ share_mount(int op, int argc, char **argv)
 	return (ret);
 }
 
-/*
- * zfs mount -a
- * zfs mount filesystem
- *
- * Mount all filesystems, or mount the given filesystem.
- */
+ 
 static int
 zfs_do_mount(int argc, char **argv)
 {
 	return (share_mount(OP_MOUNT, argc, argv));
 }
 
-/*
- * zfs share -a [nfs | smb]
- * zfs share filesystem
- *
- * Share all filesystems, or share the given filesystem.
- */
+ 
 static int
 zfs_do_share(int argc, char **argv)
 {
@@ -7344,11 +6829,7 @@ unshare_unmount_compare(const void *larg, const void *rarg, void *unused)
 	return (strcmp(l->un_mountp, r->un_mountp));
 }
 
-/*
- * Convenience routine used by zfs_do_umount() and manual_unmount().  Given an
- * absolute path, find the entry /proc/self/mounts, verify that it's a
- * ZFS filesystem, and unmount it appropriately.
- */
+ 
 static int
 unshare_unmount_path(int op, char *path, int flags, boolean_t is_manual)
 {
@@ -7359,9 +6840,7 @@ unshare_unmount_path(int op, char *path, int flags, boolean_t is_manual)
 	const char *cmdname = (op == OP_SHARE) ? "unshare" : "unmount";
 	ino_t path_inode;
 
-	/*
-	 * Search for the given (major,minor) pair in the mount table.
-	 */
+	 
 
 	if (getextmntent(path, &entry, &statbuf) != 0) {
 		if (op == OP_SHARE) {
@@ -7446,9 +6925,7 @@ out:
 	return (ret != 0);
 }
 
-/*
- * Generic callback for unsharing or unmounting a filesystem.
- */
+ 
 static int
 unshare_unmount(int op, int argc, char **argv)
 {
@@ -7460,7 +6937,7 @@ unshare_unmount(int op, int argc, char **argv)
 	char nfs_mnt_prop[ZFS_MAXPROPLEN];
 	char sharesmb[ZFS_MAXPROPLEN];
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, op == OP_SHARE ? ":a" : "afu")) != -1) {
 		switch (c) {
 		case 'a':
@@ -7488,20 +6965,7 @@ unshare_unmount(int op, int argc, char **argv)
 	argv += optind;
 
 	if (do_all) {
-		/*
-		 * We could make use of zfs_for_each() to walk all datasets in
-		 * the system, but this would be very inefficient, especially
-		 * since we would have to linearly search /proc/self/mounts for
-		 * each one. Instead, do one pass through /proc/self/mounts
-		 * looking for zfs entries and call zfs_unmount() for each one.
-		 *
-		 * Things get a little tricky if the administrator has created
-		 * mountpoints beneath other ZFS filesystems.  In this case, we
-		 * have to unmount the deepest filesystems first.  To accomplish
-		 * this, we place all the mountpoints in an AVL tree sorted by
-		 * the special type (dataset name), and walk the result in
-		 * reverse to make sure to get any snapshots first.
-		 */
+		 
 		FILE *mnttab;
 		struct mnttab entry;
 		uu_avl_pool_t *pool;
@@ -7539,11 +7003,11 @@ unshare_unmount(int op, int argc, char **argv)
 
 		while (getmntent(mnttab, &entry) == 0) {
 
-			/* ignore non-ZFS entries */
+			 
 			if (strcmp(entry.mnt_fstype, MNTTYPE_ZFS) != 0)
 				continue;
 
-			/* ignore snapshots */
+			 
 			if (strchr(entry.mnt_special, '@') != NULL)
 				continue;
 
@@ -7553,10 +7017,7 @@ unshare_unmount(int op, int argc, char **argv)
 				continue;
 			}
 
-			/*
-			 * Ignore datasets that are excluded/restricted by
-			 * parent pool name.
-			 */
+			 
 			if (zpool_skip_pool(zfs_get_pool_name(zhp))) {
 				zfs_close(zhp);
 				continue;
@@ -7578,14 +7039,14 @@ unshare_unmount(int op, int argc, char **argv)
 					continue;
 				break;
 			case OP_MOUNT:
-				/* Ignore legacy mounts */
+				 
 				verify(zfs_prop_get(zhp, ZFS_PROP_MOUNTPOINT,
 				    nfs_mnt_prop,
 				    sizeof (nfs_mnt_prop),
 				    NULL, NULL, 0, B_FALSE) == 0);
 				if (strcmp(nfs_mnt_prop, "legacy") == 0)
 					continue;
-				/* Ignore canmount=noauto mounts */
+				 
 				if (zfs_prop_get_int(zhp, ZFS_PROP_CANMOUNT) ==
 				    ZFS_CANMOUNT_NOAUTO)
 					continue;
@@ -7610,10 +7071,7 @@ unshare_unmount(int op, int argc, char **argv)
 		}
 		(void) fclose(mnttab);
 
-		/*
-		 * Walk the AVL tree in reverse, unmounting each filesystem and
-		 * removing it from the AVL tree in the process.
-		 */
+		 
 		if ((walk = uu_avl_walk_start(tree,
 		    UU_WALK_REVERSE | UU_WALK_ROBUST)) == NULL)
 			nomem();
@@ -7659,12 +7117,7 @@ unshare_unmount(int op, int argc, char **argv)
 			usage(B_FALSE);
 		}
 
-		/*
-		 * We have an argument, but it may be a full path or a ZFS
-		 * filesystem.  Pass full paths off to unmount_path() (shared by
-		 * manual_unmount), otherwise open the filesystem and pass to
-		 * zfs_unmount().
-		 */
+		 
 		if (argv[0][0] == '/')
 			return (unshare_unmount_path(op, argv[0],
 			    flags, B_FALSE));
@@ -7734,24 +7187,14 @@ unshare_unmount(int op, int argc, char **argv)
 	return (ret);
 }
 
-/*
- * zfs unmount [-fu] -a
- * zfs unmount [-fu] filesystem
- *
- * Unmount all filesystems, or a specific ZFS filesystem.
- */
+ 
 static int
 zfs_do_unmount(int argc, char **argv)
 {
 	return (unshare_unmount(OP_MOUNT, argc, argv));
 }
 
-/*
- * zfs unshare -a
- * zfs unshare filesystem
- *
- * Unshare all filesystems, or a specific ZFS filesystem.
- */
+ 
 static int
 zfs_do_unshare(int argc, char **argv)
 {
@@ -7842,10 +7285,7 @@ zfs_do_diff(int argc, char **argv)
 	}
 	free(copy);
 
-	/*
-	 * Ignore SIGPIPE so that the library can give us
-	 * information on any failure
-	 */
+	 
 	if (sigemptyset(&sa.sa_mask) == -1) {
 		err = errno;
 		goto out;
@@ -7864,12 +7304,7 @@ out:
 	return (err != 0);
 }
 
-/*
- * zfs bookmark <fs@source>|<fs#source> <fs#bookmark>
- *
- * Creates a bookmark with the given name from the source snapshot
- * or creates a copy of an existing source bookmark.
- */
+ 
 static int
 zfs_do_bookmark(int argc, char **argv)
 {
@@ -7880,7 +7315,7 @@ zfs_do_bookmark(int argc, char **argv)
 	int ret = 0;
 	int c;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "")) != -1) {
 		switch (c) {
 		case '?':
@@ -7893,7 +7328,7 @@ zfs_do_bookmark(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check number of arguments */
+	 
 	if (argc < 1) {
 		(void) fprintf(stderr, gettext("missing source argument\n"));
 		goto usage;
@@ -7919,10 +7354,7 @@ zfs_do_bookmark(int argc, char **argv)
 		goto usage;
 	}
 
-	/*
-	 * expand source or bookname to full path:
-	 * one of them may be specified as short name
-	 */
+	 
 	{
 		char **expand;
 		char *source_short, *bookname_short;
@@ -7947,20 +7379,20 @@ zfs_do_bookmark(int argc, char **argv)
 			abort();
 		}
 		if (expand != NULL) {
-			*strpbrk(expbuf, "@#") = '\0'; /* dataset name in buf */
+			*strpbrk(expbuf, "@#") = '\0';  
 			(void) strlcat(expbuf, *expand, sizeof (expbuf));
 			*expand = expbuf;
 		}
 	}
 
-	/* determine source type */
+	 
 	switch (*strpbrk(source, "@#")) {
 		case '@': source_type = ZFS_TYPE_SNAPSHOT; break;
 		case '#': source_type = ZFS_TYPE_BOOKMARK; break;
 		default: abort();
 	}
 
-	/* test the source exists */
+	 
 	zfs_handle_t *zhp;
 	zhp = zfs_open(g_zfs, source, source_type);
 	if (zhp == NULL)
@@ -8031,7 +7463,7 @@ zfs_do_channel_program(int argc, char **argv)
 	boolean_t sync_flag = B_TRUE, json_output = B_FALSE;
 	zpool_handle_t *zhp;
 
-	/* check options */
+	 
 	while ((c = getopt(argc, argv, "nt:m:j")) != -1) {
 		switch (c) {
 		case 't':
@@ -8100,10 +7532,7 @@ zfs_do_channel_program(int argc, char **argv)
 	}
 	zpool_close(zhp);
 
-	/*
-	 * Read in the channel program, expanding the program buffer as
-	 * necessary.
-	 */
+	 
 	progread = 0;
 	progsize = 1024;
 	char *progbuf = safe_malloc(progsize);
@@ -8127,13 +7556,7 @@ zfs_do_channel_program(int argc, char **argv)
 	}
 	progbuf[progread] = '\0';
 
-	/*
-	 * Any remaining arguments are passed as arguments to the lua script as
-	 * a string array:
-	 * {
-	 *	"argv" -> [ "arg 1", ... "arg n" ],
-	 * }
-	 */
+	 
 	nvlist_t *argnvl = fnvlist_alloc();
 	fnvlist_add_string_array(argnvl, ZCP_ARG_CLIARGV,
 	    (const char **)argv + 2, argc - 2);
@@ -8147,11 +7570,7 @@ zfs_do_channel_program(int argc, char **argv)
 	}
 
 	if (ret != 0) {
-		/*
-		 * On error, report the error message handed back by lua if one
-		 * exists.  Otherwise, generate an appropriate error message,
-		 * falling back on strerror() for an unexpected return code.
-		 */
+		 
 		const char *errstring = NULL;
 		const char *msg = gettext("Channel program execution failed");
 		uint64_t instructions = 0;
@@ -8238,11 +7657,7 @@ load_key_callback(zfs_handle_t *zhp, void *data)
 	loadkey_cbdata_t *cb = data;
 	uint64_t keystatus = zfs_prop_get_int(zhp, ZFS_PROP_KEYSTATUS);
 
-	/*
-	 * If we are working recursively, we want to skip loading / unloading
-	 * keys for non-encryption roots and datasets whose keys are already
-	 * in the desired end-state.
-	 */
+	 
 	if (cb->cb_recursive) {
 		ret = zfs_crypto_get_encryption_root(zhp, &is_encroot, NULL);
 		if (ret != 0)
@@ -8280,7 +7695,7 @@ load_unload_keys(int argc, char **argv, boolean_t loadkey)
 	cb.cb_loadkey = loadkey;
 
 	while ((c = getopt(argc, argv, "anrL:")) != -1) {
-		/* noop and alternate keylocations only apply to zfs load-key */
+		 
 		if (loadkey) {
 			switch (c) {
 			case 'n':
@@ -8428,7 +7843,7 @@ zfs_do_change_key(int argc, char **argv)
 			}
 		}
 
-		/* refresh the properties so the new keystatus is visible */
+		 
 		zfs_refresh_properties(zhp);
 	}
 
@@ -8444,37 +7859,7 @@ zfs_do_change_key(int argc, char **argv)
 	return (0);
 }
 
-/*
- * 1) zfs project [-d|-r] <file|directory ...>
- *    List project ID and inherit flag of file(s) or directories.
- *    -d: List the directory itself, not its children.
- *    -r: List subdirectories recursively.
- *
- * 2) zfs project -C [-k] [-r] <file|directory ...>
- *    Clear project inherit flag and/or ID on the file(s) or directories.
- *    -k: Keep the project ID unchanged. If not specified, the project ID
- *	  will be reset as zero.
- *    -r: Clear on subdirectories recursively.
- *
- * 3) zfs project -c [-0] [-d|-r] [-p id] <file|directory ...>
- *    Check project ID and inherit flag on the file(s) or directories,
- *    report the outliers.
- *    -0: Print file name followed by a NUL instead of newline.
- *    -d: Check the directory itself, not its children.
- *    -p: Specify the referenced ID for comparing with the target file(s)
- *	  or directories' project IDs. If not specified, the target (top)
- *	  directory's project ID will be used as the referenced one.
- *    -r: Check subdirectories recursively.
- *
- * 4) zfs project [-p id] [-r] [-s] <file|directory ...>
- *    Set project ID and/or inherit flag on the file(s) or directories.
- *    -p: Set the project ID as the given id.
- *    -r: Set on subdirectories recursively. If not specify "-p" option,
- *	  it will use top-level directory's project ID as the given id,
- *	  then set both project ID and inherit flag on all descendants
- *	  of the top-level directory.
- *    -s: Set project inherit flag.
- */
+ 
 static int
 zfs_do_project(int argc, char **argv)
 {
@@ -8517,7 +7902,7 @@ zfs_do_project(int argc, char **argv)
 			break;
 		case 'd':
 			zpc.zpc_dironly = B_TRUE;
-			/* overwrite "-r" option */
+			 
 			zpc.zpc_recursive = B_FALSE;
 			break;
 		case 'k':
@@ -8543,7 +7928,7 @@ zfs_do_project(int argc, char **argv)
 		}
 		case 'r':
 			zpc.zpc_recursive = B_TRUE;
-			/* overwrite "-d" option */
+			 
 			zpc.zpc_dironly = B_FALSE;
 			break;
 		case 's':
@@ -8656,14 +8041,14 @@ zfs_do_wait(int argc, char **argv)
 	int error = 0, i;
 	int c;
 
-	/* By default, wait for all types of activity. */
+	 
 	for (i = 0; i < ZFS_WAIT_NUM_ACTIVITIES; i++)
 		enabled[i] = B_TRUE;
 
 	while ((c = getopt(argc, argv, "t:")) != -1) {
 		switch (c) {
 		case 't':
-			/* Reset activities array */
+			 
 			memset(&enabled, 0, sizeof (enabled));
 
 			for (char *tok; (tok = strsep(&optarg, ",")); ) {
@@ -8731,9 +8116,7 @@ found:;
 	return (error);
 }
 
-/*
- * Display version message
- */
+ 
 static int
 zfs_do_version(int argc, char **argv)
 {
@@ -8741,7 +8124,7 @@ zfs_do_version(int argc, char **argv)
 	return (zfs_version_print() != 0);
 }
 
-/* Display documentation */
+ 
 static int
 zfs_do_help(int argc, char **argv)
 {
@@ -8774,9 +8157,7 @@ main(int argc, char **argv)
 
 	opterr = 0;
 
-	/*
-	 * Make sure the user has specified some command.
-	 */
+	 
 	if (argc < 2) {
 		(void) fprintf(stderr, gettext("missing command\n"));
 		usage(B_FALSE);
@@ -8784,40 +8165,28 @@ main(int argc, char **argv)
 
 	cmdname = argv[1];
 
-	/*
-	 * The 'umount' command is an alias for 'unmount'
-	 */
+	 
 	if (strcmp(cmdname, "umount") == 0)
 		cmdname = "unmount";
 
-	/*
-	 * The 'recv' command is an alias for 'receive'
-	 */
+	 
 	if (strcmp(cmdname, "recv") == 0)
 		cmdname = "receive";
 
-	/*
-	 * The 'snap' command is an alias for 'snapshot'
-	 */
+	 
 	if (strcmp(cmdname, "snap") == 0)
 		cmdname = "snapshot";
 
-	/*
-	 * Special case '-?'
-	 */
+	 
 	if ((strcmp(cmdname, "-?") == 0) ||
 	    (strcmp(cmdname, "--help") == 0))
 		usage(B_TRUE);
 
-	/*
-	 * Special case '-V|--version'
-	 */
+	 
 	if ((strcmp(cmdname, "-V") == 0) || (strcmp(cmdname, "--version") == 0))
 		return (zfs_do_version(argc, argv));
 
-	/*
-	 * Special case 'help'
-	 */
+	 
 	if (strcmp(cmdname, "help") == 0)
 		return (zfs_do_help(argc, argv));
 
@@ -8832,18 +8201,13 @@ main(int argc, char **argv)
 
 	zfs_setproctitle_init(argc, argv, environ);
 
-	/*
-	 * Many commands modify input strings for string parsing reasons.
-	 * We create a copy to protect the original argv.
-	 */
+	 
 	newargv = safe_malloc((argc + 1) * sizeof (newargv[0]));
 	for (i = 0; i < argc; i++)
 		newargv[i] = strdup(argv[i]);
 	newargv[argc] = NULL;
 
-	/*
-	 * Run the appropriate command.
-	 */
+	 
 	libzfs_mnttab_cache(g_zfs, B_TRUE);
 	if (find_command_idx(cmdname, &i) == 0) {
 		current_command = &command_table[i];
@@ -8868,10 +8232,7 @@ main(int argc, char **argv)
 
 	libzfs_fini(g_zfs);
 
-	/*
-	 * The 'ZFS_ABORT' environment variable causes us to dump core on exit
-	 * for the purposes of running ::findleaks.
-	 */
+	 
 	if (getenv("ZFS_ABORT") != NULL) {
 		(void) printf("dumping core by request\n");
 		abort();
@@ -8880,11 +8241,7 @@ main(int argc, char **argv)
 	return (ret);
 }
 
-/*
- * zfs zone nsfile filesystem
- *
- * Add or delete the given dataset to/from the namespace.
- */
+ 
 #ifdef __linux__
 static int
 zfs_do_zone_impl(int argc, char **argv, boolean_t attach)
@@ -8927,16 +8284,14 @@ zfs_do_unzone(int argc, char **argv)
 #ifdef __FreeBSD__
 #include <sys/jail.h>
 #include <jail.h>
-/*
- * Attach/detach the given dataset to/from the given jail
- */
+ 
 static int
 zfs_do_jail_impl(int argc, char **argv, boolean_t attach)
 {
 	zfs_handle_t *zhp;
 	int jailid, ret;
 
-	/* check number of arguments */
+	 
 	if (argc < 3) {
 		(void) fprintf(stderr, gettext("missing argument(s)\n"));
 		usage(B_FALSE);
@@ -8962,22 +8317,14 @@ zfs_do_jail_impl(int argc, char **argv, boolean_t attach)
 	return (ret);
 }
 
-/*
- * zfs jail jailid filesystem
- *
- * Attach the given dataset to the given jail
- */
+ 
 static int
 zfs_do_jail(int argc, char **argv)
 {
 	return (zfs_do_jail_impl(argc, argv, B_TRUE));
 }
 
-/*
- * zfs unjail jailid filesystem
- *
- * Detach the given dataset from the given jail
- */
+ 
 static int
 zfs_do_unjail(int argc, char **argv)
 {

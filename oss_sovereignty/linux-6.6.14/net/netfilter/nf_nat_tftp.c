@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 2001-2002 Magnus Boden <mb@ozaba.mine.nu>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/udp.h>

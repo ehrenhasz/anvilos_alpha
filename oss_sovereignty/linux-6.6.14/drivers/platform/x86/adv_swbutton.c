@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  adv_swbutton.c - Software Button Interface Driver.
- *
- *  (C) Copyright 2020 Advantech Corporation, Inc
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/input.h>
@@ -21,10 +16,7 @@ struct adv_swbutton {
 	char phys[32];
 };
 
-/*-------------------------------------------------------------------------
- *                               Driver Interface
- *--------------------------------------------------------------------------
- */
+ 
 static void adv_swbutton_notify(acpi_handle handle, u32 event, void *context)
 {
 	struct platform_device *device = context;

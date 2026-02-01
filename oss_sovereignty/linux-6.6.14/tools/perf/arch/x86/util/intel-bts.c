@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel-bts.c: Intel Processor Trace support
- * Copyright (c) 2013-2015, Intel Corporation.
- */
+
+ 
 
 #include <errno.h>
 #include <linux/kernel.h>
@@ -23,7 +20,7 @@
 #include "../../../util/tsc.h"
 #include "../../../util/auxtrace.h"
 #include "../../../util/intel-bts.h"
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 
 #define KiB(x) ((x) * 1024)
 #define MiB(x) ((x) * 1024 * 1024)
@@ -148,7 +145,7 @@ static int intel_bts_recording_options(struct auxtrace_record *itr,
 		return -EINVAL;
 	}
 
-	/* Set default sizes for snapshot mode */
+	 
 	if (opts->auxtrace_snapshot_mode) {
 		if (!opts->auxtrace_snapshot_size && !opts->auxtrace_mmap_pages) {
 			if (privileged) {
@@ -186,7 +183,7 @@ static int intel_bts_recording_options(struct auxtrace_record *itr,
 			  opts->auxtrace_snapshot_size);
 	}
 
-	/* Set default sizes for full trace mode */
+	 
 	if (opts->full_auxtrace && !opts->auxtrace_mmap_pages) {
 		if (privileged) {
 			opts->auxtrace_mmap_pages = MiB(4) / page_size;
@@ -197,7 +194,7 @@ static int intel_bts_recording_options(struct auxtrace_record *itr,
 		}
 	}
 
-	/* Validate auxtrace_mmap_pages */
+	 
 	if (opts->auxtrace_mmap_pages) {
 		size_t sz = opts->auxtrace_mmap_pages * (size_t)page_size;
 		size_t min_sz;
@@ -215,20 +212,14 @@ static int intel_bts_recording_options(struct auxtrace_record *itr,
 	}
 
 	if (intel_bts_evsel) {
-		/*
-		 * To obtain the auxtrace buffer file descriptor, the auxtrace event
-		 * must come first.
-		 */
+		 
 		evlist__to_front(evlist, intel_bts_evsel);
-		/*
-		 * In the case of per-cpu mmaps, we need the CPU on the
-		 * AUX event.
-		 */
+		 
 		if (!perf_cpu_map__empty(cpus))
 			evsel__set_sample_bit(intel_bts_evsel, CPU);
 	}
 
-	/* Add dummy event to keep tracking */
+	 
 	if (opts->full_auxtrace) {
 		struct evsel *tracking_evsel;
 		int err;
@@ -386,12 +377,7 @@ static int intel_bts_find_snapshot(struct auxtrace_record *itr, int idx,
 		wrapped = true;
 	}
 
-	/*
-	 * In full trace mode 'head' continually increases.  However in snapshot
-	 * mode 'head' is an offset within the buffer.  Here 'old' and 'head'
-	 * are adjusted to match the full trace case which expects that 'old' is
-	 * always less than 'head'.
-	 */
+	 
 	if (wrapped) {
 		*old = *head;
 		*head += mm->len;

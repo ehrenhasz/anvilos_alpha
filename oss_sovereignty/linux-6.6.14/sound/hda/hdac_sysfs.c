@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sysfs support for HD-audio core device
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/sysfs.h>
@@ -75,12 +73,7 @@ const struct attribute_group *hdac_dev_attr_groups[] = {
 	NULL
 };
 
-/*
- * Widget tree sysfs
- *
- * This is a tree showing the attributes of each widget.  It appears like
- * /sys/bus/hdaudioC0D0/widgets/04/caps
- */
+ 
 
 struct widget_attribute;
 
@@ -397,13 +390,13 @@ static int widget_tree_create(struct hdac_device *codec)
 	return 0;
 }
 
-/* call with codec->widget_lock held */
+ 
 int hda_widget_sysfs_init(struct hdac_device *codec)
 {
 	int err;
 
 	if (codec->widgets)
-		return 0; /* already created */
+		return 0;  
 
 	err = widget_tree_create(codec);
 	if (err < 0) {
@@ -414,13 +407,13 @@ int hda_widget_sysfs_init(struct hdac_device *codec)
 	return 0;
 }
 
-/* call with codec->widget_lock held */
+ 
 void hda_widget_sysfs_exit(struct hdac_device *codec)
 {
 	widget_tree_free(codec);
 }
 
-/* call with codec->widget_lock held */
+ 
 int hda_widget_sysfs_reinit(struct hdac_device *codec,
 			    hda_nid_t start_nid, int num_nodes)
 {
@@ -442,14 +435,14 @@ int hda_widget_sysfs_reinit(struct hdac_device *codec,
 		return -ENOMEM;
 	}
 
-	/* prune non-existing nodes */
+	 
 	for (i = 0, nid = codec->start_nid; i < codec->num_nodes; i++, nid++) {
 		if (nid < start_nid || nid >= end_nid)
 			free_widget_node(codec->widgets->nodes[i],
 					 &widget_node_group);
 	}
 
-	/* add new nodes */
+	 
 	for (i = 0, nid = start_nid; i < num_nodes; i++, nid++) {
 		if (nid < codec->start_nid || nid >= codec->end_nid)
 			add_widget_node(tree->root, nid, &widget_node_group,
@@ -459,7 +452,7 @@ int hda_widget_sysfs_reinit(struct hdac_device *codec,
 				codec->widgets->nodes[nid - codec->start_nid];
 	}
 
-	/* replace with the new tree */
+	 
 	kfree(codec->widgets->nodes);
 	kfree(codec->widgets);
 	codec->widgets = tree;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pinctrl / GPIO driver for StarFive JH7100 SoC
- *
- * Copyright (C) 2020 Shanghai StarFive Technology Co., Ltd.
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -32,99 +27,46 @@
 
 #define DRIVER_NAME "pinctrl-starfive"
 
-/*
- * Refer to Section 12. GPIO Registers in the JH7100 data sheet:
- * https://github.com/starfive-tech/JH7100_Docs
- */
+ 
 #define NR_GPIOS	64
 
-/*
- * Global enable for GPIO interrupts. If bit 0 is set to 1 the GPIO interrupts
- * are enabled. If set to 0 the GPIO interrupts are disabled.
- */
+ 
 #define GPIOEN		0x000
 
-/*
- * The following 32-bit registers come in pairs, but only the offset of the
- * first register is defined. The first controls (interrupts for) GPIO 0-31 and
- * the second GPIO 32-63.
- */
+ 
 
-/*
- * Interrupt Type. If set to 1 the interrupt is edge-triggered. If set to 0 the
- * interrupt is level-triggered.
- */
+ 
 #define GPIOIS		0x010
 
-/*
- * Edge-Trigger Interrupt Type.  If set to 1 the interrupt gets triggered on
- * both positive and negative edges. If set to 0 the interrupt is triggered by a
- * single edge.
- */
+ 
 #define GPIOIBE		0x018
 
-/*
- * Interrupt Trigger Polarity. If set to 1 the interrupt is triggered on a
- * rising edge (edge-triggered) or high level (level-triggered). If set to 0 the
- * interrupt is triggered on a falling edge (edge-triggered) or low level
- * (level-triggered).
- */
+ 
 #define GPIOIEV		0x020
 
-/*
- * Interrupt Mask. If set to 1 the interrupt is enabled (unmasked). If set to 0
- * the interrupt is disabled (masked). Note that the current documentation is
- * wrong and says the exct opposite of this.
- */
+ 
 #define GPIOIE		0x028
 
-/*
- * Clear Edge-Triggered Interrupts. Write a 1 to clear the edge-triggered
- * interrupt.
- */
+ 
 #define GPIOIC		0x030
 
-/*
- * Edge-Triggered Interrupt Status. A 1 means the configured edge was detected.
- */
+ 
 #define GPIORIS		0x038
 
-/*
- * Interrupt Status after Masking. A 1 means the configured edge or level was
- * detected and not masked.
- */
+ 
 #define GPIOMIS		0x040
 
-/*
- * Data Value. Dynamically reflects the value of the GPIO pin. If 1 the pin is
- * a digital 1 and if 0 the pin is a digital 0.
- */
+ 
 #define GPIODIN		0x048
 
-/*
- * From the data sheet section 12.2, there are 64 32-bit output data registers
- * and 64 output enable registers. Output data and output enable registers for
- * a given GPIO are contiguous. Eg. GPO0_DOUT_CFG is 0x50 and GPO0_DOEN_CFG is
- * 0x54 while GPO1_DOUT_CFG is 0x58 and GPO1_DOEN_CFG is 0x5c.  The stride
- * between GPIO registers is effectively 8, thus: GPOn_DOUT_CFG is 0x50 + 8n
- * and GPOn_DOEN_CFG is 0x54 + 8n.
- */
+ 
 #define GPON_DOUT_CFG	0x050
 #define GPON_DOEN_CFG	0x054
 
-/*
- * From Section 12.3, there are 75 input signal configuration registers which
- * are 4 bytes wide starting with GPI_CPU_JTAG_TCK_CFG at 0x250 and ending with
- * GPI_USB_OVER_CURRENT_CFG 0x378
- */
+ 
 #define GPI_CFG_OFFSET	0x250
 
-/*
- * Pad Control Bits. There are 16 pad control bits for each pin located in 103
- * 32-bit registers controlling PAD_GPIO[0] to PAD_GPIO[63] followed by
- * PAD_FUNC_SHARE[0] to PAD_FUNC_SHARE[141]. Odd numbered pins use the upper 16
- * bit of each register.
- */
+ 
 #define PAD_SLEW_RATE_MASK		GENMASK(11, 9)
 #define PAD_SLEW_RATE_POS		9
 #define PAD_BIAS_STRONG_PULL_UP		BIT(8)
@@ -139,32 +81,13 @@
 #define PAD_DRIVE_STRENGTH_MASK		GENMASK(3, 0)
 #define PAD_DRIVE_STRENGTH_POS		0
 
-/*
- * From Section 11, the IO_PADSHARE_SEL register can be programmed to select
- * one of seven pre-defined multiplexed signal groups on PAD_FUNC_SHARE and
- * PAD_GPIO pads. This is a global setting.
- */
+ 
 #define IO_PADSHARE_SEL			0x1a0
 
-/*
- * This just needs to be some number such that when
- * sfp->gpio.pin_base = PAD_INVALID_GPIO then
- * starfive_pin_to_gpio(sfp, validpin) is never a valid GPIO number.
- * That is it should underflow and return something >= NR_GPIOS.
- */
+ 
 #define PAD_INVALID_GPIO		0x10000
 
-/*
- * The packed pinmux values from the device tree look like this:
- *
- *  | 31 - 24 | 23 - 16 | 15 - 8 |     7    |     6    |  5 - 0  |
- *  |  dout   |  doen   |  din   | dout rev | doen rev | gpio nr |
- *
- * ..but the GPOn_DOUT_CFG and GPOn_DOEN_CFG registers look like this:
- *
- *  |      31       | 30 - 8 |   7 - 0   |
- *  | dout/doen rev | unused | dout/doen |
- */
+ 
 static unsigned int starfive_pinmux_to_gpio(u32 v)
 {
 	return v & (NR_GPIOS - 1);
@@ -185,14 +108,7 @@ static u32 starfive_pinmux_to_din(u32 v)
 	return (v >> 8) & GENMASK(7, 0);
 }
 
-/*
- * The maximum GPIO output current depends on the chosen drive strength:
- *
- *  DS:   0     1     2     3     4     5     6     7
- *  mA:  14.2  21.2  28.2  35.2  42.2  49.1  56.0  62.8
- *
- * After rounding that is 7*DS + 14 mA
- */
+ 
 static u32 starfive_drive_strength_to_max_mA(u16 ds)
 {
 	return 7 * ds + 14;
@@ -210,7 +126,7 @@ struct starfive_pinctrl {
 	void __iomem *base;
 	void __iomem *padctl;
 	struct pinctrl_dev *pctl;
-	struct mutex mutex; /* serialize adding groups and functions */
+	struct mutex mutex;  
 };
 
 static inline unsigned int starfive_pin_to_gpio(const struct starfive_pinctrl *sfp,
@@ -603,7 +519,7 @@ static int starfive_dt_node_to_map(struct pinctrl_dev *pctldev,
 			goto put_child;
 		}
 
-		/* don't create a map if there are no pinconf settings */
+		 
 		if (map[nmaps].data.configs.num_configs == 0)
 			continue;
 
@@ -944,7 +860,7 @@ static int starfive_gpio_direction_input(struct gpio_chip *gc,
 	void __iomem *doen = sfp->base + GPON_DOEN_CFG + 8 * gpio;
 	unsigned long flags;
 
-	/* enable input and schmitt trigger */
+	 
 	starfive_padctl_rmw(sfp, starfive_gpio_to_pin(sfp, gpio),
 			    PAD_INPUT_ENABLE | PAD_INPUT_SCHMITT_ENABLE,
 			    PAD_INPUT_ENABLE | PAD_INPUT_SCHMITT_ENABLE);
@@ -968,7 +884,7 @@ static int starfive_gpio_direction_output(struct gpio_chip *gc,
 	writel_relaxed(GPO_ENABLE, doen);
 	raw_spin_unlock_irqrestore(&sfp->lock, flags);
 
-	/* disable input, schmitt trigger and bias */
+	 
 	starfive_padctl_rmw(sfp, starfive_gpio_to_pin(sfp, gpio),
 			    PAD_BIAS_MASK | PAD_INPUT_ENABLE | PAD_INPUT_SCHMITT_ENABLE,
 			    PAD_BIAS_DISABLE);
@@ -1045,10 +961,7 @@ static int starfive_gpio_add_pin_ranges(struct gpio_chip *gc)
 
 	sfp->gpios.name = sfp->gc.label;
 	sfp->gpios.base = sfp->gc.base;
-	/*
-	 * sfp->gpios.pin_base depends on the chosen signal group
-	 * and is set in starfive_probe()
-	 */
+	 
 	sfp->gpios.npins = NR_GPIOS;
 	sfp->gpios.gc = &sfp->gc;
 	pinctrl_add_gpio_range(sfp->pctl, &sfp->gpios);
@@ -1130,29 +1043,29 @@ static int starfive_irq_set_type(struct irq_data *d, unsigned int trigger)
 
 	switch (trigger) {
 	case IRQ_TYPE_EDGE_RISING:
-		irq_type  = mask; /* 1: edge triggered */
-		edge_both = 0;    /* 0: single edge */
-		polarity  = mask; /* 1: rising edge */
+		irq_type  = mask;  
+		edge_both = 0;     
+		polarity  = mask;  
 		break;
 	case IRQ_TYPE_EDGE_FALLING:
-		irq_type  = mask; /* 1: edge triggered */
-		edge_both = 0;    /* 0: single edge */
-		polarity  = 0;    /* 0: falling edge */
+		irq_type  = mask;  
+		edge_both = 0;     
+		polarity  = 0;     
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
-		irq_type  = mask; /* 1: edge triggered */
-		edge_both = mask; /* 1: both edges */
-		polarity  = 0;    /* 0: ignored */
+		irq_type  = mask;  
+		edge_both = mask;  
+		polarity  = 0;     
 		break;
 	case IRQ_TYPE_LEVEL_HIGH:
-		irq_type  = 0;    /* 0: level triggered */
-		edge_both = 0;    /* 0: ignored */
-		polarity  = mask; /* 1: high level */
+		irq_type  = 0;     
+		edge_both = 0;     
+		polarity  = mask;  
 		break;
 	case IRQ_TYPE_LEVEL_LOW:
-		irq_type  = 0;    /* 0: level triggered */
-		edge_both = 0;    /* 0: ignored */
-		polarity  = 0;    /* 0: low level */
+		irq_type  = 0;     
+		edge_both = 0;     
+		polarity  = 0;     
 		break;
 	default:
 		return -EINVAL;
@@ -1209,13 +1122,13 @@ static int starfive_gpio_init_hw(struct gpio_chip *gc)
 {
 	struct starfive_pinctrl *sfp = container_of(gc, struct starfive_pinctrl, gc);
 
-	/* mask all GPIO interrupts */
+	 
 	writel(0, sfp->base + GPIOIE + 0);
 	writel(0, sfp->base + GPIOIE + 4);
-	/* clear edge interrupt flags */
+	 
 	writel(~0U, sfp->base + GPIOIC + 0);
 	writel(~0U, sfp->base + GPIOIC + 4);
-	/* enable GPIO interrupts */
+	 
 	writel(1, sfp->base + GPIOEN);
 	return 0;
 }
@@ -1262,11 +1175,7 @@ static int starfive_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * We don't want to assert reset and risk undoing pin muxing for the
-	 * early boot serial console, but let's make sure the reset line is
-	 * deasserted in case someone runs a really minimal bootloader.
-	 */
+	 
 	ret = reset_control_deassert(rst);
 	if (ret)
 		return dev_err_probe(dev, ret, "could not deassert reset\n");
@@ -1349,7 +1258,7 @@ out_pinctrl_enable:
 
 static const struct of_device_id starfive_of_match[] = {
 	{ .compatible = "starfive,jh7100-pinctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, starfive_of_match);
 

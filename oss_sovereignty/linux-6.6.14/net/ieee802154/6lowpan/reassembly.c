@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*	6LoWPAN fragment reassembly
- *
- *	Authors:
- *	Alexander Aring		<aar@pengutronix.de>
- *
- *	Based on: net/ipv6/reassembly.c
- */
+
+ 
 
 #define pr_fmt(fmt) "6LoWPAN: " fmt
 
@@ -88,9 +82,7 @@ static int lowpan_frag_queue(struct lowpan_frag_queue *fq,
 	struct net_device *ldev;
 	int end, offset, err;
 
-	/* inet_frag_queue_* functions use skb->cb; see struct ipfrag_skb_cb
-	 * in inet_fragment.c
-	 */
+	 
 	BUILD_BUG_ON(sizeof(struct lowpan_802154_cb) > sizeof(struct inet_skb_parm));
 	BUILD_BUG_ON(sizeof(struct lowpan_802154_cb) > sizeof(struct inet6_skb_parm));
 
@@ -100,11 +92,9 @@ static int lowpan_frag_queue(struct lowpan_frag_queue *fq,
 	offset = lowpan_802154_cb(skb)->d_offset << 3;
 	end = lowpan_802154_cb(skb)->d_size;
 
-	/* Is this the final fragment? */
+	 
 	if (offset + skb->len == end) {
-		/* If we already have some bits beyond end
-		 * or have different end, the segment is corrupted.
-		 */
+		 
 		if (end < fq->q.len ||
 		    ((fq->q.flags & INET_FRAG_LAST_IN) && end != fq->q.len))
 			goto err;
@@ -112,7 +102,7 @@ static int lowpan_frag_queue(struct lowpan_frag_queue *fq,
 		fq->q.len = end;
 	} else {
 		if (end > fq->q.len) {
-			/* Some bits beyond end -> corruption. */
+			 
 			if (fq->q.flags & INET_FRAG_LAST_IN)
 				goto err;
 			fq->q.len = end;
@@ -155,12 +145,7 @@ err:
 	return -1;
 }
 
-/*	Check if this packet is complete.
- *
- *	It is called with locked fq, and caller must check that
- *	queue is eligible for reassembly i.e. it is not COMPLETE,
- *	the last and the first frames arrived and all the bits are here.
- */
+ 
 static int lowpan_frag_reasm(struct lowpan_frag_queue *fq, struct sk_buff *skb,
 			     struct sk_buff *prev_tail, struct net_device *ldev)
 {
@@ -192,13 +177,13 @@ static int lowpan_frag_rx_handlers_result(struct sk_buff *skb,
 	case RX_QUEUED:
 		return NET_RX_SUCCESS;
 	case RX_CONTINUE:
-		/* nobody cared about this packet */
+		 
 		net_warn_ratelimited("%s: received unknown dispatch\n",
 				     __func__);
 
 		fallthrough;
 	default:
-		/* all others failure */
+		 
 		return NET_RX_DROP;
 	}
 }
@@ -228,7 +213,7 @@ static int lowpan_invoke_frag_rx_handlers(struct sk_buff *skb)
 			goto rxh_next;	\
 	} while (0)
 
-	/* likely at first */
+	 
 	CALL_RXH(lowpan_frag_rx_h_iphc);
 	CALL_RXH(lowpan_rx_h_ipv6);
 
@@ -249,9 +234,7 @@ static int lowpan_get_cb(struct sk_buff *skb, u8 frag_type,
 
 	fail = lowpan_fetch_skb(skb, &high, 1);
 	fail |= lowpan_fetch_skb(skb, &low, 1);
-	/* remove the dispatch value and use first three bits as high value
-	 * for the datagram size
-	 */
+	 
 	cb->d_size = (high & LOWPAN_FRAG_DGRAM_SIZE_HIGH_MASK) <<
 		LOWPAN_FRAG_DGRAM_SIZE_HIGH_SHIFT | low;
 	fail |= lowpan_fetch_skb(skb, &d_tag, 2);
@@ -262,9 +245,9 @@ static int lowpan_get_cb(struct sk_buff *skb, u8 frag_type,
 	} else {
 		skb_reset_network_header(skb);
 		cb->d_offset = 0;
-		/* check if datagram_size has ipv6hdr on FRAG1 */
+		 
 		fail |= cb->d_size < sizeof(struct ipv6hdr);
-		/* check if we can dereference the dispatch value */
+		 
 		fail |= !skb->len;
 	}
 
@@ -341,7 +324,7 @@ static struct ctl_table lowpan_frags_ns_ctl_table[] = {
 	{ }
 };
 
-/* secret interval has been deprecated */
+ 
 static int lowpan_frags_secret_interval_unused;
 static struct ctl_table lowpan_frags_ctl_table[] = {
 	{
@@ -369,7 +352,7 @@ static int __net_init lowpan_frags_ns_sysctl_register(struct net *net)
 		if (table == NULL)
 			goto err_alloc;
 
-		/* Don't export sysctls to unprivileged users */
+		 
 		if (net->user_ns != &init_user_ns) {
 			table[0].procname = NULL;
 			table_size = 0;

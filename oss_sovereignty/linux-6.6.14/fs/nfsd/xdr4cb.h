@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #define NFS4_MAXTAGLEN		20
 
 #define NFS4_enc_cb_null_sz		0
@@ -7,7 +7,7 @@
 #define cb_compound_dec_hdr_sz		(3 + (NFS4_MAXTAGLEN >> 2))
 #define sessionid_sz			(NFS4_MAX_SESSIONID_LEN >> 2)
 #define cb_sequence_enc_sz		(sessionid_sz + 4 +             \
-					1 /* no referring calls list yet */)
+					1  )
 #define cb_sequence_dec_sz		(op_dec_sz + sessionid_sz + 4)
 
 #define op_enc_sz			1

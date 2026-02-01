@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI Touch Screen / ADC MFD driver
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -58,10 +54,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tscadc)
 		spin_lock_irq(&tscadc->reg_lock);
 		finish_wait(&tscadc->reg_se_wait, &wait);
 
-		/*
-		 * Sequencer should either be idle or
-		 * busy applying the charge step.
-		 */
+		 
 		regmap_read(tscadc->regmap, REG_ADCFSM, &reg);
 		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
 		tscadc->adc_waiting = false;
@@ -127,7 +120,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 	int tscmag_wires = 0, adc_channels = 0, cell_idx = 0, total_channels;
 	int readouts = 0, mag_tracks = 0;
 
-	/* Allocate memory for device */
+	 
 	tscadc = devm_kzalloc(&pdev->dev, sizeof(*tscadc), GFP_KERNEL);
 	if (!tscadc)
 		return -ENOMEM;
@@ -155,11 +148,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 		if (tscmag_wires)
 			use_tsc = true;
 	} else {
-		/*
-		 * When adding support for the magnetic stripe reader, here is
-		 * the place to look for the number of tracks used from device
-		 * tree. Let's default to 0 for now.
-		 */
+		 
 		mag_tracks = 0;
 		tscmag_wires = mag_tracks * 2;
 		if (tscmag_wires)
@@ -220,15 +209,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get_sync(&pdev->dev);
 
-	/*
-	 * The TSC_ADC_Subsystem has 2 clock domains: OCP_CLK and ADC_CLK.
-	 * ADCs produce a 12-bit sample every 15 ADC_CLK cycles.
-	 * am33xx ADCs expect to capture 200ksps.
-	 * am47xx ADCs expect to capture 867ksps.
-	 * We need ADC clocks respectively running at 3MHz and 13MHz.
-	 * These frequencies are valid since TSC_ADC_SS controller design
-	 * assumes the OCP clock is at least 6x faster than the ADC clock.
-	 */
+	 
 	clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(clk)) {
 		dev_err(&pdev->dev, "failed to get fck\n");
@@ -239,11 +220,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 	tscadc->clk_div = (clk_get_rate(clk) / tscadc->data->target_clk_rate) - 1;
 	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
 
-	/*
-	 * Set the control register bits. tscadc->ctrl stores the configuration
-	 * of the CTRL register but not the subsystem enable bit which must be
-	 * added manually when timely.
-	 */
+	 
 	tscadc->ctrl = CNTRLREG_STEPID;
 	if (ti_adc_with_touchscreen(tscadc)) {
 		tscadc->ctrl |= CNTRLREG_TSC_STEPCONFIGWRT;
@@ -262,10 +239,10 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 
 	tscadc_idle_config(tscadc);
 
-	/* Enable the TSC module enable bit */
+	 
 	regmap_write(tscadc->regmap, REG_CTRL, tscadc->ctrl | CNTRLREG_SSENB);
 
-	/* TSC or MAG Cell */
+	 
 	if (use_tsc || use_mag) {
 		cell = &tscadc->cells[cell_idx++];
 		cell->name = tscadc->data->secondary_feature_name;
@@ -274,7 +251,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 		cell->pdata_size = sizeof(tscadc);
 	}
 
-	/* ADC Cell */
+	 
 	if (adc_channels > 0) {
 		cell = &tscadc->cells[cell_idx++];
 		cell->name = tscadc->data->adc_feature_name;

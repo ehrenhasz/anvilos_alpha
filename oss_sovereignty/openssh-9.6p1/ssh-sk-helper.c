@@ -1,29 +1,7 @@
-/* $OpenBSD: ssh-sk-helper.c,v 1.14 2022/12/04 11:03:11 dtucker Exp $ */
-/*
- * Copyright (c) 2019 Google LLC
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
-/*
- * This is a tiny program used to isolate the address space used for
- * security key middleware signing operations from ssh-agent. It is similar
- * to ssh-pkcs11-helper.c but considerably simpler as the operations for
- * security keys are stateless.
- *
- * Please crank SSH_SK_HELPER_VERSION in sshkey.h for any incompatible
- * protocol changes.
- */
+ 
  
 #include "includes.h"
 
@@ -76,7 +54,7 @@ reply_error(int r, char *fmt, ...)
 	return resp;
 }
 
-/* If the specified string is zero length, then free it and replace with NULL */
+ 
 static void
 null_empty(char **s)
 {
@@ -102,7 +80,7 @@ process_sign(struct sshbuf *req)
 	if ((r = sshbuf_froms(req, &kbuf)) != 0 ||
 	    (r = sshbuf_get_cstring(req, &provider, NULL)) != 0 ||
 	    (r = sshbuf_get_string_direct(req, &message, &msglen)) != 0 ||
-	    (r = sshbuf_get_cstring(req, NULL, NULL)) != 0 || /* alg */
+	    (r = sshbuf_get_cstring(req, NULL, NULL)) != 0 ||  
 	    (r = sshbuf_get_u32(req, &compat)) != 0 ||
 	    (r = sshbuf_get_cstring(req, &pin, NULL)) != 0)
 		fatal_r(r, "%s: parse", __progname);
@@ -254,7 +232,7 @@ process_load_resident(struct sshbuf *req)
 		if ((r = sshkey_private_serialize(srks[i]->key, kbuf)) != 0)
 			fatal_r(r, "%s: encode key", __progname);
 		if ((r = sshbuf_put_stringb(resp, kbuf)) != 0 ||
-		    (r = sshbuf_put_cstring(resp, "")) != 0 || /* comment */
+		    (r = sshbuf_put_cstring(resp, "")) != 0 ||  
 		    (r = sshbuf_put_string(resp, srks[i]->user_id,
 		    srks[i]->user_id_len)) != 0)
 			fatal_r(r, "%s: compose key", __progname);
@@ -299,16 +277,13 @@ main(int argc, char **argv)
 	}
 	log_init(__progname, log_level, log_facility, vflag);
 
-	/*
-	 * Rearrange our file descriptors a little; we don't trust the
-	 * providers not to fiddle with stdin/out.
-	 */
+	 
 	closefrom(STDERR_FILENO + 1);
 	if ((in = dup(STDIN_FILENO)) == -1 || (out = dup(STDOUT_FILENO)) == -1)
 		fatal("%s: dup: %s", __progname, strerror(errno));
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
-	sanitise_stdfd(); /* resets to /dev/null */
+	sanitise_stdfd();  
 
 	if ((req = sshbuf_new()) == NULL)
 		fatal("%s: sshbuf_new failed", __progname);
@@ -355,7 +330,7 @@ main(int argc, char **argv)
 
 	return (0);
 }
-#else /* ENABLE_SK */
+#else  
 #include <stdio.h>
 
 int
@@ -364,4 +339,4 @@ main(int argc, char **argv)
 	fprintf(stderr, "ssh-sk-helper: disabled at compile time\n");
 	return -1;
 }
-#endif /* ENABLE_SK */
+#endif  

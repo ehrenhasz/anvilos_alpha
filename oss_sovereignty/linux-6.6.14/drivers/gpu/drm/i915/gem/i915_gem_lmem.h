@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_GEM_LMEM_H
 #define __I915_GEM_LMEM_H
@@ -35,4 +33,4 @@ i915_gem_object_create_lmem(struct drm_i915_private *i915,
 			    resource_size_t size,
 			    unsigned int flags);
 
-#endif /* !__I915_GEM_LMEM_H */
+#endif  

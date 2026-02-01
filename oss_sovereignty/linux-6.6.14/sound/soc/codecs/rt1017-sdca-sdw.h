@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt1017-sdca-sdw.h -- RT1017 SDCA ALSA SoC audio driver header
- *
- * Copyright(c) 2023 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT1017_SDW_H__
 #define __RT1017_SDW_H__
@@ -14,10 +10,10 @@
 #include <linux/soundwire/sdw_registers.h>
 #include <sound/soc.h>
 
-/* RT1017 SDCA Control - function number */
+ 
 #define FUNC_NUM_SMART_AMP 0x04
 
-/* RT1017 SDCA entity */
+ 
 #define RT1017_SDCA_ENT_PDE23 0x31
 #define RT1017_SDCA_ENT_PDE22 0x33
 #define RT1017_SDCA_ENT_CS21 0x21
@@ -26,7 +22,7 @@
 #define RT1017_SDCA_ENT_FU 0x03
 #define RT1017_SDCA_ENT_UDMPU21 0x02
 
-/* RT1017 SDCA control */
+ 
 #define RT1017_SDCA_CTL_FS_INDEX 0x10
 #define RT1017_SDCA_CTL_REQ_POWER_STATE 0x01
 #define RT1017_SDCA_CTL_PROT_STAT 0x11
@@ -180,4 +176,4 @@ static const struct reg_default rt1017_sdca_reg_defaults[] = {
 			RT1017_SDCA_CTL_REQ_POWER_STATE, 0), 0x03 },
 };
 
-#endif /* __RT1017_SDW_H__ */
+#endif  

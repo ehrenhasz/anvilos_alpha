@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018-2019 SiFive, Inc.
- * Wesley Terpstra
- * Paul Walmsley
- *
- * This library supports configuration parsing and reprogramming of
- * the CLN28HPC variant of the Analog Bits Wide Range PLL.  The
- * intention is for this library to be reusable for any device that
- * integrates this PLL; thus the register structure and programming
- * details are expected to be provided by a separate IP block driver.
- *
- * The bulk of this code is primarily useful for clock configurations
- * that must operate at arbitrary rates, as opposed to clock configurations
- * that are restricted by software or manufacturer guidance to a small,
- * pre-determined set of performance points.
- *
- * References:
- * - Analog Bits "Wide Range PLL Datasheet", version 2015.10.01
- * - SiFive FU540-C000 Manual v1p0, Chapter 7 "Clocking and Reset"
- *   https://static.dev.sifive.com/FU540-C000-v1.0.pdf
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/err.h>
@@ -31,55 +11,39 @@
 
 #include <linux/clk/analogbits-wrpll-cln28hpc.h>
 
-/* MIN_INPUT_FREQ: minimum input clock frequency, in Hz (Fref_min) */
+ 
 #define MIN_INPUT_FREQ			7000000
 
-/* MAX_INPUT_FREQ: maximum input clock frequency, in Hz (Fref_max) */
+ 
 #define MAX_INPUT_FREQ			600000000
 
-/* MIN_POST_DIVIDE_REF_FREQ: minimum post-divider reference frequency, in Hz */
+ 
 #define MIN_POST_DIVR_FREQ		7000000
 
-/* MAX_POST_DIVIDE_REF_FREQ: maximum post-divider reference frequency, in Hz */
+ 
 #define MAX_POST_DIVR_FREQ		200000000
 
-/* MIN_VCO_FREQ: minimum VCO frequency, in Hz (Fvco_min) */
+ 
 #define MIN_VCO_FREQ			2400000000UL
 
-/* MAX_VCO_FREQ: maximum VCO frequency, in Hz (Fvco_max) */
+ 
 #define MAX_VCO_FREQ			4800000000ULL
 
-/* MAX_DIVQ_DIVISOR: maximum output divisor.  Selected by DIVQ = 6 */
+ 
 #define MAX_DIVQ_DIVISOR		64
 
-/* MAX_DIVR_DIVISOR: maximum reference divisor.  Selected by DIVR = 63 */
+ 
 #define MAX_DIVR_DIVISOR		64
 
-/* MAX_LOCK_US: maximum PLL lock time, in microseconds (tLOCK_max) */
+ 
 #define MAX_LOCK_US			70
 
-/*
- * ROUND_SHIFT: number of bits to shift to avoid precision loss in the rounding
- *              algorithm
- */
+ 
 #define ROUND_SHIFT			20
 
-/*
- * Private functions
- */
+ 
 
-/**
- * __wrpll_calc_filter_range() - determine PLL loop filter bandwidth
- * @post_divr_freq: input clock rate after the R divider
- *
- * Select the value to be presented to the PLL RANGE input signals, based
- * on the input clock frequency after the post-R-divider @post_divr_freq.
- * This code follows the recommendations in the PLL datasheet for filter
- * range selection.
- *
- * Return: The RANGE value to be presented to the PLL configuration inputs,
- *         or a negative return code upon error.
- */
+ 
 static int __wrpll_calc_filter_range(unsigned long post_divr_freq)
 {
 	if (post_divr_freq < MIN_POST_DIVR_FREQ ||
@@ -107,44 +71,13 @@ static int __wrpll_calc_filter_range(unsigned long post_divr_freq)
 	return 7;
 }
 
-/**
- * __wrpll_calc_fbdiv() - return feedback fixed divide value
- * @c: ptr to a struct wrpll_cfg record to read from
- *
- * The internal feedback path includes a fixed by-two divider; the
- * external feedback path does not.  Return the appropriate divider
- * value (2 or 1) depending on whether internal or external feedback
- * is enabled.  This code doesn't test for invalid configurations
- * (e.g. both or neither of WRPLL_FLAGS_*_FEEDBACK are set); it relies
- * on the caller to do so.
- *
- * Context: Any context.  Caller must protect the memory pointed to by
- *          @c from simultaneous modification.
- *
- * Return: 2 if internal feedback is enabled or 1 if external feedback
- *         is enabled.
- */
+ 
 static u8 __wrpll_calc_fbdiv(const struct wrpll_cfg *c)
 {
 	return (c->flags & WRPLL_FLAGS_INT_FEEDBACK_MASK) ? 2 : 1;
 }
 
-/**
- * __wrpll_calc_divq() - determine DIVQ based on target PLL output clock rate
- * @target_rate: target PLL output clock rate
- * @vco_rate: pointer to a u64 to store the computed VCO rate into
- *
- * Determine a reasonable value for the PLL Q post-divider, based on the
- * target output rate @target_rate for the PLL.  Along with returning the
- * computed Q divider value as the return value, this function stores the
- * desired target VCO rate into the variable pointed to by @vco_rate.
- *
- * Context: Any context.  Caller must protect the memory pointed to by
- *          @vco_rate from simultaneous access or modification.
- *
- * Return: a positive integer DIVQ value to be programmed into the hardware
- *         upon success, or 0 upon error (since 0 is an invalid DIVQ value)
- */
+ 
 static u8 __wrpll_calc_divq(u32 target_rate, u64 *vco_rate)
 {
 	u64 s;
@@ -171,19 +104,7 @@ wcd_out:
 	return divq;
 }
 
-/**
- * __wrpll_update_parent_rate() - update PLL data when parent rate changes
- * @c: ptr to a struct wrpll_cfg record to write PLL data to
- * @parent_rate: PLL input refclk rate (pre-R-divider)
- *
- * Pre-compute some data used by the PLL configuration algorithm when
- * the PLL's reference clock rate changes.  The intention is to avoid
- * computation when the parent rate remains constant - expected to be
- * the common case.
- *
- * Returns: 0 upon success or -ERANGE if the reference clock rate is
- * out of range.
- */
+ 
 static int __wrpll_update_parent_rate(struct wrpll_cfg *c,
 				      unsigned long parent_rate)
 {
@@ -201,27 +122,7 @@ static int __wrpll_update_parent_rate(struct wrpll_cfg *c,
 	return 0;
 }
 
-/**
- * wrpll_configure_for_rate() - compute PLL configuration for a target rate
- * @c: ptr to a struct wrpll_cfg record to write into
- * @target_rate: target PLL output clock rate (post-Q-divider)
- * @parent_rate: PLL input refclk rate (pre-R-divider)
- *
- * Compute the appropriate PLL signal configuration values and store
- * in PLL context @c.  PLL reprogramming is not glitchless, so the
- * caller should switch any downstream logic to a different clock
- * source or clock-gate it before presenting these values to the PLL
- * configuration signals.
- *
- * The caller must pass this function a pre-initialized struct
- * wrpll_cfg record: either initialized to zero (with the
- * exception of the .name and .flags fields) or read from the PLL.
- *
- * Context: Any context.  Caller must protect the memory pointed to by @c
- *          from simultaneous access or modification.
- *
- * Return: 0 upon success; anything else upon failure.
- */
+ 
 int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 			     unsigned long parent_rate)
 {
@@ -236,7 +137,7 @@ int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 		return -EINVAL;
 	}
 
-	/* Initialize rounding data if it hasn't been initialized already */
+	 
 	if (parent_rate != c->parent_rate) {
 		if (__wrpll_update_parent_rate(c, parent_rate)) {
 			pr_err("%s: PLL input rate is out of range\n",
@@ -247,7 +148,7 @@ int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 
 	c->flags &= ~WRPLL_FLAGS_RESET_MASK;
 
-	/* Put the PLL into bypass if the user requests the parent clock rate */
+	 
 	if (target_rate == parent_rate) {
 		c->flags |= WRPLL_FLAGS_BYPASS_MASK;
 		return 0;
@@ -255,13 +156,13 @@ int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 
 	c->flags &= ~WRPLL_FLAGS_BYPASS_MASK;
 
-	/* Calculate the Q shift and target VCO rate */
+	 
 	divq = __wrpll_calc_divq(target_rate, &target_vco_rate);
 	if (!divq)
 		return -1;
 	c->divq = divq;
 
-	/* Precalculate the pre-Q divider target ratio */
+	 
 	ratio = div64_u64((target_vco_rate << ROUND_SHIFT), parent_rate);
 
 	fbdiv = __wrpll_calc_fbdiv(c);
@@ -269,10 +170,7 @@ int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 	best_f = 0;
 	best_delta = MAX_VCO_FREQ;
 
-	/*
-	 * Consider all values for R which land within
-	 * [MIN_POST_DIVR_FREQ, MAX_POST_DIVR_FREQ]; prefer smaller R
-	 */
+	 
 	for (r = c->init_r; r <= c->max_r; ++r) {
 		f_pre_div = ratio * r;
 		f = (f_pre_div + (1 << ROUND_SHIFT)) >> ROUND_SHIFT;
@@ -282,7 +180,7 @@ int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 		vco_pre = fbdiv * post_divr_freq;
 		vco = vco_pre * f;
 
-		/* Ensure rounding didn't take us out of range */
+		 
 		if (vco > target_vco_rate) {
 			--f;
 			vco = vco_pre * f;
@@ -304,7 +202,7 @@ int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 
 	post_divr_freq = div_u64(parent_rate, best_r);
 
-	/* Pick the best PLL jitter filter */
+	 
 	range = __wrpll_calc_filter_range(post_divr_freq);
 	if (range < 0)
 		return range;
@@ -313,24 +211,7 @@ int wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,
 	return 0;
 }
 
-/**
- * wrpll_calc_output_rate() - calculate the PLL's target output rate
- * @c: ptr to a struct wrpll_cfg record to read from
- * @parent_rate: PLL refclk rate
- *
- * Given a pointer to the PLL's current input configuration @c and the
- * PLL's input reference clock rate @parent_rate (before the R
- * pre-divider), calculate the PLL's output clock rate (after the Q
- * post-divider).
- *
- * Context: Any context.  Caller must protect the memory pointed to by @c
- *          from simultaneous modification.
- *
- * Return: the PLL's output clock rate, in Hz.  The return value from
- *         this function is intended to be convenient to pass directly
- *         to the Linux clock framework; thus there is no explicit
- *         error return value.
- */
+ 
 unsigned long wrpll_calc_output_rate(const struct wrpll_cfg *c,
 				     unsigned long parent_rate)
 {
@@ -350,18 +231,7 @@ unsigned long wrpll_calc_output_rate(const struct wrpll_cfg *c,
 	return n;
 }
 
-/**
- * wrpll_calc_max_lock_us() - return the time for the PLL to lock
- * @c: ptr to a struct wrpll_cfg record to read from
- *
- * Return the minimum amount of time (in microseconds) that the caller
- * must wait after reprogramming the PLL to ensure that it is locked
- * to the input frequency and stable.  This is likely to depend on the DIVR
- * value; this is under discussion with the manufacturer.
- *
- * Return: the minimum amount of time the caller must wait for the PLL
- *         to lock (in microseconds)
- */
+ 
 unsigned int wrpll_calc_max_lock_us(const struct wrpll_cfg *c)
 {
 	return MAX_LOCK_US;

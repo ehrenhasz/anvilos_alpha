@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for Intel Xeon Phi "Knights Corner" PMU */
+
+ 
 
 #include <linux/perf_event.h>
 #include <linux/types.h>
@@ -25,27 +25,27 @@ static const u64 __initconst knc_hw_cache_event_ids
 {
  [ C(L1D) ] = {
 	[ C(OP_READ) ] = {
-		/* On Xeon Phi event "0" is a valid DATA_READ          */
-		/*   (L1 Data Cache Reads) Instruction.                */
-		/* We code this as ARCH_PERFMON_EVENTSEL_INT as this   */
-		/* bit will always be set in x86_pmu_hw_config().      */
+		 
+		 
+		 
+		 
 		[ C(RESULT_ACCESS) ] = ARCH_PERFMON_EVENTSEL_INT,
-						/* DATA_READ           */
-		[ C(RESULT_MISS)   ] = 0x0003,	/* DATA_READ_MISS      */
+						 
+		[ C(RESULT_MISS)   ] = 0x0003,	 
 	},
 	[ C(OP_WRITE) ] = {
-		[ C(RESULT_ACCESS) ] = 0x0001,	/* DATA_WRITE          */
-		[ C(RESULT_MISS)   ] = 0x0004,	/* DATA_WRITE_MISS     */
+		[ C(RESULT_ACCESS) ] = 0x0001,	 
+		[ C(RESULT_MISS)   ] = 0x0004,	 
 	},
 	[ C(OP_PREFETCH) ] = {
-		[ C(RESULT_ACCESS) ] = 0x0011,	/* L1_DATA_PF1         */
-		[ C(RESULT_MISS)   ] = 0x001c,	/* L1_DATA_PF1_MISS    */
+		[ C(RESULT_ACCESS) ] = 0x0011,	 
+		[ C(RESULT_MISS)   ] = 0x001c,	 
 	},
  },
  [ C(L1I ) ] = {
 	[ C(OP_READ) ] = {
-		[ C(RESULT_ACCESS) ] = 0x000c,	/* CODE_READ          */
-		[ C(RESULT_MISS)   ] = 0x000e,	/* CODE_CACHE_MISS    */
+		[ C(RESULT_ACCESS) ] = 0x000c,	 
+		[ C(RESULT_MISS)   ] = 0x000e,	 
 	},
 	[ C(OP_WRITE) ] = {
 		[ C(RESULT_ACCESS) ] = -1,
@@ -59,27 +59,27 @@ static const u64 __initconst knc_hw_cache_event_ids
  [ C(LL  ) ] = {
 	[ C(OP_READ) ] = {
 		[ C(RESULT_ACCESS) ] = 0,
-		[ C(RESULT_MISS)   ] = 0x10cb,	/* L2_READ_MISS */
+		[ C(RESULT_MISS)   ] = 0x10cb,	 
 	},
 	[ C(OP_WRITE) ] = {
-		[ C(RESULT_ACCESS) ] = 0x10cc,	/* L2_WRITE_HIT */
+		[ C(RESULT_ACCESS) ] = 0x10cc,	 
 		[ C(RESULT_MISS)   ] = 0,
 	},
 	[ C(OP_PREFETCH) ] = {
-		[ C(RESULT_ACCESS) ] = 0x10fc,	/* L2_DATA_PF2      */
-		[ C(RESULT_MISS)   ] = 0x10fe,	/* L2_DATA_PF2_MISS */
+		[ C(RESULT_ACCESS) ] = 0x10fc,	 
+		[ C(RESULT_MISS)   ] = 0x10fe,	 
 	},
  },
  [ C(DTLB) ] = {
 	[ C(OP_READ) ] = {
 		[ C(RESULT_ACCESS) ] = ARCH_PERFMON_EVENTSEL_INT,
-						/* DATA_READ */
-						/* see note on L1 OP_READ */
-		[ C(RESULT_MISS)   ] = 0x0002,	/* DATA_PAGE_WALK */
+						 
+						 
+		[ C(RESULT_MISS)   ] = 0x0002,	 
 	},
 	[ C(OP_WRITE) ] = {
-		[ C(RESULT_ACCESS) ] = 0x0001,	/* DATA_WRITE */
-		[ C(RESULT_MISS)   ] = 0x0002,	/* DATA_PAGE_WALK */
+		[ C(RESULT_ACCESS) ] = 0x0001,	 
+		[ C(RESULT_MISS)   ] = 0x0002,	 
 	},
 	[ C(OP_PREFETCH) ] = {
 		[ C(RESULT_ACCESS) ] = 0x0,
@@ -88,8 +88,8 @@ static const u64 __initconst knc_hw_cache_event_ids
  },
  [ C(ITLB) ] = {
 	[ C(OP_READ) ] = {
-		[ C(RESULT_ACCESS) ] = 0x000c,	/* CODE_READ */
-		[ C(RESULT_MISS)   ] = 0x000d,	/* CODE_PAGE_WALK */
+		[ C(RESULT_ACCESS) ] = 0x000c,	 
+		[ C(RESULT_MISS)   ] = 0x000d,	 
 	},
 	[ C(OP_WRITE) ] = {
 		[ C(RESULT_ACCESS) ] = -1,
@@ -102,8 +102,8 @@ static const u64 __initconst knc_hw_cache_event_ids
  },
  [ C(BPU ) ] = {
 	[ C(OP_READ) ] = {
-		[ C(RESULT_ACCESS) ] = 0x0012,	/* BRANCHES */
-		[ C(RESULT_MISS)   ] = 0x002b,	/* BRANCHES_MISPREDICTED */
+		[ C(RESULT_ACCESS) ] = 0x0012,	 
+		[ C(RESULT_MISS)   ] = 0x002b,	 
 	},
 	[ C(OP_WRITE) ] = {
 		[ C(RESULT_ACCESS) ] = -1,
@@ -124,27 +124,27 @@ static u64 knc_pmu_event_map(int hw_event)
 
 static struct event_constraint knc_event_constraints[] =
 {
-	INTEL_EVENT_CONSTRAINT(0xc3, 0x1),	/* HWP_L2HIT */
-	INTEL_EVENT_CONSTRAINT(0xc4, 0x1),	/* HWP_L2MISS */
-	INTEL_EVENT_CONSTRAINT(0xc8, 0x1),	/* L2_READ_HIT_E */
-	INTEL_EVENT_CONSTRAINT(0xc9, 0x1),	/* L2_READ_HIT_M */
-	INTEL_EVENT_CONSTRAINT(0xca, 0x1),	/* L2_READ_HIT_S */
-	INTEL_EVENT_CONSTRAINT(0xcb, 0x1),	/* L2_READ_MISS */
-	INTEL_EVENT_CONSTRAINT(0xcc, 0x1),	/* L2_WRITE_HIT */
-	INTEL_EVENT_CONSTRAINT(0xce, 0x1),	/* L2_STRONGLY_ORDERED_STREAMING_VSTORES_MISS */
-	INTEL_EVENT_CONSTRAINT(0xcf, 0x1),	/* L2_WEAKLY_ORDERED_STREAMING_VSTORE_MISS */
-	INTEL_EVENT_CONSTRAINT(0xd7, 0x1),	/* L2_VICTIM_REQ_WITH_DATA */
-	INTEL_EVENT_CONSTRAINT(0xe3, 0x1),	/* SNP_HITM_BUNIT */
-	INTEL_EVENT_CONSTRAINT(0xe6, 0x1),	/* SNP_HIT_L2 */
-	INTEL_EVENT_CONSTRAINT(0xe7, 0x1),	/* SNP_HITM_L2 */
-	INTEL_EVENT_CONSTRAINT(0xf1, 0x1),	/* L2_DATA_READ_MISS_CACHE_FILL */
-	INTEL_EVENT_CONSTRAINT(0xf2, 0x1),	/* L2_DATA_WRITE_MISS_CACHE_FILL */
-	INTEL_EVENT_CONSTRAINT(0xf6, 0x1),	/* L2_DATA_READ_MISS_MEM_FILL */
-	INTEL_EVENT_CONSTRAINT(0xf7, 0x1),	/* L2_DATA_WRITE_MISS_MEM_FILL */
-	INTEL_EVENT_CONSTRAINT(0xfc, 0x1),	/* L2_DATA_PF2 */
-	INTEL_EVENT_CONSTRAINT(0xfd, 0x1),	/* L2_DATA_PF2_DROP */
-	INTEL_EVENT_CONSTRAINT(0xfe, 0x1),	/* L2_DATA_PF2_MISS */
-	INTEL_EVENT_CONSTRAINT(0xff, 0x1),	/* L2_DATA_HIT_INFLIGHT_PF2 */
+	INTEL_EVENT_CONSTRAINT(0xc3, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xc4, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xc8, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xc9, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xca, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xcb, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xcc, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xce, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xcf, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xd7, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xe3, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xe6, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xe7, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xf1, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xf2, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xf6, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xf7, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xfc, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xfd, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xfe, 0x1),	 
+	INTEL_EVENT_CONSTRAINT(0xff, 0x1),	 
 	EVENT_CONSTRAINT_END
 };
 
@@ -256,15 +256,13 @@ again:
 			x86_pmu_stop(event, 0);
 	}
 
-	/*
-	 * Repeat if there is more work to be done:
-	 */
+	 
 	status = knc_pmu_get_status();
 	if (status)
 		goto again;
 
 done:
-	/* Only restore PMU state when it's active. See x86_pmu_disable(). */
+	 
 	if (cpuc->enabled)
 		knc_pmu_enable_all(0);
 

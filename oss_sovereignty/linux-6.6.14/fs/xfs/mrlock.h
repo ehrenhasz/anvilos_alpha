@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #ifndef __XFS_SUPPORT_MRLOCK_H__
 #define __XFS_SUPPORT_MRLOCK_H__
 
@@ -75,4 +72,4 @@ static inline void mrdemote(mrlock_t *mrp)
 	downgrade_write(&mrp->mr_lock);
 }
 
-#endif /* __XFS_SUPPORT_MRLOCK_H__ */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <net/genetlink.h>
 
@@ -382,9 +382,7 @@ int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
 	struct nlattr *tb[IFLA_BRIDGE_CFM_MAX + 1];
 	int err;
 
-	/* When this function is called for a port then the br pointer is
-	 * invalid, therefor set the br to point correctly
-	 */
+	 
 	if (p)
 		br = p->br;
 
@@ -645,9 +643,9 @@ int br_cfm_status_fill_info(struct sk_buff *skb,
 				mep->status.rx_level_low_seen))
 			goto nla_put_failure;
 
-		/* Only clear if this is a GETLINK */
+		 
 		if (getlink) {
-			/* Clear all 'seen' indications */
+			 
 			mep->status.opcode_unexp_seen = false;
 			mep->status.version_unexp_seen = false;
 			mep->status.rx_level_low_seen = false;
@@ -705,8 +703,8 @@ int br_cfm_status_fill_info(struct sk_buff *skb,
 					peer_mep->cc_status.seq_unexp_seen))
 				goto nla_put_failure;
 
-			if (getlink) { /* Only clear if this is a GETLINK */
-				/* Clear all 'seen' indications */
+			if (getlink) {  
+				 
 				peer_mep->cc_status.seen = false;
 				peer_mep->cc_status.tlv_seen = false;
 				peer_mep->cc_status.seq_unexp_seen = false;

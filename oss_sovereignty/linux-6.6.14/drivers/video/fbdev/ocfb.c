@@ -1,12 +1,4 @@
-/*
- * OpenCores VGA/LCD 2.0 core frame buffer driver
- *
- * Copyright (C) 2013 Stefan Kristiansson, stefan.kristiansson@saunalahti.fi
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -22,7 +14,7 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 
-/* OCFB register defines */
+ 
 #define OCFB_CTRL	0x000
 #define OCFB_STAT	0x004
 #define OCFB_HTIM	0x008
@@ -31,17 +23,17 @@
 #define OCFB_VBARA	0x014
 #define OCFB_PALETTE	0x800
 
-#define OCFB_CTRL_VEN	0x00000001 /* Video Enable */
-#define OCFB_CTRL_HIE	0x00000002 /* HSync Interrupt Enable */
-#define OCFB_CTRL_PC	0x00000800 /* 8-bit Pseudo Color Enable*/
-#define OCFB_CTRL_CD8	0x00000000 /* Color Depth 8 */
-#define OCFB_CTRL_CD16	0x00000200 /* Color Depth 16 */
-#define OCFB_CTRL_CD24	0x00000400 /* Color Depth 24 */
-#define OCFB_CTRL_CD32	0x00000600 /* Color Depth 32 */
-#define OCFB_CTRL_VBL1	0x00000000 /* Burst Length 1 */
-#define OCFB_CTRL_VBL2	0x00000080 /* Burst Length 2 */
-#define OCFB_CTRL_VBL4	0x00000100 /* Burst Length 4 */
-#define OCFB_CTRL_VBL8	0x00000180 /* Burst Length 8 */
+#define OCFB_CTRL_VEN	0x00000001  
+#define OCFB_CTRL_HIE	0x00000002  
+#define OCFB_CTRL_PC	0x00000800  
+#define OCFB_CTRL_CD8	0x00000000  
+#define OCFB_CTRL_CD16	0x00000200  
+#define OCFB_CTRL_CD24	0x00000400  
+#define OCFB_CTRL_CD32	0x00000600  
+#define OCFB_CTRL_VBL1	0x00000000  
+#define OCFB_CTRL_VBL2	0x00000080  
+#define OCFB_CTRL_VBL4	0x00000100  
+#define OCFB_CTRL_VBL8	0x00000180  
 
 #define PALETTE_SIZE	256
 
@@ -50,7 +42,7 @@
 static char *mode_option;
 
 static const struct fb_videomode default_mode = {
-	/* 640x480 @ 60 Hz, 31.5 kHz hsync */
+	 
 	NULL, 60, 640, 480, 39721, 40, 24, 32, 11, 96, 2,
 	0, FB_VMODE_NONINTERLACED
 };
@@ -58,9 +50,9 @@ static const struct fb_videomode default_mode = {
 struct ocfb_dev {
 	struct fb_info info;
 	void __iomem *regs;
-	/* flag indicating whether the regs are little endian accessed */
+	 
 	int little_endian;
-	/* Physical and virtual addresses of framebuffer */
+	 
 	dma_addr_t fb_phys;
 	void __iomem *fb_virt;
 	u32 pseudo_palette[PALETTE_SIZE];
@@ -108,28 +100,28 @@ static int ocfb_setupfb(struct ocfb_dev *fbdev)
 	u32 hlen;
 	u32 vlen;
 
-	/* Disable display */
+	 
 	ocfb_writereg(fbdev, OCFB_CTRL, 0);
 
-	/* Register framebuffer address */
+	 
 	fbdev->little_endian = 0;
 	ocfb_writereg(fbdev, OCFB_VBARA, fbdev->fb_phys);
 
-	/* Detect endianess */
+	 
 	if (ocfb_readreg(fbdev, OCFB_VBARA) != fbdev->fb_phys) {
 		fbdev->little_endian = 1;
 		ocfb_writereg(fbdev, OCFB_VBARA, fbdev->fb_phys);
 	}
 
-	/* Horizontal timings */
+	 
 	ocfb_writereg(fbdev, OCFB_HTIM, (var->hsync_len - 1) << 24 |
 		      (var->left_margin - 1) << 16 | (var->xres - 1));
 
-	/* Vertical timings */
+	 
 	ocfb_writereg(fbdev, OCFB_VTIM, (var->vsync_len - 1) << 24 |
 		      (var->upper_margin - 1) << 16 | (var->yres - 1));
 
-	/* Total length of frame */
+	 
 	hlen = var->left_margin + var->right_margin + var->hsync_len +
 		var->xres;
 
@@ -142,7 +134,7 @@ static int ocfb_setupfb(struct ocfb_dev *fbdev)
 	switch (var->bits_per_pixel) {
 	case 8:
 		if (!var->grayscale)
-			bpp_config |= OCFB_CTRL_PC;  /* enable palette */
+			bpp_config |= OCFB_CTRL_PC;   
 		break;
 
 	case 16:
@@ -162,10 +154,10 @@ static int ocfb_setupfb(struct ocfb_dev *fbdev)
 		break;
 	}
 
-	/* maximum (8) VBL (video memory burst length) */
+	 
 	bpp_config |= OCFB_CTRL_VBL8;
 
-	/* Enable output */
+	 
 	ocfb_writereg(fbdev, OCFB_CTRL, (OCFB_CTRL_VEN | bpp_config));
 
 	return 0;
@@ -184,7 +176,7 @@ static int ocfb_setcolreg(unsigned regno, unsigned red, unsigned green,
 	}
 
 	if (info->var.grayscale) {
-		/* grayscale = 0.30*R + 0.59*G + 0.11*B */
+		 
 		red = green = blue = (red * 77 + green * 151 + blue * 28) >> 8;
 	}
 
@@ -307,7 +299,7 @@ static int ocfb_probe(struct platform_device *pdev)
 	fbdev->info.device = &pdev->dev;
 	fbdev->info.par = fbdev;
 
-	/* Video mode setup */
+	 
 	if (!fb_find_mode(&fbdev->info.var, &fbdev->info, mode_option,
 			  NULL, 0, &default_mode, 16)) {
 		dev_err(&pdev->dev, "No valid video modes found\n");
@@ -320,7 +312,7 @@ static int ocfb_probe(struct platform_device *pdev)
 	if (IS_ERR(fbdev->regs))
 		return PTR_ERR(fbdev->regs);
 
-	/* Allocate framebuffer memory */
+	 
 	fbsize = fbdev->info.fix.smem_len;
 	fbdev->fb_virt = dma_alloc_coherent(&pdev->dev, PAGE_ALIGN(fbsize),
 					    &fbdev->fb_phys, GFP_KERNEL);
@@ -333,23 +325,23 @@ static int ocfb_probe(struct platform_device *pdev)
 	fbdev->info.screen_base = fbdev->fb_virt;
 	fbdev->info.pseudo_palette = fbdev->pseudo_palette;
 
-	/* Clear framebuffer */
+	 
 	memset_io(fbdev->fb_virt, 0, fbsize);
 
-	/* Setup and enable the framebuffer */
+	 
 	ocfb_setupfb(fbdev);
 
 	if (fbdev->little_endian)
 		fbdev->info.flags |= FBINFO_FOREIGN_ENDIAN;
 
-	/* Allocate color map */
+	 
 	ret = fb_alloc_cmap(&fbdev->info.cmap, PALETTE_SIZE, 0);
 	if (ret) {
 		dev_err(&pdev->dev, "Color map allocation failed\n");
 		goto err_dma_free;
 	}
 
-	/* Register framebuffer */
+	 
 	ret = register_framebuffer(&fbdev->info);
 	if (ret) {
 		dev_err(&pdev->dev, "Framebuffer registration failed\n");
@@ -377,7 +369,7 @@ static void ocfb_remove(struct platform_device *pdev)
 	dma_free_coherent(&pdev->dev, PAGE_ALIGN(fbdev->info.fix.smem_len),
 			  fbdev->fb_virt, fbdev->fb_phys);
 
-	/* Disable display */
+	 
 	ocfb_writereg(fbdev, OCFB_CTRL, 0);
 
 	platform_set_drvdata(pdev, NULL);
@@ -398,9 +390,7 @@ static struct platform_driver ocfb_driver = {
 	}
 };
 
-/*
- * Init and exit routines
- */
+ 
 static int __init ocfb_init(void)
 {
 #ifndef MODULE

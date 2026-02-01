@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 #include <net/if.h>
@@ -24,13 +24,13 @@ void test_empty_skb(void)
 		int *ifindex;
 		int err;
 		int ret;
-		int lwt_egress_ret; /* expected retval at lwt/egress */
+		int lwt_egress_ret;  
 		bool success_on_tc;
 	} tests[] = {
-		/* Empty packets are always rejected. */
+		 
 
 		{
-			/* BPF_PROG_RUN ETH_HLEN size check */
+			 
 			.msg = "veth empty ingress packet",
 			.data_in = NULL,
 			.data_size_in = 0,
@@ -38,7 +38,7 @@ void test_empty_skb(void)
 			.err = -EINVAL,
 		},
 		{
-			/* BPF_PROG_RUN ETH_HLEN size check */
+			 
 			.msg = "ipip empty ingress packet",
 			.data_in = NULL,
 			.data_size_in = 0,
@@ -46,13 +46,10 @@ void test_empty_skb(void)
 			.err = -EINVAL,
 		},
 
-		/* ETH_HLEN-sized packets:
-		 * - can not be redirected at LWT_XMIT
-		 * - can be redirected at TC to non-tunneling dest
-		 */
+		 
 
 		{
-			/* __bpf_redirect_common */
+			 
 			.msg = "veth ETH_HLEN packet ingress",
 			.data_in = eth_hlen,
 			.data_size_in = sizeof(eth_hlen),
@@ -62,11 +59,7 @@ void test_empty_skb(void)
 			.success_on_tc = true,
 		},
 		{
-			/* __bpf_redirect_no_mac
-			 *
-			 * lwt: skb->len=0 <= skb_network_offset=0
-			 * tc: skb->len=14 <= skb_network_offset=14
-			 */
+			 
 			.msg = "ipip ETH_HLEN packet ingress",
 			.data_in = eth_hlen,
 			.data_size_in = sizeof(eth_hlen),
@@ -75,14 +68,14 @@ void test_empty_skb(void)
 			.lwt_egress_ret = -ERANGE,
 		},
 
-		/* ETH_HLEN+1-sized packet should be redirected. */
+		 
 
 		{
 			.msg = "veth ETH_HLEN+1 packet ingress",
 			.data_in = eth_hlen_pp,
 			.data_size_in = sizeof(eth_hlen_pp),
 			.ifindex = &veth_ifindex,
-			.lwt_egress_ret = 1, /* veth_xmit NET_XMIT_DROP */
+			.lwt_egress_ret = 1,  
 		},
 		{
 			.msg = "ipip ETH_HLEN+1 packet ingress",

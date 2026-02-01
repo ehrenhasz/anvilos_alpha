@@ -1,24 +1,4 @@
-/*
- * Copyright 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software")
- * to deal in the software without restriction, including without limitation
- * on the rights to use, copy, modify, merge, publish, distribute, sub
- * license, and/or sell copies of the Software, and to permit persons to whom
- * them Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTIBILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/dma-resv.h>
@@ -96,32 +76,13 @@ static struct dma_fence *vgem_fence_create(struct vgem_file *vfile,
 
 	timer_setup(&fence->timer, vgem_fence_timeout, 0);
 
-	/* We force the fence to expire within 10s to prevent driver hangs */
+	 
 	mod_timer(&fence->timer, jiffies + VGEM_FENCE_TIMEOUT);
 
 	return &fence->base;
 }
 
-/*
- * vgem_fence_attach_ioctl (DRM_IOCTL_VGEM_FENCE_ATTACH):
- *
- * Create and attach a fence to the vGEM handle. This fence is then exposed
- * via the dma-buf reservation object and visible to consumers of the exported
- * dma-buf. If the flags contain VGEM_FENCE_WRITE, the fence indicates the
- * vGEM buffer is being written to by the client and is exposed as an exclusive
- * fence, otherwise the fence indicates the client is current reading from the
- * buffer and all future writes should wait for the client to signal its
- * completion. Note that if a conflicting fence is already on the dma-buf (i.e.
- * an exclusive fence when adding a read, or any fence when adding a write),
- * -EBUSY is reported. Serialisation between operations should be handled
- * by waiting upon the dma-buf.
- *
- * This returns the handle for the new fence that must be signaled within 10
- * seconds (or otherwise it will automatically expire). See
- * vgem_fence_signal_ioctl (DRM_IOCTL_VGEM_FENCE_SIGNAL).
- *
- * If the vGEM handle does not exist, vgem_fence_attach_ioctl returns -ENOENT.
- */
+ 
 int vgem_fence_attach_ioctl(struct drm_device *dev,
 			    void *data,
 			    struct drm_file *file)
@@ -150,7 +111,7 @@ int vgem_fence_attach_ioctl(struct drm_device *dev,
 		goto err;
 	}
 
-	/* Check for a conflicting fence */
+	 
 	resv = obj->resv;
 	usage = dma_resv_usage_rw(arg->flags & VGEM_FENCE_WRITE);
 	if (!dma_resv_test_signaled(resv, usage)) {
@@ -158,7 +119,7 @@ int vgem_fence_attach_ioctl(struct drm_device *dev,
 		goto err_fence;
 	}
 
-	/* Expose the fence via the dma-buf */
+	 
 	dma_resv_lock(resv, NULL);
 	ret = dma_resv_reserve_fences(resv, 1);
 	if (!ret)
@@ -166,7 +127,7 @@ int vgem_fence_attach_ioctl(struct drm_device *dev,
 				   DMA_RESV_USAGE_WRITE : DMA_RESV_USAGE_READ);
 	dma_resv_unlock(resv);
 
-	/* Record the fence in our idr for later signaling */
+	 
 	if (ret == 0) {
 		mutex_lock(&vfile->fence_mutex);
 		ret = idr_alloc(&vfile->fence_idr, fence, 1, 0, GFP_KERNEL);
@@ -186,22 +147,7 @@ err:
 	return ret;
 }
 
-/*
- * vgem_fence_signal_ioctl (DRM_IOCTL_VGEM_FENCE_SIGNAL):
- *
- * Signal and consume a fence ealier attached to a vGEM handle using
- * vgem_fence_attach_ioctl (DRM_IOCTL_VGEM_FENCE_ATTACH).
- *
- * All fences must be signaled within 10s of attachment or otherwise they
- * will automatically expire (and a vgem_fence_signal_ioctl returns -ETIMEDOUT).
- *
- * Signaling a fence indicates to all consumers of the dma-buf that the
- * client has completed the operation associated with the fence, and that the
- * buffer is then ready for consumption.
- *
- * If the fence does not exist (or has already been signaled by the client),
- * vgem_fence_signal_ioctl returns -ENOENT.
- */
+ 
 int vgem_fence_signal_ioctl(struct drm_device *dev,
 			    void *data,
 			    struct drm_file *file)

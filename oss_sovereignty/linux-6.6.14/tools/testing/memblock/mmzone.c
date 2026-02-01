@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <linux/mmzone.h>
 
 struct pglist_data *first_online_pgdat(void)

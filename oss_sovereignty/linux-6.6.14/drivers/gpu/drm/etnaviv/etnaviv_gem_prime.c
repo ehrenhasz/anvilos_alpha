@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014-2018 Etnaviv Project
- */
+
+ 
 
 #include <drm/drm_prime.h>
 #include <linux/dma-buf.h>
@@ -19,7 +17,7 @@ struct sg_table *etnaviv_gem_prime_get_sg_table(struct drm_gem_object *obj)
 	struct etnaviv_gem_object *etnaviv_obj = to_etnaviv_bo(obj);
 	int npages = obj->size >> PAGE_SHIFT;
 
-	if (WARN_ON(!etnaviv_obj->pages))  /* should have already pinned! */
+	if (WARN_ON(!etnaviv_obj->pages))   
 		return ERR_PTR(-EINVAL);
 
 	return drm_prime_pages_to_sg(obj->dev, etnaviv_obj->pages, npages);
@@ -67,9 +65,7 @@ static void etnaviv_gem_prime_release(struct etnaviv_gem_object *etnaviv_obj)
 	if (etnaviv_obj->vaddr)
 		dma_buf_vunmap_unlocked(etnaviv_obj->base.import_attach->dmabuf, &map);
 
-	/* Don't drop the pages for imported dmabuf, as they are not
-	 * ours, just free the array we allocated:
-	 */
+	 
 	kvfree(etnaviv_obj->pages);
 
 	drm_prime_gem_destroy(&etnaviv_obj->base, etnaviv_obj->sgt);
@@ -95,7 +91,7 @@ static int etnaviv_gem_prime_mmap_obj(struct etnaviv_gem_object *etnaviv_obj,
 
 	ret = dma_buf_mmap(etnaviv_obj->base.dma_buf, vma, 0);
 	if (!ret) {
-		/* Drop the reference acquired by drm_gem_mmap_obj(). */
+		 
 		drm_gem_object_put(&etnaviv_obj->base);
 	}
 
@@ -103,7 +99,7 @@ static int etnaviv_gem_prime_mmap_obj(struct etnaviv_gem_object *etnaviv_obj,
 }
 
 static const struct etnaviv_gem_ops etnaviv_gem_prime_ops = {
-	/* .get_pages should never be called */
+	 
 	.release = etnaviv_gem_prime_release,
 	.vmap = etnaviv_gem_prime_vmap_impl,
 	.mmap = etnaviv_gem_prime_mmap_obj,

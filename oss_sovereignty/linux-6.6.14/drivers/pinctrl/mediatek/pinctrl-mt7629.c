@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The MT7629 driver based on Linux generic pinctrl binding.
- *
- * Copyright (C) 2018 MediaTek Inc.
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- */
+
+ 
 
 #include "pinctrl-moore.h"
 
@@ -193,12 +188,9 @@ static const struct mtk_pin_desc mt7629_pins[] = {
 	MT7629_PIN(78, "WF0_2G_HB6", 78),
 };
 
-/* List all groups consisting of these pins dedicated to the enablement of
- * certain hardware block and the corresponding mode for all of the pins.
- * The hardware probably has multiple combinations of these pinouts.
- */
+ 
 
-/* LED for EPHY */
+ 
 static int mt7629_ephy_leds_pins[] = { 12, 13, 14, 15, 16, 17, 18, };
 static int mt7629_ephy_leds_funcs[] = { 1, 1, 1, 1, 1, 1, 1, };
 static int mt7629_ephy_led0_pins[] = { 12, };
@@ -216,11 +208,11 @@ static int mt7629_wf2g_led_funcs[] = { 1, };
 static int mt7629_wf5g_led_pins[] = { 18, };
 static int mt7629_wf5g_led_funcs[] = { 1, };
 
-/* Watchdog */
+ 
 static int mt7629_watchdog_pins[] = { 11, };
 static int mt7629_watchdog_funcs[] = { 1, };
 
-/* LED for GPHY */
+ 
 static int mt7629_gphy_leds_0_pins[] = { 21, 22, 23, };
 static int mt7629_gphy_leds_0_funcs[] = { 2, 2, 2, };
 static int mt7629_gphy_led1_0_pins[] = { 21, };
@@ -238,13 +230,13 @@ static int mt7629_gphy_led2_1_funcs[] = { 1, };
 static int mt7629_gphy_led3_1_pins[] = { 59, };
 static int mt7629_gphy_led3_1_funcs[] = { 1, };
 
-/* I2C */
+ 
 static int mt7629_i2c_0_pins[] = { 19, 20, };
 static int mt7629_i2c_0_funcs[] = { 1, 1, };
 static int mt7629_i2c_1_pins[] = { 53, 54, };
 static int mt7629_i2c_1_funcs[] = { 1, 1, };
 
-/* SPI */
+ 
 static int mt7629_spi_0_pins[] = { 21, 22, 23, 24, };
 static int mt7629_spi_0_funcs[] = { 1, 1, 1, 1, };
 static int mt7629_spi_1_pins[] = { 62, 63, 64, 65, };
@@ -254,7 +246,7 @@ static int mt7629_spi_wp_funcs[] = { 1, };
 static int mt7629_spi_hold_pins[] = { 67, };
 static int mt7629_spi_hold_funcs[] = { 1, };
 
-/* UART */
+ 
 static int mt7629_uart1_0_txd_rxd_pins[] = { 25, 26, };
 static int mt7629_uart1_0_txd_rxd_funcs[] = { 1, 1, };
 static int mt7629_uart1_1_txd_rxd_pins[] = { 53, 54, };
@@ -274,11 +266,11 @@ static int mt7629_uart2_1_cts_rts_funcs[] = { 2, 2, };
 static int mt7629_uart0_txd_rxd_pins[] = { 68, 69, };
 static int mt7629_uart0_txd_rxd_funcs[] = { 1, 1, };
 
-/* MDC/MDIO */
+ 
 static int mt7629_mdc_mdio_pins[] = { 49, 50, };
 static int mt7629_mdc_mdio_funcs[] = { 1, 1, };
 
-/* PCIE */
+ 
 static int mt7629_pcie_pereset_pins[] = { 51, };
 static int mt7629_pcie_pereset_funcs[] = { 1, };
 static int mt7629_pcie_wake_pins[] = { 55, };
@@ -286,25 +278,25 @@ static int mt7629_pcie_wake_funcs[] = { 1, };
 static int mt7629_pcie_clkreq_pins[] = { 56, };
 static int mt7629_pcie_clkreq_funcs[] = { 1, };
 
-/* PWM */
+ 
 static int mt7629_pwm_0_pins[] = { 52, };
 static int mt7629_pwm_0_funcs[] = { 1, };
 static int mt7629_pwm_1_pins[] = { 61, };
 static int mt7629_pwm_1_funcs[] = { 2, };
 
-/* WF 2G */
+ 
 static int mt7629_wf0_2g_pins[] = { 70, 71, 72, 73, 74, 75, 76, 77, 78, };
 static int mt7629_wf0_2g_funcs[] = { 1, 1, 1, 1, 1, 1, 1, 1, };
 
-/* WF 5G */
+ 
 static int mt7629_wf0_5g_pins[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, };
 static int mt7629_wf0_5g_funcs[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
 
-/* SNFI */
+ 
 static int mt7629_snfi_pins[] = { 62, 63, 64, 65, 66, 67 };
 static int mt7629_snfi_funcs[] = { 2, 2, 2, 2, 2, 2 };
 
-/* SPI NOR */
+ 
 static int mt7629_snor_pins[] = { 62, 63, 64, 65, 66, 67 };
 static int mt7629_snor_funcs[] = { 1, 1, 1, 1, 1, 1 };
 
@@ -353,9 +345,7 @@ static const struct group_desc mt7629_groups[] = {
 	PINCTRL_PIN_GROUP("spi_nor", mt7629_snor),
 };
 
-/* Joint those groups owning the same capability in user point of view which
- * allows that people tend to use through the device tree.
- */
+ 
 static const char *mt7629_ethernet_groups[] = { "mdc_mdio", };
 static const char *mt7629_i2c_groups[] = { "i2c_0", "i2c_1", };
 static const char *mt7629_led_groups[] = { "ephy_leds", "ephy_led0",

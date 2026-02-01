@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Contains mounting routines used for handling traversal via SMB junctions.
- *
- *   Copyright (c) 2007 Igor Mammedov
- *   Copyright (C) International Business Machines  Corp., 2008
- *   Author(s): Igor Mammedov (niallain@gmail.com)
- *		Steve French (sfrench@us.ibm.com)
- *   Copyright (c) 2023 Paulo Alcantara <palcantara@suse.de>
- */
+
+ 
 
 #include <linux/dcache.h>
 #include <linux/mount.h>
@@ -46,18 +38,7 @@ void cifs_release_automount_timer(void)
 	cancel_delayed_work_sync(&cifs_automount_task);
 }
 
-/**
- * cifs_build_devname - build a devicename from a UNC and optional prepath
- * @nodename:	pointer to UNC string
- * @prepath:	pointer to prefixpath (or NULL if there isn't one)
- *
- * Build a new cifs devicename after chasing a DFS referral. Allocate a buffer
- * big enough to hold the final thing. Copy the UNC from the nodename, and
- * concatenate the prepath onto the end of it if there is one.
- *
- * Returns pointer to the built string, or a ERR_PTR. Caller is responsible
- * for freeing the returned string.
- */
+ 
 char *
 cifs_build_devname(char *nodename, const char *prepath)
 {
@@ -66,43 +47,39 @@ cifs_build_devname(char *nodename, const char *prepath)
 	char *dev;
 	char *pos;
 
-	/* skip over any preceding delimiters */
+	 
 	nodename += strspn(nodename, "\\");
 	if (!*nodename)
 		return ERR_PTR(-EINVAL);
 
-	/* get length of UNC and set pos to last char */
+	 
 	unclen = strlen(nodename);
 	pos = nodename + unclen - 1;
 
-	/* trim off any trailing delimiters */
+	 
 	while (*pos == '\\') {
 		--pos;
 		--unclen;
 	}
 
-	/* allocate a buffer:
-	 * +2 for preceding "//"
-	 * +1 for delimiter between UNC and prepath
-	 * +1 for trailing NULL
-	 */
+	 
 	pplen = prepath ? strlen(prepath) : 0;
 	dev = kmalloc(2 + unclen + 1 + pplen + 1, GFP_KERNEL);
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
 
 	pos = dev;
-	/* add the initial "//" */
+	 
 	*pos = '/';
 	++pos;
 	*pos = '/';
 	++pos;
 
-	/* copy in the UNC portion from referral */
+	 
 	memcpy(pos, nodename, unclen);
 	pos += unclen;
 
-	/* copy the prefixpath remainder (if there is one) */
+	 
 	if (pplen) {
 		*pos = '/';
 		++pos;
@@ -110,7 +87,7 @@ cifs_build_devname(char *nodename, const char *prepath)
 		pos += pplen;
 	}
 
-	/* NULL terminator */
+	 
 	*pos = '\0';
 
 	convert_delimiter(dev, '/');
@@ -129,7 +106,7 @@ static bool is_dfs_mount(struct dentry *dentry)
 	return ret;
 }
 
-/* Return full path out of a dentry set for automount */
+ 
 static char *automount_fullpath(struct dentry *dentry, void *page)
 {
 	struct cifs_sb_info *cifs_sb = CIFS_SB(dentry->d_sb);
@@ -149,7 +126,7 @@ static char *automount_fullpath(struct dentry *dentry, void *page)
 	s = dentry_path_raw(dentry, page, PATH_MAX);
 	if (IS_ERR(s))
 		return s;
-	/* for root, we want "" */
+	 
 	if (!s[1])
 		s++;
 
@@ -168,9 +145,7 @@ static char *automount_fullpath(struct dentry *dentry, void *page)
 	return s;
 }
 
-/*
- * Create a vfsmount that we can automount
- */
+ 
 static struct vfsmount *cifs_do_automount(struct path *path)
 {
 	int rc;
@@ -235,9 +210,7 @@ out:
 	return mnt;
 }
 
-/*
- * Attempt to automount the referral
- */
+ 
 struct vfsmount *cifs_d_automount(struct path *path)
 {
 	struct vfsmount *newmnt;
@@ -250,7 +223,7 @@ struct vfsmount *cifs_d_automount(struct path *path)
 		return newmnt;
 	}
 
-	mntget(newmnt); /* prevent immediate expiration */
+	mntget(newmnt);  
 	mnt_set_expiry(newmnt, &cifs_automount_list);
 	schedule_delayed_work(&cifs_automount_task,
 			      cifs_mountpoint_expiry_timeout);

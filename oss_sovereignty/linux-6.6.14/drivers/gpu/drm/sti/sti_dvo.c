@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Vincent Abriou <vincent.abriou@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -22,7 +19,7 @@
 #include "sti_drv.h"
 #include "sti_mixer.h"
 
-/* DVO registers */
+ 
 #define DVO_AWG_DIGSYNC_CTRL      0x0000
 #define DVO_DOF_CFG               0x0004
 #define DVO_LUT_PROG_LOW          0x0008
@@ -66,22 +63,7 @@ static struct dvo_config rgb_24bit_de_cfg = {
 	.awg_fwgen_fct = sti_awg_generate_code_data_enable_mode,
 };
 
-/*
- * STI digital video output structure
- *
- * @dev: driver device
- * @drm_dev: pointer to drm device
- * @mode: current display mode selected
- * @regs: dvo registers
- * @clk_pix: pixel clock for dvo
- * @clk: clock for dvo
- * @clk_main_parent: dvo parent clock if main path used
- * @clk_aux_parent: dvo parent clock if aux path used
- * @panel_node: panel node reference from device tree
- * @panel: reference to the panel connected to the dvo
- * @enabled: true if dvo is enabled else false
- * @encoder: drm_encoder it is bound
- */
+ 
 struct sti_dvo {
 	struct device dev;
 	struct drm_device *drm_dev;
@@ -139,12 +121,7 @@ static int dvo_awg_generate_code(struct sti_dvo *dvo, u8 *ram_size, u32 *ram_cod
 	return 0;
 }
 
-/* Configure AWG, writing instructions
- *
- * @dvo: pointer to DVO structure
- * @awg_ram_code: pointer to AWG instructions table
- * @nb: nb of AWG instructions
- */
+ 
 static void dvo_awg_configure(struct sti_dvo *dvo, u32 *awg_ram_code, int nb)
 {
 	int i;
@@ -224,7 +201,7 @@ static void sti_dvo_disable(struct drm_bridge *bridge)
 
 	drm_panel_disable(dvo->panel);
 
-	/* Disable/unprepare dvo clock */
+	 
 	clk_disable_unprepare(dvo->clk_pix);
 	clk_disable_unprepare(dvo->clk);
 
@@ -242,21 +219,21 @@ static void sti_dvo_pre_enable(struct drm_bridge *bridge)
 	if (dvo->enabled)
 		return;
 
-	/* Make sure DVO is disabled */
+	 
 	writel(0x00000000, dvo->regs + DVO_DOF_CFG);
 	writel(0x00000000, dvo->regs + DVO_AWG_DIGSYNC_CTRL);
 
 	if (config->awg_fwgen_fct) {
 		u8 nb_instr;
 		u32 awg_ram_code[AWG_MAX_INST];
-		/* Configure AWG */
+		 
 		if (!dvo_awg_generate_code(dvo, &nb_instr, awg_ram_code))
 			dvo_awg_configure(dvo, awg_ram_code, nb_instr);
 		else
 			return;
 	}
 
-	/* Prepare/enable clocks */
+	 
 	if (clk_prepare_enable(dvo->clk_pix))
 		DRM_ERROR("Failed to prepare/enable dvo_pix clk\n");
 	if (clk_prepare_enable(dvo->clk))
@@ -264,12 +241,12 @@ static void sti_dvo_pre_enable(struct drm_bridge *bridge)
 
 	drm_panel_enable(dvo->panel);
 
-	/* Set LUT */
+	 
 	writel(config->lowbyte,  dvo->regs + DVO_LUT_PROG_LOW);
 	writel(config->midbyte,  dvo->regs + DVO_LUT_PROG_MID);
 	writel(config->highbyte, dvo->regs + DVO_LUT_PROG_HIGH);
 
-	/* Digital output formatter config */
+	 
 	val = (config->flags | DVO_DOF_EN);
 	writel(val, dvo->regs + DVO_DOF_CFG);
 
@@ -290,8 +267,7 @@ static void sti_dvo_set_mode(struct drm_bridge *bridge,
 
 	drm_mode_copy(&dvo->mode, mode);
 
-	/* According to the path used (main or aux), the dvo clocks should
-	 * have a different parent clock. */
+	 
 	if (mixer->id == STI_MIXER_MAIN)
 		clkp = dvo->clk_main_parent;
 	else
@@ -302,7 +278,7 @@ static void sti_dvo_set_mode(struct drm_bridge *bridge,
 		clk_set_parent(dvo->clk, clkp);
 	}
 
-	/* DVO clocks = compositor clock */
+	 
 	ret = clk_set_rate(dvo->clk_pix, rate);
 	if (ret < 0) {
 		DRM_ERROR("Cannot set rate (%dHz) for dvo_pix clk\n", rate);
@@ -315,13 +291,13 @@ static void sti_dvo_set_mode(struct drm_bridge *bridge,
 		return;
 	}
 
-	/* For now, we only support 24bit data enable (DE) synchro format */
+	 
 	dvo->config = &rgb_24bit_de_cfg;
 }
 
 static void sti_dvo_bridge_nope(struct drm_bridge *bridge)
 {
-	/* do nothing */
+	 
 }
 
 static const struct drm_bridge_funcs sti_dvo_bridge_funcs = {
@@ -441,7 +417,7 @@ static int sti_dvo_bind(struct device *dev, struct device *master, void *data)
 	struct drm_bridge *bridge;
 	int err;
 
-	/* Set the drm device handle */
+	 
 	dvo->drm_dev = drm_dev;
 
 	encoder = sti_dvo_find_encoder(drm_dev);
@@ -574,7 +550,7 @@ static void sti_dvo_remove(struct platform_device *pdev)
 
 static const struct of_device_id dvo_of_match[] = {
 	{ .compatible = "st,stih407-dvo", },
-	{ /* end node */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dvo_of_match);
 

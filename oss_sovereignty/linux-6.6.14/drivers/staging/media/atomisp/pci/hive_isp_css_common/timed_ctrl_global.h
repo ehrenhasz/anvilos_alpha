@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __TIMED_CTRL_GLOBAL_H_INCLUDED__
 #define __TIMED_CTRL_GLOBAL_H_INCLUDED__
@@ -20,13 +8,7 @@
 
 #include "timed_controller_defs.h"
 
-/**
- * Order of the input bits for the timed controller taken from
- * ISP_CSS_2401 System Architecture Description valid for
- * 2400, 2401.
- *
- * Check for other systems.
- */
+ 
 #define HIVE_TIMED_CTRL_GPIO_PIN_0_BIT_ID                       0
 #define HIVE_TIMED_CTRL_GPIO_PIN_1_BIT_ID                       1
 #define HIVE_TIMED_CTRL_GPIO_PIN_2_BIT_ID                       2
@@ -52,4 +34,4 @@
 #define HIVE_TIMED_CTRL_CSI_EOF_BIT_ID                          22
 #define HIVE_TIMED_CTRL_IRQ_IS_STREAMING_MONITOR_BIT_ID         23
 
-#endif /* __TIMED_CTRL_GLOBAL_H_INCLUDED__ */
+#endif  

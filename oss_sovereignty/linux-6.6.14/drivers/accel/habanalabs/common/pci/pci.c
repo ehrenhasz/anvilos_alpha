@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "../habanalabs.h"
 #include "../../include/hw_ip/pci/pci_general.h"
@@ -19,16 +16,7 @@
 #define IATU_REGION_CTRL_NUM_MATCH_EN_MASK	BIT(19)
 #define IATU_REGION_CTRL_BAR_NUM_MASK		GENMASK(10, 8)
 
-/**
- * hl_pci_bars_map() - Map PCI BARs.
- * @hdev: Pointer to hl_device structure.
- * @name: Array of BAR names.
- * @is_wc: Array with flag per BAR whether a write-combined mapping is needed.
- *
- * Request PCI regions and map them to kernel virtual addresses.
- *
- * Return: 0 on success, non-zero for failure.
- */
+ 
 int hl_pci_bars_map(struct hl_device *hdev, const char * const name[3],
 			bool is_wc[3])
 {
@@ -42,7 +30,7 @@ int hl_pci_bars_map(struct hl_device *hdev, const char * const name[3],
 	}
 
 	for (i = 0 ; i < 3 ; i++) {
-		bar = i * 2; /* 64-bit BARs */
+		bar = i * 2;  
 		hdev->pcie_bar[bar] = is_wc[i] ?
 				pci_ioremap_wc_bar(pdev, bar) :
 				pci_ioremap_bar(pdev, bar);
@@ -58,7 +46,7 @@ int hl_pci_bars_map(struct hl_device *hdev, const char * const name[3],
 
 err:
 	for (i = 2 ; i >= 0 ; i--) {
-		bar = i * 2; /* 64-bit BARs */
+		bar = i * 2;  
 		if (hdev->pcie_bar[bar])
 			iounmap(hdev->pcie_bar[bar]);
 	}
@@ -68,19 +56,14 @@ err:
 	return rc;
 }
 
-/**
- * hl_pci_bars_unmap() - Unmap PCI BARS.
- * @hdev: Pointer to hl_device structure.
- *
- * Release all PCI BARs and unmap their virtual addresses.
- */
+ 
 static void hl_pci_bars_unmap(struct hl_device *hdev)
 {
 	struct pci_dev *pdev = hdev->pdev;
 	int i, bar;
 
 	for (i = 2 ; i >= 0 ; i--) {
-		bar = i * 2; /* 64-bit BARs */
+		bar = i * 2;  
 		iounmap(hdev->pcie_bar[bar]);
 	}
 
@@ -99,7 +82,7 @@ int hl_pci_elbi_read(struct hl_device *hdev, u64 addr, u32 *data)
 	else
 		msec = HL_PCI_ELBI_TIMEOUT_MSEC;
 
-	/* Clear previous status */
+	 
 	pci_write_config_dword(pdev, mmPCI_CONFIG_ELBI_STS, 0);
 
 	pci_write_config_dword(pdev, mmPCI_CONFIG_ELBI_ADDR, (u32) addr);
@@ -142,14 +125,7 @@ int hl_pci_elbi_read(struct hl_device *hdev, u64 addr, u32 *data)
 	return -EIO;
 }
 
-/**
- * hl_pci_elbi_write() - Write through the ELBI interface.
- * @hdev: Pointer to hl_device structure.
- * @addr: Address to write to
- * @data: Data to write
- *
- * Return: 0 on success, negative value for failure.
- */
+ 
 static int hl_pci_elbi_write(struct hl_device *hdev, u64 addr, u32 data)
 {
 	struct pci_dev *pdev = hdev->pdev;
@@ -162,7 +138,7 @@ static int hl_pci_elbi_write(struct hl_device *hdev, u64 addr, u32 data)
 	else
 		msec = HL_PCI_ELBI_TIMEOUT_MSEC;
 
-	/* Clear previous status */
+	 
 	pci_write_config_dword(pdev, mmPCI_CONFIG_ELBI_STS, 0);
 
 	pci_write_config_dword(pdev, mmPCI_CONFIG_ELBI_ADDR, (u32) addr);
@@ -202,14 +178,7 @@ static int hl_pci_elbi_write(struct hl_device *hdev, u64 addr, u32 data)
 	return -EIO;
 }
 
-/**
- * hl_pci_iatu_write() - iatu write routine.
- * @hdev: Pointer to hl_device structure.
- * @addr: Address to write to
- * @data: Data to write
- *
- * Return: 0 on success, negative value for failure.
- */
+ 
 int hl_pci_iatu_write(struct hl_device *hdev, u32 addr, u32 data)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
@@ -218,9 +187,7 @@ int hl_pci_iatu_write(struct hl_device *hdev, u32 addr, u32 data)
 
 	dbi_offset = addr & 0xFFF;
 
-	/* Ignore result of writing to pcie_aux_dbi_reg_addr as it could fail
-	 * in case the firmware security is enabled
-	 */
+	 
 	hl_pci_elbi_write(hdev, prop->pcie_aux_dbi_reg_addr, 0x00300000);
 
 	rc = hl_pci_elbi_write(hdev, prop->pcie_dbi_base_address + dbi_offset,
@@ -232,16 +199,7 @@ int hl_pci_iatu_write(struct hl_device *hdev, u32 addr, u32 data)
 	return 0;
 }
 
-/**
- * hl_pci_set_inbound_region() - Configure inbound region
- * @hdev: Pointer to hl_device structure.
- * @region: Inbound region number.
- * @pci_region: Inbound region parameters.
- *
- * Configure the iATU inbound region.
- *
- * Return: 0 on success, negative value for failure.
- */
+ 
 int hl_pci_set_inbound_region(struct hl_device *hdev, u8 region,
 		struct hl_inbound_pci_region *pci_region)
 {
@@ -250,7 +208,7 @@ int hl_pci_set_inbound_region(struct hl_device *hdev, u8 region,
 	u32 offset, ctrl_reg_val;
 	int rc = 0;
 
-	/* region offset */
+	 
 	offset = (0x200 * region) + 0x100;
 
 	if (pci_region->mode == PCI_ADDRESS_MATCH_MODE) {
@@ -266,14 +224,14 @@ int hl_pci_set_inbound_region(struct hl_device *hdev, u8 region,
 				lower_32_bits(region_end_address));
 	}
 
-	/* Point to the specified address */
+	 
 	rc |= hl_pci_iatu_write(hdev, offset + 0x14, lower_32_bits(pci_region->addr));
 	rc |= hl_pci_iatu_write(hdev, offset + 0x18, upper_32_bits(pci_region->addr));
 
-	/* Set bar type as memory */
+	 
 	rc |= hl_pci_iatu_write(hdev, offset + 0x0, 0);
 
-	/* Enable + bar/address match + match enable + bar number */
+	 
 	ctrl_reg_val = FIELD_PREP(IATU_REGION_CTRL_REGION_EN_MASK, 1);
 	ctrl_reg_val |= FIELD_PREP(IATU_REGION_CTRL_MATCH_MODE_MASK, pci_region->mode);
 	ctrl_reg_val |= FIELD_PREP(IATU_REGION_CTRL_NUM_MATCH_EN_MASK, 1);
@@ -283,10 +241,7 @@ int hl_pci_set_inbound_region(struct hl_device *hdev, u8 region,
 
 	rc |= hl_pci_iatu_write(hdev, offset + 0x4, ctrl_reg_val);
 
-	/* Return the DBI window to the default location
-	 * Ignore result of writing to pcie_aux_dbi_reg_addr as it could fail
-	 * in case the firmware security is enabled
-	 */
+	 
 	hl_pci_elbi_write(hdev, prop->pcie_aux_dbi_reg_addr, 0);
 
 	if (rc)
@@ -296,15 +251,7 @@ int hl_pci_set_inbound_region(struct hl_device *hdev, u8 region,
 	return rc;
 }
 
-/**
- * hl_pci_set_outbound_region() - Configure outbound region 0
- * @hdev: Pointer to hl_device structure.
- * @pci_region: Outbound region parameters.
- *
- * Configure the iATU outbound region 0.
- *
- * Return: 0 on success, negative value for failure.
- */
+ 
 int hl_pci_set_outbound_region(struct hl_device *hdev,
 		struct hl_outbound_pci_region *pci_region)
 {
@@ -312,7 +259,7 @@ int hl_pci_set_outbound_region(struct hl_device *hdev,
 	u64 outbound_region_end_address;
 	int rc = 0;
 
-	/* Outbound Region 0 */
+	 
 	outbound_region_end_address =
 			pci_region->addr + pci_region->size - 1;
 	rc |= hl_pci_iatu_write(hdev, 0x008,
@@ -327,28 +274,18 @@ int hl_pci_set_outbound_region(struct hl_device *hdev,
 
 	rc |= hl_pci_iatu_write(hdev, 0x020,
 				upper_32_bits(outbound_region_end_address));
-	/* Increase region size */
+	 
 	rc |= hl_pci_iatu_write(hdev, 0x000, 0x00002000);
-	/* Enable */
+	 
 	rc |= hl_pci_iatu_write(hdev, 0x004, 0x80000000);
 
-	/* Return the DBI window to the default location
-	 * Ignore result of writing to pcie_aux_dbi_reg_addr as it could fail
-	 * in case the firmware security is enabled
-	 */
+	 
 	hl_pci_elbi_write(hdev, prop->pcie_aux_dbi_reg_addr, 0);
 
 	return rc;
 }
 
-/**
- * hl_get_pci_memory_region() - get PCI region for given address
- * @hdev: Pointer to hl_device structure.
- * @addr: device address
- *
- * @return region index on success, otherwise PCI_REGION_NUMBER (invalid
- *         region index)
- */
+ 
 enum pci_region hl_get_pci_memory_region(struct hl_device *hdev, u64 addr)
 {
 	int i;
@@ -367,14 +304,7 @@ enum pci_region hl_get_pci_memory_region(struct hl_device *hdev, u64 addr)
 	return PCI_REGION_NUMBER;
 }
 
-/**
- * hl_pci_init() - PCI initialization code.
- * @hdev: Pointer to hl_device structure.
- *
- * Set DMA masks, initialize the PCI controller and map the PCI BARs.
- *
- * Return: 0 on success, non-zero for failure.
- */
+ 
 int hl_pci_init(struct hl_device *hdev)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
@@ -401,7 +331,7 @@ int hl_pci_init(struct hl_device *hdev)
 		goto unmap_pci_bars;
 	}
 
-	/* Driver must sleep in order for FW to finish the iATU configuration */
+	 
 	if (hdev->asic_prop.iatu_done_by_fw)
 		usleep_range(2000, 3000);
 
@@ -425,12 +355,7 @@ disable_device:
 	return rc;
 }
 
-/**
- * hl_pci_fini() - PCI finalization code.
- * @hdev: Pointer to hl_device structure
- *
- * Unmap PCI bars and disable PCI device.
- */
+ 
 void hl_pci_fini(struct hl_device *hdev)
 {
 	hl_pci_bars_unmap(hdev);

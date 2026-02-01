@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- *         Rick Chang <rick.chang@mediatek.com>
- *         Xia Jiang <xia.jiang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -275,14 +270,14 @@ static int mtk_jpeg_try_fmt_mplane(struct v4l2_pix_format_mplane *pix_mp,
 				      MTK_JPEG_MAX_WIDTH);
 
 		pfmt->bytesperline = 0;
-		/* Source size must be aligned to 128 */
+		 
 		pfmt->sizeimage = round_up(pfmt->sizeimage, 128);
 		if (pfmt->sizeimage == 0)
 			pfmt->sizeimage = MTK_JPEG_DEFAULT_SIZEIMAGE;
 		return 0;
 	}
 
-	/* other fourcc */
+	 
 	pix_mp->height = clamp(round_up(pix_mp->height, fmt->v_align),
 			       MTK_JPEG_MIN_HEIGHT, MTK_JPEG_MAX_HEIGHT);
 	pix_mp->width = clamp(round_up(pix_mp->width, fmt->h_align),
@@ -860,11 +855,7 @@ static void mtk_jpeg_dec_stop_streaming(struct vb2_queue *q)
 	struct mtk_jpeg_ctx *ctx = vb2_get_drv_priv(q);
 	struct vb2_v4l2_buffer *vb;
 
-	/*
-	 * STREAMOFF is an acknowledgment for source change event.
-	 * Before STREAMOFF, we still have to return the old resolution and
-	 * subsampling. Update capture queue when the stream is off.
-	 */
+	 
 	if (ctx->state == MTK_JPEG_SOURCE_CHANGE &&
 	    V4L2_TYPE_IS_CAPTURE(q->type)) {
 		struct mtk_jpeg_src_buf *src_buf;
@@ -957,10 +948,7 @@ static void mtk_jpeg_enc_device_run(void *priv)
 
 	spin_lock_irqsave(&jpeg->hw_lock, flags);
 
-	/*
-	 * Resetting the hardware every frame is to ensure that all the
-	 * registers are cleared. This is a hardware requirement.
-	 */
+	 
 	mtk_jpeg_enc_reset(jpeg->reg_base);
 
 	mtk_jpeg_set_enc_src(ctx, jpeg->reg_base, &src_buf->vb2_buf);

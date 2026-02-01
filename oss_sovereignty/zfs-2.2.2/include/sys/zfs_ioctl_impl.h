@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 
 #ifndef _ZFS_IOCTL_IMPL_H_
@@ -43,26 +24,10 @@ typedef enum {
 	ENTITY_NAME
 } zfs_ioc_namecheck_t;
 
-/*
- * IOC Keys are used to document and validate user->kernel interface inputs.
- * See zfs_keys_recv_new for an example declaration. Any key name that is not
- * listed will be rejected as input.
- *
- * The keyname 'optional' is always allowed, and must be an nvlist if present.
- * Arguments which older kernels can safely ignore can be placed under the
- * "optional" key.
- *
- * When adding new keys to an existing ioc for new functionality, consider:
- *	- adding an entry into zfs_sysfs.c zfs_features[] list
- *	- updating the libzfs_input_check.c test utility
- *
- * Note: in the ZK_WILDCARDLIST case, the name serves as documentation
- * for the expected name (bookmark, snapshot, property, etc) but there
- * is no validation in the preflight zfs_check_input_nvpairs() check.
- */
+ 
 typedef enum {
-	ZK_OPTIONAL = 1 << 0,		/* pair is optional */
-	ZK_WILDCARDLIST = 1 << 1,	/* one or more unspecified key names */
+	ZK_OPTIONAL = 1 << 0,		 
+	ZK_WILDCARDLIST = 1 << 1,	 
 } ioc_key_flag_t;
 
 typedef struct zfs_ioc_key {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Virtual master and follower controls
- *
- *  Copyright (c) 2008 by Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -11,47 +7,33 @@
 #include <sound/control.h>
 #include <sound/tlv.h>
 
-/*
- * a subset of information returned via ctl info callback
- */
+ 
 struct link_ctl_info {
-	snd_ctl_elem_type_t type; /* value type */
-	int count;		/* item count */
-	int min_val, max_val;	/* min, max values */
+	snd_ctl_elem_type_t type;  
+	int count;		 
+	int min_val, max_val;	 
 };
 
-/*
- * link master - this contains a list of follower controls that are
- * identical types, i.e. info returns the same value type and value
- * ranges, but may have different number of counts.
- *
- * The master control is so far only mono volume/switch for simplicity.
- * The same value will be applied to all followers.
- */
+ 
 struct link_master {
 	struct list_head followers;
 	struct link_ctl_info info;
-	int val;		/* the master value */
+	int val;		 
 	unsigned int tlv[4];
 	void (*hook)(void *private_data, int);
 	void *hook_private_data;
 };
 
-/*
- * link follower - this contains a follower control element
- *
- * It fakes the control callbacks with additional attenuation by the
- * master control.  A follower may have either one or two channels.
- */
+ 
 
 struct link_follower {
 	struct list_head list;
 	struct link_master *master;
 	struct link_ctl_info info;
-	int vals[2];		/* current values */
+	int vals[2];		 
 	unsigned int flags;
-	struct snd_kcontrol *kctl; /* original kcontrol pointer */
-	struct snd_kcontrol follower; /* the copy of original control entry */
+	struct snd_kcontrol *kctl;  
+	struct snd_kcontrol follower;  
 };
 
 static int follower_update(struct link_follower *follower)
@@ -73,14 +55,14 @@ static int follower_update(struct link_follower *follower)
 	return err < 0 ? err : 0;
 }
 
-/* get the follower ctl info and save the initial values */
+ 
 static int follower_init(struct link_follower *follower)
 {
 	struct snd_ctl_elem_info *uinfo;
 	int err;
 
 	if (follower->info.count) {
-		/* already initialized */
+		 
 		if (follower->flags & SND_CTL_FOLLOWER_NEED_UPDATE)
 			return follower_update(follower);
 		return 0;
@@ -111,21 +93,21 @@ static int follower_init(struct link_follower *follower)
 	return follower_update(follower);
 }
 
-/* initialize master volume */
+ 
 static int master_init(struct link_master *master)
 {
 	struct link_follower *follower;
 
 	if (master->info.count)
-		return 0; /* already initialized */
+		return 0;  
 
 	list_for_each_entry(follower, &master->followers, list) {
 		int err = follower_init(follower);
 		if (err < 0)
 			return err;
 		master->info = follower->info;
-		master->info.count = 1; /* always mono */
-		/* set full volume as default (= no attenuation) */
+		master->info.count = 1;  
+		 
 		master->val = master->info.max_val;
 		if (master->hook)
 			master->hook(master->hook_private_data, master->val);
@@ -164,7 +146,7 @@ static int follower_put_val(struct link_follower *follower,
 		break;
 	case SNDRV_CTL_ELEM_TYPE_INTEGER:
 		for (ch = 0; ch < follower->info.count; ch++) {
-			/* max master volume is supposed to be 0 dB */
+			 
 			vol = ucontrol->value.integer.value[ch];
 			vol += follower->master->val - follower->master->info.max_val;
 			if (vol < follower->info.min_val)
@@ -178,9 +160,7 @@ static int follower_put_val(struct link_follower *follower,
 	return follower->follower.put(&follower->follower, ucontrol);
 }
 
-/*
- * ctl callbacks for followers
- */
+ 
 static int follower_info(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_info *uinfo)
 {
@@ -223,7 +203,7 @@ static int follower_tlv_cmd(struct snd_kcontrol *kcontrol,
 			    unsigned int __user *tlv)
 {
 	struct link_follower *follower = snd_kcontrol_chip(kcontrol);
-	/* FIXME: this assumes that the max volume is 0 dB */
+	 
 	return follower->follower.tlv.c(&follower->follower, op_flag, size, tlv);
 }
 
@@ -237,18 +217,7 @@ static void follower_free(struct snd_kcontrol *kcontrol)
 	kfree(follower);
 }
 
-/*
- * Add a follower control to the group with the given master control
- *
- * All followers must be the same type (returning the same information
- * via info callback).  The function doesn't check it, so it's your
- * responsibility.
- *
- * Also, some additional limitations:
- * - at most two channels
- * - logarithmic volume control (dB level), no linear volume
- * - master can only attenuate the volume, no gain
- */
+ 
 int _snd_ctl_add_follower(struct snd_kcontrol *master,
 			  struct snd_kcontrol *follower,
 			  unsigned int flags)
@@ -266,7 +235,7 @@ int _snd_ctl_add_follower(struct snd_kcontrol *master,
 	srec->master = master_link;
 	srec->flags = flags;
 
-	/* override callbacks */
+	 
 	follower->info = follower_info;
 	follower->get = follower_get;
 	follower->put = follower_put;
@@ -280,15 +249,7 @@ int _snd_ctl_add_follower(struct snd_kcontrol *master,
 }
 EXPORT_SYMBOL(_snd_ctl_add_follower);
 
-/**
- * snd_ctl_add_followers - add multiple followers to vmaster
- * @card: card instance
- * @master: the target vmaster kcontrol object
- * @list: NULL-terminated list of name strings of followers to be added
- *
- * Adds the multiple follower kcontrols with the given names.
- * Returns 0 for success or a negative error code.
- */
+ 
 int snd_ctl_add_followers(struct snd_card *card, struct snd_kcontrol *master,
 			  const char * const *list)
 {
@@ -308,9 +269,7 @@ int snd_ctl_add_followers(struct snd_card *card, struct snd_kcontrol *master,
 }
 EXPORT_SYMBOL_GPL(snd_ctl_add_followers);
 
-/*
- * ctl callbacks for master controls
- */
+ 
 static int master_info(struct snd_kcontrol *kcontrol,
 		      struct snd_ctl_elem_info *uinfo)
 {
@@ -386,37 +345,21 @@ static void master_free(struct snd_kcontrol *kcontrol)
 	struct link_master *master = snd_kcontrol_chip(kcontrol);
 	struct link_follower *follower, *n;
 
-	/* free all follower links and retore the original follower kctls */
+	 
 	list_for_each_entry_safe(follower, n, &master->followers, list) {
 		struct snd_kcontrol *sctl = follower->kctl;
 		struct list_head olist = sctl->list;
 		memcpy(sctl, &follower->follower, sizeof(*sctl));
 		memcpy(sctl->vd, follower->follower.vd,
 		       sctl->count * sizeof(*sctl->vd));
-		sctl->list = olist; /* keep the current linked-list */
+		sctl->list = olist;  
 		kfree(follower);
 	}
 	kfree(master);
 }
 
 
-/**
- * snd_ctl_make_virtual_master - Create a virtual master control
- * @name: name string of the control element to create
- * @tlv: optional TLV int array for dB information
- *
- * Creates a virtual master control with the given name string.
- *
- * After creating a vmaster element, you can add the follower controls
- * via snd_ctl_add_follower() or snd_ctl_add_follower_uncached().
- *
- * The optional argument @tlv can be used to specify the TLV information
- * for dB scale of the master control.  It should be a single element
- * with #SNDRV_CTL_TLVT_DB_SCALE, #SNDRV_CTL_TLV_DB_MINMAX or
- * #SNDRV_CTL_TLVT_DB_MINMAX_MUTE type, and should be the max 0dB.
- *
- * Return: The created control element, or %NULL for errors (ENOMEM).
- */
+ 
 struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 						 const unsigned int *tlv)
 {
@@ -439,13 +382,13 @@ struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 		kfree(master);
 		return NULL;
 	}
-	/* override some callbacks */
+	 
 	kctl->info = master_info;
 	kctl->get = master_get;
 	kctl->put = master_put;
 	kctl->private_free = master_free;
 
-	/* additional (constant) TLV read */
+	 
 	if (tlv) {
 		unsigned int type = tlv[SNDRV_CTL_TLVO_TYPE];
 		if (type == SNDRV_CTL_TLVT_DB_SCALE ||
@@ -461,17 +404,7 @@ struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 }
 EXPORT_SYMBOL(snd_ctl_make_virtual_master);
 
-/**
- * snd_ctl_add_vmaster_hook - Add a hook to a vmaster control
- * @kcontrol: vmaster kctl element
- * @hook: the hook function
- * @private_data: the private_data pointer to be saved
- *
- * Adds the given hook to the vmaster control element so that it's called
- * at each time when the value is changed.
- *
- * Return: Zero.
- */
+ 
 int snd_ctl_add_vmaster_hook(struct snd_kcontrol *kcontrol,
 			     void (*hook)(void *private_data, int),
 			     void *private_data)
@@ -483,15 +416,7 @@ int snd_ctl_add_vmaster_hook(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_ctl_add_vmaster_hook);
 
-/**
- * snd_ctl_sync_vmaster - Sync the vmaster followers and hook
- * @kcontrol: vmaster kctl element
- * @hook_only: sync only the hook
- *
- * Forcibly call the put callback of each follower and call the hook function
- * to synchronize with the current value of the given vmaster element.
- * NOP when NULL is passed to @kcontrol.
- */
+ 
 void snd_ctl_sync_vmaster(struct snd_kcontrol *kcontrol, bool hook_only)
 {
 	struct link_master *master;
@@ -515,16 +440,7 @@ void snd_ctl_sync_vmaster(struct snd_kcontrol *kcontrol, bool hook_only)
 }
 EXPORT_SYMBOL_GPL(snd_ctl_sync_vmaster);
 
-/**
- * snd_ctl_apply_vmaster_followers - Apply function to each vmaster follower
- * @kctl: vmaster kctl element
- * @func: function to apply
- * @arg: optional function argument
- *
- * Apply the function @func to each follower kctl of the given vmaster kctl.
- *
- * Return: 0 if successful, or a negative error code
- */
+ 
 int snd_ctl_apply_vmaster_followers(struct snd_kcontrol *kctl,
 				    int (*func)(struct snd_kcontrol *vfollower,
 						struct snd_kcontrol *follower,

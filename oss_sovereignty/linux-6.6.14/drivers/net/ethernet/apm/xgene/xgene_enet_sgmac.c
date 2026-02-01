@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
+
+ 
 
 #include "xgene_enet_main.h"
 #include "xgene_enet_hw.h"
@@ -94,7 +89,7 @@ static void xgene_sgmac_get_drop_cnt(struct xgene_enet_pdata *pdata,
 	count = xgene_enet_rd_mcx_csr(pdata, addr);
 	*rx = ICM_DROP_COUNT(count);
 	*tx = ECM_DROP_COUNT(count);
-	/* Errata: 10GE_4 - ICM_ECM_DROP_COUNT not clear-on-read */
+	 
 	addr = (pdata->enet_id != XGENE_ENET1) ?
 		XG_MCX_ECM_CONFIG0_REG_0_ADDR :
 		ECM_CONFIG0_REG_0_ADDR + pdata->port_id * OFFSET_4;
@@ -358,17 +353,17 @@ static void xgene_sgmac_init(struct xgene_enet_pdata *p)
 	data |= MPA_IDLE_WITH_QMI_EMPTY;
 	xgene_enet_wr_csr(p, enet_spare_cfg_reg, data);
 
-	/* Adjust MDC clock frequency */
+	 
 	data = xgene_enet_rd_mac(p, MII_MGMT_CONFIG_ADDR);
 	MGMT_CLOCK_SEL_SET(&data, 7);
 	xgene_enet_wr_mac(p, MII_MGMT_CONFIG_ADDR, data);
 
-	/* Enable drop if bufpool not available */
+	 
 	data = xgene_enet_rd_csr(p, rsif_config_reg);
 	data |= CFG_RSIF_FPBUFF_TIMEOUT_EN;
 	xgene_enet_wr_csr(p, rsif_config_reg, data);
 
-	/* Configure HW pause frame generation */
+	 
 	multi_dpf_reg = (p->enet_id == XGENE_ENET1) ? CSR_MULTI_DPF0_ADDR :
 			 XG_MCX_MULTI_DPF0_ADDR;
 	data = xgene_enet_rd_mcx_csr(p, multi_dpf_reg);
@@ -408,7 +403,7 @@ static void xgene_sgmac_init(struct xgene_enet_pdata *p)
 	xgene_sgmac_flowctl_tx(p, p->tx_pause);
 	xgene_sgmac_flowctl_rx(p, p->rx_pause);
 
-	/* Bypass traffic gating */
+	 
 	xgene_enet_wr_csr(p, XG_ENET_SPARE_CFG_REG_1_ADDR, 0x84);
 	xgene_enet_wr_csr(p, cfg_bypass_reg, RESUME_TX);
 	xgene_enet_wr_mcx_csr(p, rx_dv_gate_reg, RESUME_RX0);

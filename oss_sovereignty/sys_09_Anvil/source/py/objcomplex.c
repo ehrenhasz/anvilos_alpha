@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -80,12 +56,12 @@ static mp_obj_t complex_make_new(const mp_obj_type_t *type_in, size_t n_args, si
 
         case 1:
             if (mp_obj_is_str(args[0])) {
-                // a string, parse it
+                
                 size_t l;
                 const char *s = mp_obj_str_get_data(args[0], &l);
                 return mp_parse_num_complex(s, l, NULL);
             } else if (mp_obj_is_type(args[0], &mp_type_complex)) {
-                // a complex, just return it
+                
                 return args[0];
             } else {
                 mp_float_t real, imag;
@@ -129,7 +105,7 @@ static mp_obj_t complex_unary_op(mp_unary_op_t op, mp_obj_t o_in) {
         case MP_UNARY_OP_ABS:
             return mp_obj_new_float(MICROPY_FLOAT_C_FUN(sqrt)(o->real * o->real + o->imag * o->imag));
         default:
-            return MP_OBJ_NULL;      // op not supported
+            return MP_OBJ_NULL;      
     }
 }
 
@@ -140,7 +116,7 @@ static mp_obj_t complex_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t r
 
 static void complex_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
     if (dest[0] != MP_OBJ_NULL) {
-        // not load attribute
+        
         return;
     }
     mp_obj_complex_t *self = MP_OBJ_TO_PTR(self_in);
@@ -177,7 +153,7 @@ void mp_obj_complex_get(mp_obj_t self_in, mp_float_t *real, mp_float_t *imag) {
 mp_obj_t mp_obj_complex_binary_op(mp_binary_op_t op, mp_float_t lhs_real, mp_float_t lhs_imag, mp_obj_t rhs_in) {
     mp_float_t rhs_real, rhs_imag;
     if (!mp_obj_get_complex_maybe(rhs_in, &rhs_real, &rhs_imag)) {
-        return MP_OBJ_NULL; // op not supported
+        return MP_OBJ_NULL; 
     }
 
     switch (op) {
@@ -226,11 +202,11 @@ mp_obj_t mp_obj_complex_binary_op(mp_binary_op_t op, mp_float_t lhs_real, mp_flo
 
         case MP_BINARY_OP_POWER:
         case MP_BINARY_OP_INPLACE_POWER: {
-            // z1**z2 = exp(z2*ln(z1))
-            //        = exp(z2*(ln(|z1|)+i*arg(z1)))
-            //        = exp( (x2*ln1 - y2*arg1) + i*(y2*ln1 + x2*arg1) )
-            //        = exp(x3 + i*y3)
-            //        = exp(x3)*(cos(y3) + i*sin(y3))
+            
+            
+            
+            
+            
             mp_float_t abs1 = MICROPY_FLOAT_C_FUN(sqrt)(lhs_real * lhs_real + lhs_imag * lhs_imag);
             if (abs1 == 0) {
                 if (rhs_imag == 0 && rhs_real >= 0) {
@@ -254,7 +230,7 @@ mp_obj_t mp_obj_complex_binary_op(mp_binary_op_t op, mp_float_t lhs_real, mp_flo
             return mp_obj_new_bool(lhs_real == rhs_real && lhs_imag == rhs_imag);
 
         default:
-            return MP_OBJ_NULL; // op not supported
+            return MP_OBJ_NULL; 
     }
     return mp_obj_new_complex(lhs_real, lhs_imag);
 }

@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012 Broadcom Corporation
- */
 
-/* FWIL is the Firmware Interface Layer. In this module the support functions
- * are located to set and get variables to and from the firmware.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -91,7 +87,7 @@ static const char *brcmf_fil_get_errstr(u32 err)
 {
 	return "";
 }
-#endif /* DEBUG */
+#endif  
 
 static s32
 brcmf_fil_cmd_data(struct brcmf_if *ifp, u32 cmd, void *data, u32 len, bool set)
@@ -204,7 +200,7 @@ brcmf_create_iovar(const char *name, const char *data, u32 datalen,
 
 	memcpy(buf, name, len);
 
-	/* append data onto the end of the name string */
+	 
 	if (data && datalen)
 		memcpy(&buf[len], data, datalen);
 
@@ -306,7 +302,7 @@ brcmf_create_bsscfg(s32 bsscfgidx, const char *name, char *data, u32 datalen,
 		return brcmf_create_iovar(name, data, datalen, buf, buflen);
 
 	prefixlen = strlen(prefix);
-	namelen = strlen(name) + 1; /* length of iovar  name + null */
+	namelen = strlen(name) + 1;  
 	iolen = prefixlen + namelen + sizeof(bsscfgidx_le) + datalen;
 
 	if (buflen < iolen) {
@@ -316,20 +312,20 @@ brcmf_create_bsscfg(s32 bsscfgidx, const char *name, char *data, u32 datalen,
 
 	p = buf;
 
-	/* copy prefix, no null */
+	 
 	memcpy(p, prefix, prefixlen);
 	p += prefixlen;
 
-	/* copy iovar name including null */
+	 
 	memcpy(p, name, namelen);
 	p += namelen;
 
-	/* bss config index as first data */
+	 
 	bsscfgidx_le = cpu_to_le32(bsscfgidx);
 	memcpy(p, &bsscfgidx_le, sizeof(bsscfgidx_le));
 	p += sizeof(bsscfgidx_le);
 
-	/* parameter buffer follows */
+	 
 	if (datalen)
 		memcpy(p, data, datalen);
 

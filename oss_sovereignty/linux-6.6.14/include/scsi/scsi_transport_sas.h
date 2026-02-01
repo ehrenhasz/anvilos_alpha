@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef SCSI_TRANSPORT_SAS_H
 #define SCSI_TRANSPORT_SAS_H
 
@@ -28,7 +28,7 @@ static inline int sas_protocol_ata(enum sas_protocol proto)
 }
 
 enum sas_linkrate {
-	/* These Values are defined in the SAS standard */
+	 
 	SAS_LINK_RATE_UNKNOWN = 0,
 	SAS_PHY_DISABLED = 1,
 	SAS_PHY_RESET_PROBLEM = 2,
@@ -42,9 +42,7 @@ enum sas_linkrate {
 	SAS_LINK_RATE_6_0_GBPS = 10,
 	SAS_LINK_RATE_12_0_GBPS = 11,
 	SAS_LINK_RATE_22_5_GBPS = 12,
-	/* These are virtual to the transport class and may never
-	 * be signalled normally since the standard defined field
-	 * is only 4 bits */
+	 
 	SAS_LINK_RATE_FAILED = 0x10,
 	SAS_PHY_VIRTUAL = 0x11,
 };
@@ -62,26 +60,26 @@ struct sas_phy {
 	int			number;
 	int			enabled;
 
-	/* phy identification */
+	 
 	struct sas_identify	identify;
 
-	/* phy attributes */
+	 
 	enum sas_linkrate	negotiated_linkrate;
 	enum sas_linkrate	minimum_linkrate_hw;
 	enum sas_linkrate	minimum_linkrate;
 	enum sas_linkrate	maximum_linkrate_hw;
 	enum sas_linkrate	maximum_linkrate;
 
-	/* link error statistics */
+	 
 	u32			invalid_dword_count;
 	u32			running_disparity_error_count;
 	u32			loss_of_dword_sync_count;
 	u32			phy_reset_problem_count;
 
-	/* for the list of phys belonging to a port */
+	 
 	struct list_head	port_siblings;
 
-	/* available to the lldd */
+	 
 	void			*hostdata;
 };
 
@@ -112,11 +110,11 @@ struct sas_rphy {
 
 struct sas_end_device {
 	struct sas_rphy		rphy;
-	/* flags */
+	 
 	unsigned		ready_led_meaning:1;
 	unsigned		tlr_supported:1;
 	unsigned		tlr_enabled:1;
-	/* parameters */
+	 
 	u16			I_T_nexus_loss_timeout;
 	u16			initiator_response_timeout;
 };
@@ -149,15 +147,15 @@ struct sas_port {
 
 	int			port_identifier;
 	int			num_phys;
-	/* port flags */
+	 
 	unsigned int		is_backlink:1;
 
-	/* the other end of the link */
+	 
 	struct sas_rphy		*rphy;
 
 	struct mutex		phy_list_mutex;
 	struct list_head	phy_list;
-	struct list_head	del_list; /* libsas only */
+	struct list_head	del_list;  
 };
 
 #define dev_to_sas_port(d) \
@@ -170,7 +168,7 @@ struct sas_phy_linkrates {
 	enum sas_linkrate minimum_linkrate;
 };
 
-/* The functions by which the transport class and the driver communicate */
+ 
 struct sas_function_template {
 	int (*get_linkerrors)(struct sas_phy *);
 	int (*get_enclosure_identifier)(struct sas_rphy *, u64 *);
@@ -242,4 +240,4 @@ scsi_is_sas_expander_device(struct device *dev)
 
 #define scsi_is_sas_phy_local(phy)	scsi_is_host_device((phy)->dev.parent)
 
-#endif /* SCSI_TRANSPORT_SAS_H */
+#endif  

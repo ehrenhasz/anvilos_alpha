@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_ATOMIC64_32_H
 #define _ASM_X86_ATOMIC64_32_H
 
 #include <linux/compiler.h>
 #include <linux/types.h>
-//#include <asm/cmpxchg.h>
 
-/* An 64bit atomic type */
+
+ 
 
 typedef struct {
 	s64 __aligned(8) counter;
@@ -83,7 +83,7 @@ static __always_inline void arch_atomic64_set(atomic64_t *v, s64 i)
 {
 	unsigned high = (unsigned)(i >> 32);
 	unsigned low = (unsigned)i;
-	alternative_atomic64(set, /* no output */,
+	alternative_atomic64(set,  ,
 			     "S" (v), "b" (low), "c" (high)
 			     : "eax", "edx", "memory");
 }
@@ -149,14 +149,14 @@ static __always_inline s64 arch_atomic64_sub(s64 i, atomic64_t *v)
 
 static __always_inline void arch_atomic64_inc(atomic64_t *v)
 {
-	__alternative_atomic64(inc, inc_return, /* no output */,
+	__alternative_atomic64(inc, inc_return,  ,
 			       "S" (v) : "memory", "eax", "ecx", "edx");
 }
 #define arch_atomic64_inc arch_atomic64_inc
 
 static __always_inline void arch_atomic64_dec(atomic64_t *v)
 {
-	__alternative_atomic64(dec, dec_return, /* no output */,
+	__alternative_atomic64(dec, dec_return,  ,
 			       "S" (v) : "memory", "eax", "ecx", "edx");
 }
 #define arch_atomic64_dec arch_atomic64_dec
@@ -263,4 +263,4 @@ static __always_inline s64 arch_atomic64_fetch_add(s64 i, atomic64_t *v)
 
 #define arch_atomic64_fetch_sub(i, v)	arch_atomic64_fetch_add(-(i), (v))
 
-#endif /* _ASM_X86_ATOMIC64_32_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019, 2022, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -705,7 +703,7 @@ static int disp_cc_sc7180_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* 1380MHz configuration */
+	 
 	disp_cc_pll_config.l = 0x47;
 	disp_cc_pll_config.alpha = 0xe000;
 	disp_cc_pll_config.user_ctl_val = 0x00000001;

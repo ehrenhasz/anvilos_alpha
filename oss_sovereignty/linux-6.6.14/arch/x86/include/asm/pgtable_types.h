@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_PGTABLE_DEFS_H
 #define _ASM_X86_PGTABLE_DEFS_H
 
@@ -7,43 +7,43 @@
 
 #include <asm/page_types.h>
 
-#define _PAGE_BIT_PRESENT	0	/* is present */
-#define _PAGE_BIT_RW		1	/* writeable */
-#define _PAGE_BIT_USER		2	/* userspace addressable */
-#define _PAGE_BIT_PWT		3	/* page write through */
-#define _PAGE_BIT_PCD		4	/* page cache disabled */
-#define _PAGE_BIT_ACCESSED	5	/* was accessed (raised by CPU) */
-#define _PAGE_BIT_DIRTY		6	/* was written to (raised by CPU) */
-#define _PAGE_BIT_PSE		7	/* 4 MB (or 2MB) page */
-#define _PAGE_BIT_PAT		7	/* on 4KB pages */
-#define _PAGE_BIT_GLOBAL	8	/* Global TLB entry PPro+ */
-#define _PAGE_BIT_SOFTW1	9	/* available for programmer */
-#define _PAGE_BIT_SOFTW2	10	/* " */
-#define _PAGE_BIT_SOFTW3	11	/* " */
-#define _PAGE_BIT_PAT_LARGE	12	/* On 2MB or 1GB pages */
-#define _PAGE_BIT_SOFTW4	57	/* available for programmer */
-#define _PAGE_BIT_SOFTW5	58	/* available for programmer */
-#define _PAGE_BIT_PKEY_BIT0	59	/* Protection Keys, bit 1/4 */
-#define _PAGE_BIT_PKEY_BIT1	60	/* Protection Keys, bit 2/4 */
-#define _PAGE_BIT_PKEY_BIT2	61	/* Protection Keys, bit 3/4 */
-#define _PAGE_BIT_PKEY_BIT3	62	/* Protection Keys, bit 4/4 */
-#define _PAGE_BIT_NX		63	/* No execute: only valid after cpuid check */
+#define _PAGE_BIT_PRESENT	0	 
+#define _PAGE_BIT_RW		1	 
+#define _PAGE_BIT_USER		2	 
+#define _PAGE_BIT_PWT		3	 
+#define _PAGE_BIT_PCD		4	 
+#define _PAGE_BIT_ACCESSED	5	 
+#define _PAGE_BIT_DIRTY		6	 
+#define _PAGE_BIT_PSE		7	 
+#define _PAGE_BIT_PAT		7	 
+#define _PAGE_BIT_GLOBAL	8	 
+#define _PAGE_BIT_SOFTW1	9	 
+#define _PAGE_BIT_SOFTW2	10	 
+#define _PAGE_BIT_SOFTW3	11	 
+#define _PAGE_BIT_PAT_LARGE	12	 
+#define _PAGE_BIT_SOFTW4	57	 
+#define _PAGE_BIT_SOFTW5	58	 
+#define _PAGE_BIT_PKEY_BIT0	59	 
+#define _PAGE_BIT_PKEY_BIT1	60	 
+#define _PAGE_BIT_PKEY_BIT2	61	 
+#define _PAGE_BIT_PKEY_BIT3	62	 
+#define _PAGE_BIT_NX		63	 
 
 #define _PAGE_BIT_SPECIAL	_PAGE_BIT_SOFTW1
 #define _PAGE_BIT_CPA_TEST	_PAGE_BIT_SOFTW1
-#define _PAGE_BIT_UFFD_WP	_PAGE_BIT_SOFTW2 /* userfaultfd wrprotected */
-#define _PAGE_BIT_SOFT_DIRTY	_PAGE_BIT_SOFTW3 /* software dirty tracking */
+#define _PAGE_BIT_UFFD_WP	_PAGE_BIT_SOFTW2  
+#define _PAGE_BIT_SOFT_DIRTY	_PAGE_BIT_SOFTW3  
 #define _PAGE_BIT_DEVMAP	_PAGE_BIT_SOFTW4
 
 #ifdef CONFIG_X86_64
-#define _PAGE_BIT_SAVED_DIRTY	_PAGE_BIT_SOFTW5 /* Saved Dirty bit */
+#define _PAGE_BIT_SAVED_DIRTY	_PAGE_BIT_SOFTW5  
 #else
-/* Shared with _PAGE_BIT_UFFD_WP which is not supported on 32 bit */
-#define _PAGE_BIT_SAVED_DIRTY	_PAGE_BIT_SOFTW2 /* Saved Dirty bit */
+ 
+#define _PAGE_BIT_SAVED_DIRTY	_PAGE_BIT_SOFTW2  
 #endif
 
-/* If _PAGE_BIT_PRESENT is clear, we use these: */
-/* - if the user mapped it with PROT_NONE; pte_present gives true */
+ 
+ 
 #define _PAGE_BIT_PROTNONE	_PAGE_BIT_GLOBAL
 
 #define _PAGE_PRESENT	(_AT(pteval_t, 1) << _PAGE_BIT_PRESENT)
@@ -91,16 +91,7 @@
 #define _PAGE_SOFT_DIRTY	(_AT(pteval_t, 0))
 #endif
 
-/*
- * Tracking soft dirty bit when a page goes to a swap is tricky.
- * We need a bit which can be stored in pte _and_ not conflict
- * with swap entry format. On x86 bits 1-4 are *not* involved
- * into swap entry computation, but bit 7 is used for thp migration,
- * so we borrow bit 1 for soft dirty tracking.
- *
- * Please note that this bit must be treated as swap dirty page
- * mark if and only if the PTE/PMD has present bit clear!
- */
+ 
 #ifdef CONFIG_MEM_SOFT_DIRTY
 #define _PAGE_SWP_SOFT_DIRTY	_PAGE_RW
 #else
@@ -125,26 +116,14 @@
 #define _PAGE_SOFTW4	(_AT(pteval_t, 0))
 #endif
 
-/*
- * The hardware requires shadow stack to be Write=0,Dirty=1. However,
- * there are valid cases where the kernel might create read-only PTEs that
- * are dirty (e.g., fork(), mprotect(), uffd-wp(), soft-dirty tracking). In
- * this case, the _PAGE_SAVED_DIRTY bit is used instead of the HW-dirty bit,
- * to avoid creating a wrong "shadow stack" PTEs. Such PTEs have
- * (Write=0,SavedDirty=1,Dirty=0) set.
- */
+ 
 #define _PAGE_SAVED_DIRTY	(_AT(pteval_t, 1) << _PAGE_BIT_SAVED_DIRTY)
 
 #define _PAGE_DIRTY_BITS (_PAGE_DIRTY | _PAGE_SAVED_DIRTY)
 
 #define _PAGE_PROTNONE	(_AT(pteval_t, 1) << _PAGE_BIT_PROTNONE)
 
-/*
- * Set of bits not changed in pte_modify.  The pte's
- * protection key is treated like _PAGE_RW, for
- * instance, and is *not* included in this mask since
- * pte_modify() does modify it.
- */
+ 
 #define _COMMON_PAGE_CHG_MASK	(PTE_PFN_MASK | _PAGE_PCD | _PAGE_PWT |	\
 				 _PAGE_SPECIAL | _PAGE_ACCESSED |	\
 				 _PAGE_DIRTY_BITS | _PAGE_SOFT_DIRTY |	\
@@ -152,14 +131,7 @@
 #define _PAGE_CHG_MASK	(_COMMON_PAGE_CHG_MASK | _PAGE_PAT)
 #define _HPAGE_CHG_MASK (_COMMON_PAGE_CHG_MASK | _PAGE_PSE | _PAGE_PAT_LARGE)
 
-/*
- * The cache modes defined here are used to translate between pure SW usage
- * and the HW defined cache mode bits and/or PAT entries.
- *
- * The resulting bits for PWT, PCD and PAT should be chosen in a way
- * to have the WB mode at index 0 (all bits clear). This is the default
- * right now and likely would break too much if changed.
- */
+ 
 #ifndef __ASSEMBLY__
 enum page_cache_mode {
 	_PAGE_CACHE_MODE_WB       = 0,
@@ -210,10 +182,7 @@ enum page_cache_mode {
 #define __PAGE_KERNEL		 (__PP|__RW|   0|___A|__NX|___D|   0|___G)
 #define __PAGE_KERNEL_EXEC	 (__PP|__RW|   0|___A|   0|___D|   0|___G)
 
-/*
- * Page tables needs to have Write=1 in order for any lower PTEs to be
- * writable. This includes shadow stack memory (Write=0, Dirty=1)
- */
+ 
 #define _KERNPG_TABLE_NOENC	 (__PP|__RW|   0|___A|   0|___D|   0|   0)
 #define _KERNPG_TABLE		 (__PP|__RW|   0|___A|   0|___D|   0|   0| _ENC)
 #define _PAGE_TABLE_NOENC	 (__PP|__RW|_USR|___A|   0|___D|   0|   0)
@@ -257,17 +226,15 @@ enum page_cache_mode {
 #define PAGE_KERNEL_IO		__pgprot_mask(__PAGE_KERNEL_IO)
 #define PAGE_KERNEL_IO_NOCACHE	__pgprot_mask(__PAGE_KERNEL_IO_NOCACHE)
 
-#endif	/* __ASSEMBLY__ */
+#endif	 
 
-/*
- * early identity mapping  pte attrib macros.
- */
+ 
 #ifdef CONFIG_X86_64
 #define __PAGE_KERNEL_IDENT_LARGE_EXEC	__PAGE_KERNEL_LARGE_EXEC
 #else
-#define PTE_IDENT_ATTR	 0x003		/* PRESENT+RW */
-#define PDE_IDENT_ATTR	 0x063		/* PRESENT+RW+DIRTY+ACCESSED */
-#define PGD_IDENT_ATTR	 0x001		/* PRESENT (no other attributes) */
+#define PTE_IDENT_ATTR	 0x003		 
+#define PDE_IDENT_ATTR	 0x063		 
+#define PGD_IDENT_ATTR	 0x001		 
 #endif
 
 #ifdef CONFIG_X86_32
@@ -280,13 +247,10 @@ enum page_cache_mode {
 
 #include <linux/types.h>
 
-/* Extracts the PFN from a (pte|pmd|pud|pgd)val_t of a 4KB page */
+ 
 #define PTE_PFN_MASK		((pteval_t)PHYSICAL_PAGE_MASK)
 
-/*
- *  Extracts the flags from a (pte|pmd|pud|pgd)val_t
- *  This includes the protection key value.
- */
+ 
 #define PTE_FLAGS_MASK		(~PTE_PFN_MASK)
 
 typedef struct pgprot { pgprotval_t pgprot; } pgprot_t;
@@ -301,24 +265,18 @@ static inline pgprot_t pgprot_nx(pgprot_t prot)
 
 #ifdef CONFIG_X86_PAE
 
-/*
- * PHYSICAL_PAGE_MASK might be non-constant when SME is compiled in, so we can't
- * use it here.
- */
+ 
 
 #define PGD_PAE_PAGE_MASK	((signed long)PAGE_MASK)
 #define PGD_PAE_PHYS_MASK	(((1ULL << __PHYSICAL_MASK_SHIFT)-1) & PGD_PAE_PAGE_MASK)
 
-/*
- * PAE allows Base Address, P, PWT, PCD and AVL bits to be set in PGD entries.
- * All other bits are Reserved MBZ
- */
+ 
 #define PGD_ALLOWED_BITS	(PGD_PAE_PHYS_MASK | _PAGE_PRESENT | \
 				 _PAGE_PWT | _PAGE_PCD | \
 				 _PAGE_SOFTW1 | _PAGE_SOFTW2 | _PAGE_SOFTW3)
 
 #else
-/* No need to mask any bits for !PAE */
+ 
 #define PGD_ALLOWED_BITS	(~0ULL)
 #endif
 
@@ -415,7 +373,7 @@ static inline pmdval_t native_pmd_val(pmd_t pmd)
 
 static inline p4dval_t p4d_pfn_mask(p4d_t p4d)
 {
-	/* No 512 GiB huge pages yet */
+	 
 	return PTE_PFN_MASK;
 }
 
@@ -525,7 +483,7 @@ extern pgprot_t pgprot_writecombine(pgprot_t prot);
 #define pgprot_writethrough	pgprot_writethrough
 extern pgprot_t pgprot_writethrough(pgprot_t prot);
 
-/* Indicate that x86 has its own track and untrack pfn vma functions */
+ 
 #define __HAVE_PFNMAP_TRACKING
 
 #define __HAVE_PHYS_MEM_ACCESS_PROT
@@ -533,7 +491,7 @@ struct file;
 pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
                               unsigned long size, pgprot_t vma_prot);
 
-/* Install a pte for a particular vaddr in kernel space. */
+ 
 void set_pte_vaddr(unsigned long vaddr, pte_t pte);
 
 #ifdef CONFIG_X86_32
@@ -557,12 +515,7 @@ extern void update_page_count(int level, unsigned long pages);
 static inline void update_page_count(int level, unsigned long pages) { }
 #endif
 
-/*
- * Helper function that returns the kernel pagetable entry controlling
- * the virtual address 'address'. NULL means no pagetable entry present.
- * NOTE: the return type is pte_t but if the pmd is PSE then we return it
- * as a pte too.
- */
+ 
 extern pte_t *lookup_address(unsigned long address, unsigned int *level);
 extern pte_t *lookup_address_in_pgd(pgd_t *pgd, unsigned long address,
 				    unsigned int *level);
@@ -574,6 +527,6 @@ extern int __init kernel_map_pages_in_pgd(pgd_t *pgd, u64 pfn,
 					  unsigned long page_flags);
 extern int __init kernel_unmap_pages_in_pgd(pgd_t *pgd, unsigned long address,
 					    unsigned long numpages);
-#endif	/* !__ASSEMBLY__ */
+#endif	 
 
-#endif /* _ASM_X86_PGTABLE_DEFS_H */
+#endif  

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Memory bandwidth monitoring and allocation library
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include "resctrl.h"
 
 #define UNCORE_IMC		"uncore_imc"
@@ -44,10 +36,10 @@
 	"%s/mon_data/mon_L3_%02d/llc_occupancy"
 
 struct membw_read_format {
-	__u64 value;         /* The value of the event */
-	__u64 time_enabled;  /* if PERF_FORMAT_TOTAL_TIME_ENABLED */
-	__u64 time_running;  /* if PERF_FORMAT_TOTAL_TIME_RUNNING */
-	__u64 id;            /* if PERF_FORMAT_ID */
+	__u64 value;          
+	__u64 time_enabled;   
+	__u64 time_running;   
+	__u64 id;             
 };
 
 struct imc_counter_config {
@@ -91,12 +83,7 @@ void membw_ioctl_perf_event_ioc_disable(int i, int j)
 	ioctl(imc_counters_config[i][j].fd, PERF_EVENT_IOC_DISABLE, 0);
 }
 
-/*
- * get_event_and_umask:	Parse config into event and umask
- * @cas_count_cfg:	Config
- * @count:		iMC number
- * @op:			Operation (read/write)
- */
+ 
 void get_event_and_umask(char *cas_count_cfg, int count, bool op)
 {
 	char *token[MAX_TOKENS];
@@ -146,13 +133,13 @@ static int open_perf_event(int i, int cpu_no, int j)
 	return 0;
 }
 
-/* Get type and config (read and write) of an iMC counter */
+ 
 static int read_from_imc_dir(char *imc_dir, int count)
 {
 	char cas_count_cfg[1024], imc_counter_cfg[1024], imc_counter_type[1024];
 	FILE *fp;
 
-	/* Get type of iMC counter */
+	 
 	sprintf(imc_counter_type, "%s%s", imc_dir, "type");
 	fp = fopen(imc_counter_type, "r");
 	if (!fp) {
@@ -171,7 +158,7 @@ static int read_from_imc_dir(char *imc_dir, int count)
 	imc_counters_config[count][WRITE].type =
 				imc_counters_config[count][READ].type;
 
-	/* Get read config */
+	 
 	sprintf(imc_counter_cfg, "%s%s", imc_dir, READ_FILE_NAME);
 	fp = fopen(imc_counter_cfg, "r");
 	if (!fp) {
@@ -189,7 +176,7 @@ static int read_from_imc_dir(char *imc_dir, int count)
 
 	get_event_and_umask(cas_count_cfg, count, READ);
 
-	/* Get write config */
+	 
 	sprintf(imc_counter_cfg, "%s%s", imc_dir, WRITE_FILE_NAME);
 	fp = fopen(imc_counter_cfg, "r");
 	if (!fp) {
@@ -210,15 +197,7 @@ static int read_from_imc_dir(char *imc_dir, int count)
 	return 0;
 }
 
-/*
- * A system can have 'n' number of iMC (Integrated Memory Controller)
- * counters, get that 'n'. For each iMC counter get it's type and config.
- * Also, each counter has two configs, one for read and the other for write.
- * A config again has two parts, event and umask.
- * Enumerate all these details into an array of structures.
- *
- * Return: >= 0 on success. < 0 on failure.
- */
+ 
 static int num_of_imcs(void)
 {
 	char imc_dir[512], *temp;
@@ -234,20 +213,10 @@ static int num_of_imcs(void)
 			if (!temp)
 				continue;
 
-			/*
-			 * imc counters are named as "uncore_imc_<n>", hence
-			 * increment the pointer to point to <n>. Note that
-			 * sizeof(UNCORE_IMC) would count for null character as
-			 * well and hence the last underscore character in
-			 * uncore_imc'_' need not be counted.
-			 */
+			 
 			temp = temp + sizeof(UNCORE_IMC);
 
-			/*
-			 * Some directories under "DYN_PMU_PATH" could have
-			 * names like "uncore_imc_free_running", hence, check if
-			 * first character is a numerical digit or not.
-			 */
+			 
 			if (temp[0] >= '0' && temp[0] <= '9') {
 				sprintf(imc_dir, "%s/%s/", DYN_PMU_PATH,
 					ep->d_name);
@@ -283,7 +252,7 @@ static int initialize_mem_bw_imc(void)
 	if (imcs <= 0)
 		return imcs;
 
-	/* Initialize perf_event_attr structures for all iMC's */
+	 
 	for (imc = 0; imc < imcs; imc++) {
 		for (j = 0; j < 2; j++)
 			membw_initialize_perf_event_attr(imc, j);
@@ -292,22 +261,13 @@ static int initialize_mem_bw_imc(void)
 	return 0;
 }
 
-/*
- * get_mem_bw_imc:	Memory band width as reported by iMC counters
- * @cpu_no:		CPU number that the benchmark PID is binded to
- * @bw_report:		Bandwidth report type (reads, writes)
- *
- * Memory B/W utilized by a process on a socket can be calculated using
- * iMC counters. Perf events are used to read these counters.
- *
- * Return: = 0 on success. < 0 on failure.
- */
+ 
 static int get_mem_bw_imc(int cpu_no, char *bw_report, float *bw_imc)
 {
 	float reads, writes, of_mul_read, of_mul_write;
 	int imc, j, ret;
 
-	/* Start all iMC counters to log values (both read and write) */
+	 
 	reads = 0, writes = 0, of_mul_read = 1, of_mul_write = 1;
 	for (imc = 0; imc < imcs; imc++) {
 		for (j = 0; j < 2; j++) {
@@ -321,16 +281,13 @@ static int get_mem_bw_imc(int cpu_no, char *bw_report, float *bw_imc)
 
 	sleep(1);
 
-	/* Stop counters after a second to get results (both read and write) */
+	 
 	for (imc = 0; imc < imcs; imc++) {
 		for (j = 0; j < 2; j++)
 			membw_ioctl_perf_event_ioc_disable(imc, j);
 	}
 
-	/*
-	 * Get results which are stored in struct type imc_counter_config
-	 * Take over flow into consideration before calculating total b/w
-	 */
+	 
 	for (imc = 0; imc < imcs; imc++) {
 		struct imc_counter_config *r =
 			&imc_counters_config[imc][READ];
@@ -403,13 +360,7 @@ void set_mbm_path(const char *ctrlgrp, const char *mongrp, int resource_id)
 			resource_id);
 }
 
-/*
- * initialize_mem_bw_resctrl:	Appropriately populate "mbm_total_path"
- * @ctrlgrp:			Name of the control monitor group (con_mon grp)
- * @mongrp:			Name of the monitor group (mon grp)
- * @cpu_no:			CPU number that the benchmark PID is binded to
- * @resctrl_val:		Resctrl feature (Eg: mbm, mba.. etc)
- */
+ 
 static void initialize_mem_bw_resctrl(const char *ctrlgrp, const char *mongrp,
 				      int cpu_no, char *resctrl_val)
 {
@@ -433,16 +384,7 @@ static void initialize_mem_bw_resctrl(const char *ctrlgrp, const char *mongrp,
 	}
 }
 
-/*
- * Get MBM Local bytes as reported by resctrl FS
- * For MBM,
- * 1. If con_mon grp and mon grp are given, then read from con_mon grp's mon grp
- * 2. If only con_mon grp is given, then read from con_mon grp
- * 3. If both are not given, then read from root con_mon grp
- * For MBA,
- * 1. If con_mon grp is given, then read from it
- * 2. If con_mon grp is not given, then read from root con_mon grp
- */
+ 
 static int get_mem_bw_resctrl(unsigned long *mbm_total)
 {
 	FILE *fp;
@@ -468,7 +410,7 @@ pid_t bm_pid, ppid;
 
 void ctrlc_handler(int signum, siginfo_t *info, void *ptr)
 {
-	/* Only kill child after bm_pid is set after fork() */
+	 
 	if (bm_pid)
 		kill(bm_pid, SIGKILL);
 	umount_resctrlfs();
@@ -478,10 +420,7 @@ void ctrlc_handler(int signum, siginfo_t *info, void *ptr)
 	exit(EXIT_SUCCESS);
 }
 
-/*
- * Register CTRL-C handler for parent, as it has to kill
- * child process before exiting.
- */
+ 
 int signal_handler_register(void)
 {
 	struct sigaction sigact = {};
@@ -501,11 +440,7 @@ int signal_handler_register(void)
 	return ret;
 }
 
-/*
- * Reset signal handler to SIG_DFL.
- * Non-Value return because the caller should keep
- * the error code of other path even if sigaction fails.
- */
+ 
 void signal_handler_unregister(void)
 {
 	struct sigaction sigact = {};
@@ -519,15 +454,7 @@ void signal_handler_unregister(void)
 	}
 }
 
-/*
- * print_results_bw:	the memory bandwidth results are stored in a file
- * @filename:		file that stores the results
- * @bm_pid:		child pid that runs benchmark
- * @bw_imc:		perf imc counter value
- * @bw_resc:		memory bandwidth value
- *
- * Return:		0 on success. non-zero on failure.
- */
+ 
 static int print_results_bw(char *filename,  int bm_pid, float bw_imc,
 			    unsigned long bw_resc)
 {
@@ -572,13 +499,7 @@ static void set_cmt_path(const char *ctrlgrp, const char *mongrp, char sock_num)
 		sprintf(llc_occup_path, LCC_OCCUP_PATH,	RESCTRL_PATH, sock_num);
 }
 
-/*
- * initialize_llc_occu_resctrl:	Appropriately populate "llc_occup_path"
- * @ctrlgrp:			Name of the control monitor group (con_mon grp)
- * @mongrp:			Name of the monitor group (mon grp)
- * @cpu_no:			CPU number that the benchmark PID is binded to
- * @resctrl_val:		Resctrl feature (Eg: cat, cmt.. etc)
- */
+ 
 static void initialize_llc_occu_resctrl(const char *ctrlgrp, const char *mongrp,
 					int cpu_no, char *resctrl_val)
 {
@@ -600,13 +521,7 @@ measure_vals(struct resctrl_val_param *param, unsigned long *bw_resc_start)
 	float bw_imc;
 	int ret;
 
-	/*
-	 * Measure memory bandwidth from resctrl and from
-	 * another source which is perf imc value or could
-	 * be something else if perf imc event is not available.
-	 * Compare the two values to validate resctrl value.
-	 * It takes 1sec to measure the data.
-	 */
+	 
 	ret = get_mem_bw_imc(param->cpu_no, param->bw_report, &bw_imc);
 	if (ret < 0)
 		return ret;
@@ -625,14 +540,7 @@ measure_vals(struct resctrl_val_param *param, unsigned long *bw_resc_start)
 	return 0;
 }
 
-/*
- * resctrl_val:	execute benchmark and measure memory bandwidth on
- *			the benchmark
- * @benchmark_cmd:	benchmark command and its arguments
- * @param:		parameters passed to resctrl_val()
- *
- * Return:		0 on success. non-zero on failure.
- */
+ 
 int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *param)
 {
 	char *resctrl_val = param->resctrl_val;
@@ -652,10 +560,7 @@ int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *par
 			return ret;
 	}
 
-	/*
-	 * If benchmark wasn't successfully started by child, then child should
-	 * kill parent, so save parent's pid
-	 */
+	 
 	ppid = getpid();
 
 	if (pipe(pipefd)) {
@@ -664,10 +569,7 @@ int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *par
 		return -1;
 	}
 
-	/*
-	 * Fork to start benchmark, save child's pid so that it can be killed
-	 * when needed
-	 */
+	 
 	fflush(stdout);
 	bm_pid = fork();
 	if (bm_pid == -1) {
@@ -677,21 +579,18 @@ int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *par
 	}
 
 	if (bm_pid == 0) {
-		/*
-		 * Mask all signals except SIGUSR1, parent uses SIGUSR1 to
-		 * start benchmark
-		 */
+		 
 		sigfillset(&sigact.sa_mask);
 		sigdelset(&sigact.sa_mask, SIGUSR1);
 
 		sigact.sa_sigaction = run_benchmark;
 		sigact.sa_flags = SA_SIGINFO;
 
-		/* Register for "SIGUSR1" signal from parent */
+		 
 		if (sigaction(SIGUSR1, &sigact, NULL))
 			PARENT_EXIT("Can't register child for signal");
 
-		/* Tell parent that child is ready */
+		 
 		close(pipefd[0]);
 		pipe_message = 1;
 		if (write(pipefd[1], &pipe_message, sizeof(pipe_message)) <
@@ -702,7 +601,7 @@ int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *par
 		}
 		close(pipefd[1]);
 
-		/* Suspend child until delivery of "SIGUSR1" from parent */
+		 
 		sigsuspend(&sigact.sa_mask);
 
 		PARENT_EXIT("Child is done");
@@ -710,20 +609,15 @@ int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *par
 
 	ksft_print_msg("Benchmark PID: %d\n", bm_pid);
 
-	/*
-	 * The cast removes constness but nothing mutates benchmark_cmd within
-	 * the context of this process. At the receiving process, it becomes
-	 * argv, which is mutable, on exec() but that's after fork() so it
-	 * doesn't matter for the process running the tests.
-	 */
+	 
 	value.sival_ptr = (void *)benchmark_cmd;
 
-	/* Taskset benchmark to specified cpu */
+	 
 	ret = taskset_benchmark(bm_pid, param->cpu_no);
 	if (ret)
 		goto out;
 
-	/* Write benchmark to specified control&monitoring grp in resctrl FS */
+	 
 	ret = write_bm_pid_to_resctrl(bm_pid, param->ctrlgrp, param->mongrp,
 				      resctrl_val);
 	if (ret)
@@ -741,7 +635,7 @@ int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *par
 		initialize_llc_occu_resctrl(param->ctrlgrp, param->mongrp,
 					    param->cpu_no, resctrl_val);
 
-	/* Parent waits for child to be ready. */
+	 
 	close(pipefd[1]);
 	while (pipe_message != 1) {
 		if (read(pipefd[0], &pipe_message, sizeof(pipe_message)) <
@@ -753,17 +647,17 @@ int resctrl_val(const char * const *benchmark_cmd, struct resctrl_val_param *par
 	}
 	close(pipefd[0]);
 
-	/* Signal child to start benchmark */
+	 
 	if (sigqueue(bm_pid, SIGUSR1, value) == -1) {
 		perror("# sigqueue SIGUSR1 to child");
 		ret = errno;
 		goto out;
 	}
 
-	/* Give benchmark enough time to fully run */
+	 
 	sleep(1);
 
-	/* Test runs until the callback setup() tells the test to stop. */
+	 
 	while (1) {
 		ret = param->setup(param);
 		if (ret == END_OF_TESTS) {

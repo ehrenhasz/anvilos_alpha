@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <net/ip.h>
 #include <net/tcp.h>
@@ -54,13 +54,13 @@ static void nft_synproxy_eval_v4(const struct nft_synproxy *priv,
 	struct sk_buff *skb = pkt->skb;
 
 	if (tcp->syn) {
-		/* Initial SYN from client */
+		 
 		nft_synproxy_tcp_options(opts, tcp, snet, &info, priv);
 		synproxy_send_client_synack(net, skb, tcp, opts);
 		consume_skb(skb);
 		regs->verdict.code = NF_STOLEN;
 	} else if (tcp->ack) {
-		/* ACK from client */
+		 
 		if (synproxy_recv_client_ack(net, skb, tcp, opts,
 					     ntohl(tcp->seq))) {
 			consume_skb(skb);
@@ -85,13 +85,13 @@ static void nft_synproxy_eval_v6(const struct nft_synproxy *priv,
 	struct sk_buff *skb = pkt->skb;
 
 	if (tcp->syn) {
-		/* Initial SYN from client */
+		 
 		nft_synproxy_tcp_options(opts, tcp, snet, &info, priv);
 		synproxy_send_client_synack_ipv6(net, skb, tcp, opts);
 		consume_skb(skb);
 		regs->verdict.code = NF_STOLEN;
 	} else if (tcp->ack) {
-		/* ACK from client */
+		 
 		if (synproxy_recv_client_ack_ipv6(net, skb, tcp, opts,
 						  ntohl(tcp->seq))) {
 			consume_skb(skb);
@@ -101,7 +101,7 @@ static void nft_synproxy_eval_v6(const struct nft_synproxy *priv,
 		}
 	}
 }
-#endif /* CONFIG_NF_TABLES_IPV6*/
+#endif  
 
 static void nft_synproxy_do_eval(const struct nft_synproxy *priv,
 				 struct nft_regs *regs,

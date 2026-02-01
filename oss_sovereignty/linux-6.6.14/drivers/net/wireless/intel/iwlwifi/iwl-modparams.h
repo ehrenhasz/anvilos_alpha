@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2005-2014, 2018-2022 Intel Corporation
- */
+ 
+ 
 #ifndef __iwl_modparams_h__
 #define __iwl_modparams_h__
 
@@ -32,7 +30,7 @@ enum iwl_amsdu_size {
 	IWL_AMSDU_4K = 1,
 	IWL_AMSDU_8K = 2,
 	IWL_AMSDU_12K = 3,
-	/* Add 2K at the end to avoid breaking current API */
+	 
 	IWL_AMSDU_2K = 4,
 };
 
@@ -41,29 +39,7 @@ enum iwl_uapsd_disable {
 	IWL_DISABLE_UAPSD_P2P_CLIENT	= BIT(1),
 };
 
-/**
- * struct iwl_mod_params
- *
- * Holds the module parameters
- *
- * @swcrypto: using hardware encryption, default = 0
- * @disable_11n: disable 11n capabilities, default = 0,
- *	use IWL_[DIS,EN]ABLE_HT_* constants
- * @amsdu_size: See &enum iwl_amsdu_size.
- * @fw_restart: restart firmware, default = 1
- * @bt_coex_active: enable bt coex, default = true
- * @led_mode: system default, default = 0
- * @power_save: enable power save, default = false
- * @power_level: power level, default = 1
- * @debug_level: levels are IWL_DL_*
- * @nvm_file: specifies a external NVM file
- * @uapsd_disable: disable U-APSD, see &enum iwl_uapsd_disable, default =
- *	IWL_DISABLE_UAPSD_BSS | IWL_DISABLE_UAPSD_P2P_CLIENT
- * @disable_11ac: disable VHT capabilities, default = false.
- * @remove_when_gone: remove an inaccessible device from the PCIe bus.
- * @enable_ini: enable new FW debug infratructure (INI TLVs)
- * @disable_11be: disable EHT capabilities, default = false.
- */
+ 
 struct iwl_mod_params {
 	int swcrypto;
 	unsigned int disable_11n;
@@ -79,9 +55,7 @@ struct iwl_mod_params {
 	char *nvm_file;
 	u32 uapsd_disable;
 	bool disable_11ac;
-	/**
-	 * @disable_11ax: disable HE capabilities, default = false
-	 */
+	 
 	bool disable_11ax;
 	bool remove_when_gone;
 	u32 enable_ini;
@@ -102,8 +76,8 @@ static inline bool iwl_enable_tx_ampdu(void)
 	if (iwlwifi_mod_params.disable_11n & IWL_ENABLE_HT_TXAGG)
 		return true;
 
-	/* enabled by default */
+	 
 	return true;
 }
 
-#endif /* #__iwl_modparams_h__ */
+#endif  

@@ -1,34 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Switch Global 2 Registers support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2016-2017 Savoir-faire Linux Inc.
- *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- *
- * Copyright (c) 2017 National Instruments
- *	Brandon Streiff <brandon.streiff@ni.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 
 #include "global2.h"
 
-/* Offset 0x16: AVB Command Register
- * Offset 0x17: AVB Data Register
- *
- * There are two different versions of this register interface:
- *    "6352": 3-bit "op" field, 4-bit "port" field.
- *    "6390": 2-bit "op" field, 5-bit "port" field.
- *
- * The "op" codes are different between the two, as well as the special
- * port fields for global PTP and TAI configuration.
- */
+ 
 
-/* mv88e6xxx_g2_avb_read -- Read one or multiple 16-bit words.
- * The hardware supports snapshotting up to four contiguous registers.
- */
+ 
 static int mv88e6xxx_g2_avb_wait(struct mv88e6xxx_chip *chip)
 {
 	int bit = __bf_shf(MV88E6352_G2_AVB_CMD_BUSY);
@@ -46,7 +25,7 @@ static int mv88e6xxx_g2_avb_read(struct mv88e6xxx_chip *chip, u16 readop,
 	if (err)
 		return err;
 
-	/* Hardware can only snapshot four words. */
+	 
 	if (len > 4)
 		return -E2BIG;
 
@@ -69,7 +48,7 @@ static int mv88e6xxx_g2_avb_read(struct mv88e6xxx_chip *chip, u16 readop,
 	return 0;
 }
 
-/* mv88e6xxx_g2_avb_write -- Write one 16-bit word. */
+ 
 static int mv88e6xxx_g2_avb_write(struct mv88e6xxx_chip *chip, u16 writeop,
 				  u16 data)
 {

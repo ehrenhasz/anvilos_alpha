@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_BAR_H__
 #define __NVKM_BAR_H__
 #include <core/subdev.h>
@@ -11,7 +11,7 @@ struct nvkm_bar {
 	spinlock_t lock;
 	bool bar2;
 
-	/* whether the BAR supports to be ioremapped WC or should be uncached */
+	 
 	bool iomap_uncached;
 };
 

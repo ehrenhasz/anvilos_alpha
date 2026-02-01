@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor mediation of files
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2017 Canonical Ltd.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -78,11 +71,7 @@ static void audit_mnt_flags(struct audit_buffer *ab, unsigned long flags)
 		audit_log_format(ab, ", nouser");
 }
 
-/**
- * audit_cb - call back for mount specific audit fields
- * @ab: audit_buffer  (NOT NULL)
- * @va: audit struct to audit values of  (NOT NULL)
- */
+ 
 static void audit_cb(struct audit_buffer *ab, void *va)
 {
 	struct common_audit_data *sa = va;
@@ -111,24 +100,7 @@ static void audit_cb(struct audit_buffer *ab, void *va)
 	}
 }
 
-/**
- * audit_mount - handle the auditing of mount operations
- * @subj_cred: cred of the subject
- * @profile: the profile being enforced  (NOT NULL)
- * @op: operation being mediated (NOT NULL)
- * @name: name of object being mediated (MAYBE NULL)
- * @src_name: src_name of object being mediated (MAYBE_NULL)
- * @type: type of filesystem (MAYBE_NULL)
- * @trans: name of trans (MAYBE NULL)
- * @flags: filesystem independent mount flags
- * @data: filesystem mount flags
- * @request: permissions requested
- * @perms: the permissions computed for the request (NOT NULL)
- * @info: extra information message (MAYBE NULL)
- * @error: 0 if operation allowed else failure error code
- *
- * Returns: %0 or error on failure
- */
+ 
 static int audit_mount(const struct cred *subj_cred,
 		       struct aa_profile *profile, const char *op,
 		       const char *name, const char *src_name,
@@ -145,20 +117,20 @@ static int audit_mount(const struct cred *subj_cred,
 		if (unlikely(AUDIT_MODE(profile) == AUDIT_ALL))
 			mask = 0xffff;
 
-		/* mask off perms that are not being force audited */
+		 
 		request &= mask;
 
 		if (likely(!request))
 			return 0;
 		audit_type = AUDIT_APPARMOR_AUDIT;
 	} else {
-		/* only report permissions that were denied */
+		 
 		request = request & ~perms->allow;
 
 		if (request & perms->kill)
 			audit_type = AUDIT_APPARMOR_KILL;
 
-		/* quiet known rejects, assumes quiet and kill do not overlap */
+		 
 		if ((request & perms->quiet) &&
 		    AUDIT_MODE(profile) != AUDIT_NOQUIET &&
 		    AUDIT_MODE(profile) != AUDIT_ALL)
@@ -182,18 +154,7 @@ static int audit_mount(const struct cred *subj_cred,
 	return aa_audit(audit_type, profile, &ad, audit_cb);
 }
 
-/**
- * match_mnt_flags - Do an ordered match on mount flags
- * @dfa: dfa to match against
- * @state: state to start in
- * @flags: mount flags to match against
- *
- * Mount flags are encoded as an ordered match. This is done instead of
- * checking against a simple bitmask, to allow for logical operations
- * on the flags.
- *
- * Returns: next state after flags match
- */
+ 
 static aa_state_t match_mnt_flags(struct aa_dfa *dfa, aa_state_t state,
 				    unsigned long flags)
 {
@@ -217,10 +178,7 @@ static const char * const mnt_info_table[] = {
 	"failed perms check"
 };
 
-/*
- * Returns 0 on success else element that match failed in, this is the
- * index into the mnt_info_table above
- */
+ 
 static int do_match_mnt(struct aa_policydb *policy, aa_state_t start,
 			const char *mntpnt, const char *devname,
 			const char *type, unsigned long flags,
@@ -257,7 +215,7 @@ static int do_match_mnt(struct aa_policydb *policy, aa_state_t start,
 	if (perms->allow & AA_MAY_MOUNT)
 		return 0;
 
-	/* only match data if not binary and the DFA flags data is expected */
+	 
 	if (data && !binary && (perms->allow & AA_MNT_CONT_MATCH)) {
 		state = aa_dfa_null_transition(policy->dfa, state);
 		if (!state)
@@ -271,7 +229,7 @@ static int do_match_mnt(struct aa_policydb *policy, aa_state_t start,
 			return 0;
 	}
 
-	/* failed at perms check, don't confuse with flags match */
+	 
 	return 6;
 }
 
@@ -285,21 +243,7 @@ static int path_flags(struct aa_profile *profile, const struct path *path)
 		(S_ISDIR(path->dentry->d_inode->i_mode) ? PATH_IS_DIR : 0);
 }
 
-/**
- * match_mnt_path_str - handle path matching for mount
- * @subj_cred: cred of confined subject
- * @profile: the confining profile
- * @mntpath: for the mntpnt (NOT NULL)
- * @buffer: buffer to be used to lookup mntpath
- * @devname: string for the devname/src_name (MAY BE NULL OR ERRPTR)
- * @type: string for the dev type (MAYBE NULL)
- * @flags: mount flags to match
- * @data: fs mount data (MAYBE NULL)
- * @binary: whether @data is binary
- * @devinfo: error str if (IS_ERR(@devname))
- *
- * Returns: 0 on success else error
- */
+ 
 static int match_mnt_path_str(const struct cred *subj_cred,
 			      struct aa_profile *profile,
 			      const struct path *mntpath, char *buffer,
@@ -347,21 +291,7 @@ audit:
 			   flags, data, AA_MAY_MOUNT, &perms, info, error);
 }
 
-/**
- * match_mnt - handle path matching for mount
- * @subj_cred: cred of the subject
- * @profile: the confining profile
- * @path: for the mntpnt (NOT NULL)
- * @buffer: buffer to be used to lookup mntpath
- * @devpath: path devname/src_name (MAYBE NULL)
- * @devbuffer: buffer to be used to lookup devname/src_name
- * @type: string for the dev type (MAYBE NULL)
- * @flags: mount flags to match
- * @data: fs mount data (MAYBE NULL)
- * @binary: whether @data is binary
- *
- * Returns: 0 on success else error
- */
+ 
 static int match_mnt(const struct cred *subj_cred,
 		     struct aa_profile *profile, const struct path *path,
 		     char *buffer, const struct path *devpath, char *devbuffer,
@@ -466,7 +396,7 @@ int aa_mount_change_type(const struct cred *subj_cred,
 	AA_BUG(!label);
 	AA_BUG(!path);
 
-	/* These are the flags allowed by do_change_type() */
+	 
 	flags &= (MS_REC | MS_SILENT | MS_SHARED | MS_PRIVATE | MS_SLAVE |
 		  MS_UNBINDABLE);
 
@@ -501,7 +431,7 @@ int aa_move_mount(const struct cred *subj_cred,
 		goto out;
 
 	if (!our_mnt(from_path->mnt))
-		/* moving a mount detached from the namespace */
+		 
 		from_path = NULL;
 	error = fn_for_each_confined(label, profile,
 			match_mnt(subj_cred, profile, to_path, to_buffer,
@@ -655,10 +585,7 @@ int aa_umount(const struct cred *subj_cred, struct aa_label *label,
 	return error;
 }
 
-/* helper fn for transition on pivotroot
- *
- * Returns: label for transition or ERR_PTR. Does not return NULL
- */
+ 
 static struct aa_label *build_pivotroot(const struct cred *subj_cred,
 					struct aa_profile *profile,
 					const struct path *new_path,
@@ -744,13 +671,13 @@ int aa_pivotroot(const struct cred *subj_cred, struct aa_label *label,
 	} else if (!IS_ERR(target)) {
 		error = aa_replace_current_label(target);
 		if (error) {
-			/* TODO: audit target */
+			 
 			aa_put_label(target);
 			goto out;
 		}
 		aa_put_label(target);
 	} else
-		/* already audited error */
+		 
 		error = PTR_ERR(target);
 out:
 	aa_put_buffer(old_buffer);
@@ -759,11 +686,11 @@ out:
 	return error;
 
 fail:
-	/* TODO: add back in auditing of new_name and old_name */
+	 
 	error = fn_for_each(label, profile,
 			audit_mount(subj_cred, profile, OP_PIVOTROOT,
-				    NULL /*new_name */,
-				    NULL /* old_name */,
+				    NULL  ,
+				    NULL  ,
 				    NULL, NULL,
 				    0, NULL, AA_MAY_PIVOTROOT, &nullperms, info,
 				    error));

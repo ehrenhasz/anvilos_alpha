@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Fast batching percpu counters.
- */
+
+ 
 
 #include <linux/percpu_counter.h>
 #include <linux/mutex.h>
@@ -50,12 +48,12 @@ static inline void debug_percpu_counter_deactivate(struct percpu_counter *fbc)
 	debug_object_free(fbc, &percpu_counter_debug_descr);
 }
 
-#else	/* CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER */
+#else	 
 static inline void debug_percpu_counter_activate(struct percpu_counter *fbc)
 { }
 static inline void debug_percpu_counter_deactivate(struct percpu_counter *fbc)
 { }
-#endif	/* CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER */
+#endif	 
 
 void percpu_counter_set(struct percpu_counter *fbc, s64 amount)
 {
@@ -72,18 +70,7 @@ void percpu_counter_set(struct percpu_counter *fbc, s64 amount)
 }
 EXPORT_SYMBOL(percpu_counter_set);
 
-/*
- * local_irq_save() is needed to make the function irq safe:
- * - The slow path would be ok as protected by an irq-safe spinlock.
- * - this_cpu_add would be ok as it is irq-safe by definition.
- * But:
- * The decision slow path/fast path and the actual update must be atomic, too.
- * Otherwise a call in process context could check the current values and
- * decide that the fast path can be used. If now an interrupt occurs before
- * the this_cpu_add(), and the interrupt updates this_cpu(*fbc->counters),
- * then the this_cpu_add() that is executed after the interrupt has completed
- * can produce values larger than "batch" or even overflows.
- */
+ 
 void percpu_counter_add_batch(struct percpu_counter *fbc, s64 amount, s32 batch)
 {
 	s64 count;
@@ -103,12 +90,7 @@ void percpu_counter_add_batch(struct percpu_counter *fbc, s64 amount, s32 batch)
 }
 EXPORT_SYMBOL(percpu_counter_add_batch);
 
-/*
- * For percpu_counter with a big batch, the devication of its count could
- * be big, and there is requirement to reduce the deviation, like when the
- * counter's batch could be runtime decreased to get a better accuracy,
- * which can be achieved by running this sync function on each CPU.
- */
+ 
 void percpu_counter_sync(struct percpu_counter *fbc)
 {
 	unsigned long flags;
@@ -122,18 +104,7 @@ void percpu_counter_sync(struct percpu_counter *fbc)
 }
 EXPORT_SYMBOL(percpu_counter_sync);
 
-/*
- * Add up all the per-cpu counts, return the result.  This is a more accurate
- * but much slower version of percpu_counter_read_positive().
- *
- * We use the cpu mask of (cpu_online_mask | cpu_dying_mask) to capture sums
- * from CPUs that are in the process of being taken offline. Dying cpus have
- * been removed from the online mask, but may not have had the hotplug dead
- * notifier called to fold the percpu count back into the global counter sum.
- * By including dying CPUs in the iteration mask, we avoid this race condition
- * so __percpu_counter_sum() just does the right thing when CPUs are being taken
- * offline.
- */
+ 
 s64 __percpu_counter_sum(struct percpu_counter *fbc)
 {
 	s64 ret;
@@ -251,23 +222,20 @@ static int percpu_counter_cpu_dead(unsigned int cpu)
 	return 0;
 }
 
-/*
- * Compare counter against given value.
- * Return 1 if greater, 0 if equal and -1 if less
- */
+ 
 int __percpu_counter_compare(struct percpu_counter *fbc, s64 rhs, s32 batch)
 {
 	s64	count;
 
 	count = percpu_counter_read(fbc);
-	/* Check to see if rough count will be sufficient for comparison */
+	 
 	if (abs(count - rhs) > (batch * num_online_cpus())) {
 		if (count > rhs)
 			return 1;
 		else
 			return -1;
 	}
-	/* Need to use precise count */
+	 
 	count = percpu_counter_sum(fbc);
 	if (count > rhs)
 		return 1;

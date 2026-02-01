@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/list_sort.h>
 #include <linux/libnvdimm.h>
 #include <linux/module.h>
@@ -20,10 +18,7 @@
 #include "intel.h"
 #include "nfit.h"
 
-/*
- * For readq() and writeq() on 32-bit builds, the hi-lo, lo-hi order is
- * irrelevant.
- */
+ 
 #include <linux/io-64-nonatomic-hi-lo.h>
 
 static bool force_enable_dimms;
@@ -79,10 +74,7 @@ static const guid_t *to_nfit_bus_uuid(int family)
 	if (WARN_ONCE(family == NVDIMM_BUS_FAMILY_NFIT,
 			"only secondary bus families can be translated\n"))
 		return NULL;
-	/*
-	 * The index of bus UUIDs starts immediately following the last
-	 * NVDIMM/leaf family.
-	 */
+	 
 	return to_nfit_uuid(family + NVDIMM_FAMILY_MAX);
 }
 
@@ -90,10 +82,7 @@ static struct acpi_device *to_acpi_dev(struct acpi_nfit_desc *acpi_desc)
 {
 	struct nvdimm_bus_descriptor *nd_desc = &acpi_desc->nd_desc;
 
-	/*
-	 * If provider == 'ACPI.NFIT' we can assume 'dev' is a struct
-	 * acpi_device.
-	 */
+	 
 	if (!nd_desc->provider_name
 			|| strcmp(nd_desc->provider_name, "ACPI.NFIT") != 0)
 		return NULL;
@@ -112,46 +101,42 @@ static int xlat_bus_status(void *buf, unsigned int cmd, u32 status)
 		if ((status & 0xffff) == NFIT_ARS_CAP_NONE)
 			return -ENOTTY;
 
-		/* Command failed */
+		 
 		if (status & 0xffff)
 			return -EIO;
 
-		/* No supported scan types for this range */
+		 
 		flags = ND_ARS_PERSISTENT | ND_ARS_VOLATILE;
 		if ((status >> 16 & flags) == 0)
 			return -ENOTTY;
 		return 0;
 	case ND_CMD_ARS_START:
-		/* ARS is in progress */
+		 
 		if ((status & 0xffff) == NFIT_ARS_START_BUSY)
 			return -EBUSY;
 
-		/* Command failed */
+		 
 		if (status & 0xffff)
 			return -EIO;
 		return 0;
 	case ND_CMD_ARS_STATUS:
 		ars_status = buf;
-		/* Command failed */
+		 
 		if (status & 0xffff)
 			return -EIO;
-		/* Check extended status (Upper two bytes) */
+		 
 		if (status == NFIT_ARS_STATUS_DONE)
 			return 0;
 
-		/* ARS is in progress */
+		 
 		if (status == NFIT_ARS_STATUS_BUSY)
 			return -EBUSY;
 
-		/* No ARS performed for the current boot */
+		 
 		if (status == NFIT_ARS_STATUS_NONE)
 			return -EAGAIN;
 
-		/*
-		 * ARS interrupted, either we overflowed or some other
-		 * agent wants the scan to stop.  If we didn't overflow
-		 * then just continue with the returned results.
-		 */
+		 
 		if (status == NFIT_ARS_STATUS_INTR) {
 			if (ars_status->out_length >= 40 && (ars_status->flags
 						& NFIT_ARS_F_OVERFLOW))
@@ -159,7 +144,7 @@ static int xlat_bus_status(void *buf, unsigned int cmd, u32 status)
 			return 0;
 		}
 
-		/* Unknown status */
+		 
 		if (status >> 16)
 			return -EIO;
 		return 0;
@@ -176,7 +161,7 @@ static int xlat_bus_status(void *buf, unsigned int cmd, u32 status)
 		break;
 	}
 
-	/* all other non-zero status results in an error */
+	 
 	if (status)
 		return -EIO;
 	return 0;
@@ -191,10 +176,7 @@ static int xlat_nvdimm_status(struct nvdimm *nvdimm, void *buf, unsigned int cmd
 
 	switch (cmd) {
 	case ND_CMD_GET_CONFIG_SIZE:
-		/*
-		 * In the _LSI, _LSR, _LSW case the locked status is
-		 * communicated via the read/write commands
-		 */
+		 
 		if (test_bit(NFIT_MEM_LSR, &nfit_mem->flags))
 			break;
 
@@ -215,7 +197,7 @@ static int xlat_nvdimm_status(struct nvdimm *nvdimm, void *buf, unsigned int cmd
 		break;
 	}
 
-	/* all other non-zero status results in an error */
+	 
 	if (status)
 		return -EIO;
 	return 0;
@@ -229,7 +211,7 @@ static int xlat_status(struct nvdimm *nvdimm, void *buf, unsigned int cmd,
 	return xlat_nvdimm_status(nvdimm, buf, cmd, status);
 }
 
-/* convert _LS{I,R} packages to the buffer object acpi_nfit_ctl expects */
+ 
 static union acpi_object *pkg_to_buf(union acpi_object *pkg)
 {
 	int i;
@@ -388,7 +370,7 @@ static u8 nfit_dsm_revid(unsigned family, unsigned func)
 		return 0;
 	id = revid_table[family][func];
 	if (id == 0)
-		return 1; /* default */
+		return 1;  
 	return id;
 }
 
@@ -419,18 +401,15 @@ static int cmd_to_func(struct nfit_mem *nfit_mem, unsigned int cmd,
 		return call_pkg->nd_command;
 	}
 
-	/* In the !call_pkg case, bus commands == bus functions */
+	 
 	if (!nfit_mem)
 		return cmd;
 
-	/* Linux ND commands == NVDIMM_FAMILY_INTEL function numbers */
+	 
 	if (nfit_mem->family == NVDIMM_FAMILY_INTEL)
 		return cmd;
 
-	/*
-	 * Force function number validation to fail since 0 is never
-	 * published as a valid function in dsm_mask.
-	 */
+	 
 	return 0;
 }
 
@@ -499,10 +478,7 @@ int acpi_nfit_ctl(struct nvdimm_bus_descriptor *nd_desc, struct nvdimm *nvdimm,
 	if (!desc || (cmd && (desc->out_num + desc->in_num == 0)))
 		return -ENOTTY;
 
-	/*
-	 * Check for a valid command.  For ND_CMD_CALL, we also have to
-	 * make sure that the DSM function is supported.
-	 */
+	 
 	if (cmd == ND_CMD_CALL &&
 	    (func > NVDIMM_CMD_MAX || !test_bit(func, &dsm_mask)))
 		return -ENOTTY;
@@ -516,13 +492,13 @@ int acpi_nfit_ctl(struct nvdimm_bus_descriptor *nd_desc, struct nvdimm *nvdimm,
 	in_buf.buffer.pointer = buf;
 	in_buf.buffer.length = 0;
 
-	/* libnvdimm has already validated the input envelope */
+	 
 	for (i = 0; i < desc->in_num; i++)
 		in_buf.buffer.length += nd_cmd_in_size(nvdimm, cmd, desc,
 				i, buf);
 
 	if (call_pkg) {
-		/* skip over package wrapper */
+		 
 		in_buf.buffer.pointer = (void *) &call_pkg->nd_payload;
 		in_buf.buffer.length = call_pkg->nd_size_in;
 	}
@@ -534,7 +510,7 @@ int acpi_nfit_ctl(struct nvdimm_bus_descriptor *nd_desc, struct nvdimm *nvdimm,
 				in_buf.buffer.pointer,
 				min_t(u32, 256, in_buf.buffer.length), true);
 
-	/* call the BIOS, prefer the named methods over _DSM if available */
+	 
 	if (nvdimm && cmd == ND_CMD_GET_CONFIG_SIZE
 			&& test_bit(NFIT_MEM_LSR, &nfit_mem->flags))
 		out_obj = acpi_label_info(handle);
@@ -584,12 +560,7 @@ int acpi_nfit_ctl(struct nvdimm_bus_descriptor *nd_desc, struct nvdimm *nvdimm,
 			min(call_pkg->nd_fw_size, call_pkg->nd_size_out));
 
 		ACPI_FREE(out_obj);
-		/*
-		 * Need to support FW function w/o known size in advance.
-		 * Caller can determine required size based upon nd_fw_size.
-		 * If we return an error (like elsewhere) then caller wouldn't
-		 * be able to rely upon data returned to make calculation.
-		 */
+		 
 		if (cmd_rc)
 			*cmd_rc = 0;
 		return 0;
@@ -617,10 +588,7 @@ int acpi_nfit_ctl(struct nvdimm_bus_descriptor *nd_desc, struct nvdimm *nvdimm,
 		offset += out_size;
 	}
 
-	/*
-	 * Set fw_status for all the commands with a known format to be
-	 * later interpreted by xlat_status().
-	 */
+	 
 	if (i >= 1 && ((!nvdimm && cmd >= ND_CMD_ARS_CAP
 					&& cmd <= ND_CMD_CLEAR_ERROR)
 				|| (nvdimm && cmd >= ND_CMD_SMART
@@ -629,10 +597,7 @@ int acpi_nfit_ctl(struct nvdimm_bus_descriptor *nd_desc, struct nvdimm *nvdimm,
 
 	if (offset + in_buf.buffer.length < buf_len) {
 		if (i >= 1) {
-			/*
-			 * status valid, return the number of bytes left
-			 * unfilled in the output buffer
-			 */
+			 
 			rc = buf_len - offset - in_buf.buffer.length;
 			if (cmd_rc)
 				*cmd_rc = xlat_status(nvdimm, buf, cmd,
@@ -782,10 +747,7 @@ int nfit_get_smbios_id(u32 device_handle, u16 *flags)
 }
 EXPORT_SYMBOL_GPL(nfit_get_smbios_id);
 
-/*
- * An implementation may provide a truncated control region if no block windows
- * are defined.
- */
+ 
 static size_t sizeof_dcr(struct acpi_nfit_control_region *dcr)
 {
 	if (dcr->header.length < offsetof(struct acpi_nfit_control_region,
@@ -1015,13 +977,7 @@ static int __nfit_mem_init(struct acpi_nfit_desc *acpi_desc,
 			return 0;
 	}
 
-	/*
-	 * This loop runs in two modes, when a dimm is mapped the loop
-	 * adds memdev associations to an existing dimm, or creates a
-	 * dimm. In the unmapped dimm case this loop sweeps for memdev
-	 * instances with an invalid / zero range_index and adds those
-	 * dimms without spa associations.
-	 */
+	 
 	list_for_each_entry(nfit_memdev, &acpi_desc->memdevs, list) {
 		struct nfit_flush *nfit_flush;
 		struct nfit_dcr *nfit_dcr;
@@ -1057,13 +1013,7 @@ static int __nfit_mem_init(struct acpi_nfit_desc *acpi_desc,
 		list_for_each_entry(nfit_dcr, &acpi_desc->dcrs, list) {
 			if (nfit_dcr->dcr->region_index != dcr)
 				continue;
-			/*
-			 * Record the control region for the dimm.  For
-			 * the ACPI 6.1 case, where there are separate
-			 * control regions for the pmem vs blk
-			 * interfaces, be sure to record the extended
-			 * blk details.
-			 */
+			 
 			if (!nfit_mem->dcr)
 				nfit_mem->dcr = nfit_dcr->dcr;
 			else if (nfit_mem->dcr->windows == 0
@@ -1105,7 +1055,7 @@ static int __nfit_mem_init(struct acpi_nfit_desc *acpi_desc,
 			struct nfit_idt *nfit_idt;
 			u16 idt_idx;
 
-			/* multiple dimms may share a SPA when interleaved */
+			 
 			nfit_mem->spa_dcr = spa;
 			nfit_mem->memdev_dcr = nfit_memdev->memdev;
 			idt_idx = nfit_memdev->memdev->interleave_index;
@@ -1116,11 +1066,7 @@ static int __nfit_mem_init(struct acpi_nfit_desc *acpi_desc,
 				break;
 			}
 		} else if (type == NFIT_SPA_PM) {
-			/*
-			 * A single dimm may belong to multiple SPA-PM
-			 * ranges, record at least one in addition to
-			 * any SPA-DCR range.
-			 */
+			 
 			nfit_mem->memdev_pmem = nfit_memdev->memdev;
 		} else
 			nfit_mem->memdev_dcr = nfit_memdev->memdev;
@@ -1151,25 +1097,14 @@ static int nfit_mem_init(struct acpi_nfit_desc *acpi_desc)
 	int rc;
 
 
-	/*
-	 * For each SPA-DCR or SPA-PMEM address range find its
-	 * corresponding MEMDEV(s).  From each MEMDEV find the
-	 * corresponding DCR.  Then, if we're operating on a SPA-DCR,
-	 * try to find a SPA-BDW and a corresponding BDW that references
-	 * the DCR.  Throw it all into an nfit_mem object.  Note, that
-	 * BDWs are optional.
-	 */
+	 
 	list_for_each_entry(nfit_spa, &acpi_desc->spas, list) {
 		rc = __nfit_mem_init(acpi_desc, nfit_spa->spa);
 		if (rc)
 			return rc;
 	}
 
-	/*
-	 * If a DIMM has failed to be mapped into SPA there will be no
-	 * SPA entries above. Find and register all the unmapped DIMMs
-	 * for reporting and recovery purposes.
-	 */
+	 
 	rc = __nfit_mem_init(acpi_desc, NULL);
 	if (rc)
 		return rc;
@@ -1212,13 +1147,7 @@ static ssize_t hw_error_scrub_show(struct device *dev,
 	return sprintf(buf, "%d\n", acpi_desc->scrub_mode);
 }
 
-/*
- * The 'hw_error_scrub' attribute can have the following values written to it:
- * '0': Switch to the default mode where an exception will only insert
- *      the address of the memory error into the poison and badblocks lists.
- * '1': Enable a full scrub to happen if an exception for a memory error is
- *      received.
- */
+ 
 static ssize_t hw_error_scrub_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
@@ -1254,11 +1183,7 @@ static ssize_t hw_error_scrub_store(struct device *dev,
 }
 static DEVICE_ATTR_RW(hw_error_scrub);
 
-/*
- * This shows the number of full Address Range Scrubs that have been
- * completed since driver load time. Userspace can wait on this using
- * select/poll etc. A '+' at the end indicates an ARS is in progress
- */
+ 
 static ssize_t scrub_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -1279,7 +1204,7 @@ static ssize_t scrub_show(struct device *dev,
 	busy = test_bit(ARS_BUSY, &acpi_desc->scrub_flags)
 		&& !test_bit(ARS_CANCEL, &acpi_desc->scrub_flags);
 	rc = sprintf(buf, "%d%s", acpi_desc->scrub_count, busy ? "+\n" : "\n");
-	/* Allow an admin to poll the busy state at a higher rate */
+	 
 	if (busy && capable(CAP_SYS_RAWIO) && !test_and_set_bit(ARS_POLL,
 				&acpi_desc->scrub_flags)) {
 		acpi_desc->scrub_tmo = 1;
@@ -1484,7 +1409,7 @@ static ssize_t format1_show(struct device *dev,
 	acpi_desc = nfit_mem->acpi_desc;
 	handle = to_nfit_memdev(dev)->device_handle;
 
-	/* assumes DIMMs have at most 2 published interface codes */
+	 
 	mutex_lock(&acpi_desc->init_mutex);
 	list_for_each_entry(nfit_memdev, &acpi_desc->memdevs, list) {
 		struct acpi_nfit_memory_map *memdev = nfit_memdev->memdev;
@@ -1622,7 +1547,7 @@ static umode_t acpi_nfit_dimm_attr_visible(struct kobject *kobj,
 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
 
 	if (!to_nfit_dcr(dev)) {
-		/* Without a dcr only the memdev attributes can be surfaced */
+		 
 		if (a == &dev_attr_handle.attr || a == &dev_attr_phys_id.attr
 				|| a == &dev_attr_flags.attr
 				|| a == &dev_attr_family.attr
@@ -1682,10 +1607,7 @@ void __acpi_nvdimm_notify(struct device *dev, u32 event)
 	if (!acpi_desc)
 		return;
 
-	/*
-	 * If we successfully retrieved acpi_desc, then we know nfit_mem data
-	 * is still valid.
-	 */
+	 
 	nfit_mem = dev_get_drvdata(dev);
 	if (nfit_mem && nfit_mem->flags_attr)
 		sysfs_notify_dirent(nfit_mem->flags_attr);
@@ -1761,11 +1683,7 @@ __weak void nfit_intel_shutdown_status(struct nfit_mem *nfit_mem)
 
 static void populate_shutdown_status(struct nfit_mem *nfit_mem)
 {
-	/*
-	 * For DIMMs that provide a dynamic facility to retrieve a
-	 * dirty-shutdown status and/or a dirty-shutdown count, cache
-	 * these values in nfit_mem.
-	 */
+	 
 	if (nfit_mem->family == NVDIMM_FAMILY_INTEL)
 		nfit_intel_shutdown_status(nfit_mem);
 }
@@ -1782,7 +1700,7 @@ static int acpi_nfit_add_dimm(struct acpi_nfit_desc *acpi_desc,
 	int family = -1;
 	struct acpi_nfit_control_region *dcr = nfit_mem->dcr;
 
-	/* nfit test assumes 1:1 relationship between commands and dsms */
+	 
 	nfit_mem->dsm_mask = acpi_desc->dimm_cmd_force_en;
 	nfit_mem->family = NVDIMM_FAMILY_INTEL;
 	set_bit(NVDIMM_FAMILY_INTEL, &nd_desc->dimm_family_mask);
@@ -1800,7 +1718,7 @@ static int acpi_nfit_add_dimm(struct acpi_nfit_desc *acpi_desc,
 
 	adev = to_acpi_dev(acpi_desc);
 	if (!adev) {
-		/* unit test case */
+		 
 		populate_shutdown_status(nfit_mem);
 		return 0;
 	}
@@ -1819,25 +1737,10 @@ static int acpi_nfit_add_dimm(struct acpi_nfit_desc *acpi_desc,
 				dev_name(&adev_dimm->dev));
 		return -ENXIO;
 	}
-	/*
-	 * Record nfit_mem for the notification path to track back to
-	 * the nfit sysfs attributes for this dimm device object.
-	 */
+	 
 	dev_set_drvdata(&adev_dimm->dev, nfit_mem);
 
-	/*
-	 * There are 4 "legacy" NVDIMM command sets
-	 * (NVDIMM_FAMILY_{INTEL,MSFT,HPE1,HPE2}) that were created before
-	 * an EFI working group was established to constrain this
-	 * proliferation. The nfit driver probes for the supported command
-	 * set by GUID. Note, if you're a platform developer looking to add
-	 * a new command set to this probe, consider using an existing set,
-	 * or otherwise seek approval to publish the command set at
-	 * http://www.uefi.org/RFIC_LIST.
-	 *
-	 * Note, that checking for function0 (bit0) tells us if any commands
-	 * are reachable through this GUID.
-	 */
+	 
 	clear_bit(NVDIMM_FAMILY_INTEL, &nd_desc->dimm_family_mask);
 	for (i = 0; i <= NVDIMM_FAMILY_MAX; i++)
 		if (acpi_check_dsm(adev_dimm->handle, to_nfit_uuid(i), 1, 1)) {
@@ -1846,7 +1749,7 @@ static int acpi_nfit_add_dimm(struct acpi_nfit_desc *acpi_desc,
 				family = i;
 		}
 
-	/* limit the supported commands to those that are publicly documented */
+	 
 	nfit_mem->family = family;
 	if (override_dsm_mask && !disable_vendor_specific)
 		dsm_mask = override_dsm_mask;
@@ -1867,15 +1770,11 @@ static int acpi_nfit_add_dimm(struct acpi_nfit_desc *acpi_desc,
 	} else {
 		dev_dbg(dev, "unknown dimm command family\n");
 		nfit_mem->family = -1;
-		/* DSMs are optional, continue loading the driver... */
+		 
 		return 0;
 	}
 
-	/*
-	 * Function 0 is the command interrogation function, don't
-	 * export it to potential userspace use, and enable it to be
-	 * used as an error value in acpi_nfit_ctl().
-	 */
+	 
 	dsm_mask &= ~1UL;
 
 	guid = to_nfit_uuid(nfit_mem->family);
@@ -1885,15 +1784,12 @@ static int acpi_nfit_add_dimm(struct acpi_nfit_desc *acpi_desc,
 					1ULL << i))
 			set_bit(i, &nfit_mem->dsm_mask);
 
-	/*
-	 * Prefer the NVDIMM_FAMILY_INTEL label read commands if present
-	 * due to their better semantics handling locked capacity.
-	 */
+	 
 	label_mask = 1 << ND_CMD_GET_CONFIG_SIZE | 1 << ND_CMD_GET_CONFIG_DATA
 		| 1 << ND_CMD_SET_CONFIG_DATA;
 	if (family == NVDIMM_FAMILY_INTEL
 			&& (dsm_mask & label_mask) == label_mask)
-		/* skip _LS{I,R,W} enabling */;
+		 ;
 	else {
 		if (acpi_nvdimm_has_method(adev_dimm, "_LSI")
 				&& acpi_nvdimm_has_method(adev_dimm, "_LSR")) {
@@ -1907,10 +1803,7 @@ static int acpi_nfit_add_dimm(struct acpi_nfit_desc *acpi_desc,
 			set_bit(NFIT_MEM_LSW, &nfit_mem->flags);
 		}
 
-		/*
-		 * Quirk read-only label configurations to preserve
-		 * access to label-less namespaces by default.
-		 */
+		 
 		if (!test_bit(NFIT_MEM_LSW, &nfit_mem->flags)
 				&& !force_labels) {
 			dev_dbg(dev, "%s: No _LSW, disable labels\n",
@@ -1932,10 +1825,7 @@ static void shutdown_dimm_notify(void *data)
 	struct nfit_mem *nfit_mem;
 
 	mutex_lock(&acpi_desc->init_mutex);
-	/*
-	 * Clear out the nfit_mem->flags_attr and shut down dimm event
-	 * notifications.
-	 */
+	 
 	list_for_each_entry(nfit_mem, &acpi_desc->dimms, list) {
 		struct acpi_device *adev_dimm = nfit_mem->adev;
 
@@ -2002,7 +1892,7 @@ static int acpi_nfit_register_dimms(struct acpi_nfit_desc *acpi_desc)
 			continue;
 		}
 
-		/* collate flags across all memdevs for this dimm */
+		 
 		list_for_each_entry(nfit_memdev, &acpi_desc->memdevs, list) {
 			struct acpi_nfit_memory_map *dimm_memdev;
 
@@ -2021,18 +1911,10 @@ static int acpi_nfit_register_dimms(struct acpi_nfit_desc *acpi_desc)
 		if (rc)
 			continue;
 
-		/*
-		 * TODO: provide translation for non-NVDIMM_FAMILY_INTEL
-		 * devices (i.e. from nd_cmd to acpi_dsm) to standardize the
-		 * userspace interface.
-		 */
+		 
 		cmd_mask = 1UL << ND_CMD_CALL;
 		if (nfit_mem->family == NVDIMM_FAMILY_INTEL) {
-			/*
-			 * These commands have a 1:1 correspondence
-			 * between DSM payload and libnvdimm ioctl
-			 * payload format.
-			 */
+			 
 			cmd_mask |= nfit_mem->dsm_mask & NVDIMM_STANDARD_CMDMASK;
 		}
 
@@ -2074,10 +1956,7 @@ static int acpi_nfit_register_dimms(struct acpi_nfit_desc *acpi_desc)
 	if (rc)
 		return rc;
 
-	/*
-	 * Now that dimms are successfully registered, and async registration
-	 * is flushed, attempt to enable event notification.
-	 */
+	 
 	list_for_each_entry(nfit_mem, &acpi_desc->dimms, list) {
 		struct kernfs_node *nfit_kernfs;
 
@@ -2099,10 +1978,7 @@ static int acpi_nfit_register_dimms(struct acpi_nfit_desc *acpi_desc)
 			acpi_desc);
 }
 
-/*
- * These constants are private because there are no kernel consumers of
- * these commands.
- */
+ 
 enum nfit_aux_cmds {
 	NFIT_CMD_TRANSLATE_SPA = 5,
 	NFIT_CMD_ARS_INJECT_SET = 7,
@@ -2121,7 +1997,7 @@ static void acpi_nfit_init_dsms(struct acpi_nfit_desc *acpi_desc)
 	set_bit(ND_CMD_CALL, &nd_desc->cmd_mask);
 	set_bit(NVDIMM_BUS_FAMILY_NFIT, &nd_desc->bus_family_mask);
 
-	/* enable nfit_test to inject bus command emulation */
+	 
 	if (acpi_desc->bus_cmd_force_en) {
 		nd_desc->cmd_mask = acpi_desc->bus_cmd_force_en;
 		mask = &nd_desc->bus_family_mask;
@@ -2152,7 +2028,7 @@ static void acpi_nfit_init_dsms(struct acpi_nfit_desc *acpi_desc)
 		if (acpi_check_dsm(adev->handle, guid, 1, 1ULL << i))
 			set_bit(i, &acpi_desc->bus_dsm_mask);
 
-	/* Enumerate allowed NVDIMM_BUS_FAMILY_INTEL commands */
+	 
 	dsm_mask = NVDIMM_BUS_INTEL_FW_ACTIVATE_CMDMASK;
 	guid = to_nfit_bus_uuid(NVDIMM_BUS_FAMILY_INTEL);
 	mask = &acpi_desc->family_dsm_mask[NVDIMM_BUS_FAMILY_INTEL];
@@ -2191,7 +2067,7 @@ static const struct attribute_group *acpi_nfit_region_attribute_groups[] = {
 	NULL,
 };
 
-/* enough info to uniquely specify an interleave set */
+ 
 struct nfit_set_info {
 	u64 region_offset;
 	u32 serial_number;
@@ -2240,7 +2116,7 @@ static int cmp_map2(const void *m0, const void *m1)
 	return 0;
 }
 
-/* Retrieve the nth entry referencing this spa */
+ 
 static struct acpi_nfit_memory_map *memdev_from_spa(
 		struct acpi_nfit_desc *acpi_desc, u16 range_index, int n)
 {
@@ -2302,19 +2178,19 @@ static int acpi_nfit_init_interleave_set(struct acpi_nfit_desc *acpi_desc,
 		map2->manufacturing_location = dcr->manufacturing_location;
 	}
 
-	/* v1.1 namespaces */
+	 
 	sort(info, nr, sizeof(*info), cmp_map, NULL);
 	nd_set->cookie1 = nd_fletcher64(info, sizeof(*info) * nr, 0);
 
-	/* v1.2 namespaces */
+	 
 	sort(info2, nr, sizeof(*info2), cmp_map2, NULL);
 	nd_set->cookie2 = nd_fletcher64(info2, sizeof(*info2) * nr, 0);
 
-	/* support v1.1 namespaces created with the wrong sort order */
+	 
 	sort(info, nr, sizeof(*info), cmp_map_compat, NULL);
 	nd_set->altcookie = nd_fletcher64(info, sizeof(*info) * nr, 0);
 
-	/* record the result of the sort for the mapping position */
+	 
 	for (i = 0; i < nr; i++) {
 		struct nfit_set_info2 *map2 = &info2[i];
 		int j;
@@ -2432,28 +2308,17 @@ static void ars_complete(struct acpi_nfit_desc *acpi_desc,
 	struct device *dev;
 
 	lockdep_assert_held(&acpi_desc->init_mutex);
-	/*
-	 * Only advance the ARS state for ARS runs initiated by the
-	 * kernel, ignore ARS results from BIOS initiated runs for scrub
-	 * completion tracking.
-	 */
+	 
 	if (acpi_desc->scrub_spa != nfit_spa)
 		return;
 
 	if ((ars_status->address >= spa->address && ars_status->address
 				< spa->address + spa->length)
 			|| (ars_status->address < spa->address)) {
-		/*
-		 * Assume that if a scrub starts at an offset from the
-		 * start of nfit_spa that we are in the continuation
-		 * case.
-		 *
-		 * Otherwise, if the scrub covers the spa range, mark
-		 * any pending request complete.
-		 */
+		 
 		if (ars_status->address + ars_status->length
 				>= spa->address + spa->length)
-				/* complete */;
+				 ;
 		else
 			return;
 	} else
@@ -2475,17 +2340,11 @@ static int ars_status_process_records(struct acpi_nfit_desc *acpi_desc)
 	int rc;
 	u32 i;
 
-	/*
-	 * First record starts at 44 byte offset from the start of the
-	 * payload.
-	 */
+	 
 	if (ars_status->out_length < 44)
 		return 0;
 
-	/*
-	 * Ignore potentially stale results that are only refreshed
-	 * after a start-ARS event.
-	 */
+	 
 	if (!test_and_clear_bit(ARS_VALID, &acpi_desc->scrub_flags)) {
 		dev_dbg(acpi_desc->dev, "skip %d stale records\n",
 				ars_status->num_records);
@@ -2493,7 +2352,7 @@ static int ars_status_process_records(struct acpi_nfit_desc *acpi_desc)
 	}
 
 	for (i = 0; i < ars_status->num_records; i++) {
-		/* only process full records */
+		 
 		if (ars_status->out_length
 				< 44 + sizeof(struct nd_ars_record) * (i + 1))
 			break;
@@ -2522,7 +2381,7 @@ static int acpi_nfit_insert_resource(struct acpi_nfit_desc *acpi_desc,
 	struct resource *res, *nd_res = ndr_desc->res;
 	int is_pmem, ret;
 
-	/* No operation if the region is already registered as PMEM */
+	 
 	is_pmem = region_intersects(nd_res->start, resource_size(nd_res),
 				IORESOURCE_MEM, IORES_DESC_PERSISTENT_MEMORY);
 	if (is_pmem == REGION_INTERSECTS)
@@ -2629,7 +2488,7 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
 		ndr_desc->target_node = NUMA_NO_NODE;
 	}
 
-	/* Fallback to address based numa information if node lookup failed */
+	 
 	if (ndr_desc->numa_node == NUMA_NO_NODE) {
 		ndr_desc->numa_node = memory_add_physaddr_to_nid(spa->address);
 		dev_info(acpi_desc->dev, "changing numa node from %d to %d for nfit region [%pa-%pa]",
@@ -2641,11 +2500,7 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
 			NUMA_NO_NODE, ndr_desc->numa_node, &res.start, &res.end);
 	}
 
-	/*
-	 * Persistence domain bits are hierarchical, if
-	 * ACPI_NFIT_CAPABILITY_CACHE_FLUSH is set then
-	 * ACPI_NFIT_CAPABILITY_MEM_FLUSH is implied.
-	 */
+	 
 	if (acpi_desc->platform_cap & ACPI_NFIT_CAPABILITY_CACHE_FLUSH)
 		set_bit(ND_REGION_PERSIST_CACHE, &ndr_desc->flags);
 	else if (acpi_desc->platform_cap & ACPI_NFIT_CAPABILITY_MEM_FLUSH)
@@ -2655,7 +2510,7 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
 		struct acpi_nfit_memory_map *memdev = nfit_memdev->memdev;
 		struct nd_mapping_desc *mapping;
 
-		/* range index 0 == unmapped in SPA or invalid-SPA */
+		 
 		if (memdev->range_index == 0 || spa->range_index == 0)
 			continue;
 		if (memdev->range_index != spa->range_index)
@@ -2763,7 +2618,7 @@ static int ars_register(struct acpi_nfit_desc *acpi_desc,
 	case -ENOSPC:
 	case -EAGAIN:
 		rc = ars_start(acpi_desc, nfit_spa, ARS_REQ_SHORT);
-		/* shouldn't happen, try again later */
+		 
 		if (rc == -EBUSY)
 			break;
 		if (rc) {
@@ -2776,20 +2631,12 @@ static int ars_register(struct acpi_nfit_desc *acpi_desc,
 			break;
 		acpi_desc->scrub_spa = nfit_spa;
 		ars_complete(acpi_desc, nfit_spa);
-		/*
-		 * If ars_complete() says we didn't complete the
-		 * short scrub, we'll try again with a long
-		 * request.
-		 */
+		 
 		acpi_desc->scrub_spa = NULL;
 		break;
 	case -EBUSY:
 	case -ENOMEM:
-		/*
-		 * BIOS was using ARS, wait for it to complete (or
-		 * resources to become available) and then perform our
-		 * own scrubs.
-		 */
+		 
 		break;
 	default:
 		set_bit(ARS_FAILED, &nfit_spa->ars_state);
@@ -2848,7 +2695,7 @@ static unsigned int __acpi_nfit_scrub(struct acpi_nfit_desc *acpi_desc,
 		if (test_bit(ARS_FAILED, &nfit_spa->ars_state))
 			continue;
 
-		/* prefer short ARS requests first */
+		 
 		if (test_bit(ARS_REQ_SHORT, &nfit_spa->ars_state))
 			req_type = ARS_REQ_SHORT;
 		else if (test_bit(ARS_REQ_LONG, &nfit_spa->ars_state))
@@ -2862,10 +2709,7 @@ static unsigned int __acpi_nfit_scrub(struct acpi_nfit_desc *acpi_desc,
 				nfit_spa->spa->range_index,
 				req_type == ARS_REQ_SHORT ? "short" : "long",
 				rc);
-		/*
-		 * Hmm, we raced someone else starting ARS? Try again in
-		 * a bit.
-		 */
+		 
 		if (rc == -EBUSY)
 			return 1;
 		if (rc == 0) {
@@ -2874,10 +2718,7 @@ static unsigned int __acpi_nfit_scrub(struct acpi_nfit_desc *acpi_desc,
 					acpi_desc->scrub_spa->spa->range_index);
 			clear_bit(req_type, &nfit_spa->ars_state);
 			acpi_desc->scrub_spa = nfit_spa;
-			/*
-			 * Consider this spa last for future scrub
-			 * requests
-			 */
+			 
 			list_move_tail(&nfit_spa->list, &acpi_desc->spas);
 			return 1;
 		}
@@ -2894,7 +2735,7 @@ static void __sched_ars(struct acpi_nfit_desc *acpi_desc, unsigned int tmo)
 	lockdep_assert_held(&acpi_desc->init_mutex);
 
 	set_bit(ARS_BUSY, &acpi_desc->scrub_flags);
-	/* note this should only be set from within the workqueue */
+	 
 	if (tmo)
 		acpi_desc->scrub_tmo = tmo;
 	queue_delayed_work(nfit_wq, &acpi_desc->dwork, tmo * HZ);
@@ -2946,7 +2787,7 @@ static void acpi_nfit_init_ars(struct acpi_nfit_desc *acpi_desc,
 	rc = ars_get_cap(acpi_desc, &ars_cap, nfit_spa);
 	if (rc < 0)
 		return;
-	/* check that the supported scrub types match the spa type */
+	 
 	if (type == NFIT_SPA_VOLATILE && ((ars_cap.status >> 16)
 				& ND_ARS_VOLATILE) == 0)
 		return;
@@ -2979,33 +2820,30 @@ static int acpi_nfit_register_regions(struct acpi_nfit_desc *acpi_desc)
 		switch (nfit_spa_type(nfit_spa->spa)) {
 		case NFIT_SPA_VOLATILE:
 		case NFIT_SPA_PM:
-			/* register regions and kick off initial ARS run */
+			 
 			rc = ars_register(acpi_desc, nfit_spa);
 			if (rc)
 				return rc;
 
-			/*
-			 * Kick off background ARS if at least one
-			 * region successfully registered ARS
-			 */
+			 
 			if (!test_bit(ARS_FAILED, &nfit_spa->ars_state))
 				do_sched_ars++;
 			break;
 		case NFIT_SPA_BDW:
-			/* nothing to register */
+			 
 			break;
 		case NFIT_SPA_DCR:
 		case NFIT_SPA_VDISK:
 		case NFIT_SPA_VCD:
 		case NFIT_SPA_PDISK:
 		case NFIT_SPA_PCD:
-			/* register known regions that don't support ARS */
+			 
 			rc = acpi_nfit_register_region(acpi_desc, nfit_spa);
 			if (rc)
 				return rc;
 			break;
 		default:
-			/* don't register unknown regions */
+			 
 			break;
 		}
 	}
@@ -3088,7 +2926,7 @@ int acpi_nfit_init(struct acpi_nfit_desc *acpi_desc, void *data, acpi_size sz)
 		if (rc)
 			return rc;
 
-		/* register this acpi_desc for mce notifications */
+		 
 		mutex_lock(&acpi_desc_lock);
 		list_add_tail(&acpi_desc->list, &acpi_descs);
 		mutex_unlock(&acpi_desc_lock);
@@ -3151,11 +2989,11 @@ static int acpi_nfit_flush_probe(struct nvdimm_bus_descriptor *nd_desc)
 	struct acpi_nfit_desc *acpi_desc = to_acpi_desc(nd_desc);
 	struct device *dev = acpi_desc->dev;
 
-	/* Bounce the device lock to flush acpi_nfit_add / acpi_nfit_notify */
+	 
 	device_lock(dev);
 	device_unlock(dev);
 
-	/* Bounce the init_mutex to complete initial registration */
+	 
 	mutex_lock(&acpi_desc->init_mutex);
 	mutex_unlock(&acpi_desc->init_mutex);
 
@@ -3172,22 +3010,14 @@ static int __acpi_nfit_clear_to_send(struct nvdimm_bus_descriptor *nd_desc,
 	if (cmd != ND_CMD_ARS_START)
 		return 0;
 
-	/*
-	 * The kernel and userspace may race to initiate a scrub, but
-	 * the scrub thread is prepared to lose that initial race.  It
-	 * just needs guarantees that any ARS it initiates are not
-	 * interrupted by any intervening start requests from userspace.
-	 */
+	 
 	if (work_busy(&acpi_desc->dwork.work))
 		return -EBUSY;
 
 	return 0;
 }
 
-/*
- * Prevent security and firmware activate commands from being issued via
- * ioctl.
- */
+ 
 static int acpi_nfit_clear_to_send(struct nvdimm_bus_descriptor *nd_desc,
 		struct nvdimm *nvdimm, unsigned int cmd, void *buf)
 {
@@ -3202,7 +3032,7 @@ static int acpi_nfit_clear_to_send(struct nvdimm_bus_descriptor *nd_desc,
 			return -EOPNOTSUPP;
 	}
 
-	/* block all non-nfit bus commands */
+	 
 	if (!nvdimm && cmd == ND_CMD_CALL &&
 			call_pkg->nd_family != NVDIMM_BUS_FAMILY_NFIT)
 		return -EOPNOTSUPP;
@@ -3304,10 +3134,7 @@ void acpi_nfit_shutdown(void *data)
 	struct acpi_nfit_desc *acpi_desc = data;
 	struct device *bus_dev = to_nvdimm_bus_dev(acpi_desc->nvdimm_bus);
 
-	/*
-	 * Destruct under acpi_desc_lock so that nfit_handle_mce does not
-	 * race teardown
-	 */
+	 
 	mutex_lock(&acpi_desc_lock);
 	list_del(&acpi_desc->list);
 	mutex_unlock(&acpi_desc_lock);
@@ -3317,11 +3144,7 @@ void acpi_nfit_shutdown(void *data)
 	mutex_unlock(&acpi_desc->init_mutex);
 	cancel_delayed_work_sync(&acpi_desc->dwork);
 
-	/*
-	 * Bounce the nvdimm bus lock to make sure any in-flight
-	 * acpi_nfit_ars_rescan() submissions have had a chance to
-	 * either submit or see ->cancel set.
-	 */
+	 
 	device_lock(bus_dev);
 	device_unlock(bus_dev);
 
@@ -3351,13 +3174,7 @@ static int acpi_nfit_add(struct acpi_device *adev)
 
 	status = acpi_get_table(ACPI_SIG_NFIT, 0, &tbl);
 	if (ACPI_FAILURE(status)) {
-		/* The NVDIMM root device allows OS to trigger enumeration of
-		 * NVDIMMs through NFIT at boot time and re-enumeration at
-		 * root level via the _FIT method during runtime.
-		 * This is ok to return 0 here, we could have an nvdimm
-		 * hotplugged later and evaluate _FIT method which returns
-		 * data in the format of a series of NFIT Structures.
-		 */
+		 
 		dev_dbg(dev, "failed to find NFIT at startup\n");
 		return 0;
 	}
@@ -3372,10 +3189,10 @@ static int acpi_nfit_add(struct acpi_device *adev)
 		return -ENOMEM;
 	acpi_nfit_desc_init(acpi_desc, &adev->dev);
 
-	/* Save the acpi header for exporting the revision via sysfs */
+	 
 	acpi_desc->acpi_header = *tbl;
 
-	/* Evaluate _FIT and override with that if present */
+	 
 	status = acpi_evaluate_object(adev->handle, "_FIT", NULL, &buf);
 	if (ACPI_SUCCESS(status) && buf.length > 0) {
 		union acpi_object *obj = buf.pointer;
@@ -3388,7 +3205,7 @@ static int acpi_nfit_add(struct acpi_device *adev)
 				(int) obj->type);
 		kfree(buf.pointer);
 	} else
-		/* skip over the lead-in header table */
+		 
 		rc = acpi_nfit_init(acpi_desc, (void *) tbl
 				+ sizeof(struct acpi_table_nfit),
 				sz - sizeof(struct acpi_table_nfit));
@@ -3408,7 +3225,7 @@ static void acpi_nfit_update_notify(struct device *dev, acpi_handle handle)
 	int ret;
 
 	if (!dev->driver) {
-		/* dev->driver may be null if we're being removed */
+		 
 		dev_dbg(dev, "no driver found for dev\n");
 		return;
 	}
@@ -3419,14 +3236,11 @@ static void acpi_nfit_update_notify(struct device *dev, acpi_handle handle)
 			return;
 		acpi_nfit_desc_init(acpi_desc, dev);
 	} else {
-		/*
-		 * Finish previous registration before considering new
-		 * regions.
-		 */
+		 
 		flush_workqueue(nfit_wq);
 	}
 
-	/* Evaluate _FIT */
+	 
 	status = acpi_evaluate_object(handle, "_FIT", NULL, &buf);
 	if (ACPI_FAILURE(status)) {
 		dev_err(dev, "failed to evaluate _FIT\n");

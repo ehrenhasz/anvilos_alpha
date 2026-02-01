@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012 NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef TEGRA_HDMI_H
 #define TEGRA_HDMI_H 1
 
-/* register definitions */
+ 
 #define HDMI_CTXSW						0x00
 
 #define HDMI_NV_PDISP_SOR_STATE0				0x01
@@ -554,4 +551,4 @@
 
 #define HDMI_NV_PDISP_SOR_PAD_CTLS0		0xd2
 
-#endif /* TEGRA_HDMI_H */
+#endif  

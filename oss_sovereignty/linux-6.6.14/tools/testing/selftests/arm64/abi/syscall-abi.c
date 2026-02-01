@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 ARM Limited.
- */
+
+ 
 
 #include <errno.h>
 #include <stdbool.h>
@@ -20,12 +18,7 @@
 
 #include "syscall-abi.h"
 
-/*
- * The kernel defines a much larger SVE_VQ_MAX than is expressable in
- * the architecture, this creates a *lot* of overhead filling the
- * buffers (especially ZA) on emulated platforms so use the actual
- * architectural maximum instead.
- */
+ 
 #define ARCH_SVE_VQ_MAX 16
 
 static int default_sme_vl;
@@ -42,15 +35,12 @@ static void fill_random(void *buf, size_t size)
 	int i;
 	uint32_t *lbuf = buf;
 
-	/* random() returns a 32 bit number regardless of the size of long */
+	 
 	for (i = 0; i < size / sizeof(uint32_t); i++)
 		lbuf[i] = random();
 }
 
-/*
- * We also repeat the test for several syscalls to try to expose different
- * behaviour.
- */
+ 
 static struct syscall_cfg {
 	int syscall_nr;
 	const char *name;
@@ -76,9 +66,7 @@ static int check_gpr(struct syscall_cfg *cfg, int sve_vl, int sme_vl, uint64_t s
 	int errors = 0;
 	int i;
 
-	/*
-	 * GPR x0-x7 may be clobbered, and all others should be preserved.
-	 */
+	 
 	for (i = 9; i < ARRAY_SIZE(gpr_in); i++) {
 		if (gpr_in[i] != gpr_out[i]) {
 			ksft_print_msg("%s SVE VL %d mismatch in GPR %d: %llx != %llx\n",
@@ -121,10 +109,7 @@ static int check_fpr(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 		}
 	}
 
-	/*
-	 * In streaming mode the whole register set should be cleared
-	 * by the transition out of streaming mode.
-	 */
+	 
 	if (svcr & SVCR_SM_MASK) {
 		if (memcmp(fpr_zero, fpr_out, sizeof(fpr_out)) != 0) {
 			ksft_print_msg("%s FPSIMD registers non-zero exiting SM\n",
@@ -164,21 +149,14 @@ static int check_z(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 		uint8_t *out = &z_out[reg_size * i];
 
 		if (svcr & SVCR_SM_MASK) {
-			/*
-			 * In streaming mode the whole register should
-			 * be cleared by the transition out of
-			 * streaming mode.
-			 */
+			 
 			if (memcmp(z_zero, out, reg_size) != 0) {
 				ksft_print_msg("%s SVE VL %d Z%d non-zero\n",
 					       cfg->name, sve_vl, i);
 				errors++;
 			}
 		} else {
-			/*
-			 * For standard SVE the low 128 bits should be
-			 * preserved and any additional bits cleared.
-			 */
+			 
 			if (memcmp(in, out, SVE_Z_SHARED_BYTES) != 0) {
 				ksft_print_msg("%s SVE VL %d Z%d low 128 bits changed\n",
 					       cfg->name, sve_vl, i);
@@ -211,7 +189,7 @@ static void setup_p(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 static int check_p(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 		   uint64_t svcr)
 {
-	size_t reg_size = sve_vq_from_vl(sve_vl) * 2; /* 1 bit per VL byte */
+	size_t reg_size = sve_vq_from_vl(sve_vl) * 2;  
 
 	int errors = 0;
 	int i;
@@ -219,7 +197,7 @@ static int check_p(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 	if (!sve_vl)
 		return 0;
 
-	/* After a syscall the P registers should be zeroed */
+	 
 	for (i = 0; i < SVE_NUM_PREGS * reg_size; i++)
 		if (p_out[i])
 			errors++;
@@ -236,21 +214,14 @@ uint8_t ffr_out[__SVE_PREG_SIZE(ARCH_SVE_VQ_MAX)];
 static void setup_ffr(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 		      uint64_t svcr)
 {
-	/*
-	 * If we are in streaming mode and do not have FA64 then FFR
-	 * is unavailable.
-	 */
+	 
 	if ((svcr & SVCR_SM_MASK) &&
 	    !(getauxval(AT_HWCAP2) & HWCAP2_SME_FA64)) {
 		memset(&ffr_in, 0, sizeof(ffr_in));
 		return;
 	}
 
-	/*
-	 * It is only valid to set a contiguous set of bits starting
-	 * at 0.  For now since we're expecting this to be cleared by
-	 * a syscall just set all bits.
-	 */
+	 
 	memset(ffr_in, 0xff, sizeof(ffr_in));
 	fill_random(ffr_out, sizeof(ffr_out));
 }
@@ -258,7 +229,7 @@ static void setup_ffr(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 static int check_ffr(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 		     uint64_t svcr)
 {
-	size_t reg_size = sve_vq_from_vl(sve_vl) * 2;  /* 1 bit per VL byte */
+	size_t reg_size = sve_vq_from_vl(sve_vl) * 2;   
 	int errors = 0;
 	int i;
 
@@ -269,7 +240,7 @@ static int check_ffr(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 	    !(getauxval(AT_HWCAP2) & HWCAP2_SME_FA64))
 		return 0;
 
-	/* After a syscall FFR should be zeroed */
+	 
 	for (i = 0; i < reg_size; i++)
 		if (ffr_out[i])
 			errors++;
@@ -369,13 +340,7 @@ typedef void (*setup_fn)(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 typedef int (*check_fn)(struct syscall_cfg *cfg, int sve_vl, int sme_vl,
 			uint64_t svcr);
 
-/*
- * Each set of registers has a setup function which is called before
- * the syscall to fill values in a global variable for loading by the
- * test code and a check function which validates that the results are
- * as expected.  Vector lengths are passed everywhere, a vector length
- * of 0 should be treated as do not test.
- */
+ 
 static struct {
 	setup_fn setup;
 	check_fn check;
@@ -412,7 +377,7 @@ static void test_one_syscall(struct syscall_cfg *cfg)
 	int sve, sme;
 	int ret;
 
-	/* FPSIMD only case */
+	 
 	ksft_test_result(do_test(cfg, 0, default_sme_vl, 0),
 			 "%s FPSIMD\n", cfg->name);
 
@@ -477,9 +442,7 @@ void sve_count_vls(void)
 	if (!(getauxval(AT_HWCAP) & HWCAP_SVE))
 		return;
 
-	/*
-	 * Enumerate up to ARCH_SVE_VQ_MAX vector lengths
-	 */
+	 
 	for (vq = ARCH_SVE_VQ_MAX; vq > 0; vq /= 2) {
 		vl = prctl(PR_SVE_SET_VL, vq * 16);
 		if (vl == -1)
@@ -503,9 +466,7 @@ void sme_count_vls(void)
 	if (!(getauxval(AT_HWCAP2) & HWCAP2_SME))
 		return;
 
-	/*
-	 * Enumerate up to ARCH_SVE_VQ_MAX vector lengths
-	 */
+	 
 	for (vq = ARCH_SVE_VQ_MAX; vq > 0; vq /= 2) {
 		vl = prctl(PR_SME_SET_VL, vq * 16);
 		if (vl == -1)
@@ -514,7 +475,7 @@ void sme_count_vls(void)
 
 		vl &= PR_SME_VL_LEN_MASK;
 
-		/* Found lowest VL */
+		 
 		if (sve_vq_from_vl(vl) > vq)
 			break;
 
@@ -524,14 +485,14 @@ void sme_count_vls(void)
 		sme_vls[sme_vl_count++] = vl;
 	}
 
-	/* Ensure we configure a SME VL, used to flag if SVCR is set */
+	 
 	default_sme_vl = sme_vls[0];
 }
 
 int main(void)
 {
 	int i;
-	int tests = 1;  /* FPSIMD */
+	int tests = 1;   
 	int sme_ver;
 
 	srandom(getpid());

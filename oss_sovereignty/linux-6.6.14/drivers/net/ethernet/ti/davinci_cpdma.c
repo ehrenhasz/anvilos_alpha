@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments CPDMA Driver
- *
- * Copyright (C) 2010 Texas Instruments
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
 #include <linux/device.h>
@@ -17,7 +12,7 @@
 #include <linux/genalloc.h>
 #include "davinci_cpdma.h"
 
-/* DMA Registers */
+ 
 #define CPDMA_TXIDVER		0x00
 #define CPDMA_TXCONTROL		0x04
 #define CPDMA_TXTEARDOWN	0x08
@@ -42,13 +37,13 @@
 #define CPDMA_DMAINTMASKCLEAR	0xbc
 #define CPDMA_DMAINT_HOSTERR	BIT(1)
 
-/* the following exist only if has_ext_regs is set */
+ 
 #define CPDMA_DMACONTROL	0x20
 #define CPDMA_DMASTATUS		0x24
 #define CPDMA_RXBUFFOFS		0x28
 #define CPDMA_EM_CONTROL	0x2c
 
-/* Descriptor mode bits */
+ 
 #define CPDMA_DESC_SOP		BIT(31)
 #define CPDMA_DESC_EOP		BIT(30)
 #define CPDMA_DESC_OWNER	BIT(29)
@@ -65,12 +60,12 @@
 #define CPDMA_MAX_RLIM_CNT	16384
 
 struct cpdma_desc {
-	/* hardware fields */
+	 
 	u32			hw_next;
 	u32			hw_buffer;
 	u32			hw_len;
 	u32			hw_mode;
-	/* software fields */
+	 
 	void			*sw_token;
 	u32			sw_buffer;
 	u32			sw_len;
@@ -79,8 +74,8 @@ struct cpdma_desc {
 struct cpdma_desc_pool {
 	phys_addr_t		phys;
 	dma_addr_t		hw_addr;
-	void __iomem		*iomap;		/* ioremap map */
-	void			*cpumap;	/* dma_alloc map */
+	void __iomem		*iomap;		 
+	void			*cpumap;	 
 	int			desc_size, mem_size;
 	int			num_desc;
 	struct device		*dev;
@@ -101,8 +96,8 @@ struct cpdma_ctlr {
 	spinlock_t		lock;
 	struct cpdma_chan	*channels[2 * CPDMA_MAX_CHANNELS];
 	int chan_num;
-	int			num_rx_desc; /* RX descriptors number */
-	int			num_tx_desc; /* TX descriptors number */
+	int			num_rx_desc;  
+	int			num_tx_desc;  
 };
 
 struct cpdma_chan {
@@ -118,7 +113,7 @@ struct cpdma_chan {
 	cpdma_handler_fn		handler;
 	enum dma_data_direction		dir;
 	struct cpdma_chan_stats		stats;
-	/* offsets into dmaregs */
+	 
 	int	int_set, int_clear, td;
 	int				weight;
 	u32				rate_factor;
@@ -165,11 +160,11 @@ static struct cpdma_control_info controls[] = {
 #define __chan_linear(chan_num)	((chan_num) & (CPDMA_MAX_CHANNELS - 1))
 #define chan_linear(chan)	__chan_linear((chan)->chan_num)
 
-/* The following make access to common cpdma_ctlr params more readable */
+ 
 #define dmaregs		params.dmaregs
 #define num_chan	params.num_chan
 
-/* various accessors */
+ 
 #define dma_reg_read(ctlr, ofs)		readl((ctlr)->dmaregs + (ofs))
 #define chan_read(chan, fld)		readl((chan)->fld)
 #define desc_read(desc, fld)		readl(&(desc)->fld)
@@ -203,12 +198,7 @@ static void cpdma_desc_pool_destroy(struct cpdma_ctlr *ctlr)
 				  pool->phys);
 }
 
-/*
- * Utility constructs for a cpdma descriptor pool.  Some devices (e.g. davinci
- * emac) have dedicated on-chip memory for these descriptors.  Some other
- * devices (e.g. cpsw switches) use plain old memory.  Descriptor pools
- * abstract out these details
- */
+ 
 static int cpdma_desc_pool_create(struct cpdma_ctlr *ctlr)
 {
 	struct cpdma_params *cpdma_params = &ctlr->params;
@@ -226,11 +216,7 @@ static int cpdma_desc_pool_create(struct cpdma_ctlr *ctlr)
 	pool->num_desc	= pool->mem_size / pool->desc_size;
 
 	if (cpdma_params->descs_pool_size) {
-		/* recalculate memory size required cpdma descriptor pool
-		 * basing on number of descriptors specified by user and
-		 * if memory size > CPPI internal RAM size (desc_mem_size)
-		 * then switch to use DDR
-		 */
+		 
 		pool->num_desc = cpdma_params->descs_pool_size;
 		pool->mem_size = pool->desc_size * pool->num_desc;
 		if (pool->mem_size > cpdma_params->desc_mem_size)
@@ -254,7 +240,7 @@ static int cpdma_desc_pool_create(struct cpdma_ctlr *ctlr)
 		pool->cpumap = dma_alloc_coherent(ctlr->dev,  pool->mem_size,
 						  &pool->hw_addr, GFP_KERNEL);
 		pool->iomap = (void __iomem __force *)pool->cpumap;
-		pool->phys = pool->hw_addr; /* assumes no IOMMU, don't use this value */
+		pool->phys = pool->hw_addr;  
 	}
 
 	if (!pool->iomap)
@@ -349,9 +335,7 @@ static int _cpdma_control_get(struct cpdma_ctlr *ctlr, int control)
 	return ret;
 }
 
-/* cpdma_chan_set_chan_shaper - set shaper for a channel
- * Has to be called under ctlr lock
- */
+ 
 static int cpdma_chan_set_chan_shaper(struct cpdma_chan *chan)
 {
 	struct cpdma_ctlr *ctlr = chan->ctlr;
@@ -399,10 +383,7 @@ static int cpdma_chan_on(struct cpdma_chan *chan)
 	return 0;
 }
 
-/* cpdma_chan_fit_rate - set rate for a channel and check if it's possible.
- * rmask - mask of rate limited channels
- * Returns min rate in Kb/s
- */
+ 
 static int cpdma_chan_fit_rate(struct cpdma_chan *ch, u32 rate,
 			       u32 *rmask, int *prio_mode)
 {
@@ -523,7 +504,7 @@ struct cpdma_ctlr *cpdma_ctlr_create(struct cpdma_params *params)
 
 	if (cpdma_desc_pool_create(ctlr))
 		return NULL;
-	/* split pool equally between RX/TX by default */
+	 
 	ctlr->num_tx_desc = ctlr->pool->num_desc / 2;
 	ctlr->num_rx_desc = ctlr->pool->num_desc - ctlr->num_tx_desc;
 
@@ -579,7 +560,7 @@ int cpdma_ctlr_start(struct cpdma_ctlr *ctlr)
 			cpdma_chan_set_chan_shaper(chan);
 			cpdma_chan_on(chan);
 
-			/* off prio mode if all tx channels are rate limited */
+			 
 			if (is_tx_chan(chan) && !chan->rate)
 				prio_mode = 1;
 		}
@@ -713,15 +694,12 @@ static void cpdma_chan_set_descs(struct cpdma_ctlr *ctlr,
 			most_chan = chan;
 		}
 	}
-	/* use remains */
+	 
 	if (most_chan)
 		most_chan->desc_num += desc_cnt;
 }
 
-/*
- * cpdma_chan_split_pool - Splits ctrl pool between all channels.
- * Has to be called under ctlr lock
- */
+ 
 static int cpdma_chan_split_pool(struct cpdma_ctlr *ctlr)
 {
 	int tx_per_ch_desc = 0, rx_per_ch_desc = 0;
@@ -772,15 +750,7 @@ static int cpdma_chan_split_pool(struct cpdma_ctlr *ctlr)
 }
 
 
-/* cpdma_chan_set_weight - set weight of a channel in percentage.
- * Tx and Rx channels have separate weights. That is 100% for RX
- * and 100% for Tx. The weight is used to split cpdma resources
- * in correct proportion required by the channels, including number
- * of descriptors. The channel rate is not enough to know the
- * weight of a channel as the maximum rate of an interface is needed.
- * If weight = 0, then channel uses rest of descriptors leaved by
- * weighted channels.
- */
+ 
 int cpdma_chan_set_weight(struct cpdma_chan *ch, int weight)
 {
 	struct cpdma_ctlr *ctlr = ch->ctlr;
@@ -797,16 +767,13 @@ int cpdma_chan_set_weight(struct cpdma_chan *ch, int weight)
 	ch->weight = weight;
 	spin_unlock_irqrestore(&ch->lock, ch_flags);
 
-	/* re-split pool using new channel weight */
+	 
 	ret = cpdma_chan_split_pool(ctlr);
 	spin_unlock_irqrestore(&ctlr->lock, flags);
 	return ret;
 }
 
-/* cpdma_chan_get_min_rate - get minimum allowed rate for channel
- * Should be called before cpdma_chan_set_rate.
- * Returns min rate in Kb/s
- */
+ 
 u32 cpdma_chan_get_min_rate(struct cpdma_ctlr *ctlr)
 {
 	unsigned int divident, divisor;
@@ -817,11 +784,7 @@ u32 cpdma_chan_get_min_rate(struct cpdma_ctlr *ctlr)
 	return DIV_ROUND_UP(divident, divisor);
 }
 
-/* cpdma_chan_set_rate - limits bandwidth for transmit channel.
- * The bandwidth * limited channels have to be in order beginning from lowest.
- * ch - transmit channel the bandwidth is configured for
- * rate - bandwidth in Kb/s, if 0 - then off shaper
- */
+ 
 int cpdma_chan_set_rate(struct cpdma_chan *ch, u32 rate)
 {
 	unsigned long flags, ch_flags;
@@ -849,7 +812,7 @@ int cpdma_chan_set_rate(struct cpdma_chan *ch, u32 rate)
 
 	spin_unlock_irqrestore(&ch->lock, ch_flags);
 
-	/* on shapers */
+	 
 	_cpdma_control_set(ctlr, CPDMA_TX_RLIM, rmask);
 	_cpdma_control_set(ctlr, CPDMA_TX_PRIO_FIXED, prio_mode);
 	spin_unlock_irqrestore(&ctlr->lock, flags);
@@ -988,7 +951,7 @@ static void __cpdma_chan_submit(struct cpdma_chan *chan,
 
 	desc_dma = desc_phys(pool, desc);
 
-	/* simple case - idle channel */
+	 
 	if (!chan->head) {
 		chan->stats.head_enqueue++;
 		chan->head = desc;
@@ -998,12 +961,12 @@ static void __cpdma_chan_submit(struct cpdma_chan *chan,
 		return;
 	}
 
-	/* first chain the descriptor at the tail of the list */
+	 
 	desc_write(prev, hw_next, desc_dma);
 	chan->tail = desc;
 	chan->stats.tail_enqueue++;
 
-	/* next check if EOQ has been triggered already */
+	 
 	mode = desc_read(prev, hw_mode);
 	if (((mode & (CPDMA_DESC_EOQ | CPDMA_DESC_OWNER)) == CPDMA_DESC_EOQ) &&
 	    (chan->state == CPDMA_STATE_ACTIVE)) {
@@ -1054,9 +1017,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
 		}
 	}
 
-	/* Relaxed IO accessors can be used here as there is read barrier
-	 * at the end of write sequence.
-	 */
+	 
 	writel_relaxed(0, &desc->hw_next);
 	writel_relaxed(buffer, &desc->hw_buffer);
 	writel_relaxed(len, &desc->hw_len);
@@ -1326,11 +1287,11 @@ int cpdma_chan_stop(struct cpdma_chan *chan)
 	chan->state = CPDMA_STATE_TEARDOWN;
 	dma_reg_write(ctlr, chan->int_clear, chan->mask);
 
-	/* trigger teardown */
+	 
 	dma_reg_write(ctlr, chan->td, chan_linear(chan));
 
-	/* wait for teardown complete */
-	timeout = 100 * 100; /* 100 ms */
+	 
+	timeout = 100 * 100;  
 	while (timeout) {
 		u32 cp = chan_read(chan, cp);
 		if ((cp & CPDMA_TEARDOWN_VALUE) == CPDMA_TEARDOWN_VALUE)
@@ -1341,7 +1302,7 @@ int cpdma_chan_stop(struct cpdma_chan *chan)
 	WARN_ON(!timeout);
 	chan_write(chan, cp, CPDMA_TEARDOWN_VALUE);
 
-	/* handle completed packets */
+	 
 	spin_unlock_irqrestore(&chan->lock, flags);
 	do {
 		ret = __cpdma_chan_process(chan);
@@ -1350,7 +1311,7 @@ int cpdma_chan_stop(struct cpdma_chan *chan)
 	} while ((ret & CPDMA_DESC_TD_COMPLETE) == 0);
 	spin_lock_irqsave(&chan->lock, flags);
 
-	/* remaining packets haven't been tx/rx'ed, clean them up */
+	 
 	while (chan->head) {
 		struct cpdma_desc __iomem *desc = chan->head;
 		dma_addr_t next_dma;
@@ -1360,7 +1321,7 @@ int cpdma_chan_stop(struct cpdma_chan *chan)
 		chan->count--;
 		chan->stats.teardown_dequeue++;
 
-		/* issue callback without locks held */
+		 
 		spin_unlock_irqrestore(&chan->lock, flags);
 		__cpdma_chan_free(chan, desc, 0, -ENOSYS);
 		spin_lock_irqsave(&chan->lock, flags);

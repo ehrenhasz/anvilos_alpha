@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI VPD support
- *
- * Copyright (C) 2010 Broadcom Corporation.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -38,7 +34,7 @@ static u8 pci_vpd_info_field_size(const u8 *info_field)
 	return info_field[2];
 }
 
-/* VPD access through PCI 2.2+ VPD capability */
+ 
 
 static struct pci_dev *pci_get_func0_dev(struct pci_dev *dev)
 {
@@ -48,14 +44,11 @@ static struct pci_dev *pci_get_func0_dev(struct pci_dev *dev)
 #define PCI_VPD_MAX_SIZE	(PCI_VPD_ADDR_MASK + 1)
 #define PCI_VPD_SZ_INVALID	UINT_MAX
 
-/**
- * pci_vpd_size - determine actual size of Vital Product Data
- * @dev:	pci device struct
- */
+ 
 static size_t pci_vpd_size(struct pci_dev *dev)
 {
 	size_t off = 0, size;
-	unsigned char tag, header[1+2];	/* 1 byte tag, 2 bytes length */
+	unsigned char tag, header[1+2];	 
 
 	while (pci_read_vpd_any(dev, off, 1, header) == 1) {
 		size = 0;
@@ -64,7 +57,7 @@ static size_t pci_vpd_size(struct pci_dev *dev)
 			goto error;
 
 		if (header[0] & PCI_VPD_LRDT) {
-			/* Large Resource Data Type Tag */
+			 
 			if (pci_read_vpd_any(dev, off + 1, 2, &header[1]) != 2) {
 				pci_warn(dev, "failed VPD read at offset %zu\n",
 					 off + 1);
@@ -76,14 +69,14 @@ static size_t pci_vpd_size(struct pci_dev *dev)
 
 			off += PCI_VPD_LRDT_TAG_SIZE + size;
 		} else {
-			/* Short Resource Data Type Tag */
+			 
 			tag = pci_vpd_srdt_tag(header);
 			size = pci_vpd_srdt_size(header);
 			if (off + size > PCI_VPD_MAX_SIZE)
 				goto error;
 
 			off += PCI_VPD_SRDT_TAG_SIZE + size;
-			if (tag == PCI_VPD_STIN_END)	/* End tag descriptor */
+			if (tag == PCI_VPD_STIN_END)	 
 				return off;
 		}
 	}
@@ -114,15 +107,7 @@ static bool pci_vpd_available(struct pci_dev *dev, bool check_size)
 	return true;
 }
 
-/*
- * Wait for last operation to complete.
- * This code has to spin since there is no other notification from the PCI
- * hardware. Since the VPD is often implemented by serial attachment to an
- * EEPROM, it may take many milliseconds to complete.
- * @set: if true wait for flag to be set, else wait for it to be cleared
- *
- * Returns 0 on success, negative values indicate error.
- */
+ 
 static int pci_vpd_wait(struct pci_dev *dev, bool set)
 {
 	struct pci_vpd *vpd = &dev->vpd;
@@ -371,7 +356,7 @@ static int pci_vpd_find_tag(const u8 *buf, unsigned int len, u8 rdt, unsigned in
 {
 	int i = 0;
 
-	/* look for LRDT tags only, end tag is the only SRDT tag */
+	 
 	while (i + PCI_VPD_LRDT_TAG_SIZE <= len && buf[i] & PCI_VPD_LRDT) {
 		unsigned int lrdt_len = pci_vpd_lrdt_size(buf + i);
 		u8 tag = buf[i];
@@ -432,20 +417,14 @@ static ssize_t __pci_read_vpd(struct pci_dev *dev, loff_t pos, size_t count, voi
 	return pci_vpd_read(dev, pos, count, buf, check_size);
 }
 
-/**
- * pci_read_vpd - Read one entry from Vital Product Data
- * @dev:	PCI device struct
- * @pos:	offset in VPD space
- * @count:	number of bytes to read
- * @buf:	pointer to where to store result
- */
+ 
 ssize_t pci_read_vpd(struct pci_dev *dev, loff_t pos, size_t count, void *buf)
 {
 	return __pci_read_vpd(dev, pos, count, buf, true);
 }
 EXPORT_SYMBOL(pci_read_vpd);
 
-/* Same, but allow to access any address */
+ 
 ssize_t pci_read_vpd_any(struct pci_dev *dev, loff_t pos, size_t count, void *buf)
 {
 	return __pci_read_vpd(dev, pos, count, buf, false);
@@ -470,20 +449,14 @@ static ssize_t __pci_write_vpd(struct pci_dev *dev, loff_t pos, size_t count,
 	return pci_vpd_write(dev, pos, count, buf, check_size);
 }
 
-/**
- * pci_write_vpd - Write entry to Vital Product Data
- * @dev:	PCI device struct
- * @pos:	offset in VPD space
- * @count:	number of bytes to write
- * @buf:	buffer containing write data
- */
+ 
 ssize_t pci_write_vpd(struct pci_dev *dev, loff_t pos, size_t count, const void *buf)
 {
 	return __pci_write_vpd(dev, pos, count, buf, true);
 }
 EXPORT_SYMBOL(pci_write_vpd);
 
-/* Same, but allow to access any address */
+ 
 ssize_t pci_write_vpd_any(struct pci_dev *dev, loff_t pos, size_t count, const void *buf)
 {
 	return __pci_write_vpd(dev, pos, count, buf, false);
@@ -525,7 +498,7 @@ int pci_vpd_check_csum(const void *buf, unsigned int len)
 	int rv_start;
 
 	rv_start = pci_vpd_find_ro_info_keyword(buf, len, PCI_VPD_RO_KEYWORD_CHKSUM, &size);
-	if (rv_start == -ENOENT) /* no checksum in VPD */
+	if (rv_start == -ENOENT)  
 		return 1;
 	else if (rv_start < 0)
 		return rv_start;
@@ -541,11 +514,7 @@ int pci_vpd_check_csum(const void *buf, unsigned int len)
 EXPORT_SYMBOL_GPL(pci_vpd_check_csum);
 
 #ifdef CONFIG_PCI_QUIRKS
-/*
- * Quirk non-zero PCI functions to route VPD access through function 0 for
- * devices that share VPD resources between functions.  The functions are
- * expected to be identical devices.
- */
+ 
 static void quirk_f0_vpd_link(struct pci_dev *dev)
 {
 	struct pci_dev *f0;
@@ -566,13 +535,7 @@ static void quirk_f0_vpd_link(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
 			      PCI_CLASS_NETWORK_ETHERNET, 8, quirk_f0_vpd_link);
 
-/*
- * If a device follows the VPD format spec, the PCI core will not read or
- * write past the VPD End Tag.  But some vendors do not follow the VPD
- * format spec, so we can't tell how much data is safe to access.  Devices
- * may behave unpredictably if we access too much.  Blacklist these devices
- * so we don't touch VPD at all.
- */
+ 
 static void quirk_blacklist_vpd(struct pci_dev *dev)
 {
 	dev->vpd.len = PCI_VPD_SZ_INVALID;
@@ -590,10 +553,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_LSI_LOGIC, 0x002f, quirk_blacklist_vpd);
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_LSI_LOGIC, 0x005d, quirk_blacklist_vpd);
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_LSI_LOGIC, 0x005f, quirk_blacklist_vpd);
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ATTANSIC, PCI_ANY_ID, quirk_blacklist_vpd);
-/*
- * The Amazon Annapurna Labs 0x0031 device id is reused for other non Root Port
- * device types, so the quirk is registered for the PCI_CLASS_BRIDGE_PCI class.
- */
+ 
 DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031,
 			       PCI_CLASS_BRIDGE_PCI, 8, quirk_blacklist_vpd);
 
@@ -603,17 +563,7 @@ static void quirk_chelsio_extend_vpd(struct pci_dev *dev)
 	int func = (dev->device & 0x0f00) >>  8;
 	int prod = (dev->device & 0x00ff) >>  0;
 
-	/*
-	 * If this is a T3-based adapter, there's a 1KB VPD area at offset
-	 * 0xc00 which contains the preferred VPD values.  If this is a T4 or
-	 * later based adapter, the special VPD is at offset 0x400 for the
-	 * Physical Functions (the SR-IOV Virtual Functions have no VPD
-	 * Capabilities).  The PCI VPD Access core routines will normally
-	 * compute the size of the VPD by parsing the VPD Data Structure at
-	 * offset 0x000.  This will result in silent failures when attempting
-	 * to accesses these other VPD areas which are beyond those computed
-	 * limits.
-	 */
+	 
 	if (chip == 0x0 && prod >= 0x20)
 		dev->vpd.len = 8192;
 	else if (chip >= 0x4 && func < 0x8)

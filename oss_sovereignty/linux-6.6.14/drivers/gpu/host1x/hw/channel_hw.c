@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x Channel
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/host1x.h>
 #include <linux/iommu.h>
@@ -29,10 +25,7 @@ static void trace_write_gather(struct host1x_cdma *cdma, struct host1x_bo *bo,
 
 	if (mem) {
 		u32 i;
-		/*
-		 * Write in batches of 128 as there seems to be a limit
-		 * of how much you can output to ftrace at once.
-		 */
+		 
 		for (i = 0; i < words; i += TRACE_MAX_LENGTH) {
 			u32 num_words = min(words - i, TRACE_MAX_LENGTH);
 
@@ -55,11 +48,7 @@ static void submit_wait(struct host1x_job *job, u32 id, u32 threshold,
 #if HOST1X_HW >= 6
 	u32 stream_id;
 
-	/*
-	 * If a memory context has been set, use it. Otherwise
-	 * (if context isolation is disabled) use the engine's
-	 * firmware stream ID.
-	 */
+	 
 	if (job->memory_context)
 		stream_id = job->memory_context->stream_id;
 	else
@@ -69,7 +58,7 @@ static void submit_wait(struct host1x_job *job, u32 id, u32 threshold,
 		host1x_opcode_setclass(
 			HOST1X_CLASS_HOST1X,
 			HOST1X_UCLASS_LOAD_SYNCPT_PAYLOAD_32,
-			/* WAIT_SYNCPT_32 is at SYNCPT_PAYLOAD_32+2 */
+			 
 			BIT(0) | BIT(2)
 		),
 		threshold,
@@ -86,7 +75,7 @@ static void submit_wait(struct host1x_job *job, u32 id, u32 threshold,
 		host1x_opcode_setclass(
 			HOST1X_CLASS_HOST1X,
 			HOST1X_UCLASS_LOAD_SYNCPT_PAYLOAD_32,
-			/* WAIT_SYNCPT_32 is at SYNCPT_PAYLOAD_32+2 */
+			 
 			BIT(0) | BIT(2)
 		),
 		threshold,
@@ -94,7 +83,7 @@ static void submit_wait(struct host1x_job *job, u32 id, u32 threshold,
 		host1x_opcode_setclass(next_class, 0, 0)
 	);
 #else
-	/* TODO add waitchk or use waitbases or other mitigation */
+	 
 	host1x_cdma_push(cdma,
 		host1x_opcode_setclass(
 			HOST1X_CLASS_HOST1X,
@@ -217,14 +206,14 @@ static void channel_program_cdma(struct host1x_job *job)
 #if HOST1X_HW >= 6
 	u32 fence;
 
-	/* Enter engine class with invalid stream ID. */
+	 
 	host1x_cdma_push_wide(cdma,
 		host1x_opcode_acquire_mlock(job->class),
 		host1x_opcode_setclass(job->class, 0, 0),
 		host1x_opcode_setpayload(0),
 		host1x_opcode_setstreamid(job->engine_streamid_offset / 4));
 
-	/* Before switching stream ID to real stream ID, ensure engine is idle. */
+	 
 	fence = host1x_syncpt_incr_max(sp, 1);
 	host1x_cdma_push(&job->channel->cdma,
 		host1x_opcode_nonincr(HOST1X_UCLASS_INCR_SYNCPT, 1),
@@ -232,11 +221,11 @@ static void channel_program_cdma(struct host1x_job *job)
 			HOST1X_UCLASS_INCR_SYNCPT_COND_F(4));
 	submit_wait(job, job->syncpt->id, fence, job->class);
 
-	/* Submit work. */
+	 
 	job->syncpt_end = host1x_syncpt_incr_max(sp, job->syncpt_incrs);
 	submit_gathers(job, job->syncpt_end - job->syncpt_incrs);
 
-	/* Before releasing MLOCK, ensure engine is idle again. */
+	 
 	fence = host1x_syncpt_incr_max(sp, 1);
 	host1x_cdma_push(&job->channel->cdma,
 		host1x_opcode_nonincr(HOST1X_UCLASS_INCR_SYNCPT, 1),
@@ -244,15 +233,12 @@ static void channel_program_cdma(struct host1x_job *job)
 			HOST1X_UCLASS_INCR_SYNCPT_COND_F(4));
 	submit_wait(job, job->syncpt->id, fence, job->class);
 
-	/* Release MLOCK. */
+	 
 	host1x_cdma_push(cdma,
 		HOST1X_OPCODE_NOP, host1x_opcode_release_mlock(job->class));
 #else
 	if (job->serialize) {
-		/*
-		 * Force serialization by inserting a host wait for the
-		 * previous job to finish before this one can commence.
-		 */
+		 
 		host1x_cdma_push(cdma,
 				 host1x_opcode_setclass(HOST1X_CLASS_HOST1X,
 					host1x_uclass_wait_syncpt_r(), 1),
@@ -260,11 +246,11 @@ static void channel_program_cdma(struct host1x_job *job)
 					host1x_syncpt_read_max(sp)));
 	}
 
-	/* Synchronize base register to allow using it for relative waiting */
+	 
 	if (sp->base)
 		synchronize_syncpt_base(job);
 
-	/* add a setclass for modules that require it */
+	 
 	if (job->class)
 		host1x_cdma_push(cdma,
 				 host1x_opcode_setclass(job->class, 0, 0),
@@ -280,7 +266,7 @@ static void job_complete_callback(struct dma_fence *fence, struct dma_fence_cb *
 {
 	struct host1x_job *job = container_of(cb, struct host1x_job, fence_cb);
 
-	/* Schedules CDMA update. */
+	 
 	host1x_cdma_update(&job->channel->cdma);
 }
 
@@ -297,10 +283,10 @@ static int channel_submit(struct host1x_job *job)
 				    job->num_cmds, job->num_relocs,
 				    job->syncpt->id, job->syncpt_incrs);
 
-	/* before error checks, return current max */
+	 
 	prev_max = job->syncpt_end = host1x_syncpt_read_max(sp);
 
-	/* get submit lock */
+	 
 	err = mutex_lock_interruptible(&ch->submitlock);
 	if (err)
 		return err;
@@ -309,7 +295,7 @@ static int channel_submit(struct host1x_job *job)
 	host1x_enable_gather_filter(ch);
 	host1x_hw_syncpt_assign_to_channel(host, sp, ch);
 
-	/* begin a CDMA submit */
+	 
 	err = host1x_cdma_begin(&ch->cdma, job);
 	if (err) {
 		mutex_unlock(&ch->submitlock);
@@ -319,10 +305,7 @@ static int channel_submit(struct host1x_job *job)
 	channel_program_cdma(job);
 	syncval = host1x_syncpt_read_max(sp);
 
-	/*
-	 * Create fence before submitting job to HW to avoid job completing
-	 * before the fence is set up.
-	 */
+	 
 	job->fence = host1x_fence_create(sp, syncval, true);
 	if (WARN(IS_ERR(job->fence), "Failed to create submit complete fence")) {
 		job->fence = NULL;
@@ -331,7 +314,7 @@ static int channel_submit(struct host1x_job *job)
 					     job_complete_callback);
 	}
 
-	/* end CDMA submit & stash pinned hMems into sync queue */
+	 
 	host1x_cdma_end(&ch->cdma, job);
 
 	trace_host1x_channel_submitted(dev_name(ch->dev), prev_max, syncval);

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Raydium touchscreen I2C driver.
- *
- * Copyright (C) 2012-2014, Raydium Semiconductor Corporation.
- *
- * Raydium reserves the right to make changes without further notice
- * to the materials described herein. Raydium does not assume any
- * liability arising out of the application described herein.
- *
- * Contact Raydium Semiconductor Corporation at www.rad-ic.com
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -26,21 +16,21 @@
 #include <linux/slab.h>
 #include <asm/unaligned.h>
 
-/* Slave I2C mode */
+ 
 #define RM_BOOT_BLDR		0x02
 #define RM_BOOT_MAIN		0x03
 
-/* I2C bootoloader commands */
-#define RM_CMD_BOOT_PAGE_WRT	0x0B		/* send bl page write */
-#define RM_CMD_BOOT_WRT		0x11		/* send bl write */
-#define RM_CMD_BOOT_ACK		0x22		/* send ack*/
-#define RM_CMD_BOOT_CHK		0x33		/* send data check */
-#define RM_CMD_BOOT_READ	0x44		/* send wait bl data ready*/
+ 
+#define RM_CMD_BOOT_PAGE_WRT	0x0B		 
+#define RM_CMD_BOOT_WRT		0x11		 
+#define RM_CMD_BOOT_ACK		0x22		 
+#define RM_CMD_BOOT_CHK		0x33		 
+#define RM_CMD_BOOT_READ	0x44		 
 
-#define RM_BOOT_RDY		0xFF		/* bl data ready */
-#define RM_BOOT_CMD_READHWID	0x0E		/* read hwid */
+#define RM_BOOT_RDY		0xFF		 
+#define RM_BOOT_CMD_READHWID	0x0E		 
 
-/* I2C main commands */
+ 
 #define RM_CMD_QUERY_BANK	0x2B
 #define RM_CMD_DATA_BANK	0x4D
 #define RM_CMD_ENTER_SLEEP	0x4E
@@ -51,13 +41,13 @@
 #define RM_MAX_READ_SIZE	56
 #define RM_PACKET_CRC_SIZE	2
 
-/* Touch relative info */
+ 
 #define RM_MAX_RETRIES		3
 #define RM_RETRY_DELAY_MS	20
 #define RM_MAX_TOUCH_NUM	10
 #define RM_BOOT_DELAY_MS	100
 
-/* Offsets in contact data */
+ 
 #define RM_CONTACT_STATE_POS	0
 #define RM_CONTACT_X_POS	1
 #define RM_CONTACT_Y_POS	3
@@ -65,9 +55,9 @@
 #define RM_CONTACT_WIDTH_X_POS	6
 #define RM_CONTACT_WIDTH_Y_POS	7
 
-/* Bootloader relative info */
-#define RM_BL_WRT_CMD_SIZE	3	/* bl flash wrt cmd size */
-#define RM_BL_WRT_PKG_SIZE	32	/* bl wrt pkg size */
+ 
+#define RM_BL_WRT_CMD_SIZE	3	 
+#define RM_BL_WRT_PKG_SIZE	32	 
 #define RM_BL_WRT_LEN		(RM_BL_WRT_PKG_SIZE + RM_BL_WRT_CMD_SIZE)
 #define RM_FW_PAGE_SIZE		128
 #define RM_MAX_FW_RETRIES	30
@@ -94,7 +84,7 @@ enum raydium_boot_mode {
 	RAYDIUM_TS_BLDR,
 };
 
-/* Response to RM_CMD_DATA_BANK request */
+ 
 struct raydium_data_info {
 	__le32 data_bank_addr;
 	u8 pkg_size;
@@ -102,19 +92,19 @@ struct raydium_data_info {
 };
 
 struct raydium_info {
-	__le32 hw_ver;		/*device version */
+	__le32 hw_ver;		 
 	u8 main_ver;
 	u8 sub_ver;
-	__le16 ft_ver;		/* test version */
+	__le16 ft_ver;		 
 	u8 x_num;
 	u8 y_num;
 	__le16 x_max;
 	__le16 y_max;
-	u8 x_res;		/* units/mm */
-	u8 y_res;		/* units/mm */
+	u8 x_res;		 
+	u8 y_res;		 
 };
 
-/* struct raydium_data - represents state of Raydium touchscreen device */
+ 
 struct raydium_data {
 	struct i2c_client *client;
 	struct input_dev *input;
@@ -137,10 +127,7 @@ struct raydium_data {
 	enum raydium_boot_mode boot_mode;
 };
 
-/*
- * Header to be sent for RM_CMD_BANK_SWITCH command. This is used by
- * raydium_i2c_{read|send} below.
- */
+ 
 struct __packed raydium_bank_switch_header {
 	u8 cmd;
 	__be32 be_addr;
@@ -150,10 +137,7 @@ static int raydium_i2c_xfer(struct i2c_client *client, u32 addr,
 			    struct i2c_msg *xfer, size_t xfer_count)
 {
 	int ret;
-	/*
-	 * If address is greater than 255, then RM_CMD_BANK_SWITCH needs to be
-	 * sent first. Else, skip the header i.e. xfer[0].
-	 */
+	 
 	int xfer_start_idx = (addr > 0xff) ? 0 : 1;
 	xfer_count -= xfer_start_idx;
 
@@ -185,16 +169,7 @@ static int raydium_i2c_send(struct i2c_client *client,
 			.be_addr = cpu_to_be32(addr),
 		};
 
-		/*
-		 * Perform as a single i2c_transfer transaction to ensure that
-		 * no other I2C transactions are initiated on the bus to any
-		 * other device in between. Initiating transacations to other
-		 * devices after RM_CMD_BANK_SWITCH is sent is known to cause
-		 * issues. This is also why regmap infrastructure cannot be used
-		 * for this driver. Regmap handles page(bank) switch and reads
-		 * as separate i2c_transfer() operations. This can result in
-		 * problems if the Raydium device is on a shared I2C bus.
-		 */
+		 
 		struct i2c_msg xfer[] = {
 			{
 				.addr = client->addr,
@@ -234,16 +209,7 @@ static int raydium_i2c_read(struct i2c_client *client,
 		};
 		size_t xfer_len = min_t(size_t, len, RM_MAX_READ_SIZE);
 
-		/*
-		 * Perform as a single i2c_transfer transaction to ensure that
-		 * no other I2C transactions are initiated on the bus to any
-		 * other device in between. Initiating transacations to other
-		 * devices after RM_CMD_BANK_SWITCH is sent is known to cause
-		 * issues. This is also why regmap infrastructure cannot be used
-		 * for this driver. Regmap handles page(bank) switch and writes
-		 * as separate i2c_transfer() operations. This can result in
-		 * problems if the Raydium device is on a shared I2C bus.
-		 */
+		 
 		struct i2c_msg xfer[] = {
 			{
 				.addr = client->addr,
@@ -344,11 +310,7 @@ static int raydium_i2c_query_ts_info(struct raydium_data *ts)
 		if (error)
 			continue;
 
-		/*
-		 * Warn user if we already allocated memory for reports and
-		 * then the size changed (due to firmware update?) and keep
-		 * old size instead.
-		 */
+		 
 		if (ts->report_data && ts->pkg_size != data_info.pkg_size) {
 			dev_warn(&client->dev,
 				 "report size changes, was: %d, new: %d\n",
@@ -409,7 +371,7 @@ static int raydium_i2c_initialize(struct raydium_data *ts)
 	int error, retry_cnt;
 
 	for (retry_cnt = 0; retry_cnt < RM_MAX_RETRIES; retry_cnt++) {
-		/* Wait for Hello packet */
+		 
 		msleep(RM_BOOT_DELAY_MS);
 
 		error = raydium_i2c_check_fw_status(ts);
@@ -1114,7 +1076,7 @@ static int raydium_i2c_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Make sure there is something at this address */
+	 
 	if (i2c_smbus_xfer(client->adapter, client->addr, 0,
 			   I2C_SMBUS_READ, 0, I2C_SMBUS_BYTE, &dummy) < 0) {
 		dev_err(&client->dev, "nothing at this address\n");
@@ -1202,7 +1164,7 @@ static int raydium_i2c_suspend(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct raydium_data *ts = i2c_get_clientdata(client);
 
-	/* Sleep is not available in BLDR recovery mode */
+	 
 	if (ts->boot_mode != RAYDIUM_TS_MAIN)
 		return -EBUSY;
 
@@ -1240,14 +1202,14 @@ static DEFINE_SIMPLE_DEV_PM_OPS(raydium_i2c_pm_ops,
 static const struct i2c_device_id raydium_i2c_id[] = {
 	{ "raydium_i2c", 0 },
 	{ "rm32380", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, raydium_i2c_id);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id raydium_acpi_id[] = {
 	{ "RAYD0001", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, raydium_acpi_id);
 #endif
@@ -1255,7 +1217,7 @@ MODULE_DEVICE_TABLE(acpi, raydium_acpi_id);
 #ifdef CONFIG_OF
 static const struct of_device_id raydium_of_match[] = {
 	{ .compatible = "raydium,rm32380", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, raydium_of_match);
 #endif

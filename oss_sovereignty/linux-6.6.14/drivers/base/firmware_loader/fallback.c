@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/types.h>
 #include <linux/kconfig.h>
@@ -11,23 +11,16 @@
 #include "fallback.h"
 #include "firmware.h"
 
-/*
- * firmware fallback mechanism
- */
+ 
 
-/*
- * use small loading timeout for caching devices' firmware because all these
- * firmware images have been loaded successfully at lease once, also system is
- * ready for completing firmware loading now. The maximum size of firmware in
- * current distributions is about 2M bytes, so 10 secs should be enough.
- */
+ 
 void fw_fallback_set_cache_timeout(void)
 {
 	fw_fallback_config.old_timeout = __firmware_loading_timeout();
 	__fw_fallback_set_timeout(10);
 }
 
-/* Restores the timeout to the value last configured during normal operation */
+ 
 void fw_fallback_set_default_timeout(void)
 {
 	__fw_fallback_set_timeout(fw_fallback_config.old_timeout);
@@ -60,20 +53,14 @@ void kill_pending_fw_fallback_reqs(bool only_kill_custom)
 	mutex_unlock(&fw_lock);
 }
 
-/**
- * fw_load_sysfs_fallback() - load a firmware via the sysfs fallback mechanism
- * @fw_sysfs: firmware sysfs information for the firmware to load
- * @timeout: timeout to wait for the load
- *
- * In charge of constructing a sysfs fallback interface for firmware loading.
- **/
+ 
 static int fw_load_sysfs_fallback(struct fw_sysfs *fw_sysfs, long timeout)
 {
 	int retval = 0;
 	struct device *f_dev = &fw_sysfs->dev;
 	struct fw_priv *fw_priv = fw_sysfs->fw_priv;
 
-	/* fall back on userspace loading */
+	 
 	if (!fw_priv->data)
 		fw_priv->is_paged_buf = true;
 
@@ -187,7 +174,7 @@ static bool fw_run_sysfs_fallback(u32 opt_flags)
 	if ((opt_flags & FW_OPT_NOFALLBACK_SYSFS))
 		return false;
 
-	/* Also permit LSMs and IMA to fail firmware sysfs fallback */
+	 
 	ret = security_kernel_load_data(LOADING_FIRMWARE, true);
 	if (ret < 0)
 		return false;
@@ -195,28 +182,7 @@ static bool fw_run_sysfs_fallback(u32 opt_flags)
 	return fw_force_sysfs_fallback(opt_flags);
 }
 
-/**
- * firmware_fallback_sysfs() - use the fallback mechanism to find firmware
- * @fw: pointer to firmware image
- * @name: name of firmware file to look for
- * @device: device for which firmware is being loaded
- * @opt_flags: options to control firmware loading behaviour, as defined by
- *	       &enum fw_opt
- * @ret: return value from direct lookup which triggered the fallback mechanism
- *
- * This function is called if direct lookup for the firmware failed, it enables
- * a fallback mechanism through userspace by exposing a sysfs loading
- * interface. Userspace is in charge of loading the firmware through the sysfs
- * loading interface. This sysfs fallback mechanism may be disabled completely
- * on a system by setting the proc sysctl value ignore_sysfs_fallback to true.
- * If this is false we check if the internal API caller set the
- * @FW_OPT_NOFALLBACK_SYSFS flag, if so it would also disable the fallback
- * mechanism. A system may want to enforce the sysfs fallback mechanism at all
- * times, it can do this by setting ignore_sysfs_fallback to false and
- * force_sysfs_fallback to true.
- * Enabling force_sysfs_fallback is functionally equivalent to build a kernel
- * with CONFIG_FW_LOADER_USER_HELPER_FALLBACK.
- **/
+ 
 int firmware_fallback_sysfs(struct firmware *fw, const char *name,
 			    struct device *device,
 			    u32 opt_flags,

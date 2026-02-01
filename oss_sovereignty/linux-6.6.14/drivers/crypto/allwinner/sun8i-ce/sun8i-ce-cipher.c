@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ce-cipher.c - hardware cryptographic offloader for
- * Allwinner H3/A64/H5/H2+/H6/R40 SoC
- *
- * Copyright (C) 2016-2019 Corentin LABBE <clabbe.montjoie@gmail.com>
- *
- * This file add support for AES cipher with 128,192,256 bits keysize in
- * CBC and ECB mode.
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 
 #include <linux/bottom_half.h>
 #include <linux/crypto.h>
@@ -161,7 +151,7 @@ static int sun8i_ce_cipher_prepare(struct crypto_engine *engine, void *async_req
 	common = ce->variant->alg_cipher[algt->ce_algo_id];
 	common |= rctx->op_dir | CE_COMM_INT;
 	cet->t_common_ctl = cpu_to_le32(common);
-	/* CTS and recent CE (H6) need length in bytes, in word otherwise */
+	 
 	if (ce->variant->cipher_t_dlen_in_bytes)
 		cet->t_dlen = cpu_to_le32(areq->cryptlen);
 	else

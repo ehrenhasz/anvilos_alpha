@@ -1,44 +1,10 @@
-/****************************************************************************
- * Copyright 2021 Thomas E. Dickey                                          *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/*
- * $Id: term.priv.h,v 1.7 2021/11/20 23:33:33 tom Exp $
- *
- *	term.priv.h
- *
- *	Header file for terminfo library objects which are private to
- *	the library.
- *
- */
+ 
 
 #ifndef _TERM_PRIV_H
 #define _TERM_PRIV_H 1
-/* *INDENT-OFF* */
+ 
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,10 +16,10 @@ extern "C" {
 #define NCURSES_INTERNALS 1
 #define NCURSES_OPAQUE 0
 
-#include <limits.h>		/* PATH_MAX */
-#include <signal.h>		/* sig_atomic_t */
-#include <time.h>		/* time_t */
-#include <term.h>		/* time_t */
+#include <limits.h>		 
+#include <signal.h>		 
+#include <time.h>		 
+#include <term.h>		 
 
 #ifdef USE_PTHREADS
 #if USE_REENTRANT
@@ -61,9 +27,7 @@ extern "C" {
 #endif
 #endif
 
-/*
- * State of tparm().
- */
+ 
 #define STACKSIZE 20
 
 typedef struct {
@@ -105,54 +69,46 @@ typedef struct {
 	char *		value;
 } ITERATOR_VARS;
 
-/*
- * Internals for term.h
- */
-typedef struct term {			/* describe an actual terminal */
-	TERMTYPE	type;		/* terminal type description */
-	short		Filedes;	/* file description being written to */
-	TTY		Ottyb;		/* original state of the terminal */
-	TTY		Nttyb;		/* current state of the terminal */
-	int		_baudrate;	/* used to compute padding */
-	char *		_termname;	/* used for termname() */
+ 
+typedef struct term {			 
+	TERMTYPE	type;		 
+	short		Filedes;	 
+	TTY		Ottyb;		 
+	TTY		Nttyb;		 
+	int		_baudrate;	 
+	char *		_termname;	 
 	TPARM_STATE	tparm_state;
 #if NCURSES_EXT_COLORS
-	TERMTYPE2	type2;		/* extended terminal type description */
+	TERMTYPE2	type2;		 
 #endif
 #undef TERMINAL
 } TERMINAL;
 
-/*
- * Internals for soft-keys
- */
+ 
 typedef	struct {
-	WINDOW *	win;		/* the window used in the hook      */
-	int		line;		/* lines to take, < 0 => from bottom*/
-	int		(*hook)(WINDOW *, int); /* callback for user	    */
+	WINDOW *	win;		 
+	int		line;		 
+	int		(*hook)(WINDOW *, int);  
 } ripoff_t;
 
-/*
- * Internals for tgetent
- */
+ 
 typedef struct {
 	long		sequence;
 	bool		last_used;
-	char *		fix_sgr0;	/* this holds the filtered sgr0 string */
-	char *		last_bufp;	/* help with fix_sgr0 leak */
+	char *		fix_sgr0;	 
+	char *		last_bufp;	 
 	TERMINAL *	last_term;
 } TGETENT_CACHE;
 
 #define TGETENT_MAX 4
 
-#include <term_entry.h>		/* dbdLAST */
+#include <term_entry.h>		 
 
 #ifdef USE_TERM_DRIVER
-struct DriverTCB; /* Terminal Control Block forward declaration */
+struct DriverTCB;  
 #endif
 
-/*
- * Global data which is not specific to a screen.
- */
+ 
 typedef struct {
 	SIG_ATOMIC_T	have_sigtstp;
 	SIG_ATOMIC_T	have_sigwinch;
@@ -177,7 +133,7 @@ typedef struct {
 
 	int		slk_format;
 
-	int		getstr_limit;	/* getstr_limit based on POSIX LINE_MAX */
+	int		getstr_limit;	 
 
 	char *		safeprint_buf;
 	size_t		safeprint_used;
@@ -187,16 +143,16 @@ typedef struct {
 	long		tgetent_sequence;
 	int		terminal_count;
 
-	char *		dbd_blob;	/* string-heap for dbd_list[] */
-	char **		dbd_list;	/* distinct places to look for data */
-	int		dbd_size;	/* length of dbd_list[] */
-	time_t		dbd_time;	/* cache last updated */
+	char *		dbd_blob;	 
+	char **		dbd_list;	 
+	int		dbd_size;	 
+	time_t		dbd_time;	 
 	ITERATOR_VARS	dbd_vars[dbdLAST];
 
 #if HAVE_TSEARCH
 	void *		cached_tparm;
 	int		count_tparm;
-#endif /* HAVE_TSEARCH */
+#endif  
 
 #ifdef USE_TERM_DRIVER
 	int		(*term_driver)(struct DriverTCB*, const char*, int*);
@@ -229,7 +185,7 @@ typedef struct {
 	int		use_pthreads;
 #define _nc_use_pthreads	_nc_globals.use_pthreads
 #if USE_PTHREADS_EINTR
-	pthread_t	read_thread;	/* The reading thread */
+	pthread_t	read_thread;	 
 #endif
 #endif
 #if USE_WIDEC_SUPPORT
@@ -263,7 +219,7 @@ typedef struct {
 #if !defined(USE_PTHREADS) && USE_REENTRANT
 	int		nested_tracef;
 #endif
-#endif	/* TRACE */
+#endif	 
 
 #if NO_LEAKS
 	bool		leak_checking;
@@ -282,10 +238,7 @@ typedef struct _prescreen_list {
 } PRESCREEN_LIST;
 #endif
 
-/*
- * Global data which can be swept up into a SCREEN when one is created.
- * It may be modified before the next SCREEN is created.
- */
+ 
 typedef struct {
 #ifdef USE_PTHREADS
 	PRESCREEN_LIST *allocated;
@@ -296,15 +249,15 @@ typedef struct {
 	bool		filter_mode;
 	attr_t		previous_attr;
 	TPARM_STATE	tparm_state;
-	TTY *		saved_tty;	/* savetty/resetty information	  */
+	TTY *		saved_tty;	 
 	bool		use_tioctl;
-	NCURSES_SP_OUTC	_outch;		/* output handler if not putc */
+	NCURSES_SP_OUTC	_outch;		 
 #ifndef USE_SP_RIPOFF
 	ripoff_t	rippedoff[N_RIPS];
 	ripoff_t *	rsp;
 #endif
 #if NCURSES_NO_PADDING
-	bool		_no_padding;	/* flag to set if padding disabled */
+	bool		_no_padding;	 
 #endif
 #if BROKEN_LINKER || USE_REENTRANT
 	chtype *	real_acs_map;
@@ -330,6 +283,6 @@ extern NCURSES_EXPORT(void) _nc_free_tparm(TERMINAL*);
 }
 #endif
 
-/* *INDENT-ON* */
+ 
 
-#endif /* _TERM_PRIV_H */
+#endif  

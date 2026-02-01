@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  OneNAND driver for OMAP2 / OMAP3
- *
- *  Copyright © 2005-2006 Nokia Corporation
- *
- *  Author: Jarkko Lavinen <jarkko.lavinen@nokia.com> and Juha Yrjölä
- *  IRQ and DMA support written by Timo Teras
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -76,7 +69,7 @@ static int omap2_onenand_set_cfg(struct omap2_onenand *c,
 	reg |= latency << ONENAND_SYS_CFG1_BRL_SHIFT;
 
 	switch (burst_len) {
-	case 0:		/* continuous */
+	case 0:		 
 		break;
 	case 4:
 		reg |= ONENAND_SYS_CFG1_BL_4;
@@ -178,18 +171,18 @@ static int omap2_onenand_wait(struct mtd_info *mtd, int state)
 		}
 		if ((intr & intr_flags) == intr_flags)
 			return 0;
-		/* Continue in wait for interrupt branch */
+		 
 	}
 
 	if (state != FL_READING) {
 		int result;
 
-		/* Turn interrupts on */
+		 
 		syscfg = read_reg(c, ONENAND_REG_SYS_CFG1);
 		if (!(syscfg & ONENAND_SYS_CFG1_IOBE)) {
 			syscfg |= ONENAND_SYS_CFG1_IOBE;
 			write_reg(c, syscfg, ONENAND_REG_SYS_CFG1);
-			/* Add a delay to let GPIO settle */
+			 
 			syscfg = read_reg(c, ONENAND_REG_SYS_CFG1);
 		}
 
@@ -205,14 +198,11 @@ static int omap2_onenand_wait(struct mtd_info *mtd, int state)
 retry:
 			if (!wait_for_completion_io_timeout(&c->irq_done,
 						msecs_to_jiffies(20))) {
-				/* Timeout after 20ms */
+				 
 				ctrl = read_reg(c, ONENAND_REG_CTRL_STATUS);
 				if (ctrl & ONENAND_CTRL_ONGO &&
 				    !this->ongoing) {
-					/*
-					 * The operation seems to be still going
-					 * so give it some more time.
-					 */
+					 
 					retry_cnt += 1;
 					if (retry_cnt < 3)
 						goto retry;
@@ -229,7 +219,7 @@ retry:
 	} else {
 		int retry_cnt = 0;
 
-		/* Turn interrupts off */
+		 
 		syscfg = read_reg(c, ONENAND_REG_SYS_CFG1);
 		syscfg &= ~ONENAND_SYS_CFG1_IOBE;
 		write_reg(c, syscfg, ONENAND_REG_SYS_CFG1);
@@ -241,13 +231,10 @@ retry:
 				if (intr & ONENAND_INT_MASTER)
 					break;
 			} else {
-				/* Timeout after 20ms */
+				 
 				ctrl = read_reg(c, ONENAND_REG_CTRL_STATUS);
 				if (ctrl & ONENAND_CTRL_ONGO) {
-					/*
-					 * The operation seems to be still going
-					 * so give it some more time.
-					 */
+					 
 					retry_cnt += 1;
 					if (retry_cnt < 3) {
 						timeout = jiffies +
@@ -370,11 +357,7 @@ static int omap2_onenand_read_bufferram(struct mtd_info *mtd, int area,
 	size_t xtra;
 
 	bram_offset = omap2_onenand_bufferram_offset(mtd, area) + area + offset;
-	/*
-	 * If the buffer address is not DMA-able, len is not long enough to
-	 * make DMA transfers profitable or if invoked from panic_write()
-	 * fallback to PIO mode.
-	 */
+	 
 	if (!virt_addr_valid(buf) || bram_offset & 3 || (size_t)buf & 3 ||
 	    count < 384 || mtd->oops_panic_write)
 		goto out_copy;
@@ -417,11 +400,7 @@ static int omap2_onenand_write_bufferram(struct mtd_info *mtd, int area,
 	int bram_offset, err;
 
 	bram_offset = omap2_onenand_bufferram_offset(mtd, area) + area + offset;
-	/*
-	 * If the buffer address is not DMA-able, len is not long enough to
-	 * make DMA transfers profitable or if invoked from panic_write()
-	 * fallback to PIO mode.
-	 */
+	 
 	if (!virt_addr_valid(buf) || bram_offset & 3 || (size_t)buf & 3 ||
 	    count < 384 || mtd->oops_panic_write)
 		goto out_copy;
@@ -449,10 +428,7 @@ static void omap2_onenand_shutdown(struct platform_device *pdev)
 {
 	struct omap2_onenand *c = dev_get_drvdata(&pdev->dev);
 
-	/* With certain content in the buffer RAM, the OMAP boot ROM code
-	 * can recognize the flash chip incorrectly. Zero it out before
-	 * soft reset.
-	 */
+	 
 	memset((__force void *)c->onenand.base, 0, ONENAND_BUFRAM_SIZE);
 }
 
@@ -488,7 +464,7 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 
 	c->int_gpiod = devm_gpiod_get_optional(dev, "int", GPIOD_IN);
 	if (IS_ERR(c->int_gpiod)) {
-		/* Just try again if this happens */
+		 
 		return dev_err_probe(dev, PTR_ERR(c->int_gpiod), "error getting gpio\n");
 	}
 
@@ -539,7 +515,7 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 		case 56:
 			latency = 4;
 			break;
-		default:	/* 40 MHz or lower */
+		default:	 
 			latency = 3;
 			break;
 		}

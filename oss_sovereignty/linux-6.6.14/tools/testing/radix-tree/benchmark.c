@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * benchmark.c:
- * Author: Konstantin Khlebnikov <koct9i@gmail.com>
- */
+
+ 
 #include <linux/radix-tree.h>
 #include <linux/slab.h>
 #include <linux/errno.h>

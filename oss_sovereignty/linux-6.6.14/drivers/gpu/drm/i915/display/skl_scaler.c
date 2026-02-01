@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include "i915_reg.h"
 #include "intel_de.h"
@@ -10,46 +8,7 @@
 #include "skl_scaler.h"
 #include "skl_universal_plane.h"
 
-/*
- * The hardware phase 0.0 refers to the center of the pixel.
- * We want to start from the top/left edge which is phase
- * -0.5. That matches how the hardware calculates the scaling
- * factors (from top-left of the first pixel to bottom-right
- * of the last pixel, as opposed to the pixel centers).
- *
- * For 4:2:0 subsampled chroma planes we obviously have to
- * adjust that so that the chroma sample position lands in
- * the right spot.
- *
- * Note that for packed YCbCr 4:2:2 formats there is no way to
- * control chroma siting. The hardware simply replicates the
- * chroma samples for both of the luma samples, and thus we don't
- * actually get the expected MPEG2 chroma siting convention :(
- * The same behaviour is observed on pre-SKL platforms as well.
- *
- * Theory behind the formula (note that we ignore sub-pixel
- * source coordinates):
- * s = source sample position
- * d = destination sample position
- *
- * Downscaling 4:1:
- * -0.5
- * | 0.0
- * | |     1.5 (initial phase)
- * | |     |
- * v v     v
- * | s | s | s | s |
- * |       d       |
- *
- * Upscaling 1:4:
- * -0.5
- * | -0.375 (initial phase)
- * | |     0.0
- * | |     |
- * v v     v
- * |       s       |
- * | d | d | d | d |
- */
+ 
 static u16 skl_scaler_calc_phase(int sub, int scale, bool chroma_cosited)
 {
 	int phase = -0x8000;
@@ -60,11 +19,7 @@ static u16 skl_scaler_calc_phase(int sub, int scale, bool chroma_cosited)
 
 	phase += scale / (2 * sub);
 
-	/*
-	 * Hardware initial phase limited to [-0.5:1.5].
-	 * Since the max hardware scale factor is 3.0, we
-	 * should never actually excdeed 1.0 here.
-	 */
+	 
 	WARN_ON(phase < -0x8000 || phase > 0x18000);
 
 	if (phase < 0)
@@ -116,20 +71,11 @@ skl_update_scaler(struct intel_crtc_state *crtc_state, bool force_detach,
 	int min_src_w, min_src_h, min_dst_w, min_dst_h;
 	int max_src_w, max_src_h, max_dst_w, max_dst_h;
 
-	/*
-	 * Src coordinates are already rotated by 270 degrees for
-	 * the 90/270 degree plane rotation cases (to match the
-	 * GTT mapping), hence no need to account for rotation here.
-	 */
+	 
 	if (src_w != dst_w || src_h != dst_h)
 		need_scaler = true;
 
-	/*
-	 * Scaling/fitting not supported in IF-ID mode in GEN9+
-	 * TODO: Interlace fetch mode doesn't support YUV420 planar formats.
-	 * Once NV12 is enabled, handle it here while allocating scaler
-	 * for NV12.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 9 && crtc_state->hw.enable &&
 	    need_scaler && adjusted_mode->flags & DRM_MODE_FLAG_INTERLACE) {
 		drm_dbg_kms(&dev_priv->drm,
@@ -137,16 +83,7 @@ skl_update_scaler(struct intel_crtc_state *crtc_state, bool force_detach,
 		return -EINVAL;
 	}
 
-	/*
-	 * if plane is being disabled or scaler is no more required or force detach
-	 *  - free scaler binded to this plane/crtc
-	 *  - in order to do this, update crtc->scaler_usage
-	 *
-	 * Here scaler state in crtc_state is set free so that
-	 * scaler can be assigned to other user. Actual register
-	 * update to free the scaler is done in plane/panel-fit programming.
-	 * For this purpose crtc/plane_state->scaler_id isn't reset here.
-	 */
+	 
 	if (force_detach || !need_scaler) {
 		if (*scaler_id >= 0) {
 			scaler_state->scaler_users &= ~(1 << scaler_user);
@@ -196,7 +133,7 @@ skl_update_scaler(struct intel_crtc_state *crtc_state, bool force_detach,
 		max_dst_h = MTL_MAX_DST_H;
 	}
 
-	/* range checks */
+	 
 	if (src_w < min_src_w || src_h < min_src_h ||
 	    dst_w < min_dst_w || dst_h < min_dst_h ||
 	    src_w > max_src_w || src_h > max_src_h ||
@@ -209,13 +146,7 @@ skl_update_scaler(struct intel_crtc_state *crtc_state, bool force_detach,
 		return -EINVAL;
 	}
 
-	/*
-	 * The pipe scaler does not use all the bits of PIPESRC, at least
-	 * on the earlier platforms. So even when we're scaling a plane
-	 * the *pipe* source size must not be too large. For simplicity
-	 * we assume the limits match the scaler source size limits. Might
-	 * not be 100% accurate on all platforms, but good enough for now.
-	 */
+	 
 	if (pipe_src_w > max_src_w || pipe_src_h > max_src_h) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "scaler_user index %u.%u: pipe src size %ux%u "
@@ -224,7 +155,7 @@ skl_update_scaler(struct intel_crtc_state *crtc_state, bool force_detach,
 		return -EINVAL;
 	}
 
-	/* mark this plane as a scaler user in crtc_state */
+	 
 	scaler_state->scaler_users |= (1 << scaler_user);
 	drm_dbg_kms(&dev_priv->drm, "scaler_user index %u.%u: "
 		    "staged scaling request for %ux%u->%ux%u scaler_users = 0x%x\n",
@@ -255,15 +186,7 @@ int skl_update_scaler_crtc(struct intel_crtc_state *crtc_state)
 				 crtc_state->pch_pfit.enabled);
 }
 
-/**
- * skl_update_scaler_plane - Stages update to scaler state for a given plane.
- * @crtc_state: crtc's scaler state
- * @plane_state: atomic plane state to update
- *
- * Return
- *     0 - scaler_usage updated successfully
- *    error - requested scaling cannot be supported or other error condition
- */
+ 
 int skl_update_scaler_plane(struct intel_crtc_state *crtc_state,
 			    struct intel_plane_state *plane_state)
 {
@@ -275,7 +198,7 @@ int skl_update_scaler_plane(struct intel_crtc_state *crtc_state,
 	bool force_detach = !fb || !plane_state->uapi.visible;
 	bool need_scaler = false;
 
-	/* Pre-gen11 and SDR planes always need a scaler for planar formats. */
+	 
 	if (!icl_is_hdr_plane(dev_priv, intel_plane->id) &&
 	    fb && intel_format_info_is_yuv_semiplanar(fb->format, fb->modifier))
 		need_scaler = true;
@@ -294,7 +217,7 @@ int skl_update_scaler_plane(struct intel_crtc_state *crtc_state,
 	if (ret || plane_state->scaler_id < 0)
 		return ret;
 
-	/* check colorkey */
+	 
 	if (plane_state->ckey.flags) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "[PLANE:%d:%s] scaling with color key not allowed",
@@ -303,7 +226,7 @@ int skl_update_scaler_plane(struct intel_crtc_state *crtc_state,
 		return -EINVAL;
 	}
 
-	/* Check src format */
+	 
 	switch (fb->format->format) {
 	case DRM_FORMAT_RGB565:
 	case DRM_FORMAT_XBGR8888:
@@ -359,7 +282,7 @@ static int intel_atomic_setup_scaler(struct intel_crtc_scaler_state *scaler_stat
 	u32 mode;
 
 	if (*scaler_id < 0) {
-		/* find a free scaler */
+		 
 		for (j = 0; j < intel_crtc->num_scalers; j++) {
 			if (scaler_state->scalers[j].in_use)
 				continue;
@@ -374,7 +297,7 @@ static int intel_atomic_setup_scaler(struct intel_crtc_scaler_state *scaler_stat
 		     "Cannot find scaler for %s:%d\n", name, idx))
 		return -EINVAL;
 
-	/* set scaler mode */
+	 
 	if (plane_state && plane_state->hw.fb &&
 	    plane_state->hw.fb->format->is_yuv &&
 	    plane_state->hw.fb->format->num_planes > 1) {
@@ -383,11 +306,7 @@ static int intel_atomic_setup_scaler(struct intel_crtc_scaler_state *scaler_stat
 		if (DISPLAY_VER(dev_priv) == 9) {
 			mode = SKL_PS_SCALER_MODE_NV12;
 		} else if (icl_is_hdr_plane(dev_priv, plane->id)) {
-			/*
-			 * On gen11+'s HDR planes we only use the scaler for
-			 * scaling. They have a dedicated chroma upsampler, so
-			 * we don't need the scaler to upsample the UV plane.
-			 */
+			 
 			mode = PS_SCALER_MODE_NORMAL;
 		} else {
 			struct intel_plane *linked =
@@ -401,11 +320,7 @@ static int intel_atomic_setup_scaler(struct intel_crtc_scaler_state *scaler_stat
 	} else if (DISPLAY_VER(dev_priv) >= 10) {
 		mode = PS_SCALER_MODE_NORMAL;
 	} else if (num_scalers_need == 1 && intel_crtc->num_scalers > 1) {
-		/*
-		 * when only 1 scaler is in use on a pipe with 2 scalers
-		 * scaler 0 operates in high quality (HQ) mode.
-		 * In this case use scaler 0 to take advantage of HQ mode
-		 */
+		 
 		scaler_state->scalers[*scaler_id].in_use = 0;
 		*scaler_id = 0;
 		scaler_state->scalers[0].in_use = 1;
@@ -414,31 +329,17 @@ static int intel_atomic_setup_scaler(struct intel_crtc_scaler_state *scaler_stat
 		mode = SKL_PS_SCALER_MODE_DYN;
 	}
 
-	/*
-	 * FIXME: we should also check the scaler factors for pfit, so
-	 * this shouldn't be tied directly to planes.
-	 */
+	 
 	if (plane_state && plane_state->hw.fb) {
 		const struct drm_framebuffer *fb = plane_state->hw.fb;
 		const struct drm_rect *src = &plane_state->uapi.src;
 		const struct drm_rect *dst = &plane_state->uapi.dst;
 		int hscale, vscale, max_vscale, max_hscale;
 
-		/*
-		 * FIXME: When two scalers are needed, but only one of
-		 * them needs to downscale, we should make sure that
-		 * the one that needs downscaling support is assigned
-		 * as the first scaler, so we don't reject downscaling
-		 * unnecessarily.
-		 */
+		 
 
 		if (DISPLAY_VER(dev_priv) >= 14) {
-			/*
-			 * On versions 14 and up, only the first
-			 * scaler supports a vertical scaling factor
-			 * of more than 1.0, while a horizontal
-			 * scaling factor of 3.0 is supported.
-			 */
+			 
 			max_hscale = 0x30000 - 1;
 			if (*scaler_id == 0)
 				max_vscale = 0x30000 - 1;
@@ -454,12 +355,9 @@ static int intel_atomic_setup_scaler(struct intel_crtc_scaler_state *scaler_stat
 			max_vscale = 0x20000 - 1;
 		}
 
-		/*
-		 * FIXME: We should change the if-else block above to
-		 * support HQ vs dynamic scaler properly.
-		 */
+		 
 
-		/* Check if required scaling is within limits */
+		 
 		hscale = drm_rect_calc_hscale(src, dst, 1, max_hscale);
 		vscale = drm_rect_calc_vscale(src, dst, 1, max_vscale);
 
@@ -481,23 +379,7 @@ static int intel_atomic_setup_scaler(struct intel_crtc_scaler_state *scaler_stat
 	return 0;
 }
 
-/**
- * intel_atomic_setup_scalers() - setup scalers for crtc per staged requests
- * @dev_priv: i915 device
- * @intel_crtc: intel crtc
- * @crtc_state: incoming crtc_state to validate and setup scalers
- *
- * This function sets up scalers based on staged scaling requests for
- * a @crtc and its planes. It is called from crtc level check path. If request
- * is a supportable request, it attaches scalers to requested planes and crtc.
- *
- * This function takes into account the current scaler(s) in use by any planes
- * not being part of this atomic state
- *
- *  Returns:
- *         0 - scalers were setup successfully
- *         error code - otherwise
- */
+ 
 int intel_atomic_setup_scalers(struct drm_i915_private *dev_priv,
 			       struct intel_crtc *intel_crtc,
 			       struct intel_crtc_state *crtc_state)
@@ -513,19 +395,9 @@ int intel_atomic_setup_scalers(struct drm_i915_private *dev_priv,
 
 	num_scalers_need = hweight32(scaler_state->scaler_users);
 
-	/*
-	 * High level flow:
-	 * - staged scaler requests are already in scaler_state->scaler_users
-	 * - check whether staged scaling requests can be supported
-	 * - add planes using scalers that aren't in current transaction
-	 * - assign scalers to requested users
-	 * - as part of plane commit, scalers will be committed
-	 *   (i.e., either attached or detached) to respective planes in hw
-	 * - as part of crtc_commit, scaler will be either attached or detached
-	 *   to crtc in hw
-	 */
+	 
 
-	/* fail if required scalers > available scalers */
+	 
 	if (num_scalers_need > intel_crtc->num_scalers) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "Too many scaling requests %d > %d\n",
@@ -533,14 +405,14 @@ int intel_atomic_setup_scalers(struct drm_i915_private *dev_priv,
 		return -EINVAL;
 	}
 
-	/* walkthrough scaler_users bits and start assigning scalers */
+	 
 	for (i = 0; i < sizeof(scaler_state->scaler_users) * 8; i++) {
 		struct intel_plane_state *plane_state = NULL;
 		int *scaler_id;
 		const char *name;
 		int idx, ret;
 
-		/* skip if scaler not required */
+		 
 		if (!(scaler_state->scaler_users & (1 << i)))
 			continue;
 
@@ -548,27 +420,20 @@ int intel_atomic_setup_scalers(struct drm_i915_private *dev_priv,
 			name = "CRTC";
 			idx = intel_crtc->base.base.id;
 
-			/* panel fitter case: assign as a crtc scaler */
+			 
 			scaler_id = &scaler_state->scaler_id;
 		} else {
 			name = "PLANE";
 
-			/* plane scaler case: assign as a plane scaler */
-			/* find the plane that set the bit as scaler_user */
+			 
+			 
 			plane = drm_state->planes[i].ptr;
 
-			/*
-			 * to enable/disable hq mode, add planes that are using scaler
-			 * into this transaction
-			 */
+			 
 			if (!plane) {
 				struct drm_plane_state *state;
 
-				/*
-				 * GLK+ scalers don't have a HQ mode so it
-				 * isn't necessary to change between HQ and dyn mode
-				 * on those platforms.
-				 */
+				 
 				if (DISPLAY_VER(dev_priv) >= 10)
 					continue;
 
@@ -585,7 +450,7 @@ int intel_atomic_setup_scalers(struct drm_i915_private *dev_priv,
 			intel_plane = to_intel_plane(plane);
 			idx = plane->base.id;
 
-			/* plane on different crtc cannot be a scaler user of this crtc */
+			 
 			if (drm_WARN_ON(&dev_priv->drm,
 					intel_plane->pipe != intel_crtc->pipe))
 				continue;
@@ -615,42 +480,7 @@ static u16 glk_nearest_filter_coef(int t)
 	return t == 3 ? 0x0800 : 0x3000;
 }
 
-/*
- *  Theory behind setting nearest-neighbor integer scaling:
- *
- *  17 phase of 7 taps requires 119 coefficients in 60 dwords per set.
- *  The letter represents the filter tap (D is the center tap) and the number
- *  represents the coefficient set for a phase (0-16).
- *
- *         +------------+------------------------+------------------------+
- *         |Index value | Data value coeffient 1 | Data value coeffient 2 |
- *         +------------+------------------------+------------------------+
- *         |   00h      |          B0            |          A0            |
- *         +------------+------------------------+------------------------+
- *         |   01h      |          D0            |          C0            |
- *         +------------+------------------------+------------------------+
- *         |   02h      |          F0            |          E0            |
- *         +------------+------------------------+------------------------+
- *         |   03h      |          A1            |          G0            |
- *         +------------+------------------------+------------------------+
- *         |   04h      |          C1            |          B1            |
- *         +------------+------------------------+------------------------+
- *         |   ...      |          ...           |          ...           |
- *         +------------+------------------------+------------------------+
- *         |   38h      |          B16           |          A16           |
- *         +------------+------------------------+------------------------+
- *         |   39h      |          D16           |          C16           |
- *         +------------+------------------------+------------------------+
- *         |   3Ah      |          F16           |          C16           |
- *         +------------+------------------------+------------------------+
- *         |   3Bh      |        Reserved        |          G16           |
- *         +------------+------------------------+------------------------+
- *
- *  To enable nearest-neighbor scaling:  program scaler coefficents with
- *  the center tap (Dxx) values set to 1 and all other values set to 0 as per
- *  SCALER_COEFFICIENT_FORMAT
- *
- */
+ 
 
 static void glk_program_nearest_filter_coefs(struct drm_i915_private *dev_priv,
 					     enum pipe pipe, int id, int set)
@@ -786,17 +616,17 @@ skl_program_plane_scaler(struct intel_plane *plane,
 				      &plane_state->uapi.dst,
 				      0, INT_MAX);
 
-	/* TODO: handle sub-pixel coordinates */
+	 
 	if (intel_format_info_is_yuv_semiplanar(fb->format, fb->modifier) &&
 	    !icl_is_hdr_plane(dev_priv, plane->id)) {
 		y_hphase = skl_scaler_calc_phase(1, hscale, false);
 		y_vphase = skl_scaler_calc_phase(1, vscale, false);
 
-		/* MPEG2 chroma siting convention */
+		 
 		uv_rgb_hphase = skl_scaler_calc_phase(2, hscale, true);
 		uv_rgb_vphase = skl_scaler_calc_phase(2, vscale, false);
 	} else {
-		/* not used */
+		 
 		y_hphase = 0;
 		y_vphase = 0;
 
@@ -831,9 +661,7 @@ static void skl_detach_scaler(struct intel_crtc *crtc, int id)
 	intel_de_write_fw(dev_priv, SKL_PS_WIN_SZ(crtc->pipe, id), 0);
 }
 
-/*
- * This function detaches (aka. unbinds) unused scalers in hardware
- */
+ 
 void skl_detach_scalers(const struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
@@ -841,7 +669,7 @@ void skl_detach_scalers(const struct intel_crtc_state *crtc_state)
 		&crtc_state->scaler_state;
 	int i;
 
-	/* loop through and disable scalers that aren't in use */
+	 
 	for (i = 0; i < crtc->num_scalers; i++) {
 		if (!scaler_state->scalers[i].in_use)
 			skl_detach_scaler(crtc, i);
@@ -865,7 +693,7 @@ void skl_scaler_get_config(struct intel_crtc_state *crtc_state)
 	int id = -1;
 	int i;
 
-	/* find scaler attached to this pipe */
+	 
 	for (i = 0; i < crtc->num_scalers; i++) {
 		u32 ctl, pos, size;
 

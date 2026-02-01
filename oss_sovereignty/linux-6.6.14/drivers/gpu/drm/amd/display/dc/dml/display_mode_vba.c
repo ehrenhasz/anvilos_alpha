@@ -1,41 +1,11 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "display_mode_lib.h"
 #include "display_mode_vba.h"
 #include "dml_inline_defs.h"
 
-/*
- * NOTE:
- *   This file is gcc-parsable HW gospel, coming straight from HW engineers.
- *
- * It doesn't adhere to Linux kernel style and sometimes will do things in odd
- * ways. Unless there is something clearly wrong with it the code should
- * remain as-is as it provides us with a guarantee from HW that it is correct.
- */
+ 
 
 
 static void fetch_socbb_params(struct display_mode_lib *mode_lib);
@@ -282,7 +252,7 @@ double get_det_buffer_size_kbytes(struct display_mode_lib *mode_lib, const displ
 	plane_idx = mode_lib->vba.pipe_plane[pipe_idx];
 
 	dml_print("DML::%s: num_pipes=%d pipe_idx=%d plane_idx=%0d\n", __func__, num_pipes, pipe_idx, plane_idx);
-	det_buf_size_kbytes = mode_lib->vba.DETBufferSizeInKByte[plane_idx]; // per hubp DET buffer size
+	det_buf_size_kbytes = mode_lib->vba.DETBufferSizeInKByte[plane_idx]; 
 
 	dml_print("DML::%s: det_buf_size_kbytes=%3.2f\n", __func__, det_buf_size_kbytes);
 
@@ -306,11 +276,11 @@ static void fetch_socbb_params(struct display_mode_lib *mode_lib)
 	soc_bounding_box_st *soc = &mode_lib->vba.soc;
 	int i;
 
-	// SOC Bounding Box Parameters
+	
 	mode_lib->vba.ReturnBusWidth = soc->return_bus_width_bytes;
 	mode_lib->vba.NumberOfChannels = soc->num_chans;
 	mode_lib->vba.PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelDataOnly =
-			soc->pct_ideal_dram_sdp_bw_after_urgent_pixel_only; // there's always that one bastard variable that's so long it throws everything out of alignment!
+			soc->pct_ideal_dram_sdp_bw_after_urgent_pixel_only; 
 	mode_lib->vba.PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData =
 			soc->pct_ideal_dram_sdp_bw_after_urgent_pixel_and_vm;
 	mode_lib->vba.PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly =
@@ -364,15 +334,15 @@ static void fetch_socbb_params(struct display_mode_lib *mode_lib)
 		soc->allow_dram_self_refresh_or_dram_clock_change_in_vblank;
 
 	mode_lib->vba.Downspreading = soc->downspread_percent;
-	mode_lib->vba.DRAMChannelWidth = soc->dram_channel_width_bytes;   // new!
-	mode_lib->vba.FabricDatapathToDCNDataReturn = soc->fabric_datapath_to_dcn_data_return_bytes; // new!
-	mode_lib->vba.DISPCLKDPPCLKDSCCLKDownSpreading = soc->dcn_downspread_percent;   // new
-	mode_lib->vba.DISPCLKDPPCLKVCOSpeed = soc->dispclk_dppclk_vco_speed_mhz;   // new
+	mode_lib->vba.DRAMChannelWidth = soc->dram_channel_width_bytes;   
+	mode_lib->vba.FabricDatapathToDCNDataReturn = soc->fabric_datapath_to_dcn_data_return_bytes; 
+	mode_lib->vba.DISPCLKDPPCLKDSCCLKDownSpreading = soc->dcn_downspread_percent;   
+	mode_lib->vba.DISPCLKDPPCLKVCOSpeed = soc->dispclk_dppclk_vco_speed_mhz;   
 	mode_lib->vba.VMMPageSize = soc->vmm_page_size_bytes;
 	mode_lib->vba.GPUVMMinPageSize = soc->gpuvm_min_page_size_bytes / 1024;
 	mode_lib->vba.HostVMMinPageSize = soc->hostvm_min_page_size_bytes / 1024;
-	// Set the voltage scaling clocks as the defaults. Most of these will
-	// be set to different values by the test
+	
+	
 	for (i = 0; i < mode_lib->vba.soc.num_states; i++)
 		if (soc->clock_limits[i].state == mode_lib->vba.VoltageLevel)
 			break;
@@ -401,7 +371,7 @@ static void fetch_socbb_params(struct display_mode_lib *mode_lib)
 		mode_lib->vba.MaxDppclk[i] = soc->clock_limits[i].dppclk_mhz;
 		mode_lib->vba.MaxDSCCLK[i] = soc->clock_limits[i].dscclk_mhz;
 		mode_lib->vba.DRAMSpeedPerState[i] = soc->clock_limits[i].dram_speed_mts;
-		//mode_lib->vba.DRAMSpeedPerState[i] = soc->clock_limits[i].dram_speed_mhz;
+		
 		mode_lib->vba.MaxDispclk[i] = soc->clock_limits[i].dispclk_mhz;
 		mode_lib->vba.DTBCLKPerState[i] = soc->clock_limits[i].dtbclk_mhz;
 	}
@@ -419,7 +389,7 @@ static void fetch_ip_params(struct display_mode_lib *mode_lib)
 {
 	ip_params_st *ip = &mode_lib->vba.ip;
 
-	// IP Parameters
+	
 	mode_lib->vba.UseMinimumRequiredDCFCLK = ip->use_min_dcfclk;
 	mode_lib->vba.ClampMinDCFCLK = ip->clamp_min_dcfclk;
 	mode_lib->vba.MaxNumDPP = ip->max_num_dpp;
@@ -441,14 +411,14 @@ static void fetch_ip_params(struct display_mode_lib *mode_lib)
 	mode_lib->vba.COMPBUF_RESERVED_SPACE_ZS = ip->compbuf_reserved_space_zs;
 	mode_lib->vba.MaximumDSCBitsPerComponent = ip->maximum_dsc_bits_per_component;
 	mode_lib->vba.DSC422NativeSupport = ip->dsc422_native_support;
-    /* In DCN3.2, nomDETInKByte should be initialized correctly. */
+     
 	mode_lib->vba.nomDETInKByte = ip->det_buffer_size_kbytes;
 	mode_lib->vba.CompbufReservedSpace64B  = ip->compbuf_reserved_space_64b;
 	mode_lib->vba.CompbufReservedSpaceZs = ip->compbuf_reserved_space_zs;
 	mode_lib->vba.CompressedBufferSegmentSizeInkByteFinal = ip->compressed_buffer_segment_size_in_kbytes;
 	mode_lib->vba.LineBufferSizeFinal = ip->line_buffer_size_bits;
-	mode_lib->vba.AlphaPixelChunkSizeInKByte = ip->alpha_pixel_chunk_size_kbytes; // not ysed
-	mode_lib->vba.MinPixelChunkSizeBytes = ip->min_pixel_chunk_size_bytes; // not used
+	mode_lib->vba.AlphaPixelChunkSizeInKByte = ip->alpha_pixel_chunk_size_kbytes; 
+	mode_lib->vba.MinPixelChunkSizeBytes = ip->min_pixel_chunk_size_bytes; 
 	mode_lib->vba.MaximumPixelsPerLinePerDSCUnit = ip->maximum_pixels_per_line_per_dsc_unit;
 	mode_lib->vba.MaxNumDP2p0Outputs = ip->max_num_dp2p0_outputs;
 	mode_lib->vba.MaxNumDP2p0Streams = ip->max_num_dp2p0_streams;
@@ -522,7 +492,7 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 	bool PlaneVisited[DC__NUM_DPP__MAX];
 	bool visited[DC__NUM_DPP__MAX];
 
-	// Convert Pipes to Planes
+	
 	for (k = 0; k < mode_lib->vba.cache_num_pipes; ++k)
 		visited[k] = false;
 
@@ -561,13 +531,13 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 		mode_lib->vba.SourceRotation[mode_lib->vba.NumberOfActiveSurfaces] = src->source_rotation;
 		mode_lib->vba.ViewportXStartY[mode_lib->vba.NumberOfActiveSurfaces] = src->viewport_x_y;
 		mode_lib->vba.ViewportXStartC[mode_lib->vba.NumberOfActiveSurfaces] = src->viewport_x_c;
-		// TODO: Assign correct value to viewport_stationary
+		
 		mode_lib->vba.ViewportStationary[mode_lib->vba.NumberOfActivePlanes] =
 				src->viewport_stationary;
 		mode_lib->vba.UsesMALLForPStateChange[mode_lib->vba.NumberOfActivePlanes] = src->use_mall_for_pstate_change;
 		mode_lib->vba.UseMALLForStaticScreen[mode_lib->vba.NumberOfActivePlanes] = src->use_mall_for_static_screen;
 		mode_lib->vba.GPUVMMinPageSizeKBytes[mode_lib->vba.NumberOfActivePlanes] = src->gpuvm_min_page_size_kbytes;
-		mode_lib->vba.RefreshRate[mode_lib->vba.NumberOfActivePlanes] = dst->refresh_rate; //todo remove this
+		mode_lib->vba.RefreshRate[mode_lib->vba.NumberOfActivePlanes] = dst->refresh_rate; 
 		mode_lib->vba.OutputLinkDPRate[mode_lib->vba.NumberOfActivePlanes] = dout->dp_rate;
 		mode_lib->vba.ODMUse[mode_lib->vba.NumberOfActivePlanes] = dst->odm_combine_policy;
 		mode_lib->vba.DETSizeOverride[mode_lib->vba.NumberOfActivePlanes] = src->det_size_override;
@@ -575,7 +545,7 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 			mode_lib->vba.DETBufferSizeInKByte[mode_lib->vba.NumberOfActivePlanes] = src->det_size_override;
 		else
 			mode_lib->vba.DETBufferSizeInKByte[mode_lib->vba.NumberOfActivePlanes] = ip->det_buffer_size_kbytes;
-		//TODO: Need to assign correct values to dp_multistream vars
+		
 		mode_lib->vba.OutputMultistreamEn[mode_lib->vba.NumberOfActiveSurfaces] = dout->dp_multistream_en;
 		mode_lib->vba.OutputMultistreamId[mode_lib->vba.NumberOfActiveSurfaces] = dout->dp_multistream_id;
 		mode_lib->vba.PitchY[mode_lib->vba.NumberOfActivePlanes] = src->data_pitch;
@@ -610,7 +580,7 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 				src->dcc_use_global ?
 						ip->dcc_supported : src->dcc && ip->dcc_supported;
 		mode_lib->vba.DCCRate[mode_lib->vba.NumberOfActivePlanes] = src->dcc_rate;
-		/* TODO: Needs to be set based on src->dcc_rate_luma/chroma */
+		 
 		mode_lib->vba.DCCRateLuma[mode_lib->vba.NumberOfActivePlanes] = src->dcc_rate;
 		mode_lib->vba.DCCRateChroma[mode_lib->vba.NumberOfActivePlanes] = src->dcc_rate_chroma;
 		mode_lib->vba.SourcePixelFormat[mode_lib->vba.NumberOfActivePlanes] = (enum source_format_class) (src->source_format);
@@ -619,7 +589,7 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 		mode_lib->vba.SurfaceTiling[mode_lib->vba.NumberOfActivePlanes] =
 				(enum dm_swizzle_mode) (src->sw_mode);
 		mode_lib->vba.ScalerRecoutWidth[mode_lib->vba.NumberOfActivePlanes] =
-				dst->recout_width; // TODO: or should this be full_recout_width???...maybe only when in hsplit mode?
+				dst->recout_width; 
 		mode_lib->vba.ODMCombineEnabled[mode_lib->vba.NumberOfActivePlanes] =
 				dst->odm_combine;
 		mode_lib->vba.OutputFormat[mode_lib->vba.NumberOfActivePlanes] =
@@ -638,7 +608,7 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 
 		mode_lib->vba.OutputLinkDPLanes[mode_lib->vba.NumberOfActivePlanes] =
 				dout->dp_lanes;
-		/* TODO: Needs to be set based on dout->audio.audio_sample_rate_khz/sample_layout */
+		 
 		mode_lib->vba.AudioSampleRate[mode_lib->vba.NumberOfActivePlanes] =
 			dout->max_audio_sample_rate;
 		mode_lib->vba.AudioSampleLayout[mode_lib->vba.NumberOfActivePlanes] =
@@ -737,8 +707,8 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 			mode_lib->vba.LBBitPerPixel[mode_lib->vba.NumberOfActivePlanes] = lb_depth;
 		}
 		mode_lib->vba.NumberOfCursors[mode_lib->vba.NumberOfActivePlanes] = 0;
-		// The DML spreadsheet assumes that the two cursors utilize the same amount of bandwidth. We'll
-		// calculate things a little more accurately
+		
+		
 		for (k = 0; k < DC__NUM_CURSOR__MAX; ++k) {
 			switch (k) {
 			case 0:
@@ -833,8 +803,8 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 		mode_lib->vba.NumberOfActiveSurfaces++;
 	}
 
-	// handle overlays through BlendingAndTiming
-	// BlendingAndTiming tells you which instance to look at to get timing, the so called 'master'
+	
+	
 
 	for (j = 0; j < mode_lib->vba.NumberOfActivePlanes; ++j)
 		PlaneVisited[j] = false;
@@ -842,7 +812,7 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 	for (j = 0; j < mode_lib->vba.NumberOfActivePlanes; ++j) {
 		for (k = j + 1; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
 			if (!PlaneVisited[k] && OTGInstPlane[j] == OTGInstPlane[k]) {
-				// doesn't matter, so choose the smaller one
+				
 				mode_lib->vba.BlendingAndTiming[j] = j;
 				PlaneVisited[j] = true;
 				mode_lib->vba.BlendingAndTiming[k] = j;
@@ -866,8 +836,8 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 		if (pipes[k].pipe.src.unbounded_req_mode == 0)
 			mode_lib->vba.UseUnboundedRequesting = dm_unbounded_requesting_disable;
 	}
-	// TODO: ODMCombineEnabled => 2 * DPPPerPlane...actually maybe not since all pipes are specified
-	// Do we want the dscclk to automatically be halved? Guess not since the value is specified
+	
+	
 	mode_lib->vba.SynchronizedVBlank = pipes[0].pipe.dest.synchronized_vblank_all_planes;
 	for (k = 1; k < mode_lib->vba.cache_num_pipes; ++k) {
 		ASSERT(mode_lib->vba.SynchronizedVBlank == pipes[k].pipe.dest.synchronized_vblank_all_planes);
@@ -932,18 +902,7 @@ static void fetch_pipe_params(struct display_mode_lib *mode_lib)
 	}
 }
 
-/**
- * cache_debug_params: Cache any params that needed to be maintained from the initial validation
- * for debug purposes.
- *
- * The DML getters can modify some of the VBA params that we are interested in (for example when
- * calculating with dummy p-state latency), so cache any params here that we want for debugging
- *
- * @mode_lib: mode_lib input/output of validate call
- *
- * Return: void
- *
- */
+ 
 static void cache_debug_params(struct display_mode_lib *mode_lib)
 {
 	int k = 0;
@@ -952,14 +911,14 @@ static void cache_debug_params(struct display_mode_lib *mode_lib)
 		mode_lib->vba.CachedActiveDRAMClockChangeLatencyMargin[k] = mode_lib->vba.ActiveDRAMClockChangeLatencyMargin[k];
 }
 
-// in wm mode we pull the parameters needed from the display_e2e_pipe_params_st structs
-// rather than working them out as in recalculate_ms
+
+
 static void recalculate_params(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
 		unsigned int num_pipes)
 {
-	// This is only safe to use memcmp because there are non-POD types in struct display_mode_lib
+	
 	if (memcmp(&mode_lib->soc, &mode_lib->vba.soc, sizeof(mode_lib->vba.soc)) != 0
 			|| memcmp(&mode_lib->ip, &mode_lib->vba.ip, sizeof(mode_lib->vba.ip)) != 0
 			|| num_pipes != mode_lib->vba.cache_num_pipes
@@ -1049,7 +1008,7 @@ void PixelClockAdjustmentForProgressiveToInterlaceUnit(struct display_mode_lib *
 {
 	unsigned int k;
 
-	//Progressive To Interlace Unit Effect
+	
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
 		mode_lib->vba.PixelClockBackEnd[k] = mode_lib->vba.PixelClock[k];
 		if (mode_lib->vba.Interlace[k] == 1
@@ -1097,7 +1056,7 @@ void ModeSupportAndSystemConfiguration(struct display_mode_lib *mode_lib)
 	else
 		mode_lib->vba.DISPCLK = soc->clock_limits[mode_lib->vba.VoltageLevel].dispclk_mhz;
 
-	// Total Available Pipes Support Check
+	
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
 		total_pipes += mode_lib->vba.DPPPerPlane[k];
 		pipe_idx = get_pipe_idx(mode_lib, k);

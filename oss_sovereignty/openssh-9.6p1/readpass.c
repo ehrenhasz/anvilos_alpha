@@ -1,27 +1,5 @@
-/* $OpenBSD: readpass.c,v 1.70 2022/05/27 04:27:49 dtucker Exp $ */
-/*
- * Copyright (c) 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -110,15 +88,10 @@ ssh_askpass(char *askpass, const char *msg, const char *env_hint)
 	return pass;
 }
 
-/* private/internal read_passphrase flags */
-#define RP_ASK_PERMISSION	0x8000 /* pass hint to askpass for confirm UI */
+ 
+#define RP_ASK_PERMISSION	0x8000  
 
-/*
- * Reads a passphrase from /dev/tty with echo turned off/on.  Returns the
- * passphrase (allocated with xmalloc).  Exits if EOF is encountered. If
- * RP_ALLOW_STDIN is set, the passphrase will be read from stdin if no
- * tty is or askpass program is available
- */
+ 
 char *
 read_passphrase(const char *prompt, int flags)
 {
@@ -153,12 +126,7 @@ read_passphrase(const char *prompt, int flags)
 		rppflags |= RPP_REQUIRE_TTY;
 		ttyfd = open(_PATH_TTY, O_RDWR);
 		if (ttyfd >= 0) {
-			/*
-			 * If we're on a tty, ensure that show the prompt at
-			 * the beginning of the line. This will hopefully
-			 * clobber any password characters the user has
-			 * optimistically typed before echo is disabled.
-			 */
+			 
 			(void)write(ttyfd, &cr, 1);
 			close(ttyfd);
 		} else {
@@ -209,10 +177,7 @@ ask_permission(const char *fmt, ...)
 	p = read_passphrase(prompt,
 	    RP_USE_ASKPASS|RP_ALLOW_EOF|RP_ASK_PERMISSION);
 	if (p != NULL) {
-		/*
-		 * Accept empty responses and responses consisting
-		 * of the word "yes" as affirmative.
-		 */
+		 
 		if (*p == '\0' || *p == '\n' ||
 		    strcasecmp(p, "yes") == 0)
 			allowed = 1;
@@ -278,11 +243,11 @@ notify_start(int force_askpass, const char *fmt, ...)
 		if (stdfd_devnull(1, 1, 0) == -1)
 			fatal_f("stdfd_devnull failed");
 		closefrom(STDERR_FILENO + 1);
-		setenv("SSH_ASKPASS_PROMPT", "none", 1); /* hint to UI */
+		setenv("SSH_ASKPASS_PROMPT", "none", 1);  
 		execlp(askpass, askpass, prompt, (char *)NULL);
 		error_f("exec(%s): %s", askpass, strerror(errno));
 		_exit(1);
-		/* NOTREACHED */
+		 
 	}
  out_ctx:
 	if ((ret = calloc(1, sizeof(*ret))) == NULL) {
@@ -305,10 +270,7 @@ notify_complete(struct notifier_ctx *ctx, const char *fmt, ...)
 	va_list args;
 
 	if (ctx != NULL && fmt != NULL && ctx->pid == -1) {
-		/*
-		 * notify_start wrote to stderr, so send conclusion message
-		 * there too
-		*/
+		 
 		va_start(args, fmt);
 		xvasprintf(&msg, fmt, args);
 		va_end(args);

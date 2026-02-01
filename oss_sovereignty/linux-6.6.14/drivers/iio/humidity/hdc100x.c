@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * hdc100x.c - Support for the TI HDC100x temperature + humidity sensors
- *
- * Copyright (C) 2015, 2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * Datasheets:
- * https://www.ti.com/product/HDC1000/datasheet
- * https://www.ti.com/product/HDC1008/datasheet
- * https://www.ti.com/product/HDC1010/datasheet
- * https://www.ti.com/product/HDC1050/datasheet
- * https://www.ti.com/product/HDC1080/datasheet
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -39,31 +27,31 @@ struct hdc100x_data {
 	struct mutex lock;
 	u16 config;
 
-	/* integration time of the sensor */
+	 
 	int adc_int_us[2];
-	/* Ensure natural alignment of timestamp */
+	 
 	struct {
 		__be16 channels[2];
 		s64 ts __aligned(8);
 	} scan;
 };
 
-/* integration time in us */
+ 
 static const int hdc100x_int_time[][3] = {
-	{ 6350, 3650, 0 },	/* IIO_TEMP channel*/
-	{ 6500, 3850, 2500 },	/* IIO_HUMIDITYRELATIVE channel */
+	{ 6350, 3650, 0 },	 
+	{ 6500, 3850, 2500 },	 
 };
 
-/* HDC100X_REG_CONFIG shift and mask values */
+ 
 static const struct {
 	int shift;
 	int mask;
 } hdc100x_resolution_shift[2] = {
-	{ /* IIO_TEMP channel */
+	{  
 		.shift = 10,
 		.mask = 1
 	},
-	{ /* IIO_HUMIDITYRELATIVE channel */
+	{  
 		.shift = 8,
 		.mask = 3,
 	},
@@ -172,17 +160,17 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
 	int ret;
 	__be16 val;
 
-	/* start measurement */
+	 
 	ret = i2c_smbus_write_byte(client, chan->address);
 	if (ret < 0) {
 		dev_err(&client->dev, "cannot start measurement");
 		return ret;
 	}
 
-	/* wait for integration time to pass */
+	 
 	usleep_range(delay, delay + 1000);
 
-	/* read measurement */
+	 
 	ret = i2c_master_recv(data->client, (char *)&val, sizeof(val));
 	if (ret < 0) {
 		dev_err(&client->dev, "cannot read sensor data\n");
@@ -286,7 +274,7 @@ static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
 	struct hdc100x_data *data = iio_priv(indio_dev);
 	int ret;
 
-	/* Buffer is enabled. First set ACQ Mode, then attach poll func */
+	 
 	mutex_lock(&data->lock);
 	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE,
 				    HDC100X_REG_CONFIG_ACQ_MODE);
@@ -321,7 +309,7 @@ static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
 	int delay = data->adc_int_us[0] + data->adc_int_us[1] + 2*USEC_PER_MSEC;
 	int ret;
 
-	/* dual read starts at temp register */
+	 
 	mutex_lock(&data->lock);
 	ret = i2c_smbus_write_byte(client, HDC100X_REG_TEMP);
 	if (ret < 0) {
@@ -378,7 +366,7 @@ static int hdc100x_probe(struct i2c_client *client)
 	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
 	indio_dev->available_scan_masks = hdc100x_scan_masks;
 
-	/* be sure we are in a known state */
+	 
 	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
 	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
 	hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);

@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_RECORD_H
 #define __PERF_RECORD_H
-/*
- * The linux/stddef.h isn't need here, but is needed for __always_inline used
- * in files included from uapi/linux/perf_event.h such as
- * /usr/include/linux/swab.h and /usr/include/linux/byteorder/little_endian.h,
- * detected in at least musl libc, used in Alpine Linux. -acme
- */
+ 
 #include <stdio.h>
 #include <linux/stddef.h>
 #include <perf/event.h>
@@ -18,12 +13,7 @@ struct perf_event_attr;
 struct perf_sample;
 
 #ifdef __LP64__
-/*
- * /usr/include/inttypes.h uses just 'lu' for PRIu64, but we end up defining
- * __u64 as long long unsigned int, and then -Werror=format= kicks in and
- * complains of the mismatched types, so use these two special extra PRI
- * macros to overcome that.
- */
+ 
 #define PRI_lu64 "l" PRIu64
 #define PRI_lx64 "l" PRIx64
 #define PRI_ld64 "l" PRId64
@@ -40,7 +30,7 @@ struct perf_sample;
 	 PERF_SAMPLE_CPU | PERF_SAMPLE_PERIOD |		\
 	 PERF_SAMPLE_IDENTIFIER)
 
-/* perf sample has 16 bits size limit */
+ 
 #define PERF_SAMPLE_MAX_SIZE (1 << 16)
 
 struct ip_callchain {
@@ -92,10 +82,10 @@ enum {
 	 PERF_MEM_S(TLB, NA) |\
 	 PERF_MEM_S(LVLNUM, NA))
 
-/* Attribute type for custom synthesized events */
+ 
 #define PERF_TYPE_SYNTH		(INT_MAX + 1U)
 
-/* Attribute config for custom synthesized events */
+ 
 enum perf_synth_id {
 	PERF_SYNTH_INTEL_PTWRITE,
 	PERF_SYNTH_INTEL_MWAIT,
@@ -108,14 +98,7 @@ enum perf_synth_id {
 	PERF_SYNTH_INTEL_IFLAG_CHG,
 };
 
-/*
- * Raw data formats for synthesized events. Note that 4 bytes of padding are
- * present to match the 'size' member of PERF_SAMPLE_RAW data which is always
- * 8-byte aligned. That means we must dereference raw_data with an offset of 4.
- * Refer perf_sample__synth_ptr() and perf_synth__raw_data().  It also means the
- * structure sizes are 4 bytes bigger than the raw_size, refer
- * perf_synth__raw_size().
- */
+ 
 
 struct perf_synth_intel_ptwrite {
 	u32 padding;
@@ -215,7 +198,7 @@ struct perf_synth_intel_evd {
 	u64	payload;
 };
 
-/* Intel PT Event Trace */
+ 
 struct perf_synth_intel_evt {
 	u32 padding;
 	union {
@@ -240,7 +223,7 @@ struct perf_synth_intel_iflag_chg {
 		};
 		u32	flags;
 	};
-	u64	branch_ip; /* If via_branch */
+	u64	branch_ip;  
 };
 
 static inline void *perf_synth__raw_data(void *p)
@@ -401,4 +384,4 @@ static inline bool perf_event__is_guest(const union perf_event *event)
 	return perf_event_header__is_guest(&event->header);
 }
 
-#endif /* __PERF_RECORD_H */
+#endif  

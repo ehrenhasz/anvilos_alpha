@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Linux kernel module helpers.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/module.h>
@@ -16,8 +14,8 @@ ssize_t of_modalias(const struct device_node *np, char *str, ssize_t len)
 	ssize_t csize;
 	ssize_t tsize;
 
-	/* Name & Type */
-	/* %p eats all alphanum characters, so %c must be used here */
+	 
+	 
 	csize = snprintf(str, len, "of:N%pOFn%c%s", np, 'T',
 			 of_node_get_device_type(np));
 	tsize = csize;
@@ -57,7 +55,7 @@ int of_request_module(const struct device_node *np)
 	if (size < 0)
 		return size;
 
-	/* Reserve an additional byte for the trailing '\0' */
+	 
 	size++;
 
 	str = kmalloc(size, GFP_KERNEL);

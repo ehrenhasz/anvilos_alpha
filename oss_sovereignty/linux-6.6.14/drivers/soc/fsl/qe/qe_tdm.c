@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Freescale Semiconductor, Inc. All rights reserved.
- *
- * Authors:	Zhao Qiang <qiang.zhao@nxp.com>
- *
- * Description:
- * QE TDM API Set - TDM specific routines implementations.
- */
+
+ 
 #include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/of.h>
@@ -143,7 +136,7 @@ void ucc_tdm_init(struct ucc_tdm *utdm, struct ucc_tdm_info *ut_info)
 	if (utdm->tdm_framer_type == TDM_FRAMER_E1)
 		utdm->num_of_ts = 32;
 
-	/* set siram table */
+	 
 	csel = (ucc_num < 4) ? ucc_num + 9 : ucc_num - 3;
 
 	siram_entry_valid = SIR_CSEL(csel) | SIR_BYTE | SIR_CNT(0);
@@ -172,7 +165,7 @@ void ucc_tdm_init(struct ucc_tdm *utdm, struct ucc_tdm_info *ut_info)
 	qe_setbits_be16(&siram[(siram_entry_id * 32) + 0x200 + (utdm->num_of_ts - 1)],
 			SIR_LAST);
 
-	/* Set SIxMR register */
+	 
 	sixmr = SIMR_SAD(siram_entry_id);
 
 	sixmr &= ~SIMR_SDM_MASK;

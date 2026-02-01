@@ -1,29 +1,8 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef RV6XXD_H
 #define RV6XXD_H
 
-/* RV6xx power management */
+ 
 #define SPLL_CNTL_MODE                                    0x60c
 #       define SPLL_DIV_SYNC                              (1 << 5)
 
@@ -217,13 +196,13 @@
 #       define LVTMA_PFREQCHG                           (1 << 8)
 #define DCE3_LVTMA_DATA_SYNCHRONIZATION                 0x7f98
 
-/* PCIE indirect regs */
+ 
 #define PCIE_P_CNTL                                       0x40
 #       define P_PLL_PWRDN_IN_L1L23                       (1 << 3)
 #       define P_PLL_BUF_PDNB                             (1 << 4)
 #       define P_PLL_PDNB                                 (1 << 9)
 #       define P_ALLOW_PRX_FRONTEND_SHUTOFF               (1 << 12)
-/* PCIE PORT indirect regs */
+ 
 #define PCIE_LC_CNTL                                      0xa0
 #       define LC_L0S_INACTIVITY(x)                       ((x) << 8)
 #       define LC_L0S_INACTIVITY_MASK                     (0xf << 8)

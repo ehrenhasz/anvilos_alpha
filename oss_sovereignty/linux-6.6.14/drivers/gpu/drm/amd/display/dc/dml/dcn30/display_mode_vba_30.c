@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dc.h"
 #include "../display_mode_lib.h"
@@ -29,14 +6,7 @@
 #include "../dml_inline_defs.h"
 
 
-/*
- * NOTE:
- *   This file is gcc-parsable HW gospel, coming straight from HW engineers.
- *
- * It doesn't adhere to Linux kernel style and sometimes will do things in odd
- * ways. Unless there is something clearly wrong with it the code should
- * remain as-is as it provides us with a guarantee from HW that it is correct.
- */
+ 
 
 
 typedef struct {
@@ -77,7 +47,7 @@ static unsigned int dscceComputeDelay(
 static unsigned int dscComputeDelay(
 		enum output_format_class pixelFormat,
 		enum output_encoder_class Output);
-// Super monster function with some 45 argument
+
 static bool CalculatePrefetchSchedule(
 		struct display_mode_lib *mode_lib,
 		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
@@ -672,24 +642,24 @@ static unsigned int dscceComputeDelay(
 		enum output_format_class pixelFormat,
 		enum output_encoder_class Output)
 {
-	// valid bpc         = source bits per component in the set of {8, 10, 12}
-	// valid bpp         = increments of 1/16 of a bit
-	//                    min = 6/7/8 in N420/N422/444, respectively
-	//                    max = such that compression is 1:1
-	//valid sliceWidth  = number of pixels per slice line, must be less than or equal to 5184/numSlices (or 4096/numSlices in 420 mode)
-	//valid numSlices   = number of slices in the horiziontal direction per DSC engine in the set of {1, 2, 3, 4}
-	//valid pixelFormat = pixel/color format in the set of {:N444_RGB, :S422, :N422, :N420}
+	
+	
+	
+	
+	
+	
+	
 
-	// fixed value
+	
 	unsigned int rcModelSize = 8192;
 
-	// N422/N420 operate at 2 pixels per clock
+	
 	unsigned int pixelsPerClock, lstall, D, initalXmitDelay, w, s, ix, wx, P, l0, a, ax, L,
 			Delay, pixels;
 
 	if (pixelFormat == dm_420)
 		pixelsPerClock = 2;
-	// #all other modes operate at 1 pixel per clock
+	
 	else if (pixelFormat == dm_444)
 		pixelsPerClock = 1;
 	else if (pixelFormat == dm_n422)
@@ -697,10 +667,10 @@ static unsigned int dscceComputeDelay(
 	else
 		pixelsPerClock = 1;
 
-	//initial transmit delay as per PPS
+	
 	initalXmitDelay = dml_round(rcModelSize / 2.0 / BPP / pixelsPerClock);
 
-	//compute ssm delay
+	
 	if (bpc == 8)
 		D = 81;
 	else if (bpc == 10)
@@ -708,16 +678,16 @@ static unsigned int dscceComputeDelay(
 	else
 		D = 113;
 
-	//divide by pixel per cycle to compute slice width as seen by DSC
+	
 	w = sliceWidth / pixelsPerClock;
 
-	//422 mode has an additional cycle of delay
+	
 	if (pixelFormat == dm_420 || pixelFormat == dm_444 || pixelFormat == dm_n422)
 		s = 0;
 	else
 		s = 1;
 
-	//main calculation for the dscce
+	
 	ix = initalXmitDelay + 45;
 	wx = (w + 2) / 3;
 	P = 3 * wx - w;
@@ -731,7 +701,7 @@ static unsigned int dscceComputeDelay(
 		lstall = 0;
 	Delay = L * wx * (numSlices - 1) + ax + s + lstall + 22;
 
-	//dsc processes 3 pixel containers per cycle and a container can contain 1 or 2 pixels
+	
 	pixels = Delay * 3 * pixelsPerClock;
 	return pixels;
 }
@@ -741,67 +711,67 @@ static unsigned int dscComputeDelay(enum output_format_class pixelFormat, enum o
 	unsigned int Delay = 0;
 
 	if (pixelFormat == dm_420) {
-		//   sfr
+		
 		Delay = Delay + 2;
-		//   dsccif
+		
 		Delay = Delay + 0;
-		//   dscc - input deserializer
+		
 		Delay = Delay + 3;
-		//   dscc gets pixels every other cycle
+		
 		Delay = Delay + 2;
-		//   dscc - input cdc fifo
+		
 		Delay = Delay + 12;
-		//   dscc gets pixels every other cycle
+		
 		Delay = Delay + 13;
-		//   dscc - cdc uncertainty
+		
 		Delay = Delay + 2;
-		//   dscc - output cdc fifo
+		
 		Delay = Delay + 7;
-		//   dscc gets pixels every other cycle
+		
 		Delay = Delay + 3;
-		//   dscc - cdc uncertainty
+		
 		Delay = Delay + 2;
-		//   dscc - output serializer
+		
 		Delay = Delay + 1;
-		//   sft
+		
 		Delay = Delay + 1;
 	} else if (pixelFormat == dm_n422) {
-		//   sfr
+		
 		Delay = Delay + 2;
-		//   dsccif
+		
 		Delay = Delay + 1;
-		//   dscc - input deserializer
+		
 		Delay = Delay + 5;
-		//  dscc - input cdc fifo
+		
 		Delay = Delay + 25;
-		//   dscc - cdc uncertainty
+		
 		Delay = Delay + 2;
-		//   dscc - output cdc fifo
+		
 		Delay = Delay + 10;
-		//   dscc - cdc uncertainty
+		
 		Delay = Delay + 2;
-		//   dscc - output serializer
+		
 		Delay = Delay + 1;
-		//   sft
+		
 		Delay = Delay + 1;
 	} else {
-		//   sfr
+		
 		Delay = Delay + 2;
-		//   dsccif
+		
 		Delay = Delay + 0;
-		//   dscc - input deserializer
+		
 		Delay = Delay + 3;
-		//   dscc - input cdc fifo
+		
 		Delay = Delay + 12;
-		//   dscc - cdc uncertainty
+		
 		Delay = Delay + 2;
-		//   dscc - output cdc fifo
+		
 		Delay = Delay + 7;
-		//   dscc - output serializer
+		
 		Delay = Delay + 1;
-		//   dscc - cdc uncertainty
+		
 		Delay = Delay + 2;
-		//   sft
+		
 		Delay = Delay + 1;
 	}
 
@@ -1866,7 +1836,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	v->DISPCLKWithRamping = 0;
 	v->DISPCLKWithoutRamping = 0;
 	v->GlobalDPPCLK = 0.0;
-	/* DAL custom code: need to update ReturnBW in case min dcfclk is overriden */
+	 
 	v->IdealSDPPortBandwidthPerState[v->VoltageLevel][v->maxMpcComb] = dml_min3(
 			v->ReturnBusWidth * v->DCFCLK,
 			v->DRAMSpeedPerState[v->VoltageLevel] * v->NumberOfChannels * v->DRAMChannelWidth,
@@ -1876,10 +1846,10 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	} else {
 		v->ReturnBW = v->IdealSDPPortBandwidthPerState[v->VoltageLevel][v->maxMpcComb] * v->PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData / 100;
 	}
-	/* End DAL custom code */
+	 
 
-	// DISPCLK and DPPCLK Calculation
-	//
+	
+	
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		if (v->WritebackEnable[k]) {
 			v->WritebackDISPCLK = dml_max(v->WritebackDISPCLK,
@@ -2024,7 +1994,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		v->DPPCLK[k] = v->DPPCLK_calculated[k];
 	}
 
-	// Urgent and B P-State/DRAM Clock Change Watermark
+	
 	DTRACE("   dcfclk_mhz         = %f", v->DCFCLK);
 	DTRACE("   return_bus_bw      = %f", v->ReturnBW);
 
@@ -2081,7 +2051,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	}
 
 
-	// DCFCLK Deep Sleep
+	
 	CalculateDCFCLKDeepSleep(
 			mode_lib,
 			v->NumberOfActivePlanes,
@@ -2103,7 +2073,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			v->ReturnBusWidth,
 			&v->DCFCLKDeepSleep);
 
-	// DSCCLK
+	
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		if ((v->BlendingAndTiming[k] != k) || !v->DSCEnabled[k]) {
 			v->DSCCLK_calculated[k] = 0.0;
@@ -2128,7 +2098,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		}
 	}
 
-	// DSC Delay
+	
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		double BPP = v->OutputBppPerState[k][v->VoltageLevel];
 
@@ -2165,12 +2135,12 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	}
 
 	for (k = 0; k < v->NumberOfActivePlanes; ++k)
-		for (j = 0; j < v->NumberOfActivePlanes; ++j) // NumberOfPlanes
+		for (j = 0; j < v->NumberOfActivePlanes; ++j) 
 			if (j != k && v->BlendingAndTiming[k] == j
 					&& v->DSCEnabled[j])
 				v->DSCDelay[k] = v->DSCDelay[j];
 
-	// Prefetch
+	
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		unsigned int PDEAndMetaPTEBytesFrameY = 0;
 		unsigned int PixelPTEBytesPerRowY = 0;
@@ -2735,9 +2705,9 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	} while (!v->PrefetchModeSupported && v->VStartupLines <= v->MaximumMaxVStartupLines);
 	ASSERT(v->PrefetchModeSupported);
 
-	//Watermarks and NB P-State/DRAM Clock Change Support
+	
 	{
-		enum clock_change_support   DRAMClockChangeSupport = 0; // dummy
+		enum clock_change_support   DRAMClockChangeSupport = 0; 
 		CalculateWatermarksAndDRAMSpeedChangeSupport(
 			mode_lib,
 			PrefetchMode,
@@ -2819,7 +2789,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	}
 
 
-	//Display Pipeline Delivery Time in Prefetch, Groups
+	
 	CalculatePixelDeliveryTimes(
 			v->NumberOfActivePlanes,
 			v->VRatio,
@@ -2929,7 +2899,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			v->TimePerVMRequestFlip);
 
 
-	// Min TTUVBlank
+	
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		if (PrefetchMode == 0) {
 			v->AllowDRAMClockChangeDuringVBlank[k] = true;
@@ -2955,10 +2925,10 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 					+ v->MinTTUVBlank[k];
 	}
 
-	// DCC Configuration
+	
 	v->ActiveDPPs = 0;
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		CalculateDCCConfiguration(v->DCCEnable[k], false, // We should always know the direction DCCProgrammingAssumesScanDirectionUnknown,
+		CalculateDCCConfiguration(v->DCCEnable[k], false, 
 				v->SourcePixelFormat[k],
 				v->SurfaceWidthY[k],
 				v->SurfaceWidthC[k],
@@ -2982,7 +2952,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	}
 
 	{
-		//Maximum Bandwidth Used
+		
 		v->TotalDataReadBandwidth = 0;
 		for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 			v->TotalDataReadBandwidth = v->TotalDataReadBandwidth
@@ -2991,7 +2961,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		}
 	}
 
-	// VStartup Margin
+	
 	v->VStartupMargin = 0;
 	v->FirstMainPlane = true;
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
@@ -3007,7 +2977,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		}
 	}
 
-	// Stutter Efficiency
+	
 	CalculateStutterEfficiency(
 			v->NumberOfActivePlanes,
 			v->ROBBufferSizeInKByte,
@@ -3050,7 +3020,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 
 static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
-	// Display Pipe Configuration
+	
 	double BytePerPixDETY[DC__NUM_DPP__MAX] = { 0 };
 	double BytePerPixDETC[DC__NUM_DPP__MAX] = { 0 };
 	int BytePerPixY[DC__NUM_DPP__MAX] = { 0 };
@@ -3551,13 +3521,13 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 	long ReorderingBytes = 0;
 	bool NotUrgentLatencyHiding[DC__NUM_DPP__MAX] = { 0 };
 
-	/*MODE SUPPORT, VOLTAGE STATE AND SOC CONFIGURATION*/
+	 
 
 	CalculateMinAndMaxPrefetchMode(
 		mode_lib->vba.AllowDRAMSelfRefreshOrDRAMClockChangeInVblank,
 		&MinPrefetchMode, &MaxPrefetchMode);
 
-	/*Scale Ratio, taps Support Check*/
+	 
 
 	v->ScaleRatioAndTapsSupport = true;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -3600,7 +3570,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			v->ScaleRatioAndTapsSupport = false;
 		}
 	}
-	/*Source Format, Pixel Format and Scan Support Check*/
+	 
 
 	v->SourceFormatPixelAndScanSupport = true;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -3610,7 +3580,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			v->SourceFormatPixelAndScanSupport = false;
 		}
 	}
-	/*Bandwidth Support Check*/
+	 
 
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
 		dml30_CalculateBytePerPixelAnd256BBlockSizes(
@@ -3657,7 +3627,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	/*Writeback Latency support check*/
+	 
 
 	v->WritebackLatencySupport = true;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -3679,7 +3649,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	/*Writeback Mode Support Check*/
+	 
 
 	v->TotalNumberOfActiveWriteback = 0;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -3702,7 +3672,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		WritebackModeSupport = false;
 	}
 
-	/*Writeback Scale Ratio and Taps Support Check*/
+	 
 
 	v->WritebackScaleRatioAndTapsSupport = true;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -3732,7 +3702,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			}
 		}
 	}
-	/*Maximum DISPCLK/DPPCLK Support check*/
+	 
 
 	v->WritebackRequiredDISPCLK = 0.0;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -4005,7 +3975,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	/*Total Available Pipes Support Check*/
+	 
 
 	for (i = 0; i < v->soc.num_states; i++) {
 		for (j = 0; j < 2; j++) {
@@ -4016,7 +3986,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			}
 		}
 	}
-	/*Display IO and DSC Support Check*/
+	 
 
 	v->NonsupportedDSCInputBPC = false;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -4027,7 +3997,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	/*Number Of DSC Slices*/
+	 
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		if (v->BlendingAndTiming[k] == k) {
 			if (v->PixelClockBackEnd[k] > 3200) {
@@ -4102,8 +4072,8 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 								v->AudioSampleLayout[k],
 								v->ODMCombineEnablePerState[i][k]);
 						v->OutputBppPerState[i][k] = v->Outbpp;
-						// TODO: Need some other way to handle this nonsense
-						// v->OutputTypeAndRatePerState[i][k] = v->Output[k] & " HBR"
+						
+						
 					}
 					if (v->Outbpp == BPP_INVALID && v->PHYCLKPerState[i] >= 540.0) {
 						v->Outbpp = TruncToValidBPP(
@@ -4122,8 +4092,8 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 								v->AudioSampleLayout[k],
 								v->ODMCombineEnablePerState[i][k]);
 						v->OutputBppPerState[i][k] = v->Outbpp;
-						// TODO: Need some other way to handle this nonsense
-						// v->OutputTypeAndRatePerState[i][k] = v->Output[k] & " HBR2"
+						
+						
 					}
 					if (v->Outbpp == BPP_INVALID && v->PHYCLKPerState[i] >= 810.0) {
 						v->Outbpp = TruncToValidBPP(
@@ -4142,7 +4112,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 								v->AudioSampleLayout[k],
 								v->ODMCombineEnablePerState[i][k]);
 						if (v->Outbpp == BPP_INVALID && v->ForcedOutputLinkBPP[k] == 0) {
-							//if (v->Outbpp == BPP_INVALID && v->DSCEnabled[k] == dm_dsc_enable_only_if_necessary && v->ForcedOutputLinkBPP[k] == 0) {
+							
 							v->RequiresDSC[i][k] = true;
 							v->LinkDSCEnable = true;
 							if (v->Output[k] == dm_dp) {
@@ -4165,8 +4135,8 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 									v->ODMCombineEnablePerState[i][k]);
 						}
 						v->OutputBppPerState[i][k] = v->Outbpp;
-						// TODO: Need some other way to handle this nonsense
-						// v->OutputTypeAndRatePerState[i][k] = v->Output[k] & " HBR3"
+						
+						
 					}
 				}
 			} else {
@@ -4195,7 +4165,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	/* Skip dscclk validation: as long as dispclk is supported, dscclk is also implicitly supported */
+	 
 
 	for (i = 0; i < v->soc.num_states; i++) {
 		v->NotEnoughDSCUnits[i] = false;
@@ -4215,7 +4185,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			v->NotEnoughDSCUnits[i] = true;
 		}
 	}
-	/*DSC Delay per state*/
+	 
 
 	for (i = 0; i < v->soc.num_states; i++) {
 		for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -4266,8 +4236,8 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	//Calculate Swath, DET Configuration, DCFCLKDeepSleep
-	//
+	
+	
 	for (i = 0; i < mode_lib->soc.num_states; ++i) {
 		for (j = 0; j <= 1; ++j) {
 			for (k = 0; k < v->NumberOfActivePlanes; ++k) {
@@ -4569,7 +4539,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	//Calculate Return BW
+	
 
 	for (i = 0; i < mode_lib->soc.num_states; ++i) {
 		for (j = 0; j <= 1; ++j) {
@@ -4640,7 +4610,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		UseMinimumDCFCLK(mode_lib, v, MaxPrefetchMode, ReorderingBytes);
 
 		if (v->ClampMinDCFCLK) {
-			/* Clamp calculated values to actual minimum */
+			 
 			for (i = 0; i < mode_lib->soc.num_states; ++i) {
 				for (j = 0; j <= 1; ++j) {
 					if (v->DCFCLKState[i][j] < mode_lib->soc.min_dcfclk) {
@@ -4667,7 +4637,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	//Re-ordering Buffer Support Check
+	
 
 	for (i = 0; i < mode_lib->soc.num_states; ++i) {
 		for (j = 0; j <= 1; ++j) {
@@ -4680,7 +4650,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	//Vertical Active BW support check
+	
 
 	MaxTotalVActiveRDBandwidth = 0;
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
@@ -4701,7 +4671,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	//Prefetch Check
+	
 
 	for (i = 0; i < mode_lib->soc.num_states; ++i) {
 		for (j = 0; j <= 1; ++j) {
@@ -5073,7 +5043,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		}
 	}
 
-	/*PTE Buffer Size Check*/
+	 
 
 	for (i = 0; i < v->soc.num_states; i++) {
 		for (j = 0; j < 2; j++) {
@@ -5085,7 +5055,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			}
 		}
 	}
-	/*Cursor Support Check*/
+	 
 
 	v->CursorSupport = true;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -5095,7 +5065,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			}
 		}
 	}
-	/*Valid Pitch Check*/
+	 
 
 	v->PitchSupport = true;
 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
@@ -5134,7 +5104,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			}
 		}
 	}
-	/*Mode Support, Voltage State and SOC Configuration*/
+	 
 
 	for (i = v->soc.num_states - 1; i >= 0; i--) {
 		for (j = 0; j < 2; j++) {
@@ -5426,7 +5396,7 @@ static void CalculateDCFCLKDeepSleep(
 	unsigned int k;
 	double ReadBandwidth = 0.0;
 
-	//double   DCFCLKDeepSleepPerPlane[DC__NUM_DPP__MAX];
+	
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
 
 		if (VRatio[k] <= 1) {

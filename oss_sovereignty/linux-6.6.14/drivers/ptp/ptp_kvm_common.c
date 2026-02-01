@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtual PTP 1588 clock for use with KVM guests
- *
- * Copyright (C) 2017 Red Hat Inc.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/init.h>
@@ -62,9 +58,7 @@ static int ptp_kvm_getcrosststamp(struct ptp_clock_info *ptp,
 					     NULL, xtstamp);
 }
 
-/*
- * PTP clock operations
- */
+ 
 
 static int ptp_kvm_adjfine(struct ptp_clock_info *ptp, long delta)
 {
@@ -123,7 +117,7 @@ static const struct ptp_clock_info ptp_kvm_caps = {
 	.getcrosststamp = ptp_kvm_getcrosststamp,
 };
 
-/* module operations */
+ 
 
 static struct kvm_ptp_clock kvm_ptp_clock;
 

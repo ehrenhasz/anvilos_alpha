@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic netlink handshake service
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2023, Oracle and/or its affiliates.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -26,21 +20,14 @@
 
 #include <trace/events/handshake.h>
 
-/**
- * handshake_genl_notify - Notify handlers that a request is waiting
- * @net: target network namespace
- * @proto: handshake protocol
- * @flags: memory allocation control flags
- *
- * Returns zero on success or a negative errno if notification failed.
- */
+ 
 int handshake_genl_notify(struct net *net, const struct handshake_proto *proto,
 			  gfp_t flags)
 {
 	struct sk_buff *msg;
 	void *hdr;
 
-	/* Disable notifications during unit testing */
+	 
 	if (!test_bit(HANDSHAKE_F_PROTO_NOTIFY, &proto->hp_flags))
 		return 0;
 
@@ -72,13 +59,7 @@ out_free:
 	return -EMSGSIZE;
 }
 
-/**
- * handshake_genl_put - Create a generic netlink message header
- * @msg: buffer in which to create the header
- * @info: generic netlink message context
- *
- * Returns a ready-to-use header, or NULL.
- */
+ 
 struct nlmsghdr *handshake_genl_put(struct sk_buff *msg,
 				    struct genl_info *info)
 {
@@ -176,11 +157,7 @@ static int __net_init handshake_net_init(struct net *net)
 	unsigned long tmp;
 	struct sysinfo si;
 
-	/*
-	 * Arbitrary limit to prevent handshakes that do not make
-	 * progress from clogging up the system. The cap scales up
-	 * with the amount of physical memory on the system.
-	 */
+	 
 	si_meminfo(&si);
 	tmp = si.totalram / (25 * si.mem_unit);
 	hn->hn_pending_max = clamp(tmp, 3UL, 50UL);
@@ -198,11 +175,7 @@ static void __net_exit handshake_net_exit(struct net *net)
 	struct handshake_req *req;
 	LIST_HEAD(requests);
 
-	/*
-	 * Drain the net's pending list. Requests that have been
-	 * accepted and are in progress will be destroyed when
-	 * the socket is closed.
-	 */
+	 
 	spin_lock(&hn->hn_lock);
 	set_bit(HANDSHAKE_F_NET_DRAINING, &hn->hn_flags);
 	list_splice_init(&requests, &hn->hn_requests);
@@ -212,10 +185,7 @@ static void __net_exit handshake_net_exit(struct net *net)
 		req = list_first_entry(&requests, struct handshake_req, hr_list);
 		list_del(&req->hr_list);
 
-		/*
-		 * Requests on this list have not yet been
-		 * accepted, so they do not have an fd to put.
-		 */
+		 
 
 		handshake_complete(req, -ETIMEDOUT, NULL);
 	}
@@ -228,13 +198,7 @@ static struct pernet_operations handshake_genl_net_ops = {
 	.size		= sizeof(struct handshake_net),
 };
 
-/**
- * handshake_pernet - Get the handshake private per-net structure
- * @net: network namespace
- *
- * Returns a pointer to the net's private per-net structure for the
- * handshake module, or NULL if handshake_init() failed.
- */
+ 
 struct handshake_net *handshake_pernet(struct net *net)
 {
 	return handshake_net_id ?
@@ -259,15 +223,7 @@ static int __init handshake_init(void)
 		return ret;
 	}
 
-	/*
-	 * ORDER: register_pernet_subsys must be done last.
-	 *
-	 *	If initialization does not make it past pernet_subsys
-	 *	registration, then handshake_net_id will remain 0. That
-	 *	shunts the handshake consumer API to return ENOTSUPP
-	 *	to prevent it from dereferencing something that hasn't
-	 *	been allocated.
-	 */
+	 
 	ret = register_pernet_subsys(&handshake_genl_net_ops);
 	if (ret) {
 		pr_warn("handshake: pernet registration failed (%d)\n", ret);

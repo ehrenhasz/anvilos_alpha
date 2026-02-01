@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CPU PMU driver for the Apple M1 and derivatives
- *
- * Copyright (C) 2021 Google LLC
- *
- * Author: Marc Zyngier <maz@kernel.org>
- *
- * Most of the information used in this driver was provided by the
- * Asahi Linux project. The rest was experimentally discovered.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/perf/arm_pmu.h>
@@ -27,25 +18,7 @@
 #define ONLY_2_4_6			(BIT(2) | BIT(4) | BIT(6))
 #define ONLY_5_6_7			(BIT(5) | BIT(6) | BIT(7))
 
-/*
- * Description of the events we actually know about, as well as those with
- * a specific counter affinity. Yes, this is a grand total of two known
- * counters, and the rest is anybody's guess.
- *
- * Not all counters can count all events. Counters #0 and #1 are wired to
- * count cycles and instructions respectively, and some events have
- * bizarre mappings (every other counter, or even *one* counter). These
- * restrictions equally apply to both P and E cores.
- *
- * It is worth noting that the PMUs attached to P and E cores are likely
- * to be different because the underlying uarches are different. At the
- * moment, we don't really need to distinguish between the two because we
- * know next to nothing about the events themselves, and we already have
- * per cpu-type PMU abstractions.
- *
- * If we eventually find out that the events are different across
- * implementations, we'll have to introduce per cpu-type tables.
- */
+ 
 enum m1_pmu_events {
 	M1_PMU_PERFCTR_UNKNOWN_01	= 0x01,
 	M1_PMU_PERFCTR_CPU_CYCLES	= 0x02,
@@ -81,20 +54,12 @@ enum m1_pmu_events {
 	M1_PMU_PERFCTR_UNKNOWN_fd	= 0xfd,
 	M1_PMU_PERFCTR_LAST		= M1_PMU_CFG_EVENT,
 
-	/*
-	 * From this point onwards, these are not actual HW events,
-	 * but attributes that get stored in hw->config_base.
-	 */
+	 
 	M1_PMU_CFG_COUNT_USER		= BIT(8),
 	M1_PMU_CFG_COUNT_KERNEL		= BIT(9),
 };
 
-/*
- * Per-event affinity table. Most events can be installed on counter
- * 2-9, but there are a number of exceptions. Note that this table
- * has been created experimentally, and I wouldn't be surprised if more
- * counters had strange affinities.
- */
+ 
 static const u16 m1_pmu_event_affinity[M1_PMU_PERFCTR_LAST + 1] = {
 	[0 ... M1_PMU_PERFCTR_LAST]	= ANY_BUT_0_1,
 	[M1_PMU_PERFCTR_UNKNOWN_01]	= BIT(7),
@@ -135,10 +100,10 @@ static const unsigned m1_pmu_perf_map[PERF_COUNT_HW_MAX] = {
 	PERF_MAP_ALL_UNSUPPORTED,
 	[PERF_COUNT_HW_CPU_CYCLES]	= M1_PMU_PERFCTR_CPU_CYCLES,
 	[PERF_COUNT_HW_INSTRUCTIONS]	= M1_PMU_PERFCTR_INSTRUCTIONS,
-	/* No idea about the rest yet */
+	 
 };
 
-/* sysfs definitions */
+ 
 static ssize_t m1_pmu_events_sysfs_show(struct device *dev,
 					struct device_attribute *attr,
 					char *page)
@@ -176,7 +141,7 @@ static const struct attribute_group m1_pmu_format_attr_group = {
 	.attrs = m1_pmu_format_attrs,
 };
 
-/* Low level accessors. No synchronisation. */
+ 
 #define PMU_READ_COUNTER(_idx)						\
 	case _idx:	return read_sysreg_s(SYS_IMP_APL_PMC## _idx ##_EL1)
 
@@ -326,12 +291,7 @@ static void m1_pmu_configure_counter(unsigned int index, u8 event,
 
 	write_sysreg_s(val, SYS_IMP_APL_PMCR1_EL1);
 
-	/*
-	 * Counters 0 and 1 have fixed events. For anything else,
-	 * place the event at the expected location in the relevant
-	 * register (PMESR0 holds the event configuration for counters
-	 * 2-5, resp. PMESR1 for counters 6-9).
-	 */
+	 
 	switch (index) {
 	case 0 ... 1:
 		break;
@@ -352,7 +312,7 @@ static void m1_pmu_configure_counter(unsigned int index, u8 event,
 	}
 }
 
-/* arm_pmu backend */
+ 
 static void m1_pmu_enable_event(struct perf_event *event)
 {
 	bool user, kernel;
@@ -388,7 +348,7 @@ static irqreturn_t m1_pmu_handle_irq(struct arm_pmu *cpu_pmu)
 
 	overflow = read_sysreg_s(SYS_IMP_APL_PMSR_EL1);
 	if (!overflow) {
-		/* Spurious interrupt? */
+		 
 		state = read_sysreg_s(SYS_IMP_APL_PMCR0_EL1);
 		state &= ~PMCR0_IACT;
 		write_sysreg_s(state, SYS_IMP_APL_PMCR0_EL1);
@@ -439,14 +399,7 @@ static int m1_pmu_get_event_idx(struct pmu_hw_events *cpuc,
 	unsigned long affinity = m1_pmu_event_affinity[evtype];
 	int idx;
 
-	/*
-	 * Place the event on the first free counter that can count
-	 * this event.
-	 *
-	 * We could do a better job if we had a view of all the events
-	 * counting on the PMU at any given time, and by placing the
-	 * most constraining events first.
-	 */
+	 
 	for_each_set_bit(idx, &affinity, M1_PMU_NR_COUNTERS) {
 		if (!test_and_set_bit(idx, cpuc->used_mask))
 			return idx;
@@ -484,22 +437,14 @@ static void m1_pmu_stop(struct arm_pmu *cpu_pmu)
 
 static int m1_pmu_map_event(struct perf_event *event)
 {
-	/*
-	 * Although the counters are 48bit wide, bit 47 is what
-	 * triggers the overflow interrupt. Advertise the counters
-	 * being 47bit wide to mimick the behaviour of the ARM PMU.
-	 */
+	 
 	event->hw.flags |= ARMPMU_EVT_47BIT;
 	return armpmu_map_event(event, &m1_pmu_perf_map, NULL, M1_PMU_CFG_EVENT);
 }
 
 static int m2_pmu_map_event(struct perf_event *event)
 {
-	/*
-	 * Same deal as the above, except that M2 has 64bit counters.
-	 * Which, as far as we're concerned, actually means 63 bits.
-	 * Yes, this is getting awkward.
-	 */
+	 
 	event->hw.flags |= ARMPMU_EVT_63BIT;
 	return armpmu_map_event(event, &m1_pmu_perf_map, NULL, M1_PMU_CFG_EVENT);
 }
@@ -564,7 +509,7 @@ static int m1_pmu_init(struct arm_pmu *cpu_pmu, u32 flags)
 	return 0;
 }
 
-/* Device driver gunk */
+ 
 static int m1_pmu_ice_init(struct arm_pmu *cpu_pmu)
 {
 	cpu_pmu->name = "apple_icestorm_pmu";

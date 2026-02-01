@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm8350-i2c.c  --  Generic I2C driver for Wolfson WM8350 PMIC
- *
- * Copyright 2007, 2008 Wolfson Microelectronics PLC.
- *
- * Author: Liam Girdwood
- *         linux@wolfsonmicro.com
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -60,5 +53,5 @@ static int __init wm8350_i2c_init(void)
 {
 	return i2c_add_driver(&wm8350_i2c_driver);
 }
-/* init early so consumer devices can complete system boot */
+ 
 subsys_initcall(wm8350_i2c_init);

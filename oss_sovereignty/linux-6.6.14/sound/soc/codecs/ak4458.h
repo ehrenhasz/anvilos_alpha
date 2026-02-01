@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Audio driver for AK4458
- *
- * Copyright (C) 2016 Asahi Kasei Microdevices Corporation
- * Copyright 2018 NXP
- */
+ 
+ 
 
 #ifndef _AK4458_H
 #define _AK4458_H
 
 #include <linux/regmap.h>
 
-/* Settings */
+ 
 
 #define AK4458_00_CONTROL1			0x00
 #define AK4458_01_CONTROL2			0x01
@@ -35,22 +30,16 @@
 #define AK4458_13_L4CHATT			0x13
 #define AK4458_14_R4CHATT			0x14
 
-/* Bitfield Definitions */
+ 
 
-/* AK4458_00_CONTROL1 (0x00) Fields
- * Addr Register Name  D7     D6    D5    D4    D3    D2    D1    D0
- * 00H  Control 1      ACKS   0     0     0     DIF2  DIF1  DIF0  RSTN
- */
+ 
 
-/* Digital Filter (SD, SLOW, SSLOW) */
+ 
 #define AK4458_SD_MASK		GENMASK(5, 5)
 #define AK4458_SLOW_MASK	GENMASK(0, 0)
 #define AK4458_SSLOW_MASK	GENMASK(0, 0)
 
-/* DIF2	1 0
- *  x	1 0 MSB justified  Figure 3 (default)
- *  x	1 1 I2S Compliment  Figure 4
- */
+ 
 #define AK4458_DIF_SHIFT	1
 #define AK4458_DIF_MASK		GENMASK(3, 1)
 
@@ -60,11 +49,11 @@
 #define AK4458_DIF_32BIT_MSB	(6 << 1)
 #define AK4458_DIF_32BIT_I2S	(7 << 1)
 
-/* AK4458_00_CONTROL1 (0x00) D0 bit */
+ 
 #define AK4458_RSTN_MASK	GENMASK(0, 0)
 #define AK4458_RSTN		(0x1 << 0)
 
-/* AK4458_0A_CONTROL6 Mode bits */
+ 
 #define AK4458_MODE_SHIFT	6
 #define AK4458_MODE_MASK	GENMASK(7, 6)
 #define AK4458_MODE_NORMAL	(0 << AK4458_MODE_SHIFT)
@@ -72,14 +61,7 @@
 #define AK4458_MODE_TDM256	(2 << AK4458_MODE_SHIFT)
 #define AK4458_MODE_TDM512	(3 << AK4458_MODE_SHIFT)
 
-/* DAC Digital attenuator transition time setting
- * Table 19
- * Mode	ATS1	ATS2	ATT speed
- * 0	0	0	4080/fs
- * 1	0	1	2040/fs
- * 2	1	0	510/fs
- * 3	1	1	255/fs
- * */
+ 
 #define AK4458_ATS_SHIFT	6
 #define AK4458_ATS_MASK		GENMASK(7, 6)
 #define AK4458_DCHAIN_MASK	(0x1 << 1)

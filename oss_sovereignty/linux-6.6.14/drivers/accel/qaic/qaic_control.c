@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* Copyright (c) 2019-2021, The Linux Foundation. All rights reserved. */
-/* Copyright (c) 2021-2023 Qualcomm Innovation Center, Inc. All rights reserved. */
+
+ 
+ 
 
 #include <asm/byteorder.h>
 #include <linux/completion.h>
@@ -27,15 +27,15 @@
 
 #include "qaic.h"
 
-#define MANAGE_MAGIC_NUMBER		((__force __le32)0x43494151) /* "QAIC" in little endian */
+#define MANAGE_MAGIC_NUMBER		((__force __le32)0x43494151)  
 #define QAIC_DBC_Q_GAP			SZ_256
 #define QAIC_DBC_Q_BUF_ALIGN		SZ_4K
-#define QAIC_MANAGE_EXT_MSG_LENGTH	SZ_64K /* Max DMA message length */
+#define QAIC_MANAGE_EXT_MSG_LENGTH	SZ_64K  
 #define QAIC_WRAPPER_MAX_SIZE		SZ_4K
 #define QAIC_MHI_RETRY_WAIT_MS		100
 #define QAIC_MHI_RETRY_MAX		20
 
-static unsigned int control_resp_timeout_s = 60; /* 60 sec default */
+static unsigned int control_resp_timeout_s = 60;  
 module_param(control_resp_timeout_s, uint, 0600);
 MODULE_PARM_DESC(control_resp_timeout_s, "Timeout for NNC responses from QSM");
 
@@ -45,19 +45,16 @@ struct manage_msg {
 	u8 data[];
 };
 
-/*
- * wire encoding structures for the manage protocol.
- * All fields are little endian on the wire
- */
+ 
 struct wire_msg_hdr {
-	__le32 crc32; /* crc of everything following this field in the message */
+	__le32 crc32;  
 	__le32 magic_number;
 	__le32 sequence_number;
-	__le32 len; /* length of this message */
-	__le32 count; /* number of transactions in this message */
-	__le32 handle; /* unique id to track the resources consumed */
-	__le32 partition_id; /* partition id for the request (signed) */
-	__le32 padding; /* must be 0 */
+	__le32 len;  
+	__le32 count;  
+	__le32 handle;  
+	__le32 partition_id;  
+	__le32 padding;  
 } __packed;
 
 struct wire_msg {
@@ -70,11 +67,11 @@ struct wire_trans_hdr {
 	__le32 len;
 } __packed;
 
-/* Each message sent from driver to device are organized in a list of wrapper_msg */
+ 
 struct wrapper_msg {
 	struct list_head list;
 	struct kref ref_count;
-	u32 len; /* length of data to transfer */
+	u32 len;  
 	struct wrapper_list *head;
 	union {
 		struct wire_msg msg;
@@ -84,7 +81,7 @@ struct wrapper_msg {
 
 struct wrapper_list {
 	struct list_head list;
-	spinlock_t lock; /* Protects the list state during additions and removals */
+	spinlock_t lock;  
 };
 
 struct wire_trans_passthrough {
@@ -106,7 +103,7 @@ struct wire_trans_dma_xfer {
 	struct wire_addr_size_pair data[];
 } __packed;
 
-/* Initiated by device to continue the DMA xfer of a large piece of data */
+ 
 struct wire_trans_dma_xfer_cont {
 	struct wire_trans_hdr hdr;
 	__le32 dma_chunk_id;
@@ -121,14 +118,14 @@ struct wire_trans_activate_to_dev {
 	__le32 req_q_size;
 	__le32 rsp_q_size;
 	__le32 buf_len;
-	__le32 options; /* unused, but BIT(16) has meaning to the device */
+	__le32 options;  
 } __packed;
 
 struct wire_trans_activate_from_dev {
 	struct wire_trans_hdr hdr;
 	__le32 status;
 	__le32 dbc_id;
-	__le64 options; /* unused */
+	__le64 options;  
 } __packed;
 
 struct wire_trans_deactivate_from_dev {
@@ -174,60 +171,49 @@ struct wire_trans_validate_part_from_dev {
 } __packed;
 
 struct xfer_queue_elem {
-	/*
-	 * Node in list of ongoing transfer request on control channel.
-	 * Maintained by root device struct.
-	 */
+	 
 	struct list_head list;
-	/* Sequence number of this transfer request */
+	 
 	u32 seq_num;
-	/* This is used to wait on until completion of transfer request */
+	 
 	struct completion xfer_done;
-	/* Received data from device */
+	 
 	void *buf;
 };
 
 struct dma_xfer {
-	/* Node in list of DMA transfers which is used for cleanup */
+	 
 	struct list_head list;
-	/* SG table of memory used for DMA */
+	 
 	struct sg_table *sgt;
-	/* Array pages used for DMA */
+	 
 	struct page **page_list;
-	/* Number of pages used for DMA */
+	 
 	unsigned long nr_pages;
 };
 
 struct ioctl_resources {
-	/* List of all DMA transfers which is used later for cleanup */
+	 
 	struct list_head dma_xfers;
-	/* Base address of request queue which belongs to a DBC */
+	 
 	void *buf;
-	/*
-	 * Base bus address of request queue which belongs to a DBC. Response
-	 * queue base bus address can be calculated by adding size of request
-	 * queue to base bus address of request queue.
-	 */
+	 
 	dma_addr_t dma_addr;
-	/* Total size of request queue and response queue in byte */
+	 
 	u32 total_size;
-	/* Total number of elements that can be queued in each of request and response queue */
+	 
 	u32 nelem;
-	/* Base address of response queue which belongs to a DBC */
+	 
 	void *rsp_q_base;
-	/* Status of the NNC message received */
+	 
 	u32 status;
-	/* DBC id of the DBC received from device */
+	 
 	u32 dbc_id;
-	/*
-	 * DMA transfer request messages can be big in size and it may not be
-	 * possible to send them in one shot. In such cases the messages are
-	 * broken into chunks, this field stores ID of such chunks.
-	 */
+	 
 	u32 dma_chunk_id;
-	/* Total number of bytes transferred for a DMA xfer request */
+	 
 	u64 xferred_dma_size;
-	/* Header of transaction message received from user. Used during DMA xfer request. */
+	 
 	void *trans_hdr;
 };
 
@@ -237,11 +223,7 @@ struct resp_work {
 	void *buf;
 };
 
-/*
- * Since we're working with little endian messages, its useful to be able to
- * increment without filling a whole line with conversions back and forth just
- * to add one(1) to a message count.
- */
+ 
 static __le32 incr_le32(__le32 val)
 {
 	return cpu_to_le32(le32_to_cpu(val) + 1);
@@ -270,10 +252,7 @@ static bool valid_crc(void *msg)
 	bool ret;
 	u32 crc;
 
-	/*
-	 * The output of this algorithm is always converted to the native
-	 * endianness.
-	 */
+	 
 	crc = le32_to_cpu(hdr->crc32);
 	hdr->crc32 = 0;
 	ret = (crc32(~0, msg, le32_to_cpu(hdr->len)) ^ ~0) == crc;
@@ -387,7 +366,7 @@ static int encode_passthrough(struct qaic_device *qdev, void *trans, struct wrap
 	return 0;
 }
 
-/* returns error code for failure, 0 if enough pages alloc'd, 1 if dma_cont is needed */
+ 
 static int find_and_map_user_pages(struct qaic_device *qdev,
 				   struct qaic_manage_trans_dma_xfer *in_trans,
 				   struct ioctl_resources *resources, struct dma_xfer *xfer)
@@ -476,7 +455,7 @@ free_page_list:
 	return ret;
 }
 
-/* returns error code for failure, 0 if everything was encoded, 1 if dma_cont is needed */
+ 
 static int encode_addr_size_pairs(struct dma_xfer *xfer, struct wrapper_list *wrappers,
 				  struct ioctl_resources *resources, u32 msg_hdr_len, u32 *size,
 				  struct wire_trans_dma_xfer **out_trans)
@@ -498,7 +477,7 @@ static int encode_addr_size_pairs(struct dma_xfer *xfer, struct wrapper_list *wr
 	*size = QAIC_MANAGE_EXT_MSG_LENGTH - msg_hdr_len - sizeof(**out_trans);
 	for_each_sgtable_sg(sgt, sg, i) {
 		*size -= sizeof(*asp);
-		/* Save 1K for possible follow-up transactions. */
+		 
 		if (*size < SZ_1K) {
 			nents_dma = i;
 			break;
@@ -535,7 +514,7 @@ static int encode_addr_size_pairs(struct dma_xfer *xfer, struct wrapper_list *wr
 		asp->addr = cpu_to_le64(sg_dma_address(sg));
 		dma_len = sg_dma_len(sg);
 	}
-	/* finalize the last segment */
+	 
 	asp->size = cpu_to_le64(dma_len);
 	w->len = (void *)asp + sizeof(*asp) - (void *)&w->msg;
 	*size += w->len;
@@ -574,7 +553,7 @@ static int encode_dma(struct qaic_device *qdev, void *trans, struct wrapper_list
 	msg = &wrapper->msg;
 	msg_hdr_len = le32_to_cpu(msg->hdr.len);
 
-	/* There should be enough space to hold at least one ASP entry. */
+	 
 	if (size_add(msg_hdr_len, sizeof(*out_trans) + sizeof(struct wire_addr_size_pair)) >
 	    QAIC_MANAGE_EXT_MSG_LENGTH)
 		return -ENOMEM;
@@ -872,21 +851,15 @@ static int decode_activate(struct qaic_device *qdev, void *trans, struct manage_
 	out_trans->options = le64_to_cpu(in_trans->options);
 
 	if (!resources->buf)
-		/* how did we get an activate response without a request? */
+		 
 		return -EINVAL;
 
 	if (out_trans->dbc_id >= qdev->num_dbc)
-		/*
-		 * The device assigned an invalid resource, which should never
-		 * happen. Return an error so the user can try to recover.
-		 */
+		 
 		return -ENODEV;
 
 	if (out_trans->status)
-		/*
-		 * Allocating resources failed on device side. This is not an
-		 * expected behaviour, user is expected to handle this situation.
-		 */
+		 
 		return -ECANCELED;
 
 	resources->status = out_trans->status;
@@ -904,18 +877,11 @@ static int decode_deactivate(struct qaic_device *qdev, void *trans, u32 *msg_len
 	u32 status = le32_to_cpu(in_trans->status);
 
 	if (dbc_id >= qdev->num_dbc)
-		/*
-		 * The device assigned an invalid resource, which should never
-		 * happen. Inject an error so the user can try to recover.
-		 */
+		 
 		return -ENODEV;
 
 	if (status) {
-		/*
-		 * Releasing resources failed on the device side, which puts
-		 * us in a bind since they may still be in use, so enable the
-		 * dbc. User is expected to retry deactivation.
-		 */
+		 
 		enable_dbc(qdev, dbc_id, usr);
 		return -ECANCELED;
 	}
@@ -1027,7 +993,7 @@ static void *msg_xfer(struct qaic_device *qdev, struct wrapper_list *wrappers, u
 		return ERR_PTR(-ENODEV);
 	}
 
-	/* Attempt to avoid a partial commit of a message */
+	 
 	list_for_each_entry(w, &wrappers->list, list)
 		xfer_count++;
 
@@ -1050,10 +1016,7 @@ static void *msg_xfer(struct qaic_device *qdev, struct wrapper_list *wrappers, u
 	elem.buf = NULL;
 	init_completion(&elem.xfer_done);
 	if (likely(!qdev->cntl_lost_buf)) {
-		/*
-		 * The max size of request to device is QAIC_MANAGE_EXT_MSG_LENGTH.
-		 * The max size of response from device is QAIC_MANAGE_MAX_MSG_LENGTH.
-		 */
+		 
 		out_buf = kmalloc(QAIC_MANAGE_MAX_MSG_LENGTH, GFP_KERNEL);
 		if (!out_buf) {
 			mutex_unlock(&qdev->cntl_mutex);
@@ -1067,12 +1030,7 @@ static void *msg_xfer(struct qaic_device *qdev, struct wrapper_list *wrappers, u
 			return ERR_PTR(ret);
 		}
 	} else {
-		/*
-		 * we lost a buffer because we queued a recv buf, but then
-		 * queuing the corresponding tx buf failed. To try to avoid
-		 * a memory leak, lets reclaim it and use it for this
-		 * transaction.
-		 */
+		 
 		qdev->cntl_lost_buf = false;
 	}
 
@@ -1097,10 +1055,7 @@ static void *msg_xfer(struct qaic_device *qdev, struct wrapper_list *wrappers, u
 	else
 		ret = wait_for_completion_interruptible_timeout(&elem.xfer_done,
 								control_resp_timeout_s * HZ);
-	/*
-	 * not using _interruptable because we have to cleanup or we'll
-	 * likely cause memory corruption
-	 */
+	 
 	mutex_lock(&qdev->cntl_mutex);
 	if (!list_empty(&elem.list))
 		list_del(&elem.list);
@@ -1121,7 +1076,7 @@ static void *msg_xfer(struct qaic_device *qdev, struct wrapper_list *wrappers, u
 	return elem.buf;
 }
 
-/* Add a transaction to abort the outstanding DMA continuation */
+ 
 static int abort_dma_cont(struct qaic_device *qdev, struct wrapper_list *wrappers, u32 dma_chunk_id)
 {
 	struct wire_trans_dma_xfer *out_trans;
@@ -1133,7 +1088,7 @@ static int abort_dma_cont(struct qaic_device *qdev, struct wrapper_list *wrapper
 	wrapper = list_first_entry(&wrappers->list, struct wrapper_msg, list);
 	msg = &wrapper->msg;
 
-	/* Remove all but the first wrapper which has the msg header */
+	 
 	list_for_each_entry_safe(wrapper, w, &wrappers->list, list)
 		if (!list_is_first(&wrapper->list, &wrappers->list))
 			kref_put(&wrapper->ref_count, free_wrapper);
@@ -1218,7 +1173,7 @@ static int qaic_manage_msg_xfer(struct qaic_device *qdev, struct qaic_user *usr,
 	msg->hdr.padding = cpu_to_le32(0);
 	msg->hdr.crc32 = cpu_to_le32(qdev->gen_crc(wrappers));
 
-	/* msg_xfer releases the mutex */
+	 
 	*rsp = msg_xfer(qdev, wrappers, qdev->next_seq_num - 1, false);
 	if (IS_ERR(*rsp))
 		ret = PTR_ERR(*rsp);
@@ -1256,7 +1211,7 @@ dma_xfer_continue:
 	ret = qaic_manage_msg_xfer(qdev, usr, user_msg, &resources, &rsp);
 	if (ret)
 		return ret;
-	/* dma_cont should be the only transaction if present */
+	 
 	if (le32_to_cpu(rsp->hdr.count) == 1) {
 		dma_cont = (struct wire_trans_dma_xfer_cont *)rsp->data;
 		if (le32_to_cpu(dma_cont->hdr.type) != QAIC_TRANS_DMA_XFER_CONT)
@@ -1330,12 +1285,7 @@ int qaic_manage_ioctl(struct drm_device *dev, void *data, struct drm_file *file_
 
 	ret = qaic_manage(qdev, usr, msg);
 
-	/*
-	 * If the qaic_manage() is successful then we copy the message onto
-	 * userspace memory but we have an exception for -ECANCELED.
-	 * For -ECANCELED, it means that device has NACKed the message with a
-	 * status error code which userspace would like to know.
-	 */
+	 
 	if (ret == -ECANCELED || !ret) {
 		if (copy_to_user(user_data, msg->data, msg->len)) {
 			ret = -EFAULT;
@@ -1379,11 +1329,11 @@ int get_cntl_version(struct qaic_device *qdev, struct qaic_user *usr, u16 *major
 	*major = status_result->major;
 	*minor = status_result->minor;
 
-	if (status_result->status_flags & BIT(0)) { /* device is using CRC */
-		/* By default qdev->gen_crc is programmed to generate CRC */
+	if (status_result->status_flags & BIT(0)) {  
+		 
 		qdev->valid_crc = valid_crc;
 	} else {
-		/* By default qdev->valid_crc is programmed to bypass CRC */
+		 
 		qdev->gen_crc = gen_crc_stub;
 	}
 
@@ -1415,7 +1365,7 @@ static void resp_worker(struct work_struct *work)
 	mutex_unlock(&qdev->cntl_mutex);
 
 	if (!found)
-		/* request must have timed out, drop packet */
+		 
 		kfree(msg);
 
 	kfree(resp);
@@ -1471,18 +1421,7 @@ int qaic_control_open(struct qaic_device *qdev)
 		return -ENODEV;
 
 	qdev->cntl_lost_buf = false;
-	/*
-	 * By default qaic should assume that device has CRC enabled.
-	 * Qaic comes to know if device has CRC enabled or disabled during the
-	 * device status transaction, which is the first transaction performed
-	 * on control channel.
-	 *
-	 * So CRC validation of first device status transaction response is
-	 * ignored (by calling valid_crc_stub) and is done later during decoding
-	 * if device has CRC enabled.
-	 * Now that qaic knows whether device has CRC enabled or not it acts
-	 * accordingly.
-	 */
+	 
 	qdev->gen_crc = gen_crc;
 	qdev->valid_crc = valid_crc_stub;
 
@@ -1528,14 +1467,7 @@ void qaic_release_usr(struct qaic_device *qdev, struct qaic_user *usr)
 	msg->hdr.padding = cpu_to_le32(0);
 	msg->hdr.crc32 = cpu_to_le32(qdev->gen_crc(wrappers));
 
-	/*
-	 * msg_xfer releases the mutex
-	 * We don't care about the return of msg_xfer since we will not do
-	 * anything different based on what happens.
-	 * We ignore pending signals since one will be set if the user is
-	 * killed, and we need give the device a chance to cleanup, otherwise
-	 * DMA may still be in progress when we return.
-	 */
+	 
 	rsp = msg_xfer(qdev, wrappers, qdev->next_seq_num - 1, true);
 	if (!IS_ERR(rsp))
 		kfree(rsp);

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Core driver for ams AS3722 PMICs
- *
- * Copyright (C) 2013 AMS AG
- * Copyright (c) 2013, NVIDIA Corporation. All rights reserved.
- *
- * Author: Florian Lobmaier <florian.lobmaier@ams.com>
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -57,7 +49,7 @@ static const struct mfd_cell as3722_devs[] = {
 };
 
 static const struct regmap_irq as3722_irqs[] = {
-	/* INT1 IRQs */
+	 
 	[AS3722_IRQ_LID] = {
 		.mask = AS3722_INTERRUPT_MASK1_LID,
 	},
@@ -83,7 +75,7 @@ static const struct regmap_irq as3722_irqs[] = {
 		.mask = AS3722_INTERRUPT_MASK1_LOWBAT,
 	},
 
-	/* INT2 IRQs */
+	 
 	[AS3722_IRQ_SD0_LV] = {
 		.mask = AS3722_INTERRUPT_MASK2_SD0_LV,
 		.reg_offset = 1,
@@ -117,7 +109,7 @@ static const struct regmap_irq as3722_irqs[] = {
 		.reg_offset = 1,
 	},
 
-	/* INT3 IRQs */
+	 
 	[AS3722_IRQ_RTC_ALARM] = {
 		.mask = AS3722_INTERRUPT_MASK3_RTC_ALARM,
 		.reg_offset = 2,
@@ -151,7 +143,7 @@ static const struct regmap_irq as3722_irqs[] = {
 		.reg_offset = 2,
 	},
 
-	/* INT4 IRQs */
+	 
 	[AS3722_IRQ_TEMP_SD0_SHUTDOWN] = {
 		.mask = AS3722_INTERRUPT_MASK4_TEMP_SD0_SHUTDOWN,
 		.reg_offset = 3,
@@ -200,7 +192,7 @@ static int as3722_check_device_id(struct as3722 *as3722)
 	u32 val;
 	int ret;
 
-	/* Check that this is actually a AS3722 */
+	 
 	ret = as3722_read(as3722, AS3722_ASIC_ID1_REG, &val);
 	if (ret < 0) {
 		dev_err(as3722->dev, "ASIC_ID1 read failed: %d\n", ret);

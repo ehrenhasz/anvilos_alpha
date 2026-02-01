@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * zopt2201.c - Support for IDT ZOPT2201 ambient light and UV B sensor
- *
- * Copyright 2017 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
- *
- * Datasheet: https://www.idt.com/document/dst/zopt2201-datasheet
- * 7-bit I2C slave addresses 0x53 (default) or 0x52 (programmed)
- *
- * TODO: interrupt support, ALS/UVB raw mode
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -23,48 +14,48 @@
 
 #define ZOPT2201_DRV_NAME "zopt2201"
 
-/* Registers */
+ 
 #define ZOPT2201_MAIN_CTRL		0x00
 #define ZOPT2201_LS_MEAS_RATE		0x04
 #define ZOPT2201_LS_GAIN		0x05
 #define ZOPT2201_PART_ID		0x06
 #define ZOPT2201_MAIN_STATUS		0x07
-#define ZOPT2201_ALS_DATA		0x0d /* LSB first, 13 to 20 bits */
-#define ZOPT2201_UVB_DATA		0x10 /* LSB first, 13 to 20 bits */
-#define ZOPT2201_UV_COMP_DATA		0x13 /* LSB first, 13 to 20 bits */
-#define ZOPT2201_COMP_DATA		0x16 /* LSB first, 13 to 20 bits */
+#define ZOPT2201_ALS_DATA		0x0d  
+#define ZOPT2201_UVB_DATA		0x10  
+#define ZOPT2201_UV_COMP_DATA		0x13  
+#define ZOPT2201_COMP_DATA		0x16  
 #define ZOPT2201_INT_CFG		0x19
 #define ZOPT2201_INT_PST		0x1a
 
-#define ZOPT2201_MAIN_CTRL_LS_MODE	BIT(3) /* 0 .. ALS, 1 .. UV B */
+#define ZOPT2201_MAIN_CTRL_LS_MODE	BIT(3)  
 #define ZOPT2201_MAIN_CTRL_LS_EN	BIT(1)
 
-/* Values for ZOPT2201_LS_MEAS_RATE resolution / bit width */
-#define ZOPT2201_MEAS_RES_20BIT		0 /* takes 400 ms */
-#define ZOPT2201_MEAS_RES_19BIT		1 /* takes 200 ms */
-#define ZOPT2201_MEAS_RES_18BIT		2 /* takes 100 ms, default */
-#define ZOPT2201_MEAS_RES_17BIT		3 /* takes 50 ms */
-#define ZOPT2201_MEAS_RES_16BIT		4 /* takes 25 ms */
-#define ZOPT2201_MEAS_RES_13BIT		5 /* takes 3.125 ms */
+ 
+#define ZOPT2201_MEAS_RES_20BIT		0  
+#define ZOPT2201_MEAS_RES_19BIT		1  
+#define ZOPT2201_MEAS_RES_18BIT		2  
+#define ZOPT2201_MEAS_RES_17BIT		3  
+#define ZOPT2201_MEAS_RES_16BIT		4  
+#define ZOPT2201_MEAS_RES_13BIT		5  
 #define ZOPT2201_MEAS_RES_SHIFT		4
 
-/* Values for ZOPT2201_LS_MEAS_RATE measurement rate */
+ 
 #define ZOPT2201_MEAS_FREQ_25MS		0
 #define ZOPT2201_MEAS_FREQ_50MS		1
-#define ZOPT2201_MEAS_FREQ_100MS	2 /* default */
+#define ZOPT2201_MEAS_FREQ_100MS	2  
 #define ZOPT2201_MEAS_FREQ_200MS	3
 #define ZOPT2201_MEAS_FREQ_500MS	4
 #define ZOPT2201_MEAS_FREQ_1000MS	5
 #define ZOPT2201_MEAS_FREQ_2000MS	6
 
-/* Values for ZOPT2201_LS_GAIN */
+ 
 #define ZOPT2201_LS_GAIN_1		0
 #define ZOPT2201_LS_GAIN_3		1
 #define ZOPT2201_LS_GAIN_6		2
 #define ZOPT2201_LS_GAIN_9		3
 #define ZOPT2201_LS_GAIN_18		4
 
-/* Values for ZOPT2201_MAIN_STATUS */
+ 
 #define ZOPT2201_MAIN_STATUS_POWERON	BIT(5)
 #define ZOPT2201_MAIN_STATUS_INT	BIT(4)
 #define ZOPT2201_MAIN_STATUS_DRDY	BIT(3)
@@ -80,8 +71,8 @@ struct zopt2201_data {
 };
 
 static const struct {
-	unsigned int gain; /* gain factor */
-	unsigned int scale; /* micro lux per count */
+	unsigned int gain;  
+	unsigned int scale;  
 } zopt2201_gain_als[] = {
 	{  1, 19200000 },
 	{  3,  6400000 },
@@ -91,8 +82,8 @@ static const struct {
 };
 
 static const struct {
-	unsigned int gain; /* gain factor */
-	unsigned int scale; /* micro W/m2 per count */
+	unsigned int gain;  
+	unsigned int scale;  
 } zopt2201_gain_uvb[] = {
 	{  1, 460800 },
 	{  3, 153600 },
@@ -102,8 +93,8 @@ static const struct {
 };
 
 static const struct {
-	unsigned int bits; /* sensor resolution in bits */
-	unsigned long us; /* measurement time in micro seconds */
+	unsigned int bits;  
+	unsigned long us;  
 } zopt2201_resolution[] = {
 	{ 20, 400000 },
 	{ 19, 200000 },
@@ -114,9 +105,9 @@ static const struct {
 };
 
 static const struct {
-	unsigned int scale, uscale; /* scale factor as integer + micro */
-	u8 gain; /* gain register value */
-	u8 res; /* resolution register value */
+	unsigned int scale, uscale;  
+	u8 gain;  
+	u8 res;  
 } zopt2201_scale_als[] = {
 	{ 19, 200000, 0, 5 },
 	{  6, 400000, 1, 5 },
@@ -143,9 +134,9 @@ static const struct {
 };
 
 static const struct {
-	unsigned int scale, uscale; /* scale factor as integer + micro */
-	u8 gain; /* gain register value */
-	u8 res; /* resolution register value */
+	unsigned int scale, uscale;  
+	u8 gain;  
+	u8 res;  
 } zopt2201_scale_uvb[] = {
 	{ 0, 460800, 0, 5 },
 	{ 0, 153600, 1, 5 },

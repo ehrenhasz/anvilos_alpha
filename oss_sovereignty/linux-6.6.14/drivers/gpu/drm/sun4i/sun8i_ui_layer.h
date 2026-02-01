@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) Icenowy Zheng <icenowy@aosc.io>
- *
- * Based on sun4i_layer.h, which is:
- *   Copyright (C) 2015 Free Electrons
- *   Copyright (C) 2015 NextThing Co
- *
- *   Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+ 
+ 
 
 #ifndef _SUN8I_UI_LAYER_H_
 #define _SUN8I_UI_LAYER_H_
@@ -64,4 +56,4 @@ plane_to_sun8i_ui_layer(struct drm_plane *plane)
 struct sun8i_ui_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
 					       struct sun8i_mixer *mixer,
 					       int index);
-#endif /* _SUN8I_UI_LAYER_H_ */
+#endif  

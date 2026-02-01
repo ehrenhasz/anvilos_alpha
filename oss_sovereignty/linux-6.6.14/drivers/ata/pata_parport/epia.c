@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1997-1998  Grant R. Guenther <grant@torque.net>
- *
- * epia.c is a low-level protocol driver for Shuttle Technologies
- * EPIA parallel to IDE adapter chip.  This device is now obsolete
- * and has been replaced with the EPAT chip, which is supported
- * by epat.c, however, some devices based on EPIA are still
- * available.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -18,22 +10,12 @@
 #include <asm/io.h>
 #include "pata_parport.h"
 
-/*
- * mode codes:  0  nybble reads on port 1, 8-bit writes
- *		1  5/3 reads on ports 1 & 2, 8-bit writes
- *		2  8-bit reads and writes
- *		3  8-bit EPP mode
- *		4  16-bit EPP
- *		5  32-bit EPP
- */
+ 
 
 #define j44(a, b)	(((a >> 4) & 0x0f) + (b & 0xf0))
 #define j53(a, b)	(((a >> 3) & 0x1f) + ((b << 4) & 0xe0))
 
-/*
- * cont =  0   IDE register file
- * cont =  1   IDE control registers
- */
+ 
 static int cont_map[2] = { 0, 0x80 };
 
 static int epia_read_regr(struct pi_adapter *pi, int cont, int regr)
@@ -94,12 +76,7 @@ static void epia_write_regr(struct pi_adapter *pi, int cont, int regr, int val)
 #define WR(r, v)	epia_write_regr(pi, 0, r, v)
 #define RR(r)		epia_read_regr(pi, 0, r)
 
-/*
- * The use of register 0x84 is entirely unclear - it seems to control
- * some EPP counters ...  currently we know about 3 different block
- * sizes:  the standard 512 byte reads and writes, 12 byte writes and
- * 2048 byte reads (the last two being used in the CDrom drivers.
- */
+ 
 static void epia_connect(struct pi_adapter *pi)
 {
 	pi->saved_r0 = r0();
@@ -116,7 +93,7 @@ static void epia_connect(struct pi_adapter *pi)
 
 static void epia_disconnect(struct pi_adapter *pi)
 {
-	/* WR(0x84,0x10); */
+	 
 	w0(pi->saved_r0);
 	w2(1); w2(4);
 	w0(pi->saved_r0);

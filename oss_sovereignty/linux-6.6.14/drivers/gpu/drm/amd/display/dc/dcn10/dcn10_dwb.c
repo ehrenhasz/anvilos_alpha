@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "resource.h"
@@ -45,7 +22,7 @@
 static bool dwb1_get_caps(struct dwbc *dwbc, struct dwb_caps *caps)
 {
 	if (caps) {
-		caps->adapter_id = 0;	/* we only support 1 adapter currently */
+		caps->adapter_id = 0;	 
 		caps->hw_version = DCN_VERSION_1_0;
 		caps->num_pipes = 2;
 		memset(&caps->reserved, 0, sizeof(caps->reserved));
@@ -65,10 +42,10 @@ static bool dwb1_enable(struct dwbc *dwbc, struct dc_dwb_params *params)
 {
 	struct dcn10_dwbc *dwbc10 = TO_DCN10_DWBC(dwbc);
 
-	/* disable first. */
+	 
 	dwbc->funcs->disable(dwbc);
 
-	/* disable power gating */
+	 
 	REG_UPDATE_5(WB_EC_CONFIG, DISPCLK_R_WB_GATE_DIS, 1,
 		 DISPCLK_G_WB_GATE_DIS, 1, DISPCLK_G_WBSCL_GATE_DIS, 1,
 		 WB_LB_LS_DIS, 1, WB_LUT_LS_DIS, 1);
@@ -82,17 +59,17 @@ static bool dwb1_disable(struct dwbc *dwbc)
 {
 	struct dcn10_dwbc *dwbc10 = TO_DCN10_DWBC(dwbc);
 
-	/* disable CNV */
+	 
 	REG_UPDATE(CNV_MODE, CNV_FRAME_CAPTURE_EN, 0);
 
-	/* disable WB */
+	 
 	REG_UPDATE(WB_ENABLE, WB_ENABLE, 0);
 
-	/* soft reset */
+	 
 	REG_UPDATE(WB_SOFT_RESET, WB_SOFT_RESET, 1);
 	REG_UPDATE(WB_SOFT_RESET, WB_SOFT_RESET, 0);
 
-	/* enable power gating */
+	 
 	REG_UPDATE_5(WB_EC_CONFIG, DISPCLK_R_WB_GATE_DIS, 0,
 		 DISPCLK_G_WB_GATE_DIS, 0, DISPCLK_G_WBSCL_GATE_DIS, 0,
 		 WB_LB_LS_DIS, 0, WB_LUT_LS_DIS, 0);

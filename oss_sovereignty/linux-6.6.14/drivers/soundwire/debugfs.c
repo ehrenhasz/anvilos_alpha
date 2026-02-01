@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2017-2019 Intel Corporation.
+
+
 
 #include <linux/device.h>
 #include <linux/debugfs.h>
@@ -19,7 +19,7 @@ void sdw_bus_debugfs_init(struct sdw_bus *bus)
 	if (!sdw_debugfs_root)
 		return;
 
-	/* create the debugfs master-N */
+	 
 	snprintf(name, sizeof(name), "master-%d-%d", bus->id, bus->link_id);
 	bus->debugfs = debugfs_create_dir(name, sdw_debugfs_root);
 }
@@ -65,18 +65,18 @@ static int sdw_slave_reg_show(struct seq_file *s_file, void *data)
 
 	ret = scnprintf(buf, RD_BUF, "Register  Value\n");
 
-	/* DP0 non-banked registers */
+	 
 	ret += scnprintf(buf + ret, RD_BUF - ret, "\nDP0\n");
 	for (i = SDW_DP0_INT; i <= SDW_DP0_PREPARECTRL; i++)
 		ret += sdw_sprintf(slave, buf, ret, i);
 
-	/* DP0 Bank 0 registers */
+	 
 	ret += scnprintf(buf + ret, RD_BUF - ret, "Bank0\n");
 	ret += sdw_sprintf(slave, buf, ret, SDW_DP0_CHANNELEN);
 	for (i = SDW_DP0_SAMPLECTRL1; i <= SDW_DP0_LANECTRL; i++)
 		ret += sdw_sprintf(slave, buf, ret, i);
 
-	/* DP0 Bank 1 registers */
+	 
 	ret += scnprintf(buf + ret, RD_BUF - ret, "Bank1\n");
 	ret += sdw_sprintf(slave, buf, ret,
 			SDW_DP0_CHANNELEN + SDW_BANK1_OFFSET);
@@ -84,7 +84,7 @@ static int sdw_slave_reg_show(struct seq_file *s_file, void *data)
 			i <= SDW_DP0_LANECTRL + SDW_BANK1_OFFSET; i++)
 		ret += sdw_sprintf(slave, buf, ret, i);
 
-	/* SCP registers */
+	 
 	ret += scnprintf(buf + ret, RD_BUF - ret, "\nSCP\n");
 	for (i = SDW_SCP_INT1; i <= SDW_SCP_BUS_CLOCK_BASE; i++)
 		ret += sdw_sprintf(slave, buf, ret, i);
@@ -98,28 +98,23 @@ static int sdw_slave_reg_show(struct seq_file *s_file, void *data)
 		ret += sdw_sprintf(slave, buf, ret, i);
 
 
-	/*
-	 * SCP Bank 0/1 registers are read-only and cannot be
-	 * retrieved from the Slave. The Master typically keeps track
-	 * of the current frame size so the information can be found
-	 * in other places
-	 */
+	 
 
-	/* DP1..14 registers */
+	 
 	for (i = 1; SDW_VALID_PORT_RANGE(i); i++) {
 
-		/* DPi registers */
+		 
 		ret += scnprintf(buf + ret, RD_BUF - ret, "\nDP%d\n", i);
 		for (j = SDW_DPN_INT(i); j <= SDW_DPN_PREPARECTRL(i); j++)
 			ret += sdw_sprintf(slave, buf, ret, j);
 
-		/* DPi Bank0 registers */
+		 
 		ret += scnprintf(buf + ret, RD_BUF - ret, "Bank0\n");
 		for (j = SDW_DPN_CHANNELEN_B0(i);
 		     j <= SDW_DPN_LANECTRL_B0(i); j++)
 			ret += sdw_sprintf(slave, buf, ret, j);
 
-		/* DPi Bank1 registers */
+		 
 		ret += scnprintf(buf + ret, RD_BUF - ret, "Bank1\n");
 		for (j = SDW_DPN_CHANNELEN_B1(i);
 		     j <= SDW_DPN_LANECTRL_B1(i); j++)
@@ -145,7 +140,7 @@ void sdw_slave_debugfs_init(struct sdw_slave *slave)
 
 	master = slave->bus->debugfs;
 
-	/* create the debugfs slave-name */
+	 
 	snprintf(name, sizeof(name), "%s", dev_name(&slave->dev));
 	d = debugfs_create_dir(name, master);
 

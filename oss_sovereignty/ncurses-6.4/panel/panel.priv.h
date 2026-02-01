@@ -1,37 +1,10 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2014,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/* $Id: panel.priv.h,v 1.30 2020/09/26 18:05:32 tom Exp $ */
+ 
 
 #ifndef NCURSES_PANEL_PRIV_H
 #define NCURSES_PANEL_PRIV_H 1
-/* *INDENT-OFF* */
+ 
 
 #if HAVE_CONFIG_H
 #  include <ncurses_cfg.h>
@@ -41,9 +14,9 @@
 #include <string.h>
 #include <assert.h>
 
-struct screen;              /* forward declaration */
+struct screen;               
 
-#include "curses.priv.h"    /* includes nc_panel.h */
+#include "curses.priv.h"     
 
 #define NCURSES_OPAQUE_PANEL 0
 
@@ -72,7 +45,7 @@ struct screen;              /* forward declaration */
 #  define Wnoutrefresh(pan) _nc_Wnoutrefresh(pan)
 #  define Touchpan(pan) _nc_Touchpan(pan)
 #  define Touchline(pan,start,count) _nc_Touchline(pan,start,count)
-#else /* !TRACE */
+#else  
 #  define returnPanel(code)	return code
 #  define dBug(x)
 #  define dPanel(text,pan)
@@ -97,29 +70,26 @@ struct screen;              /* forward declaration */
 #define _nc_top_panel           ((ph)->top_panel)
 #define _nc_bottom_panel        ((ph)->bottom_panel)
 
-#else	/* !NCURSES_SP_FUNCS */
+#else	 
 
-#define GetScreenHook(sp) /* nothing */
-#define GetPanelHook(pan) /* nothing */
-#define GetWindowHook(win) /* nothing */
-#define GetHook(pan) /* nothing */
+#define GetScreenHook(sp)  
+#define GetPanelHook(pan)  
+#define GetWindowHook(win)  
+#define GetHook(pan)  
 
 #define _nc_stdscr_pseudo_panel _nc_panelhook()->stdscr_pseudo_panel
 #define _nc_top_panel           _nc_panelhook()->top_panel
 #define _nc_bottom_panel        _nc_panelhook()->bottom_panel
 
-#endif	/* NCURSES_SP_FUNCS */
+#endif	 
 
 #define EMPTY_STACK() (_nc_top_panel == _nc_bottom_panel)
 #define Is_Bottom(p)  (((p) != (PANEL*)0) && !EMPTY_STACK() && (_nc_bottom_panel->above == (p)))
 #define Is_Top(p)     (((p) != (PANEL*)0) && !EMPTY_STACK() && (_nc_top_panel == (p)))
 #define Is_Pseudo(p)  (((p) != (PANEL*)0) && ((p) == _nc_bottom_panel))
 
-/*+-------------------------------------------------------------------------
-	IS_LINKED(pan) - check to see if panel is in the stack
---------------------------------------------------------------------------*/
-/* This works! The only case where it would fail is, when the list has
-   only one element. But this could only be the pseudo panel at the bottom */
+ 
+ 
 #define IS_LINKED(p) (((p)->above || (p)->below ||((p)==_nc_bottom_panel)) ? TRUE : FALSE)
 
 #define PSTARTX(pan) ((pan)->win->_begx)
@@ -127,9 +97,7 @@ struct screen;              /* forward declaration */
 #define PSTARTY(pan) ((pan)->win->_begy)
 #define PENDY(pan)   ((pan)->win->_begy + getmaxy((pan)->win) - 1)
 
-/*+-------------------------------------------------------------------------
-	PANELS_OVERLAPPED(pan1,pan2) - check panel overlapped
----------------------------------------------------------------------------*/
+ 
 #define PANELS_OVERLAPPED(pan1,pan2) \
 (( !(pan1) || !(pan2) || \
        PSTARTY(pan1) > PENDY(pan2) || PENDY(pan1) < PSTARTY(pan2) ||\
@@ -137,9 +105,7 @@ struct screen;              /* forward declaration */
      ? FALSE : TRUE)
 
 
-/*+-------------------------------------------------------------------------
-	Compute the intersection rectangle of two overlapping rectangles
----------------------------------------------------------------------------*/
+ 
 #define COMPUTE_INTERSECTION(pan1,pan2,ix1,ix2,iy1,iy2)\
    ix1 = (PSTARTX(pan1) < PSTARTX(pan2)) ? PSTARTX(pan2) : PSTARTX(pan1);\
    ix2 = (PENDX(pan1)   < PENDX(pan2))   ? PENDX(pan1)   : PENDX(pan2);\
@@ -148,13 +114,7 @@ struct screen;              /* forward declaration */
    assert((ix1<=ix2) && (iy1<=iy2))
 
 
-/*+-------------------------------------------------------------------------
-	Walk through the panel stack starting at the given location and
-        check for intersections; overlapping panels are "touched", so they
-        are incrementally overwriting cells that should be hidden.
-        If the "touch" flag is set, the panel gets touched before it is
-        updated.
----------------------------------------------------------------------------*/
+ 
 #define PANEL_UPDATE(pan,panstart)\
 {  PANEL* pan2 = ((panstart) ? (panstart) : _nc_bottom_panel);\
    while(pan2 && pan2->win) {\
@@ -172,9 +132,7 @@ struct screen;              /* forward declaration */
    }\
 }
 
-/*+-------------------------------------------------------------------------
-	Remove panel from stack.
----------------------------------------------------------------------------*/
+ 
 #define PANEL_UNLINK(pan,err) \
 {  err = ERR;\
    if (pan) {\
@@ -204,9 +162,9 @@ struct screen;              /* forward declaration */
   }
 
 #if NCURSES_SP_FUNCS
-/* These may become later renamed and part of panel.h and the public API */
+ 
 extern PANEL_EXPORT(void) NCURSES_SP_NAME(_nc_update_panels)(SCREEN*);
 #endif
-/* *INDENT-ON* */
+ 
 
-#endif /* NCURSES_PANEL_PRIV_H */
+#endif  

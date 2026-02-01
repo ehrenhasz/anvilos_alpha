@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/vmalloc.h>
@@ -27,19 +27,16 @@ enum nfp_dumpspec_type {
 	NFP_DUMPSPEC_TYPE_ERROR = 10001,
 };
 
-/* The following structs must be carefully aligned so that they can be used to
- * interpret the binary dumpspec and populate the dump data in a deterministic
- * way.
- */
+ 
 
-/* generic type plus length */
+ 
 struct nfp_dump_tl {
 	__be32 type;
-	__be32 length;	/* chunk length to follow, aligned to 8 bytes */
+	__be32 length;	 
 	char data[];
 };
 
-/* NFP CPP parameters */
+ 
 struct nfp_dumpspec_cpp_isl_id {
 	u8 target;
 	u8 action;
@@ -49,15 +46,15 @@ struct nfp_dumpspec_cpp_isl_id {
 
 struct nfp_dump_common_cpp {
 	struct nfp_dumpspec_cpp_isl_id cpp_id;
-	__be32 offset;		/* address to start dump */
-	__be32 dump_length;	/* total bytes to dump, aligned to reg size */
+	__be32 offset;		 
+	__be32 dump_length;	 
 };
 
-/* CSR dumpables */
+ 
 struct nfp_dumpspec_csr {
 	struct nfp_dump_tl tl;
 	struct nfp_dump_common_cpp cpp;
-	__be32 register_width;	/* in bits */
+	__be32 register_width;	 
 };
 
 struct nfp_dumpspec_rtsym {
@@ -65,22 +62,22 @@ struct nfp_dumpspec_rtsym {
 	char rtsym[];
 };
 
-/* header for register dumpable */
+ 
 struct nfp_dump_csr {
 	struct nfp_dump_tl tl;
 	struct nfp_dump_common_cpp cpp;
-	__be32 register_width;	/* in bits */
-	__be32 error;		/* error code encountered while reading */
-	__be32 error_offset;	/* offset being read when error occurred */
+	__be32 register_width;	 
+	__be32 error;		 
+	__be32 error_offset;	 
 };
 
 struct nfp_dump_rtsym {
 	struct nfp_dump_tl tl;
 	struct nfp_dump_common_cpp cpp;
-	__be32 error;		/* error code encountered while reading */
-	u8 padded_name_length;	/* pad so data starts at 8 byte boundary */
+	__be32 error;		 
+	u8 padded_name_length;	 
 	char rtsym[];
-	/* after padded_name_length, there is dump_length data */
+	 
 };
 
 struct nfp_dump_prolog {
@@ -95,18 +92,18 @@ struct nfp_dump_error {
 	char spec[];
 };
 
-/* to track state through debug size calculation TLV traversal */
+ 
 struct nfp_level_size {
-	__be32 requested_level;	/* input */
-	u32 total_size;		/* output */
+	__be32 requested_level;	 
+	u32 total_size;		 
 };
 
-/* to track state during debug dump creation TLV traversal */
+ 
 struct nfp_dump_state {
-	__be32 requested_level;	/* input param */
-	u32 dumped_size;	/* adds up to size of dumped data */
-	u32 buf_size;		/* size of buffer pointer to by p */
-	void *p;		/* current point in dump buffer */
+	__be32 requested_level;	 
+	u32 dumped_size;	 
+	u32 buf_size;		 
+	void *p;		 
 };
 
 typedef int (*nfp_tlv_visit)(struct nfp_pf *pf, struct nfp_dump_tl *tl,
@@ -132,7 +129,7 @@ nfp_traverse_tlvs(struct nfp_pf *pf, void *data, u32 data_length, void *param,
 
 		total_tlv_size = sizeof(*tl) + be32_to_cpu(tl->length);
 
-		/* Spec TLVs should be aligned to 4 bytes. */
+		 
 		if (total_tlv_size % 4 != 0)
 			return -EINVAL;
 
@@ -165,7 +162,7 @@ nfp_net_dump_load_dumpspec(struct nfp_cpp *cpp, struct nfp_rtsym_table *rtbl)
 		return NULL;
 	sym_size = nfp_rtsym_size(specsym);
 
-	/* expected size of this buffer is in the order of tens of kilobytes */
+	 
 	dumpspec = vmalloc(sizeof(*dumpspec) + sym_size);
 	if (!dumpspec)
 		return NULL;
@@ -497,9 +494,7 @@ nfp_dump_csr_range(struct nfp_pf *pf, struct nfp_dumpspec_csr *spec_csr,
 	return 0;
 }
 
-/* Write context to CSRCtxPtr, then read from it. Then the value can be read
- * from IndCtxStatus.
- */
+ 
 static int
 nfp_read_indirect_csr(struct nfp_cpp *cpp,
 		      struct nfp_dumpspec_cpp_isl_id cpp_params, u32 offset,
@@ -754,9 +749,7 @@ int nfp_net_dump_populate_buffer(struct nfp_pf *pf, struct nfp_dumpspec *spec,
 	if (err)
 		return err;
 
-	/* Set size of actual dump, to trigger warning if different from
-	 * calculated size.
-	 */
+	 
 	dump_param->len = dump.dumped_size;
 
 	return 0;

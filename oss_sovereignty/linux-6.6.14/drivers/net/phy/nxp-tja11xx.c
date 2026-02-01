@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* NXP TJA1100 BroadRReach PHY driver
- *
- * Copyright (C) 2018 Marek Vasut <marex@denx.de>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/ethtool.h>
 #include <linux/ethtool_netlink.h>
@@ -78,7 +75,7 @@
 #define MII_COMMCFG			27
 #define MII_COMMCFG_AUTO_OP		BIT(15)
 
-/* Configure REF_CLK as input in RMII mode */
+ 
 #define TJA110X_RMII_MODE_REFCLK_IN       BIT(0)
 
 struct tja11xx_priv {
@@ -217,7 +214,7 @@ static int tja11xx_config_aneg_cable_test(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* According to the documentation this test takes 100 usec */
+	 
 	usleep_range(100, 200);
 
 	ret = phydev->drv->cable_test_get_status(phydev, &finished);
@@ -349,7 +346,7 @@ static int tja11xx_config_init(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* ACK interrupts by reading the status register */
+	 
 	ret = phy_read(phydev, MII_INTSRC);
 	if (ret < 0)
 		return ret;
@@ -565,10 +562,7 @@ static void tja1102_p1_register(struct work_struct *work)
 			dev_err(dev, "Can't parse addr\n");
 			continue;
 		} else if (addr != phydev_phy0->mdio.addr + 1) {
-			/* Currently we care only about double PHY chip TJA1102.
-			 * If some day NXP will decide to bring chips with more
-			 * PHYs, this logic should be reworked.
-			 */
+			 
 			dev_err(dev, "Unexpected address. Should be: %i\n",
 				phydev_phy0->mdio.addr + 1);
 			continue;
@@ -579,7 +573,7 @@ static void tja1102_p1_register(struct work_struct *work)
 			continue;
 		}
 
-		/* Real PHY ID of Port 1 is 0 */
+		 
 		phy = phy_device_create(bus, addr, PHY_ID_TJA1102, false, NULL);
 		if (IS_ERR(phy)) {
 			dev_err(dev, "Can't create PHY device for Port 1: %i\n",
@@ -587,18 +581,12 @@ static void tja1102_p1_register(struct work_struct *work)
 			continue;
 		}
 
-		/* Overwrite parent device. phy_device_create() set parent to
-		 * the mii_bus->dev, which is not correct in case.
-		 */
+		 
 		phy->mdio.dev.parent = dev;
 
 		ret = of_mdiobus_phy_device_register(bus, phy, child, addr);
 		if (ret) {
-			/* All resources needed for Port 1 should be already
-			 * available for Port 0. Both ports use the same
-			 * interrupt line, so -EPROBE_DEFER would make no sense
-			 * here.
-			 */
+			 
 			dev_err(dev, "Can't register Port 1. Unexpected error: %i\n",
 				ret);
 			phy_device_free(phy);
@@ -639,9 +627,7 @@ static int tja1102_match_phy_device(struct phy_device *phydev, bool port0)
 	if (ret < 0)
 		return ret;
 
-	/* TJA1102 Port 1 has phyid 0 and doesn't support temperature
-	 * and undervoltage alarms.
-	 */
+	 
 	if (port0)
 		return ret ? 1 : 0;
 
@@ -734,24 +720,13 @@ static int tja11xx_cable_test_start(struct phy_device *phydev)
 	return phy_set_bits(phydev, MII_ECTRL, MII_ECTRL_CABLE_TEST);
 }
 
-/*
- * | BI_DA+           | BI_DA-                 | Result
- * | open             | open                   | open
- * | + short to -     | - short to +           | short
- * | short to Vdd     | open                   | open
- * | open             | shot to Vdd            | open
- * | short to Vdd     | short to Vdd           | short
- * | shot to GND      | open                   | open
- * | open             | shot to GND            | open
- * | short to GND     | shot to GND            | short
- * | connected to active link partner (master) | shot and open
- */
+ 
 static int tja11xx_cable_test_report_trans(u32 result)
 {
 	u32 mask = MII_EXTSTAT_SHORT_DETECT | MII_EXTSTAT_OPEN_DETECT;
 
 	if ((result & mask) == mask) {
-		/* connected to active link partner (master) */
+		 
 		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
 	} else if ((result & mask) == 0) {
 		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
@@ -817,7 +792,7 @@ static struct phy_driver tja11xx_driver[] = {
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
 		.set_loopback   = genphy_loopback,
-		/* Statistics */
+		 
 		.get_sset_count = tja11xx_get_sset_count,
 		.get_strings	= tja11xx_get_strings,
 		.get_stats	= tja11xx_get_stats,
@@ -835,7 +810,7 @@ static struct phy_driver tja11xx_driver[] = {
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
 		.set_loopback   = genphy_loopback,
-		/* Statistics */
+		 
 		.get_sset_count = tja11xx_get_sset_count,
 		.get_strings	= tja11xx_get_strings,
 		.get_stats	= tja11xx_get_stats,
@@ -854,7 +829,7 @@ static struct phy_driver tja11xx_driver[] = {
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
 		.set_loopback   = genphy_loopback,
-		/* Statistics */
+		 
 		.get_sset_count = tja11xx_get_sset_count,
 		.get_strings	= tja11xx_get_strings,
 		.get_stats	= tja11xx_get_stats,
@@ -866,7 +841,7 @@ static struct phy_driver tja11xx_driver[] = {
 		.name		= "NXP TJA1102 Port 1",
 		.features       = PHY_BASIC_T1_FEATURES,
 		.flags          = PHY_POLL_CABLE_TEST,
-		/* currently no probe for Port 1 is need */
+		 
 		.soft_reset	= tja11xx_soft_reset,
 		.config_aneg	= tja11xx_config_aneg,
 		.config_init	= tja11xx_config_init,
@@ -877,7 +852,7 @@ static struct phy_driver tja11xx_driver[] = {
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
 		.set_loopback   = genphy_loopback,
-		/* Statistics */
+		 
 		.get_sset_count = tja11xx_get_sset_count,
 		.get_strings	= tja11xx_get_strings,
 		.get_stats	= tja11xx_get_stats,

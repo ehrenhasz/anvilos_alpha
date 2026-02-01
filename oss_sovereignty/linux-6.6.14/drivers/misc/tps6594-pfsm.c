@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PFSM (Pre-configurable Finite State Machine) driver for TI TPS6594/TPS6593/LP8764 PMICs
- *
- * Copyright (C) 2023 BayLibre Incorporated - https://www.baylibre.com/
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -26,20 +22,12 @@
 #define TPS6594_STARTUP_DEST_ACTIVE	  (TPS6594_STARTUP_DEST_ACTIVE_VAL \
 					   << TPS6594_STARTUP_DEST_SHIFT)
 
-/*
- * To update the PMIC firmware, the user must be able to access
- * page 0 (user registers) and page 1 (NVM control and configuration).
- */
+ 
 #define TPS6594_PMIC_MAX_POS 0x200
 
 #define TPS6594_FILE_TO_PFSM(f) container_of((f)->private_data, struct tps6594_pfsm, miscdev)
 
-/**
- * struct tps6594_pfsm - device private data structure
- *
- * @miscdev: misc device infos
- * @regmap:  regmap for accessing the device registers
- */
+ 
 struct tps6594_pfsm {
 	struct miscdevice miscdev;
 	struct regmap *regmap;
@@ -137,34 +125,34 @@ static long tps6594_pfsm_ioctl(struct file *f, unsigned int cmd, unsigned long a
 
 	switch (cmd) {
 	case PMIC_GOTO_STANDBY:
-		/* Disable LP mode */
+		 
 		ret = regmap_clear_bits(pfsm->regmap, TPS6594_REG_RTC_CTRL_2,
 					TPS6594_BIT_LP_STANDBY_SEL);
 		if (ret)
 			return ret;
 
-		/* Force trigger */
+		 
 		ret = regmap_write_bits(pfsm->regmap, TPS6594_REG_FSM_I2C_TRIGGERS,
 					TPS6594_BIT_TRIGGER_I2C(0), TPS6594_BIT_TRIGGER_I2C(0));
 		break;
 	case PMIC_GOTO_LP_STANDBY:
-		/* Enable LP mode */
+		 
 		ret = regmap_set_bits(pfsm->regmap, TPS6594_REG_RTC_CTRL_2,
 				      TPS6594_BIT_LP_STANDBY_SEL);
 		if (ret)
 			return ret;
 
-		/* Force trigger */
+		 
 		ret = regmap_write_bits(pfsm->regmap, TPS6594_REG_FSM_I2C_TRIGGERS,
 					TPS6594_BIT_TRIGGER_I2C(0), TPS6594_BIT_TRIGGER_I2C(0));
 		break;
 	case PMIC_UPDATE_PGM:
-		/* Force trigger */
+		 
 		ret = regmap_write_bits(pfsm->regmap, TPS6594_REG_FSM_I2C_TRIGGERS,
 					TPS6594_BIT_TRIGGER_I2C(3), TPS6594_BIT_TRIGGER_I2C(3));
 		break;
 	case PMIC_SET_ACTIVE_STATE:
-		/* Modify NSLEEP1-2 bits */
+		 
 		ret = regmap_set_bits(pfsm->regmap, TPS6594_REG_FSM_NSLEEP_TRIGGERS,
 				      TPS6594_BIT_NSLEEP1B | TPS6594_BIT_NSLEEP2B);
 		break;
@@ -172,13 +160,13 @@ static long tps6594_pfsm_ioctl(struct file *f, unsigned int cmd, unsigned long a
 		if (copy_from_user(&state_opt, argp, sizeof(state_opt)))
 			return -EFAULT;
 
-		/* Configure retention triggers */
+		 
 		ret = tps6594_pfsm_configure_ret_trig(pfsm->regmap, state_opt.gpio_retention,
 						      state_opt.ddr_retention);
 		if (ret)
 			return ret;
 
-		/* Modify NSLEEP1-2 bits */
+		 
 		ret = regmap_clear_bits(pfsm->regmap, TPS6594_REG_FSM_NSLEEP_TRIGGERS,
 					TPS6594_BIT_NSLEEP1B);
 		if (ret)
@@ -191,7 +179,7 @@ static long tps6594_pfsm_ioctl(struct file *f, unsigned int cmd, unsigned long a
 		if (copy_from_user(&state_opt, argp, sizeof(state_opt)))
 			return -EFAULT;
 
-		/* Configure wake-up destination */
+		 
 		if (state_opt.mcu_only_startup_dest)
 			ret = regmap_write_bits(pfsm->regmap, TPS6594_REG_RTC_CTRL_2,
 						TPS6594_MASK_STARTUP_DEST,
@@ -203,13 +191,13 @@ static long tps6594_pfsm_ioctl(struct file *f, unsigned int cmd, unsigned long a
 		if (ret)
 			return ret;
 
-		/* Configure retention triggers */
+		 
 		ret = tps6594_pfsm_configure_ret_trig(pfsm->regmap, state_opt.gpio_retention,
 						      state_opt.ddr_retention);
 		if (ret)
 			return ret;
 
-		/* Modify NSLEEP1-2 bits */
+		 
 		ret = regmap_clear_bits(pfsm->regmap, TPS6594_REG_FSM_NSLEEP_TRIGGERS,
 					TPS6594_BIT_NSLEEP2B);
 		break;

@@ -1,20 +1,10 @@
-/*
- * Broadcom specific AMBA
- * PCIe Gen 2 Core
- *
- * Copyright 2014, Broadcom Corporation
- * Copyright 2014, Rafał Miłecki <zajec5@gmail.com>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/bcma/bcma.h>
 #include <linux/pci.h>
 
-/**************************************************
- * R/W ops.
- **************************************************/
+ 
 
 #if 0
 static u32 bcma_core_pcie2_cfg_read(struct bcma_drv_pcie2 *pcie2, u32 addr)
@@ -32,16 +22,14 @@ static void bcma_core_pcie2_cfg_write(struct bcma_drv_pcie2 *pcie2, u32 addr,
 	pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDDATA, val);
 }
 
-/**************************************************
- * Init.
- **************************************************/
+ 
 
 static u32 bcma_core_pcie2_war_delay_perst_enab(struct bcma_drv_pcie2 *pcie2,
 						bool enable)
 {
 	u32 val;
 
-	/* restore back to default */
+	 
 	val = pcie2_read32(pcie2, BCMA_CORE_PCIE2_CLK_CONTROL);
 	val |= PCIE2_CLKC_DLYPERST;
 	val &= ~PCIE2_CLKC_DISSPROMLD;
@@ -50,19 +38,19 @@ static u32 bcma_core_pcie2_war_delay_perst_enab(struct bcma_drv_pcie2 *pcie2,
 		val |= PCIE2_CLKC_DISSPROMLD;
 	}
 	pcie2_write32(pcie2, (BCMA_CORE_PCIE2_CLK_CONTROL), val);
-	/* flush */
+	 
 	return pcie2_read32(pcie2, BCMA_CORE_PCIE2_CLK_CONTROL);
 }
 
 static void bcma_core_pcie2_set_ltr_vals(struct bcma_drv_pcie2 *pcie2)
 {
-	/* LTR0 */
+	 
 	pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDADDR, 0x844);
 	pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDDATA, 0x883c883c);
-	/* LTR1 */
+	 
 	pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDADDR, 0x848);
 	pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDDATA, 0x88648864);
-	/* LTR2 */
+	 
 	pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDADDR, 0x84C);
 	pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDDATA, 0x90039003);
 }
@@ -79,25 +67,23 @@ static void bcma_core_pcie2_hw_ltr_war(struct bcma_drv_pcie2 *pcie2)
 		      PCIE2_CAP_DEVSTSCTRL2_OFFSET);
 	devstsctr2 = pcie2_read32(pcie2, BCMA_CORE_PCIE2_CONFIGINDDATA);
 	if (devstsctr2 & PCIE2_CAP_DEVSTSCTRL2_LTRENAB) {
-		/* force the right LTR values */
+		 
 		bcma_core_pcie2_set_ltr_vals(pcie2);
 
-		/* TODO:
-		 *si_core_wrapperreg(pcie2, 3, 0x60, 0x8080, 0);
-		 */
+		 
 
-		/* enable the LTR */
+		 
 		devstsctr2 |= PCIE2_CAP_DEVSTSCTRL2_LTRENAB;
 		pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDADDR,
 			      PCIE2_CAP_DEVSTSCTRL2_OFFSET);
 		pcie2_write32(pcie2, BCMA_CORE_PCIE2_CONFIGINDDATA, devstsctr2);
 
-		/* set the LTR state to be active */
+		 
 		pcie2_write32(pcie2, BCMA_CORE_PCIE2_LTR_STATE,
 			      PCIE2_LTR_ACTIVE);
 		usleep_range(1000, 2000);
 
-		/* set the LTR state to be sleep */
+		 
 		pcie2_write32(pcie2, BCMA_CORE_PCIE2_LTR_STATE,
 			      PCIE2_LTR_SLEEP);
 		usleep_range(1000, 2000);
@@ -116,7 +102,7 @@ static void pciedev_crwlpciegen2(struct bcma_drv_pcie2 *pcie2)
 	if (!pciewar160 && !pciewar162)
 		return;
 
-/* TODO */
+ 
 #if 0
 	pcie2_set32(pcie2, BCMA_CORE_PCIE2_CLK_CONTROL,
 		    PCIE_DISABLE_L1CLK_GATING);
@@ -185,9 +171,7 @@ void bcma_core_pcie2_init(struct bcma_drv_pcie2 *pcie2)
 	pciedev_crwlpciegen2_182(pcie2);
 }
 
-/**************************************************
- * Runtime ops.
- **************************************************/
+ 
 
 void bcma_core_pcie2_up(struct bcma_drv_pcie2 *pcie2)
 {

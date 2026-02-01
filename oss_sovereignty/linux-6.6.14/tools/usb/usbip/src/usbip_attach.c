@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #include <sys/stat.h>
 
@@ -45,7 +39,7 @@ static int record_connection(char *host, char *port, char *busid, int rhport)
 
 	ret = mkdir(VHCI_STATE_PATH, 0700);
 	if (ret < 0) {
-		/* if VHCI_STATE_PATH exists, then it better be a directory */
+		 
 		if (errno == EEXIST) {
 			struct stat s;
 
@@ -128,7 +122,7 @@ static int query_import_device(int sockfd, char *busid)
 	memset(&request, 0, sizeof(request));
 	memset(&reply, 0, sizeof(reply));
 
-	/* send a request */
+	 
 	rc = usbip_net_send_op_common(sockfd, OP_REQ_IMPORT, 0);
 	if (rc < 0) {
 		err("send op_common");
@@ -145,7 +139,7 @@ static int query_import_device(int sockfd, char *busid)
 		return -1;
 	}
 
-	/* receive a reply */
+	 
 	rc = usbip_net_recv_op_common(sockfd, &code, &status);
 	if (rc < 0) {
 		err("Attach Request for %s failed - %s\n",
@@ -161,13 +155,13 @@ static int query_import_device(int sockfd, char *busid)
 
 	PACK_OP_IMPORT_REPLY(0, &reply);
 
-	/* check the reply */
+	 
 	if (strncmp(reply.udev.busid, busid, SYSFS_BUS_ID_SIZE)) {
 		err("recv different busid %s", reply.udev.busid);
 		return -1;
 	}
 
-	/* import a device */
+	 
 	return import_device(sockfd, &reply.udev);
 }
 

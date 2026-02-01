@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  fan_core.c - ACPI Fan core Driver
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2022 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -25,7 +19,7 @@ static const struct acpi_device_id fan_device_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, fan_device_ids);
 
-/* thermal cooling device callbacks */
+ 
 static int fan_get_max_state(struct thermal_cooling_device *cdev, unsigned long
 			     *state)
 {
@@ -86,7 +80,7 @@ static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
 		return status;
 
 	if (fan->fif.fine_grain_ctrl) {
-		/* This control should be same what we set using _FSL by spec */
+		 
 		if (fst.control > 100) {
 			dev_dbg(&device->dev, "Invalid control value returned\n");
 			goto match_fps;
@@ -164,7 +158,7 @@ static int fan_set_state_acpi4(struct acpi_device *device, unsigned long state)
 
 	if (fan->fif.fine_grain_ctrl) {
 		value *= fan->fif.step_size;
-		/* Spec allows compensate the last step only */
+		 
 		if (value + fan->fif.step_size > 100)
 			value = 100;
 	} else {
@@ -198,10 +192,7 @@ static const struct thermal_cooling_device_ops fan_cooling_ops = {
 	.set_cur_state = fan_set_cur_state,
 };
 
-/* --------------------------------------------------------------------------
- *                               Driver Interface
- * --------------------------------------------------------------------------
-*/
+ 
 
 static bool acpi_fan_is_acpi4(struct acpi_device *device)
 {
@@ -244,10 +235,10 @@ static int acpi_fan_get_fif(struct acpi_device *device)
 	fan->fif.step_size = fields[2];
 	fan->fif.low_speed_notification = fields[3];
 
-	/* If there is a bug in step size and set as 0, change to 1 */
+	 
 	if (!fan->fif.step_size)
 		fan->fif.step_size = 1;
-	/* If step size > 9, change to 9 (by spec valid values 1-9) */
+	 
 	else if (fan->fif.step_size > 9)
 		fan->fif.step_size = 9;
 err:
@@ -281,7 +272,7 @@ static int acpi_fan_get_fps(struct acpi_device *device)
 		goto err;
 	}
 
-	fan->fps_count = obj->package.count - 1; /* minus revision field */
+	fan->fps_count = obj->package.count - 1;  
 	fan->fps = devm_kcalloc(&device->dev,
 				fan->fps_count, sizeof(struct acpi_fan_fps),
 				GFP_KERNEL);
@@ -302,7 +293,7 @@ static int acpi_fan_get_fps(struct acpi_device *device)
 		}
 	}
 
-	/* sort the state array according to fan speed in increase order */
+	 
 	sort(fan->fps, fan->fps_count, sizeof(*fan->fps),
 	     acpi_fan_speed_cmp, NULL);
 

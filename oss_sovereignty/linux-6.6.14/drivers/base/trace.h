@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Device core Trace Support
- * Copyright (C) 2021, Intel Corporation
- *
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM dev
@@ -43,9 +38,9 @@ DEFINE_EVENT(devres, devres_log,
 	TP_ARGS(dev, op, node, name, size)
 );
 
-#endif /* __DEV_TRACE_H */
+#endif  
 
-/* this part has to be here */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

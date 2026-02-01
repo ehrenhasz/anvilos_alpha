@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include "hantro.h"
 

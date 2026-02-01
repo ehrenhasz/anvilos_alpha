@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GPUCC_SA8775P_H
 #define _DT_BINDINGS_CLK_QCOM_GPUCC_SA8775P_H
 
-/* GPU_CC clocks */
+ 
 #define GPU_CC_PLL0				0
 #define GPU_CC_PLL1				1
 #define GPU_CC_AHB_CLK				2
@@ -32,7 +29,7 @@
 #define GPU_CC_SLEEP_CLK			21
 #define GPU_CC_XO_CLK_SRC			22
 
-/* GPU_CC resets */
+ 
 #define GPUCC_GPU_CC_ACD_BCR			0
 #define GPUCC_GPU_CC_CB_BCR			1
 #define GPUCC_GPU_CC_CX_BCR			2
@@ -43,8 +40,8 @@
 #define GPUCC_GPU_CC_GX_BCR			7
 #define GPUCC_GPU_CC_XO_BCR			8
 
-/* GPU_CC power domains */
+ 
 #define GPU_CC_CX_GDSC				0
 #define GPU_CC_GX_GDSC				1
 
-#endif /* _DT_BINDINGS_CLK_QCOM_GPUCC_SA8775P_H */
+#endif  

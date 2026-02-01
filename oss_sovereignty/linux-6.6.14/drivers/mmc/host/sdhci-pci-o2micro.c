@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 BayHub Technology Ltd.
- *
- * Authors: Peter Guo <peter.guo@bayhubtech.com>
- *          Adam Lee <adam.lee@canonical.com>
- *          Ernest Zhang <ernest.zhang@bayhubtech.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/mmc/host.h>
@@ -17,9 +11,7 @@
 #include "sdhci.h"
 #include "sdhci-pci.h"
 
-/*
- * O2Micro device registers
- */
+ 
 
 #define O2_SD_PCIE_SWITCH	0x54
 #define O2_SD_MISC_REG5		0x64
@@ -86,7 +78,7 @@ static void sdhci_o2_wait_card_detect_stable(struct sdhci_host *host)
 	ktime_t timeout;
 	u32 scratch32;
 
-	/* Wait max 50 ms */
+	 
 	timeout = ktime_add_ms(ktime_get(), 50);
 	while (1) {
 		bool timedout = ktime_after(ktime_get(), timeout);
@@ -112,7 +104,7 @@ static void sdhci_o2_enable_internal_clock(struct sdhci_host *host)
 	u16 scratch;
 	u32 scratch32;
 
-	/* PLL software reset */
+	 
 	scratch32 = sdhci_readl(host, O2_PLL_DLL_WDT_CONTROL1);
 	scratch32 |= O2_PLL_SOFT_RESET;
 	sdhci_writel(host, scratch32, O2_PLL_DLL_WDT_CONTROL1);
@@ -120,11 +112,11 @@ static void sdhci_o2_enable_internal_clock(struct sdhci_host *host)
 	scratch32 &= ~(O2_PLL_SOFT_RESET);
 	sdhci_writel(host, scratch32, O2_PLL_DLL_WDT_CONTROL1);
 
-	/* PLL force active */
+	 
 	scratch32 |= O2_PLL_FORCE_ACTIVE;
 	sdhci_writel(host, scratch32, O2_PLL_DLL_WDT_CONTROL1);
 
-	/* Wait max 20 ms */
+	 
 	timeout = ktime_add_ms(ktime_get(), 20);
 	while (1) {
 		bool timedout = ktime_after(ktime_get(), timeout);
@@ -141,12 +133,12 @@ static void sdhci_o2_enable_internal_clock(struct sdhci_host *host)
 		udelay(10);
 	}
 
-	/* Wait for card detect finish */
+	 
 	udelay(1);
 	sdhci_o2_wait_card_detect_stable(host);
 
 out:
-	/* Cancel PLL force active */
+	 
 	scratch32 = sdhci_readl(host, O2_PLL_DLL_WDT_CONTROL1);
 	scratch32 &= ~O2_PLL_FORCE_ACTIVE;
 	sdhci_writel(host, scratch32, O2_PLL_DLL_WDT_CONTROL1);
@@ -183,12 +175,7 @@ static u32 sdhci_o2_pll_dll_wdt_control(struct sdhci_host *host)
 	return sdhci_readl(host, O2_PLL_DLL_WDT_CONTROL1);
 }
 
-/*
- * This function is used to detect dll lock status.
- * Since the dll lock status bit will toggle randomly
- * with very short interval which needs to be polled
- * as fast as possible. Set sleep_us as 1 microsecond.
- */
+ 
 static int sdhci_o2_wait_dll_detect_lock(struct sdhci_host *host)
 {
 	u32	scratch32 = 0;
@@ -201,7 +188,7 @@ static void sdhci_o2_set_tuning_mode(struct sdhci_host *host)
 {
 	u16 reg;
 
-	/* enable hardware tuning */
+	 
 	reg = sdhci_readw(host, O2_SD_VENDOR_SETTING);
 	reg &= ~O2_SD_HW_TUNING_DISABLE;
 	sdhci_writew(host, reg, O2_SD_VENDOR_SETTING);
@@ -234,13 +221,7 @@ static void __sdhci_o2_execute_tuning(struct sdhci_host *host, u32 opcode)
 	sdhci_reset_tuning(host);
 }
 
-/*
- * This function is used to fix o2 dll shift issue.
- * It isn't necessary to detect card present before recovery.
- * Firstly, it is used by bht emmc card, which is embedded.
- * Second, before call recovery card present will be detected
- * outside of the execute tuning function.
- */
+ 
 static int sdhci_o2_dll_recovery(struct sdhci_host *host)
 {
 	int ret = 0;
@@ -250,16 +231,16 @@ static int sdhci_o2_dll_recovery(struct sdhci_host *host)
 	struct sdhci_pci_chip *chip = slot->chip;
 	struct o2_host *o2_host = sdhci_pci_priv(slot);
 
-	/* UnLock WP */
+	 
 	pci_read_config_byte(chip->pdev,
 			O2_SD_LOCK_WP, &scratch_8);
 	scratch_8 &= 0x7f;
 	pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch_8);
 	while (o2_host->dll_adjust_count < DMDN_SZ && !ret) {
-		/* Disable clock */
+		 
 		sdhci_writeb(host, 0, SDHCI_CLOCK_CONTROL);
 
-		/* PLL software reset */
+		 
 		scratch_32 = sdhci_readl(host, O2_PLL_DLL_WDT_CONTROL1);
 		scratch_32 |= O2_PLL_SOFT_RESET;
 		sdhci_writel(host, scratch_32, O2_PLL_DLL_WDT_CONTROL1);
@@ -267,20 +248,17 @@ static int sdhci_o2_dll_recovery(struct sdhci_host *host)
 		pci_read_config_dword(chip->pdev,
 					    O2_SD_FUNC_REG4,
 					    &scratch_32);
-		/* Enable Base Clk setting change */
+		 
 		scratch_32 |= O2_SD_FREG4_ENABLE_CLK_SET;
 		pci_write_config_dword(chip->pdev, O2_SD_FUNC_REG4, scratch_32);
 		o2_pci_set_baseclk(chip, dmdn_table[o2_host->dll_adjust_count]);
 
-		/* Enable internal clock */
+		 
 		scratch_8 = SDHCI_CLOCK_INT_EN;
 		sdhci_writeb(host, scratch_8, SDHCI_CLOCK_CONTROL);
 
 		if (sdhci_o2_get_cd(host->mmc)) {
-			/*
-			 * need wait at least 5ms for dll status stable,
-			 * after enable internal clock
-			 */
+			 
 			usleep_range(5000, 6000);
 			if (sdhci_o2_wait_dll_detect_lock(host)) {
 				scratch_8 |= SDHCI_CLOCK_CARD_EN;
@@ -303,7 +281,7 @@ static int sdhci_o2_dll_recovery(struct sdhci_host *host)
 	if (!ret && o2_host->dll_adjust_count == DMDN_SZ)
 		pr_err("%s: DLL adjust over max times\n",
 		mmc_hostname(host->mmc));
-	/* Lock WP */
+	 
 	pci_read_config_byte(chip->pdev,
 				   O2_SD_LOCK_WP, &scratch_8);
 	scratch_8 |= 0x80;
@@ -322,10 +300,7 @@ static int sdhci_o2_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	u8  scratch_8 = 0;
 	u32 reg_val;
 
-	/*
-	 * This handler implements the hardware tuning that is specific to
-	 * this controller.  Fall back to the standard method for other TIMING.
-	 */
+	 
 	if ((host->timing != MMC_TIMING_MMC_HS200) &&
 		(host->timing != MMC_TIMING_UHS_SDR104) &&
 		(host->timing != MMC_TIMING_UHS_SDR50))
@@ -334,43 +309,43 @@ static int sdhci_o2_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	if (WARN_ON(!mmc_op_tuning(opcode)))
 		return -EINVAL;
 
-	/* Force power mode enter L0 */
+	 
 	scratch = sdhci_readw(host, O2_SD_MISC_CTRL);
 	scratch |= O2_SD_PWR_FORCE_L0;
 	sdhci_writew(host, scratch, O2_SD_MISC_CTRL);
 
-	/* Update output phase */
+	 
 	switch (chip->pdev->device) {
 	case PCI_DEVICE_ID_O2_SDS0:
 	case PCI_DEVICE_ID_O2_SEABIRD0:
 	case PCI_DEVICE_ID_O2_SEABIRD1:
 	case PCI_DEVICE_ID_O2_SDS1:
 	case PCI_DEVICE_ID_O2_FUJIN2:
-		/* Stop clk */
+		 
 		reg_val = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
 		reg_val &= ~SDHCI_CLOCK_CARD_EN;
 		sdhci_writew(host, reg_val, SDHCI_CLOCK_CONTROL);
 
 		if (host->timing == MMC_TIMING_MMC_HS200 ||
 		    host->timing == MMC_TIMING_UHS_SDR104) {
-			/* UnLock WP */
+			 
 			pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch_8);
 			scratch_8 &= 0x7f;
 			pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch_8);
 
-			/* Set pcr 0x354[16] to choose dll clock, and set the default phase */
+			 
 			pci_read_config_dword(chip->pdev, O2_SD_OUTPUT_CLK_SOURCE_SWITCH, &reg_val);
 			reg_val &= ~(O2_SD_SEL_DLL | O2_SD_PHASE_MASK);
 			reg_val |= (O2_SD_SEL_DLL | O2_SD_FIX_PHASE);
 			pci_write_config_dword(chip->pdev, O2_SD_OUTPUT_CLK_SOURCE_SWITCH, reg_val);
 
-			/* Lock WP */
+			 
 			pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch_8);
 			scratch_8 |= 0x80;
 			pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch_8);
 		}
 
-		/* Start clk */
+		 
 		reg_val = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
 		reg_val |= SDHCI_CLOCK_CARD_EN;
 		sdhci_writew(host, reg_val, SDHCI_CLOCK_CONTROL);
@@ -379,24 +354,19 @@ static int sdhci_o2_execute_tuning(struct mmc_host *mmc, u32 opcode)
 		break;
 	}
 
-	/* wait DLL lock, timeout value 5ms */
+	 
 	if (readx_poll_timeout(sdhci_o2_pll_dll_wdt_control, host,
 		scratch32, (scratch32 & O2_DLL_LOCK_STATUS), 1, 5000))
 		pr_warn("%s: DLL can't lock in 5ms after force L0 during tuning.\n",
 				mmc_hostname(host->mmc));
-	/*
-	 * Judge the tuning reason, whether caused by dll shift
-	 * If cause by dll shift, should call sdhci_o2_dll_recovery
-	 */
+	 
 	if (!sdhci_o2_wait_dll_detect_lock(host))
 		if (!sdhci_o2_dll_recovery(host)) {
 			pr_err("%s: o2 dll recovery failed\n",
 				mmc_hostname(host->mmc));
 			return -EINVAL;
 		}
-	/*
-	 * o2 sdhci host didn't support 8bit emmc tuning
-	 */
+	 
 	if (mmc->ios.bus_width == MMC_BUS_WIDTH_8) {
 		current_bus_width = mmc->ios.bus_width;
 		mmc->ios.bus_width = MMC_BUS_WIDTH_4;
@@ -416,7 +386,7 @@ static int sdhci_o2_execute_tuning(struct mmc_host *mmc, u32 opcode)
 		sdhci_set_bus_width(host, current_bus_width);
 	}
 
-	/* Cancel force power mode enter L0 */
+	 
 	scratch = sdhci_readw(host, O2_SD_MISC_CTRL);
 	scratch &= ~(O2_SD_PWR_FORCE_L0);
 	sdhci_writew(host, scratch, O2_SD_MISC_CTRL);
@@ -433,7 +403,7 @@ static void o2_pci_led_enable(struct sdhci_pci_chip *chip)
 	int ret;
 	u32 scratch_32;
 
-	/* Set led of SD host function enable */
+	 
 	ret = pci_read_config_dword(chip->pdev,
 				    O2_SD_FUNC_REG0, &scratch_32);
 	if (ret)
@@ -457,14 +427,14 @@ static void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
 {
 	u32 scratch_32;
 	int ret;
-	/* Improve write performance for SD3.0 */
+	 
 	ret = pci_read_config_dword(chip->pdev, O2_SD_DEV_CTRL, &scratch_32);
 	if (ret)
 		return;
 	scratch_32 &= ~((1 << 12) | (1 << 13) | (1 << 14));
 	pci_write_config_dword(chip->pdev, O2_SD_DEV_CTRL, scratch_32);
 
-	/* Enable Link abnormal reset generating Reset */
+	 
 	ret = pci_read_config_dword(chip->pdev, O2_SD_MISC_REG5, &scratch_32);
 	if (ret)
 		return;
@@ -472,31 +442,31 @@ static void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
 	scratch_32 |= (1 << 10);
 	pci_write_config_dword(chip->pdev, O2_SD_MISC_REG5, scratch_32);
 
-	/* set card power over current protection */
+	 
 	ret = pci_read_config_dword(chip->pdev, O2_SD_TEST_REG, &scratch_32);
 	if (ret)
 		return;
 	scratch_32 |= (1 << 4);
 	pci_write_config_dword(chip->pdev, O2_SD_TEST_REG, scratch_32);
 
-	/* adjust the output delay for SD mode */
+	 
 	pci_write_config_dword(chip->pdev, O2_SD_DELAY_CTRL, 0x00002492);
 
-	/* Set the output voltage setting of Aux 1.2v LDO */
+	 
 	ret = pci_read_config_dword(chip->pdev, O2_SD_LD0_CTRL, &scratch_32);
 	if (ret)
 		return;
 	scratch_32 &= ~(3 << 12);
 	pci_write_config_dword(chip->pdev, O2_SD_LD0_CTRL, scratch_32);
 
-	/* Set Max power supply capability of SD host */
+	 
 	ret = pci_read_config_dword(chip->pdev, O2_SD_CAP_REG0, &scratch_32);
 	if (ret)
 		return;
 	scratch_32 &= ~(0x01FE);
 	scratch_32 |= 0x00CC;
 	pci_write_config_dword(chip->pdev, O2_SD_CAP_REG0, scratch_32);
-	/* Set DLL Tuning Window */
+	 
 	ret = pci_read_config_dword(chip->pdev,
 				    O2_SD_TUNING_CTRL, &scratch_32);
 	if (ret)
@@ -505,7 +475,7 @@ static void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
 	scratch_32 |= 0x00000066;
 	pci_write_config_dword(chip->pdev, O2_SD_TUNING_CTRL, scratch_32);
 
-	/* Set UHS2 T_EIDLE */
+	 
 	ret = pci_read_config_dword(chip->pdev,
 				    O2_SD_UHS2_L1_CTRL, &scratch_32);
 	if (ret)
@@ -514,7 +484,7 @@ static void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
 	scratch_32 |= 0x00000084;
 	pci_write_config_dword(chip->pdev, O2_SD_UHS2_L1_CTRL, scratch_32);
 
-	/* Set UHS2 Termination */
+	 
 	ret = pci_read_config_dword(chip->pdev, O2_SD_FUNC_REG3, &scratch_32);
 	if (ret)
 		return;
@@ -522,7 +492,7 @@ static void sdhci_pci_o2_fujin2_pci_init(struct sdhci_pci_chip *chip)
 
 	pci_write_config_dword(chip->pdev, O2_SD_FUNC_REG3, scratch_32);
 
-	/* Set L1 Entrance Timer */
+	 
 	ret = pci_read_config_dword(chip->pdev, O2_SD_CAPS, &scratch_32);
 	if (ret)
 		return;
@@ -564,7 +534,7 @@ static void sdhci_pci_o2_enable_msi(struct sdhci_pci_chip *chip,
 
 static void sdhci_o2_enable_clk(struct sdhci_host *host, u16 clk)
 {
-	/* Enable internal clock */
+	 
 	clk |= SDHCI_CLOCK_INT_EN;
 	sdhci_writew(host, clk, SDHCI_CLOCK_CONTROL);
 
@@ -591,7 +561,7 @@ static void sdhci_pci_o2_set_clock(struct sdhci_host *host, unsigned int clock)
 	if (clock == 0)
 		return;
 
-	/* UnLock WP */
+	 
 	pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch);
 	scratch &= 0x7f;
 	pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch);
@@ -623,7 +593,7 @@ static void sdhci_pci_o2_set_clock(struct sdhci_host *host, unsigned int clock)
 	scratch_32 &= ~(O2_SD_SEL_DLL | O2_SD_PHASE_MASK);
 	pci_write_config_dword(chip->pdev, O2_SD_OUTPUT_CLK_SOURCE_SWITCH, scratch_32);
 
-	/* Lock WP */
+	 
 	pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch);
 	scratch |= 0x80;
 	pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch);
@@ -641,10 +611,10 @@ static int sdhci_pci_o2_init_sd_express(struct mmc_host *mmc, struct mmc_ios *io
 	u16 scratch16;
 	int ret;
 
-	/* Disable clock */
+	 
 	sdhci_writeb(host, 0, SDHCI_CLOCK_CONTROL);
 
-	/* Set VDD2 voltage*/
+	 
 	scratch8 = sdhci_readb(host, SDHCI_POWER_CONTROL);
 	scratch8 &= 0x0F;
 	if (host->mmc->ios.timing == MMC_TIMING_SD_EXP_1_2V &&
@@ -656,27 +626,27 @@ static int sdhci_pci_o2_init_sd_express(struct mmc_host *mmc, struct mmc_ios *io
 
 	sdhci_writeb(host, scratch8, SDHCI_POWER_CONTROL);
 
-	/* UnLock WP */
+	 
 	pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch8);
 	scratch8 &= 0x7f;
 	pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch8);
 
-	/* Wait for express card clkreqn assert */
+	 
 	ret = read_poll_timeout(sdhci_readb, scratch8, !(scratch8 & BIT(0)),
 				1, 30000, false, host, O2_SD_EXP_INT_REG);
 
 	if (!ret) {
-		/* Switch to PCIe mode */
+		 
 		scratch16 = sdhci_readw(host, O2_SD_PCIE_SWITCH);
 		scratch16 |= BIT(8);
 		sdhci_writew(host, scratch16, O2_SD_PCIE_SWITCH);
 	} else {
-		/* Power off VDD2 voltage*/
+		 
 		scratch8 = sdhci_readb(host, SDHCI_POWER_CONTROL);
 		scratch8 &= 0x0F;
 		sdhci_writeb(host, scratch8, SDHCI_POWER_CONTROL);
 
-		/* Keep mode as UHSI */
+		 
 		pci_read_config_word(chip->pdev, O2_SD_PARA_SET_REG1, &scratch16);
 		scratch16 &= ~BIT(11);
 		pci_write_config_word(chip->pdev, O2_SD_PARA_SET_REG1, scratch16);
@@ -685,7 +655,7 @@ static int sdhci_pci_o2_init_sd_express(struct mmc_host *mmc, struct mmc_ios *io
 		pr_info("%s: Express card initialization failed, falling back to Legacy\n",
 			mmc_hostname(host->mmc));
 	}
-	/* Lock WP */
+	 
 	pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch8);
 	scratch8 |= 0x80;
 	pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch8);
@@ -707,10 +677,7 @@ static int sdhci_pci_o2_probe_slot(struct sdhci_pci_slot *slot)
 	o2_host->dll_adjust_count = 0;
 	caps = sdhci_readl(host, SDHCI_CAPABILITIES);
 
-	/*
-	 * mmc_select_bus_width() will test the bus to determine the actual bus
-	 * width.
-	 */
+	 
 	if (caps & SDHCI_CAN_DO_8BIT)
 		host->mmc->caps |= MMC_CAP_8_BIT_DATA;
 
@@ -756,7 +723,7 @@ static int sdhci_pci_o2_probe_slot(struct sdhci_pci_slot *slot)
 
 		if (chip->pdev->device != PCI_DEVICE_ID_O2_FUJIN2)
 			break;
-		/* set dll watch dog timer */
+		 
 		reg = sdhci_readl(host, O2_SD_VENDOR_SETTING2);
 		reg |= (1 << 12);
 		sdhci_writel(host, reg, O2_SD_VENDOR_SETTING2);
@@ -790,7 +757,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 	case PCI_DEVICE_ID_O2_8221:
 	case PCI_DEVICE_ID_O2_8320:
 	case PCI_DEVICE_ID_O2_8321:
-		/* This extra setup is required due to broken ADMA. */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 				O2_SD_LOCK_WP, &scratch);
 		if (ret)
@@ -798,10 +765,10 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		scratch &= 0x7f;
 		pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch);
 
-		/* Set Multi 3 to VCC3V# */
+		 
 		pci_write_config_byte(chip->pdev, O2_SD_MULTI_VCC3V, 0x08);
 
-		/* Disable CLK_REQ# support after media DET */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 				O2_SD_CLKREQ, &scratch);
 		if (ret)
@@ -809,9 +776,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		scratch |= 0x20;
 		pci_write_config_byte(chip->pdev, O2_SD_CLKREQ, scratch);
 
-		/* Choose capabilities, enable SDMA.  We have to write 0x01
-		 * to the capabilities register first to unlock it.
-		 */
+		 
 		ret = pci_read_config_byte(chip->pdev, O2_SD_CAPS, &scratch);
 		if (ret)
 			return ret;
@@ -819,11 +784,11 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		pci_write_config_byte(chip->pdev, O2_SD_CAPS, scratch);
 		pci_write_config_byte(chip->pdev, O2_SD_CAPS, 0x73);
 
-		/* Disable ADMA1/2 */
+		 
 		pci_write_config_byte(chip->pdev, O2_SD_ADMA1, 0x39);
 		pci_write_config_byte(chip->pdev, O2_SD_ADMA2, 0x08);
 
-		/* Disable the infinite transfer mode */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 				O2_SD_INF_MOD, &scratch);
 		if (ret)
@@ -831,7 +796,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		scratch |= 0x08;
 		pci_write_config_byte(chip->pdev, O2_SD_INF_MOD, scratch);
 
-		/* Lock WP */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 				O2_SD_LOCK_WP, &scratch);
 		if (ret)
@@ -842,7 +807,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 	case PCI_DEVICE_ID_O2_SDS0:
 	case PCI_DEVICE_ID_O2_SDS1:
 	case PCI_DEVICE_ID_O2_FUJIN2:
-		/* UnLock WP */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 				O2_SD_LOCK_WP, &scratch);
 		if (ret)
@@ -851,7 +816,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		scratch &= 0x7f;
 		pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch);
 
-		/* DevId=8520 subId= 0x11 or 0x12  Type Chip support */
+		 
 		if (chip->pdev->device == PCI_DEVICE_ID_O2_FUJIN2) {
 			ret = pci_read_config_dword(chip->pdev,
 						    O2_SD_FUNC_REG0,
@@ -860,7 +825,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 				return ret;
 			scratch_32 = ((scratch_32 & 0xFF000000) >> 24);
 
-			/* Check Whether subId is 0x11 or 0x12 */
+			 
 			if ((scratch_32 == 0x11) || (scratch_32 == 0x12)) {
 				scratch_32 = 0x25100000;
 
@@ -871,13 +836,13 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 				if (ret)
 					return ret;
 
-				/* Enable Base Clk setting change */
+				 
 				scratch_32 |= O2_SD_FREG4_ENABLE_CLK_SET;
 				pci_write_config_dword(chip->pdev,
 						       O2_SD_FUNC_REG4,
 						       scratch_32);
 
-				/* Set Tuning Window to 4 */
+				 
 				pci_write_config_byte(chip->pdev,
 						      O2_SD_TUNING_CTRL, 0x44);
 
@@ -885,10 +850,10 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 			}
 		}
 
-		/* Enable 8520 led function */
+		 
 		o2_pci_led_enable(chip);
 
-		/* Set timeout CLK */
+		 
 		ret = pci_read_config_dword(chip->pdev,
 					    O2_SD_CLK_SETTING, &scratch_32);
 		if (ret)
@@ -916,7 +881,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		pci_write_config_dword(chip->pdev,
 				       O2_SD_PLL_SETTING, scratch_32);
 
-		/* Disable UHS1 funciton */
+		 
 		ret = pci_read_config_dword(chip->pdev,
 					    O2_SD_CAP_REG2, &scratch_32);
 		if (ret)
@@ -928,7 +893,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		if (chip->pdev->device == PCI_DEVICE_ID_O2_FUJIN2)
 			sdhci_pci_o2_fujin2_pci_init(chip);
 
-		/* Lock WP */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 					   O2_SD_LOCK_WP, &scratch);
 		if (ret)
@@ -938,7 +903,7 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 		break;
 	case PCI_DEVICE_ID_O2_SEABIRD0:
 	case PCI_DEVICE_ID_O2_SEABIRD1:
-		/* UnLock WP */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 				O2_SD_LOCK_WP, &scratch);
 		if (ret)
@@ -975,16 +940,16 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 					       O2_SD_FUNC_REG4, scratch_32);
 		}
 
-		/* Set Tuning Windows to 5 */
+		 
 		pci_write_config_byte(chip->pdev,
 				O2_SD_TUNING_CTRL, 0x55);
-		//Adjust 1st and 2nd CD debounce time
+		
 		pci_read_config_dword(chip->pdev, O2_SD_MISC_CTRL2, &scratch_32);
 		scratch_32 &= 0xFFE7FFFF;
 		scratch_32 |= 0x00180000;
 		pci_write_config_dword(chip->pdev, O2_SD_MISC_CTRL2, scratch_32);
 		pci_write_config_dword(chip->pdev, O2_SD_DETECT_SETTING, 1);
-		/* Lock WP */
+		 
 		ret = pci_read_config_byte(chip->pdev,
 					   O2_SD_LOCK_WP, &scratch);
 		if (ret)
@@ -996,36 +961,36 @@ static int sdhci_pci_o2_probe(struct sdhci_pci_chip *chip)
 	case PCI_DEVICE_ID_O2_GG8_9861:
 	case PCI_DEVICE_ID_O2_GG8_9862:
 	case PCI_DEVICE_ID_O2_GG8_9863:
-		/* UnLock WP */
+		 
 		ret = pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch);
 		if (ret)
 			return ret;
 		scratch &= 0x7f;
 		pci_write_config_byte(chip->pdev, O2_SD_LOCK_WP, scratch);
 
-		/* Select mode switch source as software control */
+		 
 		pci_read_config_word(chip->pdev, O2_SD_PARA_SET_REG1, &scratch16);
 		scratch16 &= 0xF8FF;
 		scratch16 |= BIT(9);
 		pci_write_config_word(chip->pdev, O2_SD_PARA_SET_REG1, scratch16);
 
-		/* set VDD1 supply source */
+		 
 		pci_read_config_word(chip->pdev, O2_SD_VDDX_CTRL_REG, &scratch16);
 		scratch16 &= 0xFFE3;
 		scratch16 |= BIT(3);
 		pci_write_config_word(chip->pdev, O2_SD_VDDX_CTRL_REG, scratch16);
 
-		/* Set host drive strength*/
+		 
 		scratch16 = 0x0025;
 		pci_write_config_word(chip->pdev, O2_SD_PLL_SETTING, scratch16);
 
-		/* Set output delay*/
+		 
 		pci_read_config_dword(chip->pdev, O2_SD_OUTPUT_CLK_SOURCE_SWITCH, &scratch_32);
 		scratch_32 &= 0xFF0FFF00;
 		scratch_32 |= 0x00B0003B;
 		pci_write_config_dword(chip->pdev, O2_SD_OUTPUT_CLK_SOURCE_SWITCH, scratch_32);
 
-		/* Lock WP */
+		 
 		ret = pci_read_config_byte(chip->pdev, O2_SD_LOCK_WP, &scratch);
 		if (ret)
 			return ret;

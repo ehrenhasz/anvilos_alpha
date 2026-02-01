@@ -1,38 +1,6 @@
-/* tac - concatenate and print files in reverse
-   Copyright (C) 1988-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jay Lepreau (lepreau@cs.utah.edu).
-   GNU enhancements by David MacKenzie (djm@gnu.ai.mit.edu). */
-
-/* Copy each FILE, or the standard input if none are given or when a
-   FILE name of "-" is encountered, to the standard output with the
-   order of the records reversed.  The records are separated by
-   instances of a string, or a newline if none is given.  By default, the
-   separator string is attached to the end of the record that it
-   follows in the file.
-
-   Options:
-   -b, --before			The separator is attached to the beginning
-                                of the record that it precedes in the file.
-   -r, --regex			The separator is a regular expression.
-   -s, --separator=separator	Use SEPARATOR as the record separator.
-
-   To reverse a file byte by byte, use (in bash, ksh, or sh):
-tac -r -s '.\|
-' file */
+ 
 
 #include <config.h>
 
@@ -49,7 +17,7 @@ tac -r -s '.\|
 #include "temp-stream.h"
 #include "xbinary-io.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "tac"
 
 #define AUTHORS \
@@ -57,44 +25,37 @@ tac -r -s '.\|
   proper_name ("David MacKenzie")
 
 
-/* The number of bytes per atomic read. */
+ 
 #define INITIAL_READSIZE 8192
 
-/* The number of bytes per atomic write. */
+ 
 #define WRITESIZE 8192
 
-/* The string that separates the records of the file. */
+ 
 static char const *separator;
 
-/* True if we have ever read standard input.  */
+ 
 static bool have_read_stdin = false;
 
-/* If true, print 'separator' along with the record preceding it
-   in the file; otherwise with the record following it. */
+ 
 static bool separator_ends_record;
 
-/* 0 if 'separator' is to be matched as a regular expression;
-   otherwise, the length of 'separator', used as a sentinel to
-   stop the search. */
+ 
 static size_t sentinel_length;
 
-/* The length of a match with 'separator'.  If 'sentinel_length' is 0,
-   'match_length' is computed every time a match succeeds;
-   otherwise, it is simply the length of 'separator'. */
+ 
 static size_t match_length;
 
-/* The input buffer. */
+ 
 static char *G_buffer;
 
-/* The number of bytes to read at once into 'buffer'. */
+ 
 static size_t read_size;
 
-/* The size of 'buffer'.  This is read_size * 2 + sentinel_length + 2.
-   The extra 2 bytes allow 'past_end' to have a value beyond the
-   end of 'G_buffer' and 'match_start' to run off the front of 'G_buffer'. */
+ 
 static size_t G_buffer_size;
 
-/* The compiled regular expression representing 'separator'. */
+ 
 static struct re_pattern_buffer compiled_separator;
 static char compiled_separator_fastmap[UCHAR_MAX + 1];
 static struct re_registers regs;

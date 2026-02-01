@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #include <errno.h>
 #include <libgen.h>
@@ -33,9 +11,7 @@
 
 #include "zpool_util.h"
 
-/*
- * Utility function to guarantee malloc() success.
- */
+ 
 void *
 safe_malloc(size_t size)
 {
@@ -49,9 +25,7 @@ safe_malloc(size_t size)
 	return (data);
 }
 
-/*
- * Utility function to guarantee realloc() success.
- */
+ 
 void *
 safe_realloc(void *from, size_t size)
 {
@@ -65,9 +39,7 @@ safe_realloc(void *from, size_t size)
 	return (data);
 }
 
-/*
- * Display an out of memory error message and abort the current program.
- */
+ 
 void
 zpool_no_memory(void)
 {
@@ -77,9 +49,7 @@ zpool_no_memory(void)
 	exit(1);
 }
 
-/*
- * Return the number of logs in supplied nvlist
- */
+ 
 uint_t
 num_logs(nvlist_t *nv)
 {
@@ -102,7 +72,7 @@ num_logs(nvlist_t *nv)
 	return (nlogs);
 }
 
-/* Find the max element in an array of uint64_t values */
+ 
 uint64_t
 array64_max(uint64_t array[], unsigned int len)
 {
@@ -114,10 +84,7 @@ array64_max(uint64_t array[], unsigned int len)
 	return (max);
 }
 
-/*
- * Find highest one bit set.
- * Returns bit number + 1 of highest bit that is set, otherwise returns 0.
- */
+ 
 int
 highbit64(uint64_t i)
 {
@@ -127,10 +94,7 @@ highbit64(uint64_t i)
 	return (NBBY * sizeof (uint64_t) - __builtin_clzll(i));
 }
 
-/*
- * Find lowest one bit set.
- * Returns bit number + 1 of lowest bit that is set, otherwise returns 0.
- */
+ 
 int
 lowbit64(uint64_t i)
 {

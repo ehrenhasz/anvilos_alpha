@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 Hammerspace Inc
- */
+ 
+ 
 
 #ifndef __NFS_SYSFS_H
 #define __NFS_SYSFS_H

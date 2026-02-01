@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * tui.c ncurses text user interface for TMON program
- *
- * Copyright (C) 2013 Intel Corporation. All rights reserved.
- *
- * Author: Jacob Pan <jacob.jun.pan@linux.intel.com>
- */
+
+ 
 
 #include <unistd.h>
 #include <stdio.h>
@@ -53,10 +47,10 @@ static int maxx, maxy;
 static int maxwidth = 200;
 
 #define TITLE_BAR_HIGHT 1
-#define SENSOR_WIN_HIGHT 4 /* one row for tz name, one for trip points */
+#define SENSOR_WIN_HIGHT 4  
 
 
-/* daemon mode flag (set by startup parameter -d) */
+ 
 static int  tui_disabled;
 
 static void close_panel(PANEL *p)
@@ -79,7 +73,7 @@ void close_windows(void)
 {
 	if (tui_disabled)
 		return;
-	/* must delete panels before their attached windows */
+	 
 	if (dialogue_window)
 		close_panel(dialogue_panel);
 	if (cooling_device_window)
@@ -101,11 +95,9 @@ void write_status_bar(int x, char *line)
 	wrefresh(status_bar_window);
 }
 
-/* wrap at 5 */
+ 
 #define DIAG_DEV_ROWS  5
-/*
- * list cooling devices + "set temp" entry; wraps after 5 rows, if they fit
- */
+ 
 static int diag_dev_rows(void)
 {
 	int entries = ptdata.nr_cooling_dev + 1;
@@ -131,11 +123,8 @@ void setup_windows(void)
 
 	cooling_device_window = subwin(stdscr, ptdata.nr_cooling_dev + 3, maxx,
 				y_begin, 0);
-	y_begin += ptdata.nr_cooling_dev + 3; /* 2 lines for border */
-	/* two lines to show borders, one line per tz show trip point position
-	 * and value.
-	 * dialogue window is a pop-up, when needed it lays on top of cdev win
-	 */
+	y_begin += ptdata.nr_cooling_dev + 3;  
+	 
 
 	dialogue_window = subwin(stdscr, diag_dev_rows() + 5, maxx-50,
 				DIAG_Y, DIAG_X);
@@ -153,10 +142,7 @@ void setup_windows(void)
 	strcpy(status_bar_slots[1], " TAB - Tuning ");
 	wmove(status_bar_window, 1, 30);
 
-	/* prepare panels for dialogue, if panel already created then we must
-	 * be doing resizing, so just replace windows with new ones, old ones
-	 * should have been deleted by close_window
-	 */
+	 
 	data_panel = new_panel(cooling_device_window);
 	if (!data_panel)
 		syslog(LOG_DEBUG, "No data panel\n");
@@ -166,7 +152,7 @@ void setup_windows(void)
 			if (!dialogue_panel)
 				syslog(LOG_DEBUG, "No dialogue panel\n");
 			else {
-				/* Set up the user pointer to the next panel*/
+				 
 				set_panel_userptr(data_panel, dialogue_panel);
 				set_panel_userptr(dialogue_panel, data_panel);
 				top = data_panel;
@@ -181,14 +167,14 @@ void setup_windows(void)
 
 void resize_handler(int sig)
 {
-	/* start over when term gets resized, but first we clean up */
+	 
 	close_windows();
 	endwin();
 	refresh();
 	clear();
-	getmaxyx(stdscr, maxy, maxx);  /* get the new screen size */
+	getmaxyx(stdscr, maxy, maxx);   
 	setup_windows();
-	/* rate limit */
+	 
 	sleep(1);
 	syslog(LOG_DEBUG, "SIG %d, term resized to %d x %d\n",
 		sig, maxy, maxx);
@@ -209,9 +195,7 @@ void show_cooling_device(void)
 		"ID  Cooling Dev   Cur    Max   Thermal Zone Binding");
 	wattroff(cooling_device_window, A_BOLD);
 	for (j = 0; j <	ptdata.nr_cooling_dev; j++) {
-		/* draw cooling device list on the left in the order of
-		 * cooling device instances. skip unused idr.
-		 */
+		 
 		mvwprintw(cooling_device_window, j + 2, 1,
 			"%02d %12.12s%6d %6d",
 			ptdata.cdi[j].instance,
@@ -220,7 +204,7 @@ void show_cooling_device(void)
 			ptdata.cdi[j].max_state);
 	}
 
-	/* show cdev binding, y is the global cooling device instance */
+	 
 	for (i = 0; i < ptdata.nr_tz_sensor; i++) {
 		int tz_inst = ptdata.tzi[i].instance;
 		for (j = 0; j < ptdata.nr_cooling_dev; j++) {
@@ -231,27 +215,23 @@ void show_cooling_device(void)
 			draw_hbar(cooling_device_window, y+2, x,
 				TZONE_RECORD_SIZE-1, ACS_VLINE, false);
 
-			/* draw a column of spaces to separate thermal zones */
+			 
 			mvwprintw(cooling_device_window, y+2, x-1, " ");
 			if (ptdata.tzi[i].cdev_binding) {
 				cdev_inst = ptdata.cdi[j].instance;
 				unsigned long trip_binding =
 					ptdata.tzi[i].trip_binding[cdev_inst];
-				int k = 0; /* per zone trip point id that
-					    * binded to this cdev, one to
-					    * many possible based on the
-					    * binding bitmask.
-					    */
+				int k = 0;  
 				syslog(LOG_DEBUG,
 					"bind tz%d cdev%d tp%lx %d cdev%lx\n",
 					i, j, trip_binding, y,
 					ptdata.tzi[i].cdev_binding);
-				/* draw each trip binding for the cdev */
+				 
 				while (trip_binding >>= 1) {
 					k++;
 					if (!(trip_binding & 1))
 						continue;
-					/* draw '*' to show binding */
+					 
 					mvwprintw(cooling_device_window,
 						y + 2,
 						x + ptdata.tzi[i].nr_trip_pts -
@@ -260,9 +240,7 @@ void show_cooling_device(void)
 			}
 		}
 	}
-	/* draw border after data so that border will not be messed up
-	 * even there is not enough space for all the data to be shown
-	 */
+	 
 	wborder(cooling_device_window, 0, 0, 0, 0, 0, 0, 0, 0);
 	wattron(cooling_device_window, A_BOLD);
 	mvwprintw(cooling_device_window, 0, maxx/2 - sizeof(cdev_title),
@@ -284,19 +262,19 @@ void show_dialogue(void)
 
 	getmaxyx(w, rows, cols);
 
-	/* Silence compiler 'unused' warnings */
+	 
 	(void)cols;
 
 	werase(w);
 	box(w, 0, 0);
 	mvwprintw(w, 0, maxx/4, DIAG_TITLE);
-	/* list all the available tunables */
+	 
 	for (j = 0; j <= ptdata.nr_cooling_dev; j++) {
 		y = j % diag_dev_rows();
 		if (y == 0 && j != 0)
 			x += 20;
 		if (j == ptdata.nr_cooling_dev)
-			/* save last choice for target temp */
+			 
 			mvwprintw(w, y+1, x+1, "%C-%.12s", 'A'+j, "Set Temp");
 		else
 			mvwprintw(w, y+1, x+1, "%C-%.10s-%2d", 'A'+j,
@@ -305,7 +283,7 @@ void show_dialogue(void)
 	wattron(w, A_BOLD);
 	mvwprintw(w, diag_dev_rows()+1, 1, "Enter Choice [A-Z]?");
 	wattroff(w, A_BOLD);
-	/* print legend at the bottom line */
+	 
 	mvwprintw(w, rows - 2, 1,
 		"Legend: A=Active, P=Passive, C=Critical");
 
@@ -338,7 +316,7 @@ void show_control_w(void)
 		"Target Temp: %2.1fC, Zone: %d, Control Device: %.12s",
 		p_param.t_target, target_thermal_zone, ctrl_cdev);
 
-	/* draw border last such that everything is within boundary */
+	 
 	wborder(control_window, 0, 0, 0, 0, 0, 0, 0, 0);
 	wattron(control_window, A_BOLD);
 	mvwprintw(control_window, 0, maxx/2 - sizeof(control_title),
@@ -355,11 +333,11 @@ void initialize_curses(void)
 
 	initscr();
 	start_color();
-	keypad(stdscr, TRUE);	/* enable keyboard mapping */
-	nonl();			/* tell curses not to do NL->CR/NL on output */
-	cbreak();		/* take input chars one at a time */
-	noecho();		/* dont echo input */
-	curs_set(0);		/* turn off cursor */
+	keypad(stdscr, TRUE);	 
+	nonl();			 
+	cbreak();		 
+	noecho();		 
+	curs_set(0);		 
 	use_default_colors();
 
 	init_pair(PT_COLOR_DEFAULT, COLOR_WHITE, COLOR_BLACK);
@@ -471,9 +449,7 @@ void *handle_tui_events(void *arg)
 	while ((ch = wgetch(cooling_device_window)) != EOF) {
 		if (tmon_exit)
 			break;
-		/* when term size is too small, no dialogue panels are set.
-		 * we need to filter out such cases.
-		 */
+		 
 		if (!data_panel || !dialogue_panel ||
 			!cooling_device_window ||
 			!dialogue_window) {
@@ -483,7 +459,7 @@ void *handle_tui_events(void *arg)
 		pthread_mutex_lock(&input_lock);
 		if (dialogue_on) {
 			handle_input_choice(ch);
-			/* top panel filter */
+			 
 			if (ch == 'q' || ch == 'Q')
 				ch = 0;
 		}
@@ -491,7 +467,7 @@ void *handle_tui_events(void *arg)
 		case KEY_LEFT:
 			box(cooling_device_window, 10, 0);
 			break;
-		case 9: /* TAB */
+		case 9:  
 			top = (PANEL *)panel_userptr(top);
 			top_panel(top);
 			if (top == dialogue_panel) {
@@ -499,7 +475,7 @@ void *handle_tui_events(void *arg)
 				show_dialogue();
 			} else {
 				dialogue_on = 0;
-				/* force refresh */
+				 
 				show_data_w();
 				show_control_w();
 			}
@@ -515,12 +491,12 @@ void *handle_tui_events(void *arg)
 	}
 
 	if (arg)
-		*(int *)arg = 0; /* make gcc happy */
+		*(int *)arg = 0;  
 
 	return NULL;
 }
 
-/* draw a horizontal bar in given pattern */
+ 
 static void draw_hbar(WINDOW *win, int y, int start, int len, unsigned long ptn,
 		bool end)
 {
@@ -542,10 +518,7 @@ static char trip_type_to_char(int type)
 	}
 }
 
-/* fill a string with trip point type and value in one line
- * e.g.      P(56)    C(106)
- * maintain the distance one degree per char
- */
+ 
 static void draw_tp_line(int tz, int y)
 {
 	int j;
@@ -575,7 +548,7 @@ void show_data_w(void)
 	mvwprintw(thermal_data_window, 0, maxx/2 - sizeof(data_win_title),
 		data_win_title);
 	wattroff(thermal_data_window, A_BOLD);
-	/* draw a line as ruler */
+	 
 	for (i = 10; i < MAX_DISP_TEMP; i += 10)
 		mvwprintw(thermal_data_window, 1, i+TDATA_LEFT, "%2d", i);
 
@@ -584,7 +557,7 @@ void show_data_w(void)
 		int y = 0;
 
 		y = i * NR_LINES_TZDATA + 2;
-		/* y at tz temp data line */
+		 
 		mvwprintw(thermal_data_window, y, 1, "%6.6s%2d:[%3d][",
 			ptdata.tzi[i].type,
 			ptdata.tzi[i].instance, temp);
@@ -614,12 +587,12 @@ void show_sensors_w(void)
 	wattroff(tz_sensor_window, A_BOLD);
 
 	mvwprintw(tz_sensor_window, 1, TZ_LEFT_ALIGN, "%s", buffer);
-	/* fill trip points for each tzone */
+	 
 	wattron(tz_sensor_window, A_BOLD);
 	mvwprintw(tz_sensor_window, 2, 1, "Trip Points:");
 	wattroff(tz_sensor_window, A_BOLD);
 
-	/* draw trip point from low to high for each tz */
+	 
 	for (i = 0; i < ptdata.nr_tz_sensor; i++) {
 		int inst = ptdata.tzi[i].instance;
 
@@ -627,12 +600,10 @@ void show_sensors_w(void)
 			TZ_LEFT_ALIGN+TZONE_RECORD_SIZE * inst, "%.9s%02d",
 			ptdata.tzi[i].type, ptdata.tzi[i].instance);
 		for (j = ptdata.tzi[i].nr_trip_pts - 1; j >= 0; j--) {
-			/* loop through all trip points */
+			 
 			char type;
 			int tp_pos;
-			/* reverse the order here since trips are sorted
-			 * in ascending order in terms of temperature.
-			 */
+			 
 			tp_pos = ptdata.tzi[i].nr_trip_pts - j - 1;
 
 			type = trip_type_to_char(ptdata.tzi[i].tp[j].type);

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cht-bsw-nau8824.c - ASoc Machine driver for Intel Cherryview-based
- *          platforms Cherrytrail and Braswell, with nau8824 codec.
- *
- *  Copyright (C) 2018 Intel Corp
- *  Copyright (C) 2018 Nuvoton Technology Corp
- *
- *  Author: Wang, Joseph C <joequant@gmail.com>
- *  Co-author: John Hsu <KCHSU0@nuvoton.com>
- *  This file is based on cht_bsw_rt5672.c and cht-bsw-max98090.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -100,12 +90,7 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 	struct snd_soc_component *component = codec_dai->component;
 	int ret, jack_type;
 
-	/* NAU88L24 supports 4 buttons headset detection
-	 * KEY_PLAYPAUSE
-	 * KEY_VOICECOMMAND
-	 * KEY_VOLUMEUP
-	 * KEY_VOLUMEDOWN
-	 */
+	 
 	jack_type = SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 		SND_JACK_BTN_2 | SND_JACK_BTN_3;
 	ret = snd_soc_card_jack_new_pins(runtime->card, "Headset", jack_type,
@@ -136,15 +121,15 @@ static int cht_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 		hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 	int ret;
 
-	/* The DSP will convert the FE rate to 48k, stereo, 24bits */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
-	/* set SSP2 to 24-bit */
+	 
 	snd_mask_none(fmt);
 	params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 
-	/* TDM 4 slots 24 bit, set Rx & Tx bitmask to 4 active slots */
+	 
 	ret = snd_soc_dai_set_tdm_slot(asoc_rtd_to_codec(rtd, 0), 0xf, 0x1, 4, 24);
 	if (ret < 0) {
 		dev_err(rtd->dev, "can't set codec TDM slot %d\n", ret);
@@ -187,7 +172,7 @@ SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("sst-mfld-platform")));
 
 static struct snd_soc_dai_link cht_dailink[] = {
-	/* Front End DAI links */
+	 
 	[MERR_DPCM_AUDIO] = {
 		.name = "Audio Port",
 		.stream_name = "Audio",
@@ -207,9 +192,9 @@ static struct snd_soc_dai_link cht_dailink[] = {
 		.ops = &cht_aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-	/* Back End DAI links */
+	 
 	{
-		/* SSP2 - Codec */
+		 
 		.name = "SSP2-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -224,14 +209,14 @@ static struct snd_soc_dai_link cht_dailink[] = {
 	},
 };
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht nau8824" /* card name will be 'sof-bytcht nau8824 */
+ 
+#define SOF_CARD_NAME "bytcht nau8824"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "chtnau8824"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* SoC card */
+ 
 static struct snd_soc_card snd_soc_card_cht = {
 	.owner = THIS_MODULE,
 	.dai_link = cht_dailink,
@@ -257,7 +242,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	snd_soc_card_set_drvdata(&snd_soc_card_cht, drv);
 
-	/* override platform name, if required */
+	 
 	snd_soc_card_cht.dev = &pdev->dev;
 	mach = pdev->dev.platform_data;
 	platform_name = mach->mach_params.platform;
@@ -269,7 +254,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(&pdev->dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		snd_soc_card_cht.name = SOF_CARD_NAME;
 		snd_soc_card_cht.driver_name = SOF_DRIVER_NAME;
@@ -280,11 +265,11 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 
 	snd_soc_card_cht.components = nau8824_components();
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		pdev->dev.driver->pm = &snd_soc_pm_ops;
 
-	/* register the soc card */
+	 
 	ret_val = devm_snd_soc_register_card(&pdev->dev, &snd_soc_card_cht);
 	if (ret_val) {
 		dev_err(&pdev->dev,

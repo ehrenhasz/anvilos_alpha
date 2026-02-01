@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains basic common functions used in AppArmor
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/mm.h>
@@ -25,10 +18,7 @@ struct aa_perms allperms = { .allow = ALL_PERMS_MASK,
 			     .quiet = ALL_PERMS_MASK,
 			     .hide = ALL_PERMS_MASK };
 
-/**
- * aa_free_str_table - free entries str table
- * @t: the string table to free  (MAYBE NULL)
- */
+ 
 void aa_free_str_table(struct aa_str_table *t)
 {
 	int i;
@@ -45,20 +35,7 @@ void aa_free_str_table(struct aa_str_table *t)
 	}
 }
 
-/**
- * aa_split_fqname - split a fqname into a profile and namespace name
- * @fqname: a full qualified name in namespace profile format (NOT NULL)
- * @ns_name: pointer to portion of the string containing the ns name (NOT NULL)
- *
- * Returns: profile name or NULL if one is not specified
- *
- * Split a namespace name from a profile name (see policy.c for naming
- * description).  If a portion of the name is missing it returns NULL for
- * that portion.
- *
- * NOTE: may modify the @fqname string.  The pointers returned point
- *       into the @fqname string.
- */
+ 
 char *aa_split_fqname(char *fqname, char **ns_name)
 {
 	char *name = strim(fqname);
@@ -68,13 +45,13 @@ char *aa_split_fqname(char *fqname, char **ns_name)
 		char *split = strchr(&name[1], ':');
 		*ns_name = skip_spaces(&name[1]);
 		if (split) {
-			/* overwrite ':' with \0 */
+			 
 			*split++ = 0;
 			if (strncmp(split, "//", 2) == 0)
 				split += 2;
 			name = skip_spaces(split);
 		} else
-			/* a ns name without a following profile is allowed */
+			 
 			name = NULL;
 	}
 	if (name && *name == 0)
@@ -83,14 +60,7 @@ char *aa_split_fqname(char *fqname, char **ns_name)
 	return name;
 }
 
-/**
- * skipn_spaces - Removes leading whitespace from @str.
- * @str: The string to be stripped.
- * @n: length of str to parse, will stop at \0 if encountered before n
- *
- * Returns a pointer to the first non-whitespace character in @str.
- * if all whitespace will return NULL
- */
+ 
 
 const char *skipn_spaces(const char *str, size_t n)
 {
@@ -127,7 +97,7 @@ const char *aa_splitn_fqname(const char *fqname, size_t n, const char **ns_name,
 				split += 2;
 			name = skipn_spaces(split, end - split);
 		} else {
-			/* a ns name without a following profile is allowed */
+			 
 			name = NULL;
 			*ns_len = end - *ns_name;
 		}
@@ -138,10 +108,7 @@ const char *aa_splitn_fqname(const char *fqname, size_t n, const char **ns_name,
 	return name;
 }
 
-/**
- * aa_info_message - log a none profile related status message
- * @str: message to log
- */
+ 
 void aa_info_message(const char *str)
 {
 	if (audit_enabled) {
@@ -214,13 +181,7 @@ const char *aa_file_perm_names[] = {
 	"change_hat",
 };
 
-/**
- * aa_perm_mask_to_str - convert a perm mask to its short string
- * @str: character buffer to store string in (at least 10 characters)
- * @str_size: size of the @str buffer
- * @chrs: NUL-terminated character buffer of permission characters
- * @mask: permission mask to convert
- */
+ 
 void aa_perm_mask_to_str(char *str, size_t str_size, const char *chrs, u32 mask)
 {
 	unsigned int i, perm = 1;
@@ -228,7 +189,7 @@ void aa_perm_mask_to_str(char *str, size_t str_size, const char *chrs, u32 mask)
 
 	for (i = 0; i < num_chrs; perm <<= 1, i++) {
 		if (mask & perm) {
-			/* Ensure that one byte is left for NUL-termination */
+			 
 			if (WARN_ON_ONCE(str_size <= 1))
 				break;
 
@@ -275,11 +236,7 @@ void aa_audit_perm_mask(struct audit_buffer *ab, u32 mask, const char *chrs,
 	audit_log_format(ab, "\"");
 }
 
-/**
- * aa_audit_perms_cb - generic callback fn for auditing perms
- * @ab: audit buffer (NOT NULL)
- * @va: audit struct to audit values of (NOT NULL)
- */
+ 
 static void aa_audit_perms_cb(struct audit_buffer *ab, void *va)
 {
 	struct common_audit_data *sa = va;
@@ -302,13 +259,7 @@ static void aa_audit_perms_cb(struct audit_buffer *ab, void *va)
 				      FLAGS_NONE, GFP_ATOMIC);
 }
 
-/**
- * aa_apply_modes_to_perms - apply namespace and profile flags to perms
- * @profile: that perms where computed from
- * @perms: perms to apply mode modifiers to
- *
- * TODO: split into profile and ns based flags for when accumulating perms
- */
+ 
 void aa_apply_modes_to_perms(struct aa_profile *profile, struct aa_perms *perms)
 {
 	switch (AUDIT_MODE(profile)) {
@@ -339,7 +290,7 @@ void aa_profile_match_label(struct aa_profile *profile,
 			    struct aa_label *label,
 			    int type, u32 request, struct aa_perms *perms)
 {
-	/* TODO: doesn't yet handle extended types */
+	 
 	aa_state_t state;
 
 	state = aa_dfa_next(rules->policy.dfa,
@@ -349,7 +300,7 @@ void aa_profile_match_label(struct aa_profile *profile,
 }
 
 
-/* currently unused */
+ 
 int aa_profile_label_perm(struct aa_profile *profile, struct aa_profile *target,
 			  u32 request, int type, u32 *deny,
 			  struct apparmor_audit_data *ad)
@@ -368,23 +319,7 @@ int aa_profile_label_perm(struct aa_profile *profile, struct aa_profile *target,
 	return aa_check_perms(profile, &perms, request, ad, aa_audit_perms_cb);
 }
 
-/**
- * aa_check_perms - do audit mode selection based on perms set
- * @profile: profile being checked
- * @perms: perms computed for the request
- * @request: requested perms
- * @ad: initialized audit structure (MAY BE NULL if not auditing)
- * @cb: callback fn for type specific fields (MAY BE NULL)
- *
- * Returns: 0 if permission else error code
- *
- * Note: profile audit modes need to be set before calling by setting the
- *       perm masks appropriately.
- *
- *       If not auditing then complain mode is not enabled and the
- *       error code will indicate whether there was an explicit deny
- *	 with a positive value.
- */
+ 
 int aa_check_perms(struct aa_profile *profile, struct aa_perms *perms,
 		   u32 request, struct apparmor_audit_data *ad,
 		   void (*cb)(struct audit_buffer *, void *))
@@ -393,7 +328,7 @@ int aa_check_perms(struct aa_profile *profile, struct aa_perms *perms,
 	u32 denied = request & (~perms->allow | perms->deny);
 
 	if (likely(!denied)) {
-		/* mask off perms that are not being force audited */
+		 
 		request &= perms->audit;
 		if (!request || !ad)
 			return 0;
@@ -433,23 +368,13 @@ int aa_check_perms(struct aa_profile *profile, struct aa_perms *perms,
 }
 
 
-/**
- * aa_policy_init - initialize a policy structure
- * @policy: policy to initialize  (NOT NULL)
- * @prefix: prefix name if any is required.  (MAYBE NULL)
- * @name: name of the policy, init will make a copy of it  (NOT NULL)
- * @gfp: allocation mode
- *
- * Note: this fn creates a copy of strings passed in
- *
- * Returns: true if policy init successful
- */
+ 
 bool aa_policy_init(struct aa_policy *policy, const char *prefix,
 		    const char *name, gfp_t gfp)
 {
 	char *hname;
 
-	/* freed by policy_free */
+	 
 	if (prefix) {
 		hname = aa_str_alloc(strlen(prefix) + strlen(name) + 3, gfp);
 		if (hname)
@@ -462,7 +387,7 @@ bool aa_policy_init(struct aa_policy *policy, const char *prefix,
 	if (!hname)
 		return false;
 	policy->hname = hname;
-	/* base.name is a substring of fqname */
+	 
 	policy->name = basename(policy->hname);
 	INIT_LIST_HEAD(&policy->list);
 	INIT_LIST_HEAD(&policy->profiles);
@@ -470,15 +395,12 @@ bool aa_policy_init(struct aa_policy *policy, const char *prefix,
 	return true;
 }
 
-/**
- * aa_policy_destroy - free the elements referenced by @policy
- * @policy: policy that is to have its elements freed  (NOT NULL)
- */
+ 
 void aa_policy_destroy(struct aa_policy *policy)
 {
 	AA_BUG(on_list_rcu(&policy->profiles));
 	AA_BUG(on_list_rcu(&policy->list));
 
-	/* don't free name as its a subset of hname */
+	 
 	aa_put_str(policy->hname);
 }

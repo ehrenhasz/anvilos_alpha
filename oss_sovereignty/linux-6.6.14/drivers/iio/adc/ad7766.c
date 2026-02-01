@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AD7766/AD7767 SPI ADC driver
- *
- * Copyright 2016 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -44,19 +40,11 @@ struct ad7766 {
 	struct spi_transfer xfer;
 	struct spi_message msg;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 * Make the buffer large enough for one 24 bit sample and one 64 bit
-	 * aligned 64 bit timestamp.
-	 */
+	 
 	unsigned char data[ALIGN(3, sizeof(s64)) + sizeof(s64)]	__aligned(IIO_DMA_MINALIGN);
 };
 
-/*
- * AD7766 and AD7767 variations are interface compatible, the main difference is
- * analog performance. Both parts will use the same ID.
- */
+ 
 enum ad7766_device_ids {
 	ID_AD7766,
 	ID_AD7766_1,
@@ -112,10 +100,7 @@ static int ad7766_postdisable(struct iio_dev *indio_dev)
 
 	gpiod_set_value(ad7766->pd_gpio, 1);
 
-	/*
-	 * The PD pin is synchronous to the clock, so give it some time to
-	 * notice the change before we disable the clock.
-	 */
+	 
 	msleep(20);
 
 	clk_disable_unprepare(ad7766->mclk);
@@ -255,11 +240,7 @@ static int ad7766_probe(struct spi_device *spi)
 		ad7766->trig->ops = &ad7766_trigger_ops;
 		iio_trigger_set_drvdata(ad7766->trig, ad7766);
 
-		/*
-		 * The device generates interrupts as long as it is powered up.
-		 * Some platforms might not allow the option to power it down so
-		 * don't enable the interrupt to avoid extra load on the system
-		 */
+		 
 		ret = devm_request_irq(&spi->dev, spi->irq, ad7766_irq,
 				       IRQF_TRIGGER_FALLING | IRQF_NO_AUTOEN,
 				       dev_name(&spi->dev),
@@ -274,7 +255,7 @@ static int ad7766_probe(struct spi_device *spi)
 
 	ad7766->spi = spi;
 
-	/* First byte always 0 */
+	 
 	ad7766->xfer.rx_buf = &ad7766->data[1];
 	ad7766->xfer.len = 3;
 

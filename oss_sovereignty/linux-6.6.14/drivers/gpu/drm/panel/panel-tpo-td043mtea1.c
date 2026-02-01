@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Toppoly TD043MTEA1 Panel Driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated
- *
- * Based on the omapdrm-specific panel-tpo-td043mtea1 driver
- *
- * Author: Gražvydas Ignotas <notasas@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -67,9 +59,7 @@ struct td043mtea1_panel {
 
 #define to_td043mtea1_device(p) container_of(p, struct td043mtea1_panel, panel)
 
-/* -----------------------------------------------------------------------------
- * Hardware Access
- */
+ 
 
 static int td043mtea1_write(struct td043mtea1_panel *lcd, u8 addr, u8 value)
 {
@@ -102,7 +92,7 @@ static void td043mtea1_write_gamma(struct td043mtea1_panel *lcd)
 	unsigned int i;
 	u8 val;
 
-	/* gamma bits [9:8] */
+	 
 	for (val = i = 0; i < 4; i++)
 		val |= (gamma[i] & 0x300) >> ((i + 1) * 2);
 	td043mtea1_write(lcd, 0x11, val);
@@ -115,7 +105,7 @@ static void td043mtea1_write_gamma(struct td043mtea1_panel *lcd)
 		val |= (gamma[i + 8] & 0x300) >> ((i + 1) * 2);
 	td043mtea1_write(lcd, 0x13, val);
 
-	/* gamma bits [7:0] */
+	 
 	for (i = 0; i < 12; i++)
 		td043mtea1_write(lcd, 0x14 + i, gamma[i] & 0xff);
 }
@@ -141,7 +131,7 @@ static int td043mtea1_power_on(struct td043mtea1_panel *lcd)
 	if (ret < 0)
 		return ret;
 
-	/* Wait for the panel to stabilize. */
+	 
 	msleep(160);
 
 	gpiod_set_value(lcd->reset_gpio, 0);
@@ -167,7 +157,7 @@ static void td043mtea1_power_off(struct td043mtea1_panel *lcd)
 
 	gpiod_set_value(lcd->reset_gpio, 1);
 
-	/* wait for at least 2 vsyncs before cutting off power */
+	 
 	msleep(50);
 
 	td043mtea1_write(lcd, 3, TPO_R03_VAL_STANDBY);
@@ -177,9 +167,7 @@ static void td043mtea1_power_off(struct td043mtea1_panel *lcd)
 	lcd->powered_on = false;
 }
 
-/* -----------------------------------------------------------------------------
- * sysfs
- */
+ 
 
 static ssize_t vmirror_show(struct device *dev, struct device_attribute *attr,
 			    char *buf)
@@ -293,9 +281,7 @@ static const struct attribute_group td043mtea1_attr_group = {
 	.attrs = td043mtea1_attrs,
 };
 
-/* -----------------------------------------------------------------------------
- * Panel Operations
- */
+ 
 
 static int td043mtea1_unprepare(struct drm_panel *panel)
 {
@@ -312,10 +298,7 @@ static int td043mtea1_prepare(struct drm_panel *panel)
 	struct td043mtea1_panel *lcd = to_td043mtea1_device(panel);
 	int ret;
 
-	/*
-	 * If we are resuming from system suspend, SPI might not be enabled
-	 * yet, so we'll program the LCD from SPI PM resume callback.
-	 */
+	 
 	if (lcd->spi_suspended)
 		return 0;
 
@@ -359,12 +342,7 @@ static int td043mtea1_get_modes(struct drm_panel *panel,
 
 	connector->display_info.width_mm = td043mtea1_mode.width_mm;
 	connector->display_info.height_mm = td043mtea1_mode.height_mm;
-	/*
-	 * FIXME: According to the datasheet sync signals are sampled on the
-	 * rising edge of the clock, but the code running on the OMAP3 Pandora
-	 * indicates sampling on the falling edge. This should be tested on a
-	 * real device.
-	 */
+	 
 	connector->display_info.bus_flags = DRM_BUS_FLAG_DE_HIGH
 					  | DRM_BUS_FLAG_SYNC_SAMPLE_NEGEDGE
 					  | DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE;
@@ -378,9 +356,7 @@ static const struct drm_panel_funcs td043mtea1_funcs = {
 	.get_modes = td043mtea1_get_modes,
 };
 
-/* -----------------------------------------------------------------------------
- * Power Management, Probe and Remove
- */
+ 
 
 static int __maybe_unused td043mtea1_suspend(struct device *dev)
 {
@@ -476,14 +452,14 @@ static void td043mtea1_remove(struct spi_device *spi)
 
 static const struct of_device_id td043mtea1_of_match[] = {
 	{ .compatible = "tpo,td043mtea1", },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, td043mtea1_of_match);
 
 static const struct spi_device_id td043mtea1_ids[] = {
 	{ "td043mtea1", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(spi, td043mtea1_ids);

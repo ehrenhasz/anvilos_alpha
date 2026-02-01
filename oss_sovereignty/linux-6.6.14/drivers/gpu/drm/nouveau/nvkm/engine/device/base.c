@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "acpi.h"
 
@@ -2924,7 +2902,7 @@ nvkm_device_del(struct nvkm_device **pdevice)
 	}
 }
 
-/* returns true if the GPU is in the CPU native byte order */
+ 
 static inline bool
 nvkm_device_endianness(struct nvkm_device *device)
 {
@@ -2934,24 +2912,20 @@ nvkm_device_endianness(struct nvkm_device *device)
 	const bool big_endian = false;
 #endif
 
-	/* Read NV_PMC_BOOT_1, and assume non-functional endian switch if it
-	 * doesn't contain the expected values.
-	 */
+	 
 	u32 pmc_boot_1 = nvkm_rd32(device, 0x000004);
 	if (pmc_boot_1 && pmc_boot_1 != 0x01000001)
-		return !big_endian; /* Assume GPU is LE in this case. */
+		return !big_endian;  
 
-	/* 0 means LE and 0x01000001 means BE GPU. Condition is true when
-	 * GPU/CPU endianness don't match.
-	 */
+	 
 	if (big_endian == !pmc_boot_1) {
 		nvkm_wr32(device, 0x000004, 0x01000001);
 		nvkm_rd32(device, 0x000000);
 		if (nvkm_rd32(device, 0x000004) != (big_endian ? 0x01000001 : 0x00000000))
-			return !big_endian; /* Assume GPU is LE on any unexpected read-back. */
+			return !big_endian;  
 	}
 
-	/* CPU/GPU endianness should (hopefully) match. */
+	 
 	return true;
 }
 
@@ -2997,9 +2971,9 @@ nvkm_device_ctor(const struct nvkm_device_func *func,
 		}
 	}
 
-	/* identify the chipset, and determine classes of subdev/engines */
+	 
 	if (detect) {
-		/* switch mmio to cpu's native endianness */
+		 
 		if (!nvkm_device_endianness(device)) {
 			nvdev_error(device,
 				    "Couldn't switch GPU to CPUs endianness\n");
@@ -3009,7 +2983,7 @@ nvkm_device_ctor(const struct nvkm_device_func *func,
 
 		boot0 = nvkm_rd32(device, 0x000000);
 
-		/* chipset can be overridden for devel/testing purposes */
+		 
 		chipset = nvkm_longopt(device->cfgopt, "NvChipset", 0);
 		if (chipset) {
 			u32 override_boot0;
@@ -3029,7 +3003,7 @@ nvkm_device_ctor(const struct nvkm_device_func *func,
 			boot0 = override_boot0;
 		}
 
-		/* determine chipset and derive architecture from it */
+		 
 		if ((boot0 & 0x1f000000) > 0) {
 			device->chipset = (boot0 & 0x1ff00000) >> 20;
 			device->chiprev = (boot0 & 0x000000ff);
@@ -3183,7 +3157,7 @@ nvkm_device_ctor(const struct nvkm_device_func *func,
 		nvdev_info(device, "NVIDIA %s (%08x)\n",
 			   device->chip->name, boot0);
 
-		/* vGPU detection */
+		 
 		boot1 = nvkm_rd32(device, 0x0000004);
 		if (device->card_type >= TU100 && (boot1 & 0x00030000)) {
 			nvdev_info(device, "vGPUs are not supported\n");
@@ -3191,10 +3165,10 @@ nvkm_device_ctor(const struct nvkm_device_func *func,
 			goto done;
 		}
 
-		/* read strapping information */
+		 
 		strap = nvkm_rd32(device, 0x101000);
 
-		/* determine frequency of timing crystal */
+		 
 		if ( device->card_type <= NV_10 || device->chipset < 0x17 ||
 		    (device->chipset >= 0x20 && device->chipset < 0x25))
 			strap &= 0x00000040;

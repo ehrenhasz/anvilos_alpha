@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * gpio-vbus.c - simple GPIO VBUS sensing driver for B peripheral devices
- *
- * Copyright (c) 2008 Philipp Zabel <philipp.zabel@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -20,13 +16,7 @@
 #include <linux/usb/otg.h>
 
 
-/*
- * A simple GPIO VBUS sensing driver for B peripheral only devices
- * with internal transceivers. It can control a D+ pullup GPIO and
- * a regulator to limit the current drawn from VBUS.
- *
- * Needs to be loaded before the UDC driver that will use it.
- */
+ 
 struct gpio_vbus_data {
 	struct gpio_desc	*vbus_gpiod;
 	struct gpio_desc	*pullup_gpiod;
@@ -41,20 +31,12 @@ struct gpio_vbus_data {
 };
 
 
-/*
- * This driver relies on "both edges" triggering.  VBUS has 100 msec to
- * stabilize, so the peripheral controller driver may need to cope with
- * some bouncing due to current surges (e.g. charging local capacitance)
- * and contact chatter.
- *
- * REVISIT in desperate straits, toggling between rising and falling
- * edges might be workable.
- */
+ 
 #define VBUS_IRQ_FLAGS \
 	(IRQF_SHARED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING)
 
 
-/* interface to regulator framework */
+ 
 static void set_vbus_draw(struct gpio_vbus_data *gpio_vbus, unsigned mA)
 {
 	struct regulator *vbus_draw = gpio_vbus->vbus_draw;
@@ -103,11 +85,7 @@ static void gpio_vbus_work(struct work_struct *work)
 		return;
 	gpio_vbus->vbus = vbus;
 
-	/* Peripheral controllers which manage the pullup themselves won't have
-	 * a pullup GPIO configured here.  If it's configured here, we'll do
-	 * what isp1301_omap::b_peripheral() does and enable the pullup here...
-	 * although that may complicate usb_gadget_{,dis}connect() support.
-	 */
+	 
 
 	if (vbus) {
 		status = USB_EVENT_VBUS;
@@ -115,10 +93,10 @@ static void gpio_vbus_work(struct work_struct *work)
 		gpio_vbus->phy.last_event = status;
 		usb_gadget_vbus_connect(gpio_vbus->phy.otg->gadget);
 
-		/* drawing a "unit load" is *always* OK, except for OTG */
+		 
 		set_vbus_draw(gpio_vbus, 100);
 
-		/* optionally enable D+ pullup */
+		 
 		if (gpio_vbus->pullup_gpiod)
 			gpiod_set_value(gpio_vbus->pullup_gpiod, 1);
 
@@ -126,7 +104,7 @@ static void gpio_vbus_work(struct work_struct *work)
 					   status, gpio_vbus->phy.otg->gadget);
 		usb_phy_set_event(&gpio_vbus->phy, USB_EVENT_ENUMERATED);
 	} else {
-		/* optionally disable D+ pullup */
+		 
 		if (gpio_vbus->pullup_gpiod)
 			gpiod_set_value(gpio_vbus->pullup_gpiod, 0);
 
@@ -143,7 +121,7 @@ static void gpio_vbus_work(struct work_struct *work)
 	}
 }
 
-/* VBUS change IRQ handler */
+ 
 static irqreturn_t gpio_vbus_irq(int irq, void *data)
 {
 	struct platform_device *pdev = data;
@@ -160,9 +138,9 @@ static irqreturn_t gpio_vbus_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* OTG transceiver interface */
+ 
 
-/* bind/unbind the peripheral controller */
+ 
 static int gpio_vbus_set_peripheral(struct usb_otg *otg,
 					struct usb_gadget *gadget)
 {
@@ -176,7 +154,7 @@ static int gpio_vbus_set_peripheral(struct usb_otg *otg,
 		dev_dbg(&pdev->dev, "unregistering gadget '%s'\n",
 			otg->gadget->name);
 
-		/* optionally disable D+ pullup */
+		 
 		if (gpio_vbus->pullup_gpiod)
 			gpiod_set_value(gpio_vbus->pullup_gpiod, 0);
 
@@ -192,13 +170,13 @@ static int gpio_vbus_set_peripheral(struct usb_otg *otg,
 	otg->gadget = gadget;
 	dev_dbg(&pdev->dev, "registered gadget '%s'\n", gadget->name);
 
-	/* initialize connection state */
-	gpio_vbus->vbus = 0; /* start with disconnected */
+	 
+	gpio_vbus->vbus = 0;  
 	gpio_vbus_irq(gpio_vbus->irq, pdev);
 	return 0;
 }
 
-/* effective for B devices, ignored for A-peripheral */
+ 
 static int gpio_vbus_set_power(struct usb_phy *phy, unsigned mA)
 {
 	struct gpio_vbus_data *gpio_vbus;
@@ -210,23 +188,18 @@ static int gpio_vbus_set_power(struct usb_phy *phy, unsigned mA)
 	return 0;
 }
 
-/* for non-OTG B devices: set/clear transceiver suspend mode */
+ 
 static int gpio_vbus_set_suspend(struct usb_phy *phy, int suspend)
 {
 	struct gpio_vbus_data *gpio_vbus;
 
 	gpio_vbus = container_of(phy, struct gpio_vbus_data, phy);
 
-	/* draw max 0 mA from vbus in suspend mode; or the previously
-	 * recorded amount of current if not suspended
-	 *
-	 * NOTE: high powered configs (mA > 100) may draw up to 2.5 mA
-	 * if they're wake-enabled ... we don't handle that yet.
-	 */
+	 
 	return gpio_vbus_set_power(phy, suspend ? 0 : gpio_vbus->mA);
 }
 
-/* platform driver interface */
+ 
 
 static int gpio_vbus_probe(struct platform_device *pdev)
 {
@@ -257,7 +230,7 @@ static int gpio_vbus_probe(struct platform_device *pdev)
 	gpio_vbus->phy.otg->usb_phy = &gpio_vbus->phy;
 	gpio_vbus->phy.otg->set_peripheral = gpio_vbus_set_peripheral;
 
-	/* Look up the VBUS sensing GPIO */
+	 
 	gpio_vbus->vbus_gpiod = devm_gpiod_get(dev, "vbus", GPIOD_IN);
 	if (IS_ERR(gpio_vbus->vbus_gpiod)) {
 		err = PTR_ERR(gpio_vbus->vbus_gpiod);
@@ -277,13 +250,7 @@ static int gpio_vbus_probe(struct platform_device *pdev)
 
 	gpio_vbus->irq = irq;
 
-	/*
-	 * The VBUS sensing GPIO should have a pulldown, which will normally be
-	 * part of a resistor ladder turning a 4.0V-5.25V level on VBUS into a
-	 * value the GPIO detects as active. Some systems will use comparators.
-	 * Get the optional D+ or D- pullup GPIO. If the data line pullup is
-	 * in use, initialize it to "not pulling up"
-	 */
+	 
 	gpio_vbus->pullup_gpiod = devm_gpiod_get_optional(dev, "pullup",
 							  GPIOD_OUT_LOW);
 	if (IS_ERR(gpio_vbus->pullup_gpiod)) {
@@ -312,7 +279,7 @@ static int gpio_vbus_probe(struct platform_device *pdev)
 		gpio_vbus->vbus_draw = NULL;
 	}
 
-	/* only active when a gadget is registered */
+	 
 	err = usb_add_phy(&gpio_vbus->phy, USB_PHY_TYPE_USB2);
 	if (err) {
 		dev_err(&pdev->dev, "can't register transceiver, err: %d\n",
@@ -320,7 +287,7 @@ static int gpio_vbus_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* TODO: wakeup could be enabled here with device_init_wakeup(dev, 1) */
+	 
 
 	return 0;
 }
@@ -364,10 +331,7 @@ static const struct dev_pm_ops gpio_vbus_dev_pm_ops = {
 
 MODULE_ALIAS("platform:gpio-vbus");
 
-/*
- * NOTE: this driver matches against "gpio-usb-b-connector" for
- * devices that do NOT support role switch.
- */
+ 
 static const struct of_device_id gpio_vbus_of_match[] = {
 	{
 		.compatible = "gpio-usb-b-connector",

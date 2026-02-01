@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * s3c24xx/s3c64xx SoC series Camera Interface (CAMIF) driver
- *
- * Copyright (C) 2012 Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
- * Copyright (C) 2012 Tomasz Figa <tomasz.figa@gmail.com>
- *
- * Based on drivers/media/platform/s5p-fimc,
- * Copyright (C) 2010 - 2012 Samsung Electronics Co., Ltd.
-*/
+
+ 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/bug.h>
@@ -40,7 +32,7 @@
 static int debug;
 module_param(debug, int, 0644);
 
-/* Locking: called with vp->camif->slock spinlock held */
+ 
 static void camif_cfg_video_path(struct camif_vp *vp)
 {
 	WARN_ON(s3c_camif_get_scaler_config(vp, &vp->scaler));
@@ -61,7 +53,7 @@ static void camif_prepare_dma_offset(struct camif_vp *vp)
 		 f->dma_offset.initial, f->dma_offset.line);
 }
 
-/* Locking: called with camif->slock spinlock held */
+ 
 static int s3c_camif_hw_init(struct camif_dev *camif, struct camif_vp *vp)
 {
 	const struct s3c_camif_variant *variant = camif->variant;
@@ -86,12 +78,7 @@ static int s3c_camif_hw_init(struct camif_dev *camif, struct camif_vp *vp)
 	return 0;
 }
 
-/*
- * Initialize the video path, only up from the scaler stage. The camera
- * input interface set up is skipped. This is useful to enable one of the
- * video paths when the other is already running.
- * Locking: called with camif->slock spinlock held.
- */
+ 
 static int s3c_camif_hw_vp_init(struct camif_dev *camif, struct camif_vp *vp)
 {
 	unsigned int ip_rev = camif->variant->ip_revision;
@@ -141,11 +128,7 @@ static int sensor_set_streaming(struct camif_dev *camif, int on)
 	return err;
 }
 
-/*
- * Reinitialize the driver so it is ready to start streaming again.
- * Return any buffers to vb2, perform CAMIF software reset and
- * turn off streaming at the data pipeline (sensor) if required.
- */
+ 
 static int camif_reinitialize(struct camif_vp *vp)
 {
 	struct camif_dev *camif = vp->camif;
@@ -160,7 +143,7 @@ static int camif_reinitialize(struct camif_vp *vp)
 		       ST_VP_ABORTING | ST_VP_STREAMING |
 		       ST_VP_SENSOR_STREAMING | ST_VP_LASTIRQ);
 
-	/* Release unused buffers */
+	 
 	while (!list_empty(&vp->pending_buf_q)) {
 		buf = camif_pending_queue_pop(vp);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
@@ -225,7 +208,7 @@ static int camif_stop_capture(struct camif_vp *vp)
 	spin_lock_irqsave(&camif->slock, flags);
 
 	if (ret == 0 && !(vp->state & ST_VP_OFF)) {
-		/* Timed out, forcibly stop capture */
+		 
 		vp->state &= ~(ST_VP_OFF | ST_VP_ABORTING |
 			       ST_VP_LASTIRQ);
 
@@ -260,16 +243,16 @@ static int camif_prepare_addr(struct camif_vp *vp, struct vb2_buffer *vb,
 		paddr->cr = 0;
 		break;
 	case 2:
-		/* decompose Y into Y/Cb */
+		 
 		paddr->cb = (u32)(paddr->y + pix_size);
 		paddr->cr = 0;
 		break;
 	case 3:
 		paddr->cb = (u32)(paddr->y + pix_size);
-		/* decompose Y into Y/Cb/Cr */
+		 
 		if (vp->out_fmt->color == IMG_FMT_YCBCR422P)
 			paddr->cr = (u32)(paddr->cb + (pix_size >> 1));
-		else /* 420 */
+		else  
 			paddr->cr = (u32)(paddr->cb + (pix_size >> 2));
 
 		if (vp->out_fmt->color == IMG_FMT_YCRCB420)
@@ -306,7 +289,7 @@ irqreturn_t s3c_camif_irq_handler(int irq, void *priv)
 
 	if (vp->state & ST_VP_ABORTING) {
 		if (vp->state & ST_VP_OFF) {
-			/* Last IRQ */
+			 
 			vp->state &= ~(ST_VP_OFF | ST_VP_ABORTING |
 				       ST_VP_LASTIRQ);
 			wake_up(&vp->irq_queue);
@@ -317,7 +300,7 @@ irqreturn_t s3c_camif_irq_handler(int irq, void *priv)
 			camif_hw_set_lastirq(vp, false);
 			vp->state |= ST_VP_OFF;
 		} else {
-			/* Disable capture, enable last IRQ */
+			 
 			camif_hw_set_lastirq(vp, true);
 			vp->state |= ST_VP_LASTIRQ;
 		}
@@ -327,27 +310,23 @@ irqreturn_t s3c_camif_irq_handler(int irq, void *priv)
 	    !list_empty(&vp->active_buf_q)) {
 		unsigned int index;
 		struct camif_buffer *vbuf;
-		/*
-		 * Get previous DMA write buffer index:
-		 * 0 => DMA buffer 0, 2;
-		 * 1 => DMA buffer 1, 3.
-		 */
+		 
 		index = (CISTATUS_FRAMECNT(status) + 2) & 1;
 		vbuf = camif_active_queue_peek(vp, index);
 
 		if (!WARN_ON(vbuf == NULL)) {
-			/* Dequeue a filled buffer */
+			 
 			vbuf->vb.vb2_buf.timestamp = ktime_get_ns();
 			vbuf->vb.sequence = vp->frame_sequence++;
 			vb2_buffer_done(&vbuf->vb.vb2_buf, VB2_BUF_STATE_DONE);
 
-			/* Set up an empty buffer at the DMA engine */
+			 
 			vbuf = camif_pending_queue_pop(vp);
 			vbuf->index = index;
 			camif_hw_set_output_addr(vp, &vbuf->paddr, index);
 			camif_hw_set_output_addr(vp, &vbuf->paddr, index + 2);
 
-			/* Scheduled in H/W, add to the queue */
+			 
 			camif_active_queue_add(vp, vbuf);
 		}
 	} else if (!(vp->state & ST_VP_ABORTING) &&
@@ -378,12 +357,7 @@ static int start_streaming(struct vb2_queue *vq, unsigned int count)
 	unsigned long flags;
 	int ret;
 
-	/*
-	 * We assume the codec capture path is always activated
-	 * first, before the preview path starts streaming.
-	 * This is required to avoid internal FIFO overflow and
-	 * a need for CAMIF software reset.
-	 */
+	 
 	spin_lock_irqsave(&camif->slock, flags);
 
 	if (camif->stream_count == 0) {
@@ -487,7 +461,7 @@ static void buffer_queue(struct vb2_buffer *vb)
 	WARN_ON(camif_prepare_addr(vp, &buf->vb.vb2_buf, &buf->paddr));
 
 	if (!(vp->state & ST_VP_STREAMING) && vp->active_buffers < 2) {
-		/* Schedule an empty buffer in H/W */
+		 
 		buf->index = vp->buf_index;
 
 		camif_hw_set_output_addr(vp, &buf->paddr, buf->index);
@@ -628,9 +602,7 @@ static const struct v4l2_file_operations s3c_camif_fops = {
 	.mmap		= s3c_camif_mmap,
 };
 
-/*
- * Video node IOCTLs
- */
+ 
 
 static int s3c_camif_vidioc_querycap(struct file *file, void *priv,
 				     struct v4l2_capability *cap)
@@ -728,10 +700,7 @@ static int __camif_video_try_format(struct camif_vp *vp,
 	pr_debug("fmt: %ux%u, crop: %ux%u, bytesperline: %u\n",
 		 pix->width, pix->height, crop->width, crop->height,
 		 pix->bytesperline);
-	/*
-	 * Calculate minimum width and height according to the configured
-	 * camera input interface crop rectangle and the resizer's capabilities.
-	 */
+	 
 	sc_hrmax = min(SCALER_MAX_RATIO, 1 << (ffs(crop->width) - 3));
 	sc_vrmax = min(SCALER_MAX_RATIO, 1 << (ffs(crop->height) - 1));
 
@@ -786,7 +755,7 @@ static int s3c_camif_vidioc_s_fmt(struct file *file, void *priv,
 	out_frame->f_width = pix->width;
 	out_frame->f_height = pix->height;
 
-	/* Reset composition rectangle */
+	 
 	out_frame->rect.width = pix->width;
 	out_frame->rect.height = pix->height;
 	out_frame->rect.left = 0;
@@ -803,7 +772,7 @@ static int s3c_camif_vidioc_s_fmt(struct file *file, void *priv,
 	return 0;
 }
 
-/* Only check pixel formats at the sensor and the camif subdev pads */
+ 
 static int camif_pipeline_validate(struct camif_dev *camif)
 {
 	struct v4l2_subdev_format src_fmt = {
@@ -812,7 +781,7 @@ static int camif_pipeline_validate(struct camif_dev *camif)
 	struct media_pad *pad;
 	int ret;
 
-	/* Retrieve format at the sensor subdev source pad */
+	 
 	pad = media_pad_remote_pad_first(&camif->pads[0]);
 	if (!pad || !is_media_entity_v4l2_subdev(pad->entity))
 		return -EPIPE;
@@ -1003,13 +972,13 @@ static int s3c_camif_g_selection(struct file *file, void *priv,
 static void __camif_try_compose(struct camif_dev *camif, struct camif_vp *vp,
 				struct v4l2_rect *r)
 {
-	/* s3c244x doesn't support composition */
+	 
 	if (camif->variant->ip_revision == S3C244X_CAMIF_IP_REV) {
 		*r = vp->out_frame.rect;
 		return;
 	}
 
-	/* TODO: s3c64xx */
+	 
 }
 
 static int s3c_camif_s_selection(struct file *file, void *priv,
@@ -1063,9 +1032,7 @@ static const struct v4l2_ioctl_ops s3c_camif_ioctl_ops = {
 	.vidioc_log_status	  = v4l2_ctrl_log_status,
 };
 
-/*
- * Video node controls
- */
+ 
 static int s3c_camif_video_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct camif_vp *vp = ctrl->priv;
@@ -1092,7 +1059,7 @@ static int s3c_camif_video_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
-/* Codec and preview video node control ops */
+ 
 static const struct v4l2_ctrl_ops s3c_camif_video_ctrl_ops = {
 	.s_ctrl = s3c_camif_video_s_ctrl,
 };
@@ -1185,7 +1152,7 @@ void s3c_camif_unregister_video_node(struct camif_dev *camif, int idx)
 	}
 }
 
-/* Media bus pixel formats supported at the camif input */
+ 
 static const u32 camif_mbus_formats[] = {
 	MEDIA_BUS_FMT_YUYV8_2X8,
 	MEDIA_BUS_FMT_YVYU8_2X8,
@@ -1193,9 +1160,7 @@ static const u32 camif_mbus_formats[] = {
 	MEDIA_BUS_FMT_VYUY8_2X8,
 };
 
-/*
- *  Camera input interface subdev operations
- */
+ 
 
 static int s3c_camif_subdev_enum_mbus_code(struct v4l2_subdev *sd,
 					struct v4l2_subdev_state *sd_state,
@@ -1225,12 +1190,12 @@ static int s3c_camif_subdev_get_fmt(struct v4l2_subdev *sd,
 
 	switch (fmt->pad) {
 	case CAMIF_SD_PAD_SINK:
-		/* full camera input pixel size */
+		 
 		*mf = camif->mbus_fmt;
 		break;
 
 	case CAMIF_SD_PAD_SOURCE_C...CAMIF_SD_PAD_SOURCE_P:
-		/* crop rectangle at camera interface input */
+		 
 		mf->width = camif->camif_crop.width;
 		mf->height = camif->camif_crop.height;
 		mf->code = camif->mbus_fmt.code;
@@ -1250,7 +1215,7 @@ static void __camif_subdev_try_format(struct camif_dev *camif,
 	const struct vp_pix_limits *pix_lim;
 	unsigned int i;
 
-	/* FIXME: constraints against codec or preview path ? */
+	 
 	pix_lim = &variant->vp_pix_limits[VP_CODEC];
 
 	for (i = 0; i < ARRAY_SIZE(camif_mbus_formats); i++)
@@ -1292,10 +1257,7 @@ static int s3c_camif_subdev_set_fmt(struct v4l2_subdev *sd,
 	mf->colorspace = V4L2_COLORSPACE_JPEG;
 	mutex_lock(&camif->lock);
 
-	/*
-	 * No pixel format change at the camera input is allowed
-	 * while streaming.
-	 */
+	 
 	if (vb2_is_busy(&camif->vp[VP_CODEC].vb_queue) ||
 	    vb2_is_busy(&camif->vp[VP_PREVIEW].vb_queue)) {
 		mutex_unlock(&camif->lock);
@@ -1314,15 +1276,12 @@ static int s3c_camif_subdev_set_fmt(struct v4l2_subdev *sd,
 	switch (fmt->pad) {
 	case CAMIF_SD_PAD_SINK:
 		camif->mbus_fmt = *mf;
-		/* Reset sink crop rectangle. */
+		 
 		crop->width = mf->width;
 		crop->height = mf->height;
 		crop->left = 0;
 		crop->top = 0;
-		/*
-		 * Reset source format (the camif's crop rectangle)
-		 * and the video output resolution.
-		 */
+		 
 		for (i = 0; i < CAMIF_VP_NUM; i++) {
 			struct camif_frame *frame = &camif->vp[i].out_frame;
 			frame->rect = *crop;
@@ -1332,7 +1291,7 @@ static int s3c_camif_subdev_set_fmt(struct v4l2_subdev *sd,
 		break;
 
 	case CAMIF_SD_PAD_SOURCE_C...CAMIF_SD_PAD_SOURCE_P:
-		/* Pixel format can be only changed on the sink pad. */
+		 
 		mf->code = camif->mbus_fmt.code;
 		mf->width = crop->width;
 		mf->height = crop->height;
@@ -1365,7 +1324,7 @@ static int s3c_camif_subdev_get_selection(struct v4l2_subdev *sd,
 
 	if (sel->target == V4L2_SEL_TGT_CROP) {
 		sel->r = *crop;
-	} else { /* crop bounds */
+	} else {  
 		sel->r.width = mf->width;
 		sel->r.height = mf->height;
 		sel->r.left = 0;
@@ -1388,13 +1347,7 @@ static void __camif_try_crop(struct camif_dev *camif, struct v4l2_rect *r)
 	unsigned int left = 2 * r->left;
 	unsigned int top = 2 * r->top;
 
-	/*
-	 * Following constraints must be met:
-	 *  - r->width + 2 * r->left = mf->width;
-	 *  - r->height + 2 * r->top = mf->height;
-	 *  - crop rectangle size and position must be aligned
-	 *    to 8 or 2 pixels, depending on SoC version.
-	 */
+	 
 	v4l_bound_align_image(&r->width, 0, mf->width,
 			      ffs(pix_lim->win_hor_offset_align) - 1,
 			      &r->height, 0, mf->height, 1, 0);
@@ -1407,11 +1360,7 @@ static void __camif_try_crop(struct camif_dev *camif, struct v4l2_rect *r)
 	r->top = top / 2;
 	r->width = mf->width - left;
 	r->height = mf->height - top;
-	/*
-	 * Make sure we either downscale or upscale both the pixel
-	 * width and height. Just return current crop rectangle if
-	 * this scaler constraint is not met.
-	 */
+	 
 	if (camif->variant->ip_revision == S3C244X_CAMIF_IP_REV &&
 	    camif_is_streaming(camif)) {
 		unsigned int i;
@@ -1496,7 +1445,7 @@ static int s3c_camif_subdev_s_ctrl(struct v4l2_ctrl *ctrl)
 	switch (ctrl->id) {
 	case V4L2_CID_COLORFX:
 		camif->colorfx = camif->ctrl_colorfx->val;
-		/* Set Cb, Cr */
+		 
 		switch (ctrl->val) {
 		case V4L2_COLORFX_SEPIA:
 			camif->colorfx_cb = 115;
@@ -1507,7 +1456,7 @@ static int s3c_camif_subdev_s_ctrl(struct v4l2_ctrl *ctrl)
 			camif->colorfx_cr = camif->ctrl_colorfx_cbcr->val & 0xff;
 			break;
 		default:
-			/* for V4L2_COLORFX_BW and others */
+			 
 			camif->colorfx_cb = 128;
 			camif->colorfx_cr = 128;
 		}
@@ -1593,7 +1542,7 @@ void s3c_camif_unregister_subdev(struct camif_dev *camif)
 {
 	struct v4l2_subdev *sd = &camif->subdev;
 
-	/* Return if not registered */
+	 
 	if (v4l2_get_subdevdata(sd) == NULL)
 		return;
 
@@ -1631,7 +1580,7 @@ int s3c_camif_set_defaults(struct camif_dev *camif)
 		f->rect.width = CAMIF_DEF_WIDTH;
 		f->rect.height = CAMIF_DEF_HEIGHT;
 
-		/* Scaler is always enabled */
+		 
 		vp->scaler.enable = 1;
 
 		vp->payload = (f->f_width * f->f_height *

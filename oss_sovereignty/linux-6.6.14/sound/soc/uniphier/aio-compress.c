@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext UniPhier AIO Compress Audio driver.
-//
-// Copyright (c) 2017-2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/circ_buf.h>
@@ -151,7 +151,7 @@ static int uniphier_aio_compr_set_params(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 
-	/* IEC frame type will be changed after received valid data */
+	 
 	sub->iec_pc = IEC61937_PC_AAC;
 
 	sub->cparams = *params;
@@ -265,7 +265,7 @@ static int uniphier_aio_compr_pointer(struct snd_soc_component *component,
 
 	if (sub->swm->dir == PORT_DIR_OUTPUT) {
 		pos = sub->rd_offs;
-		/* Size of AIO output format is double of IEC61937 */
+		 
 		tstamp->copied_total = sub->rd_total / 2;
 	} else {
 		pos = sub->wr_offs;
@@ -298,13 +298,13 @@ static int aio_compr_send_to_hw(struct uniphier_aio_sub *sub,
 		if (frm == IEC61937_HEADER_SIGN) {
 			frm_a |= 0x01000000;
 
-			/* Next data is Pc and Pd */
+			 
 			sub->iec_header = true;
 		} else {
 			u16 pc = be16_to_cpu((__be16)frm_a);
 
 			if (sub->iec_header && sub->iec_pc != pc) {
-				/* Force overwrite IEC frame type */
+				 
 				sub->iec_pc = pc;
 				ret = aio_oport_set_stream_type(sub, pc);
 				if (ret)
@@ -342,7 +342,7 @@ static int uniphier_aio_compr_copy(struct snd_soc_component *component,
 	if (sub->swm->dir == PORT_DIR_OUTPUT) {
 		dma_addr_t dmapos = sub->compr_addr + sub->wr_offs;
 
-		/* Size of AIO output format is double of IEC61937 */
+		 
 		s = cnt * 2;
 
 		dma_sync_single_for_cpu(carddev, dmapos, s, DMA_TO_DEVICE);

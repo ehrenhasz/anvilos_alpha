@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for the TS-4800 board
- *
- * Copyright (c) 2016 - Savoir-faire Linux
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>

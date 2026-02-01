@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MAX8997-haptic controller driver
- *
- * Copyright (C) 2012 Samsung Electronics
- * Donggeun Kim <dg77.kim@samsung.com>
- *
- * This program is not provided / owned by Maxim Integrated Products.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -18,12 +11,12 @@
 #include <linux/mfd/max8997.h>
 #include <linux/regulator/consumer.h>
 
-/* Haptic configuration 2 register */
+ 
 #define MAX8997_MOTOR_TYPE_SHIFT	7
 #define MAX8997_ENABLE_SHIFT		6
 #define MAX8997_MODE_SHIFT		5
 
-/* Haptic driver configuration register */
+ 
 #define MAX8997_CYCLE_SHIFT		6
 #define MAX8997_SIG_PERIOD_SHIFT	4
 #define MAX8997_SIG_DUTY_SHIFT		2
@@ -287,10 +280,7 @@ static int max8997_haptic_probe(struct platform_device *pdev)
 			goto err_free_mem;
 		}
 
-		/*
-		 * FIXME: pwm_apply_args() should be removed when switching to
-		 * the atomic PWM API.
-		 */
+		 
 		pwm_apply_args(chip->pwm);
 		break;
 

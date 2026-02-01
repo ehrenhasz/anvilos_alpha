@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Cadence
-// Cadence PCIe host controller driver.
-// Author: Cyrille Pitchen <cyrille.pitchen@free-electrons.com>
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -35,35 +35,28 @@ void __iomem *cdns_pci_map_bus(struct pci_bus *bus, unsigned int devfn,
 	u32 addr0, desc0;
 
 	if (pci_is_root_bus(bus)) {
-		/*
-		 * Only the root port (devfn == 0) is connected to this bus.
-		 * All other PCI devices are behind some bridge hence on another
-		 * bus.
-		 */
+		 
 		if (devfn)
 			return NULL;
 
 		return pcie->reg_base + (where & 0xfff);
 	}
-	/* Check that the link is up */
+	 
 	if (!(cdns_pcie_readl(pcie, CDNS_PCIE_LM_BASE) & 0x1))
 		return NULL;
-	/* Clear AXI link-down status */
+	 
 	cdns_pcie_writel(pcie, CDNS_PCIE_AT_LINKDOWN, 0x0);
 
-	/* Update Output registers for AXI region 0. */
+	 
 	addr0 = CDNS_PCIE_AT_OB_REGION_PCI_ADDR0_NBITS(12) |
 		CDNS_PCIE_AT_OB_REGION_PCI_ADDR0_DEVFN(devfn) |
 		CDNS_PCIE_AT_OB_REGION_PCI_ADDR0_BUS(busn);
 	cdns_pcie_writel(pcie, CDNS_PCIE_AT_OB_REGION_PCI_ADDR0(0), addr0);
 
-	/* Configuration Type 0 or Type 1 access. */
+	 
 	desc0 = CDNS_PCIE_AT_OB_REGION_DESC0_HARDCODED_RID |
 		CDNS_PCIE_AT_OB_REGION_DESC0_DEVFN(0);
-	/*
-	 * The bus number was already set once for all in desc1 by
-	 * cdns_pcie_host_init_address_translation().
-	 */
+	 
 	if (busn == bridge->busnr + 1)
 		desc0 |= CDNS_PCIE_AT_OB_REGION_DESC0_TYPE_CONF_TYPE0;
 	else
@@ -85,7 +78,7 @@ static int cdns_pcie_host_training_complete(struct cdns_pcie *pcie)
 	unsigned long end_jiffies;
 	u16 lnk_stat;
 
-	/* Wait for link training to complete. Exit after timeout. */
+	 
 	end_jiffies = jiffies + LINK_RETRAIN_TIMEOUT;
 	do {
 		lnk_stat = cdns_pcie_rp_readw(pcie, pcie_cap_off + PCI_EXP_LNKSTA);
@@ -105,7 +98,7 @@ static int cdns_pcie_host_wait_for_link(struct cdns_pcie *pcie)
 	struct device *dev = pcie->dev;
 	int retries;
 
-	/* Check if the link is up or not */
+	 
 	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
 		if (cdns_pcie_link_up(pcie)) {
 			dev_info(dev, "Link up\n");
@@ -123,10 +116,7 @@ static int cdns_pcie_retrain(struct cdns_pcie *pcie)
 	u16 lnk_stat, lnk_ctl;
 	int ret = 0;
 
-	/*
-	 * Set retrain bit if current speed is 2.5 GB/s,
-	 * but the PCIe root port support is > 2.5 GB/s.
-	 */
+	 
 
 	lnk_cap_sls = cdns_pcie_readl(pcie, (CDNS_PCIE_RP_BASE + pcie_cap_off +
 					     PCI_EXP_LNKCAP));
@@ -165,10 +155,7 @@ static int cdns_pcie_host_start_link(struct cdns_pcie_rc *rc)
 
 	ret = cdns_pcie_host_wait_for_link(pcie);
 
-	/*
-	 * Retrain link for Gen2 training defect
-	 * if quirk flag is set.
-	 */
+	 
 	if (!ret && rc->quirk_retrain_flag)
 		ret = cdns_pcie_retrain(pcie);
 
@@ -181,14 +168,7 @@ static int cdns_pcie_host_init_root_port(struct cdns_pcie_rc *rc)
 	u32 value, ctrl;
 	u32 id;
 
-	/*
-	 * Set the root complex BAR configuration register:
-	 * - disable both BAR0 and BAR1.
-	 * - enable Prefetchable Memory Base and Limit registers in type 1
-	 *   config space (64 bits).
-	 * - enable IO Base and Limit registers in type 1 config
-	 *   space (32 bits).
-	 */
+	 
 	ctrl = CDNS_PCIE_LM_BAR_CFG_CTRL_DISABLED;
 	value = CDNS_PCIE_LM_RC_BAR_CFG_BAR0_CTRL(ctrl) |
 		CDNS_PCIE_LM_RC_BAR_CFG_BAR1_CTRL(ctrl) |
@@ -198,7 +178,7 @@ static int cdns_pcie_host_init_root_port(struct cdns_pcie_rc *rc)
 		CDNS_PCIE_LM_RC_BAR_CFG_IO_32BITS;
 	cdns_pcie_writel(pcie, CDNS_PCIE_LM_RC_BAR_CFG, value);
 
-	/* Set root port configuration space */
+	 
 	if (rc->vendor_id != 0xffff) {
 		id = CDNS_PCIE_LM_ID_VENDOR(rc->vendor_id) |
 			CDNS_PCIE_LM_ID_SUBSYS(rc->vendor_id);
@@ -330,14 +310,7 @@ static int cdns_pcie_host_bar_config(struct cdns_pcie_rc *rc,
 	}
 
 	while (size > 0) {
-		/*
-		 * Try to find a minimum BAR whose size is greater than
-		 * or equal to the remaining resource_entry size. This will
-		 * fail if the size of each of the available BARs is less than
-		 * the remaining resource_entry size.
-		 * If a minimum BAR is found, IB ATU will be configured and
-		 * exited.
-		 */
+		 
 		bar = cdns_pcie_host_find_min_bar(rc, size);
 		if (bar != RP_BAR_UNDEFINED) {
 			ret = cdns_pcie_host_bar_ib_config(rc, bar, cpu_addr,
@@ -347,17 +320,7 @@ static int cdns_pcie_host_bar_config(struct cdns_pcie_rc *rc,
 			return ret;
 		}
 
-		/*
-		 * If the control reaches here, it would mean the remaining
-		 * resource_entry size cannot be fitted in a single BAR. So we
-		 * find a maximum BAR whose size is less than or equal to the
-		 * remaining resource_entry size and split the resource entry
-		 * so that part of resource entry is fitted inside the maximum
-		 * BAR. The remaining size would be fitted during the next
-		 * iteration of the loop.
-		 * If a maximum BAR is not found, there is no way we can fit
-		 * this resource_entry, so we error out.
-		 */
+		 
 		bar = cdns_pcie_host_find_max_bar(rc, size);
 		if (bar == RP_BAR_UNDEFINED) {
 			dev_err(dev, "No free BAR to map cpu_addr %llx\n",
@@ -442,12 +405,8 @@ static int cdns_pcie_host_init_address_translation(struct cdns_pcie_rc *rc)
 	if (entry)
 		busnr = entry->res->start;
 
-	/*
-	 * Reserve region 0 for PCI configure space accesses:
-	 * OB_REGION_PCI_ADDR0 and OB_REGION_DESC0 are updated dynamically by
-	 * cdns_pci_map_bus(), other region registers are set here once for all.
-	 */
-	addr1 = 0; /* Should be programmed to zero. */
+	 
+	addr1 = 0;  
 	desc1 = CDNS_PCIE_AT_OB_REGION_DESC1_BUS(busnr);
 	cdns_pcie_writel(pcie, CDNS_PCIE_AT_OB_REGION_PCI_ADDR1(0), addr1);
 	cdns_pcie_writel(pcie, CDNS_PCIE_AT_OB_REGION_DESC1(0), desc1);

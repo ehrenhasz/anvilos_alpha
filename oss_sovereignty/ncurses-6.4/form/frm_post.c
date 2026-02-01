@@ -1,53 +1,12 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2010,2012 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1995,1997                                    *
- ****************************************************************************/
+ 
 
 #include "form.priv.h"
 
 MODULE_ID("$Id: frm_post.c,v 1.14 2020/05/24 01:40:20 anonymous.maarten Exp $")
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int post_form(FORM * form)
-|
-|   Description   :  Writes the form into its associated subwindow.
-|
-|   Return Values :  E_OK              - success
-|                    E_BAD_ARGUMENT    - invalid form pointer
-|                    E_POSTED          - form already posted
-|                    E_NOT_CONNECTED   - no fields connected to form
-|                    E_NO_ROOM         - form doesn't fit into subwindow
-|                    E_SYSTEM_ERROR    - system error
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 post_form(FORM *form)
 {
@@ -70,9 +29,7 @@ post_form(FORM *form)
   if ((form->cols > getmaxx(formwin)) || (form->rows > getmaxy(formwin)))
     RETURN(E_NO_ROOM);
 
-  /* reset form->curpage to an invalid value. This forces Set_Form_Page
-     to do the page initialization which is required by post_form.
-   */
+   
   page = form->curpage;
   form->curpage = -1;
   if ((err = _nc_Set_Form_Page(form, page, form->current)) != E_OK)
@@ -87,17 +44,7 @@ post_form(FORM *form)
   RETURN(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int unpost_form(FORM * form)
-|
-|   Description   :  Erase form from its associated subwindow.
-|
-|   Return Values :  E_OK            - success
-|                    E_BAD_ARGUMENT  - invalid form pointer
-|                    E_NOT_POSTED    - form isn't posted
-|                    E_BAD_STATE     - called from a hook routine
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 unpost_form(FORM *form)
 {
@@ -122,4 +69,4 @@ unpost_form(FORM *form)
   RETURN(E_OK);
 }
 
-/* frm_post.c ends here */
+ 

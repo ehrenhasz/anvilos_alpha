@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include "rxe.h"
@@ -158,10 +155,7 @@ int rxe_srq_from_attr(struct rxe_dev *rxe, struct rxe_srq *srq,
 	int err;
 
 	if (mask & IB_SRQ_MAX_WR) {
-		/*
-		 * This is completely screwed up, the response is supposed to
-		 * be in the outbuf not like this.
-		 */
+		 
 		mi = u64_to_user_ptr(ucmd->mmap_info_addr);
 
 		wqe_size = sizeof(struct rxe_recv_wqe) +

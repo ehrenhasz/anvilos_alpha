@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2016 SUSE Software Solutions GmbH
- *           Thomas Renninger <trenn@suse.de>
- */
+
+ 
 
 #include <unistd.h>
 #include <stdio.h>

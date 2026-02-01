@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _DT_BINDINGS_ADI_AD74413R_H
 #define _DT_BINDINGS_ADI_AD74413R_H
@@ -18,4 +18,4 @@
 #define CH_FUNC_MIN	CH_FUNC_HIGH_IMPEDANCE
 #define CH_FUNC_MAX	CH_FUNC_CURRENT_INPUT_LOOP_POWER_HART
 
-#endif /* _DT_BINDINGS_ADI_AD74413R_H */
+#endif  

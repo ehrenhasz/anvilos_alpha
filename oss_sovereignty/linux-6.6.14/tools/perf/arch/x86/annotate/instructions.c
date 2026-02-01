@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * x86 instruction nmemonic table to parse disasm lines for annotate.
- * This table is searched twice - one for exact match and another for
- * match without a size suffix (b, w, l, q) in case of AT&T syntax.
- *
- * So this table should not have entries with the suffix unless it's
- * a complete different instruction than ones without the suffix.
- */
+
+ 
 static struct ins x86__instructions[] = {
 	{ .name = "adc",	.ops = &mov_ops,  },
 	{ .name = "add",	.ops = &mov_ops,  },
@@ -122,13 +115,13 @@ static bool amd__ins_is_fused(struct arch *arch, const char *ins1,
 	if (strstr(ins2, "jmp"))
 		return false;
 
-	/* Family >= 15h supports cmp/test + branch fusion */
+	 
 	if (arch->family >= 0x15 && (strstarts(ins1, "test") ||
 	    (strstarts(ins1, "cmp") && !strstr(ins1, "xchg")))) {
 		return true;
 	}
 
-	/* Family >= 19h supports some ALU + branch fusion */
+	 
 	if (arch->family >= 0x19 && (strstarts(ins1, "add") ||
 	    strstarts(ins1, "sub") || strstarts(ins1, "and") ||
 	    strstarts(ins1, "inc") || strstarts(ins1, "dec") ||
@@ -146,13 +139,13 @@ static bool intel__ins_is_fused(struct arch *arch, const char *ins1,
 		return false;
 
 	if (arch->model == 0x1e) {
-		/* Nehalem */
+		 
 		if ((strstr(ins1, "cmp") && !strstr(ins1, "xchg")) ||
 		     strstr(ins1, "test")) {
 			return true;
 		}
 	} else {
-		/* Newer platform */
+		 
 		if ((strstr(ins1, "cmp") && !strstr(ins1, "xchg")) ||
 		     strstr(ins1, "test") ||
 		     strstr(ins1, "add") ||
@@ -172,9 +165,7 @@ static int x86__cpuid_parse(struct arch *arch, char *cpuid)
 	unsigned int family, model, stepping;
 	int ret;
 
-	/*
-	 * cpuid = "GenuineIntel,family,model,stepping"
-	 */
+	 
 	ret = sscanf(cpuid, "%*[^,],%u,%u,%u", &family, &model, &stepping);
 	if (ret == 3) {
 		arch->family = family;

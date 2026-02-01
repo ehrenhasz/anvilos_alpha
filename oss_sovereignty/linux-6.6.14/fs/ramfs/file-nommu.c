@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* file-nommu.c: no-MMU version of ramfs
- *
- * Copyright (C) 2005 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -53,12 +49,8 @@ const struct inode_operations ramfs_file_inode_operations = {
 	.getattr		= simple_getattr,
 };
 
-/*****************************************************************************/
-/*
- * add a contiguous set of pages into a ramfs inode when it's truncated from
- * size 0 on the assumption that it's going to be used for an mmap of shared
- * memory
- */
+ 
+ 
 int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 {
 	unsigned long npages, xpages, loop;
@@ -68,7 +60,7 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 	int ret;
 	gfp_t gfp = mapping_gfp_mask(inode->i_mapping);
 
-	/* make various checks */
+	 
 	order = get_order(newsize);
 	if (unlikely(order > MAX_ORDER))
 		return -EFBIG;
@@ -79,28 +71,27 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 
 	i_size_write(inode, newsize);
 
-	/* allocate enough contiguous pages to be able to satisfy the
-	 * request */
+	 
 	pages = alloc_pages(gfp, order);
 	if (!pages)
 		return -ENOMEM;
 
-	/* split the high-order page into an array of single pages */
+	 
 	xpages = 1UL << order;
 	npages = (newsize + PAGE_SIZE - 1) >> PAGE_SHIFT;
 
 	split_page(pages, order);
 
-	/* trim off any pages we don't actually require */
+	 
 	for (loop = npages; loop < xpages; loop++)
 		__free_page(pages + loop);
 
-	/* clear the memory we allocated */
+	 
 	newsize = PAGE_SIZE * npages;
 	data = page_address(pages);
 	memset(data, 0, newsize);
 
-	/* attach all the pages to the inode's address space */
+	 
 	for (loop = 0; loop < npages; loop++) {
 		struct page *page = pages + loop;
 
@@ -109,7 +100,7 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 		if (ret < 0)
 			goto add_error;
 
-		/* prevent the page from being discarded on memory pressure */
+		 
 		SetPageDirty(page);
 		SetPageUptodate(page);
 
@@ -125,16 +116,13 @@ add_error:
 	return ret;
 }
 
-/*****************************************************************************/
-/*
- *
- */
+ 
+ 
 static int ramfs_nommu_resize(struct inode *inode, loff_t newsize, loff_t size)
 {
 	int ret;
 
-	/* assume a truncate from zero size is going to be for the purposes of
-	 * shared mmap */
+	 
 	if (size == 0) {
 		if (unlikely(newsize >> 32))
 			return -EFBIG;
@@ -142,7 +130,7 @@ static int ramfs_nommu_resize(struct inode *inode, loff_t newsize, loff_t size)
 		return ramfs_nommu_expand_for_mapping(inode, newsize);
 	}
 
-	/* check that a decrease in size doesn't cut off any shared mappings */
+	 
 	if (newsize < size) {
 		ret = nommu_shrink_inode_mappings(inode, size, newsize);
 		if (ret < 0)
@@ -153,11 +141,8 @@ static int ramfs_nommu_resize(struct inode *inode, loff_t newsize, loff_t size)
 	return 0;
 }
 
-/*****************************************************************************/
-/*
- * handle a change of attributes
- * - we're specifically interested in a change of size
- */
+ 
+ 
 static int ramfs_nommu_setattr(struct mnt_idmap *idmap,
 			       struct dentry *dentry, struct iattr *ia)
 {
@@ -165,12 +150,12 @@ static int ramfs_nommu_setattr(struct mnt_idmap *idmap,
 	unsigned int old_ia_valid = ia->ia_valid;
 	int ret = 0;
 
-	/* POSIX UID/GID verification for setting inode attributes */
+	 
 	ret = setattr_prepare(&nop_mnt_idmap, dentry, ia);
 	if (ret)
 		return ret;
 
-	/* pick out size-changing events */
+	 
 	if (ia->ia_valid & ATTR_SIZE) {
 		loff_t size = inode->i_size;
 
@@ -179,9 +164,7 @@ static int ramfs_nommu_setattr(struct mnt_idmap *idmap,
 			if (ret < 0 || ia->ia_valid == ATTR_SIZE)
 				goto out;
 		} else {
-			/* we skipped the truncate but must still update
-			 * timestamps
-			 */
+			 
 			ia->ia_valid |= ATTR_MTIME|ATTR_CTIME;
 		}
 	}
@@ -192,13 +175,8 @@ static int ramfs_nommu_setattr(struct mnt_idmap *idmap,
 	return ret;
 }
 
-/*****************************************************************************/
-/*
- * try to determine where a shared mapping can be made
- * - we require that:
- *   - the pages to be mapped must exist
- *   - the pages be physically contiguous in sequence
- */
+ 
+ 
 static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 					    unsigned long addr, unsigned long len,
 					    unsigned long pgoff, unsigned long flags)
@@ -208,7 +186,7 @@ static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 	struct folio_batch fbatch;
 	loff_t isize;
 
-	/* the mapping mustn't extend beyond the EOF */
+	 
 	lpages = (len + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	isize = i_size_read(inode);
 
@@ -220,7 +198,7 @@ static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 	if (maxpages - pgoff < lpages)
 		goto out;
 
-	/* gang-find the pages */
+	 
 	folio_batch_init(&fbatch);
 	nr_pages = 0;
 repeat:
@@ -235,22 +213,22 @@ repeat:
 		ret = (unsigned long) folio_address(fbatch.folios[0]);
 		pfn = folio_pfn(fbatch.folios[0]);
 	}
-	/* check the pages for physical adjacency */
+	 
 	for (loop = 0; loop < nr_folios; loop++) {
 		if (pfn + nr_pages != folio_pfn(fbatch.folios[loop])) {
 			ret = -ENOSYS;
-			goto out_free; /* leave if not physical adjacent */
+			goto out_free;  
 		}
 		nr_pages += folio_nr_pages(fbatch.folios[loop]);
 		if (nr_pages >= lpages)
-			goto out_free; /* successfully found desired pages*/
+			goto out_free;  
 	}
 
 	if (nr_pages < lpages) {
 		folio_batch_release(&fbatch);
-		goto repeat; /* loop if pages are missing */
+		goto repeat;  
 	}
-	/* okay - all conditions fulfilled */
+	 
 
 out_free:
 	folio_batch_release(&fbatch);
@@ -258,10 +236,8 @@ out:
 	return ret;
 }
 
-/*****************************************************************************/
-/*
- * set up a mapping for shared memory segments
- */
+ 
+ 
 static int ramfs_nommu_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	if (!is_nommu_shared_mapping(vma->vm_flags))

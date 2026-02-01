@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/acpi.h>
 #include <linux/cpu.h>
@@ -52,14 +52,7 @@ static void __init reserve_shared_info(void)
 {
 	u64 pa;
 
-	/*
-	 * Search for a free page starting at 4kB physical address.
-	 * Low memory is preferred to avoid an EPT large page split up
-	 * by the mapping.
-	 * Starting below X86_RESERVE_LOW (usually 64kB) is fine as
-	 * the BIOS used for HVM guests is well behaved and won't
-	 * clobber memory other than the first 4kB.
-	 */
+	 
 	for (pa = PAGE_SIZE;
 	     !e820__mapped_all(pa, pa + PAGE_SIZE, E820_TYPE_RAM) ||
 	     memblock_is_reserved(pa);
@@ -77,17 +70,7 @@ static void __init xen_hvm_init_mem_mapping(void)
 	early_memunmap(HYPERVISOR_shared_info, PAGE_SIZE);
 	HYPERVISOR_shared_info = __va(PFN_PHYS(shared_info_pfn));
 
-	/*
-	 * The virtual address of the shared_info page has changed, so
-	 * the vcpu_info pointer for VCPU 0 is now stale.
-	 *
-	 * The prepare_boot_cpu callback will re-initialize it via
-	 * xen_vcpu_setup, but we can't rely on that to be called for
-	 * old Xen versions (xen_have_vector_callback == 0).
-	 *
-	 * It is, in any case, bad to have a stale vcpu_info pointer
-	 * so reset it now.
-	 */
+	 
 	xen_vcpu_info_reset(0);
 }
 
@@ -105,7 +88,7 @@ static void __init init_hvm_pv_info(void)
 
 	xen_domain_type = XEN_HVM_DOMAIN;
 
-	/* PVH set up hypercall page in xen_prepare_pvh(). */
+	 
 	if (xen_pvh_domain())
 		pv_info.name = "Xen PVH";
 	else {
@@ -160,12 +143,7 @@ static int xen_cpu_up_prepare_hvm(unsigned int cpu)
 {
 	int rc = 0;
 
-	/*
-	 * If a CPU was offlined earlier and offlining timed out then the
-	 * lock mechanism is still initialized. Uninit it unconditionally
-	 * as it's safe to call even if already uninited. Interrupts and
-	 * timer have already been handled in xen_cpu_dead_hvm().
-	 */
+	 
 	xen_uninit_lock_cpu(cpu);
 
 	if (cpu_acpi_id(cpu) != U32_MAX)
@@ -218,11 +196,7 @@ static void __init xen_hvm_guest_init(void)
 	reserve_shared_info();
 	xen_hvm_init_shared_info();
 
-	/*
-	 * xen_vcpu is a pointer to the vcpu_info struct in the shared_info
-	 * page, we use it in the event channel upcall and in some pvclock
-	 * related functions.
-	 */
+	 
 	xen_vcpu_info_reset(0);
 
 	xen_panic_handler_init();
@@ -270,18 +244,18 @@ static bool __init msi_ext_dest_id(void)
 static __init void xen_hvm_guest_late_init(void)
 {
 #ifdef CONFIG_XEN_PVH
-	/* Test for PVH domain (PVH boot path taken overrides ACPI flags). */
+	 
 	if (!xen_pvh &&
 	    (x86_platform.legacy.rtc || !x86_platform.legacy.no_vga))
 		return;
 
-	/* PVH detected. */
+	 
 	xen_pvh = true;
 
 	if (nopv)
 		panic("\"nopv\" and \"xen_nopv\" parameters are unsupported in PVH guest.");
 
-	/* Make sure we don't fall back to (default) ACPI_IRQ_MODEL_PIC. */
+	 
 	if (!nr_ioapics && acpi_irq_model == ACPI_IRQ_MODEL_PIC)
 		acpi_irq_model = ACPI_IRQ_MODEL_PLATFORM;
 
@@ -299,18 +273,11 @@ static uint32_t __init xen_platform_hvm(void)
 		return 0;
 
 	if (xen_pvh_domain() && nopv) {
-		/* Guest booting via the Xen-PVH boot entry goes here */
+		 
 		pr_info("\"nopv\" parameter is ignored in PVH guest\n");
 		nopv = false;
 	} else if (nopv && xen_domain) {
-		/*
-		 * Guest booting via normal boot entry (like via grub2) goes
-		 * here.
-		 *
-		 * Use interface functions for bare hardware if nopv,
-		 * xen_hvm_guest_late_init is an exception as we need to
-		 * detect PVH and panic there.
-		 */
+		 
 		h->init_platform = x86_init_noop;
 		h->x2apic_available = bool_x86_init_noop;
 		h->init_mem_mapping = x86_init_noop;

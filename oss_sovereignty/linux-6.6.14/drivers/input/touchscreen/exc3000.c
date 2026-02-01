@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for I2C connected EETI EXC3000 multiple touch controller
- *
- * Copyright (C) 2017 Ahmet Inan <inan@distec.de>
- *
- * minimal implementation based on egalax_ts.c and egalax_i2c.c
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -154,21 +148,19 @@ static int exc3000_handle_mt_event(struct exc3000_data *data)
 	}
 
 	if (total_slots > EXC3000_SLOTS_PER_FRAME) {
-		/* Read 2nd frame to get the rest of the contacts. */
+		 
 		ret = exc3000_read_frame(data, buf + EXC3000_LEN_FRAME);
 		if (ret)
 			goto out_fail;
 
-		/* 2nd chunk must have number of contacts set to 0. */
+		 
 		if (buf[EXC3000_LEN_FRAME + 3] != 0) {
 			ret = -EINVAL;
 			goto out_fail;
 		}
 	}
 
-	/*
-	 * We read full state successfully, no contacts will be "stuck".
-	 */
+	 
 	del_timer_sync(&data->timer);
 
 	while (total_slots > 0) {
@@ -185,7 +177,7 @@ static int exc3000_handle_mt_event(struct exc3000_data *data)
 	return 0;
 
 out_fail:
-	/* Schedule a timer to release "stuck" contacts */
+	 
 	exc3000_schedule_timer(data);
 
 	return ret;
@@ -199,7 +191,7 @@ static irqreturn_t exc3000_interrupt(int irq, void *dev_id)
 
 	ret = exc3000_read_frame(data, buf);
 	if (ret) {
-		/* Schedule a timer to release "stuck" contacts */
+		 
 		exc3000_schedule_timer(data);
 		goto out;
 	}
@@ -271,17 +263,13 @@ static ssize_t fw_version_show(struct device *dev,
 	u8 response[EXC3000_LEN_FRAME];
 	int ret;
 
-	/* query bootloader info */
+	 
 	ret = exc3000_vendor_data_request(data,
 					  (u8[]){0x39, 0x02}, 2, response, 1);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * If the bootloader version is non-zero then the device is in
-	 * bootloader mode and won't answer a query for the application FW
-	 * version, so we just use the bootloader version info.
-	 */
+	 
 	if (response[2] || response[3])
 		return sprintf(buf, "%d.%d\n", response[2], response[3]);
 
@@ -362,7 +350,7 @@ static int exc3000_probe(struct i2c_client *client)
 	if (IS_ERR(data->reset))
 		return PTR_ERR(data->reset);
 
-	/* For proper reset sequence, enable power while reset asserted */
+	 
 	error = devm_regulator_get_enable(&client->dev, "vdd");
 	if (error && error != -ENODEV)
 		return dev_err_probe(&client->dev, error,
@@ -410,14 +398,7 @@ static int exc3000_probe(struct i2c_client *client)
 	if (error)
 		return error;
 
-	/*
-	 * I²C does not have built-in recovery, so retry on failure. This
-	 * ensures, that the device probe will not fail for temporary issues
-	 * on the bus.  This is not needed for the sysfs calls (userspace
-	 * will receive the error code and can start another query) and
-	 * cannot be done for touch events (but that only means loosing one
-	 * or two touch events anyways).
-	 */
+	 
 	for (retry = 0; retry < 3; retry++) {
 		u8 response[EXC3000_LEN_FRAME];
 

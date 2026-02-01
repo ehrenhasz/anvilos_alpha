@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MIPI-DSI based s6e3ha2 AMOLED 5.7 inch panel driver.
- *
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- * Donghwa Lee <dh09.lee@samsung.com>
- * Hyungwon Hwang <human.hwang@samsung.com>
- * Hoegeun Kwon <hoegeun.kwon@samsung.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -402,7 +395,7 @@ static int s6e3ha2_te_start_setting(struct s6e3ha2 *ctx)
 static int s6e3ha2_gamma_update(struct s6e3ha2 *ctx)
 {
 	s6e3ha2_dcs_write_seq_static(ctx, 0xf7, 0x03);
-	ndelay(100); /* need for 100ns delay */
+	ndelay(100);  
 	s6e3ha2_dcs_write_seq_static(ctx, 0xf7, 0x00);
 	return 0;
 }
@@ -569,7 +562,7 @@ static int s6e3ha2_enable(struct drm_panel *panel)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 	int ret;
 
-	/* common setting */
+	 
 	s6e3ha2_call_write_func(ret,
 		mipi_dsi_dcs_set_tear_on(dsi, MIPI_DSI_DCS_TEAR_MODE_VBLANK));
 
@@ -581,12 +574,12 @@ static int s6e3ha2_enable(struct drm_panel *panel)
 	s6e3ha2_call_write_func(ret, s6e3ha2_poc_setting(ctx));
 	s6e3ha2_call_write_func(ret, s6e3ha2_test_key_off_fc(ctx));
 
-	/* pcd setting off for TB */
+	 
 	s6e3ha2_call_write_func(ret, s6e3ha2_pcd_set_off(ctx));
 	s6e3ha2_call_write_func(ret, s6e3ha2_err_fg_set(ctx));
 	s6e3ha2_call_write_func(ret, s6e3ha2_te_start_setting(ctx));
 
-	/* brightness setting */
+	 
 	s6e3ha2_call_write_func(ret, s6e3ha2_set_brightness(ctx->bl_dev));
 	s6e3ha2_call_write_func(ret, s6e3ha2_aor_control(ctx));
 	s6e3ha2_call_write_func(ret, s6e3ha2_caps_elvss_set(ctx));
@@ -595,7 +588,7 @@ static int s6e3ha2_enable(struct drm_panel *panel)
 	s6e3ha2_call_write_func(ret, s6e3ha2_acl_off_opr(ctx));
 	s6e3ha2_call_write_func(ret, s6e3ha2_hbm_off(ctx));
 
-	/* elvss temp compensation */
+	 
 	s6e3ha2_call_write_func(ret, s6e3ha2_test_global(ctx));
 	s6e3ha2_call_write_func(ret, s6e3ha2_test(ctx));
 	s6e3ha2_call_write_func(ret, s6e3ha2_test_key_off_f0(ctx));

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for the Renesas PHY uPD60620.
- *
- * Copyright (C) 2015 Softing Industrial Automation GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -11,32 +7,32 @@
 
 #define UPD60620_PHY_ID    0xb8242824
 
-/* Extended Registers and values */
-/* PHY Special Control/Status    */
-#define PHY_PHYSCR         0x1F      /* PHY.31 */
-#define PHY_PHYSCR_10MB    0x0004    /* PHY speed = 10mb */
-#define PHY_PHYSCR_100MB   0x0008    /* PHY speed = 100mb */
-#define PHY_PHYSCR_DUPLEX  0x0010    /* PHY Duplex */
+ 
+ 
+#define PHY_PHYSCR         0x1F       
+#define PHY_PHYSCR_10MB    0x0004     
+#define PHY_PHYSCR_100MB   0x0008     
+#define PHY_PHYSCR_DUPLEX  0x0010     
 
-/* PHY Special Modes */
-#define PHY_SPM            0x12      /* PHY.18 */
+ 
+#define PHY_SPM            0x12       
 
-/* Init PHY */
+ 
 
 static int upd60620_config_init(struct phy_device *phydev)
 {
-	/* Enable support for passive HUBs (could be a strap option) */
-	/* PHYMODE: All speeds, HD in parallel detect */
+	 
+	 
 	return phy_write(phydev, PHY_SPM, 0x0180 | phydev->mdio.addr);
 }
 
-/* Get PHY status from common registers */
+ 
 
 static int upd60620_read_status(struct phy_device *phydev)
 {
 	int phy_state;
 
-	/* Read negotiated state */
+	 
 	phy_state = phy_read(phydev, MII_BMSR);
 	if (phy_state < 0)
 		return phy_state;
@@ -82,7 +78,7 @@ static struct phy_driver upd60620_driver[1] = { {
 	.phy_id         = UPD60620_PHY_ID,
 	.phy_id_mask    = 0xfffffffe,
 	.name           = "Renesas uPD60620",
-	/* PHY_BASIC_FEATURES */
+	 
 	.flags          = 0,
 	.config_init    = upd60620_config_init,
 	.read_status    = upd60620_read_status,

@@ -3,7 +3,7 @@
 
 #include <asm/unaligned.h>
 
-/* 32-bit data segment descriptor (8 bytes) */
+ 
 struct dsd32 {
 	__le32 address;
 	__le32 length;
@@ -16,7 +16,7 @@ static inline void append_dsd32(struct dsd32 **dsd, struct scatterlist *sg)
 	(*dsd)++;
 }
 
-/* 64-bit data segment descriptor (12 bytes) */
+ 
 struct dsd64 {
 	__le64 address;
 	__le32 length;

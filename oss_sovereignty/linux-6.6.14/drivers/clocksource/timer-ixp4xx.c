@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IXP4 timer driver
- * Copyright (C) 2019 Linus Walleij <linus.walleij@linaro.org>
- *
- * Based on arch/arm/mach-ixp4xx/common.c
- * Copyright 2002 (C) Intel Corporation
- * Copyright 2003-2004 (C) MontaVista, Software, Inc.
- * Copyright (C) Deepak Saxena <dsaxena@plexity.net>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/clockchips.h>
@@ -20,28 +12,24 @@
 #include <linux/of_irq.h>
 #include <linux/platform_device.h>
 
-/*
- * Constants to make it easy to access Timer Control/Status registers
- */
-#define IXP4XX_OSTS_OFFSET	0x00  /* Continuous Timestamp */
-#define IXP4XX_OST1_OFFSET	0x04  /* Timer 1 Timestamp */
-#define IXP4XX_OSRT1_OFFSET	0x08  /* Timer 1 Reload */
-#define IXP4XX_OST2_OFFSET	0x0C  /* Timer 2 Timestamp */
-#define IXP4XX_OSRT2_OFFSET	0x10  /* Timer 2 Reload */
-#define IXP4XX_OSST_OFFSET	0x20  /* Timer Status */
+ 
+#define IXP4XX_OSTS_OFFSET	0x00   
+#define IXP4XX_OST1_OFFSET	0x04   
+#define IXP4XX_OSRT1_OFFSET	0x08   
+#define IXP4XX_OST2_OFFSET	0x0C   
+#define IXP4XX_OSRT2_OFFSET	0x10   
+#define IXP4XX_OSST_OFFSET	0x20   
 
-/*
- * Timer register values and bit definitions
- */
+ 
 #define IXP4XX_OST_ENABLE		0x00000001
 #define IXP4XX_OST_ONE_SHOT		0x00000002
-/* Low order bits of reload value ignored */
+ 
 #define IXP4XX_OST_RELOAD_MASK		0x00000003
 #define IXP4XX_OST_DISABLED		0x00000000
 #define IXP4XX_OSST_TIMER_1_PEND	0x00000001
 #define IXP4XX_OSST_TIMER_2_PEND	0x00000002
 #define IXP4XX_OSST_TIMER_TS_PEND	0x00000004
-/* Remaining registers are for the watchdog and defined in the watchdog driver */
+ 
 
 struct ixp4xx_timer {
 	void __iomem *base;
@@ -52,10 +40,7 @@ struct ixp4xx_timer {
 #endif
 };
 
-/*
- * A local singleton used by sched_clock and delay timer reads, which are
- * fast and stateless
- */
+ 
 static struct ixp4xx_timer *local_ixp4xx_timer;
 
 static inline struct ixp4xx_timer *
@@ -84,7 +69,7 @@ static irqreturn_t ixp4xx_timer_interrupt(int irq, void *dev_id)
 	struct ixp4xx_timer *tmr = dev_id;
 	struct clock_event_device *evt = &tmr->clkevt;
 
-	/* Clear Pending Interrupt */
+	 
 	__raw_writel(IXP4XX_OSST_TIMER_1_PEND,
 		     tmr->base + IXP4XX_OSST_OFFSET);
 
@@ -100,7 +85,7 @@ static int ixp4xx_set_next_event(unsigned long cycles,
 	u32 val;
 
 	val = __raw_readl(tmr->base + IXP4XX_OSRT1_OFFSET);
-	/* Keep enable/oneshot bits */
+	 
 	val &= IXP4XX_OST_RELOAD_MASK;
 	__raw_writel((cycles & ~IXP4XX_OST_RELOAD_MASK) | val,
 		     tmr->base + IXP4XX_OSRT1_OFFSET);
@@ -154,11 +139,7 @@ static int ixp4xx_resume(struct clock_event_device *evt)
 	return 0;
 }
 
-/*
- * IXP4xx timer tick
- * We use OS timer1 on the CPU for the timer tick and the timestamp
- * counter as a source of real clock ticks to account for missed jiffies.
- */
+ 
 static __init int ixp4xx_timer_register(void __iomem *base,
 					int timer_irq,
 					unsigned int timer_freq)
@@ -171,26 +152,21 @@ static __init int ixp4xx_timer_register(void __iomem *base,
 		return -ENOMEM;
 	tmr->base = base;
 
-	/*
-	 * The timer register doesn't allow to specify the two least
-	 * significant bits of the timeout value and assumes them being zero.
-	 * So make sure the latch is the best value with the two least
-	 * significant bits unset.
-	 */
+	 
 	tmr->latch = DIV_ROUND_CLOSEST(timer_freq,
 				       (IXP4XX_OST_RELOAD_MASK + 1) * HZ)
 		* (IXP4XX_OST_RELOAD_MASK + 1);
 
 	local_ixp4xx_timer = tmr;
 
-	/* Reset/disable counter */
+	 
 	__raw_writel(0, tmr->base + IXP4XX_OSRT1_OFFSET);
 
-	/* Clear any pending interrupt on timer 1 */
+	 
 	__raw_writel(IXP4XX_OSST_TIMER_1_PEND,
 		     tmr->base + IXP4XX_OSST_OFFSET);
 
-	/* Reset time-stamp counter */
+	 
 	__raw_writel(0, tmr->base + IXP4XX_OSTS_OFFSET);
 
 	clocksource_mmio_init(NULL, "OSTS", timer_freq, 200, 32,
@@ -218,7 +194,7 @@ static __init int ixp4xx_timer_register(void __iomem *base,
 	sched_clock_register(ixp4xx_read_sched_clock, 32, timer_freq);
 
 #ifdef CONFIG_ARM
-	/* Also use this timer for delays */
+	 
 	tmr->delay_timer.read_current_timer = ixp4xx_read_timer;
 	tmr->delay_timer.freq = timer_freq;
 	register_current_timer_delay(&tmr->delay_timer);
@@ -232,15 +208,12 @@ static struct platform_device ixp4xx_watchdog_device = {
 	.id = -1,
 };
 
-/*
- * This probe gets called after the timer is already up and running. The main
- * function on this platform is to spawn the watchdog device as a child.
- */
+ 
 static int ixp4xx_timer_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
-	/* Pass the base address as platform data and nothing else */
+	 
 	ixp4xx_watchdog_device.dev.platform_data = local_ixp4xx_timer->base;
 	ixp4xx_watchdog_device.dev.parent = dev;
 	return platform_device_register(&ixp4xx_watchdog_device);
@@ -248,7 +221,7 @@ static int ixp4xx_timer_probe(struct platform_device *pdev)
 
 static const struct of_device_id ixp4xx_timer_dt_id[] = {
 	{ .compatible = "intel,ixp4xx-timer", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver ixp4xx_timer_driver = {
@@ -280,7 +253,7 @@ static __init int ixp4xx_of_timer_init(struct device_node *np)
 		goto out_unmap;
 	}
 
-	/* TODO: get some fixed clocks into the device tree */
+	 
 	ret = ixp4xx_timer_register(base, irq, 66666000);
 	if (ret)
 		goto out_unmap;

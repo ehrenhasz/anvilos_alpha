@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #include "gem/i915_gem_pm.h"
 #include "gem/i915_gem_ttm_pm.h"
@@ -30,15 +26,7 @@ void i915_gem_suspend(struct drm_i915_private *i915)
 	intel_wakeref_auto(&i915->runtime_pm.userfault_wakeref, 0);
 	flush_workqueue(i915->wq);
 
-	/*
-	 * We have to flush all the executing contexts to main memory so
-	 * that they can saved in the hibernation image. To ensure the last
-	 * context image is coherent, we have to switch away from it. That
-	 * leaves the i915->kernel_context still active when
-	 * we actually suspend, and its image in memory may not match the GPU
-	 * state. Fortunately, the kernel_context is disposable and we do
-	 * not rely on its state.
-	 */
+	 
 	for_each_gt(gt, i915, i)
 		intel_gt_suspend_prepare(gt);
 
@@ -91,30 +79,20 @@ int i915_gem_backup_suspend(struct drm_i915_private *i915)
 {
 	int ret;
 
-	/* Opportunistically try to evict unpinned objects */
+	 
 	ret = lmem_suspend(i915, I915_TTM_BACKUP_ALLOW_GPU);
 	if (ret)
 		goto out_recover;
 
 	i915_gem_suspend(i915);
 
-	/*
-	 * More objects may have become unpinned as requests were
-	 * retired. Now try to evict again. The gt may be wedged here
-	 * in which case we automatically fall back to memcpy.
-	 * We allow also backing up pinned objects that have not been
-	 * marked for early recover, and that may contain, for example,
-	 * page-tables for the migrate context.
-	 */
+	 
 	ret = lmem_suspend(i915, I915_TTM_BACKUP_ALLOW_GPU |
 			   I915_TTM_BACKUP_PINNED);
 	if (ret)
 		goto out_recover;
 
-	/*
-	 * Remaining objects are backed up using memcpy once we've stopped
-	 * using the migrate context.
-	 */
+	 
 	ret = lmem_suspend(i915, I915_TTM_BACKUP_PINNED);
 	if (ret)
 		goto out_recover;
@@ -140,25 +118,7 @@ void i915_gem_suspend_late(struct drm_i915_private *i915)
 	unsigned int i;
 	bool flush = false;
 
-	/*
-	 * Neither the BIOS, ourselves or any other kernel
-	 * expects the system to be in execlists mode on startup,
-	 * so we need to reset the GPU back to legacy mode. And the only
-	 * known way to disable logical contexts is through a GPU reset.
-	 *
-	 * So in order to leave the system in a known default configuration,
-	 * always reset the GPU upon unload and suspend. Afterwards we then
-	 * clean up the GEM state tracking, flushing off the requests and
-	 * leaving the system in a known idle state.
-	 *
-	 * Note that is of the upmost importance that the GPU is idle and
-	 * all stray writes are flushed *before* we dismantle the backing
-	 * storage for the pinned objects.
-	 *
-	 * However, since we are uncertain that resetting the GPU on older
-	 * machines is a good idea, we don't - just in case it leaves the
-	 * machine in an unusable condition.
-	 */
+	 
 
 	for_each_gt(gt, i915, i)
 		intel_gt_suspend_late(gt);
@@ -168,7 +128,7 @@ void i915_gem_suspend_late(struct drm_i915_private *i915)
 		list_for_each_entry(obj, *phase, mm.link) {
 			if (!(obj->cache_coherent & I915_BO_CACHE_COHERENT_FOR_READ))
 				flush |= (obj->read_domains & I915_GEM_DOMAIN_CPU) == 0;
-			__start_cpu_write(obj); /* presume auto-hibernate */
+			__start_cpu_write(obj);  
 		}
 	}
 	spin_unlock_irqrestore(&i915->mm.obj_lock, flags);
@@ -178,9 +138,7 @@ void i915_gem_suspend_late(struct drm_i915_private *i915)
 
 int i915_gem_freeze(struct drm_i915_private *i915)
 {
-	/* Discard all purgeable objects, let userspace recover those as
-	 * required after resuming.
-	 */
+	 
 	i915_gem_shrink_all(i915);
 
 	return 0;
@@ -191,20 +149,7 @@ int i915_gem_freeze_late(struct drm_i915_private *i915)
 	struct drm_i915_gem_object *obj;
 	intel_wakeref_t wakeref;
 
-	/*
-	 * Called just before we write the hibernation image.
-	 *
-	 * We need to update the domain tracking to reflect that the CPU
-	 * will be accessing all the pages to create and restore from the
-	 * hibernation, and so upon restoration those pages will be in the
-	 * CPU domain.
-	 *
-	 * To make sure the hibernation image contains the latest state,
-	 * we update that state just before writing out the image.
-	 *
-	 * To try and reduce the hibernation image, we manually shrink
-	 * the objects as well, see i915_gem_freeze()
-	 */
+	 
 
 	with_intel_runtime_pm(&i915->runtime_pm, wakeref)
 		i915_gem_shrink(NULL, i915, -1UL, NULL, ~0);
@@ -227,11 +172,7 @@ void i915_gem_resume(struct drm_i915_private *i915)
 	ret = lmem_restore(i915, 0);
 	GEM_WARN_ON(ret);
 
-	/*
-	 * As we didn't flush the kernel context before suspend, we cannot
-	 * guarantee that the context image is complete. So let's just reset
-	 * it and start again.
-	 */
+	 
 	for_each_gt(gt, i915, i)
 		if (intel_gt_resume(gt))
 			goto err_wedged;

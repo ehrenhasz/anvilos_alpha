@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * at91_udc -- driver for at91-series USB peripheral controller
- *
- * Copyright (C) 2004 by Thomas Rathbone
- * Copyright (C) 2005 by HP Labs
- * Copyright (C) 2005 by David Brownell
- */
+
+ 
 
 #undef	VERBOSE_DEBUG
 #undef	PACKET_TRACE
@@ -34,23 +28,7 @@
 #include "at91_udc.h"
 
 
-/*
- * This controller is simple and PIO-only.  It's used in many AT91-series
- * full speed USB controllers, including the at91rm9200 (arm920T, with MMU),
- * at91sam926x (arm926ejs, with MMU), and several no-mmu versions.
- *
- * This driver expects the board has been wired with two GPIOs supporting
- * a VBUS sensing IRQ, and a D+ pullup.  (They may be omitted, but the
- * testing hasn't covered such cases.)
- *
- * The pullup is most important (so it's integrated on sam926x parts).  It
- * provides software control over whether the host enumerates the device.
- *
- * The VBUS sensing helps during enumeration, and allows both USB clocks
- * (and the transceiver) to stay gated off until they're necessary, saving
- * power.  During USB suspend, the 48 MHz clock is gated off in hardware;
- * it may also be gated off by software during some Linux sleep states.
- */
+ 
 
 #define	DRIVER_VERSION	"3 May 2006"
 
@@ -91,7 +69,7 @@ static const struct {
 #define at91_udp_write(udc, reg, val) \
 	__raw_writel((val), (udc)->udp_baseaddr + (reg))
 
-/*-------------------------------------------------------------------------*/
+ 
 
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
 
@@ -117,7 +95,7 @@ static void proc_ep_show(struct seq_file *s, struct at91_ep *ep)
 
 	csr = __raw_readl(ep->creg);
 
-	/* NOTE:  not collecting per-endpoint irq statistics... */
+	 
 
 	seq_printf(s, "\n");
 	seq_printf(s, "%s, maxpacket %d %s%s %s%s\n",
@@ -135,7 +113,7 @@ static void proc_ep_show(struct seq_file *s, struct at91_ep *ep)
 		(csr & (1 << 11)) ? "DATA1" : "DATA0",
 		types[(csr & 0x700) >> 8],
 
-		/* iff type is control then print current direction */
+		 
 		(!(csr & 0x700))
 			? ((csr & (1 << 7)) ? " IN" : " OUT")
 			: "",
@@ -196,7 +174,7 @@ static int proc_udc_show(struct seq_file *s, void *unused)
 		udc->suspended ? ", suspended" : "",
 		udc->driver ? udc->driver->driver.name : "(none)");
 
-	/* don't access registers when interface isn't clocked */
+	 
 	if (!udc->clocked) {
 		seq_printf(s, "(not clocked)\n");
 		return 0;
@@ -254,7 +232,7 @@ static inline void remove_debug_file(struct at91_udc *udc) {}
 #endif
 
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void done(struct at91_ep *ep, struct at91_request *req, int status)
 {
@@ -275,38 +253,22 @@ static void done(struct at91_ep *ep, struct at91_request *req, int status)
 	spin_lock(&udc->lock);
 	ep->stopped = stopped;
 
-	/* ep0 is always ready; other endpoints need a non-empty queue */
+	 
 	if (list_empty(&ep->queue) && ep->int_mask != (1 << 0))
 		at91_udp_write(udc, AT91_UDP_IDR, ep->int_mask);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* bits indicating OUT fifo has data ready */
+ 
 #define	RX_DATA_READY	(AT91_UDP_RX_DATA_BK0 | AT91_UDP_RX_DATA_BK1)
 
-/*
- * Endpoint FIFO CSR bits have a mix of bits, making it unsafe to just write
- * back most of the value you just read (because of side effects, including
- * bits that may change after reading and before writing).
- *
- * Except when changing a specific bit, always write values which:
- *  - clear SET_FX bits (setting them could change something)
- *  - set CLR_FX bits (clearing them could change something)
- *
- * There are also state bits like FORCESTALL, EPEDS, DIR, and EPTYPE
- * that shouldn't normally be changed.
- *
- * NOTE at91sam9260 docs mention synch between UDPCK and MCK clock domains,
- * implying a need to wait for one write to complete (test relevant bits)
- * before starting the next write.  This shouldn't be an issue given how
- * infrequently we write, except maybe for write-then-read idioms.
- */
+ 
 #define	SET_FX	(AT91_UDP_TXPKTRDY)
 #define	CLR_FX	(RX_DATA_READY | AT91_UDP_RXSETUP \
 		| AT91_UDP_STALLSENT | AT91_UDP_TXCOMP)
 
-/* pull OUT packet data from the endpoint's fifo */
+ 
 static int read_fifo (struct at91_ep *ep, struct at91_request *req)
 {
 	u32 __iomem	*creg = ep->creg;
@@ -318,10 +280,7 @@ static int read_fifo (struct at91_ep *ep, struct at91_request *req)
 	buf = req->req.buf + req->req.actual;
 	bufferspace = req->req.length - req->req.actual;
 
-	/*
-	 * there might be nothing to read if ep_queue() calls us,
-	 * or if we already emptied both pingpong buffers
-	 */
+	 
 rescan:
 	csr = __raw_readl(creg);
 	if ((csr & RX_DATA_READY) == 0)
@@ -337,7 +296,7 @@ rescan:
 	}
 	__raw_readsb(dreg, buf, count);
 
-	/* release and swap pingpong mem bank */
+	 
 	csr |= CLR_FX;
 	if (ep->is_pingpong) {
 		if (ep->fifo_bank == 0) {
@@ -359,18 +318,11 @@ rescan:
 	PACKET("%s %p out/%d%s\n", ep->ep.name, &req->req, count,
 			is_done ? " (done)" : "");
 
-	/*
-	 * avoid extra trips through IRQ logic for packets already in
-	 * the fifo ... maybe preventing an extra (expensive) OUT-NAK
-	 */
+	 
 	if (is_done)
 		done(ep, req, 0);
 	else if (ep->is_pingpong) {
-		/*
-		 * One dummy read to delay the code because of a HW glitch:
-		 * CSR returns bad RXCOUNT when read too soon after updating
-		 * RX_DATA_BK flags.
-		 */
+		 
 		csr = __raw_readl(creg);
 
 		bufferspace -= count;
@@ -381,7 +333,7 @@ rescan:
 	return is_done;
 }
 
-/* load fifo for an IN packet */
+ 
 static int write_fifo(struct at91_ep *ep, struct at91_request *req)
 {
 	u32 __iomem	*creg = ep->creg;
@@ -390,18 +342,9 @@ static int write_fifo(struct at91_ep *ep, struct at91_request *req)
 	unsigned	total, count, is_last;
 	u8		*buf;
 
-	/*
-	 * TODO: allow for writing two packets to the fifo ... that'll
-	 * reduce the amount of IN-NAKing, but probably won't affect
-	 * throughput much.  (Unlike preventing OUT-NAKing!)
-	 */
+	 
 
-	/*
-	 * If ep_queue() calls us, the queue is empty and possibly in
-	 * odd states like TXCOMP not yet cleared (we do it, saving at
-	 * least one IRQ) or the fifo not yet being free.  Those aren't
-	 * issues normally (IRQ handler fast path).
-	 */
+	 
 	if (unlikely(csr & (AT91_UDP_TXCOMP | AT91_UDP_TXPKTRDY))) {
 		if (csr & AT91_UDP_TXCOMP) {
 			csr |= CLR_FX;
@@ -424,19 +367,7 @@ static int write_fifo(struct at91_ep *ep, struct at91_request *req)
 		is_last = (count < ep->ep.maxpacket) || !req->req.zero;
 	}
 
-	/*
-	 * Write the packet, maybe it's a ZLP.
-	 *
-	 * NOTE:  incrementing req->actual before we receive the ACK means
-	 * gadget driver IN bytecounts can be wrong in fault cases.  That's
-	 * fixable with PIO drivers like this one (save "count" here, and
-	 * do the increment later on TX irq), but not for most DMA hardware.
-	 *
-	 * So all gadget drivers must accept that potential error.  Some
-	 * hardware supports precise fifo status reporting, letting them
-	 * recover when the actual bytecount matters (e.g. for USB Test
-	 * and Measurement Class devices).
-	 */
+	 
 	__raw_writesb(dreg, buf, count);
 	csr &= ~SET_FX;
 	csr |= CLR_FX | AT91_UDP_TXPKTRDY;
@@ -454,7 +385,7 @@ static void nuke(struct at91_ep *ep, int status)
 {
 	struct at91_request *req;
 
-	/* terminate any request in the queue */
+	 
 	ep->stopped = 1;
 	if (list_empty(&ep->queue))
 		return;
@@ -466,7 +397,7 @@ static void nuke(struct at91_ep *ep, int status)
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int at91_ep_enable(struct usb_ep *_ep,
 				const struct usb_endpoint_descriptor *desc)
@@ -523,7 +454,7 @@ bogus_max:
 ok:
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* initialize endpoint to match this descriptor */
+	 
 	ep->is_in = usb_endpoint_dir_in(desc);
 	ep->is_iso = (tmp == USB_ENDPOINT_XFER_ISOC);
 	ep->stopped = 0;
@@ -535,10 +466,7 @@ ok:
 
 	ep->ep.maxpacket = maxpacket;
 
-	/*
-	 * reset/init endpoint fifo.  NOTE:  leaves fifo_bank alone,
-	 * since endpoint resets don't reset hw pingpong state.
-	 */
+	 
 	at91_udp_write(udc, AT91_UDP_RST_EP, ep->int_mask);
 	at91_udp_write(udc, AT91_UDP_RST_EP, 0);
 
@@ -559,11 +487,11 @@ static int at91_ep_disable (struct usb_ep * _ep)
 
 	nuke(ep, -ESHUTDOWN);
 
-	/* restore the endpoint's pristine config */
+	 
 	ep->ep.desc = NULL;
 	ep->ep.maxpacket = ep->maxpacket;
 
-	/* reset fifos and endpoint */
+	 
 	if (ep->udc->clocked) {
 		at91_udp_write(udc, AT91_UDP_RST_EP, ep->int_mask);
 		at91_udp_write(udc, AT91_UDP_RST_EP, 0);
@@ -574,10 +502,7 @@ static int at91_ep_disable (struct usb_ep * _ep)
 	return 0;
 }
 
-/*
- * this is a PIO-only driver, so there's nothing
- * interesting for request or buffer allocation.
- */
+ 
 
 static struct usb_request *
 at91_ep_alloc_request(struct usb_ep *_ep, gfp_t gfp_flags)
@@ -636,18 +561,11 @@ static int at91_ep_queue(struct usb_ep *_ep,
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* try to kickstart any empty and idle queue */
+	 
 	if (list_empty(&ep->queue) && !ep->stopped) {
 		int	is_ep0;
 
-		/*
-		 * If this control request has a non-empty DATA stage, this
-		 * will start that stage.  It works just like a non-control
-		 * request (until the status stage starts, maybe early).
-		 *
-		 * If the data stage is empty, then this starts a successful
-		 * IN/STATUS stage.  (Unsuccessful ones use set_halt.)
-		 */
+		 
 		is_ep0 = (ep->ep.name == ep0name);
 		if (is_ep0) {
 			u32	tmp;
@@ -657,10 +575,7 @@ static int at91_ep_queue(struct usb_ep *_ep,
 				goto done;
 			}
 
-			/*
-			 * defer changing CONFG until after the gadget driver
-			 * reconfigures the endpoints.
-			 */
+			 
 			if (udc->wait_for_config_ack) {
 				tmp = at91_udp_read(udc, AT91_UDP_GLB_STAT);
 				tmp ^= AT91_UDP_CONFG;
@@ -685,7 +600,7 @@ ep0_in_status:
 		else {
 			status = read_fifo(ep, req);
 
-			/* IN/STATUS stage is otherwise triggered by irq */
+			 
 			if (status && is_ep0)
 				goto ep0_in_status;
 		}
@@ -716,7 +631,7 @@ static int at91_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* make sure it's actually queued on this endpoint */
+	 
 	list_for_each_entry(iter, &ep->queue, queue) {
 		if (&iter->req != _req)
 			continue;
@@ -750,11 +665,7 @@ static int at91_ep_set_halt(struct usb_ep *_ep, int value)
 
 	csr = __raw_readl(creg);
 
-	/*
-	 * fail with still-busy IN endpoints, ensuring correct sequencing
-	 * of data tx then stall.  note that the fifo rx bytecount isn't
-	 * completely accurate as a tx bytecount.
-	 */
+	 
 	if (ep->is_in && (!list_empty(&ep->queue) || (csr >> 16) != 0))
 		status = -EAGAIN;
 	else {
@@ -783,10 +694,10 @@ static const struct usb_ep_ops at91_ep_ops = {
 	.queue		= at91_ep_queue,
 	.dequeue	= at91_ep_dequeue,
 	.set_halt	= at91_ep_set_halt,
-	/* there's only imprecise fifo status reporting */
+	 
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int at91_get_frame(struct usb_gadget *gadget)
 {
@@ -809,7 +720,7 @@ static int at91_wakeup(struct usb_gadget *gadget)
 	if (!udc->clocked || !udc->suspended)
 		goto done;
 
-	/* NOTE:  some "early versions" handle ESR differently ... */
+	 
 
 	glbstate = at91_udp_read(udc, AT91_UDP_GLB_STAT);
 	if (!(glbstate & AT91_UDP_ESR))
@@ -822,7 +733,7 @@ done:
 	return 0;
 }
 
-/* reinit == restore initial software state */
+ 
 static void udc_reinit(struct at91_udc *udc)
 {
 	u32 i;
@@ -841,7 +752,7 @@ static void udc_reinit(struct at91_udc *udc)
 		ep->fifo_bank = 0;
 		usb_ep_set_maxpacket_limit(&ep->ep, ep->maxpacket);
 		ep->creg = (void __iomem *) udc->udp_baseaddr + AT91_UDP_CSR(i);
-		/* initialize one queue per endpoint */
+		 
 		INIT_LIST_HEAD(&ep->queue);
 	}
 }
@@ -915,10 +826,7 @@ static void clk_off(struct at91_udc *udc)
 	clk_disable(udc->iclk);
 }
 
-/*
- * activate/deactivate link with host; minimize power usage for
- * inactive links by cutting clocks and transceiver power.
- */
+ 
 static void pullup(struct at91_udc *udc, int is_on)
 {
 	if (!udc->enabled || !udc->vbus)
@@ -940,13 +848,13 @@ static void pullup(struct at91_udc *udc, int is_on)
 		udc->caps->pullup(udc, is_on);
 }
 
-/* vbus is here!  turn everything on that's ready */
+ 
 static int at91_vbus_session(struct usb_gadget *gadget, int is_active)
 {
 	struct at91_udc	*udc = to_udc(gadget);
 	unsigned long	flags;
 
-	/* VDBG("vbus %s\n", is_active ? "on" : "off"); */
+	 
 	spin_lock_irqsave(&udc->lock, flags);
 	udc->vbus = (is_active != 0);
 	if (udc->driver)
@@ -993,14 +901,11 @@ static const struct usb_gadget_ops at91_udc_ops = {
 	.udc_start		= at91_start,
 	.udc_stop		= at91_stop,
 
-	/*
-	 * VBUS-powered devices may also want to support bigger
-	 * power budgets after an appropriate SET_CONFIGURATION.
-	 */
-	/* .vbus_power		= at91_vbus_power, */
+	 
+	 
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int handle_ep(struct at91_ep *ep)
 {
@@ -1025,7 +930,7 @@ static int handle_ep(struct at91_ep *ep)
 
 	} else {
 		if (csr & AT91_UDP_STALLSENT) {
-			/* STALLSENT bit == ISOERR */
+			 
 			if (ep->is_iso && req)
 				req->req.status = -EILSEQ;
 			csr |= CLR_FX;
@@ -1053,7 +958,7 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 	union setup	pkt;
 	int		status = 0;
 
-	/* read and ack SETUP; hard-fail for bogus packets */
+	 
 	rxcount = (csr & AT91_UDP_RXBYTECNT) >> 16;
 	if (likely(rxcount == 8)) {
 		while (rxcount--)
@@ -1066,7 +971,7 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 			ep->is_in = 0;
 		}
 	} else {
-		/* REVISIT this happens sometimes under load; why?? */
+		 
 		ERR("SETUP len %d, csr %08x\n", rxcount, csr);
 		status = -EINVAL;
 	}
@@ -1087,10 +992,7 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 			pkt.r.bRequestType, pkt.r.bRequest,
 			w_value, w_index, w_length);
 
-	/*
-	 * A few standard requests get handled here, ones that touch
-	 * hardware ... notably for device and endpoint features.
-	 */
+	 
 	udc->req_pending = 1;
 	csr = __raw_readl(creg);
 	csr |= CLR_FX;
@@ -1103,7 +1005,7 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 		udc->addr = w_value;
 		udc->wait_for_addr_ack = 1;
 		udc->req_pending = 0;
-		/* FADDR is set later, when we ack host STATUS */
+		 
 		return;
 
 	case ((USB_TYPE_STANDARD|USB_RECIP_DEVICE) << 8)
@@ -1115,13 +1017,10 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 			udc->wait_for_config_ack = (tmp != 0);
 		if (udc->wait_for_config_ack)
 			VDBG("wait for config\n");
-		/* CONFG is toggled later, if gadget driver succeeds */
+		 
 		break;
 
-	/*
-	 * Hosts may set or clear remote wakeup status, and
-	 * devices may report they're VBUS powered.
-	 */
+	 
 	case ((USB_DIR_IN|USB_TYPE_STANDARD|USB_RECIP_DEVICE) << 8)
 			| USB_REQ_GET_STATUS:
 		tmp = (udc->gadget.is_selfpowered << USB_DEVICE_SELF_POWERED);
@@ -1131,7 +1030,7 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 		__raw_writeb(tmp, dreg);
 		__raw_writeb(0, dreg);
 		goto write_in;
-		/* then STATUS starts later, automatically */
+		 
 	case ((USB_TYPE_STANDARD|USB_RECIP_DEVICE) << 8)
 			| USB_REQ_SET_FEATURE:
 		if (w_value != USB_DEVICE_REMOTE_WAKEUP)
@@ -1149,27 +1048,21 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 		at91_udp_write(udc, AT91_UDP_GLB_STAT, tmp);
 		goto succeed;
 
-	/*
-	 * Interfaces have no feature settings; this is pretty useless.
-	 * we won't even insist the interface exists...
-	 */
+	 
 	case ((USB_DIR_IN|USB_TYPE_STANDARD|USB_RECIP_INTERFACE) << 8)
 			| USB_REQ_GET_STATUS:
 		PACKET("get interface status\n");
 		__raw_writeb(0, dreg);
 		__raw_writeb(0, dreg);
 		goto write_in;
-		/* then STATUS starts later, automatically */
+		 
 	case ((USB_TYPE_STANDARD|USB_RECIP_INTERFACE) << 8)
 			| USB_REQ_SET_FEATURE:
 	case ((USB_TYPE_STANDARD|USB_RECIP_INTERFACE) << 8)
 			| USB_REQ_CLEAR_FEATURE:
 		goto stall;
 
-	/*
-	 * Hosts may clear bulk/intr endpoint halt after the gadget
-	 * driver sets it (not widely used); or set it (for testing)
-	 */
+	 
 	case ((USB_DIR_IN|USB_TYPE_STANDARD|USB_RECIP_ENDPOINT) << 8)
 			| USB_REQ_GET_STATUS:
 		tmp = w_index & USB_ENDPOINT_NUMBER_MASK;
@@ -1192,7 +1085,7 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 		__raw_writeb(tmp, dreg);
 		__raw_writeb(0, dreg);
 		goto write_in;
-		/* then STATUS starts later, automatically */
+		 
 	case ((USB_TYPE_STANDARD|USB_RECIP_ENDPOINT) << 8)
 			| USB_REQ_SET_FEATURE:
 		tmp = w_index & USB_ENDPOINT_NUMBER_MASK;
@@ -1243,7 +1136,7 @@ static void handle_setup(struct at91_udc *udc, struct at91_ep *ep, u32 csr)
 #undef w_index
 #undef w_length
 
-	/* pass request up to the gadget driver */
+	 
 	if (udc->driver) {
 		spin_unlock(&udc->lock);
 		status = udc->driver->setup(&udc->gadget, &pkt.r);
@@ -1262,7 +1155,7 @@ stall:
 	return;
 
 succeed:
-	/* immediate successful (IN) STATUS after zero length DATA */
+	 
 	PACKET("ep0 in/status\n");
 write_in:
 	csr |= AT91_UDP_TXPKTRDY;
@@ -1298,32 +1191,22 @@ static void handle_ep0(struct at91_udc *udc)
 	else
 		req = list_entry(ep0->queue.next, struct at91_request, queue);
 
-	/* host ACKed an IN packet that we sent */
+	 
 	if (csr & AT91_UDP_TXCOMP) {
 		csr |= CLR_FX;
 		csr &= ~(SET_FX | AT91_UDP_TXCOMP);
 
-		/* write more IN DATA? */
+		 
 		if (req && ep0->is_in) {
 			if (handle_ep(ep0))
 				udc->req_pending = 0;
 
-		/*
-		 * Ack after:
-		 *  - last IN DATA packet (including GET_STATUS)
-		 *  - IN/STATUS for OUT DATA
-		 *  - IN/STATUS for any zero-length DATA stage
-		 * except for the IN DATA case, the host should send
-		 * an OUT status later, which we'll ack.
-		 */
+		 
 		} else {
 			udc->req_pending = 0;
 			__raw_writel(csr, creg);
 
-			/*
-			 * SET_ADDRESS takes effect only after the STATUS
-			 * (to the original address) gets acked.
-			 */
+			 
 			if (udc->wait_for_addr_ack) {
 				u32	tmp;
 
@@ -1341,16 +1224,16 @@ static void handle_ep0(struct at91_udc *udc)
 		}
 	}
 
-	/* OUT packet arrived ... */
+	 
 	else if (csr & AT91_UDP_RX_DATA_BK0) {
 		csr |= CLR_FX;
 		csr &= ~(SET_FX | AT91_UDP_RX_DATA_BK0);
 
-		/* OUT DATA stage */
+		 
 		if (!ep0->is_in) {
 			if (req) {
 				if (handle_ep(ep0)) {
-					/* send IN/STATUS */
+					 
 					PACKET("ep0 in/status\n");
 					csr = __raw_readl(creg);
 					csr &= ~SET_FX;
@@ -1359,34 +1242,18 @@ static void handle_ep0(struct at91_udc *udc)
 					udc->req_pending = 0;
 				}
 			} else if (udc->req_pending) {
-				/*
-				 * AT91 hardware has a hard time with this
-				 * "deferred response" mode for control-OUT
-				 * transfers.  (For control-IN it's fine.)
-				 *
-				 * The normal solution leaves OUT data in the
-				 * fifo until the gadget driver is ready.
-				 * We couldn't do that here without disabling
-				 * the IRQ that tells about SETUP packets,
-				 * e.g. when the host gets impatient...
-				 *
-				 * Working around it by copying into a buffer
-				 * would almost be a non-deferred response,
-				 * except that it wouldn't permit reliable
-				 * stalling of the request.  Instead, demand
-				 * that gadget drivers not use this mode.
-				 */
+				 
 				DBG("no control-OUT deferred responses!\n");
 				__raw_writel(csr | AT91_UDP_FORCESTALL, creg);
 				udc->req_pending = 0;
 			}
 
-		/* STATUS stage for control-IN; ack.  */
+		 
 		} else {
 			PACKET("ep0 out/status ACK\n");
 			__raw_writel(csr, creg);
 
-			/* "early" status stage */
+			 
 			if (req)
 				done(ep0, req, 0);
 		}
@@ -1415,75 +1282,61 @@ static irqreturn_t at91_udc_irq (int irq, void *_udc)
 		if (!status)
 			break;
 
-		/* USB reset irq:  not maskable */
+		 
 		if (status & AT91_UDP_ENDBUSRES) {
 			at91_udp_write(udc, AT91_UDP_IDR, ~MINIMUS_INTERRUPTUS);
 			at91_udp_write(udc, AT91_UDP_IER, MINIMUS_INTERRUPTUS);
-			/* Atmel code clears this irq twice */
+			 
 			at91_udp_write(udc, AT91_UDP_ICR, AT91_UDP_ENDBUSRES);
 			at91_udp_write(udc, AT91_UDP_ICR, AT91_UDP_ENDBUSRES);
 			VDBG("end bus reset\n");
 			udc->addr = 0;
 			reset_gadget(udc);
 
-			/* enable ep0 */
+			 
 			at91_udp_write(udc, AT91_UDP_CSR(0),
 					AT91_UDP_EPEDS | AT91_UDP_EPTYPE_CTRL);
 			udc->gadget.speed = USB_SPEED_FULL;
 			udc->suspended = 0;
 			at91_udp_write(udc, AT91_UDP_IER, AT91_UDP_EP(0));
 
-			/*
-			 * NOTE:  this driver keeps clocks off unless the
-			 * USB host is present.  That saves power, but for
-			 * boards that don't support VBUS detection, both
-			 * clocks need to be active most of the time.
-			 */
+			 
 
-		/* host initiated suspend (3+ms bus idle) */
+		 
 		} else if (status & AT91_UDP_RXSUSP) {
 			at91_udp_write(udc, AT91_UDP_IDR, AT91_UDP_RXSUSP);
 			at91_udp_write(udc, AT91_UDP_IER, AT91_UDP_RXRSM);
 			at91_udp_write(udc, AT91_UDP_ICR, AT91_UDP_RXSUSP);
-			/* VDBG("bus suspend\n"); */
+			 
 			if (udc->suspended)
 				continue;
 			udc->suspended = 1;
 
-			/*
-			 * NOTE:  when suspending a VBUS-powered device, the
-			 * gadget driver should switch into slow clock mode
-			 * and then into standby to avoid drawing more than
-			 * 500uA power (2500uA for some high-power configs).
-			 */
+			 
 			if (udc->driver && udc->driver->suspend) {
 				spin_unlock(&udc->lock);
 				udc->driver->suspend(&udc->gadget);
 				spin_lock(&udc->lock);
 			}
 
-		/* host initiated resume */
+		 
 		} else if (status & AT91_UDP_RXRSM) {
 			at91_udp_write(udc, AT91_UDP_IDR, AT91_UDP_RXRSM);
 			at91_udp_write(udc, AT91_UDP_IER, AT91_UDP_RXSUSP);
 			at91_udp_write(udc, AT91_UDP_ICR, AT91_UDP_RXRSM);
-			/* VDBG("bus resume\n"); */
+			 
 			if (!udc->suspended)
 				continue;
 			udc->suspended = 0;
 
-			/*
-			 * NOTE:  for a VBUS-powered device, the gadget driver
-			 * would normally want to switch out of slow clock
-			 * mode into normal mode.
-			 */
+			 
 			if (udc->driver && udc->driver->resume) {
 				spin_unlock(&udc->lock);
 				udc->driver->resume(&udc->gadget);
 				spin_lock(&udc->lock);
 			}
 
-		/* endpoint IRQs are cleared by handling them */
+		 
 		} else {
 			int		i;
 			unsigned	mask = 1;
@@ -1508,7 +1361,7 @@ static irqreturn_t at91_udc_irq (int irq, void *_udc)
 	return IRQ_HANDLED;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void at91_vbus_update(struct at91_udc *udc, unsigned value)
 {
@@ -1520,7 +1373,7 @@ static irqreturn_t at91_vbus_irq(int irq, void *_udc)
 {
 	struct at91_udc	*udc = _udc;
 
-	/* vbus needs at least brief debouncing */
+	 
 	udelay(10);
 	at91_vbus_update(udc, gpiod_get_value(udc->board.vbus_pin));
 
@@ -1542,11 +1395,7 @@ static void at91_vbus_timer(struct timer_list *t)
 {
 	struct at91_udc *udc = from_timer(udc, t, vbus_timer);
 
-	/*
-	 * If we are polling vbus it is likely that the gpio is on an
-	 * bus such as i2c or spi which may sleep, so schedule some work
-	 * to read the vbus gpio
-	 */
+	 
 	schedule_work(&udc->vbus_timer_work);
 }
 
@@ -1580,14 +1429,14 @@ static int at91_stop(struct usb_gadget *gadget)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void at91udc_shutdown(struct platform_device *dev)
 {
 	struct at91_udc *udc = platform_get_drvdata(dev);
 	unsigned long	flags;
 
-	/* force disconnect on reboot */
+	 
 	spin_lock_irqsave(&udc->lock, flags);
 	pullup(platform_get_drvdata(dev), 0);
 	spin_unlock_irqrestore(&udc->lock, flags);
@@ -1763,7 +1612,7 @@ static const struct of_device_id at91_udc_dt_ids[] = {
 		.compatible = "atmel,at91sam9263-udc",
 		.data = &at91sam9263_udc_caps,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, at91_udc_dt_ids);
 
@@ -1805,7 +1654,7 @@ static int at91udc_probe(struct platform_device *pdev)
 	if (!udc)
 		return -ENOMEM;
 
-	/* init software state */
+	 
 	udc->gadget.dev.parent = dev;
 	at91udc_of_init(udc, pdev->dev.of_node);
 	udc->pdev = pdev;
@@ -1840,7 +1689,7 @@ static int at91udc_probe(struct platform_device *pdev)
 
 	udc_reinit(udc);
 
-	/* get interface and function clocks */
+	 
 	udc->iclk = devm_clk_get(dev, "pclk");
 	if (IS_ERR(udc->iclk))
 		return PTR_ERR(udc->iclk);
@@ -1849,7 +1698,7 @@ static int at91udc_probe(struct platform_device *pdev)
 	if (IS_ERR(udc->fclk))
 		return PTR_ERR(udc->fclk);
 
-	/* don't do anything until we have both gadget driver and VBUS */
+	 
 	clk_set_rate(udc->fclk, 48000000);
 	retval = clk_prepare(udc->fclk);
 	if (retval)
@@ -1861,11 +1710,11 @@ static int at91udc_probe(struct platform_device *pdev)
 
 	at91_udp_write(udc, AT91_UDP_TXVC, AT91_UDP_TXVC_TXVDIS);
 	at91_udp_write(udc, AT91_UDP_IDR, 0xffffffff);
-	/* Clear all pending interrupts - UDP may be used by bootloader. */
+	 
 	at91_udp_write(udc, AT91_UDP_ICR, 0xffffffff);
 	clk_disable(udc->iclk);
 
-	/* request UDC and maybe VBUS irqs */
+	 
 	udc->udp_irq = retval = platform_get_irq(pdev, 0);
 	if (retval < 0)
 		goto err_unprepare_iclk;
@@ -1879,10 +1728,7 @@ static int at91udc_probe(struct platform_device *pdev)
 	if (udc->board.vbus_pin) {
 		gpiod_direction_input(udc->board.vbus_pin);
 
-		/*
-		 * Get the initial state of VBUS - we cannot expect
-		 * a pending interrupt.
-		 */
+		 
 		udc->vbus = gpiod_get_value_cansleep(udc->board.vbus_pin);
 
 		if (udc->board.vbus_polled) {
@@ -1954,11 +1800,7 @@ static int at91udc_suspend(struct platform_device *pdev, pm_message_t mesg)
 	int		wake = udc->driver && device_may_wakeup(&pdev->dev);
 	unsigned long	flags;
 
-	/* Unless we can act normally to the host (letting it wake us up
-	 * whenever it has work for us) force disconnect.  Wakeup requires
-	 * PLLB for USB events (signaling for reset, wakeup, or incoming
-	 * tokens) and VBUS irqs (on systems which support them).
-	 */
+	 
 	if ((!udc->suspended && udc->addr)
 			|| !wake
 			|| at91_suspend_entering_slow_clock()) {
@@ -1984,7 +1826,7 @@ static int at91udc_resume(struct platform_device *pdev)
 	    udc->active_suspend)
 		disable_irq_wake(gpiod_to_irq(udc->board.vbus_pin));
 
-	/* maybe reconnect to host; if so, clocks on */
+	 
 	if (udc->active_suspend)
 		disable_irq_wake(udc->udp_irq);
 	else {

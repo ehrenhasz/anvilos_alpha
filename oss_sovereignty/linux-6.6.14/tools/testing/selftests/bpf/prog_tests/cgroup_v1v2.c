@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 
@@ -48,7 +48,7 @@ void test_cgroup_v1v2(void)
 	int server_fd, client_fd, cgroup_fd;
 	static const int port = 60120;
 
-	/* Step 1: Check base connectivity works without any BPF. */
+	 
 	server_fd = start_server(AF_INET, SOCK_STREAM, NULL, port, 0);
 	if (!ASSERT_GE(server_fd, 0, "server_fd"))
 		return;
@@ -60,7 +60,7 @@ void test_cgroup_v1v2(void)
 	close(client_fd);
 	close(server_fd);
 
-	/* Step 2: Check BPF policy prog attached to cgroups drops connectivity. */
+	 
 	cgroup_fd = test__join_cgroup("/connect_dropper");
 	if (!ASSERT_GE(cgroup_fd, 0, "cgroup_fd"))
 		return;

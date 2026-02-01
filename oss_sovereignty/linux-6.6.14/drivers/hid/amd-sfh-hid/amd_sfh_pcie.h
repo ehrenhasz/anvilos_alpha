@@ -1,24 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AMD MP2 PCIe communication driver
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- * Authors: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- *	    Sandeep Singh <Sandeep.singh@amd.com>
- *	    Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+ 
+ 
 
 #ifndef PCIE_MP2_AMD_H
 #define PCIE_MP2_AMD_H
 
 #include "amd_sfh_common.h"
 
-/* MP2 C2P Message Registers */
+ 
 #define AMD_C2P_MSG0	0x10500
 #define AMD_C2P_MSG1	0x10504
 #define AMD_C2P_MSG2	0x10508
 
-/* MP2 P2C Message Registers */
-#define AMD_P2C_MSG3	0x1068C /* Supported Sensors info */
+ 
+#define AMD_P2C_MSG3	0x1068C  
 
 #define V2_STATUS	0x2
 
@@ -28,7 +22,7 @@
 #define SENSOR_DISCOVERY_STATUS_MASK		GENMASK(5, 3)
 #define SENSOR_DISCOVERY_STATUS_SHIFT		3
 
-/* SFH Command register */
+ 
 union sfh_cmd_base {
 	u32 ul;
 	struct {

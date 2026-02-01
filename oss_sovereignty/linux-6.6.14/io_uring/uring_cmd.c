@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -47,10 +47,7 @@ static inline void io_req_set_cqe32_extra(struct io_kiocb *req,
 	req->big_cqe.extra2 = extra2;
 }
 
-/*
- * Called by consumers of io_uring_cmd, if they originally returned
- * -EIOCBQUEUED upon receiving the command.
- */
+ 
 void io_uring_cmd_done(struct io_uring_cmd *ioucmd, ssize_t ret, ssize_t res2,
 		       unsigned issue_flags)
 {
@@ -63,7 +60,7 @@ void io_uring_cmd_done(struct io_uring_cmd *ioucmd, ssize_t ret, ssize_t res2,
 	if (req->ctx->flags & IORING_SETUP_CQE32)
 		io_req_set_cqe32_extra(req, res2, 0);
 	if (req->ctx->flags & IORING_SETUP_IOPOLL) {
-		/* order with io_iopoll_req_issued() checking ->iopoll_complete */
+		 
 		smp_store_release(&req->iopoll_completed, 1);
 	} else {
 		struct io_tw_state ts = {

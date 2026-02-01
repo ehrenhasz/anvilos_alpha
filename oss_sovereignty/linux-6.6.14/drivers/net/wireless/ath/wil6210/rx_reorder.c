@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "wil6210.h"
 #include "txrx.h"
@@ -39,7 +36,7 @@ static void wil_release_reorder_frame(struct net_device *ndev,
 	if (!skb)
 		goto no_frame;
 
-	/* release the frame from the reorder ring buffer */
+	 
 	r->stored_mpdu_num--;
 	r->reorder_buf[index] = NULL;
 	wil_netif_rx_any(skb, ndev);
@@ -54,12 +51,7 @@ static void wil_release_reorder_frames(struct net_device *ndev,
 {
 	int index;
 
-	/* note: this function is never called with
-	 * hseq preceding r->head_seq_num, i.e it is always true
-	 * !seq_less(hseq, r->head_seq_num)
-	 * and thus on loop exit it should be
-	 * r->head_seq_num == hseq
-	 */
+	 
 	while (seq_less(r->head_seq_num, hseq) && r->stored_mpdu_num) {
 		index = reorder_index(r, r->head_seq_num);
 		wil_release_reorder_frame(ndev, r, index);
@@ -78,7 +70,7 @@ static void wil_reorder_release(struct net_device *ndev,
 	}
 }
 
-/* called in NAPI context */
+ 
 void wil_rx_reorder(struct wil6210_priv *wil, struct sk_buff *skb)
 __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 {
@@ -130,14 +122,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	r->total++;
 	hseq = r->head_seq_num;
 
-	/** Due to the race between WMI events, where BACK establishment
-	 * reported, and data Rx, few packets may be pass up before reorder
-	 * buffer get allocated. Catch up by pretending SSN is what we
-	 * see in the 1-st Rx packet
-	 *
-	 * Another scenario, Rx get delayed and we got packet from before
-	 * BACK. Pass it to the stack and wait.
-	 */
+	 
 	if (r->first_time) {
 		r->first_time = false;
 		if (seq != r->head_seq_num) {
@@ -157,7 +142,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		}
 	}
 
-	/* frame with out of date sequence number */
+	 
 	if (seq_less(seq, r->head_seq_num)) {
 		r->ssn_last_drop = seq;
 		r->drop_old++;
@@ -167,21 +152,18 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		goto out;
 	}
 
-	/*
-	 * If frame the sequence number exceeds our buffering window
-	 * size release some previous frames to make room for this one.
-	 */
+	 
 	if (!seq_less(seq, r->head_seq_num + r->buf_size)) {
 		hseq = seq_inc(seq_sub(seq, r->buf_size));
-		/* release stored frames up to new head to stack */
+		 
 		wil_release_reorder_frames(ndev, r, hseq);
 	}
 
-	/* Now the new frame is always in the range of the reordering buffer */
+	 
 
 	index = reorder_index(r, seq);
 
-	/* check if we already stored this frame */
+	 
 	if (r->reorder_buf[index]) {
 		r->drop_dup++;
 		wil_dbg_txrx(wil, "Rx drop: dup seq 0x%03x\n", seq);
@@ -189,19 +171,14 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		goto out;
 	}
 
-	/*
-	 * If the current MPDU is in the right order and nothing else
-	 * is stored we can process it directly, no need to buffer it.
-	 * If it is first but there's something stored, we may be able
-	 * to release frames after this one.
-	 */
+	 
 	if (seq == r->head_seq_num && r->stored_mpdu_num == 0) {
 		r->head_seq_num = seq_inc(r->head_seq_num);
 		wil_netif_rx_any(skb, ndev);
 		goto out;
 	}
 
-	/* put the frame in the reordering buffer */
+	 
 	r->reorder_buf[index] = skb;
 	r->stored_mpdu_num++;
 	wil_reorder_release(ndev, r);
@@ -210,7 +187,7 @@ out:
 	spin_unlock(&sta->tid_rx_lock);
 }
 
-/* process BAR frame, called in NAPI context */
+ 
 void wil_rx_bar(struct wil6210_priv *wil, struct wil6210_vif *vif,
 		u8 cid, u8 tid, u16 seq)
 {
@@ -270,11 +247,7 @@ void wil_tid_ampdu_rx_free(struct wil6210_priv *wil,
 	if (!r)
 		return;
 
-	/* Do not pass remaining frames to the network stack - it may be
-	 * not expecting to get any more Rx. Rx from here may lead to
-	 * kernel OOPS since some per-socket accounting info was already
-	 * released.
-	 */
+	 
 	for (i = 0; i < r->buf_size; i++)
 		kfree_skb(r->reorder_buf[i]);
 
@@ -282,7 +255,7 @@ void wil_tid_ampdu_rx_free(struct wil6210_priv *wil,
 	kfree(r);
 }
 
-/* ADDBA processing */
+ 
 static u16 wil_agg_size(struct wil6210_priv *wil, u16 req_agg_wsize)
 {
 	u16 max_agg_size = min_t(u16, wil->max_agg_wsize, wil->max_ampdu_size /
@@ -294,7 +267,7 @@ static u16 wil_agg_size(struct wil6210_priv *wil, u16 req_agg_wsize)
 	return min(max_agg_size, req_agg_wsize);
 }
 
-/* Block Ack - Rx side (recipient) */
+ 
 int wil_addba_rx_request(struct wil6210_priv *wil, u8 mid, u8 cid, u8 tid,
 			 u8 dialog_token, __le16 ba_param_set,
 			 __le16 ba_timeout, __le16 ba_seq_ctrl)
@@ -305,11 +278,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	u16 seq_ctrl = le16_to_cpu(ba_seq_ctrl);
 	struct wil_sta_info *sta;
 	u16 agg_wsize;
-	/* bit 0: A-MSDU supported
-	 * bit 1: policy (should be 0 for us)
-	 * bits 2..5: TID
-	 * bits 6..15: buffer size
-	 */
+	 
 	u16 req_agg_wsize = WIL_GET_BITS(param_set, 6, 15);
 	bool agg_amsdu = wil->use_enhanced_dma_hw &&
 		wil->use_rx_hw_reordering &&
@@ -322,7 +291,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 
 	might_sleep();
 
-	/* sanity checks */
+	 
 	if (cid >= wil->max_assoc_sta) {
 		wil_err(wil, "BACK: invalid CID %d\n", cid);
 		rc = -EINVAL;
@@ -341,7 +310,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		    cid, sta->addr, tid, req_agg_wsize, agg_timeout,
 		    agg_amsdu ? "+" : "-", !!ba_policy, dialog_token, ssn);
 
-	/* apply policies */
+	 
 	if (req_agg_wsize == 0) {
 		wil_dbg_misc(wil, "Suggest BACK wsize %d\n",
 			     wil->max_agg_wsize);
@@ -358,7 +327,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		goto out;
 	}
 
-	/* apply */
+	 
 	if (!wil->use_rx_hw_reordering) {
 		r = wil_tid_ampdu_rx_alloc(wil, agg_wsize, ssn);
 		spin_lock_bh(&sta->tid_rx_lock);
@@ -371,7 +340,7 @@ out:
 	return rc;
 }
 
-/* BACK - Tx side (originator) */
+ 
 int wil_addba_tx_request(struct wil6210_priv *wil, u8 ringid, u16 wsize)
 {
 	u8 agg_wsize = wil_agg_size(wil, wsize);

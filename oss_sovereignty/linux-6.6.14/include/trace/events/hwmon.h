@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hwmon
 
@@ -65,7 +65,7 @@ TRACE_EVENT(hwmon_attr_show_string,
 		  __entry->index, __get_str(attr_name), __get_str(label))
 );
 
-#endif /* _TRACE_HWMON_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

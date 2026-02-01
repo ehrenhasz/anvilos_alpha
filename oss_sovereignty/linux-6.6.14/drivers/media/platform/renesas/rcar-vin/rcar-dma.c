@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Renesas R-Car VIN
- *
- * Copyright (C) 2016 Renesas Electronics Corp.
- * Copyright (C) 2011-2013 Renesas Solutions Corp.
- * Copyright (C) 2013 Cogent Embedded, Inc., <source@cogentembedded.com>
- * Copyright (C) 2008 Magnus Damm
- *
- * Based on the soc-camera rcar_vin driver
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -18,72 +9,70 @@
 
 #include "rcar-vin.h"
 
-/* -----------------------------------------------------------------------------
- * HW Functions
- */
+ 
 
-/* Register offsets for R-Car VIN */
-#define VNMC_REG	0x00	/* Video n Main Control Register */
-#define VNMS_REG	0x04	/* Video n Module Status Register */
-#define VNFC_REG	0x08	/* Video n Frame Capture Register */
-#define VNSLPRC_REG	0x0C	/* Video n Start Line Pre-Clip Register */
-#define VNELPRC_REG	0x10	/* Video n End Line Pre-Clip Register */
-#define VNSPPRC_REG	0x14	/* Video n Start Pixel Pre-Clip Register */
-#define VNEPPRC_REG	0x18	/* Video n End Pixel Pre-Clip Register */
-#define VNIS_REG	0x2C	/* Video n Image Stride Register */
-#define VNMB_REG(m)	(0x30 + ((m) << 2)) /* Video n Memory Base m Register */
-#define VNIE_REG	0x40	/* Video n Interrupt Enable Register */
-#define VNINTS_REG	0x44	/* Video n Interrupt Status Register */
-#define VNSI_REG	0x48	/* Video n Scanline Interrupt Register */
-#define VNMTC_REG	0x4C	/* Video n Memory Transfer Control Register */
-#define VNDMR_REG	0x58	/* Video n Data Mode Register */
-#define VNDMR2_REG	0x5C	/* Video n Data Mode Register 2 */
-#define VNUVAOF_REG	0x60	/* Video n UV Address Offset Register */
+ 
+#define VNMC_REG	0x00	 
+#define VNMS_REG	0x04	 
+#define VNFC_REG	0x08	 
+#define VNSLPRC_REG	0x0C	 
+#define VNELPRC_REG	0x10	 
+#define VNSPPRC_REG	0x14	 
+#define VNEPPRC_REG	0x18	 
+#define VNIS_REG	0x2C	 
+#define VNMB_REG(m)	(0x30 + ((m) << 2))  
+#define VNIE_REG	0x40	 
+#define VNINTS_REG	0x44	 
+#define VNSI_REG	0x48	 
+#define VNMTC_REG	0x4C	 
+#define VNDMR_REG	0x58	 
+#define VNDMR2_REG	0x5C	 
+#define VNUVAOF_REG	0x60	 
 
-/* Register offsets specific for Gen2 */
-#define VNSLPOC_REG	0x1C	/* Video n Start Line Post-Clip Register */
-#define VNELPOC_REG	0x20	/* Video n End Line Post-Clip Register */
-#define VNSPPOC_REG	0x24	/* Video n Start Pixel Post-Clip Register */
-#define VNEPPOC_REG	0x28	/* Video n End Pixel Post-Clip Register */
-#define VNYS_REG	0x50	/* Video n Y Scale Register */
-#define VNXS_REG	0x54	/* Video n X Scale Register */
-#define VNC1A_REG	0x80	/* Video n Coefficient Set C1A Register */
-#define VNC1B_REG	0x84	/* Video n Coefficient Set C1B Register */
-#define VNC1C_REG	0x88	/* Video n Coefficient Set C1C Register */
-#define VNC2A_REG	0x90	/* Video n Coefficient Set C2A Register */
-#define VNC2B_REG	0x94	/* Video n Coefficient Set C2B Register */
-#define VNC2C_REG	0x98	/* Video n Coefficient Set C2C Register */
-#define VNC3A_REG	0xA0	/* Video n Coefficient Set C3A Register */
-#define VNC3B_REG	0xA4	/* Video n Coefficient Set C3B Register */
-#define VNC3C_REG	0xA8	/* Video n Coefficient Set C3C Register */
-#define VNC4A_REG	0xB0	/* Video n Coefficient Set C4A Register */
-#define VNC4B_REG	0xB4	/* Video n Coefficient Set C4B Register */
-#define VNC4C_REG	0xB8	/* Video n Coefficient Set C4C Register */
-#define VNC5A_REG	0xC0	/* Video n Coefficient Set C5A Register */
-#define VNC5B_REG	0xC4	/* Video n Coefficient Set C5B Register */
-#define VNC5C_REG	0xC8	/* Video n Coefficient Set C5C Register */
-#define VNC6A_REG	0xD0	/* Video n Coefficient Set C6A Register */
-#define VNC6B_REG	0xD4	/* Video n Coefficient Set C6B Register */
-#define VNC6C_REG	0xD8	/* Video n Coefficient Set C6C Register */
-#define VNC7A_REG	0xE0	/* Video n Coefficient Set C7A Register */
-#define VNC7B_REG	0xE4	/* Video n Coefficient Set C7B Register */
-#define VNC7C_REG	0xE8	/* Video n Coefficient Set C7C Register */
-#define VNC8A_REG	0xF0	/* Video n Coefficient Set C8A Register */
-#define VNC8B_REG	0xF4	/* Video n Coefficient Set C8B Register */
-#define VNC8C_REG	0xF8	/* Video n Coefficient Set C8C Register */
+ 
+#define VNSLPOC_REG	0x1C	 
+#define VNELPOC_REG	0x20	 
+#define VNSPPOC_REG	0x24	 
+#define VNEPPOC_REG	0x28	 
+#define VNYS_REG	0x50	 
+#define VNXS_REG	0x54	 
+#define VNC1A_REG	0x80	 
+#define VNC1B_REG	0x84	 
+#define VNC1C_REG	0x88	 
+#define VNC2A_REG	0x90	 
+#define VNC2B_REG	0x94	 
+#define VNC2C_REG	0x98	 
+#define VNC3A_REG	0xA0	 
+#define VNC3B_REG	0xA4	 
+#define VNC3C_REG	0xA8	 
+#define VNC4A_REG	0xB0	 
+#define VNC4B_REG	0xB4	 
+#define VNC4C_REG	0xB8	 
+#define VNC5A_REG	0xC0	 
+#define VNC5B_REG	0xC4	 
+#define VNC5C_REG	0xC8	 
+#define VNC6A_REG	0xD0	 
+#define VNC6B_REG	0xD4	 
+#define VNC6C_REG	0xD8	 
+#define VNC7A_REG	0xE0	 
+#define VNC7B_REG	0xE4	 
+#define VNC7C_REG	0xE8	 
+#define VNC8A_REG	0xF0	 
+#define VNC8B_REG	0xF4	 
+#define VNC8C_REG	0xF8	 
 
-/* Register offsets specific for Gen3 */
-#define VNCSI_IFMD_REG		0x20 /* Video n CSI2 Interface Mode Register */
-#define VNUDS_CTRL_REG		0x80 /* Video n scaling control register */
-#define VNUDS_SCALE_REG		0x84 /* Video n scaling factor register */
-#define VNUDS_PASS_BWIDTH_REG	0x90 /* Video n passband register */
-#define VNUDS_CLIP_SIZE_REG	0xa4 /* Video n UDS output size clipping reg */
+ 
+#define VNCSI_IFMD_REG		0x20  
+#define VNUDS_CTRL_REG		0x80  
+#define VNUDS_SCALE_REG		0x84  
+#define VNUDS_PASS_BWIDTH_REG	0x90  
+#define VNUDS_CLIP_SIZE_REG	0xa4  
 
-/* Register bit fields for R-Car VIN */
-/* Video n Main Control Register bits */
+ 
+ 
 #define VNMC_INF_MASK		(7 << 16)
-#define VNMC_DPINE		(1 << 27) /* Gen3 specific */
-#define VNMC_SCLE		(1 << 26) /* Gen3 specific */
+#define VNMC_DPINE		(1 << 27)  
+#define VNMC_SCLE		(1 << 26)  
 #define VNMC_FOC		(1 << 21)
 #define VNMC_YCAL		(1 << 19)
 #define VNMC_INF_YUV8_BT656	(0 << 16)
@@ -102,25 +91,25 @@
 #define VNMC_BPS		(1 << 1)
 #define VNMC_ME			(1 << 0)
 
-/* Video n Module Status Register bits */
+ 
 #define VNMS_FBS_MASK		(3 << 3)
 #define VNMS_FBS_SHIFT		3
 #define VNMS_FS			(1 << 2)
 #define VNMS_AV			(1 << 1)
 #define VNMS_CA			(1 << 0)
 
-/* Video n Frame Capture Register bits */
+ 
 #define VNFC_C_FRAME		(1 << 1)
 #define VNFC_S_FRAME		(1 << 0)
 
-/* Video n Interrupt Enable Register bits */
+ 
 #define VNIE_FIE		(1 << 4)
 #define VNIE_EFE		(1 << 1)
 
-/* Video n Interrupt Status Register bits */
+ 
 #define VNINTS_FIS		(1 << 4)
 
-/* Video n Data Mode Register bits */
+ 
 #define VNDMR_A8BIT(n)		(((n) & 0xff) << 24)
 #define VNDMR_A8BIT_MASK	(0xff << 24)
 #define VNDMR_YMODE_Y8		(1 << 12)
@@ -131,7 +120,7 @@
 #define VNDMR_DTMD_ARGB		(1 << 0)
 #define VNDMR_DTMD_YCSEP_420	(3 << 0)
 
-/* Video n Data Mode Register 2 bits */
+ 
 #define VNDMR2_VPS		(1 << 30)
 #define VNDMR2_HPS		(1 << 29)
 #define VNDMR2_CES		(1 << 28)
@@ -139,12 +128,12 @@
 #define VNDMR2_FTEV		(1 << 17)
 #define VNDMR2_VLV(n)		((n & 0xf) << 12)
 
-/* Video n CSI2 Interface Mode Register (Gen3) */
+ 
 #define VNCSI_IFMD_DES1		(1 << 26)
 #define VNCSI_IFMD_DES0		(1 << 25)
 #define VNCSI_IFMD_CSI_CHSEL(n) (((n) & 0xf) << 0)
 
-/* Video n scaling control register (Gen3) */
+ 
 #define VNUDS_CTRL_AMD		(1 << 30)
 
 struct rvin_buffer {
@@ -166,9 +155,7 @@ static u32 rvin_read(struct rvin_dev *vin, u32 offset)
 	return ioread32(vin->base + offset);
 }
 
-/* -----------------------------------------------------------------------------
- * Crop and Scaling
- */
+ 
 
 static bool rvin_scaler_needed(const struct rvin_dev *vin)
 {
@@ -502,7 +489,7 @@ static void rvin_set_coeff(struct rvin_dev *vin, unsigned short xs)
 	const struct vin_coeff *p_prev_set = NULL;
 	const struct vin_coeff *p_set = NULL;
 
-	/* Look for suitable coefficient values */
+	 
 	for (i = 0; i < ARRAY_SIZE(vin_coeff_set); i++) {
 		p_prev_set = p_set;
 		p_set = &vin_coeff_set[i];
@@ -511,12 +498,12 @@ static void rvin_set_coeff(struct rvin_dev *vin, unsigned short xs)
 			break;
 	}
 
-	/* Use previous value if its XS value is closer */
+	 
 	if (p_prev_set &&
 	    xs - p_prev_set->xs_value < p_set->xs_value - xs)
 		p_set = p_prev_set;
 
-	/* Set coefficient registers */
+	 
 	rvin_write(vin, p_set->coeff_set[0], VNC1A_REG);
 	rvin_write(vin, p_set->coeff_set[1], VNC1B_REG);
 	rvin_write(vin, p_set->coeff_set[2], VNC1C_REG);
@@ -555,7 +542,7 @@ void rvin_scaler_gen2(struct rvin_dev *vin)
 	unsigned int crop_height;
 	u32 xs, ys;
 
-	/* Set scaling coefficient */
+	 
 	crop_height = vin->crop.height;
 	if (V4L2_FIELD_HAS_BOTH(vin->format.field))
 		crop_height *= 2;
@@ -569,19 +556,19 @@ void rvin_scaler_gen2(struct rvin_dev *vin)
 	if (vin->crop.width != vin->compose.width)
 		xs = (4096 * vin->crop.width) / vin->compose.width;
 
-	/* Horizontal upscaling is up to double size */
+	 
 	if (xs > 0 && xs < 2048)
 		xs = 2048;
 
 	rvin_write(vin, xs, VNXS_REG);
 
-	/* Horizontal upscaling is done out by scaling down from double size */
+	 
 	if (xs < 4096)
 		xs *= 2;
 
 	rvin_set_coeff(vin, xs);
 
-	/* Set Start/End Pixel/Line Post-Clip */
+	 
 	rvin_write(vin, 0, VNSPPOC_REG);
 	rvin_write(vin, 0, VNSLPOC_REG);
 	rvin_write(vin, vin->format.width - 1, VNEPPOC_REG);
@@ -622,7 +609,7 @@ void rvin_scaler_gen3(struct rvin_dev *vin)
 
 	vnmc = rvin_read(vin, VNMC_REG);
 
-	/* Disable scaler if not needed. */
+	 
 	if (!rvin_scaler_needed(vin)) {
 		rvin_write(vin, vnmc & ~VNMC_SCLE, VNMC_REG);
 		return;
@@ -666,7 +653,7 @@ void rvin_crop_scale_comp(struct rvin_dev *vin)
 	const struct rvin_video_format *fmt;
 	u32 stride;
 
-	/* Set Start/End Pixel/Line Pre-Clip */
+	 
 	rvin_write(vin, vin->crop.left, VNSPPRC_REG);
 	rvin_write(vin, vin->crop.left + vin->crop.width - 1, VNEPPRC_REG);
 	rvin_write(vin, vin->crop.top, VNSLPRC_REG);
@@ -678,9 +665,7 @@ void rvin_crop_scale_comp(struct rvin_dev *vin)
 	fmt = rvin_format_from_pixel(vin, vin->format.pixelformat);
 	stride = vin->format.bytesperline / fmt->bpp;
 
-	/* For RAW8 format bpp is 1, but the hardware process RAW8
-	 * format in 2 pixel unit hence configure VNIS_REG as stride / 2.
-	 */
+	 
 	switch (vin->format.pixelformat) {
 	case V4L2_PIX_FMT_SBGGR8:
 	case V4L2_PIX_FMT_SGBRG8:
@@ -696,9 +681,7 @@ void rvin_crop_scale_comp(struct rvin_dev *vin)
 	rvin_write(vin, stride, VNIS_REG);
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware setup
- */
+ 
 
 static int rvin_setup(struct rvin_dev *vin)
 {
@@ -713,9 +696,9 @@ static int rvin_setup(struct rvin_dev *vin)
 		vnmc = VNMC_IM_EVEN;
 		break;
 	case V4L2_FIELD_INTERLACED:
-		/* Default to TB */
+		 
 		vnmc = VNMC_IM_FULL;
-		/* Use BT if video standard can be read and is 60 Hz format */
+		 
 		if (!vin->info->use_mc && vin->std & V4L2_STD_525_60)
 			vnmc = VNMC_IM_FULL | VNMC_FOC;
 		break;
@@ -737,12 +720,10 @@ static int rvin_setup(struct rvin_dev *vin)
 		break;
 	}
 
-	/*
-	 * Input interface
-	 */
+	 
 	switch (vin->mbus_code) {
 	case MEDIA_BUS_FMT_YUYV8_1X16:
-		/* BT.601/BT.1358 16bit YCbCr422 */
+		 
 		vnmc |= VNMC_INF_YUV16;
 		input_is_yuv = true;
 		break;
@@ -751,7 +732,7 @@ static int rvin_setup(struct rvin_dev *vin)
 		input_is_yuv = true;
 		break;
 	case MEDIA_BUS_FMT_UYVY8_2X8:
-		/* BT.656 8bit YCbCr422 or BT.601 8bit YCbCr422 */
+		 
 		if (!vin->is_csi &&
 		    vin->parallel.mbus_type == V4L2_MBUS_BT656)
 			vnmc |= VNMC_INF_YUV8_BT656;
@@ -764,7 +745,7 @@ static int rvin_setup(struct rvin_dev *vin)
 		vnmc |= VNMC_INF_RGB888;
 		break;
 	case MEDIA_BUS_FMT_UYVY10_2X10:
-		/* BT.656 10bit YCbCr422 or BT.601 10bit YCbCr422 */
+		 
 		if (!vin->is_csi &&
 		    vin->parallel.mbus_type == V4L2_MBUS_BT656)
 			vnmc |= VNMC_INF_YUV10_BT656;
@@ -784,7 +765,7 @@ static int rvin_setup(struct rvin_dev *vin)
 		break;
 	}
 
-	/* Make sure input interface and input format is valid. */
+	 
 	if (vin->info->model == RCAR_GEN3) {
 		switch (vnmc & VNMC_INF_MASK) {
 		case VNMC_INF_YUV8_BT656:
@@ -807,22 +788,22 @@ static int rvin_setup(struct rvin_dev *vin)
 		}
 	}
 
-	/* Enable VSYNC Field Toggle mode after one VSYNC input */
+	 
 	if (vin->info->model == RCAR_GEN3)
 		dmr2 = VNDMR2_FTEV;
 	else
 		dmr2 = VNDMR2_FTEV | VNDMR2_VLV(1);
 
 	if (!vin->is_csi) {
-		/* Hsync Signal Polarity Select */
+		 
 		if (!(vin->parallel.bus.flags & V4L2_MBUS_HSYNC_ACTIVE_LOW))
 			dmr2 |= VNDMR2_HPS;
 
-		/* Vsync Signal Polarity Select */
+		 
 		if (!(vin->parallel.bus.flags & V4L2_MBUS_VSYNC_ACTIVE_LOW))
 			dmr2 |= VNDMR2_VPS;
 
-		/* Data Enable Polarity Select */
+		 
 		if (vin->parallel.bus.flags & V4L2_MBUS_DATA_ENABLE_LOW)
 			dmr2 |= VNDMR2_CES;
 
@@ -837,9 +818,7 @@ static int rvin_setup(struct rvin_dev *vin)
 		}
 	}
 
-	/*
-	 * Output format
-	 */
+	 
 	switch (vin->format.pixelformat) {
 	case V4L2_PIX_FMT_NV12:
 	case V4L2_PIX_FMT_NV16:
@@ -865,7 +844,7 @@ static int rvin_setup(struct rvin_dev *vin)
 		dmr = 0;
 		break;
 	case V4L2_PIX_FMT_XBGR32:
-		/* Note: not supported on M1 */
+		 
 		dmr = VNDMR_EXRGB;
 		break;
 	case V4L2_PIX_FMT_ARGB555:
@@ -894,16 +873,16 @@ static int rvin_setup(struct rvin_dev *vin)
 		return -EINVAL;
 	}
 
-	/* Always update on field change */
+	 
 	vnmc |= VNMC_VUP;
 
 	if (!vin->info->use_isp) {
-		/* If input and output use the same colorspace, use bypass mode */
+		 
 		if (input_is_yuv == output_is_yuv)
 			vnmc |= VNMC_BPS;
 
 		if (vin->info->model == RCAR_GEN3) {
-			/* Select between CSI-2 and parallel input */
+			 
 			if (vin->is_csi)
 				vnmc &= ~VNMC_DPINE;
 			else
@@ -911,18 +890,18 @@ static int rvin_setup(struct rvin_dev *vin)
 		}
 	}
 
-	/* Progressive or interlaced mode */
+	 
 	interrupts = progressive ? VNIE_FIE : VNIE_EFE;
 
-	/* Ack interrupts */
+	 
 	rvin_write(vin, interrupts, VNINTS_REG);
-	/* Enable interrupts */
+	 
 	rvin_write(vin, interrupts, VNIE_REG);
-	/* Start capturing */
+	 
 	rvin_write(vin, dmr, VNDMR_REG);
 	rvin_write(vin, dmr2, VNDMR2_REG);
 
-	/* Enable module */
+	 
 	rvin_write(vin, vnmc | VNMC_ME, VNMC_REG);
 
 	return 0;
@@ -951,7 +930,7 @@ static bool rvin_capture_active(struct rvin_dev *vin)
 static enum v4l2_field rvin_get_active_field(struct rvin_dev *vin, u32 vnms)
 {
 	if (vin->format.field == V4L2_FIELD_ALTERNATE) {
-		/* If FS is set it is an Even field. */
+		 
 		if (vnms & VNMS_FS)
 			return V4L2_FIELD_BOTTOM;
 		return V4L2_FIELD_TOP;
@@ -968,30 +947,19 @@ static void rvin_set_slot_addr(struct rvin_dev *vin, int slot, dma_addr_t addr)
 
 	fmt = rvin_format_from_pixel(vin, vin->format.pixelformat);
 
-	/*
-	 * There is no HW support for composition do the beast we can
-	 * by modifying the buffer offset
-	 */
+	 
 	offsetx = vin->compose.left * fmt->bpp;
 	offsety = vin->compose.top * vin->format.bytesperline;
 	offset = addr + offsetx + offsety;
 
-	/*
-	 * The address needs to be 128 bytes aligned. Driver should never accept
-	 * settings that do not satisfy this in the first place...
-	 */
+	 
 	if (WARN_ON((offsetx | offsety | offset) & HW_BUFFER_MASK))
 		return;
 
 	rvin_write(vin, offset, VNMB_REG(slot));
 }
 
-/*
- * Moves a buffer from the queue to the HW slot. If no buffer is
- * available use the scratch buffer. The scratch buffer is never
- * returned to userspace, its only function is to enable the capture
- * loop to keep running.
- */
+ 
 static void rvin_fill_hw_slot(struct rvin_dev *vin, int slot)
 {
 	struct rvin_buffer *buf;
@@ -999,7 +967,7 @@ static void rvin_fill_hw_slot(struct rvin_dev *vin, int slot)
 	dma_addr_t phys_addr;
 	int prev;
 
-	/* A already populated slot shall never be overwritten. */
+	 
 	if (WARN_ON(vin->buf_hw[slot].buffer))
 		return;
 
@@ -1026,7 +994,7 @@ static void rvin_fill_hw_slot(struct rvin_dev *vin, int slot)
 		vin->buf_hw[slot].type = FULL;
 		phys_addr = vin->scratch_phys;
 	} else {
-		/* Keep track of buffer we give to HW */
+		 
 		buf = list_entry(vin->buf_list.next, struct rvin_buffer, list);
 		vbuf = &buf->vb;
 		list_del_init(to_buf_list(vbuf));
@@ -1036,7 +1004,7 @@ static void rvin_fill_hw_slot(struct rvin_dev *vin, int slot)
 			V4L2_FIELD_IS_SEQUENTIAL(vin->format.field) ?
 			HALF_TOP : FULL;
 
-		/* Setup DMA */
+		 
 		phys_addr = vb2_dma_contig_plane_dma_addr(&vbuf->vb2_buf, 0);
 	}
 
@@ -1067,7 +1035,7 @@ static int rvin_capture_start(struct rvin_dev *vin)
 
 	vin_dbg(vin, "Starting to capture\n");
 
-	/* Continuous Frame Capture Mode */
+	 
 	rvin_write(vin, VNFC_C_FRAME, VNFC_REG);
 
 	vin->state = STARTING;
@@ -1077,16 +1045,14 @@ static int rvin_capture_start(struct rvin_dev *vin)
 
 static void rvin_capture_stop(struct rvin_dev *vin)
 {
-	/* Set continuous & single transfer off */
+	 
 	rvin_write(vin, 0, VNFC_REG);
 
-	/* Disable module */
+	 
 	rvin_write(vin, rvin_read(vin, VNMC_REG) & ~VNMC_ME, VNMC_REG);
 }
 
-/* -----------------------------------------------------------------------------
- * DMA Functions
- */
+ 
 
 #define RVIN_TIMEOUT_MS 100
 #define RVIN_RETRIES 10
@@ -1108,24 +1074,21 @@ static irqreturn_t rvin_irq(int irq, void *data)
 	rvin_ack_interrupt(vin);
 	handled = 1;
 
-	/* Nothing to do if nothing was captured. */
+	 
 	if (!(int_status & VNINTS_FIS))
 		goto done;
 
-	/* Nothing to do if capture status is 'STOPPED' */
+	 
 	if (vin->state == STOPPED) {
 		vin_dbg(vin, "IRQ while state stopped\n");
 		goto done;
 	}
 
-	/* Prepare for capture and update state */
+	 
 	vnms = rvin_read(vin, VNMS_REG);
 	slot = (vnms & VNMS_FBS_MASK) >> VNMS_FBS_SHIFT;
 
-	/*
-	 * To hand buffers back in a known order to userspace start
-	 * to capture first from slot 0.
-	 */
+	 
 	if (vin->state == STARTING) {
 		if (slot != 0) {
 			vin_dbg(vin, "Starting sync slot: %d\n", slot);
@@ -1136,12 +1099,9 @@ static irqreturn_t rvin_irq(int irq, void *data)
 		vin->state = RUNNING;
 	}
 
-	/* Capture frame */
+	 
 	if (vin->buf_hw[slot].buffer) {
-		/*
-		 * Nothing to do but refill the hardware slot if
-		 * capture only filled first half of vb2 buffer.
-		 */
+		 
 		if (vin->buf_hw[slot].type == HALF_TOP) {
 			vin->buf_hw[slot].buffer = NULL;
 			rvin_fill_hw_slot(vin, slot);
@@ -1156,13 +1116,13 @@ static irqreturn_t rvin_irq(int irq, void *data)
 				VB2_BUF_STATE_DONE);
 		vin->buf_hw[slot].buffer = NULL;
 	} else {
-		/* Scratch buffer was used, dropping frame. */
+		 
 		vin_dbg(vin, "Dropping frame %u\n", vin->sequence);
 	}
 
 	vin->sequence++;
 
-	/* Prepare for next frame */
+	 
 	rvin_fill_hw_slot(vin, slot);
 done:
 	spin_unlock_irqrestore(&vin->qlock, flags);
@@ -1193,7 +1153,7 @@ static int rvin_queue_setup(struct vb2_queue *vq, unsigned int *nbuffers,
 {
 	struct rvin_dev *vin = vb2_get_drv_priv(vq);
 
-	/* Make sure the image size is large enough. */
+	 
 	if (*nplanes)
 		return sizes[0] < vin->format.sizeimage ? -EINVAL : 0;
 
@@ -1284,7 +1244,7 @@ static int rvin_mc_validate_format(struct rvin_dev *vin, struct v4l2_subdev *sd,
 	case V4L2_FIELD_INTERLACED:
 	case V4L2_FIELD_SEQ_TB:
 	case V4L2_FIELD_SEQ_BT:
-		/* Supported natively */
+		 
 		break;
 	case V4L2_FIELD_ALTERNATE:
 		switch (vin->format.field) {
@@ -1298,7 +1258,7 @@ static int rvin_mc_validate_format(struct rvin_dev *vin, struct v4l2_subdev *sd,
 		case V4L2_FIELD_INTERLACED:
 		case V4L2_FIELD_SEQ_TB:
 		case V4L2_FIELD_SEQ_BT:
-			/* Use VIN hardware to combine the two fields */
+			 
 			fmt.format.height *= 2;
 			break;
 		default:
@@ -1310,7 +1270,7 @@ static int rvin_mc_validate_format(struct rvin_dev *vin, struct v4l2_subdev *sd,
 	}
 
 	if (rvin_scaler_needed(vin)) {
-		/* Gen3 can't scale NV12 */
+		 
 		if (vin->info->model == RCAR_GEN3 &&
 		    vin->format.pixelformat == V4L2_PIX_FMT_NV12)
 			return -EPIPE;
@@ -1341,7 +1301,7 @@ static int rvin_set_stream(struct rvin_dev *vin, int on)
 	struct media_pad *pad;
 	int ret;
 
-	/* No media controller used, simply pass operation to subdevice. */
+	 
 	if (!vin->info->use_mc) {
 		ret = v4l2_subdev_call(vin->parallel.subdev, video, s_stream,
 				       on);
@@ -1404,7 +1364,7 @@ static int rvin_start_streaming_vq(struct vb2_queue *vq, unsigned int count)
 	struct rvin_dev *vin = vb2_get_drv_priv(vq);
 	int ret = -ENOMEM;
 
-	/* Allocate scratch buffer. */
+	 
 	vin->scratch = dma_alloc_coherent(vin->dev, vin->format.sizeimage,
 					  &vin->scratch_phys, GFP_KERNEL);
 	if (!vin->scratch)
@@ -1439,7 +1399,7 @@ void rvin_stop_streaming(struct rvin_dev *vin)
 
 	vin->state = STOPPING;
 
-	/* Wait until only scratch buffer is used, max 3 interrupts. */
+	 
 	retries = 0;
 	while (retries++ < RVIN_RETRIES) {
 		buffersFreed = true;
@@ -1455,13 +1415,13 @@ void rvin_stop_streaming(struct rvin_dev *vin)
 		spin_lock_irqsave(&vin->qlock, flags);
 	}
 
-	/* Wait for streaming to stop */
+	 
 	retries = 0;
 	while (retries++ < RVIN_RETRIES) {
 
 		rvin_capture_stop(vin);
 
-		/* Check if HW is stopped */
+		 
 		if (!rvin_capture_active(vin)) {
 			vin->state = STOPPED;
 			break;
@@ -1473,18 +1433,14 @@ void rvin_stop_streaming(struct rvin_dev *vin)
 	}
 
 	if (!buffersFreed || vin->state != STOPPED) {
-		/*
-		 * If this happens something have gone horribly wrong.
-		 * Set state to stopped to prevent the interrupt handler
-		 * to make things worse...
-		 */
+		 
 		vin_err(vin, "Failed stop HW, something is seriously broken\n");
 		vin->state = STOPPED;
 	}
 
 	spin_unlock_irqrestore(&vin->qlock, flags);
 
-	/* If something went wrong, free buffers with an error. */
+	 
 	if (!buffersFreed) {
 		return_unused_buffers(vin, VB2_BUF_STATE_ERROR);
 		for (i = 0; i < HW_BUFFER_NUM; i++) {
@@ -1496,7 +1452,7 @@ void rvin_stop_streaming(struct rvin_dev *vin)
 
 	rvin_set_stream(vin, 0);
 
-	/* disable interrupts */
+	 
 	rvin_disable_interrupts(vin);
 }
 
@@ -1506,7 +1462,7 @@ static void rvin_stop_streaming_vq(struct vb2_queue *vq)
 
 	rvin_stop_streaming(vin);
 
-	/* Free scratch buffer. */
+	 
 	dma_free_coherent(vin->dev, vin->format.sizeimage, vin->scratch,
 			  vin->scratch_phys);
 
@@ -1535,7 +1491,7 @@ int rvin_dma_register(struct rvin_dev *vin, int irq)
 	struct vb2_queue *q = &vin->queue;
 	int i, ret;
 
-	/* Initialize the top-level structure */
+	 
 	ret = v4l2_device_register(vin->dev, &vin->v4l2_dev);
 	if (ret)
 		return ret;
@@ -1550,7 +1506,7 @@ int rvin_dma_register(struct rvin_dev *vin, int irq)
 	for (i = 0; i < HW_BUFFER_NUM; i++)
 		vin->buf_hw[i].buffer = NULL;
 
-	/* buffer queue */
+	 
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_READ | VB2_DMABUF;
 	q->lock = &vin->lock;
@@ -1568,7 +1524,7 @@ int rvin_dma_register(struct rvin_dev *vin, int irq)
 		goto error;
 	}
 
-	/* irq */
+	 
 	ret = devm_request_irq(vin->dev, irq, rvin_irq, IRQF_SHARED,
 			       KBUILD_MODNAME, vin);
 	if (ret) {
@@ -1583,15 +1539,9 @@ error:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Gen3 CHSEL manipulation
- */
+ 
 
-/*
- * There is no need to have locking around changing the routing
- * as it's only possible to do so when no VIN in the group is
- * streaming so nothing can race with the VNMC register.
- */
+ 
 int rvin_set_channel_routing(struct rvin_dev *vin, u8 chsel)
 {
 	const struct rvin_group_route *route;
@@ -1603,16 +1553,11 @@ int rvin_set_channel_routing(struct rvin_dev *vin, u8 chsel)
 	if (ret < 0)
 		return ret;
 
-	/* Make register writes take effect immediately. */
+	 
 	vnmc = rvin_read(vin, VNMC_REG);
 	rvin_write(vin, vnmc & ~VNMC_VUP, VNMC_REG);
 
-	/*
-	 * Set data expansion mode to "pad with 0s" by inspecting the routes
-	 * table to find out which bit fields are available in the IFMD
-	 * register. IFMD_DES1 controls data expansion mode for CSI20/21,
-	 * IFMD_DES0 controls data expansion mode for CSI40/41.
-	 */
+	 
 	for (route = vin->info->routes; route->chsel; route++) {
 		if (route->csi == RVIN_CSI20 || route->csi == RVIN_CSI21)
 			ifmd |= VNCSI_IFMD_DES1;
@@ -1632,7 +1577,7 @@ int rvin_set_channel_routing(struct rvin_dev *vin, u8 chsel)
 
 	vin->chsel = chsel;
 
-	/* Restore VNMC. */
+	 
 	rvin_write(vin, vnmc, VNMC_REG);
 
 	pm_runtime_put(vin->dev);

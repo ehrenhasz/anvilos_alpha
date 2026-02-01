@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or http://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2013 Saso Kiselkov. All rights reserved.
- */
+ 
 
 #include <sys/crypto/common.h>
 #include <sys/crypto/icp.h>
@@ -68,8 +47,8 @@ static int skein_mac_atomic(crypto_mechanism_t *, crypto_key_t *,
 static const crypto_mac_ops_t skein_mac_ops = {
 	.mac_init = skein_mac_init,
 	.mac = NULL,
-	.mac_update = skein_update, /* using regular digest update is OK here */
-	.mac_final = skein_final,   /* using regular digest final is OK here */
+	.mac_update = skein_update,  
+	.mac_final = skein_final,    
 	.mac_atomic = skein_mac_atomic,
 	.mac_verify_atomic = NULL
 };
@@ -102,7 +81,7 @@ static crypto_kcf_provider_handle_t skein_prov_handle = 0;
 typedef struct skein_ctx {
 	skein_mech_type_t		sc_mech_type;
 	size_t				sc_digest_bitlen;
-	/*LINTED(E_ANONYMOUS_UNION_DECL)*/
+	 
 	union {
 		Skein_256_Ctxt_t	sc_256;
 		Skein_512_Ctxt_t	sc_512;
@@ -134,7 +113,7 @@ static int
 skein_get_digest_bitlen(const crypto_mechanism_t *mechanism, size_t *result)
 {
 	if (mechanism->cm_param != NULL) {
-		/*LINTED(E_BAD_PTR_CAST_ALIGN)*/
+		 
 		skein_param_t	*param = (skein_param_t *)mechanism->cm_param;
 
 		if (mechanism->cm_param_len != sizeof (*param) ||
@@ -163,10 +142,7 @@ skein_get_digest_bitlen(const crypto_mechanism_t *mechanism, size_t *result)
 int
 skein_mod_init(void)
 {
-	/*
-	 * Try to register with KCF - failure shouldn't unload us, since we
-	 * still may want to continue providing misc/skein functionality.
-	 */
+	 
 	(void) crypto_register_provider(&skein_prov_info, &skein_prov_handle);
 
 	return (0);
@@ -191,13 +167,9 @@ skein_mod_fini(void)
 	return (0);
 }
 
-/*
- * General Skein hashing helper functions.
- */
+ 
 
-/*
- * Performs an Update on a context with uio input data.
- */
+ 
 static int
 skein_digest_update_uio(skein_ctx_t *ctx, const crypto_data_t *data)
 {
@@ -207,26 +179,18 @@ skein_digest_update_uio(skein_ctx_t *ctx, const crypto_data_t *data)
 	size_t		cur_len;
 	zfs_uio_t	*uio = data->cd_uio;
 
-	/* we support only kernel buffer */
+	 
 	if (zfs_uio_segflg(uio) != UIO_SYSSPACE)
 		return (CRYPTO_ARGUMENTS_BAD);
 
-	/*
-	 * Jump to the first iovec containing data to be
-	 * digested.
-	 */
+	 
 	offset = zfs_uio_index_at_offset(uio, offset, &vec_idx);
 	if (vec_idx == zfs_uio_iovcnt(uio)) {
-		/*
-		 * The caller specified an offset that is larger than the
-		 * total size of the buffers it provided.
-		 */
+		 
 		return (CRYPTO_DATA_LEN_RANGE);
 	}
 
-	/*
-	 * Now do the digesting on the iovecs.
-	 */
+	 
 	while (vec_idx < zfs_uio_iovcnt(uio) && length > 0) {
 		cur_len = MIN(zfs_uio_iovlen(uio, vec_idx) - offset, length);
 		SKEIN_OP(ctx, Update, (uint8_t *)zfs_uio_iovbase(uio, vec_idx)
@@ -237,20 +201,14 @@ skein_digest_update_uio(skein_ctx_t *ctx, const crypto_data_t *data)
 	}
 
 	if (vec_idx == zfs_uio_iovcnt(uio) && length > 0) {
-		/*
-		 * The end of the specified iovec's was reached but
-		 * the length requested could not be processed, i.e.
-		 * The caller requested to digest more data than it provided.
-		 */
+		 
 		return (CRYPTO_DATA_LEN_RANGE);
 	}
 
 	return (CRYPTO_SUCCESS);
 }
 
-/*
- * Performs a Final on a context and writes to a uio digest output.
- */
+ 
 static int
 skein_digest_final_uio(skein_ctx_t *ctx, crypto_data_t *digest)
 {
@@ -258,24 +216,19 @@ skein_digest_final_uio(skein_ctx_t *ctx, crypto_data_t *digest)
 	uint_t vec_idx = 0;
 	zfs_uio_t *uio = digest->cd_uio;
 
-	/* we support only kernel buffer */
+	 
 	if (zfs_uio_segflg(uio) != UIO_SYSSPACE)
 		return (CRYPTO_ARGUMENTS_BAD);
 
-	/*
-	 * Jump to the first iovec containing ptr to the digest to be returned.
-	 */
+	 
 	offset = zfs_uio_index_at_offset(uio, offset, &vec_idx);
 	if (vec_idx == zfs_uio_iovcnt(uio)) {
-		/*
-		 * The caller specified an offset that is larger than the
-		 * total size of the buffers it provided.
-		 */
+		 
 		return (CRYPTO_DATA_LEN_RANGE);
 	}
 	if (offset + CRYPTO_BITS2BYTES(ctx->sc_digest_bitlen) <=
 	    zfs_uio_iovlen(uio, vec_idx)) {
-		/* The computed digest will fit in the current iovec. */
+		 
 		SKEIN_OP(ctx, Final,
 		    (uchar_t *)zfs_uio_iovbase(uio, vec_idx) + offset);
 	} else {
@@ -303,12 +256,7 @@ skein_digest_final_uio(skein_ctx_t *ctx, crypto_data_t *digest)
 		kmem_free(digest_tmp, CRYPTO_BITS2BYTES(ctx->sc_digest_bitlen));
 
 		if (vec_idx == zfs_uio_iovcnt(uio) && length > 0) {
-			/*
-			 * The end of the specified iovec's was reached but
-			 * the length requested could not be processed, i.e.
-			 * The caller requested to digest more data than it
-			 * provided.
-			 */
+			 
 			return (CRYPTO_DATA_LEN_RANGE);
 		}
 	}
@@ -316,18 +264,9 @@ skein_digest_final_uio(skein_ctx_t *ctx, crypto_data_t *digest)
 	return (CRYPTO_SUCCESS);
 }
 
-/*
- * KCF software provider digest entry points.
- */
+ 
 
-/*
- * Initializes a skein digest context to the configuration in `mechanism'.
- * The mechanism cm_type must be one of SKEIN_*_MECH_INFO_TYPE. The cm_param
- * field may contain a skein_param_t structure indicating the length of the
- * digest the algorithm should produce. Otherwise the default output lengths
- * are applied (32 bytes for Skein-256, 64 bytes for Skein-512 and 128 bytes
- * for Skein-1024).
- */
+ 
 static int
 skein_digest_init(crypto_ctx_t *ctx, crypto_mechanism_t *mechanism)
 {
@@ -355,11 +294,7 @@ errout:
 	return (error);
 }
 
-/*
- * Executes a skein_update and skein_digest on a pre-initialized crypto
- * context in a single step. See the documentation to these functions to
- * see what to pass here.
- */
+ 
 static int
 skein_digest(crypto_ctx_t *ctx, crypto_data_t *data, crypto_data_t *digest)
 {
@@ -387,11 +322,7 @@ skein_digest(crypto_ctx_t *ctx, crypto_data_t *data, crypto_data_t *digest)
 	return (error);
 }
 
-/*
- * Performs a skein Update with the input message in `data' (successive calls
- * can push more data). This is used both for digest and MAC operation.
- * Supported input data formats are raw, uio and mblk.
- */
+ 
 static int
 skein_update(crypto_ctx_t *ctx, crypto_data_t *data)
 {
@@ -415,11 +346,7 @@ skein_update(crypto_ctx_t *ctx, crypto_data_t *data)
 	return (error);
 }
 
-/*
- * Performs a skein Final, writing the output to `digest'. This is used both
- * for digest and MAC operation.
- * Supported output digest formats are raw, uio and mblk.
- */
+ 
 static int
 skein_final_nofree(crypto_ctx_t *ctx, crypto_data_t *digest)
 {
@@ -470,12 +397,7 @@ skein_final(crypto_ctx_t *ctx, crypto_data_t *digest)
 	return (error);
 }
 
-/*
- * Performs a full skein digest computation in a single call, configuring the
- * algorithm according to `mechanism', reading the input to be digested from
- * `data' and writing the output to `digest'.
- * Supported input/output formats are raw, uio and mblk.
- */
+ 
 static int
 skein_digest_atomic(crypto_mechanism_t *mechanism, crypto_data_t *data,
     crypto_data_t *digest)
@@ -485,7 +407,7 @@ skein_digest_atomic(crypto_mechanism_t *mechanism, crypto_data_t *data,
 	crypto_ctx_t ctx;
 	SKEIN_CTX_LVALUE(&ctx) = &skein_ctx;
 
-	/* Init */
+	 
 	if (!VALID_SKEIN_DIGEST_MECH(mechanism->cm_type))
 		return (CRYPTO_MECHANISM_INVALID);
 	skein_ctx.sc_mech_type = mechanism->cm_type;
@@ -510,10 +432,7 @@ out:
 	return (error);
 }
 
-/*
- * Helper function that builds a Skein MAC context from the provided
- * mechanism and key.
- */
+ 
 static int
 skein_mac_ctx_build(skein_ctx_t *ctx, crypto_mechanism_t *mechanism,
     crypto_key_t *key)
@@ -532,17 +451,8 @@ skein_mac_ctx_build(skein_ctx_t *ctx, crypto_mechanism_t *mechanism,
 	return (CRYPTO_SUCCESS);
 }
 
-/*
- * KCF software provide mac entry points.
- */
-/*
- * Initializes a skein MAC context. You may pass a ctx_template, in which
- * case the template will be reused to make initialization more efficient.
- * Otherwise a new context will be constructed. The mechanism cm_type must
- * be one of SKEIN_*_MAC_MECH_INFO_TYPE. Same as in skein_digest_init, you
- * may pass a skein_param_t in cm_param to configure the length of the
- * digest. The key must be in raw format.
- */
+ 
+ 
 static int
 skein_mac_init(crypto_ctx_t *ctx, crypto_mechanism_t *mechanism,
     crypto_key_t *key, crypto_spi_ctx_template_t ctx_template)
@@ -569,21 +479,15 @@ errout:
 	return (error);
 }
 
-/*
- * The MAC update and final calls are reused from the regular digest code.
- */
+ 
 
-/*
- * Same as skein_digest_atomic, performs an atomic Skein MAC operation in
- * one step. All the same properties apply to the arguments of this
- * function as to those of the partial operations above.
- */
+ 
 static int
 skein_mac_atomic(crypto_mechanism_t *mechanism,
     crypto_key_t *key, crypto_data_t *data, crypto_data_t *mac,
     crypto_spi_ctx_template_t ctx_template)
 {
-	/* faux crypto context just for skein_digest_{update,final} */
+	 
 	int	error;
 	crypto_ctx_t ctx;
 	skein_ctx_t skein_ctx;
@@ -608,15 +512,9 @@ errout:
 	return (error);
 }
 
-/*
- * KCF software provider context management entry points.
- */
+ 
 
-/*
- * Constructs a context template for the Skein MAC algorithm. The same
- * properties apply to the arguments of this function as to those of
- * skein_mac_init.
- */
+ 
 static int
 skein_create_ctx_template(crypto_mechanism_t *mechanism, crypto_key_t *key,
     crypto_spi_ctx_template_t *ctx_template, size_t *ctx_template_size)
@@ -640,9 +538,7 @@ errout:
 	return (error);
 }
 
-/*
- * Frees a skein context in a parent crypto context.
- */
+ 
 static int
 skein_free_context(crypto_ctx_t *ctx)
 {

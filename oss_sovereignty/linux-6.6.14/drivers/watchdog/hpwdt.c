@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	HPE WatchDog Driver
- *	based on
- *
- *	SoftDog	0.05:	A Software Watchdog Device
- *
- *	(c) Copyright 2018 Hewlett Packard Enterprise Development LP
- *	Thomas Mingarelli <thomas.mingarelli@hpe.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,34 +26,32 @@
 #define PRETIMEOUT_SEC			9
 
 static bool ilo5;
-static unsigned int soft_margin = DEFAULT_MARGIN;	/* in seconds */
+static unsigned int soft_margin = DEFAULT_MARGIN;	 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 static bool pretimeout = IS_ENABLED(CONFIG_HPWDT_NMI_DECODING);
 static int kdumptimeout = -1;
 
-static void __iomem *pci_mem_addr;		/* the PCI-memory address */
+static void __iomem *pci_mem_addr;		 
 static unsigned long __iomem *hpwdt_nmistat;
 static unsigned long __iomem *hpwdt_timer_reg;
 static unsigned long __iomem *hpwdt_timer_con;
 
 static const struct pci_device_id hpwdt_devices[] = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_COMPAQ, 0xB203) },	/* iLO2 */
-	{ PCI_DEVICE(PCI_VENDOR_ID_HP, 0x3306) },	/* iLO3 */
-	{ PCI_DEVICE(PCI_VENDOR_ID_HP_3PAR, 0x0389) },	/* PCtrl */
-	{0},			/* terminate list */
+	{ PCI_DEVICE(PCI_VENDOR_ID_COMPAQ, 0xB203) },	 
+	{ PCI_DEVICE(PCI_VENDOR_ID_HP, 0x3306) },	 
+	{ PCI_DEVICE(PCI_VENDOR_ID_HP_3PAR, 0x0389) },	 
+	{0},			 
 };
 MODULE_DEVICE_TABLE(pci, hpwdt_devices);
 
 static const struct pci_device_id hpwdt_blacklist[] = {
-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3306, PCI_VENDOR_ID_HP, 0x1979) }, /* auxilary iLO */
-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3306, PCI_VENDOR_ID_HP_3PAR, 0x0289) },  /* CL */
-	{0},			/* terminate list */
+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3306, PCI_VENDOR_ID_HP, 0x1979) },  
+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3306, PCI_VENDOR_ID_HP_3PAR, 0x0289) },   
+	{0},			 
 };
 
 static struct watchdog_device hpwdt_dev;
-/*
- *	Watchdog operations
- */
+ 
 static int hpwdt_hw_is_running(void)
 {
 	return ioread8(hpwdt_timer_con) & 0x01;
@@ -164,9 +154,7 @@ static int hpwdt_my_nmi(void)
 	return ioread8(hpwdt_nmistat) & 0x6;
 }
 
-/*
- *	NMI Handler
- */
+ 
 static int hpwdt_pretimeout(unsigned int ulReason, struct pt_regs *regs)
 {
 	unsigned int mynmi = hpwdt_my_nmi();
@@ -198,7 +186,7 @@ static int hpwdt_pretimeout(unsigned int ulReason, struct pt_regs *regs)
 
 	return NMI_HANDLED;
 }
-#endif /* CONFIG_HPWDT_NMI_DECODING */
+#endif  
 
 
 static const struct watchdog_info ident = {
@@ -209,9 +197,7 @@ static const struct watchdog_info ident = {
 	.identity = "HPE iLO2+ HW Watchdog Timer",
 };
 
-/*
- *	Kernel interfaces
- */
+ 
 
 static const struct watchdog_ops hpwdt_ops = {
 	.owner		= THIS_MODULE,
@@ -235,17 +221,13 @@ static struct watchdog_device hpwdt_dev = {
 };
 
 
-/*
- *	Init & Exit
- */
+ 
 
 static int hpwdt_init_nmi_decoding(struct pci_dev *dev)
 {
 #ifdef CONFIG_HPWDT_NMI_DECODING
 	int retval;
-	/*
-	 * Only one function can register for NMI_UNKNOWN
-	 */
+	 
 	retval = register_nmi_handler(NMI_UNKNOWN, hpwdt_pretimeout, 0, "hpwdt");
 	if (retval)
 		goto error;
@@ -270,7 +252,7 @@ error:
 		"Unable to register a die notifier (err=%d).\n",
 		retval);
 	return retval;
-#endif	/* CONFIG_HPWDT_NMI_DECODING */
+#endif	 
 	return 0;
 }
 
@@ -288,11 +270,7 @@ static int hpwdt_init_one(struct pci_dev *dev,
 {
 	int retval;
 
-	/*
-	 * First let's find out if we are on an iLO2+ server. We will
-	 * not run on a legacy ASM box.
-	 * So we only support the G5 ProLiant servers and higher.
-	 */
+	 
 	if (dev->subsystem_vendor != PCI_VENDOR_ID_HP &&
 	    dev->subsystem_vendor != PCI_VENDOR_ID_HP_3PAR) {
 		dev_warn(&dev->dev,
@@ -323,13 +301,13 @@ static int hpwdt_init_one(struct pci_dev *dev,
 	hpwdt_timer_reg = pci_mem_addr + 0x70;
 	hpwdt_timer_con = pci_mem_addr + 0x72;
 
-	/* Have the core update running timer until user space is ready */
+	 
 	if (hpwdt_hw_is_running()) {
 		dev_info(&dev->dev, "timer is running\n");
 		set_bit(WDOG_HW_RUNNING, &hpwdt_dev.status);
 	}
 
-	/* Initialize NMI Decoding functionality */
+	 
 	retval = hpwdt_init_nmi_decoding(dev);
 	if (retval != 0)
 		goto error_init_nmi_decoding;

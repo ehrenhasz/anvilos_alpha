@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef RKVDEC_REGS_H_
 #define RKVDEC_REGS_H_
 
-/* rkvcodec registers */
+ 
 #define RKVDEC_REG_INTERRUPT				0x004
 #define RKVDEC_INTERRUPT_DEC_E				BIT(0)
 #define RKVDEC_CONFIG_DEC_CLK_GATE_E			BIT(1)
@@ -220,4 +220,4 @@
 #define RKVDEC_REG_PREF_LUMA_CACHE_COMMAND		0x410
 #define RKVDEC_REG_PREF_CHR_CACHE_COMMAND		0x450
 
-#endif /* RKVDEC_REGS_H_ */
+#endif  

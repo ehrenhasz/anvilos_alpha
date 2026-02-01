@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Trace events for the ChromeOS Sensorhub kernel module
- *
- * Copyright 2021 Google LLC.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cros_ec
@@ -110,9 +106,9 @@ TRACE_EVENT(cros_ec_sensorhub_filter,
 );
 
 
-#endif /* _CROS_EC_SENSORHUB_TRACE_H_ */
+#endif  
 
-/* this part must be outside header guard */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

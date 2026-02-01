@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Cadence NAND flash controller driver
- *
- * Copyright (C) 2019 Cadence
- *
- * Author: Piotr Sroka <piotrs@cadence.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -19,49 +13,35 @@
 #include <linux/iopoll.h>
 #include <linux/slab.h>
 
-/*
- * HPNFC can work in 3 modes:
- * -  PIO - can work in master or slave DMA
- * -  CDMA - needs Master DMA for accessing command descriptors.
- * -  Generic mode - can use only slave DMA.
- * CDMA and PIO modes can be used to execute only base commands.
- * Generic mode can be used to execute any command
- * on NAND flash memory. Driver uses CDMA mode for
- * block erasing, page reading, page programing.
- * Generic mode is used for executing rest of commands.
- */
+ 
 
 #define MAX_ADDRESS_CYC		6
 #define MAX_ERASE_ADDRESS_CYC	3
 #define MAX_DATA_SIZE		0xFFFC
 #define DMA_DATA_SIZE_ALIGN	8
 
-/* Register definition. */
-/*
- * Command register 0.
- * Writing data to this register will initiate a new transaction
- * of the NF controller.
- */
+ 
+ 
 #define CMD_REG0			0x0000
-/* Command type field mask. */
+ 
 #define		CMD_REG0_CT		GENMASK(31, 30)
-/* Command type CDMA. */
+ 
 #define		CMD_REG0_CT_CDMA	0uL
-/* Command type generic. */
+ 
 #define		CMD_REG0_CT_GEN		3uL
-/* Command thread number field mask. */
+ 
 #define		CMD_REG0_TN		GENMASK(27, 24)
 
-/* Command register 2. */
+ 
 #define CMD_REG2			0x0008
-/* Command register 3. */
+ 
 #define CMD_REG3			0x000C
-/* Pointer register to select which thread status will be selected. */
+ 
 #define CMD_STATUS_PTR			0x0010
-/* Command status register for selected thread. */
+ 
 #define CMD_STATUS			0x0014
 
-/* Interrupt status register. */
+ 
 #define INTR_STATUS			0x0110
 #define		INTR_STATUS_SDMA_ERR	BIT(22)
 #define		INTR_STATUS_SDMA_TRIGG	BIT(21)
@@ -70,7 +50,7 @@
 #define		INTR_STATUS_CDMA_TERR	BIT(17)
 #define		INTR_STATUS_CDMA_IDL	BIT(16)
 
-/* Interrupt enable register. */
+ 
 #define INTR_ENABLE				0x0114
 #define		INTR_ENABLE_INTR_EN		BIT(31)
 #define		INTR_ENABLE_SDMA_ERR_EN		BIT(22)
@@ -80,127 +60,119 @@
 #define		INTR_ENABLE_CDMA_TERR_EN	BIT(17)
 #define		INTR_ENABLE_CDMA_IDLE_EN	BIT(16)
 
-/* Controller internal state. */
+ 
 #define CTRL_STATUS				0x0118
 #define		CTRL_STATUS_INIT_COMP		BIT(9)
 #define		CTRL_STATUS_CTRL_BUSY		BIT(8)
 
-/* Command Engine threads state. */
+ 
 #define TRD_STATUS				0x0120
 
-/* Command Engine interrupt thread error status. */
+ 
 #define TRD_ERR_INT_STATUS			0x0128
-/* Command Engine interrupt thread error enable. */
+ 
 #define TRD_ERR_INT_STATUS_EN			0x0130
-/* Command Engine interrupt thread complete status. */
+ 
 #define TRD_COMP_INT_STATUS			0x0138
 
-/*
- * Transfer config 0 register.
- * Configures data transfer parameters.
- */
+ 
 #define TRAN_CFG_0				0x0400
-/* Offset value from the beginning of the page. */
+ 
 #define		TRAN_CFG_0_OFFSET		GENMASK(31, 16)
-/* Numbers of sectors to transfer within singlNF device's page. */
+ 
 #define		TRAN_CFG_0_SEC_CNT		GENMASK(7, 0)
 
-/*
- * Transfer config 1 register.
- * Configures data transfer parameters.
- */
+ 
 #define TRAN_CFG_1				0x0404
-/* Size of last data sector. */
+ 
 #define		TRAN_CFG_1_LAST_SEC_SIZE	GENMASK(31, 16)
-/* Size of not-last data sector. */
+ 
 #define		TRAN_CFG_1_SECTOR_SIZE		GENMASK(15, 0)
 
-/* ECC engine configuration register 0. */
+ 
 #define ECC_CONFIG_0				0x0428
-/* Correction strength. */
+ 
 #define		ECC_CONFIG_0_CORR_STR		GENMASK(10, 8)
-/* Enable erased pages detection mechanism. */
+ 
 #define		ECC_CONFIG_0_ERASE_DET_EN	BIT(1)
-/* Enable controller ECC check bits generation and correction. */
+ 
 #define		ECC_CONFIG_0_ECC_EN		BIT(0)
 
-/* ECC engine configuration register 1. */
+ 
 #define ECC_CONFIG_1				0x042C
 
-/* Multiplane settings register. */
+ 
 #define MULTIPLANE_CFG				0x0434
-/* Cache operation settings. */
+ 
 #define CACHE_CFG				0x0438
 
-/* DMA settings register. */
+ 
 #define DMA_SETINGS				0x043C
-/* Enable SDMA error report on access unprepared slave DMA interface. */
+ 
 #define		DMA_SETINGS_SDMA_ERR_RSP	BIT(17)
 
-/* Transferred data block size for the slave DMA module. */
+ 
 #define SDMA_SIZE				0x0440
 
-/* Thread number associated with transferred data block
- * for the slave DMA module.
- */
+ 
 #define SDMA_TRD_NUM				0x0444
-/* Thread number mask. */
+ 
 #define		SDMA_TRD_NUM_SDMA_TRD		GENMASK(2, 0)
 
 #define CONTROL_DATA_CTRL			0x0494
-/* Thread number mask. */
+ 
 #define		CONTROL_DATA_CTRL_SIZE		GENMASK(15, 0)
 
 #define CTRL_VERSION				0x800
 #define		CTRL_VERSION_REV		GENMASK(7, 0)
 
-/* Available hardware features of the controller. */
+ 
 #define CTRL_FEATURES				0x804
-/* Support for NV-DDR2/3 work mode. */
+ 
 #define		CTRL_FEATURES_NVDDR_2_3		BIT(28)
-/* Support for NV-DDR work mode. */
+ 
 #define		CTRL_FEATURES_NVDDR		BIT(27)
-/* Support for asynchronous work mode. */
+ 
 #define		CTRL_FEATURES_ASYNC		BIT(26)
-/* Support for asynchronous work mode. */
+ 
 #define		CTRL_FEATURES_N_BANKS		GENMASK(25, 24)
-/* Slave and Master DMA data width. */
+ 
 #define		CTRL_FEATURES_DMA_DWITH64	BIT(21)
-/* Availability of Control Data feature.*/
+ 
 #define		CTRL_FEATURES_CONTROL_DATA	BIT(10)
 
-/* BCH Engine identification register 0 - correction strengths. */
+ 
 #define BCH_CFG_0				0x838
 #define		BCH_CFG_0_CORR_CAP_0		GENMASK(7, 0)
 #define		BCH_CFG_0_CORR_CAP_1		GENMASK(15, 8)
 #define		BCH_CFG_0_CORR_CAP_2		GENMASK(23, 16)
 #define		BCH_CFG_0_CORR_CAP_3		GENMASK(31, 24)
 
-/* BCH Engine identification register 1 - correction strengths. */
+ 
 #define BCH_CFG_1				0x83C
 #define		BCH_CFG_1_CORR_CAP_4		GENMASK(7, 0)
 #define		BCH_CFG_1_CORR_CAP_5		GENMASK(15, 8)
 #define		BCH_CFG_1_CORR_CAP_6		GENMASK(23, 16)
 #define		BCH_CFG_1_CORR_CAP_7		GENMASK(31, 24)
 
-/* BCH Engine identification register 2 - sector sizes. */
+ 
 #define BCH_CFG_2				0x840
 #define		BCH_CFG_2_SECT_0		GENMASK(15, 0)
 #define		BCH_CFG_2_SECT_1		GENMASK(31, 16)
 
-/* BCH Engine identification register 3. */
+ 
 #define BCH_CFG_3				0x844
 #define		BCH_CFG_3_METADATA_SIZE		GENMASK(23, 16)
 
-/* Ready/Busy# line status. */
+ 
 #define RBN_SETINGS				0x1004
 
-/* Common settings. */
+ 
 #define COMMON_SET				0x1008
-/* 16 bit device connected to the NAND Flash interface. */
+ 
 #define		COMMON_SET_DEVICE_16BIT		BIT(8)
 
-/* Skip_bytes registers. */
+ 
 #define SKIP_BYTES_CONF				0x100C
 #define		SKIP_BYTES_MARKER_VALUE		GENMASK(31, 16)
 #define		SKIP_BYTES_NUM_OF_BYTES		GENMASK(7, 0)
@@ -208,7 +180,7 @@
 #define SKIP_BYTES_OFFSET			0x1010
 #define		 SKIP_BYTES_OFFSET_VALUE	GENMASK(23, 0)
 
-/* Timings configuration. */
+ 
 #define ASYNC_TOGGLE_TIMINGS			0x101c
 #define		ASYNC_TOGGLE_TIMINGS_TRH	GENMASK(28, 24)
 #define		ASYNC_TOGGLE_TIMINGS_TRP	GENMASK(20, 16)
@@ -231,7 +203,7 @@
 #define		TIMINGS2_CS_HOLD_TIME		GENMASK(13, 8)
 #define		TIMINGS2_CS_SETUP_TIME		GENMASK(5, 0)
 
-/* Configuration of the resynchronization of slave DLL of PHY. */
+ 
 #define DLL_PHY_CTRL				0x1034
 #define		DLL_PHY_CTRL_DLL_RST_N		BIT(24)
 #define		DLL_PHY_CTRL_EXTENDED_WR_MODE	BIT(17)
@@ -239,135 +211,120 @@
 #define		DLL_PHY_CTRL_RS_HIGH_WAIT_CNT	GENMASK(11, 8)
 #define		DLL_PHY_CTRL_RS_IDLE_CNT	GENMASK(7, 0)
 
-/* Register controlling DQ related timing. */
+ 
 #define PHY_DQ_TIMING				0x2000
-/* Register controlling DSQ related timing.  */
+ 
 #define PHY_DQS_TIMING				0x2004
 #define		PHY_DQS_TIMING_DQS_SEL_OE_END	GENMASK(3, 0)
 #define		PHY_DQS_TIMING_PHONY_DQS_SEL	BIT(16)
 #define		PHY_DQS_TIMING_USE_PHONY_DQS	BIT(20)
 
-/* Register controlling the gate and loopback control related timing. */
+ 
 #define PHY_GATE_LPBK_CTRL			0x2008
 #define		PHY_GATE_LPBK_CTRL_RDS		GENMASK(24, 19)
 
-/* Register holds the control for the master DLL logic. */
+ 
 #define PHY_DLL_MASTER_CTRL			0x200C
 #define		PHY_DLL_MASTER_CTRL_BYPASS_MODE	BIT(23)
 
-/* Register holds the control for the slave DLL logic. */
+ 
 #define PHY_DLL_SLAVE_CTRL			0x2010
 
-/* This register handles the global control settings for the PHY. */
+ 
 #define PHY_CTRL				0x2080
 #define		PHY_CTRL_SDR_DQS		BIT(14)
 #define		PHY_CTRL_PHONY_DQS		GENMASK(9, 4)
 
-/*
- * This register handles the global control settings
- * for the termination selects for reads.
- */
+ 
 #define PHY_TSEL				0x2084
 
-/* Generic command layout. */
+ 
 #define GCMD_LAY_CS			GENMASK_ULL(11, 8)
-/*
- * This bit informs the minicotroller if it has to wait for tWB
- * after sending the last CMD/ADDR/DATA in the sequence.
- */
+ 
 #define GCMD_LAY_TWB			BIT_ULL(6)
-/* Type of generic instruction. */
+ 
 #define GCMD_LAY_INSTR			GENMASK_ULL(5, 0)
 
-/* Generic CMD sequence type. */
+ 
 #define		GCMD_LAY_INSTR_CMD	0
-/* Generic ADDR sequence type. */
+ 
 #define		GCMD_LAY_INSTR_ADDR	1
-/* Generic data transfer sequence type. */
+ 
 #define		GCMD_LAY_INSTR_DATA	2
 
-/* Input part of generic command type of input is command. */
+ 
 #define GCMD_LAY_INPUT_CMD		GENMASK_ULL(23, 16)
 
-/* Generic command address sequence - address fields. */
+ 
 #define GCMD_LAY_INPUT_ADDR		GENMASK_ULL(63, 16)
-/* Generic command address sequence - address size. */
+ 
 #define GCMD_LAY_INPUT_ADDR_SIZE	GENMASK_ULL(13, 11)
 
-/* Transfer direction field of generic command data sequence. */
+ 
 #define GCMD_DIR			BIT_ULL(11)
-/* Read transfer direction of generic command data sequence. */
+ 
 #define		GCMD_DIR_READ		0
-/* Write transfer direction of generic command data sequence. */
+ 
 #define		GCMD_DIR_WRITE		1
 
-/* ECC enabled flag of generic command data sequence - ECC enabled. */
+ 
 #define GCMD_ECC_EN			BIT_ULL(12)
-/* Generic command data sequence - sector size. */
+ 
 #define GCMD_SECT_SIZE			GENMASK_ULL(31, 16)
-/* Generic command data sequence - sector count. */
+ 
 #define GCMD_SECT_CNT			GENMASK_ULL(39, 32)
-/* Generic command data sequence - last sector size. */
+ 
 #define GCMD_LAST_SIZE			GENMASK_ULL(55, 40)
 
-/* CDMA descriptor fields. */
-/* Erase command type of CDMA descriptor. */
+ 
+ 
 #define CDMA_CT_ERASE		0x1000
-/* Program page command type of CDMA descriptor. */
+ 
 #define CDMA_CT_WR		0x2100
-/* Read page command type of CDMA descriptor. */
+ 
 #define CDMA_CT_RD		0x2200
 
-/* Flash pointer memory shift. */
+ 
 #define CDMA_CFPTR_MEM_SHIFT	24
-/* Flash pointer memory mask. */
+ 
 #define CDMA_CFPTR_MEM		GENMASK(26, 24)
 
-/*
- * Command DMA descriptor flags. If set causes issue interrupt after
- * the completion of descriptor processing.
- */
+ 
 #define CDMA_CF_INT		BIT(8)
-/*
- * Command DMA descriptor flags - the next descriptor
- * address field is valid and descriptor processing should continue.
- */
+ 
 #define CDMA_CF_CONT		BIT(9)
-/* DMA master flag of command DMA descriptor. */
+ 
 #define CDMA_CF_DMA_MASTER	BIT(10)
 
-/* Operation complete status of command descriptor. */
+ 
 #define CDMA_CS_COMP		BIT(15)
-/* Operation complete status of command descriptor. */
-/* Command descriptor status - operation fail. */
+ 
+ 
 #define CDMA_CS_FAIL		BIT(14)
-/* Command descriptor status - page erased. */
+ 
 #define CDMA_CS_ERP		BIT(11)
-/* Command descriptor status - timeout occurred. */
+ 
 #define CDMA_CS_TOUT		BIT(10)
-/*
- * Maximum amount of correction applied to one ECC sector.
- * It is part of command descriptor status.
- */
+ 
 #define CDMA_CS_MAXERR		GENMASK(9, 2)
-/* Command descriptor status - uncorrectable ECC error. */
+ 
 #define CDMA_CS_UNCE		BIT(1)
-/* Command descriptor status - descriptor error. */
+ 
 #define CDMA_CS_ERR		BIT(0)
 
-/* Status of operation - OK. */
+ 
 #define STAT_OK			0
-/* Status of operation - FAIL. */
+ 
 #define STAT_FAIL		2
-/* Status of operation - uncorrectable ECC error. */
+ 
 #define STAT_ECC_UNCORR		3
-/* Status of operation - page erased. */
+ 
 #define STAT_ERASED		5
-/* Status of operation - correctable ECC error. */
+ 
 #define STAT_ECC_CORR		6
-/* Status of operation - unsuspected state. */
+ 
 #define STAT_UNKNOWN		7
-/* Status of operation - operation is not completed yet. */
+ 
 #define STAT_BUSY		0xFF
 
 #define BCH_MAX_NUM_CORR_CAPS		8
@@ -384,69 +341,69 @@ struct cadence_nand_timings {
 	u32 phy_gate_lpbk_ctrl;
 };
 
-/* Command DMA descriptor. */
+ 
 struct cadence_nand_cdma_desc {
-	/* Next descriptor address. */
+	 
 	u64 next_pointer;
 
-	/* Flash address is a 32-bit address comprising of BANK and ROW ADDR. */
+	 
 	u32 flash_pointer;
-	/*field appears in HPNFC version 13*/
+	 
 	u16 bank;
 	u16 rsvd0;
 
-	/* Operation the controller needs to perform. */
+	 
 	u16 command_type;
 	u16 rsvd1;
-	/* Flags for operation of this command. */
+	 
 	u16 command_flags;
 	u16 rsvd2;
 
-	/* System/host memory address required for data DMA commands. */
+	 
 	u64 memory_pointer;
 
-	/* Status of operation. */
+	 
 	u32 status;
 	u32 rsvd3;
 
-	/* Address pointer to sync buffer location. */
+	 
 	u64 sync_flag_pointer;
 
-	/* Controls the buffer sync mechanism. */
+	 
 	u32 sync_arguments;
 	u32 rsvd4;
 
-	/* Control data pointer. */
+	 
 	u64 ctrl_data_ptr;
 };
 
-/* Interrupt status. */
+ 
 struct cadence_nand_irq_status {
-	/* Thread operation complete status. */
+	 
 	u32 trd_status;
-	/* Thread operation error. */
+	 
 	u32 trd_error;
-	/* Controller status. */
+	 
 	u32 status;
 };
 
-/* Cadence NAND flash controller capabilities get from driver data. */
+ 
 struct cadence_nand_dt_devdata {
-	/* Skew value of the output signals of the NAND Flash interface. */
+	 
 	u32 if_skew;
-	/* It informs if slave DMA interface is connected to DMA engine. */
+	 
 	unsigned int has_dma:1;
 };
 
-/* Cadence NAND flash controller capabilities read from registers. */
+ 
 struct cdns_nand_caps {
-	/* Maximum number of banks supported by hardware. */
+	 
 	u8 max_banks;
-	/* Slave and Master DMA data width in bytes (4 or 8). */
+	 
 	u8 data_dma_width;
-	/* Control Data feature supported. */
+	 
 	bool data_control_supp;
-	/* Is PHY type DLL. */
+	 
 	bool is_phy_type_dll;
 };
 
@@ -454,7 +411,7 @@ struct cdns_nand_ctrl {
 	struct device *dev;
 	struct nand_controller controller;
 	struct cadence_nand_cdma_desc *cdma_desc;
-	/* IP capability. */
+	 
 	const struct cadence_nand_dt_devdata *caps1;
 	struct cdns_nand_caps caps2;
 	u8 ctrl_rev;
@@ -463,7 +420,7 @@ struct cdns_nand_ctrl {
 	u32 buf_size;
 	u8 curr_corr_str_idx;
 
-	/* Register interface. */
+	 
 	void __iomem *reg;
 
 	struct {
@@ -472,12 +429,12 @@ struct cdns_nand_ctrl {
 	} io;
 
 	int irq;
-	/* Interrupts that have happened. */
+	 
 	struct cadence_nand_irq_status irq_status;
-	/* Interrupts we are waiting for. */
+	 
 	struct cadence_nand_irq_status irq_mask;
 	struct completion complete;
-	/* Protect irq_mask and irq_status. */
+	 
 	spinlock_t irq_lock;
 
 	int ecc_strengths[BCH_MAX_NUM_CORR_CAPS];
@@ -489,11 +446,7 @@ struct cdns_nand_ctrl {
 	struct dma_chan *dmac;
 
 	u32 nf_clk_rate;
-	/*
-	 * Estimated Board delay. The value includes the total
-	 * round trip delay for the signals and is used for deciding on values
-	 * associated with data read capture.
-	 */
+	 
 	u32 board_delay;
 
 	struct nand_chip *selected_chip;
@@ -509,21 +462,18 @@ struct cdns_nand_chip {
 	u8 nsels;
 	struct list_head node;
 
-	/*
-	 * part of oob area of NAND flash memory page.
-	 * This part is available for user to read or write.
-	 */
+	 
 	u32 avail_oob_size;
 
-	/* Sector size. There are few sectors per mtd->writesize */
+	 
 	u32 sector_size;
 	u32 sector_count;
 
-	/* Offset of BBM. */
+	 
 	u8 bbm_offs;
-	/* Number of bytes reserved for BBM. */
+	 
 	u8 bbm_len;
-	/* ECC strength index. */
+	 
 	u8 corr_str_idx;
 
 	u8 cs[];
@@ -680,7 +630,7 @@ static int cadence_nand_set_skip_bytes_conf(struct cdns_nand_ctrl *cdns_ctrl,
 	return 0;
 }
 
-/* Functions enables/disables hardware detection of erased data */
+ 
 static void cadence_nand_set_erase_detection(struct cdns_nand_ctrl *cdns_ctrl,
 					     bool enable,
 					     u8 bitflips_threshold)
@@ -760,10 +710,7 @@ static void cadence_nand_reset_irq(struct cdns_nand_ctrl *cdns_ctrl)
 	spin_unlock_irqrestore(&cdns_ctrl->irq_lock, flags);
 }
 
-/*
- * This is the interrupt service routine. It handles all interrupts
- * sent to this device.
- */
+ 
 static irqreturn_t cadence_nand_isr(int irq, void *dev_id)
 {
 	struct cdns_nand_ctrl *cdns_ctrl = dev_id;
@@ -773,16 +720,16 @@ static irqreturn_t cadence_nand_isr(int irq, void *dev_id)
 	spin_lock(&cdns_ctrl->irq_lock);
 
 	if (irq_detected(cdns_ctrl, &irq_status)) {
-		/* Handle interrupt. */
-		/* First acknowledge it. */
+		 
+		 
 		cadence_nand_clear_interrupt(cdns_ctrl, &irq_status);
-		/* Status in the device context for someone to read. */
+		 
 		cdns_ctrl->irq_status.status |= irq_status.status;
 		cdns_ctrl->irq_status.trd_status |= irq_status.trd_status;
 		cdns_ctrl->irq_status.trd_error |= irq_status.trd_error;
-		/* Notify anyone who cares that it happened. */
+		 
 		complete(&cdns_ctrl->complete);
-		/* Tell the OS that we've handled this. */
+		 
 		result = IRQ_HANDLED;
 	}
 	spin_unlock(&cdns_ctrl->irq_lock);
@@ -813,7 +760,7 @@ cadence_nand_wait_for_irq(struct cdns_nand_ctrl *cdns_ctrl,
 
 	*irq_status = cdns_ctrl->irq_status;
 	if (time_left == 0) {
-		/* Timeout error. */
+		 
 		dev_err(cdns_ctrl->dev, "timeout occurred:\n");
 		dev_err(cdns_ctrl->dev, "\tstatus = 0x%x, mask = 0x%x\n",
 			irq_status->status, irq_mask->status);
@@ -826,7 +773,7 @@ cadence_nand_wait_for_irq(struct cdns_nand_ctrl *cdns_ctrl,
 	}
 }
 
-/* Execute generic command on NAND controller. */
+ 
 static int cadence_nand_generic_cmd_send(struct cdns_nand_ctrl *cdns_ctrl,
 					 u8 chip_nr,
 					 u64 mini_ctrl_cmd)
@@ -847,18 +794,18 @@ static int cadence_nand_generic_cmd_send(struct cdns_nand_ctrl *cdns_ctrl,
 	writel_relaxed(mini_ctrl_cmd_l, cdns_ctrl->reg + CMD_REG2);
 	writel_relaxed(mini_ctrl_cmd_h, cdns_ctrl->reg + CMD_REG3);
 
-	/* Select generic command. */
+	 
 	reg = FIELD_PREP(CMD_REG0_CT, CMD_REG0_CT_GEN);
-	/* Thread number. */
+	 
 	reg |= FIELD_PREP(CMD_REG0_TN, 0);
 
-	/* Issue command. */
+	 
 	writel_relaxed(reg, cdns_ctrl->reg + CMD_REG0);
 
 	return 0;
 }
 
-/* Wait for data on slave DMA interface. */
+ 
 static int cadence_nand_wait_on_sdma(struct cdns_nand_ctrl *cdns_ctrl,
 				     u8 *out_sdma_trd,
 				     u32 *out_sdma_size)
@@ -913,7 +860,7 @@ static void cadence_nand_get_caps(struct cdns_nand_ctrl *cdns_ctrl)
 		cdns_ctrl->caps2.is_phy_type_dll = true;
 }
 
-/* Prepare CDMA descriptor. */
+ 
 static void
 cadence_nand_cdma_desc_prepare(struct cdns_nand_ctrl *cdns_ctrl,
 			       char nf_mem, u32 flash_ptr, dma_addr_t mem_ptr,
@@ -923,7 +870,7 @@ cadence_nand_cdma_desc_prepare(struct cdns_nand_ctrl *cdns_ctrl,
 
 	memset(cdma_desc, 0, sizeof(struct cadence_nand_cdma_desc));
 
-	/* Set fields for one descriptor. */
+	 
 	cdma_desc->flash_pointer = flash_ptr;
 	if (cdns_ctrl->ctrl_rev >= 13)
 		cdma_desc->bank = nf_mem;
@@ -972,12 +919,12 @@ static int cadence_nand_cdma_finish(struct cdns_nand_ctrl *cdns_ctrl)
 						       desc_ptr->status);
 		dev_err(cdns_ctrl->dev, ":CDMA error %x\n", desc_ptr->status);
 	} else if (desc_ptr->status & CDMA_CS_COMP) {
-		/* Descriptor finished with no errors. */
+		 
 		if (desc_ptr->command_flags & CDMA_CF_CONT) {
 			dev_info(cdns_ctrl->dev, "DMA unsupported flag is set");
 			status = STAT_UNKNOWN;
 		} else {
-			/* Last descriptor.  */
+			 
 			status = STAT_OK;
 		}
 	}
@@ -991,7 +938,7 @@ static int cadence_nand_cdma_send(struct cdns_nand_ctrl *cdns_ctrl,
 	u32 reg;
 	int status;
 
-	/* Wait for thread ready. */
+	 
 	status = cadence_nand_wait_for_value(cdns_ctrl, TRD_STATUS,
 					     1000000,
 					     BIT(thread), true);
@@ -1005,17 +952,17 @@ static int cadence_nand_cdma_send(struct cdns_nand_ctrl *cdns_ctrl,
 		       cdns_ctrl->reg + CMD_REG2);
 	writel_relaxed(0, cdns_ctrl->reg + CMD_REG3);
 
-	/* Select CDMA mode. */
+	 
 	reg = FIELD_PREP(CMD_REG0_CT, CMD_REG0_CT_CDMA);
-	/* Thread number. */
+	 
 	reg |= FIELD_PREP(CMD_REG0_TN, thread);
-	/* Issue command. */
+	 
 	writel_relaxed(reg, cdns_ctrl->reg + CMD_REG0);
 
 	return 0;
 }
 
-/* Send SDMA command and wait for finish. */
+ 
 static u32
 cadence_nand_cdma_send_and_wait(struct cdns_nand_ctrl *cdns_ctrl,
 				u8 thread)
@@ -1048,10 +995,7 @@ cadence_nand_cdma_send_and_wait(struct cdns_nand_ctrl *cdns_ctrl,
 	return 0;
 }
 
-/*
- * ECC size depends on configured ECC strength and on maximum supported
- * ECC step size.
- */
+ 
 static int cadence_nand_calc_ecc_bytes(int max_step_size, int strength)
 {
 	int nbytes = DIV_ROUND_UP(fls(8 * max_step_size) * strength, 8);
@@ -1073,7 +1017,7 @@ CADENCE_NAND_CALC_ECC_BYTES(1024)
 CADENCE_NAND_CALC_ECC_BYTES(2048)
 CADENCE_NAND_CALC_ECC_BYTES(4096)
 
-/* Function reads BCH capabilities. */
+ 
 static int cadence_nand_read_bch_caps(struct cdns_nand_ctrl *cdns_ctrl)
 {
 	struct nand_ecc_caps *ecc_caps = &cdns_ctrl->ecc_caps;
@@ -1115,7 +1059,7 @@ static int cadence_nand_read_bch_caps(struct cdns_nand_ctrl *cdns_ctrl)
 
 	ecc_caps->nstepinfos = 0;
 	for (i = 0; i < BCH_MAX_NUM_SECTOR_SIZES; i++) {
-		/* ECC strengths are common for all step infos. */
+		 
 		cdns_ctrl->ecc_stepinfos[i].nstrengths = nstrengths;
 		cdns_ctrl->ecc_stepinfos[i].strengths =
 			cdns_ctrl->ecc_strengths;
@@ -1154,7 +1098,7 @@ static int cadence_nand_read_bch_caps(struct cdns_nand_ctrl *cdns_ctrl)
 	return 0;
 }
 
-/* Hardware initialization. */
+ 
 static int cadence_nand_hw_init(struct cdns_nand_ctrl *cdns_ctrl)
 {
 	int status;
@@ -1173,11 +1117,11 @@ static int cadence_nand_hw_init(struct cdns_nand_ctrl *cdns_ctrl)
 		 "%s: cadence nand controller version reg %x\n",
 		 __func__, reg);
 
-	/* Disable cache and multiplane. */
+	 
 	writel_relaxed(0, cdns_ctrl->reg + MULTIPLANE_CFG);
 	writel_relaxed(0, cdns_ctrl->reg + CACHE_CFG);
 
-	/* Clear all interrupts. */
+	 
 	writel_relaxed(0xFFFFFFFF, cdns_ctrl->reg + INTR_STATUS);
 
 	cadence_nand_get_caps(cdns_ctrl);
@@ -1192,11 +1136,7 @@ static int cadence_nand_hw_init(struct cdns_nand_ctrl *cdns_ctrl)
 	}
 #endif
 
-	/*
-	 * Set IO width access to 8.
-	 * It is because during SW device discovering width access
-	 * is expected to be 8.
-	 */
+	 
 	status = cadence_nand_set_access_width16(cdns_ctrl, false);
 
 	return status;
@@ -1207,7 +1147,7 @@ static int cadence_nand_hw_init(struct cdns_nand_ctrl *cdns_ctrl)
 #define TT_BBM			4
 #define TT_MAIN_OOB_AREA_EXT	5
 
-/* Prepare size of data to transfer. */
+ 
 static void
 cadence_nand_prepare_data_size(struct nand_chip *chip,
 			       int transfer_type)
@@ -1405,10 +1345,7 @@ static int cadence_nand_read_bbm(struct nand_chip *chip, int page, u8 *buf)
 
 	cadence_nand_set_skip_bytes_conf(cdns_ctrl, 0, 0, 0);
 
-	/*
-	 * Read only bad block marker from offset
-	 * defined by a memory manufacturer.
-	 */
+	 
 	status = cadence_nand_cdma_transfer(cdns_ctrl,
 					    cdns_chip->cs[chip->cur_cs],
 					    page, cdns_ctrl->buf, NULL,
@@ -1447,7 +1384,7 @@ static int cadence_nand_write_page(struct nand_chip *chip,
 		marker_val = *(u16 *)(chip->oob_poi
 				      + cdns_chip->bbm_offs);
 	} else {
-		/* Set oob data to 0xFF. */
+		 
 		memset(cdns_ctrl->buf + mtd->writesize, 0xFF,
 		       cdns_chip->avail_oob_size);
 	}
@@ -1480,7 +1417,7 @@ static int cadence_nand_write_page(struct nand_chip *chip,
 	}
 
 	if (oob_required) {
-		/* Transfer the data to the oob area. */
+		 
 		memcpy(cdns_ctrl->buf + mtd->writesize, chip->oob_poi,
 		       cdns_chip->avail_oob_size);
 	}
@@ -1529,16 +1466,13 @@ static int cadence_nand_write_page_raw(struct nand_chip *chip,
 	if (status)
 		return status;
 
-	/*
-	 * Fill the buffer with 0xff first except the full page transfer.
-	 * This simplifies the logic.
-	 */
+	 
 	if (!buf || !oob_required)
 		memset(tmp_buf, 0xff, size);
 
 	cadence_nand_set_skip_bytes_conf(cdns_ctrl, 0, 0, 0);
 
-	/* Arrange the buffer for syndrome payload/ecc layout. */
+	 
 	if (buf) {
 		for (i = 0; i < ecc_steps; i++) {
 			pos = i * (ecc_size + ecc_bytes);
@@ -1566,15 +1500,15 @@ static int cadence_nand_write_page_raw(struct nand_chip *chip,
 			(cdns_chip->sector_size + chip->ecc.bytes)
 			+ cdns_chip->sector_size + oob_skip;
 
-		/* BBM at the beginning of the OOB area. */
+		 
 		memcpy(tmp_buf + writesize, oob, oob_skip);
 
-		/* OOB free. */
+		 
 		memcpy(tmp_buf + oob_data_offset, oob,
 		       cdns_chip->avail_oob_size);
 		oob += cdns_chip->avail_oob_size;
 
-		/* OOB ECC. */
+		 
 		for (i = 0; i < ecc_steps; i++) {
 			pos = ecc_size + i * (ecc_size + ecc_bytes);
 			if (i == (ecc_steps - 1))
@@ -1631,10 +1565,7 @@ static int cadence_nand_read_page(struct nand_chip *chip,
 					 mtd->writesize
 					 + cdns_chip->bbm_offs, 1);
 
-	/*
-	 * If data buffer can be accessed by DMA and data_control feature
-	 * is supported then transfer data and oob directly.
-	 */
+	 
 	if (cadence_nand_dma_buf_ok(cdns_ctrl, buf, mtd->writesize) &&
 	    cdns_ctrl->caps2.data_control_supp) {
 		u8 *oob;
@@ -1651,7 +1582,7 @@ static int cadence_nand_read_page(struct nand_chip *chip,
 						    mtd->writesize,
 						    cdns_chip->avail_oob_size,
 						    DMA_FROM_DEVICE, true);
-	/* Otherwise use bounce buffer. */
+	 
 	} else {
 		cadence_nand_prepare_data_size(chip, TT_MAIN_OOB_AREAS);
 		status = cadence_nand_cdma_transfer(cdns_ctrl,
@@ -1693,7 +1624,7 @@ static int cadence_nand_read_page(struct nand_chip *chip,
 	return ecc_err_count;
 }
 
-/* Reads OOB data from the device. */
+ 
 static int cadence_nand_read_oob(struct nand_chip *chip, int page)
 {
 	struct cdns_nand_ctrl *cdns_ctrl = to_cdns_nand_ctrl(chip->controller);
@@ -1739,7 +1670,7 @@ static int cadence_nand_read_page_raw(struct nand_chip *chip,
 		return -EIO;
 	}
 
-	/* Arrange the buffer for syndrome payload/ecc layout. */
+	 
 	if (buf) {
 		for (i = 0; i < ecc_steps; i++) {
 			pos = i * (ecc_size + ecc_bytes);
@@ -1767,16 +1698,16 @@ static int cadence_nand_read_page_raw(struct nand_chip *chip,
 			(cdns_chip->sector_size + chip->ecc.bytes)
 			+ cdns_chip->sector_size + oob_skip;
 
-		/* OOB free. */
+		 
 		memcpy(oob, tmp_buf + oob_data_offset,
 		       cdns_chip->avail_oob_size);
 
-		/* BBM at the beginning of the OOB area. */
+		 
 		memcpy(oob, tmp_buf + writesize, oob_skip);
 
 		oob += cdns_chip->avail_oob_size;
 
-		/* OOB ECC */
+		 
 		for (i = 0; i < ecc_steps; i++) {
 			pos = ecc_size + i * (ecc_size + ecc_bytes);
 			len = ecc_bytes;
@@ -1884,7 +1815,7 @@ static int cadence_nand_read_buf(struct cdns_nand_ctrl *cdns_ctrl,
 	u32 sdma_size;
 	int status;
 
-	/* Wait until slave DMA interface is ready to data transfer. */
+	 
 	status = cadence_nand_wait_on_sdma(cdns_ctrl, &thread_nr, &sdma_size);
 	if (status)
 		return status;
@@ -1894,7 +1825,7 @@ static int cadence_nand_read_buf(struct cdns_nand_ctrl *cdns_ctrl,
 
 		int len_in_words = (data_dma_width == 4) ? len >> 2 : len >> 3;
 
-		/* read alingment data */
+		 
 		if (data_dma_width == 4)
 			ioread32_rep(cdns_ctrl->io.virt, buf, len_in_words);
 #ifdef CONFIG_64BIT
@@ -1906,7 +1837,7 @@ static int cadence_nand_read_buf(struct cdns_nand_ctrl *cdns_ctrl,
 			int read_bytes = (data_dma_width == 4) ?
 				len_in_words << 2 : len_in_words << 3;
 
-			/* read rest data from slave DMA interface if any */
+			 
 			if (data_dma_width == 4)
 				ioread32_rep(cdns_ctrl->io.virt,
 					     cdns_ctrl->buf,
@@ -1917,7 +1848,7 @@ static int cadence_nand_read_buf(struct cdns_nand_ctrl *cdns_ctrl,
 				       sdma_size / 8 - len_in_words);
 #endif
 
-			/* copy rest of data */
+			 
 			memcpy(buf + read_bytes, cdns_ctrl->buf,
 			       len - read_bytes);
 		}
@@ -1935,7 +1866,7 @@ static int cadence_nand_read_buf(struct cdns_nand_ctrl *cdns_ctrl,
 			 "Slave DMA transfer failed. Try again using bounce buffer.");
 	}
 
-	/* If DMA transfer is not possible or failed then use bounce buffer. */
+	 
 	status = cadence_nand_slave_dma_transfer(cdns_ctrl, cdns_ctrl->buf,
 						 cdns_ctrl->io.dma,
 						 sdma_size, DMA_FROM_DEVICE);
@@ -1957,7 +1888,7 @@ static int cadence_nand_write_buf(struct cdns_nand_ctrl *cdns_ctrl,
 	u32 sdma_size;
 	int status;
 
-	/* Wait until slave DMA interface is ready to data transfer. */
+	 
 	status = cadence_nand_wait_on_sdma(cdns_ctrl, &thread_nr, &sdma_size);
 	if (status)
 		return status;
@@ -1978,11 +1909,11 @@ static int cadence_nand_write_buf(struct cdns_nand_ctrl *cdns_ctrl,
 			int written_bytes = (data_dma_width == 4) ?
 				len_in_words << 2 : len_in_words << 3;
 
-			/* copy rest of data */
+			 
 			memcpy(cdns_ctrl->buf, buf + written_bytes,
 			       len - written_bytes);
 
-			/* write all expected by nand controller data */
+			 
 			if (data_dma_width == 4)
 				iowrite32_rep(cdns_ctrl->io.virt,
 					      cdns_ctrl->buf,
@@ -2008,7 +1939,7 @@ static int cadence_nand_write_buf(struct cdns_nand_ctrl *cdns_ctrl,
 			 "Slave DMA transfer failed. Try again using bounce buffer.");
 	}
 
-	/* If DMA transfer is not possible or failed then use bounce buffer. */
+	 
 	memcpy(cdns_ctrl->buf, buf, len);
 
 	status = cadence_nand_slave_dma_transfer(cdns_ctrl, cdns_ctrl->buf,
@@ -2026,12 +1957,7 @@ static int cadence_nand_force_byte_access(struct nand_chip *chip,
 {
 	struct cdns_nand_ctrl *cdns_ctrl = to_cdns_nand_ctrl(chip->controller);
 
-	/*
-	 * Callers of this function do not verify if the NAND is using a 16-bit
-	 * an 8-bit bus for normal operations, so we need to take care of that
-	 * here by leaving the configuration unchanged if the NAND does not have
-	 * the NAND_BUSWIDTH_16 flag set.
-	 */
+	 
 	if (!(chip->options & NAND_BUSWIDTH_16))
 		return 0;
 
@@ -2134,10 +2060,7 @@ static int cadence_nand_cmd_erase(struct nand_chip *chip,
 		return cadence_nand_erase(chip, page);
 	}
 
-	/*
-	 * If it is not an erase operation then handle operation
-	 * by calling exec_op function.
-	 */
+	 
 	for (op_id = 0; op_id < subop->ninstrs; op_id++) {
 		int ret;
 		const struct nand_operation nand_op = {
@@ -2325,7 +2248,7 @@ static int calc_cycl(u32 timing, u32 clock)
 		return timing / clock - 1;
 }
 
-/* Calculate max data valid window. */
+ 
 static inline u32 calc_tdvw_max(u32 trp_cnt, u32 clk_period, u32 trhoh_min,
 				u32 board_delay_skew_min, u32 ext_mode)
 {
@@ -2336,7 +2259,7 @@ static inline u32 calc_tdvw_max(u32 trp_cnt, u32 clk_period, u32 trhoh_min,
 		board_delay_skew_min;
 }
 
-/* Calculate data valid window. */
+ 
 static inline u32 calc_tdvw(u32 trp_cnt, u32 clk_period, u32 trhoh_min,
 			    u32 trea_max, u32 ext_mode)
 {
@@ -2376,7 +2299,7 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 		return PTR_ERR(sdr);
 
 	memset(t, 0, sizeof(*t));
-	/* Sampling point calculation. */
+	 
 
 	if (cdns_ctrl->caps2.is_phy_type_dll)
 		phony_dqs_mod = 2;
@@ -2386,52 +2309,33 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 	dqs_sampl_res = clk_period / phony_dqs_mod;
 
 	tdvw_min = sdr->tREA_max + board_delay_skew_max;
-	/*
-	 * The idea of those calculation is to get the optimum value
-	 * for tRP and tRH timings. If it is NOT possible to sample data
-	 * with optimal tRP/tRH settings, the parameters will be extended.
-	 * If clk_period is 50ns (the lowest value) this condition is met
-	 * for SDR timing modes 1, 2, 3, 4 and 5.
-	 * If clk_period is 20ns the condition is met only for SDR timing
-	 * mode 5.
-	 */
+	 
 	if (sdr->tRC_min <= clk_period &&
 	    sdr->tRP_min <= (clk_period / 2) &&
 	    sdr->tREH_min <= (clk_period / 2)) {
-		/* Performance mode. */
+		 
 		ext_rd_mode = 0;
 		tdvw = calc_tdvw(trp_cnt, clk_period, sdr->tRHOH_min,
 				 sdr->tREA_max, ext_rd_mode);
 		tdvw_max = calc_tdvw_max(trp_cnt, clk_period, sdr->tRHOH_min,
 					 board_delay_skew_min,
 					 ext_rd_mode);
-		/*
-		 * Check if data valid window and sampling point can be found
-		 * and is not on the edge (ie. we have hold margin).
-		 * If not extend the tRP timings.
-		 */
+		 
 		if (tdvw > 0) {
 			if (tdvw_max <= tdvw_min ||
 			    (tdvw_max % dqs_sampl_res) == 0) {
-				/*
-				 * No valid sampling point so the RE pulse need
-				 * to be widen widening by half clock cycle.
-				 */
+				 
 				ext_rd_mode = 1;
 			}
 		} else {
-			/*
-			 * There is no valid window
-			 * to be able to sample data the tRP need to be widen.
-			 * Very safe calculations are performed here.
-			 */
+			 
 			trp_cnt = (sdr->tREA_max + board_delay_skew_max
 				   + dqs_sampl_res) / clk_period;
 			ext_rd_mode = 1;
 		}
 
 	} else {
-		/* Extended read mode. */
+		 
 		u32 trh;
 
 		ext_rd_mode = 1;
@@ -2444,11 +2348,7 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 
 		tdvw = calc_tdvw(trp_cnt, clk_period, sdr->tRHOH_min,
 				 sdr->tREA_max, ext_rd_mode);
-		/*
-		 * Check if data valid window and sampling point can be found
-		 * or if it is at the edge check if previous is valid
-		 * - if not extend the tRP timings.
-		 */
+		 
 		if (tdvw > 0) {
 			tdvw_max = calc_tdvw_max(trp_cnt, clk_period,
 						 sdr->tRHOH_min,
@@ -2460,21 +2360,11 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 			    (((tdvw_max % dqs_sampl_res) == 0) &&
 			     (((tdvw_max / dqs_sampl_res - 1)
 			       * dqs_sampl_res) <= tdvw_min))) {
-				/*
-				 * Data valid window width is lower than
-				 * sampling resolution and do not hit any
-				 * sampling point to be sure the sampling point
-				 * will be found the RE low pulse width will be
-				 *  extended by one clock cycle.
-				 */
+				 
 				trp_cnt = trp_cnt + 1;
 			}
 		} else {
-			/*
-			 * There is no valid window to be able to sample data.
-			 * The tRP need to be widen.
-			 * Very safe calculations are performed here.
-			 */
+			 
 			trp_cnt = (sdr->tREA_max + board_delay_skew_max
 				   + dqs_sampl_res) / clk_period;
 		}
@@ -2517,10 +2407,7 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 	trhw_cnt = calc_cycl((sdr->tRHW_min + if_skew), clk_period);
 	reg = FIELD_PREP(TIMINGS0_TADL, tadl_cnt);
 
-	/*
-	 * If timing exceeds delay field in timing register
-	 * then use maximum value.
-	 */
+	 
 	if (FIELD_FIT(TIMINGS0_TCCS, tccs_cnt))
 		reg |= FIELD_PREP(TIMINGS0_TCCS, tccs_cnt);
 	else
@@ -2531,20 +2418,13 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 	t->timings0 = reg;
 	dev_dbg(cdns_ctrl->dev, "TIMINGS0_SDR\t%x\n", reg);
 
-	/* The following is related to single signal so skew is not needed. */
+	 
 	trhz_cnt = calc_cycl(sdr->tRHZ_max, clk_period);
 	trhz_cnt = trhz_cnt + 1;
 	twb_cnt = calc_cycl((sdr->tWB_max + board_delay), clk_period);
-	/*
-	 * Because of the two stage syncflop the value must be increased by 3
-	 * first value is related with sync, second value is related
-	 * with output if delay.
-	 */
+	 
 	twb_cnt = twb_cnt + 3 + 5;
-	/*
-	 * The following is related to the we edge of the random data input
-	 * sequence so skew is not needed.
-	 */
+	 
 	tvdly_cnt = calc_cycl(500000 + if_skew, clk_period);
 	reg = FIELD_PREP(TIMINGS1_TRHZ, trhz_cnt);
 	reg |= FIELD_PREP(TIMINGS1_TWB, twb_cnt);
@@ -2578,7 +2458,7 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 		dev_dbg(cdns_ctrl->dev, "DLL_PHY_CTRL_SDR\t%x\n", reg);
 	}
 
-	/* Sampling point calculation. */
+	 
 	if ((tdvw_max % dqs_sampl_res) > 0)
 		sampling_point = tdvw_max / dqs_sampl_res;
 	else
@@ -2593,10 +2473,7 @@ cadence_nand_setup_interface(struct nand_chip *chip, int chipnr,
 		if ((sampling_point % 2) > 0) {
 			dll_phy_dqs_timing |= PHY_DQS_TIMING_PHONY_DQS_SEL;
 			if ((tdvw_max % dqs_sampl_res) == 0)
-				/*
-				 * Calculation for sampling point at the edge
-				 * of data and being odd number.
-				 */
+				 
 				phony_dqs_timing = (tdvw_max / dqs_sampl_res)
 					/ phony_dqs_mod - 1;
 
@@ -2660,7 +2537,7 @@ static int cadence_nand_attach_chip(struct nand_chip *chip)
 
 	cdns_chip->bbm_offs = chip->badblockpos;
 	cdns_chip->bbm_offs &= ~0x01;
-	/* this value should be even number */
+	 
 	cdns_chip->bbm_len = 2;
 
 	ret = nand_ecc_choose_conf(chip,
@@ -2675,7 +2552,7 @@ static int cadence_nand_attach_chip(struct nand_chip *chip)
 		"chosen ECC settings: step=%d, strength=%d, bytes=%d\n",
 		chip->ecc.size, chip->ecc.strength, chip->ecc.bytes);
 
-	/* Error correction configuration. */
+	 
 	cdns_chip->sector_size = chip->ecc.size;
 	cdns_chip->sector_count = mtd->writesize / cdns_chip->sector_size;
 	ecc_size = cdns_chip->sector_count * chip->ecc.bytes;
@@ -2706,7 +2583,7 @@ static int cadence_nand_attach_chip(struct nand_chip *chip)
 	cadence_nand_set_erase_detection(cdns_ctrl, true,
 					 chip->ecc.strength);
 
-	/* Override the default read operations. */
+	 
 	chip->ecc.read_page = cadence_nand_read_page;
 	chip->ecc.read_page_raw = cadence_nand_read_page_raw;
 	chip->ecc.write_page = cadence_nand_write_page;
@@ -2719,7 +2596,7 @@ static int cadence_nand_attach_chip(struct nand_chip *chip)
 	if ((mtd->writesize + mtd->oobsize) > cdns_ctrl->buf_size)
 		cdns_ctrl->buf_size = mtd->writesize + mtd->oobsize;
 
-	/* Is 32-bit DMA supported? */
+	 
 	ret = dma_set_mask(cdns_ctrl->dev, DMA_BIT_MASK(32));
 	if (ret) {
 		dev_err(cdns_ctrl->dev, "no usable DMA configuration\n");
@@ -2752,7 +2629,7 @@ static int cadence_nand_chip_init(struct cdns_nand_ctrl *cdns_ctrl,
 		return -EINVAL;
 	}
 
-	/* Allocate the nand chip structure. */
+	 
 	cdns_chip = devm_kzalloc(cdns_ctrl->dev, sizeof(*cdns_chip) +
 				 (nsels * sizeof(u8)),
 				 GFP_KERNEL);
@@ -2764,7 +2641,7 @@ static int cadence_nand_chip_init(struct cdns_nand_ctrl *cdns_ctrl,
 	cdns_chip->nsels = nsels;
 
 	for (i = 0; i < nsels; i++) {
-		/* Retrieve CS id. */
+		 
 		ret = of_property_read_u32_index(np, "reg", i, &cs);
 		if (ret) {
 			dev_err(cdns_ctrl->dev,
@@ -2796,10 +2673,7 @@ static int cadence_nand_chip_init(struct cdns_nand_ctrl *cdns_ctrl,
 	mtd = nand_to_mtd(chip);
 	mtd->dev.parent = cdns_ctrl->dev;
 
-	/*
-	 * Default to HW ECC engine mode. If the nand-ecc-mode property is given
-	 * in the DT node, this entry will be overwritten in nand_scan_ident().
-	 */
+	 
 	chip->ecc.engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
 
 	ret = nand_scan(chip, cdns_chip->nsels);
@@ -2867,7 +2741,7 @@ static int cadence_nand_chips_init(struct cdns_nand_ctrl *cdns_ctrl)
 static void
 cadence_nand_irq_cleanup(int irqnum, struct cdns_nand_ctrl *cdns_ctrl)
 {
-	/* Disable interrupts. */
+	 
 	writel_relaxed(INTR_ENABLE_INTR_EN, cdns_ctrl->reg + INTR_ENABLE);
 }
 
@@ -2957,7 +2831,7 @@ free_buf_desc:
 	return ret;
 }
 
-/* Driver exit point. */
+ 
 static void cadence_nand_remove(struct cdns_nand_ctrl *cdns_ctrl)
 {
 	cadence_nand_chips_cleanup(cdns_ctrl);

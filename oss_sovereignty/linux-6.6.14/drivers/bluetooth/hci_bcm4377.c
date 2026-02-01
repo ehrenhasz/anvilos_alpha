@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Bluetooth HCI driver for Broadcom 4377/4378/4387 devices attached via PCIe
- *
- * Copyright (C) The Asahi Linux Contributors
- */
+
+ 
 
 #include <linux/async.h>
 #include <linux/bitfield.h>
@@ -34,14 +30,7 @@ enum bcm4377_chip {
 
 #define BCM4377_TIMEOUT 1000
 
-/*
- * These devices only support DMA transactions inside a 32bit window
- * (possibly to avoid 64 bit arithmetic). The window size cannot exceed
- * 0xffffffff but is always aligned down to the previous 0x200 byte boundary
- * which effectively limits the window to [start, start+0xfffffe00].
- * We just limit the DMA window to [0, 0xfffffe00] to make sure we don't
- * run into this limitation.
- */
+ 
 #define BCM4377_DMA_MASK 0xfffffe00
 
 #define BCM4377_PCIECFG_BAR0_WINDOW1	   0x80
@@ -141,14 +130,7 @@ enum bcm4377_doorbell {
 	BCM4377_DOORBELL_SCO = 6,
 };
 
-/*
- * Transfer ring entry
- *
- * flags: Flags to indicate if the payload is appended or mapped
- * len: Payload length
- * payload: Optional payload DMA address
- * id: Message id to recognize the answer in the completion ring entry
- */
+ 
 struct bcm4377_xfer_ring_entry {
 #define BCM4377_XFER_RING_FLAG_PAYLOAD_MAPPED	 BIT(0)
 #define BCM4377_XFER_RING_FLAG_PAYLOAD_IN_FOOTER BIT(1)
@@ -161,16 +143,7 @@ struct bcm4377_xfer_ring_entry {
 } __packed;
 static_assert(sizeof(struct bcm4377_xfer_ring_entry) == 0x10);
 
-/*
- * Completion ring entry
- *
- * flags: Flags to indicate if the payload is appended or mapped. If the payload
- *        is mapped it can be found in the buffer of the corresponding transfer
- *        ring message.
- * ring_id: Transfer ring ID which required this message
- * msg_id: Message ID specified in transfer ring entry
- * len: Payload length
- */
+ 
 struct bcm4377_completion_ring_entry {
 	u8 flags;
 	u8 _unk0;
@@ -188,19 +161,7 @@ enum bcm4377_control_message_type {
 	BCM4377_CONTROL_MSG_DESTROY_COMPLETION_RING = 4,
 };
 
-/*
- * Control message used to create a completion ring
- *
- * msg_type: Must be BCM4377_CONTROL_MSG_CREATE_COMPLETION_RING
- * header_size: Unknown, but probably reserved space in front of the entry
- * footer_size: Number of 32 bit words reserved for payloads after the entry
- * id/id_again: Completion ring index
- * ring_iova: DMA address of the ring buffer
- * n_elements: Number of elements inside the ring buffer
- * msi: MSI index, doesn't work for all rings though and should be zero
- * intmod_delay: Unknown delay
- * intmod_bytes: Unknown
- */
+ 
 struct bcm4377_create_completion_ring_msg {
 	u8 msg_type;
 	u8 header_size;
@@ -222,12 +183,7 @@ struct bcm4377_create_completion_ring_msg {
 static_assert(sizeof(struct bcm4377_create_completion_ring_msg) ==
 	      BCM4377_CONTROL_MSG_SIZE);
 
-/*
- * Control ring message used to destroy a completion ring
- *
- * msg_type: Must be BCM4377_CONTROL_MSG_DESTROY_COMPLETION_RING
- * ring_id: Completion ring to be destroyed
- */
+ 
 struct bcm4377_destroy_completion_ring_msg {
 	u8 msg_type;
 	u8 _pad0;
@@ -237,23 +193,7 @@ struct bcm4377_destroy_completion_ring_msg {
 static_assert(sizeof(struct bcm4377_destroy_completion_ring_msg) ==
 	      BCM4377_CONTROL_MSG_SIZE);
 
-/*
- * Control message used to create a transfer ring
- *
- * msg_type: Must be BCM4377_CONTROL_MSG_CREATE_XFER_RING
- * header_size: Number of 32 bit words reserved for unknown content before the
- *              entry
- * footer_size: Number of 32 bit words reserved for payloads after the entry
- * ring_id/ring_id_again: Transfer ring index
- * ring_iova: DMA address of the ring buffer
- * n_elements: Number of elements inside the ring buffer
- * completion_ring_id: Completion ring index for acknowledgements and events
- * doorbell: Doorbell index used to notify device of new entries
- * flags: Transfer ring flags
- *          - virtual: set if there is no associated shared memory and only the
- *                     corresponding completion ring is used
- *          - sync: only set for the SCO rings
- */
+ 
 struct bcm4377_create_transfer_ring_msg {
 	u8 msg_type;
 	u8 header_size;
@@ -274,12 +214,7 @@ struct bcm4377_create_transfer_ring_msg {
 static_assert(sizeof(struct bcm4377_create_transfer_ring_msg) ==
 	      BCM4377_CONTROL_MSG_SIZE);
 
-/*
- * Control ring message used to destroy a transfer ring
- *
- * msg_type: Must be BCM4377_CONTROL_MSG_DESTROY_XFER_RING
- * ring_id: Transfer ring to be destroyed
- */
+ 
 struct bcm4377_destroy_transfer_ring_msg {
 	u8 msg_type;
 	u8 _pad0;
@@ -289,41 +224,7 @@ struct bcm4377_destroy_transfer_ring_msg {
 static_assert(sizeof(struct bcm4377_destroy_transfer_ring_msg) ==
 	      BCM4377_CONTROL_MSG_SIZE);
 
-/*
- * "Converged IPC" context struct used to make the device aware of all other
- * shared memory structures. A pointer to this structure is configured inside a
- * MMIO register.
- *
- * version: Protocol version, must be 2.
- * size: Size of this structure, must be 0x68.
- * enabled_caps: Enabled capabilities. Unknown bitfield but should be 2.
- * peripheral_info_addr: DMA address for a 0x20 buffer to which the device will
- *                       write unknown contents
- * {completion,xfer}_ring_{tails,heads}_addr: DMA pointers to ring heads/tails
- * n_completion_rings: Number of completion rings, the firmware only works if
- *                     this is set to BCM4377_N_COMPLETION_RINGS.
- * n_xfer_rings: Number of transfer rings, the firmware only works if
- *               this is set to BCM4377_N_TRANSFER_RINGS.
- * control_completion_ring_addr: Control completion ring buffer DMA address
- * control_xfer_ring_addr: Control transfer ring buffer DMA address
- * control_xfer_ring_n_entries: Number of control transfer ring entries
- * control_completion_ring_n_entries: Number of control completion ring entries
- * control_xfer_ring_doorbell: Control transfer ring doorbell
- * control_completion_ring_doorbell: Control completion ring doorbell,
- *                                   must be set to 0xffff
- * control_xfer_ring_msi: Control completion ring MSI index, must be 0
- * control_completion_ring_msi: Control completion ring MSI index, must be 0.
- * control_xfer_ring_header_size: Number of 32 bit words reserved in front of
- *                                every control transfer ring entry
- * control_xfer_ring_footer_size: Number of 32 bit words reserved after every
- *                                control transfer ring entry
- * control_completion_ring_header_size: Number of 32 bit words reserved in front
- *                                      of every control completion ring entry
- * control_completion_ring_footer_size: Number of 32 bit words reserved after
- *                                      every control completion ring entry
- * scratch_pad: Optional scratch pad DMA address
- * scratch_pad_size: Scratch pad size
- */
+ 
 struct bcm4377_context {
 	__le16 version;
 	__le16 size;
@@ -331,7 +232,7 @@ struct bcm4377_context {
 
 	__le64 peripheral_info_addr;
 
-	/* ring heads and tails */
+	 
 	__le64 completion_ring_heads_addr;
 	__le64 xfer_ring_tails_addr;
 	__le64 completion_ring_tails_addr;
@@ -339,7 +240,7 @@ struct bcm4377_context {
 	__le16 n_completion_rings;
 	__le16 n_xfer_rings;
 
-	/* control ring configuration */
+	 
 	__le64 control_completion_ring_addr;
 	__le64 control_xfer_ring_addr;
 	__le16 control_xfer_ring_n_entries;
@@ -376,9 +277,7 @@ struct bcm4378_hci_send_ptb_cmd {
 	u8 data[BCM4378_PTB_CHUNK_SIZE];
 } __packed;
 
-/*
- * Shared memory structure used to store the ring head and tail pointers.
- */
+ 
 struct bcm4377_ring_state {
 	__le16 completion_ring_head[BCM4377_N_COMPLETION_RINGS];
 	__le16 completion_ring_tail[BCM4377_N_COMPLETION_RINGS];
@@ -386,39 +285,7 @@ struct bcm4377_ring_state {
 	__le16 xfer_ring_tail[BCM4377_N_TRANSFER_RINGS];
 };
 
-/*
- * A transfer ring can be used in two configurations:
- *  1) Send control or HCI messages to the device which are then acknowledged
- *     in the corresponding completion ring
- *  2) Receiving HCI frames from the devices. In this case the transfer ring
- *     itself contains empty messages that are acknowledged once data is
- *     available from the device. If the payloads fit inside the footers
- *     of the completion ring the transfer ring can be configured to be
- *     virtual such that it has no ring buffer.
- *
- * ring_id: ring index hardcoded in the firmware
- * doorbell: doorbell index to notify device of new entries
- * payload_size: optional in-place payload size
- * mapped_payload_size: optional out-of-place payload size
- * completion_ring: index of corresponding completion ring
- * n_entries: number of entries inside this ring
- * generation: ring generation; incremented on hci_open to detect stale messages
- * sync: set to true for SCO rings
- * virtual: set to true if this ring has no entries and is just required to
- *          setup a corresponding completion ring for device->host messages
- * d2h_buffers_only: set to true if this ring is only used to provide large
- *                   buffers used by device->host messages in the completion
- *                   ring
- * allow_wait: allow to wait for messages to be acknowledged
- * enabled: true once the ring has been created and can be used
- * ring: ring buffer for entries (struct bcm4377_xfer_ring_entry)
- * ring_dma: DMA address for ring entry buffer
- * payloads: payload buffer for mapped_payload_size payloads
- * payloads_dma:DMA address for payload buffer
- * events: pointer to array of completions if waiting is allowed
- * msgids: bitmap to keep track of used message ids
- * lock: Spinlock to protect access to ring structurs used in the irq handler
- */
+ 
 struct bcm4377_transfer_ring {
 	enum bcm4377_transfer_ring_id ring_id;
 	enum bcm4377_doorbell doorbell;
@@ -445,22 +312,7 @@ struct bcm4377_transfer_ring {
 	spinlock_t lock;
 };
 
-/*
- * A completion ring can be either used to either acknowledge messages sent in
- * the corresponding transfer ring or to receive messages associated with the
- * transfer ring. When used to receive messages the transfer ring either
- * has no ring buffer and is only advanced ("virtual transfer ring") or it
- * only contains empty DMA buffers to be used for the payloads.
- *
- * ring_id: completion ring id, hardcoded in firmware
- * payload_size: optional payload size after each entry
- * delay: unknown delay
- * n_entries: number of entries in this ring
- * enabled: true once the ring has been created and can be used
- * ring: ring buffer for entries (struct bcm4377_completion_ring_entry)
- * ring_dma: DMA address of ring buffer
- * transfer_rings: bitmap of corresponding transfer ring ids
- */
+ 
 struct bcm4377_completion_ring {
 	enum bcm4377_completion_ring_id ring_id;
 	u16 payload_size;
@@ -476,28 +328,7 @@ struct bcm4377_completion_ring {
 
 struct bcm4377_data;
 
-/*
- * Chip-specific configuration struct
- *
- * id: Chip id (e.g. 0x4377 for BCM4377)
- * otp_offset: Offset to the start of the OTP inside BAR0
- * bar0_window1: Backplane address mapped to the first window in BAR0
- * bar0_window2: Backplane address mapped to the second window in BAR0
- * bar0_core2_window2: Optional backplane address mapped to the second core's
- *                     second window in BAR0
- * has_bar0_core2_window2: Set to true if this chip requires the second core's
- *                         second window to be configured
- * clear_pciecfg_subsystem_ctrl_bit19: Set to true if bit 19 in the
- *                                     vendor-specific subsystem control
- *                                     register has to be cleared
- * disable_aspm: Set to true if ASPM must be disabled due to hardware errata
- * broken_ext_scan: Set to true if the chip erroneously claims to support
- *                  extended scanning
- * broken_mws_transport_config: Set to true if the chip erroneously claims to
- *                              support MWS Transport Configuration
- * send_calibration: Optional callback to send calibration data
- * send_ptb: Callback to send "PTB" regulatory/calibration data
- */
+ 
 struct bcm4377_hw {
 	unsigned int id;
 
@@ -522,36 +353,7 @@ struct bcm4377_hw {
 static const struct bcm4377_hw bcm4377_hw_variants[];
 static const struct dmi_system_id bcm4377_dmi_board_table[];
 
-/*
- * Private struct associated with each device containing global state
- *
- * pdev: Pointer to associated struct pci_dev
- * hdev: Pointer to associated strucy hci_dev
- * bar0: iomem pointing to BAR0
- * bar1: iomem pointing to BAR2
- * bootstage: Current value of the bootstage
- * rti_status: Current "RTI" status value
- * hw: Pointer to chip-specific struct bcm4377_hw
- * taurus_cal_blob: "Taurus" calibration blob used for some chips
- * taurus_cal_size: "Taurus" calibration blob size
- * taurus_beamforming_cal_blob: "Taurus" beamforming calibration blob used for
- *                              some chips
- * taurus_beamforming_cal_size: "Taurus" beamforming calibration blob size
- * stepping: Chip stepping read from OTP; used for firmware selection
- * vendor: Antenna vendor read from OTP; used for firmware selection
- * board_type: Board type from FDT or DMI match; used for firmware selection
- * event: Event for changed bootstage or rti_status; used for booting firmware
- * ctx: "Converged IPC" context
- * ctx_dma: "Converged IPC" context DMA address
- * ring_state: Shared memory buffer containing ring head and tail indexes
- * ring_state_dma: DMA address for ring_state
- * {control,hci_acl,sco}_ack_ring: Completion rings used to acknowledge messages
- * {hci_acl,sco}_event_ring: Completion rings used for device->host messages
- * control_h2d_ring: Transfer ring used for control messages
- * {hci,sco,acl}_h2d_ring: Transfer ring used to transfer HCI frames
- * {hci,sco,acl}_d2h_ring: Transfer ring used to receive HCI frames in the
- *                         corresponding completion ring
- */
+ 
 struct bcm4377_data {
 	struct pci_dev *pdev;
 	struct hci_dev *hdev;
@@ -581,10 +383,7 @@ struct bcm4377_data {
 	struct bcm4377_ring_state *ring_state;
 	dma_addr_t ring_state_dma;
 
-	/*
-	 * The HCI and ACL rings have to be merged because this structure is
-	 * hardcoded in the firmware.
-	 */
+	 
 	struct bcm4377_completion_ring control_ack_ring;
 	struct bcm4377_completion_ring hci_acl_ack_ring;
 	struct bcm4377_completion_ring hci_acl_event_ring;
@@ -811,11 +610,7 @@ static void bcm4377_poll_completion_ring(struct bcm4377_data *bcm4377,
 		le16_to_cpu(heads[ring->ring_id]), tail);
 
 	while (tail != le16_to_cpu(READ_ONCE(heads[ring->ring_id]))) {
-		/*
-		 * ensure the CPU doesn't speculate through the comparison.
-		 * otherwise it might already read the (empty) queue entry
-		 * before the updated head has been loaded and checked.
-		 */
+		 
 		dma_rmb();
 
 		bcm4377_handle_completion(bcm4377, ring, tail);
@@ -930,11 +725,7 @@ static int bcm4377_enqueue(struct bcm4377_data *bcm4377,
 	if (wait)
 		ring->events[msgid] = &event;
 
-	/*
-	 * The 4377 chips stop responding to any commands as soon as they
-	 * have been idle for a while. Poking the sleep control register here
-	 * makes them come alive again.
-	 */
+	 
 	iowrite32(BCM4377_BAR0_SLEEP_CONTROL_AWAKE,
 		  bcm4377->bar0 + BCM4377_BAR0_SLEEP_CONTROL);
 
@@ -1075,10 +866,7 @@ static int bcm4377_create_transfer_ring(struct bcm4377_data *bcm4377,
 		}
 	}
 
-	/*
-	 * send some messages if this is a device->host ring to allow the device
-	 * to reply by acknowledging them in the completion ring
-	 */
+	 
 	if (ring->virtual || ring->d2h_buffers_only) {
 		bcm4377->ring_state->xfer_ring_head[ring->ring_id] =
 			cpu_to_le16(0xf);
@@ -1226,13 +1014,7 @@ static int bcm4377_send_ptb(struct bcm4377_data *bcm4377,
 
 	skb = __hci_cmd_sync(bcm4377->hdev, 0xfd98, fw->size, fw->data,
 			     HCI_INIT_TIMEOUT);
-	/*
-	 * This command seems to always fail on more recent firmware versions
-	 * (even in traces taken from the macOS driver). It's unclear why this
-	 * happens but because the PTB file contains calibration and/or
-	 * regulatory data and may be required on older firmware we still try to
-	 * send it here just in case and just ignore if it fails.
-	 */
+	 
 	if (!IS_ERR(skb))
 		kfree_skb(skb);
 	return 0;
@@ -1603,11 +1385,7 @@ static int bcm4377_init_context(struct bcm4377_data *bcm4377)
 	bcm4377->ctx->size = cpu_to_le16(sizeof(*bcm4377->ctx));
 	bcm4377->ctx->enabled_caps = cpu_to_le32(2);
 
-	/*
-	 * The BT device will write 0x20 bytes of data to this buffer but
-	 * the exact contents are unknown. It only needs to exist for BT
-	 * to work such that we can just allocate and then ignore it.
-	 */
+	 
 	if (!dmam_alloc_coherent(&bcm4377->pdev->dev, 0x20,
 				 &peripheral_info_dma, GFP_KERNEL))
 		return -ENOMEM;
@@ -1660,16 +1438,7 @@ static int bcm4377_prepare_rings(struct bcm4377_data *bcm4377)
 {
 	int ret;
 
-	/*
-	 * Even though many of these settings appear to be configurable
-	 * when sending the "create ring" messages most of these are
-	 * actually hardcoded in some (and quite possibly all) firmware versions
-	 * and changing them on the host has no effect.
-	 * Specifically, this applies to at least the doorbells, the transfer
-	 * and completion ring ids and their mapping (e.g. both HCI and ACL
-	 * entries will always be queued in completion rings 1 and 2 no matter
-	 * what we configure here).
-	 */
+	 
 	bcm4377->control_ack_ring.ring_id = BCM4377_ACK_RING_CONTROL;
 	bcm4377->control_ack_ring.n_entries = 32;
 	bcm4377->control_ack_ring.transfer_rings =
@@ -1681,11 +1450,7 @@ static int bcm4377_prepare_rings(struct bcm4377_data *bcm4377)
 		BIT(BCM4377_XFER_RING_HCI_H2D) | BIT(BCM4377_XFER_RING_ACL_H2D);
 	bcm4377->hci_acl_ack_ring.delay = 1000;
 
-	/*
-	 * A payload size of MAX_EVENT_PAYLOAD_SIZE is enough here since large
-	 * ACL packets will be transmitted inside buffers mapped via
-	 * acl_d2h_ring anyway.
-	 */
+	 
 	bcm4377->hci_acl_event_ring.ring_id = BCM4377_EVENT_RING_HCI_ACL;
 	bcm4377->hci_acl_event_ring.payload_size = MAX_EVENT_PAYLOAD_SIZE;
 	bcm4377->hci_acl_event_ring.n_entries = 2 * BCM4377_RING_N_ENTRIES;
@@ -1735,20 +1500,14 @@ static int bcm4377_prepare_rings(struct bcm4377_data *bcm4377)
 	bcm4377->sco_d2h_ring.sync = true;
 	bcm4377->sco_d2h_ring.n_entries = BCM4377_RING_N_ENTRIES;
 
-	/*
-	 * This ring has to use mapped_payload_size because the largest ACL
-	 * packet doesn't fit inside the largest possible footer
-	 */
+	 
 	bcm4377->acl_h2d_ring.ring_id = BCM4377_XFER_RING_ACL_H2D;
 	bcm4377->acl_h2d_ring.doorbell = BCM4377_DOORBELL_ACL_H2D;
 	bcm4377->acl_h2d_ring.mapped_payload_size = MAX_ACL_PAYLOAD_SIZE;
 	bcm4377->acl_h2d_ring.completion_ring = BCM4377_ACK_RING_HCI_ACL;
 	bcm4377->acl_h2d_ring.n_entries = BCM4377_RING_N_ENTRIES;
 
-	/*
-	 * This ring only contains empty buffers to be used by incoming
-	 * ACL packets that do not fit inside the footer of hci_acl_event_ring
-	 */
+	 
 	bcm4377->acl_d2h_ring.ring_id = BCM4377_XFER_RING_ACL_D2H;
 	bcm4377->acl_d2h_ring.doorbell = BCM4377_DOORBELL_ACL_D2H;
 	bcm4377->acl_d2h_ring.completion_ring = BCM4377_EVENT_RING_HCI_ACL;
@@ -1756,10 +1515,7 @@ static int bcm4377_prepare_rings(struct bcm4377_data *bcm4377)
 	bcm4377->acl_d2h_ring.mapped_payload_size = MAX_ACL_PAYLOAD_SIZE;
 	bcm4377->acl_d2h_ring.n_entries = BCM4377_RING_N_ENTRIES;
 
-	/*
-	 * no need for any cleanup since this is only called from _probe
-	 * and only devres-managed allocations are used
-	 */
+	 
 	ret = bcm4377_alloc_transfer_ring(bcm4377, &bcm4377->control_h2d_ring);
 	if (ret)
 		return ret;
@@ -1907,13 +1663,13 @@ static int bcm4377_setup_rti(struct bcm4377_data *bcm4377)
 	}
 	dev_dbg(&bcm4377->pdev->dev, "RTI is in state 1\n");
 
-	/* allow access to the entire IOVA space again */
+	 
 	iowrite32(0, bcm4377->bar2 + BCM4377_BAR2_RTI_WINDOW_LO);
 	iowrite32(0, bcm4377->bar2 + BCM4377_BAR2_RTI_WINDOW_HI);
 	iowrite32(BCM4377_DMA_MASK,
 		  bcm4377->bar2 + BCM4377_BAR2_RTI_WINDOW_SIZE);
 
-	/* setup "Converged IPC" context */
+	 
 	iowrite32(lower_32_bits(bcm4377->ctx_dma),
 		  bcm4377->bar2 + BCM4377_BAR2_CONTEXT_ADDR_LO);
 	iowrite32(upper_32_bits(bcm4377->ctx_dma),
@@ -1990,14 +1746,14 @@ static int bcm4377_parse_otp_str(struct bcm4377_data *bcm4377, const u8 *str,
 		const char *end;
 		size_t len;
 
-		if (*p++ != '=') /* implicit NUL check */
+		if (*p++ != '=')  
 			return -EINVAL;
 
-		/* *p might be NUL here, if so end == p and len == 0 */
+		 
 		end = strchrnul(p, ' ');
 		len = end - p;
 
-		/* leave 1 byte for NUL in destination string */
+		 
 		if (len > (BCM4377_OTP_MAX_PARAM_LEN - 1))
 			return -EINVAL;
 
@@ -2018,7 +1774,7 @@ static int bcm4377_parse_otp_str(struct bcm4377_data *bcm4377, const u8 *str,
 		if (ret)
 			return ret;
 
-		/* Skip to next arg, if any */
+		 
 		p = skip_spaces(end);
 	}
 
@@ -2033,7 +1789,7 @@ static int bcm4377_parse_otp_sys_vendor(struct bcm4377_data *bcm4377, u8 *otp,
 	const char *board_params;
 	int ret;
 
-	/* 4-byte header and two empty strings */
+	 
 	if (size < 6)
 		return -EINVAL;
 
@@ -2042,19 +1798,19 @@ static int bcm4377_parse_otp_sys_vendor(struct bcm4377_data *bcm4377, u8 *otp,
 
 	chip_params = &otp[idx];
 
-	/* Skip first string, including terminator */
+	 
 	idx += strnlen(chip_params, size - idx) + 1;
 	if (idx >= size)
 		return -EINVAL;
 
 	board_params = &otp[idx];
 
-	/* Skip to terminator of second string */
+	 
 	idx += strnlen(board_params, size - idx);
 	if (idx >= size)
 		return -EINVAL;
 
-	/* At this point both strings are guaranteed NUL-terminated */
+	 
 	dev_dbg(&bcm4377->pdev->dev,
 		"OTP: chip_params='%s' board_params='%s'\n", chip_params,
 		board_params);
@@ -2228,11 +1984,7 @@ static void bcm4377_disable_aspm(struct bcm4377_data *bcm4377)
 	pci_disable_link_state(bcm4377->pdev,
 			       PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1);
 
-	/*
-	 * pci_disable_link_state can fail if either CONFIG_PCIEASPM is disabled
-	 * or if the BIOS hasn't handed over control to us. We must *always*
-	 * disable ASPM for this device due to hardware errata though.
-	 */
+	 
 	pcie_capability_clear_word(bcm4377->pdev, PCI_EXP_LNKCTL,
 				   PCI_EXP_LNKCTL_ASPMC);
 }
@@ -2299,12 +2051,7 @@ static int bcm4377_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 			"function level reset failed with %d; trying to continue anyway\n",
 			ret);
 
-	/*
-	 * If this number is too low and we try to access any BAR too
-	 * early the device will crash. Experiments have shown that
-	 * approximately 50 msec is the minimum amount we have to wait.
-	 * Let's double that to be safe.
-	 */
+	 
 	msleep(100);
 
 	ret = pcim_enable_device(pdev);
@@ -2329,11 +2076,7 @@ static int bcm4377_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		return ret;
 	}
 
-	/*
-	 * Legacy interrupts result in an IRQ storm because we don't know where
-	 * the interrupt mask and status registers for these chips are.
-	 * MSIs are acked automatically instead.
-	 */
+	 
 	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI);
 	if (ret < 0)
 		return -ENODEV;

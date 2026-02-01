@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2019 Mantas Pucka <mantas@8devices.com>
-// Copyright (c) 2019 Robert Marko <robert.marko@sartura.hr>
-//
-// Driver for IPQ4019 SD/MMC controller's I/O LDO voltage regulator
+
+
+
+
+
+
 
 #include <linux/io.h>
 #include <linux/module.h>

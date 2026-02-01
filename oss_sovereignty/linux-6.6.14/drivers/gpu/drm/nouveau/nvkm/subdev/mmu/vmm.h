@@ -5,45 +5,23 @@
 enum nvkm_memory_target;
 
 struct nvkm_vmm_pt {
-	/* Some GPUs have a mapping level with a dual page tables to
-	 * support large and small pages in the same address-range.
-	 *
-	 * We track the state of both page tables in one place, which
-	 * is why there's multiple PT pointers/refcounts here.
-	 */
+	 
 	struct nvkm_mmu_pt *pt[2];
 	u32 refs[2];
 
-	/* Page size handled by this PT.
-	 *
-	 * Tesla backend needs to know this when writinge PDEs,
-	 * otherwise unnecessary.
-	 */
+	 
 	u8 page;
 
-	/* Entire page table sparse.
-	 *
-	 * Used to propagate sparseness to child page tables.
-	 */
+	 
 	bool sparse:1;
 
-	/* Tracking for page directories.
-	 *
-	 * The array is indexed by PDE, and will either point to the
-	 * child page table, or indicate the PDE is marked as sparse.
-	 **/
+	 
 #define NVKM_VMM_PDE_INVALID(pde) IS_ERR_OR_NULL(pde)
 #define NVKM_VMM_PDE_SPARSED(pde) IS_ERR(pde)
 #define NVKM_VMM_PDE_SPARSE       ERR_PTR(-EBUSY)
 	struct nvkm_vmm_pt **pde;
 
-	/* Tracking for dual page tables.
-	 *
-	 * There's one entry for each LPTE, keeping track of whether
-	 * there are valid SPTEs in the same address-range.
-	 *
-	 * This information is used to manage LPTE state transitions.
-	 */
+	 
 #define NVKM_VMM_PTE_SPARSE 0x80
 #define NVKM_VMM_PTE_VALID  0x40
 #define NVKM_VMM_PTE_SPTES  0x3f
@@ -93,9 +71,9 @@ struct nvkm_vmm_desc {
 		SPT,
 		LPT,
 	} type;
-	u8 bits;	/* VMA bits covered by PT. */
-	u8 size;	/* Bytes-per-PTE. */
-	u32 align;	/* PT address alignment. */
+	u8 bits;	 
+	u8 size;	 
+	u32 align;	 
 	const struct nvkm_vmm_desc_func *func;
 };
 

@@ -1,26 +1,4 @@
-/*
- * Copyright 2016 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "priv.h"
 
 static int
@@ -33,11 +11,11 @@ gm200_pmu_flcn_bind_stat(struct nvkm_falcon *falcon, bool intr)
 void
 gm200_pmu_flcn_bind_inst(struct nvkm_falcon *falcon, int target, u64 addr)
 {
-	nvkm_falcon_wr32(falcon, 0xe00, 4); /* DMAIDX_UCODE */
-	nvkm_falcon_wr32(falcon, 0xe04, 0); /* DMAIDX_VIRT */
-	nvkm_falcon_wr32(falcon, 0xe08, 4); /* DMAIDX_PHYS_VID */
-	nvkm_falcon_wr32(falcon, 0xe0c, 5); /* DMAIDX_PHYS_SYS_COH */
-	nvkm_falcon_wr32(falcon, 0xe10, 6); /* DMAIDX_PHYS_SYS_NCOH */
+	nvkm_falcon_wr32(falcon, 0xe00, 4);  
+	nvkm_falcon_wr32(falcon, 0xe04, 0);  
+	nvkm_falcon_wr32(falcon, 0xe08, 4);  
+	nvkm_falcon_wr32(falcon, 0xe0c, 5);  
+	nvkm_falcon_wr32(falcon, 0xe10, 6);  
 	nvkm_falcon_mask(falcon, 0x090, 0x00010000, 0x00010000);
 	nvkm_falcon_wr32(falcon, 0x480, (1 << 30) | (target << 28) | (addr >> 12));
 }

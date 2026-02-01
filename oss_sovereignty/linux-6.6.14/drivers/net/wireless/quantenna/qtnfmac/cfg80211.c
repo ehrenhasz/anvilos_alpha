@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/etherdevice.h>
@@ -14,7 +14,7 @@
 #include "util.h"
 #include "bus.h"
 
-/* Supported rates to be advertised to the cfg80211 */
+ 
 static struct ieee80211_rate qtnf_rates_2g[] = {
 	{.bitrate = 10, .hw_value = 2, },
 	{.bitrate = 20, .hw_value = 4, },
@@ -30,7 +30,7 @@ static struct ieee80211_rate qtnf_rates_2g[] = {
 	{.bitrate = 540, .hw_value = 108, },
 };
 
-/* Supported rates to be advertised to the cfg80211 */
+ 
 static struct ieee80211_rate qtnf_rates_5g[] = {
 	{.bitrate = 60, .hw_value = 12, },
 	{.bitrate = 90, .hw_value = 18, },
@@ -42,14 +42,14 @@ static struct ieee80211_rate qtnf_rates_5g[] = {
 	{.bitrate = 540, .hw_value = 108, },
 };
 
-/* Supported crypto cipher suits to be advertised to cfg80211 */
+ 
 static const u32 qtnf_cipher_suites[] = {
 	WLAN_CIPHER_SUITE_TKIP,
 	WLAN_CIPHER_SUITE_CCMP,
 	WLAN_CIPHER_SUITE_AES_CMAC,
 };
 
-/* Supported mgmt frame types to be advertised to cfg80211 */
+ 
 static const struct ieee80211_txrx_stypes
 qtnf_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 	[NL80211_IFTYPE_STATION] = {
@@ -105,10 +105,7 @@ qtnf_validate_iface_combinations(struct wiphy *wiphy,
 	if (ret)
 		return ret;
 
-	/* Check repeater interface combination: primary VIF should be STA only.
-	 * STA (primary) + AP (secondary) is OK.
-	 * AP (primary) + STA (secondary) is not supported.
-	 */
+	 
 	vif = qtnf_mac_get_base_vif(mac);
 	if (vif && vif->wdev.iftype == NL80211_IFTYPE_AP &&
 	    vif != change_vif && new_type == NL80211_IFTYPE_STATION) {
@@ -169,7 +166,7 @@ int qtnf_del_virtual_intf(struct wiphy *wiphy, struct wireless_dev *wdev)
 
 	qtnf_scan_done(vif->mac, true);
 
-	/* Stop data */
+	 
 	netif_tx_stop_all_queues(netdev);
 	if (netif_carrier_ok(netdev))
 		netif_carrier_off(netdev);
@@ -428,7 +425,7 @@ qtnf_update_mgmt_frame_registrations(struct wiphy *wiphy,
 		u16 qlink_frame_type = updates[i].qlink_type;
 		bool reg;
 
-		/* the ! are here due to the assoc/reassoc merge */
+		 
 		if (!(new_mask & mask) == !(old_mask & mask))
 			continue;
 
@@ -464,9 +461,7 @@ qtnf_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 	if (params->dont_wait_for_ack)
 		flags |= QLINK_FRAME_TX_FLAG_ACK_NOWAIT;
 
-	/* If channel is not specified, pass "freq = 0" to tell device
-	 * firmware to use current channel.
-	 */
+	 
 	if (params->chan)
 		freq = params->chan->center_freq;
 	else
@@ -1148,7 +1143,7 @@ int qtnf_wiphy_register(struct qtnf_hw_info *hw_info, struct qtnf_wmac *mac)
 	if (ret)
 		goto out;
 
-	/* Initialize cipher suits */
+	 
 	wiphy->cipher_suites = qtnf_cipher_suites;
 	wiphy->n_cipher_suites = ARRAY_SIZE(qtnf_cipher_suites);
 	wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;

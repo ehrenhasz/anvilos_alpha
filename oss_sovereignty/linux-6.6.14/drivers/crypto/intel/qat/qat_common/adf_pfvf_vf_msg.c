@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2015 - 2021 Intel Corporation */
+
+ 
 #include <linux/bitfield.h>
 #include "adf_accel_devices.h"
 #include "adf_common_drv.h"
@@ -7,14 +7,7 @@
 #include "adf_pfvf_vf_msg.h"
 #include "adf_pfvf_vf_proto.h"
 
-/**
- * adf_vf2pf_notify_init() - send init msg to PF
- * @accel_dev:  Pointer to acceleration VF device.
- *
- * Function sends an init message from the VF to a PF
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_vf2pf_notify_init(struct adf_accel_dev *accel_dev)
 {
 	struct pfvf_message msg = { .type = ADF_VF2PF_MSGTYPE_INIT };
@@ -29,14 +22,7 @@ int adf_vf2pf_notify_init(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_vf2pf_notify_init);
 
-/**
- * adf_vf2pf_notify_shutdown() - send shutdown msg to PF
- * @accel_dev:  Pointer to acceleration VF device.
- *
- * Function sends a shutdown message from the VF to a PF
- *
- * Return: void
- */
+ 
 void adf_vf2pf_notify_shutdown(struct adf_accel_dev *accel_dev)
 {
 	struct pfvf_message msg = { .type = ADF_VF2PF_MSGTYPE_SHUTDOWN };
@@ -71,12 +57,12 @@ int adf_vf2pf_request_version(struct adf_accel_dev *accel_dev)
 	pf_version = FIELD_GET(ADF_PF2VF_VERSION_RESP_VERS_MASK, resp.data);
 	compat = FIELD_GET(ADF_PF2VF_VERSION_RESP_RESULT_MASK, resp.data);
 
-	/* Response from PF received, check compatibility */
+	 
 	switch (compat) {
 	case ADF_PF2VF_VF_COMPATIBLE:
 		break;
 	case ADF_PF2VF_VF_COMPAT_UNKNOWN:
-		/* VF is newer than PF - compatible for now */
+		 
 		break;
 	case ADF_PF2VF_VF_INCOMPATIBLE:
 		dev_err(&GET_DEV(accel_dev),
@@ -100,7 +86,7 @@ int adf_vf2pf_get_capabilities(struct adf_accel_dev *accel_dev)
 	unsigned int len = sizeof(cap_msg);
 
 	if (accel_dev->vf.pf_compat_ver < ADF_PFVF_COMPAT_CAPABILITIES)
-		/* The PF is too old to support the extended capabilities */
+		 
 		return 0;
 
 	if (adf_send_vf2pf_blkmsg_req(accel_dev, ADF_VF2PF_BLKMSG_REQ_CAP_SUMMARY,
@@ -112,7 +98,7 @@ int adf_vf2pf_get_capabilities(struct adf_accel_dev *accel_dev)
 
 	switch (cap_msg.hdr.version) {
 	default:
-		/* Newer version received, handle only the know parts */
+		 
 		fallthrough;
 	case ADF_PFVF_CAPABILITIES_V3_VERSION:
 		if (likely(len >= sizeof(struct capabilities_v3)))
@@ -145,7 +131,7 @@ int adf_vf2pf_get_ring_to_svc(struct adf_accel_dev *accel_dev)
 	unsigned int len = sizeof(rts_map_msg);
 
 	if (accel_dev->vf.pf_compat_ver < ADF_PFVF_COMPAT_RING_TO_SVC_MAP)
-		/* Use already set default mappings */
+		 
 		return 0;
 
 	if (adf_send_vf2pf_blkmsg_req(accel_dev, ADF_VF2PF_BLKMSG_REQ_RING_SVC_MAP,
@@ -161,7 +147,7 @@ int adf_vf2pf_get_ring_to_svc(struct adf_accel_dev *accel_dev)
 		return -EFAULT;
 	}
 
-	/* Only v1 at present */
+	 
 	accel_dev->hw_device->ring_to_svc_map = rts_map_msg.map;
 	return 0;
 }

@@ -1,32 +1,19 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright(c) 2018 - 2020 Intel Corporation.
- */
+
+ 
 
 #include "hfi.h"
 #include "affinity.h"
 #include "sdma.h"
 #include "netdev.h"
 
-/**
- * msix_initialize() - Calculate, request and configure MSIx IRQs
- * @dd: valid hfi1 devdata
- *
- */
+ 
 int msix_initialize(struct hfi1_devdata *dd)
 {
 	u32 total;
 	int ret;
 	struct hfi1_msix_entry *entries;
 
-	/*
-	 * MSIx interrupt count:
-	 *	one for the general, "slow path" interrupt
-	 *	one per used SDMA engine
-	 *	one per kernel receive context
-	 *	one for each VNIC context
-	 *      ...any new IRQs should be added here.
-	 */
+	 
 	total = 1 + dd->num_sdma + dd->n_krcv_queues + dd->num_netdev_contexts;
 
 	if (total >= CCE_NUM_MSIX_VECTORS)
@@ -54,23 +41,7 @@ int msix_initialize(struct hfi1_devdata *dd)
 	return 0;
 }
 
-/**
- * msix_request_irq() - Allocate a free MSIx IRQ
- * @dd: valid devdata
- * @arg: context information for the IRQ
- * @handler: IRQ handler
- * @thread: IRQ thread handler (could be NULL)
- * @type: affinty IRQ type
- * @name: IRQ name
- *
- * Allocated an MSIx vector if available, and then create the appropriate
- * meta data needed to keep track of the pci IRQ request.
- *
- * Return:
- *   < 0   Error
- *   >= 0  MSIx vector
- *
- */
+ 
 static int msix_request_irq(struct hfi1_devdata *dd, void *arg,
 			    irq_handler_t handler, irq_handler_t thread,
 			    enum irq_type type, const char *name)
@@ -80,7 +51,7 @@ static int msix_request_irq(struct hfi1_devdata *dd, void *arg,
 	int ret;
 	struct hfi1_msix_entry *me;
 
-	/* Allocate an MSIx vector */
+	 
 	spin_lock(&dd->msix_info.msix_lock);
 	nr = find_first_zero_bit(dd->msix_info.in_use_msix,
 				 dd->msix_info.max_requested);
@@ -106,16 +77,13 @@ static int msix_request_irq(struct hfi1_devdata *dd, void *arg,
 		return ret;
 	}
 
-	/*
-	 * assign arg after pci_request_irq call, so it will be
-	 * cleaned up
-	 */
+	 
 	me = &dd->msix_info.msix_entries[nr];
 	me->irq = irq;
 	me->arg = arg;
 	me->type = type;
 
-	/* This is a request, so a failure is not fatal */
+	 
 	ret = hfi1_get_irq_affinity(dd, me);
 	if (ret)
 		dd_dev_err(dd, "%s: unable to pin IRQ %d\n", name, ret);
@@ -134,10 +102,7 @@ static int msix_request_rcd_irq_common(struct hfi1_ctxtdata *rcd,
 	if (nr < 0)
 		return nr;
 
-	/*
-	 * Set the interrupt register and mask for this
-	 * context's interrupt.
-	 */
+	 
 	rcd->ireg = (IS_RCVAVAIL_START + rcd->ctxt) / 64;
 	rcd->imask = ((u64)1) << ((IS_RCVAVAIL_START + rcd->ctxt) % 64);
 	rcd->msix_intr = nr;
@@ -146,11 +111,7 @@ static int msix_request_rcd_irq_common(struct hfi1_ctxtdata *rcd,
 	return 0;
 }
 
-/**
- * msix_request_rcd_irq() - Helper function for RCVAVAIL IRQs
- * @rcd: valid rcd context
- *
- */
+ 
 int msix_request_rcd_irq(struct hfi1_ctxtdata *rcd)
 {
 	char name[MAX_NAME_SIZE];
@@ -162,11 +123,7 @@ int msix_request_rcd_irq(struct hfi1_ctxtdata *rcd)
 					   receive_context_thread, name);
 }
 
-/**
- * msix_netdev_request_rcd_irq  - Helper function for RCVAVAIL IRQs
- * for netdev context
- * @rcd: valid netdev contexti
- */
+ 
 int msix_netdev_request_rcd_irq(struct hfi1_ctxtdata *rcd)
 {
 	char name[MAX_NAME_SIZE];
@@ -177,11 +134,7 @@ int msix_netdev_request_rcd_irq(struct hfi1_ctxtdata *rcd)
 					   NULL, name);
 }
 
-/**
- * msix_request_sdma_irq  - Helper for getting SDMA IRQ resources
- * @sde: valid sdma engine
- *
- */
+ 
 int msix_request_sdma_irq(struct sdma_engine *sde)
 {
 	int nr;
@@ -199,11 +152,7 @@ int msix_request_sdma_irq(struct sdma_engine *sde)
 	return 0;
 }
 
-/**
- * msix_request_general_irq - Helper for getting general IRQ
- * resources
- * @dd: valid device data
- */
+ 
 int msix_request_general_irq(struct hfi1_devdata *dd)
 {
 	int nr;
@@ -215,7 +164,7 @@ int msix_request_general_irq(struct hfi1_devdata *dd)
 	if (nr < 0)
 		return nr;
 
-	/* general interrupt must be MSIx vector 0 */
+	 
 	if (nr) {
 		msix_free_irq(dd, (u8)nr);
 		dd_dev_err(dd, "Invalid index %d for GENERAL IRQ\n", nr);
@@ -225,11 +174,7 @@ int msix_request_general_irq(struct hfi1_devdata *dd)
 	return 0;
 }
 
-/**
- * enable_sdma_srcs - Helper to enable SDMA IRQ srcs
- * @dd: valid devdata structure
- * @i: index of SDMA engine
- */
+ 
 static void enable_sdma_srcs(struct hfi1_devdata *dd, int i)
 {
 	set_intr_bits(dd, IS_SDMA_START + i, IS_SDMA_START + i, true);
@@ -240,13 +185,7 @@ static void enable_sdma_srcs(struct hfi1_devdata *dd, int i)
 		      true);
 }
 
-/**
- * msix_request_irqs() - Allocate all MSIx IRQs
- * @dd: valid devdata structure
- *
- * Helper function to request the used MSIx IRQs.
- *
- */
+ 
 int msix_request_irqs(struct hfi1_devdata *dd)
 {
 	int i;
@@ -277,12 +216,7 @@ int msix_request_irqs(struct hfi1_devdata *dd)
 	return 0;
 }
 
-/**
- * msix_free_irq() - Free the specified MSIx resources and IRQ
- * @dd: valid devdata
- * @msix_intr: MSIx vector to free.
- *
- */
+ 
 void msix_free_irq(struct hfi1_devdata *dd, u8 msix_intr)
 {
 	struct hfi1_msix_entry *me;
@@ -292,7 +226,7 @@ void msix_free_irq(struct hfi1_devdata *dd, u8 msix_intr)
 
 	me = &dd->msix_info.msix_entries[msix_intr];
 
-	if (!me->arg) /* => no irq, no affinity */
+	if (!me->arg)  
 		return;
 
 	hfi1_put_irq_affinity(dd, me);
@@ -305,22 +239,17 @@ void msix_free_irq(struct hfi1_devdata *dd, u8 msix_intr)
 	spin_unlock(&dd->msix_info.msix_lock);
 }
 
-/**
- * msix_clean_up_interrupts  - Free all MSIx IRQ resources
- * @dd: valid device data data structure
- *
- * Free the MSIx and associated PCI resources, if they have been allocated.
- */
+ 
 void msix_clean_up_interrupts(struct hfi1_devdata *dd)
 {
 	int i;
 	struct hfi1_msix_entry *me = dd->msix_info.msix_entries;
 
-	/* remove irqs - must happen before disabling/turning off */
+	 
 	for (i = 0; i < dd->msix_info.max_requested; i++, me++)
 		msix_free_irq(dd, i);
 
-	/* clean structures */
+	 
 	kfree(dd->msix_info.msix_entries);
 	dd->msix_info.msix_entries = NULL;
 	dd->msix_info.max_requested = 0;
@@ -328,10 +257,7 @@ void msix_clean_up_interrupts(struct hfi1_devdata *dd)
 	pci_free_irq_vectors(dd->pcidev);
 }
 
-/**
- * msix_netdev_synchronize_irq - netdev IRQ synchronize
- * @dd: valid devdata
- */
+ 
 void msix_netdev_synchronize_irq(struct hfi1_devdata *dd)
 {
 	int i;

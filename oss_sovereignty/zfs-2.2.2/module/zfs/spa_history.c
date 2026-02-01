@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2006, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2014 Integros [integros.com]
- * Copyright 2017 Joyent, Inc.
- */
+ 
 
 #include <sys/spa.h>
 #include <sys/spa_impl.h>
@@ -43,36 +19,9 @@
 #include <sys/zone.h>
 #endif
 
-/*
- * Routines to manage the on-disk history log.
- *
- * The history log is stored as a dmu object containing
- * <packed record length, record nvlist> tuples.
- *
- * Where "record nvlist" is an nvlist containing uint64_ts and strings, and
- * "packed record length" is the packed length of the "record nvlist" stored
- * as a little endian uint64_t.
- *
- * The log is implemented as a ring buffer, though the original creation
- * of the pool ('zpool create') is never overwritten.
- *
- * The history log is tracked as object 'spa_t::spa_history'.  The bonus buffer
- * of 'spa_history' stores the offsets for logging/retrieving history as
- * 'spa_history_phys_t'.  'sh_pool_create_len' is the ending offset in bytes of
- * where the 'zpool create' record is stored.  This allows us to never
- * overwrite the original creation of the pool.  'sh_phys_max_off' is the
- * physical ending offset in bytes of the log.  This tells you the length of
- * the buffer. 'sh_eof' is the logical EOF (in bytes).  Whenever a record
- * is added, 'sh_eof' is incremented by the size of the record.
- * 'sh_eof' is never decremented.  'sh_bof' is the logical BOF (in bytes).
- * This is where the consumer should start reading from after reading in
- * the 'zpool create' portion of the log.
- *
- * 'sh_records_lost' keeps track of how many records have been overwritten
- * and permanently lost.
- */
+ 
 
-/* convert a logical offset to physical */
+ 
 static uint64_t
 spa_history_log_to_phys(uint64_t log_off, spa_history_phys_t *shpp)
 {
@@ -105,10 +54,7 @@ spa_history_create_obj(spa_t *spa, dmu_tx_t *tx)
 	shpp = dbp->db_data;
 	dmu_buf_will_dirty(dbp, tx);
 
-	/*
-	 * Figure out maximum size of history log.  We set it at
-	 * 0.1% of pool size, with a max of 1G and min of 128KB.
-	 */
+	 
 	shpp->sh_phys_max_off =
 	    metaslab_class_get_dspace(spa_normal_class(spa)) / 1000;
 	shpp->sh_phys_max_off = MIN(shpp->sh_phys_max_off, 1<<30);
@@ -117,9 +63,7 @@ spa_history_create_obj(spa_t *spa, dmu_tx_t *tx)
 	dmu_buf_rele(dbp, FTAG);
 }
 
-/*
- * Change 'sh_bof' to the beginning of the next record.
- */
+ 
 static int
 spa_history_advance_bof(spa_t *spa, spa_history_phys_t *shpp)
 {
@@ -157,7 +101,7 @@ spa_history_write(spa_t *spa, void *buf, uint64_t len, spa_history_phys_t *shpp,
 
 	ASSERT(MUTEX_HELD(&spa->spa_history_lock));
 
-	/* see if we need to reset logical BOF */
+	 
 	while (shpp->sh_phys_max_off - shpp->sh_pool_create_len -
 	    (shpp->sh_eof - shpp->sh_bof) <= len) {
 		if ((err = spa_history_advance_bof(spa, shpp)) != 0) {
@@ -172,7 +116,7 @@ spa_history_write(spa_t *spa, void *buf, uint64_t len, spa_history_phys_t *shpp,
 
 	len -= firstwrite;
 	if (len > 0) {
-		/* write out the rest at the beginning of physical file */
+		 
 		dmu_write(mos, spa->spa_history, shpp->sh_pool_create_len,
 		    len, (char *)buf + firstwrite, tx);
 	}
@@ -180,20 +124,7 @@ spa_history_write(spa_t *spa, void *buf, uint64_t len, spa_history_phys_t *shpp,
 	return (0);
 }
 
-/*
- * Post a history sysevent.
- *
- * The nvlist_t* passed into this function will be transformed into a new
- * nvlist where:
- *
- * 1. Nested nvlists will be flattened to a single level
- * 2. Keys will have their names normalized (to remove any problematic
- * characters, such as whitespace)
- *
- * The nvlist_t passed into this function will duplicated and should be freed
- * by caller.
- *
- */
+ 
 static void
 spa_history_log_notify(spa_t *spa, nvlist_t *nvl)
 {
@@ -245,9 +176,7 @@ spa_history_log_notify(spa_t *spa, nvlist_t *nvl)
 	nvlist_free(hist_nvl);
 }
 
-/*
- * Write out a history event.
- */
+ 
 static void
 spa_history_log_sync(void *arg, dmu_tx_t *tx)
 {
@@ -261,19 +190,13 @@ spa_history_log_sync(void *arg, dmu_tx_t *tx)
 	char		*record_packed = NULL;
 	int		ret;
 
-	/*
-	 * If we have an older pool that doesn't have a command
-	 * history object, create it now.
-	 */
+	 
 	mutex_enter(&spa->spa_history_lock);
 	if (!spa->spa_history)
 		spa_history_create_obj(spa, tx);
 	mutex_exit(&spa->spa_history_lock);
 
-	/*
-	 * Get the offset of where we need to write via the bonus buffer.
-	 * Update the offset when the write completes.
-	 */
+	 
 	VERIFY0(dmu_bonus_hold(mos, spa->spa_history, FTAG, &dbp));
 	shpp = dbp->db_data;
 
@@ -309,21 +232,7 @@ spa_history_log_sync(void *arg, dmu_tx_t *tx)
 			    fnvlist_lookup_string(nvl, ZPOOL_HIST_INT_NAME),
 			    fnvlist_lookup_string(nvl, ZPOOL_HIST_INT_STR));
 		}
-		/*
-		 * The history sysevent is posted only for internal history
-		 * messages to show what has happened, not how it happened. For
-		 * example, the following command:
-		 *
-		 * # zfs destroy -r tank/foo
-		 *
-		 * will result in one sysevent posted per dataset that is
-		 * destroyed as a result of the command - which could be more
-		 * than one event in total.  By contrast, if the sysevent was
-		 * posted as a result of the ZPOOL_HIST_CMD key being present
-		 * it would result in only one sysevent being posted with the
-		 * full command line arguments, requiring the consumer to know
-		 * how to parse and understand zfs(8) command invocations.
-		 */
+		 
 		spa_history_log_notify(spa, nvl);
 	} else if (nvlist_exists(nvl, ZPOOL_HIST_IOCTL)) {
 		zfs_dbgmsg("ioctl %s",
@@ -335,13 +244,13 @@ spa_history_log_sync(void *arg, dmu_tx_t *tx)
 
 	mutex_enter(&spa->spa_history_lock);
 
-	/* write out the packed length as little endian */
+	 
 	le_len = LE_64((uint64_t)reclen);
 	ret = spa_history_write(spa, &le_len, sizeof (le_len), shpp, tx);
 	if (!ret)
 		ret = spa_history_write(spa, record_packed, reclen, shpp, tx);
 
-	/* The first command is the create, which we keep forever */
+	 
 	if (ret == 0 && shpp->sh_pool_create_len == 0 &&
 	    nvlist_exists(nvl, ZPOOL_HIST_CMD)) {
 		shpp->sh_pool_create_len = shpp->sh_bof = shpp->sh_eof;
@@ -353,9 +262,7 @@ spa_history_log_sync(void *arg, dmu_tx_t *tx)
 	fnvlist_free(nvl);
 }
 
-/*
- * Write out a history event.
- */
+ 
 int
 spa_history_log(spa_t *spa, const char *msg)
 {
@@ -397,23 +304,18 @@ spa_history_log_nvl(spa_t *spa, nvlist_t *nvl)
 	}
 	fnvlist_add_uint64(nvarg, ZPOOL_HIST_WHO, crgetruid(CRED()));
 
-	/*
-	 * Since the history is recorded asynchronously, the effective time is
-	 * now, which may be considerably before the change is made on disk.
-	 */
+	 
 	fnvlist_add_uint64(nvarg, ZPOOL_HIST_TIME, gethrestime_sec());
 
-	/* Kick this off asynchronously; errors are ignored. */
+	 
 	dsl_sync_task_nowait(spa_get_dsl(spa), spa_history_log_sync, nvarg, tx);
 	dmu_tx_commit(tx);
 
-	/* spa_history_log_sync will free nvl */
+	 
 	return (err);
 }
 
-/*
- * Read out the command history.
- */
+ 
 int
 spa_history_get(spa_t *spa, uint64_t *offp, uint64_t *len, char *buf)
 {
@@ -424,18 +326,11 @@ spa_history_get(spa_t *spa, uint64_t *offp, uint64_t *len, char *buf)
 	spa_history_phys_t *shpp;
 	int err;
 
-	/*
-	 * If the command history doesn't exist (older pool),
-	 * that's ok, just return ENOENT.
-	 */
+	 
 	if (!spa->spa_history)
 		return (SET_ERROR(ENOENT));
 
-	/*
-	 * The history is logged asynchronously, so when they request
-	 * the first chunk of history, make sure everything has been
-	 * synced to disk so that we get it.
-	 */
+	 
 	if (*offp == 0 && spa_writeable(spa))
 		txg_wait_synced(spa_get_dsl(spa), 0);
 
@@ -455,23 +350,16 @@ spa_history_get(spa_t *spa, uint64_t *offp, uint64_t *len, char *buf)
 	phys_eof = spa_history_log_to_phys(shpp->sh_eof, shpp);
 
 	if (*offp < shpp->sh_pool_create_len) {
-		/* read in just the zpool create history */
+		 
 		phys_read_off = *offp;
 		read_len = MIN(*len, shpp->sh_pool_create_len -
 		    phys_read_off);
 	} else {
-		/*
-		 * Need to reset passed in offset to BOF if the passed in
-		 * offset has since been overwritten.
-		 */
+		 
 		*offp = MAX(*offp, shpp->sh_bof);
 		phys_read_off = spa_history_log_to_phys(*offp, shpp);
 
-		/*
-		 * Read up to the minimum of what the user passed down or
-		 * the EOF (physical or logical).  If we hit physical EOF,
-		 * use 'leftover' to read from the physical BOF.
-		 */
+		 
 		if (phys_read_off <= phys_eof) {
 			read_len = MIN(*len, phys_eof - phys_read_off);
 		} else {
@@ -484,10 +372,10 @@ spa_history_get(spa_t *spa, uint64_t *offp, uint64_t *len, char *buf)
 		}
 	}
 
-	/* offset for consumer to use next */
+	 
 	*offp += read_len + leftover;
 
-	/* tell the consumer how much you actually read */
+	 
 	*len = read_len + leftover;
 
 	if (read_len == 0) {
@@ -508,20 +396,14 @@ spa_history_get(spa_t *spa, uint64_t *offp, uint64_t *len, char *buf)
 	return (err);
 }
 
-/*
- * The nvlist will be consumed by this call.
- */
+ 
 static void
 log_internal(nvlist_t *nvl, const char *operation, spa_t *spa,
     dmu_tx_t *tx, const char *fmt, va_list adx)
 {
 	char *msg;
 
-	/*
-	 * If this is part of creating a pool, not everything is
-	 * initialized yet, so don't bother logging the internal events.
-	 * Likewise if the pool is not writeable.
-	 */
+	 
 	if (spa_is_initializing(spa) || !spa_writeable(spa)) {
 		fnvlist_free(nvl);
 		return;
@@ -541,7 +423,7 @@ log_internal(nvlist_t *nvl, const char *operation, spa_t *spa,
 		dsl_sync_task_nowait(spa_get_dsl(spa),
 		    spa_history_log_sync, nvl, tx);
 	}
-	/* spa_history_log_sync() will free nvl */
+	 
 }
 
 void
@@ -551,7 +433,7 @@ spa_history_log_internal(spa_t *spa, const char *operation,
 	dmu_tx_t *htx = tx;
 	va_list adx;
 
-	/* create a tx if we didn't get one */
+	 
 	if (tx == NULL) {
 		htx = dmu_tx_create_dd(spa_get_dsl(spa)->dp_mos_dir);
 		if (dmu_tx_assign(htx, TXG_WAIT) != 0) {
@@ -564,7 +446,7 @@ spa_history_log_internal(spa_t *spa, const char *operation,
 	log_internal(fnvlist_alloc(), operation, spa, htx, fmt, adx);
 	va_end(adx);
 
-	/* if we didn't get a tx from the caller, commit the one we made */
+	 
 	if (tx == NULL)
 		dmu_tx_commit(htx);
 }

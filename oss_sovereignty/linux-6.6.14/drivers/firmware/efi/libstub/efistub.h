@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _DRIVERS_FIRMWARE_EFI_EFISTUB_H
 #define _DRIVERS_FIRMWARE_EFI_EFISTUB_H
@@ -10,21 +10,10 @@
 #include <linux/types.h>
 #include <asm/efi.h>
 
-/*
- * __init annotations should not be used in the EFI stub, since the code is
- * either included in the decompressor (x86, ARM) where they have no effect,
- * or the whole stub is __init annotated at the section level (arm64), by
- * renaming the sections, in which case the __init annotation will be
- * redundant, and will result in section names like .init.init.text, and our
- * linker script does not expect that.
- */
+ 
 #undef __init
 
-/*
- * Allow the platform to override the allocation granularity: this allows
- * systems that have the capability to run with a larger page size to deal
- * with the allocations for initrd and fdt more efficiently.
- */
+ 
 #ifndef EFI_ALLOC_ALIGN
 #define EFI_ALLOC_ALIGN		EFI_PAGE_SIZE
 #endif
@@ -96,7 +85,7 @@ efi_status_t __efiapi efi_pe_entry(efi_handle_t handle,
 #define efi_debug_once(fmt, ...) \
 	efi_printk_once(KERN_DEBUG "DEBUG: " fmt, ##__VA_ARGS__)
 
-/* Helper macros for the usual case of using simple C variables: */
+ 
 #ifndef fdt_setprop_inplace_var
 #define fdt_setprop_inplace_var(fdt, node_offset, name, var) \
 	fdt_setprop_inplace((fdt), (node_offset), (name), &(var), sizeof(var))
@@ -135,42 +124,24 @@ void efi_set_u64_split(u64 data, u32 *lo, u32 *hi)
 	*hi = upper_32_bits(data);
 }
 
-/*
- * Allocation types for calls to boottime->allocate_pages.
- */
+ 
 #define EFI_ALLOCATE_ANY_PAGES		0
 #define EFI_ALLOCATE_MAX_ADDRESS	1
 #define EFI_ALLOCATE_ADDRESS		2
 #define EFI_MAX_ALLOCATE_TYPE		3
 
-/*
- * The type of search to perform when calling boottime->locate_handle
- */
+ 
 #define EFI_LOCATE_ALL_HANDLES			0
 #define EFI_LOCATE_BY_REGISTER_NOTIFY		1
 #define EFI_LOCATE_BY_PROTOCOL			2
 
-/*
- * boottime->stall takes the time period in microseconds
- */
+ 
 #define EFI_USEC_PER_SEC		1000000
 
-/*
- * boottime->set_timer takes the time in 100ns units
- */
+ 
 #define EFI_100NSEC_PER_USEC	((u64)10)
 
-/*
- * An efi_boot_memmap is used by efi_get_memory_map() to return the
- * EFI memory map in a dynamically allocated buffer.
- *
- * The buffer allocated for the EFI memory map includes extra room for
- * a minimum of EFI_MMAP_NR_SLACK_SLOTS additional EFI memory descriptors.
- * This facilitates the reuse of the EFI memory map buffer when a second
- * call to ExitBootServices() is needed because of intervening changes to
- * the EFI memory map. Other related structures, e.g. x86 e820ext, need
- * to factor in this headroom requirement as well.
- */
+ 
 #define EFI_MMAP_NR_SLACK_SLOTS	8
 
 typedef struct efi_generic_dev_path efi_device_path_protocol_t;
@@ -208,7 +179,7 @@ union efi_device_path_from_text_protocol {
 typedef union efi_device_path_from_text_protocol efi_device_path_from_text_protocol_t;
 
 typedef void *efi_event_t;
-/* Note that notifications won't work in mixed mode */
+ 
 typedef void (__efiapi *efi_event_notify_t)(efi_event_t, void *);
 
 #define EFI_EVT_TIMER		0x80000000U
@@ -216,16 +187,7 @@ typedef void (__efiapi *efi_event_notify_t)(efi_event_t, void *);
 #define EFI_EVT_NOTIFY_WAIT	0x00000100U
 #define EFI_EVT_NOTIFY_SIGNAL	0x00000200U
 
-/**
- * efi_set_event_at() - add event to events array
- *
- * @events:	array of UEFI events
- * @ids:	index where to put the event in the array
- * @event:	event to add to the aray
- *
- * boottime->wait_for_event() takes an array of events as input.
- * Provide a helper to set it up correctly for mixed mode.
- */
+ 
 static inline
 void efi_set_event_at(efi_event_t *events, size_t idx, efi_event_t event)
 {
@@ -246,9 +208,7 @@ typedef enum {
 	EfiTimerRelative
 } EFI_TIMER_DELAY;
 
-/*
- * EFI Boot Services table
- */
+ 
 union efi_boot_services {
 	struct {
 		efi_table_hdr_t hdr;
@@ -393,9 +353,7 @@ typedef struct {
 	void *device_handle;
 } efi_gcd_memory_space_desc_t;
 
-/*
- * EFI DXE Services table
- */
+ 
 union efi_dxe_services_table {
 	struct {
 		efi_table_hdr_t hdr;
@@ -840,13 +798,13 @@ struct efi_tcg2_event {
 		u32	pcr_index;
 		u32	event_type;
 	} __packed event_header;
-	/* u8[] event follows here */
+	 
 } __packed;
 
 struct efi_tcg2_tagged_event {
 	u32 tagged_event_id;
 	u32 tagged_event_data_size;
-	/* u8  tagged event data follows here */
+	 
 } __packed;
 
 typedef struct efi_tcg2_event efi_tcg2_event_t;
@@ -907,9 +865,9 @@ typedef struct {
 	u32 attributes;
 	u16 file_path_list_length;
 	u8 variable_data[];
-	// efi_char16_t description[];
-	// efi_device_path_protocol_t file_path_list[];
-	// u8 optional_data[];
+	
+	
+	
 } __packed efi_load_option_t;
 
 #define EFI_LOAD_OPTION_ACTIVE		0x0001U
@@ -964,7 +922,7 @@ efi_status_t check_platform_features(void);
 
 void *get_efi_config_table(efi_guid_t guid);
 
-/* NOTE: These functions do not print a trailing newline after the string */
+ 
 void efi_char16_puts(efi_char16_t *);
 void efi_puts(const char *str);
 
@@ -1024,12 +982,7 @@ efi_status_t efi_load_initrd(efi_loaded_image_t *image,
 			     unsigned long soft_limit,
 			     unsigned long hard_limit,
 			     const struct linux_efi_initrd **out);
-/*
- * This function handles the architcture specific differences between arm and
- * arm64 regarding where the kernel image must be loaded and any memory that
- * must be reserved. On failure it is required to free all
- * all allocations it has made.
- */
+ 
 efi_status_t handle_kernel_image(unsigned long *image_addr,
 				 unsigned long *image_size,
 				 unsigned long *reserve_addr,
@@ -1037,7 +990,7 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
 				 efi_loaded_image_t *image,
 				 efi_handle_t image_handle);
 
-/* shared entrypoint between the normal stub and the zboot stub */
+ 
 efi_status_t efi_stub_common(efi_handle_t handle,
 			     efi_loaded_image_t *image,
 			     unsigned long image_addr,

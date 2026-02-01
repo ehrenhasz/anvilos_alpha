@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+ 
+ 
 
 #ifndef __MLX5_EN_TC_TUN_ENCAP_H__
 #define __MLX5_EN_TC_TUN_ENCAP_H__
@@ -47,4 +47,4 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
 struct mlx5e_tc_tun_encap *mlx5e_tc_tun_init(struct mlx5e_priv *priv);
 void mlx5e_tc_tun_cleanup(struct mlx5e_tc_tun_encap *encap);
 
-#endif /* __MLX5_EN_TC_TUN_ENCAP_H__ */
+#endif  

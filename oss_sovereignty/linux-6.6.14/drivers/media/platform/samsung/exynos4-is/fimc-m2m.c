@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Samsung S5P/EXYNOS4 SoC series FIMC (video postprocessor) driver
- *
- * Copyright (C) 2012 - 2013 Samsung Electronics Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -55,7 +50,7 @@ void fimc_m2m_job_finish(struct fimc_ctx *ctx, int vb_state)
 				    ctx->fh.m2m_ctx);
 }
 
-/* Complete the transaction which has been scheduled for execution. */
+ 
 static void fimc_m2m_shutdown(struct fimc_ctx *ctx)
 {
 	struct fimc_dev *fimc = ctx->fimc_dev;
@@ -106,7 +101,7 @@ static void fimc_device_run(void *priv)
 	df = &ctx->d_frame;
 
 	if (ctx->state & FIMC_PARAMS) {
-		/* Prepare the DMA offsets for scaler */
+		 
 		fimc_prepare_dma_offset(ctx, sf);
 		fimc_prepare_dma_offset(ctx, df);
 	}
@@ -126,7 +121,7 @@ static void fimc_device_run(void *priv)
 	dst_vb->flags |=
 		src_vb->flags & V4L2_BUF_FLAG_TSTAMP_SRC_MASK;
 
-	/* Reconfigure hardware if the context has changed. */
+	 
 	if (fimc->m2m.ctx != ctx) {
 		ctx->state |= FIMC_PARAMS;
 		fimc->m2m.ctx = ctx;
@@ -176,10 +171,7 @@ static int fimc_queue_setup(struct vb2_queue *vq,
 	f = ctx_get_frame(ctx, vq->type);
 	if (IS_ERR(f))
 		return PTR_ERR(f);
-	/*
-	 * Return number of non-contiguous planes (plane buffers)
-	 * depending on the configured color format.
-	 */
+	 
 	if (!f->fmt)
 		return -EINVAL;
 
@@ -222,9 +214,7 @@ static const struct vb2_ops fimc_qops = {
 	.start_streaming = start_streaming,
 };
 
-/*
- * V4L2 ioctl handlers
- */
+ 
 static int fimc_m2m_querycap(struct file *file, void *fh,
 				     struct v4l2_capability *cap)
 {
@@ -291,7 +281,7 @@ static int fimc_try_fmt_mplane(struct fimc_ctx *ctx, struct v4l2_format *f)
 	}
 
 	if (tiled_fmt(fmt)) {
-		mod_x = 6; /* 64 x 32 pixels tile */
+		mod_x = 6;  
 		mod_y = 5;
 	} else {
 		if (variant->min_vsize_align == 1)
@@ -368,7 +358,7 @@ static int fimc_m2m_s_fmt_mplane(struct file *file, void *fh,
 
 	__set_frame_format(frame, fmt, &f->fmt.pix_mp);
 
-	/* Update RGB Alpha control state and value range */
+	 
 	fimc_alpha_ctrl_update(ctx);
 
 	return 0;
@@ -452,7 +442,7 @@ static int fimc_m2m_try_selection(struct fimc_ctx *ctx,
 	min_size = (f == &ctx->s_frame) ?
 		fimc->variant->min_inp_pixsize : fimc->variant->min_out_pixsize;
 
-	/* Get pixel alignment constraints. */
+	 
 	if (fimc->variant->min_vsize_align == 1)
 		halign = fimc_fmt_is_rgb(f->fmt->color) ? 0 : 1;
 	else
@@ -466,7 +456,7 @@ static int fimc_m2m_try_selection(struct fimc_ctx *ctx,
 			      &s->r.height, min_size, f->o_height,
 			      halign, 64/(ALIGN(depth, 8)));
 
-	/* adjust left/top if cropping rectangle is out of bounds */
+	 
 	if (s->r.left + s->r.width > f->o_width)
 		s->r.left = f->o_width - s->r.width;
 	if (s->r.top + s->r.height > f->o_height)
@@ -497,7 +487,7 @@ static int fimc_m2m_s_selection(struct file *file, void *fh,
 	f = (s->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) ?
 		&ctx->s_frame : &ctx->d_frame;
 
-	/* Check to see if scaling ratio is within supported range */
+	 
 	if (s->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) {
 		ret = fimc_check_scaler_ratio(ctx, s->r.width,
 				s->r.height, ctx->d_frame.width,
@@ -610,10 +600,7 @@ static int fimc_m2m_open(struct file *file)
 
 	if (mutex_lock_interruptible(&fimc->lock))
 		return -ERESTARTSYS;
-	/*
-	 * Don't allow simultaneous open() of the mem-to-mem and the
-	 * capture video node that belong to same FIMC IP instance.
-	 */
+	 
 	if (test_bit(ST_CAPT_BUSY, &fimc->state))
 		goto unlock;
 
@@ -625,7 +612,7 @@ static int fimc_m2m_open(struct file *file)
 	v4l2_fh_init(&ctx->fh, &fimc->m2m.vfd);
 	ctx->fimc_dev = fimc;
 
-	/* Default color format */
+	 
 	ctx->s_frame.fmt = fimc_get_format(0);
 	ctx->d_frame.fmt = fimc_get_format(0);
 
@@ -633,12 +620,12 @@ static int fimc_m2m_open(struct file *file)
 	if (ret)
 		goto error_fh;
 
-	/* Use separate control handler per file handle */
+	 
 	ctx->fh.ctrl_handler = &ctx->ctrls.handler;
 	file->private_data = &ctx->fh;
 	v4l2_fh_add(&ctx->fh);
 
-	/* Setup the device context for memory-to-memory mode */
+	 
 	ctx->state = FIMC_CTX_M2M;
 	ctx->flags = 0;
 	ctx->in_path = FIMC_IO_DMA;

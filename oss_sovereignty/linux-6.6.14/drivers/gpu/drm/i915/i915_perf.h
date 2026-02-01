@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_PERF_H__
 #define __I915_PERF_H__
@@ -59,4 +57,4 @@ static inline void i915_oa_config_put(struct i915_oa_config *oa_config)
 
 u32 i915_perf_oa_timestamp_frequency(struct drm_i915_private *i915);
 
-#endif /* __I915_PERF_H__ */
+#endif  

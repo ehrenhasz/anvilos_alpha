@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Scatterlist Cryptographic API.
- *
- * Procfs information.
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- * Copyright (c) 2005 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/init.h>
 #include <linux/crypto.h>
 #include <linux/fips.h>
-#include <linux/module.h>	/* for module_name() */
+#include <linux/module.h>	 
 #include <linux/rwsem.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>

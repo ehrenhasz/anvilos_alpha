@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bitops.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -152,12 +152,7 @@ static int pm8916_wdt_probe(struct platform_device *pdev)
 
 	parent = dev->parent;
 
-	/*
-	 * The pm8916-pon-wdt is a child of the pon device, which is a child
-	 * of the pm8916 mfd device. We want access to the pm8916 registers.
-	 * Retrieve regmap from pm8916 (parent->parent) and base address
-	 * from pm8916-pon (pon).
-	 */
+	 
 	wdt->regmap = dev_get_regmap(parent->parent, NULL);
 	if (!wdt->regmap) {
 		dev_err(dev, "failed to locate regmap\n");
@@ -209,7 +204,7 @@ static int pm8916_wdt_probe(struct platform_device *pdev)
 	if (val & S2_RESET_EN_BIT)
 		set_bit(WDOG_HW_RUNNING, &wdt->wdev.status);
 
-	/* Configure watchdog to hard-reset mode */
+	 
 	err = regmap_write(wdt->regmap,
 			   wdt->baseaddr + PON_PMIC_WD_RESET_S2_CTL,
 			   RESET_TYPE_HARD);

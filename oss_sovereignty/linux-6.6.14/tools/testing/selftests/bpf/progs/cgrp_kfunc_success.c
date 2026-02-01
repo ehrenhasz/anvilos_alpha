@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -11,12 +11,7 @@ char _license[] SEC("license") = "GPL";
 
 int err, pid, invocations;
 
-/* Prototype for all of the program trace events below:
- *
- * TRACE_EVENT(cgroup_mkdir,
- *         TP_PROTO(struct cgroup *cgrp, const char *path),
- *         TP_ARGS(cgrp, path)
- */
+ 
 
 static bool is_test_kfunc_task(void)
 {
@@ -90,7 +85,7 @@ int BPF_PROG(test_cgrp_xchg_release, struct cgroup *cgrp, const char *path)
 	}
 
 	cg = bpf_cgroup_ancestor(kptr, 1);
-	if (cg)	/* verifier only check */
+	if (cg)	 
 		bpf_cgroup_release(cg);
 
 	kptr = bpf_kptr_xchg(&v->cgrp, NULL);
@@ -189,7 +184,7 @@ int BPF_PROG(test_cgrp_from_id, struct cgroup *cgrp, const char *path)
 	if (!is_test_kfunc_task())
 		return 0;
 
-	/* @cgrp's ID is not visible yet, let's test with the parent */
+	 
 	parent = bpf_cgroup_ancestor(cgrp, cgrp->level - 1);
 	if (!parent) {
 		err = 1;

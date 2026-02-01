@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -18,7 +14,7 @@
 #include <linux/of.h>
 #include <linux/regulator/of_regulator.h>
 
-/* Registers : LP8720/8725 shared */
+ 
 #define LP872X_GENERAL_CFG		0x00
 #define LP872X_LDO1_VOUT		0x01
 #define LP872X_LDO2_VOUT		0x02
@@ -26,12 +22,12 @@
 #define LP872X_LDO4_VOUT		0x04
 #define LP872X_LDO5_VOUT		0x05
 
-/* Registers : LP8720 */
+ 
 #define LP8720_BUCK_VOUT1		0x06
 #define LP8720_BUCK_VOUT2		0x07
 #define LP8720_ENABLE			0x08
 
-/* Registers : LP8725 */
+ 
 #define LP8725_LILO1_VOUT		0x06
 #define LP8725_LILO2_VOUT		0x07
 #define LP8725_BUCK1_VOUT1		0x08
@@ -41,7 +37,7 @@
 #define LP8725_BUCK_CTRL		0x0C
 #define LP8725_LDO_CTRL			0x0D
 
-/* Mask/shift : LP8720/LP8725 shared */
+ 
 #define LP872X_VOUT_M			0x1F
 #define LP872X_START_DELAY_M		0xE0
 #define LP872X_START_DELAY_S		5
@@ -51,32 +47,32 @@
 #define LP872X_EN_LDO4_M		BIT(3)
 #define LP872X_EN_LDO5_M		BIT(4)
 
-/* Mask/shift : LP8720 */
-#define LP8720_TIMESTEP_S		0		/* Addr 00h */
+ 
+#define LP8720_TIMESTEP_S		0		 
 #define LP8720_TIMESTEP_M		BIT(0)
 #define LP8720_EXT_DVS_M		BIT(2)
-#define LP8720_BUCK_FPWM_S		5		/* Addr 07h */
+#define LP8720_BUCK_FPWM_S		5		 
 #define LP8720_BUCK_FPWM_M		BIT(5)
-#define LP8720_EN_BUCK_M		BIT(5)		/* Addr 08h */
+#define LP8720_EN_BUCK_M		BIT(5)		 
 #define LP8720_DVS_SEL_M		BIT(7)
 
-/* Mask/shift : LP8725 */
-#define LP8725_TIMESTEP_M		0xC0		/* Addr 00h */
+ 
+#define LP8725_TIMESTEP_M		0xC0		 
 #define LP8725_TIMESTEP_S		6
 #define LP8725_BUCK1_EN_M		BIT(0)
 #define LP8725_DVS1_M			BIT(2)
 #define LP8725_DVS2_M			BIT(3)
 #define LP8725_BUCK2_EN_M		BIT(4)
-#define LP8725_BUCK_CL_M		0xC0		/* Addr 09h, 0Bh */
+#define LP8725_BUCK_CL_M		0xC0		 
 #define LP8725_BUCK_CL_S		6
-#define LP8725_BUCK1_FPWM_S		1		/* Addr 0Ch */
+#define LP8725_BUCK1_FPWM_S		1		 
 #define LP8725_BUCK1_FPWM_M		BIT(1)
 #define LP8725_BUCK2_FPWM_S		5
 #define LP8725_BUCK2_FPWM_M		BIT(5)
-#define LP8725_EN_LILO1_M		BIT(5)		/* Addr 0Dh */
+#define LP8725_EN_LILO1_M		BIT(5)		 
 #define LP8725_EN_LILO2_M		BIT(6)
 
-/* PWM mode */
+ 
 #define LP872X_FORCE_PWM		1
 #define LP872X_AUTO_PWM			0
 
@@ -85,11 +81,11 @@
 #define EXTERN_DVS_USED			0
 #define MAX_DELAY			6
 
-/* Default DVS Mode */
+ 
 #define LP8720_DEFAULT_DVS		0
 #define LP8725_DEFAULT_DVS		BIT(2)
 
-/* dump registers in regmap-debugfs */
+ 
 #define MAX_REGISTERS			0x0F
 
 enum lp872x_id {
@@ -106,7 +102,7 @@ struct lp872x {
 	enum gpiod_flags dvs_pin;
 };
 
-/* LP8720/LP8725 shared voltage table for LDOs */
+ 
 static const unsigned int lp872x_ldo_vtbl[] = {
 	1200000, 1250000, 1300000, 1350000, 1400000, 1450000, 1500000, 1550000,
 	1600000, 1650000, 1700000, 1750000, 1800000, 1850000, 1900000, 2000000,
@@ -114,7 +110,7 @@ static const unsigned int lp872x_ldo_vtbl[] = {
 	2750000, 2800000, 2850000, 2900000, 2950000, 3000000, 3100000, 3300000,
 };
 
-/* LP8720 LDO4 voltage table */
+ 
 static const unsigned int lp8720_ldo4_vtbl[] = {
 	 800000,  850000,  900000, 1000000, 1100000, 1200000, 1250000, 1300000,
 	1350000, 1400000, 1450000, 1500000, 1550000, 1600000, 1650000, 1700000,
@@ -122,7 +118,7 @@ static const unsigned int lp8720_ldo4_vtbl[] = {
 	2400000, 2500000, 2600000, 2650000, 2700000, 2750000, 2800000, 2850000,
 };
 
-/* LP8725 LILO(Low Input Low Output) voltage table */
+ 
 static const unsigned int lp8725_lilo_vtbl[] = {
 	 800000,  850000,  900000,  950000, 1000000, 1050000, 1100000, 1150000,
 	1200000, 1250000, 1300000, 1350000, 1400000, 1500000, 1600000, 1700000,
@@ -130,8 +126,8 @@ static const unsigned int lp8725_lilo_vtbl[] = {
 	2600000, 2700000, 2800000, 2850000, 2900000, 3000000, 3100000, 3300000,
 };
 
-/* LP8720 BUCK voltage table */
-#define EXT_R		0	/* external resistor divider */
+ 
+#define EXT_R		0	 
 static const unsigned int lp8720_buck_vtbl[] = {
 	  EXT_R,  800000,  850000,  900000,  950000, 1000000, 1050000, 1100000,
 	1150000, 1200000, 1250000, 1300000, 1350000, 1400000, 1450000, 1500000,
@@ -139,7 +135,7 @@ static const unsigned int lp8720_buck_vtbl[] = {
 	1950000, 2000000, 2050000, 2100000, 2150000, 2200000, 2250000, 2300000,
 };
 
-/* LP8725 BUCK voltage table */
+ 
 static const unsigned int lp8725_buck_vtbl[] = {
 	 800000,  850000,  900000,  950000, 1000000, 1050000, 1100000, 1150000,
 	1200000, 1250000, 1300000, 1350000, 1400000, 1500000, 1600000, 1700000,
@@ -147,7 +143,7 @@ static const unsigned int lp8725_buck_vtbl[] = {
 	2400000, 2500000, 2600000, 2700000, 2800000, 2850000, 2900000, 3000000,
 };
 
-/* LP8725 BUCK current limit */
+ 
 static const unsigned int lp8725_buck_uA[] = {
 	460000, 780000, 1050000, 1370000,
 };
@@ -710,14 +706,14 @@ static int lp872x_hw_enable(struct lp872x *lp)
 	if (!lp->pdata->enable_gpio)
 		return 0;
 
-	/* Always set enable GPIO high. */
+	 
 	lp->pdata->enable_gpio = devm_gpiod_get_optional(lp->dev, "enable", GPIOD_OUT_HIGH);
 	if (IS_ERR(lp->pdata->enable_gpio)) {
 		dev_err(lp->dev, "gpio request err: %ld\n", PTR_ERR(lp->pdata->enable_gpio));
 		return PTR_ERR(lp->pdata->enable_gpio);
 	}
 
-	/* Each chip has a different enable delay. */
+	 
 	if (lp->chipid == LP8720)
 		usleep_range(LP8720_ENABLE_DELAY, 1.5 * LP8720_ENABLE_DELAY);
 	else

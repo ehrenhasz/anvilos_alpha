@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <net/addrconf.h>
@@ -14,7 +11,7 @@
 
 static int post_one_recv(struct rxe_rq *rq, const struct ib_recv_wr *ibwr);
 
-/* dev */
+ 
 static int rxe_query_device(struct ib_device *ibdev,
 			    struct ib_device_attr *attr,
 			    struct ib_udata *udata)
@@ -132,7 +129,7 @@ static int rxe_modify_port(struct ib_device *ibdev, u32 port_num,
 		goto err_out;
 	}
 
-	//TODO is shutdown useful
+	
 	if (mask & ~(IB_PORT_RESET_QKEY_CNTR)) {
 		err = -EOPNOTSUPP;
 		rxe_dbg_dev(rxe, "unsupported mask = 0x%x", mask);
@@ -201,7 +198,7 @@ err_out:
 	return err;
 }
 
-/* uc */
+ 
 static int rxe_alloc_ucontext(struct ib_ucontext *ibuc, struct ib_udata *udata)
 {
 	struct rxe_dev *rxe = to_rdev(ibuc->device);
@@ -225,7 +222,7 @@ static void rxe_dealloc_ucontext(struct ib_ucontext *ibuc)
 		rxe_err_uc(uc, "cleanup failed, err = %d", err);
 }
 
-/* pd */
+ 
 static int rxe_alloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
 {
 	struct rxe_dev *rxe = to_rdev(ibpd->device);
@@ -257,7 +254,7 @@ static int rxe_dealloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
 	return 0;
 }
 
-/* ah */
+ 
 static int rxe_create_ah(struct ib_ah *ibah,
 			 struct rdma_ah_init_attr *init_attr,
 			 struct ib_udata *udata)
@@ -268,7 +265,7 @@ static int rxe_create_ah(struct ib_ah *ibah,
 	int err, cleanup_err;
 
 	if (udata) {
-		/* test if new user provider */
+		 
 		if (udata->outlen >= sizeof(*uresp))
 			uresp = udata->outbuf;
 		ah->is_user = true;
@@ -283,7 +280,7 @@ static int rxe_create_ah(struct ib_ah *ibah,
 		goto err_out;
 	}
 
-	/* create index > 0 */
+	 
 	ah->ah_num = ah->elem.index;
 
 	err = rxe_ah_chk_attr(ah, init_attr->ah_attr);
@@ -293,7 +290,7 @@ static int rxe_create_ah(struct ib_ah *ibah,
 	}
 
 	if (uresp) {
-		/* only if new user provider */
+		 
 		err = copy_to_user(&uresp->ah_num, &ah->ah_num,
 					 sizeof(uresp->ah_num));
 		if (err) {
@@ -302,7 +299,7 @@ static int rxe_create_ah(struct ib_ah *ibah,
 			goto err_cleanup;
 		}
 	} else if (ah->is_user) {
-		/* only if old user provider */
+		 
 		ah->ah_num = 0;
 	}
 
@@ -363,7 +360,7 @@ static int rxe_destroy_ah(struct ib_ah *ibah, u32 flags)
 	return 0;
 }
 
-/* srq */
+ 
 static int rxe_create_srq(struct ib_srq *ibsrq, struct ib_srq_init_attr *init,
 			  struct ib_udata *udata)
 {
@@ -523,7 +520,7 @@ static int rxe_destroy_srq(struct ib_srq *ibsrq, struct ib_udata *udata)
 	return 0;
 }
 
-/* qp */
+ 
 static int rxe_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init,
 			 struct ib_udata *udata)
 {
@@ -659,9 +656,9 @@ err_out:
 	return err;
 }
 
-/* send wr */
+ 
 
-/* sanity check incoming send work request */
+ 
 static int validate_send_wr(struct rxe_qp *qp, const struct ib_send_wr *ibwr,
 			    unsigned int *maskp, unsigned int *lengthp)
 {
@@ -828,7 +825,7 @@ static int init_send_wqe(struct rxe_qp *qp, const struct ib_send_wr *ibwr,
 	if (err)
 		return err;
 
-	/* local operation */
+	 
 	if (unlikely(mask & WR_LOCAL_OP_MASK)) {
 		wqe->mask = mask;
 		wqe->state = wqe_state_posted;
@@ -919,7 +916,7 @@ static int rxe_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	unsigned long flags;
 
 	spin_lock_irqsave(&qp->state_lock, flags);
-	/* caller has already called destroy_qp */
+	 
 	if (WARN_ON_ONCE(!qp->valid)) {
 		spin_unlock_irqrestore(&qp->state_lock, flags);
 		rxe_err_qp(qp, "qp has been destroyed");
@@ -935,7 +932,7 @@ static int rxe_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	spin_unlock_irqrestore(&qp->state_lock, flags);
 
 	if (qp->is_user) {
-		/* Utilize process context to do protocol processing */
+		 
 		rxe_run_task(&qp->req.task);
 	} else {
 		err = rxe_post_send_kernel(qp, wr, bad_wr);
@@ -946,7 +943,7 @@ static int rxe_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	return 0;
 }
 
-/* recv wr */
+ 
 static int post_one_recv(struct rxe_rq *rq, const struct ib_recv_wr *ibwr)
 {
 	int i;
@@ -973,7 +970,7 @@ static int post_one_recv(struct rxe_rq *rq, const struct ib_recv_wr *ibwr)
 	for (i = 0; i < num_sge; i++)
 		length += ibwr->sg_list[i].length;
 
-	/* IBA max message size is 2^31 */
+	 
 	if (length >= (1UL<<31)) {
 		err = -EINVAL;
 		rxe_dbg("message length too long");
@@ -1009,14 +1006,14 @@ static int rxe_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 	unsigned long flags;
 
 	spin_lock_irqsave(&qp->state_lock, flags);
-	/* caller has already called destroy_qp */
+	 
 	if (WARN_ON_ONCE(!qp->valid)) {
 		spin_unlock_irqrestore(&qp->state_lock, flags);
 		rxe_err_qp(qp, "qp has been destroyed");
 		return -EINVAL;
 	}
 
-	/* see C10-97.2.1 */
+	 
 	if (unlikely((qp_state(qp) < IB_QPS_INIT))) {
 		spin_unlock_irqrestore(&qp->state_lock, flags);
 		*bad_wr = wr;
@@ -1052,7 +1049,7 @@ static int rxe_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 	return err;
 }
 
-/* cq */
+ 
 static int rxe_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 			 struct ib_udata *udata)
 {
@@ -1153,7 +1150,7 @@ static int rxe_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 	for (i = 0; i < num_entries; i++) {
 		cqe = queue_head(cq->queue, QUEUE_TYPE_TO_ULP);
 		if (!cqe)
-			break;	/* queue empty */
+			break;	 
 
 		memcpy(wc++, &cqe->ibwc, sizeof(*wc));
 		queue_advance_consumer(cq->queue, QUEUE_TYPE_TO_ULP);
@@ -1197,9 +1194,7 @@ static int rxe_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
 	struct rxe_cq *cq = to_rcq(ibcq);
 	int err;
 
-	/* See IBA C11-17: The CI shall return an error if this Verb is
-	 * invoked while a Work Queue is still associated with the CQ.
-	 */
+	 
 	if (atomic_read(&cq->num_wq)) {
 		err = -EINVAL;
 		rxe_dbg_cq(cq, "still in use");
@@ -1217,7 +1212,7 @@ err_out:
 	return err;
 }
 
-/* mr */
+ 
 static struct ib_mr *rxe_get_dma_mr(struct ib_pd *ibpd, int access)
 {
 	struct rxe_dev *rxe = to_rdev(ibpd->device);
@@ -1306,9 +1301,7 @@ static struct ib_mr *rxe_rereg_user_mr(struct ib_mr *ibmr, int flags,
 	struct rxe_pd *old_pd = to_rpd(ibmr->pd);
 	struct rxe_pd *pd = to_rpd(ibpd);
 
-	/* for now only support the two easy cases:
-	 * rereg_pd and rereg_access
-	 */
+	 
 	if (flags & ~RXE_MR_REREG_SUPPORTED) {
 		rxe_err_mr(mr, "flags = %#x not supported", flags);
 		return ERR_PTR(-EOPNOTSUPP);
@@ -1383,7 +1376,7 @@ static int rxe_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata)
 	struct rxe_mr *mr = to_rmr(ibmr);
 	int err, cleanup_err;
 
-	/* See IBA 10.6.7.2.6 */
+	 
 	if (atomic_read(&mr->num_mw) > 0) {
 		err = -EINVAL;
 		rxe_dbg_mr(mr, "mr has mw's bound");
@@ -1525,9 +1518,6 @@ int rxe_register_device(struct rxe_dev *rxe, const char *ibdev_name)
 	if (err)
 		rxe_dbg_dev(rxe, "failed with error %d\n", err);
 
-	/*
-	 * Note that rxe may be invalid at this point if another thread
-	 * unregistered it.
-	 */
+	 
 	return err;
 }

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob.clark@linaro.org>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -14,18 +11,16 @@
 #include "omap_dmm_tiler.h"
 #include "omap_drv.h"
 
-/*
- * plane funcs
- */
+ 
 
 #define to_omap_plane_state(x) container_of(x, struct omap_plane_state, base)
 
 struct omap_plane_state {
-	/* Must be first. */
+	 
 	struct drm_plane_state base;
 
 	struct omap_hw_overlay *overlay;
-	struct omap_hw_overlay *r_overlay;  /* right overlay */
+	struct omap_hw_overlay *r_overlay;   
 };
 
 #define to_omap_plane(x) container_of(x, struct omap_plane, base)
@@ -80,7 +75,7 @@ static void omap_plane_atomic_update(struct drm_plane *plane,
 
 	dual_ovl = is_omap_plane_dual_overlay(new_state);
 
-	/* Cleanup previously held overlay if needed */
+	 
 	if (old_omap_state->overlay)
 		omap_overlay_update_state(priv, old_omap_state->overlay);
 	if (old_omap_state->r_overlay)
@@ -109,7 +104,7 @@ static void omap_plane_atomic_update(struct drm_plane *plane,
 
 	r_info = info;
 
-	/* update scanout: */
+	 
 	omap_framebuffer_update_scanout(new_state->fb, new_state, &info,
 					dual_ovl ? &r_info : NULL);
 
@@ -121,11 +116,7 @@ static void omap_plane_atomic_update(struct drm_plane *plane,
 
 	if (dual_ovl) {
 		r_ovl_id = new_omap_state->r_overlay->id;
-		/*
-		 * If the current plane uses 2 hw planes the very next
-		 * zorder is used by the r_overlay so we just use the
-		 * main overlay zorder + 1
-		 */
+		 
 		r_info.zorder = info.zorder + 1;
 
 		DBG("%s: %dx%d -> %dx%d (%d)",
@@ -136,7 +127,7 @@ static void omap_plane_atomic_update(struct drm_plane *plane,
 		    &r_info.paddr, &r_info.p_uv_addr);
 	}
 
-	/* and finally, update omapdss: */
+	 
 	ret = dispc_ovl_setup(priv->dispc, ovl_id, &info,
 			      omap_crtc_timings(new_state->crtc), false,
 			      omap_crtc_channel(new_state->crtc));
@@ -230,16 +221,11 @@ static int omap_plane_atomic_check(struct drm_plane *plane,
 		return 0;
 
 	crtc_state = drm_atomic_get_existing_crtc_state(state, crtc);
-	/* we should have a crtc state if the plane is attached to a crtc */
+	 
 	if (WARN_ON(!crtc_state))
 		return 0;
 
-	/*
-	 * Note: these are just sanity checks to filter out totally bad scaling
-	 * factors. The real limits must be calculated case by case, and
-	 * unfortunately we currently do those checks only at the commit
-	 * phase in dispc.
-	 */
+	 
 	ret = drm_atomic_helper_check_plane_state(new_plane_state, crtc_state,
 						  FRAC_16_16(1, 8), FRAC_16_16(8, 1),
 						  true, true);
@@ -266,7 +252,7 @@ static int omap_plane_atomic_check(struct drm_plane *plane,
 	if (new_plane_state->crtc_y + new_plane_state->crtc_h > crtc_state->adjusted_mode.vdisplay)
 		return -EINVAL;
 
-	/* Make sure dimensions are within bounds. */
+	 
 	if (new_plane_state->src_h > max_height || new_plane_state->crtc_h > height)
 		return -EINVAL;
 
@@ -276,11 +262,7 @@ static int omap_plane_atomic_check(struct drm_plane *plane,
 
 		if (is_fourcc_yuv && (((new_plane_state->src_w >> 16) / 2 & 1) ||
 				      new_plane_state->crtc_w / 2 & 1)) {
-			/*
-			 * When calculating the split overlay width
-			 * and it yield an odd value we will need to adjust
-			 * the indivual width +/- 1. So make sure it fits
-			 */
+			 
 			if (new_plane_state->src_w <= ((2 * width - 1) << 16) &&
 			    new_plane_state->crtc_w <= (2 * width - 1))
 				new_r_hw_overlay = true;
@@ -305,23 +287,17 @@ static int omap_plane_atomic_check(struct drm_plane *plane,
 
 	fourcc = new_plane_state->fb->format->format;
 
-	/*
-	 * (re)allocate hw overlay if we don't have one or
-	 * there is a caps mismatch
-	 */
+	 
 	if (!omap_state->overlay || (caps & ~omap_state->overlay->caps)) {
 		new_hw_overlay = true;
 	} else {
-		/* check supported format */
+		 
 		if (!dispc_ovl_color_mode_supported(priv->dispc, omap_state->overlay->id,
 						    fourcc))
 			new_hw_overlay = true;
 	}
 
-	/*
-	 * check if we need two overlays and only have 1 or
-	 * if we had 2 overlays but will only need 1
-	 */
+	 
 	if ((new_r_hw_overlay && !omap_state->r_overlay) ||
 	    (!new_r_hw_overlay && omap_state->r_overlay))
 		new_hw_overlay = true;
@@ -378,7 +354,7 @@ static void omap_plane_destroy(struct drm_plane *plane)
 	kfree(omap_plane);
 }
 
-/* helper to install properties which are common to planes and crtcs */
+ 
 void omap_plane_install_properties(struct drm_plane *plane,
 		struct drm_mode_object *obj)
 {
@@ -393,7 +369,7 @@ void omap_plane_install_properties(struct drm_plane *plane,
 							   DRM_MODE_ROTATE_180 | DRM_MODE_ROTATE_270 |
 							   DRM_MODE_REFLECT_X | DRM_MODE_REFLECT_Y);
 
-		/* Attach the rotation property also to the crtc object */
+		 
 		if (plane->rotation_property && obj != &plane->base)
 			drm_object_attach_property(obj, plane->rotation_property,
 						   DRM_MODE_ROTATE_0);
@@ -515,7 +491,7 @@ static bool omap_plane_supports_yuv(struct drm_plane *plane)
 	return false;
 }
 
-/* initialize plane */
+ 
 struct drm_plane *omap_plane_init(struct drm_device *dev,
 		int idx, enum drm_plane_type type,
 		u32 possible_crtcs)
@@ -557,10 +533,7 @@ struct drm_plane *omap_plane_init(struct drm_device *dev,
 
 	omap_plane_install_properties(plane, &plane->base);
 
-	/*
-	 * Set the zpos default depending on whether we are a primary or overlay
-	 * plane.
-	 */
+	 
 	if (plane->type == DRM_PLANE_TYPE_PRIMARY)
 		zpos = 0;
 	else

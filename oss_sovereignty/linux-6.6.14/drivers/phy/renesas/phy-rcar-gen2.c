@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car Gen2 PHY driver
- *
- * Copyright (C) 2014 Renesas Solutions Corp.
- * Copyright (C) 2014 Cogent Embedded, Inc.
- * Copyright (C) 2019 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,16 +14,16 @@
 #define USBHS_LPSTS			0x02
 #define USBHS_UGCTRL			0x80
 #define USBHS_UGCTRL2			0x84
-#define USBHS_UGSTS			0x88	/* From technical update */
+#define USBHS_UGSTS			0x88	 
 
-/* Low Power Status register (LPSTS) */
+ 
 #define USBHS_LPSTS_SUSPM		0x4000
 
-/* USB General control register (UGCTRL) */
+ 
 #define USBHS_UGCTRL_CONNECT		0x00000004
 #define USBHS_UGCTRL_PLLRESET		0x00000001
 
-/* USB General control register 2 (UGCTRL2) */
+ 
 #define USBHS_UGCTRL2_USB2SEL		0x80000000
 #define USBHS_UGCTRL2_USB2SEL_PCI	0x00000000
 #define USBHS_UGCTRL2_USB2SEL_USB30	0x80000000
@@ -39,8 +33,8 @@
 #define USBHS_UGCTRL2_USB0SEL_USB20	0x00000010
 #define USBHS_UGCTRL2_USB0SEL_HS_USB20	0x00000020
 
-/* USB General status register (UGSTS) */
-#define USBHS_UGSTS_LOCK		0x00000100 /* From technical update */
+ 
+#define USBHS_UGSTS_LOCK		0x00000100  
 
 #define PHYS_PER_CHANNEL	2
 
@@ -81,12 +75,7 @@ static int rcar_gen2_phy_init(struct phy *p)
 	unsigned long flags;
 	u32 ugctrl2;
 
-	/*
-	 * Try to acquire exclusive access to PHY.  The first driver calling
-	 * phy_init()  on a given channel wins, and all attempts  to use another
-	 * PHY on this channel will fail until phy_exit() is called by the first
-	 * driver.   Achieving this with cmpxcgh() should be SMP-safe.
-	 */
+	 
 	if (cmpxchg(&channel->selected_phy, -1, phy->number) != -1)
 		return -EBUSY;
 
@@ -122,13 +111,13 @@ static int rcar_gen2_phy_power_on(struct phy *p)
 	u32 value;
 	int err = 0, i;
 
-	/* Skip if it's not USBHS */
+	 
 	if (phy->select_value != USBHS_UGCTRL2_USB0SEL_HS_USB)
 		return 0;
 
 	spin_lock_irqsave(&drv->lock, flags);
 
-	/* Power on USBHS PHY */
+	 
 	value = readl(base + USBHS_UGCTRL);
 	value &= ~USBHS_UGCTRL_PLLRESET;
 	writel(value, base + USBHS_UGCTRL);
@@ -148,7 +137,7 @@ static int rcar_gen2_phy_power_on(struct phy *p)
 		udelay(1);
 	}
 
-	/* Timed out waiting for the PLL lock */
+	 
 	err = -ETIMEDOUT;
 
 out:
@@ -165,13 +154,13 @@ static int rcar_gen2_phy_power_off(struct phy *p)
 	unsigned long flags;
 	u32 value;
 
-	/* Skip if it's not USBHS */
+	 
 	if (phy->select_value != USBHS_UGCTRL2_USB0SEL_HS_USB)
 		return 0;
 
 	spin_lock_irqsave(&drv->lock, flags);
 
-	/* Power off USBHS PHY */
+	 
 	value = readl(base + USBHS_UGCTRL);
 	value &= ~USBHS_UGCTRL_CONNECT;
 	writel(value, base + USBHS_UGCTRL);
@@ -199,12 +188,12 @@ static int rz_g1c_phy_power_on(struct phy *p)
 
 	spin_lock_irqsave(&drv->lock, flags);
 
-	/* Power on USBHS PHY */
+	 
 	value = readl(base + USBHS_UGCTRL);
 	value &= ~USBHS_UGCTRL_PLLRESET;
 	writel(value, base + USBHS_UGCTRL);
 
-	/* As per the data sheet wait 340 micro sec for power stable */
+	 
 	udelay(340);
 
 	if (phy->select_value == USBHS_UGCTRL2_USB0SEL_HS_USB20) {
@@ -227,7 +216,7 @@ static int rz_g1c_phy_power_off(struct phy *p)
 	u32 value;
 
 	spin_lock_irqsave(&drv->lock, flags);
-	/* Power off USBHS PHY */
+	 
 	if (phy->select_value == USBHS_UGCTRL2_USB0SEL_HS_USB20) {
 		value = readw(base + USBHS_LPSTS);
 		value &= ~USBHS_LPSTS_SUSPM;
@@ -301,7 +290,7 @@ static const struct of_device_id rcar_gen2_phy_match_table[] = {
 		.compatible = "renesas,rcar-gen2-usb-phy",
 		.data = &rcar_gen2_usb_phy_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rcar_gen2_phy_match_table);
 

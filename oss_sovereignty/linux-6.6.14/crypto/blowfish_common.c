@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Common Blowfish algorithm parts shared between the c and assembler
- * implementations.
- *
- * Blowfish Cipher Algorithm, by Bruce Schneier.
- * http://www.counterpane.com/blowfish.html
- *
- * Adapted from Kerneli implementation.
- *
- * Copyright (c) Herbert Valerio Riedel <hvr@hvrlab.org>
- * Copyright (c) Kyle McMartin <kyle@debian.org>
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <linux/init.h>
@@ -290,10 +276,7 @@ static const u32 bf_sbox[256 * 4] = {
 	0xb74e6132, 0xce77e25b, 0x578fdfe3, 0x3ac372e6,
 };
 
-/*
- * Round loop unrolling macros, S is a pointer to a S-Box array
- * organized in 4 unsigned longs at a row.
- */
+ 
 #define GET32_3(x) (((x) & 0xff))
 #define GET32_2(x) (((x) >> (8)) & (0xff))
 #define GET32_1(x) (((x) >> (16)) & (0xff))
@@ -304,10 +287,7 @@ static const u32 bf_sbox[256 * 4] = {
 
 #define ROUND(a, b, n) ({ b ^= P[n]; a ^= bf_F(b); })
 
-/*
- * The blowfish encipher, processes 64-bit blocks.
- * NOTE: This function MUSTN'T respect endianess
- */
+ 
 static void encrypt_block(struct bf_ctx *bctx, u32 *dst, u32 *src)
 {
 	const u32 *P = bctx->p;
@@ -339,9 +319,7 @@ static void encrypt_block(struct bf_ctx *bctx, u32 *dst, u32 *src)
 	dst[1] = yl;
 }
 
-/*
- * Calculates the blowfish S and P boxes for encryption and decryption.
- */
+ 
 int blowfish_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen)
 {
 	struct bf_ctx *ctx = crypto_tfm_ctx(tfm);
@@ -350,16 +328,16 @@ int blowfish_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen)
 	short i, j, count;
 	u32 data[2], temp;
 
-	/* Copy the initialization s-boxes */
+	 
 	for (i = 0, count = 0; i < 256; i++)
 		for (j = 0; j < 4; j++, count++)
 			S[count] = bf_sbox[count];
 
-	/* Set the p-boxes */
+	 
 	for (i = 0; i < 16 + 2; i++)
 		P[i] = bf_pbox[i];
 
-	/* Actual subkey generation */
+	 
 	for (j = 0, i = 0; i < 16 + 2; i++) {
 		temp = (((u32)key[j] << 24) |
 			((u32)key[(j + 1) % keylen] << 16) |
@@ -389,7 +367,7 @@ int blowfish_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen)
 		}
 	}
 
-	/* Bruce says not to bother with the weak key check. */
+	 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(blowfish_setkey);

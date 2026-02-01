@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbutils - AML debugger utilities
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -13,25 +9,14 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
 ACPI_MODULE_NAME("dbutils")
 
-/* Local prototypes */
+ 
 #ifdef ACPI_OBSOLETE_FUNCTIONS
 acpi_status acpi_db_second_pass_parse(union acpi_parse_object *root);
 
 void acpi_db_dump_buffer(u32 address);
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_match_argument
- *
- * PARAMETERS:  user_argument           - User command line
- *              arguments               - Array of commands to match against
- *
- * RETURN:      Index into command array or ACPI_TYPE_NOT_FOUND if not found
- *
- * DESCRIPTION: Search command array for a command match
- *
- ******************************************************************************/
+ 
 
 acpi_object_type
 acpi_db_match_argument(char *user_argument,
@@ -51,23 +36,12 @@ acpi_db_match_argument(char *user_argument,
 		}
 	}
 
-	/* Argument not recognized */
+	 
 
 	return (ACPI_TYPE_NOT_FOUND);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_set_output_destination
- *
- * PARAMETERS:  output_flags        - Current flags word
- *
- * RETURN:      None
- *
- * DESCRIPTION: Set the current destination for debugger output. Also sets
- *              the debug output level accordingly.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_set_output_destination(u32 output_flags)
 {
@@ -82,18 +56,7 @@ void acpi_db_set_output_destination(u32 output_flags)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_dump_external_object
- *
- * PARAMETERS:  obj_desc        - External ACPI object to dump
- *              level           - Nesting level.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Dump the contents of an ACPI external object
- *
- ******************************************************************************/
+ 
 
 void acpi_db_dump_external_object(union acpi_object *obj_desc, u32 level)
 {
@@ -182,17 +145,7 @@ void acpi_db_dump_external_object(union acpi_object *obj_desc, u32 level)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_prep_namestring
- *
- * PARAMETERS:  name            - String to prepare
- *
- * RETURN:      None
- *
- * DESCRIPTION: Translate all forward slashes and dots to backslashes.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_prep_namestring(char *name)
 {
@@ -203,19 +156,19 @@ void acpi_db_prep_namestring(char *name)
 
 	acpi_ut_strupr(name);
 
-	/* Convert a leading forward slash to a backslash */
+	 
 
 	if (*name == '/') {
 		*name = '\\';
 	}
 
-	/* Ignore a leading backslash, this is the root prefix */
+	 
 
 	if (ACPI_IS_ROOT_PREFIX(*name)) {
 		name++;
 	}
 
-	/* Convert all slash path separators to dots */
+	 
 
 	while (*name) {
 		if ((*name == '/') || (*name == '\\')) {
@@ -226,20 +179,7 @@ void acpi_db_prep_namestring(char *name)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_local_ns_lookup
- *
- * PARAMETERS:  name            - Name to lookup
- *
- * RETURN:      Pointer to a namespace node, null on failure
- *
- * DESCRIPTION: Lookup a name in the ACPI namespace
- *
- * Note: Currently begins search from the root. Could be enhanced to use
- * the current prefix (scope) node as the search beginning point.
- *
- ******************************************************************************/
+ 
 
 struct acpi_namespace_node *acpi_db_local_ns_lookup(char *name)
 {
@@ -249,7 +189,7 @@ struct acpi_namespace_node *acpi_db_local_ns_lookup(char *name)
 
 	acpi_db_prep_namestring(name);
 
-	/* Build an internal namestring */
+	 
 
 	status = acpi_ns_internalize_name(name, &internal_path);
 	if (ACPI_FAILURE(status)) {
@@ -257,10 +197,7 @@ struct acpi_namespace_node *acpi_db_local_ns_lookup(char *name)
 		return (NULL);
 	}
 
-	/*
-	 * Lookup the name.
-	 * (Uses root node as the search starting point)
-	 */
+	 
 	status = acpi_ns_lookup(NULL, internal_path, ACPI_TYPE_ANY,
 				ACPI_IMODE_EXECUTE,
 				ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE,
@@ -274,21 +211,7 @@ struct acpi_namespace_node *acpi_db_local_ns_lookup(char *name)
 	return (node);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_uint32_to_hex_string
- *
- * PARAMETERS:  value           - The value to be converted to string
- *              buffer          - Buffer for result (not less than 11 bytes)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Convert the unsigned 32-bit value to the hexadecimal image
- *
- * NOTE: It is the caller's responsibility to ensure that the length of buffer
- *       is sufficient.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_uint32_to_hex_string(u32 value, char *buffer)
 {
@@ -308,18 +231,7 @@ void acpi_db_uint32_to_hex_string(u32 value, char *buffer)
 }
 
 #ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_second_pass_parse
- *
- * PARAMETERS:  root            - Root of the parse tree
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Second pass parse of the ACPI tables. We need to wait until
- *              second pass to parse the control methods
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_db_second_pass_parse(union acpi_parse_object *root)
 {
@@ -339,7 +251,7 @@ acpi_status acpi_db_second_pass_parse(union acpi_parse_object *root)
 		if (op->common.aml_opcode == AML_METHOD_OP) {
 			method = op;
 
-			/* Create a new walk state for the parse */
+			 
 
 			walk_state =
 			    acpi_ds_create_walk_state(0, NULL, NULL, NULL);
@@ -347,7 +259,7 @@ acpi_status acpi_db_second_pass_parse(union acpi_parse_object *root)
 				return (AE_NO_MEMORY);
 			}
 
-			/* Init the Walk State */
+			 
 
 			walk_state->parser_state.aml =
 			    walk_state->parser_state.aml_start =
@@ -361,7 +273,7 @@ acpi_status acpi_db_second_pass_parse(union acpi_parse_object *root)
 			    acpi_ds_load1_begin_op;
 			walk_state->ascending_callback = acpi_ds_load1_end_op;
 
-			/* Perform the AML parse */
+			 
 
 			status = acpi_ps_parse_aml(walk_state);
 
@@ -379,12 +291,8 @@ acpi_status acpi_db_second_pass_parse(union acpi_parse_object *root)
 
 		if (op->common.aml_opcode == AML_REGION_OP) {
 
-			/* TBD: [Investigate] this isn't quite the right thing to do! */
-			/*
-			 *
-			 * Method = (ACPI_DEFERRED_OP *) Op;
-			 * Status = acpi_ps_parse_aml (Op, Method->Body, Method->body_length);
-			 */
+			 
+			 
 		}
 
 		if (ACPI_FAILURE(status)) {
@@ -397,17 +305,7 @@ acpi_status acpi_db_second_pass_parse(union acpi_parse_object *root)
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_dump_buffer
- *
- * PARAMETERS:  address             - Pointer to the buffer
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print a portion of a buffer
- *
- ******************************************************************************/
+ 
 
 void acpi_db_dump_buffer(u32 address)
 {

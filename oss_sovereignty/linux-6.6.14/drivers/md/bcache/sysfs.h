@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BCACHE_SYSFS_H_
 #define _BCACHE_SYSFS_H_
 
@@ -139,4 +139,4 @@ do {									\
 		return strtoi_h(buf, &var) ?: (ssize_t) size;		\
 } while (0)
 
-#endif  /* _BCACHE_SYSFS_H_ */
+#endif   

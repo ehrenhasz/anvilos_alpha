@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -16,10 +16,7 @@
 #include <linux/ceph/decode.h>
 #include "crypto.h"
 
-/*
- * Set ->key and ->tfm.  The rest of the key should be filled in before
- * this function is called.
- */
+ 
 static int set_secret(struct ceph_crypto_key *key, void *buf)
 {
 	unsigned int noio_flag;
@@ -30,7 +27,7 @@ static int set_secret(struct ceph_crypto_key *key, void *buf)
 
 	switch (key->type) {
 	case CEPH_CRYPTO_NONE:
-		return 0; /* nothing to do */
+		return 0;  
 	case CEPH_CRYPTO_AES:
 		break;
 	default:
@@ -46,7 +43,7 @@ static int set_secret(struct ceph_crypto_key *key, void *buf)
 		goto fail;
 	}
 
-	/* crypto_alloc_sync_skcipher() allocates with GFP_KERNEL */
+	 
 	noio_flag = memalloc_noio_save();
 	key->tfm = crypto_alloc_sync_skcipher("cbc(aes)", 0, 0);
 	memalloc_noio_restore(noio_flag);
@@ -146,18 +143,7 @@ void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
 
 static const u8 *aes_iv = (u8 *)CEPH_AES_IV;
 
-/*
- * Should be used for buffers allocated with kvmalloc().
- * Currently these are encrypt out-buffer (ceph_buffer) and decrypt
- * in-buffer (msg front).
- *
- * Dispose of @sgt with teardown_sgtable().
- *
- * @prealloc_sg is to avoid memory allocation inside sg_alloc_table()
- * in cases where a single sg is sufficient.  No attempt to reduce the
- * number of sgs by squeezing physically contiguous pages together is
- * made though, for simplicity.
- */
+ 
 static int setup_sgtable(struct sg_table *sgt, struct scatterlist *prealloc_sg,
 			 const void *buf, unsigned int buf_len)
 {
@@ -239,12 +225,7 @@ static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
 	skcipher_request_set_callback(req, 0, NULL, NULL);
 	skcipher_request_set_crypt(req, sgt.sgl, sgt.sgl, crypt_len, iv);
 
-	/*
-	print_hex_dump(KERN_ERR, "key: ", DUMP_PREFIX_NONE, 16, 1,
-		       key->key, key->len, 1);
-	print_hex_dump(KERN_ERR, " in: ", DUMP_PREFIX_NONE, 16, 1,
-		       buf, crypt_len, 1);
-	*/
+	 
 	if (encrypt)
 		ret = crypto_skcipher_encrypt(req);
 	else
@@ -255,10 +236,7 @@ static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
 		       encrypt ? "en" : "de", ret);
 		goto out_sgt;
 	}
-	/*
-	print_hex_dump(KERN_ERR, "out: ", DUMP_PREFIX_NONE, 16, 1,
-		       buf, crypt_len, 1);
-	*/
+	 
 
 	if (encrypt) {
 		*pout_len = crypt_len;
@@ -311,7 +289,7 @@ static int ceph_key_preparse(struct key_preparsed_payload *prep)
 	if (!ckey)
 		goto err;
 
-	/* TODO ceph_crypto_key_decode should really take const input */
+	 
 	p = (void *)prep->data;
 	ret = ceph_crypto_key_decode(ckey, &p, (char*)prep->data+datalen);
 	if (ret < 0)

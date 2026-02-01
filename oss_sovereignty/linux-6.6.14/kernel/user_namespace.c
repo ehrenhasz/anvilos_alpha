@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/export.h>
 #include <linux/nsproxy.h>
@@ -42,9 +42,7 @@ static void dec_user_namespaces(struct ucounts *ucounts)
 
 static void set_cred_user_ns(struct cred *cred, struct user_namespace *user_ns)
 {
-	/* Start with the same capabilities as init but useless for doing
-	 * anything as the capabilities are bound to the new user namespace.
-	 */
+	 
 	cred->securebits = SECUREBITS_DEFAULT;
 	cred->cap_inheritable = CAP_EMPTY_SET;
 	cred->cap_permitted = CAP_FULL_SET;
@@ -55,7 +53,7 @@ static void set_cred_user_ns(struct cred *cred, struct user_namespace *user_ns)
 	key_put(cred->request_key_auth);
 	cred->request_key_auth = NULL;
 #endif
-	/* tgcred will be cleared in our caller bc CLONE_THREAD won't be set */
+	 
 	cred->user_ns = user_ns;
 }
 
@@ -63,7 +61,7 @@ static unsigned long enforced_nproc_rlimit(void)
 {
 	unsigned long limit = RLIM_INFINITY;
 
-	/* Is RLIMIT_NPROC currently enforced? */
+	 
 	if (!uid_eq(current_uid(), GLOBAL_ROOT_UID) ||
 	    (current_user_ns() != &init_user_ns))
 		limit = rlimit(RLIMIT_NPROC);
@@ -71,14 +69,7 @@ static unsigned long enforced_nproc_rlimit(void)
 	return limit;
 }
 
-/*
- * Create a new user namespace, deriving the creator from the user in the
- * passed credentials, and replacing that user with the new root user for the
- * new namespace.
- *
- * This is called by copy_creds(), which will finish setting the target task's
- * credentials.
- */
+ 
 int create_user_ns(struct cred *new)
 {
 	struct user_namespace *ns, *parent_ns = new->user_ns;
@@ -95,20 +86,12 @@ int create_user_ns(struct cred *new)
 	if (!ucounts)
 		goto fail;
 
-	/*
-	 * Verify that we can not violate the policy of which files
-	 * may be accessed that is specified by the root directory,
-	 * by verifying that the root directory is at the root of the
-	 * mount namespace which allows all files to be accessed.
-	 */
+	 
 	ret = -EPERM;
 	if (current_chrooted())
 		goto fail_dec;
 
-	/* The creator needs a mapping in the parent user namespace
-	 * or else we won't be able to reasonably tell userspace who
-	 * created a user_namespace.
-	 */
+	 
 	ret = -EPERM;
 	if (!kuid_has_mapping(parent_ns, owner) ||
 	    !kgid_has_mapping(parent_ns, group))
@@ -130,7 +113,7 @@ int create_user_ns(struct cred *new)
 	ns->ns.ops = &userns_operations;
 
 	refcount_set(&ns->ns.count, 1);
-	/* Leave the new->user_ns reference with the new user namespace. */
+	 
 	ns->parent = parent_ns;
 	ns->level = parent_ns->level + 1;
 	ns->owner = owner;
@@ -145,7 +128,7 @@ int create_user_ns(struct cred *new)
 	set_userns_rlimit_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
 	ns->ucounts = ucounts;
 
-	/* Inherit USERNS_SETGROUPS_ALLOWED from our parent */
+	 
 	mutex_lock(&userns_state_mutex);
 	ns->flags = parent_ns->flags;
 	mutex_unlock(&userns_state_mutex);
@@ -228,20 +211,14 @@ void __put_user_ns(struct user_namespace *ns)
 }
 EXPORT_SYMBOL(__put_user_ns);
 
-/**
- * struct idmap_key - holds the information necessary to find an idmapping in a
- * sorted idmap array. It is passed to cmp_map_id() as first argument.
- */
+ 
 struct idmap_key {
-	bool map_up; /* true  -> id from kid; false -> kid from id */
-	u32 id; /* id to find */
-	u32 count; /* == 0 unless used with map_id_range_down() */
+	bool map_up;  
+	u32 id;  
+	u32 count;  
 };
 
-/**
- * cmp_map_id - Function to be passed to bsearch() to find the requested
- * idmapping. Expects struct idmap_key to be passed via @k.
- */
+ 
 static int cmp_map_id(const void *k, const void *e)
 {
 	u32 first, last, id2;
@@ -250,7 +227,7 @@ static int cmp_map_id(const void *k, const void *e)
 
 	id2 = key->id + key->count - 1;
 
-	/* handle map_id_{down,up}() */
+	 
 	if (key->map_up)
 		first = el->lower_first;
 	else
@@ -268,10 +245,7 @@ static int cmp_map_id(const void *k, const void *e)
 	return 1;
 }
 
-/**
- * map_id_range_down_max - Find idmap via binary search in ordered idmap array.
- * Can only be called if number of mappings exceeds UID_GID_MAP_MAX_BASE_EXTENTS.
- */
+ 
 static struct uid_gid_extent *
 map_id_range_down_max(unsigned extents, struct uid_gid_map *map, u32 id, u32 count)
 {
@@ -285,11 +259,7 @@ map_id_range_down_max(unsigned extents, struct uid_gid_map *map, u32 id, u32 cou
 		       sizeof(struct uid_gid_extent), cmp_map_id);
 }
 
-/**
- * map_id_range_down_base - Find idmap via binary search in static extent array.
- * Can only be called if number of mappings is equal or less than
- * UID_GID_MAP_MAX_BASE_EXTENTS.
- */
+ 
 static struct uid_gid_extent *
 map_id_range_down_base(unsigned extents, struct uid_gid_map *map, u32 id, u32 count)
 {
@@ -298,7 +268,7 @@ map_id_range_down_base(unsigned extents, struct uid_gid_map *map, u32 id, u32 co
 
 	id2 = id + count - 1;
 
-	/* Find the matching extent */
+	 
 	for (idx = 0; idx < extents; idx++) {
 		first = map->extent[idx].first;
 		last = first + map->extent[idx].count - 1;
@@ -320,7 +290,7 @@ static u32 map_id_range_down(struct uid_gid_map *map, u32 id, u32 count)
 	else
 		extent = map_id_range_down_max(extents, map, id, count);
 
-	/* Map the id or note failure */
+	 
 	if (extent)
 		id = (id - extent->first) + extent->lower_first;
 	else
@@ -334,18 +304,14 @@ static u32 map_id_down(struct uid_gid_map *map, u32 id)
 	return map_id_range_down(map, id, 1);
 }
 
-/**
- * map_id_up_base - Find idmap via binary search in static extent array.
- * Can only be called if number of mappings is equal or less than
- * UID_GID_MAP_MAX_BASE_EXTENTS.
- */
+ 
 static struct uid_gid_extent *
 map_id_up_base(unsigned extents, struct uid_gid_map *map, u32 id)
 {
 	unsigned idx;
 	u32 first, last;
 
-	/* Find the matching extent */
+	 
 	for (idx = 0; idx < extents; idx++) {
 		first = map->extent[idx].lower_first;
 		last = first + map->extent[idx].count - 1;
@@ -355,10 +321,7 @@ map_id_up_base(unsigned extents, struct uid_gid_map *map, u32 id)
 	return NULL;
 }
 
-/**
- * map_id_up_max - Find idmap via binary search in ordered idmap array.
- * Can only be called if number of mappings exceeds UID_GID_MAP_MAX_BASE_EXTENTS.
- */
+ 
 static struct uid_gid_extent *
 map_id_up_max(unsigned extents, struct uid_gid_map *map, u32 id)
 {
@@ -383,7 +346,7 @@ static u32 map_id_up(struct uid_gid_map *map, u32 id)
 	else
 		extent = map_id_up_max(extents, map, id);
 
-	/* Map the id or note failure */
+	 
 	if (extent)
 		id = (id - extent->lower_first) + extent->first;
 	else
@@ -392,63 +355,23 @@ static u32 map_id_up(struct uid_gid_map *map, u32 id)
 	return id;
 }
 
-/**
- *	make_kuid - Map a user-namespace uid pair into a kuid.
- *	@ns:  User namespace that the uid is in
- *	@uid: User identifier
- *
- *	Maps a user-namespace uid pair into a kernel internal kuid,
- *	and returns that kuid.
- *
- *	When there is no mapping defined for the user-namespace uid
- *	pair INVALID_UID is returned.  Callers are expected to test
- *	for and handle INVALID_UID being returned.  INVALID_UID
- *	may be tested for using uid_valid().
- */
+ 
 kuid_t make_kuid(struct user_namespace *ns, uid_t uid)
 {
-	/* Map the uid to a global kernel uid */
+	 
 	return KUIDT_INIT(map_id_down(&ns->uid_map, uid));
 }
 EXPORT_SYMBOL(make_kuid);
 
-/**
- *	from_kuid - Create a uid from a kuid user-namespace pair.
- *	@targ: The user namespace we want a uid in.
- *	@kuid: The kernel internal uid to start with.
- *
- *	Map @kuid into the user-namespace specified by @targ and
- *	return the resulting uid.
- *
- *	There is always a mapping into the initial user_namespace.
- *
- *	If @kuid has no mapping in @targ (uid_t)-1 is returned.
- */
+ 
 uid_t from_kuid(struct user_namespace *targ, kuid_t kuid)
 {
-	/* Map the uid from a global kernel uid */
+	 
 	return map_id_up(&targ->uid_map, __kuid_val(kuid));
 }
 EXPORT_SYMBOL(from_kuid);
 
-/**
- *	from_kuid_munged - Create a uid from a kuid user-namespace pair.
- *	@targ: The user namespace we want a uid in.
- *	@kuid: The kernel internal uid to start with.
- *
- *	Map @kuid into the user-namespace specified by @targ and
- *	return the resulting uid.
- *
- *	There is always a mapping into the initial user_namespace.
- *
- *	Unlike from_kuid from_kuid_munged never fails and always
- *	returns a valid uid.  This makes from_kuid_munged appropriate
- *	for use in syscalls like stat and getuid where failing the
- *	system call and failing to provide a valid uid are not an
- *	options.
- *
- *	If @kuid has no mapping in @targ overflowuid is returned.
- */
+ 
 uid_t from_kuid_munged(struct user_namespace *targ, kuid_t kuid)
 {
 	uid_t uid;
@@ -460,62 +383,23 @@ uid_t from_kuid_munged(struct user_namespace *targ, kuid_t kuid)
 }
 EXPORT_SYMBOL(from_kuid_munged);
 
-/**
- *	make_kgid - Map a user-namespace gid pair into a kgid.
- *	@ns:  User namespace that the gid is in
- *	@gid: group identifier
- *
- *	Maps a user-namespace gid pair into a kernel internal kgid,
- *	and returns that kgid.
- *
- *	When there is no mapping defined for the user-namespace gid
- *	pair INVALID_GID is returned.  Callers are expected to test
- *	for and handle INVALID_GID being returned.  INVALID_GID may be
- *	tested for using gid_valid().
- */
+ 
 kgid_t make_kgid(struct user_namespace *ns, gid_t gid)
 {
-	/* Map the gid to a global kernel gid */
+	 
 	return KGIDT_INIT(map_id_down(&ns->gid_map, gid));
 }
 EXPORT_SYMBOL(make_kgid);
 
-/**
- *	from_kgid - Create a gid from a kgid user-namespace pair.
- *	@targ: The user namespace we want a gid in.
- *	@kgid: The kernel internal gid to start with.
- *
- *	Map @kgid into the user-namespace specified by @targ and
- *	return the resulting gid.
- *
- *	There is always a mapping into the initial user_namespace.
- *
- *	If @kgid has no mapping in @targ (gid_t)-1 is returned.
- */
+ 
 gid_t from_kgid(struct user_namespace *targ, kgid_t kgid)
 {
-	/* Map the gid from a global kernel gid */
+	 
 	return map_id_up(&targ->gid_map, __kgid_val(kgid));
 }
 EXPORT_SYMBOL(from_kgid);
 
-/**
- *	from_kgid_munged - Create a gid from a kgid user-namespace pair.
- *	@targ: The user namespace we want a gid in.
- *	@kgid: The kernel internal gid to start with.
- *
- *	Map @kgid into the user-namespace specified by @targ and
- *	return the resulting gid.
- *
- *	There is always a mapping into the initial user_namespace.
- *
- *	Unlike from_kgid from_kgid_munged never fails and always
- *	returns a valid gid.  This makes from_kgid_munged appropriate
- *	for use in syscalls like stat and getgid where failing the
- *	system call and failing to provide a valid gid are not options.
- *
- *	If @kgid has no mapping in @targ overflowgid is returned.
- */
+ 
 gid_t from_kgid_munged(struct user_namespace *targ, kgid_t kgid)
 {
 	gid_t gid;
@@ -527,63 +411,23 @@ gid_t from_kgid_munged(struct user_namespace *targ, kgid_t kgid)
 }
 EXPORT_SYMBOL(from_kgid_munged);
 
-/**
- *	make_kprojid - Map a user-namespace projid pair into a kprojid.
- *	@ns:  User namespace that the projid is in
- *	@projid: Project identifier
- *
- *	Maps a user-namespace uid pair into a kernel internal kuid,
- *	and returns that kuid.
- *
- *	When there is no mapping defined for the user-namespace projid
- *	pair INVALID_PROJID is returned.  Callers are expected to test
- *	for and handle INVALID_PROJID being returned.  INVALID_PROJID
- *	may be tested for using projid_valid().
- */
+ 
 kprojid_t make_kprojid(struct user_namespace *ns, projid_t projid)
 {
-	/* Map the uid to a global kernel uid */
+	 
 	return KPROJIDT_INIT(map_id_down(&ns->projid_map, projid));
 }
 EXPORT_SYMBOL(make_kprojid);
 
-/**
- *	from_kprojid - Create a projid from a kprojid user-namespace pair.
- *	@targ: The user namespace we want a projid in.
- *	@kprojid: The kernel internal project identifier to start with.
- *
- *	Map @kprojid into the user-namespace specified by @targ and
- *	return the resulting projid.
- *
- *	There is always a mapping into the initial user_namespace.
- *
- *	If @kprojid has no mapping in @targ (projid_t)-1 is returned.
- */
+ 
 projid_t from_kprojid(struct user_namespace *targ, kprojid_t kprojid)
 {
-	/* Map the uid from a global kernel uid */
+	 
 	return map_id_up(&targ->projid_map, __kprojid_val(kprojid));
 }
 EXPORT_SYMBOL(from_kprojid);
 
-/**
- *	from_kprojid_munged - Create a projiid from a kprojid user-namespace pair.
- *	@targ: The user namespace we want a projid in.
- *	@kprojid: The kernel internal projid to start with.
- *
- *	Map @kprojid into the user-namespace specified by @targ and
- *	return the resulting projid.
- *
- *	There is always a mapping into the initial user_namespace.
- *
- *	Unlike from_kprojid from_kprojid_munged never fails and always
- *	returns a valid projid.  This makes from_kprojid_munged
- *	appropriate for use in syscalls like stat and where
- *	failing the system call and failing to provide a valid projid are
- *	not an options.
- *
- *	If @kprojid has no mapping in @targ OVERFLOW_PROJID is returned.
- */
+ 
 projid_t from_kprojid_munged(struct user_namespace *targ, kprojid_t kprojid)
 {
 	projid_t projid;
@@ -754,12 +598,12 @@ static bool mappings_overlap(struct uid_gid_map *new_map,
 		prev_upper_last = prev_upper_first + prev->count - 1;
 		prev_lower_last = prev_lower_first + prev->count - 1;
 
-		/* Does the upper range intersect a previous extent? */
+		 
 		if ((prev_upper_first <= upper_last) &&
 		    (prev_upper_last >= upper_first))
 			return true;
 
-		/* Does the lower range intersect a previous extent? */
+		 
 		if ((prev_lower_first <= lower_last) &&
 		    (prev_lower_last >= lower_first))
 			return true;
@@ -767,11 +611,7 @@ static bool mappings_overlap(struct uid_gid_map *new_map,
 	return false;
 }
 
-/**
- * insert_extent - Safely insert a new idmap extent into struct uid_gid_map.
- * Takes care to allocate a 4K block of memory if the number of mappings exceeds
- * UID_GID_MAP_MAX_BASE_EXTENTS.
- */
+ 
 static int insert_extent(struct uid_gid_map *map, struct uid_gid_extent *extent)
 {
 	struct uid_gid_extent *dest;
@@ -779,16 +619,14 @@ static int insert_extent(struct uid_gid_map *map, struct uid_gid_extent *extent)
 	if (map->nr_extents == UID_GID_MAP_MAX_BASE_EXTENTS) {
 		struct uid_gid_extent *forward;
 
-		/* Allocate memory for 340 mappings. */
+		 
 		forward = kmalloc_array(UID_GID_MAP_MAX_EXTENTS,
 					sizeof(struct uid_gid_extent),
 					GFP_KERNEL);
 		if (!forward)
 			return -ENOMEM;
 
-		/* Copy over memory. Only set up memory for the forward pointer.
-		 * Defer the memory setup for the reverse pointer.
-		 */
+		 
 		memcpy(forward, map->extent,
 		       map->nr_extents * sizeof(map->extent[0]));
 
@@ -806,7 +644,7 @@ static int insert_extent(struct uid_gid_map *map, struct uid_gid_extent *extent)
 	return 0;
 }
 
-/* cmp function to sort() forward mappings */
+ 
 static int cmp_extents_forward(const void *a, const void *b)
 {
 	const struct uid_gid_extent *e1 = a;
@@ -821,7 +659,7 @@ static int cmp_extents_forward(const void *a, const void *b)
 	return 0;
 }
 
-/* cmp function to sort() reverse mappings */
+ 
 static int cmp_extents_reverse(const void *a, const void *b)
 {
 	const struct uid_gid_extent *e1 = a;
@@ -836,45 +674,31 @@ static int cmp_extents_reverse(const void *a, const void *b)
 	return 0;
 }
 
-/**
- * sort_idmaps - Sorts an array of idmap entries.
- * Can only be called if number of mappings exceeds UID_GID_MAP_MAX_BASE_EXTENTS.
- */
+ 
 static int sort_idmaps(struct uid_gid_map *map)
 {
 	if (map->nr_extents <= UID_GID_MAP_MAX_BASE_EXTENTS)
 		return 0;
 
-	/* Sort forward array. */
+	 
 	sort(map->forward, map->nr_extents, sizeof(struct uid_gid_extent),
 	     cmp_extents_forward, NULL);
 
-	/* Only copy the memory from forward we actually need. */
+	 
 	map->reverse = kmemdup(map->forward,
 			       map->nr_extents * sizeof(struct uid_gid_extent),
 			       GFP_KERNEL);
 	if (!map->reverse)
 		return -ENOMEM;
 
-	/* Sort reverse array. */
+	 
 	sort(map->reverse, map->nr_extents, sizeof(struct uid_gid_extent),
 	     cmp_extents_reverse, NULL);
 
 	return 0;
 }
 
-/**
- * verify_root_map() - check the uid 0 mapping
- * @file: idmapping file
- * @map_ns: user namespace of the target process
- * @new_map: requested idmap
- *
- * If a process requests mapping parent uid 0 into the new ns, verify that the
- * process writing the map had the CAP_SETFCAP capability as the target process
- * will be able to write fscaps that are valid in ancestor user namespaces.
- *
- * Return: true if the mapping is allowed, false if not.
- */
+ 
 static bool verify_root_map(const struct file *file,
 			    struct user_namespace *map_ns,
 			    struct uid_gid_map *new_map)
@@ -898,18 +722,11 @@ static bool verify_root_map(const struct file *file,
 		return true;
 
 	if (map_ns == file_ns) {
-		/* The process unshared its ns and is writing to its own
-		 * /proc/self/uid_map.  User already has full capabilites in
-		 * the new namespace.  Verify that the parent had CAP_SETFCAP
-		 * when it unshared.
-		 * */
+		 
 		if (!file_ns->parent_could_setfcap)
 			return false;
 	} else {
-		/* Process p1 is writing to uid_map of p2, who is in a child
-		 * user namespace to p1's.  Verify that the opener of the map
-		 * file has CAP_SETFCAP against the parent of the new map
-		 * namespace */
+		 
 		if (!file_ns_capable(file, map_ns->parent, CAP_SETFCAP))
 			return false;
 	}
@@ -931,55 +748,35 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 	char *kbuf = NULL, *pos, *next_line;
 	ssize_t ret;
 
-	/* Only allow < page size writes at the beginning of the file */
+	 
 	if ((*ppos != 0) || (count >= PAGE_SIZE))
 		return -EINVAL;
 
-	/* Slurp in the user data */
+	 
 	kbuf = memdup_user_nul(buf, count);
 	if (IS_ERR(kbuf))
 		return PTR_ERR(kbuf);
 
-	/*
-	 * The userns_state_mutex serializes all writes to any given map.
-	 *
-	 * Any map is only ever written once.
-	 *
-	 * An id map fits within 1 cache line on most architectures.
-	 *
-	 * On read nothing needs to be done unless you are on an
-	 * architecture with a crazy cache coherency model like alpha.
-	 *
-	 * There is a one time data dependency between reading the
-	 * count of the extents and the values of the extents.  The
-	 * desired behavior is to see the values of the extents that
-	 * were written before the count of the extents.
-	 *
-	 * To achieve this smp_wmb() is used on guarantee the write
-	 * order and smp_rmb() is guaranteed that we don't have crazy
-	 * architectures returning stale data.
-	 */
+	 
 	mutex_lock(&userns_state_mutex);
 
 	memset(&new_map, 0, sizeof(struct uid_gid_map));
 
 	ret = -EPERM;
-	/* Only allow one successful write to the map */
+	 
 	if (map->nr_extents != 0)
 		goto out;
 
-	/*
-	 * Adjusting namespace settings requires capabilities on the target.
-	 */
+	 
 	if (cap_valid(cap_setid) && !file_ns_capable(file, map_ns, CAP_SYS_ADMIN))
 		goto out;
 
-	/* Parse the user data */
+	 
 	ret = -EINVAL;
 	pos = kbuf;
 	for (; pos; pos = next_line) {
 
-		/* Find the end of line and ensure I don't look past it */
+		 
 		next_line = strchr(pos, '\n');
 		if (next_line) {
 			*next_line = '\0';
@@ -1003,26 +800,24 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 		if (*pos && !isspace(*pos))
 			goto out;
 
-		/* Verify there is not trailing junk on the line */
+		 
 		pos = skip_spaces(pos);
 		if (*pos != '\0')
 			goto out;
 
-		/* Verify we have been given valid starting values */
+		 
 		if ((extent.first == (u32) -1) ||
 		    (extent.lower_first == (u32) -1))
 			goto out;
 
-		/* Verify count is not zero and does not cause the
-		 * extent to wrap
-		 */
+		 
 		if ((extent.first + extent.count) <= extent.first)
 			goto out;
 		if ((extent.lower_first + extent.count) <=
 		     extent.lower_first)
 			goto out;
 
-		/* Do the ranges in extent overlap any previous extents? */
+		 
 		if (mappings_overlap(&new_map, &extent))
 			goto out;
 
@@ -1035,19 +830,17 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 			goto out;
 		ret = -EINVAL;
 	}
-	/* Be very certain the new map actually exists */
+	 
 	if (new_map.nr_extents == 0)
 		goto out;
 
 	ret = -EPERM;
-	/* Validate the user is allowed to use user id's mapped to. */
+	 
 	if (!new_idmap_permitted(file, map_ns, cap_setid, &new_map))
 		goto out;
 
 	ret = -EPERM;
-	/* Map the lower ids from the parent user namespace to the
-	 * kernel global id space.
-	 */
+	 
 	for (idx = 0; idx < new_map.nr_extents; idx++) {
 		struct uid_gid_extent *e;
 		u32 lower_first;
@@ -1061,24 +854,19 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 						e->lower_first,
 						e->count);
 
-		/* Fail if we can not map the specified extent to
-		 * the kernel global id space.
-		 */
+		 
 		if (lower_first == (u32) -1)
 			goto out;
 
 		e->lower_first = lower_first;
 	}
 
-	/*
-	 * If we want to use binary search for lookup, this clones the extent
-	 * array and sorts both copies.
-	 */
+	 
 	ret = sort_idmaps(&new_map);
 	if (ret < 0)
 		goto out;
 
-	/* Install the map */
+	 
 	if (new_map.nr_extents <= UID_GID_MAP_MAX_BASE_EXTENTS) {
 		memcpy(map->extent, new_map.extent,
 		       new_map.nr_extents * sizeof(new_map.extent[0]));
@@ -1152,7 +940,7 @@ ssize_t proc_projid_map_write(struct file *file, const char __user *buf,
 	if ((seq_ns != ns) && (seq_ns != ns->parent))
 		return -EPERM;
 
-	/* Anyone can set any valid project id no capability needed */
+	 
 	return map_write(file, buf, size, ppos, -1,
 			 &ns->projid_map, &ns->parent->projid_map);
 }
@@ -1166,9 +954,7 @@ static bool new_idmap_permitted(const struct file *file,
 	if (cap_setid == CAP_SETUID && !verify_root_map(file, ns, new_map))
 		return false;
 
-	/* Don't allow mappings that would allow anything that wouldn't
-	 * be allowed without the establishment of unprivileged mappings.
-	 */
+	 
 	if ((new_map->nr_extents == 1) && (new_map->extent[0].count == 1) &&
 	    uid_eq(ns->owner, cred->euid)) {
 		u32 id = new_map->extent[0].lower_first;
@@ -1184,14 +970,11 @@ static bool new_idmap_permitted(const struct file *file,
 		}
 	}
 
-	/* Allow anyone to set a mapping that doesn't require privilege */
+	 
 	if (!cap_valid(cap_setid))
 		return true;
 
-	/* Allow the specified ids if we have the appropriate capability
-	 * (CAP_SETUID or CAP_SETGID) over the parent user namespace.
-	 * And the opener of the id file also has the appropriate capability.
-	 */
+	 
 	if (ns_capable(ns->parent, cap_setid) &&
 	    file_ns_capable(file, ns->parent, cap_setid))
 		return true;
@@ -1219,19 +1002,19 @@ ssize_t proc_setgroups_write(struct file *file, const char __user *buf,
 	bool setgroups_allowed;
 	ssize_t ret;
 
-	/* Only allow a very narrow range of strings to be written */
+	 
 	ret = -EINVAL;
 	if ((*ppos != 0) || (count >= sizeof(kbuf)))
 		goto out;
 
-	/* What was written? */
+	 
 	ret = -EFAULT;
 	if (copy_from_user(kbuf, buf, count))
 		goto out;
 	kbuf[count] = '\0';
 	pos = kbuf;
 
-	/* What is being requested? */
+	 
 	ret = -EINVAL;
 	if (strncmp(pos, "allow", 5) == 0) {
 		pos += 5;
@@ -1244,7 +1027,7 @@ ssize_t proc_setgroups_write(struct file *file, const char __user *buf,
 	else
 		goto out;
 
-	/* Verify there is not trailing junk on the line */
+	 
 	pos = skip_spaces(pos);
 	if (*pos != '\0')
 		goto out;
@@ -1252,22 +1035,18 @@ ssize_t proc_setgroups_write(struct file *file, const char __user *buf,
 	ret = -EPERM;
 	mutex_lock(&userns_state_mutex);
 	if (setgroups_allowed) {
-		/* Enabling setgroups after setgroups has been disabled
-		 * is not allowed.
-		 */
+		 
 		if (!(ns->flags & USERNS_SETGROUPS_ALLOWED))
 			goto out_unlock;
 	} else {
-		/* Permanently disabling setgroups after setgroups has
-		 * been enabled by writing the gid_map is not allowed.
-		 */
+		 
 		if (ns->gid_map.nr_extents != 0)
 			goto out_unlock;
 		ns->flags &= ~USERNS_SETGROUPS_ALLOWED;
 	}
 	mutex_unlock(&userns_state_mutex);
 
-	/* Report a successful write */
+	 
 	*ppos = count;
 	ret = count;
 out:
@@ -1282,21 +1061,16 @@ bool userns_may_setgroups(const struct user_namespace *ns)
 	bool allowed;
 
 	mutex_lock(&userns_state_mutex);
-	/* It is not safe to use setgroups until a gid mapping in
-	 * the user namespace has been established.
-	 */
+	 
 	allowed = ns->gid_map.nr_extents != 0;
-	/* Is setgroups allowed? */
+	 
 	allowed = allowed && (ns->flags & USERNS_SETGROUPS_ALLOWED);
 	mutex_unlock(&userns_state_mutex);
 
 	return allowed;
 }
 
-/*
- * Returns true if @child is the same namespace or a descendant of
- * @ancestor.
- */
+ 
 bool in_userns(const struct user_namespace *ancestor,
 	       const struct user_namespace *child)
 {
@@ -1338,13 +1112,11 @@ static int userns_install(struct nsset *nsset, struct ns_common *ns)
 	struct user_namespace *user_ns = to_user_ns(ns);
 	struct cred *cred;
 
-	/* Don't allow gaining capabilities by reentering
-	 * the same user namespace.
-	 */
+	 
 	if (user_ns == current_user_ns())
 		return -EINVAL;
 
-	/* Tasks that share a thread group must share a user namespace */
+	 
 	if (!thread_group_empty(current))
 		return -EINVAL;
 
@@ -1372,7 +1144,7 @@ struct ns_common *ns_get_owner(struct ns_common *ns)
 	struct user_namespace *my_user_ns = current_user_ns();
 	struct user_namespace *owner, *p;
 
-	/* See if the owner is in the current user namespace */
+	 
 	owner = p = ns->ops->owner(ns);
 	for (;;) {
 		if (!p)

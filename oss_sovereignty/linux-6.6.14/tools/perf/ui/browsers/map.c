@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <elf.h>
 #include <inttypes.h>
 #include <sys/ttydefaults.h>
@@ -39,7 +39,7 @@ static void map_browser__write(struct ui_browser *browser, void *nd, int row)
 		ui_browser__write_nstring(browser, sym->name, width);
 }
 
-/* FIXME uber-kludgy, see comment on cmd_report... */
+ 
 static u32 *symbol__browser_index(struct symbol *browser)
 {
 	return ((void *)browser) - sizeof(struct rb_node) - sizeof(u32);

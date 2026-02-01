@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/***************************************************************************
- *   Copyright (C) 2010-2012 by Bruno Prémont <bonbons@linux-vserver.org>  *
- *                                                                         *
- *   Based on Logitech G13 driver (v0.4)                                   *
- *     Copyright (C) 2009 by Rick L. Vinyard, Jr. <rvinyard@cs.nmsu.edu>   *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #include <linux/hid.h>
 #include <linux/hid-debug.h>
@@ -23,33 +17,29 @@
 #include "hid-picolcd.h"
 
 
-/* Input device
- *
- * The PicoLCD has an IR receiver header, a built-in keypad with 5 keys
- * and header for 4x4 key matrix. The built-in keys are part of the matrix.
- */
+ 
 static const unsigned short def_keymap[PICOLCD_KEYS] = {
-	KEY_RESERVED,	/* none */
-	KEY_BACK,	/* col 4 + row 1 */
-	KEY_HOMEPAGE,	/* col 3 + row 1 */
-	KEY_RESERVED,	/* col 2 + row 1 */
-	KEY_RESERVED,	/* col 1 + row 1 */
-	KEY_SCROLLUP,	/* col 4 + row 2 */
-	KEY_OK,		/* col 3 + row 2 */
-	KEY_SCROLLDOWN,	/* col 2 + row 2 */
-	KEY_RESERVED,	/* col 1 + row 2 */
-	KEY_RESERVED,	/* col 4 + row 3 */
-	KEY_RESERVED,	/* col 3 + row 3 */
-	KEY_RESERVED,	/* col 2 + row 3 */
-	KEY_RESERVED,	/* col 1 + row 3 */
-	KEY_RESERVED,	/* col 4 + row 4 */
-	KEY_RESERVED,	/* col 3 + row 4 */
-	KEY_RESERVED,	/* col 2 + row 4 */
-	KEY_RESERVED,	/* col 1 + row 4 */
+	KEY_RESERVED,	 
+	KEY_BACK,	 
+	KEY_HOMEPAGE,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_SCROLLUP,	 
+	KEY_OK,		 
+	KEY_SCROLLDOWN,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
+	KEY_RESERVED,	 
 };
 
 
-/* Find a given report */
+ 
 struct hid_report *picolcd_report(int id, struct hid_device *hdev, int dir)
 {
 	struct list_head *feature_report_list = &hdev->report_enum[dir].report_list;
@@ -63,8 +53,7 @@ struct hid_report *picolcd_report(int id, struct hid_device *hdev, int dir)
 	return NULL;
 }
 
-/* Submit a report and wait for a reply from device - if device fades away
- * or does not respond in time, return NULL */
+ 
 struct picolcd_pending *picolcd_send_and_wait(struct hid_device *hdev,
 		int report_id, const u8 *raw_data, int size)
 {
@@ -110,20 +99,14 @@ struct picolcd_pending *picolcd_send_and_wait(struct hid_device *hdev,
 	return work;
 }
 
-/*
- * input class device
- */
+ 
 static int picolcd_raw_keypad(struct picolcd_data *data,
 		struct hid_report *report, u8 *raw_data, int size)
 {
-	/*
-	 * Keypad event
-	 * First and second data bytes list currently pressed keys,
-	 * 0x00 means no key and at most 2 keys may be pressed at same time
-	 */
+	 
 	int i, j;
 
-	/* determine newly pressed keys */
+	 
 	for (i = 0; i < size; i++) {
 		unsigned int key_code;
 		if (raw_data[i] == 0)
@@ -151,7 +134,7 @@ key_already_down:
 		continue;
 	}
 
-	/* determine newly released keys */
+	 
 	for (j = 0; j < sizeof(data->pressed_keys); j++) {
 		unsigned int key_code;
 		if (data->pressed_keys[j] == 0)
@@ -210,9 +193,7 @@ static int picolcd_check_version(struct hid_device *hdev)
 	return ret;
 }
 
-/*
- * Reset our device and wait for answer to VERSION request
- */
+ 
 int picolcd_reset(struct hid_device *hdev)
 {
 	struct picolcd_data *data = hid_get_drvdata(hdev);
@@ -227,7 +208,7 @@ int picolcd_reset(struct hid_device *hdev)
 	if (hdev->product == USB_DEVICE_ID_PICOLCD_BOOTLOADER)
 		data->status |= PICOLCD_BOOTLOADER;
 
-	/* perform the reset */
+	 
 	hid_set_field(report->field[0], 0, 1);
 	if (data->status & PICOLCD_FAILED) {
 		spin_unlock_irqrestore(&data->lock, flags);
@@ -247,9 +228,7 @@ int picolcd_reset(struct hid_device *hdev)
 	return 0;
 }
 
-/*
- * The "operation_mode" sysfs attribute
- */
+ 
 static ssize_t picolcd_operation_mode_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -293,9 +272,7 @@ static ssize_t picolcd_operation_mode_store(struct device *dev,
 static DEVICE_ATTR(operation_mode, 0644, picolcd_operation_mode_show,
 		picolcd_operation_mode_store);
 
-/*
- * The "operation_mode_delay" sysfs attribute
- */
+ 
 static ssize_t picolcd_operation_mode_delay_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -321,9 +298,7 @@ static ssize_t picolcd_operation_mode_delay_store(struct device *dev,
 static DEVICE_ATTR(operation_mode_delay, 0644, picolcd_operation_mode_delay_show,
 		picolcd_operation_mode_delay_store);
 
-/*
- * Handle raw report as sent by device
- */
+ 
 static int picolcd_raw_event(struct hid_device *hdev,
 		struct hid_report *report, u8 *raw_data, int size)
 {
@@ -346,10 +321,7 @@ static int picolcd_raw_event(struct hid_device *hdev,
 		picolcd_raw_cir(data, report, raw_data+1, size-1);
 	} else {
 		spin_lock_irqsave(&data->lock, flags);
-		/*
-		 * We let the caller of picolcd_send_and_wait() check if the
-		 * report we got is one of the expected ones or not.
-		 */
+		 
 		if (data->pending) {
 			memcpy(data->pending->raw_data, raw_data+1, size-1);
 			data->pending->raw_size  = size-1;
@@ -403,7 +375,7 @@ static int picolcd_reset_resume(struct hid_device *hdev)
 }
 #endif
 
-/* initialize keypad input device */
+ 
 static int picolcd_init_keys(struct picolcd_data *data,
 		struct hid_report *report)
 {
@@ -464,32 +436,32 @@ static int picolcd_probe_lcd(struct hid_device *hdev, struct picolcd_data *data)
 {
 	int error;
 
-	/* Setup keypad input device */
+	 
 	error = picolcd_init_keys(data, picolcd_in_report(REPORT_KEY_STATE, hdev));
 	if (error)
 		goto err;
 
-	/* Setup CIR input device */
+	 
 	error = picolcd_init_cir(data, picolcd_in_report(REPORT_IR_DATA, hdev));
 	if (error)
 		goto err;
 
-	/* Set up the framebuffer device */
+	 
 	error = picolcd_init_framebuffer(data);
 	if (error)
 		goto err;
 
-	/* Setup lcd class device */
+	 
 	error = picolcd_init_lcd(data, picolcd_out_report(REPORT_CONTRAST, hdev));
 	if (error)
 		goto err;
 
-	/* Setup backlight class device */
+	 
 	error = picolcd_init_backlight(data, picolcd_out_report(REPORT_BRIGHTNESS, hdev));
 	if (error)
 		goto err;
 
-	/* Setup the LED class devices */
+	 
 	error = picolcd_init_leds(data, picolcd_out_report(REPORT_LED_STATE, hdev));
 	if (error)
 		goto err;
@@ -526,10 +498,7 @@ static int picolcd_probe(struct hid_device *hdev,
 
 	dbg_hid(PICOLCD_NAME " hardware probe...\n");
 
-	/*
-	 * Let's allocate the picolcd data structure, set some reasonable
-	 * defaults, and associate it with the device
-	 */
+	 
 	data = kzalloc(sizeof(struct picolcd_data), GFP_KERNEL);
 	if (data == NULL) {
 		hid_err(hdev, "can't allocate space for Minibox PicoLCD device data\n");
@@ -544,7 +513,7 @@ static int picolcd_probe(struct hid_device *hdev,
 		data->status |= PICOLCD_BOOTLOADER;
 	hid_set_drvdata(hdev, data);
 
-	/* Parse the device reports and start it up */
+	 
 	error = hid_parse(hdev);
 	if (error) {
 		hid_err(hdev, "device report parse failed\n");
@@ -614,24 +583,24 @@ static void picolcd_remove(struct hid_device *hdev)
 	hid_hw_close(hdev);
 	hid_hw_stop(hdev);
 
-	/* Shortcut potential pending reply that will never arrive */
+	 
 	spin_lock_irqsave(&data->lock, flags);
 	if (data->pending)
 		complete(&data->pending->ready);
 	spin_unlock_irqrestore(&data->lock, flags);
 
-	/* Cleanup LED */
+	 
 	picolcd_exit_leds(data);
-	/* Clean up the framebuffer */
+	 
 	picolcd_exit_backlight(data);
 	picolcd_exit_lcd(data);
 	picolcd_exit_framebuffer(data);
-	/* Cleanup input */
+	 
 	picolcd_exit_cir(data);
 	picolcd_exit_keys(data);
 
 	mutex_destroy(&data->mutex);
-	/* Finally, clean up the picolcd data itself */
+	 
 	kfree(data);
 }
 

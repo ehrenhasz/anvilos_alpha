@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dice-tc_electronic.c - a part of driver for DICE based devices
- *
- * Copyright (c) 2018 Takashi Sakamoto
- */
+
+ 
 
 #include "dice.h"
 

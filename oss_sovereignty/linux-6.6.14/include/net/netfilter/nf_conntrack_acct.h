@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * (C) 2008 Krzysztof Piotr Oledzki <ole@ans.pl>
- */
+ 
+ 
 
 #ifndef _NF_CONNTRACK_ACCT_H
 #define _NF_CONNTRACK_ACCT_H
@@ -47,7 +45,7 @@ struct nf_conn_acct *nf_ct_acct_ext_add(struct nf_conn *ct, gfp_t gfp)
 #endif
 }
 
-/* Check if connection tracking accounting is enabled */
+ 
 static inline bool nf_ct_acct_enabled(struct net *net)
 {
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
@@ -57,7 +55,7 @@ static inline bool nf_ct_acct_enabled(struct net *net)
 #endif
 }
 
-/* Enable/disable connection tracking accounting */
+ 
 static inline void nf_ct_set_acct(struct net *net, bool enable)
 {
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
@@ -78,4 +76,4 @@ static inline void nf_ct_acct_update(struct nf_conn *ct, u32 dir,
 
 void nf_conntrack_acct_pernet_init(struct net *net);
 
-#endif /* _NF_CONNTRACK_ACCT_H */
+#endif  

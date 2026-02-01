@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Red Hat */
+
+ 
 #include <test_progs.h>
 #include <bpf/btf.h>
 #include "bpf/libbpf_internal.h"
@@ -25,7 +25,7 @@ static int get_bpf_testmod_btf_fd(void)
 		fd = bpf_btf_get_fd_by_id(id);
 		if (fd < 0) {
 			if (errno == ENOENT)
-				continue; /* expected race: BTF was unloaded */
+				continue;  
 			err = -errno;
 			log_err("failed to get FD for BTF object #%d", id);
 			return err;
@@ -105,12 +105,7 @@ void test_module_fentry_shadow(void)
 		if (!ASSERT_GE(prog_fd[i], 0, "bpf_prog_load"))
 			goto out;
 
-		/* If the verifier incorrectly resolves addresses of the
-		 * shadowed functions and uses the same address for both the
-		 * vmlinux and the bpf_testmod functions, this will fail on
-		 * attempting to create two trampolines for the same address,
-		 * which is forbidden.
-		 */
+		 
 		link_fd[i] = bpf_link_create(prog_fd[i], 0, BPF_TRACE_FENTRY, NULL);
 		if (!ASSERT_GE(link_fd[i], 0, "bpf_link_create"))
 			goto out;

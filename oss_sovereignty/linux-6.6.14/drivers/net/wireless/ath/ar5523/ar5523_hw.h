@@ -1,24 +1,6 @@
-/*
- * Copyright (c) 2006 Damien Bergamini <damien.bergamini@free.fr>
- * Copyright (c) 2006 Sam Leffler, Errno Consulting
- * Copyright (c) 2007 Christoph Hellwig <hch@lst.de>
- * Copyright (c) 2008-2009 Weongyo Jeong <weongyo@freebsd.org>
- * Copyright (c) 2012 Pontus Fuchs <pontus.fuchs@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/* all fields are big endian */
+ 
 struct ar5523_fwblock {
 	__be32		flags;
 #define AR5523_WRITE_BLOCK	(1 << 4)
@@ -38,8 +20,8 @@ struct ar5523_fwblock {
 struct ar5523_cmd_hdr {
 	__be32		len;
 	__be32		code;
-/* NB: these are defined for rev 1.5 firmware; rev 1.6 is different */
-/* messages from Host -> Target */
+ 
+ 
 #define	WDCMSG_HOST_AVAILABLE		0x01
 #define WDCMSG_BIND			0x02
 #define WDCMSG_TARGET_RESET		0x03
@@ -56,7 +38,7 @@ struct ar5523_cmd_hdr {
 #define	WDCMSG_DELETE_CONNECT		0x0e
 #define	WDCMSG_SEND			0x0f
 #define WDCMSG_FLUSH			0x10
-/* messages from Target -> Host */
+ 
 #define	WDCMSG_STATS_UPDATE		0x11
 #define	WDCMSG_BMISS			0x12
 #define	WDCMSG_DEVICE_AVAIL		0x13
@@ -66,7 +48,7 @@ struct ar5523_cmd_hdr {
 #define	WDCMSG_BMISS_ACK		0x17
 #define	WDCMSG_SET_LED_STEADY		0x18
 #define	WDCMSG_SET_LED_BLINK		0x19
-/* more messages */
+ 
 #define	WDCMSG_SETUP_BEACON_DESC	0x1a
 #define	WDCMSG_BEACON_INIT		0x1b
 #define	WDCMSG_RESET_KEY_CACHE		0x1c
@@ -100,8 +82,7 @@ struct ar5523_cmd_hdr {
 #define	WDCMSG_RELEASE_TX_QUEUE		0x3b
 #define	WDCMSG_SET_DEFAULT_KEY		0x43
 
-	__u32		priv;	/* driver private data,
-				   don't care about endianess */
+	__u32		priv;	 
 	__be32		magic;
 	__be32		reserved2[4];
 };
@@ -119,23 +100,21 @@ struct ar5523_cmd_host_available {
 #define	ATH_SW_VER_BUILD	9999
 
 struct ar5523_chunk {
-	u8		seqnum;		/* sequence number for ordering */
+	u8		seqnum;		 
 	u8		flags;
-#define	UATH_CFLAGS_FINAL	0x01	/* final chunk of a msg */
-#define	UATH_CFLAGS_RXMSG	0x02	/* chunk contains rx completion */
-#define	UATH_CFLAGS_DEBUG	0x04	/* for debugging */
-	__be16		length;		/* chunk size in bytes */
-	/* chunk data follows */
+#define	UATH_CFLAGS_FINAL	0x01	 
+#define	UATH_CFLAGS_RXMSG	0x02	 
+#define	UATH_CFLAGS_DEBUG	0x04	 
+	__be16		length;		 
+	 
 } __packed;
 
-/*
- * Message format for a WDCMSG_DATA_AVAIL message from Target to Host.
- */
+ 
 struct ar5523_rx_desc {
-	__be32	len;		/* msg length including header */
-	__be32	code;		/* WDCMSG_DATA_AVAIL */
-	__be32	gennum;		/* generation number */
-	__be32	status;		/* start of RECEIVE_INFO */
+	__be32	len;		 
+	__be32	code;		 
+	__be32	gennum;		 
+	__be32	status;		 
 #define	UATH_STATUS_OK			0
 #define	UATH_STATUS_STOP_IN_PROGRESS	1
 #define	UATH_STATUS_CRC_ERR		2
@@ -145,40 +124,40 @@ struct ar5523_rx_desc {
 #define	UATH_STATUS_DECOMP_ERR		6
 #define	UATH_STATUS_KEY_ERR		7
 #define	UATH_STATUS_ERR			8
-	__be32	tstamp_low;	/* low-order 32-bits of rx timestamp */
-	__be32	tstamp_high;	/* high-order 32-bits of rx timestamp */
-	__be32	framelen;	/* frame length */
-	__be32	rate;		/* rx rate code */
+	__be32	tstamp_low;	 
+	__be32	tstamp_high;	 
+	__be32	framelen;	 
+	__be32	rate;		 
 	__be32	antenna;
 	__be32	rssi;
 	__be32	channel;
 	__be32	phyerror;
-	__be32	connix;		/* key table ix for bss traffic */
+	__be32	connix;		 
 	__be32	decrypterror;
 	__be32	keycachemiss;
-	__be32	pad;		/* XXX? */
+	__be32	pad;		 
 } __packed;
 
 struct ar5523_tx_desc {
 	__be32	msglen;
-	u32	msgid;		/* msg id (supplied by host) */
-	__be32	type;		/* opcode: WDMSG_SEND or WDCMSG_FLUSH */
-	__be32	txqid;		/* tx queue id and flags */
+	u32	msgid;		 
+	__be32	type;		 
+	__be32	txqid;		 
 #define	UATH_TXQID_MASK		0x0f
-#define	UATH_TXQID_MINRATE	0x10	/* use min tx rate */
-#define	UATH_TXQID_FF		0x20	/* content is fast frame */
-	__be32	connid;		/* tx connection id */
-#define UATH_ID_INVALID	0xffffffff	/* for sending prior to connection */
-	__be32	flags;		/* non-zero if response desired */
-#define UATH_TX_NOTIFY	(1 << 24)	/* f/w will send a UATH_NOTIF_TX */
-	__be32	buflen;		/* payload length */
+#define	UATH_TXQID_MINRATE	0x10	 
+#define	UATH_TXQID_FF		0x20	 
+	__be32	connid;		 
+#define UATH_ID_INVALID	0xffffffff	 
+	__be32	flags;		 
+#define UATH_TX_NOTIFY	(1 << 24)	 
+	__be32	buflen;		 
 } __packed;
 
 
 #define AR5523_ID_BSS		2
 #define AR5523_ID_BROADCAST	0xffffffff
 
-/* structure for command UATH_CMD_WRITE_MAC */
+ 
 struct ar5523_write_mac {
 	__be32	reg;
 	__be32	len;
@@ -191,7 +170,7 @@ struct ar5523_cmd_rateset {
 	__u8		set[AR5523_MAX_NRATES];
 };
 
-struct ar5523_cmd_set_associd {		/* AR5523_WRITE_ASSOCID */
+struct ar5523_cmd_set_associd {		 
 	__be32	defaultrateix;
 	__be32	associd;
 	__be32	timoffset;
@@ -199,15 +178,15 @@ struct ar5523_cmd_set_associd {		/* AR5523_WRITE_ASSOCID */
 	__u8	bssid[6];
 } __packed;
 
-/* structure for command WDCMSG_RESET */
+ 
 struct ar5523_cmd_reset {
-	__be32	flags;		/* channel flags */
+	__be32	flags;		 
 #define	UATH_CHAN_TURBO	0x0100
 #define	UATH_CHAN_CCK	0x0200
 #define	UATH_CHAN_OFDM	0x0400
 #define	UATH_CHAN_2GHZ	0x1000
 #define	UATH_CHAN_5GHZ	0x2000
-	__be32	freq;		/* channel frequency */
+	__be32	freq;		 
 	__be32	maxrdpower;
 	__be32	cfgctl;
 	__be32	twiceantennareduction;
@@ -215,7 +194,7 @@ struct ar5523_cmd_reset {
 	__be32	keeprccontent;
 } __packed;
 
-/* structure for command WDCMSG_SET_BASIC_RATE */
+ 
 struct ar5523_cmd_rates {
 	__be32	connid;
 	__be32	keeprccontent;
@@ -242,7 +221,7 @@ struct ar5523_cmd_connection_attr {
 	__be32	wlanmode;
 } __packed;
 
-/* structure for command AR5523_CREATE_CONNECTION */
+ 
 struct ar5523_cmd_create_connection {
 	__be32	connid;
 	__be32	bssid;
@@ -250,7 +229,7 @@ struct ar5523_cmd_create_connection {
 	struct ar5523_cmd_connection_attr	connattr;
 } __packed;
 
-struct ar5523_cmd_ledsteady {		/* WDCMSG_SET_LED_STEADY */
+struct ar5523_cmd_ledsteady {		 
 	__be32	lednum;
 #define UATH_LED_LINK		0
 #define UATH_LED_ACTIVITY	1
@@ -259,14 +238,14 @@ struct ar5523_cmd_ledsteady {		/* WDCMSG_SET_LED_STEADY */
 #define UATH_LED_ON	1
 } __packed;
 
-struct ar5523_cmd_ledblink {		/* WDCMSG_SET_LED_BLINK */
+struct ar5523_cmd_ledblink {		 
 	__be32	lednum;
 	__be32	ledmode;
 	__be32	blinkrate;
 	__be32	slowmode;
 } __packed;
 
-struct ar5523_cmd_ledstate {		/* WDCMSG_SET_LED_STATE */
+struct ar5523_cmd_ledstate {		 
 	__be32	connected;
 } __packed;
 
@@ -280,23 +259,23 @@ struct ar5523_cmd_txq_attr {
 	__be32	qflags;
 } __packed;
 
-struct ar5523_cmd_txq_setup {		/* WDCMSG_SETUP_TX_QUEUE */
+struct ar5523_cmd_txq_setup {		 
 	__be32	qid;
 	__be32	len;
 	struct ar5523_cmd_txq_attr attr;
 } __packed;
 
-struct ar5523_cmd_rx_filter {		/* WDCMSG_RX_FILTER */
+struct ar5523_cmd_rx_filter {		 
 	__be32	bits;
 #define UATH_FILTER_RX_UCAST		0x00000001
 #define UATH_FILTER_RX_MCAST		0x00000002
 #define UATH_FILTER_RX_BCAST		0x00000004
 #define UATH_FILTER_RX_CONTROL		0x00000008
-#define UATH_FILTER_RX_BEACON		0x00000010	/* beacon frames */
-#define UATH_FILTER_RX_PROM		0x00000020	/* promiscuous mode */
-#define UATH_FILTER_RX_PHY_ERR		0x00000040	/* phy errors */
-#define UATH_FILTER_RX_PHY_RADAR	0x00000080	/* radar phy errors */
-#define UATH_FILTER_RX_XR_POOL		0x00000400	/* XR group polls */
+#define UATH_FILTER_RX_BEACON		0x00000010	 
+#define UATH_FILTER_RX_PROM		0x00000020	 
+#define UATH_FILTER_RX_PHY_ERR		0x00000040	 
+#define UATH_FILTER_RX_PHY_RADAR	0x00000080	 
+#define UATH_FILTER_RX_XR_POOL		0x00000400	 
 #define UATH_FILTER_RX_PROBE_REQ	0x00000800
 	__be32	op;
 #define UATH_FILTER_OP_INIT		0x0
@@ -307,10 +286,10 @@ struct ar5523_cmd_rx_filter {		/* WDCMSG_RX_FILTER */
 } __packed;
 
 enum {
-	CFG_NONE,			/* Sentinal to indicate "no config" */
-	CFG_REG_DOMAIN,			/* Regulatory Domain */
+	CFG_NONE,			 
+	CFG_REG_DOMAIN,			 
 	CFG_RATE_CONTROL_ENABLE,
-	CFG_DEF_XMIT_DATA_RATE,		/* NB: if rate control is not enabled */
+	CFG_DEF_XMIT_DATA_RATE,		 
 	CFG_HW_TX_RETRIES,
 	CFG_SW_TX_RETRIES,
 	CFG_SLOW_CLOCK_ENABLE,
@@ -326,11 +305,11 @@ enum {
 	CFG_WME_ENABLED,
 	CFG_GPRS_CBR_PERIOD,
 	CFG_SERVICE_TYPE,
-	/* MAC Address to use.  Overrides EEPROM */
+	 
 	CFG_MAC_ADDR,
 	CFG_DEBUG_EAR,
 	CFG_INIT_REGS,
-	/* An ID for use in error & debug messages */
+	 
 	CFG_DEBUG_ID,
 	CFG_COMP_WIN_SZ,
 	CFG_DIVERSITY_CTL,
@@ -346,9 +325,9 @@ enum {
 };
 
 enum {
-	/* Sentinal to indicate "no capability" */
+	 
 	CAP_NONE,
-	CAP_ALL,			/* ALL capabilities */
+	CAP_ALL,			 
 	CAP_TARGET_VERSION,
 	CAP_TARGET_REVISION,
 	CAP_MAC_VERSION,
@@ -356,7 +335,7 @@ enum {
 	CAP_PHY_REVISION,
 	CAP_ANALOG_5GHz_REVISION,
 	CAP_ANALOG_2GHz_REVISION,
-	/* Target supports WDC message debug features */
+	 
 	CAP_DEBUG_WDCMSG_SUPPORT,
 
 	CAP_REG_DOMAIN,
@@ -376,7 +355,7 @@ enum {
 	CAP_XR_SUPPORT,
 	CAP_WME_SUPPORT,
 	CAP_TOTAL_QUEUES,
-	CAP_CONNECTION_ID_MAX,		/* Should absorb CAP_KEY_CACHE_SIZE */
+	CAP_CONNECTION_ID_MAX,		 
 
 	CAP_LOW_5GHZ_CHAN,
 	CAP_HIGH_5GHZ_CHAN,
@@ -396,7 +375,7 @@ enum {
 };
 
 enum {
-	ST_NONE,                    /* Sentinal to indicate "no status" */
+	ST_NONE,                     
 	ST_ALL,
 	ST_SERVICE_TYPE,
 	ST_WLAN_MODE,
@@ -423,7 +402,7 @@ enum {
 	TARGET_DEVICE_RESUME,
 };
 
-/* this is in net/ieee80211.h, but that conflicts with the mac80211 headers */
+ 
 #define IEEE80211_2ADDR_LEN	16
 
 #define AR5523_MIN_RXBUFSZ				\

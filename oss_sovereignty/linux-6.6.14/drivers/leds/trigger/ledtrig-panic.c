@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel Panic LED Trigger
- *
- * Copyright 2016 Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -14,11 +10,7 @@
 
 static struct led_trigger *trigger;
 
-/*
- * This is called in a special context by the atomic panic
- * notifier. This means the trigger can be changed without
- * worrying about locking.
- */
+ 
 static void led_trigger_set_panic(struct led_classdev *led_cdev)
 {
 	struct led_trigger *trig;
@@ -30,7 +22,7 @@ static void led_trigger_set_panic(struct led_classdev *led_cdev)
 			list_del(&led_cdev->trig_list);
 		list_add_tail(&led_cdev->trig_list, &trig->led_cdevs);
 
-		/* Avoid the delayed blink path */
+		 
 		led_cdev->blink_delay_on = 0;
 		led_cdev->blink_delay_off = 0;
 

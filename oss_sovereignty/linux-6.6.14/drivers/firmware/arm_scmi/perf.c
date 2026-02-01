@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Performance Protocol
- *
- * Copyright (C) 2018-2023 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) "SCMI Notifications PERF - " fmt
 
@@ -163,7 +159,7 @@ struct perf_dom_info {
 
 #define LOOKUP_BY_FREQ(__htp, __freq)					\
 ({									\
-		/* u32 cast is needed to pick right hash func */	\
+		 	\
 		u32 f_ = (u32)(__freq);					\
 		struct scmi_opp *_opp;					\
 									\
@@ -270,7 +266,7 @@ scmi_perf_domain_attributes_get(const struct scmi_protocol_handle *ph,
 		if (!dom_info->sustained_freq_khz ||
 		    !dom_info->sustained_perf_level ||
 		    dom_info->level_indexing_mode)
-			/* CPUFreq converts to kHz, hence default 1000 */
+			 
 			dom_info->mult_factor =	1000;
 		else
 			dom_info->mult_factor =
@@ -282,10 +278,7 @@ scmi_perf_domain_attributes_get(const struct scmi_protocol_handle *ph,
 
 	ph->xops->xfer_put(ph, t);
 
-	/*
-	 * If supported overwrite short name with the extended one;
-	 * on error just carry on and use already provided short name.
-	 */
+	 
 	if (!ret && PROTOCOL_REV_MAJOR(version) >= 0x3 &&
 	    SUPPORTS_EXTENDED_NAMES(flags))
 		ph->hops->extended_name_get(ph, PERF_DOMAIN_NAME_GET,
@@ -321,7 +314,7 @@ static void iter_perf_levels_prepare_message(void *message,
 	const struct scmi_perf_ipriv *p = priv;
 
 	msg->domain = cpu_to_le32(p->perf_dom->id);
-	/* Set the number of OPPs to be skipped/already read */
+	 
 	msg->level_index = cpu_to_le32(desc_index);
 }
 
@@ -356,7 +349,7 @@ process_response_opp_v4(struct perf_dom_info *dom, struct scmi_opp *opp,
 	opp->trans_latency_us =
 		le16_to_cpu(r->opp[loop_idx].transition_latency_us);
 
-	/* Note that PERF v4 reports always five 32-bit words */
+	 
 	opp->indicative_freq = le32_to_cpu(r->opp[loop_idx].indicative_freq);
 	if (dom->level_indexing_mode) {
 		opp->level_index = le32_to_cpu(r->opp[loop_idx].level_index);
@@ -783,7 +776,7 @@ static void scmi_perf_domain_init_fc(const struct scmi_protocol_handle *ph,
 	*p_fc = fc;
 }
 
-/* Device specific ops */
+ 
 static int scmi_dev_domain_id(struct device *dev)
 {
 	struct of_phandle_args clkspec;
@@ -844,7 +837,7 @@ scmi_dvfs_transition_latency_get(const struct scmi_protocol_handle *ph,
 	if (IS_ERR(dom))
 		return PTR_ERR(dom);
 
-	/* uS to nS */
+	 
 	return dom->opp[dom->opp_count - 1].trans_latency_us * 1000;
 }
 

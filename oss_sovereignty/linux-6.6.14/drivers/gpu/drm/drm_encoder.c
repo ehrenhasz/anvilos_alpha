@@ -1,24 +1,4 @@
-/*
- * Copyright (c) 2016 Intel Corporation
- *
- * Permission to use, copy, modify, distribute, and sell this software and its
- * documentation for any purpose is hereby granted without fee, provided that
- * the above copyright notice appear in all copies and that both that copyright
- * notice and this permission notice appear in supporting documentation, and
- * that the name of the copyright holders not be used in advertising or
- * publicity pertaining to distribution of the software without specific,
- * written prior permission.  The copyright holders make no representations
- * about the suitability of this software for any purpose.  It is provided "as
- * is" without express or implied warranty.
- *
- * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
- * EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
- * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
- * OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/export.h>
 
@@ -31,31 +11,7 @@
 
 #include "drm_crtc_internal.h"
 
-/**
- * DOC: overview
- *
- * Encoders represent the connecting element between the CRTC (as the overall
- * pixel pipeline, represented by &struct drm_crtc) and the connectors (as the
- * generic sink entity, represented by &struct drm_connector). An encoder takes
- * pixel data from a CRTC and converts it to a format suitable for any attached
- * connector. Encoders are objects exposed to userspace, originally to allow
- * userspace to infer cloning and connector/CRTC restrictions. Unfortunately
- * almost all drivers get this wrong, making the uabi pretty much useless. On
- * top of that the exposed restrictions are too simple for today's hardware, and
- * the recommended way to infer restrictions is by using the
- * DRM_MODE_ATOMIC_TEST_ONLY flag for the atomic IOCTL.
- *
- * Otherwise encoders aren't used in the uapi at all (any modeset request from
- * userspace directly connects a connector with a CRTC), drivers are therefore
- * free to use them however they wish. Modeset helper libraries make strong use
- * of encoders to facilitate code sharing. But for more complex settings it is
- * usually better to move shared code into a separate &drm_bridge. Compared to
- * encoders, bridges also have the benefit of being purely an internal
- * abstraction since they are not exposed to userspace at all.
- *
- * Encoders are initialized with drm_encoder_init() and cleaned up using
- * drm_encoder_cleanup().
- */
+ 
 static const struct drm_prop_enum_list drm_encoder_enum_list[] = {
 	{ DRM_MODE_ENCODER_NONE, "None" },
 	{ DRM_MODE_ENCODER_DAC, "DAC" },
@@ -101,7 +57,7 @@ static int __drm_encoder_init(struct drm_device *dev,
 {
 	int ret;
 
-	/* encoder index is used with 32bit bitmasks */
+	 
 	if (WARN_ON(dev->mode_config.num_encoder >= 32))
 		return -EINVAL;
 
@@ -135,27 +91,7 @@ out_put:
 	return ret;
 }
 
-/**
- * drm_encoder_init - Init a preallocated encoder
- * @dev: drm device
- * @encoder: the encoder to init
- * @funcs: callbacks for this encoder
- * @encoder_type: user visible type of the encoder
- * @name: printf style format string for the encoder name, or NULL for default name
- *
- * Initializes a preallocated encoder. Encoder should be subclassed as part of
- * driver encoder objects. At driver unload time the driver's
- * &drm_encoder_funcs.destroy hook should call drm_encoder_cleanup() and kfree()
- * the encoder structure. The encoder structure should not be allocated with
- * devm_kzalloc().
- *
- * Note: consider using drmm_encoder_alloc() or drmm_encoder_init()
- * instead of drm_encoder_init() to let the DRM managed resource
- * infrastructure take care of cleanup and deallocation.
- *
- * Returns:
- * Zero on success, error code on failure.
- */
+ 
 int drm_encoder_init(struct drm_device *dev,
 		     struct drm_encoder *encoder,
 		     const struct drm_encoder_funcs *funcs,
@@ -174,21 +110,13 @@ int drm_encoder_init(struct drm_device *dev,
 }
 EXPORT_SYMBOL(drm_encoder_init);
 
-/**
- * drm_encoder_cleanup - cleans up an initialised encoder
- * @encoder: encoder to cleanup
- *
- * Cleans up the encoder but doesn't free the object.
- */
+ 
 void drm_encoder_cleanup(struct drm_encoder *encoder)
 {
 	struct drm_device *dev = encoder->dev;
 	struct drm_bridge *bridge, *next;
 
-	/* Note that the encoder_list is considered to be static; should we
-	 * remove the drm_encoder at runtime we would have to decrement all
-	 * the indices on the drm_encoder after us in the encoder_list.
-	 */
+	 
 
 	list_for_each_entry_safe(bridge, next, &encoder->bridge_chain,
 				 chain_node)
@@ -262,24 +190,7 @@ void *__drmm_encoder_alloc(struct drm_device *dev, size_t size, size_t offset,
 }
 EXPORT_SYMBOL(__drmm_encoder_alloc);
 
-/**
- * drmm_encoder_init - Initialize a preallocated encoder
- * @dev: drm device
- * @encoder: the encoder to init
- * @funcs: callbacks for this encoder (optional)
- * @encoder_type: user visible type of the encoder
- * @name: printf style format string for the encoder name, or NULL for default name
- *
- * Initializes a preallocated encoder. Encoder should be subclassed as
- * part of driver encoder objects. Cleanup is automatically handled
- * through registering drm_encoder_cleanup() with drmm_add_action(). The
- * encoder structure should be allocated with drmm_kzalloc().
- *
- * The @drm_encoder_funcs.destroy hook must be NULL.
- *
- * Returns:
- * Zero on success, error code on failure.
- */
+ 
 int drmm_encoder_init(struct drm_device *dev, struct drm_encoder *encoder,
 		      const struct drm_encoder_funcs *funcs,
 		      int encoder_type, const char *name, ...)
@@ -304,8 +215,7 @@ static struct drm_crtc *drm_encoder_get_crtc(struct drm_encoder *encoder)
 	bool uses_atomic = false;
 	struct drm_connector_list_iter conn_iter;
 
-	/* For atomic drivers only state objects are synchronously updated and
-	 * protected by modeset locks, so check those first. */
+	 
 	drm_connector_list_iter_begin(dev, &conn_iter);
 	drm_for_each_connector_iter(connector, &conn_iter) {
 		if (!connector->state)
@@ -321,7 +231,7 @@ static struct drm_crtc *drm_encoder_get_crtc(struct drm_encoder *encoder)
 	}
 	drm_connector_list_iter_end(&conn_iter);
 
-	/* Don't return stale data (e.g. pending async disable). */
+	 
 	if (uses_atomic)
 		return NULL;
 

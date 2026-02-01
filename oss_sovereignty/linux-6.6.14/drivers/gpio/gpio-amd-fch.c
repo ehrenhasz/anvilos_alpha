@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * GPIO driver for the AMD G series FCH (eg. GX-412TC)
- *
- * Copyright (C) 2018 metux IT consult
- * Author: Enrico Weigelt, metux IT consult <info@metux.net>
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>

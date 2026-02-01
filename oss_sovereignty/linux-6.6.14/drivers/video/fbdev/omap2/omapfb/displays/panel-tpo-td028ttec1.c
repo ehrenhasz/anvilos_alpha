@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toppoly TD028TTEC1 panel support
- *
- * Copyright (C) 2008 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Neo 1973 code (jbt6k74.c):
- * Copyright (C) 2006-2007 by OpenMoko, Inc.
- * Author: Harald Welte <laforge@openmoko.org>
- *
- * Ported and adapted from Neo 1973 U-Boot by:
- * H. Nikolaus Schaller <hns@goldelico.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -204,7 +192,7 @@ static int td028ttec1_panel_enable(struct omap_dss_device *dssdev)
 	dev_dbg(dssdev->dev, "td028ttec1_panel_enable() - state %d\n",
 		dssdev->state);
 
-	/* three times command zero */
+	 
 	r |= jbt_ret_write_0(ddata, 0x00);
 	usleep_range(1000, 2000);
 	r |= jbt_ret_write_0(ddata, 0x00);
@@ -217,27 +205,27 @@ static int td028ttec1_panel_enable(struct omap_dss_device *dssdev)
 		goto transfer_err;
 	}
 
-	/* deep standby out */
+	 
 	r |= jbt_reg_write_1(ddata, JBT_REG_POWER_ON_OFF, 0x17);
 
-	/* RGB I/F on, RAM write off, QVGA through, SIGCON enable */
+	 
 	r |= jbt_reg_write_1(ddata, JBT_REG_DISPLAY_MODE, 0x80);
 
-	/* Quad mode off */
+	 
 	r |= jbt_reg_write_1(ddata, JBT_REG_QUAD_RATE, 0x00);
 
-	/* AVDD on, XVDD on */
+	 
 	r |= jbt_reg_write_1(ddata, JBT_REG_POWER_ON_OFF, 0x16);
 
-	/* Output control */
+	 
 	r |= jbt_reg_write_2(ddata, JBT_REG_OUTPUT_CONTROL, 0xfff9);
 
-	/* Sleep mode off */
+	 
 	r |= jbt_ret_write_0(ddata, JBT_REG_SLEEP_OUT);
 
-	/* at this point we have like 50% grey */
+	 
 
-	/* initialize register set */
+	 
 	r |= jbt_reg_write_1(ddata, JBT_REG_DISPLAY_MODE1, 0x01);
 	r |= jbt_reg_write_1(ddata, JBT_REG_DISPLAY_MODE2, 0x00);
 	r |= jbt_reg_write_1(ddata, JBT_REG_RGB_FORMAT, 0x60);
@@ -251,10 +239,7 @@ static int td028ttec1_panel_enable(struct omap_dss_device *dssdev)
 	r |= jbt_reg_write_1(ddata, JBT_REG_VCOM_VOLTAGE, 0x40);
 	r |= jbt_reg_write_1(ddata, JBT_REG_EXT_DISPL, 0x03);
 	r |= jbt_reg_write_1(ddata, JBT_REG_DCCLK_DCEV, 0x04);
-	/*
-	 * default of 0x02 in JBT_REG_ASW_SLEW responsible for 72Hz requirement
-	 * to avoid red / blue flicker
-	 */
+	 
 	r |= jbt_reg_write_1(ddata, JBT_REG_ASW_SLEW, 0x04);
 	r |= jbt_reg_write_1(ddata, JBT_REG_DUMMY_DISPLAY, 0x00);
 
@@ -442,7 +427,7 @@ static void td028ttec1_panel_remove(struct spi_device *spi)
 
 static const struct of_device_id td028ttec1_of_match[] = {
 	{ .compatible = "omapdss,tpo,td028ttec1", },
-	/* keep to not break older DTB */
+	 
 	{ .compatible = "omapdss,toppoly,td028ttec1", },
 	{},
 };
@@ -452,7 +437,7 @@ MODULE_DEVICE_TABLE(of, td028ttec1_of_match);
 static const struct spi_device_id td028ttec1_ids[] = {
 	{ "toppoly,td028ttec1", 0 },
 	{ "tpo,td028ttec1", 0},
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(spi, td028ttec1_ids);

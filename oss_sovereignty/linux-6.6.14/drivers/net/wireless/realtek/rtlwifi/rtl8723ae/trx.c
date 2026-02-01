@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -38,7 +38,7 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 	u32 rssi, total_rssi = 0;
 	bool is_cck = pstatus->is_cck;
 
-	/* Record it for next packet processing */
+	 
 	pstatus->packet_matchbssid = bpacket_match_bssid;
 	pstatus->packet_toself = bpacket_toself;
 	pstatus->packet_beacon = packet_beacon;
@@ -48,13 +48,11 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 	if (is_cck) {
 		u8 report, cck_highpwr;
 
-		/* CCK Driver info Structure is not the same as OFDM packet. */
+		 
 		cck_buf = (struct phy_sts_cck_8723e_t *)p_drvinfo;
 
-		/* (1)Hardware does not provide RSSI for CCK */
-		/* (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
+		 
 		if (ppsc->rfpwr_state == ERFON)
 			cck_highpwr = (u8)rtl_get_bbreg(hw,
 					RFPGA0_XA_HSSIPARAMETER2,
@@ -101,16 +99,12 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 
 		pwdb_all = rtl_query_rxpwrpercentage(rx_pwr_all);
-		/* CCK gain is smaller than OFDM/MCS gain,  */
-		/* so we add gain diff by experiences,
-		 * the val is 6
-		 */
+		 
+		 
 		pwdb_all += 6;
 		if (pwdb_all > 100)
 			pwdb_all = 100;
-		/* modify the offset to make the same
-		 * gain index with OFDM.
-		 */
+		 
 		if (pwdb_all > 34 && pwdb_all <= 42)
 			pwdb_all -= 2;
 		else if (pwdb_all > 26 && pwdb_all <= 34)
@@ -123,7 +117,7 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->rx_pwdb_all = pwdb_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3) Get Signal Quality (EVM) */
+		 
 		if (bpacket_match_bssid) {
 			u8 sq;
 
@@ -147,32 +141,30 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 		rtlpriv->dm.rfpath_rxenable[0] =
 		    rtlpriv->dm.rfpath_rxenable[1] = true;
 
-		/* (1)Get RSSI for HT rate */
+		 
 		for (i = RF90_PATH_A; i < RF6052_MAX_PATH; i++) {
 
-			/* we will judge RF RX path now. */
+			 
 			if (rtlpriv->dm.rfpath_rxenable[i])
 				rf_rx_num++;
 
 			rx_pwr[i] = ((p_drvinfo->gain_trsw[i] &
 				      0x3f) * 2) - 110;
 
-			/* Translate DBM to percentage. */
+			 
 			rssi = rtl_query_rxpwrpercentage(rx_pwr[i]);
 			total_rssi += rssi;
 
-			/* Get Rx snr value in DB */
+			 
 			rtlpriv->stats.rx_snr_db[i] =
 				(long)(p_drvinfo->rxsnr[i] / 2);
 
-			/* Record Signal Strength for next packet */
+			 
 			if (bpacket_match_bssid)
 				pstatus->rx_mimo_signalstrength[i] = (u8)rssi;
 		}
 
-		/* (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
 		rx_pwr_all = ((p_drvinfo->pwdb_all >> 1) & 0x7f) - 110;
 
 		pwdb_all = rtl_query_rxpwrpercentage(rx_pwr_all);
@@ -180,7 +172,7 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->rxpower = rx_pwr_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3)EVM of HT rate */
+		 
 		if (pstatus->is_ht && pstatus->rate >= DESC92C_RATEMCS8 &&
 		    pstatus->rate <= DESC92C_RATEMCS15)
 			max_spatial_stream = 2;
@@ -191,9 +183,7 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 			evm = rtl_evm_db_to_percentage(p_drvinfo->rxevm[i]);
 
 			if (bpacket_match_bssid) {
-				/* Fill value in RFD, Get the first
-				 * spatial stream only
-				 */
+				 
 				if (i == 0)
 					pstatus->signalquality =
 						(u8)(evm & 0xff);
@@ -203,9 +193,7 @@ static void _rtl8723e_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* UI BSS List signal strength(in percentage),
-	 * make it good looking, from 0~100.
-	 */
+	 
 	if (is_cck)
 		pstatus->signalstrength = (u8)(rtl_signal_scale_mapping(hw,
 			pwdb_all));
@@ -224,7 +212,7 @@ static void translate_rx_signal_stuff(struct ieee80211_hw *hw,
 	struct ieee80211_hdr *hdr;
 	u8 *tmp_buf;
 	u8 *praddr;
-	/*u8 *psaddr;*/
+	 
 	u16 fc, type;
 	bool packet_matchbssid, packet_toself, packet_beacon;
 
@@ -303,14 +291,7 @@ bool rtl8723e_rx_query_desc(struct ieee80211_hw *hw,
 
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 
-	/* hw will set status->decrypted true, if it finds the
-	 * frame is open data frame or mgmt frame.
-	 * So hw will not decryption robust managment frame
-	 * for IEEE80211w but still set status->decrypted
-	 * true, so here we should set it back to undecrypted
-	 * for IEEE80211w frame, and mac80211 sw will help
-	 * to decrypt it
-	 */
+	 
 	if (status->decrypted) {
 		if ((!_ieee80211_is_robust_mgmt_frame(hdr)) &&
 		    (ieee80211_has_protected(hdr->frame_control)))
@@ -319,11 +300,7 @@ bool rtl8723e_rx_query_desc(struct ieee80211_hw *hw,
 			rx_status->flag &= ~RX_FLAG_DECRYPTED;
 	}
 
-	/* rate_idx: index of data rate into band's
-	 * supported rates or MCS index if HT rates
-	 * are use (RX_FLAG_HT)
-	 * Notice: this is diff with windows define
-	 */
+	 
 	rx_status->rate_idx = rtlwifi_rate_mapping(hw, status->is_ht,
 						   false, status->rate);
 
@@ -350,7 +327,7 @@ void rtl8723e_tx_fill_desc(struct ieee80211_hw *hw,
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 	struct rtl_ps_ctl *ppsc = rtl_psc(rtl_priv(hw));
 	bool b_defaultadapter = true;
-	/* bool b_trigger_ac = false; */
+	 
 	u8 *pdesc8 = (u8 *)pdesc_tx;
 	__le32 *pdesc = (__le32 *)pdesc8;
 	u16 seq_number;
@@ -501,12 +478,12 @@ void rtl8723e_tx_fill_desc(struct ieee80211_hw *hw,
 
 	if ((!ieee80211_is_data_qos(fc)) && ppsc->fwctrl_lps) {
 		set_tx_desc_hwseq_en_8723(pdesc, 1);
-		/* set_tx_desc_hwseq_en(pdesc, 1); */
-		/* set_tx_desc_pkt_id(pdesc, 8); */
+		 
+		 
 
 		if (!b_defaultadapter)
 			set_tx_desc_hwseq_sel_8723(pdesc, 1);
-	/* set_tx_desc_qos(pdesc, 1); */
+	 
 	}
 
 	set_tx_desc_more_frag(pdesc, (lastseg ? 0 : 1));
@@ -575,8 +552,8 @@ void rtl8723e_tx_fill_cmddesc(struct ieee80211_hw *hw,
 
 	if (!ieee80211_is_data_qos(fc)) {
 		set_tx_desc_hwseq_en_8723(pdesc, 1);
-		/* set_tx_desc_hwseq_en(pdesc, 1); */
-		/* set_tx_desc_pkt_id(pdesc, 8); */
+		 
+		 
 	}
 
 	RT_PRINT_DATA(rtlpriv, COMP_CMD, DBG_LOUD,
@@ -671,11 +648,7 @@ bool rtl8723e_is_tx_desc_closed(struct ieee80211_hw *hw,
 	u8 *entry = (u8 *)(&ring->desc[ring->idx]);
 	u8 own = (u8)rtl8723e_get_desc(hw, entry, true, HW_DESC_OWN);
 
-	/**
-	 *beacon packet will only use the first
-	 *descriptor defautly,and the own may not
-	 *be cleared by the hardware
-	 */
+	 
 	if (own)
 		return false;
 	return true;

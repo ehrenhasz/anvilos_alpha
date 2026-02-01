@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/nfs/fs_context.c
- *
- * Copyright (C) 1992 Rick Sladkey
- * Conversion to new mount api Copyright (C) David Howells
- *
- * NFS mount handling.
- *
- * Split from fs/nfs/super.c by David Howells <dhowells@redhat.com>
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/module.h>
@@ -286,12 +277,7 @@ static const struct constant_table nfs_xprtsec_policies[] = {
 	{}
 };
 
-/*
- * Sanity-check a server address provided by the mount command.
- *
- * Address family must be initialized, and address must not be
- * the ANY address for that family.
- */
+ 
 static int nfs_verify_server_address(struct sockaddr_storage *addr)
 {
 	switch (addr->ss_family) {
@@ -322,9 +308,7 @@ static bool nfs_server_transport_udp_invalid(const struct nfs_fs_context *ctx)
 }
 #endif
 
-/*
- * Sanity check the NFS transport protocol.
- */
+ 
 static int nfs_validate_transport_protocol(struct fs_context *fc,
 					   struct nfs_fs_context *ctx)
 {
@@ -356,10 +340,7 @@ out_invalid_xprtsec_policy:
 	return nfs_invalf(fc, "NFS: Transport does not support xprtsec");
 }
 
-/*
- * For text based NFSv2/v3 mounts, the mount protocol transport default
- * settings should depend upon the specified NFS transport.
- */
+ 
 static void nfs_set_mount_transport_protocol(struct nfs_fs_context *ctx)
 {
 	if (ctx->mount_server.protocol == XPRT_TRANSPORT_UDP ||
@@ -375,10 +356,7 @@ static void nfs_set_mount_transport_protocol(struct nfs_fs_context *ctx)
 	}
 }
 
-/*
- * Add 'flavor' to 'auth_info' if not already present.
- * Returns true if 'flavor' ends up in the list, false otherwise
- */
+ 
 static int nfs_auth_info_add(struct fs_context *fc,
 			     struct nfs_auth_info *auth_info,
 			     rpc_authflavor_t flavor)
@@ -386,7 +364,7 @@ static int nfs_auth_info_add(struct fs_context *fc,
 	unsigned int i;
 	unsigned int max_flavor_len = ARRAY_SIZE(auth_info->flavors);
 
-	/* make sure this flavor isn't already in the list */
+	 
 	for (i = 0; i < auth_info->flavor_len; i++) {
 		if (flavor == auth_info->flavors[i])
 			return 0;
@@ -399,9 +377,7 @@ static int nfs_auth_info_add(struct fs_context *fc,
 	return 0;
 }
 
-/*
- * Parse the value of the 'sec=' option.
- */
+ 
 static int nfs_parse_security_flavors(struct fs_context *fc,
 				      struct fs_parameter *param)
 {
@@ -499,10 +475,7 @@ static int nfs_parse_version_string(struct fs_context *fc,
 		ctx->version = 3;
 		break;
 	case Opt_vers_4:
-		/* Backward compatibility option. In future,
-		 * the mount program should always supply
-		 * a NFSv4 minor version number.
-		 */
+		 
 		ctx->version = 4;
 		break;
 	case Opt_vers_4_0:
@@ -523,9 +496,7 @@ static int nfs_parse_version_string(struct fs_context *fc,
 	return 0;
 }
 
-/*
- * Parse a single mount parameter.
- */
+ 
 static int nfs_fs_context_parse_param(struct fs_context *fc,
 				      struct fs_parameter *param)
 {
@@ -552,9 +523,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
 		param->string = NULL;
 		break;
 
-		/*
-		 * boolean options:  foo/nofoo
-		 */
+		 
 	case Opt_soft:
 		ctx->flags |= NFS_MOUNT_SOFT;
 		ctx->flags &= ~NFS_MOUNT_SOFTERR;
@@ -613,7 +582,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
 		break;
 	case Opt_tcp:
 	case Opt_rdma:
-		ctx->flags |= NFS_MOUNT_TCP; /* for side protocols */
+		ctx->flags |= NFS_MOUNT_TCP;  
 		ret = xprt_find_transport_ident(param->key);
 		if (ret < 0)
 			goto out_bad_transport;
@@ -664,9 +633,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
 			ctx->options |= NFS_OPTION_MIGRATION;
 		break;
 
-		/*
-		 * options that take numeric values
-		 */
+		 
 	case Opt_port:
 		if (result.uint_32 > USHRT_MAX)
 			goto out_of_bounds;
@@ -729,9 +696,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
 		ctx->minorversion = result.uint_32;
 		break;
 
-		/*
-		 * options that take text values
-		 */
+		 
 	case Opt_v:
 		ret = nfs_parse_version_string(fc, param->key + 1);
 		if (ret < 0)
@@ -780,7 +745,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
 			protofamily = AF_INET6;
 			fallthrough;
 		case Opt_xprt_rdma:
-			/* vector side protocols to TCP */
+			 
 			ctx->flags |= NFS_MOUNT_TCP;
 			ret = xprt_find_transport_ident(param->string);
 			if (ret < 0)
@@ -812,7 +777,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
 		case Opt_xprt_tcp:
 			ctx->mount_server.protocol = XPRT_TRANSPORT_TCP;
 			break;
-		case Opt_xprt_rdma: /* not used for side protocols */
+		case Opt_xprt_rdma:  
 		default:
 			goto out_bad_transport;
 		}
@@ -919,9 +884,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
 		}
 		break;
 
-		/*
-		 * Special options
-		 */
+		 
 	case Opt_sloppy:
 		ctx->sloppy = true;
 		break;
@@ -939,15 +902,7 @@ out_bad_transport:
 	return nfs_invalf(fc, "NFS: Unrecognized transport protocol");
 }
 
-/*
- * Split fc->source into "hostname:export_path".
- *
- * The leftmost colon demarks the split between the server's hostname
- * and the export path.  If the hostname starts with a left square
- * bracket, then it may contain colons.
- *
- * Note: caller frees hostname and export path, even on error.
- */
+ 
 static int nfs_parse_source(struct fs_context *fc,
 			    size_t maxnamlen, size_t maxpathlen)
 {
@@ -959,7 +914,7 @@ static int nfs_parse_source(struct fs_context *fc,
 	if (unlikely(!dev_name || !*dev_name))
 		return -EINVAL;
 
-	/* Is the host name protected with square brakcets? */
+	 
 	if (*dev_name == '[') {
 		end = strchr(++dev_name, ']');
 		if (end == NULL || end[1] != ':')
@@ -975,7 +930,7 @@ static int nfs_parse_source(struct fs_context *fc,
 			goto out_bad_devname;
 		len = end - dev_name;
 
-		/* kill possible hostname list: not supported */
+		 
 		comma = memchr(dev_name, ',', len);
 		if (comma)
 			len = comma - dev_name;
@@ -986,7 +941,7 @@ static int nfs_parse_source(struct fs_context *fc,
 
 	kfree(ctx->nfs_server.hostname);
 
-	/* N.B. caller will free nfs_server.hostname in all cases */
+	 
 	ctx->nfs_server.hostname = kmemdup_nul(dev_name, len, GFP_KERNEL);
 	if (!ctx->nfs_server.hostname)
 		goto out_nomem;
@@ -1018,22 +973,7 @@ static inline bool is_remount_fc(struct fs_context *fc)
 	return fc->root != NULL;
 }
 
-/*
- * Parse monolithic NFS2/NFS3 mount data
- * - fills in the mount root filehandle
- *
- * For option strings, user space handles the following behaviors:
- *
- * + DNS: mapping server host name to IP address ("addr=" option)
- *
- * + failure mode: how to behave if a mount request can't be handled
- *   immediately ("fg/bg" option)
- *
- * + retry: how often to retry a mount request ("retry=" option)
- *
- * + breaking back: trying proto=udp after proto=tcp, v2 after v3,
- *   mountproto=tcp after mountproto=udp, and so on
- */
+ 
 static int nfs23_parse_monolithic(struct fs_context *fc,
 				  struct nfs_mount_data *data)
 {
@@ -1059,7 +999,7 @@ static int nfs23_parse_monolithic(struct fs_context *fc,
 			goto out_no_v3;
 		data->root.size = NFS2_FHSIZE;
 		memcpy(data->root.data, data->old_root.data, NFS2_FHSIZE);
-		/* Turn off security negotiation */
+		 
 		extra_flags |= NFS_MOUNT_SECFLAVOUR;
 		fallthrough;
 	case 4:
@@ -1086,19 +1026,12 @@ static int nfs23_parse_monolithic(struct fs_context *fc,
 			memset(mntfh->data + mntfh->size, 0,
 			       sizeof(mntfh->data) - mntfh->size);
 
-		/*
-		 * for proto == XPRT_TRANSPORT_UDP, which is what uses
-		 * to_exponential, implying shift: limit the shift value
-		 * to BITS_PER_LONG (majortimeo is unsigned long)
-		 */
-		if (!(data->flags & NFS_MOUNT_TCP)) /* this will be UDP */
-			if (data->retrans >= 64) /* shift value is too large */
+		 
+		if (!(data->flags & NFS_MOUNT_TCP))  
+			if (data->retrans >= 64)  
 				goto out_invalid_data;
 
-		/*
-		 * Translate to nfs_fs_context, which nfs_fill_super
-		 * can deal with.
-		 */
+		 
 		ctx->flags	= data->flags & NFS_MOUNT_FLAGMASK;
 		ctx->flags	|= extra_flags;
 		ctx->rsize	= data->rsize;
@@ -1120,7 +1053,7 @@ static int nfs23_parse_monolithic(struct fs_context *fc,
 
 		if (!(data->flags & NFS_MOUNT_TCP))
 			ctx->nfs_server.protocol = XPRT_TRANSPORT_UDP;
-		/* N.B. caller will free nfs_server.hostname in all cases */
+		 
 		ctx->nfs_server.hostname = kstrdup(data->hostname, GFP_KERNEL);
 		if (!ctx->nfs_server.hostname)
 			goto out_nomem;
@@ -1140,14 +1073,7 @@ static int nfs23_parse_monolithic(struct fs_context *fc,
 			ctx->flags |= (NFS_MOUNT_LOCAL_FLOCK|
 					NFS_MOUNT_LOCAL_FCNTL);
 
-		/*
-		 * The legacy version 6 binary mount data from userspace has a
-		 * field used only to transport selinux information into the
-		 * kernel.  To continue to support that functionality we
-		 * have a touch of selinux knowledge here in the NFS code. The
-		 * userspace code converted context=blah to just blah so we are
-		 * converting back to the full string selinux understands.
-		 */
+		 
 		if (data->context[0]){
 #ifdef CONFIG_SECURITY_SELINUX
 			int ret;
@@ -1242,7 +1168,7 @@ static void nfs4_compat_mount_data_conv(struct nfs4_mount_data *data)
 	struct compat_nfs4_mount_data_v1 *compat =
 			(struct compat_nfs4_mount_data_v1 *)data;
 
-	/* copy the fields backwards */
+	 
 	data->auth_flavours = compat_ptr(compat->auth_flavours);
 	data->auth_flavourlen = compat->auth_flavourlen;
 	data->proto = compat->proto;
@@ -1263,9 +1189,7 @@ static void nfs4_compat_mount_data_conv(struct nfs4_mount_data *data)
 	data->version = compat->version;
 }
 
-/*
- * Validate NFSv4 mount options
- */
+ 
 static int nfs4_parse_monolithic(struct fs_context *fc,
 				 struct nfs4_mount_data *data)
 {
@@ -1329,10 +1253,7 @@ static int nfs4_parse_monolithic(struct fs_context *fc,
 		return PTR_ERR(c);
 	ctx->client_address = c;
 
-	/*
-	 * Translate to nfs_fs_context, which nfs_fill_super
-	 * can deal with.
-	 */
+	 
 
 	ctx->flags	= data->flags & NFS4_MOUNT_FLAGMASK;
 	ctx->rsize	= data->rsize;
@@ -1360,9 +1281,7 @@ out_no_address:
 }
 #endif
 
-/*
- * Parse a monolithic block of data from sys_mount().
- */
+ 
 static int nfs_fs_context_parse_monolithic(struct fs_context *fc,
 					   void *data)
 {
@@ -1377,9 +1296,7 @@ static int nfs_fs_context_parse_monolithic(struct fs_context *fc,
 	return nfs_invalf(fc, "NFS: Unsupported monolithic data version");
 }
 
-/*
- * Validate the preparsed information in the config.
- */
+ 
 static int nfs_fs_context_validate(struct fs_context *fc)
 {
 	struct nfs_fs_context *ctx = nfs_fc2context(fc);
@@ -1393,7 +1310,7 @@ static int nfs_fs_context_validate(struct fs_context *fc)
 	if (!fc->source)
 		goto out_no_device_name;
 
-	/* Check for sanity first. */
+	 
 	if (ctx->minorversion && ctx->version != 4)
 		goto out_minorversion_mismatch;
 
@@ -1401,9 +1318,7 @@ static int nfs_fs_context_validate(struct fs_context *fc)
 	    (ctx->version != 4 || ctx->minorversion != 0))
 		goto out_migration_misuse;
 
-	/* Verify that any proto=/mountproto= options match the address
-	 * families in the addr=/mountaddr= options.
-	 */
+	 
 	if (ctx->protofamily != AF_UNSPEC &&
 	    ctx->protofamily != ctx->nfs_server.address.sa_family)
 		goto out_proto_mismatch;
@@ -1451,7 +1366,7 @@ static int nfs_fs_context_validate(struct fs_context *fc)
 	if (ret < 0)
 		return ret;
 
-	/* Load the NFS protocol module if we haven't done so yet */
+	 
 	if (!ctx->nfs_mod) {
 		nfs_mod = get_nfs_version(ctx->version);
 		if (IS_ERR(nfs_mod)) {
@@ -1461,7 +1376,7 @@ static int nfs_fs_context_validate(struct fs_context *fc)
 		ctx->nfs_mod = nfs_mod;
 	}
 
-	/* Ensure the filesystem context has the correct fs_type */
+	 
 	if (fc->fs_type != ctx->nfs_mod->nfs_fs) {
 		module_put(fc->fs_type->owner);
 		__module_get(ctx->nfs_mod->nfs_fs->owner);
@@ -1490,9 +1405,7 @@ out_version_unavailable:
 	return ret;
 }
 
-/*
- * Create an NFS superblock by the appropriate method.
- */
+ 
 static int nfs_get_tree(struct fs_context *fc)
 {
 	struct nfs_fs_context *ctx = nfs_fc2context(fc);
@@ -1506,12 +1419,7 @@ static int nfs_get_tree(struct fs_context *fc)
 		return nfs_get_tree_common(fc);
 }
 
-/*
- * Handle duplication of a configuration.  The caller copied *src into *sc, but
- * it can't deal with resource pointers in the filesystem context, so we have
- * to do that.  We need to clear pointers, copy data or get extra refs as
- * appropriate.
- */
+ 
 static int nfs_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
 {
 	struct nfs_fs_context *src = nfs_fc2context(src_fc), *ctx;
@@ -1567,11 +1475,7 @@ static const struct fs_context_operations nfs_fs_context_ops = {
 	.reconfigure		= nfs_reconfigure,
 };
 
-/*
- * Prepare superblock configuration.  We use the namespaces attached to the
- * context.  This may be the current process's namespaces, or it may be a
- * container's namespaces.
- */
+ 
 static int nfs_init_fs_context(struct fs_context *fc)
 {
 	struct nfs_fs_context *ctx;
@@ -1591,7 +1495,7 @@ static int nfs_init_fs_context(struct fs_context *fc)
 	ctx->mount_server.port	= NFS_UNSPEC_PORT;
 
 	if (fc->root) {
-		/* reconfigure, start with the current config */
+		 
 		struct nfs_server *nfss = fc->root->d_sb->s_fs_info;
 		struct net *net = nfss->nfs_client->cl_net;
 
@@ -1621,7 +1525,7 @@ static int nfs_init_fs_context(struct fs_context *fc)
 		ctx->nfs_mod = nfss->nfs_client->cl_nfs_mod;
 		__module_get(ctx->nfs_mod->owner);
 	} else {
-		/* defaults */
+		 
 		ctx->timeo		= NFS_UNSPEC_TIMEO;
 		ctx->retrans		= NFS_UNSPEC_RETRANS;
 		ctx->acregmin		= NFS_DEF_ACREGMIN;
@@ -1667,4 +1571,4 @@ struct file_system_type nfs4_fs_type = {
 MODULE_ALIAS_FS("nfs4");
 MODULE_ALIAS("nfs4");
 EXPORT_SYMBOL_GPL(nfs4_fs_type);
-#endif /* CONFIG_NFS_V4 */
+#endif  

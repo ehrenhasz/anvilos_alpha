@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Defines interfaces for interacting with the Raspberry Pi firmware's
- * property channel.
- *
- * Copyright © 2015 Broadcom
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/kref.h>
@@ -26,7 +21,7 @@ static struct platform_device *rpi_clk;
 
 struct rpi_firmware {
 	struct mbox_client cl;
-	struct mbox_chan *chan; /* The property channel. */
+	struct mbox_chan *chan;  
 	struct completion c;
 	u32 enabled;
 
@@ -41,10 +36,7 @@ static void response_callback(struct mbox_client *cl, void *msg)
 	complete(&fw->c);
 }
 
-/*
- * Sends a request to the firmware through the BCM2835 mailbox driver,
- * and synchronously waits for the reply.
- */
+ 
 static int
 rpi_firmware_transaction(struct rpi_firmware *fw, u32 chan, u32 data)
 {
@@ -71,20 +63,7 @@ rpi_firmware_transaction(struct rpi_firmware *fw, u32 chan, u32 data)
 	return ret;
 }
 
-/**
- * rpi_firmware_property_list - Submit firmware property list
- * @fw:		Pointer to firmware structure from rpi_firmware_get().
- * @data:	Buffer holding tags.
- * @tag_size:	Size of tags buffer.
- *
- * Submits a set of concatenated tags to the VPU firmware through the
- * mailbox property interface.
- *
- * The buffer header and the ending tag are added by this function and
- * don't need to be supplied, just the actual tags for your operation.
- * See struct rpi_firmware_property_tag_header for the per-tag
- * structure.
- */
+ 
 int rpi_firmware_property_list(struct rpi_firmware *fw,
 			       void *data, size_t tag_size)
 {
@@ -93,7 +72,7 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
 	dma_addr_t bus_addr;
 	int ret;
 
-	/* Packets are processed a dword at a time. */
+	 
 	if (size & 3)
 		return -EINVAL;
 
@@ -102,7 +81,7 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
 	if (!buf)
 		return -ENOMEM;
 
-	/* The firmware will error out without parsing in this case. */
+	 
 	WARN_ON(size >= 1024 * 1024);
 
 	buf[0] = size;
@@ -116,11 +95,7 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
 	rmb();
 	memcpy(data, &buf[2], tag_size);
 	if (ret == 0 && buf[1] != RPI_FIRMWARE_STATUS_SUCCESS) {
-		/*
-		 * The tag name here might not be the one causing the
-		 * error, if there were multiple tags in the request.
-		 * But single-tag is the most common, so go with it.
-		 */
+		 
 		dev_err(fw->cl.dev, "Request 0x%08x returned status 0x%08x\n",
 			buf[2], buf[1]);
 		ret = -EINVAL;
@@ -132,31 +107,14 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
 }
 EXPORT_SYMBOL_GPL(rpi_firmware_property_list);
 
-/**
- * rpi_firmware_property - Submit single firmware property
- * @fw:		Pointer to firmware structure from rpi_firmware_get().
- * @tag:	One of enum_mbox_property_tag.
- * @tag_data:	Tag data buffer.
- * @buf_size:	Buffer size.
- *
- * Submits a single tag to the VPU firmware through the mailbox
- * property interface.
- *
- * This is a convenience wrapper around
- * rpi_firmware_property_list() to avoid some of the
- * boilerplate in property calls.
- */
+ 
 int rpi_firmware_property(struct rpi_firmware *fw,
 			  u32 tag, void *tag_data, size_t buf_size)
 {
 	struct rpi_firmware_property_tag_header *header;
 	int ret;
 
-	/* Some mailboxes can use over 1k bytes. Rather than checking
-	 * size and using stack or kmalloc depending on requirements,
-	 * just use kmalloc. Mailboxes don't get called enough to worry
-	 * too much about the time taken in the allocation.
-	 */
+	 
 	void *data = kmalloc(sizeof(*header) + buf_size, GFP_KERNEL);
 
 	if (!data)
@@ -190,7 +148,7 @@ rpi_firmware_print_firmware_revision(struct rpi_firmware *fw)
 	if (ret)
 		return;
 
-	/* This is not compatible with y2038 */
+	 
 	date_and_time = packet;
 	dev_info(fw->cl.dev, "Attached to firmware from %ptT\n", &date_and_time);
 }
@@ -213,11 +171,7 @@ static void rpi_register_clk_driver(struct device *dev)
 {
 	struct device_node *firmware;
 
-	/*
-	 * Earlier DTs don't have a node for the firmware clocks but
-	 * rely on us creating a platform device by hand. If we do
-	 * have a node for the firmware clocks, just bail out here.
-	 */
+	 
 	firmware = of_get_compatible_child(dev->of_node,
 					   "raspberrypi,firmware-clocks");
 	if (firmware) {
@@ -238,11 +192,7 @@ unsigned int rpi_firmware_clk_get_max_rate(struct rpi_firmware *fw, unsigned int
 	ret = rpi_firmware_property(fw, RPI_FIRMWARE_GET_MAX_CLOCK_RATE,
 				    &msg, sizeof(msg));
 	if (ret)
-		/*
-		 * If our firmware doesn't support that operation, or fails, we
-		 * assume the maximum clock rate is absolute maximum we can
-		 * store over our type.
-		 */
+		 
 		 return UINT_MAX;
 
 	return le32_to_cpu(msg.rate);
@@ -276,10 +226,7 @@ static int rpi_firmware_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct rpi_firmware *fw;
 
-	/*
-	 * Memory will be freed by rpi_firmware_delete() once all users have
-	 * released their firmware handles. Don't use devm_kzalloc() here.
-	 */
+	 
 	fw = kzalloc(sizeof(*fw), GFP_KERNEL);
 	if (!fw)
 		return -ENOMEM;
@@ -343,14 +290,7 @@ struct device_node *rpi_firmware_find_node(void)
 }
 EXPORT_SYMBOL_GPL(rpi_firmware_find_node);
 
-/**
- * rpi_firmware_get - Get pointer to rpi_firmware structure.
- * @firmware_node:    Pointer to the firmware Device Tree node.
- *
- * The reference to rpi_firmware has to be released with rpi_firmware_put().
- *
- * Returns NULL is the firmware device is not ready.
- */
+ 
 struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
 {
 	struct platform_device *pdev = of_find_device_by_node(firmware_node);
@@ -376,12 +316,7 @@ err_put_device:
 }
 EXPORT_SYMBOL_GPL(rpi_firmware_get);
 
-/**
- * devm_rpi_firmware_get - Get pointer to rpi_firmware structure.
- * @firmware_node:    Pointer to the firmware Device Tree node.
- *
- * Returns NULL is the firmware device is not ready.
- */
+ 
 struct rpi_firmware *devm_rpi_firmware_get(struct device *dev,
 					   struct device_node *firmware_node)
 {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SP7021 Pin Controller Driver.
- * Copyright (C) Sunplus Tech / Tibbo Tech.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/kernel.h>
@@ -61,9 +58,9 @@ const unsigned int sppctl_pins_gpio[] = {
 };
 
 const struct pinctrl_pin_desc sppctl_pins_all[] = {
-	/* gpio and iop only */
+	 
 	P(0, 0), P(0, 1), P(0, 2), P(0, 3), P(0, 4), P(0, 5), P(0, 6), P(0, 7),
-	/* gpio, iop, muxable */
+	 
 	P(1, 0), P(1, 1), P(1, 2), P(1, 3), P(1, 4), P(1, 5), P(1, 6), P(1, 7),
 	P(2, 0), P(2, 1), P(2, 2), P(2, 3), P(2, 4), P(2, 5), P(2, 6), P(2, 7),
 	P(3, 0), P(3, 1), P(3, 2), P(3, 3), P(3, 4), P(3, 5), P(3, 6), P(3, 7),
@@ -72,7 +69,7 @@ const struct pinctrl_pin_desc sppctl_pins_all[] = {
 	P(6, 0), P(6, 1), P(6, 2), P(6, 3), P(6, 4), P(6, 5), P(6, 6), P(6, 7),
 	P(7, 0), P(7, 1), P(7, 2), P(7, 3), P(7, 4), P(7, 5), P(7, 6), P(7, 7),
 	P(8, 0), P(8, 1), P(8, 2), P(8, 3), P(8, 4), P(8, 5), P(8, 6), P(8, 7),
-	/* gpio and iop only */
+	 
 	P(9, 0),  P(9, 1),  P(9, 2),  P(9, 3),  P(9, 4),  P(9, 5),  P(9, 6),  P(9, 7),
 	P(10, 0), P(10, 1), P(10, 2), P(10, 3), P(10, 4), P(10, 5), P(10, 6), P(10, 7),
 	P(11, 0), P(11, 1), P(11, 2), P(11, 3), P(11, 4), P(11, 5), P(11, 6), P(11, 7),
@@ -419,11 +416,7 @@ static const struct sppctl_grp sp7021grps_prbp[] = {
 	EGRP("PROBE_PORT2", 2, pins_prp2),
 };
 
-/*
- * Due to compatible reason, the first valid item should start at the third
- * position of the array. Please keep the first two items of the table
- * no use (dummy).
- */
+ 
 const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("", pinmux_type_fpmx, 0x00, 0, 0),
 	FNCN("", pinmux_type_fpmx, 0x00, 0, 0),
@@ -450,13 +443,13 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("L2SW_P1_MAC_RMII_RXD1",   pinmux_type_fpmx, 0x09, 8, 7),
 	FNCN("L2SW_P1_MAC_RMII_RXER",   pinmux_type_fpmx, 0x0A, 0, 7),
 	FNCN("DAISY_MODE",      pinmux_type_fpmx, 0x0A, 8, 7),
-	FNCN("SDIO_CLK",        pinmux_type_fpmx, 0x0B, 0, 7),    /* 1x SDIO */
+	FNCN("SDIO_CLK",        pinmux_type_fpmx, 0x0B, 0, 7),     
 	FNCN("SDIO_CMD",        pinmux_type_fpmx, 0x0B, 8, 7),
 	FNCN("SDIO_D0",         pinmux_type_fpmx, 0x0C, 0, 7),
 	FNCN("SDIO_D1",         pinmux_type_fpmx, 0x0C, 8, 7),
 	FNCN("SDIO_D2",         pinmux_type_fpmx, 0x0D, 0, 7),
 	FNCN("SDIO_D3",         pinmux_type_fpmx, 0x0D, 8, 7),
-	FNCN("PWM0",            pinmux_type_fpmx, 0x0E, 0, 7),    /* 8x PWM */
+	FNCN("PWM0",            pinmux_type_fpmx, 0x0E, 0, 7),     
 	FNCN("PWM1",            pinmux_type_fpmx, 0x0E, 8, 7),
 	FNCN("PWM2",            pinmux_type_fpmx, 0x0F, 0, 7),
 	FNCN("PWM3",            pinmux_type_fpmx, 0x0F, 8, 7),
@@ -465,7 +458,7 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("PWM5",            pinmux_type_fpmx, 0x10, 8, 7),
 	FNCN("PWM6",            pinmux_type_fpmx, 0x11, 0, 7),
 	FNCN("PWM7",            pinmux_type_fpmx, 0x11, 8, 7),
-	FNCN("ICM0_D",          pinmux_type_fpmx, 0x12, 0, 7),    /* 4x Input captures */
+	FNCN("ICM0_D",          pinmux_type_fpmx, 0x12, 0, 7),     
 	FNCN("ICM1_D",          pinmux_type_fpmx, 0x12, 8, 7),
 	FNCN("ICM2_D",          pinmux_type_fpmx, 0x13, 0, 7),
 	FNCN("ICM3_D",          pinmux_type_fpmx, 0x13, 8, 7),
@@ -473,7 +466,7 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("ICM1_CLK",        pinmux_type_fpmx, 0x14, 8, 7),
 	FNCN("ICM2_CLK",        pinmux_type_fpmx, 0x15, 0, 7),
 	FNCN("ICM3_CLK",        pinmux_type_fpmx, 0x15, 8, 7),
-	FNCN("SPIM0_INT",       pinmux_type_fpmx, 0x16, 0, 7),    /* 4x SPI masters */
+	FNCN("SPIM0_INT",       pinmux_type_fpmx, 0x16, 0, 7),     
 	FNCN("SPIM0_CLK",       pinmux_type_fpmx, 0x16, 8, 7),
 	FNCN("SPIM0_EN",        pinmux_type_fpmx, 0x17, 0, 7),
 	FNCN("SPIM0_DO",        pinmux_type_fpmx, 0x17, 8, 7),
@@ -494,7 +487,7 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("SPIM3_DO",        pinmux_type_fpmx, 0x1F, 0, 7),
 	FNCN("SPIM3_DI",        pinmux_type_fpmx, 0x1F, 8, 7),
 
-	FNCN("SPI0S_INT",       pinmux_type_fpmx, 0x20, 0, 7),    /* 4x SPI slaves */
+	FNCN("SPI0S_INT",       pinmux_type_fpmx, 0x20, 0, 7),     
 	FNCN("SPI0S_CLK",       pinmux_type_fpmx, 0x20, 8, 7),
 	FNCN("SPI0S_EN",        pinmux_type_fpmx, 0x21, 0, 7),
 	FNCN("SPI0S_DO",        pinmux_type_fpmx, 0x21, 8, 7),
@@ -514,7 +507,7 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("SPI3S_EN",        pinmux_type_fpmx, 0x28, 8, 7),
 	FNCN("SPI3S_DO",        pinmux_type_fpmx, 0x29, 0, 7),
 	FNCN("SPI3S_DI",        pinmux_type_fpmx, 0x29, 8, 7),
-	FNCN("I2CM0_CLK",       pinmux_type_fpmx, 0x2A, 0, 7),    /* 4x I2C masters */
+	FNCN("I2CM0_CLK",       pinmux_type_fpmx, 0x2A, 0, 7),     
 	FNCN("I2CM0_DAT",       pinmux_type_fpmx, 0x2A, 8, 7),
 	FNCN("I2CM1_CLK",       pinmux_type_fpmx, 0x2B, 0, 7),
 	FNCN("I2CM1_DAT",       pinmux_type_fpmx, 0x2B, 8, 7),
@@ -522,7 +515,7 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("I2CM2_DAT",       pinmux_type_fpmx, 0x2C, 8, 7),
 	FNCN("I2CM3_CLK",       pinmux_type_fpmx, 0x2D, 0, 7),
 	FNCN("I2CM3_DAT",       pinmux_type_fpmx, 0x2D, 8, 7),
-	FNCN("UA1_TX",          pinmux_type_fpmx, 0x2E, 0, 7),    /* 4x UARTS */
+	FNCN("UA1_TX",          pinmux_type_fpmx, 0x2E, 0, 7),     
 	FNCN("UA1_RX",          pinmux_type_fpmx, 0x2E, 8, 7),
 	FNCN("UA1_CTS",         pinmux_type_fpmx, 0x2F, 0, 7),
 	FNCN("UA1_RTS",         pinmux_type_fpmx, 0x2F, 8, 7),
@@ -539,11 +532,11 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("UA4_RX",          pinmux_type_fpmx, 0x34, 8, 7),
 	FNCN("UA4_CTS",         pinmux_type_fpmx, 0x35, 0, 7),
 	FNCN("UA4_RTS",         pinmux_type_fpmx, 0x35, 8, 7),
-	FNCN("TIMER0_INT",      pinmux_type_fpmx, 0x36, 0, 7),    /* 4x timer int. */
+	FNCN("TIMER0_INT",      pinmux_type_fpmx, 0x36, 0, 7),     
 	FNCN("TIMER1_INT",      pinmux_type_fpmx, 0x36, 8, 7),
 	FNCN("TIMER2_INT",      pinmux_type_fpmx, 0x37, 0, 7),
 	FNCN("TIMER3_INT",      pinmux_type_fpmx, 0x37, 8, 7),
-	FNCN("GPIO_INT0",       pinmux_type_fpmx, 0x38, 0, 7),    /* 8x GPIO int. */
+	FNCN("GPIO_INT0",       pinmux_type_fpmx, 0x38, 0, 7),     
 	FNCN("GPIO_INT1",       pinmux_type_fpmx, 0x38, 8, 7),
 	FNCN("GPIO_INT2",       pinmux_type_fpmx, 0x39, 0, 7),
 	FNCN("GPIO_INT3",       pinmux_type_fpmx, 0x39, 8, 7),
@@ -552,7 +545,7 @@ const struct sppctl_func sppctl_list_funcs[] = {
 	FNCN("GPIO_INT6",       pinmux_type_fpmx, 0x3B, 0, 7),
 	FNCN("GPIO_INT7",       pinmux_type_fpmx, 0x3B, 8, 7),
 
-	/* MOON1 register */
+	 
 	FNCE("SPI_FLASH",       pinmux_type_grp, 0x01,  0, 2, sp7021grps_spif),
 	FNCE("SPI_FLASH_4BIT",  pinmux_type_grp, 0x01,  2, 2, sp7021grps_spi4),
 	FNCE("SPI_NAND",        pinmux_type_grp, 0x01,  4, 1, sp7021grps_snan),

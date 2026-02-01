@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2019 Collabora Ltd */
+ 
+ 
 #ifndef __PANFROST_PERFCNT_H__
 #define __PANFROST_PERFCNT_H__
 

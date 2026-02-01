@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+ 
+ 
 
 #ifndef __DEBUGFS_H__
 #define __DEBUGFS_H__
@@ -100,4 +94,4 @@ static const struct file_operations sub## _ ##name## _ops = {		\
 	DEBUGFS_ADD(sub## _ ##name, stats)
 
 
-#endif /* WL1271_DEBUGFS_H */
+#endif  

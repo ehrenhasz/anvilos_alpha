@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __LIB_EVENTS_H__
 #define __LIB_EVENTS_H__

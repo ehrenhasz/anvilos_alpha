@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _XT_NFACCT_MATCH_H
 #define _XT_NFACCT_MATCH_H
 
@@ -16,4 +16,4 @@ struct xt_nfacct_match_info_v1 {
 	struct nf_acct	*nfacct __attribute__((aligned(8)));
 };
 
-#endif /* _XT_NFACCT_MATCH_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012-2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/clockchips.h>
@@ -10,9 +8,7 @@
 #include <linux/of_irq.h>
 #include <linux/sched_clock.h>
 
-/*
- * Each pit takes 0x10 Bytes register space
- */
+ 
 #define PITMCR		0x00
 #define PIT0_OFFSET	0x100
 #define PITn_OFFSET(n)	(PIT0_OFFSET + 0x10 * (n))
@@ -55,7 +51,7 @@ static u64 notrace pit_read_sched_clock(void)
 
 static int __init pit_clocksource_init(unsigned long rate)
 {
-	/* set the max load value and start the clock source counter */
+	 
 	__raw_writel(0, clksrc_base + PITTCTRL);
 	__raw_writel(~0UL, clksrc_base + PITLDVAL);
 	__raw_writel(PITTCTRL_TEN, clksrc_base + PITTCTRL);
@@ -68,13 +64,7 @@ static int __init pit_clocksource_init(unsigned long rate)
 static int pit_set_next_event(unsigned long delta,
 				struct clock_event_device *unused)
 {
-	/*
-	 * set a new value to PITLDVAL register will not restart the timer,
-	 * to abort the current cycle and start a timer period with the new
-	 * value, the timer must be disabled and enabled again.
-	 * and the PITLAVAL should be set to delta minus one according to pit
-	 * hardware requirement.
-	 */
+	 
 	pit_timer_disable();
 	__raw_writel(delta - 1, clkevt_base + PITLDVAL);
 	pit_timer_enable();
@@ -100,12 +90,7 @@ static irqreturn_t pit_timer_interrupt(int irq, void *dev_id)
 
 	pit_irq_acknowledge();
 
-	/*
-	 * pit hardware doesn't support oneshot, it will generate an interrupt
-	 * and reload the counter value from PITLDVAL when PITCVAL reach zero,
-	 * and start the counter again. So software need to disable the timer
-	 * to stop the counter loop in ONESHOT mode.
-	 */
+	 
 	if (likely(clockevent_state_oneshot(evt)))
 		pit_timer_disable();
 
@@ -133,14 +118,7 @@ static int __init pit_clockevent_init(unsigned long rate, int irq)
 
 	clockevent_pit.cpumask = cpumask_of(0);
 	clockevent_pit.irq = irq;
-	/*
-	 * The value for the LDVAL register trigger is calculated as:
-	 * LDVAL trigger = (period / clock period) - 1
-	 * The pit is a 32-bit down count timer, when the counter value
-	 * reaches 0, it will generate an interrupt, thus the minimal
-	 * LDVAL trigger value is 1. And then the min_delta is
-	 * minimal LDVAL trigger value + 1, and the max_delta is full 32-bit.
-	 */
+	 
 	clockevents_config_and_register(&clockevent_pit, rate, 2, 0xffffffff);
 
 	return 0;
@@ -159,11 +137,7 @@ static int __init pit_timer_init(struct device_node *np)
 		return -ENXIO;
 	}
 
-	/*
-	 * PIT0 and PIT1 can be chained to build a 64-bit timer,
-	 * so choose PIT2 as clocksource, PIT3 as clockevent device,
-	 * and leave PIT0 and PIT1 unused for anyone else who needs them.
-	 */
+	 
 	clksrc_base = timer_base + PITn_OFFSET(2);
 	clkevt_base = timer_base + PITn_OFFSET(3);
 
@@ -182,7 +156,7 @@ static int __init pit_timer_init(struct device_node *np)
 	clk_rate = clk_get_rate(pit_clk);
 	cycle_per_jiffy = clk_rate / (HZ);
 
-	/* enable the pit module */
+	 
 	__raw_writel(~PITMCR_MDIS, timer_base + PITMCR);
 
 	ret = pit_clocksource_init(clk_rate);

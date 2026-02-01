@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2016 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_GGTT_FENCING_H__
 #define __INTEL_GGTT_FENCING_H__
@@ -26,14 +24,7 @@ struct i915_fence_reg {
 	atomic_t pin_count;
 	struct i915_active active;
 	int id;
-	/**
-	 * Whether the tiling parameters for the currently
-	 * associated fence register have changed. Note that
-	 * for the purposes of tracking tiling changes we also
-	 * treat the unfenced register, the register slot that
-	 * the object occupies whilst it executes a fenced
-	 * command (such as BLT on gen2/3), as a "fence".
-	 */
+	 
 	bool dirty;
 	u32 start;
 	u32 size;

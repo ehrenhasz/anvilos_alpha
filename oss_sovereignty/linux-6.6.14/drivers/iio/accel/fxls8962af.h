@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2021 Connected Cars A/S
- */
+ 
+ 
 #ifndef _FXLS8962AF_H_
 #define _FXLS8962AF_H_
 
@@ -20,4 +18,4 @@ extern const struct dev_pm_ops fxls8962af_pm_ops;
 extern const struct regmap_config fxls8962af_i2c_regmap_conf;
 extern const struct regmap_config fxls8962af_spi_regmap_conf;
 
-#endif				/* _FXLS8962AF_H_ */
+#endif				 

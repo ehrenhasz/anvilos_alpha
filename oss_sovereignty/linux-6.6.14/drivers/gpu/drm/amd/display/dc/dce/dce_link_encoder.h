@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DC_LINK_ENCODER__DCE110_H__
 #define __DC_LINK_ENCODER__DCE110_H__
@@ -31,10 +8,7 @@
 #define TO_DCE110_LINK_ENC(link_encoder)\
 	container_of(link_encoder, struct dce110_link_encoder, base)
 
-/* Not found regs in dce120 spec
- * BIOS_SCRATCH_2
- * DP_DPHY_INTERNAL_CTRL
- */
+ 
 
 #define AUX_REG_LIST(id)\
 	SRI(AUX_CONTROL, DP_AUX, id), \
@@ -144,7 +118,7 @@ struct dce110_link_enc_hpd_registers {
 };
 
 struct dce110_link_enc_registers {
-	/* DMCU registers */
+	 
 	uint32_t MASTER_COMM_DATA_REG1;
 	uint32_t MASTER_COMM_DATA_REG2;
 	uint32_t MASTER_COMM_DATA_REG3;
@@ -157,7 +131,7 @@ struct dce110_link_enc_registers {
 	uint32_t DMCU_IRAM_RD_DATA;
 	uint32_t DMCU_INTERRUPT_TO_UC_EN_MASK;
 
-	/* Common DP registers */
+	 
 	uint32_t DIG_BE_CNTL;
 	uint32_t DIG_BE_EN_CNTL;
 	uint32_t DP_CONFIG;
@@ -231,21 +205,21 @@ bool dce110_link_encoder_validate_output_with_stream(
 	struct link_encoder *enc,
 	const struct dc_stream_state *stream);
 
-/****************** HW programming ************************/
+ 
 
-/* initialize HW */  /* why do we initialze aux in here? */
+    
 void dce110_link_encoder_hw_init(struct link_encoder *enc);
 
 void dce110_link_encoder_destroy(struct link_encoder **enc);
 
-/* program DIG_MODE in DIG_BE */
-/* TODO can this be combined with enable_output? */
+ 
+ 
 void dce110_link_encoder_setup(
 	struct link_encoder *enc,
 	enum signal_type signal);
 
-/* enables TMDS PHY output */
-/* TODO: still need depth or just pass in adjusted pixel clock? */
+ 
+ 
 void dce110_link_encoder_enable_tmds_output(
 	struct link_encoder *enc,
 	enum clock_source_id clock_source,
@@ -253,30 +227,30 @@ void dce110_link_encoder_enable_tmds_output(
 	enum signal_type signal,
 	uint32_t pixel_clock);
 
-/* enables DP PHY output */
+ 
 void dce110_link_encoder_enable_dp_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	enum clock_source_id clock_source);
 
-/* enables DP PHY output in MST mode */
+ 
 void dce110_link_encoder_enable_dp_mst_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	enum clock_source_id clock_source);
 
-/* enables LVDS PHY output */
+ 
 void dce110_link_encoder_enable_lvds_output(
 	struct link_encoder *enc,
 	enum clock_source_id clock_source,
 	uint32_t pixel_clock);
 
-/* disable PHY output */
+ 
 void dce110_link_encoder_disable_output(
 	struct link_encoder *enc,
 	enum signal_type signal);
 
-/* set DP lane settings */
+ 
 void dce110_link_encoder_dp_set_lane_settings(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
@@ -286,7 +260,7 @@ void dce110_link_encoder_dp_set_phy_pattern(
 	struct link_encoder *enc,
 	const struct encoder_set_dp_phy_pattern_param *param);
 
-/* programs DP MST VC payload allocation */
+ 
 void dce110_link_encoder_update_mst_stream_allocation_table(
 	struct link_encoder *enc,
 	const struct link_mst_stream_allocation_table *table);
@@ -317,4 +291,4 @@ bool dce110_is_dig_enabled(struct link_encoder *enc);
 void dce110_link_encoder_get_max_link_cap(struct link_encoder *enc,
 	struct dc_link_settings *link_settings);
 
-#endif /* __DC_LINK_ENCODER__DCE110_H__ */
+#endif  

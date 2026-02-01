@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Linaro Ltd.
- * Copyright (C) 2021 Dávid Virág <virag.david003@gmail.com>
- * Author: Sam Protsenko <semen.protsenko@linaro.org>
- * Author: Dávid Virág <virag.david003@gmail.com>
- *
- * This file contains shared functions used by some arm64 Exynos SoCs,
- * such as Exynos7885 or Exynos850 to register and init CMUs.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/of_address.h>
 #include <linux/of.h>
@@ -17,11 +9,11 @@
 
 #include "clk-exynos-arm64.h"
 
-/* Gate register bits */
+ 
 #define GATE_MANUAL		BIT(20)
 #define GATE_ENABLE_HWACG	BIT(28)
 
-/* Gate register offsets range */
+ 
 #define GATE_OFF_START		0x2000
 #define GATE_OFF_END		0x2fff
 
@@ -38,14 +30,7 @@ struct exynos_arm64_cmu_data {
 	struct samsung_clk_provider *ctx;
 };
 
-/**
- * exynos_arm64_init_clocks - Set clocks initial configuration
- * @np:			CMU device tree node with "reg" property (CMU addr)
- * @reg_offs:		Register offsets array for clocks to init
- * @reg_offs_len:	Number of register offsets in reg_offs array
- *
- * Set manual control mode for all gate clocks.
- */
+ 
 static void __init exynos_arm64_init_clocks(struct device_node *np,
 		const unsigned long *reg_offs, size_t reg_offs_len)
 {
@@ -60,7 +45,7 @@ static void __init exynos_arm64_init_clocks(struct device_node *np,
 		void __iomem *reg = reg_base + reg_offs[i];
 		u32 val;
 
-		/* Modify only gate clock registers */
+		 
 		if (reg_offs[i] < GATE_OFF_START || reg_offs[i] > GATE_OFF_END)
 			continue;
 
@@ -73,18 +58,7 @@ static void __init exynos_arm64_init_clocks(struct device_node *np,
 	iounmap(reg_base);
 }
 
-/**
- * exynos_arm64_enable_bus_clk - Enable parent clock of specified CMU
- *
- * @dev:	Device object; may be NULL if this function is not being
- *		called from platform driver probe function
- * @np:		CMU device tree node
- * @cmu:	CMU data
- *
- * Keep CMU parent clock running (needed for CMU registers access).
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 static int __init exynos_arm64_enable_bus_clk(struct device *dev,
 		struct device_node *np, const struct samsung_cmu_info *cmu)
 {
@@ -150,28 +124,13 @@ static int __init exynos_arm64_cmu_prepare_pm(struct device *dev,
 	return 0;
 }
 
-/**
- * exynos_arm64_register_cmu - Register specified Exynos CMU domain
- * @dev:	Device object; may be NULL if this function is not being
- *		called from platform driver probe function
- * @np:		CMU device tree node
- * @cmu:	CMU data
- *
- * Register specified CMU domain, which includes next steps:
- *
- * 1. Enable parent clock of @cmu CMU
- * 2. Set initial registers configuration for @cmu CMU clocks
- * 3. Register @cmu CMU clocks using Samsung clock framework API
- */
+ 
 void __init exynos_arm64_register_cmu(struct device *dev,
 		struct device_node *np, const struct samsung_cmu_info *cmu)
 {
 	int err;
 
-	/*
-	 * Try to boot even if the parent clock enablement fails, as it might be
-	 * already enabled by bootloader.
-	 */
+	 
 	err = exynos_arm64_enable_bus_clk(dev, np, cmu);
 	if (err)
 		pr_err("%s: could not enable bus clock %s; err = %d\n",
@@ -181,17 +140,7 @@ void __init exynos_arm64_register_cmu(struct device *dev,
 	samsung_cmu_register_one(np, cmu);
 }
 
-/**
- * exynos_arm64_register_cmu_pm - Register Exynos CMU domain with PM support
- *
- * @pdev:	Platform device object
- * @set_manual:	If true, set gate clocks to manual mode
- *
- * It's a version of exynos_arm64_register_cmu() with PM support. Should be
- * called from probe function of platform driver.
- *
- * Return: 0 on success, or negative error code on error.
- */
+ 
 int __init exynos_arm64_register_cmu_pm(struct platform_device *pdev,
 					bool set_manual)
 {
@@ -214,10 +163,7 @@ int __init exynos_arm64_register_cmu_pm(struct platform_device *pdev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Try to boot even if the parent clock enablement fails, as it might be
-	 * already enabled by bootloader.
-	 */
+	 
 	ret = exynos_arm64_enable_bus_clk(dev, NULL, cmu);
 	if (ret)
 		dev_err(dev, "%s: could not enable bus clock %s; err = %d\n",
@@ -232,12 +178,7 @@ int __init exynos_arm64_register_cmu_pm(struct platform_device *pdev,
 
 	data->ctx = samsung_clk_init(dev, reg_base, cmu->nr_clk_ids);
 
-	/*
-	 * Enable runtime PM here to allow the clock core using runtime PM
-	 * for the registered clocks. Additionally, we increase the runtime
-	 * PM usage count before registering the clocks, to prevent the
-	 * clock core from runtime suspending the device.
-	 */
+	 
 	pm_runtime_get_noresume(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
@@ -260,7 +201,7 @@ int exynos_arm64_cmu_suspend(struct device *dev)
 	for (i = 0; i < data->nr_pclks; i++)
 		clk_prepare_enable(data->pclks[i]);
 
-	/* For suspend some registers have to be set to certain values */
+	 
 	samsung_clk_restore(data->ctx->reg_base, data->clk_suspend,
 			    data->nr_clk_suspend);
 

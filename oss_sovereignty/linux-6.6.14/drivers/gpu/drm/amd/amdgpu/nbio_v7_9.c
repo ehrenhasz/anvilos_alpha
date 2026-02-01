@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
 #include "nbio_v7_9.h"
@@ -32,7 +11,7 @@
 
 #define NPS_MODE_MASK 0x000000FFL
 
-/* Core 0 Port 0 counter */
+ 
 #define smnPCIEP_NAK_COUNTER 0x1A340218
 
 #define smnPCIE_PERF_CNTL_TXCLK3		0x1A38021c
@@ -236,7 +215,7 @@ static void nbio_v7_9_vcn_doorbell_range(struct amdgpu_device *adev, bool use_do
 static void nbio_v7_9_enable_doorbell_aperture(struct amdgpu_device *adev,
 					       bool enable)
 {
-	/* Enable to allow doorbell pass thru on pre-silicon bare-metal */
+	 
 	WREG32_SOC15(NBIO, 0, regBIFC_DOORBELL_ACCESS_EN_PF, 0xfffff);
 	WREG32_FIELD15_PREREG(NBIO, 0, RCC_DEV0_EPF0_RCC_DOORBELL_APER_EN,
 			BIF_DOORBELL_APER_EN, enable ? 1 : 0);
@@ -327,15 +306,13 @@ static void nbio_v7_9_ih_control(struct amdgpu_device *adev)
 {
 	u32 interrupt_cntl;
 
-	/* setup interrupt control */
+	 
 	WREG32_SOC15(NBIO, 0, regBIF_BX0_INTERRUPT_CNTL2, adev->dummy_page_addr >> 8);
 	interrupt_cntl = RREG32_SOC15(NBIO, 0, regBIF_BX0_INTERRUPT_CNTL);
-	/* INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=0 - dummy read disabled with msi, enabled without msi
-	 * INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=1 - dummy read controlled by IH_DUMMY_RD_EN
-	 */
+	 
 	interrupt_cntl =
 		REG_SET_FIELD(interrupt_cntl, BIF_BX0_INTERRUPT_CNTL, IH_DUMMY_RD_OVERRIDE, 0);
-	/* INTERRUPT_CNTL__IH_REQ_NONSNOOP_EN_MASK=1 if ring is in non-cacheable memory, e.g., vram */
+	 
 	interrupt_cntl =
 		REG_SET_FIELD(interrupt_cntl, BIF_BX0_INTERRUPT_CNTL, IH_REQ_NONSNOOP_EN, 0);
 	WREG32_SOC15(NBIO, 0, regBIF_BX0_INTERRUPT_CNTL, interrupt_cntl);
@@ -464,12 +441,12 @@ static u64 nbio_v7_9_get_pcie_replay_count(struct amdgpu_device *adev)
 	if (adev->flags & AMD_IS_APU)
 		return 0;
 
-	/* Get the number of NAKs received and generated */
+	 
 	val = RREG32_PCIE(smnPCIEP_NAK_COUNTER);
 	nak_r = val & 0xFFFF;
 	nak_g = val >> 16;
 
-	/* Add the total number of NAKs, i.e the number of replays */
+	 
 	return (nak_r + nak_g);
 }
 
@@ -479,47 +456,34 @@ static void nbio_v7_9_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count
 	uint32_t perfctrrx = 0;
 	uint32_t perfctrtx = 0;
 
-	/* This reports 0 on APUs, so return to avoid writing/reading registers
-	 * that may or may not be different from their GPU counterparts
-	 */
+	 
 	if (adev->flags & AMD_IS_APU)
 		return;
 
-	/* Use TXCLK3 counter group for rx event */
-	/* Use TXCLK7 counter group for tx event */
-	/* Set the 2 events that we wish to watch, defined above */
-	/* 40 is event# for received msgs */
-	/* 2 is event# of posted requests sent */
+	 
+	 
+	 
+	 
+	 
 	perfctrrx = REG_SET_FIELD(perfctrrx, PCIE_PERF_CNTL_TXCLK3, EVENT0_SEL, 40);
 	perfctrtx = REG_SET_FIELD(perfctrtx, PCIE_PERF_CNTL_TXCLK7, EVENT0_SEL, 2);
 
-	/* Write to enable desired perf counters */
+	 
 	WREG32_PCIE(smnPCIE_PERF_CNTL_TXCLK3, perfctrrx);
 	WREG32_PCIE(smnPCIE_PERF_CNTL_TXCLK7, perfctrtx);
 
-	/* Zero out and enable SHADOW_WR
-	 * Write 0x6:
-	 * Bit 1 = Global Shadow wr(1)
-	 * Bit 2 = Global counter reset enable(1)
-	 */
+	 
 	WREG32_PCIE(smnPCIE_PERF_COUNT_CNTL, 0x00000006);
 
-	/* Enable Gloabl Counter
-	 * Write 0x1:
-	 * Bit 0 = Global Counter Enable(1)
-	 */
+	 
 	WREG32_PCIE(smnPCIE_PERF_COUNT_CNTL, 0x00000001);
 
 	msleep(1000);
 
-	/* Disable Global Counter, Reset and enable SHADOW_WR
-	 * Write 0x6:
-	 * Bit 1 = Global Shadow wr(1)
-	 * Bit 2 = Global counter reset enable(1)
-	 */
+	 
 	WREG32_PCIE(smnPCIE_PERF_COUNT_CNTL, 0x00000006);
 
-	/* Get the upper and lower count  */
+	 
 	*count0 = RREG32_PCIE(smnPCIE_PERF_COUNT0_TXCLK3) |
 		  ((uint64_t)RREG32_PCIE(smnPCIE_PERF_COUNT0_UPVAL_TXCLK3) << 32);
 	*count1 = RREG32_PCIE(smnPCIE_PERF_COUNT0_TXCLK7) |
@@ -570,21 +534,17 @@ static void nbio_v7_9_handle_ras_controller_intr_no_bifring(struct amdgpu_device
 
 	if (REG_GET_FIELD(bif_doorbell_intr_cntl,
 		BIF_BX0_BIF_DOORBELL_INT_CNTL, RAS_CNTLR_INTERRUPT_STATUS)) {
-		/* driver has to clear the interrupt status when bif ring is disabled */
+		 
 		bif_doorbell_intr_cntl = REG_SET_FIELD(bif_doorbell_intr_cntl,
 						BIF_BX0_BIF_DOORBELL_INT_CNTL,
 						RAS_CNTLR_INTERRUPT_CLEAR, 1);
 		WREG32_SOC15(NBIO, 0, regBIF_BX0_BIF_DOORBELL_INT_CNTL, bif_doorbell_intr_cntl);
 
 		if (!ras->disable_ras_err_cnt_harvest) {
-			/*
-			 * clear error status after ras_controller_intr
-			 * according to hw team and count ue number
-			 * for query
-			 */
+			 
 			nbio_v7_9_query_ras_error_count(adev, &err_data);
 
-			/* logging on error cnt and printing for awareness */
+			 
 			obj->err_data.ue_count += err_data.ue_count;
 			obj->err_data.ce_count += err_data.ce_count;
 
@@ -615,7 +575,7 @@ static void nbio_v7_9_handle_ras_err_event_athub_intr_no_bifring(struct amdgpu_d
 
 	if (REG_GET_FIELD(bif_doorbell_intr_cntl,
 		BIF_BX0_BIF_DOORBELL_INT_CNTL, RAS_ATHUB_ERR_EVENT_INTERRUPT_STATUS)) {
-		/* driver has to clear the interrupt status when bif ring is disabled */
+		 
 		bif_doorbell_intr_cntl = REG_SET_FIELD(bif_doorbell_intr_cntl,
 						BIF_BX0_BIF_DOORBELL_INT_CNTL,
 						RAS_ATHUB_ERR_EVENT_INTERRUPT_CLEAR, 1);
@@ -631,7 +591,7 @@ static int nbio_v7_9_set_ras_controller_irq_state(struct amdgpu_device *adev,
 						  unsigned type,
 						  enum amdgpu_interrupt_state state)
 {
-	/* Dummy function, there is no initialization operation in driver */
+	 
 
 	return 0;
 }
@@ -640,11 +600,7 @@ static int nbio_v7_9_process_ras_controller_irq(struct amdgpu_device *adev,
 						struct amdgpu_irq_src *source,
 						struct amdgpu_iv_entry *entry)
 {
-	/* By design, the ih cookie for ras_controller_irq should be written
-	 * to BIFring instead of general iv ring. However, due to known bif ring
-	 * hw bug, it has to be disabled. There is no chance the process function
-	 * will be involked. Just left it as a dummy one.
-	 */
+	 
 	return 0;
 }
 
@@ -653,7 +609,7 @@ static int nbio_v7_9_set_ras_err_event_athub_irq_state(struct amdgpu_device *ade
 						       unsigned type,
 						       enum amdgpu_interrupt_state state)
 {
-	/* Dummy function, there is no initialization operation in driver */
+	 
 
 	return 0;
 }
@@ -662,11 +618,7 @@ static int nbio_v7_9_process_err_event_athub_irq(struct amdgpu_device *adev,
 						 struct amdgpu_irq_src *source,
 						 struct amdgpu_iv_entry *entry)
 {
-	/* By design, the ih cookie for err_event_athub_irq should be written
-	 * to BIFring instead of general iv ring. However, due to known bif ring
-	 * hw bug, it has to be disabled. There is no chance the process function
-	 * will be involked. Just left it as a dummy one.
-	 */
+	 
 	return 0;
 }
 
@@ -684,12 +636,12 @@ static int nbio_v7_9_init_ras_controller_interrupt (struct amdgpu_device *adev)
 {
 	int r;
 
-	/* init the irq funcs */
+	 
 	adev->nbio.ras_controller_irq.funcs =
 		&nbio_v7_9_ras_controller_irq_funcs;
 	adev->nbio.ras_controller_irq.num_types = 1;
 
-	/* register ras controller interrupt */
+	 
 	r = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_BIF,
 			      NBIF_7_4__SRCID__RAS_CONTROLLER_INTERRUPT,
 			      &adev->nbio.ras_controller_irq);
@@ -702,12 +654,12 @@ static int nbio_v7_9_init_ras_err_event_athub_interrupt (struct amdgpu_device *a
 
 	int r;
 
-	/* init the irq funcs */
+	 
 	adev->nbio.ras_err_event_athub_irq.funcs =
 		&nbio_v7_9_ras_err_event_athub_irq_funcs;
 	adev->nbio.ras_err_event_athub_irq.num_types = 1;
 
-	/* register ras err event athub interrupt */
+	 
 	r = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_BIF,
 			      NBIF_7_4__SRCID__ERREVENT_ATHUB_INTERRUPT,
 			      &adev->nbio.ras_err_event_athub_irq);

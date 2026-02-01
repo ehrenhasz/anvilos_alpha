@@ -1,26 +1,12 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "htc.h"
 
-/*************/
-/* Utilities */
-/*************/
+ 
+ 
+ 
 
-/* HACK Alert: Use 11NG for 2.4, use 11NA for 5 */
+ 
 static enum htc_phymode ath9k_htc_get_curmode(struct ath9k_htc_priv *priv,
 					      struct ath9k_channel *ichan)
 {
@@ -80,11 +66,7 @@ void ath9k_ps_work(struct work_struct *work)
 			     ps_work);
 	ath9k_htc_setpower(priv, ATH9K_PM_AWAKE);
 
-	/* The chip wakes up after receiving the first beacon
-	   while network sleep is enabled. For the driver to
-	   be in sync with the hw, set the chip to awake and
-	   only then set it to sleep.
-	 */
+	 
 	ath9k_htc_setpower(priv, ATH9K_PM_NETWORK_SLEEP);
 }
 
@@ -143,18 +125,14 @@ static void ath9k_htc_set_mac_bssid_mask(struct ath9k_htc_priv *priv,
 	struct ath_common *common = ath9k_hw_common(priv->ah);
 	struct ath9k_vif_iter_data iter_data;
 
-	/*
-	 * Pick the MAC address of the first interface as the new hardware
-	 * MAC address. The hardware will use it together with the BSSID mask
-	 * when matching addresses.
-	 */
+	 
 	iter_data.hw_macaddr = NULL;
 	eth_broadcast_addr(iter_data.mask);
 
 	if (vif)
 		ath9k_htc_bssid_iter(&iter_data, vif->addr, vif);
 
-	/* Get list of all active MAC addresses */
+	 
 	ieee80211_iterate_active_interfaces_atomic(
 		priv->hw, IEEE80211_IFACE_ITER_RESUME_ALL,
 		ath9k_htc_bssid_iter, &iter_data);
@@ -311,7 +289,7 @@ static int ath9k_htc_set_channel(struct ath9k_htc_priv *priv,
 	mod_timer(&priv->tx.cleanup_timer,
 		  jiffies + msecs_to_jiffies(ATH9K_HTC_TX_CLEANUP_INTERVAL));
 
-	/* perform spectral scan if requested. */
+	 
 	if (test_bit(ATH_OP_SCANNING, &common->op_flags) &&
 		     priv->spec_priv.spectral_mode == SPECTRAL_CHANSCAN)
 		ath9k_cmn_spectral_scan_trigger(common, &priv->spec_priv);
@@ -320,13 +298,7 @@ err:
 	return ret;
 }
 
-/*
- * Monitor mode handling is a tad complicated because the firmware requires
- * an interface to be created exclusively, while mac80211 doesn't associate
- * an interface with the mode.
- *
- * So, for now, only one monitor interface can be configured.
- */
+ 
 static void __ath9k_htc_remove_monitor_interface(struct ath9k_htc_priv *priv)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
@@ -367,9 +339,7 @@ static int ath9k_htc_add_monitor_interface(struct ath9k_htc_priv *priv)
 		goto err_vif;
 	}
 
-	/*
-	 * Add an interface.
-	 */
+	 
 	memset(&hvif, 0, sizeof(struct ath9k_htc_target_vif));
 	memcpy(&hvif.myaddr, common->macaddr, ETH_ALEN);
 
@@ -380,25 +350,17 @@ static int ath9k_htc_add_monitor_interface(struct ath9k_htc_priv *priv)
 	if (ret)
 		goto err_vif;
 
-	/*
-	 * Assign the monitor interface index as a special case here.
-	 * This is needed when the interface is brought down.
-	 */
+	 
 	priv->mon_vif_idx = hvif.index;
 	priv->vif_slot |= (1 << hvif.index);
 
-	/*
-	 * Set the hardware mode to monitor only if there are no
-	 * other interfaces.
-	 */
+	 
 	if (!priv->nvifs)
 		priv->ah->opmode = NL80211_IFTYPE_MONITOR;
 
 	priv->nvifs++;
 
-	/*
-	 * Associate a station with the interface for packet injection.
-	 */
+	 
 	memset(&tsta, 0, sizeof(struct ath9k_htc_target_sta));
 
 	memcpy(&tsta.macaddr, common->macaddr, ETH_ALEN);
@@ -426,9 +388,7 @@ static int ath9k_htc_add_monitor_interface(struct ath9k_htc_priv *priv)
 	return 0;
 
 err_sta:
-	/*
-	 * Remove the interface from the target.
-	 */
+	 
 	__ath9k_htc_remove_monitor_interface(priv);
 err_vif:
 	ath_dbg(common, FATAL, "Unable to attach a monitor interface\n");
@@ -739,9 +699,9 @@ static int ath9k_htc_tx_aggr_oper(struct ath9k_htc_priv *priv,
 	return ret;
 }
 
-/*******/
-/* ANI */
-/*******/
+ 
+ 
+ 
 
 void ath9k_htc_start_ani(struct ath9k_htc_priv *priv)
 {
@@ -780,21 +740,18 @@ void ath9k_htc_ani_work(struct work_struct *work)
 	short_cal_interval = (ah->opmode == NL80211_IFTYPE_AP) ?
 		ATH_AP_SHORT_CALINTERVAL : ATH_STA_SHORT_CALINTERVAL;
 
-	/* Only calibrate if awake */
+	 
 	if (ah->power_mode != ATH9K_PM_AWAKE)
 		goto set_timer;
 
-	/* Long calibration runs independently of short calibration. */
+	 
 	if ((timestamp - common->ani.longcal_timer) >= ATH_LONG_CALINTERVAL) {
 		longcal = true;
 		ath_dbg(common, ANI, "longcal @%lu\n", jiffies);
 		common->ani.longcal_timer = timestamp;
 	}
 
-	/*
-	 * Short calibration applies only while caldone
-	 * is false or -ETIMEDOUT
-	 */
+	 
 	if (common->ani.caldone <= 0) {
 		if ((timestamp - common->ani.shortcal_timer) >=
 		    short_cal_interval) {
@@ -812,22 +769,22 @@ void ath9k_htc_ani_work(struct work_struct *work)
 		}
 	}
 
-	/* Verify whether we must check ANI */
+	 
 	if ((timestamp - common->ani.checkani_timer) >= ATH_ANI_POLLINTERVAL) {
 		aniflag = true;
 		common->ani.checkani_timer = timestamp;
 	}
 
-	/* Skip all processing if there's nothing to do. */
+	 
 	if (longcal || shortcal || aniflag) {
 
 		ath9k_htc_ps_wakeup(priv);
 
-		/* Call ANI routine if necessary */
+		 
 		if (aniflag)
 			ath9k_hw_ani_monitor(ah, ah->curchan);
 
-		/* Perform calibration if necessary */
+		 
 		if (longcal || shortcal)
 			common->ani.caldone =
 				ath9k_hw_calibrate(ah, ah->curchan,
@@ -837,17 +794,10 @@ void ath9k_htc_ani_work(struct work_struct *work)
 	}
 
 set_timer:
-	/*
-	* Set timer interval based on previous results.
-	* The interval must be the shortest necessary to satisfy ANI,
-	* short calibration and long calibration.
-	*/
+	 
 	cal_interval = ATH_LONG_CALINTERVAL;
 	cal_interval = min(cal_interval, (u32)ATH_ANI_POLLINTERVAL);
-	/*
-	 * Short calibration applies only while caldone
-	 * is false or -ETIMEDOUT
-	 */
+	 
 	if (common->ani.caldone <= 0)
 		cal_interval = min(cal_interval, (u32)short_cal_interval);
 
@@ -855,9 +805,9 @@ set_timer:
 				     msecs_to_jiffies(cal_interval));
 }
 
-/**********************/
-/* mac80211 Callbacks */
-/**********************/
+ 
+ 
+ 
 
 static void ath9k_htc_tx(struct ieee80211_hw *hw,
 			 struct ieee80211_tx_control *control,
@@ -870,7 +820,7 @@ static void ath9k_htc_tx(struct ieee80211_hw *hw,
 
 	hdr = (struct ieee80211_hdr *) skb->data;
 
-	/* Add the padding after the header if this is not already done */
+	 
 	padpos = ieee80211_hdrlen(hdr->frame_control);
 	padsize = padpos & 3;
 	if (padsize && skb->len > padpos) {
@@ -922,11 +872,11 @@ static int ath9k_htc_start(struct ieee80211_hw *hw)
 		"Starting driver with initial channel: %d MHz\n",
 		curchan->center_freq);
 
-	/* Ensure that HW is awake before flushing RX */
+	 
 	ath9k_htc_setpower(priv, ATH9K_PM_AWAKE);
 	WMI_CMD(WMI_FLUSH_RECV_CMDID);
 
-	/* setup initial channel */
+	 
 	init_channel = ath9k_cmn_get_channel(hw, ah, &hw->conf.chandef);
 
 	ret = ath9k_hw_reset(ah, init_channel, ah->caldata, false);
@@ -1003,7 +953,7 @@ static void ath9k_htc_stop(struct ieee80211_hw *hw)
 
 	mutex_unlock(&priv->mutex);
 
-	/* Cancel all the running timers/work .. */
+	 
 	cancel_work_sync(&priv->fatal_work);
 	cancel_work_sync(&priv->ps_work);
 
@@ -1016,7 +966,7 @@ static void ath9k_htc_stop(struct ieee80211_hw *hw)
 
 	ath9k_htc_stop_btcoex(priv);
 
-	/* Remove a monitor interface if it's present. */
+	 
 	if (priv->ah->is_monitoring)
 		ath9k_htc_remove_monitor_interface(priv);
 
@@ -1058,7 +1008,7 @@ static int ath9k_htc_add_interface(struct ieee80211_hw *hw,
 		hvif.opmode = HTC_M_HOSTAP;
 		break;
 	case NL80211_IFTYPE_MESH_POINT:
-		hvif.opmode = HTC_M_WDS;	/* close enough */
+		hvif.opmode = HTC_M_WDS;	 
 		break;
 	default:
 		ath_err(common,
@@ -1067,17 +1017,14 @@ static int ath9k_htc_add_interface(struct ieee80211_hw *hw,
 		goto out;
 	}
 
-	/* Index starts from zero on the target */
+	 
 	avp->index = hvif.index = ffz(priv->vif_slot);
 	hvif.rtsthreshold = cpu_to_be16(2304);
 	WMI_CMD_BUF(WMI_VAP_CREATE_CMDID, &hvif);
 	if (ret)
 		goto out;
 
-	/*
-	 * We need a node in target to tx mgmt frames
-	 * before association.
-	 */
+	 
 	ret = ath9k_htc_add_station(priv, vif, NULL);
 	if (ret) {
 		WMI_CMD_BUF(WMI_VAP_REMOVE_CMDID, &hvif);
@@ -1154,9 +1101,7 @@ static void ath9k_htc_remove_interface(struct ieee80211_hw *hw,
 
 	ath9k_htc_set_mac_bssid_mask(priv, vif);
 
-	/*
-	 * Stop ANI only if there are no associated station interfaces.
-	 */
+	 
 	if ((vif->type == NL80211_IFTYPE_AP) && (priv->num_ap_vif == 0)) {
 		priv->rearm_ani = false;
 		ieee80211_iterate_active_interfaces_atomic(
@@ -1193,10 +1138,7 @@ static int ath9k_htc_config(struct ieee80211_hw *hw, u32 changed)
 		mutex_unlock(&priv->htc_pm_lock);
 	}
 
-	/*
-	 * Monitor interface should be added before
-	 * IEEE80211_CONF_CHANGE_CHANNEL is handled.
-	 */
+	 
 	if (changed & IEEE80211_CONF_CHANGE_MONITOR) {
 		if ((conf->flags & IEEE80211_CONF_MONITOR) &&
 		    !priv->ah->is_monitoring)
@@ -1431,13 +1373,7 @@ static int ath9k_htc_set_key(struct ieee80211_hw *hw,
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||
 	     key->cipher == WLAN_CIPHER_SUITE_CCMP) &&
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
-		/*
-		 * For now, disable hw crypto for the RSN IBSS group keys. This
-		 * could be optimized in the future to use a modified key cache
-		 * design to support per-STA RX GTK, but until that gets
-		 * implemented, use of software crypto for group addressed
-		 * frames is a acceptable to allow RSN IBSS to be used.
-		 */
+		 
 		return -EOPNOTSUPP;
 	}
 
@@ -1450,7 +1386,7 @@ static int ath9k_htc_set_key(struct ieee80211_hw *hw,
 		ret = ath_key_config(common, vif, sta, key);
 		if (ret >= 0) {
 			key->hw_key_idx = ret;
-			/* push IV and Michael MIC generation to stack */
+			 
 			key->flags |= IEEE80211_KEY_FLAG_GENERATE_IV;
 			if (key->cipher == WLAN_CIPHER_SUITE_TKIP)
 				key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIC;
@@ -1555,10 +1491,7 @@ static void ath9k_htc_bss_info_changed(struct ieee80211_hw *hw,
 	}
 
 	if ((changed & BSS_CHANGED_BEACON_ENABLED) && !bss_conf->enable_beacon) {
-		/*
-		 * Disable SWBA interrupt only if there are no
-		 * concurrent AP/mesh or IBSS interfaces.
-		 */
+		 
 		if ((priv->num_ap_vif + priv->num_mbss_vif <= 1) ||
 		     priv->num_ibss_vif) {
 			ath_dbg(common, CONFIG,
@@ -1570,9 +1503,7 @@ static void ath9k_htc_bss_info_changed(struct ieee80211_hw *hw,
 	}
 
 	if (changed & BSS_CHANGED_BEACON_INT) {
-		/*
-		 * Reset the HW TSF for the first AP or mesh interface.
-		 */
+		 
 		if (priv->nvifs == 1 &&
 		    ((priv->ah->opmode == NL80211_IFTYPE_AP &&
 		      vif->type == NL80211_IFTYPE_AP &&
@@ -1594,11 +1525,7 @@ static void ath9k_htc_bss_info_changed(struct ieee80211_hw *hw,
 		else
 			slottime = 20;
 		if (vif->type == NL80211_IFTYPE_AP) {
-			/*
-			 * Defer update, so that connected stations can adjust
-			 * their settings at the same time.
-			 * See beacon.c for more details
-			 */
+			 
 			priv->beacon.slottime = slottime;
 			priv->beacon.updateslot = UPDATE;
 		} else {
@@ -1753,11 +1680,7 @@ static void ath9k_htc_set_coverage_class(struct ieee80211_hw *hw,
 	mutex_unlock(&priv->mutex);
 }
 
-/*
- * Currently, this is used only for selecting the minimum rate
- * for management frames, rate selection for data frames remain
- * unaffected.
- */
+ 
 static int ath9k_htc_set_bitrate_mask(struct ieee80211_hw *hw,
 				      struct ieee80211_vif *vif,
 				      const struct cfg80211_bitrate_mask *mask)
@@ -1820,11 +1743,7 @@ static int ath9k_htc_get_stats(struct ieee80211_hw *hw,
 struct base_eep_header *ath9k_htc_get_eeprom_base(struct ath9k_htc_priv *priv)
 {
 	struct base_eep_header *pBase = NULL;
-	/*
-	 * This can be done since all the 3 EEPROM families have the
-	 * same base header upto a certain point, and we are interested in
-	 * the data only upto that point.
-	 */
+	 
 
 	if (AR_SREV_9271(priv->ah))
 		pBase = (struct base_eep_header *)
@@ -1860,7 +1779,7 @@ static void ath9k_htc_channel_switch_beacon(struct ieee80211_hw *hw,
 {
 	struct ath9k_htc_priv *priv = hw->priv;
 
-	/* mac80211 does not support CSA in multi-if cases (yet) */
+	 
 	if (WARN_ON(priv->csa_vif))
 		return;
 

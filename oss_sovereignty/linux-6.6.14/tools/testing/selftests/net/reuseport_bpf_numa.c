@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test functionality of BPF filters with SO_REUSEPORT. Same test as
- * in reuseport_bpf_cpu, only as one socket per NUMA node.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -77,9 +74,9 @@ static void attach_bpf(int fd)
 
 	int bpf_fd;
 	const struct bpf_insn prog[] = {
-		/* R0 = bpf_get_numa_node_id() */
+		 
 		{ BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_numa_node_id },
-		/* return R0 */
+		 
 		{ BPF_JMP | BPF_EXIT, 0, 0, 0, 0 }
 	};
 	union bpf_attr attr;
@@ -209,7 +206,7 @@ static void test(int *rcv_fd, int len, int family, int proto)
 			error(1, errno, "failed to register sock epoll");
 	}
 
-	/* Forward iterate */
+	 
 	for (node = 0; node < len; ++node) {
 		if (!numa_bitmask_isbitset(numa_nodes_ptr, node))
 			continue;
@@ -217,7 +214,7 @@ static void test(int *rcv_fd, int len, int family, int proto)
 		receive_on_node(rcv_fd, len, epfd, node, proto);
 	}
 
-	/* Reverse iterate */
+	 
 	for (node = len - 1; node >= 0; --node) {
 		if (!numa_bitmask_isbitset(numa_nodes_ptr, node))
 			continue;

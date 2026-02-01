@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sl28cpld interrupt controller driver
- *
- * Copyright 2020 Kontron Europe GmbH
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>

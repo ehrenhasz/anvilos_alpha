@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * stv0367_defs.h
- *
- * Driver for ST STV0367 DVB-T & DVB-C demodulator IC.
- *
- * Copyright (C) ST Microelectronics.
- * Copyright (C) 2010,2011 NetUP Inc.
- * Copyright (C) 2010,2011 Igor M. Liplianin <liplianin@netup.ru>
- */
+ 
+ 
 
 #ifndef STV0367_DEFS_H
 #define STV0367_DEFS_H
@@ -28,12 +20,12 @@ struct st_register {
 	u8	value;
 };
 
-/* values for STV4100 XTAL=30M int clk=53.125M*/
+ 
 static const struct st_register def0367ter[] = {
 	{R367TER_ID,		0x60},
 	{R367TER_I2CRPT,	0xa0},
-	/* {R367TER_I2CRPT,	0x22},*/
-	{R367TER_TOPCTRL,	0x00},/* for xc5000; was 0x02 */
+	 
+	{R367TER_TOPCTRL,	0x00}, 
 	{R367TER_IOCFG0,	0x40},
 	{R367TER_DAC0R,		0x00},
 	{R367TER_IOCFG1,	0x00},
@@ -63,8 +55,8 @@ static const struct st_register def0367ter[] = {
 	{R367TER_AGC2PGA,	0x00},
 	{R367TER_OVF_RATE1,	0x00},
 	{R367TER_OVF_RATE2,	0x00},
-	{R367TER_GAIN_SRC1,	0xaa},/* for xc5000; was 0x2b */
-	{R367TER_GAIN_SRC2,	0xd6},/* for xc5000; was 0x04 */
+	{R367TER_GAIN_SRC1,	0xaa}, 
+	{R367TER_GAIN_SRC2,	0xd6}, 
 	{R367TER_INC_DEROT1,	0x55},
 	{R367TER_INC_DEROT2,	0x55},
 	{R367TER_PPM_CPAMP_DIR,	0x2c},
@@ -159,9 +151,9 @@ static const struct st_register def0367ter[] = {
 	{R367TER_FFT_CTL,	0x00},
 	{R367TER_SCR_CTL,	0x70},
 	{R367TER_PPM_CTL1,	0xf8},
-	{R367TER_TRL_CTL,	0x14},/* for xc5000; was 0xac */
-	{R367TER_TRL_NOMRATE1,	0xae},/* for xc5000; was 0x1e */
-	{R367TER_TRL_NOMRATE2,	0x56},/* for xc5000; was 0x58 */
+	{R367TER_TRL_CTL,	0x14}, 
+	{R367TER_TRL_NOMRATE1,	0xae}, 
+	{R367TER_TRL_NOMRATE2,	0x56}, 
 	{R367TER_TRL_TIME1,	0x1d},
 	{R367TER_TRL_TIME2,	0xfc},
 	{R367TER_CRL_CTL,	0x24},
@@ -198,7 +190,7 @@ static const struct st_register def0367ter[] = {
 	{R367TER_TSM_AP6,	0x00},
 	{R367TER_TSM_AP7,	0x00},
 	{R367TER_TSTRES,	0x00},
-	{R367TER_ANACTRL,	0x0D},/* PLL stopped, restart at init!!! */
+	{R367TER_ANACTRL,	0x0D}, 
 	{R367TER_TSTBUS,	0x00},
 	{R367TER_TSTRATE,	0x00},
 	{R367TER_CONSTMODE,	0x01},
@@ -213,10 +205,10 @@ static const struct st_register def0367ter[] = {
 	{R367TER_RF_AGC1,	0xff},
 	{R367TER_RF_AGC2,	0x83},
 	{R367TER_ANADIGCTRL,	0x19},
-	{R367TER_PLLMDIV,	0x01},/* for xc5000; was 0x0c */
-	{R367TER_PLLNDIV,	0x06},/* for xc5000; was 0x55 */
+	{R367TER_PLLMDIV,	0x01}, 
+	{R367TER_PLLNDIV,	0x06}, 
 	{R367TER_PLLSETUP,	0x18},
-	{R367TER_DUAL_AD12,	0x0C},/* for xc5000 AGC voltage 1.6V */
+	{R367TER_DUAL_AD12,	0x0C}, 
 	{R367TER_TSTBIST,	0x00},
 	{R367TER_PAD_COMP_CTRL,	0x00},
 	{R367TER_PAD_COMP_WR,	0x00},
@@ -361,7 +353,7 @@ static const struct st_register def0367ter[] = {
 	{R367TER_TSSTATEM,	0xb0},
 	{R367TER_TSSTATEL,	0x40},
 	{R367TER_TSCFGH,	0xC0},
-	{R367TER_TSCFGM,	0xc0},/* for xc5000; was 0x00 */
+	{R367TER_TSCFGM,	0xc0}, 
 	{R367TER_TSCFGL,	0x20},
 	{R367TER_TSSYNC,	0x00},
 	{R367TER_TSINSDELH,	0x00},
@@ -374,7 +366,7 @@ static const struct st_register def0367ter[] = {
 	{R367TER_TSDIVQL,	0x00},
 	{R367TER_TSDILSTKM,	0x00},
 	{R367TER_TSDILSTKL,	0x00},
-	{R367TER_TSSPEED,	0x40},/* for xc5000; was 0x6f */
+	{R367TER_TSSPEED,	0x40}, 
 	{R367TER_TSSTATUS,	0x81},
 	{R367TER_TSSTATUS2,	0x6a},
 	{R367TER_TSBITRATEM,	0x0f},
@@ -482,7 +474,7 @@ static const struct st_register def0367ter[] = {
 static const struct st_register def0367cab[] = {
 	{R367CAB_ID,		0x60},
 	{R367CAB_I2CRPT,	0xa0},
-	/*{R367CAB_I2CRPT,	0x22},*/
+	 
 	{R367CAB_TOPCTRL,	0x10},
 	{R367CAB_IOCFG0,	0x80},
 	{R367CAB_DAC0R,		0x00},
@@ -497,7 +489,7 @@ static const struct st_register def0367cab[] = {
 	{R367CAB_GPIO_CFG,	0x55},
 	{R367CAB_GPIO_CMD,	0x01},
 	{R367CAB_TSTRES,	0x00},
-	{R367CAB_ANACTRL,	0x0d},/* was 0x00 need to check - I.M.L.*/
+	{R367CAB_ANACTRL,	0x0d}, 
 	{R367CAB_TSTBUS,	0x00},
 	{R367CAB_RF_AGC1,	0xea},
 	{R367CAB_RF_AGC2,	0x82},
@@ -505,7 +497,7 @@ static const struct st_register def0367cab[] = {
 	{R367CAB_PLLMDIV,	0x01},
 	{R367CAB_PLLNDIV,	0x08},
 	{R367CAB_PLLSETUP,	0x18},
-	{R367CAB_DUAL_AD12,	0x0C}, /* for xc5000 AGC voltage 1.6V */
+	{R367CAB_DUAL_AD12,	0x0C},  
 	{R367CAB_TSTBIST,	0x00},
 	{R367CAB_CTRL_1,	0x00},
 	{R367CAB_CTRL_2,	0x03},
@@ -583,7 +575,7 @@ static const struct st_register def0367cab[] = {
 	{R367CAB_FSM_STS,	0x0c},
 	{R367CAB_FSM_SNR0_HTH,	0x00},
 	{R367CAB_FSM_SNR1_HTH,	0x00},
-	{R367CAB_FSM_SNR2_HTH,	0x23},/* 0x00 */
+	{R367CAB_FSM_SNR2_HTH,	0x23}, 
 	{R367CAB_FSM_SNR0_LTH,	0x00},
 	{R367CAB_FSM_SNR1_LTH,	0x00},
 	{R367CAB_FSM_EQA1_HTH,	0x00},
@@ -671,11 +663,7 @@ static const struct st_register def0367cab[] = {
 	{0x0000,		0x00},
 };
 
-/**************
- *
- * Defaults / Tables for Digital Devices C/T Cine/Flex devices
- *
- **************/
+ 
 
 static const struct st_register def0367dd_ofdm[] = {
 	{R367TER_AGC2MAX,                0xff},
@@ -1082,11 +1070,11 @@ static const struct st_register def0367dd_ofdm[] = {
 	{R367TER_SYMBFIFOL,              0x0d},
 	{R367TER_SYMBOFFSM,              0xf0},
 	{R367TER_SYMBOFFSL,              0x2d},
-	{0x0000, 0x00} /* EOT */
+	{0x0000, 0x00}  
 };
 
 static const struct st_register def0367dd_qam[] = {
-	{R367CAB_CTRL_1,                  0x06}, /* Original 0x04 */
+	{R367CAB_CTRL_1,                  0x06},  
 	{R367CAB_CTRL_2,                  0x03},
 	{R367CAB_IT_STATUS1,              0x2b},
 	{R367CAB_IT_STATUS2,              0x08},
@@ -1096,7 +1084,7 @@ static const struct st_register def0367dd_qam[] = {
 	{R367CAB_TEST_CTL,                0x00},
 	{R367CAB_AGC_CTL,                 0x73},
 	{R367CAB_AGC_IF_CFG,              0x50},
-	{R367CAB_AGC_RF_CFG,              0x02}, /* RF Freeze */
+	{R367CAB_AGC_RF_CFG,              0x02},  
 	{R367CAB_AGC_PWM_CFG,             0x03},
 	{R367CAB_AGC_PWR_REF_L,           0x5a},
 	{R367CAB_AGC_PWR_REF_H,           0x00},
@@ -1247,7 +1235,7 @@ static const struct st_register def0367dd_qam[] = {
 	{R367CAB_T_O_ID_1,                0x00},
 	{R367CAB_T_O_ID_2,                0x00},
 	{R367CAB_T_O_ID_3,                0x00},
-	{0x0000, 0x00} /* EOT */
+	{0x0000, 0x00}  
 };
 
 static const struct st_register def0367dd_base[] = {
@@ -1273,18 +1261,16 @@ static const struct st_register def0367dd_base[] = {
 	{R367TER_PLLSETUP,   0x18},
 	{R367TER_DUAL_AD12,  0x04},
 	{R367TER_TSTBIST,    0x00},
-	{0x0000, 0x00} /* EOT */
+	{0x0000, 0x00}  
 };
 
-/*
- * Tables combined
- */
+ 
 
 static const struct
 st_register *stv0367_deftabs[STV0367_DEFTAB_MAX][STV0367_TAB_MAX] = {
-	/* generic default/init tabs */
+	 
 	{ def0367ter, def0367cab, NULL },
-	/* default tabs for digital devices cards/flex modules */
+	 
 	{ def0367dd_ofdm, def0367dd_qam, def0367dd_base },
 };
 

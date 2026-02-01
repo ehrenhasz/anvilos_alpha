@@ -1,24 +1,6 @@
-// SPDX-License-Identifier: MIT
 
-/*
- * Locking:
- *
- * The uvmm mutex protects any operations on the GPU VA space provided by the
- * DRM GPU VA manager.
- *
- * The GEMs dma_resv lock protects the GEMs GPUVA list, hence link/unlink of a
- * mapping to it's backing GEM must be performed under this lock.
- *
- * Actual map/unmap operations within the fence signalling critical path are
- * protected by installing DMA fences to the corresponding GEMs DMA
- * reservations, such that concurrent BO moves, which itself walk the GEMs GPUVA
- * list in order to map/unmap it's entries, can't occur concurrently.
- *
- * Accessing the DRM_GPUVA_INVALIDATED flag doesn't need any separate
- * protection, since there are no accesses other than from BO move callbacks
- * and from the fence signalling critical path, which are already protected by
- * the corresponding GEMs DMA reservation fence.
- */
+
+ 
 
 #include "nouveau_drv.h"
 #include "nouveau_gem.h"
@@ -32,7 +14,7 @@
 #include <nvif/if000c.h>
 #include <nvif/if900d.h>
 
-#define NOUVEAU_VA_SPACE_BITS		47 /* FIXME */
+#define NOUVEAU_VA_SPACE_BITS		47  
 #define NOUVEAU_VA_SPACE_START		0x0
 #define NOUVEAU_VA_SPACE_END		(1ULL << NOUVEAU_VA_SPACE_BITS)
 
@@ -458,7 +440,7 @@ nouveau_uvmm_sm_prepare_unwind(struct nouveau_uvmm *uvmm,
 	u64 vmm_get_start = args ? args->addr : 0;
 	u64 vmm_get_end = args ? args->addr + args->range : 0;
 
-	/* Unwind GPUVA space. */
+	 
 	drm_gpuva_for_each_op_from_reverse(op, ops) {
 		switch (op->op) {
 		case DRM_GPUVA_OP_MAP:
@@ -484,9 +466,7 @@ nouveau_uvmm_sm_prepare_unwind(struct nouveau_uvmm *uvmm,
 		}
 	}
 
-	/* Unmap operation don't allocate page tables, hence skip the following
-	 * page table unwind.
-	 */
+	 
 	if (!args)
 		return;
 
@@ -525,7 +505,7 @@ nouveau_uvmm_sm_prepare_unwind(struct nouveau_uvmm *uvmm,
 			u64 urange = va->va.range;
 			u64 uend = ustart + urange;
 
-			/* Nothing to do for mappings we merge with. */
+			 
 			if (uend == vmm_get_start ||
 			    ustart == vmm_get_end)
 				break;
@@ -591,7 +571,7 @@ op_map_prepare(struct nouveau_uvmm *uvmm,
 
 	drm_gpuva_map(&uvmm->umgr, &uvma->va, op);
 
-	/* Keep a reference until this uvma is destroyed. */
+	 
 	nouveau_uvma_gem_get(uvma);
 
 	*puvma = uvma;
@@ -687,7 +667,7 @@ nouveau_uvmm_sm_prepare(struct nouveau_uvmm *uvmm,
 			if (!args)
 				break;
 
-			/* Nothing to do for mappings we merge with. */
+			 
 			if (uend == vmm_get_start ||
 			    ustart == vmm_get_end)
 				break;
@@ -754,10 +734,7 @@ op_gem_obj(struct drm_gpuva_op *op)
 	case DRM_GPUVA_OP_MAP:
 		return op->map.gem.obj;
 	case DRM_GPUVA_OP_REMAP:
-		/* Actually, we're looking for the GEMs backing remap.prev and
-		 * remap.next, but since this is a remap they're identical to
-		 * the GEM backing the unmapped GPUVA.
-		 */
+		 
 		return op->remap.unmap->va->gem.obj;
 	case DRM_GPUVA_OP_UNMAP:
 		return op->unmap.va->gem.obj;
@@ -781,7 +758,7 @@ op_unmap(struct drm_gpuva_op_unmap *u)
 	struct drm_gpuva *va = u->va;
 	struct nouveau_uvma *uvma = uvma_from_va(va);
 
-	/* nouveau_uvma_unmap() does not unmap if backing BO is evicted. */
+	 
 	if (!u->keep)
 		nouveau_uvma_unmap(uvma);
 }
@@ -1054,9 +1031,7 @@ again:
 		return 0;
 	}
 
-	/* Generally, job submits are serialized, hence only
-	 * dirty regions can be modified concurrently.
-	 */
+	 
 	if (reg->dirty) {
 		nouveau_uvma_region_get(reg);
 		nouveau_uvmm_unlock(uvmm);
@@ -1072,9 +1047,7 @@ again:
 	reg_addr = reg->va.addr;
 	reg_end = reg_addr + reg->va.range;
 
-	/* Make sure the mapping is either outside of a
-	 * region or fully enclosed by a region.
-	 */
+	 
 	if (reg_addr > addr || reg_end < end)
 		return -ENOSPC;
 
@@ -1161,20 +1134,12 @@ nouveau_uvmm_bind_job_submit(struct nouveau_job *job)
 			return ret;
 	}
 
-	/* If a sparse region or mapping overlaps a dirty region, we need to
-	 * wait for the region to complete the unbind process. This is due to
-	 * how page table management is currently implemented. A future
-	 * implementation might change this.
-	 */
+	 
 	ret = bind_validate_region(job);
 	if (ret)
 		return ret;
 
-	/* Once we start modifying the GPU VA space we need to keep holding the
-	 * uvmm lock until we can't fail anymore. This is due to the set of GPU
-	 * VA space changes must appear atomically and we need to be able to
-	 * unwind all GPU VA space changes on failure.
-	 */
+	 
 	nouveau_uvmm_lock(uvmm);
 	list_for_each_op(op, &bind_job->ops) {
 		switch (op->op) {
@@ -1231,9 +1196,7 @@ nouveau_uvmm_bind_job_submit(struct nouveau_job *job)
 					goto unwind_continue;
 				}
 
-				/* Make sure the mapping is either outside of a
-				 * region or fully enclosed by a region.
-				 */
+				 
 				if (reg_addr > op_addr || reg_end < op_end) {
 					ret = -ENOSPC;
 					goto unwind_continue;
@@ -1324,9 +1287,7 @@ nouveau_uvmm_bind_job_submit(struct nouveau_job *job)
 			if (unlikely(!obj))
 				continue;
 
-			/* Don't validate GEMs backing mappings we're about to
-			 * unmap, it's not worth the effort.
-			 */
+			 
 			if (unlikely(va_op->op == DRM_GPUVA_OP_UNMAP))
 				continue;
 
@@ -1339,26 +1300,7 @@ nouveau_uvmm_bind_job_submit(struct nouveau_job *job)
 		}
 	}
 
-	/* Link and unlink GPUVAs while holding the dma_resv lock.
-	 *
-	 * As long as we validate() all GEMs and add fences to all GEMs DMA
-	 * reservations backing map and remap operations we can be sure there
-	 * won't be any concurrent (in)validations during job execution, hence
-	 * we're safe to check drm_gpuva_invalidated() within the fence
-	 * signalling critical path without holding a separate lock.
-	 *
-	 * GPUVAs about to be unmapped are safe as well, since they're unlinked
-	 * already.
-	 *
-	 * GEMs from map and remap operations must be validated before linking
-	 * their corresponding mappings to prevent the actual PT update to
-	 * happen right away in validate() rather than asynchronously as
-	 * intended.
-	 *
-	 * Note that after linking and unlinking the GPUVAs in this loop this
-	 * function cannot fail anymore, hence there is no need for an unwind
-	 * path.
-	 */
+	 
 	list_for_each_op(op, &bind_job->ops) {
 		switch (op->op) {
 		case OP_UNMAP_SPARSE:
@@ -1438,7 +1380,7 @@ nouveau_uvmm_bind_job_run(struct nouveau_job *job)
 	list_for_each_op(op, &bind_job->ops) {
 		switch (op->op) {
 		case OP_MAP_SPARSE:
-			/* noop */
+			 
 			break;
 		case OP_MAP:
 			ret = nouveau_uvmm_sm_map(uvmm, &op->new, op->ops);
@@ -1474,12 +1416,10 @@ nouveau_uvmm_bind_job_free_work_fn(struct work_struct *work)
 	list_for_each_op(op, &bind_job->ops) {
 		struct drm_gem_object *obj = op->gem.obj;
 
-		/* When nouveau_uvmm_bind_job_submit() fails op->ops and op->reg
-		 * will be NULL, hence skip the cleanup.
-		 */
+		 
 		switch (op->op) {
 		case OP_MAP_SPARSE:
-			/* noop */
+			 
 			break;
 		case OP_UNMAP_SPARSE:
 			if (!IS_ERR_OR_NULL(op->ops))
@@ -1522,9 +1462,7 @@ nouveau_uvmm_bind_job_free_work_fn(struct work_struct *work)
 	complete_all(&bind_job->complete);
 	wake_up(&entity->job.wq);
 
-	/* Remove and free ops after removing the bind job from the job list to
-	 * avoid races against bind_validate_map_sparse().
-	 */
+	 
 	list_for_each_op_safe(op, next, &bind_job->ops) {
 		list_del(&op->entry);
 		kfree(op);
@@ -1873,7 +1811,7 @@ nouveau_uvmm_fini(struct nouveau_uvmm *uvmm)
 	if (!cli)
 		return;
 
-	rmb(); /* for list_empty to work without lock */
+	rmb();  
 	wait_event(entity->job.wq, list_empty(&entity->job.list.head));
 
 	nouveau_uvmm_lock(uvmm);

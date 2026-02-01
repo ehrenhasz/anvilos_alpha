@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *    Support for LGDT3306A - 8VSB/QAM-B
- *
- *    Copyright (C) 2013,2014 Fred Richter <frichter@hauppauge.com>
- *      based on lgdt3305.[ch] by Michael Krufky
- */
+ 
+ 
 
 #ifndef _LGDT3306A_H_
 #define _LGDT3306A_H_
@@ -31,24 +26,24 @@ enum lgdt3306a_tp_valid_polarity {
 struct lgdt3306a_config {
 	u8 i2c_addr;
 
-	/* user defined IF frequency in KHz */
+	 
 	u16 qam_if_khz;
 	u16 vsb_if_khz;
 
-	/* disable i2c repeater - 0:repeater enabled 1:repeater disabled */
+	 
 	unsigned int deny_i2c_rptr:1;
 
-	/* spectral inversion - 0:disabled 1:enabled */
+	 
 	unsigned int spectral_inversion:1;
 
 	enum lgdt3306a_mpeg_mode mpeg_mode;
 	enum lgdt3306a_tp_clock_edge tpclk_edge;
 	enum lgdt3306a_tp_valid_polarity tpvalid_polarity;
 
-	/* demod clock freq in MHz; 24 or 25 supported */
+	 
 	int  xtalMHz;
 
-	/* returned by driver if using i2c bus multiplexing */
+	 
 	struct dvb_frontend **fe;
 	struct i2c_adapter **i2c_adapter;
 };
@@ -64,6 +59,6 @@ struct dvb_frontend *lgdt3306a_attach(const struct lgdt3306a_config *config,
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
-#endif /* CONFIG_DVB_LGDT3306A */
+#endif  
 
-#endif /* _LGDT3306A_H_ */
+#endif  

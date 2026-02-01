@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,9 +8,7 @@
 #include "ebb.h"
 
 
-/*
- * Test counting multiple events using EBBs.
- */
+ 
 int multi_counter(void)
 {
 	struct event events[6];

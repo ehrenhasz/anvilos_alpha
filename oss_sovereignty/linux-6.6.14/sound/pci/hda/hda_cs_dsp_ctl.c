@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// HDA DSP ALSA Control Driver
-//
-// Copyright 2022 Cirrus Logic, Inc.
-//
-// Author: Stefan Binding <sbinding@opensource.cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -117,8 +117,7 @@ static void hda_cs_dsp_add_kcontrol(struct hda_cs_dsp_coeff_ctl *ctl, const char
 	kcontrol.get = hda_cs_dsp_coeff_get;
 	kcontrol.put = hda_cs_dsp_coeff_put;
 
-	/* Save ctl inside private_data, ctl is owned by cs_dsp,
-	 * and will be freed when cs_dsp removes the control */
+	 
 	kctl = snd_ctl_new1(&kcontrol, (void *)ctl);
 	if (!kctl)
 		return;
@@ -155,7 +154,7 @@ static void hda_cs_dsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl,
 		int avail = SNDRV_CTL_ELEM_ID_NAME_MAXLEN - ret - 2;
 		int skip = 0;
 
-		/* Truncate the subname from the start if it is too long */
+		 
 		if (cs_ctl->subname_len > avail)
 			skip = cs_ctl->subname_len - avail;
 
@@ -178,13 +177,7 @@ void hda_cs_dsp_add_controls(struct cs_dsp *dsp, const struct hda_cs_dsp_ctl_inf
 {
 	struct cs_dsp_coeff_ctl *cs_ctl;
 
-	/*
-	 * pwr_lock would cause mutex inversion with ALSA control lock compared
-	 * to the get/put functions.
-	 * It is safe to walk the list without holding a mutex because entries
-	 * are persistent and only cs_dsp_power_up() or cs_dsp_remove() can
-	 * change the list.
-	 */
+	 
 	lockdep_assert_not_held(&dsp->pwr_lock);
 
 	list_for_each_entry(cs_ctl, &dsp->ctl_list, list) {

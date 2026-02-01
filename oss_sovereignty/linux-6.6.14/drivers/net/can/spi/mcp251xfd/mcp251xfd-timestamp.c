@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
+
+
+
+
+
+
+
 
 #include <linux/clocksource.h>
 #include <linux/workqueue.h>

@@ -1,8 +1,5 @@
-/* $OpenBSD: poly1305.c,v 1.4 2023/07/17 05:26:38 djm Exp $ */
-/* 
- * Public Domain poly1305 from Andrew Moon
- * poly1305-donna-unrolled.c from https://github.com/floodyberry/poly1305-donna
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -43,13 +40,13 @@ poly1305_auth(unsigned char out[POLY1305_TAGLEN], const unsigned char *m, size_t
 	uint64_t c;
 	unsigned char mp[16];
 
-	/* clamp key */
+	 
 	t0 = U8TO32_LE(key+0);
 	t1 = U8TO32_LE(key+4);
 	t2 = U8TO32_LE(key+8);
 	t3 = U8TO32_LE(key+12);
 
-	/* precompute multipliers */
+	 
 	r0 = t0 & 0x3ffffff; t0 >>= 26; t0 |= t1 << 6;
 	r1 = t0 & 0x3ffff03; t1 >>= 20; t1 |= t2 << 12;
 	r2 = t1 & 0x3ffc0ff; t2 >>= 14; t2 |= t3 << 18;
@@ -61,14 +58,14 @@ poly1305_auth(unsigned char out[POLY1305_TAGLEN], const unsigned char *m, size_t
 	s3 = r3 * 5;
 	s4 = r4 * 5;
 
-	/* init state */
+	 
 	h0 = 0;
 	h1 = 0;
 	h2 = 0;
 	h3 = 0;
 	h4 = 0;
 
-	/* full blocks */
+	 
 	if (inlen < 16) goto poly1305_donna_atmost15bytes;
 poly1305_donna_16bytes:
 	m += 16;
@@ -102,7 +99,7 @@ poly1305_donna_mul:
 
 	if (inlen >= 16) goto poly1305_donna_16bytes;
 
-	/* final bytes */
+	 
 poly1305_donna_atmost15bytes:
 	if (!inlen) goto poly1305_donna_finish;
 

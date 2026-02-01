@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ak4118.c  --  Asahi Kasei ALSA Soc Audio driver
- *
- * Copyright 2018 DEVIALET
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/gpio/consumer.h>
@@ -213,7 +209,7 @@ static int ak4118_set_dai_fmt(struct snd_soc_dai *dai,
 		goto exit;
 	}
 
-	/* format not supported */
+	 
 	if (dif < 0) {
 		ret = dif;
 		goto exit;
@@ -285,10 +281,10 @@ static int ak4118_probe(struct snd_soc_component *component)
 
 	ak4118->component = component;
 
-	/* release reset */
+	 
 	gpiod_set_value(ak4118->reset, 0);
 
-	/* unmask all int1 sources */
+	 
 	ret = regmap_write(ak4118->regmap, AK4118_REG_INT1_MASK, 0x00);
 	if (ret < 0) {
 		dev_err(component->dev,
@@ -297,7 +293,7 @@ static int ak4118_probe(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* rx detect enable on all channels */
+	 
 	ret = regmap_write(ak4118->regmap, AK4118_REG_RX_DETECT, 0xff);
 	if (ret < 0) {
 		dev_err(component->dev,
@@ -321,7 +317,7 @@ static void ak4118_remove(struct snd_soc_component *component)
 {
 	struct ak4118_priv *ak4118 = snd_soc_component_get_drvdata(component);
 
-	/* hold reset */
+	 
 	gpiod_set_value(ak4118->reset, 1);
 }
 

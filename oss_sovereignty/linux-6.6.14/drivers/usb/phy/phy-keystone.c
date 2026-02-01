@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * phy-keystone - USB PHY, talking to dwc3 controller in Keystone.
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com
- *
- * Author: WingMan Kwok <w-kwok2@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -15,7 +9,7 @@
 
 #include "phy-generic.h"
 
-/* USB PHY control register offsets */
+ 
 #define USB_PHY_CTL_UTMI		0x0000
 #define USB_PHY_CTL_PIPE		0x0004
 #define USB_PHY_CTL_PARAM_1		0x0008

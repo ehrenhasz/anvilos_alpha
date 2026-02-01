@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra186_asrc.h - Definitions for Tegra186 ASRC driver
- *
- * Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __TEGRA186_ASRC_H__
 #define __TEGRA186_ASRC_H__
 
-/* ASRC stream related offset */
+ 
 #define TEGRA186_ASRC_CFG				0x0
 #define TEGRA186_ASRC_RATIO_INT_PART			0x4
 #define TEGRA186_ASRC_RATIO_FRAC_PART			0x8
@@ -32,7 +27,7 @@
 #define TEGRA186_ASRC_OUTSAMPLEBUF_ADDR			0x6c
 #define TEGRA186_ASRC_OUTSAMPLEBUF_CFG			0x70
 
-/* ASRC Global registers offset */
+ 
 #define TEGRA186_ASRC_GLOBAL_ENB			0x2f4
 #define TEGRA186_ASRC_GLOBAL_SOFT_RESET			0x2f8
 #define TEGRA186_ASRC_GLOBAL_CG				0x2fc

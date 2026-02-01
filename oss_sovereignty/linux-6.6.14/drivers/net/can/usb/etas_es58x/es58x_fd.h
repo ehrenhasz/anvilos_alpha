@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/* Driver for ETAS GmbH ES58X USB CAN(-FD) Bus Interfaces.
- *
- * File es58x_fd.h: Definitions and declarations specific to ETAS
- * ES582.1 and ES584.1 (naming convention: we use the term "ES58X FD"
- * when referring to those two variants together).
- *
- * Copyright (c) 2019 Robert Bosch Engineering and Business Solutions. All rights reserved.
- * Copyright (c) 2020 ETAS K.K.. All rights reserved.
- * Copyright (c) 2020, 2021 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
- */
+ 
 
 #ifndef __ES58X_FD_H__
 #define __ES58X_FD_H__
@@ -31,7 +22,7 @@ enum es58x_fd_cmd_type {
 	ES58X_FD_CMD_TYPE_DEVICE = 0xFF
 };
 
-/* Command IDs for ES58X_FD_CMD_TYPE_{CAN,CANFD}. */
+ 
 enum es58x_fd_can_cmd_id {
 	ES58X_FD_CAN_CMD_ID_ENABLE_CHANNEL = 0x01,
 	ES58X_FD_CAN_CMD_ID_DISABLE_CHANNEL = 0x02,
@@ -44,31 +35,13 @@ enum es58x_fd_can_cmd_id {
 	ES58X_FD_CAN_CMD_ID_TX_MSG_NO_ACK = 0x55
 };
 
-/* Command IDs for ES58X_FD_CMD_TYPE_DEVICE. */
+ 
 enum es58x_fd_dev_cmd_id {
 	ES58X_FD_DEV_CMD_ID_GETTIMETICKS = 0x01,
 	ES58X_FD_DEV_CMD_ID_TIMESTAMP = 0x02
 };
 
-/**
- * enum es58x_fd_ctrlmode - Controller mode.
- * @ES58X_FD_CTRLMODE_ACTIVE: send and receive messages.
- * @ES58X_FD_CTRLMODE_PASSIVE: only receive messages (monitor). Do not
- *	send anything, not even the acknowledgment bit.
- * @ES58X_FD_CTRLMODE_FD: CAN FD according to ISO11898-1.
- * @ES58X_FD_CTRLMODE_FD_NON_ISO: follow Bosch CAN FD Specification
- *	V1.0
- * @ES58X_FD_CTRLMODE_DISABLE_PROTOCOL_EXCEPTION_HANDLING: How to
- *	behave when CAN FD reserved bit is monitored as
- *	dominant. (c.f. ISO 11898-1:2015, section 10.4.2.4 "Control
- *	field", paragraph "r0 bit"). 0 (not disable = enable): send
- *	error frame. 1 (disable): goes into bus integration mode
- *	(c.f. below).
- * @ES58X_FD_CTRLMODE_EDGE_FILTER_DURING_BUS_INTEGRATION: 0: Edge
- *	filtering is disabled. 1: Edge filtering is enabled. Two
- *	consecutive dominant bits required to detect an edge for hard
- *	synchronization.
- */
+ 
 enum es58x_fd_ctrlmode {
 	ES58X_FD_CTRLMODE_ACTIVE = 0,
 	ES58X_FD_CTRLMODE_PASSIVE = BIT(0),
@@ -80,31 +53,13 @@ enum es58x_fd_ctrlmode {
 
 struct es58x_fd_bittiming {
 	__le32 bitrate;
-	__le16 tseg1;		/* range: [tseg1_min-1..tseg1_max-1] */
-	__le16 tseg2;		/* range: [tseg2_min-1..tseg2_max-1] */
-	__le16 brp;		/* range: [brp_min-1..brp_max-1] */
-	__le16 sjw;		/* range: [0..sjw_max-1] */
+	__le16 tseg1;		 
+	__le16 tseg2;		 
+	__le16 brp;		 
+	__le16 sjw;		 
 } __packed;
 
-/**
- * struct es58x_fd_tx_conf_msg - Channel configuration.
- * @nominal_bittiming: Nominal bittiming.
- * @samples_per_bit: type enum es58x_samples_per_bit.
- * @sync_edge: type enum es58x_sync_edge.
- * @physical_layer: type enum es58x_physical_layer.
- * @echo_mode: type enum es58x_echo_mode.
- * @ctrlmode: type enum es58x_fd_ctrlmode.
- * @canfd_enabled: boolean (0: Classical CAN, 1: CAN and/or CANFD).
- * @data_bittiming: Bittiming for flexible data-rate transmission.
- * @tdc_enabled: Transmitter Delay Compensation switch (0: TDC is
- *	disabled, 1: TDC is enabled).
- * @tdco: Transmitter Delay Compensation Offset.
- * @tdcf: Transmitter Delay Compensation Filter window.
- *
- * Please refer to the microcontroller datasheet: "SAM E70/S70/V70/V71
- * Family" section 49 "Controller Area Network (MCAN)" for additional
- * information.
- */
+ 
 struct es58x_fd_tx_conf_msg {
 	struct es58x_fd_bittiming nominal_bittiming;
 	u8 samples_per_bit;
@@ -128,8 +83,8 @@ struct es58x_fd_tx_can_msg {
 	__le32 can_id;
 	u8 flags;
 	union {
-		u8 dlc;		/* Only if cmd_id is ES58X_FD_CMD_TYPE_CAN */
-		u8 len;		/* Only if cmd_id is ES58X_FD_CMD_TYPE_CANFD */
+		u8 dlc;		 
+		u8 len;		 
 	} __packed;
 	u8 data[CANFD_MAX_DLEN];
 } __packed;
@@ -143,8 +98,8 @@ struct es58x_fd_rx_can_msg {
 	__le32 can_id;
 	u8 flags;
 	union {
-		u8 dlc;		/* Only if cmd_id is ES58X_FD_CMD_TYPE_CAN */
-		u8 len;		/* Only if cmd_id is ES58X_FD_CMD_TYPE_CANFD */
+		u8 dlc;		 
+		u8 len;		 
 	} __packed;
 	u8 data[CANFD_MAX_DLEN];
 } __packed;
@@ -161,48 +116,18 @@ struct es58x_fd_echo_msg {
 struct es58x_fd_rx_event_msg {
 	__le64 timestamp;
 	__le32 can_id;
-	u8 flags;		/* type enum es58x_flag */
-	u8 error_type;		/* 0: event, 1: error */
+	u8 flags;		 
+	u8 error_type;		 
 	u8 error_code;
 	u8 event_code;
 } __packed;
 
 struct es58x_fd_tx_ack_msg {
-	__le32 rx_cmd_ret_le32;	/* type enum es58x_cmd_ret_code_u32 */
-	__le16 tx_free_entries;	/* Number of remaining free entries in the device TX queue */
+	__le32 rx_cmd_ret_le32;	 
+	__le16 tx_free_entries;	 
 } __packed;
 
-/**
- * struct es58x_fd_urb_cmd - Commands received from or sent to the
- *	ES58X FD device.
- * @SOF: Start of Frame.
- * @cmd_type: Command Type (type: enum es58x_fd_cmd_type). The CRC
- *	calculation starts at this position.
- * @cmd_id: Command ID (type: enum es58x_fd_cmd_id).
- * @channel_idx: Channel index starting at 0.
- * @msg_len: Length of the message, excluding CRC (i.e. length of the
- *	union).
- * @tx_conf_msg: Channel configuration.
- * @tx_can_msg_buf: Concatenation of Tx messages. Type is "u8[]"
- *	instead of "struct es58x_fd_tx_msg[]" because the structure
- *	has a flexible size.
- * @rx_can_msg_buf: Concatenation Rx messages. Type is "u8[]" instead
- *	of "struct es58x_fd_rx_msg[]" because the structure has a
- *	flexible size.
- * @echo_msg: Array of echo messages (e.g. Tx messages being looped
- *	back).
- * @rx_event_msg: Error or event message.
- * @tx_ack_msg: Tx acknowledgment message.
- * @timestamp: Timestamp reply.
- * @rx_cmd_ret_le32: Rx 32 bits return code (type: enum
- *	es58x_cmd_ret_code_u32).
- * @raw_msg: Message raw payload.
- * @reserved_for_crc16_do_not_use: The structure ends with a
- *	CRC16. Because the structures in above union are of variable
- *	lengths, we can not predict the offset of the CRC in
- *	advance. Use functions es58x_get_crc() and es58x_set_crc() to
- *	manipulate it.
- */
+ 
 struct es58x_fd_urb_cmd {
 	__le16 SOF;
 	u8 cmd_type;
@@ -231,4 +156,4 @@ struct es58x_fd_urb_cmd {
 #define ES58X_FD_RX_URB_CMD_MAX_LEN					\
 	ES58X_SIZEOF_URB_CMD(struct es58x_fd_urb_cmd, rx_can_msg_buf)
 
-#endif /* __ES58X_FD_H__ */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include "core.h"
@@ -56,7 +53,7 @@ static inline void htt_print_stats_string_tlv(const void *tag_buf,
 				 buf_len - len,
 				 "%.*s", 4, (char *)&(htt_stats_buf->data[i]));
 	}
-	/* New lines are added for better display */
+	 
 	len += scnprintf(buf + len, buf_len - len, "\n\n");
 
 	if (len >= buf_len)
@@ -972,7 +969,7 @@ htt_print_tx_hwq_stats_cmn_tlv(const void *tag_buf, struct debug_htt_stats_req *
 	u32 len = stats_req->buf_len;
 	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
 
-	/* TODO: HKDBG */
+	 
 	len += scnprintf(buf + len, buf_len - len, "HTT_TX_HWQ_STATS_CMN_TLV:\n");
 	len += scnprintf(buf + len, buf_len - len, "mac_id = %lu\n",
 			 FIELD_GET(HTT_TX_HWQ_STATS_MAC_ID,
@@ -1774,7 +1771,7 @@ htt_print_sched_txq_sched_order_su_tlv_v(const void *tag_buf,
 	u8 *buf = stats_req->buf;
 	u32 len = stats_req->buf_len;
 	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
-	/* each entry is u32, i.e. 4 bytes */
+	 
 	u32 sched_order_su_num_entries =
 		min_t(u32, (tag_len >> 2), HTT_TX_PDEV_NUM_SCHED_ORDER_LOG);
 
@@ -1801,7 +1798,7 @@ htt_print_sched_txq_sched_ineligibility_tlv_v(const void *tag_buf,
 	u8 *buf = stats_req->buf;
 	u32 len = stats_req->buf_len;
 	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
-	/* each entry is u32, i.e. 4 bytes */
+	 
 	u32 sched_ineligibility_num_entries = tag_len >> 2;
 
 	len += scnprintf(buf + len, buf_len - len,
@@ -2836,7 +2833,7 @@ static inline void htt_print_tx_pdev_rate_stats_tlv(const void *tag_buf,
 			 htt_stats_buf->tx_he_ltf[2],
 			 htt_stats_buf->tx_he_ltf[3]);
 
-	/* SU GI Stats */
+	 
 	for (j = 0; j < HTT_TX_PDEV_STATS_NUM_GI_COUNTERS; j++) {
 		len += scnprintf(buf + len, (buf_len - len),
 				 "tx_gi[%u] = ", j);
@@ -2844,7 +2841,7 @@ static inline void htt_print_tx_pdev_rate_stats_tlv(const void *tag_buf,
 				   HTT_TX_PDEV_STATS_NUM_MCS_COUNTERS, "\n");
 	}
 
-	/* AC MU-MIMO GI Stats */
+	 
 	for (j = 0; j < HTT_TX_PDEV_STATS_NUM_GI_COUNTERS; j++) {
 		len += scnprintf(buf + len, (buf_len - len),
 				 "ac_mu_mimo_tx_gi[%u] = ", j);
@@ -2852,7 +2849,7 @@ static inline void htt_print_tx_pdev_rate_stats_tlv(const void *tag_buf,
 				   NULL, HTT_TX_PDEV_STATS_NUM_MCS_COUNTERS, "\n");
 	}
 
-	/* AX MU-MIMO GI Stats */
+	 
 	for (j = 0; j < HTT_TX_PDEV_STATS_NUM_GI_COUNTERS; j++) {
 		len += scnprintf(buf + len, (buf_len - len),
 				 "ax_mu_mimo_tx_gi[%u] = ", j);
@@ -2860,7 +2857,7 @@ static inline void htt_print_tx_pdev_rate_stats_tlv(const void *tag_buf,
 				   NULL, HTT_TX_PDEV_STATS_NUM_MCS_COUNTERS, "\n");
 	}
 
-	/* DL OFDMA GI Stats */
+	 
 	for (j = 0; j < HTT_TX_PDEV_STATS_NUM_GI_COUNTERS; j++) {
 		len += scnprintf(buf + len, (buf_len - len),
 				 "ofdma_tx_gi[%u] = ", j);

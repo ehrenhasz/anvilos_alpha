@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, 2020-2021 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 #include "dpu_encoder_phys.h"
@@ -60,17 +59,9 @@ static void drm_mode_to_intf_timing_params(
 		return;
 	}
 
-	/*
-	 * https://www.kernel.org/doc/htmldocs/drm/ch02s05.html
-	 *  Active Region      Front Porch   Sync   Back Porch
-	 * <-----------------><------------><-----><----------->
-	 * <- [hv]display --->
-	 * <--------- [hv]sync_start ------>
-	 * <----------------- [hv]sync_end ------->
-	 * <---------------------------- [hv]total ------------->
-	 */
-	timing->width = mode->hdisplay;	/* active width */
-	timing->height = mode->vdisplay;	/* active height */
+	 
+	timing->width = mode->hdisplay;	 
+	timing->height = mode->vdisplay;	 
 	timing->xres = timing->width;
 	timing->yres = timing->height;
 	timing->h_back_porch = mode->htotal - mode->hsync_end;
@@ -85,13 +76,13 @@ static void drm_mode_to_intf_timing_params(
 	timing->underflow_clr = 0xff;
 	timing->hsync_skew = mode->hskew;
 
-	/* DSI controller cannot handle active-low sync signals. */
+	 
 	if (phys_enc->hw_intf->cap->type == INTF_DSI) {
 		timing->hsync_polarity = 0;
 		timing->vsync_polarity = 0;
 	}
 
-	/* for DP/EDP, Shift timings to align it to bottom right */
+	 
 	if (phys_enc->hw_intf->cap->type == INTF_DP) {
 		timing->h_back_porch += timing->h_front_porch;
 		timing->h_front_porch = 0;
@@ -101,10 +92,7 @@ static void drm_mode_to_intf_timing_params(
 
 	timing->wide_bus_en = dpu_encoder_is_widebus_enabled(phys_enc->parent);
 
-	/*
-	 * for DP, divide the horizonal parameters by 2 when
-	 * widebus is enabled
-	 */
+	 
 	if (phys_enc->hw_intf->cap->type == INTF_DP && timing->wide_bus_en) {
 		timing->width = timing->width >> 1;
 		timing->xres = timing->xres >> 1;
@@ -132,20 +120,7 @@ static u32 get_vertical_total(const struct dpu_hw_intf_timing_params *timing)
 	return active + inactive;
 }
 
-/*
- * programmable_fetch_get_num_lines:
- *	Number of fetch lines in vertical front porch
- * @timing: Pointer to the intf timing information for the requested mode
- *
- * Returns the number of fetch lines in vertical front porch at which mdp
- * can start fetching the next frame.
- *
- * Number of needed prefetch lines is anything that cannot be absorbed in the
- * start of frame time (back porch + vsync pulse width).
- *
- * Some panels have very large VFP, however we only need a total number of
- * lines based on the chip worst case latencies.
- */
+ 
 static u32 programmable_fetch_get_num_lines(
 		struct dpu_encoder_phys *phys_enc,
 		const struct dpu_hw_intf_timing_params *timing)
@@ -157,13 +132,13 @@ static u32 programmable_fetch_get_num_lines(
 	u32 needed_vfp_lines = worst_case_needed_lines - start_of_frame_lines;
 	u32 actual_vfp_lines = 0;
 
-	/* Fetch must be outside active lines, otherwise undefined. */
+	 
 	if (start_of_frame_lines >= worst_case_needed_lines) {
 		DPU_DEBUG_VIDENC(phys_enc,
 				"prog fetch is not needed, large vbp+vsw\n");
 		actual_vfp_lines = 0;
 	} else if (timing->v_front_porch < needed_vfp_lines) {
-		/* Warn fetch needed, but not enough porch in panel config */
+		 
 		pr_warn_once
 			("low vbp+vfp may lead to perf issues in some cases\n");
 		DPU_DEBUG_VIDENC(phys_enc,
@@ -185,16 +160,7 @@ static u32 programmable_fetch_get_num_lines(
 	return actual_vfp_lines;
 }
 
-/*
- * programmable_fetch_config: Programs HW to prefetch lines by offsetting
- *	the start of fetch into the vertical front porch for cases where the
- *	vsync pulse width and vertical back porch time is insufficient
- *
- *	Gets # of lines to pre-fetch, then calculate VSYNC counter value.
- *	HW layer requires VSYNC counter of first pixel of tgt VFP line.
- *
- * @timing: Pointer to the intf timing information for the requested mode
- */
+ 
 static void programmable_fetch_config(struct dpu_encoder_phys *phys_enc,
 				      const struct dpu_hw_intf_timing_params *timing)
 {
@@ -272,7 +238,7 @@ static void dpu_encoder_phys_vid_setup_timing_engine(
 
 	intf_cfg.intf = phys_enc->hw_intf->idx;
 	intf_cfg.intf_mode_sel = DPU_CTL_MODE_SEL_VID;
-	intf_cfg.stream_sel = 0; /* Don't care value for video mode */
+	intf_cfg.stream_sel = 0;  
 	intf_cfg.mode_3d = dpu_encoder_helper_get_3d_blend_mode(phys_enc);
 	intf_cfg.dsc = dpu_encoder_helper_get_dsc(phys_enc);
 	if (phys_enc->hw_pp->merge_3d)
@@ -283,7 +249,7 @@ static void dpu_encoder_phys_vid_setup_timing_engine(
 			&timing_params, fmt);
 	phys_enc->hw_ctl->ops.setup_intf_cfg(phys_enc->hw_ctl, &intf_cfg);
 
-	/* setup which pp blk will connect to this intf */
+	 
 	if (phys_enc->hw_intf->ops.bind_pingpong_blk)
 		phys_enc->hw_intf->ops.bind_pingpong_blk(
 				phys_enc->hw_intf,
@@ -312,11 +278,7 @@ static void dpu_encoder_phys_vid_vblank_irq(void *arg, int irq_idx)
 
 	atomic_read(&phys_enc->pending_kickoff_cnt);
 
-	/*
-	 * only decrement the pending flush count if we've actually flushed
-	 * hardware. due to sw irq latency, vblank may have already happened
-	 * so we need to double-check with hw that it accepted the flush bits
-	 */
+	 
 	spin_lock_irqsave(phys_enc->enc_spinlock, lock_flags);
 	if (hw_ctl->ops.get_flush_register)
 		flush_register = hw_ctl->ops.get_flush_register(hw_ctl);
@@ -325,7 +287,7 @@ static void dpu_encoder_phys_vid_vblank_irq(void *arg, int irq_idx)
 		atomic_add_unless(&phys_enc->pending_kickoff_cnt, -1, 0);
 	spin_unlock_irqrestore(phys_enc->enc_spinlock, lock_flags);
 
-	/* Signal any waiting atomic commit thread */
+	 
 	wake_up_all(&phys_enc->pending_kickoff_wq);
 
 	dpu_encoder_frame_done_callback(phys_enc->parent, phys_enc,
@@ -366,11 +328,11 @@ static int dpu_encoder_phys_vid_control_vblank_irq(
 
 	refcount = atomic_read(&phys_enc->vblank_refcount);
 
-	/* Slave encoders don't report vblank */
+	 
 	if (!dpu_encoder_phys_vid_is_master(phys_enc))
 		goto end;
 
-	/* protect against negative */
+	 
 	if (!enable && refcount == 0) {
 		ret = -EINVAL;
 		goto end;
@@ -413,11 +375,7 @@ static void dpu_encoder_phys_vid_enable(struct dpu_encoder_phys *phys_enc)
 
 	dpu_encoder_phys_vid_setup_timing_engine(phys_enc);
 
-	/*
-	 * For single flush cases (dual-ctl or pp-split), skip setting the
-	 * flush bit for the slave intf, since both intfs use same ctl
-	 * and HW will only flush the master.
-	 */
+	 
 	if (dpu_encoder_phys_vid_needs_single_flush(phys_enc) &&
 		!dpu_encoder_phys_vid_is_master(phys_enc))
 		goto skip_flush;
@@ -433,7 +391,7 @@ skip_flush:
 
 	atomic_set(&phys_enc->underrun_cnt, 0);
 
-	/* ctl_flush & timing engine enable will be triggered by framework */
+	 
 	if (phys_enc->enable_state == DPU_ENC_DISABLED)
 		phys_enc->enable_state = DPU_ENC_ENABLING;
 }
@@ -458,7 +416,7 @@ static int dpu_encoder_phys_vid_wait_for_vblank(
 		return 0;
 	}
 
-	/* Wait for kickoff to complete */
+	 
 	ret = dpu_encoder_helper_wait_for_irq(phys_enc,
 			phys_enc->irq[INTR_IDX_VSYNC],
 			dpu_encoder_phys_vid_vblank_irq,
@@ -504,10 +462,7 @@ static void dpu_encoder_phys_vid_prepare_for_kickoff(
 	if (!ctl->ops.wait_reset_status)
 		return;
 
-	/*
-	 * hw supports hardware initiated ctl reset, so before we kickoff a new
-	 * frame, need to check and wait for hw initiated ctl reset completion
-	 */
+	 
 	rc = ctl->ops.wait_reset_status(ctl);
 	if (rc) {
 		DPU_ERROR_VIDENC(phys_enc, "ctl %d reset failure: %d\n",
@@ -549,14 +504,7 @@ static void dpu_encoder_phys_vid_disable(struct dpu_encoder_phys *phys_enc)
 		dpu_encoder_phys_inc_pending(phys_enc);
 	spin_unlock_irqrestore(phys_enc->enc_spinlock, lock_flags);
 
-	/*
-	 * Wait for a vsync so we know the ENABLE=0 latched before
-	 * the (connector) source of the vsync's gets disabled,
-	 * otherwise we end up in a funny state if we re-enable
-	 * before the disable latches, which results that some of
-	 * the settings changes for the new modeset (like new
-	 * scanout buffer) don't latch properly..
-	 */
+	 
 	if (dpu_encoder_phys_vid_is_master(phys_enc)) {
 		ret = dpu_encoder_phys_vid_wait_for_vblank(phys_enc);
 		if (ret) {
@@ -570,10 +518,7 @@ static void dpu_encoder_phys_vid_disable(struct dpu_encoder_phys *phys_enc)
 	if (phys_enc->hw_intf && phys_enc->hw_intf->ops.get_status)
 		phys_enc->hw_intf->ops.get_status(phys_enc->hw_intf, &intf_status);
 
-	/*
-	 * Wait for a vsync if timing en status is on after timing engine
-	 * is disabled.
-	 */
+	 
 	if (intf_status.is_en && dpu_encoder_phys_vid_is_master(phys_enc)) {
 		spin_lock_irqsave(phys_enc->enc_spinlock, lock_flags);
 		dpu_encoder_phys_inc_pending(phys_enc);
@@ -596,10 +541,7 @@ static void dpu_encoder_phys_vid_handle_post_kickoff(
 {
 	unsigned long lock_flags;
 
-	/*
-	 * Video mode must flush CTL before enabling timing engine
-	 * Video encoders need to turn on their interfaces now
-	 */
+	 
 	if (phys_enc->enable_state == DPU_ENC_ENABLING) {
 		trace_dpu_enc_phys_vid_post_kickoff(DRMID(phys_enc->parent),
 				    phys_enc->hw_intf->idx - INTF_0);

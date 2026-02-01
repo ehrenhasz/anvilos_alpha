@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * perf.c - performance monitor
- *
- * Copyright (C) 2021 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- *         Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 
 #include <linux/spinlock.h>
 

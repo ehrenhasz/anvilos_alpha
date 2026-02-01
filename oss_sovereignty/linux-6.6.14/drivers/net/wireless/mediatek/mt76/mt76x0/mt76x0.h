@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
+ 
+ 
 
 #ifndef MT76X0U_H
 #define MT76X0U_H
@@ -25,8 +21,8 @@
 
 #define MT7610U_FIRMWARE		"mediatek/mt7610u.bin"
 
-#define MT_USB_AGGR_SIZE_LIMIT		21 /* * 1024B */
-#define MT_USB_AGGR_TIMEOUT		0x80 /* * 33ns */
+#define MT_USB_AGGR_SIZE_LIMIT		21  
+#define MT_USB_AGGR_TIMEOUT		0x80  
 
 static inline bool is_mt7610e(struct mt76x02_dev *dev)
 {
@@ -41,7 +37,7 @@ static inline bool is_mt7630(struct mt76x02_dev *dev)
 	return mt76_chip(&dev->mt76) == 0x7630;
 }
 
-/* Init */
+ 
 int mt76x0_init_hardware(struct mt76x02_dev *dev);
 int mt76x0_register_device(struct mt76x02_dev *dev);
 void mt76x0_chip_onoff(struct mt76x02_dev *dev, bool enable, bool reset);
@@ -52,7 +48,7 @@ int mt76x0_config(struct ieee80211_hw *hw, u32 changed);
 int mt76x0_set_sar_specs(struct ieee80211_hw *hw,
 			 const struct cfg80211_sar_specs *sar);
 
-/* PHY */
+ 
 void mt76x0_phy_init(struct mt76x02_dev *dev);
 int mt76x0_phy_wait_bbp_ready(struct mt76x02_dev *dev);
 void mt76x0_phy_set_channel(struct mt76x02_dev *dev,

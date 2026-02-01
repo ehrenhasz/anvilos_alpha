@@ -1,14 +1,4 @@
-/*
- *  This file is part of the Chelsio T4 Ethernet driver for Linux.
- *  Copyright (C) 2003-2014 Chelsio Communications.  All rights reserved.
- *
- *  Written by Deepak (deepak.s@chelsio.com)
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the LICENSE file included in this
- *  release for licensing terms and conditions.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -189,10 +179,7 @@ found:
 }
 EXPORT_SYMBOL(cxgb4_clip_release);
 
-/* Retrieves IPv6 addresses from a root device (bond, vlan) associated with
- * a physical device.
- * The physical device reference is needed to send the actul CLIP command.
- */
+ 
 static int cxgb4_update_dev_clip(struct net_device *root_dev,
 				 struct net_device *dev)
 {
@@ -220,12 +207,12 @@ int cxgb4_update_root_dev_clip(struct net_device *dev)
 	struct net_device *root_dev = NULL;
 	int i, ret = 0;
 
-	/* First populate the real net device's IPv6 addresses */
+	 
 	ret = cxgb4_update_dev_clip(dev, dev);
 	if (ret)
 		return ret;
 
-	/* Parse all bond and vlan devices layered on top of the physical dev */
+	 
 	root_dev = netdev_master_upper_dev_get_rcu(dev);
 	if (root_dev) {
 		ret = cxgb4_update_dev_clip(root_dev, dev);

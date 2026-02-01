@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+ 
+ 
 
-/*
- * Declarations for the interface exported by efc_fabric
- */
+ 
 
 #ifndef __EFCT_FABRIC_H__
 #define __EFCT_FABRIC_H__
@@ -113,4 +108,4 @@ efc_fabric_set_topology(struct efc_node *node,
 			enum efc_nport_topology topology);
 void efc_fabric_notify_topology(struct efc_node *node);
 
-#endif /* __EFCT_FABRIC_H__ */
+#endif  

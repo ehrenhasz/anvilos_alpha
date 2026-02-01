@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * USBHS-DEV device controller driver.
- * Trace support header file.
- *
- * Copyright (C) 2023 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cdns2-dev
 
-/*
- * The TRACE_SYSTEM_VAR defaults to TRACE_SYSTEM, but must be a
- * legitimate C variable. It is not exported to user space.
- */
+ 
 #undef TRACE_SYSTEM_VAR
 #define TRACE_SYSTEM_VAR cdns2_dev
 
@@ -592,9 +582,9 @@ DEFINE_EVENT(cdns2_log_epx_reg_config, cdns2_epx_hw_cfg,
 	TP_ARGS(pdev, pep)
 );
 
-#endif /* __LINUX_CDNS2_TRACE */
+#endif  
 
-/* This part must be outside header guard. */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

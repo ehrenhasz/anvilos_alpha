@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -112,7 +110,7 @@ struct pmc_data *pmc_data_allocate(unsigned int ncore, unsigned int nsystem,
 
 #ifdef CONFIG_PM
 
-/* Address in SECURAM that say if we suspend to backup mode. */
+ 
 static void __iomem *at91_pmc_backup_suspend;
 
 static int at91_pmc_suspend(void)
@@ -151,7 +149,7 @@ static struct syscore_ops pmc_syscore_ops = {
 static const struct of_device_id pmc_dt_ids[] = {
 	{ .compatible = "atmel,sama5d2-pmc" },
 	{ .compatible = "microchip,sama7g5-pmc", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init pmc_register_ops(void)
@@ -188,6 +186,6 @@ static int __init pmc_register_ops(void)
 
 	return 0;
 }
-/* This has to happen before arch_initcall because of the tcb_clksrc driver */
+ 
 postcore_initcall(pmc_register_ops);
 #endif

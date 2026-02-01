@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xHCI host controller driver
- *
- * Copyright (C) 2013 Xenia Ragiadakou
- *
- * Author: Xenia Ragiadakou
- * Email : burzalodowa@gmail.com
- */
+
+ 
 
 #define CREATE_TRACE_POINTS
 #include "xhci-trace.h"

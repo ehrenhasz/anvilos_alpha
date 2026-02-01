@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/i2c/ccs-pll.c
- *
- * Generic MIPI CCS/SMIA/SMIA++ PLL calculator
- *
- * Copyright (C) 2020 Intel Corporation
- * Copyright (C) 2011--2012 Nokia Corporation
- * Contact: Sakari Ailus <sakari.ailus@linux.intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gcd.h>
@@ -16,13 +8,13 @@
 
 #include "ccs-pll.h"
 
-/* Return an even number or one. */
+ 
 static inline u32 clk_div_even(u32 a)
 {
 	return max_t(u32, 1, a & ~1);
 }
 
-/* Return an even number or one. */
+ 
 static inline u32 clk_div_even_up(u32 a)
 {
 	if (a == 1)
@@ -253,10 +245,7 @@ ccs_pll_find_vt_sys_div(struct device *dev, const struct ccs_pll_limits *lim,
 			u16 min_vt_div, u16 max_vt_div,
 			u16 *min_sys_div, u16 *max_sys_div)
 {
-	/*
-	 * Find limits for sys_clk_div. Not all values are possible with all
-	 * values of pix_clk_div.
-	 */
+	 
 	*min_sys_div = lim->vt_bk.min_sys_clk_div;
 	dev_dbg(dev, "min_sys_div: %u\n", *min_sys_div);
 	*min_sys_div = max_t(u16, *min_sys_div,
@@ -388,7 +377,7 @@ static int ccs_pll_calculate_vt_tree(struct device *dev,
 	pre_mul = pll->pixel_rate_csi / pre_div;
 	pre_div = pll->ext_clk_freq_hz * pll->vt_lanes / pre_div;
 
-	/* Make sure PLL input frequency is within limits */
+	 
 	max_pre_pll_clk_div =
 		min_t(u16, max_pre_pll_clk_div,
 		      DIV_ROUND_UP(pll->ext_clk_freq_hz,
@@ -451,23 +440,14 @@ ccs_pll_calculate_vt(struct device *dev, const struct ccs_pll_limits *lim,
 	if (pll->flags & CCS_PLL_FLAG_NO_OP_CLOCKS)
 		goto out_calc_pixel_rate;
 
-	/*
-	 * Find out whether a sensor supports derating. If it does not, VT and
-	 * OP domains are required to run at the same pixel rate.
-	 */
+	 
 	if (!(pll->flags & CCS_PLL_FLAG_FIFO_DERATING)) {
 		min_vt_div =
 			op_pll_bk->sys_clk_div * op_pll_bk->pix_clk_div
 			* pll->vt_lanes * phy_const / pll->op_lanes
 			/ (PHY_CONST_DIV << op_pix_ddr(pll->flags));
 	} else {
-		/*
-		 * Some sensors perform analogue binning and some do this
-		 * digitally. The ones doing this digitally can be roughly be
-		 * found out using this formula. The ones doing this digitally
-		 * should run at higher clock rate, so smaller divisor is used
-		 * on video timing side.
-		 */
+		 
 		if (lim->min_line_length_pck_bin > lim->min_line_length_pck
 		    / pll->binning_horizontal)
 			vt_op_binning_div = pll->binning_horizontal;
@@ -475,17 +455,7 @@ ccs_pll_calculate_vt(struct device *dev, const struct ccs_pll_limits *lim,
 			vt_op_binning_div = 1;
 		dev_dbg(dev, "vt_op_binning_div: %u\n", vt_op_binning_div);
 
-		/*
-		 * Profile 2 supports vt_pix_clk_div E [4, 10]
-		 *
-		 * Horizontal binning can be used as a base for difference in
-		 * divisors. One must make sure that horizontal blanking is
-		 * enough to accommodate the CSI-2 sync codes.
-		 *
-		 * Take scaling factor and number of VT lanes into account as well.
-		 *
-		 * Find absolute limits for the factor of vt divider.
-		 */
+		 
 		dev_dbg(dev, "scale_m: %u\n", pll->scale_m);
 		min_vt_div =
 			DIV_ROUND_UP(pll->bits_per_pixel
@@ -498,7 +468,7 @@ ccs_pll_calculate_vt(struct device *dev, const struct ccs_pll_limits *lim,
 				     * PHY_CONST_DIV << op_pix_ddr(pll->flags));
 	}
 
-	/* Find smallest and biggest allowed vt divisor. */
+	 
 	dev_dbg(dev, "min_vt_div: %u\n", min_vt_div);
 	min_vt_div = max_t(u16, min_vt_div,
 			   DIV_ROUND_UP(pll_fr->pll_op_clk_freq_hz,
@@ -520,11 +490,7 @@ ccs_pll_calculate_vt(struct device *dev, const struct ccs_pll_limits *lim,
 	ccs_pll_find_vt_sys_div(dev, lim, pll, pll_fr, min_vt_div,
 				max_vt_div, &min_sys_div, &max_sys_div);
 
-	/*
-	 * Find pix_div such that a legal pix_div * sys_div results
-	 * into a value which is not smaller than div, the desired
-	 * divisor.
-	 */
+	 
 	for (vt_div = min_vt_div; vt_div <= max_vt_div; vt_div++) {
 		u16 __max_sys_div = vt_div & 1 ? 1 : max_sys_div;
 
@@ -547,11 +513,11 @@ ccs_pll_calculate_vt(struct device *dev, const struct ccs_pll_limits *lim,
 
 			rounded_div = roundup(vt_div, best_pix_div);
 
-			/* Check if this one is better. */
+			 
 			if (pix_div * sys_div <= rounded_div)
 				best_pix_div = pix_div;
 
-			/* Bail out if we've already found the best value. */
+			 
 			if (vt_div == rounded_div)
 				break;
 		}
@@ -572,17 +538,7 @@ out_calc_pixel_rate:
 		pll->vt_bk.pix_clk_freq_hz * pll->vt_lanes;
 }
 
-/*
- * Heuristically guess the PLL tree for a given common multiplier and
- * divisor. Begin with the operational timing and continue to video
- * timing once operational timing has been verified.
- *
- * @mul is the PLL multiplier and @div is the common divisor
- * (pre_pll_clk_div and op_sys_clk_div combined). The final PLL
- * multiplier will be a multiple of @mul.
- *
- * @return Zero on success, error code on error.
- */
+ 
 static int
 ccs_pll_calculate_op(struct device *dev, const struct ccs_pll_limits *lim,
 		     const struct ccs_pll_branch_limits_fr *op_lim_fr,
@@ -592,27 +548,19 @@ ccs_pll_calculate_op(struct device *dev, const struct ccs_pll_limits *lim,
 		     u32 div, u32 op_sys_clk_freq_hz_sdr, u32 l,
 		     bool cphy, u32 phy_const)
 {
-	/*
-	 * Higher multipliers (and divisors) are often required than
-	 * necessitated by the external clock and the output clocks.
-	 * There are limits for all values in the clock tree. These
-	 * are the minimum and maximum multiplier for mul.
-	 */
+	 
 	u32 more_mul_min, more_mul_max;
 	u32 more_mul_factor;
 	u32 i;
 
-	/*
-	 * Get pre_pll_clk_div so that our pll_op_clk_freq_hz won't be
-	 * too high.
-	 */
+	 
 	dev_dbg(dev, "op_pre_pll_clk_div %u\n", op_pll_fr->pre_pll_clk_div);
 
-	/* Don't go above max pll multiplier. */
+	 
 	more_mul_max = op_lim_fr->max_pll_multiplier / mul;
 	dev_dbg(dev, "more_mul_max: max_op_pll_multiplier check: %u\n",
 		more_mul_max);
-	/* Don't go above max pll op frequency. */
+	 
 	more_mul_max =
 		min_t(u32,
 		      more_mul_max,
@@ -621,24 +569,24 @@ ccs_pll_calculate_op(struct device *dev, const struct ccs_pll_limits *lim,
 			 op_pll_fr->pre_pll_clk_div * mul));
 	dev_dbg(dev, "more_mul_max: max_pll_op_clk_freq_hz check: %u\n",
 		more_mul_max);
-	/* Don't go above the division capability of op sys clock divider. */
+	 
 	more_mul_max = min(more_mul_max,
 			   op_lim_bk->max_sys_clk_div * op_pll_fr->pre_pll_clk_div
 			   / div);
 	dev_dbg(dev, "more_mul_max: max_op_sys_clk_div check: %u\n",
 		more_mul_max);
-	/* Ensure we won't go above max_pll_multiplier. */
+	 
 	more_mul_max = min(more_mul_max, op_lim_fr->max_pll_multiplier / mul);
 	dev_dbg(dev, "more_mul_max: min_pll_multiplier check: %u\n",
 		more_mul_max);
 
-	/* Ensure we won't go below min_pll_op_clk_freq_hz. */
+	 
 	more_mul_min = DIV_ROUND_UP(op_lim_fr->min_pll_op_clk_freq_hz,
 				    pll->ext_clk_freq_hz /
 				    op_pll_fr->pre_pll_clk_div * mul);
 	dev_dbg(dev, "more_mul_min: min_op_pll_op_clk_freq_hz check: %u\n",
 		more_mul_min);
-	/* Ensure we won't go below min_pll_multiplier. */
+	 
 	more_mul_min = max(more_mul_min,
 			   DIV_ROUND_UP(op_lim_fr->min_pll_multiplier, mul));
 	dev_dbg(dev, "more_mul_min: min_op_pll_multiplier check: %u\n",
@@ -727,11 +675,7 @@ int ccs_pll_calculate(struct device *dev, const struct ccs_pll_limits *lim,
 		op_pll_fr = &pll->op_fr;
 		op_pll_bk = &pll->op_bk;
 	} else if (pll->flags & CCS_PLL_FLAG_NO_OP_CLOCKS) {
-		/*
-		 * If there's no OP PLL at all, use the VT values
-		 * instead. The OP values are ignored for the rest of
-		 * the PLL calculation.
-		 */
+		 
 		op_lim_fr = &lim->vt_fr;
 		op_lim_bk = &lim->vt_bk;
 		op_pll_fr = &pll->vt_fr;
@@ -752,10 +696,7 @@ int ccs_pll_calculate(struct device *dev, const struct ccs_pll_limits *lim,
 	    !op_lim_bk->max_sys_clk_div || !op_lim_fr->max_pll_multiplier)
 		return -EINVAL;
 
-	/*
-	 * Make sure op_pix_clk_div will be integer --- unless flexible
-	 * op_pix_clk_div is supported
-	 */
+	 
 	if (!(pll->flags & CCS_PLL_FLAG_FLEXIBLE_OP_PIX_CLK_DIV) &&
 	    (pll->bits_per_pixel * pll->op_lanes) %
 	    (pll->csi2.lanes * l << op_pix_ddr(pll->flags))) {
@@ -787,7 +728,7 @@ int ccs_pll_calculate(struct device *dev, const struct ccs_pll_limits *lim,
 			   pll->csi2.lanes : 1) * PHY_CONST_DIV,
 			phy_const * pll->bits_per_pixel * l);
 
-	/* Figure out limits for OP pre-pll divider based on extclk */
+	 
 	dev_dbg(dev, "min / max op_pre_pll_clk_div: %u / %u\n",
 		op_lim_fr->min_pre_pll_clk_div, op_lim_fr->max_pre_pll_clk_div);
 	max_op_pre_pll_clk_div =

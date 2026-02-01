@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains helper code to handle channel
- * settings and keeping track of what is possible at
- * any point in time.
- *
- * Copyright 2009	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright 2018-2022	Intel Corporation
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/bitfield.h>
@@ -79,10 +71,8 @@ static bool cfg80211_edmg_chandef_valid(const struct cfg80211_chan_def *chandef)
 
 		max_contiguous = max(contiguous, max_contiguous);
 	}
-	/* basic verification of edmg configuration according to
-	 * IEEE P802.11ay/D4.0 section 9.4.2.251
-	 */
-	/* check bw_config against contiguous edmg channels */
+	 
+	 
 	switch (chandef->edmg.bw_config) {
 	case IEEE80211_EDMG_BW_CONFIG_4:
 	case IEEE80211_EDMG_BW_CONFIG_8:
@@ -113,7 +103,7 @@ static bool cfg80211_edmg_chandef_valid(const struct cfg80211_chan_def *chandef)
 		return false;
 	}
 
-	/* check bw_config against aggregated (non contiguous) edmg channels */
+	 
 	switch (chandef->edmg.bw_config) {
 	case IEEE80211_EDMG_BW_CONFIG_4:
 	case IEEE80211_EDMG_BW_CONFIG_5:
@@ -251,7 +241,7 @@ bool cfg80211_chandef_valid(const struct cfg80211_chan_def *chandef)
 	case NL80211_CHAN_WIDTH_80P80:
 		if (!chandef->center_freq2)
 			return false;
-		/* adjacent is not allowed -- that's a 160 MHz channel */
+		 
 		if (chandef->center_freq1 - chandef->center_freq2 == 80 ||
 		    chandef->center_freq2 - chandef->center_freq1 == 80)
 			return false;
@@ -272,7 +262,7 @@ bool cfg80211_chandef_valid(const struct cfg80211_chan_def *chandef)
 	case NL80211_CHAN_WIDTH_4:
 	case NL80211_CHAN_WIDTH_8:
 	case NL80211_CHAN_WIDTH_16:
-		/* all checked above */
+		 
 		break;
 	case NL80211_CHAN_WIDTH_320:
 		if (chandef->center_freq1 == control_freq + 150 ||
@@ -307,7 +297,7 @@ bool cfg80211_chandef_valid(const struct cfg80211_chan_def *chandef)
 		return false;
 	}
 
-	/* channel 14 is only for IEEE 802.11b */
+	 
 	if (chandef->center_freq1 == 2484 &&
 	    chandef->width != NL80211_CHAN_WIDTH_20_NOHT)
 		return false;
@@ -335,36 +325,36 @@ static void chandef_primary_freqs(const struct cfg80211_chan_def *c,
 	case NL80211_CHAN_WIDTH_80P80:
 		*pri160 = 0;
 		*pri80 = c->center_freq1;
-		/* n_P20 */
+		 
 		tmp = (30 + c->chan->center_freq - c->center_freq1)/20;
-		/* n_P40 */
+		 
 		tmp /= 2;
-		/* freq_P40 */
+		 
 		*pri40 = c->center_freq1 - 20 + 40 * tmp;
 		break;
 	case NL80211_CHAN_WIDTH_160:
 		*pri160 = c->center_freq1;
-		/* n_P20 */
+		 
 		tmp = (70 + c->chan->center_freq - c->center_freq1)/20;
-		/* n_P40 */
+		 
 		tmp /= 2;
-		/* freq_P40 */
+		 
 		*pri40 = c->center_freq1 - 60 + 40 * tmp;
-		/* n_P80 */
+		 
 		tmp /= 2;
 		*pri80 = c->center_freq1 - 40 + 80 * tmp;
 		break;
 	case NL80211_CHAN_WIDTH_320:
-		/* n_P20 */
+		 
 		tmp = (150 + c->chan->center_freq - c->center_freq1) / 20;
-		/* n_P40 */
+		 
 		tmp /= 2;
-		/* freq_P40 */
+		 
 		*pri40 = c->center_freq1 - 140 + 40 * tmp;
-		/* n_P80 */
+		 
 		tmp /= 2;
 		*pri80 = c->center_freq1 - 120 + 80 * tmp;
-		/* n_P160 */
+		 
 		tmp /= 2;
 		*pri160 = c->center_freq1 - 80 + 160 * tmp;
 		break;
@@ -379,25 +369,19 @@ cfg80211_chandef_compatible(const struct cfg80211_chan_def *c1,
 {
 	u32 c1_pri40, c1_pri80, c2_pri40, c2_pri80, c1_pri160, c2_pri160;
 
-	/* If they are identical, return */
+	 
 	if (cfg80211_chandef_identical(c1, c2))
 		return c1;
 
-	/* otherwise, must have same control channel */
+	 
 	if (c1->chan != c2->chan)
 		return NULL;
 
-	/*
-	 * If they have the same width, but aren't identical,
-	 * then they can't be compatible.
-	 */
+	 
 	if (c1->width == c2->width)
 		return NULL;
 
-	/*
-	 * can't be compatible if one of them is 5 or 10 MHz,
-	 * but they don't have the same width.
-	 */
+	 
 	if (c1->width == NL80211_CHAN_WIDTH_5 ||
 	    c1->width == NL80211_CHAN_WIDTH_10 ||
 	    c2->width == NL80211_CHAN_WIDTH_5 ||
@@ -604,12 +588,7 @@ static int cfg80211_get_chans_dfs_usable(struct wiphy *wiphy,
 	start_freq = cfg80211_get_start_freq(center_freq, bandwidth);
 	end_freq = cfg80211_get_end_freq(center_freq, bandwidth);
 
-	/*
-	 * Check entire range of channels for the bandwidth.
-	 * Check all channels are DFS channels (DFS_USABLE or
-	 * DFS_AVAILABLE). Return number of usable channels
-	 * (require CAC). Allow DFS and non-DFS channel mix.
-	 */
+	 
 	for (freq = start_freq; freq <= end_freq; freq += MHZ_TO_KHZ(20)) {
 		c = ieee80211_get_channel_khz(wiphy, freq);
 		if (!c)
@@ -667,10 +646,7 @@ bool cfg80211_chandef_dfs_usable(struct wiphy *wiphy,
 	return (r1 + r2 > 0);
 }
 
-/*
- * Checks if center frequency of chan falls with in the bandwidth
- * range of chandef.
- */
+ 
 bool cfg80211_is_sub_chan(struct cfg80211_chan_def *chandef,
 			  struct ieee80211_channel *chan,
 			  bool primary_only)
@@ -737,7 +713,7 @@ bool cfg80211_beaconing_iface_active(struct wireless_dev *wdev)
 	case NL80211_IFTYPE_MONITOR:
 	case NL80211_IFTYPE_AP_VLAN:
 	case NL80211_IFTYPE_P2P_DEVICE:
-	/* Can NAN type be considered as beaconing interface? */
+	 
 	case NL80211_IFTYPE_NAN:
 		break;
 	case NL80211_IFTYPE_UNSPECIFIED:
@@ -851,11 +827,7 @@ static bool cfg80211_get_chans_dfs_available(struct wiphy *wiphy,
 	start_freq = cfg80211_get_start_freq(center_freq, bandwidth);
 	end_freq = cfg80211_get_end_freq(center_freq, bandwidth);
 
-	/*
-	 * Check entire range of channels for the bandwidth.
-	 * If any channel in between is disabled or has not
-	 * had gone through CAC return false
-	 */
+	 
 	for (freq = start_freq; freq <= end_freq; freq += MHZ_TO_KHZ(20)) {
 		c = ieee80211_get_channel_khz(wiphy, freq);
 		if (!c)
@@ -890,7 +862,7 @@ static bool cfg80211_chandef_dfs_available(struct wiphy *wiphy,
 					     MHZ_TO_KHZ(chandef->center_freq1),
 					     width);
 
-	/* If any of channels unavailable for cf1 just return */
+	 
 	if (!r)
 		return r;
 
@@ -985,7 +957,7 @@ static bool cfg80211_secondary_chans_ok(struct wiphy *wiphy,
 	return true;
 }
 
-/* check if the operating channels are valid and supported */
+ 
 static bool cfg80211_edmg_usable(struct wiphy *wiphy, u8 edmg_channels,
 				 enum ieee80211_edmg_bw_config edmg_bw_config,
 				 int primary_channel,
@@ -1005,7 +977,7 @@ static bool cfg80211_edmg_usable(struct wiphy *wiphy, u8 edmg_channels,
 	if (!(edmg_channels & BIT(primary_channel - 1)))
 		return false;
 
-	/* 60GHz channels 1..6 */
+	 
 	for (i = 0; i < 6; i++) {
 		if (!(edmg_channels & BIT(i)))
 			continue;
@@ -1022,13 +994,11 @@ static bool cfg80211_edmg_usable(struct wiphy *wiphy, u8 edmg_channels,
 			return false;
 	}
 
-	/* IEEE802.11 allows max 4 channels */
+	 
 	if (channels_counter > 4)
 		return false;
 
-	/* check bw_config is a subset of what driver supports
-	 * (see IEEE P802.11ay/D4.0 section 9.4.2.251, Table 13)
-	 */
+	 
 	if ((edmg_bw_config % 4) > (edmg_cap->bw_config % 4))
 		return false;
 
@@ -1182,21 +1152,12 @@ bool cfg80211_chandef_usable(struct wiphy *wiphy,
 		return false;
 	}
 
-	/*
-	 * TODO: What if there are only certain 80/160/80+80 MHz channels
-	 *	 allowed by the driver, or only certain combinations?
-	 *	 For 40 MHz the driver can set the NO_HT40 flags, but for
-	 *	 80/160 MHz and in particular 80+80 MHz this isn't really
-	 *	 feasible and we only have NO_80MHZ/NO_160MHZ so far but
-	 *	 no way to cover 80+80 MHz or more complex restrictions.
-	 *	 Note that such restrictions also need to be advertised to
-	 *	 userspace, for example for P2P channel selection.
-	 */
+	 
 
 	if (width > 20)
 		prohibited_flags |= IEEE80211_CHAN_NO_OFDM;
 
-	/* 5 and 10 MHz are only defined for the OFDM PHY */
+	 
 	if (width < 20)
 		prohibited_flags |= IEEE80211_CHAN_NO_OFDM;
 
@@ -1227,13 +1188,7 @@ static bool cfg80211_ir_permissive_check_wdev(enum nl80211_iftype iftype,
 		    wdev->links[link_id].client.current_bss)
 			other_chan = wdev->links[link_id].client.current_bss->pub.channel;
 
-		/*
-		 * If a GO already operates on the same GO_CONCURRENT channel,
-		 * this one (maybe the same one) can beacon as well. We allow
-		 * the operation even if the station we relied on with
-		 * GO_CONCURRENT is disconnected now. But then we must make sure
-		 * we're not outdoor on an indoor-only channel.
-		 */
+		 
 		if (iftype == NL80211_IFTYPE_P2P_GO &&
 		    wdev->iftype == NL80211_IFTYPE_P2P_GO &&
 		    wdev->links[link_id].ap.beacon_interval &&
@@ -1254,18 +1209,7 @@ static bool cfg80211_ir_permissive_check_wdev(enum nl80211_iftype iftype,
 		r2 = cfg80211_get_unii(other_chan->center_freq);
 
 		if (r1 != -EINVAL && r1 == r2) {
-			/*
-			 * At some locations channels 149-165 are considered a
-			 * bundle, but at other locations, e.g., Indonesia,
-			 * channels 149-161 are considered a bundle while
-			 * channel 165 is left out and considered to be in a
-			 * different bundle. Thus, in case that there is a
-			 * station interface connected to an AP on channel 165,
-			 * it is assumed that channels 149-161 are allowed for
-			 * GO operations. However, having a station interface
-			 * connected to an AP on channels 149-161, does not
-			 * allow GO operation on channel 165.
-			 */
+			 
 			if (chan->center_freq == 5825 &&
 			    other_chan->center_freq != 5825)
 				continue;
@@ -1276,15 +1220,7 @@ static bool cfg80211_ir_permissive_check_wdev(enum nl80211_iftype iftype,
 	return false;
 }
 
-/*
- * Check if the channel can be used under permissive conditions mandated by
- * some regulatory bodies, i.e., the channel is marked with
- * IEEE80211_CHAN_IR_CONCURRENT and there is an additional station interface
- * associated to an AP on the same channel or on the same UNII band
- * (assuming that the AP is an authorized master).
- * In addition allow operation on a channel on which indoor operation is
- * allowed, iff we are currently operating in an indoor environment.
- */
+ 
 static bool cfg80211_ir_permissive_chan(struct wiphy *wiphy,
 					enum nl80211_iftype iftype,
 					struct ieee80211_channel *chan)
@@ -1298,7 +1234,7 @@ static bool cfg80211_ir_permissive_chan(struct wiphy *wiphy,
 	    !(wiphy->regulatory_flags & REGULATORY_ENABLE_RELAX_NO_IR))
 		return false;
 
-	/* only valid for GO and TDLS off-channel (station/p2p-CL) */
+	 
 	if (iftype != NL80211_IFTYPE_P2P_GO &&
 	    iftype != NL80211_IFTYPE_STATION &&
 	    iftype != NL80211_IFTYPE_P2P_CLIENT)
@@ -1311,13 +1247,7 @@ static bool cfg80211_ir_permissive_chan(struct wiphy *wiphy,
 	if (!(chan->flags & IEEE80211_CHAN_IR_CONCURRENT))
 		return false;
 
-	/*
-	 * Generally, it is possible to rely on another device/driver to allow
-	 * the IR concurrent relaxation, however, since the device can further
-	 * enforce the relaxation (by doing a similar verifications as this),
-	 * and thus fail the GO instantiation, consider only the interfaces of
-	 * the current registered device.
-	 */
+	 
 	list_for_each_entry(wdev, &rdev->wiphy.wdev_list, list) {
 		bool ret;
 
@@ -1348,7 +1278,7 @@ static bool _cfg80211_reg_can_beacon(struct wiphy *wiphy,
 
 	if (cfg80211_chandef_dfs_required(wiphy, chandef, iftype) > 0 &&
 	    cfg80211_chandef_dfs_available(wiphy, chandef)) {
-		/* We can skip IEEE80211_CHAN_NO_IR if chandef dfs available */
+		 
 		prohibited_flags = IEEE80211_CHAN_DISABLED;
 	}
 
@@ -1375,12 +1305,7 @@ bool cfg80211_reg_can_beacon_relax(struct wiphy *wiphy,
 
 	lockdep_assert_held(&rdev->wiphy.mtx);
 
-	/*
-	 * Under certain conditions suggested by some regulatory bodies a
-	 * GO/STA can IR on channels marked with IEEE80211_NO_IR. Set this flag
-	 * only if such relaxations are not enabled and the conditions are not
-	 * met.
-	 */
+	 
 	check_no_ir = !cfg80211_ir_permissive_chan(wiphy, iftype,
 						   chandef->chan);
 
@@ -1433,13 +1358,7 @@ EXPORT_SYMBOL(cfg80211_any_usable_channels);
 struct cfg80211_chan_def *wdev_chandef(struct wireless_dev *wdev,
 				       unsigned int link_id)
 {
-	/*
-	 * We need to sort out the locking here - in some cases
-	 * where we get here we really just don't care (yet)
-	 * about the valid links, but in others we do. But we
-	 * get here with various driver cases, so we cannot
-	 * easily require the wdev mutex.
-	 */
+	 
 	if (link_id || wdev->valid_links & BIT(0)) {
 		ASSERT_WDEV_LOCK(wdev);
 		WARN_ON(!(wdev->valid_links & BIT(link_id)));
@@ -1518,7 +1437,7 @@ bool cfg80211_valid_disable_subchannel_bitmap(u16 *bitmap,
 	if (!*bitmap)
 		return true;
 
-	/* check if primary channel is punctured */
+	 
 	if (*bitmap & (u16)BIT((chandef->chan->center_freq - start_freq) / 20))
 		return false;
 

@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
 
-/*
- * As omapdss panel drivers are omapdss specific, but we want to define the
- * DT-data in generic manner, we convert the compatible strings of the panel and
- * encoder nodes from "panel-foo" to "omapdss,panel-foo". This way we can have
- * both correct DT data and omapdss specific drivers.
- *
- * When we get generic panel drivers to the kernel, this file will be removed.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/of.h>
@@ -76,7 +66,7 @@ static void __init omapdss_prefix_strcpy(char *dst, int dst_len,
 	}
 }
 
-/* prepend compatible property strings with "omapdss," */
+ 
 static void __init omapdss_omapify_node(struct device_node *node)
 {
 	struct property *prop;
@@ -92,7 +82,7 @@ static void __init omapdss_omapify_node(struct device_node *node)
 	if (strnlen(prop->value, prop->length) >= prop->length)
 		return;
 
-	/* is it already prefixed? */
+	 
 	if (strncmp(prefix, prop->value, strlen(prefix)) == 0)
 		return;
 
@@ -137,10 +127,7 @@ static void __init omapdss_walk_device(struct device_node *node, bool root)
 
 	omapdss_add_to_list(node, root);
 
-	/*
-	 * of_graph_get_remote_port_parent() prints an error if there is no
-	 * port/ports node. To avoid that, check first that there's the node.
-	 */
+	 
 	n = of_get_child_by_name(node, "ports");
 	if (!n)
 		n = of_get_child_by_name(node, "port");

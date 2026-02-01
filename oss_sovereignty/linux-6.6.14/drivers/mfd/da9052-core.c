@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device access for Dialog DA9052 PMICs.
- *
- * Copyright(c) 2011 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/delay.h>
@@ -314,17 +308,7 @@ static bool da9052_reg_volatile(struct device *dev, unsigned int reg)
 	}
 }
 
-/*
- * TBAT look-up table is computed from the R90 reg (8 bit register)
- * reading as below. The battery temperature is in milliCentigrade
- * TBAT = (1/(t1+1/298) - 273) * 1000 mC
- * where t1 = (1/B)* ln(( ADCval * 2.5)/(R25*ITBAT*255))
- * Default values are R25 = 10e3, B = 3380, ITBAT = 50e-6
- * Example:
- * R25=10E3, B=3380, ITBAT=50e-6, ADCVAL=62d calculates
- * TBAT = 20015 mili degrees Centrigrade
- *
-*/
+ 
 static const int32_t tbat_lookup[255] = {
 	183258, 144221, 124334, 111336, 101826, 94397, 88343, 83257,
 	78889, 75071, 71688, 68656, 65914, 63414, 61120, 59001,
@@ -385,14 +369,14 @@ int da9052_adc_manual_read(struct da9052 *da9052, unsigned char channel)
 
 	reinit_completion(&da9052->done);
 
-	/* Channel gets activated on enabling the Conversion bit */
+	 
 	mux_sel = chan_mux[channel] | DA9052_ADC_MAN_MAN_CONV;
 
 	ret = da9052_reg_write(da9052, DA9052_ADC_MAN_REG, mux_sel);
 	if (ret < 0)
 		goto err;
 
-	/* Wait for an interrupt */
+	 
 	if (!wait_for_completion_timeout(&da9052->done,
 					 msecs_to_jiffies(500))) {
 		dev_err(da9052->dev,
@@ -431,7 +415,7 @@ int da9052_adc_read_temp(struct da9052 *da9052)
 	if (tbat <= 0)
 		return tbat;
 
-	/* ARRAY_SIZE check is not needed since TBAT is a 8-bit register */
+	 
 	return tbat_lookup[tbat - 1];
 }
 EXPORT_SYMBOL_GPL(da9052_adc_read_temp);
@@ -619,11 +603,7 @@ int da9052_device_init(struct da9052 *da9052, u8 chip_id)
 		goto err;
 	}
 
-	/*
-	 * Check if touchscreen pins are used are analogue input instead
-	 * of having a touchscreen connected to them. The analogue input
-	 * functionality will be provided by hwmon driver (if enabled).
-	 */
+	 
 	if (!device_property_read_bool(da9052->dev, "dlg,tsi-as-adc")) {
 		ret = mfd_add_devices(da9052->dev, PLATFORM_DEVID_AUTO,
 				      da9052_tsi_subdev_info,

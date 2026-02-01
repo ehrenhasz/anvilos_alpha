@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence CDNSP DRD Driver.
- *
- * Copyright (C) 2020 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- * Code based on Linux XHCI driver.
- * Origin: Copyright (C) 2008 Intel Corp.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/dmapool.h>
@@ -20,12 +11,7 @@
 
 static void cdnsp_free_stream_info(struct cdnsp_device *pdev,
 				   struct cdnsp_ep *pep);
-/*
- * Allocates a generic ring segment from the ring pool, sets the dma address,
- * initializes the segment to zero, and sets the private next pointer to NULL.
- *
- * "All components of all Command and Transfer TRBs shall be initialized to '0'"
- */
+ 
 static struct cdnsp_segment *cdnsp_segment_alloc(struct cdnsp_device *pdev,
 						 unsigned int cycle_state,
 						 unsigned int max_packet,
@@ -51,7 +37,7 @@ static struct cdnsp_segment *cdnsp_segment_alloc(struct cdnsp_device *pdev,
 			goto free_dma;
 	}
 
-	/* If the cycle state is 0, set the cycle bit to 1 for all the TRBs. */
+	 
 	if (cycle_state == 0) {
 		for (i = 0; i < TRBS_PER_SEGMENT; i++)
 			seg->trbs[i].link.control |= cpu_to_le32(TRB_CYCLE);
@@ -95,13 +81,7 @@ static void cdnsp_free_segments_for_ring(struct cdnsp_device *pdev,
 	cdnsp_segment_free(pdev, first);
 }
 
-/*
- * Make the prev segment point to the next segment.
- *
- * Change the last TRB in the prev segment to be a Link TRB which points to the
- * DMA address of the next segment. The caller needs to set any Link TRB
- * related flags, such as End TRB, Toggle Cycle, and no snoop.
- */
+ 
 static void cdnsp_link_segments(struct cdnsp_device *pdev,
 				struct cdnsp_segment *prev,
 				struct cdnsp_segment *next,
@@ -118,10 +98,7 @@ static void cdnsp_link_segments(struct cdnsp_device *pdev,
 		link = &prev->trbs[TRBS_PER_SEGMENT - 1].link;
 		link->segment_ptr = cpu_to_le64(next->dma);
 
-		/*
-		 * Set the last TRB in the segment to have a TRB type ID
-		 * of Link TRB
-		 */
+		 
 		val = le32_to_cpu(link->control);
 		val &= ~TRB_TYPE_BITMASK;
 		val |= TRB_TYPE(TRB_LINK);
@@ -129,10 +106,7 @@ static void cdnsp_link_segments(struct cdnsp_device *pdev,
 	}
 }
 
-/*
- * Link the ring to the new segments.
- * Set Toggle Cycle for the new ring if needed.
- */
+ 
 static void cdnsp_link_rings(struct cdnsp_device *pdev,
 			     struct cdnsp_ring *ring,
 			     struct cdnsp_segment *first,
@@ -159,37 +133,7 @@ static void cdnsp_link_rings(struct cdnsp_device *pdev,
 	}
 }
 
-/*
- * We need a radix tree for mapping physical addresses of TRBs to which stream
- * ID they belong to. We need to do this because the device controller won't
- * tell us which stream ring the TRB came from. We could store the stream ID
- * in an event data TRB, but that doesn't help us for the cancellation case,
- * since the endpoint may stop before it reaches that event data TRB.
- *
- * The radix tree maps the upper portion of the TRB DMA address to a ring
- * segment that has the same upper portion of DMA addresses. For example,
- * say I have segments of size 1KB, that are always 1KB aligned. A segment may
- * start at 0x10c91000 and end at 0x10c913f0. If I use the upper 10 bits, the
- * key to the stream ID is 0x43244. I can use the DMA address of the TRB to
- * pass the radix tree a key to get the right stream ID:
- *
- *	0x10c90fff >> 10 = 0x43243
- *	0x10c912c0 >> 10 = 0x43244
- *	0x10c91400 >> 10 = 0x43245
- *
- * Obviously, only those TRBs with DMA addresses that are within the segment
- * will make the radix tree return the stream ID for that ring.
- *
- * Caveats for the radix tree:
- *
- * The radix tree uses an unsigned long as a key pair. On 32-bit systems, an
- * unsigned long will be 32-bits; on a 64-bit system an unsigned long will be
- * 64-bits. Since we only request 32-bit DMA addresses, we can use that as the
- * key on 32-bit or 64-bit systems (it would also be fine if we asked for 64-bit
- * PCI DMA addresses on a 64-bit system). There might be a problem on 32-bit
- * extended systems (where the DMA address can be bigger than 32-bits),
- * if we allow the PCI dma mask to be bigger than 32-bits. So don't do that.
- */
+ 
 static int cdnsp_insert_segment_mapping(struct radix_tree_root *trb_address_map,
 					struct cdnsp_ring *ring,
 					struct cdnsp_segment *seg,
@@ -200,7 +144,7 @@ static int cdnsp_insert_segment_mapping(struct radix_tree_root *trb_address_map,
 
 	key = (unsigned long)(seg->dma >> TRB_SEGMENT_SHIFT);
 
-	/* Skip any segments that were already added. */
+	 
 	if (radix_tree_lookup(trb_address_map, key))
 		return 0;
 
@@ -301,24 +245,14 @@ void cdnsp_initialize_ring_info(struct cdnsp_ring *ring)
 	ring->dequeue = ring->enqueue;
 	ring->deq_seg = ring->first_seg;
 
-	/*
-	 * The ring is initialized to 0. The producer must write 1 to the cycle
-	 * bit to handover ownership of the TRB, so PCS = 1. The consumer must
-	 * compare CCS to the cycle bit to check ownership, so CCS = 1.
-	 *
-	 * New rings are initialized with cycle state equal to 1; if we are
-	 * handling ring expansion, set the cycle state equal to the old ring.
-	 */
+	 
 	ring->cycle_state = 1;
 
-	/*
-	 * Each segment has a link TRB, and leave an extra TRB for SW
-	 * accounting purpose
-	 */
+	 
 	ring->num_trbs_free = ring->num_segs * (TRBS_PER_SEGMENT - 1) - 1;
 }
 
-/* Allocate segments and link them for a ring. */
+ 
 static int cdnsp_alloc_segments_for_ring(struct cdnsp_device *pdev,
 					 struct cdnsp_segment **first,
 					 struct cdnsp_segment **last,
@@ -330,7 +264,7 @@ static int cdnsp_alloc_segments_for_ring(struct cdnsp_device *pdev,
 {
 	struct cdnsp_segment *prev;
 
-	/* Allocate first segment. */
+	 
 	prev = cdnsp_segment_alloc(pdev, cycle_state, max_packet, flags);
 	if (!prev)
 		return -ENOMEM;
@@ -338,7 +272,7 @@ static int cdnsp_alloc_segments_for_ring(struct cdnsp_device *pdev,
 	num_segs--;
 	*first = prev;
 
-	/* Allocate all other segments. */
+	 
 	while (num_segs > 0) {
 		struct cdnsp_segment	*next;
 
@@ -361,12 +295,7 @@ static int cdnsp_alloc_segments_for_ring(struct cdnsp_device *pdev,
 	return 0;
 }
 
-/*
- * Create a new ring with zero or more segments.
- *
- * Link each segment together into a ring.
- * Set the end flag and the cycle toggle bit on the last segment.
- */
+ 
 static struct cdnsp_ring *cdnsp_ring_alloc(struct cdnsp_device *pdev,
 					   unsigned int num_segs,
 					   enum cdnsp_ring_type type,
@@ -394,7 +323,7 @@ static struct cdnsp_ring *cdnsp_ring_alloc(struct cdnsp_device *pdev,
 	if (ret)
 		goto fail;
 
-	/* Only event ring does not use link TRB. */
+	 
 	if (type != TYPE_EVENT)
 		ring->last_seg->trbs[TRBS_PER_SEGMENT - 1].link.control |=
 			cpu_to_le32(LINK_TOGGLE);
@@ -414,10 +343,7 @@ void cdnsp_free_endpoint_rings(struct cdnsp_device *pdev, struct cdnsp_ep *pep)
 	cdnsp_free_stream_info(pdev, pep);
 }
 
-/*
- * Expand an existing ring.
- * Allocate a new ring which has same segment numbers and link the two rings.
- */
+ 
 int cdnsp_ring_expansion(struct cdnsp_device *pdev,
 			 struct cdnsp_ring *ring,
 			 unsigned int num_trbs,
@@ -432,7 +358,7 @@ int cdnsp_ring_expansion(struct cdnsp_device *pdev,
 	num_segs_needed = (num_trbs + (TRBS_PER_SEGMENT - 1) - 1) /
 			(TRBS_PER_SEGMENT - 1);
 
-	/* Allocate number of segments we needed, or double the ring size. */
+	 
 	num_segs = max(ring->num_segs, num_segs_needed);
 
 	ret = cdnsp_alloc_segments_for_ring(pdev, &first, &last, num_segs,
@@ -506,7 +432,7 @@ struct cdnsp_slot_ctx *cdnsp_get_slot_ctx(struct cdnsp_container_ctx *ctx)
 struct cdnsp_ep_ctx *cdnsp_get_ep_ctx(struct cdnsp_container_ctx *ctx,
 				      unsigned int ep_index)
 {
-	/* Increment ep index by offset of start of ep ctx array. */
+	 
 	ep_index++;
 	if (ctx->type == CDNSP_CTX_TYPE_INPUT)
 		ep_index++;
@@ -521,7 +447,7 @@ static void cdnsp_free_stream_ctx(struct cdnsp_device *pdev,
 		      pep->stream_info.ctx_array_dma);
 }
 
-/* The stream context array must be a power of 2. */
+ 
 static struct cdnsp_stream_ctx
 	*cdnsp_alloc_stream_ctx(struct cdnsp_device *pdev, struct cdnsp_ep *pep)
 {
@@ -531,11 +457,7 @@ static struct cdnsp_stream_ctx
 	if (size > CDNSP_CTX_SIZE)
 		return NULL;
 
-	/**
-	 * Driver uses intentionally the device_pool to allocated stream
-	 * context array. Device Pool has 2048 bytes of size what gives us
-	 * 128 entries.
-	 */
+	 
 	return dma_pool_zalloc(pdev->device_pool, GFP_DMA32 | GFP_ATOMIC,
 			       &pep->stream_info.ctx_array_dma);
 }
@@ -549,15 +471,7 @@ struct cdnsp_ring *cdnsp_dma_to_transfer_ring(struct cdnsp_ep *pep, u64 address)
 	return pep->ring;
 }
 
-/*
- * Change an endpoint's internal structure so it supports stream IDs.
- * The number of requested streams includes stream 0, which cannot be used by
- * driver.
- *
- * The number of stream contexts in the stream context array may be bigger than
- * the number of streams the driver wants to use. This is because the number of
- * stream context array entries must be a power of two.
- */
+ 
 int cdnsp_alloc_stream_info(struct cdnsp_device *pdev,
 			    struct cdnsp_ep *pep,
 			    unsigned int num_stream_ctxs,
@@ -574,14 +488,14 @@ int cdnsp_alloc_stream_info(struct cdnsp_device *pdev,
 	stream_info->num_streams = num_streams;
 	stream_info->num_stream_ctxs = num_stream_ctxs;
 
-	/* Initialize the array of virtual pointers to stream rings. */
+	 
 	stream_info->stream_rings = kcalloc(num_streams,
 					    sizeof(struct cdnsp_ring *),
 					    GFP_ATOMIC);
 	if (!stream_info->stream_rings)
 		return -ENOMEM;
 
-	/* Initialize the array of DMA addresses for stream rings for the HW. */
+	 
 	stream_info->stream_ctx_array = cdnsp_alloc_stream_ctx(pdev, pep);
 	if (!stream_info->stream_ctx_array)
 		goto cleanup_stream_rings;
@@ -591,11 +505,7 @@ int cdnsp_alloc_stream_info(struct cdnsp_device *pdev,
 	INIT_RADIX_TREE(&stream_info->trb_address_map, GFP_ATOMIC);
 	mps = usb_endpoint_maxp(pep->endpoint.desc);
 
-	/*
-	 * Allocate rings for all the streams that the driver will use,
-	 * and add their segment DMA addresses to the radix tree.
-	 * Stream 0 is reserved.
-	 */
+	 
 	for (cur_stream = 1; cur_stream < num_streams; cur_stream++) {
 		cur_ring = cdnsp_ring_alloc(pdev, 2, TYPE_STREAM, mps,
 					    GFP_ATOMIC);
@@ -607,7 +517,7 @@ int cdnsp_alloc_stream_info(struct cdnsp_device *pdev,
 		cur_ring->stream_id = cur_stream;
 		cur_ring->trb_address_map = &stream_info->trb_address_map;
 
-		/* Set deq ptr, cycle bit, and stream context type. */
+		 
 		addr = cur_ring->first_seg->dma | SCT_FOR_CTX(SCT_PRI_TR) |
 		       cur_ring->cycle_state;
 
@@ -638,7 +548,7 @@ cleanup_stream_rings:
 	return -ENOMEM;
 }
 
-/* Frees all stream contexts associated with the endpoint. */
+ 
 static void cdnsp_free_stream_info(struct cdnsp_device *pdev,
 				   struct cdnsp_ep *pep)
 {
@@ -665,7 +575,7 @@ static void cdnsp_free_stream_info(struct cdnsp_device *pdev,
 	pep->ep_state &= ~EP_HAS_STREAMS;
 }
 
-/* All the cdnsp_tds in the ring's TD list should be freed at this point.*/
+ 
 static void cdnsp_free_priv_device(struct cdnsp_device *pdev)
 {
 	pdev->dcbaa->dev_context_ptrs[1] = 0;
@@ -692,12 +602,12 @@ static int cdnsp_alloc_priv_device(struct cdnsp_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Allocate endpoint 0 ring. */
+	 
 	pdev->eps[0].ring = cdnsp_ring_alloc(pdev, 2, TYPE_CTRL, 0, GFP_ATOMIC);
 	if (!pdev->eps[0].ring)
 		goto fail;
 
-	/* Point to output device context in dcbaa. */
+	 
 	pdev->dcbaa->dev_context_ptrs[1] = cpu_to_le64(pdev->out_ctx.dma);
 	pdev->cmd.in_ctx = &pdev->in_ctx;
 
@@ -722,7 +632,7 @@ void cdnsp_copy_ep0_dequeue_into_input_ctx(struct cdnsp_device *pdev)
 	ep0_ctx->deq = cpu_to_le64(dma | ep_ring->cycle_state);
 }
 
-/* Setup an controller private device for a Set Address command. */
+ 
 int cdnsp_setup_addressable_priv_dev(struct cdnsp_device *pdev)
 {
 	struct cdnsp_slot_ctx *slot_ctx;
@@ -732,7 +642,7 @@ int cdnsp_setup_addressable_priv_dev(struct cdnsp_device *pdev)
 	ep0_ctx = cdnsp_get_ep_ctx(&pdev->in_ctx, 0);
 	slot_ctx = cdnsp_get_slot_ctx(&pdev->in_ctx);
 
-	/* Only the control endpoint is valid - one endpoint context. */
+	 
 	slot_ctx->dev_info |= cpu_to_le32(LAST_CTX(1));
 
 	switch (pdev->gadget.speed) {
@@ -753,7 +663,7 @@ int cdnsp_setup_addressable_priv_dev(struct cdnsp_device *pdev)
 		max_packets = MAX_PACKET(64);
 		break;
 	default:
-		/* Speed was not set , this shouldn't happen. */
+		 
 		return -EINVAL;
 	}
 
@@ -774,10 +684,7 @@ int cdnsp_setup_addressable_priv_dev(struct cdnsp_device *pdev)
 	return 0;
 }
 
-/*
- * Convert interval expressed as 2^(bInterval - 1) == interval into
- * straight exponent value 2^n == interval.
- */
+ 
 static unsigned int cdnsp_parse_exponent_interval(struct usb_gadget *g,
 						  struct cdnsp_ep *pep)
 {
@@ -789,25 +696,18 @@ static unsigned int cdnsp_parse_exponent_interval(struct usb_gadget *g,
 			 pep->name, 1 << interval,
 			 g->speed == USB_SPEED_FULL ? "" : "micro");
 
-	/*
-	 * Full speed isoc endpoints specify interval in frames,
-	 * not microframes. We are using microframes everywhere,
-	 * so adjust accordingly.
-	 */
+	 
 	if (g->speed == USB_SPEED_FULL)
-		interval += 3;	/* 1 frame = 2^3 uframes */
+		interval += 3;	 
 
-	/* Controller handles only up to 512ms (2^12). */
+	 
 	if (interval > 12)
 		interval = 12;
 
 	return interval;
 }
 
-/*
- * Convert bInterval expressed in microframes (in 1-255 range) to exponent of
- * microframes, rounded down to nearest power of 2.
- */
+ 
 static unsigned int cdnsp_microframes_to_exponent(struct usb_gadget *g,
 						  struct cdnsp_ep *pep,
 						  unsigned int desc_interval,
@@ -820,12 +720,7 @@ static unsigned int cdnsp_microframes_to_exponent(struct usb_gadget *g,
 	return clamp_val(interval, min_exponent, max_exponent);
 }
 
-/*
- * Return the polling interval.
- *
- * The polling interval is expressed in "microframes". If controllers's Interval
- * field is set to N, it will service the endpoint every 2^(Interval)*125us.
- */
+ 
 static unsigned int cdnsp_get_endpoint_interval(struct usb_gadget *g,
 						struct cdnsp_ep *pep)
 {
@@ -857,12 +752,7 @@ static unsigned int cdnsp_get_endpoint_interval(struct usb_gadget *g,
 	return interval;
 }
 
-/*
- * The "Mult" field in the endpoint context is only set for SuperSpeed isoc eps.
- * High speed endpoint descriptors can define "the number of additional
- * transaction opportunities per microframe", but that goes in the Max Burst
- * endpoint context field.
- */
+ 
 static u32 cdnsp_get_endpoint_mult(struct usb_gadget *g, struct cdnsp_ep *pep)
 {
 	if (g->speed < USB_SPEED_SUPER ||
@@ -875,7 +765,7 @@ static u32 cdnsp_get_endpoint_mult(struct usb_gadget *g, struct cdnsp_ep *pep)
 static u32 cdnsp_get_endpoint_max_burst(struct usb_gadget *g,
 					struct cdnsp_ep *pep)
 {
-	/* Super speed and Plus have max burst in ep companion desc */
+	 
 	if (g->speed >= USB_SPEED_SUPER)
 		return pep->endpoint.comp_desc->bMaxBurst;
 
@@ -907,34 +797,30 @@ static u32 cdnsp_get_endpoint_type(const struct usb_endpoint_descriptor *desc)
 	return 0;
 }
 
-/*
- * Return the maximum endpoint service interval time (ESIT) payload.
- * Basically, this is the maxpacket size, multiplied by the burst size
- * and mult size.
- */
+ 
 static u32 cdnsp_get_max_esit_payload(struct usb_gadget *g,
 				      struct cdnsp_ep *pep)
 {
 	int max_packet;
 	int max_burst;
 
-	/* Only applies for interrupt or isochronous endpoints*/
+	 
 	if (usb_endpoint_xfer_control(pep->endpoint.desc) ||
 	    usb_endpoint_xfer_bulk(pep->endpoint.desc))
 		return 0;
 
-	/* SuperSpeedPlus Isoc ep sending over 48k per EIST. */
+	 
 	if (g->speed >= USB_SPEED_SUPER_PLUS &&
 	    USB_SS_SSP_ISOC_COMP(pep->endpoint.desc->bmAttributes))
 		return le16_to_cpu(pep->endpoint.comp_desc->wBytesPerInterval);
-	/* SuperSpeed or SuperSpeedPlus Isoc ep with less than 48k per esit */
+	 
 	else if (g->speed >= USB_SPEED_SUPER)
 		return le16_to_cpu(pep->endpoint.comp_desc->wBytesPerInterval);
 
 	max_packet = usb_endpoint_maxp(pep->endpoint.desc);
 	max_burst = usb_endpoint_maxp_mult(pep->endpoint.desc);
 
-	/* A 0 in max burst means 1 transfer per ESIT */
+	 
 	return max_packet * max_burst;
 }
 
@@ -962,12 +848,7 @@ int cdnsp_endpoint_init(struct cdnsp_device *pdev,
 
 	ring_type = usb_endpoint_type(pep->endpoint.desc);
 
-	/*
-	 * Get values to fill the endpoint context, mostly from ep descriptor.
-	 * The average TRB buffer length for bulk endpoints is unclear as we
-	 * have no clue on scatter gather list entry size. For Isoc and Int,
-	 * set it to max available.
-	 */
+	 
 	max_esit_payload = cdnsp_get_max_esit_payload(&pdev->gadget, pep);
 	interval = cdnsp_get_endpoint_interval(&pdev->gadget, pep);
 	mult = cdnsp_get_endpoint_mult(&pdev->gadget, pep);
@@ -975,24 +856,24 @@ int cdnsp_endpoint_init(struct cdnsp_device *pdev,
 	max_burst = cdnsp_get_endpoint_max_burst(&pdev->gadget, pep);
 	avg_trb_len = max_esit_payload;
 
-	/* Allow 3 retries for everything but isoc, set CErr = 3. */
+	 
 	if (!usb_endpoint_xfer_isoc(pep->endpoint.desc))
 		err_count = 3;
 	if (usb_endpoint_xfer_bulk(pep->endpoint.desc) &&
 	    pdev->gadget.speed == USB_SPEED_HIGH)
 		max_packet = 512;
-	/* Controller spec indicates that ctrl ep avg TRB Length should be 8. */
+	 
 	if (usb_endpoint_xfer_control(pep->endpoint.desc))
 		avg_trb_len = 8;
 
-	/* Set up the endpoint ring. */
+	 
 	pep->ring = cdnsp_ring_alloc(pdev, 2, ring_type, max_packet, mem_flags);
 	if (!pep->ring)
 		return -ENOMEM;
 
 	pep->skip = false;
 
-	/* Fill the endpoint context */
+	 
 	ep_ctx->ep_info = cpu_to_le32(EP_MAX_ESIT_PAYLOAD_HI(max_esit_payload) |
 				EP_INTERVAL(interval) | EP_MULT(mult));
 	ep_ctx->ep_info2 = cpu_to_le32(EP_TYPE(endpoint_type) |
@@ -1105,14 +986,11 @@ static void cdnsp_set_event_deq(struct cdnsp_device *pdev)
 	deq = cdnsp_trb_virt_to_dma(pdev->event_ring->deq_seg,
 				    pdev->event_ring->dequeue);
 
-	/* Update controller event ring dequeue pointer */
+	 
 	temp = cdnsp_read_64(&pdev->ir_set->erst_dequeue);
 	temp &= ERST_PTR_MASK;
 
-	/*
-	 * Don't clear the EHB bit (which is RW1C) because
-	 * there might be more events to service.
-	 */
+	 
 	temp &= ~ERST_EHB;
 
 	cdnsp_write_64(((u64)deq & (u64)~ERST_PTR_MASK) | temp,
@@ -1129,7 +1007,7 @@ static void cdnsp_add_in_port(struct cdnsp_device *pdev,
 	port->maj_rev = CDNSP_EXT_PORT_MAJOR(temp);
 	port->min_rev = CDNSP_EXT_PORT_MINOR(temp);
 
-	/* Port offset and count in the third dword.*/
+	 
 	temp = readl(addr + 2);
 	port_offset = CDNSP_EXT_PORT_OFF(temp);
 	port_count = CDNSP_EXT_PORT_COUNT(temp);
@@ -1140,10 +1018,7 @@ static void cdnsp_add_in_port(struct cdnsp_device *pdev,
 	port->exist = 1;
 }
 
-/*
- * Scan the Extended Capabilities for the "Supported Protocol Capabilities" that
- * specify what speeds each port is supposed to be.
- */
+ 
 static int cdnsp_setup_port_arrays(struct cdnsp_device *pdev)
 {
 	void __iomem *base;
@@ -1161,7 +1036,7 @@ static int cdnsp_setup_port_arrays(struct cdnsp_device *pdev)
 	offset = 0;
 	base = &pdev->cap_regs->hc_capbase;
 
-	/* Driver expects max 2 extended protocol capability. */
+	 
 	for (i = 0; i < 2; i++) {
 		u32 temp;
 
@@ -1198,13 +1073,7 @@ static int cdnsp_setup_port_arrays(struct cdnsp_device *pdev)
 	return 0;
 }
 
-/*
- * Initialize memory for CDNSP (one-time init).
- *
- * Program the PAGESIZE register, initialize the device context array, create
- * device contexts, set up a command ring segment, create event
- * ring (one for now).
- */
+ 
 int cdnsp_mem_init(struct cdnsp_device *pdev)
 {
 	struct device *dev = pdev->dev;
@@ -1214,20 +1083,14 @@ int cdnsp_mem_init(struct cdnsp_device *pdev)
 	u32 page_size;
 	u64 val_64;
 
-	/*
-	 * Use 4K pages, since that's common and the minimum the
-	 * controller supports
-	 */
+	 
 	page_size = 1 << 12;
 
 	val = readl(&pdev->op_regs->config_reg);
 	val |= ((val & ~MAX_DEVS) | CDNSP_DEV_MAX_SLOTS) | CONFIG_U3E;
 	writel(val, &pdev->op_regs->config_reg);
 
-	/*
-	 * Doorbell array must be physically contiguous
-	 * and 64-byte (cache line) aligned.
-	 */
+	 
 	pdev->dcbaa = dma_alloc_coherent(dev, sizeof(*pdev->dcbaa),
 					 &dma, GFP_KERNEL);
 	if (!pdev->dcbaa)
@@ -1237,14 +1100,7 @@ int cdnsp_mem_init(struct cdnsp_device *pdev)
 
 	cdnsp_write_64(dma, &pdev->op_regs->dcbaa_ptr);
 
-	/*
-	 * Initialize the ring segment pool.  The ring must be a contiguous
-	 * structure comprised of TRBs. The TRBs must be 16 byte aligned,
-	 * however, the command ring segment needs 64-byte aligned segments
-	 * and our use of dma addresses in the trb_address_map radix tree needs
-	 * TRB_SEGMENT_SIZE alignment, so driver pick the greater alignment
-	 * need.
-	 */
+	 
 	pdev->segment_pool = dma_pool_create("CDNSP ring segments", dev,
 					     TRB_SEGMENT_SIZE, TRB_SEGMENT_SIZE,
 					     page_size);
@@ -1257,12 +1113,12 @@ int cdnsp_mem_init(struct cdnsp_device *pdev)
 		goto destroy_segment_pool;
 
 
-	/* Set up the command ring to have one segments for now. */
+	 
 	pdev->cmd_ring = cdnsp_ring_alloc(pdev, 1, TYPE_COMMAND, 0, GFP_KERNEL);
 	if (!pdev->cmd_ring)
 		goto destroy_device_pool;
 
-	/* Set the address in the Command Ring Control register */
+	 
 	val_64 = cdnsp_read_64(&pdev->op_regs->cmd_ring);
 	val_64 = (val_64 & (u64)CMD_RING_RSVD_BITS) |
 		 (pdev->cmd_ring->first_seg->dma & (u64)~CMD_RING_RSVD_BITS) |
@@ -1273,13 +1129,10 @@ int cdnsp_mem_init(struct cdnsp_device *pdev)
 	val &= DBOFF_MASK;
 	pdev->dba = (void __iomem *)pdev->cap_regs + val;
 
-	/* Set ir_set to interrupt register set 0 */
+	 
 	pdev->ir_set = &pdev->run_regs->ir_set[0];
 
-	/*
-	 * Event ring setup: Allocate a normal ring, but also setup
-	 * the event ring segment table (ERST).
-	 */
+	 
 	pdev->event_ring = cdnsp_ring_alloc(pdev, ERST_NUM_SEGS, TYPE_EVENT,
 					    0, GFP_KERNEL);
 	if (!pdev->event_ring)
@@ -1289,19 +1142,19 @@ int cdnsp_mem_init(struct cdnsp_device *pdev)
 	if (ret)
 		goto free_event_ring;
 
-	/* Set ERST count with the number of entries in the segment table. */
+	 
 	val = readl(&pdev->ir_set->erst_size);
 	val &= ERST_SIZE_MASK;
 	val |= ERST_NUM_SEGS;
 	writel(val, &pdev->ir_set->erst_size);
 
-	/* Set the segment table base address. */
+	 
 	val_64 = cdnsp_read_64(&pdev->ir_set->erst_base);
 	val_64 &= ERST_PTR_MASK;
 	val_64 |= (pdev->erst.erst_dma_addr & (u64)~ERST_PTR_MASK);
 	cdnsp_write_64(val_64, &pdev->ir_set->erst_base);
 
-	/* Set the event ring dequeue address. */
+	 
 	cdnsp_set_event_deq(pdev);
 
 	ret = cdnsp_setup_port_arrays(pdev);

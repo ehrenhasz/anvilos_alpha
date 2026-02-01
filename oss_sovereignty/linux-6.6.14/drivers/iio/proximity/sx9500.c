@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Intel Corporation
- *
- * Driver for Semtech's SX9500 capacitive proximity/button solution.
- * Datasheet available at
- * <http://www.semtech.com/images/datasheet/sx9500.pdf>.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -29,7 +23,7 @@
 #define SX9500_DRIVER_NAME		"sx9500"
 #define SX9500_IRQ_NAME			"sx9500_event"
 
-/* Register definitions. */
+ 
 #define SX9500_REG_IRQ_SRC		0x00
 #define SX9500_REG_STAT			0x01
 #define SX9500_REG_IRQ_MSK		0x03
@@ -56,16 +50,13 @@
 
 #define SX9500_REG_RESET		0x7f
 
-/* Write this to REG_RESET to do a soft reset. */
+ 
 #define SX9500_SOFT_RESET		0xde
 
 #define SX9500_SCAN_PERIOD_MASK		GENMASK(6, 4)
 #define SX9500_SCAN_PERIOD_SHIFT	4
 
-/*
- * These serve for identifying IRQ source in the IRQ_SRC register, and
- * also for masking the IRQs in the IRQ_MSK register.
- */
+ 
 #define SX9500_CLOSE_IRQ		BIT(6)
 #define SX9500_FAR_IRQ			BIT(5)
 #define SX9500_CONVDONE_IRQ		BIT(3)
@@ -82,15 +73,12 @@ struct sx9500_data {
 	struct iio_trigger *trig;
 	struct regmap *regmap;
 	struct gpio_desc *gpiod_rst;
-	/*
-	 * Last reading of the proximity status for each channel.  We
-	 * only send an event to user space when this changes.
-	 */
+	 
 	bool prox_stat[SX9500_NUM_CHANNELS];
 	bool event_enabled[SX9500_NUM_CHANNELS];
 	bool trigger_enabled;
 	u16 *buffer;
-	/* Remember enabled channels and sample rate during suspend. */
+	 
 	unsigned int suspend_ctrl0;
 	struct completion completion;
 	int data_rdy_users, close_far_users;
@@ -162,10 +150,7 @@ static const struct regmap_access_table sx9500_writeable_regs = {
 	.n_yes_ranges = ARRAY_SIZE(sx9500_writable_reg_ranges),
 };
 
-/*
- * All allocated registers are readable, so we just list unallocated
- * ones.
- */
+ 
 static const struct regmap_range sx9500_non_readable_reg_ranges[] = {
 	regmap_reg_range(SX9500_REG_STAT + 1, SX9500_REG_STAT + 1),
 	regmap_reg_range(SX9500_REG_IRQ_MSK + 1, SX9500_REG_PROX_CTRL0 - 1),
@@ -206,7 +191,7 @@ static int sx9500_inc_users(struct sx9500_data *data, int *counter,
 {
 	(*counter)++;
 	if (*counter != 1)
-		/* Bit is already active, nothing to do. */
+		 
 		return 0;
 
 	return regmap_update_bits(data->regmap, reg, bitmask, bitmask);
@@ -217,7 +202,7 @@ static int sx9500_dec_users(struct sx9500_data *data, int *counter,
 {
 	(*counter)--;
 	if (*counter != 0)
-		/* There are more users, do not deactivate. */
+		 
 		return 0;
 
 	return regmap_update_bits(data->regmap, reg, bitmask, 0);
@@ -281,10 +266,7 @@ static int sx9500_read_prox_data(struct sx9500_data *data,
 	return IIO_VAL_INT;
 }
 
-/*
- * If we have no interrupt support, we have to wait for a scan period
- * after enabling a channel to get a result.
- */
+ 
 static int sx9500_wait_for_sample(struct sx9500_data *data)
 {
 	int ret;
@@ -454,12 +436,7 @@ static irqreturn_t sx9500_irq_handler(int irq, void *private)
 	if (data->trigger_enabled)
 		iio_trigger_poll(data->trig);
 
-	/*
-	 * Even if no event is enabled, we need to wake the thread to
-	 * clear the interrupt state by reading SX9500_REG_IRQ_SRC.  It
-	 * is not possible to do that here because regmap_read takes a
-	 * mutex.
-	 */
+	 
 	return IRQ_WAKE_THREAD;
 }
 
@@ -484,7 +461,7 @@ static void sx9500_push_events(struct iio_dev *indio_dev)
 		if (!data->event_enabled[chan])
 			continue;
 		if (new_prox == data->prox_stat[chan])
-			/* No change on this channel. */
+			 
 			continue;
 
 		dir = new_prox ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
@@ -736,59 +713,52 @@ struct sx9500_reg_default {
 static const struct sx9500_reg_default sx9500_default_regs[] = {
 	{
 		.reg = SX9500_REG_PROX_CTRL1,
-		/* Shield enabled, small range. */
+		 
 		.def = 0x43,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL2,
-		/* x8 gain, 167kHz frequency, finest resolution. */
+		 
 		.def = 0x77,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL3,
-		/* Doze enabled, 2x scan period doze, no raw filter. */
+		 
 		.def = 0x40,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL4,
-		/* Average threshold. */
+		 
 		.def = 0x30,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL5,
-		/*
-		 * Debouncer off, lowest average negative filter,
-		 * highest average positive filter.
-		 */
+		 
 		.def = 0x0f,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL6,
-		/* Proximity detection threshold: 280 */
+		 
 		.def = 0x0e,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL7,
-		/*
-		 * No automatic compensation, compensate each pin
-		 * independently, proximity hysteresis: 32, close
-		 * debouncer off, far debouncer off.
-		 */
+		 
 		.def = 0x00,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL8,
-		/* No stuck timeout, no periodic compensation. */
+		 
 		.def = 0x00,
 	},
 	{
 		.reg = SX9500_REG_PROX_CTRL0,
-		/* Scan period: 30ms, all sensors disabled. */
+		 
 		.def = 0x00,
 	},
 };
 
-/* Activate all channels and perform an initial compensation. */
+ 
 static int sx9500_init_compensation(struct iio_dev *indio_dev)
 {
 	struct sx9500_data *data = iio_priv(indio_dev);
@@ -862,10 +832,7 @@ static const struct acpi_gpio_params interrupt_gpios = { 2, 0, false };
 
 static const struct acpi_gpio_mapping acpi_sx9500_gpios[] = {
 	{ "reset-gpios", &reset_gpios, 1 },
-	/*
-	 * Some platforms have a bug in ACPI GPIO description making IRQ
-	 * GPIO to be output only. Ask the GPIO core to ignore this limit.
-	 */
+	 
 	{ "interrupt-gpios", &interrupt_gpios, 1, ACPI_GPIO_QUIRK_NO_IO_RESTRICTION },
 	{ },
 };
@@ -1002,10 +969,7 @@ static int sx9500_suspend(struct device *dev)
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * Scan period doesn't matter because when all the sensors are
-	 * deactivated the device is in sleep mode.
-	 */
+	 
 	ret = regmap_write(data->regmap, SX9500_REG_PROX_CTRL0, 0);
 
 out:

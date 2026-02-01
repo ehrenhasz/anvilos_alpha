@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * DES & Triple DES EDE Cipher Algorithms.
- *
- * Copyright (c) 2005 Dag Arne Osvik <da@osvik.no>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/compiler.h>
@@ -25,7 +19,7 @@
 #define ROL(x, r) ((x) = rol32((x), (r)))
 #define ROR(x, r) ((x) = ror32((x), (r)))
 
-/* Lookup tables for key expansion */
+ 
 
 static const u8 pc1[256] = {
 	0x00, 0x00, 0x40, 0x04, 0x10, 0x10, 0x50, 0x14,
@@ -357,7 +351,7 @@ static const u32 pc2[1024] = {
 	0x02024c00, 0x05018008, 0x281820c0, 0x10241034
 };
 
-/* S-box lookup tables */
+ 
 
 static const u32 S1[64] = {
 	0x01010400, 0x00000000, 0x00010000, 0x01010404,
@@ -511,7 +505,7 @@ static const u32 S8[64] = {
 	0x00001040, 0x00040040, 0x10000000, 0x10041000
 };
 
-/* Encryption components: IP, FP, and round function */
+ 
 
 #define IP(L, R, T)		\
 	ROL(R, 4);		\
@@ -592,14 +586,7 @@ static const u32 S8[64] = {
 	L ^= S3[0xff & A];					\
 	L ^= S1[0xff & (A >> 8)];
 
-/*
- * PC2 lookup tables are organized as 2 consecutive sets of 4 interleaved
- * tables of 128 elements.  One set is for C_i and the other for D_i, while
- * the 4 interleaved tables correspond to four 7-bit subsets of C_i or D_i.
- *
- * After PC1 each of the variables a,b,c,d contains a 7 bit subset of C_i
- * or D_i in bits 7-1 (bit 0 being the least significant).
- */
+ 
 
 #define T1(x) pt[2 * (x) + 0]
 #define T2(x) pt[2 * (x) + 1]
@@ -608,21 +595,10 @@ static const u32 S8[64] = {
 
 #define DES_PC2(a, b, c, d) (T4(d) | T3(c) | T2(b) | T1(a))
 
-/*
- * Encryption key expansion
- *
- * RFC2451: Weak key checks SHOULD be performed.
- *
- * FIPS 74:
- *
- *   Keys having duals are keys which produce all zeros, all ones, or
- *   alternating zero-one patterns in the C and D registers after Permuted
- *   Choice 1 has operated on the key.
- *
- */
+ 
 static unsigned long des_ekey(u32 *pe, const u8 *k)
 {
-	/* K&R: long is at least 32 bits */
+	 
 	unsigned long a, b, c, d, w;
 	const u32 *pt = pc2;
 
@@ -648,10 +624,10 @@ static unsigned long des_ekey(u32 *pe, const u8 *k)
 	pe[ 1 * 2 + 0] = DES_PC2(c, d, a, b); b = rs[b];
 	pe[ 0 * 2 + 0] = DES_PC2(b, c, d, a);
 
-	/* Check if first half is weak */
+	 
 	w  = (a ^ c) | (b ^ d) | (rs[a] ^ c) | (b ^ rs[d]);
 
-	/* Skip to next table set */
+	 
 	pt += 512;
 
 	d = k[0]; d &= 0xe0; d >>= 4; d |= k[4] & 0xf0; d = pc1[d + 1];
@@ -659,7 +635,7 @@ static unsigned long des_ekey(u32 *pe, const u8 *k)
 	b = k[2]; b &= 0xe0; b >>= 4; b |= k[6] & 0xf0; b = pc1[b + 1];
 	a = k[3]; a &= 0xe0; a >>= 4; a |= k[7] & 0xf0; a = pc1[a + 1];
 
-	/* Check if second half is weak */
+	 
 	w |= (a ^ c) | (b ^ d) | (rs[a] ^ c) | (b ^ rs[d]);
 
 	pe[15 * 2 + 1] = DES_PC2(a, b, c, d); d = rs[d];
@@ -679,7 +655,7 @@ static unsigned long des_ekey(u32 *pe, const u8 *k)
 	pe[ 1 * 2 + 1] = DES_PC2(c, d, a, b); b = rs[b];
 	pe[ 0 * 2 + 1] = DES_PC2(b, c, d, a);
 
-	/* Fixup: 2413 5768 -> 1357 2468 */
+	 
 	for (d = 0; d < 16; ++d) {
 		a = pe[2 * d];
 		b = pe[2 * d + 1];
@@ -692,7 +668,7 @@ static unsigned long des_ekey(u32 *pe, const u8 *k)
 		pe[2 * d + 1] = b;
 	}
 
-	/* Zero if weak key */
+	 
 	return w;
 }
 
@@ -705,15 +681,10 @@ int des_expand_key(struct des_ctx *ctx, const u8 *key, unsigned int keylen)
 }
 EXPORT_SYMBOL_GPL(des_expand_key);
 
-/*
- * Decryption key expansion
- *
- * No weak key checking is performed, as this is only used by triple DES
- *
- */
+ 
 static void dkey(u32 *pe, const u8 *k)
 {
-	/* K&R: long is at least 32 bits */
+	 
 	unsigned long a, b, c, d;
 	const u32 *pt = pc2;
 
@@ -739,7 +710,7 @@ static void dkey(u32 *pe, const u8 *k)
 	pe[14 * 2] = DES_PC2(c, d, a, b); b = rs[b];
 	pe[15 * 2] = DES_PC2(b, c, d, a);
 
-	/* Skip to next table set */
+	 
 	pt += 512;
 
 	d = k[0]; d &= 0xe0; d >>= 4; d |= k[4] & 0xf0; d = pc1[d + 1];
@@ -764,7 +735,7 @@ static void dkey(u32 *pe, const u8 *k)
 	pe[14 * 2 + 1] = DES_PC2(c, d, a, b); b = rs[b];
 	pe[15 * 2 + 1] = DES_PC2(b, c, d, a);
 
-	/* Fixup: 2413 5768 -> 1357 2468 */
+	 
 	for (d = 0; d < 16; ++d) {
 		a = pe[2 * d];
 		b = pe[2 * d + 1];

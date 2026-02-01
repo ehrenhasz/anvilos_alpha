@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 MediaTek Inc.
- * Author: Argus Lin <argus.lin@mediatek.com>
- */
+ 
+ 
 
 #ifndef _ACCDET_H_
 #define _ACCDET_H_
@@ -109,7 +106,7 @@ struct mt6359_accdet {
 	int accdet_irq;
 	int accdet_eint0;
 	int accdet_eint1;
-	struct mutex res_lock; /* lock protection */
+	struct mutex res_lock;  
 	bool jack_plugged;
 	unsigned int jack_type;
 	unsigned int btn_type;

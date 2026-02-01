@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2011 Samsung Electronics Co., Ltd
-//              http://www.samsung.com
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/of_gpio.h>
@@ -116,47 +116,47 @@ static const struct sec_voltage_desc *reg_voltage_map[] = {
 };
 
 static const unsigned int s5m8767_opmode_reg[][4] = {
-	/* {OFF, ON, LOWPOWER, SUSPEND} */
-	/* LDO1 ... LDO28 */
-	{0x0, 0x3, 0x2, 0x1}, /* LDO1 */
+	 
+	 
+	{0x0, 0x3, 0x2, 0x1},  
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x0, 0x0, 0x0},
-	{0x0, 0x3, 0x2, 0x1}, /* LDO5 */
+	{0x0, 0x3, 0x2, 0x1},  
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
-	{0x0, 0x3, 0x2, 0x1}, /* LDO10 */
+	{0x0, 0x3, 0x2, 0x1},  
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
-	{0x0, 0x3, 0x2, 0x1}, /* LDO15 */
-	{0x0, 0x3, 0x2, 0x1},
-	{0x0, 0x3, 0x2, 0x1},
-	{0x0, 0x0, 0x0, 0x0},
-	{0x0, 0x3, 0x2, 0x1},
-	{0x0, 0x3, 0x2, 0x1}, /* LDO20 */
+	{0x0, 0x3, 0x2, 0x1},  
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x0, 0x0, 0x0},
 	{0x0, 0x3, 0x2, 0x1},
-	{0x0, 0x3, 0x2, 0x1}, /* LDO25 */
+	{0x0, 0x3, 0x2, 0x1},  
 	{0x0, 0x3, 0x2, 0x1},
 	{0x0, 0x3, 0x2, 0x1},
-	{0x0, 0x3, 0x2, 0x1}, /* LDO28 */
+	{0x0, 0x0, 0x0, 0x0},
+	{0x0, 0x3, 0x2, 0x1},
+	{0x0, 0x3, 0x2, 0x1},  
+	{0x0, 0x3, 0x2, 0x1},
+	{0x0, 0x3, 0x2, 0x1},
+	{0x0, 0x3, 0x2, 0x1},  
 
-	/* BUCK1 ... BUCK9 */
-	{0x0, 0x3, 0x1, 0x1}, /* BUCK1 */
+	 
+	{0x0, 0x3, 0x1, 0x1},  
 	{0x0, 0x3, 0x1, 0x1},
 	{0x0, 0x3, 0x1, 0x1},
 	{0x0, 0x3, 0x1, 0x1},
-	{0x0, 0x3, 0x2, 0x1}, /* BUCK5 */
+	{0x0, 0x3, 0x2, 0x1},  
 	{0x0, 0x3, 0x1, 0x1},
 	{0x0, 0x3, 0x1, 0x1},
 	{0x0, 0x3, 0x1, 0x1},
-	{0x0, 0x3, 0x1, 0x1}, /* BUCK9 */
+	{0x0, 0x3, 0x1, 0x1},  
 };
 
 static int s5m8767_get_register(struct s5m8767_info *s5m8767, int reg_id,
@@ -316,7 +316,7 @@ static int s5m8767_set_voltage_sel(struct regulator_dev *rdev,
 		return -EINVAL;
 	}
 
-	/* buck234_vol != NULL means to control buck234 voltage via DVS GPIO */
+	 
 	if (buck234_vol) {
 		while (*buck234_vol != selector) {
 			buck234_vol++;
@@ -421,9 +421,7 @@ static struct regulator_desc regulators[] = {
 	s5m8767_regulator_desc(BUCK9),
 };
 
-/*
- * Enable GPIO control over BUCK9 in regulator_config for that regulator.
- */
+ 
 static void s5m8767_regulator_config_ext_control(struct s5m8767_info *s5m8767,
 		struct sec_regulator_data *rdata,
 		struct regulator_config *config)
@@ -433,7 +431,7 @@ static void s5m8767_regulator_config_ext_control(struct s5m8767_info *s5m8767,
 	if (rdata->id != S5M8767_BUCK9)
 		return;
 
-	/* Check if opmode for regulator matches S5M8767_ENCTRL_USE_GPIO */
+	 
 	for (i = 0; i < s5m8767->num_regulators; i++) {
 		const struct sec_opmode_data *opmode = &s5m8767->opmode[i];
 		if (opmode->id == rdata->id) {
@@ -458,9 +456,7 @@ static void s5m8767_regulator_config_ext_control(struct s5m8767_info *s5m8767,
 	config->ena_gpiod = rdata->ext_control_gpiod;
 }
 
-/*
- * Turn on GPIO control over BUCK9.
- */
+ 
 static int s5m8767_enable_ext_control(struct s5m8767_info *s5m8767,
 		struct regulator_dev *rdev)
 {
@@ -538,7 +534,7 @@ static int s5m8767_pmic_dt_parse_pdata(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* count the number of regulators to be supported in pmic */
+	 
 	pdata->num_regulators = of_get_child_count(regulators_np);
 
 	rdata = devm_kcalloc(&pdev->dev,
@@ -680,7 +676,7 @@ static int s5m8767_pmic_dt_parse_pdata(struct platform_device *pdev,
 {
 	return 0;
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static int s5m8767_pmic_probe(struct platform_device *pdev)
 {
@@ -815,13 +811,13 @@ static int s5m8767_pmic_probe(struct platform_device *pdev)
 		if (ret)
 			return ret;
 
-		/* SET1 GPIO */
+		 
 		gpio_direction_output(pdata->buck_gpios[0],
 				(s5m8767->buck_gpioindex >> 2) & 0x1);
-		/* SET2 GPIO */
+		 
 		gpio_direction_output(pdata->buck_gpios[1],
 				(s5m8767->buck_gpioindex >> 1) & 0x1);
-		/* SET3 GPIO */
+		 
 		gpio_direction_output(pdata->buck_gpios[2],
 				(s5m8767->buck_gpioindex >> 0) & 0x1);
 	}
@@ -838,11 +834,11 @@ static int s5m8767_pmic_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* DS2 GPIO */
+	 
 	gpio_direction_output(pdata->buck_ds[0], 0x0);
-	/* DS3 GPIO */
+	 
 	gpio_direction_output(pdata->buck_ds[1], 0x0);
-	/* DS4 GPIO */
+	 
 	gpio_direction_output(pdata->buck_ds[2], 0x0);
 
 	regmap_update_bits(s5m8767->iodev->regmap_pmic,
@@ -855,7 +851,7 @@ static int s5m8767_pmic_probe(struct platform_device *pdev)
 			   S5M8767_REG_BUCK4CTRL, 1 << 1,
 			   (pdata->buck4_gpiodvs) ? (1 << 1) : (0 << 1));
 
-	/* Initialize GPIO DVS registers */
+	 
 	for (i = 0; i < 8; i++) {
 		if (s5m8767->buck2_gpiodvs) {
 			regmap_write(s5m8767->iodev->regmap_pmic,
@@ -957,14 +953,11 @@ static int s5m8767_pmic_probe(struct platform_device *pdev)
 		config.of_node = pdata->regulators[i].reg_node;
 		config.ena_gpiod = NULL;
 		if (pdata->regulators[i].ext_control_gpiod) {
-			/* Assigns config.ena_gpiod */
+			 
 			s5m8767_regulator_config_ext_control(s5m8767,
 					&pdata->regulators[i], &config);
 
-			/*
-			 * Hand the GPIO descriptor management over to the
-			 * regulator core, remove it from devres management.
-			 */
+			 
 			devm_gpiod_unhinge(s5m8767->dev, config.ena_gpiod);
 		}
 		rdev = devm_regulator_register(&pdev->dev, &regulators[id],
@@ -1006,7 +999,7 @@ static struct platform_driver s5m8767_pmic_driver = {
 };
 module_platform_driver(s5m8767_pmic_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Sangbeom Kim <sbkim73@samsung.com>");
 MODULE_DESCRIPTION("Samsung S5M8767 Regulator Driver");
 MODULE_LICENSE("GPL");

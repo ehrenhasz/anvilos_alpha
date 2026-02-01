@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Copyright (C) 2012 Invensense, Inc.
-*/
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -35,7 +33,7 @@ static bool inv_mpu_i2c_aux_bus(struct device *dev)
 	case INV_ICM20600:
 	case INV_ICM20602:
 	case INV_IAM20680:
-		/* no i2c auxiliary bus on the chip */
+		 
 		return false;
 	case INV_MPU9150:
 	case INV_MPU9250:
@@ -56,13 +54,7 @@ static int inv_mpu_i2c_aux_setup(struct iio_dev *indio_dev)
 	struct fwnode_handle *mux_node;
 	int ret;
 
-	/*
-	 * MPU9xxx magnetometer support requires to disable i2c auxiliary bus.
-	 * To ensure backward compatibility with existing setups, do not disable
-	 * i2c auxiliary bus if it used.
-	 * Check for i2c-gate node in devicetree and set magnetometer disabled.
-	 * Only MPU6500 is supported by ACPI, no need to check.
-	 */
+	 
 	switch (st->chip_type) {
 	case INV_MPU9150:
 	case INV_MPU9250:
@@ -78,7 +70,7 @@ static int inv_mpu_i2c_aux_setup(struct iio_dev *indio_dev)
 		break;
 	}
 
-	/* enable i2c bypass when using i2c auxiliary bus */
+	 
 	if (inv_mpu_i2c_aux_bus(dev)) {
 		ret = regmap_write(st->map, st->reg->int_pin_cfg,
 				   st->irq_mask | INV_MPU6050_BIT_BYPASS_EN);
@@ -89,12 +81,7 @@ static int inv_mpu_i2c_aux_setup(struct iio_dev *indio_dev)
 	return 0;
 }
 
-/**
- *  inv_mpu_probe() - probe function.
- *  @client:          i2c client.
- *
- *  Returns 0 on success, a negative error code otherwise.
- */
+ 
 static int inv_mpu_probe(struct i2c_client *client)
 {
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
@@ -135,7 +122,7 @@ static int inv_mpu_probe(struct i2c_client *client)
 
 	st = iio_priv(dev_get_drvdata(&client->dev));
 	if (inv_mpu_i2c_aux_bus(&client->dev)) {
-		/* declare i2c auxiliary bus */
+		 
 		st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
 					 1, 0, I2C_MUX_LOCKED | I2C_MUX_GATE,
 					 inv_mpu6050_select_bypass, NULL);
@@ -168,10 +155,7 @@ static void inv_mpu_remove(struct i2c_client *client)
 	}
 }
 
-/*
- * device id table is used to identify what device can be
- * supported by this driver
- */
+ 
 static const struct i2c_device_id inv_mpu_id[] = {
 	{"mpu6050", INV_MPU6050},
 	{"mpu6500", INV_MPU6500},

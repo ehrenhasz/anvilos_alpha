@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
@@ -117,10 +111,10 @@ static int recv_request_import(int sockfd)
 	}
 
 	if (found) {
-		/* should set TCP_NODELAY for usbip */
+		 
 		usbip_net_set_nodelay(sockfd);
 
-		/* export device needs a TCP/IP socket descriptor */
+		 
 		status = usbip_export_device(edev, sockfd);
 		if (status < 0)
 			status = ST_NA;
@@ -163,17 +157,10 @@ static int send_reply_devlist(int connfd)
 	struct list_head *j;
 	int rc, i;
 
-	/*
-	 * Exclude devices that are already exported to a client from
-	 * the exportable device list to avoid:
-	 *	- import requests for devices that are exported only to
-	 *	  fail the request.
-	 *	- revealing devices that are imported by a client to
-	 *	  another client.
-	 */
+	 
 
 	reply.ndev = 0;
-	/* number of exported devices */
+	 
 	list_for_each(j, &driver->edev_list) {
 		edev = list_entry(j, struct usbip_exported_device, node);
 		if (edev->status != SDEV_ST_USED)
@@ -396,8 +383,7 @@ static int listen_all_addrinfo(struct addrinfo *ai_head, int sockfdlist[],
 
 		usbip_net_set_reuseaddr(sock);
 		usbip_net_set_nodelay(sock);
-		/* We use seperate sockets for IPv4 and IPv6
-		 * (see do_standalone_mode()) */
+		 
 		usbip_net_set_v6only(sock);
 
 		ret = bind(sock, ai->ai_addr, ai->ai_addrlen);
@@ -515,11 +501,7 @@ static int do_standalone_mode(int daemonize, int ipv4, int ipv6)
 
 	info("starting " PROGNAME " (%s)", usbip_version_string);
 
-	/*
-	 * To suppress warnings on systems with bindv6only disabled
-	 * (default), we use seperate sockets for IPv6 and IPv4 and set
-	 * IPV6_V6ONLY on the IPv6 sockets.
-	 */
+	 
 	if (ipv4 && ipv6)
 		family = AF_UNSPEC;
 	else if (ipv4)

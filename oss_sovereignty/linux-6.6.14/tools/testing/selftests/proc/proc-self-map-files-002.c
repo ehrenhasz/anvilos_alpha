@@ -1,19 +1,5 @@
-/*
- * Copyright © 2018 Alexey Dobriyan <adobriyan@gmail.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-/* Test readlink /proc/self/map_files/... with minimum address. */
+ 
+ 
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -47,10 +33,7 @@ static void fail(const char *fmt, unsigned long a, unsigned long b)
 int main(void)
 {
 	const int PAGE_SIZE = sysconf(_SC_PAGESIZE);
-	/*
-	 * va_max must be enough bigger than vm.mmap_min_addr, which is
-	 * 64KB/32KB by default. (depends on CONFIG_LSM_MMAP_MIN_ADDR)
-	 */
+	 
 	const unsigned long va_max = 1UL << 20;
 	unsigned long va;
 	void *p;

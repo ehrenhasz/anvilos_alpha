@@ -1,27 +1,8 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * These math functions are taken from newlib-nano-2, the newlib/libm/math
- * directory, available from https://github.com/32bitmicro/newlib-nano-2.
- *
- * Appropriate copyright headers are reproduced below.
- */
+ 
 
-/* wf_lgamma.c -- float version of w_lgamma.c.
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
+ 
 
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice 
- * is preserved.
- * ====================================================
- *
- */
+ 
 
 #include "fdlibm.h"
 #define _IEEE_LIBM 1
@@ -46,7 +27,7 @@
 #define HUGE_VAL inf
 	    double inf = 0.0;
 
-	    SET_HIGH_WORD(inf,0x7ff00000);	/* set inf to infinite */
+	    SET_HIGH_WORD(inf,0x7ff00000);	 
 #endif
 	    exc.name = "lgammaf";
 	    exc.err = 0;
@@ -56,7 +37,7 @@
             else
                exc.retval = HUGE_VAL;
 	    if(floorf(x)==x&&x<=(float)0.0) {
-		/* lgammaf(-integer) */
+		 
 		exc.type = SING;
 		if (_LIB_VERSION == _POSIX_)
 		   errno = EDOM;
@@ -65,7 +46,7 @@
 		}
 
             } else {
-		/* lgammaf(finite) overflow */
+		 
 		exc.type = OVERFLOW;
                 if (_LIB_VERSION == _POSIX_)
 		   errno = ERANGE;
@@ -93,4 +74,4 @@
 	return (double) lgammaf((float) x);
 }
 
-#endif /* defined(_DOUBLE_IS_32BITS) */
+#endif  

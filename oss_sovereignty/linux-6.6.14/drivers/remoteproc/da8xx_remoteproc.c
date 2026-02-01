@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Remote processor machine-specific module for DA8XX
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -25,10 +21,7 @@ module_param(da8xx_fw_name, charp, 0444);
 MODULE_PARM_DESC(da8xx_fw_name,
 		 "Name of DSP firmware file in /lib/firmware (if not specified defaults to 'rproc-dsp-fw')");
 
-/*
- * OMAP-L138 Technical References:
- * http://www.ti.com/product/omap-l138
- */
+ 
 #define SYSCFG_CHIPSIG0 BIT(0)
 #define SYSCFG_CHIPSIG1 BIT(1)
 #define SYSCFG_CHIPSIG2 BIT(2)
@@ -37,13 +30,7 @@ MODULE_PARM_DESC(da8xx_fw_name,
 
 #define DA8XX_RPROC_LOCAL_ADDRESS_MASK	(SZ_16M - 1)
 
-/**
- * struct da8xx_rproc_mem - internal memory structure
- * @cpu_addr: MPU virtual address of the memory region
- * @bus_addr: Bus address used to access the memory region
- * @dev_addr: Device address of the memory region from DSP view
- * @size: Size of the memory region
- */
+ 
 struct da8xx_rproc_mem {
 	void __iomem *cpu_addr;
 	phys_addr_t bus_addr;
@@ -51,18 +38,7 @@ struct da8xx_rproc_mem {
 	size_t size;
 };
 
-/**
- * struct da8xx_rproc - da8xx remote processor instance state
- * @rproc: rproc handle
- * @mem: internal memory regions data
- * @num_mems: number of internal memory regions
- * @dsp_clk: placeholder for platform's DSP clk
- * @ack_fxn: chip-specific ack function for ack'ing irq
- * @irq_data: ack_fxn function parameter
- * @chipsig: virt ptr to DSP interrupt registers (CHIPSIG & CHIPSIG_CLR)
- * @bootreg: virt ptr to DSP boot address register (HOST1CFG)
- * @irq: irq # used by this instance
- */
+ 
 struct da8xx_rproc {
 	struct rproc *rproc;
 	struct da8xx_rproc_mem *mem;
@@ -76,32 +52,19 @@ struct da8xx_rproc {
 	int irq;
 };
 
-/**
- * handle_event() - inbound virtqueue message workqueue function
- *
- * This function is registered as a kernel thread and is scheduled by the
- * kernel handler.
- */
+ 
 static irqreturn_t handle_event(int irq, void *p)
 {
 	struct rproc *rproc = p;
 
-	/* Process incoming buffers on all our vrings */
+	 
 	rproc_vq_interrupt(rproc, 0);
 	rproc_vq_interrupt(rproc, 1);
 
 	return IRQ_HANDLED;
 }
 
-/**
- * da8xx_rproc_callback() - inbound virtqueue message handler
- *
- * This handler is invoked directly by the kernel whenever the remote
- * core (DSP) has modified the state of a virtqueue.  There is no
- * "payload" message indicating the virtqueue index as is the case with
- * mailbox-based implementations on OMAP4.  As such, this handler "polls"
- * each known virtqueue index for every invocation.
- */
+ 
 static irqreturn_t da8xx_rproc_callback(int irq, void *p)
 {
 	struct rproc *rproc = p;
@@ -110,18 +73,10 @@ static irqreturn_t da8xx_rproc_callback(int irq, void *p)
 
 	chipsig = readl(drproc->chipsig);
 	if (chipsig & SYSCFG_CHIPSIG0) {
-		/* Clear interrupt level source */
+		 
 		writel(SYSCFG_CHIPSIG0, drproc->chipsig + 4);
 
-		/*
-		 * ACK intr to AINTC.
-		 *
-		 * It has already been ack'ed by the kernel before calling
-		 * this function, but since the ARM<->DSP interrupts in the
-		 * CHIPSIG register are "level" instead of "pulse" variety,
-		 * we need to ack it after taking down the level else we'll
-		 * be called again immediately after returning.
-		 */
+		 
 		drproc->ack_fxn(drproc->irq_data);
 
 		return IRQ_WAKE_THREAD;
@@ -138,7 +93,7 @@ static int da8xx_rproc_start(struct rproc *rproc)
 	struct reset_control *dsp_reset = drproc->dsp_reset;
 	int ret;
 
-	/* hw requires the start (boot) address be on 1KB boundary */
+	 
 	if (rproc->bootaddr & 0x3ff) {
 		dev_err(dev, "invalid boot address: must be aligned to 1KB\n");
 
@@ -180,12 +135,12 @@ static int da8xx_rproc_stop(struct rproc *rproc)
 	return 0;
 }
 
-/* kick a virtqueue */
+ 
 static void da8xx_rproc_kick(struct rproc *rproc, int vqid)
 {
 	struct da8xx_rproc *drproc = rproc->priv;
 
-	/* Interrupt remote proc */
+	 
 	writel(SYSCFG_CHIPSIG2, drproc->chipsig);
 }
 
@@ -302,7 +257,7 @@ static int da8xx_rproc_probe(struct platform_device *pdev)
 		goto free_mem;
 	}
 
-	/* error recovery is not supported at present */
+	 
 	rproc->recovery_disabled = true;
 
 	drproc = rproc->priv;
@@ -317,7 +272,7 @@ static int da8xx_rproc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, rproc);
 
-	/* everything the ISR needs is now setup, so hook it up */
+	 
 	ret = devm_request_threaded_irq(dev, irq, da8xx_rproc_callback,
 					handle_event, 0, "da8xx-remoteproc",
 					rproc);
@@ -326,11 +281,7 @@ static int da8xx_rproc_probe(struct platform_device *pdev)
 		goto free_rproc;
 	}
 
-	/*
-	 * rproc_add() can end up enabling the DSP's clk with the DSP
-	 * *not* in reset, but da8xx_rproc_start() needs the DSP to be
-	 * held in reset at the time it is called.
-	 */
+	 
 	ret = reset_control_assert(dsp_reset);
 	if (ret)
 		goto free_rproc;
@@ -363,11 +314,7 @@ static void da8xx_rproc_remove(struct platform_device *pdev)
 	struct da8xx_rproc *drproc = rproc->priv;
 	struct device *dev = &pdev->dev;
 
-	/*
-	 * The devm subsystem might end up releasing things before
-	 * freeing the irq, thus allowing an interrupt to sneak in while
-	 * the device is being removed.  This should prevent that.
-	 */
+	 
 	disable_irq(drproc->irq);
 
 	rproc_del(rproc);
@@ -378,7 +325,7 @@ static void da8xx_rproc_remove(struct platform_device *pdev)
 
 static const struct of_device_id davinci_rproc_of_match[] __maybe_unused = {
 	{ .compatible = "ti,da850-dsp", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, davinci_rproc_of_match);
 

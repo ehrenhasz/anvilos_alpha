@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * altera-lpt.c
- *
- * altera FPGA driver
- *
- * Copyright (C) Altera Corporation 1998-2001
- * Copyright (C) 2010 NetUP Inc.
- * Copyright (C) 2010 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/kernel.h>

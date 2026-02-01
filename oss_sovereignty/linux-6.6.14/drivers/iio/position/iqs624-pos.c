@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Azoteq IQS624/625 Angular Position Sensors
- *
- * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iio/events.h>
@@ -34,12 +30,7 @@ static int iqs624_pos_angle_en(struct iqs62x_core *iqs62x, bool angle_en)
 {
 	unsigned int event_mask = IQS624_HALL_UI_WHL_EVENT;
 
-	/*
-	 * The IQS625 reports angular position in the form of coarse intervals,
-	 * so only interval change events are unmasked. Conversely, the IQS624
-	 * reports angular position down to one degree of resolution, so wheel
-	 * movement events are unmasked instead.
-	 */
+	 
 	if (iqs62x->dev_desc->prod_num == IQS625_PROD_NUM)
 		event_mask = IQS624_HALL_UI_INT_EVENT;
 

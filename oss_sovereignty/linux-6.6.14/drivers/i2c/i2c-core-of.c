@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux I2C core OF support code
- *
- * Copyright (C) 2008 Jochen Friedrich <jochen@scram.de>
- * based on a previous patch from Jon Smirl <jonsmirl@gmail.com>
- *
- * Copyright (C) 2013, 2018 Wolfram Sang <wsa@kernel.org>
- */
+
+ 
 
 #include <dt-bindings/i2c/i2c.h>
 #include <linux/device.h>
@@ -87,7 +80,7 @@ void of_i2c_register_devices(struct i2c_adapter *adap)
 	struct device_node *bus, *node;
 	struct i2c_client *client;
 
-	/* Only register child devices if the adapter has a node pointer set */
+	 
 	if (!adap->dev.of_node)
 		return;
 
@@ -120,12 +113,7 @@ i2c_of_match_device_sysfs(const struct of_device_id *matches,
 	const char *name;
 
 	for (; matches->compatible[0]; matches++) {
-		/*
-		 * Adding devices through the i2c sysfs interface provides us
-		 * a string to match which may be compatible with the device
-		 * tree compatible strings, however with no actual of_node the
-		 * of_match_device() will not match
-		 */
+		 
 		if (sysfs_streq(client->name, matches->compatible))
 			return matches;
 
@@ -171,17 +159,14 @@ static int of_i2c_notify(struct notifier_block *nb, unsigned long action,
 	case OF_RECONFIG_CHANGE_ADD:
 		adap = of_find_i2c_adapter_by_node(rd->dn->parent);
 		if (adap == NULL)
-			return NOTIFY_OK;	/* not for us */
+			return NOTIFY_OK;	 
 
 		if (of_node_test_and_set_flag(rd->dn, OF_POPULATED)) {
 			put_device(&adap->dev);
 			return NOTIFY_OK;
 		}
 
-		/*
-		 * Clear the flag before adding the device so that fw_devlink
-		 * doesn't skip adding consumers to this device.
-		 */
+		 
 		rd->dn->fwnode.flags &= ~FWNODE_FLAG_NOT_DEVICE;
 		client = of_i2c_register_device(adap, rd->dn);
 		if (IS_ERR(client)) {
@@ -194,19 +179,19 @@ static int of_i2c_notify(struct notifier_block *nb, unsigned long action,
 		put_device(&adap->dev);
 		break;
 	case OF_RECONFIG_CHANGE_REMOVE:
-		/* already depopulated? */
+		 
 		if (!of_node_check_flag(rd->dn, OF_POPULATED))
 			return NOTIFY_OK;
 
-		/* find our device by node */
+		 
 		client = of_find_i2c_device_by_node(rd->dn);
 		if (client == NULL)
-			return NOTIFY_OK;	/* no? not meant for us */
+			return NOTIFY_OK;	 
 
-		/* unregister takes one ref away */
+		 
 		i2c_unregister_device(client);
 
-		/* and put the reference of the find */
+		 
 		put_device(&client->dev);
 		break;
 	}
@@ -217,4 +202,4 @@ static int of_i2c_notify(struct notifier_block *nb, unsigned long action,
 struct notifier_block i2c_of_notifier = {
 	.notifier_call = of_i2c_notify,
 };
-#endif /* CONFIG_OF_DYNAMIC */
+#endif  

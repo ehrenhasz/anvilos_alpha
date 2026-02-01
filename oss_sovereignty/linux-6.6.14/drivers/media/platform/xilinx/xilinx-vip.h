@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Xilinx Video IP Core
- *
- * Copyright (C) 2013-2015 Ideas on Board
- * Copyright (C) 2013-2015 Xilinx, Inc.
- *
- * Contacts: Hyun Kwon <hyun.kwon@xilinx.com>
- *           Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+ 
+ 
 
 #ifndef __XILINX_VIP_H__
 #define __XILINX_VIP_H__
@@ -18,23 +10,17 @@
 
 struct clk;
 
-/*
- * Minimum and maximum width and height common to most video IP cores. IP
- * cores with different requirements must define their own values.
- */
+ 
 #define XVIP_MIN_WIDTH			32
 #define XVIP_MAX_WIDTH			7680
 #define XVIP_MIN_HEIGHT			32
 #define XVIP_MAX_HEIGHT			7680
 
-/*
- * Pad IDs. IP cores with multiple inputs or outputs should define their own
- * values.
- */
+ 
 #define XVIP_PAD_SINK			0
 #define XVIP_PAD_SOURCE			1
 
-/* Xilinx Video IP Control Registers */
+ 
 #define XVIP_CTRL_CONTROL			0x0000
 #define XVIP_CTRL_CONTROL_SW_ENABLE		BIT(0)
 #define XVIP_CTRL_CONTROL_REG_UPDATE		BIT(1)
@@ -65,7 +51,7 @@ struct clk;
 #define XVIP_CTRL_VERSION_INTERNAL_MASK		(0xff << 0)
 #define XVIP_CTRL_VERSION_INTERNAL_SHIFT	0
 
-/* Xilinx Video IP Timing Registers */
+ 
 #define XVIP_ACTIVE_SIZE			0x0020
 #define XVIP_ACTIVE_VSIZE_MASK			(0x7ff << 16)
 #define XVIP_ACTIVE_VSIZE_SHIFT			16
@@ -85,14 +71,7 @@ struct clk;
 #define XVIP_ENCODING_VIDEO_FORMAT_MASK		(3 << 0)
 #define XVIP_ENCODING_VIDEO_FORMAT_SHIFT	0
 
-/**
- * struct xvip_device - Xilinx Video IP device structure
- * @subdev: V4L2 subdevice
- * @dev: (OF) device
- * @iomem: device I/O register space remapped to kernel virtual memory
- * @clk: video core clock
- * @saved_ctrl: saved control register for resume / suspend
- */
+ 
 struct xvip_device {
 	struct v4l2_subdev subdev;
 	struct device *dev;
@@ -101,15 +80,7 @@ struct xvip_device {
 	u32 saved_ctrl;
 };
 
-/**
- * struct xvip_video_format - Xilinx Video IP video format description
- * @vf_code: AXI4 video format code
- * @width: AXI4 format width in bits per component
- * @pattern: CFA pattern for Mono/Sensor formats
- * @code: media bus format code
- * @bpp: bytes per pixel (when stored in memory)
- * @fourcc: V4L2 pixel format FCC identifier
- */
+ 
 struct xvip_video_format {
 	unsigned int vf_code;
 	unsigned int width;
@@ -231,4 +202,4 @@ static inline void xvip_print_version(struct xvip_device *xvip)
 		  XVIP_CTRL_VERSION_REVISION_SHIFT));
 }
 
-#endif /* __XILINX_VIP_H__ */
+#endif  

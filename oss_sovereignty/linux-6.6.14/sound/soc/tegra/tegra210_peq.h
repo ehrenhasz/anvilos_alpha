@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra210_peq.h - Definitions for Tegra210 PEQ driver
- *
- * Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __TEGRA210_PEQ_H__
 #define __TEGRA210_PEQ_H__
@@ -13,7 +8,7 @@
 #include <linux/regmap.h>
 #include <sound/soc.h>
 
-/* Register offsets from PEQ base */
+ 
 #define TEGRA210_PEQ_SOFT_RESET				0x0
 #define TEGRA210_PEQ_CG					0x4
 #define TEGRA210_PEQ_STATUS				0x8
@@ -23,7 +18,7 @@
 #define TEGRA210_PEQ_CFG_RAM_SHIFT_CTRL			0x18
 #define TEGRA210_PEQ_CFG_RAM_SHIFT_DATA			0x1c
 
-/* Fields in TEGRA210_PEQ_CFG */
+ 
 #define TEGRA210_PEQ_CFG_BIQUAD_STAGES_SHIFT		2
 #define TEGRA210_PEQ_CFG_BIQUAD_STAGES_MASK		(0xf << TEGRA210_PEQ_CFG_BIQUAD_STAGES_SHIFT)
 
@@ -36,7 +31,7 @@
 #define TEGRA210_PEQ_RAM_CTRL_SEQ_ACCESS_EN		(1 << 12)
 #define TEGRA210_PEQ_RAM_CTRL_RAM_ADDR_MASK		0x1ff
 
-/* PEQ register definition ends here */
+ 
 #define TEGRA210_PEQ_MAX_BIQUAD_STAGES			12
 
 #define TEGRA210_PEQ_MAX_CHANNELS			8

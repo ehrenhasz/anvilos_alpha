@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * EHRPWM PWM driver
- *
- * Copyright (C) 2012 Texas Instruments, Inc. - https://www.ti.com/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -14,9 +10,9 @@
 #include <linux/pm_runtime.h>
 #include <linux/of.h>
 
-/* EHRPWM registers and bits definitions */
+ 
 
-/* Time base module registers */
+ 
 #define TBCTL			0x00
 #define TBPRD			0x0A
 
@@ -38,11 +34,11 @@
 #define HSPCLKDIV_MAX		7
 #define PERIOD_MAX		0xFFFF
 
-/* compare module registers */
+ 
 #define CMPA			0x12
 #define CMPB			0x14
 
-/* Action qualifier module registers */
+ 
 #define AQCTLA			0x16
 #define AQCTLB			0x18
 #define AQSFRC			0x1A
@@ -91,7 +87,7 @@
 #define AQCSFRC_CSFA_FRCHIGH	BIT(1)
 #define AQCSFRC_CSFA_DISSWFRC	(BIT(1) | BIT(0))
 
-#define NUM_PWM_CHANNEL		2	/* EHRPWM channels */
+#define NUM_PWM_CHANNEL		2	 
 
 struct ehrpwm_context {
 	u16 tbctl;
@@ -141,12 +137,7 @@ static void ehrpwm_modify(void __iomem *base, unsigned int offset, u16 mask,
 	writew(val, base + offset);
 }
 
-/**
- * set_prescale_div -	Set up the prescaler divider function
- * @rqst_prescaler:	prescaler value min
- * @prescale_div:	prescaler value set
- * @tb_clk_div:		Time Base Control prescaler bits
- */
+ 
 static int set_prescale_div(unsigned long rqst_prescaler, u16 *prescale_div,
 			    u16 *tb_clk_div)
 {
@@ -154,16 +145,7 @@ static int set_prescale_div(unsigned long rqst_prescaler, u16 *prescale_div,
 
 	for (clkdiv = 0; clkdiv <= CLKDIV_MAX; clkdiv++) {
 		for (hspclkdiv = 0; hspclkdiv <= HSPCLKDIV_MAX; hspclkdiv++) {
-			/*
-			 * calculations for prescaler value :
-			 * prescale_div = HSPCLKDIVIDER * CLKDIVIDER.
-			 * HSPCLKDIVIDER =  2 ** hspclkdiv
-			 * CLKDIVIDER = (1),		if clkdiv == 0 *OR*
-			 *		(2 * clkdiv),	if clkdiv != 0
-			 *
-			 * Configure prescale_div value such that period
-			 * register value is less than 65535.
-			 */
+			 
 
 			*prescale_div = (1 << clkdiv) *
 					(hspclkdiv ? (hspclkdiv * 2) : 1);
@@ -183,12 +165,7 @@ static void configure_polarity(struct ehrpwm_pwm_chip *pc, int chan)
 	u16 aqctl_val, aqctl_mask;
 	unsigned int aqctl_reg;
 
-	/*
-	 * Configure PWM output to HIGH/LOW level on counter
-	 * reaches compare register value and LOW/HIGH level
-	 * on counter value reaches period register value and
-	 * zero value on counter
-	 */
+	 
 	if (chan == 1) {
 		aqctl_reg = AQCTLB;
 		aqctl_mask = AQCTL_CBU_MASK;
@@ -211,10 +188,7 @@ static void configure_polarity(struct ehrpwm_pwm_chip *pc, int chan)
 	ehrpwm_modify(pc->mmio_base, aqctl_reg, aqctl_mask, aqctl_val);
 }
 
-/*
- * period_ns = 10^9 * (ps_divval * period_cycles) / PWM_CLK_RATE
- * duty_ns   = 10^9 * (ps_divval * duty_cycles) / PWM_CLK_RATE
- */
+ 
 static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			     u64 duty_ns, u64 period_ns)
 {
@@ -242,17 +216,11 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		duty_cycles = (unsigned long)c;
 	}
 
-	/*
-	 * Period values should be same for multiple PWM channels as IP uses
-	 * same period register for multiple channels.
-	 */
+	 
 	for (i = 0; i < NUM_PWM_CHANNEL; i++) {
 		if (pc->period_cycles[i] &&
 				(pc->period_cycles[i] != period_cycles)) {
-			/*
-			 * Allow channel to reconfigure period if no other
-			 * channels being configured.
-			 */
+			 
 			if (i == pwm->hwpwm)
 				continue;
 
@@ -265,7 +233,7 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	pc->period_cycles[pwm->hwpwm] = period_cycles;
 
-	/* Configure clock prescaler to support Low frequency PWM wave */
+	 
 	if (set_prescale_div(period_cycles/PERIOD_MAX, &ps_divval,
 			     &tb_divval)) {
 		dev_err(chip->dev, "Unsupported values\n");
@@ -274,27 +242,27 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	pm_runtime_get_sync(chip->dev);
 
-	/* Update clock prescaler values */
+	 
 	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_CLKDIV_MASK, tb_divval);
 
-	/* Update period & duty cycle with presacler division */
+	 
 	period_cycles = period_cycles / ps_divval;
 	duty_cycles = duty_cycles / ps_divval;
 
-	/* Configure shadow loading on Period register */
+	 
 	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_PRDLD_MASK, TBCTL_PRDLD_SHDW);
 
 	ehrpwm_write(pc->mmio_base, TBPRD, period_cycles);
 
-	/* Configure ehrpwm counter for up-count mode */
+	 
 	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_CTRMODE_MASK,
 		      TBCTL_CTRMODE_UP);
 
 	if (pwm->hwpwm == 1)
-		/* Channel 1 configured with compare B register */
+		 
 		cmp_reg = CMPB;
 	else
-		/* Channel 0 configured with compare A register */
+		 
 		cmp_reg = CMPA;
 
 	ehrpwm_write(pc->mmio_base, cmp_reg, duty_cycles);
@@ -310,7 +278,7 @@ static int ehrpwm_pwm_set_polarity(struct pwm_chip *chip,
 {
 	struct ehrpwm_pwm_chip *pc = to_ehrpwm_pwm_chip(chip);
 
-	/* Configuration of polarity in hardware delayed, do at enable */
+	 
 	pc->polarity[pwm->hwpwm] = polarity;
 
 	return 0;
@@ -322,10 +290,10 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 	u16 aqcsfrc_val, aqcsfrc_mask;
 	int ret;
 
-	/* Leave clock enabled on enabling PWM */
+	 
 	pm_runtime_get_sync(chip->dev);
 
-	/* Disabling Action Qualifier on PWM output */
+	 
 	if (pwm->hwpwm) {
 		aqcsfrc_val = AQCSFRC_CSFB_FRCDIS;
 		aqcsfrc_mask = AQCSFRC_CSFB_MASK;
@@ -334,16 +302,16 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 		aqcsfrc_mask = AQCSFRC_CSFA_MASK;
 	}
 
-	/* Changes to shadow mode */
+	 
 	ehrpwm_modify(pc->mmio_base, AQSFRC, AQSFRC_RLDCSF_MASK,
 		      AQSFRC_RLDCSF_ZRO);
 
 	ehrpwm_modify(pc->mmio_base, AQCSFRC, aqcsfrc_mask, aqcsfrc_val);
 
-	/* Channels polarity can be configured from action qualifier module */
+	 
 	configure_polarity(pc, pwm->hwpwm);
 
-	/* Enable TBCLK */
+	 
 	ret = clk_enable(pc->tbclk);
 	if (ret) {
 		dev_err(chip->dev, "Failed to enable TBCLK for %s: %d\n",
@@ -359,7 +327,7 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 	struct ehrpwm_pwm_chip *pc = to_ehrpwm_pwm_chip(chip);
 	u16 aqcsfrc_val, aqcsfrc_mask;
 
-	/* Action Qualifier puts PWM output low forcefully */
+	 
 	if (pwm->hwpwm) {
 		aqcsfrc_val = AQCSFRC_CSFB_FRCLOW;
 		aqcsfrc_mask = AQCSFRC_CSFB_MASK;
@@ -368,23 +336,20 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 		aqcsfrc_mask = AQCSFRC_CSFA_MASK;
 	}
 
-	/* Update shadow register first before modifying active register */
+	 
 	ehrpwm_modify(pc->mmio_base, AQSFRC, AQSFRC_RLDCSF_MASK,
 		      AQSFRC_RLDCSF_ZRO);
 	ehrpwm_modify(pc->mmio_base, AQCSFRC, aqcsfrc_mask, aqcsfrc_val);
-	/*
-	 * Changes to immediate action on Action Qualifier. This puts
-	 * Action Qualifier control on PWM output from next TBCLK
-	 */
+	 
 	ehrpwm_modify(pc->mmio_base, AQSFRC, AQSFRC_RLDCSF_MASK,
 		      AQSFRC_RLDCSF_IMDT);
 
 	ehrpwm_modify(pc->mmio_base, AQCSFRC, aqcsfrc_mask, aqcsfrc_val);
 
-	/* Disabling TBCLK on PWM disable */
+	 
 	clk_disable(pc->tbclk);
 
-	/* Disable clock on PWM disable */
+	 
 	pm_runtime_put_sync(chip->dev);
 }
 
@@ -397,7 +362,7 @@ static void ehrpwm_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
 		pm_runtime_put_sync(chip->dev);
 	}
 
-	/* set period value to zero on free */
+	 
 	pc->period_cycles[pwm->hwpwm] = 0;
 }
 
@@ -483,7 +448,7 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
 	if (IS_ERR(pc->mmio_base))
 		return PTR_ERR(pc->mmio_base);
 
-	/* Acquire tbclk for Time Base EHRPWM submodule */
+	 
 	pc->tbclk = devm_clk_get(&pdev->dev, "tbclk");
 	if (IS_ERR(pc->tbclk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(pc->tbclk), "Failed to get tbclk\n");
@@ -564,7 +529,7 @@ static int ehrpwm_pwm_suspend(struct device *dev)
 		if (!pwm_is_enabled(pwm))
 			continue;
 
-		/* Disable explicitly if PWM is running */
+		 
 		pm_runtime_put_sync(dev);
 	}
 
@@ -582,7 +547,7 @@ static int ehrpwm_pwm_resume(struct device *dev)
 		if (!pwm_is_enabled(pwm))
 			continue;
 
-		/* Enable explicitly if PWM was running */
+		 
 		pm_runtime_get_sync(dev);
 	}
 

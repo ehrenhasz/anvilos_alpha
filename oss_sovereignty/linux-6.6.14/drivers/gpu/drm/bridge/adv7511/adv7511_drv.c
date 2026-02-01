@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog Devices ADV7511 HDMI transmitter driver
- *
- * Copyright 2012 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -22,7 +18,7 @@
 
 #include "adv7511.h"
 
-/* ADI recommended values for proper operation. */
+ 
 static const struct reg_sequence adv7511_fixed_registers[] = {
 	{ 0x98, 0x03 },
 	{ 0x9a, 0xe0 },
@@ -35,42 +31,40 @@ static const struct reg_sequence adv7511_fixed_registers[] = {
 	{ 0x55, 0x02 },
 };
 
-/* -----------------------------------------------------------------------------
- * Register access
- */
+ 
 
 static const uint8_t adv7511_register_defaults[] = {
-	0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 00 */
+	0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x01, 0x0e, 0xbc, 0x18, 0x01, 0x13,
-	0x25, 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 10 */
+	0x25, 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x46, 0x62, 0x04, 0xa8, 0x00, 0x00, 0x1c, 0x84,
-	0x1c, 0xbf, 0x04, 0xa8, 0x1e, 0x70, 0x02, 0x1e, /* 20 */
+	0x1c, 0xbf, 0x04, 0xa8, 0x1e, 0x70, 0x02, 0x1e,  
 	0x00, 0x00, 0x04, 0xa8, 0x08, 0x12, 0x1b, 0xac,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 30 */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0xb0,
-	0x00, 0x50, 0x90, 0x7e, 0x79, 0x70, 0x00, 0x00, /* 40 */
+	0x00, 0x50, 0x90, 0x7e, 0x79, 0x70, 0x00, 0x00,  
 	0x00, 0xa8, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x02, 0x0d, 0x00, 0x00, 0x00, 0x00, /* 50 */
+	0x00, 0x00, 0x02, 0x0d, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 60 */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x01, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 70 */
+	0x01, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 80 */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, /* 90 */
+	0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00,  
 	0x0b, 0x02, 0x00, 0x18, 0x5a, 0x60, 0x00, 0x00,
-	0x00, 0x00, 0x80, 0x80, 0x08, 0x04, 0x00, 0x00, /* a0 */
+	0x00, 0x00, 0x80, 0x80, 0x08, 0x04, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x40, 0x14,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* b0 */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* c0 */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
 	0x00, 0x03, 0x00, 0x00, 0x02, 0x00, 0x01, 0x04,
-	0x30, 0xff, 0x80, 0x80, 0x80, 0x00, 0x00, 0x00, /* d0 */
+	0x30, 0xff, 0x80, 0x80, 0x80, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x01,
-	0x80, 0x75, 0x00, 0x00, 0x60, 0x00, 0x00, 0x00, /* e0 */
+	0x80, 0x75, 0x00, 0x00, 0x60, 0x00, 0x00, 0x00,  
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x11, 0x00, /* f0 */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x11, 0x00,  
 	0x00, 0x7c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
@@ -128,9 +122,7 @@ static const struct regmap_config adv7511_regmap_config = {
 	.volatile_reg = adv7511_register_volatile,
 };
 
-/* -----------------------------------------------------------------------------
- * Hardware configuration
- */
+ 
 
 static void adv7511_set_colormap(struct adv7511 *adv7511, bool enable,
 				 const uint16_t *coeff,
@@ -193,7 +185,7 @@ static int adv7511_packet_disable(struct adv7511 *adv7511, unsigned int packet)
 	return 0;
 }
 
-/* Coefficients for adv7511 color space conversion */
+ 
 static const uint16_t adv7511_csc_ycbcr_to_rgb[] = {
 	0x0734, 0x04ad, 0x0000, 0x1c1b,
 	0x1ddc, 0x04ad, 0x1f24, 0x0135,
@@ -272,7 +264,7 @@ static void adv7511_set_config_csc(struct adv7511 *adv7511,
 	hdmi_avi_infoframe_pack(&config.avi_infoframe, infoframe,
 				sizeof(infoframe));
 
-	/* The AVI infoframe id is not configurable */
+	 
 	regmap_bulk_write(adv7511->regmap, ADV7511_REG_AVI_INFOFRAME_VERSION,
 			  infoframe + 1, sizeof(infoframe) - 1);
 
@@ -282,10 +274,7 @@ static void adv7511_set_config_csc(struct adv7511 *adv7511,
 static void adv7511_set_link_config(struct adv7511 *adv7511,
 				    const struct adv7511_link_config *config)
 {
-	/*
-	 * The input style values documented in the datasheet don't match the
-	 * hardware register field values :-(
-	 */
+	 
 	static const unsigned int input_styles[4] = { 0, 2, 1, 3 };
 
 	unsigned int clock_delay;
@@ -296,7 +285,7 @@ static void adv7511_set_link_config(struct adv7511 *adv7511,
 	color_depth = config->input_color_depth == 8 ? 3
 		    : (config->input_color_depth == 10 ? 1 : 2);
 
-	/* TODO Support input ID 6 */
+	 
 	if (config->input_colorspace != HDMI_COLORSPACE_YUV422)
 		input_id = config->input_clock == ADV7511_INPUT_CLOCK_DDR
 			 ? 5 : 0;
@@ -332,11 +321,7 @@ static void __adv7511_power_on(struct adv7511 *adv7511)
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER,
 			   ADV7511_POWER_POWER_DOWN, 0);
 	if (adv7511->i2c_main->irq) {
-		/*
-		 * Documentation says the INT_ENABLE registers are reset in
-		 * POWER_DOWN mode. My 7511w preserved the bits, however.
-		 * Still, let's be safe and stick to the documentation.
-		 */
+		 
 		regmap_write(adv7511->regmap, ADV7511_REG_INT_ENABLE(0),
 			     ADV7511_INT0_EDID_READY | ADV7511_INT0_HPD);
 		regmap_update_bits(adv7511->regmap,
@@ -345,15 +330,7 @@ static void __adv7511_power_on(struct adv7511 *adv7511)
 				   ADV7511_INT1_DDC_ERROR);
 	}
 
-	/*
-	 * Per spec it is allowed to pulse the HPD signal to indicate that the
-	 * EDID information has changed. Some monitors do this when they wakeup
-	 * from standby or are enabled. When the HPD goes low the adv7511 is
-	 * reset and the outputs are disabled which might cause the monitor to
-	 * go to standby again. To avoid this we ignore the HPD pin for the
-	 * first few seconds after enabling the output. On the other hand
-	 * adv7535 require to enable HPD Override bit for proper HPD.
-	 */
+	 
 	if (adv7511->type == ADV7535)
 		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
 				   ADV7535_REG_POWER2_HPD_OVERRIDE,
@@ -368,9 +345,7 @@ static void adv7511_power_on(struct adv7511 *adv7511)
 {
 	__adv7511_power_on(adv7511);
 
-	/*
-	 * Most of the registers are reset during power down or when HPD is low.
-	 */
+	 
 	regcache_sync(adv7511->regmap);
 
 	if (adv7511->type == ADV7533 || adv7511->type == ADV7535)
@@ -380,7 +355,7 @@ static void adv7511_power_on(struct adv7511 *adv7511)
 
 static void __adv7511_power_off(struct adv7511 *adv7511)
 {
-	/* TODO: setup additional power down modes */
+	 
 	if (adv7511->type == ADV7535)
 		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
 				   ADV7535_REG_POWER2_HPD_OVERRIDE, 0);
@@ -402,9 +377,7 @@ static void adv7511_power_off(struct adv7511 *adv7511)
 	adv7511->powered = false;
 }
 
-/* -----------------------------------------------------------------------------
- * Interrupt and hotplug detection
- */
+ 
 
 static bool adv7511_hpd(struct adv7511 *adv7511)
 {
@@ -439,11 +412,7 @@ static void adv7511_hpd_work(struct work_struct *work)
 	else
 		status = connector_status_disconnected;
 
-	/*
-	 * The bridge resets its registers on unplug. So when we get a plug
-	 * event and we're already supposed to be powered, cycle the bridge to
-	 * restore its state.
-	 */
+	 
 	if (status == connector_status_connected &&
 	    adv7511->connector.status == connector_status_disconnected &&
 	    adv7511->powered) {
@@ -506,9 +475,7 @@ static irqreturn_t adv7511_irq_handler(int irq, void *devid)
 	return ret < 0 ? IRQ_NONE : IRQ_HANDLED;
 }
 
-/* -----------------------------------------------------------------------------
- * EDID retrieval
- */
+ 
 
 static int adv7511_wait_for_edid(struct adv7511 *adv7511, int timeout)
 {
@@ -562,9 +529,7 @@ static int adv7511_get_edid_block(void *data, u8 *buf, unsigned int block,
 				return ret;
 		}
 
-		/* Break this apart, hopefully more I2C controllers will
-		 * support 64 byte transfers than 256 byte transfers
-		 */
+		 
 
 		xfer[0].addr = adv7511->i2c_edid->addr;
 		xfer[0].flags = 0;
@@ -600,23 +565,21 @@ static int adv7511_get_edid_block(void *data, u8 *buf, unsigned int block,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * ADV75xx helpers
- */
+ 
 
 static struct edid *adv7511_get_edid(struct adv7511 *adv7511,
 				     struct drm_connector *connector)
 {
 	struct edid *edid;
 
-	/* Reading the EDID only works if the device is powered */
+	 
 	if (!adv7511->powered) {
 		unsigned int edid_i2c_addr =
 					(adv7511->i2c_edid->addr << 1);
 
 		__adv7511_power_on(adv7511);
 
-		/* Reset the EDID_I2C_ADDR register as it might be cleared */
+		 
 		regmap_write(adv7511->regmap, ADV7511_REG_EDID_I2C_ADDR,
 			     edid_i2c_addr);
 	}
@@ -669,10 +632,7 @@ adv7511_detect(struct adv7511 *adv7511, struct drm_connector *connector)
 
 	hpd = adv7511_hpd(adv7511);
 
-	/* The chip resets itself when the cable is disconnected, so in case
-	 * there is a pending HPD interrupt and the cable is connected there was
-	 * at least one transition from disconnected to connected and the chip
-	 * has to be reinitialized. */
+	 
 	if (status == connector_status_connected && hpd && adv7511->powered) {
 		regcache_mark_dirty(adv7511->regmap);
 		adv7511_power_on(adv7511);
@@ -681,7 +641,7 @@ adv7511_detect(struct adv7511 *adv7511, struct drm_connector *connector)
 		if (adv7511->status == connector_status_connected)
 			status = connector_status_disconnected;
 	} else {
-		/* Renable HPD sensing */
+		 
 		if (adv7511->type == ADV7535)
 			regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
 					   ADV7535_REG_POWER2_HPD_OVERRIDE,
@@ -726,7 +686,7 @@ static void adv7511_mode_set(struct adv7511 *adv7511,
 		vsync_len = adj_mode->crtc_vsync_end -
 			    adj_mode->crtc_vsync_start;
 
-		/* The hardware vsync generator has a off-by-one bug */
+		 
 		vsync_offset += 1;
 
 		regmap_write(adv7511->regmap, ADV7511_REG_HSYNC_PLACEMENT_MSB,
@@ -751,11 +711,7 @@ static void adv7511_mode_set(struct adv7511 *adv7511,
 		enum adv7511_sync_polarity mode_hsync_polarity;
 		enum adv7511_sync_polarity mode_vsync_polarity;
 
-		/**
-		 * If the input signal is always low or always high we want to
-		 * invert or let it passthrough depending on the polarity of the
-		 * current mode.
-		 **/
+		 
 		if (adj_mode->flags & DRM_MODE_FLAG_NHSYNC)
 			mode_hsync_polarity = ADV7511_SYNC_POLARITY_LOW;
 		else
@@ -798,17 +754,12 @@ static void adv7511_mode_set(struct adv7511 *adv7511,
 
 	drm_mode_copy(&adv7511->curr_mode, adj_mode);
 
-	/*
-	 * TODO Test first order 4:2:2 to 4:4:4 up conversion method, which is
-	 * supposed to give better results.
-	 */
+	 
 
 	adv7511->f_tmds = mode->clock;
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Connector Operations
- */
+ 
 
 static struct adv7511 *connector_to_adv7511(struct drm_connector *connector)
 {
@@ -883,9 +834,7 @@ static int adv7511_connector_init(struct adv7511 *adv)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Bridge Operations
- */
+ 
 
 static struct adv7511 *bridge_to_adv7511(struct drm_bridge *bridge)
 {
@@ -981,9 +930,7 @@ static const struct drm_bridge_funcs adv7511_bridge_funcs = {
 	.hpd_notify = adv7511_bridge_hpd_notify,
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & remove
- */
+ 
 
 static const char * const adv7511_supply_names[] = {
 	"avdd",
@@ -1182,7 +1129,7 @@ static int adv7511_parse_dt(struct device_node *np,
 
 	config->embedded_sync = of_property_read_bool(np, "adi,embedded-sync");
 
-	/* Hardcode the sync pulse configurations for now. */
+	 
 	config->sync_pulse = ADV7511_INPUT_SYNC_PULSE_NONE;
 	config->vsync_polarity = ADV7511_SYNC_POLARITY_PASSTHROUGH;
 	config->hsync_polarity = ADV7511_SYNC_POLARITY_PASSTHROUGH;
@@ -1228,10 +1175,7 @@ static int adv7511_probe(struct i2c_client *i2c)
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to init regulators\n");
 
-	/*
-	 * The power down GPIO is optional. If present, toggle it from active to
-	 * inactive to wake up the encoder.
-	 */
+	 
 	adv7511->gpio_pd = devm_gpiod_get_optional(dev, "pd", GPIOD_OUT_HIGH);
 	if (IS_ERR(adv7511->gpio_pd)) {
 		ret = PTR_ERR(adv7511->gpio_pd);

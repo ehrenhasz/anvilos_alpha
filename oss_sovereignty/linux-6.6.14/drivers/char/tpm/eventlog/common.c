@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2005, 2012 IBM Corporation
- *
- * Authors:
- *	Kent Yoder <key@linux.vnet.ibm.com>
- *	Seiji Munetoh <munetoh@jp.ibm.com>
- *	Stefan Berger <stefanb@us.ibm.com>
- *	Reiner Sailer <sailer@watson.ibm.com>
- *	Kylene Hall <kjhall@us.ibm.com>
- *	Nayna Jain <nayna@linux.vnet.ibm.com>
- *
- * Access to the event log created by a system's firmware / BIOS
- */
+
+ 
 
 #include <linux/seq_file.h>
 #include <linux/fs.h>
@@ -42,7 +30,7 @@ static int tpm_bios_measurements_open(struct inode *inode,
 	get_device(&chip->dev);
 	inode_unlock(inode);
 
-	/* now register seq file */
+	 
 	err = seq_open(file, seqops);
 	if (!err) {
 		seq = file->private_data;
@@ -93,13 +81,7 @@ static int tpm_read_log(struct tpm_chip *chip)
 	return tpm_read_log_of(chip);
 }
 
-/*
- * tpm_bios_log_setup() - Read the event log from the firmware
- * @chip: TPM chip to use.
- *
- * If an event log is found then the securityfs files are setup to
- * export it to userspace, otherwise nothing is done.
- */
+ 
 void tpm_bios_log_setup(struct tpm_chip *chip)
 {
 	const char *name = dev_name(&chip->dev);
@@ -117,9 +99,7 @@ void tpm_bios_log_setup(struct tpm_chip *chip)
 
 	cnt = 0;
 	chip->bios_dir[cnt] = securityfs_create_dir(name, NULL);
-	/* NOTE: securityfs_create_dir can return ENODEV if securityfs is
-	 * compiled out. The caller should ignore the ENODEV return code.
-	 */
+	 
 	if (IS_ERR(chip->bios_dir[cnt]))
 		goto err;
 	cnt++;
@@ -171,12 +151,7 @@ void tpm_bios_log_teardown(struct tpm_chip *chip)
 	int i;
 	struct inode *inode;
 
-	/* securityfs_remove currently doesn't take care of handling sync
-	 * between removal and opening of pseudo files. To handle this, a
-	 * workaround is added by making i_private = NULL here during removal
-	 * and to check it during open(), both within inode_lock()/unlock().
-	 * This design ensures that open() either safely gets kref or fails.
-	 */
+	 
 	for (i = (TPM_NUM_EVENT_LOG_FILES - 1); i >= 0; i--) {
 		if (chip->bios_dir[i]) {
 			inode = d_inode(chip->bios_dir[i]);

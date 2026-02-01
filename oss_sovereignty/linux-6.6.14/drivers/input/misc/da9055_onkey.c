@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ON pin driver for Dialog DA9055 PMICs
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -30,19 +24,14 @@ static void da9055_onkey_query(struct da9055_onkey *onkey)
 			"Failed to read onkey event %d\n", key_stat);
 	} else {
 		key_stat &= DA9055_NOKEY_STS;
-		/*
-		 * Onkey status bit is cleared when onkey button is released.
-		 */
+		 
 		if (!key_stat) {
 			input_report_key(onkey->input, KEY_POWER, 0);
 			input_sync(onkey->input);
 		}
 	}
 
-	/*
-	 * Interrupt is generated only when the ONKEY pin is asserted.
-	 * Hence the deassertion of the pin is simulated through work queue.
-	 */
+	 
 	if (key_stat)
 		schedule_delayed_work(&onkey->work, msecs_to_jiffies(10));
 

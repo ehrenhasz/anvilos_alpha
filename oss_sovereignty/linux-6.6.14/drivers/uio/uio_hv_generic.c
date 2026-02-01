@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * uio_hv_generic - generic UIO driver for VMBus
- *
- * Copyright (c) 2013-2016 Brocade Communications Systems, Inc.
- * Copyright (c) 2016, Microsoft Corporation.
- *
- * Since the driver does not declare any device ids, you must allocate
- * id and bind the device to the driver yourself.  For example:
- *
- * Associate Network GUID with UIO device
- * # echo "f8615163-df3e-46c5-913f-f2d2f965ed0e" \
- *    > /sys/bus/vmbus/drivers/uio_hv_generic/new_id
- * Then rebind
- * # echo -n "ed963694-e847-4b2a-85af-bc9cfc11d6f3" \
- *    > /sys/bus/vmbus/drivers/hv_netvsc/unbind
- * # echo -n "ed963694-e847-4b2a-85af-bc9cfc11d6f3" \
- *    > /sys/bus/vmbus/drivers/uio_hv_generic/bind
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/device.h>
@@ -36,14 +19,11 @@
 #define DRIVER_AUTHOR	"Stephen Hemminger <sthemmin at microsoft.com>"
 #define DRIVER_DESC	"Generic UIO driver for VMBus devices"
 
-#define HV_RING_SIZE	 512	/* pages */
+#define HV_RING_SIZE	 512	 
 #define SEND_BUFFER_SIZE (16 * 1024 * 1024)
 #define RECV_BUFFER_SIZE (31 * 1024 * 1024)
 
-/*
- * List of resources to be mapped to user space
- * can be extended up to MAX_UIO_MAPS(5) items
- */
+ 
 enum hv_uio_map {
 	TXRX_RING_MAP = 0,
 	INT_PAGE_MAP,
@@ -59,22 +39,14 @@ struct hv_uio_private_data {
 
 	void	*recv_buf;
 	struct vmbus_gpadl recv_gpadl;
-	char	recv_name[32];	/* "recv_4294967295" */
+	char	recv_name[32];	 
 
 	void	*send_buf;
 	struct vmbus_gpadl send_gpadl;
 	char	send_name[32];
 };
 
-/*
- * This is the irqcontrol callback to be registered to uio_info.
- * It can be used to disable/enable interrupt from user space processes.
- *
- * @param info
- *  pointer to uio_info.
- * @param irq_state
- *  state value. 1 to enable interrupt, 0 to disable interrupt.
- */
+ 
 static int
 hv_uio_irqcontrol(struct uio_info *info, s32 irq_state)
 {
@@ -87,9 +59,7 @@ hv_uio_irqcontrol(struct uio_info *info, s32 irq_state)
 	return 0;
 }
 
-/*
- * Callback from vmbus_event when something is in inbound ring.
- */
+ 
 static void hv_uio_channel_cb(void *context)
 {
 	struct vmbus_channel *chan = context;
@@ -102,27 +72,20 @@ static void hv_uio_channel_cb(void *context)
 	uio_event_notify(&pdata->info);
 }
 
-/*
- * Callback from vmbus_event when channel is rescinded.
- */
+ 
 static void hv_uio_rescind(struct vmbus_channel *channel)
 {
 	struct hv_device *hv_dev = channel->primary_channel->device_obj;
 	struct hv_uio_private_data *pdata = hv_get_drvdata(hv_dev);
 
-	/*
-	 * Turn off the interrupt file handle
-	 * Next read for event will return -EIO
-	 */
+	 
 	pdata->info.irq = 0;
 
-	/* Wake up reader */
+	 
 	uio_event_notify(&pdata->info);
 }
 
-/* Sysfs API to allow mmap of the ring buffers
- * The ring buffer is allocated as contiguous memory by vmbus_open
- */
+ 
 static int hv_uio_ring_mmap(struct file *filp, struct kobject *kobj,
 			    struct bin_attribute *attr,
 			    struct vm_area_struct *vma)
@@ -147,7 +110,7 @@ static const struct bin_attribute ring_buffer_bin_attr = {
 	.mmap = hv_uio_ring_mmap,
 };
 
-/* Callback from VMBUS subsystem when new channel created. */
+ 
 static void
 hv_uio_new_channel(struct vmbus_channel *new_sc)
 {
@@ -156,7 +119,7 @@ hv_uio_new_channel(struct vmbus_channel *new_sc)
 	const size_t ring_bytes = HV_RING_SIZE * PAGE_SIZE;
 	int ret;
 
-	/* Create host communication ring */
+	 
 	ret = vmbus_open(new_sc, ring_bytes, ring_bytes, NULL, 0,
 			 hv_uio_channel_cb, new_sc);
 	if (ret) {
@@ -164,7 +127,7 @@ hv_uio_new_channel(struct vmbus_channel *new_sc)
 		return;
 	}
 
-	/* Disable interrupts on sub channel */
+	 
 	new_sc->inbound.ring_buffer->interrupt_mask = 1;
 	set_channel_read_mode(new_sc, HV_CALL_ISR);
 
@@ -175,7 +138,7 @@ hv_uio_new_channel(struct vmbus_channel *new_sc)
 	}
 }
 
-/* free the reserved buffers for send and receive */
+ 
 static void
 hv_uio_cleanup(struct hv_device *dev, struct hv_uio_private_data *pdata)
 {
@@ -190,7 +153,7 @@ hv_uio_cleanup(struct hv_device *dev, struct hv_uio_private_data *pdata)
 	}
 }
 
-/* VMBus primary channel is opened on first use */
+ 
 static int
 hv_uio_open(struct uio_info *info, struct inode *inode)
 {
@@ -215,7 +178,7 @@ hv_uio_open(struct uio_info *info, struct inode *inode)
 	return ret;
 }
 
-/* VMBus primary channel is closed on last close */
+ 
 static int
 hv_uio_release(struct uio_info *info, struct inode *inode)
 {
@@ -239,7 +202,7 @@ hv_uio_probe(struct hv_device *dev,
 	void *ring_buffer;
 	int ret;
 
-	/* Communicating with host has to be via shared memory not hypercall */
+	 
 	if (!channel->offermsg.monitor_allocated) {
 		dev_err(&dev->device, "vmbus channel requires hypercall\n");
 		return -ENOTSUPP;
@@ -256,7 +219,7 @@ hv_uio_probe(struct hv_device *dev,
 
 	set_channel_read_mode(channel, HV_CALL_ISR);
 
-	/* Fill general uio info */
+	 
 	pdata->info.name = "uio_hv_generic";
 	pdata->info.version = DRIVER_VERSION;
 	pdata->info.irqcontrol = hv_uio_irqcontrol;
@@ -265,7 +228,7 @@ hv_uio_probe(struct hv_device *dev,
 	pdata->info.irq = UIO_IRQ_CUSTOM;
 	atomic_set(&pdata->refcnt, 0);
 
-	/* mem resources */
+	 
 	pdata->info.mem[TXRX_RING_MAP].name = "txrx_rings";
 	ring_buffer = page_address(channel->ringbuffer_page);
 	pdata->info.mem[TXRX_RING_MAP].addr
@@ -299,7 +262,7 @@ hv_uio_probe(struct hv_device *dev,
 		goto fail_close;
 	}
 
-	/* put Global Physical Address Label in name */
+	 
 	snprintf(pdata->recv_name, sizeof(pdata->recv_name),
 		 "recv:%u", pdata->recv_gpadl.gpadl_handle);
 	pdata->info.mem[RECV_BUF_MAP].name = pdata->recv_name;
@@ -372,7 +335,7 @@ hv_uio_remove(struct hv_device *dev)
 
 static struct hv_driver hv_uio_drv = {
 	.name = "uio_hv_generic",
-	.id_table = NULL, /* only dynamic id's */
+	.id_table = NULL,  
 	.probe = hv_uio_probe,
 	.remove = hv_uio_remove,
 };

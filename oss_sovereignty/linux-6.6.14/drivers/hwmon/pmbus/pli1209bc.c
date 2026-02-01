@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for Vicor PLI1209BC Digital Supervisor
- *
- * Copyright (c) 2022 9elements GmbH
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -12,12 +8,7 @@
 #include <linux/regulator/driver.h>
 #include "pmbus.h"
 
-/*
- * The capability command is only supported at page 0. Probing the device while
- * the page register is set to 1 will falsely enable PEC support. Disable
- * capability probing accordingly, since the PLI1209BC does not have any
- * additional capabilities.
- */
+ 
 static struct pmbus_platform_data pli1209bc_plat_data = {
 	.flags = PMBUS_NO_CAPABILITY,
 };
@@ -28,18 +19,14 @@ static int pli1209bc_read_word_data(struct i2c_client *client, int page,
 	int data;
 
 	switch (reg) {
-	/* PMBUS_READ_POUT uses a direct format with R=0 */
+	 
 	case PMBUS_READ_POUT:
 		data = pmbus_read_word_data(client, page, phase, reg);
 		if (data < 0)
 			return data;
 		data = sign_extend32(data, 15) * 10;
 		return clamp_val(data, -32768, 32767) & 0xffff;
-	/*
-	 * PMBUS_READ_VOUT and PMBUS_READ_TEMPERATURE_1 return invalid data
-	 * when the BCM is turned off. Since it is not possible to return
-	 * ENODATA error, return zero instead.
-	 */
+	 
 	case PMBUS_READ_VOUT:
 	case PMBUS_READ_TEMPERATURE_1:
 		data = pmbus_read_word_data(client, page, phase,
@@ -61,14 +48,7 @@ static int pli1209bc_write_byte(struct i2c_client *client, int page, u8 reg)
 	switch (reg) {
 	case PMBUS_CLEAR_FAULTS:
 		ret = pmbus_write_byte(client, page, reg);
-		/*
-		 * PLI1209 takes 230 usec to execute the CLEAR_FAULTS command.
-		 * During that time it's busy and NACKs all requests on the
-		 * SMBUS interface. It also NACKs reads on PMBUS_STATUS_BYTE
-		 * making it impossible to poll the BUSY flag.
-		 *
-		 * Just wait for not BUSY unconditionally.
-		 */
+		 
 		usleep_range(250, 300);
 		break;
 	default:
@@ -116,11 +96,7 @@ static struct pmbus_driver_info pli1209bc_info = {
 	.m[PSC_TEMPERATURE] = 1,
 	.b[PSC_TEMPERATURE] = 0,
 	.R[PSC_TEMPERATURE] = 0,
-	/*
-	 * Page 0 sums up all attributes except voltage readings.
-	 * The pli1209 digital supervisor only contains a single BCM, making
-	 * page 0 redundant.
-	 */
+	 
 	.func[1] = PMBUS_HAVE_VIN | PMBUS_HAVE_VOUT
 	    | PMBUS_HAVE_IIN | PMBUS_HAVE_IOUT
 	    | PMBUS_HAVE_PIN | PMBUS_HAVE_POUT

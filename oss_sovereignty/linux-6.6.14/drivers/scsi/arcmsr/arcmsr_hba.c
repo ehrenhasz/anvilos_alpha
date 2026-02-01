@@ -1,49 +1,4 @@
-/*
-*******************************************************************************
-**        O.S   : Linux
-**   FILE NAME  : arcmsr_hba.c
-**        BY    : Nick Cheng, C.L. Huang
-**   Description: SCSI RAID Device Driver for Areca RAID Controller
-*******************************************************************************
-** Copyright (C) 2002 - 2014, Areca Technology Corporation All rights reserved
-**
-**     Web site: www.areca.com.tw
-**       E-mail: support@areca.com.tw
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License version 2 as
-** published by the Free Software Foundation.
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-*******************************************************************************
-** Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions
-** are met:
-** 1. Redistributions of source code must retain the above copyright
-**    notice, this list of conditions and the following disclaimer.
-** 2. Redistributions in binary form must reproduce the above copyright
-**    notice, this list of conditions and the following disclaimer in the
-**    documentation and/or other materials provided with the distribution.
-** 3. The name of the author may not be used to endorse or promote products
-**    derived from this software without specific prior written permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-** IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-** OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-** IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-** INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES(INCLUDING,BUT
-** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION)HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE)ARISING IN ANY WAY OUT OF THE USE OF
-** THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*******************************************************************************
-** For history of changes, see Documentation/scsi/ChangeLog.arcmsr
-**     Firmware Specification, see Documentation/scsi/arcmsr_spec.rst
-*******************************************************************************
-*/
+ 
 #include <linux/module.h>
 #include <linux/reboot.h>
 #include <linux/spinlock.h>
@@ -218,7 +173,7 @@ static struct pci_device_id arcmsr_device_id_table[] = {
 		.driver_data = ACB_ADAPTER_TYPE_E},
 	{PCI_DEVICE(PCI_VENDOR_ID_ARECA, PCI_DEVICE_ID_ARECA_1886),
 		.driver_data = ACB_ADAPTER_TYPE_F},
-	{0, 0}, /* Terminating entry */
+	{0, 0},  
 };
 MODULE_DEVICE_TABLE(pci, arcmsr_device_id_table);
 
@@ -232,10 +187,7 @@ static struct pci_driver arcmsr_pci_driver = {
 	.driver.pm		= &arcmsr_pm_ops,
 	.shutdown		= arcmsr_shutdown,
 };
-/*
-****************************************************************************
-****************************************************************************
-*/
+ 
 
 static void arcmsr_free_io_queue(struct AdapterControlBlock *acb)
 {
@@ -286,7 +238,7 @@ static bool arcmsr_remap_pciregion(struct AdapterControlBlock *acb)
 			return false;
 		}
 		if (readl(&acb->pmuC->outbound_doorbell) & ARCMSR_HBCMU_IOP2DRV_MESSAGE_CMD_DONE) {
-			writel(ARCMSR_HBCMU_IOP2DRV_MESSAGE_CMD_DONE_DOORBELL_CLEAR, &acb->pmuC->outbound_doorbell_clear);/*clear interrupt*/
+			writel(ARCMSR_HBCMU_IOP2DRV_MESSAGE_CMD_DONE_DOORBELL_CLEAR, &acb->pmuC->outbound_doorbell_clear); 
 			return true;
 		}
 		break;
@@ -314,8 +266,8 @@ static bool arcmsr_remap_pciregion(struct AdapterControlBlock *acb)
 				acb->host->host_no);
 			return false;
 		}
-		writel(0, &acb->pmuE->host_int_status); /*clear interrupt*/
-		writel(ARCMSR_HBEMU_DOORBELL_SYNC, &acb->pmuE->iobound_doorbell);	/* synchronize doorbell to 0 */
+		writel(0, &acb->pmuE->host_int_status);  
+		writel(ARCMSR_HBEMU_DOORBELL_SYNC, &acb->pmuE->iobound_doorbell);	 
 		acb->in_doorbell = 0;
 		acb->out_doorbell = 0;
 		break;
@@ -327,7 +279,7 @@ static bool arcmsr_remap_pciregion(struct AdapterControlBlock *acb)
 				acb->host->host_no);
 			return false;
 		}
-		writel(0, &acb->pmuF->host_int_status); /* clear interrupt */
+		writel(0, &acb->pmuF->host_int_status);  
 		writel(ARCMSR_HBFMU_DOORBELL_SYNC, &acb->pmuF->iobound_doorbell);
 		acb->in_doorbell = 0;
 		acb->out_doorbell = 0;
@@ -407,7 +359,7 @@ static uint8_t arcmsr_hbaA_wait_msgint_ready(struct AdapterControlBlock *acb)
 			return true;
 		}
 		msleep(10);
-	} /* max 20 seconds */
+	}  
 
 	return false;
 }
@@ -427,7 +379,7 @@ static uint8_t arcmsr_hbaB_wait_msgint_ready(struct AdapterControlBlock *acb)
 			return true;
 		}
 		msleep(10);
-	} /* max 20 seconds */
+	}  
 
 	return false;
 }
@@ -441,11 +393,11 @@ static uint8_t arcmsr_hbaC_wait_msgint_ready(struct AdapterControlBlock *pACB)
 		if (readl(&phbcmu->outbound_doorbell)
 				& ARCMSR_HBCMU_IOP2DRV_MESSAGE_CMD_DONE) {
 			writel(ARCMSR_HBCMU_IOP2DRV_MESSAGE_CMD_DONE_DOORBELL_CLEAR,
-				&phbcmu->outbound_doorbell_clear); /*clear interrupt*/
+				&phbcmu->outbound_doorbell_clear);  
 			return true;
 		}
 		msleep(10);
-	} /* max 20 seconds */
+	}  
 
 	return false;
 }
@@ -463,7 +415,7 @@ static bool arcmsr_hbaD_wait_msgint_ready(struct AdapterControlBlock *pACB)
 			return true;
 		}
 		msleep(10);
-	} /* max 20 seconds */
+	}  
 	return false;
 }
 
@@ -476,12 +428,12 @@ static bool arcmsr_hbaE_wait_msgint_ready(struct AdapterControlBlock *pACB)
 	for (i = 0; i < 2000; i++) {
 		read_doorbell = readl(&phbcmu->iobound_doorbell);
 		if ((read_doorbell ^ pACB->in_doorbell) & ARCMSR_HBEMU_IOP2DRV_MESSAGE_CMD_DONE) {
-			writel(0, &phbcmu->host_int_status); /*clear interrupt*/
+			writel(0, &phbcmu->host_int_status);  
 			pACB->in_doorbell = read_doorbell;
 			return true;
 		}
 		msleep(10);
-	} /* max 20 seconds */
+	}  
 	return false;
 }
 
@@ -1355,14 +1307,14 @@ static u32 arcmsr_disable_outbound_ints(struct AdapterControlBlock *acb)
 		break;
 	case ACB_ADAPTER_TYPE_C:{
 		struct MessageUnit_C __iomem *reg = acb->pmuC;
-		/* disable all outbound interrupt */
-		orig_mask = readl(&reg->host_int_mask); /* disable outbound message0 int */
+		 
+		orig_mask = readl(&reg->host_int_mask);  
 		writel(orig_mask|ARCMSR_HBCMU_ALL_INTMASKENABLE, &reg->host_int_mask);
 		}
 		break;
 	case ACB_ADAPTER_TYPE_D: {
 		struct MessageUnit_D *reg = acb->pmuD;
-		/* disable all outbound interrupt */
+		 
 		writel(ARCMSR_ARC1214_ALL_INT_DISABLE, reg->pcief0_int_enable);
 		}
 		break;
@@ -1371,7 +1323,7 @@ static u32 arcmsr_disable_outbound_ints(struct AdapterControlBlock *acb)
 		struct MessageUnit_E __iomem *reg = acb->pmuE;
 		orig_mask = readl(&reg->host_int_mask);
 		writel(orig_mask | ARCMSR_HBEMU_OUTBOUND_DOORBELL_ISR | ARCMSR_HBEMU_OUTBOUND_POSTQUEUE_ISR, &reg->host_int_mask);
-		readl(&reg->host_int_mask); /* Dummy readl to force pci flush */
+		readl(&reg->host_int_mask);  
 		}
 		break;
 	}
@@ -4004,15 +3956,15 @@ static int arcmsr_iop_confirm(struct AdapterControlBlock *acb)
 			return 1;
 		}
 		rwbuffer = reg->message_rwbuffer;
-		/* driver "set config" signature */
+		 
 		writel(ARCMSR_SIGNATURE_SET_CONFIG, rwbuffer++);
-		/* normal should be zero */
+		 
 		writel(cdb_phyaddr_hi32, rwbuffer++);
-		/* postQ size (256 + 8)*4	 */
+		 
 		writel(cdb_phyaddr, rwbuffer++);
-		/* doneQ size (256 + 8)*4	 */
+		 
 		writel(cdb_phyaddr + 1056, rwbuffer++);
-		/* ccb maxQ size must be --> [(256 + 8)*4]*/
+		 
 		writel(1056, rwbuffer);
 
 		writel(ARCMSR_MESSAGE_SET_CONFIG, reg->drv2iop_doorbell);

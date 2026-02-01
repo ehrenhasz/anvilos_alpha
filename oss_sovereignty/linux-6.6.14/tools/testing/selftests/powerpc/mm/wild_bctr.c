@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018, Michael Ellerman, IBM Corp.
- *
- * Test that an out-of-bounds branch to counter behaves as expected.
- */
+
+ 
 
 #include <setjmp.h>
 #include <stdio.h>
@@ -75,8 +71,8 @@ static inline void poison_regs(void)
 	     POISON_REG(27)
 	     POISON_REG(28)
 	     POISON_REG(29)
-	     : // inputs
-	     : // outputs
+	     : 
+	     : 
 	     : "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25",
 	       "26", "27", "28", "29"
 	);
@@ -151,7 +147,7 @@ int test_wild_bctr(void)
 		func_ptr = (int (*)(void))BAD_FUNC;
 		func_ptr();
 
-		FAIL_IF(1); /* we didn't segv? */
+		FAIL_IF(1);  
 	}
 
 	FAIL_IF(signal_regs.nip != BAD_NIP);

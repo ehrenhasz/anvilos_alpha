@@ -1,10 +1,6 @@
-/* $OpenBSD: chacha.h,v 1.5 2021/04/03 05:54:14 djm Exp $ */
+ 
 
-/*
-chacha-merged.c version 20080118
-D. J. Bernstein
-Public domain.
-*/
+ 
 
 #ifndef CHACHA_H
 #define CHACHA_H
@@ -32,5 +28,5 @@ void chacha_encrypt_bytes(struct chacha_ctx *x, const u_char *m,
     __attribute__((__bounded__(__buffer__, 2, 4)))
     __attribute__((__bounded__(__buffer__, 3, 4)));
 
-#endif	/* CHACHA_H */
+#endif	 
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sysctl_net_ipv4.c: sysctl interface to net IPV4 subsystem.
- *
- * Begun April 1, 1996, Mike Shaver.
- * Added /proc/sys/net/ipv4 directory entry (empty =) ). [MS]
- */
+
+ 
 
 #include <linux/sysctl.h>
 #include <linux/seqlock.h>
@@ -46,10 +41,10 @@ static unsigned int udp_child_hash_entries_max = UDP_HTABLE_SIZE_MAX;
 static int tcp_plb_max_rounds = 31;
 static int tcp_plb_max_cong_thresh = 256;
 
-/* obsolete */
+ 
 static int sysctl_tcp_low_latency __read_mostly;
 
-/* Update system visible IP port range */
+ 
 static void set_local_port_range(struct net *net, int range[2])
 {
 	bool same_parity = !((range[0] ^ range[1]) & 1);
@@ -64,7 +59,7 @@ static void set_local_port_range(struct net *net, int range[2])
 	write_sequnlock_bh(&net->ipv4.ip_local_ports.lock);
 }
 
-/* Validate changes from /proc interface. */
+ 
 static int ipv4_local_port_range(struct ctl_table *table, int write,
 				 void *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -85,10 +80,7 @@ static int ipv4_local_port_range(struct ctl_table *table, int write,
 	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
 
 	if (write && ret == 0) {
-		/* Ensure that the upper limit is not smaller than the lower,
-		 * and that the lower does not encroach upon the privileged
-		 * port limit.
-		 */
+		 
 		if ((range[1] < range[0]) ||
 		    (range[0] < READ_ONCE(net->ipv4.sysctl_ip_prot_sock)))
 			ret = -EINVAL;
@@ -99,7 +91,7 @@ static int ipv4_local_port_range(struct ctl_table *table, int write,
 	return ret;
 }
 
-/* Validate changes from /proc interface. */
+ 
 static int ipv4_privileged_ports(struct ctl_table *table, int write,
 				void *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -122,9 +114,7 @@ static int ipv4_privileged_ports(struct ctl_table *table, int write,
 
 	if (write && ret == 0) {
 		inet_get_local_port_range(net, &range[0], &range[1]);
-		/* Ensure that the local port range doesn't overlap with the
-		 * privileged port range.
-		 */
+		 
 		if (range[0] < pports)
 			ret = -EINVAL;
 		else
@@ -148,7 +138,7 @@ static void inet_get_ping_group_range_table(struct ctl_table *table, kgid_t *low
 	} while (read_seqretry(&net->ipv4.ping_group_range.lock, seq));
 }
 
-/* Update system visible IP port range */
+ 
 static void set_ping_group_range(struct ctl_table *table, kgid_t low, kgid_t high)
 {
 	kgid_t *data = table->data;
@@ -160,7 +150,7 @@ static void set_ping_group_range(struct ctl_table *table, kgid_t low, kgid_t hig
 	write_sequnlock(&net->ipv4.ping_group_range.lock);
 }
 
-/* Validate changes from /proc interface. */
+ 
 static int ipv4_ping_group_range(struct ctl_table *table, int write,
 				 void *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -290,9 +280,7 @@ static int proc_tcp_fastopen_key(struct ctl_table *table, int write,
 {
 	struct net *net = container_of(table->data, struct net,
 	    ipv4.sysctl_tcp_fastopen);
-	/* maxlen to print the list of keys in hex (*2), with dashes
-	 * separating doublewords and a comma in between keys.
-	 */
+	 
 	struct ctl_table tbl = { .maxlen = ((TCP_FASTOPEN_KEY_LENGTH *
 					    2 * TCP_FASTOPEN_KEY_MAX) +
 					    (TCP_FASTOPEN_KEY_MAX * 5)) };
@@ -399,9 +387,7 @@ static int proc_tcp_ehash_entries(struct ctl_table *table, int write,
 
 	tcp_ehash_entries = hinfo->ehash_mask + 1;
 
-	/* A negative number indicates that the child netns
-	 * shares the global ehash.
-	 */
+	 
 	if (!net_eq(net, &init_net) && !hinfo->pernet)
 		tcp_ehash_entries *= -1;
 
@@ -422,9 +408,7 @@ static int proc_udp_hash_entries(struct ctl_table *table, int write,
 
 	udp_hash_entries = net->ipv4.udp_table->mask + 1;
 
-	/* A negative number indicates that the child netns
-	 * shares the global udp_table.
-	 */
+	 
 	if (!net_eq(net, &init_net) && net->ipv4.udp_table == &udp_table)
 		udp_hash_entries *= -1;
 
@@ -540,7 +524,7 @@ static struct ctl_table ipv4_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
-#endif /* CONFIG_NETLABEL */
+#endif  
 	{
 		.procname	= "tcp_available_ulp",
 		.maxlen		= TCP_ULP_BUF_MAX,
@@ -1031,9 +1015,7 @@ static struct ctl_table ipv4_net_table[] = {
 		.procname	= "tcp_fastopen_key",
 		.mode		= 0600,
 		.data		= &init_net.ipv4.sysctl_tcp_fastopen,
-		/* maxlen to print the list of keys in hex (*2), with dashes
-		 * separating doublewords and a comma in between keys.
-		 */
+		 
 		.maxlen		= ((TCP_FASTOPEN_KEY_LENGTH *
 				   2 * TCP_FASTOPEN_KEY_MAX) +
 				   (TCP_FASTOPEN_KEY_MAX * 5)),
@@ -1506,14 +1488,10 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
 
 		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
 			if (table[i].data) {
-				/* Update the variables to point into
-				 * the current struct net
-				 */
+				 
 				table[i].data += (void *)net - (void *)&init_net;
 			} else {
-				/* Entries without data pointer are global;
-				 * Make them read-only in non-init_net ns
-				 */
+				 
 				table[i].mode &= ~0222;
 			}
 		}

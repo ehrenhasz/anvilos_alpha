@@ -1,20 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
 #include <rtl8723b_hal.h>
 
-/**
- * phy_CalculateBitShift - Get shifted position of the BitMask.
- * @BitMask: Bitmask.
- *
- * Return:	Return the shift bit position of the mask
- */
+ 
 static	u32 phy_CalculateBitShift(u32 BitMask)
 {
 	u32 i;
@@ -27,18 +18,7 @@ static	u32 phy_CalculateBitShift(u32 BitMask)
 }
 
 
-/**
- * PHY_QueryBBReg_8723B - Read "specific bits" from BB register.
- * @Adapter:
- * @RegAddr:	The target address to be readback
- * @BitMask:	The target bit position in the target address
- *				to be readback
- *
- * Return:	The readback register value
- *
- * .. Note::	This function is equal to "GetRegSetting" in PHY programming
- *			guide
- */
+ 
 u32 PHY_QueryBBReg_8723B(struct adapter *Adapter, u32 RegAddr, u32 BitMask)
 {
 	u32 OriginalValue, BitShift;
@@ -51,18 +31,7 @@ u32 PHY_QueryBBReg_8723B(struct adapter *Adapter, u32 RegAddr, u32 BitMask)
 }
 
 
-/**
- * PHY_SetBBReg_8723B - Write "Specific bits" to BB register (page 8~).
- * @Adapter:
- * @RegAddr:	The target address to be modified
- * @BitMask:	The target bit position in the target address
- *				to be modified
- * @Data:		The new register value in the target bit position
- *				of the target address
- *
- * .. Note::	This function is equal to "PutRegSetting" in PHY programming
- *			guide
- */
+ 
 
 void PHY_SetBBReg_8723B(
 	struct adapter *Adapter,
@@ -71,10 +40,10 @@ void PHY_SetBBReg_8723B(
 	u32 Data
 )
 {
-	/* u16 BBWaitCounter	= 0; */
+	 
 	u32 OriginalValue, BitShift;
 
-	if (BitMask != bMaskDWord) { /* if not "double word" write */
+	if (BitMask != bMaskDWord) {  
 		OriginalValue = rtw_read32(Adapter, RegAddr);
 		BitShift = phy_CalculateBitShift(BitMask);
 		Data = ((OriginalValue & (~BitMask)) | ((Data << BitShift) & BitMask));
@@ -85,9 +54,9 @@ void PHY_SetBBReg_8723B(
 }
 
 
-/*  */
-/*  2. RF register R/W API */
-/*  */
+ 
+ 
+ 
 
 static u32 phy_RFSerialRead_8723B(
 	struct adapter *Adapter, enum rf_path eRFPath, u32 Offset
@@ -102,20 +71,20 @@ static u32 phy_RFSerialRead_8723B(
 	u32 MaskforPhySet = 0;
 	int i = 0;
 
-	/*  */
-	/*  Make sure RF register offset is correct */
-	/*  */
+	 
+	 
+	 
 	Offset &= 0xff;
 
 	NewOffset = Offset;
 
 	if (eRFPath == RF_PATH_A) {
 		tmplong2 = PHY_QueryBBReg(Adapter, rFPGA0_XA_HSSIParameter2|MaskforPhySet, bMaskDWord);
-		tmplong2 = (tmplong2 & (~bLSSIReadAddress)) | (NewOffset<<23) | bLSSIReadEdge;	/* T65 RF */
+		tmplong2 = (tmplong2 & (~bLSSIReadAddress)) | (NewOffset<<23) | bLSSIReadEdge;	 
 		PHY_SetBBReg(Adapter, rFPGA0_XA_HSSIParameter2|MaskforPhySet, bMaskDWord, tmplong2&(~bLSSIReadEdge));
 	} else {
 		tmplong2 = PHY_QueryBBReg(Adapter, rFPGA0_XB_HSSIParameter2|MaskforPhySet, bMaskDWord);
-		tmplong2 = (tmplong2 & (~bLSSIReadAddress)) | (NewOffset<<23) | bLSSIReadEdge;	/* T65 RF */
+		tmplong2 = (tmplong2 & (~bLSSIReadAddress)) | (NewOffset<<23) | bLSSIReadEdge;	 
 		PHY_SetBBReg(Adapter, rFPGA0_XB_HSSIParameter2|MaskforPhySet, bMaskDWord, tmplong2&(~bLSSIReadEdge));
 	}
 
@@ -135,53 +104,17 @@ static u32 phy_RFSerialRead_8723B(
 		RfPiEnable = (u8)PHY_QueryBBReg(Adapter, rFPGA0_XB_HSSIParameter1|MaskforPhySet, BIT8);
 
 	if (RfPiEnable) {
-		/*  Read from BBreg8b8, 12 bits for 8190, 20bits for T65 RF */
+		 
 		retValue = PHY_QueryBBReg(Adapter, pPhyReg->rfLSSIReadBackPi|MaskforPhySet, bLSSIReadBackData);
 	} else {
-		/* Read from BBreg8a0, 12 bits for 8190, 20 bits for T65 RF */
+		 
 		retValue = PHY_QueryBBReg(Adapter, pPhyReg->rfLSSIReadBack|MaskforPhySet, bLSSIReadBackData);
 	}
 	return retValue;
 
 }
 
-/**
- * phy_RFSerialWrite_8723B - Write data to RF register (page 8~).
- * @Adapter:
- * @eRFPath:	Radio path of A/B/C/D
- * @Offset:	The target address to be read
- * @Data:	The new register Data in the target bit position
- *			of the target to be read
- *
- * .. Note::	Threre are three types of serial operations:
- *		1. Software serial write
- *		2. Hardware LSSI-Low Speed Serial Interface
- *		3. Hardware HSSI-High speed
- *		serial write. Driver need to implement (1) and (2).
- *		This function is equal to the combination of RF_ReadReg() and  RFLSSIRead()
- *
- * .. Note::		  For RF8256 only
- *		 The total count of RTL8256(Zebra4) register is around 36 bit it only employs
- *		 4-bit RF address. RTL8256 uses "register mode control bit" (Reg00[12], Reg00[10])
- *		 to access register address bigger than 0xf. See "Appendix-4 in PHY Configuration
- *		 programming guide" for more details.
- *		 Thus, we define a sub-finction for RTL8526 register address conversion
- *	       ===========================================================
- *		 Register Mode		RegCTL[1]		RegCTL[0]		Note
- *							(Reg00[12])		(Reg00[10])
- *	       ===========================================================
- *		 Reg_Mode0				0				x			Reg 0 ~15(0x0 ~ 0xf)
- *	       ------------------------------------------------------------------
- *		 Reg_Mode1				1				0			Reg 16 ~30(0x1 ~ 0xf)
- *	       ------------------------------------------------------------------
- *		 Reg_Mode2				1				1			Reg 31 ~ 45(0x1 ~ 0xf)
- *	       ------------------------------------------------------------------
- *
- *2008/09/02	MH	Add 92S RF definition
- *
- *
- *
- */
+ 
 static void phy_RFSerialWrite_8723B(
 	struct adapter *Adapter,
 	enum rf_path eRFPath,
@@ -196,35 +129,23 @@ static void phy_RFSerialWrite_8723B(
 
 	Offset &= 0xff;
 
-	/*  */
-	/*  Switch page for 8256 RF IC */
-	/*  */
+	 
+	 
+	 
 	NewOffset = Offset;
 
-	/*  */
-	/*  Put write addr in [5:0]  and write data in [31:16] */
-	/*  */
-	DataAndAddr = ((NewOffset<<20) | (Data&0x000fffff)) & 0x0fffffff;	/*  T65 RF */
-	/*  */
-	/*  Write Operation */
-	/*  */
+	 
+	 
+	 
+	DataAndAddr = ((NewOffset<<20) | (Data&0x000fffff)) & 0x0fffffff;	 
+	 
+	 
+	 
 	PHY_SetBBReg(Adapter, pPhyReg->rf3wireOffset, bMaskDWord, DataAndAddr);
 }
 
 
-/**
- * PHY_QueryRFReg_8723B - Query "Specific bits" to RF register (page 8~).
- * @Adapter:
- * @eRFPath:	Radio path of A/B/C/D
- * @RegAddr:	The target address to be read
- * @BitMask:	The target bit position in the target address
- *				to be read
- *
- * Return:	Readback value
- *
- * .. Note::	This function is equal to "GetRFRegSetting" in PHY
- *			programming guide
- */
+ 
 u32 PHY_QueryRFReg_8723B(
 	struct adapter *Adapter,
 	u8 eRFPath,
@@ -240,19 +161,7 @@ u32 PHY_QueryRFReg_8723B(
 	return (Original_Value & BitMask) >> BitShift;
 }
 
-/**
- * PHY_SetRFReg_8723B - Write "Specific bits" to RF register (page 8~).
- * @Adapter:
- * @eRFPath:	Radio path of A/B/C/D
- * @RegAddr:	The target address to be modified
- * @BitMask:	The target bit position in the target address
- *				to be modified
- * @Data:	The new register Data in the target bit position
- *								of the target address
- *
- * .. Note::	This function is equal to "PutRFRegSetting" in PHY
- *			programming guide.
- */
+ 
 void PHY_SetRFReg_8723B(
 	struct adapter *Adapter,
 	u8 eRFPath,
@@ -263,7 +172,7 @@ void PHY_SetRFReg_8723B(
 {
 	u32 Original_Value, BitShift;
 
-	/*  RF data is 12 bits only */
+	 
 	if (BitMask != bRFRegOffsetMask) {
 		Original_Value = phy_RFSerialRead_8723B(Adapter, eRFPath, RegAddr);
 		BitShift =  phy_CalculateBitShift(BitMask);
@@ -274,20 +183,12 @@ void PHY_SetRFReg_8723B(
 }
 
 
-/*  */
-/*  3. Initial MAC/BB/RF config by reading MAC/BB/RF txt. */
-/*  */
+ 
+ 
+ 
 
 
-/*-----------------------------------------------------------------------------
- * PHY_MACConfig8192C - Condig MAC by header file or parameter file.
- *
- * Revised History:
- *  When		Who		Remark
- *  08/12/2008	MHC		Create Version 0.
- *
- *---------------------------------------------------------------------------
- */
+ 
 s32 PHY_MACConfig8723B(struct adapter *Adapter)
 {
 	struct hal_com_data	*pHalData = GET_HAL_DATA(Adapter);
@@ -296,36 +197,30 @@ s32 PHY_MACConfig8723B(struct adapter *Adapter)
 	return _SUCCESS;
 }
 
-/**
- * phy_InitBBRFRegisterDefinition - Initialize Register definition offset for
- *									Radio Path A/B/C/D
- * @Adapter:
- *
- * .. Note::		The initialization value is constant and it should never be changes
- */
+ 
 static void phy_InitBBRFRegisterDefinition(struct adapter *Adapter)
 {
 	struct hal_com_data		*pHalData = GET_HAL_DATA(Adapter);
 
-	/*  RF Interface Sowrtware Control */
-	pHalData->PHYRegDef[RF_PATH_A].rfintfs = rFPGA0_XAB_RFInterfaceSW; /*  16 LSBs if read 32-bit from 0x870 */
-	pHalData->PHYRegDef[RF_PATH_B].rfintfs = rFPGA0_XAB_RFInterfaceSW; /*  16 MSBs if read 32-bit from 0x870 (16-bit for 0x872) */
+	 
+	pHalData->PHYRegDef[RF_PATH_A].rfintfs = rFPGA0_XAB_RFInterfaceSW;  
+	pHalData->PHYRegDef[RF_PATH_B].rfintfs = rFPGA0_XAB_RFInterfaceSW;  
 
-	/*  RF Interface Output (and Enable) */
-	pHalData->PHYRegDef[RF_PATH_A].rfintfo = rFPGA0_XA_RFInterfaceOE; /*  16 LSBs if read 32-bit from 0x860 */
-	pHalData->PHYRegDef[RF_PATH_B].rfintfo = rFPGA0_XB_RFInterfaceOE; /*  16 LSBs if read 32-bit from 0x864 */
+	 
+	pHalData->PHYRegDef[RF_PATH_A].rfintfo = rFPGA0_XA_RFInterfaceOE;  
+	pHalData->PHYRegDef[RF_PATH_B].rfintfo = rFPGA0_XB_RFInterfaceOE;  
 
-	/*  RF Interface (Output and)  Enable */
-	pHalData->PHYRegDef[RF_PATH_A].rfintfe = rFPGA0_XA_RFInterfaceOE; /*  16 MSBs if read 32-bit from 0x860 (16-bit for 0x862) */
-	pHalData->PHYRegDef[RF_PATH_B].rfintfe = rFPGA0_XB_RFInterfaceOE; /*  16 MSBs if read 32-bit from 0x864 (16-bit for 0x866) */
+	 
+	pHalData->PHYRegDef[RF_PATH_A].rfintfe = rFPGA0_XA_RFInterfaceOE;  
+	pHalData->PHYRegDef[RF_PATH_B].rfintfe = rFPGA0_XB_RFInterfaceOE;  
 
-	pHalData->PHYRegDef[RF_PATH_A].rf3wireOffset = rFPGA0_XA_LSSIParameter; /* LSSI Parameter */
+	pHalData->PHYRegDef[RF_PATH_A].rf3wireOffset = rFPGA0_XA_LSSIParameter;  
 	pHalData->PHYRegDef[RF_PATH_B].rf3wireOffset = rFPGA0_XB_LSSIParameter;
 
-	pHalData->PHYRegDef[RF_PATH_A].rfHSSIPara2 = rFPGA0_XA_HSSIParameter2;  /* wire control parameter2 */
-	pHalData->PHYRegDef[RF_PATH_B].rfHSSIPara2 = rFPGA0_XB_HSSIParameter2;  /* wire control parameter2 */
+	pHalData->PHYRegDef[RF_PATH_A].rfHSSIPara2 = rFPGA0_XA_HSSIParameter2;   
+	pHalData->PHYRegDef[RF_PATH_B].rfHSSIPara2 = rFPGA0_XB_HSSIParameter2;   
 
-	/*  Tranceiver Readback LSSI/HSPI mode */
+	 
 	pHalData->PHYRegDef[RF_PATH_A].rfLSSIReadBack = rFPGA0_XA_LSSIReadBack;
 	pHalData->PHYRegDef[RF_PATH_B].rfLSSIReadBack = rFPGA0_XB_LSSIReadBack;
 	pHalData->PHYRegDef[RF_PATH_A].rfLSSIReadBackPi = TransceiverA_HSPI_Readback;
@@ -337,7 +232,7 @@ static int phy_BB8723b_Config_ParaFile(struct adapter *Adapter)
 {
 	struct hal_com_data *pHalData = GET_HAL_DATA(Adapter);
 
-	/*  Read Tx Power Limit File */
+	 
 	PHY_InitTxPowerLimit(Adapter);
 	if (
 		Adapter->registrypriv.RegEnableTxPowerLimit == 1 ||
@@ -347,12 +242,12 @@ static int phy_BB8723b_Config_ParaFile(struct adapter *Adapter)
 					   CONFIG_RF_TXPWR_LMT, 0);
 	}
 
-	/*  */
-	/*  1. Read PHY_REG.TXT BB INIT!! */
-	/*  */
+	 
+	 
+	 
 	ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG);
 
-	/*  If EEPROM or EFUSE autoload OK, We must config by PHY_REG_PG.txt */
+	 
 	PHY_InitTxPowerByRate(Adapter);
 	if (
 		Adapter->registrypriv.RegEnableTxPowerByRate == 1 ||
@@ -371,9 +266,9 @@ static int phy_BB8723b_Config_ParaFile(struct adapter *Adapter)
 			PHY_ConvertTxPowerLimitToPowerIndex(Adapter);
 	}
 
-	/*  */
-	/*  2. Read BB AGC table Initialization */
-	/*  */
+	 
+	 
+	 
 	ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_AGC_TAB);
 
 	return _SUCCESS;
@@ -389,11 +284,11 @@ int PHY_BBConfig8723B(struct adapter *Adapter)
 
 	phy_InitBBRFRegisterDefinition(Adapter);
 
-	/*  Enable BB and RF */
+	 
 	RegVal = rtw_read16(Adapter, REG_SYS_FUNC_EN);
 	rtw_write16(Adapter, REG_SYS_FUNC_EN, (u16)(RegVal|BIT13|BIT0|BIT1));
 
-	rtw_write32(Adapter, 0x948, 0x280);	/*  Others use Antenna S1 */
+	rtw_write32(Adapter, 0x948, 0x280);	 
 
 	rtw_write8(Adapter, REG_RF_CTRL, RF_EN|RF_RSTB|RF_SDMRSTB);
 
@@ -405,12 +300,12 @@ int PHY_BBConfig8723B(struct adapter *Adapter)
 
 	rtw_write8(Adapter, REG_AFE_XTAL_CTRL+1, 0x80);
 
-	/*  */
-	/*  Config BB and AGC */
-	/*  */
+	 
+	 
+	 
 	rtStatus = phy_BB8723b_Config_ParaFile(Adapter);
 
-	/*  0x2C[23:18] = 0x2C[17:12] = CrystalCap */
+	 
 	CrystalCap = pHalData->CrystalCap & 0x3F;
 	PHY_SetBBReg(Adapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));
 
@@ -429,9 +324,9 @@ int PHY_RFConfig8723B(struct adapter *Adapter)
 {
 	int rtStatus = _SUCCESS;
 
-	/*  */
-	/*  RF config */
-	/*  */
+	 
+	 
+	 
 	rtStatus = PHY_RF6052_Config8723B(Adapter);
 
 	phy_LCK_8723B(Adapter);
@@ -439,12 +334,7 @@ int PHY_RFConfig8723B(struct adapter *Adapter)
 	return rtStatus;
 }
 
-/**************************************************************************************************************
- *   Description:
- *       The low-level interface to set TxAGC , called by both MP and Normal Driver.
- *
- *                                                                                    <20120830, Kordan>
- **************************************************************************************************************/
+ 
 
 void PHY_SetTxPowerIndex(
 	struct adapter *Adapter,
@@ -567,9 +457,9 @@ void PHY_SetTxPowerLevel8723B(struct adapter *Adapter, u8 Channel)
 	struct fat_t *pDM_FatTable = &pDM_Odm->DM_FatTable;
 	u8 RFPath = RF_PATH_A;
 
-	if (pHalData->AntDivCfg) {/*  antenna diversity Enable */
+	if (pHalData->AntDivCfg) { 
 		RFPath = ((pDM_FatTable->RxIdleAnt == MAIN_ANT) ? RF_PATH_A : RF_PATH_B);
-	} else { /*  antenna diversity disable */
+	} else {  
 		RFPath = pHalData->ant_path;
 	}
 
@@ -589,12 +479,12 @@ static void phy_SetRegBW_8723B(
 
 	switch (CurrentBW) {
 	case CHANNEL_WIDTH_20:
-		rtw_write16(Adapter, REG_TRXPTCL_CTL_8723B, (RegRfMod_BW & 0xFE7F)); /*  BIT 7 = 0, BIT 8 = 0 */
+		rtw_write16(Adapter, REG_TRXPTCL_CTL_8723B, (RegRfMod_BW & 0xFE7F));  
 		break;
 
 	case CHANNEL_WIDTH_40:
 		u2tmp = RegRfMod_BW | BIT7;
-		rtw_write16(Adapter, REG_TRXPTCL_CTL_8723B, (u2tmp & 0xFEFF)); /*  BIT 7 = 1, BIT 8 = 0 */
+		rtw_write16(Adapter, REG_TRXPTCL_CTL_8723B, (u2tmp & 0xFEFF));  
 		break;
 
 	default:
@@ -623,18 +513,18 @@ static void phy_PostSetBwMode8723B(struct adapter *Adapter)
 	struct hal_com_data *pHalData = GET_HAL_DATA(Adapter);
 
 
-	/* 3 Set Reg668 Reg440 BW */
+	 
 	phy_SetRegBW_8723B(Adapter, pHalData->CurrentChannelBW);
 
-	/* 3 Set Reg483 */
+	 
 	SubChnlNum = phy_GetSecondaryChnl_8723B(Adapter);
 	rtw_write8(Adapter, REG_DATA_SC_8723B, SubChnlNum);
 
-	/* 3 */
-	/* 3<2>Set PHY related register */
-	/* 3 */
+	 
+	 
+	 
 	switch (pHalData->CurrentChannelBW) {
-	/* 20 MHz channel*/
+	 
 	case CHANNEL_WIDTH_20:
 		PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bRFMOD, 0x0);
 
@@ -643,13 +533,13 @@ static void phy_PostSetBwMode8723B(struct adapter *Adapter)
 		PHY_SetBBReg(Adapter, rOFDM0_TxPseudoNoiseWgt, (BIT31|BIT30), 0x0);
 		break;
 
-	/* 40 MHz channel*/
+	 
 	case CHANNEL_WIDTH_40:
 		PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bRFMOD, 0x1);
 
 		PHY_SetBBReg(Adapter, rFPGA1_RFMOD, bRFMOD, 0x1);
 
-		/*  Set Control channel to upper or lower. These settings are required only for 40MHz */
+		 
 		PHY_SetBBReg(Adapter, rCCK0_System, bCCKSideBand, (pHalData->nCur40MhzPrimeSC>>1));
 
 		PHY_SetBBReg(Adapter, rOFDM1_LSTF, 0xC00, pHalData->nCur40MhzPrimeSC);
@@ -660,7 +550,7 @@ static void phy_PostSetBwMode8723B(struct adapter *Adapter)
 		break;
 	}
 
-	/* 3<3>Set RF related register */
+	 
 	PHY_RF6052SetBandwidth8723B(Adapter, pHalData->CurrentChannelBW);
 }
 
@@ -707,7 +597,7 @@ static void PHY_HandleSwChnlAndSetBW8723B(
 	u8 CenterFrequencyIndex1
 )
 {
-	/* static bool		bInitialzed = false; */
+	 
 	struct hal_com_data *pHalData = GET_HAL_DATA(Adapter);
 	u8 tmpChannel = pHalData->CurrentChannel;
 	enum channel_width tmpBW = pHalData->CurrentChannelBW;
@@ -715,11 +605,11 @@ static void PHY_HandleSwChnlAndSetBW8723B(
 	u8 tmpnCur80MhzPrimeSC = pHalData->nCur80MhzPrimeSC;
 	u8 tmpCenterFrequencyIndex1 = pHalData->CurrentCenterFrequencyIndex1;
 
-	/* check is swchnl or setbw */
+	 
 	if (!bSwitchChannel && !bSetBandWidth)
 		return;
 
-	/* skip change for channel or bandwidth is the same */
+	 
 	if (bSwitchChannel) {
 		{
 			if (HAL_IsLegalChannel(Adapter, ChannelNum))
@@ -747,7 +637,7 @@ static void PHY_HandleSwChnlAndSetBW8723B(
 		pHalData->CurrentCenterFrequencyIndex1 = CenterFrequencyIndex1;
 	}
 
-	/* Switch workitem or set timer to do switch channel or setbandwidth operation */
+	 
 	if ((!Adapter->bDriverStopped) && (!Adapter->bSurpriseRemoved)) {
 		phy_SwChnlAndSetBwMode8723B(Adapter);
 	} else {
@@ -767,8 +657,8 @@ static void PHY_HandleSwChnlAndSetBW8723B(
 
 void PHY_SetBWMode8723B(
 	struct adapter *Adapter,
-	enum channel_width Bandwidth, /*  20M or 40M */
-	unsigned char Offset /*  Upper, Lower, or Don't care */
+	enum channel_width Bandwidth,  
+	unsigned char Offset  
 )
 {
 	struct hal_com_data *pHalData = GET_HAL_DATA(Adapter);
@@ -776,7 +666,7 @@ void PHY_SetBWMode8723B(
 	PHY_HandleSwChnlAndSetBW8723B(Adapter, false, true, pHalData->CurrentChannel, Bandwidth, Offset, Offset, pHalData->CurrentChannel);
 }
 
-/*  Call after initialization */
+ 
 void PHY_SwChnl8723B(struct adapter *Adapter, u8 channel)
 {
 	PHY_HandleSwChnlAndSetBW8723B(Adapter, true, false, channel, 0, 0, 0, channel);

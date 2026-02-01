@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ff-midi.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+
+ 
 
 #include "ff.h"
 
 static int midi_capture_open(struct snd_rawmidi_substream *substream)
 {
-	/* Do nothing. */
+	 
 	return 0;
 }
 
@@ -17,7 +13,7 @@ static int midi_playback_open(struct snd_rawmidi_substream *substream)
 {
 	struct snd_ff *ff = substream->rmidi->private_data;
 
-	/* Initialize internal status. */
+	 
 	ff->on_sysex[substream->number] = 0;
 	ff->rx_midi_error[substream->number] = false;
 
@@ -28,7 +24,7 @@ static int midi_playback_open(struct snd_rawmidi_substream *substream)
 
 static int midi_capture_close(struct snd_rawmidi_substream *substream)
 {
-	/* Do nothing. */
+	 
 	return 0;
 }
 

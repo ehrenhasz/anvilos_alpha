@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 
 #include <linux/moduleparam.h>
 #include <linux/vmalloc.h>
@@ -12,12 +12,12 @@
 
 #include <drm/drm_fbdev_generic.h>
 
-/* @user: 1=userspace, 0=fbcon */
+ 
 static int drm_fbdev_generic_fb_open(struct fb_info *info, int user)
 {
 	struct drm_fb_helper *fb_helper = info->par;
 
-	/* No need to take a ref for fbcon because it unbinds on unregister */
+	 
 	if (user && !try_module_get(fb_helper->dev->driver->fops->owner))
 		return -ENODEV;
 
@@ -65,9 +65,7 @@ static const struct fb_ops drm_fbdev_generic_fb_ops = {
 	.fb_destroy	= drm_fbdev_generic_fb_destroy,
 };
 
-/*
- * This function uses the client API to create a framebuffer backed by a dumb buffer.
- */
+ 
 static int drm_fbdev_generic_helper_fb_probe(struct drm_fb_helper *fb_helper,
 					     struct drm_fb_helper_surface_size *sizes)
 {
@@ -110,13 +108,13 @@ static int drm_fbdev_generic_helper_fb_probe(struct drm_fb_helper *fb_helper,
 
 	info->fbops = &drm_fbdev_generic_fb_ops;
 
-	/* screen */
+	 
 	info->flags |= FBINFO_VIRTFB | FBINFO_READS_FAST;
 	info->screen_buffer = screen_buffer;
 	info->fix.smem_start = page_to_phys(vmalloc_to_page(info->screen_buffer));
 	info->fix.smem_len = screen_size;
 
-	/* deferred I/O */
+	 
 	fb_helper->fbdefio.delay = HZ / 20;
 	fb_helper->fbdefio.deferred_io = drm_fb_helper_deferred_io;
 
@@ -168,7 +166,7 @@ static void drm_fbdev_generic_damage_blit_real(struct drm_fb_helper *fb_helper,
 	}
 
 	src = fb_helper->info->screen_buffer + offset;
-	iosys_map_incr(dst, offset); /* go to first pixel within clip rect */
+	iosys_map_incr(dst, offset);  
 
 	for (y = clip->y1; y < clip->y2; y++) {
 		iosys_map_memcpy_to(dst, 0, src, len);
@@ -184,17 +182,7 @@ static int drm_fbdev_generic_damage_blit(struct drm_fb_helper *fb_helper,
 	struct iosys_map map, dst;
 	int ret;
 
-	/*
-	 * We have to pin the client buffer to its current location while
-	 * flushing the shadow buffer. In the general case, concurrent
-	 * modesetting operations could try to move the buffer and would
-	 * fail. The modeset has to be serialized by acquiring the reservation
-	 * object of the underlying BO here.
-	 *
-	 * For fbdev emulation, we only have to protect against fbdev modeset
-	 * operations. Nothing else will involve the client buffer's BO. So it
-	 * is sufficient to acquire struct drm_fb_helper.lock here.
-	 */
+	 
 	mutex_lock(&fb_helper->lock);
 
 	ret = drm_client_buffer_vmap(buffer, &map);
@@ -218,7 +206,7 @@ static int drm_fbdev_generic_helper_fb_dirty(struct drm_fb_helper *helper,
 	struct drm_device *dev = helper->dev;
 	int ret;
 
-	/* Call damage handlers only if necessary */
+	 
 	if (!(clip->x1 < clip->x2 && clip->y1 < clip->y2))
 		return 0;
 
@@ -296,29 +284,7 @@ static const struct drm_client_funcs drm_fbdev_generic_client_funcs = {
 	.hotplug	= drm_fbdev_generic_client_hotplug,
 };
 
-/**
- * drm_fbdev_generic_setup() - Setup generic fbdev emulation
- * @dev: DRM device
- * @preferred_bpp: Preferred bits per pixel for the device.
- *
- * This function sets up generic fbdev emulation for drivers that supports
- * dumb buffers with a virtual address and that can be mmap'ed.
- * drm_fbdev_generic_setup() shall be called after the DRM driver registered
- * the new DRM device with drm_dev_register().
- *
- * Restore, hotplug events and teardown are all taken care of. Drivers that do
- * suspend/resume need to call drm_fb_helper_set_suspend_unlocked() themselves.
- * Simple drivers might use drm_mode_config_helper_suspend().
- *
- * In order to provide fixed mmap-able memory ranges, generic fbdev emulation
- * uses a shadow buffer in system memory. The implementation blits the shadow
- * fbdev buffer onto the real buffer in regular intervals.
- *
- * This function is safe to call even when there are no connectors present.
- * Setup will be retried on the next hotplug event.
- *
- * The fbdev is destroyed by drm_dev_unregister().
- */
+ 
 void drm_fbdev_generic_setup(struct drm_device *dev, unsigned int preferred_bpp)
 {
 	struct drm_fb_helper *fb_helper;

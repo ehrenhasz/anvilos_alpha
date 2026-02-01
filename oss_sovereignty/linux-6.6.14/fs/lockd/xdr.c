@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/lockd/xdr.c
- *
- * XDR support for lockd and the lock client.
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/sched.h>
@@ -41,12 +35,7 @@ loff_t_to_s32(loff_t offset)
 	return res;
 }
 
-/*
- * NLM file handles are defined by specification to be a variable-length
- * XDR opaque no longer than 1024 bytes. However, this implementation
- * constrains their length to exactly the length of an NFSv2 file
- * handle.
- */
+ 
 static bool
 svcxdr_decode_fhandle(struct xdr_stream *xdr, struct nfs_fh *fh)
 {
@@ -106,7 +95,7 @@ svcxdr_encode_holder(struct xdr_stream *xdr, const struct nlm_lock *lock)
 	const struct file_lock *fl = &lock->fl;
 	s32 start, len;
 
-	/* exclusive */
+	 
 	if (xdr_stream_encode_bool(xdr, fl->fl_type != F_RDLCK) < 0)
 		return false;
 	if (xdr_stream_encode_u32(xdr, lock->svid) < 0)
@@ -141,9 +130,7 @@ svcxdr_encode_testrply(struct xdr_stream *xdr, const struct nlm_res *resp)
 }
 
 
-/*
- * Decode Call arguments
- */
+ 
 
 bool
 nlmsvc_decode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr)
@@ -189,7 +176,7 @@ nlmsvc_decode_lockargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		return false;
 	if (xdr_stream_decode_u32(xdr, &argp->state) < 0)
 		return false;
-	argp->monitor = 1;		/* monitor client by default */
+	argp->monitor = 1;		 
 
 	return true;
 }
@@ -285,7 +272,7 @@ nlmsvc_decode_shareargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		return false;
 	if (!svcxdr_decode_owner(xdr, &lock->oh))
 		return false;
-	/* XXX: Range checks are missing in the original code */
+	 
 	if (xdr_stream_decode_u32(xdr, &argp->fsm_mode) < 0)
 		return false;
 	if (xdr_stream_decode_u32(xdr, &argp->fsm_access) < 0)
@@ -309,9 +296,7 @@ nlmsvc_decode_notify(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 }
 
 
-/*
- * Encode Reply results
- */
+ 
 
 bool
 nlmsvc_encode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr)
@@ -346,7 +331,7 @@ nlmsvc_encode_shareres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		return false;
 	if (!svcxdr_encode_stats(xdr, resp->status))
 		return false;
-	/* sequence */
+	 
 	if (xdr_stream_encode_u32(xdr, 0) < 0)
 		return false;
 

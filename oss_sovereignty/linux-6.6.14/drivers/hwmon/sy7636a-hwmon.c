@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Functions to access SY3686A power management chip temperature
- *
- * Copyright (C) 2021 reMarkable AS - http://www.remarkable.com/
- *
- * Authors: Lars Ivar Miljeteig <lars.ivar.miljeteig@remarkable.com>
- *          Alistair Francis <alistair@alistair23.me>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>

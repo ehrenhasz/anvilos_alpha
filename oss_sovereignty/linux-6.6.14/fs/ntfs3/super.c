@@ -1,51 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * Copyright (C) 2019-2021 Paragon Software GmbH, All rights reserved.
- *
- *
- *                 terminology
- *
- * cluster - allocation unit     - 512,1K,2K,4K,...,2M
- * vcn - virtual cluster number  - Offset inside the file in clusters.
- * vbo - virtual byte offset     - Offset inside the file in bytes.
- * lcn - logical cluster number  - 0 based cluster in clusters heap.
- * lbo - logical byte offset     - Absolute position inside volume.
- * run - maps VCN to LCN         - Stored in attributes in packed form.
- * attr - attribute segment      - std/name/data etc records inside MFT.
- * mi  - MFT inode               - One MFT record(usually 1024 bytes or 4K), consists of attributes.
- * ni  - NTFS inode              - Extends linux inode. consists of one or more mft inodes.
- * index - unit inside directory - 2K, 4K, <=page size, does not depend on cluster size.
- *
- * WSL - Windows Subsystem for Linux
- * https://docs.microsoft.com/en-us/windows/wsl/file-permissions
- * It stores uid/gid/mode/dev in xattr
- *
- * ntfs allows up to 2^64 clusters per volume.
- * It means you should use 64 bits lcn to operate with ntfs.
- * Implementation of ntfs.sys uses only 32 bits lcn.
- * Default ntfs3 uses 32 bits lcn too.
- * ntfs3 built with CONFIG_NTFS3_64BIT_CLUSTER (ntfs3_64) uses 64 bits per lcn.
- *
- *
- *     ntfs limits, cluster size is 4K (2^12)
- * -----------------------------------------------------------------------------
- * | Volume size   | Clusters | ntfs.sys | ntfs3  | ntfs3_64 | mkntfs | chkdsk |
- * -----------------------------------------------------------------------------
- * | < 16T, 2^44   |  < 2^32  |  yes     |  yes   |   yes    |  yes   |  yes   |
- * | > 16T, 2^44   |  > 2^32  |  no      |  no    |   yes    |  yes   |  yes   |
- * ----------------------------------------------------------|------------------
- *
- * To mount large volumes as ntfs one should use large cluster size (up to 2M)
- * The maximum volume size in this case is 2^32 * 2^21 = 2^53 = 8P
- *
- *     ntfs limits, cluster size is 2M (2^21)
- * -----------------------------------------------------------------------------
- * | < 8P, 2^53    |  < 2^32  |  yes     |  yes   |   yes    |  yes   |  yes   |
- * | > 8P, 2^53    |  > 2^32  |  no      |  no    |   yes    |  yes   |  yes   |
- * ----------------------------------------------------------|------------------
- *
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/buffer_head.h>
@@ -69,11 +23,7 @@
 #endif
 
 #ifdef CONFIG_PRINTK
-/*
- * ntfs_printk - Trace warnings/notices/errors.
- *
- * Thanks Joe Perches <joe@perches.com> for implementation
- */
+ 
 void ntfs_printk(const struct super_block *sb, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -81,7 +31,7 @@ void ntfs_printk(const struct super_block *sb, const char *fmt, ...)
 	int level;
 	struct ntfs_sb_info *sbi = sb->s_fs_info;
 
-	/* Should we use different ratelimits for warnings/notices/errors? */
+	 
 	if (!___ratelimit(&sbi->msg_ratelimit, "ntfs3"))
 		return;
 
@@ -96,13 +46,9 @@ void ntfs_printk(const struct super_block *sb, const char *fmt, ...)
 }
 
 static char s_name_buf[512];
-static atomic_t s_name_buf_cnt = ATOMIC_INIT(1); // 1 means 'free s_name_buf'.
+static atomic_t s_name_buf_cnt = ATOMIC_INIT(1); 
 
-/*
- * ntfs_inode_printk
- *
- * Print warnings/notices/errors about inode using name or inode number.
- */
+ 
 void ntfs_inode_printk(struct inode *inode, const char *fmt, ...)
 {
 	struct super_block *sb = inode->i_sb;
@@ -115,7 +61,7 @@ void ntfs_inode_printk(struct inode *inode, const char *fmt, ...)
 	if (!___ratelimit(&sbi->msg_ratelimit, "ntfs3"))
 		return;
 
-	/* Use static allocated buffer, if possible. */
+	 
 	name = atomic_dec_and_test(&s_name_buf_cnt) ?
 		       s_name_buf :
 		       kmalloc(sizeof(s_name_buf), GFP_NOFS);
@@ -128,11 +74,11 @@ void ntfs_inode_printk(struct inode *inode, const char *fmt, ...)
 			spin_lock(&de->d_lock);
 			snprintf(name, name_len, " \"%s\"", de->d_name.name);
 			spin_unlock(&de->d_lock);
-			name[name_len] = 0; /* To be sure. */
+			name[name_len] = 0;  
 		} else {
 			name[0] = 0;
 		}
-		dput(de); /* Cocci warns if placed in branch "if (de)" */
+		dput(de);  
 	}
 
 	va_start(args, fmt);
@@ -152,16 +98,7 @@ void ntfs_inode_printk(struct inode *inode, const char *fmt, ...)
 }
 #endif
 
-/*
- * Shared memory struct.
- *
- * On-disk ntfs's upcase table is created by ntfs formatter.
- * 'upcase' table is 128K bytes of memory.
- * We should read it into memory when mounting.
- * Several ntfs volumes likely use the same 'upcase' table.
- * It is good idea to share in-memory 'upcase' table between different volumes.
- * Unfortunately winxp/vista/win7 use different upcase tables.
- */
+ 
 static DEFINE_SPINLOCK(s_shared_lock);
 
 static struct {
@@ -170,13 +107,7 @@ static struct {
 	int cnt;
 } s_shared[8];
 
-/*
- * ntfs_set_shared
- *
- * Return:
- * * @ptr - If pointer was saved in shared memory.
- * * NULL - If pointer was not shared.
- */
+ 
 void *ntfs_set_shared(void *ptr, u32 bytes)
 {
 	void *ret = NULL;
@@ -205,13 +136,7 @@ void *ntfs_set_shared(void *ptr, u32 bytes)
 	return ret;
 }
 
-/*
- * ntfs_put_shared
- *
- * Return:
- * * @ptr - If pointer is not shared anymore.
- * * NULL - If pointer is still shared.
- */
+ 
 void *ntfs_put_shared(void *ptr)
 {
 	void *ret = ptr;
@@ -258,7 +183,7 @@ enum Opt {
 	Opt_err,
 };
 
-// clang-format off
+ 
 static const struct fs_parameter_spec ntfs_fs_parameters[] = {
 	fsparam_u32("uid",			Opt_uid),
 	fsparam_u32("gid",			Opt_gid),
@@ -279,14 +204,9 @@ static const struct fs_parameter_spec ntfs_fs_parameters[] = {
 	fsparam_flag_no("nocase",		Opt_nocase),
 	{}
 };
-// clang-format on
+ 
 
-/*
- * Load nls table or if @nls is utf8 then return NULL.
- *
- * It is good idea to use here "const char *nls".
- * But load_nls accepts "char*".
- */
+ 
 static struct nls_table *ntfs_load_nls(char *nls)
 {
 	struct nls_table *ret;
@@ -396,7 +316,7 @@ static int ntfs_fs_parse_param(struct fs_context *fc,
 		opts->nocase = result.negated ? 1 : 0;
 		break;
 	default:
-		/* Should not be here unless we forget add case. */
+		 
 		return -EINVAL;
 	}
 	return 0;
@@ -445,19 +365,7 @@ static int ntfs_fs_reconfigure(struct fs_context *fc)
 #ifdef CONFIG_PROC_FS
 static struct proc_dir_entry *proc_info_root;
 
-/*
- * ntfs3_volinfo:
- *
- * The content of /proc/fs/ntfs3/<dev>/volinfo
- *
- * ntfs3.1
- * cluster size
- * number of clusters
- * total number of mft records
- * number of used mft records ~= number of files + folders
- * real state of ntfs "dirty"/"clean"
- * current state of ntfs "dirty"/"clean"
-*/
+ 
 static int ntfs3_volinfo(struct seq_file *m, void *o)
 {
 	struct super_block *sb = m->private;
@@ -479,7 +387,7 @@ static int ntfs3_volinfo_open(struct inode *inode, struct file *file)
 	return single_open(file, ntfs3_volinfo, pde_data(inode));
 }
 
-/* read /proc/fs/ntfs3/<dev>/label */
+ 
 static int ntfs3_label_show(struct seq_file *m, void *o)
 {
 	struct super_block *sb = m->private;
@@ -490,7 +398,7 @@ static int ntfs3_label_show(struct seq_file *m, void *o)
 	return 0;
 }
 
-/* write /proc/fs/ntfs3/<dev>/label */
+ 
 static ssize_t ntfs3_label_write(struct file *file, const char __user *buffer,
 				 size_t count, loff_t *ppos)
 {
@@ -580,9 +488,7 @@ static void init_once(void *foo)
 	inode_init_once(&ni->vfs_inode);
 }
 
-/*
- * Noinline to reduce binary size.
- */
+ 
 static noinline void ntfs3_put_sbi(struct ntfs_sb_info *sbi)
 {
 	wnd_close(&sbi->mft.bitmap);
@@ -639,7 +545,7 @@ static void ntfs_put_super(struct super_block *sb)
 	struct ntfs_sb_info *sbi = sb->s_fs_info;
 
 #ifdef CONFIG_PROC_FS
-	// Remove /proc/fs/ntfs3/..
+	
 	if (sbi->procdir) {
 		remove_proc_entry("label", sbi->procdir);
 		remove_proc_entry("volinfo", sbi->procdir);
@@ -648,7 +554,7 @@ static void ntfs_put_super(struct super_block *sb)
 	}
 #endif
 
-	/* Mark rw ntfs as clear, if possible. */
+	 
 	ntfs_set_state(sbi, NTFS_DIRTY_CLEAR);
 	ntfs3_put_sbi(sbi);
 }
@@ -714,9 +620,7 @@ static int ntfs_show_options(struct seq_file *m, struct dentry *root)
 	return 0;
 }
 
-/*
- * ntfs_sync_fs - super_operations::sync_fs
- */
+ 
 static int ntfs_sync_fs(struct super_block *sb, int wait)
 {
 	int err = 0, err2;
@@ -804,7 +708,7 @@ static struct dentry *ntfs_fh_to_parent(struct super_block *sb, struct fid *fid,
 				    ntfs_export_get_inode);
 }
 
-/* TODO: == ntfs_sync_inode */
+ 
 static int ntfs_nfs_commit_metadata(struct inode *inode)
 {
 	return _ni_write_inode(inode, 1);
@@ -817,12 +721,10 @@ static const struct export_operations ntfs_export_ops = {
 	.commit_metadata = ntfs_nfs_commit_metadata,
 };
 
-/*
- * format_size_gb - Return Gb,Mb to print with "%u.%02u Gb".
- */
+ 
 static u32 format_size_gb(const u64 bytes, u32 *mb)
 {
-	/* Do simple right 30 bit shift of 64 bit value. */
+	 
 	u64 kbytes = bytes >> 10;
 	u32 kbytes32 = kbytes;
 
@@ -837,21 +739,12 @@ static u32 true_sectors_per_clst(const struct NTFS_BOOT *boot)
 {
 	if (boot->sectors_per_clusters <= 0x80)
 		return boot->sectors_per_clusters;
-	if (boot->sectors_per_clusters >= 0xf4) /* limit shift to 2MB max */
+	if (boot->sectors_per_clusters >= 0xf4)  
 		return 1U << (-(s8)boot->sectors_per_clusters);
 	return -EINVAL;
 }
 
-/*
- * ntfs_init_from_boot - Init internal info from on-disk boot sector.
- *
- * NTFS mount begins from boot - special formatted 512 bytes.
- * There are two boots: the first and the last 512 bytes of volume.
- * The content of boot is not changed during ntfs life.
- *
- * NOTE: ntfs.sys checks only first (primary) boot.
- * chkdsk checks both boots.
- */
+ 
 static int ntfs_init_from_boot(struct super_block *sb, u32 sector_size,
 			       u64 dev_size, struct NTFS_BOOT **boot2)
 {
@@ -867,7 +760,7 @@ static int ntfs_init_from_boot(struct super_block *sb, u32 sector_size,
 	u32 boot_off = 0;
 	const char *hint = "Primary boot";
 
-	/* Save original dev_size. Used with alternative boot. */
+	 
 	dev_size0 = dev_size;
 
 	sbi->volume.blocks = dev_size >> PAGE_SHIFT;
@@ -879,7 +772,7 @@ static int ntfs_init_from_boot(struct super_block *sb, u32 sector_size,
 check_boot:
 	err = -EINVAL;
 
-	/* Corrupted image; do not read OOB */
+	 
 	if (bh->b_size - sizeof(*boot) < boot_off)
 		goto out;
 
@@ -890,10 +783,8 @@ check_boot:
 		goto out;
 	}
 
-	/* 0x55AA is not mandaroty. Thanks Maxim Suhanov*/
-	/*if (0x55 != boot->boot_magic[0] || 0xAA != boot->boot_magic[1])
-	 *	goto out;
-	 */
+	 
+	 
 
 	boot_sector_size = ((u32)boot->bytes_per_sector[1] << 8) |
 			   boot->bytes_per_sector[0];
@@ -904,7 +795,7 @@ check_boot:
 		goto out;
 	}
 
-	/* cluster size: 512, 1K, 2K, 4K, ... 2M */
+	 
 	sct_per_clst = true_sectors_per_clst(boot);
 	if ((int)sct_per_clst < 0 || !is_power_of_2(sct_per_clst)) {
 		ntfs_err(sb, "%s: invalid sectors per cluster %u.", hint,
@@ -941,9 +832,9 @@ check_boot:
 
 	sbi->record_size = record_size;
 	sbi->record_bits = blksize_bits(record_size);
-	sbi->attr_size_tr = (5 * record_size >> 4); // ~320 bytes
+	sbi->attr_size_tr = (5 * record_size >> 4); 
 
-	/* Check MFT record size. */
+	 
 	if (record_size < SECTOR_SIZE || !is_power_of_2(record_size)) {
 		ntfs_err(sb, "%s: invalid bytes per MFT record %u (%d).", hint,
 			 record_size, boot->record_size);
@@ -966,7 +857,7 @@ check_boot:
 		goto out;
 	}
 
-	/* Check index record size. */
+	 
 	if (sbi->index_size < SECTOR_SIZE || !is_power_of_2(sbi->index_size)) {
 		ntfs_err(sb, "%s: invalid bytes per index %u(%d).", hint,
 			 sbi->index_size, boot->index_size);
@@ -983,11 +874,7 @@ check_boot:
 
 	gb = format_size_gb(sbi->volume.size + boot_sector_size, &mb);
 
-	/*
-	 * - Volume formatted and mounted with the same sector size.
-	 * - Volume formatted 4K and mounted as 512.
-	 * - Volume formatted 512 and mounted as 4K.
-	 */
+	 
 	if (boot_sector_size != sector_size) {
 		ntfs_warn(
 			sb,
@@ -999,16 +886,16 @@ check_boot:
 	sbi->mft.lbo = mlcn << cluster_bits;
 	sbi->mft.lbo2 = mlcn2 << cluster_bits;
 
-	/* Compare boot's cluster and sector. */
+	 
 	if (sbi->cluster_size < boot_sector_size) {
 		ntfs_err(sb, "%s: invalid bytes per cluster (%u).", hint,
 			 sbi->cluster_size);
 		goto out;
 	}
 
-	/* Compare boot's cluster and media sector. */
+	 
 	if (sbi->cluster_size < sector_size) {
-		/* No way to use ntfs_get_block in this case. */
+		 
 		ntfs_err(
 			sb,
 			"Failed to mount 'cause NTFS's cluster size (%u) is less than media sector size (%u).",
@@ -1023,7 +910,7 @@ check_boot:
 
 	sbi->volume.ser_num = le64_to_cpu(boot->serial_num);
 
-	/* Warning if RAW volume. */
+	 
 	if (dev_size < sbi->volume.size + boot_sector_size) {
 		u32 mb0, gb0;
 
@@ -1037,7 +924,7 @@ check_boot:
 
 	clusters = sbi->volume.size >> cluster_bits;
 #ifndef CONFIG_NTFS3_64BIT_CLUSTER
-	/* 32 bits per cluster. */
+	 
 	if (clusters >> 32) {
 		ntfs_notice(
 			sb,
@@ -1074,7 +961,7 @@ check_boot:
 	sbi->blocks_per_cluster = sbi->cluster_size >> sb->s_blocksize_bits;
 	sbi->volume.blocks = sbi->volume.size >> sb->s_blocksize_bits;
 
-	/* Maximum size for normal files. */
+	 
 	sbi->maxbytes = (clusters << cluster_bits) - 1;
 
 #ifdef CONFIG_NTFS3_64BIT_CLUSTER
@@ -1083,26 +970,18 @@ check_boot:
 	sbi->maxbytes_sparse = -1;
 	sb->s_maxbytes = MAX_LFS_FILESIZE;
 #else
-	/* Maximum size for sparse file. */
+	 
 	sbi->maxbytes_sparse = (1ull << (cluster_bits + 32)) - 1;
 	sb->s_maxbytes = 0xFFFFFFFFull << cluster_bits;
 #endif
 
-	/*
-	 * Compute the MFT zone at two steps.
-	 * It would be nice if we are able to allocate 1/8 of
-	 * total clusters for MFT but not more then 512 MB.
-	 */
+	 
 	sbi->zone_max = min_t(CLST, 0x20000000 >> cluster_bits, clusters >> 3);
 
 	err = 0;
 
 	if (bh->b_blocknr && !sb_rdonly(sb)) {
-		/*
-	 	 * Alternative boot is ok but primary is not ok.
-	 	 * Do not update primary boot here 'cause it may be faked boot.
-	 	 * Let ntfs to be mounted and update boot later.
-		 */
+		 
 		*boot2 = kmemdup(boot, sizeof(*boot), GFP_NOFS | __GFP_NOWARN);
 	}
 
@@ -1111,9 +990,7 @@ out:
 		u32 block_size = min_t(u32, sector_size, PAGE_SIZE);
 		u64 lbo = dev_size0 - sizeof(*boot);
 
-		/*
-	 	 * Try alternative boot (last sector)
-		 */
+		 
 		brelse(bh);
 
 		sb_set_blocksize(sb, block_size);
@@ -1123,7 +1000,7 @@ out:
 
 		boot_off = lbo & (block_size - 1);
 		hint = "Alternative boot";
-		dev_size = dev_size0; /* restore original size. */
+		dev_size = dev_size0;  
 		goto check_boot;
 	}
 	brelse(bh);
@@ -1131,9 +1008,7 @@ out:
 	return err;
 }
 
-/*
- * ntfs_fill_super - Try to mount.
- */
+ 
 static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 {
 	int err;
@@ -1159,10 +1034,10 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	sbi->options = options = fc->fs_private;
 	fc->fs_private = NULL;
 	sb->s_flags |= SB_NODIRATIME;
-	sb->s_magic = 0x7366746e; // "ntfs"
+	sb->s_magic = 0x7366746e;  
 	sb->s_op = &ntfs_sops;
 	sb->s_export_op = &ntfs_export_ops;
-	sb->s_time_gran = NTFS_TIME_GRAN; // 100 nsec
+	sb->s_time_gran = NTFS_TIME_GRAN;  
 	sb->s_xattr = ntfs_xattr_handlers;
 	sb->s_d_op = options->nocase ? &ntfs_dentry_ops : NULL;
 
@@ -1180,16 +1055,13 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 			~(u64)(sbi->discard_granularity - 1);
 	}
 
-	/* Parse boot. */
+	 
 	err = ntfs_init_from_boot(sb, bdev_logical_block_size(bdev),
 				  bdev_nr_bytes(bdev), &boot2);
 	if (err)
 		goto out;
 
-	/*
-	 * Load $Volume. This should be done before $LogFile
-	 * 'cause 'sbi->volume.ni' is used 'ntfs_set_state'.
-	 */
+	 
 	ref.low = cpu_to_le32(MFT_REC_VOL);
 	ref.seq = cpu_to_le16(MFT_REC_VOL);
 	inode = ntfs_iget5(sb, &ref, &NAME_VOLUME);
@@ -1201,13 +1073,13 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	ni = ntfs_i(inode);
 
-	/* Load and save label (not necessary). */
+	 
 	attr = ni_find_attr(ni, NULL, NULL, ATTR_LABEL, NULL, 0, NULL, NULL);
 
 	if (!attr) {
-		/* It is ok if no ATTR_LABEL */
+		 
 	} else if (!attr->non_res && !is_attr_ext(attr)) {
-		/* $AttrDef allows labels to be up to 128 symbols. */
+		 
 		err = utf16s_to_utf8s(resident_data(attr),
 				      le32_to_cpu(attr->res.data_size) >> 1,
 				      UTF16_LITTLE_ENDIAN, sbi->volume.label,
@@ -1215,9 +1087,9 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 		if (err < 0)
 			sbi->volume.label[0] = 0;
 	} else {
-		/* Should we break mounting here? */
-		//err = -EINVAL;
-		//goto put_inode_out;
+		 
+		
+		
 	}
 
 	attr = ni_find_attr(ni, attr, NULL, ATTR_VOL_INFO, NULL, 0, NULL, NULL);
@@ -1237,7 +1109,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 		ntfs_info(sb, "It is recommened to use chkdsk.");
 	}
 
-	/* Load $MFTMirr to estimate recs_mirr. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_MIRR);
 	ref.seq = cpu_to_le16(MFT_REC_MIRR);
 	inode = ntfs_iget5(sb, &ref, &NAME_MIRROR);
@@ -1252,7 +1124,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	iput(inode);
 
-	/* Load LogFile to replay. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_LOG);
 	ref.seq = cpu_to_le16(MFT_REC_LOG);
 	inode = ntfs_iget5(sb, &ref, &NAME_LOGFILE);
@@ -1282,7 +1154,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 		goto out;
 	}
 
-	/* Load $MFT. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_MFT);
 	ref.seq = cpu_to_le16(1);
 
@@ -1311,7 +1183,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	sbi->mft.ni = ni;
 
-	/* Load $Bitmap. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_BITMAP);
 	ref.seq = cpu_to_le16(MFT_REC_BITMAP);
 	inode = ntfs_iget5(sb, &ref, &NAME_BITMAP);
@@ -1328,7 +1200,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	}
 #endif
 
-	/* Check bitmap boundary. */
+	 
 	tt = sbi->used.bitmap.nbits;
 	if (inode->i_size < bitmap_size(tt)) {
 		ntfs_err(sb, "$Bitmap is corrupted.");
@@ -1344,14 +1216,14 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	iput(inode);
 
-	/* Compute the MFT zone. */
+	 
 	err = ntfs_refresh_zone(sbi);
 	if (err) {
 		ntfs_err(sb, "Failed to initialize MFT zone (%d).", err);
 		goto out;
 	}
 
-	/* Load $BadClus. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_BADCLUST);
 	ref.seq = cpu_to_le16(MFT_REC_BADCLUST);
 	inode = ntfs_iget5(sb, &ref, &NAME_BADCLUS);
@@ -1373,23 +1245,19 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 			continue;
 
 		if (wnd_set_used_safe(&sbi->used.bitmap, lcn, len, &tt) || tt) {
-			/* Bad blocks marked as free in bitmap. */
+			 
 			ntfs_set_state(sbi, NTFS_DIRTY_ERROR);
 		}
 	}
 	if (bad_len) {
-		/*
-		 * Notice about bad blocks.
-		 * In normal cases these blocks are marked as used in bitmap.
-		 * And we never allocate space in it.
-		 */
+		 
 		ntfs_notice(sb,
 			    "Volume contains %zu bad blocks in %zu fragments.",
 			    bad_len, bad_frags);
 	}
 	iput(inode);
 
-	/* Load $AttrDef. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_ATTR);
 	ref.seq = cpu_to_le16(MFT_REC_ATTR);
 	inode = ntfs_iget5(sb, &ref, &NAME_ATTRDEF);
@@ -1399,10 +1267,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 		goto out;
 	}
 
-	/*
-	 * Typical $AttrDef contains up to 20 entries.
-	 * Check for extremely large/small size.
-	 */
+	 
 	if (inode->i_size < sizeof(struct ATTR_DEF_ENTRY) ||
 	    inode->i_size > 100 * sizeof(struct ATTR_DEF_ENTRY)) {
 		ntfs_err(sb, "Looks like $AttrDef is corrupted (size=%llu).",
@@ -1442,7 +1307,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	sbi->def_entries = 1;
 	done = sizeof(struct ATTR_DEF_ENTRY);
 	sbi->reparse.max_size = MAXIMUM_REPARSE_DATA_BUFFER_SIZE;
-	sbi->ea_max_size = 0x10000; /* default formatter value */
+	sbi->ea_max_size = 0x10000;  
 
 	while (done + sizeof(struct ATTR_DEF_ENTRY) <= bytes) {
 		u32 t32 = le32_to_cpu(t->type);
@@ -1462,7 +1327,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	}
 	iput(inode);
 
-	/* Load $UpCase. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_UPCASE);
 	ref.seq = cpu_to_le16(MFT_REC_UPCASE);
 	inode = ntfs_iget5(sb, &ref, &NAME_UPCASE);
@@ -1509,28 +1374,28 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	iput(inode);
 
 	if (is_ntfs3(sbi)) {
-		/* Load $Secure. */
+		 
 		err = ntfs_security_init(sbi);
 		if (err) {
 			ntfs_err(sb, "Failed to initialize $Secure (%d).", err);
 			goto out;
 		}
 
-		/* Load $Extend. */
+		 
 		err = ntfs_extend_init(sbi);
 		if (err) {
 			ntfs_warn(sb, "Failed to initialize $Extend.");
 			goto load_root;
 		}
 
-		/* Load $Extend/$Reparse. */
+		 
 		err = ntfs_reparse_init(sbi);
 		if (err) {
 			ntfs_warn(sb, "Failed to initialize $Extend/$Reparse.");
 			goto load_root;
 		}
 
-		/* Load $Extend/$ObjId. */
+		 
 		err = ntfs_objid_init(sbi);
 		if (err) {
 			ntfs_warn(sb, "Failed to initialize $Extend/$ObjId.");
@@ -1539,7 +1404,7 @@ static int ntfs_fill_super(struct super_block *sb, struct fs_context *fc)
 	}
 
 load_root:
-	/* Load root. */
+	 
 	ref.low = cpu_to_le32(MFT_REC_ROOT);
 	ref.seq = cpu_to_le16(MFT_REC_ROOT);
 	inode = ntfs_iget5(sb, &ref, &NAME_ROOT);
@@ -1549,9 +1414,7 @@ load_root:
 		goto out;
 	}
 
-	/*
-	 * Final check. Looks like this case should never occurs.
-	 */
+	 
 	if (!inode->i_op) {
 		err = -EINVAL;
 		ntfs_err(sb, "Failed to load root (%d).", err);
@@ -1565,10 +1428,7 @@ load_root:
 	}
 
 	if (boot2) {
-		/*
-	 	 * Alternative boot is ok but primary is not ok.
-	 	 * Volume is recognized as NTFS. Update primary boot.
-		 */
+		 
 		struct buffer_head *bh0 = sb_getblk(sb, 0);
 		if (bh0) {
 			if (buffer_locked(bh0))
@@ -1588,7 +1448,7 @@ load_root:
 	}
 
 #ifdef CONFIG_PROC_FS
-	/* Create /proc/fs/ntfs3/.. */
+	 
 	if (proc_info_root) {
 		struct proc_dir_entry *e = proc_mkdir(sb->s_id, proc_info_root);
 		static_assert((S_IRUGO | S_IWUSR) == 0644);
@@ -1639,9 +1499,7 @@ void ntfs_unmap_meta(struct super_block *sb, CLST lcn, CLST len)
 	}
 }
 
-/*
- * ntfs_discard - Issue a discard request (trim for SSD).
- */
+ 
 int ntfs_discard(struct ntfs_sb_info *sbi, CLST lcn, CLST len)
 {
 	int err;
@@ -1660,10 +1518,10 @@ int ntfs_discard(struct ntfs_sb_info *sbi, CLST lcn, CLST len)
 	lbo = (u64)lcn << sbi->cluster_bits;
 	bytes = (u64)len << sbi->cluster_bits;
 
-	/* Align up 'start' on discard_granularity. */
+	 
 	start = (lbo + sbi->discard_granularity - 1) &
 		sbi->discard_granularity_mask_inv;
-	/* Align down 'end' on discard_granularity. */
+	 
 	end = (lbo + bytes) & sbi->discard_granularity_mask_inv;
 
 	sb = sbi->sb;
@@ -1684,12 +1542,7 @@ static int ntfs_fs_get_tree(struct fs_context *fc)
 	return get_tree_bdev(fc, ntfs_fill_super);
 }
 
-/*
- * ntfs_fs_free - Free fs_context.
- *
- * Note that this will be called after fill_super and reconfigure
- * even when they pass. So they have to take pointers if they pass.
- */
+ 
 static void ntfs_fs_free(struct fs_context *fc)
 {
 	struct ntfs_mount_options *opts = fc->fs_private;
@@ -1704,21 +1557,16 @@ static void ntfs_fs_free(struct fs_context *fc)
 		put_mount_options(opts);
 }
 
-// clang-format off
+
 static const struct fs_context_operations ntfs_context_ops = {
 	.parse_param	= ntfs_fs_parse_param,
 	.get_tree	= ntfs_fs_get_tree,
 	.reconfigure	= ntfs_fs_reconfigure,
 	.free		= ntfs_fs_free,
 };
-// clang-format on
 
-/*
- * ntfs_init_fs_context - Initialize sbi and opts
- *
- * This will called when mount/remount. We will first initialize
- * options so that if remount we can use just that.
- */
+
+ 
 static int ntfs_init_fs_context(struct fs_context *fc)
 {
 	struct ntfs_mount_options *opts;
@@ -1728,7 +1576,7 @@ static int ntfs_init_fs_context(struct fs_context *fc)
 	if (!opts)
 		return -ENOMEM;
 
-	/* Default options. */
+	 
 	opts->fs_uid = current_uid();
 	opts->fs_gid = current_gid();
 	opts->fs_fmask_inv = ~current_umask();
@@ -1778,7 +1626,7 @@ static void ntfs3_kill_sb(struct super_block *sb)
 	ntfs3_free_sbi(sbi);
 }
 
-// clang-format off
+
 static struct file_system_type ntfs_fs_type = {
 	.owner			= THIS_MODULE,
 	.name			= "ntfs3",
@@ -1787,7 +1635,7 @@ static struct file_system_type ntfs_fs_type = {
 	.kill_sb		= ntfs3_kill_sb,
 	.fs_flags		= FS_REQUIRES_DEV | FS_ALLOW_IDMAP,
 };
-// clang-format on
+
 
 static int __init init_ntfs_fs(void)
 {
@@ -1804,7 +1652,7 @@ static int __init init_ntfs_fs(void)
 		pr_info("ntfs3: Read-only LZX/Xpress compression included\n");
 
 #ifdef CONFIG_PROC_FS
-	/* Create "/proc/fs/ntfs3" */
+	 
 	proc_info_root = proc_mkdir("fs/ntfs3", NULL);
 #endif
 

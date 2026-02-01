@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- * Copyright (c) 2016 Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -232,7 +227,7 @@ static void nft_ct_set_zone_eval(const struct nft_expr *expr,
 	struct nf_conn *ct;
 
 	ct = nf_ct_get(skb, &ctinfo);
-	if (ct) /* already tracked */
+	if (ct)  
 		return;
 
 	zone.id = value;
@@ -254,9 +249,7 @@ static void nft_ct_set_zone_eval(const struct nft_expr *expr,
 		refcount_inc(&ct->ct_general.use);
 		nf_ct_zone_add(ct, &zone);
 	} else {
-		/* previous skb got queued to userspace, allocate temporary
-		 * one until percpu template can be reused.
-		 */
+		 
 		ct = nf_ct_tmpl_alloc(nft_net(pkt), &zone, GFP_ATOMIC);
 		if (!ct) {
 			regs->verdict.code = NF_DROP;
@@ -421,9 +414,7 @@ static int nft_ct_get_init(const struct nft_ctx *ctx,
 
 	case NFT_CT_L3PROTOCOL:
 	case NFT_CT_PROTOCOL:
-		/* For compatibility, do not report error if NFTA_CT_DIRECTION
-		 * attribute is specified.
-		 */
+		 
 		len = sizeof(u8);
 		break;
 	case NFT_CT_SRC:
@@ -839,7 +830,7 @@ static void nft_notrack_eval(const struct nft_expr *expr,
 	struct nf_conn *ct;
 
 	ct = nf_ct_get(pkt->skb, &ctinfo);
-	/* Previously seen (loopback or untracked)?  Ignore. */
+	 
 	if (ct || ctinfo == IP_CT_UNTRACKED)
 		return;
 
@@ -921,9 +912,7 @@ static void nft_ct_timeout_obj_eval(struct nft_object *obj,
 
 	rcu_assign_pointer(timeout->timeout, priv->timeout);
 
-	/* adjust the timeout as per 'new' state. ct is unconfirmed,
-	 * so the current timestamp must not be added.
-	 */
+	 
 	values = nf_ct_timeout_data(timeout);
 	if (values)
 		nf_ct_refresh(ct, pkt->skb, values[0]);
@@ -1043,7 +1032,7 @@ static struct nft_object_type nft_ct_timeout_obj_type __read_mostly = {
 	.policy		= nft_ct_timeout_policy,
 	.owner		= THIS_MODULE,
 };
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 
 static int nft_ct_helper_obj_init(const struct nft_ctx *ctx,
 				  const struct nlattr * const tb[],
@@ -1097,7 +1086,7 @@ static int nft_ct_helper_obj_init(const struct nft_ctx *ctx,
 		return -EAFNOSUPPORT;
 	}
 
-	/* && is intentional; only error if INET found neither ipv4 or ipv6 */
+	 
 	if (!help4 && !help6)
 		return -ENOENT;
 

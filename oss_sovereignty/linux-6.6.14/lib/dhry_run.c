@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Dhrystone benchmark test module
- *
- * Copyright (C) 2022 Glider bv
- */
+
+ 
 
 #include "dhry.h"
 

@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
 
-/* For profiling, userspace can:
- *
- *   tail -f /sys/kernel/debug/dri/<minor>/gpu
- *
- * This will enable performance counters/profiling to track the busy time
- * and any gpu specific performance counters that are supported.
- */
+ 
+
+ 
 
 #ifdef CONFIG_DEBUG_FS
 
@@ -37,7 +28,7 @@ struct msm_perf_state {
 
 #define SAMPLE_TIME (HZ/4)
 
-/* wait for next sample time: */
+ 
 static int wait_sample(struct msm_perf_state *perf)
 {
 	unsigned long start_jiffies = jiffies;
@@ -47,7 +38,7 @@ static int wait_sample(struct msm_perf_state *perf)
 			perf->next_jiffies - start_jiffies;
 		int ret = schedule_timeout_interruptible(remaining_jiffies);
 		if (ret > 0) {
-			/* interrupted */
+			 
 			return -ERESTARTSYS;
 		}
 	}
@@ -64,7 +55,7 @@ static int refill_buf(struct msm_perf_state *perf)
 	int i, n;
 
 	if ((perf->cnt++ % 32) == 0) {
-		/* Header line: */
+		 
 		n = snprintf(ptr, rem, "%%BUSY");
 		ptr += n;
 		rem -= n;
@@ -76,13 +67,13 @@ static int refill_buf(struct msm_perf_state *perf)
 			rem -= n;
 		}
 	} else {
-		/* Sample line: */
+		 
 		uint32_t activetime = 0, totaltime = 0;
 		uint32_t cntrs[5];
 		uint32_t val;
 		int ret;
 
-		/* sleep until next sample time: */
+		 
 		ret = wait_sample(perf);
 		if (ret)
 			return ret;
@@ -98,7 +89,7 @@ static int refill_buf(struct msm_perf_state *perf)
 		rem -= n;
 
 		for (i = 0; i < ret; i++) {
-			/* cycle counters (I think).. convert to MHz.. */
+			 
 			val = cntrs[i] / 10000;
 			n = snprintf(ptr, rem, "\t%5d.%02d",
 					val / 100, val % 100);
@@ -201,7 +192,7 @@ int msm_perf_debugfs_init(struct drm_minor *minor)
 	struct msm_drm_private *priv = minor->dev->dev_private;
 	struct msm_perf_state *perf;
 
-	/* only create on first minor: */
+	 
 	if (priv->perf)
 		return 0;
 

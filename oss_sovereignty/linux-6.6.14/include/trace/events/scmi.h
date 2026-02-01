@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM scmi
 
@@ -174,7 +174,7 @@ TRACE_EVENT(scmi_msg_dump,
 		  __entry->tag, __entry->msg_id, __entry->seq, __entry->status,
 		__print_hex_str(__get_dynamic_array(cmd), __entry->len))
 );
-#endif /* _TRACE_SCMI_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

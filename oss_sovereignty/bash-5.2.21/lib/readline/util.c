@@ -1,23 +1,6 @@
-/* util.c -- readline utility functions */
+ 
 
-/* Copyright (C) 1987-2017 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -30,41 +13,40 @@
 #include "posixjmp.h"
 
 #if defined (HAVE_UNISTD_H)
-#  include <unistd.h>           /* for _POSIX_VERSION */
-#endif /* HAVE_UNISTD_H */
+#  include <unistd.h>            
+#endif  
 
 #if defined (HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include <stdio.h>
 #include <ctype.h>
 
-/* System-specific feature definitions and include files. */
+ 
 #include "rldefs.h"
 #include "rlmbutil.h"
 
 #if defined (TIOCSTAT_IN_SYS_IOCTL)
 #  include <sys/ioctl.h>
-#endif /* TIOCSTAT_IN_SYS_IOCTL */
+#endif  
 
-/* Some standard library routines. */
+ 
 #include "readline.h"
 
 #include "rlprivate.h"
 #include "xmalloc.h"
 #include "rlshell.h"
 
-/* **************************************************************** */
-/*								    */
-/*			Utility Functions			    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Return 0 if C is not a member of the class of characters that belong
-   in words, or 1 if it is. */
+ 
 
 int _rl_allow_pathname_alphabetic_chars = 0;
 static const char * const pathname_alphabetic_chars = "/-_=~.#$";
@@ -94,12 +76,12 @@ _rl_walphabetic (WCHAR_T wc)
 }
 #endif
 
-/* How to abort things. */
+ 
 int
 _rl_abort_internal (void)
 {
   if (RL_ISSTATE (RL_STATE_TIMEOUT) == 0)
-    rl_ding ();			/* Don't ring the bell on a timeout */
+    rl_ding ();			 
   rl_clear_message ();
   _rl_reset_argument ();
   rl_clear_pending_input ();
@@ -109,7 +91,7 @@ _rl_abort_internal (void)
     _rl_pop_executing_macro ();
   _rl_kill_kbd_macro ();
 
-  RL_UNSETSTATE (RL_STATE_MULTIKEY);	/* XXX */
+  RL_UNSETSTATE (RL_STATE_MULTIKEY);	 
 
   rl_last_func = (rl_command_func_t *)NULL;
 
@@ -141,15 +123,14 @@ rl_tty_status (int count, int key)
   return 0;
 }
 
-/* Return a copy of the string between FROM and TO.
-   FROM is inclusive, TO is not. */
+ 
 char *
 rl_copy_text (int from, int to)
 {
   register int length;
   char *copy;
 
-  /* Fix it if the caller is confused. */
+   
   if (from > to)
     SWAP (from, to);
 
@@ -160,8 +141,7 @@ rl_copy_text (int from, int to)
   return (copy);
 }
 
-/* Increase the size of RL_LINE_BUFFER until it has enough space to hold
-   LEN characters. */
+ 
 void
 rl_extend_line_buffer (int len)
 {
@@ -175,7 +155,7 @@ rl_extend_line_buffer (int len)
 }
 
 
-/* A function for simple tilde expansion. */
+ 
 int
 rl_tilde_expand (int ignore, int key)
 {
@@ -210,9 +190,7 @@ rl_tilde_expand (int ignore, int key)
   if (whitespace (rl_line_buffer[end]) || end >= rl_end)
     end--;
 
-  /* If the first character of the current word is a tilde, perform
-     tilde expansion and insert the result.  If not a tilde, do
-     nothing. */
+   
   if (rl_line_buffer[start] == '~')
     {
       len = end - start + 1;
@@ -288,7 +266,7 @@ _rl_errmsg (va_alist)
   va_end (args);
 }
 
-#else /* !USE_VARARGS */
+#else  
 void
 _rl_ttymsg (format, arg1, arg2)
      char *format;
@@ -308,16 +286,15 @@ _rl_errmsg (format, arg1, arg2)
   fprintf (stderr, format, arg1, arg2);
   fprintf (stderr, "\n");
 }
-#endif /* !USE_VARARGS */
+#endif  
 
-/* **************************************************************** */
-/*								    */
-/*			String Utility Functions		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Determine if s2 occurs in s1.  If so, return a pointer to the
-   match in s1.  The compare is case insensitive. */
+ 
 char *
 _rl_strindex (const char *s1, const char *s2)
 {
@@ -330,8 +307,7 @@ _rl_strindex (const char *s1, const char *s2)
 }
 
 #ifndef HAVE_STRPBRK
-/* Find the first occurrence in STRING1 of any character from STRING2.
-   Return a pointer to the character in STRING1. */
+ 
 char *
 _rl_strpbrk (const char *string1, const char *string2)
 {
@@ -355,7 +331,7 @@ _rl_strpbrk (const char *string1, const char *string2)
 	{
 	  v = _rl_get_char_len (string1, &ps);
 	  if (v > 1)
-	    string1 += v - 1;	/* -1 to account for auto-increment in loop */
+	    string1 += v - 1;	 
 	}
 #endif
     }
@@ -364,8 +340,7 @@ _rl_strpbrk (const char *string1, const char *string2)
 #endif
 
 #if !defined (HAVE_STRCASECMP)
-/* Compare at most COUNT characters from string1 to string2.  Case
-   doesn't matter (strncasecmp). */
+ 
 int
 _rl_strnicmp (const char *string1, const char *string2, int count)
 {
@@ -380,7 +355,7 @@ _rl_strnicmp (const char *string1, const char *string2, int count)
   s2 = string2;
   do
     {
-      d = _rl_to_lower (*s1) - _rl_to_lower (*s2);	/* XXX - cast to unsigned char? */
+      d = _rl_to_lower (*s1) - _rl_to_lower (*s2);	 
       if (d != 0)
 	return d;
       if (*s1++ == '\0')
@@ -392,7 +367,7 @@ _rl_strnicmp (const char *string1, const char *string2, int count)
   return (0);
 }
 
-/* strcmp (), but caseless (strcasecmp). */
+ 
 int
 _rl_stricmp (const char *string1, const char *string2)
 {
@@ -415,9 +390,9 @@ _rl_stricmp (const char *string1, const char *string2)
 
   return (d);
 }
-#endif /* !HAVE_STRCASECMP */
+#endif  
 
-/* Stupid comparison routine for qsort () ing strings. */
+ 
 int
 _rl_qsort_string_compare (char **s1, char **s2)
 {
@@ -434,7 +409,7 @@ _rl_qsort_string_compare (char **s1, char **s2)
 #endif
 }
 
-/* Function equivalents for the macros defined in chardefs.h. */
+ 
 #define FUNCTION_FOR_MACRO(f)	int (f) (int c) { return f (c); }
 
 FUNCTION_FOR_MACRO (_rl_digit_p)
@@ -445,8 +420,7 @@ FUNCTION_FOR_MACRO (_rl_to_lower)
 FUNCTION_FOR_MACRO (_rl_to_upper)
 FUNCTION_FOR_MACRO (_rl_uppercase_p)
 
-/* A convenience function, to force memory deallocation to be performed
-   by readline.  DLLs on Windows apparently require this. */
+ 
 void
 rl_free (void *mem)
 {
@@ -454,8 +428,7 @@ rl_free (void *mem)
     free (mem);
 }
 
-/* Backwards compatibility, now that savestring has been removed from
-   all `public' readline header files. */
+ 
 #undef _rl_savestring
 char *
 _rl_savestring (const char *s)
@@ -532,7 +505,7 @@ _rl_settracefp (FILE *fp)
   _rl_tracefp = fp;
 }
 #endif
-#endif /* DEBUG */
+#endif  
 
 
 #if HAVE_DECL_AUDIT_USER_TTY && defined (HAVE_LIBAUDIT_H) && defined (ENABLE_TTY_AUDIT_SUPPORT)
@@ -541,7 +514,7 @@ _rl_settracefp (FILE *fp)
 #include <linux/audit.h>
 #include <linux/netlink.h>
 
-/* Report STRING to the audit system. */
+ 
 void
 _rl_audit_tty (char *string)
 {

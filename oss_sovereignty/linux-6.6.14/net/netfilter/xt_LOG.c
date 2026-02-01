@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is a module which is used for logging packets.
- */
 
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>

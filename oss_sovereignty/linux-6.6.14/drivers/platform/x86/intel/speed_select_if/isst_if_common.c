@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select Interface: Common functions
- * Copyright (c) 2019, Intel Corporation.
- * All rights reserved.
- *
- * Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- */
+
+ 
 
 #include <linux/cpufeature.h>
 #include <linux/cpuhotplug.h>
@@ -115,22 +109,7 @@ static void isst_delete_hash(void)
 	}
 }
 
-/**
- * isst_store_cmd() - Store command to a hash table
- * @cmd: Mailbox command.
- * @sub_cmd: Mailbox sub-command or MSR id.
- * @cpu: Target CPU for the command
- * @mbox_cmd_type: Mailbox or MSR command.
- * @param: Mailbox parameter.
- * @data: Mailbox request data or MSR data.
- *
- * Stores the command to a hash table if there is no such command already
- * stored. If already stored update the latest parameter and data for the
- * command.
- *
- * Return: Return result of store to hash table, 0 for success, others for
- * failure.
- */
+ 
 int isst_store_cmd(int cmd, int sub_cmd, u32 cpu, int mbox_cmd_type,
 		   u32 param, u64 data)
 {
@@ -171,13 +150,7 @@ static void isst_mbox_resume_command(struct isst_if_cmd_cb *cb,
 	(cb->cmd_callback)((u8 *)&mbox_cmd, &wr_only, 1);
 }
 
-/**
- * isst_resume_common() - Process Resume request
- *
- * On resume replay all mailbox commands and MSRs.
- *
- * Return: None.
- */
+ 
 void isst_resume_common(void)
 {
 	struct isst_cmd *sst_cmd;
@@ -217,15 +190,7 @@ static void isst_restore_msr_local(int cpu)
 	mutex_unlock(&isst_hash_lock);
 }
 
-/**
- * isst_if_mbox_cmd_invalid() - Check invalid mailbox commands
- * @cmd: Pointer to the command structure to verify.
- *
- * Invalid command to PUNIT to may result in instability of the platform.
- * This function has a whitelist of commands, which are allowed.
- *
- * Return: Return true if the command is invalid, else false.
- */
+ 
 bool isst_if_mbox_cmd_invalid(struct isst_if_mbox_cmd *cmd)
 {
 	int i;
@@ -245,14 +210,7 @@ bool isst_if_mbox_cmd_invalid(struct isst_if_mbox_cmd *cmd)
 }
 EXPORT_SYMBOL_GPL(isst_if_mbox_cmd_invalid);
 
-/**
- * isst_if_mbox_cmd_set_req() - Check mailbox command is a set request
- * @cmd: Pointer to the command structure to verify.
- *
- * Check if the given mail box level is set request and not a get request.
- *
- * Return: Return true if the command is set_req, else false.
- */
+ 
 bool isst_if_mbox_cmd_set_req(struct isst_if_mbox_cmd *cmd)
 {
 	int i;
@@ -290,7 +248,7 @@ static int isst_if_get_platform_info(void __user *argp)
 #define ISST_MAX_BUS_NUMBER	2
 
 struct isst_if_cpu_info {
-	/* For BUS 0 and BUS 1 only, which we need for PUNIT interface */
+	 
 	int bus_info[ISST_MAX_BUS_NUMBER];
 	struct pci_dev *pci_dev[ISST_MAX_BUS_NUMBER];
 	int punit_cpu_id;
@@ -348,38 +306,18 @@ static struct pci_dev *_isst_if_get_pci_dev(int cpu, int bus_no, int dev, int fn
 		}
 	}
 
-	/*
-	 * If there is no numa matched pci_dev, then there can be following cases:
-	 * 1. CONFIG_NUMA is not defined: In this case if there is only single device
-	 *    match, then we don't need numa information. Simply return last match.
-	 *    Othewise return NULL.
-	 * 2. NUMA information is not exposed via _SEG method. In this case it is similar
-	 *    to case 1.
-	 * 3. Numa information doesn't match with CPU numa node and more than one match
-	 *    return NULL.
-	 */
+	 
 	if (!pci_dev && no_matches == 1)
 		pci_dev = matched_pci_dev;
 
-	/* Return pci_dev pointer for any matched CPU in the package */
+	 
 	if (!pci_dev)
 		pci_dev = isst_pkg_info[pkg_id].pci_dev[bus_no];
 
 	return pci_dev;
 }
 
-/**
- * isst_if_get_pci_dev() - Get the PCI device instance for a CPU
- * @cpu: Logical CPU number.
- * @bus_no: The bus number assigned by the hardware.
- * @dev: The device number assigned by the hardware.
- * @fn: The function number assigned by the hardware.
- *
- * Using cached bus information, find out the PCI device for a bus number,
- * device and function.
- *
- * Return: Return pci_dev pointer or NULL.
- */
+ 
 struct pci_dev *isst_if_get_pci_dev(int cpu, int bus_no, int dev, int fn)
 {
 	struct pci_dev *pci_dev;
@@ -406,7 +344,7 @@ static int isst_if_cpu_online(unsigned int cpu)
 
 	ret = rdmsrl_safe(MSR_CPU_BUS_NUMBER, &data);
 	if (ret) {
-		/* This is not a fatal error on MSR mailbox only I/F */
+		 
 		isst_cpu_info[cpu].bus_info[0] = -1;
 		isst_cpu_info[cpu].bus_info[1] = -1;
 	} else {
@@ -553,7 +491,7 @@ static long isst_if_exec_multi_cmd(void __user *argp, struct isst_if_cmd_cb *cb)
 	long ret;
 	int i;
 
-	/* Each multi command has u32 command count as the first field */
+	 
 	if (copy_from_user(&cmd_count, argp, sizeof(cmd_count)))
 		return -EFAULT;
 
@@ -564,7 +502,7 @@ static long isst_if_exec_multi_cmd(void __user *argp, struct isst_if_cmd_cb *cb)
 	if (!cmd_ptr)
 		return -ENOMEM;
 
-	/* cb->offset points to start of the command after the command count */
+	 
 	ptr = argp + cb->offset;
 
 	for (i = 0; i < cmd_count; ++i) {
@@ -649,9 +587,9 @@ static long isst_if_def_ioctl(struct file *file, unsigned int cmd,
 	return ret;
 }
 
-/* Lock to prevent module registration when already opened by user space */
+ 
 static DEFINE_MUTEX(punit_misc_dev_open_lock);
-/* Lock to allow one shared misc device for all ISST interfaces */
+ 
 static DEFINE_MUTEX(punit_misc_dev_reg_lock);
 static int misc_usage_count;
 static int misc_device_ret;
@@ -661,7 +599,7 @@ static int isst_if_open(struct inode *inode, struct file *file)
 {
 	int i, ret = 0;
 
-	/* Fail open, if a module is going away */
+	 
 	mutex_lock(&punit_misc_dev_open_lock);
 	for (i = 0; i < ISST_IF_DEV_MAX; ++i) {
 		struct isst_if_cmd_cb *cb = &punit_callbacks[i];
@@ -767,21 +705,7 @@ static void isst_misc_unreg(void)
 	mutex_unlock(&punit_misc_dev_reg_lock);
 }
 
-/**
- * isst_if_cdev_register() - Register callback for IOCTL
- * @device_type: The device type this callback handling.
- * @cb:	Callback structure.
- *
- * This function registers a callback to device type. On very first call
- * it will register a misc device, which is used for user kernel interface.
- * Other calls simply increment ref count. Registry will fail, if the user
- * already opened misc device for operation. Also if the misc device
- * creation failed, then it will not try again and all callers will get
- * failure code.
- *
- * Return: Return the return value from the misc creation device or -EINVAL
- * for unsupported device type.
- */
+ 
 int isst_if_cdev_register(int device_type, struct isst_if_cmd_cb *cb)
 {
 	int ret;
@@ -790,7 +714,7 @@ int isst_if_cdev_register(int device_type, struct isst_if_cmd_cb *cb)
 		return -EINVAL;
 
 	mutex_lock(&punit_misc_dev_open_lock);
-	/* Device is already open, we don't want to add new callbacks */
+	 
 	if (misc_device_open) {
 		mutex_unlock(&punit_misc_dev_open_lock);
 		return -EAGAIN;
@@ -805,10 +729,7 @@ int isst_if_cdev_register(int device_type, struct isst_if_cmd_cb *cb)
 
 	ret = isst_misc_reg();
 	if (ret) {
-		/*
-		 * No need of mutex as the misc device register failed
-		 * as no one can open device yet. Hence no contention.
-		 */
+		 
 		punit_callbacks[device_type].registered = 0;
 		return ret;
 	}
@@ -816,15 +737,7 @@ int isst_if_cdev_register(int device_type, struct isst_if_cmd_cb *cb)
 }
 EXPORT_SYMBOL_GPL(isst_if_cdev_register);
 
-/**
- * isst_if_cdev_unregister() - Unregister callback for IOCTL
- * @device_type: The device type to unregister.
- *
- * This function unregisters the previously registered callback. If this
- * is the last callback unregistering, then misc device is removed.
- *
- * Return: None.
- */
+ 
 void isst_if_cdev_unregister(int device_type)
 {
 	isst_misc_unreg();

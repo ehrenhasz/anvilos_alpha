@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2016, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -18,52 +16,16 @@
 
 #define FUSE_TSENSOR_COMMON			0x180
 
-/*
- * Tegra210: Layout of bits in FUSE_TSENSOR_COMMON:
- *    3                   2                   1                   0
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |       BASE_FT       |      BASE_CP      | SHFT_FT | SHIFT_CP  |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * Tegra12x, etc:
- * In chips prior to Tegra210, this fuse was incorrectly sized as 26 bits,
- * and didn't hold SHIFT_CP in [31:26]. Therefore these missing six bits
- * were obtained via the FUSE_SPARE_REALIGNMENT_REG register [5:0].
- *
- * FUSE_TSENSOR_COMMON:
- *    3                   2                   1                   0
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |-----------| SHFT_FT |       BASE_FT       |      BASE_CP      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * FUSE_SPARE_REALIGNMENT_REG:
- *    3                   2                   1                   0
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |---------------------------------------------------| SHIFT_CP  |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 
 #define CALIB_COEFFICIENT 1000000LL
 
-/**
- * div64_s64_precise() - wrapper for div64_s64()
- * @a:  the dividend
- * @b:  the divisor
- *
- * Implements division with fairly accurate rounding instead of truncation by
- * shifting the dividend to the left by 16 so that the quotient has a
- * much higher precision.
- *
- * Return: the quotient of a / b.
- */
+ 
 static s64 div64_s64_precise(s64 a, s32 b)
 {
 	s64 r, al;
 
-	/* Scale up for increased precision division */
+	 
 	al = a << 16;
 
 	r = div64_s64(al * 2 + 1, 2 * b);

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * SPI core driver for the Ocelot chip family.
- *
- * This driver will handle everything necessary to allow for communication over
- * SPI to the VSC7511, VSC7512, VSC7513 and VSC7514 chips. The main functions
- * are to prepare the chip's SPI interface for a specific bus speed, and a host
- * processor's endianness. This will create and distribute regmaps for any
- * children.
- *
- * Copyright 2021-2022 Innovative Advantage Inc.
- *
- * Author: Colin Foster <colin.foster@in-advantage.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -59,57 +47,18 @@ static int ocelot_spi_initialize(struct device *dev)
 
 	val = OCELOT_SPI_BYTE_ORDER;
 
-	/*
-	 * The SPI address must be big-endian, but we want the payload to match
-	 * our CPU. These are two bits (0 and 1) but they're repeated such that
-	 * the write from any configuration will be valid. The four
-	 * configurations are:
-	 *
-	 * 0b00: little-endian, MSB first
-	 * |            111111   | 22221111 | 33222222 |
-	 * | 76543210 | 54321098 | 32109876 | 10987654 |
-	 *
-	 * 0b01: big-endian, MSB first
-	 * | 33222222 | 22221111 | 111111   |          |
-	 * | 10987654 | 32109876 | 54321098 | 76543210 |
-	 *
-	 * 0b10: little-endian, LSB first
-	 * |              111111 | 11112222 | 22222233 |
-	 * | 01234567 | 89012345 | 67890123 | 45678901 |
-	 *
-	 * 0b11: big-endian, LSB first
-	 * | 22222233 | 11112222 |   111111 |          |
-	 * | 45678901 | 67890123 | 89012345 | 01234567 |
-	 */
+	 
 	err = regmap_write(ddata->cpuorg_regmap, REG_DEV_CPUORG_IF_CTRL, val);
 	if (err)
 		return err;
 
-	/*
-	 * Apply the number of padding bytes between a read request and the data
-	 * payload. Some registers have access times of up to 1us, so if the
-	 * first payload bit is shifted out too quickly, the read will fail.
-	 */
+	 
 	val = ddata->spi_padding_bytes;
 	err = regmap_write(ddata->cpuorg_regmap, REG_DEV_CPUORG_IF_CFGSTAT, val);
 	if (err)
 		return err;
 
-	/*
-	 * After we write the interface configuration, read it back here. This
-	 * will verify several different things. The first is that the number of
-	 * padding bytes actually got written correctly. These are found in bits
-	 * 0:3.
-	 *
-	 * The second is that bit 16 is cleared. Bit 16 is IF_CFGSTAT:IF_STAT,
-	 * and will be set if the register access is too fast. This would be in
-	 * the condition that the number of padding bytes is insufficient for
-	 * the SPI bus frequency.
-	 *
-	 * The last check is for bits 31:24, which define the interface by which
-	 * the registers are being accessed. Since we're accessing them via the
-	 * serial interface, it must return IF_NUM_SI.
-	 */
+	 
 	check = val | CFGSTAT_IF_NUM_SI;
 
 	err = regmap_read(ddata->cpuorg_regmap, REG_DEV_CPUORG_IF_CFGSTAT, &val);
@@ -214,12 +163,7 @@ static int ocelot_spi_probe(struct spi_device *spi)
 	if (spi->max_speed_hz <= 500000) {
 		ddata->spi_padding_bytes = 0;
 	} else {
-		/*
-		 * Calculation taken from the manual for IF_CFGSTAT:IF_CFG.
-		 * Register access time is 1us, so we need to configure and send
-		 * out enough padding bytes between the read request and data
-		 * transmission that lasts at least 1 microsecond.
-		 */
+		 
 		ddata->spi_padding_bytes = 1 + (spi->max_speed_hz / HZ_PER_MHZ + 2) / 8;
 
 		ddata->dummy_buf = devm_kzalloc(dev, ddata->spi_padding_bytes, GFP_KERNEL);
@@ -245,11 +189,7 @@ static int ocelot_spi_probe(struct spi_device *spi)
 
 	ddata->gcb_regmap = r;
 
-	/*
-	 * The chip must be set up for SPI before it gets initialized and reset.
-	 * This must be done before calling init, and after a chip reset is
-	 * performed.
-	 */
+	 
 	err = ocelot_spi_initialize(dev);
 	if (err)
 		return dev_err_probe(dev, err, "Error initializing SPI bus\n");
@@ -258,10 +198,7 @@ static int ocelot_spi_probe(struct spi_device *spi)
 	if (err)
 		return dev_err_probe(dev, err, "Error resetting device\n");
 
-	/*
-	 * A chip reset will clear the SPI configuration, so it needs to be done
-	 * again before we can access any registers.
-	 */
+	 
 	err = ocelot_spi_initialize(dev);
 	if (err)
 		return dev_err_probe(dev, err, "Error initializing SPI bus after reset\n");

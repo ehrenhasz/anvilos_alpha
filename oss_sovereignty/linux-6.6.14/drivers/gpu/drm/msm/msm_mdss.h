@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2018, The Linux Foundation
- */
+ 
+ 
 
 #ifndef __MSM_MDSS_H__
 #define __MSM_MDSS_H__
 
 struct msm_mdss_data {
 	u32 ubwc_enc_version;
-	/* can be read from register 0x58 */
+	 
 	u32 ubwc_dec_version;
 	u32 ubwc_swizzle;
 	u32 ubwc_static;
@@ -24,4 +22,4 @@ struct msm_mdss_data {
 
 const struct msm_mdss_data *msm_mdss_get_mdss_data(struct device *dev);
 
-#endif /* __MSM_MDSS_H__ */
+#endif  

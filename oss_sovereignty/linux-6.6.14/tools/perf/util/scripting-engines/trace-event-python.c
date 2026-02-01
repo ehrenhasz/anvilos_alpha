@@ -1,23 +1,4 @@
-/*
- * trace-event-python.  Feed trace events to an embedded Python interpreter.
- *
- * Copyright (C) 2010 Tom Zanussi <tzanussi@gmail.com>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
+ 
 
 #include <Python.h>
 
@@ -130,16 +111,12 @@ static void handler_call_die(const char *handler_name)
 {
 	PyErr_Print();
 	Py_FatalError("problem in Python trace event handler");
-	// Py_FatalError does not return
-	// but we have to make the compiler happy
+	
+	
 	abort();
 }
 
-/*
- * Insert val into the dictionary and decrement the reference counter.
- * This is necessary for dictionaries since PyDict_SetItemString() does not
- * steal a reference, as opposed to PyTuple_SetItem().
- */
+ 
 static void pydict_set_item_string_decref(PyObject *dict, const char *key, PyObject *val)
 {
 	PyDict_SetItemString(dict, key, val);
@@ -180,10 +157,7 @@ static int get_argument_count(PyObject *handler)
 {
 	int arg_count = 0;
 
-	/*
-	 * The attribute for the code object is func_code in Python 2,
-	 * whereas it is __code__ in Python 3.0+.
-	 */
+	 
 	PyObject *code_obj = PyObject_GetAttrString(handler,
 		"func_code");
 	if (PyErr_Occurred()) {
@@ -329,13 +303,13 @@ static void define_event_symbols(struct tep_event *event,
 		define_event_symbols(event, ev_name, args->op.right);
 		break;
 	default:
-		/* gcc warns for these? */
+		 
 	case TEP_PRINT_BSTRING:
 	case TEP_PRINT_DYNAMIC_ARRAY:
 	case TEP_PRINT_DYNAMIC_ARRAY_LEN:
 	case TEP_PRINT_FUNC:
 	case TEP_PRINT_BITMASK:
-		/* we should warn... */
+		 
 		return;
 	}
 
@@ -761,13 +735,7 @@ static void set_regs_in_dict(PyObject *dict,
 	struct perf_event_attr *attr = &evsel->core.attr;
 	const char *arch = perf_env__arch(evsel__env(evsel));
 
-	/*
-	 * Here value 28 is a constant size which can be used to print
-	 * one register value and its corresponds to:
-	 * 16 chars is to specify 64 bit register in hexadecimal.
-	 * 2 chars is for appending "0x" to the hexadecimal value and
-	 * 10 chars is for register name.
-	 */
+	 
 	int size = __sw_hweight64(attr->sample_regs_intr) * 28;
 	char *bf = malloc(size);
 
@@ -912,7 +880,7 @@ static PyObject *get_perf_sample_dict(struct perf_sample *sample,
 	if (sample->flags)
 		python_process_sample_flags(sample, dict_sample);
 
-	/* Instructions per cycle (IPC) */
+	 
 	if (sample->insn_cnt && sample->cyc_cnt) {
 		pydict_set_item_string_decref(dict_sample, "insn_cnt",
 			PyLong_FromUnsignedLongLong(sample->insn_cnt));
@@ -984,9 +952,9 @@ static void python_process_tracepoint(struct perf_sample *sample,
 	PyTuple_SetItem(t, n++, _PyUnicode_FromString(handler_name));
 	PyTuple_SetItem(t, n++, context);
 
-	/* ip unwinding */
+	 
 	callchain = python_process_callchain(sample, evsel, al);
-	/* Need an additional reference for the perf_sample dict */
+	 
 	Py_INCREF(callchain);
 
 	if (!dict) {
@@ -1027,7 +995,7 @@ static void python_process_tracepoint(struct perf_sample *sample,
 				obj = PyByteArray_FromStringAndSize((const char *) data + offset, len);
 				field->flags &= ~TEP_FIELD_IS_STRING;
 			}
-		} else { /* FIELD_IS_NUMERIC */
+		} else {  
 			obj = get_field_numeric_entry(event, field, data);
 		}
 		if (!dict)
@@ -1089,10 +1057,7 @@ static int tuple_set_s64(PyObject *t, unsigned int pos, s64 val)
 #endif
 }
 
-/*
- * Databases support only signed 64-bit numbers, so even though we are
- * exporting a u64, it must be as s64.
- */
+ 
 #define tuple_set_d64 tuple_set_s64
 
 static int tuple_set_u64(PyObject *t, unsigned int pos, u64 val)
@@ -1466,15 +1431,12 @@ static void python_process_general_event(struct perf_sample *sample,
 	if (!handler)
 		return;
 
-	/*
-	 * Use the MAX_FIELDS to make the function expandable, though
-	 * currently there is only one item for the tuple.
-	 */
+	 
 	t = PyTuple_New(MAX_FIELDS);
 	if (!t)
 		Py_FatalError("couldn't create Python tuple");
 
-	/* ip unwinding */
+	 
 	callchain = python_process_callchain(sample, evsel, al);
 	dict = get_perf_sample_dict(sample, evsel, al, addr_al, callchain);
 
@@ -1501,7 +1463,7 @@ static void python_process_event(union perf_event *event,
 	case PERF_TYPE_TRACEPOINT:
 		python_process_tracepoint(sample, evsel, al, addr_al);
 		break;
-	/* Reserve for future process_hw/sw/raw APIs */
+	 
 	default:
 		if (tables->db_export_mode)
 			db_export__sample(&tables->dbe, event, sample, evsel, al, addr_al);
@@ -1806,7 +1768,7 @@ static void set_table_handlers(struct tables *tables)
 	if (!ret)
 		return;
 
-	/* handle export calls */
+	 
 	tables->dbe.crp = NULL;
 	db_export_calls = PyDict_GetItemString(main_dict, perf_db_export_calls);
 	if (db_export_calls) {
@@ -1824,7 +1786,7 @@ static void set_table_handlers(struct tables *tables)
 			Py_FatalError("failed to create calls processor");
 	}
 
-	/* handle export callchains */
+	 
 	tables->dbe.cpr = NULL;
 	db_export_callchains = PyDict_GetItemString(main_dict,
 						    perf_db_export_callchains);
@@ -1836,12 +1798,7 @@ static void set_table_handlers(struct tables *tables)
 	}
 
 	if (export_callchains) {
-		/*
-		 * Attempt to use the call path root from the call return
-		 * processor, if the call return processor is in use. Otherwise,
-		 * we allocate a new call path root. This prevents exporting
-		 * duplicate call path ids when both are in use simultaneously.
-		 */
+		 
 		if (tables->dbe.crp)
 			tables->dbe.cpr = tables->dbe.crp->cpr;
 		else
@@ -1852,9 +1809,7 @@ static void set_table_handlers(struct tables *tables)
 	}
 
 	tables->db_export_mode = true;
-	/*
-	 * Reserve per symbol space for symbol->db_id via symbol__priv()
-	 */
+	 
 	symbol_conf.priv_size = sizeof(u64);
 
 	SET_TABLE_HANDLER(evsel);
@@ -1870,12 +1825,7 @@ static void set_table_handlers(struct tables *tables)
 	SET_TABLE_HANDLER(call_return);
 	SET_TABLE_HANDLER(context_switch);
 
-	/*
-	 * Synthesized events are samples but with architecture-specific data
-	 * stored in sample->raw_data. They are exported via
-	 * python_export_sample() and consequently do not need a separate export
-	 * callback.
-	 */
+	 
 	tables->synth_handler = get_handler("synth_data");
 }
 
@@ -1895,9 +1845,7 @@ static void _free_command_line(wchar_t **command_line, int num)
 #endif
 
 
-/*
- * Start trace script
- */
+ 
 static int python_start_script(const char *script, int argc, const char **argv,
 			       struct perf_session *session)
 {
@@ -1907,10 +1855,7 @@ static int python_start_script(const char *script, int argc, const char **argv,
 #else
 	wchar_t **command_line;
 #endif
-	/*
-	 * Use a non-const name variable to cope with python 2.6's
-	 * PyImport_AppendInittab prototype
-	 */
+	 
 	char buf[PATH_MAX], name[19] = "perf_trace_context";
 	int i, err = 0;
 	FILE *fp;
@@ -1980,9 +1925,7 @@ static int python_flush_script(void)
 	return 0;
 }
 
-/*
- * Stop trace script
- */
+ 
 static int python_stop_script(void)
 {
 	struct tables *tables = &tables_global;

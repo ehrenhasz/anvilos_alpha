@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-2-Clause OR GPL-2.0-or-later
-/*
- * Dell Wyse 3020 a.k.a. "Ariel" Power Button Driver
- *
- * Copyright (C) 2020 Lubomir Rintel
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>

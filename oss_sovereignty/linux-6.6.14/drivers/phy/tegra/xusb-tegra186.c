@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016-2022, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -17,7 +15,7 @@
 
 #include "xusb.h"
 
-/* FUSE USB_CALIB registers */
+ 
 #define HS_CURR_LEVEL_PADX_SHIFT(x)	((x) ? (11 + (x - 1) * 6) : 0)
 #define HS_CURR_LEVEL_PAD_MASK		0x3f
 #define HS_TERM_RANGE_ADJ_SHIFT		7
@@ -28,7 +26,7 @@
 #define RPD_CTRL_SHIFT			0
 #define RPD_CTRL_MASK			0x1f
 
-/* XUSB PADCTL registers */
+ 
 #define XUSB_PADCTL_USB2_PAD_MUX	0x4
 #define  USB2_PORT_SHIFT(x)		((x) * 2)
 #define  USB2_PORT_MASK			0x3
@@ -118,7 +116,7 @@
 #define  ID_OVERRIDE_FLOATING			ID_OVERRIDE(8)
 #define  ID_OVERRIDE_GROUNDED			ID_OVERRIDE(0)
 
-/* XUSB AO registers */
+ 
 #define XUSB_AO_USB_DEBOUNCE_DEL		(0x4)
 #define   UHSIC_LINE_DEB_CNT(x)			(((x) & 0xf) << 4)
 #define   UTMIP_LINE_DEB_CNT(x)			((x) & 0xf)
@@ -168,28 +166,28 @@
 #define   MASTER_CFG_SEL			BIT(22)
 
 #define XUSB_AO_UTMIP_SLEEPWALK(x)		(0x100 + (x) * 4)
-/* phase A */
+ 
 #define   USBOP_RPD_A				BIT(0)
 #define   USBON_RPD_A				BIT(1)
 #define   AP_A					BIT(4)
 #define   AN_A					BIT(5)
 #define   HIGHZ_A				BIT(6)
 #define   MASTER_ENABLE_A			BIT(7)
-/* phase B */
+ 
 #define   USBOP_RPD_B				BIT(8)
 #define   USBON_RPD_B				BIT(9)
 #define   AP_B					BIT(12)
 #define   AN_B					BIT(13)
 #define   HIGHZ_B				BIT(14)
 #define   MASTER_ENABLE_B			BIT(15)
-/* phase C */
+ 
 #define   USBOP_RPD_C				BIT(16)
 #define   USBON_RPD_C				BIT(17)
 #define   AP_C					BIT(20)
 #define   AN_C					BIT(21)
 #define   HIGHZ_C				BIT(22)
 #define   MASTER_ENABLE_C			BIT(23)
-/* phase D */
+ 
 #define   USBOP_RPD_D				BIT(24)
 #define   USBON_RPD_D				BIT(25)
 #define   AP_D					BIT(28)
@@ -200,22 +198,22 @@
 	 (MASTER_ENABLE_B | MASTER_ENABLE_C | MASTER_ENABLE_D)
 
 #define XUSB_AO_UHSIC_SLEEPWALK(x)		(0x120 + (x) * 4)
-/* phase A */
+ 
 #define   RPD_STROBE_A				BIT(0)
 #define   RPD_DATA0_A				BIT(1)
 #define   RPU_STROBE_A				BIT(2)
 #define   RPU_DATA0_A				BIT(3)
-/* phase B */
+ 
 #define   RPD_STROBE_B				BIT(8)
 #define   RPD_DATA0_B				BIT(9)
 #define   RPU_STROBE_B				BIT(10)
 #define   RPU_DATA0_B				BIT(11)
-/* phase C */
+ 
 #define   RPD_STROBE_C				BIT(16)
 #define   RPD_DATA0_C				BIT(17)
 #define   RPU_STROBE_C				BIT(18)
 #define   RPU_DATA0_C				BIT(19)
-/* phase D */
+ 
 #define   RPD_STROBE_D				BIT(24)
 #define   RPD_DATA0_D				BIT(25)
 #define   RPU_STROBE_D				BIT(26)
@@ -267,11 +265,11 @@ struct tegra186_xusb_padctl {
 
 	struct tegra_xusb_fuse_calibration calib;
 
-	/* UTMI bias and tracking */
+	 
 	struct clk *usb2_trk_clk;
 	unsigned int bias_pad_enable;
 
-	/* padctl context */
+	 
 	struct tegra186_xusb_padctl_context context;
 };
 
@@ -291,7 +289,7 @@ to_tegra186_xusb_padctl(struct tegra_xusb_padctl *padctl)
 	return container_of(padctl, struct tegra186_xusb_padctl, base);
 }
 
-/* USB 2.0 UTMI PHY support */
+ 
 static struct tegra_xusb_lane *
 tegra186_usb2_lane_probe(struct tegra_xusb_pad *pad, struct device_node *np,
 			 unsigned int index)
@@ -335,45 +333,45 @@ static int tegra186_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 
 	mutex_lock(&padctl->lock);
 
-	/* ensure sleepwalk logic is disabled */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value &= ~MASTER_ENABLE;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* ensure sleepwalk logics are in low power mode */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value |= MASTER_CFG_SEL;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* set debounce time */
+	 
 	value = ao_readl(priv, XUSB_AO_USB_DEBOUNCE_DEL);
 	value &= ~UTMIP_LINE_DEB_CNT(~0);
 	value |= UTMIP_LINE_DEB_CNT(1);
 	ao_writel(priv, value, XUSB_AO_USB_DEBOUNCE_DEL);
 
-	/* ensure fake events of sleepwalk logic are desiabled */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value &= ~(FAKE_USBOP_VAL | FAKE_USBON_VAL |
 		FAKE_USBOP_EN | FAKE_USBON_EN);
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* ensure wake events of sleepwalk logic are not latched */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value &= ~LINE_WAKEUP_EN;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* disable wake event triggers of sleepwalk logic */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value &= ~WAKE_VAL(~0);
 	value |= WAKE_VAL_NONE;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* power down the line state detectors of the pad */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_PAD_CFG(index));
 	value |= (USBOP_VAL_PD | USBON_VAL_PD);
 	ao_writel(priv, value, XUSB_AO_UTMIP_PAD_CFG(index));
 
-	/* save state per speed */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SAVED_STATE(index));
 	value &= ~SPEED(~0);
 
@@ -397,31 +395,25 @@ static int tegra186_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 
 	ao_writel(priv, value, XUSB_AO_UTMIP_SAVED_STATE(index));
 
-	/* enable the trigger of the sleepwalk logic */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value |= LINEVAL_WALK_EN;
 	value &= ~WAKE_WALK_EN;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* reset the walk pointer and clear the alarm of the sleepwalk logic,
-	 * as well as capture the configuration of the USB2.0 pad
-	 */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_TRIGGERS(index));
 	value |= (CLR_WALK_PTR | CLR_WAKE_ALARM | CAP_CFG);
 	ao_writel(priv, value, XUSB_AO_UTMIP_TRIGGERS(index));
 
-	/* setup the pull-ups and pull-downs of the signals during the four
-	 * stages of sleepwalk.
-	 * if device is connected, program sleepwalk logic to maintain a J and
-	 * keep driving K upon seeing remote wake.
-	 */
+	 
 	value = USBOP_RPD_A | USBOP_RPD_B | USBOP_RPD_C | USBOP_RPD_D;
 	value |= USBON_RPD_A | USBON_RPD_B | USBON_RPD_C | USBON_RPD_D;
 
 	switch (speed) {
 	case USB_SPEED_HIGH:
 	case USB_SPEED_FULL:
-		/* J state: D+/D- = high/low, K state: D+/D- = low/high */
+		 
 		value |= HIGHZ_A;
 		value |= AP_A;
 		value |= AN_B | AN_C | AN_D;
@@ -430,7 +422,7 @@ static int tegra186_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 		break;
 
 	case USB_SPEED_LOW:
-		/* J state: D+/D- = low/high, K state: D+/D- = high/low */
+		 
 		value |= HIGHZ_A;
 		value |= AN_A;
 		value |= AP_B | AP_C | AP_D;
@@ -445,26 +437,26 @@ static int tegra186_utmi_enable_phy_sleepwalk(struct tegra_xusb_lane *lane,
 
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK(index));
 
-	/* power up the line state detectors of the pad */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_PAD_CFG(index));
 	value &= ~(USBOP_VAL_PD | USBON_VAL_PD);
 	ao_writel(priv, value, XUSB_AO_UTMIP_PAD_CFG(index));
 
 	usleep_range(150, 200);
 
-	/* switch the electric control of the USB2.0 pad to XUSB_AO */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_PAD_CFG(index));
 	value |= FSLS_USE_XUSB_AO | TRK_CTRL_USE_XUSB_AO | RPD_CTRL_USE_XUSB_AO |
 		 RPU_USE_XUSB_AO | VREG_USE_XUSB_AO;
 	ao_writel(priv, value, XUSB_AO_UTMIP_PAD_CFG(index));
 
-	/* set the wake signaling trigger events */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value &= ~WAKE_VAL(~0);
 	value |= WAKE_VAL_ANY;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* enable the wake detection */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value |= MASTER_ENABLE | LINE_WAKEUP_EN;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
@@ -483,36 +475,36 @@ static int tegra186_utmi_disable_phy_sleepwalk(struct tegra_xusb_lane *lane)
 
 	mutex_lock(&padctl->lock);
 
-	/* disable the wake detection */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value &= ~(MASTER_ENABLE | LINE_WAKEUP_EN);
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
-	/* switch the electric control of the USB2.0 pad to XUSB vcore logic */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_PAD_CFG(index));
 	value &= ~(FSLS_USE_XUSB_AO | TRK_CTRL_USE_XUSB_AO | RPD_CTRL_USE_XUSB_AO |
 		   RPU_USE_XUSB_AO | VREG_USE_XUSB_AO);
 	ao_writel(priv, value, XUSB_AO_UTMIP_PAD_CFG(index));
 
-	/* disable wake event triggers of sleepwalk logic */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 	value &= ~WAKE_VAL(~0);
 	value |= WAKE_VAL_NONE;
 	ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK_CFG(index));
 
 	if (padctl->soc->supports_lp_cfg_en) {
-		/* disable the four stages of sleepwalk */
+		 
 		value = ao_readl(priv, XUSB_AO_UTMIP_SLEEPWALK(index));
 		value &= ~(MASTER_ENABLE_A | MASTER_ENABLE_B_C_D);
 		ao_writel(priv, value, XUSB_AO_UTMIP_SLEEPWALK(index));
 	}
 
-	/* power down the line state detectors of the port */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_PAD_CFG(index));
 	value |= USBOP_VAL_PD | USBON_VAL_PD;
 	ao_writel(priv, value, XUSB_AO_UTMIP_PAD_CFG(index));
 
-	/* clear alarm of the sleepwalk logic */
+	 
 	value = ao_readl(priv, XUSB_AO_UTMIP_TRIGGERS(index));
 	value |= CLR_WAKE_ALARM;
 	ao_writel(priv, value, XUSB_AO_UTMIP_TRIGGERS(index));
@@ -637,9 +629,7 @@ static void tegra186_utmi_bias_pad_power_on(struct tegra_xusb_padctl *padctl)
 		err = padctl_readl_poll(padctl, XUSB_PADCTL_USB2_BIAS_PAD_CTL1,
 					USB2_TRK_COMPLETED, USB2_TRK_COMPLETED, 100);
 		if (err) {
-			/* The failure with polling on trk complete will not
-			 * cause the failure of powering on the bias pad.
-			 */
+			 
 			dev_warn(dev, "failed to poll USB2 trk completed: %d\n", err);
 		}
 
@@ -824,11 +814,7 @@ static int tegra186_utmi_phy_set_mode(struct phy *phy, enum phy_mode mode,
 		} else if (submode == USB_ROLE_DEVICE) {
 			tegra186_xusb_padctl_vbus_override(padctl, true);
 		} else if (submode == USB_ROLE_NONE) {
-			/*
-			 * When port is peripheral only or role transitions to
-			 * USB_ROLE_NONE from USB_ROLE_DEVICE, regulator is not
-			 * enabled.
-			 */
+			 
 			if (regulator_is_enabled(port->supply))
 				regulator_disable(port->supply);
 
@@ -1067,7 +1053,7 @@ static const struct tegra_xusb_port_ops tegra186_usb2_port_ops = {
 	.map = tegra186_usb2_port_map,
 };
 
-/* SuperSpeed PHY support */
+ 
 static struct tegra_xusb_lane *
 tegra186_usb3_lane_probe(struct tegra_xusb_pad *pad, struct device_node *np,
 			 unsigned int index)
@@ -1581,7 +1567,7 @@ static const struct tegra_xusb_pad_soc tegra186_usb3_pad = {
 static const struct tegra_xusb_pad_soc * const tegra186_pads[] = {
 	&tegra186_usb2_pad,
 	&tegra186_usb3_pad,
-#if 0 /* TODO implement */
+#if 0  
 	&tegra186_hsic_pad,
 #endif
 };
@@ -1594,7 +1580,7 @@ const struct tegra_xusb_padctl_soc tegra186_xusb_padctl_soc = {
 			.ops = &tegra186_usb2_port_ops,
 			.count = 3,
 		},
-#if 0 /* TODO implement */
+#if 0  
 		.hsic = {
 			.ops = &tegra186_hsic_port_ops,
 			.count = 1,

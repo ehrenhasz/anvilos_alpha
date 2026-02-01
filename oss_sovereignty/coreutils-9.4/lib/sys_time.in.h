@@ -1,21 +1,4 @@
-/* Provide a more complete sys/time.h.
-
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #ifndef _@GUARD_PREFIX@_SYS_TIME_H
 
@@ -24,23 +7,17 @@
 #endif
 @PRAGMA_COLUMNS@
 
-/* This file uses #include_next of a system file that defines time_t.
-   For the 'year2038' module to work right, <config.h> needs to have been
-   included before.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* On Cygwin and on many BSDish systems, <sys/time.h> includes itself
-   recursively via <sys/select.h>.
-   Simply delegate to the system's header in this case; it is a no-op.
-   Without this extra ifdef, the C++ gettimeofday declaration below
-   would be a forward declaration in gnulib's nested <sys/time.h>.  */
+ 
 #if defined _CYGWIN_SYS_TIME_H || defined _SYS_TIME_H || defined _SYS_TIME_H_
 # @INCLUDE_NEXT@ @NEXT_SYS_TIME_H@
 #else
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #if @HAVE_SYS_TIME_H@
 # @INCLUDE_NEXT@ @NEXT_SYS_TIME_H@
 #endif
@@ -48,7 +25,7 @@
 #ifndef _@GUARD_PREFIX@_SYS_TIME_H
 #define _@GUARD_PREFIX@_SYS_TIME_H
 
-/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -57,21 +34,18 @@
 # include <time.h>
 #endif
 
-/* On native Windows with MSVC, get the 'struct timeval' type.
-   Also, on native Windows with a 64-bit time_t, where we are overriding the
-   'struct timeval' type, get all declarations of system functions whose
-   signature contains 'struct timeval'.  */
+ 
 #if (defined _MSC_VER || @REPLACE_STRUCT_TIMEVAL@) && @HAVE_WINSOCK2_H@ && !defined _GL_INCLUDING_WINSOCK2_H
 # define _GL_INCLUDING_WINSOCK2_H
 # include <winsock2.h>
 # undef _GL_INCLUDING_WINSOCK2_H
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 #ifdef __cplusplus
 extern "C" {
@@ -115,8 +89,7 @@ _GL_FUNCDECL_SYS (gettimeofday, int,
                   (struct timeval *restrict, void *restrict)
                   _GL_ARG_NONNULL ((1)));
 #  endif
-/* Need to cast, because on glibc systems, by default, the second argument is
-                                                  struct timezone *.  */
+ 
 _GL_CXXALIAS_SYS_CAST (gettimeofday, int,
                        (struct timeval *restrict, void *restrict));
 # endif
@@ -140,7 +113,7 @@ _GL_WARN_ON_USE (gettimeofday, "gettimeofday is unportable - "
 # endif
 #endif
 
-/* Hide some function declarations from <winsock2.h>.  */
+ 
 
 #if defined _MSC_VER && @HAVE_WINSOCK2_H@
 # if !defined _@GUARD_PREFIX@_UNISTD_H
@@ -231,6 +204,6 @@ _GL_WARN_ON_USE (gettimeofday, "gettimeofday is unportable - "
 # endif
 #endif
 
-#endif /* _@GUARD_PREFIX@_SYS_TIME_H */
-#endif /* _CYGWIN_SYS_TIME_H */
-#endif /* _@GUARD_PREFIX@_SYS_TIME_H */
+#endif  
+#endif  
+#endif  

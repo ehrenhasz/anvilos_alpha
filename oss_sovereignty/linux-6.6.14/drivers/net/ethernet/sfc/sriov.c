@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2014-2015 Solarflare Communications Inc.
- */
+
+ 
 #include <linux/module.h>
 #include "net_driver.h"
 #include "nic.h"

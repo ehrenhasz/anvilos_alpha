@@ -1,23 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// Spreadtrum multiplexer clock driver
-//
-// Copyright (C) 2017 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+ 
+
+
+
+
+
 
 #ifndef _SPRD_MUX_H_
 #define _SPRD_MUX_H_
 
 #include "common.h"
 
-/**
- * struct sprd_mux_ssel - Mux clock's source select bits in its register
- * @shift: Bit offset of the divider in its register
- * @width: Width of the divider field in its register
- * @table: For some mux clocks, not all sources are used on some special
- *	   chips, this matches the value of mux clock's register and the
- *	   sources which are used for this mux clock
- */
+ 
 struct sprd_mux_ssel {
 	u8		shift;
 	u8		width;
@@ -85,4 +78,4 @@ int sprd_mux_helper_set_parent(const struct sprd_clk_common *common,
 			       const struct sprd_mux_ssel *mux,
 			       u8 index);
 
-#endif /* _SPRD_MUX_H_ */
+#endif  

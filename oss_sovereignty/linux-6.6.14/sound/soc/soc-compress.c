@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// soc-compress.c  --  ALSA SoC Compress
-//
-// Copyright (C) 2012 Intel Corp.
-//
-// Authors: Namarta Kohli <namartax.kohli@intel.com>
-//          Ramesh Babu K V <ramesh.babu@linux.intel.com>
-//          Vinod Koul <vinod.koul@linux.intel.com>
+
+
+
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -59,7 +59,7 @@ static int soc_compr_clean(struct snd_compr_stream *cstream, int rollback)
 	struct snd_soc_pcm_runtime *rtd = cstream->private_data;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 
 	snd_soc_dpcm_mutex_lock(rtd);
 
@@ -99,7 +99,7 @@ static int soc_compr_open(struct snd_compr_stream *cstream)
 {
 	struct snd_soc_pcm_runtime *rtd = cstream->private_data;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 	int ret;
 
 	ret = snd_soc_pcm_component_pm_runtime_get(rtd, cstream);
@@ -136,7 +136,7 @@ static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(fe, 0);
 	struct snd_soc_dpcm *dpcm;
 	struct snd_soc_dapm_widget_list *list;
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 	int ret;
 
 	snd_soc_card_mutex_lock(fe->card);
@@ -147,14 +147,14 @@ static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 
 	snd_soc_dpcm_mutex_lock(fe);
 
-	/* calculate valid and active FE <-> BE dpcms */
+	 
 	dpcm_process_paths(fe, stream, &list, 1);
 
 	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_FE;
 
 	ret = dpcm_be_dai_startup(fe, stream);
 	if (ret < 0) {
-		/* clean up all links */
+		 
 		for_each_dpcm_be(fe, stream, dpcm)
 			dpcm->state = SND_SOC_DPCM_LINK_STATE_FREE;
 
@@ -205,7 +205,7 @@ static int soc_compr_free_fe(struct snd_compr_stream *cstream)
 	struct snd_soc_pcm_runtime *fe = cstream->private_data;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(fe, 0);
 	struct snd_soc_dpcm *dpcm;
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 
 	snd_soc_card_mutex_lock(fe->card);
 
@@ -218,7 +218,7 @@ static int soc_compr_free_fe(struct snd_compr_stream *cstream)
 
 	dpcm_be_dai_shutdown(fe, stream);
 
-	/* mark FE's links ready to prune */
+	 
 	for_each_dpcm_be(fe, stream, dpcm)
 		dpcm->state = SND_SOC_DPCM_LINK_STATE_FREE;
 
@@ -246,7 +246,7 @@ static int soc_compr_trigger(struct snd_compr_stream *cstream, int cmd)
 	struct snd_soc_pcm_runtime *rtd = cstream->private_data;
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 	int ret;
 
 	snd_soc_dpcm_mutex_lock(rtd);
@@ -277,7 +277,7 @@ static int soc_compr_trigger_fe(struct snd_compr_stream *cstream, int cmd)
 {
 	struct snd_soc_pcm_runtime *fe = cstream->private_data;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(fe, 0);
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 	int ret;
 
 	if (cmd == SND_COMPR_TRIGGER_PARTIAL_DRAIN ||
@@ -324,18 +324,12 @@ static int soc_compr_set_params(struct snd_compr_stream *cstream,
 {
 	struct snd_soc_pcm_runtime *rtd = cstream->private_data;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 	int ret;
 
 	snd_soc_dpcm_mutex_lock(rtd);
 
-	/*
-	 * First we call set_params for the CPU DAI, then the component
-	 * driver this should configure the SoC side. If the machine has
-	 * compressed ops then we call that as well. The expectation is
-	 * that these callbacks will configure everything for this compress
-	 * path, like configuring a PCM port for a CODEC.
-	 */
+	 
 	ret = snd_soc_dai_compr_set_params(cpu_dai, cstream, params);
 	if (ret < 0)
 		goto err;
@@ -350,7 +344,7 @@ static int soc_compr_set_params(struct snd_compr_stream *cstream,
 
 	snd_soc_dapm_stream_event(rtd, stream, SND_SOC_DAPM_STREAM_START);
 
-	/* cancel any delayed stream shutdown that is pending */
+	 
 	rtd->pop_wait = 0;
 	snd_soc_dpcm_mutex_unlock(rtd);
 
@@ -370,16 +364,12 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 	struct snd_pcm_substream *fe_substream =
 		 fe->pcm->streams[cstream->direction].substream;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(fe, 0);
-	int stream = cstream->direction; /* SND_COMPRESS_xxx is same as SNDRV_PCM_STREAM_xxx */
+	int stream = cstream->direction;  
 	int ret;
 
 	snd_soc_card_mutex_lock(fe->card);
 
-	/*
-	 * Create an empty hw_params for the BE as the machine driver must
-	 * fix this up to match DSP decoder and ASRC configuration.
-	 * I.e. machine driver fixup for compressed BE is mandatory.
-	 */
+	 
 	memset(&fe->dpcm[fe_substream->stream].hw_params, 0,
 		sizeof(struct snd_pcm_hw_params));
 
@@ -499,7 +489,7 @@ static int soc_compr_get_metadata(struct snd_compr_stream *cstream,
 	return snd_soc_component_compr_get_metadata(cstream, metadata);
 }
 
-/* ASoC Compress operations */
+ 
 static struct snd_compr_ops soc_compr_ops = {
 	.open		= soc_compr_open,
 	.free		= soc_compr_free,
@@ -514,7 +504,7 @@ static struct snd_compr_ops soc_compr_ops = {
 	.get_codec_caps = snd_soc_component_compr_get_codec_caps,
 };
 
-/* ASoC Dynamic Compress operations */
+ 
 static struct snd_compr_ops soc_compr_dyn_ops = {
 	.open		= soc_compr_open_fe,
 	.free		= soc_compr_free_fe,
@@ -529,14 +519,7 @@ static struct snd_compr_ops soc_compr_dyn_ops = {
 	.get_codec_caps = snd_soc_component_compr_get_codec_caps,
 };
 
-/**
- * snd_soc_new_compress - create a new compress.
- *
- * @rtd: The runtime for which we will create compress
- * @num: the device index number (zero based - shared with normal PCMs)
- *
- * Return: 0 for success, else error.
- */
+ 
 int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 {
 	struct snd_soc_component *component;
@@ -549,10 +532,7 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 	int playback = 0, capture = 0;
 	int i;
 
-	/*
-	 * make sure these are same value,
-	 * and then use these as equally
-	 */
+	 
 	BUILD_BUG_ON((int)SNDRV_PCM_STREAM_PLAYBACK != (int)SND_COMPRESS_PLAYBACK);
 	BUILD_BUG_ON((int)SNDRV_PCM_STREAM_CAPTURE  != (int)SND_COMPRESS_CAPTURE);
 
@@ -568,7 +548,7 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 		return -EINVAL;
 	}
 
-	/* check client and interface hw capabilities */
+	 
 	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
 	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
 		playback = 1;
@@ -576,10 +556,7 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
 		capture = 1;
 
-	/*
-	 * Compress devices are unidirectional so only one of the directions
-	 * should be set, check for that (xor)
-	 */
+	 
 	if (playback + capture != 1) {
 		dev_err(rtd->card->dev,
 			"Compress ASoC: Invalid direction for P %d, C %d\n",
@@ -615,7 +592,7 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 			return ret;
 		}
 
-		/* inherit atomicity from DAI link */
+		 
 		be_pcm->nonatomic = rtd->dai_link->nonatomic;
 
 		rtd->pcm = be_pcm;
@@ -651,7 +628,7 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 		return ret;
 	}
 
-	/* DAPM dai link stream work */
+	 
 	rtd->close_delayed_work_func = snd_soc_close_delayed_work;
 
 	rtd->compr = compr;

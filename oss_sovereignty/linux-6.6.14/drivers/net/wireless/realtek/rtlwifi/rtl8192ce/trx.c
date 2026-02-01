@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -101,16 +101,11 @@ static void _rtl92ce_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 
 		pwdb_all = rtl_query_rxpwrpercentage(rx_pwr_all);
-		/* CCK gain is smaller than OFDM/MCS gain,
-		 * so we add gain diff by experiences,
-		 * the val is 6
-		 */
+		 
 		pwdb_all += 6;
 		if (pwdb_all > 100)
 			pwdb_all = 100;
-		/* modify the offset to make the same
-		 * gain index with OFDM.
-		 */
+		 
 		if (pwdb_all > 34 && pwdb_all <= 42)
 			pwdb_all -= 2;
 		else if (pwdb_all > 26 && pwdb_all <= 34)
@@ -123,7 +118,7 @@ static void _rtl92ce_query_rxphystatus(struct ieee80211_hw *hw,
 		pstats->rx_pwdb_all = pwdb_all;
 		pstats->recvsignalpower = rx_pwr_all;
 
-		/* (3) Get Signal Quality (EVM) */
+		 
 		if (packet_match_bssid) {
 			u8 sq;
 
@@ -146,36 +141,34 @@ static void _rtl92ce_query_rxphystatus(struct ieee80211_hw *hw,
 	} else {
 		rtlpriv->dm.rfpath_rxenable[0] =
 		    rtlpriv->dm.rfpath_rxenable[1] = true;
-		/* (1)Get RSSI for HT rate */
+		 
 		for (i = RF90_PATH_A; i < RF90_PATH_MAX; i++) {
-			/* we will judge RF RX path now. */
+			 
 			if (rtlpriv->dm.rfpath_rxenable[i])
 				rf_rx_num++;
 
 			rx_pwr[i] =
 			    ((p_drvinfo->gain_trsw[i] & 0x3f) * 2) - 110;
-			/* Translate DBM to percentage. */
+			 
 			rssi = rtl_query_rxpwrpercentage(rx_pwr[i]);
 			total_rssi += rssi;
-			/* Get Rx snr value in DB */
+			 
 			rtlpriv->stats.rx_snr_db[i] =
 			    (long)(p_drvinfo->rxsnr[i] / 2);
 
-			/* Record Signal Strength for next packet */
+			 
 			if (packet_match_bssid)
 				pstats->rx_mimo_signalstrength[i] = (u8) rssi;
 		}
 
-		/* (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
 		rx_pwr_all = ((p_drvinfo->pwdb_all >> 1) & 0x7f) - 110;
 		pwdb_all = rtl_query_rxpwrpercentage(rx_pwr_all);
 		pstats->rx_pwdb_all = pwdb_all;
 		pstats->rxpower = rx_pwr_all;
 		pstats->recvsignalpower = rx_pwr_all;
 
-		/* (3)EVM of HT rate */
+		 
 		if (pstats->is_ht && pstats->rate >= DESC_RATEMCS8 &&
 		    pstats->rate <= DESC_RATEMCS15)
 			max_spatial_stream = 2;
@@ -186,9 +179,7 @@ static void _rtl92ce_query_rxphystatus(struct ieee80211_hw *hw,
 			evm = rtl_evm_db_to_percentage(p_drvinfo->rxevm[i]);
 
 			if (packet_match_bssid) {
-				/* Fill value in RFD, Get the first
-				 * spatial stream only
-				 */
+				 
 				if (i == 0)
 					pstats->signalquality =
 					    (u8)(evm & 0xff);
@@ -197,9 +188,7 @@ static void _rtl92ce_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* UI BSS List signal strength(in percentage),
-	 * make it good looking, from 0~100.
-	 */
+	 
 	if (is_cck_rate)
 		pstats->signalstrength =
 		    (u8)(rtl_signal_scale_mapping(hw, pwdb_all));
@@ -300,14 +289,7 @@ bool rtl92ce_rx_query_desc(struct ieee80211_hw *hw,
 
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 
-	/* hw will set stats->decrypted true, if it finds the
-	 * frame is open data frame or mgmt frame.
-	 * So hw will not decryption robust managment frame
-	 * for IEEE80211w but still set status->decrypted
-	 * true, so here we should set it back to undecrypted
-	 * for IEEE80211w frame, and mac80211 sw will help
-	 * to decrypt it
-	 */
+	 
 	if (stats->decrypted) {
 		if ((_ieee80211_is_robust_mgmt_frame(hdr)) &&
 		    (ieee80211_has_protected(hdr->frame_control)))
@@ -315,11 +297,7 @@ bool rtl92ce_rx_query_desc(struct ieee80211_hw *hw,
 		else
 			rx_status->flag |= RX_FLAG_DECRYPTED;
 	}
-	/* rate_idx: index of data rate into band's
-	 * supported rates or MCS index if HT rates
-	 * are use (RX_FLAG_HT)
-	 * Notice: this is diff with windows define
-	 */
+	 
 	rx_status->rate_idx = rtlwifi_rate_mapping(hw, stats->is_ht,
 						   false, stats->rate);
 
@@ -333,7 +311,7 @@ bool rtl92ce_rx_query_desc(struct ieee80211_hw *hw,
 						   p_drvinfo);
 	}
 
-	/*rx_status->qual = stats->signal; */
+	 
 	rx_status->signal = stats->recvsignalpower + 10;
 
 	return true;
@@ -670,10 +648,7 @@ bool rtl92ce_is_tx_desc_closed(struct ieee80211_hw *hw,
 	u8 *entry = (u8 *)(&ring->desc[ring->idx]);
 	u8 own = (u8)rtl92ce_get_desc(hw, entry, true, HW_DESC_OWN);
 
-	/*beacon packet will only use the first
-	 *descriptor defautly,and the own may not
-	 *be cleared by the hardware
-	 */
+	 
 	if (own)
 		return false;
 	return true;

@@ -1,23 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2016-2018 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/dma-mapping.h>
 #include <linux/mei.h>
 
 #include "mei_dev.h"
 
-/**
- * mei_dmam_dscr_alloc() - allocate a managed coherent buffer
- *     for the dma descriptor
- * @dev: mei_device
- * @dscr: dma descriptor
- *
- * Return:
- * * 0       - on success or zero allocation request
- * * -EINVAL - if size is not power of 2
- * * -ENOMEM - of allocation has failed
- */
+ 
 static int mei_dmam_dscr_alloc(struct mei_device *dev,
 			       struct mei_dma_dscr *dscr)
 {
@@ -38,12 +26,7 @@ static int mei_dmam_dscr_alloc(struct mei_device *dev,
 	return 0;
 }
 
-/**
- * mei_dmam_dscr_free() - free a managed coherent buffer
- *     from the dma descriptor
- * @dev: mei_device
- * @dscr: dma descriptor
- */
+ 
 static void mei_dmam_dscr_free(struct mei_device *dev,
 			       struct mei_dma_dscr *dscr)
 {
@@ -54,10 +37,7 @@ static void mei_dmam_dscr_free(struct mei_device *dev,
 	dscr->vaddr = NULL;
 }
 
-/**
- * mei_dmam_ring_free() - free dma ring buffers
- * @dev: mei device
- */
+ 
 void mei_dmam_ring_free(struct mei_device *dev)
 {
 	int i;
@@ -66,12 +46,7 @@ void mei_dmam_ring_free(struct mei_device *dev)
 		mei_dmam_dscr_free(dev, &dev->dr_dscr[i]);
 }
 
-/**
- * mei_dmam_ring_alloc() - allocate dma ring buffers
- * @dev: mei device
- *
- * Return: -ENOMEM on allocation failure 0 otherwise
- */
+ 
 int mei_dmam_ring_alloc(struct mei_device *dev)
 {
 	int i;
@@ -87,12 +62,7 @@ err:
 	return -ENOMEM;
 }
 
-/**
- * mei_dma_ring_is_allocated() - check if dma ring is allocated
- * @dev: mei device
- *
- * Return: true if dma ring is allocated
- */
+ 
 bool mei_dma_ring_is_allocated(struct mei_device *dev)
 {
 	return !!dev->dr_dscr[DMA_DSCR_HOST].vaddr;
@@ -104,10 +74,7 @@ struct hbm_dma_ring_ctrl *mei_dma_ring_ctrl(struct mei_device *dev)
 	return (struct hbm_dma_ring_ctrl *)dev->dr_dscr[DMA_DSCR_CTRL].vaddr;
 }
 
-/**
- * mei_dma_ring_reset() - reset the dma control block
- * @dev: mei device
- */
+ 
 void mei_dma_ring_reset(struct mei_device *dev)
 {
 	struct hbm_dma_ring_ctrl *ctrl = mei_dma_ring_ctrl(dev);
@@ -118,13 +85,7 @@ void mei_dma_ring_reset(struct mei_device *dev)
 	memset(ctrl, 0, sizeof(*ctrl));
 }
 
-/**
- * mei_dma_copy_from() - copy from dma ring into buffer
- * @dev: mei device
- * @buf: data buffer
- * @offset: offset in slots.
- * @n: number of slots to copy.
- */
+ 
 static size_t mei_dma_copy_from(struct mei_device *dev, unsigned char *buf,
 				u32 offset, u32 n)
 {
@@ -138,13 +99,7 @@ static size_t mei_dma_copy_from(struct mei_device *dev, unsigned char *buf,
 	return b_n;
 }
 
-/**
- * mei_dma_copy_to() - copy to a buffer to the dma ring
- * @dev: mei device
- * @buf: data buffer
- * @offset: offset in slots.
- * @n: number of slots to copy.
- */
+ 
 static size_t mei_dma_copy_to(struct mei_device *dev, unsigned char *buf,
 			      u32 offset, u32 n)
 {
@@ -158,12 +113,7 @@ static size_t mei_dma_copy_to(struct mei_device *dev, unsigned char *buf,
 	return b_n;
 }
 
-/**
- * mei_dma_ring_read() - read data from the ring
- * @dev: mei device
- * @buf: buffer to read into: may be NULL in case of droping the data.
- * @len: length to read.
- */
+ 
 void mei_dma_ring_read(struct mei_device *dev, unsigned char *buf, u32 len)
 {
 	struct hbm_dma_ring_ctrl *ctrl = mei_dma_ring_ctrl(dev);
@@ -182,7 +132,7 @@ void mei_dma_ring_read(struct mei_device *dev, unsigned char *buf, u32 len)
 	rd_idx = READ_ONCE(ctrl->dbuf_rd_idx) & (dbuf_depth - 1);
 	slots = mei_data2slots(len);
 
-	/* if buf is NULL we drop the packet by advancing the pointer.*/
+	 
 	if (!buf)
 		goto out;
 
@@ -204,12 +154,7 @@ static inline u32 mei_dma_ring_hbuf_depth(struct mei_device *dev)
 	return dev->dr_dscr[DMA_DSCR_HOST].size >> 2;
 }
 
-/**
- * mei_dma_ring_empty_slots() - calaculate number of empty slots in dma ring
- * @dev: mei_device
- *
- * Return: number of empty slots
- */
+ 
 u32 mei_dma_ring_empty_slots(struct mei_device *dev)
 {
 	struct hbm_dma_ring_ctrl *ctrl = mei_dma_ring_ctrl(dev);
@@ -221,7 +166,7 @@ u32 mei_dma_ring_empty_slots(struct mei_device *dev)
 	if (WARN_ON(!ctrl))
 		return 0;
 
-	/* easier to work in slots */
+	 
 	hbuf_depth = mei_dma_ring_hbuf_depth(dev);
 	rd_idx = READ_ONCE(ctrl->hbuf_rd_idx);
 	wr_idx = READ_ONCE(ctrl->hbuf_wr_idx);
@@ -234,13 +179,7 @@ u32 mei_dma_ring_empty_slots(struct mei_device *dev)
 	return empty;
 }
 
-/**
- * mei_dma_ring_write - write data to dma ring host buffer
- *
- * @dev: mei_device
- * @buf: data will be written
- * @len: data length
- */
+ 
 void mei_dma_ring_write(struct mei_device *dev, unsigned char *buf, u32 len)
 {
 	struct hbm_dma_ring_ctrl *ctrl = mei_dma_ring_ctrl(dev);

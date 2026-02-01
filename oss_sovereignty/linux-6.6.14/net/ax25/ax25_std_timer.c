@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Alan Cox GW4PTS (alan@lxorguk.ukuu.org.uk)
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- * Copyright (C) Joerg Reuter DL1BKE (jreuter@yaina.de)
- * Copyright (C) Frederic Rible F1OAT (frible@teaser.fr)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -36,8 +30,7 @@ void ax25_std_heartbeat_expiry(ax25_cb *ax25)
 	switch (ax25->state) {
 	case AX25_STATE_0:
 	case AX25_STATE_2:
-		/* Magic here: If we listen() and a new link dies before it
-		   is accepted() it isn't 'dead' so doesn't get removed. */
+		 
 		if (!sk || sock_flag(sk, SOCK_DESTROY) ||
 		    (sk->sk_state == TCP_LISTEN &&
 		     sock_flag(sk, SOCK_DEAD))) {
@@ -45,7 +38,7 @@ void ax25_std_heartbeat_expiry(ax25_cb *ax25)
 				sock_hold(sk);
 				ax25_destroy_socket(ax25);
 				bh_unlock_sock(sk);
-				/* Ungrab socket and destroy it */
+				 
 				sock_put(sk);
 			} else
 				ax25_destroy_socket(ax25);
@@ -55,9 +48,7 @@ void ax25_std_heartbeat_expiry(ax25_cb *ax25)
 
 	case AX25_STATE_3:
 	case AX25_STATE_4:
-		/*
-		 * Check the state of the receive buffer.
-		 */
+		 
 		if (sk != NULL) {
 			if (atomic_read(&sk->sk_rmem_alloc) <
 			    (sk->sk_rcvbuf >> 1) &&

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// OWL factor clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/regmap.h>
@@ -88,11 +88,7 @@ static int owl_clk_val_best(const struct owl_factor_hw *factor_hw,
 			pr_debug("%s: [%d %d %d] found try_parent_rate %ld\n",
 				__func__, clkt->val, clkt->mul, clkt->div,
 				try_parent_rate);
-			/*
-			 * It's the most ideal case if the requested rate can be
-			 * divided from parent clock without any need to change
-			 * parent rate, so return the divider immediately.
-			 */
+			 
 			*best_parent_rate = parent_rate_saved;
 			return clkt->val;
 		}

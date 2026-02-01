@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Epson RTC module RX-6110 SA
- *
- * Copyright(C) 2015 Pengutronix, Steffen Trumtrar <kernel@pengutronix.de>
- * Copyright(C) SEIKO EPSON CORPORATION 2013. All rights reserved.
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/init.h>
@@ -16,7 +11,7 @@
 #include <linux/spi/spi.h>
 #include <linux/i2c.h>
 
-/* RX-6110 Register definitions */
+ 
 #define RX6110_REG_SEC		0x10
 #define RX6110_REG_MIN		0x11
 #define RX6110_REG_HOUR		0x12
@@ -55,7 +50,7 @@
 
 #define RX6110_BIT_ALARM_EN		BIT(7)
 
-/* Extension Register (1Dh) bit positions */
+ 
 #define RX6110_BIT_EXT_TSEL0		BIT(0)
 #define RX6110_BIT_EXT_TSEL1		BIT(1)
 #define RX6110_BIT_EXT_TSEL2		BIT(2)
@@ -65,13 +60,13 @@
 #define RX6110_BIT_EXT_FSEL0		BIT(6)
 #define RX6110_BIT_EXT_FSEL1		BIT(7)
 
-/* Flag Register (1Eh) bit positions */
+ 
 #define RX6110_BIT_FLAG_VLF		BIT(1)
 #define RX6110_BIT_FLAG_AF		BIT(3)
 #define RX6110_BIT_FLAG_TF		BIT(4)
 #define RX6110_BIT_FLAG_UF		BIT(5)
 
-/* Control Register (1Fh) bit positions */
+ 
 #define RX6110_BIT_CTRL_TBKE		BIT(0)
 #define RX6110_BIT_CTRL_TBKON		BIT(1)
 #define RX6110_BIT_CTRL_TSTP		BIT(2)
@@ -99,21 +94,12 @@ struct rx6110_data {
 	struct regmap *regmap;
 };
 
-/**
- * rx6110_rtc_tm_to_data - convert rtc_time to native time encoding
- *
- * @tm: holds date and time
- * @data: holds the encoding in rx6110 native form
- */
+ 
 static int rx6110_rtc_tm_to_data(struct rtc_time *tm, u8 *data)
 {
 	pr_debug("%s: date %ptRr\n", __func__, tm);
 
-	/*
-	 * The year in the RTC is a value between 0 and 99.
-	 * Assume that this represents the current century
-	 * and disregard all other values.
-	 */
+	 
 	if (tm->tm_year < 100 || tm->tm_year >= 200)
 		return -EINVAL;
 
@@ -128,17 +114,12 @@ static int rx6110_rtc_tm_to_data(struct rtc_time *tm, u8 *data)
 	return 0;
 }
 
-/**
- * rx6110_data_to_rtc_tm - convert native time encoding to rtc_time
- *
- * @data: holds the encoding in rx6110 native form
- * @tm: holds date and time
- */
+ 
 static int rx6110_data_to_rtc_tm(u8 *data, struct rtc_time *tm)
 {
 	tm->tm_sec = bcd2bin(data[RTC_SEC] & 0x7f);
 	tm->tm_min = bcd2bin(data[RTC_MIN] & 0x7f);
-	/* only 24-hour clock */
+	 
 	tm->tm_hour = bcd2bin(data[RTC_HOUR] & 0x3f);
 	tm->tm_wday = ffs(data[RTC_WDAY] & 0x7f);
 	tm->tm_mday = bcd2bin(data[RTC_MDAY] & 0x3f);
@@ -147,30 +128,14 @@ static int rx6110_data_to_rtc_tm(u8 *data, struct rtc_time *tm)
 
 	pr_debug("%s: date %ptRr\n", __func__, tm);
 
-	/*
-	 * The year in the RTC is a value between 0 and 99.
-	 * Assume that this represents the current century
-	 * and disregard all other values.
-	 */
+	 
 	if (tm->tm_year < 100 || tm->tm_year >= 200)
 		return -EINVAL;
 
 	return 0;
 }
 
-/**
- * rx6110_set_time - set the current time in the rx6110 registers
- *
- * @dev: the rtc device in use
- * @tm: holds date and time
- *
- * BUG: The HW assumes every year that is a multiple of 4 to be a leap
- * year. Next time this is wrong is 2100, which will not be a leap year
- *
- * Note: If STOP is not set/cleared, the clock will start when the seconds
- *       register is written
- *
- */
+ 
 static int rx6110_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct rx6110_data *rx6110 = dev_get_drvdata(dev);
@@ -181,7 +146,7 @@ static int rx6110_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret < 0)
 		return ret;
 
-	/* set STOP bit before changing clock/calendar */
+	 
 	ret = regmap_update_bits(rx6110->regmap, RX6110_REG_CTRL,
 				 RX6110_BIT_CTRL_STOP, RX6110_BIT_CTRL_STOP);
 	if (ret)
@@ -192,24 +157,20 @@ static int rx6110_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret)
 		return ret;
 
-	/* The time in the RTC is valid. Be sure to have VLF cleared. */
+	 
 	ret = regmap_update_bits(rx6110->regmap, RX6110_REG_FLAG,
 				 RX6110_BIT_FLAG_VLF, 0);
 	if (ret)
 		return ret;
 
-	/* clear STOP bit after changing clock/calendar */
+	 
 	ret = regmap_update_bits(rx6110->regmap, RX6110_REG_CTRL,
 				 RX6110_BIT_CTRL_STOP, 0);
 
 	return ret;
 }
 
-/**
- * rx6110_get_time - get the current time from the rx6110 registers
- * @dev: the rtc device in use
- * @tm: holds date and time
- */
+ 
 static int rx6110_get_time(struct device *dev, struct rtc_time *tm)
 {
 	struct rx6110_data *rx6110 = dev_get_drvdata(dev);
@@ -221,13 +182,13 @@ static int rx6110_get_time(struct device *dev, struct rtc_time *tm)
 	if (ret)
 		return -EINVAL;
 
-	/* check for VLF Flag (set at power-on) */
+	 
 	if ((flags & RX6110_BIT_FLAG_VLF)) {
 		dev_warn(dev, "Voltage low, data is invalid.\n");
 		return -EINVAL;
 	}
 
-	/* read registers to date */
+	 
 	ret = regmap_bulk_read(rx6110->regmap, RX6110_REG_SEC, data,
 			       RTC_NR_TIME);
 	if (ret)
@@ -252,12 +213,7 @@ static const struct reg_sequence rx6110_default_regs[] = {
 	{ RX6110_REG_ALWDAY, 0x00 },
 };
 
-/**
- * rx6110_init - initialize the rx6110 registers
- *
- * @rx6110: pointer to the rx6110 struct in use
- *
- */
+ 
 static int rx6110_init(struct rx6110_data *rx6110)
 {
 	struct rtc_device *rtc = rx6110->rtc;
@@ -278,23 +234,23 @@ static int rx6110_init(struct rx6110_data *rx6110)
 	if (ret)
 		return ret;
 
-	/* check for VLF Flag (set at power-on) */
+	 
 	if ((flags & RX6110_BIT_FLAG_VLF))
 		dev_warn(&rtc->dev, "Voltage low, data loss detected.\n");
 
-	/* check for Alarm Flag */
+	 
 	if (flags & RX6110_BIT_FLAG_AF)
 		dev_warn(&rtc->dev, "An alarm may have been missed.\n");
 
-	/* check for Periodic Timer Flag */
+	 
 	if (flags & RX6110_BIT_FLAG_TF)
 		dev_warn(&rtc->dev, "Periodic timer was detected\n");
 
-	/* check for Update Timer Flag */
+	 
 	if (flags & RX6110_BIT_FLAG_UF)
 		dev_warn(&rtc->dev, "Update timer was detected\n");
 
-	/* clear all flags BUT VLF */
+	 
 	ret = regmap_update_bits(rx6110->regmap, RX6110_REG_FLAG,
 				 RX6110_BIT_FLAG_AF |
 				 RX6110_BIT_FLAG_UF |
@@ -337,10 +293,7 @@ static struct regmap_config regmap_spi_config = {
 	.read_flag_mask = 0x80,
 };
 
-/**
- * rx6110_spi_probe - initialize rtc driver
- * @spi: pointer to spi device
- */
+ 
 static int rx6110_spi_probe(struct spi_device *spi)
 {
 	struct rx6110_data *rx6110;
@@ -407,7 +360,7 @@ static int rx6110_spi_register(void)
 static void rx6110_spi_unregister(void)
 {
 }
-#endif /* CONFIG_SPI_MASTER */
+#endif  
 
 #if IS_ENABLED(CONFIG_I2C)
 static struct regmap_config regmap_i2c_config = {
@@ -483,7 +436,7 @@ static int rx6110_i2c_register(void)
 static void rx6110_i2c_unregister(void)
 {
 }
-#endif /* CONFIG_I2C */
+#endif  
 
 static int __init rx6110_module_init(void)
 {

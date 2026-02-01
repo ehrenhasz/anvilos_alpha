@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -15,7 +13,7 @@
 #include "w1_internal.h"
 #include "w1_netlink.h"
 
-static int w1_search_count = -1; /* Default is continual scan */
+static int w1_search_count = -1;  
 module_param_named(search_count, w1_search_count, int, 0);
 
 static int w1_enable_pullup = 1;
@@ -28,9 +26,7 @@ static struct w1_master *w1_alloc_dev(u32 id, int slave_count, int slave_ttl,
 	struct w1_master *dev;
 	int err;
 
-	/*
-	 * We are in process context(kernel thread), so can sleep.
-	 */
+	 
 	dev = kzalloc(sizeof(struct w1_master) + sizeof(struct w1_bus_master), GFP_KERNEL);
 	if (!dev) {
 		pr_err("Failed to allocate %zd bytes for new w1 device.\n",
@@ -51,8 +47,7 @@ static struct w1_master *w1_alloc_dev(u32 id, int slave_count, int slave_ttl,
 	dev->search_count	= w1_search_count;
 	dev->enable_pullup	= w1_enable_pullup;
 
-	/* For __w1_remove_master_device to decrement
-	 */
+	 
 	atomic_set(&dev->refcnt, 1);
 
 	INIT_LIST_HEAD(&dev->slist);
@@ -85,10 +80,7 @@ static void w1_free_dev(struct w1_master *dev)
 	device_unregister(&dev->dev);
 }
 
-/**
- * w1_add_master_device() - registers a new master device
- * @master:	master bus device to register
- */
+ 
 int w1_add_master_device(struct w1_bus_master *master)
 {
 	struct w1_master *dev, *entry;
@@ -96,7 +88,7 @@ int w1_add_master_device(struct w1_bus_master *master)
 	struct w1_netlink_msg msg;
 	int id, found;
 
-	/* validate minimum functionality */
+	 
 	if (!(master->touch_bit && master->reset_bus) &&
 	    !(master->write_bit && master->read_bit) &&
 	    !(master->write_byte && master->read_byte && master->reset_bus)) {
@@ -104,9 +96,9 @@ int w1_add_master_device(struct w1_bus_master *master)
 		return(-EINVAL);
 	}
 
-	/* Lock until the device is added (or not) to w1_masters. */
+	 
 	mutex_lock(&w1_mlock);
-	/* Search for the first available id (starting at 1). */
+	 
 	id = 0;
 	do {
 		++id;
@@ -156,7 +148,7 @@ int w1_add_master_device(struct w1_bus_master *master)
 
 	return 0;
 
-#if 0 /* Thread cleanup code, not required currently. */
+#if 0  
 err_out_kill_thread:
 	set_bit(W1_ABORT_SEARCH, &dev->flags);
 	kthread_stop(dev->thread);
@@ -216,10 +208,7 @@ void __w1_remove_master_device(struct w1_master *dev)
 	w1_free_dev(dev);
 }
 
-/**
- * w1_remove_master_device() - unregister a master device
- * @bm:	master bus device to remove
- */
+ 
 void w1_remove_master_device(struct w1_bus_master *bm)
 {
 	struct w1_master *dev, *found = NULL;

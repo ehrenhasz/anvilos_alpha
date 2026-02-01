@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lib/plist.c
- *
- * Descending-priority-sorted double-linked list
- *
- * (C) 2002-2003 Intel Corp
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>.
- *
- * 2001-2005 (c) MontaVista Software, Inc.
- * Daniel Walker <dwalker@mvista.com>
- *
- * (C) 2005 Thomas Gleixner <tglx@linutronix.de>
- *
- * Simplifications of the original code by
- * Oleg Nesterov <oleg@tv-sign.ru>
- *
- * Based on simple lists (include/linux/list.h).
- *
- * This file contains the add / del functions which are considered to
- * be too large to inline. See include/linux/plist.h for further
- * information.
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/plist.h>
@@ -64,12 +43,7 @@ static void plist_check_head(struct plist_head *head)
 # define plist_check_head(h)	do { } while (0)
 #endif
 
-/**
- * plist_add - add @node to @head
- *
- * @node:	&struct plist_node pointer
- * @head:	&struct plist_head pointer
- */
+ 
 void plist_add(struct plist_node *node, struct plist_head *head)
 {
 	struct plist_node *first, *iter, *prev = NULL;
@@ -103,12 +77,7 @@ ins_node:
 	plist_check_head(head);
 }
 
-/**
- * plist_del - Remove a @node from plist.
- *
- * @node:	&struct plist_node pointer - entry to be removed
- * @head:	&struct plist_head pointer - list head
- */
+ 
 void plist_del(struct plist_node *node, struct plist_head *head)
 {
 	plist_check_head(head);
@@ -120,7 +89,7 @@ void plist_del(struct plist_node *node, struct plist_head *head)
 			next = list_entry(node->node_list.next,
 					struct plist_node, node_list);
 
-			/* add the next plist_node into prio_list */
+			 
 			if (list_empty(&next->prio_list))
 				list_add(&next->prio_list, &node->prio_list);
 		}
@@ -132,16 +101,7 @@ void plist_del(struct plist_node *node, struct plist_head *head)
 	plist_check_head(head);
 }
 
-/**
- * plist_requeue - Requeue @node at end of same-prio entries.
- *
- * This is essentially an optimized plist_del() followed by
- * plist_add().  It moves an entry already in the plist to
- * after any other same-priority entries.
- *
- * @node:	&struct plist_node pointer - entry to be moved
- * @head:	&struct plist_head pointer - list head
- */
+ 
 void plist_requeue(struct plist_node *node, struct plist_head *head)
 {
 	struct plist_node *iter;

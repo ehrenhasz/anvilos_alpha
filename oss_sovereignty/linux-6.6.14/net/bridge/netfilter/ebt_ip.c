@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebt_ip
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *
- *  April, 2002
- *
- *  Changes:
- *    added ip-sport and ip-dport
- *    Innominate Security Technologies AG <mhopf@innominate.com>
- *    September, 2002
- */
+
+ 
 #include <linux/ip.h>
 #include <net/ip.h>
 #include <linux/in.h>
@@ -66,7 +54,7 @@ ebt_ip_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		if (ntohs(ih->frag_off) & IP_OFFSET)
 			return false;
 
-		/* min icmp/igmp headersize is 4, so sizeof(_pkthdr) is ok. */
+		 
 		pptr = skb_header_pointer(skb, ih->ihl*4,
 					  sizeof(_pkthdr), &_pkthdr);
 		if (pptr == NULL)

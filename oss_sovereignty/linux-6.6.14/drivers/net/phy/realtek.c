@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* drivers/net/phy/realtek.c
- *
- * Driver for Realtek PHYs
- *
- * Author: Johnson Leung <r58129@freescale.com>
- *
- * Copyright (c) 2004 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/of.h>
 #include <linux/phy.h>
@@ -321,9 +314,7 @@ static int rtl8211_config_aneg(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* Quirk was copied from vendor driver. Unfortunately it includes no
-	 * description of the magic numbers.
-	 */
+	 
 	if (phydev->speed == SPEED_100 && phydev->autoneg == AUTONEG_DISABLE) {
 		phy_write(phydev, 0x17, 0x2138);
 		phy_write(phydev, 0x0e, 0x0260);
@@ -337,7 +328,7 @@ static int rtl8211_config_aneg(struct phy_device *phydev)
 
 static int rtl8211c_config_init(struct phy_device *phydev)
 {
-	/* RTL8211C has an issue when operating in Gigabit slave mode */
+	 
 	return phy_set_bits(phydev, MII_CTRL1000,
 			    CTL1000_ENABLE_MASTER | CTL1000_AS_MASTER);
 }
@@ -379,7 +370,7 @@ static int rtl8211f_config_init(struct phy_device *phydev)
 		val_rxdly = RTL8211F_RX_DELAY;
 		break;
 
-	default: /* the rest of the modes imply leaving delay as is. */
+	default:  
 		return 0;
 	}
 
@@ -465,7 +456,7 @@ static int rtl8211e_config_init(struct phy_device *phydev)
 	int ret = 0, oldpage;
 	u16 val;
 
-	/* enable TX/RX delay for rgmii-* modes, and disable them for rgmii. */
+	 
 	switch (phydev->interface) {
 	case PHY_INTERFACE_MODE_RGMII:
 		val = RTL8211E_CTRL_DELAY | 0;
@@ -479,19 +470,11 @@ static int rtl8211e_config_init(struct phy_device *phydev)
 	case PHY_INTERFACE_MODE_RGMII_TXID:
 		val = RTL8211E_CTRL_DELAY | RTL8211E_TX_DELAY;
 		break;
-	default: /* the rest of the modes imply leaving delays as is. */
+	default:  
 		return 0;
 	}
 
-	/* According to a sample driver there is a 0x1c config register on the
-	 * 0xa4 extension page (0x7) layout. It can be used to disable/enable
-	 * the RX/TX delays otherwise controlled by RXDLY/TXDLY pins.
-	 * The configuration register definition:
-	 * 14 = reserved
-	 * 13 = Force Tx RX Delay controlled by bit12 bit11,
-	 * 12 = RX Delay, 11 = TX Delay
-	 * 10:0 = Test && debug settings reserved by realtek
-	 */
+	 
 	oldpage = phy_select_page(phydev, 0x7);
 	if (oldpage < 0)
 		goto err_restore_page;
@@ -536,7 +519,7 @@ static int rtl8366rb_config_init(struct phy_device *phydev)
 	return ret;
 }
 
-/* get actual speed to cover the downshift case */
+ 
 static int rtlgen_get_speed(struct phy_device *phydev)
 {
 	int val;
@@ -755,7 +738,7 @@ static int rtlgen_resume(struct phy_device *phydev)
 {
 	int ret = genphy_resume(phydev);
 
-	/* Internal PHY's from RTL8168h up may not be instantly ready */
+	 
 	msleep(20);
 
 	return ret;
@@ -1051,11 +1034,7 @@ static struct phy_driver realtek_drvs[] = {
 		PHY_ID_MATCH_EXACT(0x001cc961),
 		.name		= "RTL8366RB Gigabit Ethernet",
 		.config_init	= &rtl8366rb_config_init,
-		/* These interrupts are handled by the irq controller
-		 * embedded inside the RTL8366RB, they get unmasked when the
-		 * irq is requested and ACKed by reading the status register,
-		 * which is done by the irqchip code.
-		 */
+		 
 		.config_intr	= genphy_no_config_intr,
 		.handle_interrupt = genphy_handle_interrupt_no_ack,
 		.suspend	= genphy_suspend,
@@ -1076,7 +1055,7 @@ static struct phy_driver realtek_drvs[] = {
 	}, {
 		PHY_ID_MATCH_EXACT(0x001cc942),
 		.name		= "RTL8365MB-VC Gigabit Ethernet",
-		/* Interrupt handling analogous to RTL8366RB */
+		 
 		.config_intr	= genphy_no_config_intr,
 		.handle_interrupt = genphy_handle_interrupt_no_ack,
 		.suspend	= genphy_suspend,

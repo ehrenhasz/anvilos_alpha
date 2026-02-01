@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Serial Port driver for Tegra devices
- *
- *  Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>

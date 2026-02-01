@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* fd-based mount test.
- *
- * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,7 +50,7 @@ void mount_error(int fd, const char *s)
 	exit(1);
 }
 
-/* Hope -1 isn't a syscall */
+ 
 #ifndef __NR_fsopen
 #define __NR_fsopen -1
 #endif
@@ -104,7 +100,7 @@ int main(int argc, char *argv[])
 {
 	int fsfd, mfd;
 
-	/* Mount a publically available AFS filesystem */
+	 
 	fsfd = fsopen("afs", 0);
 	if (fsfd == -1) {
 		perror("fsopen");

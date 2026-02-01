@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SBP2 target driver (SCSI over IEEE1394 in target mode)
- *
- * Copyright (C) 2011  Chris Boot <bootc@bootc.net>
- */
+
+ 
 
 #define KMSG_COMPONENT "sbp_target"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -27,19 +23,19 @@
 
 #include "sbp_target.h"
 
-/* FireWire address region for management and command block address handlers */
+ 
 static const struct fw_address_region sbp_register_region = {
 	.start	= CSR_REGISTER_BASE + 0x10000,
 	.end	= 0x1000000000000ULL,
 };
 
 static const u32 sbp_unit_directory_template[] = {
-	0x1200609e, /* unit_specifier_id: NCITS/T10 */
-	0x13010483, /* unit_sw_version: 1155D Rev 4 */
-	0x3800609e, /* command_set_specifier_id: NCITS/T10 */
-	0x390104d8, /* command_set: SPC-2 */
-	0x3b000000, /* command_set_revision: 0 */
-	0x3c000001, /* firmware_revision: 1 */
+	0x1200609e,  
+	0x13010483,  
+	0x3800609e,  
+	0x390104d8,  
+	0x3b000000,  
+	0x3c000001,  
 };
 
 #define SESSION_MAINTENANCE_INTERVAL HZ
@@ -237,7 +233,7 @@ static void sbp_login_release(struct sbp_login_descriptor *login,
 {
 	struct sbp_session *sess = login->sess;
 
-	/* FIXME: abort/wait on tasks */
+	 
 
 	sbp_target_agent_unregister(login->tgt_agt);
 
@@ -299,29 +295,13 @@ static void sbp_management_request_login(
 		if (login) {
 			pr_notice("initiator already logged-in\n");
 
-			/*
-			 * SBP-2 R4 says we should return access denied, but
-			 * that can confuse initiators. Instead we need to
-			 * treat this like a reconnect, but send the login
-			 * response block like a fresh login.
-			 *
-			 * This is required particularly in the case of Apple
-			 * devices booting off the FireWire target, where
-			 * the firmware has an active login to the target. When
-			 * the OS takes control of the session it issues its own
-			 * LOGIN rather than a RECONNECT. To avoid the machine
-			 * waiting until the reconnect_hold expires, we can skip
-			 * the ACCESS_DENIED errors to speed things up.
-			 */
+			 
 
 			goto already_logged_in;
 		}
 	}
 
-	/*
-	 * check exclusive bit in login request
-	 * reject with access_denied if any logins present
-	 */
+	 
 	if (LOGIN_ORB_EXCLUSIVE(be32_to_cpu(req->orb.misc)) &&
 			sbp_login_count_all_by_lun(tpg, unpacked_lun, 0)) {
 		pr_warn("refusing exclusive login with other active logins\n");
@@ -332,10 +312,7 @@ static void sbp_management_request_login(
 		return;
 	}
 
-	/*
-	 * check exclusive bit in any existing login descriptor
-	 * reject with access_denied if any exclusive logins present
-	 */
+	 
 	if (sbp_login_count_all_by_lun(tpg, unpacked_lun, 1)) {
 		pr_warn("refusing login while another exclusive login present\n");
 
@@ -345,10 +322,7 @@ static void sbp_management_request_login(
 		return;
 	}
 
-	/*
-	 * check we haven't exceeded the number of allowed logins
-	 * reject with resources_unavailable if we have
-	 */
+	 
 	if (sbp_login_count_all_by_lun(tpg, unpacked_lun, 0) >=
 			tport->max_logins_per_lun) {
 		pr_warn("max number of logins reached\n");
@@ -387,7 +361,7 @@ static void sbp_management_request_login(
 				SESSION_MAINTENANCE_INTERVAL);
 	}
 
-	/* only take the latest reconnect_hold into account */
+	 
 	sess->reconnect_hold = min(
 		1 << LOGIN_ORB_RECONNECT(be32_to_cpu(req->orb.misc)),
 		tport->max_reconnect_timeout) - 1;
@@ -479,7 +453,7 @@ static void sbp_management_request_query_logins(
 	int *status_data_size)
 {
 	pr_notice("QUERY LOGINS not implemented\n");
-	/* FIXME: implement */
+	 
 
 	req->status.status = cpu_to_be32(
 		STATUS_BLOCK_RESP(STATUS_RESP_REQUEST_COMPLETE) |
@@ -533,7 +507,7 @@ static void sbp_management_request_reconnect(
 	if (login->sess->card)
 		fw_card_put(login->sess->card);
 
-	/* update the node details */
+	 
 	login->sess->generation = req->generation;
 	login->sess->node_id = req->node_addr;
 	login->sess->card = fw_card_get(req->card);
@@ -641,7 +615,7 @@ static void session_maintenance_work(struct work_struct *work)
 	struct sbp_session *sess = container_of(work, struct sbp_session,
 			maint_work.work);
 
-	/* could be called while tearing down the session */
+	 
 	spin_lock_bh(&sess->lock);
 	if (list_empty(&sess->login_list)) {
 		spin_unlock_bh(&sess->lock);
@@ -650,17 +624,17 @@ static void session_maintenance_work(struct work_struct *work)
 	spin_unlock_bh(&sess->lock);
 
 	if (sess->node_id != -1) {
-		/* check for bus reset and make node_id invalid */
+		 
 		session_check_for_reset(sess);
 
 		schedule_delayed_work(&sess->maint_work,
 				SESSION_MAINTENANCE_INTERVAL);
 	} else if (!time_after64(get_jiffies_64(), sess->reconnect_expires)) {
-		/* still waiting for reconnect */
+		 
 		schedule_delayed_work(&sess->maint_work,
 				SESSION_MAINTENANCE_INTERVAL);
 	} else {
-		/* reconnect timeout has expired */
+		 
 		session_reconnect_expired(sess);
 	}
 }
@@ -683,7 +657,7 @@ static int tgt_agent_rw_agent_state(struct fw_card *card, int tcode, void *data,
 		return RCODE_COMPLETE;
 
 	case TCODE_WRITE_QUADLET_REQUEST:
-		/* ignored */
+		 
 		return RCODE_COMPLETE;
 
 	default:
@@ -782,7 +756,7 @@ static int tgt_agent_rw_unsolicited_status_enable(struct fw_card *card,
 	switch (tcode) {
 	case TCODE_WRITE_QUADLET_REQUEST:
 		pr_debug("tgt_agent UNSOLICITED_STATUS_ENABLE\n");
-		/* ignored as we don't send unsolicited status */
+		 
 		return RCODE_COMPLETE;
 
 	case TCODE_READ_QUADLET_REQUEST:
@@ -820,23 +794,23 @@ static void tgt_agent_rw(struct fw_card *card, struct fw_request *request,
 		goto out;
 	}
 
-	/* turn offset into the offset from the start of the block */
+	 
 	offset -= agent->handler.offset;
 
 	if (offset == 0x00 && length == 4) {
-		/* AGENT_STATE */
+		 
 		rcode = tgt_agent_rw_agent_state(card, tcode, data, agent);
 	} else if (offset == 0x04 && length == 4) {
-		/* AGENT_RESET */
+		 
 		rcode = tgt_agent_rw_agent_reset(card, tcode, data, agent);
 	} else if (offset == 0x08 && length == 8) {
-		/* ORB_POINTER */
+		 
 		rcode = tgt_agent_rw_orb_pointer(card, tcode, data, agent);
 	} else if (offset == 0x10 && length == 4) {
-		/* DOORBELL */
+		 
 		rcode = tgt_agent_rw_doorbell(card, tcode, data, agent);
 	} else if (offset == 0x14 && length == 4) {
-		/* UNSOLICITED_STATUS_ENABLE */
+		 
 		rcode = tgt_agent_rw_unsolicited_status_enable(card, tcode,
 				data, agent);
 	} else {
@@ -866,11 +840,11 @@ static void tgt_agent_process_work(struct work_struct *work)
 		pr_debug("ORB with high bits set\n");
 
 	switch (ORB_REQUEST_FORMAT(be32_to_cpu(req->orb.misc))) {
-		case 0:/* Format specified by this standard */
+		case 0: 
 			sbp_handle_command(req);
 			return;
-		case 1: /* Reserved for future standardization */
-		case 2: /* Vendor-dependent */
+		case 1:  
+		case 2:  
 			req->status.status |= cpu_to_be32(
 					STATUS_BLOCK_RESP(
 						STATUS_RESP_REQUEST_COMPLETE) |
@@ -880,7 +854,7 @@ static void tgt_agent_process_work(struct work_struct *work)
 						SBP_STATUS_REQ_TYPE_NOTSUPP));
 			sbp_send_status(req);
 			return;
-		case 3: /* Dummy ORB */
+		case 3:  
 			req->status.status |= cpu_to_be32(
 					STATUS_BLOCK_RESP(
 						STATUS_RESP_REQUEST_COMPLETE) |
@@ -895,7 +869,7 @@ static void tgt_agent_process_work(struct work_struct *work)
 	}
 }
 
-/* used to double-check we haven't been issued an AGENT_RESET */
+ 
 static inline bool tgt_agent_check_active(struct sbp_target_agent *agent)
 {
 	bool active;
@@ -954,7 +928,7 @@ static void tgt_agent_fetch_work(struct work_struct *work)
 		req->status.orb_low = cpu_to_be32(
 				req->orb_pointer & 0xfffffffc);
 
-		/* read in the ORB */
+		 
 		ret = sbp_run_transaction(sess->card, TCODE_READ_BLOCK_REQUEST,
 				sess->node_id, sess->generation, sess->speed,
 				req->orb_pointer, &req->orb, sizeof(req->orb));
@@ -977,7 +951,7 @@ static void tgt_agent_fetch_work(struct work_struct *work)
 			return;
 		}
 
-		/* check the next_ORB field */
+		 
 		if (be32_to_cpu(req->orb.next_orb.high) & 0x80000000) {
 			next_orb = 0;
 			req->status.status |= cpu_to_be32(STATUS_BLOCK_SRC(
@@ -992,14 +966,14 @@ static void tgt_agent_fetch_work(struct work_struct *work)
 			INIT_WORK(&req->work, tgt_agent_process_work);
 			queue_work(system_unbound_wq, &req->work);
 		} else {
-			/* don't process this request, just check next_ORB */
+			 
 			sbp_free_request(req);
 		}
 
 		spin_lock_bh(&agent->lock);
 		doorbell = agent->doorbell = false;
 
-		/* check if we should carry on processing */
+		 
 		if (next_orb)
 			agent->orb_pointer = next_orb;
 		else
@@ -1048,10 +1022,7 @@ static void sbp_target_agent_unregister(struct sbp_target_agent *agent)
 	kfree(agent);
 }
 
-/*
- * Simple wrapper around fw_run_transaction that retries the transaction several
- * times in case of failure, with an exponential backoff.
- */
+ 
 static int sbp_run_transaction(struct fw_card *card, int tcode, int destination_id,
 		int generation, int speed, unsigned long long offset,
 		void *payload, size_t length)
@@ -1078,10 +1049,7 @@ static int sbp_run_transaction(struct fw_card *card, int tcode, int destination_
 	return ret;
 }
 
-/*
- * Wrapper around sbp_run_transaction that gets the card, destination,
- * generation and speed out of the request's session.
- */
+ 
 static int sbp_run_request_transaction(struct sbp_target_request *req,
 		int tcode, unsigned long long offset, void *payload,
 		size_t length)
@@ -1216,7 +1184,7 @@ static void sbp_handle_command(struct sbp_target_request *req)
 	pr_debug("sbp_handle_command ORB:0x%llx unpacked_lun:%d data_len:%d data_dir:%d\n",
 			req->orb_pointer, unpacked_lun, data_length, data_dir);
 
-	/* only used for printk until we do TMRs */
+	 
 	req->se_cmd.tag = req->orb_pointer;
 	target_submit_cmd(&req->se_cmd, sess->se_sess, req->cmd_buf,
 			  req->sense_buf, unpacked_lun, data_length,
@@ -1232,10 +1200,7 @@ err:
 	sbp_send_status(req);
 }
 
-/*
- * DMA_TO_DEVICE = read from initiator (SCSI WRITE)
- * DMA_FROM_DEVICE = write to initiator (SCSI READ)
- */
+ 
 static int sbp_rw_data(struct sbp_target_request *req)
 {
 	struct sbp_session *sess = req->login->sess;
@@ -1300,7 +1265,7 @@ static int sbp_rw_data(struct sbp_target_request *req)
 
 		tfr_length = min3(length, max_payload, (int)iter.length);
 
-		/* FIXME: take page_size into account */
+		 
 
 		rcode = sbp_run_transaction(card, tcode, node_id,
 				generation, speed,
@@ -1342,11 +1307,7 @@ static int sbp_send_status(struct sbp_target_request *req)
 
 	pr_debug("sbp_send_status: status write complete for ORB: 0x%llx\n",
 			req->orb_pointer);
-	/*
-	 * Drop the extra ACK_KREF reference taken by target_submit_cmd()
-	 * ahead of sbp_check_stop_free() -> transport_generic_free_cmd()
-	 * final se_cmd->cmd_kref put.
-	 */
+	 
 put_ref:
 	target_put_sess_cmd(&req->se_cmd);
 	return ret;
@@ -1360,20 +1321,17 @@ static void sbp_sense_mangle(struct sbp_target_request *req)
 
 	WARN_ON(se_cmd->scsi_sense_length < 18);
 
-	switch (sense[0] & 0x7f) { 		/* sfmt */
-	case 0x70: /* current, fixed */
+	switch (sense[0] & 0x7f) { 		 
+	case 0x70:  
 		status[0] = 0 << 6;
 		break;
-	case 0x71: /* deferred, fixed */
+	case 0x71:  
 		status[0] = 1 << 6;
 		break;
-	case 0x72: /* current, descriptor */
-	case 0x73: /* deferred, descriptor */
+	case 0x72:  
+	case 0x73:  
 	default:
-		/*
-		 * TODO: SBP-3 specifies what we should do with descriptor
-		 * format sense data
-		 */
+		 
 		pr_err("sbp_send_sense: unknown sense format: 0x%x\n",
 			sense[0]);
 		req->status.status |= cpu_to_be32(
@@ -1384,30 +1342,30 @@ static void sbp_sense_mangle(struct sbp_target_request *req)
 		return;
 	}
 
-	status[0] |= se_cmd->scsi_status & 0x3f;/* status */
+	status[0] |= se_cmd->scsi_status & 0x3f; 
 	status[1] =
-		(sense[0] & 0x80) |		/* valid */
-		((sense[2] & 0xe0) >> 1) |	/* mark, eom, ili */
-		(sense[2] & 0x0f);		/* sense_key */
-	status[2] = 0;				/* XXX sense_code */
-	status[3] = 0;				/* XXX sense_qualifier */
+		(sense[0] & 0x80) |		 
+		((sense[2] & 0xe0) >> 1) |	 
+		(sense[2] & 0x0f);		 
+	status[2] = 0;				 
+	status[3] = 0;				 
 
-	/* information */
+	 
 	status[4] = sense[3];
 	status[5] = sense[4];
 	status[6] = sense[5];
 	status[7] = sense[6];
 
-	/* CDB-dependent */
+	 
 	status[8] = sense[8];
 	status[9] = sense[9];
 	status[10] = sense[10];
 	status[11] = sense[11];
 
-	/* fru */
+	 
 	status[12] = sense[14];
 
-	/* sense_key-dependent */
+	 
 	status[13] = sense[15];
 	status[14] = sense[16];
 	status[15] = sense[17];
@@ -1455,7 +1413,7 @@ static void sbp_mgt_agent_process(struct work_struct *work)
 	int ret;
 	int status_data_len = 0;
 
-	/* fetch the ORB from the initiator */
+	 
 	ret = sbp_run_transaction(req->card, TCODE_READ_BLOCK_REQUEST,
 		req->node_addr, req->generation, req->speed,
 		agent->orb_offset, &req->orb, sizeof(req->orb));
@@ -1551,12 +1509,12 @@ static void sbp_mgt_agent_process(struct work_struct *work)
 	}
 
 	req->status.status |= cpu_to_be32(
-		STATUS_BLOCK_SRC(1) | /* Response to ORB, next_ORB absent */
+		STATUS_BLOCK_SRC(1) |  
 		STATUS_BLOCK_LEN(DIV_ROUND_UP(status_data_len, 4) + 1) |
 		STATUS_BLOCK_ORB_OFFSET_HIGH(agent->orb_offset >> 32));
 	req->status.orb_low = cpu_to_be32(agent->orb_offset);
 
-	/* write the status block back to the initiator */
+	 
 	ret = sbp_run_transaction(req->card, TCODE_WRITE_BLOCK_REQUEST,
 		req->node_addr, req->generation, req->speed,
 		sbp2_pointer_to_addr(&req->orb.status_fifo),
@@ -1738,10 +1696,7 @@ static int sbp_queue_data_in(struct se_cmd *se_cmd)
 	return sbp_send_sense(req);
 }
 
-/*
- * Called after command (no data transfer) or after the write (to device)
- * operation is completed
- */
+ 
 static int sbp_queue_status(struct se_cmd *se_cmd)
 {
 	struct sbp_target_request *req = container_of(se_cmd,
@@ -1797,73 +1752,60 @@ static int sbp_update_unit_directory(struct sbp_tport *tport)
 
 	num_luns = sbp_count_se_tpg_luns(&tport->tpg->se_tpg);
 
-	/*
-	 * Number of entries in the final unit directory:
-	 *  - all of those in the template
-	 *  - management_agent
-	 *  - unit_characteristics
-	 *  - reconnect_timeout
-	 *  - unit unique ID
-	 *  - one for each LUN
-	 *
-	 *  MUST NOT include leaf or sub-directory entries
-	 */
+	 
 	num_entries = ARRAY_SIZE(sbp_unit_directory_template) + 4 + num_luns;
 
 	if (tport->directory_id != -1)
 		num_entries++;
 
-	/* allocate num_entries + 4 for the header and unique ID leaf */
+	 
 	data = kcalloc((num_entries + 4), sizeof(u32), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
-	/* directory_length */
+	 
 	data[idx++] = num_entries << 16;
 
-	/* directory_id */
+	 
 	if (tport->directory_id != -1)
 		data[idx++] = (CSR_DIRECTORY_ID << 24) | tport->directory_id;
 
-	/* unit directory template */
+	 
 	memcpy(&data[idx], sbp_unit_directory_template,
 			sizeof(sbp_unit_directory_template));
 	idx += ARRAY_SIZE(sbp_unit_directory_template);
 
-	/* management_agent */
+	 
 	mgt_agt_addr = (tport->mgt_agt->handler.offset - CSR_REGISTER_BASE) / 4;
 	data[idx++] = 0x54000000 | (mgt_agt_addr & 0x00ffffff);
 
-	/* unit_characteristics */
+	 
 	data[idx++] = 0x3a000000 |
 		(((tport->mgt_orb_timeout * 2) << 8) & 0xff00) |
 		SBP_ORB_FETCH_SIZE;
 
-	/* reconnect_timeout */
+	 
 	data[idx++] = 0x3d000000 | (tport->max_reconnect_timeout & 0xffff);
 
-	/* unit unique ID (leaf is just after LUNs) */
+	 
 	data[idx++] = 0x8d000000 | (num_luns + 1);
 
 	rcu_read_lock();
 	hlist_for_each_entry_rcu(lun, &tport->tpg->se_tpg.tpg_lun_hlist, link) {
 		struct se_device *dev;
 		int type;
-		/*
-		 * rcu_dereference_raw protected by se_lun->lun_group symlink
-		 * reference to se_device->dev_group.
-		 */
+		 
 		dev = rcu_dereference_raw(lun->lun_se_dev);
 		type = dev->transport->get_device_type(dev);
 
-		/* logical_unit_number */
+		 
 		data[idx++] = 0x14000000 |
 			((type << 16) & 0x1f0000) |
 			(lun->unpacked_lun & 0xffff);
 	}
 	rcu_read_unlock();
 
-	/* unit unique ID leaf */
+	 
 	data[idx++] = 2 << 16;
 	data[idx++] = tport->guid >> 32;
 	data[idx++] = tport->guid;
@@ -1982,7 +1924,7 @@ static struct se_portal_group *sbp_make_tpg(struct se_wwn *wwn,
 	tpg->tport_tpgt = tpgt;
 	tport->tpg = tpg;
 
-	/* default attribute values */
+	 
 	tport->enable = 0;
 	tport->directory_id = -1;
 	tport->mgt_orb_timeout = 15;
@@ -2112,7 +2054,7 @@ static int sbp_enable_tpg(struct se_portal_group *se_tpg, bool enable)
 			return -EINVAL;
 		}
 	} else {
-		/* XXX: force-shutdown sessions instead? */
+		 
 		spin_lock_bh(&se_tpg->session_lock);
 		if (!list_empty(&se_tpg->tpg_sess_list)) {
 			spin_unlock_bh(&se_tpg->session_lock);
@@ -2231,7 +2173,7 @@ static ssize_t sbp_tpg_attrib_max_logins_per_lun_store(struct config_item *item,
 	if ((val < 1) || (val > 127))
 		return -EINVAL;
 
-	/* XXX: also check against current count? */
+	 
 
 	tport->max_logins_per_lun = val;
 

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
+
+
+
+
+
+
 
 #include <sound/pcm_params.h>
 #include <sound/hdaudio_ext.h>
@@ -16,13 +16,9 @@
 #include "../sof-audio.h"
 #include "hda.h"
 
-/* These ops are only applicable for the HDA DAI's in their current form */
+ 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_LINK)
-/*
- * This function checks if the host dma channel corresponding
- * to the link DMA stream_tag argument is assigned to one
- * of the FEs connected to the BE DAI.
- */
+ 
 static bool hda_check_fes(struct snd_soc_pcm_runtime *rtd,
 			  int dir, int stream_tag)
 {
@@ -68,22 +64,16 @@ hda_link_stream_assign(struct hdac_bus *bus, struct snd_pcm_substream *substream
 		sdev = hda_stream->sdev;
 		chip = get_chip_info(sdev->pdata);
 
-		/* check if link is available */
+		 
 		if (!hext_stream->link_locked) {
-			/*
-			 * choose the first available link for platforms that do not have the
-			 * PROCEN_FMT_QUIRK set.
-			 */
+			 
 			if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
 				res = hext_stream;
 				break;
 			}
 
 			if (hstream->opened) {
-				/*
-				 * check if the stream tag matches the stream
-				 * tag of one of the connected FEs
-				 */
+				 
 				if (hda_check_fes(rtd, stream_dir,
 						  hstream->stream_tag)) {
 					res = hext_stream;
@@ -92,10 +82,7 @@ hda_link_stream_assign(struct hdac_bus *bus, struct snd_pcm_substream *substream
 			} else {
 				res = hext_stream;
 
-				/*
-				 * This must be a hostless stream.
-				 * So reserve the host DMA channel.
-				 */
+				 
 				hda_stream->host_reserved = 1;
 				break;
 			}
@@ -103,7 +90,7 @@ hda_link_stream_assign(struct hdac_bus *bus, struct snd_pcm_substream *substream
 	}
 
 	if (res) {
-		/* Make sure that host and link DMA is decoupled. */
+		 
 		snd_hdac_ext_stream_decouple_locked(bus, res, true);
 
 		res->link_locked = 1;
@@ -135,7 +122,7 @@ static struct hdac_ext_stream *hda_ipc4_get_hext_stream(struct snd_sof_dev *sdev
 	pipe_widget = swidget->spipe->pipe_widget;
 	pipeline = pipe_widget->private;
 
-	/* mark pipeline so that it can be skipped during FE trigger */
+	 
 	pipeline->skip_during_fe_trigger = true;
 
 	return snd_soc_dai_get_dma_data(cpu_dai, substream);
@@ -149,7 +136,7 @@ static struct hdac_ext_stream *hda_assign_hext_stream(struct snd_sof_dev *sdev,
 	struct snd_soc_dai *dai;
 	struct hdac_ext_stream *hext_stream;
 
-	/* only allocate a stream_tag for the first DAI in the dailink */
+	 
 	dai = asoc_rtd_to_cpu(rtd, 0);
 	if (dai == cpu_dai)
 		hext_stream = hda_link_stream_assign(sof_to_bus(sdev), substream);
@@ -171,7 +158,7 @@ static void hda_release_hext_stream(struct snd_sof_dev *sdev, struct snd_soc_dai
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	struct snd_soc_dai *dai;
 
-	/* only release a stream_tag for the first DAI in the dailink */
+	 
 	dai = asoc_rtd_to_cpu(rtd, 0);
 	if (dai == cpu_dai)
 		snd_hdac_ext_stream_release(hext_stream, HDAC_EXT_STREAM_TYPE_LINK);
@@ -196,7 +183,7 @@ static void hda_codec_dai_set_stream(struct snd_sof_dev *sdev,
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 
-	/* set the hdac_stream in the codec dai */
+	 
 	snd_soc_dai_set_stream(codec_dai, hstream, substream->stream);
 }
 
@@ -416,10 +403,7 @@ static int hda_ipc4_post_trigger(struct snd_sof_dev *sdev, struct snd_soc_dai *c
 		break;
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_STOP:
-		/*
-		 * STOP/SUSPEND trigger is invoked only once when all users of this pipeline have
-		 * been stopped. So, clear the started_count so that the pipeline can be reset
-		 */
+		 
 		swidget->spipe->started_count = 0;
 		break;
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
@@ -446,11 +430,7 @@ static struct hdac_ext_stream *sdw_hda_ipc4_get_hext_stream(struct snd_sof_dev *
 
 	blob = (struct sof_ipc4_alh_configuration_blob *)ipc4_copier->copier_config;
 
-	/*
-	 * Starting with ACE_2_0, re-setting the device_count is mandatory to avoid using
-	 * the multi-gateway firmware configuration. The DMA hardware can take care of
-	 * multiple links without needing any firmware assistance
-	 */
+	 
 	blob->alh_cfg.device_count = 1;
 
 	return hda_ipc4_get_hext_stream(sdev, cpu_dai, substream);
@@ -579,11 +559,7 @@ static void hda_dspless_setup_hext_stream(struct snd_sof_dev *sdev,
 					  struct hdac_ext_stream *hext_stream,
 					  unsigned int format_val)
 {
-	/*
-	 * Save the format_val which was adjusted by the maxbps of the codec.
-	 * This information is not available on the FE side since there we are
-	 * using dummy_codec.
-	 */
+	 
 	hext_stream->hstream.format_val = format_val;
 }
 

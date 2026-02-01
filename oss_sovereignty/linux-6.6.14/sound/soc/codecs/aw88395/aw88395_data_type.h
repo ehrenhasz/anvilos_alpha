@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw883_data_type.h --  The data type of the AW88395 chip
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-//
+
+
+
+
+
+
+
+
 
 #ifndef __AW88395_DATA_TYPE_H__
 #define __AW88395_DATA_TYPE_H__

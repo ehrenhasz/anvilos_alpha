@@ -1,41 +1,25 @@
-/* Test of quotearg family of functions.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2008.  */
+ 
 
 struct result_strings {
-  char const *str1; /* Translation of "".  */
-  char const *str2; /* Translation of "\0""1\0".  */
-  size_t len2; /* Length of str2.  */
-  char const *str3; /* Translation of "simple".  */
-  char const *str4; /* Translation of " \t\n'\"\033?""?/\\".  */
-  char const *str5; /* Translation of "a:b".  */
-  char const *str6; /* Translation of "a\\b".  */
-  char const *str7; /* Translation of "a' b".  */
-  char const *str8a; /* Translation of LQ RQ, in ASCII charset.  */
-  char const *str8b; /* Translation of LQ RQ, in Latin1 or UTF-8 charset.  */
+  char const *str1;  
+  char const *str2;  
+  size_t len2;  
+  char const *str3;  
+  char const *str4;  
+  char const *str5;  
+  char const *str6;  
+  char const *str7;  
+  char const *str8a;  
+  char const *str8b;  
 };
 
 struct result_groups {
-  struct result_strings group1; /* Via quotearg_buffer.  */
-  struct result_strings group2; /* Via quotearg{,_mem}.  */
-  struct result_strings group3; /* Via quotearg_colon{,_mem}.  */
+  struct result_strings group1;  
+  struct result_strings group2;  
+  struct result_strings group3;  
 };
 
-/* These quotes are borrowed from a pt_PT.utf8 translation.  */
+ 
 # define LQ "\302\253"
 # define RQ "\302\273"
 # define LQ_ENC "\\302\\253"

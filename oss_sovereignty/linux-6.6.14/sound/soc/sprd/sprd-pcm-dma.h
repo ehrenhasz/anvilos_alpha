@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifndef __SPRD_PCM_DMA_H
 #define __SPRD_PCM_DMA_H
@@ -55,4 +55,4 @@ struct sprd_compr_data {
 	struct sprd_pcm_dma_params *dma_params;
 };
 
-#endif /* __SPRD_PCM_DMA_H */
+#endif  

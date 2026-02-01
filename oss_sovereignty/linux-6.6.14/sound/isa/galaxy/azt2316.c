@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Aztech AZT2316 Driver
- * Copyright (C) 2007,2010  Rene Herman
- */
+
+ 
 
 #define AZT2316
 
@@ -15,9 +12,7 @@
 
 #define GALAXY_CONFIG_SIZE		4
 
-/*
- * 32-bit config register
- */
+ 
 
 #define GALAXY_CONFIG_SBA_220		(0 << 0)
 #define GALAXY_CONFIG_SBA_240		(1 << 0)

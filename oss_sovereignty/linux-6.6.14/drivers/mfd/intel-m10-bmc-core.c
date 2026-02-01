@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel MAX 10 Board Management Controller chip - common code
- *
- * Copyright (C) 2018-2020 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -14,7 +10,7 @@
 
 void m10bmc_fw_state_set(struct intel_m10bmc *m10bmc, enum m10bmc_fw_state new_state)
 {
-	/* bmcfw_state is only needed if handshake_sys_reg_nranges > 0 */
+	 
 	if (!m10bmc->info->handshake_sys_reg_nranges)
 		return;
 
@@ -24,10 +20,7 @@ void m10bmc_fw_state_set(struct intel_m10bmc *m10bmc, enum m10bmc_fw_state new_s
 }
 EXPORT_SYMBOL_NS_GPL(m10bmc_fw_state_set, INTEL_M10_BMC_CORE);
 
-/*
- * For some Intel FPGA devices, the BMC firmware is not available to service
- * handshake registers during a secure update.
- */
+ 
 static bool m10bmc_reg_always_available(struct intel_m10bmc *m10bmc, unsigned int offset)
 {
 	if (!m10bmc->info->handshake_sys_reg_nranges)
@@ -37,27 +30,14 @@ static bool m10bmc_reg_always_available(struct intel_m10bmc *m10bmc, unsigned in
 				     m10bmc->info->handshake_sys_reg_nranges);
 }
 
-/*
- * m10bmc_handshake_reg_unavailable - Checks if reg access collides with secure update state
- * @m10bmc: M10 BMC structure
- *
- * For some Intel FPGA devices, the BMC firmware is not available to service
- * handshake registers during a secure update erase and write phases.
- *
- * Context: @m10bmc->bmcfw_lock must be held.
- */
+ 
 static bool m10bmc_handshake_reg_unavailable(struct intel_m10bmc *m10bmc)
 {
 	return m10bmc->bmcfw_state == M10BMC_FW_STATE_SEC_UPDATE_PREPARE ||
 	       m10bmc->bmcfw_state == M10BMC_FW_STATE_SEC_UPDATE_WRITE;
 }
 
-/*
- * This function helps to simplify the accessing of the system registers.
- *
- * The base of the system registers is configured through the struct
- * csr_map.
- */
+ 
 int m10bmc_sys_read(struct intel_m10bmc *m10bmc, unsigned int offset, unsigned int *val)
 {
 	const struct m10bmc_csr_map *csr_map = m10bmc->info->csr_map;
@@ -68,7 +48,7 @@ int m10bmc_sys_read(struct intel_m10bmc *m10bmc, unsigned int offset, unsigned i
 
 	down_read(&m10bmc->bmcfw_lock);
 	if (m10bmc_handshake_reg_unavailable(m10bmc))
-		ret = -EBUSY;	/* Reg not available during secure update */
+		ret = -EBUSY;	 
 	else
 		ret = m10bmc_raw_read(m10bmc, csr_map->base + offset, val);
 	up_read(&m10bmc->bmcfw_lock);
@@ -88,7 +68,7 @@ int m10bmc_sys_update_bits(struct intel_m10bmc *m10bmc, unsigned int offset,
 
 	down_read(&m10bmc->bmcfw_lock);
 	if (m10bmc_handshake_reg_unavailable(m10bmc))
-		ret = -EBUSY;	/* Reg not available during secure update */
+		ret = -EBUSY;	 
 	else
 		ret = regmap_update_bits(m10bmc->regmap, csr_map->base + offset, msk, val);
 	up_read(&m10bmc->bmcfw_lock);

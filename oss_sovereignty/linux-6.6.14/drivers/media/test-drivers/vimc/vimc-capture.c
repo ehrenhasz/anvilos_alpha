@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * vimc-capture.c Virtual Media Controller Driver
- *
- * Copyright (C) 2015-2017 Helen Koike <helen.fornazier@gmail.com>
- */
+
+ 
 
 #include <media/v4l2-ioctl.h>
 #include <media/videobuf2-core.h>
@@ -19,13 +15,7 @@ struct vimc_capture_device {
 	struct v4l2_pix_format format;
 	struct vb2_queue queue;
 	struct list_head buf_list;
-	/*
-	 * NOTE: in a real driver, a spin lock must be used to access the
-	 * queue because the frames are generated from a hardware interruption
-	 * and the isr is not allowed to sleep.
-	 * Even if it is not necessary a spinlock in the vimc driver, we
-	 * use it here as a code reference
-	 */
+	 
 	spinlock_t qlock;
 	struct mutex lock;
 	u32 sequence;
@@ -42,12 +32,7 @@ static const struct v4l2_pix_format fmt_default = {
 };
 
 struct vimc_capture_buffer {
-	/*
-	 * struct vb2_v4l2_buffer must be the first element
-	 * the videobuf2 framework will allocate this struct based on
-	 * buf_struct_size and use the first sizeof(struct vb2_buffer) bytes of
-	 * memory as a vb2_buffer
-	 */
+	 
 	struct vb2_v4l2_buffer vb2;
 	struct list_head list;
 };
@@ -93,13 +78,13 @@ static int vimc_capture_try_fmt_vid_cap(struct file *file, void *priv,
 	format->height = clamp_t(u32, format->height, VIMC_FRAME_MIN_HEIGHT,
 				 VIMC_FRAME_MAX_HEIGHT) & ~1;
 
-	/* Don't accept a pixelformat that is not on the table */
+	 
 	vpix = vimc_pix_map_by_pixelformat(format->pixelformat);
 	if (!vpix) {
 		format->pixelformat = fmt_default.pixelformat;
 		vpix = vimc_pix_map_by_pixelformat(format->pixelformat);
 	}
-	/* TODO: Add support for custom bytesperline values */
+	 
 	format->bytesperline = format->width * vpix->bpp;
 	format->sizeimage = format->bytesperline * format->height;
 
@@ -120,7 +105,7 @@ static int vimc_capture_s_fmt_vid_cap(struct file *file, void *priv,
 	struct vimc_capture_device *vcapture = video_drvdata(file);
 	int ret;
 
-	/* Do not change the format while stream is on */
+	 
 	if (vb2_is_busy(&vcapture->queue))
 		return -EBUSY;
 
@@ -131,12 +116,12 @@ static int vimc_capture_s_fmt_vid_cap(struct file *file, void *priv,
 	dev_dbg(vcapture->ved.dev, "%s: format update: "
 		"old:%dx%d (0x%x, %d, %d, %d, %d) "
 		"new:%dx%d (0x%x, %d, %d, %d, %d)\n", vcapture->vdev.name,
-		/* old */
+		 
 		vcapture->format.width, vcapture->format.height,
 		vcapture->format.pixelformat, vcapture->format.colorspace,
 		vcapture->format.quantization, vcapture->format.xfer_func,
 		vcapture->format.ycbcr_enc,
-		/* new */
+		 
 		f->fmt.pix.width, f->fmt.pix.height,
 		f->fmt.pix.pixelformat,	f->fmt.pix.colorspace,
 		f->fmt.pix.quantization, f->fmt.pix.xfer_func,
@@ -177,7 +162,7 @@ static int vimc_capture_enum_framesizes(struct file *file, void *fh,
 	if (fsize->index)
 		return -EINVAL;
 
-	/* Only accept code in the pix map table */
+	 
 	vpix = vimc_pix_map_by_code(fsize->pixel_format);
 	if (!vpix)
 		return -EINVAL;
@@ -245,7 +230,7 @@ static int vimc_capture_start_streaming(struct vb2_queue *vq, unsigned int count
 
 	vcapture->sequence = 0;
 
-	/* Start the media pipeline */
+	 
 	ret = video_device_pipeline_start(&vcapture->vdev, &vcapture->stream.pipe);
 	if (ret) {
 		vimc_capture_return_all_buffers(vcapture, VB2_BUF_STATE_QUEUED);
@@ -262,20 +247,17 @@ static int vimc_capture_start_streaming(struct vb2_queue *vq, unsigned int count
 	return 0;
 }
 
-/*
- * Stop the stream engine. Any remaining buffers in the stream queue are
- * dequeued and passed on to the vb2 framework marked as STATE_ERROR.
- */
+ 
 static void vimc_capture_stop_streaming(struct vb2_queue *vq)
 {
 	struct vimc_capture_device *vcapture = vb2_get_drv_priv(vq);
 
 	vimc_streamer_s_stream(&vcapture->stream, &vcapture->ved, 0);
 
-	/* Stop the media pipeline */
+	 
 	video_device_pipeline_stop(&vcapture->vdev);
 
-	/* Release all active buffers */
+	 
 	vimc_capture_return_all_buffers(vcapture, VB2_BUF_STATE_ERROR);
 }
 
@@ -299,7 +281,7 @@ static int vimc_capture_queue_setup(struct vb2_queue *vq, unsigned int *nbuffers
 
 	if (*nplanes)
 		return sizes[0] < vcapture->format.sizeimage ? -EINVAL : 0;
-	/* We don't support multiplanes for now */
+	 
 	*nplanes = 1;
 	sizes[0] = vcapture->format.sizeimage;
 
@@ -325,10 +307,7 @@ static const struct vb2_ops vimc_capture_qops = {
 	.buf_queue		= vimc_capture_buf_queue,
 	.queue_setup		= vimc_capture_queue_setup,
 	.buf_prepare		= vimc_capture_buffer_prepare,
-	/*
-	 * Since q->lock is set we can use the standard
-	 * vb2_ops_wait_prepare/finish helper functions.
-	 */
+	 
 	.wait_prepare		= vb2_ops_wait_prepare,
 	.wait_finish		= vb2_ops_wait_finish,
 };
@@ -364,7 +343,7 @@ static void *vimc_capture_process_frame(struct vimc_ent_device *ved,
 
 	spin_lock(&vcapture->qlock);
 
-	/* Get the first entry of the list */
+	 
 	vimc_buf = list_first_entry_or_null(&vcapture->buf_list,
 					    typeof(*vimc_buf), list);
 	if (!vimc_buf) {
@@ -372,12 +351,12 @@ static void *vimc_capture_process_frame(struct vimc_ent_device *ved,
 		return ERR_PTR(-EAGAIN);
 	}
 
-	/* Remove this entry from the list */
+	 
 	list_del(&vimc_buf->list);
 
 	spin_unlock(&vcapture->qlock);
 
-	/* Fill the buffer */
+	 
 	vimc_buf->vb2.vb2_buf.timestamp = ktime_get_ns();
 	vimc_buf->vb2.sequence = vcapture->sequence++;
 	vimc_buf->vb2.field = vcapture->format.field;
@@ -386,7 +365,7 @@ static void *vimc_capture_process_frame(struct vimc_ent_device *ved,
 
 	memcpy(vbuf, frame, vcapture->format.sizeimage);
 
-	/* Set it as ready */
+	 
 	vb2_set_plane_payload(&vimc_buf->vb2.vb2_buf, 0,
 			      vcapture->format.sizeimage);
 	vb2_buffer_done(&vimc_buf->vb2.vb2_buf, VB2_BUF_STATE_DONE);
@@ -403,12 +382,12 @@ static struct vimc_ent_device *vimc_capture_add(struct vimc_device *vimc,
 	struct vb2_queue *q;
 	int ret;
 
-	/* Allocate the vimc_capture_device struct */
+	 
 	vcapture = kzalloc(sizeof(*vcapture), GFP_KERNEL);
 	if (!vcapture)
 		return ERR_PTR(-ENOMEM);
 
-	/* Initialize the media entity */
+	 
 	vcapture->vdev.entity.name = vcfg_name;
 	vcapture->vdev.entity.function = MEDIA_ENT_F_IO_V4L;
 	vcapture->pad.flags = MEDIA_PAD_FL_SINK;
@@ -417,10 +396,10 @@ static struct vimc_ent_device *vimc_capture_add(struct vimc_device *vimc,
 	if (ret)
 		goto err_free_vcapture;
 
-	/* Initialize the lock */
+	 
 	mutex_init(&vcapture->lock);
 
-	/* Initialize the vb2 queue */
+	 
 	q = &vcapture->queue;
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_DMABUF;
@@ -443,24 +422,24 @@ static struct vimc_ent_device *vimc_capture_add(struct vimc_device *vimc,
 		goto err_clean_m_ent;
 	}
 
-	/* Initialize buffer list and its lock */
+	 
 	INIT_LIST_HEAD(&vcapture->buf_list);
 	spin_lock_init(&vcapture->qlock);
 
-	/* Set default frame format */
+	 
 	vcapture->format = fmt_default;
 	vpix = vimc_pix_map_by_pixelformat(vcapture->format.pixelformat);
 	vcapture->format.bytesperline = vcapture->format.width * vpix->bpp;
 	vcapture->format.sizeimage = vcapture->format.bytesperline *
 				 vcapture->format.height;
 
-	/* Fill the vimc_ent_device struct */
+	 
 	vcapture->ved.ent = &vcapture->vdev.entity;
 	vcapture->ved.process_frame = vimc_capture_process_frame;
 	vcapture->ved.vdev_get_format = vimc_capture_get_format;
 	vcapture->ved.dev = vimc->mdev.dev;
 
-	/* Initialize the video_device struct */
+	 
 	vdev = &vcapture->vdev;
 	vdev->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING
 			  | V4L2_CAP_IO_MC;
@@ -475,7 +454,7 @@ static struct vimc_ent_device *vimc_capture_add(struct vimc_device *vimc,
 	strscpy(vdev->name, vcfg_name, sizeof(vdev->name));
 	video_set_drvdata(vdev, &vcapture->ved);
 
-	/* Register the video_device with the v4l2 and the media framework */
+	 
 	ret = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
 	if (ret) {
 		dev_err(vimc->mdev.dev, "%s: video register failed (err=%d)\n",

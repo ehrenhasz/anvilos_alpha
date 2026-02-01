@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Raspberry Pi driver for firmware controlled clocks
- *
- * Even though clk-bcm2835 provides an interface to the hardware registers for
- * the system clocks we've had to factor out 'pllb' as the firmware 'owns' it.
- * We're not allowed to change it directly as we might race with the
- * over-temperature and under-voltage protections provided by the firmware.
- *
- * Copyright (C) 2019 Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
- */
+
+ 
 
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>
@@ -72,41 +63,16 @@ raspberrypi_clk_variants[RPI_FIRMWARE_NUM_CLK_ID] = {
 	[RPI_FIRMWARE_CORE_CLK_ID] = {
 		.export = true,
 
-		/*
-		 * The clock is shared between the HVS and the CSI
-		 * controllers, on the BCM2711 and will change depending
-		 * on the pixels composited on the HVS and the capture
-		 * resolution on Unicam.
-		 *
-		 * Since the rate can get quite large, and we need to
-		 * coordinate between both driver instances, let's
-		 * always use the minimum the drivers will let us.
-		 */
+		 
 		.minimize = true,
 	},
 	[RPI_FIRMWARE_M2MC_CLK_ID] = {
 		.export = true,
 
-		/*
-		 * If we boot without any cable connected to any of the
-		 * HDMI connector, the firmware will skip the HSM
-		 * initialization and leave it with a rate of 0,
-		 * resulting in a bus lockup when we're accessing the
-		 * registers even if it's enabled.
-		 *
-		 * Let's put a sensible default so that we don't end up
-		 * in this situation.
-		 */
+		 
 		.min_rate = 120000000,
 
-		/*
-		 * The clock is shared between the two HDMI controllers
-		 * on the BCM2711 and will change depending on the
-		 * resolution output on each. Since the rate can get
-		 * quite large, and we need to coordinate between both
-		 * driver instances, let's always use the minimum the
-		 * drivers will let us.
-		 */
+		 
 		.minimize = true,
 	},
 	[RPI_FIRMWARE_V3D_CLK_ID] = {
@@ -126,20 +92,7 @@ raspberrypi_clk_variants[RPI_FIRMWARE_NUM_CLK_ID] = {
 	},
 };
 
-/*
- * Structure of the message passed to Raspberry Pi's firmware in order to
- * change clock rates. The 'disable_turbo' option is only available to the ARM
- * clock (pllb) which we enable by default as turbo mode will alter multiple
- * clocks at once.
- *
- * Even though we're able to access the clock registers directly we're bound to
- * use the firmware interface as the firmware ultimately takes care of
- * mitigating overheating/undervoltage situations and we would be changing
- * frequencies behind his back.
- *
- * For more information on the firmware interface check:
- * https://github.com/raspberrypi/firmware/wiki/Mailbox-property-interface
- */
+ 
 struct raspberrypi_firmware_prop {
 	__le32 id;
 	__le32 val;
@@ -225,19 +178,11 @@ static int raspberrypi_fw_dumb_determine_rate(struct clk_hw *hw,
 		container_of(hw, struct raspberrypi_clk_data, hw);
 	struct raspberrypi_clk_variant *variant = data->variant;
 
-	/*
-	 * The firmware will do the rounding but that isn't part of
-	 * the interface with the firmware, so we just do our best
-	 * here.
-	 */
+	 
 
 	req->rate = clamp(req->rate, req->min_rate, req->max_rate);
 
-	/*
-	 * We want to aggressively reduce the clock rate here, so let's
-	 * just ignore the requested rate and return the bare minimum
-	 * rate we can get away with.
-	 */
+	 
 	if (variant->minimize && req->min_rate > 0)
 		req->rate = req->min_rate;
 
@@ -336,11 +281,7 @@ static int raspberrypi_discover_clocks(struct raspberrypi_clk *rpi,
 	struct rpi_firmware_get_clocks_response *clks;
 	int ret;
 
-	/*
-	 * The firmware doesn't guarantee that the last element of
-	 * RPI_FIRMWARE_GET_CLOCKS is zeroed. So allocate an additional
-	 * zero element as sentinel.
-	 */
+	 
 	clks = devm_kcalloc(rpi->dev,
 			    RPI_FIRMWARE_NUM_CLK_ID + 1, sizeof(*clks),
 			    GFP_KERNEL);
@@ -390,11 +331,7 @@ static int raspberrypi_clk_probe(struct platform_device *pdev)
 	struct raspberrypi_clk *rpi;
 	int ret;
 
-	/*
-	 * We can be probed either through the an old-fashioned
-	 * platform device registration or through a DT node that is a
-	 * child of the firmware node. Handle both cases.
-	 */
+	 
 	if (dev->of_node)
 		firmware_node = of_get_parent(dev->of_node);
 	else

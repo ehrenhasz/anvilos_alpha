@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm8727.c
- *
- *  Created on: 15-Oct-2009
- *      Author: neil.jones@imgtec.com
- *
- * Copyright (C) 2009 Imagination Technologies Ltd.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -28,10 +21,7 @@ static const struct snd_soc_dapm_route wm8727_dapm_routes[] = {
 	{ "VOUTR", NULL, "Playback" },
 };
 
-/*
- * Note this is a simple chip with no configuration interface, sample rate is
- * determined automatically by examining the Master clock and Bit clock ratios
- */
+ 
 #define WM8727_RATES  (SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 |\
 			SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_96000 |\
 			SNDRV_PCM_RATE_192000)

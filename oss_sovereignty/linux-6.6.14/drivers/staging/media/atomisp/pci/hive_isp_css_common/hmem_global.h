@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __HMEM_GLOBAL_H_INCLUDED__
 #define __HMEM_GLOBAL_H_INCLUDED__
@@ -22,14 +10,7 @@
 
 #include "isp.h"
 
-/*
-#define ISP_HIST_ADDRESS_BITS                  12
-#define ISP_HIST_ALIGNMENT                     4
-#define ISP_HIST_COMP_IN_PREC                  12
-#define ISP_HIST_DEPTH                         1024
-#define ISP_HIST_WIDTH                         24
-#define ISP_HIST_COMPONENTS                    4
-*/
+ 
 #define ISP_HIST_ALIGNMENT_LOG2		2
 
 #define HMEM_SIZE_LOG2		(ISP_HIST_ADDRESS_BITS - ISP_HIST_ALIGNMENT_LOG2)
@@ -43,4 +24,4 @@
 
 typedef u32			hmem_data_t;
 
-#endif /* __HMEM_GLOBAL_H_INCLUDED__ */
+#endif  

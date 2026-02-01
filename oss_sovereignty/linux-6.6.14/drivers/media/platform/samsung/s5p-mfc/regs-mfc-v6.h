@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Register definition file for Samsung MFC V6.x Interface (FIMV) driver
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- */
+ 
+ 
 
 #ifndef _REGS_FIMV_V6_H
 #define _REGS_FIMV_V6_H
@@ -15,8 +10,7 @@
 #define S5P_FIMV_REG_SIZE_V6	(S5P_FIMV_END_ADDR - S5P_FIMV_START_ADDR)
 #define S5P_FIMV_REG_COUNT_V6	((S5P_FIMV_END_ADDR - S5P_FIMV_START_ADDR) / 4)
 
-/* Number of bits that the buffer address should be shifted for particular
- * MFC buffers.  */
+ 
 #define S5P_FIMV_MEM_OFFSET_V6		0
 
 #define S5P_FIMV_START_ADDR_V6		0x0000
@@ -25,7 +19,7 @@
 #define S5P_FIMV_REG_CLEAR_BEGIN_V6	0xf000
 #define S5P_FIMV_REG_CLEAR_COUNT_V6	1024
 
-/* Codec Common Registers */
+ 
 #define S5P_FIMV_RISC_ON_V6			0x0000
 #define S5P_FIMV_RISC2HOST_INT_V6		0x003C
 #define S5P_FIMV_HOST2RISC_INT_V6		0x0044
@@ -45,7 +39,7 @@
 #define S5P_FIMV_H2R_CMD_WAKEUP_V6		8
 #define S5P_FIMV_CH_LAST_FRAME_V6		9
 #define S5P_FIMV_H2R_CMD_FLUSH_V6		10
-/* RMVME: REALLOC used? */
+ 
 #define S5P_FIMV_CH_FRAME_START_REALLOC_V6	5
 
 #define S5P_FIMV_RISC2HOST_CMD_V6		0x1104
@@ -94,7 +88,7 @@
 #define S5P_FIMV_METADATA_ADDR_MB_INFO_V6	0xf080
 #define S5P_FIMV_METADATA_SIZE_MB_INFO_V6	0xf084
 
-/* Decoder Registers */
+ 
 #define S5P_FIMV_D_CRC_CTRL_V6			0xf0b0
 #define S5P_FIMV_D_DEC_OPTIONS_V6		0xf0b4
 #define S5P_FIMV_D_OPT_FMO_ASO_CTRL_MASK_V6	4
@@ -110,7 +104,7 @@
 
 #define S5P_FIMV_D_SEI_ENABLE_V6		0xf0c4
 
-/* Buffer setting registers */
+ 
 #define S5P_FIMV_D_MIN_NUM_DPB_V6		0xf0f0
 #define S5P_FIMV_D_MIN_LUMA_DPB_SIZE_V6		0xf0f4
 #define S5P_FIMV_D_MIN_CHROMA_DPB_SIZE_V6	0xf0f8
@@ -141,11 +135,11 @@
 #define S5P_FIMV_D_STREAM_DATA_SIZE_V6		0xf4d0
 #define S5P_FIMV_D_INIT_BUFFER_OPTIONS_V6	0xf47c
 
-/* Display information register */
+ 
 #define S5P_FIMV_D_DISPLAY_FRAME_WIDTH_V6	0xf500
 #define S5P_FIMV_D_DISPLAY_FRAME_HEIGHT_V6	0xf504
 
-/* Display status */
+ 
 #define S5P_FIMV_D_DISPLAY_STATUS_V6		0xf508
 
 #define S5P_FIMV_D_DISPLAY_LUMA_ADDR_V6		0xf50c
@@ -163,7 +157,7 @@
 #define S5P_FIMV_D_DISPLAY_ASPECT_RATIO_V6	0xf534
 #define S5P_FIMV_D_DISPLAY_EXTENDED_AR_V6	0xf538
 
-/* Decoded picture information register */
+ 
 #define S5P_FIMV_D_DECODED_FRAME_WIDTH_V6	0xf53c
 #define S5P_FIMV_D_DECODED_FRAME_HEIGHT_V6	0xf540
 #define S5P_FIMV_D_DECODED_STATUS_V6		0xf544
@@ -185,7 +179,7 @@
 #define S5P_FIMV_D_DECODED_LUMA_CRC_BOT_V6	0xf56c
 #define S5P_FIMV_D_DECODED_CHROMA_CRC_BOT_V6	0xf570
 
-/* Returned value register for specific setting */
+ 
 #define S5P_FIMV_D_RET_PICTURE_TAG_TOP_V6		0xf574
 #define S5P_FIMV_D_RET_PICTURE_TAG_BOT_V6		0xf578
 #define S5P_FIMV_D_RET_PICTURE_TIME_TOP_V6		0xf57c
@@ -205,13 +199,13 @@
 
 #define S5P_FIMV_D_MVC_VIEW_ID_V6		0xf5b4
 
-/* SEI related information */
+ 
 #define S5P_FIMV_D_FRAME_PACK_SEI_AVAIL_V6	0xf5f0
 #define S5P_FIMV_D_FRAME_PACK_ARRGMENT_ID_V6	0xf5f4
 #define S5P_FIMV_D_FRAME_PACK_SEI_INFO_V6	0xf5f8
 #define S5P_FIMV_D_FRAME_PACK_GRID_POS_V6	0xf5fc
 
-/* Encoder Registers */
+ 
 #define S5P_FIMV_E_FRAME_WIDTH_V6		0xf770
 #define S5P_FIMV_E_FRAME_HEIGHT_V6		0xf774
 #define S5P_FIMV_E_CROPPED_FRAME_WIDTH_V6	0xf778
@@ -330,7 +324,7 @@
 #define S5P_FIMV_E_MVC_RC_RPARA_VIEW1_V6		0xfd50
 #define S5P_FIMV_E_MVC_INTER_VIEW_PREDICTION_ON_V6	0xfd80
 
-/* Codec numbers  */
+ 
 #define S5P_FIMV_CODEC_NONE_V6		-1
 
 
@@ -345,10 +339,10 @@
 #define S5P_FIMV_CODEC_H263_DEC_V6	8
 #define S5P_FIMV_CODEC_VC1RCV_DEC_V6	9
 #define S5P_FIMV_CODEC_VC1_DEC_V6	10
-/* FIXME: Add 11~12 */
+ 
 #define S5P_FIMV_CODEC_MPEG2_DEC_V6	13
 #define S5P_FIMV_CODEC_VP8_DEC_V6	14
-/* FIXME: Add 15~16 */
+ 
 #define S5P_FIMV_CODEC_H264_ENC_V6	20
 #define S5P_FIMV_CODEC_H264_MVC_ENC_V6	21
 
@@ -373,7 +367,7 @@
 #define S5P_FIMV_NUM_PIXELS_IN_MB_ROW_V6	16
 #define S5P_FIMV_NUM_PIXELS_IN_MB_COL_V6	16
 
-/* Buffer size requirements defined by hardware */
+ 
 #define S5P_FIMV_TMV_BUFFER_SIZE_V6(w, h)	(((w) + 1) * ((h) + 3) * 8)
 #define S5P_FIMV_ME_BUFFER_SIZE_V6(imw, imh, mbw, mbh) \
 	(((((imw + 127) / 64) * 16) *  DIV_ROUND_UP(imh, 64) * 256) + \
@@ -392,17 +386,17 @@
 #define S5P_FIMV_SCRATCH_BUF_SIZE_MPEG4_ENC_V6(w, h) \
 			(((w) * 16) + (((w) + 1) * 16))
 
-/* MFC Context buffer sizes */
-#define MFC_CTX_BUF_SIZE_V6		(28 * SZ_1K)	/*  28KB */
-#define MFC_H264_DEC_CTX_BUF_SIZE_V6	(2 * SZ_1M)	/*  2MB */
-#define MFC_OTHER_DEC_CTX_BUF_SIZE_V6	(20 * SZ_1K)	/*  20KB */
-#define MFC_H264_ENC_CTX_BUF_SIZE_V6	(100 * SZ_1K)	/* 100KB */
-#define MFC_OTHER_ENC_CTX_BUF_SIZE_V6	(12 * SZ_1K)	/*  12KB */
+ 
+#define MFC_CTX_BUF_SIZE_V6		(28 * SZ_1K)	 
+#define MFC_H264_DEC_CTX_BUF_SIZE_V6	(2 * SZ_1M)	 
+#define MFC_OTHER_DEC_CTX_BUF_SIZE_V6	(20 * SZ_1K)	 
+#define MFC_H264_ENC_CTX_BUF_SIZE_V6	(100 * SZ_1K)	 
+#define MFC_OTHER_ENC_CTX_BUF_SIZE_V6	(12 * SZ_1K)	 
 
-/* MFCv6 variant defines */
-#define MAX_FW_SIZE_V6			(SZ_512K)	/* 512KB */
-#define MAX_CPB_SIZE_V6			(3 * SZ_1M)	/* 3MB */
+ 
+#define MAX_FW_SIZE_V6			(SZ_512K)	 
+#define MAX_CPB_SIZE_V6			(3 * SZ_1M)	 
 #define MFC_VERSION_V6			0x61
 #define MFC_NUM_PORTS_V6		1
 
-#endif /* _REGS_FIMV_V6_H */
+#endif  

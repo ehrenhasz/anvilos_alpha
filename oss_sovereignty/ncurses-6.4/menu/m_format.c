@@ -1,40 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2010,2012 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1995,1997                                    *
- ****************************************************************************/
+ 
 
-/***************************************************************************
-* Module m_format                                                          *
-* Set and get maximum numbers of rows and columns in menus                 *
-***************************************************************************/
+ 
 
 #include "menu.priv.h"
 
@@ -42,20 +10,7 @@ MODULE_ID("$Id: m_format.c,v 1.22 2021/03/27 23:46:29 tom Exp $")
 
 #define minimum(a,b) ((a)<(b) ? (a): (b))
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  int set_menu_format(MENU *menu, int rows, int cols)
-|
-|   Description   :  Sets the maximum number of rows and columns of items
-|                    that may be displayed at one time on a menu. If the
-|                    menu contains more items than can be displayed at
-|                    once, the menu will be scrollable.
-|
-|   Return Values :  E_OK                   - success
-|                    E_BAD_ARGUMENT         - invalid values passed
-|                    E_NOT_CONNECTED        - there are no items connected
-|                    E_POSTED               - the menu is already posted
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(int)
 set_menu_format(MENU *menu, int rows, int cols)
 {
@@ -112,15 +67,7 @@ set_menu_format(MENU *menu, int rows, int cols)
   RETURN(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void menu_format(const MENU *menu, int *rows, int *cols)
-|
-|   Description   :  Returns the maximum number of rows and columns that may
-|                    be displayed at one time on menu.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 menu_format(const MENU *menu, int *rows, int *cols)
 {
@@ -130,4 +77,4 @@ menu_format(const MENU *menu, int *rows, int *cols)
     *cols = Normalize_Menu(menu)->fcols;
 }
 
-/* m_format.c ends here */
+ 

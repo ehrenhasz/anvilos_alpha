@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include <uapi/drm/habanalabs_accel.h>
 #include "habanalabs.h"
@@ -107,14 +104,7 @@ static struct hl_cb *hl_cb_alloc(struct hl_device *hdev, u32 cb_size,
 	u32 cb_offset;
 	void *p;
 
-	/*
-	 * We use of GFP_ATOMIC here because this function can be called from
-	 * the latency-sensitive code path for command submission. Due to H/W
-	 * limitations in some of the ASICs, the kernel must copy the user CB
-	 * that is designated for an external queue and actually enqueue
-	 * the kernel's copy. Hence, we must never sleep in this code section
-	 * and must use GFP_ATOMIC for all memory allocations.
-	 */
+	 
 	if (ctx_id == HL_KERNEL_ASID_ID && !hdev->disabled)
 		cb = kzalloc(sizeof(*cb), GFP_ATOMIC);
 
@@ -187,7 +177,7 @@ static int hl_cb_mmap_mem_alloc(struct hl_mmap_mem_buf *buf, gfp_t gfp, void *ar
 	bool alloc_new_cb = true;
 
 	if (!cb_args->internal_cb) {
-		/* Minimum allocation must be PAGE SIZE */
+		 
 		if (cb_args->cb_size < PAGE_SIZE)
 			cb_args->cb_size = PAGE_SIZE;
 
@@ -312,7 +302,7 @@ int hl_cb_destroy(struct hl_mem_mgr *mmg, u64 cb_handle)
 		return -EINVAL;
 	}
 
-	/* Make sure that CB handle isn't destroyed more than once */
+	 
 	rc = atomic_cmpxchg(&cb->is_handle_destroyed, 0, 1);
 	hl_cb_put(cb);
 	if (rc) {
@@ -323,7 +313,7 @@ int hl_cb_destroy(struct hl_mem_mgr *mmg, u64 cb_handle)
 
 	rc = hl_mmap_mem_buf_put_handle(mmg, cb_handle);
 	if (rc < 0)
-		return rc; /* Invalid handle */
+		return rc;  
 
 	if (rc == 0)
 		dev_dbg(mmg->dev, "CB 0x%llx is destroyed while still in use\n", cb_handle);
@@ -456,7 +446,7 @@ struct hl_cb *hl_cb_kernel_create(struct hl_device *hdev, u32 cb_size,
 	}
 
 	cb = hl_cb_get(&hdev->kernel_mem_mgr, cb_handle);
-	/* hl_cb_get should never fail here */
+	 
 	if (!cb) {
 		dev_crit(hdev->dev, "Kernel CB handle invalid 0x%x\n",
 				(u32) cb_handle);

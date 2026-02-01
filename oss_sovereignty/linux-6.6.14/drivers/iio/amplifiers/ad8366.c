@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD8366 and similar Gain Amplifiers
- * This driver supports the following gain amplifiers:
- *   AD8366 Dual-Digital Variable Gain Amplifier (VGA)
- *   ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)
- *   ADL5240 Digitally controlled variable gain amplifier (VGA)
- *   HMC792A 0.25 dB LSB GaAs MMIC 6-Bit Digital Attenuator
- *   HMC1119 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator
- *
- * Copyright 2012-2019 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -41,15 +31,12 @@ struct ad8366_info {
 struct ad8366_state {
 	struct spi_device	*spi;
 	struct regulator	*reg;
-	struct mutex            lock; /* protect sensor state */
+	struct mutex            lock;  
 	struct gpio_desc	*reset_gpio;
 	unsigned char		ch[2];
 	enum ad8366_type	type;
 	struct ad8366_info	*info;
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	unsigned char		data[2] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -142,7 +129,7 @@ static int ad8366_read_raw(struct iio_dev *indio_dev,
 			break;
 		}
 
-		/* Values in dB */
+		 
 		*val = gain / 1000;
 		*val2 = (gain % 1000) * 1000;
 
@@ -167,7 +154,7 @@ static int ad8366_write_raw(struct iio_dev *indio_dev,
 	int code = 0, gain;
 	int ret;
 
-	/* Values in dB */
+	 
 	if (val < 0)
 		gain = (val * 1000) - (val2 / 1000);
 	else

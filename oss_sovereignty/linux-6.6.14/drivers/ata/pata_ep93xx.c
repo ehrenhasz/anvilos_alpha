@@ -1,36 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EP93XX PATA controller driver.
- *
- * Copyright (c) 2012, Metasoft s.c.
- *	Rafal Prylowski <prylowski@metasoft.pl>
- *
- * Based on pata_scc.c, pata_icside.c and on earlier version of EP93XX
- * PATA driver by Lennert Buytenhek and Alessandro Zummo.
- * Read/Write timings, resource management and other improvements
- * from driver by Joao Ramos and Bartlomiej Zolnierkiewicz.
- * DMA engine support based on spi-ep93xx.c by Mika Westerberg.
- *
- * Original copyrights:
- *
- * Support for Cirrus Logic's EP93xx (EP9312, EP9315) CPUs
- * PATA host controller driver.
- *
- * Copyright (c) 2009, Bartlomiej Zolnierkiewicz
- *
- * Heavily based on the ep93xx-ide.c driver:
- *
- * Copyright (c) 2009, Joao Ramos <joao.ramos@inov.pt>
- *		      INESC Inovacao (INOV)
- *
- * EP93XX PATA controller driver.
- * Copyright (C) 2007 Lennert Buytenhek <buytenh@wantstofly.org>
- *
- * An ATA driver for the Cirrus Logic EP93xx PATA controller.
- *
- * Based on an earlier version by Alessandro Zummo, which is:
- *   Copyright (C) 2006 Tower Technologies
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -52,7 +21,7 @@
 #define DRV_VERSION	"1.0"
 
 enum {
-	/* IDE Control Register */
+	 
 	IDECTRL				= 0x00,
 	IDECTRL_CS0N			= (1 << 0),
 	IDECTRL_CS1N			= (1 << 1),
@@ -60,18 +29,8 @@ enum {
 	IDECTRL_DIOWN			= (1 << 6),
 	IDECTRL_INTRQ			= (1 << 9),
 	IDECTRL_IORDY			= (1 << 10),
-	/*
-	 * the device IDE register to be accessed is selected through
-	 * IDECTRL register's specific bitfields 'DA', 'CS1N' and 'CS0N':
-	 *   b4   b3   b2    b1     b0
-	 *   A2   A1   A0   CS1N   CS0N
-	 * the values filled in this structure allows the value to be directly
-	 * ORed to the IDECTRL register, hence giving directly the A[2:0] and
-	 * CS1N/CS0N values for each IDE register.
-	 * The values correspond to the transformation:
-	 *   ((real IDE address) << 2) | CS1N value << 1 | CS0N value
-	 */
-	IDECTRL_ADDR_CMD		= 0 + 2, /* CS1 */
+	 
+	IDECTRL_ADDR_CMD		= 0 + 2,  
 	IDECTRL_ADDR_DATA		= (ATA_REG_DATA << 2) + 2,
 	IDECTRL_ADDR_ERROR		= (ATA_REG_ERR << 2) + 2,
 	IDECTRL_ADDR_FEATURE		= (ATA_REG_FEATURE << 2) + 2,
@@ -82,10 +41,10 @@ enum {
 	IDECTRL_ADDR_DEVICE		= (ATA_REG_DEVICE << 2) + 2,
 	IDECTRL_ADDR_STATUS		= (ATA_REG_STATUS << 2) + 2,
 	IDECTRL_ADDR_COMMAND		= (ATA_REG_CMD << 2) + 2,
-	IDECTRL_ADDR_ALTSTATUS		= (0x06 << 2) + 1, /* CS0 */
-	IDECTRL_ADDR_CTL		= (0x06 << 2) + 1, /* CS0 */
+	IDECTRL_ADDR_ALTSTATUS		= (0x06 << 2) + 1,  
+	IDECTRL_ADDR_CTL		= (0x06 << 2) + 1,  
 
-	/* IDE Configuration Register */
+	 
 	IDECFG				= 0x04,
 	IDECFG_IDEEN			= (1 << 0),
 	IDECFG_PIO			= (1 << 1),
@@ -96,15 +55,15 @@ enum {
 	IDECFG_WST_SHIFT		= 8,
 	IDECFG_WST_MASK			= (0x3 << 8),
 
-	/* MDMA Operation Register */
+	 
 	IDEMDMAOP			= 0x08,
 
-	/* UDMA Operation Register */
+	 
 	IDEUDMAOP			= 0x0c,
 	IDEUDMAOP_UEN			= (1 << 0),
 	IDEUDMAOP_RWOP			= (1 << 1),
 
-	/* PIO/MDMA/UDMA Data Registers */
+	 
 	IDEDATAOUT			= 0x10,
 	IDEDATAIN			= 0x14,
 	IDEMDMADATAOUT			= 0x18,
@@ -112,7 +71,7 @@ enum {
 	IDEUDMADATAOUT			= 0x20,
 	IDEUDMADATAIN			= 0x24,
 
-	/* UDMA Status Register */
+	 
 	IDEUDMASTS			= 0x28,
 	IDEUDMASTS_DMAIDE		= (1 << 16),
 	IDEUDMASTS_INTIDE		= (1 << 17),
@@ -121,7 +80,7 @@ enum {
 	IDEUDMASTS_NDI			= (1 << 25),
 	IDEUDMASTS_N4X			= (1 << 26),
 
-	/* UDMA Debug Status Register */
+	 
 	IDEUDMADEBUG			= 0x2c,
 };
 
@@ -162,20 +121,7 @@ static bool ep93xx_pata_check_iordy(void __iomem *base)
 	return !!(readl(base + IDECTRL) & IDECTRL_IORDY);
 }
 
-/*
- * According to EP93xx User's Guide, WST field of IDECFG specifies number
- * of HCLK cycles to hold the data bus after a PIO write operation.
- * It should be programmed to guarantee following delays:
- *
- * PIO Mode   [ns]
- * 0          30
- * 1          20
- * 2          15
- * 3          10
- * 4          5
- *
- * Maximum possible value for HCLK is 100MHz.
- */
+ 
 static int ep93xx_pata_get_wst(int pio_mode)
 {
 	int val;
@@ -197,13 +143,7 @@ static void ep93xx_pata_enable_pio(void __iomem *base, int pio_mode)
 		(pio_mode << IDECFG_MODE_SHIFT), base + IDECFG);
 }
 
-/*
- * Based on delay loop found in mach-pxa/mp900.c.
- *
- * Single iteration should take 5 cpu cycles. This is 25ns assuming the
- * fastest ep93xx cpu speed (200MHz) and is better optimized for PIO4 timings
- * than eg. 20ns.
- */
+ 
 static void ep93xx_pata_delay(unsigned long count)
 {
 	__asm__ volatile (
@@ -219,15 +159,7 @@ static void ep93xx_pata_delay(unsigned long count)
 static unsigned long ep93xx_pata_wait_for_iordy(void __iomem *base,
 						unsigned long t2)
 {
-	/*
-	 * According to ATA specification, IORDY pin can be first sampled
-	 * tA = 35ns after activation of DIOR-/DIOW-. Maximum IORDY pulse
-	 * width is tB = 1250ns.
-	 *
-	 * We are already t2 delay loop iterations after activation of
-	 * DIOR-/DIOW-, so we set timeout to (1250 + 35) / 25 - t2 additional
-	 * delay loop iterations.
-	 */
+	 
 	unsigned long start = (1250 + 35) / 25 - t2;
 	unsigned long counter = start;
 
@@ -236,7 +168,7 @@ static unsigned long ep93xx_pata_wait_for_iordy(void __iomem *base,
 	return start - counter;
 }
 
-/* common part at start of ep93xx_pata_read/write() */
+ 
 static void ep93xx_pata_rw_begin(void __iomem *base, unsigned long addr,
 				 unsigned long t1)
 {
@@ -244,13 +176,13 @@ static void ep93xx_pata_rw_begin(void __iomem *base, unsigned long addr,
 	ep93xx_pata_delay(t1);
 }
 
-/* common part at end of ep93xx_pata_read/write() */
+ 
 static void ep93xx_pata_rw_end(void __iomem *base, unsigned long addr,
 			       bool iordy, unsigned long t0, unsigned long t2,
 			       unsigned long t2i)
 {
 	ep93xx_pata_delay(t2);
-	/* lengthen t2 if needed */
+	 
 	if (iordy)
 		t2 += ep93xx_pata_wait_for_iordy(base, t2);
 	writel(IDECTRL_DIOWN | IDECTRL_DIORN | addr, base + IDECTRL);
@@ -272,22 +204,19 @@ static u16 ep93xx_pata_read(struct ep93xx_pata_data *drv_data,
 
 	ep93xx_pata_rw_begin(base, addr, t->setup);
 	writel(IDECTRL_DIOWN | addr, base + IDECTRL);
-	/*
-	 * The IDEDATAIN register is loaded from the DD pins at the positive
-	 * edge of the DIORN signal. (EP93xx UG p27-14)
-	 */
+	 
 	ep93xx_pata_rw_end(base, addr, drv_data->iordy, t0, t2, t2i);
 	return readl(base + IDEDATAIN);
 }
 
-/* IDE register read */
+ 
 static u16 ep93xx_pata_read_reg(struct ep93xx_pata_data *drv_data,
 				unsigned long addr)
 {
 	return ep93xx_pata_read(drv_data, addr, true);
 }
 
-/* PIO data read */
+ 
 static u16 ep93xx_pata_read_data(struct ep93xx_pata_data *drv_data,
 				 unsigned long addr)
 {
@@ -305,23 +234,20 @@ static void ep93xx_pata_write(struct ep93xx_pata_data *drv_data,
 	unsigned long t2i = reg ? t->rec8b : t->recover;
 
 	ep93xx_pata_rw_begin(base, addr, t->setup);
-	/*
-	 * Value from IDEDATAOUT register is driven onto the DD pins when
-	 * DIOWN is low. (EP93xx UG p27-13)
-	 */
+	 
 	writel(value, base + IDEDATAOUT);
 	writel(IDECTRL_DIORN | addr, base + IDECTRL);
 	ep93xx_pata_rw_end(base, addr, drv_data->iordy, t0, t2, t2i);
 }
 
-/* IDE register write */
+ 
 static void ep93xx_pata_write_reg(struct ep93xx_pata_data *drv_data,
 				  u16 value, unsigned long addr)
 {
 	ep93xx_pata_write(drv_data, value, addr, true);
 }
 
-/* PIO data write */
+ 
 static void ep93xx_pata_write_data(struct ep93xx_pata_data *drv_data,
 				   u16 value, unsigned long addr)
 {
@@ -333,13 +259,7 @@ static void ep93xx_pata_set_piomode(struct ata_port *ap,
 {
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
 	struct ata_device *pair = ata_dev_pair(adev);
-	/*
-	 * Calculate timings for the delay loop, assuming ep93xx cpu speed
-	 * is 200MHz (maximum possible for ep93xx). If actual cpu speed is
-	 * slower, we will wait a bit longer in each delay.
-	 * Additional division of cpu speed by 5, because single iteration
-	 * of our delay loop takes 5 cpu cycles (25ns).
-	 */
+	 
 	unsigned long T = 1000000 / (200 / 5);
 
 	ata_timing_compute(adev, adev->pio_mode, &drv_data->t, T, 0);
@@ -355,7 +275,7 @@ static void ep93xx_pata_set_piomode(struct ata_port *ap,
 			       adev->pio_mode - XFER_PIO_0);
 }
 
-/* Note: original code is ata_sff_check_status */
+ 
 static u8 ep93xx_pata_check_status(struct ata_port *ap)
 {
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
@@ -370,7 +290,7 @@ static u8 ep93xx_pata_check_altstatus(struct ata_port *ap)
 	return ep93xx_pata_read_reg(drv_data, IDECTRL_ADDR_ALTSTATUS);
 }
 
-/* Note: original code is ata_sff_tf_load */
+ 
 static void ep93xx_pata_tf_load(struct ata_port *ap,
 				const struct ata_taskfile *tf)
 {
@@ -412,7 +332,7 @@ static void ep93xx_pata_tf_load(struct ata_port *ap,
 	ata_wait_idle(ap);
 }
 
-/* Note: original code is ata_sff_tf_read */
+ 
 static void ep93xx_pata_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 {
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
@@ -443,7 +363,7 @@ static void ep93xx_pata_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 	}
 }
 
-/* Note: original code is ata_sff_exec_command */
+ 
 static void ep93xx_pata_exec_command(struct ata_port *ap,
 				     const struct ata_taskfile *tf)
 {
@@ -454,7 +374,7 @@ static void ep93xx_pata_exec_command(struct ata_port *ap,
 	ata_sff_pause(ap);
 }
 
-/* Note: original code is ata_sff_dev_select */
+ 
 static void ep93xx_pata_dev_select(struct ata_port *ap, unsigned int device)
 {
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
@@ -464,10 +384,10 @@ static void ep93xx_pata_dev_select(struct ata_port *ap, unsigned int device)
 		tmp |= ATA_DEV1;
 
 	ep93xx_pata_write_reg(drv_data, tmp, IDECTRL_ADDR_DEVICE);
-	ata_sff_pause(ap);	/* needed; also flushes, for mmio */
+	ata_sff_pause(ap);	 
 }
 
-/* Note: original code is ata_sff_set_devctl */
+ 
 static void ep93xx_pata_set_devctl(struct ata_port *ap, u8 ctl)
 {
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
@@ -475,7 +395,7 @@ static void ep93xx_pata_set_devctl(struct ata_port *ap, u8 ctl)
 	ep93xx_pata_write_reg(drv_data, ctl, IDECTRL_ADDR_CTL);
 }
 
-/* Note: original code is ata_sff_data_xfer */
+ 
 static unsigned int ep93xx_pata_data_xfer(struct ata_queued_cmd *qc,
 					  unsigned char *buf,
 					  unsigned int buflen, int rw)
@@ -485,7 +405,7 @@ static unsigned int ep93xx_pata_data_xfer(struct ata_queued_cmd *qc,
 	u16 *data = (u16 *)buf;
 	unsigned int words = buflen >> 1;
 
-	/* Transfer multiple of 2 bytes */
+	 
 	while (words--)
 		if (rw == READ)
 			*data++ = cpu_to_le16(
@@ -495,7 +415,7 @@ static unsigned int ep93xx_pata_data_xfer(struct ata_queued_cmd *qc,
 			ep93xx_pata_write_data(drv_data, le16_to_cpu(*data++),
 				IDECTRL_ADDR_DATA);
 
-	/* Transfer trailing 1 byte, if any. */
+	 
 	if (unlikely(buflen & 0x01)) {
 		unsigned char pad[2] = { };
 
@@ -517,7 +437,7 @@ static unsigned int ep93xx_pata_data_xfer(struct ata_queued_cmd *qc,
 	return words << 1;
 }
 
-/* Note: original code is ata_devchk */
+ 
 static bool ep93xx_pata_device_is_present(struct ata_port *ap,
 					  unsigned int device)
 {
@@ -544,7 +464,7 @@ static bool ep93xx_pata_device_is_present(struct ata_port *ap,
 	return false;
 }
 
-/* Note: original code is ata_sff_wait_after_reset */
+ 
 static int ep93xx_pata_wait_after_reset(struct ata_link *link,
 					unsigned int devmask,
 					unsigned long deadline)
@@ -557,29 +477,19 @@ static int ep93xx_pata_wait_after_reset(struct ata_link *link,
 
 	ata_msleep(ap, ATA_WAIT_AFTER_RESET);
 
-	/* always check readiness of the master device */
+	 
 	rc = ata_sff_wait_ready(link, deadline);
-	/*
-	 * -ENODEV means the odd clown forgot the D7 pulldown resistor
-	 * and TF status is 0xff, bail out on it too.
-	 */
+	 
 	if (rc)
 		return rc;
 
-	/*
-	 * if device 1 was found in ata_devchk, wait for register
-	 * access briefly, then wait for BSY to clear.
-	 */
+	 
 	if (dev1) {
 		int i;
 
 		ap->ops->sff_dev_select(ap, 1);
 
-		/*
-		 * Wait for register access.  Some ATAPI devices fail
-		 * to set nsect/lbal after reset, so don't waste too
-		 * much time on it.  We're gonna wait for !BSY anyway.
-		 */
+		 
 		for (i = 0; i < 2; i++) {
 			u8 nsect, lbal;
 
@@ -589,7 +499,7 @@ static int ep93xx_pata_wait_after_reset(struct ata_link *link,
 				IDECTRL_ADDR_LBAL);
 			if (nsect == 1 && lbal == 1)
 				break;
-			msleep(50);	/* give drive a breather */
+			msleep(50);	 
 		}
 
 		rc = ata_sff_wait_ready(link, deadline);
@@ -599,7 +509,7 @@ static int ep93xx_pata_wait_after_reset(struct ata_link *link,
 			ret = rc;
 		}
 	}
-	/* is all this really necessary? */
+	 
 	ap->ops->sff_dev_select(ap, 0);
 	if (dev1)
 		ap->ops->sff_dev_select(ap, 1);
@@ -609,16 +519,16 @@ static int ep93xx_pata_wait_after_reset(struct ata_link *link,
 	return ret;
 }
 
-/* Note: original code is ata_bus_softreset */
+ 
 static int ep93xx_pata_bus_softreset(struct ata_port *ap, unsigned int devmask,
 				     unsigned long deadline)
 {
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
 
 	ep93xx_pata_write_reg(drv_data, ap->ctl, IDECTRL_ADDR_CTL);
-	udelay(20);		/* FIXME: flush */
+	udelay(20);		 
 	ep93xx_pata_write_reg(drv_data, ap->ctl | ATA_SRST, IDECTRL_ADDR_CTL);
-	udelay(20);		/* FIXME: flush */
+	udelay(20);		 
 	ep93xx_pata_write_reg(drv_data, ap->ctl, IDECTRL_ADDR_CTL);
 	ap->last_ctl = ap->ctl;
 
@@ -655,11 +565,7 @@ static void ep93xx_pata_dma_init(struct ep93xx_pata_data *drv_data)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
-	/*
-	 * Request two channels for IDE. Another possibility would be
-	 * to request only one channel, and reprogram it's direction at
-	 * start of new transfer.
-	 */
+	 
 	drv_data->dma_rx_data.port = EP93XX_DMA_IDE;
 	drv_data->dma_rx_data.direction = DMA_DEV_TO_MEM;
 	drv_data->dma_rx_data.name = "ep93xx-pata-rx";
@@ -678,7 +584,7 @@ static void ep93xx_pata_dma_init(struct ep93xx_pata_data *drv_data)
 		return;
 	}
 
-	/* Configure receive channel direction and source address */
+	 
 	memset(&conf, 0, sizeof(conf));
 	conf.direction = DMA_DEV_TO_MEM;
 	conf.src_addr = drv_data->udma_in_phys;
@@ -689,7 +595,7 @@ static void ep93xx_pata_dma_init(struct ep93xx_pata_data *drv_data)
 		return;
 	}
 
-	/* Configure transmit channel direction and destination address */
+	 
 	memset(&conf, 0, sizeof(conf));
 	conf.direction = DMA_MEM_TO_DEV;
 	conf.dst_addr = drv_data->udma_out_phys;
@@ -725,13 +631,7 @@ static void ep93xx_pata_dma_start(struct ata_queued_cmd *qc)
 	}
 	dma_async_issue_pending(channel);
 
-	/*
-	 * When enabling UDMA operation, IDEUDMAOP register needs to be
-	 * programmed in three step sequence:
-	 * 1) set or clear the RWOP bit,
-	 * 2) perform dummy read of the register,
-	 * 3) set the UEN bit.
-	 */
+	 
 	writel(v, base + IDEUDMAOP);
 	readl(base + IDEUDMAOP);
 	writel(v | IDEUDMAOP_UEN, base + IDEUDMAOP);
@@ -746,14 +646,11 @@ static void ep93xx_pata_dma_stop(struct ata_queued_cmd *qc)
 	struct ep93xx_pata_data *drv_data = qc->ap->host->private_data;
 	void __iomem *base = drv_data->ide_base;
 
-	/* terminate all dma transfers, if not yet finished */
+	 
 	dmaengine_terminate_all(drv_data->dma_rx_channel);
 	dmaengine_terminate_all(drv_data->dma_tx_channel);
 
-	/*
-	 * To properly stop IDE-DMA, IDEUDMAOP register must to be cleared
-	 * and IDECTRL register must be set to default value.
-	 */
+	 
 	writel(0, base + IDEUDMAOP);
 	writel(readl(base + IDECTRL) | IDECTRL_DIOWN | IDECTRL_DIORN |
 		IDECTRL_CS0N | IDECTRL_CS1N, base + IDECTRL);
@@ -774,24 +671,12 @@ static u8 ep93xx_pata_dma_status(struct ata_port *ap)
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
 	u32 val = readl(drv_data->ide_base + IDEUDMASTS);
 
-	/*
-	 * UDMA Status Register bits:
-	 *
-	 * DMAIDE - DMA request signal from UDMA state machine,
-	 * INTIDE - INT line generated by UDMA because of errors in the
-	 *          state machine,
-	 * SBUSY - UDMA state machine busy, not in idle state,
-	 * NDO   - error for data-out not completed,
-	 * NDI   - error for data-in not completed,
-	 * N4X   - error for data transferred not multiplies of four
-	 *         32-bit words.
-	 * (EP93xx UG p27-17)
-	 */
+	 
 	if (val & IDEUDMASTS_NDO || val & IDEUDMASTS_NDI ||
 	    val & IDEUDMASTS_N4X || val & IDEUDMASTS_INTIDE)
 		return ATA_DMA_ERR;
 
-	/* read INTRQ (INT[3]) pin input state */
+	 
 	if (readl(drv_data->ide_base + IDECTRL) & IDECTRL_INTRQ)
 		return ATA_DMA_INTR;
 
@@ -801,7 +686,7 @@ static u8 ep93xx_pata_dma_status(struct ata_port *ap)
 	return 0;
 }
 
-/* Note: original code is ata_sff_softreset */
+ 
 static int ep93xx_pata_softreset(struct ata_link *al, unsigned int *classes,
 				 unsigned long deadline)
 {
@@ -811,24 +696,24 @@ static int ep93xx_pata_softreset(struct ata_link *al, unsigned int *classes,
 	int rc;
 	u8 err;
 
-	/* determine if device 0/1 are present */
+	 
 	if (ep93xx_pata_device_is_present(ap, 0))
 		devmask |= (1 << 0);
 	if (slave_possible && ep93xx_pata_device_is_present(ap, 1))
 		devmask |= (1 << 1);
 
-	/* select device 0 again */
+	 
 	ap->ops->sff_dev_select(al->ap, 0);
 
-	/* issue bus reset */
+	 
 	rc = ep93xx_pata_bus_softreset(ap, devmask, deadline);
-	/* if link is ocuppied, -ENODEV too is an error */
+	 
 	if (rc && (rc != -ENODEV || sata_scr_valid(al))) {
 		ata_link_err(al, "SRST failed (errno=%d)\n", rc);
 		return rc;
 	}
 
-	/* determine by signature whether we have ATA or ATAPI devices */
+	 
 	classes[0] = ata_sff_dev_classify(&al->device[0], devmask & (1 << 0),
 					  &err);
 	if (slave_possible && err != 0x81)
@@ -838,20 +723,20 @@ static int ep93xx_pata_softreset(struct ata_link *al, unsigned int *classes,
 	return 0;
 }
 
-/* Note: original code is ata_sff_drain_fifo */
+ 
 static void ep93xx_pata_drain_fifo(struct ata_queued_cmd *qc)
 {
 	int count;
 	struct ata_port *ap;
 	struct ep93xx_pata_data *drv_data;
 
-	/* We only need to flush incoming data when a command was running */
+	 
 	if (qc == NULL || qc->dma_dir == DMA_TO_DEVICE)
 		return;
 
 	ap = qc->ap;
 	drv_data = ap->host->private_data;
-	/* Drain up to 64K of data before we give up this recovery method */
+	 
 	for (count = 0; (ap->ops->sff_check_status(ap) & ATA_DRQ)
 		     && count < 65536; count += 2)
 		ep93xx_pata_read_reg(drv_data, IDECTRL_ADDR_DATA);
@@ -865,19 +750,16 @@ static int ep93xx_pata_port_start(struct ata_port *ap)
 {
 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
 
-	/*
-	 * Set timings to safe values at startup (= number of ns from ATA
-	 * specification), we'll switch to properly calculated values later.
-	 */
+	 
 	drv_data->t = *ata_timing_find_mode(XFER_PIO_0);
 	return 0;
 }
 
 static const struct scsi_host_template ep93xx_pata_sht = {
 	ATA_BASE_SHT(DRV_NAME),
-	/* ep93xx dma implementation limit */
+	 
 	.sg_tablesize		= 32,
-	/* ep93xx dma can't transfer 65536 bytes at once */
+	 
 	.dma_boundary		= 0x7fff,
 };
 
@@ -914,7 +796,7 @@ static struct ata_port_operations ep93xx_pata_port_ops = {
 static const struct soc_device_attribute ep93xx_soc_table[] = {
 	{ .revision = "E1", .data = (void *)ATA_UDMA3 },
 	{ .revision = "E2", .data = (void *)ATA_UDMA4 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int ep93xx_pata_probe(struct platform_device *pdev)
@@ -931,7 +813,7 @@ static int ep93xx_pata_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* INT[3] (IRQ_EP93XX_EXT3) line connected as pull down */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		err = irq;
@@ -956,7 +838,7 @@ static int ep93xx_pata_probe(struct platform_device *pdev)
 	drv_data->udma_out_phys = mem_res->start + IDEUDMADATAOUT;
 	ep93xx_pata_dma_init(drv_data);
 
-	/* allocate host */
+	 
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host) {
 		err = -ENOMEM;
@@ -973,15 +855,7 @@ static int ep93xx_pata_probe(struct platform_device *pdev)
 	ap->flags |= ATA_FLAG_SLAVE_POSS;
 	ap->pio_mask = ATA_PIO4;
 
-	/*
-	 * Maximum UDMA modes:
-	 * EP931x rev.E0 - UDMA2
-	 * EP931x rev.E1 - UDMA3
-	 * EP931x rev.E2 - UDMA4
-	 *
-	 * MWDMA support was removed from EP931x rev.E2,
-	 * so this driver supports only UDMA modes.
-	 */
+	 
 	if (drv_data->dma_rx_channel && drv_data->dma_tx_channel) {
 		const struct soc_device_attribute *match;
 
@@ -992,12 +866,12 @@ static int ep93xx_pata_probe(struct platform_device *pdev)
 			ap->udma_mask = ATA_UDMA2;
 	}
 
-	/* defaults, pio 0 */
+	 
 	ep93xx_pata_enable_pio(ide_base, 0);
 
 	dev_info(&pdev->dev, "version " DRV_VERSION "\n");
 
-	/* activate host */
+	 
 	err = ata_host_activate(host, irq, ata_bmdma_interrupt, 0,
 		&ep93xx_pata_sht);
 	if (err == 0)

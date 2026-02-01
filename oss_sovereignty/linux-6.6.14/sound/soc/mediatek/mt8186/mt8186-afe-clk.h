@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * mt8186-afe-clk.h  --  Mediatek 8186 afe clock ctrl definition
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
- */
+ 
 
 #ifndef _MT8186_AFE_CLOCK_CTRL_H_
 #define _MT8186_AFE_CLOCK_CTRL_H_
 
 #define PERI_BUS_DCM_CTRL	0x74
 
-/* APLL */
+ 
 #define APLL1_W_NAME "APLL1"
 #define APLL2_W_NAME "APLL2"
 enum {
@@ -54,7 +48,7 @@ enum {
 	CLK_MUX_AUDIO,
 	CLK_MUX_AUDIOINTBUS,
 	CLK_TOP_MAINPLL_D2_D4,
-	/* apll related mux */
+	 
 	CLK_TOP_MUX_AUD_1,
 	CLK_TOP_APLL1_CK,
 	CLK_TOP_MUX_AUD_2,
@@ -98,7 +92,7 @@ int mt8186_get_apll_rate(struct mtk_base_afe *afe, int apll);
 int mt8186_get_apll_by_rate(struct mtk_base_afe *afe, int rate);
 int mt8186_get_apll_by_name(struct mtk_base_afe *afe, const char *name);
 
-/* these will be replaced by using CCF */
+ 
 int mt8186_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate);
 void mt8186_mck_disable(struct mtk_base_afe *afe, int mck_id);
 

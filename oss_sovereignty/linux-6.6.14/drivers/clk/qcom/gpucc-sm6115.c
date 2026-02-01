@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -60,7 +57,7 @@ static const struct alpha_pll_config gpu_cc_pll0_config = {
 	.test_ctl_hi1_val = 0x1,
 };
 
-/* 1200MHz configuration */
+ 
 static struct clk_alpha_pll gpu_cc_pll0 = {
 	.offset = 0x0,
 	.vco_table = default_vco,
@@ -102,7 +99,7 @@ static struct clk_alpha_pll_postdiv gpu_cc_pll0_out_aux2 = {
 	},
 };
 
-/* 640MHz configuration */
+ 
 static const struct alpha_pll_config gpu_cc_pll1_config = {
 	.l = 0x21,
 	.alpha = 0x55555555,
@@ -481,7 +478,7 @@ static int gpu_cc_sm6115_probe(struct platform_device *pdev)
 	clk_alpha_pll_configure(&gpu_cc_pll0, regmap, &gpu_cc_pll0_config);
 	clk_alpha_pll_configure(&gpu_cc_pll1, regmap, &gpu_cc_pll1_config);
 
-	/* Set recommended WAKEUP/SLEEP settings for the gpu_cc_cx_gmu_clk */
+	 
 	qcom_branch_set_wakeup(regmap, gpu_cc_cx_gmu_clk, 0xf);
 	qcom_branch_set_sleep(regmap, gpu_cc_cx_gmu_clk, 0xf);
 

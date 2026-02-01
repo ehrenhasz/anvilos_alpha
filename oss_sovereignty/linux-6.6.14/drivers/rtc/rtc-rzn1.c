@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Renesas RZ/N1 Real Time Clock interface for Linux
- *
- * Copyright:
- * - 2014 Renesas Electronics Europe Limited
- * - 2022 Schneider Electric
- *
- * Authors:
- * - Michel Pollet <michel.pollet@bp.renesas.com>, <buserror@gmail.com>
- * - Miquel Raynal <miquel.raynal@bootlin.com>
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/init.h>
@@ -84,7 +74,7 @@ static unsigned int rzn1_rtc_tm_to_wday(struct rtc_time *tm)
 	time = rtc_tm_to_time64(tm);
 	days = div_s64_rem(time, 86400, &secs);
 
-	/* day of the week, 1970-01-01 was a Thursday */
+	 
 	return (days + 4) % 7;
 }
 
@@ -93,10 +83,7 @@ static int rzn1_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	struct rzn1_rtc *rtc = dev_get_drvdata(dev);
 	u32 val, secs;
 
-	/*
-	 * The RTC was not started or is stopped and thus does not carry the
-	 * proper time/date.
-	 */
+	 
 	val = readl(rtc->base + RZN1_RTC_CTL2);
 	if (val & RZN1_RTC_CTL2_STOPPED)
 		return -EINVAL;
@@ -133,10 +120,10 @@ static int rzn1_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	val = readl(rtc->base + RZN1_RTC_CTL2);
 	if (!(val & RZN1_RTC_CTL2_STOPPED)) {
-		/* Hold the counter if it was counting up */
+		 
 		writel(RZN1_RTC_CTL2_WAIT, rtc->base + RZN1_RTC_CTL2);
 
-		/* Wait for the counter to stop: two 32k clock cycles */
+		 
 		usleep_range(61, 100);
 		ret = readl_poll_timeout(rtc->base + RZN1_RTC_CTL2, val,
 					 val & RZN1_RTC_CTL2_WST, 0, 100);
@@ -226,13 +213,13 @@ static int rzn1_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	if (ret)
 		return ret;
 
-	/* We cannot set alarms more than one week ahead */
+	 
 	farest = rtc_tm_to_time64(&tm_now) + rtc->rtcdev->alarm_offset_max;
 	alarm = rtc_tm_to_time64(tm);
 	if (time_after(alarm, farest))
 		return -ERANGE;
 
-	/* Convert alarm day into week day */
+	 
 	days_ahead = tm->tm_mday - tm_now.tm_mday;
 	wday = (tm_now.tm_wday + days_ahead) % 7;
 
@@ -274,22 +261,16 @@ static int rzn1_rtc_set_offset(struct device *dev, long offset)
 	u32 subu = 0, ctl2;
 	int ret;
 
-	/*
-	 * Check which resolution mode (every 20 or 60s) can be used.
-	 * Between 2 and 124 clock pulses can be added or substracted.
-	 *
-	 * In 20s mode, the minimum resolution is 2 / (32768 * 20) which is
-	 * close to 3051 ppb. In 60s mode, the resolution is closer to 1017.
-	 */
+	 
 	stepsh = DIV_ROUND_CLOSEST(offset, 1017);
 	stepsl = DIV_ROUND_CLOSEST(offset, 3051);
 
 	if (stepsh >= -0x3E && stepsh <= 0x3E) {
-		/* 1017 ppb per step */
+		 
 		steps = stepsh;
 		subu |= RZN1_RTC_SUBU_DEV;
 	} else if (stepsl >= -0x3E && stepsl <= 0x3E) {
-		/* 3051 ppb per step */
+		 
 		steps = stepsl;
 	} else {
 		return -ERANGE;
@@ -363,14 +344,11 @@ static int rzn1_rtc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Ensure the clock counter is enabled.
-	 * Set 24-hour mode and possible oscillator offset compensation in SUBU mode.
-	 */
+	 
 	writel(RZN1_RTC_CTL0_CE | RZN1_RTC_CTL0_AMPM | RZN1_RTC_CTL0_SLSB_SUBU,
 	       rtc->base + RZN1_RTC_CTL0);
 
-	/* Disable all interrupts */
+	 
 	writel(0, rtc->base + RZN1_RTC_CTL1);
 
 	ret = devm_request_irq(&pdev->dev, alarm_irq, rzn1_rtc_alarm_irq, 0,

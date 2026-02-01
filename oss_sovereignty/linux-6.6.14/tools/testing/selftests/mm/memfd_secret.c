@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corporation, 2021
- *
- * Author: Mike Rapoport <rppt@linux.ibm.com>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <sys/uio.h>
@@ -220,7 +216,7 @@ static int set_cap_limits(rlim_t max)
 		return -1;
 	}
 
-	/* drop capabilities including CAP_IPC_LOCK */
+	 
 	if (cap_set_proc(cap)) {
 		perror("cap_set_proc() returns error");
 		return -2;
@@ -288,7 +284,7 @@ int main(int argc, char *argv[])
 	ksft_finished();
 }
 
-#else /* __NR_memfd_secret */
+#else  
 
 int main(int argc, char *argv[])
 {
@@ -296,4 +292,4 @@ int main(int argc, char *argv[])
 	return KSFT_SKIP;
 }
 
-#endif /* __NR_memfd_secret */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/module.h>
@@ -23,17 +23,12 @@
 
 #include "netns.h"
 
-/*
- * AUTHUNIX and AUTHNULL credentials are both handled here.
- * AUTHNULL is treated just like AUTHUNIX except that the uid/gid
- * are always nobody (-2).  i.e. we do the same IP address checks for
- * AUTHNULL as for AUTHUNIX, and that is done here.
- */
+ 
 
 
 struct unix_domain {
 	struct auth_domain	h;
-	/* other stuff later */
+	 
 };
 
 extern struct auth_ops svcauth_null;
@@ -88,16 +83,13 @@ struct auth_domain *unix_domain_find(char *name)
 EXPORT_SYMBOL_GPL(unix_domain_find);
 
 
-/**************************************************
- * cache for IP address to unix_domain
- * as needed by AUTH_UNIX
- */
+ 
 #define	IP_HASHBITS	8
 #define	IP_HASHMAX	(1<<IP_HASHBITS)
 
 struct ip_map {
 	struct cache_head	h;
-	char			m_class[8]; /* e.g. "nfsd" */
+	char			m_class[8];  
 	struct in6_addr		m_addr;
 	struct unix_domain	*m_client;
 	struct rcu_head		m_rcu;
@@ -178,9 +170,8 @@ static int __ip_map_update(struct cache_detail *cd, struct ip_map *ipm, struct u
 static int ip_map_parse(struct cache_detail *cd,
 			  char *mesg, int mlen)
 {
-	/* class ipaddress [domainname] */
-	/* should be safe just to use the start of the input buffer
-	 * for scratch: */
+	 
+	 
 	char *buf = mesg;
 	int len;
 	char class[8];
@@ -200,11 +191,11 @@ static int ip_map_parse(struct cache_detail *cd,
 		return -EINVAL;
 	mesg[mlen-1] = 0;
 
-	/* class */
+	 
 	len = qword_get(&mesg, class, sizeof(class));
 	if (len <= 0) return -EINVAL;
 
-	/* ip address */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	if (len <= 0) return -EINVAL;
 
@@ -212,7 +203,7 @@ static int ip_map_parse(struct cache_detail *cd,
 		return -EINVAL;
 	switch (address.sa.sa_family) {
 	case AF_INET:
-		/* Form a mapped IPv4 address in sin6 */
+		 
 		sin6.sin6_family = AF_INET6;
 		ipv6_addr_set_v4mapped(address.s4.sin_addr.s_addr,
 				&sin6.sin6_addr);
@@ -230,7 +221,7 @@ static int ip_map_parse(struct cache_detail *cd,
 	if (err)
 		return err;
 
-	/* domainname, or empty for NEGATIVE */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	if (len < 0) return -EINVAL;
 
@@ -241,7 +232,7 @@ static int ip_map_parse(struct cache_detail *cd,
 	} else
 		dom = NULL;
 
-	/* IPv6 scope IDs are ignored for now */
+	 
 	ipmp = __ip_map_lookup(cd, class, &sin6.sin6_addr);
 	if (ipmp) {
 		err = __ip_map_update(cd, ipmp,
@@ -270,7 +261,7 @@ static int ip_map_show(struct seq_file *m,
 		return 0;
 	}
 	im = container_of(h, struct ip_map, h);
-	/* class addr domain */
+	 
 	addr = im->m_addr;
 
 	if (test_bit(CACHE_VALID, &h->flags) &&
@@ -346,11 +337,7 @@ ip_map_cached_get(struct svc_xprt *xprt)
 		if (ipm != NULL) {
 			sn = net_generic(xprt->xpt_net, sunrpc_net_id);
 			if (cache_is_expired(sn->ip_map_cache, &ipm->h)) {
-				/*
-				 * The entry has been invalidated since it was
-				 * remembered, e.g. by a second mount from the
-				 * same IP address.
-				 */
+				 
 				xprt->xpt_auth_cache = NULL;
 				spin_unlock(&xprt->xpt_lock);
 				cache_put(&ipm->h, sn->ip_map_cache);
@@ -369,7 +356,7 @@ ip_map_cached_put(struct svc_xprt *xprt, struct ip_map *ipm)
 	if (test_bit(XPT_CACHE_AUTH, &xprt->xpt_flags)) {
 		spin_lock(&xprt->xpt_lock);
 		if (xprt->xpt_auth_cache == NULL) {
-			/* newly cached, keep the reference */
+			 
 			xprt->xpt_auth_cache = ipm;
 			ipm = NULL;
 		}
@@ -397,11 +384,7 @@ svcauth_unix_info_release(struct svc_xprt *xpt)
 	}
 }
 
-/****************************************************************************
- * auth.unix.gid cache
- * simple cache to map a UID to a list of GIDs
- * because AUTH_UNIX aka AUTH_SYS has a max of UNX_NGROUPS
- */
+ 
 #define	GID_HASHBITS	8
 #define	GID_HASHMAX	(1<<GID_HASHBITS)
 
@@ -487,7 +470,7 @@ static struct unix_gid *unix_gid_lookup(struct cache_detail *cd, kuid_t uid);
 static int unix_gid_parse(struct cache_detail *cd,
 			char *mesg, int mlen)
 {
-	/* uid expiry Ngid gid0 gid1 ... gidN-1 */
+	 
 	int id;
 	kuid_t uid;
 	int gids;
@@ -738,18 +721,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(svcauth_unix_set_client);
 
-/**
- * svcauth_null_accept - Decode and validate incoming RPC_AUTH_NULL credential
- * @rqstp: RPC transaction
- *
- * Return values:
- *   %SVC_OK: Both credential and verifier are valid
- *   %SVC_DENIED: Credential or verifier is not valid
- *   %SVC_GARBAGE: Failed to decode credential or verifier
- *   %SVC_CLOSE: Temporary failure
- *
- * rqstp->rq_auth_stat is set as mandated by RFC 5531.
- */
+ 
 static enum svc_auth_status
 svcauth_null_accept(struct svc_rqst *rqstp)
 {
@@ -758,7 +730,7 @@ svcauth_null_accept(struct svc_rqst *rqstp)
 	u32 flavor, len;
 	void *body;
 
-	/* Length of Call's credential body field: */
+	 
 	if (xdr_stream_decode_u32(xdr, &len) < 0)
 		return SVC_GARBAGE;
 	if (len != 0) {
@@ -766,7 +738,7 @@ svcauth_null_accept(struct svc_rqst *rqstp)
 		return SVC_DENIED;
 	}
 
-	/* Call's verf field: */
+	 
 	if (xdr_stream_decode_opaque_auth(xdr, &flavor, &body, &len) < 0)
 		return SVC_GARBAGE;
 	if (flavor != RPC_AUTH_NULL || len != 0) {
@@ -774,12 +746,12 @@ svcauth_null_accept(struct svc_rqst *rqstp)
 		return SVC_DENIED;
 	}
 
-	/* Signal that mapping to nobody uid/gid is required */
+	 
 	cred->cr_uid = INVALID_UID;
 	cred->cr_gid = INVALID_GID;
 	cred->cr_group_info = groups_alloc(0);
 	if (cred->cr_group_info == NULL)
-		return SVC_CLOSE; /* kmalloc failure - client must retry */
+		return SVC_CLOSE;  
 
 	if (xdr_stream_encode_opaque_auth(&rqstp->rq_res_stream,
 					  RPC_AUTH_NULL, NULL, 0) < 0)
@@ -801,7 +773,7 @@ svcauth_null_release(struct svc_rqst *rqstp)
 		put_group_info(rqstp->rq_cred.cr_group_info);
 	rqstp->rq_cred.cr_group_info = NULL;
 
-	return 0; /* don't drop */
+	return 0;  
 }
 
 
@@ -815,18 +787,7 @@ struct auth_ops svcauth_null = {
 };
 
 
-/**
- * svcauth_tls_accept - Decode and validate incoming RPC_AUTH_TLS credential
- * @rqstp: RPC transaction
- *
- * Return values:
- *   %SVC_OK: Both credential and verifier are valid
- *   %SVC_DENIED: Credential or verifier is not valid
- *   %SVC_GARBAGE: Failed to decode credential or verifier
- *   %SVC_CLOSE: Temporary failure
- *
- * rqstp->rq_auth_stat is set as mandated by RFC 5531.
- */
+ 
 static enum svc_auth_status
 svcauth_tls_accept(struct svc_rqst *rqstp)
 {
@@ -837,7 +798,7 @@ svcauth_tls_accept(struct svc_rqst *rqstp)
 	void *body;
 	__be32 *p;
 
-	/* Length of Call's credential body field: */
+	 
 	if (xdr_stream_decode_u32(xdr, &len) < 0)
 		return SVC_GARBAGE;
 	if (len != 0) {
@@ -845,7 +806,7 @@ svcauth_tls_accept(struct svc_rqst *rqstp)
 		return SVC_DENIED;
 	}
 
-	/* Call's verf field: */
+	 
 	if (xdr_stream_decode_opaque_auth(xdr, &flavor, &body, &len) < 0)
 		return SVC_GARBAGE;
 	if (flavor != RPC_AUTH_NULL || len != 0) {
@@ -853,13 +814,13 @@ svcauth_tls_accept(struct svc_rqst *rqstp)
 		return SVC_DENIED;
 	}
 
-	/* AUTH_TLS is not valid on non-NULL procedures */
+	 
 	if (rqstp->rq_proc != 0) {
 		rqstp->rq_auth_stat = rpc_autherr_badcred;
 		return SVC_DENIED;
 	}
 
-	/* Signal that mapping to nobody uid/gid is required */
+	 
 	cred->cr_uid = INVALID_UID;
 	cred->cr_gid = INVALID_GID;
 	cred->cr_group_info = groups_alloc(0);
@@ -900,18 +861,7 @@ struct auth_ops svcauth_tls = {
 };
 
 
-/**
- * svcauth_unix_accept - Decode and validate incoming RPC_AUTH_SYS credential
- * @rqstp: RPC transaction
- *
- * Return values:
- *   %SVC_OK: Both credential and verifier are valid
- *   %SVC_DENIED: Credential or verifier is not valid
- *   %SVC_GARBAGE: Failed to decode credential or verifier
- *   %SVC_CLOSE: Temporary failure
- *
- * rqstp->rq_auth_stat is set as mandated by RFC 5531.
- */
+ 
 static enum svc_auth_status
 svcauth_unix_accept(struct svc_rqst *rqstp)
 {
@@ -922,11 +872,7 @@ svcauth_unix_accept(struct svc_rqst *rqstp)
 	void *body;
 	__be32 *p;
 
-	/*
-	 * This implementation ignores the length of the Call's
-	 * credential body field and the timestamp and machinename
-	 * fields.
-	 */
+	 
 	p = xdr_inline_decode(xdr, XDR_UNIT * 3);
 	if (!p)
 		return SVC_GARBAGE;
@@ -936,13 +882,7 @@ svcauth_unix_accept(struct svc_rqst *rqstp)
 	if (!xdr_inline_decode(xdr, len))
 		return SVC_GARBAGE;
 
-	/*
-	 * Note: we skip uid_valid()/gid_valid() checks here for
-	 * backwards compatibility with clients that use -1 id's.
-	 * Instead, -1 uid or gid is later mapped to the
-	 * (export-specific) anonymous id by nfsd_setuser.
-	 * Supplementary gid's will be left alone.
-	 */
+	 
 	userns = (rqstp->rq_xprt && rqstp->rq_xprt->xpt_cred) ?
 		rqstp->rq_xprt->xpt_cred->user_ns : &init_user_ns;
 	if (xdr_stream_decode_u32(xdr, &i) < 0)
@@ -968,7 +908,7 @@ svcauth_unix_accept(struct svc_rqst *rqstp)
 	}
 	groups_sort(cred->cr_group_info);
 
-	/* Call's verf field: */
+	 
 	if (xdr_stream_decode_opaque_auth(xdr, &flavor, &body, &len) < 0)
 		return SVC_GARBAGE;
 	if (flavor != RPC_AUTH_NULL || len != 0) {
@@ -993,8 +933,7 @@ badcred:
 static int
 svcauth_unix_release(struct svc_rqst *rqstp)
 {
-	/* Verifier (such as it is) is already in place.
-	 */
+	 
 	if (rqstp->rq_client)
 		auth_domain_put(rqstp->rq_client);
 	rqstp->rq_client = NULL;

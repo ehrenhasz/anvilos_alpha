@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #include <linux/list.h>
 #include <linux/errno.h>
@@ -27,11 +27,7 @@ static struct iavf_ops iavf_lan_ops = {
 	.setup_qvlist = iavf_client_setup_qvlist,
 };
 
-/**
- * iavf_client_get_params - retrieve relevant client parameters
- * @vsi: VSI with parameters
- * @params: client param struct
- **/
+ 
 static
 void iavf_client_get_params(struct iavf_vsi *vsi, struct iavf_params *params)
 {
@@ -47,14 +43,7 @@ void iavf_client_get_params(struct iavf_vsi *vsi, struct iavf_params *params)
 	}
 }
 
-/**
- * iavf_notify_client_message - call the client message receive callback
- * @vsi: the VSI associated with this client
- * @msg: message buffer
- * @len: length of message
- *
- * If there is a client to this VSI, call the client
- **/
+ 
 void iavf_notify_client_message(struct iavf_vsi *vsi, u8 *msg, u16 len)
 {
 	struct iavf_client_instance *cinst;
@@ -73,12 +62,7 @@ void iavf_notify_client_message(struct iavf_vsi *vsi, u8 *msg, u16 len)
 					     msg, len);
 }
 
-/**
- * iavf_notify_client_l2_params - call the client notify callback
- * @vsi: the VSI with l2 param changes
- *
- * If there is a client to this VSI, call the client
- **/
+ 
 void iavf_notify_client_l2_params(struct iavf_vsi *vsi)
 {
 	struct iavf_client_instance *cinst;
@@ -101,12 +85,7 @@ void iavf_notify_client_l2_params(struct iavf_vsi *vsi)
 					    &params);
 }
 
-/**
- * iavf_notify_client_open - call the client open callback
- * @vsi: the VSI with netdev opened
- *
- * If there is a client to this netdev, call the client with open
- **/
+ 
 void iavf_notify_client_open(struct iavf_vsi *vsi)
 {
 	struct iavf_adapter *adapter = vsi->back;
@@ -126,12 +105,7 @@ void iavf_notify_client_open(struct iavf_vsi *vsi)
 	}
 }
 
-/**
- * iavf_client_release_qvlist - send a message to the PF to release rdma qv map
- * @ldev: pointer to L2 context.
- *
- * Return 0 on success or < 0 on error
- **/
+ 
 static int iavf_client_release_qvlist(struct iavf_info *ldev)
 {
 	struct iavf_adapter *adapter = ldev->vf;
@@ -152,13 +126,7 @@ static int iavf_client_release_qvlist(struct iavf_info *ldev)
 	return err;
 }
 
-/**
- * iavf_notify_client_close - call the client close callback
- * @vsi: the VSI with netdev closed
- * @reset: true when close called due to reset pending
- *
- * If there is a client to this netdev, call the client with close
- **/
+ 
 void iavf_notify_client_close(struct iavf_vsi *vsi, bool reset)
 {
 	struct iavf_adapter *adapter = vsi->back;
@@ -175,12 +143,7 @@ void iavf_notify_client_close(struct iavf_vsi *vsi, bool reset)
 	clear_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state);
 }
 
-/**
- * iavf_client_add_instance - add a client instance to the instance list
- * @adapter: pointer to the board struct
- *
- * Returns cinst ptr on success, NULL on failure
- **/
+ 
 static struct iavf_client_instance *
 iavf_client_add_instance(struct iavf_adapter *adapter)
 {
@@ -232,11 +195,7 @@ out:
 	return cinst;
 }
 
-/**
- * iavf_client_del_instance - removes a client instance from the list
- * @adapter: pointer to the board struct
- *
- **/
+ 
 static
 void iavf_client_del_instance(struct iavf_adapter *adapter)
 {
@@ -244,10 +203,7 @@ void iavf_client_del_instance(struct iavf_adapter *adapter)
 	adapter->cinst = NULL;
 }
 
-/**
- * iavf_client_subtask - client maintenance work
- * @adapter: board private structure
- **/
+ 
 void iavf_client_subtask(struct iavf_adapter *adapter)
 {
 	struct iavf_client *client = vf_registered_client;
@@ -257,11 +213,11 @@ void iavf_client_subtask(struct iavf_adapter *adapter)
 	if (adapter->state < __IAVF_DOWN)
 		return;
 
-	/* first check client is registered */
+	 
 	if (!client)
 		return;
 
-	/* Add the client instance to the instance list */
+	 
 	cinst = iavf_client_add_instance(adapter);
 	if (!cinst)
 		return;
@@ -270,7 +226,7 @@ void iavf_client_subtask(struct iavf_adapter *adapter)
 		 client->name);
 
 	if (!test_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state)) {
-		/* Send an Open request to the client */
+		 
 
 		if (client->ops && client->ops->open)
 			ret = client->ops->open(&cinst->lan_info, client);
@@ -278,17 +234,12 @@ void iavf_client_subtask(struct iavf_adapter *adapter)
 			set_bit(__IAVF_CLIENT_INSTANCE_OPENED,
 				&cinst->state);
 		else
-			/* remove client instance */
+			 
 			iavf_client_del_instance(adapter);
 	}
 }
 
-/**
- * iavf_lan_add_device - add a lan device struct to the list of lan devices
- * @adapter: pointer to the board struct
- *
- * Returns 0 on success or none 0 on error
- **/
+ 
 int iavf_lan_add_device(struct iavf_adapter *adapter)
 {
 	struct iavf_device *ldev;
@@ -313,9 +264,7 @@ int iavf_lan_add_device(struct iavf_adapter *adapter)
 		 adapter->hw.bus.bus_id, adapter->hw.bus.device,
 		 adapter->hw.bus.func);
 
-	/* Since in some cases register may have happened before a device gets
-	 * added, we can schedule a subtask to go initiate the clients.
-	 */
+	 
 	adapter->flags |= IAVF_FLAG_SERVICE_CLIENT_REQUESTED;
 
 out:
@@ -323,12 +272,7 @@ out:
 	return ret;
 }
 
-/**
- * iavf_lan_del_device - removes a lan device from the device list
- * @adapter: pointer to the board struct
- *
- * Returns 0 on success or non-0 on error
- **/
+ 
 int iavf_lan_del_device(struct iavf_adapter *adapter)
 {
 	struct iavf_device *ldev, *tmp;
@@ -352,11 +296,7 @@ int iavf_lan_del_device(struct iavf_adapter *adapter)
 	return ret;
 }
 
-/**
- * iavf_client_release - release client specific resources
- * @client: pointer to the registered client
- *
- **/
+ 
 static void iavf_client_release(struct iavf_client *client)
 {
 	struct iavf_client_instance *cinst;
@@ -379,7 +319,7 @@ static void iavf_client_release(struct iavf_client *client)
 			dev_warn(&adapter->pdev->dev,
 				 "Client %s instance closed\n", client->name);
 		}
-		/* delete the client instance */
+		 
 		iavf_client_del_instance(adapter);
 		dev_info(&adapter->pdev->dev, "Deleted client instance of Client %s\n",
 			 client->name);
@@ -387,11 +327,7 @@ static void iavf_client_release(struct iavf_client *client)
 	mutex_unlock(&iavf_device_mutex);
 }
 
-/**
- * iavf_client_prepare - prepare client specific resources
- * @client: pointer to the registered client
- *
- **/
+ 
 static void iavf_client_prepare(struct iavf_client *client)
 {
 	struct iavf_device *ldev;
@@ -400,21 +336,13 @@ static void iavf_client_prepare(struct iavf_client *client)
 	mutex_lock(&iavf_device_mutex);
 	list_for_each_entry(ldev, &iavf_devices, list) {
 		adapter = ldev->vf;
-		/* Signal the watchdog to service the client */
+		 
 		adapter->flags |= IAVF_FLAG_SERVICE_CLIENT_REQUESTED;
 	}
 	mutex_unlock(&iavf_device_mutex);
 }
 
-/**
- * iavf_client_virtchnl_send - send a message to the PF instance
- * @ldev: pointer to L2 context.
- * @client: Client pointer.
- * @msg: pointer to message buffer
- * @len: message length
- *
- * Return 0 on success or < 0 on error
- **/
+ 
 static u32 iavf_client_virtchnl_send(struct iavf_info *ldev,
 				     struct iavf_client *client,
 				     u8 *msg, u16 len)
@@ -434,14 +362,7 @@ static u32 iavf_client_virtchnl_send(struct iavf_info *ldev,
 	return err;
 }
 
-/**
- * iavf_client_setup_qvlist - send a message to the PF to setup rdma qv map
- * @ldev: pointer to L2 context.
- * @client: Client pointer.
- * @qvlist_info: queue and vector list
- *
- * Return 0 on success or < 0 on error
- **/
+ 
 static int iavf_client_setup_qvlist(struct iavf_info *ldev,
 				    struct iavf_client *client,
 				    struct iavf_qvlist_info *qvlist_info)
@@ -456,7 +377,7 @@ static int iavf_client_setup_qvlist(struct iavf_info *ldev,
 	if (adapter->aq_required)
 		return -EAGAIN;
 
-	/* A quick check on whether the vectors belong to the client */
+	 
 	for (i = 0; i < qvlist_info->num_vectors; i++) {
 		qv_info = &qvlist_info->qv_info[i];
 		if (!qv_info)
@@ -497,12 +418,7 @@ out:
 	return err;
 }
 
-/**
- * iavf_register_client - Register a iavf client driver with the L2 driver
- * @client: pointer to the iavf_client struct
- *
- * Returns 0 on success or non-0 on error
- **/
+ 
 int iavf_register_client(struct iavf_client *client)
 {
 	int ret = 0;
@@ -548,20 +464,12 @@ out:
 }
 EXPORT_SYMBOL(iavf_register_client);
 
-/**
- * iavf_unregister_client - Unregister a iavf client driver with the L2 driver
- * @client: pointer to the iavf_client struct
- *
- * Returns 0 on success or non-0 on error
- **/
+ 
 int iavf_unregister_client(struct iavf_client *client)
 {
 	int ret = 0;
 
-	/* When a unregister request comes through we would have to send
-	 * a close for each of the client instances that were opened.
-	 * client_release function is called to handle this.
-	 */
+	 
 	iavf_client_release(client);
 
 	if (vf_registered_client != client) {

@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  arch/arm/mach-vt8500/timer.c
- *
- *  Copyright (C) 2012 Tony Prisk <linux@prisktech.co.nz>
- *  Copyright (C) 2010 Alexey Charkov <alchark@gmail.com>
- */
 
-/*
- * This file is copied and modified from the original timer.c provided by
- * Alexey Charkov. Minor changes have been made for Device Tree Support.
- */
+ 
+
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -27,12 +19,12 @@
 #define TIMER_MATCH_VAL		0x0000
 #define TIMER_COUNT_VAL		0x0010
 #define TIMER_STATUS_VAL	0x0014
-#define TIMER_IER_VAL		0x001c		/* interrupt enable */
+#define TIMER_IER_VAL		0x001c		 
 #define TIMER_CTRL_VAL		0x0020
-#define TIMER_AS_VAL		0x0024		/* access status */
-#define TIMER_COUNT_R_ACTIVE	(1 << 5)	/* not ready for read */
-#define TIMER_COUNT_W_ACTIVE	(1 << 4)	/* not ready for write */
-#define TIMER_MATCH_W_ACTIVE	(1 << 0)	/* not ready for write */
+#define TIMER_AS_VAL		0x0024		 
+#define TIMER_COUNT_R_ACTIVE	(1 << 5)	 
+#define TIMER_COUNT_W_ACTIVE	(1 << 4)	 
+#define TIMER_MATCH_W_ACTIVE	(1 << 0)	 
 
 #define msecs_to_loops(t) (loops_per_jiffy / 1000 * HZ * t)
 

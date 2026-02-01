@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI Multiplexer Clock
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -24,13 +18,7 @@ static u8 ti_clk_mux_get_parent(struct clk_hw *hw)
 	int num_parents = clk_hw_get_num_parents(hw);
 	u32 val;
 
-	/*
-	 * FIXME need a mux-specific flag to determine if val is bitwise or
-	 * numeric. e.g. sys_clkin_ck's clksel field is 3 bits wide, but ranges
-	 * from 0x1 to 0x7 (index starts at one)
-	 * OTOH, pmd_trace_clk_mux_ck uses a separate bit for each clock, so
-	 * val = 0x4 really means "bit 2, index starts at bit 0"
-	 */
+	 
 	val = ti_clk_ll_ops->clk_readl(&mux->reg) >> mux->shift;
 	val &= mux->mask;
 
@@ -83,12 +71,7 @@ static int ti_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 	return 0;
 }
 
-/**
- * clk_mux_save_context - Save the parent selcted in the mux
- * @hw: pointer  struct clk_hw
- *
- * Save the parent mux value.
- */
+ 
 static int clk_mux_save_context(struct clk_hw *hw)
 {
 	struct clk_omap_mux *mux = to_clk_omap_mux(hw);
@@ -97,12 +80,7 @@ static int clk_mux_save_context(struct clk_hw *hw)
 	return 0;
 }
 
-/**
- * clk_mux_restore_context - Restore the parent in the mux
- * @hw: pointer  struct clk_hw
- *
- * Restore the saved parent mux value.
- */
+ 
 static void clk_mux_restore_context(struct clk_hw *hw)
 {
 	struct clk_omap_mux *mux = to_clk_omap_mux(hw);
@@ -128,7 +106,7 @@ static struct clk *_register_mux(struct device_node *node, const char *name,
 	struct clk *clk;
 	struct clk_init_data init;
 
-	/* allocate the mux */
+	 
 	mux = kzalloc(sizeof(*mux), GFP_KERNEL);
 	if (!mux)
 		return ERR_PTR(-ENOMEM);
@@ -139,7 +117,7 @@ static struct clk *_register_mux(struct device_node *node, const char *name,
 	init.parent_names = parent_names;
 	init.num_parents = num_parents;
 
-	/* struct clk_mux assignments */
+	 
 	memcpy(&mux->reg, reg, sizeof(*reg));
 	mux->shift = shift;
 	mux->mask = mask;
@@ -156,12 +134,7 @@ static struct clk *_register_mux(struct device_node *node, const char *name,
 	return clk;
 }
 
-/**
- * of_mux_clk_setup - Setup function for simple mux rate clock
- * @node: DT node for the clock
- *
- * Sets up a basic clock multiplexer.
- */
+ 
 static void of_mux_clk_setup(struct device_node *node)
 {
 	struct clk *clk;
@@ -199,7 +172,7 @@ static void of_mux_clk_setup(struct device_node *node)
 	if (of_property_read_bool(node, "ti,set-rate-parent"))
 		flags |= CLK_SET_RATE_PARENT;
 
-	/* Generate bit-mask based on parent info */
+	 
 	mask = num_parents;
 	if (!(clk_mux_flags & CLK_MUX_INDEX_ONE))
 		mask--;

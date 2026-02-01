@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -58,7 +56,7 @@ struct cdns_dphy_rx {
 };
 
 struct cdns_dphy_rx_band {
-	/* Rates are in Mbps. */
+	 
 	unsigned int min_rate;
 	unsigned int max_rate;
 };
@@ -67,7 +65,7 @@ struct cdns_dphy_soc_data {
 	bool has_hw_cmn_rstb;
 };
 
-/* Order of bands is important since the index is the band number. */
+ 
 static const struct cdns_dphy_rx_band bands[] = {
 	{ 80, 100 }, { 100, 120 }, { 120, 160 }, { 160, 200 }, { 200, 240 },
 	{ 240, 280 }, { 280, 320 }, { 320, 360 }, { 360, 400 }, { 400, 480 },
@@ -80,7 +78,7 @@ static int cdns_dphy_rx_power_on(struct phy *phy)
 {
 	struct cdns_dphy_rx *dphy = phy_get_drvdata(phy);
 
-	/* Start RX state machine. */
+	 
 	writel(DPHY_CMN_SSM_EN | DPHY_CMN_RX_MODE_EN |
 	       FIELD_PREP(DPHY_CMN_RX_BANDGAP_TIMER_MASK,
 			  DPHY_CMN_RX_BANDGAP_TIMER),
@@ -103,7 +101,7 @@ static int cdns_dphy_rx_get_band_ctrl(unsigned long hs_clk_rate)
 	unsigned int rate, i;
 
 	rate = hs_clk_rate / 1000000UL;
-	/* Since CSI-2 clock is DDR, the bit rate is twice the clock rate. */
+	 
 	rate *= 2;
 
 	if (rate < bands[0].min_rate)
@@ -136,7 +134,7 @@ static int cdns_dphy_rx_wait_lane_ready(struct cdns_dphy_rx *dphy,
 	unsigned int i;
 	int ret;
 
-	/* Clock lane */
+	 
 	ret = cdns_dphy_rx_wait_for_bit(reg + DPHY_ISO_CL_CTRL_L,
 					DPHY_ISO_LANE_READY_BIT);
 	if (ret)
@@ -162,7 +160,7 @@ static const struct soc_device_attribute cdns_dphy_socinfo[] = {
 		.revision = "SR1.0",
 		.data = &j721e_soc_data,
 	},
-	{/* sentinel */}
+	{ }
 };
 
 static int cdns_dphy_rx_configure(struct phy *phy,
@@ -182,7 +180,7 @@ static int cdns_dphy_rx_configure(struct phy *phy,
 		writel(reg, dphy->regs + DPHY_LANE);
 	}
 
-	/* Data lanes. Minimum one lane is mandatory. */
+	 
 	if (lanes < DPHY_LANES_MIN || lanes > DPHY_LANES_MAX)
 		return -EINVAL;
 
@@ -194,10 +192,7 @@ static int cdns_dphy_rx_configure(struct phy *phy,
 	      FIELD_PREP(DPHY_BAND_CFG_RIGHT_BAND, band_ctrl);
 	writel(reg, dphy->regs + DPHY_BAND_CFG);
 
-	/*
-	 * Set the required power island phase 2 time. This is mandated by DPHY
-	 * specs.
-	 */
+	 
 	reg = DPHY_POWER_ISLAND_EN_DATA_VAL;
 	writel(reg, dphy->regs + DPHY_POWER_ISLAND_EN_DATA);
 	reg = DPHY_POWER_ISLAND_EN_CLK_VAL;
@@ -270,7 +265,7 @@ static int cdns_dphy_rx_probe(struct platform_device *pdev)
 
 static const struct of_device_id cdns_dphy_rx_of_match[] = {
 	{ .compatible = "cdns,dphy-rx" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, cdns_dphy_rx_of_match);
 

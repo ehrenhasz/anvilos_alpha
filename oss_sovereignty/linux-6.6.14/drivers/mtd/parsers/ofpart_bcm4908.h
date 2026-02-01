@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __BCM4908_PARTITIONS_H
 #define __BCM4908_PARTITIONS_H
 

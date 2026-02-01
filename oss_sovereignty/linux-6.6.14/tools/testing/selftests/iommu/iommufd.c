@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES */
+
+ 
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/eventfd.h>
@@ -74,11 +74,11 @@ TEST_F(iommufd, cmd_fail)
 {
 	struct iommu_destroy cmd = { .size = sizeof(cmd), .id = 0 };
 
-	/* object id is invalid */
+	 
 	EXPECT_ERRNO(ENOENT, _test_ioctl_destroy(self->fd, 0));
-	/* Bad pointer */
+	 
 	EXPECT_ERRNO(EFAULT, ioctl(self->fd, IOMMU_DESTROY, NULL));
-	/* Unknown ioctl */
+	 
 	EXPECT_ERRNO(ENOTTY,
 		     ioctl(self->fd, _IO(IOMMUFD_TYPE, IOMMUFD_CMD_BASE - 1),
 			   &cmd));
@@ -132,15 +132,15 @@ TEST_F(iommufd, cmd_ex_fail)
 		__u64 future;
 	} cmd = { .cmd = { .size = sizeof(cmd), .id = 0 } };
 
-	/* object id is invalid and command is longer */
+	 
 	EXPECT_ERRNO(ENOENT, ioctl(self->fd, IOMMU_DESTROY, &cmd));
-	/* future area is non-zero */
+	 
 	cmd.future = 1;
 	EXPECT_ERRNO(E2BIG, ioctl(self->fd, IOMMU_DESTROY, &cmd));
-	/* Original command "works" */
+	 
 	cmd.cmd.size = sizeof(cmd.cmd);
 	EXPECT_ERRNO(ENOENT, ioctl(self->fd, IOMMU_DESTROY, &cmd));
-	/* Short command fails */
+	 
 	cmd.cmd.size = sizeof(cmd.cmd) - 1;
 	EXPECT_ERRNO(EINVAL, ioctl(self->fd, IOMMU_DESTROY, &cmd));
 }
@@ -158,7 +158,7 @@ TEST_F(iommufd, global_options)
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
 	ASSERT_EQ(0, cmd.val64);
 
-	/* This requires root */
+	 
 	cmd.op = IOMMU_OPTION_OP_SET;
 	cmd.val64 = 1;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
@@ -251,18 +251,18 @@ TEST_F(iommufd_ioas, ioas_auto_destroy)
 TEST_F(iommufd_ioas, ioas_destroy)
 {
 	if (self->stdev_id) {
-		/* IOAS cannot be freed while a device has a HWPT using it */
+		 
 		EXPECT_ERRNO(EBUSY,
 			     _test_ioctl_destroy(self->fd, self->ioas_id));
 	} else {
-		/* Can allocate and manually free an IOAS table */
+		 
 		test_ioctl_destroy(self->ioas_id);
 	}
 }
 
 TEST_F(iommufd_ioas, hwpt_attach)
 {
-	/* Create a device attached directly to a hwpt */
+	 
 	if (self->stdev_id) {
 		test_cmd_mock_domain(self->hwpt_id, NULL, NULL, NULL);
 	} else {
@@ -272,7 +272,7 @@ TEST_F(iommufd_ioas, hwpt_attach)
 
 TEST_F(iommufd_ioas, ioas_area_destroy)
 {
-	/* Adding an area does not change ability to destroy */
+	 
 	test_ioctl_ioas_map_fixed(buffer, PAGE_SIZE, self->base_iova);
 	if (self->stdev_id)
 		EXPECT_ERRNO(EBUSY,
@@ -285,7 +285,7 @@ TEST_F(iommufd_ioas, ioas_area_auto_destroy)
 {
 	int i;
 
-	/* Can allocate and automatically free an IOAS table with many areas */
+	 
 	for (i = 0; i != 10; i++) {
 		test_ioctl_ioas_map_fixed(buffer, PAGE_SIZE,
 					  self->base_iova + i * PAGE_SIZE);
@@ -304,19 +304,13 @@ TEST_F(iommufd_ioas, get_hw_info)
 	} buffer_smaller;
 
 	if (self->device_id) {
-		/* Provide a zero-size user_buffer */
+		 
 		test_cmd_get_hw_info(self->device_id, NULL, 0);
-		/* Provide a user_buffer with exact size */
+		 
 		test_cmd_get_hw_info(self->device_id, &buffer_exact, sizeof(buffer_exact));
-		/*
-		 * Provide a user_buffer with size larger than the exact size to check if
-		 * kernel zero the trailing bytes.
-		 */
+		 
 		test_cmd_get_hw_info(self->device_id, &buffer_larger, sizeof(buffer_larger));
-		/*
-		 * Provide a user_buffer with size smaller than the exact size to check if
-		 * the fields within the size range still gets updated.
-		 */
+		 
 		test_cmd_get_hw_info(self->device_id, &buffer_smaller, sizeof(buffer_smaller));
 	} else {
 		test_err_get_hw_info(ENOENT, self->device_id,
@@ -330,11 +324,11 @@ TEST_F(iommufd_ioas, area)
 {
 	int i;
 
-	/* Unmap fails if nothing is mapped */
+	 
 	for (i = 0; i != 10; i++)
 		test_err_ioctl_ioas_unmap(ENOENT, i * PAGE_SIZE, PAGE_SIZE);
 
-	/* Unmap works */
+	 
 	for (i = 0; i != 10; i++)
 		test_ioctl_ioas_map_fixed(buffer, PAGE_SIZE,
 					  self->base_iova + i * PAGE_SIZE);
@@ -342,7 +336,7 @@ TEST_F(iommufd_ioas, area)
 		test_ioctl_ioas_unmap(self->base_iova + i * PAGE_SIZE,
 				      PAGE_SIZE);
 
-	/* Split fails */
+	 
 	test_ioctl_ioas_map_fixed(buffer, PAGE_SIZE * 2,
 				  self->base_iova + 16 * PAGE_SIZE);
 	test_err_ioctl_ioas_unmap(ENOENT, self->base_iova + 16 * PAGE_SIZE,
@@ -350,7 +344,7 @@ TEST_F(iommufd_ioas, area)
 	test_err_ioctl_ioas_unmap(ENOENT, self->base_iova + 17 * PAGE_SIZE,
 				  PAGE_SIZE);
 
-	/* Over map fails */
+	 
 	test_err_ioctl_ioas_map_fixed(EEXIST, buffer, PAGE_SIZE * 2,
 				      self->base_iova + 16 * PAGE_SIZE);
 	test_err_ioctl_ioas_map_fixed(EEXIST, buffer, PAGE_SIZE,
@@ -362,10 +356,10 @@ TEST_F(iommufd_ioas, area)
 	test_err_ioctl_ioas_map_fixed(EEXIST, buffer, PAGE_SIZE * 3,
 				      self->base_iova + 15 * PAGE_SIZE);
 
-	/* unmap all works */
+	 
 	test_ioctl_ioas_unmap(0, UINT64_MAX);
 
-	/* Unmap all succeeds on an empty IOAS */
+	 
 	test_ioctl_ioas_unmap(0, UINT64_MAX);
 }
 
@@ -374,14 +368,14 @@ TEST_F(iommufd_ioas, unmap_fully_contained_areas)
 	uint64_t unmap_len;
 	int i;
 
-	/* Give no_domain some space to rewind base_iova */
+	 
 	self->base_iova += 4 * PAGE_SIZE;
 
 	for (i = 0; i != 4; i++)
 		test_ioctl_ioas_map_fixed(buffer, 8 * PAGE_SIZE,
 					  self->base_iova + i * 16 * PAGE_SIZE);
 
-	/* Unmap not fully contained area doesn't work */
+	 
 	test_err_ioctl_ioas_unmap(ENOENT, self->base_iova - 4 * PAGE_SIZE,
 				  8 * PAGE_SIZE);
 	test_err_ioctl_ioas_unmap(ENOENT,
@@ -389,7 +383,7 @@ TEST_F(iommufd_ioas, unmap_fully_contained_areas)
 					  8 * PAGE_SIZE - 4 * PAGE_SIZE,
 				  8 * PAGE_SIZE);
 
-	/* Unmap fully contained areas works */
+	 
 	ASSERT_EQ(0, _test_ioctl_ioas_unmap(self->fd, self->ioas_id,
 					    self->base_iova - 4 * PAGE_SIZE,
 					    3 * 16 * PAGE_SIZE + 8 * PAGE_SIZE +
@@ -417,13 +411,13 @@ TEST_F(iommufd_ioas, area_auto_iova)
 	__u64 iovas[10];
 	int i;
 
-	/* Simple 4k pages */
+	 
 	for (i = 0; i != 10; i++)
 		test_ioctl_ioas_map(buffer, PAGE_SIZE, &iovas[i]);
 	for (i = 0; i != 10; i++)
 		test_ioctl_ioas_unmap(iovas[i], PAGE_SIZE);
 
-	/* Kernel automatically aligns IOVAs properly */
+	 
 	for (i = 0; i != 10; i++) {
 		size_t length = PAGE_SIZE * (i + 1);
 
@@ -438,7 +432,7 @@ TEST_F(iommufd_ioas, area_auto_iova)
 	for (i = 0; i != 10; i++)
 		test_ioctl_ioas_unmap(iovas[i], PAGE_SIZE * (i + 1));
 
-	/* Avoids a reserved region */
+	 
 	ASSERT_EQ(0,
 		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ADD_RESERVED),
 			&test_cmd));
@@ -456,13 +450,13 @@ TEST_F(iommufd_ioas, area_auto_iova)
 	for (i = 0; i != 10; i++)
 		test_ioctl_ioas_unmap(iovas[i], PAGE_SIZE * (i + 1));
 
-	/* Allowed region intersects with a reserved region */
+	 
 	ranges[0].start = PAGE_SIZE;
 	ranges[0].last = PAGE_SIZE * 600;
 	EXPECT_ERRNO(EADDRINUSE,
 		     ioctl(self->fd, IOMMU_IOAS_ALLOW_IOVAS, &allow_cmd));
 
-	/* Allocate from an allowed region */
+	 
 	if (self->stdev_id) {
 		ranges[0].start = MOCK_APERTURE_START + PAGE_SIZE;
 		ranges[0].last = MOCK_APERTURE_START + PAGE_SIZE * 600 - 1;
@@ -502,7 +496,7 @@ TEST_F(iommufd_ioas, area_allowed)
 		.allowed_iovas = (uintptr_t)ranges,
 	};
 
-	/* Reserved intersects an allowed */
+	 
 	allow_cmd.num_iovas = 1;
 	ranges[0].start = self->base_iova;
 	ranges[0].last = ranges[0].start + PAGE_SIZE * 600;
@@ -516,7 +510,7 @@ TEST_F(iommufd_ioas, area_allowed)
 	allow_cmd.num_iovas = 0;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_ALLOW_IOVAS, &allow_cmd));
 
-	/* Allowed intersects a reserved */
+	 
 	ASSERT_EQ(0,
 		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ADD_RESERVED),
 			&test_cmd));
@@ -539,12 +533,12 @@ TEST_F(iommufd_ioas, copy_area)
 
 	test_ioctl_ioas_map_fixed(buffer, PAGE_SIZE, self->base_iova);
 
-	/* Copy inside a single IOAS */
+	 
 	copy_cmd.src_iova = self->base_iova;
 	copy_cmd.dst_iova = self->base_iova + PAGE_SIZE;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
 
-	/* Copy between IOAS's */
+	 
 	copy_cmd.src_iova = self->base_iova;
 	copy_cmd.dst_iova = 0;
 	test_ioctl_ioas_alloc(&copy_cmd.dst_ioas_id);
@@ -567,7 +561,7 @@ TEST_F(iommufd_ioas, iova_ranges)
 		.allowed_iovas = (uintptr_t)ranges,
 	};
 
-	/* Range can be read */
+	 
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_IOVA_RANGES, &ranges_cmd));
 	EXPECT_EQ(1, ranges_cmd.num_iovas);
 	if (!self->stdev_id) {
@@ -580,7 +574,7 @@ TEST_F(iommufd_ioas, iova_ranges)
 		EXPECT_EQ(MOCK_PAGE_SIZE, ranges_cmd.out_iova_alignment);
 	}
 
-	/* Buffer too small */
+	 
 	memset(ranges, 0, BUFFER_SIZE);
 	ranges_cmd.num_iovas = 0;
 	EXPECT_ERRNO(EMSGSIZE,
@@ -589,7 +583,7 @@ TEST_F(iommufd_ioas, iova_ranges)
 	EXPECT_EQ(0, ranges[0].start);
 	EXPECT_EQ(0, ranges[0].last);
 
-	/* 2 ranges */
+	 
 	ASSERT_EQ(0,
 		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ADD_RESERVED),
 			&test_cmd));
@@ -607,7 +601,7 @@ TEST_F(iommufd_ioas, iova_ranges)
 		EXPECT_EQ(MOCK_APERTURE_LAST, ranges[0].last);
 	}
 
-	/* Buffer too small */
+	 
 	memset(ranges, 0, BUFFER_SIZE);
 	ranges_cmd.num_iovas = 1;
 	if (!self->stdev_id) {
@@ -651,7 +645,7 @@ TEST_F(iommufd_ioas, access_domain_destory)
 		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_PAGES),
 			&access_cmd));
 
-	/* Causes a complicated unpin across a huge page boundary */
+	 
 	if (self->stdev_id)
 		test_ioctl_destroy(self->stdev_id);
 
@@ -689,7 +683,7 @@ TEST_F(iommufd_ioas, access_pin)
 
 		access_cmd.access_pages.length = npages * PAGE_SIZE;
 
-		/* Single map/unmap */
+		 
 		test_ioctl_ioas_map_fixed(buffer, BUFFER_SIZE,
 					  MOCK_APERTURE_START);
 		ASSERT_EQ(0, ioctl(self->fd,
@@ -699,7 +693,7 @@ TEST_F(iommufd_ioas, access_pin)
 			access_cmd.id,
 			access_cmd.access_pages.out_access_pages_id);
 
-		/* Double user */
+		 
 		ASSERT_EQ(0, ioctl(self->fd,
 				   _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_PAGES),
 				   &access_cmd));
@@ -712,7 +706,7 @@ TEST_F(iommufd_ioas, access_pin)
 			access_cmd.access_pages.out_access_pages_id);
 		test_cmd_destroy_access_pages(access_cmd.id, access_pages_id);
 
-		/* Add/remove a domain with a user */
+		 
 		ASSERT_EQ(0, ioctl(self->fd,
 				   _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_PAGES),
 				   &access_cmd));
@@ -750,10 +744,10 @@ TEST_F(iommufd_ioas, access_pin_unmap)
 		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_PAGES),
 			&access_pages_cmd));
 
-	/* Trigger the unmap op */
+	 
 	test_ioctl_ioas_unmap(MOCK_APERTURE_START, BUFFER_SIZE);
 
-	/* kernel removed the item for us */
+	 
 	test_err_destroy_access_pages(
 		ENOENT, access_pages_cmd.id,
 		access_pages_cmd.access_pages.out_access_pages_id);
@@ -808,7 +802,7 @@ static void check_access_rw(struct __test_metadata *_metadata, int fd,
 		}
 	}
 
-	/* Multi-page test */
+	 
 	tmp2 = malloc(BUFFER_SIZE);
 	ASSERT_NE(NULL, tmp2);
 	access_cmd.access_rw.iova = iova;
@@ -842,7 +836,7 @@ TEST_F(iommufd_ioas, access_rw_unaligned)
 
 	test_cmd_create_access(self->ioas_id, &access_id, 0);
 
-	/* Unaligned pages */
+	 
 	iova = self->base_iova + MOCK_PAGE_SIZE;
 	test_ioctl_ioas_map_fixed(buffer, BUFFER_SIZE, iova);
 	check_access_rw(_metadata, self->fd, access_id, iova, 0);
@@ -857,7 +851,7 @@ TEST_F(iommufd_ioas, fork_gone)
 
 	test_cmd_create_access(self->ioas_id, &access_id, 0);
 
-	/* Create a mapping with a different mm */
+	 
 	child = fork();
 	if (!child) {
 		test_ioctl_ioas_map_fixed(buffer, BUFFER_SIZE,
@@ -868,19 +862,13 @@ TEST_F(iommufd_ioas, fork_gone)
 	ASSERT_EQ(child, waitpid(child, NULL, 0));
 
 	if (self->stdev_id) {
-		/*
-		 * If a domain already existed then everything was pinned within
-		 * the fork, so this copies from one domain to another.
-		 */
+		 
 		test_cmd_mock_domain(self->ioas_id, NULL, NULL, NULL);
 		check_access_rw(_metadata, self->fd, access_id,
 				MOCK_APERTURE_START, 0);
 
 	} else {
-		/*
-		 * Otherwise we need to actually pin pages which can't happen
-		 * since the fork is gone.
-		 */
+		 
 		test_err_mock_domain(EFAULT, self->ioas_id, NULL, NULL);
 	}
 
@@ -901,7 +889,7 @@ TEST_F(iommufd_ioas, fork_present)
 	efd = eventfd(0, EFD_CLOEXEC);
 	ASSERT_NE(-1, efd);
 
-	/* Create a mapping with a different mm */
+	 
 	child = fork();
 	if (!child) {
 		__u64 iova;
@@ -920,7 +908,7 @@ TEST_F(iommufd_ioas, fork_present)
 	ASSERT_NE(-1, child);
 	ASSERT_EQ(8, read(efd, &tmp, sizeof(tmp)));
 
-	/* Read pages from the remote process */
+	 
 	test_cmd_mock_domain(self->ioas_id, NULL, NULL, NULL);
 	check_access_rw(_metadata, self->fd, access_id, MOCK_APERTURE_START, 0);
 
@@ -983,34 +971,29 @@ TEST_F(iommufd_ioas, ioas_align_change)
 		.option_id = IOMMU_OPTION_HUGE_PAGES,
 		.op = IOMMU_OPTION_OP_SET,
 		.object_id = self->ioas_id,
-		/* 0 means everything must be aligned to PAGE_SIZE */
+		 
 		.val64 = 0,
 	};
 
-	/*
-	 * We cannot upgrade the alignment using OPTION_HUGE_PAGES when a domain
-	 * and map are present.
-	 */
+	 
 	if (variant->mock_domains)
 		return;
 
-	/*
-	 * We can upgrade to PAGE_SIZE alignment when things are aligned right
-	 */
+	 
 	test_ioctl_ioas_map_fixed(buffer, PAGE_SIZE, MOCK_APERTURE_START);
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
 
-	/* Misalignment is rejected at map time */
+	 
 	test_err_ioctl_ioas_map_fixed(EINVAL, buffer + MOCK_PAGE_SIZE,
 				      PAGE_SIZE,
 				      MOCK_APERTURE_START + PAGE_SIZE);
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
 
-	/* Reduce alignment */
+	 
 	cmd.val64 = 1;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
 
-	/* Confirm misalignment is rejected during alignment upgrade */
+	 
 	test_ioctl_ioas_map_fixed(buffer + MOCK_PAGE_SIZE, PAGE_SIZE,
 				  MOCK_APERTURE_START + PAGE_SIZE);
 	cmd.val64 = 0;
@@ -1098,10 +1081,7 @@ FIXTURE_SETUP(iommufd_mock_domain)
 	self->mmap_flags = MAP_SHARED | MAP_ANONYMOUS;
 	self->mmap_buf_size = PAGE_SIZE * 8;
 	if (variant->hugepages) {
-		/*
-		 * MAP_POPULATE will cause the kernel to fail mmap if THPs are
-		 * not available.
-		 */
+		 
 		self->mmap_flags |= MAP_HUGETLB | MAP_POPULATE;
 		self->mmap_buf_size = HUGEPAGE_SIZE * 2;
 	}
@@ -1136,7 +1116,7 @@ FIXTURE_VARIANT_ADD(iommufd_mock_domain, two_domains_hugepage)
 	.hugepages = true,
 };
 
-/* Have the kernel check that the user pages made it to the iommu_domain */
+ 
 #define check_mock_iova(_ptr, _iova, _length)                                \
 	({                                                                   \
 		struct iommu_test_cmd check_map_cmd = {                      \
@@ -1167,7 +1147,7 @@ TEST_F(iommufd_mock_domain, basic)
 	uint8_t *buf;
 	__u64 iova;
 
-	/* Simple one page map */
+	 
 	test_ioctl_ioas_map(buffer, PAGE_SIZE, &iova);
 	check_mock_iova(buffer, iova, PAGE_SIZE);
 
@@ -1175,11 +1155,11 @@ TEST_F(iommufd_mock_domain, basic)
 		   0);
 	ASSERT_NE(MAP_FAILED, buf);
 
-	/* EFAULT half way through mapping */
+	 
 	ASSERT_EQ(0, munmap(buf + buf_size / 2, buf_size / 2));
 	test_err_ioctl_ioas_map(EFAULT, buf, buf_size, &iova);
 
-	/* EFAULT on first page */
+	 
 	ASSERT_EQ(0, munmap(buf, buf_size / 2));
 	test_err_ioctl_ioas_map(EFAULT, buf, buf_size, &iova);
 }
@@ -1197,11 +1177,7 @@ TEST_F(iommufd_mock_domain, ro_unshare)
 	ASSERT_NE(MAP_FAILED, buf);
 	close(fd);
 
-	/*
-	 * There have been lots of changes to the "unshare" mechanism in
-	 * get_user_pages(), make sure it works right. The write to the page
-	 * after we map it for reading should not change the assigned PFN.
-	 */
+	 
 	ASSERT_EQ(0,
 		  _test_ioctl_ioas_map(self->fd, self->ioas_id, buf, PAGE_SIZE,
 				       &iova, IOMMU_IOAS_MAP_READABLE));
@@ -1225,10 +1201,7 @@ TEST_F(iommufd_mock_domain, all_aligns)
 	ASSERT_NE(MAP_FAILED, buf);
 	check_refs(buf, buf_size, 0);
 
-	/*
-	 * Map every combination of page size and alignment within a big region,
-	 * less for hugepage case as it takes so long to finish.
-	 */
+	 
 	for (start = 0; start < buf_size; start += test_step) {
 		if (variant->hugepages)
 			end = buf_size;
@@ -1266,10 +1239,7 @@ TEST_F(iommufd_mock_domain, all_aligns_copy)
 	ASSERT_NE(MAP_FAILED, buf);
 	check_refs(buf, buf_size, 0);
 
-	/*
-	 * Map every combination of page size and alignment within a big region,
-	 * less for hugepage case as it takes so long to finish.
-	 */
+	 
 	for (start = 0; start < buf_size; start += test_step) {
 		if (variant->hugepages)
 			end = buf_size;
@@ -1283,7 +1253,7 @@ TEST_F(iommufd_mock_domain, all_aligns_copy)
 
 			test_ioctl_ioas_map(buf + start, length, &iova);
 
-			/* Add and destroy a domain while the area exists */
+			 
 			old_id = self->hwpt_ids[1];
 			test_cmd_mock_domain(self->ioas_id, &mock_stdev_id,
 					     &self->hwpt_ids[1], NULL);
@@ -1327,7 +1297,7 @@ TEST_F(iommufd_mock_domain, user_copy)
 	};
 	unsigned int new_ioas_id, ioas_id;
 
-	/* Pin the pages in an IOAS with no domains then copy to an IOAS with domains */
+	 
 	test_ioctl_ioas_alloc(&ioas_id);
 	test_ioctl_ioas_map_id(ioas_id, buffer, BUFFER_SIZE,
 			       &copy_cmd.src_iova);
@@ -1343,17 +1313,17 @@ TEST_F(iommufd_mock_domain, user_copy)
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_COPY, &copy_cmd));
 	check_mock_iova(buffer, MOCK_APERTURE_START, BUFFER_SIZE);
 
-	/* Now replace the ioas with a new one */
+	 
 	test_ioctl_ioas_alloc(&new_ioas_id);
 	test_ioctl_ioas_map_id(new_ioas_id, buffer, BUFFER_SIZE,
 			       &copy_cmd.src_iova);
 	test_cmd_access_replace_ioas(access_cmd.id, new_ioas_id);
 
-	/* Destroy the old ioas and cleanup copied mapping */
+	 
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_UNMAP, &unmap_cmd));
 	test_ioctl_destroy(ioas_id);
 
-	/* Then run the same test again with the new ioas */
+	 
 	access_cmd.access_pages.iova = copy_cmd.src_iova;
 	ASSERT_EQ(0,
 		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_PAGES),
@@ -1377,10 +1347,7 @@ TEST_F(iommufd_mock_domain, replace)
 
 	test_cmd_mock_domain_replace(self->stdev_ids[0], ioas_id);
 
-	/*
-	 * Replacing the IOAS causes the prior HWPT to be deallocated, thus we
-	 * should get enoent when we try to use it.
-	 */
+	 
 	if (variant->mock_domains == 1)
 		test_err_mock_domain_replace(ENOENT, self->stdev_ids[0],
 					     self->hwpt_ids[0]);
@@ -1414,7 +1381,7 @@ TEST_F(iommufd_mock_domain, alloc_hwpt)
 	}
 }
 
-/* VFIO compatibility IOCTLs */
+ 
 
 TEST_F(iommufd, simple_ioctls)
 {
@@ -1455,7 +1422,7 @@ TEST_F(iommufd, map_cmd)
 	map_cmd.flags = 1 << 31;
 	EXPECT_ERRNO(EINVAL, ioctl(self->fd, VFIO_IOMMU_MAP_DMA, &map_cmd));
 
-	/* Requires a domain to be attached */
+	 
 	map_cmd.flags = VFIO_DMA_MAP_FLAG_READ | VFIO_DMA_MAP_FLAG_WRITE;
 	EXPECT_ERRNO(ENODEV, ioctl(self->fd, VFIO_IOMMU_MAP_DMA, &map_cmd));
 }
@@ -1464,7 +1431,7 @@ TEST_F(iommufd, info_cmd)
 {
 	struct vfio_iommu_type1_info info_cmd = {};
 
-	/* Invalid argsz */
+	 
 	info_cmd.argsz = 1;
 	EXPECT_ERRNO(EINVAL, ioctl(self->fd, VFIO_IOMMU_GET_INFO, &info_cmd));
 
@@ -1474,7 +1441,7 @@ TEST_F(iommufd, info_cmd)
 
 TEST_F(iommufd, set_iommu_cmd)
 {
-	/* Requires a domain to be attached */
+	 
 	EXPECT_ERRNO(ENODEV,
 		     ioctl(self->fd, VFIO_SET_IOMMU, VFIO_TYPE1v2_IOMMU));
 	EXPECT_ERRNO(ENODEV, ioctl(self->fd, VFIO_SET_IOMMU, VFIO_TYPE1_IOMMU));
@@ -1488,24 +1455,24 @@ TEST_F(iommufd, vfio_ioas)
 	};
 	__u32 ioas_id;
 
-	/* ENODEV if there is no compat ioas */
+	 
 	EXPECT_ERRNO(ENODEV, ioctl(self->fd, IOMMU_VFIO_IOAS, &vfio_ioas_cmd));
 
-	/* Invalid id for set */
+	 
 	vfio_ioas_cmd.op = IOMMU_VFIO_IOAS_SET;
 	EXPECT_ERRNO(ENOENT, ioctl(self->fd, IOMMU_VFIO_IOAS, &vfio_ioas_cmd));
 
-	/* Valid id for set*/
+	 
 	test_ioctl_ioas_alloc(&ioas_id);
 	vfio_ioas_cmd.ioas_id = ioas_id;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_VFIO_IOAS, &vfio_ioas_cmd));
 
-	/* Same id comes back from get */
+	 
 	vfio_ioas_cmd.op = IOMMU_VFIO_IOAS_GET;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_VFIO_IOAS, &vfio_ioas_cmd));
 	ASSERT_EQ(ioas_id, vfio_ioas_cmd.ioas_id);
 
-	/* Clear works */
+	 
 	vfio_ioas_cmd.op = IOMMU_VFIO_IOAS_CLEAR;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_VFIO_IOAS, &vfio_ioas_cmd));
 	vfio_ioas_cmd.op = IOMMU_VFIO_IOAS_GET;
@@ -1533,11 +1500,11 @@ FIXTURE_SETUP(vfio_compat_mock_domain)
 	self->fd = open("/dev/iommu", O_RDWR);
 	ASSERT_NE(-1, self->fd);
 
-	/* Create what VFIO would consider a group */
+	 
 	test_ioctl_ioas_alloc(&self->ioas_id);
 	test_cmd_mock_domain(self->ioas_id, NULL, NULL, NULL);
 
-	/* Attach it to the vfio compat */
+	 
 	vfio_ioas_cmd.ioas_id = self->ioas_id;
 	ASSERT_EQ(0, ioctl(self->fd, IOMMU_VFIO_IOAS, &vfio_ioas_cmd));
 	ASSERT_EQ(0, ioctl(self->fd, VFIO_SET_IOMMU, variant->version));
@@ -1580,10 +1547,7 @@ TEST_F(vfio_compat_mock_domain, option_huge_pages)
 	}
 }
 
-/*
- * Execute an ioctl command stored in buffer and check that the result does not
- * overflow memory.
- */
+ 
 static bool is_filled(const void *buf, uint8_t c, size_t len)
 {
 	const uint8_t *cbuf = buf;
@@ -1658,7 +1622,7 @@ TEST_F(vfio_compat_mock_domain, get_info)
 	unsigned int i;
 	size_t caplen;
 
-	/* Pre-cap ABI */
+	 
 	*info_cmd = (struct vfio_iommu_type1_info){
 		.argsz = offsetof(struct vfio_iommu_type1_info, cap_offset),
 	};
@@ -1667,7 +1631,7 @@ TEST_F(vfio_compat_mock_domain, get_info)
 	ASSERT_EQ(VFIO_IOMMU_INFO_PGSIZES | VFIO_IOMMU_INFO_CAPS,
 		  info_cmd->flags);
 
-	/* Read the cap chain size */
+	 
 	*info_cmd = (struct vfio_iommu_type1_info){
 		.argsz = sizeof(*info_cmd),
 	};
@@ -1678,7 +1642,7 @@ TEST_F(vfio_compat_mock_domain, get_info)
 	ASSERT_EQ(0, info_cmd->cap_offset);
 	ASSERT_LT(sizeof(*info_cmd), info_cmd->argsz);
 
-	/* Read the caps, kernel should never create a corrupted caps */
+	 
 	caplen = info_cmd->argsz;
 	for (i = sizeof(*info_cmd); i < caplen; i++) {
 		*info_cmd = (struct vfio_iommu_type1_info){
@@ -1697,7 +1661,7 @@ static void shuffle_array(unsigned long *array, size_t nelms)
 {
 	unsigned int i;
 
-	/* Shuffle */
+	 
 	for (i = 0; i != nelms; i++) {
 		unsigned long tmp = array[i];
 		unsigned int other = rand() % (nelms - i);
@@ -1724,12 +1688,12 @@ TEST_F(vfio_compat_mock_domain, map)
 	unsigned long pages_iova[BUFFER_SIZE / PAGE_SIZE];
 	unsigned int i;
 
-	/* Simple map/unmap */
+	 
 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_MAP_DMA, &map_cmd));
 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_UNMAP_DMA, &unmap_cmd));
 	ASSERT_EQ(BUFFER_SIZE, unmap_cmd.size);
 
-	/* UNMAP_FLAG_ALL requres 0 iova/size */
+	 
 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_MAP_DMA, &map_cmd));
 	unmap_cmd.flags = VFIO_DMA_UNMAP_FLAG_ALL;
 	EXPECT_ERRNO(EINVAL, ioctl(self->fd, VFIO_IOMMU_UNMAP_DMA, &unmap_cmd));
@@ -1739,7 +1703,7 @@ TEST_F(vfio_compat_mock_domain, map)
 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_UNMAP_DMA, &unmap_cmd));
 	ASSERT_EQ(BUFFER_SIZE, unmap_cmd.size);
 
-	/* Small pages */
+	 
 	for (i = 0; i != ARRAY_SIZE(pages_iova); i++) {
 		map_cmd.iova = pages_iova[i] =
 			MOCK_APERTURE_START + i * PAGE_SIZE;
@@ -1773,7 +1737,7 @@ TEST_F(vfio_compat_mock_domain, huge_map)
 	unsigned int i;
 	void *buf;
 
-	/* Test huge pages and splitting */
+	 
 	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE,
 		   MAP_SHARED | MAP_ANONYMOUS | MAP_HUGETLB | MAP_POPULATE, -1,
 		   0);
@@ -1786,7 +1750,7 @@ TEST_F(vfio_compat_mock_domain, huge_map)
 		pages_iova[i] = MOCK_APERTURE_START + (i * unmap_cmd.size);
 	shuffle_array(pages_iova, ARRAY_SIZE(pages_iova));
 
-	/* type1 mode can cut up larger mappings, type1v2 always fails */
+	 
 	for (i = 0; i != ARRAY_SIZE(pages_iova); i++) {
 		unmap_cmd.iova = pages_iova[i];
 		unmap_cmd.size = buf_size / ARRAY_SIZE(pages_iova);

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2016 Freescale Semiconductor, Inc.
-// Copyright (C) 2017 NXP
-//
-// Author: Dong Aisheng <aisheng.dong@nxp.com>
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -133,7 +133,7 @@ enum imx7ulp_pads {
 	IMX7ULP_PAD_PTF19,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx7ulp_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(IMX7ULP_PAD_PTC0),
 	IMX_PINCTRL_PIN(IMX7ULP_PAD_PTC1),
@@ -291,7 +291,7 @@ static const struct imx_pinctrl_soc_info imx7ulp_pinctrl_info = {
 
 static const struct of_device_id imx7ulp_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx7ulp-iomuxc1", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx7ulp_pinctrl_probe(struct platform_device *pdev)

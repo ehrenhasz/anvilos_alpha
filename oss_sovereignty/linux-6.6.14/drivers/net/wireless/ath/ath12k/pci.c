@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/msi.h>
@@ -30,10 +27,7 @@
 #define TCSR_SOC_HW_VERSION_MAJOR_MASK	GENMASK(11, 8)
 #define TCSR_SOC_HW_VERSION_MINOR_MASK	GENMASK(7, 4)
 
-/* BAR0 + 4k is always accessible, and no
- * need to force wakeup.
- * 4K - 32 = 0xFE0
- */
+ 
 #define ACCESS_ALWAYS_OFF 0xFE0
 
 #define QCN9274_DEVICE_ID		0x1109
@@ -47,7 +41,7 @@ static const struct pci_device_id ath12k_pci_id_table[] = {
 
 MODULE_DEVICE_TABLE(pci, ath12k_pci_id_table);
 
-/* TODO: revisit IRQ mapping for new SRNG's */
+ 
 static const struct ath12k_msi_config ath12k_msi_config[] = {
 	{
 		.total_vectors = 16,
@@ -152,7 +146,7 @@ static void ath12k_pci_select_window(struct ath12k_pci *ab_pci, u32 offset)
 
 	lockdep_assert_held(&ab_pci->window_lock);
 
-	/* Preserve the static window configuration and reset only dynamic window */
+	 
 	static_window = ab_pci->register_window & WINDOW_STATIC_MASK;
 	window |= static_window;
 
@@ -184,15 +178,13 @@ static u32 ath12k_pci_get_window_start(struct ath12k_base *ab,
 {
 	u32 window_start;
 
-	/* If offset lies within DP register range, use 3rd window */
+	 
 	if ((offset ^ HAL_SEQ_WCSS_UMAC_OFFSET) < WINDOW_RANGE_MASK)
 		window_start = 3 * WINDOW_START;
-	/* If offset lies within CE register range, use 2nd window */
+	 
 	else if ((offset ^ HAL_CE_WFSS_CE_REG_BASE) < WINDOW_RANGE_MASK)
 		window_start = 2 * WINDOW_START;
-	/* If offset lies within PCI_BAR_WINDOW0_BASE and within PCI_SOC_PCI_REG_BASE
-	 * use 0th window
-	 */
+	 
 	else if (((offset ^ PCI_BAR_WINDOW0_BASE) < WINDOW_RANGE_MASK) &&
 		 !((offset ^ PCI_SOC_PCI_REG_BASE) < PCI_SOC_RANGE_MASK))
 		window_start = 0;
@@ -212,11 +204,11 @@ static void ath12k_pci_soc_global_reset(struct ath12k_base *ab)
 
 	ath12k_pci_write32(ab, PCIE_SOC_GLOBAL_RESET, val);
 
-	/* TODO: exact time to sleep is uncertain */
+	 
 	delay = 10;
 	mdelay(delay);
 
-	/* Need to toggle V bit back otherwise stuck in reset status */
+	 
 	val &= ~PCIE_SOC_GLOBAL_RESET_V;
 
 	ath12k_pci_write32(ab, PCIE_SOC_GLOBAL_RESET, val);
@@ -232,28 +224,24 @@ static void ath12k_pci_clear_dbg_registers(struct ath12k_base *ab)
 {
 	u32 val;
 
-	/* read cookie */
+	 
 	val = ath12k_pci_read32(ab, PCIE_Q6_COOKIE_ADDR);
 	ath12k_dbg(ab, ATH12K_DBG_PCI, "cookie:0x%x\n", val);
 
 	val = ath12k_pci_read32(ab, WLAON_WARM_SW_ENTRY);
 	ath12k_dbg(ab, ATH12K_DBG_PCI, "WLAON_WARM_SW_ENTRY 0x%x\n", val);
 
-	/* TODO: exact time to sleep is uncertain */
+	 
 	mdelay(10);
 
-	/* write 0 to WLAON_WARM_SW_ENTRY to prevent Q6 from
-	 * continuing warm path and entering dead loop.
-	 */
+	 
 	ath12k_pci_write32(ab, WLAON_WARM_SW_ENTRY, 0);
 	mdelay(10);
 
 	val = ath12k_pci_read32(ab, WLAON_WARM_SW_ENTRY);
 	ath12k_dbg(ab, ATH12K_DBG_PCI, "WLAON_WARM_SW_ENTRY 0x%x\n", val);
 
-	/* A read clear register. clear the register to prevent
-	 * Q6 from entering wrong code path.
-	 */
+	 
 	val = ath12k_pci_read32(ab, WLAON_SOC_RESET_CAUSE_REG);
 	ath12k_dbg(ab, ATH12K_DBG_PCI, "soc reset cause:%d\n", val);
 }
@@ -265,7 +253,7 @@ static void ath12k_pci_enable_ltssm(struct ath12k_base *ab)
 
 	val = ath12k_pci_read32(ab, PCIE_PCIE_PARF_LTSSM);
 
-	/* PCIE link seems very unstable after the Hot Reset*/
+	 
 	for (i = 0; val != PARM_LTSSM_VALUE && i < 5; i++) {
 		if (val == 0xffffffff)
 			mdelay(5);
@@ -288,11 +276,7 @@ static void ath12k_pci_enable_ltssm(struct ath12k_base *ab)
 
 static void ath12k_pci_clear_all_intrs(struct ath12k_base *ab)
 {
-	/* This is a WAR for PCIE Hotreset.
-	 * When target receive Hotreset, but will set the interrupt.
-	 * So when download SBL again, SBL will open Interrupt and
-	 * receive it, and crash immediately.
-	 */
+	 
 	ath12k_pci_write32(ab, PCIE_PCIE_INT_ALL_CLEAR, PCIE_INT_CLEAR_ALL);
 }
 
@@ -407,7 +391,7 @@ static irqreturn_t ath12k_pci_ce_interrupt_handler(int irq, void *arg)
 {
 	struct ath12k_ce_pipe *ce_pipe = arg;
 
-	/* last interrupt received for this CE */
+	 
 	ce_pipe->timestamp = jiffies;
 
 	ath12k_pci_ce_irq_disable(ce_pipe->ab, ce_pipe->pipe_num);
@@ -486,7 +470,7 @@ static irqreturn_t ath12k_pci_ext_interrupt_handler(int irq, void *arg)
 
 	ath12k_dbg(irq_grp->ab, ATH12K_DBG_PCI, "ext irq:%d\n", irq);
 
-	/* last interrupt received for this group */
+	 
 	irq_grp->timestamp = jiffies;
 
 	ath12k_pci_ext_grp_disable(irq_grp);
@@ -574,7 +558,7 @@ static int ath12k_pci_config_irq(struct ath12k_base *ab)
 	if (ret)
 		return ret;
 
-	/* Configure CE irqs */
+	 
 
 	for (i = 0, msi_data_idx = 0; i < ab->hw_params->ce_count; i++) {
 		if (ath12k_ce_get_attr_flags(ab, i) & CE_ATTR_DIS_INTR)
@@ -793,7 +777,7 @@ static void ath12k_pci_aspm_disable(struct ath12k_pci *ab_pci)
 		   u16_get_bits(ab_pci->link_ctl, PCI_EXP_LNKCTL_ASPM_L0S),
 		   u16_get_bits(ab_pci->link_ctl, PCI_EXP_LNKCTL_ASPM_L1));
 
-	/* disable L0s and L1 */
+	 
 	pcie_capability_clear_word(ab_pci->pdev, PCI_EXP_LNKCTL,
 				   PCI_EXP_LNKCTL_ASPMC);
 
@@ -1014,9 +998,7 @@ u32 ath12k_pci_read32(struct ath12k_base *ab, u32 offset)
 	u32 val, window_start;
 	int ret = 0;
 
-	/* for offset beyond BAR + 4K - 32, may
-	 * need to wakeup MHI to access.
-	 */
+	 
 	if (test_bit(ATH12K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
 	    offset >= ACCESS_ALWAYS_OFF && ab_pci->pci_ops->wakeup)
 		ret = ab_pci->pci_ops->wakeup(ab);
@@ -1059,9 +1041,7 @@ void ath12k_pci_write32(struct ath12k_base *ab, u32 offset, u32 value)
 	u32 window_start;
 	int ret = 0;
 
-	/* for offset beyond BAR + 4K - 32, may
-	 * need to wakeup MHI to access.
-	 */
+	 
 	if (test_bit(ATH12K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
 	    offset >= ACCESS_ALWAYS_OFF && ab_pci->pci_ops->wakeup)
 		ret = ab_pci->pci_ops->wakeup(ab);
@@ -1106,9 +1086,7 @@ int ath12k_pci_power_up(struct ath12k_base *ab)
 	clear_bit(ATH12K_PCI_FLAG_INIT_DONE, &ab_pci->flags);
 	ath12k_pci_sw_reset(ab_pci->ab, true);
 
-	/* Disable ASPM during firmware download due to problems switching
-	 * to AMSS state.
-	 */
+	 
 	ath12k_pci_aspm_disable(ab_pci);
 
 	ath12k_pci_msi_enable(ab_pci);
@@ -1129,7 +1107,7 @@ void ath12k_pci_power_down(struct ath12k_base *ab)
 {
 	struct ath12k_pci *ab_pci = ath12k_pci_priv(ab);
 
-	/* restore aspm in case firmware bootup fails */
+	 
 	ath12k_pci_aspm_restore(ab_pci);
 
 	ath12k_pci_force_wake(ab_pci->ab);

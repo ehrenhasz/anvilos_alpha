@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 MediaTek Inc.
- * Author: Yunfei Dong <yunfei.dong@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -14,36 +11,24 @@
 #include "../vdec_drv_if.h"
 #include "../vdec_vpu_if.h"
 
-/* the size used to store hevc wrap information */
+ 
 #define VDEC_HEVC_WRAP_SZ (532 * SZ_1K)
 
 #define HEVC_MAX_MV_NUM 32
 
-/* get used parameters for sps/pps */
+ 
 #define GET_HEVC_VDEC_FLAG(cond, flag) \
 	{ dst_param->cond = ((src_param->flags & (flag)) ? (1) : (0)); }
 #define GET_HEVC_VDEC_PARAM(param) \
 	{ dst_param->param = src_param->param; }
 
-/**
- * enum vdec_hevc_core_dec_err_type  - core decode error type
- *
- * @TRANS_BUFFER_FULL: trans buffer is full
- * @SLICE_HEADER_FULL: slice header buffer is full
- */
+ 
 enum vdec_hevc_core_dec_err_type {
 	TRANS_BUFFER_FULL = 1,
 	SLICE_HEADER_FULL,
 };
 
-/**
- * struct mtk_hevc_dpb_info  - hevc dpb information
- *
- * @y_dma_addr:     Y plane physical address
- * @c_dma_addr:     CbCr plane physical address
- * @reference_flag: reference picture flag (short/long term reference picture)
- * @field:          field picture flag
- */
+ 
 struct mtk_hevc_dpb_info {
 	dma_addr_t y_dma_addr;
 	dma_addr_t c_dma_addr;
@@ -51,9 +36,7 @@ struct mtk_hevc_dpb_info {
 	int field;
 };
 
-/*
- * struct mtk_hevc_sps_param  - parameters for sps
- */
+ 
 struct mtk_hevc_sps_param {
 	unsigned char video_parameter_set_id;
 	unsigned char seq_parameter_set_id;
@@ -91,9 +74,7 @@ struct mtk_hevc_sps_param {
 	unsigned char reserved[5];
 };
 
-/*
- * struct mtk_hevc_pps_param  - parameters for pps
- */
+ 
 struct mtk_hevc_pps_param {
 	unsigned char pic_parameter_set_id;
 	unsigned char num_extra_slice_header_bits;
@@ -134,9 +115,7 @@ struct mtk_hevc_pps_param {
 	char reserved[6];
 };
 
-/*
- * struct mtk_hevc_slice_header_param  - parameters for slice header
- */
+ 
 struct mtk_hevc_slice_header_param {
 	unsigned int	slice_type;
 	unsigned int	num_active_ref_layer_pics;
@@ -173,9 +152,7 @@ struct mtk_hevc_slice_header_param {
 	unsigned char   nal_unit_type;
 };
 
-/*
- * struct slice_api_hevc_scaling_matrix  - parameters for scaling list
- */
+ 
 struct slice_api_hevc_scaling_matrix {
 	unsigned char scaling_list_4x4[6][16];
 	unsigned char scaling_list_8x8[6][64];
@@ -185,9 +162,7 @@ struct slice_api_hevc_scaling_matrix {
 	unsigned char scaling_list_dc_coef_32x32[2];
 };
 
-/*
- * struct slice_hevc_dpb_entry  - each dpb information
- */
+ 
 struct slice_hevc_dpb_entry {
 	u64 timestamp;
 	unsigned char flags;
@@ -195,9 +170,7 @@ struct slice_hevc_dpb_entry {
 	int pic_order_cnt_val;
 };
 
-/*
- * struct slice_api_hevc_decode_param - parameters for decode.
- */
+ 
 struct slice_api_hevc_decode_param {
 	struct slice_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
 	int pic_order_cnt_val;
@@ -214,15 +187,7 @@ struct slice_api_hevc_decode_param {
 	int flags;
 };
 
-/**
- * struct hevc_fb - hevc decode frame buffer information
- *
- * @vdec_fb_va: virtual address of struct vdec_fb
- * @y_fb_dma:   dma address of Y frame buffer (luma)
- * @c_fb_dma:   dma address of C frame buffer (chroma)
- * @poc:        picture order count of frame buffer
- * @reserved:   for 8 bytes alignment
- */
+ 
 struct hevc_fb {
 	u64 vdec_fb_va;
 	u64 y_fb_dma;
@@ -231,16 +196,7 @@ struct hevc_fb {
 	u32 reserved;
 };
 
-/**
- * struct vdec_hevc_slice_lat_dec_param  - parameters for decode current frame
- *
- * @sps:            hevc sps syntax parameters
- * @pps:            hevc pps syntax parameters
- * @slice_header:   hevc slice header syntax parameters
- * @scaling_matrix: hevc scaling list parameters
- * @decode_params:  decoder parameters of each frame used for hardware decode
- * @hevc_dpb_info:  dpb reference list
- */
+ 
 struct vdec_hevc_slice_lat_dec_param {
 	struct mtk_hevc_sps_param sps;
 	struct mtk_hevc_pps_param pps;
@@ -250,14 +206,7 @@ struct vdec_hevc_slice_lat_dec_param {
 	struct mtk_hevc_dpb_info hevc_dpb_info[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
 };
 
-/**
- * struct vdec_hevc_slice_info - decode information
- *
- * @wdma_end_addr_offset: wdma end address offset
- * @timeout:              Decode timeout: 1 timeout, 0 no timeount
- * @vdec_fb_va:           VDEC frame buffer struct virtual address
- * @crc:                  Used to check whether hardware's status is right
- */
+ 
 struct vdec_hevc_slice_info {
 	u64 wdma_end_addr_offset;
 	u64 timeout;
@@ -265,9 +214,7 @@ struct vdec_hevc_slice_info {
 	u32 crc[8];
 };
 
-/*
- * struct vdec_hevc_slice_mem - memory address and size
- */
+ 
 struct vdec_hevc_slice_mem {
 	union {
 		u64 buf;
@@ -280,35 +227,15 @@ struct vdec_hevc_slice_mem {
 	};
 };
 
-/**
- * struct vdec_hevc_slice_fb - frame buffer for decoding
- * @y:  current y buffer address info
- * @c:  current c buffer address info
- */
+ 
 struct vdec_hevc_slice_fb {
 	struct vdec_hevc_slice_mem y;
 	struct vdec_hevc_slice_mem c;
 };
 
-/**
- * struct vdec_hevc_slice_vsi - shared memory for decode information exchange
- *        between SCP and Host.
- *
- * @bs:                input buffer info
- *
- * @ube:               ube buffer
- * @trans:             transcoded buffer
- * @err_map:           err map buffer
- * @slice_bc:          slice bc buffer
- * @wrap:              temp buffer
- *
- * @fb:                current y/c buffer
- * @mv_buf_dma:        HW working motion vector buffer
- * @dec:               decode information (AP-R, VPU-W)
- * @hevc_slice_params: decode parameters for hw used
- */
+ 
 struct vdec_hevc_slice_vsi {
-	/* used in LAT stage */
+	 
 	struct vdec_hevc_slice_mem bs;
 
 	struct vdec_hevc_slice_mem ube;
@@ -323,15 +250,7 @@ struct vdec_hevc_slice_vsi {
 	struct vdec_hevc_slice_lat_dec_param hevc_slice_params;
 };
 
-/**
- * struct vdec_hevc_slice_share_info - shared information used to exchange
- *                                     message between lat and core
- *
- * @sps:               sequence header information from user space
- * @dec_params:        decoder params from user space
- * @hevc_slice_params: decoder params used for hardware
- * @trans:             trans buffer dma address
- */
+ 
 struct vdec_hevc_slice_share_info {
 	struct v4l2_ctrl_hevc_sps sps;
 	struct v4l2_ctrl_hevc_decode_params dec_params;
@@ -339,23 +258,7 @@ struct vdec_hevc_slice_share_info {
 	struct vdec_hevc_slice_mem trans;
 };
 
-/**
- * struct vdec_hevc_slice_inst - hevc decoder instance
- *
- * @slice_dec_num:      how many picture be decoded
- * @ctx:                point to mtk_vcodec_dec_ctx
- * @mv_buf:             HW working motion vector buffer
- * @vpu:                VPU instance
- * @vsi:                vsi used for lat
- * @vsi_core:           vsi used for core
- * @wrap_addr:          wrap address used for hevc
- *
- * @hevc_slice_param:   the parameters that hardware use to decode
- *
- * @resolution_changed: resolution changed
- * @realloc_mv_buf:     reallocate mv buffer
- * @cap_num_planes:     number of capture queue plane
- */
+ 
 struct vdec_hevc_slice_inst {
 	unsigned int slice_dec_num;
 	struct mtk_vcodec_dec_ctx *ctx;
@@ -944,7 +847,7 @@ static int vdec_hevc_slice_core_decode(struct vdec_lat_buf *lat_buf)
 		goto vdec_dec_end;
 	}
 
-	/* wait decoder done interrupt */
+	 
 	timeout = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
 					       WAIT_INTR_TIMEOUT_MS, MTK_VDEC_CORE);
 	if (timeout)
@@ -982,7 +885,7 @@ static int vdec_hevc_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 				sizeof(*share_info)))
 		return -ENOMEM;
 
-	/* bs NULL means flush decoder */
+	 
 	if (!bs) {
 		vdec_msg_queue_wait_lat_buf_full(&inst->ctx->msg_queue);
 		return vpu_dec_reset(vpu);
@@ -1015,7 +918,7 @@ static int vdec_hevc_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		vdec_msg_queue_qbuf(&inst->ctx->msg_queue.core_ctx, lat_buf);
 	}
 
-	/* wait decoder done interrupt */
+	 
 	timeout = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
 					       WAIT_INTR_TIMEOUT_MS, MTK_VDEC_LAT0);
 	if (timeout)

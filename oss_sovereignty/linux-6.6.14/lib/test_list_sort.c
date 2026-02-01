@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <kunit/test.h>
 
 #include <linux/kernel.h>
@@ -9,11 +9,8 @@
 #include <linux/slab.h>
 #include <linux/random.h>
 
-/*
- * The pattern of set bits in the list length determines which cases
- * are hit in list_sort().
- */
-#define TEST_LIST_LEN (512+128+2) /* not including head */
+ 
+#define TEST_LIST_LEN (512+128+2)  
 
 #define TEST_POISON1 0xDEADBEEF
 #define TEST_POISON2 0xA324354C
@@ -43,7 +40,7 @@ static void check(struct kunit *test, struct debug_el *ela, struct debug_el *elb
 	KUNIT_EXPECT_EQ_MSG(test, elb->poison2, TEST_POISON2, "bad poison");
 }
 
-/* `priv` is the test pointer so check() can fail the test if the list is invalid. */
+ 
 static int cmp(void *priv, const struct list_head *a, const struct list_head *b)
 {
 	struct debug_el *ela, *elb;
@@ -70,7 +67,7 @@ static void list_sort_test(struct kunit *test)
 		el = kunit_kmalloc(test, sizeof(*el), GFP_KERNEL);
 		KUNIT_ASSERT_NOT_ERR_OR_NULL(test, el);
 
-		 /* force some equivalencies */
+		  
 		el->value = get_random_u32_below(TEST_LIST_LEN / 3);
 		el->serial = i;
 		el->poison1 = TEST_POISON1;

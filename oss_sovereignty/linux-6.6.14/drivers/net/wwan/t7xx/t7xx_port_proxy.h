@@ -1,19 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+ 
 
 #ifndef __T7XX_PORT_PROXY_H__
 #define __T7XX_PORT_PROXY_H__
@@ -46,7 +31,7 @@ struct ccci_header {
 	__le32 ex_msg;
 };
 
-/* Coupled with HW - indicates if there is data following the CCCI header or not */
+ 
 #define CCCI_HEADER_NO_DATA	0xffffffff
 
 #define CCCI_H_AST_BIT		BIT(31)
@@ -59,7 +44,7 @@ struct ctrl_msg_header {
 	__le32	data_length;
 };
 
-/* Control identification numbers for AP<->MD messages  */
+ 
 #define CTL_ID_HS1_MSG		0x0
 #define CTL_ID_HS2_MSG		0x1
 #define CTL_ID_HS3_MSG		0x2
@@ -69,9 +54,9 @@ struct ctrl_msg_header {
 #define CTL_ID_MD_EX_PASS	0x8
 #define CTL_ID_PORT_ENUM	0x9
 
-/* Modem exception check identification code - "EXCP" */
+ 
 #define MD_EX_CHK_ID		0x45584350
-/* Modem exception check acknowledge identification code - "EREC" */
+ 
 #define MD_EX_CHK_ACK_ID	0x45524543
 
 #define PORT_INFO_RSRVD		GENMASK(31, 16)
@@ -83,7 +68,7 @@ struct ctrl_msg_header {
 #define PORT_ENUM_TAIL_PATTERN	0xa5a5a5a5
 #define PORT_ENUM_VER_MISMATCH	0x00657272
 
-/* Port operations mapping */
+ 
 extern struct port_ops wwan_sub_port_ops;
 extern struct port_ops ctl_port_ops;
 
@@ -99,4 +84,4 @@ int t7xx_port_enum_msg_handler(struct t7xx_modem *md, void *msg);
 int t7xx_port_proxy_chl_enable_disable(struct port_proxy *port_prox, unsigned int ch_id,
 				       bool en_flag);
 
-#endif /* __T7XX_PORT_PROXY_H__ */
+#endif  

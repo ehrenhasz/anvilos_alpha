@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7921_REGS_H
 #define __MT7921_REGS_H
@@ -41,7 +41,7 @@
 #define HOST_TX_DONE_INT_ENA16		BIT(26)
 #define HOST_TX_DONE_INT_ENA17		BIT(27)
 
-/* WFDMA interrupt */
+ 
 #define MT_INT_RX_DONE_DATA		HOST_RX_DONE_INT_ENA2
 #define MT_INT_RX_DONE_WM		HOST_RX_DONE_INT_ENA0
 #define MT_INT_RX_DONE_WM2		HOST_RX_DONE_INT_ENA4

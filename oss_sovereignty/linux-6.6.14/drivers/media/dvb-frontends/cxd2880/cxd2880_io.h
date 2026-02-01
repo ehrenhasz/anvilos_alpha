@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * cxd2880_io.h
- * Sony CXD2880 DVB-T2/T tuner + demodulator driver
- * register I/O interface definitions
- *
- * Copyright (C) 2016, 2017, 2018 Sony Semiconductor Solutions Corporation
- */
+ 
+ 
 
 #ifndef CXD2880_IO_H
 #define CXD2880_IO_H

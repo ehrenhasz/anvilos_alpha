@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * usb.c - Hardware dependent module for USB
- *
- * Copyright (C) 2013-2015 Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -33,12 +29,12 @@
 #define MAX_STRING_LEN		80
 #define MAX_BUF_SIZE		0xFFFF
 
-#define USB_VENDOR_ID_SMSC	0x0424  /* VID: SMSC */
-#define USB_DEV_ID_BRDG		0xC001  /* PID: USB Bridge */
-#define USB_DEV_ID_OS81118	0xCF18  /* PID: USB OS81118 */
-#define USB_DEV_ID_OS81119	0xCF19  /* PID: USB OS81119 */
-#define USB_DEV_ID_OS81210	0xCF30  /* PID: USB OS81210 */
-/* DRCI Addresses */
+#define USB_VENDOR_ID_SMSC	0x0424   
+#define USB_DEV_ID_BRDG		0xC001   
+#define USB_DEV_ID_OS81118	0xCF18   
+#define USB_DEV_ID_OS81119	0xCF19   
+#define USB_DEV_ID_OS81210	0xCF30   
+ 
 #define DRCI_REG_NI_STATE	0x0100
 #define DRCI_REG_PACKET_BW	0x0101
 #define DRCI_REG_NODE_ADDR	0x0102
@@ -56,12 +52,7 @@
 #define DRCI_READ_REQ		0xA0
 #define DRCI_WRITE_REQ		0xA1
 
-/**
- * struct most_dci_obj - Direct Communication Interface
- * @kobj:position in sysfs
- * @usb_device: pointer to the usb device
- * @reg_addr: register address for arbitrary DCI access
- */
+ 
 struct most_dci_obj {
 	struct device dev;
 	struct usb_device *usb_device;
@@ -81,24 +72,7 @@ struct clear_hold_work {
 
 #define to_clear_hold_work(w) container_of(w, struct clear_hold_work, ws)
 
-/**
- * struct most_dev - holds all usb interface specific stuff
- * @usb_device: pointer to usb device
- * @iface: hardware interface
- * @cap: channel capabilities
- * @conf: channel configuration
- * @dci: direct communication interface of hardware
- * @ep_address: endpoint address table
- * @description: device description
- * @suffix: suffix for channel name
- * @channel_lock: synchronize channel access
- * @padding_active: indicates channel uses padding
- * @is_channel_healthy: health status table of each channel
- * @busy_urbs: list of anchored items
- * @io_mutex: synchronize I/O with disconnect
- * @link_stat_timer: timer for link status reports
- * @poll_work_obj: work for polling link status
- */
+ 
 struct most_dev {
 	struct device dev;
 	struct usb_device *usb_device;
@@ -109,7 +83,7 @@ struct most_dev {
 	u8 *ep_address;
 	char description[MAX_STRING_LEN];
 	char suffix[MAX_NUM_ENDPOINTS][MAX_SUFFIX_LEN];
-	spinlock_t channel_lock[MAX_NUM_ENDPOINTS]; /* sync channel access */
+	spinlock_t channel_lock[MAX_NUM_ENDPOINTS];  
 	bool padding_active[MAX_NUM_ENDPOINTS];
 	bool is_channel_healthy[MAX_NUM_ENDPOINTS];
 	struct clear_hold_work clear_work[MAX_NUM_ENDPOINTS];
@@ -128,14 +102,7 @@ struct most_dev {
 static void wq_clear_halt(struct work_struct *wq_obj);
 static void wq_netinfo(struct work_struct *wq_obj);
 
-/**
- * drci_rd_reg - read a DCI register
- * @dev: usb device
- * @reg: register address
- * @buf: buffer to store data
- *
- * This is reads data from INIC's direct register communication interface
- */
+ 
 static inline int drci_rd_reg(struct usb_device *dev, u16 reg, u16 *buf)
 {
 	int retval;
@@ -159,14 +126,7 @@ static inline int drci_rd_reg(struct usb_device *dev, u16 reg, u16 *buf)
 	return 0;
 }
 
-/**
- * drci_wr_reg - write a DCI register
- * @dev: usb device
- * @reg: register address
- * @data: data to write
- *
- * This is writes data to INIC's direct register communication interface
- */
+ 
 static inline int drci_wr_reg(struct usb_device *dev, u16 reg, u16 data)
 {
 	return usb_control_msg(dev,
@@ -185,11 +145,7 @@ static inline int start_sync_ep(struct usb_device *usb_dev, u16 ep)
 	return drci_wr_reg(usb_dev, DRCI_REG_BASE + DRCI_COMMAND + ep * 16, 1);
 }
 
-/**
- * get_stream_frame_size - calculate frame size of current configuration
- * @dev: device structure
- * @cfg: channel configuration
- */
+ 
 static unsigned int get_stream_frame_size(struct device *dev,
 					  struct most_channel_config *cfg)
 {
@@ -222,22 +178,12 @@ static unsigned int get_stream_frame_size(struct device *dev,
 	return frame_size;
 }
 
-/**
- * hdm_poison_channel - mark buffers of this channel as invalid
- * @iface: pointer to the interface
- * @channel: channel ID
- *
- * This unlinks all URBs submitted to the HCD,
- * calls the associated completion function of the core and removes
- * them from the list.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int hdm_poison_channel(struct most_interface *iface, int channel)
 {
 	struct most_dev *mdev = to_mdev(iface);
 	unsigned long flags;
-	spinlock_t *lock; /* temp. lock */
+	spinlock_t *lock;  
 
 	if (channel < 0 || channel >= iface->num_channels) {
 		dev_warn(&mdev->usb_device->dev, "Channel ID out of range.\n");
@@ -264,15 +210,7 @@ static int hdm_poison_channel(struct most_interface *iface, int channel)
 	return 0;
 }
 
-/**
- * hdm_add_padding - add padding bytes
- * @mdev: most device
- * @channel: channel ID
- * @mbo: buffer object
- *
- * This inserts the INIC hardware specific padding bytes into a streaming
- * channel's buffer
- */
+ 
 static int hdm_add_padding(struct most_dev *mdev, int channel, struct mbo *mbo)
 {
 	struct most_channel_config *conf = &mdev->conf[channel];
@@ -297,15 +235,7 @@ static int hdm_add_padding(struct most_dev *mdev, int channel, struct mbo *mbo)
 	return 0;
 }
 
-/**
- * hdm_remove_padding - remove padding bytes
- * @mdev: most device
- * @channel: channel ID
- * @mbo: buffer object
- *
- * This takes the INIC hardware specific padding bytes off a streaming
- * channel's buffer.
- */
+ 
 static int hdm_remove_padding(struct most_dev *mdev, int channel,
 			      struct mbo *mbo)
 {
@@ -326,17 +256,7 @@ static int hdm_remove_padding(struct most_dev *mdev, int channel,
 	return 0;
 }
 
-/**
- * hdm_write_completion - completion function for submitted Tx URBs
- * @urb: the URB that has been completed
- *
- * This checks the status of the completed URB. In case the URB has been
- * unlinked before, it is immediately freed. On any other error the MBO
- * transfer flag is set. On success it frees allocated resources and calls
- * the completion function.
- *
- * Context: interrupt!
- */
+ 
 static void hdm_write_completion(struct urb *urb)
 {
 	struct mbo *mbo = urb->context;
@@ -378,17 +298,7 @@ static void hdm_write_completion(struct urb *urb)
 	usb_free_urb(urb);
 }
 
-/**
- * hdm_read_completion - completion function for submitted Rx URBs
- * @urb: the URB that has been completed
- *
- * This checks the status of the completed URB. In case the URB has been
- * unlinked before it is immediately freed. On any other error the MBO transfer
- * flag is set. On success it frees allocated resources, removes
- * padding bytes -if necessary- and calls the completion function.
- *
- * Context: interrupt!
- */
+ 
 static void hdm_read_completion(struct urb *urb)
 {
 	struct mbo *mbo = urb->context;
@@ -439,21 +349,7 @@ static void hdm_read_completion(struct urb *urb)
 	usb_free_urb(urb);
 }
 
-/**
- * hdm_enqueue - receive a buffer to be used for data transfer
- * @iface: interface to enqueue to
- * @channel: ID of the channel
- * @mbo: pointer to the buffer object
- *
- * This allocates a new URB and fills it according to the channel
- * that is being used for transmission of data. Before the URB is
- * submitted it is stored in the private anchor list.
- *
- * Returns 0 on success. On any error the URB is freed and a error code
- * is returned.
- *
- * Context: Could in _some_ cases be interrupt!
- */
+ 
 static int hdm_enqueue(struct most_interface *iface, int channel,
 		       struct mbo *mbo)
 {
@@ -548,21 +444,7 @@ static void hdm_dma_free(struct mbo *mbo, u32 size)
 			  mbo->bus_address);
 }
 
-/**
- * hdm_configure_channel - receive channel configuration from core
- * @iface: interface
- * @channel: channel ID
- * @conf: structure that holds the configuration information
- *
- * The attached network interface controller (NIC) supports a padding mode
- * to avoid short packets on USB, hence increasing the performance due to a
- * lower interrupt load. This mode is default for synchronous data and can
- * be switched on for isochronous data. In case padding is active the
- * driver needs to know the frame size of the payload in order to calculate
- * the number of bytes it needs to pad when transmitting or to cut off when
- * receiving data.
- *
- */
+ 
 static int hdm_configure_channel(struct most_interface *iface, int channel,
 				 struct most_channel_config *conf)
 {
@@ -594,11 +476,7 @@ static int hdm_configure_channel(struct most_interface *iface, int channel,
 	    !(conf->data_type == MOST_CH_ISOC &&
 	      conf->packets_per_xact != 0xFF)) {
 		mdev->padding_active[channel] = false;
-		/*
-		 * Since the NIC's padding mode is not going to be
-		 * used, we can skip the frame size calculations and
-		 * move directly on to exit.
-		 */
+		 
 		goto exit;
 	}
 
@@ -620,7 +498,7 @@ static int hdm_configure_channel(struct most_interface *iface, int channel,
 			 mdev->suffix[channel], old_size, conf->buffer_size);
 	}
 
-	/* calculate extra length to comply w/ HW padding */
+	 
 	conf->extra_len = num_frames * (USB_MTU - frame_size);
 
 exit:
@@ -634,15 +512,7 @@ exit:
 	return 0;
 }
 
-/**
- * hdm_request_netinfo - request network information
- * @iface: pointer to interface
- * @channel: channel ID
- *
- * This is used as trigger to set up the link status timer that
- * polls for the NI state of the INIC every 2 seconds.
- *
- */
+ 
 static void hdm_request_netinfo(struct most_interface *iface, int channel,
 				void (*on_netinfo)(struct most_interface *,
 						   unsigned char,
@@ -658,13 +528,7 @@ static void hdm_request_netinfo(struct most_interface *iface, int channel,
 	mod_timer(&mdev->link_stat_timer, mdev->link_stat_timer.expires);
 }
 
-/**
- * link_stat_timer_handler - schedule work obtaining mac address and link status
- * @t: pointer to timer_list which holds a pointer to the USB device instance
- *
- * The handler runs in interrupt context. That's why we need to defer the
- * tasks to a work queue.
- */
+ 
 static void link_stat_timer_handler(struct timer_list *t)
 {
 	struct most_dev *mdev = from_timer(mdev, t, link_stat_timer);
@@ -674,12 +538,7 @@ static void link_stat_timer_handler(struct timer_list *t)
 	add_timer(&mdev->link_stat_timer);
 }
 
-/**
- * wq_netinfo - work queue function to deliver latest networking information
- * @wq_obj: object that holds data for our deferred work to do
- *
- * This retrieves the network interface status of the USB INIC
- */
+ 
 static void wq_netinfo(struct work_struct *wq_obj)
 {
 	struct most_dev *mdev = to_mdev_from_work(wq_obj);
@@ -719,12 +578,7 @@ static void wq_netinfo(struct work_struct *wq_obj)
 		mdev->on_netinfo(&mdev->iface, link, hw_addr);
 }
 
-/**
- * wq_clear_halt - work queue function
- * @wq_obj: work_struct object to execute
- *
- * This sends a clear_halt to the given USB pipe.
- */
+ 
 static void wq_clear_halt(struct work_struct *wq_obj)
 {
 	struct clear_hold_work *clear_work = to_clear_hold_work(wq_obj);
@@ -740,14 +594,7 @@ static void wq_clear_halt(struct work_struct *wq_obj)
 	if (usb_clear_halt(mdev->usb_device, pipe))
 		dev_warn(&mdev->usb_device->dev, "Failed to reset endpoint.\n");
 
-	/* If the functional Stall condition has been set on an
-	 * asynchronous rx channel, we need to clear the tx channel
-	 * too, since the hardware runs its clean-up sequence on both
-	 * channels, as they are physically one on the network.
-	 *
-	 * The USB interface that exposes the asynchronous channels
-	 * contains always two endpoints, and two only.
-	 */
+	 
 	if (mdev->conf[channel].data_type == MOST_CH_ASYNC &&
 	    mdev->conf[channel].direction == MOST_CH_RX) {
 		if (channel == 0)
@@ -763,22 +610,18 @@ static void wq_clear_halt(struct work_struct *wq_obj)
 	mutex_unlock(&mdev->io_mutex);
 }
 
-/*
- * hdm_usb_fops - file operation table for USB driver
- */
+ 
 static const struct file_operations hdm_usb_fops = {
 	.owner = THIS_MODULE,
 };
 
-/*
- * usb_device_id - ID table for HCD device probing
- */
+ 
 static const struct usb_device_id usbid[] = {
 	{ USB_DEVICE(USB_VENDOR_ID_SMSC, USB_DEV_ID_BRDG), },
 	{ USB_DEVICE(USB_VENDOR_ID_SMSC, USB_DEV_ID_OS81118), },
 	{ USB_DEVICE(USB_VENDOR_ID_SMSC, USB_DEV_ID_OS81119), },
 	{ USB_DEVICE(USB_VENDOR_ID_SMSC, USB_DEV_ID_OS81210), },
-	{ } /* Terminating entry */
+	{ }  
 };
 
 struct regs {
@@ -931,18 +774,7 @@ static void release_mdev(struct device *dev)
 
 	kfree(mdev);
 }
-/**
- * hdm_probe - probe function of USB device driver
- * @interface: Interface of the attached USB device
- * @id: Pointer to the USB ID table.
- *
- * This allocates and initializes the device instance, adds the new
- * entry to the internal list, scans the USB descriptors and registers
- * the interface with the core.
- * Additionally, the DCI objects are created and the hardware is sync'd.
- *
- * Return 0 on success. In case of an error a negative number is returned.
- */
+ 
 static int
 hdm_probe(struct usb_interface *interface, const struct usb_device_id *id)
 {
@@ -1097,15 +929,7 @@ err_free_mdev:
 	return ret;
 }
 
-/**
- * hdm_disconnect - disconnect function of USB device driver
- * @interface: Interface of the attached USB device
- *
- * This deregisters the interface with the core, removes the kernel timer
- * and frees resources.
- *
- * Context: hub kernel thread
- */
+ 
 static void hdm_disconnect(struct usb_interface *interface)
 {
 	struct most_dev *mdev = usb_get_intfdata(interface);

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * User interface for Resource Allocation in Resource Director Technology(RDT)
- *
- * Copyright (C) 2016 Intel Corporation
- *
- * Author: Fenghua Yu <fenghua.yu@intel.com>
- *
- * More information about RDT be found in the Intel (R) x86 Architecture
- * Software Developer Manual.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -39,16 +30,16 @@ static struct kernfs_root *rdt_root;
 struct rdtgroup rdtgroup_default;
 LIST_HEAD(rdt_all_groups);
 
-/* list of entries for the schemata file */
+ 
 LIST_HEAD(resctrl_schema_all);
 
-/* Kernel fs node for "info" directory under root */
+ 
 static struct kernfs_node *kn_info;
 
-/* Kernel fs node for "mon_groups" directory under root */
+ 
 static struct kernfs_node *kn_mongrp;
 
-/* Kernel fs node for "mon_data" directory under root */
+ 
 static struct kernfs_node *kn_mondata;
 
 static struct seq_buf last_cmd_status;
@@ -91,21 +82,7 @@ void rdt_staged_configs_clear(void)
 	}
 }
 
-/*
- * Trivial allocator for CLOSIDs. Since h/w only supports a small number,
- * we can keep a bitmap of free CLOSIDs in a single integer.
- *
- * Using a global CLOSID across all resources has some advantages and
- * some drawbacks:
- * + We can simply set "current->closid" to assign a task to a resource
- *   group.
- * + Context switch code can avoid extra memory references deciding which
- *   CLOSID to load into the PQR_ASSOC MSR
- * - We give up some options in configuring resource groups across multi-socket
- *   systems.
- * - Our choices on how to configure each resource become progressively more
- *   limited as the number of resources grows.
- */
+ 
 static int closid_free_map;
 static int closid_free_map_len;
 
@@ -119,13 +96,13 @@ static void closid_init(void)
 	struct resctrl_schema *s;
 	u32 rdt_min_closid = 32;
 
-	/* Compute rdt_min_closid across all resources */
+	 
 	list_for_each_entry(s, &resctrl_schema_all, list)
 		rdt_min_closid = min(rdt_min_closid, s->num_closid);
 
 	closid_free_map = BIT_MASK(rdt_min_closid) - 1;
 
-	/* CLOSID 0 is always reserved for the default group */
+	 
 	closid_free_map &= ~1;
 	closid_free_map_len = rdt_min_closid;
 }
@@ -147,27 +124,13 @@ void closid_free(int closid)
 	closid_free_map |= 1 << closid;
 }
 
-/**
- * closid_allocated - test if provided closid is in use
- * @closid: closid to be tested
- *
- * Return: true if @closid is currently associated with a resource group,
- * false if @closid is free
- */
+ 
 static bool closid_allocated(unsigned int closid)
 {
 	return (closid_free_map & (1 << closid)) == 0;
 }
 
-/**
- * rdtgroup_mode_by_closid - Return mode of resource group with closid
- * @closid: closid if the resource group
- *
- * Each resource group is associated with a @closid. Here the mode
- * of a resource group can be queried by searching for it using its closid.
- *
- * Return: mode as &enum rdtgrp_mode of resource group with closid @closid
- */
+ 
 enum rdtgrp_mode rdtgroup_mode_by_closid(int closid)
 {
 	struct rdtgroup *rdtgrp;
@@ -187,12 +150,7 @@ static const char * const rdt_mode_str[] = {
 	[RDT_MODE_PSEUDO_LOCKED]	= "pseudo-locked",
 };
 
-/**
- * rdtgroup_mode_str - Return the string representation of mode
- * @mode: the resource group mode as &enum rdtgroup_mode
- *
- * Return: string representation of valid mode, "unknown" otherwise
- */
+ 
 static const char *rdtgroup_mode_str(enum rdtgrp_mode mode)
 {
 	if (mode < RDT_MODE_SHAREABLE || mode >= RDT_NUM_MODES)
@@ -201,7 +159,7 @@ static const char *rdtgroup_mode_str(enum rdtgrp_mode mode)
 	return rdt_mode_str[mode];
 }
 
-/* set uid and gid of rdtgroup dirs and files to that of the creator */
+ 
 static int rdtgroup_kn_set_ugid(struct kernfs_node *kn)
 {
 	struct iattr iattr = { .ia_valid = ATTR_UID | ATTR_GID,
@@ -307,12 +265,7 @@ static int rdtgroup_cpus_show(struct kernfs_open_file *of,
 	return ret;
 }
 
-/*
- * This is safe against resctrl_sched_in() called from __switch_to()
- * because __switch_to() is executed with interrupts disabled. A local call
- * from update_closid_rmid() is protected against __switch_to() because
- * preemption is disabled.
- */
+ 
 static void update_cpu_closid_rmid(void *info)
 {
 	struct rdtgroup *r = info;
@@ -322,19 +275,11 @@ static void update_cpu_closid_rmid(void *info)
 		this_cpu_write(pqr_state.default_rmid, r->mon.rmid);
 	}
 
-	/*
-	 * We cannot unconditionally write the MSR because the current
-	 * executing task might have its own closid selected. Just reuse
-	 * the context switch code.
-	 */
+	 
 	resctrl_sched_in(current);
 }
 
-/*
- * Update the PGR_ASSOC MSR on all cpus in @cpu_mask,
- *
- * Per task closids/rmids must have been set up before calling this function.
- */
+ 
 static void
 update_closid_rmid(const struct cpumask *cpu_mask, struct rdtgroup *r)
 {
@@ -347,25 +292,22 @@ static int cpus_mon_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
 	struct rdtgroup *prgrp = rdtgrp->mon.parent, *crgrp;
 	struct list_head *head;
 
-	/* Check whether cpus belong to parent ctrl group */
+	 
 	cpumask_andnot(tmpmask, newmask, &prgrp->cpu_mask);
 	if (!cpumask_empty(tmpmask)) {
 		rdt_last_cmd_puts("Can only add CPUs to mongroup that belong to parent\n");
 		return -EINVAL;
 	}
 
-	/* Check whether cpus are dropped from this group */
+	 
 	cpumask_andnot(tmpmask, &rdtgrp->cpu_mask, newmask);
 	if (!cpumask_empty(tmpmask)) {
-		/* Give any dropped cpus to parent rdtgroup */
+		 
 		cpumask_or(&prgrp->cpu_mask, &prgrp->cpu_mask, tmpmask);
 		update_closid_rmid(tmpmask, prgrp);
 	}
 
-	/*
-	 * If we added cpus, remove them from previous group that owned them
-	 * and update per-cpu rmid
-	 */
+	 
 	cpumask_andnot(tmpmask, newmask, &rdtgrp->cpu_mask);
 	if (!cpumask_empty(tmpmask)) {
 		head = &prgrp->mon.crdtgrp_list;
@@ -378,7 +320,7 @@ static int cpus_mon_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
 		update_closid_rmid(tmpmask, rdtgrp);
 	}
 
-	/* Done pushing/pulling - update this group with new mask */
+	 
 	cpumask_copy(&rdtgrp->cpu_mask, newmask);
 
 	return 0;
@@ -389,7 +331,7 @@ static void cpumask_rdtgrp_clear(struct rdtgroup *r, struct cpumask *m)
 	struct rdtgroup *crgrp;
 
 	cpumask_andnot(&r->cpu_mask, &r->cpu_mask, m);
-	/* update the child mon group masks as well*/
+	 
 	list_for_each_entry(crgrp, &r->mon.crdtgrp_list, mon.crdtgrp_list)
 		cpumask_and(&crgrp->cpu_mask, &r->cpu_mask, &crgrp->cpu_mask);
 }
@@ -400,26 +342,22 @@ static int cpus_ctrl_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
 	struct rdtgroup *r, *crgrp;
 	struct list_head *head;
 
-	/* Check whether cpus are dropped from this group */
+	 
 	cpumask_andnot(tmpmask, &rdtgrp->cpu_mask, newmask);
 	if (!cpumask_empty(tmpmask)) {
-		/* Can't drop from default group */
+		 
 		if (rdtgrp == &rdtgroup_default) {
 			rdt_last_cmd_puts("Can't drop CPUs from default group\n");
 			return -EINVAL;
 		}
 
-		/* Give any dropped cpus to rdtgroup_default */
+		 
 		cpumask_or(&rdtgroup_default.cpu_mask,
 			   &rdtgroup_default.cpu_mask, tmpmask);
 		update_closid_rmid(tmpmask, &rdtgroup_default);
 	}
 
-	/*
-	 * If we added cpus, remove them from previous group and
-	 * the prev group's child groups that owned them
-	 * and update per-cpu closid/rmid.
-	 */
+	 
 	cpumask_andnot(tmpmask, newmask, &rdtgrp->cpu_mask);
 	if (!cpumask_empty(tmpmask)) {
 		list_for_each_entry(r, &rdt_all_groups, rdtgroup_list) {
@@ -432,13 +370,10 @@ static int cpus_ctrl_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
 		update_closid_rmid(tmpmask, rdtgrp);
 	}
 
-	/* Done pushing/pulling - update this group with new mask */
+	 
 	cpumask_copy(&rdtgrp->cpu_mask, newmask);
 
-	/*
-	 * Clear child mon group masks since there is a new parent mask
-	 * now and update the rmid for the cpus the child lost.
-	 */
+	 
 	head = &rdtgrp->mon.crdtgrp_list;
 	list_for_each_entry(crgrp, head, mon.crdtgrp_list) {
 		cpumask_and(tmpmask, &rdtgrp->cpu_mask, &crgrp->cpu_mask);
@@ -494,7 +429,7 @@ static ssize_t rdtgroup_cpus_write(struct kernfs_open_file *of,
 		goto unlock;
 	}
 
-	/* check that user didn't specify any offline cpus */
+	 
 	cpumask_andnot(tmpmask, newmask, cpu_online_mask);
 	if (!cpumask_empty(tmpmask)) {
 		ret = -EINVAL;
@@ -518,18 +453,7 @@ unlock:
 	return ret ?: nbytes;
 }
 
-/**
- * rdtgroup_remove - the helper to remove resource group safely
- * @rdtgrp: resource group to remove
- *
- * On resource group creation via a mkdir, an extra kernfs_node reference is
- * taken to ensure that the rdtgroup structure remains accessible for the
- * rdtgroup_kn_unlock() calls where it is removed.
- *
- * Drop the extra reference here, then free the rdtgroup structure.
- *
- * Return: void
- */
+ 
 static void rdtgroup_remove(struct rdtgroup *rdtgrp)
 {
 	kernfs_put(rdtgrp->kn);
@@ -538,10 +462,7 @@ static void rdtgroup_remove(struct rdtgroup *rdtgrp)
 
 static void _update_task_closid_rmid(void *task)
 {
-	/*
-	 * If the task is still current on this CPU, update PQR_ASSOC MSR.
-	 * Otherwise, the MSR is updated when the task is scheduled in.
-	 */
+	 
 	if (task == current)
 		resctrl_sched_in(task);
 }
@@ -557,21 +478,14 @@ static void update_task_closid_rmid(struct task_struct *t)
 static int __rdtgroup_move_task(struct task_struct *tsk,
 				struct rdtgroup *rdtgrp)
 {
-	/* If the task is already in rdtgrp, no need to move the task. */
+	 
 	if ((rdtgrp->type == RDTCTRL_GROUP && tsk->closid == rdtgrp->closid &&
 	     tsk->rmid == rdtgrp->mon.rmid) ||
 	    (rdtgrp->type == RDTMON_GROUP && tsk->rmid == rdtgrp->mon.rmid &&
 	     tsk->closid == rdtgrp->mon.parent->closid))
 		return 0;
 
-	/*
-	 * Set the task's closid/rmid before the PQR_ASSOC MSR can be
-	 * updated by them.
-	 *
-	 * For ctrl_mon groups, move both closid and rmid.
-	 * For monitor groups, can move the tasks only from
-	 * their parent CTRL group.
-	 */
+	 
 
 	if (rdtgrp->type == RDTCTRL_GROUP) {
 		WRITE_ONCE(tsk->closid, rdtgrp->closid);
@@ -585,20 +499,10 @@ static int __rdtgroup_move_task(struct task_struct *tsk,
 		}
 	}
 
-	/*
-	 * Ensure the task's closid and rmid are written before determining if
-	 * the task is current that will decide if it will be interrupted.
-	 * This pairs with the full barrier between the rq->curr update and
-	 * resctrl_sched_in() during context switch.
-	 */
+	 
 	smp_mb();
 
-	/*
-	 * By now, the task's closid and rmid are set. If the task is current
-	 * on a CPU, the PQR_ASSOC MSR needs to be updated to make the resource
-	 * group go into effect. If the task is not current, the MSR will be
-	 * updated when the task is scheduled in.
-	 */
+	 
 	update_task_closid_rmid(tsk);
 
 	return 0;
@@ -616,12 +520,7 @@ static bool is_rmid_match(struct task_struct *t, struct rdtgroup *r)
 	       (r->type == RDTMON_GROUP) && (t->rmid == r->mon.rmid));
 }
 
-/**
- * rdtgroup_tasks_assigned - Test if tasks have been assigned to resource group
- * @r: Resource group
- *
- * Return: 1 if tasks have been assigned to @r, 0 otherwise
- */
+ 
 int rdtgroup_tasks_assigned(struct rdtgroup *r)
 {
 	struct task_struct *p, *t;
@@ -648,10 +547,7 @@ static int rdtgroup_task_write_permission(struct task_struct *task,
 	const struct cred *cred = current_cred();
 	int ret = 0;
 
-	/*
-	 * Even if we're attaching all tasks in the thread group, we only
-	 * need to check permissions on one of them.
-	 */
+	 
 	if (!uid_eq(cred->euid, GLOBAL_ROOT_UID) &&
 	    !uid_eq(cred->euid, tcred->uid) &&
 	    !uid_eq(cred->euid, tcred->suid)) {
@@ -757,37 +653,7 @@ static int rdtgroup_tasks_show(struct kernfs_open_file *of,
 
 #ifdef CONFIG_PROC_CPU_RESCTRL
 
-/*
- * A task can only be part of one resctrl control group and of one monitor
- * group which is associated to that control group.
- *
- * 1)   res:
- *      mon:
- *
- *    resctrl is not available.
- *
- * 2)   res:/
- *      mon:
- *
- *    Task is part of the root resctrl control group, and it is not associated
- *    to any monitor group.
- *
- * 3)  res:/
- *     mon:mon0
- *
- *    Task is part of the root resctrl control group and monitor group mon0.
- *
- * 4)  res:group0
- *     mon:
- *
- *    Task is part of resctrl control group group0, and it is not associated
- *    to any monitor group.
- *
- * 5) res:group0
- *    mon:mon1
- *
- *    Task is part of resctrl control group group0 and monitor group mon1.
- */
+ 
 int proc_resctrl_show(struct seq_file *s, struct pid_namespace *ns,
 		      struct pid *pid, struct task_struct *tsk)
 {
@@ -796,7 +662,7 @@ int proc_resctrl_show(struct seq_file *s, struct pid_namespace *ns,
 
 	mutex_lock(&rdtgroup_mutex);
 
-	/* Return empty if resctrl has not been mounted. */
+	 
 	if (!static_branch_unlikely(&rdt_enable_key)) {
 		seq_puts(s, "res:\nmon:\n");
 		goto unlock;
@@ -805,10 +671,7 @@ int proc_resctrl_show(struct seq_file *s, struct pid_namespace *ns,
 	list_for_each_entry(rdtg, &rdt_all_groups, rdtgroup_list) {
 		struct rdtgroup *crg;
 
-		/*
-		 * Task information is only relevant for shareable
-		 * and exclusive groups.
-		 */
+		 
 		if (rdtg->mode != RDT_MODE_SHAREABLE &&
 		    rdtg->mode != RDT_MODE_EXCLUSIVE)
 			continue;
@@ -829,10 +692,7 @@ int proc_resctrl_show(struct seq_file *s, struct pid_namespace *ns,
 		seq_putc(s, '\n');
 		goto unlock;
 	}
-	/*
-	 * The above search should succeed. Otherwise return
-	 * with an error.
-	 */
+	 
 	ret = -ENOENT;
 unlock:
 	mutex_unlock(&rdtgroup_mutex);
@@ -895,28 +755,12 @@ static int rdt_shareable_bits_show(struct kernfs_open_file *of,
 	return 0;
 }
 
-/**
- * rdt_bit_usage_show - Display current usage of resources
- *
- * A domain is a shared resource that can now be allocated differently. Here
- * we display the current regions of the domain as an annotated bitmask.
- * For each domain of this resource its allocation bitmask
- * is annotated as below to indicate the current usage of the corresponding bit:
- *   0 - currently unused
- *   X - currently available for sharing and used by software and hardware
- *   H - currently used by hardware only but available for software use
- *   S - currently used and shareable by software only
- *   E - currently used exclusively by one resource group
- *   P - currently pseudo-locked by one resource group
- */
+ 
 static int rdt_bit_usage_show(struct kernfs_open_file *of,
 			      struct seq_file *seq, void *v)
 {
 	struct resctrl_schema *s = of->kn->parent->priv;
-	/*
-	 * Use unsigned long even though only 32 bits are used to ensure
-	 * test_bit() is used safely.
-	 */
+	 
 	unsigned long sw_shareable = 0, hw_shareable = 0;
 	unsigned long exclusive = 0, pseudo_locked = 0;
 	struct rdt_resource *r = s->res;
@@ -948,13 +792,7 @@ static int rdt_bit_usage_show(struct kernfs_open_file *of,
 				exclusive |= ctrl_val;
 				break;
 			case RDT_MODE_PSEUDO_LOCKSETUP:
-			/*
-			 * RDT_MODE_PSEUDO_LOCKSETUP is possible
-			 * here but not included since the CBM
-			 * associated with this CLOSID in this mode
-			 * is not initialized and no task or cpu can be
-			 * assigned this CLOSID.
-			 */
+			 
 				break;
 			case RDT_MODE_PSEUDO_LOCKED:
 			case RDT_NUM_MODES:
@@ -979,7 +817,7 @@ static int rdt_bit_usage_show(struct kernfs_open_file *of,
 				seq_putc(seq, 'E');
 			else if (psl)
 				seq_putc(seq, 'P');
-			else /* Unused bits remain */
+			else  
 				seq_putc(seq, '0');
 		}
 		sep = true;
@@ -1084,9 +922,7 @@ static ssize_t max_threshold_occ_write(struct kernfs_open_file *of,
 	return nbytes;
 }
 
-/*
- * rdtgroup_mode_show - Display mode of this resource group
- */
+ 
 static int rdtgroup_mode_show(struct kernfs_open_file *of,
 			      struct seq_file *s, void *v)
 {
@@ -1117,26 +953,7 @@ static enum resctrl_conf_type resctrl_peer_type(enum resctrl_conf_type my_type)
 	}
 }
 
-/**
- * __rdtgroup_cbm_overlaps - Does CBM for intended closid overlap with other
- * @r: Resource to which domain instance @d belongs.
- * @d: The domain instance for which @closid is being tested.
- * @cbm: Capacity bitmask being tested.
- * @closid: Intended closid for @cbm.
- * @exclusive: Only check if overlaps with exclusive resource groups
- *
- * Checks if provided @cbm intended to be used for @closid on domain
- * @d overlaps with any other closids or other hardware usage associated
- * with this domain. If @exclusive is true then only overlaps with
- * resource groups in exclusive mode will be considered. If @exclusive
- * is false then overlaps with any resource group or hardware entities
- * will be considered.
- *
- * @cbm is unsigned long, even if only 32 bits are used, to make the
- * bitmap functions work correctly.
- *
- * Return: false if CBM does not overlap, true if it does.
- */
+ 
 static bool __rdtgroup_cbm_overlaps(struct rdt_resource *r, struct rdt_domain *d,
 				    unsigned long cbm, int closid,
 				    enum resctrl_conf_type type, bool exclusive)
@@ -1145,14 +962,14 @@ static bool __rdtgroup_cbm_overlaps(struct rdt_resource *r, struct rdt_domain *d
 	unsigned long ctrl_b;
 	int i;
 
-	/* Check for any overlap with regions used by hardware directly */
+	 
 	if (!exclusive) {
 		ctrl_b = r->cache.shareable_bits;
 		if (bitmap_intersects(&cbm, &ctrl_b, r->cache.cbm_len))
 			return true;
 	}
 
-	/* Check for overlap with other resource groups */
+	 
 	for (i = 0; i < closids_supported(); i++) {
 		ctrl_b = resctrl_arch_get_config(r, d, i, type);
 		mode = rdtgroup_mode_by_closid(i);
@@ -1172,26 +989,7 @@ static bool __rdtgroup_cbm_overlaps(struct rdt_resource *r, struct rdt_domain *d
 	return false;
 }
 
-/**
- * rdtgroup_cbm_overlaps - Does CBM overlap with other use of hardware
- * @s: Schema for the resource to which domain instance @d belongs.
- * @d: The domain instance for which @closid is being tested.
- * @cbm: Capacity bitmask being tested.
- * @closid: Intended closid for @cbm.
- * @exclusive: Only check if overlaps with exclusive resource groups
- *
- * Resources that can be allocated using a CBM can use the CBM to control
- * the overlap of these allocations. rdtgroup_cmb_overlaps() is the test
- * for overlap. Overlap test is not limited to the specific resource for
- * which the CBM is intended though - when dealing with CDP resources that
- * share the underlying hardware the overlap check should be performed on
- * the CDP resource sharing the hardware also.
- *
- * Refer to description of __rdtgroup_cbm_overlaps() for the details of the
- * overlap test.
- *
- * Return: true if CBM overlap detected, false if there is no overlap
- */
+ 
 bool rdtgroup_cbm_overlaps(struct resctrl_schema *s, struct rdt_domain *d,
 			   unsigned long cbm, int closid, bool exclusive)
 {
@@ -1207,18 +1005,7 @@ bool rdtgroup_cbm_overlaps(struct resctrl_schema *s, struct rdt_domain *d,
 	return  __rdtgroup_cbm_overlaps(r, d, cbm, closid, peer_type, exclusive);
 }
 
-/**
- * rdtgroup_mode_test_exclusive - Test if this resource group can be exclusive
- *
- * An exclusive resource group implies that there should be no sharing of
- * its allocated resources. At the time this group is considered to be
- * exclusive this test can determine if its current schemata supports this
- * setting by testing for overlap with all other resource groups.
- *
- * Return: true if resource group can be exclusive, false if there is overlap
- * with allocations of other resource groups and thus this resource group
- * cannot be exclusive.
- */
+ 
 static bool rdtgroup_mode_test_exclusive(struct rdtgroup *rdtgrp)
 {
 	int closid = rdtgrp->closid;
@@ -1251,10 +1038,7 @@ static bool rdtgroup_mode_test_exclusive(struct rdtgroup *rdtgrp)
 	return true;
 }
 
-/**
- * rdtgroup_mode_write - Modify the resource group's mode
- *
- */
+ 
 static ssize_t rdtgroup_mode_write(struct kernfs_open_file *of,
 				   char *buf, size_t nbytes, loff_t off)
 {
@@ -1262,7 +1046,7 @@ static ssize_t rdtgroup_mode_write(struct kernfs_open_file *of,
 	enum rdtgrp_mode mode;
 	int ret = 0;
 
-	/* Valid input requires a trailing newline */
+	 
 	if (nbytes == 0 || buf[nbytes - 1] != '\n')
 		return -EINVAL;
 	buf[nbytes - 1] = '\0';
@@ -1323,21 +1107,7 @@ out:
 	return ret ?: nbytes;
 }
 
-/**
- * rdtgroup_cbm_to_size - Translate CBM to size in bytes
- * @r: RDT resource to which @d belongs.
- * @d: RDT domain instance.
- * @cbm: bitmask for which the size should be computed.
- *
- * The bitmask provided associated with the RDT domain instance @d will be
- * translated into how many bytes it represents. The size in bytes is
- * computed by first dividing the total cache size by the CBM length to
- * determine how many bytes each bit in the bitmask represents. The result
- * is multiplied with the number of bits set in the bitmask.
- *
- * @cbm is unsigned long, even if only 32 bits are used to make the
- * bitmap functions work correctly.
- */
+ 
 unsigned int rdtgroup_cbm_to_size(struct rdt_resource *r,
 				  struct rdt_domain *d, unsigned long cbm)
 {
@@ -1357,13 +1127,7 @@ unsigned int rdtgroup_cbm_to_size(struct rdt_resource *r,
 	return size;
 }
 
-/**
- * rdtgroup_size_show - Display size in bytes of allocated regions
- *
- * The "size" file mirrors the layout of the "schemata" file, printing the
- * size in bytes of each region instead of the capacity bitmask.
- *
- */
+ 
 static int rdtgroup_size_show(struct kernfs_open_file *of,
 			      struct seq_file *s, void *v)
 {
@@ -1444,15 +1208,7 @@ struct mon_config_info {
 
 #define INVALID_CONFIG_INDEX   UINT_MAX
 
-/**
- * mon_event_config_index_get - get the hardware index for the
- *                              configurable event
- * @evtid: event id.
- *
- * Return: 0 for evtid == QOS_L3_MBM_TOTAL_EVENT_ID
- *         1 for evtid == QOS_L3_MBM_LOCAL_EVENT_ID
- *         INVALID_CONFIG_INDEX for invalid evtid
- */
+ 
 static inline unsigned int mon_event_config_index_get(u32 evtid)
 {
 	switch (evtid) {
@@ -1461,7 +1217,7 @@ static inline unsigned int mon_event_config_index_get(u32 evtid)
 	case QOS_L3_MBM_LOCAL_EVENT_ID:
 		return 1;
 	default:
-		/* Should never reach here */
+		 
 		return INVALID_CONFIG_INDEX;
 	}
 }
@@ -1479,7 +1235,7 @@ static void mon_event_config_read(void *info)
 	}
 	rdmsrl(MSR_IA32_EVT_CFG_BASE + index, msrval);
 
-	/* Report only the valid event configuration bits */
+	 
 	mon_info->mon_config = msrval & MAX_EVT_CONFIG_BITS;
 }
 
@@ -1553,16 +1309,13 @@ static int mbm_config_write_domain(struct rdt_resource *r,
 	struct mon_config_info mon_info = {0};
 	int ret = 0;
 
-	/* mon_config cannot be more than the supported set of events */
+	 
 	if (val > MAX_EVT_CONFIG_BITS) {
 		rdt_last_cmd_puts("Invalid event configuration\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * Read the current config value first. If both are the same then
-	 * no need to write it again.
-	 */
+	 
 	mon_info.evtid = evtid;
 	mondata_config_read(d, &mon_info);
 	if (mon_info.mon_config == val)
@@ -1570,24 +1323,11 @@ static int mbm_config_write_domain(struct rdt_resource *r,
 
 	mon_info.mon_config = val;
 
-	/*
-	 * Update MSR_IA32_EVT_CFG_BASE MSR on one of the CPUs in the
-	 * domain. The MSRs offset from MSR MSR_IA32_EVT_CFG_BASE
-	 * are scoped at the domain level. Writing any of these MSRs
-	 * on one CPU is observed by all the CPUs in the domain.
-	 */
+	 
 	smp_call_function_any(&d->cpu_mask, mon_event_config_write,
 			      &mon_info, 1);
 
-	/*
-	 * When an Event Configuration is changed, the bandwidth counters
-	 * for all RMIDs and Events will be cleared by the hardware. The
-	 * hardware also sets MSR_IA32_QM_CTR.Unavailable (bit 62) for
-	 * every RMID on the next read to any event for every RMID.
-	 * Subsequent reads will have MSR_IA32_QM_CTR.Unavailable (bit 62)
-	 * cleared while it is tracked by the hardware. Clear the
-	 * mbm_local and mbm_total counts for all the RMIDs.
-	 */
+	 
 	resctrl_arch_reset_rmid_all(r, d);
 
 out:
@@ -1605,7 +1345,7 @@ next:
 	if (!tok || tok[0] == '\0')
 		return 0;
 
-	/* Start processing the strings for each domain */
+	 
 	dom_str = strim(strsep(&tok, ";"));
 	id_str = strsep(&dom_str, "=");
 
@@ -1638,7 +1378,7 @@ static ssize_t mbm_total_bytes_config_write(struct kernfs_open_file *of,
 	struct rdt_resource *r = of->kn->parent->priv;
 	int ret;
 
-	/* Valid input requires a trailing newline */
+	 
 	if (nbytes == 0 || buf[nbytes - 1] != '\n')
 		return -EINVAL;
 
@@ -1662,7 +1402,7 @@ static ssize_t mbm_local_bytes_config_write(struct kernfs_open_file *of,
 	struct rdt_resource *r = of->kn->parent->priv;
 	int ret;
 
-	/* Valid input requires a trailing newline */
+	 
 	if (nbytes == 0 || buf[nbytes - 1] != '\n')
 		return -EINVAL;
 
@@ -1679,7 +1419,7 @@ static ssize_t mbm_local_bytes_config_write(struct kernfs_open_file *of,
 	return ret ?: nbytes;
 }
 
-/* rdtgroup information files for one cache resource. */
+ 
 static struct rftype res_common_files[] = {
 	{
 		.name		= "last_cmd_status",
@@ -1758,11 +1498,7 @@ static struct rftype res_common_files[] = {
 		.seq_show	= rdt_delay_linear_show,
 		.fflags		= RF_CTRL_INFO | RFTYPE_RES_MB,
 	},
-	/*
-	 * Platform specific which (if any) capabilities are provided by
-	 * thread_throttle_mode. Defer "fflags" initialization to platform
-	 * discovery.
-	 */
+	 
 	{
 		.name		= "thread_throttle_mode",
 		.mode		= 0444,
@@ -1906,23 +1642,7 @@ void __init mbm_config_rftype_init(const char *config)
 		rft->fflags = RF_MON_INFO | RFTYPE_RES_CACHE;
 }
 
-/**
- * rdtgroup_kn_mode_restrict - Restrict user access to named resctrl file
- * @r: The resource group with which the file is associated.
- * @name: Name of the file
- *
- * The permissions of named resctrl file, directory, or link are modified
- * to not allow read, write, or execute by any user.
- *
- * WARNING: This function is intended to communicate to the user that the
- * resctrl file has been locked down - that it is not relevant to the
- * particular state the system finds itself in. It should not be relied
- * on to protect from user access because after the file's permissions
- * are restricted the user can still change the permissions using chmod
- * from the command line.
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 int rdtgroup_kn_mode_restrict(struct rdtgroup *r, const char *name)
 {
 	struct iattr iattr = {.ia_valid = ATTR_MODE,};
@@ -1950,17 +1670,7 @@ int rdtgroup_kn_mode_restrict(struct rdtgroup *r, const char *name)
 	return ret;
 }
 
-/**
- * rdtgroup_kn_mode_restore - Restore user access to named resctrl file
- * @r: The resource group with which the file is associated.
- * @name: Name of the file
- * @mask: Mask of permissions that should be restored
- *
- * Restore the permissions of the named file. If @name is a directory the
- * permissions of its parent will be used.
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 int rdtgroup_kn_mode_restore(struct rdtgroup *r, const char *name,
 			     umode_t mask)
 {
@@ -2033,7 +1743,7 @@ static int rdtgroup_create_info_dir(struct kernfs_node *parent_kn)
 	char name[32];
 	int ret;
 
-	/* create the directory */
+	 
 	kn_info = kernfs_create_dir(parent_kn, "info", parent_kn->mode, NULL);
 	if (IS_ERR(kn_info))
 		return PTR_ERR(kn_info);
@@ -2042,7 +1752,7 @@ static int rdtgroup_create_info_dir(struct kernfs_node *parent_kn)
 	if (ret)
 		goto out_destroy;
 
-	/* loop over enabled controls, these are all alloc_capable */
+	 
 	list_for_each_entry(s, &resctrl_schema_all, list) {
 		r = s->res;
 		fflags =  r->fflags | RF_CTRL_INFO;
@@ -2079,7 +1789,7 @@ mongroup_create_dir(struct kernfs_node *parent_kn, struct rdtgroup *prgrp,
 	struct kernfs_node *kn;
 	int ret;
 
-	/* create the directory */
+	 
 	kn = kernfs_create_dir(parent_kn, name, parent_kn->mode, prgrp);
 	if (IS_ERR(kn))
 		return PTR_ERR(kn);
@@ -2140,15 +1850,15 @@ static int set_cache_qos_cfg(int level, bool enable)
 	r_l = &rdt_resources_all[level].r_resctrl;
 	list_for_each_entry(d, &r_l->domains, list) {
 		if (r_l->cache.arch_has_per_cpu_cfg)
-			/* Pick all the CPUs in the domain instance */
+			 
 			for_each_cpu(cpu, &d->cpu_mask)
 				cpumask_set_cpu(cpu, cpu_mask);
 		else
-			/* Pick one CPU from each domain instance to update MSR */
+			 
 			cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
 	}
 
-	/* Update QOS_CFG MSR on all the CPUs in cpu_mask */
+	 
 	on_each_cpu_mask(cpu_mask, update, &enable, 1);
 
 	free_cpumask_var(cpu_mask);
@@ -2156,7 +1866,7 @@ static int set_cache_qos_cfg(int level, bool enable)
 	return 0;
 }
 
-/* Restore the qos cfg state when a domain comes online */
+ 
 void rdt_domain_reconfigure_cdp(struct rdt_resource *r)
 {
 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
@@ -2195,10 +1905,7 @@ static void mba_sc_domain_destroy(struct rdt_resource *r,
 	d->mbps_val = NULL;
 }
 
-/*
- * MBA software controller is supported only if
- * MBM is supported and MBA is in linear scale.
- */
+ 
 static bool supports_mba_mbps(void)
 {
 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
@@ -2207,10 +1914,7 @@ static bool supports_mba_mbps(void)
 		r->alloc_capable && is_mba_linear());
 }
 
-/*
- * Enable or disable the MBA software controller
- * which helps user specify bandwidth in MBps.
- */
+ 
 static int set_mba_sc(bool mba_sc)
 {
 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
@@ -2279,23 +1983,11 @@ static void cdp_disable_all(void)
 		resctrl_arch_set_cdp_enabled(RDT_RESOURCE_L2, false);
 }
 
-/*
- * We don't allow rdtgroup directories to be created anywhere
- * except the root directory. Thus when looking for the rdtgroup
- * structure for a kernfs node we are either looking at a directory,
- * in which case the rdtgroup structure is pointed at by the "priv"
- * field, otherwise we have a file, and need only look to the parent
- * to find the rdtgroup.
- */
+ 
 static struct rdtgroup *kernfs_to_rdtgroup(struct kernfs_node *kn)
 {
 	if (kernfs_type(kn) == KERNFS_DIR) {
-		/*
-		 * All the resource directories use "kn->priv"
-		 * to point to the "struct rdtgroup" for the
-		 * resource. "info" and its subdirectories don't
-		 * have rdtgroup structures, so return NULL here.
-		 */
+		 
 		if (kn == kn_info || kn->parent == kn_info)
 			return NULL;
 		else
@@ -2336,7 +2028,7 @@ struct rdtgroup *rdtgroup_kn_lock_live(struct kernfs_node *kn)
 
 	mutex_lock(&rdtgroup_mutex);
 
-	/* Was this group deleted while we waited? */
+	 
 	if (rdtgrp->flags & RDT_DELETED)
 		return NULL;
 
@@ -2410,11 +2102,7 @@ static int schemata_list_add(struct rdt_resource *r, enum resctrl_conf_type type
 
 	cl = strlen(s->name);
 
-	/*
-	 * If CDP is supported by this resource, but not enabled,
-	 * include the suffix. This ensures the tabular format of the
-	 * schemata file does not change between mounts of the filesystem.
-	 */
+	 
 	if (r->cdp_capable && !resctrl_arch_get_cdp_enabled(r->rid))
 		cl += 4;
 
@@ -2469,9 +2157,7 @@ static int rdt_get_tree(struct fs_context *fc)
 
 	cpus_read_lock();
 	mutex_lock(&rdtgroup_mutex);
-	/*
-	 * resctrl file system can only be mounted once.
-	 */
+	 
 	if (static_branch_unlikely(&rdt_enable_key)) {
 		ret = -EBUSY;
 		goto out;
@@ -2644,11 +2330,7 @@ static int reset_all_ctrls(struct rdt_resource *r)
 	msr_param.low = 0;
 	msr_param.high = hw_res->num_closid;
 
-	/*
-	 * Disable resource control for this resource by setting all
-	 * CBMs in all domains to the maximum mask value. Pick one CPU
-	 * from each domain to update the MSRs below.
-	 */
+	 
 	list_for_each_entry(d, &r->domains, list) {
 		hw_dom = resctrl_to_arch_dom(d);
 		cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
@@ -2657,7 +2339,7 @@ static int reset_all_ctrls(struct rdt_resource *r)
 			hw_dom->ctrl_val[i] = r->default_ctrl;
 	}
 
-	/* Update CBM on all the CPUs in cpu_mask */
+	 
 	on_each_cpu_mask(cpu_mask, rdt_ctrl_update, &msr_param, 1);
 
 	free_cpumask_var(cpu_mask);
@@ -2665,14 +2347,7 @@ static int reset_all_ctrls(struct rdt_resource *r)
 	return 0;
 }
 
-/*
- * Move tasks from one to the other group. If @from is NULL, then all tasks
- * in the systems are moved unconditionally (used for teardown).
- *
- * If @mask is not NULL the cpus on which moved tasks are running are set
- * in that mask so the update smp function call is restricted to affected
- * cpus.
- */
+ 
 static void rdt_move_group_tasks(struct rdtgroup *from, struct rdtgroup *to,
 				 struct cpumask *mask)
 {
@@ -2685,21 +2360,10 @@ static void rdt_move_group_tasks(struct rdtgroup *from, struct rdtgroup *to,
 			WRITE_ONCE(t->closid, to->closid);
 			WRITE_ONCE(t->rmid, to->mon.rmid);
 
-			/*
-			 * Order the closid/rmid stores above before the loads
-			 * in task_curr(). This pairs with the full barrier
-			 * between the rq->curr update and resctrl_sched_in()
-			 * during context switch.
-			 */
+			 
 			smp_mb();
 
-			/*
-			 * If the task is on a CPU, set the CPU in the mask.
-			 * The detection is inaccurate as tasks might move or
-			 * schedule before the smp function call takes place.
-			 * In such a case the function call is pointless, but
-			 * there is no other side effect.
-			 */
+			 
 			if (IS_ENABLED(CONFIG_SMP) && mask && task_curr(t))
 				cpumask_set_cpu(task_cpu(t), mask);
 		}
@@ -2724,21 +2388,19 @@ static void free_all_child_rdtgrp(struct rdtgroup *rdtgrp)
 	}
 }
 
-/*
- * Forcibly remove all of subdirectories under root.
- */
+ 
 static void rmdir_all_sub(void)
 {
 	struct rdtgroup *rdtgrp, *tmp;
 
-	/* Move all tasks to the default resource group */
+	 
 	rdt_move_group_tasks(NULL, &rdtgroup_default, NULL);
 
 	list_for_each_entry_safe(rdtgrp, tmp, &rdt_all_groups, rdtgroup_list) {
-		/* Free any child rmids */
+		 
 		free_all_child_rdtgrp(rdtgrp);
 
-		/* Remove each rdtgroup other than root */
+		 
 		if (rdtgrp == &rdtgroup_default)
 			continue;
 
@@ -2746,11 +2408,7 @@ static void rmdir_all_sub(void)
 		    rdtgrp->mode == RDT_MODE_PSEUDO_LOCKED)
 			rdtgroup_pseudo_lock_remove(rdtgrp);
 
-		/*
-		 * Give any CPUs back to the default group. We cannot copy
-		 * cpu_online_mask because a CPU might have executed the
-		 * offline callback already, but is still marked online.
-		 */
+		 
 		cpumask_or(&rdtgroup_default.cpu_mask,
 			   &rdtgroup_default.cpu_mask, &rdtgrp->cpu_mask);
 
@@ -2764,7 +2422,7 @@ static void rmdir_all_sub(void)
 		else
 			rdtgroup_remove(rdtgrp);
 	}
-	/* Notify online CPUs to update per cpu storage and PQR_ASSOC MSR */
+	 
 	update_closid_rmid(cpu_online_mask, &rdtgroup_default);
 
 	kernfs_remove(kn_info);
@@ -2781,7 +2439,7 @@ static void rdt_kill_sb(struct super_block *sb)
 
 	set_mba_sc(false);
 
-	/*Put everything back to default values. */
+	 
 	for_each_alloc_capable_rdt_resource(r)
 		reset_all_ctrls(r);
 	cdp_disable_all();
@@ -2825,10 +2483,7 @@ static int mon_addfile(struct kernfs_node *parent_kn, const char *name,
 	return ret;
 }
 
-/*
- * Remove all subdirectories of mon_data of ctrl_mon groups
- * and monitor groups with given domain id.
- */
+ 
 static void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
 					   unsigned int dom_id)
 {
@@ -2856,7 +2511,7 @@ static int mkdir_mondata_subdir(struct kernfs_node *parent_kn,
 	int ret;
 
 	sprintf(name, "mon_%s_%02d", r->name, d->id);
-	/* create the directory */
+	 
 	kn = kernfs_create_dir(parent_kn, name, parent_kn->mode, prgrp);
 	if (IS_ERR(kn))
 		return PTR_ERR(kn);
@@ -2889,10 +2544,7 @@ out_destroy:
 	return ret;
 }
 
-/*
- * Add all subdirectories of mon_data for "ctrl_mon" groups
- * and "monitor" groups with given domain id.
- */
+ 
 static void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
 					   struct rdt_domain *d)
 {
@@ -2928,23 +2580,7 @@ static int mkdir_mondata_subdir_alldom(struct kernfs_node *parent_kn,
 	return 0;
 }
 
-/*
- * This creates a directory mon_data which contains the monitored data.
- *
- * mon_data has one directory for each domain which are named
- * in the format mon_<domain_name>_<domain_id>. For ex: A mon_data
- * with L3 domain looks as below:
- * ./mon_data:
- * mon_L3_00
- * mon_L3_01
- * mon_L3_02
- * ...
- *
- * Each domain directory has one file per event:
- * ./mon_L3_00/:
- * llc_occupancy
- *
- */
+ 
 static int mkdir_mondata_all(struct kernfs_node *parent_kn,
 			     struct rdtgroup *prgrp,
 			     struct kernfs_node **dest_kn)
@@ -2953,9 +2589,7 @@ static int mkdir_mondata_all(struct kernfs_node *parent_kn,
 	struct kernfs_node *kn;
 	int ret;
 
-	/*
-	 * Create the mon_data directory first.
-	 */
+	 
 	ret = mongroup_create_dir(parent_kn, prgrp, "mon_data", &kn);
 	if (ret)
 		return ret;
@@ -2963,10 +2597,7 @@ static int mkdir_mondata_all(struct kernfs_node *parent_kn,
 	if (dest_kn)
 		*dest_kn = kn;
 
-	/*
-	 * Create the subdirectories for each domain. Note that all events
-	 * in a domain like L3 are grouped into a resource whose domain is L3
-	 */
+	 
 	for_each_mon_capable_rdt_resource(r) {
 		ret = mkdir_mondata_subdir_alldom(kn, r, prgrp);
 		if (ret)
@@ -2980,21 +2611,7 @@ out_destroy:
 	return ret;
 }
 
-/**
- * cbm_ensure_valid - Enforce validity on provided CBM
- * @_val:	Candidate CBM
- * @r:		RDT resource to which the CBM belongs
- *
- * The provided CBM represents all cache portions available for use. This
- * may be represented by a bitmap that does not consist of contiguous ones
- * and thus be an invalid CBM.
- * Here the provided CBM is forced to be a valid CBM by only considering
- * the first set of contiguous bits as valid and clearing all bits.
- * The intention here is to provide a valid default CBM with which a new
- * resource group is initialized. The user can follow this with a
- * modification to the CBM if the default does not satisfy the
- * requirements.
- */
+ 
 static u32 cbm_ensure_valid(u32 _val, struct rdt_resource *r)
 {
 	unsigned int cbm_len = r->cache.cbm_len;
@@ -3007,17 +2624,12 @@ static u32 cbm_ensure_valid(u32 _val, struct rdt_resource *r)
 	first_bit = find_first_bit(&val, cbm_len);
 	zero_bit = find_next_zero_bit(&val, cbm_len, first_bit);
 
-	/* Clear any remaining bits to ensure contiguous region */
+	 
 	bitmap_clear(&val, zero_bit, cbm_len - zero_bit);
 	return (u32)val;
 }
 
-/*
- * Initialize cache resources per RDT domain
- *
- * Set the RDT domain up to start off with all usable allocations. That is,
- * all shareable and unused bits. All-zero CBM is invalid.
- */
+ 
 static int __init_one_rdt_domain(struct rdt_domain *d, struct resctrl_schema *s,
 				 u32 closid)
 {
@@ -3039,17 +2651,9 @@ static int __init_one_rdt_domain(struct rdt_domain *d, struct resctrl_schema *s,
 		if (closid_allocated(i) && i != closid) {
 			mode = rdtgroup_mode_by_closid(i);
 			if (mode == RDT_MODE_PSEUDO_LOCKSETUP)
-				/*
-				 * ctrl values for locksetup aren't relevant
-				 * until the schemata is written, and the mode
-				 * becomes RDT_MODE_PSEUDO_LOCKED.
-				 */
+				 
 				continue;
-			/*
-			 * If CDP is active include peer domain's
-			 * usage to ensure there is no overlap
-			 * with an exclusive group.
-			 */
+			 
 			if (resctrl_arch_get_cdp_enabled(r->rid))
 				peer_ctl = resctrl_arch_get_config(r, d, i,
 								   peer_type);
@@ -3067,15 +2671,9 @@ static int __init_one_rdt_domain(struct rdt_domain *d, struct resctrl_schema *s,
 	unused_b = used_b ^ (BIT_MASK(r->cache.cbm_len) - 1);
 	unused_b &= BIT_MASK(r->cache.cbm_len) - 1;
 	cfg->new_ctrl |= unused_b;
-	/*
-	 * Force the initial CBM to be valid, user can
-	 * modify the CBM based on system availability.
-	 */
+	 
 	cfg->new_ctrl = cbm_ensure_valid(cfg->new_ctrl, r);
-	/*
-	 * Assign the u32 CBM to an unsigned long to ensure that
-	 * bitmap_weight() does not access out-of-bound memory.
-	 */
+	 
 	tmp_cbm = cfg->new_ctrl;
 	if (bitmap_weight(&tmp_cbm, r->cache.cbm_len) < r->cache.min_cbm_bits) {
 		rdt_last_cmd_printf("No space on %s:%d\n", s->name, d->id);
@@ -3086,16 +2684,7 @@ static int __init_one_rdt_domain(struct rdt_domain *d, struct resctrl_schema *s,
 	return 0;
 }
 
-/*
- * Initialize cache resources with default values.
- *
- * A new RDT group is being created on an allocation capable (CAT)
- * supporting system. Set this group up to start off with all usable
- * allocations.
- *
- * If there are no more shareable bits available on any domain then
- * the entire allocation will fail.
- */
+ 
 static int rdtgroup_init_cat(struct resctrl_schema *s, u32 closid)
 {
 	struct rdt_domain *d;
@@ -3110,7 +2699,7 @@ static int rdtgroup_init_cat(struct resctrl_schema *s, u32 closid)
 	return 0;
 }
 
-/* Initialize MBA resource with default values. */
+ 
 static void rdtgroup_init_mba(struct rdt_resource *r, u32 closid)
 {
 	struct resctrl_staged_config *cfg;
@@ -3128,7 +2717,7 @@ static void rdtgroup_init_mba(struct rdt_resource *r, u32 closid)
 	}
 }
 
-/* Initialize the RDT group's allocations. */
+ 
 static int rdtgroup_init_alloc(struct rdtgroup *rdtgrp)
 {
 	struct resctrl_schema *s;
@@ -3188,7 +2777,7 @@ static int mkdir_rdt_prepare(struct kernfs_node *parent_kn,
 		goto out_unlock;
 	}
 
-	/* allocate the rdtgroup. */
+	 
 	rdtgrp = kzalloc(sizeof(*rdtgrp), GFP_KERNEL);
 	if (!rdtgrp) {
 		ret = -ENOSPC;
@@ -3200,7 +2789,7 @@ static int mkdir_rdt_prepare(struct kernfs_node *parent_kn,
 	rdtgrp->type = rtype;
 	INIT_LIST_HEAD(&rdtgrp->mon.crdtgrp_list);
 
-	/* kernfs creates the directory for rdtgrp */
+	 
 	kn = kernfs_create_dir(parent_kn, name, mode, rdtgrp);
 	if (IS_ERR(kn)) {
 		ret = PTR_ERR(kn);
@@ -3209,12 +2798,7 @@ static int mkdir_rdt_prepare(struct kernfs_node *parent_kn,
 	}
 	rdtgrp->kn = kn;
 
-	/*
-	 * kernfs_remove() will drop the reference count on "kn" which
-	 * will free it. But we still need it to stick around for the
-	 * rdtgroup_kn_unlock(kn) call. Take one extra reference here,
-	 * which will be dropped by kernfs_put() in rdtgroup_remove().
-	 */
+	 
 	kernfs_get(kn);
 
 	ret = rdtgroup_kn_set_ugid(kn);
@@ -3246,9 +2830,7 @@ static int mkdir_rdt_prepare(struct kernfs_node *parent_kn,
 	}
 	kernfs_activate(kn);
 
-	/*
-	 * The caller unlocks the parent_kn upon success.
-	 */
+	 
 	return 0;
 
 out_idfree:
@@ -3270,11 +2852,7 @@ static void mkdir_rdt_prepare_clean(struct rdtgroup *rgrp)
 	rdtgroup_remove(rgrp);
 }
 
-/*
- * Create a monitor group under "mon_groups" directory of a control
- * and monitor group(ctrl_mon). This is a resource group
- * to monitor a subset of tasks and cpus in its parent ctrl_mon group.
- */
+ 
 static int rdtgroup_mkdir_mon(struct kernfs_node *parent_kn,
 			      const char *name, umode_t mode)
 {
@@ -3288,20 +2866,14 @@ static int rdtgroup_mkdir_mon(struct kernfs_node *parent_kn,
 	prgrp = rdtgrp->mon.parent;
 	rdtgrp->closid = prgrp->closid;
 
-	/*
-	 * Add the rdtgrp to the list of rdtgrps the parent
-	 * ctrl_mon group has to track.
-	 */
+	 
 	list_add_tail(&rdtgrp->mon.crdtgrp_list, &prgrp->mon.crdtgrp_list);
 
 	rdtgroup_kn_unlock(parent_kn);
 	return ret;
 }
 
-/*
- * These are rdtgroups created under the root directory. Can be used
- * to allocate and monitor resources.
- */
+ 
 static int rdtgroup_mkdir_ctrl_mon(struct kernfs_node *parent_kn,
 				   const char *name, umode_t mode)
 {
@@ -3331,10 +2903,7 @@ static int rdtgroup_mkdir_ctrl_mon(struct kernfs_node *parent_kn,
 	list_add(&rdtgrp->rdtgroup_list, &rdt_all_groups);
 
 	if (rdt_mon_capable) {
-		/*
-		 * Create an empty mon_groups directory to hold the subset
-		 * of tasks and cpus to monitor.
-		 */
+		 
 		ret = mongroup_create_dir(kn, rdtgrp, "mon_groups", NULL);
 		if (ret) {
 			rdt_last_cmd_puts("kernfs subdir error\n");
@@ -3355,16 +2924,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * We allow creating mon groups only with in a directory called "mon_groups"
- * which is present in every ctrl_mon group. Check if this is a valid
- * "mon_groups" directory.
- *
- * 1. The directory should be named "mon_groups".
- * 2. The mon group itself should "not" be named "mon_groups".
- *   This makes sure "mon_groups" directory always has a ctrl_mon group
- *   as parent.
- */
+ 
 static bool is_mon_groups(struct kernfs_node *kn, const char *name)
 {
 	return (!strcmp(kn->name, "mon_groups") &&
@@ -3374,22 +2934,15 @@ static bool is_mon_groups(struct kernfs_node *kn, const char *name)
 static int rdtgroup_mkdir(struct kernfs_node *parent_kn, const char *name,
 			  umode_t mode)
 {
-	/* Do not accept '\n' to avoid unparsable situation. */
+	 
 	if (strchr(name, '\n'))
 		return -EINVAL;
 
-	/*
-	 * If the parent directory is the root directory and RDT
-	 * allocation is supported, add a control and monitoring
-	 * subdirectory
-	 */
+	 
 	if (rdt_alloc_capable && parent_kn == rdtgroup_default.kn)
 		return rdtgroup_mkdir_ctrl_mon(parent_kn, name, mode);
 
-	/*
-	 * If RDT monitoring is supported and the parent directory is a valid
-	 * "mon_groups" directory, add a monitoring subdirectory.
-	 */
+	 
 	if (rdt_mon_capable && is_mon_groups(parent_kn, name))
 		return rdtgroup_mkdir_mon(parent_kn, name, mode);
 
@@ -3401,25 +2954,20 @@ static int rdtgroup_rmdir_mon(struct rdtgroup *rdtgrp, cpumask_var_t tmpmask)
 	struct rdtgroup *prdtgrp = rdtgrp->mon.parent;
 	int cpu;
 
-	/* Give any tasks back to the parent group */
+	 
 	rdt_move_group_tasks(rdtgrp, prdtgrp, tmpmask);
 
-	/* Update per cpu rmid of the moved CPUs first */
+	 
 	for_each_cpu(cpu, &rdtgrp->cpu_mask)
 		per_cpu(pqr_state.default_rmid, cpu) = prdtgrp->mon.rmid;
-	/*
-	 * Update the MSR on moved CPUs and CPUs which have moved
-	 * task running on them.
-	 */
+	 
 	cpumask_or(tmpmask, tmpmask, &rdtgrp->cpu_mask);
 	update_closid_rmid(tmpmask, NULL);
 
 	rdtgrp->flags = RDT_DELETED;
 	free_rmid(rdtgrp->mon.rmid);
 
-	/*
-	 * Remove the rdtgrp from the parent ctrl_mon group's list
-	 */
+	 
 	WARN_ON(list_empty(&prdtgrp->mon.crdtgrp_list));
 	list_del(&rdtgrp->mon.crdtgrp_list);
 
@@ -3441,23 +2989,20 @@ static int rdtgroup_rmdir_ctrl(struct rdtgroup *rdtgrp, cpumask_var_t tmpmask)
 {
 	int cpu;
 
-	/* Give any tasks back to the default group */
+	 
 	rdt_move_group_tasks(rdtgrp, &rdtgroup_default, tmpmask);
 
-	/* Give any CPUs back to the default group */
+	 
 	cpumask_or(&rdtgroup_default.cpu_mask,
 		   &rdtgroup_default.cpu_mask, &rdtgrp->cpu_mask);
 
-	/* Update per cpu closid and rmid of the moved CPUs first */
+	 
 	for_each_cpu(cpu, &rdtgrp->cpu_mask) {
 		per_cpu(pqr_state.default_closid, cpu) = rdtgroup_default.closid;
 		per_cpu(pqr_state.default_rmid, cpu) = rdtgroup_default.mon.rmid;
 	}
 
-	/*
-	 * Update the MSR on moved CPUs and CPUs which have moved
-	 * task running on them.
-	 */
+	 
 	cpumask_or(tmpmask, tmpmask, &rdtgrp->cpu_mask);
 	update_closid_rmid(tmpmask, NULL);
 
@@ -3466,9 +3011,7 @@ static int rdtgroup_rmdir_ctrl(struct rdtgroup *rdtgrp, cpumask_var_t tmpmask)
 
 	rdtgroup_ctrl_remove(rdtgrp);
 
-	/*
-	 * Free all the child monitor group rmids.
-	 */
+	 
 	free_all_child_rdtgrp(rdtgrp);
 
 	return 0;
@@ -3490,13 +3033,7 @@ static int rdtgroup_rmdir(struct kernfs_node *kn)
 		goto out;
 	}
 
-	/*
-	 * If the rdtgroup is a ctrl_mon group and parent directory
-	 * is the root directory, remove the ctrl_mon group.
-	 *
-	 * If the rdtgroup is a mon group and parent directory
-	 * is a valid "mon_groups" directory, remove the mon group.
-	 */
+	 
 	if (rdtgrp->type == RDTCTRL_GROUP && parent_kn == rdtgroup_default.kn &&
 	    rdtgrp != &rdtgroup_default) {
 		if (rdtgrp->mode == RDT_MODE_PSEUDO_LOCKSETUP ||
@@ -3518,16 +3055,7 @@ out:
 	return ret;
 }
 
-/**
- * mongrp_reparent() - replace parent CTRL_MON group of a MON group
- * @rdtgrp:		the MON group whose parent should be replaced
- * @new_prdtgrp:	replacement parent CTRL_MON group for @rdtgrp
- * @cpus:		cpumask provided by the caller for use during this call
- *
- * Replaces the parent CTRL_MON group for a MON group, resulting in all member
- * tasks' CLOSID immediately changing to that of the new parent group.
- * Monitoring data for the group is unaffected by this operation.
- */
+ 
 static void mongrp_reparent(struct rdtgroup *rdtgrp,
 			    struct rdtgroup *new_prdtgrp,
 			    cpumask_var_t cpus)
@@ -3537,7 +3065,7 @@ static void mongrp_reparent(struct rdtgroup *rdtgrp,
 	WARN_ON(rdtgrp->type != RDTMON_GROUP);
 	WARN_ON(new_prdtgrp->type != RDTCTRL_GROUP);
 
-	/* Nothing to do when simply renaming a MON group. */
+	 
 	if (prdtgrp == new_prdtgrp)
 		return;
 
@@ -3548,7 +3076,7 @@ static void mongrp_reparent(struct rdtgroup *rdtgrp,
 	rdtgrp->mon.parent = new_prdtgrp;
 	rdtgrp->closid = new_prdtgrp->closid;
 
-	/* Propagate updated closid to all tasks in this group. */
+	 
 	rdt_move_group_tasks(rdtgrp, rdtgrp, cpus);
 
 	update_closid_rmid(cpus, NULL);
@@ -3567,7 +3095,7 @@ static int rdtgroup_rename(struct kernfs_node *kn,
 	if (!rdtgrp || !new_prdtgrp)
 		return -ENOENT;
 
-	/* Release both kernfs active_refs before obtaining rdtgroup mutex. */
+	 
 	rdtgroup_kn_get(rdtgrp, kn);
 	rdtgroup_kn_get(new_prdtgrp, new_parent);
 
@@ -3575,10 +3103,7 @@ static int rdtgroup_rename(struct kernfs_node *kn,
 
 	rdt_last_cmd_clear();
 
-	/*
-	 * Don't allow kernfs_to_rdtgroup() to return a parent rdtgroup if
-	 * either kernfs_node is a file.
-	 */
+	 
 	if (kernfs_type(kn) != KERNFS_DIR ||
 	    kernfs_type(new_parent) != KERNFS_DIR) {
 		rdt_last_cmd_puts("Source and destination must be directories");
@@ -3604,11 +3129,7 @@ static int rdtgroup_rename(struct kernfs_node *kn,
 		goto out;
 	}
 
-	/*
-	 * If the MON group is monitoring CPUs, the CPUs must be assigned to the
-	 * current parent CTRL_MON group and therefore cannot be assigned to
-	 * the new parent, making the move illegal.
-	 */
+	 
 	if (!cpumask_empty(&rdtgrp->cpu_mask) &&
 	    rdtgrp->mon.parent != new_prdtgrp) {
 		rdt_last_cmd_puts("Cannot move a MON group that monitors CPUs\n");
@@ -3616,22 +3137,13 @@ static int rdtgroup_rename(struct kernfs_node *kn,
 		goto out;
 	}
 
-	/*
-	 * Allocate the cpumask for use in mongrp_reparent() to avoid the
-	 * possibility of failing to allocate it after kernfs_rename() has
-	 * succeeded.
-	 */
+	 
 	if (!zalloc_cpumask_var(&tmpmask, GFP_KERNEL)) {
 		ret = -ENOMEM;
 		goto out;
 	}
 
-	/*
-	 * Perform all input validation and allocations needed to ensure
-	 * mongrp_reparent() will succeed before calling kernfs_rename(),
-	 * otherwise it would be necessary to revert this call if
-	 * mongrp_reparent() failed.
-	 */
+	 
 	ret = kernfs_rename(kn, new_parent, new_name);
 	if (!ret)
 		mongrp_reparent(rdtgrp, new_prdtgrp, tmpmask);
@@ -3718,24 +3230,14 @@ void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d)
 	if (!r->mon_capable)
 		return;
 
-	/*
-	 * If resctrl is mounted, remove all the
-	 * per domain monitor data directories.
-	 */
+	 
 	if (static_branch_unlikely(&rdt_mon_enable_key))
 		rmdir_mondata_subdir_allrdtgrp(r, d->id);
 
 	if (is_mbm_enabled())
 		cancel_delayed_work(&d->mbm_over);
 	if (is_llc_occupancy_enabled() && has_busy_rmid(r, d)) {
-		/*
-		 * When a package is going down, forcefully
-		 * decrement rmid->ebusy. There is no way to know
-		 * that the L3 was flushed and hence may lead to
-		 * incorrect counts in rare scenarios, but leaving
-		 * the RMID as busy creates RMID leaks if the
-		 * package never comes back.
-		 */
+		 
 		__check_limbo(d, true);
 		cancel_delayed_work(&d->cqm_limbo);
 	}
@@ -3780,7 +3282,7 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
 	lockdep_assert_held(&rdtgroup_mutex);
 
 	if (supports_mba_mbps() && r->rid == RDT_RESOURCE_MBA)
-		/* RDT_RESOURCE_MBA is never mon_capable */
+		 
 		return mba_sc_domain_allocate(r, d);
 
 	if (!r->mon_capable)
@@ -3798,21 +3300,14 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
 	if (is_llc_occupancy_enabled())
 		INIT_DELAYED_WORK(&d->cqm_limbo, cqm_handle_limbo);
 
-	/* If resctrl is mounted, add per domain monitor data directories. */
+	 
 	if (static_branch_unlikely(&rdt_mon_enable_key))
 		mkdir_mondata_subdir_allrdtgrp(r, d);
 
 	return 0;
 }
 
-/*
- * rdtgroup_init - rdtgroup initialization
- *
- * Setup resctrl file system including set up root, create mount point,
- * register rdtgroup filesystem, and initialize files under root directory.
- *
- * Return: 0 on success or -errno
- */
+ 
 int __init rdtgroup_init(void)
 {
 	int ret = 0;
@@ -3832,27 +3327,7 @@ int __init rdtgroup_init(void)
 	if (ret)
 		goto cleanup_mountpoint;
 
-	/*
-	 * Adding the resctrl debugfs directory here may not be ideal since
-	 * it would let the resctrl debugfs directory appear on the debugfs
-	 * filesystem before the resctrl filesystem is mounted.
-	 * It may also be ok since that would enable debugging of RDT before
-	 * resctrl is mounted.
-	 * The reason why the debugfs directory is created here and not in
-	 * rdt_get_tree() is because rdt_get_tree() takes rdtgroup_mutex and
-	 * during the debugfs directory creation also &sb->s_type->i_mutex_key
-	 * (the lockdep class of inode->i_rwsem). Other filesystem
-	 * interactions (eg. SyS_getdents) have the lock ordering:
-	 * &sb->s_type->i_mutex_key --> &mm->mmap_lock
-	 * During mmap(), called with &mm->mmap_lock, the rdtgroup_mutex
-	 * is taken, thus creating dependency:
-	 * &mm->mmap_lock --> rdtgroup_mutex for the latter that can cause
-	 * issues considering the other two lock dependencies.
-	 * By creating the debugfs directory here we avoid a dependency
-	 * that may cause deadlock (even though file operations cannot
-	 * occur until the filesystem is mounted, but I do not know how to
-	 * tell lockdep that).
-	 */
+	 
 	debugfs_resctrl = debugfs_create_dir("resctrl", NULL);
 
 	return 0;

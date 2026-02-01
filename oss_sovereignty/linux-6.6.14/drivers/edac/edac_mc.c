@@ -1,16 +1,4 @@
-/*
- * edac_mc kernel module
- * (C) 2005, 2006 Linux Networx (http://lnxi.com)
- * This file may be distributed under the terms of the
- * GNU General Public License.
- *
- * Written by Thayne Harbaugh
- * Based on work by Dan Hollis <goemon at anime dot net> and others.
- *	http://www.anime.net/~goemon/linux-ecc/
- *
- * Modified by Dave Peterson and Doug Thompson
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/proc_fs.h>
@@ -43,14 +31,11 @@
 int edac_op_state = EDAC_OPSTATE_INVAL;
 EXPORT_SYMBOL_GPL(edac_op_state);
 
-/* lock to memory controller's control array */
+ 
 static DEFINE_MUTEX(mem_ctls_mutex);
 static LIST_HEAD(mc_devices);
 
-/*
- * Used to lock EDAC MC to just one module, avoiding two drivers e. g.
- *	apei/ghes and i7core_edac to be used at the same time.
- */
+ 
 static const char *edac_mc_owner;
 
 static struct mem_ctl_info *error_desc_to_mci(struct edac_raw_error_desc *e)
@@ -134,7 +119,7 @@ static void edac_mc_dump_mci(struct mem_ctl_info *mci)
 	edac_dbg(3, "\tpvt_info = %p\n\n", mci->pvt_info);
 }
 
-#endif				/* CONFIG_EDAC_DEBUG */
+#endif				 
 
 const char * const edac_mem_types[] = {
 	[MEM_EMPTY]	= "Empty",
@@ -212,9 +197,7 @@ static int edac_mc_alloc_csrows(struct mem_ctl_info *mci)
 	unsigned int tot_csrows = mci->nr_csrows;
 	unsigned int row, chn;
 
-	/*
-	 * Alocate and fill the csrow/channels structs
-	 */
+	 
 	mci->csrows = kcalloc(tot_csrows, sizeof(*mci->csrows), GFP_KERNEL);
 	if (!mci->csrows)
 		return -ENOMEM;
@@ -258,9 +241,7 @@ static int edac_mc_alloc_dimms(struct mem_ctl_info *mci)
 	int layer;
 	void *p;
 
-	/*
-	 * Allocate and fill the dimm structs
-	 */
+	 
 	mci->dimms  = kcalloc(mci->tot_dimms, sizeof(*mci->dimms), GFP_KERNEL);
 	if (!mci->dimms)
 		return -ENOMEM;
@@ -282,9 +263,7 @@ static int edac_mc_alloc_dimms(struct mem_ctl_info *mci)
 		dimm->mci = mci;
 		dimm->idx = idx;
 
-		/*
-		 * Copy DIMM location and initialize it.
-		 */
+		 
 		len = sizeof(dimm->label);
 		p = dimm->label;
 		n = scnprintf(p, len, "mc#%u", mci->mc_idx);
@@ -299,12 +278,12 @@ static int edac_mc_alloc_dimms(struct mem_ctl_info *mci)
 			dimm->location[layer] = pos[layer];
 		}
 
-		/* Link it to the csrows old API data */
+		 
 		chan->dimm = dimm;
 		dimm->csrow = row;
 		dimm->cschannel = chn;
 
-		/* Increment csrow location */
+		 
 		if (mci->layers[0].is_virt_csrow) {
 			chn++;
 			if (chn == mci->num_cschannel) {
@@ -319,7 +298,7 @@ static int edac_mc_alloc_dimms(struct mem_ctl_info *mci)
 			}
 		}
 
-		/* Increment dimm location */
+		 
 		for (layer = mci->n_layers - 1; layer >= 0; layer--) {
 			pos[layer]++;
 			if (pos[layer] < mci->layers[layer].size)
@@ -345,10 +324,7 @@ struct mem_ctl_info *edac_mc_alloc(unsigned int mc_num,
 	if (WARN_ON(n_layers > EDAC_MAX_LAYERS || n_layers == 0))
 		return NULL;
 
-	/*
-	 * Calculate the total amount of dimms and csrows/cschannels while
-	 * in the old API emulation mode
-	 */
+	 
 	for (idx = 0; idx < n_layers; idx++) {
 		tot_dimms *= layers[idx].size;
 
@@ -376,7 +352,7 @@ struct mem_ctl_info *edac_mc_alloc(unsigned int mc_num,
 	mci->dev.release = mci_release;
 	device_initialize(&mci->dev);
 
-	/* setup index and various internal pointers */
+	 
 	mci->mc_idx = mc_num;
 	mci->tot_dimms = tot_dimms;
 	mci->n_layers = n_layers;
@@ -424,7 +400,7 @@ bool edac_has_mcs(void)
 }
 EXPORT_SYMBOL_GPL(edac_has_mcs);
 
-/* Caller must hold mem_ctls_mutex */
+ 
 static struct mem_ctl_info *__find_mci_by_dev(struct device *dev)
 {
 	struct mem_ctl_info *mci;
@@ -442,13 +418,7 @@ static struct mem_ctl_info *__find_mci_by_dev(struct device *dev)
 	return NULL;
 }
 
-/**
- * find_mci_by_dev
- *
- *	scan list of controllers looking for the one that manages
- *	the 'dev' device
- * @dev: pointer to a struct device related with the MCI
- */
+ 
 struct mem_ctl_info *find_mci_by_dev(struct device *dev)
 {
 	struct mem_ctl_info *ret;
@@ -461,10 +431,7 @@ struct mem_ctl_info *find_mci_by_dev(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(find_mci_by_dev);
 
-/*
- * edac_mc_workq_function
- *	performs the operation scheduled by a workq request
- */
+ 
 static void edac_mc_workq_function(struct work_struct *work_req)
 {
 	struct delayed_work *d_work = to_delayed_work(work_req);
@@ -482,16 +449,11 @@ static void edac_mc_workq_function(struct work_struct *work_req)
 
 	mutex_unlock(&mem_ctls_mutex);
 
-	/* Queue ourselves again. */
+	 
 	edac_queue_work(&mci->work, msecs_to_jiffies(edac_mc_get_poll_msec()));
 }
 
-/*
- * edac_mc_reset_delay_period(unsigned long value)
- *
- *	user space has updated our poll period value, need to
- *	reset our workq delays
- */
+ 
 void edac_mc_reset_delay_period(unsigned long value)
 {
 	struct mem_ctl_info *mci;
@@ -510,14 +472,7 @@ void edac_mc_reset_delay_period(unsigned long value)
 
 
 
-/* Return 0 on success, 1 on failure.
- * Before calling this function, caller must
- * assign a unique value to mci->mc_idx.
- *
- *	locking model:
- *
- *		called with the mem_ctls_mutex lock held
- */
+ 
 static int add_mc_to_global_list(struct mem_ctl_info *mci)
 {
 	struct list_head *item, *insert_before;
@@ -561,9 +516,7 @@ static int del_mc_from_global_list(struct mem_ctl_info *mci)
 {
 	list_del_rcu(&mci->link);
 
-	/* these are for safe removal of devices from global list while
-	 * NMI handlers may be traversing list
-	 */
+	 
 	synchronize_rcu();
 	INIT_LIST_HEAD(&mci->link);
 
@@ -596,7 +549,7 @@ const char *edac_get_owner(void)
 }
 EXPORT_SYMBOL_GPL(edac_get_owner);
 
-/* FIXME - should a warning be printed if no error detection? correction? */
+ 
 int edac_mc_add_mc_with_groups(struct mem_ctl_info *mci,
 			       const struct attribute_group **groups)
 {
@@ -640,7 +593,7 @@ int edac_mc_add_mc_with_groups(struct mem_ctl_info *mci,
 	if (add_mc_to_global_list(mci))
 		goto fail0;
 
-	/* set load time so that error rate can be tracked */
+	 
 	mci->start_time = jiffies;
 
 	mci->bus = edac_get_sysfs_subsys();
@@ -661,7 +614,7 @@ int edac_mc_add_mc_with_groups(struct mem_ctl_info *mci,
 		mci->op_state = OP_RUNNING_INTERRUPT;
 	}
 
-	/* Report action taken */
+	 
 	edac_mc_printk(mci, KERN_INFO,
 		"Giving out device to module %s controller %s: DEV %s (%s)\n",
 		mci->mod_name, mci->ctl_name, mci->dev_name,
@@ -689,14 +642,14 @@ struct mem_ctl_info *edac_mc_del_mc(struct device *dev)
 
 	mutex_lock(&mem_ctls_mutex);
 
-	/* find the requested mci struct in the global list */
+	 
 	mci = __find_mci_by_dev(dev);
 	if (mci == NULL) {
 		mutex_unlock(&mem_ctls_mutex);
 		return NULL;
 	}
 
-	/* mark MCI offline: */
+	 
 	mci->op_state = OP_OFFLINE;
 
 	if (del_mc_from_global_list(mci))
@@ -707,7 +660,7 @@ struct mem_ctl_info *edac_mc_del_mc(struct device *dev)
 	if (mci->edac_check)
 		edac_stop_work(&mci->work);
 
-	/* remove from sysfs */
+	 
 	edac_remove_sysfs_mci_device(mci);
 
 	edac_printk(KERN_INFO, EDAC_MC,
@@ -727,11 +680,11 @@ static void edac_mc_scrub_block(unsigned long page, unsigned long offset,
 
 	edac_dbg(3, "\n");
 
-	/* ECC error page was not in our memory. Ignore it. */
+	 
 	if (!pfn_valid(page))
 		return;
 
-	/* Find the actual page structure then map it and fix */
+	 
 	pg = pfn_to_page(page);
 
 	if (PageHighMem(pg))
@@ -739,17 +692,17 @@ static void edac_mc_scrub_block(unsigned long page, unsigned long offset,
 
 	virt_addr = kmap_atomic(pg);
 
-	/* Perform architecture specific atomic scrub operation */
+	 
 	edac_atomic_scrub(virt_addr + offset, size);
 
-	/* Unmap and complete */
+	 
 	kunmap_atomic(virt_addr);
 
 	if (PageHighMem(pg))
 		local_irq_restore(flags);
 }
 
-/* FIXME - should return -1 */
+ 
 int edac_mc_find_csrow_by_page(struct mem_ctl_info *mci, unsigned long page)
 {
 	struct csrow_info **csrows = mci->csrows;
@@ -847,17 +800,7 @@ static void edac_ce_error(struct edac_raw_error_desc *e)
 	edac_inc_ce_error(e);
 
 	if (mci->scrub_mode == SCRUB_SW_SRC) {
-		/*
-			* Some memory controllers (called MCs below) can remap
-			* memory so that it is still available at a different
-			* address when PCI devices map into memory.
-			* MC's that can't do this, lose the memory where PCI
-			* devices are mapped. This mapping is MC-dependent
-			* and so we call back into the MC driver for it to
-			* map the MC page to a physical (CPU) page which can
-			* then be mapped to a virtual page - which can then
-			* be scrubbed.
-			*/
+		 
 		remapped_page = mci->ctl_page_to_phys ?
 			mci->ctl_page_to_phys(mci, e->page_frame_number) :
 			e->page_frame_number;
@@ -919,13 +862,13 @@ void edac_raw_mc_handle_error(struct edac_raw_error_desc *e)
 	struct mem_ctl_info *mci = error_desc_to_mci(e);
 	u8 grain_bits;
 
-	/* Sanity-check driver-supplied grain value. */
+	 
 	if (WARN_ON_ONCE(!e->grain))
 		e->grain = 1;
 
 	grain_bits = fls_long(e->grain - 1);
 
-	/* Report the error via the trace interface */
+	 
 	if (IS_ENABLED(CONFIG_RAS))
 		trace_mc_event(e->type, e->msg, e->label, e->error_count,
 			       mci->mc_idx, e->top_layer, e->mid_layer,
@@ -963,7 +906,7 @@ void edac_mc_handle_error(const enum hw_event_mc_err_type type,
 
 	edac_dbg(3, "MC%d\n", mci->mc_idx);
 
-	/* Fills the error report buffer */
+	 
 	memset(e, 0, sizeof (*e));
 	e->error_count = error_count;
 	e->type = type;
@@ -973,15 +916,11 @@ void edac_mc_handle_error(const enum hw_event_mc_err_type type,
 	e->page_frame_number = page_frame_number;
 	e->offset_in_page = offset_in_page;
 	e->syndrome = syndrome;
-	/* need valid strings here for both: */
+	 
 	e->msg = msg ?: "";
 	e->other_detail = other_detail ?: "";
 
-	/*
-	 * Check if the event report is consistent and if the memory location is
-	 * known. If it is, the DIMM(s) label info will be filled and the DIMM's
-	 * error counters will be incremented.
-	 */
+	 
 	for (i = 0; i < mci->n_layers; i++) {
 		if (pos[i] >= (int)mci->layers[i].size) {
 
@@ -989,29 +928,14 @@ void edac_mc_handle_error(const enum hw_event_mc_err_type type,
 				       "INTERNAL ERROR: %s value is out of range (%d >= %d)\n",
 				       edac_layer_name[mci->layers[i].type],
 				       pos[i], mci->layers[i].size);
-			/*
-			 * Instead of just returning it, let's use what's
-			 * known about the error. The increment routines and
-			 * the DIMM filter logic will do the right thing by
-			 * pointing the likely damaged DIMMs.
-			 */
+			 
 			pos[i] = -1;
 		}
 		if (pos[i] >= 0)
 			any_memory = false;
 	}
 
-	/*
-	 * Get the dimm label/grain that applies to the match criteria.
-	 * As the error algorithm may not be able to point to just one memory
-	 * stick, the logic here will get all possible labels that could
-	 * pottentially be affected by the error.
-	 * On FB-DIMM memory controllers, for uncorrected errors, it is common
-	 * to have only the MC channel and the MC dimm (also called "branch")
-	 * but the channel is not known, as the memory is arranged in pairs,
-	 * where each memory belongs to a separate channel within the same
-	 * branch.
-	 */
+	 
 	p = e->label;
 	*p = '\0';
 	end = p + sizeof(e->label);
@@ -1025,16 +949,11 @@ void edac_mc_handle_error(const enum hw_event_mc_err_type type,
 		if (low_layer >= 0 && low_layer != dimm->location[2])
 			continue;
 
-		/* get the max grain, over the error match range */
+		 
 		if (dimm->grain > e->grain)
 			e->grain = dimm->grain;
 
-		/*
-		 * If the error is memory-controller wide, there's no need to
-		 * seek for the affected DIMMs because the whole channel/memory
-		 * controller/... may be affected. Also, don't show errors for
-		 * empty DIMM slots.
-		 */
+		 
 		if (!dimm->nr_pages)
 			continue;
 
@@ -1047,10 +966,7 @@ void edac_mc_handle_error(const enum hw_event_mc_err_type type,
 			prefix = OTHER_LABEL;
 		}
 
-		/*
-		 * get csrow/channel of the DIMM, in order to allow
-		 * incrementing the compat API counters
-		 */
+		 
 		edac_dbg(4, "%s csrows map: (%d,%d)\n",
 			mci->csbased ? "rank" : "dimm",
 			dimm->csrow, dimm->cschannel);
@@ -1072,7 +988,7 @@ void edac_mc_handle_error(const enum hw_event_mc_err_type type,
 
 	edac_inc_csrow(e, row, chan);
 
-	/* Fill the RAM location data */
+	 
 	p = e->location;
 	end = p + sizeof(e->location);
 	prefix = "";

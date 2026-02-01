@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL_STATS_H__
 #define __RTL_STATS_H__
@@ -8,7 +8,7 @@
 #define	PHY_LINKQUALITY_SLID_WIN_MAX		20
 #define	PHY_BEACON_RSSI_SLID_WIN_MAX		10
 
-/* Rx smooth factor */
+ 
 #define	RX_SMOOTH_FACTOR			20
 
 u8 rtl_query_rxpwrpercentage(s8 antpower);

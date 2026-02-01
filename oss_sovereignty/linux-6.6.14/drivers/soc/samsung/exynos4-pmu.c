@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2011-2015 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com/
-//
-// Exynos4 - CPU PMU(Power Management Unit) support
+
+
+
+
+
+
 
 #include <linux/soc/samsung/exynos-regs-pmu.h>
 #include <linux/soc/samsung/exynos-pmu.h>
@@ -11,7 +11,7 @@
 #include "exynos-pmu.h"
 
 static const struct exynos_pmu_conf exynos4210_pmu_config[] = {
-	/* { .offset = offset, .val = { AFTR, LPA, SLEEP } */
+	 
 	{ S5P_ARM_CORE0_LOWPWR,			{ 0x0, 0x0, 0x2 } },
 	{ S5P_DIS_IRQ_CORE0,			{ 0x0, 0x0, 0x0 } },
 	{ S5P_DIS_IRQ_CENTRAL0,			{ 0x0, 0x0, 0x0 } },
@@ -98,7 +98,7 @@ static const struct exynos_pmu_conf exynos4x12_pmu_config[] = {
 	{ S5P_DIS_IRQ_ISP_ARM_CENTRAL_LOWPWR,	{ 0x0, 0x0, 0x0 } },
 	{ S5P_ARM_COMMON_LOWPWR,		{ 0x0, 0x0, 0x2 } },
 	{ S5P_L2_0_LOWPWR,			{ 0x0, 0x0, 0x3 } },
-	/* XXX_OPTION register should be set other field */
+	 
 	{ S5P_ARM_L2_0_OPTION,			{ 0x10, 0x10, 0x0 } },
 	{ S5P_L2_1_LOWPWR,			{ 0x0, 0x0, 0x3 } },
 	{ S5P_ARM_L2_1_OPTION,			{ 0x10, 0x10, 0x0 } },

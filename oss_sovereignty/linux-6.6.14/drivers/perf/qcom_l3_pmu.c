@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the L3 cache PMUs in Qualcomm Technologies chips.
- *
- * The driver supports a distributed cache architecture where the overall
- * cache for a socket is comprised of multiple slices each with its own PMU.
- * Access to each individual PMU is provided even though all CPUs share all
- * the slices. User space needs to aggregate to individual counts to provide
- * a global picture.
- *
- * See Documentation/admin-guide/perf/qcom_l3_pmu.rst for more details.
- *
- * Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -22,26 +10,18 @@
 #include <linux/perf_event.h>
 #include <linux/platform_device.h>
 
-/*
- * General constants
- */
+ 
 
-/* Number of counters on each PMU */
+ 
 #define L3_NUM_COUNTERS  8
-/* Mask for the event type field within perf_event_attr.config and EVTYPE reg */
+ 
 #define L3_EVTYPE_MASK   0xFF
-/*
- * Bit position of the 'long counter' flag within perf_event_attr.config.
- * Reserve some space between the event type and this flag to allow expansion
- * in the event type field.
- */
+ 
 #define L3_EVENT_LC_BIT  32
 
-/*
- * Register offsets
- */
+ 
 
-/* Perfmon registers */
+ 
 #define L3_HML3_PM_CR       0x000
 #define L3_HML3_PM_EVCNTR(__cntr) (0x420 + ((__cntr) & 0x7) * 8)
 #define L3_HML3_PM_CNTCTL(__cntr) (0x120 + ((__cntr) & 0x7) * 8)
@@ -53,7 +33,7 @@
 #define L3_HML3_PM_FILTRBM  0x30C
 #define L3_HML3_PM_FILTRCM  0x314
 
-/* Basic counter registers */
+ 
 #define L3_M_BC_CR         0x500
 #define L3_M_BC_SATROLL_CR 0x504
 #define L3_M_BC_CNTENSET   0x508
@@ -64,58 +44,54 @@
 #define L3_M_BC_OVSR       0x740
 #define L3_M_BC_IRQCTL     0x96C
 
-/*
- * Bit field definitions
- */
+ 
 
-/* L3_HML3_PM_CR */
+ 
 #define PM_CR_RESET           (0)
 
-/* L3_HML3_PM_XCNTCTL/L3_HML3_PM_CNTCTLx */
+ 
 #define PMCNT_RESET           (0)
 
-/* L3_HML3_PM_EVTYPEx */
+ 
 #define EVSEL(__val)          ((__val) & L3_EVTYPE_MASK)
 
-/* Reset value for all the filter registers */
+ 
 #define PM_FLTR_RESET         (0)
 
-/* L3_M_BC_CR */
+ 
 #define BC_RESET              (1UL << 1)
 #define BC_ENABLE             (1UL << 0)
 
-/* L3_M_BC_SATROLL_CR */
+ 
 #define BC_SATROLL_CR_RESET   (0)
 
-/* L3_M_BC_CNTENSET */
+ 
 #define PMCNTENSET(__cntr)    (1UL << ((__cntr) & 0x7))
 
-/* L3_M_BC_CNTENCLR */
+ 
 #define PMCNTENCLR(__cntr)    (1UL << ((__cntr) & 0x7))
 #define BC_CNTENCLR_RESET     (0xFF)
 
-/* L3_M_BC_INTENSET */
+ 
 #define PMINTENSET(__cntr)    (1UL << ((__cntr) & 0x7))
 
-/* L3_M_BC_INTENCLR */
+ 
 #define PMINTENCLR(__cntr)    (1UL << ((__cntr) & 0x7))
 #define BC_INTENCLR_RESET     (0xFF)
 
-/* L3_M_BC_GANG */
+ 
 #define GANG_EN(__cntr)       (1UL << ((__cntr) & 0x7))
 #define BC_GANG_RESET         (0)
 
-/* L3_M_BC_OVSR */
+ 
 #define PMOVSRCLR(__cntr)     (1UL << ((__cntr) & 0x7))
 #define PMOVSRCLR_RESET       (0xFF)
 
-/* L3_M_BC_IRQCTL */
+ 
 #define PMIRQONMSBEN(__cntr)  (1UL << ((__cntr) & 0x7))
 #define BC_IRQCTL_RESET       (0x0)
 
-/*
- * Events
- */
+ 
 
 #define L3_EVENT_CYCLES		0x01
 #define L3_EVENT_READ_HIT		0x20
@@ -125,13 +101,7 @@
 #define L3_EVENT_WRITE_HIT		0x24
 #define L3_EVENT_WRITE_MISS		0x25
 
-/*
- * Decoding of settings from perf_event_attr
- *
- * The config format for perf events is:
- * - config: bits 0-7: event type
- *           bit  32:  HW counter size requested, 0: 32 bits, 1: 64 bits
- */
+ 
 
 static inline u32 get_event_type(struct perf_event *event)
 {
@@ -148,9 +118,7 @@ static inline int event_num_counters(struct perf_event *event)
 	return event_uses_long_counter(event) ? 2 : 1;
 }
 
-/*
- * Main PMU, inherits from the core perf PMU type
- */
+ 
 struct l3cache_pmu {
 	struct pmu		pmu;
 	struct hlist_node	node;
@@ -162,33 +130,17 @@ struct l3cache_pmu {
 
 #define to_l3cache_pmu(p) (container_of(p, struct l3cache_pmu, pmu))
 
-/*
- * Type used to group hardware counter operations
- *
- * Used to implement two types of hardware counters, standard (32bits) and
- * long (64bits). The hardware supports counter chaining which we use to
- * implement long counters. This support is exposed via the 'lc' flag field
- * in perf_event_attr.config.
- */
+ 
 struct l3cache_event_ops {
-	/* Called to start event monitoring */
+	 
 	void (*start)(struct perf_event *event);
-	/* Called to stop event monitoring */
+	 
 	void (*stop)(struct perf_event *event, int flags);
-	/* Called to update the perf_event */
+	 
 	void (*update)(struct perf_event *event);
 };
 
-/*
- * Implementation of long counter operations
- *
- * 64bit counters are implemented by chaining two of the 32bit physical
- * counters. The PMU only supports chaining of adjacent even/odd pairs
- * and for simplicity the driver always configures the odd counter to
- * count the overflows of the lower-numbered even counter. Note that since
- * the resulting hardware counter is 64bits no IRQs are required to maintain
- * the software counter which is also 64bits.
- */
+ 
 
 static void qcom_l3_cache__64bit_counter_start(struct perf_event *event)
 {
@@ -197,24 +149,21 @@ static void qcom_l3_cache__64bit_counter_start(struct perf_event *event)
 	u32 evsel = get_event_type(event);
 	u32 gang;
 
-	/* Set the odd counter to count the overflows of the even counter */
+	 
 	gang = readl_relaxed(l3pmu->regs + L3_M_BC_GANG);
 	gang |= GANG_EN(idx + 1);
 	writel_relaxed(gang, l3pmu->regs + L3_M_BC_GANG);
 
-	/* Initialize the hardware counters and reset prev_count*/
+	 
 	local64_set(&event->hw.prev_count, 0);
 	writel_relaxed(0, l3pmu->regs + L3_HML3_PM_EVCNTR(idx + 1));
 	writel_relaxed(0, l3pmu->regs + L3_HML3_PM_EVCNTR(idx));
 
-	/*
-	 * Set the event types, the upper half must use zero and the lower
-	 * half the actual event type
-	 */
+	 
 	writel_relaxed(EVSEL(0), l3pmu->regs + L3_HML3_PM_EVTYPE(idx + 1));
 	writel_relaxed(EVSEL(evsel), l3pmu->regs + L3_HML3_PM_EVTYPE(idx));
 
-	/* Finally, enable the counters */
+	 
 	writel_relaxed(PMCNT_RESET, l3pmu->regs + L3_HML3_PM_CNTCTL(idx + 1));
 	writel_relaxed(PMCNTENSET(idx + 1), l3pmu->regs + L3_M_BC_CNTENSET);
 	writel_relaxed(PMCNT_RESET, l3pmu->regs + L3_HML3_PM_CNTCTL(idx));
@@ -228,11 +177,11 @@ static void qcom_l3_cache__64bit_counter_stop(struct perf_event *event,
 	int idx = event->hw.idx;
 	u32 gang = readl_relaxed(l3pmu->regs + L3_M_BC_GANG);
 
-	/* Disable the counters */
+	 
 	writel_relaxed(PMCNTENCLR(idx), l3pmu->regs + L3_M_BC_CNTENCLR);
 	writel_relaxed(PMCNTENCLR(idx + 1), l3pmu->regs + L3_M_BC_CNTENCLR);
 
-	/* Disable chaining */
+	 
 	writel_relaxed(gang & ~GANG_EN(idx + 1), l3pmu->regs + L3_M_BC_GANG);
 }
 
@@ -261,15 +210,7 @@ static const struct l3cache_event_ops event_ops_long = {
 	.update = qcom_l3_cache__64bit_counter_update,
 };
 
-/*
- * Implementation of standard counter operations
- *
- * 32bit counters use a single physical counter and a hardware feature that
- * asserts the overflow IRQ on the toggling of the most significant bit in
- * the counter. This feature allows the counters to be left free-running
- * without needing the usual reprogramming required to properly handle races
- * during concurrent calls to update.
- */
+ 
 
 static void qcom_l3_cache__32bit_counter_start(struct perf_event *event)
 {
@@ -278,20 +219,20 @@ static void qcom_l3_cache__32bit_counter_start(struct perf_event *event)
 	u32 evsel = get_event_type(event);
 	u32 irqctl = readl_relaxed(l3pmu->regs + L3_M_BC_IRQCTL);
 
-	/* Set the counter to assert the overflow IRQ on MSB toggling */
+	 
 	writel_relaxed(irqctl | PMIRQONMSBEN(idx), l3pmu->regs + L3_M_BC_IRQCTL);
 
-	/* Initialize the hardware counter and reset prev_count*/
+	 
 	local64_set(&event->hw.prev_count, 0);
 	writel_relaxed(0, l3pmu->regs + L3_HML3_PM_EVCNTR(idx));
 
-	/* Set the event type */
+	 
 	writel_relaxed(EVSEL(evsel), l3pmu->regs + L3_HML3_PM_EVTYPE(idx));
 
-	/* Enable interrupt generation by this counter */
+	 
 	writel_relaxed(PMINTENSET(idx), l3pmu->regs + L3_M_BC_INTENSET);
 
-	/* Finally, enable the counter */
+	 
 	writel_relaxed(PMCNT_RESET, l3pmu->regs + L3_HML3_PM_CNTCTL(idx));
 	writel_relaxed(PMCNTENSET(idx), l3pmu->regs + L3_M_BC_CNTENSET);
 }
@@ -303,13 +244,13 @@ static void qcom_l3_cache__32bit_counter_stop(struct perf_event *event,
 	int idx = event->hw.idx;
 	u32 irqctl = readl_relaxed(l3pmu->regs + L3_M_BC_IRQCTL);
 
-	/* Disable the counter */
+	 
 	writel_relaxed(PMCNTENCLR(idx), l3pmu->regs + L3_M_BC_CNTENCLR);
 
-	/* Disable interrupt generation by this counter */
+	 
 	writel_relaxed(PMINTENCLR(idx), l3pmu->regs + L3_M_BC_INTENCLR);
 
-	/* Set the counter to not assert the overflow IRQ on MSB toggling */
+	 
 	writel_relaxed(irqctl & ~PMIRQONMSBEN(idx), l3pmu->regs + L3_M_BC_IRQCTL);
 }
 
@@ -333,7 +274,7 @@ static const struct l3cache_event_ops event_ops_std = {
 	.update = qcom_l3_cache__32bit_counter_update,
 };
 
-/* Retrieve the appropriate operations for the given event */
+ 
 static
 const struct l3cache_event_ops *l3cache_event_get_ops(struct perf_event *event)
 {
@@ -343,9 +284,7 @@ const struct l3cache_event_ops *l3cache_event_get_ops(struct perf_event *event)
 		return &event_ops_std;
 }
 
-/*
- * Top level PMU functions.
- */
+ 
 
 static inline void qcom_l3_cache__init(struct l3cache_pmu *l3pmu)
 {
@@ -353,10 +292,7 @@ static inline void qcom_l3_cache__init(struct l3cache_pmu *l3pmu)
 
 	writel_relaxed(BC_RESET, l3pmu->regs + L3_M_BC_CR);
 
-	/*
-	 * Use writel for the first programming command to ensure the basic
-	 * counter unit is stopped before proceeding
-	 */
+	 
 	writel(BC_SATROLL_CR_RESET, l3pmu->regs + L3_M_BC_SATROLL_CR);
 
 	writel_relaxed(BC_CNTENCLR_RESET, l3pmu->regs + L3_M_BC_CNTENCLR);
@@ -378,24 +314,21 @@ static inline void qcom_l3_cache__init(struct l3cache_pmu *l3pmu)
 	writel_relaxed(PM_FLTR_RESET, l3pmu->regs + L3_HML3_PM_FILTRC);
 	writel_relaxed(PM_FLTR_RESET, l3pmu->regs + L3_HML3_PM_FILTRCM);
 
-	/*
-	 * Use writel here to ensure all programming commands are done
-	 *  before proceeding
-	 */
+	 
 	writel(BC_ENABLE, l3pmu->regs + L3_M_BC_CR);
 }
 
 static irqreturn_t qcom_l3_cache__handle_irq(int irq_num, void *data)
 {
 	struct l3cache_pmu *l3pmu = data;
-	/* Read the overflow status register */
+	 
 	long status = readl_relaxed(l3pmu->regs + L3_M_BC_OVSR);
 	int idx;
 
 	if (status == 0)
 		return IRQ_NONE;
 
-	/* Clear the bits we read on the overflow status register */
+	 
 	writel_relaxed(status, l3pmu->regs + L3_M_BC_OVSR);
 
 	for_each_set_bit(idx, &status, L3_NUM_COUNTERS) {
@@ -406,11 +339,7 @@ static irqreturn_t qcom_l3_cache__handle_irq(int irq_num, void *data)
 		if (!event)
 			continue;
 
-		/*
-		 * Since the IRQ is not enabled for events using long counters
-		 * we should never see one of those here, however, be consistent
-		 * and use the ops indirections like in the other operations.
-		 */
+		 
 
 		ops = l3cache_event_get_ops(event);
 		ops->update(event);
@@ -419,16 +348,13 @@ static irqreturn_t qcom_l3_cache__handle_irq(int irq_num, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * Implementation of abstract pmu functionality required by
- * the core perf events code.
- */
+ 
 
 static void qcom_l3_cache__pmu_enable(struct pmu *pmu)
 {
 	struct l3cache_pmu *l3pmu = to_l3cache_pmu(pmu);
 
-	/* Ensure the other programming commands are observed before enabling */
+	 
 	wmb();
 
 	writel_relaxed(BC_ENABLE, l3pmu->regs + L3_M_BC_CR);
@@ -440,14 +366,11 @@ static void qcom_l3_cache__pmu_disable(struct pmu *pmu)
 
 	writel_relaxed(0, l3pmu->regs + L3_M_BC_CR);
 
-	/* Ensure the basic counter unit is stopped before proceeding */
+	 
 	wmb();
 }
 
-/*
- * We must NOT create groups containing events from multiple hardware PMUs,
- * although mixing different software and hardware PMUs is allowed.
- */
+ 
 static bool qcom_l3_cache__validate_event_group(struct perf_event *event)
 {
 	struct perf_event *leader = event->group_leader;
@@ -468,10 +391,7 @@ static bool qcom_l3_cache__validate_event_group(struct perf_event *event)
 		counters += event_num_counters(sibling);
 	}
 
-	/*
-	 * If the group requires more counters than the HW has, it
-	 * cannot ever be scheduled.
-	 */
+	 
 	return counters <= L3_NUM_COUNTERS;
 }
 
@@ -480,42 +400,25 @@ static int qcom_l3_cache__event_init(struct perf_event *event)
 	struct l3cache_pmu *l3pmu = to_l3cache_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
 
-	/*
-	 * Is the event for this PMU?
-	 */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * Sampling not supported since these events are not core-attributable.
-	 */
+	 
 	if (hwc->sample_period)
 		return -EINVAL;
 
-	/*
-	 * Task mode not available, we run the counters as socket counters,
-	 * not attributable to any CPU and therefore cannot attribute per-task.
-	 */
+	 
 	if (event->cpu < 0)
 		return -EINVAL;
 
-	/* Validate the group */
+	 
 	if (!qcom_l3_cache__validate_event_group(event))
 		return -EINVAL;
 
 	hwc->idx = -1;
 
-	/*
-	 * Many perf core operations (eg. events rotation) operate on a
-	 * single CPU context. This is obvious for CPU PMUs, where one
-	 * expects the same sets of events being observed on all CPUs,
-	 * but can lead to issues for off-core PMUs, like this one, where
-	 * each event could be theoretically assigned to a different CPU.
-	 * To mitigate this, we enforce CPU assignment to one designated
-	 * processor (the one described in the "cpumask" attribute exported
-	 * by the PMU device). perf user space tools honor this and avoid
-	 * opening more than one copy of the events.
-	 */
+	 
 	event->cpu = cpumask_first(&l3pmu->cpumask);
 
 	return 0;
@@ -551,12 +454,10 @@ static int qcom_l3_cache__event_add(struct perf_event *event, int flags)
 	int order = event_uses_long_counter(event) ? 1 : 0;
 	int idx;
 
-	/*
-	 * Try to allocate a counter.
-	 */
+	 
 	idx = bitmap_find_free_region(l3pmu->used_mask, L3_NUM_COUNTERS, order);
 	if (idx < 0)
-		/* The counters are all in use. */
+		 
 		return -EAGAIN;
 
 	hwc->idx = idx;
@@ -566,7 +467,7 @@ static int qcom_l3_cache__event_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		qcom_l3_cache__event_start(event, 0);
 
-	/* Propagate changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 
 	return 0;
@@ -578,12 +479,12 @@ static void qcom_l3_cache__event_del(struct perf_event *event, int flags)
 	struct hw_perf_event *hwc = &event->hw;
 	int order = event_uses_long_counter(event) ? 1 : 0;
 
-	/* Stop and clean up */
+	 
 	qcom_l3_cache__event_stop(event,  flags | PERF_EF_UPDATE);
 	l3pmu->events[hwc->idx] = NULL;
 	bitmap_release_region(l3pmu->used_mask, hwc->idx, order);
 
-	/* Propagate changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 }
 
@@ -594,20 +495,9 @@ static void qcom_l3_cache__event_read(struct perf_event *event)
 	ops->update(event);
 }
 
-/*
- * Add sysfs attributes
- *
- * We export:
- * - formats, used by perf user space and other tools to configure events
- * - events, used by perf user space and other tools to create events
- *   symbolically, e.g.:
- *     perf stat -a -e l3cache_0_0/event=read-miss/ ls
- *     perf stat -a -e l3cache_0_0/event=0x21/ ls
- * - cpumask, used by perf user space and other tools to know on which CPUs
- *   to open the events
- */
+ 
 
-/* formats */
+ 
 
 static ssize_t l3cache_pmu_format_show(struct device *dev,
 				       struct device_attribute *attr, char *buf)
@@ -635,7 +525,7 @@ static const struct attribute_group qcom_l3_cache_pmu_format_group = {
 	.attrs = qcom_l3_cache_pmu_formats,
 };
 
-/* events */
+ 
 
 static ssize_t l3cache_pmu_event_show(struct device *dev,
 				     struct device_attribute *attr, char *page)
@@ -665,7 +555,7 @@ static const struct attribute_group qcom_l3_cache_pmu_events_group = {
 	.attrs = qcom_l3_cache_pmu_events,
 };
 
-/* cpumask */
+ 
 
 static ssize_t cpumask_show(struct device *dev,
 			    struct device_attribute *attr, char *buf)
@@ -686,9 +576,7 @@ static const struct attribute_group qcom_l3_cache_pmu_cpumask_attr_group = {
 	.attrs = qcom_l3_cache_pmu_cpumask_attrs,
 };
 
-/*
- * Per PMU device attribute groups
- */
+ 
 static const struct attribute_group *qcom_l3_cache_pmu_attr_grps[] = {
 	&qcom_l3_cache_pmu_format_group,
 	&qcom_l3_cache_pmu_events_group,
@@ -696,15 +584,13 @@ static const struct attribute_group *qcom_l3_cache_pmu_attr_grps[] = {
 	NULL,
 };
 
-/*
- * Probing functions and data.
- */
+ 
 
 static int qcom_l3_cache_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 {
 	struct l3cache_pmu *l3pmu = hlist_entry_safe(node, struct l3cache_pmu, node);
 
-	/* If there is not a CPU/PMU association pick this CPU */
+	 
 	if (cpumask_empty(&l3pmu->cpumask))
 		cpumask_set_cpu(cpu, &l3pmu->cpumask);
 
@@ -734,7 +620,7 @@ static int qcom_l3_cache_pmu_probe(struct platform_device *pdev)
 	int ret;
 	char *name;
 
-	/* Initialize the PMU data structures */
+	 
 
 	acpi_dev = ACPI_COMPANION(&pdev->dev);
 	if (!acpi_dev)
@@ -781,7 +667,7 @@ static int qcom_l3_cache_pmu_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Add this instance to the list used by the offline callback */
+	 
 	ret = cpuhp_state_add_instance(CPUHP_AP_PERF_ARM_QCOM_L3_ONLINE, &l3pmu->node);
 	if (ret) {
 		dev_err(&pdev->dev, "Error %d registering hotplug", ret);
@@ -818,7 +704,7 @@ static int __init register_qcom_l3_cache_pmu_driver(void)
 {
 	int ret;
 
-	/* Install a hook to update the reader CPU in case it goes offline */
+	 
 	ret = cpuhp_setup_state_multi(CPUHP_AP_PERF_ARM_QCOM_L3_ONLINE,
 				      "perf/qcom/l3cache:online",
 				      qcom_l3_cache_pmu_online_cpu,

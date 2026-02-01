@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * leds-netxbig.c - Driver for the 2Big and 5Big Network series LEDs
- *
- * Copyright (C) 2010 LaCie
- *
- * Author: Simon Guinot <sguinot@lacie.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/irq.h>
@@ -59,9 +53,7 @@ struct netxbig_led_platform_data {
 	int			num_leds;
 };
 
-/*
- * GPIO extension bus.
- */
+ 
 
 static DEFINE_SPINLOCK(gpio_ext_lock);
 
@@ -83,7 +75,7 @@ static void gpio_ext_set_data(struct netxbig_gpio_ext *gpio_ext, int data)
 
 static void gpio_ext_enable_select(struct netxbig_gpio_ext *gpio_ext)
 {
-	/* Enable select is done on the raising edge. */
+	 
 	gpiod_set_value(gpio_ext->enable, 0);
 	gpiod_set_value(gpio_ext->enable, 1);
 }
@@ -100,9 +92,7 @@ static void gpio_ext_set_value(struct netxbig_gpio_ext *gpio_ext,
 	spin_unlock_irqrestore(&gpio_ext_lock, flags);
 }
 
-/*
- * Class LED driver.
- */
+ 
 
 struct netxbig_led_data {
 	struct netxbig_gpio_ext	*gpio_ext;
@@ -145,7 +135,7 @@ static int netxbig_led_blink_set(struct led_classdev *led_cdev,
 	int mode_val;
 	int ret;
 
-	/* Look for a LED mode with the requested timer frequency. */
+	 
 	ret = netxbig_led_get_timer_mode(&mode, *delay_on, *delay_off,
 					 led_dat->timer, led_dat->num_timer);
 	if (ret < 0)
@@ -185,18 +175,14 @@ static void netxbig_led_set(struct led_classdev *led_cdev,
 			mode = NETXBIG_LED_SATA;
 		else if (led_dat->mode == NETXBIG_LED_OFF)
 			mode = NETXBIG_LED_ON;
-		else /* Keep 'timer' mode. */
+		else  
 			mode = led_dat->mode;
 	}
 	mode_val = led_dat->mode_val[mode];
 
 	gpio_ext_set_value(led_dat->gpio_ext, led_dat->mode_addr, mode_val);
 	led_dat->mode = mode;
-	/*
-	 * Note that the brightness register is shared between all the
-	 * SATA LEDs. So, change the brightness setting for a single
-	 * SATA LED will affect all the others.
-	 */
+	 
 	if (set_brightness)
 		gpio_ext_set_value(led_dat->gpio_ext,
 				   led_dat->bright_addr, value);
@@ -231,7 +217,7 @@ static ssize_t sata_store(struct device *dev,
 
 	if (led_dat->mode != NETXBIG_LED_ON &&
 	    led_dat->mode != NETXBIG_LED_SATA)
-		mode = led_dat->mode; /* Keep modes 'off' and 'timer'. */
+		mode = led_dat->mode;  
 	else if (enable)
 		mode = NETXBIG_LED_SATA;
 	else
@@ -284,16 +270,7 @@ static int create_netxbig_led(struct platform_device *pdev,
 	led_dat->cdev.default_trigger = template->default_trigger;
 	led_dat->cdev.blink_set = netxbig_led_blink_set;
 	led_dat->cdev.brightness_set = netxbig_led_set;
-	/*
-	 * Because the GPIO extension bus don't allow to read registers
-	 * value, there is no way to probe the LED initial state.
-	 * So, the initial sysfs LED value for the "brightness" and "sata"
-	 * attributes are inconsistent.
-	 *
-	 * Note that the initial LED state can't be reconfigured.
-	 * The reason is that the LED behaviour must stay uniform during
-	 * the whole boot process (bootloader+linux).
-	 */
+	 
 	led_dat->sata = 0;
 	led_dat->cdev.brightness = LED_OFF;
 	led_dat->cdev.max_brightness = template->bright_max;
@@ -303,24 +280,14 @@ static int create_netxbig_led(struct platform_device *pdev,
 	led_dat->bright_addr = template->bright_addr;
 	led_dat->timer = pdata->timer;
 	led_dat->num_timer = pdata->num_timer;
-	/*
-	 * If available, expose the SATA activity blink capability through
-	 * a "sata" sysfs attribute.
-	 */
+	 
 	if (led_dat->mode_val[NETXBIG_LED_SATA] != NETXBIG_LED_INVALID_MODE)
 		led_dat->cdev.groups = netxbig_led_groups;
 
 	return devm_led_classdev_register(&pdev->dev, &led_dat->cdev);
 }
 
-/**
- * netxbig_gpio_ext_remove() - Clean up GPIO extension data
- * @data: managed resource data to clean up
- *
- * Since we pick GPIO descriptors from another device than the device our
- * driver is probing to, we need to register a specific callback to free
- * these up using managed resources.
- */
+ 
 static void netxbig_gpio_ext_remove(void *data)
 {
 	struct netxbig_gpio_ext *gpio_ext = data;
@@ -333,16 +300,7 @@ static void netxbig_gpio_ext_remove(void *data)
 	gpiod_put(gpio_ext->enable);
 }
 
-/**
- * netxbig_gpio_ext_get() - Obtain GPIO extension device data
- * @dev: main LED device
- * @gpio_ext_dev: the GPIO extension device
- * @gpio_ext: the data structure holding the GPIO extension data
- *
- * This function walks the subdevice that only contain GPIO line
- * handles in the device tree and obtains the GPIO descriptors from that
- * device.
- */
+ 
 static int netxbig_gpio_ext_get(struct device *dev,
 				struct device *gpio_ext_dev,
 				struct netxbig_gpio_ext *gpio_ext)
@@ -364,13 +322,7 @@ static int netxbig_gpio_ext_get(struct device *dev,
 	if (!addr)
 		return -ENOMEM;
 
-	/*
-	 * We cannot use devm_ managed resources with these GPIO descriptors
-	 * since they are associated with the "GPIO extension device" which
-	 * does not probe any driver. The device tree parser will however
-	 * populate a platform device for it so we can anyway obtain the
-	 * GPIO descriptors from the device.
-	 */
+	 
 	for (i = 0; i < num_addr; i++) {
 		gpiod = gpiod_get_index(gpio_ext_dev, "addr", i,
 					GPIOD_OUT_LOW);
@@ -432,7 +384,7 @@ static int netxbig_leds_get_of_pdata(struct device *dev,
 	int ret;
 	int i;
 
-	/* GPIO extension */
+	 
 	gpio_ext_np = of_parse_phandle(np, "gpio-ext", 0);
 	if (!gpio_ext_np) {
 		dev_err(dev, "Failed to get DT handle gpio-ext\n");
@@ -457,7 +409,7 @@ static int netxbig_leds_get_of_pdata(struct device *dev,
 		goto put_device;
 	pdata->gpio_ext = gpio_ext;
 
-	/* Timers (optional) */
+	 
 	ret = of_property_count_u32_elems(np, "timers");
 	if (ret > 0) {
 		if (ret % 3) {
@@ -492,7 +444,7 @@ static int netxbig_leds_get_of_pdata(struct device *dev,
 		pdata->num_timer = num_timers;
 	}
 
-	/* LEDs */
+	 
 	num_leds = of_get_available_child_count(np);
 	if (!num_leds) {
 		dev_err(dev, "No LED subnodes found in DT\n");

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/net.h>
 #include <linux/uio.h>
@@ -17,7 +17,7 @@ struct io_async_msghdr {
 		};
 		struct io_cache_entry	cache;
 	};
-	/* points to an allocated iov, if NULL we use fast_iov instead */
+	 
 	struct iovec			*free_iov;
 	struct sockaddr __user		*uaddr;
 	struct msghdr			msg;

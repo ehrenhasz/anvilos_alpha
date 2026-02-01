@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Portions
- * Copyright (C) 2022 Intel Corporation
- */
+
+ 
 #include <linux/ieee80211.h>
 #include <linux/export.h>
 #include <net/cfg80211.h>
@@ -10,7 +7,7 @@
 #include "core.h"
 #include "rdev-ops.h"
 
-/* Default values, timeouts in ms */
+ 
 #define MESH_TTL 		31
 #define MESH_DEFAULT_ELEMENT_TTL 31
 #define MESH_MAX_RETR	 	3
@@ -23,36 +20,29 @@
 #define MESH_PATH_TO_ROOT_TIMEOUT      6000
 #define MESH_ROOT_INTERVAL     5000
 #define MESH_ROOT_CONFIRMATION_INTERVAL 2000
-#define MESH_DEFAULT_PLINK_TIMEOUT	1800 /* timeout in seconds */
+#define MESH_DEFAULT_PLINK_TIMEOUT	1800  
 
-/*
- * Minimum interval between two consecutive PREQs originated by the same
- * interface
- */
+ 
 #define MESH_PREQ_MIN_INT	10
 #define MESH_PERR_MIN_INT	100
 #define MESH_DIAM_TRAVERSAL_TIME 50
 
 #define MESH_RSSI_THRESHOLD	0
 
-/*
- * A path will be refreshed if it is used PATH_REFRESH_TIME milliseconds
- * before timing out.  This way it will remain ACTIVE and no data frames
- * will be unnecessarily held in the pending queue.
- */
+ 
 #define MESH_PATH_REFRESH_TIME			1000
 #define MESH_MIN_DISCOVERY_TIMEOUT (2 * MESH_DIAM_TRAVERSAL_TIME)
 
-/* Default maximum number of established plinks per interface */
+ 
 #define MESH_MAX_ESTAB_PLINKS	32
 
 #define MESH_MAX_PREQ_RETRIES	4
 
 #define MESH_SYNC_NEIGHBOR_OFFSET_MAX 50
 
-#define MESH_DEFAULT_BEACON_INTERVAL	1000	/* in 1024 us units (=TUs) */
+#define MESH_DEFAULT_BEACON_INTERVAL	1000	 
 #define MESH_DEFAULT_DTIM_PERIOD	2
-#define MESH_DEFAULT_AWAKE_WINDOW	10	/* in 1024 us units (=TUs) */
+#define MESH_DEFAULT_AWAKE_WINDOW	10	 
 
 const struct mesh_config default_mesh_config = {
 	.dot11MeshRetryTimeout = MESH_RET_T,
@@ -86,11 +76,11 @@ const struct mesh_config default_mesh_config = {
 };
 
 const struct mesh_setup default_mesh_setup = {
-	/* cfg80211_join_mesh() will pick a channel if needed */
+	 
 	.sync_method = IEEE80211_SYNC_METHOD_NEIGHBOR_OFFSET,
 	.path_sel_proto = IEEE80211_PATH_PROTOCOL_HWMP,
 	.path_metric = IEEE80211_PATH_METRIC_AIRTIME,
-	.auth_id = 0, /* open */
+	.auth_id = 0,  
 	.ie = NULL,
 	.ie_len = 0,
 	.is_secure = false,
@@ -128,12 +118,12 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 		return -EOPNOTSUPP;
 
 	if (!setup->chandef.chan) {
-		/* if no channel explicitly given, use preset channel */
+		 
 		setup->chandef = wdev->u.mesh.preset_chandef;
 	}
 
 	if (!setup->chandef.chan) {
-		/* if we don't have that either, use the first usable channel */
+		 
 		enum nl80211_band band;
 
 		for (band = 0; band < NUM_NL80211_BANDS; band++) {
@@ -159,7 +149,7 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 				break;
 		}
 
-		/* no usable channel ... */
+		 
 		if (!setup->chandef.chan)
 			return -EINVAL;
 
@@ -167,10 +157,7 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 		setup->chandef.center_freq1 = setup->chandef.chan->center_freq;
 	}
 
-	/*
-	 * check if basic rates are available otherwise use mandatory rates as
-	 * basic rates
-	 */
+	 
 	if (!setup->basic_rates) {
 		enum nl80211_bss_scan_width scan_width;
 		struct ieee80211_supported_band *sband =
@@ -179,13 +166,7 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 		if (setup->chandef.chan->band == NL80211_BAND_2GHZ) {
 			int i;
 
-			/*
-			 * Older versions selected the mandatory rates for
-			 * 2.4 GHz as well, but were broken in that only
-			 * 1 Mbps was regarded as a mandatory rate. Keep
-			 * using just 1 Mbps as the default basic rate for
-			 * mesh to be interoperable with older versions.
-			 */
+			 
 			for (i = 0; i < sband->n_bitrates; i++) {
 				if (sband->bitrates[i].bitrate == 10) {
 					setup->basic_rates = BIT(i);
@@ -228,13 +209,7 @@ int cfg80211_set_mesh_channel(struct cfg80211_registered_device *rdev,
 {
 	int err;
 
-	/*
-	 * Workaround for libertas (only!), it puts the interface
-	 * into mesh mode but doesn't implement join_mesh. Instead,
-	 * it is configured via sysfs and then joins the mesh when
-	 * you set the channel. Note that the libertas mesh isn't
-	 * compatible with 802.11 mesh.
-	 */
+	 
 	if (rdev->ops->libertas_set_mesh_channel) {
 		if (chandef->width != NL80211_CHAN_WIDTH_20_NOHT)
 			return -EINVAL;

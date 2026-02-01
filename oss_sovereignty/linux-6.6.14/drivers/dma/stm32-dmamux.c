@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) STMicroelectronics SA 2017
- * Author(s): M'boumba Cedric Madianga <cedric.madianga@gmail.com>
- *            Pierre-Yves Mordret <pierre-yves.mordret@st.com>
- *
- * DMA Router driver for STM32 DMA MUX
- *
- * Based on TI DMA Crossbar driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -38,17 +29,12 @@ struct stm32_dmamux_data {
 	struct dma_router dmarouter;
 	struct clk *clk;
 	void __iomem *iomem;
-	u32 dma_requests; /* Number of DMA requests connected to DMAMUX */
-	u32 dmamux_requests; /* Number of DMA requests routed toward DMAs */
-	spinlock_t lock; /* Protects register access */
-	DECLARE_BITMAP(dma_inuse, STM32_DMAMUX_MAX_DMA_REQUESTS); /* Used DMA channel */
-	u32 ccr[STM32_DMAMUX_MAX_DMA_REQUESTS]; /* Used to backup CCR register
-						 * in suspend
-						 */
-	u32 dma_reqs[]; /* Number of DMA Request per DMA masters.
-			 *  [0] holds number of DMA Masters.
-			 *  To be kept at very end of this structure
-			 */
+	u32 dma_requests;  
+	u32 dmamux_requests;  
+	spinlock_t lock;  
+	DECLARE_BITMAP(dma_inuse, STM32_DMAMUX_MAX_DMA_REQUESTS);  
+	u32 ccr[STM32_DMAMUX_MAX_DMA_REQUESTS];  
+	u32 dma_reqs[];  
 };
 
 static inline u32 stm32_dmamux_read(void __iomem *iomem, u32 reg)
@@ -67,7 +53,7 @@ static void stm32_dmamux_free(struct device *dev, void *route_data)
 	struct stm32_dmamux *mux = route_data;
 	unsigned long flags;
 
-	/* Clear dma request */
+	 
 	spin_lock_irqsave(&dmamux->lock, flags);
 
 	stm32_dmamux_write(dmamux->iomem, STM32_DMAMUX_CCR(mux->chan_id), 0);
@@ -121,7 +107,7 @@ static void *stm32_dmamux_route_allocate(struct of_phandle_args *dma_spec,
 	set_bit(mux->chan_id, dmamux->dma_inuse);
 	spin_unlock_irqrestore(&dmamux->lock, flags);
 
-	/* Look for DMA Master */
+	 
 	for (i = 1, min = 0, max = dmamux->dma_reqs[i];
 	     i <= dmamux->dma_reqs[0];
 	     min += dmamux->dma_reqs[i], max += dmamux->dma_reqs[++i])
@@ -129,7 +115,7 @@ static void *stm32_dmamux_route_allocate(struct of_phandle_args *dma_spec,
 			break;
 	mux->master = i - 1;
 
-	/* The of_node_put() will be done in of_dma_router_xlate function */
+	 
 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", i - 1);
 	if (!dma_spec->np) {
 		dev_err(&pdev->dev, "can't get dma master\n");
@@ -137,7 +123,7 @@ static void *stm32_dmamux_route_allocate(struct of_phandle_args *dma_spec,
 		goto error;
 	}
 
-	/* Set dma request */
+	 
 	spin_lock_irqsave(&dmamux->lock, flags);
 	ret = pm_runtime_resume_and_get(&pdev->dev);
 	if (ret < 0) {
@@ -148,7 +134,7 @@ static void *stm32_dmamux_route_allocate(struct of_phandle_args *dma_spec,
 
 	mux->request = dma_spec->args[0];
 
-	/*  craft DMA spec */
+	 
 	dma_spec->args[3] = dma_spec->args[2] | mux->chan_id << 16;
 	dma_spec->args[2] = dma_spec->args[1];
 	dma_spec->args[1] = 0;
@@ -261,7 +247,7 @@ static int stm32_dmamux_probe(struct platform_device *pdev)
 		ret = PTR_ERR(rst);
 		if (ret == -EPROBE_DEFER)
 			goto err_clk;
-	} else if (count > 1) { /* Don't reset if there is only one dma-master */
+	} else if (count > 1) {  
 		reset_control_assert(rst);
 		udelay(2);
 		reset_control_deassert(rst);
@@ -277,7 +263,7 @@ static int stm32_dmamux_probe(struct platform_device *pdev)
 
 	pm_runtime_get_noresume(&pdev->dev);
 
-	/* Reset the dmamux */
+	 
 	for (i = 0; i < stm32_dmamux->dma_requests; i++)
 		stm32_dmamux_write(stm32_dmamux->iomem, STM32_DMAMUX_CCR(i), 0);
 

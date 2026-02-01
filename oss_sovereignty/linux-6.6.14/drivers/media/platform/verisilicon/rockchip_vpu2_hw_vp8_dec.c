@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip VPU codec vp8 decode driver
- *
- * Copyright (C) 2014 Rockchip Electronics Co., Ltd.
- *	ZhiChao Yu <zhichao.yu@rock-chips.com>
- *
- * Copyright (C) 2014 Google LLC.
- *      Tomasz Figa <tfiga@chromium.org>
- *
- * Copyright (C) 2015 Rockchip Electronics Co., Ltd.
- *      Alpha Lin <alpha.lin@rock-chips.com>
- */
+
+ 
 
 #include <media/v4l2-mem2mem.h>
 
@@ -357,17 +346,7 @@ static void cfg_parts(struct hantro_ctx *ctx,
 	vb2_src = hantro_get_src_buf(ctx);
 	src_dma = vb2_dma_contig_plane_dma_addr(&vb2_src->vb2_buf, 0);
 
-	/*
-	 * Calculate control partition mb data info
-	 * @first_part_header_bits:	bits offset of mb data from first
-	 *				part start pos
-	 * @mb_offset_bits:		bits offset of mb data from src_dma
-	 *				base addr
-	 * @mb_offset_byte:		bytes offset of mb data from src_dma
-	 *				base addr
-	 * @mb_start_bits:		bits offset of mb data from mb data
-	 *				64bits alignment addr
-	 */
+	 
 	mb_offset_bits = first_part_offset * 8 +
 			 hdr->first_part_header_bits + 8;
 	mb_offset_bytes = mb_offset_bits / 8;
@@ -377,20 +356,13 @@ static void cfg_parts(struct hantro_ctx *ctx,
 		  (mb_offset_bytes - first_part_offset) +
 		  (mb_offset_bytes & DEC_8190_ALIGN_MASK);
 
-	/* Macroblock data aligned base addr */
+	 
 	vdpu_write_relaxed(vpu, (mb_offset_bytes & (~DEC_8190_ALIGN_MASK)) +
 			   src_dma, VDPU_REG_VP8_ADDR_CTRL_PART);
 	hantro_reg_write(vpu, &vp8_dec_mb_start_bit, mb_start_bits);
 	hantro_reg_write(vpu, &vp8_dec_mb_aligned_data_len, mb_size);
 
-	/*
-	 * Calculate DCT partition info
-	 * @dct_size_part_size: Containing sizes of DCT part, every DCT part
-	 *			has 3 bytes to store its size, except the last
-	 *			DCT part
-	 * @dct_part_offset:	bytes offset of DCT parts from src_dma base addr
-	 * @dct_part_total_len: total size of all DCT parts
-	 */
+	 
 	dct_size_part_size = (hdr->num_dct_parts - 1) * 3;
 	dct_part_offset = first_part_offset + hdr->first_part_size;
 	for (i = 0; i < hdr->num_dct_parts; i++)
@@ -398,14 +370,14 @@ static void cfg_parts(struct hantro_ctx *ctx,
 	dct_part_total_len += dct_size_part_size;
 	dct_part_total_len += (dct_part_offset & DEC_8190_ALIGN_MASK);
 
-	/* Number of DCT partitions */
+	 
 	hantro_reg_write(vpu, &vp8_dec_num_dct_partitions,
 			 hdr->num_dct_parts - 1);
 
-	/* DCT partition length */
+	 
 	hantro_reg_write(vpu, &vp8_dec_stream_len, dct_part_total_len);
 
-	/* DCT partitions base address */
+	 
 	for (i = 0; i < hdr->num_dct_parts; i++) {
 		u32 byte_offset = dct_part_offset + dct_size_part_size + count;
 		u32 base_addr = byte_offset + src_dma;
@@ -420,10 +392,7 @@ static void cfg_parts(struct hantro_ctx *ctx,
 	}
 }
 
-/*
- * prediction filter taps
- * normal 6-tap filters
- */
+ 
 static void cfg_tap(struct hantro_ctx *ctx,
 		    const struct v4l2_ctrl_vp8_frame *hdr)
 {
@@ -431,7 +400,7 @@ static void cfg_tap(struct hantro_ctx *ctx,
 	int i, j;
 
 	if ((hdr->version & 0x03) != 0)
-		return; /* Tap filter not used. */
+		return;  
 
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 6; j++) {
@@ -488,11 +457,11 @@ static void cfg_buffers(struct hantro_ctx *ctx,
 	dma_addr_t dst_dma;
 	u32 reg;
 
-	/* Set probability table buffer address */
+	 
 	vdpu_write_relaxed(vpu, ctx->vp8_dec.prob_tbl.dma,
 			   VDPU_REG_ADDR_QTABLE);
 
-	/* Set segment map address */
+	 
 	reg = VDPU_REG_FWD_PIC1_SEGMENT_BASE(ctx->vp8_dec.segment_map.dma);
 	if (seg->flags & V4L2_VP8_SEGMENT_FLAG_ENABLED) {
 		reg |= VDPU_REG_FWD_PIC1_SEGMENT_E;
@@ -501,7 +470,7 @@ static void cfg_buffers(struct hantro_ctx *ctx,
 	}
 	vdpu_write_relaxed(vpu, reg, VDPU_REG_VP8_SEGMENT_VAL);
 
-	/* set output frame buffer address */
+	 
 	dst_dma = vb2_dma_contig_plane_dma_addr(&vb2_dst->vb2_buf, 0);
 	vdpu_write_relaxed(vpu, dst_dma, VDPU_REG_ADDR_DST);
 }
@@ -522,20 +491,14 @@ int rockchip_vpu2_vp8_dec_run(struct hantro_ctx *ctx)
 	if (WARN_ON(!hdr))
 		return -EINVAL;
 
-	/* Reset segment_map buffer in keyframe */
+	 
 	if (V4L2_VP8_FRAME_IS_KEY_FRAME(hdr) && ctx->vp8_dec.segment_map.cpu)
 		memset(ctx->vp8_dec.segment_map.cpu, 0,
 		       ctx->vp8_dec.segment_map.size);
 
 	hantro_vp8_prob_update(ctx, hdr);
 
-	/*
-	 * Extensive testing shows that the hardware does not properly
-	 * clear the internal state from previous a decoding run. This
-	 * causes corruption in decoded frames for multi-instance use cases.
-	 * A soft reset before programming the registers has been found
-	 * to resolve those problems.
-	 */
+	 
 	ctx->codec_ops->reset(ctx);
 
 	reg = VDPU_REG_CONFIG_DEC_TIMEOUT_E
@@ -563,7 +526,7 @@ int rockchip_vpu2_vp8_dec_run(struct hantro_ctx *ctx)
 	if (hdr->lf.level == 0)
 		hantro_reg_write(vpu, &vp8_dec_filter_disable, 1);
 
-	/* Frame dimensions */
+	 
 	mb_width = MB_WIDTH(width);
 	mb_height = MB_HEIGHT(height);
 
@@ -572,7 +535,7 @@ int rockchip_vpu2_vp8_dec_run(struct hantro_ctx *ctx)
 	hantro_reg_write(vpu, &vp8_dec_mb_width_ext, mb_width >> 9);
 	hantro_reg_write(vpu, &vp8_dec_mb_height_ext, mb_height >> 8);
 
-	/* Boolean decoder */
+	 
 	hantro_reg_write(vpu, &vp8_dec_bool_range, hdr->coder_state.range);
 	hantro_reg_write(vpu, &vp8_dec_bool_value, hdr->coder_state.value);
 

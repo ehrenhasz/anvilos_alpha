@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Jeilin JL2005B/C/D library
- *
- * Copyright (C) 2011 Theodore Kilgore <kilgota@auburn.edu>
- */
+
+ 
 
 #define MODULE_NAME "jl2005bcd"
 
@@ -16,29 +12,29 @@ MODULE_AUTHOR("Theodore Kilgore <kilgota@auburn.edu>");
 MODULE_DESCRIPTION("JL2005B/C/D USB Camera Driver");
 MODULE_LICENSE("GPL");
 
-/* Default timeouts, in ms */
+ 
 #define JL2005C_CMD_TIMEOUT 500
 #define JL2005C_DATA_TIMEOUT 1000
 
-/* Maximum transfer size to use. */
+ 
 #define JL2005C_MAX_TRANSFER 0x200
 #define FRAME_HEADER_LEN 16
 
 
-/* specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev;  /* !! must be the first item */
+	struct gspca_dev gspca_dev;   
 	unsigned char firmware_id[6];
 	const struct v4l2_pix_format *cap_mode;
-	/* Driver stuff */
+	 
 	struct work_struct work_struct;
 	u8 frame_brightness;
-	int block_size;	/* block size of camera */
-	int vga;	/* 1 if vga cam, 0 if cif cam */
+	int block_size;	 
+	int vga;	 
 };
 
 
-/* Camera has two resolution settings. What they are depends on model. */
+ 
 static const struct v4l2_pix_format cif_mode[] = {
 	{176, 144, V4L2_PIX_FMT_JL2005BCD, V4L2_FIELD_NONE,
 		.bytesperline = 176,
@@ -65,12 +61,9 @@ static const struct v4l2_pix_format vga_mode[] = {
 		.priv = 0},
 };
 
-/*
- * cam uses endpoint 0x03 to send commands, 0x84 for read commands,
- * and 0x82 for bulk data transfer.
- */
+ 
 
-/* All commands are two bytes only */
+ 
 static int jl2005c_write2(struct gspca_dev *gspca_dev, unsigned char *command)
 {
 	int retval;
@@ -85,7 +78,7 @@ static int jl2005c_write2(struct gspca_dev *gspca_dev, unsigned char *command)
 	return retval;
 }
 
-/* Response to a command is one byte in usb_buf[0], only if requested. */
+ 
 static int jl2005c_read1(struct gspca_dev *gspca_dev)
 {
 	int retval;
@@ -99,15 +92,15 @@ static int jl2005c_read1(struct gspca_dev *gspca_dev)
 	return retval;
 }
 
-/* Response appears in gspca_dev->usb_buf[0] */
+ 
 static int jl2005c_read_reg(struct gspca_dev *gspca_dev, unsigned char reg)
 {
 	int retval;
 
 	static u8 instruction[2] = {0x95, 0x00};
-	/* put register to read in byte 1 */
+	 
 	instruction[1] = reg;
-	/* Send the read request */
+	 
 	retval = jl2005c_write2(gspca_dev, instruction);
 	if (retval < 0)
 		return retval;
@@ -130,7 +123,7 @@ static int jl2005c_start_new_frame(struct gspca_dev *gspca_dev)
 
 	i = 0;
 	while (i < 20 && !frame_brightness) {
-		/* If we tried 20 times, give up. */
+		 
 		retval = jl2005c_read_reg(gspca_dev, 0x7e);
 		if (retval < 0)
 			return retval;
@@ -171,13 +164,13 @@ static int jl2005c_get_firmware_id(struct gspca_dev *gspca_dev)
 	};
 
 	gspca_dbg(gspca_dev, D_PROBE, "Running jl2005c_get_firmware_id\n");
-	/* Read the first ID byte once for warmup */
+	 
 	retval = jl2005c_read_reg(gspca_dev, regs_to_read[0]);
 	gspca_dbg(gspca_dev, D_PROBE, "response is %02x\n",
 		  gspca_dev->usb_buf[0]);
 	if (retval < 0)
 		return retval;
-	/* Now actually get the ID string */
+	 
 	for (i = 0; i < 6; i++) {
 		retval = jl2005c_read_reg(gspca_dev, regs_to_read[i]);
 		if (retval < 0)
@@ -293,20 +286,13 @@ static int jl2005c_stop(struct gspca_dev *gspca_dev)
 	return jl2005c_write_reg(gspca_dev, 0x07, 0x00);
 }
 
-/*
- * This function is called as a workqueue function and runs whenever the camera
- * is streaming data. Because it is a workqueue function it is allowed to sleep
- * so we can use synchronous USB calls. To avoid possible collisions with other
- * threads attempting to use gspca_dev->usb_buf we take the usb_lock when
- * performing USB operations using it. In practice we don't really need this
- * as the camera doesn't provide any controls.
- */
+ 
 static void jl2005c_dostream(struct work_struct *work)
 {
 	struct sd *dev = container_of(work, struct sd, work_struct);
 	struct gspca_dev *gspca_dev = &dev->gspca_dev;
-	int bytes_left = 0; /* bytes remaining in current frame. */
-	int data_len;   /* size to use for the next read. */
+	int bytes_left = 0;  
+	int data_len;    
 	int header_read = 0;
 	unsigned char header_sig[2] = {0x4a, 0x4c};
 	int act_len;
@@ -325,7 +311,7 @@ static void jl2005c_dostream(struct work_struct *work)
 		if (gspca_dev->frozen)
 			break;
 #endif
-		/* Check if this is a new frame. If so, start the frame first */
+		 
 		if (!header_read) {
 			mutex_lock(&gspca_dev->usb_lock);
 			ret = jl2005c_start_new_frame(gspca_dev);
@@ -341,17 +327,16 @@ static void jl2005c_dostream(struct work_struct *work)
 				  act_len, JL2005C_MAX_TRANSFER);
 			if (ret < 0 || act_len < JL2005C_MAX_TRANSFER)
 				goto quit_stream;
-			/* Check whether we actually got the first blodk */
+			 
 			if (memcmp(header_sig, buffer, 2) != 0) {
 				pr_err("First block is not the first block\n");
 				goto quit_stream;
 			}
-			/* total size to fetch is byte 7, times blocksize
-			 * of which we already got act_len */
+			 
 			bytes_left = buffer[0x07] * dev->block_size - act_len;
 			gspca_dbg(gspca_dev, D_PACK, "bytes_left = 0x%x\n",
 				  bytes_left);
-			/* We keep the header. It has other information, too.*/
+			 
 			packet_type = FIRST_PACKET;
 			gspca_frame_add(gspca_dev, packet_type,
 					buffer, act_len);
@@ -391,7 +376,7 @@ quit_stream:
 
 
 
-/* This function is called at probe time */
+ 
 static int sd_config(struct gspca_dev *gspca_dev,
 			const struct usb_device_id *id)
 {
@@ -399,23 +384,12 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	struct sd *sd = (struct sd *) gspca_dev;
 
 	cam = &gspca_dev->cam;
-	/* We don't use the buffer gspca allocates so make it small. */
+	 
 	cam->bulk_size = 64;
 	cam->bulk = 1;
-	/* For the rest, the camera needs to be detected */
+	 
 	jl2005c_get_firmware_id(gspca_dev);
-	/* Here are some known firmware IDs
-	 * First some JL2005B cameras
-	 * {0x41, 0x07, 0x04, 0x2c, 0xe8, 0xf2}	Sakar KidzCam
-	 * {0x45, 0x02, 0x08, 0xb9, 0x00, 0xd2}	No-name JL2005B
-	 * JL2005C cameras
-	 * {0x01, 0x0c, 0x16, 0x10, 0xf8, 0xc8}	Argus DC-1512
-	 * {0x12, 0x04, 0x03, 0xc0, 0x00, 0xd8}	ICarly
-	 * {0x86, 0x08, 0x05, 0x02, 0x00, 0xd4}	Jazz
-	 *
-	 * Based upon this scanty evidence, we can detect a CIF camera by
-	 * testing byte 0 for 0x4x.
-	 */
+	 
 	if ((sd->firmware_id[0] & 0xf0) == 0x40) {
 		cam->cam_mode	= cif_mode;
 		cam->nmodes	= ARRAY_SIZE(cif_mode);
@@ -431,7 +405,7 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	return 0;
 }
 
-/* this function is called at probe and resume time */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	return 0;
@@ -470,22 +444,22 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* called on streamoff with alt==0 and on disconnect */
-/* the usb_lock is held at entry - restore on exit */
+ 
+ 
 static void sd_stop0(struct gspca_dev *gspca_dev)
 {
 	struct sd *dev = (struct sd *) gspca_dev;
 
-	/* wait for the work queue to terminate */
+	 
 	mutex_unlock(&gspca_dev->usb_lock);
-	/* This waits for sq905c_dostream to finish */
+	 
 	flush_work(&dev->work_struct);
 	mutex_lock(&gspca_dev->usb_lock);
 }
 
 
 
-/* sub-driver description */
+ 
 static const struct sd_desc sd_desc = {
 	.name = MODULE_NAME,
 	.config = sd_config,
@@ -494,14 +468,14 @@ static const struct sd_desc sd_desc = {
 	.stop0 = sd_stop0,
 };
 
-/* -- module initialisation -- */
+ 
 static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x0979, 0x0227)},
 	{}
 };
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* -- device connect -- */
+ 
 static int sd_probe(struct usb_interface *intf,
 				const struct usb_device_id *id)
 {

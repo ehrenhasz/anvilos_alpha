@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for VIA PadLock
- *
- * Copyright (c) 2004 Michal Ludvig <michal@logix.cz>
- */
+ 
+ 
 
 #ifndef _CRYPTO_PADLOCK_H
 #define _CRYPTO_PADLOCK_H
@@ -21,4 +17,4 @@
 #define STACK_ALIGN 4
 #endif
 
-#endif	/* _CRYPTO_PADLOCK_H */
+#endif	 

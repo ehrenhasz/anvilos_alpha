@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- *******************************************************************************/
+
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
@@ -25,11 +21,7 @@ inline void rtw_sdio_set_irq_thd(struct dvobj_priv *dvobj, void *thd_hdl)
 	sdio_data->sys_sdio_irq_thd = thd_hdl;
 }
 
-/*
- * Return:
- *0		Success
- *others	Fail
- */
+ 
 s32 _sd_cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 {
 	struct adapter *padapter;
@@ -56,11 +48,7 @@ s32 _sd_cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 	return err;
 }
 
-/*
- * Return:
- *0		Success
- *others	Fail
- */
+ 
 s32 sd_cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 {
 	struct adapter *padapter;
@@ -89,11 +77,7 @@ s32 sd_cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 	return err;
 }
 
-/*
- * Return:
- *0		Success
- *others	Fail
- */
+ 
 s32 _sd_cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 {
 	struct adapter *padapter;
@@ -120,11 +104,7 @@ s32 _sd_cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 	return err;
 }
 
-/*
- * Return:
- *0		Success
- *others	Fail
- */
+ 
 s32 sd_cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 {
 	struct adapter *padapter;
@@ -310,21 +290,7 @@ void sd_write32(struct intf_hdl *pintfhdl, u32 addr, u32 v, s32 *err)
 	}
 }
 
-/*
- * Use CMD53 to read data from SDIO device.
- * This function MUST be called after sdio_claim_host() or
- * in SDIO ISR(host had been claimed).
- *
- * Parameters:
- *psdio	pointer of SDIO_DATA
- *addr	address to read
- *cnt		amount to read
- *pdata	pointer to put data, this should be a "DMA:able scratch buffer"!
- *
- * Return:
- *0		Success
- *others	Fail
- */
+ 
 s32 _sd_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 {
 	struct adapter *padapter;
@@ -361,19 +327,7 @@ s32 _sd_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 	return err;
 }
 
-/*
- * Use CMD53 to read data from SDIO device.
- *
- * Parameters:
- *psdio	pointer of SDIO_DATA
- *addr	address to read
- *cnt		amount to read
- *pdata	pointer to put data, this should be a "DMA:able scratch buffer"!
- *
- * Return:
- *0		Success
- *others	Fail
- */
+ 
 s32 sd_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 {
 	struct adapter *padapter;
@@ -402,21 +356,7 @@ s32 sd_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 	return err;
 }
 
-/*
- * Use CMD53 to write data to SDIO device.
- * This function MUST be called after sdio_claim_host() or
- * in SDIO ISR(host had been claimed).
- *
- * Parameters:
- *psdio	pointer of SDIO_DATA
- *addr	address to write
- *cnt		amount to write
- *pdata	data pointer, this should be a "DMA:able scratch buffer"!
- *
- * Return:
- *0		Success
- *others	Fail
- */
+ 
 s32 _sd_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 {
 	struct adapter *padapter;
@@ -435,7 +375,7 @@ s32 _sd_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 		return err;
 
 	func = psdio->func;
-/*	size = sdio_align_size(func, cnt); */
+ 
 
 	if (unlikely((cnt == 1) || (cnt == 2))) {
 		int i;
@@ -456,19 +396,7 @@ s32 _sd_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 	return err;
 }
 
-/*
- * Use CMD53 to write data to SDIO device.
- *
- * Parameters:
- *  psdio	pointer of SDIO_DATA
- *  addr	address to write
- *  cnt		amount to write
- *  pdata	data pointer, this should be a "DMA:able scratch buffer"!
- *
- * Return:
- *  0		Success
- *  others	Fail
- */
+ 
 s32 sd_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 {
 	struct adapter *padapter;

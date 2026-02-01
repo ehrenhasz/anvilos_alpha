@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * esrt.c
- *
- * This module exports EFI System Resource Table (ESRT) entries into userspace
- * through the sysfs file system. The ESRT provides a read-only catalog of
- * system components for which the system accepts firmware upgrades via UEFI's
- * "Capsule Update" feature. This module allows userland utilities to evaluate
- * what firmware updates can be applied to this system, and potentially arrange
- * for those updates to occur.
- *
- * Data is currently found below /sys/firmware/efi/esrt/...
- */
+
+ 
 #define pr_fmt(fmt) "esrt: " fmt
 
 #include <linux/capability.h>
@@ -38,15 +27,7 @@ struct efi_system_resource_entry_v1 {
 	u32		last_attempt_status;
 };
 
-/*
- * _count and _version are what they seem like.  _max is actually just
- * accounting info for the firmware when creating the table; it should never
- * have been exposed to us.  To wit, the spec says:
- * The maximum number of resource array entries that can be within the
- * table without reallocating the table, must not be zero.
- * Since there's no guidance about what that means in terms of memory layout,
- * it means nothing to us.
- */
+ 
 struct efi_system_resource_table {
 	u32	fw_resource_count;
 	u32	fw_resource_count_max;
@@ -68,10 +49,10 @@ struct esre_entry {
 	struct list_head list;
 };
 
-/* global list of esre_entry. */
+ 
 static LIST_HEAD(entry_list);
 
-/* entry attribute */
+ 
 struct esre_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct esre_entry *entry, char *buf);
@@ -102,7 +83,7 @@ static const struct sysfs_ops esre_attr_ops = {
 	.show = esre_attr_show,
 };
 
-/* Generic ESRT Entry ("ESRE") support. */
+ 
 static ssize_t fw_class_show(struct esre_entry *entry, char *buf)
 {
 	char *str = buf;
@@ -188,7 +169,7 @@ static int esre_create_sysfs_entry(void *esre, int entry_num)
 	return 0;
 }
 
-/* support for displaying ESRT fields at the top level */
+ 
 #define esrt_attr_decl(name, size, fmt) \
 static ssize_t name##_show(struct kobject *kobj, \
 				  struct kobj_attribute *attr, char *buf)\
@@ -231,9 +212,7 @@ static const struct attribute_group esrt_attr_group = {
 	.is_visible = esrt_attr_is_visible,
 };
 
-/*
- * remap the table, validate it, mark it reserved and unmap it.
- */
+ 
 void __init efi_esrt_init(void)
 {
 	void *va;
@@ -293,23 +272,14 @@ void __init efi_esrt_init(void)
 		return;
 	}
 
-	/*
-	 * The format doesn't really give us any boundary to test here,
-	 * so I'm making up 128 as the max number of individually updatable
-	 * components we support.
-	 * 128 should be pretty excessive, but there's still some chance
-	 * somebody will do that someday and we'll need to raise this.
-	 */
+	 
 	if (tmpesrt.fw_resource_count > 128) {
 		pr_err("ESRT says fw_resource_count has very large value %d.\n",
 		       tmpesrt.fw_resource_count);
 		return;
 	}
 
-	/*
-	 * We know it can't be larger than N * sizeof() here, and N is limited
-	 * by the previous test to a small number, so there's no overflow.
-	 */
+	 
 	entries_size = tmpesrt.fw_resource_count * entry_size;
 	if (max < size + entries_size) {
 		pr_err("ESRT does not fit on single memory map entry (size: %zu max: %zu)\n",
@@ -424,8 +394,4 @@ err:
 }
 device_initcall(esrt_sysfs_init);
 
-/*
-MODULE_AUTHOR("Peter Jones <pjones@redhat.com>");
-MODULE_DESCRIPTION("EFI System Resource Table support");
-MODULE_LICENSE("GPL");
-*/
+ 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  MA35D1 serial driver
- *  Copyright (C) 2023 Nuvoton Technology Corp.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -33,106 +30,106 @@
 #define MA35_WKCTL_REG		0x40
 #define MA35_WKSTS_REG		0x44
 
-/* MA35_IER_REG - Interrupt Enable Register */
-#define MA35_IER_RDA_IEN	BIT(0)  /* RBR Available Interrupt Enable */
-#define MA35_IER_THRE_IEN	BIT(1)  /* THR Empty Interrupt Enable */
-#define MA35_IER_RLS_IEN	BIT(2)  /* RX Line Status Interrupt Enable */
-#define MA35_IER_RTO_IEN	BIT(4)  /* RX Time-out Interrupt Enable */
-#define MA35_IER_BUFERR_IEN	BIT(5)  /* Buffer Error Interrupt Enable */
-#define MA35_IER_TIME_OUT_EN	BIT(11) /* RX Buffer Time-out Counter Enable */
-#define MA35_IER_AUTO_RTS	BIT(12) /* nRTS Auto-flow Control Enable */
-#define MA35_IER_AUTO_CTS	BIT(13) /* nCTS Auto-flow Control Enable */
+ 
+#define MA35_IER_RDA_IEN	BIT(0)   
+#define MA35_IER_THRE_IEN	BIT(1)   
+#define MA35_IER_RLS_IEN	BIT(2)   
+#define MA35_IER_RTO_IEN	BIT(4)   
+#define MA35_IER_BUFERR_IEN	BIT(5)   
+#define MA35_IER_TIME_OUT_EN	BIT(11)  
+#define MA35_IER_AUTO_RTS	BIT(12)  
+#define MA35_IER_AUTO_CTS	BIT(13)  
 
-/* MA35_FCR_REG - FIFO Control Register */
-#define MA35_FCR_RFR		BIT(1)  /* RX Field Software Reset */
-#define MA35_FCR_TFR		BIT(2)  /* TX Field Software Reset */
-#define MA35_FCR_RFITL_MASK	GENMASK(7, 4) /* RX FIFO Interrupt Trigger Level */
+ 
+#define MA35_FCR_RFR		BIT(1)   
+#define MA35_FCR_TFR		BIT(2)   
+#define MA35_FCR_RFITL_MASK	GENMASK(7, 4)  
 #define MA35_FCR_RFITL_1BYTE	FIELD_PREP(MA35_FCR_RFITL_MASK, 0)
 #define MA35_FCR_RFITL_4BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 1)
 #define MA35_FCR_RFITL_8BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 2)
 #define MA35_FCR_RFITL_14BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 3)
 #define MA35_FCR_RFITL_30BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 4)
-#define MA35_FCR_RTSTL_MASK	GENMASK(19, 16) /* nRTS Trigger Level */
+#define MA35_FCR_RTSTL_MASK	GENMASK(19, 16)  
 #define MA35_FCR_RTSTL_1BYTE	FIELD_PREP(MA35_FCR_RTSTL_MASK, 0)
 #define MA35_FCR_RTSTL_4BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 1)
 #define MA35_FCR_RTSTL_8BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 2)
 #define MA35_FCR_RTSTL_14BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 3)
 #define MA35_FCR_RTSTLL_30BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 4)
 
-/* MA35_LCR_REG - Line Control Register */
-#define	MA35_LCR_NSB		BIT(2)  /* Number of “STOP Bit” */
-#define MA35_LCR_PBE		BIT(3)  /* Parity Bit Enable */
-#define MA35_LCR_EPE		BIT(4)  /* Even Parity Enable */
-#define MA35_LCR_SPE		BIT(5)  /* Stick Parity Enable */
-#define MA35_LCR_BREAK		BIT(6)  /* Break Control */
-#define MA35_LCR_WLS_MASK	GENMASK(1, 0) /* Word Length Selection */
+ 
+#define	MA35_LCR_NSB		BIT(2)   
+#define MA35_LCR_PBE		BIT(3)   
+#define MA35_LCR_EPE		BIT(4)   
+#define MA35_LCR_SPE		BIT(5)   
+#define MA35_LCR_BREAK		BIT(6)   
+#define MA35_LCR_WLS_MASK	GENMASK(1, 0)  
 #define MA35_LCR_WLS_5BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 0)
 #define MA35_LCR_WLS_6BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 1)
 #define MA35_LCR_WLS_7BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 2)
 #define MA35_LCR_WLS_8BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 3)
 
-/* MA35_MCR_REG - Modem Control Register */
-#define MA35_MCR_RTS_CTRL	BIT(1)  /* nRTS Signal Control */
-#define MA35_MCR_RTSACTLV	BIT(9)  /* nRTS Pin Active Level */
-#define MA35_MCR_RTSSTS		BIT(13) /* nRTS Pin Status (Read Only) */
+ 
+#define MA35_MCR_RTS_CTRL	BIT(1)   
+#define MA35_MCR_RTSACTLV	BIT(9)   
+#define MA35_MCR_RTSSTS		BIT(13)  
 
-/* MA35_MSR_REG - Modem Status Register */
-#define MA35_MSR_CTSDETF	BIT(0)  /* Detect nCTS State Change Flag */
-#define MA35_MSR_CTSSTS		BIT(4)  /* nCTS Pin Status (Read Only) */
-#define MA35_MSR_CTSACTLV	BIT(8)  /* nCTS Pin Active Level */
+ 
+#define MA35_MSR_CTSDETF	BIT(0)   
+#define MA35_MSR_CTSSTS		BIT(4)   
+#define MA35_MSR_CTSACTLV	BIT(8)   
 
-/* MA35_FSR_REG - FIFO Status Register */
-#define MA35_FSR_RX_OVER_IF	BIT(0)  /* RX Overflow Error Interrupt Flag */
-#define MA35_FSR_PEF		BIT(4)  /* Parity Error Flag*/
-#define MA35_FSR_FEF		BIT(5)  /* Framing Error Flag */
-#define MA35_FSR_BIF		BIT(6)  /* Break Interrupt Flag */
-#define MA35_FSR_RX_EMPTY	BIT(14) /* Receiver FIFO Empty (Read Only) */
-#define MA35_FSR_RX_FULL	BIT(15) /* Receiver FIFO Full (Read Only) */
-#define MA35_FSR_TX_EMPTY	BIT(22) /* Transmitter FIFO Empty (Read Only) */
-#define MA35_FSR_TX_FULL	BIT(23) /* Transmitter FIFO Full (Read Only) */
-#define MA35_FSR_TX_OVER_IF	BIT(24) /* TX Overflow Error Interrupt Flag */
-#define MA35_FSR_TE_FLAG	BIT(28) /* Transmitter Empty Flag (Read Only) */
-#define MA35_FSR_RXPTR_MSK	GENMASK(13, 8) /* TX FIFO Pointer mask */
-#define MA35_FSR_TXPTR_MSK	GENMASK(21, 16) /* RX FIFO Pointer mask */
+ 
+#define MA35_FSR_RX_OVER_IF	BIT(0)   
+#define MA35_FSR_PEF		BIT(4)   
+#define MA35_FSR_FEF		BIT(5)   
+#define MA35_FSR_BIF		BIT(6)   
+#define MA35_FSR_RX_EMPTY	BIT(14)  
+#define MA35_FSR_RX_FULL	BIT(15)  
+#define MA35_FSR_TX_EMPTY	BIT(22)  
+#define MA35_FSR_TX_FULL	BIT(23)  
+#define MA35_FSR_TX_OVER_IF	BIT(24)  
+#define MA35_FSR_TE_FLAG	BIT(28)  
+#define MA35_FSR_RXPTR_MSK	GENMASK(13, 8)  
+#define MA35_FSR_TXPTR_MSK	GENMASK(21, 16)  
 
-/* MA35_ISR_REG - Interrupt Status Register */
-#define MA35_ISR_RDA_IF		BIT(0)  /* RBR Available Interrupt Flag */
-#define MA35_ISR_THRE_IF	BIT(1)  /* THR Empty Interrupt Flag */
-#define MA35_ISR_RLSIF		BIT(2)  /* Receive Line Interrupt Flag */
-#define MA35_ISR_MODEMIF	BIT(3)  /* MODEM Interrupt Flag */
-#define MA35_ISR_RXTO_IF	BIT(4)  /* RX Time-out Interrupt Flag */
-#define MA35_ISR_BUFEIF		BIT(5)  /* Buffer Error Interrupt Flag */
-#define MA35_ISR_WK_IF		BIT(6)  /* UART Wake-up Interrupt Flag */
-#define MA35_ISR_RDAINT		BIT(8)  /* RBR Available Interrupt Indicator */
-#define MA35_ISR_THRE_INT	BIT(9)  /* THR Empty Interrupt Indicator */
+ 
+#define MA35_ISR_RDA_IF		BIT(0)   
+#define MA35_ISR_THRE_IF	BIT(1)   
+#define MA35_ISR_RLSIF		BIT(2)   
+#define MA35_ISR_MODEMIF	BIT(3)   
+#define MA35_ISR_RXTO_IF	BIT(4)   
+#define MA35_ISR_BUFEIF		BIT(5)   
+#define MA35_ISR_WK_IF		BIT(6)   
+#define MA35_ISR_RDAINT		BIT(8)   
+#define MA35_ISR_THRE_INT	BIT(9)   
 #define MA35_ISR_ALL		0xFFFFFFFF
 
-/* MA35_BAUD_REG - Baud Rate Divider Register */
+ 
 #define	MA35_BAUD_MODE_MASK	GENMASK(29, 28)
 #define MA35_BAUD_MODE0		FIELD_PREP(MA35_BAUD_MODE_MASK, 0)
 #define MA35_BAUD_MODE1		FIELD_PREP(MA35_BAUD_MODE_MASK, 2)
 #define MA35_BAUD_MODE2		FIELD_PREP(MA35_BAUD_MODE_MASK, 3)
 #define	MA35_BAUD_MASK		GENMASK(15, 0)
 
-/* MA35_ALTCTL_REG - Alternate Control/Status Register */
-#define MA35_ALTCTL_RS485AUD	BIT(10) /* RS-485 Auto Direction Function */
+ 
+#define MA35_ALTCTL_RS485AUD	BIT(10)  
 
-/* MA35_FUN_SEL_REG - Function Select Register */
+ 
 #define MA35_FUN_SEL_MASK	GENMASK(2, 0)
 #define MA35_FUN_SEL_UART	FIELD_PREP(MA35_FUN_SEL_MASK, 0)
 #define MA35_FUN_SEL_RS485	FIELD_PREP(MA35_FUN_SEL_MASK, 3)
 
-/* The constrain for MA35D1 UART baud rate divider */
+ 
 #define MA35_BAUD_DIV_MAX	0xFFFF
 #define MA35_BAUD_DIV_MIN	11
 
-/* UART FIFO depth */
+ 
 #define MA35_UART_FIFO_DEPTH	32
-/* UART console clock */
+ 
 #define MA35_UART_CONSOLE_CLK	(24 * HZ_PER_MHZ)
-/* UART register ioremap size */
+ 
 #define MA35_UART_REG_SIZE	0x100
-/* Rx Timeout */
+ 
 #define MA35_UART_RX_TOUT	0x40
 
 #define MA35_IER_CONFIG		(MA35_IER_RTO_IEN | MA35_IER_RDA_IEN | \
@@ -148,7 +145,7 @@ static struct uart_driver ma35d1serial_reg;
 struct uart_ma35d1_port {
 	struct uart_port port;
 	struct clk *clk;
-	u16 capabilities; /* port capabilities */
+	u16 capabilities;  
 	u8 ier;
 	u8 lcr;
 	u8 mcr;
@@ -380,10 +377,10 @@ static int ma35d1serial_startup(struct uart_port *port)
 	u32 fcr;
 	int retval;
 
-	/* Reset FIFO */
+	 
 	serial_out(up, MA35_FCR_REG, MA35_FCR_TFR | MA35_FCR_RFR);
 
-	/* Clear pending interrupts */
+	 
 	serial_out(up, MA35_ISR_REG, MA35_ISR_ALL);
 
 	retval = request_irq(port->irq, ma35d1serial_interrupt, 0,
@@ -434,13 +431,10 @@ static void ma35d1serial_set_termios(struct uart_port *port,
 				  port->uartclk / MA35_BAUD_DIV_MAX,
 				  port->uartclk / MA35_BAUD_DIV_MIN);
 
-	/* MA35D1 UART baud rate equation: baudrate = UART_CLK / (quot + 2) */
+	 
 	quot = (port->uartclk / baud) - 2;
 
-	/*
-	 * Ok, we're now changing the port state.  Do it with
-	 * interrupts disabled.
-	 */
+	 
 	spin_lock_irqsave(&up->port.lock, flags);
 
 	up->port.read_status_mask = MA35_FSR_RX_OVER_IF;
@@ -449,16 +443,13 @@ static void ma35d1serial_set_termios(struct uart_port *port,
 	if (termios->c_iflag & (BRKINT | PARMRK))
 		up->port.read_status_mask |= MA35_FSR_BIF;
 
-	/* Characteres to ignore */
+	 
 	up->port.ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		up->port.ignore_status_mask |= MA35_FSR_FEF | MA35_FSR_PEF;
 	if (termios->c_iflag & IGNBRK) {
 		up->port.ignore_status_mask |= MA35_FSR_BIF;
-		/*
-		 * If we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			up->port.ignore_status_mask |= MA35_FSR_RX_OVER_IF;
 	}
@@ -485,11 +476,7 @@ static const char *ma35d1serial_type(struct uart_port *port)
 
 static void ma35d1serial_config_port(struct uart_port *port, int flags)
 {
-	/*
-	 * Driver core for serial ports forces a non-zero value for port type.
-	 * Write an arbitrary value here to accommodate the serial core driver,
-	 * as ID part of UAPI is redundant.
-	 */
+	 
 	port->type = 1;
 }
 
@@ -544,12 +531,7 @@ static void ma35d1serial_console_putchar(struct uart_port *port, unsigned char c
 	serial_out(up, MA35_THR_REG, ch);
 }
 
-/*
- *  Print a string to the serial port trying not to disturb
- *  any possible real use of the port...
- *
- *  The console_lock must be held when we get here.
- */
+ 
 static void ma35d1serial_console_write(struct console *co, const char *s, u32 count)
 {
 	struct uart_ma35d1_port *up;
@@ -572,9 +554,7 @@ static void ma35d1serial_console_write(struct console *co, const char *s, u32 co
 	else
 		spin_lock_irqsave(&up->port.lock, flags);
 
-	/*
-	 *  First save the IER then disable the interrupts
-	 */
+	 
 	ier = serial_in(up, MA35_IER_REG);
 	serial_out(up, MA35_IER_REG, 0);
 
@@ -677,11 +657,7 @@ static struct uart_driver ma35d1serial_reg = {
 	.nr           = MA35_UART_NR,
 };
 
-/*
- * Register a set of serial devices attached to a platform device.
- * The list is terminated with a zero flags entry, which means we expect
- * all entries to have at least UPF_BOOT_AUTOCONF set.
- */
+ 
 static int ma35d1serial_probe(struct platform_device *pdev)
 {
 	struct resource *res_mem;
@@ -748,9 +724,7 @@ err_iounmap:
 	return ret;
 }
 
-/*
- * Remove serial ports registered against a platform device.
- */
+ 
 static int ma35d1serial_remove(struct platform_device *dev)
 {
 	struct uart_port *port = platform_get_drvdata(dev);

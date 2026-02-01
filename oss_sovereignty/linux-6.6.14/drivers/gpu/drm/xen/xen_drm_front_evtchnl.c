@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- *  Xen para-virtual DRM device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/irq.h>
@@ -35,7 +29,7 @@ static irqreturn_t evtchnl_interrupt_ctrl(int irq, void *dev_id)
 
 again:
 	rp = evtchnl->u.req.ring.sring->rsp_prod;
-	/* ensure we see queued responses up to rp */
+	 
 	virt_rmb();
 
 	for (i = evtchnl->u.req.ring.rsp_cons; i != rp; i++) {
@@ -92,7 +86,7 @@ static irqreturn_t evtchnl_interrupt_evt(int irq, void *dev_id)
 	spin_lock_irqsave(&front_info->io_lock, flags);
 
 	prod = page->in_prod;
-	/* ensure we see ring contents up to prod */
+	 
 	virt_rmb();
 	if (prod == page->in_cons)
 		goto out;
@@ -112,7 +106,7 @@ static irqreturn_t evtchnl_interrupt_evt(int irq, void *dev_id)
 		}
 	}
 	page->in_cons = cons;
-	/* ensure ring contents */
+	 
 	virt_wmb();
 
 out:
@@ -135,7 +129,7 @@ static void evtchnl_free(struct xen_drm_front_info *front_info,
 	evtchnl->state = EVTCHNL_STATE_DISCONNECTED;
 
 	if (evtchnl->type == EVTCHNL_TYPE_REQ) {
-		/* release all who still waits for response if any */
+		 
 		evtchnl->u.req.resp_status = -EIO;
 		complete_all(&evtchnl->u.req.completion);
 	}
@@ -146,7 +140,7 @@ static void evtchnl_free(struct xen_drm_front_info *front_info,
 	if (evtchnl->port)
 		xenbus_free_evtchn(front_info->xb_dev, evtchnl->port);
 
-	/* end access and free the page */
+	 
 	xenbus_teardown_ring(&page, 1, &evtchnl->gref);
 
 	memset(evtchnl, 0, sizeof(*evtchnl));
@@ -253,14 +247,14 @@ static int evtchnl_publish(struct xenbus_transaction xbt,
 	struct xenbus_device *xb_dev = evtchnl->front_info->xb_dev;
 	int ret;
 
-	/* write control channel ring reference */
+	 
 	ret = xenbus_printf(xbt, path, node_ring, "%u", evtchnl->gref);
 	if (ret < 0) {
 		xenbus_dev_error(xb_dev, ret, "writing ring-ref");
 		return ret;
 	}
 
-	/* write event channel ring reference */
+	 
 	ret = xenbus_printf(xbt, path, node_chnl, "%u", evtchnl->port);
 	if (ret < 0) {
 		xenbus_dev_error(xb_dev, ret, "writing event channel");

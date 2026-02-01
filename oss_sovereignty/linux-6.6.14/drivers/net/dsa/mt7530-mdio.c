@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/mdio.h>
@@ -27,7 +27,7 @@ mt7530_regmap_write(void *context, unsigned int reg, unsigned int val)
 	lo = val & 0xffff;
 	hi = val >> 16;
 
-	/* MT7530 uses 31 as the pseudo port */
+	 
 	ret = bus->write(bus, 0x1f, 0x1f, page);
 	if (ret < 0)
 		return ret;
@@ -50,7 +50,7 @@ mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val)
 	page = (reg >> 6) & 0x3ff;
 	r = (reg >> 2) & 0xf;
 
-	/* MT7530 uses 31 as the pseudo port */
+	 
 	ret = bus->write(bus, 0x1f, 0x1f, page);
 	if (ret < 0)
 		return ret;
@@ -88,9 +88,7 @@ mt7531_create_sgmii(struct mt7530_priv *priv, bool dual_sgmii)
 	struct regmap *regmap;
 	int i, ret = 0;
 
-	/* MT7531AE has two SGMII units for port 5 and port 6
-	 * MT7531BE has only one SGMII unit for port 6
-	 */
+	 
 	for (i = dual_sgmii ? 0 : 1; i < 2; i++) {
 		mt7531_pcs_config[i] = devm_kzalloc(priv->dev,
 						    sizeof(struct regmap_config),
@@ -136,7 +134,7 @@ static const struct of_device_id mt7530_of_match[] = {
 	{ .compatible = "mediatek,mt7621", .data = &mt753x_table[ID_MT7621], },
 	{ .compatible = "mediatek,mt7530", .data = &mt753x_table[ID_MT7530], },
 	{ .compatible = "mediatek,mt7531", .data = &mt753x_table[ID_MT7531], },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mt7530_of_match);
 
@@ -161,13 +159,7 @@ mt7530_probe(struct mdio_device *mdiodev)
 	if (ret)
 		return ret;
 
-	/* Use medatek,mcm property to distinguish hardware type that would
-	 * cause a little bit differences on power-on sequence.
-	 * Not MCM that indicates switch works as the remote standalone
-	 * integrated circuit so the GPIO pin would be used to complete
-	 * the reset, otherwise memory-mapped register accessing used
-	 * through syscon provides in the case of MCM.
-	 */
+	 
 	priv->mcm = of_property_read_bool(dn, "mediatek,mcm");
 	if (priv->mcm) {
 		dev_info(&mdiodev->dev, "MT7530 adapts as multi-chip module\n");

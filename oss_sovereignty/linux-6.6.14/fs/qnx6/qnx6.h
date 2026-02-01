@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * QNX6 file system, Linux implementation.
- *
- * Version : 1.0.0
- *
- * History :
- *
- * 01-02-2012 by Kai Bankett (chaosman@ontika.net) : first release.
- * 16-02-2012 page map extension by Al Viro
- *
- */
+ 
+ 
 
 #ifdef pr_fmt
 #undef pr_fmt
@@ -27,12 +17,12 @@ typedef __u64 __bitwise __fs64;
 #include <linux/qnx6_fs.h>
 
 struct qnx6_sb_info {
-	struct buffer_head	*sb_buf;	/* superblock buffer */
-	struct qnx6_super_block	*sb;		/* our superblock */
-	int			s_blks_off;	/* blkoffset fs-startpoint */
-	int			s_ptrbits;	/* indirect pointer bitfield */
-	unsigned long		s_mount_opt;	/* all mount options */
-	int			s_bytesex;	/* holds endianess info */
+	struct buffer_head	*sb_buf;	 
+	struct qnx6_super_block	*sb;		 
+	int			s_blks_off;	 
+	int			s_ptrbits;	 
+	unsigned long		s_mount_opt;	 
+	int			s_bytesex;	 
 	struct inode *		inodes;
 	struct inode *		longfile;
 };

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012 Bryan Schumaker <bjschuma@netapp.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mount.h>
@@ -54,21 +52,17 @@ static int nfs4_write_inode(struct inode *inode, struct writeback_control *wbc)
 	return ret;
 }
 
-/*
- * Clean out any remaining NFSv4 state that might be left over due
- * to open() calls that passed nfs_atomic_lookup, but failed to call
- * nfs_open().
- */
+ 
 static void nfs4_evict_inode(struct inode *inode)
 {
 	truncate_inode_pages_final(&inode->i_data);
 	clear_inode(inode);
-	/* If we are holding a delegation, return and free it */
+	 
 	nfs_inode_evict_delegation(inode);
-	/* Note that above delegreturn would trigger pnfs return-on-close */
+	 
 	pnfs_return_layout(inode);
 	pnfs_destroy_layout_final(NFS_I(inode));
-	/* First call standard NFS clear_inode() code */
+	 
 	nfs_clear_inode(inode);
 	nfs4_xattr_cache_zap(inode);
 }
@@ -171,7 +165,7 @@ static int do_nfs4_mount(struct nfs_server *server,
 	root_ctx = nfs_fc2context(root_fc);
 	root_ctx->internal = true;
 	root_ctx->server = server;
-	/* We leave export_path unset as it's not used to find the root. */
+	 
 
 	len = strlen(hostname) + 5;
 	param.string = kmalloc(len, GFP_KERNEL);
@@ -180,7 +174,7 @@ static int do_nfs4_mount(struct nfs_server *server,
 		return -ENOMEM;
 	}
 
-	/* Does hostname needs to be enclosed in brackets? */
+	 
 	if (strchr(hostname, ':'))
 		param.size = snprintf(param.string, len, "[%s]:/", hostname);
 	else
@@ -220,9 +214,7 @@ int nfs4_try_get_tree(struct fs_context *fc)
 
 	dfprintk(MOUNT, "--> nfs4_try_get_tree()\n");
 
-	/* We create a mount for the server's root, walk to the requested
-	 * location and then create another mount for that.
-	 */
+	 
 	err= do_nfs4_mount(nfs4_create_server(fc),
 			   fc, ctx->nfs_server.hostname,
 			   ctx->nfs_server.export_path);
@@ -235,9 +227,7 @@ int nfs4_try_get_tree(struct fs_context *fc)
 	return err;
 }
 
-/*
- * Create an NFS4 server record on referral traversal
- */
+ 
 int nfs4_get_referral_tree(struct fs_context *fc)
 {
 	struct nfs_fs_context *ctx = nfs_fc2context(fc);
@@ -245,7 +235,7 @@ int nfs4_get_referral_tree(struct fs_context *fc)
 
 	dprintk("--> nfs4_referral_mount()\n");
 
-	/* create a new volume representation */
+	 
 	err = do_nfs4_mount(nfs4_create_referral_server(fc),
 			    fc, ctx->nfs_server.hostname,
 			    ctx->nfs_server.export_path);
@@ -295,7 +285,7 @@ out:
 
 static void __exit exit_nfs_v4(void)
 {
-	/* Not called in the _init(), conditionally loaded */
+	 
 	nfs4_pnfs_v3_ds_connect_unload();
 
 	unregister_nfs_version(&nfs_v4);

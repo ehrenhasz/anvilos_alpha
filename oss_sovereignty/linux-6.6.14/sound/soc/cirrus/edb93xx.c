@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SoC audio for EDB93xx
- *
- * Copyright (c) 2010 Alexander Sverdlin <subaparts@yandex.ru>
- *
- * This driver support CS4271 codec being master or slave, working
- * in control port mode, connected either via SPI or I2C.
- * The data format accepted is I2S or left-justified.
- * DAPM support not implemented.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
@@ -29,10 +20,7 @@ static int edb93xx_hw_params(struct snd_pcm_substream *substream,
 	unsigned int mclk_rate;
 	unsigned int rate = params_rate(params);
 
-	/*
-	 * According to CS4271 datasheet we use MCLK/LRCK=256 for
-	 * rates below 50kHz and 128 for higher sample rates
-	 */
+	 
 	if (rate < 50000)
 		mclk_rate = rate * 64 * 4;
 	else

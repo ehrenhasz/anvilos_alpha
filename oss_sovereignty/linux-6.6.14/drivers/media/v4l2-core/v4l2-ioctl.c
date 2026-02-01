@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Video capture interface for Linux version 2
- *
- * A generic framework to process V4L2 ioctl commands.
- *
- * Authors:	Alan Cox, <alan@lxorguk.ukuu.org.uk> (version 1)
- *              Mauro Carvalho Chehab <mchehab@kernel.org> (version 2)
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/mm.h>
@@ -19,7 +12,7 @@
 #include <linux/v4l2-subdev.h>
 #include <linux/videodev2.h>
 
-#include <media/media-device.h> /* for media_set_bus_info() */
+#include <media/media-device.h>  
 #include <media/v4l2-common.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
@@ -73,17 +66,13 @@ static const struct std_descr standards[] = {
 	{ 0,			"Unknown"   }
 };
 
-/* video4linux standard ID conversion to standard name
- */
+ 
 const char *v4l2_norm_to_name(v4l2_std_id id)
 {
 	u32 myid = id;
 	int i;
 
-	/* HACK: ppc32 architecture doesn't have __ucmpdi2 function to handle
-	   64 bit comparisons. So, on that architecture, with some gcc
-	   variants, compilation fails. Currently, the max value is 30bit wide.
-	 */
+	 
 	BUG_ON(myid != id);
 
 	for (i = 0; standards[i].std; i++)
@@ -93,7 +82,7 @@ const char *v4l2_norm_to_name(v4l2_std_id id)
 }
 EXPORT_SYMBOL(v4l2_norm_to_name);
 
-/* Returns frame period for the given standard */
+ 
 void v4l2_video_std_frame_period(int id, struct v4l2_fract *frameperiod)
 {
 	if (id & V4L2_STD_525_60) {
@@ -106,8 +95,7 @@ void v4l2_video_std_frame_period(int id, struct v4l2_fract *frameperiod)
 }
 EXPORT_SYMBOL(v4l2_video_std_frame_period);
 
-/* Fill in the fields of a v4l2_standard structure according to the
-   'id' and 'transmission' parameters.  Returns negative on error.  */
+ 
 int v4l2_video_std_construct(struct v4l2_standard *vs,
 			     int id, const char *name)
 {
@@ -119,23 +107,20 @@ int v4l2_video_std_construct(struct v4l2_standard *vs,
 }
 EXPORT_SYMBOL(v4l2_video_std_construct);
 
-/* Fill in the fields of a v4l2_standard structure according to the
- * 'id' and 'vs->index' parameters. Returns negative on error. */
+ 
 int v4l_video_std_enumstd(struct v4l2_standard *vs, v4l2_std_id id)
 {
 	v4l2_std_id curr_id = 0;
 	unsigned int index = vs->index, i, j = 0;
 	const char *descr = "";
 
-	/* Return -ENODATA if the id for the current input
-	   or output is 0, meaning that it doesn't support this API. */
+	 
 	if (id == 0)
 		return -ENODATA;
 
-	/* Return norm array in a canonical way */
+	 
 	for (i = 0; i <= index && id; i++) {
-		/* last std value in the standards array is 0, so this
-		   while always ends there since (id & 0) == 0. */
+		 
 		while ((id & standards[j].std) != standards[j].std)
 			j++;
 		curr_id = standards[j].std;
@@ -155,8 +140,8 @@ int v4l_video_std_enumstd(struct v4l2_standard *vs, v4l2_std_id id)
 	return 0;
 }
 
-/* ----------------------------------------------------------------- */
-/* some arrays for pretty-printing debug messages of enum types      */
+ 
+ 
 
 const char *v4l2_field_names[] = {
 	[V4L2_FIELD_ANY]        = "any",
@@ -200,8 +185,8 @@ static const char *v4l2_memory_names[] = {
 
 #define prt_names(a, arr) (((unsigned)(a)) < ARRAY_SIZE(arr) ? arr[a] : "unknown")
 
-/* ------------------------------------------------------------------ */
-/* debug help functions                                               */
+ 
+ 
 
 static void v4l_print_querycap(const void *arg, bool write_only)
 {
@@ -867,24 +852,19 @@ static bool check_ext_ctrls(struct v4l2_ext_controls *c, unsigned long ioctl)
 {
 	__u32 i;
 
-	/* zero the reserved fields */
+	 
 	c->reserved[0] = 0;
 	for (i = 0; i < c->count; i++)
 		c->controls[i].reserved2[0] = 0;
 
 	switch (c->which) {
 	case V4L2_CID_PRIVATE_BASE:
-		/*
-		 * V4L2_CID_PRIVATE_BASE cannot be used as control class
-		 * when using extended controls.
-		 * Only when passed in through VIDIOC_G_CTRL and VIDIOC_S_CTRL
-		 * is it allowed for backwards compatibility.
-		 */
+		 
 		if (ioctl == VIDIOC_G_CTRL || ioctl == VIDIOC_S_CTRL)
 			return false;
 		break;
 	case V4L2_CTRL_WHICH_DEF_VAL:
-		/* Default value cannot be changed */
+		 
 		if (ioctl == VIDIOC_S_EXT_CTRLS ||
 		    ioctl == VIDIOC_TRY_EXT_CTRLS) {
 			c->error_idx = c->count;
@@ -898,7 +878,7 @@ static bool check_ext_ctrls(struct v4l2_ext_controls *c, unsigned long ioctl)
 		return false;
 	}
 
-	/* Check that all controls are from the same control class. */
+	 
 	for (i = 0; i < c->count; i++) {
 		if (V4L2_CTRL_ID2WHICH(c->controls[i].id) != c->which) {
 			c->error_idx = ioctl == VIDIOC_TRY_EXT_CTRLS ? i :
@@ -1027,21 +1007,13 @@ static void v4l_sanitize_format(struct v4l2_format *fmt)
 {
 	unsigned int offset;
 
-	/* Make sure num_planes is not bogus */
+	 
 	if (fmt->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE ||
 	    fmt->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
 		fmt->fmt.pix_mp.num_planes = min_t(u32, fmt->fmt.pix_mp.num_planes,
 					       VIDEO_MAX_PLANES);
 
-	/*
-	 * The v4l2_pix_format structure has been extended with fields that were
-	 * not previously required to be set to zero by applications. The priv
-	 * field, when set to a magic value, indicates that the extended fields
-	 * are valid. Otherwise they will contain undefined values. To simplify
-	 * the API towards drivers zero the extended fields and set the priv
-	 * field to the magic value when the extended pixel format structure
-	 * isn't used by applications.
-	 */
+	 
 	if (fmt->type == V4L2_BUF_TYPE_VIDEO_CAPTURE ||
 	    fmt->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) {
 		if (fmt->fmt.pix.priv != V4L2_PIX_FMT_PRIV_MAGIC) {
@@ -1054,7 +1026,7 @@ static void v4l_sanitize_format(struct v4l2_format *fmt)
 		}
 	}
 
-	/* Replace invalid colorspace values with defaults. */
+	 
 	if (fmt->type == V4L2_BUF_TYPE_VIDEO_CAPTURE ||
 	    fmt->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) {
 		v4l_sanitize_colorspace(fmt->fmt.pix.pixelformat,
@@ -1094,15 +1066,9 @@ static int v4l_querycap(const struct v4l2_ioctl_ops *ops,
 
 	ret = ops->vidioc_querycap(file, fh, cap);
 
-	/*
-	 * Drivers must not change device_caps, so check for this and
-	 * warn if this happened.
-	 */
+	 
 	WARN_ON(cap->device_caps != vfd->device_caps);
-	/*
-	 * Check that capabilities is a superset of
-	 * vfd->device_caps | V4L2_CAP_DEVICE_CAPS
-	 */
+	 
 	WARN_ON((cap->capabilities &
 		 (vfd->device_caps | V4L2_CAP_DEVICE_CAPS)) !=
 		(vfd->device_caps | V4L2_CAP_DEVICE_CAPS));
@@ -1196,12 +1162,7 @@ static int v4l_enuminput(const struct v4l2_ioctl_ops *ops,
 	struct video_device *vfd = video_devdata(file);
 	struct v4l2_input *p = arg;
 
-	/*
-	 * We set the flags for CAP_DV_TIMINGS &
-	 * CAP_STD here based on ioctl handler provided by the
-	 * driver. If the driver doesn't support these
-	 * for a specific input, it must override these flags.
-	 */
+	 
 	if (is_valid_ioctl(vfd, VIDIOC_S_STD))
 		p->capabilities |= V4L2_IN_CAP_STD;
 
@@ -1222,12 +1183,7 @@ static int v4l_enumoutput(const struct v4l2_ioctl_ops *ops,
 	struct video_device *vfd = video_devdata(file);
 	struct v4l2_output *p = arg;
 
-	/*
-	 * We set the flags for CAP_DV_TIMINGS &
-	 * CAP_STD here based on ioctl handler provided by the
-	 * driver. If the driver doesn't support these
-	 * for a specific output, it must override these flags.
-	 */
+	 
 	if (is_valid_ioctl(vfd, VIDIOC_S_STD))
 		p->capabilities |= V4L2_OUT_CAP_STD;
 
@@ -1248,16 +1204,9 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
 	const char *descr = NULL;
 	u32 flags = 0;
 
-	/*
-	 * We depart from the normal coding style here since the descriptions
-	 * should be aligned so it is easy to see which descriptions will be
-	 * longer than 31 characters (the max length for a description).
-	 * And frankly, this is easier to read anyway.
-	 *
-	 * Note that gcc will use O(log N) comparisons to find the right case.
-	 */
+	 
 	switch (fmt->pixelformat) {
-	/* Max description length mask:	descr = "0123456789012345678901234567890" */
+	 
 	case V4L2_PIX_FMT_RGB332:	descr = "8-bit RGB 3-3-2"; break;
 	case V4L2_PIX_FMT_RGB444:	descr = "16-bit A/XRGB 4-4-4-4"; break;
 	case V4L2_PIX_FMT_ARGB444:	descr = "16-bit ARGB 4-4-4-4"; break;
@@ -1454,10 +1403,10 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
 	case V4L2_PIX_FMT_Y216:		descr = "16-bit YUYV Packed"; break;
 
 	default:
-		/* Compressed formats */
+		 
 		flags = V4L2_FMT_FLAG_COMPRESSED;
 		switch (fmt->pixelformat) {
-		/* Max description length mask:	descr = "0123456789012345678901234567890" */
+		 
 		case V4L2_PIX_FMT_MJPEG:	descr = "Motion-JPEG"; break;
 		case V4L2_PIX_FMT_JPEG:		descr = "JFIF JPEG"; break;
 		case V4L2_PIX_FMT_DV:		descr = "1394"; break;
@@ -1478,10 +1427,10 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
 		case V4L2_PIX_FMT_VP8_FRAME:    descr = "VP8 Frame"; break;
 		case V4L2_PIX_FMT_VP9:		descr = "VP9"; break;
 		case V4L2_PIX_FMT_VP9_FRAME:    descr = "VP9 Frame"; break;
-		case V4L2_PIX_FMT_HEVC:		descr = "HEVC"; break; /* aka H.265 */
+		case V4L2_PIX_FMT_HEVC:		descr = "HEVC"; break;  
 		case V4L2_PIX_FMT_HEVC_SLICE:	descr = "HEVC Parsed Slice Data"; break;
-		case V4L2_PIX_FMT_FWHT:		descr = "FWHT"; break; /* used in vicodec */
-		case V4L2_PIX_FMT_FWHT_STATELESS:	descr = "FWHT Stateless"; break; /* used in vicodec */
+		case V4L2_PIX_FMT_FWHT:		descr = "FWHT"; break;  
+		case V4L2_PIX_FMT_FWHT_STATELESS:	descr = "FWHT Stateless"; break;  
 		case V4L2_PIX_FMT_SPK:		descr = "Sorenson Spark"; break;
 		case V4L2_PIX_FMT_RV30:		descr = "RealVideo 8"; break;
 		case V4L2_PIX_FMT_RV40:		descr = "RealVideo 9 & 10"; break;
@@ -1604,10 +1553,7 @@ static int v4l_enum_fmt(const struct v4l2_ioctl_ops *ops,
 
 static void v4l_pix_format_touch(struct v4l2_pix_format *p)
 {
-	/*
-	 * The v4l2_pix_format structure contains fields that make no sense for
-	 * touch. Set them to default values in this case.
-	 */
+	 
 
 	p->field = V4L2_FIELD_NONE;
 	p->colorspace = V4L2_COLORSPACE_RAW;
@@ -1635,7 +1581,7 @@ static int v4l_g_fmt(const struct v4l2_ioctl_ops *ops,
 			break;
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		ret = ops->vidioc_g_fmt_vid_cap(file, fh, arg);
-		/* just in case the driver zeroed it again */
+		 
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		if (vfd->vfl_type == VFL_TYPE_TOUCH)
 			v4l_pix_format_touch(&p->fmt.pix);
@@ -1653,7 +1599,7 @@ static int v4l_g_fmt(const struct v4l2_ioctl_ops *ops,
 			break;
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		ret = ops->vidioc_g_fmt_vid_out(file, fh, arg);
-		/* just in case the driver zeroed it again */
+		 
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		return ret;
 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
@@ -1698,7 +1644,7 @@ static int v4l_s_fmt(const struct v4l2_ioctl_ops *ops,
 			break;
 		memset_after(p, 0, fmt.pix);
 		ret = ops->vidioc_s_fmt_vid_cap(file, fh, arg);
-		/* just in case the driver zeroed it again */
+		 
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		if (vfd->vfl_type == VFL_TYPE_TOUCH)
 			v4l_pix_format_touch(&p->fmt.pix);
@@ -1734,7 +1680,7 @@ static int v4l_s_fmt(const struct v4l2_ioctl_ops *ops,
 			break;
 		memset_after(p, 0, fmt.pix);
 		ret = ops->vidioc_s_fmt_vid_out(file, fh, arg);
-		/* just in case the driver zeroed it again */
+		 
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		return ret;
 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
@@ -1806,7 +1752,7 @@ static int v4l_try_fmt(const struct v4l2_ioctl_ops *ops,
 			break;
 		memset_after(p, 0, fmt.pix);
 		ret = ops->vidioc_try_fmt_vid_cap(file, fh, arg);
-		/* just in case the driver zeroed it again */
+		 
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		if (vfd->vfl_type == VFL_TYPE_TOUCH)
 			v4l_pix_format_touch(&p->fmt.pix);
@@ -1842,7 +1788,7 @@ static int v4l_try_fmt(const struct v4l2_ioctl_ops *ops,
 			break;
 		memset_after(p, 0, fmt.pix);
 		ret = ops->vidioc_try_fmt_vid_out(file, fh, arg);
-		/* just in case the driver zeroed it again */
+		 
 		p->fmt.pix.priv = V4L2_PIX_FMT_PRIV_MAGIC;
 		return ret;
 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
@@ -2022,10 +1968,10 @@ static int v4l_s_std(const struct v4l2_ioctl_ops *ops,
 	if (ret)
 		return ret;
 	norm = id & vfd->tvnorms;
-	if (vfd->tvnorms && !norm)	/* Check if std is supported */
+	if (vfd->tvnorms && !norm)	 
 		return -EINVAL;
 
-	/* Calls the specific handler */
+	 
 	return ops->vidioc_s_std(file, fh, norm);
 }
 
@@ -2039,14 +1985,7 @@ static int v4l_querystd(const struct v4l2_ioctl_ops *ops,
 	ret = v4l_enable_media_source(vfd);
 	if (ret)
 		return ret;
-	/*
-	 * If no signal is detected, then the driver should return
-	 * V4L2_STD_UNKNOWN. Otherwise it should return tvnorms with
-	 * any standards that do not apply removed.
-	 *
-	 * This means that tuners, audio and video decoders can join
-	 * their efforts to improve the standards detection.
-	 */
+	 
 	*p = vfd->tvnorms;
 	return ops->vidioc_querystd(file, fh, arg);
 }
@@ -2062,7 +2001,7 @@ static int v4l_s_hw_freq_seek(const struct v4l2_ioctl_ops *ops,
 	ret = v4l_enable_media_source(vfd);
 	if (ret)
 		return ret;
-	/* s_hw_freq_seek is not supported for SDR for now */
+	 
 	if (vfd->vfl_type == VFL_TYPE_SDR)
 		return -EINVAL;
 
@@ -2192,7 +2131,7 @@ static int v4l_s_parm(const struct v4l2_ioctl_ops *ops,
 	if (ret)
 		return ret;
 
-	/* Note: extendedmode is never used in drivers */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(p->type)) {
 		memset(p->parm.output.reserved, 0,
 		       sizeof(p->parm.output.reserved));
@@ -2387,15 +2326,7 @@ static int v4l_try_ext_ctrls(const struct v4l2_ioctl_ops *ops,
 			ops->vidioc_try_ext_ctrls(file, fh, p) : -EINVAL;
 }
 
-/*
- * The selection API specified originally that the _MPLANE buffer types
- * shouldn't be used. The reasons for this are lost in the mists of time
- * (or just really crappy memories). Regardless, this is really annoying
- * for userspace. So to keep things simple we map _MPLANE buffer types
- * to their 'regular' counterparts before calling the driver. And we
- * restore it afterwards. This way applications can use either buffer
- * type and drivers don't need to check for both.
- */
+ 
 static int v4l_g_selection(const struct v4l2_ioctl_ops *ops,
 			   struct file *file, void *fh, void *arg)
 {
@@ -2438,9 +2369,9 @@ static int v4l_g_crop(const struct v4l2_ioctl_ops *ops,
 	};
 	int ret;
 
-	/* simulate capture crop using selection api */
+	 
 
-	/* crop means compose for output devices */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(p->type))
 		s.target = V4L2_SEL_TGT_COMPOSE;
 	else
@@ -2452,7 +2383,7 @@ static int v4l_g_crop(const struct v4l2_ioctl_ops *ops,
 
 	ret = v4l_g_selection(ops, file, fh, &s);
 
-	/* copying results to old structure on success */
+	 
 	if (!ret)
 		p->c = s.r;
 	return ret;
@@ -2468,9 +2399,9 @@ static int v4l_s_crop(const struct v4l2_ioctl_ops *ops,
 		.r = p->c,
 	};
 
-	/* simulate capture crop using selection api */
+	 
 
-	/* crop means compose for output devices */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(p->type))
 		s.target = V4L2_SEL_TGT_COMPOSE;
 	else
@@ -2491,7 +2422,7 @@ static int v4l_cropcap(const struct v4l2_ioctl_ops *ops,
 	struct v4l2_selection s = { .type = p->type };
 	int ret = 0;
 
-	/* setting trivial pixelaspect */
+	 
 	p->pixelaspect.numerator = 1;
 	p->pixelaspect.denominator = 1;
 
@@ -2500,10 +2431,7 @@ static int v4l_cropcap(const struct v4l2_ioctl_ops *ops,
 	else if (s.type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
 		s.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 
-	/*
-	 * The determine_valid_ioctls() call already should ensure
-	 * that this can never happen, but just in case...
-	 */
+	 
 	if (WARN_ON(!ops->vidioc_g_selection))
 		return -ENOTTY;
 
@@ -2511,16 +2439,13 @@ static int v4l_cropcap(const struct v4l2_ioctl_ops *ops,
 		ret = ops->vidioc_g_pixelaspect(file, fh, s.type,
 						&p->pixelaspect);
 
-	/*
-	 * Ignore ENOTTY or ENOIOCTLCMD error returns, just use the
-	 * square pixel aspect ratio in that case.
-	 */
+	 
 	if (ret && ret != -ENOTTY && ret != -ENOIOCTLCMD)
 		return ret;
 
-	/* Use g_selection() to fill in the bounds and defrect rectangles */
+	 
 
-	/* obtaining bounds */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(p->type))
 		s.target = V4L2_SEL_TGT_COMPOSE_BOUNDS;
 	else
@@ -2535,7 +2460,7 @@ static int v4l_cropcap(const struct v4l2_ioctl_ops *ops,
 		return ret;
 	p->bounds = s.r;
 
-	/* obtaining defrect */
+	 
 	if (s.target == V4L2_SEL_TGT_COMPOSE_BOUNDS)
 		s.target = V4L2_SEL_TGT_COMPOSE_DEFAULT;
 	else
@@ -2691,7 +2616,7 @@ static int v4l_g_sliced_vbi_cap(const struct v4l2_ioctl_ops *ops,
 	if (ret)
 		return ret;
 
-	/* Clear up to type, everything after type is zeroed already */
+	 
 	memset(p, 0, offsetof(struct v4l2_sliced_vbi_cap, type));
 
 	return ops->vidioc_g_sliced_vbi_cap(file, fh, p);
@@ -2769,15 +2694,15 @@ struct v4l2_ioctl_info {
 	void (*debug)(const void *arg, bool write_only);
 };
 
-/* This control needs a priority check */
+ 
 #define INFO_FL_PRIO		(1 << 0)
-/* This control can be valid if the filehandle passes a control handler. */
+ 
 #define INFO_FL_CTRL		(1 << 1)
-/* Queuing ioctl */
+ 
 #define INFO_FL_QUEUE		(1 << 2)
-/* Always copy back result, even on error */
+ 
 #define INFO_FL_ALWAYS_COPY	(1 << 3)
-/* Zero struct from after the field to the end */
+ 
 #define INFO_FL_CLEAR(v4l2_struct, field)			\
 	((offsetof(struct v4l2_struct, field) +			\
 	  sizeof_field(struct v4l2_struct, field)) << 16)
@@ -2936,8 +2861,7 @@ static struct mutex *v4l2_ioctl_get_lock(struct video_device *vdev,
 	return vdev->lock;
 }
 
-/* Common ioctl debug function. This function can be used by
-   external ioctl messages as well as internal V4L ioctl */
+ 
 void v4l_printk_ioctl(const char *prefix, unsigned int cmd)
 {
 	const char *dir, *type;
@@ -2978,7 +2902,7 @@ static long __video_do_ioctl(struct file *file,
 {
 	struct video_device *vfd = video_devdata(file);
 	struct mutex *req_queue_lock = NULL;
-	struct mutex *lock; /* ioctl serialization mutex */
+	struct mutex *lock;  
 	const struct v4l2_ioctl_ops *ops = vfd->ioctl_ops;
 	bool write_only = false;
 	struct v4l2_ioctl_info default_info;
@@ -2997,12 +2921,7 @@ static long __video_do_ioctl(struct file *file,
 	if (test_bit(V4L2_FL_USES_V4L2_FH, &vfd->flags))
 		vfh = file->private_data;
 
-	/*
-	 * We need to serialize streamon/off with queueing new requests.
-	 * These ioctls may trigger the cancellation of a streaming
-	 * operation, and that should not be mixed with queueing a new
-	 * request at the same time.
-	 */
+	 
 	if (v4l2_device_supports_requests(vfd->v4l2_dev) &&
 	    (cmd == VIDIOC_STREAMON || cmd == VIDIOC_STREAMOFF)) {
 		req_queue_lock = &vfd->v4l2_dev->mdev->req_queue_mutex;
@@ -3191,18 +3110,12 @@ static int video_get_user(void __user *arg, void *parg,
 	int err = 0;
 
 	if (!(_IOC_DIR(cmd) & _IOC_WRITE)) {
-		/* read-only ioctl */
+		 
 		memset(parg, 0, n);
 		return 0;
 	}
 
-	/*
-	 * In some cases, only a few fields are used as input,
-	 * i.e. when the app sets "index" and then the driver
-	 * fills in the rest of the structure for the thing
-	 * with that index.  We only need to copy up the first
-	 * non-input field.
-	 */
+	 
 	if (v4l2_is_known_ioctl(real_cmd)) {
 		u32 flags = v4l2_ioctls[_IOC_NR(real_cmd)].flags;
 
@@ -3252,7 +3165,7 @@ static int video_get_user(void __user *arg, void *parg,
 #endif
 	}
 
-	/* zero out anything we don't copy from userspace */
+	 
 	if (!err && n < _IOC_SIZE(real_cmd))
 		memset((u8 *)parg + n, 0, _IOC_SIZE(real_cmd) - n);
 	return err;
@@ -3265,7 +3178,7 @@ static int video_put_user(void __user *arg, void *parg,
 		return 0;
 
 	if (cmd == real_cmd) {
-		/*  Copy results into user buffer  */
+		 
 		if (copy_to_user(arg, parg, _IOC_SIZE(cmd)))
 			return -EFAULT;
 		return 0;
@@ -3345,12 +3258,12 @@ video_usercopy(struct file *file, unsigned int orig_cmd, unsigned long arg,
 	unsigned int cmd = video_translate_cmd(orig_cmd);
 	const size_t ioc_size = _IOC_SIZE(cmd);
 
-	/*  Copy arguments into temp kernel buffer  */
+	 
 	if (_IOC_DIR(cmd) != _IOC_NONE) {
 		if (ioc_size <= sizeof(sbuf)) {
 			parg = sbuf;
 		} else {
-			/* too big to allocate from stack */
+			 
 			mbuf = kmalloc(ioc_size, GFP_KERNEL);
 			if (NULL == mbuf)
 				return -ENOMEM;
@@ -3385,7 +3298,7 @@ video_usercopy(struct file *file, unsigned int orig_cmd, unsigned long arg,
 		*kernel_ptr = array_buf;
 	}
 
-	/* Handles IOCTL */
+	 
 	err = func(file, cmd, parg);
 	if (err == -ENOTTY || err == -ENOIOCTLCMD) {
 		err = -ENOTTY;
@@ -3399,17 +3312,7 @@ video_usercopy(struct file *file, unsigned int orig_cmd, unsigned long arg,
 			trace_v4l2_qbuf(video_devdata(file)->minor, parg);
 	}
 
-	/*
-	 * Some ioctls can return an error, but still have valid
-	 * results that must be returned.
-	 *
-	 * FIXME: subdev IOCTLS are partially handled here and partially in
-	 * v4l2-subdev.c and the 'always_copy' flag can only be set for IOCTLS
-	 * defined here as part of the 'v4l2_ioctls' array. As
-	 * VIDIOC_SUBDEV_G_ROUTING needs to return results to applications even
-	 * in case of failure, but it is not defined here as part of the
-	 * 'v4l2_ioctls' array, insert an ad-hoc check to address that.
-	 */
+	 
 	if (err < 0 && !always_copy && cmd != VIDIOC_SUBDEV_G_ROUTING)
 		goto out;
 

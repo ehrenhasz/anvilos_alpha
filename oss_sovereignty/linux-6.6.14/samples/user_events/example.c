@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Microsoft Corporation.
- *
- * Authors:
- *   Beau Belgrave <beaub@linux.microsoft.com>
- */
+
+ 
 
 #include <errno.h>
 #include <sys/ioctl.h>
@@ -47,7 +42,7 @@ int main(int argc, char **argv)
 	if (event_reg(data_fd, "test u32 count", &write, &enabled) == -1)
 		return errno;
 
-	/* Setup iovec */
+	 
 	io[0].iov_base = &write;
 	io[0].iov_len = sizeof(write);
 	io[1].iov_base = &count;
@@ -56,12 +51,12 @@ ask:
 	printf("Press enter to check status...\n");
 	getchar();
 
-	/* Check if anyone is listening */
+	 
 	if (enabled) {
-		/* Yep, trace out our data */
+		 
 		writev(data_fd, (const struct iovec *)io, 2);
 
-		/* Increase the count */
+		 
 		count++;
 
 		printf("Something was attached, wrote data\n");

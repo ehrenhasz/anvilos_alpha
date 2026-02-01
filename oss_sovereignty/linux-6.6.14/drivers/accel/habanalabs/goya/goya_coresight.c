@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "goyaP.h"
 #include "../include/goya/goya_coresight.h"
@@ -430,11 +427,11 @@ static int goya_config_etr(struct hl_device *hdev,
 		WREG32(mmPSOC_ETR_RSZ, input->buffer_size);
 		WREG32(mmPSOC_ETR_MODE, input->sink_mode);
 		if (!hdev->asic_prop.fw_security_enabled) {
-			/* make ETR not privileged */
+			 
 			val = FIELD_PREP(PSOC_ETR_AXICTL_PROTCTRLBIT0_MASK, 0);
-			/* make ETR non-secured (inverted logic) */
+			 
 			val |= FIELD_PREP(PSOC_ETR_AXICTL_PROTCTRLBIT1_MASK, 1);
-			/* burst size 8 */
+			 
 			val |= FIELD_PREP(PSOC_ETR_AXICTL_WRBURSTLEN_MASK, 7);
 			WREG32(mmPSOC_ETR_AXICTL, val);
 		}
@@ -457,11 +454,7 @@ static int goya_config_etr(struct hl_device *hdev,
 		if (params->output_size >= sizeof(u64)) {
 			u32 rwp, rwphi;
 
-			/*
-			 * The trace buffer address is 40 bits wide. The end of
-			 * the buffer is set in the RWP register (lower 32
-			 * bits), and in the RWPHI register (upper 8 bits).
-			 */
+			 
 			rwp = RREG32(mmPSOC_ETR_RWP);
 			rwphi = RREG32(mmPSOC_ETR_RWPHI) & 0xff;
 			*(u64 *) params->output = ((u64) rwphi << 32) | rwp;
@@ -525,7 +518,7 @@ static int goya_config_bmon(struct hl_device *hdev,
 		WREG32(base_reg + 0x30C, input->bw_win);
 		WREG32(base_reg + 0x308, input->win_capture);
 
-		/* PCIE IF BMON bug WA */
+		 
 		if (params->reg_idx != GOYA_BMON_PCIE_MSTR_RD &&
 				params->reg_idx != GOYA_BMON_PCIE_MSTR_WR &&
 				params->reg_idx != GOYA_BMON_PCIE_SLV_RD &&
@@ -672,7 +665,7 @@ int goya_debug_coresight(struct hl_device *hdev, struct hl_ctx *ctx, void *data)
 		rc = goya_config_spmu(hdev, params);
 		break;
 	case HL_DEBUG_OP_TIMESTAMP:
-		/* Do nothing as this opcode is deprecated */
+		 
 		break;
 
 	default:
@@ -680,7 +673,7 @@ int goya_debug_coresight(struct hl_device *hdev, struct hl_ctx *ctx, void *data)
 		return -EINVAL;
 	}
 
-	/* Perform read from the device to flush all configuration */
+	 
 	RREG32(mmPCIE_DBI_DEVICE_ID_VENDOR_ID_REG);
 
 	return rc;

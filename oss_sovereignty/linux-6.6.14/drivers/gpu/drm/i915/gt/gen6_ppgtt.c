@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/log2.h>
 
@@ -15,14 +13,14 @@
 #include "intel_engine_regs.h"
 #include "intel_gt.h"
 
-/* Write pde (index) from the page directory @pd to the page table @pt */
+ 
 static void gen6_write_pde(const struct gen6_ppgtt *ppgtt,
 			   const unsigned int pde,
 			   const struct i915_page_table *pt)
 {
 	dma_addr_t addr = pt ? px_dma(pt) : px_dma(ppgtt->base.vm.scratch[1]);
 
-	/* Caller needs to make sure the write completes if necessary */
+	 
 	iowrite32(GEN6_PDE_ADDR_ENCODE(addr) | GEN6_PDE_VALID,
 		  ppgtt->pd_addr + pde);
 }
@@ -64,13 +62,13 @@ void gen6_ppgtt_enable(struct intel_gt *gt)
 			 0,
 			 ECOCHK_SNB_BIT | ECOCHK_PPGTT_CACHE64B);
 
-	if (HAS_PPGTT(uncore->i915)) /* may be disabled for VT-d */
+	if (HAS_PPGTT(uncore->i915))  
 		intel_uncore_write(uncore,
 				   GFX_MODE,
 				   _MASKED_BIT_ENABLE(GFX_PPGTT_ENABLE));
 }
 
-/* PPGTT support for Sandybdrige/Gen6 and later */
+ 
 static void gen6_ppgtt_clear_range(struct i915_address_space *vm,
 				   u64 start, u64 length)
 {
@@ -93,12 +91,7 @@ static void gen6_ppgtt_clear_range(struct i915_address_space *vm,
 		if (!atomic_sub_return(count, &pt->used))
 			ppgtt->scan_for_unused_pt = true;
 
-		/*
-		 * Note that the hw doesn't support removing PDE on the fly
-		 * (they are cached inside the context with no means to
-		 * invalidate the cache), so we can only reset the PTE
-		 * entries back to scratch.
-		 */
+		 
 
 		vaddr = px_vaddr(pt);
 		memset32(vaddr + pte, scratch_pte, count);
@@ -304,7 +297,7 @@ static void pd_vma_unbind(struct i915_address_space *vm,
 	if (!ppgtt->scan_for_unused_pt)
 		return;
 
-	/* Free all no longer used page tables */
+	 
 	gen6_for_all_pdes(pt, ppgtt->base.pd, pde) {
 		if (!pt || atomic_read(&pt->used))
 			continue;
@@ -328,25 +321,16 @@ int gen6_ppgtt_pin(struct i915_ppgtt *base, struct i915_gem_ww_ctx *ww)
 
 	GEM_BUG_ON(!kref_read(&ppgtt->base.vm.ref));
 
-	/*
-	 * Workaround the limited maximum vma->pin_count and the aliasing_ppgtt
-	 * which will be pinned into every active context.
-	 * (When vma->pin_count becomes atomic, I expect we will naturally
-	 * need a larger, unpacked, type and kill this redundancy.)
-	 */
+	 
 	if (atomic_add_unless(&ppgtt->pin_count, 1, 0))
 		return 0;
 
-	/* grab the ppgtt resv to pin the object */
+	 
 	err = i915_vm_lock_objects(&ppgtt->base.vm, ww);
 	if (err)
 		return err;
 
-	/*
-	 * PPGTT PDEs reside in the GGTT and consists of 512 entries. The
-	 * allocator works in address space sizes, so it's multiplied by page
-	 * size. We allocate at the top of the GTT to avoid fragmentation.
-	 */
+	 
 	if (!atomic_read(&ppgtt->pin_count)) {
 		err = i915_ggtt_pin(ppgtt->vma, ww, GEN6_PD_ALIGN, PIN_HIGH);
 
@@ -406,7 +390,7 @@ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
 		goto err_pd;
 	}
 
-	/* The dummy object we create is special, override ops.. */
+	 
 	ppgtt->vma->ops = &pd_vma_ops;
 	ppgtt->vma->private = ppgtt;
 	return pd;

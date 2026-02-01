@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #if !defined(_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 
@@ -11,12 +8,12 @@
 
 #define _TRACE_H_
 
-/* create empty functions when tracing is disabled */
+ 
 #if !defined(CONFIG_ATH12K_TRACING)
 #undef TRACE_EVENT
 #define TRACE_EVENT(name, proto, ...) \
 static inline void trace_ ## name(proto) {}
-#endif /* !CONFIG_ATH12K_TRACING || __CHECKER__ */
+#endif  
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ath12k
@@ -140,13 +137,13 @@ TRACE_EVENT(ath12k_htt_rxdesc,
 	 )
 );
 
-#endif /* _TRACE_H_ || TRACE_HEADER_MULTI_READ*/
+#endif  
 
-/* we don't want to use include/trace/events */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

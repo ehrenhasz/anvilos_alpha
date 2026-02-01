@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -31,11 +28,7 @@
 #include "transport_ipc.h"
 #include "../common/arc4.h"
 
-/*
- * Fixed format data defining GSS header and fixed string
- * "not_defined_in_RFC4178@please_ignore".
- * So sec blob data in neg phase could be generated statically.
- */
+ 
 static char NEGOTIATE_GSS_HEADER[AUTH_GSS_LENGTH] = {
 #ifdef CONFIG_SMB_SERVER_KERBEROS5
 	0x60, 0x5e, 0x06, 0x06, 0x2b, 0x06, 0x01, 0x05,
@@ -69,13 +62,7 @@ void ksmbd_copy_gss_neg_header(void *buf)
 	memcpy(buf, NEGOTIATE_GSS_HEADER, AUTH_GSS_LENGTH);
 }
 
-/**
- * ksmbd_gen_sess_key() - function to generate session key
- * @sess:	session of connection
- * @hash:	source hash value to be used for find session key
- * @hmac:	source hmac value to be used for finding session key
- *
- */
+ 
 static int ksmbd_gen_sess_key(struct ksmbd_session *sess, char *hash,
 			      char *hmac)
 {
@@ -149,7 +136,7 @@ static int calc_ntlmv2_hash(struct ksmbd_conn *conn, struct ksmbd_session *sess,
 		goto out;
 	}
 
-	/* convert user_name to unicode */
+	 
 	len = strlen(user_name(sess->user));
 	uniname = kzalloc(2 + UNICODE_LEN(len), GFP_KERNEL);
 	if (!uniname) {
@@ -173,7 +160,7 @@ static int calc_ntlmv2_hash(struct ksmbd_conn *conn, struct ksmbd_session *sess,
 		goto out;
 	}
 
-	/* Convert domain name or conn name to unicode and uppercase */
+	 
 	len = strlen(dname);
 	domain = kzalloc(2 + UNICODE_LEN(len), GFP_KERNEL);
 	if (!domain) {
@@ -206,15 +193,7 @@ out:
 	return ret;
 }
 
-/**
- * ksmbd_auth_ntlmv2() - NTLMv2 authentication handler
- * @sess:	session of connection
- * @ntlmv2:		NTLMv2 challenge response
- * @blen:		NTLMv2 blob length
- * @domain_name:	domain name
- *
- * Return:	0 on success, error number on error
- */
+ 
 int ksmbd_auth_ntlmv2(struct ksmbd_conn *conn, struct ksmbd_session *sess,
 		      struct ntlmv2_resp *ntlmv2, int blen, char *domain_name,
 		      char *cryptkey)
@@ -290,15 +269,7 @@ out:
 	return rc;
 }
 
-/**
- * ksmbd_decode_ntlmssp_auth_blob() - helper function to construct
- * authenticate blob
- * @authblob:	authenticate blob source pointer
- * @usr:	user details
- * @sess:	session of connection
- *
- * Return:	0 on success, error number on error
- */
+ 
 int ksmbd_decode_ntlmssp_auth_blob(struct authenticate_message *authblob,
 				   int blob_len, struct ksmbd_conn *conn,
 				   struct ksmbd_session *sess)
@@ -329,13 +300,13 @@ int ksmbd_decode_ntlmssp_auth_blob(struct authenticate_message *authblob,
 	    nt_len < CIFS_ENCPWD_SIZE)
 		return -EINVAL;
 
-	/* TODO : use domain name that imported from configuration file */
+	 
 	domain_name = smb_strndup_from_utf16((const char *)authblob + dn_off,
 					     dn_len, true, conn->local_nls);
 	if (IS_ERR(domain_name))
 		return PTR_ERR(domain_name);
 
-	/* process NTLMv2 authentication */
+	 
 	ksmbd_debug(AUTH, "decode_ntlmssp_authenticate_blob dname%s\n",
 		    domain_name);
 	ret = ksmbd_auth_ntlmv2(conn, sess,
@@ -344,7 +315,7 @@ int ksmbd_decode_ntlmssp_auth_blob(struct authenticate_message *authblob,
 				domain_name, conn->ntlmssp.cryptkey);
 	kfree(domain_name);
 
-	/* The recovered secondary session key */
+	 
 	if (conn->ntlmssp.client_flags & NTLMSSP_NEGOTIATE_KEY_XCH) {
 		struct arc4_ctx *ctx_arc4;
 		unsigned int sess_key_off, sess_key_len;
@@ -372,14 +343,7 @@ int ksmbd_decode_ntlmssp_auth_blob(struct authenticate_message *authblob,
 	return ret;
 }
 
-/**
- * ksmbd_decode_ntlmssp_neg_blob() - helper function to construct
- * negotiate blob
- * @negblob: negotiate blob source pointer
- * @rsp:     response header pointer to be updated
- * @sess:    session of connection
- *
- */
+ 
 int ksmbd_decode_ntlmssp_neg_blob(struct negotiate_message *negblob,
 				  int blob_len, struct ksmbd_conn *conn)
 {
@@ -399,14 +363,7 @@ int ksmbd_decode_ntlmssp_neg_blob(struct negotiate_message *negblob,
 	return 0;
 }
 
-/**
- * ksmbd_build_ntlmssp_challenge_blob() - helper function to construct
- * challenge blob
- * @chgblob: challenge blob source pointer to initialize
- * @rsp:     response header pointer to be updated
- * @sess:    session of connection
- *
- */
+ 
 unsigned int
 ksmbd_build_ntlmssp_challenge_blob(struct challenge_message *chgblob,
 				   struct ksmbd_conn *conn)
@@ -469,12 +426,12 @@ ksmbd_build_ntlmssp_challenge_blob(struct challenge_message *chgblob,
 	chgblob->TargetName.MaximumLength = cpu_to_le16(uni_len);
 	chgblob->TargetName.BufferOffset = cpu_to_le32(blob_off);
 
-	/* Initialize random conn challenge */
+	 
 	get_random_bytes(conn->ntlmssp.cryptkey, sizeof(__u64));
 	memcpy(chgblob->Challenge, conn->ntlmssp.cryptkey,
 	       CIFS_CRYPTO_KEY_SIZE);
 
-	/* Add Target Information to security buffer */
+	 
 	chgblob->TargetInfoArray.BufferOffset = cpu_to_le32(blob_len);
 
 	target_name = (__u8 *)chgblob + blob_off;
@@ -482,7 +439,7 @@ ksmbd_build_ntlmssp_challenge_blob(struct challenge_message *chgblob,
 	tinfo = (struct target_info *)(target_name + uni_len);
 
 	chgblob->TargetInfoArray.Length = 0;
-	/* Add target info list for NetBIOS/DNS settings */
+	 
 	for (type = NTLMSSP_AV_NB_COMPUTER_NAME;
 	     type <= NTLMSSP_AV_DNS_DOMAIN_NAME; type++) {
 		tinfo->Type = cpu_to_le16(type);
@@ -492,7 +449,7 @@ ksmbd_build_ntlmssp_challenge_blob(struct challenge_message *chgblob,
 		target_info_len += 4 + uni_len;
 	}
 
-	/* Add terminator subblock */
+	 
 	tinfo->Type = 0;
 	tinfo->Length = 0;
 	target_info_len += 4;
@@ -563,15 +520,7 @@ int ksmbd_krb5_authenticate(struct ksmbd_session *sess, char *in_blob,
 }
 #endif
 
-/**
- * ksmbd_sign_smb2_pdu() - function to generate packet signing
- * @conn:	connection
- * @key:	signing key
- * @iov:        buffer iov array
- * @n_vec:	number of iovecs
- * @sig:	signature value generated for client request packet
- *
- */
+ 
 int ksmbd_sign_smb2_pdu(struct ksmbd_conn *conn, char *key, struct kvec *iov,
 			int n_vec, char *sig)
 {
@@ -614,15 +563,7 @@ out:
 	return rc;
 }
 
-/**
- * ksmbd_sign_smb3_pdu() - function to generate packet signing
- * @conn:	connection
- * @key:	signing key
- * @iov:        buffer iov array
- * @n_vec:	number of iovecs
- * @sig:	signature value generated for client request packet
- *
- */
+ 
 int ksmbd_sign_smb3_pdu(struct ksmbd_conn *conn, char *key, struct kvec *iov,
 			int n_vec, char *sig)
 {
@@ -1054,7 +995,7 @@ static struct scatterlist *ksmbd_init_sg(struct kvec *iov, unsigned int nvec,
 		total_entries += nr_entries[i];
 	}
 
-	/* Add two entries for transform header and signature */
+	 
 	total_entries += 2;
 
 	sg = kmalloc_array(total_entries, sizeof(struct scatterlist), GFP_KERNEL);

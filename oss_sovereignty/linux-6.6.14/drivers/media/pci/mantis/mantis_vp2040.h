@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Mantis VP-2040 driver
-
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __MANTIS_VP2040_H
 #define __MANTIS_VP2040_H
@@ -17,4 +12,4 @@
 
 extern struct mantis_hwconfig vp2040_config;
 
-#endif /* __MANTIS_VP2040_H */
+#endif  

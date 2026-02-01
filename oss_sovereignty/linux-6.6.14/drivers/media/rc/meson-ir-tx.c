@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * meson-ir-tx.c - Amlogic Meson IR TX driver
- *
- * Copyright (c) 2021, SberDevices. All Rights Reserved.
- *
- * Author: Viktor Prutyanov <viktor.prutyanov@phystech.edu>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -38,7 +32,7 @@
 #define IRB_MAX_DELAY	(1 << 10)
 #define IRB_DELAY_MASK	(IRB_MAX_DELAY - 1)
 
-/* IRCTRL_IR_BLASTER_ADDR0 */
+ 
 #define IRB_MOD_CLK(x)		((x) << 12)
 #define IRB_MOD_SYS_CLK		0
 #define IRB_MOD_XTAL3_CLK	1
@@ -47,10 +41,10 @@
 #define IRB_INIT_HIGH		BIT(2)
 #define IRB_ENABLE		BIT(0)
 
-/* IRCTRL_IR_BLASTER_ADDR2 */
+ 
 #define IRB_MOD_COUNT(lo, hi)	((((lo) - 1) << 16) | ((hi) - 1))
 
-/* IRCTRL_IR_BLASTER_ADDR2 */
+ 
 #define IRB_WRITE_FIFO	BIT(16)
 #define IRB_MOD_ENABLE	BIT(12)
 #define IRB_TB_1US	(0x0 << 10)
@@ -58,7 +52,7 @@
 #define IRB_TB_100US	(0x2 << 10)
 #define IRB_TB_MOD_CLK	(0x3 << 10)
 
-/* IRCTRL_IR_BLASTER_ADDR3 */
+ 
 #define IRB_FIFO_THD_PENDING	BIT(16)
 #define IRB_FIFO_IRQ_ENABLE	BIT(8)
 
@@ -70,7 +64,7 @@ struct meson_irtx {
 	unsigned int buf_head;
 	unsigned int carrier;
 	unsigned int duty_cycle;
-	/* Locks buf */
+	 
 	spinlock_t lock;
 	struct completion completion;
 	unsigned long clk_rate;
@@ -92,12 +86,7 @@ static void meson_irtx_set_mod(struct meson_irtx *ir)
 
 static void meson_irtx_setup(struct meson_irtx *ir, unsigned int clk_nr)
 {
-	/*
-	 * Disable the TX, set modulator clock tick and set initialize
-	 * output to be high. Set up carrier frequency and duty cycle. Then
-	 * unset initialize output. Enable FIFO interrupt, set FIFO interrupt
-	 * threshold. Finally, enable the transmitter back.
-	 */
+	 
 	writel(~IRB_ENABLE & (IRB_MOD_CLK(clk_nr) | IRB_INIT_HIGH),
 	       ir->reg_base + IRB_ADDR0);
 	meson_irtx_set_mod(ir);
@@ -162,10 +151,7 @@ static bool meson_irtx_check_buf(struct meson_irtx *ir,
 
 	for (i = 0; i < len; i++) {
 		unsigned int max_tb_us;
-		/*
-		 * Max space timebase is 100 us.
-		 * Pulse timebase equals to carrier period.
-		 */
+		 
 		if (i % 2 == 0)
 			max_tb_us = USEC_PER_SEC / ir->carrier;
 		else

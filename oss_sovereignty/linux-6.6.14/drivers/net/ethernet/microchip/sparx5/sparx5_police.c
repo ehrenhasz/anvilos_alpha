@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include "sparx5_main_regs.h"
 #include "sparx5_main.h"
@@ -41,7 +38,7 @@ static int sparx5_policer_service_conf_set(struct sparx5 *sparx5,
 
 int sparx5_policer_conf_set(struct sparx5 *sparx5, struct sparx5_policer *pol)
 {
-	/* More policer types will be added later */
+	 
 	switch (pol->type) {
 	case SPX5_POL_SERVICE:
 		return sparx5_policer_service_conf_set(sparx5, pol);

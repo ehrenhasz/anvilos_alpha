@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cpuidle driver for haltpoll governor.
- *
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.  See
- * the COPYING file in the top-level directory.
- *
- * Authors: Marcelo Tosatti <mtosatti@redhat.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/cpu.h>
@@ -39,7 +30,7 @@ static struct cpuidle_driver haltpoll_driver = {
 	.name = "haltpoll",
 	.governor = "haltpoll",
 	.states = {
-		{ /* entry 0 is for polling */ },
+		{   },
 		{
 			.enter			= default_enter_idle,
 			.exit_latency		= 1,
@@ -103,7 +94,7 @@ static int __init haltpoll_init(void)
 	int ret;
 	struct cpuidle_driver *drv = &haltpoll_driver;
 
-	/* Do not load haltpoll if idle= is passed */
+	 
 	if (boot_option_idle_override != IDLE_NO_OVERRIDE)
 		return -ENODEV;
 

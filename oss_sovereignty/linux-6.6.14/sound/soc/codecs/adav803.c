@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADAV803 audio driver
- *
- * Copyright 2014 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>

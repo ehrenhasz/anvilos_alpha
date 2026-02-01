@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -21,10 +21,7 @@
 #include <net/netfilter/nf_log.h>
 #include <linux/netfilter/nfnetlink_osf.h>
 
-/*
- * Indexed by dont-fragment bit.
- * It is the only constant value in the fingerprint.
- */
+ 
 struct list_head nf_osf_fingers[2];
 EXPORT_SYMBOL_GPL(nf_osf_fingers);
 
@@ -75,13 +72,11 @@ static bool nf_osf_match_one(const struct sk_buff *skb,
 	if (ctx->totlen != f->ss || !nf_osf_ttl(skb, ttl_check, f->ttl))
 		return false;
 
-	/*
-	 * Should not happen if userspace parser was written correctly.
-	 */
+	 
 	if (f->wss.wc >= OSF_WSS_MAX)
 		return false;
 
-	/* Check options */
+	 
 
 	foptsize = 0;
 	for (optnum = 0; optnum < f->opt_num; ++optnum)
@@ -130,12 +125,7 @@ static bool nf_osf_match_one(const struct sk_buff *skb,
 				fmatch = FMATCH_OK;
 			break;
 		case OSF_WSS_MSS:
-			/*
-			 * Some smart modems decrease mangle MSS to
-			 * SMART_MSS_2, so we check standard, decreased
-			 * and the one provided in the fingerprint MSS
-			 * values.
-			 */
+			 
 #define SMART_MSS_1	1460
 #define SMART_MSS_2	1448
 			if (ctx->window == f->wss.val * mss ||
@@ -341,9 +331,7 @@ static int nfnl_osf_add_callback(struct sk_buff *skb,
 		break;
 	}
 
-	/*
-	 * We are protected by nfnl mutex.
-	 */
+	 
 	if (kf)
 		list_add_tail_rcu(&kf->finger_entry, &nf_osf_fingers[!!f->df]);
 
@@ -370,9 +358,7 @@ static int nfnl_osf_remove_callback(struct sk_buff *skb,
 		if (memcmp(&sf->finger, f, sizeof(struct nf_osf_user_finger)))
 			continue;
 
-		/*
-		 * We are protected by nfnl mutex.
-		 */
+		 
 		list_del_rcu(&sf->finger_entry);
 		kfree_rcu(sf, rcu_head);
 

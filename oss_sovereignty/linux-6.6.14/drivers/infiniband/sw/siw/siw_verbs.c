@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -50,9 +50,7 @@ int siw_mmap(struct ib_ucontext *ctx, struct vm_area_struct *vma)
 	struct siw_user_mmap_entry *entry;
 	int rv = -EINVAL;
 
-	/*
-	 * Must be page aligned
-	 */
+	 
 	if (vma->vm_start & (PAGE_SIZE - 1)) {
 		pr_warn("siw: mmap not page aligned\n");
 		return -EINVAL;
@@ -130,7 +128,7 @@ int siw_query_device(struct ib_device *base_dev, struct ib_device_attr *attr,
 
 	memset(attr, 0, sizeof(*attr));
 
-	/* Revisit atomic caps if RFC 7306 gets supported */
+	 
 	attr->atomic_cap = 0;
 	attr->device_cap_flags = IB_DEVICE_MEM_MGT_EXTENSIONS;
 	attr->kernel_cap_flags = IBK_ALLOW_USER_UNREG;
@@ -180,19 +178,7 @@ int siw_query_port(struct ib_device *base_dev, u32 port,
 		IB_PORT_PHYS_STATE_LINK_UP : IB_PORT_PHYS_STATE_DISABLED;
 	attr->port_cap_flags = IB_PORT_CM_SUP | IB_PORT_DEVICE_MGMT_SUP;
 	attr->state = sdev->state;
-	/*
-	 * All zero
-	 *
-	 * attr->lid = 0;
-	 * attr->bad_pkey_cntr = 0;
-	 * attr->qkey_viol_cntr = 0;
-	 * attr->sm_lid = 0;
-	 * attr->lmc = 0;
-	 * attr->max_vl_num = 0;
-	 * attr->sm_sl = 0;
-	 * attr->subnet_timeout = 0;
-	 * attr->init_type_repy = 0;
-	 */
+	 
 	return rv;
 }
 
@@ -216,7 +202,7 @@ int siw_query_gid(struct ib_device *base_dev, u32 port, int idx,
 {
 	struct siw_device *sdev = to_siw_dev(base_dev);
 
-	/* subnet_prefix == interface_id == 0; */
+	 
 	memset(gid, 0, sizeof(*gid));
 	memcpy(gid->raw, sdev->raw_gid, ETH_ALEN);
 
@@ -282,15 +268,7 @@ siw_mmap_entry_insert(struct siw_ucontext *uctx,
 	return &entry->rdma_entry;
 }
 
-/*
- * siw_create_qp()
- *
- * Create QP of requested size on given device.
- *
- * @qp:		Queue pait
- * @attrs:	Initial QP attributes.
- * @udata:	used to provide QP ID, SQ and RQ size back to user.
- */
+ 
 
 int siw_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attrs,
 		  struct ib_udata *udata)
@@ -335,10 +313,7 @@ int siw_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attrs,
 		rv = -EINVAL;
 		goto err_atomic;
 	}
-	/*
-	 * NOTE: we allow for zero element SQ and RQ WQE's SGL's
-	 * but not for a QP unable to hold any WQE (SQ + RQ)
-	 */
+	 
 	if (attrs->cap.max_send_wr + attrs->cap.max_recv_wr == 0) {
 		siw_dbg(base_dev, "QP must have send or receive queue\n");
 		rv = -EINVAL;
@@ -363,15 +338,11 @@ int siw_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attrs,
 	num_sqe = attrs->cap.max_send_wr;
 	num_rqe = attrs->cap.max_recv_wr;
 
-	/* All queue indices are derived from modulo operations
-	 * on a free running 'get' (consumer) and 'put' (producer)
-	 * unsigned counter. Having queue sizes at power of two
-	 * avoids handling counter wrap around.
-	 */
+	 
 	if (num_sqe)
 		num_sqe = roundup_pow_of_two(num_sqe);
 	else {
-		/* Zero sized SQ is not supported */
+		 
 		rv = -EINVAL;
 		goto err_out_xa;
 	}
@@ -400,11 +371,7 @@ int siw_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attrs,
 	qp->rcq = to_siw_cq(attrs->recv_cq);
 
 	if (attrs->srq) {
-		/*
-		 * SRQ support.
-		 * Verbs 6.3.7: ignore RQ size, if SRQ present
-		 * Verbs 6.3.5: do not check PD of SRQ against PD of QP
-		 */
+		 
 		qp->srq = to_siw_srq(attrs->srq);
 		qp->attrs.rq_size = 0;
 		siw_dbg(base_dev, "QP [%u]: SRQ attached\n",
@@ -426,7 +393,7 @@ int siw_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attrs,
 	qp->attrs.sq_max_sges = attrs->cap.max_send_sge;
 	qp->attrs.rq_max_sges = attrs->cap.max_recv_sge;
 
-	/* Make those two tunables fixed for now. */
+	 
 	qp->tx_ctx.gso_seg_limit = 1;
 	qp->tx_ctx.zcopy_tx = zcopy_tx;
 
@@ -498,11 +465,7 @@ err_atomic:
 	return rv;
 }
 
-/*
- * Minimum siw_query_qp() verb interface.
- *
- * @qp_attr_mask is not used but all available information is provided
- */
+ 
 int siw_query_qp(struct ib_qp *base_qp, struct ib_qp_attr *qp_attr,
 		 int qp_attr_mask, struct ib_qp_init_attr *qp_init_attr)
 {
@@ -597,10 +560,7 @@ int siw_destroy_qp(struct ib_qp *base_qp, struct ib_udata *udata)
 
 	siw_dbg_qp(qp, "state %d\n", qp->attrs.state);
 
-	/*
-	 * Mark QP as in process of destruction to prevent from
-	 * any async callbacks to RDMA core
-	 */
+	 
 	qp->attrs.flags |= SIW_QP_IN_DESTROY;
 	qp->rx_stream.rx_suspend = 1;
 
@@ -631,15 +591,7 @@ int siw_destroy_qp(struct ib_qp *base_qp, struct ib_udata *udata)
 	return 0;
 }
 
-/*
- * siw_copy_inline_sgl()
- *
- * Prepare sgl of inlined data for sending. For userland callers
- * function checks if given buffer addresses and len's are within
- * process context bounds.
- * Data from all provided sge's are copied together into the wqe,
- * referenced by a single sge.
- */
+ 
 static int siw_copy_inline_sgl(const struct ib_send_wr *core_wr,
 			       struct siw_sqe *sqe)
 {
@@ -672,7 +624,7 @@ static int siw_copy_inline_sgl(const struct ib_send_wr *core_wr,
 	return bytes;
 }
 
-/* Complete SQ WR's without processing */
+ 
 static int siw_sq_flush_wr(struct siw_qp *qp, const struct ib_send_wr *wr,
 			   const struct ib_send_wr **bad_wr)
 {
@@ -725,7 +677,7 @@ static int siw_sq_flush_wr(struct siw_qp *qp, const struct ib_send_wr *wr,
 	return rv;
 }
 
-/* Complete RQ WR's without processing */
+ 
 static int siw_rq_flush_wr(struct siw_qp *qp, const struct ib_recv_wr *wr,
 			   const struct ib_recv_wr **bad_wr)
 {
@@ -745,15 +697,7 @@ static int siw_rq_flush_wr(struct siw_qp *qp, const struct ib_recv_wr *wr,
 	return rv;
 }
 
-/*
- * siw_post_send()
- *
- * Post a list of S-WR's to a SQ.
- *
- * @base_qp:	Base QP contained in siw QP
- * @wr:		Null terminated list of user WR's
- * @bad_wr:	Points to failing WR in case of synchronous failure.
- */
+ 
 int siw_post_send(struct ib_qp *base_qp, const struct ib_send_wr *wr,
 		  const struct ib_send_wr **bad_wr)
 {
@@ -769,21 +713,10 @@ int siw_post_send(struct ib_qp *base_qp, const struct ib_send_wr *wr,
 		return -EINVAL;
 	}
 
-	/*
-	 * Try to acquire QP state lock. Must be non-blocking
-	 * to accommodate kernel clients needs.
-	 */
+	 
 	if (!down_read_trylock(&qp->state_lock)) {
 		if (qp->attrs.state == SIW_QP_STATE_ERROR) {
-			/*
-			 * ERROR state is final, so we can be sure
-			 * this state will not change as long as the QP
-			 * exists.
-			 *
-			 * This handles an ib_drain_sq() call with
-			 * a concurrent request to set the QP state
-			 * to ERROR.
-			 */
+			 
 			rv = siw_sq_flush_wr(qp, wr, bad_wr);
 		} else {
 			siw_dbg_qp(qp, "QP locked, state %d\n",
@@ -795,13 +728,7 @@ int siw_post_send(struct ib_qp *base_qp, const struct ib_send_wr *wr,
 	}
 	if (unlikely(qp->attrs.state != SIW_QP_STATE_RTS)) {
 		if (qp->attrs.state == SIW_QP_STATE_ERROR) {
-			/*
-			 * Immediately flush this WR to CQ, if QP
-			 * is in ERROR state. SQ is guaranteed to
-			 * be empty, so WR complets in-order.
-			 *
-			 * Typically triggered by ib_drain_sq().
-			 */
+			 
 			rv = siw_sq_flush_wr(qp, wr, bad_wr);
 		} else {
 			siw_dbg_qp(qp, "QP out of state %d\n",
@@ -866,21 +793,13 @@ int siw_post_send(struct ib_qp *base_qp, const struct ib_send_wr *wr,
 
 		case IB_WR_RDMA_READ_WITH_INV:
 		case IB_WR_RDMA_READ:
-			/*
-			 * iWarp restricts RREAD sink to SGL containing
-			 * 1 SGE only. we could relax to SGL with multiple
-			 * elements referring the SAME ltag or even sending
-			 * a private per-rreq tag referring to a checked
-			 * local sgl with MULTIPLE ltag's.
-			 */
+			 
 			if (unlikely(wr->num_sge != 1)) {
 				rv = -EINVAL;
 				break;
 			}
 			siw_copy_sgl(wr->sg_list, &sqe->sge[0], 1);
-			/*
-			 * NOTE: zero length RREAD is allowed!
-			 */
+			 
 			sqe->raddr = rdma_wr(wr)->remote_addr;
 			sqe->rkey = rdma_wr(wr)->rkey;
 			sqe->num_sge = 1;
@@ -935,7 +854,7 @@ int siw_post_send(struct ib_qp *base_qp, const struct ib_send_wr *wr,
 		if (unlikely(rv < 0))
 			break;
 
-		/* make SQE only valid after completely written */
+		 
 		smp_wmb();
 		sqe->flags |= SIW_WQE_VALID;
 
@@ -943,13 +862,7 @@ int siw_post_send(struct ib_qp *base_qp, const struct ib_send_wr *wr,
 		wr = wr->next;
 	}
 
-	/*
-	 * Send directly if SQ processing is not in progress.
-	 * Eventual immediate errors (rv < 0) do not affect the involved
-	 * RI resources (Verbs, 8.3.1) and thus do not prevent from SQ
-	 * processing, if new work is already pending. But rv must be passed
-	 * to caller.
-	 */
+	 
 	if (wqe->wr_status != SIW_WR_IDLE) {
 		spin_unlock_irqrestore(&qp->sq_lock, flags);
 		goto skip_direct_sending;
@@ -976,24 +889,14 @@ skip_direct_sending:
 
 	if (rv >= 0)
 		return 0;
-	/*
-	 * Immediate error
-	 */
+	 
 	siw_dbg_qp(qp, "error %d\n", rv);
 
 	*bad_wr = wr;
 	return rv;
 }
 
-/*
- * siw_post_receive()
- *
- * Post a list of R-WR's to a RQ.
- *
- * @base_qp:	Base QP contained in siw QP
- * @wr:		Null terminated list of user WR's
- * @bad_wr:	Points to failing WR in case of synchronous failure.
- */
+ 
 int siw_post_receive(struct ib_qp *base_qp, const struct ib_recv_wr *wr,
 		     const struct ib_recv_wr **bad_wr)
 {
@@ -1011,21 +914,10 @@ int siw_post_receive(struct ib_qp *base_qp, const struct ib_recv_wr *wr,
 		return -EINVAL;
 	}
 
-	/*
-	 * Try to acquire QP state lock. Must be non-blocking
-	 * to accommodate kernel clients needs.
-	 */
+	 
 	if (!down_read_trylock(&qp->state_lock)) {
 		if (qp->attrs.state == SIW_QP_STATE_ERROR) {
-			/*
-			 * ERROR state is final, so we can be sure
-			 * this state will not change as long as the QP
-			 * exists.
-			 *
-			 * This handles an ib_drain_rq() call with
-			 * a concurrent request to set the QP state
-			 * to ERROR.
-			 */
+			 
 			rv = siw_rq_flush_wr(qp, wr, bad_wr);
 		} else {
 			siw_dbg_qp(qp, "QP locked, state %d\n",
@@ -1037,13 +929,7 @@ int siw_post_receive(struct ib_qp *base_qp, const struct ib_recv_wr *wr,
 	}
 	if (qp->attrs.state > SIW_QP_STATE_RTS) {
 		if (qp->attrs.state == SIW_QP_STATE_ERROR) {
-			/*
-			 * Immediately flush this WR to CQ, if QP
-			 * is in ERROR state. RQ is guaranteed to
-			 * be empty, so WR complets in-order.
-			 *
-			 * Typically triggered by ib_drain_rq().
-			 */
+			 
 			rv = siw_rq_flush_wr(qp, wr, bad_wr);
 		} else {
 			siw_dbg_qp(qp, "QP out of state %d\n",
@@ -1054,10 +940,7 @@ int siw_post_receive(struct ib_qp *base_qp, const struct ib_recv_wr *wr,
 		up_read(&qp->state_lock);
 		return rv;
 	}
-	/*
-	 * Serialize potentially multiple producers.
-	 * Not needed for single threaded consumer side.
-	 */
+	 
 	spin_lock_irqsave(&qp->rq_lock, flags);
 
 	while (wr) {
@@ -1078,7 +961,7 @@ int siw_post_receive(struct ib_qp *base_qp, const struct ib_recv_wr *wr,
 		rqe->num_sge = wr->num_sge;
 		siw_copy_sgl(wr->sg_list, rqe->sge, wr->num_sge);
 
-		/* make sure RQE is completely written before valid */
+		 
 		smp_wmb();
 
 		rqe->flags = SIW_WQE_VALID;
@@ -1118,15 +1001,7 @@ int siw_destroy_cq(struct ib_cq *base_cq, struct ib_udata *udata)
 	return 0;
 }
 
-/*
- * siw_create_cq()
- *
- * Populate CQ of requested size
- *
- * @base_cq: CQ as allocated by RDMA midlayer
- * @attr: Initial CQ attributes
- * @udata: relates to user context
- */
+ 
 
 int siw_create_cq(struct ib_cq *base_cq, const struct ib_cq_init_attr *attr,
 		  struct ib_udata *udata)
@@ -1215,16 +1090,7 @@ err_out:
 	return rv;
 }
 
-/*
- * siw_poll_cq()
- *
- * Reap CQ entries if available and copy work completion status into
- * array of WC's provided by caller. Returns number of reaped CQE's.
- *
- * @base_cq:	Base CQ contained in siw CQ.
- * @num_cqe:	Maximum number of CQE's to reap.
- * @wc:		Array of work completions to be filled by siw.
- */
+ 
 int siw_poll_cq(struct ib_cq *base_cq, int num_cqe, struct ib_wc *wc)
 {
 	struct siw_cq *cq = to_siw_cq(base_cq);
@@ -1238,22 +1104,7 @@ int siw_poll_cq(struct ib_cq *base_cq, int num_cqe, struct ib_wc *wc)
 	return i;
 }
 
-/*
- * siw_req_notify_cq()
- *
- * Request notification for new CQE's added to that CQ.
- * Defined flags:
- * o SIW_CQ_NOTIFY_SOLICITED lets siw trigger a notification
- *   event if a WQE with notification flag set enters the CQ
- * o SIW_CQ_NOTIFY_NEXT_COMP lets siw trigger a notification
- *   event if a WQE enters the CQ.
- * o IB_CQ_REPORT_MISSED_EVENTS: return value will provide the
- *   number of not reaped CQE's regardless of its notification
- *   type and current or new CQ notification settings.
- *
- * @base_cq:	Base CQ contained in siw CQ.
- * @flags:	Requested notification flags.
- */
+ 
 int siw_req_notify_cq(struct ib_cq *base_cq, enum ib_cq_notify_flags flags)
 {
 	struct siw_cq *cq = to_siw_cq(base_cq);
@@ -1261,16 +1112,10 @@ int siw_req_notify_cq(struct ib_cq *base_cq, enum ib_cq_notify_flags flags)
 	siw_dbg_cq(cq, "flags: 0x%02x\n", flags);
 
 	if ((flags & IB_CQ_SOLICITED_MASK) == IB_CQ_SOLICITED)
-		/*
-		 * Enable CQ event for next solicited completion.
-		 * and make it visible to all associated producers.
-		 */
+		 
 		smp_store_mb(cq->notify->flags, SIW_NOTIFY_SOLICITED);
 	else
-		/*
-		 * Enable CQ event for any signalled completion.
-		 * and make it visible to all associated producers.
-		 */
+		 
 		smp_store_mb(cq->notify->flags, SIW_NOTIFY_ALL);
 
 	if (flags & IB_CQ_REPORT_MISSED_EVENTS)
@@ -1279,14 +1124,7 @@ int siw_req_notify_cq(struct ib_cq *base_cq, enum ib_cq_notify_flags flags)
 	return 0;
 }
 
-/*
- * siw_dereg_mr()
- *
- * Release Memory Region.
- *
- * @base_mr: Base MR contained in siw MR.
- * @udata: points to user context, unused.
- */
+ 
 int siw_dereg_mr(struct ib_mr *base_mr, struct ib_udata *udata)
 {
 	struct siw_mr *mr = to_siw_mr(base_mr);
@@ -1302,18 +1140,7 @@ int siw_dereg_mr(struct ib_mr *base_mr, struct ib_udata *udata)
 	return 0;
 }
 
-/*
- * siw_reg_user_mr()
- *
- * Register Memory Region.
- *
- * @pd:		Protection Domain
- * @start:	starting address of MR (virtual address)
- * @len:	len of MR
- * @rnic_va:	not used by siw
- * @rights:	MR access rights
- * @udata:	user buffer to communicate STag and Key.
- */
+ 
 struct ib_mr *siw_reg_user_mr(struct ib_pd *pd, u64 start, u64 len,
 			      u64 rnic_va, int rights, struct ib_udata *udata)
 {
@@ -1469,7 +1296,7 @@ err_out:
 	return ERR_PTR(rv);
 }
 
-/* Just used to count number of pages being mapped */
+ 
 static int siw_set_pbl_page(struct ib_mr *base_mr, u64 buf_addr)
 {
 	return 0;
@@ -1509,7 +1336,7 @@ int siw_map_mr_sg(struct ib_mr *base_mr, struct scatterlist *sl, int num_sle,
 			pbl_size = pble->size;
 			pbl->num_buf = 1;
 		} else {
-			/* Merge PBL entries if adjacent */
+			 
 			if (pble->addr + pble->size == sg_dma_address(slp)) {
 				pble->size += sg_dma_len(slp);
 			} else {
@@ -1538,11 +1365,7 @@ int siw_map_mr_sg(struct ib_mr *base_mr, struct scatterlist *sl, int num_sle,
 	return rv;
 }
 
-/*
- * siw_get_dma_mr()
- *
- * Create a (empty) DMA memory region, where no umem is attached.
- */
+ 
 struct ib_mr *siw_get_dma_mr(struct ib_pd *pd, int rights)
 {
 	struct siw_device *sdev = to_siw_dev(pd->device);
@@ -1578,16 +1401,7 @@ err_out:
 	return ERR_PTR(rv);
 }
 
-/*
- * siw_create_srq()
- *
- * Create Shared Receive Queue of attributes @init_attrs
- * within protection domain given by @pd.
- *
- * @base_srq:	Base SRQ contained in siw SRQ.
- * @init_attrs:	SRQ init attributes.
- * @udata:	points to user context
- */
+ 
 int siw_create_srq(struct ib_srq *base_srq,
 		   struct ib_srq_init_attr *init_attrs, struct ib_udata *udata)
 {
@@ -1669,15 +1483,7 @@ err_out:
 	return rv;
 }
 
-/*
- * siw_modify_srq()
- *
- * Modify SRQ. The caller may resize SRQ and/or set/reset notification
- * limit and (re)arm IB_EVENT_SRQ_LIMIT_REACHED notification.
- *
- * NOTE: it is unclear if RDMA core allows for changing the MAX_SGE
- * parameter. siw_modify_srq() does not check the attrs->max_sge param.
- */
+ 
 int siw_modify_srq(struct ib_srq *base_srq, struct ib_srq_attr *attrs,
 		   enum ib_srq_attr_mask attr_mask, struct ib_udata *udata)
 {
@@ -1688,7 +1494,7 @@ int siw_modify_srq(struct ib_srq *base_srq, struct ib_srq_attr *attrs,
 	spin_lock_irqsave(&srq->lock, flags);
 
 	if (attr_mask & IB_SRQ_MAX_WR) {
-		/* resize request not yet supported */
+		 
 		rv = -EOPNOTSUPP;
 		goto out;
 	}
@@ -1710,11 +1516,7 @@ out:
 	return rv;
 }
 
-/*
- * siw_query_srq()
- *
- * Query SRQ attributes.
- */
+ 
 int siw_query_srq(struct ib_srq *base_srq, struct ib_srq_attr *attrs)
 {
 	struct siw_srq *srq = to_siw_srq(base_srq);
@@ -1731,14 +1533,7 @@ int siw_query_srq(struct ib_srq *base_srq, struct ib_srq_attr *attrs)
 	return 0;
 }
 
-/*
- * siw_destroy_srq()
- *
- * Destroy SRQ.
- * It is assumed that the SRQ is not referenced by any
- * QP anymore - the code trusts the RDMA core environment to keep track
- * of QP references.
- */
+ 
 int siw_destroy_srq(struct ib_srq *base_srq, struct ib_udata *udata)
 {
 	struct siw_srq *srq = to_siw_srq(base_srq);
@@ -1754,18 +1549,7 @@ int siw_destroy_srq(struct ib_srq *base_srq, struct ib_udata *udata)
 	return 0;
 }
 
-/*
- * siw_post_srq_recv()
- *
- * Post a list of receive queue elements to SRQ.
- * NOTE: The function does not check or lock a certain SRQ state
- *       during the post operation. The code simply trusts the
- *       RDMA core environment.
- *
- * @base_srq:	Base SRQ contained in siw SRQ
- * @wr:		List of R-WR's
- * @bad_wr:	Updated to failing WR if posting fails.
- */
+ 
 int siw_post_srq_recv(struct ib_srq *base_srq, const struct ib_recv_wr *wr,
 		      const struct ib_recv_wr **bad_wr)
 {
@@ -1779,11 +1563,7 @@ int siw_post_srq_recv(struct ib_srq *base_srq, const struct ib_recv_wr *wr,
 		rv = -EINVAL;
 		goto out;
 	}
-	/*
-	 * Serialize potentially multiple producers.
-	 * Also needed to serialize potentially multiple
-	 * consumers.
-	 */
+	 
 	spin_lock_irqsave(&srq->lock, flags);
 
 	while (wr) {
@@ -1805,7 +1585,7 @@ int siw_post_srq_recv(struct ib_srq *base_srq, const struct ib_recv_wr *wr,
 		rqe->num_sge = wr->num_sge;
 		siw_copy_sgl(wr->sg_list, rqe->sge, wr->num_sge);
 
-		/* Make sure S-RQE is completely written before valid */
+		 
 		smp_wmb();
 
 		rqe->flags = SIW_WQE_VALID;
@@ -1827,10 +1607,7 @@ void siw_qp_event(struct siw_qp *qp, enum ib_event_type etype)
 	struct ib_event event;
 	struct ib_qp *base_qp = &qp->base_qp;
 
-	/*
-	 * Do not report asynchronous errors on QP which gets
-	 * destroyed via verbs interface (siw_destroy_qp())
-	 */
+	 
 	if (qp->attrs.flags & SIW_QP_IN_DESTROY)
 		return;
 

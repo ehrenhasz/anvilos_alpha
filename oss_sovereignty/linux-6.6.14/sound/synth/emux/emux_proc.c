@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
- *
- *  Proc interface for Emu8k/Emu10k1 WaveTable synth
- */
+
+ 
 
 #include <linux/wait.h>
 #include <sound/core.h>
@@ -46,7 +42,7 @@ snd_emux_proc_info_read(struct snd_info_entry *entry,
 		snd_iprintf(buf, "Locked Samples: %d\n", emu->sflist->sample_locked);
 		mutex_unlock(&emu->sflist->presets_mutex);
 	}
-#if 0  /* debug */
+#if 0   
 	if (emu->voices[0].state != SNDRV_EMUX_ST_OFF && emu->voices[0].ch >= 0) {
 		struct snd_emux_voice *vp = &emu->voices[0];
 		snd_iprintf(buf, "voice 0: on\n");

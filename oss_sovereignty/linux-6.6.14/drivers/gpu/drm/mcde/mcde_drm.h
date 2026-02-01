@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2018 Linus Walleij <linus.walleij@linaro.org>
- * Parts of this file were based on the MCDE driver by Marcus Lorentzon
- * (C) ST-Ericsson SA 2013
- */
+ 
+ 
 #include <drm/drm_simple_kms_helper.h>
 
 #ifndef _MCDE_DRM_H_
 #define _MCDE_DRM_H_
 
-/* Shared basic registers */
+ 
 #define MCDE_CR 0x00000000
 #define MCDE_CR_IFIFOEMPTYLINECOUNT_V422_SHIFT 0
 #define MCDE_CR_IFIFOEMPTYLINECOUNT_V422_MASK 0x0000003F
@@ -49,20 +45,17 @@
 #define MCDE_SISERR 0x00000140
 
 enum mcde_flow_mode {
-	/* One-shot mode: flow stops after one frame */
+	 
 	MCDE_COMMAND_ONESHOT_FLOW,
-	/* Command mode with tearing effect (TE) IRQ sync */
+	 
 	MCDE_COMMAND_TE_FLOW,
-	/*
-	 * Command mode with bus turn-around (BTA) and tearing effect
-	 * (TE) IRQ sync.
-	 */
+	 
 	MCDE_COMMAND_BTA_TE_FLOW,
-	/* Video mode with tearing effect (TE) sync IRQ */
+	 
 	MCDE_VIDEO_TE_FLOW,
-	/* Video mode with the formatter itself as sync source */
+	 
 	MCDE_VIDEO_FORMATTER_FLOW,
-	/* DPI video with the formatter itsels as sync source */
+	 
 	MCDE_DPI_FORMATTER_FLOW,
 };
 
@@ -78,17 +71,17 @@ struct mcde {
 	s16 stride;
 	enum mcde_flow_mode flow_mode;
 	unsigned int flow_active;
-	spinlock_t flow_lock; /* Locks the channel flow control */
+	spinlock_t flow_lock;  
 
 	void __iomem *regs;
 
 	struct clk *mcde_clk;
 	struct clk *lcd_clk;
 	struct clk *hdmi_clk;
-	/* Handles to the clock dividers for FIFO A and B */
+	 
 	struct clk *fifoa_clk;
 	struct clk *fifob_clk;
-	/* Locks the MCDE FIFO control register A and B */
+	 
 	spinlock_t fifo_crx1_lock;
 
 	struct regulator *epod;
@@ -115,4 +108,4 @@ int mcde_display_init(struct drm_device *drm);
 
 int mcde_init_clock_divider(struct mcde *mcde);
 
-#endif /* _MCDE_DRM_H_ */
+#endif  

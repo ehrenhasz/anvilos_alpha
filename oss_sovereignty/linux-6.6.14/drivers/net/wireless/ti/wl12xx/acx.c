@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2008-2009 Nokia Corporation
- * Copyright (C) 2011 Texas Instruments Inc.
- */
+
+ 
 
 #include "../wlcore/cmd.h"
 #include "../wlcore/debug.h"

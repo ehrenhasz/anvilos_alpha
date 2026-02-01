@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM8250_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM8250_H
 
-/* GCC clocks */
+ 
 #define GPLL0							0
 #define GPLL0_OUT_EVEN						1
 #define GPLL4							2
@@ -208,7 +206,7 @@
 #define GCC_VIDEO_AXI1_CLK					198
 #define GCC_VIDEO_XO_CLK					199
 
-/* GCC resets */
+ 
 #define GCC_GPU_BCR						0
 #define GCC_MMSS_BCR						1
 #define GCC_NPU_BWMON_BCR					2
@@ -255,7 +253,7 @@
 #define GCC_VIDEO_AXI0_CLK_ARES					43
 #define GCC_VIDEO_AXI1_CLK_ARES					44
 
-/* GCC power domains */
+ 
 #define PCIE_0_GDSC						0
 #define PCIE_1_GDSC						1
 #define PCIE_2_GDSC						2

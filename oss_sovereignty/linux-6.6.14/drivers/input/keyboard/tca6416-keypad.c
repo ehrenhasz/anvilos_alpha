@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for keys on TCA6416 I2C IO expander
- *
- * Copyright (C) 2010 Texas Instruments
- *
- * Author : Sriramakrishnan.A.G. <srk@ti.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -24,7 +18,7 @@
 #define TCA6416_INVERT         2
 #define TCA6416_DIRECTION      3
 
-#define TCA6416_POLL_INTERVAL	100 /* msec */
+#define TCA6416_POLL_INTERVAL	100  
 
 static const struct i2c_device_id tca6416_id[] = {
 	{ "tca6416-keys", 16, },
@@ -98,7 +92,7 @@ static void tca6416_keys_scan(struct input_dev *input)
 
 	reg_val &= chip->pinmask;
 
-	/* Figure out which lines have changed */
+	 
 	val = reg_val ^ chip->reg_input;
 	chip->reg_input = reg_val;
 
@@ -118,9 +112,7 @@ static void tca6416_keys_scan(struct input_dev *input)
 	}
 }
 
-/*
- * This is threaded IRQ handler and this can (and will) sleep.
- */
+ 
 static irqreturn_t tca6416_keys_isr(int irq, void *dev_id)
 {
 	tca6416_keys_scan(dev_id);
@@ -133,7 +125,7 @@ static int tca6416_keys_open(struct input_dev *dev)
 	struct tca6416_keypad_chip *chip = input_get_drvdata(dev);
 
 	if (!chip->use_polling) {
-		/* Get initial device state in case it has switches */
+		 
 		tca6416_keys_scan(dev);
 		enable_irq(chip->client->irq);
 	}
@@ -161,7 +153,7 @@ static int tca6416_setup_registers(struct tca6416_keypad_chip *chip)
 	if (error)
 		return error;
 
-	/* ensure that keypad pins are set to input */
+	 
 	error = tca6416_write_reg(chip, TCA6416_DIRECTION,
 				  chip->reg_direction | chip->pinmask);
 	if (error)
@@ -189,7 +181,7 @@ static int tca6416_keypad_probe(struct i2c_client *client)
 	int error;
 	int i;
 
-	/* Check functionality */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE)) {
 		dev_err(&client->dev, "%s adapter not supported\n",
 			dev_driver_string(&client->adapter->dev));
@@ -229,7 +221,7 @@ static int tca6416_keypad_probe(struct i2c_client *client)
 	input->id.product = 0x0001;
 	input->id.version = 0x0100;
 
-	/* Enable auto repeat feature of Linux input subsystem */
+	 
 	if (pdata->rep)
 		__set_bit(EV_REP, input->evbit);
 
@@ -243,10 +235,7 @@ static int tca6416_keypad_probe(struct i2c_client *client)
 
 	input_set_drvdata(input, chip);
 
-	/*
-	 * Initialize cached registers from their original values.
-	 * we can't share this chip with another i2c master.
-	 */
+	 
 	error = tca6416_setup_registers(chip);
 	if (error)
 		return error;

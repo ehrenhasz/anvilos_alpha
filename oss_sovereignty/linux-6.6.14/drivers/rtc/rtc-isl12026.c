@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * An I2C driver for the Intersil ISL 12026
- *
- * Copyright (c) 2018 Cavium, Inc.
- */
+
+ 
 #include <linux/bcd.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -14,13 +10,13 @@
 #include <linux/rtc.h>
 #include <linux/slab.h>
 
-/* register offsets */
+ 
 #define ISL12026_REG_PWR	0x14
 # define ISL12026_REG_PWR_BSW	BIT(6)
 # define ISL12026_REG_PWR_SBIB	BIT(7)
 #define ISL12026_REG_SC		0x30
 #define ISL12026_REG_HR		0x32
-# define ISL12026_REG_HR_MIL	BIT(7)	/* military or 24 hour time */
+# define ISL12026_REG_HR_MIL	BIT(7)	 
 #define ISL12026_REG_SR		0x3f
 # define ISL12026_REG_SR_RTCF	BIT(0)
 # define ISL12026_REG_SR_WEL	BIT(1)
@@ -28,7 +24,7 @@
 # define ISL12026_REG_SR_MBZ	BIT(3)
 # define ISL12026_REG_SR_OSCF	BIT(4)
 
-/* The EEPROM array responds at i2c address 0x57 */
+ 
 #define ISL12026_EEPROM_ADDR	0x57
 
 #define ISL12026_PAGESIZE 16
@@ -81,7 +77,7 @@ static int isl12026_arm_write(struct i2c_client *client)
 		.buf	= op
 	};
 
-	/* Set SR.WEL */
+	 
 	op[0] = 0;
 	op[1] = ISL12026_REG_SR;
 	op[2] = ISL12026_REG_SR_WEL;
@@ -93,7 +89,7 @@ static int isl12026_arm_write(struct i2c_client *client)
 		goto out;
 	}
 
-	/* Set SR.WEL and SR.RWEL */
+	 
 	op[2] = ISL12026_REG_SR_WEL | ISL12026_REG_SR_RWEL;
 	msg.len = 3;
 	ret = i2c_transfer(client->adapter, &msg, 1);
@@ -177,17 +173,17 @@ static int isl12026_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret)
 		return ret;
 
-	/* Set the CCR registers */
+	 
 	op[0] = 0;
 	op[1] = ISL12026_REG_SC;
-	op[2] = bin2bcd(tm->tm_sec); /* SC */
-	op[3] = bin2bcd(tm->tm_min); /* MN */
-	op[4] = bin2bcd(tm->tm_hour) | ISL12026_REG_HR_MIL; /* HR */
-	op[5] = bin2bcd(tm->tm_mday); /* DT */
-	op[6] = bin2bcd(tm->tm_mon + 1); /* MO */
-	op[7] = bin2bcd(tm->tm_year % 100); /* YR */
-	op[8] = bin2bcd(tm->tm_wday & 7); /* DW */
-	op[9] = bin2bcd(tm->tm_year >= 100 ? 20 : 19); /* Y2K */
+	op[2] = bin2bcd(tm->tm_sec);  
+	op[3] = bin2bcd(tm->tm_min);  
+	op[4] = bin2bcd(tm->tm_hour) | ISL12026_REG_HR_MIL;  
+	op[5] = bin2bcd(tm->tm_mday);  
+	op[6] = bin2bcd(tm->tm_mon + 1);  
+	op[7] = bin2bcd(tm->tm_year % 100);  
+	op[8] = bin2bcd(tm->tm_wday & 7);  
+	op[9] = bin2bcd(tm->tm_year >= 100 ? 20 : 19);  
 	ret = i2c_transfer(client->adapter, &msg, 1);
 	if (ret != 1) {
 		dev_err(&client->dev, "write error CCR, ret=%d\n", ret);
@@ -219,7 +215,7 @@ static int isl12026_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		}
 	};
 
-	/* First, read SR */
+	 
 	addr[0] = 0;
 	addr[1] = ISL12026_REG_SR;
 	msgs[1].len = 1;
@@ -237,7 +233,7 @@ static int isl12026_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	if (sr & ISL12026_REG_SR_OSCF)
 		dev_warn(&client->dev, "Oscillator Failure on read\n");
 
-	/* Second, CCR regs */
+	 
 	addr[0] = 0;
 	addr[1] = ISL12026_REG_SC;
 	msgs[1].len = sizeof(ccr);
@@ -293,15 +289,12 @@ static int isl12026_nvm_read(void *p, unsigned int offset,
 		}
 	};
 
-	/*
-	 * offset and bytes checked and limited by nvmem core, so
-	 * proceed without further checks.
-	 */
+	 
 	ret = mutex_lock_interruptible(&priv->rtc->ops_lock);
 	if (ret)
 		return ret;
 
-	/* 2 bytes of address, most significant first */
+	 
 	addr[0] = offset >> 8;
 	addr[1] = offset;
 	msgs[1].len = bytes;
@@ -325,7 +318,7 @@ static int isl12026_nvm_write(void *p, unsigned int offset,
 	int ret;
 	u8 *v = val;
 	size_t chunk_size, num_written;
-	u8 payload[ISL12026_PAGESIZE + 2]; /* page + 2 address bytes */
+	u8 payload[ISL12026_PAGESIZE + 2];  
 	struct i2c_msg msgs[] = {
 		{
 			.addr	= priv->nvm_client->addr,
@@ -334,10 +327,7 @@ static int isl12026_nvm_write(void *p, unsigned int offset,
 		}
 	};
 
-	/*
-	 * offset and bytes checked and limited by nvmem core, so
-	 * proceed without further checks.
-	 */
+	 
 	ret = mutex_lock_interruptible(&priv->rtc->ops_lock);
 	if (ret)
 		return ret;
@@ -347,10 +337,7 @@ static int isl12026_nvm_write(void *p, unsigned int offset,
 		chunk_size = round_down(offset, ISL12026_PAGESIZE) +
 			ISL12026_PAGESIZE - offset;
 		chunk_size = min(bytes, chunk_size);
-		/*
-		 * 2 bytes of address, most significant first, followed
-		 * by page data bytes
-		 */
+		 
 		memcpy(payload + 2, v + num_written, chunk_size);
 		payload[0] = offset >> 8;
 		payload[1] = offset;
@@ -382,11 +369,7 @@ static void isl12026_force_power_modes(struct i2c_client *client)
 	u32 bsw_val, sbib_val;
 	bool set_bsw, set_sbib;
 
-	/*
-	 * If we can read the of_property, set the specified value.
-	 * If there is an error reading the of_property (likely
-	 * because it does not exist), keep the current value.
-	 */
+	 
 	ret = of_property_read_u32(client->dev.of_node,
 				   "isil,pwr-bsw", &bsw_val);
 	set_bsw = (ret == 0);
@@ -395,7 +378,7 @@ static void isl12026_force_power_modes(struct i2c_client *client)
 				   "isil,pwr-sbib", &sbib_val);
 	set_sbib = (ret == 0);
 
-	/* Check if PWR.BSW and/or PWR.SBIB need specified values */
+	 
 	if (!set_bsw && !set_sbib)
 		return;
 
@@ -412,14 +395,14 @@ static void isl12026_force_power_modes(struct i2c_client *client)
 			requested_pwr |= ISL12026_REG_PWR_BSW;
 		else
 			requested_pwr &= ~ISL12026_REG_PWR_BSW;
-	} /* else keep current BSW */
+	}  
 
 	if (set_sbib) {
 		if (sbib_val)
 			requested_pwr |= ISL12026_REG_PWR_SBIB;
 		else
 			requested_pwr &= ~ISL12026_REG_PWR_SBIB;
-	} /* else keep current SBIB */
+	}  
 
 	if (pwr >= 0 && pwr != requested_pwr) {
 		dev_dbg(&client->dev, "PWR: %02x\n", pwr);

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Bluetooth Software UART Qualcomm protocol
- *
- *  HCI_IBS (HCI In-Band Sleep) is Qualcomm's power management
- *  protocol extension to H4.
- *
- *  Copyright (C) 2007 Texas Instruments, Inc.
- *  Copyright (c) 2010, 2012, 2018 The Linux Foundation. All rights reserved.
- *
- *  Acknowledgements:
- *  This file is based on hci_ll.c, which was...
- *  Written by Ohad Ben-Cohen <ohad@bencohen.org>
- *  which was in turn based on hci_h4.c, which was written
- *  by Maxim Krasnyansky and Marcel Holtmann.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk.h>
@@ -39,7 +25,7 @@
 #include "hci_uart.h"
 #include "btqca.h"
 
-/* HCI_IBS protocol messages */
+ 
 #define HCI_IBS_SLEEP_IND	0xFE
 #define HCI_IBS_WAKE_IND	0xFD
 #define HCI_IBS_WAKE_ACK	0xFC
@@ -54,16 +40,16 @@
 	(MEMDUMP_TIMEOUT_MS + FW_DOWNLOAD_TIMEOUT_MS)
 #define FW_DOWNLOAD_TIMEOUT_MS		3000
 
-/* susclk rate */
+ 
 #define SUSCLK_RATE_32KHZ	32768
 
-/* Controller debug log header */
+ 
 #define QCA_DEBUG_HANDLE	0x2EDC
 
-/* max retry count when init fails */
+ 
 #define MAX_INIT_RETRIES 3
 
-/* Controller dump header */
+ 
 #define QCA_SSR_DUMP_HANDLE		0x0108
 #define QCA_DUMP_PACKET_SIZE		255
 #define QCA_LAST_SEQUENCE_NUM		0xFFFF
@@ -87,20 +73,20 @@ enum qca_capabilities {
 	QCA_CAP_VALID_LE_STATES = BIT(1),
 };
 
-/* HCI_IBS transmit side sleep protocol states */
+ 
 enum tx_ibs_states {
 	HCI_IBS_TX_ASLEEP,
 	HCI_IBS_TX_WAKING,
 	HCI_IBS_TX_AWAKE,
 };
 
-/* HCI_IBS receive side sleep protocol states */
+ 
 enum rx_states {
 	HCI_IBS_RX_ASLEEP,
 	HCI_IBS_RX_AWAKE,
 };
 
-/* HCI_IBS transmit and receive side clock state vote */
+ 
 enum hci_ibs_clock_state_vote {
 	HCI_IBS_VOTE_STATS_UPDATE,
 	HCI_IBS_TX_VOTE_CLOCK_ON,
@@ -109,7 +95,7 @@ enum hci_ibs_clock_state_vote {
 	HCI_IBS_RX_VOTE_CLOCK_OFF,
 };
 
-/* Controller memory dump states */
+ 
 enum qca_memdump_states {
 	QCA_MEMDUMP_IDLE,
 	QCA_MEMDUMP_COLLECTING,
@@ -140,13 +126,13 @@ struct qca_data {
 	struct hci_uart *hu;
 	struct sk_buff *rx_skb;
 	struct sk_buff_head txq;
-	struct sk_buff_head tx_wait_q;	/* HCI_IBS wait queue	*/
-	struct sk_buff_head rx_memdump_q;	/* Memdump wait queue	*/
-	spinlock_t hci_ibs_lock;	/* HCI_IBS state lock	*/
-	u8 tx_ibs_state;	/* HCI_IBS transmit side power state*/
-	u8 rx_ibs_state;	/* HCI_IBS receive side power state */
-	bool tx_vote;		/* Clock must be on for TX */
-	bool rx_vote;		/* Clock must be on for RX */
+	struct sk_buff_head tx_wait_q;	 
+	struct sk_buff_head rx_memdump_q;	 
+	spinlock_t hci_ibs_lock;	 
+	u8 tx_ibs_state;	 
+	u8 rx_ibs_state;	 
+	bool tx_vote;		 
+	bool rx_vote;		 
 	struct timer_list tx_idle_timer;
 	u32 tx_idle_delay;
 	struct timer_list wake_retrans_timer;
@@ -167,7 +153,7 @@ struct qca_data {
 
 	u16 fw_version;
 	u16 controller_id;
-	/* For debugging purpose */
+	 
 	u64 ibs_sent_wacks;
 	u64 ibs_sent_slps;
 	u64 ibs_sent_wakes;
@@ -190,10 +176,7 @@ enum qca_speed_type {
 	QCA_OPER_SPEED
 };
 
-/*
- * Voltage regulator information required for configuring the
- * QCA Bluetooth chipset
- */
+ 
 struct qca_vreg {
 	const char *name;
 	unsigned int load_uA;
@@ -206,9 +189,7 @@ struct qca_device_data {
 	uint32_t capabilities;
 };
 
-/*
- * Platform data for the QCA Bluetooth power driver.
- */
+ 
 struct qca_power {
 	struct device *dev;
 	struct regulator_bulk_data *vreg_bulk;
@@ -263,21 +244,15 @@ static const char *qca_get_firmware_name(struct hci_uart *hu)
 
 static void __serial_clock_on(struct tty_struct *tty)
 {
-	/* TODO: Some chipset requires to enable UART clock on client
-	 * side to save power consumption or manual work is required.
-	 * Please put your code to control UART clock here if needed
-	 */
+	 
 }
 
 static void __serial_clock_off(struct tty_struct *tty)
 {
-	/* TODO: Some chipset requires to disable UART clock on client
-	 * side to save power consumption or manual work is required.
-	 * Please put your code to control UART clock off here if needed
-	 */
+	 
 }
 
-/* serial_clock_vote needs to be called with the ibs lock held */
+ 
 static void serial_clock_vote(unsigned long vote, struct hci_uart *hu)
 {
 	struct qca_data *qca = hu->priv;
@@ -345,9 +320,7 @@ static void serial_clock_vote(unsigned long vote, struct hci_uart *hu)
 	}
 }
 
-/* Builds and sends an HCI_IBS command packet.
- * These are very simple packets with only 1 cmd byte.
- */
+ 
 static int send_hci_ibs_cmd(u8 cmd, struct hci_uart *hu)
 {
 	int err = 0;
@@ -362,7 +335,7 @@ static int send_hci_ibs_cmd(u8 cmd, struct hci_uart *hu)
 		return -ENOMEM;
 	}
 
-	/* Assign HCI_IBS type */
+	 
 	skb_put_u8(skb, cmd);
 
 	skb_queue_tail(&qca->txq, skb);
@@ -380,24 +353,24 @@ static void qca_wq_awake_device(struct work_struct *work)
 
 	BT_DBG("hu %p wq awake device", hu);
 
-	/* Vote for serial clock */
+	 
 	serial_clock_vote(HCI_IBS_TX_VOTE_CLOCK_ON, hu);
 
 	spin_lock_irqsave(&qca->hci_ibs_lock, flags);
 
-	/* Send wake indication to device */
+	 
 	if (send_hci_ibs_cmd(HCI_IBS_WAKE_IND, hu) < 0)
 		BT_ERR("Failed to send WAKE to device");
 
 	qca->ibs_sent_wakes++;
 
-	/* Start retransmit timer */
+	 
 	retrans_delay = msecs_to_jiffies(qca->wake_retrans);
 	mod_timer(&qca->wake_retrans_timer, jiffies + retrans_delay);
 
 	spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 
-	/* Actually send the packets */
+	 
 	hci_uart_tx_wakeup(hu);
 }
 
@@ -415,9 +388,7 @@ static void qca_wq_awake_rx(struct work_struct *work)
 	spin_lock_irqsave(&qca->hci_ibs_lock, flags);
 	qca->rx_ibs_state = HCI_IBS_RX_AWAKE;
 
-	/* Always acknowledge device wake up,
-	 * sending IBS message doesn't count as TX ON.
-	 */
+	 
 	if (send_hci_ibs_cmd(HCI_IBS_WAKE_ACK, hu) < 0)
 		BT_ERR("Failed to acknowledge device wake up");
 
@@ -425,7 +396,7 @@ static void qca_wq_awake_rx(struct work_struct *work)
 
 	spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 
-	/* Actually send the packets */
+	 
 	hci_uart_tx_wakeup(hu);
 }
 
@@ -448,12 +419,10 @@ static void qca_wq_serial_tx_clock_vote_off(struct work_struct *work)
 
 	BT_DBG("hu %p tx clock vote off", hu);
 
-	/* Run HCI tx handling unlocked */
+	 
 	hci_uart_tx_wakeup(hu);
 
-	/* Now that message queued to tty driver, vote for tty clocks off.
-	 * It is up to the tty driver to pend the clocks off until tx done.
-	 */
+	 
 	serial_clock_vote(HCI_IBS_TX_VOTE_CLOCK_OFF, hu);
 }
 
@@ -470,7 +439,7 @@ static void hci_ibs_tx_idle_timeout(struct timer_list *t)
 
 	switch (qca->tx_ibs_state) {
 	case HCI_IBS_TX_AWAKE:
-		/* TX_IDLE, go to SLEEP */
+		 
 		if (send_hci_ibs_cmd(HCI_IBS_SLEEP_IND, hu) < 0) {
 			BT_ERR("Failed to send SLEEP to device");
 			break;
@@ -503,7 +472,7 @@ static void hci_ibs_wake_retrans_timeout(struct timer_list *t)
 	spin_lock_irqsave_nested(&qca->hci_ibs_lock,
 				 flags, SINGLE_DEPTH_NESTING);
 
-	/* Don't retransmit the HCI_IBS_WAKE_IND when suspending. */
+	 
 	if (test_bit(QCA_SUSPENDING, &qca->flags)) {
 		spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 		return;
@@ -511,7 +480,7 @@ static void hci_ibs_wake_retrans_timeout(struct timer_list *t)
 
 	switch (qca->tx_ibs_state) {
 	case HCI_IBS_TX_WAKING:
-		/* No WAKE_ACK, retransmit WAKE */
+		 
 		retransmit = true;
 		if (send_hci_ibs_cmd(HCI_IBS_WAKE_IND, hu) < 0) {
 			BT_ERR("Failed to acknowledge device wake up");
@@ -546,9 +515,7 @@ static void qca_controller_memdump_timeout(struct work_struct *work)
 	if (test_bit(QCA_MEMDUMP_COLLECTION, &qca->flags)) {
 		qca->memdump_state = QCA_MEMDUMP_TIMEOUT;
 		if (!test_bit(QCA_HW_ERROR_EVENT, &qca->flags)) {
-			/* Inject hw error event to reset the device
-			 * and driver.
-			 */
+			 
 			hci_reset_dev(hu->hdev);
 		}
 	}
@@ -557,7 +524,7 @@ static void qca_controller_memdump_timeout(struct work_struct *work)
 }
 
 
-/* Initialize protocol */
+ 
 static int qca_open(struct hci_uart *hu)
 {
 	struct qca_serdev *qcadev;
@@ -596,7 +563,7 @@ static int qca_open(struct hci_uart *hu)
 	qca->hu = hu;
 	init_completion(&qca->drop_ev_comp);
 
-	/* Assume we start with both sides asleep -- extra wakes OK */
+	 
 	qca->tx_ibs_state = HCI_IBS_TX_ASLEEP;
 	qca->rx_ibs_state = HCI_IBS_RX_ASLEEP;
 
@@ -651,7 +618,7 @@ static void qca_debugfs_init(struct hci_dev *hdev)
 
 	ibs_dir = debugfs_create_dir("ibs", hdev->debugfs);
 
-	/* read only */
+	 
 	mode = 0444;
 	debugfs_create_u8("tx_ibs_state", mode, ibs_dir, &qca->tx_ibs_state);
 	debugfs_create_u8("rx_ibs_state", mode, ibs_dir, &qca->rx_ibs_state);
@@ -678,14 +645,14 @@ static void qca_debugfs_init(struct hci_dev *hdev)
 	debugfs_create_u32("vote_on_ms", mode, ibs_dir, &qca->vote_on_ms);
 	debugfs_create_u32("vote_off_ms", mode, ibs_dir, &qca->vote_off_ms);
 
-	/* read/write */
+	 
 	mode = 0644;
 	debugfs_create_u32("wake_retrans", mode, ibs_dir, &qca->wake_retrans);
 	debugfs_create_u32("tx_idle_delay", mode, ibs_dir,
 			   &qca->tx_idle_delay);
 }
 
-/* Flush protocol data */
+ 
 static int qca_flush(struct hci_uart *hu)
 {
 	struct qca_data *qca = hu->priv;
@@ -698,7 +665,7 @@ static int qca_flush(struct hci_uart *hu)
 	return 0;
 }
 
-/* Close protocol */
+ 
 static int qca_close(struct hci_uart *hu)
 {
 	struct qca_data *qca = hu->priv;
@@ -710,12 +677,7 @@ static int qca_close(struct hci_uart *hu)
 	skb_queue_purge(&qca->tx_wait_q);
 	skb_queue_purge(&qca->txq);
 	skb_queue_purge(&qca->rx_memdump_q);
-	/*
-	 * Shut the timers down so they can't be rearmed when
-	 * destroy_workqueue() drains pending work which in turn might try
-	 * to arm a timer.  After shutdown rearm attempts are silently
-	 * ignored by the timer core code.
-	 */
+	 
 	timer_shutdown_sync(&qca->tx_idle_timer);
 	timer_shutdown_sync(&qca->wake_retrans_timer);
 	destroy_workqueue(qca->workqueue);
@@ -730,8 +692,7 @@ static int qca_close(struct hci_uart *hu)
 	return 0;
 }
 
-/* Called upon a wake-up-indication from the device.
- */
+ 
 static void device_want_to_wakeup(struct hci_uart *hu)
 {
 	unsigned long flags;
@@ -743,7 +704,7 @@ static void device_want_to_wakeup(struct hci_uart *hu)
 
 	qca->ibs_recv_wakes++;
 
-	/* Don't wake the rx up when suspending. */
+	 
 	if (test_bit(QCA_SUSPENDING, &qca->flags)) {
 		spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 		return;
@@ -751,17 +712,13 @@ static void device_want_to_wakeup(struct hci_uart *hu)
 
 	switch (qca->rx_ibs_state) {
 	case HCI_IBS_RX_ASLEEP:
-		/* Make sure clock is on - we may have turned clock off since
-		 * receiving the wake up indicator awake rx clock.
-		 */
+		 
 		queue_work(qca->workqueue, &qca->ws_awake_rx);
 		spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 		return;
 
 	case HCI_IBS_RX_AWAKE:
-		/* Always acknowledge device wake up,
-		 * sending IBS message doesn't count as TX ON.
-		 */
+		 
 		if (send_hci_ibs_cmd(HCI_IBS_WAKE_ACK, hu) < 0) {
 			BT_ERR("Failed to acknowledge device wake up");
 			break;
@@ -770,7 +727,7 @@ static void device_want_to_wakeup(struct hci_uart *hu)
 		break;
 
 	default:
-		/* Any other state is illegal */
+		 
 		BT_ERR("Received HCI_IBS_WAKE_IND in rx state %d",
 		       qca->rx_ibs_state);
 		break;
@@ -778,12 +735,11 @@ static void device_want_to_wakeup(struct hci_uart *hu)
 
 	spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 
-	/* Actually send the packets */
+	 
 	hci_uart_tx_wakeup(hu);
 }
 
-/* Called upon a sleep-indication from the device.
- */
+ 
 static void device_want_to_sleep(struct hci_uart *hu)
 {
 	unsigned long flags;
@@ -797,9 +753,9 @@ static void device_want_to_sleep(struct hci_uart *hu)
 
 	switch (qca->rx_ibs_state) {
 	case HCI_IBS_RX_AWAKE:
-		/* Update state */
+		 
 		qca->rx_ibs_state = HCI_IBS_RX_ASLEEP;
-		/* Vote off rx clock under workqueue */
+		 
 		queue_work(qca->workqueue, &qca->ws_rx_vote_off);
 		break;
 
@@ -807,7 +763,7 @@ static void device_want_to_sleep(struct hci_uart *hu)
 		break;
 
 	default:
-		/* Any other state is illegal */
+		 
 		BT_ERR("Received HCI_IBS_SLEEP_IND in rx state %d",
 		       qca->rx_ibs_state);
 		break;
@@ -818,8 +774,7 @@ static void device_want_to_sleep(struct hci_uart *hu)
 	spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 }
 
-/* Called upon wake-up-acknowledgement from the device
- */
+ 
 static void device_woke_up(struct hci_uart *hu)
 {
 	unsigned long flags, idle_delay;
@@ -832,7 +787,7 @@ static void device_woke_up(struct hci_uart *hu)
 
 	qca->ibs_recv_wacks++;
 
-	/* Don't react to the wake-up-acknowledgment when suspending. */
+	 
 	if (test_bit(QCA_SUSPENDING, &qca->flags)) {
 		spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 		return;
@@ -840,17 +795,17 @@ static void device_woke_up(struct hci_uart *hu)
 
 	switch (qca->tx_ibs_state) {
 	case HCI_IBS_TX_AWAKE:
-		/* Expect one if we send 2 WAKEs */
+		 
 		BT_DBG("Received HCI_IBS_WAKE_ACK in tx state %d",
 		       qca->tx_ibs_state);
 		break;
 
 	case HCI_IBS_TX_WAKING:
-		/* Send pending packets */
+		 
 		while ((skb = skb_dequeue(&qca->tx_wait_q)))
 			skb_queue_tail(&qca->txq, skb);
 
-		/* Switch timers and change state to HCI_IBS_TX_AWAKE */
+		 
 		del_timer(&qca->wake_retrans_timer);
 		idle_delay = msecs_to_jiffies(qca->tx_idle_delay);
 		mod_timer(&qca->tx_idle_timer, jiffies + idle_delay);
@@ -866,13 +821,11 @@ static void device_woke_up(struct hci_uart *hu)
 
 	spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 
-	/* Actually send the packets */
+	 
 	hci_uart_tx_wakeup(hu);
 }
 
-/* Enqueue frame for transmittion (padding, crc, etc) may be called from
- * two simultaneous tasklets.
- */
+ 
 static int qca_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 {
 	unsigned long flags = 0, idle_delay;
@@ -882,21 +835,18 @@ static int qca_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	       qca->tx_ibs_state);
 
 	if (test_bit(QCA_SSR_TRIGGERED, &qca->flags)) {
-		/* As SSR is in progress, ignore the packets */
+		 
 		bt_dev_dbg(hu->hdev, "SSR is in progress");
 		kfree_skb(skb);
 		return 0;
 	}
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 
 	spin_lock_irqsave(&qca->hci_ibs_lock, flags);
 
-	/* Don't go to sleep in middle of patch download or
-	 * Out-Of-Band(GPIOs control) sleep is selected.
-	 * Don't wake the device up when suspending.
-	 */
+	 
 	if (test_bit(QCA_IBS_DISABLED, &qca->flags) ||
 	    test_bit(QCA_SUSPENDING, &qca->flags)) {
 		skb_queue_tail(&qca->txq, skb);
@@ -904,7 +854,7 @@ static int qca_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 		return 0;
 	}
 
-	/* Act according to current state */
+	 
 	switch (qca->tx_ibs_state) {
 	case HCI_IBS_TX_AWAKE:
 		BT_DBG("Device awake, sending normally");
@@ -915,17 +865,17 @@ static int qca_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 
 	case HCI_IBS_TX_ASLEEP:
 		BT_DBG("Device asleep, waking up and queueing packet");
-		/* Save packet for later */
+		 
 		skb_queue_tail(&qca->tx_wait_q, skb);
 
 		qca->tx_ibs_state = HCI_IBS_TX_WAKING;
-		/* Schedule a work queue to wake up device */
+		 
 		queue_work(qca->workqueue, &qca->ws_awake_device);
 		break;
 
 	case HCI_IBS_TX_WAKING:
 		BT_DBG("Device waking up, queueing packet");
-		/* Transient state; just keep packet for later */
+		 
 		skb_queue_tail(&qca->tx_wait_q, skb);
 		break;
 
@@ -979,11 +929,7 @@ static int qca_ibs_wake_ack(struct hci_dev *hdev, struct sk_buff *skb)
 
 static int qca_recv_acl_data(struct hci_dev *hdev, struct sk_buff *skb)
 {
-	/* We receive debug logs from chip as an ACL packets.
-	 * Instead of sending the data to ACL to decode the
-	 * received data, we are pushing them to the above layers
-	 * as a diagnostic packet.
-	 */
+	 
 	if (get_unaligned_le16(skb->data) == QCA_DEBUG_HANDLE)
 		return hci_recv_diag(hdev, skb);
 
@@ -1029,9 +975,7 @@ static void qca_controller_memdump(struct work_struct *work)
 	while ((skb = skb_dequeue(&qca->rx_memdump_q))) {
 
 		mutex_lock(&qca->hci_memdump_lock);
-		/* Skip processing the received packets if timeout detected
-		 * or memdump collection completed.
-		 */
+		 
 		if (qca->memdump_state == QCA_MEMDUMP_TIMEOUT ||
 		    qca->memdump_state == QCA_MEMDUMP_COLLECTED) {
 			mutex_unlock(&qca->hci_memdump_lock);
@@ -1056,12 +1000,7 @@ static void qca_controller_memdump(struct work_struct *work)
 
 		if (!seq_no) {
 
-			/* This is the first frame of memdump packet from
-			 * the controller, Disable IBS to recevie dump
-			 * with out any interruption, ideally time required for
-			 * the controller to send the dump is 8 seconds. let us
-			 * start timer to handle this asynchronous activity.
-			 */
+			 
 			set_bit(QCA_IBS_DISABLED, &qca->flags);
 			set_bit(QCA_MEMDUMP_COLLECTION, &qca->flags);
 			dump = (void *) skb->data;
@@ -1098,9 +1037,7 @@ static void qca_controller_memdump(struct work_struct *work)
 
 		}
 
-		/* If sequence no 0 is missed then there is no point in
-		 * accepting the other sequences.
-		 */
+		 
 		if (!test_bit(QCA_MEMDUMP_COLLECTION, &qca->flags)) {
 			bt_dev_err(hu->hdev, "QCA: Discarding other packets");
 			kfree(qca_memdump);
@@ -1108,14 +1045,8 @@ static void qca_controller_memdump(struct work_struct *work)
 			mutex_unlock(&qca->hci_memdump_lock);
 			return;
 		}
-		/* There could be chance of missing some packets from
-		 * the controller. In such cases let us store the dummy
-		 * packets in the buffer.
-		 */
-		/* For QCA6390, controller does not lost packets but
-		 * sequence number field of packet sometimes has error
-		 * bits, so skip this checking for missing packet.
-		 */
+		 
+		 
 		while ((seq_no > qca_memdump->current_seq_no + 1) &&
 			(soc_type != QCA_QCA6390) &&
 			seq_no != QCA_LAST_SEQUENCE_NUM) {
@@ -1194,15 +1125,7 @@ static int qca_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
 	if (test_bit(QCA_DROP_VENDOR_EVENT, &qca->flags)) {
 		struct hci_event_hdr *hdr = (void *)skb->data;
 
-		/* For the WCN3990 the vendor command for a baudrate change
-		 * isn't sent as synchronous HCI command, because the
-		 * controller sends the corresponding vendor event with the
-		 * new baudrate. The event is received and properly decoded
-		 * after changing the baudrate of the host port. It needs to
-		 * be dropped, otherwise it can be misinterpreted as
-		 * response to a later firmware download command (also a
-		 * vendor command).
-		 */
+		 
 
 		if (hdr->evt == HCI_EV_VENDOR)
 			complete(&qca->drop_ev_comp);
@@ -1211,11 +1134,7 @@ static int qca_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
 
 		return 0;
 	}
-	/* We receive chip memory dump as an event packet, With a dedicated
-	 * handler followed by a hardware error event. When this event is
-	 * received we store dump into a file before closing hci. This
-	 * dump will help in triaging the issues.
-	 */
+	 
 	if ((skb->data[0] == HCI_VENDOR_PKT) &&
 	    (get_unaligned_be16(skb->data + 2) == QCA_SSR_DUMP_HANDLE))
 		return qca_controller_memdump_event(hdev, skb);
@@ -1333,14 +1252,14 @@ static int qca_set_baudrate(struct hci_dev *hdev, uint8_t baudrate)
 		return -ENOMEM;
 	}
 
-	/* Assign commands to change baudrate and packet type. */
+	 
 	skb_put_data(skb, cmd, sizeof(cmd));
 	hci_skb_pkt_type(skb) = HCI_COMMAND_PKT;
 
 	skb_queue_tail(&qca->txq, skb);
 	hci_uart_tx_wakeup(hu);
 
-	/* Wait for the baudrate change request to be sent */
+	 
 
 	while (!skb_queue_empty(&qca->txq))
 		usleep_range(100, 200);
@@ -1349,7 +1268,7 @@ static int qca_set_baudrate(struct hci_dev *hdev, uint8_t baudrate)
 		serdev_device_wait_until_sent(hu->serdev,
 		      msecs_to_jiffies(CMD_TRANS_TIMEOUT_MS));
 
-	/* Give the controller time to process the request */
+	 
 	switch (qca_soc_type(hu)) {
 	case QCA_WCN3988:
 	case QCA_WCN3990:
@@ -1382,16 +1301,7 @@ static int qca_send_power_pulse(struct hci_uart *hu, bool on)
 	int timeout = msecs_to_jiffies(CMD_TRANS_TIMEOUT_MS);
 	u8 cmd = on ? QCA_WCN3990_POWERON_PULSE : QCA_WCN3990_POWEROFF_PULSE;
 
-	/* These power pulses are single byte command which are sent
-	 * at required baudrate to wcn3990. On wcn3990, we have an external
-	 * circuit at Tx pin which decodes the pulse sent at specific baudrate.
-	 * For example, wcn3990 supports RF COEX antenna for both Wi-Fi/BT
-	 * and also we use the same power inputs to turn on and off for
-	 * Wi-Fi/BT. Powering up the power sources will not enable BT, until
-	 * we send a power on pulse at 115200 bps. This algorithm will help to
-	 * save power. Disabling hardware flow control is mandatory while
-	 * sending power pulses to SoC.
-	 */
+	 
 	bt_dev_dbg(hu->hdev, "sending power pulse %02x to controller", cmd);
 
 	serdev_device_write_flush(hu->serdev);
@@ -1405,7 +1315,7 @@ static int qca_send_power_pulse(struct hci_uart *hu, bool on)
 	serdev_device_wait_until_sent(hu->serdev, timeout);
 	hci_uart_set_flow_control(hu, false);
 
-	/* Give to controller time to boot/shutdown */
+	 
 	if (on)
 		msleep(100);
 	else
@@ -1475,9 +1385,7 @@ static int qca_set_speed(struct hci_uart *hu, enum qca_speed_type speed_type)
 		if (!speed)
 			return 0;
 
-		/* Disable flow control for wcn3990 to deassert RTS while
-		 * changing the baudrate of chip and host.
-		 */
+		 
 		switch (soc_type) {
 		case QCA_WCN3988:
 		case QCA_WCN3990:
@@ -1529,9 +1437,7 @@ error:
 
 		switch (soc_type) {
 		case QCA_WCN3990:
-			/* Wait for the controller to send the vendor event
-			 * for the baudrate change command.
-			 */
+			 
 			if (!wait_for_completion_timeout(&qca->drop_ev_comp,
 						 msecs_to_jiffies(100))) {
 				bt_dev_err(hu->hdev,
@@ -1561,10 +1467,7 @@ static int qca_send_crashbuffer(struct hci_uart *hu)
 		return -ENOMEM;
 	}
 
-	/* We forcefully crash the controller, by sending 0xfb byte for
-	 * 1024 times. We also might have chance of losing data, To be
-	 * on safer side we send 1096 bytes to the SoC.
-	 */
+	 
 	memset(skb_put(skb, QCA_CRASHBYTE_PACKET_LEN), QCA_MEMDUMP_BYTE,
 	       QCA_CRASHBYTE_PACKET_LEN);
 	hci_skb_pkt_type(skb) = HCI_COMMAND_PKT;
@@ -1596,19 +1499,12 @@ static void qca_hw_error(struct hci_dev *hdev, u8 code)
 	bt_dev_info(hdev, "mem_dump_status: %d", qca->memdump_state);
 
 	if (qca->memdump_state == QCA_MEMDUMP_IDLE) {
-		/* If hardware error event received for other than QCA
-		 * soc memory dump event, then we need to crash the SOC
-		 * and wait here for 8 seconds to get the dump packets.
-		 * This will block main thread to be on hold until we
-		 * collect dump.
-		 */
+		 
 		set_bit(QCA_MEMDUMP_COLLECTION, &qca->flags);
 		qca_send_crashbuffer(hu);
 		qca_wait_for_dump_collection(hdev);
 	} else if (qca->memdump_state == QCA_MEMDUMP_COLLECTING) {
-		/* Let us wait here until memory dump collected or
-		 * memory dump timer expired.
-		 */
+		 
 		bt_dev_info(hdev, "waiting for dump to complete");
 		qca_wait_for_dump_collection(hdev);
 	}
@@ -1646,9 +1542,7 @@ static void qca_cmd_timeout(struct hci_dev *hdev)
 		qca_send_crashbuffer(hu);
 		qca_wait_for_dump_collection(hdev);
 	} else if (qca->memdump_state == QCA_MEMDUMP_COLLECTING) {
-		/* Let us wait here until memory dump collected or
-		 * memory dump timer expired.
-		 */
+		 
 		bt_dev_info(hdev, "waiting for dump to complete");
 		qca_wait_for_dump_collection(hdev);
 	}
@@ -1657,9 +1551,7 @@ static void qca_cmd_timeout(struct hci_dev *hdev)
 	if (qca->memdump_state != QCA_MEMDUMP_COLLECTED) {
 		qca->memdump_state = QCA_MEMDUMP_TIMEOUT;
 		if (!test_bit(QCA_HW_ERROR_EVENT, &qca->flags)) {
-			/* Inject hw error event to reset the device
-			 * and driver.
-			 */
+			 
 			hci_reset_dev(hu->hdev);
 		}
 	}
@@ -1671,10 +1563,7 @@ static bool qca_wakeup(struct hci_dev *hdev)
 	struct hci_uart *hu = hci_get_drvdata(hdev);
 	bool wakeup;
 
-	/* BT SoC attached through the serial bus is handled by the serdev driver.
-	 * So we need to use the device handle of the serdev driver to get the
-	 * status of device may wakeup.
-	 */
+	 
 	wakeup = device_may_wakeup(&hu->serdev->ctrl->dev);
 	bt_dev_dbg(hu->hdev, "wakeup status : %d", wakeup);
 
@@ -1688,9 +1577,7 @@ static int qca_regulator_init(struct hci_uart *hu)
 	int ret;
 	bool sw_ctrl_state;
 
-	/* Check for vregs status, may be hci down has turned
-	 * off the voltage regulator.
-	 */
+	 
 	qcadev = serdev_device_get_drvdata(hu->serdev);
 	if (!qcadev->bt_power->vregs_on) {
 		serdev_device_close(hu->serdev);
@@ -1710,7 +1597,7 @@ static int qca_regulator_init(struct hci_uart *hu)
 	case QCA_WCN3990:
 	case QCA_WCN3991:
 	case QCA_WCN3998:
-		/* Forcefully enable wcn399x to enter in to boot mode. */
+		 
 		host_set_baudrate(hu, 2400);
 		ret = qca_send_power_pulse(hu, false);
 		if (ret)
@@ -1721,7 +1608,7 @@ static int qca_regulator_init(struct hci_uart *hu)
 		break;
 	}
 
-	/* For wcn6750 need to enable gpio bt_en */
+	 
 	if (qcadev->bt_en) {
 		gpiod_set_value_cansleep(qcadev->bt_en, 0);
 		msleep(50);
@@ -1749,11 +1636,7 @@ static int qca_regulator_init(struct hci_uart *hu)
 		break;
 	}
 
-	/* Now the device is in ready state to communicate with host.
-	 * To sync host with device we need to reopen port.
-	 * Without this, we will have RTS and CTS synchronization
-	 * issues.
-	 */
+	 
 	serdev_device_close(hu->serdev);
 	ret = serdev_device_open(hu->serdev);
 	if (ret) {
@@ -1774,9 +1657,7 @@ static int qca_power_on(struct hci_dev *hdev)
 	struct qca_data *qca = hu->priv;
 	int ret = 0;
 
-	/* Non-serdev device usually is powered by external power
-	 * and don't need additional action in driver for power on
-	 */
+	 
 	if (!hu->serdev)
 		return 0;
 
@@ -1795,7 +1676,7 @@ static int qca_power_on(struct hci_dev *hdev)
 		qcadev = serdev_device_get_drvdata(hu->serdev);
 		if (qcadev->bt_en) {
 			gpiod_set_value_cansleep(qcadev->bt_en, 1);
-			/* Controller needs time to bootup. */
+			 
 			msleep(150);
 		}
 	}
@@ -1832,12 +1713,10 @@ static int qca_setup(struct hci_uart *hu)
 		return ret;
 
 	clear_bit(QCA_ROM_FW, &qca->flags);
-	/* Patch downloading has to be done without IBS mode */
+	 
 	set_bit(QCA_IBS_DISABLED, &qca->flags);
 
-	/* Enable controller to do both LE scan and BR/EDR inquiry
-	 * simultaneously.
-	 */
+	 
 	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
 
 	switch (soc_type) {
@@ -1894,7 +1773,7 @@ retry:
 		qca_set_speed(hu, QCA_INIT_SPEED);
 	}
 
-	/* Setup user speed if needed */
+	 
 	speed = qca_get_speed(hu, QCA_OPER_SPEED);
 	if (speed) {
 		ret = qca_set_speed(hu, QCA_OPER_SPEED);
@@ -1915,13 +1794,13 @@ retry:
 		break;
 
 	default:
-		/* Get QCA version information */
+		 
 		ret = qca_read_soc_version(hdev, &ver, soc_type);
 		if (ret)
 			goto out;
 	}
 
-	/* Setup patch / NVM configurations */
+	 
 	ret = qca_uart_setup(hdev, qca_baudrate, soc_type, ver,
 			firmware_name);
 	if (!ret) {
@@ -1932,14 +1811,11 @@ retry:
 		if (device_can_wakeup(hu->serdev->ctrl->dev.parent))
 			hu->hdev->wakeup = qca_wakeup;
 	} else if (ret == -ENOENT) {
-		/* No patch/nvm-config found, run with original fw/config */
+		 
 		set_bit(QCA_ROM_FW, &qca->flags);
 		ret = 0;
 	} else if (ret == -EAGAIN) {
-		/*
-		 * Userspace firmware loader will return -EAGAIN in case no
-		 * patch/nvm-config is found, so run with original fw/config.
-		 */
+		 
 		set_bit(QCA_ROM_FW, &qca->flags);
 		ret = 0;
 	}
@@ -1960,7 +1836,7 @@ out:
 		goto retry;
 	}
 
-	/* Setup bdaddr */
+	 
 	if (soc_type == QCA_ROME)
 		hu->hdev->set_bdaddr = qca_set_bdaddr_rome;
 	else
@@ -2090,18 +1966,13 @@ static void qca_power_shutdown(struct hci_uart *hu)
 	enum qca_btsoc_type soc_type = qca_soc_type(hu);
 	bool sw_ctrl_state;
 
-	/* From this point we go into power off state. But serial port is
-	 * still open, stop queueing the IBS data and flush all the buffered
-	 * data in skb's.
-	 */
+	 
 	spin_lock_irqsave(&qca->hci_ibs_lock, flags);
 	set_bit(QCA_IBS_DISABLED, &qca->flags);
 	qca_flush(hu);
 	spin_unlock_irqrestore(&qca->hci_ibs_lock, flags);
 
-	/* Non-serdev device usually is powered by external power
-	 * and don't need additional action in driver for power down
-	 */
+	 
 	if (!hu->serdev)
 		return;
 
@@ -2147,7 +2018,7 @@ static int qca_power_off(struct hci_dev *hdev)
 	del_timer_sync(&qca->wake_retrans_timer);
 	del_timer_sync(&qca->tx_idle_timer);
 
-	/* Stop sending shutdown command if soc crashes. */
+	 
 	if (soc_type != QCA_ROME
 		&& qca->memdump_state == QCA_MEMDUMP_IDLE) {
 		qca_send_pre_shutdown_cmd(hdev);
@@ -2163,7 +2034,7 @@ static int qca_regulator_enable(struct qca_serdev *qcadev)
 	struct qca_power *power = qcadev->bt_power;
 	int ret;
 
-	/* Already enabled */
+	 
 	if (power->vregs_on)
 		return 0;
 
@@ -2191,7 +2062,7 @@ static void qca_regulator_disable(struct qca_serdev *qcadev)
 
 	power = qcadev->bt_power;
 
-	/* Already disabled? */
+	 
 	if (!power->vregs_on)
 		return;
 
@@ -2349,9 +2220,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
 	}
 
 	if (data) {
-		/* Wideband speech support must be set per driver since it can't
-		 * be queried via hci. Same with the valid le states quirk.
-		 */
+		 
 		if (data->capabilities & QCA_CAP_WIDEBAND_SPEECH)
 			set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED,
 				&hdev->quirks);
@@ -2443,16 +2312,11 @@ static int __maybe_unused qca_suspend(struct device *dev)
 
 	set_bit(QCA_SUSPENDING, &qca->flags);
 
-	/* if BT SoC is running with default firmware then it does not
-	 * support in-band sleep
-	 */
+	 
 	if (test_bit(QCA_ROM_FW, &qca->flags))
 		return 0;
 
-	/* During SSR after memory dump collection, controller will be
-	 * powered off and then powered on.If controller is powered off
-	 * during SSR then we should wait until SSR is completed.
-	 */
+	 
 	if (test_bit(QCA_BT_OFF, &qca->flags) &&
 	    !test_bit(QCA_SSR_TRIGGERED, &qca->flags))
 		return 0;
@@ -2463,10 +2327,7 @@ static int __maybe_unused qca_suspend(struct device *dev)
 					IBS_DISABLE_SSR_TIMEOUT_MS :
 					FW_DOWNLOAD_TIMEOUT_MS;
 
-		/* QCA_IBS_DISABLED flag is set to true, During FW download
-		 * and during memory dump collection. It is reset to false,
-		 * After FW download complete.
-		 */
+		 
 		wait_on_bit_timeout(&qca->flags, QCA_IBS_DISABLED,
 			    TASK_UNINTERRUPTIBLE, msecs_to_jiffies(wait_timeout));
 
@@ -2524,9 +2385,7 @@ static int __maybe_unused qca_suspend(struct device *dev)
 		serial_clock_vote(HCI_IBS_TX_VOTE_CLOCK_OFF, hu);
 	}
 
-	/* Wait for HCI_IBS_SLEEP_IND sent by device to indicate its Tx is going
-	 * to sleep, so that the packet does not wake the system later.
-	 */
+	 
 	ret = wait_event_interruptible_timeout(qca->suspend_wait_q,
 			qca->rx_ibs_state == HCI_IBS_RX_ASLEEP,
 			msecs_to_jiffies(IBS_BTSOC_TX_IDLE_TIMEOUT_MS));
@@ -2569,7 +2428,7 @@ static const struct of_device_id qca_bluetooth_of_match[] = {
 	{ .compatible = "qcom,wcn6750-bt", .data = &qca_soc_data_wcn6750},
 	{ .compatible = "qcom,wcn6855-bt", .data = &qca_soc_data_wcn6855},
 	{ .compatible = "qcom,wcn7850-bt", .data = &qca_soc_data_wcn7850},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, qca_bluetooth_of_match);
 #endif

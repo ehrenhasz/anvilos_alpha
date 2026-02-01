@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
+ 
+ 
 #ifndef _MT76X0_PHY_H_
 #define _MT76X0_PHY_H_
 
@@ -59,18 +56,18 @@ struct mt76x0_freq_item {
 	u8 pllR34;
 	u8 pllR33;
 	u8 pllR32_b7b5;
-	u8 pllR32_b4b0; /* PLL_DEN (Denomina - 8) */
+	u8 pllR32_b4b0;  
 	u8 pllR31_b7b5;
-	u8 pllR31_b4b0; /* PLL_K (Nominator *)*/
-	u8 pllR30_b7;	/* sdm_reset_n */
-	u8 pllR30_b6b2; /* sdmmash_prbs,sin */
-	u8 pllR30_b1;	/* sdm_bp */
-	u16 pll_n;	/* R30<0>, R29<7:0> (hex) */
-	u8 pllR28_b7b6; /* isi,iso */
-	u8 pllR28_b5b4;	/* pfd_dly */
-	u8 pllR28_b3b2;	/* clksel option */
-	u32 pll_sdm_k;	/* R28<1:0>, R27<7:0>, R26<7:0> (hex) SDM_k */
-	u8 pllR24_b1b0;	/* xo_div */
+	u8 pllR31_b4b0;  
+	u8 pllR30_b7;	 
+	u8 pllR30_b6b2;  
+	u8 pllR30_b1;	 
+	u16 pll_n;	 
+	u8 pllR28_b7b6;  
+	u8 pllR28_b5b4;	 
+	u8 pllR28_b3b2;	 
+	u32 pll_sdm_k;	 
+	u8 pllR24_b1b0;	 
 };
 
 struct mt76x0_rate_pwr_item {
@@ -87,4 +84,4 @@ struct mt76x0_rate_pwr_tab {
 	struct mt76x0_rate_pwr_item mcs32;
 };
 
-#endif /* _MT76X0_PHY_H_ */
+#endif  

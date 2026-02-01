@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /******************************************************************************
- * Nuvoton TPM I2C Device Driver Interface for WPCT301/NPCT501/NPCT6XX,
- * based on the TCG TPM Interface Spec version 1.2.
- * Specifications at www.trustedcomputinggroup.org
- *
- * Copyright (C) 2011, Nuvoton Technology Corporation.
- *  Dan Morav <dan.morav@nuvoton.com>
- * Copyright (C) 2013, Obsidian Research Corp.
- *  Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
- *
- * Nuvoton contact information: APC.Support@nuvoton.com
- *****************************************************************************/
+
+  
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -22,23 +11,20 @@
 #include <linux/of_device.h>
 #include "tpm.h"
 
-/* I2C interface offsets */
+ 
 #define TPM_STS			0x00
 #define TPM_BURST_COUNT		0x01
 #define TPM_DATA_FIFO_W		0x20
 #define TPM_DATA_FIFO_R		0x40
 #define TPM_VID_DID_RID		0x60
 #define TPM_I2C_RETRIES		5
-/*
- * I2C bus device maximum buffer size w/o counting I2C address or command
- * i.e. max size required for I2C write is 34 = addr, command, 32 bytes data
- */
+ 
 #define TPM_I2C_MAX_BUF_SIZE           32
 #define TPM_I2C_RETRY_COUNT            32
-#define TPM_I2C_BUS_DELAY              1000      	/* usec */
-#define TPM_I2C_RETRY_DELAY_SHORT      (2 * 1000)	/* usec */
-#define TPM_I2C_RETRY_DELAY_LONG       (10 * 1000) 	/* usec */
-#define TPM_I2C_DELAY_RANGE            300		/* usec */
+#define TPM_I2C_BUS_DELAY              1000      	 
+#define TPM_I2C_RETRY_DELAY_SHORT      (2 * 1000)	 
+#define TPM_I2C_RETRY_DELAY_LONG       (10 * 1000) 	 
+#define TPM_I2C_DELAY_RANGE            300		 
 
 #define OF_IS_TPM2 ((void *)1)
 #define I2C_IS_TPM2 1
@@ -79,12 +65,12 @@ static s32 i2c_nuvoton_write_buf(struct i2c_client *client, u8 offset, u8 size,
 #define TPM_STS_DATA_AVAIL     0x10
 #define TPM_STS_EXPECT         0x08
 #define TPM_STS_RESPONSE_RETRY 0x02
-#define TPM_STS_ERR_VAL        0x07    /* bit2...bit0 reads always 0 */
+#define TPM_STS_ERR_VAL        0x07     
 
-#define TPM_I2C_SHORT_TIMEOUT  750     /* ms */
-#define TPM_I2C_LONG_TIMEOUT   2000    /* 2 sec */
+#define TPM_I2C_SHORT_TIMEOUT  750      
+#define TPM_I2C_LONG_TIMEOUT   2000     
 
-/* read TPM_STS register */
+ 
 static u8 i2c_nuvoton_read_status(struct tpm_chip *chip)
 {
 	struct i2c_client *client = to_i2c_client(chip->dev.parent);
@@ -101,13 +87,13 @@ static u8 i2c_nuvoton_read_status(struct tpm_chip *chip)
 	return data;
 }
 
-/* write byte to TPM_STS register */
+ 
 static s32 i2c_nuvoton_write_status(struct i2c_client *client, u8 data)
 {
 	s32 status;
 	int i;
 
-	/* this causes the current command to be aborted */
+	 
 	for (i = 0, status = -1; i < TPM_I2C_RETRY_COUNT && status < 0; i++) {
 		status = i2c_nuvoton_write_buf(client, TPM_STS, 1, &data);
 		if (status < 0)
@@ -117,21 +103,20 @@ static s32 i2c_nuvoton_write_status(struct i2c_client *client, u8 data)
 	return status;
 }
 
-/* write commandReady to TPM_STS register */
+ 
 static void i2c_nuvoton_ready(struct tpm_chip *chip)
 {
 	struct i2c_client *client = to_i2c_client(chip->dev.parent);
 	s32 status;
 
-	/* this causes the current command to be aborted */
+	 
 	status = i2c_nuvoton_write_status(client, TPM_STS_COMMAND_READY);
 	if (status < 0)
 		dev_err(&chip->dev,
 			"%s() fail to write TPM_STS.commandReady\n", __func__);
 }
 
-/* read burstCount field from TPM_STS register
- * return -1 on fail to read */
+ 
 static int i2c_nuvoton_get_burstcount(struct i2c_client *client,
 				      struct tpm_chip *chip)
 {
@@ -140,9 +125,9 @@ static int i2c_nuvoton_get_burstcount(struct i2c_client *client,
 	int burst_count = -1;
 	u8 data;
 
-	/* wait for burstcount to be non-zero */
+	 
 	do {
-		/* in I2C burstCount is 1 byte */
+		 
 		status = i2c_nuvoton_read_buf(client, TPM_BURST_COUNT, 1,
 					      &data);
 		if (status > 0 && data > 0) {
@@ -156,11 +141,7 @@ static int i2c_nuvoton_get_burstcount(struct i2c_client *client,
 	return burst_count;
 }
 
-/*
- * WPCT301/NPCT501/NPCT6XX SINT# supports only dataAvail
- * any call to this function which is not waiting for dataAvail will
- * set queue to NULL to avoid waiting for interrupt
- */
+ 
 static bool i2c_nuvoton_check_status(struct tpm_chip *chip, u8 mask, u8 value)
 {
 	u8 status = i2c_nuvoton_read_status(chip);
@@ -181,18 +162,17 @@ static int i2c_nuvoton_wait_for_stat(struct tpm_chip *chip, u8 mask, u8 value,
 						      timeout);
 		if (rc > 0)
 			return 0;
-		/* At this point we know that the SINT pin is asserted, so we
-		 * do not need to do i2c_nuvoton_check_status */
+		 
 	} else {
 		unsigned long ten_msec, stop;
 		bool status_valid;
 
-		/* check current status */
+		 
 		status_valid = i2c_nuvoton_check_status(chip, mask, value);
 		if (status_valid)
 			return 0;
 
-		/* use polling to wait for the event */
+		 
 		ten_msec = jiffies + usecs_to_jiffies(TPM_I2C_RETRY_DELAY_LONG);
 		stop = jiffies + timeout;
 		do {
@@ -215,7 +195,7 @@ static int i2c_nuvoton_wait_for_stat(struct tpm_chip *chip, u8 mask, u8 value,
 	return -ETIMEDOUT;
 }
 
-/* wait for dataAvail field to be set in the TPM_STS register */
+ 
 static int i2c_nuvoton_wait_for_data_avail(struct tpm_chip *chip, u32 timeout,
 					   wait_queue_head_t *queue)
 {
@@ -225,7 +205,7 @@ static int i2c_nuvoton_wait_for_data_avail(struct tpm_chip *chip, u32 timeout,
 					 timeout, queue);
 }
 
-/* Read @count bytes into @buf from TPM_RD_FIFO register */
+ 
 static int i2c_nuvoton_recv_data(struct i2c_client *client,
 				 struct tpm_chip *chip, u8 *buf, size_t count)
 {
@@ -260,7 +240,7 @@ static int i2c_nuvoton_recv_data(struct i2c_client *client,
 	return size;
 }
 
-/* Read TPM command results */
+ 
 static int i2c_nuvoton_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 {
 	struct priv_data *priv = dev_get_drvdata(&chip->dev);
@@ -274,20 +254,17 @@ static int i2c_nuvoton_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	u32 expected;
 
 	if (count < TPM_HEADER_SIZE) {
-		i2c_nuvoton_ready(chip);    /* return to idle */
+		i2c_nuvoton_ready(chip);     
 		dev_err(dev, "%s() count < header size\n", __func__);
 		return -EIO;
 	}
 	for (retries = 0; retries < TPM_I2C_RETRIES; retries++) {
 		if (retries > 0) {
-			/* if this is not the first trial, set responseRetry */
+			 
 			i2c_nuvoton_write_status(client,
 						 TPM_STS_RESPONSE_RETRY);
 		}
-		/*
-		 * read first available (> 10 bytes), including:
-		 * tag, paramsize, and result
-		 */
+		 
 		status = i2c_nuvoton_wait_for_data_avail(
 			chip, chip->timeout_c, &priv->read_queue);
 		if (status != 0) {
@@ -308,10 +285,7 @@ static int i2c_nuvoton_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 			size = -EIO;
 			continue;
 		}
-		/*
-		 * convert number of expected bytes field from big endian 32 bit
-		 * to machine native
-		 */
+		 
 		expected = be32_to_cpu(*(__be32 *) (buf + 2));
 		if (expected > count || expected < size) {
 			dev_err(dev, "%s() expected > count\n", __func__);
@@ -342,13 +316,7 @@ static int i2c_nuvoton_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	return size;
 }
 
-/*
- * Send TPM command.
- *
- * If interrupts are used (signaled by an irq set in the vendor structure)
- * tpm.c can skip polling for the data to be available as the interrupt is
- * waited for here
- */
+ 
 static int i2c_nuvoton_send(struct tpm_chip *chip, u8 *buf, size_t len)
 {
 	struct priv_data *priv = dev_get_drvdata(&chip->dev);
@@ -407,7 +375,7 @@ static int i2c_nuvoton_send(struct tpm_chip *chip, u8 *buf, size_t len)
 		if (rc < 0)
 			continue;
 
-		/* write last byte */
+		 
 		rc = i2c_nuvoton_write_buf(client, TPM_DATA_FIFO_W, 1,
 					   &buf[count]);
 		if (rc < 0) {
@@ -430,11 +398,11 @@ static int i2c_nuvoton_send(struct tpm_chip *chip, u8 *buf, size_t len)
 		break;
 	}
 	if (rc < 0) {
-		/* retries == TPM_RETRY */
+		 
 		i2c_nuvoton_ready(chip);
 		return rc;
 	}
-	/* execute the TPM command */
+	 
 	rc = i2c_nuvoton_write_status(client, TPM_STS_GO);
 	if (rc < 0) {
 		dev_err(dev, "%s() fail to write Go\n", __func__);
@@ -472,11 +440,7 @@ static const struct tpm_class_ops tpm_i2c = {
 	.req_canceled = i2c_nuvoton_req_canceled,
 };
 
-/* The only purpose for the handler is to signal to any waiting threads that
- * the interrupt is currently being asserted. The driver does not do any
- * processing triggered by interrupts, and the chip provides no way to mask at
- * the source (plus that would be slow over I2C). Run the IRQ as a one-shot,
- * this means it cannot be shared. */
+ 
 static irqreturn_t i2c_nuvoton_int_handler(int dummy, void *dev_id)
 {
 	struct tpm_chip *chip = dev_id;
@@ -500,19 +464,15 @@ static int get_vid(struct i2c_client *client, u32 *res)
 	if (rc < 0)
 		return rc;
 
-	/* check WPCT301 values - ignore RID */
+	 
 	if (memcmp(&temp, vid_did_rid_value, sizeof(vid_did_rid_value))) {
-		/*
-		 * f/w rev 2.81 has an issue where the VID_DID_RID is not
-		 * reporting the right value. so give it another chance at
-		 * offset 0x20 (FIFO_W).
-		 */
+		 
 		rc = i2c_nuvoton_read_buf(client, TPM_DATA_FIFO_W, 4,
 					  (u8 *) (&temp));
 		if (rc < 0)
 			return rc;
 
-		/* check WPCT301 values - ignore RID */
+		 
 		if (memcmp(&temp, vid_did_rid_value,
 			   sizeof(vid_did_rid_value)))
 			return -ENODEV;
@@ -558,7 +518,7 @@ static int i2c_nuvoton_probe(struct i2c_client *client)
 
 	init_waitqueue_head(&priv->read_queue);
 
-	/* Default timeouts */
+	 
 	chip->timeout_a = msecs_to_jiffies(TPM_I2C_SHORT_TIMEOUT);
 	chip->timeout_b = msecs_to_jiffies(TPM_I2C_LONG_TIMEOUT);
 	chip->timeout_c = msecs_to_jiffies(TPM_I2C_SHORT_TIMEOUT);
@@ -566,11 +526,7 @@ static int i2c_nuvoton_probe(struct i2c_client *client)
 
 	dev_set_drvdata(&chip->dev, priv);
 
-	/*
-	 * I2C intfcaps (interrupt capabilitieis) in the chip are hard coded to:
-	 *   TPM_INTF_INT_LEVEL_LOW | TPM_INTF_DATA_AVAIL_INT
-	 * The IRQ should be set in the i2c_board_info (which is done
-	 * automatically in of_i2c_register_devices, for device tree users */
+	 
 	priv->irq = client->irq;
 	if (client->irq) {
 		dev_dbg(dev, "%s() priv->irq\n", __func__);
@@ -585,33 +541,25 @@ static int i2c_nuvoton_probe(struct i2c_client *client)
 			priv->irq = 0;
 		} else {
 			chip->flags |= TPM_CHIP_FLAG_IRQ;
-			/* Clear any pending interrupt */
+			 
 			i2c_nuvoton_ready(chip);
-			/* - wait for TPM_STS==0xA0 (stsValid, commandReady) */
+			 
 			rc = i2c_nuvoton_wait_for_stat(chip,
 						       TPM_STS_COMMAND_READY,
 						       TPM_STS_COMMAND_READY,
 						       chip->timeout_b,
 						       NULL);
 			if (rc == 0) {
-				/*
-				 * TIS is in ready state
-				 * write dummy byte to enter reception state
-				 * TPM_DATA_FIFO_W <- rc (0)
-				 */
+				 
 				rc = i2c_nuvoton_write_buf(client,
 							   TPM_DATA_FIFO_W,
 							   1, (u8 *) (&rc));
 				if (rc < 0)
 					return rc;
-				/* TPM_STS <- 0x40 (commandReady) */
+				 
 				i2c_nuvoton_ready(chip);
 			} else {
-				/*
-				 * timeout_b reached - command was
-				 * aborted. TIS should now be in idle state -
-				 * only TPM_STS_VALID should be set
-				 */
+				 
 				if (i2c_nuvoton_read_status(chip) !=
 				    TPM_STS_VALID)
 					return -EIO;

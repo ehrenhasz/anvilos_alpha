@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2006 Micronas USA Inc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -38,7 +36,7 @@ static int write_regs(struct i2c_client *client,
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_subdev_ops ov7640_ops;
 

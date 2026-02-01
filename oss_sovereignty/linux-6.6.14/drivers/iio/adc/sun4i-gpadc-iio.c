@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* ADC driver for sunxi platforms' (A10, A13 and A31) GPADC
- *
- * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.com>
- *
- * The Allwinner SoCs all have an ADC that can also act as a touchscreen
- * controller and a thermal sensor.
- * The thermal sensor works only when the ADC acts as a touchscreen controller
- * and is configured to throw an interrupt every fixed periods of time (let say
- * every X seconds).
- * One would be tempted to disable the IP on the hardware side rather than
- * disabling interrupts to save some power but that resets the internal clock of
- * the IP, resulting in having to wait X seconds every time we want to read the
- * value of the thermal sensor.
- * This is also the reason of using autosuspend in pm_runtime. If there was no
- * autosuspend, the thermal sensor would need X seconds after every
- * pm_runtime_get_sync to get a value from the ADC. The autosuspend allows the
- * thermal sensor to be requested again in a certain time span before it gets
- * shutdown for not being used.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/interrupt.h>
@@ -99,7 +81,7 @@ struct sun4i_gpadc_iio {
 	atomic_t			ignore_temp_data_irq;
 	const struct gpadc_data		*data;
 	bool				no_irq;
-	/* prevents concurrent reads of temperature and ADC */
+	 
 	struct mutex			mutex;
 	struct thermal_zone_device	*tzd;
 	struct device			*sensor_device;
@@ -119,7 +101,7 @@ static struct iio_map sun4i_gpadc_hwmon_maps[] = {
 		.adc_channel_label = "temp_adc",
 		.consumer_dev_name = "iio_hwmon.0",
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct iio_chan_spec sun4i_gpadc_channels[] = {
@@ -186,19 +168,13 @@ static int sun4i_prepare_for_irq(struct iio_dev *indio_dev, int channel,
 				   info->data->tp_mode_en |
 				   info->data->tp_adc_select |
 				   info->data->adc_chan_select(channel));
-		/*
-		 * When the IP changes channel, it needs a bit of time to get
-		 * correct values.
-		 */
+		 
 		if ((reg & info->data->adc_chan_mask) !=
 			 info->data->adc_chan_select(channel))
 			mdelay(10);
 
 	} else {
-		/*
-		 * The temperature sensor returns valid data only when the ADC
-		 * operates in touchscreen mode.
-		 */
+		 
 		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
 				   info->data->tp_mode_en);
 	}
@@ -206,10 +182,7 @@ static int sun4i_prepare_for_irq(struct iio_dev *indio_dev, int channel,
 	if (ret)
 		return ret;
 
-	/*
-	 * When the IP changes mode between ADC or touchscreen, it
-	 * needs a bit of time to get correct values.
-	 */
+	 
 	if ((reg & info->data->tp_adc_select) != info->data->tp_adc_select)
 		mdelay(100);
 
@@ -230,12 +203,7 @@ static int sun4i_gpadc_read(struct iio_dev *indio_dev, int channel, int *val,
 
 	enable_irq(irq);
 
-	/*
-	 * The temperature sensor throws an interruption periodically (currently
-	 * set at periods of ~0.6s in sun4i_gpadc_runtime_resume). A 1s delay
-	 * makes sure an interruption occurs in normal conditions. If it doesn't
-	 * occur, then there is a timeout.
-	 */
+	 
 	if (!wait_for_completion_timeout(&info->completion,
 					 msecs_to_jiffies(1000))) {
 		ret = -ETIMEDOUT;
@@ -328,7 +296,7 @@ static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
 		if (chan->type == IIO_VOLTAGE) {
-			/* 3000mV / 4096 * raw */
+			 
 			*val = 0;
 			*val2 = 732421875;
 			return IIO_VAL_INT_PLUS_NANO;
@@ -382,9 +350,9 @@ static int sun4i_gpadc_runtime_suspend(struct device *dev)
 {
 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
 
-	/* Disable the ADC on IP */
+	 
 	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
-	/* Disable temperature sensor on IP */
+	 
 	regmap_write(info->regmap, SUN4I_GPADC_TPR, 0);
 
 	return 0;
@@ -394,7 +362,7 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
 {
 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
 
-	/* clkin = 6MHz */
+	 
 	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
 		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
 		     SUN4I_GPADC_CTRL0_FS_DIV(7) |
@@ -403,7 +371,7 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
 	regmap_write(info->regmap, SUN4I_GPADC_CTRL3,
 		     SUN4I_GPADC_CTRL3_FILTER_EN |
 		     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
-	/* period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; ~0.6s */
+	 
 	regmap_write(info->regmap, SUN4I_GPADC_TPR,
 		     SUN4I_GPADC_TPR_TEMP_ENABLE |
 		     SUN4I_GPADC_TPR_TEMP_PERIOD(800));
@@ -444,18 +412,7 @@ static int sun4i_irq_init(struct platform_device *pdev, const char *name,
 	struct sun4i_gpadc_dev *mfd_dev = dev_get_drvdata(pdev->dev.parent);
 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(&pdev->dev));
 
-	/*
-	 * Once the interrupt is activated, the IP continuously performs
-	 * conversions thus throws interrupts. The interrupt is activated right
-	 * after being requested but we want to control when these interrupts
-	 * occur thus we disable it right after being requested. However, an
-	 * interrupt might occur between these two instructions and we have to
-	 * make sure that does not happen, by using atomic flags. We set the
-	 * flag before requesting the interrupt and unset it right after
-	 * disabling the interrupt. When an interrupt occurs between these two
-	 * instructions, reading the atomic flag will tell us to ignore the
-	 * interrupt.
-	 */
+	 
 	atomic_set(atomic, 1);
 
 	ret = platform_get_irq_byname(pdev, name);
@@ -488,7 +445,7 @@ static const struct of_device_id sun4i_gpadc_of_id[] = {
 		.compatible = "allwinner,sun8i-a33-ths",
 		.data = &sun8i_a33_gpadc_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
@@ -540,33 +497,10 @@ static int sun4i_gpadc_probe_mfd(struct platform_device *pdev,
 
 	info->data = (struct gpadc_data *)platform_get_device_id(pdev)->driver_data;
 
-	/*
-	 * Since the controller needs to be in touchscreen mode for its thermal
-	 * sensor to operate properly, and that switching between the two modes
-	 * needs a delay, always registering in the thermal framework will
-	 * significantly slow down the conversion rate of the ADCs.
-	 *
-	 * Therefore, instead of depending on THERMAL_OF in Kconfig, we only
-	 * register the sensor if that option is enabled, eventually leaving
-	 * that choice to the user.
-	 */
+	 
 
 	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
-		/*
-		 * This driver is a child of an MFD which has a node in the DT
-		 * but not its children, because of DT backward compatibility
-		 * for A10, A13 and A31 SoCs. Therefore, the resulting devices
-		 * of this driver do not have an of_node variable.
-		 * However, its parent (the MFD driver) has an of_node variable
-		 * and since devm_thermal_zone_of_sensor_register uses its first
-		 * argument to match the phandle defined in the node of the
-		 * thermal driver with the of_node of the device passed as first
-		 * argument and the third argument to call ops from
-		 * thermal_zone_of_device_ops, the solution is to use the parent
-		 * device as first argument to match the phandle with its
-		 * of_node, and the device from this driver as third argument to
-		 * return the temperature.
-		 */
+		 
 		info->sensor_device = pdev->dev.parent;
 	} else {
 		indio_dev->num_channels =
@@ -639,10 +573,7 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
 		info->tzd = devm_thermal_of_zone_register(info->sensor_device,
 							  0, info,
 							  &sun4i_ts_tz_ops);
-		/*
-		 * Do not fail driver probing when failing to register in
-		 * thermal because no thermal DT node is found.
-		 */
+		 
 		if (IS_ERR(info->tzd) && PTR_ERR(info->tzd) != -ENODEV) {
 			dev_err(&pdev->dev,
 				"could not register thermal sensor: %ld\n",
@@ -690,7 +621,7 @@ static const struct platform_device_id sun4i_gpadc_id[] = {
 	{ "sun4i-a10-gpadc-iio", (kernel_ulong_t)&sun4i_gpadc_data },
 	{ "sun5i-a13-gpadc-iio", (kernel_ulong_t)&sun5i_gpadc_data },
 	{ "sun6i-a31-gpadc-iio", (kernel_ulong_t)&sun6i_gpadc_data },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, sun4i_gpadc_id);
 

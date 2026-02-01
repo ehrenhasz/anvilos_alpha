@@ -1,11 +1,7 @@
-/* 	$OpenBSD: test_sshbuf.c,v 1.2 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for sshbuf.h buffer API
- *
- * Placed in the public domain
- */
+ 
+ 
 
-#define SSHBUF_INTERNAL 1	/* access internals for testing */
+#define SSHBUF_INTERNAL 1	 
 #include "includes.h"
 
 #include <sys/types.h>
@@ -209,7 +205,7 @@ sshbuf_tests(void)
 	ASSERT_INT_EQ(sshbuf_len(p1), 1223);
 	TEST_DONE();
 
-	/* NB. uses sshbuf internals */
+	 
 	TEST_START("alloc chunking");
 	r = sshbuf_reserve(p1, 1, &dp);
 	ASSERT_INT_EQ(r, 0);

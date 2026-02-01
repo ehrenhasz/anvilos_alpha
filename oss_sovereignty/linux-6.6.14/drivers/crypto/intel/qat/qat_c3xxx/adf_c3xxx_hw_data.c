@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2021 Intel Corporation */
+
+ 
 #include <adf_accel_devices.h>
 #include <adf_clock.h>
 #include <adf_common_drv.h>
@@ -11,7 +11,7 @@
 #include "adf_heartbeat.h"
 #include "icp_qat_hw.h"
 
-/* Worker thread to service arbiter mappings */
+ 
 static const u32 thrd_to_arb_map[ADF_C3XXX_MAX_ACCELENGINES] = {
 	0x12222AAA, 0x11222AAA, 0x12222AAA,
 	0x11222AAA, 0x12222AAA, 0x11222AAA
@@ -43,7 +43,7 @@ static u32 get_ae_mask(struct adf_hw_device_data *self)
 	u32 ae_disable;
 	int accel;
 
-	/* If an accel is disabled, then disable the corresponding two AEs */
+	 
 	disabled = ~get_accel_mask(self) & ADF_C3XXX_ACCELERATORS_MASK;
 	ae_disable = BIT(1) | BIT(0);
 	for_each_set_bit(accel, &disabled, ADF_C3XXX_MAX_ACCELERATORS)
@@ -54,9 +54,7 @@ static u32 get_ae_mask(struct adf_hw_device_data *self)
 
 static u32 get_ts_clock(struct adf_hw_device_data *self)
 {
-	/*
-	 * Timestamp update interval is 16 AE clock ticks for c3xxx.
-	 */
+	 
 	return self->clock_frequency / 16;
 }
 

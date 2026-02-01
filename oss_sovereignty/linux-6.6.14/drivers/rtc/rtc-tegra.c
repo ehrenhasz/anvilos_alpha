@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * An RTC driver for the NVIDIA Tegra 200 series internal RTC.
- *
- * Copyright (c) 2010-2019, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -18,27 +14,27 @@
 #include <linux/rtc.h>
 #include <linux/slab.h>
 
-/* Set to 1 = busy every eight 32 kHz clocks during copy of sec+msec to AHB. */
+ 
 #define TEGRA_RTC_REG_BUSY			0x004
 #define TEGRA_RTC_REG_SECONDS			0x008
-/* When msec is read, the seconds are buffered into shadow seconds. */
+ 
 #define TEGRA_RTC_REG_SHADOW_SECONDS		0x00c
 #define TEGRA_RTC_REG_MILLI_SECONDS		0x010
 #define TEGRA_RTC_REG_SECONDS_ALARM0		0x014
 #define TEGRA_RTC_REG_SECONDS_ALARM1		0x018
 #define TEGRA_RTC_REG_MILLI_SECONDS_ALARM0	0x01c
 #define TEGRA_RTC_REG_INTR_MASK			0x028
-/* write 1 bits to clear status bits */
+ 
 #define TEGRA_RTC_REG_INTR_STATUS		0x02c
 
-/* bits in INTR_MASK */
+ 
 #define TEGRA_RTC_INTR_MASK_MSEC_CDN_ALARM	(1<<4)
 #define TEGRA_RTC_INTR_MASK_SEC_CDN_ALARM	(1<<3)
 #define TEGRA_RTC_INTR_MASK_MSEC_ALARM		(1<<2)
 #define TEGRA_RTC_INTR_MASK_SEC_ALARM1		(1<<1)
 #define TEGRA_RTC_INTR_MASK_SEC_ALARM0		(1<<0)
 
-/* bits in INTR_STATUS */
+ 
 #define TEGRA_RTC_INTR_STATUS_MSEC_CDN_ALARM	(1<<4)
 #define TEGRA_RTC_INTR_STATUS_SEC_CDN_ALARM	(1<<3)
 #define TEGRA_RTC_INTR_STATUS_MSEC_ALARM	(1<<2)
@@ -48,42 +44,25 @@
 struct tegra_rtc_info {
 	struct platform_device *pdev;
 	struct rtc_device *rtc;
-	void __iomem *base; /* NULL if not initialized */
+	void __iomem *base;  
 	struct clk *clk;
-	int irq; /* alarm and periodic IRQ */
+	int irq;  
 	spinlock_t lock;
 };
 
-/*
- * RTC hardware is busy when it is updating its values over AHB once every
- * eight 32 kHz clocks (~250 us). Outside of these updates the CPU is free to
- * write. CPU is always free to read.
- */
+ 
 static inline u32 tegra_rtc_check_busy(struct tegra_rtc_info *info)
 {
 	return readl(info->base + TEGRA_RTC_REG_BUSY) & 1;
 }
 
-/*
- * Wait for hardware to be ready for writing. This function tries to maximize
- * the amount of time before the next update. It does this by waiting for the
- * RTC to become busy with its periodic update, then returning once the RTC
- * first becomes not busy.
- *
- * This periodic update (where the seconds and milliseconds are copied to the
- * AHB side) occurs every eight 32 kHz clocks (~250 us). The behavior of this
- * function allows us to make some assumptions without introducing a race,
- * because 250 us is plenty of time to read/write a value.
- */
+ 
 static int tegra_rtc_wait_while_busy(struct device *dev)
 {
 	struct tegra_rtc_info *info = dev_get_drvdata(dev);
-	int retries = 500; /* ~490 us is the worst case, ~250 us is best */
+	int retries = 500;  
 
-	/*
-	 * First wait for the RTC to become busy. This is when it posts its
-	 * updated seconds+msec registers to AHB side.
-	 */
+	 
 	while (tegra_rtc_check_busy(info)) {
 		if (!retries--)
 			goto retry_failed;
@@ -91,7 +70,7 @@ static int tegra_rtc_wait_while_busy(struct device *dev)
 		udelay(1);
 	}
 
-	/* now we have about 250 us to manipulate registers */
+	 
 	return 0;
 
 retry_failed:
@@ -105,10 +84,7 @@ static int tegra_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	unsigned long flags;
 	u32 sec;
 
-	/*
-	 * RTC hardware copies seconds to shadow seconds when a read of
-	 * milliseconds occurs. use a lock to keep other threads out.
-	 */
+	 
 	spin_lock_irqsave(&info->lock, flags);
 
 	readl(info->base + TEGRA_RTC_REG_MILLI_SECONDS);
@@ -129,12 +105,12 @@ static int tegra_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	u32 sec;
 	int ret;
 
-	/* convert tm to seconds */
+	 
 	sec = rtc_tm_to_time64(tm);
 
 	dev_vdbg(dev, "time set to %u, %ptR\n", sec, tm);
 
-	/* seconds only written if wait succeeded */
+	 
 	ret = tegra_rtc_wait_while_busy(dev);
 	if (!ret)
 		writel(sec, info->base + TEGRA_RTC_REG_SECONDS);
@@ -153,10 +129,10 @@ static int tegra_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	sec = readl(info->base + TEGRA_RTC_REG_SECONDS_ALARM0);
 
 	if (sec == 0) {
-		/* alarm is disabled */
+		 
 		alarm->enabled = 0;
 	} else {
-		/* alarm is enabled */
+		 
 		alarm->enabled = 1;
 		rtc_time64_to_tm(sec, &alarm->time);
 	}
@@ -176,12 +152,12 @@ static int tegra_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	tegra_rtc_wait_while_busy(dev);
 	spin_lock_irqsave(&info->lock, flags);
 
-	/* read the original value, and OR in the flag */
+	 
 	status = readl(info->base + TEGRA_RTC_REG_INTR_MASK);
 	if (enabled)
-		status |= TEGRA_RTC_INTR_MASK_SEC_ALARM0; /* set it */
+		status |= TEGRA_RTC_INTR_MASK_SEC_ALARM0;  
 	else
-		status &= ~TEGRA_RTC_INTR_MASK_SEC_ALARM0; /* clear it */
+		status &= ~TEGRA_RTC_INTR_MASK_SEC_ALARM0;  
 
 	writel(status, info->base + TEGRA_RTC_REG_INTR_MASK);
 
@@ -205,12 +181,12 @@ static int tegra_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	dev_vdbg(dev, "alarm read back as %d\n",
 		 readl(info->base + TEGRA_RTC_REG_SECONDS_ALARM0));
 
-	/* if successfully written and alarm is enabled ... */
+	 
 	if (sec) {
 		tegra_rtc_alarm_irq_enable(dev, 1);
 		dev_vdbg(dev, "alarm set as %u, %ptR\n", sec, &alarm->time);
 	} else {
-		/* disable alarm if 0 or write error */
+		 
 		dev_vdbg(dev, "alarm disabled\n");
 		tegra_rtc_alarm_irq_enable(dev, 0);
 	}
@@ -237,7 +213,7 @@ static irqreturn_t tegra_rtc_irq_handler(int irq, void *data)
 
 	status = readl(info->base + TEGRA_RTC_REG_INTR_STATUS);
 	if (status) {
-		/* clear the interrupt masks and status on any IRQ */
+		 
 		tegra_rtc_wait_while_busy(dev);
 
 		spin_lock(&info->lock);
@@ -246,11 +222,11 @@ static irqreturn_t tegra_rtc_irq_handler(int irq, void *data)
 		spin_unlock(&info->lock);
 	}
 
-	/* check if alarm */
+	 
 	if (status & TEGRA_RTC_INTR_STATUS_SEC_ALARM0)
 		events |= RTC_IRQF | RTC_AF;
 
-	/* check if periodic */
+	 
 	if (status & TEGRA_RTC_INTR_STATUS_SEC_CDN_ALARM)
 		events |= RTC_IRQF | RTC_PF;
 
@@ -308,13 +284,13 @@ static int tegra_rtc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* set context info */
+	 
 	info->pdev = pdev;
 	spin_lock_init(&info->lock);
 
 	platform_set_drvdata(pdev, info);
 
-	/* clear out the hardware */
+	 
 	writel(0, info->base + TEGRA_RTC_REG_SECONDS_ALARM0);
 	writel(0xffffffff, info->base + TEGRA_RTC_REG_INTR_STATUS);
 	writel(0, info->base + TEGRA_RTC_REG_INTR_MASK);
@@ -356,7 +332,7 @@ static int tegra_rtc_suspend(struct device *dev)
 
 	tegra_rtc_wait_while_busy(dev);
 
-	/* only use ALARM0 as a wake source */
+	 
 	writel(0xffffffff, info->base + TEGRA_RTC_REG_INTR_STATUS);
 	writel(TEGRA_RTC_INTR_STATUS_SEC_ALARM0,
 	       info->base + TEGRA_RTC_REG_INTR_MASK);
@@ -367,7 +343,7 @@ static int tegra_rtc_suspend(struct device *dev)
 	dev_vdbg(dev, "Suspend (device_may_wakeup=%d) IRQ:%d\n",
 		 device_may_wakeup(dev), info->irq);
 
-	/* leave the alarms on as a wake source */
+	 
 	if (device_may_wakeup(dev))
 		enable_irq_wake(info->irq);
 
@@ -381,7 +357,7 @@ static int tegra_rtc_resume(struct device *dev)
 	dev_vdbg(dev, "Resume (device_may_wakeup=%d)\n",
 		 device_may_wakeup(dev));
 
-	/* alarms were left on as a wake source, turn them off */
+	 
 	if (device_may_wakeup(dev))
 		disable_irq_wake(info->irq);
 

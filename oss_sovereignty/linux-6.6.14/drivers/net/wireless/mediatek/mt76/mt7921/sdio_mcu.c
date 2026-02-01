@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2021 MediaTek Inc. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mmc/sdio_func.h>
@@ -21,11 +21,7 @@ mt7921s_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
 	enum mt76_mcuq_id txq = MT_MCUQ_WM;
 	int ret, pad;
 
-	/* We just return in case firmware assertion to avoid blocking the
-	 * common workqueue to run, for example, the coredump work might be
-	 * blocked by mt792x_mac_work that is excuting register access via sdio
-	 * bus.
-	 */
+	 
 	if (dev->fw_assert)
 		return -EBUSY;
 

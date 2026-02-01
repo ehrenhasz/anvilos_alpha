@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "gaudiP.h"
 #include "../include/gaudi/gaudi_coresight.h"
@@ -427,7 +424,7 @@ static int gaudi_config_stm(struct hl_device *hdev,
 		WREG32(base_reg + 0xE8C, frequency);
 		WREG32(base_reg + 0xE90, 0x1F00);
 
-		/* SW-2176 - SW WA for HW bug */
+		 
 		if ((CFG_BASE + base_reg) >= mmDMA_CH_0_CS_STM_BASE &&
 			(CFG_BASE + base_reg) <= mmDMA_CH_7_CS_STM_BASE) {
 
@@ -532,7 +529,7 @@ static bool gaudi_etr_validate_address(struct hl_device *hdev, u64 addr,
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
 	struct gaudi_device *gaudi = hdev->asic_specific;
 
-	/* maximum address length is 50 bits */
+	 
 	if (addr >> 50) {
 		dev_err(hdev->dev,
 			"ETR buffer address shouldn't exceed 50 bits\n");
@@ -545,7 +542,7 @@ static bool gaudi_etr_validate_address(struct hl_device *hdev, u64 addr,
 		return false;
 	}
 
-	/* PMMU and HPMMU addresses are equal, check only one of them */
+	 
 	if ((gaudi->hw_cap_initialized & HW_CAP_MMU) &&
 		hl_mem_area_inside_range(addr, size,
 				prop->pmmu.start_addr,
@@ -631,16 +628,13 @@ static int gaudi_config_etr(struct hl_device *hdev,
 		WREG32(mmPSOC_ETR_RSZ, input->buffer_size);
 		WREG32(mmPSOC_ETR_MODE, input->sink_mode);
 		if (!hdev->asic_prop.fw_security_enabled) {
-			/* make ETR not privileged */
+			 
 			val = FIELD_PREP(
 					PSOC_ETR_AXICTL_PROTCTRLBIT0_MASK, 0);
-			/* make ETR non-secured (inverted logic) */
+			 
 			val |= FIELD_PREP(
 					PSOC_ETR_AXICTL_PROTCTRLBIT1_MASK, 1);
-			/*
-			 * Workaround for H3 #HW-2075 bug: use small data
-			 * chunks
-			 */
+			 
 			val |= FIELD_PREP(PSOC_ETR_AXICTL_WRBURSTLEN_MASK,
 							is_host ? 0 : 7);
 			WREG32(mmPSOC_ETR_AXICTL, val);
@@ -664,13 +658,7 @@ static int gaudi_config_etr(struct hl_device *hdev,
 		if (params->output_size >= sizeof(u64)) {
 			u32 rwp, rwphi;
 
-			/*
-			 * The trace buffer address is 50 bits wide. The end of
-			 * the buffer is set in the RWP register (lower 32
-			 * bits), and in the RWPHI register (upper 8 bits).
-			 * The 10 msb of the 50-bit address are stored in a
-			 * global configuration register.
-			 */
+			 
 			rwp = RREG32(mmPSOC_ETR_RWP);
 			rwphi = RREG32(mmPSOC_ETR_RWPHI) & 0xff;
 			msb = RREG32(mmPSOC_GLOBAL_CONF_TRACE_ADDR) &
@@ -874,7 +862,7 @@ int gaudi_debug_coresight(struct hl_device *hdev, struct hl_ctx *ctx, void *data
 		rc = gaudi_config_spmu(hdev, params);
 		break;
 	case HL_DEBUG_OP_TIMESTAMP:
-		/* Do nothing as this opcode is deprecated */
+		 
 		break;
 
 	default:
@@ -882,7 +870,7 @@ int gaudi_debug_coresight(struct hl_device *hdev, struct hl_ctx *ctx, void *data
 		return -EINVAL;
 	}
 
-	/* Perform read from the device to flush all configuration */
+	 
 	RREG32(mmHW_STATE);
 
 	return rc;

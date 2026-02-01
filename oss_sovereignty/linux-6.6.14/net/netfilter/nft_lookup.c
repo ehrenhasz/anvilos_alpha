@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2009 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -138,12 +134,7 @@ static int nft_lookup_init(const struct nft_ctx *ctx,
 			return err;
 		priv->dreg_set = true;
 	} else if (set->flags & NFT_SET_MAP) {
-		/* Map given, but user asks for lookup only (i.e. to
-		 * ignore value assoicated with key).
-		 *
-		 * This makes no sense for anonymous maps since they are
-		 * scoped to the rule, but for named sets this can be useful.
-		 */
+		 
 		if (set->flags & NFT_SET_ANONYMOUS)
 			return -EINVAL;
 	}

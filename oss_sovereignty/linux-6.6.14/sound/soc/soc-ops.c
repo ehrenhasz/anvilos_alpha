@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// soc-ops.c  --  Generic ASoC operations
-//
-// Copyright 2005 Wolfson Microelectronics PLC.
-// Copyright 2005 Openedhand Ltd.
-// Copyright (C) 2010 Slimlogic Ltd.
-// Copyright (C) 2010 Texas Instruments Inc.
-//
-// Author: Liam Girdwood <lrg@slimlogic.co.uk>
-//         with code, comments and ideas from :-
-//         Richard Purdie <richard@openedhand.com>
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -26,16 +26,7 @@
 #include <sound/soc-dpcm.h>
 #include <sound/initval.h>
 
-/**
- * snd_soc_info_enum_double - enumerated double mixer info callback
- * @kcontrol: mixer control
- * @uinfo: control element information
- *
- * Callback to provide information about a double enumerated
- * mixer control.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_info_enum_double(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_info *uinfo)
 {
@@ -46,15 +37,7 @@ int snd_soc_info_enum_double(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_info_enum_double);
 
-/**
- * snd_soc_get_enum_double - enumerated double mixer get callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to get the value of a double enumerated mixer.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_get_enum_double(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -77,15 +60,7 @@ int snd_soc_get_enum_double(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_enum_double);
 
-/**
- * snd_soc_put_enum_double - enumerated double mixer put callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to set the value of a double enumerated mixer.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_put_enum_double(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -110,21 +85,7 @@ int snd_soc_put_enum_double(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_put_enum_double);
 
-/**
- * snd_soc_read_signed - Read a codec register and interpret as signed value
- * @component: component
- * @reg: Register to read
- * @mask: Mask to use after shifting the register value
- * @shift: Right shift of register value
- * @sign_bit: Bit that describes if a number is negative or not.
- * @signed_val: Pointer to where the read value should be stored
- *
- * This functions reads a codec register. The register value is shifted right
- * by 'shift' bits and masked with the given 'mask'. Afterwards it translates
- * the given registervalue into a signed integer if sign_bit is non-zero.
- *
- * Returns 0 on sucess, otherwise an error value
- */
+ 
 static int snd_soc_read_signed(struct snd_soc_component *component,
 	unsigned int reg, unsigned int mask, unsigned int shift,
 	unsigned int sign_bit, int *signed_val)
@@ -140,7 +101,7 @@ static int snd_soc_read_signed(struct snd_soc_component *component,
 		return 0;
 	}
 
-	/* non-negative number */
+	 
 	if (!(val & BIT(sign_bit))) {
 		*signed_val = val;
 		return 0;
@@ -148,12 +109,7 @@ static int snd_soc_read_signed(struct snd_soc_component *component,
 
 	ret = val;
 
-	/*
-	 * The register most probably does not contain a full-sized int.
-	 * Instead we have an arbitrary number of bits in a signed
-	 * representation which has to be translated into a full-sized int.
-	 * This is done by filling up all bits above the sign-bit.
-	 */
+	 
 	ret |= ~((int)(BIT(sign_bit) - 1));
 
 	*signed_val = ret;
@@ -161,16 +117,7 @@ static int snd_soc_read_signed(struct snd_soc_component *component,
 	return 0;
 }
 
-/**
- * snd_soc_info_volsw - single mixer info callback
- * @kcontrol: mixer control
- * @uinfo: control element information
- *
- * Callback to provide information about a single mixer control, or a double
- * mixer control that spans 2 registers.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_info_volsw(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_info *uinfo)
 {
@@ -184,7 +131,7 @@ int snd_soc_info_volsw(struct snd_kcontrol *kcontrol,
 		max = mc->platform_max;
 
 	if (max == 1) {
-		/* Even two value controls ending in Volume should always be integer */
+		 
 		vol_string = strstr(kcontrol->id.name, " Volume");
 		if (vol_string && !strcmp(vol_string, " Volume"))
 			uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
@@ -202,19 +149,7 @@ int snd_soc_info_volsw(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_info_volsw);
 
-/**
- * snd_soc_info_volsw_sx - Mixer info callback for SX TLV controls
- * @kcontrol: mixer control
- * @uinfo: control element information
- *
- * Callback to provide information about a single mixer control, or a double
- * mixer control that spans 2 registers of the SX TLV type. SX TLV controls
- * have a range that represents both positive and negative values either side
- * of zero but without a sign bit. min is the minimum register value, max is
- * the number of steps.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_info_volsw_sx(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_info *uinfo)
 {
@@ -240,16 +175,7 @@ int snd_soc_info_volsw_sx(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_info_volsw_sx);
 
-/**
- * snd_soc_get_volsw - single mixer get callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to get the value of a single mixer control, or a double mixer
- * control that spans 2 registers.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_get_volsw(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -300,16 +226,7 @@ int snd_soc_get_volsw(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_volsw);
 
-/**
- * snd_soc_put_volsw - single mixer put callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to set the value of a single mixer control, or a double mixer
- * control that spans 2 registers.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_put_volsw(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -372,7 +289,7 @@ int snd_soc_put_volsw(struct snd_kcontrol *kcontrol,
 	if (type_2r) {
 		err = snd_soc_component_update_bits(component, reg2, val_mask,
 						    val2);
-		/* Don't discard any error code or drop change flag */
+		 
 		if (ret == 0 || err < 0) {
 			ret = err;
 		}
@@ -382,16 +299,7 @@ int snd_soc_put_volsw(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_put_volsw);
 
-/**
- * snd_soc_get_volsw_sx - single mixer get callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to get the value of a single mixer control, or a double mixer
- * control that spans 2 registers.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_get_volsw_sx(struct snd_kcontrol *kcontrol,
 		      struct snd_ctl_elem_value *ucontrol)
 {
@@ -420,15 +328,7 @@ int snd_soc_get_volsw_sx(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_volsw_sx);
 
-/**
- * snd_soc_put_volsw_sx - double mixer set callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to set the value of a double mixer control that spans 2 registers.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_put_volsw_sx(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
@@ -478,7 +378,7 @@ int snd_soc_put_volsw_sx(struct snd_kcontrol *kcontrol,
 		err = snd_soc_component_update_bits(component, reg2, val_mask,
 			val2);
 
-		/* Don't discard any error code or drop change flag */
+		 
 		if (ret == 0 || err < 0) {
 			ret = err;
 		}
@@ -487,16 +387,7 @@ int snd_soc_put_volsw_sx(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_put_volsw_sx);
 
-/**
- * snd_soc_info_volsw_range - single mixer info callback with range.
- * @kcontrol: mixer control
- * @uinfo: control element information
- *
- * Callback to provide information, within a range, about a single
- * mixer control.
- *
- * returns 0 for success.
- */
+ 
 int snd_soc_info_volsw_range(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_info *uinfo)
 {
@@ -518,15 +409,7 @@ int snd_soc_info_volsw_range(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_info_volsw_range);
 
-/**
- * snd_soc_put_volsw_range - single mixer put value callback with range.
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to set the value, within a range, for a single mixer control.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -581,7 +464,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
 
 		err = snd_soc_component_update_bits(component, rreg, val_mask,
 			val);
-		/* Don't discard any error code or drop change flag */
+		 
 		if (ret == 0 || err < 0) {
 			ret = err;
 		}
@@ -591,15 +474,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_put_volsw_range);
 
-/**
- * snd_soc_get_volsw_range - single mixer get callback with range
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback to get the value, within a range, of a single mixer control.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_get_volsw_range(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -639,22 +514,14 @@ int snd_soc_get_volsw_range(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_volsw_range);
 
-/**
- * snd_soc_limit_volume - Set new limit to an existing volume control.
- *
- * @card: where to look for the control
- * @name: Name of the control
- * @max: new maximum limit
- *
- * Return 0 for success, else error.
- */
+ 
 int snd_soc_limit_volume(struct snd_soc_card *card,
 	const char *name, int max)
 {
 	struct snd_kcontrol *kctl;
 	int ret = -EINVAL;
 
-	/* Sanity check for name and max */
+	 
 	if (unlikely(!name || max <= 0))
 		return -EINVAL;
 
@@ -697,7 +564,7 @@ int snd_soc_bytes_get(struct snd_kcontrol *kcontrol,
 	else
 		ret = -EINVAL;
 
-	/* Hide any masked bytes to ensure consistent data reporting */
+	 
 	if (ret == 0 && params->mask) {
 		switch (component->val_bytes) {
 		case 1:
@@ -738,11 +605,7 @@ int snd_soc_bytes_put(struct snd_kcontrol *kcontrol,
 	if (!data)
 		return -ENOMEM;
 
-	/*
-	 * If we've got a mask then we need to preserve the register
-	 * bits.  We shouldn't modify the incoming data so take a
-	 * copy.
-	 */
+	 
 	if (params->mask) {
 		ret = regmap_read(component->regmap, params->base, &val);
 		if (ret != 0)
@@ -836,17 +699,7 @@ int snd_soc_bytes_tlv_callback(struct snd_kcontrol *kcontrol, int op_flag,
 }
 EXPORT_SYMBOL_GPL(snd_soc_bytes_tlv_callback);
 
-/**
- * snd_soc_info_xr_sx - signed multi register info callback
- * @kcontrol: mreg control
- * @uinfo: control element information
- *
- * Callback to provide information of a control that can
- * span multiple codec registers which together
- * forms a single signed value in a MSB/LSB manner.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_info_xr_sx(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_info *uinfo)
 {
@@ -861,19 +714,7 @@ int snd_soc_info_xr_sx(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_info_xr_sx);
 
-/**
- * snd_soc_get_xr_sx - signed multi register get callback
- * @kcontrol: mreg control
- * @ucontrol: control element information
- *
- * Callback to get the value of a control that can span
- * multiple codec registers which together forms a single
- * signed value in a MSB/LSB manner. The control supports
- * specifying total no of bits used to allow for bitfields
- * across the multiple codec registers.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_get_xr_sx(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -906,19 +747,7 @@ int snd_soc_get_xr_sx(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_xr_sx);
 
-/**
- * snd_soc_put_xr_sx - signed multi register get callback
- * @kcontrol: mreg control
- * @ucontrol: control element information
- *
- * Callback to set the value of a control that can span
- * multiple codec registers which together forms a single
- * signed value in a MSB/LSB manner. The control supports
- * specifying total no of bits used to allow for bitfields
- * across the multiple codec registers.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_put_xr_sx(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -956,15 +785,7 @@ int snd_soc_put_xr_sx(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_put_xr_sx);
 
-/**
- * snd_soc_get_strobe - strobe get callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback get the value of a strobe mixer control.
- *
- * Returns 0 for success.
- */
+ 
 int snd_soc_get_strobe(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -988,16 +809,7 @@ int snd_soc_get_strobe(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_strobe);
 
-/**
- * snd_soc_put_strobe - strobe put callback
- * @kcontrol: mixer control
- * @ucontrol: control element information
- *
- * Callback strobe a register bit to high then low (or the inverse)
- * in one pass of a single mixer enum control.
- *
- * Returns 1 for success.
- */
+ 
 int snd_soc_put_strobe(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {

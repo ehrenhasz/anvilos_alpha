@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef MTK_DRM_DRV_H
 #define MTK_DRM_DRV_H
@@ -65,4 +63,4 @@ extern struct platform_driver mtk_dsi_driver;
 extern struct platform_driver mtk_ethdr_driver;
 extern struct platform_driver mtk_mdp_rdma_driver;
 
-#endif /* MTK_DRM_DRV_H */
+#endif  

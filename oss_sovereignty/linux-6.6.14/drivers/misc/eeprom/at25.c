@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for most of the SPI EEPROMs, such as Atmel AT25 models
- * and Cypress FRAMs FM25 models.
- *
- * Copyright (C) 2006 David Brownell
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -20,18 +15,10 @@
 
 #include <linux/nvmem-provider.h>
 
-/*
- * NOTE: this is an *EEPROM* driver. The vagaries of product naming
- * mean that some AT25 products are EEPROMs, and others are FLASH.
- * Handle FLASH chips with the drivers/mtd/devices/m25p80.c driver,
- * not this one!
- *
- * EEPROMs that can be used with this driver include, for example:
- *   AT25M02, AT25128B
- */
+ 
 
-#define	FM25_SN_LEN	8		/* serial number length */
-#define EE_MAXADDRLEN	3		/* 24 bit addresses, up to 2 MBytes */
+#define	FM25_SN_LEN	8		 
+#define EE_MAXADDRLEN	3		 
 
 struct at25_data {
 	struct spi_eeprom	chip;
@@ -44,35 +31,32 @@ struct at25_data {
 	u8 command[EE_MAXADDRLEN + 1];
 };
 
-#define	AT25_WREN	0x06		/* latch the write enable */
-#define	AT25_WRDI	0x04		/* reset the write enable */
-#define	AT25_RDSR	0x05		/* read status register */
-#define	AT25_WRSR	0x01		/* write status register */
-#define	AT25_READ	0x03		/* read byte(s) */
-#define	AT25_WRITE	0x02		/* write byte(s)/sector */
-#define	FM25_SLEEP	0xb9		/* enter sleep mode */
-#define	FM25_RDID	0x9f		/* read device ID */
-#define	FM25_RDSN	0xc3		/* read S/N */
+#define	AT25_WREN	0x06		 
+#define	AT25_WRDI	0x04		 
+#define	AT25_RDSR	0x05		 
+#define	AT25_WRSR	0x01		 
+#define	AT25_READ	0x03		 
+#define	AT25_WRITE	0x02		 
+#define	FM25_SLEEP	0xb9		 
+#define	FM25_RDID	0x9f		 
+#define	FM25_RDSN	0xc3		 
 
-#define	AT25_SR_nRDY	0x01		/* nRDY = write-in-progress */
-#define	AT25_SR_WEN	0x02		/* write enable (latched) */
-#define	AT25_SR_BP0	0x04		/* BP for software writeprotect */
+#define	AT25_SR_nRDY	0x01		 
+#define	AT25_SR_WEN	0x02		 
+#define	AT25_SR_BP0	0x04		 
 #define	AT25_SR_BP1	0x08
-#define	AT25_SR_WPEN	0x80		/* writeprotect enable */
+#define	AT25_SR_WPEN	0x80		 
 
-#define	AT25_INSTR_BIT3	0x08		/* additional address bit in instr */
+#define	AT25_INSTR_BIT3	0x08		 
 
-#define	FM25_ID_LEN	9		/* ID length */
+#define	FM25_ID_LEN	9		 
 
-/*
- * Specs often allow 5ms for a page write, sometimes 20ms;
- * it's important to recover from write timeouts.
- */
+ 
 #define	EE_TIMEOUT	25
 
-/*-------------------------------------------------------------------------*/
+ 
 
-#define	io_limit	PAGE_SIZE	/* bytes */
+#define	io_limit	PAGE_SIZE	 
 
 static int at25_ee_read(void *priv, unsigned int offset,
 			void *val, size_t count)
@@ -109,16 +93,16 @@ static int at25_ee_read(void *priv, unsigned int offset,
 
 		*cp++ = instr;
 
-		/* 8/16/24-bit address is written MSB first */
+		 
 		switch (at25->addrlen) {
-		default:	/* case 3 */
+		default:	 
 			*cp++ = msg_offset >> 16;
 			fallthrough;
 		case 2:
 			*cp++ = msg_offset >> 8;
 			fallthrough;
 		case 1:
-		case 0:	/* can't happen: for better code generation */
+		case 0:	 
 			*cp++ = msg_offset >> 0;
 		}
 
@@ -150,7 +134,7 @@ static int at25_ee_read(void *priv, unsigned int offset,
 	return 0;
 }
 
-/* Read extra registers as ID or serial number */
+ 
 static int fm25_aux_read(struct at25_data *at25, u8 *buf, uint8_t command,
 			 int len)
 {
@@ -211,7 +195,7 @@ static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
 	if (unlikely(!count))
 		return -EINVAL;
 
-	/* Temp buffer starts with command and address */
+	 
 	buf_size = at25->chip.page_size;
 	if (buf_size > io_limit)
 		buf_size = io_limit;
@@ -219,10 +203,7 @@ static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
 	if (!bounce)
 		return -ENOMEM;
 
-	/*
-	 * For write, rollover is within the page ... so we write at
-	 * most one page, then manually roll over to the next page.
-	 */
+	 
 	mutex_lock(&at25->lock);
 	do {
 		unsigned long	timeout, retries;
@@ -245,20 +226,20 @@ static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
 				instr |= AT25_INSTR_BIT3;
 		*cp++ = instr;
 
-		/* 8/16/24-bit address is written MSB first */
+		 
 		switch (at25->addrlen) {
-		default:	/* case 3 */
+		default:	 
 			*cp++ = offset >> 16;
 			fallthrough;
 		case 2:
 			*cp++ = offset >> 8;
 			fallthrough;
 		case 1:
-		case 0:	/* can't happen: for better code generation */
+		case 0:	 
 			*cp++ = offset >> 0;
 		}
 
-		/* Write as much of a page as we can */
+		 
 		segment = buf_size - (offset % buf_size);
 		if (segment > count)
 			segment = count;
@@ -272,12 +253,9 @@ static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
 		if (status < 0)
 			break;
 
-		/*
-		 * REVISIT this should detect (or prevent) failed writes
-		 * to read-only sections of the EEPROM...
-		 */
+		 
 
-		/* Wait for non-busy status */
+		 
 		timeout = jiffies + msecs_to_jiffies(EE_TIMEOUT);
 		retries = 0;
 		do {
@@ -286,7 +264,7 @@ static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
 			if (sr < 0 || (sr & AT25_SR_nRDY)) {
 				dev_dbg(&at25->spi->dev,
 					"rdsr --> %d (%02x)\n", sr, sr);
-				/* at HZ=100, this is sloooow */
+				 
 				msleep(1);
 				continue;
 			}
@@ -316,7 +294,7 @@ static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
 	return status;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int at25_fw_to_chip(struct device *dev, struct spi_eeprom *chip)
 {
@@ -386,13 +364,13 @@ static int at25_fram_to_chip(struct device *dev, struct spi_eeprom *chip)
 
 	strscpy(chip->name, "fm25", sizeof(chip->name));
 
-	/* Get ID of chip */
+	 
 	fm25_aux_read(at25, id, FM25_RDID, FM25_ID_LEN);
 	if (id[6] != 0xc2) {
 		dev_err(dev, "Error: no Cypress FRAM (id %02x)\n", id[6]);
 		return -ENODEV;
 	}
-	/* Set size found in ID */
+	 
 	if (id[7] < 0x21 || id[7] > 0x26) {
 		dev_err(dev, "Error: unsupported size (id %02x)\n", id[7]);
 		return -ENODEV;
@@ -406,7 +384,7 @@ static int at25_fram_to_chip(struct device *dev, struct spi_eeprom *chip)
 
 	if (id[8]) {
 		fm25_aux_read(at25, sernum, FM25_RDSN, FM25_SN_LEN);
-		/* Swap byte order */
+		 
 		for (i = 0; i < FM25_SN_LEN; i++)
 			at25->sernum[i] = sernum[FM25_SN_LEN - 1 - i];
 	}
@@ -437,11 +415,7 @@ static int at25_probe(struct spi_device *spi)
 	struct spi_eeprom *pdata;
 	bool is_fram;
 
-	/*
-	 * Ping the chip ... the status register is pretty portable,
-	 * unlike probing manufacturer IDs. We do expect that system
-	 * firmware didn't write it in the past few milliseconds!
-	 */
+	 
 	sr = spi_w8r8(spi, AT25_RDSR);
 	if (sr < 0 || sr & AT25_SR_nRDY) {
 		dev_dbg(&spi->dev, "rdsr --> %d (%02x)\n", sr, sr);
@@ -458,7 +432,7 @@ static int at25_probe(struct spi_device *spi)
 
 	is_fram = fwnode_device_is_compatible(dev_fwnode(&spi->dev), "cypress,fm25");
 
-	/* Chip description */
+	 
 	pdata = dev_get_platdata(&spi->dev);
 	if (pdata) {
 		at25->chip = *pdata;
@@ -471,7 +445,7 @@ static int at25_probe(struct spi_device *spi)
 			return err;
 	}
 
-	/* For now we only support 8/16/24 bit addressing */
+	 
 	if (at25->chip.flags & EE_ADDR1)
 		at25->addrlen = 1;
 	else if (at25->chip.flags & EE_ADDR2)
@@ -512,7 +486,7 @@ static int at25_probe(struct spi_device *spi)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static struct spi_driver at25_driver = {
 	.driver = {

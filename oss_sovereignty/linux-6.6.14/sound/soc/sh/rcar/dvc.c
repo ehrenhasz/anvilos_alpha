@@ -1,31 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Renesas R-Car DVC support
-//
-// Copyright (C) 2014 Renesas Solutions Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-/*
- * Playback Volume
- *	amixer set "DVC Out" 100%
- *
- * Capture Volume
- *	amixer set "DVC In" 100%
- *
- * Playback Mute
- *	amixer set "DVC Out Mute" on
- *
- * Capture Mute
- *	amixer set "DVC In Mute" on
- *
- * Volume Ramp
- *	amixer set "DVC Out Ramp Up Rate"   "0.125 dB/64 steps"
- *	amixer set "DVC Out Ramp Down Rate" "0.125 dB/512 steps"
- *	amixer set "DVC Out Ramp" on
- *	aplay xxx.wav &
- *	amixer set "DVC Out"  80%  // Volume Down
- *	amixer set "DVC Out" 100%  // Volume Up
- */
+
+
+
+
+
+
+ 
 
 #include "rsnd.h"
 
@@ -37,9 +17,9 @@ struct rsnd_dvc {
 	struct rsnd_mod mod;
 	struct rsnd_kctrl_cfg_m volume;
 	struct rsnd_kctrl_cfg_m mute;
-	struct rsnd_kctrl_cfg_s ren;	/* Ramp Enable */
-	struct rsnd_kctrl_cfg_s rup;	/* Ramp Rate Up */
-	struct rsnd_kctrl_cfg_s rdown;	/* Ramp Rate Down */
+	struct rsnd_kctrl_cfg_s ren;	 
+	struct rsnd_kctrl_cfg_s rup;	 
+	struct rsnd_kctrl_cfg_s rdown;	 
 };
 
 #define rsnd_dvc_get(priv, id) ((struct rsnd_dvc *)(priv->dvc) + id)
@@ -77,7 +57,7 @@ static void rsnd_dvc_volume_parameter(struct rsnd_dai_stream *io,
 	u32 val[RSND_MAX_CHANNELS];
 	int i;
 
-	/* Enable Ramp */
+	 
 	if (rsnd_kctrl_vals(dvc->ren))
 		for (i = 0; i < RSND_MAX_CHANNELS; i++)
 			val[i] = rsnd_kctrl_max(dvc->volume);
@@ -85,7 +65,7 @@ static void rsnd_dvc_volume_parameter(struct rsnd_dai_stream *io,
 		for (i = 0; i < RSND_MAX_CHANNELS; i++)
 			val[i] = rsnd_kctrl_valm(dvc->volume, i);
 
-	/* Enable Digital Volume */
+	 
 	for (i = 0; i < RSND_MAX_CHANNELS; i++)
 		rsnd_mod_write(mod, DVC_VOLxR(i), val[i]);
 }
@@ -103,40 +83,35 @@ static void rsnd_dvc_volume_init(struct rsnd_dai_stream *io,
 	adinr = rsnd_get_adinr_bit(mod, io) |
 		rsnd_runtime_channel_after_ctu(io);
 
-	/* Enable Digital Volume, Zero Cross Mute Mode */
+	 
 	dvucr |= 0x101;
 
-	/* Enable Ramp */
+	 
 	if (rsnd_kctrl_vals(dvc->ren)) {
 		dvucr |= 0x10;
 
-		/*
-		 * FIXME !!
-		 * use scale-downed Digital Volume
-		 * as Volume Ramp
-		 * 7F FFFF -> 3FF
-		 */
+		 
 		vrctr = 0xff;
 		vrpdr = rsnd_dvc_get_vrpdr(dvc);
 		vrdbr = rsnd_dvc_get_vrdbr(dvc);
 	}
 
-	/* Initialize operation */
+	 
 	rsnd_mod_write(mod, DVC_DVUIR, 1);
 
-	/* General Information */
+	 
 	rsnd_mod_write(mod, DVC_ADINR, adinr);
 	rsnd_mod_write(mod, DVC_DVUCR, dvucr);
 
-	/* Volume Ramp Parameter */
+	 
 	rsnd_mod_write(mod, DVC_VRCTR, vrctr);
 	rsnd_mod_write(mod, DVC_VRPDR, vrpdr);
 	rsnd_mod_write(mod, DVC_VRDBR, vrdbr);
 
-	/* Digital Volume Function Parameter */
+	 
 	rsnd_dvc_volume_parameter(io, mod);
 
-	/* cancel operation */
+	 
 	rsnd_mod_write(mod, DVC_DVUIR, 0);
 }
 
@@ -157,21 +132,21 @@ static void rsnd_dvc_volume_update(struct rsnd_dai_stream *io,
 		vrdbr = rsnd_dvc_get_vrdbr(dvc);
 	}
 
-	/* Disable DVC Register access */
+	 
 	rsnd_mod_write(mod, DVC_DVUER, 0);
 
-	/* Zero Cross Mute Function */
+	 
 	rsnd_mod_write(mod, DVC_ZCMCR, zcmcr);
 
-	/* Volume Ramp Function */
+	 
 	rsnd_mod_write(mod, DVC_VRPDR, vrpdr);
 	rsnd_mod_write(mod, DVC_VRDBR, vrdbr);
-	/* add DVC_VRWTR here */
+	 
 
-	/* Digital Volume Function Parameter */
+	 
 	rsnd_dvc_volume_parameter(io, mod);
 
-	/* Enable DVC Register access */
+	 
 	rsnd_mod_write(mod, DVC_DVUER, 1);
 }
 
@@ -222,7 +197,7 @@ static int rsnd_dvc_pcm_new(struct rsnd_mod *mod,
 	int channels = rsnd_rdai_channels_get(rdai);
 	int ret;
 
-	/* Volume */
+	 
 	ret = rsnd_kctrl_new_m(mod, io, rtd,
 			is_play ?
 			"DVC Out Playback Volume" : "DVC In Capture Volume",
@@ -233,7 +208,7 @@ static int rsnd_dvc_pcm_new(struct rsnd_mod *mod,
 	if (ret < 0)
 		return ret;
 
-	/* Mute */
+	 
 	ret = rsnd_kctrl_new_m(mod, io, rtd,
 			is_play ?
 			"DVC Out Mute Switch" : "DVC In Mute Switch",
@@ -244,7 +219,7 @@ static int rsnd_dvc_pcm_new(struct rsnd_mod *mod,
 	if (ret < 0)
 		return ret;
 
-	/* Ramp */
+	 
 	ret = rsnd_kctrl_new_s(mod, io, rtd,
 			is_play ?
 			"DVC Out Ramp Switch" : "DVC In Ramp Switch",
@@ -331,13 +306,13 @@ int rsnd_dvc_probe(struct rsnd_priv *priv)
 	char name[RSND_DVC_NAME_SIZE];
 	int i, nr, ret;
 
-	/* This driver doesn't support Gen1 at this point */
+	 
 	if (rsnd_is_gen1(priv))
 		return 0;
 
 	node = rsnd_dvc_of_node(priv);
 	if (!node)
-		return 0; /* not used is not error */
+		return 0;  
 
 	nr = of_get_child_count(node);
 	if (!nr) {

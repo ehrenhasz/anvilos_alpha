@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "mod_vmid.h"
 
@@ -59,14 +36,14 @@ static void evict_vmids(struct core_vmid *core_vmid)
 	int i;
 	uint16_t ord = dc_get_vmid_use_vector(core_vmid->dc);
 
-	// At this point any positions with value 0 are unused vmids, evict them
+	
 	for (i = 1; i < core_vmid->num_vmid; i++) {
 		if (!(ord & (1u << i)))
 			clear_entry_from_vmid_table(core_vmid, i);
 	}
 }
 
-// Return value of -1 indicates vmid table uninitialized or ptb dne in the table
+
 static int get_existing_vmid_for_ptb(struct core_vmid *core_vmid, uint64_t ptb)
 {
 	int i;
@@ -79,7 +56,7 @@ static int get_existing_vmid_for_ptb(struct core_vmid *core_vmid, uint64_t ptb)
 	return -1;
 }
 
-// Expected to be called only when there's an available vmid
+
 static int get_next_available_vmid(struct core_vmid *core_vmid)
 {
 	int i;
@@ -97,7 +74,7 @@ uint8_t mod_vmid_get_for_ptb(struct mod_vmid *mod_vmid, uint64_t ptb)
 	struct core_vmid *core_vmid = MOD_VMID_TO_CORE(mod_vmid);
 	int vmid = 0;
 
-	// Physical address gets vmid 0
+	
 	if (ptb == 0)
 		return 0;
 

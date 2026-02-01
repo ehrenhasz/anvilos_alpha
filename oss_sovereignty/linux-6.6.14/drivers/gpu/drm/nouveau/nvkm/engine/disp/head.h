@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_DISP_HEAD_H__
 #define __NVKM_DISP_HEAD_H__
 #include <nvif/object.h>
@@ -22,7 +22,7 @@ struct nvkm_head {
 		u16 vblanks;
 		u32 hz;
 
-		/* Prior to GF119, these are set by the OR. */
+		 
 		struct {
 			u8 depth;
 		} or;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * HID Sensors Driver
- * Copyright (c) 2012, Intel Corporation.
- */
+ 
+ 
 #ifndef _HID_SENSOR_TRIGGER_H
 #define _HID_SENSOR_TRIGGER_H
 

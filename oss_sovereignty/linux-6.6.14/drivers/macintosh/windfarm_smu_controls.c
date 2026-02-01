@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control. SMU based controls
- *
- * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
- *                    <benh@kernel.crashing.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -35,18 +30,16 @@
 
 static int smu_supports_new_fans_ops = 1;
 
-/*
- * SMU fans control object
- */
+ 
 
 static LIST_HEAD(smu_fans);
 
 struct smu_fan_control {
 	struct list_head	link;
-	int    			fan_type;	/* 0 = rpm, 1 = pwm */
-	u32			reg;		/* index in SMU */
-	s32			value;		/* current value */
-	s32			min, max;	/* min/max values */
+	int    			fan_type;	 
+	u32			reg;		 
+	s32			value;		 
+	s32			min, max;	 
 	struct wf_control	ctrl;
 };
 #define to_smu_fan(c) container_of(c, struct smu_fan_control, ctrl)
@@ -58,15 +51,10 @@ static int smu_set_fan(int pwm, u8 id, u16 value)
 	DECLARE_COMPLETION_ONSTACK(comp);
 	int rc;
 
-	/* Fill SMU command structure */
+	 
 	cmd.cmd = SMU_CMD_FAN_COMMAND;
 
-	/* The SMU has an "old" and a "new" way of setting the fan speed
-	 * Unfortunately, I found no reliable way to know which one works
-	 * on a given machine model. After some investigations it appears
-	 * that MacOS X just tries the new one, and if it fails fallbacks
-	 * to the old ones ... Ugh.
-	 */
+	 
  retry:
 	if (smu_supports_new_fans_ops) {
 		buffer[0] = 0x30;
@@ -76,7 +64,7 @@ static int smu_set_fan(int pwm, u8 id, u16 value)
 	} else {
 		if (id > 7)
 			return -EINVAL;
-		/* Fill argument buffer */
+		 
 		memset(buffer, 0, 16);
 		buffer[0] = pwm ? 0x10 : 0x00;
 		buffer[1] = 0x01 << id;
@@ -95,7 +83,7 @@ static int smu_set_fan(int pwm, u8 id, u16 value)
 		return rc;
 	wait_for_completion(&comp);
 
-	/* Handle fallback (see comment above) */
+	 
 	if (cmd.status != 0 && smu_supports_new_fans_ops) {
 		printk(KERN_WARNING "windfarm: SMU failed new fan command "
 		       "falling back to old method\n");
@@ -129,7 +117,7 @@ static int smu_fan_set(struct wf_control *ct, s32 value)
 static int smu_fan_get(struct wf_control *ct, s32 *value)
 {
 	struct smu_fan_control *fct = to_smu_fan(ct);
-	*value = fct->value; /* todo: read from SMU */
+	*value = fct->value;  
 	return 0;
 }
 
@@ -173,18 +161,11 @@ static struct smu_fan_control *smu_fan_create(struct device_node *node,
 	fct->fan_type = pwm_fan;
 	fct->ctrl.type = pwm_fan ? WF_CONTROL_PWM_FAN : WF_CONTROL_RPM_FAN;
 
-	/* We use the name & location here the same way we do for SMU sensors,
-	 * see the comment in windfarm_smu_sensors.c. The locations are a bit
-	 * less consistent here between the iMac and the desktop models, but
-	 * that is good enough for our needs for now at least.
-	 *
-	 * One problem though is that Apple seem to be inconsistent with case
-	 * and the kernel doesn't have strcasecmp =P
-	 */
+	 
 
 	fct->ctrl.name = NULL;
 
-	/* Names used on desktop models */
+	 
 	if (!strcmp(l, "Rear Fan 0") || !strcmp(l, "Rear Fan") ||
 	    !strcmp(l, "Rear fan 0") || !strcmp(l, "Rear fan") ||
 	    !strcmp(l, "CPU A EXHAUST"))
@@ -212,23 +193,23 @@ static struct smu_fan_control *smu_fan_create(struct device_node *node,
 	else if (!strcmp(l, "BACKSIDE"))
 		fct->ctrl.name = "backside-fan";
 
-	/* Names used on iMac models */
+	 
 	if (!strcmp(l, "System Fan") || !strcmp(l, "System fan"))
 		fct->ctrl.name = "system-fan";
 	else if (!strcmp(l, "CPU Fan") || !strcmp(l, "CPU fan"))
 		fct->ctrl.name = "cpu-fan";
 	else if (!strcmp(l, "Hard Drive") || !strcmp(l, "Hard drive"))
 		fct->ctrl.name = "drive-bay-fan";
-	else if (!strcmp(l, "HDD Fan")) /* seen on iMac G5 iSight */
+	else if (!strcmp(l, "HDD Fan"))  
 		fct->ctrl.name = "hard-drive-fan";
-	else if (!strcmp(l, "ODD Fan")) /* same */
+	else if (!strcmp(l, "ODD Fan"))  
 		fct->ctrl.name = "optical-drive-fan";
 
-	/* Unrecognized fan, bail out */
+	 
 	if (fct->ctrl.name == NULL)
 		goto fail;
 
-	/* Get min & max values*/
+	 
 	v = of_get_property(node, "min-value", NULL);
 	if (v == NULL)
 		goto fail;
@@ -238,7 +219,7 @@ static struct smu_fan_control *smu_fan_create(struct device_node *node,
 		goto fail;
 	fct->max = *v;
 
-	/* Get "reg" value */
+	 
 	reg = of_get_property(node, "reg", NULL);
 	if (reg == NULL)
 		goto fail;
@@ -265,7 +246,7 @@ static int __init smu_controls_init(void)
 	if (smu == NULL)
 		return -ENODEV;
 
-	/* Look for RPM fans */
+	 
 	for_each_child_of_node(smu, fans)
 		if (of_node_name_eq(fans, "rpm-fans") ||
 		    of_device_is_compatible(fans, "smu-rpm-fans"))
@@ -284,7 +265,7 @@ static int __init smu_controls_init(void)
 	of_node_put(fans);
 
 
-	/* Look for PWM fans */
+	 
 	for_each_child_of_node(smu, fans)
 		if (of_node_name_eq(fans, "pwm-fans"))
 			break;

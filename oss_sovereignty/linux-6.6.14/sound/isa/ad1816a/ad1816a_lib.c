@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    ad1816a.c - lowlevel code for Analog Devices AD1816A chip.
-    Copyright (C) 1999-2000 by Massimo Piccioni <dafastidio@libero.it>
 
-*/
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -173,10 +169,8 @@ static int snd_ad1816a_trigger(struct snd_ad1816a *chip, unsigned char what,
 	case SNDRV_PCM_TRIGGER_STOP:
 		spin_lock(&chip->lock);
 		cmd = (cmd == SNDRV_PCM_TRIGGER_START) ? 0xff: 0x00;
-		/* if (what & AD1816A_PLAYBACK_ENABLE) */
-		/* That is not valid, because playback and capture enable
-		 * are the same bit pattern, just to different addresses
-		 */
+		 
+		 
 		if (! iscapture)
 			snd_ad1816a_out_mask(chip, AD1816A_PLAYBACK_CONFIG,
 				AD1816A_PLAYBACK_ENABLE, cmd);
@@ -662,9 +656,7 @@ int snd_ad1816a_timer(struct snd_ad1816a *chip, int device)
 	return 0;
 }
 
-/*
- *
- */
+ 
 
 static int snd_ad1816a_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {

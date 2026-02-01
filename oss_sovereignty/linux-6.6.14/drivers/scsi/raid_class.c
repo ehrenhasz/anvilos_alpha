@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * raid_class.c - implementation of a simple raid visualisation class
- *
- * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
- *
- * This class is designed to allow raid attributes to be visualised and
- * manipulated in a form independent of the underlying raid.  Ultimately this
- * should work for both hardware and software raids.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/list.h>
@@ -22,10 +14,9 @@
 struct raid_internal {
 	struct raid_template r;
 	struct raid_function_template *f;
-	/* The actual attributes */
+	 
 	struct device_attribute private_attrs[RAID_NUM_ATTRS];
-	/* The array of null terminated pointers to attributes 
-	 * needed by scsi_sysfs.c */
+	 
 	struct device_attribute *attrs[RAID_NUM_ATTRS + 1];
 };
 
@@ -58,8 +49,7 @@ struct raid_component {
 
 static int raid_match(struct attribute_container *cont, struct device *dev)
 {
-	/* We have to look for every subsystem that could house
-	 * emulated RAID devices, so start with SCSI */
+	 
 	struct raid_internal *i = ac_to_raid_internal(cont);
 
 	if (IS_ENABLED(CONFIG_SCSI) && scsi_is_sdev_device(dev)) {
@@ -70,7 +60,7 @@ static int raid_match(struct attribute_container *cont, struct device *dev)
 
 		return i->f->is_raid(dev);
 	}
-	/* FIXME: look at other subsystems too */
+	 
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 #include <linux/clk.h>
 #include <linux/clocksource.h>
 #include <linux/clockchips.h>
@@ -17,7 +17,7 @@
 #include <clocksource/timer-ti-dm.h>
 #include <dt-bindings/bus/ti-sysc.h>
 
-/* For type1, set SYSC_OMAP2_CLOCKACTIVITY for fck off on idle, l4 clock on */
+ 
 #define DMTIMER_TYPE1_ENABLE	((1 << 9) | (SYSC_IDLE_SMART << 3) | \
 				 SYSC_OMAP2_ENAWAKEUP | SYSC_OMAP2_AUTOIDLE)
 #define DMTIMER_TYPE1_DISABLE	(SYSC_OMAP2_SOFTRESET | SYSC_OMAP2_AUTOIDLE)
@@ -30,10 +30,7 @@ static int counter_32k;
 static u32 clocksource;
 static u32 clockevent;
 
-/*
- * Subset of the timer registers we use. Note that the register offsets
- * depend on the timer revision detected.
- */
+ 
 struct dmtimer_systimer {
 	void __iomem *base;
 	u8 sysc;
@@ -62,7 +59,7 @@ struct dmtimer_clocksource {
 	unsigned int loadval;
 };
 
-/* Assumes v1 ip if bits [31:16] are zero */
+ 
 static bool dmtimer_systimer_revision1(struct dmtimer_systimer *t)
 {
 	u32 tidr = readl_relaxed(t->base);
@@ -104,7 +101,7 @@ static int __init dmtimer_systimer_type1_reset(struct dmtimer_systimer *t)
 	return ret;
 }
 
-/* Note we must use io_base instead of func_base for type2 OCP regs */
+ 
 static int __init dmtimer_systimer_type2_reset(struct dmtimer_systimer *t)
 {
 	void __iomem *sysc = t->base + t->sysc;
@@ -138,16 +135,10 @@ static int __init dmtimer_systimer_reset(struct dmtimer_systimer *t)
 
 static const struct of_device_id counter_match_table[] = {
 	{ .compatible = "ti,omap-counter32k" },
-	{ /* Sentinel */ },
+	{   },
 };
 
-/*
- * Check if the SoC als has a usable working 32 KiHz counter. The 32 KiHz
- * counter is handled by timer-ti-32k, but we need to detect it as it
- * affects the preferred dmtimer system timer configuration. There is
- * typically no use for a dmtimer clocksource if the 32 KiHz counter is
- * present, except on am437x as described below.
- */
+ 
 static void __init dmtimer_systimer_check_counter32k(void)
 {
 	struct device_node *np;
@@ -179,15 +170,10 @@ static const struct of_device_id dmtimer_match_table[] = {
 	{ .compatible = "ti,am335x-timer-1ms", },
 	{ .compatible = "ti,dm814-timer", },
 	{ .compatible = "ti,dm816-timer", },
-	{ /* Sentinel */ },
+	{   },
 };
 
-/*
- * Checks that system timers are configured to not reset and idle during
- * the generic timer-ti-dm device driver probe. And that the system timer
- * source clocks are properly configured. Also, let's not hog any DSP and
- * PWM capable timers unnecessarily as system timers.
- */
+ 
 static bool __init dmtimer_is_preferred(struct device_node *np)
 {
 	if (!of_device_is_available(np))
@@ -200,7 +186,7 @@ static bool __init dmtimer_is_preferred(struct device_node *np)
 	if (!of_property_read_bool(np->parent, "ti,no-idle"))
 		return false;
 
-	/* Secure gptimer12 is always clocked with a fixed source */
+	 
 	if (!of_property_read_bool(np, "ti,timer-secure")) {
 		if (!of_property_read_bool(np, "assigned-clocks"))
 			return false;
@@ -218,35 +204,20 @@ static bool __init dmtimer_is_preferred(struct device_node *np)
 	return true;
 }
 
-/*
- * Finds the first available usable always-on timer, and assigns it to either
- * clockevent or clocksource depending if the counter_32k is available on the
- * SoC or not.
- *
- * Some omap3 boards with unreliable oscillator must not use the counter_32k
- * or dmtimer1 with 32 KiHz source. Additionally, the boards with unreliable
- * oscillator should really set counter_32k as disabled, and delete dmtimer1
- * ti,always-on property, but let's not count on it. For these quirky cases,
- * we prefer using the always-on secure dmtimer12 with the internal 32 KiHz
- * clock as the clocksource, and any available dmtimer as clockevent.
- *
- * For am437x, we are using am335x style dmtimer clocksource. It is unclear
- * if this quirk handling is really needed, but let's change it separately
- * based on testing as it might cause side effects.
- */
+ 
 static void __init dmtimer_systimer_assign_alwon(void)
 {
 	struct device_node *np;
 	u32 pa = 0;
 	bool quirk_unreliable_oscillator = false;
 
-	/* Quirk unreliable 32 KiHz oscillator with incomplete dts */
+	 
 	if (of_machine_is_compatible("ti,omap3-beagle-ab4")) {
 		quirk_unreliable_oscillator = true;
 		counter_32k = -ENODEV;
 	}
 
-	/* Quirk am437x using am335x style dmtimer clocksource */
+	 
 	if (of_machine_is_compatible("ti,am43"))
 		counter_32k = -ENODEV;
 
@@ -263,7 +234,7 @@ static void __init dmtimer_systimer_assign_alwon(void)
 
 		pa = res.start;
 
-		/* Quirky omap3 boards must use dmtimer12 */
+		 
 		if (quirk_unreliable_oscillator && pa == 0x48318000)
 			continue;
 
@@ -271,7 +242,7 @@ static void __init dmtimer_systimer_assign_alwon(void)
 		break;
 	}
 
-	/* Usually no need for dmtimer clocksource if we have counter32 */
+	 
 	if (counter_32k >= 0) {
 		clockevent = pa;
 		clocksource = 0;
@@ -281,7 +252,7 @@ static void __init dmtimer_systimer_assign_alwon(void)
 	}
 }
 
-/* Finds the first usable dmtimer, used for the don't care case */
+ 
 static u32 __init dmtimer_systimer_find_first_available(void)
 {
 	struct device_node *np;
@@ -306,7 +277,7 @@ static u32 __init dmtimer_systimer_find_first_available(void)
 	return pa;
 }
 
-/* Selects the best clocksource and clockevent to use */
+ 
 static void __init dmtimer_systimer_select_best(void)
 {
 	dmtimer_systimer_check_counter32k();
@@ -319,7 +290,7 @@ static void __init dmtimer_systimer_select_best(void)
 		 __func__, counter_32k, clocksource, clockevent);
 }
 
-/* Interface clocks are only available on some SoCs variants */
+ 
 static int __init dmtimer_systimer_init_clock(struct dmtimer_systimer *t,
 					      struct device_node *np,
 					      const char *name,
@@ -372,16 +343,12 @@ static int __init dmtimer_systimer_setup(struct device_node *np,
 	if (!t->base)
 		return -ENXIO;
 
-	/*
-	 * Enable optional assigned-clock-parents configured at the timer
-	 * node level. For regular device drivers, this is done automatically
-	 * by bus related code such as platform_drv_probe().
-	 */
+	 
 	error = of_clk_set_defaults(np, false);
 	if (error < 0)
 		pr_err("%s: clock source init failed: %i\n", __func__, error);
 
-	/* For ti-sysc, we have timer clocks at the parent module level */
+	 
 	error = dmtimer_systimer_init_clock(t, np->parent, "fck", &rate);
 	if (error)
 		goto err_unmap;
@@ -424,7 +391,7 @@ err_unmap:
 	return error;
 }
 
-/* Clockevent */
+ 
 static struct dmtimer_clockevent *
 to_dmtimer_clockevent(struct clock_event_device *clockevent)
 {
@@ -471,9 +438,9 @@ static int dmtimer_clockevent_shutdown(struct clock_event_device *evt)
 	if (l & OMAP_TIMER_CTRL_ST) {
 		l &= ~BIT(0);
 		writel_relaxed(l, ctrl);
-		/* Flush posted write */
+		 
 		l = readl_relaxed(ctrl);
-		/*  Wait for functional clock period x 3.5 */
+		 
 		udelay(3500000 / t->rate + 1);
 	}
 	writel_relaxed(OMAP_TIMER_INT_OVERFLOW, t->base + t->irq_stat);
@@ -489,7 +456,7 @@ static int dmtimer_set_periodic(struct clock_event_device *evt)
 
 	dmtimer_clockevent_shutdown(evt);
 
-	/* Looks like we need to first set the load value separately */
+	 
 	while (readl_relaxed(pend) & WP_TLDR)
 		cpu_relax();
 	writel_relaxed(clkevt->period, t->base + t->load);
@@ -544,10 +511,7 @@ static int __init dmtimer_clkevt_init_common(struct dmtimer_clockevent *clkevt,
 	t = &clkevt->t;
 	dev = &clkevt->dev;
 
-	/*
-	 * We mostly use cpuidle_coupled with ARM local timers for runtime,
-	 * so there's probably no use for CLOCK_EVT_FEAT_DYNIRQ here.
-	 */
+	 
 	dev->features = features;
 	dev->rating = rating;
 	dev->set_next_event = dmtimer_set_next_event;
@@ -568,11 +532,7 @@ static int __init dmtimer_clkevt_init_common(struct dmtimer_clockevent *clkevt,
 
 	clkevt->period = 0xffffffff - DIV_ROUND_CLOSEST(t->rate, HZ);
 
-	/*
-	 * For clock-event timers we never read the timer counter and
-	 * so we are not impacted by errata i103 and i767. Therefore,
-	 * we can safely ignore this errata for clock-event timers.
-	 */
+	 
 	writel_relaxed(OMAP_TIMER_CTRL_POSTED, t->base + t->ifctrl);
 
 	error = request_irq(dev->irq, dmtimer_clockevent_interrupt,
@@ -613,7 +573,7 @@ static int __init dmtimer_clockevent_init(struct device_node *np)
 		goto err_out_free;
 
 	clockevents_config_and_register(&clkevt->dev, clkevt->t.rate,
-					3, /* Timer internal resync latency */
+					3,  
 					0xffffffff);
 
 	if (of_machine_is_compatible("ti,am33xx") ||
@@ -630,7 +590,7 @@ err_out_free:
 	return error;
 }
 
-/* Dmtimer as percpu timer. See dra7 ARM architected timer wrap erratum i940 */
+ 
 static DEFINE_PER_CPU(struct dmtimer_clockevent, dmtimer_percpu_timer);
 
 static int __init dmtimer_percpu_timer_init(struct device_node *np, int cpu)
@@ -656,7 +616,7 @@ static int __init dmtimer_percpu_timer_init(struct device_node *np, int cpu)
 	return 0;
 }
 
-/* See TRM for timer internal resynch latency */
+ 
 static int omap_dmtimer_starting_cpu(unsigned int cpu)
 {
 	struct dmtimer_clockevent *clkevt = per_cpu_ptr(&dmtimer_percpu_timer, cpu);
@@ -694,15 +654,15 @@ static int __init dmtimer_percpu_quirk_init(struct device_node *np, u32 pa)
 		return 0;
 	}
 
-	if (pa == 0x4882c000)           /* dra7 dmtimer15 */
+	if (pa == 0x4882c000)            
 		return dmtimer_percpu_timer_init(np, 0);
-	else if (pa == 0x4882e000)      /* dra7 dmtimer16 */
+	else if (pa == 0x4882e000)       
 		return dmtimer_percpu_timer_init(np, 1);
 
 	return 0;
 }
 
-/* Clocksource */
+ 
 static struct dmtimer_clocksource *
 to_dmtimer_clocksource(struct clocksource *cs)
 {
@@ -774,7 +734,7 @@ static int __init dmtimer_clocksource_init(struct device_node *np)
 	dev->mask = CLOCKSOURCE_MASK(32);
 	dev->flags = CLOCK_SOURCE_IS_CONTINUOUS;
 
-	/* Unlike for clockevent, legacy code sets suspend only for am4 */
+	 
 	if (of_machine_is_compatible("ti,am43")) {
 		dev->suspend = dmtimer_clocksource_suspend;
 		dev->resume = dmtimer_clocksource_resume;
@@ -804,16 +764,13 @@ err_out_free:
 	return -ENODEV;
 }
 
-/*
- * To detect between a clocksource and clockevent, we assume the device tree
- * has no interrupts configured for a clocksource timer.
- */
+ 
 static int __init dmtimer_systimer_init(struct device_node *np)
 {
 	struct resource res;
 	u32 pa;
 
-	/* One time init for the preferred timer configuration */
+	 
 	if (!clocksource && !clockevent)
 		dmtimer_systimer_select_best();
 

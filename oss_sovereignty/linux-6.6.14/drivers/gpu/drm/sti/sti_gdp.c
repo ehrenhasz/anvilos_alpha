@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/of.h>
@@ -27,7 +22,7 @@
 #define BIGNOTLITTLE    BIT(23)
 #define WAIT_NEXT_VSYNC BIT(31)
 
-/* GDP color formats */
+ 
 #define GDP_RGB565      0x00
 #define GDP_RGB888      0x01
 #define GDP_RGB888_32   0x02
@@ -105,20 +100,7 @@ struct sti_gdp_node_list {
 	dma_addr_t btm_field_paddr;
 };
 
-/*
- * STI GDP structure
- *
- * @sti_plane:          sti_plane structure
- * @dev:                driver device
- * @regs:               gdp registers
- * @clk_pix:            pixel clock for the current gdp
- * @clk_main_parent:    gdp parent clock if main path used
- * @clk_aux_parent:     gdp parent clock if aux path used
- * @vtg_field_nb:       callback for VTG FIELD (top or bottom) notification
- * @is_curr_top:        true if the current node processed is the top field
- * @node_list:          array of node list
- * @vtg:                registered vtg
- */
+ 
 struct sti_gdp {
 	struct sti_plane plane;
 	struct device *dev;
@@ -385,15 +367,7 @@ static int sti_gdp_get_alpharange(int format)
 	return 0;
 }
 
-/**
- * sti_gdp_get_free_nodes
- * @gdp: gdp pointer
- *
- * Look for a GDP node list that is not currently read by the HW.
- *
- * RETURNS:
- * Pointer to the free GDP node list
- */
+ 
 static struct sti_gdp_node_list *sti_gdp_get_free_nodes(struct sti_gdp *gdp)
 {
 	int hw_nvn;
@@ -408,7 +382,7 @@ static struct sti_gdp_node_list *sti_gdp_get_free_nodes(struct sti_gdp *gdp)
 		    (hw_nvn != gdp->node_list[i].top_field_paddr))
 			return &gdp->node_list[i];
 
-	/* in hazardous cases restart with the first node */
+	 
 	DRM_ERROR("inconsistent NVN for %s: 0x%08X\n",
 			sti_plane_to_str(&gdp->plane), hw_nvn);
 
@@ -416,15 +390,7 @@ end:
 	return &gdp->node_list[0];
 }
 
-/**
- * sti_gdp_get_current_nodes
- * @gdp: gdp pointer
- *
- * Look for GDP nodes that are currently read by the HW.
- *
- * RETURNS:
- * Pointer to the current GDP node list
- */
+ 
 static
 struct sti_gdp_node_list *sti_gdp_get_current_nodes(struct sti_gdp *gdp)
 {
@@ -447,19 +413,14 @@ end:
 	return NULL;
 }
 
-/**
- * sti_gdp_disable
- * @gdp: gdp pointer
- *
- * Disable a GDP.
- */
+ 
 static void sti_gdp_disable(struct sti_gdp *gdp)
 {
 	unsigned int i;
 
 	DRM_DEBUG_DRIVER("%s\n", sti_plane_to_str(&gdp->plane));
 
-	/* Set the nodes as 'to be ignored on mixer' */
+	 
 	for (i = 0; i < GDP_NODE_NB_BANK; i++) {
 		gdp->node_list[i].top_field->gam_gdp_ppt |= GAM_GDP_PPT_IGNORE;
 		gdp->node_list[i].btm_field->gam_gdp_ppt |= GAM_GDP_PPT_IGNORE;
@@ -475,24 +436,14 @@ static void sti_gdp_disable(struct sti_gdp *gdp)
 	gdp->vtg = NULL;
 }
 
-/**
- * sti_gdp_field_cb
- * @nb: notifier block
- * @event: event message
- * @data: private data
- *
- * Handle VTG top field and bottom field event.
- *
- * RETURNS:
- * 0 on success.
- */
+ 
 static int sti_gdp_field_cb(struct notifier_block *nb,
 			    unsigned long event, void *data)
 {
 	struct sti_gdp *gdp = container_of(nb, struct sti_gdp, vtg_field_nb);
 
 	if (gdp->plane.status == STI_PLANE_FLUSHING) {
-		/* disable need to be synchronize on vsync event */
+		 
 		DRM_DEBUG_DRIVER("Vsync event received => disable %s\n",
 				 sti_plane_to_str(&gdp->plane));
 
@@ -521,7 +472,7 @@ static void sti_gdp_init(struct sti_gdp *gdp)
 	void *base;
 	unsigned int i, size;
 
-	/* Allocate all the nodes within a single memory page */
+	 
 	size = sizeof(struct sti_gdp_node) *
 	    GDP_NODE_PER_FIELD * GDP_NODE_NB_BANK;
 	base = dma_alloc_wc(gdp->dev, size, &dma_addr, GFP_KERNEL);
@@ -556,7 +507,7 @@ static void sti_gdp_init(struct sti_gdp *gdp)
 	}
 
 	if (of_device_is_compatible(np, "st,stih407-compositor")) {
-		/* GDP of STiH407 chip have its own pixel clock */
+		 
 		char *clk_name;
 
 		switch (gdp->plane.desc) {
@@ -591,17 +542,7 @@ static void sti_gdp_init(struct sti_gdp *gdp)
 	}
 }
 
-/**
- * sti_gdp_get_dst
- * @dev: device
- * @dst: requested destination size
- * @src: source size
- *
- * Return the cropped / clamped destination size
- *
- * RETURNS:
- * cropped / clamped destination size
- */
+ 
 static int sti_gdp_get_dst(struct device *dev, int dst, int src)
 {
 	if (dst == src)
@@ -632,7 +573,7 @@ static int sti_gdp_atomic_check(struct drm_plane *drm_plane,
 	int src_x, src_y, src_w, src_h;
 	int format;
 
-	/* no need for further checks if the plane is being disabled */
+	 
 	if (!crtc || !fb)
 		return 0;
 
@@ -643,7 +584,7 @@ static int sti_gdp_atomic_check(struct drm_plane *drm_plane,
 	dst_y = new_plane_state->crtc_y;
 	dst_w = clamp_val(new_plane_state->crtc_w, 0, mode->hdisplay - dst_x);
 	dst_h = clamp_val(new_plane_state->crtc_h, 0, mode->vdisplay - dst_y);
-	/* src_x are in 16.16 format */
+	 
 	src_x = new_plane_state->src_x >> 16;
 	src_y = new_plane_state->src_y >> 16;
 	src_w = clamp_val(new_plane_state->src_w >> 16, 0,
@@ -663,16 +604,13 @@ static int sti_gdp_atomic_check(struct drm_plane *drm_plane,
 		return -EINVAL;
 	}
 
-	/* Set gdp clock */
+	 
 	if (mode->clock && gdp->clk_pix) {
 		struct clk *clkp;
 		int rate = mode->clock * 1000;
 		int res;
 
-		/*
-		 * According to the mixer used, the gdp pixel clock
-		 * should have a different parent clock.
-		 */
+		 
 		if (mixer->id == STI_MIXER_MAIN)
 			clkp = gdp->clk_main_parent;
 		else
@@ -736,7 +674,7 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 	    (oldstate->src_y == newstate->src_y) &&
 	    (oldstate->src_w == newstate->src_w) &&
 	    (oldstate->src_h == newstate->src_h)) {
-		/* No change since last update, do not post cmd */
+		 
 		DRM_DEBUG_DRIVER("No change, not posting cmd\n");
 		plane->status = STI_PLANE_UPDATED;
 		return;
@@ -746,7 +684,7 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 		struct sti_compositor *compo = dev_get_drvdata(gdp->dev);
 		struct sti_mixer *mixer = to_sti_mixer(crtc);
 
-		/* Register gdp callback */
+		 
 		gdp->vtg = compo->vtg[mixer->id];
 		sti_vtg_register_client(gdp->vtg, &gdp->vtg_field_nb, crtc);
 		clk_prepare_enable(gdp->clk_pix);
@@ -757,7 +695,7 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 	dst_y = newstate->crtc_y;
 	dst_w = clamp_val(newstate->crtc_w, 0, mode->hdisplay - dst_x);
 	dst_h = clamp_val(newstate->crtc_h, 0, mode->vdisplay - dst_y);
-	/* src_x are in 16.16 format */
+	 
 	src_x = newstate->src_x >> 16;
 	src_y = newstate->src_y >> 16;
 	src_w = clamp_val(newstate->src_w >> 16, 0, GAM_GDP_SIZE_MAX_WIDTH);
@@ -770,7 +708,7 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 	dev_dbg(gdp->dev, "%s %s top_node:0x%p btm_node:0x%p\n", __func__,
 		sti_plane_to_str(plane), top_field, btm_field);
 
-	/* build the top field */
+	 
 	top_field->gam_gdp_agc = GAM_GDP_AGC_FULL_RANGE;
 	top_field->gam_gdp_ctl = WAIT_NEXT_VSYNC;
 	format = sti_gdp_fourcc2format(fb->format->format);
@@ -784,13 +722,13 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 			 (char *)&fb->format->format,
 			 (unsigned long) dma_obj->dma_addr);
 
-	/* pixel memory location */
+	 
 	bpp = fb->format->cpp[0];
 	top_field->gam_gdp_pml = (u32) dma_obj->dma_addr + fb->offsets[0];
 	top_field->gam_gdp_pml += src_x * bpp;
 	top_field->gam_gdp_pml += src_y * fb->pitches[0];
 
-	/* output parameters (clamped / cropped) */
+	 
 	dst_w = sti_gdp_get_dst(gdp->dev, dst_w, src_w);
 	dst_h = sti_gdp_get_dst(gdp->dev, dst_h, src_h);
 	ydo = sti_vtg_get_line_number(*mode, dst_y);
@@ -800,30 +738,22 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 	top_field->gam_gdp_vpo = (ydo << 16) | xdo;
 	top_field->gam_gdp_vps = (yds << 16) | xds;
 
-	/* input parameters */
+	 
 	src_w = dst_w;
 	top_field->gam_gdp_pmp = fb->pitches[0];
 	top_field->gam_gdp_size = src_h << 16 | src_w;
 
-	/* Same content and chained together */
+	 
 	memcpy(btm_field, top_field, sizeof(*btm_field));
 	top_field->gam_gdp_nvn = list->btm_field_paddr;
 	btm_field->gam_gdp_nvn = list->top_field_paddr;
 
-	/* Interlaced mode */
+	 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		btm_field->gam_gdp_pml = top_field->gam_gdp_pml +
 					 fb->pitches[0];
 
-	/* Update the NVN field of the 'right' field of the current GDP node
-	 * (being used by the HW) with the address of the updated ('free') top
-	 * field GDP node.
-	 * - In interlaced mode the 'right' field is the bottom field as we
-	 *   update frames starting from their top field
-	 * - In progressive mode, we update both bottom and top fields which
-	 *   are equal nodes.
-	 * At the next VSYNC, the updated node list will be used by the HW.
-	 */
+	 
 	curr_list = sti_gdp_get_current_nodes(gdp);
 	dma_updated_top = list->top_field_paddr;
 	dma_updated_btm = list->btm_field_paddr;
@@ -835,8 +765,7 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 		readl(gdp->regs + GAM_GDP_PML_OFFSET));
 
 	if (!curr_list) {
-		/* First update or invalid node should directly write in the
-		 * hw register */
+		 
 		DRM_DEBUG_DRIVER("%s first update (or invalid node)\n",
 				 sti_plane_to_str(plane));
 
@@ -848,17 +777,15 @@ static void sti_gdp_atomic_update(struct drm_plane *drm_plane,
 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE) {
 		if (gdp->is_curr_top) {
-			/* Do not update in the middle of the frame, but
-			 * postpone the update after the bottom field has
-			 * been displayed */
+			 
 			curr_list->btm_field->gam_gdp_nvn = dma_updated_top;
 		} else {
-			/* Direct update to avoid one frame delay */
+			 
 			writel(dma_updated_top,
 			       gdp->regs + GAM_GDP_NVN_OFFSET);
 		}
 	} else {
-		/* Direct update for progressive to avoid one frame delay */
+		 
 		writel(dma_updated_top, gdp->regs + GAM_GDP_NVN_OFFSET);
 	}
 

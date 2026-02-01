@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <assert.h>
 #include <bpf/bpf.h>
 #include <linux/filter.h>
@@ -17,16 +17,16 @@ char bpf_log_buf[BPF_LOG_BUF_SIZE];
 int main(int argc, char **argv)
 {
 	struct bpf_insn prog[] = {
-		BPF_LD_MAP_FD(BPF_REG_1, 0), /* percpu map fd */
-		BPF_MOV64_IMM(BPF_REG_2, 0), /* flags, not used */
+		BPF_LD_MAP_FD(BPF_REG_1, 0),  
+		BPF_MOV64_IMM(BPF_REG_2, 0),  
 		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
 			     BPF_FUNC_get_local_storage),
 		BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0),
 		BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 0x1),
 		BPF_STX_MEM(BPF_DW, BPF_REG_0, BPF_REG_3, 0),
 
-		BPF_LD_MAP_FD(BPF_REG_1, 0), /* map fd */
-		BPF_MOV64_IMM(BPF_REG_2, 0), /* flags, not used */
+		BPF_LD_MAP_FD(BPF_REG_1, 0),  
+		BPF_MOV64_IMM(BPF_REG_2, 0),  
 		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
 			     BPF_FUNC_get_local_storage),
 		BPF_MOV64_IMM(BPF_REG_1, 1),
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 		goto err;
 	}
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	map_fd = bpf_map_create(BPF_MAP_TYPE_CGROUP_STORAGE, NULL, sizeof(key),
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 
 	cgroup_fd = cgroup_setup_and_join(TEST_CGROUP);
 
-	/* Attach the bpf program */
+	 
 	if (bpf_prog_attach(prog_fd, cgroup_fd, BPF_CGROUP_INET_EGRESS, 0)) {
 		printf("Failed to attach bpf program\n");
 		goto err;
@@ -104,12 +104,12 @@ int main(int argc, char **argv)
 		goto err;
 	}
 
-	/* Every second packet should be dropped */
+	 
 	assert(system("ping localhost -c 1 -W 1 -q > /dev/null") == 0);
 	assert(system("ping localhost -c 1 -W 1 -q > /dev/null"));
 	assert(system("ping localhost -c 1 -W 1 -q > /dev/null") == 0);
 
-	/* Check the counter in the cgroup local storage */
+	 
 	if (bpf_map_lookup_elem(map_fd, &key, &value)) {
 		printf("Failed to lookup cgroup storage\n");
 		goto err;
@@ -120,19 +120,19 @@ int main(int argc, char **argv)
 		goto err;
 	}
 
-	/* Bump the counter in the cgroup local storage */
+	 
 	value++;
 	if (bpf_map_update_elem(map_fd, &key, &value, 0)) {
 		printf("Failed to update the data in the cgroup storage\n");
 		goto err;
 	}
 
-	/* Every second packet should be dropped */
+	 
 	assert(system("ping localhost -c 1 -W 1 -q > /dev/null") == 0);
 	assert(system("ping localhost -c 1 -W 1 -q > /dev/null"));
 	assert(system("ping localhost -c 1 -W 1 -q > /dev/null") == 0);
 
-	/* Check the final value of the counter in the cgroup local storage */
+	 
 	if (bpf_map_lookup_elem(map_fd, &key, &value)) {
 		printf("Failed to lookup the cgroup storage\n");
 		goto err;
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
 		goto err;
 	}
 
-	/* Check the final value of the counter in the percpu local storage */
+	 
 
 	for (cpu = 0; cpu < nproc; cpu++)
 		percpu_value[cpu] = 0;

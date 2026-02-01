@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * i.MX8QXP/i.MX8QM JPEG encoder/decoder v4l2 driver
- *
- * Copyright 2018-2019 NXP
- */
+
+ 
 
 #include <linux/delay.h>
 #include <media/videobuf2-core.h>
@@ -88,36 +84,27 @@ void mxc_jpeg_disable_irq(void __iomem *reg, int slot)
 
 void mxc_jpeg_sw_reset(void __iomem *reg)
 {
-	/*
-	 * engine soft reset, internal state machine reset
-	 * this will not reset registers, however, it seems
-	 * the registers may remain inconsistent with the internal state
-	 * so, on purpose, at least let GLB_CTRL bits clear after this reset
-	 */
+	 
 	writel(GLB_CTRL_SFT_RST, reg + GLB_CTRL);
 }
 
 void mxc_jpeg_enc_mode_conf(struct device *dev, void __iomem *reg, u8 extseq)
 {
 	dev_dbg(dev, "CAST Encoder CONFIG...\n");
-	/*
-	 * "Config_Mode" enabled, "Config_Mode auto clear enabled",
-	 */
+	 
 	if (extseq)
 		writel(0xb0, reg + CAST_MODE);
 	else
 		writel(0xa0, reg + CAST_MODE);
 
-	/* all markers and segments */
+	 
 	writel(0x3ff, reg + CAST_CFG_MODE);
 }
 
 void mxc_jpeg_enc_mode_go(struct device *dev, void __iomem *reg, u8 extseq)
 {
 	dev_dbg(dev, "CAST Encoder GO...\n");
-	/*
-	 * "GO" enabled, "GO bit auto clear" enabled
-	 */
+	 
 	if (extseq)
 		writel(0x150, reg + CAST_MODE);
 	else
@@ -128,7 +115,7 @@ void mxc_jpeg_enc_set_quality(struct device *dev, void __iomem *reg, u8 quality)
 {
 	dev_dbg(dev, "CAST Encoder Quality %d...\n", quality);
 
-	/* quality factor */
+	 
 	writel(quality, reg + CAST_QUALITY);
 }
 
@@ -160,8 +147,8 @@ void mxc_jpeg_set_l_endian(void __iomem *reg, int le)
 	u32 regval;
 
 	regval = readl(reg + GLB_CTRL);
-	regval &= ~GLB_CTRL_L_ENDIAN(1); /* clear */
-	writel(GLB_CTRL_L_ENDIAN(le) | regval, reg + GLB_CTRL); /* set */
+	regval &= ~GLB_CTRL_L_ENDIAN(1);  
+	writel(GLB_CTRL_L_ENDIAN(le) | regval, reg + GLB_CTRL);  
 }
 
 void mxc_jpeg_set_bufsize(struct mxc_jpeg_desc *desc,  u32 bufsize)

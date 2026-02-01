@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI Palma series PMIC's GPIO driver.
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/kernel.h>
@@ -88,7 +82,7 @@ static int palmas_gpio_output(struct gpio_chip *gc, unsigned offset,
 	offset %= 8;
 	reg = (gpio16) ? PALMAS_GPIO_DATA_DIR2 : PALMAS_GPIO_DATA_DIR;
 
-	/* Set the initial value */
+	 
 	palmas_gpio_set(gc, offset, value);
 
 	ret = palmas_update_bits(palmas, PALMAS_GPIO_BASE, reg,

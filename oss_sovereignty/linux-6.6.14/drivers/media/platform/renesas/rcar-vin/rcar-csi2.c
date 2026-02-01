@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Renesas R-Car MIPI CSI-2 Receiver
- *
- * Copyright (C) 2018 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -25,17 +21,17 @@
 
 struct rcar_csi2;
 
-/* Register offsets and bits */
+ 
 
-/* Control Timing Select */
+ 
 #define TREF_REG			0x00
 #define TREF_TREF			BIT(0)
 
-/* Software Reset */
+ 
 #define SRST_REG			0x04
 #define SRST_SRST			BIT(0)
 
-/* PHY Operation Control */
+ 
 #define PHYCNT_REG			0x08
 #define PHYCNT_SHUTDOWNZ		BIT(17)
 #define PHYCNT_RSTZ			BIT(16)
@@ -45,16 +41,12 @@ struct rcar_csi2;
 #define PHYCNT_ENABLE_1			BIT(1)
 #define PHYCNT_ENABLE_0			BIT(0)
 
-/* Checksum Control */
+ 
 #define CHKSUM_REG			0x0c
 #define CHKSUM_ECC_EN			BIT(1)
 #define CHKSUM_CRC_EN			BIT(0)
 
-/*
- * Channel Data Type Select
- * VCDT[0-15]:  Channel 0 VCDT[16-31]:  Channel 1
- * VCDT2[0-15]: Channel 2 VCDT2[16-31]: Channel 3
- */
+ 
 #define VCDT_REG			0x10
 #define VCDT2_REG			0x14
 #define VCDT_VCDTN_EN			BIT(15)
@@ -62,10 +54,10 @@ struct rcar_csi2;
 #define VCDT_SEL_DTN_ON			BIT(6)
 #define VCDT_SEL_DT(n)			(((n) & 0x3f) << 0)
 
-/* Frame Data Type Select */
+ 
 #define FRDT_REG			0x18
 
-/* Field Detection Control */
+ 
 #define FLD_REG				0x1c
 #define FLD_FLD_NUM(n)			(((n) & 0xff) << 16)
 #define FLD_DET_SEL(n)			(((n) & 0x3) << 4)
@@ -74,52 +66,52 @@ struct rcar_csi2;
 #define FLD_FLD_EN2			BIT(1)
 #define FLD_FLD_EN			BIT(0)
 
-/* Automatic Standby Control */
+ 
 #define ASTBY_REG			0x20
 
-/* Long Data Type Setting 0 */
+ 
 #define LNGDT0_REG			0x28
 
-/* Long Data Type Setting 1 */
+ 
 #define LNGDT1_REG			0x2c
 
-/* Interrupt Enable */
+ 
 #define INTEN_REG			0x30
 #define INTEN_INT_AFIFO_OF		BIT(27)
 #define INTEN_INT_ERRSOTHS		BIT(4)
 #define INTEN_INT_ERRSOTSYNCHS		BIT(3)
 
-/* Interrupt Source Mask */
+ 
 #define INTCLOSE_REG			0x34
 
-/* Interrupt Status Monitor */
+ 
 #define INTSTATE_REG			0x38
 #define INTSTATE_INT_ULPS_START		BIT(7)
 #define INTSTATE_INT_ULPS_END		BIT(6)
 
-/* Interrupt Error Status Monitor */
+ 
 #define INTERRSTATE_REG			0x3c
 
-/* Short Packet Data */
+ 
 #define SHPDAT_REG			0x40
 
-/* Short Packet Count */
+ 
 #define SHPCNT_REG			0x44
 
-/* LINK Operation Control */
+ 
 #define LINKCNT_REG			0x48
 #define LINKCNT_MONITOR_EN		BIT(31)
 #define LINKCNT_REG_MONI_PACT_EN	BIT(25)
 #define LINKCNT_ICLK_NONSTOP		BIT(24)
 
-/* Lane Swap */
+ 
 #define LSWAP_REG			0x4c
 #define LSWAP_L3SEL(n)			(((n) & 0x3) << 6)
 #define LSWAP_L2SEL(n)			(((n) & 0x3) << 4)
 #define LSWAP_L1SEL(n)			(((n) & 0x3) << 2)
 #define LSWAP_L0SEL(n)			(((n) & 0x3) << 0)
 
-/* PHY Test Interface Write Register */
+ 
 #define PHTW_REG			0x50
 #define PHTW_DWEN			BIT(24)
 #define PHTW_TESTDIN_DATA(n)		(((n & 0xff)) << 16)
@@ -132,7 +124,7 @@ struct rcar_csi2;
 #define PHYFRX_FORCERX_MODE_1		BIT(1)
 #define PHYFRX_FORCERX_MODE_0		BIT(0)
 
-/* V4H BASE registers */
+ 
 #define V4H_N_LANES_REG					0x0004
 #define V4H_CSI2_RESETN_REG				0x0008
 #define V4H_PHY_MODE_REG				0x001c
@@ -150,8 +142,8 @@ struct rcar_csi2;
 #define V4H_ST_PHYST_ST_STOPSTATE_1			BIT(1)
 #define V4H_ST_PHYST_ST_STOPSTATE_0			BIT(0)
 
-/* V4H PPI registers */
-#define V4H_PPI_STARTUP_RW_COMMON_DPHY_REG(n)		(0x21800 + ((n) * 2)) /* n = 0 - 9 */
+ 
+#define V4H_PPI_STARTUP_RW_COMMON_DPHY_REG(n)		(0x21800 + ((n) * 2))  
 #define V4H_PPI_STARTUP_RW_COMMON_STARTUP_1_1_REG	0x21822
 #define V4H_PPI_CALIBCTRL_RW_COMMON_BG_0_REG		0x2184c
 #define V4H_PPI_RW_LPDCOCAL_TIMEBASE_REG		0x21c02
@@ -164,28 +156,28 @@ struct rcar_csi2;
 #define V4H_PPI_RW_TERMCAL_CFG_0_REG			0x21c80
 #define V4H_PPI_RW_OFFSETCAL_CFG_0_REG			0x21ca0
 
-/* V4H CORE registers */
-#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE0_CTRL_2_REG(n)	(0x22040 + ((n) * 2)) /* n = 0 - 15 */
-#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE1_CTRL_2_REG(n)	(0x22440 + ((n) * 2)) /* n = 0 - 15 */
-#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE2_CTRL_2_REG(n)	(0x22840 + ((n) * 2)) /* n = 0 - 15 */
-#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE3_CTRL_2_REG(n)	(0x22c40 + ((n) * 2)) /* n = 0 - 15 */
-#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE4_CTRL_2_REG(n)	(0x23040 + ((n) * 2)) /* n = 0 - 15 */
-#define V4H_CORE_DIG_IOCTRL_RW_AFE_CB_CTRL_2_REG(n)	(0x23840 + ((n) * 2)) /* n = 0 - 11 */
-#define V4H_CORE_DIG_RW_COMMON_REG(n)			(0x23880 + ((n) * 2)) /* n = 0 - 15 */
-#define V4H_CORE_DIG_ANACTRL_RW_COMMON_ANACTRL_REG(n)	(0x239e0 + ((n) * 2)) /* n = 0 - 3 */
+ 
+#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE0_CTRL_2_REG(n)	(0x22040 + ((n) * 2))  
+#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE1_CTRL_2_REG(n)	(0x22440 + ((n) * 2))  
+#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE2_CTRL_2_REG(n)	(0x22840 + ((n) * 2))  
+#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE3_CTRL_2_REG(n)	(0x22c40 + ((n) * 2))  
+#define V4H_CORE_DIG_IOCTRL_RW_AFE_LANE4_CTRL_2_REG(n)	(0x23040 + ((n) * 2))  
+#define V4H_CORE_DIG_IOCTRL_RW_AFE_CB_CTRL_2_REG(n)	(0x23840 + ((n) * 2))  
+#define V4H_CORE_DIG_RW_COMMON_REG(n)			(0x23880 + ((n) * 2))  
+#define V4H_CORE_DIG_ANACTRL_RW_COMMON_ANACTRL_REG(n)	(0x239e0 + ((n) * 2))  
 #define V4H_CORE_DIG_CLANE_1_RW_CFG_0_REG		0x2a400
 #define V4H_CORE_DIG_CLANE_1_RW_HS_TX_6_REG		0x2a60c
 
-/* V4H C-PHY */
-#define V4H_CORE_DIG_RW_TRIO0_REG(n)			(0x22100 + ((n) * 2)) /* n = 0 - 3 */
-#define V4H_CORE_DIG_RW_TRIO1_REG(n)			(0x22500 + ((n) * 2)) /* n = 0 - 3 */
-#define V4H_CORE_DIG_RW_TRIO2_REG(n)			(0x22900 + ((n) * 2)) /* n = 0 - 3 */
+ 
+#define V4H_CORE_DIG_RW_TRIO0_REG(n)			(0x22100 + ((n) * 2))  
+#define V4H_CORE_DIG_RW_TRIO1_REG(n)			(0x22500 + ((n) * 2))  
+#define V4H_CORE_DIG_RW_TRIO2_REG(n)			(0x22900 + ((n) * 2))  
 #define V4H_CORE_DIG_CLANE_0_RW_LP_0_REG		0x2a080
-#define V4H_CORE_DIG_CLANE_0_RW_HS_RX_REG(n)		(0x2a100 + ((n) * 2)) /* n = 0 - 6 */
+#define V4H_CORE_DIG_CLANE_0_RW_HS_RX_REG(n)		(0x2a100 + ((n) * 2))  
 #define V4H_CORE_DIG_CLANE_1_RW_LP_0_REG		0x2a480
-#define V4H_CORE_DIG_CLANE_1_RW_HS_RX_REG(n)		(0x2a500 + ((n) * 2)) /* n = 0 - 6 */
+#define V4H_CORE_DIG_CLANE_1_RW_HS_RX_REG(n)		(0x2a500 + ((n) * 2))  
 #define V4H_CORE_DIG_CLANE_2_RW_LP_0_REG		0x2a880
-#define V4H_CORE_DIG_CLANE_2_RW_HS_RX_REG(n)		(0x2a900 + ((n) * 2)) /* n = 0 - 6 */
+#define V4H_CORE_DIG_CLANE_2_RW_HS_RX_REG(n)		(0x2a900 + ((n) * 2))  
 
 struct rcsi2_cphy_setting {
 	u16 msps;
@@ -234,7 +226,7 @@ static const struct rcsi2_cphy_setting cphy_setting_table_r8a779g0[] = {
 	{ .msps = 3300, .rx2 = 0xce, .trio0 = 0x084a, .trio1 = 0x0001, .trio2 = 0x04, .lane27 = 0x1c00, .lane29 = 0x0ad4 },
 	{ .msps = 3400, .rx2 = 0xd4, .trio0 = 0x084a, .trio1 = 0x0001, .trio2 = 0x04, .lane27 = 0x1c00, .lane29 = 0x0ad4 },
 	{ .msps = 3500, .rx2 = 0xda, .trio0 = 0x084a, .trio1 = 0x0001, .trio2 = 0x04, .lane27 = 0x1c00, .lane29 = 0x0ad4 },
-	{ /* sentinel */ },
+	{   },
 };
 
 struct phtw_value {
@@ -269,7 +261,7 @@ static const struct rcsi2_mbps_reg phtw_mbps_v3u[] = {
 	{ .mbps = 2400, .reg = 0xba },
 	{ .mbps = 2450, .reg = 0xc3 },
 	{ .mbps = 2500, .reg = 0xcc },
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct rcsi2_mbps_reg phtw_mbps_h3_v3h_m3n[] = {
@@ -289,7 +281,7 @@ static const struct rcsi2_mbps_reg phtw_mbps_h3_v3h_m3n[] = {
 	{ .mbps =  220, .reg = 0x8d },
 	{ .mbps =  235, .reg = 0x8e },
 	{ .mbps =  250, .reg = 0x8e },
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct rcsi2_mbps_reg phtw_mbps_v3m_e3[] = {
@@ -325,14 +317,14 @@ static const struct rcsi2_mbps_reg phtw_mbps_v3m_e3[] = {
 	{ .mbps = 1000, .reg = 0x54 },
 	{ .mbps = 1050, .reg = 0x74 },
 	{ .mbps = 1125, .reg = 0x16 },
-	{ /* sentinel */ },
+	{   },
 };
 
-/* PHY Test Interface Clear */
+ 
 #define PHTC_REG			0x58
 #define PHTC_TESTCLR			BIT(0)
 
-/* PHY Frequency Control */
+ 
 #define PHYPLL_REG			0x68
 #define PHYPLL_HSFREQRANGE(n)		((n) << 16)
 
@@ -399,7 +391,7 @@ static const struct rcsi2_mbps_reg hsfreqrange_v3u[] = {
 	{ .mbps = 2400, .reg = 0x47 },
 	{ .mbps = 2450, .reg = 0x48 },
 	{ .mbps = 2500, .reg = 0x49 },
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct rcsi2_mbps_reg hsfreqrange_h3_v3h_m3n[] = {
@@ -446,7 +438,7 @@ static const struct rcsi2_mbps_reg hsfreqrange_h3_v3h_m3n[] = {
 	{ .mbps = 1400, .reg = 0x0c },
 	{ .mbps = 1450, .reg = 0x1c },
 	{ .mbps = 1500, .reg = 0x2c },
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct rcsi2_mbps_reg hsfreqrange_m3w[] = {
@@ -493,20 +485,20 @@ static const struct rcsi2_mbps_reg hsfreqrange_m3w[] = {
 	{ .mbps = 1400,	.reg = 0x1c },
 	{ .mbps = 1450,	.reg = 0x2c },
 	{ .mbps = 1500,	.reg = 0x3c },
-	{ /* sentinel */ },
+	{   },
 };
 
-/* PHY ESC Error Monitor */
+ 
 #define PHEERM_REG			0x74
 
-/* PHY Clock Lane Monitor */
+ 
 #define PHCLM_REG			0x78
 #define PHCLM_STOPSTATECKL		BIT(0)
 
-/* PHY Data Lane Monitor */
+ 
 #define PHDLM_REG			0x7c
 
-/* CSI0CLK Frequency Configuration Preset Register */
+ 
 #define CSI0CLKFCPR_REG			0x260
 #define CSI0CLKFREQRANGE(n)		((n & 0x3f) << 16)
 
@@ -613,7 +605,7 @@ struct rcar_csi2 {
 
 	int channel_vc[4];
 
-	struct mutex lock; /* Protects mf and stream_count. */
+	struct mutex lock;  
 	struct v4l2_mbus_framefmt mf;
 	int stream_count;
 
@@ -681,7 +673,7 @@ static int rcsi2_wait_phy_start(struct rcar_csi2 *priv,
 {
 	unsigned int timeout;
 
-	/* Wait for the clock and data lanes to enter LP-11 state. */
+	 
 	for (timeout = 0; timeout <= 20; timeout++) {
 		const u32 lane_mask = (1 << lanes) - 1;
 
@@ -738,7 +730,7 @@ static int rcsi2_calc_mbps(struct rcar_csi2 *priv, unsigned int bpp,
 
 	source = priv->remote;
 
-	/* Read the pixel rate control from remote. */
+	 
 	ctrl = v4l2_ctrl_find(source->ctrl_handler, V4L2_CID_PIXEL_RATE);
 	if (!ctrl) {
 		dev_err(priv->dev, "no pixel rate control in subdev %s\n",
@@ -746,15 +738,11 @@ static int rcsi2_calc_mbps(struct rcar_csi2 *priv, unsigned int bpp,
 		return -EINVAL;
 	}
 
-	/*
-	 * Calculate the phypll in mbps.
-	 * link_freq = (pixel_rate * bits_per_sample) / (2 * nr_of_lanes)
-	 * bps = link_freq * 2
-	 */
+	 
 	mbps = v4l2_ctrl_g_ctrl_int64(ctrl) * bpp;
 	do_div(mbps, lanes * 1000000);
 
-	/* Adjust for C-PHY, divide by 2.8. */
+	 
 	if (priv->cphy)
 		mbps = div_u64(mbps * 5, 14);
 
@@ -820,19 +808,12 @@ static int rcsi2_start_receiver_gen3(struct rcar_csi2 *priv)
 		priv->mf.width, priv->mf.height,
 		priv->mf.field == V4L2_FIELD_NONE ? 'p' : 'i');
 
-	/* Code is validated in set_fmt. */
+	 
 	format = rcsi2_code_to_fmt(priv->mf.code);
 	if (!format)
 		return -EINVAL;
 
-	/*
-	 * Enable all supported CSI-2 channels with virtual channel and
-	 * data type matching.
-	 *
-	 * NOTE: It's not possible to get individual datatype for each
-	 *       source virtual channel. Once this is possible in V4L2
-	 *       it should be used here.
-	 */
+	 
 	for (i = 0; i < priv->info->num_channels; i++) {
 		u32 vcdt_part;
 
@@ -842,7 +823,7 @@ static int rcsi2_start_receiver_gen3(struct rcar_csi2 *priv)
 		vcdt_part = VCDT_SEL_VC(priv->channel_vc[i]) | VCDT_VCDTN_EN |
 			VCDT_SEL_DTN_ON | VCDT_SEL_DT(format->datatype);
 
-		/* Store in correct reg and offset. */
+		 
 		if (i < 2)
 			vcdt |= vcdt_part << ((i % 2) * 16);
 		else
@@ -859,10 +840,7 @@ static int rcsi2_start_receiver_gen3(struct rcar_csi2 *priv)
 			fld |= FLD_FLD_NUM(1);
 	}
 
-	/*
-	 * Get the number of active data lanes inspecting the remote mbus
-	 * configuration.
-	 */
+	 
 	ret = rcsi2_get_active_lanes(priv, &lanes);
 	if (ret)
 		return ret;
@@ -874,29 +852,29 @@ static int rcsi2_start_receiver_gen3(struct rcar_csi2 *priv)
 	if (mbps < 0)
 		return mbps;
 
-	/* Enable interrupts. */
+	 
 	rcsi2_write(priv, INTEN_REG, INTEN_INT_AFIFO_OF | INTEN_INT_ERRSOTHS
 		    | INTEN_INT_ERRSOTSYNCHS);
 
-	/* Init */
+	 
 	rcsi2_write(priv, TREF_REG, TREF_TREF);
 	rcsi2_write(priv, PHTC_REG, 0);
 
-	/* Configure */
+	 
 	if (!priv->info->use_isp) {
 		rcsi2_write(priv, VCDT_REG, vcdt);
 		if (vcdt2)
 			rcsi2_write(priv, VCDT2_REG, vcdt2);
 	}
 
-	/* Lanes are zero indexed. */
+	 
 	rcsi2_write(priv, LSWAP_REG,
 		    LSWAP_L0SEL(priv->lane_swap[0] - 1) |
 		    LSWAP_L1SEL(priv->lane_swap[1] - 1) |
 		    LSWAP_L2SEL(priv->lane_swap[2] - 1) |
 		    LSWAP_L3SEL(priv->lane_swap[3] - 1));
 
-	/* Start */
+	 
 	if (priv->info->init_phtw) {
 		ret = priv->info->init_phtw(priv, mbps);
 		if (ret)
@@ -932,14 +910,14 @@ static int rcsi2_start_receiver_gen3(struct rcar_csi2 *priv)
 	if (priv->info->use_isp)
 		rcsi2_write(priv, PHYFRX_REG, 0);
 
-	/* Run post PHY start initialization, if needed. */
+	 
 	if (priv->info->phy_post_init) {
 		ret = priv->info->phy_post_init(priv);
 		if (ret)
 			return ret;
 	}
 
-	/* Clear Ultra Low Power interrupt. */
+	 
 	if (priv->info->clear_ulps)
 		rcsi2_write(priv, INTSTATE_REG,
 			    INTSTATE_INT_ULPS_START |
@@ -977,7 +955,7 @@ static int rcsi2_c_phy_setting_v4h(struct rcar_csi2 *priv, int msps)
 		return -ERANGE;
 	}
 
-	/* C-PHY specific */
+	 
 	rcsi2_write16(priv, V4H_CORE_DIG_RW_COMMON_REG(7), 0x0155);
 	rcsi2_write16(priv, V4H_PPI_STARTUP_RW_COMMON_DPHY_REG(7), 0x0068);
 	rcsi2_write16(priv, V4H_PPI_STARTUP_RW_COMMON_DPHY_REG(8), 0x0010);
@@ -1024,25 +1002,21 @@ static int rcsi2_c_phy_setting_v4h(struct rcar_csi2 *priv, int msps)
 	rcsi2_write16(priv, V4H_CORE_DIG_RW_TRIO1_REG(1), conf->trio1);
 	rcsi2_write16(priv, V4H_CORE_DIG_RW_TRIO2_REG(1), conf->trio1);
 
-	/*
-	 * Configure pin-swap.
-	 * TODO: This registers is not documented yet, the values should depend
-	 * on the 'clock-lanes' and 'data-lanes' devicetree properties.
-	 */
+	 
 	rcsi2_write16(priv, V4H_CORE_DIG_CLANE_1_RW_CFG_0_REG, 0xf5);
 	rcsi2_write16(priv, V4H_CORE_DIG_CLANE_1_RW_HS_TX_6_REG, 0x5000);
 
-	/* Leave Shutdown mode */
+	 
 	rcsi2_write(priv, V4H_DPHY_RSTZ_REG, BIT(0));
 	rcsi2_write(priv, V4H_PHY_SHUTDOWNZ_REG, BIT(0));
 
-	/* Wait for calibration */
+	 
 	if (rcsi2_wait_phy_start_v4h(priv, V4H_ST_PHYST_ST_PHY_READY)) {
 		dev_err(priv->dev, "PHY calibration failed\n");
 		return -ETIMEDOUT;
 	}
 
-	/* C-PHY setting - analog programing*/
+	 
 	rcsi2_write16(priv, V4H_CORE_DIG_IOCTRL_RW_AFE_LANE0_CTRL_2_REG(9), conf->lane29);
 	rcsi2_write16(priv, V4H_CORE_DIG_IOCTRL_RW_AFE_LANE0_CTRL_2_REG(7), conf->lane27);
 
@@ -1056,7 +1030,7 @@ static int rcsi2_start_receiver_v4h(struct rcar_csi2 *priv)
 	int msps;
 	int ret;
 
-	/* Calculate parameters */
+	 
 	format = rcsi2_code_to_fmt(priv->mf.code);
 	if (!format)
 		return -EINVAL;
@@ -1069,12 +1043,12 @@ static int rcsi2_start_receiver_v4h(struct rcar_csi2 *priv)
 	if (msps < 0)
 		return msps;
 
-	/* Reset LINK and PHY*/
+	 
 	rcsi2_write(priv, V4H_CSI2_RESETN_REG, 0);
 	rcsi2_write(priv, V4H_DPHY_RSTZ_REG, 0);
 	rcsi2_write(priv, V4H_PHY_SHUTDOWNZ_REG, 0);
 
-	/* PHY static setting */
+	 
 	rcsi2_write(priv, V4H_PHY_EN_REG, BIT(0));
 	rcsi2_write(priv, V4H_FLDC_REG, 0);
 	rcsi2_write(priv, V4H_FLDD_REG, 0);
@@ -1082,11 +1056,11 @@ static int rcsi2_start_receiver_v4h(struct rcar_csi2 *priv)
 	rcsi2_write(priv, V4H_PHY_MODE_REG, BIT(0));
 	rcsi2_write(priv, V4H_N_LANES_REG, lanes - 1);
 
-	/* Reset CSI2 */
+	 
 	rcsi2_write(priv, V4H_CSI2_RESETN_REG, BIT(0));
 
-	/* Registers static setting through APB */
-	/* Common setting */
+	 
+	 
 	rcsi2_write16(priv, V4H_CORE_DIG_ANACTRL_RW_COMMON_ANACTRL_REG(0), 0x1bfd);
 	rcsi2_write16(priv, V4H_PPI_STARTUP_RW_COMMON_STARTUP_1_1_REG, 0x0233);
 	rcsi2_write16(priv, V4H_PPI_STARTUP_RW_COMMON_DPHY_REG(6), 0x0027);
@@ -1102,7 +1076,7 @@ static int rcsi2_start_receiver_v4h(struct rcar_csi2 *priv)
 	rcsi2_write16(priv, V4H_CORE_DIG_IOCTRL_RW_AFE_CB_CTRL_2_REG(6), 0x1000);
 	rcsi2_write16(priv, V4H_PPI_RW_COMMON_CFG_REG, 0x0003);
 
-	/* C-PHY settings */
+	 
 	ret = rcsi2_c_phy_setting_v4h(priv, msps);
 	if (ret)
 		return ret;
@@ -1263,9 +1237,7 @@ static irqreturn_t rcsi2_irq_thread(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* -----------------------------------------------------------------------------
- * Async handling and registration of subdevices and links.
- */
+ 
 
 static int rcsi2_notify_bound(struct v4l2_async_notifier *notifier,
 			      struct v4l2_subdev *subdev,
@@ -1313,7 +1285,7 @@ static int rcsi2_parse_v4l2(struct rcar_csi2 *priv,
 {
 	unsigned int i;
 
-	/* Only port 0 endpoint 0 is valid. */
+	 
 	if (vep->base.port || vep->base.id)
 		return -ENOTCONN;
 
@@ -1359,7 +1331,7 @@ static int rcsi2_parse_v4l2(struct rcar_csi2 *priv,
 		priv->lane_swap[i] = i < priv->lanes ?
 			vep->bus.mipi_csi2.data_lanes[i] : i;
 
-		/* Check for valid lane number. */
+		 
 		if (priv->lane_swap[i] < 1 || priv->lane_swap[i] > 4) {
 			dev_err(priv->dev, "data-lanes must be in 1-4 range\n");
 			return -EINVAL;
@@ -1419,11 +1391,7 @@ static int rcsi2_parse_dt(struct rcar_csi2 *priv)
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * PHTW initialization sequences.
- *
- * NOTE: Magic values are from the datasheet and lack documentation.
- */
+ 
 
 static int rcsi2_phtw_write(struct rcar_csi2 *priv, u16 data, u16 code)
 {
@@ -1433,7 +1401,7 @@ static int rcsi2_phtw_write(struct rcar_csi2 *priv, u16 data, u16 code)
 		    PHTW_DWEN | PHTW_TESTDIN_DATA(data) |
 		    PHTW_CWEN | PHTW_TESTDIN_CODE(code));
 
-	/* Wait for DWEN and CWEN to be cleared by hardware. */
+	 
 	for (timeout = 0; timeout <= 20; timeout++) {
 		if (!(rcsi2_read(priv, PHTW_REG) & (PHTW_DWEN | PHTW_CWEN)))
 			return 0;
@@ -1494,7 +1462,7 @@ static int __rcsi2_init_phtw_h3_v3h_m3n(struct rcar_csi2 *priv,
 		{ .data = 0x11, .code = 0xe4 },
 		{ .data = 0x01, .code = 0xe5 },
 		{ .data = 0x10, .code = 0x04 },
-		{ /* sentinel */ },
+		{   },
 	};
 
 	static const struct phtw_value step2[] = {
@@ -1503,7 +1471,7 @@ static int __rcsi2_init_phtw_h3_v3h_m3n(struct rcar_csi2 *priv,
 		{ .data = 0x4b, .code = 0xac },
 		{ .data = 0x03, .code = 0x00 },
 		{ .data = 0x80, .code = 0x07 },
-		{ /* sentinel */ },
+		{   },
 	};
 
 	int ret;
@@ -1549,7 +1517,7 @@ static int rcsi2_phy_post_init_v3m_e3(struct rcar_csi2 *priv)
 		{ .data = 0xee, .code = 0x54 },
 		{ .data = 0xee, .code = 0x84 },
 		{ .data = 0xee, .code = 0x94 },
-		{ /* sentinel */ },
+		{   },
 	};
 
 	return rcsi2_phtw_write_array(priv, step1);
@@ -1558,23 +1526,23 @@ static int rcsi2_phy_post_init_v3m_e3(struct rcar_csi2 *priv)
 static int rcsi2_init_phtw_v3u(struct rcar_csi2 *priv,
 			       unsigned int mbps)
 {
-	/* In case of 1500Mbps or less */
+	 
 	static const struct phtw_value step1[] = {
 		{ .data = 0xcc, .code = 0xe2 },
-		{ /* sentinel */ },
+		{   },
 	};
 
 	static const struct phtw_value step2[] = {
 		{ .data = 0x01, .code = 0xe3 },
 		{ .data = 0x11, .code = 0xe4 },
 		{ .data = 0x01, .code = 0xe5 },
-		{ /* sentinel */ },
+		{   },
 	};
 
-	/* In case of 1500Mbps or less */
+	 
 	static const struct phtw_value step3[] = {
 		{ .data = 0x38, .code = 0x08 },
-		{ /* sentinel */ },
+		{   },
 	};
 
 	static const struct phtw_value step4[] = {
@@ -1582,7 +1550,7 @@ static int rcsi2_init_phtw_v3u(struct rcar_csi2 *priv,
 		{ .data = 0x4b, .code = 0xac },
 		{ .data = 0x03, .code = 0x00 },
 		{ .data = 0x80, .code = 0x07 },
-		{ /* sentinel */ },
+		{   },
 	};
 
 	int ret;
@@ -1611,9 +1579,7 @@ static int rcsi2_init_phtw_v3u(struct rcar_csi2 *priv,
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Platform Device Driver.
- */
+ 
 
 static int rcsi2_link_setup(struct media_entity *entity,
 			    const struct media_pad *local,
@@ -1835,7 +1801,7 @@ static const struct of_device_id rcar_csi2_of_table[] = {
 		.compatible = "renesas,r8a779g0-csi2",
 		.data = &rcar_csi2_info_r8a779g0,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rcar_csi2_of_table);
 
@@ -1844,7 +1810,7 @@ static const struct soc_device_attribute r8a7795[] = {
 		.soc_id = "r8a7795", .revision = "ES2.*",
 		.data = &rcar_csi2_info_r8a7795es2,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int rcsi2_probe(struct platform_device *pdev)
@@ -1860,10 +1826,7 @@ static int rcsi2_probe(struct platform_device *pdev)
 
 	priv->info = of_device_get_match_data(&pdev->dev);
 
-	/*
-	 * The different ES versions of r8a7795 (H3) behave differently but
-	 * share the same compatible string.
-	 */
+	 
 	attr = soc_device_match(r8a7795);
 	if (attr)
 		priv->info = attr->data;

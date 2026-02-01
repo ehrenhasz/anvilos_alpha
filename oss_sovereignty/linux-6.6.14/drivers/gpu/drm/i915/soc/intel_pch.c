@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2019 Intel Corporation.
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_utils.h"
 #include "intel_pch.h"
 
-/* Map PCH device id to PCH type, or PCH_NONE if unknown. */
+ 
 static enum intel_pch
 intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 {
@@ -25,7 +23,7 @@ intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 		drm_dbg_kms(&dev_priv->drm, "Found PantherPoint PCH\n");
 		drm_WARN_ON(&dev_priv->drm,
 			    GRAPHICS_VER(dev_priv) != 6 && !IS_IVYBRIDGE(dev_priv));
-		/* PPT is CPT compatible */
+		 
 		return PCH_CPT;
 	case INTEL_PCH_LPT_DEVICE_ID_TYPE:
 		drm_dbg_kms(&dev_priv->drm, "Found LynxPoint PCH\n");
@@ -47,7 +45,7 @@ intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 			    !IS_HASWELL(dev_priv) && !IS_BROADWELL(dev_priv));
 		drm_WARN_ON(&dev_priv->drm,
 			    IS_HASWELL_ULT(dev_priv) || IS_BROADWELL_ULT(dev_priv));
-		/* WPT is LPT compatible */
+		 
 		return PCH_LPT;
 	case INTEL_PCH_WPT_LP_DEVICE_ID_TYPE:
 		drm_dbg_kms(&dev_priv->drm, "Found WildcatPoint LP PCH\n");
@@ -55,7 +53,7 @@ intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 			    !IS_HASWELL(dev_priv) && !IS_BROADWELL(dev_priv));
 		drm_WARN_ON(&dev_priv->drm,
 			    !IS_HASWELL_ULT(dev_priv) && !IS_BROADWELL_ULT(dev_priv));
-		/* WPT is LPT compatible */
+		 
 		return PCH_LPT;
 	case INTEL_PCH_SPT_DEVICE_ID_TYPE:
 		drm_dbg_kms(&dev_priv->drm, "Found SunrisePoint PCH\n");
@@ -77,7 +75,7 @@ intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 			    !IS_KABYLAKE(dev_priv) &&
 			    !IS_COFFEELAKE(dev_priv) &&
 			    !IS_COMETLAKE(dev_priv));
-		/* KBP is SPT compatible */
+		 
 		return PCH_SPT;
 	case INTEL_PCH_CNP_DEVICE_ID_TYPE:
 		drm_dbg_kms(&dev_priv->drm, "Found Cannon Lake PCH (CNP)\n");
@@ -99,14 +97,14 @@ intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 			    !IS_COFFEELAKE(dev_priv) &&
 			    !IS_COMETLAKE(dev_priv) &&
 			    !IS_ROCKETLAKE(dev_priv));
-		/* CMP is CNP compatible */
+		 
 		return PCH_CNP;
 	case INTEL_PCH_CMP_V_DEVICE_ID_TYPE:
 		drm_dbg_kms(&dev_priv->drm, "Found Comet Lake V PCH (CMP-V)\n");
 		drm_WARN_ON(&dev_priv->drm,
 			    !IS_COFFEELAKE(dev_priv) &&
 			    !IS_COMETLAKE(dev_priv));
-		/* CMP-V is based on KBP, which is SPT compatible */
+		 
 		return PCH_SPT;
 	case INTEL_PCH_ICP_DEVICE_ID_TYPE:
 	case INTEL_PCH_ICP2_DEVICE_ID_TYPE:
@@ -117,7 +115,7 @@ intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 		drm_dbg_kms(&dev_priv->drm, "Found Mule Creek Canyon PCH\n");
 		drm_WARN_ON(&dev_priv->drm, !(IS_JASPERLAKE(dev_priv) ||
 					      IS_ELKHARTLAKE(dev_priv)));
-		/* MCC is TGP compatible */
+		 
 		return PCH_TGP;
 	case INTEL_PCH_TGP_DEVICE_ID_TYPE:
 	case INTEL_PCH_TGP2_DEVICE_ID_TYPE:
@@ -130,7 +128,7 @@ intel_pch_type(const struct drm_i915_private *dev_priv, unsigned short id)
 		drm_dbg_kms(&dev_priv->drm, "Found Jasper Lake PCH\n");
 		drm_WARN_ON(&dev_priv->drm, !(IS_JASPERLAKE(dev_priv) ||
 					      IS_ELKHARTLAKE(dev_priv)));
-		/* JSP is ICP compatible */
+		 
 		return PCH_ICP;
 	case INTEL_PCH_ADP_DEVICE_ID_TYPE:
 	case INTEL_PCH_ADP2_DEVICE_ID_TYPE:
@@ -166,12 +164,7 @@ intel_virt_detect_pch(const struct drm_i915_private *dev_priv,
 {
 	unsigned short id = 0;
 
-	/*
-	 * In a virtualized passthrough environment we can be in a
-	 * setup where the ISA bridge is not able to be passed through.
-	 * In this case, a south bridge can be emulated and we have to
-	 * make an educated guess as to which PCH is really there.
-	 */
+	 
 
 	if (IS_METEORLAKE(dev_priv))
 		id = INTEL_PCH_MTP_DEVICE_ID_TYPE;
@@ -204,7 +197,7 @@ intel_virt_detect_pch(const struct drm_i915_private *dev_priv,
 
 	*pch_type = intel_pch_type(dev_priv, id);
 
-	/* Sanity check virtual PCH id */
+	 
 	if (drm_WARN_ON(&dev_priv->drm,
 			id && *pch_type == PCH_NONE))
 		id = 0;
@@ -218,7 +211,7 @@ void intel_detect_pch(struct drm_i915_private *dev_priv)
 	unsigned short id;
 	enum intel_pch pch_type;
 
-	/* DG1 has south engine display on the same PCI device */
+	 
 	if (IS_DG1(dev_priv)) {
 		dev_priv->pch_type = PCH_DG1;
 		return;
@@ -227,17 +220,7 @@ void intel_detect_pch(struct drm_i915_private *dev_priv)
 		return;
 	}
 
-	/*
-	 * The reason to probe ISA bridge instead of Dev31:Fun0 is to
-	 * make graphics device passthrough work easy for VMM, that only
-	 * need to expose ISA bridge to let driver know the real hardware
-	 * underneath. This is a requirement from virtualization team.
-	 *
-	 * In some virtualized environments (e.g. XEN), there is irrelevant
-	 * ISA bridge in the system. To work reliably, we should scan trhough
-	 * all the ISA bridge devices and check for the first match, instead
-	 * of only checking the first one.
-	 */
+	 
 	while ((pch = pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, pch))) {
 		if (pch->vendor != PCI_VENDOR_ID_INTEL)
 			continue;
@@ -258,10 +241,7 @@ void intel_detect_pch(struct drm_i915_private *dev_priv)
 		}
 	}
 
-	/*
-	 * Use PCH_NOP (PCH but no South Display) for PCH platforms without
-	 * display.
-	 */
+	 
 	if (pch && !HAS_DISPLAY(dev_priv)) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "Display disabled, reverting to NOP PCH\n");

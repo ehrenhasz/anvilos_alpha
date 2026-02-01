@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 
 #include "msm_drv.h"
@@ -32,9 +29,7 @@ static void update_irq(struct mdp_kms *mdp_kms)
 	mdp_kms->cur_irq_mask = irqmask;
 }
 
-/* if an mdp_irq's irqmask has changed, such as when mdp5 crtc<->encoder
- * link changes, this must be called to figure out the new global irqmask
- */
+ 
 void mdp_irq_update(struct mdp_kms *mdp_kms)
 {
 	unsigned long flags;

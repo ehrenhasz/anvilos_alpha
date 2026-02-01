@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Switch Global 2 Registers support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2016-2017 Savoir-faire Linux Inc.
- *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
 
 #include "chip.h"
-#include "global1.h" /* for MV88E6XXX_G1_STS_IRQ_DEVICE */
+#include "global1.h"  
 #include "global2.h"
 
 int mv88e6xxx_g2_read(struct mv88e6xxx_chip *chip, int reg, u16 *val)
@@ -33,36 +26,36 @@ int mv88e6xxx_g2_wait_bit(struct mv88e6xxx_chip *chip, int reg, int
 				  bit, val);
 }
 
-/* Offset 0x00: Interrupt Source Register */
+ 
 
 static int mv88e6xxx_g2_int_source(struct mv88e6xxx_chip *chip, u16 *src)
 {
-	/* Read (and clear most of) the Interrupt Source bits */
+	 
 	return mv88e6xxx_g2_read(chip, MV88E6XXX_G2_INT_SRC, src);
 }
 
-/* Offset 0x01: Interrupt Mask Register */
+ 
 
 static int mv88e6xxx_g2_int_mask(struct mv88e6xxx_chip *chip, u16 mask)
 {
 	return mv88e6xxx_g2_write(chip, MV88E6XXX_G2_INT_MASK, mask);
 }
 
-/* Offset 0x02: Management Enable 2x */
+ 
 
 static int mv88e6xxx_g2_mgmt_enable_2x(struct mv88e6xxx_chip *chip, u16 en2x)
 {
 	return mv88e6xxx_g2_write(chip, MV88E6XXX_G2_MGMT_EN_2X, en2x);
 }
 
-/* Offset 0x03: Management Enable 0x */
+ 
 
 static int mv88e6xxx_g2_mgmt_enable_0x(struct mv88e6xxx_chip *chip, u16 en0x)
 {
 	return mv88e6xxx_g2_write(chip, MV88E6XXX_G2_MGMT_EN_0X, en0x);
 }
 
-/* Offset 0x05: Switch Management Register */
+ 
 
 static int mv88e6xxx_g2_switch_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip,
 					     bool enable)
@@ -86,9 +79,7 @@ int mv88e6185_g2_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip)
 {
 	int err;
 
-	/* Consider the frames with reserved multicast destination
-	 * addresses matching 01:80:c2:00:00:0x as MGMT.
-	 */
+	 
 	err = mv88e6xxx_g2_mgmt_enable_0x(chip, 0xffff);
 	if (err)
 		return err;
@@ -100,9 +91,7 @@ int mv88e6352_g2_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip)
 {
 	int err;
 
-	/* Consider the frames with reserved multicast destination
-	 * addresses matching 01:80:c2:00:00:2x as MGMT.
-	 */
+	 
 	err = mv88e6xxx_g2_mgmt_enable_2x(chip, 0xffff);
 	if (err)
 		return err;
@@ -110,21 +99,19 @@ int mv88e6352_g2_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip)
 	return mv88e6185_g2_mgmt_rsvd2cpu(chip);
 }
 
-/* Offset 0x06: Device Mapping Table register */
+ 
 
 int mv88e6xxx_g2_device_mapping_write(struct mv88e6xxx_chip *chip, int target,
 				      int port)
 {
 	u16 val = (target << 8) | (port & 0x1f);
-	/* Modern chips use 5 bits to define a device mapping port,
-	 * but bit 4 is reserved on older chips, so it is safe to use.
-	 */
+	 
 
 	return mv88e6xxx_g2_write(chip, MV88E6XXX_G2_DEVICE_MAPPING,
 				  MV88E6XXX_G2_DEVICE_MAPPING_UPDATE | val);
 }
 
-/* Offset 0x07: Trunk Mask Table register */
+ 
 
 int mv88e6xxx_g2_trunk_mask_write(struct mv88e6xxx_chip *chip, int num,
 				  bool hash, u16 mask)
@@ -138,7 +125,7 @@ int mv88e6xxx_g2_trunk_mask_write(struct mv88e6xxx_chip *chip, int num,
 				  MV88E6XXX_G2_TRUNK_MASK_UPDATE | val);
 }
 
-/* Offset 0x08: Trunk Mapping Table register */
+ 
 
 int mv88e6xxx_g2_trunk_mapping_write(struct mv88e6xxx_chip *chip, int id,
 				     u16 map)
@@ -155,14 +142,14 @@ int mv88e6xxx_g2_trunk_clear(struct mv88e6xxx_chip *chip)
 	const u16 port_mask = BIT(mv88e6xxx_num_ports(chip)) - 1;
 	int i, err;
 
-	/* Clear all eight possible Trunk Mask vectors */
+	 
 	for (i = 0; i < 8; ++i) {
 		err = mv88e6xxx_g2_trunk_mask_write(chip, i, false, port_mask);
 		if (err)
 			return err;
 	}
 
-	/* Clear all sixteen possible Trunk ID routing vectors */
+	 
 	for (i = 0; i < 16; ++i) {
 		err = mv88e6xxx_g2_trunk_mapping_write(chip, i, 0);
 		if (err)
@@ -172,9 +159,7 @@ int mv88e6xxx_g2_trunk_clear(struct mv88e6xxx_chip *chip)
 	return 0;
 }
 
-/* Offset 0x09: Ingress Rate Command register
- * Offset 0x0A: Ingress Rate Data register
- */
+ 
 
 static int mv88e6xxx_g2_irl_wait(struct mv88e6xxx_chip *chip)
 {
@@ -209,9 +194,7 @@ int mv88e6390_g2_irl_init_all(struct mv88e6xxx_chip *chip, int port)
 				   0, 0);
 }
 
-/* Offset 0x0B: Cross-chip Port VLAN (Addr) Register
- * Offset 0x0C: Cross-chip Port VLAN Data Register
- */
+ 
 
 static int mv88e6xxx_g2_pvt_op_wait(struct mv88e6xxx_chip *chip)
 {
@@ -225,9 +208,7 @@ static int mv88e6xxx_g2_pvt_op(struct mv88e6xxx_chip *chip, int src_dev,
 {
 	int err;
 
-	/* 9-bit Cross-chip PVT pointer: with MV88E6XXX_G2_MISC_5_BIT_PORT
-	 * cleared, source device is 5-bit, source port is 4-bit.
-	 */
+	 
 	op |= MV88E6XXX_G2_PVT_ADDR_BUSY;
 	op |= (src_dev & 0x1f) << 4;
 	op |= (src_port & 0xf);
@@ -273,7 +254,7 @@ int mv88e6xxx_g2_pvt_write(struct mv88e6xxx_chip *chip, int src_dev,
 				   MV88E6XXX_G2_PVT_ADDR_OP_WRITE_PVLAN);
 }
 
-/* Offset 0x0D: Switch MAC/WoL/WoF register */
+ 
 
 static int mv88e6xxx_g2_switch_mac_write(struct mv88e6xxx_chip *chip,
 					 unsigned int pointer, u8 data)
@@ -297,7 +278,7 @@ int mv88e6xxx_g2_set_switch_mac(struct mv88e6xxx_chip *chip, u8 *addr)
 	return err;
 }
 
-/* Offset 0x0E: ATU Statistics */
+ 
 
 int mv88e6xxx_g2_atu_stats_set(struct mv88e6xxx_chip *chip, u16 kind, u16 bin)
 {
@@ -310,7 +291,7 @@ int mv88e6xxx_g2_atu_stats_get(struct mv88e6xxx_chip *chip, u16 *stats)
 	return mv88e6xxx_g2_read(chip, MV88E6XXX_G2_ATU_STATS, stats);
 }
 
-/* Offset 0x0F: Priority Override Table */
+ 
 
 static int mv88e6xxx_g2_pot_write(struct mv88e6xxx_chip *chip, int pointer,
 				  u8 data)
@@ -325,7 +306,7 @@ int mv88e6xxx_g2_pot_clear(struct mv88e6xxx_chip *chip)
 {
 	int i, err;
 
-	/* Clear all sixteen possible Priority Override entries */
+	 
 	for (i = 0; i < 16; i++) {
 		err = mv88e6xxx_g2_pot_write(chip, i, 0);
 		if (err)
@@ -335,10 +316,7 @@ int mv88e6xxx_g2_pot_clear(struct mv88e6xxx_chip *chip)
 	return err;
 }
 
-/* Offset 0x14: EEPROM Command
- * Offset 0x15: EEPROM Data (for 16-bit data access)
- * Offset 0x15: EEPROM Addr (for 8-bit data access)
- */
+ 
 
 int mv88e6xxx_g2_eeprom_wait(struct mv88e6xxx_chip *chip)
 {
@@ -549,7 +527,7 @@ int mv88e6xxx_g2_set_eeprom16(struct mv88e6xxx_chip *chip,
 	u16 val;
 	int err;
 
-	/* Ensure the RO WriteEn bit is set */
+	 
 	err = mv88e6xxx_g2_read(chip, MV88E6XXX_G2_EEPROM_CMD, &val);
 	if (err)
 		return err;
@@ -607,9 +585,7 @@ int mv88e6xxx_g2_set_eeprom16(struct mv88e6xxx_chip *chip,
 	return 0;
 }
 
-/* Offset 0x18: SMI PHY Command Register
- * Offset 0x19: SMI PHY Data Register
- */
+ 
 
 static int mv88e6xxx_g2_smi_phy_wait(struct mv88e6xxx_chip *chip)
 {
@@ -639,10 +615,10 @@ static int mv88e6xxx_g2_smi_phy_access(struct mv88e6xxx_chip *chip,
 	if (external)
 		cmd |= MV88E6390_G2_SMI_PHY_CMD_FUNC_EXTERNAL;
 	else
-		cmd |= MV88E6390_G2_SMI_PHY_CMD_FUNC_INTERNAL; /* empty mask */
+		cmd |= MV88E6390_G2_SMI_PHY_CMD_FUNC_INTERNAL;  
 
 	if (c45)
-		cmd |= MV88E6XXX_G2_SMI_PHY_CMD_MODE_45; /* empty mask */
+		cmd |= MV88E6XXX_G2_SMI_PHY_CMD_MODE_45;  
 	else
 		cmd |= MV88E6XXX_G2_SMI_PHY_CMD_MODE_22;
 
@@ -660,7 +636,7 @@ static int mv88e6xxx_g2_smi_phy_access_c22(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g2_smi_phy_access(chip, external, false, op, dev, reg);
 }
 
-/* IEEE 802.3 Clause 22 Read Data Register */
+ 
 static int mv88e6xxx_g2_smi_phy_read_data_c22(struct mv88e6xxx_chip *chip,
 					      bool external, int dev, int reg,
 					      u16 *data)
@@ -679,7 +655,7 @@ static int mv88e6xxx_g2_smi_phy_read_data_c22(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g2_read(chip, MV88E6XXX_G2_SMI_PHY_DATA, data);
 }
 
-/* IEEE 802.3 Clause 22 Write Data Register */
+ 
 static int mv88e6xxx_g2_smi_phy_write_data_c22(struct mv88e6xxx_chip *chip,
 					       bool external, int dev, int reg,
 					       u16 data)
@@ -705,7 +681,7 @@ static int mv88e6xxx_g2_smi_phy_access_c45(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g2_smi_phy_access(chip, external, true, op, port, dev);
 }
 
-/* IEEE 802.3 Clause 45 Write Address Register */
+ 
 static int mv88e6xxx_g2_smi_phy_write_addr_c45(struct mv88e6xxx_chip *chip,
 					       bool external, int port, int dev,
 					       int addr)
@@ -724,7 +700,7 @@ static int mv88e6xxx_g2_smi_phy_write_addr_c45(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g2_smi_phy_access_c45(chip, external, op, port, dev);
 }
 
-/* IEEE 802.3 Clause 45 Read Data Register */
+ 
 static int mv88e6xxx_g2_smi_phy_read_data_c45(struct mv88e6xxx_chip *chip,
 					      bool external, int port, int dev,
 					      u16 *data)
@@ -754,7 +730,7 @@ static int _mv88e6xxx_g2_smi_phy_read_c45(struct mv88e6xxx_chip *chip,
 						  data);
 }
 
-/* IEEE 802.3 Clause 45 Write Data Register */
+ 
 static int mv88e6xxx_g2_smi_phy_write_data_c45(struct mv88e6xxx_chip *chip,
 					       bool external, int port, int dev,
 					       u16 data)
@@ -828,7 +804,7 @@ int mv88e6xxx_g2_smi_phy_write_c45(struct mv88e6xxx_chip *chip,
 					       val);
 }
 
-/* Offset 0x1B: Watchdog Control */
+ 
 static int mv88e6097_watchdog_action(struct mv88e6xxx_chip *chip, int irq)
 {
 	u16 reg;
@@ -921,7 +897,7 @@ static int mv88e6390_watchdog_action(struct mv88e6xxx_chip *chip, int irq)
 	dev_info(chip->dev, "Watchdog history: 0x%04x",
 		 reg & MV88E6390_G2_WDOG_CTL_DATA_MASK);
 
-	/* Trigger a software reset to try to recover the switch */
+	 
 	if (chip->info->ops->reset)
 		chip->info->ops->reset(chip);
 
@@ -947,9 +923,7 @@ static int mv88e6393x_watchdog_action(struct mv88e6xxx_chip *chip, int irq)
 {
 	mv88e6390_watchdog_action(chip, irq);
 
-	/* Fix for clearing the force WD event bit.
-	 * Unreleased erratum on mv88e6393x.
-	 */
+	 
 	mv88e6xxx_g2_write(chip, MV88E6390_G2_WDOG_CTL,
 			   MV88E6390_G2_WDOG_CTL_UPDATE |
 			   MV88E6390_G2_WDOG_CTL_PTR_EVENT);
@@ -1014,7 +988,7 @@ static int mv88e6xxx_g2_watchdog_setup(struct mv88e6xxx_chip *chip)
 	return err;
 }
 
-/* Offset 0x1D: Misc Register */
+ 
 
 static int mv88e6xxx_g2_misc_5_bit_port(struct mv88e6xxx_chip *chip,
 					bool port_5_bit)

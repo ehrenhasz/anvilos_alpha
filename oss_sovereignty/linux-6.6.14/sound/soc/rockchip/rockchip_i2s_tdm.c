@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// ALSA SoC Audio Layer - Rockchip I2S/TDM Controller driver
 
-// Copyright (c) 2018 Rockchip Electronics Co. Ltd.
-// Author: Sugar Zhang <sugar.zhang@rock-chips.com>
-// Author: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -25,7 +25,7 @@
 #define DRV_NAME "rockchip-i2s-tdm"
 
 #define DEFAULT_MCLK_FS				256
-#define CH_GRP_MAX				4  /* The max channel 8 / 2 */
+#define CH_GRP_MAX				4   
 #define MULTIPLEX_CH_MAX			10
 #define CLK_PPM_MIN				-1000
 #define CLK_PPM_MAX				1000
@@ -55,18 +55,11 @@ struct rk_i2s_tdm_dev {
 	struct clk *hclk;
 	struct clk *mclk_tx;
 	struct clk *mclk_rx;
-	/* The mclk_tx_src is parent of mclk_tx */
+	 
 	struct clk *mclk_tx_src;
-	/* The mclk_rx_src is parent of mclk_rx */
+	 
 	struct clk *mclk_rx_src;
-	/*
-	 * The mclk_root0 and mclk_root1 are root parent and supplies for
-	 * the different FS.
-	 *
-	 * e.g:
-	 * mclk_root0 is VPLL0, used for FS=48000Hz
-	 * mclk_root1 is VPLL1, used for FS=44100Hz
-	 */
+	 
 	struct clk *mclk_root0;
 	struct clk *mclk_root1;
 	struct regmap *regmap;
@@ -92,7 +85,7 @@ struct rk_i2s_tdm_dev {
 	unsigned int i2s_sdos[CH_GRP_MAX];
 	int clk_ppm;
 	int refcount;
-	spinlock_t lock; /* xfer lock */
+	spinlock_t lock;  
 	bool has_playback;
 	bool has_capture;
 	struct snd_soc_dai_driver *dai;
@@ -124,16 +117,7 @@ static void i2s_tdm_disable_unprepare_mclk(struct rk_i2s_tdm_dev *i2s_tdm)
 	}
 }
 
-/**
- * i2s_tdm_prepare_enable_mclk - prepare to enable all mclks, disable them on
- *				 failure.
- * @i2s_tdm: rk_i2s_tdm_dev struct
- *
- * This function attempts to enable all mclk clocks, but cleans up after
- * itself on failure. Guarantees to balance its calls.
- *
- * Returns success (0) or negative errno.
- */
+ 
 static int i2s_tdm_prepare_enable_mclk(struct rk_i2s_tdm_dev *i2s_tdm)
 {
 	int ret = 0;
@@ -220,29 +204,10 @@ static inline struct rk_i2s_tdm_dev *to_info(struct snd_soc_dai *dai)
 	return snd_soc_dai_get_drvdata(dai);
 }
 
-/*
- * Makes sure that both tx and rx are reset at the same time to sync lrck
- * when clk_trcm > 0.
- */
+ 
 static void rockchip_snd_xfer_sync_reset(struct rk_i2s_tdm_dev *i2s_tdm)
 {
-	/* This is technically race-y.
-	 *
-	 * In an ideal world, we could atomically assert both resets at the
-	 * same time, through an atomic bulk reset API. This API however does
-	 * not exist, so what the downstream vendor code used to do was
-	 * implement half a reset controller here and require the CRU to be
-	 * passed to the driver as a device tree node. Violating abstractions
-	 * like that is bad, especially when it influences something like the
-	 * bindings which are supposed to describe the hardware, not whatever
-	 * workarounds the driver needs, so it was dropped.
-	 *
-	 * In practice, asserting the resets one by one appears to work just
-	 * fine for playback. During duplex (playback + capture) operation,
-	 * this might become an issue, but that should be solved by the
-	 * implementation of the aforementioned API, not by shoving a reset
-	 * controller into an audio driver.
-	 */
+	 
 
 	reset_control_assert(i2s_tdm->tx_reset);
 	reset_control_assert(i2s_tdm->rx_reset);
@@ -287,7 +252,7 @@ static void rockchip_snd_xfer_clear(struct rk_i2s_tdm_dev *i2s_tdm,
 	regmap_update_bits(i2s_tdm->regmap, I2S_CLR, clr, clr);
 
 	regmap_read(i2s_tdm->regmap, I2S_CLR, &val);
-	/* Wait on the clear operation to finish */
+	 
 	while (val) {
 		udelay(15);
 		regmap_read(i2s_tdm->regmap, I2S_CLR, &val);
@@ -330,7 +295,7 @@ static inline void rockchip_disable_rde(struct regmap *regmap)
 			   I2S_DMACR_RDE_DISABLE);
 }
 
-/* only used when clk_trcm > 0 */
+ 
 static void rockchip_snd_txrxctrl(struct snd_pcm_substream *substream,
 				  struct snd_soc_dai *dai, int on)
 {
@@ -467,11 +432,11 @@ static int rockchip_i2s_tdm_set_fmt(struct snd_soc_dai *cpu_dai,
 		txcr_val = I2S_TXCR_IBM_NORMAL;
 		rxcr_val = I2S_RXCR_IBM_NORMAL;
 		break;
-	case SND_SOC_DAIFMT_DSP_A: /* PCM delay 1 mode */
+	case SND_SOC_DAIFMT_DSP_A:  
 		txcr_val = I2S_TXCR_TFS_PCM | I2S_TXCR_PBM_MODE(1);
 		rxcr_val = I2S_RXCR_TFS_PCM | I2S_RXCR_PBM_MODE(1);
 		break;
-	case SND_SOC_DAIFMT_DSP_B: /* PCM no delay mode */
+	case SND_SOC_DAIFMT_DSP_B:  
 		txcr_val = I2S_TXCR_TFS_PCM;
 		rxcr_val = I2S_RXCR_TFS_PCM;
 		break;
@@ -700,7 +665,7 @@ static int rockchip_i2s_tdm_set_mclk(struct rk_i2s_tdm_dev *i2s_tdm,
 		if (ret)
 			return ret;
 
-		/* mclk_rx is also ok. */
+		 
 		*mclk = i2s_tdm->mclk_tx;
 	} else {
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -980,7 +945,7 @@ static int rockchip_i2s_tdm_set_sysclk(struct snd_soc_dai *cpu_dai, int stream,
 {
 	struct rk_i2s_tdm_dev *i2s_tdm = to_info(cpu_dai);
 
-	/* Put set mclk rate into rockchip_i2s_tdm_set_mclk() */
+	 
 	if (i2s_tdm->clk_trcm) {
 		i2s_tdm->mclk_tx_freq = freq;
 		i2s_tdm->mclk_rx_freq = freq;

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MFD core driver for X-Powers' AC100 Audio Codec IC
- *
- * The AC100 is a highly integrated audio codec and RTC subsystem designed
- * for mobile applications. It has 3 I2S/PCM interfaces, a 2 channel DAC,
- * a 2 channel ADC with 5 inputs and a builtin mixer. The RTC subsystem has
- * 3 clock outputs.
- *
- * The audio codec and RTC parts are completely separate, sharing only the
- * host interface for access to its registers.
- *
- * Copyright (2016) Chen-Yu Tsai
- *
- * Author: Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>

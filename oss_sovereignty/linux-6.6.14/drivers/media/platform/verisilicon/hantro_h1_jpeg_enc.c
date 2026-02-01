@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <media/v4l2-mem2mem.h>
@@ -21,12 +17,7 @@ static void hantro_h1_set_src_img_ctrl(struct hantro_dev *vpu,
 	u32 overfill_r, overfill_b;
 	u32 reg;
 
-	/*
-	 * The format width and height are already macroblock aligned
-	 * by .vidioc_s_fmt_vid_cap_mplane() callback. Destination
-	 * format width and height can be further modified by
-	 * .vidioc_s_selection(), and the width is 4-aligned.
-	 */
+	 
 	overfill_r = ctx->src_fmt.width - ctx->dst_fmt.width;
 	overfill_b = ctx->src_fmt.height - ctx->dst_fmt.height;
 
@@ -59,7 +50,7 @@ static void hantro_h1_jpeg_enc_set_buffers(struct hantro_dev *vpu,
 
 	if (pix_fmt->num_planes == 1) {
 		src[0] = vb2_dma_contig_plane_dma_addr(src_buf, 0);
-		/* single plane formats we supported are all interlaced */
+		 
 		vepu_write_relaxed(vpu, src[0], H1_REG_ADDR_IN_PLANE_0);
 	} else if (pix_fmt->num_planes == 2) {
 		src[0] = vb2_dma_contig_plane_dma_addr(src_buf, 0);
@@ -88,10 +79,7 @@ hantro_h1_jpeg_enc_set_qtable(struct hantro_dev *vpu,
 	luma_qtable_p = (__be32 *)luma_qtable;
 	chroma_qtable_p = (__be32 *)chroma_qtable;
 
-	/*
-	 * Quantization table registers must be written in contiguous blocks.
-	 * DO NOT collapse the below two "for" loops into one.
-	 */
+	 
 	for (i = 0; i < H1_JPEG_QUANT_TABLE_COUNT; i++) {
 		reg = get_unaligned_be32(&luma_qtable_p[i]);
 		vepu_write_relaxed(vpu, reg, H1_REG_JPEG_LUMA_QUAT(i));
@@ -122,7 +110,7 @@ int hantro_h1_jpeg_enc_run(struct hantro_ctx *ctx)
 	jpeg_ctx.quality = ctx->jpeg_quality;
 	hantro_jpeg_header_assemble(&jpeg_ctx);
 
-	/* Switch to JPEG encoder mode before writing registers */
+	 
 	vepu_write_relaxed(vpu, H1_REG_ENC_CTRL_ENC_MODE_JPEG,
 			   H1_REG_ENC_CTRL);
 
@@ -139,7 +127,7 @@ int hantro_h1_jpeg_enc_run(struct hantro_ctx *ctx)
 		| H1_REG_AXI_CTRL_INPUT_SWAP32
 		| H1_REG_AXI_CTRL_OUTPUT_SWAP8
 		| H1_REG_AXI_CTRL_INPUT_SWAP8;
-	/* Make sure that all registers are written at this point. */
+	 
 	vepu_write(vpu, reg, H1_REG_AXI_CTRL);
 
 	reg = H1_REG_ENC_CTRL_WIDTH(MB_WIDTH(ctx->src_fmt.width))

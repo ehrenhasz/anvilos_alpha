@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * File: pep_gprs.h
- *
- * GPRS over Phonet pipe end point socket
- *
- * Copyright (C) 2008 Nokia Corporation.
- *
- * Author: Rémi Denis-Courmont
- */
+ 
+ 
 
 #ifndef NET_PHONET_GPRS_H
 #define NET_PHONET_GPRS_H

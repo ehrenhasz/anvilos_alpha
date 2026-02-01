@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * si7005.c - Support for Silabs Si7005 humidity and temperature sensor
- *
- * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * (7-bit I2C slave address 0x40)
- *
- * TODO: heater, fast mode, processed mode (temp. / linearity compensation)
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -19,7 +11,7 @@
 #include <linux/iio/sysfs.h>
 
 #define SI7005_STATUS 0x00
-#define SI7005_DATA 0x01 /* 16-bit, MSB */
+#define SI7005_DATA 0x01  
 #define SI7005_CONFIG 0x03
 #define SI7005_ID 0x11
 

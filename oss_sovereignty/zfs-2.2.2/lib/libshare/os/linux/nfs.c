@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2002, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011 Gunnar Beutner
- * Copyright (c) 2012 Cyril Plisko. All rights reserved.
- * Copyright (c) 2019, 2022 by Delphix. All rights reserved.
- */
+ 
 
 #include <dirent.h>
 #include <stdio.h>
@@ -54,10 +30,7 @@ typedef int (*nfs_shareopt_callback_t)(const char *opt, const char *value,
 typedef int (*nfs_host_callback_t)(FILE *tmpfile, const char *sharepath,
     const char *host, const char *security, const char *access, void *cookie);
 
-/*
- * Invokes the specified callback function for each Solaris share option
- * listed in the specified string.
- */
+ 
 static int
 foreach_nfs_shareopt(const char *shareopts,
     nfs_shareopt_callback_t callback, void *cookie)
@@ -126,11 +99,7 @@ typedef struct nfs_host_cookie_s {
 	const char *security;
 } nfs_host_cookie_t;
 
-/*
- * Helper function for foreach_nfs_host. This function checks whether the
- * current share option is a host specification and invokes a callback
- * function with information about the host.
- */
+ 
 static int
 foreach_nfs_host_cb(const char *opt, const char *value, void *pcookie)
 {
@@ -222,9 +191,7 @@ foreach_nfs_host_cb(const char *opt, const char *value, void *pcookie)
 	return (SA_OK);
 }
 
-/*
- * Invokes a callback function for all NFS hosts that are set for a share.
- */
+ 
 static int
 foreach_nfs_host(sa_share_impl_t impl_share, FILE *tmpfile,
     nfs_host_callback_t callback, void *cookie)
@@ -241,30 +208,20 @@ foreach_nfs_host(sa_share_impl_t impl_share, FILE *tmpfile,
 	    foreach_nfs_host_cb, &udata));
 }
 
-/*
- * Converts a Solaris NFS host specification to its Linux equivalent.
- */
+ 
 static const char *
 get_linux_hostspec(const char *solaris_hostspec)
 {
-	/*
-	 * For now we just support CIDR masks (e.g. @192.168.0.0/16) and host
-	 * wildcards (e.g. *.example.org).
-	 */
+	 
 	if (solaris_hostspec[0] == '@') {
-		/*
-		 * Solaris host specifier, e.g. @192.168.0.0/16; we just need
-		 * to skip the @ in this case
-		 */
+		 
 		return (solaris_hostspec + 1);
 	} else {
 		return (solaris_hostspec);
 	}
 }
 
-/*
- * Adds a Linux share option to an array of NFS options.
- */
+ 
 static int
 add_linux_shareopt(char **plinux_opts, const char *key, const char *value)
 {
@@ -302,14 +259,11 @@ static int string_cmp(const void *lhs, const void *rhs) {
 	return (strcmp(*l, *r));
 }
 
-/*
- * Validates and converts a single Solaris share option to its Linux
- * equivalent.
- */
+ 
 static int
 get_linux_shareopts_cb(const char *key, const char *value, void *cookie)
 {
-	/* This list must remain sorted, since we bsearch() it */
+	 
 	static const char *const valid_keys[] = { "all_squash", "anongid",
 	    "anonuid", "async", "auth_nlm", "crossmnt", "fsid", "fsuid", "hide",
 	    "insecure", "insecure_locks", "mountpoint", "mp", "no_acl",
@@ -382,10 +336,7 @@ get_linux_shareopts_cb(const char *key, const char *value, void *cookie)
 	return (SA_OK);
 }
 
-/*
- * Takes a string containing Solaris share options (e.g. "sync,no_acl") and
- * converts them to a NULL-terminated array of Linux NFS options.
- */
+ 
 static int
 get_linux_shareopts(const char *shareopts, char **plinux_opts)
 {
@@ -395,10 +346,10 @@ get_linux_shareopts(const char *shareopts, char **plinux_opts)
 
 	*plinux_opts = NULL;
 
-	/* no_subtree_check - Default as of nfs-utils v1.1.0 */
+	 
 	(void) add_linux_shareopt(plinux_opts, "no_subtree_check", NULL);
 
-	/* mountpoint - Restrict exports to ZFS mountpoints */
+	 
 	(void) add_linux_shareopt(plinux_opts, "mountpoint", NULL);
 
 	error = foreach_nfs_shareopt(shareopts, get_linux_shareopts_cb,
@@ -412,11 +363,7 @@ get_linux_shareopts(const char *shareopts, char **plinux_opts)
 	return (error);
 }
 
-/*
- * This function populates an entry into /etc/exports.d/zfs.exports.
- * This file is consumed by the linux nfs server so that zfs shares are
- * automatically exported upon boot or whenever the nfs server restarts.
- */
+ 
 static int
 nfs_add_entry(FILE *tmpfile, const char *sharepath,
     const char *host, const char *security, const char *access_opts,
@@ -444,9 +391,7 @@ nfs_add_entry(FILE *tmpfile, const char *sharepath,
 	return (rc);
 }
 
-/*
- * Enables NFS sharing for the specified share.
- */
+ 
 static int
 nfs_enable_share_impl(sa_share_impl_t impl_share, FILE *tmpfile)
 {
@@ -472,9 +417,7 @@ nfs_enable_share(sa_share_impl_t impl_share)
 	    nfs_enable_share_impl));
 }
 
-/*
- * Disables NFS sharing for the specified share.
- */
+ 
 static int
 nfs_disable_share_impl(sa_share_impl_t impl_share, FILE *tmpfile)
 {
@@ -502,9 +445,7 @@ nfs_is_shared(sa_share_impl_t impl_share)
 	return (nfs_is_shared_impl(ZFS_EXPORTS_FILE, impl_share));
 }
 
-/*
- * Checks whether the specified NFS share options are syntactically correct.
- */
+ 
 static int
 nfs_validate_shareopts(const char *shareopts)
 {

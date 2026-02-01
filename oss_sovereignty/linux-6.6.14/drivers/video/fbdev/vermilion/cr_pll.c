@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) Intel Corp. 2007.
- * All Rights Reserved.
- *
- * Intel funded Tungsten Graphics (http://www.tungstengraphics.com) to
- * develop this driver.
- *
- * This file is part of the Carillo Ranch video subsystem driver.
- *
- * Authors:
- *   Thomas Hellstrom <thomas-at-tungstengraphics-dot-com>
- *   Alan Hourihane <alanh-at-tungstengraphics-dot-com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -20,7 +8,7 @@
 #include <linux/fb.h>
 #include "vermilion.h"
 
-/* The PLL Clock register sits on Host bridge */
+ 
 #define CRVML_DEVICE_MCH   0x5001
 #define CRVML_REG_MCHBAR   0x44
 #define CRVML_REG_MCHEN    0x54
@@ -45,9 +33,7 @@ static const unsigned crvml_clocks[] = {
 	59400,
 	74250,
 	120000
-	    /*
-	     * There are more clocks, but they are disabled on the CR board.
-	     */
+	     
 };
 
 static const u32 crvml_clock_bits[] = {

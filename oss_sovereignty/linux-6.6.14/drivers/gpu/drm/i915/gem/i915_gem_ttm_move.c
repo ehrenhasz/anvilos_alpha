@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <drm/ttm/ttm_tt.h>
 
@@ -19,17 +17,7 @@
 #include "gt/intel_gt.h"
 #include "gt/intel_migrate.h"
 
-/**
- * DOC: Selftest failure modes for failsafe migration:
- *
- * For fail_gpu_migration, the gpu blit scheduled is always a clear blit
- * rather than a copy blit, and then we force the failure paths as if
- * the blit fence returned an error.
- *
- * For fail_work_allocation we fail the kmalloc of the async worker, we
- * sync the gpu blit. If it then fails, or fail_gpu_migration is set to
- * true, then a memcpy operation is performed sync.
- */
+ 
 #if IS_ENABLED(CONFIG_DRM_I915_SELFTEST)
 static bool fail_gpu_migration;
 static bool fail_work_allocation;
@@ -63,7 +51,7 @@ i915_ttm_region(struct ttm_device *bdev, int ttm_mem_type)
 {
 	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
 
-	/* There's some room for optimization here... */
+	 
 	GEM_BUG_ON(ttm_mem_type != I915_PL_SYSTEM &&
 		   ttm_mem_type < I915_PL_LMEM0);
 	if (ttm_mem_type == I915_PL_SYSTEM)
@@ -74,11 +62,7 @@ i915_ttm_region(struct ttm_device *bdev, int ttm_mem_type)
 					  ttm_mem_type - I915_PL_LMEM0);
 }
 
-/**
- * i915_ttm_adjust_domains_after_move - Adjust the GEM domains after a
- * TTM move
- * @obj: The gem object
- */
+ 
 void i915_ttm_adjust_domains_after_move(struct drm_i915_gem_object *obj)
 {
 	struct ttm_buffer_object *bo = i915_gem_to_ttm(obj);
@@ -92,13 +76,7 @@ void i915_ttm_adjust_domains_after_move(struct drm_i915_gem_object *obj)
 	}
 }
 
-/**
- * i915_ttm_adjust_gem_after_move - Adjust the GEM state after a TTM move
- * @obj: The gem object
- *
- * Adjusts the GEM object's region, mem_flags and cache coherency after a
- * TTM move.
- */
+ 
 void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
 {
 	struct ttm_buffer_object *bo = i915_gem_to_ttm(obj);
@@ -107,12 +85,7 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
 	unsigned int i;
 	int mem_type;
 
-	/*
-	 * We might have been purged (or swapped out) if the resource is NULL,
-	 * in which case the SYSTEM placement is the closest match to describe
-	 * the current domain. If the object is ever used in this state then we
-	 * will require moving it again.
-	 */
+	 
 	if (!bo->resource) {
 		mem_flags = I915_BO_FLAG_STRUCT_PAGE;
 		mem_type = I915_PL_SYSTEM;
@@ -125,12 +98,7 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
 						   bo->ttm);
 	}
 
-	/*
-	 * If object was moved to an allowable region, update the object
-	 * region to consider it migrated. Note that if it's currently not
-	 * in an allowable region, it's evicted and we don't update the
-	 * object region.
-	 */
+	 
 	if (intel_region_to_ttm_type(obj->mm.region) != mem_type) {
 		for (i = 0; i < obj->mm.n_placements; ++i) {
 			struct intel_memory_region *mr = obj->mm.placements[i];
@@ -150,28 +118,13 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
 	i915_gem_object_set_cache_coherency(obj, cache_level);
 }
 
-/**
- * i915_ttm_move_notify - Prepare an object for move
- * @bo: The ttm buffer object.
- *
- * This function prepares an object for move by removing all GPU bindings,
- * removing all CPU mapings and finally releasing the pages sg-table.
- *
- * Return: 0 if successful, negative error code on error.
- */
+ 
 int i915_ttm_move_notify(struct ttm_buffer_object *bo)
 {
 	struct drm_i915_gem_object *obj = i915_ttm_to_gem(bo);
 	int ret;
 
-	/*
-	 * Note: The async unbinding here will actually transform the
-	 * blocking wait for unbind into a wait before finally submitting
-	 * evict / migration blit and thus stall the migration timeline
-	 * which may not be good for overall throughput. We should make
-	 * sure we await the unbind fences *after* the migration blit
-	 * instead of *before* as we currently do.
-	 */
+	 
 	ret = i915_gem_object_unbind(obj, I915_GEM_OBJECT_UNBIND_ACTIVE |
 				     I915_GEM_OBJECT_UNBIND_ASYNC);
 	if (ret)
@@ -202,7 +155,7 @@ static struct dma_fence *i915_ttm_accel_move(struct ttm_buffer_object *bo,
 	if (!to_gt(i915)->migrate.context || intel_gt_is_wedged(to_gt(i915)))
 		return ERR_PTR(-EINVAL);
 
-	/* With fail_gpu_migration, we always perform a GPU clear. */
+	 
 	if (I915_SELFTEST_ONLY(fail_gpu_migration))
 		clear = true;
 
@@ -249,17 +202,7 @@ static struct dma_fence *i915_ttm_accel_move(struct ttm_buffer_object *bo,
 	return ret ? ERR_PTR(ret) : &rq->fence;
 }
 
-/**
- * struct i915_ttm_memcpy_arg - argument for the bo memcpy functionality.
- * @_dst_iter: Storage space for the destination kmap iterator.
- * @_src_iter: Storage space for the source kmap iterator.
- * @dst_iter: Pointer to the destination kmap iterator.
- * @src_iter: Pointer to the source kmap iterator.
- * @num_pages: Number of pages
- * @clear: Whether to clear instead of copy.
- * @src_rsgt: Refcounted scatter-gather list of source memory.
- * @dst_rsgt: Refcounted scatter-gather list of destination memory.
- */
+ 
 struct i915_ttm_memcpy_arg {
 	union {
 		struct ttm_kmap_iter_tt tt;
@@ -274,22 +217,7 @@ struct i915_ttm_memcpy_arg {
 	struct i915_refct_sgt *dst_rsgt;
 };
 
-/**
- * struct i915_ttm_memcpy_work - Async memcpy worker under a dma-fence.
- * @fence: The dma-fence.
- * @work: The work struct use for the memcpy work.
- * @lock: The fence lock. Not used to protect anything else ATM.
- * @irq_work: Low latency worker to signal the fence since it can't be done
- * from the callback for lockdep reasons.
- * @cb: Callback for the accelerated migration fence.
- * @arg: The argument for the memcpy functionality.
- * @i915: The i915 pointer.
- * @obj: The GEM object.
- * @memcpy_allowed: Instead of processing the @arg, and falling back to memcpy
- * or memset, we wedge the device and set the @obj unknown_state, to prevent
- * further access to the object with the CPU or GPU.  On some devices we might
- * only be permitted to use the blitter engine for such operations.
- */
+ 
 struct i915_ttm_memcpy_work {
 	struct dma_fence fence;
 	struct work_struct work;
@@ -352,10 +280,7 @@ static void __memcpy_work(struct work_struct *work)
 	struct i915_ttm_memcpy_arg *arg = &copy_work->arg;
 	bool cookie;
 
-	/*
-	 * FIXME: We need to take a closer look here. We should be able to plonk
-	 * this into the fence critical section.
-	 */
+	 
 	if (!copy_work->memcpy_allowed) {
 		struct intel_gt *gt;
 		unsigned int id;
@@ -369,14 +294,7 @@ static void __memcpy_work(struct work_struct *work)
 	if (copy_work->memcpy_allowed) {
 		i915_ttm_move_memcpy(arg);
 	} else {
-		/*
-		 * Prevent further use of the object. Any future GTT binding or
-		 * CPU access is not allowed once we signal the fence. Outside
-		 * of the fence critical section, we then also then wedge the gpu
-		 * to indicate the device is not functional.
-		 *
-		 * The below dma_fence_signal() is our write-memory-barrier.
-		 */
+		 
 		copy_work->obj->mm.unknown_state = true;
 	}
 
@@ -482,18 +400,14 @@ __i915_ttm_move(struct ttm_buffer_object *bo,
 		fence = i915_ttm_accel_move(bo, clear, dst_mem, dst_ttm,
 					    &dst_rsgt->table, move_deps);
 
-		/*
-		 * We only need to intercept the error when moving to lmem.
-		 * When moving to system, TTM or shmem will provide us with
-		 * cleared pages.
-		 */
+		 
 		if (!IS_ERR(fence) && !i915_ttm_gtt_binds_lmem(dst_mem) &&
 		    !I915_SELFTEST_ONLY(fail_gpu_migration ||
 					fail_work_allocation))
 			goto out;
 	}
 
-	/* If we've scheduled gpu migration. Try to arm error intercept. */
+	 
 	if (!IS_ERR(fence)) {
 		struct dma_fence *dep = fence;
 
@@ -532,7 +446,7 @@ __i915_ttm_move(struct ttm_buffer_object *bo,
 		}
 	}
 
-	/* Error intercept failed or no accelerated migration to start with */
+	 
 
 	if (memcpy_allowed) {
 		if (!copy_work)
@@ -556,17 +470,7 @@ out:
 	return fence;
 }
 
-/**
- * i915_ttm_move - The TTM move callback used by i915.
- * @bo: The buffer object.
- * @evict: Whether this is an eviction.
- * @ctx: Pointer to a struct ttm_operation_ctx indicating how the waits should be
- *       performed if waiting
- * @dst_mem: The destination ttm resource.
- * @hop: If we need multihop, what temporary memory type to move to.
- *
- * Return: 0 if successful, negative error code otherwise.
- */
+ 
 int i915_ttm_move(struct ttm_buffer_object *bo, bool evict,
 		  struct ttm_operation_ctx *ctx,
 		  struct ttm_resource *dst_mem,
@@ -593,21 +497,7 @@ int i915_ttm_move(struct ttm_buffer_object *bo, bool evict,
 			return -EMULTIHOP;
 		}
 
-		/*
-		 * This is only reached when first creating the object, or if
-		 * the object was purged or swapped out (pipeline-gutting). For
-		 * the former we can safely skip all of the below since we are
-		 * only using a dummy SYSTEM placement here. And with the latter
-		 * we will always re-enter here with bo->resource set correctly
-		 * (as per the above), since this is part of a multi-hop
-		 * sequence, where at the end we can do the move for real.
-		 *
-		 * The special case here is when the dst_mem is TTM_PL_SYSTEM,
-		 * which doens't require any kind of move, so it should be safe
-		 * to skip all the below and call ttm_bo_move_null() here, where
-		 * the caller in __i915_ttm_get_pages() will take care of the
-		 * rest, since we should have a valid ttm_tt.
-		 */
+		 
 		ttm_bo_move_null(bo, dst_mem);
 		return 0;
 	}
@@ -622,7 +512,7 @@ int i915_ttm_move(struct ttm_buffer_object *bo, bool evict,
 		return 0;
 	}
 
-	/* Populate ttm with pages if needed. Typically system memory. */
+	 
 	if (ttm && (dst_man->use_tt || (ttm->page_flags & TTM_TT_FLAG_SWAPPED))) {
 		ret = ttm_tt_populate(bo->bdev, ttm, ctx);
 		if (ret)
@@ -650,7 +540,7 @@ int i915_ttm_move(struct ttm_buffer_object *bo, bool evict,
 		i915_deps_fini(&deps);
 	}
 
-	/* We can possibly get an -ERESTARTSYS here */
+	 
 	if (IS_ERR(migration_fence)) {
 		i915_refct_sgt_put(dst_rsgt);
 		return PTR_ERR(migration_fence);
@@ -658,7 +548,7 @@ int i915_ttm_move(struct ttm_buffer_object *bo, bool evict,
 
 	if (migration_fence) {
 		if (I915_SELFTEST_ONLY(evict && fail_gpu_migration))
-			ret = -EIO; /* never feed non-migrate fences into ttm */
+			ret = -EIO;  
 		else
 			ret = ttm_bo_move_accel_cleanup(bo, migration_fence, evict,
 							true, dst_mem);
@@ -687,20 +577,7 @@ int i915_ttm_move(struct ttm_buffer_object *bo, bool evict,
 	return 0;
 }
 
-/**
- * i915_gem_obj_copy_ttm - Copy the contents of one ttm-based gem object to
- * another
- * @dst: The destination object
- * @src: The source object
- * @allow_accel: Allow using the blitter. Otherwise TTM memcpy is used.
- * @intr: Whether to perform waits interruptible:
- *
- * Note: The caller is responsible for assuring that the underlying
- * TTM objects are populated if needed and locked.
- *
- * Return: Zero on success. Negative error code on error. If @intr == true,
- * then it may return -ERESTARTSYS or -EINTR.
- */
+ 
 int i915_gem_obj_copy_ttm(struct drm_i915_gem_object *dst,
 			  struct drm_i915_gem_object *src,
 			  bool allow_accel, bool intr)

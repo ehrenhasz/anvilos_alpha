@@ -1,17 +1,4 @@
-/*
-   BLAKE2 reference source code package - reference C implementations
-
-   Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under the
-   terms of the CC0, the OpenSSL Licence, or the Apache Public License 2.0, at
-   your option.  The terms of these licenses can be found at:
-
-   - CC0 1.0 Universal : https://creativecommons.org/publicdomain/zero/1.0
-   - OpenSSL license   : https://www.openssl.org/source/license.html
-   - Apache 2.0        : https://www.apache.org/licenses/LICENSE-2.0
-
-   More information about the BLAKE2 hash function can be found at
-   https://blake2.net.
-*/
+ 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -54,7 +41,7 @@ static void blake2b_set_lastnode( blake2b_state *S )
   S->f[1] = (uint64_t)-1;
 }
 
-/* Some helper functions, not necessarily useful */
+ 
 static int blake2b_is_lastblock( const blake2b_state *S )
 {
   return S->f[0] != 0;
@@ -81,7 +68,7 @@ static void blake2b_init0( blake2b_state *S )
   for( i = 0; i < 8; ++i ) S->h[i] = blake2b_IV[i];
 }
 
-/* init xors IV with input parameter block */
+ 
 int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
 {
   const uint8_t *p = ( const uint8_t * )( P );
@@ -89,7 +76,7 @@ int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
 
   blake2b_init0( S );
 
-  /* IV XOR ParamBlock */
+   
   for( i = 0; i < 8; ++i )
     S->h[i] ^= load64( p + sizeof( S->h[i] ) * i );
 
@@ -149,7 +136,7 @@ int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t k
     memset( block, 0, BLAKE2B_BLOCKBYTES );
     memcpy( block, key, keylen );
     blake2b_update( S, block, BLAKE2B_BLOCKBYTES );
-    secure_zero_memory( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
+    secure_zero_memory( block, BLAKE2B_BLOCKBYTES );  
   }
   return 0;
 }
@@ -232,9 +219,9 @@ int blake2b_update( blake2b_state *S, const void *pin, size_t inlen )
     if( inlen > fill )
     {
       S->buflen = 0;
-      memcpy( S->buf + left, in, fill ); /* Fill buffer */
+      memcpy( S->buf + left, in, fill );  
       blake2b_increment_counter( S, BLAKE2B_BLOCKBYTES );
-      blake2b_compress( S, S->buf ); /* Compress */
+      blake2b_compress( S, S->buf );  
       in += fill; inlen -= fill;
       while(inlen > BLAKE2B_BLOCKBYTES) {
         blake2b_increment_counter(S, BLAKE2B_BLOCKBYTES);
@@ -262,10 +249,10 @@ int blake2b_final( blake2b_state *S, void *out, size_t outlen )
 
   blake2b_increment_counter( S, S->buflen );
   blake2b_set_lastblock( S );
-  memset( S->buf + S->buflen, 0, BLAKE2B_BLOCKBYTES - S->buflen ); /* Padding */
+  memset( S->buf + S->buflen, 0, BLAKE2B_BLOCKBYTES - S->buflen );  
   blake2b_compress( S, S->buf );
 
-  for( i = 0; i < 8; ++i ) /* Output full hash to temp buffer */
+  for( i = 0; i < 8; ++i )  
     store64( buffer + sizeof( S->h[i] ) * i, S->h[i] );
 
   memcpy( out, buffer, S->outlen );
@@ -273,12 +260,12 @@ int blake2b_final( blake2b_state *S, void *out, size_t outlen )
   return 0;
 }
 
-/* inlen, at least, should be uint64_t. Others can be size_t. */
+ 
 int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen )
 {
   blake2b_state S[1];
 
-  /* Verify parameters */
+   
   if ( NULL == in && inlen > 0 ) return -1;
 
   if ( NULL == out ) return -1;
@@ -329,7 +316,7 @@ int main( void )
   for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
     buf[i] = ( uint8_t )i;
 
-  /* Test simple API */
+   
   for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
   {
     uint8_t hash[BLAKE2B_OUTBYTES];
@@ -341,7 +328,7 @@ int main( void )
     }
   }
 
-  /* Test streaming API */
+   
   for(step = 1; step < BLAKE2B_BLOCKBYTES; ++step) {
     for (i = 0; i < BLAKE2_KAT_LENGTH; ++i) {
       uint8_t hash[BLAKE2B_OUTBYTES];

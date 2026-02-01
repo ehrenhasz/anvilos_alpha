@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW_REG_DEF_H__
 #define __RTW_REG_DEF_H__
@@ -104,20 +103,20 @@
 #define BIT_MAC_PORT_EN		BIT(21)
 #define BIT_BOOT_FSPI_EN	BIT(20)
 #define BIT_ROM_DLEN		BIT(19)
-#define BIT_ROM_PGE		GENMASK(18, 16)	/* legacy only */
+#define BIT_ROM_PGE		GENMASK(18, 16)	 
 #define BIT_SHIFT_ROM_PGE	16
 #define BIT_FW_INIT_RDY		BIT(15)
 #define BIT_FW_DW_RDY		BIT(14)
 #define BIT_RPWM_TOGGLE		BIT(7)
-#define BIT_RAM_DL_SEL		BIT(7)	/* legacy only */
+#define BIT_RAM_DL_SEL		BIT(7)	 
 #define BIT_DMEM_CHKSUM_OK	BIT(6)
-#define BIT_WINTINI_RDY		BIT(6)	/* legacy only */
+#define BIT_WINTINI_RDY		BIT(6)	 
 #define BIT_DMEM_DW_OK		BIT(5)
 #define BIT_IMEM_CHKSUM_OK	BIT(4)
 #define BIT_IMEM_DW_OK		BIT(3)
 #define BIT_IMEM_BOOT_LOAD_CHECKSUM_OK BIT(2)
-#define BIT_FWDL_CHK_RPT	BIT(2)	/* legacy only */
-#define BIT_MCUFWDL_RDY		BIT(1)	/* legacy only */
+#define BIT_FWDL_CHK_RPT	BIT(2)	 
+#define BIT_MCUFWDL_RDY		BIT(1)	 
 #define BIT_MCUFWDL_EN		BIT(0)
 #define BIT_CHECK_SUM_OK	(BIT(4) | BIT(6))
 #define FW_READY		(BIT_FW_INIT_RDY | BIT_FW_DW_RDY |             \

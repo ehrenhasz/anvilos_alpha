@@ -1,28 +1,4 @@
-/*
-* Copyright 2018 Advanced Micro Devices, Inc.
- * Copyright 2019 Raptor Engineering, LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -90,10 +66,9 @@
 #include "dce/dmub_psr.h"
 #include "dce/dmub_abm.h"
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file */
+ 
 
-/* DCN */
+ 
 #define BASE_INNER(seg) DMU_BASE__INST0_SEG ## seg
 
 #define BASE(seg) BASE_INNER(seg)
@@ -122,7 +97,7 @@
 	.reg_name[id] = BASE(mm ## reg_name ## _ ## block ## id ## _BASE_IDX) + \
 					mm ## reg_name ## _ ## block ## id
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) \
 	NBIF0_BASE__INST0_SEG ## seg
 
@@ -133,7 +108,7 @@
 		.reg_name = NBIO_BASE(mm ## reg_name ## _BASE_IDX) + \
 					mm ## reg_name
 
-/* MMHUB */
+ 
 #define MMHUB_BASE_INNER(seg) \
 	MMHUB_BASE__INST0_SEG ## seg
 
@@ -572,9 +547,9 @@ static const struct resource_caps res_cap_rn = {
 		.num_timing_generator = 4,
 		.num_opp = 4,
 		.num_video_plane = 4,
-		.num_audio = 4, // 4 audio endpoints.  4 audio streams
+		.num_audio = 4, 
 		.num_stream_encoder = 5,
-		.num_pll = 5,  // maybe 3 because the last two used for USB-c
+		.num_pll = 5,  
 		.num_dwb = 1,
 		.num_ddc = 5,
 		.num_vmid = 16,
@@ -818,23 +793,13 @@ bool dcn21_fast_validate_bw(struct dc *dc,
 		out = true;
 		goto validate_out;
 	}
-	/*
-	 * DML favors voltage over p-state, but we're more interested in
-	 * supporting p-state over voltage. We can't support p-state in
-	 * prefetch mode > 0 so try capping the prefetch mode to start.
-	 */
+	 
 	context->bw_ctx.dml.soc.allow_dram_self_refresh_or_dram_clock_change_in_vblank =
 				dm_allow_self_refresh_and_mclk_switch;
 	vlevel = dml_get_voltage_level(&context->bw_ctx.dml, pipes, pipe_cnt);
 
 	if (vlevel > context->bw_ctx.dml.soc.num_states) {
-		/*
-		 * If mode is unsupported or there's still no p-state support then
-		 * fall back to favoring voltage.
-		 *
-		 * We don't actually support prefetch mode 2, so require that we
-		 * at least support prefetch mode 1.
-		 */
+		 
 		context->bw_ctx.dml.soc.allow_dram_self_refresh_or_dram_clock_change_in_vblank =
 					dm_allow_self_refresh;
 		vlevel = dml_get_voltage_level(&context->bw_ctx.dml, pipes, pipe_cnt);
@@ -852,7 +817,7 @@ bool dcn21_fast_validate_bw(struct dc *dc,
 		if (!pipe->stream)
 			continue;
 
-		/* We only support full screen mpo with ODM */
+		 
 		if (vba->ODMCombineEnabled[vba->pipe_plane[pipe_idx]] != dm_odm_combine_mode_disabled
 				&& pipe->plane_state && mpo_pipe
 				&& memcmp(&mpo_pipe->plane_state->clip_rect,
@@ -864,7 +829,7 @@ bool dcn21_fast_validate_bw(struct dc *dc,
 		pipe_idx++;
 	}
 
-	/*initialize pipe_just_split_from to invalid idx*/
+	 
 	for (i = 0; i < MAX_PIPES; i++)
 		pipe_split_from[i] = -1;
 
@@ -890,13 +855,13 @@ bool dcn21_fast_validate_bw(struct dc *dc,
 
 		if (!pipe->plane_state)
 			continue;
-		/* Skip 2nd half of already split pipe */
+		 
 		if (pipe->top_pipe && pipe->plane_state == pipe->top_pipe->plane_state)
 			continue;
 
 		if (split[i] == 2) {
 			if (!hsplit_pipe || hsplit_pipe->plane_state != pipe->plane_state) {
-				/* pipe not split previously needs split */
+				 
 				hsplit_pipe = dcn20_find_secondary_pipe(dc, &context->res_ctx, dc->res_pool, pipe);
 				ASSERT(hsplit_pipe);
 				if (!hsplit_pipe) {
@@ -921,11 +886,11 @@ bool dcn21_fast_validate_bw(struct dc *dc,
 				pipe_split_from[hsplit_pipe->pipe_idx] = pipe_idx;
 			}
 		} else if (hsplit_pipe && hsplit_pipe->plane_state == pipe->plane_state) {
-			/* merge should already have been done */
+			 
 			ASSERT(0);
 		}
 	}
-	/* Actual dsc count per stream dsc validation*/
+	 
 	if (!dcn20_validate_dsc(dc, context)) {
 		context->bw_ctx.dml.vba.ValidationStatus[context->bw_ctx.dml.vba.soc.num_states] =
 				DML_FAIL_DSC_VALIDATION_FAILURE;
@@ -944,11 +909,7 @@ validate_out:
 	return out;
 }
 
-/*
- * Some of the functions further below use the FPU, so we need to wrap this
- * with DC_FP_START()/DC_FP_END(). Use the same approach as for
- * dcn20_validate_bandwidth in dcn20_resource.c.
- */
+ 
 static bool dcn21_validate_bandwidth(struct dc *dc, struct dc_state *context,
 		bool fast_validate)
 {
@@ -1363,7 +1324,7 @@ static void dcn21_get_panel_config_defaults(struct dc_panel_config *panel_config
 static uint32_t read_pipe_fuses(struct dc_context *ctx)
 {
 	uint32_t value = REG_READ(CC_DC_PIPE_DIS);
-	/* RV1 support max 4 pipes */
+	 
 	value = value & 0xf;
 	return value;
 }
@@ -1372,7 +1333,7 @@ static enum dc_status dcn21_patch_unknown_plane_state(struct dc_plane_state *pla
 {
 	if (plane_state->ctx->dc->debug.disable_dcc == DCC_ENABLE) {
 		plane_state->dcc.enable = 1;
-		/* align to our worst case block width */
+		 
 		plane_state->dcc.meta_pitch = ((plane_state->src_rect.width + 1023) / 1024) * 1024;
 	}
 
@@ -1413,23 +1374,21 @@ static bool dcn21_resource_construct(
 	pool->base.res_cap = &res_cap_rn;
 #ifdef DIAGS_BUILD
 	if (IS_FPGA_MAXIMUS_DC(dc->ctx->dce_environment))
-		//pool->base.res_cap = &res_cap_nv10_FPGA_2pipe_dsc;
+		
 		pool->base.res_cap = &res_cap_rn_FPGA_4pipe;
 #endif
 
 	pool->base.funcs = &dcn21_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 
-	/* max pipe num for ASIC before check pipe fuses */
+	 
 	pool->base.pipe_count = pool->base.res_cap->num_timing_generator;
 
 	dc->caps.max_downscale_ratio = 200;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 5; /*1.4 w/a applied by default*/
+	dc->caps.i2c_speed_in_khz_hdcp = 5;  
 	dc->caps.max_cursor_size = 256;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dmdata_alloc_size = 2048;
@@ -1443,7 +1402,7 @@ static bool dcn21_resource_construct(
 	dc->caps.dmcub_support = true;
 	dc->caps.is_apu = true;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 0;
 	dc->caps.color.dpp.icsc = 1;
@@ -1459,7 +1418,7 @@ static bool dcn21_resource_construct(
 
 	dc->caps.color.dpp.hw_3d_lut = 1;
 	dc->caps.color.dpp.ogam_ram = 1;
-	// no OGAM ROM on DCN2
+	
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 0;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 0;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -1483,13 +1442,11 @@ static bool dcn21_resource_construct(
 	if (dc->ctx->dce_environment == DCE_ENV_PRODUCTION_DRV)
 		dc->debug = debug_defaults_drv;
 
-	// Init the vm_helper
+	
 	if (dc->vm_helper)
 		vm_helper_init(dc->vm_helper, 16);
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
 	pool->base.clock_sources[DCN20_CLK_SRC_PLL0] =
 			dcn21_clock_source_create(ctx, ctx->dc_bios,
@@ -1514,7 +1471,7 @@ static bool dcn21_resource_construct(
 
 	pool->base.clk_src_count = DCN20_CLK_SRC_TOTAL_DCN21;
 
-	/* todo: not reuse phy_pll registers */
+	 
 	pool->base.dp_clock_source =
 			dcn21_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_ID_DP_DTO,
@@ -1588,11 +1545,9 @@ static bool dcn21_resource_construct(
 		goto create_fail;
 
 	j = 0;
-	/* mem input -> ipp -> dpp -> opp -> TG */
+	 
 	for (i = 0; i < pool->base.pipe_count; i++) {
-		/* if pipe is disabled, skip instance of HW pipe,
-		 * i.e, skip ASIC register instance
-		 */
+		 
 		if ((pipe_fuses & (1 << i)) != 0)
 			continue;
 

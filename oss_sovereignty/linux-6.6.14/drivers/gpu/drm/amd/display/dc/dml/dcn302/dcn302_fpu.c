@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "resource.h"
 #include "clk_mgr.h"
@@ -52,17 +29,17 @@ struct _vcs_dpi_ip_params_st dcn3_02_ip = {
 		.pixel_chunk_size_kbytes = 8,
 		.pte_enable = 1,
 		.max_page_table_levels = 2,
-		.pte_chunk_size_kbytes = 2,  // ?
+		.pte_chunk_size_kbytes = 2,  
 		.meta_chunk_size_kbytes = 2,
 		.writeback_chunk_size_kbytes = 8,
 		.line_buffer_size_bits = 789504,
-		.is_line_buffer_bpp_fixed = 0,  // ?
-		.line_buffer_fixed_bpp = 0,     // ?
+		.is_line_buffer_bpp_fixed = 0,  
+		.line_buffer_fixed_bpp = 0,     
 		.dcc_supported = true,
 		.writeback_interface_buffer_size_kbytes = 90,
 		.writeback_line_buffer_buffer_size = 0,
 		.max_line_buffer_lines = 12,
-		.writeback_luma_buffer_size_kbytes = 12,  // writeback_line_buffer_buffer_size = 656640
+		.writeback_luma_buffer_size_kbytes = 12,  
 		.writeback_chroma_buffer_size_kbytes = 8,
 		.writeback_chroma_line_buffer_width_pixels = 4,
 		.writeback_max_hscl_ratio = 1,
@@ -98,7 +75,7 @@ struct _vcs_dpi_ip_params_st dcn3_02_ip = {
 		.dppclk_delay_cnvc_formatter = 27,
 		.dppclk_delay_cnvc_cursor = 6,
 		.dispclk_delay_subtotal = 119,
-		.dcfclk_cstate_latency = 5.2, // SRExitTime
+		.dcfclk_cstate_latency = 5.2, 
 		.max_inter_dcn_tile_repeaters = 8,
 		.max_num_hdmi_frl_outputs = 1,
 		.odm_combine_4to1_supported = true,
@@ -122,7 +99,7 @@ struct _vcs_dpi_soc_bounding_box_st dcn3_02_soc = {
 				},
 		},
 
-		.min_dcfclk = 500.0, /* TODO: set this to actual min DCFCLK */
+		.min_dcfclk = 500.0,  
 		.num_states = 1,
 		.sr_exit_time_us = 26.5,
 		.sr_enter_plus_exit_time_us = 31,
@@ -157,9 +134,9 @@ struct _vcs_dpi_soc_bounding_box_st dcn3_02_soc = {
 		.writeback_dram_clock_change_latency_us = 23.0,
 		.return_bus_width_bytes = 64,
 		.dispclk_dppclk_vco_speed_mhz = 3650,
-		.xfc_bus_transport_time_us = 20,      // ?
-		.xfc_xbuf_latency_tolerance_us = 4,  // ?
-		.use_urgent_burst_bw = 1,            // ?
+		.xfc_bus_transport_time_us = 20,      
+		.xfc_xbuf_latency_tolerance_us = 4,  
+		.use_urgent_burst_bw = 1,            
 		.do_urgent_latency_adjustment = true,
 		.urgent_latency_adjustment_fabric_clock_component_us = 1.0,
 		.urgent_latency_adjustment_fabric_clock_reference_mhz = 1000,
@@ -240,24 +217,24 @@ void dcn302_fpu_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_p
 			max_phyclk_mhz = dcn3_02_soc.clock_limits[0].phyclk_mhz;
 
 		if (max_dcfclk_mhz > dcfclk_sta_targets[num_dcfclk_sta_targets-1]) {
-			/* If max DCFCLK is greater than the max DCFCLK STA target, insert into the DCFCLK STA target array */
+			 
 			dcfclk_sta_targets[num_dcfclk_sta_targets] = max_dcfclk_mhz;
 			num_dcfclk_sta_targets++;
 		} else if (max_dcfclk_mhz < dcfclk_sta_targets[num_dcfclk_sta_targets-1]) {
-			/* If max DCFCLK is less than the max DCFCLK STA target, cap values and remove duplicates */
+			 
 			for (i = 0; i < num_dcfclk_sta_targets; i++) {
 				if (dcfclk_sta_targets[i] > max_dcfclk_mhz) {
 					dcfclk_sta_targets[i] = max_dcfclk_mhz;
 					break;
 				}
 			}
-			/* Update size of array since we "removed" duplicates */
+			 
 			num_dcfclk_sta_targets = i + 1;
 		}
 
 		num_uclk_states = bw_params->clk_table.num_entries;
 
-		/* Calculate optimal dcfclk for each uclk */
+		 
 		for (i = 0; i < num_uclk_states; i++) {
 			dcn302_get_optimal_dcfclk_fclk_for_uclk(bw_params->clk_table.entries[i].memclk_mhz * 16,
 					&optimal_dcfclk_for_uclk[i], NULL);
@@ -265,7 +242,7 @@ void dcn302_fpu_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_p
 				optimal_dcfclk_for_uclk[i] = bw_params->clk_table.entries[0].dcfclk_mhz;
 		}
 
-		/* Calculate optimal uclk for each dcfclk sta target */
+		 
 		for (i = 0; i < num_dcfclk_sta_targets; i++) {
 			for (j = 0; j < num_uclk_states; j++) {
 				if (dcfclk_sta_targets[i] < optimal_dcfclk_for_uclk[j]) {
@@ -278,7 +255,7 @@ void dcn302_fpu_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_p
 
 		i = 0;
 		j = 0;
-		/* create the final dcfclk and uclk table */
+		 
 		while (i < num_dcfclk_sta_targets && j < num_uclk_states && num_states < DC__VOLTAGE_STATES) {
 			if (dcfclk_sta_targets[i] < optimal_dcfclk_for_uclk[j] && i < num_dcfclk_sta_targets) {
 				dcfclk_mhz[num_states] = dcfclk_sta_targets[i];
@@ -311,11 +288,11 @@ void dcn302_fpu_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_p
 			dcn3_02_soc.clock_limits[i].fabricclk_mhz = dcfclk_mhz[i];
 			dcn3_02_soc.clock_limits[i].dram_speed_mts = dram_speed_mts[i];
 
-			/* Fill all states with max values of all other clocks */
+			 
 			dcn3_02_soc.clock_limits[i].dispclk_mhz = max_dispclk_mhz;
 			dcn3_02_soc.clock_limits[i].dppclk_mhz  = max_dppclk_mhz;
 			dcn3_02_soc.clock_limits[i].phyclk_mhz  = max_phyclk_mhz;
-			/* Populate from bw_params for DTBCLK, SOCCLK */
+			 
 			if (!bw_params->clk_table.entries[i].dtbclk_mhz && i > 0)
 				dcn3_02_soc.clock_limits[i].dtbclk_mhz  = dcn3_02_soc.clock_limits[i-1].dtbclk_mhz;
 			else
@@ -324,12 +301,12 @@ void dcn302_fpu_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_p
 				dcn3_02_soc.clock_limits[i].socclk_mhz = dcn3_02_soc.clock_limits[i-1].socclk_mhz;
 			else
 				dcn3_02_soc.clock_limits[i].socclk_mhz = bw_params->clk_table.entries[i].socclk_mhz;
-			/* These clocks cannot come from bw_params, always fill from dcn3_02_soc[1] */
-			/* FCLK, PHYCLK_D18, DSCCLK */
+			 
+			 
 			dcn3_02_soc.clock_limits[i].phyclk_d18_mhz = dcn3_02_soc.clock_limits[0].phyclk_d18_mhz;
 			dcn3_02_soc.clock_limits[i].dscclk_mhz = dcn3_02_soc.clock_limits[0].dscclk_mhz;
 		}
-		/* re-init DML with updated bb */
+		 
 		dml_init_instance(&dc->dml, &dcn3_02_soc, &dcn3_02_ip, DML_PROJECT_DCN30);
 		if (dc->current_state)
 			dml_init_instance(&dc->current_state->bw_ctx.dml, &dcn3_02_soc, &dcn3_02_ip, DML_PROJECT_DCN30);

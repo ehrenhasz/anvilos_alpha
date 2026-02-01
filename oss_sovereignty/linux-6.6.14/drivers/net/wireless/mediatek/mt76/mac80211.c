@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 #include <linux/sched.h>
 #include <linux/of.h>
 #include "mt76.h"
@@ -79,7 +77,7 @@ static const struct ieee80211_channel mt76_channels_5ghz[] = {
 };
 
 static const struct ieee80211_channel mt76_channels_6ghz[] = {
-	/* UNII-5 */
+	 
 	CHAN6G(1, 5955),
 	CHAN6G(5, 5975),
 	CHAN6G(9, 5995),
@@ -104,14 +102,14 @@ static const struct ieee80211_channel mt76_channels_6ghz[] = {
 	CHAN6G(85, 6375),
 	CHAN6G(89, 6395),
 	CHAN6G(93, 6415),
-	/* UNII-6 */
+	 
 	CHAN6G(97, 6435),
 	CHAN6G(101, 6455),
 	CHAN6G(105, 6475),
 	CHAN6G(109, 6495),
 	CHAN6G(113, 6515),
 	CHAN6G(117, 6535),
-	/* UNII-7 */
+	 
 	CHAN6G(121, 6555),
 	CHAN6G(125, 6575),
 	CHAN6G(129, 6595),
@@ -129,7 +127,7 @@ static const struct ieee80211_channel mt76_channels_6ghz[] = {
 	CHAN6G(177, 6835),
 	CHAN6G(181, 6855),
 	CHAN6G(185, 6875),
-	/* UNII-8 */
+	 
 	CHAN6G(189, 6895),
 	CHAN6G(193, 6915),
 	CHAN6G(197, 6935),
@@ -584,7 +582,7 @@ int mt76_create_page_pool(struct mt76_dev *dev, struct mt76_queue *q)
 	}
 
 	if (mt76_is_mmio(dev)) {
-		/* rely on page_pool for DMA mapping */
+		 
 		pp_params.flags |= PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
 		pp_params.dma_dir = DMA_FROM_DEVICE;
 		pp_params.max_len = PAGE_SIZE;
@@ -767,13 +765,7 @@ static void mt76_rx_release_amsdu(struct mt76_phy *phy, enum mt76_rxq_id q)
 	phy->rx_amsdu[q].head = NULL;
 	phy->rx_amsdu[q].tail = NULL;
 
-	/*
-	 * Validate if the amsdu has a proper first subframe.
-	 * A single MSDU can be parsed as A-MSDU when the unauthenticated A-MSDU
-	 * flag of the QoS header gets flipped. In such cases, the first
-	 * subframe has a LLC/SNAP header in the location of the destination
-	 * address.
-	 */
+	 
 	if (skb_shinfo(skb)->frag_list) {
 		int offset = 0;
 
@@ -1010,13 +1002,13 @@ void mt76_wcid_key_setup(struct mt76_dev *dev, struct mt76_wcid *wcid,
 
 	wcid->rx_check_pn = true;
 
-	/* data frame */
+	 
 	for (i = 0; i < IEEE80211_NUM_TIDS; i++) {
 		ieee80211_get_key_rx_seq(key, i, &seq);
 		memcpy(wcid->rx_key_pn[i], seq.ccmp.pn, sizeof(seq.ccmp.pn));
 	}
 
-	/* robust management frame */
+	 
 	ieee80211_get_key_rx_seq(key, -1, &seq);
 	memcpy(wcid->rx_key_pn[i], seq.ccmp.pn, sizeof(seq.ccmp.pn));
 
@@ -1127,21 +1119,13 @@ mt76_check_ccmp_pn(struct sk_buff *skb)
 
 	hdr = mt76_skb_get_hdr(skb);
 	if (!(status->flag & RX_FLAG_IV_STRIPPED)) {
-		/*
-		 * Validate the first fragment both here and in mac80211
-		 * All further fragments will be validated by mac80211 only.
-		 */
+		 
 		if (ieee80211_is_frag(hdr) &&
 		    !ieee80211_is_first_frag(hdr->frame_control))
 			return;
 	}
 
-	/* IEEE 802.11-2020, 12.5.3.4.4 "PN and replay detection" c):
-	 *
-	 * the recipient shall maintain a single replay counter for received
-	 * individually addressed robust Management frames that are received
-	 * with the To DS subfield equal to 0, [...]
-	 */
+	 
 	if (ieee80211_is_mgmt(hdr->frame_control) &&
 	    !ieee80211_has_tods(hdr->frame_control))
 		security_idx = IEEE80211_NUM_TIDS;
@@ -1337,7 +1321,7 @@ void mt76_rx_complete(struct mt76_dev *dev, struct sk_buff_head *frames,
 		mt76_rx_convert(dev, skb, &hw, &sta);
 		ieee80211_rx_list(hw, sta, skb, &list);
 
-		/* subsequent amsdu frames */
+		 
 		while (nskb) {
 			skb = nskb;
 			nskb = nskb->next;
@@ -1511,7 +1495,7 @@ int mt76_init_sar_power(struct ieee80211_hw *hw,
 
 	for (i = 0; i < sar->num_sub_specs; i++) {
 		u32 index = sar->sub_specs[i].freq_range_index;
-		/* SAR specifies power limitaton in 0.25dbm */
+		 
 		s32 power = sar->sub_specs[i].power >> 1;
 
 		if (power > 127 || power < -127)
@@ -1631,7 +1615,7 @@ int mt76_get_rate(struct mt76_dev *dev,
 		if (sband != &dev->phy.sband_2g.sband)
 			return 0;
 
-		idx &= ~BIT(2); /* short preamble */
+		idx &= ~BIT(2);  
 	} else if (sband == &dev->phy.sband_2g.sband) {
 		offset = 4;
 	}
@@ -1709,7 +1693,7 @@ u16 mt76_calculate_default_rate(struct mt76_phy *phy,
 	if (chandef->chan->band != NL80211_BAND_2GHZ)
 		offset = 4;
 
-	/* pick the lowest rate for hidden nodes */
+	 
 	if (rateidx < 0)
 		rateidx = 0;
 

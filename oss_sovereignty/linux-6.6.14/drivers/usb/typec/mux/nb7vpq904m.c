@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * OnSemi NB7VPQ904M Type-C driver
- *
- * Copyright (C) 2023 Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/mutex.h>
 #include <linux/kernel.h>
@@ -72,7 +68,7 @@ struct nb7vpq904m {
 
 	struct drm_bridge bridge;
 
-	struct mutex lock; /* protect non-concurrent retimer & switch */
+	struct mutex lock;  
 
 	enum typec_orientation orientation;
 	unsigned long mode;
@@ -128,20 +124,7 @@ static int nb7vpq904m_set(struct nb7vpq904m *nb7)
 		return 0;
 
 	case TYPEC_STATE_USB:
-		/*
-		 * Normal Orientation (CC1)
-		 * A -> USB RX
-		 * B -> USB TX
-		 * C -> X
-		 * D -> X
-		 * Flipped Orientation (CC2)
-		 * A -> X
-		 * B -> X
-		 * C -> USB TX
-		 * D -> USB RX
-		 *
-		 * Reversed if data lanes are swapped
-		 */
+		 
 		if (reverse ^ nb7->swap_data_lanes) {
 			regmap_write(nb7->regmap, GEN_DEV_SET_REG,
 				     GEN_DEV_SET_CHIP_EN |
@@ -172,25 +155,14 @@ static int nb7vpq904m_set(struct nb7vpq904m *nb7)
 		break;
 	}
 
-	/* DP Altmode Setup */
+	 
 
 	regmap_write(nb7->regmap, AUX_CC_REG, reverse ? 0x1 : 0x0);
 
 	switch (nb7->mode) {
 	case TYPEC_DP_STATE_C:
 	case TYPEC_DP_STATE_E:
-		/*
-		 * Normal Orientation (CC1)
-		 * A -> DP3
-		 * B -> DP2
-		 * C -> DP1
-		 * D -> DP0
-		 * Flipped Orientation (CC2)
-		 * A -> DP0
-		 * B -> DP1
-		 * C -> DP2
-		 * D -> DP3
-		 */
+		 
 		regmap_write(nb7->regmap, GEN_DEV_SET_REG,
 			     GEN_DEV_SET_CHIP_EN |
 			     GEN_DEV_SET_CHNA_EN |
@@ -218,20 +190,7 @@ static int nb7vpq904m_set(struct nb7vpq904m *nb7)
 						GEN_DEV_SET_OP_MODE_DP_CC2
 						: GEN_DEV_SET_OP_MODE_DP_CC1));
 
-		/*
-		 * Normal Orientation (CC1)
-		 * A -> USB RX
-		 * B -> USB TX
-		 * C -> DP1
-		 * D -> DP0
-		 * Flipped Orientation (CC2)
-		 * A -> DP0
-		 * B -> DP1
-		 * C -> USB TX
-		 * D -> USB RX
-		 *
-		 * Reversed if data lanes are swapped
-		 */
+		 
 		if (nb7->swap_data_lanes) {
 			nb7vpq904m_set_channel(nb7, NB7_CHNA, !reverse);
 			nb7vpq904m_set_channel(nb7, NB7_CHNB, !reverse);
@@ -287,7 +246,7 @@ static int nb7vpq904m_retimer_set(struct typec_retimer *retimer, struct typec_re
 		if (state->alt)
 			nb7->svid = state->alt->svid;
 		else
-			nb7->svid = 0; // No SVID
+			nb7->svid = 0; 
 
 		ret = nb7vpq904m_set(nb7);
 	}
@@ -364,7 +323,7 @@ static int nb7vpq904m_parse_data_lanes_mapping(struct nb7vpq904m *nb7)
 	if (ep) {
 		ret = of_property_count_u32_elems(ep, "data-lanes");
 		if (ret == -EINVAL)
-			/* Property isn't here, consider default mapping */
+			 
 			goto out_done;
 		if (ret < 0)
 			goto out_error;

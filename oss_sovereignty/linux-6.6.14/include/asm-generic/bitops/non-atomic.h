@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_GENERIC_BITOPS_NON_ATOMIC_H_
 #define _ASM_GENERIC_BITOPS_NON_ATOMIC_H_
 
@@ -17,4 +17,4 @@
 
 #include <asm-generic/bitops/non-instrumented-non-atomic.h>
 
-#endif /* _ASM_GENERIC_BITOPS_NON_ATOMIC_H_ */
+#endif  

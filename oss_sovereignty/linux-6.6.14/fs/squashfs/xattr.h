@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2010
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * xattr.h
- */
+ 
+ 
 
 #ifdef CONFIG_SQUASHFS_XATTR
 extern __le64 *squashfs_read_xattr_id_table(struct super_block *, u64,

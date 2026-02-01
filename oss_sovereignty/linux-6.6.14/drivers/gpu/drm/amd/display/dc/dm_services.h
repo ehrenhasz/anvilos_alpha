@@ -1,37 +1,12 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/**
- * This file defines external dependencies of Display Core.
- */
+ 
 
 #ifndef __DM_SERVICES_H__
 
 #define __DM_SERVICES_H__
 
-/* TODO: remove when DC is complete. */
+ 
 #include "dm_services_types.h"
 #include "logger_interface.h"
 #include "link_service_types.h"
@@ -48,16 +23,12 @@ irq_handler_idx dm_register_interrupt(
 	interrupt_handler ih,
 	void *handler_args);
 
-/*
- *
- * GPU registers access
- *
- */
+ 
 uint32_t dm_read_reg_func(const struct dc_context *ctx, uint32_t address,
 			  const char *func_name);
 
-/* enable for debugging new code, this adds 50k to the driver size. */
-/* #define DM_CHECK_ADDR_0 */
+ 
+ 
 
 void dm_write_reg_func(const struct dc_context *ctx, uint32_t address,
 		       uint32_t value, const char *func_name);
@@ -134,10 +105,7 @@ void reg_sequence_wait_done(const struct dc_context *ctx);
 #define FD(reg_field)	reg_field ## __SHIFT, \
 						reg_field ## _MASK
 
-/*
- * return number of poll before condition is met
- * return 0 if condition is not meet after specified time out tries
- */
+ 
 void generic_reg_wait(const struct dc_context *ctx,
 	uint32_t addr, uint32_t mask, uint32_t shift, uint32_t condition_value,
 	unsigned int delay_between_poll_us, unsigned int time_out_num_tries,
@@ -145,9 +113,7 @@ void generic_reg_wait(const struct dc_context *ctx,
 
 unsigned int snprintf_count(char *pBuf, unsigned int bufSize, char *fmt, ...);
 
-/* These macros need to be used with soc15 registers in order to retrieve
- * the actual offset.
- */
+ 
 #define dm_write_reg_soc15(ctx, reg, inst_offset, value)	\
 		dm_write_reg_func(ctx, reg + DCE_BASE.instance[0].segment[reg##_BASE_IDX] + inst_offset, value, __func__)
 
@@ -175,18 +141,9 @@ unsigned int snprintf_count(char *pBuf, unsigned int bufSize, char *fmt, ...);
 		block ## reg_num ## _ ## reg_name ## __ ## reg_field ## _MASK,\
 		block ## reg_num ## _ ## reg_name ## __ ## reg_field ## __SHIFT)
 
-/**************************************
- * Power Play (PP) interfaces
- **************************************/
+ 
 
-/* Gets valid clocks levels from pplib
- *
- * input: clk_type - display clk / sclk / mem clk
- *
- * output: array of valid clock levels for given type in ascending order,
- * with invalid levels filtered out
- *
- */
+ 
 bool dm_pp_get_clock_levels_by_type(
 	const struct dc_context *ctx,
 	enum dm_pp_clock_type clk_type,
@@ -209,17 +166,7 @@ bool dm_pp_notify_wm_clock_changes(
 void dm_pp_get_funcs(struct dc_context *ctx,
 		struct pp_smu_funcs *funcs);
 
-/* DAL calls this function to notify PP about completion of Mode Set.
- * For PP it means that current DCE clocks are those which were returned
- * by dc_service_pp_pre_dce_clock_change(), in the 'output' parameter.
- *
- * If the clocks are higher than before, then PP does nothing.
- *
- * If the clocks are lower than before, then PP reduces the voltage.
- *
- * \returns	true - call is successful
- *		false - call failed
- */
+ 
 bool dm_pp_apply_display_requirements(
 	const struct dc_context *ctx,
 	const struct dm_pp_display_configuration *pp_display_cfg);
@@ -236,7 +183,7 @@ bool dm_pp_get_static_clocks(
 	const struct dc_context *ctx,
 	struct dm_pp_static_clock_info *static_clk_info);
 
-/****** end of PP interfaces ******/
+ 
 
 struct persistent_data_flag {
 	bool save_per_link;
@@ -249,11 +196,7 @@ bool dm_query_extended_brightness_caps
 
 bool dm_dmcu_set_pipe(struct dc_context *ctx, unsigned int controller_id);
 
-/*
- *
- * print-out services
- *
- */
+ 
 #define dm_log_to_buffer(buffer, size, fmt, args)\
 	vsnprintf(buffer, size, fmt, args)
 
@@ -266,23 +209,17 @@ unsigned long long dm_get_elapse_time_in_ns(struct dc_context *ctx,
 		unsigned long long current_time_stamp,
 		unsigned long long last_time_stamp);
 
-/*
- * performance tracing
- */
+ 
 void dm_perf_trace_timestamp(const char *func_name, unsigned int line, struct dc_context *ctx);
 
 #define PERF_TRACE()	dm_perf_trace_timestamp(__func__, __LINE__, CTX)
 #define PERF_TRACE_CTX(__CTX)	dm_perf_trace_timestamp(__func__, __LINE__, __CTX)
 
-/*
- * DMUB Interfaces
- */
+ 
 bool dm_execute_dmub_cmd(const struct dc_context *ctx, union dmub_rb_cmd *cmd, enum dm_dmub_wait_type wait_type);
 bool dm_execute_dmub_cmd_list(const struct dc_context *ctx, unsigned int count, union dmub_rb_cmd *cmd, enum dm_dmub_wait_type wait_type);
 
-/*
- * Debug and verification hooks
- */
+ 
 
 void dm_dtn_log_begin(struct dc_context *ctx,
 	struct dc_log_buffer_ctx *log_ctx);
@@ -294,4 +231,4 @@ void dm_dtn_log_end(struct dc_context *ctx,
 
 char *dce_version_to_string(const int version);
 
-#endif /* __DM_SERVICES_H__ */
+#endif  

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - V4l resizer device
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on Rockchip ISP1 driver by Rockchip Electronics Co., Ltd.
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include "rkisp1-common.h"
 
@@ -24,12 +17,12 @@ struct rkisp1_rsz_yuv_mbus_info {
 
 static const struct rkisp1_rsz_yuv_mbus_info rkisp1_rsz_yuv_src_formats[] = {
 	{
-		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8, /* YUV422 */
+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,  
 		.hdiv		= 2,
 		.vdiv		= 1,
 	},
 	{
-		.mbus_code	= MEDIA_BUS_FMT_YUYV8_1_5X8, /* YUV420 */
+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_1_5X8,  
 		.hdiv		= 2,
 		.vdiv		= 2,
 	},
@@ -53,12 +46,12 @@ enum rkisp1_shadow_regs_when {
 };
 
 struct rkisp1_rsz_config {
-	/* constrains */
+	 
 	const int max_rsz_width;
 	const int max_rsz_height;
 	const int min_rsz_width;
 	const int min_rsz_height;
-	/* registers */
+	 
 	struct {
 		u32 ctrl;
 		u32 yuvmode_mask;
@@ -71,12 +64,12 @@ struct rkisp1_rsz_config {
 };
 
 static const struct rkisp1_rsz_config rkisp1_rsz_config_mp = {
-	/* constraints */
+	 
 	.max_rsz_width = RKISP1_RSZ_MP_SRC_MAX_WIDTH,
 	.max_rsz_height = RKISP1_RSZ_MP_SRC_MAX_HEIGHT,
 	.min_rsz_width = RKISP1_RSZ_SRC_MIN_WIDTH,
 	.min_rsz_height = RKISP1_RSZ_SRC_MIN_HEIGHT,
-	/* registers */
+	 
 	.dual_crop = {
 		.ctrl =			RKISP1_CIF_DUAL_CROP_CTRL,
 		.yuvmode_mask =		RKISP1_CIF_DUAL_CROP_MP_MODE_YUV,
@@ -89,12 +82,12 @@ static const struct rkisp1_rsz_config rkisp1_rsz_config_mp = {
 };
 
 static const struct rkisp1_rsz_config rkisp1_rsz_config_sp = {
-	/* constraints */
+	 
 	.max_rsz_width = RKISP1_RSZ_SP_SRC_MAX_WIDTH,
 	.max_rsz_height = RKISP1_RSZ_SP_SRC_MAX_HEIGHT,
 	.min_rsz_width = RKISP1_RSZ_SRC_MIN_WIDTH,
 	.min_rsz_height = RKISP1_RSZ_SRC_MIN_HEIGHT,
-	/* registers */
+	 
 	.dual_crop = {
 		.ctrl =			RKISP1_CIF_DUAL_CROP_CTRL,
 		.yuvmode_mask =		RKISP1_CIF_DUAL_CROP_SP_MODE_YUV,
@@ -145,9 +138,7 @@ rkisp1_rsz_get_pad_crop(struct rkisp1_resizer *rsz,
 		return v4l2_subdev_get_try_crop(&rsz->sd, &state, pad);
 }
 
-/* ----------------------------------------------------------------------------
- * Dual crop hw configs
- */
+ 
 
 static void rkisp1_dcrop_disable(struct rkisp1_resizer *rsz,
 				 enum rkisp1_shadow_regs_when when)
@@ -164,7 +155,7 @@ static void rkisp1_dcrop_disable(struct rkisp1_resizer *rsz,
 	rkisp1_write(rsz->rkisp1, rsz->config->dual_crop.ctrl, dc_ctrl);
 }
 
-/* configure dual-crop unit */
+ 
 static void rkisp1_dcrop_config(struct rkisp1_resizer *rsz)
 {
 	struct rkisp1_device *rkisp1 = rsz->rkisp1;
@@ -199,9 +190,7 @@ static void rkisp1_dcrop_config(struct rkisp1_resizer *rsz)
 		sink_crop->width, sink_crop->height);
 }
 
-/* ----------------------------------------------------------------------------
- * Resizer hw configs
- */
+ 
 
 static void rkisp1_rsz_update_shadow(struct rkisp1_resizer *rsz,
 				     enum rkisp1_shadow_regs_when when)
@@ -245,13 +234,13 @@ static void rkisp1_rsz_config_regs(struct rkisp1_resizer *rsz,
 	u32 ratio, rsz_ctrl = 0;
 	unsigned int i;
 
-	/* No phase offset */
+	 
 	rkisp1_rsz_write(rsz, RKISP1_CIF_RSZ_PHASE_HY, 0);
 	rkisp1_rsz_write(rsz, RKISP1_CIF_RSZ_PHASE_HC, 0);
 	rkisp1_rsz_write(rsz, RKISP1_CIF_RSZ_PHASE_VY, 0);
 	rkisp1_rsz_write(rsz, RKISP1_CIF_RSZ_PHASE_VC, 0);
 
-	/* Linear interpolation */
+	 
 	for (i = 0; i < 64; i++) {
 		rkisp1_rsz_write(rsz, RKISP1_CIF_RSZ_SCALE_LUT_ADDR, i);
 		rkisp1_rsz_write(rsz, RKISP1_CIF_RSZ_SCALE_LUT, i);
@@ -312,10 +301,7 @@ static void rkisp1_rsz_config(struct rkisp1_resizer *rsz,
 					  V4L2_SUBDEV_FORMAT_ACTIVE);
 	sink_yuv_info = rkisp1_rsz_get_yuv_mbus_info(sink_fmt->code);
 
-	/*
-	 * The resizer only works on yuv formats,
-	 * so return if it is bayer format.
-	 */
+	 
 	if (rsz->pixel_enc == V4L2_PIXEL_ENC_BAYER) {
 		rkisp1_rsz_disable(rsz, when);
 		return;
@@ -329,12 +315,7 @@ static void rkisp1_rsz_config(struct rkisp1_resizer *rsz,
 	sink_c.width = sink_y.width / sink_yuv_info->hdiv;
 	sink_c.height = sink_y.height / sink_yuv_info->vdiv;
 
-	/*
-	 * The resizer is used not only to change the dimensions of the frame
-	 * but also to change the scale for YUV formats,
-	 * (4:2:2 -> 4:2:0 for example). So the width/height of the CbCr
-	 * streams should be set according to the media bus format in the src pad.
-	 */
+	 
 	src_c.width = src_y.width / src_yuv_info->hdiv;
 	src_c.height = src_y.height / src_yuv_info->vdiv;
 
@@ -349,13 +330,11 @@ static void rkisp1_rsz_config(struct rkisp1_resizer *rsz,
 	dev_dbg(rsz->rkisp1->dev, "chroma scaling %dx%d -> %dx%d\n",
 		sink_c.width, sink_c.height, src_c.width, src_c.height);
 
-	/* set values in the hw */
+	 
 	rkisp1_rsz_config_regs(rsz, &sink_y, &sink_c, &src_y, &src_c, when);
 }
 
-/* ----------------------------------------------------------------------------
- * Subdev pad operations
- */
+ 
 
 static int rkisp1_rsz_enum_mbus_code(struct v4l2_subdev *sd,
 				     struct v4l2_subdev_state *sd_state,
@@ -371,16 +350,13 @@ static int rkisp1_rsz_enum_mbus_code(struct v4l2_subdev *sd,
 	int ret;
 
 	if (code->pad == RKISP1_RSZ_PAD_SRC) {
-		/* supported mbus codes on the src are the same as in the capture */
+		 
 		struct rkisp1_capture *cap = &rsz->rkisp1->capture_devs[rsz->id];
 
 		return rkisp1_cap_enum_mbus_codes(cap, code);
 	}
 
-	/*
-	 * The selfpath capture doesn't support bayer formats. Therefore the selfpath resizer
-	 * should support only YUV422 on the sink pad
-	 */
+	 
 	if (rsz->id == RKISP1_SELFPATH) {
 		if (code->index > 0)
 			return -EINVAL;
@@ -388,12 +364,12 @@ static int rkisp1_rsz_enum_mbus_code(struct v4l2_subdev *sd,
 		return 0;
 	}
 
-	/* supported mbus codes on the sink pad are the same as isp src pad */
+	 
 	code->pad = RKISP1_ISP_PAD_SOURCE_VIDEO;
 	ret = v4l2_subdev_call(&rsz->rkisp1->isp.sd, pad, enum_mbus_code,
 			       &pad_state, code);
 
-	/* restore pad */
+	 
 	code->pad = pad;
 	code->flags = 0;
 	return ret;
@@ -427,7 +403,7 @@ static int rkisp1_rsz_init_config(struct v4l2_subdev *sd,
 					     RKISP1_RSZ_PAD_SINK);
 	*src_fmt = *sink_fmt;
 
-	/* NOTE: there is no crop in the source pad, only in the sink */
+	 
 
 	return 0;
 }
@@ -446,7 +422,7 @@ static void rkisp1_rsz_set_src_fmt(struct rkisp1_resizer *rsz,
 					 which);
 	sink_mbus_info = rkisp1_mbus_info_get_by_code(sink_fmt->code);
 
-	/* for YUV formats, userspace can change the mbus code on the src pad if it is supported */
+	 
 	if (sink_mbus_info->pixel_enc == V4L2_PIXEL_ENC_YUV &&
 	    rkisp1_rsz_get_yuv_mbus_info(format->code))
 		src_fmt->code = format->code;
@@ -476,7 +452,7 @@ static void rkisp1_rsz_set_sink_crop(struct rkisp1_resizer *rsz,
 					    RKISP1_RSZ_PAD_SINK,
 					    which);
 
-	/* Not crop for MP bayer raw data */
+	 
 	mbus_info = rkisp1_mbus_info_get_by_code(sink_fmt->code);
 
 	if (rsz->id == RKISP1_MAINPATH &&
@@ -536,13 +512,7 @@ static void rkisp1_rsz_set_sink_fmt(struct rkisp1_resizer *rsz,
 				   RKISP1_ISP_MIN_HEIGHT,
 				   RKISP1_ISP_MAX_HEIGHT);
 
-	/*
-	 * Adjust the color space fields. Accept any color primaries and
-	 * transfer function for both YUV and Bayer. For YUV any YCbCr encoding
-	 * and quantization range is also accepted. For Bayer formats, the YCbCr
-	 * encoding isn't applicable, and the quantization range can only be
-	 * full.
-	 */
+	 
 	is_yuv = mbus_info->pixel_enc == V4L2_PIXEL_ENC_YUV;
 
 	sink_fmt->colorspace = format->colorspace ? :
@@ -557,25 +527,21 @@ static void rkisp1_rsz_set_sink_fmt(struct rkisp1_resizer *rsz,
 			V4L2_MAP_QUANTIZATION_DEFAULT(false, sink_fmt->colorspace,
 						      sink_fmt->ycbcr_enc);
 	} else {
-		/*
-		 * The YCbCr encoding isn't applicable for non-YUV formats, but
-		 * V4L2 has no "no encoding" value. Hardcode it to Rec. 601, it
-		 * should be ignored by userspace.
-		 */
+		 
 		sink_fmt->ycbcr_enc = V4L2_YCBCR_ENC_601;
 		sink_fmt->quantization = V4L2_QUANTIZATION_FULL_RANGE;
 	}
 
 	*format = *sink_fmt;
 
-	/* Propagate the media bus code and color space to the source pad. */
+	 
 	src_fmt->code = sink_fmt->code;
 	src_fmt->colorspace = sink_fmt->colorspace;
 	src_fmt->xfer_func = sink_fmt->xfer_func;
 	src_fmt->ycbcr_enc = sink_fmt->ycbcr_enc;
 	src_fmt->quantization = sink_fmt->quantization;
 
-	/* Update sink crop */
+	 
 	rkisp1_rsz_set_sink_crop(rsz, sd_state, sink_crop, which);
 }
 
@@ -682,9 +648,7 @@ static const struct v4l2_subdev_pad_ops rkisp1_rsz_pad_ops = {
 	.link_validate = v4l2_subdev_link_validate_default,
 };
 
-/* ----------------------------------------------------------------------------
- * Stream operations
- */
+ 
 
 static int rkisp1_rsz_s_stream(struct v4l2_subdev *sd, int enable)
 {

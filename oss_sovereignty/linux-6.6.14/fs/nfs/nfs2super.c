@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012 Netapp, Inc. All rights reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/nfs_fs.h>
 #include "internal.h"

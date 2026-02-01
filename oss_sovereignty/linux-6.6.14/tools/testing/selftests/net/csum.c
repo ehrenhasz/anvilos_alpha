@@ -1,63 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Test hardware checksum offload: Rx + Tx, IPv4 + IPv6, TCP + UDP.
- *
- * The test runs on two machines to exercise the NIC. For this reason it
- * is not integrated in kselftests.
- *
- *     CMD=$((./csum -[46] -[tu] -S $SADDR -D $DADDR -[RT] -r 1 $EXTRA_ARGS))
- *
- * Rx:
- *
- * The sender sends packets with a known checksum field using PF_INET(6)
- * SOCK_RAW sockets.
- *
- * good packet: $CMD [-t]
- * bad packet:  $CMD [-t] -E
- *
- * The receiver reads UDP packets with a UDP socket. This is not an
- * option for TCP packets ('-t'). Optionally insert an iptables filter
- * to avoid these entering the real protocol stack.
- *
- * The receiver also reads all packets with a PF_PACKET socket, to
- * observe whether both good and bad packets arrive on the host. And to
- * read the optional TP_STATUS_CSUM_VALID bit. This requires setting
- * option PACKET_AUXDATA, and works only for CHECKSUM_UNNECESSARY.
- *
- * Tx:
- *
- * The sender needs to build CHECKSUM_PARTIAL packets to exercise tx
- * checksum offload.
- *
- * The sender can sends packets with a UDP socket.
- *
- * Optionally crafts a packet that sums up to zero to verify that the
- * device writes negative zero 0xFFFF in this case to distinguish from
- * 0x0000 (checksum disabled), as required by RFC 768. Hit this case
- * by choosing a specific source port.
- *
- * good packet: $CMD -U
- * zero csum:   $CMD -U -Z
- *
- * The sender can also build packets with PF_PACKET with PACKET_VNET_HDR,
- * to cover more protocols. PF_PACKET requires passing src and dst mac
- * addresses.
- *
- * good packet: $CMD -s $smac -d $dmac -p [-t]
- *
- * Argument '-z' sends UDP packets with a 0x000 checksum disabled field,
- * to verify that the NIC passes these packets unmodified.
- *
- * Argument '-e' adds a transport mode encapsulation header between
- * network and transport header. This will fail for devices that parse
- *  headers. Should work on devices that implement protocol agnostic tx
- * checksum offload (NETIF_F_HW_CSUM).
- *
- * Argument '-r $SEED' optionally randomizes header, payload and length
- * to increase coverage between packets sent. SEED 1 further chooses a
- * different seed for each run (and logs this for reproducibility). It
- * is advised to enable this for extra coverage in continuous testing.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -109,12 +52,12 @@ static uint16_t cfg_port_dst = 34000;
 static uint16_t cfg_port_src = 33000;
 static uint16_t cfg_port_src_encap = 33001;
 static unsigned int cfg_random_seed;
-static int cfg_rcvbuf = 1 << 22;	/* be able to queue large cfg_num_pkt */
+static int cfg_rcvbuf = 1 << 22;	 
 static bool cfg_send_pfpacket;
 static bool cfg_send_udp;
 static int cfg_timeout_ms = 2000;
-static bool cfg_zero_disable; /* skip checksum: set to zero (udp only) */
-static bool cfg_zero_sum;     /* create packet that adds up to zero */
+static bool cfg_zero_disable;  
+static bool cfg_zero_sum;      
 
 static struct sockaddr_in cfg_daddr4 = {.sin_family = AF_INET};
 static struct sockaddr_in cfg_saddr4 = {.sin_family = AF_INET};
@@ -125,13 +68,13 @@ static struct sockaddr_in6 cfg_saddr6 = {.sin6_family = AF_INET6};
 #define MAX_HEADER_LEN	(sizeof(struct ipv6hdr) + ENC_HEADER_LEN + sizeof(struct tcphdr))
 #define MAX_PAYLOAD_LEN 1024
 
-/* Trivial demo encap. Stand-in for transport layer protocols like ESP or PSP */
+ 
 struct udp_encap_hdr {
 	uint8_t nexthdr;
 	uint8_t padding[3];
 };
 
-/* Ipaddrs, for pseudo csum. Global var is ugly, pass through funcs was worse */
+ 
 static void *iph_addr_p;
 
 static unsigned long gettimeofday_ms(void)
@@ -177,7 +120,7 @@ static uint16_t checksum(void *th, uint16_t proto, size_t len)
 	sum += htons(proto);
 	sum += htons(len);
 
-	/* With CHECKSUM_PARTIAL kernel expects non-inverted pseudo csum */
+	 
 	if (cfg_do_tx && cfg_send_pfpacket)
 		return ~checksum_fold(NULL, 0, sum);
 	else
@@ -231,7 +174,7 @@ static void *build_packet_udp(void *_uh)
 	uh->len = htons(sizeof(*uh) + cfg_payload_len);
 	uh->check = 0;
 
-	/* choose source port so that uh->check adds up to zero */
+	 
 	if (cfg_zero_sum) {
 		uh->source = 0;
 		uh->source = checksum(uh, IPPROTO_UDP, sizeof(*uh) + cfg_payload_len);
@@ -276,9 +219,7 @@ static char *build_packet_udp_encap(void *_uh)
 	struct udphdr *uh = _uh;
 	struct udp_encap_hdr *eh = _uh + sizeof(*uh);
 
-	/* outer dst == inner dst, to simplify BPF filter
-	 * outer src != inner src, to demultiplex on recv
-	 */
+	 
 	uh->dest = htons(cfg_port_dst);
 	uh->source = htons(cfg_port_src_encap);
 	uh->check = 0;
@@ -332,7 +273,7 @@ static char *build_packet(char *buf, int max_len, int *len)
 	else
 		off = build_packet_tcp(off);
 
-	/* only pass the payload, but still compute headers for cfg_zero_sum */
+	 
 	if (cfg_send_udp) {
 		*len = cfg_payload_len;
 		return off;
@@ -351,7 +292,7 @@ static int open_inet(int ipproto, int protocol)
 		error(1, errno, "socket inet");
 
 	if (cfg_family == PF_INET6) {
-		/* may have been updated by cfg_zero_sum */
+		 
 		cfg_saddr6.sin6_port = htons(cfg_port_src);
 
 		if (bind(fd, (void *)&cfg_saddr6, sizeof(cfg_saddr6)))
@@ -359,7 +300,7 @@ static int open_inet(int ipproto, int protocol)
 		if (connect(fd, (void *)&cfg_daddr6, sizeof(cfg_daddr6)))
 			error(1, errno, "connect dgram 6");
 	} else {
-		/* may have been updated by cfg_zero_sum */
+		 
 		cfg_saddr4.sin_port = htons(cfg_port_src);
 
 		if (bind(fd, (void *)&cfg_saddr4, sizeof(cfg_saddr4)))
@@ -487,11 +428,7 @@ static int recv_prepare_udp(void)
 	return fd;
 }
 
-/* Filter out all traffic that is not cfg_proto with our destination port.
- *
- * Otherwise background noise may cause PF_PACKET receive queue overflow,
- * dropping the expected packets and failing the test.
- */
+ 
 static void __recv_prepare_packet_filter(int fd, int off_nexthdr, int off_dport)
 {
 	struct sock_filter filter[] = {
@@ -514,7 +451,7 @@ static void __recv_prepare_packet_filter(int fd, int off_nexthdr, int off_dport)
 
 static void recv_prepare_packet_filter(int fd)
 {
-	const int off_dport = offsetof(struct tcphdr, dest); /* same for udp */
+	const int off_dport = offsetof(struct tcphdr, dest);  
 
 	if (cfg_family == AF_INET)
 		__recv_prepare_packet_filter(fd, offsetof(struct iphdr, protocol),
@@ -555,14 +492,14 @@ static int recv_prepare_packet(void)
 		       &cfg_rcvbuf, sizeof(cfg_rcvbuf)))
 		error(1, errno, "setsockopt SO_RCVBUF p");
 
-	/* enable auxdata to recv checksum status (valid vs unknown) */
+	 
 	if (setsockopt(fd, SOL_PACKET, PACKET_AUXDATA, &one, sizeof(one)))
 		error(1, errno, "setsockopt auxdata");
 
-	/* install filter to restrict packet flow to match */
+	 
 	recv_prepare_packet_filter(fd);
 
-	/* bind to address family to start packet flow */
+	 
 	recv_prepare_packet_bind(fd);
 
 	return fd;
@@ -596,7 +533,7 @@ static int recv_verify_csum(void *th, int len, uint16_t sport, uint16_t csum_fie
 	fprintf(stderr, "rx: pkt: sport=%hu len=%u csum=0x%hx verify=0x%hx\n",
 		sport, len, csum_field, csum);
 
-	/* csum must be zero unless cfg_bad_csum indicates bad csum */
+	 
 	if (csum && !cfg_bad_csum) {
 		fprintf(stderr, "pkt: bad csum\n");
 		return 1;
@@ -681,7 +618,7 @@ static int recv_verify_packet_ipv6(void *nh, int len)
 		return recv_verify_packet_udp(ip6h + 1, len - sizeof(*ip6h));
 }
 
-/* return whether auxdata includes TP_STATUS_CSUM_VALID */
+ 
 static bool recv_verify_packet_csum(struct msghdr *msg)
 {
 	struct tpacket_auxdata *aux = NULL;
@@ -742,17 +679,14 @@ static int recv_packet(int fd)
 		else
 			ret = recv_verify_packet_ipv4(buf, len);
 
-		if (ret == -1 /* skip: non-matching */)
+		if (ret == -1  )
 			continue;
 
 		total++;
 		if (ret == 1)
 			bad_csums++;
 
-		/* Fail if kernel returns valid for known bad csum.
-		 * Do not fail if kernel does not validate a good csum:
-		 * Absence of validation does not imply invalid.
-		 */
+		 
 		if (recv_verify_packet_csum(&msg) && cfg_bad_csum) {
 			fprintf(stderr, "cmsg: expected bad csum, pf_packet returns valid\n");
 			bad_validations++;
@@ -810,7 +744,7 @@ static void parse_args(int argc, char *const argv[])
 			cfg_send_pfpacket = true;
 			break;
 		case 'R':
-			/* only Rx: used with two machine tests */
+			 
 			cfg_do_tx = false;
 			break;
 		case 's':
@@ -823,16 +757,14 @@ static void parse_args(int argc, char *const argv[])
 			cfg_proto = IPPROTO_TCP;
 			break;
 		case 'T':
-			/* only Tx: used with two machine tests */
+			 
 			cfg_do_rx = false;
 			break;
 		case 'u':
 			cfg_proto = IPPROTO_UDP;
 			break;
 		case 'U':
-			/* send using real udp socket,
-			 * to exercise tx checksum offload
-			 */
+			 
 			cfg_send_udp = true;
 			break;
 		case 'z':
@@ -884,7 +816,7 @@ static void parse_args(int argc, char *const argv[])
 	}
 
 	if (cfg_do_tx && cfg_random_seed) {
-		/* special case: time-based seed */
+		 
 		if (cfg_random_seed == 1)
 			cfg_random_seed = (unsigned int)gettimeofday_ms();
 		srand(cfg_random_seed);
@@ -913,7 +845,7 @@ static void do_tx(void)
 		else
 			send_inet(fd, buf, len);
 
-		/* randomize each packet individually to increase coverage */
+		 
 		if (cfg_random_seed) {
 			cfg_payload_len = rand() % MAX_PAYLOAD_LEN;
 			buf = build_packet(_buf, sizeof(_buf), &len);
@@ -967,11 +899,11 @@ static void do_rx(int fdp, int fdr)
 
 int main(int argc, char *const argv[])
 {
-	int fdp = -1, fdr = -1;		/* -1 to silence -Wmaybe-uninitialized */
+	int fdp = -1, fdr = -1;		 
 
 	parse_args(argc, argv);
 
-	/* open receive sockets before transmitting */
+	 
 	if (cfg_do_rx) {
 		fdp = recv_prepare_packet();
 		fdr = recv_prepare_udp();

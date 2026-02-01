@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef __SOC_MEDIATEK_MT8195_MMSYS_H
 #define __SOC_MEDIATEK_MT8195_MMSYS_H
@@ -146,7 +146,7 @@
 #define MT8195_VDO1_MIXER_SOUT_SEL_IN				0xf68
 #define MT8195_MIXER_SOUT_SEL_IN_FROM_DISP_MIXER			0
 
-/* VPPSYS1 */
+ 
 #define MT8195_VPP1_HW_DCM_1ST_DIS0				0x150
 #define MT8195_VPP1_HW_DCM_1ST_DIS1				0x160
 #define MT8195_VPP1_HW_DCM_2ND_DIS0				0x1a0
@@ -154,7 +154,7 @@
 #define MT8195_SVPP2_BUF_BF_RSZ_SWITCH				0xf48
 #define MT8195_SVPP3_BUF_BF_RSZ_SWITCH				0xf74
 
-/* VPPSYS1 HW DCM client*/
+ 
 #define MT8195_SVPP1_MDP_RSZ					BIT(25)
 #define MT8195_SVPP2_MDP_RSZ					BIT(4)
 #define MT8195_SVPP3_MDP_RSZ					BIT(5)
@@ -526,4 +526,4 @@ static const struct mtk_mmsys_routes mmsys_mt8195_vdo1_routing_table[] = {
 		MT8195_MERGE4_SOUT_TO_DP_INTF0_SEL
 	}
 };
-#endif /* __SOC_MEDIATEK_MT8195_MMSYS_H */
+#endif  

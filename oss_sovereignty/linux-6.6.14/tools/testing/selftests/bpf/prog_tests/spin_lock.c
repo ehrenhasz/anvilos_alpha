@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <regex.h>
 #include <test_progs.h>
 #include <network_helpers.h>
@@ -91,7 +91,7 @@ static void test_spin_lock_fail_prog(const char *prog_name, const char *err_msg)
 	if (!ASSERT_ERR(ret, "test_spin_lock_fail__load must fail"))
 		goto end;
 
-	/* Skip check if JIT does not support kfuncs */
+	 
 	if (strstr(log_buf, "JIT does not support calling kernel function")) {
 		test__skip();
 		goto end;

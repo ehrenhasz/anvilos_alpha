@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Marvell
- *
- * Authors:
- *   Konstantin Porotchkin <kostap@marvell.com>
- *
- * Marvell CP110 UTMI PHY driver
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -21,7 +14,7 @@
 
 #define UTMI_PHY_PORTS				2
 
-/* CP110 UTMI register macro definetions */
+ 
 #define SYSCON_USB_CFG_REG			0x420
 #define   USB_CFG_DEVICE_EN_MASK		BIT(0)
 #define   USB_CFG_DEVICE_MUX_OFFSET		1
@@ -78,14 +71,7 @@
 
 #define PORT_REGS(p)				((p)->priv->regs + (p)->id * 0x1000)
 
-/**
- * struct mvebu_cp110_utmi - PHY driver data
- *
- * @regs: PHY registers
- * @syscon: Regmap with system controller registers
- * @dev: device driver handle
- * @ops: phy ops
- */
+ 
 struct mvebu_cp110_utmi {
 	void __iomem *regs;
 	struct regmap *syscon;
@@ -93,13 +79,7 @@ struct mvebu_cp110_utmi {
 	const struct phy_ops *ops;
 };
 
-/**
- * struct mvebu_cp110_utmi_port - PHY port data
- *
- * @priv: PHY driver data
- * @id: PHY port ID
- * @dr_mode: PHY connection: USB_DR_MODE_HOST or USB_DR_MODE_PERIPHERAL
- */
+ 
 struct mvebu_cp110_utmi_port {
 	struct mvebu_cp110_utmi *priv;
 	u32 id;
@@ -110,51 +90,38 @@ static void mvebu_cp110_utmi_port_setup(struct mvebu_cp110_utmi_port *port)
 {
 	u32 reg;
 
-	/*
-	 * Setup PLL.
-	 * The reference clock is the frequency of quartz resonator
-	 * connected to pins REFCLK_XIN and REFCLK_XOUT of the SoC.
-	 * Register init values are matching the 40MHz default clock.
-	 * The crystal used for all platform boards is now 25MHz.
-	 * See the functional specification for details.
-	 */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_PLL_CTRL_REG);
 	reg &= ~(PLL_REFDIV_MASK | PLL_FBDIV_MASK | PLL_SEL_LPFR_MASK);
 	reg |= (PLL_REFDIV_VAL << PLL_REFDIV_OFFSET) |
 	       (PLL_FBDIV_VAL << PLL_FBDIV_OFFSET);
 	writel(reg, PORT_REGS(port) + UTMI_PLL_CTRL_REG);
 
-	/* Impedance Calibration Threshold Setting */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_CAL_CTRL_REG);
 	reg &= ~IMPCAL_VTH_MASK;
 	reg |= IMPCAL_VTH_VAL << IMPCAL_VTH_OFFSET;
 	writel(reg, PORT_REGS(port) + UTMI_CAL_CTRL_REG);
 
-	/* Set LS TX driver strength coarse control */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_TX_CH_CTRL_REG);
 	reg &= ~TX_AMP_MASK;
 	reg |= TX_AMP_VAL << TX_AMP_OFFSET;
 	writel(reg, PORT_REGS(port) + UTMI_TX_CH_CTRL_REG);
 
-	/* Disable SQ and enable analog squelch detect */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_RX_CH_CTRL0_REG);
 	reg &= ~SQ_DET_EN;
 	reg |= SQ_ANA_DTC_SEL;
 	writel(reg, PORT_REGS(port) + UTMI_RX_CH_CTRL0_REG);
 
-	/*
-	 * Set External squelch calibration number and
-	 * enable the External squelch calibration
-	 */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_RX_CH_CTRL1_REG);
 	reg &= ~SQ_AMP_CAL_MASK;
 	reg |= (SQ_AMP_CAL_VAL << SQ_AMP_CAL_OFFSET) | SQ_AMP_CAL_EN;
 	writel(reg, PORT_REGS(port) + UTMI_RX_CH_CTRL1_REG);
 
-	/*
-	 * Set Control VDAT Reference Voltage - 0.325V and
-	 * Control VSRC Reference Voltage - 0.6V
-	 */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_CHGDTC_CTRL_REG);
 	reg &= ~(VDAT_MASK | VSRC_MASK);
 	reg |= (VDAT_VAL << VDAT_OFFSET) | (VSRC_VAL << VSRC_OFFSET);
@@ -167,7 +134,7 @@ static int mvebu_cp110_utmi_phy_power_off(struct phy *phy)
 	struct mvebu_cp110_utmi *utmi = port->priv;
 	int i;
 
-	/* Power down UTMI PHY port */
+	 
 	regmap_clear_bits(utmi->syscon, SYSCON_UTMI_CFG_REG(port->id),
 			  UTMI_PHY_CFG_PU_MASK);
 
@@ -175,12 +142,12 @@ static int mvebu_cp110_utmi_phy_power_off(struct phy *phy)
 		int test = regmap_test_bits(utmi->syscon,
 					    SYSCON_UTMI_CFG_REG(i),
 					    UTMI_PHY_CFG_PU_MASK);
-		/* skip PLL shutdown if there are active UTMI PHY ports */
+		 
 		if (test != 0)
 			return 0;
 	}
 
-	/* PLL Power down if all UTMI PHYs are down */
+	 
 	regmap_clear_bits(utmi->syscon, SYSCON_USB_CFG_REG, USB_CFG_PLL_MASK);
 
 	return 0;
@@ -194,19 +161,14 @@ static int mvebu_cp110_utmi_phy_power_on(struct phy *phy)
 	int ret;
 	u32 reg;
 
-	/* It is necessary to power off UTMI before configuration */
+	 
 	ret = mvebu_cp110_utmi_phy_power_off(phy);
 	if (ret) {
 		dev_err(dev, "UTMI power OFF before power ON failed\n");
 		return ret;
 	}
 
-	/*
-	 * If UTMI port is connected to USB Device controller,
-	 * configure the USB MUX prior to UTMI PHY initialization.
-	 * The single USB device controller can be connected
-	 * to UTMI0 or to UTMI1 PHY port, but not to both.
-	 */
+	 
 	if (port->dr_mode == USB_DR_MODE_PERIPHERAL) {
 		regmap_update_bits(utmi->syscon, SYSCON_USB_CFG_REG,
 				   USB_CFG_DEVICE_EN_MASK | USB_CFG_DEVICE_MUX_MASK,
@@ -214,27 +176,27 @@ static int mvebu_cp110_utmi_phy_power_on(struct phy *phy)
 				   (port->id << USB_CFG_DEVICE_MUX_OFFSET));
 	}
 
-	/* Set Test suspendm mode and enable Test UTMI select */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_CTRL_STATUS0_REG);
 	reg |= SUSPENDM | TEST_SEL;
 	writel(reg, PORT_REGS(port) + UTMI_CTRL_STATUS0_REG);
 
-	/* Wait for UTMI power down */
+	 
 	mdelay(1);
 
-	/* PHY port setup first */
+	 
 	mvebu_cp110_utmi_port_setup(port);
 
-	/* Power UP UTMI PHY */
+	 
 	regmap_set_bits(utmi->syscon, SYSCON_UTMI_CFG_REG(port->id),
 			UTMI_PHY_CFG_PU_MASK);
 
-	/* Disable Test UTMI select */
+	 
 	reg = readl(PORT_REGS(port) + UTMI_CTRL_STATUS0_REG);
 	reg &= ~TEST_SEL;
 	writel(reg, PORT_REGS(port) + UTMI_CTRL_STATUS0_REG);
 
-	/* Wait for impedance calibration */
+	 
 	ret = readl_poll_timeout(PORT_REGS(port) + UTMI_CAL_CTRL_REG, reg,
 				 reg & IMPCAL_DONE,
 				 PLL_LOCK_DELAY_US, PLL_LOCK_TIMEOUT_US);
@@ -243,7 +205,7 @@ static int mvebu_cp110_utmi_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Wait for PLL calibration */
+	 
 	ret = readl_poll_timeout(PORT_REGS(port) + UTMI_CAL_CTRL_REG, reg,
 				 reg & PLLCAL_DONE,
 				 PLL_LOCK_DELAY_US, PLL_LOCK_TIMEOUT_US);
@@ -252,7 +214,7 @@ static int mvebu_cp110_utmi_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Wait for PLL ready */
+	 
 	ret = readl_poll_timeout(PORT_REGS(port) + UTMI_PLL_CTRL_REG, reg,
 				 reg & PLL_RDY,
 				 PLL_LOCK_DELAY_US, PLL_LOCK_TIMEOUT_US);
@@ -261,7 +223,7 @@ static int mvebu_cp110_utmi_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* PLL Power up */
+	 
 	regmap_set_bits(utmi->syscon, SYSCON_USB_CFG_REG, USB_CFG_PLL_MASK);
 
 	return 0;
@@ -293,7 +255,7 @@ static int mvebu_cp110_utmi_phy_probe(struct platform_device *pdev)
 
 	utmi->dev = dev;
 
-	/* Get system controller region */
+	 
 	utmi->syscon = syscon_regmap_lookup_by_phandle(dev->of_node,
 						       "marvell,system-controller");
 	if (IS_ERR(utmi->syscon)) {
@@ -301,7 +263,7 @@ static int mvebu_cp110_utmi_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(utmi->syscon);
 	}
 
-	/* Get UTMI memory region */
+	 
 	utmi->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(utmi->regs))
 		return PTR_ERR(utmi->regs);
@@ -345,10 +307,10 @@ static int mvebu_cp110_utmi_phy_probe(struct platform_device *pdev)
 			}
 		}
 
-		/* Retrieve PHY capabilities */
+		 
 		utmi->ops = &mvebu_cp110_utmi_phy_ops;
 
-		/* Instantiate the PHY */
+		 
 		phy = devm_phy_create(dev, child, utmi->ops);
 		if (IS_ERR(phy)) {
 			dev_err(dev, "Failed to create the UTMI PHY\n");
@@ -360,7 +322,7 @@ static int mvebu_cp110_utmi_phy_probe(struct platform_device *pdev)
 		port->id = port_id;
 		phy_set_drvdata(phy, port);
 
-		/* Ensure the PHY is powered off */
+		 
 		mvebu_cp110_utmi_phy_power_off(phy);
 	}
 

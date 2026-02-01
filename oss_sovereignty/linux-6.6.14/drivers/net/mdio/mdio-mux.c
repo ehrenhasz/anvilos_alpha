@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011, 2012 Cavium, Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/mdio-mux.h>
@@ -21,7 +19,7 @@ struct mdio_mux_parent_bus {
 	void *switch_data;
 	int (*switch_fn)(int current_child, int desired_child, void *data);
 
-	/* List of our children linked through their next fields. */
+	 
 	struct mdio_mux_child_bus *children;
 };
 
@@ -32,9 +30,7 @@ struct mdio_mux_child_bus {
 	int bus_number;
 };
 
-/*
- * The parent bus' lock is used to order access to the switch_fn.
- */
+ 
 static int mdio_mux_read(struct mii_bus *bus, int phy_id, int regnum)
 {
 	struct mdio_mux_child_bus *cb = bus->priv;
@@ -76,9 +72,7 @@ out:
 	return r;
 }
 
-/*
- * The parent bus' lock is used to order access to the switch_fn.
- */
+ 
 static int mdio_mux_write(struct mii_bus *bus, int phy_id,
 			  int regnum, u16 val)
 {

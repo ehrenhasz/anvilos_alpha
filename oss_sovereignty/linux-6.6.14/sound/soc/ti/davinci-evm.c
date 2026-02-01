@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ASoC driver for TI DAVINCI EVM platform
- *
- * Author:      Vladimir Barinov, <vbarinov@embeddedalley.com>
- * Copyright:   (C) 2007 MontaVista Software, Inc., <source@mvista.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -60,12 +55,12 @@ static int evm_hw_params(struct snd_pcm_substream *substream,
 	unsigned sysclk = ((struct snd_soc_card_drvdata_davinci *)
 			   snd_soc_card_get_drvdata(soc_card))->sysclk;
 
-	/* set the codec system clock */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, 0, sysclk, SND_SOC_CLOCK_OUT);
 	if (ret < 0)
 		return ret;
 
-	/* set the CPU system clock */
+	 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, 0, sysclk, SND_SOC_CLOCK_OUT);
 	if (ret < 0 && ret != -ENOTSUPP)
 		return ret;
@@ -79,7 +74,7 @@ static const struct snd_soc_ops evm_ops = {
 	.hw_params = evm_hw_params,
 };
 
-/* davinci-evm machine dapm widgets */
+ 
 static const struct snd_soc_dapm_widget aic3x_dapm_widgets[] = {
 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
 	SND_SOC_DAPM_LINE("Line Out", NULL),
@@ -87,36 +82,36 @@ static const struct snd_soc_dapm_widget aic3x_dapm_widgets[] = {
 	SND_SOC_DAPM_LINE("Line In", NULL),
 };
 
-/* davinci-evm machine audio_mapnections to the codec pins */
+ 
 static const struct snd_soc_dapm_route audio_map[] = {
-	/* Headphone connected to HPLOUT, HPROUT */
+	 
 	{"Headphone Jack", NULL, "HPLOUT"},
 	{"Headphone Jack", NULL, "HPROUT"},
 
-	/* Line Out connected to LLOUT, RLOUT */
+	 
 	{"Line Out", NULL, "LLOUT"},
 	{"Line Out", NULL, "RLOUT"},
 
-	/* Mic connected to (MIC3L | MIC3R) */
+	 
 	{"MIC3L", NULL, "Mic Bias"},
 	{"MIC3R", NULL, "Mic Bias"},
 	{"Mic Bias", NULL, "Mic Jack"},
 
-	/* Line In connected to (LINE1L | LINE2L), (LINE1R | LINE2R) */
+	 
 	{"LINE1L", NULL, "Line In"},
 	{"LINE2L", NULL, "Line In"},
 	{"LINE1R", NULL, "Line In"},
 	{"LINE2R", NULL, "Line In"},
 };
 
-/* Logic for a aic3x as connected on a davinci-evm */
+ 
 static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_card *card = rtd->card;
 	struct device_node *np = card->dev->of_node;
 	int ret;
 
-	/* Add davinci-evm specific widgets */
+	 
 	snd_soc_dapm_new_controls(&card->dapm, aic3x_dapm_widgets,
 				  ARRAY_SIZE(aic3x_dapm_widgets));
 
@@ -125,12 +120,12 @@ static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
 		if (ret)
 			return ret;
 	} else {
-		/* Set up davinci-evm specific audio path audio_map */
+		 
 		snd_soc_dapm_add_routes(&card->dapm, audio_map,
 					ARRAY_SIZE(audio_map));
 	}
 
-	/* not connected */
+	 
 	snd_soc_dapm_nc_pin(&card->dapm, "MONO_LOUT");
 	snd_soc_dapm_nc_pin(&card->dapm, "HPLCOM");
 	snd_soc_dapm_nc_pin(&card->dapm, "HPRCOM");
@@ -138,10 +133,7 @@ static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
-/*
- * The struct is used as place holder. It will be completely
- * filled with data from dt node.
- */
+ 
 SND_SOC_DAILINK_DEFS(evm,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),
 	DAILINK_COMP_ARRAY(COMP_CODEC(NULL, "tlv320aic3x-hifi")),
@@ -162,11 +154,11 @@ static const struct of_device_id davinci_evm_dt_ids[] = {
 		.compatible = "ti,da830-evm-audio",
 		.data = (void *) &evm_dai_tlv320aic3x,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, davinci_evm_dt_ids);
 
-/* davinci evm audio machine driver */
+ 
 static struct snd_soc_card evm_soc_card = {
 	.owner = THIS_MODULE,
 	.num_links = 1,

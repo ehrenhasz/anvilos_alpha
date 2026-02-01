@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Oracle and/or its affiliates. */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_core_read.h>
@@ -33,7 +33,7 @@ int dump_task_struct(struct bpf_iter__task *ctx)
 		tasks++;
 		break;
 	case -ERANGE:
-		/* NULL task or task->fs, don't count it as an error. */
+		 
 		break;
 	case -E2BIG:
 		return 1;

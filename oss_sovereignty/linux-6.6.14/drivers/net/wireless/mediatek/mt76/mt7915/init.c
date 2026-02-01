@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/hwmon.h>
@@ -56,7 +56,7 @@ static ssize_t mt7915_thermal_temp_show(struct device *dev,
 		temperature = mt7915_mcu_get_temperature(phy);
 		if (temperature < 0)
 			return temperature;
-		/* display in millidegree celcius */
+		 
 		return sprintf(buf, "%u\n", temperature * 1000);
 	case 1:
 	case 2:
@@ -155,10 +155,7 @@ mt7915_thermal_set_cur_throttle_state(struct thermal_cooling_device *cdev,
 	if (state == phy->cdev_state)
 		return 0;
 
-	/*
-	 * cooling_device convention: 0 = no cooling, more = more cooling
-	 * mcu convention: 1 = max cooling, more = less cooling
-	 */
+	 
 	ret = mt7915_mcu_set_thermal_throttling(phy, throttling);
 	if (ret)
 		return ret;
@@ -204,7 +201,7 @@ static int mt7915_thermal_init(struct mt7915_phy *phy)
 			phy->cdev = cdev;
 	}
 
-	/* initialize critical/maximum high temperature */
+	 
 	phy->throttle_temp[MT7915_CRIT_TEMP_IDX] = MT7915_CRIT_TEMP;
 	phy->throttle_temp[MT7915_MAX_TEMP_IDX] = MT7915_MAX_TEMP;
 
@@ -229,17 +226,17 @@ static void mt7915_led_set_config(struct led_classdev *led_cdev,
 	mphy = container_of(led_cdev, struct mt76_phy, leds.cdev);
 	dev = container_of(mphy->dev, struct mt7915_dev, mt76);
 
-	/* set PWM mode */
+	 
 	val = FIELD_PREP(MT_LED_STATUS_DURATION, 0xffff) |
 	      FIELD_PREP(MT_LED_STATUS_OFF, delay_off) |
 	      FIELD_PREP(MT_LED_STATUS_ON, delay_on);
 	mt76_wr(dev, MT_LED_STATUS_0(mphy->band_idx), val);
 	mt76_wr(dev, MT_LED_STATUS_1(mphy->band_idx), val);
 
-	/* enable LED */
+	 
 	mt76_wr(dev, MT_LED_EN(mphy->band_idx), 1);
 
-	/* control LED */
+	 
 	val = MT_LED_CTRL_KICK;
 	if (dev->mphy.leds.al)
 		val |= MT_LED_CTRL_POLARITY;
@@ -421,7 +418,7 @@ mt7915_init_wiphy(struct mt7915_phy *phy)
 				IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 |
 				IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
 
-			/* mt7916 dbdc with 2g 2x2 bw40 and 5g 2x2 bw160c */
+			 
 			vht_cap->cap |=
 				IEEE80211_VHT_CAP_SHORT_GI_160 |
 				IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160MHZ;
@@ -438,7 +435,7 @@ mt7915_init_wiphy(struct mt7915_phy *phy)
 	wiphy->available_antennas_rx = phy->mt76->antenna_mask;
 	wiphy->available_antennas_tx = phy->mt76->antenna_mask;
 
-	/* init led callbacks */
+	 
 	if (IS_ENABLED(CONFIG_MT76_LEDS)) {
 		mphy->leds.cdev.brightness_set = mt7915_led_set_brightness;
 		mphy->leds.cdev.blink_set = mt7915_led_set_blink;
@@ -474,13 +471,13 @@ mt7915_mac_init_band(struct mt7915_dev *dev, u8 band)
 
 	mt76_rmw_field(dev, MT_DMA_DCR0(band), MT_DMA_DCR0_MAX_RX_LEN, 0x680);
 
-	/* mt7915: disable rx rate report by default due to hw issues */
+	 
 	mt76_clear(dev, MT_DMA_DCR0(band), MT_DMA_DCR0_RXD_G5_EN);
 
-	/* clear estimated value of EIFS for Rx duration & OBSS time */
+	 
 	mt76_wr(dev, MT_WF_RMAC_RSVD0(band), MT_WF_RMAC_RSVD0_EIFS_CLR);
 
-	/* clear backoff time for Rx duration  */
+	 
 	mt76_clear(dev, MT_WF_RMAC_MIB_AIRTIME1(band),
 		   MT_WF_RMAC_MIB_NONQOSD_BACKOFF);
 	mt76_clear(dev, MT_WF_RMAC_MIB_AIRTIME3(band),
@@ -488,21 +485,19 @@ mt7915_mac_init_band(struct mt7915_dev *dev, u8 band)
 	mt76_clear(dev, MT_WF_RMAC_MIB_AIRTIME4(band),
 		   MT_WF_RMAC_MIB_QOS23_BACKOFF);
 
-	/* clear backoff time and set software compensation for OBSS time */
+	 
 	mask = MT_WF_RMAC_MIB_OBSS_BACKOFF | MT_WF_RMAC_MIB_ED_OFFSET;
 	set = FIELD_PREP(MT_WF_RMAC_MIB_OBSS_BACKOFF, 0) |
 	      FIELD_PREP(MT_WF_RMAC_MIB_ED_OFFSET, 4);
 	mt76_rmw(dev, MT_WF_RMAC_MIB_AIRTIME0(band), mask, set);
 
-	/* filter out non-resp frames and get instanstaeous signal reporting */
+	 
 	mask = MT_WTBLOFF_TOP_RSCR_RCPI_MODE | MT_WTBLOFF_TOP_RSCR_RCPI_PARAM;
 	set = FIELD_PREP(MT_WTBLOFF_TOP_RSCR_RCPI_MODE, 0) |
 	      FIELD_PREP(MT_WTBLOFF_TOP_RSCR_RCPI_PARAM, 0x3);
 	mt76_rmw(dev, MT_WTBLOFF_TOP_RSCR(band), mask, set);
 
-	/* MT_TXD5_TX_STATUS_HOST (MPDU format) has higher priority than
-	 * MT_AGG_ACR_PPDU_TXS2H (PPDU format) even though ACR bit is set.
-	 */
+	 
 	if (mtk_wed_device_active(&dev->mt76.mmio.wed))
 		mt76_set(dev, MT_AGG_ACR4(band), MT_AGG_ACR_PPDU_TXS2H);
 }
@@ -578,7 +573,7 @@ void mt7915_mac_init(struct mt7915_dev *dev)
 	int i;
 	u32 rx_len = is_mt7915(&dev->mt76) ? 0x400 : 0x680;
 
-	/* config pse qid6 wfdma port selection */
+	 
 	if (!is_mt7915(&dev->mt76) && dev->hif2)
 		mt76_rmw(dev, MT_WF_PP_TOP_RXQ_WFDMA_CF_5, 0,
 			 MT_WF_PP_TOP_RXQ_QID6_WFDMA_HIF_SEL_MASK);
@@ -590,7 +585,7 @@ void mt7915_mac_init(struct mt7915_dev *dev)
 	else
 		mt76_clear(dev, MT_PLE_HOST_RPT0, MT_PLE_HOST_RPT0_TX_LATENCY);
 
-	/* enable hardware de-agg */
+	 
 	mt76_set(dev, MT_MDP_DCR0, MT_MDP_DCR0_DAMSDU_EN);
 
 	for (i = 0; i < mt7915_wtbl_size(dev); i++)
@@ -612,12 +607,12 @@ int mt7915_txbf_init(struct mt7915_dev *dev)
 			return ret;
 	}
 
-	/* trigger sounding packets */
+	 
 	ret = mt7915_mcu_set_txbf(dev, MT_BF_SOUNDING_ON);
 	if (ret)
 		return ret;
 
-	/* enable eBF */
+	 
 	return mt7915_mcu_set_txbf(dev, MT_BF_TYPE_UPDATE);
 }
 
@@ -638,7 +633,7 @@ mt7915_alloc_ext_phy(struct mt7915_dev *dev)
 	phy->dev = dev;
 	phy->mt76 = mphy;
 
-	/* Bind main phy to band0 and ext_phy to band1 for dbdc case */
+	 
 	phy->mt76->band_idx = 1;
 
 	return phy;
@@ -656,9 +651,7 @@ mt7915_register_ext_phy(struct mt7915_dev *dev, struct mt7915_phy *phy)
 
 	memcpy(mphy->macaddr, dev->mt76.eeprom.data + MT_EE_MAC_ADDR2,
 	       ETH_ALEN);
-	/* Make the secondary PHY MAC address local without overlapping with
-	 * the usual MAC address allocation scheme on multiple virtual interfaces
-	 */
+	 
 	if (!is_valid_ether_addr(mphy->macaddr)) {
 		memcpy(mphy->macaddr, dev->mt76.eeprom.data + MT_EE_MAC_ADDR,
 		       ETH_ALEN);
@@ -667,7 +660,7 @@ mt7915_register_ext_phy(struct mt7915_dev *dev, struct mt7915_phy *phy)
 	}
 	mt76_eeprom_override(mphy);
 
-	/* init wiphy according to mphy and phy */
+	 
 	mt7915_init_wiphy(phy);
 
 	ret = mt76_register_phy(mphy, true, mt76_rates,
@@ -711,24 +704,24 @@ void mt7915_wfsys_reset(struct mt7915_dev *dev)
 
 		mt76_wr(dev, MT_MCU_WFDMA0_DUMMY_CR, MT_MCU_DUMMY_RANDOM);
 
-		/* change to software control */
+		 
 		val |= MT_TOP_PWR_SW_RST;
 		mt76_wr(dev, MT_TOP_PWR_CTRL, val);
 
-		/* reset wfsys */
+		 
 		val &= ~MT_TOP_PWR_SW_RST;
 		mt76_wr(dev, MT_TOP_PWR_CTRL, val);
 
-		/* release wfsys then mcu re-executes romcode */
+		 
 		val |= MT_TOP_PWR_SW_RST;
 		mt76_wr(dev, MT_TOP_PWR_CTRL, val);
 
-		/* switch to hw control */
+		 
 		val &= ~MT_TOP_PWR_SW_RST;
 		val |= MT_TOP_PWR_HW_CTRL;
 		mt76_wr(dev, MT_TOP_PWR_CTRL, val);
 
-		/* check whether mcu resets to default */
+		 
 		if (!mt76_poll_msec(dev, MT_MCU_WFDMA0_DUMMY_CR,
 				    MT_MCU_DUMMY_DEFAULT, MT_MCU_DUMMY_DEFAULT,
 				    1000)) {
@@ -736,7 +729,7 @@ void mt7915_wfsys_reset(struct mt7915_dev *dev)
 			return;
 		}
 
-		/* wfsys reset won't clear host registers */
+		 
 		mt76_clear(dev, MT_TOP_MISC, MT_TOP_MISC_FW_STATE);
 
 		msleep(100);
@@ -764,11 +757,7 @@ static bool mt7915_band_config(struct mt7915_dev *dev)
 	if (is_mt798x(&dev->mt76)) {
 		u32 sku = mt7915_check_adie(dev, true);
 
-		/*
-		 * for mt7986, dbdc support is determined by the number
-		 * of adie chips and the main phy is bound to band1 when
-		 * dbdc is disabled.
-		 */
+		 
 		if (sku == MT7975_ONE_ADIE || sku == MT7976_ONE_ADIE) {
 			dev->phy.mt76->band_idx = 1;
 			ret = false;
@@ -811,7 +800,7 @@ mt7915_init_hardware(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 			return ret;
 	}
 
-	/* Beacon and mgmt frames should occupy wcid 0 */
+	 
 	idx = mt76_wcid_alloc(dev->mt76.wcid_mask, MT7915_WTBL_STA);
 	if (idx)
 		return -ENOSPC;
@@ -862,7 +851,7 @@ mt7915_set_stream_he_txbf_caps(struct mt7915_phy *phy,
 	int sts = hweight8(phy->mt76->chainmask);
 	u8 c, sts_160 = sts;
 
-	/* Can do 1/2 of STS in 160Mhz mode for mt7915 */
+	 
 	if (is_mt7915(&dev->mt76)) {
 		if (!dev->dbdc_support)
 			sts_160 /= 2;
@@ -901,7 +890,7 @@ mt7915_set_stream_he_txbf_caps(struct mt7915_phy *phy,
 		c |= IEEE80211_HE_PHY_CAP4_BEAMFORMEE_MAX_STS_ABOVE_80MHZ_4;
 	elem->phy_cap_info[4] |= c;
 
-	/* do not support NG16 due to spec D4.0 changes subcarrier idx */
+	 
 	c = IEEE80211_HE_PHY_CAP6_CODEBOOK_SIZE_42_SU |
 	    IEEE80211_HE_PHY_CAP6_CODEBOOK_SIZE_75_MU;
 
@@ -913,7 +902,7 @@ mt7915_set_stream_he_txbf_caps(struct mt7915_phy *phy,
 	if (sts < 2)
 		return;
 
-	/* the maximum cap is 4 x 3, (Nr, Nc) = (3, 2) */
+	 
 	elem->phy_cap_info[7] |= min_t(int, sts - 1, 2) << 3;
 
 	if (vif != NL80211_IFTYPE_AP)
@@ -953,10 +942,10 @@ mt7915_init_he_caps(struct mt7915_phy *phy, enum nl80211_band band,
 	if (!is_mt7915(&dev->mt76))
 		nss_160 = nss;
 	else if (!dev->dbdc_support)
-		/* Can do 1/2 of NSS streams in 160Mhz mode for mt7915 */
+		 
 		nss_160 = nss / 2;
 	else
-		/* Can't do 160MHz with mt7915 dbdc */
+		 
 		nss_160 = 0;
 
 	for (i = 0; i < 8; i++) {

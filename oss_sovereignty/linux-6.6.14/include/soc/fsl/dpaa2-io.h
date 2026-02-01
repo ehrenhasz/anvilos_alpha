@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/*
- * Copyright 2014-2016 Freescale Semiconductor Inc.
- * Copyright 2017-2019 NXP
- *
- */
+ 
+ 
 #ifndef __FSL_DPAA2_IO_H
 #define __FSL_DPAA2_IO_H
 
@@ -18,36 +14,11 @@ struct dpaa2_io;
 struct dpaa2_io_store;
 struct device;
 
-/**
- * DOC: DPIO Service
- *
- * The DPIO service provides APIs for users to interact with the datapath
- * by enqueueing and dequeing frame descriptors.
- *
- * The following set of APIs can be used to enqueue and dequeue frames
- * as well as producing notification callbacks when data is available
- * for dequeue.
- */
+ 
 
 #define DPAA2_IO_ANY_CPU	-1
 
-/**
- * struct dpaa2_io_desc - The DPIO descriptor
- * @receives_notifications: Use notificaton mode. Non-zero if the DPIO
- *                  has a channel.
- * @has_8prio:      Set to non-zero for channel with 8 priority WQs.  Ignored
- *                  unless receives_notification is TRUE.
- * @cpu:            The cpu index that at least interrupt handlers will
- *                  execute on.
- * @stash_affinity: The stash affinity for this portal favour 'cpu'
- * @regs_cena:      The cache enabled regs.
- * @regs_cinh:      The cache inhibited regs
- * @dpio_id:        The dpio index
- * @qman_version:   The qman version
- * @qman_clk:       The qman clock frequency in Hz
- *
- * Describes the attributes and features of the DPIO object.
- */
+ 
 struct dpaa2_io_desc {
 	int receives_notifications;
 	int has_8prio;
@@ -68,20 +39,7 @@ irqreturn_t dpaa2_io_irq(struct dpaa2_io *obj);
 
 struct dpaa2_io *dpaa2_io_service_select(int cpu);
 
-/**
- * struct dpaa2_io_notification_ctx - The DPIO notification context structure
- * @cb:           The callback to be invoked when the notification arrives
- * @is_cdan:      Zero for FQDAN, non-zero for CDAN
- * @id:           FQID or channel ID, needed for rearm
- * @desired_cpu:  The cpu on which the notifications will show up. Use
- *                DPAA2_IO_ANY_CPU if don't care
- * @dpio_id:      The dpio index
- * @qman64:       The 64-bit context value shows up in the FQDAN/CDAN.
- * @node:         The list node
- * @dpio_private: The dpio object internal to dpio_service
- *
- * Used when a FQDAN/CDAN registration is made by drivers.
- */
+ 
 struct dpaa2_io_notification_ctx {
 	void (*cb)(struct dpaa2_io_notification_ctx *ctx);
 	int is_cdan;
@@ -138,4 +96,4 @@ void dpaa2_io_set_adaptive_coalescing(struct dpaa2_io *d,
 				      int use_adaptive_rx_coalesce);
 int dpaa2_io_get_adaptive_coalescing(struct dpaa2_io *d);
 void dpaa2_io_update_net_dim(struct dpaa2_io *d, __u64 frames, __u64 bytes);
-#endif /* __FSL_DPAA2_IO_H */
+#endif  

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * c8sectpfe-common.h - C8SECTPFE STi DVB driver
- *
- * Copyright (c) STMicroelectronics 2015
- *
- *   Author: Peter Griffin <peter.griffin@linaro.org>
- *
- */
+ 
+ 
 #ifndef _C8SECTPFE_COMMON_H_
 #define _C8SECTPFE_COMMON_H_
 
@@ -19,7 +12,7 @@
 #include <media/dvb_frontend.h>
 #include <media/dvb_net.h>
 
-/* Maximum number of channels */
+ 
 #define C8SECTPFE_MAXADAPTER (4)
 #define C8SECTPFE_MAXCHANNEL 64
 #define STPTI_MAXCHANNEL 64
@@ -48,7 +41,7 @@ struct c8sectpfe {
 	int num_feeds;
 };
 
-/* Channel registration */
+ 
 int c8sectpfe_tuner_register_frontend(struct c8sectpfe **c8sectpfe,
 					struct c8sectpfei *fei,
 					void *start_feed,

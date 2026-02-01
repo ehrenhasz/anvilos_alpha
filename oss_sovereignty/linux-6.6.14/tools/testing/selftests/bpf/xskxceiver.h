@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Copyright(c) 2020 Intel Corporation.
- */
+ 
 
 #ifndef XSKXCEIVER_H_
 #define XSKXCEIVER_H_
@@ -36,7 +34,7 @@
 #define MAX_SOCKETS 2
 #define MAX_TEST_NAME_SIZE 32
 #define MAX_TEARDOWN_ITER 10
-#define PKT_HDR_SIZE (sizeof(struct ethhdr) + 2) /* Just to align the data in the packet */
+#define PKT_HDR_SIZE (sizeof(struct ethhdr) + 2)  
 #define MIN_PKT_SIZE 64
 #define MAX_ETH_PKT_SIZE 1518
 #define MAX_ETH_JUMBO_SIZE 9000
@@ -196,4 +194,4 @@ pthread_mutex_t pacing_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int pkts_in_flight;
 
-#endif				/* XSKXCEIVER_H_ */
+#endif				 

@@ -1,47 +1,4 @@
-/*
- * Copyright (c) 2012-2016 VMware, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of EITHER the GNU General Public License
- * version 2 as published by the Free Software Foundation or the BSD
- * 2-Clause License. This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED
- * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License version 2 for more details at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program available in the file COPYING in the main
- * directory of this source tree.
- *
- * The BSD 2-Clause License
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <asm/page.h>
 #include <linux/inet.h>
@@ -54,14 +11,7 @@
 
 #include "pvrdma.h"
 
-/**
- * pvrdma_query_device - query device
- * @ibdev: the device to query
- * @props: the device properties
- * @uhw: user data
- *
- * @return: 0 on success, otherwise negative errno
- */
+ 
 int pvrdma_query_device(struct ib_device *ibdev,
 			struct ib_device_attr *props,
 			struct ib_udata *uhw)
@@ -117,14 +67,7 @@ int pvrdma_query_device(struct ib_device *ibdev,
 	return 0;
 }
 
-/**
- * pvrdma_query_port - query device port attributes
- * @ibdev: the device to query
- * @port: the port number
- * @props: the device properties
- *
- * @return: 0 on success, otherwise negative errno
- */
+ 
 int pvrdma_query_port(struct ib_device *ibdev, u32 port,
 		      struct ib_port_attr *props)
 {
@@ -146,7 +89,7 @@ int pvrdma_query_port(struct ib_device *ibdev, u32 port,
 		return err;
 	}
 
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 
 	props->state = pvrdma_port_state_to_ib(resp->attrs.state);
 	props->max_mtu = pvrdma_mtu_to_ib(resp->attrs.max_mtu);
@@ -174,15 +117,7 @@ int pvrdma_query_port(struct ib_device *ibdev, u32 port,
 	return 0;
 }
 
-/**
- * pvrdma_query_gid - query device gid
- * @ibdev: the device to query
- * @port: the port number
- * @index: the index
- * @gid: the device gid value
- *
- * @return: 0 on success, otherwise negative errno
- */
+ 
 int pvrdma_query_gid(struct ib_device *ibdev, u32 port, int index,
 		     union ib_gid *gid)
 {
@@ -196,15 +131,7 @@ int pvrdma_query_gid(struct ib_device *ibdev, u32 port, int index,
 	return 0;
 }
 
-/**
- * pvrdma_query_pkey - query device port's P_Key table
- * @ibdev: the device to query
- * @port: the port number
- * @index: the index
- * @pkey: the device P_Key value
- *
- * @return: 0 on success, otherwise negative errno
- */
+ 
 int pvrdma_query_pkey(struct ib_device *ibdev, u32 port, u16 index,
 		      u16 *pkey)
 {
@@ -265,15 +192,7 @@ int pvrdma_modify_device(struct ib_device *ibdev, int mask,
 	return 0;
 }
 
-/**
- * pvrdma_modify_port - modify device port attributes
- * @ibdev: the device to modify
- * @port: the port number
- * @mask: attributes to modify
- * @props: the device properties
- *
- * @return: 0 on success, otherwise negative errno
- */
+ 
 int pvrdma_modify_port(struct ib_device *ibdev, u32 port, int mask,
 		       struct ib_port_modify *props)
 {
@@ -303,13 +222,7 @@ out:
 	return ret;
 }
 
-/**
- * pvrdma_alloc_ucontext - allocate ucontext
- * @uctx: the uverbs countext
- * @udata: user data
- *
- * @return:  zero on success, otherwise errno.
- */
+ 
 int pvrdma_alloc_ucontext(struct ib_ucontext *uctx, struct ib_udata *udata)
 {
 	struct ib_device *ibdev = uctx->device;
@@ -330,7 +243,7 @@ int pvrdma_alloc_ucontext(struct ib_ucontext *uctx, struct ib_udata *udata)
 	if (ret)
 		return -ENOMEM;
 
-	/* get ctx_handle from host */
+	 
 	if (vdev->dsr_version < PVRDMA_PPN64_VERSION)
 		cmd->pfn = context->uar.pfn;
 	else
@@ -346,7 +259,7 @@ int pvrdma_alloc_ucontext(struct ib_ucontext *uctx, struct ib_udata *udata)
 
 	context->ctx_handle = resp->ctx_handle;
 
-	/* copy back to user */
+	 
 	uresp.qp_tab_size = vdev->dsr->caps.max_qp;
 	ret = ib_copy_to_udata(udata, &uresp, sizeof(uresp));
 	if (ret) {
@@ -362,10 +275,7 @@ err:
 	return ret;
 }
 
-/**
- * pvrdma_dealloc_ucontext - deallocate ucontext
- * @ibcontext: the ucontext
- */
+ 
 void pvrdma_dealloc_ucontext(struct ib_ucontext *ibcontext)
 {
 	struct pvrdma_ucontext *context = to_vucontext(ibcontext);
@@ -381,17 +291,11 @@ void pvrdma_dealloc_ucontext(struct ib_ucontext *ibcontext)
 		dev_warn(&context->dev->pdev->dev,
 			 "destroy ucontext failed, error: %d\n", ret);
 
-	/* Free the UAR even if the device command failed */
+	 
 	pvrdma_uar_free(to_vdev(ibcontext->device), &context->uar);
 }
 
-/**
- * pvrdma_mmap - create mmap region
- * @ibcontext: the user context
- * @vma: the VMA
- *
- * @return: 0 on success, otherwise errno.
- */
+ 
 int pvrdma_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
 {
 	struct pvrdma_ucontext *context = to_vucontext(ibcontext);
@@ -407,7 +311,7 @@ int pvrdma_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
 		return -EINVAL;
 	}
 
-	/* Map UAR to kernel space, VM_LOCKED? */
+	 
 	vm_flags_set(vma, VM_DONTCOPY | VM_DONTEXPAND);
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 	if (io_remap_pfn_range(vma, start, context->uar.pfn, size,
@@ -417,13 +321,7 @@ int pvrdma_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
 	return 0;
 }
 
-/**
- * pvrdma_alloc_pd - allocate protection domain
- * @ibpd: PD pointer
- * @udata: user data
- *
- * @return: the ib_pd protection domain pointer on success, otherwise errno.
- */
+ 
 int pvrdma_alloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
 {
 	struct ib_device *ibdev = ibpd->device;
@@ -438,7 +336,7 @@ int pvrdma_alloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
 	struct pvrdma_ucontext *context = rdma_udata_to_drv_context(
 		udata, struct pvrdma_ucontext, ibucontext);
 
-	/* Check allowed max pds */
+	 
 	if (!atomic_add_unless(&dev->num_pds, 1, dev->dsr->caps.max_pd))
 		return -ENOMEM;
 
@@ -466,7 +364,7 @@ int pvrdma_alloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
 		}
 	}
 
-	/* u32 pd handle */
+	 
 	return 0;
 
 err:
@@ -474,13 +372,7 @@ err:
 	return ret;
 }
 
-/**
- * pvrdma_dealloc_pd - deallocate protection domain
- * @pd: the protection domain to be released
- * @udata: user data or null for kernel object
- *
- * @return: Always 0
- */
+ 
 int pvrdma_dealloc_pd(struct ib_pd *pd, struct ib_udata *udata)
 {
 	struct pvrdma_dev *dev = to_vdev(pd->device);
@@ -501,14 +393,7 @@ int pvrdma_dealloc_pd(struct ib_pd *pd, struct ib_udata *udata)
 	return 0;
 }
 
-/**
- * pvrdma_create_ah - create an address handle
- * @ibah: the IB address handle
- * @init_attr: the attributes of the AH
- * @udata: pointer to user data
- *
- * @return: 0 on success, otherwise errno.
- */
+ 
 int pvrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
 		     struct ib_udata *udata)
 {
@@ -542,12 +427,7 @@ int pvrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
 	return 0;
 }
 
-/**
- * pvrdma_destroy_ah - destroy an address handle
- * @ah: the address handle to destroyed
- * @flags: destroy address handle flags (see enum rdma_destroy_ah_flags)
- *
- */
+ 
 int pvrdma_destroy_ah(struct ib_ah *ah, u32 flags)
 {
 	struct pvrdma_dev *dev = to_vdev(ah->device);

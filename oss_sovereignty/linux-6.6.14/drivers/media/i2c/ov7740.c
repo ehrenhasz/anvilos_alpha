@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Microchip Corporation.
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -15,30 +15,30 @@
 
 #define REG_OUTSIZE_LSB 0x34
 
-/* OV7740 register tables */
-#define REG_GAIN	0x00	/* Gain lower 8 bits (rest in vref) */
-#define REG_BGAIN	0x01	/* blue gain */
-#define REG_RGAIN	0x02	/* red gain */
-#define REG_GGAIN	0x03	/* green gain */
-#define REG_REG04	0x04	/* analog setting, don't change*/
-#define REG_BAVG	0x05	/* b channel average */
-#define REG_GAVG	0x06	/* g channel average */
-#define REG_RAVG	0x07	/* r channel average */
+ 
+#define REG_GAIN	0x00	 
+#define REG_BGAIN	0x01	 
+#define REG_RGAIN	0x02	 
+#define REG_GGAIN	0x03	 
+#define REG_REG04	0x04	 
+#define REG_BAVG	0x05	 
+#define REG_GAVG	0x06	 
+#define REG_RAVG	0x07	 
 
-#define REG_REG0C	0x0C	/* filp enable */
+#define REG_REG0C	0x0C	 
 #define REG0C_IMG_FLIP		0x80
 #define REG0C_IMG_MIRROR	0x40
 
-#define REG_REG0E	0x0E	/* blc line */
-#define REG_HAEC	0x0F	/* auto exposure cntrl */
-#define REG_AEC		0x10	/* auto exposure cntrl */
+#define REG_REG0E	0x0E	 
+#define REG_HAEC	0x0F	 
+#define REG_AEC		0x10	 
 
-#define REG_CLK		0x11	/* Clock control */
-#define REG_REG55	0x55	/* Clock PLL DIV/PreDiv */
+#define REG_CLK		0x11	 
+#define REG_REG55	0x55	 
 
 #define REG_REG12	0x12
 
-#define REG_REG13	0x13	/* auto/manual AGC, AEC, Write Balance*/
+#define REG_REG13	0x13	 
 #define REG13_AEC_EN	0x01
 #define REG13_AGC_EN	0x04
 
@@ -48,30 +48,30 @@
 
 #define REG_REG16	0x16
 
-#define REG_MIDH	0x1C	/* manufacture id byte */
-#define REG_MIDL	0x1D	/* manufacture id byre */
-#define REG_PIDH	0x0A	/* Product ID MSB */
-#define REG_PIDL	0x0B	/* Product ID LSB */
+#define REG_MIDH	0x1C	 
+#define REG_MIDL	0x1D	 
+#define REG_PIDH	0x0A	 
+#define REG_PIDL	0x0B	 
 
-#define REG_84		0x84	/* lots of stuff */
-#define REG_REG38	0x38	/* sub-addr */
+#define REG_84		0x84	 
+#define REG_REG38	0x38	 
 
-#define REG_AHSTART	0x17	/* Horiz start high bits */
+#define REG_AHSTART	0x17	 
 #define REG_AHSIZE	0x18
-#define REG_AVSTART	0x19	/* Vert start high bits */
+#define REG_AVSTART	0x19	 
 #define REG_AVSIZE	0x1A
-#define REG_PSHFT	0x1b	/* Pixel delay after HREF */
+#define REG_PSHFT	0x1b	 
 
 #define REG_HOUTSIZE	0x31
 #define REG_VOUTSIZE	0x32
 #define REG_HVSIZEOFF	0x33
-#define REG_REG34	0x34	/* DSP output size H/V LSB*/
+#define REG_REG34	0x34	 
 
 #define REG_ISP_CTRL00	0x80
 #define ISPCTRL00_AWB_EN	0x10
 #define ISPCTRL00_AWB_GAIN_EN	0x04
 
-#define	REG_YGAIN	0xE2	/* ygain for contrast control */
+#define	REG_YGAIN	0xE2	 
 
 #define	REG_YBRIGHT	  0xE3
 #define	REG_SGNSET	  0xE4
@@ -87,13 +87,13 @@ struct ov7740 {
 	struct media_pad pad;
 #endif
 	struct v4l2_mbus_framefmt format;
-	const struct ov7740_pixfmt *fmt;  /* Current format */
+	const struct ov7740_pixfmt *fmt;   
 	const struct ov7740_framesize *frmsize;
 	struct regmap *regmap;
 	struct clk *xvclk;
 	struct v4l2_ctrl_handler ctrl_handler;
 	struct {
-		/* gain cluster */
+		 
 		struct v4l2_ctrl *auto_gain;
 		struct v4l2_ctrl *gain;
 	};
@@ -107,20 +107,20 @@ struct ov7740 {
 		struct v4l2_ctrl *vflip;
 	};
 	struct {
-		/* exposure cluster */
+		 
 		struct v4l2_ctrl *auto_exposure;
 		struct v4l2_ctrl *exposure;
 	};
 	struct {
-		/* saturation/hue cluster */
+		 
 		struct v4l2_ctrl *saturation;
 		struct v4l2_ctrl *hue;
 	};
 	struct v4l2_ctrl *brightness;
 	struct v4l2_ctrl *contrast;
 
-	struct mutex mutex;	/* To serialize asynchronus callbacks */
-	bool streaming;		/* Streaming on/off */
+	struct mutex mutex;	 
+	bool streaming;		 
 
 	struct gpio_desc *resetb_gpio;
 	struct gpio_desc *pwdn_gpio;
@@ -407,7 +407,7 @@ static int ov7740_set_autogain(struct regmap *regmap, int value)
 
 static int ov7740_set_brightness(struct regmap *regmap, int value)
 {
-	/* Turn off AEC/AGC */
+	 
 	regmap_update_bits(regmap, REG_REG13, REG13_AEC_EN, 0);
 	regmap_update_bits(regmap, REG_REG13, REG13_AGC_EN, 0);
 
@@ -473,7 +473,7 @@ static int ov7740_set_exp(struct regmap *regmap, int value)
 {
 	int ret;
 
-	/* Turn off AEC/AGC */
+	 
 	ret = regmap_update_bits(regmap, REG_REG13,
 				 REG13_AEC_EN | REG13_AGC_EN, 0);
 	if (ret)
@@ -767,7 +767,7 @@ static int ov7740_try_fmt_internal(struct v4l2_subdev *sd,
 			break;
 	}
 	if (index >= N_OV7740_FMTS) {
-		/* default to first format */
+		 
 		index = 0;
 		fmt->code = ov7740_formats[0].mbus_code;
 	}
@@ -1192,7 +1192,7 @@ static int __maybe_unused ov7740_runtime_resume(struct device *dev)
 
 static const struct i2c_device_id ov7740_id[] = {
 	{ "ov7740", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, ov7740_id);
 
@@ -1202,7 +1202,7 @@ static const struct dev_pm_ops ov7740_pm_ops = {
 
 static const struct of_device_id ov7740_of_match[] = {
 	{.compatible = "ovti,ov7740", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ov7740_of_match);
 

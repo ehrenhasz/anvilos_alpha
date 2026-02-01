@@ -1,34 +1,4 @@
-/* Iteration over virtual memory areas.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-   Written by Bruno Haible <bruno@clisp.org>, 2011-2017.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* On Solaris in 32-bit mode, when gnulib module 'largefile' is in use,
-   prevent a compilation error
-     "Cannot use procfs in the large file compilation environment"
-   while also preventing <sys/types.h> from not defining off_t.
-   On Android, when targeting Android 4.4 or older with a GCC toolchain,
-   prevent a compilation error
-     "error: call to 'mmap' declared with attribute error: mmap is not
-      available with _FILE_OFFSET_BITS=64 when using GCC until android-21.
-      Either raise your minSdkVersion, disable _FILE_OFFSET_BITS=64, or
-      switch to Clang."
-   The files that we access in this compilation unit are less than 2 GB
-   large.  */
+ 
 #if defined __sun && !defined _LP64 && _FILE_OFFSET_BITS == 64
 # undef _FILE_OFFSET_BITS
 # define _FILE_OFFSET_BITS 32
@@ -37,125 +7,108 @@
 # undef _FILE_OFFSET_BITS
 #endif
 
-/* Specification.  */
+ 
 #include "vma-iter.h"
 
-#include <errno.h> /* errno */
-#include <stdlib.h> /* size_t */
-#include <fcntl.h> /* open, O_RDONLY */
-#include <unistd.h> /* getpagesize, lseek, read, close, getpid */
+#include <errno.h>  
+#include <stdlib.h>  
+#include <fcntl.h>  
+#include <unistd.h>  
 
 #if defined __linux__ || defined __ANDROID__
-# include <limits.h> /* PATH_MAX */
+# include <limits.h>  
 #endif
 
-#if defined __linux__ || defined __ANDROID__ || defined __FreeBSD_kernel__ || defined __FreeBSD__ || defined __DragonFly__ || defined __NetBSD__ || defined __minix /* || defined __CYGWIN__ */
+#if defined __linux__ || defined __ANDROID__ || defined __FreeBSD_kernel__ || defined __FreeBSD__ || defined __DragonFly__ || defined __NetBSD__ || defined __minix  
 # include <sys/types.h>
-# include <sys/mman.h> /* mmap, munmap */
+# include <sys/mman.h>  
 #endif
 #if defined __minix
-# include <string.h> /* memcpy */
+# include <string.h>  
 #endif
 
-#if defined __FreeBSD__ || defined __FreeBSD_kernel__ /* FreeBSD, GNU/kFreeBSD */
+#if defined __FreeBSD__ || defined __FreeBSD_kernel__  
 # include <sys/types.h>
-# include <sys/mman.h> /* mmap, munmap */
-# include <sys/user.h> /* struct kinfo_vmentry */
-# include <sys/sysctl.h> /* sysctl */
+# include <sys/mman.h>  
+# include <sys/user.h>  
+# include <sys/sysctl.h>  
 #endif
-#if defined __NetBSD__ || defined __OpenBSD__ /* NetBSD, OpenBSD */
+#if defined __NetBSD__ || defined __OpenBSD__  
 # include <sys/types.h>
-# include <sys/mman.h> /* mmap, munmap */
-# include <sys/sysctl.h> /* sysctl, struct kinfo_vmentry */
-#endif
-
-#if defined _AIX /* AIX */
-# include <string.h> /* memcpy */
-# include <sys/types.h>
-# include <sys/mman.h> /* mmap, munmap */
-# include <sys/procfs.h> /* prmap_t */
+# include <sys/mman.h>  
+# include <sys/sysctl.h>  
 #endif
 
-#if defined __sgi || defined __osf__ /* IRIX, OSF/1 */
-# include <string.h> /* memcpy */
+#if defined _AIX  
+# include <string.h>  
 # include <sys/types.h>
-# include <sys/mman.h> /* mmap, munmap */
-# include <sys/procfs.h> /* PIOC*, prmap_t */
+# include <sys/mman.h>  
+# include <sys/procfs.h>  
 #endif
 
-#if defined __sun /* Solaris */
-# include <string.h> /* memcpy */
+#if defined __sgi || defined __osf__  
+# include <string.h>  
 # include <sys/types.h>
-# include <sys/mman.h> /* mmap, munmap */
-/* Try to use the newer ("structured") /proc filesystem API, if supported.  */
+# include <sys/mman.h>  
+# include <sys/procfs.h>  
+#endif
+
+#if defined __sun  
+# include <string.h>  
+# include <sys/types.h>
+# include <sys/mman.h>  
+ 
 # define _STRUCTURED_PROC 1
-# include <sys/procfs.h> /* prmap_t, optionally PIOC* */
+# include <sys/procfs.h>  
 #endif
 
-#if HAVE_PSTAT_GETPROCVM /* HP-UX */
-# include <sys/pstat.h> /* pstat_getprocvm */
+#if HAVE_PSTAT_GETPROCVM  
+# include <sys/pstat.h>  
 #endif
 
-#if defined __APPLE__ && defined __MACH__ /* Mac OS X */
+#if defined __APPLE__ && defined __MACH__  
 # include <mach/mach.h>
 #endif
 
-#if defined __GNU__ /* GNU/Hurd */
+#if defined __GNU__  
 # include <mach/mach.h>
 #endif
 
-#if defined _WIN32 || defined __CYGWIN__ /* Windows */
+#if defined _WIN32 || defined __CYGWIN__  
 # include <windows.h>
 #endif
 
-#if defined __BEOS__ || defined __HAIKU__ /* BeOS, Haiku */
+#if defined __BEOS__ || defined __HAIKU__  
 # include <OS.h>
 #endif
 
-#if HAVE_MQUERY /* OpenBSD */
+#if HAVE_MQUERY  
 # include <sys/types.h>
-# include <sys/mman.h> /* mquery */
+# include <sys/mman.h>  
 #endif
 
 
-/* Support for reading text files in the /proc file system.  */
+ 
 
-#if defined __linux__ || defined __ANDROID__ || defined __FreeBSD_kernel__ || defined __FreeBSD__ || defined __DragonFly__ || defined __NetBSD__ || defined __minix /* || defined __CYGWIN__ */
+#if defined __linux__ || defined __ANDROID__ || defined __FreeBSD_kernel__ || defined __FreeBSD__ || defined __DragonFly__ || defined __NetBSD__ || defined __minix  
 
-/* Buffered read-only streams.
-   We cannot use <stdio.h> here, because fopen() calls malloc(), and a malloc()
-   call may call mmap() and thus pre-allocate available memory.
-   Also, we cannot use multiple read() calls, because if the buffer size is
-   smaller than the file's contents:
-     - On NetBSD, the second read() call would return 0, thus making the file
-       appear truncated.
-     - On DragonFly BSD, the first read() call would fail with errno = EFBIG.
-     - On all platforms, if some other thread is doing memory allocations or
-       deallocations between two read() calls, there is a high risk that the
-       result of these two read() calls don't fit together, and as a
-       consequence we will parse garbage and either omit some VMAs or return
-       VMAs with nonsensical addresses.
-   So use mmap(), and ignore the resulting VMA.  */
+ 
 
 # if defined __linux__ || defined __ANDROID__
-  /* On Linux, if the file does not entirely fit into the buffer, the read()
-     function stops before the line that would come out truncated.  The
-     maximum size of such a line is 73 + PATH_MAX bytes.  To be sure that we
-     have read everything, we must verify that at least that many bytes are
-     left when read() returned.  */
+   
 #  define MIN_LEFTOVER (73 + PATH_MAX)
 # else
 #  define MIN_LEFTOVER 1
 # endif
 
 # ifdef TEST
-/* During testing, we want to run into the hairy cases.  */
+ 
 #  define STACK_ALLOCATED_BUFFER_SIZE 32
 # else
 #  if MIN_LEFTOVER < 1024
 #   define STACK_ALLOCATED_BUFFER_SIZE 1024
 #  else
-    /* There is no point in using a stack-allocated buffer if it is too small anyway.  */
+     
 #   define STACK_ALLOCATED_BUFFER_SIZE 1
 #  endif
 # endif
@@ -165,7 +118,7 @@ struct rofile
     size_t position;
     size_t filled;
     int eof_seen;
-    /* These fields deal with allocation of the buffer.  */
+     
     char *buffer;
     char *auxmap;
     size_t auxmap_length;
@@ -174,7 +127,7 @@ struct rofile
     char stack_allocated_buffer[STACK_ALLOCATED_BUFFER_SIZE];
   };
 
-/* Open a read-only file stream.  */
+ 
 static int
 rof_open (struct rofile *rof, const char *filename)
 {
@@ -187,7 +140,7 @@ rof_open (struct rofile *rof, const char *filename)
     return -1;
   rof->position = 0;
   rof->eof_seen = 0;
-  /* Try the static buffer first.  */
+   
   pagesize = 0;
   rof->buffer = rof->stack_allocated_buffer;
   size = sizeof (rof->stack_allocated_buffer);
@@ -196,7 +149,7 @@ rof_open (struct rofile *rof, const char *filename)
   rof->auxmap_end = 0;
   for (;;)
     {
-      /* Attempt to read the contents in a single system call.  */
+       
       if (size > MIN_LEFTOVER)
         {
           int n = read (fd, rof->buffer, size);
@@ -207,29 +160,28 @@ rof_open (struct rofile *rof, const char *filename)
 # endif
             {
               if (n <= 0)
-                /* Empty file.  */
+                 
                 goto fail1;
               if (n + MIN_LEFTOVER <= size)
                 {
-                  /* The buffer was sufficiently large.  */
+                   
                   rof->filled = n;
 # if defined __linux__ || defined __ANDROID__
-                  /* On Linux, the read() call may stop even if the buffer was
-                     large enough.  We need the equivalent of full_read().  */
+                   
                   for (;;)
                     {
                       n = read (fd, rof->buffer + rof->filled, size - rof->filled);
                       if (n < 0 && errno == EINTR)
                         goto retry;
                       if (n < 0)
-                        /* Some error.  */
+                         
                         goto fail1;
                       if (n + MIN_LEFTOVER > size - rof->filled)
-                        /* Allocate a larger buffer.  */
+                         
                         break;
                       if (n == 0)
                         {
-                          /* Reached the end of file.  */
+                           
                           close (fd);
                           return 0;
                         }
@@ -242,7 +194,7 @@ rof_open (struct rofile *rof, const char *filename)
                 }
             }
         }
-      /* Allocate a larger buffer.  */
+       
       if (pagesize == 0)
         {
           pagesize = getpagesize ();
@@ -254,7 +206,7 @@ rof_open (struct rofile *rof, const char *filename)
         {
           size = 2 * size;
           if (size == 0)
-            /* Wraparound.  */
+             
             goto fail1;
           if (rof->auxmap != NULL)
             munmap (rof->auxmap, rof->auxmap_length);
@@ -271,7 +223,7 @@ rof_open (struct rofile *rof, const char *filename)
       rof->auxmap_end = rof->auxmap_start + size;
       rof->buffer = (char *) rof->auxmap;
      retry:
-      /* Restart.  */
+       
       if (lseek (fd, 0, SEEK_SET) < 0)
         {
           close (fd);
@@ -288,8 +240,7 @@ rof_open (struct rofile *rof, const char *filename)
   return -1;
 }
 
-/* Return the next byte from a read-only file stream without consuming it,
-   or -1 at EOF.  */
+ 
 static int
 rof_peekchar (struct rofile *rof)
 {
@@ -301,7 +252,7 @@ rof_peekchar (struct rofile *rof)
   return (unsigned char) rof->buffer[rof->position];
 }
 
-/* Return the next byte from a read-only file stream, or -1 at EOF.  */
+ 
 static int
 rof_getchar (struct rofile *rof)
 {
@@ -311,7 +262,7 @@ rof_getchar (struct rofile *rof)
   return c;
 }
 
-/* Parse an unsigned hexadecimal number from a read-only file stream.  */
+ 
 static int
 rof_scanf_lx (struct rofile *rof, unsigned long *valuep)
 {
@@ -337,7 +288,7 @@ rof_scanf_lx (struct rofile *rof, unsigned long *valuep)
   return 0;
 }
 
-/* Close a read-only file stream.  */
+ 
 static void
 rof_close (struct rofile *rof)
 {
@@ -348,18 +299,17 @@ rof_close (struct rofile *rof)
 #endif
 
 
-/* Support for reading the info from a text file in the /proc file system.  */
+ 
 
-#if defined __linux__ || defined __ANDROID__ || (defined __FreeBSD_kernel__ && !defined __FreeBSD__) /* || defined __CYGWIN__ */
-/* GNU/kFreeBSD mounts /proc as linprocfs, which looks like a Linux /proc
-   file system.  */
+#if defined __linux__ || defined __ANDROID__ || (defined __FreeBSD_kernel__ && !defined __FreeBSD__)  
+ 
 
 static int
 vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
 {
   struct rofile rof;
 
-  /* Open the current process' maps file.  It describes one VMA per line.  */
+   
   if (rof_open (&rof, "/proc/self/maps") >= 0)
     {
       unsigned long auxmap_start = rof.auxmap_start;
@@ -371,12 +321,12 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
           unsigned int flags;
           int c;
 
-          /* Parse one line.  First start and end.  */
+           
           if (!(rof_scanf_lx (&rof, &start) >= 0
                 && rof_getchar (&rof) == '-'
                 && rof_scanf_lx (&rof, &end) >= 0))
             break;
-          /* Then the flags.  */
+           
           do
             c = rof_getchar (&rof);
           while (c == ' ');
@@ -394,8 +344,7 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
 
           if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
             {
-              /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-                 = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+               
               if (start < auxmap_start)
                 if (callback (data, start, auxmap_start, flags))
                   break;
@@ -423,7 +372,7 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
 {
   struct rofile rof;
 
-  /* Open the current process' maps file.  It describes one VMA per line.  */
+   
   if (rof_open (&rof, "/proc/curproc/map") >= 0)
     {
       unsigned long auxmap_start = rof.auxmap_start;
@@ -435,34 +384,34 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
           unsigned int flags;
           int c;
 
-          /* Parse one line.  First start.  */
+           
           if (!(rof_getchar (&rof) == '0'
                 && rof_getchar (&rof) == 'x'
                 && rof_scanf_lx (&rof, &start) >= 0))
             break;
           while (c = rof_peekchar (&rof), c == ' ' || c == '\t')
             rof_getchar (&rof);
-          /* Then end.  */
+           
           if (!(rof_getchar (&rof) == '0'
                 && rof_getchar (&rof) == 'x'
                 && rof_scanf_lx (&rof, &end) >= 0))
             break;
 # if defined __FreeBSD__ || defined __DragonFly__
-          /* Then the resident pages count.  */
+           
           do
             c = rof_getchar (&rof);
           while (c == ' ');
           do
             c = rof_getchar (&rof);
           while (c != -1 && c != '\n' && c != ' ');
-          /* Then the private resident pages count.  */
+           
           do
             c = rof_getchar (&rof);
           while (c == ' ');
           do
             c = rof_getchar (&rof);
           while (c != -1 && c != '\n' && c != ' ');
-          /* Then some kernel address.  */
+           
           do
             c = rof_getchar (&rof);
           while (c == ' ');
@@ -470,7 +419,7 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
             c = rof_getchar (&rof);
           while (c != -1 && c != '\n' && c != ' ');
 # endif
-          /* Then the flags.  */
+           
           do
             c = rof_getchar (&rof);
           while (c == ' ');
@@ -488,8 +437,7 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
 
           if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
             {
-              /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-                 = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+               
               if (start < auxmap_start)
                 if (callback (data, start, auxmap_start, flags))
                   break;
@@ -519,7 +467,7 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
   char *fname;
   struct rofile rof;
 
-  /* Construct fname = sprintf (fnamebuf+i, "/proc/%u/map", getpid ()).  */
+   
   fname = fnamebuf + sizeof (fnamebuf) - (4 + 1);
   memcpy (fname, "/map", 4 + 1);
   {
@@ -531,7 +479,7 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
   fname -= 6;
   memcpy (fname, "/proc/", 6);
 
-  /* Open the current process' maps file.  It describes one VMA per line.  */
+   
   if (rof_open (&rof, fname) >= 0)
     {
       unsigned long auxmap_start = rof.auxmap_start;
@@ -543,12 +491,12 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
           unsigned int flags;
           int c;
 
-          /* Parse one line.  First start and end.  */
+           
           if (!(rof_scanf_lx (&rof, &start) >= 0
                 && rof_getchar (&rof) == '-'
                 && rof_scanf_lx (&rof, &end) >= 0))
             break;
-          /* Then the flags.  */
+           
           do
             c = rof_getchar (&rof);
           while (c == ' ');
@@ -566,8 +514,7 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
 
           if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
             {
-              /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-                 = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+               
               if (start < auxmap_start)
                 if (callback (data, start, auxmap_start, flags))
                   break;
@@ -599,14 +546,14 @@ vma_iterate_proc (vma_iterate_callback_fn callback, void *data)
 #endif
 
 
-/* Support for reading the info from the BSD sysctl() system call.  */
+ 
 
-#if (defined __FreeBSD__ || defined __FreeBSD_kernel__) && defined KERN_PROC_VMMAP /* FreeBSD >= 7.1 */
+#if (defined __FreeBSD__ || defined __FreeBSD_kernel__) && defined KERN_PROC_VMMAP  
 
 static int
 vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
 {
-  /* Documentation: https://www.freebsd.org/cgi/man.cgi?sysctl(3)  */
+   
   int info_path[] = { CTL_KERN, KERN_PROC, KERN_PROC_VMMAP, getpid () };
   size_t len;
   size_t pagesize;
@@ -621,14 +568,9 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
   len = 0;
   if (sysctl (info_path, 4, NULL, &len, NULL, 0) < 0)
     return -1;
-  /* Allow for small variations over time.  In a multithreaded program
-     new VMAs can be allocated at any moment.  */
+   
   len = 2 * len + 200;
-  /* Allocate memneed bytes of memory.
-     We cannot use alloca here, because not much stack space is guaranteed.
-     We also cannot use malloc here, because a malloc() call may call mmap()
-     and thus pre-allocate available memory.
-     So use mmap(), and ignore the resulting VMA.  */
+   
   pagesize = getpagesize ();
   memneed = len;
   memneed = ((memneed - 1) / pagesize + 1) * pagesize;
@@ -660,8 +602,7 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
         flags |= VMA_PROT_EXECUTE;
       if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
         {
-          /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-             = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+           
           if (start < auxmap_start)
             if (callback (data, start, auxmap_start, flags))
               break;
@@ -680,16 +621,14 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
   return 0;
 }
 
-#elif defined __NetBSD__ && defined VM_PROC_MAP /* NetBSD >= 8.0 */
+#elif defined __NetBSD__ && defined VM_PROC_MAP  
 
 static int
 vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
 {
-  /* Documentation: https://man.netbsd.org/man/sysctl+7  */
+   
   unsigned int entry_size =
-    /* If we wanted to have the path of each entry, we would need
-       sizeof (struct kinfo_vmentry).  But we need only the non-string
-       parts of each entry.  */
+     
     offsetof (struct kinfo_vmentry, kve_path);
   int info_path[] = { CTL_VM, VM_PROC, VM_PROC_MAP, getpid (), entry_size };
   size_t len;
@@ -705,20 +644,14 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
   len = 0;
   if (sysctl (info_path, 5, NULL, &len, NULL, 0) < 0)
     return -1;
-  /* Allow for small variations over time.  In a multithreaded program
-     new VMAs can be allocated at any moment.  */
+   
   len = 2 * len + 10 * entry_size;
-  /* But the system call rejects lengths > 1 MB.  */
+   
   if (len > 0x100000)
     len = 0x100000;
-  /* And the system call causes a kernel panic if the length is not a multiple
-     of entry_size.  */
+   
   len = (len / entry_size) * entry_size;
-  /* Allocate memneed bytes of memory.
-     We cannot use alloca here, because not much stack space is guaranteed.
-     We also cannot use malloc here, because a malloc() call may call mmap()
-     and thus pre-allocate available memory.
-     So use mmap(), and ignore the resulting VMA.  */
+   
   pagesize = getpagesize ();
   memneed = len;
   memneed = ((memneed - 1) / pagesize + 1) * pagesize;
@@ -732,7 +665,7 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
   if (sysctl (info_path, 5, mem, &len, NULL, 0) < 0
       || len > 0x100000 - entry_size)
     {
-      /* sysctl failed, or the list of VMAs is possibly truncated.  */
+       
       munmap (auxmap, memneed);
       return -1;
     }
@@ -752,8 +685,7 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
         flags |= VMA_PROT_EXECUTE;
       if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
         {
-          /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-             = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+           
           if (start < auxmap_start)
             if (callback (data, start, auxmap_start, flags))
               break;
@@ -772,12 +704,12 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
   return 0;
 }
 
-#elif defined __OpenBSD__ && defined KERN_PROC_VMMAP /* OpenBSD >= 5.7 */
+#elif defined __OpenBSD__ && defined KERN_PROC_VMMAP  
 
 static int
 vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
 {
-  /* Documentation: https://man.openbsd.org/sysctl.2  */
+   
   int info_path[] = { CTL_KERN, KERN_PROC_VMMAP, getpid () };
   size_t len;
   size_t pagesize;
@@ -792,20 +724,14 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
   len = 0;
   if (sysctl (info_path, 3, NULL, &len, NULL, 0) < 0)
     return -1;
-  /* Allow for small variations over time.  In a multithreaded program
-     new VMAs can be allocated at any moment.  */
+   
   len = 2 * len + 10 * sizeof (struct kinfo_vmentry);
-  /* But the system call rejects lengths > 64 KB.  */
+   
   if (len > 0x10000)
     len = 0x10000;
-  /* And the system call rejects lengths that are not a multiple of
-     sizeof (struct kinfo_vmentry).  */
+   
   len = (len / sizeof (struct kinfo_vmentry)) * sizeof (struct kinfo_vmentry);
-  /* Allocate memneed bytes of memory.
-     We cannot use alloca here, because not much stack space is guaranteed.
-     We also cannot use malloc here, because a malloc() call may call mmap()
-     and thus pre-allocate available memory.
-     So use mmap(), and ignore the resulting VMA.  */
+   
   pagesize = getpagesize ();
   memneed = len;
   memneed = ((memneed - 1) / pagesize + 1) * pagesize;
@@ -819,7 +745,7 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
   if (sysctl (info_path, 3, mem, &len, NULL, 0) < 0
       || len > 0x10000 - sizeof (struct kinfo_vmentry))
     {
-      /* sysctl failed, or the list of VMAs is possibly truncated.  */
+       
       munmap (auxmap, memneed);
       return -1;
     }
@@ -839,8 +765,7 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
         flags |= VMA_PROT_EXECUTE;
       if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
         {
-          /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-             = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+           
           if (start < auxmap_start)
             if (callback (data, start, auxmap_start, flags))
               break;
@@ -874,22 +799,17 @@ vma_iterate_bsd (vma_iterate_callback_fn callback, void *data)
 int
 vma_iterate (vma_iterate_callback_fn callback, void *data)
 {
-#if defined __linux__ || defined __ANDROID__ || defined __FreeBSD_kernel__ || defined __FreeBSD__ || defined __DragonFly__ || defined __NetBSD__ || defined __minix /* || defined __CYGWIN__ */
+#if defined __linux__ || defined __ANDROID__ || defined __FreeBSD_kernel__ || defined __FreeBSD__ || defined __DragonFly__ || defined __NetBSD__ || defined __minix  
 
 # if defined __FreeBSD__
-  /* On FreeBSD with procfs (but not GNU/kFreeBSD, which uses linprocfs), the
-     function vma_iterate_proc does not return the virtual memory areas that
-     were created by anonymous mmap.  See
-     <https://svnweb.freebsd.org/base/head/sys/fs/procfs/procfs_map.c?view=markup>
-     So use vma_iterate_proc only as a fallback.  */
+   
   int retval = vma_iterate_bsd (callback, data);
   if (retval == 0)
       return 0;
 
   return vma_iterate_proc (callback, data);
 # else
-  /* On the other platforms, try the /proc approach first, and the sysctl()
-     as a fallback.  */
+   
   int retval = vma_iterate_proc (callback, data);
   if (retval == 0)
       return 0;
@@ -897,12 +817,9 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   return vma_iterate_bsd (callback, data);
 # endif
 
-#elif defined _AIX /* AIX */
+#elif defined _AIX  
 
-  /* On AIX, there is a /proc/$pic/map file, that contains records of type
-     prmap_t, defined in <sys/procfs.h>.  In older versions of AIX, it lists
-     only the virtual memory areas that are connected to a file, not the
-     anonymous ones.  But at least since AIX 7.1, it is well usable.  */
+   
 
   size_t pagesize;
   char fnamebuf[6+10+4+1];
@@ -912,7 +829,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
   pagesize = getpagesize ();
 
-  /* Construct fname = sprintf (fnamebuf+i, "/proc/%u/map", getpid ()).  */
+   
   fname = fnamebuf + sizeof (fnamebuf) - (4+1);
   memcpy (fname, "/map", 4+1);
   {
@@ -928,22 +845,11 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   if (fd < 0)
     return -1;
 
-  /* The contents of /proc/<pid>/map contains a number of prmap_t entries,
-     then an entirely null prmap_t entry, then a heap of NUL terminated
-     strings.
-     Documentation: https://www.ibm.com/docs/en/aix/7.1?topic=files-proc-file
-     We read the entire contents, but look only at the prmap_t entries and
-     ignore the tail part.  */
+   
 
   for (memneed = 2 * pagesize; ; memneed = 2 * memneed)
     {
-      /* Allocate memneed bytes of memory.
-         We cannot use alloca here, because not much stack space is guaranteed.
-         We also cannot use malloc here, because a malloc() call may call mmap()
-         and thus pre-allocate available memory.
-         So use mmap(), and ignore the resulting VMA if it occurs among the
-         resulting VMAs.  (Normally it doesn't, because it was allocated after
-         the open() call.)  */
+       
       void *auxmap;
       unsigned long auxmap_start;
       unsigned long auxmap_end;
@@ -959,9 +865,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
       auxmap_start = (unsigned long) auxmap;
       auxmap_end = auxmap_start + memneed;
 
-      /* Read the contents of /proc/<pid>/map in a single system call.
-         This guarantees a consistent result (no duplicated or omitted
-         entries).  */
+       
      retry:
       do
         nbytes = read (fd, auxmap, memneed);
@@ -974,7 +878,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
         }
       if (nbytes == memneed)
         {
-          /* Need more memory.  */
+           
           munmap (auxmap, memneed);
           if (lseek (fd, 0, SEEK_SET) < 0)
             {
@@ -986,7 +890,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
         {
           if (read (fd, (char *) auxmap + nbytes, 1) > 0)
             {
-              /* Oops, we had a short read.  Retry.  */
+               
               if (lseek (fd, 0, SEEK_SET) < 0)
                 {
                   munmap (auxmap, memneed);
@@ -996,13 +900,10 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
               goto retry;
             }
 
-          /* We now have the entire contents of /proc/<pid>/map in memory.  */
+           
           prmap_t* maps = (prmap_t *) auxmap;
 
-          /* The entries are not sorted by address.  Therefore
-             1. Extract the relevant information into an array.
-             2. Sort the array in ascending order.
-             3. Invoke the callback.  */
+           
           typedef struct
             {
               uintptr_t start;
@@ -1010,8 +911,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
               unsigned int flags;
             }
           vma_t;
-          /* Since 2 * sizeof (vma_t) <= sizeof (prmap_t), we can reuse the
-             same memory.  */
+           
           vma_t *vmas = (vma_t *) auxmap;
 
           vma_t *vp = vmas;
@@ -1025,7 +925,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
                 end = start + mp->pr_size;
                 if (start == 0 && end == 0 && mp->pr_mflags == 0)
                   break;
-                /* Discard empty VMAs and kernel VMAs.  */
+                 
                 if (start < end && (mp->pr_mflags & MA_KERNTEXT) == 0)
                   {
                     unsigned int flags;
@@ -1039,8 +939,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
                     if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
                       {
-                        /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-                           = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+                         
                         if (start < auxmap_start)
                           {
                             vp->start = start;
@@ -1069,16 +968,12 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
           }
 
           size_t nvmas = vp - vmas;
-          /* Sort the array in ascending order.
-             Better not call qsort(), since it may call malloc().
-             Insertion-sort is OK in this case, despite its worst-case running
-             time of O(N²), since the number of VMAs will rarely be larger than
-             1000.  */
+           
           {
             size_t i;
             for (i = 1; i < nvmas; i++)
               {
-                /* Invariant: Here vmas[0..i-1] is sorted.  */
+                 
                 size_t j;
                 for (j = i; j > 0 && vmas[j - 1].start > vmas[j].start; j--)
                   {
@@ -1086,11 +981,11 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
                     vmas[j - 1] = vmas[j];
                     vmas[j] = tmp;
                   }
-                /* Invariant: Here vmas[0..i] is sorted.  */
+                 
               }
           }
 
-          /* Invoke the callback.  */
+           
           {
             size_t i;
             for (i = 0; i < nvmas; i++)
@@ -1109,7 +1004,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   close (fd);
   return 0;
 
-#elif defined __sgi || defined __osf__ /* IRIX, OSF/1 */
+#elif defined __sgi || defined __osf__  
 
   size_t pagesize;
   char fnamebuf[6+10+1];
@@ -1132,7 +1027,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
   pagesize = getpagesize ();
 
-  /* Construct fname = sprintf (fnamebuf+i, "/proc/%u", getpid ()).  */
+   
   fname = fnamebuf + sizeof (fnamebuf) - 1;
   *fname = '\0';
   {
@@ -1152,11 +1047,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
     goto fail2;
 
   memneed = (nmaps + 10) * sizeof (prmap_t);
-  /* Allocate memneed bytes of memory.
-     We cannot use alloca here, because not much stack space is guaranteed.
-     We also cannot use malloc here, because a malloc() call may call mmap()
-     and thus pre-allocate available memory.
-     So use mmap(), and ignore the resulting VMA.  */
+   
   memneed = ((memneed - 1) / pagesize + 1) * pagesize;
 # if !HAVE_MAP_ANONYMOUS
   zero_fd = open ("/dev/zero", O_RDONLY | O_CLOEXEC, 0644);
@@ -1196,8 +1087,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
       mp++;
       if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
         {
-          /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-             = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+           
           if (start < auxmap_start)
             if (callback (data, start, auxmap_start, flags))
               break;
@@ -1221,20 +1111,12 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   close (fd);
   return -1;
 
-#elif defined __sun /* Solaris */
+#elif defined __sun  
 
-  /* Note: Solaris <sys/procfs.h> defines a different type prmap_t with
-     _STRUCTURED_PROC than without! Here's a table of sizeof(prmap_t):
-                                  32-bit   64-bit
-         _STRUCTURED_PROC = 0       32       56
-         _STRUCTURED_PROC = 1       96      104
-     Therefore, if the include files provide the newer API, prmap_t has
-     the bigger size, and thus you MUST use the newer API.  And if the
-     include files provide the older API, prmap_t has the smaller size,
-     and thus you MUST use the older API.  */
+   
 
 # if defined PIOCNMAP && defined PIOCMAP
-  /* We must use the older /proc interface.  */
+   
 
   size_t pagesize;
   char fnamebuf[6+10+1];
@@ -1245,7 +1127,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 #  if HAVE_MAP_ANONYMOUS
 #   define zero_fd -1
 #   define map_flags MAP_ANONYMOUS
-#  else /* Solaris <= 7 */
+#  else  
   int zero_fd;
 #   define map_flags 0
 #  endif
@@ -1257,7 +1139,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
   pagesize = getpagesize ();
 
-  /* Construct fname = sprintf (fnamebuf+i, "/proc/%u", getpid ()).  */
+   
   fname = fnamebuf + sizeof (fnamebuf) - 1;
   *fname = '\0';
   {
@@ -1277,11 +1159,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
     goto fail2;
 
   memneed = (nmaps + 10) * sizeof (prmap_t);
-  /* Allocate memneed bytes of memory.
-     We cannot use alloca here, because not much stack space is guaranteed.
-     We also cannot use malloc here, because a malloc() call may call mmap()
-     and thus pre-allocate available memory.
-     So use mmap(), and ignore the resulting VMA.  */
+   
   memneed = ((memneed - 1) / pagesize + 1) * pagesize;
 #  if !HAVE_MAP_ANONYMOUS
   zero_fd = open ("/dev/zero", O_RDONLY | O_CLOEXEC, 0644);
@@ -1321,8 +1199,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
       mp++;
       if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
         {
-          /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-             = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+           
           if (start < auxmap_start)
             if (callback (data, start, auxmap_start, flags))
               break;
@@ -1347,12 +1224,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   return -1;
 
 # else
-  /* We must use the newer /proc interface.
-     Documentation:
-     https://docs.oracle.com/cd/E23824_01/html/821-1473/proc-4.html
-     The contents of /proc/<pid>/map consists of records of type
-     prmap_t.  These are different in 32-bit and 64-bit processes,
-     but here we are fortunately accessing only the current process.  */
+   
 
   size_t pagesize;
   char fnamebuf[6+10+4+1];
@@ -1363,7 +1235,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 #  if HAVE_MAP_ANONYMOUS
 #   define zero_fd -1
 #   define map_flags MAP_ANONYMOUS
-#  else /* Solaris <= 7 */
+#  else  
   int zero_fd;
 #   define map_flags 0
 #  endif
@@ -1376,7 +1248,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
   pagesize = getpagesize ();
 
-  /* Construct fname = sprintf (fnamebuf+i, "/proc/%u/map", getpid ()).  */
+   
   fname = fnamebuf + sizeof (fnamebuf) - 1 - 4;
   memcpy (fname, "/map", 4 + 1);
   {
@@ -1400,11 +1272,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   }
 
   memneed = (nmaps + 10) * sizeof (prmap_t);
-  /* Allocate memneed bytes of memory.
-     We cannot use alloca here, because not much stack space is guaranteed.
-     We also cannot use malloc here, because a malloc() call may call mmap()
-     and thus pre-allocate available memory.
-     So use mmap(), and ignore the resulting VMA.  */
+   
   memneed = ((memneed - 1) / pagesize + 1) * pagesize;
 #  if !HAVE_MAP_ANONYMOUS
   zero_fd = open ("/dev/zero", O_RDONLY | O_CLOEXEC, 0644);
@@ -1422,7 +1290,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   auxmap_end = auxmap_start + memneed;
   maps = (prmap_t *) auxmap;
 
-  /* Read up to memneed bytes from fd into maps.  */
+   
   {
     size_t remaining = memneed;
     size_t total_read = 0;
@@ -1438,7 +1306,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
             goto fail1;
           }
         if (nread == 0)
-          /* EOF */
+           
           break;
         total_read += nread;
         ptr += nread;
@@ -1466,8 +1334,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
         flags |= VMA_PROT_EXECUTE;
       if (start <= auxmap_start && auxmap_end - 1 <= end - 1)
         {
-          /* Consider [start,end-1] \ [auxmap_start,auxmap_end-1]
-             = [start,auxmap_start-1] u [auxmap_end,end-1].  */
+           
           if (start < auxmap_start)
             if (callback (data, start, auxmap_start, flags))
               break;
@@ -1493,7 +1360,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
 # endif
 
-#elif HAVE_PSTAT_GETPROCVM /* HP-UX */
+#elif HAVE_PSTAT_GETPROCVM  
 
   unsigned long pagesize = getpagesize ();
   int i;
@@ -1522,7 +1389,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
       }
     }
 
-#elif defined __APPLE__ && defined __MACH__ /* Mac OS X */
+#elif defined __APPLE__ && defined __MACH__  
 
   task_t task = mach_task_self ();
   vm_address_t address;
@@ -1533,26 +1400,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
       int more;
       mach_port_t object_name;
       unsigned int flags;
-      /* In Mac OS X 10.5, the types vm_address_t, vm_offset_t, vm_size_t have
-         32 bits in 32-bit processes and 64 bits in 64-bit processes. Whereas
-         mach_vm_address_t and mach_vm_size_t are always 64 bits large.
-         Mac OS X 10.5 has three vm_region like methods:
-           - vm_region. It has arguments that depend on whether the current
-             process is 32-bit or 64-bit. When linking dynamically, this
-             function exists only in 32-bit processes. Therefore we use it only
-             in 32-bit processes.
-           - vm_region_64. It has arguments that depend on whether the current
-             process is 32-bit or 64-bit. It interprets a flavor
-             VM_REGION_BASIC_INFO as VM_REGION_BASIC_INFO_64, which is
-             dangerous since 'struct vm_region_basic_info_64' is larger than
-             'struct vm_region_basic_info'; therefore let's write
-             VM_REGION_BASIC_INFO_64 explicitly.
-           - mach_vm_region. It has arguments that are 64-bit always. This
-             function is useful when you want to access the VM of a process
-             other than the current process.
-         In 64-bit processes, we could use vm_region_64 or mach_vm_region.
-         I choose vm_region_64 because it uses the same types as vm_region,
-         resulting in less conditional code.  */
+       
 # if defined __aarch64__ || defined __ppc64__ || defined __x86_64__
       struct vm_region_basic_info_64 info;
       mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
@@ -1584,47 +1432,9 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
     }
   return 0;
 
-#elif defined __GNU__ /* GNU/Hurd */
+#elif defined __GNU__  
 
-  /* The Hurd has a /proc/self/maps that looks like the Linux one, but it
-     lacks the VMAs created through anonymous mmap.  Therefore use the Mach
-     API.
-     Documentation:
-     https://www.gnu.org/software/hurd/gnumach-doc/Memory-Attributes.html */
-
-  task_t task = mach_task_self ();
-  vm_address_t address;
-  vm_size_t size;
-
-  for (address = 0;; address += size)
-    {
-      vm_prot_t protection;
-      vm_prot_t max_protection;
-      vm_inherit_t inheritance;
-      boolean_t shared;
-      memory_object_name_t object_name;
-      vm_offset_t offset;
-      unsigned int flags;
-
-      if (!(vm_region (task, &address, &size, &protection, &max_protection,
-                         &inheritance, &shared, &object_name, &offset)
-            == KERN_SUCCESS))
-        break;
-      mach_port_deallocate (task, object_name);
-      flags = 0;
-      if (protection & VM_PROT_READ)
-        flags |= VMA_PROT_READ;
-      if (protection & VM_PROT_WRITE)
-        flags |= VMA_PROT_WRITE;
-      if (protection & VM_PROT_EXECUTE)
-        flags |= VMA_PROT_EXECUTE;
-      if (callback (data, address, address + size, flags))
-        break;
-    }
-  return 0;
-
-#elif defined _WIN32 || defined __CYGWIN__
-  /* Windows platform.  Use the native Windows API.  */
+   
 
   MEMORY_BASIC_INFORMATION info;
   uintptr_t address = 0;
@@ -1632,10 +1442,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   while (VirtualQuery ((void*)address, &info, sizeof(info)) == sizeof(info))
     {
       if (info.State != MEM_FREE)
-        /* Ignore areas where info.State has the value MEM_RESERVE or,
-           equivalently, info.Protect has the undocumented value 0.
-           This is needed, so that on Cygwin, areas used by malloc() are
-           distinguished from areas reserved for future malloc().  */
+         
         if (info.State != MEM_RESERVE)
           {
             uintptr_t start, end;
@@ -1676,7 +1483,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   return 0;
 
 #elif defined __BEOS__ || defined __HAIKU__
-  /* Use the BeOS specific API.  */
+   
 
   area_info info;
   ssize_t cookie;
@@ -1700,11 +1507,10 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
     }
   return 0;
 
-#elif HAVE_MQUERY /* OpenBSD */
+#elif HAVE_MQUERY  
 
 # if defined __OpenBSD__
-  /* Try sysctl() first.  It is more efficient than the mquery() loop below
-     and also provides the flags.  */
+   
   {
     int retval = vma_iterate_bsd (callback, data);
     if (retval == 0)
@@ -1715,52 +1521,48 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
   {
     uintptr_t pagesize;
     uintptr_t address;
-    int /*bool*/ address_known_mapped;
+    int   address_known_mapped;
 
     pagesize = getpagesize ();
-    /* Avoid calling mquery with a NULL first argument, because this argument
-       value has a specific meaning.  We know the NULL page is unmapped.  */
+     
     address = pagesize;
     address_known_mapped = 0;
     for (;;)
       {
-        /* Test whether the page at address is mapped.  */
+         
         if (address_known_mapped
             || mquery ((void *) address, pagesize, 0, MAP_FIXED, -1, 0)
                == (void *) -1)
           {
-            /* The page at address is mapped.
-               This is the start of an interval.  */
+             
             uintptr_t start = address;
             uintptr_t end;
 
-            /* Find the end of the interval.  */
+             
             end = (uintptr_t) mquery ((void *) address, pagesize, 0, 0, -1, 0);
             if (end == (uintptr_t) (void *) -1)
-              end = 0; /* wrap around */
+              end = 0;  
             address = end;
 
-            /* It's too complicated to find out about the flags.
-               Just pass 0.  */
+             
             if (callback (data, start, end, 0))
               break;
 
-            if (address < pagesize) /* wrap around? */
+            if (address < pagesize)  
               break;
           }
-        /* Here we know that the page at address is unmapped.  */
+         
         {
           uintptr_t query_size = pagesize;
 
           address += pagesize;
 
-          /* Query larger and larger blocks, to get through the unmapped address
-             range with few mquery() calls.  */
+           
           for (;;)
             {
               if (2 * query_size > query_size)
                 query_size = 2 * query_size;
-              if (address + query_size - 1 < query_size) /* wrap around? */
+              if (address + query_size - 1 < query_size)  
                 {
                   address_known_mapped = 0;
                   break;
@@ -1768,17 +1570,14 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
               if (mquery ((void *) address, query_size, 0, MAP_FIXED, -1, 0)
                   == (void *) -1)
                 {
-                  /* Not all the interval [address .. address + query_size - 1]
-                     is unmapped.  */
+                   
                   address_known_mapped = (query_size == pagesize);
                   break;
                 }
-              /* The interval [address .. address + query_size - 1] is
-                 unmapped.  */
+               
               address += query_size;
             }
-          /* Reduce the query size again, to determine the precise size of the
-             unmapped interval that starts at address.  */
+           
           while (query_size > pagesize)
             {
               query_size = query_size / 2;
@@ -1787,8 +1586,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
                   if (mquery ((void *) address, query_size, 0, MAP_FIXED, -1, 0)
                       != (void *) -1)
                     {
-                      /* The interval [address .. address + query_size - 1] is
-                         unmapped.  */
+                       
                       address += query_size;
                       address_known_mapped = 0;
                     }
@@ -1796,12 +1594,9 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
                     address_known_mapped = (query_size == pagesize);
                 }
             }
-          /* Here again query_size = pagesize, and
-             either address + pagesize - 1 < pagesize, or
-             mquery ((void *) address, pagesize, 0, MAP_FIXED, -1, 0) fails.
-             So, the unmapped area ends at address.  */
+           
         }
-        if (address + pagesize - 1 < pagesize) /* wrap around? */
+        if (address + pagesize - 1 < pagesize)  
           break;
       }
     return 0;
@@ -1809,7 +1604,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
 #else
 
-  /* Not implemented.  */
+   
   return -1;
 
 #endif
@@ -1820,8 +1615,7 @@ vma_iterate (vma_iterate_callback_fn callback, void *data)
 
 #include <stdio.h>
 
-/* Output the VMAs of the current process in a format similar to the Linux
-   /proc/$pid/maps file.  */
+ 
 
 static int
 vma_iterate_callback (void *data, uintptr_t start, uintptr_t end,
@@ -1840,16 +1634,12 @@ main ()
 {
   vma_iterate (vma_iterate_callback, NULL);
 
-  /* Let the user interactively look at the /proc file system.  */
+   
   sleep (10);
 
   return 0;
 }
 
-/*
- * Local Variables:
- * compile-command: "gcc -ggdb -DTEST -Wall -I.. vma-iter.c"
- * End:
- */
+ 
 
-#endif /* TEST */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sparse memory mappings.
- */
+
+ 
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/mmzone.h>
@@ -18,11 +16,7 @@
 #include "internal.h"
 #include <asm/dma.h>
 
-/*
- * Permanent SPARSEMEM data:
- *
- * 1) mem_section	- memory sections, mem_map's for valid memory
- */
+ 
 #ifdef CONFIG_SPARSEMEM_EXTREME
 struct mem_section **mem_section;
 #else
@@ -32,11 +26,7 @@ struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT]
 EXPORT_SYMBOL(mem_section);
 
 #ifdef NODE_NOT_IN_PAGE_FLAGS
-/*
- * If we did not store the node number in the page then we have to
- * do a lookup in the section_to_node_table in order to find which
- * node the page belongs to.
- */
+ 
 #if MAX_NUMNODES <= 256
 static u8 section_to_node_table[NR_MEM_SECTIONS] __cacheline_aligned;
 #else
@@ -53,7 +43,7 @@ static void set_section_nid(unsigned long section_nr, int nid)
 {
 	section_to_node_table[section_nr] = nid;
 }
-#else /* !NODE_NOT_IN_PAGE_FLAGS */
+#else  
 static inline void set_section_nid(unsigned long section_nr, int nid)
 {
 }
@@ -84,13 +74,7 @@ static int __meminit sparse_index_init(unsigned long section_nr, int nid)
 	unsigned long root = SECTION_NR_TO_ROOT(section_nr);
 	struct mem_section *section;
 
-	/*
-	 * An existing section is possible in the sub-section hotplug
-	 * case. First hot-add instantiates, follow-on hot-add reuses
-	 * the existing section.
-	 *
-	 * The mem_hotplug_lock resolves the apparent race below.
-	 */
+	 
 	if (mem_section[root])
 		return 0;
 
@@ -102,19 +86,14 @@ static int __meminit sparse_index_init(unsigned long section_nr, int nid)
 
 	return 0;
 }
-#else /* !SPARSEMEM_EXTREME */
+#else  
 static inline int sparse_index_init(unsigned long section_nr, int nid)
 {
 	return 0;
 }
 #endif
 
-/*
- * During early boot, before section_mem_map is used for an actual
- * mem_map, we use section_mem_map to store the section's NUMA
- * node.  This keeps us from having to use another data structure.  The
- * node information is cleared just before we store the real mem_map.
- */
+ 
 static inline unsigned long sparse_encode_early_nid(int nid)
 {
 	return ((unsigned long)nid << SECTION_NID_SHIFT);
@@ -125,16 +104,13 @@ static inline int sparse_early_nid(struct mem_section *section)
 	return (section->section_mem_map >> SECTION_NID_SHIFT);
 }
 
-/* Validate the physical addressing limitations of the model */
+ 
 static void __meminit mminit_validate_memmodel_limits(unsigned long *start_pfn,
 						unsigned long *end_pfn)
 {
 	unsigned long max_sparsemem_pfn = 1UL << (MAX_PHYSMEM_BITS-PAGE_SHIFT);
 
-	/*
-	 * Sanity checks - do not allow an architecture to pass
-	 * in larger pfns than the maximum scope of sparsemem:
-	 */
+	 
 	if (*start_pfn > max_sparsemem_pfn) {
 		mminit_dprintk(MMINIT_WARNING, "pfnvalidation",
 			"Start of range %lu -> %lu exceeds SPARSEMEM max %lu\n",
@@ -151,15 +127,7 @@ static void __meminit mminit_validate_memmodel_limits(unsigned long *start_pfn,
 	}
 }
 
-/*
- * There are a number of times that we loop over NR_MEM_SECTIONS,
- * looking for section_present() on each.  But, when we have very
- * large physical address spaces, NR_MEM_SECTIONS can also be
- * very large which makes the loops quite long.
- *
- * Keeping track of this gives us an easy way to break out of
- * those loops early.
- */
+ 
 unsigned long __highest_present_section_nr;
 static void __section_mark_present(struct mem_section *ms,
 		unsigned long section_nr)
@@ -221,7 +189,7 @@ void __init subsection_map_init(unsigned long pfn, unsigned long nr_pages)
 }
 #endif
 
-/* Record a memory area against a node. */
+ 
 static void __init memory_present(int nid, unsigned long start, unsigned long end)
 {
 	unsigned long pfn;
@@ -257,11 +225,7 @@ static void __init memory_present(int nid, unsigned long start, unsigned long en
 	}
 }
 
-/*
- * Mark all memblocks as present using memory_present().
- * This is a convenience function that is useful to mark all of the systems
- * memory as present during initialization.
- */
+ 
 static void __init memblocks_present(void)
 {
 	unsigned long start, end;
@@ -271,11 +235,7 @@ static void __init memblocks_present(void)
 		memory_present(nid, start, end);
 }
 
-/*
- * Subtle, we encode the real pfn into the mem_map such that
- * the identity pfn - section_mem_map will return the actual
- * physical page frame number.
- */
+ 
 static unsigned long sparse_encode_mem_map(struct page *mem_map, unsigned long pnum)
 {
 	unsigned long coded_mem_map =
@@ -286,16 +246,14 @@ static unsigned long sparse_encode_mem_map(struct page *mem_map, unsigned long p
 }
 
 #ifdef CONFIG_MEMORY_HOTPLUG
-/*
- * Decode mem_map from the coded memmap
- */
+ 
 struct page *sparse_decode_mem_map(unsigned long coded_mem_map, unsigned long pnum)
 {
-	/* mask off the extra low bits of information */
+	 
 	coded_mem_map &= SECTION_MAP_MASK;
 	return ((struct page *)coded_mem_map) + section_nr_to_pfn(pnum);
 }
-#endif /* CONFIG_MEMORY_HOTPLUG */
+#endif  
 
 static void __meminit sparse_init_one_section(struct mem_section *ms,
 		unsigned long pnum, struct page *mem_map,
@@ -335,16 +293,7 @@ sparse_early_usemaps_alloc_pgdat_section(struct pglist_data *pgdat,
 	struct mem_section_usage *usage;
 	unsigned long goal, limit;
 	int nid;
-	/*
-	 * A page may contain usemaps for other sections preventing the
-	 * page being freed and making a section unremovable while
-	 * other sections referencing the usemap remain active. Similarly,
-	 * a pgdat can prevent a section being removed. If section A
-	 * contains a pgdat and section B contains the usemap, both
-	 * sections become inter-dependent. This allocates usemaps
-	 * from the same section as the pgdat where possible to avoid
-	 * this problem.
-	 */
+	 
 	goal = pgdat_to_phys(pgdat) & (PAGE_SECTION_MASK << PAGE_SHIFT);
 	limit = goal + (1UL << PA_SECTION_SHIFT);
 	nid = early_pfn_to_nid(goal >> PAGE_SHIFT);
@@ -366,7 +315,7 @@ static void __init check_usemap_section_nr(int nid,
 	struct pglist_data *pgdat = NODE_DATA(nid);
 	int usemap_nid;
 
-	/* First call */
+	 
 	if (!old_usemap_snr) {
 		old_usemap_snr = NR_MEM_SECTIONS;
 		old_pgdat_snr = NR_MEM_SECTIONS;
@@ -378,7 +327,7 @@ static void __init check_usemap_section_nr(int nid,
 		return;
 
 	if (old_usemap_snr == usemap_snr && old_pgdat_snr == pgdat_snr)
-		/* skip redundant message */
+		 
 		return;
 
 	old_usemap_snr = usemap_snr;
@@ -390,12 +339,7 @@ static void __init check_usemap_section_nr(int nid,
 			nid, usemap_snr);
 		return;
 	}
-	/*
-	 * There is a circular dependency.
-	 * Some platforms allow un-removable section because they will just
-	 * gather other removable sections for dynamic partitioning.
-	 * Just notify un-removable section's number here.
-	 */
+	 
 	pr_info("Section %ld and %ld (node %d) have a circular dependency on usemap and pgdat allocations\n",
 		usemap_snr, pgdat_snr, nid);
 }
@@ -411,7 +355,7 @@ static void __init check_usemap_section_nr(int nid,
 		struct mem_section_usage *usage)
 {
 }
-#endif /* CONFIG_MEMORY_HOTREMOVE */
+#endif  
 
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
 static unsigned long __init section_map_size(void)
@@ -443,7 +387,7 @@ struct page __init *__populate_section_memmap(unsigned long pfn,
 
 	return map;
 }
-#endif /* !CONFIG_SPARSEMEM_VMEMMAP */
+#endif  
 
 static void *sparsemap_buf __meminitdata;
 static void *sparsemap_buf_end __meminitdata;
@@ -457,12 +401,8 @@ static inline void __meminit sparse_buffer_free(unsigned long size)
 static void __init sparse_buffer_init(unsigned long size, int nid)
 {
 	phys_addr_t addr = __pa(MAX_DMA_ADDRESS);
-	WARN_ON(sparsemap_buf);	/* forgot to call sparse_buffer_fini()? */
-	/*
-	 * Pre-allocated buffer is mainly used by __populate_section_memmap
-	 * and we want it to be properly aligned to the section size - this is
-	 * especially the case for VMEMMAP which maps memmap to PMDs
-	 */
+	WARN_ON(sparsemap_buf);	 
+	 
 	sparsemap_buf = memmap_alloc(size, section_map_size(), addr, nid, true);
 	sparsemap_buf_end = sparsemap_buf + size;
 }
@@ -485,7 +425,7 @@ void * __meminit sparse_buffer_alloc(unsigned long size)
 		if (ptr + size > sparsemap_buf_end)
 			ptr = NULL;
 		else {
-			/* Free redundant aligned space */
+			 
 			if ((unsigned long)(ptr - sparsemap_buf) > 0)
 				sparse_buffer_free((unsigned long)(ptr - sparsemap_buf));
 			sparsemap_buf = ptr + size;
@@ -498,10 +438,7 @@ void __weak __meminit vmemmap_populate_print_last(void)
 {
 }
 
-/*
- * Initialize sparse on a specific node. The node spans [pnum_begin, pnum_end)
- * And number of present sections in this node is map_count.
- */
+ 
 static void __init sparse_init_nid(int nid, unsigned long pnum_begin,
 				   unsigned long pnum_end,
 				   unsigned long map_count)
@@ -540,7 +477,7 @@ static void __init sparse_init_nid(int nid, unsigned long pnum_begin,
 	sparse_buffer_fini();
 	return;
 failed:
-	/* We failed to allocate, mark all the following pnums as not present */
+	 
 	for_each_present_section_nr(pnum_begin, pnum) {
 		struct mem_section *ms;
 
@@ -551,10 +488,7 @@ failed:
 	}
 }
 
-/*
- * Allocate the accumulated non-linear sections, allocate a mem_map
- * for each and record the physical to section mapping.
- */
+ 
 void __init sparse_init(void)
 {
 	unsigned long pnum_end, pnum_begin, map_count = 1;
@@ -565,7 +499,7 @@ void __init sparse_init(void)
 	pnum_begin = first_present_section_nr();
 	nid_begin = sparse_early_nid(__nr_to_section(pnum_begin));
 
-	/* Setup pageblock_order for HUGETLB_PAGE_SIZE_VARIABLE */
+	 
 	set_pageblock_order();
 
 	for_each_present_section_nr(pnum_begin + 1, pnum_end) {
@@ -575,20 +509,20 @@ void __init sparse_init(void)
 			map_count++;
 			continue;
 		}
-		/* Init node with sections in range [pnum_begin, pnum_end) */
+		 
 		sparse_init_nid(nid_begin, pnum_begin, pnum_end, map_count);
 		nid_begin = nid;
 		pnum_begin = pnum_end;
 		map_count = 1;
 	}
-	/* cover the last node */
+	 
 	sparse_init_nid(nid_begin, pnum_begin, pnum_end, map_count);
 	vmemmap_populate_print_last();
 }
 
 #ifdef CONFIG_MEMORY_HOTPLUG
 
-/* Mark all memory sections within the pfn range as online */
+ 
 void online_mem_sections(unsigned long start_pfn, unsigned long end_pfn)
 {
 	unsigned long pfn;
@@ -597,7 +531,7 @@ void online_mem_sections(unsigned long start_pfn, unsigned long end_pfn)
 		unsigned long section_nr = pfn_to_section_nr(pfn);
 		struct mem_section *ms;
 
-		/* onlining code should never touch invalid ranges */
+		 
 		if (WARN_ON(!valid_section_nr(section_nr)))
 			continue;
 
@@ -606,7 +540,7 @@ void online_mem_sections(unsigned long start_pfn, unsigned long end_pfn)
 	}
 }
 
-/* Mark all memory sections within the pfn range as offline */
+ 
 void offline_mem_sections(unsigned long start_pfn, unsigned long end_pfn)
 {
 	unsigned long pfn;
@@ -615,10 +549,7 @@ void offline_mem_sections(unsigned long start_pfn, unsigned long end_pfn)
 		unsigned long section_nr = pfn_to_section_nr(pfn);
 		struct mem_section *ms;
 
-		/*
-		 * TODO this needs some double checking. Offlining code makes
-		 * sure to check pfn_valid but those checks might be just bogus
-		 */
+		 
 		if (WARN_ON(!valid_section_nr(section_nr)))
 			continue;
 
@@ -731,14 +662,7 @@ static void free_map_bootmem(struct page *memmap)
 		maps_section_nr = pfn_to_section_nr(page_to_pfn(page));
 		removing_section_nr = page_private(page);
 
-		/*
-		 * When this function is called, the removing section is
-		 * logical offlined state. This means all pages are isolated
-		 * from page allocator. If removing section's memmap is placed
-		 * on the same section, it must not be freed.
-		 * If it is freed, page allocator may allocate it which will
-		 * be removed physically soon.
-		 */
+		 
 		if (maps_section_nr != removing_section_nr)
 			put_page_bootmem(page);
 	}
@@ -758,24 +682,9 @@ static int fill_subsection_map(unsigned long pfn, unsigned long nr_pages)
 {
 	return 0;
 }
-#endif /* CONFIG_SPARSEMEM_VMEMMAP */
+#endif  
 
-/*
- * To deactivate a memory region, there are 3 cases to handle across
- * two configurations (SPARSEMEM_VMEMMAP={y,n}):
- *
- * 1. deactivation of a partial hot-added section (only possible in
- *    the SPARSEMEM_VMEMMAP=y case).
- *      a) section was present at memory init.
- *      b) section was hot-added post memory init.
- * 2. deactivation of a complete hot-added section.
- * 3. deactivation of a complete section from memory init.
- *
- * For 1, when subsection_map does not empty we will not be freeing the
- * usage map, but still need to free the vmemmap range.
- *
- * For 2 and 3, the SPARSEMEM_VMEMMAP={y,n} cases are unified
- */
+ 
 static void section_deactivate(unsigned long pfn, unsigned long nr_pages,
 		struct vmem_altmap *altmap)
 {
@@ -791,30 +700,17 @@ static void section_deactivate(unsigned long pfn, unsigned long nr_pages,
 	if (empty) {
 		unsigned long section_nr = pfn_to_section_nr(pfn);
 
-		/*
-		 * When removing an early section, the usage map is kept (as the
-		 * usage maps of other sections fall into the same page). It
-		 * will be re-used when re-adding the section - which is then no
-		 * longer an early section. If the usage map is PageReserved, it
-		 * was allocated during boot.
-		 */
+		 
 		if (!PageReserved(virt_to_page(ms->usage))) {
 			kfree(ms->usage);
 			ms->usage = NULL;
 		}
 		memmap = sparse_decode_mem_map(ms->section_mem_map, section_nr);
-		/*
-		 * Mark the section invalid so that valid_section()
-		 * return false. This prevents code from dereferencing
-		 * ms->usage array.
-		 */
+		 
 		ms->section_mem_map &= ~SECTION_HAS_MEM_MAP;
 	}
 
-	/*
-	 * The memmap of early sections is always fully populated. See
-	 * section_activate() and pfn_valid() .
-	 */
+	 
 	if (!section_is_early)
 		depopulate_section_memmap(pfn, nr_pages, altmap);
 	else if (memmap)
@@ -848,13 +744,7 @@ static struct page * __meminit section_activate(int nid, unsigned long pfn,
 		return ERR_PTR(rc);
 	}
 
-	/*
-	 * The early init code does not consider partially populated
-	 * initial sections, it simply assumes that memory will never be
-	 * referenced.  If we hot-add memory into such a section then we
-	 * do not need to populate the memmap and can simply reuse what
-	 * is already there.
-	 */
+	 
 	if (nr_pages < PAGES_PER_SECTION && early_section(ms))
 		return pfn_to_page(pfn);
 
@@ -867,25 +757,7 @@ static struct page * __meminit section_activate(int nid, unsigned long pfn,
 	return memmap;
 }
 
-/**
- * sparse_add_section - add a memory section, or populate an existing one
- * @nid: The node to add section on
- * @start_pfn: start pfn of the memory range
- * @nr_pages: number of pfns to add in the section
- * @altmap: alternate pfns to allocate the memmap backing store
- * @pgmap: alternate compound page geometry for devmap mappings
- *
- * This is only intended for hotplug.
- *
- * Note that only VMEMMAP supports sub-section aligned hotplug,
- * the proper alignment and size are gated by check_pfn_span().
- *
- *
- * Return:
- * * 0		- On success.
- * * -EEXIST	- Section has been present.
- * * -ENOMEM	- Out of memory.
- */
+ 
 int __meminit sparse_add_section(int nid, unsigned long start_pfn,
 		unsigned long nr_pages, struct vmem_altmap *altmap,
 		struct dev_pagemap *pgmap)
@@ -903,17 +775,14 @@ int __meminit sparse_add_section(int nid, unsigned long start_pfn,
 	if (IS_ERR(memmap))
 		return PTR_ERR(memmap);
 
-	/*
-	 * Poison uninitialized struct pages in order to catch invalid flags
-	 * combinations.
-	 */
+	 
 	page_init_poison(memmap, sizeof(struct page) * nr_pages);
 
 	ms = __nr_to_section(section_nr);
 	set_section_nid(section_nr, nid);
 	__section_mark_present(ms, section_nr);
 
-	/* Align memmap to section boundary in the subsection case */
+	 
 	if (section_nr_to_pfn(section_nr) != start_pfn)
 		memmap = pfn_to_page(section_nr_to_pfn(section_nr));
 	sparse_init_one_section(ms, section_nr, memmap, ms->usage, 0);
@@ -931,4 +800,4 @@ void sparse_remove_section(unsigned long pfn, unsigned long nr_pages,
 
 	section_deactivate(pfn, nr_pages, altmap);
 }
-#endif /* CONFIG_MEMORY_HOTPLUG */
+#endif  

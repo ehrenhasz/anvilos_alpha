@@ -1,21 +1,4 @@
-/*
- *
- * Copyright IBM Corporation, 2012
- * Author Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
- *
- * Cgroup v2
- * Copyright (C) 2019 Red Hat, Inc.
- * Author: Giuseppe Scrivano <gscrivan@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2.1 of the GNU Lesser General Public License
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- */
+ 
 
 #include <linux/cgroup.h>
 #include <linux/page_counter.h>
@@ -148,13 +131,9 @@ hugetlb_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
 	if (!parent_h_cgroup)
 		root_h_cgroup = h_cgroup;
 
-	/*
-	 * TODO: this routine can waste much memory for nodes which will
-	 * never be onlined. It's better to use memory hotplug callback
-	 * function.
-	 */
+	 
 	for_each_node(node) {
-		/* Set node_to_alloc to NUMA_NO_NODE for offline nodes. */
+		 
 		int node_to_alloc =
 			node_state(node, N_NORMAL_MEMORY) ? node : NUMA_NO_NODE;
 		h_cgroup->nodeinfo[node] =
@@ -177,13 +156,7 @@ static void hugetlb_cgroup_css_free(struct cgroup_subsys_state *css)
 	hugetlb_cgroup_free(hugetlb_cgroup_from_css(css));
 }
 
-/*
- * Should be called with hugetlb_lock held.
- * Since we are holding hugetlb_lock, pages cannot get moved from
- * active list or uncharged from the cgroup, So no need to get
- * page reference and test for page active here. This function
- * cannot fail.
- */
+ 
 static void hugetlb_cgroup_move_parent(int idx, struct hugetlb_cgroup *h_cg,
 				       struct page *page)
 {
@@ -194,22 +167,18 @@ static void hugetlb_cgroup_move_parent(int idx, struct hugetlb_cgroup *h_cg,
 	struct folio *folio = page_folio(page);
 
 	page_hcg = hugetlb_cgroup_from_folio(folio);
-	/*
-	 * We can have pages in active list without any cgroup
-	 * ie, hugepage with less than 3 pages. We can safely
-	 * ignore those pages.
-	 */
+	 
 	if (!page_hcg || page_hcg != h_cg)
 		goto out;
 
 	nr_pages = compound_nr(page);
 	if (!parent) {
 		parent = root_h_cgroup;
-		/* root has no limit */
+		 
 		page_counter_charge(&parent->hugepage[idx], nr_pages);
 	}
 	counter = &h_cg->hugepage[idx];
-	/* Take the pages off the local counter */
+	 
 	page_counter_cancel(counter, nr_pages);
 
 	set_hugetlb_cgroup(folio, parent);
@@ -217,10 +186,7 @@ out:
 	return;
 }
 
-/*
- * Force the hugetlb cgroup to empty the hugetlb resources by moving them to
- * the parent cgroup.
- */
+ 
 static void hugetlb_cgroup_css_offline(struct cgroup_subsys_state *css)
 {
 	struct hugetlb_cgroup *h_cg = hugetlb_cgroup_from_css(css);
@@ -262,10 +228,7 @@ static int __hugetlb_cgroup_charge_cgroup(int idx, unsigned long nr_pages,
 
 	if (hugetlb_cgroup_disabled())
 		goto done;
-	/*
-	 * We don't charge any cgroup if the compound page have less
-	 * than 3 pages.
-	 */
+	 
 	if (huge_page_order(&hstates[idx]) < HUGETLB_CGROUP_MIN_ORDER)
 		goto done;
 again:
@@ -285,9 +248,7 @@ again:
 		css_put(&h_cg->css);
 		goto done;
 	}
-	/* Reservations take a reference to the css because they do not get
-	 * reparented.
-	 */
+	 
 	if (!rsvd)
 		css_put(&h_cg->css);
 done:
@@ -307,7 +268,7 @@ int hugetlb_cgroup_charge_cgroup_rsvd(int idx, unsigned long nr_pages,
 	return __hugetlb_cgroup_charge_cgroup(idx, nr_pages, ptr, true);
 }
 
-/* Should be called with hugetlb_lock held */
+ 
 static void __hugetlb_cgroup_commit_charge(int idx, unsigned long nr_pages,
 					   struct hugetlb_cgroup *h_cg,
 					   struct folio *folio, bool rsvd)
@@ -319,11 +280,7 @@ static void __hugetlb_cgroup_commit_charge(int idx, unsigned long nr_pages,
 	if (!rsvd) {
 		unsigned long usage =
 			h_cg->nodeinfo[folio_nid(folio)]->usage[idx];
-		/*
-		 * This write is not atomic due to fetching usage and writing
-		 * to it, but that's fine because we call this with
-		 * hugetlb_lock held anyway.
-		 */
+		 
 		WRITE_ONCE(h_cg->nodeinfo[folio_nid(folio)]->usage[idx],
 			   usage + nr_pages);
 	}
@@ -343,9 +300,7 @@ void hugetlb_cgroup_commit_charge_rsvd(int idx, unsigned long nr_pages,
 	__hugetlb_cgroup_commit_charge(idx, nr_pages, h_cg, folio, true);
 }
 
-/*
- * Should be called with hugetlb_lock held
- */
+ 
 static void __hugetlb_cgroup_uncharge_folio(int idx, unsigned long nr_pages,
 					   struct folio *folio, bool rsvd)
 {
@@ -368,11 +323,7 @@ static void __hugetlb_cgroup_uncharge_folio(int idx, unsigned long nr_pages,
 	else {
 		unsigned long usage =
 			h_cg->nodeinfo[folio_nid(folio)]->usage[idx];
-		/*
-		 * This write is not atomic due to fetching usage and writing
-		 * to it, but that's fine because we call this with
-		 * hugetlb_lock held anyway.
-		 */
+		 
 		WRITE_ONCE(h_cg->nodeinfo[folio_nid(folio)]->usage[idx],
 			   usage - nr_pages);
 	}
@@ -444,10 +395,7 @@ void hugetlb_cgroup_uncharge_file_region(struct resv_map *resv,
 	    !resv->reservation_counter) {
 		page_counter_uncharge(rg->reservation_counter,
 				      nr_pages * resv->pages_per_hpage);
-		/*
-		 * Only do css_put(rg->css) when we delete the entire region
-		 * because one file_region must hold exactly one css reference.
-		 */
+		 
 		if (region_del)
 			css_put(rg->css);
 	}
@@ -475,13 +423,13 @@ static int hugetlb_cgroup_read_numa_stat(struct seq_file *seq, void *dummy)
 	unsigned long usage;
 
 	if (legacy) {
-		/* Add up usage across all nodes for the non-hierarchical total. */
+		 
 		usage = 0;
 		for_each_node_state(nid, N_MEMORY)
 			usage += READ_ONCE(h_cg->nodeinfo[nid]->usage[idx]);
 		seq_printf(seq, "total=%lu", usage * PAGE_SIZE);
 
-		/* Simply print the per-node usage for the non-hierarchical total. */
+		 
 		for_each_node_state(nid, N_MEMORY)
 			seq_printf(seq, " N%d=%lu", nid,
 				   READ_ONCE(h_cg->nodeinfo[nid]->usage[idx]) *
@@ -489,17 +437,11 @@ static int hugetlb_cgroup_read_numa_stat(struct seq_file *seq, void *dummy)
 		seq_putc(seq, '\n');
 	}
 
-	/*
-	 * The hierarchical total is pretty much the value recorded by the
-	 * counter, so use that.
-	 */
+	 
 	seq_printf(seq, "%stotal=%lu", legacy ? "hierarchical_" : "",
 		   page_counter_read(&h_cg->hugepage[idx]) * PAGE_SIZE);
 
-	/*
-	 * For each node, transverse the css tree to obtain the hierarchical
-	 * node usage.
-	 */
+	 
 	for_each_node_state(nid, N_MEMORY) {
 		usage = 0;
 		rcu_read_lock();
@@ -600,7 +542,7 @@ static ssize_t hugetlb_cgroup_write(struct kernfs_open_file *of,
 	struct hugetlb_cgroup *h_cg = hugetlb_cgroup_from_css(of_css(of));
 	bool rsvd = false;
 
-	if (hugetlb_cgroup_is_root(h_cg)) /* Can't set limit on root */
+	if (hugetlb_cgroup_is_root(h_cg))  
 		return -EINVAL;
 
 	buf = strstrip(buf);
@@ -717,10 +659,10 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
 	struct cftype *cft;
 	struct hstate *h = &hstates[idx];
 
-	/* format the size */
+	 
 	mem_fmt(buf, sizeof(buf), huge_page_size(h));
 
-	/* Add the limit file */
+	 
 	cft = &h->cgroup_files_dfl[0];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.max", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_LIMIT);
@@ -728,7 +670,7 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
 	cft->write = hugetlb_cgroup_write_dfl;
 	cft->flags = CFTYPE_NOT_ON_ROOT;
 
-	/* Add the reservation limit file */
+	 
 	cft = &h->cgroup_files_dfl[1];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.rsvd.max", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_RSVD_LIMIT);
@@ -736,21 +678,21 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
 	cft->write = hugetlb_cgroup_write_dfl;
 	cft->flags = CFTYPE_NOT_ON_ROOT;
 
-	/* Add the current usage file */
+	 
 	cft = &h->cgroup_files_dfl[2];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.current", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_USAGE);
 	cft->seq_show = hugetlb_cgroup_read_u64_max;
 	cft->flags = CFTYPE_NOT_ON_ROOT;
 
-	/* Add the current reservation usage file */
+	 
 	cft = &h->cgroup_files_dfl[3];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.rsvd.current", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_RSVD_USAGE);
 	cft->seq_show = hugetlb_cgroup_read_u64_max;
 	cft->flags = CFTYPE_NOT_ON_ROOT;
 
-	/* Add the events file */
+	 
 	cft = &h->cgroup_files_dfl[4];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.events", buf);
 	cft->private = MEMFILE_PRIVATE(idx, 0);
@@ -758,7 +700,7 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
 	cft->file_offset = offsetof(struct hugetlb_cgroup, events_file[idx]);
 	cft->flags = CFTYPE_NOT_ON_ROOT;
 
-	/* Add the events.local file */
+	 
 	cft = &h->cgroup_files_dfl[5];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.events.local", buf);
 	cft->private = MEMFILE_PRIVATE(idx, 0);
@@ -767,14 +709,14 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
 				    events_local_file[idx]);
 	cft->flags = CFTYPE_NOT_ON_ROOT;
 
-	/* Add the numa stat file */
+	 
 	cft = &h->cgroup_files_dfl[6];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.numa_stat", buf);
 	cft->private = MEMFILE_PRIVATE(idx, 0);
 	cft->seq_show = hugetlb_cgroup_read_numa_stat;
 	cft->flags = CFTYPE_NOT_ON_ROOT;
 
-	/* NULL terminate the last cft */
+	 
 	cft = &h->cgroup_files_dfl[7];
 	memset(cft, 0, sizeof(*cft));
 
@@ -788,70 +730,70 @@ static void __init __hugetlb_cgroup_file_legacy_init(int idx)
 	struct cftype *cft;
 	struct hstate *h = &hstates[idx];
 
-	/* format the size */
+	 
 	mem_fmt(buf, sizeof(buf), huge_page_size(h));
 
-	/* Add the limit file */
+	 
 	cft = &h->cgroup_files_legacy[0];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.limit_in_bytes", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_LIMIT);
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 	cft->write = hugetlb_cgroup_write_legacy;
 
-	/* Add the reservation limit file */
+	 
 	cft = &h->cgroup_files_legacy[1];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.rsvd.limit_in_bytes", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_RSVD_LIMIT);
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 	cft->write = hugetlb_cgroup_write_legacy;
 
-	/* Add the usage file */
+	 
 	cft = &h->cgroup_files_legacy[2];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.usage_in_bytes", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_USAGE);
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 
-	/* Add the reservation usage file */
+	 
 	cft = &h->cgroup_files_legacy[3];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.rsvd.usage_in_bytes", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_RSVD_USAGE);
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 
-	/* Add the MAX usage file */
+	 
 	cft = &h->cgroup_files_legacy[4];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.max_usage_in_bytes", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_MAX_USAGE);
 	cft->write = hugetlb_cgroup_reset;
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 
-	/* Add the MAX reservation usage file */
+	 
 	cft = &h->cgroup_files_legacy[5];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.rsvd.max_usage_in_bytes", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_RSVD_MAX_USAGE);
 	cft->write = hugetlb_cgroup_reset;
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 
-	/* Add the failcntfile */
+	 
 	cft = &h->cgroup_files_legacy[6];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.failcnt", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_FAILCNT);
 	cft->write = hugetlb_cgroup_reset;
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 
-	/* Add the reservation failcntfile */
+	 
 	cft = &h->cgroup_files_legacy[7];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.rsvd.failcnt", buf);
 	cft->private = MEMFILE_PRIVATE(idx, RES_RSVD_FAILCNT);
 	cft->write = hugetlb_cgroup_reset;
 	cft->read_u64 = hugetlb_cgroup_read_u64;
 
-	/* Add the numa stat file */
+	 
 	cft = &h->cgroup_files_legacy[8];
 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.numa_stat", buf);
 	cft->private = MEMFILE_PRIVATE(idx, 1);
 	cft->seq_show = hugetlb_cgroup_read_numa_stat;
 
-	/* NULL terminate the last cft */
+	 
 	cft = &h->cgroup_files_legacy[9];
 	memset(cft, 0, sizeof(*cft));
 
@@ -870,20 +812,13 @@ void __init hugetlb_cgroup_file_init(void)
 	struct hstate *h;
 
 	for_each_hstate(h) {
-		/*
-		 * Add cgroup control files only if the huge page consists
-		 * of more than two normal pages. This is because we use
-		 * page[2].private for storing cgroup details.
-		 */
+		 
 		if (huge_page_order(h) >= HUGETLB_CGROUP_MIN_ORDER)
 			__hugetlb_cgroup_file_init(hstate_index(h));
 	}
 }
 
-/*
- * hugetlb_lock will make sure a parallel cgroup rmdir won't happen
- * when we migrate hugepages
- */
+ 
 void hugetlb_cgroup_migrate(struct folio *old_folio, struct folio *new_folio)
 {
 	struct hugetlb_cgroup *h_cg;
@@ -899,7 +834,7 @@ void hugetlb_cgroup_migrate(struct folio *old_folio, struct folio *new_folio)
 	set_hugetlb_cgroup(old_folio, NULL);
 	set_hugetlb_cgroup_rsvd(old_folio, NULL);
 
-	/* move the h_cg details to new cgroup */
+	 
 	set_hugetlb_cgroup(new_folio, h_cg);
 	set_hugetlb_cgroup_rsvd(new_folio, h_cg_rsvd);
 	list_move(&new_folio->lru, &h->hugepage_activelist);
@@ -908,7 +843,7 @@ void hugetlb_cgroup_migrate(struct folio *old_folio, struct folio *new_folio)
 }
 
 static struct cftype hugetlb_files[] = {
-	{} /* terminate */
+	{}  
 };
 
 struct cgroup_subsys hugetlb_cgrp_subsys = {

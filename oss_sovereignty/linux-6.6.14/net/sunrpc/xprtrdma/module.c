@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (c) 2015, 2017 Oracle.  All rights reserved.
- */
 
-/* rpcrdma.ko module initialization
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/compiler.h>

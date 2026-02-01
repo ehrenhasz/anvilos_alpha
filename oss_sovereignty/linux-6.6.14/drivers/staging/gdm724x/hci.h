@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _HCI_H_
 #define _HCI_H_
@@ -42,4 +42,4 @@
 #define LTE_AT_CMD_TO_DEVICE_EXT	0x3323
 #define LTE_AT_CMD_FROM_DEVICE_EXT	0xB324
 
-#endif /* _HCI_H_ */
+#endif  

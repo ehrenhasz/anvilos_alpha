@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -131,11 +108,11 @@ static const struct dce110_timing_generator_offsets dce100_tg_offsets[] = {
 	}
 };
 
-/* set register offset */
+ 
 #define SR(reg_name)\
 	.reg_name = mm ## reg_name
 
-/* set register offset with instance */
+ 
 #define SRI(reg_name, block, id)\
 	.reg_name = mm ## block ## id ## _ ## reg_name
 
@@ -850,7 +827,7 @@ static bool dce100_validate_bandwidth(
 	}
 
 	if (at_least_one_pipe) {
-		/* TODO implement when needed but for now hardcode max value*/
+		 
 		context->bw_ctx.bw.dce.dispclk_khz = 681000;
 		context->bw_ctx.bw.dce.yclk_khz = 250000 * MEMORY_TYPE_MULTIPLIER_CZ;
 	} else {
@@ -939,9 +916,7 @@ struct stream_encoder *dce100_find_first_free_match_stream_enc_for_link(
 	for (i = 0; i < pool->stream_enc_count; i++) {
 		if (!res_ctx->is_stream_enc_acquired[i] &&
 				pool->stream_enc[i]) {
-			/* Store first available for MST second display
-			 * in daisy chain use case
-			 */
+			 
 			j = i;
 			if (pool->stream_enc[i]->id ==
 					link->link_enc->preferred_engine)
@@ -949,18 +924,7 @@ struct stream_encoder *dce100_find_first_free_match_stream_enc_for_link(
 		}
 	}
 
-	/*
-	 * below can happen in cases when stream encoder is acquired:
-	 * 1) for second MST display in chain, so preferred engine already
-	 * acquired;
-	 * 2) for another link, which preferred engine already acquired by any
-	 * MST configuration.
-	 *
-	 * If signal is of DP type and preferred engine not found, return last available
-	 *
-	 * TODO - This is just a patch up and a generic solution is
-	 * required for non DP connectors.
-	 */
+	 
 
 	if (j >= 0 && link->connector_signal == SIGNAL_TYPE_DISPLAY_PORT)
 		return pool->stream_enc[j];
@@ -1061,9 +1025,7 @@ static bool dce100_resource_construct(
 			goto res_create_fail;
 	}
 
-	/*************************************************
-	*  Resource + asic cap harcoding                *
-	*************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 	pool->base.pipe_count = res_cap.num_timing_generator;
 	pool->base.timing_generator_count = pool->base.res_cap->num_timing_generator;
@@ -1149,7 +1111,7 @@ static bool dce100_resource_construct(
 			&res_create_funcs))
 		goto res_create_fail;
 
-	/* Create hardware sequencer */
+	 
 	dce100_hw_sequencer_construct(dc);
 	return true;
 

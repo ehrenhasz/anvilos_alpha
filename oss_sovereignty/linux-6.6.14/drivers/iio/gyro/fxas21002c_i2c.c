@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for NXP FXAS21002C Gyroscope - I2C
- *
- * Copyright (C) 2018 Linaro Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>

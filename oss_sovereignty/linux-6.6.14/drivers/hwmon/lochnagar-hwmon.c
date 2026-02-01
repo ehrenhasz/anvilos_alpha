@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lochnagar hardware monitoring features
- *
- * Copyright (c) 2016-2019 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- *
- * Author: Lucas Tanure <tanureal@opensource.cirrus.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/hwmon.h>
@@ -43,7 +36,7 @@ struct lochnagar_hwmon {
 
 	long power_nsamples[ARRAY_SIZE(lochnagar_chan_names)];
 
-	/* Lock to ensure only a single sensor is read at a time */
+	 
 	struct mutex sensor_lock;
 };
 
@@ -53,20 +46,7 @@ enum lochnagar_measure_mode {
 	LN2_TEMP,
 };
 
-/**
- * float_to_long - Convert ieee754 reading from hardware to an integer
- *
- * @data: Value read from the hardware
- * @precision: Units to multiply up to eg. 1000 = milli, 1000000 = micro
- *
- * Return: Converted integer reading
- *
- * Depending on the measurement type the hardware returns an ieee754
- * floating point value in either volts, amps or celsius. This function
- * will convert that into an integer in a smaller unit such as micro-amps
- * or milli-celsius. The hardware does not return NaN, so consideration of
- * that is not required.
- */
+ 
 static long float_to_long(u32 data, u32 precision)
 {
 	u64 man = data & 0x007FFFFF;
@@ -119,13 +99,7 @@ static int do_measurement(struct regmap *regmap, int chan,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Actual measurement time is ~1.67mS per sample, approximate this
-	 * with a 1.5mS per sample msleep and then poll for success up to
-	 * ~0.17mS * 1023 (LN2_MAX_NSAMPLES). Normally for smaller values
-	 * of nsamples the poll will complete on the first loop due to
-	 * other latency in the system.
-	 */
+	 
 	msleep((nsamples * 3) / 2);
 
 	ret =  regmap_read_poll_timeout(regmap, LOCHNAGAR2_IMON_CTRL3, val,

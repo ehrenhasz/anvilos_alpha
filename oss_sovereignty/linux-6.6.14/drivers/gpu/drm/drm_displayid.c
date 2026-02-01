@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_displayid.h>
 #include <drm/drm_edid.h>
@@ -34,7 +32,7 @@ validate_displayid(const u8 *displayid, int length, int idx)
 	DRM_DEBUG_KMS("base revision 0x%x, length %d, %d %d\n",
 		      base->rev, base->bytes, base->prod_id, base->ext_count);
 
-	/* +1 for DispID checksum */
+	 
 	dispid_length = sizeof(*base) + base->bytes + 1;
 	if (dispid_length > length - idx)
 		return ERR_PTR(-EINVAL);
@@ -59,7 +57,7 @@ static const u8 *drm_find_displayid_extension(const struct drm_edid *drm_edid,
 	if (!displayid)
 		return NULL;
 
-	/* EDID extensions block checksum isn't for us */
+	 
 	*length = EDID_LENGTH - 1;
 	*idx = 1;
 
@@ -106,7 +104,7 @@ __displayid_iter_next(struct displayid_iter *iter)
 		return NULL;
 
 	if (iter->section) {
-		/* current block should always be valid */
+		 
 		block = displayid_iter_block(iter);
 		if (WARN_ON(!block)) {
 			iter->section = NULL;
@@ -114,7 +112,7 @@ __displayid_iter_next(struct displayid_iter *iter)
 			return NULL;
 		}
 
-		/* next block in section */
+		 
 		iter->idx += sizeof(*block) + block->num_bytes;
 
 		block = displayid_iter_block(iter);
@@ -123,7 +121,7 @@ __displayid_iter_next(struct displayid_iter *iter)
 	}
 
 	for (;;) {
-		/* The first section we encounter is the base section */
+		 
 		bool base_section = !iter->section;
 
 		iter->section = drm_find_displayid_extension(iter->drm_edid,
@@ -135,7 +133,7 @@ __displayid_iter_next(struct displayid_iter *iter)
 			return NULL;
 		}
 
-		/* Save the structure version and primary use case. */
+		 
 		if (base_section) {
 			const struct displayid_header *base;
 
@@ -160,16 +158,13 @@ void displayid_iter_end(struct displayid_iter *iter)
 	memset(iter, 0, sizeof(*iter));
 }
 
-/* DisplayID Structure Version/Revision from the Base Section. */
+ 
 u8 displayid_version(const struct displayid_iter *iter)
 {
 	return iter->version;
 }
 
-/*
- * DisplayID Primary Use Case (2.0+) or Product Type Identifier (1.0-1.3) from
- * the Base Section.
- */
+ 
 u8 displayid_primary_use(const struct displayid_iter *iter)
 {
 	return iter->primary_use;

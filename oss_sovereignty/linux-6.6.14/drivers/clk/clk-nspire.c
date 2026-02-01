@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>

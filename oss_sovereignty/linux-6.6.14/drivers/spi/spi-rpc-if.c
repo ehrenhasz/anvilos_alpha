@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// RPC-IF SPI/QSPI/Octa driver
-//
-// Copyright (C) 2018 ~ 2019 Renesas Solutions Corp.
-// Copyright (C) 2019 Macronix International Co., Ltd.
-// Copyright (C) 2019 - 2020 Cogent Embedded, Inc.
-//
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>

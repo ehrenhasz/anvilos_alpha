@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Nuvoton Technology Corp.
- * Author: Chi-Fang Li <cfli0@nuvoton.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/container_of.h>
@@ -21,7 +18,7 @@ struct ma35d1_reset_data {
 	struct reset_controller_dev rcdev;
 	struct notifier_block restart_handler;
 	void __iomem *base;
-	/* protect registers against concurrent read-modify-write */
+	 
 	spinlock_t lock;
 };
 

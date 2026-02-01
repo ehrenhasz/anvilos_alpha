@@ -1,48 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * adv_pci1724.c
- * Comedi driver for the Advantech PCI-1724U card.
- *
- * Author:  Frank Mori Hess <fmh6jj@gmail.com>
- * Copyright (C) 2013 GnuBIO Inc
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-8 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: adv_pci1724
- * Description: Advantech PCI-1724U
- * Devices: [Advantech] PCI-1724U (adv_pci1724)
- * Author: Frank Mori Hess <fmh6jj@gmail.com>
- * Updated: 2013-02-09
- * Status: works
- *
- * Configuration Options: not applicable, uses comedi PCI auto config
- *
- * Subdevice 0 is the analog output.
- * Subdevice 1 is the offset calibration for the analog output.
- * Subdevice 2 is the gain calibration for the analog output.
- *
- * The calibration offset and gains have quite a large effect on the
- * analog output, so it is possible to adjust the analog output to
- * have an output range significantly different from the board's
- * nominal output ranges. For a calibrated +/-10V range, the analog
- * output's offset will be set somewhere near mid-range (0x2000) and
- * its gain will be near maximum (0x3fff).
- *
- * There is really no difference between the board's documented 0-20mA
- * versus 4-20mA output ranges. To pick one or the other is simply a
- * matter of adjusting the offset and gain calibration until the board
- * outputs in the desired range.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * PCI bar 2 Register I/O map (dev->iobase)
- */
+ 
 #define PCI1724_DAC_CTRL_REG		0x00
 #define PCI1724_DAC_CTRL_GX(x)		BIT(20 + ((x) / 8))
 #define PCI1724_DAC_CTRL_CX(x)		(((x) % 8) << 16)
@@ -56,7 +20,7 @@
 #define PCI1724_SYNC_CTRL_DACSTAT	BIT(1)
 #define PCI1724_SYNC_CTRL_SYN		BIT(0)
 #define PCI1724_EEPROM_CTRL_REG		0x08
-#define PCI1724_SYNC_TRIG_REG		0x0c  /* any value works */
+#define PCI1724_SYNC_TRIG_REG		0x0c   
 #define PCI1724_BOARD_ID_REG		0x10
 #define PCI1724_BOARD_ID_MASK		(0xf << 0)
 
@@ -95,7 +59,7 @@ static int adv_pci1724_insn_write(struct comedi_device *dev,
 
 	ctrl = PCI1724_DAC_CTRL_GX(chan) | PCI1724_DAC_CTRL_CX(chan) | mode;
 
-	/* turn off synchronous mode */
+	 
 	outl(0, dev->iobase + PCI1724_SYNC_CTRL_REG);
 
 	for (i = 0; i < insn->n; ++i) {
@@ -135,7 +99,7 @@ static int adv_pci1724_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE | SDF_GROUND;
@@ -149,7 +113,7 @@ static int adv_pci1724_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Offset Calibration subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_CALIB;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE | SDF_INTERNAL;
@@ -162,7 +126,7 @@ static int adv_pci1724_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Gain Calibration subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_CALIB;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE | SDF_INTERNAL;

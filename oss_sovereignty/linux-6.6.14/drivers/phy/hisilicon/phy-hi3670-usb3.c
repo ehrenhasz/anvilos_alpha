@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Phy provider for USB 3.1 controller on HiSilicon Kirin970 platform
- *
- * Copyright (C) 2017-2020 Hilisicon Electronics Co., Ltd.
- *		http://www.huawei.com
- *
- * Authors: Yu Chen <chenyu56@huawei.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -142,13 +135,13 @@ static int hi3670_phy_cr_clk(struct regmap *usb31misc)
 {
 	int ret;
 
-	/* Clock up */
+	 
 	ret = regmap_update_bits(usb31misc, USB_MISC_CFG54,
 				 CFG54_USB31PHY_CR_CLK, CFG54_USB31PHY_CR_CLK);
 	if (ret)
 		return ret;
 
-	/* Clock down */
+	 
 	return regmap_update_bits(usb31misc, USB_MISC_CFG54,
 				  CFG54_USB31PHY_CR_CLK, 0);
 }
@@ -346,18 +339,18 @@ static int hi3670_config_phy_clock(struct hi3670_priv *priv)
 	int ret;
 
 	if (!hi3670_is_abbclk_selected(priv)) {
-		/* usb refclk iso disable */
+		 
 		ret = regmap_write(priv->peri_crg, PERI_CRG_ISODIS,
 				   USB_REFCLK_ISO_EN);
 		if (ret)
 			goto out;
 
-		/* enable usb_tcxo_en */
+		 
 		ret = regmap_write(priv->pctrl, PCTRL_PERI_CTRL3,
 				   USB_TCXO_EN |
 				   (USB_TCXO_EN << PCTRL_PERI_CTRL3_MSK_START));
 
-		/* select usbphy clk from abb */
+		 
 		mask = SC_CLK_USB3PHY_3MUX1_SEL;
 		ret = regmap_update_bits(priv->pctrl,
 					 PCTRL_PERI_CTRL24, mask, 0);
@@ -469,7 +462,7 @@ static int hi3670_phy_init(struct phy *phy)
 	u32 val;
 	int ret;
 
-	/* assert controller */
+	 
 	val = CFGA0_VAUX_RESET | CFGA0_USB31C_RESET |
 	      CFGA0_USB3PHY_RESET | CFGA0_USB2PHY_POR;
 	ret = regmap_update_bits(priv->usb31misc, USB_MISC_CFGA0, val, 0);
@@ -480,19 +473,19 @@ static int hi3670_phy_init(struct phy *phy)
 	if (ret)
 		goto out;
 
-	/* Exit from IDDQ mode */
+	 
 	ret = regmap_update_bits(priv->usb31misc, USB3OTG_CTRL5,
 				 CTRL5_USB2_SIDDQ, 0);
 	if (ret)
 		goto out;
 
-	/* Release USB31 PHY out of TestPowerDown mode */
+	 
 	ret = regmap_update_bits(priv->usb31misc, USB_MISC_CFG50,
 				 CFG50_USB3_PHY_TEST_POWERDOWN, 0);
 	if (ret)
 		goto out;
 
-	/* Deassert phy */
+	 
 	val = CFGA0_USB3PHY_RESET | CFGA0_USB2PHY_POR;
 	ret = regmap_update_bits(priv->usb31misc, USB_MISC_CFGA0, val, val);
 	if (ret)
@@ -500,7 +493,7 @@ static int hi3670_phy_init(struct phy *phy)
 
 	usleep_range(100, 120);
 
-	/* Tell the PHY power is stable */
+	 
 	val = CFG54_USB3_PHY0_ANA_PWR_EN | CFG54_PHY0_PCS_PWR_STABLE |
 	      CFG54_PHY0_PMA_PWR_STABLE;
 	ret = regmap_update_bits(priv->usb31misc, USB_MISC_CFG54,
@@ -512,14 +505,14 @@ static int hi3670_phy_init(struct phy *phy)
 	if (ret)
 		goto out;
 
-	/* Enable SSC */
+	 
 	ret = regmap_update_bits(priv->usb31misc, USB_MISC_CFG5C,
 				 CFG5C_USB3_PHY0_SS_MPLLA_SSC_EN,
 				 CFG5C_USB3_PHY0_SS_MPLLA_SSC_EN);
 	if (ret)
 		goto out;
 
-	/* Deassert controller */
+	 
 	val = CFGA0_VAUX_RESET | CFGA0_USB31C_RESET;
 	ret = regmap_update_bits(priv->usb31misc, USB_MISC_CFGA0, val, val);
 	if (ret)
@@ -527,7 +520,7 @@ static int hi3670_phy_init(struct phy *phy)
 
 	usleep_range(100, 120);
 
-	/* Set fake vbus valid signal */
+	 
 	val = CTRL0_USB3_VBUSVLD | CTRL0_USB3_VBUSVLD_SEL;
 	ret = regmap_update_bits(priv->usb31misc, USB3OTG_CTRL0, val, val);
 	if (ret)
@@ -556,14 +549,14 @@ static int hi3670_phy_exit(struct phy *phy)
 	u32 mask;
 	int ret;
 
-	/* Assert phy */
+	 
 	mask = CFGA0_USB3PHY_RESET | CFGA0_USB2PHY_POR;
 	ret = regmap_update_bits(priv->usb31misc, USB_MISC_CFGA0, mask, 0);
 	if (ret)
 		goto out;
 
 	if (!hi3670_is_abbclk_selected(priv)) {
-		/* disable usb_tcxo_en */
+		 
 		ret = regmap_write(priv->pctrl, PCTRL_PERI_CTRL3,
 				   USB_TCXO_EN << PCTRL_PERI_CTRL3_MSK_START);
 	} else {
@@ -618,7 +611,7 @@ static int hi3670_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->sctrl);
 	}
 
-	/* node of hi3670 phy is a sub-node of usb3_otg_bc */
+	 
 	priv->usb31misc = syscon_node_to_regmap(dev->parent->of_node);
 	if (IS_ERR(priv->usb31misc)) {
 		dev_err(dev, "no hisilicon,usb3-otg-bc-syscon\n");

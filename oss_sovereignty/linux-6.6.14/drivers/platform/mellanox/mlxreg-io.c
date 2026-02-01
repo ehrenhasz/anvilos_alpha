@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Mellanox register access driver
- *
- * Copyright (C) 2018 Mellanox Technologies
- * Copyright (C) 2018 Vadim Pasternak <vadimp@mellanox.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -15,23 +10,11 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* Attribute parameters. */
+ 
 #define MLXREG_IO_ATT_SIZE	10
 #define MLXREG_IO_ATT_NUM	96
 
-/**
- * struct mlxreg_io_priv_data - driver's private data:
- *
- * @pdev: platform device;
- * @pdata: platform data;
- * @hwmon: hwmon device;
- * @mlxreg_io_attr: sysfs attributes array;
- * @mlxreg_io_dev_attr: sysfs sensor device attribute array;
- * @group: sysfs attribute group;
- * @groups: list of sysfs attribute group for hwmon registration;
- * @regsize: size of a register value;
- * @io_lock: user access locking;
- */
+ 
 struct mlxreg_io_priv_data {
 	struct platform_device *pdev;
 	struct mlxreg_core_platform_data *pdata;
@@ -41,7 +24,7 @@ struct mlxreg_io_priv_data {
 	struct attribute_group group;
 	const struct attribute_group *groups[2];
 	int regsize;
-	struct mutex io_lock; /* Protects user access. */
+	struct mutex io_lock;  
 };
 
 static int
@@ -54,46 +37,31 @@ mlxreg_io_get_reg(void *regmap, struct mlxreg_core_data *data, u32 in_val,
 	if (ret)
 		goto access_error;
 
-	/*
-	 * There are four kinds of attributes: single bit, full register's
-	 * bits, bit sequence, bits in few registers For the first kind field
-	 * mask indicates which bits are not related and field bit is set zero.
-	 * For the second kind field mask is set to zero and field bit is set
-	 * with all bits one. No special handling for such kind of attributes -
-	 * pass value as is. For the third kind, the field mask indicates which
-	 * bits are related and the field bit is set to the first bit number
-	 * (from 1 to 32) is the bit sequence. For the fourth kind - the number
-	 * of registers which should be read for getting an attribute are
-	 * specified through 'data->regnum' field.
-	 */
+	 
 	if (!data->bit) {
-		/* Single bit. */
+		 
 		if (rw_flag) {
-			/* For show: expose effective bit value as 0 or 1. */
+			 
 			*regval = !!(*regval & ~data->mask);
 		} else {
-			/* For store: set effective bit value. */
+			 
 			*regval &= data->mask;
 			if (in_val)
 				*regval |= ~data->mask;
 		}
 	} else if (data->mask) {
-		/* Bit sequence. */
+		 
 		if (rw_flag) {
-			/* For show: mask and shift right. */
+			 
 			*regval = ror32(*regval & data->mask, (data->bit - 1));
 		} else {
-			/* For store: shift to the position and mask. */
+			 
 			in_val = rol32(in_val, data->bit - 1) & data->mask;
-			/* Clear relevant bits and set them to new value. */
+			 
 			*regval = (*regval & ~data->mask) | in_val;
 		}
 	} else {
-		/*
-		 * Some attributes could occupied few registers in case regmap
-		 * bit size is 8 or 16. Compose such attributes from 'regnum'
-		 * registers. Such attributes contain read-only data.
-		 */
+		 
 		for (i = 1; i < data->regnum; i++) {
 			ret = regmap_read(regmap, data->reg + i, &val);
 			if (ret)
@@ -146,7 +114,7 @@ mlxreg_io_attr_store(struct device *dev, struct device_attribute *attr,
 	if (len > MLXREG_IO_ATT_SIZE)
 		return -EINVAL;
 
-	/* Convert buffer to input value. */
+	 
 	ret = kstrtou32(buf, 0, &input_val);
 	if (ret)
 		return ret;
@@ -194,7 +162,7 @@ static int mlxreg_io_attr_init(struct mlxreg_io_priv_data *priv)
 		memcpy(&priv->mlxreg_io_dev_attr[i].dev_attr,
 		       &mlxreg_io_devattr_rw, sizeof(struct device_attribute));
 
-		/* Set attribute name as a label. */
+		 
 		priv->mlxreg_io_attr[i]->name =
 				devm_kasprintf(&priv->pdev->dev, GFP_KERNEL,
 					       priv->pdata->data[i].label);

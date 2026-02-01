@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
- /*
-  * iio/dac/max5821.c
-  * Copyright (C) 2014 Philippe Reynes
-  */
+
+  
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -12,7 +9,7 @@
 
 #define MAX5821_MAX_DAC_CHANNELS		2
 
-/* command bytes */
+ 
 #define MAX5821_LOAD_DAC_A_IN_REG_B		0x00
 #define MAX5821_LOAD_DAC_B_IN_REG_A		0x10
 #define MAX5821_EXTENDED_COMMAND_MODE		0xf0
@@ -315,7 +312,7 @@ static int max5821_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->lock);
 
-	/* max5821 start in powerdown mode 100Kohm to ground */
+	 
 	for (tmp = 0; tmp < MAX5821_MAX_DAC_CHANNELS; tmp++) {
 		data->powerdown[tmp] = true;
 		data->powerdown_mode[tmp] = MAX5821_100KOHM_TO_GND;

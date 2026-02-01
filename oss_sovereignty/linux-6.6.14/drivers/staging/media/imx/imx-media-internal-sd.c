@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Media driver for Freescale i.MX5/6 SOC
- *
- * Adds the IPU internal subdevices and the media links between them.
- *
- * Copyright (c) 2016 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/platform_device.h>
 #include "imx-media.h"
 
-/* max pads per internal-sd */
+ 
 #define MAX_INTERNAL_PADS   8
-/* max links per internal-sd pad */
+ 
 #define MAX_INTERNAL_LINKS  8
 
 struct internal_subdev;
@@ -137,7 +131,7 @@ static int create_internal_link(struct imx_media_dev *imxmd,
 {
 	int ret;
 
-	/* skip if this link already created */
+	 
 	if (media_entity_find_link(&src->entity.pads[link->local_pad],
 				   &sink->entity.pads[link->remote_pad]))
 		return 0;
@@ -164,7 +158,7 @@ static int create_ipu_internal_links(struct imx_media_dev *imxmd,
 	struct media_pad *pad;
 	int i, j, ret;
 
-	/* create the source->sink links */
+	 
 	for (i = 0; i < sd->entity.num_pads; i++) {
 		intpad = &intsd->pad[i];
 		pad = &sd->entity.pads[i];
@@ -210,20 +204,17 @@ int imx_media_register_ipu_internal_subdevs(struct imx_media_dev *imxmd,
 
 	mutex_lock(&imxmd->mutex);
 
-	/* record this IPU */
+	 
 	if (!imxmd->ipu[ipu_id])
 		imxmd->ipu[ipu_id] = ipu;
 
-	/* register the synchronous subdevs */
+	 
 	for (i = 0; i < NUM_IPU_SUBDEVS; i++) {
 		intsd = &int_subdev[i];
 
 		sd = imxmd->sync_sd[ipu_id][i];
 
-		/*
-		 * skip if this sync subdev already registered or its
-		 * not a sync subdev (one of the CSIs)
-		 */
+		 
 		if (sd || !intsd->sync_register)
 			continue;
 
@@ -239,10 +230,7 @@ int imx_media_register_ipu_internal_subdevs(struct imx_media_dev *imxmd,
 		imxmd->sync_sd[ipu_id][i] = sd;
 	}
 
-	/*
-	 * all the sync subdevs are registered, create the media links
-	 * between them.
-	 */
+	 
 	for (i = 0; i < NUM_IPU_SUBDEVS; i++) {
 		intsd = &int_subdev[i];
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A ptrace test for testing PTRACE_SYSEMU, PTRACE_SETREGS and
- * PTRACE_GETREG.  This test basically create a child process that executes
- * syscalls and the parent process check if it is being traced appropriated.
- *
- * This test is heavily based on tools/testing/selftests/x86/ptrace_syscall.c
- * test, and it was adapted to run on Powerpc by
- * Breno Leitao <leitao@debian.org>
- */
+
+ 
 #define _GNU_SOURCE
 
 #include <sys/ptrace.h>
@@ -24,7 +16,7 @@
 #include <sys/auxv.h>
 #include "utils.h"
 
-/* Bitness-agnostic defines for user_regs_struct fields. */
+ 
 #define user_syscall_nr	gpr[0]
 #define user_arg0		gpr[3]
 #define user_arg1		gpr[4]
@@ -62,14 +54,7 @@ static void test_ptrace_syscall_restart(void)
 	if (chld < 0)
 		err(1, "fork");
 
-	/*
-	 * Child process is running 4 syscalls after ptrace.
-	 *
-	 * 1) getpid()
-	 * 2) gettid()
-	 * 3) tgkill() -> Send SIGSTOP
-	 * 4) gettid() -> Where the tests will happen essentially
-	 */
+	 
 	if (chld == 0) {
 		if (ptrace(PTRACE_TRACEME, 0, 0, 0) != 0)
 			err(1, "PTRACE_TRACEME");
@@ -82,9 +67,9 @@ static void test_ptrace_syscall_restart(void)
 		syscall(SYS_gettid, 10, 11, 12, 13, 14, 15);
 		_exit(0);
 	}
-	/* Parent process below */
+	 
 
-	/* Wait for SIGSTOP sent by tgkill above. */
+	 
 	if (waitpid(chld, &status, 0) != chld || !WIFSTOPPED(status))
 		err(1, "waitpid");
 
@@ -96,10 +81,7 @@ static void test_ptrace_syscall_restart(void)
 	if (ptrace(PTRACE_GETREGS, chld, 0, &regs) != 0)
 		err(1, "PTRACE_GETREGS");
 
-	/*
-	 * Ptrace trapped prior to executing the syscall, thus r3 still has
-	 * the syscall number instead of the sys_gettid() result
-	 */
+	 
 	if (regs.user_syscall_nr != SYS_gettid ||
 	    regs.user_arg0 != 10 || regs.user_arg1 != 11 ||
 	    regs.user_arg2 != 12 || regs.user_arg3 != 13 ||
@@ -119,10 +101,7 @@ static void test_ptrace_syscall_restart(void)
 	printf("[RUN]\tRestart the syscall (ip = 0x%lx)\n",
 	       (unsigned long)regs.user_ip);
 
-	/*
-	 * Rewind to retry the same syscall again. This will basically test
-	 * the rewind process together with PTRACE_SETREGS and PTRACE_GETREGS.
-	 */
+	 
 	regs.user_ip -= 4;
 	if (ptrace(PTRACE_SETREGS, chld, 0, &regs) != 0)
 		err(1, "PTRACE_SETREGS");
@@ -154,10 +133,7 @@ static void test_ptrace_syscall_restart(void)
 	printf("[RUN]\tChange nr and args and restart the syscall (ip = 0x%lx)\n",
 	       (unsigned long)regs.user_ip);
 
-	/*
-	 * Inject a new syscall (getpid) in the same place the previous
-	 * syscall (gettid), rewind and re-execute.
-	 */
+	 
 	regs.user_syscall_nr = SYS_getpid;
 	regs.user_arg0 = 20;
 	regs.user_arg1 = 21;
@@ -177,11 +153,7 @@ static void test_ptrace_syscall_restart(void)
 	if (ptrace(PTRACE_GETREGS, chld, 0, &regs) != 0)
 		err(1, "PTRACE_GETREGS");
 
-	/* Check that ptrace stopped at the new syscall that was
-	 * injected, and guarantee that it haven't executed, i.e, user_args
-	 * contain the arguments and not the syscall return value, for
-	 * instance.
-	 */
+	 
 	if (regs.user_syscall_nr != SYS_getpid
 		|| regs.user_arg0 != 20 || regs.user_arg1 != 21
 		|| regs.user_arg2 != 22 || regs.user_arg3 != 23
@@ -206,7 +178,7 @@ static void test_ptrace_syscall_restart(void)
 	if (waitpid(chld, &status, 0) != chld)
 		err(1, "waitpid");
 
-	/* Guarantee that the process executed properly, returning 0 */
+	 
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
 		printf("[FAIL]\tChild failed\n");
 		nerrs++;

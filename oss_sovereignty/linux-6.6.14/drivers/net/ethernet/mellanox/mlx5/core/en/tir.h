@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, Mellanox Technologies inc. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_EN_TIR_H__
 #define __MLX5_EN_TIR_H__
@@ -55,4 +55,4 @@ static inline u32 mlx5e_tir_get_tirn(struct mlx5e_tir *tir)
 
 int mlx5e_tir_modify(struct mlx5e_tir *tir, struct mlx5e_tir_builder *builder);
 
-#endif /* __MLX5_EN_TIR_H__ */
+#endif  

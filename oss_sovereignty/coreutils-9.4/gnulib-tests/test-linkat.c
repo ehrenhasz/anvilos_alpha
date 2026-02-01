@@ -1,20 +1,4 @@
-/* Tests of linkat.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
+ 
 
 #include <config.h>
 
@@ -44,15 +28,14 @@ static int dfd1 = AT_FDCWD;
 static int dfd2 = AT_FDCWD;
 static int flag = AT_SYMLINK_FOLLOW;
 
-/* Wrapper to test linkat like link.  */
+ 
 static int
 do_link (char const *name1, char const *name2)
 {
   return linkat (dfd1, name1, dfd2, name2, flag);
 }
 
-/* Can we expect that link() and linkat(), when called on a symlink,
-   increment the link count of that symlink?  */
+ 
 #if LINK_FOLLOWS_SYMLINKS == 0
 # define EXPECT_LINK_HARDLINKS_SYMLINKS 1
 #elif LINK_FOLLOWS_SYMLINKS == -1
@@ -62,7 +45,7 @@ extern int __xpg4;
 # define EXPECT_LINK_HARDLINKS_SYMLINKS 0
 #endif
 
-/* Wrapper to see if two symlinks act the same.  */
+ 
 static void
 check_same_link (char const *name1, char const *name2)
 {
@@ -91,10 +74,10 @@ main (void)
   char *cwd;
   int result;
 
-  /* Clean up any trash from prior testsuite runs.  */
+   
   ignore_value (system ("rm -rf " BASE "*"));
 
-  /* Test behaviour for invalid file descriptors.  */
+   
   {
     errno = 0;
     ASSERT (linkat (-1, "foo", AT_FDCWD, "bar", 0) == -1);
@@ -119,7 +102,7 @@ main (void)
   }
   ASSERT (unlink (BASE "oo") == 0);
 
-  /* Test basic link functionality, without mentioning symlinks.  */
+   
   result = test_link (do_link, true);
   dfd1 = open (".", O_RDONLY);
   ASSERT (0 <= dfd1);
@@ -138,12 +121,11 @@ main (void)
   dfd1 = AT_FDCWD;
   ASSERT (test_link (do_link, false) == result);
 
-  /* Skip the rest of the test if the file system does not support hard links
-     and symlinks.  */
+   
   if (result)
     return result;
 
-  /* Create locations to manipulate.  */
+   
   ASSERT (mkdir (BASE "sub1", 0700) == 0);
   ASSERT (mkdir (BASE "sub2", 0700) == 0);
   ASSERT (close (creat (BASE "00", 0600)) == 0);
@@ -154,18 +136,7 @@ main (void)
   ASSERT (0 <= dfd);
   ASSERT (chdir (BASE "sub2") == 0);
 
-  /* There are 16 possible scenarios, based on whether an fd is
-     AT_FDCWD or real, whether a file is absolute or relative, coupled
-     with whether flag is set for 32 iterations.
-
-     To ensure that we test all of the code paths (rather than
-     triggering early normalization optimizations), we use a loop to
-     repeatedly rename a file in the parent directory, use an fd open
-     on subdirectory 1, all while executing in subdirectory 2; all
-     relative names are thus given with a leading "../".  Finally, the
-     last scenario (two relative paths given, neither one AT_FDCWD)
-     has two paths, based on whether the two fds are equivalent, so we
-     do the other variant after the loop.  */
+   
   for (i = 0; i < 32; i++)
     {
       int fd1 = (i & 8) ? dfd : AT_FDCWD;
@@ -190,8 +161,7 @@ main (void)
                   AT_SYMLINK_FOLLOW) == 0);
   ASSERT (close (dfd2) == 0);
 
-  /* Now we change back to the parent directory, and set dfd to ".",
-     in order to test behavior on symlinks.  */
+   
   ASSERT (chdir ("..") == 0);
   ASSERT (close (dfd) == 0);
   if (symlink (BASE "sub1", BASE "link1"))
@@ -213,7 +183,7 @@ main (void)
   ASSERT (symlink (BASE "link3", BASE "link3") == 0);
   ASSERT (symlink (BASE "nowhere", BASE "link4") == 0);
 
-  /* Link cannot overwrite existing files.  */
+   
   errno = 0;
   ASSERT (linkat (dfd, BASE "link1", dfd, BASE "sub1", 0) == -1);
   ASSERT (errno == EEXIST);
@@ -260,7 +230,7 @@ main (void)
                   AT_SYMLINK_FOLLOW) == -1);
   ASSERT (errno == EEXIST || errno == ELOOP);
 
-  /* AT_SYMLINK_FOLLOW only follows first argument, not second.  */
+   
   errno = 0;
   ASSERT (linkat (dfd, BASE "link1", dfd, BASE "link4", 0) == -1);
   ASSERT (errno == EEXIST);
@@ -274,7 +244,7 @@ main (void)
   ASSERT (linkat (dfd, BASE "34", dfd, BASE "link4", AT_SYMLINK_FOLLOW) == -1);
   ASSERT (errno == EEXIST);
 
-  /* Trailing slash handling.  */
+   
   errno = 0;
   ASSERT (linkat (dfd, BASE "link2/", dfd, BASE "link5", 0) == -1);
   ASSERT (errno == ENOTDIR);
@@ -297,7 +267,7 @@ main (void)
                   AT_SYMLINK_FOLLOW) == -1);
   ASSERT (errno == ENOENT || errno == EINVAL);
 
-  /* Check for hard links to symlinks.  */
+   
   ASSERT (linkat (dfd, BASE "link1", dfd, BASE "link5", 0) == 0);
   check_same_link (BASE "link1", BASE "link5");
   ASSERT (unlink (BASE "link5") == 0);
@@ -328,7 +298,7 @@ main (void)
                   AT_SYMLINK_FOLLOW) == -1);
   ASSERT (errno == ENOENT);
 
-  /* Check that symlink to symlink to file is followed all the way.  */
+   
   ASSERT (symlink (BASE "link2", BASE "link5") == 0);
   ASSERT (linkat (dfd, BASE "link5", dfd, BASE "link6", 0) == 0);
   check_same_link (BASE "link5", BASE "link6");
@@ -351,7 +321,7 @@ main (void)
                   AT_SYMLINK_FOLLOW) == -1);
   ASSERT (errno == ENOENT);
 
-  /* Now for some real fun with directory crossing.  */
+   
   ASSERT (symlink (cwd, BASE "sub1/link") == 0);
   ASSERT (symlink (".././/" BASE "sub1/link/" BASE "link2",
                    BASE "sub2/link") == 0);
@@ -366,7 +336,7 @@ main (void)
   ASSERT (areadlink (BASE "sub1/file") == NULL);
   ASSERT (errno == EINVAL);
 
-  /* Cleanup.  */
+   
   ASSERT (close (dfd) == 0);
   ASSERT (close (dfd2) == 0);
   ASSERT (unlink (BASE "sub1/file") == 0);

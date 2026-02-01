@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -21,12 +21,7 @@
 struct avs_dma_data {
 	struct avs_tplg_path_template *template;
 	struct avs_path *path;
-	/*
-	 * link stream is stored within substream's runtime
-	 * private_data to fulfill the needs of codec BE path
-	 *
-	 * host stream assigned
-	 */
+	 
 	struct hdac_ext_stream *host_stream;
 
 	struct snd_pcm_substream *substream;
@@ -49,7 +44,7 @@ avs_dai_find_path_template(struct snd_soc_dai *dai, bool is_fe, int direction)
 	if (!dp)
 		return NULL;
 
-	/* Get the other widget, with actual path template data */
+	 
 	dw = (dp->source == dw) ? dp->sink : dp->source;
 
 	return dw->priv;
@@ -189,7 +184,7 @@ static int avs_dai_nonhda_be_hw_params(struct snd_pcm_substream *substream,
 	if (data->path)
 		return 0;
 
-	/* Actual port-id comes from topology. */
+	 
 	return avs_dai_be_hw_params(substream, hw_params, dai, 0);
 }
 
@@ -319,7 +314,7 @@ static int avs_dai_hda_be_hw_free(struct snd_pcm_substream *substream, struct sn
 	avs_path_free(data->path);
 	data->path = NULL;
 
-	/* clear link <-> stream mapping */
+	 
 	codec = dev_to_hda_codec(asoc_rtd_to_codec(rtd, 0)->dev);
 	link = snd_hdac_ext_bus_get_hlink_by_addr(&codec->bus->core, codec->core.addr);
 	if (!link)
@@ -477,7 +472,7 @@ static int avs_dai_fe_startup(struct snd_pcm_substream *substream, struct snd_so
 	if (ret < 0)
 		goto err;
 
-	/* avoid wrap-around with wall-clock */
+	 
 	ret = snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_BUFFER_TIME, 20, 178000000);
 	if (ret < 0)
 		goto err;
@@ -661,7 +656,7 @@ static int avs_dai_fe_trigger(struct snd_pcm_substream *substream, int cmd, stru
 		snd_hdac_stream_start(hdac_stream(host_stream));
 		spin_unlock_irqrestore(&bus->reg_lock, flags);
 
-		/* Timeout on DRSM poll shall not stop the resume so ignore the result. */
+		 
 		if (cmd == SNDRV_PCM_TRIGGER_RESUME)
 			snd_hdac_stream_wait_drsm(hdac_stream(host_stream));
 
@@ -743,7 +738,7 @@ static int avs_component_load_libraries(struct avs_soc_component *acomp)
 	if (!tplg->num_libs)
 		return 0;
 
-	/* Parent device may be asleep and library loading involves IPCs. */
+	 
 	ret = pm_runtime_resume_and_get(adev->dev);
 	if (ret < 0)
 		return ret;
@@ -788,7 +783,7 @@ static int avs_component_probe(struct snd_soc_component *component)
 	if (!mach->tplg_filename)
 		goto finalize;
 
-	/* Load specified topology and create debugfs for it. */
+	 
 	filename = kasprintf(GFP_KERNEL, "%s/%s", component->driver->topology_name_prefix,
 			     mach->tplg_filename);
 	if (!filename)
@@ -889,7 +884,7 @@ static int avs_dai_resume_fe_prepare(struct snd_soc_dai *dai, struct avs_dma_dat
 	hstream = hdac_stream(host_stream);
 	bus = hdac_stream(host_stream)->bus;
 
-	/* Set DRSM before programming stream and position registers. */
+	 
 	snd_hdac_stream_drsm_enable(bus, true, hstream->index);
 
 	ret = dai->driver->ops->prepare(data->substream, dai);
@@ -903,7 +898,7 @@ static int avs_dai_resume_fe_prepare(struct snd_soc_dai *dai, struct avs_dma_dat
 	writel(host_stream->pphcldpl, host_stream->pphc_addr + AZX_REG_PPHCLDPL);
 	writel(host_stream->pphcldpu, host_stream->pphc_addr + AZX_REG_PPHCLDPU);
 
-	/* As per HW spec recommendation, program LPIB and DPIB to the same value. */
+	 
 	snd_hdac_stream_set_lpib(hstream, hstream->lpib);
 	snd_hdac_stream_set_dpibr(bus, hstream, hstream->lpib);
 
@@ -928,7 +923,7 @@ static int avs_dai_suspend_fe_hw_free(struct snd_soc_dai *dai, struct avs_dma_da
 
 	host_stream = data->host_stream;
 
-	/* Store position addresses so we can resume from them later on. */
+	 
 	hdac_stream(host_stream)->lpib = snd_hdac_stream_get_pos_lpib(hdac_stream(host_stream));
 	host_stream->pphcllpl = readl(host_stream->pphc_addr + AZX_REG_PPHCLLPL);
 	host_stream->pphcllpu = readl(host_stream->pphc_addr + AZX_REG_PPHCLLPU);
@@ -1025,10 +1020,7 @@ static int avs_component_suspend(struct snd_soc_component *component)
 {
 	int ret;
 
-	/*
-	 * When freeing paths, FEs need to be first as they perform
-	 * path unbinding.
-	 */
+	 
 	ret = avs_component_suspend_hw_free(component, false);
 	if (ret)
 		return ret;
@@ -1040,10 +1032,7 @@ static int avs_component_resume(struct snd_soc_component *component)
 {
 	int ret;
 
-	/*
-	 * When creating paths, FEs need to be last as they perform
-	 * path binding.
-	 */
+	 
 	ret = avs_component_resume_hw_params(component, true);
 	if (ret)
 		return ret;
@@ -1052,7 +1041,7 @@ static int avs_component_resume(struct snd_soc_component *component)
 	if (ret)
 		return ret;
 
-	/* It is expected that the LINK stream is prepared first. */
+	 
 	ret = avs_component_resume_prepare(component, true);
 	if (ret)
 		return ret;
@@ -1083,7 +1072,7 @@ static int avs_component_open(struct snd_soc_component *component,
 {
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 
-	/* only FE DAI links are handled here */
+	 
 	if (rtd->dai_link->no_pcm)
 		return 0;
 
@@ -1155,7 +1144,7 @@ static const struct snd_soc_component_driver avs_component_driver = {
 	.pointer		= avs_component_pointer,
 	.mmap			= avs_component_mmap,
 	.pcm_construct		= avs_component_construct,
-	.module_get_upon_open	= 1, /* increment refcount when a pcm is opened */
+	.module_get_upon_open	= 1,  
 	.topology_name_prefix	= "intel/avs",
 };
 
@@ -1174,7 +1163,7 @@ int avs_soc_component_register(struct device *dev, const char *name,
 	if (ret < 0)
 		return ret;
 
-	/* force name change after ASoC is done with its init */
+	 
 	acomp->base.name = name;
 	INIT_LIST_HEAD(&acomp->node);
 
@@ -1291,7 +1280,7 @@ plat_register:
 	return avs_soc_component_register(adev->dev, name, &avs_component_driver, cpus, cpu_count);
 }
 
-/* HD-Audio CPU DAI template */
+ 
 static const struct snd_soc_dai_driver hda_cpu_dai = {
 	.ops = &avs_dai_hda_be_ops,
 	.playback = {
@@ -1440,11 +1429,7 @@ static int avs_component_hda_open(struct snd_soc_component *component,
 		struct snd_soc_dpcm *dpcm;
 		int dir = substream->stream;
 
-		/*
-		 * Support the DPCM reparenting while still fulfilling expectations of HDAudio
-		 * common code - a valid stream pointer at substream->runtime->private_data -
-		 * by having all FEs point to the same private data.
-		 */
+		 
 		for_each_dpcm_be(rtd, dir, dpcm) {
 			struct snd_pcm_substream *be_substream;
 
@@ -1457,7 +1442,7 @@ static int avs_component_hda_open(struct snd_soc_component *component,
 			break;
 		}
 
-		/* RESUME unsupported for de-coupled HD-Audio capture. */
+		 
 		if (dir == SNDRV_PCM_STREAM_CAPTURE)
 			hwparams.info &= ~SNDRV_PCM_INFO_RESUME;
 
@@ -1480,7 +1465,7 @@ static int avs_component_hda_close(struct snd_soc_component *component,
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	struct hdac_ext_stream *link_stream;
 
-	/* only BE DAI links are handled here */
+	 
 	if (!rtd->dai_link->no_pcm)
 		return 0;
 
@@ -1502,11 +1487,7 @@ static const struct snd_soc_component_driver avs_hda_component_driver = {
 	.pointer		= avs_component_pointer,
 	.mmap			= avs_component_mmap,
 	.pcm_construct		= avs_component_construct,
-	/*
-	 * hda platform component's probe() is dependent on
-	 * codec->pcm_list_head, it needs to be initialized after codec
-	 * component. remove_order is here for completeness sake
-	 */
+	 
 	.probe_order		= SND_SOC_COMP_ORDER_LATE,
 	.remove_order		= SND_SOC_COMP_ORDER_EARLY,
 	.module_get_upon_open	= 1,

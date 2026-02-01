@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright(c) 2019-2022, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/mei_aux.h>
@@ -16,12 +14,12 @@
 
 static void gsc_irq_mask(struct irq_data *d)
 {
-	/* generic irq handling */
+	 
 }
 
 static void gsc_irq_unmask(struct irq_data *d)
 {
-	/* generic irq handling */
+	 
 }
 
 static struct irq_chip gsc_irq_chip = {
@@ -90,10 +88,10 @@ struct gsc_def {
 	size_t lmem_size;
 };
 
-/* gsc resources and definitions (HECI1 and HECI2) */
+ 
 static const struct gsc_def gsc_def_dg1[] = {
 	{
-		/* HECI1 not yet implemented. */
+		 
 	},
 	{
 		.name = "mei-gscfi",
@@ -104,7 +102,7 @@ static const struct gsc_def gsc_def_dg1[] = {
 
 static const struct gsc_def gsc_def_xehpsdv[] = {
 	{
-		/* HECI1 not enabled on the device. */
+		 
 	},
 	{
 		.name = "mei-gscfi",
@@ -174,9 +172,7 @@ static void gsc_init_one(struct drm_i915_private *i915, struct intel_gsc *gsc,
 	intf->irq = -1;
 	intf->id = intf_id;
 
-	/*
-	 * On the multi-tile setups the GSC is functional on the first tile only
-	 */
+	 
 	if (gsc_to_gt(gsc)->info.id != 0) {
 		drm_dbg(&i915->drm, "Not initializing gsc for remote tiles\n");
 		return;
@@ -201,7 +197,7 @@ static void gsc_init_one(struct drm_i915_private *i915, struct intel_gsc *gsc,
 		return;
 	}
 
-	/* skip irq initialization */
+	 
 	if (def->use_polling)
 		goto add_device;
 
@@ -257,7 +253,7 @@ add_device:
 		goto fail;
 	}
 
-	intf->adev = adev; /* needed by the notifier */
+	intf->adev = adev;  
 
 	if (intf_id == 0)
 		intel_huc_register_gsc_notifier(&gsc_to_gt(gsc)->uc.huc,
@@ -271,7 +267,7 @@ add_device:
 							  aux_dev->dev.bus);
 		intf->adev = NULL;
 
-		/* adev will be freed with the put_device() and .release sequence */
+		 
 		auxiliary_device_uninit(aux_dev);
 		goto fail;
 	}

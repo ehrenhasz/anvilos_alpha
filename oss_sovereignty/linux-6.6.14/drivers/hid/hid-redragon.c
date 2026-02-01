@@ -1,16 +1,6 @@
-/*
- *  HID driver for Redragon keyboards
- *
- *  Copyright (c) 2017 Robert Munteanu
- *  SPDX-License-Identifier: GPL-2.0+
- */
+ 
 
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- */
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -19,19 +9,7 @@
 #include "hid-ids.h"
 
 
-/*
- * The Redragon Asura keyboard sends an incorrect HID descriptor.
- * At byte 100 it contains
- *
- *   0x81, 0x00
- *
- * which is Input (Data, Arr, Abs), but it should be
- *
- *   0x81, 0x02
- *
- * which is Input (Data, Var, Abs), which is consistent with the way
- * key codes are generated.
- */
+ 
 
 static __u8 *redragon_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	unsigned int *rsize)

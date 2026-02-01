@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ec_access.c
- *
- * Copyright (C) 2010 SUSE Linux Products GmbH
- * Author:
- *      Thomas Renninger <trenn@suse.de>
- */
+
+ 
 
 #include <fcntl.h>
 #include <err.h>
@@ -22,9 +16,7 @@
 #define EC_SPACE_SIZE 256
 #define SYSFS_PATH "/sys/kernel/debug/ec/ec0/io"
 
-/* TBD/Enhancements:
-   - Provide param for accessing different ECs (not supported by kernel yet)
-*/
+ 
 
 static int read_mode = -1;
 static int sleep_time;
@@ -119,7 +111,7 @@ void parse_opts(int argc, char *argv[])
 			usage(argv[0], EXIT_FAILURE);
 		}
 	}
-	/* Add additional parameter checks here */
+	 
 }
 
 void dump_ec(int fd)

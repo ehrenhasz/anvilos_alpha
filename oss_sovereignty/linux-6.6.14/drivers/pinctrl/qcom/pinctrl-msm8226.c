@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -325,10 +323,7 @@ static const unsigned int sdc2_data_pins[] = { 122 };
 		.intr_detection_width = -1,		\
 	}
 
-/*
- * TODO: Add the rest of the possible functions and fill out
- * the pingroup table below.
- */
+ 
 enum msm8226_functions {
 	msm_mux_audio_pcm,
 	msm_mux_blsp_i2c1,

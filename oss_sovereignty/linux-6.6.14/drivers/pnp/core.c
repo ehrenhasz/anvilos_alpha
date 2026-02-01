@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * core.c - contains all core device and protocol registration functions
- *
- * Copyright 2002 Adam Belay <ambx1@neo.rr.com>
- */
+
+ 
 
 #include <linux/pnp.h>
 #include <linux/types.h>
@@ -23,11 +19,7 @@ static LIST_HEAD(pnp_protocols);
 LIST_HEAD(pnp_global);
 DEFINE_MUTEX(pnp_lock);
 
-/*
- * ACPI or PNPBIOS should tell us about all platform devices, so we can
- * skip some blind probes.  ISAPNP typically enumerates only plug-in ISA
- * devices, not built-in things like COM ports.
- */
+ 
 int pnp_platform_devices;
 EXPORT_SYMBOL(pnp_platform_devices);
 
@@ -38,12 +30,7 @@ static void pnp_remove_protocol(struct pnp_protocol *protocol)
 	mutex_unlock(&pnp_lock);
 }
 
-/**
- * pnp_register_protocol - adds a pnp protocol to the pnp layer
- * @protocol: pointer to the corresponding pnp_protocol structure
- *
- *  Ex protocols: ISAPNP, PNPBIOS, etc
- */
+ 
 int pnp_register_protocol(struct pnp_protocol *protocol)
 {
 	struct list_head *pos;
@@ -55,7 +42,7 @@ int pnp_register_protocol(struct pnp_protocol *protocol)
 
 	mutex_lock(&pnp_lock);
 
-	/* assign the lowest unused number */
+	 
 	list_for_each(pos, &pnp_protocols) {
 		struct pnp_protocol *cur = to_pnp_protocol(pos);
 		if (cur->number == nodenum) {
@@ -78,10 +65,7 @@ int pnp_register_protocol(struct pnp_protocol *protocol)
 	return ret;
 }
 
-/**
- * pnp_unregister_protocol - removes a pnp protocol from the pnp layer
- * @protocol: pointer to the corresponding pnp_protocol structure
- */
+ 
 void pnp_unregister_protocol(struct pnp_protocol *protocol)
 {
 	pnp_remove_protocol(protocol);
@@ -191,12 +175,7 @@ int __pnp_add_device(struct pnp_dev *dev)
 	return ret;
 }
 
-/*
- * pnp_add_device - adds a pnp device to the pnp layer
- * @dev: pointer to dev to add
- *
- *  adds to driver model, name database, fixups, interface, etc.
- */
+ 
 int pnp_add_device(struct pnp_dev *dev)
 {
 	int ret;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max98925.c -- ALSA SoC Stereo MAX98925 driver
- * Copyright 2013-15 Maxim Integrated Products
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -33,53 +30,53 @@ static const char *const hpf_text[] = {
 };
 
 static const struct reg_default max98925_reg[] = {
-	{ 0x0B, 0x00 }, /* IRQ Enable0 */
-	{ 0x0C, 0x00 }, /* IRQ Enable1 */
-	{ 0x0D, 0x00 }, /* IRQ Enable2 */
-	{ 0x0E, 0x00 }, /* IRQ Clear0 */
-	{ 0x0F, 0x00 }, /* IRQ Clear1 */
-	{ 0x10, 0x00 }, /* IRQ Clear2 */
-	{ 0x11, 0xC0 }, /* Map0 */
-	{ 0x12, 0x00 }, /* Map1 */
-	{ 0x13, 0x00 }, /* Map2 */
-	{ 0x14, 0xF0 }, /* Map3 */
-	{ 0x15, 0x00 }, /* Map4 */
-	{ 0x16, 0xAB }, /* Map5 */
-	{ 0x17, 0x89 }, /* Map6 */
-	{ 0x18, 0x00 }, /* Map7 */
-	{ 0x19, 0x00 }, /* Map8 */
-	{ 0x1A, 0x06 }, /* DAI Clock Mode 1 */
-	{ 0x1B, 0xC0 }, /* DAI Clock Mode 2 */
-	{ 0x1C, 0x00 }, /* DAI Clock Divider Denominator MSBs */
-	{ 0x1D, 0x00 }, /* DAI Clock Divider Denominator LSBs */
-	{ 0x1E, 0xF0 }, /* DAI Clock Divider Numerator MSBs */
-	{ 0x1F, 0x00 }, /* DAI Clock Divider Numerator LSBs */
-	{ 0x20, 0x50 }, /* Format */
-	{ 0x21, 0x00 }, /* TDM Slot Select */
-	{ 0x22, 0x00 }, /* DOUT Configuration VMON */
-	{ 0x23, 0x00 }, /* DOUT Configuration IMON */
-	{ 0x24, 0x00 }, /* DOUT Configuration VBAT */
-	{ 0x25, 0x00 }, /* DOUT Configuration VBST */
-	{ 0x26, 0x00 }, /* DOUT Configuration FLAG */
-	{ 0x27, 0xFF }, /* DOUT HiZ Configuration 1 */
-	{ 0x28, 0xFF }, /* DOUT HiZ Configuration 2 */
-	{ 0x29, 0xFF }, /* DOUT HiZ Configuration 3 */
-	{ 0x2A, 0xFF }, /* DOUT HiZ Configuration 4 */
-	{ 0x2B, 0x02 }, /* DOUT Drive Strength */
-	{ 0x2C, 0x90 }, /* Filters */
-	{ 0x2D, 0x00 }, /* Gain */
-	{ 0x2E, 0x02 }, /* Gain Ramping */
-	{ 0x2F, 0x00 }, /* Speaker Amplifier */
-	{ 0x30, 0x0A }, /* Threshold */
-	{ 0x31, 0x00 }, /* ALC Attack */
-	{ 0x32, 0x80 }, /* ALC Atten and Release */
-	{ 0x33, 0x00 }, /* ALC Infinite Hold Release */
-	{ 0x34, 0x92 }, /* ALC Configuration */
-	{ 0x35, 0x01 }, /* Boost Converter */
-	{ 0x36, 0x00 }, /* Block Enable */
-	{ 0x37, 0x00 }, /* Configuration */
-	{ 0x38, 0x00 }, /* Global Enable */
-	{ 0x3A, 0x00 }, /* Boost Limiter */
+	{ 0x0B, 0x00 },  
+	{ 0x0C, 0x00 },  
+	{ 0x0D, 0x00 },  
+	{ 0x0E, 0x00 },  
+	{ 0x0F, 0x00 },  
+	{ 0x10, 0x00 },  
+	{ 0x11, 0xC0 },  
+	{ 0x12, 0x00 },  
+	{ 0x13, 0x00 },  
+	{ 0x14, 0xF0 },  
+	{ 0x15, 0x00 },  
+	{ 0x16, 0xAB },  
+	{ 0x17, 0x89 },  
+	{ 0x18, 0x00 },  
+	{ 0x19, 0x00 },  
+	{ 0x1A, 0x06 },  
+	{ 0x1B, 0xC0 },  
+	{ 0x1C, 0x00 },  
+	{ 0x1D, 0x00 },  
+	{ 0x1E, 0xF0 },  
+	{ 0x1F, 0x00 },  
+	{ 0x20, 0x50 },  
+	{ 0x21, 0x00 },  
+	{ 0x22, 0x00 },  
+	{ 0x23, 0x00 },  
+	{ 0x24, 0x00 },  
+	{ 0x25, 0x00 },  
+	{ 0x26, 0x00 },  
+	{ 0x27, 0xFF },  
+	{ 0x28, 0xFF },  
+	{ 0x29, 0xFF },  
+	{ 0x2A, 0xFF },  
+	{ 0x2B, 0x02 },  
+	{ 0x2C, 0x90 },  
+	{ 0x2D, 0x00 },  
+	{ 0x2E, 0x02 },  
+	{ 0x2F, 0x00 },  
+	{ 0x30, 0x0A },  
+	{ 0x31, 0x00 },  
+	{ 0x32, 0x80 },  
+	{ 0x33, 0x00 },  
+	{ 0x34, 0x92 },  
+	{ 0x35, 0x01 },  
+	{ 0x36, 0x00 },  
+	{ 0x37, 0x00 },  
+	{ 0x38, 0x00 },  
+	{ 0x3A, 0x00 },  
 };
 
 static const struct soc_enum max98925_dai_enum =
@@ -201,7 +198,7 @@ static const struct snd_kcontrol_new max98925_snd_controls[] = {
 	SOC_ENUM("Boost Output Voltage", max98925_boost_voltage),
 };
 
-/* codec sample rate and n/m dividers parameter table */
+ 
 static const struct {
 	int rate;
 	int  sr;
@@ -274,7 +271,7 @@ static inline int max98925_rate_value(struct snd_soc_component *component,
 
 static void max98925_set_sense_data(struct max98925_priv *max98925)
 {
-	/* set VMON slots */
+	 
 	regmap_update_bits(max98925->regmap,
 		MAX98925_DOUT_CFG_VMON,
 		M98925_DAI_VMON_EN_MASK, M98925_DAI_VMON_EN_MASK);
@@ -282,7 +279,7 @@ static void max98925_set_sense_data(struct max98925_priv *max98925)
 		MAX98925_DOUT_CFG_VMON,
 		M98925_DAI_VMON_SLOT_MASK,
 		max98925->v_slot << M98925_DAI_VMON_SLOT_SHIFT);
-	/* set IMON slots */
+	 
 	regmap_update_bits(max98925->regmap,
 		MAX98925_DOUT_CFG_IMON,
 		M98925_DAI_IMON_EN_MASK, M98925_DAI_IMON_EN_MASK);
@@ -308,10 +305,7 @@ static int max98925_dai_set_fmt(struct snd_soc_dai *codec_dai,
 		max98925_set_sense_data(max98925);
 		break;
 	case SND_SOC_DAIFMT_CBP_CFP:
-		/*
-		 * set left channel DAI to provider mode,
-		 * right channel always consumer
-		 */
+		 
 		regmap_update_bits(max98925->regmap,
 			MAX98925_DAI_CLK_MODE2,
 			M98925_DAI_MAS_MASK, M98925_DAI_MAS_MASK);
@@ -349,7 +343,7 @@ static int max98925_set_clock(struct max98925_priv *max98925,
 	unsigned int dai_sr = 0, clock, mdll, n, m;
 	struct snd_soc_component *component = max98925->component;
 	int rate = params_rate(params);
-	/* BCLK/LRCLK ratio calculation */
+	 
 	int blr_clk_ratio = params_channels(params) * max98925->ch_size;
 
 	switch (blr_clk_ratio) {
@@ -398,21 +392,21 @@ static int max98925_set_clock(struct max98925_priv *max98925,
 	if (max98925_rate_value(component, rate, clock, &dai_sr, &n, &m))
 		return -EINVAL;
 
-	/* set DAI_SR to correct LRCLK frequency */
+	 
 	regmap_update_bits(max98925->regmap,
 			MAX98925_DAI_CLK_MODE2,
 			M98925_DAI_SR_MASK, dai_sr << M98925_DAI_SR_SHIFT);
-	/* set DAI m divider */
+	 
 	regmap_write(max98925->regmap,
 		MAX98925_DAI_CLK_DIV_M_MSBS, m >> 8);
 	regmap_write(max98925->regmap,
 		MAX98925_DAI_CLK_DIV_M_LSBS, m & 0xFF);
-	/* set DAI n divider */
+	 
 	regmap_write(max98925->regmap,
 		MAX98925_DAI_CLK_DIV_N_MSBS, n >> 8);
 	regmap_write(max98925->regmap,
 		MAX98925_DAI_CLK_DIV_N_LSBS, n & 0xFF);
-	/* set MDLL */
+	 
 	regmap_update_bits(max98925->regmap, MAX98925_DAI_CLK_MODE1,
 			M98925_MDLL_MULT_MASK, mdll << M98925_MDLL_MULT_SHIFT);
 	return 0;
@@ -462,13 +456,13 @@ static int max98925_dai_set_sysclk(struct snd_soc_dai *dai,
 
 	switch (clk_id) {
 	case 0:
-		/* use MCLK for Left channel, right channel always BCLK */
+		 
 		regmap_update_bits(max98925->regmap,
 				MAX98925_DAI_CLK_MODE1,
 				M98925_DAI_CLK_SOURCE_MASK, 0);
 		break;
 	case 1:
-		/* configure dai clock source to BCLK instead of MCLK */
+		 
 		regmap_update_bits(max98925->regmap,
 				MAX98925_DAI_CLK_MODE1,
 				M98925_DAI_CLK_SOURCE_MASK,
@@ -517,7 +511,7 @@ static int max98925_probe(struct snd_soc_component *component)
 
 	max98925->component = component;
 	regmap_write(max98925->regmap, MAX98925_GLOBAL_ENABLE, 0x00);
-	/* It's not the default but we need to set DAI_DLY */
+	 
 	regmap_write(max98925->regmap,
 			MAX98925_FORMAT, M98925_DAI_DLY_MASK);
 	regmap_write(max98925->regmap, MAX98925_TDM_SLOT_SELECT, 0xC8);
@@ -528,7 +522,7 @@ static int max98925_probe(struct snd_soc_component *component)
 	regmap_write(max98925->regmap, MAX98925_FILTERS, 0xD8);
 	regmap_write(max98925->regmap, MAX98925_ALC_CONFIGURATION, 0xF8);
 	regmap_write(max98925->regmap, MAX98925_CONFIGURATION, 0xF0);
-	/* Disable ALC muting */
+	 
 	regmap_write(max98925->regmap, MAX98925_BOOST_LIMITER, 0xF8);
 	return 0;
 }

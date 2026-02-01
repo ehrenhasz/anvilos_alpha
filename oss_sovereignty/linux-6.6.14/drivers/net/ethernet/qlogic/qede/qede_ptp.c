@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qede NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include "qede_ptp.h"
 #define QEDE_PTP_TX_TIMEOUT (2 * HZ)
@@ -18,25 +15,14 @@ struct qede_ptp {
 	struct qede_dev			*edev;
 	struct sk_buff			*tx_skb;
 
-	/* ptp spinlock is used for protecting the cycle/time counter fields
-	 * and, also for serializing the qed PTP API invocations.
-	 */
+	 
 	spinlock_t			lock;
 	bool				hw_ts_ioctl_called;
 	u16				tx_type;
 	u16				rx_filter;
 };
 
-/**
- * qede_ptp_adjfine() - Adjust the frequency of the PTP cycle counter.
- *
- * @info: The PTP clock info structure.
- * @scaled_ppm: Scaled parts per million adjustment from base.
- *
- * Scaled parts per million is ppm with a 16-bit binary fractional field.
- *
- * Return: Zero on success, negative errno otherwise.
- */
+ 
 static int qede_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
 {
 	struct qede_ptp *ptp = container_of(info, struct qede_ptp, clock_info);
@@ -110,7 +96,7 @@ static int qede_ptp_settime(struct ptp_clock_info *info,
 
 	DP_VERBOSE(edev, QED_MSG_DEBUG, "PTP settime called, ns = %llu\n", ns);
 
-	/* Re-init the timecounter */
+	 
 	spin_lock_bh(&ptp->lock);
 	timecounter_init(&ptp->tc, &ptp->cc, ns);
 	spin_unlock_bh(&ptp->lock);
@@ -118,7 +104,7 @@ static int qede_ptp_settime(struct ptp_clock_info *info,
 	return 0;
 }
 
-/* Enable (or disable) ancillary features of the phc subsystem */
+ 
 static int qede_ptp_ancillary_feature_enable(struct ptp_clock_info *info,
 					     struct ptp_clock_request *rq,
 					     int on)
@@ -148,7 +134,7 @@ static void qede_ptp_task(struct work_struct *work)
 	timedout = time_is_before_jiffies(ptp->ptp_tx_start +
 					  QEDE_PTP_TX_TIMEOUT);
 
-	/* Read Tx timestamp registers */
+	 
 	spin_lock_bh(&ptp->lock);
 	rc = ptp->ops->read_tx_ts(edev->cdev, &timestamp);
 	spin_unlock_bh(&ptp->lock);
@@ -161,7 +147,7 @@ static void qede_ptp_task(struct work_struct *work)
 					 &edev->flags);
 			edev->ptp_skip_txts++;
 		} else {
-			/* Reschedule to keep checking for a valid TS value */
+			 
 			schedule_work(&ptp->work);
 		}
 		return;
@@ -180,7 +166,7 @@ static void qede_ptp_task(struct work_struct *work)
 		   timestamp, ns);
 }
 
-/* Read the PHC. This API is invoked with ptp_lock held. */
+ 
 static u64 qede_ptp_read_cc(const struct cyclecounter *cc)
 {
 	struct qede_dev *edev;
@@ -248,7 +234,7 @@ static int qede_ptp_cfg_filters(struct qede_dev *edev)
 	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
 	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
 		ptp->rx_filter = HWTSTAMP_FILTER_PTP_V1_L4_EVENT;
-		/* Initialize PTP detection for UDP/IPv4 events */
+		 
 		rx_filter = QED_PTP_FILTER_V1_L4_GEN;
 		break;
 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
@@ -258,7 +244,7 @@ static int qede_ptp_cfg_filters(struct qede_dev *edev)
 	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
 	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
 		ptp->rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
-		/* Initialize PTP detection for UDP/IPv4 or UDP/IPv6 events */
+		 
 		rx_filter = QED_PTP_FILTER_V2_L4_GEN;
 		break;
 	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
@@ -268,7 +254,7 @@ static int qede_ptp_cfg_filters(struct qede_dev *edev)
 	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
 	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
 		ptp->rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
-		/* Initialize PTP detection L2 events */
+		 
 		rx_filter = QED_PTP_FILTER_V2_L2_GEN;
 		break;
 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
@@ -278,7 +264,7 @@ static int qede_ptp_cfg_filters(struct qede_dev *edev)
 	case HWTSTAMP_FILTER_PTP_V2_SYNC:
 	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
 		ptp->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-		/* Initialize PTP detection L2, UDP/IPv4 or UDP/IPv6 events */
+		 
 		rx_filter = QED_PTP_FILTER_V2_GEN;
 		break;
 	}
@@ -378,9 +364,7 @@ void qede_ptp_disable(struct qede_dev *edev)
 		ptp->clock = NULL;
 	}
 
-	/* Cancel PTP work queue. Should be done after the Tx queues are
-	 * drained to prevent additional scheduling.
-	 */
+	 
 	cancel_work_sync(&ptp->work);
 	if (ptp->tx_skb) {
 		dev_kfree_skb_any(ptp->tx_skb);
@@ -388,7 +372,7 @@ void qede_ptp_disable(struct qede_dev *edev)
 		clear_bit_unlock(QEDE_FLAGS_PTP_TX_IN_PRORGESS, &edev->flags);
 	}
 
-	/* Disable PTP in HW */
+	 
 	spin_lock_bh(&ptp->lock);
 	ptp->ops->disable(edev->cdev);
 	spin_unlock_bh(&ptp->lock);
@@ -408,17 +392,17 @@ static int qede_ptp_init(struct qede_dev *edev)
 
 	spin_lock_init(&ptp->lock);
 
-	/* Configure PTP in HW */
+	 
 	rc = ptp->ops->enable(edev->cdev);
 	if (rc) {
 		DP_INFO(edev, "PTP HW enable failed\n");
 		return rc;
 	}
 
-	/* Init work queue for Tx timestamping */
+	 
 	INIT_WORK(&ptp->work, qede_ptp_task);
 
-	/* Init cyclecounter and timecounter */
+	 
 	memset(&ptp->cc, 0, sizeof(ptp->cc));
 	ptp->cc.read = qede_ptp_read_cc;
 	ptp->cc.mask = CYCLECOUNTER_MASK(64);
@@ -457,7 +441,7 @@ int qede_ptp_enable(struct qede_dev *edev)
 
 	qede_ptp_cfg_filters(edev);
 
-	/* Fill the ptp_clock_info struct and register PTP clock */
+	 
 	ptp->clock_info.owner = THIS_MODULE;
 	snprintf(ptp->clock_info.name, 16, "%s", edev->ndev->name);
 	ptp->clock_info.max_adj = QED_MAX_PHC_DRIFT_PPB;
@@ -516,7 +500,7 @@ void qede_ptp_tx_ts(struct qede_dev *edev, struct sk_buff *skb)
 		edev->ptp_skip_txts++;
 	} else {
 		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-		/* schedule check for Tx timestamp */
+		 
 		ptp->tx_skb = skb_get(skb);
 		ptp->ptp_tx_start = jiffies;
 		schedule_work(&ptp->work);

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Randomness driver for the ARM SMCCC TRNG Firmware Interface
- * https://developer.arm.com/documentation/den0098/latest/
- *
- *  Copyright (C) 2020 Arm Ltd.
- *
- * The ARM TRNG firmware interface specifies a protocol to read entropy
- * from a higher exception level, to abstract from any machine specific
- * implemenations and allow easier use in hypervisors.
- *
- * The firmware interface is realised using the SMCCC specification.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/device.h>
@@ -27,7 +16,7 @@
 #define MAX_BITS_PER_CALL	(3 * 32UL)
 #endif
 
-/* We don't want to allow the firmware to stall us forever. */
+ 
 #define SMCCC_TRNG_MAX_TRIES	20
 
 #define SMCCC_RET_TRNG_INVALID_PARAMETER	-2

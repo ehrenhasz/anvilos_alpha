@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright (c) 2016 AmLogic, Inc.
- * Author: Michael Turquette <mturquette@baylibre.com>
- */
 
-/*
- * MultiPhase Locked Loops are outputs from a PLL with additional frequency
- * scaling capabilities. MPLL rates are calculated as:
- *
- * f(N2_integer, SDM_IN ) = 2.0G/(N2_integer + SDM_IN/16384)
- */
+ 
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -121,10 +113,10 @@ static int mpll_set_rate(struct clk_hw *hw,
 	else
 		__acquire(mpll->lock);
 
-	/* Set the fractional part */
+	 
 	meson_parm_write(clk->map, &mpll->sdm, sdm);
 
-	/* Set the integer divider part */
+	 
 	meson_parm_write(clk->map, &mpll->n2, n2);
 
 	if (mpll->lock)
@@ -144,17 +136,17 @@ static int mpll_init(struct clk_hw *hw)
 		regmap_multi_reg_write(clk->map, mpll->init_regs,
 				       mpll->init_count);
 
-	/* Enable the fractional part */
+	 
 	meson_parm_write(clk->map, &mpll->sdm_en, 1);
 
-	/* Set spread spectrum if possible */
+	 
 	if (MESON_PARM_APPLICABLE(&mpll->ssen)) {
 		unsigned int ss =
 			mpll->flags & CLK_MESON_MPLL_SPREAD_SPECTRUM ? 1 : 0;
 		meson_parm_write(clk->map, &mpll->ssen, ss);
 	}
 
-	/* Set the magic misc bit if required */
+	 
 	if (MESON_PARM_APPLICABLE(&mpll->misc))
 		meson_parm_write(clk->map, &mpll->misc, 1);
 

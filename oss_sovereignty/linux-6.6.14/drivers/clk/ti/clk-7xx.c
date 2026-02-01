@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRA7 Clock init
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo (t-kristo@ti.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>

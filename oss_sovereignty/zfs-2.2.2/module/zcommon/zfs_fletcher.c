@@ -1,137 +1,10 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
-/*
- * Copyright 2013 Saso Kiselkov. All rights reserved.
- */
+ 
+ 
+ 
 
-/*
- * Copyright (c) 2016 by Delphix. All rights reserved.
- */
+ 
 
-/*
- * Fletcher Checksums
- * ------------------
- *
- * ZFS's 2nd and 4th order Fletcher checksums are defined by the following
- * recurrence relations:
- *
- *	a  = a    + f
- *	 i    i-1    i-1
- *
- *	b  = b    + a
- *	 i    i-1    i
- *
- *	c  = c    + b		(fletcher-4 only)
- *	 i    i-1    i
- *
- *	d  = d    + c		(fletcher-4 only)
- *	 i    i-1    i
- *
- * Where
- *	a_0 = b_0 = c_0 = d_0 = 0
- * and
- *	f_0 .. f_(n-1) are the input data.
- *
- * Using standard techniques, these translate into the following series:
- *
- *	     __n_			     __n_
- *	     \   |			     \   |
- *	a  =  >     f			b  =  >     i * f
- *	 n   /___|   n - i		 n   /___|	 n - i
- *	     i = 1			     i = 1
- *
- *
- *	     __n_			     __n_
- *	     \   |  i*(i+1)		     \   |  i*(i+1)*(i+2)
- *	c  =  >     ------- f		d  =  >     ------------- f
- *	 n   /___|     2     n - i	 n   /___|	  6	   n - i
- *	     i = 1			     i = 1
- *
- * For fletcher-2, the f_is are 64-bit, and [ab]_i are 64-bit accumulators.
- * Since the additions are done mod (2^64), errors in the high bits may not
- * be noticed.  For this reason, fletcher-2 is deprecated.
- *
- * For fletcher-4, the f_is are 32-bit, and [abcd]_i are 64-bit accumulators.
- * A conservative estimate of how big the buffer can get before we overflow
- * can be estimated using f_i = 0xffffffff for all i:
- *
- * % bc
- *  f=2^32-1;d=0; for (i = 1; d<2^64; i++) { d += f*i*(i+1)*(i+2)/6 }; (i-1)*4
- * 2264
- *  quit
- * %
- *
- * So blocks of up to 2k will not overflow.  Our largest block size is
- * 128k, which has 32k 4-byte words, so we can compute the largest possible
- * accumulators, then divide by 2^64 to figure the max amount of overflow:
- *
- * % bc
- *  a=b=c=d=0; f=2^32-1; for (i=1; i<=32*1024; i++) { a+=f; b+=a; c+=b; d+=c }
- *  a/2^64;b/2^64;c/2^64;d/2^64
- * 0
- * 0
- * 1365
- * 11186858
- *  quit
- * %
- *
- * So a and b cannot overflow.  To make sure each bit of input has some
- * effect on the contents of c and d, we can look at what the factors of
- * the coefficients in the equations for c_n and d_n are.  The number of 2s
- * in the factors determines the lowest set bit in the multiplier.  Running
- * through the cases for n*(n+1)/2 reveals that the highest power of 2 is
- * 2^14, and for n*(n+1)*(n+2)/6 it is 2^15.  So while some data may overflow
- * the 64-bit accumulators, every bit of every f_i effects every accumulator,
- * even for 128k blocks.
- *
- * If we wanted to make a stronger version of fletcher4 (fletcher4c?),
- * we could do our calculations mod (2^32 - 1) by adding in the carries
- * periodically, and store the number of carries in the top 32-bits.
- *
- * --------------------
- * Checksum Performance
- * --------------------
- *
- * There are two interesting components to checksum performance: cached and
- * uncached performance.  With cached data, fletcher-2 is about four times
- * faster than fletcher-4.  With uncached data, the performance difference is
- * negligible, since the cost of a cache fill dominates the processing time.
- * Even though fletcher-4 is slower than fletcher-2, it is still a pretty
- * efficient pass over the data.
- *
- * In normal operation, the data which is being checksummed is in a buffer
- * which has been filled either by:
- *
- *	1. a compression step, which will be mostly cached, or
- *	2. a memcpy() or copyin(), which will be uncached
- *	   (because the copy is cache-bypassing).
- *
- * For both cached and uncached data, both fletcher checksums are much faster
- * than sha-256, and slower than 'off', which doesn't touch the data at all.
- */
+ 
 
 #include <sys/types.h>
 #include <sys/sysmacros.h>
@@ -193,11 +66,11 @@ static const fletcher_4_ops_t *fletcher_4_impls[] = {
 #endif
 };
 
-/* Hold all supported implementations */
+ 
 static uint32_t fletcher_4_supp_impls_cnt = 0;
 static fletcher_4_ops_t *fletcher_4_supp_impls[ARRAY_SIZE(fletcher_4_impls)];
 
-/* Select fletcher4 implementation */
+ 
 #define	IMPL_FASTEST	(UINT32_MAX)
 #define	IMPL_CYCLE	(UINT32_MAX - 1)
 #define	IMPL_SCALAR	(0)
@@ -224,7 +97,7 @@ static struct fletcher_4_kstat {
 } fletcher_4_stat_data[ARRAY_SIZE(fletcher_4_impls) + 1];
 #endif
 
-/* Indicate that benchmark has been completed */
+ 
 static boolean_t fletcher_4_initialized = B_FALSE;
 
 void
@@ -373,10 +246,10 @@ fletcher_4_impl_set(const char *val)
 	size_t i, val_len;
 
 	val_len = strlen(val);
-	while ((val_len > 0) && !!isspace(val[val_len-1])) /* trim '\n' */
+	while ((val_len > 0) && !!isspace(val[val_len-1]))  
 		val_len--;
 
-	/* check mandatory implementations */
+	 
 	for (i = 0; i < ARRAY_SIZE(fletcher_4_impl_selectors); i++) {
 		const char *name = fletcher_4_impl_selectors[i].fis_name;
 
@@ -389,7 +262,7 @@ fletcher_4_impl_set(const char *val)
 	}
 
 	if (err != 0 && fletcher_4_initialized) {
-		/* check all supported implementations */
+		 
 		for (i = 0; i < fletcher_4_supp_impls_cnt; i++) {
 			const char *name = fletcher_4_supp_impls[i]->name;
 
@@ -410,11 +283,7 @@ fletcher_4_impl_set(const char *val)
 	return (err);
 }
 
-/*
- * Returns the Fletcher 4 operations for checksums.   When a SIMD
- * implementation is not allowed in the current context, then fallback
- * to the fastest generic implementation.
- */
+ 
 static inline const fletcher_4_ops_t *
 fletcher_4_impl_get(void)
 {
@@ -430,7 +299,7 @@ fletcher_4_impl_get(void)
 		ops = &fletcher_4_fastest_impl;
 		break;
 	case IMPL_CYCLE:
-		/* Cycle through supported implementations */
+		 
 		ASSERT(fletcher_4_initialized);
 		ASSERT3U(fletcher_4_supp_impls_cnt, >, 0);
 		static uint32_t cycle_count = 0;
@@ -538,7 +407,7 @@ fletcher_4_byteswap(const void *buf, uint64_t size,
 	}
 }
 
-/* Incremental Fletcher 4 */
+ 
 
 #define	ZFS_FLETCHER_4_INC_MAX_SIZE	(8ULL << 20)
 
@@ -550,11 +419,7 @@ fletcher_4_incremental_combine(zio_cksum_t *zcp, const uint64_t size,
 	const uint64_t c2 = c1 * (c1 + 1) / 2;
 	const uint64_t c3 = c2 * (c1 + 2) / 3;
 
-	/*
-	 * Value of 'c3' overflows on buffer sizes close to 16MiB. For that
-	 * reason we split incremental fletcher4 computation of large buffers
-	 * to steps of (ZFS_FLETCHER_4_INC_MAX_SIZE) size.
-	 */
+	 
 	ASSERT3U(size, <=, ZFS_FLETCHER_4_INC_MAX_SIZE);
 
 	zcp->zc_word[3] += nzcp->zc_word[3] + c1 * zcp->zc_word[2] +
@@ -589,7 +454,7 @@ int
 fletcher_4_incremental_native(void *buf, size_t size, void *data)
 {
 	zio_cksum_t *zcp = data;
-	/* Use scalar impl to directly update cksum of small blocks */
+	 
 	if (size < SPA_MINBLOCKSIZE)
 		fletcher_4_scalar_native((fletcher_4_ctx_t *)zcp, buf, size);
 	else
@@ -601,7 +466,7 @@ int
 fletcher_4_incremental_byteswap(void *buf, size_t size, void *data)
 {
 	zio_cksum_t *zcp = data;
-	/* Use scalar impl to directly update cksum of small blocks */
+	 
 	if (size < SPA_MINBLOCKSIZE)
 		fletcher_4_scalar_byteswap((fletcher_4_ctx_t *)zcp, buf, size);
 	else
@@ -610,9 +475,7 @@ fletcher_4_incremental_byteswap(void *buf, size_t size, void *data)
 }
 
 #if defined(_KERNEL)
-/*
- * Fletcher 4 kstats
- */
+ 
 static int
 fletcher_4_kstat_headers(char *buf, size_t size)
 {
@@ -673,7 +536,7 @@ fletcher_4_kstat_addr(kstat_t *ksp, loff_t n)
 	fletcher_4_fastest_impl.uses_fpu = src->uses_fpu;		  \
 }
 
-#define	FLETCHER_4_BENCH_NS	(MSEC2NSEC(1))		/* 1ms */
+#define	FLETCHER_4_BENCH_NS	(MSEC2NSEC(1))		 
 
 typedef void fletcher_checksum_func_t(const void *, uint64_t, const void *,
 					zio_cksum_t *);
@@ -697,7 +560,7 @@ fletcher_4_benchmark_impl(boolean_t native, char *data, uint64_t data_size)
 		struct fletcher_4_kstat *stat = &fletcher_4_stat_data[i];
 		uint64_t run_count = 0;
 
-		/* temporary set an implementation */
+		 
 		fletcher_4_impl_chosen = i;
 
 		kpreempt_disable();
@@ -711,7 +574,7 @@ fletcher_4_benchmark_impl(boolean_t native, char *data, uint64_t data_size)
 		kpreempt_enable();
 
 		run_bw = data_size * run_count * NANOSEC;
-		run_bw /= run_time_ns;	/* B/s */
+		run_bw /= run_time_ns;	 
 
 		if (native)
 			stat->native = run_bw;
@@ -733,63 +596,57 @@ fletcher_4_benchmark_impl(boolean_t native, char *data, uint64_t data_size)
 		}
 	}
 
-	/* restore original selection */
+	 
 	atomic_swap_32(&fletcher_4_impl_chosen, sel_save);
 }
-#endif /* _KERNEL */
+#endif  
 
-/*
- * Initialize and benchmark all supported implementations.
- */
+ 
 static void
 fletcher_4_benchmark(void)
 {
 	fletcher_4_ops_t *curr_impl;
 	int i, c;
 
-	/* Move supported implementations into fletcher_4_supp_impls */
+	 
 	for (i = 0, c = 0; i < ARRAY_SIZE(fletcher_4_impls); i++) {
 		curr_impl = (fletcher_4_ops_t *)fletcher_4_impls[i];
 
 		if (curr_impl->valid && curr_impl->valid())
 			fletcher_4_supp_impls[c++] = curr_impl;
 	}
-	membar_producer();	/* complete fletcher_4_supp_impls[] init */
-	fletcher_4_supp_impls_cnt = c;	/* number of supported impl */
+	membar_producer();	 
+	fletcher_4_supp_impls_cnt = c;	 
 
 #if defined(_KERNEL)
-	static const size_t data_size = 1 << SPA_OLD_MAXBLOCKSHIFT; /* 128kiB */
+	static const size_t data_size = 1 << SPA_OLD_MAXBLOCKSHIFT;  
 	char *databuf = vmem_alloc(data_size, KM_SLEEP);
 
 	for (i = 0; i < data_size / sizeof (uint64_t); i++)
-		((uint64_t *)databuf)[i] = (uintptr_t)(databuf+i); /* warm-up */
+		((uint64_t *)databuf)[i] = (uintptr_t)(databuf+i);  
 
 	fletcher_4_benchmark_impl(B_FALSE, databuf, data_size);
 	fletcher_4_benchmark_impl(B_TRUE, databuf, data_size);
 
 	vmem_free(databuf, data_size);
 #else
-	/*
-	 * Skip the benchmark in user space to avoid impacting libzpool
-	 * consumers (zdb, zhack, zinject, ztest).  The last implementation
-	 * is assumed to be the fastest and used by default.
-	 */
+	 
 	memcpy(&fletcher_4_fastest_impl,
 	    fletcher_4_supp_impls[fletcher_4_supp_impls_cnt - 1],
 	    sizeof (fletcher_4_fastest_impl));
 	fletcher_4_fastest_impl.name = "fastest";
 	membar_producer();
-#endif /* _KERNEL */
+#endif  
 }
 
 void
 fletcher_4_init(void)
 {
-	/* Determine the fastest available implementation. */
+	 
 	fletcher_4_benchmark();
 
 #if defined(_KERNEL)
-	/* Install kstats for all implementations */
+	 
 	fletcher_4_kstat = kstat_create("zfs", 0, "fletcher_4_bench", "misc",
 	    KSTAT_TYPE_RAW, 0, KSTAT_FLAG_VIRTUAL);
 	if (fletcher_4_kstat != NULL) {
@@ -803,7 +660,7 @@ fletcher_4_init(void)
 	}
 #endif
 
-	/* Finish initialization */
+	 
 	fletcher_4_initialized = B_TRUE;
 }
 
@@ -818,7 +675,7 @@ fletcher_4_fini(void)
 #endif
 }
 
-/* ABD adapters */
+ 
 
 static void
 abd_fletcher_4_init(zio_abd_checksum_data_t *cdp)
@@ -894,7 +751,7 @@ abd_fletcher_4_iter(void *data, size_t size, void *private)
 
 	if (size > 0) {
 		ASSERT3U(size, <, FLETCHER_MIN_SIMD_SIZE);
-		/* At this point we have to switch to scalar impl */
+		 
 		abd_fletcher_4_simd2scalar(native, data, size, cdp);
 	}
 
@@ -920,11 +777,11 @@ fletcher_4_param_get(char *buffer, zfs_kernel_param_t *unused)
 	char *fmt;
 	int cnt = 0;
 
-	/* list fastest */
+	 
 	fmt = IMPL_FMT(impl, IMPL_FASTEST);
 	cnt += kmem_scnprintf(buffer + cnt, PAGE_SIZE - cnt, fmt, "fastest");
 
-	/* list all supported implementations */
+	 
 	for (uint32_t i = 0; i < fletcher_4_supp_impls_cnt; ++i) {
 		fmt = IMPL_FMT(impl, i);
 		cnt += kmem_scnprintf(buffer + cnt, PAGE_SIZE - cnt, fmt,
@@ -957,11 +814,11 @@ fletcher_4_param(ZFS_MODULE_PARAM_ARGS)
 
 		s = sbuf_new_for_sysctl(NULL, NULL, init_buflen, req);
 
-		/* list fastest */
+		 
 		fmt = IMPL_FMT(impl, IMPL_FASTEST);
 		(void) sbuf_printf(s, fmt, "fastest");
 
-		/* list all supported implementations */
+		 
 		for (uint32_t i = 0; i < fletcher_4_supp_impls_cnt; ++i) {
 			fmt = IMPL_FMT(impl, i);
 			(void) sbuf_printf(s, fmt,
@@ -986,11 +843,7 @@ fletcher_4_param(ZFS_MODULE_PARAM_ARGS)
 
 #undef IMPL_FMT
 
-/*
- * Choose a fletcher 4 implementation in ZFS.
- * Users can choose "cycle" to exercise all implementations, but this is
- * for testing purpose therefore it can only be set in user space.
- */
+ 
 ZFS_MODULE_VIRTUAL_PARAM_CALL(zfs, zfs_, fletcher_4_impl,
     fletcher_4_param_set, fletcher_4_param_get, ZMOD_RW,
 	"Select fletcher 4 implementation.");

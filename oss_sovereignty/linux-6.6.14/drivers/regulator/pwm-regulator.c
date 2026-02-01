@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator driver for PWM Regulators
- *
- * Copyright (C) 2014 - STMicroelectronics Inc.
- *
- * Author: Lee Jones <lee.jones@linaro.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -25,21 +19,21 @@ struct pwm_continuous_reg_data {
 };
 
 struct pwm_regulator_data {
-	/*  Shared */
+	 
 	struct pwm_device *pwm;
 
-	/* Voltage table */
+	 
 	struct pwm_voltages *duty_cycle_table;
 
-	/* Continuous mode info */
+	 
 	struct pwm_continuous_reg_data continuous;
 
-	/* regulator descriptor */
+	 
 	struct regulator_desc desc;
 
 	int state;
 
-	/* Enable GPIO */
+	 
 	struct gpio_desc *enb_gpio;
 };
 
@@ -48,9 +42,7 @@ struct pwm_voltages {
 	unsigned int dutycycle;
 };
 
-/*
- * Voltage table call-backs
- */
+ 
 static void pwm_regulator_init_state(struct regulator_dev *rdev)
 {
 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
@@ -159,11 +151,7 @@ static int pwm_regulator_get_voltage(struct regulator_dev *rdev)
 
 	voltage = pwm_get_relative_duty_cycle(&pstate, duty_unit);
 
-	/*
-	 * The dutycycle for min_uV might be greater than the one for max_uV.
-	 * This is happening when the user needs an inversed polarity, but the
-	 * PWM device does not support inversing it in hardware.
-	 */
+	 
 	if (max_uV_duty < min_uV_duty) {
 		voltage = min_uV_duty - voltage;
 		diff_duty = min_uV_duty - max_uV_duty;
@@ -195,11 +183,7 @@ static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
 
 	pwm_init_state(drvdata->pwm, &pstate);
 
-	/*
-	 * The dutycycle for min_uV might be greater than the one for max_uV.
-	 * This is happening when the user needs an inversed polarity, but the
-	 * PWM device does not support inversing it in hardware.
-	 */
+	 
 	if (max_uV_duty < min_uV_duty)
 		diff_duty = min_uV_duty - max_uV_duty;
 	else

@@ -1,46 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	parse_entry.c -- compile one terminfo or termcap entry
- *
- *	Get an exact in-core representation of an entry.  Don't
- *	try to resolve use or tc capabilities, that is someone
- *	else's job.  Depends on the lexical analyzer to get tokens
- *	from the input stream.
- */
+ 
 
 #define __INTERNAL_CAPS_VISIBLE
 #include <curses.priv.h>
@@ -107,15 +69,13 @@ _nc_extend_names(ENTRY * entryp, const char *name, int token_type)
 		return _nc_extend_names(entryp, name, token_type);
 	    }
 	}
-	/* Well, we are given a cancel for a name that we don't recognize */
+	 
 	return _nc_extend_names(entryp, name, STRING);
     default:
 	return 0;
     }
 
-    /* Adjust the 'offset' (insertion-point) to keep the lists of extended
-     * names sorted.
-     */
+     
     for (n = first, found = FALSE; n < last; n++) {
 	int cmp = strcmp(tp->ext_Names[n], name);
 	if (cmp == 0)
@@ -212,25 +172,9 @@ expected_type(const char *name, int token_type, bool silent)
     }
     return result;
 }
-#endif /* NCURSES_XNAMES */
+#endif  
 
-/*
- * A valid entry name uses characters from the "portable character set"
- * (more commonly referred to as US-ASCII), and disallows some of the
- * punctuation characters:
- *
- * '/' is a pathname separator
- * '\' may be a pathname separator, but more important, is an escape
- * '|' delimits names and description
- * '#' denotes a numeric value
- * '=' denotes a string value
- * '@' denotes a cancelled symbol
- * ',' separates terminfo capabilities
- * ':' separates termcap capabilities
- *
- * Termcap capability names may begin with a '#' or '@' (since they have
- * exactly two characters).
- */
+ 
 static bool
 valid_entryname(const char *name)
 {
@@ -251,24 +195,7 @@ valid_entryname(const char *name)
     return result;
 }
 
-/*
- *	int
- *	_nc_parse_entry(entry, literal, silent)
- *
- *	Compile one entry.  Doesn't try to resolve use or tc capabilities.
- *
- *	found-forward-use = FALSE
- *	re-initialise internal arrays
- *	get_token();
- *	if the token was not a name in column 1, complain and die
- *	save names in entry's string table
- *	while (get_token() is not EOF and not NAMES)
- *	        check for existence and type-correctness
- *	        enter cap into structure
- *	        if STRING
- *	            save string in entry's string table
- *	push back token
- */
+ 
 
 #define BAD_TC_USAGE if (!bad_tc_usage) \
  	{ bad_tc_usage = TRUE; \
@@ -303,15 +230,7 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
     entryp->startline = _nc_start_line;
     DEBUG(2, ("Comment range is %ld to %ld", entryp->cstart, entryp->cend));
 
-    /*
-     * Strip off the 2-character termcap name, if present.  Originally termcap
-     * used that as an indexing aid.  We can retain 2-character terminfo names,
-     * but note that they would be lost if we translate to/from termcap.  This
-     * feature is supposedly obsolete since "newer" BSD implementations do not
-     * use it; however our reference for this feature is SunOS 4.x, which
-     * implemented it.  Note that the resulting terminal type was never the
-     * 2-character name, but was instead the first alias after that.
-     */
+     
 #define ok_TC2(s) (isgraph(UChar(s)) && (s) != '|')
     ptr = _nc_curr_token.tk_name;
     if (_nc_syntax == SYN_TERMCAP
@@ -332,11 +251,7 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 
     DEBUG(2, ("Starting '%s'", ptr));
 
-    /*
-     * We do this because the one-token lookahead in the parse loop
-     * results in the terminal type getting prematurely set to correspond
-     * to that of the next entry.
-     */
+     
     name = _nc_first_name(entryp->tterm.term_names);
     if (!valid_entryname(name)) {
 	_nc_warning("invalid entry name \"%s\"", name);
@@ -344,7 +259,7 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
     }
     _nc_set_type(name);
 
-    /* check for overly-long names and aliases */
+     
     for (base = entryp->tterm.term_names; (ptr = strchr(base, '|')) != 0;
 	 base = ptr + 1) {
 	if (ptr - base > MAX_ALIAS) {
@@ -384,18 +299,11 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 		BAD_TC_USAGE
 	    }
 	} else {
-	    /* normal token lookup */
+	     
 	    entry_ptr = _nc_find_entry(_nc_curr_token.tk_name,
 				       _nc_get_hash_table(_nc_syntax));
 
-	    /*
-	     * Our kluge to handle aliasing.  The reason it is done
-	     * this ugly way, with a linear search, is so the hashing
-	     * machinery doesn't have to be made really complicated
-	     * (also we get better warnings this way).  No point in
-	     * making this case fast, aliased caps aren't common now
-	     * and will get rarer.
-	     */
+	     
 	    if (entry_ptr == NOTFOUND) {
 		const struct alias *ap;
 
@@ -418,7 +326,7 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 					    ap->from, ap->source, ap->to);
 			    break;
 			}
-		} else {	/* if (_nc_syntax == SYN_TERMINFO) */
+		} else {	 
 		    for (ap = _nc_get_alias_table(FALSE); ap->from; ap++)
 			if (strcmp(ap->from, _nc_curr_token.tk_name) == 0) {
 			    if (ap->to == (char *) 0) {
@@ -441,10 +349,7 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 		}
 	    }
 #if NCURSES_XNAMES
-	    /*
-	     * If we have extended-names active, we will automatically
-	     * define a name based on its context.
-	     */
+	     
 	    if (entry_ptr == NOTFOUND
 		&& _nc_user_definable) {
 		if (expected_type(_nc_curr_token.tk_name, token_type, silent)) {
@@ -457,13 +362,13 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 			}
 		    }
 		} else {
-		    /* ignore it: we have already printed error message */
+		     
 		    continue;
 		}
 	    }
-#endif /* NCURSES_XNAMES */
+#endif  
 
-	    /* can't find this cap name, not even as an alias */
+	     
 	    if (entry_ptr == NOTFOUND) {
 		if (!silent)
 		    _nc_warning("unknown capability '%s'",
@@ -471,47 +376,37 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 		continue;
 	    }
 
-	    /* deal with bad type/value combinations. */
+	     
 	    if (token_type == CANCEL) {
-		/*
-		 * Prefer terminfo in this (long-obsolete) ambiguity:
-		 */
+		 
 		if (!strcmp("ma", _nc_curr_token.tk_name)) {
 		    entry_ptr = _nc_find_type_entry("ma", NUMBER,
 						    _nc_syntax != 0);
 		    assert(entry_ptr != 0);
 		}
 	    } else if (entry_ptr->nte_type != token_type) {
-		/*
-		 * Nasty special cases here handle situations in which type
-		 * information can resolve name clashes.  Normal lookup
-		 * finds the last instance in the capability table of a
-		 * given name, regardless of type.  find_type_entry looks
-		 * for a first matching instance with given type.  So as
-		 * long as all ambiguous names occur in pairs of distinct
-		 * type, this will do the job.
-		 */
+		 
 
 		if (token_type == NUMBER
 		    && !strcmp("ma", _nc_curr_token.tk_name)) {
-		    /* tell max_attributes from arrow_key_map */
+		     
 		    entry_ptr = _nc_find_type_entry("ma", NUMBER,
 						    _nc_syntax != 0);
 		    assert(entry_ptr != 0);
 
 		} else if (token_type == STRING
 			   && !strcmp("MT", _nc_curr_token.tk_name)) {
-		    /* map terminfo's string MT to MT */
+		     
 		    entry_ptr = _nc_find_type_entry("MT", STRING,
 						    _nc_syntax != 0);
 		    assert(entry_ptr != 0);
 
 		} else if (token_type == BOOLEAN
 			   && entry_ptr->nte_type == STRING) {
-		    /* treat strings without following "=" as empty strings */
+		     
 		    token_type = STRING;
 		} else {
-		    /* we couldn't recover; skip this token */
+		     
 		    if (!silent) {
 			const char *type_name;
 			switch (entry_ptr->nte_type) {
@@ -535,7 +430,7 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 		}
 	    }
 
-	    /* now we know that the type/value combination is OK */
+	     
 	    switch (token_type) {
 	    case CANCEL:
 		switch (entry_ptr->nte_type) {
@@ -588,37 +483,25 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 		_nc_panic_mode((char) ((_nc_syntax == SYN_TERMCAP) ? ':' : ','));
 		continue;
 	    }
-	}			/* end else cur_token.name != "use" */
+	}			 
       nexttok:
-	continue;		/* cannot have a label w/o statement */
-    }				/* endwhile (not EOF and not NAMES) */
+	continue;		 
+    }				 
 
     _nc_push_token(token_type);
     _nc_set_type(_nc_first_name(entryp->tterm.term_names));
 
-    /*
-     * Try to deduce as much as possible from extension capabilities
-     * (this includes obsolete BSD capabilities).  Sigh...it would be more
-     * space-efficient to call this after use resolution, but it has
-     * to be done before entry allocation is wrapped up.
-     */
+     
     if (!literal) {
 	if (_nc_syntax == SYN_TERMCAP) {
 	    bool has_base_entry = FALSE;
 
-	    /*
-	     * Don't insert defaults if this is a `+' entry meant only
-	     * for inclusion in other entries (not sure termcap ever
-	     * had these, actually).
-	     */
+	     
 	    if (strchr(entryp->tterm.term_names, '+')) {
 		has_base_entry = TRUE;
 	    } else {
 		unsigned i;
-		/*
-		 * Otherwise, look for a base entry that will already
-		 * have picked up defaults via translation.
-		 */
+		 
 		for (i = 0; i < entryp->nuses; i++) {
 		    if (entryp->uses[i].name != 0
 			&& !strchr(entryp->uses[i].name, '+'))
@@ -637,7 +520,7 @@ _nc_parse_entry(ENTRY * entryp, int literal, bool silent)
 
 NCURSES_EXPORT(int)
 _nc_capcmp(const char *s, const char *t)
-/* compare two string capabilities, stripping out padding */
+ 
 {
     bool ok_s = VALID_STRING(s);
     bool ok_t = VALID_STRING(t);
@@ -668,7 +551,7 @@ _nc_capcmp(const char *s, const char *t)
 		}
 	    }
 
-	    /* we've now pushed s and t past any padding they pointed at */
+	     
 
 	    if (*s == '\0' && *t == '\0')
 		return (0);
@@ -676,7 +559,7 @@ _nc_capcmp(const char *s, const char *t)
 	    if (*s != *t)
 		return (*t - *s);
 
-	    /* else *s == *t but one is not NUL, so continue */
+	     
 	    s++, t++;
 	}
     } else if (ok_s || ok_t) {
@@ -705,11 +588,7 @@ append_acs(string_desc * dst, int code, char *src)
     }
 }
 
-/*
- * The ko capability, if present, consists of a comma-separated capability
- * list.  For each capability, we may assume there is a keycap that sends the
- * string which is the value of that capability.
- */
+ 
 #define DATA(from, to) { { from }, { to } }
 typedef struct {
     const char from[3];
@@ -717,43 +596,35 @@ typedef struct {
 } assoc;
 static assoc const ko_xlate[] =
 {
-    DATA("al", "kil1"),		/* insert line key  -> KEY_IL    */
-    DATA("bt", "kcbt"),		/* back tab         -> KEY_BTAB  */
-    DATA("cd", "ked"),		/* clear-to-eos key -> KEY_EOL   */
-    DATA("ce", "kel"),		/* clear-to-eol key -> KEY_EOS   */
-    DATA("cl", "kclr"),		/* clear key        -> KEY_CLEAR */
-    DATA("ct", "tbc"),		/* clear all tabs   -> KEY_CATAB */
-    DATA("dc", "kdch1"),	/* delete char      -> KEY_DC    */
-    DATA("dl", "kdl1"),		/* delete line      -> KEY_DL    */
-    DATA("do", "kcud1"),	/* down key         -> KEY_DOWN  */
-    DATA("ei", "krmir"),	/* exit insert key  -> KEY_EIC   */
-    DATA("ho", "khome"),	/* home key         -> KEY_HOME  */
-    DATA("ic", "kich1"),	/* insert char key  -> KEY_IC    */
-    DATA("im", "kIC"),		/* insert-mode key  -> KEY_SIC   */
-    DATA("le", "kcub1"),	/* le key           -> KEY_LEFT  */
-    DATA("nd", "kcuf1"),	/* nd key           -> KEY_RIGHT */
-    DATA("nl", "kent"),		/* new line key     -> KEY_ENTER */
-    DATA("st", "khts"),		/* set-tab key      -> KEY_STAB  */
+    DATA("al", "kil1"),		 
+    DATA("bt", "kcbt"),		 
+    DATA("cd", "ked"),		 
+    DATA("ce", "kel"),		 
+    DATA("cl", "kclr"),		 
+    DATA("ct", "tbc"),		 
+    DATA("dc", "kdch1"),	 
+    DATA("dl", "kdl1"),		 
+    DATA("do", "kcud1"),	 
+    DATA("ei", "krmir"),	 
+    DATA("ho", "khome"),	 
+    DATA("ic", "kich1"),	 
+    DATA("im", "kIC"),		 
+    DATA("le", "kcub1"),	 
+    DATA("nd", "kcuf1"),	 
+    DATA("nl", "kent"),		 
+    DATA("st", "khts"),		 
     DATA("ta", ""),
-    DATA("up", "kcuu1"),	/* up-arrow key     -> KEY_UP    */
+    DATA("up", "kcuu1"),	 
 };
 
-/*
- * This routine fills in string caps that either had defaults under
- * termcap or can be manufactured from obsolete termcap capabilities.
- * It was lifted from Ross Ridge's mytinfo package.
- */
+ 
 
 static const char C_CR[] = "\r";
 static const char C_LF[] = "\n";
 static const char C_BS[] = "\b";
 static const char C_HT[] = "\t";
 
-/*
- * This bit of legerdemain turns all the terminfo variable names into
- * references to locations in the arrays Booleans, Numbers, and Strings ---
- * precisely what's needed.
- */
+ 
 
 #undef CUR
 #define CUR tp->
@@ -768,15 +639,9 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
        (T_CALLED("postprocess_termcap(tp=%p, has_base=%d)"),
 	(void *) tp, has_base));
 
-    /*
-     * TERMCAP DEFAULTS AND OBSOLETE-CAPABILITY TRANSLATIONS
-     *
-     * This first part of the code is the functional inverse of the
-     * fragment in capdefaults.c.
-     * ----------------------------------------------------------------------
-     */
+     
 
-    /* if there was a tc entry, assume we picked up defaults via that */
+     
     if (!has_base) {
 	if (WANTED(init_3string) && PRESENT(termcap_init2))
 	    init_3string = _nc_save_str(termcap_init2);
@@ -802,7 +667,7 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	    else if (PRESENT(backspace_if_not_bs))
 		cursor_left = backspace_if_not_bs;
 	}
-	/* vi doesn't use "do", but it does seem to use nl (or '\n') instead */
+	 
 	if (WANTED(cursor_down)) {
 	    if (PRESENT(linefeed_if_not_lf))
 		cursor_down = linefeed_if_not_lf;
@@ -849,28 +714,14 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	}
     }
 
-    /*
-     * Inverse of capdefaults.c code ends here.
-     * ----------------------------------------------------------------------
-     *
-     * TERMCAP-TO TERMINFO MAPPINGS FOR SOURCE TRANSLATION
-     *
-     * These translations will *not* be inverted by tgetent().
-     */
+     
 
     if (!has_base) {
-	/*
-	 * We wait until now to decide if we've got a working cr because even
-	 * one that doesn't work can be used for newline. Unfortunately the
-	 * space allocated for it is wasted.
-	 */
+	 
 	if (return_does_clr_eol == 1 || no_correctly_working_cr == 1)
 	    carriage_return = ABSENT_STRING;
 
-	/*
-	 * Supposedly most termcap entries have ta now and '\t' is no longer a
-	 * default, but it doesn't seem to be true...
-	 */
+	 
 	if (WANTED(tab)) {
 	    if (horizontal_tab_delay > 0) {
 		_nc_SPRINTF(buf, _nc_SLIMIT(sizeof(buf))
@@ -882,16 +733,12 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	if (init_tabs == ABSENT_NUMERIC && has_hardware_tabs == TRUE)
 	    init_tabs = 8;
 
-	/*
-	 * Assume we can beep with ^G unless we're given bl@.
-	 */
+	 
 	if (WANTED(bell))
 	    bell = _nc_save_str("\007");
     }
 
-    /*
-     * Translate the old termcap :pt: capability to it#8 + ht=\t
-     */
+     
     if (has_hardware_tabs == TRUE) {
 	if (init_tabs != 8 && init_tabs != ABSENT_NUMERIC)
 	    _nc_warning("hardware tabs with a width other than 8: %d", init_tabs);
@@ -906,10 +753,7 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	    }
 	}
     }
-    /*
-     * Now translate the ko capability, if there is one.  This
-     * isn't from mytinfo...
-     */
+     
     if (PRESENT(other_non_function_keys)) {
 	char *base;
 	char *bp, *cp, *dp;
@@ -918,11 +762,11 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	char buf2[MAX_TERMINFO_LENGTH];
 	bool foundim;
 
-	/* we're going to use this for a special case later */
+	 
 	dp = strchr(other_non_function_keys, 'i');
 	foundim = (dp != 0) && (dp[1] == 'm');
 
-	/* look at each comma-separated capability in the ko string... */
+	 
 	for (base = other_non_function_keys;
 	     (cp = strchr(base, ',')) != 0;
 	     base = cp + 1) {
@@ -941,15 +785,15 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 		_nc_warning("unknown capability `%.*s' in ko string",
 			    (int) len, base);
 		continue;
-	    } else if (ap->to[0] == '\0')	/* ignore it */
+	    } else if (ap->to[0] == '\0')	 
 		continue;
 
-	    /* now we know we found a match in ko_table, so... */
+	     
 
 	    from_ptr = _nc_find_entry(ap->from, _nc_get_hash_table(TRUE));
 	    to_ptr = _nc_find_entry(ap->to, _nc_get_hash_table(FALSE));
 
-	    if (!from_ptr || !to_ptr)	/* should never happen! */
+	    if (!from_ptr || !to_ptr)	 
 		_nc_err_abort("ko translation table is invalid, I give up");
 
 	    if (WANTED(tp->Strings[from_ptr->nte_index])) {
@@ -960,19 +804,14 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	    if (tp->Strings[to_ptr->nte_index]) {
 		const char *s = tp->Strings[from_ptr->nte_index];
 		const char *t = tp->Strings[to_ptr->nte_index];
-		/* There's no point in warning about it if it is the same
-		 * string; that's just an inefficiency.
-		 */
+		 
 		if (VALID_STRING(s) && VALID_STRING(t) && strcmp(s, t) != 0)
 		    _nc_warning("%s (%s) already has an explicit value %s, ignoring ko",
 				ap->to, ap->from, t);
 		continue;
 	    }
 
-	    /*
-	     * The magic moment -- copy the mapped key string over,
-	     * stripping out padding.
-	     */
+	     
 	    bp = tp->Strings[from_ptr->nte_index];
 	    if (VALID_STRING(bp)) {
 		for (dp = buf2; *bp; bp++) {
@@ -991,12 +830,7 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	    }
 	}
 
-	/*
-	 * Note: ko=im and ko=ic both want to grab the `Insert'
-	 * keycap.  There's a kich1 but no ksmir, so the ic capability
-	 * got mapped to kich1 and im to kIC to avoid a collision.
-	 * If the description has im but not ic, hack kIC back to kich1.
-	 */
+	 
 	if (foundim && WANTED(key_ic) && PRESENT(key_sic)) {
 	    key_ic = key_sic;
 	    key_sic = ABSENT_STRING;
@@ -1014,9 +848,7 @@ postprocess_termcap(TERMTYPE2 *tp, bool has_base)
 	}
     }
 
-    /*
-     * Translate XENIX forms characters.
-     */
+     
     if (PRESENT(acs_ulcorner) ||
 	PRESENT(acs_llcorner) ||
 	PRESENT(acs_urcorner) ||
@@ -1064,14 +896,9 @@ postprocess_terminfo(TERMTYPE2 *tp)
        (T_CALLED("postprocess_terminfo(tp=%p)"),
 	(void *) tp));
 
-    /*
-     * TERMINFO-TO-TERMINFO MAPPINGS FOR SOURCE TRANSLATION
-     * ----------------------------------------------------------------------
-     */
+     
 
-    /*
-     * Translate AIX forms characters.
-     */
+     
     if (PRESENT(box_chars_1)) {
 	char buf2[MAX_TERMCAP_LENGTH];
 	string_desc result;
@@ -1079,17 +906,17 @@ postprocess_terminfo(TERMTYPE2 *tp)
 	_nc_str_init(&result, buf2, sizeof(buf2));
 	_nc_safe_strcat(&result, acs_chars);
 
-	append_acs0(&result, 'l', box_chars_1, 0);	/* ACS_ULCORNER */
-	append_acs0(&result, 'q', box_chars_1, 1);	/* ACS_HLINE */
-	append_acs0(&result, 'k', box_chars_1, 2);	/* ACS_URCORNER */
-	append_acs0(&result, 'x', box_chars_1, 3);	/* ACS_VLINE */
-	append_acs0(&result, 'j', box_chars_1, 4);	/* ACS_LRCORNER */
-	append_acs0(&result, 'm', box_chars_1, 5);	/* ACS_LLCORNER */
-	append_acs0(&result, 'w', box_chars_1, 6);	/* ACS_TTEE */
-	append_acs0(&result, 'u', box_chars_1, 7);	/* ACS_RTEE */
-	append_acs0(&result, 'v', box_chars_1, 8);	/* ACS_BTEE */
-	append_acs0(&result, 't', box_chars_1, 9);	/* ACS_LTEE */
-	append_acs0(&result, 'n', box_chars_1, 10);	/* ACS_PLUS */
+	append_acs0(&result, 'l', box_chars_1, 0);	 
+	append_acs0(&result, 'q', box_chars_1, 1);	 
+	append_acs0(&result, 'k', box_chars_1, 2);	 
+	append_acs0(&result, 'x', box_chars_1, 3);	 
+	append_acs0(&result, 'j', box_chars_1, 4);	 
+	append_acs0(&result, 'm', box_chars_1, 5);	 
+	append_acs0(&result, 'w', box_chars_1, 6);	 
+	append_acs0(&result, 'u', box_chars_1, 7);	 
+	append_acs0(&result, 'v', box_chars_1, 8);	 
+	append_acs0(&result, 't', box_chars_1, 9);	 
+	append_acs0(&result, 'n', box_chars_1, 10);	 
 
 	if (buf2[0]) {
 	    acs_chars = _nc_save_str(buf2);
@@ -1097,20 +924,11 @@ postprocess_terminfo(TERMTYPE2 *tp)
 	    box_chars_1 = ABSENT_STRING;
 	}
     }
-    /*
-     * ----------------------------------------------------------------------
-     */
+     
     returnVoidDB;
 }
 
-/*
- * Do a linear search through the terminfo tables to find a given full-name.
- * We don't expect to do this often, so there's no hashing function.
- *
- * In effect, this scans through the 3 lists of full-names, and looks them
- * up in _nc_info_table, which is organized so that the nte_index fields are
- * sorted, but the nte_type fields are not necessarily grouped together.
- */
+ 
 static struct name_table_entry const *
 lookup_fullname(const char *find)
 {
@@ -1146,4 +964,4 @@ lookup_fullname(const char *find)
     }
 }
 
-/* parse_entry.c ends here */
+ 

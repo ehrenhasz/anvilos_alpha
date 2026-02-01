@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2009-2016 Cavium, Inc.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/gfp.h>
@@ -60,9 +58,7 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
 		struct cavium_mdiobus *bus;
 		union cvmx_smix_en smi_en;
 
-		/* If it is not an OF node we cannot handle it yet, so
-		 * exit the loop.
-		 */
+		 
 		node = to_of_node(fwn);
 		if (!node)
 			break;
@@ -137,7 +133,7 @@ static void thunder_mdiobus_pci_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id thunder_mdiobus_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xa02b) },
-	{ 0, } /* End of table. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, thunder_mdiobus_id_table);
 

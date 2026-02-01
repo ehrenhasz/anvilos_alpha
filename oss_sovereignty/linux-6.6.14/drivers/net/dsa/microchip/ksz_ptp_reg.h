@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Microchip KSZ PTP register definitions
- * Copyright (C) 2022 Microchip Technology Inc.
- */
+ 
+ 
 
 #ifndef __KSZ_PTP_REGS_H
 #define __KSZ_PTP_REGS_H
@@ -14,7 +12,7 @@
 #define LED_SRC_PTP_GPIO_1		BIT(3)
 #define LED_SRC_PTP_GPIO_2		BIT(2)
 
-/* 5 - PTP Clock */
+ 
 #define REG_PTP_CLK_CTRL		0x0500
 
 #define PTP_STEP_ADJ			BIT(6)
@@ -120,7 +118,7 @@
 
 #define TRIG_PULSE_WIDTH_M		GENMASK(23, 0)
 
-/* Port PTP Register */
+ 
 #define REG_PTP_PORT_RX_DELAY__2	0x0C00
 #define REG_PTP_PORT_TX_DELAY__2	0x0C02
 #define REG_PTP_PORT_ASYM_DELAY__2	0x0C04

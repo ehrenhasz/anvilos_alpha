@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH Timer Support - MTU2
- *
- *  Copyright (C) 2009 Magnus Damm
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -44,7 +40,7 @@ struct sh_mtu2_device {
 	void __iomem *mapbase;
 	struct clk *clk;
 
-	raw_spinlock_t lock; /* Protect the shared registers */
+	raw_spinlock_t lock;  
 
 	struct sh_mtu2_channel *channels;
 	unsigned int num_channels;
@@ -52,14 +48,14 @@ struct sh_mtu2_device {
 	bool has_clockevent;
 };
 
-#define TSTR -1 /* shared register */
-#define TCR  0 /* channel register */
-#define TMDR 1 /* channel register */
-#define TIOR 2 /* channel register */
-#define TIER 3 /* channel register */
-#define TSR  4 /* channel register */
-#define TCNT 5 /* channel register */
-#define TGR  6 /* channel register */
+#define TSTR -1  
+#define TCR  0  
+#define TMDR 1  
+#define TIOR 2  
+#define TIER 3  
+#define TSR  4  
+#define TCNT 5  
+#define TGR  6  
 
 #define TCR_CCLR_NONE		(0 << 5)
 #define TCR_CCLR_TGRA		(1 << 5)
@@ -72,7 +68,7 @@ struct sh_mtu2_device {
 #define TCR_CKEG_FALLING	(1 << 3)
 #define TCR_CKEG_BOTH		(2 << 3)
 #define TCR_CKEG_MASK		(3 << 3)
-/* Values 4 to 7 are channel-dependent */
+ 
 #define TCR_TPSC_P1		(0 << 0)
 #define TCR_TPSC_P4		(1 << 0)
 #define TCR_TPSC_P16		(2 << 0)
@@ -188,7 +184,7 @@ static void sh_mtu2_start_stop_ch(struct sh_mtu2_channel *ch, int start)
 {
 	unsigned long flags, value;
 
-	/* start stop register shared by multiple timer channels */
+	 
 	raw_spin_lock_irqsave(&ch->mtu->lock, flags);
 	value = sh_mtu2_read(ch, TSTR);
 
@@ -210,7 +206,7 @@ static int sh_mtu2_enable(struct sh_mtu2_channel *ch)
 	pm_runtime_get_sync(&ch->mtu->pdev->dev);
 	dev_pm_syscore_device(&ch->mtu->pdev->dev, true);
 
-	/* enable clock */
+	 
 	ret = clk_enable(ch->mtu->clk);
 	if (ret) {
 		dev_err(&ch->mtu->pdev->dev, "ch%u: cannot enable clock\n",
@@ -218,16 +214,13 @@ static int sh_mtu2_enable(struct sh_mtu2_channel *ch)
 		return ret;
 	}
 
-	/* make sure channel is disabled */
+	 
 	sh_mtu2_start_stop_ch(ch, 0);
 
 	rate = clk_get_rate(ch->mtu->clk) / 64;
 	periodic = (rate + HZ/2) / HZ;
 
-	/*
-	 * "Periodic Counter Operation"
-	 * Clear on TGRA compare match, divide clock by 64.
-	 */
+	 
 	sh_mtu2_write(ch, TCR, TCR_CCLR_TGRA | TCR_TPSC_P64);
 	sh_mtu2_write(ch, TIOR, TIOC_IOCH(TIOR_OC_0_CLEAR) |
 		      TIOC_IOCL(TIOR_OC_0_CLEAR));
@@ -236,7 +229,7 @@ static int sh_mtu2_enable(struct sh_mtu2_channel *ch)
 	sh_mtu2_write(ch, TMDR, TMDR_MD_NORMAL);
 	sh_mtu2_write(ch, TIER, TIER_TGIEA);
 
-	/* enable channel */
+	 
 	sh_mtu2_start_stop_ch(ch, 1);
 
 	return 0;
@@ -244,10 +237,10 @@ static int sh_mtu2_enable(struct sh_mtu2_channel *ch)
 
 static void sh_mtu2_disable(struct sh_mtu2_channel *ch)
 {
-	/* disable channel */
+	 
 	sh_mtu2_start_stop_ch(ch, 0);
 
-	/* stop clock */
+	 
 	clk_disable(ch->mtu->clk);
 
 	dev_pm_syscore_device(&ch->mtu->pdev->dev, false);
@@ -258,11 +251,11 @@ static irqreturn_t sh_mtu2_interrupt(int irq, void *dev_id)
 {
 	struct sh_mtu2_channel *ch = dev_id;
 
-	/* acknowledge interrupt */
+	 
 	sh_mtu2_read(ch, TSR);
 	sh_mtu2_write(ch, TSR, ~TSR_TGFA);
 
-	/* notify clockevent layer */
+	 
 	ch->ced.event_handler(&ch->ced);
 	return IRQ_HANDLED;
 }
@@ -348,7 +341,7 @@ static int sh_mtu2_setup_channel(struct sh_mtu2_channel *ch, unsigned int index,
 	sprintf(name, "tgi%ua", index);
 	irq = platform_get_irq_byname(mtu->pdev, name);
 	if (irq < 0) {
-		/* Skip channels with no declared interrupt. */
+		 
 		return 0;
 	}
 
@@ -394,7 +387,7 @@ static int sh_mtu2_setup(struct sh_mtu2_device *mtu,
 
 	raw_spin_lock_init(&mtu->lock);
 
-	/* Get hold of clock. */
+	 
 	mtu->clk = clk_get(&mtu->pdev->dev, "fck");
 	if (IS_ERR(mtu->clk)) {
 		dev_err(&mtu->pdev->dev, "cannot get clock\n");
@@ -405,14 +398,14 @@ static int sh_mtu2_setup(struct sh_mtu2_device *mtu,
 	if (ret < 0)
 		goto err_clk_put;
 
-	/* Map the memory resource. */
+	 
 	ret = sh_mtu2_map_memory(mtu);
 	if (ret < 0) {
 		dev_err(&mtu->pdev->dev, "failed to remap I/O memory\n");
 		goto err_clk_unprepare;
 	}
 
-	/* Allocate and setup the channels. */
+	 
 	ret = platform_irq_count(pdev);
 	if (ret < 0)
 		goto err_unmap;

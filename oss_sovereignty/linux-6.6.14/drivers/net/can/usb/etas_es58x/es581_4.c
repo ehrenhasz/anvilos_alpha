@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Driver for ETAS GmbH ES58X USB CAN(-FD) Bus Interfaces.
- *
- * File es581_4.c: Adds support to ETAS ES581.4.
- *
- * Copyright (c) 2019 Robert Bosch Engineering and Business Solutions. All rights reserved.
- * Copyright (c) 2020 ETAS K.K.. All rights reserved.
- * Copyright (c) 2020-2022 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/kernel.h>
@@ -16,18 +9,7 @@
 #include "es58x_core.h"
 #include "es581_4.h"
 
-/**
- * es581_4_sizeof_rx_tx_msg() - Calculate the actual length of the
- *	structure of a rx or tx message.
- * @msg: message of variable length, must have a dlc field.
- *
- * Even if RTR frames have actually no payload, the ES58X devices
- * still expect it. Must be a macro in order to accept several types
- * (struct es581_4_tx_can_msg and struct es581_4_rx_can_msg) as an
- * input.
- *
- * Return: length of the message.
- */
+ 
 #define es581_4_sizeof_rx_tx_msg(msg)				\
 	offsetof(typeof(msg), data[can_cc_dlc2len((msg).dlc)])
 
@@ -371,7 +353,7 @@ static int es581_4_tx_can_msg(struct es58x_priv *priv,
 	if (ret)
 		return ret;
 
-	/* Fill message contents. */
+	 
 	tx_can_msg = (typeof(tx_can_msg))&es581_4_urb_cmd->raw_msg[msg_len];
 	put_unaligned_le32(es58x_get_raw_can_id(cf), &tx_can_msg->can_id);
 	put_unaligned_le32(priv->tx_head, &tx_can_msg->packet_idx);
@@ -381,7 +363,7 @@ static int es581_4_tx_can_msg(struct es58x_priv *priv,
 
 	memcpy(tx_can_msg->data, cf->data, cf->len);
 
-	/* Calculate new sizes. */
+	 
 	es581_4_urb_cmd->bulk_tx_can_msg.num_can_msg++;
 	msg_len += es581_4_sizeof_rx_tx_msg(*tx_can_msg);
 	priv->tx_urb->transfer_buffer_length = es58x_get_urb_cmd_len(es58x_dev,
@@ -397,7 +379,7 @@ static int es581_4_set_bittiming(struct es58x_priv *priv)
 	struct can_bittiming *bt = &priv->can.bittiming;
 
 	tx_conf_msg.bitrate = cpu_to_le32(bt->bitrate);
-	/* bt->sample_point is in tenth of percent. Convert it to percent. */
+	 
 	tx_conf_msg.sample_point = cpu_to_le32(bt->sample_point / 10U);
 	tx_conf_msg.samples_per_bit = cpu_to_le32(ES58X_SAMPLES_PER_BIT_ONE);
 	tx_conf_msg.bit_time = cpu_to_le32(can_bit_time(bt));
@@ -450,10 +432,7 @@ static int es581_4_get_timestamp(struct es58x_device *es58x_dev)
 			      ES58X_EMPTY_MSG, 0, ES58X_CHANNEL_IDX_NA);
 }
 
-/* Nominal bittiming constants for ES581.4 as specified in the
- * microcontroller datasheet: "Stellaris(R) LM3S5B91 Microcontroller"
- * table 17-4 "CAN Protocol Ranges" from Texas Instruments.
- */
+ 
 static const struct can_bittiming_const es581_4_bittiming_const = {
 	.name = "ES581.4",
 	.tseg1_min = 1,
@@ -470,25 +449,16 @@ const struct es58x_parameters es581_4_param = {
 	.bittiming_const = &es581_4_bittiming_const,
 	.data_bittiming_const = NULL,
 	.tdc_const = NULL,
-	.bitrate_max = 1 * MEGA /* BPS */,
-	.clock = {.freq = 50 * MEGA /* Hz */},
+	.bitrate_max = 1 * MEGA  ,
+	.clock = {.freq = 50 * MEGA  },
 	.ctrlmode_supported = CAN_CTRLMODE_CC_LEN8_DLC,
 	.tx_start_of_frame = 0xAFAF,
 	.rx_start_of_frame = 0xFAFA,
 	.tx_urb_cmd_max_len = ES581_4_TX_URB_CMD_MAX_LEN,
 	.rx_urb_cmd_max_len = ES581_4_RX_URB_CMD_MAX_LEN,
-	/* Size of internal device TX queue is 330.
-	 *
-	 * However, we witnessed some ES58X_ERR_PROT_CRC errors from
-	 * the device and thus, echo_skb_max was lowered to the
-	 * empirical value of 75 which seems stable and then rounded
-	 * down to become a power of two.
-	 *
-	 * Root cause of those ES58X_ERR_PROT_CRC errors is still
-	 * unclear.
-	 */
-	.fifo_mask = 63, /* echo_skb_max = 64 */
-	.dql_min_limit = CAN_FRAME_LEN_MAX * 50, /* Empirical value. */
+	 
+	.fifo_mask = 63,  
+	.dql_min_limit = CAN_FRAME_LEN_MAX * 50,  
 	.tx_bulk_max = ES581_4_TX_BULK_MAX,
 	.urb_cmd_header_len = ES581_4_URB_CMD_HEADER_LEN,
 	.rx_urb_max = ES58X_RX_URBS_MAX,

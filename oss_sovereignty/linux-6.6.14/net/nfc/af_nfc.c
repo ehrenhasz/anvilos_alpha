@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- *
- * Authors:
- *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
- *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
- */
+
+ 
 
 #include <linux/nfc.h>
 #include <linux/module.h>

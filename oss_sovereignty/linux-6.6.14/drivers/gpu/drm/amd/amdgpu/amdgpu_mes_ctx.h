@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __AMDGPU_MES_CTX_H__
 #define __AMDGPU_MES_CTX_H__
@@ -60,14 +39,14 @@ struct amdgpu_mes_ctx_meta_data {
 	struct {
 		uint8_t ring[PAGE_SIZE * 4];
 
-		/* gfx csa */
+		 
 		struct v10_gfx_meta_data gfx_meta_data;
 
 		uint8_t gds_backup[64 * 1024];
 
 		struct amdgpu_wb_slot slots[AMDGPU_MES_CTX_MAX_OFFS];
 
-		/* only for ib test */
+		 
 		uint32_t ib[256] __aligned(256);
 
 		uint32_t padding[64];
@@ -81,7 +60,7 @@ struct amdgpu_mes_ctx_meta_data {
 
 		struct amdgpu_wb_slot slots[AMDGPU_MES_CTX_MAX_OFFS];
 
-		/* only for ib test */
+		 
 		uint32_t ib[256] __aligned(256);
 
 		uint32_t padding[64];
@@ -91,12 +70,12 @@ struct amdgpu_mes_ctx_meta_data {
 	struct {
 		uint8_t ring[PAGE_SIZE * 4];
 
-		/* sdma csa for mcbp */
+		 
 		uint8_t sdma_meta_data[AMDGPU_CSA_SDMA_SIZE];
 
 		struct amdgpu_wb_slot slots[AMDGPU_MES_CTX_MAX_OFFS];
 
-		/* only for ib test */
+		 
 		uint32_t ib[256] __aligned(256);
 
 		uint32_t padding[64];

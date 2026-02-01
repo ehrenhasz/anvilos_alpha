@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, 2020, The Linux Foundation. All rights reserved. */
+ 
+ 
 
 
 #ifndef _DT_BINDINGS_CLK_MSM_RPMH_H
 #define _DT_BINDINGS_CLK_MSM_RPMH_H
 
-/* RPMh controlled clocks */
+ 
 #define RPMH_CXO_CLK				0
 #define RPMH_CXO_CLK_A				1
 #define RPMH_LN_BB_CLK2				2

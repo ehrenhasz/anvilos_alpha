@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STMicroelectronics TPM I2C Linux driver for TPM ST33ZP24
- * Copyright (C) 2009 - 2016 STMicroelectronics
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,14 +17,7 @@ struct st33zp24_i2c_phy {
 	u8 buf[ST33ZP24_BUFSIZE + 1];
 };
 
-/*
- * write8_reg
- * Send byte to the TIS register according to the ST33ZP24 I2C protocol.
- * @param: tpm_register, the tpm tis register where the data should be written
- * @param: tpm_data, the tpm_data to write inside the tpm_register
- * @param: tpm_size, The length of the data
- * @return: Returns negative errno, or else the number of bytes written.
- */
+ 
 static int write8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data, int tpm_size)
 {
 	struct st33zp24_i2c_phy *phy = phy_id;
@@ -35,16 +25,9 @@ static int write8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data, int tpm_size)
 	phy->buf[0] = tpm_register;
 	memcpy(phy->buf + 1, tpm_data, tpm_size);
 	return i2c_master_send(phy->client, phy->buf, tpm_size + 1);
-} /* write8_reg() */
+}  
 
-/*
- * read8_reg
- * Recv byte from the TIS register according to the ST33ZP24 I2C protocol.
- * @param: tpm_register, the tpm tis register where the data should be read
- * @param: tpm_data, the TPM response
- * @param: tpm_size, tpm TPM response size to read.
- * @return: number of byte read successfully: should be one if success.
- */
+ 
 static int read8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data, int tpm_size)
 {
 	struct st33zp24_i2c_phy *phy = phy_id;
@@ -56,17 +39,9 @@ static int read8_reg(void *phy_id, u8 tpm_register, u8 *tpm_data, int tpm_size)
 	if (status == 2)
 		status = i2c_master_recv(phy->client, tpm_data, tpm_size);
 	return status;
-} /* read8_reg() */
+}  
 
-/*
- * st33zp24_i2c_send
- * Send byte to the TIS register according to the ST33ZP24 I2C protocol.
- * @param: phy_id, the phy description
- * @param: tpm_register, the tpm tis register where the data should be written
- * @param: tpm_data, the tpm_data to write inside the tpm_register
- * @param: tpm_size, the length of the data
- * @return: number of byte written successfully: should be one if success.
- */
+ 
 static int st33zp24_i2c_send(void *phy_id, u8 tpm_register, u8 *tpm_data,
 			     int tpm_size)
 {
@@ -74,15 +49,7 @@ static int st33zp24_i2c_send(void *phy_id, u8 tpm_register, u8 *tpm_data,
 			  tpm_size);
 }
 
-/*
- * st33zp24_i2c_recv
- * Recv byte from the TIS register according to the ST33ZP24 I2C protocol.
- * @param: phy_id, the phy description
- * @param: tpm_register, the tpm tis register where the data should be read
- * @param: tpm_data, the TPM response
- * @param: tpm_size, tpm TPM response size to read.
- * @return: number of byte read successfully: should be one if success.
- */
+ 
 static int st33zp24_i2c_recv(void *phy_id, u8 tpm_register, u8 *tpm_data,
 			     int tpm_size)
 {
@@ -94,13 +61,7 @@ static const struct st33zp24_phy_ops i2c_phy_ops = {
 	.recv = st33zp24_i2c_recv,
 };
 
-/*
- * st33zp24_i2c_probe initialize the TPM device
- * @param: client, the i2c_client description (TPM I2C description).
- * @param: id, the i2c_device_id struct.
- * @return: 0 in case of success.
- *	 -1 in other case.
- */
+ 
 static int st33zp24_i2c_probe(struct i2c_client *client)
 {
 	struct st33zp24_i2c_phy *phy;
@@ -120,11 +81,7 @@ static int st33zp24_i2c_probe(struct i2c_client *client)
 	return st33zp24_probe(phy, &i2c_phy_ops, &client->dev, client->irq);
 }
 
-/*
- * st33zp24_i2c_remove remove the TPM device
- * @param: client, the i2c_client description (TPM I2C description).
- * @return: 0 in case of success.
- */
+ 
 static void st33zp24_i2c_remove(struct i2c_client *client)
 {
 	struct tpm_chip *chip = i2c_get_clientdata(client);

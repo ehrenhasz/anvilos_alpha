@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __RTW_EFUSE_H__
 #define __RTW_EFUSE_H__
 
@@ -46,17 +42,17 @@ enum {
 
 #define		EFUSE_REPEAT_THRESHOLD_			3
 
-/*  */
-/* 	The following is for BT Efuse definition */
-/*  */
+ 
+ 
+ 
 #define		EFUSE_BT_MAX_MAP_LEN		1024
 #define		EFUSE_MAX_BANK			4
 #define		EFUSE_MAX_BT_BANK		(EFUSE_MAX_BANK-1)
-/*  */
-/*--------------------------Define Parameters-------------------------------*/
+ 
+ 
 #define		EFUSE_MAX_WORD_UNIT			4
 
-/*------------------------------Define structure----------------------------*/
+ 
 struct pgpkt_struct {
 	u8 offset;
 	u8 word_en;
@@ -64,7 +60,7 @@ struct pgpkt_struct {
 	u8 word_cnts;
 };
 
-/*------------------------------Define structure----------------------------*/
+ 
 struct efuse_hal {
 	u8 fakeEfuseBank;
 	u32 fakeEfuseUsedBytes;
@@ -85,7 +81,7 @@ struct efuse_hal {
 };
 
 
-/*------------------------Export global variable----------------------------*/
+ 
 extern u8 fakeEfuseBank;
 extern u32 fakeEfuseUsedBytes;
 extern u8 fakeEfuseContent[];
@@ -101,7 +97,7 @@ extern u32 fakeBTEfuseUsedBytes;
 extern u8 fakeBTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
 extern u8 fakeBTEfuseInitMap[];
 extern u8 fakeBTEfuseModifiedMap[];
-/*------------------------Export global variable----------------------------*/
+ 
 
 u16 Efuse_GetCurrentSize(struct adapter *padapter, u8 efuseType, bool bPseudoTest);
 u8 Efuse_CalculateWordCnts(u8 word_en);

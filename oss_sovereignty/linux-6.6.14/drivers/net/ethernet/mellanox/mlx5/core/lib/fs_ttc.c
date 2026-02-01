@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021 NVIDIA CORPORATION & AFFILIATES.
+
+
 
 #include <linux/ip.h>
 #include <linux/ipv6.h>
@@ -25,7 +25,7 @@
 					 MLX5_INNER_TTC_GROUP2_SIZE +\
 					 MLX5_INNER_TTC_GROUP3_SIZE)
 
-/* L3/L4 traffic type classifier */
+ 
 struct mlx5_ttc_table {
 	int num_groups;
 	struct mlx5_flow_table *t;
@@ -307,7 +307,7 @@ static int mlx5_create_ttc_table_groups(struct mlx5_ttc_table *ttc,
 		return -ENOMEM;
 	}
 
-	/* L4 Group */
+	 
 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
 	MLX5_SET_TO_ONES(fte_match_param, mc, outer_headers.ip_protocol);
 	if (use_ipv)
@@ -323,7 +323,7 @@ static int mlx5_create_ttc_table_groups(struct mlx5_ttc_table *ttc,
 		goto err;
 	ttc->num_groups++;
 
-	/* L3 Group */
+	 
 	MLX5_SET(fte_match_param, mc, outer_headers.ip_protocol, 0);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5_TTC_GROUP2_SIZE;
@@ -333,7 +333,7 @@ static int mlx5_create_ttc_table_groups(struct mlx5_ttc_table *ttc,
 		goto err;
 	ttc->num_groups++;
 
-	/* Any Group */
+	 
 	memset(in, 0, inlen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5_TTC_GROUP3_SIZE;
@@ -449,7 +449,7 @@ static int mlx5_create_inner_ttc_table_groups(struct mlx5_ttc_table *ttc)
 		return -ENOMEM;
 	}
 
-	/* L4 Group */
+	 
 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
 	MLX5_SET_TO_ONES(fte_match_param, mc, inner_headers.ip_protocol);
 	MLX5_SET_TO_ONES(fte_match_param, mc, inner_headers.ip_version);
@@ -462,7 +462,7 @@ static int mlx5_create_inner_ttc_table_groups(struct mlx5_ttc_table *ttc)
 		goto err;
 	ttc->num_groups++;
 
-	/* L3 Group */
+	 
 	MLX5_SET(fte_match_param, mc, inner_headers.ip_protocol, 0);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5_INNER_TTC_GROUP2_SIZE;
@@ -472,7 +472,7 @@ static int mlx5_create_inner_ttc_table_groups(struct mlx5_ttc_table *ttc)
 		goto err;
 	ttc->num_groups++;
 
-	/* Any Group */
+	 
 	memset(in, 0, inlen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5_INNER_TTC_GROUP3_SIZE;

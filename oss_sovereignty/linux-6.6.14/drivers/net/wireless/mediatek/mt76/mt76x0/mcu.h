@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+ 
+ 
 
 #ifndef __MT76X0U_MCU_H
 #define __MT76X0U_MCU_H
@@ -14,9 +11,7 @@ struct mt76x02_dev;
 #define MT_MCU_IVB_SIZE			0x40
 #define MT_MCU_DLM_OFFSET		0x80000
 
-/* We use same space for BBP as for MAC regs
- * #define MT_MCU_MEMMAP_BBP		0x40000000
- */
+ 
 #define MT_MCU_MEMMAP_RF		0x80000000
 
 enum mcu_calibrate {

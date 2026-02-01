@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_CPU_CA53_CFG_REGS_H_
 #define ASIC_REG_CPU_CA53_CFG_REGS_H_
 
-/*
- *****************************************
- *   CPU_CA53_CFG (Prototype: CA53_CFG)
- *****************************************
- */
+ 
 
 #define mmCPU_CA53_CFG_ARM_CFG                                       0x441100
 
@@ -57,4 +45,4 @@
 
 #define mmCPU_CA53_CFG_ARM_PMU_1                                     0x441214
 
-#endif /* ASIC_REG_CPU_CA53_CFG_REGS_H_ */
+#endif  

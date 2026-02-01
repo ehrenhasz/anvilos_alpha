@@ -1,27 +1,5 @@
-/* $OpenBSD: compat.c,v 1.126 2023/03/06 12:14:48 dtucker Exp $ */
-/*
- * Copyright (c) 1999, 2000, 2001, 2002 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -37,7 +15,7 @@
 #include "log.h"
 #include "match.h"
 
-/* determine bug flags from SSH protocol banner */
+ 
 void
 compat_banner(struct ssh *ssh, const char *version)
 {
@@ -80,16 +58,16 @@ compat_banner(struct ssh *ssh, const char *version)
 					SSH_BUG_HOSTKEYS },
 		{ "*SSH_Version_Mapper*",
 					SSH_BUG_SCANNER },
-		{ "PuTTY_Local:*,"	/* dev versions < Sep 2014 */
-		  "PuTTY-Release-0.5*," /* 0.50-0.57, DH-GEX in >=0.52 */
-		  "PuTTY_Release_0.5*,"	/* 0.58-0.59 */
+		{ "PuTTY_Local:*,"	 
+		  "PuTTY-Release-0.5*,"  
+		  "PuTTY_Release_0.5*,"	 
 		  "PuTTY_Release_0.60*,"
 		  "PuTTY_Release_0.61*,"
 		  "PuTTY_Release_0.62*,"
 		  "PuTTY_Release_0.63*,"
 		  "PuTTY_Release_0.64*",
 					SSH_OLD_DHGEX },
-		{ "FuTTY*",		SSH_OLD_DHGEX }, /* Putty Fork */
+		{ "FuTTY*",		SSH_OLD_DHGEX },  
 		{ "Probe-*",
 					SSH_BUG_PROBE },
 		{ "TeraTerm SSH*,"
@@ -124,7 +102,7 @@ compat_banner(struct ssh *ssh, const char *version)
 		{ NULL,			0 }
 	};
 
-	/* process table, return first match */
+	 
 	ssh->compat = 0;
 	for (i = 0; check[i].pat; i++) {
 		if (match_pattern_list(version, check[i].pat, 0) == 1) {
@@ -137,7 +115,7 @@ compat_banner(struct ssh *ssh, const char *version)
 	debug_f("no match: %s", version);
 }
 
-/* Always returns pointer to allocated memory, caller must free. */
+ 
 char *
 compat_kex_proposal(struct ssh *ssh, const char *p)
 {

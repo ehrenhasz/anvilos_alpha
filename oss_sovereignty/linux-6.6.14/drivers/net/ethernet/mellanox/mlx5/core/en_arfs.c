@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/hash.h>
 #include <linux/mlx5/fs.h>
@@ -55,7 +25,7 @@ enum arfs_type {
 
 struct mlx5e_arfs_tables {
 	struct arfs_table arfs_tables[ARFS_NUM_TYPES];
-	/* Protect aRFS rules list */
+	 
 	spinlock_t                     arfs_lock;
 	int                            last_filter_id;
 	struct workqueue_struct        *wq;
@@ -82,9 +52,9 @@ struct arfs_rule {
 	struct mlx5_flow_handle *rule;
 	struct hlist_node	hlist;
 	int			rxq;
-	/* Flow ID passed to ndo_rx_flow_steer */
+	 
 	int			flow_id;
-	/* Filter ID returned by ndo_rx_flow_steer */
+	 
 	int			filter_id;
 	struct arfs_tuple	tuple;
 };
@@ -119,7 +89,7 @@ static int arfs_disable(struct mlx5e_flow_steering *fs)
 	int err, i;
 
 	for (i = 0; i < ARFS_NUM_TYPES; i++) {
-		/* Modify ttc rules destination back to their default */
+		 
 		err = mlx5_ttc_fwd_default_dest(ttc, arfs_get_tt(i));
 		if (err) {
 			fs_err(fs,
@@ -135,13 +105,7 @@ static void arfs_del_rules(struct mlx5e_flow_steering *fs);
 
 int mlx5e_arfs_disable(struct mlx5e_flow_steering *fs)
 {
-	/* Moving to switchdev mode, fs->arfs is freed by mlx5e_nic_profile
-	 * cleanup_rx callback and it is not recreated when
-	 * mlx5e_uplink_rep_profile is loaded as mlx5e_create_flow_steering()
-	 * is not called by the uplink_rep profile init_rx callback. Thus, if
-	 * ntuple is set, moving to switchdev flow will enter this function
-	 * with fs->arfs nullified.
-	 */
+	 
 	if (!mlx5e_fs_get_arfs(fs))
 		return 0;
 
@@ -160,7 +124,7 @@ int mlx5e_arfs_enable(struct mlx5e_flow_steering *fs)
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
 	for (i = 0; i < ARFS_NUM_TYPES; i++) {
 		dest.ft = arfs->arfs_tables[i].ft.t;
-		/* Modify ttc rules destination to point on the aRFS FTs */
+		 
 		err = mlx5_ttc_fwd_dest(ttc, arfs_get_tt(i), &dest);
 		if (err) {
 			fs_err(fs, "%s: modify ttc[%d] dest to arfs, failed err(%d)\n",
@@ -221,9 +185,7 @@ static int arfs_add_default_rule(struct mlx5e_flow_steering *fs,
 		return -EINVAL;
 	}
 
-	/* FIXME: Must use mlx5_ttc_get_default_dest(),
-	 * but can't since TTC default is not setup yet !
-	 */
+	 
 	dest.tir_num = mlx5e_rx_res_get_tirn_rss(rx_res, tt);
 	arfs_t->default_rule = mlx5_add_flow_rules(arfs_t->ft.t, NULL,
 						   &flow_act,

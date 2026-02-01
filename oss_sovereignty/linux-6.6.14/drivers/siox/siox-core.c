@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2017 Pengutronix, Uwe Kleine-König <kernel@pengutronix.de>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/device.h>
 #include <linux/module.h>
@@ -10,27 +8,13 @@
 
 #include "siox.h"
 
-/*
- * The lowest bit in the SIOX status word signals if the in-device watchdog is
- * ok. If the bit is set, the device is functional.
- *
- * On writing the watchdog timer is reset when this bit toggles.
- */
+ 
 #define SIOX_STATUS_WDG			0x01
 
-/*
- * Bits 1 to 3 of the status word read as the bitwise negation of what was
- * clocked in before. The value clocked in is changed in each cycle and so
- * allows to detect transmit/receive problems.
- */
+ 
 #define SIOX_STATUS_COUNTER		0x0e
 
-/*
- * Each Siox-Device has a 4 bit type number that is neither 0 nor 15. This is
- * available in the upper nibble of the read status.
- *
- * On write these bits are DC.
- */
+ 
 #define SIOX_STATUS_TYPE		0xf0
 
 #define CREATE_TRACE_POINTS
@@ -50,17 +34,7 @@ static void siox_master_unlock(struct siox_master *smaster)
 
 static inline u8 siox_status_clean(u8 status_read, u8 status_written)
 {
-	/*
-	 * bits 3:1 of status sample the respective bit in the status
-	 * byte written in the previous cycle but inverted. So if you wrote the
-	 * status word as 0xa before (counter = 0b101), it is expected to get
-	 * back the counter bits as 0b010.
-	 *
-	 * So given the last status written this function toggles the there
-	 * unset counter bits in the read value such that the counter bits in
-	 * the return value are all zero iff the bits were read as expected to
-	 * simplify error detection.
-	 */
+	 
 
 	return status_read ^ (~status_written & 0xe);
 }
@@ -75,11 +49,7 @@ static bool siox_device_type_error(struct siox_device *sdevice, u8 status_clean)
 {
 	u8 statustype = (status_clean & SIOX_STATUS_TYPE) >> 4;
 
-	/*
-	 * If the device knows which value the type bits should have, check
-	 * against this value otherwise just rule out the invalid values 0b0000
-	 * and 0b1111.
-	 */
+	 
 	if (sdevice->statustype) {
 		if (statustype != sdevice->statustype)
 			return true;
@@ -99,9 +69,7 @@ static bool siox_device_wdg_error(struct siox_device *sdevice, u8 status_clean)
 	return (status_clean & SIOX_STATUS_WDG) == 0;
 }
 
-/*
- * If there is a type or counter error the device is called "unsynced".
- */
+ 
 bool siox_device_synced(struct siox_device *sdevice)
 {
 	if (siox_device_type_error(sdevice, sdevice->status_read_clean))
@@ -112,10 +80,7 @@ bool siox_device_synced(struct siox_device *sdevice)
 }
 EXPORT_SYMBOL_GPL(siox_device_synced);
 
-/*
- * A device is called "connected" if it is synced and the watchdog is not
- * asserted.
- */
+ 
 bool siox_device_connected(struct siox_device *sdevice)
 {
 	if (!siox_device_synced(sdevice))
@@ -134,22 +99,13 @@ static void siox_poll(struct siox_master *smaster)
 
 	smaster->last_poll = jiffies;
 
-	/*
-	 * The counter bits change in each second cycle, the watchdog bit
-	 * toggles each time.
-	 * The counter bits hold values from [0, 6]. 7 would be possible
-	 * theoretically but the protocol designer considered that a bad idea
-	 * for reasons unknown today. (Maybe that's because then the status read
-	 * back has only zeros in the counter bits then which might be confused
-	 * with a stuck-at-0 error. But for the same reason (with s/0/1/) 0
-	 * could be skipped.)
-	 */
+	 
 	if (++smaster->status > 0x0d)
 		smaster->status = 0;
 
 	memset(smaster->buf, 0, smaster->setbuf_len);
 
-	/* prepare data pushed out to devices in buf[0..setbuf_len) */
+	 
 	list_for_each_entry(sdevice, &smaster->devices, node) {
 		struct siox_driver *sdriver =
 			to_siox_driver(sdevice->dev.driver);
@@ -157,11 +113,7 @@ static void siox_poll(struct siox_master *smaster)
 
 		i -= sdevice->inbytes;
 
-		/*
-		 * If the device or a previous one is unsynced, don't pet the
-		 * watchdog. This is done to ensure that the device is kept in
-		 * reset when something is wrong.
-		 */
+		 
 		if (!siox_device_synced(sdevice))
 			unsync_error = 1;
 
@@ -169,10 +121,7 @@ static void siox_poll(struct siox_master *smaster)
 			sdriver->set_data(sdevice, sdevice->status_written,
 					  &smaster->buf[i + 1]);
 		else
-			/*
-			 * Don't trigger watchdog if there is no driver or a
-			 * sync problem
-			 */
+			 
 			sdevice->status_written &= ~SIOX_STATUS_WDG;
 
 		smaster->buf[i] = sdevice->status_written;
@@ -188,7 +137,7 @@ static void siox_poll(struct siox_master *smaster)
 
 	unsync_error = 0;
 
-	/* interpret data pulled in from devices in buf[setbuf_len..] */
+	 
 	devno = 0;
 	i = smaster->setbuf_len;
 	list_for_each_entry(sdevice, &smaster->devices, node) {
@@ -203,11 +152,7 @@ static void siox_poll(struct siox_master *smaster)
 		if (!siox_device_synced(sdevice))
 			unsync_error = 1;
 
-		/*
-		 * If the watchdog bit wasn't toggled in this cycle, report the
-		 * watchdog as active to give a consistent view for drivers and
-		 * sysfs consumers.
-		 */
+		 
 		if (!sdriver || unsync_error)
 			status &= ~SIOX_STATUS_WDG;
 
@@ -215,14 +160,14 @@ static void siox_poll(struct siox_master *smaster)
 			siox_status_clean(status,
 					  sdevice->status_written_lastcycle);
 
-		/* Check counter and type bits */
+		 
 		if (siox_device_counter_error(sdevice, status_clean) ||
 		    siox_device_type_error(sdevice, status_clean)) {
 			bool prev_error;
 
 			synced = false;
 
-			/* only report a new error if the last cycle was ok */
+			 
 			prev_error =
 				siox_device_counter_error(sdevice,
 							  prev_status_clean) ||
@@ -235,7 +180,7 @@ static void siox_poll(struct siox_master *smaster)
 			}
 		}
 
-		/* If the device is unsynced report the watchdog as active */
+		 
 		if (!synced) {
 			status &= ~SIOX_STATUS_WDG;
 			status_clean &= ~SIOX_STATUS_WDG;
@@ -244,7 +189,7 @@ static void siox_poll(struct siox_master *smaster)
 		if (siox_device_wdg_error(sdevice, status_clean))
 			connected = false;
 
-		/* The watchdog state changed just now */
+		 
 		if ((status_clean ^ prev_status_clean) & SIOX_STATUS_WDG) {
 			sysfs_notify_dirent(sdevice->watchdog_kn);
 
@@ -266,7 +211,7 @@ static void siox_poll(struct siox_master *smaster)
 
 		trace_siox_get_data(smaster, sdevice, devno, status_clean, i);
 
-		/* only give data read to driver if the device is connected */
+		 
 		if (sdriver && connected)
 			sdriver->get_data(sdevice, &smaster->buf[i]);
 
@@ -302,11 +247,7 @@ static int siox_poll_thread(void *data)
 			timeout = MAX_SCHEDULE_TIMEOUT;
 		}
 
-		/*
-		 * Set the task to idle while holding the lock. This makes sure
-		 * that we don't sleep too long when the bus is reenabled before
-		 * schedule_timeout is reached.
-		 */
+		 
 		if (timeout > 0)
 			set_current_state(TASK_IDLE);
 
@@ -315,11 +256,7 @@ static int siox_poll_thread(void *data)
 		if (timeout > 0)
 			schedule_timeout(timeout);
 
-		/*
-		 * I'm not clear if/why it is important to set the state to
-		 * RUNNING again, but it fixes a "do not call blocking ops when
-		 * !TASK_RUNNING;"-warning.
-		 */
+		 
 		set_current_state(TASK_RUNNING);
 	}
 }
@@ -508,7 +445,7 @@ static int siox_match(struct device *dev, struct device_driver *drv)
 	if (dev->type != &siox_device_type)
 		return 0;
 
-	/* up to now there is only a single driver so keeping this simple */
+	 
 	return 1;
 }
 
@@ -621,7 +558,7 @@ static ssize_t device_remove_store(struct device *dev,
 {
 	struct siox_master *smaster = to_siox_master(dev);
 
-	/* XXX? require to write <type> <inbytes> <outbytes> */
+	 
 	siox_device_remove(smaster);
 
 	return count;
@@ -740,7 +677,7 @@ EXPORT_SYMBOL_GPL(siox_master_register);
 
 void siox_master_unregister(struct siox_master *smaster)
 {
-	/* remove device */
+	 
 	device_del(&smaster->dev);
 
 	siox_master_lock(smaster);
@@ -838,7 +775,7 @@ static struct siox_device *siox_device_add(struct siox_master *smaster,
 	return sdevice;
 
 err_device_register:
-	/* don't care to make the buffer smaller again */
+	 
 	put_device(&sdevice->dev);
 	sdevice = NULL;
 
@@ -873,11 +810,7 @@ static void siox_device_remove(struct siox_master *smaster)
 
 	siox_master_unlock(smaster);
 
-	/*
-	 * This must be done without holding the master lock because we're
-	 * called from device_remove_store which also holds a sysfs mutex.
-	 * device_unregister tries to aquire the same lock.
-	 */
+	 
 	device_unregister(&sdevice->dev);
 }
 

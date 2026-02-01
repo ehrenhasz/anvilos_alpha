@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- * Copyright 2019-2020 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 #include "net_driver.h"
 #include "mcdi_port_common.h"
 #include "mcdi_functions.h"
@@ -34,10 +26,7 @@ static void ef100_update_name(struct efx_nic *efx)
 
 static int ef100_alloc_vis(struct efx_nic *efx, unsigned int *allocated_vis)
 {
-	/* EF100 uses a single TXQ per channel, as all checksum offloading
-	 * is configured in the TX descriptor, and there is no TX Pacer for
-	 * HIGHPRI queues.
-	 */
+	 
 	unsigned int tx_vis = efx->n_tx_channels + efx->n_extra_tx_channels;
 	unsigned int rx_vis = efx->n_rx_channels;
 	unsigned int min_vis, max_vis;
@@ -48,15 +37,13 @@ static int ef100_alloc_vis(struct efx_nic *efx, unsigned int *allocated_vis)
 	tx_vis += efx->n_xdp_channels * efx->xdp_tx_per_channel;
 
 	max_vis = max(rx_vis, tx_vis);
-	/* We require at least a single complete TX channel worth of queues. */
+	 
 	min_vis = efx->tx_queues_per_channel;
 
 	rc = efx_mcdi_alloc_vis(efx, min_vis, max_vis,
 				NULL, allocated_vis);
 
-	/* We retry allocating VIs by reallocating channels when we have not
-	 * been able to allocate the maximum VIs.
-	 */
+	 
 	if (!rc && *allocated_vis < max_vis)
 		rc = -EAGAIN;
 
@@ -71,7 +58,7 @@ static int ef100_remap_bar(struct efx_nic *efx, int max_vis)
 	efx->max_vis = max_vis;
 	uc_mem_map_size = PAGE_ALIGN(max_vis * efx->vi_stride);
 
-	/* Extend the original UC mapping of the memory BAR */
+	 
 	membase = ioremap(efx->membase_phys, uc_mem_map_size);
 	if (!membase) {
 		netif_err(efx, probe, efx->net_dev,
@@ -84,10 +71,7 @@ static int ef100_remap_bar(struct efx_nic *efx, int max_vis)
 	return 0;
 }
 
-/* Context: process, rtnl_lock() held.
- * Note that the kernel will ignore our return code; this method
- * should really be a void.
- */
+ 
 static int ef100_net_stop(struct net_device *net_dev)
 {
 	struct efx_nic *efx = efx_netdev_priv(net_dev);
@@ -113,7 +97,7 @@ static int ef100_net_stop(struct net_device *net_dev)
 	return 0;
 }
 
-/* Context: process, rtnl_lock() held. */
+ 
 static int ef100_net_open(struct net_device *net_dev)
 {
 	struct efx_nic *efx = efx_netdev_priv(net_dev);
@@ -144,9 +128,7 @@ static int ef100_net_open(struct net_device *net_dev)
 	if (rc && rc != -EAGAIN)
 		goto fail;
 
-	/* Try one more time but with the maximum number of channels
-	 * equal to the allocated VIs, which would more likely succeed.
-	 */
+	 
 	if (rc == -EAGAIN) {
 		rc = efx_mcdi_free_vis(efx);
 		if (rc)
@@ -167,9 +149,7 @@ static int ef100_net_open(struct net_device *net_dev)
 		if (rc && rc != -EAGAIN)
 			goto fail;
 
-		/* It should be very unlikely that we failed here again, but in
-		 * such a case we return ENOSPC.
-		 */
+		 
 		if (rc == -EAGAIN) {
 			rc = -ENOSPC;
 			goto fail;
@@ -199,9 +179,7 @@ static int ef100_net_open(struct net_device *net_dev)
 	if (rc)
 		goto fail;
 
-	/* in case the MC rebooted while we were stopped, consume the change
-	 * to the warm reboot count
-	 */
+	 
 	(void) efx_mcdi_poll_reboot(efx);
 
 	rc = efx_mcdi_mac_init_stats(efx);
@@ -210,9 +188,7 @@ static int ef100_net_open(struct net_device *net_dev)
 
 	efx_start_all(efx);
 
-	/* Link state detection is normally event-driven; we have
-	 * to poll now because we could have missed a change
-	 */
+	 
 	mutex_lock(&efx->mac_lock);
 	if (efx_mcdi_phy_poll(efx))
 		efx_link_status_changed(efx);
@@ -229,13 +205,7 @@ fail:
 	return rc;
 }
 
-/* Initiate a packet transmission.  We use one channel per CPU
- * (sharing when we have more CPUs than channels).
- *
- * Context: non-blocking.
- * Note that returning anything other than NETDEV_TX_OK will cause the
- * OS to free the skb.
- */
+ 
 static netdev_tx_t ef100_hard_start_xmit(struct sk_buff *skb,
 					 struct net_device *net_dev)
 {
@@ -282,7 +252,7 @@ static const struct net_device_ops ef100_netdev_ops = {
 	.ndo_change_mtu         = efx_change_mtu,
 	.ndo_validate_addr      = eth_validate_addr,
 	.ndo_set_mac_address    = efx_set_mac_address,
-	.ndo_set_rx_mode        = efx_set_rx_mode, /* Lookout */
+	.ndo_set_rx_mode        = efx_set_rx_mode,  
 	.ndo_set_features       = efx_set_features,
 	.ndo_get_phys_port_id   = efx_get_phys_port_id,
 	.ndo_get_phys_port_name = efx_get_phys_port_name,
@@ -294,8 +264,7 @@ static const struct net_device_ops ef100_netdev_ops = {
 #endif
 };
 
-/*	Netdev registration
- */
+ 
 int ef100_netdev_event(struct notifier_block *this,
 		       unsigned long event, void *ptr)
 {
@@ -356,7 +325,7 @@ static int ef100_register_netdev(struct efx_nic *efx)
 	if (rc)
 		goto fail_locked;
 
-	/* Always start with carrier off; PHY events will detect the link */
+	 
 	netif_carrier_off(net_dev);
 
 	efx->state = STATE_NET_DOWN;
@@ -434,7 +403,7 @@ int ef100_probe_netdev(struct efx_probe_data *probe_data)
 		return 0;
 	}
 
-	/* Allocate and initialise a struct net_device */
+	 
 	net_dev = alloc_etherdev_mq(sizeof(probe_data), EFX_MAX_CORE_TX_QUEUES);
 	if (!net_dev)
 		return -ENOMEM;
@@ -443,7 +412,7 @@ int ef100_probe_netdev(struct efx_probe_data *probe_data)
 	efx->net_dev = net_dev;
 	SET_NETDEV_DEV(net_dev, &efx->pci_dev->dev);
 
-	/* enable all supported features except rx-fcs and rx-all */
+	 
 	net_dev->features |= efx->type->offload_features &
 			     ~(NETIF_F_RXFCS | NETIF_F_RXALL);
 	net_dev->hw_features |= efx->type->offload_features;
@@ -475,7 +444,7 @@ int ef100_probe_netdev(struct efx_probe_data *probe_data)
 	netdev_rss_key_fill(efx->rss_context.rx_hash_key,
 			    sizeof(efx->rss_context.rx_hash_key));
 
-	/* Don't fail init if RSS setup doesn't work. */
+	 
 	efx_mcdi_push_default_indir_table(efx, efx->n_rx_channels);
 
 	nic_data = efx->nic_data;
@@ -483,11 +452,11 @@ int ef100_probe_netdev(struct efx_probe_data *probe_data)
 				   efx->type->is_vf);
 	if (rc)
 		return rc;
-	/* Assign MAC address */
+	 
 	eth_hw_addr_set(net_dev, net_dev->perm_addr);
 	ether_addr_copy(nic_data->port_id, net_dev->perm_addr);
 
-	/* devlink creation, registration and lock */
+	 
 	rc = efx_probe_devlink_and_lock(efx);
 	if (rc)
 		pci_info(efx->pci_dev, "devlink registration failed");
@@ -525,7 +494,7 @@ int ef100_probe_netdev(struct efx_probe_data *probe_data)
 	return rc;
 fail:
 #ifdef CONFIG_SFC_SRIOV
-	/* remove devlink port if does exist */
+	 
 	ef100_pf_unset_devlink_port(efx);
 #endif
 	efx_probe_devlink_unlock(efx);

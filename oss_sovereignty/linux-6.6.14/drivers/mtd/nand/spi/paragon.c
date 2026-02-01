@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Jeff Kletsky
- *
- * Author: Jeff Kletsky <git-commits@allycomm.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -44,7 +40,7 @@ static int pn26g0xa_ooblayout_ecc(struct mtd_info *mtd, int section,
 	if (section > 3)
 		return -ERANGE;
 
-	region->offset = 6 + (15 * section); /* 4 BBM + 2 user bytes */
+	region->offset = 6 + (15 * section);  
 	region->length = 13;
 
 	return 0;
@@ -75,7 +71,7 @@ static int pn26g0xa_ecc_get_status(struct spinand_device *spinand,
 		return 0;
 
 	case PN26G0XA_STATUS_ECC_1_7_CORRECTED:
-		return 7;	/* Return upper limit by convention */
+		return 7;	 
 
 	case PN26G0XA_STATUS_ECC_8_CORRECTED:
 		return 8;

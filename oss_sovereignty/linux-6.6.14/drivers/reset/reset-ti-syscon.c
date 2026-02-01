@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI SYSCON regmap reset driver
- *
- * Copyright (C) 2015-2016 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- *	Suman Anna <afd@ti.com>
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -16,16 +10,7 @@
 
 #include <dt-bindings/reset/ti-syscon.h>
 
-/**
- * struct ti_syscon_reset_control - reset control structure
- * @assert_offset: reset assert control register offset from syscon base
- * @assert_bit: reset assert bit in the reset assert control register
- * @deassert_offset: reset deassert control register offset from syscon base
- * @deassert_bit: reset deassert bit in the reset deassert control register
- * @status_offset: reset status register offset from syscon base
- * @status_bit: reset status bit in the reset status register
- * @flags: reset flag indicating how the (de)assert and status are handled
- */
+ 
 struct ti_syscon_reset_control {
 	unsigned int assert_offset;
 	unsigned int assert_bit;
@@ -36,13 +21,7 @@ struct ti_syscon_reset_control {
 	u32 flags;
 };
 
-/**
- * struct ti_syscon_reset_data - reset controller information structure
- * @rcdev: reset controller entity
- * @regmap: regmap handle containing the memory-mapped reset registers
- * @controls: array of reset controls
- * @nr_controls: number of controls in control array
- */
+ 
 struct ti_syscon_reset_data {
 	struct reset_controller_dev rcdev;
 	struct regmap *regmap;
@@ -53,16 +32,7 @@ struct ti_syscon_reset_data {
 #define to_ti_syscon_reset_data(_rcdev)	\
 	container_of(_rcdev, struct ti_syscon_reset_data, rcdev)
 
-/**
- * ti_syscon_reset_assert() - assert device reset
- * @rcdev: reset controller entity
- * @id: ID of the reset to be asserted
- *
- * This function implements the reset driver op to assert a device's reset.
- * This asserts the reset in a manner prescribed by the reset flags.
- *
- * Return: 0 for successful request, else a corresponding error value
- */
+ 
 static int ti_syscon_reset_assert(struct reset_controller_dev *rcdev,
 				  unsigned long id)
 {
@@ -76,7 +46,7 @@ static int ti_syscon_reset_assert(struct reset_controller_dev *rcdev,
 	control = &data->controls[id];
 
 	if (control->flags & ASSERT_NONE)
-		return -ENOTSUPP; /* assert not supported for this reset */
+		return -ENOTSUPP;  
 
 	mask = BIT(control->assert_bit);
 	value = (control->flags & ASSERT_SET) ? mask : 0x0;
@@ -84,16 +54,7 @@ static int ti_syscon_reset_assert(struct reset_controller_dev *rcdev,
 	return regmap_write_bits(data->regmap, control->assert_offset, mask, value);
 }
 
-/**
- * ti_syscon_reset_deassert() - deassert device reset
- * @rcdev: reset controller entity
- * @id: ID of reset to be deasserted
- *
- * This function implements the reset driver op to deassert a device's reset.
- * This deasserts the reset in a manner prescribed by the reset flags.
- *
- * Return: 0 for successful request, else a corresponding error value
- */
+ 
 static int ti_syscon_reset_deassert(struct reset_controller_dev *rcdev,
 				    unsigned long id)
 {
@@ -107,7 +68,7 @@ static int ti_syscon_reset_deassert(struct reset_controller_dev *rcdev,
 	control = &data->controls[id];
 
 	if (control->flags & DEASSERT_NONE)
-		return -ENOTSUPP; /* deassert not supported for this reset */
+		return -ENOTSUPP;  
 
 	mask = BIT(control->deassert_bit);
 	value = (control->flags & DEASSERT_SET) ? mask : 0x0;
@@ -115,17 +76,7 @@ static int ti_syscon_reset_deassert(struct reset_controller_dev *rcdev,
 	return regmap_write_bits(data->regmap, control->deassert_offset, mask, value);
 }
 
-/**
- * ti_syscon_reset_status() - check device reset status
- * @rcdev: reset controller entity
- * @id: ID of the reset for which the status is being requested
- *
- * This function implements the reset driver op to return the status of a
- * device's reset.
- *
- * Return: 0 if reset is deasserted, true if reset is asserted, else a
- * corresponding error value
- */
+ 
 static int ti_syscon_reset_status(struct reset_controller_dev *rcdev,
 				  unsigned long id)
 {
@@ -140,7 +91,7 @@ static int ti_syscon_reset_status(struct reset_controller_dev *rcdev,
 	control = &data->controls[id];
 
 	if (control->flags & STATUS_NONE)
-		return -ENOTSUPP; /* status not supported for this reset */
+		return -ENOTSUPP;  
 
 	ret = regmap_read(data->regmap, control->status_offset, &reset_state);
 	if (ret)
@@ -209,7 +160,7 @@ static int ti_syscon_reset_probe(struct platform_device *pdev)
 
 static const struct of_device_id ti_syscon_reset_of_match[] = {
 	{ .compatible = "ti,syscon-reset", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ti_syscon_reset_of_match);
 

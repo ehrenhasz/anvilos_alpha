@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2019, 2021-2023 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -76,7 +72,7 @@ void iwl_mvm_beacon_filter_set_cqm_params(struct iwl_mvm *mvm,
 	if (vif->bss_conf.cqm_rssi_thold) {
 		cmd->bf_energy_delta =
 			cpu_to_le32(vif->bss_conf.cqm_rssi_hyst);
-		/* fw uses an absolute value for this */
+		 
 		cmd->bf_roaming_state =
 			cpu_to_le32(-vif->bss_conf.cqm_rssi_thold);
 	}
@@ -142,7 +138,7 @@ static void iwl_mvm_power_configure_uapsd(struct iwl_mvm *mvm,
 	}
 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-	/* set advanced pm flag with no uapsd ACs to enable ps-poll */
+	 
 	if (mvmvif->dbgfs_pm.use_ps_poll) {
 		cmd->flags |= cpu_to_le16(POWER_FLAGS_ADVANCE_PM_ENA_MSK);
 		return;
@@ -159,7 +155,7 @@ static void iwl_mvm_power_configure_uapsd(struct iwl_mvm *mvm,
 
 		cmd->uapsd_ac_flags |= BIT(ac);
 
-		/* QNDP TID - the highest TID with no admission control */
+		 
 		if (!tid_found && !mvmvif->deflink.queue_params[ac].acm) {
 			tid_found = true;
 			switch (ac) {
@@ -241,24 +237,18 @@ static bool iwl_mvm_power_allow_uapsd(struct iwl_mvm *mvm,
 			     vif->cfg.ap_addr))
 		return false;
 
-	/*
-	 * Avoid using uAPSD if P2P client is associated to GO that uses
-	 * opportunistic power save. This is due to current FW limitation.
-	 */
+	 
 	if (vif->p2p &&
 	    (vif->bss_conf.p2p_noa_attr.oppps_ctwindow &
 	    IEEE80211_P2P_OPPPS_ENABLE_BIT))
 		return false;
 
-	/*
-	 * Avoid using uAPSD if client is in DCM -
-	 * low latency issue in Miracast
-	 */
+	 
 	if (iwl_mvm_phy_ctx_count(mvm) >= 2)
 		return false;
 
 	if (vif->p2p) {
-		/* Allow U-APSD only if p2p is stand alone */
+		 
 		bool is_p2p_standalone = true;
 
 		if (!iwl_mvm_is_p2p_scm_uapsd_supported(mvm))
@@ -286,7 +276,7 @@ static bool iwl_mvm_power_is_radar(struct ieee80211_vif *vif)
 	rcu_read_lock();
 	for_each_vif_active_link(vif, link_conf, link_id) {
 		chanctx_conf = rcu_dereference(link_conf->chanctx_conf);
-		/* this happens on link switching, just ignore inactive ones */
+		 
 		if (!chanctx_conf)
 			continue;
 
@@ -308,7 +298,7 @@ static void iwl_mvm_power_config_skip_dtim(struct iwl_mvm *mvm,
 	int dtimper = vif->bss_conf.dtim_period ?: 1;
 	int skip;
 
-	/* disable, in case we're supposed to override */
+	 
 	cmd->skip_dtim_periods = 0;
 	cmd->flags &= ~cpu_to_le16(POWER_FLAGS_SKIP_OVER_DTIM_MSK);
 
@@ -327,7 +317,7 @@ static void iwl_mvm_power_config_skip_dtim(struct iwl_mvm *mvm,
 
 		if (WARN_ON(!dtimper_tu))
 			return;
-		/* configure skip over dtim up to 900 TU DTIM interval */
+		 
 		skip = max_t(u8, 1, 900 / dtimper_tu);
 	}
 
@@ -349,12 +339,7 @@ static void iwl_mvm_power_build_cmd(struct iwl_mvm *mvm,
 	dtimper = vif->bss_conf.dtim_period;
 	bi = vif->bss_conf.beacon_int;
 
-	/*
-	 * Regardless of power management state the driver must set
-	 * keep alive period. FW will use it for sending keep alive NDPs
-	 * immediately after association. Check that keep alive period
-	 * is at least 3 * DTIM
-	 */
+	 
 	keep_alive = DIV_ROUND_UP(ieee80211_tu_to_usec(3 * dtimper * bi),
 				  USEC_PER_SEC);
 	keep_alive = max(keep_alive, POWER_KEEP_ALIVE_PERIOD_SEC);
@@ -450,7 +435,7 @@ static void iwl_mvm_power_build_cmd(struct iwl_mvm *mvm,
 		else
 			cmd->flags &= cpu_to_le16(flag);
 	}
-#endif /* CONFIG_IWLWIFI_DEBUGFS */
+#endif  
 }
 
 static int iwl_mvm_power_send_cmd(struct iwl_mvm *mvm,
@@ -518,9 +503,7 @@ static void iwl_mvm_power_uapsd_misbehav_ap_iterator(void *_data, u8 *mac,
 	for_each_vif_active_link(vif, link_conf, link_id) {
 		struct iwl_mvm_vif_link_info *link_info = mvmvif->link[link_id];
 
-		/* The ap_sta_id is not expected to change during current
-		 * association so no explicit protection is needed
-		 */
+		 
 		if (link_info->ap_sta_id == *ap_sta_id) {
 			ether_addr_copy(mvmvif->uapsd_misbehaving_ap_addr,
 					vif->cfg.ap_addr);
@@ -590,7 +573,7 @@ static void iwl_mvm_power_get_vifs_iterator(void *_data, u8 *mac,
 
 	case NL80211_IFTYPE_P2P_GO:
 	case NL80211_IFTYPE_AP:
-		/* only a single MAC of the same type */
+		 
 		WARN_ON(power_iterator->ap_vif);
 		power_iterator->ap_vif = vif;
 		if (active)
@@ -598,7 +581,7 @@ static void iwl_mvm_power_get_vifs_iterator(void *_data, u8 *mac,
 		break;
 
 	case NL80211_IFTYPE_MONITOR:
-		/* only a single MAC of the same type */
+		 
 		WARN_ON(power_iterator->monitor_vif);
 		power_iterator->monitor_vif = vif;
 		if (active)
@@ -606,7 +589,7 @@ static void iwl_mvm_power_get_vifs_iterator(void *_data, u8 *mac,
 		break;
 
 	case NL80211_IFTYPE_P2P_CLIENT:
-		/* only a single MAC of the same type */
+		 
 		WARN_ON(power_iterator->p2p_vif);
 		power_iterator->p2p_vif = vif;
 		if (active)
@@ -635,7 +618,7 @@ static void iwl_mvm_power_set_pm(struct iwl_mvm *mvm,
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* set pm_enable to false */
+	 
 	ieee80211_iterate_active_interfaces_atomic(mvm->hw,
 					IEEE80211_IFACE_ITER_NORMAL,
 					iwl_mvm_power_disable_pm_iterator,
@@ -650,18 +633,18 @@ static void iwl_mvm_power_set_pm(struct iwl_mvm *mvm,
 	if (vifs->ap_vif)
 		ap_mvmvif = iwl_mvm_vif_from_mac80211(vifs->ap_vif);
 
-	/* don't allow PM if any TDLS stations exist */
+	 
 	if (iwl_mvm_tdls_sta_count(mvm, NULL))
 		return;
 
-	/* enable PM on bss if bss stand alone */
+	 
 	if (bss_mvmvif && vifs->bss_active && !vifs->p2p_active &&
 	    !vifs->ap_active) {
 		bss_mvmvif->pm_enabled = true;
 		return;
 	}
 
-	/* enable PM on p2p if p2p stand alone */
+	 
 	if (p2p_mvmvif && vifs->p2p_active && !vifs->bss_active &&
 	    !vifs->ap_active) {
 		p2p_mvmvif->pm_enabled = true;
@@ -676,7 +659,7 @@ static void iwl_mvm_power_set_pm(struct iwl_mvm *mvm,
 		ap_same_channel =
 			iwl_mvm_have_links_same_channel(bss_mvmvif, ap_mvmvif);
 
-	/* clients are not stand alone: enable PM if DCM */
+	 
 	if (!(client_same_channel || ap_same_channel)) {
 		if (bss_mvmvif && vifs->bss_active)
 			bss_mvmvif->pm_enabled = true;
@@ -685,12 +668,9 @@ static void iwl_mvm_power_set_pm(struct iwl_mvm *mvm,
 		return;
 	}
 
-	/*
-	 * There is only one channel in the system and there are only
-	 * bss and p2p clients that share it
-	 */
+	 
 	if (client_same_channel && !vifs->ap_active) {
-		/* share same channel*/
+		 
 		bss_mvmvif->pm_enabled = true;
 		p2p_mvmvif->pm_enabled = true;
 	}
@@ -871,15 +851,15 @@ static int iwl_mvm_power_set_ps(struct iwl_mvm *mvm)
 	bool disable_ps;
 	int ret;
 
-	/* disable PS if CAM */
+	 
 	disable_ps = (iwlmvm_mod_params.power_scheme == IWL_POWER_SCHEME_CAM);
-	/* ...or if any of the vifs require PS to be off */
+	 
 	ieee80211_iterate_active_interfaces_atomic(mvm->hw,
 					IEEE80211_IFACE_ITER_NORMAL,
 					iwl_mvm_power_ps_disabled_iterator,
 					&disable_ps);
 
-	/* update device power state if it has changed */
+	 
 	if (mvm->ps_disabled != disable_ps) {
 		bool old_ps_disabled = mvm->ps_disabled;
 
@@ -926,7 +906,7 @@ int iwl_mvm_power_update_ps(struct iwl_mvm *mvm)
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* get vifs info */
+	 
 	ieee80211_iterate_active_interfaces_atomic(mvm->hw,
 					IEEE80211_IFACE_ITER_NORMAL,
 					iwl_mvm_power_get_vifs_iterator, &vifs);
@@ -950,7 +930,7 @@ int iwl_mvm_power_update_mac(struct iwl_mvm *mvm)
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* get vifs info */
+	 
 	ieee80211_iterate_active_interfaces_atomic(mvm->hw,
 					IEEE80211_IFACE_ITER_NORMAL,
 					iwl_mvm_power_get_vifs_iterator, &vifs);

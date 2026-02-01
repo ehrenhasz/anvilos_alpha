@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ACP_HW_H
 #define __ACP_HW_H
 
@@ -10,7 +10,7 @@
 #define ACP_PLAYBACK_PTE_OFFSET			10
 #define ACP_CAPTURE_PTE_OFFSET			0
 
-/* Playback and Capture Offset for Stoney */
+ 
 #define ACP_ST_PLAYBACK_PTE_OFFSET	0x04
 #define ACP_ST_CAPTURE_PTE_OFFSET	0x00
 #define ACP_ST_BT_PLAYBACK_PTE_OFFSET	0x08
@@ -21,14 +21,7 @@
 
 #define ACP_PHYSICAL_BASE			0x14000
 
-/*
- * In case of I2S SP controller instance, Stoney uses SRAM bank 1 for
- * playback and SRAM Bank 2 for capture where as in case of BT I2S
- * Instance, Stoney uses SRAM Bank 3 for playback & SRAM Bank 4 will
- * be used for capture. Carrizo uses I2S SP controller instance. SRAM Banks
- * 1, 2, 3, 4 will be used for playback & SRAM Banks 5, 6, 7, 8 will be used
- * for capture scenario.
- */
+ 
 #define ACP_SRAM_BANK_1_ADDRESS		0x4002000
 #define ACP_SRAM_BANK_2_ADDRESS		0x4004000
 #define ACP_SRAM_BANK_3_ADDRESS		0x4006000
@@ -70,23 +63,23 @@
 #define ACP_TILE_DSP1_MASK              0x37
 
 #define ACP_TILE_DSP2_MASK              0x2f
-/* Playback DMA channels */
+ 
 #define SYSRAM_TO_ACP_CH_NUM 12
 #define ACP_TO_I2S_DMA_CH_NUM 13
 
-/* Capture DMA channels */
+ 
 #define I2S_TO_ACP_DMA_CH_NUM 14
 #define ACP_TO_SYSRAM_CH_NUM 15
 
-/* Playback DMA Channels for I2S BT instance */
+ 
 #define SYSRAM_TO_ACP_BT_INSTANCE_CH_NUM  8
 #define ACP_TO_I2S_DMA_BT_INSTANCE_CH_NUM 9
 
-/* Capture DMA Channels for I2S BT Instance */
+ 
 #define I2S_TO_ACP_DMA_BT_INSTANCE_CH_NUM 10
 #define ACP_TO_SYSRAM_BT_INSTANCE_CH_NUM 11
 
-/* Playback DMA channels for I2S MICSP instance */
+ 
 #define SYSRAM_TO_ACP_MICSP_INSTANCE_CH_NUM  4
 #define ACP_TO_I2S_DMA_MICSP_INSTANCE_CH_NUM 5
 
@@ -102,7 +95,7 @@
 #define CAPTURE_START_DMA_DESCR_CH15 6
 #define CAPTURE_END_DMA_DESCR_CH15 7
 
-/* I2S BT Instance DMA Descriptors */
+ 
 #define PLAYBACK_START_DMA_DESCR_CH8 8
 #define PLAYBACK_END_DMA_DESCR_CH8 9
 #define PLAYBACK_START_DMA_DESCR_CH9 10
@@ -113,7 +106,7 @@
 #define CAPTURE_START_DMA_DESCR_CH11 14
 #define CAPTURE_END_DMA_DESCR_CH11 15
 
-/* I2S MICSP Instance DMA Descriptors */
+ 
 #define PLAYBACK_START_DMA_DESCR_CH4 0
 #define PLAYBACK_END_DMA_DESCR_CH4 1
 #define PLAYBACK_START_DMA_DESCR_CH5 2
@@ -127,9 +120,9 @@
 #define ACP_BT_UART_PAD_SELECT_MASK	0x1
 
 enum acp_dma_priority_level {
-	/* 0x0 Specifies the DMA channel is given normal priority */
+	 
 	ACP_DMA_PRIORITY_LEVEL_NORMAL = 0x0,
-	/* 0x1 Specifies the DMA channel is given high priority */
+	 
 	ACP_DMA_PRIORITY_LEVEL_HIGH = 0x1,
 	ACP_DMA_PRIORITY_LEVEL_FORCESIZE = 0xFF
 };
@@ -167,10 +160,7 @@ struct audio_drv_data {
 	snd_pcm_sframes_t delay;
 };
 
-/*
- * this structure used for platform data transfer between machine driver
- * and dma driver
- */
+ 
 struct acp_platform_info {
 	u16 play_i2s_instance;
 	u16 cap_i2s_instance;
@@ -202,22 +192,16 @@ enum {
 };
 
 typedef struct acp_dma_dscr_transfer {
-	/* Specifies the source memory location for the DMA data transfer. */
+	 
 	u32 src;
-	/*
-	 * Specifies the destination memory location to where the data will
-	 * be transferred.
-	 */
+	 
 	u32 dest;
-	/*
-	 * Specifies the number of bytes need to be transferred
-	 * from source to destination memory.Transfer direction & IOC enable
-	 */
+	 
 	u32 xfer_val;
-	/* Reserved for future use */
+	 
 	u32 reserved;
 } acp_dma_dscr_transfer_t;
 
 extern bool acp_bt_uart_enable;
 
-#endif /*__ACP_HW_H */
+#endif  

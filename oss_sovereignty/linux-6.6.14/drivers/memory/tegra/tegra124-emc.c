@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author:
- *	Mikko Perttunen <mperttunen@nvidia.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -281,7 +276,7 @@
 #define EMC_REFCTRL_DEV_SEL(n) (((n > 1) ? 0 : 2) << EMC_REFCTRL_DEV_SEL_SHIFT)
 #define EMC_DRAM_DEV_SEL(n) ((n > 1) ? DRAM_DEV_SEL_ALL : DRAM_DEV_SEL_0)
 
-/* Maximum amount of time in us. to wait for changes to become effective */
+ 
 #define EMC_STATUS_UPDATE_TIMEOUT		1000
 
 enum emc_dram_type {
@@ -503,17 +498,14 @@ struct tegra_emc {
 
 	struct icc_provider provider;
 
-	/*
-	 * There are multiple sources in the EMC driver which could request
-	 * a min/max clock rate, these rates are contained in this array.
-	 */
+	 
 	struct emc_rate_request requested_rate[EMC_RATE_TYPE_MAX];
 
-	/* protect shared rate-change code path */
+	 
 	struct mutex rate_lock;
 };
 
-/* Timing change sequence functions */
+ 
 
 static void emc_ccfifo_writel(struct tegra_emc *emc, u32 value,
 			      unsigned long offset)
@@ -613,10 +605,10 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 	else
 		dll_change = DLL_CHANGE_OFF;
 
-	/* Clear CLKCHANGE_COMPLETE interrupts */
+	 
 	writel(EMC_INTSTATUS_CLKCHANGE_COMPLETE, emc->regs + EMC_INTSTATUS);
 
-	/* Disable dynamic self-refresh */
+	 
 	val = readl(emc->regs + EMC_CFG);
 	if (val & EMC_CFG_PWR_MASK) {
 		val &= ~EMC_CFG_POWER_FEATURES_MASK;
@@ -625,7 +617,7 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 		pre_wait = 5;
 	}
 
-	/* Disable SEL_DPD_CTRL for clock change */
+	 
 	if (emc->dram_type == DRAM_TYPE_DDR3)
 		mask = EMC_SEL_DPD_CTRL_DDR3_MASK;
 	else
@@ -637,7 +629,7 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 		writel(val, emc->regs + EMC_SEL_DPD_CTRL);
 	}
 
-	/* Prepare DQ/DQS for clock change */
+	 
 	val = readl(emc->regs + EMC_BGBIAS_CTL0);
 	val2 = last->emc_bgbias_ctl0;
 	if (!(timing->emc_bgbias_ctl0 &
@@ -678,13 +670,13 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 			pre_wait = 30;
 	}
 
-	/* Wait to settle */
+	 
 	if (pre_wait) {
 		emc_seq_update_timing(emc);
 		udelay(pre_wait);
 	}
 
-	/* Program CTT_TERM control */
+	 
 	if (last->emc_ctt_term_ctrl != timing->emc_ctt_term_ctrl) {
 		emc_seq_disable_auto_cal(emc);
 		writel(timing->emc_ctt_term_ctrl,
@@ -692,7 +684,7 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 		emc_seq_update_timing(emc);
 	}
 
-	/* Program burst shadow registers */
+	 
 	for (i = 0; i < ARRAY_SIZE(timing->emc_burst_data); ++i)
 		writel(timing->emc_burst_data[i],
 		       emc->regs + emc_burst_regs[i]);
@@ -705,7 +697,7 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 	val = timing->emc_cfg & ~EMC_CFG_POWER_FEATURES_MASK;
 	emc_ccfifo_writel(emc, val, EMC_CFG);
 
-	/* Program AUTO_CAL_CONFIG */
+	 
 	if (timing->emc_auto_cal_config2 != last->emc_auto_cal_config2)
 		emc_ccfifo_writel(emc, timing->emc_auto_cal_config2,
 				  EMC_AUTO_CAL_CONFIG2);
@@ -720,7 +712,7 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 		emc_ccfifo_writel(emc, val, EMC_AUTO_CAL_CONFIG);
 	}
 
-	/* DDR3: predict MRS long wait count */
+	 
 	if (emc->dram_type == DRAM_TYPE_DDR3 &&
 	    dll_change == DLL_CHANGE_ON) {
 		u32 cnt = 512;
@@ -747,11 +739,11 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 	val &= ~EMC_CFG_2_DIS_STP_OB_CLK_DURING_NON_WR;
 	emc_ccfifo_writel(emc, val, EMC_CFG_2);
 
-	/* DDR3: Turn off DLL and enter self-refresh */
+	 
 	if (emc->dram_type == DRAM_TYPE_DDR3 && dll_change == DLL_CHANGE_OFF)
 		emc_ccfifo_writel(emc, timing->emc_mode_1, EMC_EMRS);
 
-	/* Disable refresh controller */
+	 
 	emc_ccfifo_writel(emc, EMC_REFCTRL_DEV_SEL(emc->dram_num),
 			  EMC_REFCTRL);
 	if (emc->dram_type == DRAM_TYPE_DDR3)
@@ -759,10 +751,10 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 				       EMC_SELF_REF_CMD_ENABLED,
 				  EMC_SELF_REF);
 
-	/* Flow control marker */
+	 
 	emc_ccfifo_writel(emc, 1, EMC_STALL_THEN_EXE_AFTER_CLKCHANGE);
 
-	/* DDR3: Exit self-refresh */
+	 
 	if (emc->dram_type == DRAM_TYPE_DDR3)
 		emc_ccfifo_writel(emc, EMC_DRAM_DEV_SEL(emc->dram_num),
 				  EMC_SELF_REF);
@@ -770,7 +762,7 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 			       EMC_REFCTRL_ENABLE,
 			  EMC_REFCTRL);
 
-	/* Set DRAM mode registers */
+	 
 	if (emc->dram_type == DRAM_TYPE_DDR3) {
 		if (timing->emc_mode_1 != last->emc_mode_1)
 			emc_ccfifo_writel(emc, timing->emc_mode_1, EMC_EMRS);
@@ -797,7 +789,7 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 			emc_ccfifo_writel(emc, timing->emc_mode_4, EMC_MRW4);
 	}
 
-	/*  Issue ZCAL command if turning ZCAL on */
+	 
 	if (timing->emc_zcal_interval != 0 && last->emc_zcal_interval == 0) {
 		emc_ccfifo_writel(emc, EMC_ZQ_CAL_LONG_CMD_DEV0, EMC_ZQ_CAL);
 		if (emc->dram_num > 1)
@@ -805,16 +797,16 @@ static int tegra_emc_prepare_timing_change(struct tegra_emc *emc,
 					  EMC_ZQ_CAL);
 	}
 
-	/*  Write to RO register to remove stall after change */
+	 
 	emc_ccfifo_writel(emc, 0, EMC_CCFIFO_STATUS);
 
 	if (timing->emc_cfg_2 & EMC_CFG_2_DIS_STP_OB_CLK_DURING_NON_WR)
 		emc_ccfifo_writel(emc, timing->emc_cfg_2, EMC_CFG_2);
 
-	/* Disable AUTO_CAL for clock change */
+	 
 	emc_seq_disable_auto_cal(emc);
 
-	/* Read register to wait until programming has settled */
+	 
 	readl(emc->regs + EMC_INTSTATUS);
 
 	return 0;
@@ -830,22 +822,22 @@ static void tegra_emc_complete_timing_change(struct tegra_emc *emc,
 	if (!timing)
 		return;
 
-	/* Wait until the state machine has settled */
+	 
 	emc_seq_wait_clkchange(emc);
 
-	/* Restore AUTO_CAL */
+	 
 	if (timing->emc_ctt_term_ctrl != last->emc_ctt_term_ctrl)
 		writel(timing->emc_auto_cal_interval,
 		       emc->regs + EMC_AUTO_CAL_INTERVAL);
 
-	/* Restore dynamic self-refresh */
+	 
 	if (timing->emc_cfg & EMC_CFG_PWR_MASK)
 		writel(timing->emc_cfg, emc->regs + EMC_CFG);
 
-	/* Set ZCAL wait count */
+	 
 	writel(timing->emc_zcal_cnt_long, emc->regs + EMC_ZCAL_WAIT_CNT);
 
-	/* LPDDR3: Turn off BGBIAS if low frequency */
+	 
 	if (emc->dram_type == DRAM_TYPE_LPDDR3 &&
 	    timing->emc_bgbias_ctl0 &
 	      EMC_BGBIAS_CTL0_BIAS0_DSC_E_PWRD_IBIAS_RX) {
@@ -865,17 +857,17 @@ static void tegra_emc_complete_timing_change(struct tegra_emc *emc,
 		       emc->regs + EMC_AUTO_CAL_INTERVAL);
 	}
 
-	/* Wait for timing to settle */
+	 
 	udelay(2);
 
-	/* Reprogram SEL_DPD_CTRL */
+	 
 	writel(timing->emc_sel_dpd_ctrl, emc->regs + EMC_SEL_DPD_CTRL);
 	emc_seq_update_timing(emc);
 
 	emc->last_timing = *timing;
 }
 
-/* Initialization and deinitialization */
+ 
 
 static void emc_read_current_timing(struct tegra_emc *emc,
 				    struct emc_timing *timing)
@@ -1066,7 +1058,7 @@ static int emc_request_rate(struct tegra_emc *emc,
 	unsigned int i;
 	int err;
 
-	/* select minimum and maximum rates among the requested rates */
+	 
 	for (i = 0; i < EMC_RATE_TYPE_MAX; i++, req++) {
 		if (i == type) {
 			min_rate = max(new_min_rate, min_rate);
@@ -1083,10 +1075,7 @@ static int emc_request_rate(struct tegra_emc *emc,
 		return -ERANGE;
 	}
 
-	/*
-	 * EMC rate-changes should go via OPP API because it manages voltage
-	 * changes.
-	 */
+	 
 	err = dev_pm_opp_set_rate(emc->dev, min_rate);
 	if (err)
 		return err;
@@ -1123,30 +1112,7 @@ static int emc_set_max_rate(struct tegra_emc *emc, unsigned long rate,
 	return ret;
 }
 
-/*
- * debugfs interface
- *
- * The memory controller driver exposes some files in debugfs that can be used
- * to control the EMC frequency. The top-level directory can be found here:
- *
- *   /sys/kernel/debug/emc
- *
- * It contains the following files:
- *
- *   - available_rates: This file contains a list of valid, space-separated
- *     EMC frequencies.
- *
- *   - min_rate: Writing a value to this file sets the given frequency as the
- *       floor of the permitted range. If this is higher than the currently
- *       configured EMC frequency, this will cause the frequency to be
- *       increased so that it stays within the valid range.
- *
- *   - max_rate: Similarily to the min_rate file, writing a value to this file
- *       sets the given frequency as the ceiling of the permitted range. If
- *       the value is lower than the currently configured EMC frequency, this
- *       will cause the frequency to be decreased so that it stays within the
- *       valid range.
- */
+ 
 
 static bool tegra_emc_validate_rate(struct tegra_emc *emc, unsigned long rate)
 {
@@ -1291,7 +1257,7 @@ emc_of_icc_xlate_extended(struct of_phandle_args *spec, void *data)
 	struct icc_node_data *ndata;
 	struct icc_node *node;
 
-	/* External Memory is the only possible ICC route */
+	 
 	list_for_each_entry(node, &provider->nodes, node_list) {
 		if (node->id != TEGRA_ICC_EMEM)
 			continue;
@@ -1300,10 +1266,7 @@ emc_of_icc_xlate_extended(struct of_phandle_args *spec, void *data)
 		if (!ndata)
 			return ERR_PTR(-ENOMEM);
 
-		/*
-		 * SRC and DST nodes should have matching TAG in order to have
-		 * it set by default for a requested path.
-		 */
+		 
 		ndata->tag = TEGRA_MC_ICC_TAG_ISO;
 		ndata->node = node;
 
@@ -1323,11 +1286,7 @@ static int emc_icc_set(struct icc_node *src, struct icc_node *dst)
 	const unsigned int ddr = 2;
 	int err;
 
-	/*
-	 * Tegra124 EMC runs on a clock rate of SDRAM bus. This means that
-	 * EMC clock rate is twice smaller than the peak data rate because
-	 * data is sampled on both EMC clock edges.
-	 */
+	 
 	dram_data_bus_width_bytes = emc->dram_bus_width / 8;
 	do_div(rate, ddr * dram_data_bus_width_bytes);
 	rate = min_t(u64, rate, U32_MAX);
@@ -1353,7 +1312,7 @@ static int tegra_emc_interconnect_init(struct tegra_emc *emc)
 
 	icc_provider_init(&emc->provider);
 
-	/* create External Memory Controller node */
+	 
 	node = icc_node_create(TEGRA_ICC_EMC);
 	if (IS_ERR(node)) {
 		err = PTR_ERR(node);
@@ -1363,12 +1322,12 @@ static int tegra_emc_interconnect_init(struct tegra_emc *emc)
 	node->name = "External Memory Controller";
 	icc_node_add(node, &emc->provider);
 
-	/* link External Memory Controller to External Memory (DRAM) */
+	 
 	err = icc_link_create(node, TEGRA_ICC_EMEM);
 	if (err)
 		goto remove_nodes;
 
-	/* create External Memory node */
+	 
 	node = icc_node_create(TEGRA_ICC_EMEM);
 	if (IS_ERR(node)) {
 		err = PTR_ERR(node);
@@ -1417,7 +1376,7 @@ static int tegra_emc_opp_table_init(struct tegra_emc *emc)
 	dev_info_once(emc->dev, "OPP HW ver. 0x%x, current clock rate %lu MHz\n",
 		      hw_version, clk_get_rate(emc->clk) / 1000000);
 
-	/* first dummy rate-set initializes voltage state */
+	 
 	err = dev_pm_opp_set_rate(emc->dev, clk_get_rate(emc->clk));
 	if (err) {
 		dev_err(emc->dev, "failed to initialize OPP clock: %d\n", err);
@@ -1509,11 +1468,7 @@ static int tegra_emc_probe(struct platform_device *pdev)
 
 	tegra_emc_interconnect_init(emc);
 
-	/*
-	 * Don't allow the kernel module to be unloaded. Unloading adds some
-	 * extra complexity which doesn't really worth the effort in a case of
-	 * this driver.
-	 */
+	 
 	try_module_get(THIS_MODULE);
 
 	return 0;

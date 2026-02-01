@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt8365-clk.h>
 #include <linux/clk-provider.h>
@@ -41,7 +39,7 @@ static const struct of_device_id of_match_clk_mt8365_cam[] = {
 		.compatible = "mediatek,mt8365-imgsys",
 		.data = &cam_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8365_cam);

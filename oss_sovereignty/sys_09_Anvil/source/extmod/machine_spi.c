@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -33,14 +9,14 @@
 
 #include "extmod/modmachine.h"
 
-// if a port didn't define MSB/LSB constants then provide them
+
 #ifndef MICROPY_PY_MACHINE_SPI_MSB
 #define MICROPY_PY_MACHINE_SPI_MSB (0)
 #define MICROPY_PY_MACHINE_SPI_LSB (1)
 #endif
 
-/******************************************************************************/
-// MicroPython bindings for generic machine.SPI
+ 
+
 
 static mp_obj_t machine_spi_init(size_t n_args, const mp_obj_t *args, mp_map_t *kw_args) {
     mp_obj_base_t *s = (mp_obj_base_t *)MP_OBJ_TO_PTR(args[0]);
@@ -118,10 +94,10 @@ static const mp_rom_map_elem_t machine_spi_locals_dict_table[] = {
 };
 MP_DEFINE_CONST_DICT(mp_machine_spi_locals_dict, machine_spi_locals_dict_table);
 
-#endif // MICROPY_PY_MACHINE_SPI || MICROPY_PY_MACHINE_SOFTSPI
+#endif 
 
-/******************************************************************************/
-// Implementation of soft SPI
+ 
+
 
 #if MICROPY_PY_MACHINE_SOFTSPI
 
@@ -144,7 +120,7 @@ static uint32_t baudrate_to_delay_half(uint32_t baudrate) {
     #endif
     {
         uint32_t delay_half = 500000 / baudrate;
-        // round delay_half up so that: actual_baudrate <= requested_baudrate
+        
         if (500000 % baudrate != 0) {
             delay_half += 1;
         }
@@ -175,10 +151,10 @@ static mp_obj_t mp_machine_soft_spi_make_new(const mp_obj_type_t *type, size_t n
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all_kw_array(n_args, n_kw, all_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    // create new object
+    
     mp_machine_soft_spi_obj_t *self = mp_obj_malloc(mp_machine_soft_spi_obj_t, &mp_machine_soft_spi_type);
 
-    // set parameters
+    
     self->spi.delay_half = baudrate_to_delay_half(args[ARG_baudrate].u_int);
     self->spi.polarity = args[ARG_polarity].u_int;
     self->spi.phase = args[ARG_phase].u_int;
@@ -197,7 +173,7 @@ static mp_obj_t mp_machine_soft_spi_make_new(const mp_obj_type_t *type, size_t n
     self->spi.mosi = mp_hal_get_pin_obj(args[ARG_mosi].u_obj);
     self->spi.miso = mp_hal_get_pin_obj(args[ARG_miso].u_obj);
 
-    // configure bus
+    
     mp_soft_spi_ioctl(&self->spi, MP_SPI_IOCTL_INIT);
 
     return MP_OBJ_FROM_PTR(self);
@@ -237,7 +213,7 @@ static void mp_machine_soft_spi_init(mp_obj_base_t *self_in, size_t n_args, cons
         self->spi.miso = mp_hal_get_pin_obj(args[ARG_miso].u_obj);
     }
 
-    // configure bus
+    
     mp_soft_spi_ioctl(&self->spi, MP_SPI_IOCTL_INIT);
 }
 
@@ -262,4 +238,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &mp_machine_spi_locals_dict
     );
 
-#endif // MICROPY_PY_MACHINE_SOFTSPI
+#endif 

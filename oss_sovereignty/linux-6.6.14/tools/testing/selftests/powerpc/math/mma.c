@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test basic matrix multiply assist (MMA) functionality if available.
- *
- * Copyright 2020, Alistair Popple, IBM Corp.
- */
+
+ 
 #include <stdio.h>
 #include <stdint.h>
 

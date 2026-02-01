@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Window watchdog device driver for Xilinx Versal WWDT
- *
- * Copyright (C) 2022 - 2023, Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -15,21 +11,21 @@
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
 
-/* Max timeout is calculated at 100MHz source clock */
+ 
 #define XWWDT_DEFAULT_TIMEOUT	42
 #define XWWDT_MIN_TIMEOUT	1
 
-/* Register offsets for the WWDT device */
+ 
 #define XWWDT_MWR_OFFSET	0x00
 #define XWWDT_ESR_OFFSET	0x04
 #define XWWDT_FCR_OFFSET	0x08
 #define XWWDT_FWR_OFFSET	0x0c
 #define XWWDT_SWR_OFFSET	0x10
 
-/* Master Write Control Register Masks */
+ 
 #define XWWDT_MWR_MASK		BIT(0)
 
-/* Enable and Status Register Masks */
+ 
 #define XWWDT_ESR_WINT_MASK	BIT(16)
 #define XWWDT_ESR_WSW_MASK	BIT(8)
 #define XWWDT_ESR_WEN_MASK	BIT(0)
@@ -47,17 +43,10 @@ module_param(closed_window_percent, int, 0);
 MODULE_PARM_DESC(closed_window_percent,
 		 "Watchdog closed window percentage. (default="
 		 __MODULE_STRING(XWWDT_CLOSE_WINDOW_PERCENT) ")");
-/**
- * struct xwwdt_device - Watchdog device structure
- * @base: base io address of WDT device
- * @spinlock: spinlock for IO register access
- * @xilinx_wwdt_wdd: watchdog device structure
- * @freq: source clock frequency of WWDT
- * @close_percent: Closed window percent
- */
+ 
 struct xwwdt_device {
 	void __iomem *base;
-	spinlock_t spinlock; /* spinlock for register handling */
+	spinlock_t spinlock;  
 	struct watchdog_device xilinx_wwdt_wdd;
 	unsigned long freq;
 	u32 close_percent;
@@ -70,7 +59,7 @@ static int xilinx_wwdt_start(struct watchdog_device *wdd)
 	u64 time_out, closed_timeout, open_timeout;
 	u32 control_status_reg;
 
-	/* Calculate timeout count */
+	 
 	time_out = xdev->freq * wdd->timeout;
 	closed_timeout = div_u64(time_out * xdev->close_percent, 100);
 	open_timeout = time_out - closed_timeout;
@@ -83,7 +72,7 @@ static int xilinx_wwdt_start(struct watchdog_device *wdd)
 	iowrite32((u32)closed_timeout, xdev->base + XWWDT_FWR_OFFSET);
 	iowrite32((u32)open_timeout, xdev->base + XWWDT_SWR_OFFSET);
 
-	/* Enable the window watchdog timer */
+	 
 	control_status_reg = ioread32(xdev->base + XWWDT_ESR_OFFSET);
 	control_status_reg |= XWWDT_ESR_WEN_MASK;
 	iowrite32(control_status_reg, xdev->base + XWWDT_ESR_OFFSET);
@@ -102,10 +91,10 @@ static int xilinx_wwdt_keepalive(struct watchdog_device *wdd)
 
 	spin_lock(&xdev->spinlock);
 
-	/* Enable write access control bit for the window watchdog */
+	 
 	iowrite32(XWWDT_MWR_MASK, xdev->base + XWWDT_MWR_OFFSET);
 
-	/* Trigger restart kick to watchdog */
+	 
 	control_status_reg = ioread32(xdev->base + XWWDT_ESR_OFFSET);
 	control_status_reg |= XWWDT_ESR_WSW_MASK;
 	iowrite32(control_status_reg, xdev->base + XWWDT_ESR_OFFSET);

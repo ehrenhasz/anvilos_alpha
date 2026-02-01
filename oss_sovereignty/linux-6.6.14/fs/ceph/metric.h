@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _FS_CEPH_MDS_METRIC_H
 #define _FS_CEPH_MDS_METRIC_H
 
@@ -29,10 +29,7 @@ enum ceph_metric_type {
 	CLIENT_METRIC_TYPE_MAX = CLIENT_METRIC_TYPE_STDEV_METADATA_LATENCY,
 };
 
-/*
- * This will always have the highest metric bit value
- * as the last element of the array.
- */
+ 
 #define CEPHFS_METRIC_SPEC_CLIENT_SUPPORTED {	   \
 	CLIENT_METRIC_TYPE_CAP_INFO,		   \
 	CLIENT_METRIC_TYPE_READ_LATENCY,	   \
@@ -55,13 +52,13 @@ enum ceph_metric_type {
 }
 
 struct ceph_metric_header {
-	__le32 type;     /* ceph metric type */
+	__le32 type;      
 	__u8  ver;
 	__u8  compat;
-	__le32 data_len; /* length of sizeof(hit + mis + total) */
+	__le32 data_len;  
 } __packed;
 
-/* metric caps header */
+ 
 struct ceph_metric_cap {
 	struct ceph_metric_header header;
 	__le64 hit;
@@ -69,7 +66,7 @@ struct ceph_metric_cap {
 	__le64 total;
 } __packed;
 
-/* metric read latency header */
+ 
 struct ceph_metric_read_latency {
 	struct ceph_metric_header header;
 	struct ceph_timespec lat;
@@ -78,7 +75,7 @@ struct ceph_metric_read_latency {
 	__le64 count;
 } __packed;
 
-/* metric write latency header */
+ 
 struct ceph_metric_write_latency {
 	struct ceph_metric_header header;
 	struct ceph_timespec lat;
@@ -87,7 +84,7 @@ struct ceph_metric_write_latency {
 	__le64 count;
 } __packed;
 
-/* metric metadata latency header */
+ 
 struct ceph_metric_metadata_latency {
 	struct ceph_metric_header header;
 	struct ceph_timespec lat;
@@ -96,7 +93,7 @@ struct ceph_metric_metadata_latency {
 	__le64 count;
 } __packed;
 
-/* metric dentry lease header */
+ 
 struct ceph_metric_dlease {
 	struct ceph_metric_header header;
 	__le64 hit;
@@ -104,35 +101,35 @@ struct ceph_metric_dlease {
 	__le64 total;
 } __packed;
 
-/* metric opened files header */
+ 
 struct ceph_opened_files {
 	struct ceph_metric_header header;
 	__le64 opened_files;
 	__le64 total;
 } __packed;
 
-/* metric pinned i_caps header */
+ 
 struct ceph_pinned_icaps {
 	struct ceph_metric_header header;
 	__le64 pinned_icaps;
 	__le64 total;
 } __packed;
 
-/* metric opened inodes header */
+ 
 struct ceph_opened_inodes {
 	struct ceph_metric_header header;
 	__le64 opened_inodes;
 	__le64 total;
 } __packed;
 
-/* metric read io size header */
+ 
 struct ceph_read_io_size {
 	struct ceph_metric_header header;
 	__le64 total_ops;
 	__le64 total_size;
 } __packed;
 
-/* metric write io size header */
+ 
 struct ceph_write_io_size {
 	struct ceph_metric_header header;
 	__le64 total_ops;
@@ -140,7 +137,7 @@ struct ceph_write_io_size {
 } __packed;
 
 struct ceph_metric_head {
-	__le32 num;	/* the number of metrics that will be sent */
+	__le32 num;	 
 } __packed;
 
 enum metric_type {
@@ -164,7 +161,7 @@ struct ceph_metric {
 	ktime_t latency_max;
 };
 
-/* This is the global metrics */
+ 
 struct ceph_client_metric {
 	atomic64_t            total_dentries;
 	struct percpu_counter d_lease_hit;
@@ -176,15 +173,15 @@ struct ceph_client_metric {
 
 	struct ceph_metric metric[METRIC_MAX];
 
-	/* The total number of directories and files that are opened */
+	 
 	atomic64_t opened_files;
 
-	/* The total number of inodes that have opened files or directories */
+	 
 	struct percpu_counter opened_inodes;
 	struct percpu_counter total_inodes;
 
 	struct ceph_mds_session *session;
-	struct delayed_work delayed_work;  /* delayed work */
+	struct delayed_work delayed_work;   
 };
 
 static inline void metric_schedule_delayed(struct ceph_client_metric *m)
@@ -192,7 +189,7 @@ static inline void metric_schedule_delayed(struct ceph_client_metric *m)
 	if (disable_send_metrics)
 		return;
 
-	/* per second */
+	 
 	schedule_delayed_work(&m->delayed_work, round_jiffies_relative(HZ));
 }
 
@@ -241,4 +238,4 @@ static inline void ceph_update_copyfrom_metrics(struct ceph_client_metric *m,
 	ceph_update_metrics(&m->metric[METRIC_COPYFROM],
 			    r_start, r_end, size, rc);
 }
-#endif /* _FS_CEPH_MDS_METRIC_H */
+#endif  

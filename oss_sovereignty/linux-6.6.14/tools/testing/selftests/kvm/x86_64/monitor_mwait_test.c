@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,10 +16,7 @@ enum monitor_mwait_testcases {
 	MWAIT_DISABLED = BIT(2),
 };
 
-/*
- * If both MWAIT and its quirk are disabled, MONITOR/MWAIT should #UD, in all
- * other scenarios KVM should emulate them as nops.
- */
+ 
 #define GUEST_ASSERT_MONITOR_MWAIT(insn, testcase, vector)		\
 do {									\
 	bool fault_wanted = ((testcase) & MWAIT_QUIRK_DISABLED) &&	\
@@ -39,10 +36,7 @@ static void guest_monitor_wait(int testcase)
 
 	GUEST_SYNC(testcase);
 
-	/*
-	 * Arbitrarily MONITOR this function, SVM performs fault checks before
-	 * intercept checks, so the inputs for MONITOR and MWAIT must be valid.
-	 */
+	 
 	vector = kvm_asm_safe("monitor", "a"(guest_monitor_wait), "c"(0), "d"(0));
 	GUEST_ASSERT_MONITOR_MWAIT("MONITOR", testcase, vector);
 
@@ -106,13 +100,7 @@ int main(int argc, char *argv[])
 			disabled_quirks |= KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT;
 		vm_enable_cap(vm, KVM_CAP_DISABLE_QUIRKS2, disabled_quirks);
 
-		/*
-		 * If the MISC_ENABLES quirk (KVM neglects to update CPUID to
-		 * enable/disable MWAIT) is disabled, toggle the ENABLE_MWAIT
-		 * bit in MISC_ENABLES accordingly.  If the quirk is enabled,
-		 * the only valid configuration is MWAIT disabled, as CPUID
-		 * can't be manually changed after running the vCPU.
-		 */
+		 
 		if (!(testcase & MISC_ENABLES_QUIRK_DISABLED)) {
 			TEST_ASSERT(testcase & MWAIT_DISABLED,
 				    "Can't toggle CPUID features after running vCPU");

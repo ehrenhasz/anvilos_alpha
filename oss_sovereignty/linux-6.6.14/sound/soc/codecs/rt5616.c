@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5616.c  --  RT5616 ALSA SoC audio codec driver
- *
- * Copyright 2015 Realtek Semiconductor Corp.
- * Author: Bard Liao <bardliao@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -290,7 +285,7 @@ static const DECLARE_TLV_DB_SCALE(in_vol_tlv, -3450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(adc_vol_tlv, -17625, 375, 0);
 static const DECLARE_TLV_DB_SCALE(adc_bst_tlv, 0, 1200, 0);
 
-/* {0, +20, +24, +30, +35, +40, +44, +50, +52} dB */
+ 
 static const SNDRV_CTL_TLVD_DECLARE_DB_RANGE(bst_tlv,
 	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
@@ -302,14 +297,14 @@ static const SNDRV_CTL_TLVD_DECLARE_DB_RANGE(bst_tlv,
 );
 
 static const struct snd_kcontrol_new rt5616_snd_controls[] = {
-	/* Headphone Output Volume */
+	 
 	SOC_DOUBLE("HP Playback Switch", RT5616_HP_VOL,
 		   RT5616_L_MUTE_SFT, RT5616_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE("HPVOL Playback Switch", RT5616_HP_VOL,
 		   RT5616_VOL_L_SFT, RT5616_VOL_R_SFT, 1, 1),
 	SOC_DOUBLE_TLV("HP Playback Volume", RT5616_HP_VOL,
 		       RT5616_L_VOL_SFT, RT5616_R_VOL_SFT, 39, 1, out_vol_tlv),
-	/* OUTPUT Control */
+	 
 	SOC_DOUBLE("OUT Playback Switch", RT5616_LOUT_CTRL1,
 		   RT5616_L_MUTE_SFT, RT5616_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE("OUT Channel Switch", RT5616_LOUT_CTRL1,
@@ -317,27 +312,27 @@ static const struct snd_kcontrol_new rt5616_snd_controls[] = {
 	SOC_DOUBLE_TLV("OUT Playback Volume", RT5616_LOUT_CTRL1,
 		       RT5616_L_VOL_SFT, RT5616_R_VOL_SFT, 39, 1, out_vol_tlv),
 
-	/* DAC Digital Volume */
+	 
 	SOC_DOUBLE_TLV("DAC1 Playback Volume", RT5616_DAC1_DIG_VOL,
 		       RT5616_L_VOL_SFT, RT5616_R_VOL_SFT,
 		       175, 0, dac_vol_tlv),
-	/* IN1/IN2 Control */
+	 
 	SOC_SINGLE_TLV("IN1 Boost Volume", RT5616_IN1_IN2,
 		       RT5616_BST_SFT1, 8, 0, bst_tlv),
 	SOC_SINGLE_TLV("IN2 Boost Volume", RT5616_IN1_IN2,
 		       RT5616_BST_SFT2, 8, 0, bst_tlv),
-	/* INL/INR Volume Control */
+	 
 	SOC_DOUBLE_TLV("IN Capture Volume", RT5616_INL1_INR1_VOL,
 		       RT5616_INL_VOL_SFT, RT5616_INR_VOL_SFT,
 		       31, 1, in_vol_tlv),
-	/* ADC Digital Volume Control */
+	 
 	SOC_DOUBLE("ADC Capture Switch", RT5616_ADC_DIG_VOL,
 		   RT5616_L_MUTE_SFT, RT5616_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE_TLV("ADC Capture Volume", RT5616_ADC_DIG_VOL,
 		       RT5616_L_VOL_SFT, RT5616_R_VOL_SFT,
 		       127, 0, adc_vol_tlv),
 
-	/* ADC Boost Volume Control */
+	 
 	SOC_DOUBLE_TLV("ADC Boost Volume", RT5616_ADC_BST_VOL,
 		       RT5616_ADC_L_BST_SFT, RT5616_ADC_R_BST_SFT,
 		       3, 0, adc_bst_tlv),
@@ -356,7 +351,7 @@ static int is_sys_clk_from_pll(struct snd_soc_dapm_widget *source,
 		return 0;
 }
 
-/* Digital Mixer */
+ 
 static const struct snd_kcontrol_new rt5616_sto1_adc_l_mix[] = {
 	SOC_DAPM_SINGLE("ADC1 Switch", RT5616_STO1_ADC_MIXER,
 			RT5616_M_STO1_ADC_L1_SFT, 1, 1),
@@ -395,7 +390,7 @@ static const struct snd_kcontrol_new rt5616_sto_dac_r_mix[] = {
 			RT5616_M_DAC_L1_MIXR_SFT, 1, 1),
 };
 
-/* Analog Input Mixer */
+ 
 static const struct snd_kcontrol_new rt5616_rec_l_mix[] = {
 	SOC_DAPM_SINGLE("INL1 Switch", RT5616_REC_L2_MIXER,
 			RT5616_M_IN1_L_RM_L_SFT, 1, 1),
@@ -414,7 +409,7 @@ static const struct snd_kcontrol_new rt5616_rec_r_mix[] = {
 			RT5616_M_BST1_RM_R_SFT, 1, 1),
 };
 
-/* Analog Output Mixer */
+ 
 
 static const struct snd_kcontrol_new rt5616_out_l_mix[] = {
 	SOC_DAPM_SINGLE("BST1 Switch", RT5616_OUT_L3_MIXER,
@@ -491,7 +486,7 @@ static int rt5616_charge_pump_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* depop parameters */
+		 
 		snd_soc_component_update_bits(component, RT5616_DEPOP_M2,
 				    RT5616_DEPOP_MASK, RT5616_DEPOP_MAN);
 		snd_soc_component_update_bits(component, RT5616_DEPOP_M1,
@@ -500,7 +495,7 @@ static int rt5616_charge_pump_event(struct snd_soc_dapm_widget *w,
 				    RT5616_HP_SG_DIS | RT5616_HP_CB_PU);
 		snd_soc_component_write(component, RT5616_PR_BASE +
 			      RT5616_HP_DCC_INT1, 0x9f00);
-		/* headphone amp power on */
+		 
 		snd_soc_component_update_bits(component, RT5616_PWR_ANLG1,
 				    RT5616_PWR_FV1 | RT5616_PWR_FV2, 0);
 		snd_soc_component_update_bits(component, RT5616_PWR_VOL,
@@ -530,7 +525,7 @@ static int rt5616_charge_pump_event(struct snd_soc_dapm_widget *w,
 				    RT5616_HP_SG_MASK | RT5616_HP_L_SMT_MASK |
 				    RT5616_HP_R_SMT_MASK, RT5616_HP_SG_DIS |
 				    RT5616_HP_L_SMT_DIS | RT5616_HP_R_SMT_DIS);
-		/* headphone amp power down */
+		 
 		snd_soc_component_update_bits(component, RT5616_DEPOP_M1,
 				    RT5616_SMT_TRIG_MASK |
 				    RT5616_HP_CD_PD_MASK | RT5616_HP_CO_MASK |
@@ -557,7 +552,7 @@ static int rt5616_hp_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* headphone unmute sequence */
+		 
 		snd_soc_component_update_bits(component, RT5616_DEPOP_M3,
 				    RT5616_CP_FQ1_MASK | RT5616_CP_FQ2_MASK |
 				    RT5616_CP_FQ3_MASK,
@@ -587,7 +582,7 @@ static int rt5616_hp_event(struct snd_soc_dapm_widget *w,
 		break;
 
 	case SND_SOC_DAPM_PRE_PMD:
-		/* headphone mute sequence */
+		 
 		snd_soc_component_update_bits(component, RT5616_DEPOP_M3,
 				    RT5616_CP_FQ1_MASK | RT5616_CP_FQ2_MASK |
 				    RT5616_CP_FQ3_MASK,
@@ -697,14 +692,14 @@ static int rt5616_bst2_event(struct snd_soc_dapm_widget *w,
 static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("PLL1", RT5616_PWR_ANLG2,
 			    RT5616_PWR_PLL_BIT, 0, NULL, 0),
-	/* Input Side */
-	/* micbias */
+	 
+	 
 	SND_SOC_DAPM_SUPPLY("LDO", RT5616_PWR_ANLG1,
 			    RT5616_PWR_LDO_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("micbias1", RT5616_PWR_ANLG2,
 			    RT5616_PWR_MB1_BIT, 0, NULL, 0),
 
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("MIC1"),
 	SND_SOC_DAPM_INPUT("MIC2"),
 
@@ -712,14 +707,14 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("IN2P"),
 	SND_SOC_DAPM_INPUT("IN2N"),
 
-	/* Boost */
+	 
 	SND_SOC_DAPM_PGA_E("BST1", RT5616_PWR_ANLG2,
 			   RT5616_PWR_BST1_BIT, 0, NULL, 0, rt5616_bst1_event,
 			   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
 	SND_SOC_DAPM_PGA_E("BST2", RT5616_PWR_ANLG2,
 			   RT5616_PWR_BST2_BIT, 0, NULL, 0, rt5616_bst2_event,
 			   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
-	/* Input Volume */
+	 
 	SND_SOC_DAPM_PGA("INL1 VOL", RT5616_PWR_VOL,
 			 RT5616_PWR_IN1_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("INR1 VOL", RT5616_PWR_VOL,
@@ -729,12 +724,12 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("INR2 VOL", RT5616_PWR_VOL,
 			 RT5616_PWR_IN2_R_BIT, 0, NULL, 0),
 
-	/* REC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("RECMIXL", RT5616_PWR_MIXER, RT5616_PWR_RM_L_BIT, 0,
 			   rt5616_rec_l_mix, ARRAY_SIZE(rt5616_rec_l_mix)),
 	SND_SOC_DAPM_MIXER("RECMIXR", RT5616_PWR_MIXER, RT5616_PWR_RM_R_BIT, 0,
 			   rt5616_rec_r_mix, ARRAY_SIZE(rt5616_rec_r_mix)),
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC_E("ADC L", NULL, RT5616_PWR_DIG1,
 			   RT5616_PWR_ADC_L_BIT, 0, rt5616_adc_event,
 			   SND_SOC_DAPM_POST_PMD | SND_SOC_DAPM_POST_PMU),
@@ -742,7 +737,7 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 			   RT5616_PWR_ADC_R_BIT, 0, rt5616_adc_event,
 			   SND_SOC_DAPM_POST_PMD | SND_SOC_DAPM_POST_PMU),
 
-	/* ADC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("stereo1 filter", RT5616_PWR_DIG2,
 			    RT5616_PWR_ADC_STO1_F_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("Stereo1 ADC MIXL", SND_SOC_NOPM, 0, 0,
@@ -752,7 +747,7 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 			   rt5616_sto1_adc_r_mix,
 			   ARRAY_SIZE(rt5616_sto1_adc_r_mix)),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("I2S1", RT5616_PWR_DIG1,
 			    RT5616_PWR_I2S1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 DAC", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -760,17 +755,17 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("IF1 DAC1 R", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 ADC1", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Digital Interface Select */
+	 
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Audio DSP */
+	 
 	SND_SOC_DAPM_PGA("Audio DSP", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Output Side */
-	/* DAC mixer before sound effect  */
+	 
+	 
 	SND_SOC_DAPM_MIXER("DAC MIXL", SND_SOC_NOPM, 0, 0,
 			   rt5616_dac_l_mix, ARRAY_SIZE(rt5616_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("DAC MIXR", SND_SOC_NOPM, 0, 0,
@@ -779,7 +774,7 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("Stero1 DAC Power", RT5616_PWR_DIG2,
 			    RT5616_PWR_DAC_STO1_F_BIT, 0, NULL, 0),
 
-	/* DAC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Stereo DAC MIXL", SND_SOC_NOPM, 0, 0,
 			   rt5616_sto_dac_l_mix,
 			   ARRAY_SIZE(rt5616_sto_dac_l_mix)),
@@ -787,17 +782,17 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 			   rt5616_sto_dac_r_mix,
 			   ARRAY_SIZE(rt5616_sto_dac_r_mix)),
 
-	/* DACs */
+	 
 	SND_SOC_DAPM_DAC("DAC L1", NULL, RT5616_PWR_DIG1,
 			 RT5616_PWR_DAC_L1_BIT, 0),
 	SND_SOC_DAPM_DAC("DAC R1", NULL, RT5616_PWR_DIG1,
 			 RT5616_PWR_DAC_R1_BIT, 0),
-	/* OUT Mixer */
+	 
 	SND_SOC_DAPM_MIXER("OUT MIXL", RT5616_PWR_MIXER, RT5616_PWR_OM_L_BIT,
 			   0, rt5616_out_l_mix, ARRAY_SIZE(rt5616_out_l_mix)),
 	SND_SOC_DAPM_MIXER("OUT MIXR", RT5616_PWR_MIXER, RT5616_PWR_OM_R_BIT,
 			   0, rt5616_out_r_mix, ARRAY_SIZE(rt5616_out_r_mix)),
-	/* Output Volume */
+	 
 	SND_SOC_DAPM_PGA("OUTVOL L", RT5616_PWR_VOL,
 			 RT5616_PWR_OV_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("OUTVOL R", RT5616_PWR_VOL,
@@ -820,7 +815,7 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 			 RT5616_PWR_IN2_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("INR2", RT5616_PWR_VOL,
 			 RT5616_PWR_IN2_R_BIT, 0, NULL, 0),
-	/* HPO/LOUT/Mono Mixer */
+	 
 	SND_SOC_DAPM_MIXER("HPO MIX", SND_SOC_NOPM, 0, 0,
 			   rt5616_hpo_mix, ARRAY_SIZE(rt5616_hpo_mix)),
 	SND_SOC_DAPM_MIXER("LOUT MIX", SND_SOC_NOPM, 0, 0,
@@ -837,7 +832,7 @@ static const struct snd_soc_dapm_widget rt5616_dapm_widgets[] = {
 			      rt5616_charge_pump_event, SND_SOC_DAPM_POST_PMU |
 			      SND_SOC_DAPM_PRE_PMD),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("HPOL"),
 	SND_SOC_DAPM_OUTPUT("HPOR"),
 	SND_SOC_DAPM_OUTPUT("LOUTL"),
@@ -1167,13 +1162,7 @@ static int rt5616_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-		/*
-		 * SND_SOC_BIAS_PREPARE is called while preparing for a
-		 * transition to ON or away from ON. If current bias_level
-		 * is SND_SOC_BIAS_ON, then it is preparing for a transition
-		 * away from ON. Disable the clock in that case, otherwise
-		 * enable it.
-		 */
+		 
 		if (IS_ERR(rt5616->mclk))
 			break;
 
@@ -1224,7 +1213,7 @@ static int rt5616_probe(struct snd_soc_component *component)
 {
 	struct rt5616_priv *rt5616 = snd_soc_component_get_drvdata(component);
 
-	/* Check if MCLK provided */
+	 
 	rt5616->mclk = devm_clk_get(component->dev, "mclk");
 	if (PTR_ERR(rt5616->mclk) == -EPROBE_DEFER)
 		return -EPROBE_DEFER;

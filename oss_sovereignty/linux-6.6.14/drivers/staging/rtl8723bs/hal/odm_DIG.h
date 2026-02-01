@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 
 #ifndef __ODMDIG_H__
 #define __ODMDIG_H__
 
-struct dig_t { /* _Dynamic_Initial_Gain_Threshold_ */
+struct dig_t {  
 	bool bStopDIG;
 	bool bPSDInProgress;
 
@@ -27,7 +23,7 @@ struct dig_t { /* _Dynamic_Initial_Gain_Threshold_ */
 
 	u8 PreIGValue;
 	u8 CurIGValue;
-	u8 BackupIGValue;		/* MP DIG */
+	u8 BackupIGValue;		 
 	u8 BT30_CurIGI;
 	u8 IGIBackup;
 
@@ -65,7 +61,7 @@ struct  false_ALARM_STATISTICS {
 	u32 Cnt_Crc8_fail;
 	u32 Cnt_Mcs_fail;
 	u32 Cnt_Ofdm_fail;
-	u32 Cnt_Ofdm_fail_pre; /* For RTL8881A */
+	u32 Cnt_Ofdm_fail_pre;  
 	u32 Cnt_Cck_fail;
 	u32 Cnt_all;
 	u32 Cnt_Fast_Fsync;
@@ -73,8 +69,8 @@ struct  false_ALARM_STATISTICS {
 	u32 Cnt_OFDM_CCA;
 	u32 Cnt_CCK_CCA;
 	u32 Cnt_CCA_all;
-	u32 Cnt_BW_USC; /* Gary */
-	u32 Cnt_BW_LSC; /* Gary */
+	u32 Cnt_BW_USC;  
+	u32 Cnt_BW_LSC;  
 };
 
 enum ODM_Pause_DIG_TYPE {
@@ -89,12 +85,7 @@ enum ODM_Pause_DIG_TYPE {
 #define		DMfalseALARM_THRESH_HIGH	1000
 
 #define		DM_DIG_MAX_NIC				0x3e
-#define		DM_DIG_MIN_NIC				0x1e /* 0x22//0x1c */
-#define		DM_DIG_MAX_OF_MIN_NIC		0x3e
-
-#define		DM_DIG_MAX_AP					0x3e
-#define		DM_DIG_MIN_AP					0x1c
-#define		DM_DIG_MAX_OF_MIN			0x2A	/* 0x32 */
+#define		DM_DIG_MIN_NIC				0x1e  
 #define		DM_DIG_MIN_AP_DFS				0x20
 
 #define		DM_DIG_MAX_NIC_HP			0x46
@@ -103,11 +94,11 @@ enum ODM_Pause_DIG_TYPE {
 #define		DM_DIG_MAX_AP_HP				0x42
 #define		DM_DIG_MIN_AP_HP				0x30
 
-#define		DM_DIG_FA_TH0				0x200/* 0x20 */
+#define		DM_DIG_FA_TH0				0x200 
 
 #define		DM_DIG_FA_TH1					0x300
 #define		DM_DIG_FA_TH2					0x400
-/* this is for 92d */
+ 
 #define		DM_DIG_FA_TH0_92D				0x100
 #define		DM_DIG_FA_TH1_92D				0x400
 #define		DM_DIG_FA_TH2_92D				0x600
@@ -116,9 +107,9 @@ enum ODM_Pause_DIG_TYPE {
 #define		DM_DIG_BACKOFF_MIN			-4
 #define		DM_DIG_BACKOFF_DEFAULT		10
 
-#define			DM_DIG_FA_TH0_LPS				4 /*  4 in lps */
-#define			DM_DIG_FA_TH1_LPS				15 /*  15 lps */
-#define			DM_DIG_FA_TH2_LPS				30 /*  30 lps */
+#define			DM_DIG_FA_TH0_LPS				4  
+#define			DM_DIG_FA_TH1_LPS				15  
+#define			DM_DIG_FA_TH2_LPS				30  
 #define			RSSI_OFFSET_DIG				0x05
 
 void odm_NHMCounterStatisticsInit(void *pDM_VOID);

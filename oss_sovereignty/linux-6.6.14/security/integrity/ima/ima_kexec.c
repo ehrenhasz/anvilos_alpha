@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 IBM Corporation
- *
- * Authors:
- * Thiago Jung Bauermann <bauerman@linux.vnet.ibm.com>
- * Mimi Zohar <zohar@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/seq_file.h>
 #include <linux/vmalloc.h>
@@ -23,7 +17,7 @@ static int ima_dump_measurement_list(unsigned long *buffer_size, void **buffer,
 	struct ima_kexec_hdr khdr;
 	int ret = 0;
 
-	/* segment size can't change between kexec load and execute */
+	 
 	file.buf = vmalloc(segment_size);
 	if (!file.buf) {
 		ret = -ENOMEM;
@@ -32,7 +26,7 @@ static int ima_dump_measurement_list(unsigned long *buffer_size, void **buffer,
 
 	file.size = segment_size;
 	file.read_pos = 0;
-	file.count = sizeof(khdr);	/* reserved space */
+	file.count = sizeof(khdr);	 
 
 	memset(&khdr, 0, sizeof(khdr));
 	khdr.version = 1;
@@ -49,10 +43,7 @@ static int ima_dump_measurement_list(unsigned long *buffer_size, void **buffer,
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * fill in reserved space with some buffer details
-	 * (eg. version, buffer size, number of measurements)
-	 */
+	 
 	khdr.buffer_size = file.count;
 	if (ima_canonical_fmt) {
 		khdr.version = cpu_to_le16(khdr.version);
@@ -73,12 +64,7 @@ out:
 	return ret;
 }
 
-/*
- * Called during kexec_file_load so that IMA can add a segment to the kexec
- * image for the measurement list for the next kernel.
- *
- * This function assumes that kexec_lock is held.
- */
+ 
 void ima_add_kexec_buffer(struct kimage *image)
 {
 	struct kexec_buf kbuf = { .image = image, .buf_align = PAGE_SIZE,
@@ -86,16 +72,13 @@ void ima_add_kexec_buffer(struct kimage *image)
 				  .top_down = true };
 	unsigned long binary_runtime_size;
 
-	/* use more understandable variable names than defined in kbuf */
+	 
 	void *kexec_buffer = NULL;
 	size_t kexec_buffer_size;
 	size_t kexec_segment_size;
 	int ret;
 
-	/*
-	 * Reserve an extra half page of memory for additional measurements
-	 * added during the kexec load.
-	 */
+	 
 	binary_runtime_size = ima_get_binary_runtime_size();
 	if (binary_runtime_size >= ULONG_MAX - PAGE_SIZE)
 		kexec_segment_size = ULONG_MAX;
@@ -132,11 +115,9 @@ void ima_add_kexec_buffer(struct kimage *image)
 	pr_debug("kexec measurement buffer for the loaded kernel at 0x%lx.\n",
 		 kbuf.mem);
 }
-#endif /* IMA_KEXEC */
+#endif  
 
-/*
- * Restore the measurement list from the previous kernel.
- */
+ 
 void __init ima_load_kexec_buffer(void)
 {
 	void *kexec_buffer = NULL;

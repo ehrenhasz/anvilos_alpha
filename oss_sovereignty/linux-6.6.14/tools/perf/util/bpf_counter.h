@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_BPF_COUNTER_H
 #define __PERF_BPF_COUNTER_H 1
 
@@ -45,7 +45,7 @@ int bpf_counter__read(struct evsel *evsel);
 void bpf_counter__destroy(struct evsel *evsel);
 int bpf_counter__install_pe(struct evsel *evsel, int cpu_map_idx, int fd);
 
-#else /* HAVE_BPF_SKEL */
+#else  
 
 #include <linux/err.h>
 
@@ -81,7 +81,7 @@ static inline int bpf_counter__install_pe(struct evsel *evsel __maybe_unused,
 	return 0;
 }
 
-#endif /* HAVE_BPF_SKEL */
+#endif  
 
 static inline void set_max_rlimit(void)
 {
@@ -119,7 +119,7 @@ static inline __u32 bpf_map_get_id(int fd)
 	return map_info.id;
 }
 
-/* trigger the leader program on a cpu */
+ 
 static inline int bperf_trigger_reading(int prog_fd, int cpu)
 {
 	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
@@ -132,6 +132,6 @@ static inline int bperf_trigger_reading(int prog_fd, int cpu)
 
 	return bpf_prog_test_run_opts(prog_fd, &opts);
 }
-#endif /* HAVE_BPF_SKEL */
+#endif  
 
-#endif /* __PERF_BPF_COUNTER_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -69,9 +67,7 @@ static int mt76x0_get_firmware(struct mt76x02_dev *dev,
 {
 	int err;
 
-	/* try to load mt7610e fw if available
-	 * otherwise fall back to mt7610u one
-	 */
+	 
 	err = firmware_request_nowarn(fw, MT7610E_FIRMWARE, dev->mt76.dev);
 	if (err) {
 		dev_info(dev->mt76.dev, "%s not found, switching to %s",
@@ -132,13 +128,13 @@ static int mt76x0u_load_firmware(struct mt76x02_dev *dev)
 
 	mt76_wr(dev, MT_FCE_PSE_CTRL, 1);
 
-	/* FCE tx_fs_base_ptr */
+	 
 	mt76_wr(dev, MT_TX_CPU_FROM_FCE_BASE_PTR, 0x400230);
-	/* FCE tx_fs_max_cnt */
+	 
 	mt76_wr(dev, MT_TX_CPU_FROM_FCE_MAX_COUNT, 1);
-	/* FCE pdma enable */
+	 
 	mt76_wr(dev, MT_FCE_PDMA_GLOBAL_CONF, 0x44);
-	/* FCE skip_fs_en */
+	 
 	mt76_wr(dev, MT_FCE_SKIP_FS, 3);
 
 	val = mt76_rr(dev, MT_USB_DMA_CFG);

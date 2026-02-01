@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Simplified ASN.1 notation parser
- *
- * Copyright (C) 2012 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -116,7 +112,7 @@ enum token_type {
 };
 
 static const unsigned char token_to_tag[NR__TOKENS] = {
-	/* EOC goes first */
+	 
 	[DIRECTIVE_BOOLEAN]		= ASN1_BOOL,
 	[DIRECTIVE_INTEGER]		= ASN1_INT,
 	[DIRECTIVE_BIT]			= ASN1_BTS,
@@ -130,8 +126,8 @@ static const unsigned char token_to_tag[NR__TOKENS] = {
 	[DIRECTIVE_EMBEDDED]		= 0,
 	[DIRECTIVE_UTF8String]		= ASN1_UTF8STR,
 	[DIRECTIVE_RELATIVE_OID]	= ASN1_RELOID,
-	/* 14 */
-	/* 15 */
+	 
+	 
 	[DIRECTIVE_SEQUENCE]		= ASN1_SEQ,
 	[DIRECTIVE_SET]			= ASN1_SET,
 	[DIRECTIVE_NumericString]	= ASN1_NUMSTR,
@@ -177,8 +173,8 @@ static const char *const asn1_universal_tags[32] = {
 	"EPDV",
 	"UTF8STR",
 	"RELOID",
-	NULL,		/* 14 */
-	NULL,		/* 15 */
+	NULL,		 
+	NULL,		 
 	"SEQ",
 	"SET",
 	"NUMSTR",
@@ -194,7 +190,7 @@ static const char *const asn1_universal_tags[32] = {
 	"UNISTR",
 	"CHRSTR",
 	"BMPSTR",
-	NULL		/* 31 */
+	NULL		 
 };
 
 static const char *filename;
@@ -324,34 +320,30 @@ static int directive_compare(const void *_key, const void *_pdir)
 	dlen = strlen(dir);
 	clen = (dlen < token->size) ? dlen : token->size;
 
-	//debug("cmp(%s,%s) = ", token->content, dir);
+	
 
 	val = memcmp(token->content, dir, clen);
 	if (val != 0) {
-		//debug("%d [cmp]\n", val);
+		
 		return val;
 	}
 
 	if (dlen == token->size) {
-		//debug("0\n");
+		
 		return 0;
 	}
-	//debug("%d\n", (int)dlen - (int)token->size);
-	return dlen - token->size; /* shorter -> negative */
+	
+	return dlen - token->size;  
 }
 
-/*
- * Tokenise an ASN.1 grammar
- */
+ 
 static void tokenise(char *buffer, char *end)
 {
 	struct token *tokens;
 	char *line, *nl, *start, *p, *q;
 	unsigned tix, lineno;
 
-	/* Assume we're going to have half as many tokens as we have
-	 * characters
-	 */
+	 
 	token_list = tokens = calloc((end - buffer) / 2, sizeof(struct token));
 	if (!tokens) {
 		perror(NULL);
@@ -361,7 +353,7 @@ static void tokenise(char *buffer, char *end)
 
 	lineno = 0;
 	while (buffer < end) {
-		/* First of all, break out a line */
+		 
 		lineno++;
 		line = buffer;
 		nl = memchr(line, '\n', end - buffer);
@@ -372,16 +364,16 @@ static void tokenise(char *buffer, char *end)
 			*nl = '\0';
 		}
 
-		/* Remove "--" comments */
+		 
 		p = line;
 	next_comment:
 		while ((p = memchr(p, '-', nl - p))) {
 			if (p[1] == '-') {
-				/* Found a comment; see if there's a terminator */
+				 
 				q = p + 2;
 				while ((q = memchr(q, '-', nl - q))) {
 					if (q[1] == '-') {
-						/* There is - excise the comment */
+						 
 						q += 2;
 						memmove(p, q, nl - q);
 						goto next_comment;
@@ -398,7 +390,7 @@ static void tokenise(char *buffer, char *end)
 
 		p = line;
 		while (p < nl) {
-			/* Skip white space */
+			 
 			while (p < nl && isspace(*p))
 				*(p++) = 0;
 			if (p >= nl)
@@ -407,13 +399,11 @@ static void tokenise(char *buffer, char *end)
 			tokens[tix].line = lineno;
 			start = p;
 
-			/* Handle string tokens */
+			 
 			if (isalpha(*p)) {
 				const char **dir;
 
-				/* Can be a directive, type name or element
-				 * name.  Find the end of the name.
-				 */
+				 
 				q = p + 1;
 				while (q < nl && (isalnum(*q) || *q == '-' || *q == '_'))
 					q++;
@@ -428,17 +418,13 @@ static void tokenise(char *buffer, char *end)
 				memcpy(tokens[tix].content, start, tokens[tix].size);
 				tokens[tix].content[tokens[tix].size] = 0;
 				
-				/* If it begins with a lowercase letter then
-				 * it's an element name
-				 */
+				 
 				if (islower(tokens[tix].content[0])) {
 					tokens[tix++].token_type = TOKEN_ELEMENT_NAME;
 					continue;
 				}
 
-				/* Otherwise we need to search the directive
-				 * table
-				 */
+				 
 				dir = bsearch(&tokens[tix], directives,
 					      sizeof(directives) / sizeof(directives[1]),
 					      sizeof(directives[1]),
@@ -452,9 +438,9 @@ static void tokenise(char *buffer, char *end)
 				continue;
 			}
 
-			/* Handle numbers */
+			 
 			if (isdigit(*p)) {
-				/* Find the end of the number */
+				 
 				q = p + 1;
 				while (q < nl && (isdigit(*q)))
 					q++;
@@ -554,9 +540,7 @@ static void parse(void);
 static void dump_elements(void);
 static void render(FILE *out, FILE *hdr);
 
-/*
- *
- */
+ 
 int main(int argc, char **argv)
 {
 	struct stat st;
@@ -740,9 +724,7 @@ static int type_finder(const void *_key, const void *_ti)
 			      token->size);
 }
 
-/*
- * Build up a list of types and a sorted index to that list.
- */
+ 
 static void build_type_list(void)
 {
 	struct type *types;
@@ -798,15 +780,13 @@ static void build_type_list(void)
 static struct element *parse_type(struct token **_cursor, struct token *stop,
 				  struct token *name);
 
-/*
- * Parse the token stream
- */
+ 
 static void parse(void)
 {
 	struct token *cursor;
 	struct type *type;
 
-	/* Parse one type definition statement at a time */
+	 
 	type = type_list;
 	do {
 		cursor = type->name;
@@ -847,9 +827,7 @@ static struct element *alloc_elem(void)
 static struct element *parse_compound(struct token **_cursor, struct token *end,
 				      int alternates);
 
-/*
- * Parse one type definition statement
- */
+ 
 static struct element *parse_type(struct token **_cursor, struct token *end,
 				  struct token *name)
 {
@@ -866,7 +844,7 @@ static struct element *parse_type(struct token **_cursor, struct token *end,
 	element->tag = token_to_tag[cursor->token_type];
 	element->name = name;
 
-	/* Extract the tag value if one given */
+	 
 	if (cursor->token_type == TOKEN_OPEN_SQUARE) {
 		cursor++;
 		if (cursor >= end)
@@ -921,7 +899,7 @@ static struct element *parse_type(struct token **_cursor, struct token *end,
 		labelled = 1;
 	}
 
-	/* Handle implicit and explicit markers */
+	 
 	if (cursor->token_type == DIRECTIVE_IMPLICIT) {
 		element->flags |= ELEMENT_IMPLICIT;
 		implicit = 1;
@@ -947,7 +925,7 @@ static struct element *parse_type(struct token **_cursor, struct token *end,
 		element->name = name;
 	}
 
-	/* Extract the type we're expecting here */
+	 
 	element->type = cursor;
 	switch (cursor->token_type) {
 	case DIRECTIVE_ANY:
@@ -1067,7 +1045,7 @@ static struct element *parse_type(struct token **_cursor, struct token *end,
 		exit(1);
 	}
 
-	/* Handle elements that are optional */
+	 
 	if (cursor < end && (cursor->token_type == DIRECTIVE_OPTIONAL ||
 			     cursor->token_type == DIRECTIVE_DEFAULT)
 	    ) {
@@ -1141,9 +1119,7 @@ overrun_error:
 	exit(1);
 }
 
-/*
- * Parse a compound type list
- */
+ 
 static struct element *parse_compound(struct token **_cursor, struct token *end,
 				      int alternates)
 {
@@ -1286,9 +1262,7 @@ static void render_more(FILE *out, const char *fmt, ...)
 	}
 }
 
-/*
- * Render the grammar into a state machine definition.
- */
+ 
 static void render(FILE *out, FILE *hdr)
 {
 	struct element *e;
@@ -1322,7 +1296,7 @@ static void render(FILE *out, FILE *hdr)
 		exit(1);
 	}
 
-	/* Tabulate the action functions we might have to call */
+	 
 	fprintf(hdr, "\n");
 	index = 0;
 	for (action = action_list; action; action = action->next) {
@@ -1353,7 +1327,7 @@ static void render(FILE *out, FILE *hdr)
 		exit(1);
 	}
 
-	/* We do two passes - the first one calculates all the offsets */
+	 
 	verbose("Pass 1\n");
 	nr_entries = 0;
 	root = &type_list[0];
@@ -1364,7 +1338,7 @@ static void render(FILE *out, FILE *hdr)
 	for (e = element_list; e; e = e->list_next)
 		e->flags &= ~ELEMENT_RENDERED;
 
-	/* And then we actually render */
+	 
 	verbose("Pass 2\n");
 	fprintf(out, "\n");
 	fprintf(out, "static const unsigned char %s_machine[] = {\n",
@@ -1386,9 +1360,7 @@ static void render(FILE *out, FILE *hdr)
 	fprintf(out, "};\n");
 }
 
-/*
- * Render the out-of-line elements
- */
+ 
 static void render_out_of_line_list(FILE *out)
 {
 	struct element *e, *ce;
@@ -1433,9 +1405,7 @@ static void render_out_of_line_list(FILE *out)
 	}
 }
 
-/*
- * Render an element.
- */
+ 
 static void render_element(FILE *out, struct element *e, struct element *tag)
 {
 	struct element *ec, *x;
@@ -1454,7 +1424,7 @@ static void render_element(FILE *out, struct element *e, struct element *tag)
 		render_more(out, "\t// %s\n", e->type_def->name->content);
 	}
 
-	/* Render the operation */
+	 
 	cond = (e->flags & ELEMENT_CONDITIONAL ||
 		(tag && tag->flags & ELEMENT_CONDITIONAL)) ? "COND_" : "";
 	act = e->action ? "_ACT" : "";
@@ -1499,7 +1469,7 @@ static void render_element(FILE *out, struct element *e, struct element *tag)
 		render_more(out, "\t\t// %s", x->name->content);
 	render_more(out, "\n");
 
-	/* Render the tag */
+	 
 	if (!tag || !(tag->flags & ELEMENT_TAG_SPECIFIED))
 		tag = e;
 
@@ -1519,7 +1489,7 @@ static void render_element(FILE *out, struct element *e, struct element *tag)
 	tag = NULL;
 dont_render_tag:
 
-	/* Deal with compound types */
+	 
 	switch (e->compound) {
 	case TYPE_REF:
 		render_element(out, e->type->type->element, tag);
@@ -1530,8 +1500,7 @@ dont_render_tag:
 
 	case SEQUENCE:
 		if (outofline) {
-			/* Render out-of-line for multiple use or
-			 * skipability */
+			 
 			render_opcode(out, "_jump_target(%u),", e->entry_index);
 			if (e->type_def && e->type_def->name)
 				render_more(out, "\t\t// --> %s",
@@ -1544,7 +1513,7 @@ dont_render_tag:
 			}
 			return;
 		} else {
-			/* Render inline for single use */
+			 
 			render_depth++;
 			for (ec = e->children; ec; ec = ec->next)
 				render_element(out, ec, NULL);
@@ -1556,8 +1525,7 @@ dont_render_tag:
 	case SEQUENCE_OF:
 	case SET_OF:
 		if (outofline) {
-			/* Render out-of-line for multiple use or
-			 * skipability */
+			 
 			render_opcode(out, "_jump_target(%u),", e->entry_index);
 			if (e->type_def && e->type_def->name)
 				render_more(out, "\t\t// --> %s",
@@ -1570,7 +1538,7 @@ dont_render_tag:
 			}
 			return;
 		} else {
-			/* Render inline for single use */
+			 
 			entry = nr_entries;
 			render_depth++;
 			render_element(out, e->children, NULL);
@@ -1584,12 +1552,7 @@ dont_render_tag:
 		break;
 
 	case SET:
-		/* I can't think of a nice way to do SET support without having
-		 * a stack of bitmasks to make sure no element is repeated.
-		 * The bitmask has also to be checked that no non-optional
-		 * elements are left out whilst not preventing optional
-		 * elements from being left out.
-		 */
+		 
 		fprintf(stderr, "The ASN.1 SET type is not currently supported.\n");
 		exit(1);
 

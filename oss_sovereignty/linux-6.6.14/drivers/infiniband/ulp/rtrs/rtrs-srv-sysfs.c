@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
 
@@ -52,7 +46,7 @@ static ssize_t rtrs_srv_disconnect_store(struct kobject *kobj,
 			sizeof(str));
 
 	rtrs_info(s, "disconnect for path %s requested\n", str);
-	/* first remove sysfs itself to avoid deadlock */
+	 
 	sysfs_remove_file_self(&srv_path->kobj, &attr->attr);
 	close_path(srv_path);
 
@@ -159,9 +153,7 @@ static int rtrs_srv_create_once_sysfs_root_folders(struct rtrs_srv_path *srv_pat
 
 	mutex_lock(&srv->paths_mutex);
 	if (srv->dev_ref++) {
-		/*
-		 * Device needs to be registered only on the first session
-		 */
+		 
 		goto unlock;
 	}
 	srv->dev.class = &rtrs_dev_class;
@@ -169,10 +161,7 @@ static int rtrs_srv_create_once_sysfs_root_folders(struct rtrs_srv_path *srv_pat
 	if (err)
 		goto unlock;
 
-	/*
-	 * Suppress user space notification until
-	 * sysfs files are created
-	 */
+	 
 	dev_set_uevent_suppress(&srv->dev, true);
 	err = device_add(&srv->dev);
 	if (err) {

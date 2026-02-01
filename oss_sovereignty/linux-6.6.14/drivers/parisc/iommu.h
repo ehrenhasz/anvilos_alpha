@@ -13,7 +13,7 @@ static inline struct pci_hba_data *parisc_walk_tree(struct device *dev)
 	if (likely(dev->platform_data))
 		return dev->platform_data;
 
-	/* OK, just traverse the bus to find it */
+	 
 	for (otherdev = dev->parent;
 	     otherdev;
 	     otherdev = otherdev->parent) {
@@ -42,14 +42,14 @@ int ccio_request_resource(const struct parisc_device *dev,
 int ccio_allocate_resource(const struct parisc_device *dev,
 		struct resource *res, unsigned long size,
 		unsigned long min, unsigned long max, unsigned long align);
-#else /* !CONFIG_IOMMU_CCIO */
+#else  
 #define ccio_get_iommu(dev) NULL
 #define ccio_request_resource(dev, res) insert_resource(&iomem_resource, res)
 #define ccio_allocate_resource(dev, res, size, min, max, align) \
 		allocate_resource(&iomem_resource, res, size, min, max, \
 				align, NULL, NULL)
-#endif /* !CONFIG_IOMMU_CCIO */
+#endif  
 
 void *sba_get_iommu(struct parisc_device *dev);
 
-#endif /* _IOMMU_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lib/lshrdi3.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/libgcc.h>

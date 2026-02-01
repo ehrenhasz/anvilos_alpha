@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/ipc/shm.c
- * Copyright (C) 1992, 1993 Krishna Balasubramanian
- *	 Many improvements/fixes by Bruno Haible.
- * Replaced `struct shm_desc' by `struct vm_area_struct', July 1994.
- * Fixed the shm swap deallocation (shm_unuse()), August 1998 Andrea Arcangeli.
- *
- * /proc/sysvipc/shm support (c) 1999 Dragos Acostachioaie <dragos@iname.com>
- * BIGMEM support, Andrea Arcangeli <andrea@suse.de>
- * SMP thread shm, Jean-Luc Boyard <jean-luc.boyard@siemens.fr>
- * HIGHMEM support, Ingo Molnar <mingo@redhat.com>
- * Make shmmax, shmall, shmmni sysctl'able, Christoph Rohland <cr@sap.com>
- * Shared /dev/zero support, Kanoj Sarcar <kanoj@sgi.com>
- * Move the mm functionality over to mm/shmem.c, Christoph Rohland <cr@sap.com>
- *
- * support for audit of ipc object properties and permission changes
- * Dustin Kirkland <dustin.kirkland@us.ibm.com>
- *
- * namespaces support
- * OpenVZ, SWsoft Inc.
- * Pavel Emelianov <xemul@openvz.org>
- *
- * Better ipc lock (kern_ipc_perm.lock) handling
- * Davidlohr Bueso <davidlohr.bueso@hp.com>, June 2013.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/mm.h>
@@ -49,7 +25,7 @@
 
 #include "util.h"
 
-struct shmid_kernel /* private to the kernel */
+struct shmid_kernel  
 {
 	struct kern_ipc_perm	shm_perm;
 	struct file		*shm_file;
@@ -62,23 +38,17 @@ struct shmid_kernel /* private to the kernel */
 	struct pid		*shm_lprid;
 	struct ucounts		*mlock_ucounts;
 
-	/*
-	 * The task created the shm object, for
-	 * task_lock(shp->shm_creator)
-	 */
+	 
 	struct task_struct	*shm_creator;
 
-	/*
-	 * List by creator. task_lock(->shm_creator) required for read/write.
-	 * If list_empty(), then the creator is dead already.
-	 */
+	 
 	struct list_head	shm_clist;
 	struct ipc_namespace	*ns;
 } __randomize_layout;
 
-/* shm_mode upper byte flags */
-#define SHM_DEST	01000	/* segment will be destroyed on last detach */
-#define SHM_LOCKED	02000   /* segment will not be swapped */
+ 
+#define SHM_DEST	01000	 
+#define SHM_LOCKED	02000    
 
 struct shm_file_data {
 	int id;
@@ -115,10 +85,7 @@ void shm_init_ns(struct ipc_namespace *ns)
 	ipc_init_ids(&shm_ids(ns));
 }
 
-/*
- * Called with shm_ids.rwsem (writer) and the shp structure locked.
- * Only shm_ids.rwsem remains locked on exit.
- */
+ 
 static void do_shm_rmid(struct ipc_namespace *ns, struct kern_ipc_perm *ipcp)
 {
 	struct shmid_kernel *shp;
@@ -128,7 +95,7 @@ static void do_shm_rmid(struct ipc_namespace *ns, struct kern_ipc_perm *ipcp)
 
 	if (shp->shm_nattch) {
 		shp->shm_perm.mode |= SHM_DEST;
-		/* Do not find it any more */
+		 
 		ipc_set_key_private(&shm_ids(ns), &shp->shm_perm);
 		shm_unlock(shp);
 	} else
@@ -183,10 +150,7 @@ static inline struct shmid_kernel *shm_obtain_object_check(struct ipc_namespace 
 	return container_of(ipcp, struct shmid_kernel, shm_perm);
 }
 
-/*
- * shm_lock_(check_) routines are called in the paths where the rwsem
- * is not necessarily held.
- */
+ 
 static inline struct shmid_kernel *shm_lock(struct ipc_namespace *ns, int id)
 {
 	struct kern_ipc_perm *ipcp;
@@ -197,14 +161,9 @@ static inline struct shmid_kernel *shm_lock(struct ipc_namespace *ns, int id)
 		goto err;
 
 	ipc_lock_object(ipcp);
-	/*
-	 * ipc_rmid() may have already freed the ID while ipc_lock_object()
-	 * was spinning: here verify that the structure is still valid.
-	 * Upon races with RMID, return -EIDRM, thus indicating that
-	 * the ID points to a removed identifier.
-	 */
+	 
 	if (ipc_valid_object(ipcp)) {
-		/* return a locked ipc object upon success */
+		 
 		return container_of(ipcp, struct shmid_kernel, shm_perm);
 	}
 
@@ -212,10 +171,7 @@ static inline struct shmid_kernel *shm_lock(struct ipc_namespace *ns, int id)
 	ipcp = ERR_PTR(-EIDRM);
 err:
 	rcu_read_unlock();
-	/*
-	 * Callers of shm_lock() must validate the status of the returned ipc
-	 * object pointer and error out as appropriate.
-	 */
+	 
 	return ERR_CAST(ipcp);
 }
 
@@ -235,33 +191,21 @@ static void shm_rcu_free(struct rcu_head *head)
 	kfree(shp);
 }
 
-/*
- * It has to be called with shp locked.
- * It must be called before ipc_rmid()
- */
+ 
 static inline void shm_clist_rm(struct shmid_kernel *shp)
 {
 	struct task_struct *creator;
 
-	/* ensure that shm_creator does not disappear */
+	 
 	rcu_read_lock();
 
-	/*
-	 * A concurrent exit_shm may do a list_del_init() as well.
-	 * Just do nothing if exit_shm already did the work
-	 */
+	 
 	if (!list_empty(&shp->shm_clist)) {
-		/*
-		 * shp->shm_creator is guaranteed to be valid *only*
-		 * if shp->shm_clist is not empty.
-		 */
+		 
 		creator = shp->shm_creator;
 
 		task_lock(creator);
-		/*
-		 * list_del_init() is a nop if the entry was already removed
-		 * from the list.
-		 */
+		 
 		list_del_init(&shp->shm_clist);
 		task_unlock(creator);
 	}
@@ -285,7 +229,7 @@ static int __shm_open(struct shm_file_data *sfd)
 		return PTR_ERR(shp);
 
 	if (shp->shm_file != sfd->file) {
-		/* ID was reused */
+		 
 		shm_unlock(shp);
 		return -EINVAL;
 	}
@@ -297,34 +241,23 @@ static int __shm_open(struct shm_file_data *sfd)
 	return 0;
 }
 
-/* This is called by fork, once for every shm attach. */
+ 
 static void shm_open(struct vm_area_struct *vma)
 {
 	struct file *file = vma->vm_file;
 	struct shm_file_data *sfd = shm_file_data(file);
 	int err;
 
-	/* Always call underlying open if present */
+	 
 	if (sfd->vm_ops->open)
 		sfd->vm_ops->open(vma);
 
 	err = __shm_open(sfd);
-	/*
-	 * We raced in the idr lookup or with shm_destroy().
-	 * Either way, the ID is busted.
-	 */
+	 
 	WARN_ON_ONCE(err);
 }
 
-/*
- * shm_destroy - free the struct shmid_kernel
- *
- * @ns: namespace
- * @shp: struct to free
- *
- * It has to be called with shp and shm_ids.rwsem (writer) locked,
- * but returns with shp unlocked and freed.
- */
+ 
 static void shm_destroy(struct ipc_namespace *ns, struct shmid_kernel *shp)
 {
 	struct file *shm_file;
@@ -342,16 +275,7 @@ static void shm_destroy(struct ipc_namespace *ns, struct shmid_kernel *shp)
 	ipc_rcu_putref(&shp->shm_perm, shm_rcu_free);
 }
 
-/*
- * shm_may_destroy - identifies whether shm segment should be destroyed now
- *
- * Returns true if and only if there are no active users of the segment and
- * one of the following is true:
- *
- * 1) shmctl(id, IPC_RMID, NULL) was called for this shp
- *
- * 2) sysctl kernel.shm_rmid_forced is set to 1.
- */
+ 
 static bool shm_may_destroy(struct shmid_kernel *shp)
 {
 	return (shp->shm_nattch == 0) &&
@@ -359,27 +283,19 @@ static bool shm_may_destroy(struct shmid_kernel *shp)
 		(shp->shm_perm.mode & SHM_DEST));
 }
 
-/*
- * remove the attach descriptor vma.
- * free memory for segment if it is marked destroyed.
- * The descriptor has already been removed from the current->mm->mmap list
- * and will later be kfree()d.
- */
+ 
 static void __shm_close(struct shm_file_data *sfd)
 {
 	struct shmid_kernel *shp;
 	struct ipc_namespace *ns = sfd->ns;
 
 	down_write(&shm_ids(ns).rwsem);
-	/* remove from the list of attaches of the shm segment */
+	 
 	shp = shm_lock(ns, sfd->id);
 
-	/*
-	 * We raced in the idr lookup or with shm_destroy().
-	 * Either way, the ID is busted.
-	 */
+	 
 	if (WARN_ON_ONCE(IS_ERR(shp)))
-		goto done; /* no-op */
+		goto done;  
 
 	ipc_update_pid(&shp->shm_lprid, task_tgid(current));
 	shp->shm_dtim = ktime_get_real_seconds();
@@ -397,26 +313,21 @@ static void shm_close(struct vm_area_struct *vma)
 	struct file *file = vma->vm_file;
 	struct shm_file_data *sfd = shm_file_data(file);
 
-	/* Always call underlying close if present */
+	 
 	if (sfd->vm_ops->close)
 		sfd->vm_ops->close(vma);
 
 	__shm_close(sfd);
 }
 
-/* Called with ns->shm_ids(ns).rwsem locked */
+ 
 static int shm_try_destroy_orphaned(int id, void *p, void *data)
 {
 	struct ipc_namespace *ns = data;
 	struct kern_ipc_perm *ipcp = p;
 	struct shmid_kernel *shp = container_of(ipcp, struct shmid_kernel, shm_perm);
 
-	/*
-	 * We want to destroy segments without users and with already
-	 * exit'ed originating process.
-	 *
-	 * As shp->* are changed under rwsem, it's safe to skip shp locking.
-	 */
+	 
 	if (!list_empty(&shp->shm_clist))
 		return 0;
 
@@ -435,7 +346,7 @@ void shm_destroy_orphaned(struct ipc_namespace *ns)
 	up_write(&shm_ids(ns).rwsem);
 }
 
-/* Locking assumes this will only be called with task == current */
+ 
 void exit_shm(struct task_struct *task)
 {
 	for (;;) {
@@ -452,28 +363,14 @@ void exit_shm(struct task_struct *task)
 		shp = list_first_entry(&task->sysvshm.shm_clist, struct shmid_kernel,
 				shm_clist);
 
-		/*
-		 * 1) Get pointer to the ipc namespace. It is worth to say
-		 * that this pointer is guaranteed to be valid because
-		 * shp lifetime is always shorter than namespace lifetime
-		 * in which shp lives.
-		 * We taken task_lock it means that shp won't be freed.
-		 */
+		 
 		ns = shp->ns;
 
-		/*
-		 * 2) If kernel.shm_rmid_forced is not set then only keep track of
-		 * which shmids are orphaned, so that a later set of the sysctl
-		 * can clean them up.
-		 */
+		 
 		if (!ns->shm_rmid_forced)
 			goto unlink_continue;
 
-		/*
-		 * 3) get a reference to the namespace.
-		 *    The refcount could be already 0. If it is 0, then
-		 *    the shm objects will be free by free_ipc_work().
-		 */
+		 
 		ns = get_ipc_ns_not_zero(ns);
 		if (!ns) {
 unlink_continue:
@@ -482,34 +379,18 @@ unlink_continue:
 			continue;
 		}
 
-		/*
-		 * 4) get a reference to shp.
-		 *   This cannot fail: shm_clist_rm() is called before
-		 *   ipc_rmid(), thus the refcount cannot be 0.
-		 */
+		 
 		WARN_ON(!ipc_rcu_getref(&shp->shm_perm));
 
-		/*
-		 * 5) unlink the shm segment from the list of segments
-		 *    created by current.
-		 *    This must be done last. After unlinking,
-		 *    only the refcounts obtained above prevent IPC_RMID
-		 *    from destroying the segment or the namespace.
-		 */
+		 
 		list_del_init(&shp->shm_clist);
 
 		task_unlock(task);
 
-		/*
-		 * 6) we have all references
-		 *    Thus lock & if needed destroy shp.
-		 */
+		 
 		down_write(&shm_ids(ns).rwsem);
 		shm_lock_by_ptr(shp);
-		/*
-		 * rcu_read_lock was implicitly taken in shm_lock_by_ptr, it's
-		 * safe to call ipc_rcu_putref here
-		 */
+		 
 		ipc_rcu_putref(&shp->shm_perm, shm_rcu_free);
 
 		if (ipc_valid_object(&shp->shm_perm)) {
@@ -518,16 +399,12 @@ unlink_continue:
 			else
 				shm_unlock(shp);
 		} else {
-			/*
-			 * Someone else deleted the shp from namespace
-			 * idr/kht while we have waited.
-			 * Just unlock and continue.
-			 */
+			 
 			shm_unlock(shp);
 		}
 
 		up_write(&shm_ids(ns).rwsem);
-		put_ipc_ns(ns); /* paired with get_ipc_ns_not_zero */
+		put_ipc_ns(ns);  
 	}
 }
 
@@ -594,11 +471,7 @@ static int shm_mmap(struct file *file, struct vm_area_struct *vma)
 	struct shm_file_data *sfd = shm_file_data(file);
 	int ret;
 
-	/*
-	 * In case of remap_file_pages() emulation, the file can represent an
-	 * IPC ID that was removed, and possibly even reused by another shm
-	 * segment already.  Propagate this case as an error to caller.
-	 */
+	 
 	ret = __shm_open(sfd);
 	if (ret)
 		return ret;
@@ -665,10 +538,7 @@ static const struct file_operations shm_file_operations = {
 	.fallocate	= shm_fallocate,
 };
 
-/*
- * shm_file_operations_huge is now identical to shm_file_operations,
- * but we keep it distinct for the sake of is_file_shm_hugepages().
- */
+ 
 static const struct file_operations shm_file_operations_huge = {
 	.mmap		= shm_mmap,
 	.fsync		= shm_fsync,
@@ -684,8 +554,8 @@ bool is_file_shm_hugepages(struct file *file)
 }
 
 static const struct vm_operations_struct shm_vm_ops = {
-	.open	= shm_open,	/* callback for a new vm-area open */
-	.close	= shm_close,	/* callback for when the vm-area is released */
+	.open	= shm_open,	 
+	.close	= shm_close,	 
 	.fault	= shm_fault,
 	.may_split = shm_may_split,
 	.pagesize = shm_pagesize,
@@ -695,13 +565,7 @@ static const struct vm_operations_struct shm_vm_ops = {
 #endif
 };
 
-/**
- * newseg - Create a new shared memory segment
- * @ns: namespace
- * @params: ptr to the structure that contains key, size and shmflg
- *
- * Called with shm_ids.rwsem held as a writer.
- */
+ 
 static int newseg(struct ipc_namespace *ns, struct ipc_params *params)
 {
 	key_t key = params->key;
@@ -751,16 +615,13 @@ static int newseg(struct ipc_namespace *ns, struct ipc_params *params)
 		}
 		hugesize = ALIGN(size, huge_page_size(hs));
 
-		/* hugetlb_file_setup applies strict accounting */
+		 
 		if (shmflg & SHM_NORESERVE)
 			acctflag = VM_NORESERVE;
 		file = hugetlb_file_setup(name, hugesize, acctflag,
 				HUGETLB_SHMFS_INODE, (shmflg >> SHM_HUGE_SHIFT) & SHM_HUGE_MASK);
 	} else {
-		/*
-		 * Do not allow no accounting for OVERCOMMIT_NEVER, even
-		 * if it's asked for.
-		 */
+		 
 		if  ((shmflg & SHM_NORESERVE) &&
 				sysctl_overcommit_memory != OVERCOMMIT_NEVER)
 			acctflag = VM_NORESERVE;
@@ -779,7 +640,7 @@ static int newseg(struct ipc_namespace *ns, struct ipc_params *params)
 	shp->shm_file = file;
 	shp->shm_creator = current;
 
-	/* ipc_addid() locks shp upon success. */
+	 
 	error = ipc_addid(&shm_ids(ns), &shp->shm_perm, ns->shm_ctlmni);
 	if (error < 0)
 		goto no_id;
@@ -790,10 +651,7 @@ static int newseg(struct ipc_namespace *ns, struct ipc_params *params)
 	list_add(&shp->shm_clist, &current->sysvshm.shm_clist);
 	task_unlock(current);
 
-	/*
-	 * shmid gets reported as "inode#" in /proc/pid/maps.
-	 * proc-ps tools use this. Changing this will break them.
-	 */
+	 
 	file_inode(file)->i_ino = shp->shm_perm.id;
 
 	ns->shm_tot += numpages;
@@ -814,9 +672,7 @@ no_file:
 	return error;
 }
 
-/*
- * Called with shm_ids.rwsem and ipcp locked.
- */
+ 
 static int shm_more_checks(struct kern_ipc_perm *ipcp, struct ipc_params *params)
 {
 	struct shmid_kernel *shp;
@@ -930,10 +786,7 @@ static inline unsigned long copy_shminfo_to_user(void __user *buf, struct shminf
 	}
 }
 
-/*
- * Calculate and add used RSS and swap pages of a shm.
- * Called with shm_ids.rwsem held as a reader
- */
+ 
 static void shm_add_rss_swap(struct shmid_kernel *shp,
 	unsigned long *rss_add, unsigned long *swp_add)
 {
@@ -959,9 +812,7 @@ static void shm_add_rss_swap(struct shmid_kernel *shp,
 	}
 }
 
-/*
- * Called with shm_ids.rwsem held as a reader
- */
+ 
 static void shm_get_stat(struct ipc_namespace *ns, unsigned long *rss,
 		unsigned long *swp)
 {
@@ -988,11 +839,7 @@ static void shm_get_stat(struct ipc_namespace *ns, unsigned long *rss,
 	}
 }
 
-/*
- * This function handles some shmctl commands which require the rwsem
- * to be held in write mode.
- * NOTE: no locks must be held, the rwsem is taken inside this function.
- */
+ 
 static int shmctl_down(struct ipc_namespace *ns, int shmid, int cmd,
 		       struct shmid64_ds *shmid64)
 {
@@ -1019,7 +866,7 @@ static int shmctl_down(struct ipc_namespace *ns, int shmid, int cmd,
 	switch (cmd) {
 	case IPC_RMID:
 		ipc_lock_object(&shp->shm_perm);
-		/* do_shm_rmid unlocks the ipc object and rcu */
+		 
 		do_shm_rmid(ns, ipcp);
 		goto out_up;
 	case IPC_SET:
@@ -1097,7 +944,7 @@ static int shmctl_stat(struct ipc_namespace *ns, int shmid,
 			err = PTR_ERR(shp);
 			goto out_unlock;
 		}
-	} else { /* IPC_STAT */
+	} else {  
 		shp = shm_obtain_object_check(ns, shmid);
 		if (IS_ERR(shp)) {
 			err = PTR_ERR(shp);
@@ -1105,13 +952,7 @@ static int shmctl_stat(struct ipc_namespace *ns, int shmid,
 		}
 	}
 
-	/*
-	 * Semantically SHM_STAT_ANY ought to be identical to
-	 * that functionality provided by the /proc/sysvipc/
-	 * interface. As such, only audit these calls and
-	 * do not do traditional S_IRUGO permission checks on
-	 * the ipc object.
-	 */
+	 
 	if (cmd == SHM_STAT_ANY)
 		audit_ipc_obj(&shp->shm_perm);
 	else {
@@ -1147,16 +988,10 @@ static int shmctl_stat(struct ipc_namespace *ns, int shmid,
 	tbuf->shm_nattch = shp->shm_nattch;
 
 	if (cmd == IPC_STAT) {
-		/*
-		 * As defined in SUS:
-		 * Return 0 on success
-		 */
+		 
 		err = 0;
 	} else {
-		/*
-		 * SHM_STAT and SHM_STAT_ANY (both Linux specific)
-		 * Return the full id, including the sequence number
-		 */
+		 
 		err = shp->shm_perm.id;
 	}
 
@@ -1186,7 +1021,7 @@ static int shmctl_do_lock(struct ipc_namespace *ns, int shmid, int cmd)
 
 	ipc_lock_object(&shp->shm_perm);
 
-	/* check if shm_destroy() is tearing down shp */
+	 
 	if (!ipc_valid_object(&shp->shm_perm)) {
 		err = -EIDRM;
 		goto out_unlock0;
@@ -1221,7 +1056,7 @@ static int shmctl_do_lock(struct ipc_namespace *ns, int shmid, int cmd)
 		goto out_unlock0;
 	}
 
-	/* SHM_UNLOCK */
+	 
 	if (!(shp->shm_perm.mode & SHM_LOCKED))
 		goto out_unlock0;
 	shmem_lock(shm_file, 0, shp->mlock_ucounts);
@@ -1512,13 +1347,7 @@ COMPAT_SYSCALL_DEFINE3(old_shmctl, int, shmid, int, cmd, void __user *, uptr)
 #endif
 #endif
 
-/*
- * Fix shmaddr, allocate descriptor, map shm, add attach descriptor to lists.
- *
- * NOTE! Despite the name, this is NOT a direct system call entrypoint. The
- * "raddr" thing points to kernel space, and there has to be a wrapper around
- * this.
- */
+ 
 long do_shmat(int shmid, char __user *shmaddr, int shmflg,
 	      ulong *raddr, unsigned long shmlba)
 {
@@ -1542,13 +1371,9 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg,
 	if (addr) {
 		if (addr & (shmlba - 1)) {
 			if (shmflg & SHM_RND) {
-				addr &= ~(shmlba - 1);  /* round down */
+				addr &= ~(shmlba - 1);   
 
-				/*
-				 * Ensure that the round-down is non-nil
-				 * when remapping. This can happen for
-				 * cases when addr < shmlba.
-				 */
+				 
 				if (!addr && (shmflg & SHM_REMAP))
 					goto out;
 			} else
@@ -1576,10 +1401,7 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg,
 		acc_mode |= S_IXUGO;
 	}
 
-	/*
-	 * We cannot rely on the fs check since SYSV IPC does have an
-	 * additional creator id...
-	 */
+	 
 	ns = current->nsproxy->ipc_ns;
 	rcu_read_lock();
 	shp = shm_obtain_object_check(ns, shmid);
@@ -1598,22 +1420,14 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg,
 
 	ipc_lock_object(&shp->shm_perm);
 
-	/* check if shm_destroy() is tearing down shp */
+	 
 	if (!ipc_valid_object(&shp->shm_perm)) {
 		ipc_unlock_object(&shp->shm_perm);
 		err = -EIDRM;
 		goto out_unlock;
 	}
 
-	/*
-	 * We need to take a reference to the real shm file to prevent the
-	 * pointer from becoming stale in cases where the lifetime of the outer
-	 * file extends beyond that of the shm segment.  It's not usually
-	 * possible, but it can happen during remap_file_pages() emulation as
-	 * that unmaps the memory, then does ->mmap() via file reference only.
-	 * We'll deny the ->mmap() if the shm segment was since removed, but to
-	 * detect shm ID reuse we need to compare the file pointers.
-	 */
+	 
 	base = get_file(shp->shm_file);
 	shp->shm_nattch++;
 	size = i_size_read(file_inode(base));
@@ -1724,10 +1538,7 @@ COMPAT_SYSCALL_DEFINE3(shmat, int, shmid, compat_uptr_t, shmaddr, int, shmflg)
 }
 #endif
 
-/*
- * detach and kill segment if marked destroyed.
- * The work is done in shm_close.
- */
+ 
 long ksys_shmdt(char __user *shmaddr)
 {
 	struct mm_struct *mm = current->mm;
@@ -1746,68 +1557,31 @@ long ksys_shmdt(char __user *shmaddr)
 	if (mmap_write_lock_killable(mm))
 		return -EINTR;
 
-	/*
-	 * This function tries to be smart and unmap shm segments that
-	 * were modified by partial mlock or munmap calls:
-	 * - It first determines the size of the shm segment that should be
-	 *   unmapped: It searches for a vma that is backed by shm and that
-	 *   started at address shmaddr. It records it's size and then unmaps
-	 *   it.
-	 * - Then it unmaps all shm vmas that started at shmaddr and that
-	 *   are within the initially determined size and that are from the
-	 *   same shm segment from which we determined the size.
-	 * Errors from do_munmap are ignored: the function only fails if
-	 * it's called with invalid parameters or if it's called to unmap
-	 * a part of a vma. Both calls in this function are for full vmas,
-	 * the parameters are directly copied from the vma itself and always
-	 * valid - therefore do_munmap cannot fail. (famous last words?)
-	 */
-	/*
-	 * If it had been mremap()'d, the starting address would not
-	 * match the usual checks anyway. So assume all vma's are
-	 * above the starting address given.
-	 */
+	 
+	 
 
 #ifdef CONFIG_MMU
 	for_each_vma(vmi, vma) {
-		/*
-		 * Check if the starting address would match, i.e. it's
-		 * a fragment created by mprotect() and/or munmap(), or it
-		 * otherwise it starts at this address with no hassles.
-		 */
+		 
 		if ((vma->vm_ops == &shm_vm_ops) &&
 			(vma->vm_start - addr)/PAGE_SIZE == vma->vm_pgoff) {
 
-			/*
-			 * Record the file of the shm segment being
-			 * unmapped.  With mremap(), someone could place
-			 * page from another segment but with equal offsets
-			 * in the range we are unmapping.
-			 */
+			 
 			file = vma->vm_file;
 			size = i_size_read(file_inode(vma->vm_file));
 			do_vma_munmap(&vmi, vma, vma->vm_start, vma->vm_end,
 				      NULL, false);
-			/*
-			 * We discovered the size of the shm segment, so
-			 * break out of here and fall through to the next
-			 * loop that uses the size information to stop
-			 * searching for matching vma's.
-			 */
+			 
 			retval = 0;
 			vma = vma_next(&vmi);
 			break;
 		}
 	}
 
-	/*
-	 * We need look no further than the maximum address a fragment
-	 * could possibly have landed at. Also cast things to loff_t to
-	 * prevent overflows and make comparisons vs. equal-width types.
-	 */
+	 
 	size = PAGE_ALIGN(size);
 	while (vma && (loff_t)(vma->vm_end - addr) <= size) {
-		/* finding a matching vma now does not alter retval */
+		 
 		if ((vma->vm_ops == &shm_vm_ops) &&
 		    ((vma->vm_start - addr)/PAGE_SIZE == vma->vm_pgoff) &&
 		    (vma->vm_file == file)) {
@@ -1818,11 +1592,9 @@ long ksys_shmdt(char __user *shmaddr)
 		vma = vma_next(&vmi);
 	}
 
-#else	/* CONFIG_MMU */
+#else	 
 	vma = vma_lookup(mm, addr);
-	/* under NOMMU conditions, the exact address to be destroyed must be
-	 * given
-	 */
+	 
 	if (vma && vma->vm_start == addr && vma->vm_ops == &shm_vm_ops) {
 		do_munmap(mm, vma->vm_start, vma->vm_end - vma->vm_start, NULL);
 		retval = 0;

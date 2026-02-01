@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM spmi
 
@@ -8,9 +8,7 @@
 #include <linux/spmi.h>
 #include <linux/tracepoint.h>
 
-/*
- * drivers/spmi/spmi.c
- */
+ 
 
 TRACE_EVENT(spmi_write_begin,
 	TP_PROTO(u8 opcode, u8 sid, u16 addr, u8 len, const u8 *buf),
@@ -130,7 +128,7 @@ TRACE_EVENT(spmi_cmd,
 		  (int)__entry->sid, ret)
 );
 
-#endif /* _TRACE_SPMI_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

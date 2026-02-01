@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL355 3-Axis Digital Accelerometer SPI driver
- *
- * Copyright (c) 2021 Puranjay Mohan <puranjay12@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>

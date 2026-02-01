@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AMD Platform Security Processor (PSP) Dynamic Boost Control support
- *
- * Copyright (C) 2023 Advanced Micro Devices, Inc.
- *
- * Author: Mario Limonciello <mario.limonciello@amd.com>
- */
+ 
+ 
 
 #ifndef __DBC_H__
 #define __DBC_H__
@@ -53,4 +47,4 @@ union dbc_buffer {
 void dbc_dev_destroy(struct psp_device *psp);
 int dbc_dev_init(struct psp_device *psp);
 
-#endif /* __DBC_H */
+#endif  

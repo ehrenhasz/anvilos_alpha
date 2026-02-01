@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Watchdog Timer Driver
- *	   for ITE IT87xx Environment Control - Low Pin Count Input / Output
- *
- *	(c) Copyright 2007  Oliver Schuster <olivers137@aol.com>
- *
- *	Based on softdog.c	by Alan Cox,
- *		 83977f_wdt.c	by Jose Goncalves,
- *		 it87.c		by Chris Gauthron, Jean Delvare
- *
- *	Data-sheets: Publicly available at the ITE website
- *		    http://www.ite.com.tw/
- *
- *	Support of the watchdog timers, which are available on
- *	IT8607, IT8620, IT8622, IT8625, IT8628, IT8655, IT8665, IT8686,
- *	IT8702, IT8712, IT8716, IT8718, IT8720, IT8721, IT8726, IT8728,
- *	IT8772, IT8783 and IT8784.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,24 +13,24 @@
 
 #define WATCHDOG_NAME		"IT87 WDT"
 
-/* Defaults for Module Parameter */
+ 
 #define DEFAULT_TIMEOUT		60
 #define DEFAULT_TESTMODE	0
 #define DEFAULT_NOWAYOUT	WATCHDOG_NOWAYOUT
 
-/* IO Ports */
+ 
 #define REG		0x2e
 #define VAL		0x2f
 
-/* Logical device Numbers LDN */
+ 
 #define GPIO		0x07
 
-/* Configuration Registers and Functions */
+ 
 #define LDNREG		0x07
 #define CHIPID		0x20
 #define CHIPREV		0x22
 
-/* Chip Id numbers */
+ 
 #define NO_DEV_ID	0xffff
 #define IT8607_ID	0x8607
 #define IT8620_ID	0x8620
@@ -64,24 +47,24 @@
 #define IT8718_ID	0x8718
 #define IT8720_ID	0x8720
 #define IT8721_ID	0x8721
-#define IT8726_ID	0x8726	/* the data sheet suggest wrongly 0x8716 */
+#define IT8726_ID	0x8726	 
 #define IT8728_ID	0x8728
 #define IT8772_ID	0x8772
 #define IT8783_ID	0x8783
 #define IT8784_ID	0x8784
 #define IT8786_ID	0x8786
 
-/* GPIO Configuration Registers LDN=0x07 */
+ 
 #define WDTCTRL		0x71
 #define WDTCFG		0x72
 #define WDTVALLSB	0x73
 #define WDTVALMSB	0x74
 
-/* GPIO Bits WDTCFG */
+ 
 #define WDT_TOV1	0x80
 #define WDT_KRST	0x40
 #define WDT_TOVE	0x20
-#define WDT_PWROK	0x10 /* not in it8721 */
+#define WDT_PWROK	0x10  
 #define WDT_INT_MASK	0x0f
 
 static unsigned int max_units, chip_type;
@@ -100,13 +83,11 @@ module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started, default="
 		__MODULE_STRING(WATCHDOG_NOWAYOUT));
 
-/* Superio Chip */
+ 
 
 static inline int superio_enter(void)
 {
-	/*
-	 * Try to reserve REG and REG + 1 for exclusive access.
-	 */
+	 
 	if (!request_muxed_region(REG, 2, WATCHDOG_NAME))
 		return -EBUSY;
 
@@ -152,7 +133,7 @@ static inline int superio_inw(int reg)
 	return val;
 }
 
-/* Internal function, should be called after superio_select(GPIO) */
+ 
 static void _wdt_update_timeout(unsigned int t)
 {
 	unsigned char cfg = WDT_KRST;
@@ -196,7 +177,7 @@ static int wdt_round_time(int t)
 	return t;
 }
 
-/* watchdog timer handling */
+ 
 
 static int wdt_start(struct watchdog_device *wdd)
 {
@@ -208,15 +189,7 @@ static int wdt_stop(struct watchdog_device *wdd)
 	return wdt_update_timeout(0);
 }
 
-/**
- *	wdt_set_timeout - set a new timeout value with watchdog ioctl
- *	@t: timeout value in seconds
- *
- *	The hardware device has a 8 or 16 bit watchdog timer (depends on
- *	chip version) that can be configured to count seconds or minutes.
- *
- *	Used within WDIOC_SETTIMEOUT watchdog device ioctl.
- */
+ 
 
 static int wdt_set_timeout(struct watchdog_device *wdd, unsigned int t)
 {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2014, 2016-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -27,11 +24,11 @@
 
 #define PMIC_GPIO_ADDRESS_RANGE			0x100
 
-/* type and subtype registers base address offsets */
+ 
 #define PMIC_GPIO_REG_TYPE			0x4
 #define PMIC_GPIO_REG_SUBTYPE			0x5
 
-/* GPIO peripheral type and subtype out_values */
+ 
 #define PMIC_GPIO_TYPE				0x10
 #define PMIC_GPIO_SUBTYPE_GPIO_4CH		0x1
 #define PMIC_GPIO_SUBTYPE_GPIOC_4CH		0x5
@@ -45,7 +42,7 @@
 #define PMIC_MPP_REG_RT_STS			0x10
 #define PMIC_MPP_REG_RT_STS_VAL_MASK		0x1
 
-/* control register base address offsets */
+ 
 #define PMIC_GPIO_REG_MODE_CTL			0x40
 #define PMIC_GPIO_REG_DIG_VIN_CTL		0x41
 #define PMIC_GPIO_REG_DIG_PULL_CTL		0x42
@@ -55,7 +52,7 @@
 #define PMIC_GPIO_REG_EN_CTL			0x46
 #define PMIC_GPIO_REG_LV_MV_ANA_PASS_THRU_SEL	0x4A
 
-/* PMIC_GPIO_REG_MODE_CTL */
+ 
 #define PMIC_GPIO_REG_MODE_VALUE_SHIFT		0x1
 #define PMIC_GPIO_REG_MODE_FUNCTION_SHIFT	1
 #define PMIC_GPIO_REG_MODE_FUNCTION_MASK	0x7
@@ -68,37 +65,34 @@
 #define PMIC_GPIO_MODE_ANALOG_PASS_THRU		3
 #define PMIC_GPIO_REG_LV_MV_MODE_DIR_MASK	0x3
 
-/* PMIC_GPIO_REG_DIG_VIN_CTL */
+ 
 #define PMIC_GPIO_REG_VIN_SHIFT			0
 #define PMIC_GPIO_REG_VIN_MASK			0x7
 
-/* PMIC_GPIO_REG_DIG_PULL_CTL */
+ 
 #define PMIC_GPIO_REG_PULL_SHIFT		0
 #define PMIC_GPIO_REG_PULL_MASK			0x7
 
 #define PMIC_GPIO_PULL_DOWN			4
 #define PMIC_GPIO_PULL_DISABLE			5
 
-/* PMIC_GPIO_REG_LV_MV_DIG_OUT_SOURCE_CTL for LV/MV */
+ 
 #define PMIC_GPIO_LV_MV_OUTPUT_INVERT		0x80
 #define PMIC_GPIO_LV_MV_OUTPUT_INVERT_SHIFT	7
 #define PMIC_GPIO_LV_MV_OUTPUT_SOURCE_SEL_MASK	0xF
 
-/* PMIC_GPIO_REG_DIG_IN_CTL */
+ 
 #define PMIC_GPIO_LV_MV_DIG_IN_DTEST_EN		0x80
 #define PMIC_GPIO_LV_MV_DIG_IN_DTEST_SEL_MASK	0x7
 #define PMIC_GPIO_DIG_IN_DTEST_SEL_MASK		0xf
 
-/* PMIC_GPIO_REG_DIG_OUT_CTL */
+ 
 #define PMIC_GPIO_REG_OUT_STRENGTH_SHIFT	0
 #define PMIC_GPIO_REG_OUT_STRENGTH_MASK		0x3
 #define PMIC_GPIO_REG_OUT_TYPE_SHIFT		4
 #define PMIC_GPIO_REG_OUT_TYPE_MASK		0x3
 
-/*
- * Output type - indicates pin should be configured as push-pull,
- * open drain or open source.
- */
+ 
 #define PMIC_GPIO_OUT_BUF_CMOS			0
 #define PMIC_GPIO_OUT_BUF_OPEN_DRAIN_NMOS	1
 #define PMIC_GPIO_OUT_BUF_OPEN_DRAIN_PMOS	2
@@ -106,22 +100,22 @@
 #define PMIC_GPIO_OUT_STRENGTH_LOW		1
 #define PMIC_GPIO_OUT_STRENGTH_HIGH		3
 
-/* PMIC_GPIO_REG_EN_CTL */
+ 
 #define PMIC_GPIO_REG_MASTER_EN_SHIFT		7
 
 #define PMIC_GPIO_PHYSICAL_OFFSET		1
 
-/* PMIC_GPIO_REG_LV_MV_ANA_PASS_THRU_SEL */
+ 
 #define PMIC_GPIO_LV_MV_ANA_MUX_SEL_MASK		0x3
 
-/* Qualcomm specific pin configurations */
+ 
 #define PMIC_GPIO_CONF_PULL_UP			(PIN_CONFIG_END + 1)
 #define PMIC_GPIO_CONF_STRENGTH			(PIN_CONFIG_END + 2)
 #define PMIC_GPIO_CONF_ATEST			(PIN_CONFIG_END + 3)
 #define PMIC_GPIO_CONF_ANALOG_PASS		(PIN_CONFIG_END + 4)
 #define PMIC_GPIO_CONF_DTEST_BUFFER		(PIN_CONFIG_END + 5)
 
-/* The index of each function in pmic_gpio_functions[] array */
+ 
 enum pmic_gpio_func_index {
 	PMIC_GPIO_FUNC_INDEX_NORMAL,
 	PMIC_GPIO_FUNC_INDEX_PAIRED,
@@ -135,26 +129,7 @@ enum pmic_gpio_func_index {
 	PMIC_GPIO_FUNC_INDEX_DTEST4,
 };
 
-/**
- * struct pmic_gpio_pad - keep current GPIO settings
- * @base: Address base in SPMI device.
- * @is_enabled: Set to false when GPIO should be put in high Z state.
- * @out_value: Cached pin output value
- * @have_buffer: Set to true if GPIO output could be configured in push-pull,
- *	open-drain or open-source mode.
- * @output_enabled: Set to true if GPIO output logic is enabled.
- * @input_enabled: Set to true if GPIO input buffer logic is enabled.
- * @analog_pass: Set to true if GPIO is in analog-pass-through mode.
- * @lv_mv_type: Set to true if GPIO subtype is GPIO_LV(0x10) or GPIO_MV(0x11).
- * @num_sources: Number of power-sources supported by this GPIO.
- * @power_source: Current power-source used.
- * @buffer_type: Push-pull, open-drain or open-source.
- * @pullup: Constant current which flow trough GPIO output buffer.
- * @strength: No, Low, Medium, High
- * @function: See pmic_gpio_functions[]
- * @atest: the ATEST selection for GPIO analog-pass-through mode
- * @dtest_buffer: the DTEST buffer selection for digital input mode.
- */
+ 
 struct pmic_gpio_pad {
 	u16		base;
 	bool		is_enabled;
@@ -252,7 +227,7 @@ static int pmic_gpio_write(struct pmic_gpio_state *state,
 
 static int pmic_gpio_get_groups_count(struct pinctrl_dev *pctldev)
 {
-	/* Every PIN is a group */
+	 
 	return pctldev->desc->npins;
 }
 
@@ -313,10 +288,7 @@ static int pmic_gpio_set_mux(struct pinctrl_dev *pctldev, unsigned function,
 	}
 
 	pad = pctldev->desc->pins[pin].drv_data;
-	/*
-	 * Non-LV/MV subtypes only support 2 special functions,
-	 * offsetting the dtestx function values by 2
-	 */
+	 
 	if (!pad->lv_mv_type) {
 		if (function == PMIC_GPIO_FUNC_INDEX_FUNC3 ||
 				function == PMIC_GPIO_FUNC_INDEX_FUNC4) {
@@ -687,10 +659,7 @@ static void pmic_gpio_config_dbg_show(struct pinctrl_dev *pctldev,
 			ret &= PMIC_MPP_REG_RT_STS_VAL_MASK;
 			pad->out_value = ret;
 		}
-		/*
-		 * For the non-LV/MV subtypes only 2 special functions are
-		 * available, offsetting the dtest function values by 2.
-		 */
+		 
 		function = pad->function;
 		if (!pad->lv_mv_type &&
 				pad->function >= PMIC_GPIO_FUNC_INDEX_FUNC3)
@@ -959,7 +928,7 @@ static int pmic_gpio_populate(struct pmic_gpio_state *state,
 		pad->atest = (val & PMIC_GPIO_LV_MV_ANA_MUX_SEL_MASK) + 1;
 	}
 
-	/* Pin could be disabled with PIN_CONFIG_BIAS_HIGH_IMPEDANCE */
+	 
 	pad->is_enabled = true;
 	return 0;
 }
@@ -1016,7 +985,7 @@ static int pmic_gpio_populate_parent_fwspec(struct gpio_chip *chip,
 	fwspec->param_count = 4;
 	fwspec->param[0] = state->usid;
 	fwspec->param[1] = parent_hwirq;
-	/* param[2] must be left as 0 */
+	 
 	fwspec->param[3] = parent_type;
 
 	return 0;
@@ -1159,16 +1128,7 @@ static int pmic_gpio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * For DeviceTree-supported systems, the gpio core checks the
-	 * pinctrl's device node for the "gpio-ranges" property.
-	 * If it is present, it takes care of adding the pin ranges
-	 * for the driver. In this case the driver can skip ahead.
-	 *
-	 * In order to remain compatible with older, existing DeviceTree
-	 * files which don't set the "gpio-ranges" property or systems that
-	 * utilize ACPI the driver has to call gpiochip_add_pin_range().
-	 */
+	 
 	if (!of_property_read_bool(dev->of_node, "gpio-ranges")) {
 		ret = gpiochip_add_pin_range(&state->chip, dev_name(dev), 0, 0,
 					     npins);
@@ -1195,9 +1155,9 @@ static int pmic_gpio_remove(struct platform_device *pdev)
 
 static const struct of_device_id pmic_gpio_of_match[] = {
 	{ .compatible = "qcom,pm2250-gpio", .data = (void *) 10 },
-	/* pm660 has 13 GPIOs with holes on 1, 5, 6, 7, 8 and 10 */
+	 
 	{ .compatible = "qcom,pm660-gpio", .data = (void *) 13 },
-	/* pm660l has 12 GPIOs with holes on 1, 2, 10, 11 and 12 */
+	 
 	{ .compatible = "qcom,pm660l-gpio", .data = (void *) 12 },
 	{ .compatible = "qcom,pm6125-gpio", .data = (void *) 9 },
 	{ .compatible = "qcom,pm6150-gpio", .data = (void *) 10 },
@@ -1209,12 +1169,12 @@ static const struct of_device_id pmic_gpio_of_match[] = {
 	{ .compatible = "qcom,pm8005-gpio", .data = (void *) 4 },
 	{ .compatible = "qcom,pm8008-gpio", .data = (void *) 2 },
 	{ .compatible = "qcom,pm8019-gpio", .data = (void *) 6 },
-	/* pm8150 has 10 GPIOs with holes on 2, 5, 7 and 8 */
+	 
 	{ .compatible = "qcom,pm8150-gpio", .data = (void *) 10 },
 	{ .compatible = "qcom,pmc8180-gpio", .data = (void *) 10 },
-	/* pm8150b has 12 GPIOs with holes on 3, r and 7 */
+	 
 	{ .compatible = "qcom,pm8150b-gpio", .data = (void *) 12 },
-	/* pm8150l has 12 GPIOs with holes on 7 */
+	 
 	{ .compatible = "qcom,pm8150l-gpio", .data = (void *) 12 },
 	{ .compatible = "qcom,pmc8180c-gpio", .data = (void *) 12 },
 	{ .compatible = "qcom,pm8226-gpio", .data = (void *) 8 },
@@ -1228,9 +1188,9 @@ static const struct of_device_id pmic_gpio_of_match[] = {
 	{ .compatible = "qcom,pm8550vs-gpio", .data = (void *) 6 },
 	{ .compatible = "qcom,pm8916-gpio", .data = (void *) 4 },
 	{ .compatible = "qcom,pm8941-gpio", .data = (void *) 36 },
-	/* pm8950 has 8 GPIOs with holes on 3 */
+	 
 	{ .compatible = "qcom,pm8950-gpio", .data = (void *) 8 },
-	/* pm8953 has 8 GPIOs with holes on 3 and 6 */
+	 
 	{ .compatible = "qcom,pm8953-gpio", .data = (void *) 8 },
 	{ .compatible = "qcom,pm8994-gpio", .data = (void *) 22 },
 	{ .compatible = "qcom,pm8998-gpio", .data = (void *) 26 },
@@ -1243,14 +1203,14 @@ static const struct of_device_id pmic_gpio_of_match[] = {
 	{ .compatible = "qcom,pmk8550-gpio", .data = (void *) 6 },
 	{ .compatible = "qcom,pmm8155au-gpio", .data = (void *) 10 },
 	{ .compatible = "qcom,pmm8654au-gpio", .data = (void *) 12 },
-	/* pmp8074 has 12 GPIOs with holes on 1 and 12 */
+	 
 	{ .compatible = "qcom,pmp8074-gpio", .data = (void *) 12 },
 	{ .compatible = "qcom,pmr735a-gpio", .data = (void *) 4 },
 	{ .compatible = "qcom,pmr735b-gpio", .data = (void *) 4 },
 	{ .compatible = "qcom,pmr735d-gpio", .data = (void *) 2 },
-	/* pms405 has 12 GPIOs with holes on 1, 9, and 10 */
+	 
 	{ .compatible = "qcom,pms405-gpio", .data = (void *) 12 },
-	/* pmx55 has 11 GPIOs with holes on 3, 7, 10, 11 */
+	 
 	{ .compatible = "qcom,pmx55-gpio", .data = (void *) 11 },
 	{ .compatible = "qcom,pmx65-gpio", .data = (void *) 16 },
 	{ .compatible = "qcom,pmx75-gpio", .data = (void *) 16 },

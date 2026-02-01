@@ -1,33 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Broadcom
- */
 
-/**
- * DOC: VC4 CRTC module
- *
- * In VC4, the Pixel Valve is what most closely corresponds to the
- * DRM's concept of a CRTC.  The PV generates video timings from the
- * encoder's clock plus its configuration.  It pulls scaled pixels from
- * the HVS at that timing, and feeds it to the encoder.
- *
- * However, the DRM CRTC also collects the configuration of all the
- * DRM planes attached to it.  As a result, the CRTC is also
- * responsible for writing the display list for the HVS channel that
- * the CRTC will use.
- *
- * The 2835 has 3 different pixel valves.  pv0 in the audio power
- * domain feeds DSI0 or DPI, while pv1 feeds DS1 or SMI.  pv2 in the
- * image domain can feed either HDMI or the SDTV controller.  The
- * pixel valve chooses from the CPRMAN clocks (HSM for HDMI, VEC for
- * SDTV, etc.) according to which output type is chosen in the mux.
- *
- * For power management, the pixel valve's registers are all clocked
- * by the AXI clock, while the timings and FIFOs make use of the
- * output-specific clock.  Since the encoders also directly consume
- * the CPRMAN clocks, and know what timings they need, they are the
- * ones that set the clock.
- */
+ 
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -84,10 +58,7 @@ vc4_crtc_get_cob_allocation(struct vc4_dev *vc4, unsigned int channel)
 {
 	struct vc4_hvs *hvs = vc4->hvs;
 	u32 dispbase = HVS_READ(SCALER_DISPBASEX(channel));
-	/* Top/base are supposed to be 4-pixel aligned, but the
-	 * Raspberry Pi firmware fills the low bits (which are
-	 * presumably ignored).
-	 */
+	 
 	u32 top = VC4_GET_FIELD(dispbase, SCALER_DISPBASEX_TOP) & ~3;
 	u32 base = VC4_GET_FIELD(dispbase, SCALER_DISPBASEX_BASE) & ~3;
 
@@ -111,83 +82,53 @@ static bool vc4_crtc_get_scanout_position(struct drm_crtc *crtc,
 	int vblank_lines;
 	bool ret = false;
 
-	/* preempt_disable_rt() should go right here in PREEMPT_RT patchset. */
+	 
 
-	/* Get optional system timestamp before query. */
+	 
 	if (stime)
 		*stime = ktime_get();
 
-	/*
-	 * Read vertical scanline which is currently composed for our
-	 * pixelvalve by the HVS, and also the scaler status.
-	 */
+	 
 	val = HVS_READ(SCALER_DISPSTATX(vc4_crtc_state->assigned_channel));
 
-	/* Get optional system timestamp after query. */
+	 
 	if (etime)
 		*etime = ktime_get();
 
-	/* preempt_enable_rt() should go right here in PREEMPT_RT patchset. */
+	 
 
-	/* Vertical position of hvs composed scanline. */
+	 
 	*vpos = VC4_GET_FIELD(val, SCALER_DISPSTATX_LINE);
 	*hpos = 0;
 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE) {
 		*vpos /= 2;
 
-		/* Use hpos to correct for field offset in interlaced mode. */
+		 
 		if (vc4_hvs_get_fifo_frame_count(hvs, vc4_crtc_state->assigned_channel) % 2)
 			*hpos += mode->crtc_htotal / 2;
 	}
 
 	cob_size = vc4_crtc_get_cob_allocation(vc4, vc4_crtc_state->assigned_channel);
-	/* This is the offset we need for translating hvs -> pv scanout pos. */
+	 
 	fifo_lines = cob_size / mode->crtc_hdisplay;
 
 	if (fifo_lines > 0)
 		ret = true;
 
-	/* HVS more than fifo_lines into frame for compositing? */
+	 
 	if (*vpos > fifo_lines) {
-		/*
-		 * We are in active scanout and can get some meaningful results
-		 * from HVS. The actual PV scanout can not trail behind more
-		 * than fifo_lines as that is the fifo's capacity. Assume that
-		 * in active scanout the HVS and PV work in lockstep wrt. HVS
-		 * refilling the fifo and PV consuming from the fifo, ie.
-		 * whenever the PV consumes and frees up a scanline in the
-		 * fifo, the HVS will immediately refill it, therefore
-		 * incrementing vpos. Therefore we choose HVS read position -
-		 * fifo size in scanlines as a estimate of the real scanout
-		 * position of the PV.
-		 */
+		 
 		*vpos -= fifo_lines + 1;
 
 		return ret;
 	}
 
-	/*
-	 * Less: This happens when we are in vblank and the HVS, after getting
-	 * the VSTART restart signal from the PV, just started refilling its
-	 * fifo with new lines from the top-most lines of the new framebuffers.
-	 * The PV does not scan out in vblank, so does not remove lines from
-	 * the fifo, so the fifo will be full quickly and the HVS has to pause.
-	 * We can't get meaningful readings wrt. scanline position of the PV
-	 * and need to make things up in a approximative but consistent way.
-	 */
+	 
 	vblank_lines = mode->vtotal - mode->vdisplay;
 
 	if (in_vblank_irq) {
-		/*
-		 * Assume the irq handler got called close to first
-		 * line of vblank, so PV has about a full vblank
-		 * scanlines to go, and as a base timestamp use the
-		 * one taken at entry into vblank irq handler, so it
-		 * is not affected by random delays due to lock
-		 * contention on event_lock or vblank_time lock in
-		 * the core.
-		 */
+		 
 		*vpos = -vblank_lines;
 
 		if (stime)
@@ -195,22 +136,9 @@ static bool vc4_crtc_get_scanout_position(struct drm_crtc *crtc,
 		if (etime)
 			*etime = vc4_crtc->t_vblank;
 
-		/*
-		 * If the HVS fifo is not yet full then we know for certain
-		 * we are at the very beginning of vblank, as the hvs just
-		 * started refilling, and the stime and etime timestamps
-		 * truly correspond to start of vblank.
-		 *
-		 * Unfortunately there's no way to report this to upper levels
-		 * and make it more useful.
-		 */
+		 
 	} else {
-		/*
-		 * No clue where we are inside vblank. Return a vpos of zero,
-		 * which will cause calling code to just return the etime
-		 * timestamp uncorrected. At least this is no worse than the
-		 * standard fallback.
-		 */
+		 
 		*vpos = 0;
 	}
 
@@ -224,16 +152,7 @@ static u32 vc4_get_fifo_full_level(struct vc4_crtc *vc4_crtc, u32 format)
 	struct vc4_dev *vc4 = to_vc4_dev(vc4_crtc->base.dev);
 	u32 fifo_len_bytes = pv_data->fifo_depth;
 
-	/*
-	 * Pixels are pulled from the HVS if the number of bytes is
-	 * lower than the FIFO full level.
-	 *
-	 * The latency of the pixel fetch mechanism is 6 pixels, so we
-	 * need to convert those 6 pixels in bytes, depending on the
-	 * format, and then subtract that from the length of the FIFO
-	 * to make sure we never end up in a situation where the FIFO
-	 * is full.
-	 */
+	 
 	switch (format) {
 	case PV_CONTROL_FORMAT_DSIV_16:
 	case PV_CONTROL_FORMAT_DSIC_16:
@@ -243,26 +162,11 @@ static u32 vc4_get_fifo_full_level(struct vc4_crtc *vc4_crtc, u32 format)
 	case PV_CONTROL_FORMAT_24:
 	case PV_CONTROL_FORMAT_DSIV_24:
 	default:
-		/*
-		 * For some reason, the pixelvalve4 doesn't work with
-		 * the usual formula and will only work with 32.
-		 */
+		 
 		if (crtc_data->hvs_output == 5)
 			return 32;
 
-		/*
-		 * It looks like in some situations, we will overflow
-		 * the PixelValve FIFO (with the bit 10 of PV stat being
-		 * set) and stall the HVS / PV, eventually resulting in
-		 * a page flip timeout.
-		 *
-		 * Displaying the video overlay during a playback with
-		 * Kodi on an RPi3 seems to be a great solution with a
-		 * failure rate around 50%.
-		 *
-		 * Removing 1 from the FIFO full level however
-		 * seems to completely remove that issue.
-		 */
+		 
 		if (!vc4->is_vc5)
 			return fifo_len_bytes - 3 * HVS_FIFO_LATENCY_PIX - 1;
 
@@ -283,13 +187,7 @@ static u32 vc4_crtc_get_fifo_full_level_bits(struct vc4_crtc *vc4_crtc,
 				   PV_CONTROL_FIFO_LEVEL);
 }
 
-/*
- * Returns the encoder attached to the CRTC.
- *
- * VC4 can only scan out to one encoder at a time, while the DRM core
- * allows drivers to push pixels to more than one encoder from the
- * same CRTC.
- */
+ 
 struct drm_encoder *vc4_get_crtc_encoder(struct drm_crtc *crtc,
 					 struct drm_crtc_state *state)
 {
@@ -312,7 +210,7 @@ static void vc4_crtc_pixelvalve_reset(struct drm_crtc *crtc)
 	if (!drm_dev_enter(dev, &idx))
 		return;
 
-	/* The PV needs to be disabled before it can be flushed */
+	 
 	CRTC_WRITE(PV_CONTROL, CRTC_READ(PV_CONTROL) & ~PV_CONTROL_EN);
 	CRTC_WRITE(PV_CONTROL, CRTC_READ(PV_CONTROL) | PV_CONTROL_FIFO_CLR);
 
@@ -378,10 +276,10 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
 		u16 vert_fp_even = vert_fp;
 
 		if (is_vec) {
-			/* VEC (composite output) */
+			 
 			++field_delay;
 			if (mode->htotal == 858) {
-				/* 525-line mode (NTSC or PAL-M) */
+				 
 				odd_field_first = true;
 			}
 		}
@@ -398,9 +296,7 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
 			   VC4_SET_FIELD(vert_fp_even, PV_VERTB_VFP) |
 			   VC4_SET_FIELD(mode->crtc_vdisplay, PV_VERTB_VACTIVE));
 
-		/* We set up first field even mode for HDMI and VEC's PAL.
-		 * For NTSC, we need first field odd.
-		 */
+		 
 		CRTC_WRITE(PV_V_CONTROL,
 			   PV_VCONTROL_CONTINUOUS |
 			   (is_dsi ? PV_VCONTROL_DSI : 0) |
@@ -481,22 +377,7 @@ static int vc4_crtc_disable(struct drm_crtc *crtc,
 	ret = wait_for(!(CRTC_READ(PV_V_CONTROL) & PV_VCONTROL_VIDEN), 1);
 	WARN_ONCE(ret, "Timeout waiting for !PV_VCONTROL_VIDEN\n");
 
-	/*
-	 * This delay is needed to avoid to get a pixel stuck in an
-	 * unflushable FIFO between the pixelvalve and the HDMI
-	 * controllers on the BCM2711.
-	 *
-	 * Timing is fairly sensitive here, so mdelay is the safest
-	 * approach.
-	 *
-	 * If it was to be reworked, the stuck pixel happens on a
-	 * BCM2711 when changing mode with a good probability, so a
-	 * script that changes mode on a regular basis should trigger
-	 * the bug after less than 10 attempts. It manifests itself with
-	 * every pixels being shifted by one to the right, and thus the
-	 * last pixel of a line actually being displayed as the first
-	 * pixel on the next line.
-	 */
+	 
 	mdelay(20);
 
 	if (vc4_encoder && vc4_encoder->post_crtc_disable)
@@ -561,11 +442,7 @@ int vc4_crtc_disable_at_boot(struct drm_crtc *crtc)
 	if (ret)
 		return ret;
 
-	/*
-	 * post_crtc_powerdown will have called pm_runtime_put, so we
-	 * don't need it here otherwise we'll get the reference counting
-	 * wrong.
-	 */
+	 
 
 	return 0;
 }
@@ -598,15 +475,12 @@ static void vc4_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	require_hvs_enabled(dev);
 
-	/* Disable vblank irq handling before crtc is disabled. */
+	 
 	drm_crtc_vblank_off(crtc);
 
 	vc4_crtc_disable(crtc, encoder, state, old_vc4_state->assigned_channel);
 
-	/*
-	 * Make sure we issue a vblank event after disabling the CRTC if
-	 * someone was waiting it.
-	 */
+	 
 	vc4_crtc_send_vblank(crtc);
 }
 
@@ -629,9 +503,7 @@ static void vc4_crtc_atomic_enable(struct drm_crtc *crtc,
 
 	require_hvs_enabled(dev);
 
-	/* Enable vblank irq handling before crtc is started otherwise
-	 * drm_crtc_get_vblank() fails in vc4_crtc_update_dlist().
-	 */
+	 
 	drm_crtc_vblank_on(crtc);
 
 	vc4_hvs_atomic_enable(crtc, state);
@@ -646,9 +518,7 @@ static void vc4_crtc_atomic_enable(struct drm_crtc *crtc,
 	if (vc4_encoder->pre_crtc_enable)
 		vc4_encoder->pre_crtc_enable(encoder, state);
 
-	/* When feeding the transposer block the pixelvalve is unneeded and
-	 * should not be enabled.
-	 */
+	 
 	CRTC_WRITE(PV_V_CONTROL,
 		   CRTC_READ(PV_V_CONTROL) | PV_VCONTROL_VIDEN);
 
@@ -661,7 +531,7 @@ static void vc4_crtc_atomic_enable(struct drm_crtc *crtc,
 static enum drm_mode_status vc4_crtc_mode_valid(struct drm_crtc *crtc,
 						const struct drm_display_mode *mode)
 {
-	/* Do not allow doublescan modes from user space */
+	 
 	if (mode->flags & DRM_MODE_FLAG_DBLSCAN) {
 		DRM_DEBUG_KMS("[CRTC:%d] Doublescan mode rejected.\n",
 			      crtc->base.id);
@@ -685,11 +555,7 @@ void vc4_crtc_get_margins(struct drm_crtc_state *state,
 	*top = vc4_state->margins.top;
 	*bottom = vc4_state->margins.bottom;
 
-	/* We have to interate over all new connector states because
-	 * vc4_crtc_get_margins() might be called before
-	 * vc4_crtc_atomic_check() which means margins info in vc4_crtc_state
-	 * might be outdated.
-	 */
+	 
 	for_each_new_connector_in_state(state->state, conn, conn_state, i) {
 		if (conn_state->crtc != state->crtc)
 			continue;
@@ -793,12 +659,7 @@ static void vc4_crtc_handle_page_flip(struct vc4_crtc *vc4_crtc)
 		vc4_crtc->event = NULL;
 		drm_crtc_vblank_put(crtc);
 
-		/* Wait for the page flip to unmask the underrun to ensure that
-		 * the display list was updated by the hardware. Before that
-		 * happens, the HVS will be using the previous display list with
-		 * the CRTC and encoder already reconfigured, leading to
-		 * underruns. This can be seen when reconfiguring the CRTC.
-		 */
+		 
 		vc4_hvs_unmask_underrun(hvs, chan);
 	}
 	spin_unlock(&vc4_crtc->irq_lock);
@@ -839,9 +700,7 @@ struct vc4_async_flip_state {
 	} cb;
 };
 
-/* Called when the V3D execution for the BO being flipped to is done, so that
- * we can actually update the plane's address to point to it.
- */
+ 
 static void
 vc4_async_page_flip_complete(struct vc4_async_flip_state *flip_state)
 {
@@ -881,15 +740,7 @@ static void vc4_async_page_flip_seqno_complete(struct vc4_seqno_cb *cb)
 
 	vc4_async_page_flip_complete(flip_state);
 
-	/*
-	 * Decrement the BO usecnt in order to keep the inc/dec
-	 * calls balanced when the planes are updated through
-	 * the async update path.
-	 *
-	 * FIXME: we should move to generic async-page-flip when
-	 * it's available, so that we can get rid of this
-	 * hand-made cleanup_fb() logic.
-	 */
+	 
 	if (bo)
 		vc4_bo_dec_usecnt(bo);
 }
@@ -924,13 +775,13 @@ static int vc4_async_set_fence_cb(struct drm_device *dev,
 	if (ret)
 		return ret;
 
-	/* If there's no fence, complete the page flip immediately */
+	 
 	if (!fence) {
 		vc4_async_page_flip_fence_complete(fence, &flip_state->cb.fence);
 		return 0;
 	}
 
-	/* If the fence has already been completed, complete the page flip */
+	 
 	if (dma_fence_add_callback(fence, &flip_state->cb.fence,
 				   vc4_async_page_flip_fence_complete))
 		vc4_async_page_flip_fence_complete(fence, &flip_state->cb.fence);
@@ -957,38 +808,23 @@ vc4_async_page_flip_common(struct drm_crtc *crtc,
 	flip_state->crtc = crtc;
 	flip_state->event = event;
 
-	/* Save the current FB before it's replaced by the new one in
-	 * drm_atomic_set_fb_for_plane(). We'll need the old FB in
-	 * vc4_async_page_flip_complete() to decrement the BO usecnt and keep
-	 * it consistent.
-	 * FIXME: we should move to generic async-page-flip when it's
-	 * available, so that we can get rid of this hand-made cleanup_fb()
-	 * logic.
-	 */
+	 
 	flip_state->old_fb = plane->state->fb;
 	if (flip_state->old_fb)
 		drm_framebuffer_get(flip_state->old_fb);
 
 	WARN_ON(drm_crtc_vblank_get(crtc) != 0);
 
-	/* Immediately update the plane's legacy fb pointer, so that later
-	 * modeset prep sees the state that will be present when the semaphore
-	 * is released.
-	 */
+	 
 	drm_atomic_set_fb_for_plane(plane->state, fb);
 
 	vc4_async_set_fence_cb(dev, flip_state);
 
-	/* Driver takes ownership of state on successful async commit. */
+	 
 	return 0;
 }
 
-/* Implements async (non-vblank-synced) page flips.
- *
- * The page flip ioctl needs to return immediately, so we grab the
- * modeset semaphore on the pipe, and queue the address update for
- * when V3D is done with the BO being flipped to.
- */
+ 
 static int vc4_async_page_flip(struct drm_crtc *crtc,
 			       struct drm_framebuffer *fb,
 			       struct drm_pending_vblank_event *event,
@@ -1003,15 +839,7 @@ static int vc4_async_page_flip(struct drm_crtc *crtc,
 	if (WARN_ON_ONCE(vc4->is_vc5))
 		return -ENODEV;
 
-	/*
-	 * Increment the BO usecnt here, so that we never end up with an
-	 * unbalanced number of vc4_bo_{dec,inc}_usecnt() calls when the
-	 * plane is later updated through the non-async path.
-	 *
-	 * FIXME: we should move to generic async-page-flip when
-	 * it's available, so that we can get rid of this
-	 * hand-made prepare_fb() logic.
-	 */
+	 
 	ret = vc4_bo_inc_usecnt(bo);
 	if (ret)
 		return ret;
@@ -1119,8 +947,8 @@ static const struct drm_crtc_funcs vc4_crtc_funcs = {
 	.set_config = drm_atomic_helper_set_config,
 	.page_flip = vc4_page_flip,
 	.set_property = NULL,
-	.cursor_set = NULL, /* handled by drm_mode_cursor_universal */
-	.cursor_move = NULL, /* handled by drm_mode_cursor_universal */
+	.cursor_set = NULL,  
+	.cursor_move = NULL,  
 	.reset = vc4_crtc_reset,
 	.atomic_duplicate_state = vc4_crtc_duplicate_state,
 	.atomic_destroy_state = vc4_crtc_destroy_state,
@@ -1295,24 +1123,7 @@ static void vc4_set_crtc_possible_masks(struct drm_device *drm,
 	}
 }
 
-/**
- * __vc4_crtc_init - Initializes a CRTC
- * @drm: DRM Device
- * @pdev: CRTC Platform Device
- * @vc4_crtc: CRTC Object to Initialize
- * @data: Configuration data associated with this CRTC
- * @primary_plane: Primary plane for CRTC
- * @crtc_funcs: Callbacks for the new CRTC
- * @crtc_helper_funcs: Helper Callbacks for the new CRTC
- * @feeds_txp: Is this CRTC connected to the TXP?
- *
- * Initializes our private CRTC structure. This function is mostly
- * relevant for KUnit testing, all other users should use
- * vc4_crtc_init() instead.
- *
- * Returns:
- * 0 on success, a negative error code on failure.
- */
+ 
 int __vc4_crtc_init(struct drm_device *drm,
 		    struct platform_device *pdev,
 		    struct vc4_crtc *vc4_crtc,
@@ -1343,9 +1154,7 @@ int __vc4_crtc_init(struct drm_device *drm,
 
 		drm_crtc_enable_color_mgmt(crtc, 0, false, crtc->gamma_size);
 
-		/* We support CTM, but only for one CRTC at a time. It's therefore
-		 * implemented as private driver state in vc4_kms, not here.
-		 */
+		 
 		drm_crtc_enable_color_mgmt(crtc, 0, true, crtc->gamma_size);
 	}
 
@@ -1367,12 +1176,7 @@ int vc4_crtc_init(struct drm_device *drm, struct platform_device *pdev,
 {
 	struct drm_plane *primary_plane;
 
-	/* For now, we create just the primary and the legacy cursor
-	 * planes.  We should be able to stack more planes on easily,
-	 * but to do that we would need to compute the bandwidth
-	 * requirement of the plane configuration, and reject ones
-	 * that will take too much.
-	 */
+	 
 	primary_plane = vc4_plane_init(drm, DRM_PLANE_TYPE_PRIMARY, 0);
 	if (IS_ERR(primary_plane)) {
 		dev_err(drm->dev, "failed to construct primary plane\n");

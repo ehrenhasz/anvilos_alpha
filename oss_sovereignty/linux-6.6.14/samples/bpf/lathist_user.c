@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2015 PLUMgrid, http://plumgrid.com
- * Copyright (c) 2015 BMW Car IT GmbH
- */
+
+ 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -37,13 +35,13 @@ static void print_hist(void)
 	struct cpu_hist *hist;
 	int i, j;
 
-	/* clear screen */
+	 
 	printf("\033[2J");
 
 	for (j = 0; j < MAX_CPU; j++) {
 		hist = &cpu_hist[j];
 
-		/* ignore CPUs without data (maybe offline?) */
+		 
 		if (hist->max == 0)
 			continue;
 
@@ -93,7 +91,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

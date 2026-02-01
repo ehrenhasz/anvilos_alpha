@@ -1,11 +1,4 @@
-/* netfilter.c: look after the filters for various protocols.
- * Heavily influenced by the old firewall.c by David Bonn and Alan Cox.
- *
- * Thanks to Rob `CmdrTaco' Malda for not influencing this code in any
- * way.
- *
- * This code is GPL.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/netfilter.h>
 #include <net/protocol.h>
@@ -41,7 +34,7 @@ EXPORT_SYMBOL(nf_hooks_needed);
 
 static DEFINE_MUTEX(nf_hook_mutex);
 
-/* max hooks per family/hooknum */
+ 
 #define MAX_HOOK_COUNT		1024
 
 #define nf_entry_dereference(e) \
@@ -92,7 +85,7 @@ static unsigned int accept_all(void *priv,
 			       struct sk_buff *skb,
 			       const struct nf_hook_state *state)
 {
-	return NF_ACCEPT; /* ACCEPT makes nf_hook_slow call next hook */
+	return NF_ACCEPT;  
 }
 
 static const struct nf_hook_ops dummy_ops = {
@@ -120,14 +113,7 @@ nf_hook_entries_grow(const struct nf_hook_entries *old,
 			if (orig_ops[i] != &dummy_ops)
 				alloc_entries++;
 
-			/* Restrict BPF hook type to force a unique priority, not
-			 * shared at attach time.
-			 *
-			 * This is mainly to avoid ordering issues between two
-			 * different bpf programs, this doesn't prevent a normal
-			 * hook at same priority as a bpf one (we don't want to
-			 * prevent defrag, conntrack, iptables etc from attaching).
-			 */
+			 
 			if (reg->priority == orig_ops[i]->priority &&
 			    reg->hook_ops_type == NF_HOOK_OP_BPF)
 				return ERR_PTR(-EBUSY);
@@ -215,22 +201,7 @@ int nf_hook_entries_insert_raw(struct nf_hook_entries __rcu **pp,
 }
 EXPORT_SYMBOL_GPL(nf_hook_entries_insert_raw);
 
-/*
- * __nf_hook_entries_try_shrink - try to shrink hook array
- *
- * @old -- current hook blob at @pp
- * @pp -- location of hook blob
- *
- * Hook unregistration must always succeed, so to-be-removed hooks
- * are replaced by a dummy one that will just move to next hook.
- *
- * This counts the current dummy hooks, attempts to allocate new blob,
- * copies the live hooks, then replaces and discards old one.
- *
- * return values:
- *
- * Returns address to free, or NULL.
- */
+ 
 static void *__nf_hook_entries_try_shrink(struct nf_hook_entries *old,
 					  struct nf_hook_entries __rcu **pp)
 {
@@ -248,7 +219,7 @@ static void *__nf_hook_entries_try_shrink(struct nf_hook_entries *old,
 			skip++;
 	}
 
-	/* if skip == hook_entries all hooks have been removed */
+	 
 	hook_entries = old->num_hook_entries;
 	if (skip == hook_entries)
 		goto out_assign;
@@ -458,15 +429,7 @@ static int __nf_register_net_hook(struct net *net, int pf,
 	return 0;
 }
 
-/*
- * nf_remove_net_hook - remove a hook from blob
- *
- * @oldp: current address of hook blob
- * @unreg: hook to unregister
- *
- * This cannot fail, hook unregistration must always succeed.
- * Therefore replace the to-be-removed hook with a dummy hook.
- */
+ 
 static bool nf_remove_net_hook(struct nf_hook_entries *old,
 			       const struct nf_hook_ops *unreg)
 {
@@ -614,8 +577,7 @@ void nf_unregister_net_hooks(struct net *net, const struct nf_hook_ops *reg,
 }
 EXPORT_SYMBOL(nf_unregister_net_hooks);
 
-/* Returns 1 if okfn() needs to be executed by the caller,
- * -EPERM for NF_DROP, 0 otherwise.  Caller must hold rcu_read_lock. */
+ 
 int nf_hook_slow(struct sk_buff *skb, struct nf_hook_state *state,
 		 const struct nf_hook_entries *e, unsigned int s)
 {
@@ -640,9 +602,7 @@ int nf_hook_slow(struct sk_buff *skb, struct nf_hook_state *state,
 				continue;
 			return ret;
 		default:
-			/* Implicit handling for NF_STOLEN, as well as any other
-			 * non conventional verdicts.
-			 */
+			 
 			return 0;
 		}
 	}
@@ -666,14 +626,12 @@ void nf_hook_slow_list(struct list_head *head, struct nf_hook_state *state,
 		if (ret == 1)
 			list_add_tail(&skb->list, &sublist);
 	}
-	/* Put passed packets back on main list */
+	 
 	list_splice(&sublist, head);
 }
 EXPORT_SYMBOL(nf_hook_slow_list);
 
-/* This needs to be compiled in any case to avoid dependencies between the
- * nfnetlink_queue code and nf_conntrack.
- */
+ 
 const struct nfnl_ct_hook __rcu *nfnl_ct_hook __read_mostly;
 EXPORT_SYMBOL_GPL(nfnl_ct_hook);
 
@@ -693,10 +651,7 @@ EXPORT_SYMBOL_GPL(nf_ctnetlink_has_listener);
 const struct nf_nat_hook __rcu *nf_nat_hook __read_mostly;
 EXPORT_SYMBOL_GPL(nf_nat_hook);
 
-/* This does not belong here, but locally generated errors need it if connection
- * tracking in use: without this, connection may not be in hash table, and hence
- * manufactured ICMP or RST packets will not be associated with it.
- */
+ 
 void nf_ct_attach(struct sk_buff *new, const struct sk_buff *skb)
 {
 	const struct nf_ct_hook *ct_hook;
@@ -756,13 +711,13 @@ bool nf_ct_get_tuple_skb(struct nf_conntrack_tuple *dst_tuple,
 }
 EXPORT_SYMBOL(nf_ct_get_tuple_skb);
 
-/* Built-in default zone used e.g. by modules. */
+ 
 const struct nf_conntrack_zone nf_ct_zone_dflt = {
 	.id	= NF_CT_DEFAULT_ZONE_ID,
 	.dir	= NF_CT_DEFAULT_ZONE_DIR,
 };
 EXPORT_SYMBOL_GPL(nf_ct_zone_dflt);
-#endif /* CONFIG_NF_CONNTRACK */
+#endif  
 
 static void __net_init
 __netfilter_net_init(struct nf_hook_entries __rcu **e, int max)

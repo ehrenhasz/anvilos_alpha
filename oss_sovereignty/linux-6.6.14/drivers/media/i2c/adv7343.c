@@ -1,19 +1,4 @@
-/*
- * adv7343 - ADV7343 Video Encoder Driver
- *
- * The encoder hardware does not support SECAM.
- *
- * Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed .as is. WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -99,32 +84,28 @@ static const u8 adv7343_init_reg_val[] = {
 	ADV7343_SD_BRIGHTNESS_WSS, ADV7343_SD_BRIGHTNESS_WSS_DEFAULT,
 };
 
-/*
- *			    2^32
- * FSC(reg) =  FSC (HZ) * --------
- *			  27000000
- */
+ 
 static const struct adv7343_std_info stdinfo[] = {
 	{
-		/* FSC(Hz) = 3,579,545.45 Hz */
+		 
 		SD_STD_NTSC, 569408542, V4L2_STD_NTSC,
 	}, {
-		/* FSC(Hz) = 3,575,611.00 Hz */
+		 
 		SD_STD_PAL_M, 568782678, V4L2_STD_PAL_M,
 	}, {
-		/* FSC(Hz) = 3,582,056.00 */
+		 
 		SD_STD_PAL_N, 569807903, V4L2_STD_PAL_Nc,
 	}, {
-		/* FSC(Hz) = 4,433,618.75 Hz */
+		 
 		SD_STD_PAL_N, 705268427, V4L2_STD_PAL_N,
 	}, {
-		/* FSC(Hz) = 4,433,618.75 Hz */
+		 
 		SD_STD_PAL_BDGHI, 705268427, V4L2_STD_PAL,
 	}, {
-		/* FSC(Hz) = 4,433,618.75 Hz */
+		 
 		SD_STD_NTSC, 705268427, V4L2_STD_NTSC_443,
 	}, {
-		/* FSC(Hz) = 4,433,618.75 Hz */
+		 
 		SD_STD_PAL_M, 705268427, V4L2_STD_PAL_60,
 	},
 };
@@ -154,7 +135,7 @@ static int adv7343_setstd(struct v4l2_subdev *sd, v4l2_std_id std)
 		return -EINVAL;
 	}
 
-	/* Set the standard */
+	 
 	val = state->reg80 & (~(SD_STD_MASK));
 	val |= std_info[i].standard_val3;
 	err = adv7343_write(sd, ADV7343_SD_MODE_REG1, val);
@@ -163,7 +144,7 @@ static int adv7343_setstd(struct v4l2_subdev *sd, v4l2_std_id std)
 
 	state->reg80 = val;
 
-	/* Configure the input mode register */
+	 
 	val = state->reg01 & (~((u8) INPUT_MODE_MASK));
 	val |= SD_INPUT_MODE;
 	err = adv7343_write(sd, ADV7343_MODE_SELECT_REG, val);
@@ -172,7 +153,7 @@ static int adv7343_setstd(struct v4l2_subdev *sd, v4l2_std_id std)
 
 	state->reg01 = val;
 
-	/* Program the sub carrier frequency registers */
+	 
 	fsc_ptr = (unsigned char *)&std_info[i].fsc_val;
 	reg = ADV7343_FSC_REG0;
 	for (i = 0; i < 4; i++, reg++, fsc_ptr++) {
@@ -183,7 +164,7 @@ static int adv7343_setstd(struct v4l2_subdev *sd, v4l2_std_id std)
 
 	val = state->reg80;
 
-	/* Filter settings */
+	 
 	if (std & (V4L2_STD_NTSC | V4L2_STD_NTSC_443))
 		val &= 0x03;
 	else if (std & ~V4L2_STD_SECAM)
@@ -215,10 +196,10 @@ static int adv7343_setoutput(struct v4l2_subdev *sd, u32 output_type)
 		return -EINVAL;
 	}
 
-	/* Enable Appropriate DAC */
+	 
 	val = state->reg00 & 0x03;
 
-	/* configure default configuration */
+	 
 	if (!state->pdata)
 		if (output_type == ADV7343_COMPOSITE_ID)
 			val |= ADV7343_COMPOSITE_POWER_VALUE;
@@ -242,7 +223,7 @@ static int adv7343_setoutput(struct v4l2_subdev *sd, u32 output_type)
 
 	state->reg00 = val;
 
-	/* Enable YUV output */
+	 
 	val = state->reg02 | YUV_OUTPUT_SELECT;
 	err = adv7343_write(sd, ADV7343_MODE_REG0, val);
 	if (err < 0)
@@ -250,7 +231,7 @@ static int adv7343_setoutput(struct v4l2_subdev *sd, u32 output_type)
 
 	state->reg02 = val;
 
-	/* configure SD DAC Output 2 and SD DAC Output 1 bit to zero */
+	 
 	val = state->reg82 & (SD_DAC_1_DI & SD_DAC_2_DI);
 
 	if (state->pdata && state->pdata->sd_config.sd_dac_out[0])
@@ -269,8 +250,7 @@ static int adv7343_setoutput(struct v4l2_subdev *sd, u32 output_type)
 
 	state->reg82 = val;
 
-	/* configure ED/HD Color DAC Swap and ED/HD RGB Input Enable bit to
-	 * zero */
+	 
 	val = state->reg35 & (HD_RGB_INPUT_DI & HD_DAC_SWAP_DI);
 	err = adv7343_write(sd, ADV7343_HD_MODE_REG6, val);
 	if (err < 0)
@@ -378,7 +358,7 @@ static int adv7343_initialize(struct v4l2_subdev *sd)
 		}
 	}
 
-	/* Configure for default video standard */
+	 
 	err = adv7343_setoutput(sd, state->output);
 	if (err < 0) {
 		v4l2_err(sd, "Error setting output during init\n");
@@ -444,7 +424,7 @@ static int adv7343_probe(struct i2c_client *client)
 	if (state == NULL)
 		return -ENOMEM;
 
-	/* Copy board specific information here */
+	 
 	state->pdata = adv7343_get_pdata(client);
 
 	state->reg00	= 0x80;
@@ -511,7 +491,7 @@ MODULE_DEVICE_TABLE(i2c, adv7343_id);
 #if IS_ENABLED(CONFIG_OF)
 static const struct of_device_id adv7343_of_match[] = {
 	{.compatible = "adi,adv7343", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, adv7343_of_match);
 #endif

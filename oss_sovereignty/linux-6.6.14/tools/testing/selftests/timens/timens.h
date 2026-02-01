@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __TIMENS_H__
 #define __TIMENS_H__
 
@@ -38,7 +38,7 @@ static inline bool check_skip(int clockid)
 		return false;
 
 	switch (clockid) {
-	/* Only these clocks are supported without CONFIG_POSIX_TIMERS. */
+	 
 	case CLOCK_BOOTTIME:
 	case CLOCK_MONOTONIC:
 	case CLOCK_REALTIME:

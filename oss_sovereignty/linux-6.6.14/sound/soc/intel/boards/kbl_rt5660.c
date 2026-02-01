@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2018-19 Canonical Corporation.
 
-/*
- * Intel Kabylake I2S Machine Driver with RT5660 Codec
- *
- * Modified from:
- *   Intel Kabylake I2S Machine driver supporting MAXIM98357a and
- *   DA7219 codecs
- * Also referred to:
- *   Intel Broadwell I2S Machine driver supporting RT5677 codec
- */
+
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -112,13 +104,13 @@ static const struct snd_soc_dapm_widget kabylake_rt5660_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route kabylake_rt5660_map[] = {
-	/* other jacks */
+	 
 	{"IN1P", NULL, "Line In"},
 	{"IN2P", NULL, "Line In"},
 	{"Line Out", NULL, "LOUTR"},
 	{"Line Out", NULL, "LOUTL"},
 
-	/* CODEC BE connections */
+	 
 	{ "AIF1 Playback", NULL, "ssp0 Tx"},
 	{ "ssp0 Tx", NULL, "codec0_out"},
 
@@ -142,11 +134,11 @@ static int kabylake_ssp0_fixup(struct snd_soc_pcm_runtime *rtd,
 			SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = chan->max = DUAL_CHANNEL;
 
-	/* set SSP0 to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 
@@ -164,7 +156,7 @@ static int kabylake_rt5660_codec_init(struct snd_soc_pcm_runtime *rtd)
 	if (ret)
 		dev_warn(component->dev, "Failed to add driver gpios\n");
 
-	/* Request rt5660 GPIO for lineout mute control, return if fails */
+	 
 	ctx->gpio_lo_mute = gpiod_get(component->dev, "lineout-mute",
 				      GPIOD_OUT_HIGH);
 	if (IS_ERR(ctx->gpio_lo_mute)) {
@@ -172,7 +164,7 @@ static int kabylake_rt5660_codec_init(struct snd_soc_pcm_runtime *rtd)
 		return PTR_ERR(ctx->gpio_lo_mute);
 	}
 
-	/* Create and initialize headphone jack, this jack is not mandatory, don't return if fails */
+	 
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Lineout Jack",
 					 SND_JACK_LINEOUT, &lineout_jack,
 					 &lineout_jack_pin, 1);
@@ -186,7 +178,7 @@ static int kabylake_rt5660_codec_init(struct snd_soc_pcm_runtime *rtd)
 			dev_warn(component->dev, "Can't add Lineout jack gpio\n");
 	}
 
-	/* Create and initialize mic jack, this jack is not mandatory, don't return if fails */
+	 
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Mic Jack",
 					 SND_JACK_MICROPHONE, &mic_jack,
 					 &mic_jack_pin, 1);
@@ -199,7 +191,7 @@ static int kabylake_rt5660_codec_init(struct snd_soc_pcm_runtime *rtd)
 			dev_warn(component->dev, "Can't add mic jack gpio\n");
 	}
 
-	/* Here we enable some dapms in advance to reduce the pop noise for recording via line-in */
+	 
 	snd_soc_dapm_force_enable_pin(dapm, "MICBIAS1");
 	snd_soc_dapm_force_enable_pin(dapm, "BST1");
 	snd_soc_dapm_force_enable_pin(dapm, "BST2");
@@ -211,10 +203,7 @@ static void kabylake_rt5660_codec_exit(struct snd_soc_pcm_runtime *rtd)
 {
 	struct kbl_codec_private *ctx = snd_soc_card_get_drvdata(rtd->card);
 
-	/*
-	 * The .exit() can be reached without going through the .init()
-	 * so explicitly test if the gpiod is valid
-	 */
+	 
 	if (!IS_ERR_OR_NULL(ctx->gpio_lo_mute))
 		gpiod_put(ctx->gpio_lo_mute);
 }
@@ -305,12 +294,7 @@ static int kbl_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/*
-	 * On this platform for PCM device we support,
-	 * 48Khz
-	 * stereo
-	 * 16 bit audio
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -367,9 +351,9 @@ SND_SOC_DAILINK_DEF(idisp3_codec,
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:1f.3")));
 
-/* kabylake digital audio interface glue - connects rt5660 codec <--> CPU */
+ 
 static struct snd_soc_dai_link kabylake_rt5660_dais[] = {
-	/* Front End DAI links */
+	 
 	[KBL_DPCM_AUDIO_PB] = {
 		.name = "Kbl Audio Port",
 		.stream_name = "Audio",
@@ -426,9 +410,9 @@ static struct snd_soc_dai_link kabylake_rt5660_dais[] = {
 		SND_SOC_DAILINK_REG(hdmi3, dummy, platform),
 	},
 
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "SSP0-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -505,7 +489,7 @@ static int kabylake_card_late_probe(struct snd_soc_card *card)
 	return hdac_hdmi_jack_port_init(component, &card->dapm);
 }
 
-/* kabylake audio machine driver for rt5660 */
+ 
 static struct snd_soc_card kabylake_audio_card_rt5660 = {
 	.name = "kblrt5660",
 	.owner = THIS_MODULE,
@@ -560,7 +544,7 @@ static struct platform_driver kabylake_audio = {
 
 module_platform_driver(kabylake_audio)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("Audio Machine driver-RT5660 in I2S mode");
 MODULE_AUTHOR("Hui Wang <hui.wang@canonical.com>");
 MODULE_LICENSE("GPL v2");

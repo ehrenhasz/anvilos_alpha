@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef BTRFS_DISK_IO_H
 #define BTRFS_DISK_IO_H
@@ -9,12 +7,7 @@
 #define BTRFS_SUPER_MIRROR_MAX	 3
 #define BTRFS_SUPER_MIRROR_SHIFT 12
 
-/*
- * Fixed blocksize for all devices, applies to specific ways of reading
- * metadata like superblock. Must meet the set_blocksize requirements.
- *
- * Do not change.
- */
+ 
 #define BTRFS_BDEV_BLOCKSIZE	(4096)
 
 static inline u64 btrfs_sb_offset(int mirror)
@@ -87,13 +80,7 @@ int btrfs_validate_extent_buffer(struct extent_buffer *eb,
 struct btrfs_root *btrfs_alloc_dummy_root(struct btrfs_fs_info *fs_info);
 #endif
 
-/*
- * This function is used to grab the root, and avoid it is freed when we
- * access it. But it doesn't ensure that the tree is not dropped.
- *
- * If you want to ensure the whole tree is safe, you should use
- * 	fs_info->subvol_srcu
- */
+ 
 static inline struct btrfs_root *btrfs_grab_root(struct btrfs_root *root)
 {
 	if (!root)

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Kernel cryptographic api.
- * cast6.c - Cast6 cipher algorithm [rfc2612].
- *
- * CAST-256 (*cast6*) is a DES like Substitution-Permutation Network (SPN)
- * cryptosystem built upon the CAST-128 (*cast5*) [rfc2144] encryption
- * algorithm.
- *
- * Copyright (C) 2003 Kartikey Mahendra Bhatt <kartik_me@hotmail.com>.
- */
+
+ 
 
 
 #include <asm/unaligned.h>
@@ -89,7 +81,7 @@ static const u8 Tr[4][8] = {
 	{ 0x0b, 0x1c, 0x0d, 0x1e, 0x0f, 0x00, 0x11, 0x02 }
 };
 
-/* forward octave */
+ 
 static inline void W(u32 *key, unsigned int i)
 {
 	u32 I;
@@ -107,7 +99,7 @@ int __cast6_setkey(struct cast6_ctx *c, const u8 *in_key, unsigned int key_len)
 {
 	int i;
 	u32 key[8];
-	__be32 p_key[8]; /* padded key */
+	__be32 p_key[8];  
 
 	if (key_len % 4 != 0)
 		return -EINVAL;
@@ -115,14 +107,14 @@ int __cast6_setkey(struct cast6_ctx *c, const u8 *in_key, unsigned int key_len)
 	memset(p_key, 0, 32);
 	memcpy(p_key, in_key, key_len);
 
-	key[0] = be32_to_cpu(p_key[0]);		/* A */
-	key[1] = be32_to_cpu(p_key[1]);		/* B */
-	key[2] = be32_to_cpu(p_key[2]);		/* C */
-	key[3] = be32_to_cpu(p_key[3]);		/* D */
-	key[4] = be32_to_cpu(p_key[4]);		/* E */
-	key[5] = be32_to_cpu(p_key[5]);		/* F */
-	key[6] = be32_to_cpu(p_key[6]);		/* G */
-	key[7] = be32_to_cpu(p_key[7]);		/* H */
+	key[0] = be32_to_cpu(p_key[0]);		 
+	key[1] = be32_to_cpu(p_key[1]);		 
+	key[2] = be32_to_cpu(p_key[2]);		 
+	key[3] = be32_to_cpu(p_key[3]);		 
+	key[4] = be32_to_cpu(p_key[4]);		 
+	key[5] = be32_to_cpu(p_key[5]);		 
+	key[6] = be32_to_cpu(p_key[6]);		 
+	key[7] = be32_to_cpu(p_key[7]);		 
 
 	for (i = 0; i < 12; i++) {
 		W(key, 2 * i);
@@ -149,7 +141,7 @@ int cast6_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen)
 }
 EXPORT_SYMBOL_GPL(cast6_setkey);
 
-/*forward quad round*/
+ 
 static inline void Q(u32 *block, const u8 *Kr, const u32 *Km)
 {
 	u32 I;
@@ -159,7 +151,7 @@ static inline void Q(u32 *block, const u8 *Kr, const u32 *Km)
 	block[3] ^= F1(block[0], Kr[3], Km[3]);
 }
 
-/*reverse quad round*/
+ 
 static inline void QBAR(u32 *block, const u8 *Kr, const u32 *Km)
 {
 	u32 I;

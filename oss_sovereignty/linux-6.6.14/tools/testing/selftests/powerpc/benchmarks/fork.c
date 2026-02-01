@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Context switch microbenchmark.
- *
- * Copyright 2018, Anton Blanchard, IBM Corp.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <assert.h>
@@ -311,7 +307,7 @@ int main(int argc, char *argv[])
 
 	printf(" on cpu %d\n", cpu);
 
-	/* Create a new process group so we can signal everyone for exit */
+	 
 	setpgid(getpid(), getpid());
 
 	signal(SIGUSR1, sigusr1_handler);

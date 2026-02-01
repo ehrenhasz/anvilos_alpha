@@ -1,25 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "i915_drv.h"
 #include "i915_vgpu.h"
@@ -29,20 +8,7 @@
 #include "gt/intel_ring.h"
 #include "gt/shmem_utils.h"
 
-/**
- * DOC: Intel GVT-g host support
- *
- * Intel GVT-g is a graphics virtualization technology which shares the
- * GPU among multiple virtual machines on a time-sharing basis. Each
- * virtual machine is presented a virtual GPU (vGPU), which has equivalent
- * features as the underlying physical GPU (pGPU), so i915 driver can run
- * seamlessly in a virtual machine.
- *
- * To virtualize GPU resources GVT-g driver depends on hypervisor technology
- * e.g KVM/VFIO/mdev, Xen, etc. to provide resource access trapping capability
- * and be virtualized within GVT-g device module. More architectural design
- * doc is available on https://01.org/group/2230/documentation-list.
- */
+ 
 
 static LIST_HEAD(intel_gvt_devices);
 static const struct intel_vgpu_ops *intel_gvt_ops;
@@ -223,16 +189,7 @@ void intel_gvt_clear_ops(const struct intel_vgpu_ops *ops)
 }
 EXPORT_SYMBOL_NS_GPL(intel_gvt_clear_ops, I915_GVT);
 
-/**
- * intel_gvt_init - initialize GVT components
- * @dev_priv: drm i915 private data
- *
- * This function is called at the initialization stage to create a GVT device.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_gvt_init(struct drm_i915_private *dev_priv)
 {
 	if (i915_inject_probe_failure(dev_priv))
@@ -247,14 +204,7 @@ int intel_gvt_init(struct drm_i915_private *dev_priv)
 	return 0;
 }
 
-/**
- * intel_gvt_driver_remove - cleanup GVT components when i915 driver is
- *			     unbinding
- * @dev_priv: drm i915 private *
- *
- * This function is called at the i915 driver unloading stage, to shutdown
- * GVT components and release the related resources.
- */
+ 
 void intel_gvt_driver_remove(struct drm_i915_private *dev_priv)
 {
 	mutex_lock(&intel_gvt_mutex);
@@ -263,14 +213,7 @@ void intel_gvt_driver_remove(struct drm_i915_private *dev_priv)
 	mutex_unlock(&intel_gvt_mutex);
 }
 
-/**
- * intel_gvt_resume - GVT resume routine wapper
- *
- * @dev_priv: drm i915 private *
- *
- * This function is called at the i915 driver resume stage to restore required
- * HW status for GVT so that vGPU can continue running after resumed.
- */
+ 
 void intel_gvt_resume(struct drm_i915_private *dev_priv)
 {
 	mutex_lock(&intel_gvt_mutex);
@@ -279,10 +222,7 @@ void intel_gvt_resume(struct drm_i915_private *dev_priv)
 	mutex_unlock(&intel_gvt_mutex);
 }
 
-/*
- * Exported here so that the exports only get created when GVT support is
- * actually enabled.
- */
+ 
 EXPORT_SYMBOL_NS_GPL(i915_gem_object_alloc, I915_GVT);
 EXPORT_SYMBOL_NS_GPL(i915_gem_object_create_shmem, I915_GVT);
 EXPORT_SYMBOL_NS_GPL(i915_gem_object_init, I915_GVT);

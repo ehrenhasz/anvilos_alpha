@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test that a syscall does not get restarted twice, handled by trap_norestart()
- *
- * Based on Al's description, and a test for the bug fixed in this commit:
- *
- * commit 9a81c16b527528ad307843be5571111aa8d35a80
- * Author: Al Viro <viro@zeniv.linux.org.uk>
- * Date:   Mon Sep 20 21:48:57 2010 +0100
- *
- *  powerpc: fix double syscall restarts
- *
- *  Make sigreturn zero regs->trap, make do_signal() do the same on all
- *  paths.  As it is, signal interrupting e.g. read() from fd 512 (==
- *  ERESTARTSYS) with another signal getting unblocked when the first
- *  handler finishes will lead to restart one insn earlier than it ought
- *  to.  Same for multiple signals with in-kernel handlers interrupting
- *  that sucker at the same time.  Same for multiple signals of any kind
- *  interrupting that sucker on 64bit...
- */
+
+ 
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -34,12 +16,7 @@
 static void SIGUSR1_handler(int sig)
 {
 	kill(getpid(), SIGUSR2);
-	/*
-	 * SIGUSR2 is blocked until the handler exits, at which point it will
-	 * be raised again and think there is a restart to be done because the
-	 * pending restarted syscall has 512 (ERESTARTSYS) in r3. The second
-	 * restart will retreat NIP another 4 bytes to fail case branch.
-	 */
+	 
 }
 
 static void SIGUSR2_handler(int sig)
@@ -95,7 +72,7 @@ int test_restart(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (pid == 0) { /* Child reads from pipe */
+	if (pid == 0) {  
 		struct sigaction act;
 		int fd;
 
@@ -116,7 +93,7 @@ int test_restart(void)
 			exit(EXIT_FAILURE);
 		}
 
-		/* Let's get ERESTARTSYS into r3 */
+		 
 		while ((fd = dup(pipefd[0])) != 512) {
 			if (fd == -1) {
 				perror("dup");
@@ -143,7 +120,7 @@ int test_restart(void)
 	} else {
 		int wstatus;
 
-		usleep(100000);		/* Hack to get reader waiting */
+		usleep(100000);		 
 		kill(pid, SIGUSR1);
 		usleep(100000);
 		if (write(pipefd[1], DATA, DLEN) != DLEN) {

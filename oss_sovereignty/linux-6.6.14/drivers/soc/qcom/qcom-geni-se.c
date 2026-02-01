@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
 
-/* Disable MMIO tracing to prevent excessive logging of unwanted MMIO traces */
+
+
+ 
 #define __DISABLE_TRACE_MMIO__
 
 #include <linux/acpi.h>
@@ -16,81 +16,16 @@
 #include <linux/platform_device.h>
 #include <linux/soc/qcom/geni-se.h>
 
-/**
- * DOC: Overview
- *
- * Generic Interface (GENI) Serial Engine (SE) Wrapper driver is introduced
- * to manage GENI firmware based Qualcomm Universal Peripheral (QUP) Wrapper
- * controller. QUP Wrapper is designed to support various serial bus protocols
- * like UART, SPI, I2C, I3C, etc.
- */
+ 
 
-/**
- * DOC: Hardware description
- *
- * GENI based QUP is a highly-flexible and programmable module for supporting
- * a wide range of serial interfaces like UART, SPI, I2C, I3C, etc. A single
- * QUP module can provide upto 8 serial interfaces, using its internal
- * serial engines. The actual configuration is determined by the target
- * platform configuration. The protocol supported by each interface is
- * determined by the firmware loaded to the serial engine. Each SE consists
- * of a DMA Engine and GENI sub modules which enable serial engines to
- * support FIFO and DMA modes of operation.
- *
- *
- *                      +-----------------------------------------+
- *                      |QUP Wrapper                              |
- *                      |         +----------------------------+  |
- *   --QUP & SE Clocks-->         | Serial Engine N            |  +-IO------>
- *                      |         | ...                        |  | Interface
- *   <---Clock Perf.----+    +----+-----------------------+    |  |
- *     State Interface  |    | Serial Engine 1            |    |  |
- *                      |    |                            |    |  |
- *                      |    |                            |    |  |
- *   <--------AHB------->    |                            |    |  |
- *                      |    |                            +----+  |
- *                      |    |                            |       |
- *                      |    |                            |       |
- *   <------SE IRQ------+    +----------------------------+       |
- *                      |                                         |
- *                      +-----------------------------------------+
- *
- *                         Figure 1: GENI based QUP Wrapper
- *
- * The GENI submodules include primary and secondary sequencers which are
- * used to drive TX & RX operations. On serial interfaces that operate using
- * master-slave model, primary sequencer drives both TX & RX operations. On
- * serial interfaces that operate using peer-to-peer model, primary sequencer
- * drives TX operation and secondary sequencer drives RX operation.
- */
+ 
 
-/**
- * DOC: Software description
- *
- * GENI SE Wrapper driver is structured into 2 parts:
- *
- * geni_wrapper represents QUP Wrapper controller. This part of the driver
- * manages QUP Wrapper information such as hardware version, clock
- * performance table that is common to all the internal serial engines.
- *
- * geni_se represents serial engine. This part of the driver manages serial
- * engine information such as clocks, containing QUP Wrapper, etc. This part
- * of driver also supports operations (eg. initialize the concerned serial
- * engine, select between FIFO and DMA mode of operation etc.) that are
- * common to all the serial engines and are independent of serial interfaces.
- */
+ 
 
 #define MAX_CLK_PERF_LEVEL 32
 #define MAX_CLKS 2
 
-/**
- * struct geni_wrapper - Data structure to represent the QUP Wrapper Core
- * @dev:		Device pointer of the QUP wrapper core
- * @base:		Base address of this instance of QUP wrapper core
- * @clks:		Handle to the primary & optional secondary AHB clocks
- * @num_clks:		Count of clocks
- * @to_core:		Core ICC path
- */
+ 
 struct geni_wrapper {
 	struct device *dev;
 	void __iomem *base;
@@ -98,11 +33,7 @@ struct geni_wrapper {
 	unsigned int num_clks;
 };
 
-/**
- * struct geni_se_desc - Data structure to represent the QUP Wrapper resources
- * @clks:		Name of the primary & optional secondary AHB clocks
- * @num_clks:		Count of clock names
- */
+ 
 struct geni_se_desc {
 	unsigned int num_clks;
 	const char * const *clks;
@@ -113,7 +44,7 @@ static const char * const icc_path_names[] = {"qup-core", "qup-config",
 
 #define QUP_HW_VER_REG			0x4
 
-/* Common SE registers */
+ 
 #define GENI_INIT_CFG_REVISION		0x0
 #define GENI_S_INIT_CFG_REVISION	0x4
 #define GENI_OUTPUT_CTRL		0x24
@@ -150,10 +81,10 @@ static const char * const icc_path_names[] = {"qup-core", "qup-config",
 #define SE_IRQ_EN			0xe1c
 #define SE_DMA_GENERAL_CFG		0xe30
 
-/* GENI_OUTPUT_CTRL fields */
+ 
 #define DEFAULT_IO_OUTPUT_CTRL_MSK	GENMASK(6, 0)
 
-/* GENI_CGC_CTRL fields */
+ 
 #define CFG_AHB_CLK_CGC_ON		BIT(0)
 #define CFG_AHB_WR_ACLK_CGC_ON		BIT(1)
 #define DATA_AHB_CLK_CGC_ON		BIT(2)
@@ -165,19 +96,19 @@ static const char * const icc_path_names[] = {"qup-core", "qup-config",
 #define PROG_RAM_SCLK_OFF		BIT(9)
 #define DEFAULT_CGC_EN			GENMASK(6, 0)
 
-/* SE_GSI_EVENT_EN fields */
+ 
 #define DMA_RX_EVENT_EN			BIT(0)
 #define DMA_TX_EVENT_EN			BIT(1)
 #define GENI_M_EVENT_EN			BIT(2)
 #define GENI_S_EVENT_EN			BIT(3)
 
-/* SE_IRQ_EN fields */
+ 
 #define DMA_RX_IRQ_EN			BIT(0)
 #define DMA_TX_IRQ_EN			BIT(1)
 #define GENI_M_IRQ_EN			BIT(2)
 #define GENI_S_IRQ_EN			BIT(3)
 
-/* SE_DMA_GENERAL_CFG */
+ 
 #define DMA_RX_CLK_CGC_ON		BIT(0)
 #define DMA_TX_CLK_CGC_ON		BIT(1)
 #define DMA_AHB_SLV_CFG_ON		BIT(2)
@@ -187,12 +118,7 @@ static const char * const icc_path_names[] = {"qup-core", "qup-config",
 #define RX_DMA_IRQ_DELAY_MSK		GENMASK(8, 6)
 #define RX_DMA_IRQ_DELAY_SHFT		6
 
-/**
- * geni_se_get_qup_hw_version() - Read the QUP wrapper Hardware version
- * @se:	Pointer to the corresponding serial engine.
- *
- * Return: Hardware Version of the wrapper.
- */
+ 
 u32 geni_se_get_qup_hw_version(struct geni_se *se)
 {
 	struct geni_wrapper *wrapper = se->wrapper;
@@ -244,15 +170,7 @@ static void geni_se_irq_clear(struct geni_se *se)
 	writel_relaxed(0xffffffff, se->base + SE_IRQ_EN);
 }
 
-/**
- * geni_se_init() - Initialize the GENI serial engine
- * @se:		Pointer to the concerned serial engine.
- * @rx_wm:	Receive watermark, in units of FIFO words.
- * @rx_rfr:	Ready-for-receive watermark, in units of FIFO words.
- *
- * This function is used to initialize the GENI serial engine, configure
- * receive watermark and ready-for-receive watermarks.
- */
+ 
 void geni_se_init(struct geni_se *se, u32 rx_wm, u32 rx_rfr)
 {
 	u32 val;
@@ -281,9 +199,9 @@ static void geni_se_select_fifo_mode(struct geni_se *se)
 
 	geni_se_irq_clear(se);
 
-	/* UART driver manages enabling / disabling interrupts internally */
+	 
 	if (proto != GENI_SE_UART) {
-		/* Non-UART use only primary sequencer so dont bother about S_IRQ */
+		 
 		val_old = val = readl_relaxed(se->base + SE_GENI_M_IRQ_EN);
 		val |= M_CMD_DONE_EN | M_TX_FIFO_WATERMARK_EN;
 		val |= M_RX_FIFO_WATERMARK_EN | M_RX_FIFO_LAST_EN;
@@ -304,9 +222,9 @@ static void geni_se_select_dma_mode(struct geni_se *se)
 
 	geni_se_irq_clear(se);
 
-	/* UART driver manages enabling / disabling interrupts internally */
+	 
 	if (proto != GENI_SE_UART) {
-		/* Non-UART use only primary sequencer so dont bother about S_IRQ */
+		 
 		val_old = val = readl_relaxed(se->base + SE_GENI_M_IRQ_EN);
 		val &= ~(M_CMD_DONE_EN | M_TX_FIFO_WATERMARK_EN);
 		val &= ~(M_RX_FIFO_WATERMARK_EN | M_RX_FIFO_LAST_EN);
@@ -340,11 +258,7 @@ static void geni_se_select_gpi_mode(struct geni_se *se)
 	writel(val, se->base + SE_GSI_EVENT_EN);
 }
 
-/**
- * geni_se_select_mode() - Select the serial engine transfer mode
- * @se:		Pointer to the concerned serial engine.
- * @mode:	Transfer mode to be selected.
- */
+ 
 void geni_se_select_mode(struct geni_se *se, enum geni_se_xfer_mode mode)
 {
 	WARN_ON(mode != GENI_SE_FIFO && mode != GENI_SE_DMA && mode != GENI_GPI_DMA);
@@ -366,49 +280,7 @@ void geni_se_select_mode(struct geni_se *se, enum geni_se_xfer_mode mode)
 }
 EXPORT_SYMBOL(geni_se_select_mode);
 
-/**
- * DOC: Overview
- *
- * GENI FIFO packing is highly configurable. TX/RX packing/unpacking consist
- * of up to 4 operations, each operation represented by 4 configuration vectors
- * of 10 bits programmed in GENI_TX_PACKING_CFG0 and GENI_TX_PACKING_CFG1 for
- * TX FIFO and in GENI_RX_PACKING_CFG0 and GENI_RX_PACKING_CFG1 for RX FIFO.
- * Refer to below examples for detailed bit-field description.
- *
- * Example 1: word_size = 7, packing_mode = 4 x 8, msb_to_lsb = 1
- *
- *        +-----------+-------+-------+-------+-------+
- *        |           | vec_0 | vec_1 | vec_2 | vec_3 |
- *        +-----------+-------+-------+-------+-------+
- *        | start     | 0x6   | 0xe   | 0x16  | 0x1e  |
- *        | direction | 1     | 1     | 1     | 1     |
- *        | length    | 6     | 6     | 6     | 6     |
- *        | stop      | 0     | 0     | 0     | 1     |
- *        +-----------+-------+-------+-------+-------+
- *
- * Example 2: word_size = 15, packing_mode = 2 x 16, msb_to_lsb = 0
- *
- *        +-----------+-------+-------+-------+-------+
- *        |           | vec_0 | vec_1 | vec_2 | vec_3 |
- *        +-----------+-------+-------+-------+-------+
- *        | start     | 0x0   | 0x8   | 0x10  | 0x18  |
- *        | direction | 0     | 0     | 0     | 0     |
- *        | length    | 7     | 6     | 7     | 6     |
- *        | stop      | 0     | 0     | 0     | 1     |
- *        +-----------+-------+-------+-------+-------+
- *
- * Example 3: word_size = 23, packing_mode = 1 x 32, msb_to_lsb = 1
- *
- *        +-----------+-------+-------+-------+-------+
- *        |           | vec_0 | vec_1 | vec_2 | vec_3 |
- *        +-----------+-------+-------+-------+-------+
- *        | start     | 0x16  | 0xe   | 0x6   | 0x0   |
- *        | direction | 1     | 1     | 1     | 1     |
- *        | length    | 7     | 7     | 6     | 0     |
- *        | stop      | 0     | 0     | 1     | 0     |
- *        +-----------+-------+-------+-------+-------+
- *
- */
+ 
 
 #define NUM_PACKING_VECTORS 4
 #define PACKING_START_SHIFT 5
@@ -416,18 +288,7 @@ EXPORT_SYMBOL(geni_se_select_mode);
 #define PACKING_LEN_SHIFT 1
 #define PACKING_STOP_BIT BIT(0)
 #define PACKING_VECTOR_SHIFT 10
-/**
- * geni_se_config_packing() - Packing configuration of the serial engine
- * @se:		Pointer to the concerned serial engine
- * @bpw:	Bits of data per transfer word.
- * @pack_words:	Number of words per fifo element.
- * @msb_to_lsb:	Transfer from MSB to LSB or vice-versa.
- * @tx_cfg:	Flag to configure the TX Packing.
- * @rx_cfg:	Flag to configure the RX Packing.
- *
- * This function is used to configure the packing rules for the current
- * transfer.
- */
+ 
 void geni_se_config_packing(struct geni_se *se, int bpw, int pack_words,
 			    bool msb_to_lsb, bool tx_cfg, bool rx_cfg)
 {
@@ -471,13 +332,7 @@ void geni_se_config_packing(struct geni_se *se, int bpw, int pack_words,
 		writel_relaxed(cfg1, se->base + SE_GENI_RX_PACKING_CFG1);
 	}
 
-	/*
-	 * Number of protocol words in each FIFO entry
-	 * 0 - 4x8, four words in each entry, max word size of 8 bits
-	 * 1 - 2x16, two words in each entry, max word size of 16 bits
-	 * 2 - 1x32, one word in each entry, max word size of 32 bits
-	 * 3 - undefined
-	 */
+	 
 	if (pack_words || bpw == 32)
 		writel_relaxed(bpw / 16, se->base + SE_GENI_BYTE_GRAN);
 }
@@ -491,13 +346,7 @@ static void geni_se_clks_off(struct geni_se *se)
 	clk_bulk_disable_unprepare(wrapper->num_clks, wrapper->clks);
 }
 
-/**
- * geni_se_resources_off() - Turn off resources associated with the serial
- *                           engine
- * @se:	Pointer to the concerned serial engine.
- *
- * Return: 0 on success, standard Linux error codes on failure/error.
- */
+ 
 int geni_se_resources_off(struct geni_se *se)
 {
 	int ret;
@@ -529,13 +378,7 @@ static int geni_se_clks_on(struct geni_se *se)
 	return ret;
 }
 
-/**
- * geni_se_resources_on() - Turn on resources associated with the serial
- *                          engine
- * @se:	Pointer to the concerned serial engine.
- *
- * Return: 0 on success, standard Linux error codes on failure/error.
- */
+ 
 int geni_se_resources_on(struct geni_se *se)
 {
 	int ret;
@@ -555,19 +398,7 @@ int geni_se_resources_on(struct geni_se *se)
 }
 EXPORT_SYMBOL(geni_se_resources_on);
 
-/**
- * geni_se_clk_tbl_get() - Get the clock table to program DFS
- * @se:		Pointer to the concerned serial engine.
- * @tbl:	Table in which the output is returned.
- *
- * This function is called by the protocol drivers to determine the different
- * clock frequencies supported by serial engine core clock. The protocol
- * drivers use the output to determine the clock frequency index to be
- * programmed into DFS.
- *
- * Return: number of valid performance levels in the table on success,
- *	   standard Linux error codes on failure.
- */
+ 
 int geni_se_clk_tbl_get(struct geni_se *se, unsigned long **tbl)
 {
 	long freq = 0;
@@ -596,25 +427,7 @@ int geni_se_clk_tbl_get(struct geni_se *se, unsigned long **tbl)
 }
 EXPORT_SYMBOL(geni_se_clk_tbl_get);
 
-/**
- * geni_se_clk_freq_match() - Get the matching or closest SE clock frequency
- * @se:		Pointer to the concerned serial engine.
- * @req_freq:	Requested clock frequency.
- * @index:	Index of the resultant frequency in the table.
- * @res_freq:	Resultant frequency of the source clock.
- * @exact:	Flag to indicate exact multiple requirement of the requested
- *		frequency.
- *
- * This function is called by the protocol drivers to determine the best match
- * of the requested frequency as provided by the serial engine clock in order
- * to meet the performance requirements.
- *
- * If we return success:
- * - if @exact is true  then @res_freq / <an_integer> == @req_freq
- * - if @exact is false then @res_freq / <an_integer> <= @req_freq
- *
- * Return: 0 on success, standard Linux error codes on failure.
- */
+ 
 int geni_se_clk_freq_match(struct geni_se *se, unsigned long req_freq,
 			   unsigned int *index, unsigned long *res_freq,
 			   bool exact)
@@ -638,15 +451,15 @@ int geni_se_clk_freq_match(struct geni_se *se, unsigned long req_freq,
 		divider = DIV_ROUND_UP(tbl[i], req_freq);
 		new_delta = req_freq - tbl[i] / divider;
 		if (new_delta < best_delta) {
-			/* We have a new best! */
+			 
 			*index = i;
 			*res_freq = tbl[i];
 
-			/* If the new best is exact then we're done */
+			 
 			if (new_delta == 0)
 				return 0;
 
-			/* Record how close we got */
+			 
 			best_delta = new_delta;
 		}
 	}
@@ -663,14 +476,7 @@ EXPORT_SYMBOL(geni_se_clk_freq_match);
 #define GENI_SE_DMA_AHB_ERR_EN BIT(2)
 #define GENI_SE_DMA_EOT_BUF BIT(0)
 
-/**
- * geni_se_tx_init_dma() - Initiate TX DMA transfer on the serial engine
- * @se:			Pointer to the concerned serial engine.
- * @iova:		Mapped DMA address.
- * @len:		Length of the TX buffer.
- *
- * This function is used to initiate DMA TX transfer.
- */
+ 
 void geni_se_tx_init_dma(struct geni_se *se, dma_addr_t iova, size_t len)
 {
 	u32 val;
@@ -686,17 +492,7 @@ void geni_se_tx_init_dma(struct geni_se *se, dma_addr_t iova, size_t len)
 }
 EXPORT_SYMBOL(geni_se_tx_init_dma);
 
-/**
- * geni_se_tx_dma_prep() - Prepare the serial engine for TX DMA transfer
- * @se:			Pointer to the concerned serial engine.
- * @buf:		Pointer to the TX buffer.
- * @len:		Length of the TX buffer.
- * @iova:		Pointer to store the mapped DMA address.
- *
- * This function is used to prepare the buffers for DMA TX.
- *
- * Return: 0 on success, standard Linux error codes on failure.
- */
+ 
 int geni_se_tx_dma_prep(struct geni_se *se, void *buf, size_t len,
 			dma_addr_t *iova)
 {
@@ -714,14 +510,7 @@ int geni_se_tx_dma_prep(struct geni_se *se, void *buf, size_t len,
 }
 EXPORT_SYMBOL(geni_se_tx_dma_prep);
 
-/**
- * geni_se_rx_init_dma() - Initiate RX DMA transfer on the serial engine
- * @se:			Pointer to the concerned serial engine.
- * @iova:		Mapped DMA address.
- * @len:		Length of the RX buffer.
- *
- * This function is used to initiate DMA RX transfer.
- */
+ 
 void geni_se_rx_init_dma(struct geni_se *se, dma_addr_t iova, size_t len)
 {
 	u32 val;
@@ -732,23 +521,13 @@ void geni_se_rx_init_dma(struct geni_se *se, dma_addr_t iova, size_t len)
 	writel_relaxed(val, se->base + SE_DMA_RX_IRQ_EN_SET);
 	writel_relaxed(lower_32_bits(iova), se->base + SE_DMA_RX_PTR_L);
 	writel_relaxed(upper_32_bits(iova), se->base + SE_DMA_RX_PTR_H);
-	/* RX does not have EOT buffer type bit. So just reset RX_ATTR */
+	 
 	writel_relaxed(0, se->base + SE_DMA_RX_ATTR);
 	writel(len, se->base + SE_DMA_RX_LEN);
 }
 EXPORT_SYMBOL(geni_se_rx_init_dma);
 
-/**
- * geni_se_rx_dma_prep() - Prepare the serial engine for RX DMA transfer
- * @se:			Pointer to the concerned serial engine.
- * @buf:		Pointer to the RX buffer.
- * @len:		Length of the RX buffer.
- * @iova:		Pointer to store the mapped DMA address.
- *
- * This function is used to prepare the buffers for DMA RX.
- *
- * Return: 0 on success, standard Linux error codes on failure.
- */
+ 
 int geni_se_rx_dma_prep(struct geni_se *se, void *buf, size_t len,
 			dma_addr_t *iova)
 {
@@ -766,14 +545,7 @@ int geni_se_rx_dma_prep(struct geni_se *se, void *buf, size_t len,
 }
 EXPORT_SYMBOL(geni_se_rx_dma_prep);
 
-/**
- * geni_se_tx_dma_unprep() - Unprepare the serial engine after TX DMA transfer
- * @se:			Pointer to the concerned serial engine.
- * @iova:		DMA address of the TX buffer.
- * @len:		Length of the TX buffer.
- *
- * This function is used to unprepare the DMA buffers after DMA TX.
- */
+ 
 void geni_se_tx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
 {
 	struct geni_wrapper *wrapper = se->wrapper;
@@ -783,14 +555,7 @@ void geni_se_tx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
 }
 EXPORT_SYMBOL(geni_se_tx_dma_unprep);
 
-/**
- * geni_se_rx_dma_unprep() - Unprepare the serial engine after RX DMA transfer
- * @se:			Pointer to the concerned serial engine.
- * @iova:		DMA address of the RX buffer.
- * @len:		Length of the RX buffer.
- *
- * This function is used to unprepare the DMA buffers after DMA RX.
- */
+ 
 void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
 {
 	struct geni_wrapper *wrapper = se->wrapper;
@@ -856,7 +621,7 @@ void geni_icc_set_tag(struct geni_se *se, u32 tag)
 }
 EXPORT_SYMBOL(geni_icc_set_tag);
 
-/* To do: Replace this by icc_bulk_enable once it's implemented in ICC core */
+ 
 int geni_icc_enable(struct geni_se *se)
 {
 	int i, ret;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include "mt7601u.h"
 #include "dma.h"
@@ -51,7 +49,7 @@ mt7601u_rx_skb_from_seg(struct mt7601u_dev *dev, struct mt7601u_rxwi *rxwi,
 		hdr_len = 0;
 	}
 
-	/* If not doing paged RX allocated skb will always have enough space */
+	 
 	copy = (true_len <= skb_tailroom(skb)) ? true_len : hdr_len + 8;
 	frag = true_len - copy;
 
@@ -81,9 +79,7 @@ static void mt7601u_rx_process_seg(struct mt7601u_dev *dev, u8 *data,
 	struct mt7601u_rxwi *rxwi;
 	u32 fce_info, truesize = seg_len;
 
-	/* DMA_INFO field at the beginning of the segment contains only some of
-	 * the information, we need to read the FCE descriptor from the end.
-	 */
+	 
 	fce_info = get_unaligned_le32(data + seg_len - MT_FCE_INFO_LEN);
 	seg_len -= MT_FCE_INFO_LEN;
 
@@ -142,7 +138,7 @@ mt7601u_rx_process_entry(struct mt7601u_dev *dev, struct mt7601u_dma_buf_rx *e)
 	if (!test_bit(MT7601U_STATE_INITIALIZED, &dev->state))
 		return;
 
-	/* Copy if there is very little data in the buffer. */
+	 
 	if (data_len > 512)
 		new_p = dev_alloc_pages(MT_RX_ORDER);
 
@@ -161,7 +157,7 @@ mt7601u_rx_process_entry(struct mt7601u_dev *dev, struct mt7601u_dma_buf_rx *e)
 	netif_receive_skb_list(&list);
 
 	if (new_p) {
-		/* we have one extra ref from the allocator */
+		 
 		put_page(e->p);
 		e->p = new_p;
 	}
@@ -194,9 +190,7 @@ static void mt7601u_complete_rx(struct urb *urb)
 	struct mt7601u_rx_queue *q = &dev->rx_q;
 	unsigned long flags;
 
-	/* do no schedule rx tasklet if urb has been unlinked
-	 * or the device has been removed
-	 */
+	 
 	switch (urb->status) {
 	case -ECONNRESET:
 	case -ESHUTDOWN:
@@ -325,9 +319,7 @@ static int mt7601u_dma_submit_tx(struct mt7601u_dev *dev,
 			  mt7601u_complete_tx, q);
 	ret = usb_submit_urb(e->urb, GFP_ATOMIC);
 	if (ret) {
-		/* Special-handle ENODEV from TX urb submission because it will
-		 * often be the first ENODEV we see after device is removed.
-		 */
+		 
 		if (ret == -ENODEV)
 			set_bit(MT7601U_STATE_REMOVED, &dev->state);
 		else
@@ -348,14 +340,14 @@ out:
 	return ret;
 }
 
-/* Map hardware Q to USB endpoint number */
+ 
 static u8 q2ep(u8 qid)
 {
-	/* TODO: take management packets to queue 5 */
+	 
 	return qid + 1;
 }
 
-/* Map USB endpoint number to Q id in the DMA engine */
+ 
 static enum mt76_qsel ep2dmaq(u8 ep)
 {
 	if (ep == 5)

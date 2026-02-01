@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 IBM Corp.
- */
+
+ 
 
 
 #include <linux/compiler.h>
@@ -23,27 +21,27 @@
 #define H_DOWNLOAD_CA_FACILITY 0x364
 #define H_CONTROL_CA_FACILITY  0x368
 
-#define H_CONTROL_CA_FUNCTION_RESET                   1 /* perform a reset */
-#define H_CONTROL_CA_FUNCTION_SUSPEND_PROCESS         2 /* suspend a process from being executed */
-#define H_CONTROL_CA_FUNCTION_RESUME_PROCESS          3 /* resume a process to be executed */
-#define H_CONTROL_CA_FUNCTION_READ_ERR_STATE          4 /* read the error state */
-#define H_CONTROL_CA_FUNCTION_GET_AFU_ERR             5 /* collect the AFU error buffer */
-#define H_CONTROL_CA_FUNCTION_GET_CONFIG              6 /* collect configuration record */
-#define H_CONTROL_CA_FUNCTION_GET_DOWNLOAD_STATE      7 /* query to return download status */
-#define H_CONTROL_CA_FUNCTION_TERMINATE_PROCESS       8 /* terminate the process before completion */
-#define H_CONTROL_CA_FUNCTION_COLLECT_VPD             9 /* collect VPD */
-#define H_CONTROL_CA_FUNCTION_GET_FUNCTION_ERR_INT   11 /* read the function-wide error data based on an interrupt */
-#define H_CONTROL_CA_FUNCTION_ACK_FUNCTION_ERR_INT   12 /* acknowledge function-wide error data based on an interrupt */
-#define H_CONTROL_CA_FUNCTION_GET_ERROR_LOG          13 /* retrieve the Platform Log ID (PLID) of an error log */
+#define H_CONTROL_CA_FUNCTION_RESET                   1  
+#define H_CONTROL_CA_FUNCTION_SUSPEND_PROCESS         2  
+#define H_CONTROL_CA_FUNCTION_RESUME_PROCESS          3  
+#define H_CONTROL_CA_FUNCTION_READ_ERR_STATE          4  
+#define H_CONTROL_CA_FUNCTION_GET_AFU_ERR             5  
+#define H_CONTROL_CA_FUNCTION_GET_CONFIG              6  
+#define H_CONTROL_CA_FUNCTION_GET_DOWNLOAD_STATE      7  
+#define H_CONTROL_CA_FUNCTION_TERMINATE_PROCESS       8  
+#define H_CONTROL_CA_FUNCTION_COLLECT_VPD             9  
+#define H_CONTROL_CA_FUNCTION_GET_FUNCTION_ERR_INT   11  
+#define H_CONTROL_CA_FUNCTION_ACK_FUNCTION_ERR_INT   12  
+#define H_CONTROL_CA_FUNCTION_GET_ERROR_LOG          13  
 
 #define H_CONTROL_CA_FAULTS_RESPOND_PSL         1
 #define H_CONTROL_CA_FAULTS_RESPOND_AFU         2
 
-#define H_CONTROL_CA_FACILITY_RESET             1 /* perform a reset */
-#define H_CONTROL_CA_FACILITY_COLLECT_VPD       2 /* collect VPD */
+#define H_CONTROL_CA_FACILITY_RESET             1  
+#define H_CONTROL_CA_FACILITY_COLLECT_VPD       2  
 
-#define H_DOWNLOAD_CA_FACILITY_DOWNLOAD         1 /* download adapter image */
-#define H_DOWNLOAD_CA_FACILITY_VALIDATE         2 /* validate adapter image */
+#define H_DOWNLOAD_CA_FACILITY_DOWNLOAD         1  
+#define H_DOWNLOAD_CA_FACILITY_VALIDATE         2  
 
 
 #define _CXL_LOOP_HCALL(call, rc, retbuf, fn, ...)			\
@@ -86,32 +84,32 @@
 
 
 static char *afu_op_names[] = {
-	"UNKNOWN_OP",		/* 0 undefined */
-	"RESET",		/* 1 */
-	"SUSPEND_PROCESS",	/* 2 */
-	"RESUME_PROCESS",	/* 3 */
-	"READ_ERR_STATE",	/* 4 */
-	"GET_AFU_ERR",		/* 5 */
-	"GET_CONFIG",		/* 6 */
-	"GET_DOWNLOAD_STATE",	/* 7 */
-	"TERMINATE_PROCESS",	/* 8 */
-	"COLLECT_VPD",		/* 9 */
-	"UNKNOWN_OP",		/* 10 undefined */
-	"GET_FUNCTION_ERR_INT",	/* 11 */
-	"ACK_FUNCTION_ERR_INT",	/* 12 */
-	"GET_ERROR_LOG",	/* 13 */
+	"UNKNOWN_OP",		 
+	"RESET",		 
+	"SUSPEND_PROCESS",	 
+	"RESUME_PROCESS",	 
+	"READ_ERR_STATE",	 
+	"GET_AFU_ERR",		 
+	"GET_CONFIG",		 
+	"GET_DOWNLOAD_STATE",	 
+	"TERMINATE_PROCESS",	 
+	"COLLECT_VPD",		 
+	"UNKNOWN_OP",		 
+	"GET_FUNCTION_ERR_INT",	 
+	"ACK_FUNCTION_ERR_INT",	 
+	"GET_ERROR_LOG",	 
 };
 
 static char *control_adapter_op_names[] = {
-	"UNKNOWN_OP",		/* 0 undefined */
-	"RESET",		/* 1 */
-	"COLLECT_VPD",		/* 2 */
+	"UNKNOWN_OP",		 
+	"RESET",		 
+	"COLLECT_VPD",		 
 };
 
 static char *download_op_names[] = {
-	"UNKNOWN_OP",		/* 0 undefined */
-	"DOWNLOAD",		/* 1 */
-	"VALIDATE",		/* 2 */
+	"UNKNOWN_OP",		 
+	"DOWNLOAD",		 
+	"VALIDATE",		 
 };
 
 static char *op_str(unsigned int op, char *name_array[], int array_len)
@@ -145,20 +143,20 @@ long cxl_h_attach_process(u64 unit_address,
 	cxl_dump_debug_buffer(element, sizeof(*element));
 
 	switch (rc) {
-	case H_SUCCESS:       /* The process info is attached to the coherent platform function */
+	case H_SUCCESS:        
 		*process_token = retbuf[0];
 		if (mmio_addr)
 			*mmio_addr = retbuf[1];
 		if (mmio_size)
 			*mmio_size = retbuf[2];
 		return 0;
-	case H_PARAMETER:     /* An incorrect parameter was supplied. */
-	case H_FUNCTION:      /* The function is not supported. */
+	case H_PARAMETER:      
+	case H_FUNCTION:       
 		return -EINVAL;
-	case H_AUTHORITY:     /* The partition does not have authority to perform this hcall */
-	case H_RESOURCE:      /* The coherent platform function does not have enough additional resource to attach the process */
-	case H_HARDWARE:      /* A hardware event prevented the attach operation */
-	case H_STATE:         /* The coherent platform function is not in a valid state */
+	case H_AUTHORITY:      
+	case H_RESOURCE:       
+	case H_HARDWARE:       
+	case H_STATE:          
 	case H_BUSY:
 		return -EBUSY;
 	default:
@@ -167,10 +165,7 @@ long cxl_h_attach_process(u64 unit_address,
 	}
 }
 
-/*
- * cxl_h_detach_process - Detach a process element from a coherent
- *                        platform function.
- */
+ 
 long cxl_h_detach_process(u64 unit_address, u64 process_token)
 {
 	unsigned long retbuf[PLPAR_HCALL_BUFSIZE];
@@ -181,14 +176,14 @@ long cxl_h_detach_process(u64 unit_address, u64 process_token)
 	trace_cxl_hcall_detach(unit_address, process_token, rc);
 
 	switch (rc) {
-	case H_SUCCESS:       /* The process was detached from the coherent platform function */
+	case H_SUCCESS:        
 		return 0;
-	case H_PARAMETER:     /* An incorrect parameter was supplied. */
+	case H_PARAMETER:      
 		return -EINVAL;
-	case H_AUTHORITY:     /* The partition does not have authority to perform this hcall */
-	case H_RESOURCE:      /* The function has page table mappings for MMIO */
-	case H_HARDWARE:      /* A hardware event prevented the detach operation */
-	case H_STATE:         /* The coherent platform function is not in a valid state */
+	case H_AUTHORITY:      
+	case H_RESOURCE:       
+	case H_HARDWARE:       
+	case H_STATE:          
 	case H_BUSY:
 		return -EBUSY;
 	default:
@@ -197,11 +192,7 @@ long cxl_h_detach_process(u64 unit_address, u64 process_token)
 	}
 }
 
-/*
- * cxl_h_control_function - This H_CONTROL_CA_FUNCTION hypervisor call allows
- *                          the partition to manipulate or query
- *                          certain coherent platform function behaviors.
- */
+ 
 static long cxl_h_control_function(u64 unit_address, u64 op,
 				   u64 p1, u64 p2, u64 p3, u64 p4, u64 *out)
 {
@@ -214,22 +205,22 @@ static long cxl_h_control_function(u64 unit_address, u64 op,
 	trace_cxl_hcall_control_function(unit_address, OP_STR_AFU(op), p1, p2, p3, p4, retbuf[0], rc);
 
 	switch (rc) {
-	case H_SUCCESS:       /* The operation is completed for the coherent platform function */
+	case H_SUCCESS:        
 		if ((op == H_CONTROL_CA_FUNCTION_GET_FUNCTION_ERR_INT ||
 		     op == H_CONTROL_CA_FUNCTION_READ_ERR_STATE ||
 		     op == H_CONTROL_CA_FUNCTION_COLLECT_VPD))
 			*out = retbuf[0];
 		return 0;
-	case H_PARAMETER:     /* An incorrect parameter was supplied. */
-	case H_FUNCTION:      /* The function is not supported. */
-	case H_NOT_FOUND:     /* The operation supplied was not valid */
-	case H_NOT_AVAILABLE: /* The operation cannot be performed because the AFU has not been downloaded */
-	case H_SG_LIST:       /* An block list entry was invalid */
+	case H_PARAMETER:      
+	case H_FUNCTION:       
+	case H_NOT_FOUND:      
+	case H_NOT_AVAILABLE:  
+	case H_SG_LIST:        
 		return -EINVAL;
-	case H_AUTHORITY:     /* The partition does not have authority to perform this hcall */
-	case H_RESOURCE:      /* The function has page table mappings for MMIO */
-	case H_HARDWARE:      /* A hardware event prevented the attach operation */
-	case H_STATE:         /* The coherent platform function is not in a valid state */
+	case H_AUTHORITY:      
+	case H_RESOURCE:       
+	case H_HARDWARE:       
+	case H_STATE:          
 	case H_BUSY:
 		return -EBUSY;
 	default:
@@ -238,9 +229,7 @@ static long cxl_h_control_function(u64 unit_address, u64 op,
 	}
 }
 
-/*
- * cxl_h_reset_afu - Perform a reset to the coherent platform function.
- */
+ 
 long cxl_h_reset_afu(u64 unit_address)
 {
 	return cxl_h_control_function(unit_address,
@@ -249,11 +238,7 @@ long cxl_h_reset_afu(u64 unit_address)
 				NULL);
 }
 
-/*
- * cxl_h_suspend_process - Suspend a process from being executed
- * Parameter1 = process-token as returned from H_ATTACH_CA_PROCESS when
- *              process was attached.
- */
+ 
 long cxl_h_suspend_process(u64 unit_address, u64 process_token)
 {
 	return cxl_h_control_function(unit_address,
@@ -262,11 +247,7 @@ long cxl_h_suspend_process(u64 unit_address, u64 process_token)
 				NULL);
 }
 
-/*
- * cxl_h_resume_process - Resume a process to be executed
- * Parameter1 = process-token as returned from H_ATTACH_CA_PROCESS when
- *              process was attached.
- */
+ 
 long cxl_h_resume_process(u64 unit_address, u64 process_token)
 {
 	return cxl_h_control_function(unit_address,
@@ -275,11 +256,7 @@ long cxl_h_resume_process(u64 unit_address, u64 process_token)
 				NULL);
 }
 
-/*
- * cxl_h_read_error_state - Checks the error state of the coherent
- *                          platform function.
- * R4 contains the error state
- */
+ 
 long cxl_h_read_error_state(u64 unit_address, u64 *state)
 {
 	return cxl_h_control_function(unit_address,
@@ -288,13 +265,7 @@ long cxl_h_read_error_state(u64 unit_address, u64 *state)
 				state);
 }
 
-/*
- * cxl_h_get_afu_err - collect the AFU error buffer
- * Parameter1 = byte offset into error buffer to retrieve, valid values
- *              are between 0 and (ibm,error-buffer-size - 1)
- * Parameter2 = 4K aligned real address of error buffer, to be filled in
- * Parameter3 = length of error buffer, valid values are 4K or less
- */
+ 
 long cxl_h_get_afu_err(u64 unit_address, u64 offset,
 		u64 buf_address, u64 len)
 {
@@ -304,17 +275,7 @@ long cxl_h_get_afu_err(u64 unit_address, u64 offset,
 				NULL);
 }
 
-/*
- * cxl_h_get_config - collect configuration record for the
- *                    coherent platform function
- * Parameter1 = # of configuration record to retrieve, valid values are
- *              between 0 and (ibm,#config-records - 1)
- * Parameter2 = byte offset into configuration record to retrieve,
- *              valid values are between 0 and (ibm,config-record-size - 1)
- * Parameter3 = 4K aligned real address of configuration record buffer,
- *              to be filled in
- * Parameter4 = length of configuration buffer, valid values are 4K or less
- */
+ 
 long cxl_h_get_config(u64 unit_address, u64 cr_num, u64 offset,
 		u64 buf_address, u64 len)
 {
@@ -324,11 +285,7 @@ long cxl_h_get_config(u64 unit_address, u64 cr_num, u64 offset,
 				NULL);
 }
 
-/*
- * cxl_h_terminate_process - Terminate the process before completion
- * Parameter1 = process-token as returned from H_ATTACH_CA_PROCESS when
- *              process was attached.
- */
+ 
 long cxl_h_terminate_process(u64 unit_address, u64 process_token)
 {
 	return cxl_h_control_function(unit_address,
@@ -337,15 +294,7 @@ long cxl_h_terminate_process(u64 unit_address, u64 process_token)
 				NULL);
 }
 
-/*
- * cxl_h_collect_vpd - Collect VPD for the coherent platform function.
- * Parameter1 = # of VPD record to retrieve, valid values are between 0
- *              and (ibm,#config-records - 1).
- * Parameter2 = 4K naturally aligned real buffer containing block
- *              list entries
- * Parameter3 = number of block list entries in the block list, valid
- *              values are between 0 and 256
- */
+ 
 long cxl_h_collect_vpd(u64 unit_address, u64 record, u64 list_address,
 		       u64 num, u64 *out)
 {
@@ -355,9 +304,7 @@ long cxl_h_collect_vpd(u64 unit_address, u64 record, u64 list_address,
 				out);
 }
 
-/*
- * cxl_h_get_fn_error_interrupt - Read the function-wide error data based on an interrupt
- */
+ 
 long cxl_h_get_fn_error_interrupt(u64 unit_address, u64 *reg)
 {
 	return cxl_h_control_function(unit_address,
@@ -365,11 +312,7 @@ long cxl_h_get_fn_error_interrupt(u64 unit_address, u64 *reg)
 				0, 0, 0, 0, reg);
 }
 
-/*
- * cxl_h_ack_fn_error_interrupt - Acknowledge function-wide error data
- *                                based on an interrupt
- * Parameter1 = value to write to the function-wide error interrupt register
- */
+ 
 long cxl_h_ack_fn_error_interrupt(u64 unit_address, u64 value)
 {
 	return cxl_h_control_function(unit_address,
@@ -378,10 +321,7 @@ long cxl_h_ack_fn_error_interrupt(u64 unit_address, u64 value)
 				NULL);
 }
 
-/*
- * cxl_h_get_error_log - Retrieve the Platform Log ID (PLID) of
- *                       an error log
- */
+ 
 long cxl_h_get_error_log(u64 unit_address, u64 value)
 {
 	return cxl_h_control_function(unit_address,
@@ -390,10 +330,7 @@ long cxl_h_get_error_log(u64 unit_address, u64 value)
 				NULL);
 }
 
-/*
- * cxl_h_collect_int_info - Collect interrupt info about a coherent
- *                          platform function after an interrupt occurred.
- */
+ 
 long cxl_h_collect_int_info(u64 unit_address, u64 process_token,
 			    struct cxl_irq_info *info)
 {
@@ -408,16 +345,16 @@ long cxl_h_collect_int_info(u64 unit_address, u64 process_token,
 	trace_cxl_hcall_collect_int_info(unit_address, process_token, rc);
 
 	switch (rc) {
-	case H_SUCCESS:     /* The interrupt info is returned in return registers. */
+	case H_SUCCESS:      
 		pr_devel("dsisr:%#llx, dar:%#llx, dsr:%#llx, pid_tid:%#llx, afu_err:%#llx, errstat:%#llx\n",
 			info->dsisr, info->dar, info->dsr, info->reserved,
 			info->afu_err, info->errstat);
 		return 0;
-	case H_PARAMETER:   /* An incorrect parameter was supplied. */
+	case H_PARAMETER:    
 		return -EINVAL;
-	case H_AUTHORITY:   /* The partition does not have authority to perform this hcall. */
-	case H_HARDWARE:    /* A hardware event prevented the collection of the interrupt info.*/
-	case H_STATE:       /* The coherent platform function is not in a valid state to collect interrupt info. */
+	case H_AUTHORITY:    
+	case H_HARDWARE:     
+	case H_STATE:        
 		return -EBUSY;
 	default:
 		WARN(1, "Unexpected return code: %lx", rc);
@@ -425,16 +362,7 @@ long cxl_h_collect_int_info(u64 unit_address, u64 process_token,
 	}
 }
 
-/*
- * cxl_h_control_faults - Control the operation of a coherent platform
- *                        function after a fault occurs.
- *
- * Parameters
- *    control-mask: value to control the faults
- *                  looks like PSL_TFC_An shifted >> 32
- *    reset-mask: mask to control reset of function faults
- *                Set reset_mask = 1 to reset PSL errors
- */
+ 
 long cxl_h_control_faults(u64 unit_address, u64 process_token,
 			  u64 control_mask, u64 reset_mask)
 {
@@ -453,16 +381,16 @@ long cxl_h_control_faults(u64 unit_address, u64 process_token,
 				control_mask, reset_mask, retbuf[0], rc);
 
 	switch (rc) {
-	case H_SUCCESS:    /* Faults were successfully controlled for the function. */
+	case H_SUCCESS:     
 		return 0;
-	case H_PARAMETER:  /* An incorrect parameter was supplied. */
+	case H_PARAMETER:   
 		return -EINVAL;
-	case H_HARDWARE:   /* A hardware event prevented the control of faults. */
-	case H_STATE:      /* The function was in an invalid state. */
-	case H_AUTHORITY:  /* The partition does not have authority to perform this hcall; the coherent platform facilities may need to be licensed. */
+	case H_HARDWARE:    
+	case H_STATE:       
+	case H_AUTHORITY:   
 		return -EBUSY;
-	case H_FUNCTION:   /* The function is not supported */
-	case H_NOT_FOUND:  /* The operation supplied was not valid */
+	case H_FUNCTION:    
+	case H_NOT_FOUND:   
 		return -EINVAL;
 	default:
 		WARN(1, "Unexpected return code: %lx", rc);
@@ -470,11 +398,7 @@ long cxl_h_control_faults(u64 unit_address, u64 process_token,
 	}
 }
 
-/*
- * cxl_h_control_facility - This H_CONTROL_CA_FACILITY hypervisor call
- *                          allows the partition to manipulate or query
- *                          certain coherent platform facility behaviors.
- */
+ 
 static long cxl_h_control_facility(u64 unit_address, u64 op,
 				   u64 p1, u64 p2, u64 p3, u64 p4, u64 *out)
 {
@@ -487,20 +411,20 @@ static long cxl_h_control_facility(u64 unit_address, u64 op,
 	trace_cxl_hcall_control_facility(unit_address, OP_STR_CONTROL_ADAPTER(op), p1, p2, p3, p4, retbuf[0], rc);
 
 	switch (rc) {
-	case H_SUCCESS:       /* The operation is completed for the coherent platform facility */
+	case H_SUCCESS:        
 		if (op == H_CONTROL_CA_FACILITY_COLLECT_VPD)
 			*out = retbuf[0];
 		return 0;
-	case H_PARAMETER:     /* An incorrect parameter was supplied. */
-	case H_FUNCTION:      /* The function is not supported. */
-	case H_NOT_FOUND:     /* The operation supplied was not valid */
-	case H_NOT_AVAILABLE: /* The operation cannot be performed because the AFU has not been downloaded */
-	case H_SG_LIST:       /* An block list entry was invalid */
+	case H_PARAMETER:      
+	case H_FUNCTION:       
+	case H_NOT_FOUND:      
+	case H_NOT_AVAILABLE:  
+	case H_SG_LIST:        
 		return -EINVAL;
-	case H_AUTHORITY:     /* The partition does not have authority to perform this hcall */
-	case H_RESOURCE:      /* The function has page table mappings for MMIO */
-	case H_HARDWARE:      /* A hardware event prevented the attach operation */
-	case H_STATE:         /* The coherent platform facility is not in a valid state */
+	case H_AUTHORITY:      
+	case H_RESOURCE:       
+	case H_HARDWARE:       
+	case H_STATE:          
 	case H_BUSY:
 		return -EBUSY;
 	default:
@@ -509,9 +433,7 @@ static long cxl_h_control_facility(u64 unit_address, u64 op,
 	}
 }
 
-/*
- * cxl_h_reset_adapter - Perform a reset to the coherent platform facility.
- */
+ 
 long cxl_h_reset_adapter(u64 unit_address)
 {
 	return cxl_h_control_facility(unit_address,
@@ -520,13 +442,7 @@ long cxl_h_reset_adapter(u64 unit_address)
 				NULL);
 }
 
-/*
- * cxl_h_collect_vpd - Collect VPD for the coherent platform function.
- * Parameter1 = 4K naturally aligned real buffer containing block
- *              list entries
- * Parameter2 = number of block list entries in the block list, valid
- *              values are between 0 and 256
- */
+ 
 long cxl_h_collect_vpd_adapter(u64 unit_address, u64 list_address,
 			       u64 num, u64 *out)
 {
@@ -536,25 +452,7 @@ long cxl_h_collect_vpd_adapter(u64 unit_address, u64 list_address,
 				out);
 }
 
-/*
- * cxl_h_download_facility - This H_DOWNLOAD_CA_FACILITY
- *                    hypervisor call provide platform support for
- *                    downloading a base adapter image to the coherent
- *                    platform facility, and for validating the entire
- *                    image after the download.
- * Parameters
- *    op: operation to perform to the coherent platform function
- *      Download: operation = 1, the base image in the coherent platform
- *                               facility is first erased, and then
- *                               programmed using the image supplied
- *                               in the scatter/gather list.
- *      Validate: operation = 2, the base image in the coherent platform
- *                               facility is compared with the image
- *                               supplied in the scatter/gather list.
- *    list_address: 4K naturally aligned real buffer containing
- *                  scatter/gather list entries.
- *    num: number of block list entries in the scatter/gather list.
- */
+ 
 static long cxl_h_download_facility(u64 unit_address, u64 op,
 				    u64 list_address, u64 num,
 				    u64 *out)
@@ -594,32 +492,29 @@ static long cxl_h_download_facility(u64 unit_address, u64 op,
 	trace_cxl_hcall_download_facility(unit_address, OP_STR_DOWNLOAD_ADAPTER(op), list_address, num, retbuf[0], rc);
 
 	switch (rc) {
-	case H_SUCCESS:       /* The operation is completed for the coherent platform facility */
+	case H_SUCCESS:        
 		return 0;
-	case H_PARAMETER:     /* An incorrect parameter was supplied */
-	case H_FUNCTION:      /* The function is not supported. */
-	case H_SG_LIST:       /* An block list entry was invalid */
-	case H_BAD_DATA:      /* Image verification failed */
+	case H_PARAMETER:      
+	case H_FUNCTION:       
+	case H_SG_LIST:        
+	case H_BAD_DATA:       
 		return -EINVAL;
-	case H_AUTHORITY:     /* The partition does not have authority to perform this hcall */
-	case H_RESOURCE:      /* The function has page table mappings for MMIO */
-	case H_HARDWARE:      /* A hardware event prevented the attach operation */
-	case H_STATE:         /* The coherent platform facility is not in a valid state */
+	case H_AUTHORITY:      
+	case H_RESOURCE:       
+	case H_HARDWARE:       
+	case H_STATE:          
 	case H_BUSY:
 		return -EBUSY;
 	case H_CONTINUE:
 		*out = retbuf[0];
-		return 1;  /* More data is needed for the complete image */
+		return 1;   
 	default:
 		WARN(1, "Unexpected return code: %lx", rc);
 		return -EINVAL;
 	}
 }
 
-/*
- * cxl_h_download_adapter_image - Download the base image to the coherent
- *                                platform facility.
- */
+ 
 long cxl_h_download_adapter_image(u64 unit_address,
 				  u64 list_address, u64 num,
 				  u64 *out)
@@ -629,10 +524,7 @@ long cxl_h_download_adapter_image(u64 unit_address,
 				       list_address, num, out);
 }
 
-/*
- * cxl_h_validate_adapter_image - Validate the base image in the coherent
- *                                platform facility.
- */
+ 
 long cxl_h_validate_adapter_image(u64 unit_address,
 				  u64 list_address, u64 num,
 				  u64 *out)

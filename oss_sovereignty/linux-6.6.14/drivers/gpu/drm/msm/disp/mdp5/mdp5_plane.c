@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014-2015 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_blend.h>
@@ -47,7 +43,7 @@ static void mdp5_plane_destroy(struct drm_plane *plane)
 	kfree(mdp5_plane);
 }
 
-/* helper to install properties which are common to planes and crtcs */
+ 
 static void mdp5_plane_install_properties(struct drm_plane *plane,
 		struct drm_mode_object *obj)
 {
@@ -196,16 +192,12 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
 	max_width = config->hw->lm.max_width << 16;
 	max_height = config->hw->lm.max_height << 16;
 
-	/* Make sure source dimensions are within bounds. */
+	 
 	if (state->src_h > max_height)
 		out_of_bounds = true;
 
 	if (state->src_w > max_width) {
-		/* If source split is supported, we can go up to 2x
-		 * the max LM width, but we'd need to stage another
-		 * hwpipe to the right LM. So, the drm_plane would
-		 * consist of 2 hwpipes.
-		 */
+		 
 		if (config->hw->mdp.caps & MDP_CAP_SRC_SPLIT &&
 		    (state->src_w <= 2 * max_width))
 			need_right_hwpipe = true;
@@ -257,15 +249,11 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
 		if (plane->type == DRM_PLANE_TYPE_CURSOR)
 			caps |= MDP_PIPE_CAP_CURSOR;
 
-		/* (re)allocate hw pipe if we don't have one or caps-mismatch: */
+		 
 		if (!mdp5_state->hwpipe || (caps & ~mdp5_state->hwpipe->caps))
 			new_hwpipe = true;
 
-		/*
-		 * (re)allocte hw pipe if we're either requesting for 2 hw pipes
-		 * or we're switching from 2 hw pipes to 1 hw pipe because the
-		 * new src_w can be supported by 1 hw pipe itself.
-		 */
+		 
 		if ((need_right_hwpipe && !mdp5_state->r_hwpipe) ||
 		    (!need_right_hwpipe && mdp5_state->r_hwpipe))
 			new_hwpipe = true;
@@ -281,12 +269,9 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
 				new_hwpipe = true;
 		}
 
-		/* (re)assign hwpipe if needed, otherwise keep old one: */
+		 
 		if (new_hwpipe) {
-			/* TODO maybe we want to re-assign hwpipe sometimes
-			 * in cases when we no-longer need some caps to make
-			 * it available for other planes?
-			 */
+			 
 			struct mdp5_hw_pipe *old_hwpipe = mdp5_state->hwpipe;
 			struct mdp5_hw_pipe *old_right_hwpipe =
 							  mdp5_state->r_hwpipe;
@@ -307,11 +292,7 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
 			if (need_right_hwpipe)
 				mdp5_state->r_hwpipe = new_right_hwpipe;
 			else
-				/*
-				 * set it to NULL so that the driver knows we
-				 * don't have a right hwpipe when committing a
-				 * new state
-				 */
+				 
 				mdp5_state->r_hwpipe = NULL;
 
 
@@ -375,7 +356,7 @@ static void mdp5_plane_atomic_update(struct drm_plane *plane,
 		ret = mdp5_plane_mode_set(plane,
 				new_state->crtc, new_state->fb,
 				&new_state->src, &new_state->dst);
-		/* atomic_check should have ensured that this doesn't fail */
+		 
 		WARN_ON(ret < 0);
 	}
 }
@@ -398,11 +379,11 @@ static int mdp5_plane_atomic_async_check(struct drm_plane *plane,
 	if (!crtc_state->active)
 		return -EINVAL;
 
-	/* don't use fast path if we don't have a hwpipe allocated yet */
+	 
 	if (!mdp5_state->hwpipe)
 		return -EINVAL;
 
-	/* only allow changing of position(crtc x/y or src x/y) in fast path */
+	 
 	if (plane->state->crtc != new_plane_state->crtc ||
 	    plane->state->src_w != new_plane_state->src_w ||
 	    plane->state->src_h != new_plane_state->src_h ||
@@ -421,13 +402,7 @@ static int mdp5_plane_atomic_async_check(struct drm_plane *plane,
 	if (ret)
 		return ret;
 
-	/*
-	 * if the visibility of the plane changes (i.e, if the cursor is
-	 * clipped out completely, we can't take the async path because
-	 * we need to stage/unstage the plane from the Layer Mixer(s). We
-	 * also assign/unassign the hwpipe(s) tied to the plane. We avoid
-	 * taking the fast path for both these reasons.
-	 */
+	 
 	if (new_plane_state->visible != plane->state->visible)
 		return -EINVAL;
 
@@ -500,7 +475,7 @@ static void set_scanout_locked(struct mdp5_kms *mdp5_kms,
 			msm_framebuffer_iova(fb, kms->aspace, 3));
 }
 
-/* Note: mdp5_plane->pipe_lock must be locked */
+ 
 static void csc_disable(struct mdp5_kms *mdp5_kms, enum mdp5_pipe pipe)
 {
 	uint32_t value = mdp5_read(mdp5_kms, REG_MDP5_PIPE_OP_MODE(pipe)) &
@@ -509,11 +484,11 @@ static void csc_disable(struct mdp5_kms *mdp5_kms, enum mdp5_pipe pipe)
 	mdp5_write(mdp5_kms, REG_MDP5_PIPE_OP_MODE(pipe), value);
 }
 
-/* Note: mdp5_plane->pipe_lock must be locked */
+ 
 static void csc_enable(struct mdp5_kms *mdp5_kms, enum mdp5_pipe pipe,
 		struct csc_cfg *csc)
 {
-	uint32_t  i, mode = 0; /* RGB, no CSC */
+	uint32_t  i, mode = 0;  
 	uint32_t *matrix;
 
 	if (unlikely(!csc))
@@ -563,7 +538,7 @@ static void csc_enable(struct mdp5_kms *mdp5_kms, enum mdp5_pipe pipe,
 }
 
 #define PHASE_STEP_SHIFT	21
-#define DOWN_SCALE_RATIO_MAX	32	/* 2^(26-21) */
+#define DOWN_SCALE_RATIO_MAX	32	 
 
 static int calc_phase_step(uint32_t src, uint32_t dst, uint32_t *out_phase)
 {
@@ -572,12 +547,7 @@ static int calc_phase_step(uint32_t src, uint32_t dst, uint32_t *out_phase)
 	if (src == 0 || dst == 0)
 		return -EINVAL;
 
-	/*
-	 * PHASE_STEP_X/Y is coded on 26 bits (25:0),
-	 * where 2^21 represents the unity "1" in fixed-point hardware design.
-	 * This leaves 5 bits for the integer part (downscale case):
-	 *	-> maximum downscale ratio = 0b1_1111 = 31
-	 */
+	 
 	if (src > (dst * DOWN_SCALE_RATIO_MAX))
 		return -EOVERFLOW;
 
@@ -672,13 +642,7 @@ static void calc_pixel_ext(const struct mdp_format *format,
 	bool scaling = format->is_yuv ? true : (src != dst);
 	int i;
 
-	/*
-	 * Note:
-	 * We assume here that:
-	 *     1. PCMN filter is used for downscale
-	 *     2. bilinear filter is used for upscale
-	 *     3. we are in a single pipe configuration
-	 */
+	 
 
 	for (i = 0; i < COMP_MAX; i++) {
 		pix_ext_edge1[i] = 0;
@@ -820,7 +784,7 @@ static void mdp5_hwpipe_mode_set(struct mdp5_kms *mdp5_kms,
 			COND(has_pe, MDP5_PIPE_SRC_OP_MODE_SW_PIX_EXT_OVERRIDE) |
 			MDP5_PIPE_SRC_OP_MODE_BWC(BWC_LOSSLESS));
 
-	/* not using secure mode: */
+	 
 	mdp5_write(mdp5_kms, REG_MDP5_PIPE_SRC_ADDR_SW_STATUS(pipe), 0);
 
 	if (hwpipe->caps & MDP_PIPE_CAP_SW_PIX_EXT)
@@ -881,7 +845,7 @@ static int mdp5_plane_mode_set(struct drm_plane *plane,
 
 	nplanes = fb->format->num_planes;
 
-	/* bad formats should already be rejected: */
+	 
 	if (WARN_ON(nplanes > pipe2nclients(pipe)))
 		return -EINVAL;
 
@@ -898,7 +862,7 @@ static int mdp5_plane_mode_set(struct drm_plane *plane,
 	crtc_w = drm_rect_width(dest);
 	crtc_h = drm_rect_height(dest);
 
-	/* src values are in Q16 fixed point, convert to integer: */
+	 
 	src_x = src_x >> 16;
 	src_y = src_y >> 16;
 	src_w = src_w >> 16;
@@ -913,11 +877,7 @@ static int mdp5_plane_mode_set(struct drm_plane *plane,
 
 	right_hwpipe = to_mdp5_plane_state(pstate)->r_hwpipe;
 	if (right_hwpipe) {
-		/*
-		 * if the plane comprises of 2 hw pipes, assume that the width
-		 * is split equally across them. The only parameters that varies
-		 * between the 2 pipes are src_x and crtc_x
-		 */
+		 
 		crtc_w /= 2;
 		src_w /= 2;
 		src_img_w /= 2;
@@ -938,9 +898,9 @@ static int mdp5_plane_mode_set(struct drm_plane *plane,
 			       pe.top, pe.bottom, false);
 	}
 
-	/* TODO calc hdecm, vdecm */
+	 
 
-	/* SCALE is used to both scale and up-sample chroma components */
+	 
 	config |= get_scale_config(format, src_w, crtc_w, true);
 	config |= get_scale_config(format, src_h, crtc_h, false);
 	DBG("scale config = %x", config);
@@ -967,10 +927,7 @@ static int mdp5_plane_mode_set(struct drm_plane *plane,
 	return ret;
 }
 
-/*
- * Use this func and the one below only after the atomic state has been
- * successfully swapped
- */
+ 
 enum mdp5_pipe mdp5_plane_pipe(struct drm_plane *plane)
 {
 	struct mdp5_plane_state *pstate = to_mdp5_plane_state(plane->state);
@@ -1007,7 +964,7 @@ uint32_t mdp5_plane_get_flush(struct drm_plane *plane)
 	return mask;
 }
 
-/* initialize plane */
+ 
 struct drm_plane *mdp5_plane_init(struct drm_device *dev,
 				  enum drm_plane_type type)
 {

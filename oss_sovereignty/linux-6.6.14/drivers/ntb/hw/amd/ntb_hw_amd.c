@@ -1,52 +1,4 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- *   redistributing this file, you may do so under either license.
- *
- *   GPL LICENSE SUMMARY
- *
- *   Copyright (C) 2016 Advanced Micro Devices, Inc. All Rights Reserved.
- *   Copyright (C) 2016 T-Platforms. All Rights Reserved.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of version 2 of the GNU General Public License as
- *   published by the Free Software Foundation.
- *
- *   BSD LICENSE
- *
- *   Copyright (C) 2016 Advanced Micro Devices, Inc. All Rights Reserved.
- *   Copyright (C) 2016 T-Platforms. All Rights Reserved.
- *
- *   Redistribution and use in source and binary forms, with or without
- *   modification, are permitted provided that the following conditions
- *   are met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copy
- *       notice, this list of conditions and the following disclaimer in
- *       the documentation and/or other materials provided with the
- *       distribution.
- *     * Neither the name of AMD Corporation nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * AMD PCIe NTB Linux driver
- *
- * Contact Information:
- * Xiangliang Yu <Xiangliang.Yu@amd.com>
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -135,7 +87,7 @@ static int amd_ntb_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 
 	mw_size = pci_resource_len(ntb->pdev, bar);
 
-	/* make sure the range fits in the usable mw size */
+	 
 	if (size > mw_size)
 		return -EINVAL;
 
@@ -148,10 +100,10 @@ static int amd_ntb_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 		xlat_reg = AMD_BAR23XLAT_OFFSET + ((bar - 2) << 2);
 		limit_reg = AMD_BAR23LMT_OFFSET + ((bar - 2) << 2);
 
-		/* Set the limit if supported */
+		 
 		limit = size;
 
-		/* set and verify setting the translation address */
+		 
 		write64(addr, peer_mmio + xlat_reg);
 		reg_val = read64(peer_mmio + xlat_reg);
 		if (reg_val != addr) {
@@ -159,7 +111,7 @@ static int amd_ntb_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 			return -EIO;
 		}
 
-		/* set and verify setting the limit */
+		 
 		write64(limit, peer_mmio + limit_reg);
 		reg_val = read64(peer_mmio + limit_reg);
 		if (reg_val != limit) {
@@ -171,10 +123,10 @@ static int amd_ntb_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 		xlat_reg = AMD_BAR1XLAT_OFFSET;
 		limit_reg = AMD_BAR1LMT_OFFSET;
 
-		/* Set the limit if supported */
+		 
 		limit = size;
 
-		/* set and verify setting the translation address */
+		 
 		write64(addr, peer_mmio + xlat_reg);
 		reg_val = read64(peer_mmio + xlat_reg);
 		if (reg_val != addr) {
@@ -182,7 +134,7 @@ static int amd_ntb_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 			return -EIO;
 		}
 
-		/* set and verify setting the limit */
+		 
 		writel(limit, peer_mmio + limit_reg);
 		reg_val = readl(peer_mmio + limit_reg);
 		if (reg_val != limit) {
@@ -204,13 +156,10 @@ static int amd_ntb_get_link_status(struct amd_ntb_dev *ndev)
 	int rc;
 
 	if (ndev->ntb.topo == NTB_TOPO_SEC) {
-		/* Locate the pointer to Downstream Switch for this device */
+		 
 		pci_swds = pci_upstream_bridge(ndev->ntb.pdev);
 		if (pci_swds) {
-			/*
-			 * Locate the pointer to Upstream Switch for
-			 * the Downstream Switch.
-			 */
+			 
 			pci_swus = pci_upstream_bridge(pci_swds);
 			if (pci_swus) {
 				rc = pcie_capability_read_dword(pci_swus,
@@ -225,16 +174,13 @@ static int amd_ntb_get_link_status(struct amd_ntb_dev *ndev)
 			return 0;
 		}
 	} else if (ndev->ntb.topo == NTB_TOPO_PRI) {
-		/*
-		 * For NTB primary, we simply read the Link Status and control
-		 * register of the NTB device itself.
-		 */
+		 
 		pdev = ndev->ntb.pdev;
 		rc = pcie_capability_read_dword(pdev, PCI_EXP_LNKCTL, &stat);
 		if (rc)
 			return 0;
 	} else {
-		/* Catch all for everything else */
+		 
 		return 0;
 	}
 
@@ -247,62 +193,21 @@ static int amd_link_is_up(struct amd_ntb_dev *ndev)
 {
 	int ret;
 
-	/*
-	 * We consider the link to be up under two conditions:
-	 *
-	 *   - When a link-up event is received. This is indicated by
-	 *     AMD_LINK_UP_EVENT set in peer_sta.
-	 *   - When driver on both sides of the link have been loaded.
-	 *     This is indicated by bit 1 being set in the peer
-	 *     SIDEINFO register.
-	 *
-	 * This function should return 1 when the latter of the above
-	 * two conditions is true.
-	 *
-	 * Now consider the sequence of events - Link-Up event occurs,
-	 * then the peer side driver loads. In this case, we would have
-	 * received LINK_UP event and bit 1 of peer SIDEINFO is also
-	 * set. What happens now if the link goes down? Bit 1 of
-	 * peer SIDEINFO remains set, but LINK_DOWN bit is set in
-	 * peer_sta. So we should return 0 from this function. Not only
-	 * that, we clear bit 1 of peer SIDEINFO to 0, since the peer
-	 * side driver did not even get a chance to clear it before
-	 * the link went down. This can be the case of surprise link
-	 * removal.
-	 *
-	 * LINK_UP event will always occur before the peer side driver
-	 * gets loaded the very first time. So there can be a case when
-	 * the LINK_UP event has occurred, but the peer side driver hasn't
-	 * yet loaded. We return 0 in that case.
-	 *
-	 * There is also a special case when the primary side driver is
-	 * unloaded and then loaded again. Since there is no change in
-	 * the status of NTB secondary in this case, there is no Link-Up
-	 * or Link-Down notification received. We recognize this condition
-	 * with peer_sta being set to 0.
-	 *
-	 * If bit 1 of peer SIDEINFO register is not set, then we
-	 * simply return 0 irrespective of the link up or down status
-	 * set in peer_sta.
-	 */
+	 
 	ret = amd_poll_link(ndev);
 	if (ret) {
-		/*
-		 * We need to check the below only for NTB primary. For NTB
-		 * secondary, simply checking the result of PSIDE_INFO
-		 * register will suffice.
-		 */
+		 
 		if (ndev->ntb.topo == NTB_TOPO_PRI) {
 			if ((ndev->peer_sta & AMD_LINK_UP_EVENT) ||
 			    (ndev->peer_sta == 0))
 				return ret;
 			else if (ndev->peer_sta & AMD_LINK_DOWN_EVENT) {
-				/* Clear peer sideinfo register */
+				 
 				amd_clear_side_info_reg(ndev, true);
 
 				return 0;
 			}
-		} else { /* NTB_TOPO_SEC */
+		} else {  
 			return ret;
 		}
 	}
@@ -345,7 +250,7 @@ static int amd_ntb_link_enable(struct ntb_dev *ntb,
 	struct amd_ntb_dev *ndev = ntb_ndev(ntb);
 	void __iomem *mmio = ndev->self_mmio;
 
-	/* Enable event interrupt */
+	 
 	ndev->int_mask &= ~AMD_EVENT_INTMASK;
 	writel(ndev->int_mask, mmio + AMD_INTMASK_OFFSET);
 
@@ -361,7 +266,7 @@ static int amd_ntb_link_disable(struct ntb_dev *ntb)
 	struct amd_ntb_dev *ndev = ntb_ndev(ntb);
 	void __iomem *mmio = ndev->self_mmio;
 
-	/* Disable event interrupt */
+	 
 	ndev->int_mask |= AMD_EVENT_INTMASK;
 	writel(ndev->int_mask, mmio + AMD_INTMASK_OFFSET);
 
@@ -374,7 +279,7 @@ static int amd_ntb_link_disable(struct ntb_dev *ntb)
 
 static int amd_ntb_peer_mw_count(struct ntb_dev *ntb)
 {
-	/* The same as for inbound MWs */
+	 
 	return ntb_ndev(ntb)->mw_count;
 }
 
@@ -602,9 +507,9 @@ static void amd_handle_event(struct amd_ntb_dev *ndev, int vec)
 
 		amd_ack_smu(ndev, status);
 
-		/* link down first */
+		 
 		ntb_link_event(&ndev->ntb);
-		/* polling peer status */
+		 
 		schedule_delayed_work(&ndev->hb_timer, AMD_LINK_HB_TIMEOUT);
 
 		break;
@@ -619,14 +524,14 @@ static void amd_handle_event(struct amd_ntb_dev *ndev, int vec)
 
 		amd_ack_smu(ndev, status);
 
-		/* link down */
+		 
 		ntb_link_event(&ndev->ntb);
 
 		break;
 	case AMD_PEER_D0_EVENT:
 		mmio = ndev->peer_mmio;
 		status = readl(mmio + AMD_PMESTAT_OFFSET);
-		/* check if this is WAKEUP event */
+		 
 		if (status & 0x1)
 			dev_info(dev, "Wakeup is done.\n");
 
@@ -634,7 +539,7 @@ static void amd_handle_event(struct amd_ntb_dev *ndev, int vec)
 		ndev->peer_sta &= ~AMD_PEER_D3_EVENT;
 		amd_ack_smu(ndev, AMD_PEER_D0_EVENT);
 
-		/* start a timer to poll link status */
+		 
 		schedule_delayed_work(&ndev->hb_timer,
 				      AMD_LINK_HB_TIMEOUT);
 		break;
@@ -643,7 +548,7 @@ static void amd_handle_event(struct amd_ntb_dev *ndev, int vec)
 		break;
 	}
 
-	/* Clear the interrupt status */
+	 
 	writel(status, mmio + AMD_INTSTAT_OFFSET);
 }
 
@@ -656,23 +561,13 @@ static void amd_handle_db_event(struct amd_ntb_dev *ndev, int vec)
 
 	dev_dbg(dev, "status = 0x%llx and vec = %d\n", status, vec);
 
-	/*
-	 * Since we had reserved highest order bit of DB for signaling peer of
-	 * a special event, this is the only status bit we should be concerned
-	 * here now.
-	 */
+	 
 	if (status & BIT(ndev->db_last_bit)) {
 		ntb_db_clear(&ndev->ntb, BIT(ndev->db_last_bit));
-		/* send link down event notification */
+		 
 		ntb_link_event(&ndev->ntb);
 
-		/*
-		 * If we are here, that means the peer has signalled a special
-		 * event which notifies that the peer driver has been
-		 * un-loaded for some reason. Since there is a chance that the
-		 * peer will load its driver again sometime, we schedule link
-		 * polling routine.
-		 */
+		 
 		schedule_delayed_work(&ndev->hb_timer, AMD_LINK_HB_TIMEOUT);
 	}
 }
@@ -718,7 +613,7 @@ static int ndev_init_isr(struct amd_ntb_dev *ndev,
 
 	ndev->db_mask = ndev->db_valid_mask;
 
-	/* Try to set up msix irq */
+	 
 	ndev->vec = kcalloc_node(msix_max, sizeof(*ndev->vec),
 				 GFP_KERNEL, node);
 	if (!ndev->vec)
@@ -737,9 +632,7 @@ static int ndev_init_isr(struct amd_ntb_dev *ndev,
 	if (msix_count < 0)
 		goto err_msix_enable;
 
-	/* NOTE: Disable MSIX if msix count is less than 16 because of
-	 * hardware limitation.
-	 */
+	 
 	if (msix_count < msix_min) {
 		pci_disable_msix(pdev);
 		goto err_msix_enable;
@@ -771,7 +664,7 @@ err_msix_vec_alloc:
 	ndev->msix = NULL;
 	ndev->vec = NULL;
 
-	/* Try to set up msi irq */
+	 
 	rc = pci_enable_msi(pdev);
 	if (rc)
 		goto err_msi_enable;
@@ -790,7 +683,7 @@ err_msi_request:
 	pci_disable_msi(pdev);
 err_msi_enable:
 
-	/* Try to set up intx irq */
+	 
 	pci_intx(pdev, 1);
 
 	rc = request_irq(pdev->irq, ndev_irq_isr, IRQF_SHARED,
@@ -815,7 +708,7 @@ static void ndev_deinit_isr(struct amd_ntb_dev *ndev)
 
 	pdev = ndev->ntb.pdev;
 
-	/* Mask all doorbell interrupts */
+	 
 	ndev->db_mask = ndev->db_valid_mask;
 	writel(ndev->db_mask, mmio + AMD_DBMASK_OFFSET);
 
@@ -1085,7 +978,7 @@ static int amd_init_ntb(struct amd_ntb_dev *ndev)
 		return -EINVAL;
 	}
 
-	/* Mask event interrupts */
+	 
 	writel(ndev->int_mask, mmio + AMD_INTMASK_OFFSET);
 
 	return 0;
@@ -1126,23 +1019,16 @@ static int amd_init_dev(struct amd_ntb_dev *ndev)
 	}
 
 	ndev->db_valid_mask = BIT_ULL(ndev->db_count) - 1;
-	/*
-	 * We reserve the highest order bit of the DB register which will
-	 * be used to notify peer when the driver on this side is being
-	 * un-loaded.
-	 */
+	 
 	ndev->db_last_bit =
 			find_last_bit((unsigned long *)&ndev->db_valid_mask,
 				      hweight64(ndev->db_valid_mask));
 	writew((u16)~BIT(ndev->db_last_bit), mmio + AMD_DBMASK_OFFSET);
-	/*
-	 * Since now there is one less bit to account for, the DB count
-	 * and DB mask should be adjusted accordingly.
-	 */
+	 
 	ndev->db_count -= 1;
 	ndev->db_valid_mask = BIT_ULL(ndev->db_count) - 1;
 
-	/* Enable Link-Up and Link-Down event interrupts */
+	 
 	ndev->int_mask &= ~(AMD_LINK_UP_EVENT | AMD_LINK_DOWN_EVENT);
 	writel(ndev->int_mask, mmio + AMD_INTMASK_OFFSET);
 
@@ -1236,7 +1122,7 @@ static int amd_ntb_pci_probe(struct pci_dev *pdev,
 	if (rc)
 		goto err_init_dev;
 
-	/* write side info */
+	 
 	amd_init_side_info(ndev);
 
 	amd_poll_link(ndev);
@@ -1266,11 +1152,7 @@ static void amd_ntb_pci_remove(struct pci_dev *pdev)
 {
 	struct amd_ntb_dev *ndev = pci_get_drvdata(pdev);
 
-	/*
-	 * Clear the READY bit in SIDEINFO register before sending DB event
-	 * to the peer. This will make sure that when the peer handles the
-	 * DB event, it correctly reads this bit as being 0.
-	 */
+	 
 	amd_deinit_side_info(ndev);
 	ntb_peer_db_set(&ndev->ntb, BIT_ULL(ndev->db_last_bit));
 	ntb_unregister_device(&ndev->ntb);
@@ -1284,7 +1166,7 @@ static void amd_ntb_pci_shutdown(struct pci_dev *pdev)
 {
 	struct amd_ntb_dev *ndev = pci_get_drvdata(pdev);
 
-	/* Send link down notification */
+	 
 	ntb_link_event(&ndev->ntb);
 
 	amd_deinit_side_info(ndev);
@@ -1303,11 +1185,11 @@ static const struct file_operations amd_ntb_debugfs_info = {
 };
 
 static const struct ntb_dev_data dev_data[] = {
-	{ /* for device 145b */
+	{  
 		.mw_count = 3,
 		.mw_idx = 1,
 	},
-	{ /* for device 148b */
+	{  
 		.mw_count = 2,
 		.mw_idx = 2,
 	},

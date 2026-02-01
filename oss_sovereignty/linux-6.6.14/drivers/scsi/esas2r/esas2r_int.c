@@ -1,58 +1,16 @@
-/*
- *  linux/drivers/scsi/esas2r/esas2r_int.c
- *      esas2r interrupt handling
- *
- *  Copyright (c) 2001-2013 ATTO Technology, Inc.
- *  (mailto:linuxdrivers@attotech.com)
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
-/*
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  NO WARRANTY
- *  THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- *  LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- *  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- *  solely responsible for determining the appropriateness of using and
- *  distributing the Program and assumes all risks associated with its
- *  exercise of rights under this Agreement, including but not limited to
- *  the risks and costs of program errors, damage to or loss of data,
- *  programs or equipment, and unavailability or interruption of operations.
- *
- *  DISCLAIMER OF LIABILITY
- *  NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- *  DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- *  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- *  USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- *  HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+ 
+ 
+ 
+ 
 
 #include "esas2r.h"
 
-/* Local function prototypes */
+ 
 static void esas2r_doorbell_interrupt(struct esas2r_adapter *a, u32 doorbell);
 static void esas2r_get_outbound_responses(struct esas2r_adapter *a);
 static void esas2r_process_bus_reset(struct esas2r_adapter *a);
 
-/*
- * Poll the adapter for interrupts and service them.
- * This function handles both legacy interrupts and MSI.
- */
+ 
 void esas2r_polled_interrupt(struct esas2r_adapter *a)
 {
 	u32 intstat;
@@ -63,7 +21,7 @@ void esas2r_polled_interrupt(struct esas2r_adapter *a)
 	intstat = esas2r_read_register_dword(a, MU_INT_STATUS_OUT);
 
 	if (intstat & MU_INTSTAT_POST_OUT) {
-		/* clear the interrupt */
+		 
 
 		esas2r_write_register_dword(a, MU_OUT_LIST_INT_STAT,
 					    MU_OLIS_INT);
@@ -84,11 +42,7 @@ void esas2r_polled_interrupt(struct esas2r_adapter *a)
 		esas2r_do_deferred_processes(a);
 }
 
-/*
- * Legacy and MSI interrupt handlers.  Note that the legacy interrupt handler
- * schedules a TASKLET to process events, whereas the MSI handler just
- * processes interrupt events directly.
- */
+ 
 irqreturn_t esas2r_interrupt(int irq, void *dev_id)
 {
 	struct esas2r_adapter *a = (struct esas2r_adapter *)dev_id;
@@ -107,7 +61,7 @@ void esas2r_adapter_interrupt(struct esas2r_adapter *a)
 	u32 doorbell;
 
 	if (likely(a->int_stat & MU_INTSTAT_POST_OUT)) {
-		/* clear the interrupt */
+		 
 		esas2r_write_register_dword(a, MU_OUT_LIST_INT_STAT,
 					    MU_OLIS_INT);
 		esas2r_flush_register_dword(a, MU_OUT_LIST_INT_STAT);
@@ -137,7 +91,7 @@ irqreturn_t esas2r_msi_interrupt(int irq, void *dev_id)
 	intstat = esas2r_read_register_dword(a, MU_INT_STATUS_OUT);
 
 	if (likely(intstat & MU_INTSTAT_POST_OUT)) {
-		/* clear the interrupt */
+		 
 
 		esas2r_write_register_dword(a, MU_OUT_LIST_INT_STAT,
 					    MU_OLIS_INT);
@@ -152,10 +106,7 @@ irqreturn_t esas2r_msi_interrupt(int irq, void *dev_id)
 			esas2r_doorbell_interrupt(a, doorbell);
 	}
 
-	/*
-	 * Work around a chip bug and force a new MSI to be sent if one is
-	 * still pending.
-	 */
+	 
 	esas2r_disable_chip_interrupts(a);
 	esas2r_enable_chip_interrupts(a);
 
@@ -174,10 +125,7 @@ static void esas2r_handle_outbound_rsp_err(struct esas2r_adapter *a,
 					   struct atto_vda_ob_rsp *rsp)
 {
 
-	/*
-	 * For I/O requests, only copy the response if an error
-	 * occurred and setup a callback to do error processing.
-	 */
+	 
 	if (unlikely(rq->req_stat != RS_SUCCESS)) {
 		memcpy(&rq->func_rsp, &rsp->func_rsp, sizeof(rsp->func_rsp));
 
@@ -189,7 +137,7 @@ static void esas2r_handle_outbound_rsp_err(struct esas2r_adapter *a,
 
 			esas2r_trace("scsistatus: %x", scsistatus);
 
-			/* Any of these are a good result. */
+			 
 			if (scsistatus == SAM_STAT_GOOD || scsistatus ==
 			    SAM_STAT_CONDITION_MET || scsistatus ==
 			    SAM_STAT_INTERMEDIATE || scsistatus ==
@@ -217,20 +165,20 @@ static void esas2r_get_outbound_responses(struct esas2r_adapter *a)
 
 	spin_lock_irqsave(&a->queue_lock, flags);
 
-	/* Get the outbound limit and pointers */
+	 
 	rspput_ptr = le32_to_cpu(*a->outbound_copy) & MU_OLC_WRT_PTR;
 	rspget_ptr = a->last_read;
 
 	esas2r_trace("rspput_ptr: %x, rspget_ptr: %x", rspput_ptr, rspget_ptr);
 
-	/* If we don't have anything to process, get out */
+	 
 	if (unlikely(rspget_ptr == rspput_ptr)) {
 		spin_unlock_irqrestore(&a->queue_lock, flags);
 		esas2r_trace_exit();
 		return;
 	}
 
-	/* Make sure the firmware is healthy */
+	 
 	if (unlikely(rspput_ptr >= a->list_size)) {
 		spin_unlock_irqrestore(&a->queue_lock, flags);
 		esas2r_bugon();
@@ -250,7 +198,7 @@ static void esas2r_get_outbound_responses(struct esas2r_adapter *a)
 
 		handle = rsp->handle;
 
-		/* Verify the handle range */
+		 
 		if (unlikely(LOWORD(handle) == 0
 			     || LOWORD(handle) > num_requests +
 			     num_ae_requests + 1)) {
@@ -258,7 +206,7 @@ static void esas2r_get_outbound_responses(struct esas2r_adapter *a)
 			continue;
 		}
 
-		/* Get the request for this handle */
+		 
 		rq = a->req_table[LOWORD(handle)];
 
 		if (unlikely(rq == NULL || rq->vrq->scsi.handle != handle)) {
@@ -268,7 +216,7 @@ static void esas2r_get_outbound_responses(struct esas2r_adapter *a)
 
 		list_del(&rq->req_list);
 
-		/* Get the completion status */
+		 
 		rq->req_stat = rsp->req_stat;
 
 		esas2r_trace("handle: %x", handle);
@@ -278,15 +226,12 @@ static void esas2r_get_outbound_responses(struct esas2r_adapter *a)
 		if (likely(rq->vrq->scsi.function == VDA_FUNC_SCSI)) {
 			esas2r_handle_outbound_rsp_err(a, rq, rsp);
 		} else {
-			/*
-			 * Copy the outbound completion struct for non-I/O
-			 * requests.
-			 */
+			 
 			memcpy(&rq->func_rsp, &rsp->func_rsp,
 			       sizeof(rsp->func_rsp));
 		}
 
-		/* Queue the request for completion. */
+		 
 		list_add_tail(&rq->comp_list, &comp_list);
 
 	} while (rspget_ptr != rspput_ptr);
@@ -298,24 +243,14 @@ static void esas2r_get_outbound_responses(struct esas2r_adapter *a)
 	esas2r_trace_exit();
 }
 
-/*
- * Perform all deferred processes for the adapter.  Deferred
- * processes can only be done while the current interrupt
- * disable_cnt for the adapter is zero.
- */
+ 
 void esas2r_do_deferred_processes(struct esas2r_adapter *a)
 {
 	int startreqs = 2;
 	struct esas2r_request *rq;
 	unsigned long flags;
 
-	/*
-	 * startreqs is used to control starting requests
-	 * that are on the deferred queue
-	 *  = 0 - do not start any requests
-	 *  = 1 - can start discovery requests
-	 *  = 2 - can start any request
-	 */
+	 
 
 	if (test_bit(AF_CHPRST_PENDING, &a->flags) ||
 	    test_bit(AF_FLASHING, &a->flags))
@@ -325,7 +260,7 @@ void esas2r_do_deferred_processes(struct esas2r_adapter *a)
 
 	atomic_inc(&a->disable_cnt);
 
-	/* Clear off the completed list to be processed later. */
+	 
 
 	if (esas2r_is_tasklet_pending(a)) {
 		esas2r_schedule_tasklet(a);
@@ -333,10 +268,7 @@ void esas2r_do_deferred_processes(struct esas2r_adapter *a)
 		startreqs = 0;
 	}
 
-	/*
-	 * If we can start requests then traverse the defer queue
-	 * looking for requests to start or complete
-	 */
+	 
 	if (startreqs && !list_empty(&a->defer_list)) {
 		LIST_HEAD(comp_list);
 		struct list_head *element, *next;
@@ -351,12 +283,7 @@ void esas2r_do_deferred_processes(struct esas2r_adapter *a)
 				list_del(element);
 				list_add_tail(&rq->comp_list, &comp_list);
 			}
-			/*
-			 * Process discovery and OS requests separately.  We
-			 * can't hold up discovery requests when discovery is
-			 * pending.  In general, there may be different sets of
-			 * conditions for starting different types of requests.
-			 */
+			 
 			else if (rq->req_type == RT_DISC_REQ) {
 				list_del(element);
 				esas2r_disc_local_start_request(a, rq);
@@ -364,10 +291,7 @@ void esas2r_do_deferred_processes(struct esas2r_adapter *a)
 				list_del(element);
 				esas2r_local_start_request(a, rq);
 
-				/*
-				 * Flashing could have been set by last local
-				 * start
-				 */
+				 
 				if (test_bit(AF_FLASHING, &a->flags))
 					break;
 			}
@@ -380,11 +304,7 @@ void esas2r_do_deferred_processes(struct esas2r_adapter *a)
 	atomic_dec(&a->disable_cnt);
 }
 
-/*
- * Process an adapter reset (or one that is about to happen)
- * by making sure all outstanding requests are completed that
- * haven't been already.
- */
+ 
 void esas2r_process_adapter_reset(struct esas2r_adapter *a)
 {
 	struct esas2r_request *rq = &a->general_req;
@@ -398,7 +318,7 @@ void esas2r_process_adapter_reset(struct esas2r_adapter *a)
 
 	spin_lock_irqsave(&a->queue_lock, flags);
 
-	/* abort the active discovery, if any.   */
+	 
 
 	if (rq->interrupt_cx) {
 		dc = (struct esas2r_disc_context *)rq->interrupt_cx;
@@ -408,19 +328,14 @@ void esas2r_process_adapter_reset(struct esas2r_adapter *a)
 		clear_bit(AF_DISC_IN_PROG, &a->flags);
 	}
 
-	/*
-	 * just clear the interrupt callback for now.  it will be dequeued if
-	 * and when we find it on the active queue and we don't want the
-	 * callback called.  also set the dummy completion callback in case we
-	 * were doing an I/O request.
-	 */
+	 
 
 	rq->interrupt_cx = NULL;
 	rq->interrupt_cb = NULL;
 
 	rq->comp_cb = esas2r_dummy_complete;
 
-	/* Reset the read and write pointers */
+	 
 
 	*a->outbound_copy =
 		a->last_write =
@@ -428,7 +343,7 @@ void esas2r_process_adapter_reset(struct esas2r_adapter *a)
 
 	set_bit(AF_COMM_LIST_TOGGLE, &a->flags);
 
-	/* Kill all the requests on the active list */
+	 
 	list_for_each(element, &a->defer_list) {
 		rq = list_entry(element, struct esas2r_request, req_list);
 
@@ -457,7 +372,7 @@ static void esas2r_process_bus_reset(struct esas2r_adapter *a)
 
 	spin_lock_irqsave(&a->queue_lock, flags);
 
-	/* kill all the requests on the deferred queue */
+	 
 	list_for_each(element, &a->defer_list) {
 		rq = list_entry(element, struct esas2r_request, req_list);
 		if (esas2r_ioreq_aborted(a, rq, RS_ABORTED))
@@ -483,30 +398,12 @@ static void esas2r_chip_rst_needed_during_tasklet(struct esas2r_adapter *a)
 	clear_bit(AF_BUSRST_NEEDED, &a->flags);
 	clear_bit(AF_BUSRST_DETECTED, &a->flags);
 	clear_bit(AF_BUSRST_PENDING, &a->flags);
-	/*
-	 * Make sure we don't get attempt more than 3 resets
-	 * when the uptime between resets does not exceed one
-	 * minute.  This will stop any situation where there is
-	 * really something wrong with the hardware.  The way
-	 * this works is that we start with uptime ticks at 0.
-	 * Each time we do a reset, we add 20 seconds worth to
-	 * the count.  Each time a timer tick occurs, as long
-	 * as a chip reset is not pending, we decrement the
-	 * tick count.  If the uptime ticks ever gets to 60
-	 * seconds worth, we disable the adapter from that
-	 * point forward.  Three strikes, you're out.
-	 */
+	 
 	if (!esas2r_is_adapter_present(a) || (a->chip_uptime >=
 					      ESAS2R_CHP_UPTIME_MAX)) {
 		esas2r_hdebug("*** adapter disabled ***");
 
-		/*
-		 * Ok, some kind of hard failure.  Make sure we
-		 * exit this loop with chip interrupts
-		 * permanently disabled so we don't lock up the
-		 * entire system.  Also flag degraded mode to
-		 * prevent the heartbeat from trying to recover.
-		 */
+		 
 
 		set_bit(AF_DEGRADED_MODE, &a->flags);
 		set_bit(AF_DISABLED, &a->flags);
@@ -523,31 +420,25 @@ static void esas2r_chip_rst_needed_during_tasklet(struct esas2r_adapter *a)
 		bool alrdyrst = test_and_set_bit(AF_CHPRST_STARTED, &a->flags);
 
 		if (!alrdyrst)
-			/*
-			 * Only disable interrupts if this is
-			 * the first reset attempt.
-			 */
+			 
 			esas2r_disable_chip_interrupts(a);
 
 		if ((test_bit(AF_POWER_MGT, &a->flags)) &&
 		    !test_bit(AF_FIRST_INIT, &a->flags) && !alrdyrst) {
-			/*
-			 * Don't reset the chip on the first
-			 * deferred power up attempt.
-			 */
+			 
 		} else {
 			esas2r_hdebug("*** resetting chip ***");
 			esas2r_reset_chip(a);
 		}
 
-		/* Kick off the reinitialization */
+		 
 		a->chip_uptime += ESAS2R_CHP_UPTIME_CNT;
 		a->chip_init_time = jiffies_to_msecs(jiffies);
 		if (!test_bit(AF_POWER_MGT, &a->flags)) {
 			esas2r_process_adapter_reset(a);
 
 			if (!alrdyrst) {
-				/* Remove devices now that I/O is cleaned up. */
+				 
 				a->prev_dev_cnt =
 					esas2r_targ_db_get_tgt_cnt(a);
 				esas2r_targ_db_remove_all(a, false);
@@ -561,16 +452,12 @@ static void esas2r_chip_rst_needed_during_tasklet(struct esas2r_adapter *a)
 static void esas2r_handle_chip_rst_during_tasklet(struct esas2r_adapter *a)
 {
 	while (test_bit(AF_CHPRST_DETECTED, &a->flags)) {
-		/*
-		 * Balance the enable in esas2r_initadapter_hw.
-		 * Esas2r_power_down already took care of it for power
-		 * management.
-		 */
+		 
 		if (!test_bit(AF_DEGRADED_MODE, &a->flags) &&
 		    !test_bit(AF_POWER_MGT, &a->flags))
 			esas2r_disable_chip_interrupts(a);
 
-		/* Reinitialize the chip. */
+		 
 		esas2r_check_adapter(a);
 		esas2r_init_adapter_hw(a, 0);
 
@@ -578,22 +465,22 @@ static void esas2r_handle_chip_rst_during_tasklet(struct esas2r_adapter *a)
 			break;
 
 		if (test_bit(AF_POWER_MGT, &a->flags)) {
-			/* Recovery from power management. */
+			 
 			if (test_bit(AF_FIRST_INIT, &a->flags)) {
-				/* Chip reset during normal power up */
+				 
 				esas2r_log(ESAS2R_LOG_CRIT,
 					   "The firmware was reset during a normal power-up sequence");
 			} else {
-				/* Deferred power up complete. */
+				 
 				clear_bit(AF_POWER_MGT, &a->flags);
 				esas2r_send_reset_ae(a, true);
 			}
 		} else {
-			/* Recovery from online chip reset. */
+			 
 			if (test_bit(AF_FIRST_INIT, &a->flags)) {
-				/* Chip reset during driver load */
+				 
 			} else {
-				/* Chip reset after driver load */
+				 
 				esas2r_send_reset_ae(a, false);
 			}
 
@@ -604,16 +491,13 @@ static void esas2r_handle_chip_rst_during_tasklet(struct esas2r_adapter *a)
 		clear_bit(AF_CHPRST_STARTED, &a->flags);
 		esas2r_enable_chip_interrupts(a);
 
-		/*
-		 * Clear this flag last!  this indicates that the chip has been
-		 * reset already during initialization.
-		 */
+		 
 		clear_bit(AF_CHPRST_DETECTED, &a->flags);
 	}
 }
 
 
-/* Perform deferred tasks when chip interrupts are disabled */
+ 
 void esas2r_do_tasklet_tasks(struct esas2r_adapter *a)
 {
 
@@ -669,7 +553,7 @@ static void esas2r_doorbell_interrupt(struct esas2r_adapter *a, u32 doorbell)
 		esas2r_trace("doorbell: %x", doorbell);
 	}
 
-	/* First clear the doorbell bits */
+	 
 	esas2r_write_register_dword(a, MU_DOORBELL_OUT, doorbell);
 
 	if (doorbell & DRBL_RESET_BUS)
@@ -834,9 +718,7 @@ void esas2r_ae_complete(struct esas2r_adapter *a, struct esas2r_request *rq)
 
 		default:
 
-			/* Silently ignore the rest and let the apps deal with
-			 * them.
-			 */
+			 
 
 			break;
 		}
@@ -844,12 +726,12 @@ void esas2r_ae_complete(struct esas2r_adapter *a, struct esas2r_request *rq)
 		ae = (union atto_vda_ae *)((u8 *)ae + length);
 	}
 
-	/* Now requeue it. */
+	 
 	esas2r_start_ae_request(a, rq);
 	esas2r_trace_exit();
 }
 
-/* Send an asynchronous event for a chip reset or power management. */
+ 
 void esas2r_send_reset_ae(struct esas2r_adapter *a, bool pwr_mgt)
 {
 	struct atto_vda_ae_hdr ae;
@@ -892,13 +774,13 @@ static void esas2r_check_req_rsp_sense(struct esas2r_adapter *a,
 		else
 			rq->sense_buf = (u8 *)rq->data_buf;
 
-		/* See about possible sense data */
+		 
 		if (snslen2 > 0x0c) {
 			u8 *s = (u8 *)rq->data_buf;
 
 			esas2r_trace_enter();
 
-			/* Report LUNS data has changed */
+			 
 			if (s[0x0c] == 0x3f && s[0x0d] == 0x0E) {
 				esas2r_trace("rq->target_id: %d",
 					     rq->target_id);
@@ -923,7 +805,7 @@ void esas2r_complete_request(struct esas2r_adapter *a,
 	    && rq->vrq->flash.sub_func == VDA_FLASH_COMMIT)
 		clear_bit(AF_FLASHING, &a->flags);
 
-	/* See if we setup a callback to do special processing */
+	 
 
 	if (rq->interrupt_cb) {
 		(*rq->interrupt_cb)(a, rq);

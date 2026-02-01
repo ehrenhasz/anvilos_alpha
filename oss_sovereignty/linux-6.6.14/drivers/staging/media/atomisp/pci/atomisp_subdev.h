@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+ 
+ 
 #ifndef __ATOMISP_SUBDEV_H__
 #define __ATOMISP_SUBDEV_H__
 
@@ -28,7 +13,7 @@
 
 #include "ia_css.h"
 
-/* EXP_ID's ranger is 1 ~ 250 */
+ 
 #define ATOMISP_MAX_EXP_ID     (250)
 
 #define ATOMISP_SUBDEV_PAD_SINK			0
@@ -37,8 +22,8 @@
 
 struct atomisp_in_fmt_conv {
 	u32     code;
-	u8 bpp; /* bits per pixel */
-	u8 depth; /* uncompressed */
+	u8 bpp;  
+	u8 depth;  
 	enum atomisp_input_format atomisp_in_fmt;
 	enum ia_css_bayer_order bayer_order;
 };
@@ -50,30 +35,24 @@ struct atomisp_video_pipe {
 	enum v4l2_buf_type type;
 	struct media_pad pad;
 	struct vb2_queue vb_queue;
-	/* Lock for vb_queue, when also taking isp->mutex this must be taken first! */
+	 
 	struct mutex vb_queue_mutex;
-	/* List of video-buffers handed over to the CSS  */
+	 
 	struct list_head buffers_in_css;
-	/* List of video-buffers handed over to the driver, but not yet to the CSS */
+	 
 	struct list_head activeq;
-	/*
-	 * the buffers waiting for per-frame parameters, this is only valid
-	 * in per-frame setting mode.
-	 */
+	 
 	struct list_head buffers_waiting_for_param;
-	/* the link list to store per_frame parameters */
+	 
 	struct list_head per_frame_params;
 
-	/* Filled through atomisp_get_css_frame_info() on queue setup */
+	 
 	struct ia_css_frame_info frame_info;
 
-	/* Set from streamoff to disallow queuing further buffers in CSS */
+	 
 	bool stopping;
 
-	/*
-	 * irq_lock is used to protect video buffer state change operations and
-	 * also to make activeq and capq operations atomic.
-	 */
+	 
 	spinlock_t irq_lock;
 	unsigned int users;
 
@@ -83,15 +62,9 @@ struct atomisp_video_pipe {
 
 	struct atomisp_sub_device *asd;
 
-	/*
-	 * This frame_config_id is got from CSS when dequueues buffers from CSS,
-	 * it is used to indicate which parameter it has applied.
-	 */
+	 
 	unsigned int frame_config_id[VIDEO_MAX_FRAME];
-	/*
-	 * This config id is set when camera HAL enqueues buffer, it has a
-	 * non-zero value to indicate which parameter it needs to applu
-	 */
+	 
 	unsigned int frame_request_config_id[VIDEO_MAX_FRAME];
 	struct atomisp_css_params_with_list *frame_params[VIDEO_MAX_FRAME];
 };
@@ -107,7 +80,7 @@ struct atomisp_pad_format {
 	struct v4l2_rect compose;
 };
 
-/* Internal states for flash process */
+ 
 enum atomisp_flash_state {
 	ATOMISP_FLASH_IDLE,
 	ATOMISP_FLASH_REQUESTED,
@@ -115,10 +88,7 @@ enum atomisp_flash_state {
 	ATOMISP_FLASH_DONE
 };
 
-/*
- * This structure is used to cache the CSS parameters, it aligns to
- * struct ia_css_isp_config but without un-supported and deprecated parts.
- */
+ 
 struct atomisp_css_params {
 	struct ia_css_wb_config   wb_config;
 	struct ia_css_cc_config   cc_config;
@@ -162,14 +132,11 @@ struct atomisp_css_params {
 	struct ia_css_shading_table *shading_table;
 	struct ia_css_morph_table   *morph_table;
 
-	/*
-	 * Used to store the user pointer address of the frame. driver needs to
-	 * translate to ia_css_frame * and then set to CSS.
-	 */
+	 
 	void		*output_frame;
 	u32	isp_config_id;
 
-	/* Indicates which parameters need to be updated. */
+	 
 	struct atomisp_parameters update_flag;
 };
 
@@ -187,7 +154,7 @@ struct atomisp_subdev_params {
 	int false_color;
 	unsigned int histogram_elenum;
 
-	/* Current grid info */
+	 
 	struct ia_css_grid_info curr_grid_info;
 	enum ia_css_pipe_id s3a_enabled_pipe;
 
@@ -195,18 +162,15 @@ struct atomisp_subdev_params {
 
 	bool dis_proj_data_valid;
 
-	struct ia_css_dz_config   dz_config;  /** Digital Zoom */
+	struct ia_css_dz_config   dz_config;   
 	struct ia_css_capture_config   capture_config;
 
 	struct ia_css_isp_config config;
 
-	/* current configurations */
+	 
 	struct atomisp_css_params css_param;
 
-	/*
-	 * Intermediate buffers used to communicate data between
-	 * CSS and user space.
-	 */
+	 
 	struct ia_css_3a_statistics *s3a_user_stat;
 
 	void *metadata_user[ATOMISP_METADATA_TYPE_NUM];
@@ -220,17 +184,17 @@ struct atomisp_subdev_params {
 	int  dvs_ver_proj_bytes;
 	int  dvs_hor_proj_bytes;
 
-	/* Flash */
+	 
 	int num_flash_frames;
 	enum atomisp_flash_state flash_state;
 	enum atomisp_frame_status last_frame_status;
 
-	/* Flag to check if driver needs to update params to css */
+	 
 	bool css_update_params_needed;
 };
 
 struct atomisp_css_params_with_list {
-	/* parameters for CSS */
+	 
 	struct atomisp_css_params params;
 	struct list_head list;
 };
@@ -239,7 +203,7 @@ struct atomisp_sub_device {
 	struct v4l2_subdev subdev;
 	struct media_pad pads[ATOMISP_SUBDEV_PADS_NUM];
 	struct atomisp_pad_format fmt[ATOMISP_SUBDEV_PADS_NUM];
-	/* Padding for currently set sink-pad fmt */
+	 
 	u32 sink_pad_padding_w;
 	u32 sink_pad_padding_h;
 
@@ -253,7 +217,7 @@ struct atomisp_sub_device {
 	struct v4l2_ctrl *continuous_viewfinder;
 	struct v4l2_ctrl *enable_raw_buffer_lock;
 
-	/* ISP2401 */
+	 
 	struct v4l2_ctrl *ion_dev_fd;
 
 	struct v4l2_ctrl *disable_dz;
@@ -268,56 +232,53 @@ struct atomisp_sub_device {
 
 	unsigned int metadata_bufs_in_css
 	[ATOMISP_INPUT_STREAM_NUM][IA_CSS_PIPE_ID_NUM];
-	/* The list of free and available metadata buffers for CSS */
+	 
 	struct list_head metadata[ATOMISP_METADATA_TYPE_NUM];
-	/* The list of metadata buffers which have been en-queued to CSS */
+	 
 	struct list_head metadata_in_css[ATOMISP_METADATA_TYPE_NUM];
-	/* The list of metadata buffers which are ready for userspace to get */
+	 
 	struct list_head metadata_ready[ATOMISP_METADATA_TYPE_NUM];
 
-	/* The list of free and available s3a stat buffers for CSS */
+	 
 	struct list_head s3a_stats;
-	/* The list of s3a stat buffers which have been en-queued to CSS */
+	 
 	struct list_head s3a_stats_in_css;
-	/* The list of s3a stat buffers which are ready for userspace to get */
+	 
 	struct list_head s3a_stats_ready;
 
 	struct list_head dis_stats;
 	struct list_head dis_stats_in_css;
 	spinlock_t dis_stats_lock;
 
-	struct ia_css_frame *vf_frame; /* TODO: needed? */
+	struct ia_css_frame *vf_frame;  
 	enum atomisp_frame_status frame_status[VIDEO_MAX_FRAME];
 
-	/* This field specifies which camera (v4l2 input) is selected. */
+	 
 	int input_curr;
 
 	atomic_t sof_count;
-	atomic_t sequence;      /* Sequence value that is assigned to buffer. */
+	atomic_t sequence;       
 	atomic_t sequence_temp;
 
-	/*
-	 * Writers of streaming must hold both isp->mutex and isp->lock.
-	 * Readers of streaming need to hold only one of the two locks.
-	 */
+	 
 	bool streaming;
-	bool stream_prepared; /* whether css stream is created */
+	bool stream_prepared;  
 	bool recreate_streams_on_resume;
 
-	unsigned int latest_preview_exp_id; /* CSS ZSL/SDV raw buffer id */
+	unsigned int latest_preview_exp_id;  
 
-	bool copy_mode; /* CSI2+ use copy mode */
+	bool copy_mode;  
 
 	int raw_buffer_bitmap[ATOMISP_MAX_EXP_ID / 32 +
-						 1]; /* Record each Raw Buffer lock status */
+						 1];  
 	int raw_buffer_locked_count;
 	spinlock_t raw_buffer_bitmap_lock;
 
-	/* ISP2401 */
+	 
 	bool re_trigger_capture;
 
 	struct atomisp_resolution sensor_array_res;
-	bool high_speed_mode; /* Indicate whether now is a high speed mode */
+	bool high_speed_mode;  
 
 	unsigned int preview_exp_id;
 	unsigned int postview_exp_id;
@@ -329,11 +290,11 @@ u32 atomisp_subdev_uncompressed_code(u32 code);
 bool atomisp_subdev_is_compressed(u32 code);
 const struct atomisp_in_fmt_conv *atomisp_find_in_fmt_conv(u32 code);
 
-/* ISP2400 */
+ 
 const struct atomisp_in_fmt_conv *atomisp_find_in_fmt_conv_by_atomisp_in_fmt(
     enum atomisp_input_format atomisp_in_fmt);
 
-/* ISP2401 */
+ 
 const struct atomisp_in_fmt_conv
 *atomisp_find_in_fmt_conv_by_atomisp_in_fmt(enum atomisp_input_format
 	atomisp_in_fmt);
@@ -341,7 +302,7 @@ const struct atomisp_in_fmt_conv
 const struct atomisp_in_fmt_conv *atomisp_find_in_fmt_conv_compressed(u32 code);
 bool atomisp_subdev_format_conversion(struct atomisp_sub_device *asd);
 
-/* Get pointer to appropriate format */
+ 
 struct v4l2_mbus_framefmt
 *atomisp_subdev_get_ffmt(struct v4l2_subdev *sd,
 			 struct v4l2_subdev_state *sd_state, uint32_t which,
@@ -354,7 +315,7 @@ int atomisp_subdev_set_selection(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 u32 which, uint32_t pad, uint32_t target,
 				 u32 flags, struct v4l2_rect *r);
-/* Actually set the format */
+ 
 void atomisp_subdev_set_ffmt(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_state *sd_state,
 			     uint32_t which,
@@ -370,4 +331,4 @@ int atomisp_subdev_register_subdev(struct atomisp_sub_device *asd,
 int atomisp_subdev_init(struct atomisp_device *isp);
 void atomisp_subdev_cleanup(struct atomisp_device *isp);
 
-#endif /* __ATOMISP_SUBDEV_H__ */
+#endif  

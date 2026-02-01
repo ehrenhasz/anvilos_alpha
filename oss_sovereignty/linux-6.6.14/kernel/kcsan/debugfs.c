@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KCSAN debugfs interface.
- *
- * Copyright (C) 2019, Google LLC.
- */
+
+ 
 
 #define pr_fmt(fmt) "kcsan: " fmt
 
@@ -36,42 +32,32 @@ static const char *const counter_names[] = {
 };
 static_assert(ARRAY_SIZE(counter_names) == KCSAN_COUNTER_COUNT);
 
-/*
- * Addresses for filtering functions from reporting. This list can be used as a
- * whitelist or blacklist.
- */
+ 
 static struct {
-	unsigned long	*addrs;		/* array of addresses */
-	size_t		size;		/* current size */
-	int		used;		/* number of elements used */
-	bool		sorted;		/* if elements are sorted */
-	bool		whitelist;	/* if list is a blacklist or whitelist */
+	unsigned long	*addrs;		 
+	size_t		size;		 
+	int		used;		 
+	bool		sorted;		 
+	bool		whitelist;	 
 } report_filterlist = {
 	.addrs		= NULL,
-	.size		= 8,		/* small initial size */
+	.size		= 8,		 
 	.used		= 0,
 	.sorted		= false,
-	.whitelist	= false,	/* default is blacklist */
+	.whitelist	= false,	 
 };
 static DEFINE_SPINLOCK(report_filterlist_lock);
 
-/*
- * The microbenchmark allows benchmarking KCSAN core runtime only. To run
- * multiple threads, pipe 'microbench=<iters>' from multiple tasks into the
- * debugfs file. This will not generate any conflicts, and tests fast-path only.
- */
+ 
 static noinline void microbenchmark(unsigned long iters)
 {
 	const struct kcsan_ctx ctx_save = current->kcsan_ctx;
 	const bool was_enabled = READ_ONCE(kcsan_enabled);
 	u64 cycles;
 
-	/* We may have been called from an atomic region; reset context. */
+	 
 	memset(&current->kcsan_ctx, 0, sizeof(current->kcsan_ctx));
-	/*
-	 * Disable to benchmark fast-path for all accesses, and (expected
-	 * negligible) call into slow-path, but never set up watchpoints.
-	 */
+	 
 	WRITE_ONCE(kcsan_enabled, false);
 
 	pr_info("%s begin | iters: %lu\n", __func__, iters);
@@ -88,7 +74,7 @@ static noinline void microbenchmark(unsigned long iters)
 	pr_info("%s end   | cycles: %llu\n", __func__, cycles);
 
 	WRITE_ONCE(kcsan_enabled, was_enabled);
-	/* restore context */
+	 
 	current->kcsan_ctx = ctx_save;
 }
 
@@ -108,13 +94,13 @@ bool kcsan_skip_report_debugfs(unsigned long func_addr)
 
 	if (!kallsyms_lookup_size_offset(func_addr, &symbolsize, &offset))
 		return false;
-	func_addr -= offset; /* Get function start */
+	func_addr -= offset;  
 
 	spin_lock_irqsave(&report_filterlist_lock, flags);
 	if (report_filterlist.used == 0)
 		goto out;
 
-	/* Sort array if it is unsorted, and then do a binary search. */
+	 
 	if (!report_filterlist.sorted) {
 		sort(report_filterlist.addrs, report_filterlist.used,
 		     sizeof(unsigned long), cmp_filterlist_addrs, NULL);
@@ -140,7 +126,7 @@ static void set_report_filterlist_whitelist(bool whitelist)
 	spin_unlock_irqrestore(&report_filterlist_lock, flags);
 }
 
-/* Returns 0 on success, error-code otherwise. */
+ 
 static ssize_t insert_report_filterlist(const char *func)
 {
 	unsigned long flags;
@@ -155,7 +141,7 @@ static ssize_t insert_report_filterlist(const char *func)
 	spin_lock_irqsave(&report_filterlist_lock, flags);
 
 	if (report_filterlist.addrs == NULL) {
-		/* initial allocation */
+		 
 		report_filterlist.addrs =
 			kmalloc_array(report_filterlist.size,
 				      sizeof(unsigned long), GFP_ATOMIC);
@@ -164,14 +150,14 @@ static ssize_t insert_report_filterlist(const char *func)
 			goto out;
 		}
 	} else if (report_filterlist.used == report_filterlist.size) {
-		/* resize filterlist */
+		 
 		size_t new_size = report_filterlist.size * 2;
 		unsigned long *new_addrs =
 			krealloc(report_filterlist.addrs,
 				 new_size * sizeof(unsigned long), GFP_ATOMIC);
 
 		if (new_addrs == NULL) {
-			/* leave filterlist itself untouched */
+			 
 			ret = -ENOMEM;
 			goto out;
 		}
@@ -180,7 +166,7 @@ static ssize_t insert_report_filterlist(const char *func)
 		report_filterlist.addrs = new_addrs;
 	}
 
-	/* Note: deduplicating should be done in userspace. */
+	 
 	report_filterlist.addrs[report_filterlist.used++] =
 		kallsyms_lookup_name(func);
 	report_filterlist.sorted = false;
@@ -196,14 +182,14 @@ static int show_info(struct seq_file *file, void *v)
 	int i;
 	unsigned long flags;
 
-	/* show stats */
+	 
 	seq_printf(file, "enabled: %i\n", READ_ONCE(kcsan_enabled));
 	for (i = 0; i < KCSAN_COUNTER_COUNT; ++i) {
 		seq_printf(file, "%s: %ld\n", counter_names[i],
 			   atomic_long_read(&kcsan_counters[i]));
 	}
 
-	/* show filter functions, and filter type */
+	 
 	spin_lock_irqsave(&report_filterlist_lock, flags);
 	seq_printf(file, "\n%s functions: %s\n",
 		   report_filterlist.whitelist ? "whitelisted" : "blacklisted",

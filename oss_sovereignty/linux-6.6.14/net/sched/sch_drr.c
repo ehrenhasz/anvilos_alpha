@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sched/sch_drr.c         Deficit Round Robin scheduler
- *
- * Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>

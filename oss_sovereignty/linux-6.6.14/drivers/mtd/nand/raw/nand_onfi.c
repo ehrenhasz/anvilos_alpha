@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2000 Steven J. Hill (sjhill@realitydiluted.com)
- *		  2002-2006 Thomas Gleixner (tglx@linutronix.de)
- *
- *  Credits:
- *	David Woodhouse for adding multichip support
- *
- *	Aleph One Ltd. and Toby Churchill Ltd. for supporting the
- *	rework for 2K page size chips
- *
- * This file contains all ONFI helpers.
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -30,7 +19,7 @@ u16 onfi_crc16(u16 crc, u8 const *p, size_t len)
 	return crc;
 }
 
-/* Parse the Extended Parameter Page. */
+ 
 static int nand_flash_detect_ext_param_page(struct nand_chip *chip,
 					    struct nand_onfi_params *p)
 {
@@ -49,10 +38,7 @@ static int nand_flash_detect_ext_param_page(struct nand_chip *chip,
 	if (!ep)
 		return -ENOMEM;
 
-	/*
-	 * Use the Change Read Column command to skip the ONFI param pages and
-	 * ensure we read at the right location.
-	 */
+	 
 	ret = nand_change_read_column_op(chip,
 					 sizeof(*p) * p->num_of_param_pages,
 					 ep, len, true);
@@ -66,16 +52,13 @@ static int nand_flash_detect_ext_param_page(struct nand_chip *chip,
 		goto ext_out;
 	}
 
-	/*
-	 * Check the signature.
-	 * Do not strictly follow the ONFI spec, maybe changed in future.
-	 */
+	 
 	if (strncmp(ep->sig, "EPPS", 4)) {
 		pr_debug("The signature is invalid.\n");
 		goto ext_out;
 	}
 
-	/* find the ECC section. */
+	 
 	cursor = (uint8_t *)(ep + 1);
 	for (i = 0; i < ONFI_EXT_SECTION_MAX; i++) {
 		s = ep->sections + i;
@@ -88,7 +71,7 @@ static int nand_flash_detect_ext_param_page(struct nand_chip *chip,
 		goto ext_out;
 	}
 
-	/* get the info we want. */
+	 
 	ecc = (struct onfi_ext_ecc_info *)cursor;
 
 	if (!ecc->codeword_size) {
@@ -107,9 +90,7 @@ ext_out:
 	return ret;
 }
 
-/*
- * Recover data with bit-wise majority
- */
+ 
 static void nand_bit_wise_majority(const void **srcbufs,
 				   unsigned int nsrcbufs,
 				   void *dstbuf,
@@ -138,9 +119,7 @@ static void nand_bit_wise_majority(const void **srcbufs,
 	}
 }
 
-/*
- * Check if the NAND chip is ONFI compliant, returns 1 if it is, 0 otherwise.
- */
+ 
 int nand_onfi_detect(struct nand_chip *chip)
 {
 	struct nand_device *base = &chip->base;
@@ -156,12 +135,12 @@ int nand_onfi_detect(struct nand_chip *chip)
 
 	memorg = nanddev_get_memorg(&chip->base);
 
-	/* Try ONFI for unknown chip or LP */
+	 
 	ret = nand_readid_op(chip, 0x20, id, sizeof(id));
 	if (ret || strncmp(id, "ONFI", 4))
 		return 0;
 
-	/* ONFI chip: allocate a buffer to hold its parameter page */
+	 
 	pbuf = kzalloc((sizeof(*pbuf) * ONFI_PARAM_PAGES), GFP_KERNEL);
 	if (!pbuf)
 		return -ENOMEM;
@@ -215,7 +194,7 @@ int nand_onfi_detect(struct nand_chip *chip)
 	    chip->manufacturer.desc->ops->fixup_onfi_param_page)
 		chip->manufacturer.desc->ops->fixup_onfi_param_page(chip, p);
 
-	/* Check version */
+	 
 	val = le16_to_cpu(p->revision);
 	if (val & ONFI_VERSION_2_3)
 		onfi_version = 23;
@@ -244,11 +223,7 @@ int nand_onfi_detect(struct nand_chip *chip)
 	memorg->pagesize = le32_to_cpu(p->byte_per_page);
 	mtd->writesize = memorg->pagesize;
 
-	/*
-	 * pages_per_block and blocks_per_lun may not be a power-of-2 size
-	 * (don't ask me who thought of this...). MTD assumes that these
-	 * dimensions will be power-of-2, so just truncate the remaining area.
-	 */
+	 
 	memorg->pages_per_eraseblock =
 			1 << (fls(le32_to_cpu(p->pages_per_block)) - 1);
 	mtd->erasesize = memorg->pages_per_eraseblock * memorg->pagesize;
@@ -259,7 +234,7 @@ int nand_onfi_detect(struct nand_chip *chip)
 	memorg->luns_per_target = p->lun_count;
 	memorg->planes_per_lun = 1 << p->interleaved_bits;
 
-	/* See erasesize comment */
+	 
 	memorg->eraseblocks_per_lun =
 		1 << (fls(le32_to_cpu(p->blocks_per_lun)) - 1);
 	memorg->max_bad_eraseblocks_per_lun = le32_to_cpu(p->blocks_per_lun);
@@ -278,23 +253,17 @@ int nand_onfi_detect(struct nand_chip *chip)
 	} else if (onfi_version >= 21 &&
 		(le16_to_cpu(p->features) & ONFI_FEATURE_EXT_PARAM_PAGE)) {
 
-		/*
-		 * The nand_flash_detect_ext_param_page() uses the
-		 * Change Read Column command which maybe not supported
-		 * by the chip->legacy.cmdfunc. So try to update the
-		 * chip->legacy.cmdfunc now. We do not replace user supplied
-		 * command function.
-		 */
+		 
 		nand_legacy_adjust_cmdfunc(chip);
 
-		/* The Extended Parameter Page is supported since ONFI 2.1. */
+		 
 		if (nand_flash_detect_ext_param_page(chip, p))
 			pr_warn("Failed to detect ONFI extended param page\n");
 	} else {
 		pr_warn("Could not retrieve ONFI ECC requirements\n");
 	}
 
-	/* Save some parameters from the parameter page for future use */
+	 
 	if (le16_to_cpu(p->opt_cmd) & ONFI_OPT_CMD_SET_GET_FEATURES) {
 		chip->parameters.supports_set_get_features = true;
 		bitmap_set(chip->parameters.get_feature_list,
@@ -325,7 +294,7 @@ int nand_onfi_detect(struct nand_chip *chip)
 	memcpy(onfi->vendor, p->vendor, sizeof(p->vendor));
 	chip->parameters.onfi = onfi;
 
-	/* Identification done, free the full ONFI parameter page and exit */
+	 
 	kfree(pbuf);
 
 	return 1;

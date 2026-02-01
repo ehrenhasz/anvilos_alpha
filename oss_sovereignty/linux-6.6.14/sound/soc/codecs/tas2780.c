@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Driver for the Texas Instruments TAS2780 Mono
-//		Audio amplifier
-// Copyright (C) 2022 Texas Instruments Inc.
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/err.h>

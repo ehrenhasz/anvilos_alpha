@@ -1,22 +1,6 @@
-/* general.c -- Stuff that is used by all files. */
+ 
 
-/* Copyright (C) 1987-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -49,14 +33,14 @@
 #include "builtins/common.h"
 
 #if defined (HAVE_MBSTR_H) && defined (HAVE_MBSCHR)
-#  include <mbstr.h>		/* mbschr */
+#  include <mbstr.h>		 
 #endif
 
 #include <tilde/tilde.h>
 
 #if !defined (errno)
 extern int errno;
-#endif /* !errno */
+#endif  
 
 #ifdef __CYGWIN__
 #  include <sys/cygwin.h>
@@ -66,24 +50,10 @@ static char *bash_special_tilde_expansions PARAMS((char *));
 static int unquoted_tilde_word PARAMS((const char *));
 static void initialize_group_array PARAMS((void));
 
-/* A standard error message to use when getcwd() returns NULL. */
+ 
 const char * const bash_getcwd_errstr = N_("getcwd: cannot access parent directories");
 
-/* Do whatever is necessary to initialize `Posix mode'.  This currently
-   modifies the following variables which are controlled via shopt:
-      interactive_comments
-      source_uses_path
-      expand_aliases
-      inherit_errexit
-      print_shift_error
-      posixglob
-
-   and the following variables which cannot be user-modified:
-
-      source_searches_cwd
-
-  If we add to the first list, we need to change the table and functions
-  below */
+ 
 
 static struct {
   int *posix_mode_var;
@@ -103,7 +73,7 @@ void
 posix_initialize (on)
      int on;
 {
-  /* Things that should be turned on when posix mode is enabled. */
+   
   if (on != 0)
     {
       interactive_comments = source_uses_path = 1;
@@ -113,18 +83,18 @@ posix_initialize (on)
       print_shift_error = 1;
     }
 
-  /* Things that should be turned on when posix mode is disabled. */
-  else if (saved_posix_vars)		/* on == 0, restore saved settings */
+   
+  else if (saved_posix_vars)		 
     {
       set_posix_options (saved_posix_vars);
       expand_aliases = expaliases_flag;
       free (saved_posix_vars);
       saved_posix_vars = 0;
     }
-  else	/* on == 0, restore a default set of settings */
+  else	 
     {
       source_searches_cwd = 1;
-      expand_aliases = expaliases_flag = interactive_shell;	/* XXX */
+      expand_aliases = expaliases_flag = interactive_shell;	 
       print_shift_error = 0;
     }
 }
@@ -142,7 +112,7 @@ get_posix_options (bitmap)
   register int i;
 
   if (bitmap == 0)
-    bitmap = (char *)xmalloc (num_posix_options ());	/* no trailing NULL */
+    bitmap = (char *)xmalloc (num_posix_options ());	 
   for (i = 0; posix_vars[i].posix_mode_var; i++)
     bitmap[i] = *(posix_vars[i].posix_mode_var);
   return bitmap;
@@ -165,11 +135,11 @@ set_posix_options (bitmap)
     *(posix_vars[i].posix_mode_var) = bitmap[i];
 }
 
-/* **************************************************************** */
-/*								    */
-/*  Functions to convert to and from and display non-standard types */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 #if defined (RLIMTYPE)
 RLIMTYPE
@@ -220,15 +190,15 @@ print_rlimtype (n, addnl)
 
   printf ("%s%s", p, addnl ? "\n" : "");
 }
-#endif /* RLIMTYPE */
+#endif  
 
-/* **************************************************************** */
-/*								    */
-/*		       Input Validation Functions		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Return non-zero if all of the characters in STRING are digits. */
+ 
 int
 all_digits (string)
      const char *string;
@@ -242,9 +212,7 @@ all_digits (string)
   return (1);
 }
 
-/* Return non-zero if the characters pointed to by STRING constitute a
-   valid number.  Stuff the converted number into RESULT if RESULT is
-   not null. */
+ 
 int
 legal_number (string, result)
      const char *string;
@@ -262,30 +230,25 @@ legal_number (string, result)
   errno = 0;
   value = strtoimax (string, &ep, 10);
   if (errno || ep == string)
-    return 0;	/* errno is set on overflow or underflow */
+    return 0;	 
 
-  /* Skip any trailing whitespace, since strtoimax does not. */
+   
   while (whitespace (*ep))
     ep++;
 
-  /* If *string is not '\0' but *ep is '\0' on return, the entire string
-     is valid. */
+   
   if (*string && *ep == '\0')
     {
       if (result)
 	*result = value;
-      /* The SunOS4 implementation of strtol() will happily ignore
-	 overflow conditions, so this cannot do overflow correctly
-	 on those systems. */
+       
       return 1;
     }
     
   return (0);
 }
 
-/* Return 1 if this token is a legal shell `identifier'; that is, it consists
-   solely of letters, digits, and underscores, and does not begin with a
-   digit. */
+ 
 int
 legal_identifier (name)
      const char *name;
@@ -304,11 +267,7 @@ legal_identifier (name)
   return (1);
 }
 
-/* Return 1 if NAME is a valid value that can be assigned to a nameref
-   variable.  FLAGS can be 2, in which case the name is going to be used
-   to create a variable.  Other values are currently unused, but could
-   be used to allow values to be stored and indirectly referenced, but
-   not used in assignments. */
+ 
 int
 valid_nameref_value (name, flags)
      const char *name;
@@ -317,7 +276,7 @@ valid_nameref_value (name, flags)
   if (name == 0 || *name == 0)
     return 0;
 
-  /* valid identifier */
+   
 #if defined (ARRAY_VARS)  
   if (legal_identifier (name) || (flags != 2 && valid_array_reference (name, 0)))
 #else
@@ -352,20 +311,16 @@ check_selfref (name, value, flags)
     }
 #endif
 
-  return 0;	/* not a self reference */
+  return 0;	 
 }
 
-/* Make sure that WORD is a valid shell identifier, i.e.
-   does not contain a dollar sign, nor is quoted in any way.
-   If CHECK_WORD is non-zero,
-   the word is checked to ensure that it consists of only letters,
-   digits, and underscores, and does not consist of all digits. */
+ 
 int
 check_identifier (word, check_word)
      WORD_DESC *word;
      int check_word;
 {
-  if (word->flags & (W_HASDOLLAR|W_QUOTED))	/* XXX - HASDOLLAR? */
+  if (word->flags & (W_HASDOLLAR|W_QUOTED))	 
     {
       internal_error (_("`%s': not a valid identifier"), word->word);
       return (0);
@@ -379,19 +334,15 @@ check_identifier (word, check_word)
     return (1);
 }
 
-/* Return 1 if STRING is a function name that the shell will import from
-   the environment.  Currently we reject attempts to import shell functions
-   containing slashes, beginning with newlines or containing blanks.  In
-   Posix mode, we require that STRING be a valid shell identifier.  Not
-   used yet. */
+ 
 int
 importable_function_name (string, len)
      const char *string;
      size_t len;
 {
-  if (absolute_program (string))	/* don't allow slash */
+  if (absolute_program (string))	 
     return 0;
-  if (*string == '\n')			/* can't start with a newline */
+  if (*string == '\n')			 
     return 0;
   if (shellblank (*string) || shellblank(string[len-1]))
     return 0;
@@ -409,9 +360,7 @@ exportable_function_name (string)
   return 1;
 }
 
-/* Return 1 if STRING comprises a valid alias name.  The shell accepts
-   essentially all characters except those which must be quoted to the
-   parser (which disqualifies them from alias expansion anyway) and `/'. */
+ 
 int
 legal_alias_name (string, flags)
      const char *string;
@@ -425,10 +374,7 @@ legal_alias_name (string, flags)
   return 1;
 }
 
-/* Returns non-zero if STRING is an assignment statement.  The returned value
-   is the index of the `=' sign.  If FLAGS&1 we are expecting a compound assignment
-   and require an array subscript before the `=' to denote an assignment
-   statement. */
+ 
 int
 assignment (string, flags)
      const char *string;
@@ -440,15 +386,8 @@ assignment (string, flags)
   c = string[indx = 0];
 
 #if defined (ARRAY_VARS)
-  /* If parser_state includes PST_COMPASSIGN, FLAGS will include 1, so we are
-     parsing the contents of a compound assignment. If parser_state includes
-     PST_REPARSE, we are in the middle of an assignment statement and breaking
-     the words between the parens into words and assignment statements, but
-     we don't need to check for that right now. Within a compound assignment,
-     the subscript is required to make the word an assignment statement. If
-     we don't have a subscript, even if the word is a valid assignment
-     statement otherwise, we don't want to treat it as one. */
-  if ((flags & 1) && c != '[')		/* ] */
+   
+  if ((flags & 1) && c != '[')		 
     return (0);
   else if ((flags & 1) == 0 && legal_variable_starter (c) == 0)
 #else
@@ -458,8 +397,7 @@ assignment (string, flags)
 
   while (c = string[indx])
     {
-      /* The following is safe.  Note that '=' at the start of a word
-	 is not an assignment statement. */
+       
       if (c == '=')
 	return (indx);
 
@@ -467,22 +405,20 @@ assignment (string, flags)
       if (c == '[')
 	{
 	  newi = skipsubscript (string, indx, (flags & 2) ? 1 : 0);
-	  /* XXX - why not check for blank subscripts here, if we do in
-	     valid_array_reference? */
+	   
 	  if (string[newi++] != ']')
 	    return (0);
 	  if (string[newi] == '+' && string[newi+1] == '=')
 	    return (newi + 1);
 	  return ((string[newi] == '=') ? newi : 0);
 	}
-#endif /* ARRAY_VARS */
+#endif  
 
-      /* Check for `+=' */
+       
       if (c == '+' && string[indx+1] == '=')
 	return (indx + 1);
 
-      /* Variable names in assignment statements may contain only letters,
-	 digits, and `_'. */
+       
       if (legal_variable_char (c) == 0)
 	return (0);
 
@@ -498,30 +434,28 @@ line_isblank (line)
   register int i;
 
   if (line == 0)
-    return 0;		/* XXX */
+    return 0;		 
   for (i = 0; line[i]; i++)
     if (isblank ((unsigned char)line[i]) == 0)
       break;
   return (line[i] == '\0');  
 }
 
-/* **************************************************************** */
-/*								    */
-/*	     Functions to manage files and file descriptors	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* A function to unset no-delay mode on a file descriptor.  Used in shell.c
-   to unset it on the fd passed as stdin.  Should be called on stdin if
-   readline gets an EAGAIN or EWOULDBLOCK when trying to read input. */
+ 
 
 #if !defined (O_NDELAY)
 #  if defined (FNDELAY)
 #    define O_NDELAY FNDELAY
 #  endif
-#endif /* O_NDELAY */
+#endif  
 
-/* Make sure no-delay mode is not set on file descriptor FD. */
+ 
 int
 sh_unset_nodelay_mode (fd)
      int fd;
@@ -533,8 +467,7 @@ sh_unset_nodelay_mode (fd)
 
   bflags = 0;
 
-  /* This is defined to O_NDELAY in filecntl.h if O_NONBLOCK is not present
-     and O_NDELAY is defined. */
+   
 #ifdef O_NONBLOCK
   bflags |= O_NONBLOCK;
 #endif
@@ -552,7 +485,7 @@ sh_unset_nodelay_mode (fd)
   return 0;
 }
 
-/* Just a wrapper for the define in include/filecntl.h */
+ 
 int
 sh_setclexec (fd)
      int fd;
@@ -560,7 +493,7 @@ sh_setclexec (fd)
   return (SET_CLOSE_ON_EXEC (fd));
 }
 
-/* Return 1 if file descriptor FD is valid; 0 otherwise. */
+ 
 int
 sh_validfd (fd)
      int fd;
@@ -576,15 +509,13 @@ fd_ispipe (fd)
   return ((lseek (fd, 0L, SEEK_CUR) < 0) && (errno == ESPIPE));
 }
 
-/* There is a bug in the NeXT 2.1 rlogind that causes opens
-   of /dev/tty to fail. */
+ 
 
 #if defined (__BEOS__)
-/* On BeOS, opening in non-blocking mode exposes a bug in BeOS, so turn it
-   into a no-op.  This should probably go away in the future. */
+ 
 #  undef O_NONBLOCK
 #  define O_NONBLOCK 0
-#endif /* __BEOS__ */
+#endif  
 
 void
 check_dev_tty ()
@@ -605,9 +536,7 @@ check_dev_tty ()
     close (tty_fd);
 }
 
-/* Return 1 if PATH1 and PATH2 are the same file.  This is kind of
-   expensive.  If non-NULL STP1 and STP2 point to stat structures
-   corresponding to PATH1 and PATH2, respectively. */
+ 
 int
 same_file (path1, path2, stp1, stp2)
      const char *path1, *path2;
@@ -632,13 +561,7 @@ same_file (path1, path2, stp1, stp2)
   return ((stp1->st_dev == stp2->st_dev) && (stp1->st_ino == stp2->st_ino));
 }
 
-/* Move FD to a number close to the maximum number of file descriptors
-   allowed in the shell process, to avoid the user stepping on it with
-   redirection and causing us extra work.  If CHECK_NEW is non-zero,
-   we check whether or not the file descriptors are in use before
-   duplicating FD onto them.  MAXFD says where to start checking the
-   file descriptors.  If it's less than 20, we get the maximum value
-   available from getdtablesize(2). */
+ 
 int
 move_to_high_fd (fd, check_new, maxfd)
      int fd, check_new, maxfd;
@@ -651,7 +574,7 @@ move_to_high_fd (fd, check_new, maxfd)
       if (nfds <= 0)
 	nfds = 20;
       if (nfds > HIGH_FD_MAX)
-	nfds = HIGH_FD_MAX;		/* reasonable maximum */
+	nfds = HIGH_FD_MAX;		 
     }
   else
     nfds = maxfd;
@@ -662,20 +585,16 @@ move_to_high_fd (fd, check_new, maxfd)
 
   if (nfds > 3 && fd != nfds && (script_fd = dup2 (fd, nfds)) != -1)
     {
-      if (check_new == 0 || fd != fileno (stderr))	/* don't close stderr */
+      if (check_new == 0 || fd != fileno (stderr))	 
 	close (fd);
       return (script_fd);
     }
 
-  /* OK, we didn't find one less than our artificial maximum; return the
-     original file descriptor. */
+   
   return (fd);
 }
  
-/* Return non-zero if the characters from SAMPLE are not all valid
-   characters to be found in the first line of a shell script.  We
-   check up to the first newline, or SAMPLE_LEN, whichever comes first.
-   All of the characters must be printable or whitespace. */
+ 
 
 int
 check_binary_file (sample, sample_len)
@@ -689,8 +608,7 @@ check_binary_file (sample, sample_len)
   if (sample_len >= 4 && sample[0] == 0x7f && sample[1] == 'E' && sample[2] == 'L' && sample[3] == 'F')
     return 1;
 
-  /* Generally we check the first line for NULs. If the first line looks like
-     a `#!' interpreter specifier, we look for NULs in the first two lines. */
+   
   nline = (sample[0] == '#' && sample[1] == '!') ? 2 : 1;
 
   for (i = 0; i < sample_len; i++)
@@ -705,11 +623,11 @@ check_binary_file (sample, sample_len)
   return (0);
 }
 
-/* **************************************************************** */
-/*								    */
-/*		    Functions to manipulate pipes		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 int
 sh_openpipe (pv)
@@ -740,11 +658,11 @@ sh_closepipe (pv)
   return 0;
 }
 
-/* **************************************************************** */
-/*								    */
-/*		    Functions to inspect pathnames		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 int
 file_exists (fn)
@@ -771,8 +689,7 @@ file_iswdir (fn)
   return (file_isdir (fn) && sh_eaccess (fn, W_OK) == 0);
 }
 
-/* Return 1 if STRING is "." or "..", optionally followed by a directory
-   separator */
+ 
 int
 path_dot_or_dotdot (string)
      const char *string;
@@ -780,15 +697,14 @@ path_dot_or_dotdot (string)
   if (string == 0 || *string == '\0' || *string != '.')
     return (0);
 
-  /* string[0] == '.' */
+   
   if (PATHSEP(string[1]) || (string[1] == '.' && PATHSEP(string[2])))
     return (1);
 
   return (0);
 }
 
-/* Return 1 if STRING contains an absolute pathname, else 0.  Used by `cd'
-   to decide whether or not to look up a directory name in $CDPATH. */
+ 
 int
 absolute_pathname (string)
      const char *string;
@@ -799,18 +715,16 @@ absolute_pathname (string)
   if (ABSPATH(string))
     return (1);
 
-  if (string[0] == '.' && PATHSEP(string[1]))	/* . and ./ */
+  if (string[0] == '.' && PATHSEP(string[1]))	 
     return (1);
 
-  if (string[0] == '.' && string[1] == '.' && PATHSEP(string[2]))	/* .. and ../ */
+  if (string[0] == '.' && string[1] == '.' && PATHSEP(string[2]))	 
     return (1);
 
   return (0);
 }
 
-/* Return 1 if STRING is an absolute program name; it is absolute if it
-   contains any slashes.  This is used to decide whether or not to look
-   up through $PATH. */
+ 
 int
 absolute_program (string)
      const char *string;
@@ -818,16 +732,13 @@ absolute_program (string)
   return ((char *)mbschr (string, '/') != (char *)NULL);
 }
 
-/* **************************************************************** */
-/*								    */
-/*		    Functions to manipulate pathnames		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Turn STRING (a pathname) into an absolute pathname, assuming that
-   DOT_PATH contains the symbolic location of `.'.  This always
-   returns a new string, even if STRING was an absolute pathname to
-   begin with. */
+ 
 char *
 make_absolute (string, dot_path)
      const char *string, *dot_path;
@@ -839,7 +750,7 @@ make_absolute (string, dot_path)
     {
       char pathbuf[PATH_MAX + 1];
 
-      /* WAS cygwin_conv_to_full_posix_path (string, pathbuf); */
+       
       cygwin_conv_path (CCP_WIN_A_TO_POSIX, string, pathbuf, PATH_MAX);
       result = savestring (pathbuf);
     }
@@ -852,8 +763,7 @@ make_absolute (string, dot_path)
   return (result);
 }
 
-/* Return the `basename' of the pathname in STRING (the stuff after the
-   last '/').  If STRING is `/', just return it. */
+ 
 char *
 base_pathname (string)
      char *string;
@@ -872,10 +782,7 @@ base_pathname (string)
   return (p ? ++p : string);
 }
 
-/* Return the full pathname of FILE.  Easy.  Filenames that begin
-   with a '/' are returned as themselves.  Other filenames have
-   the current working directory prepended.  A new string is
-   returned in either case. */
+ 
 char *
 full_pathname (file)
      char *file;
@@ -893,12 +800,10 @@ full_pathname (file)
   return (ret);
 }
 
-/* A slightly related function.  Get the prettiest name of this
-   directory possible. */
+ 
 static char tdir[PATH_MAX];
 
-/* Return a pretty pathname.  If the first part of the pathname is
-   the same as $HOME, then replace that with `~'.  */
+ 
 char *
 polite_directory_format (name)
      char *name;
@@ -919,9 +824,7 @@ polite_directory_format (name)
     return (name);
 }
 
-/* Trim NAME.  If NAME begins with `~/', skip over tilde prefix.  Trim to
-   keep any tilde prefix and PROMPT_DIRTRIM trailing directory components
-   and replace the intervening characters with `...' */
+ 
 char *
 trim_pathname (name, maxlen)
      char *name;
@@ -941,7 +844,7 @@ trim_pathname (name, maxlen)
   if (legal_number (v, &nskip) == 0 || nskip <= 0)
     return name;
 
-  /* Skip over tilde prefix */
+   
   nbeg = name;
   if (name[0] == '~')
     for (nbeg = name; *nbeg; nbeg++)
@@ -969,7 +872,7 @@ trim_pathname (name, maxlen)
   if (ntail == nbeg)
     return name;
 
-  /* Now we want to return name[0..nbeg]+"..."+ntail, modifying name in place */
+   
   nlen = ntail - nbeg;
   if (nlen <= 3)
     return name;
@@ -985,10 +888,7 @@ trim_pathname (name, maxlen)
   return name;
 }
 
-/* Return a printable representation of FN without special characters.  The
-   caller is responsible for freeing memory if this returns something other
-   than its argument.  If FLAGS is non-zero, we are printing for portable
-   re-input and should single-quote filenames appropriately. */
+ 
 char *
 printable_filename (fn, flags)
      char *fn;
@@ -1006,9 +906,7 @@ printable_filename (fn, flags)
   return newf;
 }
 
-/* Given a string containing units of information separated by colons,
-   return the next one pointed to by (P_INDEX), or NULL if there are no more.
-   Advance (P_INDEX) to the character after the colon. */
+ 
 char *
 extract_colon_unit (string, p_index)
      char *string;
@@ -1026,11 +924,7 @@ extract_colon_unit (string, p_index)
 
   i = *p_index;
 
-  /* Each call to this routine leaves the index pointing at a colon if
-     there is more to the path.  If I is > 0, then increment past the
-     `:'.  If I is 0, then the path has a leading colon.  Trailing colons
-     are handled OK by the `else' part of the if statement; an empty
-     string is returned in that case. */
+   
   if (i && string[i] == ':')
     i++;
 
@@ -1043,7 +937,7 @@ extract_colon_unit (string, p_index)
     {
       if (string[i])
 	(*p_index)++;
-      /* Return "" in the case of a trailing `:'. */
+       
       value = (char *)xmalloc (1);
       value[0] = '\0';
     }
@@ -1053,11 +947,11 @@ extract_colon_unit (string, p_index)
   return (value);
 }
 
-/* **************************************************************** */
-/*								    */
-/*		    Tilde Initialization and Expansion		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 #if defined (PUSHD_AND_POPD)
 extern char *get_dirstack_from_string PARAMS((char *));
@@ -1068,11 +962,7 @@ static char **bash_tilde_prefixes2;
 static char **bash_tilde_suffixes;
 static char **bash_tilde_suffixes2;
 
-/* If tilde_expand hasn't been able to expand the text, perhaps it
-   is a special shell expansion.  This function is installed as the
-   tilde_expansion_preexpansion_hook.  It knows how to expand ~- and ~+.
-   If PUSHD_AND_POPD is defined, ~[+-]N expands to directories from the
-   directory stack. */
+ 
 static char *
 bash_special_tilde_expansions (text)
      char *text;
@@ -1093,20 +983,16 @@ bash_special_tilde_expansions (text)
   return (result ? savestring (result) : (char *)NULL);
 }
 
-/* Initialize the tilde expander.  In Bash, we handle `~-' and `~+', as
-   well as handling special tilde prefixes; `:~" and `=~' are indications
-   that we should do tilde expansion. */
+ 
 void
 tilde_initialize ()
 {
   static int times_called = 0;
 
-  /* Tell the tilde expander that we want a crack first. */
+   
   tilde_expansion_preexpansion_hook = bash_special_tilde_expansions;
 
-  /* Tell the tilde expander about special strings which start a tilde
-     expansion, and the special strings that end one.  Only do this once.
-     tilde_initialize () is called from within bashline_reinitialize (). */
+   
   if (times_called++ == 0)
     {
       bash_tilde_prefixes = strvec_create (3);
@@ -1122,7 +1008,7 @@ tilde_initialize ()
 
       bash_tilde_suffixes = strvec_create (3);
       bash_tilde_suffixes[0] = ":";
-      bash_tilde_suffixes[1] = "=~";	/* XXX - ?? */
+      bash_tilde_suffixes[1] = "=~";	 
       bash_tilde_suffixes[2] = (char *)NULL;
 
       tilde_additional_suffixes = bash_tilde_suffixes;
@@ -1133,12 +1019,7 @@ tilde_initialize ()
     }
 }
 
-/* POSIX.2, 3.6.1:  A tilde-prefix consists of an unquoted tilde character
-   at the beginning of the word, followed by all of the characters preceding
-   the first unquoted slash in the word, or all the characters in the word
-   if there is no slash...If none of the characters in the tilde-prefix are
-   quoted, the characters in the tilde-prefix following the tilde shell be
-   treated as a possible login name. */
+ 
 
 #define TILDE_END(c)	((c) == '\0' || (c) == '/' || (c) == ':')
 
@@ -1161,10 +1042,7 @@ unquoted_tilde_word (s)
   return 1;
 }
 
-/* Find the end of the tilde-prefix starting at S, and return the tilde
-   prefix in newly-allocated memory.  Return the length of the string in
-   *LENP.  FLAGS tells whether or not we're in an assignment context --
-   if so, `:' delimits the end of the tilde prefix as well. */
+ 
 char *
 bash_tilde_find_word (s, flags, lenp)
      const char *s;
@@ -1176,10 +1054,7 @@ bash_tilde_find_word (s, flags, lenp)
 
   for (r = s; *r && *r != '/'; r++)
     {
-      /* Short-circuit immediately if we see a quote character.  Even though
-	 POSIX says that `the first unquoted slash' (or `:') terminates the
-	 tilde-prefix, in practice, any quoted portion of the tilde prefix
-	 will cause it to not be expanded. */
+       
       if (*r == '\\' || *r == '\'' || *r == '"')  
 	{
 	  ret = savestring (s);
@@ -1199,11 +1074,7 @@ bash_tilde_find_word (s, flags, lenp)
   return ret;
 }
     
-/* Tilde-expand S by running it through the tilde expansion library.
-   ASSIGN_P is 1 if this is a variable assignment, so the alternate
-   tilde prefixes should be enabled (`=~' and `:~', see above).  If
-   ASSIGN_P is 2, we are expanding the rhs of an assignment statement,
-   so `=~' is not valid. */
+ 
 char *
 bash_tilde_expand (s, assign_p)
      const char *s;
@@ -1225,15 +1096,15 @@ bash_tilde_expand (s, assign_p)
   return (ret);
 }
 
-/* **************************************************************** */
-/*								    */
-/*	  Functions to manipulate and search the group list	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 static int ngroups, maxgroups;
 
-/* The set of groups that this user is a member of. */
+ 
 static GETGROUPS_T *group_array = (GETGROUPS_T *)NULL;
 
 #if !defined (NOGROUP)
@@ -1255,16 +1126,14 @@ initialize_group_array ()
   ngroups = getgroups (maxgroups, group_array);
 #endif
 
-  /* If getgroups returns nothing, or the OS does not support getgroups(),
-     make sure the groups array includes at least the current gid. */
+   
   if (ngroups == 0)
     {
       group_array[0] = current_user.gid;
       ngroups = 1;
     }
 
-  /* If the primary group is not in the groups array, add it as group_array[0]
-     and shuffle everything else up 1, if there's room. */
+   
   for (i = 0; i < ngroups; i++)
     if (current_user.gid == (gid_t)group_array[i])
       break;
@@ -1276,9 +1145,7 @@ initialize_group_array ()
       ngroups++;
     }
 
-  /* If the primary group is not group_array[0], swap group_array[0] and
-     whatever the current group is.  The vast majority of systems should
-     not need this; a notable exception is Linux. */
+   
   if (group_array[0] != current_user.gid)
     {
       for (i = 0; i < ngroups; i++)
@@ -1292,20 +1159,20 @@ initialize_group_array ()
     }
 }
 
-/* Return non-zero if GID is one that we have in our groups list. */
+ 
 int
 #if defined (__STDC__) || defined ( _MINIX)
 group_member (gid_t gid)
 #else
 group_member (gid)
      gid_t gid;
-#endif /* !__STDC__ && !_MINIX */
+#endif  
 {
 #if defined (HAVE_GETGROUPS)
   register int i;
 #endif
 
-  /* Short-circuit if possible, maybe saving a call to getgroups(). */
+   
   if (gid == current_user.gid || gid == current_user.egid)
     return (1);
 
@@ -1313,11 +1180,11 @@ group_member (gid)
   if (ngroups == 0)
     initialize_group_array ();
 
-  /* In case of error, the user loses. */
+   
   if (ngroups <= 0)
     return (0);
 
-  /* Search through the list looking for GID. */
+   
   for (i = 0; i < ngroups; i++)
     if (gid == (gid_t)group_array[i])
       return (1);
@@ -1392,15 +1259,13 @@ get_group_array (ngp)
   return group_iarray;
 }
 
-/* **************************************************************** */
-/*								    */
-/*	  Miscellaneous functions				    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Return a value for PATH that is guaranteed to find all of the standard
-   utilities.  This uses Posix.2 configuration variables, if present.  It
-   uses a value defined in config.h as a last resort. */
+ 
 char *
 conf_standard_path ()
 {
@@ -1418,13 +1283,13 @@ conf_standard_path ()
     }
   else
     return (savestring (STANDARD_UTILS_PATH));
-#else /* !_CS_PATH || !HAVE_CONFSTR  */
+#else  
 #  if defined (CS_PATH)
   return (savestring (CS_PATH));
 #  else
   return (savestring (STANDARD_UTILS_PATH));
-#  endif /* !CS_PATH */
-#endif /* !_CS_PATH || !HAVE_CONFSTR */
+#  endif  
+#endif  
 }
 
 int

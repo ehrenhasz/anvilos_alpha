@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic show_mem() implementation
- *
- * Copyright (C) 2008 Johannes Weiner <hannes@saeurebad.de>
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/cma.h>
@@ -45,26 +41,15 @@ long si_mem_available(void)
 	for_each_zone(zone)
 		wmark_low += low_wmark_pages(zone);
 
-	/*
-	 * Estimate the amount of memory available for userspace allocations,
-	 * without causing swapping or OOM.
-	 */
+	 
 	available = global_zone_page_state(NR_FREE_PAGES) - totalreserve_pages;
 
-	/*
-	 * Not all the page cache can be freed, otherwise the system will
-	 * start swapping or thrashing. Assume at least half of the page
-	 * cache, or the low watermark worth of cache, needs to stay.
-	 */
+	 
 	pagecache = pages[LRU_ACTIVE_FILE] + pages[LRU_INACTIVE_FILE];
 	pagecache -= min(pagecache / 2, wmark_low);
 	available += pagecache;
 
-	/*
-	 * Part of the reclaimable slab and other kernel memory consists of
-	 * items that are in use, and cannot be freed. Cap this estimate at the
-	 * low watermark.
-	 */
+	 
 	reclaimable = global_node_page_state_pages(NR_SLAB_RECLAIMABLE_B) +
 		global_node_page_state(NR_KERNEL_MISC_RECLAIMABLE);
 	available += reclaimable - min(reclaimable / 2, wmark_low);
@@ -91,7 +76,7 @@ EXPORT_SYMBOL(si_meminfo);
 #ifdef CONFIG_NUMA
 void si_meminfo_node(struct sysinfo *val, int nid)
 {
-	int zone_type;		/* needs to be signed */
+	int zone_type;		 
 	unsigned long managed_pages = 0;
 	unsigned long managed_highpages = 0;
 	unsigned long free_highpages = 0;
@@ -121,20 +106,13 @@ void si_meminfo_node(struct sysinfo *val, int nid)
 }
 #endif
 
-/*
- * Determine whether the node should be displayed or not, depending on whether
- * SHOW_MEM_FILTER_NODES was passed to show_free_areas().
- */
+ 
 static bool show_mem_node_skip(unsigned int flags, int nid, nodemask_t *nodemask)
 {
 	if (!(flags & SHOW_MEM_FILTER_NODES))
 		return false;
 
-	/*
-	 * no node mask - aka implicit memory numa policy. Do not bother with
-	 * the synchronization - read_mems_allowed_begin - because we do not
-	 * have to be precise here.
-	 */
+	 
 	if (!nodemask)
 		nodemask = &cpuset_current_mems_allowed;
 
@@ -177,15 +155,7 @@ static bool node_has_managed_zones(pg_data_t *pgdat, int max_zone_idx)
 	return false;
 }
 
-/*
- * Show free area list (used inside shift_scroll-lock stuff)
- * We also calculate the percentage fragmentation. We do this by counting the
- * memory on each free list with the exception of the first item on the list.
- *
- * Bits in @filter:
- * SHOW_MEM_FILTER_NODES: suppress nodes that are not allowed by current's
- *   cpuset.
- */
+ 
 static void show_free_areas(unsigned int filter, nodemask_t *nodemask, int max_zone_idx)
 {
 	unsigned long free_pcp = 0;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mtu3_debugfs.c - debugfs interface
- *
- * Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+ 
 
 #include <linux/uaccess.h>
 

@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef INCLUDE_MMU_GENERAL_H_
 #define INCLUDE_MMU_GENERAL_H_
@@ -33,7 +28,7 @@
 
 #define HL_PTE_SIZE			sizeof(u64)
 
-/* definitions for HOP with 512 PTE entries */
+ 
 #define HOP_PTE_ENTRIES_512		512
 #define HOP_TABLE_SIZE_512_PTE		(HOP_PTE_ENTRIES_512 * HL_PTE_SIZE)
 #define HOP0_512_PTE_TABLES_TOTAL_SIZE	(HOP_TABLE_SIZE_512_PTE * MAX_ASID)
@@ -42,7 +37,7 @@
 #define MMU_HOP0_PA49_44_SHIFT		(12 + 32)
 #define MMU_HOP0_PA63_44_SHIFT		(12 + 32)
 
-#define MMU_CONFIG_TIMEOUT_USEC		2000 /* 2 ms */
+#define MMU_CONFIG_TIMEOUT_USEC		2000  
 
 enum mmu_hop_num {
 	MMU_HOP0,
@@ -54,4 +49,4 @@ enum mmu_hop_num {
 	MMU_HOP_MAX,
 };
 
-#endif /* INCLUDE_MMU_GENERAL_H_ */
+#endif  

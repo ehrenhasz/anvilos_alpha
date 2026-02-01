@@ -1,44 +1,7 @@
-// * this is for making emacs happy: -*-Mode: C++;-*-
-/****************************************************************************
- * Copyright 2019,2020 Thomas E. Dickey                                     *
- * Copyright 1998-2012,2014 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
 
-/*
- * Authors:
- *	Thomas E. Dickey
- *	Juergen Pfeifer
- *
- * The NCursesWindow class was originally based on a file written by
- * Eric Newton, later modified by Ulrich Drepper and Anatoly Ivasyuk.
- * However, aside from the compatible interface definition, no trace
- * of the original code remains in this version: it consists only of
- * changes introduced since 1995.
- */
+ 
+
+ 
 
 #include "internal.h"
 #include "cursesw.h"
@@ -52,7 +15,7 @@ MODULE_ID("$Id: cursesw.cc,v 1.56 2020/02/02 23:34:34 tom Exp $")
 
 #define HaveColors() (colorInitialized == COLORS_ARE_REALLY_THERE)
 
-// declare static variables for the class
+
 long NCursesWindow::count = 0L;
 bool NCursesWindow::b_initialized = FALSE;
 
@@ -212,11 +175,11 @@ NCursesWindow::NCursesWindow(WINDOW* window)
 {
     constructing();
 
-    // We used to use a reference on the "window" parameter, but we cannot do
-    // that with an opaque pointer (see NCURSES_OPAQUE).  If the parameter was
-    // "::stdscr", that is first set via the "constructing() call, and is null
-    // up to that point.  So we allow a null pointer here as meaning the "same"
-    // as "::stdscr".
+    
+    
+    
+    
+    
     w = window ? window : ::stdscr;
     set_keyboard();
 }
@@ -226,13 +189,13 @@ NCursesWindow::NCursesWindow(NCursesWindow& win, int ny, int nx,
   : w(0), alloced(TRUE), par(0), subwins(0), sib(0)
 {
     constructing();
-    if (absrel == 'a') {	// absolute origin
+    if (absrel == 'a') {	
 	begin_y -= win.begy();
 	begin_x -= win.begx();
     }
 
-    // Link this window into its parent's list of subwindows.
-    // We use derwin(), since this also works for pads.
+    
+    
     w = ::derwin(win.w, ny, nx, begin_y, begin_x);
     if (w == 0) {
 	err_handler("Cannot construct subwindow");
@@ -278,7 +241,7 @@ NCursesWindow NCursesWindow::Clone()
 }
 
 typedef int (*RIPOFFINIT)(NCursesWindow&);
-static RIPOFFINIT R_INIT[5];       // There can't be more
+static RIPOFFINIT R_INIT[5];       
 static int r_init_idx   = 0;
 static RIPOFFINIT* prip = R_INIT;
 
@@ -350,7 +313,7 @@ NCursesWindow::~NCursesWindow() THROWS(NCursesException)
     kill_subwindows();
 
     if (par != 0) {
-	// Remove this window from the parent's list of subwindows.
+	
 	NCursesWindow * next = par->subwins;
 	NCursesWindow * prev = 0;
 	while (next != 0) {
@@ -374,15 +337,15 @@ NCursesWindow::~NCursesWindow() THROWS(NCursesException)
 	--count;
 	if (count == 0) {
 	    ::endwin();
-	} else if (count < 0) { // cannot happen!
+	} else if (count < 0) { 
 	    err_handler("Too many windows destroyed");
 	}
     }
 }
 
-// ---------------------------------------------------------------------
-// Color stuff
-//
+
+
+
 int NCursesWindow::colorInitialized = COLORS_NOT_INITIALIZED;
 
 void
@@ -417,7 +380,7 @@ NCursesWindow::getcolor(int getback) const
 	if (::pair_content(getPair(), &fore, &back) == ERR)
 	    err_handler("Can't get color pair");
     } else {
-	// Monochrome means white on black
+	
 	back = COLOR_BLACK;
 	fore = COLOR_WHITE;
     }

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) ST-Ericsson SA 2012
- *
- * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
- *         for ST-Ericsson.
- */
+ 
+ 
 
 
 #ifndef UX500_MSP_I2S_H
@@ -14,28 +9,26 @@
 
 #define MSP_INPUT_FREQ_APB 48000000
 
-/*** Stereo mode. Used for APB data accesses as 16 bits accesses (mono),
- *   32 bits accesses (stereo).
- ***/
+ 
 enum msp_stereo_mode {
 	MSP_MONO,
 	MSP_STEREO
 };
 
-/* Direction (Transmit/Receive mode) */
+ 
 enum msp_direction {
 	MSP_TX = 1,
 	MSP_RX = 2
 };
 
-/* Transmit and receive configuration register */
+ 
 #define MSP_BIG_ENDIAN           0x00000000
 #define MSP_LITTLE_ENDIAN        0x00001000
 #define MSP_UNEXPECTED_FS_ABORT  0x00000000
 #define MSP_UNEXPECTED_FS_IGNORE 0x00008000
 #define MSP_NON_MODE_BIT_MASK    0x00009000
 
-/* Global configuration register */
+ 
 #define RX_ENABLE             0x00000001
 #define RX_FIFO_ENABLE        0x00000002
 #define RX_SYNC_SRG           0x00000010
@@ -99,7 +92,7 @@ enum msp_direction {
 #define MSP_CID2	0xff8
 #define MSP_CID3	0xffc
 
-/* Protocol dependant parameters list */
+ 
 #define RX_ENABLE_MASK		BIT(0)
 #define RX_FIFO_ENABLE_MASK	BIT(1)
 #define RX_FSYNC_MASK		BIT(2)
@@ -192,7 +185,7 @@ enum msp_direction {
 						COMPANDING_MODE_MASK)
 #define MSP_SET_FSYNC_IGNORE(n)		((n << FSYNC_SHIFT) & FSYNC_MASK)
 
-/* Flag register */
+ 
 #define RX_BUSY			BIT(0)
 #define RX_FIFO_EMPTY		BIT(1)
 #define RX_FIFO_FULL		BIT(2)
@@ -207,14 +200,14 @@ enum msp_direction {
 #define TFE_SHIFT		4
 #define TFU_SHIFT		5
 
-/* Multichannel control register */
+ 
 #define RMCEN_SHIFT		0
 #define RMCSF_SHIFT		1
 #define RCMPM_SHIFT		3
 #define TMCEN_SHIFT		5
 #define TNCSF_SHIFT		6
 
-/* Sample rate generator register */
+ 
 #define SCKDIV_SHIFT		0
 #define FRWID_SHIFT		10
 #define FRPER_SHIFT		16
@@ -223,14 +216,14 @@ enum msp_direction {
 #define FRAME_WIDTH_BITS(n)	(((n) << FRWID_SHIFT)  & 0x0000FC00)
 #define FRAME_PERIOD_BITS(n)	(((n) << FRPER_SHIFT) & 0x1FFF0000)
 
-/* DMA controller register */
+ 
 #define RX_DMA_ENABLE		BIT(0)
 #define TX_DMA_ENABLE		BIT(1)
 
 #define RDMAE_SHIFT		0
 #define TDMAE_SHIFT		1
 
-/* Interrupt Register */
+ 
 #define RX_SERVICE_INT		BIT(0)
 #define RX_OVERRUN_ERROR_INT	BIT(1)
 #define RX_FSYNC_ERR_INT	BIT(2)
@@ -241,7 +234,7 @@ enum msp_direction {
 #define TX_FSYNC_INT		BIT(7)
 #define ALL_INT			0x000000ff
 
-/* MSP test control register */
+ 
 #define MSP_ITCR_ITEN		BIT(0)
 #define MSP_ITCR_TESTFIFO	BIT(1)
 
@@ -251,13 +244,13 @@ enum msp_direction {
 #define TMCEN_BIT   5
 #define TNCSF_BIT   6
 
-/* Single or dual phase mode */
+ 
 enum msp_phase_mode {
 	MSP_SINGLE_PHASE,
 	MSP_DUAL_PHASE
 };
 
-/* Frame length */
+ 
 enum msp_frame_length {
 	MSP_FRAME_LEN_1 = 0,
 	MSP_FRAME_LEN_2 = 1,
@@ -271,7 +264,7 @@ enum msp_frame_length {
 	MSP_FRAME_LEN_64 = 63
 };
 
-/* Element length */
+ 
 enum msp_elem_length {
 	MSP_ELEM_LEN_8 = 0,
 	MSP_ELEM_LEN_10 = 1,
@@ -309,7 +302,7 @@ enum msp_fsync_pol {
 	MSP_FSYNC_POL_ACT_LO = 1
 };
 
-/* Data delay (in bit clock cycles) */
+ 
 enum msp_delay {
 	MSP_DELAY_0 = 0,
 	MSP_DELAY_1 = 1,
@@ -317,7 +310,7 @@ enum msp_delay {
 	MSP_DELAY_3 = 3
 };
 
-/* Configurations of clocks (transmit, receive or sample rate generator) */
+ 
 enum msp_edge {
 	MSP_FALLING_EDGE = 0,
 	MSP_RISING_EDGE = 1,
@@ -354,10 +347,7 @@ enum msp_protocol {
 	MSP_INVALID_PROTOCOL
 };
 
-/*
- * No of registers to backup during
- * suspend resume
- */
+ 
 #define MAX_MSP_BACKUP_REGS 36
 
 enum i2s_direction_t {

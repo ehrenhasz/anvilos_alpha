@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/media-bus-format.h>
@@ -35,10 +33,7 @@
 
 #define LVDS_CTRL_CH0_EN			BIT(0)
 #define LVDS_CTRL_CH1_EN			BIT(1)
-/*
- * LVDS_CTRL_LVDS_EN bit is poorly named in i.MX93 reference manual.
- * Clear it to enable LVDS and set it to disable LVDS.
- */
+ 
 #define LVDS_CTRL_LVDS_EN			BIT(1)
 #define LVDS_CTRL_VBG_EN			BIT(2)
 #define LVDS_CTRL_HS_EN				BIT(3)
@@ -137,7 +132,7 @@ static void fsl_ldb_atomic_enable(struct drm_bridge *bridge,
 	bool lvds_format_jeida;
 	u32 reg;
 
-	/* Get the LVDS format from the bridge state. */
+	 
 	bridge_state = drm_atomic_get_new_bridge_state(state, bridge);
 
 	switch (bridge_state->output_bus_cfg.format) {
@@ -154,10 +149,7 @@ static void fsl_ldb_atomic_enable(struct drm_bridge *bridge,
 		lvds_format_jeida = false;
 		break;
 	default:
-		/*
-		 * Some bridges still don't set the correct LVDS bus pixel
-		 * format, use SPWG24 default format until those are fixed.
-		 */
+		 
 		lvds_format_24bpp = true;
 		lvds_format_jeida = false;
 		dev_warn(fsl_ldb->dev,
@@ -166,10 +158,7 @@ static void fsl_ldb_atomic_enable(struct drm_bridge *bridge,
 		break;
 	}
 
-	/*
-	 * Retrieve the CRTC adjusted mode. This requires a little dance to go
-	 * from the bridge to the encoder, to the connector and to the CRTC.
-	 */
+	 
 	connector = drm_atomic_get_new_connector_for_encoder(state,
 							     bridge->encoder);
 	crtc = drm_atomic_get_new_connector_state(state, connector)->crtc;
@@ -187,7 +176,7 @@ static void fsl_ldb_atomic_enable(struct drm_bridge *bridge,
 
 	clk_prepare_enable(fsl_ldb->clk);
 
-	/* Program LDB_CTRL */
+	 
 	reg =	(fsl_ldb->ch0_enabled ? LDB_CTRL_CH0_ENABLE : 0) |
 		(fsl_ldb->ch1_enabled ? LDB_CTRL_CH1_ENABLE : 0) |
 		(fsl_ldb_is_dual(fsl_ldb) ? LDB_CTRL_SPLIT_MODE : 0);
@@ -209,12 +198,12 @@ static void fsl_ldb_atomic_enable(struct drm_bridge *bridge,
 	if (fsl_ldb->devdata->single_ctrl_reg)
 		return;
 
-	/* Program LVDS_CTRL */
+	 
 	reg = LVDS_CTRL_CC_ADJ(2) | LVDS_CTRL_PRE_EMPH_EN |
 	      LVDS_CTRL_PRE_EMPH_ADJ(3) | LVDS_CTRL_VBG_EN;
 	regmap_write(fsl_ldb->regmap, fsl_ldb->devdata->lvds_ctrl, reg);
 
-	/* Wait for VBG to stabilize. */
+	 
 	usleep_range(15, 20);
 
 	reg |=	(fsl_ldb->ch0_enabled ? LVDS_CTRL_CH0_EN : 0) |
@@ -228,9 +217,9 @@ static void fsl_ldb_atomic_disable(struct drm_bridge *bridge,
 {
 	struct fsl_ldb *fsl_ldb = to_fsl_ldb(bridge);
 
-	/* Stop channel(s). */
+	 
 	if (fsl_ldb->devdata->lvds_en_bit)
-		/* Set LVDS_CTRL_LVDS_EN bit to disable. */
+		 
 		regmap_write(fsl_ldb->regmap, fsl_ldb->devdata->lvds_ctrl,
 			     LVDS_CTRL_LVDS_EN);
 	else
@@ -318,7 +307,7 @@ static int fsl_ldb_probe(struct platform_device *pdev)
 	if (IS_ERR(fsl_ldb->regmap))
 		return PTR_ERR(fsl_ldb->regmap);
 
-	/* Locate the remote ports and the panel node */
+	 
 	remote1 = of_graph_get_remote_node(dev->of_node, 1, 0);
 	remote2 = of_graph_get_remote_node(dev->of_node, 2, 0);
 	fsl_ldb->ch0_enabled = (remote1 != NULL);
@@ -359,7 +348,7 @@ static int fsl_ldb_probe(struct platform_device *pdev)
 			return dev_err_probe(dev, dual_link,
 					     "Error getting dual link configuration\n");
 
-		/* Only DRM_LVDS_DUAL_LINK_ODD_EVEN_PIXELS is supported */
+		 
 		if (dual_link == DRM_LVDS_DUAL_LINK_EVEN_ODD_PIXELS) {
 			dev_err(dev, "LVDS channel pixel swap not supported.\n");
 			return -EINVAL;
@@ -387,7 +376,7 @@ static const struct of_device_id fsl_ldb_match[] = {
 	  .data = &fsl_ldb_devdata[IMX8MP_LDB], },
 	{ .compatible = "fsl,imx93-ldb",
 	  .data = &fsl_ldb_devdata[IMX93_LDB], },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, fsl_ldb_match);
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-* Copyright (C) 2012 Invensense, Inc.
-*/
+ 
+ 
 
 #ifndef INV_MPU_IIO_H_
 #define INV_MPU_IIO_H_
@@ -21,29 +19,7 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/sysfs.h>
 
-/**
- *  struct inv_mpu6050_reg_map - Notable registers.
- *  @sample_rate_div:	Divider applied to gyro output rate.
- *  @lpf:		Configures internal low pass filter.
- *  @accel_lpf:		Configures accelerometer low pass filter.
- *  @user_ctrl:		Enables/resets the FIFO.
- *  @fifo_en:		Determines which data will appear in FIFO.
- *  @gyro_config:	gyro config register.
- *  @accl_config:	accel config register
- *  @fifo_count_h:	Upper byte of FIFO count.
- *  @fifo_r_w:		FIFO register.
- *  @raw_gyro:		Address of first gyro register.
- *  @raw_accl:		Address of first accel register.
- *  @temperature:	temperature register
- *  @int_enable:	Interrupt enable register.
- *  @int_status:	Interrupt status register.
- *  @pwr_mgmt_1:	Controls chip's power state and clock source.
- *  @pwr_mgmt_2:	Controls power state of individual sensors.
- *  @int_pin_cfg;	Controls interrupt pin configuration.
- *  @accl_offset:	Controls the accelerometer calibration offset.
- *  @gyro_offset:	Controls the gyroscope calibration offset.
- *  @i2c_if:		Controls the i2c interface
- */
+ 
 struct inv_mpu6050_reg_map {
 	u8 sample_rate_div;
 	u8 lpf;
@@ -67,7 +43,7 @@ struct inv_mpu6050_reg_map {
 	u8 i2c_if;
 };
 
-/*device enum */
+ 
 enum inv_devices {
 	INV_MPU6050,
 	INV_MPU6500,
@@ -88,28 +64,13 @@ enum inv_devices {
 	INV_NUM_PARTS
 };
 
-/* chip sensors mask: accelerometer, gyroscope, temperature, magnetometer */
+ 
 #define INV_MPU6050_SENSOR_ACCL		BIT(0)
 #define INV_MPU6050_SENSOR_GYRO		BIT(1)
 #define INV_MPU6050_SENSOR_TEMP		BIT(2)
 #define INV_MPU6050_SENSOR_MAGN		BIT(3)
 
-/**
- *  struct inv_mpu6050_chip_config - Cached chip configuration data.
- *  @clk:		selected chip clock
- *  @fsr:		Full scale range.
- *  @lpf:		Digital low pass filter frequency.
- *  @accl_fs:		accel full scale range.
- *  @accl_en:		accel engine enabled
- *  @gyro_en:		gyro engine enabled
- *  @temp_en:		temperature sensor enabled
- *  @magn_en:		magn engine (i2c master) enabled
- *  @accl_fifo_enable:	enable accel data output
- *  @gyro_fifo_enable:	enable gyro data output
- *  @temp_fifo_enable:	enable temp data output
- *  @magn_fifo_enable:	enable magn data output
- *  @divider:		chip sample rate divider (sample rate divider - 1)
- */
+ 
 struct inv_mpu6050_chip_config {
 	unsigned int clk:3;
 	unsigned int fsr:2;
@@ -127,22 +88,10 @@ struct inv_mpu6050_chip_config {
 	u8 user_ctrl;
 };
 
-/*
- * Maximum of 6 + 6 + 2 + 7 (for MPU9x50) = 21 round up to 24 and plus 8.
- * May be less if fewer channels are enabled, as long as the timestamp
- * remains 8 byte aligned
- */
+ 
 #define INV_MPU6050_OUTPUT_DATA_SIZE         32
 
-/**
- *  struct inv_mpu6050_hw - Other important hardware information.
- *  @whoami:	Self identification byte from WHO_AM_I register
- *  @name:      name of the chip.
- *  @reg:   register map of the chip.
- *  @config:    configuration of the chip.
- *  @fifo_size:	size of the FIFO in bytes.
- *  @temp:	offset and scale to apply to raw temperature.
- */
+ 
 struct inv_mpu6050_hw {
 	u8 whoami;
 	u8 *name;
@@ -159,28 +108,7 @@ struct inv_mpu6050_hw {
 	} startup_time;
 };
 
-/*
- *  struct inv_mpu6050_state - Driver state variables.
- *  @lock:              Chip access lock.
- *  @trig:              IIO trigger.
- *  @chip_config:	Cached attribute information.
- *  @reg:		Map of important registers.
- *  @hw:		Other hardware-specific information.
- *  @chip_type:		chip type.
- *  @plat_data:		platform data (deprecated in favor of @orientation).
- *  @orientation:	sensor chip orientation relative to main hardware.
- *  @map		regmap pointer.
- *  @irq		interrupt number.
- *  @irq_mask		the int_pin_cfg mask to configure interrupt type.
- *  @timestamp:		timestamping module
- *  @vdd_supply:	VDD voltage regulator for the chip.
- *  @vddio_supply	I/O voltage regulator for the chip.
- *  @magn_disabled:     magnetometer disabled for backward compatibility reason.
- *  @magn_raw_to_gauss:	coefficient to convert mag raw value to Gauss.
- *  @magn_orient:       magnetometer sensor chip orientation if available.
- *  @suspended_sensors:	sensors mask of sensors turned off for suspend
- *  @data:		read buffer used for bulk reads.
- */
+ 
 struct inv_mpu6050_state {
 	struct mutex lock;
 	struct iio_trigger  *trig;
@@ -206,7 +134,7 @@ struct inv_mpu6050_state {
 	u8 *data;
 };
 
-/*register and associated bit definition*/
+ 
 #define INV_MPU6050_REG_ACCEL_OFFSET        0x06
 #define INV_MPU6050_REG_GYRO_OFFSET         0x13
 
@@ -230,7 +158,7 @@ struct inv_mpu6050_state {
 #define INV_MPU6050_BIT_WAIT_FOR_ES         0x40
 #define INV_MPU6050_BIT_MULT_MST_EN         0x80
 
-/* control I2C slaves from 0 to 3 */
+ 
 #define INV_MPU6050_REG_I2C_SLV_ADDR(_x)    (0x25 + 3 * (_x))
 #define INV_MPU6050_BIT_I2C_SLV_RNW         0x80
 
@@ -242,7 +170,7 @@ struct inv_mpu6050_state {
 #define INV_MPU6050_BIT_SLV_BYTE_SW         0x40
 #define INV_MPU6050_BIT_SLV_EN              0x80
 
-/* I2C master delay register */
+ 
 #define INV_MPU6050_REG_I2C_SLV4_CTRL       0x34
 #define INV_MPU6050_BITS_I2C_MST_DLY(_x)    ((_x) & 0x1F)
 
@@ -266,7 +194,7 @@ struct inv_mpu6050_state {
 
 #define INV_MPU6050_REG_EXT_SENS_DATA       0x49
 
-/* I2C slaves data output from 0 to 3 */
+ 
 #define INV_MPU6050_REG_I2C_SLV_DO(_x)      (0x63 + (_x))
 
 #define INV_MPU6050_REG_I2C_MST_DELAY_CTRL  0x67
@@ -300,7 +228,7 @@ struct inv_mpu6050_state {
 #define INV_MPU6050_BIT_PWR_ACCL_STBY       0x38
 #define INV_MPU6050_BIT_PWR_GYRO_STBY       0x07
 
-/* ICM20602 register */
+ 
 #define INV_ICM20602_REG_I2C_IF             0x70
 #define INV_ICM20602_BIT_I2C_IF_DIS         0x40
 
@@ -310,18 +238,18 @@ struct inv_mpu6050_state {
 #define INV_MPU6050_BYTES_PER_3AXIS_SENSOR   6
 #define INV_MPU6050_FIFO_COUNT_BYTE          2
 
-/* MPU9X50 9-axis magnetometer */
+ 
 #define INV_MPU9X50_BYTES_MAGN               7
 
-/* FIFO temperature sample size */
+ 
 #define INV_MPU6050_BYTES_PER_TEMP_SENSOR   2
 
-/* mpu6500 registers */
+ 
 #define INV_MPU6500_REG_ACCEL_CONFIG_2      0x1D
 #define INV_ICM20689_BITS_FIFO_SIZE_MAX     0xC0
 #define INV_MPU6500_REG_ACCEL_OFFSET        0x77
 
-/* delay time in milliseconds */
+ 
 #define INV_MPU6050_POWER_UP_TIME            100
 #define INV_MPU6050_TEMP_UP_TIME             100
 #define INV_MPU6050_ACCEL_STARTUP_TIME       20
@@ -339,7 +267,7 @@ struct inv_mpu6050_state {
 #define INV_ICM20690_ACCEL_STARTUP_TIME      10
 
 
-/* delay time in microseconds */
+ 
 #define INV_MPU6050_REG_UP_TIME_MIN          5000
 #define INV_MPU6050_REG_UP_TIME_MAX          10000
 
@@ -361,23 +289,23 @@ struct inv_mpu6050_state {
 #define INV_MPU6050_REG_INT_PIN_CFG	0x37
 #define INV_MPU6050_ACTIVE_HIGH		0x00
 #define INV_MPU6050_ACTIVE_LOW		0x80
-/* enable level triggering */
+ 
 #define INV_MPU6050_LATCH_INT_EN	0x20
 #define INV_MPU6050_BIT_BYPASS_EN	0x2
 
-/* Allowed timestamp period jitter in percent */
+ 
 #define INV_MPU6050_TS_PERIOD_JITTER	4
 
-/* init parameters */
+ 
 #define INV_MPU6050_MAX_FIFO_RATE            1000
 #define INV_MPU6050_MIN_FIFO_RATE            4
 
-/* chip internal frequency: 1KHz */
+ 
 #define INV_MPU6050_INTERNAL_FREQ_HZ		1000
-/* return the frequency divider (chip sample rate divider + 1) */
+ 
 #define INV_MPU6050_FREQ_DIVIDER(st)					\
 	((st)->chip_config.divider + 1)
-/* chip sample rate divider to fifo rate */
+ 
 #define INV_MPU6050_FIFO_RATE_TO_DIVIDER(fifo_rate)			\
 	((INV_MPU6050_INTERNAL_FREQ_HZ / (fifo_rate)) - 1)
 #define INV_MPU6050_DIVIDER_TO_FIFO_RATE(divider)			\
@@ -402,7 +330,7 @@ struct inv_mpu6050_state {
 #define INV_ICM20690_WHOAMI_VALUE		0x20
 #define INV_IAM20680_WHOAMI_VALUE		0xA9
 
-/* scan element definition for generic MPU6xxx devices */
+ 
 enum inv_mpu6050_scan {
 	INV_MPU6050_SCAN_ACCL_X,
 	INV_MPU6050_SCAN_ACCL_Y,
@@ -431,7 +359,7 @@ enum inv_mpu6050_filter_e {
 	NUM_MPU6050_FILTER
 };
 
-/* IIO attribute address */
+ 
 enum INV_MPU6050_IIO_ATTR_ADDR {
 	ATTR_GYRO_MATRIX,
 	ATTR_ACCL_MATRIX,

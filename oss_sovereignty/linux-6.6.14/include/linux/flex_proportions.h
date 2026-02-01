@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Floating proportions with flexible aging period
- *
- *  Copyright (C) 2011, SUSE, Jan Kara <jack@suse.cz>
- */
+ 
+ 
 
 #ifndef _LINUX_FLEX_PROPORTIONS_H
 #define _LINUX_FLEX_PROPORTIONS_H
@@ -13,24 +9,17 @@
 #include <linux/seqlock.h>
 #include <linux/gfp.h>
 
-/*
- * When maximum proportion of some event type is specified, this is the
- * precision with which we allow limitting. Note that this creates an upper
- * bound on the number of events per period like
- *   ULLONG_MAX >> FPROP_FRAC_SHIFT.
- */
+ 
 #define FPROP_FRAC_SHIFT 10
 #define FPROP_FRAC_BASE (1UL << FPROP_FRAC_SHIFT)
 
-/*
- * ---- Global proportion definitions ----
- */
+ 
 struct fprop_global {
-	/* Number of events in the current period */
+	 
 	struct percpu_counter events;
-	/* Current period */
+	 
 	unsigned int period;
-	/* Synchronization with period transitions */
+	 
 	seqcount_t sequence;
 };
 
@@ -38,15 +27,13 @@ int fprop_global_init(struct fprop_global *p, gfp_t gfp);
 void fprop_global_destroy(struct fprop_global *p);
 bool fprop_new_period(struct fprop_global *p, int periods);
 
-/*
- *  ---- SINGLE ----
- */
+ 
 struct fprop_local_single {
-	/* the local events counter */
+	 
 	unsigned long events;
-	/* Period in which we last updated events */
+	 
 	unsigned int period;
-	raw_spinlock_t lock;	/* Protect period and numerator */
+	raw_spinlock_t lock;	 
 };
 
 #define INIT_FPROP_LOCAL_SINGLE(name)			\
@@ -70,15 +57,13 @@ void fprop_inc_single(struct fprop_global *p, struct fprop_local_single *pl)
 	local_irq_restore(flags);
 }
 
-/*
- * ---- PERCPU ----
- */
+ 
 struct fprop_local_percpu {
-	/* the local events counter */
+	 
 	struct percpu_counter events;
-	/* Period in which we last updated events */
+	 
 	unsigned int period;
-	raw_spinlock_t lock;	/* Protect period and numerator */
+	raw_spinlock_t lock;	 
 };
 
 int fprop_local_init_percpu(struct fprop_local_percpu *pl, gfp_t gfp);

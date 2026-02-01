@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * SerDes PHY driver for Microsemi Ocelot
- *
- * Copyright (c) 2018 Microsemi
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mfd/syscon.h>
@@ -26,7 +21,7 @@ struct serdes_ctrl {
 
 struct serdes_macro {
 	u8			idx;
-	/* Not used when in QSGMII or PCIe mode */
+	 
 	int			port;
 	struct serdes_ctrl	*ctrl;
 };
@@ -90,7 +85,7 @@ static int serdes_init_s6g(struct regmap *regmap, u8 serdes, int mode)
 	if (ret)
 		return ret;
 
-	/* Test pattern */
+	 
 
 	regmap_update_bits(regmap, HSIO_S6G_COMMON_CFG,
 			   HSIO_S6G_COMMON_CFG_SYS_RST, 0);
@@ -147,7 +142,7 @@ static int serdes_init_s6g(struct regmap *regmap, u8 serdes, int mode)
 	if (ret)
 		return ret;
 
-	/* OB + DES + IB + SER CFG */
+	 
 	regmap_update_bits(regmap, HSIO_S6G_OB_CFG,
 			   HSIO_S6G_OB_CFG_OB_IDLE |
 			   HSIO_S6G_OB_CFG_OB_ENA1V_MODE |
@@ -231,7 +226,7 @@ static int serdes_init_s6g(struct regmap *regmap, u8 serdes, int mode)
 	if (ret)
 		return ret;
 
-	/* Wait for PLL bringup */
+	 
 	msleep(20);
 
 	regmap_update_bits(regmap, HSIO_S6G_IB_CFG,
@@ -245,7 +240,7 @@ static int serdes_init_s6g(struct regmap *regmap, u8 serdes, int mode)
 	if (ret)
 		return ret;
 
-	/* Wait for calibration */
+	 
 	msleep(60);
 
 	regmap_update_bits(regmap, HSIO_S6G_IB_CFG,
@@ -258,7 +253,7 @@ static int serdes_init_s6g(struct regmap *regmap, u8 serdes, int mode)
 			   HSIO_S6G_IB_CFG1_IB_TSDET_M,
 			   HSIO_S6G_IB_CFG1_IB_TSDET(3));
 
-	/* IB CFG */
+	 
 
 	return 0;
 }
@@ -401,7 +396,7 @@ static int serdes_set_mode(struct phy *phy, enum phy_mode mode, int submode)
 	unsigned int i;
 	int ret;
 
-	/* As of now only PHY_MODE_ETHERNET is supported */
+	 
 	if (mode != PHY_MODE_ETHERNET)
 		return -EOPNOTSUPP;
 
@@ -428,7 +423,7 @@ static int serdes_set_mode(struct phy *phy, enum phy_mode mode, int submode)
 					       macro->idx - (SERDES1G_MAX + 1),
 					       ocelot_serdes_muxes[i].submode);
 
-		/* PCIe not supported yet */
+		 
 		return -EOPNOTSUPP;
 	}
 
@@ -458,7 +453,7 @@ static struct phy *serdes_simple_xlate(struct device *dev,
 		if (idx != macro->idx)
 			continue;
 
-		/* SERDES6G(0) is the only SerDes capable of QSGMII */
+		 
 		if (idx != SERDES6G(0) && macro->port >= 0)
 			return ERR_PTR(-EBUSY);
 
@@ -505,7 +500,7 @@ static int serdes_probe(struct platform_device *pdev)
 	ctrl->dev = &pdev->dev;
 	ctrl->regs = syscon_node_to_regmap(pdev->dev.parent->of_node);
 	if (IS_ERR(ctrl->regs)) {
-		/* Fall back to using IORESOURCE_REG, if possible */
+		 
 		res = platform_get_resource(pdev, IORESOURCE_REG, 0);
 		if (res)
 			ctrl->regs = dev_get_regmap(ctrl->dev->parent,

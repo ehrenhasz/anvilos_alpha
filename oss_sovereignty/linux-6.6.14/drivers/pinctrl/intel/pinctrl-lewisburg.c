@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Lewisburg pinctrl/GPIO driver
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -23,9 +18,9 @@
 #define LBG_COMMUNITY(b, s, e)				\
 	INTEL_COMMUNITY_SIZE(b, s, e, 24, 3, LBG)
 
-/* Lewisburg */
+ 
 static const struct pinctrl_pin_desc lbg_pins[] = {
-	/* GPP_A */
+	 
 	PINCTRL_PIN(0, "RCINB"),
 	PINCTRL_PIN(1, "LAD_0"),
 	PINCTRL_PIN(2, "LAD_1"),
@@ -50,7 +45,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(21, "GPP_A_21"),
 	PINCTRL_PIN(22, "GPP_A_22"),
 	PINCTRL_PIN(23, "GPP_A_23"),
-	/* GPP_B */
+	 
 	PINCTRL_PIN(24, "CORE_VID_0"),
 	PINCTRL_PIN(25, "CORE_VID_1"),
 	PINCTRL_PIN(26, "VRALERTB"),
@@ -75,7 +70,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(45, "GPP_B_21"),
 	PINCTRL_PIN(46, "GPP_B_22"),
 	PINCTRL_PIN(47, "SML1ALERTB"),
-	/* GPP_F */
+	 
 	PINCTRL_PIN(48, "SATAXPCIE_3"),
 	PINCTRL_PIN(49, "SATAXPCIE_4"),
 	PINCTRL_PIN(50, "SATAXPCIE_5"),
@@ -100,7 +95,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(69, "GBE_SMBALRTN"),
 	PINCTRL_PIN(70, "SSATA_SCLOCK"),
 	PINCTRL_PIN(71, "SSATA_SLOAD"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(72, "SMBCLK"),
 	PINCTRL_PIN(73, "SMBDATA"),
 	PINCTRL_PIN(74, "SMBALERTB"),
@@ -125,7 +120,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(93, "GPP_C_21"),
 	PINCTRL_PIN(94, "GPP_C_22"),
 	PINCTRL_PIN(95, "GPP_C_23"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(96, "GPP_D_0"),
 	PINCTRL_PIN(97, "GPP_D_1"),
 	PINCTRL_PIN(98, "GPP_D_2"),
@@ -150,7 +145,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(117, "IE_UART_RXD"),
 	PINCTRL_PIN(118, "IE_UART_TXD"),
 	PINCTRL_PIN(119, "GPP_D_23"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(120, "SATAXPCIE_0"),
 	PINCTRL_PIN(121, "SATAXPCIE_1"),
 	PINCTRL_PIN(122, "SATAXPCIE_2"),
@@ -164,7 +159,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(130, "USB2_OCB_1"),
 	PINCTRL_PIN(131, "USB2_OCB_2"),
 	PINCTRL_PIN(132, "USB2_OCB_3"),
-	/* GPP_I */
+	 
 	PINCTRL_PIN(133, "GBE_TDO"),
 	PINCTRL_PIN(134, "GBE_TCK"),
 	PINCTRL_PIN(135, "GBE_TMS"),
@@ -176,7 +171,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(141, "GBE_PCI_DIS"),
 	PINCTRL_PIN(142, "GBE_LAN_DIS"),
 	PINCTRL_PIN(143, "GPP_I_10"),
-	/* GPP_J */
+	 
 	PINCTRL_PIN(144, "GBE_LED_0_0"),
 	PINCTRL_PIN(145, "GBE_LED_0_1"),
 	PINCTRL_PIN(146, "GBE_LED_1_0"),
@@ -201,7 +196,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(165, "GBE_SDP_2_1"),
 	PINCTRL_PIN(166, "GBE_SDP_3_0"),
 	PINCTRL_PIN(167, "GBE_SDP_3_1"),
-	/* GPP_K */
+	 
 	PINCTRL_PIN(168, "GBE_RMIICLK"),
 	PINCTRL_PIN(169, "GBE_RMII_RXD_0"),
 	PINCTRL_PIN(170, "GBE_RMII_RXD_1"),
@@ -213,7 +208,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(176, "GBE_RMII_ARBIN"),
 	PINCTRL_PIN(177, "GBE_RMII_ARB_OUT"),
 	PINCTRL_PIN(178, "PE_RST_N"),
-	/* GPP_G */
+	 
 	PINCTRL_PIN(179, "FAN_TACH_0"),
 	PINCTRL_PIN(180, "FAN_TACH_1"),
 	PINCTRL_PIN(181, "FAN_TACH_2"),
@@ -238,7 +233,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(200, "SSATA_DEVSLP_1"),
 	PINCTRL_PIN(201, "SSATA_DEVSLP_2"),
 	PINCTRL_PIN(202, "SSATAXPCIE0_SSATAGP0"),
-	/* GPP_H */
+	 
 	PINCTRL_PIN(203, "SRCCLKREQB_6"),
 	PINCTRL_PIN(204, "SRCCLKREQB_7"),
 	PINCTRL_PIN(205, "SRCCLKREQB_8"),
@@ -263,7 +258,7 @@ static const struct pinctrl_pin_desc lbg_pins[] = {
 	PINCTRL_PIN(224, "SSATAXPCIE3_SSATAGP3"),
 	PINCTRL_PIN(225, "SSATAXPCIE4_SSATAGP4"),
 	PINCTRL_PIN(226, "SSATAXPCIE5_SSATAGP5"),
-	/* GPP_L */
+	 
 	PINCTRL_PIN(227, "GPP_L_0"),
 	PINCTRL_PIN(228, "EC_CSME_INTR_OUT"),
 	PINCTRL_PIN(229, "VISA2CH0_D0"),

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_ZSWAP_H
 #define _LINUX_ZSWAP_H
 
@@ -34,4 +34,4 @@ static inline void zswap_swapoff(int type) {}
 
 #endif
 
-#endif /* _LINUX_ZSWAP_H */
+#endif  

@@ -1,30 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #ifndef __XFS_TRANS_SPACE_H__
 #define __XFS_TRANS_SPACE_H__
 
-/*
- * Components of space reservations.
- */
+ 
 
-/* Worst case number of rmaps that can be held in a block. */
+ 
 #define XFS_MAX_CONTIG_RMAPS_PER_BLOCK(mp)    \
 		(((mp)->m_rmap_mxr[0]) - ((mp)->m_rmap_mnr[0]))
 
-/* Adding one rmap could split every level up to the top of the tree. */
+ 
 #define XFS_RMAPADD_SPACE_RES(mp) ((mp)->m_rmap_maxlevels)
 
-/*
- * Note that we historically set m_rmap_maxlevels to 9 when reflink is enabled,
- * so we must preserve this behavior to avoid changing the transaction space
- * reservations and minimum log size calculations for existing filesystems.
- */
+ 
 #define XFS_OLD_REFLINK_RMAP_MAXLEVELS		9
 
-/* Blocks we might need to add "b" rmaps to a tree. */
+ 
 #define XFS_NRMAPADD_SPACE_RES(mp, b)\
 	(((b + XFS_MAX_CONTIG_RMAPS_PER_BLOCK(mp) - 1) / \
 	  XFS_MAX_CONTIG_RMAPS_PER_BLOCK(mp)) * \
@@ -38,7 +29,7 @@
 	  XFS_MAX_CONTIG_EXTENTS_PER_BLOCK(mp)) * \
 	  XFS_EXTENTADD_SPACE_RES(mp,w))
 
-/* Blocks we might need to add "b" mappings & rmappings to a file. */
+ 
 #define XFS_SWAP_RMAP_SPACE_RES(mp,b,w)\
 	(XFS_NEXTENTADD_SPACE_RES((mp), (b), (w)) + \
 	 XFS_NRMAPADD_SPACE_RES((mp), (b)))
@@ -66,14 +57,12 @@
 	(M_IGEO(mp)->ialloc_blks + \
 	 ((xfs_has_finobt(mp) ? 2 : 1) * M_IGEO(mp)->inobt_maxlevels))
 
-/*
- * Space reservation values for various transactions.
- */
+ 
 #define	XFS_ADDAFORK_SPACE_RES(mp)	\
 	((mp)->m_dir_geo->fsbcount + XFS_DAENTER_BMAP1B(mp, XFS_DATA_FORK))
 #define	XFS_ATTRRM_SPACE_RES(mp)	\
 	XFS_DAREMOVE_SPACE_RES(mp, XFS_ATTR_FORK)
-/* This macro is not used - see inline code in xfs_attr_set */
+ 
 #define	XFS_ATTRSET_SPACE_RES(mp, v)	\
 	(XFS_DAENTER_SPACE_RES(mp, XFS_ATTR_FORK) + XFS_B_TO_FSB(mp, v))
 #define	XFS_CREATE_SPACE_RES(mp,nl)	\
@@ -103,4 +92,4 @@
 	(xfs_has_finobt(mp) ? M_IGEO(mp)->inobt_maxlevels : 0)
 
 
-#endif	/* __XFS_TRANS_SPACE_H__ */
+#endif	 

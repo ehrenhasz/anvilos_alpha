@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2003-2015 Broadcom Corporation
- * All Rights Reserved
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/platform_device.h>
@@ -12,27 +9,12 @@
 #include <linux/irqchip/chained_irq.h>
 #include <linux/acpi.h>
 
-/*
- * XLP GPIO has multiple 32 bit registers for each feature where each register
- * controls 32 pins. So, pins up to 64 require 2 32-bit registers and up to 96
- * require 3 32-bit registers for each feature.
- * Here we only define offset of the first register for each feature. Offset of
- * the registers for pins greater than 32 can be calculated as following(Use
- * GPIO_INT_STAT as example):
- *
- * offset = (gpio / XLP_GPIO_REGSZ) * 4;
- * reg_addr = addr + offset;
- *
- * where addr is base address of the that feature register and gpio is the pin.
- */
+ 
 #define GPIO_9XX_BYTESWAP	0X00
 #define GPIO_9XX_CTRL		0X04
 #define GPIO_9XX_OUTPUT_EN	0x14
 #define GPIO_9XX_PADDRV		0x24
-/*
- * Only for 4 interrupt enable reg are defined for now,
- * total reg available are 12.
- */
+ 
 #define GPIO_9XX_INT_EN00	0x44
 #define GPIO_9XX_INT_EN10	0x54
 #define GPIO_9XX_INT_EN20	0x64
@@ -41,11 +23,11 @@
 #define GPIO_9XX_INT_TYPE	0x114
 #define GPIO_9XX_INT_STAT	0x124
 
-/* Interrupt type register mask */
+ 
 #define XLP_GPIO_IRQ_TYPE_LVL	0x0
 #define XLP_GPIO_IRQ_TYPE_EDGE	0x1
 
-/* Interrupt polarity register mask */
+ 
 #define XLP_GPIO_IRQ_POL_HIGH	0x0
 #define XLP_GPIO_IRQ_POL_LOW	0x1
 
@@ -56,12 +38,12 @@
 struct xlp_gpio_priv {
 	struct gpio_chip chip;
 	DECLARE_BITMAP(gpio_enabled_mask, XLP_MAX_NR_GPIO);
-	void __iomem *gpio_intr_en;	/* pointer to first intr enable reg */
-	void __iomem *gpio_intr_stat;	/* pointer to first intr status reg */
-	void __iomem *gpio_intr_type;	/* pointer to first intr type reg */
-	void __iomem *gpio_intr_pol;	/* pointer to first intr polarity reg */
-	void __iomem *gpio_out_en;	/* pointer to first output enable reg */
-	void __iomem *gpio_paddrv;	/* pointer to first pad drive reg */
+	void __iomem *gpio_intr_en;	 
+	void __iomem *gpio_intr_stat;	 
+	void __iomem *gpio_intr_type;	 
+	void __iomem *gpio_intr_pol;	 
+	void __iomem *gpio_out_en;	 
+	void __iomem *gpio_paddrv;	 
 	spinlock_t lock;
 };
 

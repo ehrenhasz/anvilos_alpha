@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018-2019 Linaro Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/of.h>
@@ -16,48 +14,15 @@
 
 #define TEE_ERROR_HEALTH_TEST_FAIL	0x00000001
 
-/*
- * TA_CMD_GET_ENTROPY - Get Entropy from RNG
- *
- * param[0] (inout memref) - Entropy buffer memory reference
- * param[1] unused
- * param[2] unused
- * param[3] unused
- *
- * Result:
- * TEE_SUCCESS - Invoke command success
- * TEE_ERROR_BAD_PARAMETERS - Incorrect input param
- * TEE_ERROR_NOT_SUPPORTED - Requested entropy size greater than size of pool
- * TEE_ERROR_HEALTH_TEST_FAIL - Continuous health testing failed
- */
+ 
 #define TA_CMD_GET_ENTROPY		0x0
 
-/*
- * TA_CMD_GET_RNG_INFO - Get RNG information
- *
- * param[0] (out value) - value.a: RNG data-rate in bytes per second
- *                        value.b: Quality/Entropy per 1024 bit of data
- * param[1] unused
- * param[2] unused
- * param[3] unused
- *
- * Result:
- * TEE_SUCCESS - Invoke command success
- * TEE_ERROR_BAD_PARAMETERS - Incorrect input param
- */
+ 
 #define TA_CMD_GET_RNG_INFO		0x1
 
 #define MAX_ENTROPY_REQ_SZ		(4 * 1024)
 
-/**
- * struct optee_rng_private - OP-TEE Random Number Generator private data
- * @dev:		OP-TEE based RNG device.
- * @ctx:		OP-TEE context handler.
- * @session_id:		RNG TA session identifier.
- * @data_rate:		RNG data rate.
- * @entropy_shm_pool:	Memory pool shared with RNG device.
- * @optee_rng:		OP-TEE RNG driver structure.
- */
+ 
 struct optee_rng_private {
 	struct device *dev;
 	struct tee_context *ctx;
@@ -82,12 +47,12 @@ static size_t get_optee_rng_data(struct optee_rng_private *pvt_data,
 	memset(&inv_arg, 0, sizeof(inv_arg));
 	memset(&param, 0, sizeof(param));
 
-	/* Invoke TA_CMD_GET_ENTROPY function of Trusted App */
+	 
 	inv_arg.func = TA_CMD_GET_ENTROPY;
 	inv_arg.session = pvt_data->session_id;
 	inv_arg.num_params = 4;
 
-	/* Fill invoke cmd params */
+	 
 	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INOUT;
 	param[0].u.memref.shm = pvt_data->entropy_shm_pool;
 	param[0].u.memref.size = req_size;
@@ -182,12 +147,12 @@ static int get_optee_rng_info(struct device *dev)
 	memset(&inv_arg, 0, sizeof(inv_arg));
 	memset(&param, 0, sizeof(param));
 
-	/* Invoke TA_CMD_GET_RNG_INFO function of Trusted App */
+	 
 	inv_arg.func = TA_CMD_GET_RNG_INFO;
 	inv_arg.session = pvt_data.session_id;
 	inv_arg.num_params = 4;
 
-	/* Fill invoke cmd params */
+	 
 	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_OUTPUT;
 
 	ret = tee_client_invoke_func(pvt_data.ctx, &inv_arg, param);
@@ -219,13 +184,13 @@ static int optee_rng_probe(struct device *dev)
 
 	memset(&sess_arg, 0, sizeof(sess_arg));
 
-	/* Open context with TEE driver */
+	 
 	pvt_data.ctx = tee_client_open_context(NULL, optee_ctx_match, NULL,
 					       NULL);
 	if (IS_ERR(pvt_data.ctx))
 		return -ENODEV;
 
-	/* Open session with hwrng Trusted App */
+	 
 	export_uuid(sess_arg.uuid, &rng_device->id.uuid);
 	sess_arg.clnt_login = TEE_IOCTL_LOGIN_PUBLIC;
 	sess_arg.num_params = 0;

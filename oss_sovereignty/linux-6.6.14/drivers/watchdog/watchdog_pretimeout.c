@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015-2016 Mentor Graphics
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/slab.h>
@@ -12,13 +10,13 @@
 #include "watchdog_core.h"
 #include "watchdog_pretimeout.h"
 
-/* Default watchdog pretimeout governor */
+ 
 static struct watchdog_governor *default_gov;
 
-/* The spinlock protects default_gov, wdd->gov and pretimeout_list */
+ 
 static DEFINE_SPINLOCK(pretimeout_lock);
 
-/* List of watchdog devices, which can generate a pretimeout event */
+ 
 static LIST_HEAD(pretimeout_list);
 
 struct watchdog_pretimeout {
@@ -26,10 +24,10 @@ struct watchdog_pretimeout {
 	struct list_head		entry;
 };
 
-/* The mutex protects governor list and serializes external interfaces */
+ 
 static DEFINE_MUTEX(governor_lock);
 
-/* List of the registered watchdog pretimeout governors */
+ 
 static LIST_HEAD(governor_list);
 
 struct governor_priv {

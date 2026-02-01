@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Apple Cinema Display driver
- *
- * Copyright (C) 2006  Michael Hanselmann (linux-kernel@hansmi.ch)
- *
- * Thanks to Caskey L. Dickson for his work with acdctl.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -44,7 +38,7 @@
 	.bInterfaceClass = USB_CLASS_HID,			\
 	.bInterfaceProtocol = 0x00
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id appledisplay_table[] = {
 	{ APPLEDISPLAY_DEVICE(0x9218) },
 	{ APPLEDISPLAY_DEVICE(0x9219) },
@@ -54,22 +48,22 @@ static const struct usb_device_id appledisplay_table[] = {
 	{ APPLEDISPLAY_DEVICE(0x9226) },
 	{ APPLEDISPLAY_DEVICE(0x9236) },
 
-	/* Terminating entry */
+	 
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, appledisplay_table);
 
-/* Structure to hold all of our device specific stuff */
+ 
 struct appledisplay {
-	struct usb_device *udev;	/* usb device */
-	struct urb *urb;		/* usb request block */
-	struct backlight_device *bd;	/* backlight device */
-	u8 *urbdata;			/* interrupt URB data buffer */
-	u8 *msgdata;			/* control message data buffer */
+	struct usb_device *udev;	 
+	struct urb *urb;		 
+	struct backlight_device *bd;	 
+	u8 *urbdata;			 
+	u8 *msgdata;			 
 
 	struct delayed_work work;
 	int button_pressed;
-	struct mutex sysfslock;		/* concurrent read and write */
+	struct mutex sysfslock;		 
 };
 
 static atomic_t count_displays = ATOMIC_INIT(0);
@@ -83,7 +77,7 @@ static void appledisplay_complete(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -EOVERFLOW:
 		dev_err(dev,
@@ -93,7 +87,7 @@ static void appledisplay_complete(struct urb *urb)
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* This urb is terminated, clean up */
+		 
 		dev_dbg(dev, "%s - urb shuttingdown with status: %d\n",
 			__func__, status);
 		return;
@@ -193,7 +187,7 @@ static void appledisplay_work(struct work_struct *work)
 	if (retval >= 0)
 		pdata->bd->props.brightness = retval;
 
-	/* Poll again in about 125ms if there's still a button pressed */
+	 
 	if (pdata->button_pressed)
 		schedule_delayed_work(&pdata->work, HZ / 8);
 }
@@ -209,8 +203,8 @@ static int appledisplay_probe(struct usb_interface *iface,
 	int retval, brightness;
 	char bl_name[20];
 
-	/* set up the endpoint information */
-	/* use only the first interrupt-in endpoint */
+	 
+	 
 	retval = usb_find_int_in_endpoint(iface->cur_altsetting, &endpoint);
 	if (retval) {
 		dev_err(&iface->dev, "Could not find int-in endpoint\n");
@@ -219,7 +213,7 @@ static int appledisplay_probe(struct usb_interface *iface,
 
 	int_in_endpointAddr = endpoint->bEndpointAddress;
 
-	/* allocate memory for our device state and initialize it */
+	 
 	pdata = kzalloc(sizeof(struct appledisplay), GFP_KERNEL);
 	if (!pdata) {
 		retval = -ENOMEM;
@@ -231,21 +225,21 @@ static int appledisplay_probe(struct usb_interface *iface,
 	INIT_DELAYED_WORK(&pdata->work, appledisplay_work);
 	mutex_init(&pdata->sysfslock);
 
-	/* Allocate buffer for control messages */
+	 
 	pdata->msgdata = kmalloc(ACD_MSG_BUFFER_LEN, GFP_KERNEL);
 	if (!pdata->msgdata) {
 		retval = -ENOMEM;
 		goto error;
 	}
 
-	/* Allocate interrupt URB */
+	 
 	pdata->urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pdata->urb) {
 		retval = -ENOMEM;
 		goto error;
 	}
 
-	/* Allocate buffer for interrupt data */
+	 
 	pdata->urbdata = usb_alloc_coherent(pdata->udev, ACD_URB_BUFFER_LEN,
 		GFP_KERNEL, &pdata->urb->transfer_dma);
 	if (!pdata->urbdata) {
@@ -254,7 +248,7 @@ static int appledisplay_probe(struct usb_interface *iface,
 		goto error;
 	}
 
-	/* Configure interrupt URB */
+	 
 	usb_fill_int_urb(pdata->urb, udev,
 		usb_rcvintpipe(udev, int_in_endpointAddr),
 		pdata->urbdata, ACD_URB_BUFFER_LEN, appledisplay_complete,
@@ -266,7 +260,7 @@ static int appledisplay_probe(struct usb_interface *iface,
 		goto error;
 	}
 
-	/* Register backlight device */
+	 
 	snprintf(bl_name, sizeof(bl_name), "appledisplay%d",
 		atomic_inc_return(&count_displays) - 1);
 	memset(&props, 0, sizeof(struct backlight_properties));
@@ -280,7 +274,7 @@ static int appledisplay_probe(struct usb_interface *iface,
 		goto error;
 	}
 
-	/* Try to get brightness */
+	 
 	brightness = appledisplay_bl_get_brightness(pdata->bd);
 
 	if (brightness < 0) {
@@ -290,10 +284,10 @@ static int appledisplay_probe(struct usb_interface *iface,
 		goto error;
 	}
 
-	/* Set brightness in backlight device */
+	 
 	pdata->bd->props.brightness = brightness;
 
-	/* save our data pointer in the interface device */
+	 
 	usb_set_intfdata(iface, pdata);
 
 	printk(KERN_INFO "appledisplay: Apple Cinema Display connected\n");

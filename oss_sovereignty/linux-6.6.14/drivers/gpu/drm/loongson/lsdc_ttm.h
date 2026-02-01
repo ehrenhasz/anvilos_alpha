@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+ 
+ 
 
 #ifndef __LSDC_TTM_H__
 #define __LSDC_TTM_H__
@@ -23,13 +21,13 @@
 struct lsdc_bo {
 	struct ttm_buffer_object tbo;
 
-	/* Protected by gem.mutex */
+	 
 	struct list_head list;
 
 	struct iosys_map map;
 
 	unsigned int vmap_count;
-	/* cross device driver sharing reference count */
+	 
 	unsigned int sharing_count;
 
 	struct ttm_bo_kmap_obj kmap;

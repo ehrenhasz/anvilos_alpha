@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2016-2017 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Steven FENG <steven_feng@realsil.com.cn>
- *   Rui FENG <rui_feng@realsil.com.cn>
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -109,13 +101,7 @@ static int rts5260_turn_off_led(struct rtsx_pcr *pcr)
 		RTS5260_REG_GPIO_MASK, RTS5260_REG_GPIO_OFF);
 }
 
-/* SD Pull Control Enable:
- *     SD_DAT[3:0] ==> pull up
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull up
- *     SD_CMD      ==> pull up
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5260_sd_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x66),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
@@ -124,13 +110,7 @@ static const u32 rts5260_sd_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* SD Pull Control Disable:
- *     SD_DAT[3:0] ==> pull down
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull down
- *     SD_CMD      ==> pull down
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5260_sd_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x66),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
@@ -139,10 +119,7 @@ static const u32 rts5260_sd_pull_ctl_disable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Enable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5260_ms_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL4, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
@@ -150,10 +127,7 @@ static const u32 rts5260_ms_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Disable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5260_ms_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL4, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
@@ -196,7 +170,7 @@ static int rts5260_card_power_on(struct rtsx_pcr *pcr, int card)
 	    pcr->extra_caps & EXTRA_CAPS_SD_SDR104)
 		sd_set_sample_push_timing_sd30(pcr);
 
-	/* Initialize SD_CFG1 register */
+	 
 	rtsx_pci_write_register(pcr, SD_CFG1, 0xFF,
 				SD_CLK_DIVIDE_128 | SD_20_MODE);
 
@@ -206,7 +180,7 @@ static int rts5260_card_power_on(struct rtsx_pcr *pcr, int card)
 	rtsx_pci_write_register(pcr, CARD_STOP, SD_STOP | SD_CLR_ERR,
 				SD_STOP | SD_CLR_ERR);
 
-	/* Reset SD_CFG3 register */
+	 
 	rtsx_pci_write_register(pcr, SD_CFG3, SD30_CLK_END_EN, 0);
 	rtsx_pci_write_register(pcr, REG_SD_STOP_SDCLK_CFG,
 			SD30_CLK_STOP_CFG_EN | SD30_CLK_STOP_CFG1 |
@@ -239,7 +213,7 @@ static int rts5260_switch_output_voltage(struct rtsx_pcr *pcr, u8 voltage)
 		return -EINVAL;
 	}
 
-	/* set pad drive */
+	 
 	rts5260_fill_driving(pcr, voltage);
 
 	return 0;
@@ -384,7 +358,7 @@ static int rts5260_init_hw(struct rtsx_pcr *pcr)
 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, L1SUB_CONFIG1,
 			 AUX_CLK_ACTIVE_SEL_MASK, MAC_CKSW_DONE);
-	/* Rest L1SUB Config */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, L1SUB_CONFIG3, 0xFF, 0x00);
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, PM_CLK_FORCE_CTL,
 			 CLK_PM_EN, CLK_PM_EN);
@@ -459,7 +433,7 @@ static void rts5260_pwr_saving_setting(struct rtsx_pcr *pcr)
 				0xFF, CFG_L1_0_RET_VALUE_DEFAULT);
 	rtsx_pci_write_register(pcr, CFG_L1_0_SYS_RET_VALUE,
 				0xFF, CFG_L1_0_RET_VALUE_DEFAULT);
-	/*Option cut APHY*/
+	 
 	rtsx_pci_write_register(pcr, CFG_PCIE_APHY_OFF_0,
 				0xFF, CFG_PCIE_APHY_OFF_0_DEFAULT);
 	rtsx_pci_write_register(pcr, CFG_PCIE_APHY_OFF_1,
@@ -468,12 +442,12 @@ static void rts5260_pwr_saving_setting(struct rtsx_pcr *pcr)
 				0xFF, CFG_PCIE_APHY_OFF_2_DEFAULT);
 	rtsx_pci_write_register(pcr, CFG_PCIE_APHY_OFF_3,
 				0xFF, CFG_PCIE_APHY_OFF_3_DEFAULT);
-	/*CDR DEC*/
+	 
 	rtsx_pci_write_register(pcr, PWC_CDR, 0xFF, PWC_CDR_DEFAULT);
-	/*PWMPFM*/
+	 
 	rtsx_pci_write_register(pcr, CFG_LP_FPWM_VALUE,
 				0xFF, CFG_LP_FPWM_VALUE_DEFAULT);
-	/*No Power Saving WA*/
+	 
 	rtsx_pci_write_register(pcr, CFG_L1_0_CRC_MISC_RET_VALUE,
 				0xFF, CFG_L1_0_CRC_MISC_RET_VALUE_DEFAULT);
 }
@@ -494,16 +468,16 @@ static int rts5260_extra_init_hw(struct rtsx_pcr *pcr)
 {
 	struct rtsx_cr_option *option = &pcr->option;
 
-	/* Set mcu_cnt to 7 to ensure data can be sampled properly */
+	 
 	rtsx_pci_write_register(pcr, 0xFC03, 0x7F, 0x07);
 	rtsx_pci_write_register(pcr, SSC_DIV_N_0, 0xFF, 0x5D);
 
 	rts5260_init_from_cfg(pcr);
 
-	/* force no MDIO*/
+	 
 	rtsx_pci_write_register(pcr, RTS5260_AUTOLOAD_CFG4,
 				0xFF, RTS5260_MIMO_DISABLE);
-	/*Modify SDVCC Tune Default Parameters!*/
+	 
 	rtsx_pci_write_register(pcr, LDO_VCC_CFG0,
 				RTS5260_DVCC_TUNE_MASK, RTS5260_DVCC_33);
 
@@ -511,10 +485,7 @@ static int rts5260_extra_init_hw(struct rtsx_pcr *pcr)
 
 	rts5260_init_hw(pcr);
 
-	/*
-	 * If u_force_clkreq_0 is enabled, CLKREQ# PIN will be forced
-	 * to drive low, and we forcibly request clock.
-	 */
+	 
 	if (option->force_clkreq_0)
 		rtsx_pci_write_register(pcr, PETXCFG,
 				 FORCE_CLKREQ_DELINK_MASK, FORCE_CLKREQ_LOW);
@@ -539,11 +510,11 @@ static void rts5260_set_l1off_cfg_sub_d0(struct rtsx_pcr *pcr, int active)
 	aspm_L1_2 = rtsx_check_dev_flag(pcr, ASPM_L1_2_EN);
 
 	if (active) {
-		/* run, latency: 60us */
+		 
 		if (aspm_L1_1)
 			val = option->ltr_l1off_snooze_sspwrgate;
 	} else {
-		/* l1off, latency: 300us */
+		 
 		if (aspm_L1_2)
 			val = option->ltr_l1off_sspwrgate;
 	}
@@ -611,7 +582,7 @@ void rts5260_init_params(struct rtsx_pcr *pcr)
 				| LTR_L1SS_PWR_GATE_EN);
 	option->ltr_en = true;
 
-	/* init latency of active, idle, L1OFF to 60us, 300us, 3ms */
+	 
 	option->ltr_active_latency = LTR_ACTIVE_LATENCY_DEF;
 	option->ltr_idle_latency = LTR_IDLE_LATENCY_DEF;
 	option->ltr_l1off_latency = LTR_L1OFF_LATENCY_DEF;

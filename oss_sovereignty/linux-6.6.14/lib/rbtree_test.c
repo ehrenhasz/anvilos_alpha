@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/rbtree_augmented.h>
@@ -19,7 +19,7 @@ struct test_node {
 	u32 key;
 	struct rb_node rb;
 
-	/* following fields used for testing augmented rbtree functionality */
+	 
 	u32 val;
 	u32 augmented;
 };
@@ -329,7 +329,7 @@ static int __init rbtree_test_init(void)
 	for (i = 0; i < nnodes; i++)
 		erase(nodes + i, &root);
 
-	/* run checks */
+	 
 	for (i = 0; i < check_loops; i++) {
 		init();
 		for (j = 0; j < nnodes; j++) {
@@ -392,7 +392,7 @@ static int __init rbtree_test_init(void)
 
 	kfree(nodes);
 
-	return -EAGAIN; /* Fail will directly unload the module */
+	return -EAGAIN;  
 }
 
 static void __exit rbtree_test_exit(void)

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2017 The Linux Foundation. All rights reserved. */
+ 
+ 
 
 #ifndef _A6XX_GMU_H_
 #define _A6XX_GMU_H_
@@ -18,35 +18,29 @@ struct a6xx_gmu_bo {
 	u64 iova;
 };
 
-/*
- * These define the different GMU wake up options - these define how both the
- * CPU and the GMU bring up the hardware
- */
+ 
 
-/* THe GMU has already been booted and the rentention registers are active */
+ 
 #define GMU_WARM_BOOT 0
 
-/* the GMU is coming up for the first time or back from a power collapse */
+ 
 #define GMU_COLD_BOOT 1
 
-/*
- * These define the level of control that the GMU has - the higher the number
- * the more things that the GMU hardware controls on its own.
- */
+ 
 
-/* The GMU does not do any idle state management */
+ 
 #define GMU_IDLE_STATE_ACTIVE 0
 
-/* The GMU manages SPTP power collapse */
+ 
 #define GMU_IDLE_STATE_SPTP 2
 
-/* The GMU does automatic IFPC (intra-frame power collapse) */
+ 
 #define GMU_IDLE_STATE_IFPC 3
 
 struct a6xx_gmu {
 	struct device *dev;
 
-	/* For serializing communication with the GMU: */
+	 
 	struct mutex lock;
 
 	struct msm_gem_address_space *aspace;
@@ -74,7 +68,7 @@ struct a6xx_gmu {
 	struct clk *core_clk;
 	struct clk *hub_clk;
 
-	/* current performance index set externally */
+	 
 	int current_perf_index;
 
 	int nr_gpu_freqs;
@@ -91,9 +85,9 @@ struct a6xx_gmu {
 
 	bool initialized;
 	bool hung;
-	bool legacy; /* a618 or a630 */
+	bool legacy;  
 
-	/* For power domain callback */
+	 
 	struct notifier_block pd_nb;
 	struct completion pd_gate;
 };
@@ -152,36 +146,16 @@ static inline void gmu_write_rscc(struct a6xx_gmu *gmu, u32 offset, u32 value)
 	readl_poll_timeout((gmu)->rscc + ((addr) << 2), val, cond, \
 		interval, timeout)
 
-/*
- * These are the available OOB (out of band requests) to the GMU where "out of
- * band" means that the CPU talks to the GMU directly and not through HFI.
- * Normally this works by writing a ITCM/DTCM register and then triggering a
- * interrupt (the "request" bit) and waiting for an acknowledgment (the "ack"
- * bit). The state is cleared by writing the "clear' bit to the GMU interrupt.
- *
- * These are used to force the GMU/GPU to stay on during a critical sequence or
- * for hardware workarounds.
- */
+ 
 
 enum a6xx_gmu_oob_state {
-	/*
-	 * Let the GMU know that a boot or slumber operation has started. The value in
-	 * REG_A6XX_GMU_BOOT_SLUMBER_OPTION lets the GMU know which operation we are
-	 * doing
-	 */
+	 
 	GMU_OOB_BOOT_SLUMBER = 0,
-	/*
-	 * Let the GMU know to not turn off any GPU registers while the CPU is in a
-	 * critical section
-	 */
+	 
 	GMU_OOB_GPU_SET,
-	/*
-	 * Set a new power level for the GPU when the CPU is doing frequency scaling
-	 */
+	 
 	GMU_OOB_DCVS_SET,
-	/*
-	 * Used to keep the GPU on for CPU-side reads of performance counters.
-	 */
+	 
 	GMU_OOB_PERFCOUNTER_SET,
 };
 

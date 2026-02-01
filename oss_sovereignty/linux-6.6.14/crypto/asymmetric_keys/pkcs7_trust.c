@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Validate the trust chain of a PKCS#7 message.
- *
- * Copyright (C) 2012 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "PKCS7: "fmt
 #include <linux/kernel.h>
@@ -16,9 +12,7 @@
 #include <crypto/public_key.h>
 #include "pkcs7_parser.h"
 
-/*
- * Check the trust on one PKCS#7 SignedInfo block.
- */
+ 
 static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 				    struct pkcs7_signed_info *sinfo,
 				    struct key *trust_keyring)
@@ -44,17 +38,11 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 		}
 		x509->seen = true;
 
-		/* Look to see if this certificate is present in the trusted
-		 * keys.
-		 */
+		 
 		key = find_asymmetric_key(trust_keyring,
 					  x509->id, x509->skid, NULL, false);
 		if (!IS_ERR(key)) {
-			/* One of the X.509 certificates in the PKCS#7 message
-			 * is apparently the same as one we already trust.
-			 * Verify that the trusted variant can also validate
-			 * the signature on the descendant.
-			 */
+			 
 			pr_devel("sinfo %u: Cert %u as key %x\n",
 				 sinfo->index, x509->index, key_serial(key));
 			goto matched;
@@ -62,9 +50,7 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 		if (key == ERR_PTR(-ENOMEM))
 			return -ENOMEM;
 
-		 /* Self-signed certificates form roots of their own, and if we
-		  * don't know them, then we can't accept them.
-		  */
+		  
 		if (x509->signer == x509) {
 			kleave(" = -ENOKEY [unknown self-signed]");
 			return -ENOKEY;
@@ -75,9 +61,7 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 		sig = last->sig;
 	}
 
-	/* No match - see if the root certificate has a signer amongst the
-	 * trusted keys.
-	 */
+	 
 	if (last && (last->sig->auth_ids[0] || last->sig->auth_ids[1])) {
 		key = find_asymmetric_key(trust_keyring,
 					  last->sig->auth_ids[0],
@@ -93,9 +77,7 @@ static int pkcs7_validate_trust_one(struct pkcs7_message *pkcs7,
 			return PTR_ERR(key);
 	}
 
-	/* As a last resort, see if we have a trusted public key that matches
-	 * the signed info directly.
-	 */
+	 
 	key = find_asymmetric_key(trust_keyring,
 				  sinfo->sig->auth_ids[0], NULL, NULL, false);
 	if (!IS_ERR(key)) {
@@ -131,30 +113,7 @@ verified:
 	return 0;
 }
 
-/**
- * pkcs7_validate_trust - Validate PKCS#7 trust chain
- * @pkcs7: The PKCS#7 certificate to validate
- * @trust_keyring: Signing certificates to use as starting points
- *
- * Validate that the certificate chain inside the PKCS#7 message intersects
- * keys we already know and trust.
- *
- * Returns, in order of descending priority:
- *
- *  (*) -EKEYREJECTED if a signature failed to match for which we have a valid
- *	key, or:
- *
- *  (*) 0 if at least one signature chain intersects with the keys in the trust
- *	keyring, or:
- *
- *  (*) -ENOPKG if a suitable crypto module couldn't be found for a check on a
- *	chain.
- *
- *  (*) -ENOKEY if we couldn't find a match for any of the signature chains in
- *	the message.
- *
- * May also return -ENOMEM.
- */
+ 
 int pkcs7_validate_trust(struct pkcs7_message *pkcs7,
 			 struct key *trust_keyring)
 {

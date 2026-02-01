@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "test_util.h"
 #include "kvm_util.h"
 #include "processor.h"
@@ -12,7 +12,7 @@
 
 #define ARBITRARY_IO_PORT	0x2000
 
-/* The virtual machine object. */
+ 
 static struct kvm_vm *vm;
 
 static void l2_guest_code(void)
@@ -35,7 +35,7 @@ void l1_guest_code_vmx(struct vmx_pages *vmx)
 		     &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 
 	GUEST_ASSERT(!vmlaunch());
-	/* L2 should triple fault after a triple fault event injected. */
+	 
 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_TRIPLE_FAULT);
 	GUEST_DONE();
 }
@@ -47,12 +47,12 @@ void l1_guest_code_svm(struct svm_test_data *svm)
 	generic_svm_setup(svm, l2_guest_code,
 			&l2_guest_stack[L2_GUEST_STACK_SIZE]);
 
-	/* don't intercept shutdown to test the case of SVM allowing to do so */
+	 
 	vmcb->control.intercept &= ~(BIT(INTERCEPT_SHUTDOWN));
 
 	run_guest(vmcb, svm->vmcb_gpa);
 
-	/* should not reach here, L1 should crash  */
+	 
 	GUEST_ASSERT(0);
 }
 

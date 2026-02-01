@@ -1,28 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS35L41 ALSA HDA Property driver
-//
-// Copyright 2023 Cirrus Logic, Inc.
-//
-// Author: Stefan Binding <sbinding@opensource.cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/string.h>
 #include "cs35l41_hda_property.h"
 
-/*
- * Device CLSA010(0/1) doesn't have _DSD so a gpiod_get by the label reset won't work.
- * And devices created by serial-multi-instantiate don't have their device struct
- * pointing to the correct fwnode, so acpi_dev must be used here.
- * And devm functions expect that the device requesting the resource has the correct
- * fwnode.
- */
+ 
 static int lenovo_legion_no_acpi(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
 				 const char *hid)
 {
 	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
 
-	/* check I2C address to assign the index */
+	 
 	cs35l41->index = id == 0x40 ? 0 : 1;
 	cs35l41->channel_index = 0;
 	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 0, GPIOD_OUT_HIGH);
@@ -43,12 +37,7 @@ static int lenovo_legion_no_acpi(struct cs35l41_hda *cs35l41, struct device *phy
 	return 0;
 }
 
-/*
- * Device 103C89C6 does have _DSD, however it is setup to use the wrong boost type.
- * We can override the _DSD to correct the boost type here.
- * Since this laptop has valid ACPI, we do not need to handle cs-gpios, since that already exists
- * in the ACPI.
- */
+ 
 static int hp_vision_acpi_fix(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
 			      const char *hid)
 {
@@ -60,7 +49,7 @@ static int hp_vision_acpi_fix(struct cs35l41_hda *cs35l41, struct device *physde
 	cs35l41->channel_index = 0;
 	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 1, GPIOD_OUT_HIGH);
 	cs35l41->speaker_id = -ENOENT;
-	hw_cfg->spk_pos = cs35l41->index ? 1 : 0; // right:left
+	hw_cfg->spk_pos = cs35l41->index ? 1 : 0; 
 	hw_cfg->gpio1.func = CS35L41_NOT_USED;
 	hw_cfg->gpio1.valid = true;
 	hw_cfg->gpio2.func = CS35L41_INTERRUPT;

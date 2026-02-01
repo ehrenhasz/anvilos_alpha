@@ -1,26 +1,4 @@
-/*
- * Copyright 2006 Dave Airlie
- * Copyright 2007 Maarten Maathuis
- * Copyright 2007-2009 Stuart Bennett
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "nouveau_drv.h"
 #include "hw.h"
@@ -31,9 +9,7 @@
 #define CHIPSET_NFORCE 0x01a0
 #define CHIPSET_NFORCE2 0x01f0
 
-/*
- * misc hw access wrappers/control functions
- */
+ 
 
 void
 NVWriteVgaSeq(struct drm_device *dev, int head, uint8_t index, uint8_t value)
@@ -63,24 +39,7 @@ NVReadVgaGr(struct drm_device *dev, int head, uint8_t index)
 	return NVReadPRMVIO(dev, head, NV_PRMVIO_GX);
 }
 
-/* CR44 takes values 0 (head A), 3 (head B) and 4 (heads tied)
- * it affects only the 8 bit vga io regs, which we access using mmio at
- * 0xc{0,2}3c*, 0x60{1,3}3*, and 0x68{1,3}3d*
- * in general, the set value of cr44 does not matter: reg access works as
- * expected and values can be set for the appropriate head by using a 0x2000
- * offset as required
- * however:
- * a) pre nv40, the head B range of PRMVIO regs at 0xc23c* was not exposed and
- *    cr44 must be set to 0 or 3 for accessing values on the correct head
- *    through the common 0xc03c* addresses
- * b) in tied mode (4) head B is programmed to the values set on head A, and
- *    access using the head B addresses can have strange results, ergo we leave
- *    tied mode in init once we know to what cr44 should be restored on exit
- *
- * the owner parameter is slightly abused:
- * 0 and 1 are treated as head values and so the set value is (owner * 3)
- * other values are treated as literal values to set
- */
+ 
 void
 NVSetOwner(struct drm_device *dev, int owner)
 {
@@ -90,17 +49,15 @@ NVSetOwner(struct drm_device *dev, int owner)
 		owner *= 3;
 
 	if (drm->client.device.info.chipset == 0x11) {
-		/* This might seem stupid, but the blob does it and
-		 * omitting it often locks the system up.
-		 */
+		 
 		NVReadVgaCrtc(dev, 0, NV_CIO_SR_LOCK_INDEX);
 		NVReadVgaCrtc(dev, 1, NV_CIO_SR_LOCK_INDEX);
 	}
 
-	/* CR44 is always changed on CRTC0 */
+	 
 	NVWriteVgaCrtc(dev, 0, NV_CIO_CRE_44, owner);
 
-	if (drm->client.device.info.chipset == 0x11) {	/* set me harder */
+	if (drm->client.device.info.chipset == 0x11) {	 
 		NVWriteVgaCrtc(dev, 0, NV_CIO_CRE_2E, owner);
 		NVWriteVgaCrtc(dev, 0, NV_CIO_CRE_2E, owner);
 	}
@@ -124,9 +81,7 @@ NVBlankScreen(struct drm_device *dev, int head, bool blank)
 	NVVgaSeqReset(dev, head, false);
 }
 
-/*
- * PLL getting
- */
+ 
 
 static void
 nouveau_hw_decode_pll(struct drm_device *dev, uint32_t reg1, uint32_t pll1,
@@ -134,15 +89,15 @@ nouveau_hw_decode_pll(struct drm_device *dev, uint32_t reg1, uint32_t pll1,
 {
 	struct nouveau_drm *drm = nouveau_drm(dev);
 
-	/* to force parsing as single stage (i.e. nv40 vplls) pass pll2 as 0 */
+	 
 
-	/* log2P is & 0x7 as never more than 7, and nv30/35 only uses 3 bits */
+	 
 	pllvals->log2P = (pll1 >> 16) & 0x7;
 	pllvals->N2 = pllvals->M2 = 1;
 
 	if (reg1 <= 0x405c) {
 		pllvals->NM1 = pll2 & 0xffff;
-		/* single stage NVPLL and VPLLs use 1 << 8, MPLL uses 1 << 12 */
+		 
 		if (!(pll1 & 0x1100))
 			pllvals->NM2 = pll2 >> 16;
 	} else {
@@ -150,7 +105,7 @@ nouveau_hw_decode_pll(struct drm_device *dev, uint32_t reg1, uint32_t pll1,
 		if (nv_two_reg_pll(dev) && pll2 & NV31_RAMDAC_ENABLE_VCO2)
 			pllvals->NM2 = pll2 & 0xffff;
 		else if (drm->client.device.info.chipset == 0x30 || drm->client.device.info.chipset == 0x35) {
-			pllvals->M1 &= 0xf; /* only 4 bits */
+			pllvals->M1 &= 0xf;  
 			if (pll1 & NV30_RAMDAC_ENABLE_VCO2) {
 				pllvals->M2 = (pll1 >> 4) & 0x7;
 				pllvals->N2 = ((pll1 >> 21) & 0x18) |
@@ -187,7 +142,7 @@ nouveau_hw_get_pllvals(struct drm_device *dev, enum nvbios_pll_type plltype,
 	if (drm->client.device.info.family == NV_DEVICE_INFO_V0_CELSIUS && reg1 >= NV_PRAMDAC_VPLL_COEFF) {
 		uint32_t ramdac580 = NVReadRAMDAC(dev, 0, NV_PRAMDAC_580);
 
-		/* check whether vpll has been forced into single stage mode */
+		 
 		if (reg1 == NV_PRAMDAC_VPLL_COEFF) {
 			if (ramdac580 & NV_RAMDAC_580_VPLL1_ACTIVE)
 				pll2 = 0;
@@ -204,7 +159,7 @@ nouveau_hw_get_pllvals(struct drm_device *dev, enum nvbios_pll_type plltype,
 int
 nouveau_hw_pllvals_to_clk(struct nvkm_pll_vals *pv)
 {
-	/* Avoid divide by zero if called at an inappropriate time */
+	 
 	if (!pv->M1 || !pv->M2)
 		return 0;
 
@@ -251,11 +206,7 @@ nouveau_hw_get_clock(struct drm_device *dev, enum nvbios_pll_type plltype)
 static void
 nouveau_hw_fix_bad_vpll(struct drm_device *dev, int head)
 {
-	/* the vpll on an unused head can come up with a random value, way
-	 * beyond the pll limits.  for some reason this causes the chip to
-	 * lock up when reading the dac palette regs, so set a valid pll here
-	 * when such a condition detected.  only seen on nv11 to date
-	 */
+	 
 
 	struct nouveau_drm *drm = nouveau_drm(dev);
 	struct nvif_device *device = &drm->client.device;
@@ -276,16 +227,14 @@ nouveau_hw_fix_bad_vpll(struct drm_device *dev, int head)
 
 	NV_WARN(drm, "VPLL %d outwith limits, attempting to fix\n", head + 1);
 
-	/* set lowest clock within static limits */
+	 
 	pv.M1 = pll_lim.vco1.max_m;
 	pv.N1 = pll_lim.vco1.min_n;
 	pv.log2P = pll_lim.max_p_usable;
 	clk->pll_prog(clk, pll_lim.reg, &pv);
 }
 
-/*
- * vga font save/restore
- */
+ 
 
 static void nouveau_vga_font_io(struct drm_device *dev,
 				void __iomem *iovram,
@@ -323,12 +272,12 @@ nouveau_hw_save_vga_fonts(struct drm_device *dev, bool save)
 	graphicsmode = NVReadVgaAttr(dev, 0, NV_CIO_AR_MODE_INDEX) & 1;
 	NVSetEnablePalette(dev, 0, false);
 
-	if (graphicsmode) /* graphics mode => framebuffer => no need to save */
+	if (graphicsmode)  
 		return;
 
 	NV_INFO(drm, "%sing VGA fonts\n", save ? "Sav" : "Restor");
 
-	/* map first 64KiB of VRAM, holds VGA fonts etc */
+	 
 	iovram = ioremap(pci_resource_start(pdev, 1), 65536);
 	if (!iovram) {
 		NV_ERROR(drm, "Failed to map VRAM, "
@@ -340,7 +289,7 @@ nouveau_hw_save_vga_fonts(struct drm_device *dev, bool save)
 		NVBlankScreen(dev, 1, true);
 	NVBlankScreen(dev, 0, true);
 
-	/* save control regs */
+	 
 	misc = NVReadPRMVIO(dev, 0, NV_PRMVIO_MISC__READ);
 	seq2 = NVReadVgaSeq(dev, 0, NV_VIO_SR_PLANE_MASK_INDEX);
 	seq4 = NVReadVgaSeq(dev, 0, NV_VIO_SR_MEM_MODE_INDEX);
@@ -353,11 +302,11 @@ nouveau_hw_save_vga_fonts(struct drm_device *dev, bool save)
 	NVWriteVgaGr(dev, 0, NV_VIO_GX_MODE_INDEX, 0x0);
 	NVWriteVgaGr(dev, 0, NV_VIO_GX_MISC_INDEX, 0x5);
 
-	/* store font in planes 0..3 */
+	 
 	for (plane = 0; plane < 4; plane++)
 		nouveau_vga_font_io(dev, iovram, save, plane);
 
-	/* restore control regs */
+	 
 	NVWritePRMVIO(dev, 0, NV_PRMVIO_MISC__WRITE, misc);
 	NVWriteVgaGr(dev, 0, NV_VIO_GX_READ_MAP_INDEX, gr4);
 	NVWriteVgaGr(dev, 0, NV_VIO_GX_MODE_INDEX, gr5);
@@ -372,9 +321,7 @@ nouveau_hw_save_vga_fonts(struct drm_device *dev, bool save)
 	iounmap(iovram);
 }
 
-/*
- * mode state save/load
- */
+ 
 
 static void
 rd_cio_state(struct drm_device *dev, int head,
@@ -441,8 +388,7 @@ nv_save_state_ramdac(struct drm_device *dev, int head,
 	regp->fp_control = NVReadRAMDAC(dev, head, NV_PRAMDAC_FP_TG_CONTROL);
 	regp->fp_debug_0 = NVReadRAMDAC(dev, head, NV_PRAMDAC_FP_DEBUG_0);
 	if (!nv_gf4_disp_arch(dev) && head == 0) {
-		/* early chips don't allow access to PRAMDAC_TMDS_* without
-		 * the head A FPCLK on (nv11 even locks up) */
+		 
 		NVWriteRAMDAC(dev, 0, NV_PRAMDAC_FP_DEBUG_0, regp->fp_debug_0 &
 			      ~NV_PRAMDAC_FP_DEBUG_0_PWRDOWN_FPCLK);
 	}
@@ -644,7 +590,7 @@ nv_save_state_ext(struct drm_device *dev, int head,
 		rd_cio_state(dev, head, regp, NV_CIO_CRE_4B);
 		rd_cio_state(dev, head, regp, NV_CIO_CRE_TVOUT_LATENCY);
 	}
-	/* NV11 and NV20 don't have this, they stop at 0x52. */
+	 
 	if (nv_gf4_disp_arch(dev)) {
 		rd_cio_state(dev, head, regp, NV_CIO_CRE_42);
 		rd_cio_state(dev, head, regp, NV_CIO_CRE_53);
@@ -674,10 +620,7 @@ nv_load_state_ext(struct drm_device *dev, int head,
 
 	if (drm->client.device.info.family >= NV_DEVICE_INFO_V0_CELSIUS) {
 		if (nv_two_heads(dev))
-			/* setting ENGINE_CTRL (EC) *must* come before
-			 * CIO_CRE_LCD, as writing CRE_LCD sets bits 16 & 17 in
-			 * EC that should not be overwritten by writing stale EC
-			 */
+			 
 			NVWriteCRTC(dev, head, NV_PCRTC_ENGINE_CTRL, regp->crtc_eng_ctrl);
 
 		nvif_wr32(device, NV_PVIDEO_STOP, 1);
@@ -742,11 +685,10 @@ nv_load_state_ext(struct drm_device *dev, int head,
 		wr_cio_state(dev, head, regp, NV_CIO_CRE_4B);
 		wr_cio_state(dev, head, regp, NV_CIO_CRE_TVOUT_LATENCY);
 	}
-	/* NV11 and NV20 stop at 0x52. */
+	 
 	if (nv_gf4_disp_arch(dev)) {
 		if (drm->client.device.info.family < NV_DEVICE_INFO_V0_KELVIN) {
-			/* Not waiting for vertical retrace before modifying
-			   CRE_53/CRE_54 causes lockups. */
+			 
 			nvif_msec(&drm->client.device, 650,
 				if ( (nvif_rd32(device, NV_PRMCIO_INP0__COLOR) & 8))
 					break;
@@ -817,7 +759,7 @@ void nouveau_hw_save_state(struct drm_device *dev, int head,
 	struct nouveau_drm *drm = nouveau_drm(dev);
 
 	if (drm->client.device.info.chipset == 0x11)
-		/* NB: no attempt is made to restore the bad pll later on */
+		 
 		nouveau_hw_fix_bad_vpll(dev, head);
 	nv_save_state_ramdac(dev, head, state);
 	nv_save_state_vga(dev, head, state);

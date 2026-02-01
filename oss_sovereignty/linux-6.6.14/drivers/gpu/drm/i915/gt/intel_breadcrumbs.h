@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_BREADCRUMBS__
 #define __INTEL_BREADCRUMBS__
@@ -60,4 +58,4 @@ static inline void intel_breadcrumbs_put(struct intel_breadcrumbs *b)
 	kref_put(&b->ref, intel_breadcrumbs_free);
 }
 
-#endif /* __INTEL_BREADCRUMBS__ */
+#endif  

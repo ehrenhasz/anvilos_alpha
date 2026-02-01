@@ -1,20 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+ 
+ 
 
 #ifndef __REALTEK_RTSX_XD_H
 #define __REALTEK_RTSX_XD_H
 
 #define	XD_DELAY_WRITE
 
-/* Error Codes */
+ 
 #define	XD_NO_ERROR			0x00
 #define	XD_NO_MEMORY			0x80
 #define	XD_PRG_ERROR			0x40
@@ -25,7 +17,7 @@
 #define	XD_ECC_ERROR			0x02
 #define	XD_TO_ERROR			0x01
 
-/* XD Commands */
+ 
 #define	READ1_1				0x00
 #define	READ1_2				0x01
 #define	READ2				0x50
@@ -49,7 +41,7 @@
 #define	CHG_DAT_IN_1			0x85
 #define	CACHE_PRG			0x15
 
-/* Redundant Area Related */
+ 
 #define XD_EXTRA_SIZE			0x10
 #define XD_2K_EXTRA_SIZE		0x40
 
@@ -173,4 +165,4 @@ void xd_cleanup_work(struct rtsx_chip *chip);
 int xd_power_off_card3v3(struct rtsx_chip *chip);
 int release_xd_card(struct rtsx_chip *chip);
 
-#endif  /* __REALTEK_RTSX_XD_H */
+#endif   

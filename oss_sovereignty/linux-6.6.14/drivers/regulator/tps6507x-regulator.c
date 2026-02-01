@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tps6507x-regulator.c
- *
- * Regulator driver for TPS65073 PMIC
- *
- * Copyright (C) 2009 Texas Instrument Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,24 +14,24 @@
 #include <linux/mfd/tps6507x.h>
 #include <linux/regulator/of_regulator.h>
 
-/* DCDC's */
+ 
 #define TPS6507X_DCDC_1				0
 #define TPS6507X_DCDC_2				1
 #define TPS6507X_DCDC_3				2
-/* LDOs */
+ 
 #define TPS6507X_LDO_1				3
 #define TPS6507X_LDO_2				4
 
 #define TPS6507X_MAX_REG_ID			TPS6507X_LDO_2
 
-/* Number of step-down converters available */
+ 
 #define TPS6507X_NUM_DCDC			3
-/* Number of LDO voltage regulators  available */
+ 
 #define TPS6507X_NUM_LDO			2
-/* Number of total regulators available */
+ 
 #define TPS6507X_NUM_REGULATOR		(TPS6507X_NUM_DCDC + TPS6507X_NUM_LDO)
 
-/* Supported voltage values for regulators (in microVolts) */
+ 
 static const unsigned int VDCDCx_VSEL_table[] = {
 	725000, 750000, 775000, 800000,
 	825000, 850000, 875000, 900000,
@@ -64,7 +58,7 @@ static const unsigned int LDO1_VSEL_table[] = {
 	2800000, 3000000, 3100000, 3300000,
 };
 
-/* The voltage mapping table for LDO2 is the same as VDCDCx */
+ 
 #define LDO2_VSEL_table VDCDCx_VSEL_table
 
 struct tps_info {
@@ -72,7 +66,7 @@ struct tps_info {
 	u8 table_len;
 	const unsigned int *table;
 
-	/* Does DCDC high or the low register defines output voltage? */
+	 
 	bool defdcdc_default;
 };
 
@@ -377,10 +371,7 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 	struct tps6507x_board *tps_board;
 	int i;
 
-	/**
-	 * tps_board points to pmic related constants
-	 * coming from the board-evm file.
-	 */
+	 
 
 	tps_board = dev_get_platdata(tps6507x_dev->dev);
 	if (tps_board)
@@ -392,11 +383,11 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 
 	mutex_init(&tps->io_lock);
 
-	/* common for all regulators */
+	 
 	tps->mfd = tps6507x_dev;
 
 	for (i = 0; i < TPS6507X_NUM_REGULATOR; i++, info++) {
-		/* Register the regulators */
+		 
 		tps->info[i] = info;
 		if (init_data && init_data[i].driver_data) {
 			struct tps6507x_reg_platform_data *data =

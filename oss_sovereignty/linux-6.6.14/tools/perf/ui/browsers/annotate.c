@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "../browser.h"
 #include "../helpline.h"
 #include "../ui.h"
@@ -110,7 +110,7 @@ static void annotate_browser__write(struct ui_browser *browser, void *entry, int
 		.write_graph		 = annotate_browser__write_graph,
 	};
 
-	/* The scroll bar isn't being used */
+	 
 	if (!browser->navkeypressed)
 		ops.width += 1;
 
@@ -161,33 +161,14 @@ static void annotate_browser__draw_current_jump(struct ui_browser *browser)
 	int width;
 	int diff = 0;
 
-	/* PLT symbols contain external offsets */
+	 
 	if (strstr(sym->name, "@plt"))
 		return;
 
 	if (!disasm_line__is_valid_local_jump(cursor, sym))
 		return;
 
-	/*
-	 * This first was seen with a gcc function, _cpp_lex_token, that
-	 * has the usual jumps:
-	 *
-	 *  │1159e6c: ↓ jne    115aa32 <_cpp_lex_token@@Base+0xf92>
-	 *
-	 * I.e. jumps to a label inside that function (_cpp_lex_token), and
-	 * those works, but also this kind:
-	 *
-	 *  │1159e8b: ↓ jne    c469be <cpp_named_operator2name@@Base+0xa72>
-	 *
-	 *  I.e. jumps to another function, outside _cpp_lex_token, which
-	 *  are not being correctly handled generating as a side effect references
-	 *  to ab->offset[] entries that are set to NULL, so to make this code
-	 *  more robust, check that here.
-	 *
-	 *  A proper fix for will be put in place, looking at the function
-	 *  name right after the '<' token and probably treating this like a
-	 *  'call' instruction.
-	 */
+	 
 	target = notes->offsets[cursor->ops.target.offset];
 	if (target == NULL) {
 		ui_helpline__printf("WARN: jump target inconsistency, press 'o', notes->offsets[%#x] = NULL\n",
@@ -354,20 +335,20 @@ static struct annotation_line *annotate_browser__find_next_asm_line(
 {
 	struct annotation_line *it = al;
 
-	/* find next asm line */
+	 
 	list_for_each_entry_continue(it, browser->b.entries, node) {
 		if (it->idx_asm >= 0)
 			return it;
 	}
 
-	/* no asm line found forwards, try backwards */
+	 
 	it = al;
 	list_for_each_entry_continue_reverse(it, browser->b.entries, node) {
 		if (it->idx_asm >= 0)
 			return it;
 	}
 
-	/* There are no asm lines */
+	 
 	return NULL;
 }
 
@@ -391,7 +372,7 @@ static bool annotate_browser__toggle_source(struct annotate_browser *browser)
 		browser->b.index = al->idx;
 	} else {
 		if (al->idx_asm < 0) {
-			/* move cursor to next asm line */
+			 
 			al = annotate_browser__find_next_asm_line(browser, al);
 			if (!al) {
 				browser->b.seek(&browser->b, -offset, SEEK_CUR);
@@ -446,15 +427,7 @@ static int sym_title(struct symbol *sym, struct map *map, char *title,
 			percent_type_str(percent_type));
 }
 
-/*
- * This can be called from external jumps, i.e. jumps from one function
- * to another, like from the kernel's entry_SYSCALL_64 function to the
- * swapgs_restore_regs_and_return_to_usermode() function.
- *
- * So all we check here is that dl->ops.target.sym is set, if it is, just
- * go to that function and when exiting from its disassembly, come back
- * to the calling function.
- */
+ 
 static bool annotate_browser__callq(struct annotate_browser *browser,
 				    struct evsel *evsel,
 				    struct hist_browser_timer *hbt)
@@ -740,11 +713,7 @@ static int annotate_browser__run(struct annotate_browser *browser,
 
 		if (delay_secs != 0) {
 			annotate_browser__calc_percent(browser, evsel);
-			/*
-			 * Current line focus got out of the list of most active
-			 * lines, NULL it so that if TAB|UNTAB is pressed, we
-			 * move to curr_hot (current hottest line).
-			 */
+			 
 			if (nd != NULL && RB_EMPTY_NODE(nd))
 				nd = NULL;
 		}
@@ -942,7 +911,7 @@ int hist_entry__tui_annotate(struct hist_entry *he, struct evsel *evsel,
 			     struct hist_browser_timer *hbt,
 			     struct annotation_options *opts)
 {
-	/* reset abort key so that it can get Ctrl-C as a key */
+	 
 	SLang_reset_tty();
 	SLang_init_tty(0, 0, 0);
 
@@ -961,7 +930,7 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
 			.seek	 = ui_browser__list_head_seek,
 			.write	 = annotate_browser__write,
 			.filter  = disasm_line__filter,
-			.extra_title_lines = 1, /* for hists__scnprintf_title() */
+			.extra_title_lines = 1,  
 			.priv	 = ms,
 			.use_navkeypressed = true,
 		},
@@ -994,7 +963,7 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
 	browser.b.width = notes->max_line_len;
 	browser.b.nr_entries = notes->nr_entries;
 	browser.b.entries = &notes->src->source,
-	browser.b.width += 18; /* Percentage */
+	browser.b.width += 18;  
 
 	if (notes->options->hide_src_code)
 		ui_browser__init_asm_mode(&browser.b);

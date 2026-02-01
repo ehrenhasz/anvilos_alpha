@@ -1,45 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2010,2011 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                                                 *
- ****************************************************************************/
+ 
 
-/*
- *	lib_refresh.c
- *
- *	The routines wrefresh() and wnoutrefresh().
- *
- */
+ 
 
 #include <curses.priv.h>
 
@@ -64,12 +27,7 @@ wrefresh(WINDOW *win)
 	if (win->_clear)
 	    NewScreen(SP_PARM)->_clear = TRUE;
 	code = NCURSES_SP_NAME(doupdate) (NCURSES_SP_ARG);
-	/*
-	 * Reset the clearok() flag in case it was set for the special
-	 * case in hardscroll.c (if we don't reset it here, we'll get 2
-	 * refreshes because the flag is copied from stdscr to newscr).
-	 * Resetting the flag shouldn't do any harm, anyway.
-	 */
+	 
 	win->_clear = FALSE;
     }
     returnCode(code);
@@ -95,9 +53,7 @@ wnoutrefresh(WINDOW *win)
     if (win == NULL)
 	returnCode(ERR);
 
-    /*
-     * Handle pads as a special case.
-     */
+     
     if (IS_PAD(win)) {
 	returnCode(pnoutrefresh(win,
 				win->_pad._pad_y,
@@ -112,48 +68,30 @@ wnoutrefresh(WINDOW *win)
 	_tracedump("...win", win);
 	_nc_unlock_global(tracef);
     }
-#endif /* TRACE */
+#endif  
 
-    /* put them here so "win == 0" won't break our code */
+     
     begx = win->_begx;
     begy = win->_begy;
 
     NewScreen(SP_PARM)->_nc_bkgd = win->_nc_bkgd;
     WINDOW_ATTRS(NewScreen(SP_PARM)) = WINDOW_ATTRS(win);
 
-    /* merge in change information from all subwindows of this window */
+     
     wsyncdown(win);
 
 #if USE_SCROLL_HINTS
-    /*
-     * For pure efficiency, we'd want to transfer scrolling information
-     * from the window to newscr whenever the window is wide enough that
-     * its update will dominate the cost of the update for the horizontal
-     * band of newscr that it occupies.  Unfortunately, this threshold
-     * tends to be complex to estimate, and in any case scrolling the
-     * whole band and rewriting the parts outside win's image would look
-     * really ugly.  So.  What we do is consider the window "wide" if it
-     * either (a) occupies the whole width of newscr, or (b) occupies
-     * all but at most one column on either vertical edge of the screen
-     * (this caters to fussy people who put boxes around full-screen
-     * windows).  Note that changing this formula will not break any code,
-     * merely change the costs of various update cases.
-     */
+     
     wide = (begx <= 1 && win->_maxx >= (NewScreen(SP_PARM)->_maxx - 1));
 #endif
 
     win->_flags &= ~_HASMOVED;
 
-    /*
-     * Microtweaking alert!  This double loop is one of the genuine
-     * hot spots in the code.  Even gcc doesn't seem to do enough
-     * common-subexpression chunking to make it really tense,
-     * so we'll force the issue.
-     */
+     
 
-    /* limit(dst_col) */
+     
     limit_x = win->_maxx;
-    /* limit(src_col) */
+     
     if (limit_x > NewScreen(SP_PARM)->_maxx - begx)
 	limit_x = NewScreen(SP_PARM)->_maxx - begx;
 
@@ -175,10 +113,7 @@ wnoutrefresh(WINDOW *win)
 	    if_WIDEC({
 		int j;
 
-		/*
-		 * Ensure that we will copy complete multi-column characters
-		 * on the left-boundary.
-		 */
+		 
 		if (isWidecExt(oline->text[src_col])) {
 		    j = 1 + dst_col - WidecExt(oline->text[src_col]);
 		    if (j < 0)
@@ -189,10 +124,7 @@ wnoutrefresh(WINDOW *win)
 		    }
 		}
 
-		/*
-		 * Ensure that we will copy complete multi-column characters
-		 * on the right-boundary.
-		 */
+		 
 		j = last_src;
 		if (WidecExt(oline->text[j])) {
 		    ++j;
@@ -216,31 +148,18 @@ wnoutrefresh(WINDOW *win)
 		int fix_right = last_dst;
 		int j;
 
-		/*
-		 * Check for boundary cases where we may overwrite part of a
-		 * multi-column character.  For those, wipe the remainder of
-		 * the character to blanks.
-		 */
+		 
 		j = dst_col;
 		if (isWidecExt(nline->text[j])) {
-		    /*
-		     * On the left, we only care about multi-column characters
-		     * that extend into the changed region.
-		     */
+		     
 		    fix_left = 1 + j - WidecExt(nline->text[j]);
 		    if (fix_left < 0)
-			fix_left = 0;	/* only if cell is corrupt */
+			fix_left = 0;	 
 		}
 
 		j = last_dst;
 		if (WidecExt(nline->text[j]) != 0) {
-		    /*
-		     * On the right, any multi-column character is a problem,
-		     * unless it happens to be contained in the change, and
-		     * ending at the right boundary of the change.  The
-		     * computation for 'fix_left' accounts for the left-side of
-		     * this character.  Find the end of the character.
-		     */
+		     
 		    ++j;
 		    while (j <= NewScreen(SP_PARM)->_maxx &&
 			   isWidecExt(nline->text[j])) {
@@ -248,10 +167,7 @@ wnoutrefresh(WINDOW *win)
 		    }
 		}
 
-		/*
-		 * The analysis is simpler if we do the clearing afterwards.
-		 * Do that now.
-		 */
+		 
 		if (fix_left < dst_col || fix_right > last_dst) {
 		    for (j = fix_left; j <= fix_right; ++j) {
 			nline->text[j] = blank;
@@ -260,9 +176,7 @@ wnoutrefresh(WINDOW *win)
 		}
 	    });
 
-	    /*
-	     * Copy the changed text.
-	     */
+	     
 	    for (; src_col <= last_src; src_col++, dst_col++) {
 		if (!CharEq(oline->text[src_col], nline->text[dst_col])) {
 		    nline->text[dst_col] = oline->text[src_col];
@@ -279,7 +193,7 @@ wnoutrefresh(WINDOW *win)
 			       ? _NEWINDEX
 			       : (begy + oind + win->_yoffset));
 	}
-#endif /* USE_SCROLL_HINTS */
+#endif  
 
 	oline->firstchar = oline->lastchar = _NOCHANGE;
 	if_USE_SCROLL_HINTS(oline->oldindex = src_row);
@@ -302,6 +216,6 @@ wnoutrefresh(WINDOW *win)
 	_tracedump("newscr", NewScreen(SP_PARM));
 	_nc_unlock_global(tracef);
     }
-#endif /* TRACE */
+#endif  
     returnCode(OK);
 }

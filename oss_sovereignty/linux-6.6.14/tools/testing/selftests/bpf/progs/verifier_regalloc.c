@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/regalloc.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -160,13 +160,13 @@ __naked void regalloc_and_spill(void)
 	call %[bpf_get_prandom_u32];			\
 	r2 = r0;					\
 	if r0 s> 20 goto l0_%=;				\
-	/* r0 has upper bound that should propagate into r2 */\
-	*(u64*)(r10 - 8) = r2;		/* spill r2 */	\
+	 \
+	*(u64*)(r10 - 8) = r2;		 	\
 	r0 = 0;						\
-	r2 = 0;				/* clear r0 and r2 */\
-	r3 = *(u64*)(r10 - 8);		/* fill r3 */	\
+	r2 = 0;				 \
+	r3 = *(u64*)(r10 - 8);		 	\
 	if r0 s>= r3 goto l0_%=;			\
-	/* r3 has lower and upper bounds */		\
+	 		\
 	r7 += r3;					\
 	r0 = *(u64*)(r7 + 0);				\
 l0_%=:	exit;						\
@@ -196,13 +196,13 @@ __naked void regalloc_and_spill_negative(void)
 	call %[bpf_get_prandom_u32];			\
 	r2 = r0;					\
 	if r0 s> 48 goto l0_%=;				\
-	/* r0 has upper bound that should propagate into r2 */\
-	*(u64*)(r10 - 8) = r2;		/* spill r2 */	\
+	 \
+	*(u64*)(r10 - 8) = r2;		 	\
 	r0 = 0;						\
-	r2 = 0;				/* clear r0 and r2 */\
-	r3 = *(u64*)(r10 - 8);		/* fill r3 */\
+	r2 = 0;				 \
+	r3 = *(u64*)(r10 - 8);		 \
 	if r0 s>= r3 goto l0_%=;			\
-	/* r3 has lower and upper bounds */		\
+	 		\
 	r7 += r3;					\
 	r0 = *(u64*)(r7 + 0);				\
 l0_%=:	exit;						\
@@ -342,17 +342,17 @@ __naked void regalloc_spill_jeq(void)
 	r2 += -8;					\
 	r1 = %[map_hash_48b] ll;			\
 	call %[bpf_map_lookup_elem];			\
-	*(u64*)(r10 - 8) = r0;		/* spill r0 */	\
+	*(u64*)(r10 - 8) = r0;		 	\
 	if r0 == 0 goto l0_%=;				\
-l0_%=:	/* The verifier will walk the rest twice with r0 == 0 and r0 == map_value */\
+l0_%=:	 \
 	call %[bpf_get_prandom_u32];			\
 	r2 = r0;					\
 	if r2 == 20 goto l1_%=;				\
-l1_%=:	/* The verifier will walk the rest two more times with r0 == 20 and r0 == unknown */\
-	r3 = *(u64*)(r10 - 8);		/* fill r3 with map_value */\
-	if r3 == 0 goto l2_%=;		/* skip ldx if map_value == NULL */\
-	/* Buggy verifier will think that r3 == 20 here */\
-	r0 = *(u64*)(r3 + 0);		/* read from map_value */\
+l1_%=:	 \
+	r3 = *(u64*)(r10 - 8);		 \
+	if r3 == 0 goto l2_%=;		 \
+	 \
+	r0 = *(u64*)(r3 + 0);		 \
 l2_%=:	exit;						\
 "	:
 	: __imm(bpf_get_prandom_u32),

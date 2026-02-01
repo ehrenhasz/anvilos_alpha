@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/ni_labpc_isadma.c
- * ISA DMA support for National Instruments Lab-PC series boards and
- * compatibles.
- *
- * Extracted from ni_labpc.c:
- * Copyright (C) 2001-2003 Frank Mori Hess <fmhess@users.sourceforge.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -17,10 +10,10 @@
 #include "ni_labpc_regs.h"
 #include "ni_labpc_isadma.h"
 
-/* size in bytes of dma buffer */
+ 
 #define LABPC_ISADMA_BUFFER_SIZE	0xff00
 
-/* utility function that suggests a dma transfer size in bytes */
+ 
 static unsigned int labpc_suggest_transfer_size(struct comedi_device *dev,
 						struct comedi_subdevice *s,
 						unsigned int maxbytes)
@@ -33,13 +26,13 @@ static unsigned int labpc_suggest_transfer_size(struct comedi_device *dev,
 	if (cmd->convert_src == TRIG_TIMER)
 		freq = 1000000000 / cmd->convert_arg;
 	else
-		/* return some default value */
+		 
 		freq = 0xffffffff;
 
-	/* make buffer fill in no more than 1/3 second */
+	 
 	size = (freq / 3) * sample_size;
 
-	/* set a minimum and maximum size allowed */
+	 
 	if (size > maxbytes)
 		size = maxbytes;
 	else if (size < sample_size)
@@ -55,7 +48,7 @@ void labpc_setup_dma(struct comedi_device *dev, struct comedi_subdevice *s)
 	struct comedi_cmd *cmd = &s->async->cmd;
 	unsigned int sample_size = comedi_bytes_per_sample(s);
 
-	/* set appropriate size of transfer */
+	 
 	desc->size = labpc_suggest_transfer_size(dev, s, desc->maxsize);
 	if (cmd->stop_src == TRIG_COUNT &&
 	    devpriv->count * sample_size < desc->size)
@@ -63,7 +56,7 @@ void labpc_setup_dma(struct comedi_device *dev, struct comedi_subdevice *s)
 
 	comedi_isadma_program(desc);
 
-	/* set CMD3 bits for caller to enable DMA and interrupt */
+	 
 	devpriv->cmd3 |= (CMD3_DMAEN | CMD3_DMATCINTEN);
 }
 EXPORT_SYMBOL_GPL(labpc_setup_dma);
@@ -80,17 +73,10 @@ void labpc_drain_dma(struct comedi_device *dev)
 	unsigned int nsamples;
 	unsigned int leftover;
 
-	/*
-	 * residue is the number of bytes left to be done on the dma
-	 * transfer.  It should always be zero at this point unless
-	 * the stop_src is set to external triggering.
-	 */
+	 
 	residue = comedi_isadma_disable(desc->chan);
 
-	/*
-	 * Figure out how many samples to read for this transfer and
-	 * how many will be stored for next time.
-	 */
+	 
 	nsamples = max_samples - comedi_bytes_to_samples(s, residue);
 	if (cmd->stop_src == TRIG_COUNT) {
 		if (devpriv->count <= nsamples) {
@@ -121,7 +107,7 @@ static void handle_isa_dma(struct comedi_device *dev)
 	if (desc->size)
 		comedi_isadma_program(desc);
 
-	/* clear dma tc interrupt */
+	 
 	devpriv->write_byte(dev, 0x1, DMATC_CLEAR_REG);
 }
 
@@ -130,10 +116,7 @@ void labpc_handle_dma_status(struct comedi_device *dev)
 	const struct labpc_boardinfo *board = dev->board_ptr;
 	struct labpc_private *devpriv = dev->private;
 
-	/*
-	 * if a dma terminal count of external stop trigger
-	 * has occurred
-	 */
+	 
 	if (devpriv->stat1 & STAT1_GATA0 ||
 	    (board->is_labpc1200 && devpriv->stat2 & STAT2_OUTA1))
 		handle_isa_dma(dev);
@@ -144,11 +127,11 @@ void labpc_init_dma_chan(struct comedi_device *dev, unsigned int dma_chan)
 {
 	struct labpc_private *devpriv = dev->private;
 
-	/* only DMA channels 3 and 1 are valid */
+	 
 	if (dma_chan != 1 && dma_chan != 3)
 		return;
 
-	/* DMA uses 1 buffer */
+	 
 	devpriv->dma = comedi_isadma_alloc(dev, 1, dma_chan, dma_chan,
 					   LABPC_ISADMA_BUFFER_SIZE,
 					   COMEDI_ISADMA_READ);

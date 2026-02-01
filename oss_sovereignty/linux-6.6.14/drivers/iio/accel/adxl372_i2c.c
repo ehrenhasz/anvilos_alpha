@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ADXL372 3-Axis Digital Accelerometer I2C driver
- *
- * Copyright 2018 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>
@@ -33,7 +29,7 @@ static int adxl372_i2c_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* Starting with the 3rd revision an I2C chip bug was fixed */
+	 
 	if (regval < 3)
 		dev_warn(&client->dev,
 		"I2C might not work properly with other devices on the bus");

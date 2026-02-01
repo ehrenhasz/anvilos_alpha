@@ -1,35 +1,9 @@
-/* Test of perror() function.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <stdio.h>
-
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
-
-/* Tell GCC not to warn about myerr being leaked.  */
+ 
 #if __GNUC__ >= 13
 # pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
 #endif
 
-/* This test intentionally parses stderr.  So, we arrange to have fd 10
-   (outside the range of interesting fd's during the test) set up to
-   duplicate the original stderr.  */
+ 
 #define BACKUP_STDERR_FILENO 10
 #define ASSERT_STREAM myerr
 #include "macros.h"
@@ -41,14 +15,14 @@ static FILE *myerr;
 int
 main (void)
 {
-  /* We change fd 2 later, so save it in fd 10.  */
+   
   if (dup2 (STDERR_FILENO, BACKUP_STDERR_FILENO) != BACKUP_STDERR_FILENO
       || (myerr = fdopen (BACKUP_STDERR_FILENO, "w")) == NULL)
     return 2;
 
   ASSERT (freopen (BASE ".tmp", "w+", stderr) == stderr);
 
-  /* Test that perror does not clobber strerror buffer.  */
+   
   {
     const char *msg1;
     const char *msg2;
@@ -92,7 +66,7 @@ main (void)
     free (str4);
   }
 
-  /* Test that perror uses the same message as strerror.  */
+   
   {
     int errs[] = { EACCES, 0, -3, };
     int i;
@@ -114,7 +88,7 @@ main (void)
       }
   }
 
-  /* Test that perror reports write failure.  */
+   
   {
     ASSERT (freopen (BASE ".tmp", "r", stderr) == stderr);
     ASSERT (setvbuf (stderr, NULL, _IONBF, BUFSIZ) == 0);
@@ -123,10 +97,10 @@ main (void)
     perror (NULL);
 #if 0
     /* Commented out until cygwin behaves:
-       https://sourceware.org/ml/newlib/2011/msg00228.html */
+       https:
     ASSERT (errno > 0);
     /* Commented out until glibc behaves:
-       https://sourceware.org/bugzilla/show_bug.cgi?id=12792 */
+       https:
     ASSERT (ferror (stderr));
 #endif
   }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* mountpoint management
- *
- * Copyright (C) 2002 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -45,9 +41,7 @@ static unsigned long afs_mntpt_expiry_timeout = 10 * 60;
 
 static const char afs_root_volume[] = "root.cell";
 
-/*
- * no valid lookup procedure on this sort of dir
- */
+ 
 static struct dentry *afs_mntpt_lookup(struct inode *dir,
 				       struct dentry *dentry,
 				       unsigned int flags)
@@ -56,18 +50,14 @@ static struct dentry *afs_mntpt_lookup(struct inode *dir,
 	return ERR_PTR(-EREMOTE);
 }
 
-/*
- * no valid open procedure on this sort of dir
- */
+ 
 static int afs_mntpt_open(struct inode *inode, struct file *file)
 {
 	_enter("%p,%p{%pD2}", inode, file, file);
 	return -EREMOTE;
 }
 
-/*
- * Set the parameters for the proposed superblock.
- */
+ 
 static int afs_mntpt_set_params(struct fs_context *fc, struct dentry *mntpt)
 {
 	struct afs_fs_context *ctx = fc->fs_private;
@@ -91,7 +81,7 @@ static int afs_mntpt_set_params(struct fs_context *fc, struct dentry *mntpt)
 		ctx->cell = NULL;
 	}
 	if (test_bit(AFS_VNODE_PSEUDODIR, &vnode->flags)) {
-		/* if the directory is a pseudo directory, use the d_name */
+		 
 		unsigned size = mntpt->d_name.len;
 
 		if (size < 2)
@@ -117,7 +107,7 @@ static int afs_mntpt_set_params(struct fs_context *fc, struct dentry *mntpt)
 		ctx->volname = afs_root_volume;
 		ctx->volnamesz = sizeof(afs_root_volume) - 1;
 	} else {
-		/* read the contents of the AFS special symlink */
+		 
 		struct page *page;
 		loff_t size = i_size_read(d_inode(mntpt));
 		char *buf;
@@ -145,9 +135,7 @@ static int afs_mntpt_set_params(struct fs_context *fc, struct dentry *mntpt)
 	return 0;
 }
 
-/*
- * create a vfsmount to be automounted
- */
+ 
 static struct vfsmount *afs_mntpt_do_automount(struct dentry *mntpt)
 {
 	struct fs_context *fc;
@@ -170,9 +158,7 @@ static struct vfsmount *afs_mntpt_do_automount(struct dentry *mntpt)
 	return mnt;
 }
 
-/*
- * handle an automount point
- */
+ 
 struct vfsmount *afs_d_automount(struct path *path)
 {
 	struct vfsmount *newmnt;
@@ -183,7 +169,7 @@ struct vfsmount *afs_d_automount(struct path *path)
 	if (IS_ERR(newmnt))
 		return newmnt;
 
-	mntget(newmnt); /* prevent immediate expiration */
+	mntget(newmnt);  
 	mnt_set_expiry(newmnt, &afs_vfsmounts);
 	queue_delayed_work(afs_wq, &afs_mntpt_expiry_timer,
 			   afs_mntpt_expiry_timeout * HZ);
@@ -191,9 +177,7 @@ struct vfsmount *afs_d_automount(struct path *path)
 	return newmnt;
 }
 
-/*
- * handle mountpoint expiry timer going off
- */
+ 
 static void afs_mntpt_expiry_timed_out(struct work_struct *work)
 {
 	_enter("");
@@ -207,9 +191,7 @@ static void afs_mntpt_expiry_timed_out(struct work_struct *work)
 	_leave("");
 }
 
-/*
- * kill the AFS mountpoint timer if it's still running
- */
+ 
 void afs_mntpt_kill_timer(void)
 {
 	_enter("");

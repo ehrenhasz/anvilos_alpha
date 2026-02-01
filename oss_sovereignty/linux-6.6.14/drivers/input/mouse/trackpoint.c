@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Stephen Evanchik <evanchsa@gmail.com>
- *
- * Trademarks are the property of their respective owners.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/delay.h>
@@ -25,11 +21,7 @@ static const char * const trackpoint_variants[] = {
 	[TP_VARIANT_SYNAPTICS]		= "Synaptics",
 };
 
-/*
- * Power-on Reset: Resets all trackpoint parameters, including RAM values,
- * to defaults.
- * Returns zero on success, non-zero on failure.
- */
+ 
 static int trackpoint_power_on_reset(struct ps2dev *ps2dev)
 {
 	u8 param[2] = { TP_POR };
@@ -39,16 +31,14 @@ static int trackpoint_power_on_reset(struct ps2dev *ps2dev)
 	if (err)
 		return err;
 
-	/* Check for success response -- 0xAA00 */
+	 
 	if (param[0] != 0xAA || param[1] != 0x00)
 		return -ENODEV;
 
 	return 0;
 }
 
-/*
- * Device IO: read, write and toggle bit
- */
+ 
 static int trackpoint_read(struct ps2dev *ps2dev, u8 loc, u8 *results)
 {
 	results[0] = loc;
@@ -67,7 +57,7 @@ static int trackpoint_toggle_bit(struct ps2dev *ps2dev, u8 loc, u8 mask)
 {
 	u8 param[3] = { TP_TOGGLE, loc, mask };
 
-	/* Bad things will happen if the loc param isn't in this range */
+	 
 	if (loc < 0x20 || loc >= 0x2F)
 		return -EINVAL;
 
@@ -90,9 +80,7 @@ static int trackpoint_update_bit(struct ps2dev *ps2dev,
 	return retval;
 }
 
-/*
- * Trackpoint-specific attributes
- */
+ 
 struct trackpoint_attr_data {
 	size_t field_offset;
 	u8 command;
@@ -294,21 +282,13 @@ static int trackpoint_start_protocol(struct psmouse *psmouse,
 	return -ENODEV;
 }
 
-/*
- * Write parameters to trackpad.
- * in_power_on_state: Set to true if TP is in default / power-on state (ex. if
- *		      power-on reset was run). If so, values will only be
- *		      written to TP if they differ from power-on default.
- */
+ 
 static int trackpoint_sync(struct psmouse *psmouse, bool in_power_on_state)
 {
 	struct trackpoint_data *tp = psmouse->private;
 
 	if (!in_power_on_state && tp->variant_id == TP_VARIANT_IBM) {
-		/*
-		 * Disable features that may make device unusable
-		 * with this driver.
-		 */
+		 
 		trackpoint_update_bit(&psmouse->ps2dev, TP_TOGGLE_TWOHAND,
 				      TP_MASK_TWOHAND, TP_DEF_TWOHAND);
 
@@ -319,11 +299,7 @@ static int trackpoint_sync(struct psmouse *psmouse, bool in_power_on_state)
 				      TP_MASK_MB, TP_DEF_MB);
 	}
 
-	/*
-	 * These properties can be changed in this driver. Only
-	 * configure them if the values are non-default or if the TP is in
-	 * an unknown state.
-	 */
+	 
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, sensitivity);
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, inertia);
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, speed);
@@ -336,7 +312,7 @@ static int trackpoint_sync(struct psmouse *psmouse, bool in_power_on_state)
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, jenks);
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, drift_time);
 
-	/* toggles */
+	 
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, press_to_select);
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, skipback);
 	TRACKPOINT_UPDATE(in_power_on_state, psmouse, tp, ext_dev);
@@ -358,7 +334,7 @@ static void trackpoint_defaults(struct trackpoint_data *tp)
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, drift_time);
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, inertia);
 
-	/* toggles */
+	 
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, press_to_select);
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, skipback);
 	TRACKPOINT_SET_POWER_ON_DEFAULT(tp, ext_dev);
@@ -426,7 +402,7 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
 	psmouse->disconnect = trackpoint_disconnect;
 
 	if (variant_id != TP_VARIANT_IBM) {
-		/* Newer variants do not support extended button query. */
+		 
 		button_info = 0x33;
 	} else {
 		error = trackpoint_read(ps2dev, TP_EXT_BTN, &button_info);
@@ -449,9 +425,7 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
 
 	if (variant_id != TP_VARIANT_IBM ||
 	    trackpoint_power_on_reset(ps2dev) != 0) {
-		/*
-		 * Write defaults to TP if we did not reset the trackpoint.
-		 */
+		 
 		trackpoint_sync(psmouse, false);
 	}
 

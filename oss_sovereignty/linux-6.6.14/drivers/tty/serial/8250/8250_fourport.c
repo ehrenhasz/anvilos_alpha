@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2005 Russell King.
- *  Data taken from include/asm-i386/serial.h
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/serial_8250.h>

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Hantro VPU codec driver
- *
- * Copyright 2018 Google LLC.
- *	Tomasz Figa <tfiga@chromium.org>
- */
+ 
+ 
 
 #ifndef HANTRO_HW_H_
 #define HANTRO_HW_H_
@@ -45,14 +40,7 @@ struct hantro_ctx;
 struct hantro_buf;
 struct hantro_variant;
 
-/**
- * struct hantro_aux_buf - auxiliary DMA buffer for hardware data
- *
- * @cpu:	CPU pointer to the buffer.
- * @dma:	DMA address of the buffer.
- * @size:	Size of the buffer.
- * @attrs:	Attributes of the DMA mapping.
- */
+ 
 struct hantro_aux_buf {
 	void *cpu;
 	dma_addr_t dma;
@@ -60,17 +48,10 @@ struct hantro_aux_buf {
 	unsigned long attrs;
 };
 
-/* Max. number of entries in the DPB (HW limitation). */
+ 
 #define HANTRO_H264_DPB_SIZE		16
 
-/**
- * struct hantro_h264_dec_ctrls
- *
- * @decode:	Decode params
- * @scaling:	Scaling info
- * @sps:	SPS info
- * @pps:	PPS info
- */
+ 
 struct hantro_h264_dec_ctrls {
 	const struct v4l2_ctrl_h264_decode_params *decode;
 	const struct v4l2_ctrl_h264_scaling_matrix *scaling;
@@ -78,30 +59,14 @@ struct hantro_h264_dec_ctrls {
 	const struct v4l2_ctrl_h264_pps *pps;
 };
 
-/**
- * struct hantro_h264_dec_reflists
- *
- * @p:		P reflist
- * @b0:		B0 reflist
- * @b1:		B1 reflist
- */
+ 
 struct hantro_h264_dec_reflists {
 	struct v4l2_h264_reference p[V4L2_H264_REF_LIST_LEN];
 	struct v4l2_h264_reference b0[V4L2_H264_REF_LIST_LEN];
 	struct v4l2_h264_reference b1[V4L2_H264_REF_LIST_LEN];
 };
 
-/**
- * struct hantro_h264_dec_hw_ctx
- *
- * @priv:	Private auxiliary buffer for hardware.
- * @dpb:	DPB
- * @reflists:	P/B0/B1 reflists
- * @ctrls:	V4L2 controls attached to a run
- * @dpb_longterm: DPB long-term
- * @dpb_valid:	  DPB valid
- * @cur_poc:	Current picture order count
- */
+ 
 struct hantro_h264_dec_hw_ctx {
 	struct hantro_aux_buf priv;
 	struct v4l2_h264_dpb_entry dpb[HANTRO_H264_DPB_SIZE];
@@ -112,16 +77,7 @@ struct hantro_h264_dec_hw_ctx {
 	s32 cur_poc;
 };
 
-/**
- * struct hantro_hevc_dec_ctrls
- * @decode_params: Decode params
- * @scaling:	Scaling matrix
- * @sps:	SPS info
- * @pps:	PPS info
- * @hevc_hdr_skip_length: the number of data (in bits) to skip in the
- *			  slice segment header syntax after 'slice type'
- *			  token
- */
+ 
 struct hantro_hevc_dec_ctrls {
 	const struct v4l2_ctrl_hevc_decode_params *decode_params;
 	const struct v4l2_ctrl_hevc_scaling_matrix *scaling;
@@ -130,19 +86,7 @@ struct hantro_hevc_dec_ctrls {
 	u32 hevc_hdr_skip_length;
 };
 
-/**
- * struct hantro_hevc_dec_hw_ctx
- * @tile_sizes:		Tile sizes buffer
- * @tile_filter:	Tile vertical filter buffer
- * @tile_sao:		Tile SAO buffer
- * @tile_bsd:		Tile BSD control buffer
- * @ref_bufs:		Internal reference buffers
- * @scaling_lists:	Scaling lists buffer
- * @ref_bufs_poc:	Internal reference buffers picture order count
- * @ref_bufs_used:	Bitfield of used reference buffers
- * @ctrls:		V4L2 controls attached to a run
- * @num_tile_cols_allocated: number of allocated tiles
- */
+ 
 struct hantro_hevc_dec_hw_ctx {
 	struct hantro_aux_buf tile_sizes;
 	struct hantro_aux_buf tile_filter;
@@ -156,37 +100,18 @@ struct hantro_hevc_dec_hw_ctx {
 	unsigned int num_tile_cols_allocated;
 };
 
-/**
- * struct hantro_mpeg2_dec_hw_ctx
- *
- * @qtable:		Quantization table
- */
+ 
 struct hantro_mpeg2_dec_hw_ctx {
 	struct hantro_aux_buf qtable;
 };
 
-/**
- * struct hantro_vp8_dec_hw_ctx
- *
- * @segment_map:	Segment map buffer.
- * @prob_tbl:		Probability table buffer.
- */
+ 
 struct hantro_vp8_dec_hw_ctx {
 	struct hantro_aux_buf segment_map;
 	struct hantro_aux_buf prob_tbl;
 };
 
-/**
- * struct hantro_vp9_frame_info
- *
- * @valid: frame info valid flag
- * @frame_context_idx: index of frame context
- * @reference_mode: inter prediction type
- * @tx_mode: transform mode
- * @interpolation_filter: filter selection for inter prediction
- * @flags: frame flags
- * @timestamp: frame timestamp
- */
+ 
 struct hantro_vp9_frame_info {
 	u32 valid : 1;
 	u32 frame_context_idx : 2;
@@ -200,31 +125,7 @@ struct hantro_vp9_frame_info {
 #define MAX_SB_COLS	64
 #define MAX_SB_ROWS	34
 
-/**
- * struct hantro_vp9_dec_hw_ctx
- *
- * @tile_edge: auxiliary DMA buffer for tile edge processing
- * @segment_map: auxiliary DMA buffer for segment map
- * @misc: auxiliary DMA buffer for tile info, probabilities and hw counters
- * @cnts: vp9 library struct for abstracting hw counters access
- * @probability_tables: VP9 probability tables implied by the spec
- * @frame_context: VP9 frame contexts
- * @cur: current frame information
- * @last: last frame information
- * @bsd_ctrl_offset: bsd offset into tile_edge
- * @segment_map_size: size of segment map
- * @ctx_counters_offset: hw counters offset into misc
- * @tile_info_offset: tile info offset into misc
- * @tile_r_info: per-tile information array
- * @tile_c_info: per-tile information array
- * @last_tile_r: last number of tile rows
- * @last_tile_c: last number of tile cols
- * @last_sbs_r: last number of superblock rows
- * @last_sbs_c: last number of superblock cols
- * @active_segment: number of active segment (alternating between 0 and 1)
- * @feature_enabled: segmentation feature enabled flags
- * @feature_data: segmentation feature data
- */
+ 
 struct hantro_vp9_dec_hw_ctx {
 	struct hantro_aux_buf tile_edge;
 	struct hantro_aux_buf segment_map;
@@ -252,13 +153,7 @@ struct hantro_vp9_dec_hw_ctx {
 	s16 feature_data[8][4];
 };
 
-/**
- * struct hantro_av1_dec_ctrls
- * @sequence:		AV1 Sequence
- * @tile_group_entry:	AV1 Tile Group entry
- * @frame:		AV1 Frame Header OBU
- * @film_grain:		AV1 Film Grain
- */
+ 
 struct hantro_av1_dec_ctrls {
 	const struct v4l2_ctrl_av1_sequence *sequence;
 	const struct v4l2_ctrl_av1_tile_group_entry *tile_group_entry;
@@ -279,32 +174,7 @@ struct hantro_av1_frame_ref {
 	struct vb2_v4l2_buffer *vb2_ref;
 };
 
-/**
- * struct hantro_av1_dec_hw_ctx
- * @db_data_col:	db tile col data buffer
- * @db_ctrl_col:	db tile col ctrl buffer
- * @cdef_col:		cdef tile col buffer
- * @sr_col:		sr tile col buffer
- * @lr_col:		lr tile col buffer
- * @global_model:	global model buffer
- * @tile_info:		tile info buffer
- * @segment:		segmentation info buffer
- * @film_grain:		film grain buffer
- * @prob_tbl:		probability table
- * @prob_tbl_out:	probability table output
- * @tile_buf:		tile buffer
- * @ctrls:		V4L2 controls attached to a run
- * @frame_refs:		reference frames info slots
- * @ref_frame_sign_bias: array of sign bias
- * @num_tile_cols_allocated: number of allocated tiles
- * @cdfs:		current probabilities structure
- * @cdfs_ndvc:		current mv probabilities structure
- * @default_cdfs:	default probabilities structure
- * @default_cdfs_ndvc:	default mv probabilties structure
- * @cdfs_last:		stored probabilities structures
- * @cdfs_last_ndvc:	stored mv probabilities structures
- * @current_frame_index: index of the current in frame_refs array
- */
+ 
 struct hantro_av1_dec_hw_ctx {
 	struct hantro_aux_buf db_data_col;
 	struct hantro_aux_buf db_ctrl_col;
@@ -330,44 +200,19 @@ struct hantro_av1_dec_hw_ctx {
 	struct mvcdfs  cdfs_last_ndvc[NUM_REF_FRAMES];
 	int current_frame_index;
 };
-/**
- * struct hantro_postproc_ctx
- *
- * @dec_q:		References buffers, in decoder format.
- */
+ 
 struct hantro_postproc_ctx {
 	struct hantro_aux_buf dec_q[VB2_MAX_FRAME];
 };
 
-/**
- * struct hantro_postproc_ops - post-processor operations
- *
- * @enable:		Enable the post-processor block. Optional.
- * @disable:		Disable the post-processor block. Optional.
- * @enum_framesizes:	Enumerate possible scaled output formats.
- *			Returns zero if OK, a negative value in error cases.
- *			Optional.
- */
+ 
 struct hantro_postproc_ops {
 	void (*enable)(struct hantro_ctx *ctx);
 	void (*disable)(struct hantro_ctx *ctx);
 	int (*enum_framesizes)(struct hantro_ctx *ctx, struct v4l2_frmsizeenum *fsize);
 };
 
-/**
- * struct hantro_codec_ops - codec mode specific operations
- *
- * @init:	If needed, can be used for initialization.
- *		Optional and called from process context.
- * @exit:	If needed, can be used to undo the .init phase.
- *		Optional and called from process context.
- * @run:	Start single {en,de)coding job. Called from atomic context
- *		to indicate that a pair of buffers is ready and the hardware
- *		should be programmed and started. Returns zero if OK, a
- *		negative value in error cases.
- * @done:	Read back processing results and additional data from hardware.
- * @reset:	Reset the hardware in case of a timeout.
- */
+ 
 struct hantro_codec_ops {
 	int (*init)(struct hantro_ctx *ctx);
 	void (*exit)(struct hantro_ctx *ctx);
@@ -376,14 +221,7 @@ struct hantro_codec_ops {
 	void (*reset)(struct hantro_ctx *ctx);
 };
 
-/**
- * enum hantro_enc_fmt - source format ID for hardware registers.
- *
- * @ROCKCHIP_VPU_ENC_FMT_YUV420P: Y/CbCr 4:2:0 planar format
- * @ROCKCHIP_VPU_ENC_FMT_YUV420SP: Y/CbCr 4:2:0 semi-planar format
- * @ROCKCHIP_VPU_ENC_FMT_YUYV422: YUV 4:2:2 packed format (YUYV)
- * @ROCKCHIP_VPU_ENC_FMT_UYVY422: YUV 4:2:2 packed format (UYVY)
- */
+ 
 enum hantro_enc_fmt {
 	ROCKCHIP_VPU_ENC_FMT_YUV420P = 0,
 	ROCKCHIP_VPU_ENC_FMT_YUV420SP = 1,
@@ -461,10 +299,7 @@ hantro_vp9_mv_size(unsigned int width, unsigned int height)
 {
 	int num_ctbs;
 
-	/*
-	 * There can be up to (CTBs x 64) number of blocks,
-	 * and the motion vector for each block needs 16 bytes.
-	 */
+	 
 	num_ctbs = hantro_vp9_num_sbs(width) * hantro_vp9_num_sbs(height);
 	return (num_ctbs * 64) * 16;
 }
@@ -472,37 +307,14 @@ hantro_vp9_mv_size(unsigned int width, unsigned int height)
 static inline size_t
 hantro_h264_mv_size(unsigned int width, unsigned int height)
 {
-	/*
-	 * A decoded 8-bit 4:2:0 NV12 frame may need memory for up to
-	 * 448 bytes per macroblock with additional 32 bytes on
-	 * multi-core variants.
-	 *
-	 * The H264 decoder needs extra space on the output buffers
-	 * to store motion vectors. This is needed for reference
-	 * frames and only if the format is non-post-processed NV12.
-	 *
-	 * Memory layout is as follow:
-	 *
-	 * +---------------------------+
-	 * | Y-plane   256 bytes x MBs |
-	 * +---------------------------+
-	 * | UV-plane  128 bytes x MBs |
-	 * +---------------------------+
-	 * | MV buffer  64 bytes x MBs |
-	 * +---------------------------+
-	 * | MC sync          32 bytes |
-	 * +---------------------------+
-	 */
+	 
 	return 64 * MB_WIDTH(width) * MB_WIDTH(height) + 32;
 }
 
 static inline size_t
 hantro_hevc_mv_size(unsigned int width, unsigned int height)
 {
-	/*
-	 * A CTB can be 64x64, 32x32 or 16x16.
-	 * Allocated memory for the "worse" case: 16x16
-	 */
+	 
 	return width * height / 16;
 }
 
@@ -540,4 +352,4 @@ void hantro_vp9_dec_exit(struct hantro_ctx *ctx);
 void hantro_g2_check_idle(struct hantro_dev *vpu);
 irqreturn_t hantro_g2_irq(int irq, void *dev_id);
 
-#endif /* HANTRO_HW_H_ */
+#endif  

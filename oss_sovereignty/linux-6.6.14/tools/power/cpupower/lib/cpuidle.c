@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
- *  (C) 2011       Thomas Renninger <trenn@novell.com> Novell Inc.
- */
+
+ 
 
 #include <stdio.h>
 #include <errno.h>
@@ -16,15 +13,7 @@
 #include "cpuidle.h"
 #include "cpupower_intern.h"
 
-/*
- * helper function to check whether a file under "../cpuX/cpuidle/stateX/" dir
- * exists.
- * For example the functionality to disable c-states was introduced in later
- * kernel versions, this function can be used to explicitly check for this
- * feature.
- *
- * returns 1 if the file exists, 0 otherwise.
- */
+ 
 static
 unsigned int cpuidle_state_file_exists(unsigned int cpu,
 				       unsigned int idlestate,
@@ -41,12 +30,7 @@ unsigned int cpuidle_state_file_exists(unsigned int cpu,
 	return 1;
 }
 
-/*
- * helper function to read file from /sys into given buffer
- * fname is a relative path under "cpuX/cpuidle/stateX/" dir
- * cstates starting with 0, C0 is not counted as cstate.
- * This means if you want C1 info, pass 0 as idlestate param
- */
+ 
 static
 unsigned int cpuidle_state_read_file(unsigned int cpu,
 					    unsigned int idlestate,
@@ -76,12 +60,7 @@ unsigned int cpuidle_state_read_file(unsigned int cpu,
 	return (unsigned int) numread;
 }
 
-/*
- * helper function to write a new value to a /sys file
- * fname is a relative path under "../cpuX/cpuidle/cstateY/" dir
- *
- * Returns the number of bytes written or 0 on error
- */
+ 
 static
 unsigned int cpuidle_state_write_file(unsigned int cpu,
 				      unsigned int idlestate,
@@ -110,7 +89,7 @@ unsigned int cpuidle_state_write_file(unsigned int cpu,
 	return (unsigned int) numwrite;
 }
 
-/* read access to files which contain one numeric value */
+ 
 
 enum idlestate_value {
 	IDLESTATE_USAGE,
@@ -156,7 +135,7 @@ unsigned long long cpuidle_state_get_one_value(unsigned int cpu,
 	return value;
 }
 
-/* read access to files which contain one string */
+ 
 
 enum idlestate_string {
 	IDLESTATE_DESC,
@@ -197,13 +176,7 @@ static char *cpuidle_state_get_one_string(unsigned int cpu,
 	return result;
 }
 
-/*
- * Returns:
- *    1  if disabled
- *    0  if enabled
- *    -1 if idlestate is not available
- *    -2 if disabling is not supported by the kernel
- */
+ 
 int cpuidle_is_state_disabled(unsigned int cpu,
 				unsigned int idlestate)
 {
@@ -216,15 +189,7 @@ int cpuidle_is_state_disabled(unsigned int cpu,
 	return cpuidle_state_get_one_value(cpu, idlestate, IDLESTATE_DISABLE);
 }
 
-/*
- * Pass 1 as last argument to disable or 0 to enable the state
- * Returns:
- *    0  on success
- *    negative values on error, for example:
- *      -1 if idlestate is not available
- *      -2 if disabling is not supported by the kernel
- *      -3 No write access to disable/enable C-states
- */
+ 
 int cpuidle_state_disable(unsigned int cpu,
 			    unsigned int idlestate,
 			    unsigned int disable)
@@ -276,11 +241,7 @@ char *cpuidle_state_desc(unsigned int cpu, unsigned int idlestate)
 	return cpuidle_state_get_one_string(cpu, idlestate, IDLESTATE_DESC);
 }
 
-/*
- * Returns number of supported C-states of CPU core cpu
- * Negativ in error case
- * Zero if cpuidle does not export any C-states
- */
+ 
 unsigned int cpuidle_state_count(unsigned int cpu)
 {
 	char file[SYSFS_PATH_MAX];
@@ -305,12 +266,9 @@ unsigned int cpuidle_state_count(unsigned int cpu)
 	return idlestates;
 }
 
-/* CPUidle general /sys/devices/system/cpu/cpuidle/ sysfs access ********/
+ 
 
-/*
- * helper function to read file from /sys into given buffer
- * fname is a relative path under "cpu/cpuidle/" dir
- */
+ 
 static unsigned int sysfs_cpuidle_read_file(const char *fname, char *buf,
 					    size_t buflen)
 {
@@ -323,7 +281,7 @@ static unsigned int sysfs_cpuidle_read_file(const char *fname, char *buf,
 
 
 
-/* read access to files which contain one string */
+ 
 
 enum cpuidle_string {
 	CPUIDLE_GOVERNOR,
@@ -376,4 +334,4 @@ char *cpuidle_get_driver(void)
 {
 	return sysfs_cpuidle_get_one_string(CPUIDLE_DRIVER);
 }
-/* CPUidle idlestate specific /sys/devices/system/cpu/cpuX/cpuidle/ access */
+ 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NCI based driver for Samsung S3FWRN5 NFC chip
- *
- * Copyright (C) 2015 Samsung Electrnoics
- * Robert Baldyga <r.baldyga@samsung.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/firmware.h>
@@ -60,13 +55,13 @@ int s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name)
 	if (ret < 0)
 		return ret;
 
-	/* Compute rfreg checksum */
+	 
 
 	checksum = 0;
 	for (i = 0; i < fw->size; i += 4)
 		checksum += *((u32 *)(fw->data+i));
 
-	/* Set default clock configuration for external crystal */
+	 
 
 	fw_cfg.clk_type = 0x01;
 	fw_cfg.clk_speed = 0xff;
@@ -76,7 +71,7 @@ int s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name)
 	if (ret < 0)
 		goto out;
 
-	/* Start rfreg configuration */
+	 
 
 	dev_info(dev, "rfreg configuration update: %s\n", fw_name);
 
@@ -86,7 +81,7 @@ int s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name)
 		goto out;
 	}
 
-	/* Update rfreg */
+	 
 
 	set_rfreg.index = 0;
 	for (i = 0; i < fw->size; i += S3FWRN5_RFREG_SECTION_SIZE) {
@@ -102,7 +97,7 @@ int s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name)
 		set_rfreg.index++;
 	}
 
-	/* Finish rfreg configuration */
+	 
 
 	stop_rfreg.checksum = checksum & 0xffff;
 	ret = nci_prop_cmd(info->ndev, NCI_PROP_STOP_RFREG,

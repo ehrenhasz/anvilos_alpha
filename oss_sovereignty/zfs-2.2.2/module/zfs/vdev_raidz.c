@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2016 Gvozden Nešković. All rights reserved.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -38,75 +15,10 @@
 #include <sys/vdev_draid.h>
 
 #ifdef ZFS_DEBUG
-#include <sys/vdev.h>	/* For vdev_xlate() in vdev_raidz_io_verify() */
+#include <sys/vdev.h>	 
 #endif
 
-/*
- * Virtual device vector for RAID-Z.
- *
- * This vdev supports single, double, and triple parity. For single parity,
- * we use a simple XOR of all the data columns. For double or triple parity,
- * we use a special case of Reed-Solomon coding. This extends the
- * technique described in "The mathematics of RAID-6" by H. Peter Anvin by
- * drawing on the system described in "A Tutorial on Reed-Solomon Coding for
- * Fault-Tolerance in RAID-like Systems" by James S. Plank on which the
- * former is also based. The latter is designed to provide higher performance
- * for writes.
- *
- * Note that the Plank paper claimed to support arbitrary N+M, but was then
- * amended six years later identifying a critical flaw that invalidates its
- * claims. Nevertheless, the technique can be adapted to work for up to
- * triple parity. For additional parity, the amendment "Note: Correction to
- * the 1997 Tutorial on Reed-Solomon Coding" by James S. Plank and Ying Ding
- * is viable, but the additional complexity means that write performance will
- * suffer.
- *
- * All of the methods above operate on a Galois field, defined over the
- * integers mod 2^N. In our case we choose N=8 for GF(8) so that all elements
- * can be expressed with a single byte. Briefly, the operations on the
- * field are defined as follows:
- *
- *   o addition (+) is represented by a bitwise XOR
- *   o subtraction (-) is therefore identical to addition: A + B = A - B
- *   o multiplication of A by 2 is defined by the following bitwise expression:
- *
- *	(A * 2)_7 = A_6
- *	(A * 2)_6 = A_5
- *	(A * 2)_5 = A_4
- *	(A * 2)_4 = A_3 + A_7
- *	(A * 2)_3 = A_2 + A_7
- *	(A * 2)_2 = A_1 + A_7
- *	(A * 2)_1 = A_0
- *	(A * 2)_0 = A_7
- *
- * In C, multiplying by 2 is therefore ((a << 1) ^ ((a & 0x80) ? 0x1d : 0)).
- * As an aside, this multiplication is derived from the error correcting
- * primitive polynomial x^8 + x^4 + x^3 + x^2 + 1.
- *
- * Observe that any number in the field (except for 0) can be expressed as a
- * power of 2 -- a generator for the field. We store a table of the powers of
- * 2 and logs base 2 for quick look ups, and exploit the fact that A * B can
- * be rewritten as 2^(log_2(A) + log_2(B)) (where '+' is normal addition rather
- * than field addition). The inverse of a field element A (A^-1) is therefore
- * A ^ (255 - 1) = A^254.
- *
- * The up-to-three parity columns, P, Q, R over several data columns,
- * D_0, ... D_n-1, can be expressed by field operations:
- *
- *	P = D_0 + D_1 + ... + D_n-2 + D_n-1
- *	Q = 2^n-1 * D_0 + 2^n-2 * D_1 + ... + 2^1 * D_n-2 + 2^0 * D_n-1
- *	  = ((...((D_0) * 2 + D_1) * 2 + ...) * 2 + D_n-2) * 2 + D_n-1
- *	R = 4^n-1 * D_0 + 4^n-2 * D_1 + ... + 4^1 * D_n-2 + 4^0 * D_n-1
- *	  = ((...((D_0) * 4 + D_1) * 4 + ...) * 4 + D_n-2) * 4 + D_n-1
- *
- * We chose 1, 2, and 4 as our generators because 1 corresponds to the trivial
- * XOR operation, and 2 and 4 can be computed quickly and generate linearly-
- * independent coefficients. (There are no additional coefficients that have
- * this property which is why the uncorrected Plank method breaks down.)
- *
- * See the reconstruction code below for how P, Q and R can used individually
- * or in concert to recover missing data columns.
- */
+ 
 
 #define	VDEV_RAIDZ_P		0
 #define	VDEV_RAIDZ_Q		1
@@ -115,12 +27,7 @@
 #define	VDEV_RAIDZ_MUL_2(x)	(((x) << 1) ^ (((x) & 0x80) ? 0x1d : 0))
 #define	VDEV_RAIDZ_MUL_4(x)	(VDEV_RAIDZ_MUL_2(VDEV_RAIDZ_MUL_2(x)))
 
-/*
- * We provide a mechanism to perform the field multiplication operation on a
- * 64-bit value all at once rather than a byte at a time. This works by
- * creating a mask from the top bit in each byte and using that to
- * conditionally apply the XOR of 0x1d.
- */
+ 
 #define	VDEV_RAIDZ_64MUL_2(x, mask) \
 { \
 	(mask) = (x) & 0x8080808080808080ULL; \
@@ -185,10 +92,7 @@ vdev_raidz_map_alloc_write(zio_t *zio, raidz_map_t *rm, uint64_t ashift)
 	ASSERT3U(zio->io_type, ==, ZIO_TYPE_WRITE);
 	ASSERT3U(rm->rm_nrows, ==, 1);
 
-	/*
-	 * Pad any parity columns with additional space to account for skip
-	 * sectors.
-	 */
+	 
 	if (rm->rm_skipstart < rr->rr_firstdatacol) {
 		ASSERT0(rm->rm_skipstart);
 		nwrapped = rm->rm_nskip;
@@ -197,25 +101,14 @@ vdev_raidz_map_alloc_write(zio_t *zio, raidz_map_t *rm, uint64_t ashift)
 		    (rm->rm_skipstart + rm->rm_nskip) % rr->rr_scols;
 	}
 
-	/*
-	 * Optional single skip sectors (rc_size == 0) will be handled in
-	 * vdev_raidz_io_start_write().
-	 */
+	 
 	int skipped = rr->rr_scols - rr->rr_cols;
 
-	/* Allocate buffers for the parity columns */
+	 
 	for (c = 0; c < rr->rr_firstdatacol; c++) {
 		raidz_col_t *rc = &rr->rr_col[c];
 
-		/*
-		 * Parity columns will pad out a linear ABD to account for
-		 * the skip sector. A linear ABD is used here because
-		 * parity calculations use the ABD buffer directly to calculate
-		 * parity. This avoids doing a memcpy back to the ABD after the
-		 * parity has been calculated. By issuing the parity column
-		 * with the skip sector we can reduce contention on the child
-		 * VDEV queue locks (vq_lock).
-		 */
+		 
 		if (c < nwrapped) {
 			rc->rc_abd = abd_alloc_linear(
 			    rc->rc_size + (1ULL << ashift), B_FALSE);
@@ -231,20 +124,7 @@ vdev_raidz_map_alloc_write(zio_t *zio, raidz_map_t *rm, uint64_t ashift)
 		abd_t *abd = abd_get_offset_struct(&rc->rc_abdstruct,
 		    zio->io_abd, off, rc->rc_size);
 
-		/*
-		 * Generate I/O for skip sectors to improve aggregation
-		 * continuity. We will use gang ABD's to reduce contention
-		 * on the child VDEV queue locks (vq_lock) by issuing
-		 * a single I/O that contains the data and skip sector.
-		 *
-		 * It is important to make sure that rc_size is not updated
-		 * even though we are adding a skip sector to the ABD. When
-		 * calculating the parity in vdev_raidz_generate_parity_row()
-		 * the rc_size is used to iterate through the ABD's. We can
-		 * not have zero'd out skip sectors used for calculating
-		 * parity for raidz, because those same sectors are not used
-		 * during reconstruction.
-		 */
+		 
 		if (c >= rm->rm_skipstart && skipped < rm->rm_nskip) {
 			rc->rc_abd = abd_alloc_gang();
 			abd_gang_add(rc->rc_abd, abd, B_TRUE);
@@ -269,7 +149,7 @@ vdev_raidz_map_alloc_read(zio_t *zio, raidz_map_t *rm)
 
 	ASSERT3U(rm->rm_nrows, ==, 1);
 
-	/* Allocate buffers for the parity columns */
+	 
 	for (c = 0; c < rr->rr_firstdatacol; c++)
 		rr->rr_col[c].rc_abd =
 		    abd_alloc_linear(rr->rr_col[c].rc_size, B_FALSE);
@@ -282,25 +162,19 @@ vdev_raidz_map_alloc_read(zio_t *zio, raidz_map_t *rm)
 	}
 }
 
-/*
- * Divides the IO evenly across all child vdevs; usually, dcols is
- * the number of children in the target vdev.
- *
- * Avoid inlining the function to keep vdev_raidz_io_start(), which
- * is this functions only caller, as small as possible on the stack.
- */
+ 
 noinline raidz_map_t *
 vdev_raidz_map_alloc(zio_t *zio, uint64_t ashift, uint64_t dcols,
     uint64_t nparity)
 {
 	raidz_row_t *rr;
-	/* The starting RAIDZ (parent) vdev sector of the block. */
+	 
 	uint64_t b = zio->io_offset >> ashift;
-	/* The zio's size in units of the vdev's minimum sector size. */
+	 
 	uint64_t s = zio->io_size >> ashift;
-	/* The first column for this stripe. */
+	 
 	uint64_t f = b % dcols;
-	/* The starting byte offset on each child vdev. */
+	 
 	uint64_t o = (b / dcols) << ashift;
 	uint64_t q, r, c, bc, col, acols, scols, coff, devidx, asize, tot;
 
@@ -308,33 +182,21 @@ vdev_raidz_map_alloc(zio_t *zio, uint64_t ashift, uint64_t dcols,
 	    kmem_zalloc(offsetof(raidz_map_t, rm_row[1]), KM_SLEEP);
 	rm->rm_nrows = 1;
 
-	/*
-	 * "Quotient": The number of data sectors for this stripe on all but
-	 * the "big column" child vdevs that also contain "remainder" data.
-	 */
+	 
 	q = s / (dcols - nparity);
 
-	/*
-	 * "Remainder": The number of partial stripe data sectors in this I/O.
-	 * This will add a sector to some, but not all, child vdevs.
-	 */
+	 
 	r = s - q * (dcols - nparity);
 
-	/* The number of "big columns" - those which contain remainder data. */
+	 
 	bc = (r == 0 ? 0 : r + nparity);
 
-	/*
-	 * The total number of data and parity sectors associated with
-	 * this I/O.
-	 */
+	 
 	tot = s + nparity * (q + (r == 0 ? 0 : 1));
 
-	/*
-	 * acols: The columns that will be accessed.
-	 * scols: The columns that will be accessed or skipped.
-	 */
+	 
 	if (q == 0) {
-		/* Our I/O request doesn't span all child vdevs. */
+		 
 		acols = bc;
 		scols = MIN(dcols, roundup(bc, nparity + 1));
 	} else {
@@ -395,26 +257,7 @@ vdev_raidz_map_alloc(zio_t *zio, uint64_t ashift, uint64_t dcols,
 	rm->rm_nskip = roundup(tot, nparity + 1) - tot;
 	rm->rm_skipstart = bc;
 
-	/*
-	 * If all data stored spans all columns, there's a danger that parity
-	 * will always be on the same device and, since parity isn't read
-	 * during normal operation, that device's I/O bandwidth won't be
-	 * used effectively. We therefore switch the parity every 1MB.
-	 *
-	 * ... at least that was, ostensibly, the theory. As a practical
-	 * matter unless we juggle the parity between all devices evenly, we
-	 * won't see any benefit. Further, occasional writes that aren't a
-	 * multiple of the LCM of the number of children and the minimum
-	 * stripe width are sufficient to avoid pessimal behavior.
-	 * Unfortunately, this decision created an implicit on-disk format
-	 * requirement that we need to support for all eternity, but only
-	 * for single-parity RAID-Z.
-	 *
-	 * If we intend to skip a sector in the zeroth column for padding
-	 * we must make sure to note this swap. We will never intend to
-	 * skip the first column since at least one data and one parity
-	 * column must appear in each row.
-	 */
+	 
 	ASSERT(rr->rr_cols >= 2);
 	ASSERT(rr->rr_col[0].rc_size == rr->rr_col[1].rc_size);
 
@@ -436,7 +279,7 @@ vdev_raidz_map_alloc(zio_t *zio, uint64_t ashift, uint64_t dcols,
 		vdev_raidz_map_alloc_read(zio, rm);
 	}
 
-	/* init RAIDZ parity ops */
+	 
 	rm->rm_ops = vdev_raidz_math_get_ops();
 
 	return (rm);
@@ -551,10 +394,7 @@ vdev_raidz_generate_parity_pq(raidz_row_t *rr)
 			(void) abd_iterate_func(src, 0, rr->rr_col[c].rc_size,
 			    vdev_raidz_pq_func, &pqr);
 
-			/*
-			 * Treat short columns as though they are full of 0s.
-			 * Note that there's therefore nothing needed for P.
-			 */
+			 
 			uint64_t mask;
 			for (uint64_t i = ccnt; i < pcnt; i++) {
 				VDEV_RAIDZ_64MUL_2(q[i], mask);
@@ -598,10 +438,7 @@ vdev_raidz_generate_parity_pqr(raidz_row_t *rr)
 			(void) abd_iterate_func(src, 0, rr->rr_col[c].rc_size,
 			    vdev_raidz_pqr_func, &pqr);
 
-			/*
-			 * Treat short columns as though they are full of 0s.
-			 * Note that there's therefore nothing needed for P.
-			 */
+			 
 			uint64_t mask;
 			for (uint64_t i = ccnt; i < pcnt; i++) {
 				VDEV_RAIDZ_64MUL_2(q[i], mask);
@@ -611,16 +448,13 @@ vdev_raidz_generate_parity_pqr(raidz_row_t *rr)
 	}
 }
 
-/*
- * Generate RAID parity in the first virtual columns according to the number of
- * parity columns available.
- */
+ 
 void
 vdev_raidz_generate_parity_row(raidz_map_t *rm, raidz_row_t *rr)
 {
 	ASSERT3U(rr->rr_cols, !=, 0);
 
-	/* Generate using the new math implementation */
+	 
 	if (vdev_raidz_math_generate(rm, rr) != RAIDZ_ORIGINAL_IMPL)
 		return;
 
@@ -690,7 +524,7 @@ vdev_raidz_reconst_q_pre_tail_func(void *buf, size_t size, void *private)
 	int cnt = size / sizeof (dst[0]);
 
 	for (int i = 0; i < cnt; i++, dst++) {
-		/* same operation as vdev_raidz_reconst_q_pre_func() on dst */
+		 
 		VDEV_RAIDZ_64MUL_2(*dst, mask);
 	}
 
@@ -756,7 +590,7 @@ vdev_raidz_reconst_pq_tail_func(void *xbuf, size_t size, void *private)
 
 	for (int i = 0; i < size;
 	    i++, rpq->p++, rpq->q++, rpq->pxy++, rpq->qxy++, xd++) {
-		/* same operation as vdev_raidz_reconst_pq_func() on xd */
+		 
 		*xd = vdev_raidz_exp2(*rpq->p ^ *rpq->pxy, rpq->aexp) ^
 		    vdev_raidz_exp2(*rpq->q ^ *rpq->qxy, rpq->bexp);
 	}
@@ -855,13 +689,7 @@ vdev_raidz_reconstruct_pq(raidz_row_t *rr, int *tgts, int ntgts)
 
 	ASSERT(rr->rr_col[x].rc_size >= rr->rr_col[y].rc_size);
 
-	/*
-	 * Move the parity data aside -- we're going to compute parity as
-	 * though columns x and y were full of zeros -- Pxy and Qxy. We want to
-	 * reuse the parity generation mechanism without trashing the actual
-	 * parity so we make those columns appear to be full of zeros by
-	 * setting their lengths to zero.
-	 */
+	 
 	pdata = rr->rr_col[VDEV_RAIDZ_P].rc_abd;
 	qdata = rr->rr_col[VDEV_RAIDZ_Q].rc_abd;
 	xsize = rr->rr_col[x].rc_size;
@@ -886,20 +714,7 @@ vdev_raidz_reconstruct_pq(raidz_row_t *rr, int *tgts, int ntgts)
 	xd = rr->rr_col[x].rc_abd;
 	yd = rr->rr_col[y].rc_abd;
 
-	/*
-	 * We now have:
-	 *	Pxy = P + D_x + D_y
-	 *	Qxy = Q + 2^(ndevs - 1 - x) * D_x + 2^(ndevs - 1 - y) * D_y
-	 *
-	 * We can then solve for D_x:
-	 *	D_x = A * (P + Pxy) + B * (Q + Qxy)
-	 * where
-	 *	A = 2^(x - y) * (2^(x - y) + 1)^-1
-	 *	B = 2^(ndevs - 1 - x) * (2^(x - y) + 1)^-1
-	 *
-	 * With D_x in hand, we can easily solve for D_y:
-	 *	D_y = P + Pxy + D_x
-	 */
+	 
 
 	a = vdev_raidz_pow2[255 + x - y];
 	b = vdev_raidz_pow2[255 - (rr->rr_cols - 1 - x)];
@@ -919,164 +734,12 @@ vdev_raidz_reconstruct_pq(raidz_row_t *rr, int *tgts, int ntgts)
 	abd_free(rr->rr_col[VDEV_RAIDZ_P].rc_abd);
 	abd_free(rr->rr_col[VDEV_RAIDZ_Q].rc_abd);
 
-	/*
-	 * Restore the saved parity data.
-	 */
+	 
 	rr->rr_col[VDEV_RAIDZ_P].rc_abd = pdata;
 	rr->rr_col[VDEV_RAIDZ_Q].rc_abd = qdata;
 }
 
-/*
- * In the general case of reconstruction, we must solve the system of linear
- * equations defined by the coefficients used to generate parity as well as
- * the contents of the data and parity disks. This can be expressed with
- * vectors for the original data (D) and the actual data (d) and parity (p)
- * and a matrix composed of the identity matrix (I) and a dispersal matrix (V):
- *
- *            __   __                     __     __
- *            |     |         __     __   |  p_0  |
- *            |  V  |         |  D_0  |   | p_m-1 |
- *            |     |    x    |   :   | = |  d_0  |
- *            |  I  |         | D_n-1 |   |   :   |
- *            |     |         ~~     ~~   | d_n-1 |
- *            ~~   ~~                     ~~     ~~
- *
- * I is simply a square identity matrix of size n, and V is a vandermonde
- * matrix defined by the coefficients we chose for the various parity columns
- * (1, 2, 4). Note that these values were chosen both for simplicity, speedy
- * computation as well as linear separability.
- *
- *      __               __               __     __
- *      |   1   ..  1 1 1 |               |  p_0  |
- *      | 2^n-1 ..  4 2 1 |   __     __   |   :   |
- *      | 4^n-1 .. 16 4 1 |   |  D_0  |   | p_m-1 |
- *      |   1   ..  0 0 0 |   |  D_1  |   |  d_0  |
- *      |   0   ..  0 0 0 | x |  D_2  | = |  d_1  |
- *      |   :       : : : |   |   :   |   |  d_2  |
- *      |   0   ..  1 0 0 |   | D_n-1 |   |   :   |
- *      |   0   ..  0 1 0 |   ~~     ~~   |   :   |
- *      |   0   ..  0 0 1 |               | d_n-1 |
- *      ~~               ~~               ~~     ~~
- *
- * Note that I, V, d, and p are known. To compute D, we must invert the
- * matrix and use the known data and parity values to reconstruct the unknown
- * data values. We begin by removing the rows in V|I and d|p that correspond
- * to failed or missing columns; we then make V|I square (n x n) and d|p
- * sized n by removing rows corresponding to unused parity from the bottom up
- * to generate (V|I)' and (d|p)'. We can then generate the inverse of (V|I)'
- * using Gauss-Jordan elimination. In the example below we use m=3 parity
- * columns, n=8 data columns, with errors in d_1, d_2, and p_1:
- *           __                               __
- *           |  1   1   1   1   1   1   1   1  |
- *           | 128  64  32  16  8   4   2   1  | <-----+-+-- missing disks
- *           |  19 205 116  29  64  16  4   1  |      / /
- *           |  1   0   0   0   0   0   0   0  |     / /
- *           |  0   1   0   0   0   0   0   0  | <--' /
- *  (V|I)  = |  0   0   1   0   0   0   0   0  | <---'
- *           |  0   0   0   1   0   0   0   0  |
- *           |  0   0   0   0   1   0   0   0  |
- *           |  0   0   0   0   0   1   0   0  |
- *           |  0   0   0   0   0   0   1   0  |
- *           |  0   0   0   0   0   0   0   1  |
- *           ~~                               ~~
- *           __                               __
- *           |  1   1   1   1   1   1   1   1  |
- *           | 128  64  32  16  8   4   2   1  |
- *           |  19 205 116  29  64  16  4   1  |
- *           |  1   0   0   0   0   0   0   0  |
- *           |  0   1   0   0   0   0   0   0  |
- *  (V|I)' = |  0   0   1   0   0   0   0   0  |
- *           |  0   0   0   1   0   0   0   0  |
- *           |  0   0   0   0   1   0   0   0  |
- *           |  0   0   0   0   0   1   0   0  |
- *           |  0   0   0   0   0   0   1   0  |
- *           |  0   0   0   0   0   0   0   1  |
- *           ~~                               ~~
- *
- * Here we employ Gauss-Jordan elimination to find the inverse of (V|I)'. We
- * have carefully chosen the seed values 1, 2, and 4 to ensure that this
- * matrix is not singular.
- * __                                                                 __
- * |  1   1   1   1   1   1   1   1     1   0   0   0   0   0   0   0  |
- * |  19 205 116  29  64  16  4   1     0   1   0   0   0   0   0   0  |
- * |  1   0   0   0   0   0   0   0     0   0   1   0   0   0   0   0  |
- * |  0   0   0   1   0   0   0   0     0   0   0   1   0   0   0   0  |
- * |  0   0   0   0   1   0   0   0     0   0   0   0   1   0   0   0  |
- * |  0   0   0   0   0   1   0   0     0   0   0   0   0   1   0   0  |
- * |  0   0   0   0   0   0   1   0     0   0   0   0   0   0   1   0  |
- * |  0   0   0   0   0   0   0   1     0   0   0   0   0   0   0   1  |
- * ~~                                                                 ~~
- * __                                                                 __
- * |  1   0   0   0   0   0   0   0     0   0   1   0   0   0   0   0  |
- * |  1   1   1   1   1   1   1   1     1   0   0   0   0   0   0   0  |
- * |  19 205 116  29  64  16  4   1     0   1   0   0   0   0   0   0  |
- * |  0   0   0   1   0   0   0   0     0   0   0   1   0   0   0   0  |
- * |  0   0   0   0   1   0   0   0     0   0   0   0   1   0   0   0  |
- * |  0   0   0   0   0   1   0   0     0   0   0   0   0   1   0   0  |
- * |  0   0   0   0   0   0   1   0     0   0   0   0   0   0   1   0  |
- * |  0   0   0   0   0   0   0   1     0   0   0   0   0   0   0   1  |
- * ~~                                                                 ~~
- * __                                                                 __
- * |  1   0   0   0   0   0   0   0     0   0   1   0   0   0   0   0  |
- * |  0   1   1   0   0   0   0   0     1   0   1   1   1   1   1   1  |
- * |  0  205 116  0   0   0   0   0     0   1   19  29  64  16  4   1  |
- * |  0   0   0   1   0   0   0   0     0   0   0   1   0   0   0   0  |
- * |  0   0   0   0   1   0   0   0     0   0   0   0   1   0   0   0  |
- * |  0   0   0   0   0   1   0   0     0   0   0   0   0   1   0   0  |
- * |  0   0   0   0   0   0   1   0     0   0   0   0   0   0   1   0  |
- * |  0   0   0   0   0   0   0   1     0   0   0   0   0   0   0   1  |
- * ~~                                                                 ~~
- * __                                                                 __
- * |  1   0   0   0   0   0   0   0     0   0   1   0   0   0   0   0  |
- * |  0   1   1   0   0   0   0   0     1   0   1   1   1   1   1   1  |
- * |  0   0  185  0   0   0   0   0    205  1  222 208 141 221 201 204 |
- * |  0   0   0   1   0   0   0   0     0   0   0   1   0   0   0   0  |
- * |  0   0   0   0   1   0   0   0     0   0   0   0   1   0   0   0  |
- * |  0   0   0   0   0   1   0   0     0   0   0   0   0   1   0   0  |
- * |  0   0   0   0   0   0   1   0     0   0   0   0   0   0   1   0  |
- * |  0   0   0   0   0   0   0   1     0   0   0   0   0   0   0   1  |
- * ~~                                                                 ~~
- * __                                                                 __
- * |  1   0   0   0   0   0   0   0     0   0   1   0   0   0   0   0  |
- * |  0   1   1   0   0   0   0   0     1   0   1   1   1   1   1   1  |
- * |  0   0   1   0   0   0   0   0    166 100  4   40 158 168 216 209 |
- * |  0   0   0   1   0   0   0   0     0   0   0   1   0   0   0   0  |
- * |  0   0   0   0   1   0   0   0     0   0   0   0   1   0   0   0  |
- * |  0   0   0   0   0   1   0   0     0   0   0   0   0   1   0   0  |
- * |  0   0   0   0   0   0   1   0     0   0   0   0   0   0   1   0  |
- * |  0   0   0   0   0   0   0   1     0   0   0   0   0   0   0   1  |
- * ~~                                                                 ~~
- * __                                                                 __
- * |  1   0   0   0   0   0   0   0     0   0   1   0   0   0   0   0  |
- * |  0   1   0   0   0   0   0   0    167 100  5   41 159 169 217 208 |
- * |  0   0   1   0   0   0   0   0    166 100  4   40 158 168 216 209 |
- * |  0   0   0   1   0   0   0   0     0   0   0   1   0   0   0   0  |
- * |  0   0   0   0   1   0   0   0     0   0   0   0   1   0   0   0  |
- * |  0   0   0   0   0   1   0   0     0   0   0   0   0   1   0   0  |
- * |  0   0   0   0   0   0   1   0     0   0   0   0   0   0   1   0  |
- * |  0   0   0   0   0   0   0   1     0   0   0   0   0   0   0   1  |
- * ~~                                                                 ~~
- *                   __                               __
- *                   |  0   0   1   0   0   0   0   0  |
- *                   | 167 100  5   41 159 169 217 208 |
- *                   | 166 100  4   40 158 168 216 209 |
- *       (V|I)'^-1 = |  0   0   0   1   0   0   0   0  |
- *                   |  0   0   0   0   1   0   0   0  |
- *                   |  0   0   0   0   0   1   0   0  |
- *                   |  0   0   0   0   0   0   1   0  |
- *                   |  0   0   0   0   0   0   0   1  |
- *                   ~~                               ~~
- *
- * We can then simply compute D = (V|I)'^-1 x (d|p)' to discover the values
- * of the missing data.
- *
- * As is apparent from the example above, the only non-trivial rows in the
- * inverse matrix correspond to the data disks that we're trying to
- * reconstruct. Indeed, those are the only rows we need as the others would
- * only be useful for reconstructing data known or assumed to be valid. For
- * that reason, we only build the coefficients in the rows that correspond to
- * targeted columns.
- */
+ 
 
 static void
 vdev_raidz_matrix_init(raidz_row_t *rr, int n, int nmap, int *map,
@@ -1087,9 +750,7 @@ vdev_raidz_matrix_init(raidz_row_t *rr, int n, int nmap, int *map,
 
 	ASSERT(n == rr->rr_cols - rr->rr_firstdatacol);
 
-	/*
-	 * Fill in the missing rows of interest.
-	 */
+	 
 	for (i = 0; i < nmap; i++) {
 		ASSERT3S(0, <=, map[i]);
 		ASSERT3S(map[i], <=, 2);
@@ -1115,11 +776,7 @@ vdev_raidz_matrix_invert(raidz_row_t *rr, int n, int nmissing, int *missing,
 	int i, j, ii, jj;
 	uint8_t log;
 
-	/*
-	 * Assert that the first nmissing entries from the array of used
-	 * columns correspond to parity columns and that subsequent entries
-	 * correspond to data columns.
-	 */
+	 
 	for (i = 0; i < nmissing; i++) {
 		ASSERT3S(used[i], <, rr->rr_firstdatacol);
 	}
@@ -1127,18 +784,14 @@ vdev_raidz_matrix_invert(raidz_row_t *rr, int n, int nmissing, int *missing,
 		ASSERT3S(used[i], >=, rr->rr_firstdatacol);
 	}
 
-	/*
-	 * First initialize the storage where we'll compute the inverse rows.
-	 */
+	 
 	for (i = 0; i < nmissing; i++) {
 		for (j = 0; j < n; j++) {
 			invrows[i][j] = (i == j) ? 1 : 0;
 		}
 	}
 
-	/*
-	 * Subtract all trivial rows from the rows of consequence.
-	 */
+	 
 	for (i = 0; i < nmissing; i++) {
 		for (j = nmissing; j < n; j++) {
 			ASSERT3U(used[j], >=, rr->rr_firstdatacol);
@@ -1149,20 +802,14 @@ vdev_raidz_matrix_invert(raidz_row_t *rr, int n, int nmissing, int *missing,
 		}
 	}
 
-	/*
-	 * For each of the rows of interest, we must normalize it and subtract
-	 * a multiple of it from the other rows.
-	 */
+	 
 	for (i = 0; i < nmissing; i++) {
 		for (j = 0; j < missing[i]; j++) {
 			ASSERT0(rows[i][j]);
 		}
 		ASSERT3U(rows[i][missing[i]], !=, 0);
 
-		/*
-		 * Compute the inverse of the first element and multiply each
-		 * element in the row by that value.
-		 */
+		 
 		log = 255 - vdev_raidz_log2[rows[i][missing[i]]];
 
 		for (j = 0; j < n; j++) {
@@ -1187,10 +834,7 @@ vdev_raidz_matrix_invert(raidz_row_t *rr, int n, int nmissing, int *missing,
 		}
 	}
 
-	/*
-	 * Verify that the data that is left in the rows are properly part of
-	 * an identity matrix.
-	 */
+	 
 	for (i = 0; i < nmissing; i++) {
 		for (j = 0; j < n; j++) {
 			if (j == missing[i]) {
@@ -1295,10 +939,7 @@ vdev_raidz_reconstruct_general(raidz_row_t *rr, int *tgts, int ntgts)
 
 	abd_t **bufs = NULL;
 
-	/*
-	 * Matrix reconstruction can't use scatter ABDs yet, so we allocate
-	 * temporary linear ABDs if any non-linear ABDs are found.
-	 */
+	 
 	for (i = rr->rr_firstdatacol; i < rr->rr_cols; i++) {
 		if (!abd_is_linear(rr->rr_col[i].rc_abd)) {
 			bufs = kmem_alloc(rr->rr_cols * sizeof (abd_t *),
@@ -1322,9 +963,7 @@ vdev_raidz_reconstruct_general(raidz_row_t *rr, int *tgts, int ntgts)
 
 	n = rr->rr_cols - rr->rr_firstdatacol;
 
-	/*
-	 * Figure out which data columns are missing.
-	 */
+	 
 	nmissing_rows = 0;
 	for (t = 0; t < ntgts; t++) {
 		if (tgts[t] >= rr->rr_firstdatacol) {
@@ -1333,17 +972,12 @@ vdev_raidz_reconstruct_general(raidz_row_t *rr, int *tgts, int ntgts)
 		}
 	}
 
-	/*
-	 * Figure out which parity columns to use to help generate the missing
-	 * data columns.
-	 */
+	 
 	for (tt = 0, c = 0, i = 0; i < nmissing_rows; c++) {
 		ASSERT(tt < ntgts);
 		ASSERT(c < rr->rr_firstdatacol);
 
-		/*
-		 * Skip any targeted parity columns.
-		 */
+		 
 		if (c == tgts[tt]) {
 			tt++;
 			continue;
@@ -1381,28 +1015,20 @@ vdev_raidz_reconstruct_general(raidz_row_t *rr, int *tgts, int ntgts)
 		i++;
 	}
 
-	/*
-	 * Initialize the interesting rows of the matrix.
-	 */
+	 
 	vdev_raidz_matrix_init(rr, n, nmissing_rows, parity_map, rows);
 
-	/*
-	 * Invert the matrix.
-	 */
+	 
 	vdev_raidz_matrix_invert(rr, n, nmissing_rows, missing_rows, rows,
 	    invrows, used);
 
-	/*
-	 * Reconstruct the missing data using the generated matrix.
-	 */
+	 
 	vdev_raidz_matrix_reconstruct(rr, n, nmissing_rows, missing_rows,
 	    invrows, used);
 
 	kmem_free(p, psize);
 
-	/*
-	 * copy back from temporary linear abds and free them
-	 */
+	 
 	if (bufs) {
 		for (c = rr->rr_firstdatacol; c < rr->rr_cols; c++) {
 			raidz_col_t *col = &rr->rr_col[c];
@@ -1453,14 +1079,12 @@ vdev_raidz_reconstruct_row(raidz_map_t *rm, raidz_row_t *rr,
 
 	dt = &tgts[nbadparity];
 
-	/* Reconstruct using the new math implementation */
+	 
 	ret = vdev_raidz_math_reconstruct(rm, rr, parity_valid, dt, nbaddata);
 	if (ret != RAIDZ_ORIGINAL_IMPL)
 		return;
 
-	/*
-	 * See if we can use any of our optimized reconstruction routines.
-	 */
+	 
 	switch (nbaddata) {
 	case 1:
 		if (parity_valid[VDEV_RAIDZ_P]) {
@@ -1573,10 +1197,7 @@ vdev_raidz_asize(vdev_t *vd, uint64_t psize)
 	return (asize);
 }
 
-/*
- * The allocatable space for a raidz vdev is N * sizeof(smallest child)
- * so each child must provide at least 1/Nth of its asize.
- */
+ 
 static uint64_t
 vdev_raidz_min_asize(vdev_t *vd)
 {
@@ -1613,12 +1234,7 @@ vdev_raidz_io_verify(vdev_t *vd, raidz_row_t *rr, int col)
 	ASSERT(vdev_xlate_is_empty(&remain_rs));
 	ASSERT3U(rc->rc_offset, ==, physical_rs.rs_start);
 	ASSERT3U(rc->rc_offset, <, physical_rs.rs_end);
-	/*
-	 * It would be nice to assert that rs_end is equal
-	 * to rc_offset + rc_size but there might be an
-	 * optional I/O at the end that is not accounted in
-	 * rc_size.
-	 */
+	 
 	if (physical_rs.rs_end > rc->rc_offset + rc->rc_size) {
 		ASSERT3U(physical_rs.rs_end, ==, rc->rc_offset +
 		    rc->rc_size + (1 << tvd->vdev_ashift));
@@ -1640,7 +1256,7 @@ vdev_raidz_io_start_write(zio_t *zio, raidz_row_t *rr, uint64_t ashift)
 		raidz_col_t *rc = &rr->rr_col[c];
 		vdev_t *cvd = vd->vdev_child[rc->rc_devidx];
 
-		/* Verify physical to logical translation */
+		 
 		vdev_raidz_io_verify(vd, rr, c);
 
 		if (rc->rc_size > 0) {
@@ -1650,10 +1266,7 @@ vdev_raidz_io_start_write(zio_t *zio, raidz_row_t *rr, uint64_t ashift)
 			    abd_get_size(rc->rc_abd), zio->io_type,
 			    zio->io_priority, 0, vdev_raidz_child_done, rc));
 		} else {
-			/*
-			 * Generate optional write for skip sector to improve
-			 * aggregation contiguity.
-			 */
+			 
 			ASSERT3P(rc->rc_abd, ==, NULL);
 			zio_nowait(zio_vdev_child_io(zio, NULL, cvd,
 			    rc->rc_offset, NULL, 1ULL << ashift,
@@ -1669,10 +1282,7 @@ vdev_raidz_io_start_read(zio_t *zio, raidz_row_t *rr)
 {
 	vdev_t *vd = zio->io_vd;
 
-	/*
-	 * Iterate over the columns in reverse order so that we hit the parity
-	 * last -- any errors along the way will force us to read the parity.
-	 */
+	 
 	for (int c = rr->rr_cols - 1; c >= 0; c--) {
 		raidz_col_t *rc = &rr->rr_col[c];
 		if (rc->rc_size == 0)
@@ -1684,7 +1294,7 @@ vdev_raidz_io_start_read(zio_t *zio, raidz_row_t *rr)
 			else
 				rr->rr_missingparity++;
 			rc->rc_error = SET_ERROR(ENXIO);
-			rc->rc_tried = 1;	/* don't even try */
+			rc->rc_tried = 1;	 
 			rc->rc_skipped = 1;
 			continue;
 		}
@@ -1707,23 +1317,7 @@ vdev_raidz_io_start_read(zio_t *zio, raidz_row_t *rr)
 	}
 }
 
-/*
- * Start an IO operation on a RAIDZ VDev
- *
- * Outline:
- * - For write operations:
- *   1. Generate the parity data
- *   2. Create child zio write operations to each column's vdev, for both
- *      data and parity.
- *   3. If the column skips any sectors for padding, create optional dummy
- *      write zio children for those areas to improve aggregation continuity.
- * - For read operations:
- *   1. Create child zio read operations to each data column's vdev to read
- *      the range of data required for zio.
- *   2. If this is a scrub or resilver operation, or if any of the data
- *      vdevs have had errors, then create zio read operations to the parity
- *      columns' VDevs as well.
- */
+ 
 static void
 vdev_raidz_io_start(zio_t *zio)
 {
@@ -1736,10 +1330,7 @@ vdev_raidz_io_start(zio_t *zio)
 	zio->io_vsd = rm;
 	zio->io_vsd_ops = &vdev_raidz_vsd_ops;
 
-	/*
-	 * Until raidz expansion is implemented all maps for a raidz vdev
-	 * contain a single row.
-	 */
+	 
 	ASSERT3U(rm->rm_nrows, ==, 1);
 	raidz_row_t *rr = rm->rm_row[0];
 
@@ -1753,9 +1344,7 @@ vdev_raidz_io_start(zio_t *zio)
 	zio_execute(zio);
 }
 
-/*
- * Report a checksum error for a child of a RAID-Z device.
- */
+ 
 void
 vdev_raidz_checksum_error(zio_t *zio, raidz_col_t *rc, abd_t *bad_data)
 {
@@ -1778,10 +1367,7 @@ vdev_raidz_checksum_error(zio_t *zio, raidz_col_t *rc, abd_t *bad_data)
 	}
 }
 
-/*
- * We keep track of whether or not there were any injected errors, so that
- * any ereports we generate can note it.
- */
+ 
 static int
 raidz_checksum_verify(zio_t *zio)
 {
@@ -1795,12 +1381,7 @@ raidz_checksum_verify(zio_t *zio)
 	return (ret);
 }
 
-/*
- * Generate the parity from the data columns. If we tried and were able to
- * read the parity without error, verify that the generated parity matches the
- * data we read. If it doesn't, we fire off a checksum error. Return the
- * number of such failures.
- */
+ 
 static int
 raidz_parity_verify(zio_t *zio, raidz_row_t *rr)
 {
@@ -1826,18 +1407,11 @@ raidz_parity_verify(zio_t *zio, raidz_row_t *rr)
 		rc->rc_abd = abd_alloc_linear(rc->rc_size, B_FALSE);
 	}
 
-	/*
-	 * Verify any empty sectors are zero filled to ensure the parity
-	 * is calculated correctly even if these non-data sectors are damaged.
-	 */
+	 
 	if (rr->rr_nempty && rr->rr_abd_empty != NULL)
 		ret += vdev_draid_map_verify_empty(zio, rr);
 
-	/*
-	 * Regenerates parity even for !tried||rc_error!=0 columns.  This
-	 * isn't harmful but it does have the side effect of fixing stuff
-	 * we didn't realize was necessary (i.e. even if we return 0).
-	 */
+	 
 	vdev_raidz_generate_parity_row(rm, rr);
 
 	for (c = 0; c < rr->rr_firstdatacol; c++) {
@@ -1897,14 +1471,7 @@ vdev_raidz_io_done_verified(zio_t *zio, raidz_row_t *rr)
 			unexpected_errors++;
 	}
 
-	/*
-	 * If we read more parity disks than were used for
-	 * reconstruction, confirm that the other parity disks produced
-	 * correct data.
-	 *
-	 * Note that we also regenerate parity when resilvering so we
-	 * can write it out to failed devices later.
-	 */
+	 
 	if (parity_errors + parity_untried <
 	    rr->rr_firstdatacol - data_errors ||
 	    (zio->io_flags & ZIO_FLAG_RESILVER)) {
@@ -1914,9 +1481,7 @@ vdev_raidz_io_done_verified(zio_t *zio, raidz_row_t *rr)
 
 	if (zio->io_error == 0 && spa_writeable(zio->io_spa) &&
 	    (unexpected_errors > 0 || (zio->io_flags & ZIO_FLAG_RESILVER))) {
-		/*
-		 * Use the good data we have in hand to repair damaged children.
-		 */
+		 
 		for (int c = 0; c < rr->rr_cols; c++) {
 			raidz_col_t *rc = &rr->rr_col[c];
 			vdev_t *vd = zio->io_vd;
@@ -1956,20 +1521,16 @@ raidz_restore_orig_data(raidz_map_t *rm)
 	}
 }
 
-/*
- * returns EINVAL if reconstruction of the block will not be possible
- * returns ECKSUM if this specific reconstruction failed
- * returns 0 on successful reconstruction
- */
+ 
 static int
 raidz_reconstruct(zio_t *zio, int *ltgts, int ntgts, int nparity)
 {
 	raidz_map_t *rm = zio->io_vsd;
 
-	/* Reconstruct each row */
+	 
 	for (int r = 0; r < rm->rm_nrows; r++) {
 		raidz_row_t *rr = rm->rm_row[r];
-		int my_tgts[VDEV_RAIDZ_MAXPARITY]; /* value is child id */
+		int my_tgts[VDEV_RAIDZ_MAXPARITY];  
 		int t = 0;
 		int dead = 0;
 		int dead_data = 0;
@@ -2005,7 +1566,7 @@ raidz_reconstruct(zio_t *zio, int *ltgts, int ntgts, int nparity)
 			}
 		}
 		if (dead > nparity) {
-			/* reconstruction not possible */
+			 
 			raidz_restore_orig_data(rm);
 			return (EINVAL);
 		}
@@ -2013,26 +1574,17 @@ raidz_reconstruct(zio_t *zio, int *ltgts, int ntgts, int nparity)
 			vdev_raidz_reconstruct_row(rm, rr, my_tgts, t);
 	}
 
-	/* Check for success */
+	 
 	if (raidz_checksum_verify(zio) == 0) {
 
-		/* Reconstruction succeeded - report errors */
+		 
 		for (int i = 0; i < rm->rm_nrows; i++) {
 			raidz_row_t *rr = rm->rm_row[i];
 
 			for (int c = 0; c < rr->rr_cols; c++) {
 				raidz_col_t *rc = &rr->rr_col[c];
 				if (rc->rc_need_orig_restore) {
-					/*
-					 * Note: if this is a parity column,
-					 * we don't really know if it's wrong.
-					 * We need to let
-					 * vdev_raidz_io_done_verified() check
-					 * it, and if we set rc_error, it will
-					 * think that it is a "known" error
-					 * that doesn't need to be checked
-					 * or corrected.
-					 */
+					 
 					if (rc->rc_error == 0 &&
 					    c >= rr->rr_firstdatacol) {
 						vdev_raidz_checksum_error(zio,
@@ -2052,65 +1604,19 @@ raidz_reconstruct(zio_t *zio, int *ltgts, int ntgts, int nparity)
 		return (0);
 	}
 
-	/* Reconstruction failed - restore original data */
+	 
 	raidz_restore_orig_data(rm);
 	return (ECKSUM);
 }
 
-/*
- * Iterate over all combinations of N bad vdevs and attempt a reconstruction.
- * Note that the algorithm below is non-optimal because it doesn't take into
- * account how reconstruction is actually performed. For example, with
- * triple-parity RAID-Z the reconstruction procedure is the same if column 4
- * is targeted as invalid as if columns 1 and 4 are targeted since in both
- * cases we'd only use parity information in column 0.
- *
- * The order that we find the various possible combinations of failed
- * disks is dictated by these rules:
- * - Examine each "slot" (the "i" in tgts[i])
- *   - Try to increment this slot (tgts[i] = tgts[i] + 1)
- *   - if we can't increment because it runs into the next slot,
- *     reset our slot to the minimum, and examine the next slot
- *
- *  For example, with a 6-wide RAIDZ3, and no known errors (so we have to choose
- *  3 columns to reconstruct), we will generate the following sequence:
- *
- *  STATE        ACTION
- *  0 1 2        special case: skip since these are all parity
- *  0 1   3      first slot: reset to 0; middle slot: increment to 2
- *  0   2 3      first slot: increment to 1
- *    1 2 3      first: reset to 0; middle: reset to 1; last: increment to 4
- *  0 1     4    first: reset to 0; middle: increment to 2
- *  0   2   4    first: increment to 1
- *    1 2   4    first: reset to 0; middle: increment to 3
- *  0     3 4    first: increment to 1
- *    1   3 4    first: increment to 2
- *      2 3 4    first: reset to 0; middle: reset to 1; last: increment to 5
- *  0 1       5  first: reset to 0; middle: increment to 2
- *  0   2     5  first: increment to 1
- *    1 2     5  first: reset to 0; middle: increment to 3
- *  0     3   5  first: increment to 1
- *    1   3   5  first: increment to 2
- *      2 3   5  first: reset to 0; middle: increment to 4
- *  0       4 5  first: increment to 1
- *    1     4 5  first: increment to 2
- *      2   4 5  first: increment to 3
- *        3 4 5  done
- *
- * This strategy works for dRAID but is less efficient when there are a large
- * number of child vdevs and therefore permutations to check. Furthermore,
- * since the raidz_map_t rows likely do not overlap reconstruction would be
- * possible as long as there are no more than nparity data errors per row.
- * These additional permutations are not currently checked but could be as
- * a future improvement.
- */
+ 
 static int
 vdev_raidz_combrec(zio_t *zio)
 {
 	int nparity = vdev_get_nparity(zio->io_vd);
 	raidz_map_t *rm = zio->io_vsd;
 
-	/* Check if there's enough data to attempt reconstrution. */
+	 
 	for (int i = 0; i < rm->rm_nrows; i++) {
 		raidz_row_t *rr = rm->rm_row[i];
 		int total_errors = 0;
@@ -2126,15 +1632,15 @@ vdev_raidz_combrec(zio_t *zio)
 
 	for (int num_failures = 1; num_failures <= nparity; num_failures++) {
 		int tstore[VDEV_RAIDZ_MAXPARITY + 2];
-		int *ltgts = &tstore[1]; /* value is logical child ID */
+		int *ltgts = &tstore[1];  
 
-		/* Determine number of logical children, n */
+		 
 		int n = zio->io_vd->vdev_children;
 
 		ASSERT3U(num_failures, <=, nparity);
 		ASSERT3U(num_failures, <=, VDEV_RAIDZ_MAXPARITY);
 
-		/* Handle corner cases in combrec logic */
+		 
 		ltgts[-1] = -1;
 		for (int i = 0; i < num_failures; i++) {
 			ltgts[i] = i;
@@ -2145,20 +1651,17 @@ vdev_raidz_combrec(zio_t *zio)
 			int err = raidz_reconstruct(zio, ltgts, num_failures,
 			    nparity);
 			if (err == EINVAL) {
-				/*
-				 * Reconstruction not possible with this #
-				 * failures; try more failures.
-				 */
+				 
 				break;
 			} else if (err == 0)
 				return (0);
 
-			/* Compute next targets to try */
+			 
 			for (int t = 0; ; t++) {
 				ASSERT3U(t, <, num_failures);
 				ltgts[t]++;
 				if (ltgts[t] == n) {
-					/* try more failures */
+					 
 					ASSERT3U(t, ==, num_failures - 1);
 					break;
 				}
@@ -2166,22 +1669,16 @@ vdev_raidz_combrec(zio_t *zio)
 				ASSERT3U(ltgts[t], <, n);
 				ASSERT3U(ltgts[t], <=, ltgts[t + 1]);
 
-				/*
-				 * If that spot is available, we're done here.
-				 * Try the next combination.
-				 */
+				 
 				if (ltgts[t] != ltgts[t + 1])
 					break;
 
-				/*
-				 * Otherwise, reset this tgt to the minimum,
-				 * and move on to the next tgt.
-				 */
+				 
 				ltgts[t] = ltgts[t - 1] + 1;
 				ASSERT3U(ltgts[t], ==, t);
 			}
 
-			/* Increase the number of failures and keep trying. */
+			 
 			if (ltgts[num_failures - 1] == n)
 				break;
 		}
@@ -2199,15 +1696,7 @@ vdev_raidz_reconstruct(raidz_map_t *rm, const int *t, int nt)
 	}
 }
 
-/*
- * Complete a write IO operation on a RAIDZ VDev
- *
- * Outline:
- *   1. Check for errors on the child IOs.
- *   2. Return, setting an error code if too few child VDevs were written
- *      to reconstruct the data later.  Note that partial writes are
- *      considered successful if they can be reconstructed at all.
- */
+ 
 static void
 vdev_raidz_io_done_write_impl(zio_t *zio, raidz_row_t *rr)
 {
@@ -2221,22 +1710,13 @@ vdev_raidz_io_done_write_impl(zio_t *zio, raidz_row_t *rr)
 		raidz_col_t *rc = &rr->rr_col[c];
 
 		if (rc->rc_error) {
-			ASSERT(rc->rc_error != ECKSUM);	/* child has no bp */
+			ASSERT(rc->rc_error != ECKSUM);	 
 
 			total_errors++;
 		}
 	}
 
-	/*
-	 * Treat partial writes as a success. If we couldn't write enough
-	 * columns to reconstruct the data, the I/O failed.  Otherwise,
-	 * good enough.
-	 *
-	 * Now that we support write reallocation, it would be better
-	 * to treat partial failure as real failure unless there are
-	 * no non-degraded top-level vdevs left, and not update DTLs
-	 * if we intend to reallocate.
-	 */
+	 
 	if (total_errors > rr->rr_firstdatacol) {
 		zio->io_error = zio_worst_error(zio->io_error,
 		    vdev_raidz_worst_error(rr));
@@ -2259,12 +1739,7 @@ vdev_raidz_io_done_reconstruct_known_missing(zio_t *zio, raidz_map_t *rm,
 	for (int c = 0; c < rr->rr_cols; c++) {
 		raidz_col_t *rc = &rr->rr_col[c];
 
-		/*
-		 * If scrubbing and a replacing/sparing child vdev determined
-		 * that not all of its children have an identical copy of the
-		 * data, then clear the error so the column is treated like
-		 * any other read and force a repair to correct the damage.
-		 */
+		 
 		if (rc->rc_error == ECKSUM) {
 			ASSERT(zio->io_flags & ZIO_FLAG_SCRUB);
 			vdev_raidz_checksum_error(zio, rc, rc->rc_abd);
@@ -2284,26 +1759,14 @@ vdev_raidz_io_done_reconstruct_known_missing(zio_t *zio, raidz_map_t *rm,
 		}
 	}
 
-	/*
-	 * If there were data errors and the number of errors we saw was
-	 * correctable -- less than or equal to the number of parity disks read
-	 * -- reconstruct based on the missing data.
-	 */
+	 
 	if (data_errors != 0 &&
 	    total_errors <= rr->rr_firstdatacol - parity_untried) {
-		/*
-		 * We either attempt to read all the parity columns or
-		 * none of them. If we didn't try to read parity, we
-		 * wouldn't be here in the correctable case. There must
-		 * also have been fewer parity errors than parity
-		 * columns or, again, we wouldn't be in this code path.
-		 */
+		 
 		ASSERT(parity_untried == 0);
 		ASSERT(parity_errors < rr->rr_firstdatacol);
 
-		/*
-		 * Identify the data columns that reported an error.
-		 */
+		 
 		int n = 0;
 		int tgts[VDEV_RAIDZ_MAXPARITY];
 		for (int c = rr->rr_firstdatacol; c < rr->rr_cols; c++) {
@@ -2320,9 +1783,7 @@ vdev_raidz_io_done_reconstruct_known_missing(zio_t *zio, raidz_map_t *rm,
 	}
 }
 
-/*
- * Return the number of reads issued.
- */
+ 
 static int
 vdev_raidz_read_all(zio_t *zio, raidz_row_t *rr)
 {
@@ -2332,11 +1793,7 @@ vdev_raidz_read_all(zio_t *zio, raidz_row_t *rr)
 	rr->rr_missingdata = 0;
 	rr->rr_missingparity = 0;
 
-	/*
-	 * If this rows contains empty sectors which are not required
-	 * for a normal read then allocate an ABD for them now so they
-	 * may be read, verified, and any needed repairs performed.
-	 */
+	 
 	if (rr->rr_nempty && rr->rr_abd_empty == NULL)
 		vdev_draid_map_alloc_empty(zio, rr);
 
@@ -2355,12 +1812,7 @@ vdev_raidz_read_all(zio_t *zio, raidz_row_t *rr)
 	return (nread);
 }
 
-/*
- * We're here because either there were too many errors to even attempt
- * reconstruction (total_errors == rm_first_datacol), or vdev_*_combrec()
- * failed. In either case, there is enough bad data to prevent reconstruction.
- * Start checksum ereports for all children which haven't failed.
- */
+ 
 static void
 vdev_raidz_io_done_unrecoverable(zio_t *zio)
 {
@@ -2413,35 +1865,17 @@ vdev_raidz_io_done(zio_t *zio)
 			}
 			zio_checksum_verified(zio);
 		} else {
-			/*
-			 * A sequential resilver has no checksum which makes
-			 * combinatoral reconstruction impossible. This code
-			 * path is unreachable since raidz_checksum_verify()
-			 * has no checksum to verify and must succeed.
-			 */
+			 
 			ASSERT3U(zio->io_priority, !=, ZIO_PRIORITY_REBUILD);
 
-			/*
-			 * This isn't a typical situation -- either we got a
-			 * read error or a child silently returned bad data.
-			 * Read every block so we can try again with as much
-			 * data and parity as we can track down. If we've
-			 * already been through once before, all children will
-			 * be marked as tried so we'll proceed to combinatorial
-			 * reconstruction.
-			 */
+			 
 			int nread = 0;
 			for (int i = 0; i < rm->rm_nrows; i++) {
 				nread += vdev_raidz_read_all(zio,
 				    rm->rm_row[i]);
 			}
 			if (nread != 0) {
-				/*
-				 * Normally our stage is VDEV_IO_DONE, but if
-				 * we've already called redone(), it will have
-				 * changed to VDEV_IO_START, in which case we
-				 * don't want to call redone() again.
-				 */
+				 
 				if (zio->io_stage != ZIO_STAGE_VDEV_IO_START)
 					zio_vdev_io_redone(zio);
 				return;
@@ -2469,12 +1903,7 @@ vdev_raidz_state_change(vdev_t *vd, int faulted, int degraded)
 		vdev_set_state(vd, B_FALSE, VDEV_STATE_HEALTHY, VDEV_AUX_NONE);
 }
 
-/*
- * Determine if any portion of the provided block resides on a child vdev
- * with a dirty DTL and therefore needs to be resilvered.  The function
- * assumes that at least one DTL is dirty which implies that full stripe
- * width blocks must be resilvered.
- */
+ 
 static boolean_t
 vdev_raidz_need_resilver(vdev_t *vd, const dva_t *dva, size_t psize,
     uint64_t phys_birth)
@@ -2483,14 +1912,14 @@ vdev_raidz_need_resilver(vdev_t *vd, const dva_t *dva, size_t psize,
 	uint64_t dcols = vd->vdev_children;
 	uint64_t nparity = vdrz->vd_nparity;
 	uint64_t ashift = vd->vdev_top->vdev_ashift;
-	/* The starting RAIDZ (parent) vdev sector of the block. */
+	 
 	uint64_t b = DVA_GET_OFFSET(dva) >> ashift;
-	/* The zio's size in units of the vdev's minimum sector size. */
+	 
 	uint64_t s = ((psize - 1) >> ashift) + 1;
-	/* The first column for this stripe. */
+	 
 	uint64_t f = b % dcols;
 
-	/* Unreachable by sequential resilver. */
+	 
 	ASSERT3U(phys_birth, !=, TXG_UNKNOWN);
 
 	if (!vdev_dtl_contains(vd, DTL_PARTIAL, phys_birth, 1))
@@ -2503,11 +1932,7 @@ vdev_raidz_need_resilver(vdev_t *vd, const dva_t *dva, size_t psize,
 		uint64_t devidx = (f + c) % dcols;
 		vdev_t *cvd = vd->vdev_child[devidx];
 
-		/*
-		 * dsl_scan_need_resilver() already checked vd with
-		 * vdev_dtl_contains(). So here just check cvd with
-		 * vdev_dtl_empty(), cheaper and a good approximation.
-		 */
+		 
 		if (!vdev_dtl_empty(cvd, DTL_PARTIAL))
 			return (B_TRUE);
 	}
@@ -2528,14 +1953,14 @@ vdev_raidz_xlate(vdev_t *cvd, const range_seg64_t *logical_rs,
 	uint64_t tgt_col = cvd->vdev_id;
 	uint64_t ashift = raidvd->vdev_top->vdev_ashift;
 
-	/* make sure the offsets are block-aligned */
+	 
 	ASSERT0(logical_rs->rs_start % (1 << ashift));
 	ASSERT0(logical_rs->rs_end % (1 << ashift));
 	uint64_t b_start = logical_rs->rs_start >> ashift;
 	uint64_t b_end = logical_rs->rs_end >> ashift;
 
 	uint64_t start_row = 0;
-	if (b_start > tgt_col) /* avoid underflow */
+	if (b_start > tgt_col)  
 		start_row = ((b_start - tgt_col - 1) / width) + 1;
 
 	uint64_t end_row = 0;
@@ -2550,9 +1975,7 @@ vdev_raidz_xlate(vdev_t *cvd, const range_seg64_t *logical_rs,
 	    logical_rs->rs_end - logical_rs->rs_start);
 }
 
-/*
- * Initialize private RAIDZ specific fields from the nvlist.
- */
+ 
 static int
 vdev_raidz_init(spa_t *spa, nvlist_t *nv, void **tsd)
 {
@@ -2570,25 +1993,17 @@ vdev_raidz_init(spa_t *spa, nvlist_t *nv, void **tsd)
 		if (nparity == 0 || nparity > VDEV_RAIDZ_MAXPARITY)
 			return (SET_ERROR(EINVAL));
 
-		/*
-		 * Previous versions could only support 1 or 2 parity
-		 * device.
-		 */
+		 
 		if (nparity > 1 && spa_version(spa) < SPA_VERSION_RAIDZ2)
 			return (SET_ERROR(EINVAL));
 		else if (nparity > 2 && spa_version(spa) < SPA_VERSION_RAIDZ3)
 			return (SET_ERROR(EINVAL));
 	} else {
-		/*
-		 * We require the parity to be specified for SPAs that
-		 * support multiple parity levels.
-		 */
+		 
 		if (spa_version(spa) >= SPA_VERSION_RAIDZ2)
 			return (SET_ERROR(EINVAL));
 
-		/*
-		 * Otherwise, we default to 1 parity device for RAID-Z.
-		 */
+		 
 		nparity = 1;
 	}
 
@@ -2607,30 +2022,21 @@ vdev_raidz_fini(vdev_t *vd)
 	kmem_free(vd->vdev_tsd, sizeof (vdev_raidz_t));
 }
 
-/*
- * Add RAIDZ specific fields to the config nvlist.
- */
+ 
 static void
 vdev_raidz_config_generate(vdev_t *vd, nvlist_t *nv)
 {
 	ASSERT3P(vd->vdev_ops, ==, &vdev_raidz_ops);
 	vdev_raidz_t *vdrz = vd->vdev_tsd;
 
-	/*
-	 * Make sure someone hasn't managed to sneak a fancy new vdev
-	 * into a crufty old storage pool.
-	 */
+	 
 	ASSERT(vdrz->vd_nparity == 1 ||
 	    (vdrz->vd_nparity <= 2 &&
 	    spa_version(vd->vdev_spa) >= SPA_VERSION_RAIDZ2) ||
 	    (vdrz->vd_nparity <= 3 &&
 	    spa_version(vd->vdev_spa) >= SPA_VERSION_RAIDZ3));
 
-	/*
-	 * Note that we'll add these even on storage pools where they
-	 * aren't strictly required -- older software will just ignore
-	 * it.
-	 */
+	 
 	fnvlist_add_uint64(nv, ZPOOL_CONFIG_NPARITY, vdrz->vd_nparity);
 }
 
@@ -2668,6 +2074,6 @@ vdev_ops_t vdev_raidz_ops = {
 	.vdev_op_config_generate = vdev_raidz_config_generate,
 	.vdev_op_nparity = vdev_raidz_nparity,
 	.vdev_op_ndisks = vdev_raidz_ndisks,
-	.vdev_op_type = VDEV_TYPE_RAIDZ,	/* name of this vdev type */
-	.vdev_op_leaf = B_FALSE			/* not a leaf vdev */
+	.vdev_op_type = VDEV_TYPE_RAIDZ,	 
+	.vdev_op_leaf = B_FALSE			 
 };

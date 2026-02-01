@@ -1,43 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 2008-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Juergen Pfeifer                                                 *
- *     and: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
-/*
- * TODO - GetMousePos(POINT * result) from ntconio.c
- * TODO - implement nodelay
- * TODO - improve screen-repainting performance, using implied wraparound to reduce write's
- * TODO - make it optional whether screen is restored or not when non-buffered
- */
+ 
 
 #include <curses.priv.h>
 
@@ -114,10 +79,7 @@ static const LONG ansi_keys[] =
 #define MAPSIZE (FKEYS + N_INI)
 #define NUMPAIRS 64
 
-/*   A process can only have a single console, so it is safe
-     to maintain all the information about it in a single
-     static structure.
- */
+ 
 static struct {
     BOOL initialized;
     BOOL buffered;
@@ -196,7 +158,7 @@ MapAttr(WORD res, attr_t ch)
     return res;
 }
 
-#if 0				/* def TRACE */
+#if 0				 
 static void
 dump_screen(const char *fn, int ln)
 {
@@ -246,16 +208,11 @@ dump_screen(const char *fn, int ln)
 }
 
 #else
-#define dump_screen(fn,ln)	/* nothing */
+#define dump_screen(fn,ln)	 
 #endif
 
 #if USE_WIDEC_SUPPORT
-/*
- * TODO: support surrogate pairs
- * TODO: support combining characters
- * TODO: support acsc
- * TODO: _nc_wacs should be part of sp.
- */
+ 
 static BOOL
 con_write16(TERMINAL_CONTROL_BLOCK * TCB, int y, int x, cchar_t *str, int limit)
 {
@@ -347,11 +304,7 @@ con_write8(TERMINAL_CONTROL_BLOCK * TCB, int y, int x, chtype *str, int n)
 #endif
 
 #if EXP_OPTIMIZE
-/*
- * Comparing new/current screens, determine the last column-index for a change
- * beginning on the given row,col position.  Unlike a serial terminal, there is
- * no cost for "moving" the "cursor" on the line as we update it.
- */
+ 
 static int
 find_end_of_change(SCREEN *sp, int row, int col)
 {
@@ -382,10 +335,7 @@ find_end_of_change(SCREEN *sp, int row, int col)
     return result;
 }
 
-/*
- * Given a row,col position at the end of a change-chunk, look for the
- * beginning of the next change-chunk.
- */
+ 
 static int
 find_next_change(SCREEN *sp, int row, int col)
 {
@@ -419,7 +369,7 @@ find_next_change(SCREEN *sp, int row, int col)
 #define NextChange(last) \
 	find_next_change(sp, y, last)
 
-#endif /* EXP_OPTIMIZE */
+#endif  
 
 #define MARK_NOCHANGE(win,row) \
 		win->_line[row].firstchar = _NOCHANGE; \
@@ -557,7 +507,7 @@ wcon_doupdate(TERMINAL_CONTROL_BLOCK * TCB)
 		    x0 = NextChange(x1);
 		}
 
-		/* mark line changed successfully */
+		 
 		if (y <= NewScreen(sp)->_maxy) {
 		    MARK_NOCHANGE(NewScreen(sp), y);
 		}
@@ -576,7 +526,7 @@ wcon_doupdate(TERMINAL_CONTROL_BLOCK * TCB)
 			      x0,
 			      &CurScreen(sp)->_line[y].text[x0], n);
 
-		    /* mark line changed successfully */
+		     
 		    if (y <= NewScreen(sp)->_maxy) {
 			MARK_NOCHANGE(NewScreen(sp), y);
 		    }
@@ -588,7 +538,7 @@ wcon_doupdate(TERMINAL_CONTROL_BLOCK * TCB)
 	    }
 	}
 
-	/* put everything back in sync */
+	 
 	for (y = nonempty; y <= NewScreen(sp)->_maxy; y++) {
 	    MARK_NOCHANGE(NewScreen(sp), y);
 	}
@@ -626,13 +576,7 @@ wcon_CanHandle(TERMINAL_CONTROL_BLOCK * TCB,
     if (tname == 0 || *tname == 0)
 	code = TRUE;
     else if (tname != 0 && *tname == '#') {
-	/*
-	 * Use "#" (a character which cannot begin a terminal's name) to
-	 * select specific driver from the table.
-	 *
-	 * In principle, we could have more than one non-terminfo driver,
-	 * e.g., "win32gui".
-	 */
+	 
 	size_t n = strlen(tname + 1);
 	if (n != 0
 	    && ((strncmp(tname + 1, "win32console", n) == 0)
@@ -643,10 +587,7 @@ wcon_CanHandle(TERMINAL_CONTROL_BLOCK * TCB,
 	code = TRUE;
     }
 
-    /*
-     * This is intentional, to avoid unnecessary breakage of applications
-     * using <term.h> symbols.
-     */
+     
     if (code && (TerminalType(&TCB->term).Booleans == 0)) {
 	_nc_init_termtype(&TerminalType(&TCB->term));
 #if NCURSES_EXT_NUMBERS
@@ -712,7 +653,7 @@ wcon_dobeepflash(TERMINAL_CONTROL_BLOCK * TCB,
 	    write_screen(CON.hdl, this_screen, this_size, bufferCoord, &this_region);
 
 	} else {
-	    MessageBeep(MB_ICONWARNING);	/* MB_OK might be better */
+	    MessageBeep(MB_ICONWARNING);	 
 	}
 	res = OK;
     }
@@ -923,9 +864,7 @@ wcon_sgmode(TERMINAL_CONTROL_BLOCK * TCB, int setFlag, TTY * buf)
 #define MIN_WIDE 80
 #define MIN_HIGH 24
 
-/*
- * In "normal" mode, reset the buffer- and window-sizes back to their original values.
- */
+ 
 static void
 set_scrollback(bool normal, CONSOLE_SCREEN_BUFFER_INFO * info)
 {
@@ -991,8 +930,8 @@ set_scrollback(bool normal, CONSOLE_SCREEN_BUFFER_INFO * info)
 	T(("... rect %d,%d - %d,%d",
 	   rect.Top, rect.Left,
 	   rect.Bottom, rect.Right));
-	SetConsoleScreenBufferSize(CON.hdl, coord);	/* dwSize */
-	SetConsoleWindowInfo(CON.hdl, TRUE, &rect);	/* srWindow */
+	SetConsoleScreenBufferSize(CON.hdl, coord);	 
+	SetConsoleWindowInfo(CON.hdl, TRUE, &rect);	 
 	get_SBI();
     }
     returnVoid;
@@ -1015,14 +954,14 @@ wcon_mode(TERMINAL_CONTROL_BLOCK * TCB, int progFlag, int defFlag)
 	CON.lastOut = progFlag ? CON.hdl : CON.out;
 	SetConsoleActiveScreenBuffer(CON.lastOut);
 
-	if (progFlag) /* prog mode */  {
+	if (progFlag)    {
 	    if (defFlag) {
 		if ((wcon_sgmode(TCB, FALSE, &(_term->Nttyb)) == OK)) {
 		    _term->Nttyb.c_oflag &= (tcflag_t) (~OFLAGS_TABS);
 		    code = OK;
 		}
 	    } else {
-		/* reset_prog_mode */
+		 
 		if (wcon_sgmode(TCB, TRUE, &(_term->Nttyb)) == OK) {
 		    if (sp) {
 			if (sp->_keypad_on)
@@ -1035,14 +974,14 @@ wcon_mode(TERMINAL_CONTROL_BLOCK * TCB, int progFlag, int defFlag)
 		}
 	    }
 	    T(("... buffered:%d, clear:%d", CON.buffered, CurScreen(sp)->_clear));
-	} else {		/* shell mode */
+	} else {		 
 	    if (defFlag) {
-		/* def_shell_mode */
+		 
 		if (wcon_sgmode(TCB, FALSE, &(_term->Ottyb)) == OK) {
 		    code = OK;
 		}
 	    } else {
-		/* reset_shell_mode */
+		 
 		if (sp) {
 		    _nc_keypad(sp, FALSE);
 		    NCURSES_SP_NAME(_nc_flush) (sp);
@@ -1190,13 +1129,7 @@ read_screen_data(void)
     return result;
 }
 
-/*
- * Attempt to save the screen contents.  PDCurses does this if
- * PDC_RESTORE_SCREEN is set, giving the same visual appearance on
- * restoration as if the library had allocated a console buffer.  MSDN
- * says that the data which can be read is limited to 64Kb (and may be
- * less).
- */
+ 
 static bool
 save_original_screen(void)
 {
@@ -1405,28 +1338,28 @@ wcon_initacs(TERMINAL_CONTROL_BLOCK * TCB,
 	int acs_code;
 	int use_code;
     } table[] = {
-	DATA('a', 0xb1),	/* ACS_CKBOARD  */
-	    DATA('f', 0xf8),	/* ACS_DEGREE   */
-	    DATA('g', 0xf1),	/* ACS_PLMINUS  */
-	    DATA('j', 0xd9),	/* ACS_LRCORNER */
-	    DATA('l', 0xda),	/* ACS_ULCORNER */
-	    DATA('k', 0xbf),	/* ACS_URCORNER */
-	    DATA('m', 0xc0),	/* ACS_LLCORNER */
-	    DATA('n', 0xc5),	/* ACS_PLUS     */
-	    DATA('q', 0xc4),	/* ACS_HLINE    */
-	    DATA('t', 0xc3),	/* ACS_LTEE     */
-	    DATA('u', 0xb4),	/* ACS_RTEE     */
-	    DATA('v', 0xc1),	/* ACS_BTEE     */
-	    DATA('w', 0xc2),	/* ACS_TTEE     */
-	    DATA('x', 0xb3),	/* ACS_VLINE    */
-	    DATA('y', 0xf3),	/* ACS_LEQUAL   */
-	    DATA('z', 0xf2),	/* ACS_GEQUAL   */
-	    DATA('0', 0xdb),	/* ACS_BLOCK    */
-	    DATA('{', 0xe3),	/* ACS_PI       */
-	    DATA('}', 0x9c),	/* ACS_STERLING */
-	    DATA(',', 0xae),	/* ACS_LARROW   */
-	    DATA('+', 0xaf),	/* ACS_RARROW   */
-	    DATA('~', 0xf9),	/* ACS_BULLET   */
+	DATA('a', 0xb1),	 
+	    DATA('f', 0xf8),	 
+	    DATA('g', 0xf1),	 
+	    DATA('j', 0xd9),	 
+	    DATA('l', 0xda),	 
+	    DATA('k', 0xbf),	 
+	    DATA('m', 0xc0),	 
+	    DATA('n', 0xc5),	 
+	    DATA('q', 0xc4),	 
+	    DATA('t', 0xc3),	 
+	    DATA('u', 0xb4),	 
+	    DATA('v', 0xc1),	 
+	    DATA('w', 0xc2),	 
+	    DATA('x', 0xb3),	 
+	    DATA('y', 0xf3),	 
+	    DATA('z', 0xf2),	 
+	    DATA('0', 0xdb),	 
+	    DATA('{', 0xe3),	 
+	    DATA('}', 0x9c),	 
+	    DATA(',', 0xae),	 
+	    DATA('+', 0xaf),	 
+	    DATA('~', 0xf9),	 
     };
 #undef DATA
     unsigned n;
@@ -1532,7 +1465,7 @@ console_twait(
     bool isImmed = (milliseconds == 0);
 
 #ifdef NCURSES_WGETCH_EVENTS
-    (void) evl;			/* TODO: implement wgetch-events */
+    (void) evl;			 
 #endif
 
 #define CONSUME() ReadConsoleInput(fd,&inp_rec,1,&nRead)
@@ -1594,7 +1527,7 @@ console_twait(
 				goto end;
 			    }
 			    continue;
-			    /* e.g., FOCUS_EVENT */
+			     
 			default:
 			    CONSUME();
 			    selectActiveHandle();
@@ -1658,10 +1591,7 @@ handle_mouse(SCREEN *sp, MOUSE_EVENT_RECORD mer)
     sp->_drv_mouse_old_buttons = sp->_drv_mouse_new_buttons;
     sp->_drv_mouse_new_buttons = mer.dwButtonState & BUTTON_MASK;
 
-    /*
-     * We're only interested if the button is pressed or released.
-     * FIXME: implement continuous event-tracking.
-     */
+     
     if (sp->_drv_mouse_new_buttons != sp->_drv_mouse_old_buttons) {
 
 	memset(&work, 0, sizeof(work));
@@ -1672,7 +1602,7 @@ handle_mouse(SCREEN *sp, MOUSE_EVENT_RECORD mer)
 
 	} else {
 
-	    /* cf: BUTTON_PRESSED, BUTTON_RELEASED */
+	     
 	    work.bstate |= (mmask_t) (decode_mouse(sp,
 						   sp->_drv_mouse_old_buttons)
 				      >> 1);
@@ -1817,45 +1747,45 @@ wcon_keyok(TERMINAL_CONTROL_BLOCK * TCB,
 
 NCURSES_EXPORT_VAR (TERM_DRIVER) _nc_WIN_DRIVER = {
     FALSE,
-	wcon_name,		/* Name */
-	wcon_CanHandle,		/* CanHandle */
-	wcon_init,		/* init */
-	wcon_release,		/* release */
-	wcon_size,		/* size */
-	wcon_sgmode,		/* sgmode */
-	wcon_conattr,		/* conattr */
-	wcon_mvcur,		/* hwcur */
-	wcon_mode,		/* mode */
-	wcon_rescol,		/* rescol */
-	wcon_rescolors,		/* rescolors */
-	wcon_setcolor,		/* color */
-	wcon_dobeepflash,	/* DoBeepFlash */
-	wcon_initpair,		/* initpair */
-	wcon_initcolor,		/* initcolor */
-	wcon_do_color,		/* docolor */
-	wcon_initmouse,		/* initmouse */
-	wcon_testmouse,		/* testmouse */
-	wcon_setfilter,		/* setfilter */
-	wcon_hwlabel,		/* hwlabel */
-	wcon_hwlabelOnOff,	/* hwlabelOnOff */
-	wcon_doupdate,		/* update */
-	wcon_defaultcolors,	/* defaultcolors */
-	wcon_print,		/* print */
-	wcon_size,		/* getsize */
-	wcon_setsize,		/* setsize */
-	wcon_initacs,		/* initacs */
-	wcon_screen_init,	/* scinit */
-	wcon_wrap,		/* scexit */
-	wcon_twait,		/* twait */
-	wcon_read,		/* read */
-	wcon_nap,		/* nap */
-	wcon_kpad,		/* kpad */
-	wcon_keyok,		/* kyOk */
-	wcon_kyExist,		/* kyExist */
-	wcon_cursorSet		/* cursorSet */
+	wcon_name,		 
+	wcon_CanHandle,		 
+	wcon_init,		 
+	wcon_release,		 
+	wcon_size,		 
+	wcon_sgmode,		 
+	wcon_conattr,		 
+	wcon_mvcur,		 
+	wcon_mode,		 
+	wcon_rescol,		 
+	wcon_rescolors,		 
+	wcon_setcolor,		 
+	wcon_dobeepflash,	 
+	wcon_initpair,		 
+	wcon_initcolor,		 
+	wcon_do_color,		 
+	wcon_initmouse,		 
+	wcon_testmouse,		 
+	wcon_setfilter,		 
+	wcon_hwlabel,		 
+	wcon_hwlabelOnOff,	 
+	wcon_doupdate,		 
+	wcon_defaultcolors,	 
+	wcon_print,		 
+	wcon_size,		 
+	wcon_setsize,		 
+	wcon_initacs,		 
+	wcon_screen_init,	 
+	wcon_wrap,		 
+	wcon_twait,		 
+	wcon_read,		 
+	wcon_nap,		 
+	wcon_kpad,		 
+	wcon_keyok,		 
+	wcon_kyExist,		 
+	wcon_cursorSet		 
 };
 
-/* --------------------------------------------------------- */
+ 
 
 static HANDLE
 get_handle(int fd)
@@ -1865,14 +1795,7 @@ get_handle(int fd)
 }
 
 #if WINVER >= 0x0600
-/*   This function tests, whether or not the ncurses application
-     is running as a descendant of MSYS2/cygwin mintty terminal
-     application. mintty doesn't use Windows Console for its screen
-     I/O, so the native Windows _isatty doesn't recognize it as
-     character device. But we can discover we are at the end of an
-     Pipe and can query to server side of the pipe, looking whether
-     or not this is mintty.
- */
+ 
 static int
 _ismintty(int fd, LPHANDLE pMinTTY)
 {
@@ -1887,13 +1810,11 @@ _ismintty(int fd, LPHANDLE pMinTTY)
 	if (dw == FILE_TYPE_PIPE) {
 	    if (GetNamedPipeInfo(handle, 0, 0, 0, 0)) {
 		ULONG pPid;
-		/* Requires NT6 */
+		 
 		if (GetNamedPipeServerProcessId(handle, &pPid)) {
 		    TCHAR buf[MAX_PATH];
 		    DWORD len = 0;
-		    /* These security attributes may allow us to
-		       create a remote thread in mintty to manipulate
-		       the terminal state remotely */
+		     
 		    HANDLE pHandle = OpenProcess(
 						    PROCESS_CREATE_THREAD
 						    | PROCESS_QUERY_INFORMATION
@@ -1930,10 +1851,7 @@ _ismintty(int fd, LPHANDLE pMinTTY)
 }
 #endif
 
-/*   Borrowed from ansicon project.
-     Check whether or not an I/O handle is associated with
-     a Windows console.
-*/
+ 
 static BOOL
 IsConsoleHandle(HANDLE hdl)
 {
@@ -1948,10 +1866,7 @@ IsConsoleHandle(HANDLE hdl)
     return result;
 }
 
-/*   Our replacement for the systems _isatty to include also
-     a test for mintty. This is called from the NC_ISATTY macro
-     defined in curses.priv.h
- */
+ 
 int
 _nc_mingw_isatty(int fd)
 {
@@ -1972,12 +1887,7 @@ _nc_mingw_isatty(int fd)
     return result;
 }
 
-/*   This is used when running in terminfo mode to discover,
-     whether or not the "terminal" is actually a Windows
-     Console. It is the responsibility of the console to deal
-     with the terminal escape sequences that are sent by
-     terminfo.
- */
+ 
 int
 _nc_mingw_isconsole(int fd)
 {
@@ -2125,11 +2035,7 @@ _nc_mingw_console_read(
 		    continue;
 		*buf = (int) inp_rec.Event.KeyEvent.uChar.AsciiChar;
 		vk = inp_rec.Event.KeyEvent.wVirtualKeyCode;
-		/*
-		 * There are 24 virtual function-keys, and typically
-		 * 12 function-keys on a keyboard.  Use the shift-modifier
-		 * to provide the remaining 12 keys.
-		 */
+		 
 		if (vk >= VK_F1 && vk <= VK_F12) {
 		    if (inp_rec.Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED) {
 			vk = (WORD) (vk + 12);
@@ -2163,7 +2069,7 @@ _nc_mingw_console_read(
 static bool
 InitConsole(void)
 {
-    /* initialize once, or not at all */
+     
     if (!console_initialized) {
 	int i;
 	DWORD num_buttons;
@@ -2261,10 +2167,7 @@ okConsoleHandle(TERMINAL_CONTROL_BLOCK * TCB)
 	    InitConsole());
 }
 
-/*
- * While a constructor would ensure that this module is initialized, that will
- * interfere with applications that may combine this with GUI interfaces.
- */
+ 
 #if 0
 static
 __attribute__((constructor))

@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
+
+ 
 
 #include <rdma/ib_umem_odp.h>
 #include "mlx5_ib.h"
 #include "umr.h"
 #include "wr.h"
 
-/*
- * We can't use an array for xlt_emergency_page because dma_map_single doesn't
- * work on kernel modules memory
- */
+ 
 void *xlt_emergency_page;
 static DEFINE_MUTEX(xlt_emergency_page_mutex);
 
@@ -347,14 +344,7 @@ static int mlx5r_umr_post_send_wait(struct mlx5_ib_dev *dev, u32 mkey,
 	return err;
 }
 
-/**
- * mlx5r_umr_revoke_mr - Fence all DMA on the MR
- * @mr: The MR to fence
- *
- * Upon return the NIC will not be doing any DMA to the pages under the MR,
- * and any DMA in progress will be completed. Failure of this function
- * indicates the HW has failed catastrophically.
- */
+ 
 int mlx5r_umr_revoke_mr(struct mlx5_ib_mr *mr)
 {
 	struct mlx5_ib_dev *dev = mr_to_mdev(mr);
@@ -424,11 +414,7 @@ int mlx5r_umr_rereg_pd_access(struct mlx5_ib_mr *mr, struct ib_pd *pd,
 	((1 << (MLX5_MAX_UMR_SHIFT + 4)) - MLX5_UMR_FLEX_ALIGNMENT)
 #define MLX5_SPARE_UMR_CHUNK 0x10000
 
-/*
- * Allocate a temporary buffer to hold the per-page information to transfer to
- * HW. For efficiency this should be as large as it can be, but buffer
- * allocation failure is not allowed, so try smaller sizes.
- */
+ 
 static void *mlx5r_umr_alloc_xlt(size_t *nents, size_t ent_size, gfp_t gfp_mask)
 {
 	const size_t xlt_chunk_align = MLX5_UMR_FLEX_ALIGNMENT / ent_size;
@@ -437,19 +423,12 @@ static void *mlx5r_umr_alloc_xlt(size_t *nents, size_t ent_size, gfp_t gfp_mask)
 
 	static_assert(PAGE_SIZE % MLX5_UMR_FLEX_ALIGNMENT == 0);
 
-	/*
-	 * MLX5_IB_UPD_XLT_ATOMIC doesn't signal an atomic context just that the
-	 * allocation can't trigger any kind of reclaim.
-	 */
+	 
 	might_sleep();
 
 	gfp_mask |= __GFP_ZERO | __GFP_NORETRY;
 
-	/*
-	 * If the system already has a suitable high order page then just use
-	 * that, but don't try hard to create one. This max is about 1M, so a
-	 * free x86 huge page will satisfy it.
-	 */
+	 
 	size = min_t(size_t, ent_size * ALIGN(*nents, xlt_chunk_align),
 		     MLX5_MAX_UMR_CHUNK);
 	*nents = size / ent_size;
@@ -496,9 +475,7 @@ static void mlx5r_umr_unmap_free_xlt(struct mlx5_ib_dev *dev, void *xlt,
 	mlx5r_umr_free_xlt(xlt, sg->length);
 }
 
-/*
- * Create an XLT buffer ready for submission.
- */
+ 
 static void *mlx5r_umr_create_xlt(struct mlx5_ib_dev *dev, struct ib_sge *sg,
 				  size_t nents, size_t ent_size,
 				  unsigned int flags)
@@ -528,10 +505,10 @@ mlx5r_umr_set_update_xlt_ctrl_seg(struct mlx5_wqe_umr_ctrl_seg *ctrl_seg,
 				  unsigned int flags, struct ib_sge *sg)
 {
 	if (!(flags & MLX5_IB_UPD_XLT_ENABLE))
-		/* fail if free */
+		 
 		ctrl_seg->flags = MLX5_UMR_CHECK_FREE;
 	else
-		/* fail if not free */
+		 
 		ctrl_seg->flags = MLX5_UMR_CHECK_NOT_FREE;
 	ctrl_seg->xlt_octowords =
 		cpu_to_be16(mlx5r_umr_get_xlt_octo(sg->length));
@@ -603,11 +580,7 @@ static void mlx5r_umr_final_update_xlt(struct mlx5_ib_dev *dev,
 	wqe->data_seg.byte_count = cpu_to_be32(sg->length);
 }
 
-/*
- * Send the DMA list to the HW for a normal MR using UMR.
- * Dmabuf MR is handled in a similar way, except that the MLX5_IB_UPD_XLT_ZAP
- * flag may be used.
- */
+ 
 int mlx5r_umr_update_mr_pas(struct mlx5_ib_mr *mr, unsigned int flags)
 {
 	struct mlx5_ib_dev *dev = mr_to_mdev(mr);
@@ -712,9 +685,7 @@ int mlx5r_umr_update_xlt(struct mlx5_ib_mr *mr, u64 idx, int npages,
 	if (WARN_ON(!mr->umem->is_odp))
 		return -EINVAL;
 
-	/* UMR copies MTTs in units of MLX5_UMR_FLEX_ALIGNMENT bytes,
-	 * so we need to align the offset and length accordingly
-	 */
+	 
 	if (idx & page_mask) {
 		npages += idx & page_mask;
 		idx &= ~page_mask;

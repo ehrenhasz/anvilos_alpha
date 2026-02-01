@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ST Thermal Sensor Driver for memory mapped sensors.
- * Author: Ajit Pal Singh <ajitpal.singh@st.com>
- *
- * Copyright (C) 2003-2014 STMicroelectronics (R&D) Limited
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/module.h>
@@ -16,17 +11,12 @@
 #define STIH416_MPE_INT_THRESH			0x8
 #define STIH416_MPE_INT_EN			0xC
 
-/* Power control bits for the memory mapped thermal sensor */
+ 
 #define THERMAL_PDN				BIT(4)
 #define THERMAL_SRSTN				BIT(10)
 
 static const struct reg_field st_mmap_thermal_regfields[MAX_REGFIELDS] = {
-	/*
-	 * According to the STIH416 MPE temp sensor data sheet -
-	 * the PDN (Power Down Bit) and SRSTN (Soft Reset Bit) need to be
-	 * written simultaneously for powering on and off the temperature
-	 * sensor. regmap_update_bits() will be used to update the register.
-	 */
+	 
 	[INT_THRESH_HI]	= REG_FIELD(STIH416_MPE_INT_THRESH, 	0,  7),
 	[DCORRECT]	= REG_FIELD(STIH416_MPE_CONF,		5,  9),
 	[OVERFLOW]	= REG_FIELD(STIH416_MPE_STATUS,		9,  9),
@@ -44,7 +34,7 @@ static irqreturn_t st_mmap_thermal_trip_handler(int irq, void *sdata)
 	return IRQ_HANDLED;
 }
 
-/* Private ops for the Memory Mapped based thermal sensors */
+ 
 static int st_mmap_power_ctrl(struct st_thermal_sensor *sensor,
 			      enum st_thermal_power_state power_state)
 {
@@ -77,7 +67,7 @@ static int st_mmap_enable_irq(struct st_thermal_sensor *sensor)
 {
 	int ret;
 
-	/* Set upper critical threshold */
+	 
 	ret = regmap_field_write(sensor->int_thresh_hi,
 				 sensor->cdata->crit_temp -
 				 sensor->cdata->temp_adjust_val);
@@ -142,7 +132,7 @@ static const struct st_thermal_sensor_ops st_mmap_sensor_ops = {
 	.enable_irq		= st_mmap_enable_irq,
 };
 
-/* Compatible device data stih416 mpe thermal sensor */
+ 
 static const struct st_thermal_compat_data st_416mpe_cdata = {
 	.reg_fields		= st_mmap_thermal_regfields,
 	.ops			= &st_mmap_sensor_ops,
@@ -151,7 +141,7 @@ static const struct st_thermal_compat_data st_416mpe_cdata = {
 	.crit_temp		= 120,
 };
 
-/* Compatible device data stih407 thermal sensor */
+ 
 static const struct st_thermal_compat_data st_407_cdata = {
 	.reg_fields		= st_mmap_thermal_regfields,
 	.ops			= &st_mmap_sensor_ops,
@@ -163,7 +153,7 @@ static const struct st_thermal_compat_data st_407_cdata = {
 static const struct of_device_id st_mmap_thermal_of_match[] = {
 	{ .compatible = "st,stih416-mpe-thermal", .data = &st_416mpe_cdata },
 	{ .compatible = "st,stih407-thermal",     .data = &st_407_cdata },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, st_mmap_thermal_of_match);
 

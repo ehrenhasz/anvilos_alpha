@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx AMS driver
- *
- *  Copyright (C) 2021 Xilinx, Inc.
- *
- *  Manish Narani <mnarani@xilinx.com>
- *  Rajnikant Bhojani <rajnikant.bhojani@xilinx.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -27,7 +20,7 @@
 #include <linux/iio/events.h>
 #include <linux/iio/iio.h>
 
-/* AMS registers definitions */
+ 
 #define AMS_ISR_0			0x010
 #define AMS_ISR_1			0x014
 #define AMS_IER_0			0x020
@@ -150,10 +143,7 @@
 #define AMS_INIT_TIMEOUT_US		10000
 #define AMS_UNMASK_TIMEOUT_MS		500
 
-/*
- * Following scale and offset value is derived from
- * UG580 (v1.7) December 20, 2016
- */
+ 
 #define AMS_SUPPLY_SCALE_1VOLT_mV		1000
 #define AMS_SUPPLY_SCALE_3VOLT_mV		3000
 #define AMS_SUPPLY_SCALE_6VOLT_mV		6000
@@ -259,21 +249,7 @@ enum ams_ps_pl_seq {
 #define AMS_CTRL_CHAN_VOLTAGE(_scan_index, _addr) \
 	AMS_CHAN_VOLTAGE(PL_SEQ(AMS_SEQ(AMS_SEQ(_scan_index))), _addr, false)
 
-/**
- * struct ams - This structure contains necessary state for xilinx-ams to operate
- * @base: physical base address of device
- * @ps_base: physical base address of PS device
- * @pl_base: physical base address of PL device
- * @clk: clocks associated with the device
- * @dev: pointer to device struct
- * @lock: to handle multiple user interaction
- * @intr_lock: to protect interrupt mask values
- * @alarm_mask: alarm configuration
- * @current_masked_alarm: currently masked due to alarm
- * @intr_mask: interrupt configuration
- * @ams_unmask_work: re-enables event once the event condition disappears
- *
- */
+ 
 struct ams {
 	void __iomem *base;
 	void __iomem *ps_base;
@@ -329,7 +305,7 @@ static void ams_update_intrmask(struct ams *ams, u64 mask, u64 val)
 
 static void ams_disable_all_alarms(struct ams *ams)
 {
-	/* disable PS module alarm */
+	 
 	if (ams->ps_base) {
 		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_REGCFG1_ALARM_MASK,
 				  AMS_REGCFG1_ALARM_MASK);
@@ -337,7 +313,7 @@ static void ams_disable_all_alarms(struct ams *ams)
 				  AMS_REGCFG3_ALARM_MASK);
 	}
 
-	/* disable PL module alarm */
+	 
 	if (ams->pl_base) {
 		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_REGCFG1_ALARM_MASK,
 				  AMS_REGCFG1_ALARM_MASK);
@@ -407,39 +383,36 @@ static void ams_enable_channel_sequence(struct iio_dev *indio_dev)
 	int i;
 	u32 regval;
 
-	/*
-	 * Enable channel sequence. First 22 bits of scan_mask represent
-	 * PS channels, and next remaining bits represent PL channels.
-	 */
+	 
 
-	/* Run calibration of PS & PL as part of the sequence */
+	 
 	scan_mask = BIT(0) | BIT(AMS_PS_SEQ_MAX);
 	for (i = 0; i < indio_dev->num_channels; i++)
 		scan_mask |= BIT_ULL(indio_dev->channels[i].scan_index);
 
 	if (ams->ps_base) {
-		/* put sysmon in a soft reset to change the sequence */
+		 
 		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 				  AMS_CONF1_SEQ_DEFAULT);
 
-		/* configure basic channels */
+		 
 		regval = FIELD_GET(AMS_REG_SEQ0_MASK, scan_mask);
 		writel(regval, ams->ps_base + AMS_REG_SEQ_CH0);
 
 		regval = FIELD_GET(AMS_REG_SEQ2_MASK, scan_mask);
 		writel(regval, ams->ps_base + AMS_REG_SEQ_CH2);
 
-		/* set continuous sequence mode */
+		 
 		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 				  AMS_CONF1_SEQ_CONTINUOUS);
 	}
 
 	if (ams->pl_base) {
-		/* put sysmon in a soft reset to change the sequence */
+		 
 		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 				  AMS_CONF1_SEQ_DEFAULT);
 
-		/* configure basic channels */
+		 
 		scan_mask = FIELD_GET(AMS_PL_SEQ_MASK, scan_mask);
 
 		regval = FIELD_GET(AMS_REG_SEQ0_MASK, scan_mask);
@@ -451,7 +424,7 @@ static void ams_enable_channel_sequence(struct iio_dev *indio_dev)
 		regval = FIELD_GET(AMS_REG_SEQ2_MASK, scan_mask);
 		writel(regval, ams->pl_base + AMS_REG_SEQ_CH2);
 
-		/* set continuous sequence mode */
+		 
 		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 				  AMS_CONF1_SEQ_CONTINUOUS);
 	}
@@ -463,7 +436,7 @@ static int ams_init_device(struct ams *ams)
 	u32 reg, value;
 	int ret;
 
-	/* reset AMS */
+	 
 	if (ams->ps_base) {
 		writel(AMS_PS_RESET_VALUE, ams->ps_base + AMS_VP_VN);
 
@@ -472,7 +445,7 @@ static int ams_init_device(struct ams *ams)
 		if (ret)
 			return ret;
 
-		/* put sysmon in a default state */
+		 
 		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 				  AMS_CONF1_SEQ_DEFAULT);
 	}
@@ -484,17 +457,17 @@ static int ams_init_device(struct ams *ams)
 
 		writel(AMS_PL_RESET_VALUE, ams->pl_base + AMS_VP_VN);
 
-		/* put sysmon in a default state */
+		 
 		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 				  AMS_CONF1_SEQ_DEFAULT);
 	}
 
 	ams_disable_all_alarms(ams);
 
-	/* Disable interrupt */
+	 
 	ams_update_intrmask(ams, AMS_ALARM_MASK, AMS_ALARM_MASK);
 
-	/* Clear any pending interrupt */
+	 
 	writel(AMS_ISR0_ALARM_MASK, ams->base + AMS_ISR_0);
 	writel(AMS_ISR1_ALARM_MASK, ams->base + AMS_ISR_1);
 
@@ -531,15 +504,15 @@ static int ams_enable_single_channel(struct ams *ams, unsigned int offset)
 		return -EINVAL;
 	}
 
-	/* put sysmon in a soft reset to change the sequence */
+	 
 	ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 			  AMS_CONF1_SEQ_DEFAULT);
 
-	/* write the channel number */
+	 
 	ams_ps_update_reg(ams, AMS_REG_CONFIG0, AMS_CONF0_CHANNEL_NUM_MASK,
 			  channel_num);
 
-	/* set single channel, sequencer off mode */
+	 
 	ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
 			  AMS_CONF1_SEQ_SINGLE_CHANNEL);
 
@@ -556,7 +529,7 @@ static int ams_read_vcc_reg(struct ams *ams, unsigned int offset, u32 *data)
 	if (ret)
 		return ret;
 
-	/* clear end-of-conversion flag, wait for next conversion to complete */
+	 
 	writel(expect, ams->base + AMS_ISR_1);
 	ret = readl_poll_timeout(ams->base + AMS_ISR_1, reg, (reg & expect),
 				 AMS_INIT_POLL_TIME_US, AMS_INIT_TIMEOUT_US);
@@ -719,7 +692,7 @@ unlock_mutex:
 			return -EINVAL;
 		}
 	case IIO_CHAN_INFO_OFFSET:
-		/* Only the temperature channel has an offset */
+		 
 		*val = AMS_TEMP_OFFSET;
 		return IIO_VAL_INT;
 	default:
@@ -944,7 +917,7 @@ static int ams_write_event_value(struct iio_dev *indio_dev,
 
 	mutex_lock(&ams->lock);
 
-	/* Set temperature channel threshold to direct threshold */
+	 
 	if (chan->type == IIO_TEMP) {
 		offset = ams_get_alarm_offset(chan->scan_index, IIO_EV_DIR_FALLING);
 
@@ -976,21 +949,14 @@ static void ams_handle_event(struct iio_dev *indio_dev, u32 event)
 	chan = ams_event_to_channel(indio_dev, event);
 
 	if (chan->type == IIO_TEMP) {
-		/*
-		 * The temperature channel only supports over-temperature
-		 * events.
-		 */
+		 
 		iio_push_event(indio_dev,
 			       IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
 						    IIO_EV_TYPE_THRESH,
 						    IIO_EV_DIR_RISING),
 			       iio_get_time_ns(indio_dev));
 	} else {
-		/*
-		 * For other channels we don't know whether it is a upper or
-		 * lower threshold event. Userspace will have to check the
-		 * channel value if it wants to know.
-		 */
+		 
 		iio_push_event(indio_dev,
 			       IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
 						    IIO_EV_TYPE_THRESH,
@@ -1007,17 +973,7 @@ static void ams_handle_events(struct iio_dev *indio_dev, unsigned long events)
 		ams_handle_event(indio_dev, bit);
 }
 
-/**
- * ams_unmask_worker - ams alarm interrupt unmask worker
- * @work: work to be done
- *
- * The ZynqMP threshold interrupts are level sensitive. Since we can't make the
- * threshold condition go way from within the interrupt handler, this means as
- * soon as a threshold condition is present we would enter the interrupt handler
- * again and again. To work around this we mask all active threshold interrupts
- * in the interrupt handler and start a timer. In this timer we poll the
- * interrupt status and only if the interrupt is inactive we unmask it again.
- */
+ 
 static void ams_unmask_worker(struct work_struct *work)
 {
 	struct ams *ams = container_of(work, struct ams, ams_unmask_work.work);
@@ -1027,25 +983,25 @@ static void ams_unmask_worker(struct work_struct *work)
 
 	status = readl(ams->base + AMS_ISR_0);
 
-	/* Clear those bits which are not active anymore */
+	 
 	unmask = (ams->current_masked_alarm ^ status) & ams->current_masked_alarm;
 
-	/* Clear status of disabled alarm */
+	 
 	unmask |= ams->intr_mask;
 
 	ams->current_masked_alarm &= status;
 
-	/* Also clear those which are masked out anyway */
+	 
 	ams->current_masked_alarm &= ~ams->intr_mask;
 
-	/* Clear the interrupts before we unmask them */
+	 
 	writel(unmask, ams->base + AMS_ISR_0);
 
 	ams_update_intrmask(ams, ~AMS_ALARM_MASK, ~AMS_ALARM_MASK);
 
 	spin_unlock_irq(&ams->intr_lock);
 
-	/* If still pending some alarm re-trigger the timer */
+	 
 	if (ams->current_masked_alarm)
 		schedule_delayed_work(&ams->ams_unmask_work,
 				      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
@@ -1061,17 +1017,17 @@ static irqreturn_t ams_irq(int irq, void *data)
 
 	isr0 = readl(ams->base + AMS_ISR_0);
 
-	/* Only process alarms that are not masked */
+	 
 	isr0 &= ~((ams->intr_mask & AMS_ISR0_ALARM_MASK) | ams->current_masked_alarm);
 	if (!isr0) {
 		spin_unlock(&ams->intr_lock);
 		return IRQ_NONE;
 	}
 
-	/* Clear interrupt */
+	 
 	writel(isr0, ams->base + AMS_ISR_0);
 
-	/* Mask the alarm interrupts until cleared */
+	 
 	ams->current_masked_alarm |= isr0;
 	ams_update_intrmask(ams, ~AMS_ALARM_MASK, ~AMS_ALARM_MASK);
 
@@ -1228,7 +1184,7 @@ static int ams_init_module(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/* add PS channels to iio device channels */
+		 
 		memcpy(channels, ams_ps_channels, sizeof(ams_ps_channels));
 		num_channels = ARRAY_SIZE(ams_ps_channels);
 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
@@ -1240,13 +1196,13 @@ static int ams_init_module(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/* Copy only first 10 fix channels */
+		 
 		memcpy(channels, ams_pl_channels, AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
 		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
 		num_channels = ams_get_ext_chan(fwnode, channels,
 						num_channels);
 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
-		/* add AMS channels to iio device channels */
+		 
 		memcpy(channels, ams_ctrl_channels, sizeof(ams_ctrl_channels));
 		num_channels += ARRAY_SIZE(ams_ctrl_channels);
 	} else {
@@ -1270,7 +1226,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
 	ams_size = ARRAY_SIZE(ams_ps_channels) + ARRAY_SIZE(ams_pl_channels) +
 		ARRAY_SIZE(ams_ctrl_channels);
 
-	/* Initialize buffer for channel specification */
+	 
 	ams_channels = devm_kcalloc(dev, ams_size, sizeof(*ams_channels), GFP_KERNEL);
 	if (!ams_channels)
 		return -ENOMEM;
@@ -1299,7 +1255,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
 		ams_channels[i].channel = ch_cnt++;
 
 		if (ams_channels[i].scan_index < AMS_CTRL_SEQ_BASE) {
-			/* set threshold to max and min for each channel */
+			 
 			falling_off =
 				ams_get_alarm_offset(ams_channels[i].scan_index,
 						     IIO_EV_DIR_FALLING);

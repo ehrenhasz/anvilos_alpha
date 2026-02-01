@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_THREAD_H
 #define __PERF_THREAD_H
 
@@ -37,11 +37,11 @@ struct thread_rb_node {
 
 DECLARE_RC_STRUCT(thread) {
 	struct maps		*maps;
-	pid_t			pid_; /* Not all tools update this */
+	pid_t			pid_;  
 	pid_t			tid;
 	pid_t			ppid;
 	int			cpu;
-	int			guest_cpu; /* For QEMU thread */
+	int			guest_cpu;  
 	refcount_t		refcnt;
 	bool			comm_set;
 	int			comm_len;
@@ -58,7 +58,7 @@ DECLARE_RC_STRUCT(thread) {
 	bool			filter;
 	int			filter_entry_depth;
 
-	/* LBR call stack stitch */
+	 
 	bool			lbr_stitch_enable;
 	struct lbr_stitch	*lbr_stitch;
 };
@@ -339,4 +339,4 @@ void thread__free_stitch_list(struct thread *thread);
 void thread__resolve(struct thread *thread, struct addr_location *al,
 		     struct perf_sample *sample);
 
-#endif	/* __PERF_THREAD_H */
+#endif	 

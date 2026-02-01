@@ -1,22 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* General persistent per-UID keyrings register
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/user_namespace.h>
 #include <linux/cred.h>
 
 #include "internal.h"
 
-unsigned persistent_keyring_expiry = 3 * 24 * 3600; /* Expire after 3 days of non-use */
+unsigned persistent_keyring_expiry = 3 * 24 * 3600;  
 
-/*
- * Create the persistent keyring register for the current user namespace.
- *
- * Called with the namespace's sem locked for writing.
- */
+ 
 static int key_create_persistent_register(struct user_namespace *ns)
 {
 	struct key *reg = keyring_alloc(".persistent_register",
@@ -32,11 +24,7 @@ static int key_create_persistent_register(struct user_namespace *ns)
 	return 0;
 }
 
-/*
- * Create the persistent keyring for the specified user.
- *
- * Called with the namespace's sem locked for writing.
- */
+ 
 static key_ref_t key_create_persistent(struct user_namespace *ns, kuid_t uid,
 				       struct keyring_index_key *index_key)
 {
@@ -66,10 +54,7 @@ static key_ref_t key_create_persistent(struct user_namespace *ns, kuid_t uid,
 	return make_key_ref(persistent, true);
 }
 
-/*
- * Get the persistent keyring for a specific UID and link it to the nominated
- * keyring.
- */
+ 
 static long key_get_persistent(struct user_namespace *ns, kuid_t uid,
 			       key_ref_t dest_ref)
 {
@@ -79,7 +64,7 @@ static long key_get_persistent(struct user_namespace *ns, kuid_t uid,
 	char buf[32];
 	long ret;
 
-	/* Look in the register if it exists */
+	 
 	memset(&index_key, 0, sizeof(index_key));
 	index_key.type = &key_type_keyring;
 	index_key.description = buf;
@@ -96,9 +81,7 @@ static long key_get_persistent(struct user_namespace *ns, kuid_t uid,
 			goto found;
 	}
 
-	/* It wasn't in the register, so we'll need to create it.  We might
-	 * also need to create the register.
-	 */
+	 
 	down_write(&ns->keyring_sem);
 	persistent_ref = key_create_persistent(ns, uid, &index_key);
 	up_write(&ns->keyring_sem);
@@ -122,10 +105,7 @@ found:
 	return ret;
 }
 
-/*
- * Get the persistent keyring for a specific UID and link it to the nominated
- * keyring.
- */
+ 
 long keyctl_get_persistent(uid_t _uid, key_serial_t destid)
 {
 	struct user_namespace *ns = current_user_ns();
@@ -133,7 +113,7 @@ long keyctl_get_persistent(uid_t _uid, key_serial_t destid)
 	kuid_t uid;
 	long ret;
 
-	/* -1 indicates the current user */
+	 
 	if (_uid == (uid_t)-1) {
 		uid = current_uid();
 	} else {
@@ -141,16 +121,14 @@ long keyctl_get_persistent(uid_t _uid, key_serial_t destid)
 		if (!uid_valid(uid))
 			return -EINVAL;
 
-		/* You can only see your own persistent cache if you're not
-		 * sufficiently privileged.
-		 */
+		 
 		if (!uid_eq(uid, current_uid()) &&
 		    !uid_eq(uid, current_euid()) &&
 		    !ns_capable(ns, CAP_SETUID))
 			return -EPERM;
 	}
 
-	/* There must be a destination keyring */
+	 
 	dest_ref = lookup_user_key(destid, KEY_LOOKUP_CREATE, KEY_NEED_WRITE);
 	if (IS_ERR(dest_ref))
 		return PTR_ERR(dest_ref);

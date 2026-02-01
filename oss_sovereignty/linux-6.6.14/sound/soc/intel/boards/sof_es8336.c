@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2021 Intel Corporation.
 
-/*
- * Intel SOF Machine Driver with es8336 Codec
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/dmi.h>
@@ -21,7 +19,7 @@
 #include <sound/soc-acpi.h>
 #include "hda_dsp_common.h"
 
-/* jd-inv + terminating entry */
+ 
 #define MAX_NO_PROPS 2
 
 #define SOF_ES8336_SSP_CODEC(quirk)		((quirk) & GENMASK(3, 0))
@@ -29,7 +27,7 @@
 
 #define SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK	BIT(4)
 
-/* HDMI capture*/
+ 
 #define SOF_SSP_HDMI_CAPTURE_PRESENT		BIT(14)
 #define SOF_NO_OF_HDMI_CAPTURE_SSP_SHIFT		15
 #define SOF_NO_OF_HDMI_CAPTURE_SSP_MASK		(GENMASK(16, 15))
@@ -186,10 +184,7 @@ static const struct snd_soc_dapm_route sof_es8316_audio_map[] = {
 	{"Headphone", NULL, "HPOL"},
 	{"Headphone", NULL, "HPOR"},
 
-	/*
-	 * There is no separate speaker output instead the speakers are muxed to
-	 * the HP outputs. The mux is controlled Speaker and/or headphone switch.
-	 */
+	 
 	{"Speaker", NULL, "HPOL"},
 	{"Speaker", NULL, "HPOR"},
 	{"Speaker", NULL, "Speaker Power"},
@@ -206,7 +201,7 @@ static const struct snd_soc_dapm_route sof_es8316_headset_mic1_map[] = {
 };
 
 static const struct snd_soc_dapm_route dmic_map[] = {
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 };
 
@@ -258,7 +253,7 @@ static int sof_hdmi_init(struct snd_soc_pcm_runtime *runtime)
 	if (!pcm)
 		return -ENOMEM;
 
-	/* dai_link id is 1:1 mapped to the PCM device */
+	 
 	pcm->device = runtime->dai_link->id;
 	pcm->codec_dai = dai;
 
@@ -320,17 +315,7 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
 	return 1;
 }
 
-/*
- * this table should only be used to add GPIO or jack-detection quirks
- * that cannot be detected from ACPI tables. The SSP and DMIC
- * information are providing by the platform driver and are aligned
- * with the topology used.
- *
- * If the GPIO support is missing, the quirk parameter can be used to
- * enable speakers. In that case it's recommended to keep the SSP and DMIC
- * information consistent, overriding the SSP and DMIC can only be done
- * if the topology file is modified as well.
- */
+ 
 static const struct dmi_system_id sof_es8336_quirk_table[] = {
 	{
 		.callback = sof_es8336_quirk_cb,
@@ -370,7 +355,7 @@ static int sof_es8336_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* machine stream operations */
+ 
 static struct snd_soc_ops sof_es8336_ops = {
 	.hw_params = sof_es8336_hw_params,
 	.trigger = sof_8336_trigger,
@@ -378,7 +363,7 @@ static struct snd_soc_ops sof_es8336_ops = {
 
 static struct snd_soc_dai_link_component platform_component[] = {
 	{
-		/* name might be overridden during probe */
+		 
 		.name = "0000:00:1f.3"
 	}
 };
@@ -406,9 +391,9 @@ static int sof_es8336_late_probe(struct snd_soc_card *card)
 	return hda_dsp_hdmi_build_controls(card, pcm->codec_dai->component);
 }
 
-/* SoC card */
+ 
 static struct snd_soc_card sof_es8336_card = {
-	.name = "essx8336", /* sof- prefix added automatically */
+	.name = "essx8336",  
 	.owner = THIS_MODULE,
 	.dapm_widgets = sof_es8316_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(sof_es8316_widgets),
@@ -440,7 +425,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	if (!links || !cpus)
 		goto devm_err;
 
-	/* codec SSP */
+	 
 	links[id].name = devm_kasprintf(dev, GFP_KERNEL,
 					"SSP%d-Codec", ssp_codec);
 	if (!links[id].name)
@@ -469,22 +454,22 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 
 	id++;
 
-	/* dmic */
+	 
 	if (dmic_be_num > 0) {
-		/* at least we have dmic01 */
+		 
 		links[id].name = "dmic01";
 		links[id].cpus = &cpus[id];
 		links[id].cpus->dai_name = "DMIC01 Pin";
 		links[id].init = dmic_init;
 		if (dmic_be_num > 1) {
-			/* set up 2 BE links at most */
+			 
 			links[id + 1].name = "dmic16k";
 			links[id + 1].cpus = &cpus[id + 1];
 			links[id + 1].cpus->dai_name = "DMIC16k Pin";
 			dmic_be_num = 2;
 		}
 	} else {
-		/* HDMI dai link starts at 3 according to current topology settings */
+		 
 		hdmi_id_offset = 2;
 	}
 
@@ -502,7 +487,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		id++;
 	}
 
-	/* HDMI */
+	 
 	if (hdmi_num > 0) {
 		idisp_components = devm_kcalloc(dev,
 						hdmi_num,
@@ -545,7 +530,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		id++;
 	}
 
-	/* HDMI-In SSP */
+	 
 	if (quirk & SOF_SSP_HDMI_CAPTURE_PRESENT) {
 		int num_of_hdmi_ssp = (quirk & SOF_NO_OF_HDMI_CAPTURE_SSP_MASK) >>
 				SOF_NO_OF_HDMI_CAPTURE_SSP_SHIFT;
@@ -584,7 +569,7 @@ devm_err:
 
 static char soc_components[30];
 
- /* i2c-<HID>:00 with HID being 8 chars */
+  
 static char codec_name[SND_ACPI_I2C_ID_LEN];
 
 static int sof_es8336_probe(struct platform_device *pdev)
@@ -614,27 +599,18 @@ static int sof_es8336_probe(struct platform_device *pdev)
 	if (pdev->id_entry && pdev->id_entry->driver_data)
 		quirk = (unsigned long)pdev->id_entry->driver_data;
 
-	/* check GPIO DMI quirks */
+	 
 	dmi_check_system(sof_es8336_quirk_table);
 
-	/* Use NHLT configuration only for Non-HDMI capture use case.
-	 * Because more than one SSP will be enabled for HDMI capture hence wrong codec
-	 * SSP will be set.
-	 */
+	 
 	if (mach->tplg_quirk_mask & SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER) {
 		if (!mach->mach_params.i2s_link_mask) {
 			dev_warn(dev, "No I2S link information provided, using SSP0. This may need to be modified with the quirk module parameter\n");
 		} else {
-			/*
-			 * Set configuration based on platform NHLT.
-			 * In this machine driver, we can only support one SSP for the
-			 * ES8336 link.
-			 * In some cases multiple SSPs can be reported by NHLT, starting MSB-first
-			 * seems to pick the right connection.
-			 */
+			 
 			unsigned long ssp;
 
-			/* fls returns 1-based results, SSPs indices are 0-based */
+			 
 			ssp = fls(mach->mach_params.i2s_link_mask) - 1;
 
 			quirk |= ssp;
@@ -654,7 +630,7 @@ static int sof_es8336_probe(struct platform_device *pdev)
 	if (quirk & SOF_ES8336_ENABLE_DMIC)
 		dmic_be_num = 2;
 
-	/* compute number of dai links */
+	 
 	sof_es8336_card.num_links = 1 + dmic_be_num + hdmi_num;
 
 	if (quirk & SOF_SSP_HDMI_CAPTURE_PRESENT)
@@ -669,14 +645,14 @@ static int sof_es8336_probe(struct platform_device *pdev)
 
 	sof_es8336_card.dai_link = dai_links;
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(codec_name, sizeof(codec_name),
 			 "i2c-%s", acpi_dev_name(adev));
 		dai_links[0].codecs->name = codec_name;
 
-		/* also fixup codec dai name if relevant */
+		 
 		if (!strncmp(mach->id, "ESSX8326", SND_ACPI_I2C_ID_LEN))
 			dai_links[0].codecs->dai_name = "ES8326 HiFi";
 	} else {
@@ -717,7 +693,7 @@ static int sof_es8336_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* get speaker enable GPIO */
+	 
 	if (quirk & SOF_ES8336_HEADPHONE_GPIO) {
 		if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
 			gpio_mapping = acpi_enable_both_gpios;
@@ -786,7 +762,7 @@ static void sof_es8336_remove(struct platform_device *pdev)
 
 static const struct platform_device_id board_ids[] = {
 	{
-		.name = "sof-essx8336", /* default quirk == 0 */
+		.name = "sof-essx8336",  
 	},
 	{
 		.name = "adl_es83x6_c1_h02",

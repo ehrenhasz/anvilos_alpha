@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019, Amarula Solutions.
- * Author: Jagan Teki <jagan@amarulasolutions.com>
- */
+
+ 
 
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_modes.h>
@@ -17,32 +14,32 @@
 
 #include <video/mipi_display.h>
 
-/* Command2 BKx selection command */
+ 
 #define DSI_CMD2BKX_SEL			0xFF
 #define DSI_CMD1			0
 #define DSI_CMD2			BIT(4)
 #define DSI_CMD2BK_MASK			GENMASK(3, 0)
 
-/* Command2, BK0 commands */
-#define DSI_CMD2_BK0_PVGAMCTRL		0xB0 /* Positive Voltage Gamma Control */
-#define DSI_CMD2_BK0_NVGAMCTRL		0xB1 /* Negative Voltage Gamma Control */
-#define DSI_CMD2_BK0_LNESET		0xC0 /* Display Line setting */
-#define DSI_CMD2_BK0_PORCTRL		0xC1 /* Porch control */
-#define DSI_CMD2_BK0_INVSEL		0xC2 /* Inversion selection, Frame Rate Control */
+ 
+#define DSI_CMD2_BK0_PVGAMCTRL		0xB0  
+#define DSI_CMD2_BK0_NVGAMCTRL		0xB1  
+#define DSI_CMD2_BK0_LNESET		0xC0  
+#define DSI_CMD2_BK0_PORCTRL		0xC1  
+#define DSI_CMD2_BK0_INVSEL		0xC2  
 
-/* Command2, BK1 commands */
-#define DSI_CMD2_BK1_VRHS		0xB0 /* Vop amplitude setting */
-#define DSI_CMD2_BK1_VCOM		0xB1 /* VCOM amplitude setting */
-#define DSI_CMD2_BK1_VGHSS		0xB2 /* VGH Voltage setting */
-#define DSI_CMD2_BK1_TESTCMD		0xB3 /* TEST Command Setting */
-#define DSI_CMD2_BK1_VGLS		0xB5 /* VGL Voltage setting */
-#define DSI_CMD2_BK1_PWCTLR1		0xB7 /* Power Control 1 */
-#define DSI_CMD2_BK1_PWCTLR2		0xB8 /* Power Control 2 */
-#define DSI_CMD2_BK1_SPD1		0xC1 /* Source pre_drive timing set1 */
-#define DSI_CMD2_BK1_SPD2		0xC2 /* Source EQ2 Setting */
-#define DSI_CMD2_BK1_MIPISET1		0xD0 /* MIPI Setting 1 */
+ 
+#define DSI_CMD2_BK1_VRHS		0xB0  
+#define DSI_CMD2_BK1_VCOM		0xB1  
+#define DSI_CMD2_BK1_VGHSS		0xB2  
+#define DSI_CMD2_BK1_TESTCMD		0xB3  
+#define DSI_CMD2_BK1_VGLS		0xB5  
+#define DSI_CMD2_BK1_PWCTLR1		0xB7  
+#define DSI_CMD2_BK1_PWCTLR2		0xB8  
+#define DSI_CMD2_BK1_SPD1		0xC1  
+#define DSI_CMD2_BK1_SPD2		0xC2  
+#define DSI_CMD2_BK1_MIPISET1		0xD0  
 
-/* Command2, BK0 bytes */
+ 
 #define DSI_CMD2_BK0_GAMCTRL_AJ_MASK	GENMASK(7, 6)
 #define DSI_CMD2_BK0_GAMCTRL_VC0_MASK	GENMASK(3, 0)
 #define DSI_CMD2_BK0_GAMCTRL_VC4_MASK	GENMASK(5, 0)
@@ -69,7 +66,7 @@
 #define DSI_CMD2_BK0_INVSEL_NLINV_MASK	GENMASK(2, 0)
 #define DSI_CMD2_BK0_INVSEL_RTNI_MASK	GENMASK(4, 0)
 
-/* Command2, BK1 bytes */
+ 
 #define DSI_CMD2_BK1_VRHA_MASK		GENMASK(7, 0)
 #define DSI_CMD2_BK1_VCOM_MASK		GENMASK(7, 0)
 #define DSI_CMD2_BK1_VGHSS_MASK		GENMASK(3, 0)
@@ -106,24 +103,24 @@ struct st7701_panel_desc {
 	enum mipi_dsi_pixel_format format;
 	unsigned int panel_sleep_delay;
 
-	/* TFT matrix driver configuration, panel specific. */
-	const u8	pv_gamma[16];	/* Positive voltage gamma control */
-	const u8	nv_gamma[16];	/* Negative voltage gamma control */
-	const u8	nlinv;		/* Inversion selection */
-	const u32	vop_uv;		/* Vop in uV */
-	const u32	vcom_uv;	/* Vcom in uV */
-	const u16	vgh_mv;		/* Vgh in mV */
-	const s16	vgl_mv;		/* Vgl in mV */
-	const u16	avdd_mv;	/* Avdd in mV */
-	const s16	avcl_mv;	/* Avcl in mV */
+	 
+	const u8	pv_gamma[16];	 
+	const u8	nv_gamma[16];	 
+	const u8	nlinv;		 
+	const u32	vop_uv;		 
+	const u32	vcom_uv;	 
+	const u16	vgh_mv;		 
+	const s16	vgl_mv;		 
+	const u16	avdd_mv;	 
+	const s16	avcl_mv;	 
 	const enum op_bias	gamma_op_bias;
 	const enum op_bias	input_op_bias;
 	const enum op_bias	output_op_bias;
-	const u16	t2d_ns;		/* T2D in ns */
-	const u16	t3d_ns;		/* T3D in ns */
+	const u16	t2d_ns;		 
+	const u16	t3d_ns;		 
 	const bool	eot_en;
 
-	/* GIP sequence, fully custom and undocumented. */
+	 
 	void		(*gip_sequence)(struct st7701 *st7701);
 };
 
@@ -201,31 +198,21 @@ static void st7701_init_sequence(struct st7701 *st7701)
 
 	ST7701_DSI(st7701, MIPI_DCS_SOFT_RESET, 0x00);
 
-	/* We need to wait 5ms before sending new commands */
+	 
 	msleep(5);
 
 	ST7701_DSI(st7701, MIPI_DCS_EXIT_SLEEP_MODE, 0x00);
 
 	msleep(st7701->sleep_delay);
 
-	/* Command2, BK0 */
+	 
 	st7701_switch_cmd_bkx(st7701, true, 0);
 
 	mipi_dsi_dcs_write(st7701->dsi, DSI_CMD2_BK0_PVGAMCTRL,
 			   desc->pv_gamma, ARRAY_SIZE(desc->pv_gamma));
 	mipi_dsi_dcs_write(st7701->dsi, DSI_CMD2_BK0_NVGAMCTRL,
 			   desc->nv_gamma, ARRAY_SIZE(desc->nv_gamma));
-	/*
-	 * Vertical line count configuration:
-	 * Line[6:0]: select number of vertical lines of the TFT matrix in
-	 *            multiples of 8 lines
-	 * LDE_EN: enable sub-8-line granularity line count
-	 * Line_delta[1:0]: add 0/2/4/6 extra lines to line count selected
-	 *                  using Line[6:0]
-	 *
-	 * Total number of vertical lines:
-	 * LN = ((Line[6:0] + 1) * 8) + (LDE_EN ? Line_delta[1:0] * 2 : 0)
-	 */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK0_LNESET,
 		   FIELD_PREP(DSI_CMD2_BK0_LNESET_LINE_MASK, linecount8 - 1) |
 		   (linecountrem2 ? DSI_CMD2_BK0_LNESET_LDE_EN : 0),
@@ -235,32 +222,27 @@ static void st7701_init_sequence(struct st7701 *st7701)
 			      mode->vtotal - mode->vsync_end),
 		   FIELD_PREP(DSI_CMD2_BK0_PORCTRL_VFP_MASK,
 			      mode->vsync_start - mode->vdisplay));
-	/*
-	 * Horizontal pixel count configuration:
-	 * PCLK = 512 + (RTNI[4:0] * 16)
-	 * The PCLK is number of pixel clock per line, which matches
-	 * mode htotal. The minimum is 512 PCLK.
-	 */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK0_INVSEL,
 		   DSI_CMD2_BK0_INVSEL_ONES_MASK |
 		   FIELD_PREP(DSI_CMD2_BK0_INVSEL_NLINV_MASK, desc->nlinv),
 		   FIELD_PREP(DSI_CMD2_BK0_INVSEL_RTNI_MASK,
 			      (clamp((u32)mode->htotal, 512U, 1008U) - 512) / 16));
 
-	/* Command2, BK1 */
+	 
 	st7701_switch_cmd_bkx(st7701, true, 1);
 
-	/* Vop = 3.5375V + (VRHA[7:0] * 0.0125V) */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_VRHS,
 		   FIELD_PREP(DSI_CMD2_BK1_VRHA_MASK,
 			      DIV_ROUND_CLOSEST(desc->vop_uv - 3537500, 12500)));
 
-	/* Vcom = 0.1V + (VCOM[7:0] * 0.0125V) */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_VCOM,
 		   FIELD_PREP(DSI_CMD2_BK1_VCOM_MASK,
 			      DIV_ROUND_CLOSEST(desc->vcom_uv - 100000, 12500)));
 
-	/* Vgh = 11.5V + (VGHSS[7:0] * 0.5V) */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_VGHSS,
 		   FIELD_PREP(DSI_CMD2_BK1_VGHSS_MASK,
 			      DIV_ROUND_CLOSEST(clamp(desc->vgh_mv,
@@ -270,7 +252,7 @@ static void st7701_init_sequence(struct st7701 *st7701)
 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_TESTCMD, DSI_CMD2_BK1_TESTCMD_VAL);
 
-	/* Vgl is non-linear */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_VGLS,
 		   DSI_CMD2_BK1_VGLS_ONES |
 		   FIELD_PREP(DSI_CMD2_BK1_VGLS_MASK, st7701_vgls_map(st7701)));
@@ -283,20 +265,20 @@ static void st7701_init_sequence(struct st7701 *st7701)
 		   FIELD_PREP(DSI_CMD2_BK1_PWRCTRL1_APOS_MASK,
 			      desc->output_op_bias));
 
-	/* Avdd = 6.2V + (AVDD[1:0] * 0.2V) , Avcl = -4.4V - (AVCL[1:0] * 0.2V) */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_PWCTLR2,
 		   FIELD_PREP(DSI_CMD2_BK1_PWRCTRL2_AVDD_MASK,
 			      DIV_ROUND_CLOSEST(desc->avdd_mv - 6200, 200)) |
 		   FIELD_PREP(DSI_CMD2_BK1_PWRCTRL2_AVCL_MASK,
 			      DIV_ROUND_CLOSEST(-4400 - desc->avcl_mv, 200)));
 
-	/* T2D = 0.2us * T2D[3:0] */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_SPD1,
 		   DSI_CMD2_BK1_SPD1_ONES_MASK |
 		   FIELD_PREP(DSI_CMD2_BK1_SPD1_T2D_MASK,
 			      DIV_ROUND_CLOSEST(desc->t2d_ns, 200)));
 
-	/* T3D = 4us + (0.8us * T3D[3:0]) */
+	 
 	ST7701_DSI(st7701, DSI_CMD2_BK1_SPD2,
 		   DSI_CMD2_BK1_SPD2_ONES_MASK |
 		   FIELD_PREP(DSI_CMD2_BK1_SPD2_T3D_MASK,
@@ -309,10 +291,7 @@ static void st7701_init_sequence(struct st7701 *st7701)
 
 static void ts8550b_gip_sequence(struct st7701 *st7701)
 {
-	/**
-	 * ST7701_SPEC_V1.2 is unable to provide enough information above this
-	 * specific command sequence, so grab the same from vendor BSP driver.
-	 */
+	 
 	ST7701_DSI(st7701, 0xE0, 0x00, 0x00, 0x02);
 	ST7701_DSI(st7701, 0xE1, 0x0B, 0x00, 0x0D, 0x00, 0x0C, 0x00, 0x0E,
 		   0x00, 0x00, 0x44, 0x44);
@@ -400,10 +379,7 @@ static void dmt028vghmcmi_1a_gip_sequence(struct st7701 *st7701)
 
 static void kd50t048a_gip_sequence(struct st7701 *st7701)
 {
-	/**
-	 * ST7701_SPEC_V1.2 is unable to provide enough information above this
-	 * specific command sequence, so grab the same from vendor BSP driver.
-	 */
+	 
 	ST7701_DSI(st7701, 0xE0, 0x00, 0x00, 0x02);
 	ST7701_DSI(st7701, 0xE1, 0x08, 0x00, 0x0A, 0x00, 0x07, 0x00, 0x09,
 		   0x00, 0x00, 0x33, 0x33);
@@ -444,7 +420,7 @@ static int st7701_prepare(struct drm_panel *panel)
 	if (st7701->desc->gip_sequence)
 		st7701->desc->gip_sequence(st7701);
 
-	/* Disable Command2 */
+	 
 	st7701_switch_cmd_bkx(st7701, false, 0);
 
 	return 0;
@@ -478,15 +454,7 @@ static int st7701_unprepare(struct drm_panel *panel)
 
 	gpiod_set_value(st7701->reset, 0);
 
-	/**
-	 * During the Resetting period, the display will be blanked
-	 * (The display is entering blanking sequence, which maximum
-	 * time is 120 ms, when Reset Starts in Sleep Out –mode. The
-	 * display remains the blank state in Sleep In –mode.) and
-	 * then return to Default condition for Hardware Reset.
-	 *
-	 * So we need wait sleep_delay time to make sure reset completed.
-	 */
+	 
 	msleep(st7701->sleep_delay);
 
 	regulator_bulk_disable(ARRAY_SIZE(st7701->supplies), st7701->supplies);
@@ -515,10 +483,7 @@ static int st7701_get_modes(struct drm_panel *panel,
 	connector->display_info.width_mm = desc_mode->width_mm;
 	connector->display_info.height_mm = desc_mode->height_mm;
 
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, st7701->orientation);
 
 	return 1;
@@ -563,7 +528,7 @@ static const struct st7701_panel_desc ts8550b_desc = {
 	.mode = &ts8550b_mode,
 	.lanes = 2,
 	.format = MIPI_DSI_FMT_RGB888,
-	.panel_sleep_delay = 80, /* panel need extra 80ms for sleep out cmd */
+	.panel_sleep_delay = 80,  
 
 	.pv_gamma = {
 		CFIELD_PREP(DSI_CMD2_BK0_GAMCTRL_AJ_MASK, 0) |
@@ -664,7 +629,7 @@ static const struct st7701_panel_desc dmt028vghmcmi_1a_desc = {
 	.mode = &dmt028vghmcmi_1a_mode,
 	.lanes = 2,
 	.format = MIPI_DSI_FMT_RGB888,
-	.panel_sleep_delay = 5, /* panel need extra 5ms for sleep out cmd */
+	.panel_sleep_delay = 5,  
 
 	.pv_gamma = {
 		CFIELD_PREP(DSI_CMD2_BK0_GAMCTRL_AJ_MASK, 0) |
@@ -876,15 +841,7 @@ static int st7701_dsi_probe(struct mipi_dsi_device *dsi)
 	drm_panel_init(&st7701->panel, &dsi->dev, &st7701_funcs,
 		       DRM_MODE_CONNECTOR_DSI);
 
-	/**
-	 * Once sleep out has been issued, ST7701 IC required to wait 120ms
-	 * before initiating new commands.
-	 *
-	 * On top of that some panels might need an extra delay to wait, so
-	 * add panel specific delay for those cases. As now this panel specific
-	 * delay information is referenced from those panel BSP driver, example
-	 * ts8550b and there is no valid documentation for that.
-	 */
+	 
 	st7701->sleep_delay = 120 + desc->panel_sleep_delay;
 
 	ret = drm_panel_of_backlight(&st7701->panel);

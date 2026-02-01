@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UCSI DisplayPort Alternate Mode Support
- *
- * Copyright (C) 2018, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/usb/typec_dp.h>
 #include <linux/usb/pd_vdo.h>
@@ -30,20 +25,7 @@ struct ucsi_dp {
 	u8 vdo_size;
 };
 
-/*
- * Note. Alternate mode control is optional feature in UCSI. It means that even
- * if the system supports alternate modes, the OS may not be aware of them.
- *
- * In most cases however, the OS will be able to see the supported alternate
- * modes, but it may still not be able to configure them, not even enter or exit
- * them. That is because UCSI defines alt mode details and alt mode "overriding"
- * as separate options.
- *
- * In case alt mode details are supported, but overriding is not, the driver
- * will still display the supported pin assignments and configuration, but any
- * changes the user attempts to do will lead into failure with return value of
- * -EOPNOTSUPP.
- */
+ 
 
 static int ucsi_displayport_enter(struct typec_altmode *alt, u32 *vdo)
 {
@@ -78,11 +60,7 @@ static int ucsi_displayport_enter(struct typec_altmode *alt, u32 *vdo)
 		goto err_unlock;
 	}
 
-	/*
-	 * We can't send the New CAM command yet to the PPM as it needs the
-	 * configuration value as well. Pretending that we have now entered the
-	 * mode, and letting the alt mode driver continue.
-	 */
+	 
 
 	svdm_version = typec_altmode_get_svdm_version(alt);
 	if (svdm_version < 0) {
@@ -149,20 +127,14 @@ out_unlock:
 	return ret;
 }
 
-/*
- * We do not actually have access to the Status Update VDO, so we have to guess
- * things.
- */
+ 
 static int ucsi_displayport_status_update(struct ucsi_dp *dp)
 {
 	u32 cap = dp->alt->vdo;
 
 	dp->data.status = DP_STATUS_ENABLED;
 
-	/*
-	 * If pin assignement D is supported, claiming always
-	 * that Multi-function is preferred.
-	 */
+	 
 	if (DP_CAP_CAPABILITY(cap) & DP_CAP_UFP_D) {
 		dp->data.status |= DP_STATUS_CON_UFP_D;
 
@@ -314,10 +286,10 @@ struct typec_altmode *ucsi_register_displayport(struct ucsi_connector *con,
 	struct typec_altmode *alt;
 	struct ucsi_dp *dp;
 
-	/* We can't rely on the firmware with the capabilities. */
+	 
 	desc->vdo |= DP_CAP_DP_SIGNALING | DP_CAP_RECEPTACLE;
 
-	/* Claiming that we support all pin assignments */
+	 
 	desc->vdo |= all_assignments << 8;
 	desc->vdo |= all_assignments << 16;
 

@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2018-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef __GAUDI_ASYNC_IDS_MAP_EVENTS_EXT_H_
 #define __GAUDI_ASYNC_IDS_MAP_EVENTS_EXT_H_
@@ -707,4 +699,4 @@ static struct gaudi_async_events_ids_map gaudi_irq_map_table[] = {
 	{ .fc_id = 662, .cpu_id = 511, .valid = 1, .name = "RAZWI_OR_ADC_SW" },
 };
 
-#endif /* __GAUDI_ASYNC_IDS_MAP_EVENTS_EXT_H_ */
+#endif  

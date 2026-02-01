@@ -1,43 +1,4 @@
-/*
- * This file is part of the Chelsio T6 Crypto driver for Linux.
- *
- * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Written and Maintained by:
- *	Manoj Malviya (manojmalviya@chelsio.com)
- *	Atul Gupta (atul.gupta@chelsio.com)
- *	Jitendra Lulla (jlulla@chelsio.com)
- *	Yeshaswi M R Gowda (yeshaswi@chelsio.com)
- *	Harsh Jain (harsh@chelsio.com)
- */
+ 
 
 #define pr_fmt(fmt) "chcr:" fmt
 
@@ -257,7 +218,7 @@ static void get_aes_decrypt_key(unsigned char *dec_key,
 	temp = w_ring[nk - 1];
 	while (i + nk < (nr + 1) * 4) {
 		if (!(i % nk)) {
-			/* RotWord(temp) */
+			 
 			temp = (temp << 8) | (temp >> 24);
 			temp = aes_ks_subword(temp);
 			temp ^= round_constant[i / nk];
@@ -745,7 +706,7 @@ static inline int get_qidxs(struct crypto_async_request *req,
 	}
 	default:
 		ret = -EINVAL;
-		/* should never get here */
+		 
 		BUG();
 		break;
 	}
@@ -791,10 +752,7 @@ static inline void create_wreq(struct chcr_context *ctx,
 					   sizeof(chcr_req->key_ctx) + sc_len);
 }
 
-/**
- *	create_cipher_wr - form the WR for cipher operations
- *	@wrparam: Container for create_cipher_wr()'s parameters
- */
+ 
 static struct sk_buff *create_cipher_wr(struct cipher_wr_param *wrparam)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(wrparam->req);
@@ -1045,7 +1003,7 @@ static unsigned int adjust_ctr_overflow(u8 *iv, u32 bytes)
 	u32 temp = be32_to_cpu(*--b);
 
 	temp = ~temp;
-	c = (u64)temp +  1; // No of block can processed without overflow
+	c = (u64)temp +  1;  
 	if ((bytes / AES_BLOCK_SIZE) >= c)
 		bytes = c * AES_BLOCK_SIZE;
 	return bytes;
@@ -1068,9 +1026,7 @@ static int chcr_update_tweak(struct skcipher_request *req, u8 *iv,
 
 	keylen = ablkctx->enckey_len / 2;
 	key = ablkctx->key + keylen;
-	/* For a 192 bit key remove the padded zeroes which was
-	 * added in chcr_xts_setkey
-	 */
+	 
 	if (KEY_CONTEXT_CK_SIZE_G(ntohl(ablkctx->key_ctx_hdr))
 			== CHCR_KEYCTX_CIPHER_KEY_SIZE_192)
 		ret = aes_expandkey(&aes, key, keylen - 8);
@@ -1111,7 +1067,7 @@ static int chcr_update_cipher_iv(struct skcipher_request *req,
 		ret = chcr_update_tweak(req, iv, 0);
 	else if (subtype == CRYPTO_ALG_SUB_TYPE_CBC) {
 		if (reqctx->op)
-			/*Updated before sending last WR*/
+			 
 			memcpy(iv, req->iv, AES_BLOCK_SIZE);
 		else
 			memcpy(iv, &fw6_pld->data[2], AES_BLOCK_SIZE);
@@ -1121,10 +1077,7 @@ static int chcr_update_cipher_iv(struct skcipher_request *req,
 
 }
 
-/* We need separate function for final iv because in rfc3686  Initial counter
- * starts from 1 and buffer size of iv is 8 byte only which remains constant
- * for subsequent update requests
- */
+ 
 
 static int chcr_final_cipher_iv(struct skcipher_request *req,
 				   struct cpl_fw6_pld *fw6_pld, u8 *iv)
@@ -1144,7 +1097,7 @@ static int chcr_final_cipher_iv(struct skcipher_request *req,
 			ret = chcr_update_tweak(req, iv, 1);
 	}
 	else if (subtype == CRYPTO_ALG_SUB_TYPE_CBC) {
-		/*Already updated for Decrypt*/
+		 
 		if (!reqctx->op)
 			memcpy(iv, &fw6_pld->data[2], AES_BLOCK_SIZE);
 
@@ -1186,7 +1139,7 @@ static int chcr_handle_cipher_resp(struct skcipher_request *req,
 		else
 			bytes = rounddown(bytes, 16);
 	} else {
-		/*CTR mode counter overfloa*/
+		 
 		bytes  = req->cryptlen - reqctx->processed;
 	}
 	err = chcr_update_cipher_iv(req, fw6_pld, reqctx->iv);
@@ -1277,9 +1230,9 @@ static int process_cipher(struct skcipher_request *req,
 	if (req->cryptlen < (SGE_MAX_WR_LEN - (sizeof(struct chcr_wr) +
 					    AES_MIN_KEY_SIZE +
 					    sizeof(struct cpl_rx_phys_dsgl) +
-					/*Min dsgl size*/
+					 
 					    32))) {
-		/* Can be sent as Imm*/
+		 
 		unsigned int dnents = 0, transhdr_len, phys_dsgl, kctx_len;
 
 		dnents = sg_nents_xlen(req->dst, req->cryptlen,
@@ -1314,7 +1267,7 @@ static int process_cipher(struct skcipher_request *req,
 		memcpy(reqctx->iv + CTR_RFC3686_NONCE_SIZE, req->iv,
 				CTR_RFC3686_IV_SIZE);
 
-		/* initialize counter portion of counter block */
+		 
 		*(__be32 *)(reqctx->iv + CTR_RFC3686_NONCE_SIZE +
 			CTR_RFC3686_IV_SIZE) = cpu_to_be32(1);
 		memcpy(reqctx->init_iv, reqctx->iv, IV);
@@ -1488,9 +1441,7 @@ static int chcr_rfc3686_init(struct crypto_skcipher *tfm)
 	struct chcr_context *ctx = crypto_skcipher_ctx(tfm);
 	struct ablk_ctx *ablkctx = ABLK_CTX(ctx);
 
-	/*RFC3686 initialises IV counter value to 1, rfc3686(ctr(aes))
-	 * cannot be used as fallback in chcr_handle_cipher_response
-	 */
+	 
 	ablkctx->sw_cipher = crypto_alloc_skcipher("ctr(aes)", 0,
 				CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(ablkctx->sw_cipher)) {
@@ -1552,11 +1503,7 @@ static inline void chcr_free_shash(struct crypto_shash *base_hash)
 		crypto_free_shash(base_hash);
 }
 
-/**
- *	create_hash_wr - Create hash work request
- *	@req: Cipher req base
- *	@param: Container for create_hash_wr()'s parameters
- */
+ 
 static struct sk_buff *create_hash_wr(struct ahash_request *req,
 				      struct hash_wr_param *param)
 {
@@ -1639,7 +1586,7 @@ static struct sk_buff *create_hash_wr(struct ahash_request *req,
 		req_ctx->hctx_wr.dma_addr = 0;
 	}
 	chcr_add_hash_src_ent(req, ulptx, param);
-	/* Request upto max wr size */
+	 
 	temp = param->kctx_len + DUMMY_BYTES + (req_ctx->hctx_wr.imm ?
 				(param->sg_len + param->bfr_len) : 0);
 	atomic_inc(&adap->chcr_stats.digest_rqst);
@@ -1686,9 +1633,7 @@ static int chcr_ahash_update(struct ahash_request *req)
 	error = chcr_inc_wrcount(dev);
 	if (error)
 		return -ENXIO;
-	/* Detach state for CHCR means lldi or padap is freed. Increasing
-	 * inflight count for dev guarantees that lldi and padap is valid
-	 */
+	 
 	if (unlikely(cxgb4_is_crypto_q_full(u_ctx->lldi.ports[0],
 						req_ctx->txqidx) &&
 		(!(req->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)))) {
@@ -1727,7 +1672,7 @@ static int chcr_ahash_update(struct ahash_request *req)
 
 	req_ctx->hctx_wr.processed += params.sg_len;
 	if (remainder) {
-		/* Swap buffers */
+		 
 		swap(req_ctx->reqbfr, req_ctx->skbfr);
 		sg_pcopy_to_buffer(req->src, sg_nents(req->src),
 				   req_ctx->reqbfr, remainder, req->nbytes -
@@ -2135,10 +2080,7 @@ out:
 	ahash_request_complete(req, err);
 }
 
-/*
- *	chcr_handle_resp - Unmap the DMA buffers associated with the request
- *	@req: crypto request
- */
+ 
 int chcr_handle_resp(struct crypto_async_request *req, unsigned char *input,
 			 int err)
 {
@@ -2201,10 +2143,7 @@ static int chcr_ahash_setkey(struct crypto_ahash *tfm, const u8 *key,
 
 	SHASH_DESC_ON_STACK(shash, hmacctx->base_hash);
 
-	/* use the key to calculate the ipad and opad. ipad will sent with the
-	 * first request's data. opad will be sent with the final hash result
-	 * ipad in hmacctx->ipad and opad in hmacctx->opad location
-	 */
+	 
 	shash->tfm = hmacctx->base_hash;
 	if (keylen > bs) {
 		err = crypto_shash_digest(shash, key, keylen,
@@ -2259,9 +2198,7 @@ static int chcr_aes_xts_setkey(struct crypto_skcipher *cipher, const u8 *key,
 	ablkctx->enckey_len = key_len;
 	get_aes_decrypt_key(ablkctx->rrkey, ablkctx->key, key_len << 2);
 	context_size = (KEY_CONTEXT_HDR_SALT_AND_PAD + key_len) >> 4;
-	/* Both keys for xts must be aligned to 16 byte boundary
-	 * by padding with zeros. So for 24 byte keys padding 8 zeroes.
-	 */
+	 
 	if (key_len == 48) {
 		context_size = (KEY_CONTEXT_HDR_SALT_AND_PAD + key_len
 				+ 16) >> 4;
@@ -2378,7 +2315,7 @@ static int chcr_aead_common_init(struct aead_request *req)
 	unsigned int authsize = crypto_aead_authsize(tfm);
 	int error = -EINVAL;
 
-	/* validate key size */
+	 
 	if (aeadctx->enckey_len == 0)
 		goto err;
 	if (reqctx->op && req->cryptlen < authsize)
@@ -2471,7 +2408,7 @@ static struct sk_buff *create_authenc_wr(struct aead_request *req,
 	}
 	dnents = sg_nents_xlen(req->dst, req->assoclen + req->cryptlen +
 		(reqctx->op ? -authsize : authsize), CHCR_DST_SG_SIZE, 0);
-	dnents += MIN_AUTH_SG; // For IV
+	dnents += MIN_AUTH_SG;  
 	snents = sg_nents_xlen(req->src, req->assoclen + req->cryptlen,
 			       CHCR_SRC_SG_SIZE, 0);
 	dst_size = get_space_for_phys_dsgl(dnents);
@@ -2501,11 +2438,7 @@ static struct sk_buff *create_authenc_wr(struct aead_request *req,
 
 	temp  = (reqctx->op == CHCR_ENCRYPT_OP) ? 0 : authsize;
 
-	/*
-	 * Input order	is AAD,IV and Payload. where IV should be included as
-	 * the part of authdata. All other fields should be filled according
-	 * to the hardware spec
-	 */
+	 
 	chcr_req->sec_cpl.op_ivinsrtofst =
 				FILL_SEC_CPL_OP_IVINSR(rx_channel_id, 2, 1);
 	chcr_req->sec_cpl.pldlen = htonl(req->assoclen + IV + req->cryptlen);
@@ -2582,9 +2515,7 @@ int chcr_aead_dma_map(struct device *dev,
 	unsigned int authsize = crypto_aead_authsize(tfm);
 	int src_len, dst_len;
 
-	/* calculate and handle src and dst sg length separately
-	 * for inplace and out-of place operations
-	 */
+	 
 	if (req->src == req->dst) {
 		src_len = req->assoclen + req->cryptlen + (op_type ?
 							0 : authsize);
@@ -2643,9 +2574,7 @@ void chcr_aead_dma_unmap(struct device *dev,
 	unsigned int authsize = crypto_aead_authsize(tfm);
 	int src_len, dst_len;
 
-	/* calculate and handle src and dst sg length separately
-	 * for inplace and out-of place operations
-	 */
+	 
 	if (req->src == req->dst) {
 		src_len = req->assoclen + req->cryptlen + (op_type ?
 							0 : authsize);
@@ -2905,10 +2834,10 @@ static int generate_b0(struct aead_request *req, u8 *ivptr,
 	lp = b0[0];
 	l = lp + 1;
 
-	/* set m, bits 3-5 */
+	 
 	*b0 |= (8 * ((m - 2) / 2));
 
-	/* set adata, bit 6, if associated data is used */
+	 
 	if (req->assoclen)
 		*b0 |= 64;
 	rc = set_msg_len(b0 + 16 - l,
@@ -2920,7 +2849,7 @@ static int generate_b0(struct aead_request *req, u8 *ivptr,
 
 static inline int crypto_ccm_check_iv(const u8 *iv)
 {
-	/* 2 <= L <= 8, so 1 <= L' <= 7. */
+	 
 	if (iv[0] < 1 || iv[0] > 7)
 		return -EINVAL;
 
@@ -2950,7 +2879,7 @@ static int ccm_format_packet(struct aead_request *req,
 		put_unaligned_be16(assoclen, &reqctx->scratch_pad[16]);
 
 	rc = generate_b0(req, ivptr, op_type);
-	/* zero the ctr value */
+	 
 	memset(ivptr + 15 - ivptr[0], 0, ivptr[0] + 1);
 	return rc;
 }
@@ -2993,7 +2922,7 @@ static void fill_sec_cpl_for_aead(struct cpl_tx_sec_pdu *sec_cpl,
 	sec_cpl->op_ivinsrtofst = FILL_SEC_CPL_OP_IVINSR(rx_channel_id, 2, 1);
 	sec_cpl->pldlen =
 		htonl(req->assoclen + IV + req->cryptlen + ccm_xtra);
-	/* For CCM there wil be b0 always. So AAD start will be 1 always */
+	 
 	sec_cpl->aadstart_cipherstop_hi = FILL_SEC_CPL_CIPHERSTOP_HI(
 				1 + IV,	IV + assoclen + ccm_xtra,
 				req->assoclen + IV + 1 + ccm_xtra, 0);
@@ -3066,11 +2995,11 @@ static struct sk_buff *create_aead_ccm_wr(struct aead_request *req,
 	dnents = sg_nents_xlen(req->dst, req->assoclen + req->cryptlen
 			+ (reqctx->op ? -authsize : authsize),
 			CHCR_DST_SG_SIZE, 0);
-	dnents += MIN_CCM_SG; // For IV and B0
+	dnents += MIN_CCM_SG; 
 	dst_size = get_space_for_phys_dsgl(dnents);
 	snents = sg_nents_xlen(req->src, req->assoclen + req->cryptlen,
 			       CHCR_SRC_SG_SIZE, 0);
-	snents += MIN_CCM_SG; //For B0
+	snents += MIN_CCM_SG; 
 	kctx_len = roundup(aeadctx->enckey_len, 16) * 2;
 	transhdr_len = CIPHER_TRANSHDR_SIZE(kctx_len, dst_size);
 	reqctx->imm = (transhdr_len + req->assoclen + req->cryptlen +
@@ -3164,7 +3093,7 @@ static struct sk_buff *create_gcm_wr(struct aead_request *req,
 				CHCR_DST_SG_SIZE, 0);
 	snents = sg_nents_xlen(req->src, req->assoclen + req->cryptlen,
 			       CHCR_SRC_SG_SIZE, 0);
-	dnents += MIN_GCM_SG; // For IV
+	dnents += MIN_GCM_SG; 
 	dst_size = get_space_for_phys_dsgl(dnents);
 	kctx_len = roundup(aeadctx->enckey_len, 16) + AEAD_H_SIZE;
 	transhdr_len = CIPHER_TRANSHDR_SIZE(kctx_len, dst_size);
@@ -3189,7 +3118,7 @@ static struct sk_buff *create_gcm_wr(struct aead_request *req,
 
 	chcr_req = __skb_put_zero(skb, transhdr_len);
 
-	//Offset of tag from end
+	
 	temp = (reqctx->op == CHCR_ENCRYPT_OP) ? 0 : authsize;
 	chcr_req->sec_cpl.op_ivinsrtofst = FILL_SEC_CPL_OP_IVINSR(
 						rx_channel_id, 2, 1);
@@ -3217,8 +3146,8 @@ static struct sk_buff *create_gcm_wr(struct aead_request *req,
 
 	phys_cpl = (struct cpl_rx_phys_dsgl *)((u8 *)(chcr_req + 1) + kctx_len);
 	ivptr = (u8 *)(phys_cpl + 1) + dst_size;
-	/* prepare a 16 byte iv */
-	/* S   A   L  T |  IV | 0x00000001 */
+	 
+	 
 	if (get_aead_subtype(tfm) ==
 	    CRYPTO_ALG_SUB_TYPE_AEAD_RFC4106) {
 		memcpy(ivptr, aeadctx->salt, 4);
@@ -3285,10 +3214,7 @@ static int chcr_authenc_setauthsize(struct crypto_aead *tfm,
 	struct chcr_aead_ctx *aeadctx = AEAD_CTX(a_ctx(tfm));
 	u32 maxauth = crypto_aead_maxauthsize(tfm);
 
-	/*SHA1 authsize in ipsec is 12 instead of 10 i.e maxauthsize / 2 is not
-	 * true for sha1. authsize == 12 condition should be before
-	 * authsize == (maxauth >> 1)
-	 */
+	 
 	if (authsize == ICV_4) {
 		aeadctx->hmac_ctrl = CHCR_SCMD_HMAC_CTRL_PL1;
 		aeadctx->mayverify = VERIFY_HW;
@@ -3504,7 +3430,7 @@ static int chcr_gcm_setkey(struct crypto_aead *aead, const u8 *key,
 
 	if (get_aead_subtype(aead) == CRYPTO_ALG_SUB_TYPE_AEAD_RFC4106 &&
 	    keylen > 3) {
-		keylen -= 4;  /* nonce/salt is present in the last 4 bytes */
+		keylen -= 4;   
 		memcpy(aeadctx->salt, key + keylen, 4);
 	}
 	if (keylen == AES_KEYSIZE_128) {
@@ -3527,9 +3453,7 @@ static int chcr_gcm_setkey(struct crypto_aead *aead, const u8 *key,
 						CHCR_KEYCTX_MAC_KEY_SIZE_128,
 						0, 0,
 						key_ctx_size >> 4);
-	/* Calculate the H = CIPH(K, 0 repeated 16 times).
-	 * It will go in key context
-	 */
+	 
 	ret = aes_expandkey(&aes, key, keylen);
 	if (ret) {
 		aeadctx->enckey_len = 0;
@@ -3548,7 +3472,7 @@ static int chcr_authenc_setkey(struct crypto_aead *authenc, const u8 *key,
 {
 	struct chcr_aead_ctx *aeadctx = AEAD_CTX(a_ctx(authenc));
 	struct chcr_authenc_ctx *actx = AUTHENC_CTX(aeadctx);
-	/* it contains auth and cipher key both*/
+	 
 	struct crypto_authenc_keys keys;
 	unsigned int bs, subtype;
 	unsigned int max_authsize = crypto_aead_alg(authenc)->maxauthsize;
@@ -3594,10 +3518,7 @@ static int chcr_authenc_setkey(struct crypto_aead *authenc, const u8 *key,
 		goto out;
 	}
 
-	/* Copy only encryption key. We use authkey to generate h(ipad) and
-	 * h(opad) so authkey is not needed again. authkeylen size have the
-	 * size of the hash digest size.
-	 */
+	 
 	memcpy(aeadctx->key, keys.enckey, keys.enckeylen);
 	aeadctx->enckey_len = keys.enckeylen;
 	if (subtype == CRYPTO_ALG_SUB_TYPE_CBC_SHA ||
@@ -3631,7 +3552,7 @@ static int chcr_authenc_setkey(struct crypto_aead *authenc, const u8 *key,
 		} else
 			memcpy(o_ptr, keys.authkey, keys.authkeylen);
 
-		/* Compute the ipad-digest*/
+		 
 		memset(pad + keys.authkeylen, 0, bs - keys.authkeylen);
 		memcpy(pad, o_ptr, keys.authkeylen);
 		for (i = 0; i < bs >> 2; i++)
@@ -3640,7 +3561,7 @@ static int chcr_authenc_setkey(struct crypto_aead *authenc, const u8 *key,
 		if (chcr_compute_partial_hash(shash, pad, actx->h_iopad,
 					      max_authsize))
 			goto out;
-		/* Compute the opad-digest */
+		 
 		memset(pad + keys.authkeylen, 0, bs - keys.authkeylen);
 		memcpy(pad, o_ptr, keys.authkeylen);
 		for (i = 0; i < bs >> 2; i++)
@@ -3649,7 +3570,7 @@ static int chcr_authenc_setkey(struct crypto_aead *authenc, const u8 *key,
 		if (chcr_compute_partial_hash(shash, pad, o_ptr, max_authsize))
 			goto out;
 
-		/* convert the ipad and opad digest to network order */
+		 
 		chcr_change_order(actx->h_iopad, param.result_size);
 		chcr_change_order(o_ptr, param.result_size);
 		key_ctx_len = sizeof(struct _key_ctx) +
@@ -3678,7 +3599,7 @@ static int chcr_aead_digest_null_setkey(struct crypto_aead *authenc,
 	struct chcr_authenc_ctx *actx = AUTHENC_CTX(aeadctx);
 	struct crypto_authenc_keys keys;
 	int err;
-	/* it contains auth and cipher key both*/
+	 
 	unsigned int subtype;
 	int key_ctx_len = 0;
 	unsigned char ck_size = 0;
@@ -3750,9 +3671,7 @@ static int chcr_aead_op(struct aead_request *req,
 	}
 
 	if (chcr_inc_wrcount(cdev)) {
-	/* Detach state for CHCR means lldi or padap is freed.
-	 * We cannot increment fallback here.
-	 */
+	 
 		return chcr_aead_fallback(req, reqctx->op);
 	}
 
@@ -3770,7 +3689,7 @@ static int chcr_aead_op(struct aead_request *req,
 		return -EINVAL;
 	}
 
-	/* Form a WR from req */
+	 
 	skb = create_wr_fn(req, u_ctx->lldi.rxq_ids[reqctx->rxqidx], size);
 
 	if (IS_ERR_OR_NULL(skb)) {
@@ -3850,7 +3769,7 @@ static int chcr_aead_decrypt(struct aead_request *req)
 }
 
 static struct chcr_alg_template driver_algs[] = {
-	/* AES-CBC */
+	 
 	{
 		.type = CRYPTO_ALG_TYPE_SKCIPHER | CRYPTO_ALG_SUB_TYPE_CBC,
 		.is_registered = 0,
@@ -3924,7 +3843,7 @@ static struct chcr_alg_template driver_algs[] = {
 			.decrypt		= chcr_aes_decrypt,
 		}
 	},
-	/* SHA */
+	 
 	{
 		.type = CRYPTO_ALG_TYPE_AHASH,
 		.is_registered = 0,
@@ -3985,7 +3904,7 @@ static struct chcr_alg_template driver_algs[] = {
 			}
 		}
 	},
-	/* HMAC */
+	 
 	{
 		.type = CRYPTO_ALG_TYPE_HMAC,
 		.is_registered = 0,
@@ -4046,7 +3965,7 @@ static struct chcr_alg_template driver_algs[] = {
 			}
 		}
 	},
-	/* Add AEAD Algorithms */
+	 
 	{
 		.type = CRYPTO_ALG_TYPE_AEAD | CRYPTO_ALG_SUB_TYPE_AEAD_GCM,
 		.is_registered = 0,
@@ -4378,10 +4297,7 @@ static struct chcr_alg_template driver_algs[] = {
 	},
 };
 
-/*
- *	chcr_unregister_alg - Deregister crypto algorithms with
- *	kernel framework.
- */
+ 
 static int chcr_unregister_alg(void)
 {
 	int i;
@@ -4423,9 +4339,7 @@ static int chcr_unregister_alg(void)
 #define SZ_AHASH_H_CTX (sizeof(struct chcr_context) + sizeof(struct hmac_ctx))
 #define SZ_AHASH_REQ_CTX sizeof(struct chcr_ahash_req_ctx)
 
-/*
- *	chcr_register_alg - Register crypto algorithms with kernel framework.
- */
+ 
 static int chcr_register_alg(void)
 {
 	struct crypto_alg ai;
@@ -4511,21 +4425,13 @@ register_err:
 	return err;
 }
 
-/*
- *	start_crypto - Register the crypto algorithms.
- *	This should called once when the first device comesup. After this
- *	kernel will start calling driver APIs for crypto operations.
- */
+ 
 int start_crypto(void)
 {
 	return chcr_register_alg();
 }
 
-/*
- *	stop_crypto - Deregister all the crypto algorithms with kernel.
- *	This should be called once when the last device goes down. After this
- *	kernel will not call the driver API for crypto operations.
- */
+ 
 int stop_crypto(void)
 {
 	chcr_unregister_alg();

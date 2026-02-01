@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __IVPU_DRV_H__
 #define __IVPU_DRV_H__
@@ -30,7 +28,7 @@
 #define IVPU_HW_40XX	40
 
 #define IVPU_GLOBAL_CONTEXT_MMU_SSID 0
-/* SSID 1 is used by the VPU to represent invalid context */
+ 
 #define IVPU_USER_CONTEXT_MIN_SSID   2
 #define IVPU_USER_CONTEXT_MAX_SSID   (IVPU_USER_CONTEXT_MIN_SSID + 63)
 
@@ -126,14 +124,11 @@ struct ivpu_device {
 	} timeout;
 };
 
-/*
- * file_priv has its own refcount (ref) that allows user space to close the fd
- * without blocking even if VPU is still processing some jobs.
- */
+ 
 struct ivpu_file_priv {
 	struct kref ref;
 	struct ivpu_device *vdev;
-	struct mutex lock; /* Protects cmdq */
+	struct mutex lock;  
 	struct ivpu_cmdq *cmdq[IVPU_NUM_ENGINES];
 	struct ivpu_mmu_context ctx;
 	u32 priority;
@@ -215,4 +210,4 @@ static inline bool ivpu_is_fpga(struct ivpu_device *vdev)
 	return ivpu_get_platform(vdev) == IVPU_PLATFORM_FPGA;
 }
 
-#endif /* __IVPU_DRV_H__ */
+#endif  

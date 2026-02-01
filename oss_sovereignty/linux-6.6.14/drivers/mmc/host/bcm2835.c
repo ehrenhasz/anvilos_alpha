@@ -1,32 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * bcm2835 sdhost driver.
- *
- * The 2835 has two SD controllers: The Arasan sdhci controller
- * (supported by the iproc driver) and a custom sdhost controller
- * (supported by this driver).
- *
- * The sdhci controller supports both sdcard and sdio.  The sdhost
- * controller supports the sdcard only, but has better performance.
- * Also note that the rpi3 has sdio wifi, so driving the sdcard with
- * the sdhost controller allows to use the sdhci controller for wifi
- * support.
- *
- * The configuration is done by devicetree via pin muxing.  Both
- * SD controller are available on the same pins (2 pin groups = pin 22
- * to 27 + pin 48 to 53).  So it's possible to use both SD controllers
- * at the same time with different pin groups.
- *
- * Author:      Phil Elwell <phil@raspberrypi.org>
- *              Copyright (C) 2015-2016 Raspberry Pi (Trading) Ltd.
- *
- * Based on
- *  mmc-bcm2835.c by Gellert Weisz
- * which is, in turn, based on
- *  sdhci-bcm2708.c by Broadcom
- *  sdhci-bcm2835.c by Stephen Warren and Oleksandr Tymoshenko
- *  sdhci.c and sdhci-pci.c by Pierre Ossman
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -49,21 +22,21 @@
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/sd.h>
 
-#define SDCMD  0x00 /* Command to SD card              - 16 R/W */
-#define SDARG  0x04 /* Argument to SD card             - 32 R/W */
-#define SDTOUT 0x08 /* Start value for timeout counter - 32 R/W */
-#define SDCDIV 0x0c /* Start value for clock divider   - 11 R/W */
-#define SDRSP0 0x10 /* SD card response (31:0)         - 32 R   */
-#define SDRSP1 0x14 /* SD card response (63:32)        - 32 R   */
-#define SDRSP2 0x18 /* SD card response (95:64)        - 32 R   */
-#define SDRSP3 0x1c /* SD card response (127:96)       - 32 R   */
-#define SDHSTS 0x20 /* SD host status                  - 11 R/W */
-#define SDVDD  0x30 /* SD card power control           -  1 R/W */
-#define SDEDM  0x34 /* Emergency Debug Mode            - 13 R/W */
-#define SDHCFG 0x38 /* Host configuration              -  2 R/W */
-#define SDHBCT 0x3c /* Host byte count (debug)         - 32 R/W */
-#define SDDATA 0x40 /* Data to/from SD card            - 32 R/W */
-#define SDHBLC 0x50 /* Host block count (SDIO/SDHC)    -  9 R/W */
+#define SDCMD  0x00  
+#define SDARG  0x04  
+#define SDTOUT 0x08  
+#define SDCDIV 0x0c  
+#define SDRSP0 0x10  
+#define SDRSP1 0x14  
+#define SDRSP2 0x18  
+#define SDRSP3 0x1c  
+#define SDHSTS 0x20  
+#define SDVDD  0x30  
+#define SDEDM  0x34  
+#define SDHCFG 0x38  
+#define SDHBCT 0x3c  
+#define SDDATA 0x40  
+#define SDHBLC 0x50  
 
 #define SDCMD_NEW_FLAG			0x8000
 #define SDCMD_FAIL_FLAG			0x4000
@@ -84,8 +57,8 @@
 #define SDHSTS_CRC16_ERROR		0x20
 #define SDHSTS_CRC7_ERROR		0x10
 #define SDHSTS_FIFO_ERROR		0x08
-/* Reserved */
-/* Reserved */
+ 
+ 
 #define SDHSTS_DATA_FLAG		0x01
 
 #define SDHSTS_TRANSFER_ERROR_MASK	(SDHSTS_CRC7_ERROR | \
@@ -139,7 +112,7 @@
 #define FIFO_WRITE_THRESHOLD	4
 #define SDDATA_FIFO_PIO_BURST	8
 
-#define PIO_THRESHOLD	1  /* Maximum block count for PIO (0 = always DMA) */
+#define PIO_THRESHOLD	1   
 
 struct bcm2835_host {
 	spinlock_t		lock;
@@ -150,33 +123,33 @@ struct bcm2835_host {
 
 	struct platform_device	*pdev;
 
-	int			clock;		/* Current clock speed */
-	unsigned int		max_clk;	/* Max possible freq */
+	int			clock;		 
+	unsigned int		max_clk;	 
 	struct work_struct	dma_work;
-	struct delayed_work	timeout_work;	/* Timer for timeouts */
-	struct sg_mapping_iter	sg_miter;	/* SG state for PIO */
-	unsigned int		blocks;		/* remaining PIO blocks */
-	int			irq;		/* Device IRQ */
+	struct delayed_work	timeout_work;	 
+	struct sg_mapping_iter	sg_miter;	 
+	unsigned int		blocks;		 
+	int			irq;		 
 
 	u32			ns_per_fifo_word;
 
-	/* cached registers */
+	 
 	u32			hcfg;
 	u32			cdiv;
 
-	struct mmc_request	*mrq;		/* Current request */
-	struct mmc_command	*cmd;		/* Current command */
-	struct mmc_data		*data;		/* Current data request */
-	bool			data_complete:1;/* Data finished before cmd */
-	bool			use_busy:1;	/* Wait for busy interrupt */
-	bool			use_sbc:1;	/* Send CMD23 */
+	struct mmc_request	*mrq;		 
+	struct mmc_command	*cmd;		 
+	struct mmc_data		*data;		 
+	bool			data_complete:1; 
+	bool			use_busy:1;	 
+	bool			use_sbc:1;	 
 
-	/* for threaded irq handler */
+	 
 	bool			irq_block;
 	bool			irq_busy;
 	bool			irq_data;
 
-	/* DMA part */
+	 
 	struct dma_chan		*dma_chan_rxtx;
 	struct dma_chan		*dma_chan;
 	struct dma_slave_config dma_cfg_rx;
@@ -248,12 +221,12 @@ static void bcm2835_reset_internal(struct bcm2835_host *host)
 	writel(0, host->ioaddr + SDARG);
 	writel(0xf00000, host->ioaddr + SDTOUT);
 	writel(0, host->ioaddr + SDCDIV);
-	writel(0x7f8, host->ioaddr + SDHSTS); /* Write 1s to clear */
+	writel(0x7f8, host->ioaddr + SDHSTS);  
 	writel(0, host->ioaddr + SDHCFG);
 	writel(0, host->ioaddr + SDHBCT);
 	writel(0, host->ioaddr + SDHBLC);
 
-	/* Limit fifo usage due to silicon bug */
+	 
 	temp = readl(host->ioaddr + SDEDM);
 	temp &= ~((SDEDM_THRESHOLD_MASK << SDEDM_READ_THRESHOLD_SHIFT) |
 		  (SDEDM_THRESHOLD_MASK << SDEDM_WRITE_THRESHOLD_SHIFT));
@@ -460,12 +433,7 @@ void bcm2835_prepare_dma(struct bcm2835_host *host, struct mmc_data *data)
 		dir_slave = DMA_MEM_TO_DEV;
 	}
 
-	/* The block doesn't manage the FIFO DREQs properly for
-	 * multi-block transfers, so don't attempt to DMA the final
-	 * few words.  Unfortunately this requires the final sg entry
-	 * to be trimmed.  N.B. This code demands that the overspill
-	 * is contained in a single sg entry.
-	 */
+	 
 
 	host->drain_words = 0;
 	if ((data->blocks > 1) && (dir_data == DMA_FROM_DEVICE)) {
@@ -487,7 +455,7 @@ void bcm2835_prepare_dma(struct bcm2835_host *host, struct mmc_data *data)
 		host->drain_words = len / 4;
 	}
 
-	/* The parameters have already been validated, so this will not fail */
+	 
 	(void)dmaengine_slave_config(dma_chan,
 				     (dir_data == DMA_FROM_DEVICE) ?
 				     &host->dma_cfg_rx :
@@ -551,7 +519,7 @@ void bcm2835_prepare_data(struct bcm2835_host *host, struct mmc_command *cmd)
 	host->data->bytes_xfered = 0;
 
 	if (!host->dma_desc) {
-		/* Use PIO */
+		 
 		int flags = SG_MITER_ATOMIC;
 
 		if (data->flags & MMC_DATA_READ)
@@ -577,7 +545,7 @@ static u32 bcm2835_read_wait_sdcmd(struct bcm2835_host *host, u32 max_ms)
 	ret = readl_poll_timeout(host->ioaddr + SDCMD, value,
 				 !(value & SDCMD_NEW_FLAG), 1, 10);
 	if (ret == -ETIMEDOUT)
-		/* if it takes a while make poll interval bigger */
+		 
 		ret = readl_poll_timeout(host->ioaddr + SDCMD, value,
 					 !(value & SDCMD_NEW_FLAG),
 					 10, max_ms * 1000);
@@ -641,7 +609,7 @@ bool bcm2835_send_command(struct bcm2835_host *host, struct mmc_command *cmd)
 
 	host->cmd = cmd;
 
-	/* Clear any error flags */
+	 
 	sdhsts = readl(host->ioaddr + SDHSTS);
 	if (sdhsts & SDHSTS_ERROR_MASK)
 		writel(sdhsts, host->ioaddr + SDHSTS);
@@ -692,13 +660,10 @@ static void bcm2835_transfer_complete(struct bcm2835_host *host)
 	data = host->data;
 	host->data = NULL;
 
-	/* Need to send CMD12 if -
-	 * a) open-ended multiblock transfer (no CMD23)
-	 * b) error in multiblock transfer
-	 */
+	 
 	if (host->mrq->stop && (data->error || !host->use_sbc)) {
 		if (bcm2835_send_command(host, host->mrq->stop)) {
-			/* No busy, so poll for completion */
+			 
 			if (!host->use_busy)
 				bcm2835_finish_command(host);
 		}
@@ -723,10 +688,7 @@ static void bcm2835_finish_data(struct bcm2835_host *host)
 	host->data_complete = true;
 
 	if (host->cmd) {
-		/* Data managed to finish before the
-		 * command completed. Make sure we do
-		 * things in the proper order.
-		 */
+		 
 		dev_dbg(dev, "Finished early - HSTS %08x\n",
 			readl(host->ioaddr + SDHSTS));
 	} else {
@@ -742,7 +704,7 @@ static void bcm2835_finish_command(struct bcm2835_host *host)
 
 	sdcmd = bcm2835_read_wait_sdcmd(host, 100);
 
-	/* Check for errors */
+	 
 	if (sdcmd & SDCMD_NEW_FLAG) {
 		dev_err(dev, "command never completed.\n");
 		bcm2835_dumpregs(host);
@@ -752,7 +714,7 @@ static void bcm2835_finish_command(struct bcm2835_host *host)
 	} else if (sdcmd & SDCMD_FAIL_FLAG) {
 		u32 sdhsts = readl(host->ioaddr + SDHSTS);
 
-		/* Clear the errors */
+		 
 		writel(SDHSTS_ERROR_MASK, host->ioaddr + SDHSTS);
 
 		if (!(sdhsts & SDHSTS_CRC7_ERROR) ||
@@ -771,7 +733,7 @@ static void bcm2835_finish_command(struct bcm2835_host *host)
 			fsm = edm & SDEDM_FSM_MASK;
 			if (fsm == SDEDM_FSM_READWAIT ||
 			    fsm == SDEDM_FSM_WRITESTART1)
-				/* Kick the FSM out of its wait */
+				 
 				writel(edm | SDEDM_FORCE_DATA_MODE,
 				       host->ioaddr + SDEDM);
 			bcm2835_finish_request(host);
@@ -793,23 +755,21 @@ static void bcm2835_finish_command(struct bcm2835_host *host)
 	}
 
 	if (cmd == host->mrq->sbc) {
-		/* Finished CMD23, now send actual command. */
+		 
 		host->cmd = NULL;
 		if (bcm2835_send_command(host, host->mrq->cmd)) {
 			if (host->data && host->dma_desc)
-				/* DMA transfer starts now, PIO starts
-				 * after irq
-				 */
+				 
 				bcm2835_start_dma(host);
 
 			if (!host->use_busy)
 				bcm2835_finish_command(host);
 		}
 	} else if (cmd == host->mrq->stop) {
-		/* Finished CMD12 */
+		 
 		bcm2835_finish_request(host);
 	} else {
-		/* Processed actual command. */
+		 
 		host->cmd = NULL;
 		if (!host->data)
 			bcm2835_finish_request(host);
@@ -908,12 +868,7 @@ static void bcm2835_busy_irq(struct bcm2835_host *host)
 
 static void bcm2835_data_irq(struct bcm2835_host *host, u32 intmask)
 {
-	/* There are no dedicated data/space available interrupt
-	 * status bits, so it is necessary to use the single shared
-	 * data/space available FIFO status bits. It is therefore not
-	 * an error to get here when there is no data transfer in
-	 * progress.
-	 */
+	 
 	if (!host->data)
 		return;
 
@@ -922,7 +877,7 @@ static void bcm2835_data_irq(struct bcm2835_host *host, u32 intmask)
 		goto finished;
 
 	if (host->data->flags & MMC_DATA_WRITE) {
-		/* Use the block interrupt for writes after the first block */
+		 
 		host->hcfg &= ~(SDHCFG_DATA_IRPT_EN);
 		host->hcfg |= SDHCFG_BLOCK_IRPT_EN;
 		writel(host->hcfg, host->ioaddr + SDHCFG);
@@ -997,10 +952,7 @@ static irqreturn_t bcm2835_irq(int irq, void *dev_id)
 		}
 	}
 
-	/* There is no true data interrupt status bit, so it is
-	 * necessary to qualify the data flag with the interrupt
-	 * enable bit.
-	 */
+	 
 	if ((intmask & SDHSTS_DATA_FLAG) &&
 	    (host->hcfg & SDHCFG_DATA_IRPT_EN)) {
 		bcm2835_data_irq(host, intmask);
@@ -1094,31 +1046,10 @@ static void bcm2835_set_clock(struct bcm2835_host *host, unsigned int clock)
 	struct mmc_host *mmc = mmc_from_priv(host);
 	int div;
 
-	/* The SDCDIV register has 11 bits, and holds (div - 2).  But
-	 * in data mode the max is 50MHz wihout a minimum, and only
-	 * the bottom 3 bits are used. Since the switch over is
-	 * automatic (unless we have marked the card as slow...),
-	 * chosen values have to make sense in both modes.  Ident mode
-	 * must be 100-400KHz, so can range check the requested
-	 * clock. CMD15 must be used to return to data mode, so this
-	 * can be monitored.
-	 *
-	 * clock 250MHz -> 0->125MHz, 1->83.3MHz, 2->62.5MHz, 3->50.0MHz
-	 *                 4->41.7MHz, 5->35.7MHz, 6->31.3MHz, 7->27.8MHz
-	 *
-	 *		 623->400KHz/27.8MHz
-	 *		 reset value (507)->491159/50MHz
-	 *
-	 * BUT, the 3-bit clock divisor in data mode is too small if
-	 * the core clock is higher than 250MHz, so instead use the
-	 * SLOW_CARD configuration bit to force the use of the ident
-	 * clock divisor at all times.
-	 */
+	 
 
 	if (clock < 100000) {
-		/* Can't stop the clock, but make it as slow as possible
-		 * to show willing
-		 */
+		 
 		host->cdiv = SDCDIV_MAX_CDIV;
 		writel(host->cdiv, host->ioaddr + SDCDIV);
 		return;
@@ -1137,7 +1068,7 @@ static void bcm2835_set_clock(struct bcm2835_host *host, unsigned int clock)
 	clock = host->max_clk / (div + 2);
 	mmc->actual_clock = clock;
 
-	/* Calibrate some delays */
+	 
 
 	host->ns_per_fifo_word = (1000000000 / clock) *
 		((mmc->caps & MMC_CAP_4_BIT_DATA) ? 8 : 32);
@@ -1145,7 +1076,7 @@ static void bcm2835_set_clock(struct bcm2835_host *host, unsigned int clock)
 	host->cdiv = div;
 	writel(host->cdiv, host->ioaddr + SDCDIV);
 
-	/* Set the timeout to 500ms */
+	 
 	writel(mmc->actual_clock / 2, host->ioaddr + SDTOUT);
 }
 
@@ -1155,7 +1086,7 @@ static void bcm2835_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	struct device *dev = &host->pdev->dev;
 	u32 edm, fsm;
 
-	/* Reset the error statuses in case this is a retry */
+	 
 	if (mrq->sbc)
 		mrq->sbc->error = 0;
 	if (mrq->cmd)
@@ -1211,7 +1142,7 @@ static void bcm2835_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		}
 	} else if (mrq->cmd && bcm2835_send_command(host, mrq->cmd)) {
 		if (host->data && host->dma_desc) {
-			/* DMA transfer starts now, PIO starts after irq */
+			 
 			bcm2835_start_dma(host);
 		}
 
@@ -1233,14 +1164,14 @@ static void bcm2835_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		host->clock = ios->clock;
 	}
 
-	/* set bus width */
+	 
 	host->hcfg &= ~SDHCFG_WIDE_EXT_BUS;
 	if (ios->bus_width == MMC_BUS_WIDTH_4)
 		host->hcfg |= SDHCFG_WIDE_EXT_BUS;
 
 	host->hcfg |= SDHCFG_WIDE_INT_BUS;
 
-	/* Disable clever clock switching, to cope with fast core clocks */
+	 
 	host->hcfg |= SDHCFG_SLOW_CARD;
 
 	writel(host->hcfg, host->ioaddr + SDHCFG);
@@ -1270,7 +1201,7 @@ static int bcm2835_add_host(struct bcm2835_host *host)
 	dev_dbg(dev, "f_max %d, f_min %d, max_busy_timeout %d\n",
 		mmc->f_max, mmc->f_min, mmc->max_busy_timeout);
 
-	/* host controller capabilities */
+	 
 	mmc->caps |= MMC_CAP_SD_HIGHSPEED | MMC_CAP_MMC_HIGHSPEED |
 		     MMC_CAP_NEEDS_POLL | MMC_CAP_HW_RESET | MMC_CAP_CMD23;
 
@@ -1308,13 +1239,13 @@ static int bcm2835_add_host(struct bcm2835_host *host)
 	mmc->max_blk_size = 1024;
 	mmc->max_blk_count =  65535;
 
-	/* report supported voltage ranges */
+	 
 	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
 	INIT_WORK(&host->dma_work, bcm2835_dma_complete_work);
 	INIT_DELAYED_WORK(&host->timeout_work, bcm2835_timeout);
 
-	/* Set interrupt enables */
+	 
 	host->hcfg = SDHCFG_BUSY_IRPT_EN;
 
 	bcm2835_reset_internal(host);
@@ -1367,9 +1298,7 @@ static int bcm2835_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Parse OF address directly to get the physical address for
-	 * DMA to our registers.
-	 */
+	 
 	regaddr_p = of_get_address(pdev->dev.of_node, 0, NULL, NULL);
 	if (!regaddr_p) {
 		dev_err(dev, "Can't get phys address\n");
@@ -1390,7 +1319,7 @@ static int bcm2835_probe(struct platform_device *pdev)
 		if (ret == -EPROBE_DEFER)
 			goto err;
 
-		/* Ignore errors to fall back to PIO mode */
+		 
 	}
 
 

@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * u_printer.h
- *
- * Utility definitions for the printer function
- *
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
+ 
+ 
 
 #ifndef U_PRINTER_H
 #define U_PRINTER_H
@@ -22,12 +13,9 @@ struct f_printer_opts {
 	bool				pnp_string_allocated;
 	unsigned			q_len;
 
-	/*
-	 * Protect the data from concurrent access by read/write
-	 * and create symlink/remove symlink
-	 */
+	 
 	struct mutex			lock;
 	int				refcnt;
 };
 
-#endif /* U_PRINTER_H */
+#endif  

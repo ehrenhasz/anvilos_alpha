@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Universal Interface for Intel High Definition Audio Codec
- * 
- * Generic proc interface
- *
- * Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -18,7 +12,7 @@ static int dump_coef = -1;
 module_param(dump_coef, int, 0644);
 MODULE_PARM_DESC(dump_coef, "Dump processing coefficients in codec proc file (-1=auto, 0=disable, 1=enable)");
 
-/* always use noncached version */
+ 
 #define param_read(codec, nid, parm) \
 	snd_hdac_read_parm_uncached(&(codec)->core, nid, parm)
 
@@ -108,7 +102,7 @@ static void print_amp_caps(struct snd_info_buffer *buffer,
 		    (caps & AC_AMPCAP_MUTE) >> AC_AMPCAP_MUTE_SHIFT);
 }
 
-/* is this a stereo widget or a stereo-to-mono mix? */
+ 
 static bool is_stereo_amps(struct hda_codec *codec, hda_nid_t nid,
 			   int dir, unsigned int wcaps, int indices)
 {
@@ -116,16 +110,14 @@ static bool is_stereo_amps(struct hda_codec *codec, hda_nid_t nid,
 
 	if (wcaps & AC_WCAP_STEREO)
 		return true;
-	/* check for a stereo-to-mono mix; it must be:
-	 * only a single connection, only for input, and only a mixer widget
-	 */
+	 
 	if (indices != 1 || dir != HDA_INPUT ||
 	    get_wcaps_type(wcaps) != AC_WID_AUD_MIX)
 		return false;
 
 	if (snd_hda_get_raw_connections(codec, nid, &conn, 1) < 0)
 		return false;
-	/* the connection source is a stereo? */
+	 
 	wcaps = snd_hda_param_read(codec, conn, AC_PAR_AUDIO_WIDGET_CAP);
 	return !!(wcaps & AC_WCAP_STEREO);
 }
@@ -240,10 +232,7 @@ static const char *get_jack_color(u32 cfg)
 		return "UNKNOWN";
 }
 
-/*
- * Parse the pin default config value and returns the string of the
- * jack location, e.g. "Rear", "Front", etc.
- */
+ 
 static const char *get_jack_location(u32 cfg)
 {
 	static const char * const bases[7] = {
@@ -271,10 +260,7 @@ static const char *get_jack_location(u32 cfg)
 	return "UNKNOWN";
 }
 
-/*
- * Parse the pin default config value and returns the string of the
- * jack connectivity, i.e. external or internal connection.
- */
+ 
 static const char *get_jack_connectivity(u32 cfg)
 {
 	static const char * const jack_locations[4] = {
@@ -284,10 +270,7 @@ static const char *get_jack_connectivity(u32 cfg)
 	return jack_locations[(cfg >> (AC_DEFCFG_LOCATION_SHIFT + 4)) & 3];
 }
 
-/*
- * Parse the pin default config value and returns the string of the
- * jack type, i.e. the purpose of the jack, such as Line-Out or CD.
- */
+ 
 static const char *get_jack_type(u32 cfg)
 {
 	static const char * const jack_types[16] = {
@@ -325,7 +308,7 @@ static void print_pin_caps(struct snd_info_buffer *buffer,
 	if (caps & AC_PINCAP_BALANCE)
 		snd_iprintf(buffer, " Balanced");
 	if (caps & AC_PINCAP_HDMI) {
-		/* Realtek uses this bit as a different meaning */
+		 
 		if ((codec->core.vendor_id >> 16) == 0x10ec)
 			snd_iprintf(buffer, " R/L");
 		else {
@@ -380,19 +363,13 @@ static void print_pin_caps(struct snd_info_buffer *buffer,
 	snd_iprintf(buffer, "    Conn = %s, Color = %s\n",
 		    get_jack_connection(caps),
 		    get_jack_color(caps));
-	/* Default association and sequence values refer to default grouping
-	 * of pin complexes and their sequence within the group. This is used
-	 * for priority and resource allocation.
-	 */
+	 
 	snd_iprintf(buffer, "    DefAssociation = 0x%x, Sequence = 0x%x\n",
 		    (caps & AC_DEFCFG_DEF_ASSOC) >> AC_DEFCFG_ASSOC_SHIFT,
 		    caps & AC_DEFCFG_SEQUENCE);
 	if (((caps & AC_DEFCFG_MISC) >> AC_DEFCFG_MISC_SHIFT) &
 	    AC_DEFCFG_MISC_NO_PRESENCE) {
-		/* Miscellaneous bit indicates external hardware does not
-		 * support presence detection even if the pin complex
-		 * indicates it is supported.
-		 */
+		 
 		snd_iprintf(buffer, "    Misc = NO_PRESENCE\n");
 	}
 }
@@ -582,8 +559,7 @@ static void print_proc_caps(struct snd_info_buffer *buffer,
 	if (!can_dump_coef(codec))
 		return;
 
-	/* Note: This is racy - another process could run in parallel and change
-	   the coef index too. */
+	 
 	oldindex = snd_hda_codec_read(codec, nid, 0, AC_VERB_GET_COEF_INDEX, 0);
 	for (i = 0; i < ncoeff; i++) {
 		unsigned int val;
@@ -621,7 +597,7 @@ static void print_conn_list(struct snd_info_buffer *buffer,
 		snd_iprintf(buffer, "\n");
 	}
 
-	/* Get Cache connections info */
+	 
 	cache_len = snd_hda_get_conn_list(codec, nid, &list);
 	if (cache_len >= 0 && (cache_len != conn_len ||
 			      memcmp(list, conn, conn_len) != 0)) {
@@ -674,7 +650,7 @@ static void print_gpio(struct snd_info_buffer *buffer,
 			    (sticky & (1<<i)) ? 1 : 0,
 			    (data & (1<<i)) ? 1 : 0,
 			    (unsol & (1<<i)) ? 1 : 0);
-	/* FIXME: add GPO and GPI pin information */
+	 
 	print_nid_array(buffer, codec, nid, &codec->mixers);
 	print_nid_array(buffer, codec, nid, &codec->nids);
 }
@@ -838,9 +814,7 @@ static void print_codec_info(struct snd_info_entry *entry,
 		print_nid_array(buffer, codec, nid, &codec->nids);
 		print_nid_pcms(buffer, codec, nid);
 
-		/* volume knob is a special widget that always have connection
-		 * list
-		 */
+		 
 		if (wid_type == AC_WID_VOL_KNB)
 			wid_caps |= AC_WCAP_CONN_LIST;
 
@@ -935,9 +909,7 @@ static void print_codec_info(struct snd_info_entry *entry,
 	snd_hda_power_down(codec);
 }
 
-/*
- * create a proc read
- */
+ 
 int snd_hda_codec_proc_new(struct hda_codec *codec)
 {
 	char name[32];

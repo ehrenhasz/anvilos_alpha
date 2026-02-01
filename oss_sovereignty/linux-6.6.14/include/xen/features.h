@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- * features.h
- *
- * Query the features reported by Xen.
- *
- * Copyright (c) 2006, Ian Campbell
- */
+ 
+ 
 
 #ifndef __XEN_FEATURES_H__
 #define __XEN_FEATURES_H__
@@ -21,4 +15,4 @@ static inline int xen_feature(int flag)
 	return xen_features[flag];
 }
 
-#endif /* __ASM_XEN_FEATURES_H__ */
+#endif  

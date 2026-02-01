@@ -1,7 +1,4 @@
-/*
- * SPDX-License-Identifier: GPL-2.0
- * Copyright (c) 2018, The Linux Foundation
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -26,7 +23,7 @@
 #define UBWC_CTRL_2			0x150
 #define UBWC_PREDICTION_MODE		0x154
 
-#define MIN_IB_BW	400000000UL /* Min ib vote 400MB */
+#define MIN_IB_BW	400000000UL  
 
 struct msm_mdss {
 	struct device *dev;
@@ -115,10 +112,10 @@ static void msm_mdss_irq_mask(struct irq_data *irqd)
 {
 	struct msm_mdss *msm_mdss = irq_data_get_irq_chip_data(irqd);
 
-	/* memory barrier */
+	 
 	smp_mb__before_atomic();
 	clear_bit(irqd->hwirq, &msm_mdss->irq_controller.enabled_mask);
-	/* memory barrier */
+	 
 	smp_mb__after_atomic();
 }
 
@@ -126,10 +123,10 @@ static void msm_mdss_irq_unmask(struct irq_data *irqd)
 {
 	struct msm_mdss *msm_mdss = irq_data_get_irq_chip_data(irqd);
 
-	/* memory barrier */
+	 
 	smp_mb__before_atomic();
 	set_bit(irqd->hwirq, &msm_mdss->irq_controller.enabled_mask);
-	/* memory barrier */
+	 
 	smp_mb__after_atomic();
 }
 
@@ -238,11 +235,7 @@ static int msm_mdss_enable(struct msm_mdss *msm_mdss)
 {
 	int ret;
 
-	/*
-	 * Several components have AXI clocks that can only be turned on if
-	 * the interconnect is enabled (non-zero bandwidth). Let's make sure
-	 * that the interconnects are at least at a minimum amount.
-	 */
+	 
 	msm_mdss_icc_request_bw(msm_mdss, MIN_IB_BW);
 
 	ret = clk_bulk_prepare_enable(msm_mdss->num_clocks, msm_mdss->clocks);
@@ -251,24 +244,15 @@ static int msm_mdss_enable(struct msm_mdss *msm_mdss)
 		return ret;
 	}
 
-	/*
-	 * Register access requires MDSS_MDP_CLK, which is not enabled by the
-	 * mdss on mdp5 hardware. Skip it for now.
-	 */
+	 
 	if (msm_mdss->is_mdp5 || !msm_mdss->mdss_data)
 		return 0;
 
-	/*
-	 * ubwc config is part of the "mdss" region which is not accessible
-	 * from the rest of the driver. hardcode known configurations here
-	 *
-	 * Decoder version can be read from the UBWC_DEC_HW_VERSION reg,
-	 * UBWC_n and the rest of params comes from hw data.
-	 */
+	 
 	switch (msm_mdss->mdss_data->ubwc_dec_version) {
-	case 0: /* no UBWC */
+	case 0:  
 	case UBWC_1_0:
-		/* do nothing */
+		 
 		break;
 	case UBWC_2_0:
 		msm_mdss_setup_ubwc_dec_20(msm_mdss);
@@ -320,7 +304,7 @@ static int msm_mdss_reset(struct device *dev)
 
 	reset = reset_control_get_optional_exclusive(dev, NULL);
 	if (!reset) {
-		/* Optional reset not specified */
+		 
 		return 0;
 	} else if (IS_ERR(reset)) {
 		return dev_err_probe(dev, PTR_ERR(reset),
@@ -328,10 +312,7 @@ static int msm_mdss_reset(struct device *dev)
 	}
 
 	reset_control_assert(reset);
-	/*
-	 * Tests indicate that reset has to be held for some period of time,
-	 * make it one frame in a typical system
-	 */
+	 
 	msleep(20);
 	reset_control_deassert(reset);
 
@@ -340,9 +321,7 @@ static int msm_mdss_reset(struct device *dev)
 	return 0;
 }
 
-/*
- * MDP5 MDSS uses at most three specified clocks.
- */
+ 
 #define MDP5_MDSS_NUM_CLOCKS 3
 static int mdp5_mdss_parse_clock(struct platform_device *pdev, struct clk_bulk_data **clocks)
 {
@@ -481,12 +460,7 @@ static int mdss_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, mdss);
 
-	/*
-	 * MDP5/DPU based devices don't have a flat hierarchy. There is a top
-	 * level parent: MDSS, and children: MDP5/DPU, DSI, HDMI, eDP etc.
-	 * Populate the children devices, find the MDP5/DPU node, and then add
-	 * the interfaces to our components list.
-	 */
+	 
 	ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
 	if (ret) {
 		DRM_DEV_ERROR(dev, "failed to populate children devices\n");
@@ -515,7 +489,7 @@ static const struct msm_mdss_data msm8998_data = {
 };
 
 static const struct msm_mdss_data qcm2290_data = {
-	/* no UBWC */
+	 
 	.highest_bank_bit = 0x2,
 };
 
@@ -591,7 +565,7 @@ static const struct msm_mdss_data sm8250_data = {
 	.ubwc_dec_version = UBWC_4_0,
 	.ubwc_swizzle = 6,
 	.ubwc_static = 1,
-	/* TODO: highest_bank_bit = 2 for LP_DDR4 */
+	 
 	.highest_bank_bit = 3,
 	.macrotile_mode = 1,
 };
@@ -601,7 +575,7 @@ static const struct msm_mdss_data sm8550_data = {
 	.ubwc_dec_version = UBWC_4_3,
 	.ubwc_swizzle = 6,
 	.ubwc_static = 1,
-	/* TODO: highest_bank_bit = 2 for LP_DDR4 */
+	 
 	.highest_bank_bit = 3,
 	.macrotile_mode = 1,
 };

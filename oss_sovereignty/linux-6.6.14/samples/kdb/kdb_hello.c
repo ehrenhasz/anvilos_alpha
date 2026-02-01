@@ -1,20 +1,9 @@
-/*
- * Created by: Jason Wessel <jason.wessel@windriver.com>
- *
- * Copyright (c) 2010 Wind River Systems, Inc.  All Rights Reserved.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kdb.h>
 
-/*
- * All kdb shell command call backs receive argc and argv, where
- * argv[0] is the command the end user typed
- */
+ 
 static int kdb_hello_cmd(int argc, const char **argv)
 {
 	if (argc > 1)
@@ -37,10 +26,7 @@ static kdbtab_t hello_cmd = {
 
 static int __init kdb_hello_cmd_init(void)
 {
-	/*
-	 * Registration of a dynamically added kdb command is done with
-	 * kdb_register().
-	 */
+	 
 	kdb_register(&hello_cmd);
 	return 0;
 }

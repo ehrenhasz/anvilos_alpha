@@ -1,57 +1,29 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 1999 - 2010 Intel Corporation.
- * Copyright (C) 2010 OKI SEMICONDUCTOR Co., LTD.
- *
- * This code was derived from the Intel e1000e Linux driver.
- */
+
+ 
 
 #include "pch_gbe.h"
-#include <linux/module.h>	/* for __MODULE_STRING */
+#include <linux/module.h>	 
 
 #define OPTION_UNSET   -1
 #define OPTION_DISABLED 0
 #define OPTION_ENABLED  1
 
-/*
- * TxDescriptors - Transmit Descriptor Count
- * @Valid Range:   PCH_GBE_MIN_TXD - PCH_GBE_MAX_TXD
- * @Default Value: PCH_GBE_DEFAULT_TXD
- */
+ 
 static int TxDescriptors = OPTION_UNSET;
 module_param(TxDescriptors, int, 0);
 MODULE_PARM_DESC(TxDescriptors, "Number of transmit descriptors");
 
-/*
- * RxDescriptors -Receive Descriptor Count
- * @Valid Range:   PCH_GBE_MIN_RXD - PCH_GBE_MAX_RXD
- * @Default Value: PCH_GBE_DEFAULT_RXD
- */
+ 
 static int RxDescriptors = OPTION_UNSET;
 module_param(RxDescriptors, int, 0);
 MODULE_PARM_DESC(RxDescriptors, "Number of receive descriptors");
 
-/*
- * Speed - User Specified Speed Override
- * @Valid Range: 0, 10, 100, 1000
- *   - 0:    auto-negotiate at all supported speeds
- *   - 10:   only link at 10 Mbps
- *   - 100:  only link at 100 Mbps
- *   - 1000: only link at 1000 Mbps
- * @Default Value: 0
- */
+ 
 static int Speed = OPTION_UNSET;
 module_param(Speed, int, 0);
 MODULE_PARM_DESC(Speed, "Speed setting");
 
-/*
- * Duplex - User Specified Duplex Override
- * @Valid Range: 0-2
- *   - 0:  auto-negotiate for duplex
- *   - 1:  only link at half duplex
- *   - 2:  only link at full duplex
- * @Default Value: 0
- */
+ 
 static int Duplex = OPTION_UNSET;
 module_param(Duplex, int, 0);
 MODULE_PARM_DESC(Duplex, "Duplex setting");
@@ -59,20 +31,7 @@ MODULE_PARM_DESC(Duplex, "Duplex setting");
 #define HALF_DUPLEX 1
 #define FULL_DUPLEX 2
 
-/*
- * AutoNeg - Auto-negotiation Advertisement Override
- * @Valid Range: 0x01-0x0F, 0x20-0x2F
- *
- *       The AutoNeg value is a bit mask describing which speed and duplex
- *       combinations should be advertised during auto-negotiation.
- *       The supported speed and duplex modes are listed below
- *
- *       Bit           7     6     5      4      3     2     1      0
- *       Speed (Mbps)  N/A   N/A   1000   N/A    100   100   10     10
- *       Duplex                    Full          Full  Half  Full   Half
- *
- * @Default Value: 0x2F (copper)
- */
+ 
 static int AutoNeg = OPTION_UNSET;
 module_param(AutoNeg, int, 0);
 MODULE_PARM_DESC(AutoNeg, "Advertised auto-negotiation setting");
@@ -81,67 +40,41 @@ MODULE_PARM_DESC(AutoNeg, "Advertised auto-negotiation setting");
 #define PHY_ADVERTISE_10_FULL      0x0002
 #define PHY_ADVERTISE_100_HALF     0x0004
 #define PHY_ADVERTISE_100_FULL     0x0008
-#define PHY_ADVERTISE_1000_HALF    0x0010 /* Not used, just FYI */
+#define PHY_ADVERTISE_1000_HALF    0x0010  
 #define PHY_ADVERTISE_1000_FULL    0x0020
 #define PCH_AUTONEG_ADVERTISE_DEFAULT   0x2F
 
-/*
- * FlowControl - User Specified Flow Control Override
- * @Valid Range: 0-3
- *    - 0:  No Flow Control
- *    - 1:  Rx only, respond to PAUSE frames but do not generate them
- *    - 2:  Tx only, generate PAUSE frames but ignore them on receive
- *    - 3:  Full Flow Control Support
- * @Default Value: Read flow control settings from the EEPROM
- */
+ 
 static int FlowControl = OPTION_UNSET;
 module_param(FlowControl, int, 0);
 MODULE_PARM_DESC(FlowControl, "Flow Control setting");
 
-/*
- * XsumRX - Receive Checksum Offload Enable/Disable
- * @Valid Range: 0, 1
- *    - 0:  disables all checksum offload
- *    - 1:  enables receive IP/TCP/UDP checksum offload
- * @Default Value: PCH_GBE_DEFAULT_RX_CSUM
- */
+ 
 static int XsumRX = OPTION_UNSET;
 module_param(XsumRX, int, 0);
 MODULE_PARM_DESC(XsumRX, "Disable or enable Receive Checksum offload");
 
-#define PCH_GBE_DEFAULT_RX_CSUM             true	/* trueorfalse */
+#define PCH_GBE_DEFAULT_RX_CSUM             true	 
 
-/*
- * XsumTX - Transmit Checksum Offload Enable/Disable
- * @Valid Range: 0, 1
- *    - 0:  disables all checksum offload
- *    - 1:  enables transmit IP/TCP/UDP checksum offload
- * @Default Value: PCH_GBE_DEFAULT_TX_CSUM
- */
+ 
 static int XsumTX = OPTION_UNSET;
 module_param(XsumTX, int, 0);
 MODULE_PARM_DESC(XsumTX, "Disable or enable Transmit Checksum offload");
 
-#define PCH_GBE_DEFAULT_TX_CSUM             true	/* trueorfalse */
+#define PCH_GBE_DEFAULT_TX_CSUM             true	 
 
-/*
- * pch_gbe_option - Force the MAC's flow control settings
- * @hw:	            Pointer to the HW structure
- * Returns:
- *	0:			Successful.
- *	Negative value:		Failed.
- */
+ 
 struct pch_gbe_option {
 	enum { enable_option, range_option, list_option } type;
 	char *name;
 	char *err;
 	int  def;
 	union {
-		struct { /* range_option info */
+		struct {  
 			int min;
 			int max;
 		} r;
-		struct { /* list_option info */
+		struct {  
 			int nr;
 			const struct pch_gbe_opt_list { int i; char *str; } *p;
 		} l;
@@ -203,15 +136,7 @@ static const struct pch_gbe_opt_list fc_list[] = {
 	{ PCH_GBE_FC_FULL, "Flow Control Enabled" }
 };
 
-/**
- * pch_gbe_validate_option - Validate option
- * @value:    value
- * @opt:      option
- * @adapter:  Board private structure
- * Returns:
- *	0:			Successful.
- *	Negative value:		Failed.
- */
+ 
 static int pch_gbe_validate_option(int *value,
 				    const struct pch_gbe_option *opt,
 				    struct pch_gbe_adapter *adapter)
@@ -264,16 +189,13 @@ static int pch_gbe_validate_option(int *value,
 	return -1;
 }
 
-/**
- * pch_gbe_check_copper_options - Range Checking for Link Options, Copper Version
- * @adapter:  Board private structure
- */
+ 
 static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 {
 	struct pch_gbe_hw *hw = &adapter->hw;
 	int speed, dplx;
 
-	{ /* Speed */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = list_option,
 			.name = "Speed",
@@ -285,7 +207,7 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 		speed = Speed;
 		pch_gbe_validate_option(&speed, &opt, adapter);
 	}
-	{ /* Duplex */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = list_option,
 			.name = "Duplex",
@@ -298,7 +220,7 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 		pch_gbe_validate_option(&dplx, &opt, adapter);
 	}
 
-	{ /* Autoneg */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = list_option,
 			.name = "AutoNeg",
@@ -425,17 +347,14 @@ full_duplex_only:
 	}
 }
 
-/**
- * pch_gbe_check_options - Range Checking for Command Line Parameters
- * @adapter:  Board private structure
- */
+ 
 void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 {
 	struct pch_gbe_hw *hw = &adapter->hw;
 	struct net_device *dev = adapter->netdev;
 	int val;
 
-	{ /* Transmit Descriptor Count */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = range_option,
 			.name = "Transmit Descriptors",
@@ -451,7 +370,7 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 		tx_ring->count = roundup(tx_ring->count,
 					PCH_GBE_TX_DESC_MULTIPLE);
 	}
-	{ /* Receive Descriptor Count */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = range_option,
 			.name = "Receive Descriptors",
@@ -467,7 +386,7 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 		rx_ring->count = roundup(rx_ring->count,
 				PCH_GBE_RX_DESC_MULTIPLE);
 	}
-	{ /* Checksum Offload Enable/Disable */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = enable_option,
 			.name = "Checksum Offload",
@@ -479,7 +398,7 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 		if (!val)
 			dev->features &= ~NETIF_F_RXCSUM;
 	}
-	{ /* Checksum Offload Enable/Disable */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = enable_option,
 			.name = "Checksum Offload",
@@ -491,7 +410,7 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 		if (!val)
 			dev->features &= ~NETIF_F_CSUM_MASK;
 	}
-	{ /* Flow Control */
+	{  
 		static const struct pch_gbe_option opt = {
 			.type = list_option,
 			.name = "Flow Control",

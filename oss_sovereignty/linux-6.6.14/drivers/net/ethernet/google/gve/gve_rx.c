@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2021 Google, Inc.
- */
+
+ 
 
 #include "gve.h"
 #include "gve_adminq.h"
@@ -86,7 +83,7 @@ static void gve_setup_rx_buffer(struct gve_rx_slot_page_info *page_info,
 	page_info->page_offset = 0;
 	page_info->page_address = page_address(page);
 	*slot_addr = cpu_to_be64(addr);
-	/* The page already has 1 ref */
+	 
 	page_ref_add(page, INT_MAX - 1);
 	page_info->pagecnt_bias = INT_MAX;
 }
@@ -116,9 +113,7 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
 	int i;
 	int j;
 
-	/* Allocate one page per Rx queue slot. Each page is split into two
-	 * packet buffers, when possible we "page flip" between the two.
-	 */
+	 
 	slots = rx->mask + 1;
 
 	rx->data.page_info = kvzalloc(slots *
@@ -162,7 +157,7 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
 			rx->qpl_copy_pool[j].page_offset = 0;
 			rx->qpl_copy_pool[j].page_address = page_address(page);
 
-			/* The page already has 1 ref. */
+			 
 			page_ref_add(page, INT_MAX - 1);
 			rx->qpl_copy_pool[j].pagecnt_bias = INT_MAX;
 		}
@@ -171,16 +166,14 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
 	return slots;
 
 alloc_err_qpl:
-	/* Fully free the copy pool pages. */
+	 
 	while (j--) {
 		page_ref_sub(rx->qpl_copy_pool[j].page,
 			     rx->qpl_copy_pool[j].pagecnt_bias - 1);
 		put_page(rx->qpl_copy_pool[j].page);
 	}
 
-	/* Do not fully free QPL pages - only remove the bias added in this
-	 * function with gve_setup_rx_buffer.
-	 */
+	 
 	while (i--)
 		page_ref_sub(rx->data.page_info[i].page,
 			     rx->data.page_info[i].pagecnt_bias - 1);
@@ -217,7 +210,7 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
 	int err;
 
 	netif_dbg(priv, drv, priv->dev, "allocating rx ring\n");
-	/* Make sure everything is zeroed to start with */
+	 
 	memset(rx, 0, sizeof(*rx));
 
 	rx->gve = priv;
@@ -227,7 +220,7 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
 	rx->mask = slots - 1;
 	rx->data.raw_addressing = priv->queue_format == GVE_GQI_RDA_FORMAT;
 
-	/* alloc rx data ring */
+	 
 	bytes = sizeof(*rx->data.data_ring) * slots;
 	rx->data.data_ring = dma_alloc_coherent(hdev, bytes,
 						&rx->data.data_bus,
@@ -252,10 +245,10 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
 		goto abort_with_copy_pool;
 	}
 	rx->fill_cnt = filled_pages;
-	/* Ensure data ring slots (packet buffers) are visible. */
+	 
 	dma_wmb();
 
-	/* Alloc gve_queue_resources */
+	 
 	rx->q_resources =
 		dma_alloc_coherent(hdev,
 				   sizeof(*rx->q_resources),
@@ -268,7 +261,7 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
 	netif_dbg(priv, drv, priv->dev, "rx[%d]->data.data_bus=%lx\n", idx,
 		  (unsigned long)rx->data.data_bus);
 
-	/* alloc rx desc ring */
+	 
 	bytes = sizeof(struct gve_rx_desc) * priv->rx_desc_cnt;
 	npages = bytes / PAGE_SIZE;
 	if (npages * PAGE_SIZE != bytes) {
@@ -286,9 +279,7 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
 	rx->db_threshold = priv->rx_desc_cnt / 2;
 	rx->desc.seqno = 1;
 
-	/* Allocating half-page buffers allows page-flipping which is faster
-	 * than copying or allocating new pages.
-	 */
+	 
 	rx->packet_buffer_size = PAGE_SIZE / 2;
 	gve_rx_ctx_clear(&rx->ctx);
 	gve_rx_add_to_block(priv, idx);
@@ -326,7 +317,7 @@ int gve_rx_alloc_rings(struct gve_priv *priv)
 			break;
 		}
 	}
-	/* Unallocate if there was an error */
+	 
 	if (err) {
 		int j;
 
@@ -383,8 +374,8 @@ static struct sk_buff *gve_rx_add_frags(struct napi_struct *napi,
 			if (!skb)
 				return NULL;
 
-			// We will never chain more than two SKBs: 2 * 16 * 2k > 64k
-			// which is why we do not need to chain by using skb->next
+			
+			
 			skb_shinfo(ctx->skb_tail)->frag_list = skb;
 
 			ctx->skb_tail = skb;
@@ -407,7 +398,7 @@ static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info, __be64 *sl
 {
 	const __be64 offset = cpu_to_be64(PAGE_SIZE / 2);
 
-	/* "flip" to other packet buffer on this page */
+	 
 	page_info->page_offset ^= PAGE_SIZE / 2;
 	*(slot_addr) ^= offset;
 }
@@ -416,10 +407,10 @@ static int gve_rx_can_recycle_buffer(struct gve_rx_slot_page_info *page_info)
 {
 	int pagecount = page_count(page_info->page);
 
-	/* This page is not being used by any SKBs - reuse */
+	 
 	if (pagecount == page_info->pagecnt_bias)
 		return 1;
-	/* This page is still being used by an SKB - we can't reuse */
+	 
 	else if (pagecount > page_info->pagecnt_bias)
 		return 0;
 	WARN(pagecount < page_info->pagecnt_bias,
@@ -439,10 +430,7 @@ gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
 	if (!skb)
 		return NULL;
 
-	/* Optimistically stop the kernel from freeing the page.
-	 * We will check again in refill to determine if we need to alloc a
-	 * new page.
-	 */
+	 
 	gve_dec_pagecnt_bias(page_info);
 
 	return skb;
@@ -475,10 +463,7 @@ static struct sk_buff *gve_rx_copy_to_pool(struct gve_rx_ring *rx,
 		struct gve_rx_slot_page_info alloc_page_info;
 		struct page *page;
 
-		/* The least recently used page turned out to be
-		 * still in use by the kernel. Ignoring it and moving
-		 * on alleviates head-of-line blocking.
-		 */
+		 
 		rx->qpl_copy_pool_head++;
 
 		page = alloc_page(GFP_ATOMIC);
@@ -517,9 +502,7 @@ static struct sk_buff *gve_rx_copy_to_pool(struct gve_rx_ring *rx,
 	copy_page_info->page_offset &= (PAGE_SIZE - 1);
 
 	if (copy_page_info->can_flip) {
-		/* We have used both halves of this copy page, it
-		 * is time for it to go to the back of the queue.
-		 */
+		 
 		copy_page_info->can_flip = false;
 		rx->qpl_copy_pool_head++;
 		prefetch(rx->qpl_copy_pool[rx->qpl_copy_pool_head & rx->qpl_copy_pool_mask].page);
@@ -543,16 +526,12 @@ gve_rx_qpl(struct device *dev, struct net_device *netdev,
 	struct gve_rx_ctx *ctx = &rx->ctx;
 	struct sk_buff *skb;
 
-	/* if raw_addressing mode is not enabled gvnic can only receive into
-	 * registered segments. If the buffer can't be recycled, our only
-	 * choice is to copy the data out of it so that we can return it to the
-	 * device.
-	 */
+	 
 	if (page_info->can_flip) {
 		skb = gve_rx_add_frags(napi, page_info, rx->packet_buffer_size, len, ctx);
-		/* No point in recycling if we didn't get the skb */
+		 
 		if (skb) {
-			/* Make sure that the page isn't freed. */
+			 
 			gve_dec_pagecnt_bias(page_info);
 			gve_rx_flip_buff(page_info, &data_slot->qpl_offset);
 		}
@@ -572,7 +551,7 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
 	struct sk_buff *skb = NULL;
 
 	if (len <= priv->rx_copybreak && is_only_frag)  {
-		/* Just copy small packets */
+		 
 		skb = gve_rx_copy(netdev, napi, page_info, len);
 		if (skb) {
 			u64_stats_update_begin(&rx->statss);
@@ -751,12 +730,12 @@ static void gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
 		goto finish_frag;
 	}
 
-	/* Prefetch two packet buffers ahead, we will need it soon. */
+	 
 	page_info = &rx->data.page_info[(idx + 2) & rx->mask];
 	va = page_info->page_address + page_info->page_offset;
-	prefetch(page_info->page); /* Kernel page struct. */
-	prefetch(va);              /* Packet header. */
-	prefetch(va + 64);         /* Next cacheline too. */
+	prefetch(page_info->page);  
+	prefetch(va);               
+	prefetch(va + 64);          
 
 	page_info = &rx->data.page_info[idx];
 	data_slot = &rx->data.data_ring[idx];
@@ -809,7 +788,7 @@ static void gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
 
 	if (is_first_frag) {
 		if (likely(feat & NETIF_F_RXCSUM)) {
-			/* NIC passes up the partial sum */
+			 
 			if (desc->csum)
 				skb->ip_summed = CHECKSUM_COMPLETE;
 			else
@@ -817,7 +796,7 @@ static void gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
 			skb->csum = csum_unfold(desc->csum);
 		}
 
-		/* parse flags & pass relevant info up */
+		 
 		if (likely(feat & NETIF_F_RXHASH) &&
 		    gve_needs_rss(desc->flags_seq))
 			skb_set_hash(skb, be32_to_cpu(desc->rss_hash),
@@ -872,22 +851,14 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
 
 		page_info = &rx->data.page_info[idx];
 		if (page_info->can_flip) {
-			/* The other half of the page is free because it was
-			 * free when we processed the descriptor. Flip to it.
-			 */
+			 
 			union gve_rx_data_slot *data_slot =
 						&rx->data.data_ring[idx];
 
 			gve_rx_flip_buff(page_info, &data_slot->addr);
 			page_info->can_flip = 0;
 		} else {
-			/* It is possible that the networking stack has already
-			 * finished processing all outstanding packets in the buffer
-			 * and it can be reused.
-			 * Flipping is unnecessary here - if the networking stack still
-			 * owns half the page it is impossible to tell which half. Either
-			 * the whole page is free or it needs to be replaced.
-			 */
+			 
 			int recycle = gve_rx_can_recycle_buffer(page_info);
 
 			if (recycle < 0) {
@@ -896,7 +867,7 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
 				return false;
 			}
 			if (!recycle) {
-				/* We can't reuse the buffer - alloc a new one*/
+				 
 				union gve_rx_data_slot *data_slot =
 						&rx->data.data_ring[idx];
 				struct device *dev = &priv->pdev->dev;
@@ -931,7 +902,7 @@ static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
 
 	struct gve_rx_desc *desc = &rx->desc.desc_ring[idx];
 
-	// Exceed budget only if (and till) the inflight packet is consumed.
+	 
 	while ((GVE_SEQNO(desc->flags_seq) == rx->desc.seqno) &&
 	       (work_done < budget || ctx->frag_cnt)) {
 		next_desc = &rx->desc.desc_ring[(idx + 1) & rx->mask];
@@ -946,7 +917,7 @@ static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
 		work_done++;
 	}
 
-	// The device will only send whole packets.
+	 
 	if (unlikely(ctx->frag_cnt)) {
 		struct napi_struct *napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
 
@@ -975,20 +946,16 @@ static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
 	if (xdp_redirects != rx->xdp_actions[XDP_REDIRECT])
 		xdp_do_flush();
 
-	/* restock ring slots */
+	 
 	if (!rx->data.raw_addressing) {
-		/* In QPL mode buffs are refilled as the desc are processed */
+		 
 		rx->fill_cnt += work_done;
 	} else if (rx->fill_cnt - rx->cnt <= rx->db_threshold) {
-		/* In raw addressing mode buffs are only refilled if the avail
-		 * falls below a threshold.
-		 */
+		 
 		if (!gve_rx_refill_buffers(priv, rx))
 			return 0;
 
-		/* If we were not able to completely refill buffers, we'll want
-		 * to schedule this queue for work again to refill buffers.
-		 */
+		 
 		if (rx->fill_cnt - rx->cnt <= rx->db_threshold) {
 			gve_rx_write_doorbell(priv, rx);
 			return budget;

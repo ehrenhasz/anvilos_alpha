@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* /proc/net/ support for AF_RXRPC
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/sock.h>
@@ -21,9 +17,7 @@ static const char *const rxrpc_conn_states[RXRPC_CONN__NR_STATES] = {
 	[RXRPC_CONN_ABORTED]			= "Aborted ",
 };
 
-/*
- * generate a list of extant and dead calls in /proc/net/rxrpc_calls
- */
+ 
 static void *rxrpc_call_seq_start(struct seq_file *seq, loff_t *_pos)
 	__acquires(rcu)
 {
@@ -111,9 +105,7 @@ const struct seq_operations rxrpc_call_seq_ops = {
 	.show   = rxrpc_call_seq_show,
 };
 
-/*
- * generate a list of extant virtual connections in /proc/net/rxrpc_conns
- */
+ 
 static void *rxrpc_connection_seq_start(struct seq_file *seq, loff_t *_pos)
 	__acquires(rxnet->conn_lock)
 {
@@ -198,9 +190,7 @@ const struct seq_operations rxrpc_connection_seq_ops = {
 	.show   = rxrpc_connection_seq_show,
 };
 
-/*
- * generate a list of extant virtual peers in /proc/net/rxrpc/peers
- */
+ 
 static int rxrpc_peer_seq_show(struct seq_file *seq, void *v)
 {
 	struct rxrpc_peer *peer;
@@ -324,9 +314,7 @@ const struct seq_operations rxrpc_peer_seq_ops = {
 	.show   = rxrpc_peer_seq_show,
 };
 
-/*
- * Generate a list of extant virtual local endpoints in /proc/net/rxrpc/locals
- */
+ 
 static int rxrpc_local_seq_show(struct seq_file *seq, void *v)
 {
 	struct rxrpc_local *local;
@@ -394,9 +382,7 @@ const struct seq_operations rxrpc_local_seq_ops = {
 	.show   = rxrpc_local_seq_show,
 };
 
-/*
- * Display stats in /proc/net/rxrpc/stats
- */
+ 
 int rxrpc_stats_show(struct seq_file *seq, void *v)
 {
 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_single_net(seq));
@@ -466,9 +452,7 @@ int rxrpc_stats_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
-/*
- * Clear stats if /proc/net/rxrpc/stats is written to.
- */
+ 
 int rxrpc_stats_clear(struct file *file, char *buf, size_t size)
 {
 	struct seq_file *m = file->private_data;

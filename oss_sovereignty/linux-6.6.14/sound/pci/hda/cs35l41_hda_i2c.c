@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS35l41 HDA I2C driver
-//
-// Copyright 2021 Cirrus Logic, Inc.
-//
-// Author: Lucas Tanure <tanureal@opensource.cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -16,10 +16,7 @@ static int cs35l41_hda_i2c_probe(struct i2c_client *clt)
 {
 	const char *device_name;
 
-	/*
-	 * Compare against the device name so it works for SPI, normal ACPI
-	 * and for ACPI by serial-multi-instantiate matching cases.
-	 */
+	 
 	if (strstr(dev_name(&clt->dev), "CLSA0100"))
 		device_name = "CLSA0100";
 	else if (strstr(dev_name(&clt->dev), "CLSA0101"))

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM regmap
 
@@ -10,9 +10,7 @@
 
 #include "internal.h"
 
-/*
- * Log register events
- */
+ 
 DECLARE_EVENT_CLASS(regmap_reg,
 
 	TP_PROTO(struct regmap *map, unsigned int reg,
@@ -272,7 +270,7 @@ TRACE_EVENT(regcache_drop_region,
 	TP_printk("%s %u-%u", __get_str(name), __entry->from, __entry->to)
 );
 
-#endif /* _TRACE_REGMAP_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
@@ -280,5 +278,5 @@ TRACE_EVENT(regcache_drop_region,
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

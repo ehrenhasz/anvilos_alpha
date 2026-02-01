@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021 Gerhard Engleder <gerhard@engleder-embedded.com> */
+
+ 
 
 #include "tsnep.h"
 
@@ -93,9 +93,7 @@ static int tsnep_ethtool_get_regs_len(struct net_device *netdev)
 
 	len = TSNEP_MAC_SIZE;
 
-	/* first queue pair is within TSNEP_MAC_SIZE, only queues additional to
-	 * the first queue pair extend the register length by TSNEP_QUEUE_SIZE
-	 */
+	 
 	num_additional_queues =
 		max(adapter->num_tx_queues, adapter->num_rx_queues) - 1;
 	len += TSNEP_QUEUE_SIZE * num_additional_queues;
@@ -392,7 +390,7 @@ static int tsnep_ethtool_set_coalesce(struct net_device *netdev,
 	int retval;
 
 	for (i = 0; i < adapter->num_queues; i++) {
-		/* RX coalesce has priority for queues with TX and RX */
+		 
 		if (adapter->queue[i].rx)
 			retval = tsnep_set_irq_coalesce(&adapter->queue[i],
 							ec->rx_coalesce_usecs);
@@ -447,7 +445,7 @@ static int tsnep_ethtool_set_per_queue_coalesce(struct net_device *netdev,
 			return retval;
 	}
 
-	/* RX coalesce has priority for queues with TX and RX */
+	 
 	queue_with_tx = tsnep_get_queue_with_tx(adapter, queue);
 	if (queue_with_tx && !queue_with_tx->rx) {
 		retval = tsnep_set_irq_coalesce(queue_with_tx, ec->tx_coalesce_usecs);

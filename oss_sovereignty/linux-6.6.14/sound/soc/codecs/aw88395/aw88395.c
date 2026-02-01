@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88395.c --  ALSA SoC AW88395 codec support
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-// Author: Weidong Wang <wangweidong.a@awinic.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/firmware.h>
@@ -226,7 +226,7 @@ static int aw88395_profile_set(struct snd_kcontrol *kcontrol,
 	struct aw88395 *aw88395 = snd_soc_component_get_drvdata(codec);
 	int ret;
 
-	/* pa stop or stopping just set profile */
+	 
 	mutex_lock(&aw88395->lock);
 	ret = aw88395_dev_set_profile_index(aw88395->aw_pa, ucontrol->value.integer.value[0]);
 	if (ret < 0) {
@@ -386,13 +386,13 @@ static int aw88395_playback_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget aw88395_dapm_widgets[] = {
-	 /* playback */
+	  
 	SND_SOC_DAPM_AIF_IN_E("AIF_RX", "Speaker_Playback", 0, 0, 0, 0,
 					aw88395_playback_event,
 					SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 	SND_SOC_DAPM_OUTPUT("DAC Output"),
 
-	/* capture */
+	 
 	SND_SOC_DAPM_AIF_OUT("AIF_TX", "Speaker_Capture", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_INPUT("ADC Input"),
 };
@@ -410,13 +410,13 @@ static int aw88395_codec_probe(struct snd_soc_component *component)
 
 	INIT_DELAYED_WORK(&aw88395->start_work, aw88395_startup_work);
 
-	/* add widgets */
+	 
 	ret = snd_soc_dapm_new_controls(dapm, aw88395_dapm_widgets,
 							ARRAY_SIZE(aw88395_dapm_widgets));
 	if (ret < 0)
 		return ret;
 
-	/* add route */
+	 
 	ret = snd_soc_dapm_add_routes(dapm, aw88395_audio_map,
 							ARRAY_SIZE(aw88395_audio_map));
 	if (ret < 0)
@@ -498,7 +498,7 @@ static int aw88395_request_firmware_file(struct aw88395 *aw88395)
 	dev_dbg(aw88395->aw_pa->dev, "%s : bin load success\n", __func__);
 
 	mutex_lock(&aw88395->lock);
-	/* aw device init */
+	 
 	ret = aw88395_dev_init(aw88395->aw_pa, aw88395->aw_cfg);
 	if (ret < 0)
 		dev_err(aw88395->aw_pa->dev, "dev init failed");
@@ -528,7 +528,7 @@ static int aw88395_i2c_probe(struct i2c_client *i2c)
 	if (IS_ERR(aw88395->reset_gpio))
 		dev_info(&i2c->dev, "reset gpio not defined\n");
 
-	/* hardware reset */
+	 
 	aw88395_hw_reset(aw88395);
 
 	aw88395->regmap = devm_regmap_init_i2c(i2c, &aw88395_remap_config);
@@ -538,7 +538,7 @@ static int aw88395_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* aw pa init */
+	 
 	ret = aw88395_init(&aw88395->aw_pa, i2c, aw88395->regmap);
 	if (ret < 0)
 		return ret;

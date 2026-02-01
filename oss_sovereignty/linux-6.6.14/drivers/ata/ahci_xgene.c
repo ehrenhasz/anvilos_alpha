@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AppliedMicro X-Gene SoC SATA Host Controller Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author: Loc Ho <lho@apm.com>
- *         Tuan Phan <tphan@apm.com>
- *         Suman Tripathi <stripathi@apm.com>
- *
- * NOTE: PM support is not currently available.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -21,14 +12,14 @@
 
 #define DRV_NAME "xgene-ahci"
 
-/* Max # of disk per a controller */
+ 
 #define MAX_AHCI_CHN_PERCTR		2
 
-/* MUX CSR */
+ 
 #define SATA_ENET_CONFIG_REG		0x00000000
 #define  CFG_SATA_ENET_SELECT_MASK	0x00000001
 
-/* SATA core host controller CSR */
+ 
 #define SLVRDERRATTRIBUTES		0x00000000
 #define SLVWRERRATTRIBUTES		0x00000004
 #define MSTRDERRATTRIBUTES		0x00000008
@@ -39,7 +30,7 @@
 #define ERRINTSTATUS			0x00000030
 #define ERRINTSTATUSMASK		0x00000034
 
-/* SATA host AHCI CSR */
+ 
 #define PORTCFG				0x000000a4
 #define  PORTADDR_SET(dst, src) \
 		(((dst) & ~0x0000003f) | (((u32)(src)) & 0x0000003f))
@@ -62,14 +53,14 @@
 #define PORTRANSCFG_RXWM_SET(dst, src)		\
 		(((dst) & ~0x0000007f) | (((u32)(src)) & 0x0000007f))
 
-/* SATA host controller AXI CSR */
+ 
 #define INT_SLV_TMOMASK			0x00000010
 
-/* SATA diagnostic CSR */
+ 
 #define CFG_MEM_RAM_SHUTDOWN		0x00000070
 #define BLOCK_MEM_RDY			0x00000074
 
-/* Max retry for link down */
+ 
 #define MAX_LINK_DOWN_RETRY 3
 
 enum xgene_ahci_version {
@@ -80,20 +71,20 @@ enum xgene_ahci_version {
 struct xgene_ahci_context {
 	struct ahci_host_priv *hpriv;
 	struct device *dev;
-	u8 last_cmd[MAX_AHCI_CHN_PERCTR]; /* tracking the last command issued*/
-	u32 class[MAX_AHCI_CHN_PERCTR]; /* tracking the class of device */
-	void __iomem *csr_core;		/* Core CSR address of IP */
-	void __iomem *csr_diag;		/* Diag CSR address of IP */
-	void __iomem *csr_axi;		/* AXI CSR address of IP */
-	void __iomem *csr_mux;		/* MUX CSR address of IP */
+	u8 last_cmd[MAX_AHCI_CHN_PERCTR];  
+	u32 class[MAX_AHCI_CHN_PERCTR];  
+	void __iomem *csr_core;		 
+	void __iomem *csr_diag;		 
+	void __iomem *csr_axi;		 
+	void __iomem *csr_mux;		 
 };
 
 static int xgene_ahci_init_memram(struct xgene_ahci_context *ctx)
 {
 	dev_dbg(ctx->dev, "Release memory from shutdown\n");
 	writel(0x0, ctx->csr_diag + CFG_MEM_RAM_SHUTDOWN);
-	readl(ctx->csr_diag + CFG_MEM_RAM_SHUTDOWN); /* Force a barrier */
-	msleep(1);	/* reset may take up to 1ms */
+	readl(ctx->csr_diag + CFG_MEM_RAM_SHUTDOWN);  
+	msleep(1);	 
 	if (readl(ctx->csr_diag + BLOCK_MEM_RDY) != 0xFFFFFFFF) {
 		dev_err(ctx->dev, "failed to release memory from shutdown\n");
 		return -ENODEV;
@@ -101,14 +92,7 @@ static int xgene_ahci_init_memram(struct xgene_ahci_context *ctx)
 	return 0;
 }
 
-/**
- * xgene_ahci_poll_reg_val- Poll a register on a specific value.
- * @ap : ATA port of interest.
- * @reg : Register of interest.
- * @val : Value to be attained.
- * @interval : waiting interval for polling.
- * @timeout : timeout for achieving the value.
- */
+ 
 static int xgene_ahci_poll_reg_val(struct ata_port *ap,
 				   void __iomem *reg, unsigned int val,
 				   unsigned int interval, unsigned int timeout)
@@ -127,13 +111,7 @@ static int xgene_ahci_poll_reg_val(struct ata_port *ap,
 	return tmp;
 }
 
-/**
- * xgene_ahci_restart_engine - Restart the dma engine.
- * @ap : ATA port of interest
- *
- * Waits for completion of multiple commands and restarts
- * the DMA engine inside the controller.
- */
+ 
 static int xgene_ahci_restart_engine(struct ata_port *ap)
 {
 	struct ahci_host_priv *hpriv = ap->host->private_data;
@@ -141,12 +119,7 @@ static int xgene_ahci_restart_engine(struct ata_port *ap)
 	void __iomem *port_mmio = ahci_port_base(ap);
 	u32 fbs;
 
-	/*
-	 * In case of PMP multiple IDENTIFY DEVICE commands can be
-	 * issued inside PxCI. So need to poll PxCI for the
-	 * completion of outstanding IDENTIFY DEVICE commands before
-	 * we restart the DMA engine.
-	 */
+	 
 	if (xgene_ahci_poll_reg_val(ap, port_mmio +
 				    PORT_CMD_ISSUE, 0x0, 1, 100))
 		  return -EBUSY;
@@ -154,10 +127,7 @@ static int xgene_ahci_restart_engine(struct ata_port *ap)
 	hpriv->stop_engine(ap);
 	ahci_start_fis_rx(ap);
 
-	/*
-	 * Enable the PxFBS.FBS_EN bit as it
-	 * gets cleared due to stopping the engine.
-	 */
+	 
 	if (pp->fbs_supported) {
 		fbs = readl(port_mmio + PORT_FBS);
 		writel(fbs | PORT_FBS_EN, port_mmio + PORT_FBS);
@@ -169,22 +139,7 @@ static int xgene_ahci_restart_engine(struct ata_port *ap)
 	return 0;
 }
 
-/**
- * xgene_ahci_qc_issue - Issue commands to the device
- * @qc: Command to issue
- *
- * Due to Hardware errata for IDENTIFY DEVICE command, the controller cannot
- * clear the BSY bit after receiving the PIO setup FIS. This results in the dma
- * state machine goes into the CMFatalErrorUpdate state and locks up. By
- * restarting the dma engine, it removes the controller out of lock up state.
- *
- * Due to H/W errata, the controller is unable to save the PMP
- * field fetched from command header before sending the H2D FIS.
- * When the device returns the PMP port field in the D2H FIS, there is
- * a mismatch and results in command completion failure. The
- * workaround is to write the pmp value to PxFBS.DEV field before issuing
- * any command to PMP.
- */
+ 
 static unsigned int xgene_ahci_qc_issue(struct ata_queued_cmd *qc)
 {
 	struct ata_port *ap = qc->ap;
@@ -194,10 +149,7 @@ static unsigned int xgene_ahci_qc_issue(struct ata_queued_cmd *qc)
 	u32 port_fbs;
 	void __iomem *port_mmio = ahci_port_base(ap);
 
-	/*
-	 * Write the pmp value to PxFBS.DEV
-	 * for case of Port Mulitplier.
-	 */
+	 
 	if (ctx->class[ap->port_no] == ATA_DEV_PMP) {
 		port_fbs = readl(port_mmio + PORT_FBS);
 		port_fbs &= ~PORT_FBS_DEV_MASK;
@@ -212,7 +164,7 @@ static unsigned int xgene_ahci_qc_issue(struct ata_queued_cmd *qc)
 
 	rc = ahci_qc_issue(qc);
 
-	/* Save the last command issued */
+	 
 	ctx->last_cmd[ap->port_no] = qc->tf.command;
 
 	return rc;
@@ -226,15 +178,7 @@ static bool xgene_ahci_is_memram_inited(struct xgene_ahci_context *ctx)
 	        readl(diagcsr + BLOCK_MEM_RDY) == 0xFFFFFFFF);
 }
 
-/**
- * xgene_ahci_read_id - Read ID data from the specified device
- * @dev: device
- * @tf: proposed taskfile
- * @id: data buffer
- *
- * This custom read ID function is required due to the fact that the HW
- * does not support DEVSLP.
- */
+ 
 static unsigned int xgene_ahci_read_id(struct ata_device *dev,
 				       struct ata_taskfile *tf, __le16 *id)
 {
@@ -244,20 +188,7 @@ static unsigned int xgene_ahci_read_id(struct ata_device *dev,
 	if (err_mask)
 		return err_mask;
 
-	/*
-	 * Mask reserved area. Word78 spec of Link Power Management
-	 * bit15-8: reserved
-	 * bit7: NCQ autosence
-	 * bit6: Software settings preservation supported
-	 * bit5: reserved
-	 * bit4: In-order sata delivery supported
-	 * bit3: DIPM requests supported
-	 * bit2: DMA Setup FIS Auto-Activate optimization supported
-	 * bit1: DMA Setup FIX non-Zero buffer offsets supported
-	 * bit0: Reserved
-	 *
-	 * Clear reserved bit 8 (DEVSLP bit) as we don't support DEVSLP
-	 */
+	 
 	id[ATA_ID_FEATURE_SUPP] &= cpu_to_le16(~(1 << 8));
 
 	return 0;
@@ -273,79 +204,33 @@ static void xgene_ahci_set_phy_cfg(struct xgene_ahci_context *ctx, int channel)
 	val = readl(mmio + PORTCFG);
 	val = PORTADDR_SET(val, channel == 0 ? 2 : 3);
 	writel(val, mmio + PORTCFG);
-	readl(mmio + PORTCFG);  /* Force a barrier */
-	/* Disable fix rate */
+	readl(mmio + PORTCFG);   
+	 
 	writel(0x0001fffe, mmio + PORTPHY1CFG);
-	readl(mmio + PORTPHY1CFG); /* Force a barrier */
+	readl(mmio + PORTPHY1CFG);  
 	writel(0x28183219, mmio + PORTPHY2CFG);
-	readl(mmio + PORTPHY2CFG); /* Force a barrier */
+	readl(mmio + PORTPHY2CFG);  
 	writel(0x13081008, mmio + PORTPHY3CFG);
-	readl(mmio + PORTPHY3CFG); /* Force a barrier */
+	readl(mmio + PORTPHY3CFG);  
 	writel(0x00480815, mmio + PORTPHY4CFG);
-	readl(mmio + PORTPHY4CFG); /* Force a barrier */
-	/* Set window negotiation */
+	readl(mmio + PORTPHY4CFG);  
+	 
 	val = readl(mmio + PORTPHY5CFG);
 	val = PORTPHY5CFG_RTCHG_SET(val, 0x300);
 	writel(val, mmio + PORTPHY5CFG);
-	readl(mmio + PORTPHY5CFG); /* Force a barrier */
+	readl(mmio + PORTPHY5CFG);  
 	val = readl(mmio + PORTAXICFG);
-	val = PORTAXICFG_EN_CONTEXT_SET(val, 0x1); /* Enable context mgmt */
-	val = PORTAXICFG_OUTTRANS_SET(val, 0xe); /* Set outstanding */
+	val = PORTAXICFG_EN_CONTEXT_SET(val, 0x1);  
+	val = PORTAXICFG_OUTTRANS_SET(val, 0xe);  
 	writel(val, mmio + PORTAXICFG);
-	readl(mmio + PORTAXICFG); /* Force a barrier */
-	/* Set the watermark threshold of the receive FIFO */
+	readl(mmio + PORTAXICFG);  
+	 
 	val = readl(mmio + PORTRANSCFG);
 	val = PORTRANSCFG_RXWM_SET(val, 0x30);
 	writel(val, mmio + PORTRANSCFG);
 }
 
-/**
- * xgene_ahci_do_hardreset - Issue the actual COMRESET
- * @link: link to reset
- * @deadline: deadline jiffies for the operation
- * @online: Return value to indicate if device online
- *
- * Due to the limitation of the hardware PHY, a difference set of setting is
- * required for each supported disk speed - Gen3 (6.0Gbps), Gen2 (3.0Gbps),
- * and Gen1 (1.5Gbps). Otherwise during long IO stress test, the PHY will
- * report disparity error and etc. In addition, during COMRESET, there can
- * be error reported in the register PORT_SCR_ERR. For SERR_DISPARITY and
- * SERR_10B_8B_ERR, the PHY receiver line must be reseted. Also during long
- * reboot cycle regression, sometimes the PHY reports link down even if the
- * device is present because of speed negotiation failure. so need to retry
- * the COMRESET to get the link up. The following algorithm is followed to
- * proper configure the hardware PHY during COMRESET:
- *
- * Alg Part 1:
- * 1. Start the PHY at Gen3 speed (default setting)
- * 2. Issue the COMRESET
- * 3. If no link, go to Alg Part 3
- * 4. If link up, determine if the negotiated speed matches the PHY
- *    configured speed
- * 5. If they matched, go to Alg Part 2
- * 6. If they do not matched and first time, configure the PHY for the linked
- *    up disk speed and repeat step 2
- * 7. Go to Alg Part 2
- *
- * Alg Part 2:
- * 1. On link up, if there are any SERR_DISPARITY and SERR_10B_8B_ERR error
- *    reported in the register PORT_SCR_ERR, then reset the PHY receiver line
- * 2. Go to Alg Part 4
- *
- * Alg Part 3:
- * 1. Check the PORT_SCR_STAT to see whether device presence detected but PHY
- *    communication establishment failed and maximum link down attempts are
- *    less than Max attempts 3 then goto Alg Part 1.
- * 2. Go to Alg Part 4.
- *
- * Alg Part 4:
- * 1. Clear any pending from register PORT_SCR_ERR.
- *
- * NOTE: For the initial version, we will NOT support Gen1/Gen2. In addition
- *       and until the underlying PHY supports an method to reset the receiver
- *       line, on detection of SERR_DISPARITY or SERR_10B_8B_ERR errors,
- *       an warning message will be printed.
- */
+ 
 static int xgene_ahci_do_hardreset(struct ata_link *link,
 				   unsigned long deadline, bool *online)
 {
@@ -362,7 +247,7 @@ static int xgene_ahci_do_hardreset(struct ata_link *link,
 	u32 val, sstatus;
 
 	do {
-		/* clear D2H reception area to properly wait for D2H FIS */
+		 
 		ata_tf_init(link->device, &tf);
 		tf.status = ATA_BUSY;
 		ata_tf_to_fis(&tf, 0, 0, d2h_fis);
@@ -379,7 +264,7 @@ static int xgene_ahci_do_hardreset(struct ata_link *link,
 	} while (link_down_retry++ < MAX_LINK_DOWN_RETRY &&
 		 (sstatus & 0xff) == 0x1);
 
-	/* clear all errors if any pending */
+	 
 	val = readl(port_mmio + PORT_SCR_ERR);
 	writel(val, port_mmio + PORT_SCR_ERR);
 
@@ -400,7 +285,7 @@ static int xgene_ahci_hardreset(struct ata_link *link, unsigned int *class,
 	u32 portrxfis_saved;
 	u32 portrxfishi_saved;
 
-	/* As hardreset resets these CSR, save it to restore later */
+	 
 	portcmd_saved = readl(port_mmio + PORT_CMD);
 	portclb_saved = readl(port_mmio + PORT_LST_ADDR);
 	portclbhi_saved = readl(port_mmio + PORT_LST_ADDR_HI);
@@ -411,7 +296,7 @@ static int xgene_ahci_hardreset(struct ata_link *link, unsigned int *class,
 
 	rc = xgene_ahci_do_hardreset(link, deadline, &online);
 
-	/* As controller hardreset clears them, restore them */
+	 
 	writel(portcmd_saved, port_mmio + PORT_CMD);
 	writel(portclb_saved, port_mmio + PORT_LST_ADDR);
 	writel(portclbhi_saved, port_mmio + PORT_LST_ADDR_HI);
@@ -433,20 +318,7 @@ static void xgene_ahci_host_stop(struct ata_host *host)
 	ahci_platform_disable_resources(hpriv);
 }
 
-/**
- * xgene_ahci_pmp_softreset - Issue the softreset to the drives connected
- *                            to Port Multiplier.
- * @link: link to reset
- * @class: Return value to indicate class of device
- * @deadline: deadline jiffies for the operation
- *
- * Due to H/W errata, the controller is unable to save the PMP
- * field fetched from command header before sending the H2D FIS.
- * When the device returns the PMP port field in the D2H FIS, there is
- * a mismatch and results in command completion failure. The workaround
- * is to write the pmp value to PxFBS.DEV field before issuing any command
- * to PMP.
- */
+ 
 static int xgene_ahci_pmp_softreset(struct ata_link *link, unsigned int *class,
 			  unsigned long deadline)
 {
@@ -456,10 +328,7 @@ static int xgene_ahci_pmp_softreset(struct ata_link *link, unsigned int *class,
 	void __iomem *port_mmio = ahci_port_base(ap);
 	u32 port_fbs;
 
-	/*
-	 * Set PxFBS.DEV field with pmp
-	 * value.
-	 */
+	 
 	port_fbs = readl(port_mmio + PORT_FBS);
 	port_fbs &= ~PORT_FBS_DEV_MASK;
 	port_fbs |= pmp << PORT_FBS_DEV_OFFSET;
@@ -470,27 +339,7 @@ static int xgene_ahci_pmp_softreset(struct ata_link *link, unsigned int *class,
 	return rc;
 }
 
-/**
- * xgene_ahci_softreset - Issue the softreset to the drive.
- * @link: link to reset
- * @class: Return value to indicate class of device
- * @deadline: deadline jiffies for the operation
- *
- * Due to H/W errata, the controller is unable to save the PMP
- * field fetched from command header before sending the H2D FIS.
- * When the device returns the PMP port field in the D2H FIS, there is
- * a mismatch and results in command completion failure. The workaround
- * is to write the pmp value to PxFBS.DEV field before issuing any command
- * to PMP. Here is the algorithm to detect PMP :
- *
- * 1. Save the PxFBS value
- * 2. Program PxFBS.DEV with pmp value send by framework. Framework sends
- *    0xF for both PMP/NON-PMP initially
- * 3. Issue softreset
- * 4. If signature class is PMP goto 6
- * 5. restore the original PxFBS and goto 3
- * 6. return
- */
+ 
 static int xgene_ahci_softreset(struct ata_link *link, unsigned int *class,
 			  unsigned long deadline)
 {
@@ -506,10 +355,7 @@ static int xgene_ahci_softreset(struct ata_link *link, unsigned int *class,
 
 	port_fbs_save = readl(port_mmio + PORT_FBS);
 
-	/*
-	 * Set PxFBS.DEV field with pmp
-	 * value.
-	 */
+	 
 	port_fbs = readl(port_mmio + PORT_FBS);
 	port_fbs &= ~PORT_FBS_DEV_MASK;
 	port_fbs |= pmp << PORT_FBS_DEV_OFFSET;
@@ -521,10 +367,7 @@ softreset_retry:
 
 	ctx->class[ap->port_no] = *class;
 	if (*class != ATA_DEV_PMP) {
-		/*
-		 * Retry for normal drives without
-		 * setting PxFBS.DEV field with pmp value.
-		 */
+		 
 		if (retry--) {
 			writel(port_fbs_save, port_mmio + PORT_FBS);
 			goto softreset_retry;
@@ -534,30 +377,7 @@ softreset_retry:
 	return rc;
 }
 
-/**
- * xgene_ahci_handle_broken_edge_irq - Handle the broken irq.
- * @host: Host that recieved the irq
- * @irq_masked: HOST_IRQ_STAT value
- *
- * For hardware with broken edge trigger latch
- * the HOST_IRQ_STAT register misses the edge interrupt
- * when clearing of HOST_IRQ_STAT register and hardware
- * reporting the PORT_IRQ_STAT register at the
- * same clock cycle.
- * As such, the algorithm below outlines the workaround.
- *
- * 1. Read HOST_IRQ_STAT register and save the state.
- * 2. Clear the HOST_IRQ_STAT register.
- * 3. Read back the HOST_IRQ_STAT register.
- * 4. If HOST_IRQ_STAT register equals to zero, then
- *    traverse the rest of port's PORT_IRQ_STAT register
- *    to check if an interrupt is triggered at that point else
- *    go to step 6.
- * 5. If PORT_IRQ_STAT register of rest ports is not equal to zero
- *    then update the state of HOST_IRQ_STAT saved in step 1.
- * 6. Handle port interrupts.
- * 7. Exit
- */
+ 
 static int xgene_ahci_handle_broken_edge_irq(struct ata_host *host,
 					     u32 irq_masked)
 {
@@ -590,7 +410,7 @@ static irqreturn_t xgene_ahci_irq_intr(int irq, void *dev_instance)
 	hpriv = host->private_data;
 	mmio = hpriv->mmio;
 
-	/* sigh.  0xffffffff is a valid return from h/w */
+	 
 	irq_stat = readl(mmio + HOST_IRQ_STAT);
 	if (!irq_stat)
 		return IRQ_NONE;
@@ -599,10 +419,7 @@ static irqreturn_t xgene_ahci_irq_intr(int irq, void *dev_instance)
 
 	spin_lock(&host->lock);
 
-	/*
-	 * HOST_IRQ_STAT behaves as edge triggered latch meaning that
-	 * it should be cleared before all the port events are cleared.
-	 */
+	 
 	writel(irq_stat, mmio + HOST_IRQ_STAT);
 
 	rc = xgene_ahci_handle_broken_edge_irq(host, irq_masked);
@@ -650,7 +467,7 @@ static int xgene_ahci_hw_init(struct ahci_host_priv *hpriv)
 	int rc;
 	u32 val;
 
-	/* Remove IP RAM out of shutdown */
+	 
 	rc = xgene_ahci_init_memram(ctx);
 	if (rc)
 		return rc;
@@ -658,34 +475,34 @@ static int xgene_ahci_hw_init(struct ahci_host_priv *hpriv)
 	for (i = 0; i < MAX_AHCI_CHN_PERCTR; i++)
 		xgene_ahci_set_phy_cfg(ctx, i);
 
-	/* AXI disable Mask */
+	 
 	writel(0xffffffff, hpriv->mmio + HOST_IRQ_STAT);
-	readl(hpriv->mmio + HOST_IRQ_STAT); /* Force a barrier */
+	readl(hpriv->mmio + HOST_IRQ_STAT);  
 	writel(0, ctx->csr_core + INTSTATUSMASK);
-	val = readl(ctx->csr_core + INTSTATUSMASK); /* Force a barrier */
+	val = readl(ctx->csr_core + INTSTATUSMASK);  
 	dev_dbg(ctx->dev, "top level interrupt mask 0x%X value 0x%08X\n",
 		INTSTATUSMASK, val);
 
 	writel(0x0, ctx->csr_core + ERRINTSTATUSMASK);
-	readl(ctx->csr_core + ERRINTSTATUSMASK); /* Force a barrier */
+	readl(ctx->csr_core + ERRINTSTATUSMASK);  
 	writel(0x0, ctx->csr_axi + INT_SLV_TMOMASK);
 	readl(ctx->csr_axi + INT_SLV_TMOMASK);
 
-	/* Enable AXI Interrupt */
+	 
 	writel(0xffffffff, ctx->csr_core + SLVRDERRATTRIBUTES);
 	writel(0xffffffff, ctx->csr_core + SLVWRERRATTRIBUTES);
 	writel(0xffffffff, ctx->csr_core + MSTRDERRATTRIBUTES);
 	writel(0xffffffff, ctx->csr_core + MSTWRERRATTRIBUTES);
 
-	/* Enable coherency */
+	 
 	val = readl(ctx->csr_core + BUSCTLREG);
-	val &= ~0x00000002;     /* Enable write coherency */
-	val &= ~0x00000001;     /* Enable read coherency */
+	val &= ~0x00000002;      
+	val &= ~0x00000001;      
 	writel(val, ctx->csr_core + BUSCTLREG);
 
 	val = readl(ctx->csr_core + IOFMSTRWAUX);
-	val |= (1 << 3);        /* Enable read coherency */
-	val |= (1 << 9);        /* Enable write coherency */
+	val |= (1 << 3);         
+	val |= (1 << 9);         
 	writel(val, ctx->csr_core + IOFMSTRWAUX);
 	val = readl(ctx->csr_core + IOFMSTRWAUX);
 	dev_dbg(ctx->dev, "coherency 0x%X value 0x%08X\n",
@@ -698,7 +515,7 @@ static int xgene_ahci_mux_select(struct xgene_ahci_context *ctx)
 {
 	u32 val;
 
-	/* Check for optional MUX resource */
+	 
 	if (!ctx->csr_mux)
 		return 0;
 
@@ -725,7 +542,7 @@ MODULE_DEVICE_TABLE(acpi, xgene_ahci_acpi_match);
 static const struct of_device_id xgene_ahci_of_match[] = {
 	{.compatible = "apm,xgene-ahci", .data = (void *) XGENE_AHCI_V1},
 	{.compatible = "apm,xgene-ahci-v2", .data = (void *) XGENE_AHCI_V2},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, xgene_ahci_of_match);
 
@@ -753,22 +570,22 @@ static int xgene_ahci_probe(struct platform_device *pdev)
 	ctx->hpriv = hpriv;
 	ctx->dev = dev;
 
-	/* Retrieve the IP core resource */
+	 
 	ctx->csr_core = devm_platform_ioremap_resource(pdev, 1);
 	if (IS_ERR(ctx->csr_core))
 		return PTR_ERR(ctx->csr_core);
 
-	/* Retrieve the IP diagnostic resource */
+	 
 	ctx->csr_diag = devm_platform_ioremap_resource(pdev, 2);
 	if (IS_ERR(ctx->csr_diag))
 		return PTR_ERR(ctx->csr_diag);
 
-	/* Retrieve the IP AXI resource */
+	 
 	ctx->csr_axi = devm_platform_ioremap_resource(pdev, 3);
 	if (IS_ERR(ctx->csr_axi))
 		return PTR_ERR(ctx->csr_axi);
 
-	/* Retrieve the optional IP mux resource */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 4);
 	if (res) {
 		void __iomem *csr = devm_ioremap_resource(dev, res);
@@ -812,7 +629,7 @@ static int xgene_ahci_probe(struct platform_device *pdev)
 	dev_dbg(dev, "VAddr 0x%p Mmio VAddr 0x%p\n", ctx->csr_core,
 		hpriv->mmio);
 
-	/* Select ATA */
+	 
 	if ((rc = xgene_ahci_mux_select(ctx))) {
 		dev_err(dev, "SATA mux selection failed error %d\n", rc);
 		return -ENODEV;
@@ -823,7 +640,7 @@ static int xgene_ahci_probe(struct platform_device *pdev)
 		goto skip_clk_phy;
 	}
 
-	/* Due to errata, HW requires full toggle transition */
+	 
 	rc = ahci_platform_enable_clks(hpriv);
 	if (rc)
 		goto disable_resources;
@@ -833,7 +650,7 @@ static int xgene_ahci_probe(struct platform_device *pdev)
 	if (rc)
 		goto disable_resources;
 
-	/* Configure the host controller */
+	 
 	xgene_ahci_hw_init(hpriv);
 skip_clk_phy:
 

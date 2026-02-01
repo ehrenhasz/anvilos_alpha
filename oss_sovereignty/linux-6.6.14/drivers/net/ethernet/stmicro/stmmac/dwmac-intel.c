@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Intel Corporation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/pci.h>
@@ -11,16 +10,12 @@
 #include "stmmac_ptp.h"
 
 struct intel_priv_data {
-	int mdio_adhoc_addr;	/* mdio address for serdes & etc */
+	int mdio_adhoc_addr;	 
 	unsigned long crossts_adj;
 	bool is_pse;
 };
 
-/* This struct is used to associate PCI Function of MAC controller on a board,
- * discovered via DMI, with the address of PHY connected to the MAC. The
- * negative value of the address means that MAC controller is not connected
- * with PHY.
- */
+ 
 struct stmmac_pci_func_data {
 	unsigned int func;
 	int phy_addr;
@@ -86,7 +81,7 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
 
 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
 
-	/* Set the serdes rate and the PCLK rate */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr,
 			    SERDES_GCR0);
 
@@ -102,12 +97,12 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
 
 	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
 
-	/* assert clk_req */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
 	data |= SERDES_PLL_CLK;
 	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
 
-	/* check for clk_ack assertion */
+	 
 	data = serdes_status_poll(priv, serdes_phy_addr,
 				  SERDES_GSR0,
 				  SERDES_PLL_CLK,
@@ -118,12 +113,12 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
 		return data;
 	}
 
-	/* assert lane reset */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
 	data |= SERDES_RST;
 	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
 
-	/* check for assert lane reset reflection */
+	 
 	data = serdes_status_poll(priv, serdes_phy_addr,
 				  SERDES_GSR0,
 				  SERDES_RST,
@@ -134,7 +129,7 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
 		return data;
 	}
 
-	/*  move power state to P0 */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
 
 	data &= ~SERDES_PWR_ST_MASK;
@@ -142,7 +137,7 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
 
 	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
 
-	/* Check for P0 state */
+	 
 	data = serdes_status_poll(priv, serdes_phy_addr,
 				  SERDES_GSR0,
 				  SERDES_PWR_ST_MASK,
@@ -153,7 +148,7 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
 		return data;
 	}
 
-	/* PSE only - ungate SGMII PHY Rx Clock */
+	 
 	if (intel_priv->is_pse)
 		mdiobus_modify(priv->mii, serdes_phy_addr, SERDES_GCR0,
 			       0, SERDES_PHY_RX_CLK);
@@ -173,12 +168,12 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
 
 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
 
-	/* PSE only - gate SGMII PHY Rx Clock */
+	 
 	if (intel_priv->is_pse)
 		mdiobus_modify(priv->mii, serdes_phy_addr, SERDES_GCR0,
 			       SERDES_PHY_RX_CLK, 0);
 
-	/*  move power state to P3 */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
 
 	data &= ~SERDES_PWR_ST_MASK;
@@ -186,7 +181,7 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
 
 	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
 
-	/* Check for P3 state */
+	 
 	data = serdes_status_poll(priv, serdes_phy_addr,
 				  SERDES_GSR0,
 				  SERDES_PWR_ST_MASK,
@@ -197,12 +192,12 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
 		return;
 	}
 
-	/* de-assert clk_req */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
 	data &= ~SERDES_PLL_CLK;
 	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
 
-	/* check for clk_ack de-assert */
+	 
 	data = serdes_status_poll(priv, serdes_phy_addr,
 				  SERDES_GSR0,
 				  SERDES_PLL_CLK,
@@ -213,12 +208,12 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
 		return;
 	}
 
-	/* de-assert lane reset */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
 	data &= ~SERDES_RST;
 	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
 
-	/* check for de-assert lane reset reflection */
+	 
 	data = serdes_status_poll(priv, serdes_phy_addr,
 				  SERDES_GSR0,
 				  SERDES_RST,
@@ -239,7 +234,7 @@ static void intel_speed_mode_2500(struct net_device *ndev, void *intel_data)
 
 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
 
-	/* Determine the link speed mode: 2.5Gbps/1Gbps */
+	 
 	data = mdiobus_read(priv->mii, serdes_phy_addr,
 			    SERDES_GCR);
 
@@ -254,9 +249,7 @@ static void intel_speed_mode_2500(struct net_device *ndev, void *intel_data)
 	}
 }
 
-/* Program PTP Clock Frequency for different variant of
- * Intel mGBE that has slightly different GPO mapping
- */
+ 
 static void intel_mgbe_ptp_clk_freq_config(struct stmmac_priv *priv)
 {
 	struct intel_priv_data *intel_priv;
@@ -267,11 +260,11 @@ static void intel_mgbe_ptp_clk_freq_config(struct stmmac_priv *priv)
 	gpio_value = readl(priv->ioaddr + GMAC_GPIO_STATUS);
 
 	if (intel_priv->is_pse) {
-		/* For PSE GbE, use 200MHz */
+		 
 		gpio_value &= ~PSE_PTP_CLK_FREQ_MASK;
 		gpio_value |= PSE_PTP_CLK_FREQ_200MHZ;
 	} else {
-		/* For PCH GbE, use 200MHz */
+		 
 		gpio_value &= ~PCH_PTP_CLK_FREQ_MASK;
 		gpio_value |= PCH_PTP_CLK_FREQ_200MHZ;
 	}
@@ -322,16 +315,14 @@ static int intel_crosststamp(ktime_t *device,
 
 	intel_priv = priv->plat->bsp_priv;
 
-	/* Both internal crosstimestamping and external triggered event
-	 * timestamping cannot be run concurrently.
-	 */
+	 
 	if (priv->plat->flags & STMMAC_FLAG_EXT_SNAPSHOT_EN)
 		return -EBUSY;
 
 	priv->plat->flags |= STMMAC_FLAG_INT_SNAPSHOT_EN;
 
 	mutex_lock(&priv->aux_ts_lock);
-	/* Enable Internal snapshot trigger */
+	 
 	acr_value = readl(ptpaddr + PTP_ACR);
 	acr_value &= ~PTP_ACR_MASK;
 	switch (priv->plat->int_snapshot_num) {
@@ -354,24 +345,21 @@ static int intel_crosststamp(ktime_t *device,
 	}
 	writel(acr_value, ptpaddr + PTP_ACR);
 
-	/* Clear FIFO */
+	 
 	acr_value = readl(ptpaddr + PTP_ACR);
 	acr_value |= PTP_ACR_ATSFC;
 	writel(acr_value, ptpaddr + PTP_ACR);
-	/* Release the mutex */
+	 
 	mutex_unlock(&priv->aux_ts_lock);
 
-	/* Trigger Internal snapshot signal
-	 * Create a rising edge by just toggle the GPO1 to low
-	 * and back to high.
-	 */
+	 
 	gpio_value = readl(ioaddr + GMAC_GPIO_STATUS);
 	gpio_value &= ~GMAC_GPO1;
 	writel(gpio_value, ioaddr + GMAC_GPIO_STATUS);
 	gpio_value |= GMAC_GPO1;
 	writel(gpio_value, ioaddr + GMAC_GPIO_STATUS);
 
-	/* Time sync done Indication - Interrupt method */
+	 
 	if (!wait_event_interruptible_timeout(priv->tstamp_busy_wait,
 					      stmmac_cross_ts_isr(priv),
 					      HZ / 100)) {
@@ -383,7 +371,7 @@ static int intel_crosststamp(ktime_t *device,
 			GMAC_TIMESTAMP_ATSNS_MASK) >>
 			GMAC_TIMESTAMP_ATSNS_SHIFT;
 
-	/* Repeat until the timestamps are from the FIFO last segment */
+	 
 	for (i = 0; i < num_snapshot; i++) {
 		read_lock_irqsave(&priv->ptp_lock, flags);
 		stmmac_get_ptptime(priv, ptpaddr, &ptp_time);
@@ -405,9 +393,7 @@ static void intel_mgbe_pse_crossts_adj(struct intel_priv_data *intel_priv,
 	if (boot_cpu_has(X86_FEATURE_ART)) {
 		unsigned int art_freq;
 
-		/* On systems that support ART, ART frequency can be obtained
-		 * from ECX register of CPUID leaf (0x15).
-		 */
+		 
 		art_freq = cpuid_ecx(ART_CPUID_LEAF);
 		do_div(art_freq, base);
 		intel_priv->crossts_adj = art_freq;
@@ -416,30 +402,30 @@ static void intel_mgbe_pse_crossts_adj(struct intel_priv_data *intel_priv,
 
 static void common_default_data(struct plat_stmmacenet_data *plat)
 {
-	plat->clk_csr = 2;	/* clk_csr_i = 20-35MHz & MDC = clk_csr_i/16 */
+	plat->clk_csr = 2;	 
 	plat->has_gmac = 1;
 	plat->force_sf_dma_mode = 1;
 
 	plat->mdio_bus_data->needs_reset = true;
 
-	/* Set default value for multicast hash bins */
+	 
 	plat->multicast_filter_bins = HASH_TABLE_SIZE;
 
-	/* Set default value for unicast filter entries */
+	 
 	plat->unicast_filter_entries = 1;
 
-	/* Set the maxmtu to a default of JUMBO_LEN */
+	 
 	plat->maxmtu = JUMBO_LEN;
 
-	/* Set default number of RX and TX queues to use */
+	 
 	plat->tx_queues_to_use = 1;
 	plat->rx_queues_to_use = 1;
 
-	/* Disable Priority config by default */
+	 
 	plat->tx_queues_cfg[0].use_prio = false;
 	plat->rx_queues_cfg[0].use_prio = false;
 
-	/* Disable RX queues routing by default */
+	 
 	plat->rx_queues_cfg[0].pkt_route = 0x0;
 }
 
@@ -459,15 +445,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
 	plat->force_sf_dma_mode = 0;
 	plat->flags |= (STMMAC_FLAG_TSO_EN | STMMAC_FLAG_SPH_DISABLE);
 
-	/* Multiplying factor to the clk_eee_i clock time
-	 * period to make it closer to 100 ns. This value
-	 * should be programmed such that the clk_eee_time_period *
-	 * (MULT_FACT_100NS + 1) should be within 80 ns to 120 ns
-	 * clk_eee frequency is 19.2Mhz
-	 * clk_eee_time_period is 52ns
-	 * 52ns * (1 + 1) = 104ns
-	 * MULT_FACT_100NS = 1
-	 */
+	 
 	plat->mult_fact_100ns = 1;
 
 	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
@@ -476,24 +454,24 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
 		plat->rx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
 		plat->rx_queues_cfg[i].chan = i;
 
-		/* Disable Priority config by default */
+		 
 		plat->rx_queues_cfg[i].use_prio = false;
 
-		/* Disable RX queues routing by default */
+		 
 		plat->rx_queues_cfg[i].pkt_route = 0x0;
 	}
 
 	for (i = 0; i < plat->tx_queues_to_use; i++) {
 		plat->tx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
 
-		/* Disable Priority config by default */
+		 
 		plat->tx_queues_cfg[i].use_prio = false;
-		/* Default TX Q0 to use TSO and rest TXQ for TBS */
+		 
 		if (i > 0)
 			plat->tx_queues_cfg[i].tbs_en = 1;
 	}
 
-	/* FIFO size is 4096 bytes for 1 tx/rx queue */
+	 
 	plat->tx_fifo_size = plat->tx_queues_to_use * 4096;
 	plat->rx_fifo_size = plat->rx_queues_to_use * 4096;
 
@@ -530,7 +508,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
 	plat->ptp_max_adj = plat->clk_ptp_rate;
 	plat->eee_usecs_rate = plat->clk_ptp_rate;
 
-	/* Set system clock */
+	 
 	sprintf(clk_name, "%s-%s", "stmmac", pci_name(pdev));
 
 	plat->stmmac_clk = clk_register_fixed_rate(&pdev->dev,
@@ -550,28 +528,26 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
 
 	plat->ptp_clk_freq_config = intel_mgbe_ptp_clk_freq_config;
 
-	/* Set default value for multicast hash bins */
+	 
 	plat->multicast_filter_bins = HASH_TABLE_SIZE;
 
-	/* Set default value for unicast filter entries */
+	 
 	plat->unicast_filter_entries = 1;
 
-	/* Set the maxmtu to a default of JUMBO_LEN */
+	 
 	plat->maxmtu = JUMBO_LEN;
 
 	plat->flags |= STMMAC_FLAG_VLAN_FAIL_Q_EN;
 
-	/* Use the last Rx queue */
+	 
 	plat->vlan_fail_q = plat->rx_queues_to_use - 1;
 
-	/* For fixed-link setup, we allow phy-mode setting */
+	 
 	fwnode = dev_fwnode(&pdev->dev);
 	if (fwnode) {
 		int phy_mode;
 
-		/* "phy-mode" setting is optional. If it is set,
-		 *  we allow either sgmii or 1000base-x for now.
-		 */
+		 
 		phy_mode = fwnode_get_phy_mode(fwnode);
 		if (phy_mode >= 0) {
 			if (phy_mode == PHY_INTERFACE_MODE_SGMII ||
@@ -582,14 +558,14 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
 		}
 	}
 
-	/* Intel mgbe SGMII interface uses pcs-xcps */
+	 
 	if (plat->phy_interface == PHY_INTERFACE_MODE_SGMII ||
 	    plat->phy_interface == PHY_INTERFACE_MODE_1000BASEX) {
 		plat->mdio_bus_data->has_xpcs = true;
 		plat->mdio_bus_data->xpcs_an_inband = true;
 	}
 
-	/* For fixed-link setup, we clear xpcs_an_inband */
+	 
 	if (fwnode) {
 		struct fwnode_handle *fixed_node;
 
@@ -600,7 +576,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
 		fwnode_handle_put(fixed_node);
 	}
 
-	/* Ensure mdio bus scan skips intel serdes and pcs-xpcs */
+	 
 	plat->mdio_bus_data->phy_mask = 1 << INTEL_MGBE_ADHOC_ADDR;
 	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
 
@@ -610,7 +586,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
 	plat->crosststamp = intel_crosststamp;
 	plat->flags &= ~STMMAC_FLAG_INT_SNAPSHOT_EN;
 
-	/* Setup MSI vector offset specific to Intel mGbE controller */
+	 
 	plat->msi_mac_vec = 29;
 	plat->msi_lpi_vec = 28;
 	plat->msi_sfty_ce_vec = 27;
@@ -812,7 +788,7 @@ static int adls_sgmii_phy0_data(struct pci_dev *pdev,
 	plat->bus_id = 1;
 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
 
-	/* SerDes power up and power down are done in BIOS for ADL */
+	 
 
 	return tgl_common_data(pdev, plat);
 }
@@ -827,7 +803,7 @@ static int adls_sgmii_phy1_data(struct pci_dev *pdev,
 	plat->bus_id = 2;
 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
 
-	/* SerDes power up and power down are done in BIOS for ADL */
+	 
 
 	return tgl_common_data(pdev, plat);
 }
@@ -876,11 +852,7 @@ static const struct dmi_system_id quark_pci_dmi[] = {
 		},
 		.driver_data = (void *)&galileo_stmmac_dmi_data,
 	},
-	/* There are 2 types of SIMATIC IOT2000: IOT2020 and IOT2040.
-	 * The asset tag "6ES7647-0AA00-0YA2" is only for IOT2020 which
-	 * has only one pci network device while other asset tags are
-	 * for IOT2040 which has two.
-	 */
+	 
 	{
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "SIMATIC IOT2000"),
@@ -903,22 +875,17 @@ static int quark_default_data(struct pci_dev *pdev,
 {
 	int ret;
 
-	/* Set common default data first */
+	 
 	common_default_data(plat);
 
-	/* Refuse to load the driver and register net device if MAC controller
-	 * does not connect to any PHY interface.
-	 */
+	 
 	ret = stmmac_pci_find_phy_addr(pdev, quark_pci_dmi);
 	if (ret < 0) {
-		/* Return error to the caller on DMI enabled boards. */
+		 
 		if (dmi_get_system_info(DMI_BOARD_NAME))
 			return ret;
 
-		/* Galileo boards with old firmware don't support DMI. We always
-		 * use 1 here as PHY address, so at least the first found MAC
-		 * controller would be probed.
-		 */
+		 
 		ret = 1;
 	}
 
@@ -929,7 +896,7 @@ static int quark_default_data(struct pci_dev *pdev,
 	plat->dma_cfg->pbl = 16;
 	plat->dma_cfg->pblx8 = true;
 	plat->dma_cfg->fixed_burst = 1;
-	/* AXI (TODO) */
+	 
 
 	return 0;
 }
@@ -982,13 +949,13 @@ static int stmmac_config_multi_msi(struct pci_dev *pdev,
 		return ret;
 	}
 
-	/* For RX MSI */
+	 
 	for (i = 0; i < plat->rx_queues_to_use; i++) {
 		res->rx_irq[i] = pci_irq_vector(pdev,
 						plat->msi_rx_base_vec + i * 2);
 	}
 
-	/* For TX MSI */
+	 
 	for (i = 0; i < plat->tx_queues_to_use; i++) {
 		res->tx_irq[i] = pci_irq_vector(pdev,
 						plat->msi_tx_base_vec + i * 2);
@@ -1011,18 +978,7 @@ static int stmmac_config_multi_msi(struct pci_dev *pdev,
 	return 0;
 }
 
-/**
- * intel_eth_pci_probe
- *
- * @pdev: pci device pointer
- * @id: pointer to table of device id/id's.
- *
- * Description: This probing function gets called for all PCI devices which
- * match the ID table and are not "owned" by other driver yet. This function
- * gets passed a "struct pci_dev *" for each device whose entry in the ID table
- * matches the device. The probe functions returns zero when the driver choose
- * to take "ownership" of the device or an error code(-ve no) otherwise.
- */
+ 
 static int intel_eth_pci_probe(struct pci_dev *pdev,
 			       const struct pci_device_id *id)
 {
@@ -1057,7 +1013,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
 	if (!plat->safety_feat_cfg)
 		return -ENOMEM;
 
-	/* Enable pci device */
+	 
 	ret = pcim_enable_device(pdev);
 	if (ret) {
 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
@@ -1075,10 +1031,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
 	intel_priv->mdio_adhoc_addr = INTEL_MGBE_ADHOC_ADDR;
 	intel_priv->crossts_adj = 1;
 
-	/* Initialize all MSI vectors to invalid so that it can be set
-	 * according to platform data settings below.
-	 * Note: MSI vector takes value from 0 upto 31 (STMMAC_MSI_VEC_MAX)
-	 */
+	 
 	plat->msi_mac_vec = STMMAC_MSI_VEC_MAX;
 	plat->msi_wol_vec = STMMAC_MSI_VEC_MAX;
 	plat->msi_lpi_vec = STMMAC_MSI_VEC_MAX;
@@ -1124,13 +1077,7 @@ err_alloc_irq:
 	return ret;
 }
 
-/**
- * intel_eth_pci_remove
- *
- * @pdev: pci device pointer
- * Description: this function calls the main to free the net resources
- * and releases the PCI resources.
- */
+ 
 static void intel_eth_pci_remove(struct pci_dev *pdev)
 {
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
@@ -1184,9 +1131,7 @@ static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
 #define PCI_DEVICE_ID_INTEL_EHL_RGMII1G		0x4b30
 #define PCI_DEVICE_ID_INTEL_EHL_SGMII1G		0x4b31
 #define PCI_DEVICE_ID_INTEL_EHL_SGMII2G5	0x4b32
-/* Intel(R) Programmable Services Engine (Intel(R) PSE) consist of 2 MAC
- * which are named PSE0 and PSE1
- */
+ 
 #define PCI_DEVICE_ID_INTEL_EHL_PSE0_RGMII1G	0x4ba0
 #define PCI_DEVICE_ID_INTEL_EHL_PSE0_SGMII1G	0x4ba1
 #define PCI_DEVICE_ID_INTEL_EHL_PSE0_SGMII2G5	0x4ba2

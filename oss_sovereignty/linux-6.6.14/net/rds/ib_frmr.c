@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016 Oracle.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "ib_mr.h"
 
@@ -40,9 +10,7 @@ rds_transition_frwr_state(struct rds_ib_mr *ibmr,
 	if (cmpxchg(&ibmr->u.frmr.fr_state,
 		    old_state, new_state) == old_state &&
 	    old_state == FRMR_IS_INUSE) {
-		/* enforce order of ibmr->u.frmr.fr_state update
-		 * before decrementing i_fastreg_inuse_count
-		 */
+		 
 		smp_mb__before_atomic();
 		atomic_dec(&ibmr->ic->i_fastreg_inuse_count);
 		if (waitqueue_active(&rds_ib_ring_empty_wait))
@@ -114,7 +82,7 @@ static void rds_ib_free_frmr(struct rds_ib_mr *ibmr, bool drop)
 	atomic_add(ibmr->sg_len, &pool->free_pinned);
 	atomic_inc(&pool->dirty_count);
 
-	/* If we've pinned too many pages, request a flush */
+	 
 	if (atomic_read(&pool->free_pinned) >= pool->max_free_pinned ||
 	    atomic_read(&pool->dirty_count) >= pool->max_items / 5)
 		queue_delayed_work(rds_ib_mr_wq, &pool->flush_worker, 10);
@@ -142,11 +110,7 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
 
 	atomic_inc(&ibmr->ic->i_fastreg_inuse_count);
 
-	/* Perform a WR for the fast_reg_mr. Each individual page
-	 * in the sg list is added to the fast reg page list and placed
-	 * inside the fast_reg_mr WR.  The key used is a rolling 8bit
-	 * counter, which should guarantee uniqueness.
-	 */
+	 
 	ib_update_fast_reg_key(frmr->mr, ibmr->remap_count++);
 	frmr->fr_reg = true;
 
@@ -163,7 +127,7 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
 
 	ret = ib_post_send(ibmr->ic->i_cm_id->qp, &reg_wr.wr, NULL);
 	if (unlikely(ret)) {
-		/* Failure here can be because of -ENOMEM as well */
+		 
 		rds_transition_frwr_state(ibmr, FRMR_IS_INUSE, FRMR_IS_STALE);
 
 		atomic_inc(&ibmr->ic->i_fastreg_wrs);
@@ -173,10 +137,7 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
 		goto out;
 	}
 
-	/* Wait for the registration to complete in order to prevent an invalid
-	 * access error resulting from a race between the memory region already
-	 * being accessed while registration is still pending.
-	 */
+	 
 	wait_event(frmr->fr_reg_done, !frmr->fr_reg);
 
 out:
@@ -195,9 +156,7 @@ static int rds_ib_map_frmr(struct rds_ib_device *rds_ibdev,
 	u32 len;
 	int ret = 0;
 
-	/* We want to teardown old ibmr values here and fill it up with
-	 * new sg values
-	 */
+	 
 	rds_ib_teardown_mr(ibmr);
 
 	ibmr->sg = sg;
@@ -294,25 +253,14 @@ static int rds_ib_post_inv(struct rds_ib_mr *ibmr)
 	if (unlikely(ret)) {
 		rds_transition_frwr_state(ibmr, FRMR_IS_INUSE, FRMR_IS_STALE);
 		frmr->fr_inv = false;
-		/* enforce order of frmr->fr_inv update
-		 * before incrementing i_fastreg_wrs
-		 */
+		 
 		smp_mb__before_atomic();
 		atomic_inc(&ibmr->ic->i_fastreg_wrs);
 		pr_err("RDS/IB: %s returned error(%d)\n", __func__, ret);
 		goto out;
 	}
 
-	/* Wait for the FRMR_IS_FREE (or FRMR_IS_STALE) transition in order to
-	 * 1) avoid a silly bouncing between "clean_list" and "drop_list"
-	 *    triggered by function "rds_ib_reg_frmr" as it is releases frmr
-	 *    regions whose state is not "FRMR_IS_FREE" right away.
-	 * 2) prevents an invalid access error in a race
-	 *    from a pending "IB_WR_LOCAL_INV" operation
-	 *    with a teardown ("dma_unmap_sg", "put_page")
-	 *    and de-registration ("ib_dereg_mr") of the corresponding
-	 *    memory region.
-	 */
+	 
 	wait_event(frmr->fr_inv_done, frmr->fr_state != FRMR_IS_INUSE);
 
 out:
@@ -347,9 +295,7 @@ void rds_ib_mr_cqe_handler(struct rds_ib_connection *ic, struct ib_wc *wc)
 		wake_up(&frmr->fr_reg_done);
 	}
 
-	/* enforce order of frmr->{fr_reg,fr_inv} update
-	 * before incrementing i_fastreg_wrs
-	 */
+	 
 	smp_mb__before_atomic();
 	atomic_inc(&ic->i_fastreg_wrs);
 }
@@ -362,7 +308,7 @@ void rds_ib_unreg_frmr(struct list_head *list, unsigned int *nfreed,
 	int ret = 0, ret2;
 	unsigned int freed = *nfreed;
 
-	/* String all ib_mr's onto one list and hand them to ib_unmap_fmr */
+	 
 	list_for_each_entry(ibmr, list, unmap_list) {
 		if (ibmr->sg_dma_len) {
 			ret2 = rds_ib_post_inv(ibmr);
@@ -374,13 +320,13 @@ void rds_ib_unreg_frmr(struct list_head *list, unsigned int *nfreed,
 	if (ret)
 		pr_warn("RDS/IB: %s failed (err=%d)\n", __func__, ret);
 
-	/* Now we can destroy the DMA mapping and unpin any pages */
+	 
 	list_for_each_entry_safe(ibmr, next, list, unmap_list) {
 		*unpinned += ibmr->sg_len;
 		frmr = &ibmr->u.frmr;
 		__rds_ib_teardown_mr(ibmr);
 		if (freed < goal || frmr->fr_state == FRMR_IS_STALE) {
-			/* Don't de-allocate if the MR is not free yet */
+			 
 			if (frmr->fr_state == FRMR_IS_INUSE)
 				continue;
 
@@ -408,7 +354,7 @@ struct rds_ib_mr *rds_ib_reg_frmr(struct rds_ib_device *rds_ibdev,
 	int ret;
 
 	if (!ic) {
-		/* TODO: Add FRWR support for RDS_GET_MR using proxy qp*/
+		 
 		return ERR_PTR(-EOPNOTSUPP);
 	}
 

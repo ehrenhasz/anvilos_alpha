@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -167,7 +164,7 @@ int vnic_wq_disable(struct vnic_wq *wq)
 
 	iowrite32(0, &wq->ctrl->enable);
 
-	/* Wait for HW to ACK disable request */
+	 
 	for (wait = 0; wait < 1000; wait++) {
 		if (!(ioread32(&wq->ctrl->running)))
 			return 0;

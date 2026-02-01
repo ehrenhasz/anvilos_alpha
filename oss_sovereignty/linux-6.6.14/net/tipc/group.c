@@ -1,38 +1,4 @@
-/*
- * net/tipc/group.c: TIPC group messaging code
- *
- * Copyright (c) 2017, Ericsson AB
- * Copyright (c) 2020, Red Hat Inc
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "core.h"
 #include "addr.h"
@@ -125,16 +91,16 @@ static int tipc_group_rcvbuf_limit(struct tipc_group *grp)
 	int max_active, active_pool, idle_pool;
 	int mcnt = grp->member_cnt + 1;
 
-	/* Limit simultaneous reception from other members */
+	 
 	max_active = min(mcnt / 8, 64);
 	max_active = max(max_active, 16);
 	grp->max_active = max_active;
 
-	/* Reserve blocks for active and idle members */
+	 
 	active_pool = max_active * ADV_ACTIVE;
 	idle_pool = (mcnt - max_active) * ADV_IDLE;
 
-	/* Scale to bytes, considering worst-case truesize/msgsize ratio */
+	 
 	return (active_pool + idle_pool) * FLOWCTL_BLK_SZ * 4;
 }
 
@@ -340,7 +306,7 @@ static void tipc_group_delete_member(struct tipc_group *grp,
 	rb_erase(&m->tree_node, &grp->members);
 	grp->member_cnt--;
 
-	/* Check if we were waiting for replicast ack from this member */
+	 
 	if (grp->bc_ackers && less(m->bc_acked, grp->bc_snd_nxt - 1))
 		grp->bc_ackers--;
 
@@ -348,7 +314,7 @@ static void tipc_group_delete_member(struct tipc_group *grp,
 	list_del_init(&m->small_win);
 	tipc_group_decr_active(grp, m);
 
-	/* If last member on a node, remove node from dest list */
+	 
 	if (!tipc_group_find_node(grp, m->node))
 		tipc_nlist_del(&grp->dests, m->node);
 
@@ -384,7 +350,7 @@ void tipc_group_update_member(struct tipc_member *m, int len)
 
 	list_del_init(&m->small_win);
 
-	/* Sort member into small_window members' list */
+	 
 	list_for_each_entry_safe(_m, tmp, &grp->small_win, small_win) {
 		if (_m->window > m->window)
 			break;
@@ -408,7 +374,7 @@ void tipc_group_update_bc_members(struct tipc_group *grp, int len, bool ack)
 		}
 	}
 
-	/* Mark number of acknowledges to expect, if any */
+	 
 	if (ack)
 		grp->bc_ackers = ackers;
 	grp->bc_snd_nxt++;
@@ -433,7 +399,7 @@ bool tipc_group_cong(struct tipc_group *grp, u32 dnode, u32 dport,
 
 	*grp->open = false;
 
-	/* If not fully advertised, do it now to prevent mutual blocking */
+	 
 	adv = m->advertised;
 	state = m->state;
 	if (state == MBR_JOINED && adv == ADV_IDLE)
@@ -452,7 +418,7 @@ bool tipc_group_bc_cong(struct tipc_group *grp, int len)
 {
 	struct tipc_member *m = NULL;
 
-	/* If prev bcast was replicast, reject until all receivers have acked */
+	 
 	if (grp->bc_ackers) {
 		*grp->open = false;
 		return true;
@@ -467,8 +433,7 @@ bool tipc_group_bc_cong(struct tipc_group *grp, int len)
 	return tipc_group_cong(grp, m->node, m->port, len, &m);
 }
 
-/* tipc_group_sort_msg() - sort msg into queue by bcast sequence number
- */
+ 
 static void tipc_group_sort_msg(struct sk_buff *skb, struct sk_buff_head *defq)
 {
 	struct tipc_msg *_hdr, *hdr = buf_msg(skb);
@@ -476,7 +441,7 @@ static void tipc_group_sort_msg(struct sk_buff *skb, struct sk_buff_head *defq)
 	struct sk_buff *_skb, *tmp;
 	int mtyp = msg_type(hdr);
 
-	/* Bcast/mcast may be bypassed by ucast or other bcast, - sort it in */
+	 
 	if (mtyp == TIPC_GRP_BCAST_MSG || mtyp == TIPC_GRP_MCAST_MSG) {
 		skb_queue_walk_safe(defq, _skb, tmp) {
 			_hdr = buf_msg(_skb);
@@ -485,14 +450,13 @@ static void tipc_group_sort_msg(struct sk_buff *skb, struct sk_buff_head *defq)
 			__skb_queue_before(defq, _skb, skb);
 			return;
 		}
-		/* Bcast was not bypassed, - add to tail */
+		 
 	}
-	/* Unicasts are never bypassed, - always add to tail */
+	 
 	__skb_queue_tail(defq, skb);
 }
 
-/* tipc_group_filter_msg() - determine if we should accept arriving message
- */
+ 
 void tipc_group_filter_msg(struct tipc_group *grp, struct sk_buff_head *inputq,
 			   struct sk_buff_head *xmitq)
 {
@@ -536,7 +500,7 @@ void tipc_group_filter_msg(struct tipc_group *grp, struct sk_buff_head *inputq,
 		if (more(msg_grp_bc_seqno(hdr), m->bc_rcv_nxt))
 			break;
 
-		/* Decide what to do with message */
+		 
 		switch (mtyp) {
 		case TIPC_GRP_MCAST_MSG:
 			if (msg_nameinst(hdr) != grp->instance) {
@@ -560,7 +524,7 @@ void tipc_group_filter_msg(struct tipc_group *grp, struct sk_buff_head *inputq,
 			break;
 		}
 
-		/* Execute decisions */
+		 
 		__skb_dequeue(defq);
 		if (deliver)
 			__skb_queue_tail(inputq, skb);
@@ -602,7 +566,7 @@ void tipc_group_update_rcv_win(struct tipc_group *grp, int blks, u32 node,
 
 	switch (m->state) {
 	case MBR_JOINED:
-		/* First, decide if member can go active */
+		 
 		if (active_cnt <= max_active) {
 			m->state = MBR_ACTIVE;
 			list_add_tail(&m->list, active);
@@ -616,7 +580,7 @@ void tipc_group_update_rcv_win(struct tipc_group *grp, int blks, u32 node,
 		if (active_cnt < reclaim_limit)
 			break;
 
-		/* Reclaim from oldest active member, if possible */
+		 
 		if (!list_empty(active)) {
 			rm = list_first_entry(active, struct tipc_member, list);
 			rm->state = MBR_RECLAIMING;
@@ -624,7 +588,7 @@ void tipc_group_update_rcv_win(struct tipc_group *grp, int blks, u32 node,
 			tipc_group_proto_xmit(grp, rm, GRP_RECLAIM_MSG, xmitq);
 			break;
 		}
-		/* Nobody to reclaim from; - revert oldest pending to JOINED */
+		 
 		pm = list_first_entry(&grp->pending, struct tipc_member, list);
 		list_del_init(&pm->list);
 		pm->state = MBR_JOINED;
@@ -650,7 +614,7 @@ void tipc_group_update_rcv_win(struct tipc_group *grp, int blks, u32 node,
 		if (list_empty(&grp->pending))
 			return;
 
-		/* Set oldest pending member to active and advertise */
+		 
 		pm = list_first_entry(&grp->pending, struct tipc_member, list);
 		pm->state = MBR_ACTIVE;
 		list_move_tail(&pm->list, &grp->active);
@@ -766,11 +730,11 @@ void tipc_group_proto_rcv(struct tipc_group *grp, bool *usr_wakeup,
 		m->bc_rcv_nxt = m->bc_syncpt;
 		m->window += msg_adv_win(hdr);
 
-		/* Wait until PUBLISH event is received if necessary */
+		 
 		if (m->state != MBR_PUBLISHED)
 			return;
 
-		/* Member can be taken into service */
+		 
 		m->state = MBR_JOINED;
 		tipc_group_open(m, usr_wakeup);
 		tipc_group_update_member(m, 0);
@@ -819,23 +783,23 @@ void tipc_group_proto_rcv(struct tipc_group *grp, bool *usr_wakeup,
 
 		remitted = msg_grp_remitted(hdr);
 
-		/* Messages preceding the REMIT still in receive queue */
+		 
 		if (m->advertised > remitted) {
 			m->state = MBR_REMITTED;
 			in_flight = m->advertised - remitted;
 			m->advertised = ADV_IDLE + in_flight;
 			return;
 		}
-		/* This should never happen */
+		 
 		if (m->advertised < remitted)
 			pr_warn_ratelimited("Unexpected REMIT msg\n");
 
-		/* All messages preceding the REMIT have been read */
+		 
 		m->state = MBR_JOINED;
 		grp->active_cnt--;
 		m->advertised = ADV_IDLE;
 
-		/* Set oldest pending member to active and advertise */
+		 
 		if (list_empty(&grp->pending))
 			return;
 		pm = list_first_entry(&grp->pending, struct tipc_member, list);
@@ -850,8 +814,7 @@ void tipc_group_proto_rcv(struct tipc_group *grp, bool *usr_wakeup,
 	}
 }
 
-/* tipc_group_member_evt() - receive and handle a member up/down event
- */
+ 
 void tipc_group_member_evt(struct tipc_group *grp,
 			   bool *usr_wakeup,
 			   int *sk_rcvbuf,
@@ -880,7 +843,7 @@ void tipc_group_member_evt(struct tipc_group *grp,
 
 	switch (event) {
 	case TIPC_PUBLISHED:
-		/* Send and wait for arrival of JOIN message if necessary */
+		 
 		if (!m) {
 			m = tipc_group_create_member(grp, node, port, instance,
 						     MBR_PUBLISHED);
@@ -894,7 +857,7 @@ void tipc_group_member_evt(struct tipc_group *grp,
 		if (m->state != MBR_JOINING)
 			break;
 
-		/* Member can be taken into service */
+		 
 		m->instance = instance;
 		m->state = MBR_JOINED;
 		tipc_group_open(m, usr_wakeup);
@@ -912,7 +875,7 @@ void tipc_group_member_evt(struct tipc_group *grp,
 		list_del_init(&m->list);
 		tipc_group_open(m, usr_wakeup);
 
-		/* Only send event if no LEAVE message can be expected */
+		 
 		if (!tipc_node_is_up(net, node))
 			tipc_group_create_event(grp, m, TIPC_WITHDRAWN,
 						m->bc_rcv_nxt, inputq);

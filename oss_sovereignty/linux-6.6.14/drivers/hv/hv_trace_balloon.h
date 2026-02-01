@@ -42,7 +42,7 @@ TRACE_EVENT(balloon_status,
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE hv_trace_balloon
-#endif /* _HV_TRACE_BALLOON_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

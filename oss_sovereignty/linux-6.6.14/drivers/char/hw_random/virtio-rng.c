@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Randomness driver for virtio
- *  Copyright (C) 2007, 2008 Rusty Russell IBM Corporation
- */
+
+ 
 
 #include <asm/barrier.h>
 #include <linux/err.h>
@@ -23,11 +20,11 @@ struct virtrng_info {
 	int index;
 	bool hwrng_register_done;
 	bool hwrng_removed;
-	/* data transfer */
+	 
 	struct completion have_data;
 	unsigned int data_avail;
 	unsigned int data_idx;
-	/* minimal size returned by rng_buffer_size() */
+	 
 #if SMP_CACHE_BYTES < 32
 	u8 data[32];
 #else
@@ -40,7 +37,7 @@ static void random_recv_done(struct virtqueue *vq)
 	struct virtrng_info *vi = vq->vdev->priv;
 	unsigned int len;
 
-	/* We can get spurious callbacks, e.g. shared IRQs + virtio_pci. */
+	 
 	if (!virtqueue_get_buf(vi->vq, &len))
 		return;
 
@@ -57,7 +54,7 @@ static void request_entropy(struct virtrng_info *vi)
 
 	sg_init_one(&sg, vi->data, sizeof(vi->data));
 
-	/* There should always be room for one buffer. */
+	 
 	virtqueue_add_inbuf(vi->vq, &sg, 1, vi->data, GFP_KERNEL);
 
 	virtqueue_kick(vi->vq);
@@ -87,7 +84,7 @@ static int virtio_read(struct hwrng *rng, void *buf, size_t size, bool wait)
 
 	read = 0;
 
-	/* copy available data */
+	 
 	if (smp_load_acquire(&vi->data_avail)) {
 		chunk = copy_data(vi, buf, size);
 		size -= chunk;
@@ -97,17 +94,13 @@ static int virtio_read(struct hwrng *rng, void *buf, size_t size, bool wait)
 	if (!wait)
 		return read;
 
-	/* We have already copied available entropy,
-	 * so either size is 0 or data_avail is 0
-	 */
+	 
 	while (size != 0) {
-		/* data_avail is 0 but a request is pending */
+		 
 		ret = wait_for_completion_killable(&vi->have_data);
 		if (ret < 0)
 			return ret;
-		/* if vi->data_avail is 0, we have been interrupted
-		 * by a cleanup, but buffer stays in the queue
-		 */
+		 
 		if (vi->data_avail == 0)
 			return read;
 
@@ -151,7 +144,7 @@ static int probe_common(struct virtio_device *vdev)
 	};
 	vdev->priv = vi;
 
-	/* We expect a single virtqueue. */
+	 
 	vi->vq = virtio_find_single_vq(vdev, random_recv_done, "input");
 	if (IS_ERR(vi->vq)) {
 		err = PTR_ERR(vi->vq);
@@ -160,7 +153,7 @@ static int probe_common(struct virtio_device *vdev)
 
 	virtio_device_ready(vdev);
 
-	/* we always have a pending entropy request */
+	 
 	request_entropy(vi);
 
 	return 0;
@@ -223,11 +216,7 @@ static int virtrng_restore(struct virtio_device *vdev)
 	if (!err) {
 		struct virtrng_info *vi = vdev->priv;
 
-		/*
-		 * Set hwrng_removed to ensure that virtio_read()
-		 * does not block waiting for data before the
-		 * registration is complete.
-		 */
+		 
 		vi->hwrng_removed = true;
 		err = hwrng_register(&vi->hwrng);
 		if (!err) {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- *
- * This test attempts to see if the VMX registers change across a syscall (fork).
- */
+
+ 
 
 #include <altivec.h>
 #include <stdio.h>
@@ -29,7 +25,7 @@ int vmx_syscall(void)
 	int ret;
 	int child_ret;
 	for (i = 0; i < 1000; i++) {
-		/* test_vmx will fork() */
+		 
 		ret = test_vmx(varray, &fork_pid);
 		if (fork_pid == -1)
 			return -1;
@@ -45,15 +41,13 @@ int vmx_syscall(void)
 
 int test_vmx_syscall(void)
 {
-	/*
-	 * Setup an environment with much context switching
-	 */
+	 
 	pid_t pid2;
 	pid_t pid;
 	int ret;
 	int child_ret;
 
-	// vcmpequd used in vmx_asm.S is v2.07
+	
 	SKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));
 
 	pid = fork();
@@ -61,11 +55,9 @@ int test_vmx_syscall(void)
 
 	pid2 = fork();
 	ret = vmx_syscall();
-	/* Can't FAIL_IF(pid2 == -1); because we've already forked */
+	 
 	if (pid2 == -1) {
-		/*
-		 * Couldn't fork, ensure child_ret is set and is a fail
-		 */
+		 
 		ret = child_ret = 1;
 	} else {
 		if (pid2)

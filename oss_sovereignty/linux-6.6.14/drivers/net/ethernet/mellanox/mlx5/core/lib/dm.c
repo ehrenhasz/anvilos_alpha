@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2019 Mellanox Technologies
+
+
 
 #include <linux/mlx5/driver.h>
 #include <linux/mlx5/device.h>
@@ -8,7 +8,7 @@
 #include "lib/mlx5.h"
 
 struct mlx5_dm {
-	/* protect access to icm bitmask */
+	 
 	spinlock_t lock;
 	unsigned long *steering_sw_icm_alloc_blocks;
 	unsigned long *header_modify_sw_icm_alloc_blocks;

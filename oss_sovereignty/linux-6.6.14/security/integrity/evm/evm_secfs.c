@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 IBM Corporation
- *
- * Authors:
- * Mimi Zohar <zohar@us.ibm.com>
- *
- * File: evm_secfs.c
- *	- Used to signal when key is on keyring
- *	- Get the key and enable EVM
- */
+
+ 
 
 #include <linux/audit.h>
 #include <linux/uaccess.h>
@@ -26,16 +17,7 @@ static DEFINE_MUTEX(xattr_list_mutex);
 static int evm_xattrs_locked;
 #endif
 
-/**
- * evm_read_key - read() for <securityfs>/evm
- *
- * @filp: file pointer, not actually used
- * @buf: where to put the result
- * @count: maximum to send along
- * @ppos: where to start
- *
- * Returns number of bytes read or error code, as appropriate
- */
+ 
 static ssize_t evm_read_key(struct file *filp, char __user *buf,
 			    size_t count, loff_t *ppos)
 {
@@ -51,18 +33,7 @@ static ssize_t evm_read_key(struct file *filp, char __user *buf,
 	return rc;
 }
 
-/**
- * evm_write_key - write() for <securityfs>/evm
- * @file: file pointer, not actually used
- * @buf: where to get the data from
- * @count: bytes sent
- * @ppos: where to start
- *
- * Used to signal that key is on the kernel key ring.
- * - get the integrity hmac key from the kernel key ring
- * - create list of hmac protected extended attributes
- * Returns number of bytes written or error code, as appropriate
- */
+ 
 static ssize_t evm_write_key(struct file *file, const char __user *buf,
 			     size_t count, loff_t *ppos)
 {
@@ -77,14 +48,11 @@ static ssize_t evm_write_key(struct file *file, const char __user *buf,
 	if (ret)
 		return ret;
 
-	/* Reject invalid values */
+	 
 	if (!i || (i & ~EVM_INIT_MASK) != 0)
 		return -EINVAL;
 
-	/*
-	 * Don't allow a request to enable metadata writes if
-	 * an HMAC key is loaded.
-	 */
+	 
 	if ((i & EVM_ALLOW_METADATA_WRITES) &&
 	    (evm_initialized & EVM_INIT_HMAC) != 0)
 		return -EPERM;
@@ -93,15 +61,13 @@ static ssize_t evm_write_key(struct file *file, const char __user *buf,
 		ret = evm_init_key();
 		if (ret != 0)
 			return ret;
-		/* Forbid further writes after the symmetric key is loaded */
+		 
 		i |= EVM_SETUP_COMPLETE;
 	}
 
 	evm_initialized |= i;
 
-	/* Don't allow protected metadata modification if a symmetric key
-	 * is loaded
-	 */
+	 
 	if (evm_initialized & EVM_INIT_HMAC)
 		evm_initialized &= ~(EVM_ALLOW_METADATA_WRITES);
 
@@ -114,16 +80,7 @@ static const struct file_operations evm_key_ops = {
 };
 
 #ifdef CONFIG_EVM_ADD_XATTRS
-/**
- * evm_read_xattrs - read() for <securityfs>/evm_xattrs
- *
- * @filp: file pointer, not actually used
- * @buf: where to put the result
- * @count: maximum to send along
- * @ppos: where to start
- *
- * Returns number of bytes read or error code, as appropriate
- */
+ 
 static ssize_t evm_read_xattrs(struct file *filp, char __user *buf,
 			       size_t count, loff_t *ppos)
 {
@@ -168,15 +125,7 @@ static ssize_t evm_read_xattrs(struct file *filp, char __user *buf,
 	return rc;
 }
 
-/**
- * evm_write_xattrs - write() for <securityfs>/evm_xattrs
- * @file: file pointer, not actually used
- * @buf: where to get the data from
- * @count: bytes sent
- * @ppos: where to start
- *
- * Returns number of bytes written or error code, as appropriate
- */
+ 
 static ssize_t evm_write_xattrs(struct file *file, const char __user *buf,
 				size_t count, loff_t *ppos)
 {
@@ -214,7 +163,7 @@ static ssize_t evm_write_xattrs(struct file *file, const char __user *buf,
 		goto out;
 	}
 
-	/* Remove any trailing newline */
+	 
 	len = strlen(xattr->name);
 	if (len && xattr->name[len-1] == '\n')
 		xattr->name[len-1] = '\0';
@@ -241,14 +190,7 @@ static ssize_t evm_write_xattrs(struct file *file, const char __user *buf,
 		goto out;
 	}
 
-	/*
-	 * xattr_list_mutex guards against races in evm_read_xattrs().
-	 * Entries are only added to the evm_config_xattrnames list
-	 * and never deleted. Therefore, the list is traversed
-	 * using list_for_each_entry_lockless() without holding
-	 * the mutex in evm_calc_hmac_or_hash(), evm_find_protected_xattrs()
-	 * and evm_protected_xattr().
-	 */
+	 
 	mutex_lock(&xattr_list_mutex);
 	list_for_each_entry(tmp, &evm_config_xattrnames, list) {
 		if (strcmp(xattr->name, tmp->name) == 0) {

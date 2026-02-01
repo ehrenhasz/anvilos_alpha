@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Freescale QUICC Engine USB Host Controller Driver
- *
- * Copyright (c) Freescale Semicondutor, Inc. 2006.
- *               Shlomi Gridish <gridish@freescale.com>
- *               Jerry Huang <Chang-Ming.Huang@freescale.com>
- * Copyright (c) Logic Product Development, Inc. 2007
- *               Peter Barada <peterb@logicpd.com>
- * Copyright (c) MontaVista Software, Inc. 2008.
- *               Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -23,17 +13,17 @@
 #include <soc/fsl/qe/qe.h>
 #include "fhci.h"
 
-/* virtual root hub specific descriptor */
+ 
 static u8 root_hub_des[] = {
-	0x09, /* blength */
-	USB_DT_HUB, /* bDescriptorType;hub-descriptor */
-	0x01, /* bNbrPorts */
-	HUB_CHAR_INDV_PORT_LPSM | HUB_CHAR_NO_OCPM, /* wHubCharacteristics */
-	0x00, /* per-port power, no overcurrent */
-	0x01, /* bPwrOn2pwrGood;2ms */
-	0x00, /* bHubContrCurrent;0mA */
-	0x00, /* DeviceRemoveable */
-	0xff, /* PortPwrCtrlMask */
+	0x09,  
+	USB_DT_HUB,  
+	0x01,  
+	HUB_CHAR_INDV_PORT_LPSM | HUB_CHAR_NO_OCPM,  
+	0x00,  
+	0x01,  
+	0x00,  
+	0x00,  
+	0xff,  
 };
 
 static void fhci_gpio_set_value(struct fhci_hcd *fhci, int gpio_nr, bool on)
@@ -74,7 +64,7 @@ void fhci_config_transceiver(struct fhci_hcd *fhci,
 	fhci_dbg(fhci, "<- %s: %d\n", __func__, status);
 }
 
-/* disable the USB port by clearing the EN bit in the USBMOD register */
+ 
 void fhci_port_disable(struct fhci_hcd *fhci)
 {
 	struct fhci_usb *usb = (struct fhci_usb *)fhci->usb_lld;
@@ -90,11 +80,11 @@ void fhci_port_disable(struct fhci_hcd *fhci)
 	port_status = usb->port_status;
 	usb->port_status = FHCI_PORT_DISABLED;
 
-	/* Enable IDLE since we want to know if something comes along */
+	 
 	usb->saved_msk |= USB_E_IDLE_MASK;
 	out_be16(&usb->fhci->regs->usb_usbmr, usb->saved_msk);
 
-	/* check if during the disconnection process attached new device */
+	 
 	if (port_status == FHCI_PORT_WAITING)
 		fhci_device_connected_interrupt(fhci);
 	usb->vroot_hub->port.wPortStatus &= ~USB_PORT_STAT_ENABLE;
@@ -104,7 +94,7 @@ void fhci_port_disable(struct fhci_hcd *fhci)
 	fhci_dbg(fhci, "<- %s\n", __func__);
 }
 
-/* enable the USB port by setting the EN bit in the USBMOD register */
+ 
 void fhci_port_enable(void *lld)
 {
 	struct fhci_usb *usb = (struct fhci_usb *)lld;
@@ -141,7 +131,7 @@ void fhci_io_port_generate_reset(struct fhci_hcd *fhci)
 	fhci_dbg(fhci, "<- %s\n", __func__);
 }
 
-/* generate the RESET condition on the bus */
+ 
 void fhci_port_reset(void *lld)
 {
 	struct fhci_usb *usb = (struct fhci_usb *)lld;
@@ -152,20 +142,20 @@ void fhci_port_reset(void *lld)
 	fhci_dbg(fhci, "-> %s\n", __func__);
 
 	fhci_stop_sof_timer(fhci);
-	/* disable the USB controller */
+	 
 	mode = in_8(&fhci->regs->usb_usmod);
 	out_8(&fhci->regs->usb_usmod, mode & (~USB_MODE_EN));
 
-	/* disable idle interrupts */
+	 
 	mask = in_be16(&fhci->regs->usb_usbmr);
 	out_be16(&fhci->regs->usb_usbmr, mask & (~USB_E_IDLE_MASK));
 
 	fhci_io_port_generate_reset(fhci);
 
-	/* enable interrupt on this endpoint */
+	 
 	out_be16(&fhci->regs->usb_usbmr, mask);
 
-	/* enable the USB controller */
+	 
 	mode = in_8(&fhci->regs->usb_usmod);
 	out_8(&fhci->regs->usb_usmod, mode | USB_MODE_EN);
 	fhci_start_sof_timer(fhci);

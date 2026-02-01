@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2004-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "core.h"
 
@@ -29,7 +14,7 @@ struct ath6kl_fwlog_slot {
 	__le32 timestamp;
 	__le32 length;
 
-	/* max ATH6KL_FWLOG_PAYLOAD_SIZE bytes */
+	 
 	u8 payload[];
 };
 
@@ -157,7 +142,7 @@ void ath6kl_dbg_dump(enum ATH6K_DEBUG_MASK mask,
 		print_hex_dump_bytes(prefix, DUMP_PREFIX_OFFSET, buf, len);
 	}
 
-	/* tracing code doesn't like null strings :/ */
+	 
 	trace_ath6kl_log_dbg_dump(msg ? msg : "", prefix ? prefix : "",
 				  buf, len);
 }
@@ -216,10 +201,7 @@ void ath6kl_dump_registers(struct ath6kl_device *dev,
 			   irq_proc_reg->rx_lkahd[1]);
 
 		if (dev->ar->mbox_info.gmbox_addr != 0) {
-			/*
-			 * If the target supports GMBOX hardware, dump some
-			 * additional state.
-			 */
+			 
 			ath6kl_dbg(ATH6KL_DBG_IRQ,
 				   "GMBOX Host Int status 2:   0x%x\n",
 				   irq_proc_reg->host_int_status2);
@@ -274,7 +256,7 @@ static void dump_cred_dist(struct htc_endpoint_credit_dist *ep_dist)
 		   "----------------------------------\n");
 }
 
-/* FIXME: move to htc.c */
+ 
 void dump_cred_dist_stats(struct htc_target *target)
 {
 	struct htc_endpoint_credit_dist *ep_list;
@@ -353,7 +335,7 @@ void ath6kl_debug_fwlog_event(struct ath6kl *ar, const void *buf, size_t len)
 	slot->length = cpu_to_le32(len);
 	memcpy(slot->payload, buf, len);
 
-	/* Need to pad each record to fixed length ATH6KL_FWLOG_PAYLOAD_SIZE */
+	 
 	memset(slot->payload + len, 0, ATH6KL_FWLOG_PAYLOAD_SIZE - len);
 
 	spin_lock(&ar->debug.fwlog_queue.lock);
@@ -361,7 +343,7 @@ void ath6kl_debug_fwlog_event(struct ath6kl *ar, const void *buf, size_t len)
 	__skb_queue_tail(&ar->debug.fwlog_queue, skb);
 	complete(&ar->debug.fwlog_completion);
 
-	/* drop oldest entries */
+	 
 	while (skb_queue_len(&ar->debug.fwlog_queue) >
 	       ATH6KL_FWLOG_MAX_ENTRIES) {
 		skb = __skb_dequeue(&ar->debug.fwlog_queue);
@@ -408,14 +390,14 @@ static ssize_t ath6kl_fwlog_read(struct file *file, char __user *user_buf,
 	if (!buf)
 		return -ENOMEM;
 
-	/* read undelivered logs from firmware */
+	 
 	ath6kl_read_fwlogs(ar);
 
 	spin_lock(&ar->debug.fwlog_queue.lock);
 
 	while ((skb = __skb_dequeue(&ar->debug.fwlog_queue))) {
 		if (skb->len > count - len) {
-			/* not enough space, put skb back and leave */
+			 
 			__skb_queue_head(&ar->debug.fwlog_queue, skb);
 			break;
 		}
@@ -429,7 +411,7 @@ static ssize_t ath6kl_fwlog_read(struct file *file, char __user *user_buf,
 
 	spin_unlock(&ar->debug.fwlog_queue.lock);
 
-	/* FIXME: what to do if len == 0? */
+	 
 
 	ret_cnt = simple_read_from_buffer(user_buf, count, ppos, buf, len);
 
@@ -465,7 +447,7 @@ static ssize_t ath6kl_fwlog_block_read(struct file *file,
 	spin_lock(&ar->debug.fwlog_queue.lock);
 
 	if (skb_queue_len(&ar->debug.fwlog_queue) == 0) {
-		/* we must init under queue lock */
+		 
 		init_completion(&ar->debug.fwlog_completion);
 
 		spin_unlock(&ar->debug.fwlog_queue.lock);
@@ -482,7 +464,7 @@ static ssize_t ath6kl_fwlog_block_read(struct file *file,
 
 	while ((skb = __skb_dequeue(&ar->debug.fwlog_queue))) {
 		if (skb->len > count - len) {
-			/* not enough space, put skb back and leave */
+			 
 			__skb_queue_head(&ar->debug.fwlog_queue, skb);
 			break;
 		}
@@ -496,7 +478,7 @@ static ssize_t ath6kl_fwlog_block_read(struct file *file,
 
 	spin_unlock(&ar->debug.fwlog_queue.lock);
 
-	/* FIXME: what to do if len == 0? */
+	 
 
 	not_copied = copy_to_user(user_buf, buf, len);
 	if (not_copied != 0) {
@@ -945,7 +927,7 @@ static int ath6kl_regdump_open(struct inode *inode, struct file *file)
 	__le32 reg_val;
 	int i, status;
 
-	/* Dump all the registers if no register is specified */
+	 
 	if (!ar->debug.dbgfs_diag_reg)
 		n_reg = ath6kl_get_num_reg();
 	else
@@ -1777,18 +1759,11 @@ void ath6kl_debug_init(struct ath6kl *ar)
 	skb_queue_head_init(&ar->debug.fwlog_queue);
 	init_completion(&ar->debug.fwlog_completion);
 
-	/*
-	 * Actually we are lying here but don't know how to read the mask
-	 * value from the firmware.
-	 */
+	 
 	ar->debug.fwlog_mask = 0;
 }
 
-/*
- * Initialisation needs to happen in two stages as fwlog events can come
- * before cfg80211 is initialised, and debugfs depends on cfg80211
- * initialisation.
- */
+ 
 int ath6kl_debug_init_fs(struct ath6kl *ar)
 {
 	ar->debugfs_phy = debugfs_create_dir("ath6kl",

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <stdio.h>
 #include <errno.h>
@@ -12,7 +12,7 @@
 #include "cpupower_intern.h"
 #include "acpi_cppc.h"
 
-/* ACPI CPPC sysfs access ***********************************************/
+ 
 
 static int acpi_cppc_read_file(unsigned int cpu, const char *fname,
 			       char *buf, size_t buflen)

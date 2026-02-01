@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* iptables module for the IPv4 and TCP ECN bits, Version 1.5
- *
- * (C) 2002 by Harald Welte <laforge@netfilter.org>
-*/
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/in.h>
 #include <linux/module.h>
@@ -20,8 +17,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Harald Welte <laforge@netfilter.org>");
 MODULE_DESCRIPTION("Xtables: Explicit Congestion Notification (ECN) flag modification");
 
-/* set ECT codepoint from IP header.
- * 	return false if there was an error. */
+ 
 static inline bool
 set_ect_ip(struct sk_buff *skb, const struct ipt_ECN_info *einfo)
 {
@@ -40,14 +36,14 @@ set_ect_ip(struct sk_buff *skb, const struct ipt_ECN_info *einfo)
 	return true;
 }
 
-/* Return false if there was an error. */
+ 
 static inline bool
 set_ect_tcp(struct sk_buff *skb, const struct ipt_ECN_info *einfo)
 {
 	struct tcphdr _tcph, *tcph;
 	__be16 oldval;
 
-	/* Not enough header? */
+	 
 	tcph = skb_header_pointer(skb, ip_hdrlen(skb), sizeof(_tcph), &_tcph);
 	if (!tcph)
 		return false;

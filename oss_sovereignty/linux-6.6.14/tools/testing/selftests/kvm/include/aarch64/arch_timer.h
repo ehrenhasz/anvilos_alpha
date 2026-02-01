@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ARM Generic Timer specific interface
- */
+ 
+ 
 
 #ifndef SELFTEST_KVM_ARCH_TIMER_H
 #define SELFTEST_KVM_ARCH_TIMER_H
@@ -44,7 +42,7 @@ static inline uint64_t timer_get_cntct(enum arch_timer timer)
 		GUEST_FAIL("Unexpected timer type = %u", timer);
 	}
 
-	/* We should not reach here */
+	 
 	return 0;
 }
 
@@ -75,7 +73,7 @@ static inline uint64_t timer_get_cval(enum arch_timer timer)
 		GUEST_FAIL("Unexpected timer type = %u", timer);
 	}
 
-	/* We should not reach here */
+	 
 	return 0;
 }
 
@@ -122,7 +120,7 @@ static inline uint32_t timer_get_ctl(enum arch_timer timer)
 		GUEST_FAIL("Unexpected timer type = %u", timer);
 	}
 
-	/* We should not reach here */
+	 
 	return 0;
 }
 
@@ -139,4 +137,4 @@ static inline void timer_set_next_tval_ms(enum arch_timer timer, uint32_t msec)
 	timer_set_tval(timer, msec_to_cycles(msec));
 }
 
-#endif /* SELFTEST_KVM_ARCH_TIMER_H */
+#endif  

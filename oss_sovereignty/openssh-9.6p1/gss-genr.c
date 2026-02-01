@@ -1,28 +1,6 @@
-/* $OpenBSD: gss-genr.c,v 1.28 2021/01/27 10:05:28 djm Exp $ */
+ 
 
-/*
- * Copyright (c) 2001-2007 Simon Wilkinson. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR `AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 
@@ -45,7 +23,7 @@
 
 #include "ssh-gss.h"
 
-/* sshbuf_get for gss_buffer_desc */
+ 
 int
 ssh_gssapi_get_buffer_desc(struct sshbuf *b, gss_buffer_desc *g)
 {
@@ -60,7 +38,7 @@ ssh_gssapi_get_buffer_desc(struct sshbuf *b, gss_buffer_desc *g)
 	return 0;
 }
 
-/* Check that the OID in a data stream matches that in the context */
+ 
 int
 ssh_gssapi_check_oid(Gssctxt *ctx, void *data, size_t len)
 {
@@ -69,7 +47,7 @@ ssh_gssapi_check_oid(Gssctxt *ctx, void *data, size_t len)
 	    memcmp(ctx->oid->elements, data, len) == 0);
 }
 
-/* Set the contexts OID from a data stream */
+ 
 void
 ssh_gssapi_set_oid_data(Gssctxt *ctx, void *data, size_t len)
 {
@@ -83,14 +61,14 @@ ssh_gssapi_set_oid_data(Gssctxt *ctx, void *data, size_t len)
 	memcpy(ctx->oid->elements, data, len);
 }
 
-/* Set the contexts OID */
+ 
 void
 ssh_gssapi_set_oid(Gssctxt *ctx, gss_OID oid)
 {
 	ssh_gssapi_set_oid_data(ctx, oid->elements, oid->length);
 }
 
-/* All this effort to report an error ... */
+ 
 void
 ssh_gssapi_error(Gssctxt *ctxt)
 {
@@ -121,7 +99,7 @@ ssh_gssapi_last_error(Gssctxt *ctxt, OM_uint32 *major_status,
 		*minor_status = ctxt->minor;
 
 	ctx = 0;
-	/* The GSSAPI error */
+	 
 	do {
 		gss_display_status(&lmin, ctxt->major,
 		    GSS_C_GSS_CODE, ctxt->oid, &ctx, &msg);
@@ -133,7 +111,7 @@ ssh_gssapi_last_error(Gssctxt *ctxt, OM_uint32 *major_status,
 		gss_release_buffer(&lmin, &msg);
 	} while (ctx != 0);
 
-	/* The mechanism specific error */
+	 
 	do {
 		gss_display_status(&lmin, ctxt->minor,
 		    GSS_C_MECH_CODE, ctxt->oid, &ctx, &msg);
@@ -152,12 +130,7 @@ ssh_gssapi_last_error(Gssctxt *ctxt, OM_uint32 *major_status,
 	return (ret);
 }
 
-/*
- * Initialise our GSSAPI context. We use this opaque structure to contain all
- * of the data which both the client and server need to persist across
- * {accept,init}_sec_context calls, so that when we do it from the userauth
- * stuff life is a little easier
- */
+ 
 void
 ssh_gssapi_build_ctx(Gssctxt **ctx)
 {
@@ -170,7 +143,7 @@ ssh_gssapi_build_ctx(Gssctxt **ctx)
 	(*ctx)->client_creds = GSS_C_NO_CREDENTIAL;
 }
 
-/* Delete our context, providing it has been built correctly */
+ 
 void
 ssh_gssapi_delete_ctx(Gssctxt **ctx)
 {
@@ -198,12 +171,7 @@ ssh_gssapi_delete_ctx(Gssctxt **ctx)
 	*ctx = NULL;
 }
 
-/*
- * Wrapper to init_sec_context
- * Requires that the context contains:
- *	oid
- *	server name (from ssh_gssapi_import_name)
- */
+ 
 OM_uint32
 ssh_gssapi_init_ctx(Gssctxt *ctx, int deleg_creds, gss_buffer_desc *recv_tok,
     gss_buffer_desc* send_tok, OM_uint32 *flags)
@@ -226,7 +194,7 @@ ssh_gssapi_init_ctx(Gssctxt *ctx, int deleg_creds, gss_buffer_desc *recv_tok,
 	return (ctx->major);
 }
 
-/* Create a service name for the given host */
+ 
 OM_uint32
 ssh_gssapi_import_name(Gssctxt *ctx, const char *host)
 {
@@ -277,10 +245,10 @@ ssh_gssapi_check_mechanism(Gssctxt **ctx, gss_OID oid, const char *host)
 	OM_uint32 major, minor;
 	gss_OID_desc spnego_oid = {6, (void *)"\x2B\x06\x01\x05\x05\x02"};
 
-	/* RFC 4462 says we MUST NOT do SPNEGO */
+	 
 	if (oid->length == spnego_oid.length && 
 	    (memcmp(oid->elements, spnego_oid.elements, oid->length) == 0))
-		return 0; /* false */
+		return 0;  
 
 	ssh_gssapi_build_ctx(ctx);
 	ssh_gssapi_set_oid(*ctx, oid);
@@ -300,4 +268,4 @@ ssh_gssapi_check_mechanism(Gssctxt **ctx, gss_OID oid, const char *host)
 	return (!GSS_ERROR(major));
 }
 
-#endif /* GSSAPI */
+#endif  

@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c)  2018 Intel Corporation */
+
+ 
 
 #include "igc_mac.h"
 #include "igc_nvm.h"
 
-/**
- * igc_poll_eerd_eewr_done - Poll for EEPROM read/write completion
- * @hw: pointer to the HW structure
- * @ee_reg: EEPROM flag for polling
- *
- * Polls the EEPROM status bit for either read or write completion based
- * upon the value of 'ee_reg'.
- */
+ 
 static s32 igc_poll_eerd_eewr_done(struct igc_hw *hw, int ee_reg)
 {
 	s32 ret_val = -IGC_ERR_NVM;
@@ -35,14 +28,7 @@ static s32 igc_poll_eerd_eewr_done(struct igc_hw *hw, int ee_reg)
 	return ret_val;
 }
 
-/**
- * igc_acquire_nvm - Generic request for access to EEPROM
- * @hw: pointer to the HW structure
- *
- * Set the EEPROM access request bit and wait for EEPROM access grant bit.
- * Return successful if access grant bit set, else clear the request for
- * EEPROM access and return -IGC_ERR_NVM (-1).
- */
+ 
 s32 igc_acquire_nvm(struct igc_hw *hw)
 {
 	s32 timeout = IGC_NVM_GRANT_ATTEMPTS;
@@ -70,12 +56,7 @@ s32 igc_acquire_nvm(struct igc_hw *hw)
 	return ret_val;
 }
 
-/**
- * igc_release_nvm - Release exclusive access to EEPROM
- * @hw: pointer to the HW structure
- *
- * Stop any current commands to the EEPROM and clear the EEPROM request bit.
- */
+ 
 void igc_release_nvm(struct igc_hw *hw)
 {
 	u32 eecd;
@@ -85,24 +66,14 @@ void igc_release_nvm(struct igc_hw *hw)
 	wr32(IGC_EECD, eecd);
 }
 
-/**
- * igc_read_nvm_eerd - Reads EEPROM using EERD register
- * @hw: pointer to the HW structure
- * @offset: offset of word in the EEPROM to read
- * @words: number of words to read
- * @data: word read from the EEPROM
- *
- * Reads a 16 bit word from the EEPROM using the EERD register.
- */
+ 
 s32 igc_read_nvm_eerd(struct igc_hw *hw, u16 offset, u16 words, u16 *data)
 {
 	struct igc_nvm_info *nvm = &hw->nvm;
 	u32 i, eerd = 0;
 	s32 ret_val = 0;
 
-	/* A check for invalid values:  offset too large, too many words,
-	 * and not enough words.
-	 */
+	 
 	if (offset >= nvm->word_size || (words > (nvm->word_size - offset)) ||
 	    words == 0) {
 		hw_dbg("nvm parameter(s) out of bounds\n");
@@ -126,10 +97,7 @@ out:
 	return ret_val;
 }
 
-/**
- * igc_read_mac_addr - Read device MAC address
- * @hw: pointer to the HW structure
- */
+ 
 s32 igc_read_mac_addr(struct igc_hw *hw)
 {
 	u32 rar_high;
@@ -151,13 +119,7 @@ s32 igc_read_mac_addr(struct igc_hw *hw)
 	return 0;
 }
 
-/**
- * igc_validate_nvm_checksum - Validate EEPROM checksum
- * @hw: pointer to the HW structure
- *
- * Calculates the EEPROM checksum by reading/adding each word of the EEPROM
- * and then verifies that the sum of the EEPROM is equal to 0xBABA.
- */
+ 
 s32 igc_validate_nvm_checksum(struct igc_hw *hw)
 {
 	u16 checksum = 0;
@@ -183,14 +145,7 @@ out:
 	return ret_val;
 }
 
-/**
- * igc_update_nvm_checksum - Update EEPROM checksum
- * @hw: pointer to the HW structure
- *
- * Updates the EEPROM checksum by reading/adding each word of the EEPROM
- * up to the checksum.  Then calculates the EEPROM checksum and writes the
- * value to the EEPROM.
- */
+ 
 s32 igc_update_nvm_checksum(struct igc_hw *hw)
 {
 	u16 checksum = 0;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/exportfs.h>
@@ -9,23 +9,17 @@
 #include "mds_client.h"
 #include "crypto.h"
 
-/*
- * Basic fh
- */
+ 
 struct ceph_nfs_fh {
 	u64 ino;
 } __attribute__ ((packed));
 
-/*
- * Larger fh that includes parent ino.
- */
+ 
 struct ceph_nfs_confh {
 	u64 ino, parent_ino;
 } __attribute__ ((packed));
 
-/*
- * fh for snapped inode
- */
+ 
 struct ceph_nfs_snapfh {
 	u64 ino;
 	u64 snapid;
@@ -187,13 +181,13 @@ static struct dentry *__fh_to_dentry(struct super_block *sb, u64 ino)
 
 	if (IS_ERR(inode))
 		return ERR_CAST(inode);
-	/* We need LINK caps to reliably check i_nlink */
+	 
 	err = ceph_do_getattr(inode, CEPH_CAP_LINK_SHARED, false);
 	if (err) {
 		iput(inode);
 		return ERR_PTR(err);
 	}
-	/* -ESTALE if inode as been unlinked and no file is open */
+	 
 	if ((inode->i_nlink == 0) && !__ceph_is_file_opened(ci)) {
 		iput(inode);
 		return ERR_PTR(-ESTALE);
@@ -269,7 +263,7 @@ static struct dentry *__snapfh_to_dentry(struct super_block *sb,
 		} else if (ceph_snap(inode) == vino.snap) {
 			ihold(inode);
 		} else {
-			/* mds does not support lookup snapped inode */
+			 
 			inode = ERR_PTR(-EOPNOTSUPP);
 		}
 	} else {
@@ -286,13 +280,11 @@ static struct dentry *__snapfh_to_dentry(struct super_block *sb,
 	}
 	if (IS_ERR(inode))
 		return ERR_CAST(inode);
-	/* see comments in ceph_get_parent() */
+	 
 	return unlinked ? d_obtain_root(inode) : d_obtain_alias(inode);
 }
 
-/*
- * convert regular fh to dentry
- */
+ 
 static struct dentry *ceph_fh_to_dentry(struct super_block *sb,
 					struct fid *fid,
 					int fh_len, int fh_type)
@@ -368,7 +360,7 @@ static struct dentry *ceph_get_parent(struct dentry *child)
 	if (ceph_snap(inode) != CEPH_NOSNAP) {
 		struct inode* dir;
 		bool unlinked = false;
-		/* do not support non-directory */
+		 
 		if (!d_is_dir(child)) {
 			dn = ERR_PTR(-EINVAL);
 			goto out;
@@ -378,8 +370,7 @@ static struct dentry *ceph_get_parent(struct dentry *child)
 			dn = ERR_CAST(dir);
 			goto out;
 		}
-		/* There can be multiple paths to access snapped inode.
-		 * For simplicity, treat snapdir of head inode as parent */
+		 
 		if (ceph_snap(inode) != CEPH_SNAPDIR) {
 			struct inode *snapdir = ceph_get_snapdir(dir);
 			if (dir->i_nlink == 0)
@@ -391,9 +382,7 @@ static struct dentry *ceph_get_parent(struct dentry *child)
 			}
 			dir = snapdir;
 		}
-		/* If directory has already been deleted, futher get_parent
-		 * will fail. Do not mark snapdir dentry as disconnected,
-		 * this prevent exportfs from doing futher get_parent. */
+		 
 		if (unlinked)
 			dn = d_obtain_root(dir);
 		else
@@ -407,9 +396,7 @@ out:
 	return dn;
 }
 
-/*
- * convert regular fh to parent
- */
+ 
 static struct dentry *ceph_fh_to_parent(struct super_block *sb,
 					struct fid *fid,
 					int fh_len, int fh_type)

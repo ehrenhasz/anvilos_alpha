@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Ltd */
+
+ 
 
 #include <linux/mlx5/driver.h>
 #include <linux/mlx5/device.h>
@@ -29,7 +29,7 @@ static int mlx5_sf_dev_probe(struct auxiliary_device *adev, const struct auxilia
 	mdev->priv.adev_idx = adev->id;
 	sf_dev->mdev = mdev;
 
-	/* Only local SFs do light probe */
+	 
 	if (MLX5_ESWITCH_MANAGER(sf_dev->parent_mdev))
 		mlx5_dev_set_lightweight(mdev);
 

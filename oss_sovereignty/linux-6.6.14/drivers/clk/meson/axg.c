@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AmLogic Meson-AXG Clock Controller Driver
- *
- * Copyright (c) 2016 Baylibre SAS.
- * Author: Michael Turquette <mturquette@baylibre.com>
- *
- * Copyright (c) 2017 Amlogic, inc.
- * Author: Qiufang Dai <qiufang.dai@amlogic.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -82,10 +74,7 @@ static struct clk_regmap axg_fixed_pll = {
 			&axg_fixed_pll_dco.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock won't ever change at runtime so
-		 * CLK_SET_RATE_PARENT is not required
-		 */
+		 
 	},
 };
 
@@ -175,7 +164,7 @@ static const struct pll_params_table axg_gp0_pll_params_table[] = {
 	PLL_PARAMS(66, 1),
 	PLL_PARAMS(67, 1),
 	PLL_PARAMS(68, 1),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct reg_sequence axg_gp0_init_regs[] = {
@@ -373,17 +362,7 @@ static struct clk_regmap axg_fclk_div3 = {
 			&axg_fclk_div3_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * FIXME:
-		 * This clock, as fdiv2, is used by the SCPI FW and is required
-		 * by the platform to operate correctly.
-		 * Until the following condition are met, we need this clock to
-		 * be marked as critical:
-		 * a) The SCPI generic driver claims and enable all the clocks
-		 *    it needs
-		 * b) CCF has a clock hand-off mechanism to make the sure the
-		 *    clock stays on until the proper driver comes along
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -698,7 +677,7 @@ static const struct pll_params_table axg_pcie_pll_params_table[] = {
 		.m = 200,
 		.n = 3,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct reg_sequence axg_pcie_init_regs[] = {
@@ -798,7 +777,7 @@ static struct clk_regmap axg_pcie_mux = {
 		.offset = HHI_PCIE_PLL_CNTL6,
 		.mask = 0x1,
 		.shift = 2,
-		/* skip the parent mpll3, reserved for debug */
+		 
 		.table = (u32[]){ 1 },
 	},
 	.hw.init = &(struct clk_init_data){
@@ -815,7 +794,7 @@ static struct clk_regmap axg_pcie_ref = {
 		.offset = HHI_PCIE_PLL_CNTL6,
 		.mask = 0x1,
 		.shift = 1,
-		/* skip the parent 0, reserved for debug */
+		 
 		.table = (u32[]){ 1 },
 	},
 	.hw.init = &(struct clk_init_data){
@@ -921,15 +900,10 @@ static const struct clk_parent_data axg_sd_emmc_clk0_parent_data[] = {
 	{ .hw = &axg_fclk_div3.hw },
 	{ .hw = &axg_fclk_div5.hw },
 	{ .hw = &axg_fclk_div7.hw },
-	/*
-	 * Following these parent clocks, we should also have had mpll2, mpll3
-	 * and gp0_pll but these clocks are too precious to be used here. All
-	 * the necessary rates for MMC and NAND operation can be acheived using
-	 * xtal or fclk_div clocks
-	 */
+	 
 };
 
-/* SDcard clock */
+ 
 static struct clk_regmap axg_sd_emmc_b_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SD_EMMC_CLK_CNTL,
@@ -979,7 +953,7 @@ static struct clk_regmap axg_sd_emmc_b_clk0 = {
 	},
 };
 
-/* EMMC/NAND clock */
+ 
 static struct clk_regmap axg_sd_emmc_c_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_NAND_CLK_CNTL,
@@ -1029,7 +1003,7 @@ static struct clk_regmap axg_sd_emmc_c_clk0 = {
 	},
 };
 
-/* VPU Clock */
+ 
 
 static const struct clk_hw *axg_vpu_parent_hws[] = {
 	&axg_fclk_div4.hw,
@@ -1049,7 +1023,7 @@ static struct clk_regmap axg_vpu_0_sel = {
 		.ops = &clk_regmap_mux_ops,
 		.parent_hws = axg_vpu_parent_hws,
 		.num_parents = ARRAY_SIZE(axg_vpu_parent_hws),
-		/* We need a specific parent for VPU clock source, let it be set in DT */
+		 
 		.flags = CLK_SET_RATE_NO_REPARENT,
 	},
 };
@@ -1079,10 +1053,7 @@ static struct clk_regmap axg_vpu_0 = {
 		.ops = &clk_regmap_gate_ops,
 		.parent_hws = (const struct clk_hw *[]) { &axg_vpu_0_div.hw },
 		.num_parents = 1,
-		/*
-		 * We want to avoid CCF to disable the VPU clock if
-		 * display has been set by Bootloader
-		 */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
 	},
 };
@@ -1098,7 +1069,7 @@ static struct clk_regmap axg_vpu_1_sel = {
 		.ops = &clk_regmap_mux_ops,
 		.parent_hws = axg_vpu_parent_hws,
 		.num_parents = ARRAY_SIZE(axg_vpu_parent_hws),
-		/* We need a specific parent for VPU clock source, let it be set in DT */
+		 
 		.flags = CLK_SET_RATE_NO_REPARENT,
 	},
 };
@@ -1128,10 +1099,7 @@ static struct clk_regmap axg_vpu_1 = {
 		.ops = &clk_regmap_gate_ops,
 		.parent_hws = (const struct clk_hw *[]) { &axg_vpu_1_div.hw },
 		.num_parents = 1,
-		/*
-		 * We want to avoid CCF to disable the VPU clock if
-		 * display has been set by Bootloader
-		 */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
 	},
 };
@@ -1154,7 +1122,7 @@ static struct clk_regmap axg_vpu = {
 	},
 };
 
-/* VAPB Clock */
+ 
 
 static struct clk_regmap axg_vapb_0_sel = {
 	.data = &(struct clk_regmap_mux_data){
@@ -1284,7 +1252,7 @@ static struct clk_regmap axg_vapb = {
 	},
 };
 
-/* Video Clocks */
+ 
 
 static const struct clk_hw *axg_vclk_parent_hws[] = {
 	&axg_gp0_pll.hw,
@@ -1706,7 +1674,7 @@ static struct clk_regmap axg_cts_encl = {
 	},
 };
 
-/* MIPI DSI Host Clock */
+ 
 
 static u32 mux_table_axg_vdin_meas[]    = { 0, 1, 2, 3, 6, 7 };
 static const struct clk_parent_data axg_vdin_meas_parent_data[] = {
@@ -1792,12 +1760,7 @@ static struct clk_regmap axg_gen_clk_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "gen_clk_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 15:12 selects from 14 possible parents:
-		 * xtal, [rtc_oscin_i], [sys_cpu_div16], [ddr_dpll_pt],
-		 * hifi_pll, mpll0, mpll1, mpll2, mpll3, fdiv4,
-		 * fdiv3, fdiv5, [cts_msr_clk], fdiv7, gp0_pll
-		 */
+		 
 		.parent_data = gen_clk_parent_data,
 		.num_parents = ARRAY_SIZE(gen_clk_parent_data),
 	},
@@ -1839,7 +1802,7 @@ static struct clk_regmap axg_gen_clk = {
 #define MESON_GATE(_name, _reg, _bit) \
 	MESON_PCLK(_name, _reg, _bit, &axg_clk81.hw)
 
-/* Everything Else (EE) domain gates */
+ 
 static MESON_GATE(axg_ddr, HHI_GCLK_MPEG0, 0);
 static MESON_GATE(axg_audio_locker, HHI_GCLK_MPEG0, 2);
 static MESON_GATE(axg_mipi_dsi_host, HHI_GCLK_MPEG0, 3);
@@ -1882,7 +1845,7 @@ static MESON_GATE(axg_vpu_intr, HHI_GCLK_MPEG2, 25);
 static MESON_GATE(axg_sec_ahb_ahb3_bridge, HHI_GCLK_MPEG2, 26);
 static MESON_GATE(axg_gic, HHI_GCLK_MPEG2, 30);
 
-/* Always On (AO) domain gates */
+ 
 
 static MESON_GATE(axg_ao_media_cpu, HHI_GCLK_AO, 0);
 static MESON_GATE(axg_ao_ahb_sram, HHI_GCLK_AO, 1);
@@ -1890,7 +1853,7 @@ static MESON_GATE(axg_ao_ahb_bus, HHI_GCLK_AO, 2);
 static MESON_GATE(axg_ao_iface, HHI_GCLK_AO, 3);
 static MESON_GATE(axg_ao_i2c, HHI_GCLK_AO, 4);
 
-/* Array of all clocks provided by this provider */
+ 
 
 static struct clk_hw *axg_hw_clks[] = {
 	[CLKID_SYS_PLL]			= &axg_sys_pll.hw,
@@ -2031,7 +1994,7 @@ static struct clk_hw *axg_hw_clks[] = {
 	[CLKID_VDIN_MEAS]		= &axg_vdin_meas.hw,
 };
 
-/* Convenience table to populate regmap in .probe */
+ 
 static struct clk_regmap *const axg_clk_regmaps[] = {
 	&axg_clk81,
 	&axg_ddr,

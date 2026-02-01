@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner Hantro G2 VPU codec driver
- *
- * Copyright (C) 2021 Jernej Skrabec <jernej.skrabec@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 

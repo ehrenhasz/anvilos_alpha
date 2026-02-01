@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Bluetooth HCI UART driver for Intel/AG6xx devices
- *
- *  Copyright (C) 2016  Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -79,7 +74,7 @@ static struct sk_buff *ag6xx_dequeue(struct hci_uart *hu)
 	if (!skb)
 		return skb;
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
 	return skb;
 }
@@ -121,9 +116,7 @@ static int ag6xx_recv(struct hci_uart *hu, const void *data, int count)
 static int intel_mem_write(struct hci_dev *hdev, u32 addr, u32 plen,
 			   const void *data)
 {
-	/* Can write a maximum of 247 bytes per HCI command.
-	 * HCI cmd Header (3), Intel mem write header (6), data (247).
-	 */
+	 
 	while (plen > 0) {
 		struct sk_buff *skb;
 		u8 cmd_param[253], fragment_len = (plen > 247) ? 247 : plen;
@@ -172,18 +165,14 @@ static int ag6xx_setup(struct hci_uart *hu)
 
 	btintel_version_info(hdev, &ver);
 
-	/* The hardware platform number has a fixed value of 0x37 and
-	 * for now only accept this single value.
-	 */
+	 
 	if (ver.hw_platform != 0x37) {
 		bt_dev_err(hdev, "Unsupported Intel hardware platform: 0x%X",
 			   ver.hw_platform);
 		return -EINVAL;
 	}
 
-	/* Only the hardware variant iBT 2.1 (AG6XX) is supported by this
-	 * firmware setup method.
-	 */
+	 
 	if (ver.hw_variant != 0x0a) {
 		bt_dev_err(hdev, "Unsupported Intel hardware variant: 0x%x",
 			   ver.hw_variant);
@@ -214,9 +203,7 @@ static int ag6xx_setup(struct hci_uart *hu)
 	release_firmware(fw);
 
 patch:
-	/* If there is no applied patch, fw_patch_num is always 0x00. In other
-	 * cases, current firmware is already patched. No need to patch it.
-	 */
+	 
 	if (ver.fw_patch_num) {
 		bt_dev_info(hdev, "Device is already patched. patch num: %02x",
 			    ver.fw_patch_num);
@@ -240,16 +227,7 @@ patch:
 
 	bt_dev_info(hdev, "Patching firmware file (%s)", fwname);
 
-	/* PBN patch file contains a list of binary patches to be applied on top
-	 * of the embedded firmware. Each patch entry header contains the target
-	 * address and patch size.
-	 *
-	 * Patch entry:
-	 * | addr(le) | patch_len(le) | patch_data |
-	 * | 4 Bytes  |    4 Bytes    |   n Bytes  |
-	 *
-	 * PBN file is terminated by a patch entry whose address is 0xffffffff.
-	 */
+	 
 	while (fw->size > fw_ptr - fw->data) {
 		struct pbn_entry *pbn = (void *)fw_ptr;
 		u32 addr, plen;
@@ -283,14 +261,12 @@ patch:
 	release_firmware(fw);
 
 complete:
-	/* Exit manufacturing mode and reset */
+	 
 	err = btintel_exit_mfg(hdev, true, patched);
 	if (err)
 		return err;
 
-	/* Set the event mask for Intel specific vendor events. This enables
-	 * a few extra events that are useful during general operation.
-	 */
+	 
 	btintel_set_event_mask_mfg(hdev, false);
 
 	btintel_check_bdaddr(hdev);

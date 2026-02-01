@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_PGTABLE_H
 #define _LINUX_PGTABLE_H
 
@@ -22,45 +22,22 @@
 #error CONFIG_PGTABLE_LEVELS is not consistent with __PAGETABLE_{P4D,PUD,PMD}_FOLDED
 #endif
 
-/*
- * On almost all architectures and configurations, 0 can be used as the
- * upper ceiling to free_pgtables(): on many architectures it has the same
- * effect as using TASK_SIZE.  However, there is one configuration which
- * must impose a more careful limit, to avoid freeing kernel pgtables.
- */
+ 
 #ifndef USER_PGTABLES_CEILING
 #define USER_PGTABLES_CEILING	0UL
 #endif
 
-/*
- * This defines the first usable user address. Platforms
- * can override its value with custom FIRST_USER_ADDRESS
- * defined in their respective <asm/pgtable.h>.
- */
+ 
 #ifndef FIRST_USER_ADDRESS
 #define FIRST_USER_ADDRESS	0UL
 #endif
 
-/*
- * This defines the generic helper for accessing PMD page
- * table page. Although platforms can still override this
- * via their respective <asm/pgtable.h>.
- */
+ 
 #ifndef pmd_pgtable
 #define pmd_pgtable(pmd) pmd_page(pmd)
 #endif
 
-/*
- * A page table page can be thought of an array like this: pXd_t[PTRS_PER_PxD]
- *
- * The pXx_index() functions return the index of the entry in the page
- * table page which would control the given virtual address
- *
- * As these functions may be used by the same code for different levels of
- * the page table folding, they are always available, regardless of
- * CONFIG_PGTABLE_LEVELS value. For the folded levels they simply return 0
- * because in such cases PTRS_PER_PxD equals 1.
- */
+ 
 
 static inline unsigned long pte_index(unsigned long address)
 {
@@ -84,7 +61,7 @@ static inline unsigned long pud_index(unsigned long address)
 #endif
 
 #ifndef pgd_index
-/* Must be a compile-time constant, so implement it as a macro */
+ 
 #define pgd_index(a)  (((a) >> PGDIR_SHIFT) & (PTRS_PER_PGD - 1))
 #endif
 
@@ -116,7 +93,7 @@ static inline void pte_unmap(pte_t *pte)
 
 void pte_free_defer(struct mm_struct *mm, pgtable_t pgtable);
 
-/* Find an entry in the second-level page table.. */
+ 
 #ifndef pmd_offset
 static inline pmd_t *pmd_offset(pud_t *pud, unsigned long address)
 {
@@ -138,28 +115,17 @@ static inline pgd_t *pgd_offset_pgd(pgd_t *pgd, unsigned long address)
 	return (pgd + pgd_index(address));
 };
 
-/*
- * a shortcut to get a pgd_t in a given mm
- */
+ 
 #ifndef pgd_offset
 #define pgd_offset(mm, address)		pgd_offset_pgd((mm)->pgd, (address))
 #endif
 
-/*
- * a shortcut which implies the use of the kernel's pgd, instead
- * of a process's
- */
+ 
 #ifndef pgd_offset_k
 #define pgd_offset_k(address)		pgd_offset(&init_mm, (address))
 #endif
 
-/*
- * In many cases it is known that a virtual address is mapped at PMD or PTE
- * level, so instead of traversing all the page table levels, we can get a
- * pointer to the PMD entry in user or kernel page table or translate a virtual
- * address to the pointer in the PTE in the kernel page tables with simple
- * helpers.
- */
+ 
 static inline pmd_t *pmd_off(struct mm_struct *mm, unsigned long va)
 {
 	return pmd_offset(pud_offset(p4d_offset(pgd_offset(mm, va), va), va), va);
@@ -184,21 +150,7 @@ static inline int pmd_young(pmd_t pmd)
 }
 #endif
 
-/*
- * A facility to provide lazy MMU batching.  This allows PTE updates and
- * page invalidations to be delayed until a call to leave lazy MMU mode
- * is issued.  Some architectures may benefit from doing this, and it is
- * beneficial for both shadow and direct mode hypervisors, which may batch
- * the PTE updates which happen during this window.  Note that using this
- * interface requires that read hazards be removed from the code.  A read
- * hazard could result in the direct mode hypervisor case, since the actual
- * write to the page tables may not yet have taken place, so reads though
- * a raw PTE pointer after it has been modified are not guaranteed to be
- * up to date.  This mode can only be entered and left under the protection of
- * the page table locks for all page tables which may be modified.  In the UP
- * case, this is required so that preemption is disabled, and in the SMP case,
- * it must synchronize the delayed page table writes properly on other CPUs.
- */
+ 
 #ifndef __HAVE_ARCH_ENTER_LAZY_MMU_MODE
 #define arch_enter_lazy_mmu_mode()	do {} while (0)
 #define arch_leave_lazy_mmu_mode()	do {} while (0)
@@ -214,20 +166,7 @@ static inline pte_t pte_next_pfn(pte_t pte)
 }
 #endif
 
-/**
- * set_ptes - Map consecutive pages to a contiguous range of addresses.
- * @mm: Address space to map the pages into.
- * @addr: Address to map the first page at.
- * @ptep: Page table pointer for the first entry.
- * @pte: Page table entry for the first page.
- * @nr: Number of pages to map.
- *
- * May be overridden by the architecture, or the architecture can define
- * set_pte() and PFN_PTE_SHIFT.
- *
- * Context: The caller holds the page table lock.  The pages all belong
- * to the same folio.  The PTEs are all in the same PMD.
- */
+ 
 static inline void set_ptes(struct mm_struct *mm, unsigned long addr,
 		pte_t *ptep, pte_t pte, unsigned int nr)
 {
@@ -275,7 +214,7 @@ static inline int pudp_set_access_flags(struct vm_area_struct *vma,
 	BUILD_BUG();
 	return 0;
 }
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
 #endif
 
 #ifndef ptep_get
@@ -329,7 +268,7 @@ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
 	BUILD_BUG();
 	return 0;
 }
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG */
+#endif  
 #endif
 
 #ifndef __HAVE_ARCH_PTEP_CLEAR_YOUNG_FLUSH
@@ -342,24 +281,18 @@ int ptep_clear_flush_young(struct vm_area_struct *vma,
 extern int pmdp_clear_flush_young(struct vm_area_struct *vma,
 				  unsigned long address, pmd_t *pmdp);
 #else
-/*
- * Despite relevant to THP only, this API is called from generic rmap code
- * under PageTransHuge(), hence needs a dummy implementation for !THP
- */
+ 
 static inline int pmdp_clear_flush_young(struct vm_area_struct *vma,
 					 unsigned long address, pmd_t *pmdp)
 {
 	BUILD_BUG();
 	return 0;
 }
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
 #endif
 
 #ifndef arch_has_hw_nonleaf_pmd_young
-/*
- * Return whether the accessed bit in non-leaf PMD entries is supported on the
- * local CPU.
- */
+ 
 static inline bool arch_has_hw_nonleaf_pmd_young(void)
 {
 	return IS_ENABLED(CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG);
@@ -367,12 +300,7 @@ static inline bool arch_has_hw_nonleaf_pmd_young(void)
 #endif
 
 #ifndef arch_has_hw_pte_young
-/*
- * Return whether the accessed bit is supported on the local CPU.
- *
- * This stub assumes accessing through an old PTE triggers a page fault.
- * Architectures that automatically set the access bit should overwrite it.
- */
+ 
 static inline bool arch_has_hw_pte_young(void)
 {
 	return false;
@@ -412,34 +340,7 @@ static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
 }
 
 #ifdef CONFIG_GUP_GET_PXX_LOW_HIGH
-/*
- * For walking the pagetables without holding any locks.  Some architectures
- * (eg x86-32 PAE) cannot load the entries atomically without using expensive
- * instructions.  We are guaranteed that a PTE will only either go from not
- * present to present, or present to not present -- it will not switch to a
- * completely different present page without a TLB flush inbetween; which we
- * are blocking by holding interrupts off.
- *
- * Setting ptes from not present to present goes:
- *
- *   ptep->pte_high = h;
- *   smp_wmb();
- *   ptep->pte_low = l;
- *
- * And present to not present goes:
- *
- *   ptep->pte_low = 0;
- *   smp_wmb();
- *   ptep->pte_high = 0;
- *
- * We must ensure here that the load of pte_low sees 'l' IFF pte_high sees 'h'.
- * We load pte_high *after* loading pte_low, which ensures we don't see an older
- * value of pte_high.  *Then* we recheck pte_low, which ensures that we haven't
- * picked up a changed pte high. We might have gotten rubbish values from
- * pte_low and pte_high, but we are guaranteed that pte_low will not have the
- * present bit set *unless* it is 'l'. Because get_user_pages_fast() only
- * operates on present ptes we're safe.
- */
+ 
 static inline pte_t ptep_get_lockless(pte_t *ptep)
 {
 	pte_t pte;
@@ -471,12 +372,10 @@ static inline pmd_t pmdp_get_lockless(pmd_t *pmdp)
 }
 #define pmdp_get_lockless pmdp_get_lockless
 #define pmdp_get_lockless_sync() tlb_remove_table_sync_one()
-#endif /* CONFIG_PGTABLE_LEVELS > 2 */
-#endif /* CONFIG_GUP_GET_PXX_LOW_HIGH */
+#endif  
+#endif  
 
-/*
- * We require that the PTE can be read atomically.
- */
+ 
 #ifndef ptep_get_lockless
 static inline pte_t ptep_get_lockless(pte_t *ptep)
 {
@@ -507,7 +406,7 @@ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
 
 	return pmd;
 }
-#endif /* __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR */
+#endif  
 #ifndef __HAVE_ARCH_PUDP_HUGE_GET_AND_CLEAR
 static inline pud_t pudp_huge_get_and_clear(struct mm_struct *mm,
 					    unsigned long address,
@@ -520,8 +419,8 @@ static inline pud_t pudp_huge_get_and_clear(struct mm_struct *mm,
 
 	return pud;
 }
-#endif /* __HAVE_ARCH_PUDP_HUGE_GET_AND_CLEAR */
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
+#endif  
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 #ifndef __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR_FULL
@@ -541,7 +440,7 @@ static inline pud_t pudp_huge_get_and_clear_full(struct vm_area_struct *vma,
 	return pudp_huge_get_and_clear(vma->vm_mm, address, pudp);
 }
 #endif
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
 
 #ifndef __HAVE_ARCH_PTEP_GET_AND_CLEAR_FULL
 static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
@@ -553,14 +452,7 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
 #endif
 
 
-/*
- * If two threads concurrently fault at the same page, the thread that
- * won the race updates the PTE and its local TLB/Cache. The other thread
- * gives up, simply does nothing, and continues; on architectures where
- * software can update TLB,  local TLB can be updated here to avoid next page
- * fault. This function updates TLB only, do nothing with cache or others.
- * It is the difference with function update_mmu_cache.
- */
+ 
 #ifndef __HAVE_ARCH_UPDATE_MMU_TLB
 static inline void update_mmu_tlb(struct vm_area_struct *vma,
 				unsigned long address, pte_t *ptep)
@@ -569,11 +461,7 @@ static inline void update_mmu_tlb(struct vm_area_struct *vma,
 #define __HAVE_ARCH_UPDATE_MMU_TLB
 #endif
 
-/*
- * Some architectures may be able to avoid expensive synchronization
- * primitives when modifications are made to PTE's which are already
- * not present, or in the process of an address space destruction.
- */
+ 
 #ifndef __HAVE_ARCH_PTE_CLEAR_NOT_PRESENT_FULL
 static inline void pte_clear_not_present_full(struct mm_struct *mm,
 					      unsigned long address,
@@ -622,14 +510,7 @@ static inline void ptep_set_wrprotect(struct mm_struct *mm, unsigned long addres
 }
 #endif
 
-/*
- * On some architectures hardware does not set page access bit when accessing
- * memory page, it is responsibility of software setting this bit. It brings
- * out extra page fault penalty to track page access bit. For optimization page
- * access bit can be set during all page fault flow on these arches.
- * To be differentiate with macro pte_mkyoung, this macro is used on platforms
- * where software maintains page access bit.
- */
+ 
 #ifndef pte_sw_mkyoung
 static inline pte_t pte_sw_mkyoung(pte_t pte)
 {
@@ -652,7 +533,7 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
 {
 	BUILD_BUG();
 }
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
 #endif
 #ifndef __HAVE_ARCH_PUDP_SET_WRPROTECT
 #ifdef CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
@@ -670,8 +551,8 @@ static inline void pudp_set_wrprotect(struct mm_struct *mm,
 {
 	BUILD_BUG();
 }
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-#endif /* CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
+#endif  
+#endif  
 #endif
 
 #ifndef pmdp_collapse_flush
@@ -687,7 +568,7 @@ static inline pmd_t pmdp_collapse_flush(struct vm_area_struct *vma,
 	return *pmdp;
 }
 #define pmdp_collapse_flush pmdp_collapse_flush
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
 #endif
 
 #ifndef __HAVE_ARCH_PGTABLE_DEPOSIT
@@ -704,11 +585,7 @@ extern pgtable_t pgtable_trans_huge_withdraw(struct mm_struct *mm, pmd_t *pmdp);
 #endif
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-/*
- * This is an implementation of pmdp_establish() that is only suitable for an
- * architecture that doesn't have hardware dirty/accessed bits. In this case we
- * can't race with CPU which sets these bits and non-atomic approach is fine.
- */
+ 
 static inline pmd_t generic_pmdp_establish(struct vm_area_struct *vma,
 		unsigned long address, pmd_t *pmdp, pmd_t pmd)
 {
@@ -725,20 +602,7 @@ extern pmd_t pmdp_invalidate(struct vm_area_struct *vma, unsigned long address,
 
 #ifndef __HAVE_ARCH_PMDP_INVALIDATE_AD
 
-/*
- * pmdp_invalidate_ad() invalidates the PMD while changing a transparent
- * hugepage mapping in the page tables. This function is similar to
- * pmdp_invalidate(), but should only be used if the access and dirty bits would
- * not be cleared by the software in the new PMD value. The function ensures
- * that hardware changes of the access and dirty bits updates would not be lost.
- *
- * Doing so can allow in certain architectures to avoid a TLB flush in most
- * cases. Yet, another TLB flush might be necessary later if the PMD update
- * itself requires such flush (e.g., if protection was set to be stricter). Yet,
- * even when a TLB flush is needed because of the update, the caller may be able
- * to batch these TLB flushing operations, so fewer TLB flush operations are
- * needed.
- */
+ 
 extern pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma,
 				unsigned long address, pmd_t *pmdp);
 #endif
@@ -751,12 +615,7 @@ static inline int pte_same(pte_t pte_a, pte_t pte_b)
 #endif
 
 #ifndef __HAVE_ARCH_PTE_UNUSED
-/*
- * Some architectures provide facilities to virtualization guests
- * so that they can flag allocated pages as unused. This allows the
- * host to transparently reclaim unused pages. This function returns
- * whether the pte's page is unused.
- */
+ 
 static inline int pte_unused(pte_t pte)
 {
 	return 0;
@@ -817,14 +676,7 @@ static inline int pgd_same(pgd_t pgd_a, pgd_t pgd_b)
 }
 #endif
 
-/*
- * Use set_p*_safe(), and elide TLB flushing, when confident that *no*
- * TLB flush will be required as a result of the "set". For example, use
- * in scenarios where it is known ahead of time that the routine is
- * setting non-present entries, or re-setting an existing entry to the
- * same value. Otherwise, use the typical "set" helpers and flush the
- * TLB.
- */
+ 
 #define set_pte_safe(ptep, pte) \
 ({ \
 	WARN_ON_ONCE(pte_present(*ptep) && !pte_same(*ptep, pte)); \
@@ -856,14 +708,7 @@ static inline int pgd_same(pgd_t pgd_a, pgd_t pgd_b)
 })
 
 #ifndef __HAVE_ARCH_DO_SWAP_PAGE
-/*
- * Some architectures support metadata associated with a page. When a
- * page is being swapped out, this metadata must be saved so it can be
- * restored when the page is swapped back in. SPARC M7 and newer
- * processors support an ADI (Application Data Integrity) tag for the
- * page as metadata for the page. arch_do_swap_page() can restore this
- * metadata when a page is swapped back in.
- */
+ 
 static inline void arch_do_swap_page(struct mm_struct *mm,
 				     struct vm_area_struct *vma,
 				     unsigned long addr,
@@ -874,14 +719,7 @@ static inline void arch_do_swap_page(struct mm_struct *mm,
 #endif
 
 #ifndef __HAVE_ARCH_UNMAP_ONE
-/*
- * Some architectures support metadata associated with a page. When a
- * page is being swapped out, this metadata must be saved so it can be
- * restored when the page is swapped back in. SPARC M7 and newer
- * processors support an ADI (Application Data Integrity) tag for the
- * page as metadata for the page. arch_unmap_one() can save this
- * metadata on a swap-out of a page.
- */
+ 
 static inline int arch_unmap_one(struct mm_struct *mm,
 				  struct vm_area_struct *vma,
 				  unsigned long addr,
@@ -891,11 +729,7 @@ static inline int arch_unmap_one(struct mm_struct *mm,
 }
 #endif
 
-/*
- * Allow architectures to preserve additional metadata associated with
- * swapped-out pages. The corresponding __HAVE_ARCH_SWAP_* macros and function
- * prototypes must be defined in the arch-specific asm/pgtable.h file.
- */
+ 
 #ifndef __HAVE_ARCH_PREPARE_TO_SWAP
 static inline int arch_prepare_to_swap(struct page *page)
 {
@@ -935,11 +769,7 @@ static inline void arch_swap_restore(swp_entry_t entry, struct folio *folio)
 #define flush_tlb_fix_spurious_fault(vma, address, ptep) flush_tlb_page(vma, address)
 #endif
 
-/*
- * When walking page tables, get the address of the next boundary,
- * or the end address of the range if that comes earlier.  Although no
- * vma end wraps to 0, rounded up __boundary may wrap to 0 throughout.
- */
+ 
 
 #define pgd_addr_end(addr, end)						\
 ({	unsigned long __boundary = ((addr) + PGDIR_SIZE) & PGDIR_MASK;	\
@@ -967,11 +797,7 @@ static inline void arch_swap_restore(swp_entry_t entry, struct folio *folio)
 })
 #endif
 
-/*
- * When walking page tables, we usually want to skip any p?d_none entries;
- * and any p?d_bad entries - reporting the error before resetting to none.
- * Do the tests inline, but report and clear the bad entry in mm/memory.c.
- */
+ 
 void pgd_clear_bad(pgd_t *);
 
 #ifndef __PAGETABLE_P4D_FOLDED
@@ -1036,11 +862,7 @@ static inline pte_t __ptep_modify_prot_start(struct vm_area_struct *vma,
 					     unsigned long addr,
 					     pte_t *ptep)
 {
-	/*
-	 * Get the current pte state, but zero it out to make it
-	 * non-present, preventing the hardware from asynchronously
-	 * updating it.
-	 */
+	 
 	return ptep_get_and_clear(vma->vm_mm, addr, ptep);
 }
 
@@ -1048,28 +870,12 @@ static inline void __ptep_modify_prot_commit(struct vm_area_struct *vma,
 					     unsigned long addr,
 					     pte_t *ptep, pte_t pte)
 {
-	/*
-	 * The pte is non-present, so there's no hardware state to
-	 * preserve.
-	 */
+	 
 	set_pte_at(vma->vm_mm, addr, ptep, pte);
 }
 
 #ifndef __HAVE_ARCH_PTEP_MODIFY_PROT_TRANSACTION
-/*
- * Start a pte protection read-modify-write transaction, which
- * protects against asynchronous hardware modifications to the pte.
- * The intention is not to prevent the hardware from making pte
- * updates, but to prevent any updates it may make from being lost.
- *
- * This does not protect against other software modifications of the
- * pte; the appropriate pte lock must be held over the transaction.
- *
- * Note that this interface is intended to be batchable, meaning that
- * ptep_modify_prot_commit may not actually update the pte, but merely
- * queue the update to be done at some later time.  The update must be
- * actually committed before the pte lock is released, however.
- */
+ 
 static inline pte_t ptep_modify_prot_start(struct vm_area_struct *vma,
 					   unsigned long addr,
 					   pte_t *ptep)
@@ -1077,23 +883,17 @@ static inline pte_t ptep_modify_prot_start(struct vm_area_struct *vma,
 	return __ptep_modify_prot_start(vma, addr, ptep);
 }
 
-/*
- * Commit an update to a pte, leaving any hardware-controlled bits in
- * the PTE unmodified.
- */
+ 
 static inline void ptep_modify_prot_commit(struct vm_area_struct *vma,
 					   unsigned long addr,
 					   pte_t *ptep, pte_t old_pte, pte_t pte)
 {
 	__ptep_modify_prot_commit(vma, addr, ptep, pte);
 }
-#endif /* __HAVE_ARCH_PTEP_MODIFY_PROT_TRANSACTION */
-#endif /* CONFIG_MMU */
+#endif  
+#endif  
 
-/*
- * No-op macros that just return the current protection value. Defined here
- * because these macros can be used even if CONFIG_MMU is not defined.
- */
+ 
 
 #ifndef pgprot_nx
 #define pgprot_nx(prot)	(prot)
@@ -1133,7 +933,7 @@ static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
 	return newprot;
 }
 #endif
-#endif /* CONFIG_MMU */
+#endif  
 
 #ifndef pgprot_encrypted
 #define pgprot_encrypted(prot)	(prot)
@@ -1143,17 +943,7 @@ static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
 #define pgprot_decrypted(prot)	(prot)
 #endif
 
-/*
- * A facility to provide batching of the reload of page tables and
- * other process state with the actual context switch code for
- * paravirtualized guests.  By convention, only one of the batched
- * update (lazy) modes (CPU, MMU) should be active at any given time,
- * entry should never be nested, and entry and exits should always be
- * paired.  This is for sanity of maintaining and reasoning about the
- * kernel code.  In this case, the exit (end of the context switch) is
- * in architecture-specific code, and so doesn't need a generic
- * definition.
- */
+ 
 #ifndef __HAVE_ARCH_START_CONTEXT_SWITCH
 #define arch_start_context_switch(prev)	do {} while (0)
 #endif
@@ -1175,7 +965,7 @@ static inline pmd_t pmd_swp_clear_soft_dirty(pmd_t pmd)
 	return pmd;
 }
 #endif
-#else /* !CONFIG_HAVE_ARCH_SOFT_DIRTY */
+#else  
 static inline int pte_soft_dirty(pte_t pte)
 {
 	return 0;
@@ -1238,16 +1028,9 @@ static inline pmd_t pmd_swp_clear_soft_dirty(pmd_t pmd)
 #endif
 
 #ifndef __HAVE_PFNMAP_TRACKING
-/*
- * Interfaces that can be used by architecture code to keep track of
- * memory type of pfn mappings specified by the remap_pfn_range,
- * vmf_insert_pfn.
- */
+ 
 
-/*
- * track_pfn_remap is called when a _new_ pfn mapping is being established
- * by remap_pfn_range() for physical range indicated by pfn and size.
- */
+ 
 static inline int track_pfn_remap(struct vm_area_struct *vma, pgprot_t *prot,
 				  unsigned long pfn, unsigned long addr,
 				  unsigned long size)
@@ -1255,39 +1038,26 @@ static inline int track_pfn_remap(struct vm_area_struct *vma, pgprot_t *prot,
 	return 0;
 }
 
-/*
- * track_pfn_insert is called when a _new_ single pfn is established
- * by vmf_insert_pfn().
- */
+ 
 static inline void track_pfn_insert(struct vm_area_struct *vma, pgprot_t *prot,
 				    pfn_t pfn)
 {
 }
 
-/*
- * track_pfn_copy is called when vma that is covering the pfnmap gets
- * copied through copy_page_range().
- */
+ 
 static inline int track_pfn_copy(struct vm_area_struct *vma)
 {
 	return 0;
 }
 
-/*
- * untrack_pfn is called while unmapping a pfnmap for a region.
- * untrack can be called for a specific region indicated by pfn and size or
- * can be for the entire vma (in which case pfn, size are zero).
- */
+ 
 static inline void untrack_pfn(struct vm_area_struct *vma,
 			       unsigned long pfn, unsigned long size,
 			       bool mm_wr_locked)
 {
 }
 
-/*
- * untrack_pfn_clear is called while mremapping a pfnmap for a new region
- * or fails to copy pgtable during duplicate vm area.
- */
+ 
 static inline void untrack_pfn_clear(struct vm_area_struct *vma)
 {
 }
@@ -1337,7 +1107,7 @@ static inline unsigned long my_zero_pfn(unsigned long addr)
 {
 	return 0;
 }
-#endif /* CONFIG_MMU */
+#endif  
 
 #ifdef CONFIG_MMU
 
@@ -1352,8 +1122,8 @@ static inline int pmd_write(pmd_t pmd)
 	BUG();
 	return 0;
 }
-#endif /* pmd_write */
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
+#endif  
 
 #ifndef pud_write
 static inline int pud_write(pud_t pud)
@@ -1361,7 +1131,7 @@ static inline int pud_write(pud_t pud)
 	BUG();
 	return 0;
 }
-#endif /* pud_write */
+#endif  
 
 #if !defined(CONFIG_ARCH_HAS_PTE_DEVMAP) || !defined(CONFIG_TRANSPARENT_HUGEPAGE)
 static inline int pmd_devmap(pmd_t pmd)
@@ -1403,18 +1173,7 @@ static inline int pud_trans_unstable(pud_t *pud)
 }
 
 #ifndef CONFIG_NUMA_BALANCING
-/*
- * In an inaccessible (PROT_NONE) VMA, pte_protnone() may indicate "yes". It is
- * perfectly valid to indicate "no" in that case, which is why our default
- * implementation defaults to "always no".
- *
- * In an accessible VMA, however, pte_protnone() reliably indicates PROT_NONE
- * page protection due to NUMA hinting. NUMA hinting faults only apply in
- * accessible VMAs.
- *
- * So, to reliably identify PROT_NONE PTEs that require a NUMA hinting fault,
- * looking at the VMA accessibility is sufficient.
- */
+ 
 static inline int pte_protnone(pte_t pte)
 {
 	return 0;
@@ -1424,9 +1183,9 @@ static inline int pmd_protnone(pmd_t pmd)
 {
 	return 0;
 }
-#endif /* CONFIG_NUMA_BALANCING */
+#endif  
 
-#endif /* CONFIG_MMU */
+#endif  
 
 #ifdef CONFIG_HAVE_ARCH_HUGE_VMAP
 
@@ -1439,7 +1198,7 @@ static inline int p4d_set_huge(p4d_t *p4d, phys_addr_t addr, pgprot_t prot)
 	return 0;
 }
 static inline void p4d_clear_huge(p4d_t *p4d) { }
-#endif /* !__PAGETABLE_P4D_FOLDED */
+#endif  
 
 int pud_set_huge(pud_t *pud, phys_addr_t addr, pgprot_t prot);
 int pmd_set_huge(pmd_t *pmd, phys_addr_t addr, pgprot_t prot);
@@ -1448,7 +1207,7 @@ int pmd_clear_huge(pmd_t *pmd);
 int p4d_free_pud_page(p4d_t *p4d, unsigned long addr);
 int pud_free_pmd_page(pud_t *pud, unsigned long addr);
 int pmd_free_pte_page(pmd_t *pmd, unsigned long addr);
-#else	/* !CONFIG_HAVE_ARCH_HUGE_VMAP */
+#else	 
 static inline int p4d_set_huge(p4d_t *p4d, phys_addr_t addr, pgprot_t prot)
 {
 	return 0;
@@ -1482,19 +1241,11 @@ static inline int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
 {
 	return 0;
 }
-#endif	/* CONFIG_HAVE_ARCH_HUGE_VMAP */
+#endif	 
 
 #ifndef __HAVE_ARCH_FLUSH_PMD_TLB_RANGE
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-/*
- * ARCHes with special requirements for evicting THP backing TLB entries can
- * implement this. Otherwise also, it can help optimize normal TLB flush in
- * THP regime. Stock flush_tlb_range() typically has optimization to nuke the
- * entire TLB if flush span is greater than a threshold, which will
- * likely be true for a single huge page. Thus a single THP flush will
- * invalidate the entire TLB which is not desirable.
- * e.g. see arch/arc: flush_pmd_tlb_range
- */
+ 
 #define flush_pmd_tlb_range(vma, addr, end)	flush_tlb_range(vma, addr, end)
 #define flush_pud_tlb_range(vma, addr, end)	flush_tlb_range(vma, addr, end)
 #else
@@ -1523,17 +1274,9 @@ static inline bool arch_has_pfn_modify_check(void)
 {
 	return false;
 }
-#endif /* !_HAVE_ARCH_PFN_MODIFY_ALLOWED */
+#endif  
 
-/*
- * Architecture PAGE_KERNEL_* fallbacks
- *
- * Some architectures don't define certain PAGE_KERNEL_* flags. This is either
- * because they really don't support them, or the port needs to be updated to
- * reflect the required functionality. Below are a set of relatively safe
- * fallbacks, as best effort, which we can count on in lieu of the architectures
- * not defining them on their own yet.
- */
+ 
 
 #ifndef PAGE_KERNEL_RO
 # define PAGE_KERNEL_RO PAGE_KERNEL
@@ -1543,14 +1286,7 @@ static inline bool arch_has_pfn_modify_check(void)
 # define PAGE_KERNEL_EXEC PAGE_KERNEL
 #endif
 
-/*
- * Page Table Modification bits for pgtbl_mod_mask.
- *
- * These are used by the p?d_alloc_track*() set of functions an in the generic
- * vmalloc/ioremap code to track at which page-table levels entries have been
- * modified. Based on that the code can better decide when vmalloc and ioremap
- * mapping changes need to be synchronized to other page-tables in the system.
- */
+ 
 #define		__PGTBL_PGD_MODIFIED	0
 #define		__PGTBL_P4D_MODIFIED	1
 #define		__PGTBL_PUD_MODIFIED	2
@@ -1563,18 +1299,14 @@ static inline bool arch_has_pfn_modify_check(void)
 #define		PGTBL_PMD_MODIFIED	BIT(__PGTBL_PMD_MODIFIED)
 #define		PGTBL_PTE_MODIFIED	BIT(__PGTBL_PTE_MODIFIED)
 
-/* Page-Table Modification Mask */
+ 
 typedef unsigned int pgtbl_mod_mask;
 
-#endif /* !__ASSEMBLY__ */
+#endif  
 
 #if !defined(MAX_POSSIBLE_PHYSMEM_BITS) && !defined(CONFIG_64BIT)
 #ifdef CONFIG_PHYS_ADDR_T_64BIT
-/*
- * ZSMALLOC needs to know the highest PFN on 32-bit architectures
- * with physical address space extension, but falls back to
- * BITS_PER_LONG otherwise.
- */
+ 
 #error Missing MAX_POSSIBLE_PHYSMEM_BITS definition
 #else
 #define MAX_POSSIBLE_PHYSMEM_BITS 32
@@ -1588,10 +1320,7 @@ typedef unsigned int pgtbl_mod_mask;
 #ifndef has_transparent_pud_hugepage
 #define has_transparent_pud_hugepage() IS_BUILTIN(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
 #endif
-/*
- * On some architectures it depends on the mm if the p4d/pud or pmd
- * layer of the page table hierarchy is folded or not.
- */
+ 
 #ifndef mm_p4d_folded
 #define mm_p4d_folded(mm)	__is_defined(__PAGETABLE_P4D_FOLDED)
 #endif
@@ -1614,13 +1343,7 @@ typedef unsigned int pgtbl_mod_mask;
 #define pmd_offset_lockless(pudp, pud, address) pmd_offset(&(pud), address)
 #endif
 
-/*
- * p?d_leaf() - true if this entry is a final mapping to a physical address.
- * This differs from p?d_huge() by the fact that they are always available (if
- * the architecture supports large pages at the appropriate level) even
- * if CONFIG_HUGETLB_PAGE is not defined.
- * Only meaningful when called on a valid entry.
- */
+ 
 #ifndef pgd_leaf
 #define pgd_leaf(x)	0
 #endif
@@ -1650,11 +1373,7 @@ typedef unsigned int pgtbl_mod_mask;
 #define pte_leaf_size(x) PAGE_SIZE
 #endif
 
-/*
- * Some architectures have MMUs that are configurable or selectable at boot
- * time. These lead to variable PTRS_PER_x. For statically allocated arrays it
- * helps to have a static maximum value.
- */
+ 
 
 #ifndef MAX_PTRS_PER_PTE
 #define MAX_PTRS_PER_PTE PTRS_PER_PTE
@@ -1672,26 +1391,7 @@ typedef unsigned int pgtbl_mod_mask;
 #define MAX_PTRS_PER_P4D PTRS_PER_P4D
 #endif
 
-/* description of effects of mapping type and prot in current implementation.
- * this is due to the limited x86 page protection hardware.  The expected
- * behavior is in parens:
- *
- * map_type	prot
- *		PROT_NONE	PROT_READ	PROT_WRITE	PROT_EXEC
- * MAP_SHARED	r: (no) no	r: (yes) yes	r: (no) yes	r: (no) yes
- *		w: (no) no	w: (no) no	w: (yes) yes	w: (no) no
- *		x: (no) no	x: (no) yes	x: (no) yes	x: (yes) yes
- *
- * MAP_PRIVATE	r: (no) no	r: (yes) yes	r: (no) yes	r: (no) yes
- *		w: (no) no	w: (no) no	w: (copy) copy	w: (no) no
- *		x: (no) no	x: (no) yes	x: (no) yes	x: (yes) yes
- *
- * On arm64, PROT_EXEC has the following behaviour for both MAP_SHARED and
- * MAP_PRIVATE (with Enhanced PAN supported):
- *								r: (no) no
- *								w: (no) no
- *								x: (yes) yes
- */
+ 
 #define DECLARE_VM_GET_PAGE_PROT					\
 pgprot_t vm_get_page_prot(unsigned long vm_flags)			\
 {									\
@@ -1700,4 +1400,4 @@ pgprot_t vm_get_page_prot(unsigned long vm_flags)			\
 }									\
 EXPORT_SYMBOL(vm_get_page_prot);
 
-#endif /* _LINUX_PGTABLE_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Admin Function Devlink
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include<linux/bitfield.h>
 
@@ -80,7 +76,7 @@ static irqreturn_t rvu_nix_af_rvu_intr_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NIX_AF_RVU_INT);
 	nix_event_context->nix_af_rvu_int = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT, intr);
 	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_nix_health_reporter->intr_work);
@@ -115,7 +111,7 @@ static irqreturn_t rvu_nix_af_rvu_gen_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NIX_AF_GEN_INT);
 	nix_event_context->nix_af_rvu_gen = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NIX_AF_GEN_INT, intr);
 	rvu_write64(rvu, blkaddr, NIX_AF_GEN_INT_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_nix_health_reporter->gen_work);
@@ -150,7 +146,7 @@ static irqreturn_t rvu_nix_af_rvu_err_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NIX_AF_ERR_INT);
 	nix_event_context->nix_af_rvu_err = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT, intr);
 	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_nix_health_reporter->err_work);
@@ -185,7 +181,7 @@ static irqreturn_t rvu_nix_af_rvu_ras_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NIX_AF_ERR_INT);
 	nix_event_context->nix_af_rvu_ras = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NIX_AF_RAS, intr);
 	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_nix_health_reporter->ras_work);
@@ -233,7 +229,7 @@ static int rvu_nix_register_interrupts(struct rvu *rvu)
 	if (blkaddr < 0)
 		return blkaddr;
 
-	/* Get NIX AF MSIX vectors offset. */
+	 
 	base = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
 	if (!base) {
 		dev_warn(rvu->dev,
@@ -241,7 +237,7 @@ static int rvu_nix_register_interrupts(struct rvu *rvu)
 			 blkaddr - BLKADDR_NIX0);
 		return 0;
 	}
-	/* Register and enable NIX_AF_RVU_INT interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base +  NIX_AF_INT_VEC_RVU,
 				    "NIX_AF_RVU_INT",
 				    rvu_nix_af_rvu_intr_handler);
@@ -249,7 +245,7 @@ static int rvu_nix_register_interrupts(struct rvu *rvu)
 		goto err;
 	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1S, ~0ULL);
 
-	/* Register and enable NIX_AF_GEN_INT interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base +  NIX_AF_INT_VEC_GEN,
 				    "NIX_AF_GEN_INT",
 				    rvu_nix_af_rvu_gen_handler);
@@ -257,7 +253,7 @@ static int rvu_nix_register_interrupts(struct rvu *rvu)
 		goto err;
 	rvu_write64(rvu, blkaddr, NIX_AF_GEN_INT_ENA_W1S, ~0ULL);
 
-	/* Register and enable NIX_AF_ERR_INT interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base + NIX_AF_INT_VEC_AF_ERR,
 				    "NIX_AF_ERR_INT",
 				    rvu_nix_af_rvu_err_handler);
@@ -265,7 +261,7 @@ static int rvu_nix_register_interrupts(struct rvu *rvu)
 		goto err;
 	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1S, ~0ULL);
 
-	/* Register and enable NIX_AF_RAS interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base + NIX_AF_INT_VEC_POISON,
 				    "NIX_AF_RAS",
 				    rvu_nix_af_rvu_ras_handler);
@@ -721,7 +717,7 @@ static irqreturn_t rvu_npa_af_rvu_intr_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NPA_AF_RVU_INT);
 	npa_event_context->npa_af_rvu_int = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NPA_AF_RVU_INT, intr);
 	rvu_write64(rvu, blkaddr, NPA_AF_RVU_INT_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_npa_health_reporter->intr_work);
@@ -756,7 +752,7 @@ static irqreturn_t rvu_npa_af_gen_intr_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NPA_AF_GEN_INT);
 	npa_event_context->npa_af_rvu_gen = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NPA_AF_GEN_INT, intr);
 	rvu_write64(rvu, blkaddr, NPA_AF_GEN_INT_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_npa_health_reporter->gen_work);
@@ -790,7 +786,7 @@ static irqreturn_t rvu_npa_af_err_intr_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NPA_AF_ERR_INT);
 	npa_event_context->npa_af_rvu_err = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NPA_AF_ERR_INT, intr);
 	rvu_write64(rvu, blkaddr, NPA_AF_ERR_INT_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_npa_health_reporter->err_work);
@@ -825,7 +821,7 @@ static irqreturn_t rvu_npa_af_ras_intr_handler(int irq, void *rvu_irq)
 	intr = rvu_read64(rvu, blkaddr, NPA_AF_RAS);
 	npa_event_context->npa_af_rvu_ras = intr;
 
-	/* Clear interrupts */
+	 
 	rvu_write64(rvu, blkaddr, NPA_AF_RAS, intr);
 	rvu_write64(rvu, blkaddr, NPA_AF_RAS_ENA_W1C, ~0ULL);
 	queue_work(rvu_dl->devlink_wq, &rvu_dl->rvu_npa_health_reporter->ras_work);
@@ -867,7 +863,7 @@ static int rvu_npa_register_interrupts(struct rvu *rvu)
 	if (blkaddr < 0)
 		return blkaddr;
 
-	/* Get NPA AF MSIX vectors offset. */
+	 
 	base = rvu_read64(rvu, blkaddr, NPA_PRIV_AF_INT_CFG) & 0x3ff;
 	if (!base) {
 		dev_warn(rvu->dev,
@@ -875,7 +871,7 @@ static int rvu_npa_register_interrupts(struct rvu *rvu)
 		return 0;
 	}
 
-	/* Register and enable NPA_AF_RVU_INT interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base +  NPA_AF_INT_VEC_RVU,
 				    "NPA_AF_RVU_INT",
 				    rvu_npa_af_rvu_intr_handler);
@@ -883,7 +879,7 @@ static int rvu_npa_register_interrupts(struct rvu *rvu)
 		goto err;
 	rvu_write64(rvu, blkaddr, NPA_AF_RVU_INT_ENA_W1S, ~0ULL);
 
-	/* Register and enable NPA_AF_GEN_INT interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base + NPA_AF_INT_VEC_GEN,
 				    "NPA_AF_RVU_GEN",
 				    rvu_npa_af_gen_intr_handler);
@@ -891,7 +887,7 @@ static int rvu_npa_register_interrupts(struct rvu *rvu)
 		goto err;
 	rvu_write64(rvu, blkaddr, NPA_AF_GEN_INT_ENA_W1S, ~0ULL);
 
-	/* Register and enable NPA_AF_ERR_INT interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base + NPA_AF_INT_VEC_AF_ERR,
 				    "NPA_AF_ERR_INT",
 				    rvu_npa_af_err_intr_handler);
@@ -899,7 +895,7 @@ static int rvu_npa_register_interrupts(struct rvu *rvu)
 		goto err;
 	rvu_write64(rvu, blkaddr, NPA_AF_ERR_INT_ENA_W1S, ~0ULL);
 
-	/* Register and enable NPA_AF_RAS interrupt */
+	 
 	rc = rvu_common_request_irq(rvu, base + NPA_AF_INT_VEC_POISON,
 				    "NPA_AF_RAS",
 				    rvu_npa_af_ras_intr_handler);
@@ -1359,7 +1355,7 @@ static void rvu_health_reporters_destroy(struct rvu *rvu)
 	rvu_nix_health_reporters_destroy(rvu_dl);
 }
 
-/* Devlink Params APIs */
+ 
 static int rvu_af_dl_dwrr_mtu_validate(struct devlink *devlink, u32 id,
 				       union devlink_param_value val,
 				       struct netlink_ext_ack *extack)
@@ -1532,16 +1528,14 @@ static int rvu_af_dl_npc_mcam_high_zone_percent_validate(struct devlink *devlink
 	struct rvu *rvu = rvu_dl->rvu;
 	struct npc_mcam *mcam;
 
-	/* The percent of high prio zone must range from 12% to 100% of unreserved mcam space */
+	 
 	if (val.vu8 < 12 || val.vu8 > 100) {
 		NL_SET_ERR_MSG_MOD(extack,
 				   "mcam high zone percent must be between 12% to 100%");
 		return -EINVAL;
 	}
 
-	/* Do not allow user to modify the high priority zone entries while mcam entries
-	 * have already been assigned.
-	 */
+	 
 	mcam = &rvu->hw->mcam;
 	if (mcam->bmap_fcnt < mcam->bmap_entries) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -1575,7 +1569,7 @@ static const struct devlink_param rvu_af_dl_param_exact_match[] = {
 			     rvu_af_dl_npc_mcam_high_zone_percent_validate),
 };
 
-/* Devlink switch mode */
+ 
 static int rvu_devlink_eswitch_mode_get(struct devlink *devlink, u16 *mode)
 {
 	struct rvu_devlink *rvu_dl = devlink_priv(devlink);
@@ -1651,7 +1645,7 @@ int rvu_register_dl(struct rvu *rvu)
 		goto err_dl_health;
 	}
 
-	/* Register exact match devlink only for CN10K-B */
+	 
 	if (!rvu_npc_exact_has_match_table(rvu))
 		goto done;
 
@@ -1685,7 +1679,7 @@ void rvu_unregister_dl(struct rvu *rvu)
 
 	devlink_params_unregister(dl, rvu_af_dl_params, ARRAY_SIZE(rvu_af_dl_params));
 
-	/* Unregister exact match devlink only for CN10K-B */
+	 
 	if (rvu_npc_exact_has_match_table(rvu))
 		devlink_params_unregister(dl, rvu_af_dl_param_exact_match,
 					  ARRAY_SIZE(rvu_af_dl_param_exact_match));

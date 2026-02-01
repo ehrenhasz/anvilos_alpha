@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "debug.h"
 #include "hal.h"
@@ -17,7 +14,7 @@ static void ath12k_hal_reo_set_desc_hdr(struct hal_desc_header *hdr,
 	hdr->info0 = le32_encode_bits(owner, HAL_DESC_HDR_INFO0_OWNER) |
 		     le32_encode_bits(buffer_type, HAL_DESC_HDR_INFO0_BUF_TYPE);
 
-	/* Magic pattern in reserved bits for debugging */
+	 
 	hdr->info0 |= le32_encode_bits(magic, HAL_DESC_HDR_INFO0_DBG_RESERVED);
 }
 
@@ -359,7 +356,7 @@ int ath12k_hal_wbm_desc_parse_err(struct ath12k_base *ab, void *desc,
 	u32 val;
 
 	type = le32_get_bits(wbm_desc->info0, HAL_WBM_RELEASE_INFO0_DESC_TYPE);
-	/* We expect only WBM_REL buffer type */
+	 
 	if (type != HAL_WBM_REL_DESC_TYPE_REL_MSDU) {
 		WARN_ON(1);
 		return -EINVAL;
@@ -371,9 +368,7 @@ int ath12k_hal_wbm_desc_parse_err(struct ath12k_base *ab, void *desc,
 	    rel_src != HAL_WBM_REL_SRC_MODULE_REO)
 		return -EINVAL;
 
-	/* The format of wbm rel ring desc changes based on the
-	 * hw cookie conversion status
-	 */
+	 
 	hw_cc_done = le32_get_bits(wbm_desc->info0,
 				   HAL_WBM_RELEASE_RX_INFO0_CC_STATUS);
 
@@ -750,9 +745,7 @@ void ath12k_hal_reo_qdesc_setup(struct hal_rx_reo_queue *qdesc,
 		break;
 	}
 
-	/* TODO: Set Ignore ampdu flags based on BA window size and/or
-	 * AMPDU capabilities
-	 */
+	 
 	qdesc->info0 |= le32_encode_bits(1, HAL_RX_REO_QUEUE_INFO0_IGNORE_AMPDU_FLG);
 
 	qdesc->info1 |= le32_encode_bits(0, HAL_RX_REO_QUEUE_INFO1_SVLD);
@@ -766,14 +759,7 @@ void ath12k_hal_reo_qdesc_setup(struct hal_rx_reo_queue *qdesc,
 
 	ext_desc = qdesc->ext_desc;
 
-	/* TODO: HW queue descriptors are currently allocated for max BA
-	 * window size for all QOS TIDs so that same descriptor can be used
-	 * later when ADDBA request is received. This should be changed to
-	 * allocate HW queue descriptors based on BA window size being
-	 * negotiated (0 for non BA cases), and reallocate when BA window
-	 * size changes and also send WMI message to FW to change the REO
-	 * queue descriptor in Rx peer entry as part of dp_rx_tid_update.
-	 */
+	 
 	memset(ext_desc, 0, 3 * sizeof(*ext_desc));
 	ath12k_hal_reo_set_desc_hdr(&ext_desc->desc_hdr, HAL_DESC_REO_OWNED,
 				    HAL_DESC_REO_QUEUE_EXT_DESC,

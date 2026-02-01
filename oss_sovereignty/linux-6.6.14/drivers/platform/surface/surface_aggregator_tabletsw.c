@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Surface System Aggregator Module (SSAM) tablet mode switch driver.
- *
- * Copyright (C) 2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/input.h>
@@ -16,7 +12,7 @@
 #include <linux/surface_aggregator/device.h>
 
 
-/* -- SSAM generic tablet switch driver framework. -------------------------- */
+ 
 
 struct ssam_tablet_sw;
 
@@ -99,7 +95,7 @@ static void ssam_tablet_sw_update_workfn(struct work_struct *work)
 		return;
 	sw->state = state;
 
-	/* Send SW_TABLET_MODE event. */
+	 
 	tablet = sw->ops.state_is_tablet_mode(sw, &state);
 	input_report_switch(sw->mode_switch, SW_TABLET_MODE, tablet);
 	input_sync(sw->mode_switch);
@@ -140,12 +136,12 @@ static int ssam_tablet_sw_probe(struct ssam_device *sdev)
 
 	ssam_device_set_drvdata(sdev, sw);
 
-	/* Get initial state. */
+	 
 	status = sw->ops.get_state(sw, &sw->state);
 	if (status)
 		return status;
 
-	/* Set up tablet mode switch. */
+	 
 	sw->mode_switch = devm_input_allocate_device(&sdev->dev);
 	if (!sw->mode_switch)
 		return -ENOMEM;
@@ -163,7 +159,7 @@ static int ssam_tablet_sw_probe(struct ssam_device *sdev)
 	if (status)
 		return status;
 
-	/* Set up notifier. */
+	 
 	sw->notif.base.priority = 0;
 	sw->notif.base.fn = desc->ops.notify;
 	sw->notif.event.reg = desc->event.reg;
@@ -179,7 +175,7 @@ static int ssam_tablet_sw_probe(struct ssam_device *sdev)
 	if (status)
 		goto err;
 
-	/* We might have missed events during setup, so check again. */
+	 
 	schedule_work(&sw->update_work);
 	return 0;
 
@@ -200,7 +196,7 @@ static void ssam_tablet_sw_remove(struct ssam_device *sdev)
 }
 
 
-/* -- SSAM KIP tablet switch implementation. -------------------------------- */
+ 
 
 #define SSAM_EVENT_KIP_CID_COVER_STATE_CHANGED	0x1d
 
@@ -279,7 +275,7 @@ static int ssam_kip_get_cover_state(struct ssam_tablet_sw *sw, struct ssam_table
 		return status;
 	}
 
-	state->source = 0;	/* Unused for KIP switch. */
+	state->source = 0;	 
 	state->state = raw;
 	return 0;
 }
@@ -289,7 +285,7 @@ static u32 ssam_kip_sw_notif(struct ssam_event_notifier *nf, const struct ssam_e
 	struct ssam_tablet_sw *sw = container_of(nf, struct ssam_tablet_sw, notif);
 
 	if (event->command_id != SSAM_EVENT_KIP_CID_COVER_STATE_CHANGED)
-		return 0;	/* Return "unhandled". */
+		return 0;	 
 
 	if (event->length < 1)
 		dev_warn(&sw->sdev->dev, "unexpected payload size: %u\n", event->length);
@@ -320,7 +316,7 @@ static const struct ssam_tablet_sw_desc ssam_kip_sw_desc = {
 };
 
 
-/* -- SSAM POS tablet switch implementation. -------------------------------- */
+ 
 
 static bool tablet_mode_in_slate_state = true;
 module_param(tablet_mode_in_slate_state, bool, 0644);
@@ -495,13 +491,13 @@ static int ssam_pos_get_sources_list(struct ssam_tablet_sw *sw, struct ssam_sour
 	if (status)
 		return status;
 
-	/* We need at least the 'sources->count' field. */
+	 
 	if (rsp.length < sizeof(__le32)) {
 		dev_err(&sw->sdev->dev, "received source list response is too small\n");
 		return -EPROTO;
 	}
 
-	/* Make sure 'sources->count' matches with the response length. */
+	 
 	if (get_unaligned_le32(&sources->count) * sizeof(__le32) + sizeof(__le32) != rsp.length) {
 		dev_err(&sw->sdev->dev, "mismatch between number of sources and response size\n");
 		return -EPROTO;
@@ -524,13 +520,7 @@ static int ssam_pos_get_source(struct ssam_tablet_sw *sw, u32 *source_id)
 		return -ENODEV;
 	}
 
-	/*
-	 * We currently don't know what to do with more than one posture
-	 * source. At the moment, only one source seems to be used/provided.
-	 * The WARN_ON() here should hopefully let us know quickly once there
-	 * is a device that provides multiple sources, at which point we can
-	 * then try to figure out how to handle them.
-	 */
+	 
 	WARN_ON(get_unaligned_le32(&sources.count) > 1);
 
 	*source_id = get_unaligned_le32(&sources.id[0]);
@@ -588,7 +578,7 @@ static u32 ssam_pos_sw_notif(struct ssam_event_notifier *nf, const struct ssam_e
 	struct ssam_tablet_sw *sw = container_of(nf, struct ssam_tablet_sw, notif);
 
 	if (event->command_id != SSAM_EVENT_POS_CID_POSTURE_CHANGED)
-		return 0;	/* Return "unhandled". */
+		return 0;	 
 
 	if (event->length != sizeof(__le32) * 3)
 		dev_warn(&sw->sdev->dev, "unexpected payload size: %u\n", event->length);
@@ -619,7 +609,7 @@ static const struct ssam_tablet_sw_desc ssam_pos_sw_desc = {
 };
 
 
-/* -- Driver registration. -------------------------------------------------- */
+ 
 
 static const struct ssam_device_id ssam_tablet_sw_match[] = {
 	{ SSAM_SDEV(KIP, SAM, 0x00, 0x01), (unsigned long)&ssam_kip_sw_desc },

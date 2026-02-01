@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * V9FS cache definitions.
- *
- *  Copyright (C) 2009 by Abhishek Kulkarni <adkulkar@umail.iu.edu>
- */
+
+ 
 
 #include <linux/jiffies.h>
 #include <linux/file.h>

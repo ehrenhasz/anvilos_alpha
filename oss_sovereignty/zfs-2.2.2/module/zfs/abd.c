@@ -1,100 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2014 by Chunwei Chen. All rights reserved.
- * Copyright (c) 2019 by Delphix. All rights reserved.
- */
+ 
+ 
 
-/*
- * ARC buffer data (ABD).
- *
- * ABDs are an abstract data structure for the ARC which can use two
- * different ways of storing the underlying data:
- *
- * (a) Linear buffer. In this case, all the data in the ABD is stored in one
- *     contiguous buffer in memory (from a zio_[data_]buf_* kmem cache).
- *
- *         +-------------------+
- *         | ABD (linear)      |
- *         |   abd_flags = ... |
- *         |   abd_size = ...  |     +--------------------------------+
- *         |   abd_buf ------------->| raw buffer of size abd_size    |
- *         +-------------------+     +--------------------------------+
- *              no abd_chunks
- *
- * (b) Scattered buffer. In this case, the data in the ABD is split into
- *     equal-sized chunks (from the abd_chunk_cache kmem_cache), with pointers
- *     to the chunks recorded in an array at the end of the ABD structure.
- *
- *         +-------------------+
- *         | ABD (scattered)   |
- *         |   abd_flags = ... |
- *         |   abd_size = ...  |
- *         |   abd_offset = 0  |                           +-----------+
- *         |   abd_chunks[0] ----------------------------->| chunk 0   |
- *         |   abd_chunks[1] ---------------------+        +-----------+
- *         |   ...             |                  |        +-----------+
- *         |   abd_chunks[N-1] ---------+         +------->| chunk 1   |
- *         +-------------------+        |                  +-----------+
- *                                      |                      ...
- *                                      |                  +-----------+
- *                                      +----------------->| chunk N-1 |
- *                                                         +-----------+
- *
- * In addition to directly allocating a linear or scattered ABD, it is also
- * possible to create an ABD by requesting the "sub-ABD" starting at an offset
- * within an existing ABD. In linear buffers this is simple (set abd_buf of
- * the new ABD to the starting point within the original raw buffer), but
- * scattered ABDs are a little more complex. The new ABD makes a copy of the
- * relevant abd_chunks pointers (but not the underlying data). However, to
- * provide arbitrary rather than only chunk-aligned starting offsets, it also
- * tracks an abd_offset field which represents the starting point of the data
- * within the first chunk in abd_chunks. For both linear and scattered ABDs,
- * creating an offset ABD marks the original ABD as the offset's parent, and the
- * original ABD's abd_children refcount is incremented. This data allows us to
- * ensure the root ABD isn't deleted before its children.
- *
- * Most consumers should never need to know what type of ABD they're using --
- * the ABD public API ensures that it's possible to transparently switch from
- * using a linear ABD to a scattered one when doing so would be beneficial.
- *
- * If you need to use the data within an ABD directly, if you know it's linear
- * (because you allocated it) you can use abd_to_buf() to access the underlying
- * raw buffer. Otherwise, you should use one of the abd_borrow_buf* functions
- * which will allocate a raw buffer if necessary. Use the abd_return_buf*
- * functions to return any raw buffers that are no longer necessary when you're
- * done using them.
- *
- * There are a variety of ABD APIs that implement basic buffer operations:
- * compare, copy, read, write, and fill with zeroes. If you need a custom
- * function which progressively accesses the whole ABD, use the abd_iterate_*
- * functions.
- *
- * As an additional feature, linear and scatter ABD's can be stitched together
- * by using the gang ABD type (abd_alloc_gang_abd()). This allows for
- * multiple ABDs to be viewed as a singular ABD.
- *
- * It is possible to make all ABDs linear by setting zfs_abd_scatter_enabled to
- * B_FALSE.
- */
+ 
 
 #include <sys/abd_impl.h>
 #include <sys/param.h>
@@ -102,7 +9,7 @@
 #include <sys/zfs_context.h>
 #include <sys/zfs_znode.h>
 
-/* see block comment above for description */
+ 
 int zfs_abd_scatter_enabled = B_TRUE;
 
 void
@@ -175,10 +82,7 @@ abd_free_struct(abd_t *abd)
 	abd_free_struct_impl(abd);
 }
 
-/*
- * Allocate an ABD, along with its own underlying data buffers. Use this if you
- * don't care whether the ABD is linear or not.
- */
+ 
 abd_t *
 abd_alloc(size_t size, boolean_t is_metadata)
 {
@@ -202,11 +106,7 @@ abd_alloc(size_t size, boolean_t is_metadata)
 	return (abd);
 }
 
-/*
- * Allocate an ABD that must be linear, along with its own underlying data
- * buffer. Only use this when it would be very annoying to write your ABD
- * consumer with a scattered ABD.
- */
+ 
 abd_t *
 abd_alloc_linear(size_t size, boolean_t is_metadata)
 {
@@ -254,12 +154,7 @@ abd_free_gang(abd_t *abd)
 	abd_t *cabd;
 
 	while ((cabd = list_head(&ABD_GANG(abd).abd_gang_chain)) != NULL) {
-		/*
-		 * We must acquire the child ABDs mutex to ensure that if it
-		 * is being added to another gang ABD we will set the link
-		 * as inactive when removing it from this gang ABD and before
-		 * adding it to the other gang ABD.
-		 */
+		 
 		mutex_enter(&cabd->abd_mtx);
 		ASSERT(list_link_active(&cabd->abd_gang_link));
 		list_remove(&ABD_GANG(abd).abd_gang_chain, cabd);
@@ -277,17 +172,7 @@ abd_free_scatter(abd_t *abd)
 	abd_update_scatter_stats(abd, ABDSTAT_DECR);
 }
 
-/*
- * Free an ABD.  Use with any kind of abd: those created with abd_alloc_*()
- * and abd_get_*(), including abd_get_offset_struct().
- *
- * If the ABD was created with abd_alloc_*(), the underlying data
- * (scatterlist or linear buffer) will also be freed.  (Subject to ownership
- * changes via abd_*_ownership_of_buf().)
- *
- * Unless the ABD was created with abd_get_offset_struct(), the abd_t will
- * also be freed.
- */
+ 
 void
 abd_free(abd_t *abd)
 {
@@ -321,10 +206,7 @@ abd_free(abd_t *abd)
 		abd_free_struct_impl(abd);
 }
 
-/*
- * Allocate an ABD of the same format (same metadata flag, same scatterize
- * setting) as another ABD.
- */
+ 
 abd_t *
 abd_alloc_sametype(abd_t *sabd, size_t size)
 {
@@ -337,11 +219,7 @@ abd_alloc_sametype(abd_t *sabd, size_t size)
 	}
 }
 
-/*
- * Create gang ABD that will be the head of a list of ABD's. This is used
- * to "chain" scatter/gather lists together when constructing aggregated
- * IO's. To free this abd, abd_free() must be called.
- */
+ 
 abd_t *
 abd_alloc_gang(void)
 {
@@ -352,9 +230,7 @@ abd_alloc_gang(void)
 	return (abd);
 }
 
-/*
- * Add a child gang ABD to a parent gang ABDs chained list.
- */
+ 
 static void
 abd_gang_add_gang(abd_t *pabd, abd_t *cabd, boolean_t free_on_free)
 {
@@ -362,19 +238,9 @@ abd_gang_add_gang(abd_t *pabd, abd_t *cabd, boolean_t free_on_free)
 	ASSERT(abd_is_gang(cabd));
 
 	if (free_on_free) {
-		/*
-		 * If the parent is responsible for freeing the child gang
-		 * ABD we will just splice the child's children ABD list to
-		 * the parent's list and immediately free the child gang ABD
-		 * struct. The parent gang ABDs children from the child gang
-		 * will retain all the free_on_free settings after being
-		 * added to the parents list.
-		 */
+		 
 #ifdef ZFS_DEBUG
-		/*
-		 * If cabd had abd_parent, we have to drop it here.  We can't
-		 * transfer it to pabd, nor we can clear abd_size leaving it.
-		 */
+		 
 		if (cabd->abd_parent != NULL) {
 			(void) zfs_refcount_remove_many(
 			    &cabd->abd_parent->abd_children,
@@ -393,74 +259,31 @@ abd_gang_add_gang(abd_t *pabd, abd_t *cabd, boolean_t free_on_free)
 		for (abd_t *child = list_head(&ABD_GANG(cabd).abd_gang_chain);
 		    child != NULL;
 		    child = list_next(&ABD_GANG(cabd).abd_gang_chain, child)) {
-			/*
-			 * We always pass B_FALSE for free_on_free as it is the
-			 * original child gang ABDs responsibility to determine
-			 * if any of its child ABDs should be free'd on the call
-			 * to abd_free().
-			 */
+			 
 			abd_gang_add(pabd, child, B_FALSE);
 		}
 		abd_verify(pabd);
 	}
 }
 
-/*
- * Add a child ABD to a gang ABD's chained list.
- */
+ 
 void
 abd_gang_add(abd_t *pabd, abd_t *cabd, boolean_t free_on_free)
 {
 	ASSERT(abd_is_gang(pabd));
 	abd_t *child_abd = NULL;
 
-	/*
-	 * If the child being added is a gang ABD, we will add the
-	 * child's ABDs to the parent gang ABD. This allows us to account
-	 * for the offset correctly in the parent gang ABD.
-	 */
+	 
 	if (abd_is_gang(cabd)) {
 		ASSERT(!list_link_active(&cabd->abd_gang_link));
 		return (abd_gang_add_gang(pabd, cabd, free_on_free));
 	}
 	ASSERT(!abd_is_gang(cabd));
 
-	/*
-	 * In order to verify that an ABD is not already part of
-	 * another gang ABD, we must lock the child ABD's abd_mtx
-	 * to check its abd_gang_link status. We unlock the abd_mtx
-	 * only after it is has been added to a gang ABD, which
-	 * will update the abd_gang_link's status. See comment below
-	 * for how an ABD can be in multiple gang ABD's simultaneously.
-	 */
+	 
 	mutex_enter(&cabd->abd_mtx);
 	if (list_link_active(&cabd->abd_gang_link)) {
-		/*
-		 * If the child ABD is already part of another
-		 * gang ABD then we must allocate a new
-		 * ABD to use a separate link. We mark the newly
-		 * allocated ABD with ABD_FLAG_GANG_FREE, before
-		 * adding it to the gang ABD's list, to make the
-		 * gang ABD aware that it is responsible to call
-		 * abd_free(). We use abd_get_offset() in order
-		 * to just allocate a new ABD but avoid copying the
-		 * data over into the newly allocated ABD.
-		 *
-		 * An ABD may become part of multiple gang ABD's. For
-		 * example, when writing ditto bocks, the same ABD
-		 * is used to write 2 or 3 locations with 2 or 3
-		 * zio_t's. Each of the zio's may be aggregated with
-		 * different adjacent zio's. zio aggregation uses gang
-		 * zio's, so the single ABD can become part of multiple
-		 * gang zio's.
-		 *
-		 * The ASSERT below is to make sure that if
-		 * free_on_free is passed as B_TRUE, the ABD can
-		 * not be in multiple gang ABD's. The gang ABD
-		 * can not be responsible for cleaning up the child
-		 * ABD memory allocation if the ABD can be in
-		 * multiple gang ABD's at one time.
-		 */
+		 
 		ASSERT3B(free_on_free, ==, B_FALSE);
 		child_abd = abd_get_offset(cabd, 0);
 		child_abd->abd_flags |= ABD_FLAG_GANG_FREE;
@@ -476,10 +299,7 @@ abd_gang_add(abd_t *pabd, abd_t *cabd, boolean_t free_on_free)
 	pabd->abd_size += child_abd->abd_size;
 }
 
-/*
- * Locate the ABD for the supplied offset in the gang ABD.
- * Return a new offset relative to the returned ABD.
- */
+ 
 abd_t *
 abd_gang_get_offset(abd_t *abd, size_t *off)
 {
@@ -498,12 +318,7 @@ abd_gang_get_offset(abd_t *abd, size_t *off)
 	return (cabd);
 }
 
-/*
- * Allocate a new ABD, using the provided struct (if non-NULL, and if
- * circumstances allow - otherwise allocate the struct).  The returned ABD will
- * point to offset off of sabd. It shares the underlying buffer data with sabd.
- * Use abd_free() to free.  sabd must not be freed while any derived ABDs exist.
- */
+ 
 static abd_t *
 abd_get_offset_impl(abd_t *abd, abd_t *sabd, size_t off, size_t size)
 {
@@ -513,11 +328,7 @@ abd_get_offset_impl(abd_t *abd, abd_t *sabd, size_t off, size_t size)
 	if (abd_is_linear(sabd)) {
 		if (abd == NULL)
 			abd = abd_alloc_struct(0);
-		/*
-		 * Even if this buf is filesystem metadata, we only track that
-		 * if we own the underlying data buffer, which is not true in
-		 * this case. Therefore, we don't ever use ABD_FLAG_META here.
-		 */
+		 
 		abd->abd_flags |= ABD_FLAG_LINEAR;
 
 		ABD_LINEAR_BUF(abd) = (char *)ABD_LINEAR_BUF(sabd) + off;
@@ -556,15 +367,7 @@ abd_get_offset_impl(abd_t *abd, abd_t *sabd, size_t off, size_t size)
 	return (abd);
 }
 
-/*
- * Like abd_get_offset_size(), but memory for the abd_t is provided by the
- * caller.  Using this routine can improve performance by avoiding the cost
- * of allocating memory for the abd_t struct, and updating the abd stats.
- * Usually, the provided abd is returned, but in some circumstances (FreeBSD,
- * if sabd is scatter and size is more than 2 pages) a new abd_t may need to
- * be allocated.  Therefore callers should be careful to use the returned
- * abd_t*.
- */
+ 
 abd_t *
 abd_get_offset_struct(abd_t *abd, abd_t *sabd, size_t off, size_t size)
 {
@@ -591,9 +394,7 @@ abd_get_offset_size(abd_t *sabd, size_t off, size_t size)
 	return (abd_get_offset_impl(NULL, sabd, off, size));
 }
 
-/*
- * Return a size scatter ABD containing only zeros.
- */
+ 
 abd_t *
 abd_get_zeros(size_t size)
 {
@@ -602,9 +403,7 @@ abd_get_zeros(size_t size)
 	return (abd_get_offset_size(abd_zero_scatter, 0, size));
 }
 
-/*
- * Allocate a linear ABD structure for buf.
- */
+ 
 abd_t *
 abd_get_from_buf(void *buf, size_t size)
 {
@@ -612,11 +411,7 @@ abd_get_from_buf(void *buf, size_t size)
 
 	VERIFY3U(size, <=, SPA_MAXBLOCKSIZE);
 
-	/*
-	 * Even if this buf is filesystem metadata, we only track that if we
-	 * own the underlying data buffer, which is not true in this case.
-	 * Therefore, we don't ever use ABD_FLAG_META here.
-	 */
+	 
 	abd->abd_flags |= ABD_FLAG_LINEAR;
 	abd->abd_size = size;
 
@@ -625,9 +420,7 @@ abd_get_from_buf(void *buf, size_t size)
 	return (abd);
 }
 
-/*
- * Get the raw buffer associated with a linear ABD.
- */
+ 
 void *
 abd_to_buf(abd_t *abd)
 {
@@ -636,12 +429,7 @@ abd_to_buf(abd_t *abd)
 	return (ABD_LINEAR_BUF(abd));
 }
 
-/*
- * Borrow a raw buffer from an ABD without copying the contents of the ABD
- * into the buffer. If the ABD is scattered, this will allocate a raw buffer
- * whose contents are undefined. To copy over the existing data in the ABD, use
- * abd_borrow_buf_copy() instead.
- */
+ 
 void *
 abd_borrow_buf(abd_t *abd, size_t n)
 {
@@ -669,12 +457,7 @@ abd_borrow_buf_copy(abd_t *abd, size_t n)
 	return (buf);
 }
 
-/*
- * Return a borrowed raw buffer to an ABD. If the ABD is scattered, this will
- * not change the contents of the ABD and will ASSERT that you didn't modify
- * the buffer since it was borrowed. If you want any changes you made to buf to
- * be copied back to abd, use abd_return_buf_copy() instead.
- */
+ 
 void
 abd_return_buf(abd_t *abd, void *buf, size_t n)
 {
@@ -706,31 +489,20 @@ abd_release_ownership_of_buf(abd_t *abd)
 	ASSERT(abd_is_linear(abd));
 	ASSERT(abd->abd_flags & ABD_FLAG_OWNER);
 
-	/*
-	 * abd_free() needs to handle LINEAR_PAGE ABD's specially.
-	 * Since that flag does not survive the
-	 * abd_release_ownership_of_buf() -> abd_get_from_buf() ->
-	 * abd_take_ownership_of_buf() sequence, we don't allow releasing
-	 * these "linear but not zio_[data_]buf_alloc()'ed" ABD's.
-	 */
+	 
 	ASSERT(!abd_is_linear_page(abd));
 
 	abd_verify(abd);
 
 	abd->abd_flags &= ~ABD_FLAG_OWNER;
-	/* Disable this flag since we no longer own the data buffer */
+	 
 	abd->abd_flags &= ~ABD_FLAG_META;
 
 	abd_update_linear_stats(abd, ABDSTAT_DECR);
 }
 
 
-/*
- * Give this ABD ownership of the buffer that it's storing. Can only be used on
- * linear ABDs which were allocated via abd_get_from_buf(), or ones allocated
- * with abd_alloc_linear() which subsequently released ownership of their buf
- * with abd_release_ownership_of_buf().
- */
+ 
 void
 abd_take_ownership_of_buf(abd_t *abd, boolean_t is_metadata)
 {
@@ -746,10 +518,7 @@ abd_take_ownership_of_buf(abd_t *abd, boolean_t is_metadata)
 	abd_update_linear_stats(abd, ABDSTAT_INCR);
 }
 
-/*
- * Initializes an abd_iter based on whether the abd is a gang ABD
- * or just a single ABD.
- */
+ 
 static inline abd_t *
 abd_init_abd_iter(abd_t *abd, struct abd_iter *aiter, size_t off)
 {
@@ -768,11 +537,7 @@ abd_init_abd_iter(abd_t *abd, struct abd_iter *aiter, size_t off)
 	return (cabd);
 }
 
-/*
- * Advances an abd_iter. We have to be careful with gang ABD as
- * advancing could mean that we are at the end of a particular ABD and
- * must grab the ABD in the gang ABD's list.
- */
+ 
 static inline abd_t *
 abd_advance_abd_iter(abd_t *abd, abd_t *cabd, struct abd_iter *aiter,
     size_t len)
@@ -806,7 +571,7 @@ abd_iterate_func(abd_t *abd, size_t off, size_t size,
 	abd_t *c_abd = abd_init_abd_iter(abd, &aiter, off);
 
 	while (size > 0) {
-		/* If we are at the end of the gang ABD we are done */
+		 
 		if (gang && !c_abd)
 			break;
 
@@ -844,9 +609,7 @@ abd_copy_to_buf_off_cb(void *buf, size_t size, void *private)
 	return (0);
 }
 
-/*
- * Copy abd to buf. (off is the offset in abd.)
- */
+ 
 void
 abd_copy_to_buf_off(void *buf, abd_t *abd, size_t off, size_t size)
 {
@@ -868,9 +631,7 @@ abd_cmp_buf_off_cb(void *buf, size_t size, void *private)
 	return (ret);
 }
 
-/*
- * Compare the contents of abd to buf. (off is the offset in abd.)
- */
+ 
 int
 abd_cmp_buf_off(abd_t *abd, const void *buf, size_t off, size_t size)
 {
@@ -890,9 +651,7 @@ abd_copy_from_buf_off_cb(void *buf, size_t size, void *private)
 	return (0);
 }
 
-/*
- * Copy from buf to abd. (off is the offset in abd.)
- */
+ 
 void
 abd_copy_from_buf_off(abd_t *abd, const void *buf, size_t off, size_t size)
 {
@@ -910,20 +669,14 @@ abd_zero_off_cb(void *buf, size_t size, void *private)
 	return (0);
 }
 
-/*
- * Zero out the abd from a particular offset to the end.
- */
+ 
 void
 abd_zero_off(abd_t *abd, size_t off, size_t size)
 {
 	(void) abd_iterate_func(abd, off, size, abd_zero_off_cb, NULL);
 }
 
-/*
- * Iterate over two ABDs and call func incrementally on the two ABDs' data in
- * equal-sized chunks (passed to func as raw buffers). func could be called many
- * times during this iteration.
- */
+ 
 int
 abd_iterate_func2(abd_t *dabd, abd_t *sabd, size_t doff, size_t soff,
     size_t size, abd_iter_func2_t *func, void *private)
@@ -948,7 +701,7 @@ abd_iterate_func2(abd_t *dabd, abd_t *sabd, size_t doff, size_t soff,
 	c_sabd = abd_init_abd_iter(sabd, &saiter, soff);
 
 	while (size > 0) {
-		/* if we are at the end of the gang ABD we are done */
+		 
 		if ((dabd_is_gang_abd && !c_dabd) ||
 		    (sabd_is_gang_abd && !c_sabd))
 			break;
@@ -988,9 +741,7 @@ abd_copy_off_cb(void *dbuf, void *sbuf, size_t size, void *private)
 	return (0);
 }
 
-/*
- * Copy from sabd to dabd starting from soff and doff.
- */
+ 
 void
 abd_copy_off(abd_t *dabd, abd_t *sabd, size_t doff, size_t soff, size_t size)
 {
@@ -1005,9 +756,7 @@ abd_cmp_cb(void *bufa, void *bufb, size_t size, void *private)
 	return (memcmp(bufa, bufb, size));
 }
 
-/*
- * Compares the contents of two ABDs.
- */
+ 
 int
 abd_cmp(abd_t *dabd, abd_t *sabd)
 {
@@ -1016,14 +765,7 @@ abd_cmp(abd_t *dabd, abd_t *sabd)
 	    abd_cmp_cb, NULL));
 }
 
-/*
- * Iterate over code ABDs and a data ABD and call @func_raidz_gen.
- *
- * @cabds          parity ABDs, must have equal size
- * @dabd           data ABD. Can be NULL (in this case @dsize = 0)
- * @func_raidz_gen should be implemented so that its behaviour
- *                 is the same when taking linear and when taking scatter
- */
+ 
 void
 abd_raidz_gen_iterate(abd_t **cabds, abd_t *dabd,
     ssize_t csize, ssize_t dsize, const unsigned parity,
@@ -1056,15 +798,12 @@ abd_raidz_gen_iterate(abd_t **cabds, abd_t *dabd,
 
 	abd_enter_critical(flags);
 	while (csize > 0) {
-		/* if we are at the end of the gang ABD we are done */
+		 
 		if (dabd_is_gang_abd && !c_dabd)
 			break;
 
 		for (i = 0; i < parity; i++) {
-			/*
-			 * If we are at the end of the gang ABD we are
-			 * done.
-			 */
+			 
 			if (cabds_is_gang_abd[i] && !c_cabds[i])
 				break;
 			abd_iter_map(&caiters[i]);
@@ -1087,22 +826,19 @@ abd_raidz_gen_iterate(abd_t **cabds, abd_t *dabd,
 				len = MIN(caiters[0].iter_mapsize, len);
 		}
 
-		/* must be progressive */
+		 
 		ASSERT3S(len, >, 0);
 
 		if (dabd && dsize > 0) {
-			/* this needs precise iter.length */
+			 
 			len = MIN(daiter.iter_mapsize, len);
 			dlen = len;
 		} else
 			dlen = 0;
 
-		/* must be progressive */
+		 
 		ASSERT3S(len, >, 0);
-		/*
-		 * The iterated function likely will not do well if each
-		 * segment except the last one is not multiple of 512 (raidz).
-		 */
+		 
 		ASSERT3U(((uint64_t)len & 511ULL), ==, 0);
 
 		func_raidz_gen(caddrs, daiter.iter_mapaddr, len, dlen);
@@ -1130,16 +866,7 @@ abd_raidz_gen_iterate(abd_t **cabds, abd_t *dabd,
 	abd_exit_critical(flags);
 }
 
-/*
- * Iterate over code ABDs and data reconstruction target ABDs and call
- * @func_raidz_rec. Function maps at most 6 pages atomically.
- *
- * @cabds           parity ABDs, must have equal size
- * @tabds           rec target ABDs, at most 3
- * @tsize           size of data target columns
- * @func_raidz_rec  expects syndrome data in target columns. Function
- *                  reconstructs data and overwrites target columns.
- */
+ 
 void
 abd_raidz_rec_iterate(abd_t **cabds, abd_t **tabds,
     ssize_t tsize, const unsigned parity,
@@ -1173,10 +900,7 @@ abd_raidz_rec_iterate(abd_t **cabds, abd_t **tabds,
 	while (tsize > 0) {
 
 		for (i = 0; i < parity; i++) {
-			/*
-			 * If we are at the end of the gang ABD we
-			 * are done.
-			 */
+			 
 			if (cabds_is_gang_abd[i] && !c_cabds[i])
 				break;
 			if (tabds_is_gang_abd[i] && !c_tabds[i])
@@ -1201,12 +925,9 @@ abd_raidz_rec_iterate(abd_t **cabds, abd_t **tabds,
 				len = MIN(xiters[0].iter_mapsize, len);
 				len = MIN(citers[0].iter_mapsize, len);
 		}
-		/* must be progressive */
+		 
 		ASSERT3S(len, >, 0);
-		/*
-		 * The iterated function likely will not do well if each
-		 * segment except the last one is not multiple of 512 (raidz).
-		 */
+		 
 		ASSERT3U(((uint64_t)len & 511ULL), ==, 0);
 
 		func_raidz_rec(xaddrs, len, caddrs, mul);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Device handling code
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -24,7 +18,7 @@
 const struct nf_br_ops __rcu *nf_br_ops __read_mostly;
 EXPORT_SYMBOL_GPL(nf_br_ops);
 
-/* net device transmit always called with BH disabled */
+ 
 netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct net_bridge_mcast_port *pmctx_null = NULL;
@@ -215,17 +209,17 @@ static int br_change_mtu(struct net_device *dev, int new_mtu)
 
 	dev->mtu = new_mtu;
 
-	/* this flag will be cleared if the MTU was automatically adjusted */
+	 
 	br_opt_toggle(br, BROPT_MTU_SET_BY_USER, true);
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-	/* remember the MTU in the rtable for PMTU */
+	 
 	dst_metric_set(&br->fake_rtable.dst, RTAX_MTU, new_mtu);
 #endif
 
 	return 0;
 }
 
-/* Allow setting mac address to any valid ethernet address. */
+ 
 static int br_set_mac_address(struct net_device *dev, void *p)
 {
 	struct net_bridge *br = netdev_priv(dev);
@@ -234,15 +228,13 @@ static int br_set_mac_address(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-	/* dev_set_mac_addr() can be called by a master device on bridge's
-	 * NETDEV_UNREGISTER, but since it's being destroyed do nothing
-	 */
+	 
 	if (dev->reg_state != NETREG_REGISTERED)
 		return -EBUSY;
 
 	spin_lock_bh(&br->lock);
 	if (!ether_addr_equal(dev->dev_addr, addr->sa_data)) {
-		/* Mac address will be changed in br_stp_change_bridge_id(). */
+		 
 		br_stp_change_bridge_id(br, addr->sa_data);
 	}
 	spin_unlock_bh(&br->lock);

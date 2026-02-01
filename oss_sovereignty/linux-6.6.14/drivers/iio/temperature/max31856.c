@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* max31856.c
- *
- * Maxim MAX31856 thermocouple sensor driver
- *
- * Copyright (C) 2018-2019 Rockwell Collins
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/mod_devicetable.h>
@@ -18,10 +13,7 @@
 #include <linux/util_macros.h>
 #include <asm/unaligned.h>
 #include <dt-bindings/iio/temperature/thermocouple.h>
-/*
- * The MSB of the register value determines whether the following byte will
- * be written or read. If it is 0, one or more byte reads will follow.
- */
+ 
 #define MAX31856_RD_WR_BIT         BIT(7)
 
 #define MAX31856_CR0_AUTOCONVERT   BIT(7)
@@ -35,7 +27,7 @@
 #define MAX31856_FAULT_OVUV        BIT(1)
 #define MAX31856_FAULT_OPEN        BIT(0)
 
-/* The MAX31856 registers */
+ 
 #define MAX31856_CR0_REG           0x00
 #define MAX31856_CR1_REG           0x01
 #define MAX31856_MASK_REG          0x02
@@ -54,7 +46,7 @@
 #define MAX31856_SR_REG            0x0F
 
 static const struct iio_chan_spec max31856_channels[] = {
-	{	/* Thermocouple Temperature */
+	{	 
 		.type = IIO_TEMP,
 		.info_mask_separate =
 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE) |
@@ -62,7 +54,7 @@ static const struct iio_chan_spec max31856_channels[] = {
 		.info_mask_shared_by_type =
 			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)
 	},
-	{	/* Cold Junction Temperature */
+	{	 
 		.type = IIO_TEMP,
 		.channel2 = IIO_MOD_TEMP_AMBIENT,
 		.modified = 1,
@@ -106,10 +98,7 @@ static int max31856_init(struct max31856_data *data)
 	int ret;
 	u8 reg_cr0_val, reg_cr1_val;
 
-	/* Start by changing to Off mode before making changes as
-	 * some settings are recommended to be set only when the device
-	 * is off
-	 */
+	 
 	ret = max31856_read(data, MAX31856_CR0_REG, &reg_cr0_val, 1);
 	if (ret)
 		return ret;
@@ -119,7 +108,7 @@ static int max31856_init(struct max31856_data *data)
 	if (ret)
 		return ret;
 
-	/* Set thermocouple type based on dts property */
+	 
 	ret = max31856_read(data, MAX31856_CR1_REG, &reg_cr1_val, 1);
 	if (ret)
 		return ret;
@@ -134,15 +123,11 @@ static int max31856_init(struct max31856_data *data)
 	if (ret)
 		return ret;
 
-	/*
-	 * Enable Open circuit fault detection
-	 * Read datasheet for more information: Table 4.
-	 * Value 01 means : Enabled (Once every 16 conversions)
-	 */
+	 
 	reg_cr0_val &= ~MAX31856_CR0_OCFAULT_MASK;
 	reg_cr0_val |= MAX31856_CR0_OCFAULT;
 
-	/* Set Auto Conversion Mode */
+	 
 	reg_cr0_val &= ~MAX31856_CR0_1SHOT;
 	reg_cr0_val |= MAX31856_CR0_AUTOCONVERT;
 
@@ -163,35 +148,29 @@ static int max31856_thermocouple_read(struct max31856_data *data,
 
 	switch (chan->channel2) {
 	case IIO_NO_MOD:
-		/*
-		 * Multibyte Read
-		 * MAX31856_LTCBH_REG, MAX31856_LTCBM_REG, MAX31856_LTCBL_REG
-		 */
+		 
 		ret = max31856_read(data, MAX31856_LTCBH_REG, reg_val, 3);
 		if (ret)
 			return ret;
-		/* Skip last 5 dead bits of LTCBL */
+		 
 		*val = get_unaligned_be24(&reg_val[0]) >> 5;
-		/* Check 7th bit of LTCBH reg. value for sign*/
+		 
 		if (reg_val[0] & 0x80)
 			*val -= 0x80000;
 		break;
 
 	case IIO_MOD_TEMP_AMBIENT:
-		/*
-		 * Multibyte Read
-		 * MAX31856_CJTO_REG, MAX31856_CJTH_REG, MAX31856_CJTL_REG
-		 */
+		 
 		ret = max31856_read(data, MAX31856_CJTO_REG, reg_val, 3);
 		if (ret)
 			return ret;
-		/* Get Cold Junction Temp. offset register value */
+		 
 		offset_cjto = reg_val[0];
-		/* Get CJTH and CJTL value and skip last 2 dead bits of CJTL */
+		 
 		*val = get_unaligned_be16(&reg_val[1]) >> 2;
-		/* As per datasheet add offset into CJTH and CJTL */
+		 
 		*val += offset_cjto;
-		/* Check 7th bit of CJTH reg. value for sign */
+		 
 		if (reg_val[1] & 0x80)
 			*val -= 0x4000;
 		break;
@@ -203,7 +182,7 @@ static int max31856_thermocouple_read(struct max31856_data *data,
 	ret = max31856_read(data, MAX31856_SR_REG, reg_val, 1);
 	if (ret)
 		return ret;
-	/* Check for over/under voltage or open circuit fault */
+	 
 	if (reg_val[0] & (MAX31856_FAULT_OVUV | MAX31856_FAULT_OPEN))
 		return -EIO;
 
@@ -226,15 +205,15 @@ static int max31856_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->channel2) {
 		case IIO_MOD_TEMP_AMBIENT:
-			/* Cold junction Temp. Data resolution is 0.015625 */
+			 
 			*val = 15;
-			*val2 = 625000; /* 1000 * 0.015625 */
+			*val2 = 625000;  
 			ret = IIO_VAL_INT_PLUS_MICRO;
 			break;
 		default:
-			/* Thermocouple Temp. Data resolution is 0.0078125 */
+			 
 			*val = 7;
-			*val2 = 812500; /* 1000 * 0.0078125) */
+			*val2 = 812500;  
 			return IIO_VAL_INT_PLUS_MICRO;
 		}
 		break;
@@ -276,7 +255,7 @@ static int max31856_write_raw(struct iio_dev *indio_dev,
 		if (val > 16 || val < 1)
 			return -EINVAL;
 		msb = fls(val) - 1;
-		/* Round up to next 2pow if needed */
+		 
 		if (BIT(msb) < val)
 			msb++;
 
@@ -431,10 +410,7 @@ static int max31856_probe(struct spi_device *spi)
 		data->thermocouple_type = THERMOCOUPLE_TYPE_K;
 	}
 
-	/*
-	 * no need to translate values as the supported types
-	 * have the same value as the #defines
-	 */
+	 
 	switch (data->thermocouple_type) {
 	case THERMOCOUPLE_TYPE_B:
 	case THERMOCOUPLE_TYPE_E:

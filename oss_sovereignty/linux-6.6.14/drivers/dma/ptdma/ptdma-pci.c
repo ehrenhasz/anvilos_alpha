@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Passthru DMA device driver
- * -- Based on the CCP driver
- *
- * Copyright (C) 2016,2021 Advanced Micro Devices, Inc.
- *
- * Author: Sanjay R Mehta <sanju.mehta@amd.com>
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -28,11 +19,7 @@ struct pt_msix {
 	struct msix_entry msix_entry;
 };
 
-/*
- * pt_alloc_struct - allocate and initialize the pt_device struct
- *
- * @dev: device struct of the PTDMA
- */
+ 
 static struct pt_device *pt_alloc_struct(struct device *dev)
 {
 	struct pt_device *pt;
@@ -92,13 +79,13 @@ static int pt_get_irqs(struct pt_device *pt)
 	if (!ret)
 		return 0;
 
-	/* Couldn't get MSI-X vectors, try MSI */
+	 
 	dev_err(dev, "could not enable MSI-X (%d), trying MSI\n", ret);
 	ret = pt_get_msi_irq(pt);
 	if (!ret)
 		return 0;
 
-	/* Couldn't get MSI interrupt */
+	 
 	dev_err(dev, "could not enable MSI (%d)\n", ret);
 
 	return ret;
@@ -224,7 +211,7 @@ static const struct pt_dev_vdata dev_vdata[] = {
 
 static const struct pci_device_id pt_pci_table[] = {
 	{ PCI_VDEVICE(AMD, 0x1498), (kernel_ulong_t)&dev_vdata[0] },
-	/* Last entry must be zero */
+	 
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, pt_pci_table);

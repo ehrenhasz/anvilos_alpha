@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ARCH_PERF_REGS_H
 #define ARCH_PERF_REGS_H
 
@@ -14,4 +14,4 @@ void perf_regs_load(u64 *regs);
 #define PERF_REGS_MAX	PERF_REG_ARM64_MAX
 #define PERF_SAMPLE_REGS_ABI	PERF_SAMPLE_REGS_ABI_64
 
-#endif /* ARCH_PERF_REGS_H */
+#endif  

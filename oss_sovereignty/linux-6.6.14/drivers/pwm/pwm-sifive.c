@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017-2018 SiFive
- * For SiFive's PWM IP block documentation please refer Chapter 14 of
- * Reference Manual : https://static.dev.sifive.com/FU540-C000-v1.0.pdf
- *
- * Limitations:
- * - When changing both duty cycle and period, we cannot prevent in
- *   software that the output might produce a period with mixed
- *   settings (new period length and old duty cycle).
- * - The hardware cannot generate a 100% duty cycle.
- * - The hardware generates only inverted output.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/mod_devicetable.h>
@@ -20,13 +9,13 @@
 #include <linux/slab.h>
 #include <linux/bitfield.h>
 
-/* Register offsets */
+ 
 #define PWM_SIFIVE_PWMCFG		0x0
 #define PWM_SIFIVE_PWMCOUNT		0x8
 #define PWM_SIFIVE_PWMS			0x10
 #define PWM_SIFIVE_PWMCMP(i)		(0x20 + 4 * (i))
 
-/* PWMCFG fields */
+ 
 #define PWM_SIFIVE_PWMCFG_SCALE		GENMASK(3, 0)
 #define PWM_SIFIVE_PWMCFG_STICKY	BIT(8)
 #define PWM_SIFIVE_PWMCFG_ZERO_CMP	BIT(9)
@@ -42,7 +31,7 @@
 
 struct pwm_sifive_ddata {
 	struct pwm_chip	chip;
-	struct mutex lock; /* lock to protect user_count and approx_period */
+	struct mutex lock;  
 	struct notifier_block notifier;
 	struct clk *clk;
 	void __iomem *regs;
@@ -77,7 +66,7 @@ static void pwm_sifive_free(struct pwm_chip *chip, struct pwm_device *pwm)
 	mutex_unlock(&ddata->lock);
 }
 
-/* Called holding ddata->lock */
+ 
 static void pwm_sifive_update_clock(struct pwm_sifive_ddata *ddata,
 				    unsigned long rate)
 {
@@ -85,13 +74,7 @@ static void pwm_sifive_update_clock(struct pwm_sifive_ddata *ddata,
 	unsigned long scale_pow;
 	int scale;
 	u32 val;
-	/*
-	 * The PWM unit is used with pwmzerocmp=0, so the only way to modify the
-	 * period length is using pwmscale which provides the number of bits the
-	 * counter is shifted before being feed to the comparators. A period
-	 * lasts (1 << (PWM_SIFIVE_CMPWIDTH + pwmscale)) clock ticks.
-	 * (1 << (PWM_SIFIVE_CMPWIDTH + scale)) * 10^9/rate = period
-	 */
+	 
 	scale_pow = div64_ul(ddata->approx_period * (u64)rate, NSEC_PER_SEC);
 	scale = clamp(ilog2(scale_pow) - PWM_SIFIVE_CMPWIDTH, 0, 0xf);
 
@@ -99,7 +82,7 @@ static void pwm_sifive_update_clock(struct pwm_sifive_ddata *ddata,
 	      FIELD_PREP(PWM_SIFIVE_PWMCFG_SCALE, scale);
 	writel(val, ddata->regs + PWM_SIFIVE_PWMCFG);
 
-	/* As scale <= 15 the shift operation cannot overflow. */
+	 
 	num = (unsigned long long)NSEC_PER_SEC << (PWM_SIFIVE_CMPWIDTH + scale);
 	ddata->real_period = div64_ul(num, rate);
 	dev_dbg(ddata->chip.dev,
@@ -149,25 +132,15 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (!state->enabled)
 		duty_cycle = 0;
 
-	/*
-	 * The problem of output producing mixed setting as mentioned at top,
-	 * occurs here. To minimize the window for this problem, we are
-	 * calculating the register values first and then writing them
-	 * consecutively
-	 */
+	 
 	num = (u64)duty_cycle * (1U << PWM_SIFIVE_CMPWIDTH);
 	frac = DIV64_U64_ROUND_CLOSEST(num, state->period);
-	/* The hardware cannot generate a 100% duty cycle */
+	 
 	frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
 
 	mutex_lock(&ddata->lock);
 	if (state->period != ddata->approx_period) {
-		/*
-		 * Don't let a 2nd user change the period underneath the 1st user.
-		 * However if ddate->approx_period == 0 this is the first time we set
-		 * any period, so let whoever gets here first set the period so other
-		 * users who agree on the period won't fail.
-		 */
+		 
 		if (ddata->user_count != 1 && ddata->approx_period) {
 			mutex_unlock(&ddata->lock);
 			return -EBUSY;
@@ -177,11 +150,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	}
 	mutex_unlock(&ddata->lock);
 
-	/*
-	 * If the PWM is enabled the clk is already on. So only enable it
-	 * conditionally to have it on exactly once afterwards independent of
-	 * the PWM state.
-	 */
+	 
 	if (!enabled) {
 		ret = clk_enable(ddata->clk);
 		if (ret) {
@@ -267,10 +236,10 @@ static int pwm_sifive_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* The clk should be on once for each running PWM. */
+	 
 	if (enabled_pwms) {
 		while (enabled_clks < enabled_pwms) {
-			/* This is not expected to fail as the clk is already on */
+			 
 			ret = clk_enable(ddata->clk);
 			if (unlikely(ret)) {
 				dev_err_probe(dev, ret, "Failed to enable clk\n");
@@ -283,7 +252,7 @@ static int pwm_sifive_probe(struct platform_device *pdev)
 		enabled_clks = 0;
 	}
 
-	/* Watch for changes to underlying clock frequency */
+	 
 	ddata->notifier.notifier_call = pwm_sifive_clock_notifier;
 	ret = clk_notifier_register(ddata->clk, &ddata->notifier);
 	if (ret) {

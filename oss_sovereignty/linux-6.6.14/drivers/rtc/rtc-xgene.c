@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * APM X-Gene SoC Real Time Clock Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author: Rameshwar Prasad Sahu <rsahu@apm.com>
- *         Loc Ho <lho@apm.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -17,7 +11,7 @@
 #include <linux/rtc.h>
 #include <linux/slab.h>
 
-/* RTC CSR Registers */
+ 
 #define RTC_CCVR		0x00
 #define RTC_CMR			0x04
 #define RTC_CLR			0x08
@@ -52,12 +46,9 @@ static int xgene_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct xgene_rtc_dev *pdata = dev_get_drvdata(dev);
 
-	/*
-	 * NOTE: After the following write, the RTC_CCVR is only reflected
-	 *       after the update cycle of 1 seconds.
-	 */
+	 
 	writel((u32)rtc_tm_to_time64(tm), pdata->csr_base + RTC_CLR);
-	readl(pdata->csr_base + RTC_CLR); /* Force a barrier */
+	readl(pdata->csr_base + RTC_CLR);  
 
 	return 0;
 }
@@ -66,7 +57,7 @@ static int xgene_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct xgene_rtc_dev *pdata = dev_get_drvdata(dev);
 
-	/* If possible, CMR should be read here */
+	 
 	rtc_time64_to_tm(0, &alrm->time);
 	alrm->enabled = readl(pdata->csr_base + RTC_CCR) & RTC_CCR_IE;
 
@@ -121,11 +112,11 @@ static irqreturn_t xgene_rtc_interrupt(int irq, void *id)
 {
 	struct xgene_rtc_dev *pdata = id;
 
-	/* Check if interrupt asserted */
+	 
 	if (!(readl(pdata->csr_base + RTC_STAT) & RTC_STAT_BIT))
 		return IRQ_NONE;
 
-	/* Clear interrupt */
+	 
 	readl(pdata->csr_base + RTC_EOI);
 
 	rtc_update_irq(pdata->rtc, 1, RTC_IRQF | RTC_AF);
@@ -171,7 +162,7 @@ static int xgene_rtc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Turn on the clock and the crystal */
+	 
 	writel(RTC_CCR_EN, pdata->csr_base + RTC_CCR);
 
 	ret = device_init_wakeup(&pdev->dev, 1);
@@ -209,11 +200,7 @@ static int __maybe_unused xgene_rtc_suspend(struct device *dev)
 
 	irq = platform_get_irq(pdev, 0);
 
-	/*
-	 * If this RTC alarm will be used for waking the system up,
-	 * don't disable it of course. Else we just disable the alarm
-	 * and await suspension.
-	 */
+	 
 	if (device_may_wakeup(&pdev->dev)) {
 		if (!enable_irq_wake(irq))
 			pdata->irq_wake = 1;

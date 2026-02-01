@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// SY8824C/SY8824E regulator driver
-//
-// Copyright (C) 2019 Synaptics Incorporated
-//
-// Author: Jisheng Zhang <jszhang@kernel.org>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -17,11 +17,11 @@
 #define SY8824C_MODE		(1 << 6)
 
 struct sy8824_config {
-	/* registers */
+	 
 	unsigned int vol_reg;
 	unsigned int mode_reg;
 	unsigned int enable_reg;
-	/* Voltage range and step(linear) */
+	 
 	unsigned int vsel_min;
 	unsigned int vsel_step;
 	unsigned int vsel_count;

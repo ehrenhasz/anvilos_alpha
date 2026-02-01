@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2019 NXP
- *  Author: Daniel Baluta <daniel.baluta@nxp.com>
- *
- * Implementation of the DSP IPC interface (host side)
- */
+
+ 
 
 #include <linux/firmware/imx/dsp.h>
 #include <linux/kernel.h>
@@ -13,14 +8,7 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/*
- * imx_dsp_ring_doorbell - triggers an interrupt on the other side (DSP)
- *
- * @dsp: DSP IPC handle
- * @chan_idx: index of the channel where to trigger the interrupt
- *
- * Returns non-negative value for success, negative value for error
- */
+ 
 int imx_dsp_ring_doorbell(struct imx_dsp_ipc *ipc, unsigned int idx)
 {
 	int ret;
@@ -38,15 +26,7 @@ int imx_dsp_ring_doorbell(struct imx_dsp_ipc *ipc, unsigned int idx)
 }
 EXPORT_SYMBOL(imx_dsp_ring_doorbell);
 
-/*
- * imx_dsp_handle_rx - rx callback used by imx mailbox
- *
- * @c: mbox client
- * @msg: message received
- *
- * Users of DSP IPC will need to privde handle_reply and handle_request
- * callbacks.
- */
+ 
 static void imx_dsp_handle_rx(struct mbox_client *c, void *msg)
 {
 	struct imx_dsp_chan *chan = container_of(c, struct imx_dsp_chan, cl);

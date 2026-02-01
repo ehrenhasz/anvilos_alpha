@@ -1,33 +1,4 @@
-/* Copyright (c) 2018, Mellanox Technologies All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <net/tls.h>
 #include <crypto/aead.h>
@@ -101,13 +72,7 @@ static int tls_enc_record(struct aead_request *aead_req,
 	*in_len -= len;
 	if (*in_len < 0) {
 		*in_len += cipher_desc->tag;
-		/* the input buffer doesn't contain the entire record.
-		 * trim len accordingly. The resulting authentication tag
-		 * will contain garbage, but we don't care, so we won't
-		 * include any of it in the output skb
-		 * Note that we assume the output buffer length
-		 * is larger then input buffer length + tag size
-		 */
+		 
 		if (*in_len < 0)
 			len += *in_len;
 
@@ -173,9 +138,7 @@ static int tls_enc_records(struct aead_request *aead_req,
 	return rc;
 }
 
-/* Can't use icsk->icsk_af_ops->send_check here because the ip addresses
- * might have been changed by NAT.
- */
+ 
 static void update_chksum(struct sk_buff *skb, int headln)
 {
 	struct tcphdr *th = tcp_hdr(skb);
@@ -183,9 +146,7 @@ static void update_chksum(struct sk_buff *skb, int headln)
 	const struct ipv6hdr *ipv6h;
 	const struct iphdr *iph;
 
-	/* We only changed the payload so if we are using partial we don't
-	 * need to update anything.
-	 */
+	 
 	if (likely(skb->ip_summed == CHECKSUM_PARTIAL))
 		return;
 
@@ -221,7 +182,7 @@ static void complete_skb(struct sk_buff *nskb, struct sk_buff *skb, int headln)
 
 	update_chksum(nskb, headln);
 
-	/* sock_efree means skb must gone through skb_orphan_partial() */
+	 
 	if (nskb->destructor == sock_efree)
 		return;
 
@@ -232,10 +193,7 @@ static void complete_skb(struct sk_buff *nskb, struct sk_buff *skb, int headln)
 		refcount_add(delta, &sk->sk_wmem_alloc);
 }
 
-/* This function may be called after the user socket is already
- * closed so make sure we don't use anything freed during
- * tls_sk_proto_close here
- */
+ 
 
 static int fill_sg_in(struct scatterlist *sg_in,
 		      struct sk_buff *skb,
@@ -264,16 +222,7 @@ static int fill_sg_in(struct scatterlist *sg_in,
 		int is_start_marker = tls_record_is_start_marker(record);
 
 		spin_unlock_irqrestore(&ctx->lock, flags);
-		/* This should only occur if the relevant record was
-		 * already acked. In that case it should be ok
-		 * to drop the packet and avoid retransmission.
-		 *
-		 * There is a corner case where the packet contains
-		 * both an acked and a non-acked record.
-		 * We currently don't handle that case and rely
-		 * on TCP to retransmit a packet that doesn't contain
-		 * already acked payload.
-		 */
+		 
 		if (!is_start_marker)
 			*sync_size = 0;
 		return -EINVAL;
@@ -314,7 +263,7 @@ static void fill_sg_out(struct scatterlist sg_out[3], void *buf,
 
 	sg_set_buf(&sg_out[0], dummy_buf, sync_size);
 	sg_set_buf(&sg_out[1], nskb->data + tcp_payload_offset, payload_len);
-	/* Add room for authentication tag produced by crypto */
+	 
 	dummy_buf += sync_size;
 	sg_set_buf(&sg_out[2], dummy_buf, cipher_desc->tag);
 }
@@ -376,9 +325,7 @@ static struct sk_buff *tls_enc_skb(struct tls_context *tls_ctx,
 
 	complete_skb(nskb, skb, tcp_payload_offset);
 
-	/* validate_xmit_skb_list assumes that if the skb wasn't segmented
-	 * nskb->prev will point to the skb itself
-	 */
+	 
 	nskb->prev = nskb;
 
 free_buf:
@@ -405,10 +352,7 @@ static struct sk_buff *tls_sw_fallback(struct sock *sk, struct sk_buff *skb)
 	s32 sync_size = 0;
 	u64 rcd_sn;
 
-	/* worst case is:
-	 * MAX_SKB_FRAGS in tls_record_info
-	 * MAX_SKB_FRAGS + 1 in SKB head and frags.
-	 */
+	 
 	sg_in_max_elements = 2 * MAX_SKB_FRAGS + 1;
 
 	if (!payload_len)
@@ -422,7 +366,7 @@ static struct sk_buff *tls_sw_fallback(struct sock *sk, struct sk_buff *skb)
 	sg_init_table(sg_out, ARRAY_SIZE(sg_out));
 
 	if (fill_sg_in(sg_in, skb, ctx, &rcd_sn, &sync_size, &resync_sgs)) {
-		/* bypass packets before kernel TLS socket option was set */
+		 
 		if (sync_size < 0 && payload_len <= -sync_size)
 			nskb = skb_get(skb);
 		goto put_sg;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 3-axis magnetometer driver support following SPI Bosch-Sensortec chips:
- *  - BMC150
- *  - BMC156
- *  - BMM150
- *
- * Copyright (c) 2016, Intel Corporation.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
 #include <linux/spi/spi.h>

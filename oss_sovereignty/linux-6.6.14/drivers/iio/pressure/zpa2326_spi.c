@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Murata ZPA2326 SPI pressure and temperature sensor driver
- *
- * Copyright (c) 2016 Parrot S.A.
- *
- * Author: Gregor Boirie <gregor.boirie@parrot.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -13,11 +7,7 @@
 #include <linux/mod_devicetable.h>
 #include "zpa2326.h"
 
-/*
- * read_flag_mask:
- *   - address bit 7 must be set to request a register read operation
- *   - address bit 6 must be set to request register address auto increment
- */
+ 
 static const struct regmap_config zpa2326_regmap_spi_config = {
 	.reg_bits       = 8,
 	.val_bits       = 8,
@@ -40,12 +30,7 @@ static int zpa2326_probe_spi(struct spi_device *spi)
 		return PTR_ERR(regmap);
 	}
 
-	/*
-	 * Enforce SPI slave settings to prevent from DT misconfiguration.
-	 *
-	 * Clock is idle high. Sampling happens on trailing edge, i.e., rising
-	 * edge. Maximum bus frequency is 1 MHz. Registers are 8 bits wide.
-	 */
+	 
 	spi->mode = SPI_MODE_3;
 	spi->max_speed_hz = min(spi->max_speed_hz, 1000000U);
 	spi->bits_per_word = 8;

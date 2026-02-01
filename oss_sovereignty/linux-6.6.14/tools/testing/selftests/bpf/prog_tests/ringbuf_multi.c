@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <test_progs.h>
 #include <sys/epoll.h>
@@ -50,7 +50,7 @@ void test_ringbuf_multi(void)
 	if (CHECK(!skel, "skel_open", "skeleton open failed\n"))
 		return;
 
-	/* validate ringbuf size adjustment logic */
+	 
 	ASSERT_EQ(bpf_map__max_entries(skel->maps.ringbuf1), page_size, "rb1_size_before");
 	ASSERT_OK(bpf_map__set_max_entries(skel->maps.ringbuf1, page_size + 1), "rb1_resize");
 	ASSERT_EQ(bpf_map__max_entries(skel->maps.ringbuf1), 2 * page_size, "rb1_size_after");
@@ -72,11 +72,11 @@ void test_ringbuf_multi(void)
 	close(proto_fd);
 	proto_fd = -1;
 
-	/* make sure we can't resize ringbuf after object load */
+	 
 	if (!ASSERT_ERR(bpf_map__set_max_entries(skel->maps.ringbuf1, 3 * page_size), "rb1_resize_after_load"))
 		goto cleanup;
 
-	/* only trigger BPF program for current process */
+	 
 	skel->bss->pid = getpid();
 
 	ringbuf = ring_buffer__new(bpf_map__fd(skel->maps.ringbuf1),
@@ -93,12 +93,12 @@ void test_ringbuf_multi(void)
 	if (CHECK(err, "skel_attach", "skeleton attachment failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger few samples, some will be skipped */
+	 
 	skel->bss->target_ring = 0;
 	skel->bss->value = 333;
 	syscall(__NR_getpgid);
 
-	/* skipped, no ringbuf in slot 1 */
+	 
 	skel->bss->target_ring = 1;
 	skel->bss->value = 555;
 	syscall(__NR_getpgid);
@@ -107,12 +107,12 @@ void test_ringbuf_multi(void)
 	skel->bss->value = 777;
 	syscall(__NR_getpgid);
 
-	/* poll for samples, should get 2 ringbufs back */
+	 
 	err = ring_buffer__poll(ringbuf, -1);
 	if (CHECK(err != 2, "poll_res", "expected 2 records, got %d\n", err))
 		goto cleanup;
 
-	/* expect extra polling to return nothing */
+	 
 	err = ring_buffer__poll(ringbuf, 0);
 	if (CHECK(err < 0, "extra_samples", "poll result: %d\n", err))
 		goto cleanup;

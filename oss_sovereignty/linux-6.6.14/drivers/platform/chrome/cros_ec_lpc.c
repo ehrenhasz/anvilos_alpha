@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-// LPC interface for ChromeOS Embedded Controller
-//
-// Copyright (C) 2012-2015 Google, Inc
-//
-// This driver uses the ChromeOS EC byte-level message-based protocol for
-// communicating the keyboard state (which keys are pressed) from a keyboard EC
-// to the AP over some bus (such as i2c, lpc, spi).  The EC does debouncing,
-// but everything else (including deghosting) is done here.  The main
-// motivation for this is to keep the EC firmware as simple as possible, since
-// it cannot be easily upgraded and EC flash/IRAM space is relatively
-// expensive.
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -31,16 +31,10 @@
 #define DRV_NAME "cros_ec_lpcs"
 #define ACPI_DRV_NAME "GOOG0004"
 
-/* True if ACPI device is present */
+ 
 static bool cros_ec_lpc_acpi_device_found;
 
-/**
- * struct lpc_driver_ops - LPC driver operations
- * @read: Copy length bytes from EC address offset into buffer dest. Returns
- *        the 8-bit checksum of all bytes read.
- * @write: Copy length bytes from buffer msg into EC address offset. Returns
- *         the 8-bit checksum of all bytes written.
- */
+ 
 struct lpc_driver_ops {
 	u8 (*read)(unsigned int offset, unsigned int length, u8 *dest);
 	u8 (*write)(unsigned int offset, unsigned int length, const u8 *msg);
@@ -48,10 +42,7 @@ struct lpc_driver_ops {
 
 static struct lpc_driver_ops cros_ec_lpc_ops = { };
 
-/*
- * A generic instance of the read function of struct lpc_driver_ops, used for
- * the LPC EC.
- */
+ 
 static u8 cros_ec_lpc_read_bytes(unsigned int offset, unsigned int length,
 				 u8 *dest)
 {
@@ -63,14 +54,11 @@ static u8 cros_ec_lpc_read_bytes(unsigned int offset, unsigned int length,
 		sum += dest[i];
 	}
 
-	/* Return checksum of all bytes read */
+	 
 	return sum;
 }
 
-/*
- * A generic instance of the write function of struct lpc_driver_ops, used for
- * the LPC EC.
- */
+ 
 static u8 cros_ec_lpc_write_bytes(unsigned int offset, unsigned int length,
 				  const u8 *msg)
 {
@@ -82,14 +70,11 @@ static u8 cros_ec_lpc_write_bytes(unsigned int offset, unsigned int length,
 		sum += msg[i];
 	}
 
-	/* Return checksum of all bytes written */
+	 
 	return sum;
 }
 
-/*
- * An instance of the read function of struct lpc_driver_ops, used for the
- * MEC variant of LPC EC.
- */
+ 
 static u8 cros_ec_lpc_mec_read_bytes(unsigned int offset, unsigned int length,
 				     u8 *dest)
 {
@@ -105,10 +90,7 @@ static u8 cros_ec_lpc_mec_read_bytes(unsigned int offset, unsigned int length,
 		cros_ec_lpc_read_bytes(offset, length, dest);
 }
 
-/*
- * An instance of the write function of struct lpc_driver_ops, used for the
- * MEC variant of LPC EC.
- */
+ 
 static u8 cros_ec_lpc_mec_write_bytes(unsigned int offset, unsigned int length,
 				      const u8 *msg)
 {
@@ -152,10 +134,10 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
 	if (ret < 0)
 		goto done;
 
-	/* Write buffer */
+	 
 	cros_ec_lpc_ops.write(EC_LPC_ADDR_HOST_PACKET, ret, ec->dout);
 
-	/* Here we go */
+	 
 	sum = EC_COMMAND_PROTOCOL_3;
 	cros_ec_lpc_ops.write(EC_LPC_ADDR_HOST_CMD, 1, &sum);
 
@@ -165,13 +147,13 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
 		goto done;
 	}
 
-	/* Check result */
+	 
 	msg->result = cros_ec_lpc_ops.read(EC_LPC_ADDR_HOST_DATA, 1, &sum);
 	ret = cros_ec_check_result(ec, msg);
 	if (ret)
 		goto done;
 
-	/* Read back response */
+	 
 	dout = (u8 *)&response;
 	sum = cros_ec_lpc_ops.read(EC_LPC_ADDR_HOST_PACKET, sizeof(response),
 				   dout);
@@ -186,7 +168,7 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
 		goto done;
 	}
 
-	/* Read response and process checksum */
+	 
 	sum += cros_ec_lpc_ops.read(EC_LPC_ADDR_HOST_PACKET +
 				    sizeof(response), response.data_len,
 				    msg->data);
@@ -199,7 +181,7 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
 		goto done;
 	}
 
-	/* Return actual amount of data received */
+	 
 	ret = response.data_len;
 done:
 	return ret;
@@ -220,24 +202,24 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *ec,
 		return -EINVAL;
 	}
 
-	/* Now actually send the command to the EC and get the result */
+	 
 	args.flags = EC_HOST_ARGS_FLAG_FROM_HOST;
 	args.command_version = msg->version;
 	args.data_size = msg->outsize;
 
-	/* Initialize checksum */
+	 
 	sum = msg->command + args.flags + args.command_version + args.data_size;
 
-	/* Copy data and update checksum */
+	 
 	sum += cros_ec_lpc_ops.write(EC_LPC_ADDR_HOST_PARAM, msg->outsize,
 				     msg->data);
 
-	/* Finalize checksum and write args */
+	 
 	args.checksum = sum;
 	cros_ec_lpc_ops.write(EC_LPC_ADDR_HOST_ARGS, sizeof(args),
 			      (u8 *)&args);
 
-	/* Here we go */
+	 
 	sum = msg->command;
 	cros_ec_lpc_ops.write(EC_LPC_ADDR_HOST_CMD, 1, &sum);
 
@@ -247,13 +229,13 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *ec,
 		goto done;
 	}
 
-	/* Check result */
+	 
 	msg->result = cros_ec_lpc_ops.read(EC_LPC_ADDR_HOST_DATA, 1, &sum);
 	ret = cros_ec_check_result(ec, msg);
 	if (ret)
 		goto done;
 
-	/* Read back args */
+	 
 	cros_ec_lpc_ops.read(EC_LPC_ADDR_HOST_ARGS, sizeof(args), (u8 *)&args);
 
 	if (args.data_size > msg->insize) {
@@ -264,14 +246,14 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *ec,
 		goto done;
 	}
 
-	/* Start calculating response checksum */
+	 
 	sum = msg->command + args.flags + args.command_version + args.data_size;
 
-	/* Read response and update checksum */
+	 
 	sum += cros_ec_lpc_ops.read(EC_LPC_ADDR_HOST_PARAM, args.data_size,
 				    msg->data);
 
-	/* Verify checksum */
+	 
 	if (args.checksum != sum) {
 		dev_err(ec->dev,
 			"bad packet checksum, expected %02x, got %02x\n",
@@ -280,13 +262,13 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *ec,
 		goto done;
 	}
 
-	/* Return actual amount of data received */
+	 
 	ret = args.data_size;
 done:
 	return ret;
 }
 
-/* Returns num bytes read, or negative on error. Doesn't need locking. */
+ 
 static int cros_ec_lpc_readmem(struct cros_ec_device *ec, unsigned int offset,
 			       unsigned int bytes, void *dest)
 {
@@ -297,13 +279,13 @@ static int cros_ec_lpc_readmem(struct cros_ec_device *ec, unsigned int offset,
 	if (offset >= EC_MEMMAP_SIZE - bytes)
 		return -EINVAL;
 
-	/* fixed length */
+	 
 	if (bytes) {
 		cros_ec_lpc_ops.read(EC_LPC_ADDR_MEMMAP + offset, bytes, s);
 		return bytes;
 	}
 
-	/* string */
+	 
 	for (; i < EC_MEMMAP_SIZE; i++, s++) {
 		cros_ec_lpc_ops.read(EC_LPC_ADDR_MEMMAP + i, 1, s);
 		cnt++;
@@ -327,9 +309,9 @@ static void cros_ec_lpc_acpi_notify(acpi_handle device, u32 value, void *data)
 		dev_emerg(ec_dev->dev, "CrOS EC Panic Reported. Shutdown is imminent!");
 		blocking_notifier_call_chain(&ec_dev->panic_notifier, 0, ec_dev);
 		kobject_uevent_env(&ec_dev->dev->kobj, KOBJ_CHANGE, (char **)env);
-		/* Begin orderly shutdown. EC will force reset after a short period. */
+		 
 		hw_protection_shutdown("CrOS EC Panic", -1);
-		/* Do not query for other events after a panic is reported */
+		 
 		return;
 	}
 
@@ -356,11 +338,7 @@ static int cros_ec_lpc_probe(struct platform_device *pdev)
 	u8 buf[2] = {};
 	int irq, ret;
 
-	/*
-	 * The Framework Laptop (and possibly other non-ChromeOS devices)
-	 * only exposes the eight I/O ports that are required for the Microchip EC.
-	 * Requesting a larger reservation will fail.
-	 */
+	 
 	if (!devm_request_region(dev, EC_HOST_CMD_REGION0,
 				 EC_HOST_CMD_MEC_REGION_SIZE, dev_name(dev))) {
 		dev_err(dev, "couldn't reserve MEC region\n");
@@ -370,12 +348,7 @@ static int cros_ec_lpc_probe(struct platform_device *pdev)
 	cros_ec_lpc_mec_init(EC_HOST_CMD_REGION0,
 			     EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SIZE);
 
-	/*
-	 * Read the mapped ID twice, the first one is assuming the
-	 * EC is a Microchip Embedded Controller (MEC) variant, if the
-	 * protocol fails, fallback to the non MEC variant and try to
-	 * read again the ID.
-	 */
+	 
 	cros_ec_lpc_ops.read = cros_ec_lpc_mec_read_bytes;
 	cros_ec_lpc_ops.write = cros_ec_lpc_mec_write_bytes;
 	cros_ec_lpc_ops.read(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID, 2, buf);
@@ -386,7 +359,7 @@ static int cros_ec_lpc_probe(struct platform_device *pdev)
 			return -EBUSY;
 		}
 
-		/* Re-assign read/write operations for the non MEC variant */
+		 
 		cros_ec_lpc_ops.read = cros_ec_lpc_read_bytes;
 		cros_ec_lpc_ops.write = cros_ec_lpc_write_bytes;
 		cros_ec_lpc_ops.read(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID, 2,
@@ -396,7 +369,7 @@ static int cros_ec_lpc_probe(struct platform_device *pdev)
 			return -ENODEV;
 		}
 
-		/* Reserve the remaining I/O ports required by the non-MEC protocol. */
+		 
 		if (!devm_request_region(dev, EC_HOST_CMD_REGION0 + EC_HOST_CMD_MEC_REGION_SIZE,
 					 EC_HOST_CMD_REGION_SIZE - EC_HOST_CMD_MEC_REGION_SIZE,
 					 dev_name(dev))) {
@@ -424,10 +397,7 @@ static int cros_ec_lpc_probe(struct platform_device *pdev)
 			   sizeof(struct ec_response_get_protocol_info);
 	ec_dev->dout_size = sizeof(struct ec_host_request);
 
-	/*
-	 * Some boards do not have an IRQ allotted for cros_ec_lpc,
-	 * which makes ENXIO an expected (and safe) scenario.
-	 */
+	 
 	irq = platform_get_irq_optional(pdev, 0);
 	if (irq > 0)
 		ec_dev->irq = irq;
@@ -442,10 +412,7 @@ static int cros_ec_lpc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Connect a notify handler to process MKBP messages if we have a
-	 * companion ACPI device.
-	 */
+	 
 	adev = ACPI_COMPANION(dev);
 	if (adev) {
 		status = acpi_install_notify_handler(adev->handle,
@@ -483,65 +450,56 @@ MODULE_DEVICE_TABLE(acpi, cros_ec_lpc_acpi_device_ids);
 
 static const struct dmi_system_id cros_ec_lpc_dmi_table[] __initconst = {
 	{
-		/*
-		 * Today all Chromebooks/boxes ship with Google_* as version and
-		 * coreboot as bios vendor. No other systems with this
-		 * combination are known to date.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BIOS_VENDOR, "coreboot"),
 			DMI_MATCH(DMI_BIOS_VERSION, "Google_"),
 		},
 	},
 	{
-		/*
-		 * If the box is running custom coreboot firmware then the
-		 * DMI BIOS version string will not be matched by "Google_",
-		 * but the system vendor string will still be matched by
-		 * "GOOGLE".
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_BIOS_VENDOR, "coreboot"),
 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
 		},
 	},
 	{
-		/* x86-link, the Chromebook Pixel. */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Link"),
 		},
 	},
 	{
-		/* x86-samus, the Chromebook Pixel 2. */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Samus"),
 		},
 	},
 	{
-		/* x86-peppy, the Acer C720 Chromebook. */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Peppy"),
 		},
 	},
 	{
-		/* x86-glimmer, the Lenovo Thinkpad Yoga 11e. */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Glimmer"),
 		},
 	},
-	/* A small number of non-Chromebook/box machines also use the ChromeOS EC */
+	 
 	{
-		/* the Framework Laptop */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Framework"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Laptop"),
 		},
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(dmi, cros_ec_lpc_dmi_table);
 
@@ -586,11 +544,7 @@ static struct platform_driver cros_ec_lpc_driver = {
 		.name = DRV_NAME,
 		.acpi_match_table = cros_ec_lpc_acpi_device_ids,
 		.pm = &cros_ec_lpc_pm_ops,
-		/*
-		 * ACPI child devices may probe before us, and they racily
-		 * check our drvdata pointer. Force synchronous probe until
-		 * those races are resolved.
-		 */
+		 
 		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 	.probe = cros_ec_lpc_probe,
@@ -624,7 +578,7 @@ static int __init cros_ec_lpc_init(void)
 		return -ENODEV;
 	}
 
-	/* Register the driver */
+	 
 	ret = platform_driver_register(&cros_ec_lpc_driver);
 	if (ret) {
 		pr_err(DRV_NAME ": can't register driver: %d\n", ret);
@@ -632,7 +586,7 @@ static int __init cros_ec_lpc_init(void)
 	}
 
 	if (!cros_ec_lpc_acpi_device_found) {
-		/* Register the device, and it'll get hooked up automatically */
+		 
 		ret = platform_device_register(&cros_ec_lpc_device);
 		if (ret) {
 			pr_err(DRV_NAME ": can't register device: %d\n", ret);

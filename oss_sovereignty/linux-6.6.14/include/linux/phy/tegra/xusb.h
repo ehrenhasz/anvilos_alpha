@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016-2022, NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef PHY_TEGRA_XUSB_H
 #define PHY_TEGRA_XUSB_H
@@ -33,4 +31,4 @@ int tegra_xusb_padctl_enable_phy_wake(struct tegra_xusb_padctl *padctl, struct p
 int tegra_xusb_padctl_disable_phy_wake(struct tegra_xusb_padctl *padctl, struct phy *phy);
 bool tegra_xusb_padctl_remote_wake_detected(struct tegra_xusb_padctl *padctl, struct phy *phy);
 
-#endif /* PHY_TEGRA_XUSB_H */
+#endif  

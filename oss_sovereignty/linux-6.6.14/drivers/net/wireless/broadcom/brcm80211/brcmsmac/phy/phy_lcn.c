@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/delay.h>
@@ -1349,7 +1347,7 @@ wlc_lcnphy_rx_iq_cal(struct brcms_phy *pi,
 
 	or_phy_reg(pi, 0x631, 0x0015);
 
-	read_phy_reg(pi, 0x44c); /* RFOverride0_old */
+	read_phy_reg(pi, 0x44c);  
 	RFOverrideVal0_old = read_phy_reg(pi, 0x44d);
 	rfoverride2_old = read_phy_reg(pi, 0x4b0);
 	rfoverride2val_old = read_phy_reg(pi, 0x4b1);
@@ -2805,7 +2803,7 @@ static void wlc_lcnphy_idle_tssi_est(struct brcms_phy_pub *ppi)
 	u16 SAVE_iqadc_aux_en = read_radio_reg(pi, RADIO_2064_REG11F) & 4;
 	u8 SAVE_bbmult = wlc_lcnphy_get_bbmult(pi);
 
-	read_phy_reg(pi, 0x4ab); /* idleTssi */
+	read_phy_reg(pi, 0x4ab);  
 	suspend = (0 == (bcma_read32(pi->d11core, D11REGOFFS(maccontrol)) &
 			 MCTL_EN_MAC));
 	if (!suspend)
@@ -2829,7 +2827,7 @@ static void wlc_lcnphy_idle_tssi_est(struct brcms_phy_pub *ppi)
 	wlc_lcnphy_set_bbmult(pi, 0x0);
 
 	wlc_phy_do_dummy_tx(pi, true, OFF);
-	read_phy_reg(pi, 0x4ab); /* idleTssi */
+	read_phy_reg(pi, 0x4ab);  
 
 	idleTssi0_2C = ((read_phy_reg(pi, 0x63e) & (0x1ff << 0))
 			>> 0);
@@ -4292,7 +4290,7 @@ wlc_lcnphy_load_tx_gain_table(struct brcms_phy *pi,
 	tab.tbl_len = 1;
 	tab.tbl_ptr = &val;
 
-	/* fixed gm_gain value for iPA */
+	 
 	gm_gain = 15;
 	for (j = 0; j < 128; j++) {
 		if (pi->sh->boardflags & BFL_FEM)

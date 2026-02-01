@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toshiba Visconti clock controller
- *
- * Copyright (c) 2021 TOSHIBA CORPORATION
- * Copyright (c) 2021 Toshiba Electronic Devices & Storage Corporation
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -29,23 +22,23 @@ static const struct clk_parent_data pietherplls_parent_data[] = {
 };
 
 static const struct visconti_fixed_clk fixed_clk_tables[] = {
-	/* PLL1 */
-	/* PICMPT0/1, PITSC, PIUWDT, PISWDT, PISBUS, PIPMU, PIGPMU, PITMU */
-	/* PIEMM, PIMISC, PIGCOMM, PIDCOMM, PIMBUS, PIGPIO, PIPGM */
+	 
+	 
+	 
 	{ TMPV770X_CLK_PIPLL1_DIV4, "pipll1_div4", "pipll1", 0, 1, 4, },
-	/* PISBUS */
+	 
 	{ TMPV770X_CLK_PIPLL1_DIV2, "pipll1_div2", "pipll1", 0, 1, 2, },
-	/* PICOBUS_CLK */
+	 
 	{ TMPV770X_CLK_PIPLL1_DIV1, "pipll1_div1", "pipll1", 0, 1, 1, },
-	/* PIDNNPLL */
-	/* CONN_CLK, PIMBUS, PICRC0/1 */
+	 
+	 
 	{ TMPV770X_CLK_PIDNNPLL_DIV1, "pidnnpll_div1", "pidnnpll", 0, 1, 1, },
 	{ TMPV770X_CLK_PIREFCLK, "pirefclk", "osc2-clk", 0, 1, 1, },
 	{ TMPV770X_CLK_WDTCLK, "wdtclk", "osc2-clk", 0, 1, 1, },
 };
 
 static const struct visconti_clk_gate_table pietherpll_clk_gate_tables[] = {
-	/* pietherpll */
+	 
 	{ TMPV770X_CLK_PIETHER_2P5M, "piether_2p5m",
 		pietherplls_parent_data, ARRAY_SIZE(pietherplls_parent_data),
 		CLK_SET_RATE_PARENT, 0x34, 0x134, 4, 200,
@@ -79,12 +72,12 @@ static const struct visconti_clk_gate_table clk_gate_tables[] = {
 		TMPV770X_RESET_PCIE_AUX, },
 	{ TMPV770X_CLK_PIINTC, "piintc",
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
-		CLK_IGNORE_UNUSED, 0x8, 0x108, 0, 2, //FIX!!
+		CLK_IGNORE_UNUSED, 0x8, 0x108, 0, 2, 
 		TMPV770X_RESET_PIINTC,},
 	{ TMPV770X_CLK_PIETHER_BUS, "piether_bus",
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
 		0, 0x34, 0x134, 0, 2,
-		TMPV770X_RESET_PIETHER_BUS, }, /* BUS_CLK */
+		TMPV770X_RESET_PIETHER_BUS, },  
 	{ TMPV770X_CLK_PISPI0, "pispi0",
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
 		0, 0x28, 0x128, 0, 2,
@@ -115,12 +108,12 @@ static const struct visconti_clk_gate_table clk_gate_tables[] = {
 		TMPV770X_RESET_PISPI6,},
 	{ TMPV770X_CLK_PIUART0, "piuart0",
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
-		//CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED, 0x2c, 0x12c, 0, 4,
+		
 		0, 0x2c, 0x12c, 0, 4,
 		TMPV770X_RESET_PIUART0,},
 	{ TMPV770X_CLK_PIUART1, "piuart1",
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
-		//CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED, 0x2c, 0x12c, 1, 4,
+		
 		0, 0x2c, 0x12c, 1, 4,
 		TMPV770X_RESET_PIUART1, },
 	{ TMPV770X_CLK_PIUART2, "piuart2",
@@ -167,12 +160,12 @@ static const struct visconti_clk_gate_table clk_gate_tables[] = {
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
 		0, 0x30, 0x130, 8, 4,
 		TMPV770X_RESET_PII2C8, },
-	/* PIPCMIF */
+	 
 	{ TMPV770X_CLK_PIPCMIF, "pipcmif",
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
 		0, 0x64, 0x164, 0, 4,
 		TMPV770X_RESET_PIPCMIF, },
-	/* PISYSTEM */
+	 
 	{ TMPV770X_CLK_WRCK, "wrck",
 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
 		0, 0x68, 0x168, 9, 32,

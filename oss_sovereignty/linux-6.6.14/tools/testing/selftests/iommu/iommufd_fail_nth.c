@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
- *
- * These tests are "kernel integrity" tests. They are looking for kernel
- * WARN/OOPS/kasn/etc splats triggered by kernel sanitizers & debugging
- * features. It does not attempt to verify that the system calls are doing what
- * they are supposed to do.
- *
- * The basic philosophy is to run a sequence of calls that will succeed and then
- * sweep every failure injection point on that call chain to look for
- * interesting things in error handling.
- *
- * This test is best run with:
- *  echo 1 > /proc/sys/kernel/panic_on_warn
- * If something is actually going wrong.
- */
+
+ 
 #include <fcntl.h>
 #include <dirent.h>
 
@@ -49,10 +35,7 @@ static __attribute__((constructor)) void setup_buffer(void)
 		      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 }
 
-/*
- * This sets up fail_injection in a way that is useful for this test.
- * It does not attempt to restore things back to how they were.
- */
+ 
 static __attribute__((constructor)) void setup_fault_injection(void)
 {
 	DIR *debugfs = opendir("/sys/kernel/debug/");
@@ -61,7 +44,7 @@ static __attribute__((constructor)) void setup_fault_injection(void)
 	if (!debugfs)
 		return;
 
-	/* Allow any allocation call to be fault injected */
+	 
 	if (writeat(dirfd(debugfs), "failslab/ignore-gfp-wait", "N"))
 		return;
 	writeat(dirfd(debugfs), "fail_page_alloc/ignore-gfp-wait", "N");
@@ -73,7 +56,7 @@ static __attribute__((constructor)) void setup_fault_injection(void)
 		if (strncmp(dent->d_name, "fail", 4) != 0)
 			continue;
 
-		/* We are looking for kernel splats, quiet down the log */
+		 
 		snprintf(fn, sizeof(fn), "%s/verbose", dent->d_name);
 		writeat(dirfd(debugfs), fn, "0");
 	}
@@ -103,23 +86,14 @@ static bool fail_nth_next(struct __test_metadata *_metadata,
 	static const char disable_nth[] = "0";
 	char buf[300];
 
-	/*
-	 * This is just an arbitrary limit based on the current kernel
-	 * situation. Changes in the kernel can dramtically change the number of
-	 * required fault injection sites, so if this hits it doesn't
-	 * necessarily mean a test failure, just that the limit has to be made
-	 * bigger.
-	 */
+	 
 	ASSERT_GT(400, nth_state->iteration);
 	if (nth_state->iteration != 0) {
 		ssize_t res;
 		ssize_t res2;
 
 		buf[0] = 0;
-		/*
-		 * Annoyingly disabling the nth can also fail. This means
-		 * the test passed without triggering failure
-		 */
+		 
 		res = pread(nth_state->proc_fd, buf, sizeof(buf), 0);
 		if (res == -1 && errno == EFAULT) {
 			buf[0] = '1';
@@ -137,25 +111,19 @@ static bool fail_nth_next(struct __test_metadata *_metadata,
 		}
 		ASSERT_EQ(ARRAY_SIZE(disable_nth) - 1, res2);
 
-		/* printf("  nth %u result=%d nth=%u\n", nth_state->iteration,
-		       test_result, atoi(buf)); */
+		 
 		fflush(stdout);
 		ASSERT_LT(1, res);
 		if (res != 2 || buf[0] != '0' || buf[1] != '\n')
 			return false;
 	} else {
-		/* printf("  nth %u result=%d\n", nth_state->iteration,
-		       test_result); */
+		 
 	}
 	nth_state->iteration++;
 	return true;
 }
 
-/*
- * This is called during the test to start failure injection. It allows the test
- * to do some setup that has already been swept and thus reduce the required
- * iterations.
- */
+ 
 void __fail_nth_enable(struct __test_metadata *_metadata,
 		       struct fail_nth_state *nth_state)
 {
@@ -219,14 +187,14 @@ FIXTURE_TEARDOWN(basic_fail_nth)
 	int rc;
 
 	if (self->access_id) {
-		/* The access FD holds the iommufd open until it closes */
+		 
 		rc = _test_cmd_destroy_access(self->access_id);
 		assert(rc == 0);
 	}
 	teardown_iommufd(self->fd, _metadata);
 }
 
-/* Cover ioas.c */
+ 
 TEST_FAIL_NTH(basic_fail_nth, basic)
 {
 	struct iommu_iova_range ranges[10];
@@ -290,12 +258,12 @@ TEST_FAIL_NTH(basic_fail_nth, basic)
 	if (_test_ioctl_ioas_unmap(self->fd, ioas_id, iova, BUFFER_SIZE,
 				   NULL))
 		return -1;
-	/* Failure path of no IOVA to unmap */
+	 
 	_test_ioctl_ioas_unmap(self->fd, ioas_id, iova, BUFFER_SIZE, NULL);
 	return 0;
 }
 
-/* iopt_area_fill_domains() and iopt_area_fill_domain() */
+ 
 TEST_FAIL_NTH(basic_fail_nth, map_domain)
 {
 	uint32_t ioas_id;
@@ -415,7 +383,7 @@ TEST_FAIL_NTH(basic_fail_nth, access_rw)
 				       .uptr = (uintptr_t)tmp },
 		};
 
-		// READ
+		
 		if (ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ACCESS_RW),
 			  &access_cmd))
 			return -1;
@@ -457,7 +425,7 @@ TEST_FAIL_NTH(basic_fail_nth, access_rw)
 	return 0;
 }
 
-/* pages.c access functions */
+ 
 TEST_FAIL_NTH(basic_fail_nth, access_pin)
 {
 	uint32_t access_pages_id;
@@ -511,7 +479,7 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin)
 	return 0;
 }
 
-/* iopt_pages_fill_xarray() */
+ 
 TEST_FAIL_NTH(basic_fail_nth, access_pin_domain)
 {
 	uint32_t access_pages_id;
@@ -573,7 +541,7 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin_domain)
 	return 0;
 }
 
-/* device.c */
+ 
 TEST_FAIL_NTH(basic_fail_nth, device)
 {
 	struct iommu_test_hw_info info;

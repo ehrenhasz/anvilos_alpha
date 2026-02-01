@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __CSIO_MB_H__
 #define __CSIO_MB_H__
@@ -64,10 +32,10 @@ struct fw_fcoe_port_cmd_params {
 
 #define CSIO_MB_MAX_REGS	8
 #define CSIO_MAX_MB_SIZE	64
-#define CSIO_MB_POLL_FREQ	5		/*  5 ms */
+#define CSIO_MB_POLL_FREQ	5		 
 #define CSIO_MB_DEFAULT_TMO	FW_CMD_MAX_TIMEOUT
 
-/* Device master in HELLO command */
+ 
 enum csio_dev_master { CSIO_MASTER_CANT, CSIO_MASTER_MAY, CSIO_MASTER_MUST };
 
 enum csio_mb_owner { CSIO_MBOWNER_NONE, CSIO_MBOWNER_FW, CSIO_MBOWNER_PL };
@@ -101,44 +69,38 @@ do {									\
 } while (0)
 
 struct csio_mbm_stats {
-	uint32_t	n_req;		/* number of mbox req */
-	uint32_t	n_rsp;		/* number of mbox rsp */
-	uint32_t	n_activeq;	/* number of mbox req active Q */
-	uint32_t	n_cbfnq;	/* number of mbox req cbfn Q */
-	uint32_t	n_tmo;		/* number of mbox timeout */
-	uint32_t	n_cancel;	/* number of mbox cancel */
-	uint32_t	n_err;		/* number of mbox error */
+	uint32_t	n_req;		 
+	uint32_t	n_rsp;		 
+	uint32_t	n_activeq;	 
+	uint32_t	n_cbfnq;	 
+	uint32_t	n_tmo;		 
+	uint32_t	n_cancel;	 
+	uint32_t	n_err;		 
 };
 
-/* Driver version of Mailbox */
+ 
 struct csio_mb {
-	struct list_head	list;			/* for req/resp */
-							/* queue in driver */
-	__be64			mb[CSIO_MB_MAX_REGS];	/* MB in HW format */
-	int			mb_size;		/* Size of this
-							 * mailbox.
-							 */
-	uint32_t		tmo;			/* Timeout */
-	struct completion	cmplobj;		/* MB Completion
-							 * object
-							 */
+	struct list_head	list;			 
+							 
+	__be64			mb[CSIO_MB_MAX_REGS];	 
+	int			mb_size;		 
+	uint32_t		tmo;			 
+	struct completion	cmplobj;		 
 	void			(*mb_cbfn) (struct csio_hw *, struct csio_mb *);
-							/* Callback fn */
-	void			*priv;			/* Owner private ptr */
+							 
+	void			*priv;			 
 };
 
 struct csio_mbm {
-	uint32_t		a_mbox;			/* Async mbox num */
-	uint32_t		intr_idx;		/* Interrupt index */
-	struct timer_list	timer;			/* Mbox timer */
-	struct csio_hw		*hw;			/* Hardware pointer */
-	struct list_head	req_q;			/* Mbox request queue */
-	struct list_head	cbfn_q;			/* Mbox completion q */
-	struct csio_mb		*mcurrent;		/* Current mailbox */
-	uint32_t		req_q_cnt;		/* Outstanding mbox
-							 * cmds
-							 */
-	struct csio_mbm_stats	stats;			/* Statistics */
+	uint32_t		a_mbox;			 
+	uint32_t		intr_idx;		 
+	struct timer_list	timer;			 
+	struct csio_hw		*hw;			 
+	struct list_head	req_q;			 
+	struct list_head	cbfn_q;			 
+	struct csio_mb		*mcurrent;		 
+	uint32_t		req_q_cnt;		 
+	struct csio_mbm_stats	stats;			 
 };
 
 #define csio_set_mb_intr_idx(_m, _i)	((_m)->intr_idx = (_i))
@@ -149,7 +111,7 @@ struct csio_eq_params;
 
 enum fw_retval csio_mb_fw_retval(struct csio_mb *);
 
-/* MB helpers */
+ 
 void csio_mb_hello(struct csio_hw *, struct csio_mb *, uint32_t,
 		   uint32_t, uint32_t, enum csio_dev_master,
 		   void (*)(struct csio_hw *, struct csio_mb *));
@@ -246,7 +208,7 @@ void csio_mb_process_portparams_rsp(struct csio_hw *hw, struct csio_mb *mbp,
 				struct fw_fcoe_port_cmd_params *portparams,
 				struct fw_fcoe_port_stats *portstats);
 
-/* MB module functions */
+ 
 int csio_mbm_init(struct csio_mbm *, struct csio_hw *,
 			    void (*)(struct timer_list *));
 void csio_mbm_exit(struct csio_mbm *);
@@ -260,4 +222,4 @@ int csio_mb_isr_handler(struct csio_hw *);
 struct csio_mb *csio_mb_tmo_handler(struct csio_hw *);
 void csio_mb_cancel_all(struct csio_hw *, struct list_head *);
 
-#endif /* ifndef __CSIO_MB_H__ */
+#endif  

@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_powerclamp.c - package c-state idle injection
- *
- * Copyright (c) 2012-2023, Intel Corporation.
- *
- * Authors:
- *     Arjan van de Ven <arjan@linux.intel.com>
- *     Jacob Pan <jacob.jun.pan@linux.intel.com>
- *
- *	TODO:
- *           1. better handle wakeup from external interrupts, currently a fixed
- *              compensation is added to clamping duration when excessive amount
- *              of wakeups are observed during idle time. the reason is that in
- *              case of external interrupts without need for ack, clamping down
- *              cpu in non-irq context does not reduce irq. for majority of the
- *              cases, clamping down cpu does help reduce irq as well, we should
- *              be able to differentiate the two cases and give a quantitative
- *              solution for the irqs that we can control. perhaps based on
- *              get_cpu_iowait_time_us()
- *
- *	     2. synchronization with other hw blocks
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -38,25 +17,19 @@
 #include <asm/cpu_device_id.h>
 
 #define MAX_TARGET_RATIO (100U)
-/* For each undisturbed clamping period (no extra wake ups during idle time),
- * we increment the confidence counter for the given target ratio.
- * CONFIDENCE_OK defines the level where runtime calibration results are
- * valid.
- */
+ 
 #define CONFIDENCE_OK (3)
-/* Default idle injection duration, driver adjust sleep time to meet target
- * idle ratio. Similar to frequency modulation.
- */
+ 
 #define DEFAULT_DURATION_JIFFIES (6)
 
 static unsigned int target_mwait;
 static struct dentry *debug_dir;
 static bool poll_pkg_cstate_enable;
 
-/* Idle ratio observed using package C-state counters */
+ 
 static unsigned int current_ratio;
 
-/* Skip the idle injection till set to true */
+ 
 static bool should_skip;
 
 struct powerclamp_data {
@@ -74,7 +47,7 @@ static struct thermal_cooling_device *cooling_dev;
 
 static DEFINE_MUTEX(powerclamp_lock);
 
-/* This duration is in microseconds */
+ 
 static unsigned int duration;
 static unsigned int pkg_cstate_ratio_cur;
 static unsigned int window_size;
@@ -133,7 +106,7 @@ static int allocate_copy_idle_injection_mask(const struct cpumask *copy_mask)
 	if (cpumask_available(idle_injection_cpu_mask))
 		goto copy_mask;
 
-	/* This mask is allocated only one time and freed during module exit */
+	 
 	if (!alloc_cpumask_var(&idle_injection_cpu_mask, GFP_KERNEL))
 		return -ENOMEM;
 
@@ -143,7 +116,7 @@ copy_mask:
 	return 0;
 }
 
-/* Return true if the cpumask and idle percent combination is invalid */
+ 
 static bool check_invalid(cpumask_var_t mask, u8 idle)
 {
 	if (cpumask_equal(cpu_present_mask, mask) && idle > MAX_ALL_CPU_IDLE)
@@ -159,7 +132,7 @@ static int cpumask_set(const char *arg, const struct kernel_param *kp)
 
 	mutex_lock(&powerclamp_lock);
 
-	/* Can't set mask when cooling device is in use */
+	 
 	if (powerclamp_data.clamping) {
 		ret = -EAGAIN;
 		goto skip_cpumask_set;
@@ -179,13 +152,7 @@ static int cpumask_set(const char *arg, const struct kernel_param *kp)
 		goto free_cpumask_set;
 	}
 
-	/*
-	 * When module parameters are passed from kernel command line
-	 * during insmod, the module parameter callback is called
-	 * before powerclamp_init(), so we can't assume that some
-	 * cpumask can be allocated and copied before here. Also
-	 * in this case this cpumask is used as the default mask.
-	 */
+	 
 	ret = allocate_copy_idle_injection_mask(new_mask);
 
 free_cpumask_set:
@@ -220,7 +187,7 @@ static int max_idle_set(const char *arg, const struct kernel_param *kp)
 
 	mutex_lock(&powerclamp_lock);
 
-	/* Can't set mask when cooling device is in use */
+	 
 	if (powerclamp_data.clamping) {
 		ret = -EAGAIN;
 		goto skip_limit_set;
@@ -263,18 +230,9 @@ module_param_cb(max_idle, &max_idle_ops, &max_idle, 0644);
 MODULE_PARM_DESC(max_idle, "maximum injected idle time to the total CPU time ratio in percent range:1-100");
 
 struct powerclamp_calibration_data {
-	unsigned long confidence;  /* used for calibration, basically a counter
-				    * gets incremented each time a clamping
-				    * period is completed without extra wakeups
-				    * once that counter is reached given level,
-				    * compensation is deemed usable.
-				    */
-	unsigned long steady_comp; /* steady state compensation used when
-				    * no extra wakeups occurred.
-				    */
-	unsigned long dynamic_comp; /* compensate excessive wakeup from idle
-				     * mostly from external interrupts.
-				     */
+	unsigned long confidence;   
+	unsigned long steady_comp;  
+	unsigned long dynamic_comp;  
 };
 
 static struct powerclamp_calibration_data cal_data[MAX_TARGET_RATIO];
@@ -367,7 +325,7 @@ static bool has_pkg_state_counter(void)
 	u64 val;
 	struct pkg_cstate_info *info = pkg_cstates;
 
-	/* check if any one of the counter msrs exists */
+	 
 	while (info->msr_index) {
 		if (!rdmsrl_safe(info->msr_index, &val))
 			return true;
@@ -403,7 +361,7 @@ static unsigned int get_compensation(int ratio)
 	if (!poll_pkg_cstate_enable)
 		return 0;
 
-	/* we only use compensation if all adjacent ones are good */
+	 
 	if (ratio == 1 &&
 		cal_data[ratio].confidence >= CONFIDENCE_OK &&
 		cal_data[ratio + 1].confidence >= CONFIDENCE_OK &&
@@ -426,7 +384,7 @@ static unsigned int get_compensation(int ratio)
 			cal_data[ratio + 1].steady_comp) / 3;
 	}
 
-	/* do not exceed limit */
+	 
 	if (comp + ratio >= MAX_TARGET_RATIO)
 		comp = MAX_TARGET_RATIO - ratio - 1;
 
@@ -438,14 +396,12 @@ static void adjust_compensation(int target_ratio, unsigned int win)
 	int delta;
 	struct powerclamp_calibration_data *d = &cal_data[target_ratio];
 
-	/*
-	 * adjust compensations if confidence level has not been reached.
-	 */
+	 
 	if (d->confidence >= CONFIDENCE_OK)
 		return;
 
 	delta = powerclamp_data.target_ratio - current_ratio;
-	/* filter out bad data */
+	 
 	if (delta >= 0 && delta <= (1+target_ratio/10)) {
 		if (d->steady_comp)
 			d->steady_comp =
@@ -463,11 +419,11 @@ static bool powerclamp_adjust_controls(unsigned int target_ratio,
 	u64 msr_now, tsc_now;
 	u64 val64;
 
-	/* check result for the last window */
+	 
 	msr_now = pkg_state_counter();
 	tsc_now = rdtsc();
 
-	/* calculate pkg cstate vs tsc ratio */
+	 
 	if (!msr_last || !tsc_last)
 		current_ratio = 1;
 	else if (tsc_now-tsc_last) {
@@ -476,38 +432,27 @@ static bool powerclamp_adjust_controls(unsigned int target_ratio,
 		current_ratio = val64;
 	}
 
-	/* update record */
+	 
 	msr_last = msr_now;
 	tsc_last = tsc_now;
 
 	adjust_compensation(target_ratio, win);
 
-	/* if we are above target+guard, skip */
+	 
 	return powerclamp_data.target_ratio + guard <= current_ratio;
 }
 
-/*
- * This function calculates runtime from the current target ratio.
- * This function gets called under powerclamp_lock.
- */
+ 
 static unsigned int get_run_time(void)
 {
 	unsigned int compensated_ratio;
 	unsigned int runtime;
 
-	/*
-	 * make sure user selected ratio does not take effect until
-	 * the next round. adjust target_ratio if user has changed
-	 * target such that we can converge quickly.
-	 */
+	 
 	powerclamp_data.guard = 1 + powerclamp_data.target_ratio / 20;
 	powerclamp_data.window_size_now = window_size;
 
-	/*
-	 * systems may have different ability to enter package level
-	 * c-states, thus we need to compensate the injected idle ratio
-	 * to achieve the actual target reported by the HW.
-	 */
+	 
 	compensated_ratio = powerclamp_data.target_ratio +
 		get_compensation(powerclamp_data.target_ratio);
 	if (compensated_ratio <= 0)
@@ -518,10 +463,7 @@ static unsigned int get_run_time(void)
 	return runtime;
 }
 
-/*
- * 1 HZ polling while clamping is active, useful for userspace
- * to monitor actual idle ratio.
- */
+ 
 static void poll_pkg_cstate(struct work_struct *dummy);
 static DECLARE_DELAYED_WORK(poll_pkg_cstate_work, poll_pkg_cstate);
 static void poll_pkg_cstate(struct work_struct *dummy)
@@ -536,7 +478,7 @@ static void poll_pkg_cstate(struct work_struct *dummy)
 	msr_now = pkg_state_counter();
 	tsc_now = rdtsc();
 
-	/* calculate pkg cstate vs tsc ratio */
+	 
 	if (!msr_last || !tsc_last)
 		pkg_cstate_ratio_cur = 1;
 	else {
@@ -547,7 +489,7 @@ static void poll_pkg_cstate(struct work_struct *dummy)
 		}
 	}
 
-	/* update record */
+	 
 	msr_last = msr_now;
 	tsc_last = tsc_now;
 
@@ -559,16 +501,12 @@ static void poll_pkg_cstate(struct work_struct *dummy)
 
 static struct idle_inject_device *ii_dev;
 
-/*
- * This function is called from idle injection core on timer expiry
- * for the run duration. This allows powerclamp to readjust or skip
- * injecting idle for this cycle.
- */
+ 
 static bool idle_inject_update(void)
 {
 	bool update = false;
 
-	/* We can't sleep in this callback */
+	 
 	if (!mutex_trylock(&powerclamp_lock))
 		return true;
 
@@ -596,7 +534,7 @@ static bool idle_inject_update(void)
 	return true;
 }
 
-/* This function starts idle injection by calling idle_inject_start() */
+ 
 static void trigger_idle_injection(void)
 {
 	unsigned int runtime = get_run_time();
@@ -606,11 +544,7 @@ static void trigger_idle_injection(void)
 	powerclamp_data.clamping = true;
 }
 
-/*
- * This function is called from start_power_clamp() to register
- * CPUS with powercap idle injection register and set default
- * idle duration and latency.
- */
+ 
 static int powerclamp_idle_injection_register(void)
 {
 	poll_pkg_cstate_enable = false;
@@ -633,10 +567,7 @@ static int powerclamp_idle_injection_register(void)
 	return 0;
 }
 
-/*
- * This function is called from end_power_clamp() to stop idle injection
- * and unregister CPUS from powercap idle injection core.
- */
+ 
 static void remove_idle_injection(void)
 {
 	if (!powerclamp_data.clamping)
@@ -646,10 +577,7 @@ static void remove_idle_injection(void)
 	idle_inject_stop(ii_dev);
 }
 
-/*
- * This function is called when user change the cooling device
- * state from zero to some other value.
- */
+ 
 static int start_power_clamp(void)
 {
 	int ret;
@@ -664,10 +592,7 @@ static int start_power_clamp(void)
 	return ret;
 }
 
-/*
- * This function is called when user change the cooling device
- * state from non zero value zero.
- */
+ 
 static void end_power_clamp(void)
 {
 	if (powerclamp_data.clamping) {
@@ -718,7 +643,7 @@ static int powerclamp_set_cur_state(struct thermal_cooling_device *cdev,
 		pr_info("Stop forced idle injection\n");
 		end_power_clamp();
 		powerclamp_data.target_ratio = 0;
-	} else	/* adjust currently running */ {
+	} else	  {
 		unsigned int runtime;
 
 		powerclamp_data.target_ratio = new_target_ratio;
@@ -732,7 +657,7 @@ exit_set:
 	return ret;
 }
 
-/* bind to generic thermal layer as cooling device*/
+ 
 static const struct thermal_cooling_device_ops powerclamp_cooling_ops = {
 	.get_max_state = powerclamp_get_max_state,
 	.get_cur_state = powerclamp_get_cur_state,
@@ -753,13 +678,13 @@ static int __init powerclamp_probe(void)
 		return -ENODEV;
 	}
 
-	/* The goal for idle time alignment is to achieve package cstate. */
+	 
 	if (!has_pkg_state_counter()) {
 		pr_info("No package C-state available\n");
 		return -ENODEV;
 	}
 
-	/* find the deepest mwait value */
+	 
 	find_target_mwait();
 
 	return 0;
@@ -795,7 +720,7 @@ static int __init powerclamp_init(void)
 {
 	int retval;
 
-	/* probe cpu features and ids here */
+	 
 	retval = powerclamp_probe();
 	if (retval)
 		return retval;
@@ -808,7 +733,7 @@ static int __init powerclamp_init(void)
 	if (retval)
 		return retval;
 
-	/* set default limit, maybe adjusted during runtime based on feedback */
+	 
 	window_size = 2;
 
 	cooling_dev = thermal_cooling_device_register("intel_powerclamp", NULL,

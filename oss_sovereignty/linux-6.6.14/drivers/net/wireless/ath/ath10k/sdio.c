@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2004-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012,2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2016-2017 Erik Stromdahl <erik.stromdahl@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mmc/card.h>
@@ -29,7 +25,7 @@ void ath10k_sdio_fw_crashed_dump(struct ath10k *ar);
 
 #define ATH10K_SDIO_VSG_BUF_SIZE	(64 * 1024)
 
-/* inlined helper functions */
+ 
 
 static inline int ath10k_sdio_calc_txrx_padded_len(struct ath10k_sdio *ar_sdio,
 						   size_t len)
@@ -82,7 +78,7 @@ static inline bool is_trailer_only_msg(struct ath10k_sdio_rx_data *pkt)
 	return trailer_only;
 }
 
-/* sdio/mmc functions */
+ 
 
 static inline void ath10k_sdio_set_cmd52_arg(u32 *arg, u8 write, u8 raw,
 					     unsigned int address,
@@ -199,7 +195,7 @@ static int ath10k_sdio_config(struct ath10k *ar)
 					      CCCR_SDIO_ASYNC_INT_DELAY_ADDRESS,
 					      byte);
 
-	/* give us some time to enable, in ms */
+	 
 	func->enable_timeout = 100;
 
 	ret = sdio_set_block_size(func, ar_sdio->mbox_info.block_size);
@@ -327,9 +323,7 @@ static int ath10k_sdio_write(struct ath10k *ar, u32 addr, const void *buf, size_
 
 	sdio_claim_host(func);
 
-	/* For some reason toio() doesn't have const for the buffer, need
-	 * an ugly hack to workaround that.
-	 */
+	 
 	ret = sdio_memcpy_toio(func, addr, (void *)buf, len);
 	if (ret) {
 		ath10k_warn(ar, "failed to write to address 0x%x: %d\n",
@@ -374,7 +368,7 @@ out:
 	return ret;
 }
 
-/* HIF mbox functions */
+ 
 
 static int ath10k_sdio_mbox_rx_process_packet(struct ath10k *ar,
 					      struct ath10k_sdio_rx_data *pkt,
@@ -453,9 +447,7 @@ static int ath10k_sdio_mbox_rx_process_packets(struct ath10k *ar,
 		pkt = &ar_sdio->rx_pkts[i];
 
 		if (pkt->part_of_bundle && !pkt->last_in_bundle) {
-			/* Only read lookahead's from RX trailers
-			 * for the last packet in a bundle.
-			 */
+			 
 			lookahead_idx--;
 			lookaheads_local = NULL;
 			n_lookahead_local = NULL;
@@ -479,7 +471,7 @@ static int ath10k_sdio_mbox_rx_process_packets(struct ath10k *ar,
 			kfree_skb(pkt->skb);
 		}
 
-		/* The RX complete handler now owns the skb...*/
+		 
 		pkt->skb = NULL;
 		pkt->alloc_len = 0;
 	}
@@ -487,9 +479,7 @@ static int ath10k_sdio_mbox_rx_process_packets(struct ath10k *ar,
 	ret = 0;
 
 out:
-	/* Free all packets that was not passed on to the RX completion
-	 * handler...
-	 */
+	 
 	for (; i < ar_sdio->n_rx_pkts; i++)
 		ath10k_sdio_mbox_free_rx_pkt(&ar_sdio->rx_pkts[i]);
 
@@ -515,12 +505,7 @@ static int ath10k_sdio_mbox_alloc_bundle(struct ath10k *ar,
 		return -ENOMEM;
 	}
 
-	/* Allocate bndl_cnt extra skb's for the bundle.
-	 * The package containing the
-	 * ATH10K_HTC_FLAG_BUNDLE_MASK flag is not included
-	 * in bndl_cnt. The skb for that packet will be
-	 * allocated separately.
-	 */
+	 
 	for (i = 0; i < *bndl_cnt; i++) {
 		ret = ath10k_sdio_mbox_alloc_rx_pkt(&rx_pkts[i],
 						    act_len,
@@ -580,10 +565,7 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
 
 		if (ath10k_htc_get_bundle_count(
 			ar->htc.max_msgs_per_htc_bundle, htc_hdr->flags)) {
-			/* HTC header indicates that every packet to follow
-			 * has the same padded length so that it can be
-			 * optimally fetched as a full bundle.
-			 */
+			 
 			size_t bndl_cnt;
 
 			ret = ath10k_sdio_mbox_alloc_bundle(ar,
@@ -601,14 +583,11 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
 
 			pkt_cnt += bndl_cnt;
 
-			/* next buffer will be the last in the bundle */
+			 
 			last_in_bundle = true;
 		}
 
-		/* Allocate skb for packet. If the packet had the
-		 * ATH10K_HTC_FLAG_BUNDLE_MASK flag set, all bundled
-		 * packet skb's have been allocated in the previous step.
-		 */
+		 
 		if (htc_hdr->flags & ATH10K_HTC_FLAGS_RECV_1MORE_BLOCK)
 			full_len += ATH10K_HIF_MBOX_BLOCK_SIZE;
 
@@ -713,7 +692,7 @@ static int ath10k_sdio_mbox_rx_fetch_bundle(struct ath10k *ar)
 	return 0;
 
 err:
-	/* Free all packets that was not successfully fetched. */
+	 
 	for (i = 0; i < ar_sdio->n_rx_pkts; i++)
 		ath10k_sdio_mbox_free_rx_pkt(&ar_sdio->rx_pkts[i]);
 
@@ -722,11 +701,7 @@ err:
 	return ret;
 }
 
-/* This is the timeout for mailbox processing done in the sdio irq
- * handler. The timeout is deliberately set quite high since SDIO dump logs
- * over serial port can/will add a substantial overhead to the processing
- * (if enabled).
- */
+ 
 #define SDIO_MBOX_PROCESSING_TIMEOUT_HZ (20 * HZ)
 
 static int ath10k_sdio_mbox_rxmsg_pending_handler(struct ath10k *ar,
@@ -740,25 +715,19 @@ static int ath10k_sdio_mbox_rxmsg_pending_handler(struct ath10k *ar,
 
 	*done = true;
 
-	/* Copy the lookahead obtained from the HTC register table into our
-	 * temp array as a start value.
-	 */
+	 
 	lookaheads[0] = msg_lookahead;
 
 	timeout = jiffies + SDIO_MBOX_PROCESSING_TIMEOUT_HZ;
 	do {
-		/* Try to allocate as many HTC RX packets indicated by
-		 * n_lookaheads.
-		 */
+		 
 		ret = ath10k_sdio_mbox_rx_alloc(ar, lookaheads,
 						n_lookaheads);
 		if (ret)
 			break;
 
 		if (ar_sdio->n_rx_pkts >= 2)
-			/* A recv bundle was detected, force IRQ status
-			 * re-check again.
-			 */
+			 
 			*done = false;
 
 		if (ar_sdio->n_rx_pkts > 1)
@@ -766,10 +735,7 @@ static int ath10k_sdio_mbox_rxmsg_pending_handler(struct ath10k *ar,
 		else
 			ret = ath10k_sdio_mbox_rx_fetch(ar);
 
-		/* Process fetched packets. This will potentially update
-		 * n_lookaheads depending on if the packets contain lookahead
-		 * reports.
-		 */
+		 
 		n_lookaheads = 0;
 		ret = ath10k_sdio_mbox_rx_process_packets(ar,
 							  lookaheads,
@@ -778,12 +744,7 @@ static int ath10k_sdio_mbox_rxmsg_pending_handler(struct ath10k *ar,
 		if (!n_lookaheads || ret)
 			break;
 
-		/* For SYNCH processing, if we get here, we are running
-		 * through the loop again due to updated lookaheads. Set
-		 * flag that we should re-check IRQ status registers again
-		 * before leaving IRQ processing, this can net better
-		 * performance in high throughput situations.
-		 */
+		 
 		*done = false;
 	} while (time_before(jiffies, timeout));
 
@@ -799,12 +760,10 @@ static int ath10k_sdio_mbox_proc_dbg_intr(struct ath10k *ar)
 	u32 val;
 	int ret;
 
-	/* TODO: Add firmware crash handling */
+	 
 	ath10k_warn(ar, "firmware crashed\n");
 
-	/* read counter to clear the interrupt, the debug error interrupt is
-	 * counter 0.
-	 */
+	 
 	ret = ath10k_sdio_read32(ar, MBOX_COUNT_DEC_ADDRESS, &val);
 	if (ret)
 		ath10k_warn(ar, "failed to clear debug interrupt: %d\n", ret);
@@ -823,10 +782,7 @@ static int ath10k_sdio_mbox_proc_counter_intr(struct ath10k *ar)
 	counter_int_status = irq_data->irq_proc_reg->counter_int_status &
 			     irq_data->irq_en_reg->cntr_int_status_en;
 
-	/* NOTE: other modules like GMBOX may use the counter interrupt for
-	 * credit flow control on other counters, we only need to check for
-	 * the debug assertion counter interrupt.
-	 */
+	 
 	if (counter_int_status & ATH10K_SDIO_TARGET_DEBUG_INTR_MASK)
 		ret = ath10k_sdio_mbox_proc_dbg_intr(ar);
 	else
@@ -868,10 +824,10 @@ static int ath10k_sdio_mbox_proc_err_intr(struct ath10k *ar)
 		      error_int_status))
 		ath10k_warn(ar, "tx overflow interrupt error\n");
 
-	/* Clear the interrupt */
+	 
 	irq_data->irq_proc_reg->error_int_status &= ~error_int_status;
 
-	/* set W1C value to clear the interrupt, this hits the register first */
+	 
 	ret = ath10k_sdio_writesb32(ar, MBOX_ERROR_INT_STATUS_ADDRESS,
 				    error_int_status);
 	if (ret) {
@@ -899,16 +855,10 @@ static int ath10k_sdio_mbox_proc_cpu_intr(struct ath10k *ar)
 		goto out;
 	}
 
-	/* Clear the interrupt */
+	 
 	irq_data->irq_proc_reg->cpu_int_status &= ~cpu_int_status;
 
-	/* Set up the register transfer buffer to hit the register 4 times,
-	 * this is done to make the access 4-byte aligned to mitigate issues
-	 * with host bus interconnects that restrict bus transfer lengths to
-	 * be a multiple of 4-bytes.
-	 *
-	 * Set W1C value to clear the interrupt, this hits the register first.
-	 */
+	 
 	ret = ath10k_sdio_writesb32(ar, MBOX_CPU_INT_STATUS_ADDRESS,
 				    cpu_int_status);
 	if (ret) {
@@ -941,22 +891,13 @@ static int ath10k_sdio_mbox_read_int_status(struct ath10k *ar,
 	*lookahead = 0;
 	*host_int_status = 0;
 
-	/* int_status_en is supposed to be non zero, otherwise interrupts
-	 * shouldn't be enabled. There is however a short time frame during
-	 * initialization between the irq register and int_status_en init
-	 * where this can happen.
-	 * We silently ignore this condition.
-	 */
+	 
 	if (!irq_en_reg->int_status_en) {
 		ret = 0;
 		goto out;
 	}
 
-	/* Read the first sizeof(struct ath10k_irq_proc_registers)
-	 * bytes of the HTC register table. This
-	 * will yield us the value of different int status
-	 * registers and the lookahead registers.
-	 */
+	 
 	ret = ath10k_sdio_read(ar, MBOX_HOST_INT_STATUS_ADDRESS,
 			       irq_proc_reg, sizeof(*irq_proc_reg));
 	if (ret) {
@@ -965,20 +906,18 @@ static int ath10k_sdio_mbox_read_int_status(struct ath10k *ar,
 		goto out;
 	}
 
-	/* Update only those registers that are enabled */
+	 
 	*host_int_status = irq_proc_reg->host_int_status &
 			   irq_en_reg->int_status_en;
 
-	/* Look at mbox status */
+	 
 	if (!(*host_int_status & htc_mbox)) {
 		*lookahead = 0;
 		ret = 0;
 		goto out;
 	}
 
-	/* Mask out pending mbox value, we use look ahead as
-	 * the real flag for mbox processing.
-	 */
+	 
 	*host_int_status &= ~htc_mbox;
 	if (irq_proc_reg->rx_lookahead_valid & htc_mbox) {
 		*lookahead = le32_to_cpu(
@@ -999,11 +938,7 @@ static int ath10k_sdio_mbox_proc_pending_irqs(struct ath10k *ar,
 	u32 lookahead;
 	int ret;
 
-	/* NOTE: HIF implementation guarantees that the context of this
-	 * call allows us to perform SYNCHRONOUS I/O, that is we can block,
-	 * sleep or call any API that can block or switch thread/task
-	 * contexts. This is a fully schedulable context.
-	 */
+	 
 
 	ret = ath10k_sdio_mbox_read_int_status(ar,
 					       &host_int_status,
@@ -1031,42 +966,32 @@ static int ath10k_sdio_mbox_proc_pending_irqs(struct ath10k *ar,
 			goto out;
 	}
 
-	/* now, handle the rest of the interrupts */
+	 
 	ath10k_dbg(ar, ATH10K_DBG_SDIO,
 		   "sdio host_int_status 0x%x\n", host_int_status);
 
 	if (FIELD_GET(MBOX_HOST_INT_STATUS_CPU_MASK, host_int_status)) {
-		/* CPU Interrupt */
+		 
 		ret = ath10k_sdio_mbox_proc_cpu_intr(ar);
 		if (ret)
 			goto out;
 	}
 
 	if (FIELD_GET(MBOX_HOST_INT_STATUS_ERROR_MASK, host_int_status)) {
-		/* Error Interrupt */
+		 
 		ret = ath10k_sdio_mbox_proc_err_intr(ar);
 		if (ret)
 			goto out;
 	}
 
 	if (FIELD_GET(MBOX_HOST_INT_STATUS_COUNTER_MASK, host_int_status))
-		/* Counter Interrupt */
+		 
 		ret = ath10k_sdio_mbox_proc_counter_intr(ar);
 
 	ret = 0;
 
 out:
-	/* An optimization to bypass reading the IRQ status registers
-	 * unnecessarily which can re-wake the target, if upper layers
-	 * determine that we are in a low-throughput mode, we can rely on
-	 * taking another interrupt rather than re-checking the status
-	 * registers which can re-wake the target.
-	 *
-	 * NOTE : for host interfaces that makes use of detecting pending
-	 * mbox messages at hif can not use this optimization due to
-	 * possible side effects, SPI requires the host to drain all
-	 * messages from the mailbox before exiting the ISR routine.
-	 */
+	 
 
 	ath10k_dbg(ar, ATH10K_DBG_SDIO,
 		   "sdio pending irqs done %d status %d",
@@ -1097,9 +1022,7 @@ static void ath10k_sdio_set_mbox_info(struct ath10k *ar)
 			mbox_info->ext_info[0].htc_ext_sz =
 				ATH10K_HIF_MBOX0_EXT_WIDTH;
 		else
-			/* from QCA6174 2.0(0x504), the width has been extended
-			 * to 56K
-			 */
+			 
 			mbox_info->ext_info[0].htc_ext_sz =
 				ATH10K_HIF_MBOX0_EXT_WIDTH_ROME_2_0;
 		break;
@@ -1119,7 +1042,7 @@ static void ath10k_sdio_set_mbox_info(struct ath10k *ar)
 	mbox_info->ext_info[1].htc_ext_sz = ATH10K_HIF_MBOX1_EXT_WIDTH;
 }
 
-/* BMI functions */
+ 
 
 static int ath10k_sdio_bmi_credits(struct ath10k *ar)
 {
@@ -1127,17 +1050,13 @@ static int ath10k_sdio_bmi_credits(struct ath10k *ar)
 	unsigned long timeout;
 	int ret;
 
-	/* Read the counter register to get the command credits */
+	 
 	addr = MBOX_COUNT_DEC_ADDRESS + ATH10K_HIF_MBOX_NUM_MAX * 4;
 	timeout = jiffies + BMI_COMMUNICATION_TIMEOUT_HZ;
 	cmd_credits = 0;
 
 	while (time_before(jiffies, timeout) && !cmd_credits) {
-		/* Hit the credit counter with a 4-byte access, the first byte
-		 * read will hit the counter and cause a decrement, while the
-		 * remaining 3 bytes has no effect. The rationale behind this
-		 * is to make all HIF accesses 4-byte aligned.
-		 */
+		 
 		ret = ath10k_sdio_read32(ar, addr, &cmd_credits);
 		if (ret) {
 			ath10k_warn(ar,
@@ -1146,9 +1065,7 @@ static int ath10k_sdio_bmi_credits(struct ath10k *ar)
 			return ret;
 		}
 
-		/* The counter is only 8 bits.
-		 * Ignore anything in the upper 3 bytes
-		 */
+		 
 		cmd_credits &= 0xFF;
 	}
 
@@ -1178,7 +1095,7 @@ static int ath10k_sdio_bmi_get_rx_lookahead(struct ath10k *ar)
 			return ret;
 		}
 
-		 /* all we really want is one bit */
+		  
 		rx_word &= 1;
 	}
 
@@ -1216,59 +1133,15 @@ static int ath10k_sdio_bmi_exchange_msg(struct ath10k *ar,
 	}
 
 	if (!resp || !resp_len)
-		/* No response expected */
+		 
 		return 0;
 
-	/* During normal bootup, small reads may be required.
-	 * Rather than issue an HIF Read and then wait as the Target
-	 * adds successive bytes to the FIFO, we wait here until
-	 * we know that response data is available.
-	 *
-	 * This allows us to cleanly timeout on an unexpected
-	 * Target failure rather than risk problems at the HIF level.
-	 * In particular, this avoids SDIO timeouts and possibly garbage
-	 * data on some host controllers.  And on an interconnect
-	 * such as Compact Flash (as well as some SDIO masters) which
-	 * does not provide any indication on data timeout, it avoids
-	 * a potential hang or garbage response.
-	 *
-	 * Synchronization is more difficult for reads larger than the
-	 * size of the MBOX FIFO (128B), because the Target is unable
-	 * to push the 129th byte of data until AFTER the Host posts an
-	 * HIF Read and removes some FIFO data.  So for large reads the
-	 * Host proceeds to post an HIF Read BEFORE all the data is
-	 * actually available to read.  Fortunately, large BMI reads do
-	 * not occur in practice -- they're supported for debug/development.
-	 *
-	 * So Host/Target BMI synchronization is divided into these cases:
-	 *  CASE 1: length < 4
-	 *        Should not happen
-	 *
-	 *  CASE 2: 4 <= length <= 128
-	 *        Wait for first 4 bytes to be in FIFO
-	 *        If CONSERVATIVE_BMI_READ is enabled, also wait for
-	 *        a BMI command credit, which indicates that the ENTIRE
-	 *        response is available in the FIFO
-	 *
-	 *  CASE 3: length > 128
-	 *        Wait for the first 4 bytes to be in FIFO
-	 *
-	 * For most uses, a small timeout should be sufficient and we will
-	 * usually see a response quickly; but there may be some unusual
-	 * (debug) cases of BMI_EXECUTE where we want an larger timeout.
-	 * For now, we use an unbounded busy loop while waiting for
-	 * BMI_EXECUTE.
-	 *
-	 * If BMI_EXECUTE ever needs to support longer-latency execution,
-	 * especially in production, this code needs to be enhanced to sleep
-	 * and yield.  Also note that BMI_COMMUNICATION_TIMEOUT is currently
-	 * a function of Host processor speed.
-	 */
+	 
 	ret = ath10k_sdio_bmi_get_rx_lookahead(ar);
 	if (ret)
 		return ret;
 
-	/* We always read from the start of the mbox address */
+	 
 	addr = ar_sdio->mbox_info.htc_addr;
 	ret = ath10k_sdio_read(ar, addr, ar_sdio->bmi_buf, *resp_len);
 	if (ret) {
@@ -1283,7 +1156,7 @@ static int ath10k_sdio_bmi_exchange_msg(struct ath10k *ar,
 	return 0;
 }
 
-/* sdio async handling functions */
+ 
 
 static struct ath10k_sdio_bus_request
 *ath10k_sdio_alloc_busreq(struct ath10k *ar)
@@ -1342,9 +1215,7 @@ static void __ath10k_sdio_write_async(struct ath10k *ar,
 	ath10k_sdio_free_bus_req(ar, req);
 }
 
-/* To improve throughput use workqueue to deliver packets to HTC layer,
- * this way SDIO bus is utilised much better.
- */
+ 
 static void ath10k_rx_indication_async_work(struct work_struct *work)
 {
 	struct ath10k_sdio *ar_sdio = container_of(work, struct ath10k_sdio,
@@ -1491,9 +1362,7 @@ static int ath10k_sdio_prep_async_req(struct ath10k *ar, u32 addr,
 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
 	struct ath10k_sdio_bus_request *bus_req;
 
-	/* Allocate a bus request for the message and queue it on the
-	 * SDIO workqueue.
-	 */
+	 
 	bus_req = ath10k_sdio_alloc_busreq(ar);
 	if (!bus_req) {
 		ath10k_warn(ar,
@@ -1514,7 +1383,7 @@ static int ath10k_sdio_prep_async_req(struct ath10k *ar, u32 addr,
 	return 0;
 }
 
-/* IRQ handler */
+ 
 
 static void ath10k_sdio_irq_handler(struct sdio_func *func)
 {
@@ -1524,9 +1393,7 @@ static void ath10k_sdio_irq_handler(struct sdio_func *func)
 	bool done = false;
 	int ret;
 
-	/* Release the host during interrupts so we can pick it back up when
-	 * we process commands.
-	 */
+	 
 	sdio_release_host(ar_sdio->func);
 
 	timeout = jiffies + ATH10K_SDIO_HIF_COMMUNICATION_TIMEOUT_HZ;
@@ -1545,7 +1412,7 @@ static void ath10k_sdio_irq_handler(struct sdio_func *func)
 			    ret);
 }
 
-/* sdio HIF functions */
+ 
 
 static int ath10k_sdio_disable_intrs(struct ath10k *ar)
 {
@@ -1596,9 +1463,7 @@ static int ath10k_sdio_hif_power_up(struct ath10k *ar,
 
 	sdio_release_host(func);
 
-	/* Wait for hardware to initialise. It should take a lot less than
-	 * 20 ms but let's be conservative here.
-	 */
+	 
 	msleep(20);
 
 	ar_sdio->is_disabled = false;
@@ -1623,7 +1488,7 @@ static void ath10k_sdio_hif_power_down(struct ath10k *ar)
 	del_timer_sync(&ar_sdio->sleep_timer);
 	ath10k_sdio_set_mbox_sleep(ar, true);
 
-	/* Disable the card */
+	 
 	sdio_claim_host(ar_sdio->func);
 
 	ret = sdio_disable_func(ar_sdio->func);
@@ -1661,7 +1526,7 @@ static int ath10k_sdio_hif_tx_sg(struct ath10k *ar, u8 pipe_id,
 							      skb->len);
 		skb_trim(skb, padded_len);
 
-		/* Write TX data to the end of the mbox address space */
+		 
 		address = ar_sdio->mbox_addr[eid] + ar_sdio->mbox_size[eid] -
 			  skb->len;
 		ret = ath10k_sdio_prep_async_req(ar, address, skb,
@@ -1684,30 +1549,24 @@ static int ath10k_sdio_enable_intrs(struct ath10k *ar)
 
 	mutex_lock(&irq_data->mtx);
 
-	/* Enable all but CPU interrupts */
+	 
 	regs->int_status_en = FIELD_PREP(MBOX_INT_STATUS_ENABLE_ERROR_MASK, 1) |
 			      FIELD_PREP(MBOX_INT_STATUS_ENABLE_CPU_MASK, 1) |
 			      FIELD_PREP(MBOX_INT_STATUS_ENABLE_COUNTER_MASK, 1);
 
-	/* NOTE: There are some cases where HIF can do detection of
-	 * pending mbox messages which is disabled now.
-	 */
+	 
 	regs->int_status_en |=
 		FIELD_PREP(MBOX_INT_STATUS_ENABLE_MBOX_DATA_MASK, 1);
 
-	/* Set up the CPU Interrupt Status Register, enable CPU sourced interrupt #0
-	 * #0 is used for report assertion from target
-	 */
+	 
 	regs->cpu_int_status_en = FIELD_PREP(MBOX_CPU_STATUS_ENABLE_ASSERT_MASK, 1);
 
-	/* Set up the Error Interrupt status Register */
+	 
 	regs->err_int_status_en =
 		FIELD_PREP(MBOX_ERROR_STATUS_ENABLE_RX_UNDERFLOW_MASK, 1) |
 		FIELD_PREP(MBOX_ERROR_STATUS_ENABLE_TX_OVERFLOW_MASK, 1);
 
-	/* Enable Counter interrupt status register to get fatal errors for
-	 * debugging.
-	 */
+	 
 	regs->cntr_int_status_en =
 		FIELD_PREP(MBOX_COUNTER_INT_STATUS_ENABLE_BIT_MASK,
 			   ATH10K_SDIO_TARGET_DEBUG_INTR_MASK);
@@ -1723,7 +1582,7 @@ static int ath10k_sdio_enable_intrs(struct ath10k *ar)
 	return ret;
 }
 
-/* HIF diagnostics */
+ 
 
 static int ath10k_sdio_hif_diag_read(struct ath10k *ar, u32 address, void *buf,
 				     size_t buf_len)
@@ -1735,14 +1594,14 @@ static int ath10k_sdio_hif_diag_read(struct ath10k *ar, u32 address, void *buf,
 	if (!mem)
 		return -ENOMEM;
 
-	/* set window register to start read cycle */
+	 
 	ret = ath10k_sdio_write32(ar, MBOX_WINDOW_READ_ADDR_ADDRESS, address);
 	if (ret) {
 		ath10k_warn(ar, "failed to set mbox window read address: %d", ret);
 		goto out;
 	}
 
-	/* read the data */
+	 
 	ret = ath10k_sdio_read(ar, MBOX_WINDOW_DATA_ADDRESS, mem, buf_len);
 	if (ret) {
 		ath10k_warn(ar, "failed to read from mbox window data address: %d\n",
@@ -1785,7 +1644,7 @@ static int ath10k_sdio_hif_diag_write_mem(struct ath10k *ar, u32 address,
 {
 	int ret;
 
-	/* set write data */
+	 
 	ret = ath10k_sdio_write(ar, MBOX_WINDOW_DATA_ADDRESS, data, nbytes);
 	if (ret) {
 		ath10k_warn(ar,
@@ -1794,7 +1653,7 @@ static int ath10k_sdio_hif_diag_write_mem(struct ath10k *ar, u32 address,
 		return ret;
 	}
 
-	/* set window register, which starts the write cycle */
+	 
 	ret = ath10k_sdio_write32(ar, MBOX_WINDOW_WRITE_ADDR_ADDRESS, address);
 	if (ret) {
 		ath10k_warn(ar, "failed to set mbox window write address: %d", ret);
@@ -1855,7 +1714,7 @@ static int ath10k_sdio_get_htt_tx_complete(struct ath10k *ar)
 	return ret;
 }
 
-/* HIF start/stop */
+ 
 
 static int ath10k_sdio_hif_start(struct ath10k *ar)
 {
@@ -1864,24 +1723,19 @@ static int ath10k_sdio_hif_start(struct ath10k *ar)
 
 	ath10k_core_napi_enable(ar);
 
-	/* Sleep 20 ms before HIF interrupts are disabled.
-	 * This will give target plenty of time to process the BMI done
-	 * request before interrupts are disabled.
-	 */
+	 
 	msleep(20);
 	ret = ath10k_sdio_disable_intrs(ar);
 	if (ret)
 		return ret;
 
-	/* eid 0 always uses the lower part of the extended mailbox address
-	 * space (ext_info[0].htc_ext_addr).
-	 */
+	 
 	ar_sdio->mbox_addr[0] = ar_sdio->mbox_info.ext_info[0].htc_ext_addr;
 	ar_sdio->mbox_size[0] = ar_sdio->mbox_info.ext_info[0].htc_ext_sz;
 
 	sdio_claim_host(ar_sdio->func);
 
-	/* Register the isr */
+	 
 	ret =  sdio_claim_irq(ar_sdio->func, ath10k_sdio_irq_handler);
 	if (ret) {
 		ath10k_warn(ar, "failed to claim sdio interrupt: %d\n", ret);
@@ -1895,12 +1749,12 @@ static int ath10k_sdio_hif_start(struct ath10k *ar)
 	if (ret)
 		ath10k_warn(ar, "failed to enable sdio interrupts: %d\n", ret);
 
-	/* Enable sleep and then disable it again */
+	 
 	ret = ath10k_sdio_set_mbox_sleep(ar, true);
 	if (ret)
 		return ret;
 
-	/* Wait for 20ms for the written value to take effect */
+	 
 	msleep(20);
 
 	ret = ath10k_sdio_set_mbox_sleep(ar, false);
@@ -1927,7 +1781,7 @@ static void ath10k_sdio_irq_disable(struct ath10k *ar)
 
 	mutex_lock(&irq_data->mtx);
 
-	memset(regs, 0, sizeof(*regs)); /* disable all interrupts */
+	memset(regs, 0, sizeof(*regs));  
 	memcpy(skb->data, regs, sizeof(*regs));
 	skb_put(skb, sizeof(*regs));
 
@@ -1941,9 +1795,7 @@ static void ath10k_sdio_irq_disable(struct ath10k *ar)
 
 	queue_work(ar_sdio->workqueue, &ar_sdio->wr_async_work);
 
-	/* Wait for the completion of the IRQ disable request.
-	 * If there is a timeout we will try to disable irq's anyway.
-	 */
+	 
 	ret = wait_for_completion_timeout(&irqs_disabled_comp,
 					  SDIO_IRQ_DISABLE_TIMEOUT_HZ);
 	if (!ret)
@@ -1978,7 +1830,7 @@ static void ath10k_sdio_hif_stop(struct ath10k *ar)
 
 	spin_lock_bh(&ar_sdio->wr_async_lock);
 
-	/* Free all bus requests that have not been handled */
+	 
 	list_for_each_entry_safe(req, tmp_req, &ar_sdio->wr_asyncq, list) {
 		struct ath10k_htc_ep *ep;
 
@@ -2012,7 +1864,7 @@ static int ath10k_sdio_hif_resume(struct ath10k *ar)
 		ath10k_dbg(ar, ATH10K_DBG_SDIO,
 			   "sdio resume configuring sdio\n");
 
-		/* need to set sdio settings after power is cut from sdio */
+		 
 		ath10k_sdio_config(ar);
 		break;
 
@@ -2036,11 +1888,7 @@ static int ath10k_sdio_hif_map_service_to_pipe(struct ath10k *ar,
 	bool ep_found = false;
 	int i;
 
-	/* For sdio, we are interested in the mapping between eid
-	 * and pipeid rather than service_id to pipe_id.
-	 * First we find out which eid has been allocated to the
-	 * service...
-	 */
+	 
 	for (i = 0; i < ATH10K_HTC_EP_COUNT; i++) {
 		if (htc->endpoint[i].service_id == service_id) {
 			eid = htc->endpoint[i].eid;
@@ -2052,16 +1900,10 @@ static int ath10k_sdio_hif_map_service_to_pipe(struct ath10k *ar,
 	if (!ep_found)
 		return -EINVAL;
 
-	/* Then we create the simplest mapping possible between pipeid
-	 * and eid
-	 */
+	 
 	*ul_pipe = *dl_pipe = (u8)eid;
 
-	/* Normally, HTT will use the upper part of the extended
-	 * mailbox address space (ext_info[1].htc_ext_addr) and WMI ctrl
-	 * the lower part (ext_info[0].htc_ext_addr).
-	 * If fw wants swapping of mailbox addresses, the opposite is true.
-	 */
+	 
 	if (ar_sdio->swap_mbox) {
 		htt_addr = ar_sdio->mbox_info.ext_info[0].htc_ext_addr;
 		wmi_addr = ar_sdio->mbox_info.ext_info[1].htc_ext_addr;
@@ -2076,9 +1918,7 @@ static int ath10k_sdio_hif_map_service_to_pipe(struct ath10k *ar,
 
 	switch (service_id) {
 	case ATH10K_HTC_SVC_ID_RSVD_CTRL:
-		/* HTC ctrl ep mbox address has already been setup in
-		 * ath10k_sdio_hif_start
-		 */
+		 
 		break;
 	case ATH10K_HTC_SVC_ID_WMI_CONTROL:
 		ar_sdio->mbox_addr[eid] = wmi_addr;
@@ -2108,9 +1948,7 @@ static void ath10k_sdio_hif_get_default_pipe(struct ath10k *ar,
 {
 	ath10k_dbg(ar, ATH10K_DBG_SDIO, "sdio hif get default pipe\n");
 
-	/* HTC ctrl ep (SVC id 1) always has eid (and pipe_id in our
-	 * case) == 0
-	 */
+	 
 	*ul_pipe = 0;
 	*dl_pipe = 0;
 }
@@ -2136,9 +1974,7 @@ static const struct ath10k_hif_ops ath10k_sdio_hif_ops = {
 
 #ifdef CONFIG_PM_SLEEP
 
-/* Empty handlers so that mmc subsystem doesn't remove us entirely during
- * suspend. We instead follow cfg80211 suspend/resume handlers.
- */
+ 
 static int ath10k_sdio_pm_suspend(struct device *device)
 {
 	struct sdio_func *func = dev_to_sdio_func(device);
@@ -2179,7 +2015,7 @@ static SIMPLE_DEV_PM_OPS(ath10k_sdio_pm_ops, ath10k_sdio_pm_suspend,
 
 #define ATH10K_SDIO_PM_OPS NULL
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static int ath10k_sdio_napi_poll(struct napi_struct *ctx, int budget)
 {
@@ -2306,9 +2142,7 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
 
 	skip_size = cur_section->start - mem_region->start;
 
-	/* fill the gap between the first register section and register
-	 * start address
-	 */
+	 
 	for (i = 0; i < skip_size; i++) {
 		*buf = ATH10K_MAGIC_NOT_COPIED;
 		buf++;
@@ -2327,7 +2161,7 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
 		}
 
 		if (++i == mem_region->section_table.size) {
-			/* last section */
+			 
 			next_section = NULL;
 			skip_size = 0;
 		} else {
@@ -2350,7 +2184,7 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
 
 		buf_len -= skip_size + section_size;
 
-		/* read section to dest memory */
+		 
 		ret = ath10k_sdio_read_mem(ar, cur_section->start,
 					   buf, section_size);
 		if (ret) {
@@ -2362,7 +2196,7 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
 		buf += section_size;
 		count += section_size;
 
-		/* fill in the gap between this section and the next */
+		 
 		for (j = 0; j < skip_size; j++) {
 			*buf = ATH10K_MAGIC_NOT_COPIED;
 			buf++;
@@ -2374,7 +2208,7 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
 	return count;
 }
 
-/* if an error happened returns < 0, otherwise the length */
+ 
 static int ath10k_sdio_dump_memory_generic(struct ath10k *ar,
 					   const struct ath10k_mem_region *current_region,
 					   u8 *buf,
@@ -2383,15 +2217,13 @@ static int ath10k_sdio_dump_memory_generic(struct ath10k *ar,
 	int ret;
 
 	if (current_region->section_table.size > 0)
-		/* Copy each section individually. */
+		 
 		return ath10k_sdio_dump_memory_section(ar,
 						      current_region,
 						      buf,
 						      current_region->len);
 
-	/* No individual memory sections defined so we can
-	 * copy the entire memory region.
-	 */
+	 
 	if (fast_dump)
 		ret = ath10k_bmi_read_memory(ar,
 					     current_region->start,
@@ -2449,7 +2281,7 @@ static void ath10k_sdio_dump_memory(struct ath10k *ar,
 			break;
 		}
 
-		/* Reserve space for the header. */
+		 
 		hdr = (void *)buf;
 		buf += sizeof(*hdr);
 		buf_len -= sizeof(*hdr);
@@ -2464,7 +2296,7 @@ static void ath10k_sdio_dump_memory(struct ath10k *ar,
 		hdr->length = cpu_to_le32(count);
 
 		if (count == 0)
-			/* Note: the header remains, just with zero length. */
+			 
 			break;
 
 		buf += count;
@@ -2516,12 +2348,7 @@ static int ath10k_sdio_probe(struct sdio_func *func,
 	struct ath10k_bus_params bus_params = {};
 	int ret, i;
 
-	/* Assumption: All SDIO based chipsets (so far) are QCA6174 based.
-	 * If there will be newer chipsets that does not use the hw reg
-	 * setup as defined in qca6174_regs and qca6174_values, this
-	 * assumption is no longer valid and hw_rev must be setup differently
-	 * depending on chipset.
-	 */
+	 
 	hw_rev = ATH10K_HW_QCA6174;
 
 	ar = ath10k_core_create(sizeof(*ar_sdio), &func->dev, ATH10K_BUS_SDIO,
@@ -2610,7 +2437,7 @@ static int ath10k_sdio_probe(struct sdio_func *func,
 	ath10k_sdio_set_mbox_info(ar);
 
 	bus_params.dev_type = ATH10K_DEV_TYPE_HL;
-	/* TODO: don't know yet how to get chip_id with SDIO */
+	 
 	bus_params.chip_id = 0;
 	bus_params.hl_msdu_ids = true;
 

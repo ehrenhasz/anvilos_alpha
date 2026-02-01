@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a7740 Core CPG Clocks
- *
- * Copyright (C) 2014  Ulrich Hecht
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk/renesas.h>
@@ -71,17 +67,17 @@ r8a7740_cpg_register_clock(struct device_node *np, struct r8a7740_cpg *cpg,
 	if (!strcmp(name, "r")) {
 		switch (cpg_mode & (BIT(2) | BIT(1))) {
 		case BIT(1) | BIT(2):
-			/* extal1 */
+			 
 			parent_name = of_clk_get_parent_name(np, 0);
 			div = 2048;
 			break;
 		case BIT(2):
-			/* extal1 */
+			 
 			parent_name = of_clk_get_parent_name(np, 0);
 			div = 1024;
 			break;
 		default:
-			/* extalr */
+			 
 			parent_name = of_clk_get_parent_name(np, 2);
 			break;
 		}
@@ -90,11 +86,7 @@ r8a7740_cpg_register_clock(struct device_node *np, struct r8a7740_cpg *cpg,
 		if (cpg_mode & BIT(1))
 			div = 2;
 	} else if (!strcmp(name, "pllc0")) {
-		/* PLLC0/1 are configurable multiplier clocks. Register them as
-		 * fixed factor clocks for now as there's no generic multiplier
-		 * clock implementation and we currently have no need to change
-		 * the multiplier value.
-		 */
+		 
 		u32 value = readl(base + CPG_FRQCRC);
 		parent_name = "system";
 		mult = ((value >> 24) & 0x7f) + 1;
@@ -110,7 +102,7 @@ r8a7740_cpg_register_clock(struct device_node *np, struct r8a7740_cpg *cpg,
 	} else if (!strcmp(name, "usb24s")) {
 		u32 value = readl(base + CPG_USBCKCR);
 		if (value & BIT(7))
-			/* extal2 */
+			 
 			parent_name = of_clk_get_parent_name(np, 1);
 		else
 			parent_name = "system";
@@ -161,9 +153,7 @@ static void __init r8a7740_cpg_clocks_init(struct device_node *np)
 	cpg = kzalloc(sizeof(*cpg), GFP_KERNEL);
 	clks = kcalloc(num_clks, sizeof(*clks), GFP_KERNEL);
 	if (cpg == NULL || clks == NULL) {
-		/* We're leaking memory on purpose, there's no point in cleaning
-		 * up as the system won't boot anyway.
-		 */
+		 
 		return;
 	}
 

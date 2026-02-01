@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Loopback IEEE 802.15.4 interface
- *
- * Copyright 2007-2012 Siemens AG
- *
- * Written by:
- * Sergey Lapin <slapin@ossfans.org>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/timer.h>
@@ -120,7 +111,7 @@ static const struct ieee802154_ops fakelb_ops = {
 	.set_promiscuous_mode = fakelb_set_promiscuous_mode,
 };
 
-/* Number of dummy devices to be set up by this module. */
+ 
 module_param(numlbs, int, 0);
 MODULE_PARM_DESC(numlbs, " number of pseudo devices");
 
@@ -137,39 +128,39 @@ static int fakelb_add_one(struct device *dev)
 	phy = hw->priv;
 	phy->hw = hw;
 
-	/* 868 MHz BPSK	802.15.4-2003 */
+	 
 	hw->phy->supported.channels[0] |= 1;
-	/* 915 MHz BPSK	802.15.4-2003 */
+	 
 	hw->phy->supported.channels[0] |= 0x7fe;
-	/* 2.4 GHz O-QPSK 802.15.4-2003 */
+	 
 	hw->phy->supported.channels[0] |= 0x7FFF800;
-	/* 868 MHz ASK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[1] |= 1;
-	/* 915 MHz ASK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[1] |= 0x7fe;
-	/* 868 MHz O-QPSK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[2] |= 1;
-	/* 915 MHz O-QPSK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[2] |= 0x7fe;
-	/* 2.4 GHz CSS 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[3] |= 0x3fff;
-	/* UWB Sub-gigahertz 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[4] |= 1;
-	/* UWB Low band 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[4] |= 0x1e;
-	/* UWB High band 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[4] |= 0xffe0;
-	/* 750 MHz O-QPSK 802.15.4c-2009 */
+	 
 	hw->phy->supported.channels[5] |= 0xf;
-	/* 750 MHz MPSK 802.15.4c-2009 */
+	 
 	hw->phy->supported.channels[5] |= 0xf0;
-	/* 950 MHz BPSK 802.15.4d-2009 */
+	 
 	hw->phy->supported.channels[6] |= 0x3ff;
-	/* 950 MHz GFSK 802.15.4d-2009 */
+	 
 	hw->phy->supported.channels[6] |= 0x3ffc00;
 
 	ieee802154_random_extended_addr(&hw->phy->perm_extended_addr);
-	/* fake phy channel 13 as default */
+	 
 	hw->phy->current_channel = 13;
 	phy->channel = hw->phy->current_channel;
 

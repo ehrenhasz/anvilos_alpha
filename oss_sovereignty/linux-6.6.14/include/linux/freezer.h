@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Freezer declarations */
+ 
+ 
 
 #ifndef FREEZER_H_INCLUDED
 #define FREEZER_H_INCLUDED
@@ -13,24 +13,18 @@
 #ifdef CONFIG_FREEZER
 DECLARE_STATIC_KEY_FALSE(freezer_active);
 
-extern bool pm_freezing;		/* PM freezing in effect */
-extern bool pm_nosig_freezing;		/* PM nosig freezing in effect */
+extern bool pm_freezing;		 
+extern bool pm_nosig_freezing;		 
 
-/*
- * Timeout for stopping processes
- */
+ 
 extern unsigned int freeze_timeout_msecs;
 
-/*
- * Check if a process has been frozen
- */
+ 
 extern bool frozen(struct task_struct *p);
 
 extern bool freezing_slow_path(struct task_struct *p);
 
-/*
- * Check if there is a request to freeze a process
- */
+ 
 static inline bool freezing(struct task_struct *p)
 {
 	if (static_branch_unlikely(&freezer_active))
@@ -39,7 +33,7 @@ static inline bool freezing(struct task_struct *p)
 	return false;
 }
 
-/* Takes and releases task alloc lock using task_lock() */
+ 
 extern void __thaw_task(struct task_struct *t);
 
 extern bool __refrigerator(bool check_kthr_stop);
@@ -63,14 +57,14 @@ extern bool set_freezable(void);
 
 #ifdef CONFIG_CGROUP_FREEZER
 extern bool cgroup_freezing(struct task_struct *task);
-#else /* !CONFIG_CGROUP_FREEZER */
+#else  
 static inline bool cgroup_freezing(struct task_struct *task)
 {
 	return false;
 }
-#endif /* !CONFIG_CGROUP_FREEZER */
+#endif  
 
-#else /* !CONFIG_FREEZER */
+#else  
 static inline bool frozen(struct task_struct *p) { return false; }
 static inline bool freezing(struct task_struct *p) { return false; }
 static inline void __thaw_task(struct task_struct *t) {}
@@ -85,6 +79,6 @@ static inline bool try_to_freeze(void) { return false; }
 
 static inline void set_freezable(void) {}
 
-#endif /* !CONFIG_FREEZER */
+#endif  
 
-#endif	/* FREEZER_H_INCLUDED */
+#endif	 

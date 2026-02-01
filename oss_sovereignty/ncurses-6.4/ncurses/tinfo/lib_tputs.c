@@ -1,46 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*
- *	tputs.c
- *		delay_output()
- *		_nc_outch()
- *		tputs()
- *
- */
+ 
 
 #include <curses.priv.h>
 
@@ -49,15 +11,15 @@
 #endif
 
 #include <ctype.h>
-#include <termcap.h>		/* ospeed */
+#include <termcap.h>		 
 #include <tic.h>
 
 MODULE_ID("$Id: lib_tputs.c,v 1.109 2022/07/21 23:26:34 tom Exp $")
 
-NCURSES_EXPORT_VAR(char) PC = 0;              /* used by termcap library */
-NCURSES_EXPORT_VAR(NCURSES_OSPEED) ospeed = 0;        /* used by termcap library */
+NCURSES_EXPORT_VAR(char) PC = 0;               
+NCURSES_EXPORT_VAR(NCURSES_OSPEED) ospeed = 0;         
 
-NCURSES_EXPORT_VAR(int) _nc_nulls_sent = 0;   /* used by 'tack' program */
+NCURSES_EXPORT_VAR(int) _nc_nulls_sent = 0;    
 
 #if NCURSES_NO_PADDING
 NCURSES_EXPORT(void)
@@ -135,7 +97,7 @@ NCURSES_SP_NAME(_nc_flush) (NCURSES_SP_DCL0)
 	    while (amount) {
 		ssize_t res = write(SP_PARM->_ofd, buf, amount);
 		if (res > 0) {
-		    /* if the write was incomplete, try again */
+		     
 		    amount -= (size_t) res;
 		    buf += res;
 		} else if (errno == EAGAIN) {
@@ -143,7 +105,7 @@ NCURSES_SP_NAME(_nc_flush) (NCURSES_SP_DCL0)
 		} else if (errno == EINTR) {
 		    continue;
 		} else {
-		    break;	/* an error we can not recover from */
+		    break;	 
 		}
 	    }
 	} else if (SP_PARM->out_buffer == 0) {
@@ -182,10 +144,7 @@ NCURSES_SP_NAME(_nc_outch) (NCURSES_SP_DCLx int ch)
 	    SP_PARM->out_buffer[SP_PARM->out_inuse++] = (char) ch;
 	} else {
 	    char tmp = (char) ch;
-	    /*
-	     * POSIX says write() is safe in a signal handler, but the
-	     * buffered I/O is not.
-	     */
+	     
 	    if (write(fileno(NC_OUTPUT(SP_PARM)), &tmp, (size_t) 1) == -1)
 		rc = ERR;
 	}
@@ -205,9 +164,7 @@ _nc_outch(int ch)
 }
 #endif
 
-/*
- * This is used for the putp special case.
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(_nc_putchar) (NCURSES_SP_DCLx int ch)
 {
@@ -223,12 +180,7 @@ _nc_putchar(int ch)
 }
 #endif
 
-/*
- * putp is special - per documentation it calls tputs with putchar as the
- * parameter for outputting characters.  This means that it uses stdio, which
- * is not signal-safe.  Applications call this entrypoint; we do not call it
- * from within the library.
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(putp) (NCURSES_SP_DCLx const char *string)
 {
@@ -244,9 +196,7 @@ putp(const char *string)
 }
 #endif
 
-/*
- * Use these entrypoints rather than "putp" within the library.
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(_nc_putp) (NCURSES_SP_DCLx
 			   const char *name GCC_UNUSED,
@@ -282,7 +232,7 @@ NCURSES_SP_NAME(tputs) (NCURSES_SP_DCLx
     int number;
 #if BSD_TPUTS
     int trailpad;
-#endif /* BSD_TPUTS */
+#endif  
 
 #ifdef TRACE
     if (USE_TRACEF(TRACE_TPUTS)) {
@@ -304,7 +254,7 @@ NCURSES_SP_NAME(tputs) (NCURSES_SP_DCLx
 	TPUTS_TRACE(NULL);
 	_nc_unlock_global(tracef);
     }
-#endif /* TRACE */
+#endif  
 
     if (!VALID_STRING(string))
 	return ERR;
@@ -331,10 +281,7 @@ NCURSES_SP_NAME(tputs) (NCURSES_SP_DCLx
 	}
     }
 #if BSD_TPUTS
-    /*
-     * This ugly kluge deals with the fact that some ancient BSD programs
-     * (like nethack) actually do the likes of tputs("50") to get delays.
-     */
+     
     trailpad = 0;
     if (isdigit(UChar(*string))) {
 	while (isdigit(UChar(*string))) {
@@ -357,9 +304,9 @@ NCURSES_SP_NAME(tputs) (NCURSES_SP_DCLx
 	    string++;
 	}
     }
-#endif /* BSD_TPUTS */
+#endif  
 
-    SetOutCh(outc);		/* redirect delay_output() */
+    SetOutCh(outc);		 
     while (*string) {
 	if (*string != '$')
 	    (*outc) (NCURSES_SP_ARGx *string);
@@ -401,7 +348,7 @@ NCURSES_SP_NAME(tputs) (NCURSES_SP_DCLx
 		    if (*string == '*') {
 			number *= affcnt;
 			string++;
-		    } else {	/* if (*string == '/') */
+		    } else {	 
 			mandatory = TRUE;
 			string++;
 		    }
@@ -413,8 +360,8 @@ NCURSES_SP_NAME(tputs) (NCURSES_SP_DCLx
 			|| mandatory))
 		    NCURSES_SP_NAME(delay_output) (NCURSES_SP_ARGx number / 10);
 
-	    }			/* endelse (*string == '<') */
-	}			/* endelse (*string == '$') */
+	    }			 
+	}			 
 
 	if (*string == '\0')
 	    break;
@@ -423,13 +370,11 @@ NCURSES_SP_NAME(tputs) (NCURSES_SP_DCLx
     }
 
 #if BSD_TPUTS
-    /*
-     * Emit any BSD-style prefix padding that we've accumulated now.
-     */
+     
     if (trailpad > 0
 	&& (always_delay || normal_delay))
 	NCURSES_SP_NAME(delay_output) (NCURSES_SP_ARGx trailpad / 10);
-#endif /* BSD_TPUTS */
+#endif  
 
     SetOutCh(my_outch);
     return OK;

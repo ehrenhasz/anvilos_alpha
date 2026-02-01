@@ -1,20 +1,4 @@
-/*
- * B53 common definitions
- *
- * Copyright (C) 2011-2013 Jonas Gorski <jogo@openwrt.org>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef __B53_PRIV_H
 #define __B53_PRIV_H
@@ -114,7 +98,7 @@ struct b53_device {
 	struct mutex arl_mutex;
 	const struct b53_io_ops *ops;
 
-	/* chip specific data */
+	 
 	u32 chip_id;
 	u8 core_rev;
 	u8 vta_regs[3];
@@ -126,21 +110,21 @@ struct b53_device {
 	u16 num_arl_buckets;
 	enum dsa_tag_protocol tag_protocol;
 
-	/* used ports mask */
+	 
 	u16 enabled_ports;
 	unsigned int imp_port;
 
-	/* connect specific data */
+	 
 	u8 current_page;
 	struct device *dev;
 	u8 serdes_lane;
 
-	/* Master MDIO bus we got probed from */
+	 
 	struct mii_bus *bus;
 
 	void *priv;
 
-	/* run time configuration */
+	 
 	bool enable_jumbo;
 
 	unsigned int num_vlans;
@@ -331,7 +315,7 @@ static inline int b53_switch_get_reset_gpio(struct b53_device *dev)
 }
 #endif
 
-/* Exported functions towards other drivers */
+ 
 void b53_imp_vlan_setup(struct dsa_switch *ds, int cpu_port);
 int b53_configure_vlan(struct dsa_switch *ds);
 void b53_get_strings(struct dsa_switch *ds, int port, u32 stringset,

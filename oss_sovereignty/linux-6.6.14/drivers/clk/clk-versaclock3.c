@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Renesas Versaclock 3
- *
- * Copyright (C) 2023 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/i2c.h>
@@ -248,9 +244,9 @@ static unsigned long vc3_pfd_recalc_rate(struct clk_hw *hw,
 
 	regmap_read(vc3->regmap, pfd->offs, &prediv);
 	if (pfd->num == VC3_PFD1) {
-		/* The bypass_prediv is set, PLL fed from Ref_in directly. */
+		 
 		if (prediv & pfd->mdiv1_bitmsk) {
-			/* check doubler is set or not */
+			 
 			regmap_read(vc3->regmap, VC3_PLL1_CTRL_OUTDIV5, &premul);
 			if (premul & VC3_PLL1_CTRL_OUTDIV5_PLL1_MDIV_DOUBLER)
 				parent_rate *= 2;
@@ -258,10 +254,10 @@ static unsigned long vc3_pfd_recalc_rate(struct clk_hw *hw,
 		}
 		mdiv = VC3_PLL1_M_DIV(prediv);
 	} else if (pfd->num == VC3_PFD2) {
-		/* The bypass_prediv is set, PLL fed from Ref_in directly. */
+		 
 		if (prediv & pfd->mdiv1_bitmsk) {
 			regmap_read(vc3->regmap, VC3_PLL2_M_DIVIDER, &premul);
-			/* check doubler is set or not */
+			 
 			if (premul & VC3_PLL2_MDIV_DOUBLER)
 				parent_rate *= 2;
 			return parent_rate;
@@ -269,7 +265,7 @@ static unsigned long vc3_pfd_recalc_rate(struct clk_hw *hw,
 
 		mdiv = VC3_PLL2_M_DIV(prediv);
 	} else {
-		/* The bypass_prediv is set, PLL fed from Ref_in directly. */
+		 
 		if (prediv & pfd->mdiv1_bitmsk)
 			return parent_rate;
 
@@ -291,11 +287,11 @@ static long vc3_pfd_round_rate(struct clk_hw *hw, unsigned long rate,
 	const struct vc3_pfd_data *pfd = vc3->data;
 	unsigned long idiv;
 
-	/* PLL cannot operate with input clock above 50 MHz. */
+	 
 	if (rate > 50000000)
 		return -EINVAL;
 
-	/* CLKIN within range of PLL input, feed directly to PLL. */
+	 
 	if (*parent_rate <= 50000000)
 		return *parent_rate;
 
@@ -319,7 +315,7 @@ static int vc3_pfd_set_rate(struct clk_hw *hw, unsigned long rate,
 	unsigned long idiv;
 	u8 div;
 
-	/* CLKIN within range of PLL input, feed directly to PLL. */
+	 
 	if (parent_rate <= 50000000) {
 		regmap_update_bits(vc3->regmap, pfd->offs, pfd->mdiv1_bitmsk,
 				   pfd->mdiv1_bitmsk);
@@ -328,7 +324,7 @@ static int vc3_pfd_set_rate(struct clk_hw *hw, unsigned long rate,
 	}
 
 	idiv = DIV_ROUND_UP(parent_rate, rate);
-	/* We have dedicated div-2 predivider. */
+	 
 	if (idiv == 2) {
 		regmap_update_bits(vc3->regmap, pfd->offs, pfd->mdiv2_bitmsk,
 				   pfd->mdiv2_bitmsk);
@@ -398,7 +394,7 @@ static long vc3_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 		if (vc3->div_int > 0x7ff)
 			rate = *parent_rate * 0x7ff;
 
-		/* Determine best fractional part, which is 16 bit wide */
+		 
 		div_frc = rate % *parent_rate;
 		div_frc *= BIT(16) - 1;
 
@@ -502,7 +498,7 @@ static long vc3_div_round_rate(struct clk_hw *hw, unsigned long rate,
 	const struct vc3_div_data *div_data = vc3->data;
 	unsigned int bestdiv;
 
-	/* if read only, just return current value */
+	 
 	if (div_data->flags & CLK_DIVIDER_READ_ONLY) {
 		regmap_read(vc3->regmap, div_data->offs, &bestdiv);
 		bestdiv >>= div_data->shift;
@@ -544,7 +540,7 @@ static int vc3_clk_mux_determine_rate(struct clk_hw *hw,
 
 	ret = clk_mux_determine_rate_flags(hw, req, CLK_SET_RATE_PARENT);
 	if (ret) {
-		/* The below check is equivalent to (best_parent_rate/rate) */
+		 
 		if (req->best_parent_rate >= req->rate) {
 			frc = DIV_ROUND_CLOSEST_ULL(req->best_parent_rate,
 						    req->rate);
@@ -1008,10 +1004,7 @@ static int vc3_probe(struct i2c_client *client)
 	ret = of_property_read_u8_array(dev->of_node, "renesas,settings",
 					settings, ARRAY_SIZE(settings));
 	if (!ret) {
-		/*
-		 * A raw settings array was specified in the DT. Write the
-		 * settings to the device immediately.
-		 */
+		 
 		for  (i = 0; i < NUM_CONFIG_REGISTERS; i++) {
 			ret = regmap_write(regmap, i, settings[i]);
 			if (ret) {
@@ -1025,7 +1018,7 @@ static int vc3_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Register pfd muxes */
+	 
 	for (i = 0; i < ARRAY_SIZE(clk_pfd_mux); i++) {
 		clk_pfd_mux[i].regmap = regmap;
 		ret = devm_clk_hw_register(dev, &clk_pfd_mux[i].hw);
@@ -1034,7 +1027,7 @@ static int vc3_probe(struct i2c_client *client)
 					     clk_pfd_mux[i].hw.init->name);
 	}
 
-	/* Register pfd's */
+	 
 	for (i = 0; i < ARRAY_SIZE(clk_pfd); i++) {
 		clk_pfd[i].regmap = regmap;
 		ret = devm_clk_hw_register(dev, &clk_pfd[i].hw);
@@ -1043,7 +1036,7 @@ static int vc3_probe(struct i2c_client *client)
 					     clk_pfd[i].hw.init->name);
 	}
 
-	/* Register pll's */
+	 
 	for (i = 0; i < ARRAY_SIZE(clk_pll); i++) {
 		clk_pll[i].regmap = regmap;
 		ret = devm_clk_hw_register(dev, &clk_pll[i].hw);
@@ -1052,7 +1045,7 @@ static int vc3_probe(struct i2c_client *client)
 					     clk_pll[i].hw.init->name);
 	}
 
-	/* Register divider muxes */
+	 
 	for (i = 0; i < ARRAY_SIZE(clk_div_mux); i++) {
 		clk_div_mux[i].regmap = regmap;
 		ret = devm_clk_hw_register(dev, &clk_div_mux[i].hw);
@@ -1061,7 +1054,7 @@ static int vc3_probe(struct i2c_client *client)
 					     clk_div_mux[i].hw.init->name);
 	}
 
-	/* Register dividers */
+	 
 	for (i = 0; i < ARRAY_SIZE(clk_div); i++) {
 		clk_div[i].regmap = regmap;
 		ret = devm_clk_hw_register(dev, &clk_div[i].hw);
@@ -1070,7 +1063,7 @@ static int vc3_probe(struct i2c_client *client)
 					     clk_div[i].hw.init->name);
 	}
 
-	/* Register clk muxes */
+	 
 	for (i = 0; i < ARRAY_SIZE(clk_mux); i++) {
 		clk_mux[i].regmap = regmap;
 		ret = devm_clk_hw_register(dev, &clk_mux[i].hw);
@@ -1079,7 +1072,7 @@ static int vc3_probe(struct i2c_client *client)
 					     clk_mux[i].hw.init->name);
 	}
 
-	/* Register clk outputs */
+	 
 	for (i = 0; i < ARRAY_SIZE(clk_out); i++) {
 		switch (i) {
 		case VC3_DIFF2:
@@ -1124,7 +1117,7 @@ static int vc3_probe(struct i2c_client *client)
 
 static const struct of_device_id dev_ids[] = {
 	{ .compatible = "renesas,5p35023" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dev_ids);
 

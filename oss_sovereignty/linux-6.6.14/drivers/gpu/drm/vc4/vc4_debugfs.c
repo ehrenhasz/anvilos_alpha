@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright © 2014 Broadcom
- */
+
+ 
 
 #include <drm/drm_drv.h>
 
@@ -14,10 +12,7 @@
 #include "vc4_drv.h"
 #include "vc4_regs.h"
 
-/*
- * Called at drm_dev_register() time on each of the minors registered
- * by the DRM device, to attach the debugfs files.
- */
+ 
 void
 vc4_debugfs_init(struct drm_minor *minor)
 {

@@ -1,20 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #define _GNU_SOURCE
 #define _LARGEFILE64_SOURCE
 
-/* libc-specific include files
- * The program may be built in 3 ways:
- *   $(CC) -nostdlib -include /path/to/nolibc.h => NOLIBC already defined
- *   $(CC) -nostdlib -I/path/to/nolibc/sysroot  => _NOLIBC_* guards are present
- *   $(CC) with default libc                    => NOLIBC* never defined
- */
+ 
 #ifndef NOLIBC
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #ifndef _NOLIBC_STDIO_H
-/* standard libcs need more includes */
+ 
 #include <sys/auxv.h>
 #include <sys/io.h>
 #include <sys/ioctl.h>
@@ -41,26 +36,26 @@
 #endif
 #endif
 
-/* for the type of int_fast16_t and int_fast32_t, musl differs from glibc and nolibc */
+ 
 #define SINT_MAX_OF_TYPE(type) (((type)1 << (sizeof(type) * 8 - 2)) - (type)1 + ((type)1 << (sizeof(type) * 8 - 2)))
 #define SINT_MIN_OF_TYPE(type) (-SINT_MAX_OF_TYPE(type) - 1)
 
-/* will be used to test initialization of environ */
+ 
 static char **test_envp;
 
-/* will be used to test initialization of argv */
+ 
 static char **test_argv;
 
-/* will be used to test initialization of argc */
+ 
 static int test_argc;
 
-/* will be used by some test cases as readable file, please don't write it */
+ 
 static const char *argv0;
 
-/* definition of a series of tests */
+ 
 struct test {
-	const char *name;              /* test name */
-	int (*func)(int min, int max); /* handler */
+	const char *name;               
+	int (*func)(int min, int max);  
 };
 
 #ifndef _NOLIBC_STDLIB_H
@@ -77,9 +72,7 @@ char *itoa(int i)
 #define CASE_ERR(err) \
 	case err: return #err
 
-/* returns the error name (e.g. "ENOENT") for common errors, "SUCCESS" for 0,
- * or the decimal value for less common ones.
- */
+ 
 static const char *errorname(int err)
 {
 	switch (err) {
@@ -156,11 +149,7 @@ static void result(int llen, enum RESULT r)
 	puts(msg);
 }
 
-/* The tests below are intended to be used by the macroes, which evaluate
- * expression <expr>, print the status to stdout, and update the "ret"
- * variable to count failures. The functions themselves return the number
- * of failures, thus either 0 or 1.
- */
+ 
 
 #define EXPECT_ZR(cond, expr)				\
 	do { if (!(cond)) result(llen, SKIPPED); else ret += expect_zr(expr, llen); } while (0)
@@ -590,7 +579,7 @@ int expect_strne(const char *expr, int llen, const char *cmp)
 }
 
 
-/* declare tests based on line numbers. There must be exactly one test per line. */
+ 
 #define CASE_TEST(name) \
 	case __LINE__: llen += printf("%d %s", test, #name);
 
@@ -598,23 +587,21 @@ int run_startup(int min, int max)
 {
 	int test;
 	int ret = 0;
-	/* kernel at least passes HOME and TERM, shell passes more */
+	 
 	int env_total = 2;
-	/* checking NULL for argv/argv0, environ and _auxv is not enough, let's compare with sbrk(0) or &end */
+	 
 	extern char end;
 	char *brk = sbrk(0) != (void *)-1 ? sbrk(0) : &end;
-	/* differ from nolibc, both glibc and musl have no global _auxv */
+	 
 	const unsigned long *test_auxv = (void *)-1;
 #ifdef NOLIBC
 	test_auxv = _auxv;
 #endif
 
 	for (test = min; test >= 0 && test <= max; test++) {
-		int llen = 0; /* line length */
+		int llen = 0;  
 
-		/* avoid leaving empty lines below, this will insert holes into
-		 * test numbers.
-		 */
+		 
 		switch (test + __LINE__ + 1) {
 		CASE_TEST(argc);             EXPECT_GE(1, test_argc, 1); break;
 		CASE_TEST(argv_addr);        EXPECT_PTRGT(1, test_argv, brk); break;
@@ -632,15 +619,15 @@ int run_startup(int min, int max)
 		CASE_TEST(auxv_AT_UID);      EXPECT_EQ(1, getauxval(AT_UID), getuid()); break;
 		CASE_TEST(auxv_AT_PAGESZ);   EXPECT_GE(1, getauxval(AT_PAGESZ), 4096); break;
 		case __LINE__:
-			return ret; /* must be last */
-		/* note: do not set any defaults so as to permit holes above */
+			return ret;  
+		 
 		}
 	}
 	return ret;
 }
 
 
-/* used by some syscall tests below */
+ 
 int test_getdents64(const char *dir)
 {
 	char buffer[4096];
@@ -668,20 +655,13 @@ int test_getpagesize(void)
 		return x;
 
 #if defined(__x86_64__) || defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
-	/*
-	 * x86 family is always 4K page.
-	 */
+	 
 	c = (x == 4096);
 #elif defined(__aarch64__)
-	/*
-	 * Linux aarch64 supports three values of page size: 4K, 16K, and 64K
-	 * which are selected at kernel compilation time.
-	 */
+	 
 	c = (x == 4096 || x == (16 * 1024) || x == (64 * 1024));
 #else
-	/*
-	 * Assuming other architectures must have at least 4K page.
-	 */
+	 
 	c = (x >= 4096);
 #endif
 
@@ -693,7 +673,7 @@ int test_fork(void)
 	int status;
 	pid_t pid;
 
-	/* flush the printf buffer to avoid child flush it */
+	 
 	fflush(stdout);
 	fflush(stderr);
 
@@ -753,7 +733,7 @@ int test_mmap_munmap(void)
 	if (page_size < 0)
 		return 1;
 
-	/* find a right file to mmap, existed and accessible */
+	 
 	for (i = 0; files[i] != NULL; i++) {
 		ret = fd = open(files[i], O_RDONLY);
 		if (ret == -1)
@@ -768,7 +748,7 @@ int test_mmap_munmap(void)
 	if (ret == -1)
 		goto end;
 
-	/* file size of the special /dev/zero is 0, let's assign one manually */
+	 
 	if (i == 0)
 		file_size = 3*page_size;
 	else
@@ -815,9 +795,7 @@ int test_pipe(void)
 }
 
 
-/* Run syscall tests between IDs <min> and <max>.
- * Return 0 on success, non-zero on failure.
- */
+ 
 int run_syscall(int min, int max)
 {
 	struct timeval tv;
@@ -831,23 +809,21 @@ int run_syscall(int min, int max)
 	void *p1, *p2;
 	int has_gettid = 1;
 
-	/* <proc> indicates whether or not /proc is mounted */
+	 
 	proc = stat("/proc", &stat_buf) == 0;
 
-	/* this will be used to skip certain tests that can't be run unprivileged */
+	 
 	euid0 = geteuid() == 0;
 
-	/* from 2.30, glibc provides gettid() */
+	 
 #if defined(__GLIBC_MINOR__) && defined(__GLIBC__)
 	has_gettid = __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 30);
 #endif
 
 	for (test = min; test >= 0 && test <= max; test++) {
-		int llen = 0; /* line length */
+		int llen = 0;  
 
-		/* avoid leaving empty lines below, this will insert holes into
-		 * test numbers.
-		 */
+		 
 		switch (test + __LINE__ + 1) {
 		CASE_TEST(getpid);            EXPECT_SYSNE(1, getpid(), -1); break;
 		CASE_TEST(getppid);           EXPECT_SYSNE(1, getppid(), -1); break;
@@ -923,8 +899,8 @@ int run_syscall(int min, int max)
 		CASE_TEST(syscall_noargs);    EXPECT_SYSEQ(1, syscall(__NR_getpid), getpid()); break;
 		CASE_TEST(syscall_args);      EXPECT_SYSER(1, syscall(__NR_statx, 0, NULL, 0, 0, NULL), -1, EFAULT); break;
 		case __LINE__:
-			return ret; /* must be last */
-		/* note: do not set any defaults so as to permit holes above */
+			return ret;  
+		 
 		}
 	}
 	return ret;
@@ -936,11 +912,9 @@ int run_stdlib(int min, int max)
 	int ret = 0;
 
 	for (test = min; test >= 0 && test <= max; test++) {
-		int llen = 0; /* line length */
+		int llen = 0;  
 
-		/* avoid leaving empty lines below, this will insert holes into
-		 * test numbers.
-		 */
+		 
 		switch (test + __LINE__ + 1) {
 		CASE_TEST(getenv_TERM);        EXPECT_STRNZ(1, getenv("TERM")); break;
 		CASE_TEST(getenv_blah);        EXPECT_STRZR(1, getenv("blah")); break;
@@ -1006,8 +980,8 @@ int run_stdlib(int min, int max)
 		CASE_TEST(limit_size_max);          EXPECT_EQ(1, SIZE_MAX,    sizeof(long) == 8 ? (size_t)    0xffffffffffffffffULL : (size_t)    0xffffffffU); break;
 
 		case __LINE__:
-			return ret; /* must be last */
-		/* note: do not set any defaults so as to permit holes above */
+			return ret;  
+		 
 		}
 	}
 	return ret;
@@ -1073,11 +1047,9 @@ static int run_vfprintf(int min, int max)
 	int ret = 0;
 
 	for (test = min; test >= 0 && test <= max; test++) {
-		int llen = 0; /* line length */
+		int llen = 0;  
 
-		/* avoid leaving empty lines below, this will insert holes into
-		 * test numbers.
-		 */
+		 
 		switch (test + __LINE__ + 1) {
 		CASE_TEST(empty);        EXPECT_VFPRINTF(0, "", ""); break;
 		CASE_TEST(simple);       EXPECT_VFPRINTF(3, "foo", "foo"); break;
@@ -1089,8 +1061,8 @@ static int run_vfprintf(int min, int max)
 		CASE_TEST(hex);          EXPECT_VFPRINTF(1, "f", "%x", 0xf); break;
 		CASE_TEST(pointer);      EXPECT_VFPRINTF(3, "0x1", "%p", (void *) 0x1); break;
 		case __LINE__:
-			return ret; /* must be last */
-		/* note: do not set any defaults so as to permit holes above */
+			return ret;  
+		 
 		}
 	}
 	return ret;
@@ -1160,20 +1132,17 @@ static int run_protection(int min __attribute__((unused)),
 	}
 }
 
-/* prepare what needs to be prepared for pid 1 (stdio, /dev, /proc, etc) */
+ 
 int prepare(void)
 {
 	struct stat stat_buf;
 
-	/* It's possible that /dev doesn't even exist or was not mounted, so
-	 * we'll try to create it, mount it, or create minimal entries into it.
-	 * We want at least /dev/null and /dev/console.
-	 */
+	 
 	if (stat("/dev/.", &stat_buf) == 0 || mkdir("/dev", 0755) == 0) {
 		if (stat("/dev/console", &stat_buf) != 0 ||
 		    stat("/dev/null", &stat_buf) != 0 ||
 		    stat("/dev/zero", &stat_buf) != 0) {
-			/* try devtmpfs first, otherwise fall back to manual creation */
+			 
 			if (mount("/dev", "/dev", "devtmpfs", 0, 0) != 0) {
 				mknod("/dev/console", 0600 | S_IFCHR, makedev(5, 1));
 				mknod("/dev/null",    0666 | S_IFCHR, makedev(1, 3));
@@ -1182,10 +1151,7 @@ int prepare(void)
 		}
 	}
 
-	/* If no /dev/console was found before calling init, stdio is closed so
-	 * we need to reopen it from /dev/console. If it failed above, it will
-	 * still fail here and we cannot emit a message anyway.
-	 */
+	 
 	if (close(dup(1)) == -1) {
 		int fd = open("/dev/console", O_RDWR);
 
@@ -1202,24 +1168,24 @@ int prepare(void)
 		}
 	}
 
-	/* try to mount /proc if not mounted. Silently fail otherwise */
+	 
 	if (stat("/proc/.", &stat_buf) == 0 || mkdir("/proc", 0755) == 0) {
 		if (stat("/proc/self", &stat_buf) != 0) {
-			/* If not mountable, remove /proc completely to avoid misuse */
+			 
 			if (mount("none", "/proc", "proc", 0, 0) != 0)
 				rmdir("/proc");
 		}
 	}
 
-	/* some tests rely on a writable /tmp */
+	 
 	mkdir("/tmp", 0755);
 
 	return 0;
 }
 
-/* This is the definition of known test names, with their functions */
+ 
 static const struct test test_names[] = {
-	/* add new tests here */
+	 
 	{ .name = "startup",    .func = run_startup    },
 	{ .name = "syscall",    .func = run_syscall    },
 	{ .name = "stdlib",     .func = run_stdlib     },
@@ -1271,19 +1237,11 @@ int main(int argc, char **argv, char **envp)
 	test_argv = argv;
 	test_envp = envp;
 
-	/* when called as init, it's possible that no console was opened, for
-	 * example if no /dev file system was provided. We'll check that fd#1
-	 * was opened, and if not we'll attempt to create and open /dev/console
-	 * and /dev/null that we'll use for later tests.
-	 */
+	 
 	if (getpid() == 1)
 		prepare();
 
-	/* the definition of a series of tests comes from either argv[1] or the
-	 * "NOLIBC_TEST" environment variable. It's made of a comma-delimited
-	 * series of test names and optional ranges:
-	 *    syscall:5-15[:.*],stdlib:8-10
-	 */
+	 
 	test = argv[1];
 	if (!is_setting_valid(test))
 		test = getenv("NOLIBC_TEST");
@@ -1306,10 +1264,7 @@ int main(int argc, char **argv, char **envp)
 			}
 
 			if (test_names[idx].name) {
-				/* The test was named, it will be called at least
-				 * once. We may have an optional range at <colon>
-				 * here, which defaults to the full range.
-				 */
+				 
 				do {
 					min = 0; max = INT_MAX;
 					value = colon;
@@ -1322,7 +1277,7 @@ int main(int argc, char **argv, char **envp)
 						if (dash)
 							*(dash++) = '\0';
 
-						/* support :val: :min-max: :min-: :-max: */
+						 
 						if (*value)
 							min = atoi(value);
 						if (!dash)
@@ -1333,7 +1288,7 @@ int main(int argc, char **argv, char **envp)
 						value = colon;
 					}
 
-					/* now's time to call the test */
+					 
 					printf("Running test '%s'\n", test_names[idx].name);
 					err = test_names[idx].func(min, max);
 					ret += err;
@@ -1345,7 +1300,7 @@ int main(int argc, char **argv, char **envp)
 			test = comma;
 		} while (test && *test);
 	} else {
-		/* no test mentioned, run everything */
+		 
 		for (idx = 0; test_names[idx].name; idx++) {
 			printf("Running test '%s'\n", test_names[idx].name);
 			err = test_names[idx].func(min, max);
@@ -1357,24 +1312,15 @@ int main(int argc, char **argv, char **envp)
 	printf("Total number of errors: %d\n", ret);
 
 	if (getpid() == 1) {
-		/* we're running as init, there's no other process on the
-		 * system, thus likely started from a VM for a quick check.
-		 * Exiting will provoke a kernel panic that may be reported
-		 * as an error by Qemu or the hypervisor, while stopping
-		 * cleanly will often be reported as a success. This allows
-		 * to use the output of this program for bisecting kernels.
-		 */
+		 
 		printf("Leaving init with final status: %d\n", !!ret);
 		if (ret == 0)
 			reboot(RB_POWER_OFF);
 #if defined(__x86_64__)
-		/* QEMU started with "-device isa-debug-exit -no-reboot" will
-		 * exit with status code 2N+1 when N is written to 0x501. We
-		 * hard-code the syscall here as it's arch-dependent.
-		 */
+		 
 		else if (syscall(__NR_ioperm, 0x501, 1, 1) == 0)
 			__asm__ volatile ("outb %%al, %%dx" :: "d"(0x501), "a"(0));
-		/* if it does nothing, fall back to the regular panic */
+		 
 #endif
 	}
 

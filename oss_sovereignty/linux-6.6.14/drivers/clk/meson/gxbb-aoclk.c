@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -14,7 +11,7 @@
 #include <dt-bindings/clock/gxbb-aoclkc.h>
 #include <dt-bindings/reset/gxbb-aoclkc.h>
 
-/* AO Configuration Clock registers offsets */
+ 
 #define AO_RTI_PWR_CNTL_REG1	0x0c
 #define AO_RTI_PWR_CNTL_REG0	0x10
 #define AO_RTI_GEN_CNTL_REG0	0x40
@@ -206,19 +203,7 @@ static struct clk_regmap ao_cts_cec = {
 	.hw.init = &(struct clk_init_data){
 		.name = "ao_cts_cec",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * FIXME: The 'fixme' parent obviously does not exist.
-		 *
-		 * ATM, CCF won't call get_parent() if num_parents is 1. It
-		 * does not allow NULL as a parent name either.
-		 *
-		 * On this particular mux, we only know the input #1 parent
-		 * but, on boot, unknown input #0 is set, so it is critical
-		 * to call .get_parent() on it
-		 *
-		 * Until CCF gets fixed, adding this fake parent that won't
-		 * ever be registered should work around the problem
-		 */
+		 
 		.parent_data = (const struct clk_parent_data []) {
 			{ .name = "fixme", .index = -1, },
 			{ .hw = &ao_cts_rtc_oscin.hw },

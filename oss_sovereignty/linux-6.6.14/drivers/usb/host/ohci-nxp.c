@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * driver for NXP USB Host devices
- *
- * Currently supported OHCI host devices:
- * - NXP LPC32xx
- *
- * Authors: Dmitry Chigirev <source@mvista.com>
- *	    Vitaly Wool <vitalywool@gmail.com>
- *
- * register initialization is based on code examples provided by Philips
- * Copyright (c) 2005 Koninklijke Philips Electronics N.V.
- *
- * NOTE: This driver does not have suspend/resume functionality
- * This driver is intended for engineering development purposes only
- *
- * 2005-2006 (c) MontaVista Software, Inc.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
@@ -31,11 +15,11 @@
 
 #define USB_CONFIG_BASE		0x31020000
 
-/* USB_OTG_STAT_CONTROL bit defines */
+ 
 #define TRANSPARENT_I2C_EN	(1 << 7)
 #define HOST_EN			(1 << 0)
 
-/* On LPC32xx, those are undefined */
+ 
 #ifndef start_int_set_falling_edge
 #define start_int_set_falling_edge(irq)
 #define start_int_set_rising_edge(irq)
@@ -55,10 +39,10 @@ static struct clk *usb_host_clk;
 
 static void isp1301_configure_lpc32xx(void)
 {
-	/* LPC32XX only supports DAT_SE0 USB mode */
-	/* This sequence is important */
+	 
+	 
 
-	/* Disable transparent UART mode first */
+	 
 	i2c_smbus_write_byte_data(isp1301_i2c_client,
 		(ISP1301_I2C_MODE_CONTROL_1 | ISP1301_I2C_REG_CLEAR_ADDR),
 		MC1_UART_EN);
@@ -179,7 +163,7 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
 		goto fail_disable;
 	}
 
-	/* Enable USB host clock */
+	 
 	usb_host_clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(usb_host_clk)) {
 		dev_err(&pdev->dev, "failed to acquire USB OHCI clock\n");
@@ -247,7 +231,7 @@ static void ohci_hcd_nxp_remove(struct platform_device *pdev)
 	isp1301_i2c_client = NULL;
 }
 
-/* work with hotplug and coldplug */
+ 
 MODULE_ALIAS("platform:usb-ohci");
 
 #ifdef CONFIG_OF

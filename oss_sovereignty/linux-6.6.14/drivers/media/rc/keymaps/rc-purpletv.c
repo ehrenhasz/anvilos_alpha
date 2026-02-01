@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-// purpletv.h - Keytable for purpletv Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -11,7 +11,7 @@
 static struct rc_map_table purpletv[] = {
 	{ 0x03, KEY_POWER },
 	{ 0x6f, KEY_MUTE },
-	{ 0x10, KEY_BACKSPACE },	/* Recall */
+	{ 0x10, KEY_BACKSPACE },	 
 
 	{ 0x11, KEY_NUMERIC_0 },
 	{ 0x04, KEY_NUMERIC_1 },
@@ -23,7 +23,7 @@ static struct rc_map_table purpletv[] = {
 	{ 0x0c, KEY_NUMERIC_7 },
 	{ 0x0d, KEY_NUMERIC_8 },
 	{ 0x0e, KEY_NUMERIC_9 },
-	{ 0x12, KEY_DOT },	/* 100+ */
+	{ 0x12, KEY_DOT },	 
 
 	{ 0x07, KEY_VOLUMEUP },
 	{ 0x0b, KEY_VOLUMEDOWN },
@@ -35,19 +35,19 @@ static struct rc_map_table purpletv[] = {
 	{ 0x13, KEY_CHANNELDOWN },
 	{ 0x48, KEY_ZOOM },
 
-	{ 0x1b, KEY_VIDEO },	/* Video source */
-	{ 0x1f, KEY_CAMERA },	/* Snapshot */
-	{ 0x49, KEY_LANGUAGE },	/* MTS Select */
-	{ 0x19, KEY_SEARCH },	/* Auto Scan */
+	{ 0x1b, KEY_VIDEO },	 
+	{ 0x1f, KEY_CAMERA },	 
+	{ 0x49, KEY_LANGUAGE },	 
+	{ 0x19, KEY_SEARCH },	 
 
 	{ 0x4b, KEY_RECORD },
 	{ 0x46, KEY_PLAY },
-	{ 0x45, KEY_PAUSE },	/* Pause */
+	{ 0x45, KEY_PAUSE },	 
 	{ 0x44, KEY_STOP },
-	{ 0x43, KEY_TIME },	/* Time Shift */
-	{ 0x17, KEY_CHANNEL },	/* SURF CH */
-	{ 0x40, KEY_FORWARD },	/* Forward ? */
-	{ 0x42, KEY_REWIND },	/* Backward ? */
+	{ 0x43, KEY_TIME },	 
+	{ 0x17, KEY_CHANNEL },	 
+	{ 0x40, KEY_FORWARD },	 
+	{ 0x42, KEY_REWIND },	 
 
 };
 
@@ -55,7 +55,7 @@ static struct rc_map_list purpletv_map = {
 	.map = {
 		.scan     = purpletv,
 		.size     = ARRAY_SIZE(purpletv),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_PURPLETV,
 	}
 };

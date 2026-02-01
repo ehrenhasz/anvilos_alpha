@@ -1,23 +1,4 @@
-/* POSIX compatible signal blocking.
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
-   Written by Bruno Haible <bruno@clisp.org>, 2006.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <signal.h>
 
 #include <errno.h>
@@ -28,18 +9,12 @@
 # include "msvc-inval.h"
 #endif
 
-/* We assume that a platform without POSIX signal blocking functions
-   also does not have the POSIX sigaction() function, only the
-   signal() function.  We also assume signal() has SysV semantics,
-   where any handler is uninstalled prior to being invoked.  This is
-   true for native Windows platforms.  */
+ 
 
-/* We use raw signal(), but also provide a wrapper rpl_signal() so
-   that applications can query or change a blocked signal.  */
+ 
 #undef signal
 
-/* Provide invalid signal numbers as fallbacks if the uncatchable
-   signals are not defined.  */
+ 
 #ifndef SIGKILL
 # define SIGKILL (-1)
 #endif
@@ -47,9 +22,7 @@
 # define SIGSTOP (-1)
 #endif
 
-/* On native Windows, as of 2008, the signal SIGABRT_COMPAT is an alias
-   for the signal SIGABRT.  Only one signal handler is stored for both
-   SIGABRT and SIGABRT_COMPAT.  SIGABRT_COMPAT is not a signal of its own.  */
+ 
 #if defined _WIN32 && ! defined __CYGWIN__
 # undef SIGABRT_COMPAT
 # define SIGABRT_COMPAT 6
@@ -84,7 +57,7 @@ signal_nothrow (int sig, handler_t handler)
 # define signal signal_nothrow
 #endif
 
-/* Handling of gnulib defined signals.  */
+ 
 
 #if GNULIB_defined_SIGPIPE
 static handler_t SIGPIPE_handler = SIG_DFL;
@@ -102,7 +75,7 @@ ext_signal (int sig, handler_t handler)
         SIGPIPE_handler = handler;
         return old_handler;
       }
-    default: /* System defined signal */
+    default:  
       return signal (sig, handler);
     }
 }
@@ -181,21 +154,17 @@ sigfillset (sigset_t *set)
   return 0;
 }
 
-/* Set of currently blocked signals.  */
-static volatile sigset_t blocked_set /* = 0 */;
+ 
+static volatile sigset_t blocked_set  ;
 
-/* Set of currently blocked and pending signals.  */
-static volatile sig_atomic_t pending_array[NSIG] /* = { 0 } */;
+ 
+static volatile sig_atomic_t pending_array[NSIG]  ;
 
-/* Signal handler that is installed for blocked signals.  */
+ 
 static void
 blocked_handler (int sig)
 {
-  /* Reinstall the handler, in case the signal occurs multiple times
-     while blocked.  There is an inherent race where an asynchronous
-     signal in between when the kernel uninstalled the handler and
-     when we reinstall it will trigger the default handler; oh
-     well.  */
+   
   signal (sig, blocked_handler);
   if (sig >= 0 && sig < NSIG)
     pending_array[sig] = 1;
@@ -214,8 +183,7 @@ sigpending (sigset_t *set)
   return 0;
 }
 
-/* The previous signal handlers.
-   Only the array elements corresponding to blocked signals are relevant.  */
+ 
 static volatile handler_t old_handlers[NSIG];
 
 int
@@ -270,9 +238,7 @@ sigprocmask (int operation, const sigset_t *set, sigset_t *old_set)
             if ((to_unblock >> sig) & 1)
               {
                 if (signal (sig, old_handlers[sig]) != blocked_handler)
-                  /* The application changed a signal handler while the signal
-                     was blocked, bypassing our rpl_signal replacement.
-                     We don't support this.  */
+                   
                   abort ();
                 received[sig] = pending_array[sig];
                 blocked_set &= ~(1U << sig);
@@ -289,13 +255,11 @@ sigprocmask (int operation, const sigset_t *set, sigset_t *old_set)
   return 0;
 }
 
-/* Install the handler FUNC for signal SIG, and return the previous
-   handler.  */
+ 
 handler_t
 rpl_signal (int sig, handler_t handler)
 {
-  /* We must provide a wrapper, so that a user can query what handler
-     they installed even if that signal is currently blocked.  */
+   
   if (sig >= 0 && sig < NSIG && sig != SIGKILL && sig != SIGSTOP
       && handler != SIG_ERR)
     {
@@ -306,15 +270,7 @@ rpl_signal (int sig, handler_t handler)
 
       if (blocked_set & (1U << sig))
         {
-          /* POSIX states that sigprocmask and signal are both
-             async-signal-safe.  This is not true of our
-             implementation - there is a slight data race where an
-             asynchronous interrupt on signal A can occur after we
-             install blocked_handler but before we have updated
-             old_handlers for signal B, such that handler A can see
-             stale information if it calls signal(B).  Oh well -
-             signal handlers really shouldn't try to manipulate the
-             installed handlers of unrelated signals.  */
+           
           handler_t result = old_handlers[sig];
           old_handlers[sig] = handler;
           return result;
@@ -330,7 +286,7 @@ rpl_signal (int sig, handler_t handler)
 }
 
 #if GNULIB_defined_SIGPIPE
-/* Raise the signal SIGPIPE.  */
+ 
 int
 _gl_raise_SIGPIPE (void)
 {

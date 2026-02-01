@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains platform specific structure definitions
- * and init function used by Alder Lake PCH.
- *
- * Copyright (c) 2022, Intel Corporation.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #include "core.h"
 
-/* Alder Lake: PGD PFET Enable Ack Status Register(s) bitmap */
+ 
 const struct pmc_bit_map adl_pfear_map[] = {
 	{"SPI/eSPI",		BIT(2)},
 	{"XHCI",		BIT(3)},
@@ -55,10 +48,7 @@ const struct pmc_bit_map adl_pfear_map[] = {
 };
 
 const struct pmc_bit_map *ext_adl_pfear_map[] = {
-	/*
-	 * Check intel_pmc_core_ids[] users of cnp_reg_map for
-	 * a list of core SoCs using this.
-	 */
+	 
 	adl_pfear_map,
 	NULL
 };
@@ -71,7 +61,7 @@ const struct pmc_bit_map adl_ltr_show_map[] = {
 	{"XHCI",		CNP_PMC_LTR_XHCI},
 	{"SOUTHPORT_F",		ADL_PMC_LTR_SPF},
 	{"ME",			CNP_PMC_LTR_ME},
-	/* EVA is Enterprise Value Add, doesn't really exist on PCH */
+	 
 	{"SATA1",		CNP_PMC_LTR_EVA},
 	{"SOUTHPORT_C",		CNP_PMC_LTR_SPC},
 	{"HD_AUDIO",		CNP_PMC_LTR_AZ},
@@ -85,16 +75,13 @@ const struct pmc_bit_map adl_ltr_show_map[] = {
 	{"ISH",			CNP_PMC_LTR_ISH},
 	{"UFSX2",		CNP_PMC_LTR_UFSX2},
 	{"EMMC",		CNP_PMC_LTR_EMMC},
-	/*
-	 * Check intel_pmc_core_ids[] users of cnp_reg_map for
-	 * a list of core SoCs using this.
-	 */
+	 
 	{"WIGIG",		ICL_PMC_LTR_WIGIG},
 	{"THC0",		TGL_PMC_LTR_THC0},
 	{"THC1",		TGL_PMC_LTR_THC1},
 	{"SOUTHPORT_G",		CNP_PMC_LTR_RESERVED},
 
-	/* Below two cannot be used for LTR_IGNORE */
+	 
 	{"CURRENT_PLATFORM",	CNP_PMC_LTR_CUR_PLT},
 	{"AGGREGATED_SYSTEM",	CNP_PMC_LTR_CUR_ASLT},
 	{}

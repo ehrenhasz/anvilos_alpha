@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max8997_charger.c - Power supply consumer driver for the Maxim 8997/8966
-//
-//  Copyright (C) 2011 Samsung Electronics
-//  MyungJoo Ham <myungjoo.ham@samsung.com>
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/extcon.h>
@@ -16,17 +16,17 @@
 #include <linux/regulator/consumer.h>
 #include <linux/devm-helpers.h>
 
-/* MAX8997_REG_STATUS4 */
+ 
 #define DCINOK_SHIFT		1
 #define DCINOK_MASK		(1 << DCINOK_SHIFT)
 #define DETBAT_SHIFT		2
 #define DETBAT_MASK		(1 << DETBAT_SHIFT)
 
-/* MAX8997_REG_MBCCTRL1 */
+ 
 #define TFCH_SHIFT		4
 #define TFCH_MASK		(7 << TFCH_SHIFT)
 
-/* MAX8997_REG_MBCCTRL5 */
+ 
 #define ITOPOFF_SHIFT		0
 #define ITOPOFF_MASK		(0xF << ITOPOFF_SHIFT)
 
@@ -41,12 +41,12 @@ struct charger_data {
 };
 
 static enum power_supply_property max8997_battery_props[] = {
-	POWER_SUPPLY_PROP_STATUS, /* "FULL", "CHARGING" or "DISCHARGING". */
-	POWER_SUPPLY_PROP_PRESENT, /* the presence of battery */
-	POWER_SUPPLY_PROP_ONLINE, /* charger is active or not */
+	POWER_SUPPLY_PROP_STATUS,  
+	POWER_SUPPLY_PROP_PRESENT,  
+	POWER_SUPPLY_PROP_ONLINE,  
 };
 
-/* Note that the charger control is done by a current regulator "CHARGER" */
+ 
 static int max8997_battery_get_property(struct power_supply *psy,
 		enum power_supply_property psp,
 		union power_supply_propval *val)
@@ -232,7 +232,7 @@ static int max8997_battery_probe(struct platform_device *pdev)
 		return PTR_ERR(charger->battery);
 	}
 
-	// grab regulator from parent device's node
+	
 	pdev->dev.of_node = iodev->dev->of_node;
 	charger->reg = devm_regulator_get_optional(&pdev->dev, "charger");
 	pdev->dev.of_node = np;

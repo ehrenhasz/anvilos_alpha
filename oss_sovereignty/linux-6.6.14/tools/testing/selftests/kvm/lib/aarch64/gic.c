@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM Generic Interrupt Controller (GIC) support
- */
+
+ 
 
 #include <errno.h>
 #include <linux/bits.h>
@@ -29,7 +27,7 @@ gic_dist_init(enum gic_type type, unsigned int nr_cpus, void *dist_base)
 
 	spin_lock(&gic_lock);
 
-	/* Distributor initialization is needed only once per VM */
+	 
 	if (gic_common_ops) {
 		spin_unlock(&gic_lock);
 		return;
@@ -43,7 +41,7 @@ gic_dist_init(enum gic_type type, unsigned int nr_cpus, void *dist_base)
 	gic_ops->gic_init(nr_cpus, dist_base);
 	gic_common_ops = gic_ops;
 
-	/* Make sure that the initialized data is visible to all the vCPUs */
+	 
 	dsb(sy);
 
 	spin_unlock(&gic_lock);

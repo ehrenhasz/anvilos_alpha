@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/sched/mm.h>
@@ -26,25 +24,7 @@
 #include "fs.h"
 #include "accessors.h"
 
-/*
- * Structure name                       Path
- * --------------------------------------------------------------------------
- * btrfs_supported_static_feature_attrs /sys/fs/btrfs/features
- * btrfs_supported_feature_attrs	/sys/fs/btrfs/features and
- *					/sys/fs/btrfs/<uuid>/features
- * btrfs_attrs				/sys/fs/btrfs/<uuid>
- * devid_attrs				/sys/fs/btrfs/<uuid>/devinfo/<devid>
- * allocation_attrs			/sys/fs/btrfs/<uuid>/allocation
- * qgroup_attrs				/sys/fs/btrfs/<uuid>/qgroups/<level>_<qgroupid>
- * space_info_attrs			/sys/fs/btrfs/<uuid>/allocation/<bg-type>
- * raid_attrs				/sys/fs/btrfs/<uuid>/allocation/<bg-type>/<bg-profile>
- * discard_attrs			/sys/fs/btrfs/<uuid>/discard
- *
- * When built with BTRFS_CONFIG_DEBUG:
- *
- * btrfs_debug_feature_attrs		/sys/fs/btrfs/debug
- * btrfs_debug_mount_attrs		/sys/fs/btrfs/<uuid>/debug
- */
+ 
 
 struct btrfs_feature_attr {
 	struct kobj_attribute kobj_attr;
@@ -52,7 +32,7 @@ struct btrfs_feature_attr {
 	u64 feature_bit;
 };
 
-/* For raid type sysfs entries */
+ 
 struct raid_kobject {
 	u64 flags;
 	struct kobject kobj;
@@ -223,7 +203,7 @@ static ssize_t btrfs_feature_attr_store(struct kobject *kobj,
 
 	features = get_features(fs_info, fa->feature_set);
 
-	/* Nothing to do */
+	 
 	if ((val && (features & fa->feature_bit)) ||
 	    (!val && !(features & fa->feature_bit)))
 		return count;
@@ -248,9 +228,7 @@ static ssize_t btrfs_feature_attr_store(struct kobject *kobj,
 	set_features(fs_info, fa->feature_set, features);
 	spin_unlock(&fs_info->super_lock);
 
-	/*
-	 * We don't want to do full transaction commit from inside sysfs
-	 */
+	 
 	set_bit(BTRFS_FS_NEED_TRANS_COMMIT, &fs_info->flags);
 	wake_up_process(fs_info->transaction_kthread);
 
@@ -295,20 +273,14 @@ BTRFS_FEAT_ATTR_INCOMPAT(raid1c34, RAID1C34);
 BTRFS_FEAT_ATTR_INCOMPAT(zoned, ZONED);
 #endif
 #ifdef CONFIG_BTRFS_DEBUG
-/* Remove once support for extent tree v2 is feature complete */
+ 
 BTRFS_FEAT_ATTR_INCOMPAT(extent_tree_v2, EXTENT_TREE_V2);
 #endif
 #ifdef CONFIG_FS_VERITY
 BTRFS_FEAT_ATTR_COMPAT_RO(verity, VERITY);
 #endif
 
-/*
- * Features which depend on feature bits and may differ between each fs.
- *
- * /sys/fs/btrfs/features      - all available features implemented by this version
- * /sys/fs/btrfs/UUID/features - features of the fs which are enabled or
- *                               can be changed on a mounted filesystem.
- */
+ 
 static struct attribute *btrfs_supported_feature_attrs[] = {
 	BTRFS_FEAT_ATTR_PTR(default_subvol),
 	BTRFS_FEAT_ATTR_PTR(mixed_groups),
@@ -354,10 +326,7 @@ static ssize_t supported_checksums_show(struct kobject *kobj,
 	int i;
 
 	for (i = 0; i < btrfs_get_num_csums(); i++) {
-		/*
-		 * This "trick" only works as long as 'enum btrfs_csum_type' has
-		 * no holes in it
-		 */
+		 
 		ret += sysfs_emit_at(buf, ret, "%s%s", (i == 0 ? "" : " "),
 				     btrfs_super_csum_name(i));
 
@@ -404,7 +373,7 @@ static ssize_t supported_sectorsizes_show(struct kobject *kobj,
 {
 	ssize_t ret = 0;
 
-	/* An artificial limit to only support 4K and PAGE_SIZE */
+	 
 	if (PAGE_SIZE > SZ_4K)
 		ret += sysfs_emit_at(buf, ret, "%u ", SZ_4K);
 	ret += sysfs_emit_at(buf, ret, "%lu\n", PAGE_SIZE);
@@ -420,12 +389,7 @@ static ssize_t acl_show(struct kobject *kobj, struct kobj_attribute *a, char *bu
 }
 BTRFS_ATTR(static_feature, acl, acl_show);
 
-/*
- * Features which only depend on kernel version.
- *
- * These are listed in /sys/fs/btrfs/features along with
- * btrfs_supported_feature_attrs.
- */
+ 
 static struct attribute *btrfs_supported_static_feature_attrs[] = {
 	BTRFS_ATTR_PTR(static_feature, acl),
 	BTRFS_ATTR_PTR(static_feature, rmdir_subvol),
@@ -441,9 +405,7 @@ static const struct attribute_group btrfs_static_feature_attr_group = {
 	.attrs = btrfs_supported_static_feature_attrs,
 };
 
-/*
- * Discard statistics and tunables
- */
+ 
 #define discard_to_fs_info(_kobj)	to_fs_info(get_btrfs_kobj(_kobj))
 
 static ssize_t btrfs_discardable_bytes_show(struct kobject *kobj,
@@ -592,11 +554,7 @@ static ssize_t btrfs_discard_max_discard_size_store(struct kobject *kobj,
 BTRFS_ATTR_RW(discard, max_discard_size, btrfs_discard_max_discard_size_show,
 	      btrfs_discard_max_discard_size_store);
 
-/*
- * Per-filesystem stats for discard (when mounted with discard=async).
- *
- * Path: /sys/fs/btrfs/<uuid>/discard/
- */
+ 
 static const struct attribute *discard_attrs[] = {
 	BTRFS_ATTR_PTR(discard, discardable_bytes),
 	BTRFS_ATTR_PTR(discard, discardable_extents),
@@ -611,20 +569,12 @@ static const struct attribute *discard_attrs[] = {
 
 #ifdef CONFIG_BTRFS_DEBUG
 
-/*
- * Per-filesystem runtime debugging exported via sysfs.
- *
- * Path: /sys/fs/btrfs/UUID/debug/
- */
+ 
 static const struct attribute *btrfs_debug_mount_attrs[] = {
 	NULL,
 };
 
-/*
- * Runtime debugging exported via sysfs, applies to all mounted filesystems.
- *
- * Path: /sys/fs/btrfs/debug
- */
+ 
 static struct attribute *btrfs_debug_feature_attrs[] = {
 	NULL
 };
@@ -693,11 +643,7 @@ static ssize_t raid_bytes_show(struct kobject *kobj,
 	return sysfs_emit(buf, "%llu\n", val);
 }
 
-/*
- * Allocation information about block group profiles.
- *
- * Path: /sys/fs/btrfs/<uuid>/allocation/<bg-type>/<bg-profile>/
- */
+ 
 static struct attribute *raid_attrs[] = {
 	BTRFS_ATTR_PTR(raid, total_bytes),
 	BTRFS_ATTR_PTR(raid, used_bytes),
@@ -734,13 +680,7 @@ static ssize_t btrfs_chunk_size_show(struct kobject *kobj,
 	return sysfs_emit(buf, "%llu\n", READ_ONCE(sinfo->chunk_size));
 }
 
-/*
- * Store new chunk size in space info. Can be called on a read-only filesystem.
- *
- * If the new chunk size value is larger than 10% of free space it is reduced
- * to match that limit. Alignment must be to 256M and the system chunk size
- * cannot be set.
- */
+ 
 static ssize_t btrfs_chunk_size_store(struct kobject *kobj,
 				      struct kobj_attribute *a,
 				      const char *buf, size_t len)
@@ -759,25 +699,25 @@ static ssize_t btrfs_chunk_size_store(struct kobject *kobj,
 	if (btrfs_is_zoned(fs_info))
 		return -EINVAL;
 
-	/* System block type must not be changed. */
+	 
 	if (space_info->flags & BTRFS_BLOCK_GROUP_SYSTEM)
 		return -EPERM;
 
 	val = memparse(buf, &retptr);
-	/* There could be trailing '\n', also catch any typos after the value */
+	 
 	retptr = skip_spaces(retptr);
 	if (*retptr != 0 || val == 0)
 		return -EINVAL;
 
 	val = min(val, BTRFS_MAX_DATA_CHUNK_SIZE);
 
-	/* Limit stripe size to 10% of available space. */
+	 
 	val = min(mult_perc(fs_info->fs_devices->total_rw_bytes, 10), val);
 
-	/* Must be multiple of 256M. */
+	 
 	val &= ~((u64)SZ_256M - 1);
 
-	/* Must be at least 256M. */
+	 
 	if (val < SZ_256M)
 		return -EINVAL;
 
@@ -826,9 +766,7 @@ static ssize_t btrfs_size_classes_show(struct kobject *kobj,
 }
 
 #ifdef CONFIG_BTRFS_DEBUG
-/*
- * Request chunk allocation with current chunk size.
- */
+ 
 static ssize_t btrfs_force_chunk_alloc_store(struct kobject *kobj,
 					     struct kobj_attribute *a,
 					     const char *buf, size_t len)
@@ -852,10 +790,7 @@ static ssize_t btrfs_force_chunk_alloc_store(struct kobject *kobj,
 	if (!val)
 		return -EINVAL;
 
-	/*
-	 * This is unsafe to be called from sysfs context and may cause
-	 * unexpected problems.
-	 */
+	 
 	trans = btrfs_start_transaction(fs_info->tree_root, 0);
 	if (IS_ERR(trans))
 		return PTR_ERR(trans);
@@ -917,11 +852,7 @@ BTRFS_ATTR_RW(space_info, bg_reclaim_threshold,
 	      btrfs_sinfo_bg_reclaim_threshold_show,
 	      btrfs_sinfo_bg_reclaim_threshold_store);
 
-/*
- * Allocation information about block group types.
- *
- * Path: /sys/fs/btrfs/<uuid>/allocation/<bg-type>/
- */
+ 
 static struct attribute *space_info_attrs[] = {
 	BTRFS_ATTR_PTR(space_info, flags),
 	BTRFS_ATTR_PTR(space_info, total_bytes),
@@ -955,11 +886,7 @@ static const struct kobj_type space_info_ktype = {
 	.default_groups = space_info_groups,
 };
 
-/*
- * Allocation information about block groups.
- *
- * Path: /sys/fs/btrfs/<uuid>/allocation/
- */
+ 
 static const struct attribute *allocation_attrs[] = {
 	BTRFS_ATTR_PTR(allocation, global_rsv_reserved),
 	BTRFS_ATTR_PTR(allocation, global_rsv_size),
@@ -993,10 +920,7 @@ static ssize_t btrfs_label_store(struct kobject *kobj,
 	if (sb_rdonly(fs_info->sb))
 		return -EROFS;
 
-	/*
-	 * p_len is the len until the first occurrence of either
-	 * '\n' or '\0'
-	 */
+	 
 	p_len = strcspn(buf, "\n");
 
 	if (p_len >= BTRFS_LABEL_SIZE)
@@ -1007,9 +931,7 @@ static ssize_t btrfs_label_store(struct kobject *kobj,
 	memcpy(fs_info->super_copy->label, buf, p_len);
 	spin_unlock(&fs_info->super_lock);
 
-	/*
-	 * We don't want to do full transaction commit from inside sysfs
-	 */
+	 
 	set_bit(BTRFS_FS_NEED_TRANS_COMMIT, &fs_info->flags);
 	wake_up_process(fs_info->transaction_kthread);
 
@@ -1284,11 +1206,7 @@ static ssize_t btrfs_bg_reclaim_threshold_store(struct kobject *kobj,
 BTRFS_ATTR_RW(, bg_reclaim_threshold, btrfs_bg_reclaim_threshold_show,
 	      btrfs_bg_reclaim_threshold_store);
 
-/*
- * Per-filesystem information and stats.
- *
- * Path: /sys/fs/btrfs/<uuid>/
- */
+ 
 static const struct attribute *btrfs_attrs[] = {
 	BTRFS_ATTR_PTR(, label),
 	BTRFS_ATTR_PTR(, nodesize),
@@ -1420,7 +1338,7 @@ static void __btrfs_sysfs_remove_fsid(struct btrfs_fs_devices *fs_devs)
 	}
 }
 
-/* when fs_devs is NULL it will remove all fsid kobject */
+ 
 void btrfs_sysfs_remove_fsid(struct btrfs_fs_devices *fs_devs)
 {
 	struct list_head *fs_uuids = btrfs_get_fs_uuids();
@@ -1491,7 +1409,7 @@ const char *btrfs_feature_set_name(enum btrfs_feature_set set)
 
 char *btrfs_printable_features(enum btrfs_feature_set set, u64 flags)
 {
-	size_t bufsize = 4096; /* safe max, 64 names * 64 bytes */
+	size_t bufsize = 4096;  
 	int len = 0;
 	int i;
 	char *str;
@@ -1553,10 +1471,7 @@ static void init_feature_attrs(void)
 	}
 }
 
-/*
- * Create a sysfs entry for a given block group type at path
- * /sys/fs/btrfs/UUID/allocation/data/TYPE
- */
+ 
 void btrfs_sysfs_add_block_group_type(struct btrfs_block_group *cache)
 {
 	struct btrfs_fs_info *fs_info = cache->fs_info;
@@ -1566,13 +1481,7 @@ void btrfs_sysfs_add_block_group_type(struct btrfs_block_group *cache)
 	unsigned int nofs_flag;
 	int ret;
 
-	/*
-	 * Setup a NOFS context because kobject_add(), deep in its call chain,
-	 * does GFP_KERNEL allocations, and we are often called in a context
-	 * where if reclaim is triggered we can deadlock (we are either holding
-	 * a transaction handle or some lock required for a transaction
-	 * commit).
-	 */
+	 
 	nofs_flag = memalloc_nofs_save();
 
 	rkobj = kzalloc(sizeof(*rkobj), GFP_NOFS);
@@ -1586,15 +1495,7 @@ void btrfs_sysfs_add_block_group_type(struct btrfs_block_group *cache)
 	rkobj->flags = cache->flags;
 	kobject_init(&rkobj->kobj, &btrfs_raid_ktype);
 
-	/*
-	 * We call this either on mount, or if we've created a block group for a
-	 * new index type while running (i.e. when restriping).  The running
-	 * case is tricky because we could race with other threads, so we need
-	 * to have this check to make sure we didn't already init the kobject.
-	 *
-	 * We don't have to protect on the free side because it only happens on
-	 * unmount.
-	 */
+	 
 	spin_lock(&space_info->lock);
 	if (space_info->block_group_kobjs[index]) {
 		spin_unlock(&space_info->lock);
@@ -1619,10 +1520,7 @@ void btrfs_sysfs_add_block_group_type(struct btrfs_block_group *cache)
 	}
 }
 
-/*
- * Remove sysfs directories for all block group types of a given space info and
- * the space info as well
- */
+ 
 void btrfs_sysfs_remove_space_info(struct btrfs_space_info *space_info)
 {
 	int i;
@@ -1658,10 +1556,7 @@ static const char *alloc_name(u64 flags)
 	}
 }
 
-/*
- * Create a sysfs entry for a space info type at path
- * /sys/fs/btrfs/UUID/allocation/TYPE
- */
+ 
 int btrfs_sysfs_add_space_info_type(struct btrfs_fs_info *fs_info,
 				    struct btrfs_space_info *space_info)
 {
@@ -1682,10 +1577,7 @@ void btrfs_sysfs_remove_device(struct btrfs_device *device)
 {
 	struct kobject *devices_kobj;
 
-	/*
-	 * Seed fs_devices devices_kobj aren't used, fetch kobject from the
-	 * fs_info::fs_devices.
-	 */
+	 
 	devices_kobj = device->fs_info->fs_devices->devices_kobj;
 	ASSERT(devices_kobj);
 
@@ -1798,11 +1690,7 @@ static ssize_t btrfs_devinfo_error_stats_show(struct kobject *kobj,
 	if (!device->dev_stats_valid)
 		return sysfs_emit(buf, "invalid\n");
 
-	/*
-	 * Print all at once so we get a snapshot of all values from the same
-	 * time. Keep them in sync and in order of definition of
-	 * btrfs_dev_stat_values.
-	 */
+	 
 	return sysfs_emit(buf,
 		"write_errs %d\n"
 		"read_errs %d\n"
@@ -1817,11 +1705,7 @@ static ssize_t btrfs_devinfo_error_stats_show(struct kobject *kobj,
 }
 BTRFS_ATTR(devid, error_stats, btrfs_devinfo_error_stats_show);
 
-/*
- * Information about one device.
- *
- * Path: /sys/fs/btrfs/<uuid>/devinfo/<devid>/
- */
+ 
 static struct attribute *devid_attrs[] = {
 	BTRFS_ATTR_PTR(devid, error_stats),
 	BTRFS_ATTR_PTR(devid, fsid),
@@ -1856,10 +1740,7 @@ int btrfs_sysfs_add_device(struct btrfs_device *device)
 	struct kobject *devices_kobj;
 	struct kobject *devinfo_kobj;
 
-	/*
-	 * Make sure we use the fs_info::fs_devices to fetch the kobjects even
-	 * for the seed fs_devices
-	 */
+	 
 	devices_kobj = device->fs_info->fs_devices->devices_kobj;
 	devinfo_kobj = device->fs_info->fs_devices->devinfo_kobj;
 	ASSERT(devices_kobj);
@@ -1937,10 +1818,7 @@ void btrfs_sysfs_update_sprout_fsid(struct btrfs_fs_devices *fs_devices)
 {
 	char fsid_buf[BTRFS_UUID_UNPARSED_SIZE];
 
-	/*
-	 * Sprouting changes fsid of the mounted filesystem, rename the fsid
-	 * directory
-	 */
+	 
 	snprintf(fsid_buf, BTRFS_UUID_UNPARSED_SIZE, "%pU", fs_devices->fsid);
 	if (kobject_rename(&fs_devices->fsid_kobj, fsid_buf))
 		btrfs_warn(fs_devices->fs_info,
@@ -1959,15 +1837,10 @@ void btrfs_sysfs_update_devid(struct btrfs_device *device)
 			   device->devid);
 }
 
-/* /sys/fs/btrfs/ entry */
+ 
 static struct kset *btrfs_kset;
 
-/*
- * Creates:
- *		/sys/fs/btrfs/UUID
- *
- * Can be called by the device discovery thread.
- */
+ 
 int btrfs_sysfs_add_fsid(struct btrfs_fs_devices *fs_devs)
 {
 	int error;
@@ -2035,7 +1908,7 @@ int btrfs_sysfs_add_mounted(struct btrfs_fs_info *fs_info)
 		goto failure;
 #endif
 
-	/* Discard directory */
+	 
 	fs_info->discard_kobj = kobject_create_and_add("discard", fsid_kobj);
 	if (!fs_info->discard_kobj) {
 		error = -ENOMEM;
@@ -2139,11 +2012,7 @@ static ssize_t qgroup_drop_subtree_thres_store(struct kobject *qgroups_kobj,
 BTRFS_ATTR_RW(qgroups, drop_subtree_threshold, qgroup_drop_subtree_thres_show,
 	      qgroup_drop_subtree_thres_store);
 
-/*
- * Qgroups global info
- *
- * Path: /sys/fs/btrfs/<uuid>/qgroups/
- */
+ 
 static struct attribute *qgroups_attrs[] = {
 	BTRFS_ATTR_PTR(qgroups, enabled),
 	BTRFS_ATTR_PTR(qgroups, inconsistent),
@@ -2202,11 +2071,7 @@ QGROUP_RSV_ATTR(data, BTRFS_QGROUP_RSV_DATA);
 QGROUP_RSV_ATTR(meta_pertrans, BTRFS_QGROUP_RSV_META_PERTRANS);
 QGROUP_RSV_ATTR(meta_prealloc, BTRFS_QGROUP_RSV_META_PREALLOC);
 
-/*
- * Qgroup information.
- *
- * Path: /sys/fs/btrfs/<uuid>/qgroups/<level>_<qgroupid>/
- */
+ 
 static struct attribute *qgroup_attrs[] = {
 	BTRFS_ATTR_PTR(qgroup, referenced),
 	BTRFS_ATTR_PTR(qgroup, exclusive),
@@ -2273,7 +2138,7 @@ void btrfs_sysfs_del_qgroups(struct btrfs_fs_info *fs_info)
 	}
 }
 
-/* Called when qgroups get initialized, thus there is no need for locking */
+ 
 int btrfs_sysfs_add_qgroups(struct btrfs_fs_info *fs_info)
 {
 	struct kobject *fsid_kobj = &fs_info->fs_devices->fsid_kobj;
@@ -2322,10 +2187,7 @@ void btrfs_sysfs_del_one_qgroup(struct btrfs_fs_info *fs_info,
 	}
 }
 
-/*
- * Change per-fs features in /sys/fs/btrfs/UUID/features to match current
- * values in superblock. Call after any changes to incompat/compat_ro flags
- */
+ 
 void btrfs_sysfs_feature_update(struct btrfs_fs_info *fs_info)
 {
 	struct kobject *fsid_kobj;

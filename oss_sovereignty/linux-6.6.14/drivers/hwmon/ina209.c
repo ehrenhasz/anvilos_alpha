@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Texas Instruments / Burr Brown INA209
- * Bidirectional Current/Power Monitor
- *
- * Copyright (C) 2012 Guenter Roeck <linux@roeck-us.net>
- *
- * Derived from Ira W. Snyder's original driver submission
- *	Copyright (C) 2008 Paul Hays <Paul.Hays@cattail.ca>
- *	Copyright (C) 2008-2009 Ira W. Snyder <iws@ovro.caltech.edu>
- *
- * Aligned with ina2xx driver
- *	Copyright (C) 2012 Lothar Felten <l-felten@ti.com>
- *	Thanks to Jan Volkering
- *
- * Datasheet:
- * https://www.ti.com/lit/gpn/ina209
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,7 +13,7 @@
 
 #include <linux/platform_data/ina2xx.h>
 
-/* register definitions */
+ 
 #define INA209_CONFIGURATION		0x00
 #define INA209_STATUS			0x01
 #define INA209_STATUS_MASK		0x02
@@ -56,20 +40,20 @@
 
 #define INA209_REGISTERS		0x17
 
-#define INA209_CONFIG_DEFAULT		0x3c47	/* PGA=8, full range */
-#define INA209_SHUNT_DEFAULT		10000	/* uOhm */
+#define INA209_CONFIG_DEFAULT		0x3c47	 
+#define INA209_SHUNT_DEFAULT		10000	 
 
 struct ina209_data {
 	struct i2c_client *client;
 
 	struct mutex update_lock;
 	bool valid;
-	unsigned long last_updated;	/* in jiffies */
+	unsigned long last_updated;	 
 
-	u16 regs[INA209_REGISTERS];	/* All chip registers */
+	u16 regs[INA209_REGISTERS];	 
 
-	u16 config_orig;		/* Original configuration */
-	u16 calibration_orig;		/* Original calibration */
+	u16 config_orig;		 
+	u16 calibration_orig;		 
 	u16 update_interval;
 };
 
@@ -101,10 +85,7 @@ abort:
 	return ret;
 }
 
-/*
- * Read a value from a device register and convert it to the
- * appropriate sysfs units
- */
+ 
 static long ina209_from_reg(const u8 reg, const u16 val)
 {
 	switch (reg) {
@@ -113,7 +94,7 @@ static long ina209_from_reg(const u8 reg, const u16 val)
 	case INA209_SHUNT_VOLTAGE_NEG_PEAK:
 	case INA209_SHUNT_VOLTAGE_POS_WARN:
 	case INA209_SHUNT_VOLTAGE_NEG_WARN:
-		/* LSB=10 uV. Convert to mV. */
+		 
 		return DIV_ROUND_CLOSEST((s16)val, 100);
 
 	case INA209_BUS_VOLTAGE:
@@ -123,85 +104,66 @@ static long ina209_from_reg(const u8 reg, const u16 val)
 	case INA209_BUS_VOLTAGE_UNDER_WARN:
 	case INA209_BUS_VOLTAGE_OVER_LIMIT:
 	case INA209_BUS_VOLTAGE_UNDER_LIMIT:
-		/* LSB=4 mV, last 3 bits unused */
+		 
 		return (val >> 3) * 4;
 
 	case INA209_CRITICAL_DAC_POS:
-		/* LSB=1 mV, in the upper 8 bits */
+		 
 		return val >> 8;
 
 	case INA209_CRITICAL_DAC_NEG:
-		/* LSB=1 mV, in the upper 8 bits */
+		 
 		return -1 * (val >> 8);
 
 	case INA209_POWER:
 	case INA209_POWER_PEAK:
 	case INA209_POWER_WARN:
 	case INA209_POWER_OVER_LIMIT:
-		/* LSB=20 mW. Convert to uW */
+		 
 		return val * 20 * 1000L;
 
 	case INA209_CURRENT:
-		/* LSB=1 mA (selected). Is in mA */
+		 
 		return (s16)val;
 	}
 
-	/* programmer goofed */
+	 
 	WARN_ON_ONCE(1);
 	return 0;
 }
 
-/*
- * Take a value and convert it to register format, clamping the value
- * to the appropriate range.
- */
+ 
 static int ina209_to_reg(u8 reg, u16 old, long val)
 {
 	switch (reg) {
 	case INA209_SHUNT_VOLTAGE_POS_WARN:
 	case INA209_SHUNT_VOLTAGE_NEG_WARN:
-		/* Limit to +- 320 mV, 10 uV LSB */
+		 
 		return clamp_val(val, -320, 320) * 100;
 
 	case INA209_BUS_VOLTAGE_OVER_WARN:
 	case INA209_BUS_VOLTAGE_UNDER_WARN:
 	case INA209_BUS_VOLTAGE_OVER_LIMIT:
 	case INA209_BUS_VOLTAGE_UNDER_LIMIT:
-		/*
-		 * Limit to 0-32000 mV, 4 mV LSB
-		 *
-		 * The last three bits aren't part of the value, but we'll
-		 * preserve them in their original state.
-		 */
+		 
 		return (DIV_ROUND_CLOSEST(clamp_val(val, 0, 32000), 4) << 3)
 		  | (old & 0x7);
 
 	case INA209_CRITICAL_DAC_NEG:
-		/*
-		 * Limit to -255-0 mV, 1 mV LSB
-		 * Convert the value to a positive value for the register
-		 *
-		 * The value lives in the top 8 bits only, be careful
-		 * and keep original value of other bits.
-		 */
+		 
 		return (clamp_val(-val, 0, 255) << 8) | (old & 0xff);
 
 	case INA209_CRITICAL_DAC_POS:
-		/*
-		 * Limit to 0-255 mV, 1 mV LSB
-		 *
-		 * The value lives in the top 8 bits only, be careful
-		 * and keep original value of other bits.
-		 */
+		 
 		return (clamp_val(val, 0, 255) << 8) | (old & 0xff);
 
 	case INA209_POWER_WARN:
 	case INA209_POWER_OVER_LIMIT:
-		/* 20 mW LSB */
+		 
 		return DIV_ROUND_CLOSEST(val, 20 * 1000);
 	}
 
-	/* Other registers are read-only, return access error */
+	 
 	return -EACCES;
 }
 
@@ -262,12 +224,7 @@ static ssize_t ina209_interval_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", data->update_interval);
 }
 
-/*
- * History is reset by writing 1 into bit 0 of the respective peak register.
- * Since more than one peak register may be affected by the scope of a
- * reset_history attribute write, use a bit mask in attr->index to identify
- * which registers are affected.
- */
+ 
 static u16 ina209_reset_history_regs[] = {
 	INA209_SHUNT_VOLTAGE_POS_PEAK,
 	INA209_SHUNT_VOLTAGE_NEG_PEAK,
@@ -359,14 +316,11 @@ static ssize_t ina209_alarm_show(struct device *dev,
 
 	status = data->regs[INA209_STATUS];
 
-	/*
-	 * All alarms are in the INA209_STATUS register. To avoid a long
-	 * switch statement, the mask is passed in attr->index
-	 */
+	 
 	return sysfs_emit(buf, "%u\n", !!(status & mask));
 }
 
-/* Shunt voltage, history, limits, alarms */
+ 
 static SENSOR_DEVICE_ATTR_RO(in0_input, ina209_value, INA209_SHUNT_VOLTAGE);
 static SENSOR_DEVICE_ATTR_RO(in0_input_highest, ina209_value,
 			     INA209_SHUNT_VOLTAGE_POS_PEAK);
@@ -388,7 +342,7 @@ static SENSOR_DEVICE_ATTR_RO(in0_max_alarm, ina209_alarm, 1 << 12);
 static SENSOR_DEVICE_ATTR_RO(in0_crit_min_alarm, ina209_alarm, 1 << 6);
 static SENSOR_DEVICE_ATTR_RO(in0_crit_max_alarm, ina209_alarm, 1 << 7);
 
-/* Bus voltage, history, limits, alarms */
+ 
 static SENSOR_DEVICE_ATTR_RO(in1_input, ina209_value, INA209_BUS_VOLTAGE);
 static SENSOR_DEVICE_ATTR_RO(in1_input_highest, ina209_value,
 			     INA209_BUS_VOLTAGE_MAX_PEAK);
@@ -410,7 +364,7 @@ static SENSOR_DEVICE_ATTR_RO(in1_max_alarm, ina209_alarm, 1 << 15);
 static SENSOR_DEVICE_ATTR_RO(in1_crit_min_alarm, ina209_alarm, 1 << 9);
 static SENSOR_DEVICE_ATTR_RO(in1_crit_max_alarm, ina209_alarm, 1 << 10);
 
-/* Power */
+ 
 static SENSOR_DEVICE_ATTR_RO(power1_input, ina209_value, INA209_POWER);
 static SENSOR_DEVICE_ATTR_RO(power1_input_highest, ina209_value,
 			     INA209_POWER_PEAK);
@@ -422,15 +376,12 @@ static SENSOR_DEVICE_ATTR_RW(power1_crit, ina209_value,
 static SENSOR_DEVICE_ATTR_RO(power1_max_alarm, ina209_alarm, 1 << 13);
 static SENSOR_DEVICE_ATTR_RO(power1_crit_alarm, ina209_alarm, 1 << 8);
 
-/* Current */
+ 
 static SENSOR_DEVICE_ATTR_RO(curr1_input, ina209_value, INA209_CURRENT);
 
 static SENSOR_DEVICE_ATTR_RW(update_interval, ina209_interval, 0);
 
-/*
- * Finally, construct an array of pointers to members of the above objects,
- * as required for sysfs_create_group()
- */
+ 
 static struct attribute *ina209_attrs[] = {
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in0_input_highest.dev_attr.attr,
@@ -477,7 +428,7 @@ ATTRIBUTE_GROUPS(ina209);
 static void ina209_restore_conf(struct i2c_client *client,
 				struct ina209_data *data)
 {
-	/* Restore initial configuration */
+	 
 	i2c_smbus_write_word_swapped(client, INA209_CONFIGURATION,
 				     data->config_orig);
 	i2c_smbus_write_word_swapped(client, INA209_CALIBRATION,
@@ -518,14 +469,11 @@ static int ina209_init_client(struct i2c_client *client,
 				     INA209_CONFIG_DEFAULT);
 	data->update_interval = ina209_interval_from_reg(INA209_CONFIG_DEFAULT);
 
-	/*
-	 * Calibrate current LSB to 1mA. Shunt is in uOhms.
-	 * See equation 13 in datasheet.
-	 */
+	 
 	i2c_smbus_write_word_swapped(client, INA209_CALIBRATION,
 				     clamp_val(40960000 / shunt, 1, 65535));
 
-	/* Clear status register */
+	 
 	i2c_smbus_read_word_swapped(client, INA209_STATUS);
 
 	return 0;
@@ -587,7 +535,7 @@ static const struct of_device_id __maybe_unused ina209_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, ina209_of_match);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver ina209_driver = {
 	.class		= I2C_CLASS_HWMON,
 	.driver = {

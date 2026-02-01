@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Linaro Ltd.
- * Author: Pi-Cheng Chen <pi-cheng.chen@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpu.h>
@@ -25,17 +22,7 @@ struct mtk_cpufreq_platform_data {
 	bool ccifreq_supported;
 };
 
-/*
- * The struct mtk_cpu_dvfs_info holds necessary information for doing CPU DVFS
- * on each CPU power/clock domain of Mediatek SoCs. Each CPU cluster in
- * Mediatek SoCs has two voltage inputs, Vproc and Vsram. In some cases the two
- * voltage inputs need to be controlled under a hardware limitation:
- * 100mV < Vsram - Vproc < 200mV
- *
- * When scaling the clock frequency of a CPU clock domain, the clock source
- * needs to be switched to another stable PLL clock temporarily until
- * the original PLL becomes stable at target frequency.
- */
+ 
 struct mtk_cpu_dvfs_info {
 	struct cpumask cpus;
 	struct device *cpu_dev;
@@ -49,7 +36,7 @@ struct mtk_cpu_dvfs_info {
 	bool need_voltage_tracking;
 	int vproc_on_boot;
 	int pre_vproc;
-	/* Avoid race condition for regulators between notify and policy */
+	 
 	struct mutex reg_lock;
 	struct notifier_block opp_nb;
 	unsigned int opp_cpu;
@@ -238,18 +225,11 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
 	vproc = dev_pm_opp_get_voltage(opp);
 	dev_pm_opp_put(opp);
 
-	/*
-	 * If MediaTek cci is supported but is not ready, we will use the value
-	 * of max(target cpu voltage, booting voltage) to prevent high freqeuncy
-	 * low voltage crash.
-	 */
+	 
 	if (info->soc_data->ccifreq_supported && !is_ccifreq_ready(info))
 		vproc = max(vproc, info->vproc_on_boot);
 
-	/*
-	 * If the new voltage or the intermediate voltage is higher than the
-	 * current voltage, scale up voltage first.
-	 */
+	 
 	target_vproc = max(inter_vproc, vproc);
 	if (pre_vproc <= target_vproc) {
 		ret = mtk_cpufreq_set_voltage(info, target_vproc);
@@ -261,7 +241,7 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
 		}
 	}
 
-	/* Reparent the CPU clock to intermediate clock. */
+	 
 	ret = clk_set_parent(cpu_clk, info->inter_clk);
 	if (ret) {
 		dev_err(cpu_dev,
@@ -270,7 +250,7 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
 		goto out;
 	}
 
-	/* Set the original PLL to target rate. */
+	 
 	ret = clk_set_rate(armpll, freq_hz);
 	if (ret) {
 		dev_err(cpu_dev,
@@ -280,7 +260,7 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
 		goto out;
 	}
 
-	/* Set parent of CPU clock back to the original PLL. */
+	 
 	ret = clk_set_parent(cpu_clk, armpll);
 	if (ret) {
 		dev_err(cpu_dev,
@@ -289,10 +269,7 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
 		goto out;
 	}
 
-	/*
-	 * If the new voltage is lower than the intermediate voltage or the
-	 * original voltage, scale down to the new voltage.
-	 */
+	 
 	if (vproc < inter_vproc || vproc < pre_vproc) {
 		ret = mtk_cpufreq_set_voltage(info, vproc);
 		if (ret) {
@@ -340,7 +317,7 @@ static int mtk_cpufreq_opp_notifier(struct notifier_block *nb,
 	} else if (event == OPP_EVENT_DISABLE) {
 		freq = dev_pm_opp_get_freq(opp);
 
-		/* case of current opp item is disabled */
+		 
 		if (info->current_freq == freq) {
 			freq = 1;
 			new_opp = dev_pm_opp_find_freq_ceil(info->cpu_dev,
@@ -435,7 +412,7 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
 		goto out_free_proc_reg;
 	}
 
-	/* Both presence and absence of sram regulator are valid cases. */
+	 
 	info->sram_reg = regulator_get_optional(cpu_dev, "sram");
 	if (IS_ERR(info->sram_reg)) {
 		ret = PTR_ERR(info->sram_reg);
@@ -451,7 +428,7 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
 		}
 	}
 
-	/* Get OPP-sharing information from "operating-points-v2" bindings */
+	 
 	ret = dev_pm_opp_of_get_sharing_cpus(cpu_dev, &info->cpus);
 	if (ret) {
 		dev_err(cpu_dev,
@@ -483,7 +460,7 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
 		}
 	}
 
-	/* Search a safe voltage for intermediate frequency. */
+	 
 	rate = clk_get_rate(info->inter_clk);
 	opp = dev_pm_opp_find_freq_ceil(cpu_dev, &rate);
 	if (IS_ERR(opp)) {
@@ -505,17 +482,10 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
 		goto out_disable_inter_clock;
 	}
 
-	/*
-	 * If SRAM regulator is present, software "voltage tracking" is needed
-	 * for this CPU power domain.
-	 */
+	 
 	info->need_voltage_tracking = (info->sram_reg != NULL);
 
-	/*
-	 * We assume min voltage is 0 and tracking target voltage using
-	 * min_volt_shift for each iteration.
-	 * The vtrack_max is 3 times of expeted iteration count.
-	 */
+	 
 	info->vtrack_max = 3 * DIV_ROUND_UP(max(info->soc_data->sram_max_volt,
 						info->soc_data->proc_max_volt),
 					    info->soc_data->min_volt_shift);
@@ -734,7 +704,7 @@ static const struct mtk_cpufreq_platform_data mt8516_platform_data = {
 	.ccifreq_supported = false,
 };
 
-/* List of machines supported by this driver */
+ 
 static const struct of_device_id mtk_cpufreq_machines[] __initconst = {
 	{ .compatible = "mediatek,mt2701", .data = &mt2701_platform_data },
 	{ .compatible = "mediatek,mt2712", .data = &mt2701_platform_data },
@@ -775,12 +745,7 @@ static int __init mtk_cpufreq_driver_init(void)
 	if (err)
 		return err;
 
-	/*
-	 * Since there's no place to hold device registration code and no
-	 * device tree based way to match cpufreq driver yet, both the driver
-	 * and the device registration codes are put here to handle defer
-	 * probing.
-	 */
+	 
 	cpufreq_pdev = platform_device_register_data(NULL, "mtk-cpufreq", -1,
 						     data, sizeof(*data));
 	if (IS_ERR(cpufreq_pdev)) {

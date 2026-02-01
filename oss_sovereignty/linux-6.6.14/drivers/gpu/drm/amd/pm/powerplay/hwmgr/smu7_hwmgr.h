@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _SMU7_HWMGR_H
 #define _SMU7_HWMGR_H
@@ -257,7 +236,7 @@ struct smu7_hwmgr {
 	bool                           vbi_time_out_support;
 
 	uint32_t                       soft_regs_start;
-	/* ---- Stuff originally coming from Evergreen ---- */
+	 
 	uint32_t                             vddci_control;
 	struct pp_atomctrl_voltage_table     vddc_voltage_table;
 	struct pp_atomctrl_voltage_table     vddci_voltage_table;
@@ -275,16 +254,16 @@ struct smu7_hwmgr {
 	bool                                 dll_default_on;
 	bool                                 performance_request_registered;
 
-	/* ---- Low Power Features ---- */
+	 
 	bool                           ulv_supported;
 
-	/* ---- CAC Stuff ---- */
+	 
 	uint32_t                       cac_table_start;
 	bool                           cac_configuration_required;
 	bool                           driver_calculate_cac_leakage;
 	bool                           cac_enabled;
 
-	/* ---- DPM2 Parameters ---- */
+	 
 	uint32_t                       power_containment_features;
 	bool                           enable_dte_feature;
 	bool                           enable_tdc_limit_feature;
@@ -295,13 +274,13 @@ struct smu7_hwmgr {
 	uint32_t                       dte_tj_offset;
 	uint32_t                       fast_watermark_threshold;
 
-	/* ---- Phase Shedding ---- */
+	 
 	uint8_t                           vddc_phase_shed_control;
 
-	/* ---- DI/DT ---- */
+	 
 	struct smu7_display_timing        display_timing;
 
-	/* ---- Thermal Temperature Setting ---- */
+	 
 	struct smu7_thermal_temperature_setting  thermal_temp_setting;
 	struct smu7_dpmlevel_enable_mask     dpm_level_enable_mask;
 	uint32_t                                  need_update_smu7_dpm_table;
@@ -320,12 +299,12 @@ struct smu7_hwmgr {
 	uint32_t                                  last_mclk_dpm_enable_mask;
 	bool                                      uvd_enabled;
 
-	/* ---- Power Gating States ---- */
+	 
 	bool                           uvd_power_gated;
 	bool                           vce_power_gated;
 	bool                           need_long_memory_training;
 
-	/* Application power optimization parameters */
+	 
 	bool                               update_up_hyst;
 	bool                               update_down_hyst;
 	uint32_t                           down_hyst;
@@ -350,7 +329,7 @@ struct smu7_hwmgr {
 	AtomCtrl_EDCLeakgeTable               edc_leakage_table;
 };
 
-/* To convert to Q8.8 format for firmware */
+ 
 #define SMU7_Q88_FORMAT_CONVERSION_UNIT             256
 
 enum SMU7_I2CLineID {

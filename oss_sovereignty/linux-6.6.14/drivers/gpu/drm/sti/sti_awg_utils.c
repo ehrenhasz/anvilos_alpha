@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Vincent Abriou <vincent.abriou@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <drm/drm_print.h>
 
@@ -36,12 +33,7 @@ static int awg_generate_instr(enum opcode opcode,
 	u32 data_enable = (data_en << 9) & 0x2ff;
 	long int arg_tmp = arg;
 
-	/* skip, repeat and replay arg should not exceed 1023.
-	 * If user wants to exceed this value, the instruction should be
-	 * duplicate and arg should be adjust for each duplicated instruction.
-	 *
-	 * mux_sel is used in case of SAV/EAV synchronization.
-	 */
+	 
 
 	while (arg_tmp > 0) {
 		arg = arg_tmp;
@@ -52,20 +44,17 @@ static int awg_generate_instr(enum opcode opcode,
 
 		switch (opcode) {
 		case SKIP:
-			/* leave 'arg' + 1 pixel elapsing without changing
-			 * output bus */
-			arg--; /* pixel adjustment */
+			 
+			arg--;  
 			arg_tmp--;
 
 			if (arg < 0) {
-				/* SKIP instruction not needed */
+				 
 				return 0;
 			}
 
 			if (arg == 0) {
-				/* SKIP 0 not permitted but we want to skip 1
-				 * pixel. So we transform SKIP into SET
-				 * instruction */
+				 
 				opcode = SET;
 				break;
 			}
@@ -77,7 +66,7 @@ static int awg_generate_instr(enum opcode opcode,
 		case REPEAT:
 		case REPLAY:
 			if (arg == 0) {
-				/* REPEAT or REPLAY instruction not needed */
+				 
 				return 0;
 			}
 
@@ -88,7 +77,7 @@ static int awg_generate_instr(enum opcode opcode,
 		case JUMP:
 			mux = 0;
 			data_enable = 0;
-			arg |= 0x40; /* for jump instruction 7th bit is 1 */
+			arg |= 0x40;  
 			arg &= AWG_MAX_ARG;
 			break;
 		case STOP:
@@ -125,7 +114,7 @@ static int awg_generate_line_signal(
 	int ret = 0;
 
 	if (timing->trailing_pixels > 0) {
-		/* skip trailing pixel */
+		 
 		val = timing->blanking_level;
 		ret |= awg_generate_instr(RPLSET, val, 0, 0, fwparams);
 
@@ -133,17 +122,17 @@ static int awg_generate_line_signal(
 		ret |= awg_generate_instr(SKIP, val, 0, 0, fwparams);
 	}
 
-	/* set DE signal high */
+	 
 	val = timing->blanking_level;
 	ret |= awg_generate_instr((timing->trailing_pixels > 0) ? SET : RPLSET,
 			val, 0, 1, fwparams);
 
 	if (timing->blanking_pixels > 0) {
-		/* skip the number of active pixel */
+		 
 		val = timing->active_pixels - 1;
 		ret |= awg_generate_instr(SKIP, val, 0, 1, fwparams);
 
-		/* set DE signal low */
+		 
 		val = timing->blanking_level;
 		ret |= awg_generate_instr(SET, val, 0, 0, fwparams);
 	}
@@ -159,7 +148,7 @@ int sti_awg_generate_code_data_enable_mode(
 	int ret = 0;
 
 	if (timing->trailing_lines > 0) {
-		/* skip trailing lines */
+		 
 		val = timing->blanking_level;
 		ret |= awg_generate_instr(RPLSET, val, 0, 0, fwparams);
 
@@ -170,9 +159,9 @@ int sti_awg_generate_code_data_enable_mode(
 	tmp_val = timing->active_lines - 1;
 
 	while (tmp_val > 0) {
-		/* generate DE signal for each line */
+		 
 		ret |= awg_generate_line_signal(fwparams, timing);
-		/* replay the sequence as many active lines defined */
+		 
 		ret |= awg_generate_instr(REPLAY,
 					  min_t(int, AWG_MAX_ARG, tmp_val),
 					  0, 0, fwparams);
@@ -180,7 +169,7 @@ int sti_awg_generate_code_data_enable_mode(
 	}
 
 	if (timing->blanking_lines > 0) {
-		/* skip blanking lines */
+		 
 		val = timing->blanking_level;
 		ret |= awg_generate_instr(RPLSET, val, 0, 0, fwparams);
 

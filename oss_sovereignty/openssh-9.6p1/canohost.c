@@ -1,16 +1,5 @@
-/* $OpenBSD: canohost.c,v 1.77 2023/03/31 04:42:29 dtucker Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Functions for returning the canonical host name of the remote site.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -60,10 +49,7 @@ ipv64_normalise_mapped(struct sockaddr_storage *addr, socklen_t *len)
 	a4->sin_port = port;
 }
 
-/*
- * Returns the local/remote IP-address/hostname of socket as a string.
- * The returned string must be freed.
- */
+ 
 static char *
 get_socket_address(int sock, int remote, int flags)
 {
@@ -75,7 +61,7 @@ get_socket_address(int sock, int remote, int flags)
 	if (sock < 0)
 		return NULL;
 
-	/* Get IP address of client. */
+	 
 	addrlen = sizeof(addr);
 	memset(&addr, 0, sizeof(addr));
 
@@ -87,7 +73,7 @@ get_socket_address(int sock, int remote, int flags)
 			return NULL;
 	}
 
-	/* Work around Linux IPv6 weirdness */
+	 
 	if (addr.ss_family == AF_INET6) {
 		addrlen = sizeof(struct sockaddr_in6);
 		ipv64_normalise_mapped(&addr, &addrlen);
@@ -96,7 +82,7 @@ get_socket_address(int sock, int remote, int flags)
 	switch (addr.ss_family) {
 	case AF_INET:
 	case AF_INET6:
-		/* Get the address in ascii. */
+		 
 		if ((r = getnameinfo((struct sockaddr *)&addr, addrlen, ntop,
 		    sizeof(ntop), NULL, 0, flags)) != 0) {
 			error_f("getnameinfo %d failed: %s",
@@ -105,10 +91,10 @@ get_socket_address(int sock, int remote, int flags)
 		}
 		return xstrdup(ntop);
 	case AF_UNIX:
-		/* Get the Unix domain socket path. */
+		 
 		return xstrdup(((struct sockaddr_un *)&addr)->sun_path);
 	default:
-		/* We can't look up remote Unix domain sockets. */
+		 
 		return NULL;
 	}
 }
@@ -138,11 +124,11 @@ get_local_name(int fd)
 {
 	char *host, myname[NI_MAXHOST];
 
-	/* Assume we were passed a socket */
+	 
 	if ((host = get_socket_address(fd, 0, NI_NAMEREQD)) != NULL)
 		return host;
 
-	/* Handle the case where we were passed a pipe */
+	 
 	if (gethostname(myname, sizeof(myname)) == -1) {
 		verbose_f("gethostname: %s", strerror(errno));
 		host = xstrdup("UNKNOWN");
@@ -153,7 +139,7 @@ get_local_name(int fd)
 	return host;
 }
 
-/* Returns the local/remote port for the socket. */
+ 
 
 static int
 get_sock_port(int sock, int local)
@@ -165,7 +151,7 @@ get_sock_port(int sock, int local)
 
 	if (sock < 0)
 		return -1;
-	/* Get IP address of client. */
+	 
 	fromlen = sizeof(from);
 	memset(&from, 0, sizeof(from));
 	if (local) {
@@ -180,15 +166,15 @@ get_sock_port(int sock, int local)
 		}
 	}
 
-	/* Work around Linux IPv6 weirdness */
+	 
 	if (from.ss_family == AF_INET6)
 		fromlen = sizeof(struct sockaddr_in6);
 
-	/* Non-inet sockets don't have a port number. */
+	 
 	if (from.ss_family != AF_INET && from.ss_family != AF_INET6)
 		return 0;
 
-	/* Return port number. */
+	 
 	if ((r = getnameinfo((struct sockaddr *)&from, fromlen, NULL, 0,
 	    strport, sizeof(strport), NI_NUMERICSERV)) != 0)
 		fatal_f("getnameinfo NI_NUMERICSERV failed: %s",

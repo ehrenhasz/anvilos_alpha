@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* rc-streamzap.c - Keytable for Streamzap PC Remote, for use
- * with the Streamzap PC Remote IR Receiver.
- *
- * Copyright (c) 2010 by Jarod Wilson <jarod@redhat.com>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table streamzap[] = {
-/*
- * The Streamzap remote is almost, but not quite, RC-5, as it has an extra
- * bit in it.
- */
+ 
 	{ 0x28c0, KEY_NUMERIC_0 },
 	{ 0x28c1, KEY_NUMERIC_1 },
 	{ 0x28c2, KEY_NUMERIC_2 },

@@ -1,16 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ir-jvc-decoder.c - handle JVC IR Pulse/Space protocol
- *
- * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
-#define JVC_NBITS		16		/* dev(8) + func(8) */
-#define JVC_UNIT		525		/* us */
-#define JVC_HEADER_PULSE	(16 * JVC_UNIT) /* lack of header -> repeat */
+#define JVC_NBITS		16		 
+#define JVC_UNIT		525		 
+#define JVC_HEADER_PULSE	(16 * JVC_UNIT)  
 #define JVC_HEADER_SPACE	(8  * JVC_UNIT)
 #define JVC_BIT_PULSE		(1  * JVC_UNIT)
 #define JVC_BIT_0_SPACE		(1  * JVC_UNIT)
@@ -28,13 +25,7 @@ enum jvc_state {
 	STATE_CHECK_REPEAT,
 };
 
-/**
- * ir_jvc_decode() - Decode one JVC pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:   the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_jvc_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct jvc_dec *data = &dev->raw->jvc;
@@ -173,18 +164,7 @@ static const struct ir_raw_timings_pd ir_jvc_timings = {
 	.msb_first     = 1,
 };
 
-/**
- * ir_jvc_encode() - Encode a scancode as a stream of raw events
- *
- * @protocol:	protocol to encode
- * @scancode:	scancode to encode
- * @events:	array of raw ir events to write into
- * @max:	maximum size of @events
- *
- * Returns:	The number of events written.
- *		-ENOBUFS if there isn't enough space in the array to fit the
- *		encoding. In this case all @max events will have been written.
- */
+ 
 static int ir_jvc_encode(enum rc_proto protocol, u32 scancode,
 			 struct ir_raw_event *events, unsigned int max)
 {

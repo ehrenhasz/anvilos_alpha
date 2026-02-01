@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2020 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/msi.h>
 #include <linux/pci.h>
@@ -213,10 +210,7 @@ void ath11k_mhi_set_mhictrl_reset(struct ath11k_base *ab)
 
 	ath11k_dbg(ab, ATH11K_DBG_PCI, "mhistatus 0x%x\n", val);
 
-	/* Observed on QCA6390 that after SOC_GLOBAL_RESET, MHISTATUS
-	 * has SYSERR bit set and thus need to set MHICTRL_RESET
-	 * to clear SYSERR.
-	 */
+	 
 	ath11k_pcic_write32(ab, MHICTRL, MHICTRL_RESET_MASK);
 
 	mdelay(10);
@@ -513,10 +507,7 @@ int ath11k_mhi_resume(struct ath11k_pci *ab_pci)
 	struct ath11k_base *ab = ab_pci->ab;
 	int ret;
 
-	/* Do force MHI resume as some devices like QCA6390, WCN6855
-	 * are not in M3 state but they are functional. So just ignore
-	 * the MHI state while resuming.
-	 */
+	 
 	ret = mhi_pm_resume_force(ab_pci->mhi_ctrl);
 	if (ret) {
 		ath11k_warn(ab, "failed to resume mhi: %d", ret);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2020 Synaptics Incorporated
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/rmi.h>
@@ -12,7 +10,7 @@
 #define RMI_F3A_MAX_GPIO_COUNT		128
 #define RMI_F3A_MAX_REG_SIZE		DIV_ROUND_UP(RMI_F3A_MAX_GPIO_COUNT, 8)
 
-/* Defs for Query 0 */
+ 
 #define RMI_F3A_GPIO_COUNT		0x7F
 
 #define RMI_F3A_DATA_REGS_MAX_SIZE	RMI_F3A_MAX_REG_SIZE
@@ -21,7 +19,7 @@
 #define TRACKSTICK_RANGE_END		6
 
 struct f3a_data {
-	/* Query Data */
+	 
 	u8 gpio_count;
 
 	u8 register_count;
@@ -102,7 +100,7 @@ static int rmi_f3a_config(struct rmi_function *fn)
 		return 0;
 
 	if (pdata->gpio_data.trackstick_buttons) {
-		/* Try [re-]establish link to F03. */
+		 
 		f3a->f03 = rmi_find_function(fn->rmi_dev, 0x03);
 		f3a->trackstick_buttons = f3a->f03 != NULL;
 	}
@@ -115,7 +113,7 @@ static int rmi_f3a_config(struct rmi_function *fn)
 static bool rmi_f3a_is_valid_button(int button, struct f3a_data *f3a,
 					u8 *query1_regs, u8 *ctrl1_regs)
 {
-	/* gpio exist && direction input */
+	 
 	return (query1_regs[0] & BIT(button)) && !(ctrl1_regs[0] & BIT(button));
 }
 
@@ -181,7 +179,7 @@ static int rmi_f3a_initialize(struct rmi_function *fn, struct f3a_data *f3a)
 	f3a->gpio_count = buf & RMI_F3A_GPIO_COUNT;
 	f3a->register_count = DIV_ROUND_UP(f3a->gpio_count, 8);
 
-	/* Query1 -> gpio exist */
+	 
 	error = rmi_read_block(fn->rmi_dev, fn->fd.query_base_addr + 1,
 				query1, f3a->register_count);
 	if (error) {
@@ -189,7 +187,7 @@ static int rmi_f3a_initialize(struct rmi_function *fn, struct f3a_data *f3a)
 		return error;
 	}
 
-	/* Ctrl1 -> gpio direction */
+	 
 	error = rmi_read_block(fn->rmi_dev, fn->fd.control_base_addr + 1,
 				ctrl1, f3a->register_count);
 	if (error) {

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DesignWare MIPI DSI Host Controller v1.02 driver
- *
- * Copyright (c) 2016 Linaro Limited.
- * Copyright (c) 2014-2016 HiSilicon Limited.
- *
- * Author:
- *	Xinliang Liu <z.liuxinliang@hisilicon.com>
- *	Xinliang Liu <xinliang.liu@linaro.org>
- *	Xinwei Kong <kong.kongxinwei@hisilicon.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -133,9 +123,7 @@ static u32 dsi_calc_phy_rate(u32 req_kHz, struct mipi_phy_params *phy)
 	u32 f_kHz = 0;
 	u64 temp;
 
-	/*
-	 * Find a rate >= req_kHz.
-	 */
+	 
 	do {
 		f_kHz = tmp_kHz;
 
@@ -291,9 +279,7 @@ static u32 dsi_get_dpi_color_coding(enum mipi_dsi_pixel_format format)
 {
 	u32 val;
 
-	/*
-	 * TODO: only support RGB888 now, to support more
-	 */
+	 
 	switch (format) {
 	case MIPI_DSI_FMT_RGB888:
 		val = DSI_24BITS_1;
@@ -306,23 +292,17 @@ static u32 dsi_get_dpi_color_coding(enum mipi_dsi_pixel_format format)
 	return val;
 }
 
-/*
- * dsi phy reg write function
- */
+ 
 static void dsi_phy_tst_set(void __iomem *base, u32 reg, u32 val)
 {
 	u32 reg_write = 0x10000 + reg;
 
-	/*
-	 * latch reg first
-	 */
+	 
 	writel(reg_write, base + PHY_TST_CTRL1);
 	writel(0x02, base + PHY_TST_CTRL0);
 	writel(0x00, base + PHY_TST_CTRL0);
 
-	/*
-	 * then latch value
-	 */
+	 
 	writel(val, base + PHY_TST_CTRL1);
 	writel(0x02, base + PHY_TST_CTRL0);
 	writel(0x00, base + PHY_TST_CTRL0);
@@ -334,21 +314,15 @@ static void dsi_set_phy_timer(void __iomem *base,
 {
 	u32 val;
 
-	/*
-	 * Set lane value and phy stop wait time.
-	 */
+	 
 	val = (lanes - 1) | (PHY_STOP_WAIT_TIME << 8);
 	writel(val, base + PHY_IF_CFG);
 
-	/*
-	 * Set phy clk division.
-	 */
+	 
 	val = readl(base + CLKMGR_CFG) | phy->clk_division;
 	writel(val, base + CLKMGR_CFG);
 
-	/*
-	 * Set lp and hs switching params.
-	 */
+	 
 	dw_update_bits(base + PHY_TMR_CFG, 24, MASK(8), phy->hs2lp_time);
 	dw_update_bits(base + PHY_TMR_CFG, 16, MASK(8), phy->lp2hs_time);
 	dw_update_bits(base + PHY_TMR_LPCLK_CFG, 16, MASK(10),
@@ -369,31 +343,23 @@ static void dsi_set_mipi_phy(void __iomem *base,
 	u32 val;
 	u32 i;
 
-	/* phy timer setting */
+	 
 	dsi_set_phy_timer(base, phy, lanes);
 
-	/*
-	 * Reset to clean up phy tst params.
-	 */
+	 
 	writel(0, base + PHY_RSTZ);
 	writel(0, base + PHY_TST_CTRL0);
 	writel(1, base + PHY_TST_CTRL0);
 	writel(0, base + PHY_TST_CTRL0);
 
-	/*
-	 * Clock lane timing control setting: TLPX, THS-PREPARE,
-	 * THS-ZERO, THS-TRAIL, TWAKEUP.
-	 */
+	 
 	dsi_phy_tst_set(base, CLK_TLPX, phy->clk_t_lpx);
 	dsi_phy_tst_set(base, CLK_THS_PREPARE, phy->clk_t_hs_prepare);
 	dsi_phy_tst_set(base, CLK_THS_ZERO, phy->clk_t_hs_zero);
 	dsi_phy_tst_set(base, CLK_THS_TRAIL, phy->clk_t_hs_trial);
 	dsi_phy_tst_set(base, CLK_TWAKEUP, phy->clk_t_wakeup);
 
-	/*
-	 * Data lane timing control setting: TLPX, THS-PREPARE,
-	 * THS-ZERO, THS-TRAIL, TTA-GO, TTA-GET, TWAKEUP.
-	 */
+	 
 	for (i = 0; i < lanes; i++) {
 		dsi_phy_tst_set(base, DATA_TLPX(i), phy->data_t_lpx);
 		dsi_phy_tst_set(base, DATA_THS_PREPARE(i),
@@ -405,10 +371,7 @@ static void dsi_set_mipi_phy(void __iomem *base,
 		dsi_phy_tst_set(base, DATA_TWAKEUP(i), phy->data_t_wakeup);
 	}
 
-	/*
-	 * physical configuration: I, pll I, pll II, pll III,
-	 * pll IV, pll V.
-	 */
+	 
 	dsi_phy_tst_set(base, PHY_CFG_I, phy->hstx_ckg_sel);
 	val = (phy->pll_fbd_div5f << 5) + (phy->pll_fbd_div1f << 4) +
 				(phy->pll_fbd_2p << 1) + phy->pll_enbwt;
@@ -428,9 +391,7 @@ static void dsi_set_mipi_phy(void __iomem *base,
 	writel(PHY_ENABLECLK | PHY_UNRSTZ | PHY_UNSHUTDOWNZ, base + PHY_RSTZ);
 	usleep_range(1000, 1500);
 
-	/*
-	 * wait for phy's clock ready
-	 */
+	 
 	delay_count = 100;
 	while (delay_count) {
 		val = readl(base +  PHY_STATUS);
@@ -466,13 +427,7 @@ static void dsi_set_mode_timing(void __iomem *base,
 	val |= (mode->flags & DRM_MODE_FLAG_NVSYNC ? 1 : 0) << 1;
 	writel(val, base +  DPI_CFG_POL);
 
-	/*
-	 * The DSI IP accepts vertical timing using lines as normal,
-	 * but horizontal timing is a mixture of pixel-clocks for the
-	 * active region and byte-lane clocks for the blanking-related
-	 * timings.  hfp is specified as the total hline_time in byte-
-	 * lane clocks minus hsa, hbp and active.
-	 */
+	 
 	pixel_clk_kHz = mode->clock;
 	htot = mode->htotal;
 	vtot = mode->vtotal;
@@ -492,7 +447,7 @@ static void dsi_set_mode_timing(void __iomem *base,
 	tmp = (u64)htot * (u64)lane_byte_clk_kHz;
 	hline_time = DIV_ROUND_UP(tmp, pixel_clk_kHz);
 
-	/* all specified in byte-lane clocks */
+	 
 	writel(hsa_time, base + VID_HSA_TIME);
 	writel(hbp_time, base + VID_HBP_TIME);
 	writel(hline_time, base + VID_HLINE_TIME);
@@ -520,9 +475,7 @@ static void dsi_set_video_mode(void __iomem *base, unsigned long flags)
 		MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
 	u32 non_burst_sync_event = MIPI_DSI_MODE_VIDEO;
 
-	/*
-	 * choose video mode type
-	 */
+	 
 	if ((flags & mode_mask) == non_burst_sync_pulse)
 		val = DSI_NON_BURST_SYNC_PULSES;
 	else if ((flags & mode_mask) == non_burst_sync_event)
@@ -544,25 +497,23 @@ static void dsi_mipi_init(struct dw_dsi *dsi)
 	void __iomem *base = ctx->base;
 	u32 dphy_req_kHz;
 
-	/*
-	 * count phy params
-	 */
+	 
 	dphy_req_kHz = mode->clock * bpp / dsi->lanes;
 	dsi_get_phy_params(dphy_req_kHz, phy);
 
-	/* reset Core */
+	 
 	writel(RESET, base + PWR_UP);
 
-	/* set dsi phy params */
+	 
 	dsi_set_mipi_phy(base, phy, dsi->lanes);
 
-	/* set dsi mode timing */
+	 
 	dsi_set_mode_timing(base, phy->lane_byte_clk_kHz, mode, dsi->format);
 
-	/* set dsi video mode */
+	 
 	dsi_set_video_mode(base, dsi->mode_flags);
 
-	/* dsi wake up */
+	 
 	writel(POWERUP, base + PWR_UP);
 
 	DRM_DEBUG_DRIVER("lanes=%d, pixel_clk=%d kHz, bytes_freq=%d kHz\n",
@@ -615,7 +566,7 @@ static enum drm_mode_status dsi_encoder_phy_mode_valid(
 	u32 bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
 	u32 req_kHz, act_kHz, lane_byte_clk_kHz;
 
-	/* Calculate the lane byte clk using the adjusted mode clk */
+	 
 	memset(&phy, 0, sizeof(phy));
 	req_kHz = mode->clock * bpp / dsi->lanes;
 	act_kHz = dsi_calc_phy_rate(req_kHz, &phy);
@@ -625,10 +576,7 @@ static enum drm_mode_status dsi_encoder_phy_mode_valid(
 			mode->hdisplay, mode->vdisplay, bpp,
 			drm_mode_vrefresh(mode), mode->clock);
 
-	/*
-	 * Make sure the adjusted mode clock and the lane byte clk
-	 * have a common denominator base frequency
-	 */
+	 
 	if (mode->clock/dsi->lanes == lane_byte_clk_kHz/3) {
 		DRM_DEBUG_DRIVER("OK!\n");
 		return MODE_OK;
@@ -647,17 +595,9 @@ static enum drm_mode_status dsi_encoder_mode_valid(struct drm_encoder *encoder,
 	struct drm_display_mode adj_mode;
 	enum drm_mode_status ret;
 
-	/*
-	 * The crtc might adjust the mode, so go through the
-	 * possible crtcs (technically just one) and call
-	 * mode_fixup to figure out the adjusted mode before we
-	 * validate it.
-	 */
+	 
 	drm_for_each_crtc(crtc, encoder->dev) {
-		/*
-		 * reset adj_mode to the mode value each time,
-		 * so we don't adjust the mode twice
-		 */
+		 
 		drm_mode_init(&adj_mode, mode);
 
 		crtc_funcs = crtc->helper_private;
@@ -685,7 +625,7 @@ static int dsi_encoder_atomic_check(struct drm_encoder *encoder,
 				    struct drm_crtc_state *crtc_state,
 				    struct drm_connector_state *conn_state)
 {
-	/* do nothing */
+	 
 	return 0;
 }
 
@@ -783,15 +723,12 @@ static int dsi_bridge_init(struct drm_device *dev, struct dw_dsi *dsi)
 	struct device_node *np = dsi->dev->of_node;
 	int ret;
 
-	/*
-	 * Get the endpoint node. In our case, dsi has one output port1
-	 * to which the external HDMI bridge is connected.
-	 */
+	 
 	ret = drm_of_find_panel_or_bridge(np, 1, 0, NULL, &bridge);
 	if (ret)
 		return ret;
 
-	/* associate the bridge to dsi encoder */
+	 
 	return drm_bridge_attach(encoder, bridge, NULL, 0);
 }
 
@@ -815,7 +752,7 @@ static int dsi_bind(struct device *dev, struct device *master, void *data)
 
 static void dsi_unbind(struct device *dev, struct device *master, void *data)
 {
-	/* do nothing */
+	 
 }
 
 static const struct component_ops dsi_ops = {

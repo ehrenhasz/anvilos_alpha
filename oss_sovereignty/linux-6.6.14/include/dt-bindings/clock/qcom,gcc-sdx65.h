@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SDX65_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SDX65_H
 
-/* GCC clocks */
+ 
 #define GPLL0							0
 #define GPLL0_OUT_EVEN						1
 #define GCC_AHB_PCIE_LINK_CLK					2
@@ -89,7 +87,7 @@
 #define GCC_XO_DIV4_CLK						79
 #define GCC_XO_PCIE_LINK_CLK					80
 
-/* GCC resets */
+ 
 #define GCC_BLSP1_QUP1_BCR					0
 #define GCC_BLSP1_QUP2_BCR					1
 #define GCC_BLSP1_QUP3_BCR					2
@@ -115,7 +113,7 @@
 #define GCC_USB3PHY_PHY_BCR					22
 #define GCC_USB_PHY_CFG_AHB2PHY_BCR				23
 
-/* GCC power domains */
+ 
 #define USB30_GDSC                                              0
 #define PCIE_GDSC                                               1
 

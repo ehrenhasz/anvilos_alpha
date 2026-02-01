@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Zodiac Inflight Innovations
- * Copyright (c) 2007-2016, Synaptics Incorporated
- * Copyright (C) 2012 Alexandra Chin <alexandra.chin@tw.synaptics.com>
- * Copyright (C) 2012 Scott Lin <scott.lin@tw.synaptics.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -336,10 +331,7 @@ static int rmi_f34v7_read_partition_table(struct f34_data *f34)
 		return ret;
 	}
 
-	/*
-	 * rmi_f34v7_check_command_status() can't be used here, as this
-	 * function is called before IRQs are available
-	 */
+	 
 	timeout = msecs_to_jiffies(F34_WRITE_WAIT_MS);
 	while (time_before(jiffies, timeout)) {
 		usleep_range(5000, 6000);
@@ -540,9 +532,9 @@ static int rmi_f34v7_read_queries(struct f34_data *f34)
 		if (ret)
 			return ret;
 
-		/* Eat leading zeros */
+		 
 		for (i = 0; i < sizeof(f34_ctrl) - 1 && !f34_ctrl[i]; i++)
-			/* Empty */;
+			 ;
 
 		snprintf(f34->configuration_id, sizeof(f34->configuration_id),
 			 "%*phN", (int)sizeof(f34_ctrl) - i, f34_ctrl + i);
@@ -929,11 +921,11 @@ static void rmi_f34v7_parse_image_header_10(struct f34_data *f34)
 	rmi_dbg(RMI_DEBUG_FN, &f34->fn->dev, "%s: f34->v7.img.checksum=%X\n",
 		__func__, f34->v7.img.checksum);
 
-	/* address of top level container */
+	 
 	offset = le32_to_cpu(header->top_level_container_start_addr);
 	descriptor = image + offset;
 
-	/* address of top level container content */
+	 
 	offset = le32_to_cpu(descriptor->content_address);
 	num_of_containers = le32_to_cpu(descriptor->content_length) / 4;
 
@@ -1054,10 +1046,7 @@ int rmi_f34v7_do_reflash(struct f34_data *f34, const struct firmware *fw)
 		return ret;
 	dev_info(&f34->fn->dev, "%s: Partition table programmed\n", __func__);
 
-	/*
-	 * Reset to reload partition table - as the previous firmware has been
-	 * erased, we remain in bootloader mode.
-	 */
+	 
 	ret = rmi_scan_pdt(f34->fn->rmi_dev, NULL, rmi_initial_reset);
 	if (ret < 0)
 		dev_warn(&f34->fn->dev, "RMI reset failed!\n");
@@ -1145,7 +1134,7 @@ int rmi_f34v7_probe(struct f34_data *f34)
 {
 	int ret;
 
-	/* Read bootloader version */
+	 
 	ret = rmi_read_block(f34->fn->rmi_dev,
 			f34->fn->fd.query_base_addr + V7_BOOTLOADER_ID_OFFSET,
 			f34->bootloader_id,

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 BayLibre SAS
-// Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-//
-// Regulator driver for MAXIM 77650/77651 charger/power-supply.
+
+
+
+
+
+
 
 #include <linux/of.h>
 #include <linux/mfd/max77650.h>
@@ -50,13 +50,13 @@ static const unsigned int max77651_sbb1_volt_range_sel[] = {
 };
 
 static const struct linear_range max77651_sbb1_volt_ranges[] = {
-	/* range index 0 */
+	 
 	REGULATOR_LINEAR_RANGE(2400000, 0x00, 0x0f, 50000),
-	/* range index 1 */
+	 
 	REGULATOR_LINEAR_RANGE(3200000, 0x00, 0x0f, 50000),
-	/* range index 2 */
+	 
 	REGULATOR_LINEAR_RANGE(4000000, 0x00, 0x0f, 50000),
-	/* range index 3 */
+	 
 	REGULATOR_LINEAR_RANGE(4800000, 0x00, 0x09, 50000),
 };
 
@@ -132,7 +132,7 @@ static const struct regulator_ops max77650_regulator_SBB_ops = {
 	.set_active_discharge	= regulator_set_active_discharge_regmap,
 };
 
-/* Special case for max77651 SBB1 - pickable linear-range voltage mapping. */
+ 
 static const struct regulator_ops max77651_SBB1_regulator_ops = {
 	.is_enabled		= max77650_regulator_is_enabled,
 	.enable			= max77650_regulator_enable,

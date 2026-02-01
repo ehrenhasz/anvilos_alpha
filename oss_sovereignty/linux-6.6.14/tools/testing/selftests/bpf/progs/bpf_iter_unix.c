@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright Amazon.com Inc. or its affiliates. */
+
+ 
 #include "bpf_iter.h"
 #include "bpf_tracing_net.h"
 #include <bpf/bpf_helpers.h>
@@ -52,10 +52,7 @@ int dump_unix(struct bpf_iter__unix *ctx)
 		if (unix_sk->addr->name->sun_path[0]) {
 			BPF_SEQ_PRINTF(seq, " %s", unix_sk->addr->name->sun_path);
 		} else {
-			/* The name of the abstract UNIX domain socket starts
-			 * with '\0' and can contain '\0'.  The null bytes
-			 * should be escaped as done in unix_seq_show().
-			 */
+			 
 			__u64 i, len;
 
 			len = unix_sk->addr->len - sizeof(short);
@@ -63,7 +60,7 @@ int dump_unix(struct bpf_iter__unix *ctx)
 			BPF_SEQ_PRINTF(seq, " @");
 
 			for (i = 1; i < len; i++) {
-				/* unix_validate_addr() tests this upper bound. */
+				 
 				if (i >= sizeof(struct sockaddr_un))
 					break;
 

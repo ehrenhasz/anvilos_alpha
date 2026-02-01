@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2017 - 2021 Intel Corporation */
+
+ 
 #include "osdep.h"
 #include "hmc.h"
 #include "defs.h"
@@ -8,13 +8,7 @@
 
 #include "ws.h"
 
-/**
- * irdma_alloc_node - Allocate a WS node and init
- * @vsi: vsi pointer
- * @user_pri: user priority
- * @node_type: Type of node, leaf or parent
- * @parent: parent node pointer
- */
+ 
 static struct irdma_ws_node *irdma_alloc_node(struct irdma_sc_vsi *vsi,
 					      u8 user_pri,
 					      enum irdma_ws_node_type node_type,
@@ -62,11 +56,7 @@ static struct irdma_ws_node *irdma_alloc_node(struct irdma_sc_vsi *vsi,
 	return node;
 }
 
-/**
- * irdma_free_node - Free a WS node
- * @vsi: VSI stricture of device
- * @node: Pointer to node to free
- */
+ 
 static void irdma_free_node(struct irdma_sc_vsi *vsi,
 			    struct irdma_ws_node *node)
 {
@@ -80,12 +70,7 @@ static void irdma_free_node(struct irdma_sc_vsi *vsi,
 	kfree(ws_mem.va);
 }
 
-/**
- * irdma_ws_cqp_cmd - Post CQP work scheduler node cmd
- * @vsi: vsi pointer
- * @node: pointer to node
- * @cmd: add, remove or modify
- */
+ 
 static int irdma_ws_cqp_cmd(struct irdma_sc_vsi *vsi,
 			    struct irdma_ws_node *node, u8 cmd)
 {
@@ -116,12 +101,7 @@ static int irdma_ws_cqp_cmd(struct irdma_sc_vsi *vsi,
 	return 0;
 }
 
-/**
- * ws_find_node - Find SC WS node based on VSI id or TC
- * @parent: parent node of First VSI or TC node
- * @match_val: value to match
- * @type: match type VSI/TC
- */
+ 
 static struct irdma_ws_node *ws_find_node(struct irdma_ws_node *parent,
 					  u16 match_val,
 					  enum irdma_ws_match_type type)
@@ -148,11 +128,7 @@ static struct irdma_ws_node *ws_find_node(struct irdma_ws_node *parent,
 	return NULL;
 }
 
-/**
- * irdma_tc_in_use - Checks to see if a leaf node is in use
- * @vsi: vsi pointer
- * @user_pri: user priority
- */
+ 
 static bool irdma_tc_in_use(struct irdma_sc_vsi *vsi, u8 user_pri)
 {
 	int i;
@@ -163,9 +139,7 @@ static bool irdma_tc_in_use(struct irdma_sc_vsi *vsi, u8 user_pri)
 		return true;
 	}
 
-	/* Check if the traffic class associated with the given user priority
-	 * is in use by any other user priority. If so, nothing left to do
-	 */
+	 
 	for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++) {
 		if (vsi->qos[i].traffic_class == vsi->qos[user_pri].traffic_class &&
 		    !list_empty(&vsi->qos[i].qplist)) {
@@ -178,11 +152,7 @@ static bool irdma_tc_in_use(struct irdma_sc_vsi *vsi, u8 user_pri)
 	return false;
 }
 
-/**
- * irdma_remove_leaf - Remove leaf node unconditionally
- * @vsi: vsi pointer
- * @user_pri: user priority
- */
+ 
 static void irdma_remove_leaf(struct irdma_sc_vsi *vsi, u8 user_pri)
 {
 	struct irdma_ws_node *ws_tree_root, *vsi_node, *tc_node;
@@ -213,12 +183,12 @@ static void irdma_remove_leaf(struct irdma_sc_vsi *vsi, u8 user_pri)
 	vsi->unregister_qset(vsi, tc_node);
 	list_del(&tc_node->siblings);
 	irdma_free_node(vsi, tc_node);
-	/* Check if VSI node can be freed */
+	 
 	if (list_empty(&vsi_node->child_list_head)) {
 		irdma_ws_cqp_cmd(vsi, vsi_node, IRDMA_OP_WS_DELETE_NODE);
 		list_del(&vsi_node->siblings);
 		irdma_free_node(vsi, vsi_node);
-		/* Free head node there are no remaining VSI nodes */
+		 
 		if (list_empty(&ws_tree_root->child_list_head)) {
 			irdma_ws_cqp_cmd(vsi, ws_tree_root,
 					 IRDMA_OP_WS_DELETE_NODE);
@@ -228,11 +198,7 @@ static void irdma_remove_leaf(struct irdma_sc_vsi *vsi, u8 user_pri)
 	}
 }
 
-/**
- * irdma_ws_add - Build work scheduler tree, set RDMA qs_handle
- * @vsi: vsi pointer
- * @user_pri: user priority
- */
+ 
 int irdma_ws_add(struct irdma_sc_vsi *vsi, u8 user_pri)
 {
 	struct irdma_ws_node *ws_tree_root;
@@ -270,11 +236,11 @@ int irdma_ws_add(struct irdma_sc_vsi *vsi, u8 user_pri)
 		vsi->dev->ws_tree_root = ws_tree_root;
 	}
 
-	/* Find a second tier node that matches the VSI */
+	 
 	vsi_node = ws_find_node(ws_tree_root, vsi->vsi_idx,
 				WS_MATCH_TYPE_VSI);
 
-	/* If VSI node doesn't exist, add one */
+	 
 	if (!vsi_node) {
 		ibdev_dbg(to_ibdev(vsi->dev),
 			  "WS: Node not found matching VSI %d\n",
@@ -302,7 +268,7 @@ int irdma_ws_add(struct irdma_sc_vsi *vsi, u8 user_pri)
 	tc_node = ws_find_node(vsi_node, traffic_class,
 			       WS_MATCH_TYPE_TC);
 	if (!tc_node) {
-		/* Add leaf node */
+		 
 		ibdev_dbg(to_ibdev(vsi->dev),
 			  "WS: Node not found matching VSI %d and TC %d\n",
 			  vsi->vsi_idx, traffic_class);
@@ -320,9 +286,7 @@ int irdma_ws_add(struct irdma_sc_vsi *vsi, u8 user_pri)
 		}
 
 		list_add(&tc_node->siblings, &vsi_node->child_list_head);
-		/*
-		 * callback to LAN to update the LAN tree with our node
-		 */
+		 
 		ret = vsi->register_qset(vsi, tc_node);
 		if (ret)
 			goto reg_err;
@@ -337,10 +301,7 @@ int irdma_ws_add(struct irdma_sc_vsi *vsi, u8 user_pri)
 	ibdev_dbg(to_ibdev(vsi->dev),
 		  "WS: Using node %d which represents VSI %d TC %d\n",
 		  tc_node->index, vsi->vsi_idx, traffic_class);
-	/*
-	 * Iterate through other UPs and update the QS handle if they have
-	 * a matching traffic class.
-	 */
+	 
 	for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++) {
 		if (vsi->qos[i].traffic_class == traffic_class) {
 			vsi->qos[i].qs_handle = tc_node->qs_handle;
@@ -364,7 +325,7 @@ leaf_add_err:
 	}
 
 vsi_add_err:
-	/* Free head node there are no remaining VSI nodes */
+	 
 	if (list_empty(&ws_tree_root->child_list_head)) {
 		irdma_ws_cqp_cmd(vsi, ws_tree_root, IRDMA_OP_WS_DELETE_NODE);
 		vsi->dev->ws_tree_root = NULL;
@@ -376,11 +337,7 @@ exit:
 	return ret;
 }
 
-/**
- * irdma_ws_remove - Free WS scheduler node, update WS tree
- * @vsi: vsi pointer
- * @user_pri: user priority
- */
+ 
 void irdma_ws_remove(struct irdma_sc_vsi *vsi, u8 user_pri)
 {
 	mutex_lock(&vsi->dev->ws_mutex);
@@ -391,10 +348,7 @@ exit:
 	mutex_unlock(&vsi->dev->ws_mutex);
 }
 
-/**
- * irdma_ws_reset - Reset entire WS tree
- * @vsi: vsi pointer
- */
+ 
 void irdma_ws_reset(struct irdma_sc_vsi *vsi)
 {
 	u8 i;

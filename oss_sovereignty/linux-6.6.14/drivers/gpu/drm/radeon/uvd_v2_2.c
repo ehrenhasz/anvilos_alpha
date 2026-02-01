@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König <christian.koenig@amd.com>
- */
+ 
 
 #include <linux/firmware.h>
 
@@ -28,14 +6,7 @@
 #include "radeon_asic.h"
 #include "rv770d.h"
 
-/**
- * uvd_v2_2_fence_emit - emit an fence & trap command
- *
- * @rdev: radeon_device pointer
- * @fence: fence to emit
- *
- * Write a fence and a trap command to the ring.
- */
+ 
 void uvd_v2_2_fence_emit(struct radeon_device *rdev,
 			 struct radeon_fence *fence)
 {
@@ -59,16 +30,7 @@ void uvd_v2_2_fence_emit(struct radeon_device *rdev,
 	radeon_ring_write(ring, 2);
 }
 
-/**
- * uvd_v2_2_semaphore_emit - emit semaphore command
- *
- * @rdev: radeon_device pointer
- * @ring: radeon_ring pointer
- * @semaphore: semaphore to emit commands for
- * @emit_wait: true if we should emit a wait command
- *
- * Emit a semaphore command (either wait or signal) to the UVD ring.
- */
+ 
 bool uvd_v2_2_semaphore_emit(struct radeon_device *rdev,
 			     struct radeon_ring *ring,
 			     struct radeon_semaphore *semaphore,
@@ -88,20 +50,14 @@ bool uvd_v2_2_semaphore_emit(struct radeon_device *rdev,
 	return true;
 }
 
-/**
- * uvd_v2_2_resume - memory controller programming
- *
- * @rdev: radeon_device pointer
- *
- * Let the UVD memory controller know it's offsets
- */
+ 
 int uvd_v2_2_resume(struct radeon_device *rdev)
 {
 	uint64_t addr;
 	uint32_t chip_id, size;
 	int r;
 
-	/* RV770 uses V1.0 MC */
+	 
 	if (rdev->family == CHIP_RV770)
 		return uvd_v1_0_resume(rdev);
 
@@ -109,7 +65,7 @@ int uvd_v2_2_resume(struct radeon_device *rdev)
 	if (r)
 		return r;
 
-	/* program the VCPU memory controller bits 0-27 */
+	 
 	addr = rdev->uvd.gpu_addr >> 3;
 	size = RADEON_GPU_PAGE_ALIGN(rdev->uvd_fw->size + 4) >> 3;
 	WREG32(UVD_VCPU_CACHE_OFFSET0, addr);
@@ -126,15 +82,15 @@ int uvd_v2_2_resume(struct radeon_device *rdev)
 	WREG32(UVD_VCPU_CACHE_OFFSET2, addr);
 	WREG32(UVD_VCPU_CACHE_SIZE2, size);
 
-	/* bits 28-31 */
+	 
 	addr = (rdev->uvd.gpu_addr >> 28) & 0xF;
 	WREG32(UVD_LMI_ADDR_EXT, (addr << 12) | (addr << 0));
 
-	/* bits 32-39 */
+	 
 	addr = (rdev->uvd.gpu_addr >> 32) & 0xFF;
 	WREG32(UVD_LMI_EXT40_ADDR, addr | (0x9 << 16) | (0x1 << 31));
 
-	/* tell firmware which hardware it is running on */
+	 
 	switch (rdev->family) {
 	default:
 		return -EINVAL;

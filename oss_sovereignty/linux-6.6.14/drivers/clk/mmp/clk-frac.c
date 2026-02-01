@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mmp factor clock operation source file
- *
- * Copyright (C) 2012 Marvell
- * Chao Xie <xiechao.mail@gmail.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -12,12 +7,7 @@
 #include <linux/err.h>
 
 #include "clk.h"
-/*
- * It is M/N clock
- *
- * Fout from synthesizer can be given from two equations:
- * numerator/denominator = Fin / (Fout * factor)
- */
+ 
 
 #define to_clk_factor(hw) container_of(hw, struct mmp_clk_factor, hw)
 
@@ -57,10 +47,10 @@ static unsigned long clk_factor_recalc_rate(struct clk_hw *hw,
 
 	val = readl_relaxed(factor->base);
 
-	/* calculate numerator */
+	 
 	num = (val >> masks->num_shift) & masks->num_mask;
 
-	/* calculate denominator */
+	 
 	den = (val >> masks->den_shift) & masks->den_mask;
 
 	if (!den)
@@ -73,7 +63,7 @@ static unsigned long clk_factor_recalc_rate(struct clk_hw *hw,
 	return rate;
 }
 
-/* Configures new clock rate*/
+ 
 static int clk_factor_set_rate(struct clk_hw *hw, unsigned long drate,
 				unsigned long prate)
 {
@@ -127,10 +117,10 @@ static int clk_factor_init(struct clk_hw *hw)
 
 	val = readl(factor->base);
 
-	/* calculate numerator */
+	 
 	num = (val >> masks->num_shift) & masks->num_mask;
 
-	/* calculate denominator */
+	 
 	den = (val >> masks->den_shift) & masks->den_mask;
 
 	for (i = 0; i < factor->ftbl_cnt; i++)
@@ -184,7 +174,7 @@ struct clk *mmp_clk_register_factor(const char *name, const char *parent_name,
 	if (!factor)
 		return ERR_PTR(-ENOMEM);
 
-	/* struct clk_aux assignments */
+	 
 	factor->base = base;
 	factor->masks = masks;
 	factor->ftbl = ftbl;

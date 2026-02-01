@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
- *
- *  Output format inspired by Len Brown's <lenb@kernel.org> turbostat tool.
- */
+
+ 
 
 
 #include <stdio.h>
@@ -20,7 +16,7 @@
 #include "idle_monitor/idle_monitors.h"
 #include "helpers/helpers.h"
 
-/* Define pointers to all monitors.  */
+ 
 #define DEF(x) & x ## _monitor ,
 struct cpuidle_monitor *all_monitors[] = {
 #include "idle_monitors.def"
@@ -41,7 +37,7 @@ static char *show_monitors_param;
 static struct cpupower_topology cpu_top;
 static unsigned int wake_cpus;
 
-/* ToDo: Document this in the manpage */
+ 
 static char range_abbr[RANGE_MAX] = { 'T', 'C', 'P', 'M', };
 
 static void print_wrong_arg_exit(void)
@@ -70,9 +66,7 @@ void print_n_spaces(int n)
 		printf(" ");
 }
 
-/*s is filled with left and right spaces
- *to make its length atleast n+1
- */
+ 
 int fill_string_with_spaces(char *s, int n)
 {
 	char *temp;
@@ -145,7 +139,7 @@ void print_results(int topology_depth, int cpu)
 	unsigned long long result;
 	cstate_t s;
 
-	/* Be careful CPUs may got resorted for pkg value do not just use cpu */
+	 
 	if (!bitmask_isbitset(cpus_chosen, cpu_top.core_info[cpu].cpu))
 		return;
 	if (!cpu_top.core_info[cpu].is_online &&
@@ -193,12 +187,7 @@ void print_results(int topology_depth, int cpu)
 			}
 		}
 	}
-	/*
-	 * The monitor could still provide useful data, for example
-	 * AMD HW counters partly sit in PCI config space.
-	 * It's up to the monitor plug-in to check .is_online, this one
-	 * is just for additional info.
-	 */
+	 
 	if (!cpu_top.core_info[cpu].is_online &&
 	    cpu_top.core_info[cpu].pkg != -1) {
 		printf(_(" *is offline\n"));
@@ -208,14 +197,7 @@ void print_results(int topology_depth, int cpu)
 }
 
 
-/* param: string passed by -m param (The list of monitors to show)
- *
- * Monitors must have been registered already, matching monitors
- * are picked out and available monitors array is overridden
- * with matching ones
- *
- * Monitors get sorted in the same order the user passes them
-*/
+ 
 
 static void parse_monitor_param(char *param)
 {
@@ -248,7 +230,7 @@ static void parse_monitor_param(char *param)
 			 "try -l option\n"), param);
 		exit(EXIT_FAILURE);
 	}
-	/* Override detected/registerd monitors array with requested one */
+	 
 	memcpy(monitors, tmp_mons,
 		sizeof(struct cpuidle_monitor *) * MONITORS_MAX);
 	avail_monitors = hits;
@@ -268,10 +250,7 @@ void list_monitors(void)
 
 		for (state = 0; state < monitors[mon]->hw_states_num; state++) {
 			s = monitors[mon]->hw_states[state];
-			/*
-			 * ToDo show more state capabilities:
-			 * percent, time (granlarity)
-			 */
+			 
 			printf("%s\t[%c] -> %s\n", s.name, range_abbr[s.range],
 			       gettext(s.desc));
 		}
@@ -293,10 +272,10 @@ int fork_it(char **argv)
 		monitors[num]->start();
 
 	if (!child_pid) {
-		/* child */
+		 
 		execvp(argv[0], argv);
 	} else {
-		/* parent */
+		 
 		if (child_pid == -1) {
 			perror("fork");
 			exit(1);
@@ -362,7 +341,7 @@ static void cmdline(int argc, char *argv[])
 			mode = list;
 			break;
 		case 'i':
-			/* only allow -i with -m or no option */
+			 
 			if (mode && mode != show)
 				print_wrong_arg_exit();
 			interval = atoi(optarg);
@@ -400,7 +379,7 @@ int cmd_monitor(int argc, char **argv)
 	if (!cpu_top.core_info[0].is_online)
 		printf("WARNING: at least one cpu is offline\n");
 
-	/* Default is: monitor all CPUs */
+	 
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setall(cpus_chosen);
 
@@ -437,16 +416,13 @@ int cmd_monitor(int argc, char **argv)
 	dprint("Packages: %d - Cores: %d - CPUs: %d\n",
 	       cpu_top.pkgs, cpu_top.cores, cpu_count);
 
-	/*
-	 * if any params left, it must be a command to fork
-	 */
+	 
 	if (argc - optind)
 		fork_it(argv + optind);
 	else
 		do_interval_measure(interval);
 
-	/* ToDo: Topology parsing needs fixing first to do
-	   this more generically */
+	 
 	if (cpu_top.pkgs > 1)
 		print_header(3);
 	else

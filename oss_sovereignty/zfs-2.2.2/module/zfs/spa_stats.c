@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa_impl.h>
@@ -25,45 +6,31 @@
 #include <sys/spa.h>
 #include <zfs_comutil.h>
 
-/*
- * Keeps stats on last N reads per spa_t, disabled by default.
- */
+ 
 static uint_t zfs_read_history = B_FALSE;
 
-/*
- * Include cache hits in history, disabled by default.
- */
+ 
 static int zfs_read_history_hits = B_FALSE;
 
-/*
- * Keeps stats on the last 100 txgs by default.
- */
+ 
 static uint_t zfs_txg_history = 100;
 
-/*
- * Keeps stats on the last N MMP updates, disabled by default.
- */
+ 
 static uint_t zfs_multihost_history = B_FALSE;
 
-/*
- * ==========================================================================
- * SPA Read History Routines
- * ==========================================================================
- */
+ 
 
-/*
- * Read statistics - Information exported regarding each arc_read call
- */
+ 
 typedef struct spa_read_history {
-	hrtime_t	start;		/* time read completed */
-	uint64_t	objset;		/* read from this objset */
-	uint64_t	object;		/* read of this object number */
-	uint64_t	level;		/* block's indirection level */
-	uint64_t	blkid;		/* read of this block id */
-	char		origin[24];	/* read originated from here */
-	uint32_t	aflags;		/* ARC flags (cached, prefetch, etc.) */
-	pid_t		pid;		/* PID of task doing read */
-	char		comm[16];	/* process name of task doing read */
+	hrtime_t	start;		 
+	uint64_t	objset;		 
+	uint64_t	object;		 
+	uint64_t	level;		 
+	uint64_t	blkid;		 
+	char		origin[24];	 
+	uint32_t	aflags;		 
+	pid_t		pid;		 
+	char		comm[16];	 
 	procfs_list_node_t	srh_node;
 } spa_read_history_t;
 
@@ -92,7 +59,7 @@ spa_read_history_show(struct seq_file *f, void *data)
 	return (0);
 }
 
-/* Remove oldest elements from list until there are no more than 'size' left */
+ 
 static void
 spa_read_history_truncate(spa_history_list_t *shl, unsigned int size)
 {
@@ -180,25 +147,19 @@ spa_read_history_add(spa_t *spa, const zbookmark_phys_t *zb, uint32_t aflags)
 	mutex_exit(&shl->procfs_list.pl_lock);
 }
 
-/*
- * ==========================================================================
- * SPA TXG History Routines
- * ==========================================================================
- */
+ 
 
-/*
- * Txg statistics - Information exported regarding each txg sync
- */
+ 
 
 typedef struct spa_txg_history {
-	uint64_t	txg;		/* txg id */
-	txg_state_t	state;		/* active txg state */
-	uint64_t	nread;		/* number of bytes read */
-	uint64_t	nwritten;	/* number of bytes written */
-	uint64_t	reads;		/* number of read operations */
-	uint64_t	writes;		/* number of write operations */
-	uint64_t	ndirty;		/* number of dirty bytes */
-	hrtime_t	times[TXG_STATE_COMMITTED]; /* completion times */
+	uint64_t	txg;		 
+	txg_state_t	state;		 
+	uint64_t	nread;		 
+	uint64_t	nwritten;	 
+	uint64_t	reads;		 
+	uint64_t	writes;		 
+	uint64_t	ndirty;		 
+	hrtime_t	times[TXG_STATE_COMMITTED];  
 	procfs_list_node_t	sth_node;
 } spa_txg_history_t;
 
@@ -257,7 +218,7 @@ spa_txg_history_show(struct seq_file *f, void *data)
 	return (0);
 }
 
-/* Remove oldest elements from list until there are no more than 'size' left */
+ 
 static void
 spa_txg_history_truncate(spa_history_list_t *shl, unsigned int size)
 {
@@ -311,9 +272,7 @@ spa_txg_history_destroy(spa_t *spa)
 	procfs_list_destroy(&shl->procfs_list);
 }
 
-/*
- * Add a new txg to historical record.
- */
+ 
 void
 spa_txg_history_add(spa_t *spa, uint64_t txg, hrtime_t birth_time)
 {
@@ -335,9 +294,7 @@ spa_txg_history_add(spa_t *spa, uint64_t txg, hrtime_t birth_time)
 	mutex_exit(&shl->procfs_list.pl_lock);
 }
 
-/*
- * Set txg state completion time and increment current state.
- */
+ 
 int
 spa_txg_history_set(spa_t *spa, uint64_t txg, txg_state_t completed_state,
     hrtime_t completed_time)
@@ -364,9 +321,7 @@ spa_txg_history_set(spa_t *spa, uint64_t txg, txg_state_t completed_state,
 	return (error);
 }
 
-/*
- * Set txg IO stats.
- */
+ 
 static int
 spa_txg_history_set_io(spa_t *spa, uint64_t txg, uint64_t nread,
     uint64_t nwritten, uint64_t reads, uint64_t writes, uint64_t ndirty)
@@ -444,21 +399,11 @@ spa_txg_history_fini_io(spa_t *spa, txg_stat_t *ts)
 	kmem_free(ts, sizeof (txg_stat_t));
 }
 
-/*
- * ==========================================================================
- * SPA TX Assign Histogram Routines
- * ==========================================================================
- */
+ 
 
-/*
- * Tx statistics - Information exported regarding dmu_tx_assign time.
- */
+ 
 
-/*
- * When the kstat is written zero all buckets.  When the kstat is read
- * count the number of trailing buckets set to zero and update ks_ndata
- * such that they are not output.
- */
+ 
 static int
 spa_tx_assign_update(kstat_t *ksp, int rw)
 {
@@ -492,7 +437,7 @@ spa_tx_assign_init(spa_t *spa)
 
 	mutex_init(&shk->lock, NULL, MUTEX_DEFAULT, NULL);
 
-	shk->count = 42; /* power of two buckets for 1ns to 2,199s */
+	shk->count = 42;  
 	shk->size = shk->count * sizeof (kstat_named_t);
 	shk->priv = kmem_alloc(shk->size, KM_SLEEP);
 
@@ -548,36 +493,21 @@ spa_tx_assign_add_nsecs(spa_t *spa, uint64_t nsecs)
 	atomic_inc_64(&((kstat_named_t *)shk->priv)[idx].value.ui64);
 }
 
-/*
- * ==========================================================================
- * SPA MMP History Routines
- * ==========================================================================
- */
+ 
 
-/*
- * MMP statistics - Information exported regarding attempted MMP writes
- *   For MMP writes issued, fields used as per comments below.
- *   For MMP writes skipped, an entry represents a span of time when
- *      writes were skipped for same reason (error from mmp_random_leaf).
- *      Differences are:
- *      timestamp	time first write skipped, if >1 skipped in a row
- *      mmp_delay	delay value at timestamp
- *      vdev_guid	number of writes skipped
- *      io_error	one of enum mmp_error
- *      duration	time span (ns) of skipped writes
- */
+ 
 
 typedef struct spa_mmp_history {
-	uint64_t	mmp_node_id;	/* unique # for updates */
-	uint64_t	txg;		/* txg of last sync */
-	uint64_t	timestamp;	/* UTC time MMP write issued */
-	uint64_t	mmp_delay;	/* mmp_thread.mmp_delay at timestamp */
-	uint64_t	vdev_guid;	/* unique ID of leaf vdev */
+	uint64_t	mmp_node_id;	 
+	uint64_t	txg;		 
+	uint64_t	timestamp;	 
+	uint64_t	mmp_delay;	 
+	uint64_t	vdev_guid;	 
 	char		*vdev_path;
-	int		vdev_label;	/* vdev label */
-	int		io_error;	/* error status of MMP write */
-	hrtime_t	error_start;	/* hrtime of start of error period */
-	hrtime_t	duration;	/* time from submission to completion */
+	int		vdev_label;	 
+	int		io_error;	 
+	hrtime_t	error_start;	 
+	hrtime_t	duration;	 
 	procfs_list_node_t	smh_node;
 } spa_mmp_history_t;
 
@@ -609,7 +539,7 @@ spa_mmp_history_show(struct seq_file *f, void *data)
 	return (0);
 }
 
-/* Remove oldest elements from list until there are no more than 'size' left */
+ 
 static void
 spa_mmp_history_truncate(spa_history_list_t *shl, unsigned int size)
 {
@@ -665,13 +595,7 @@ spa_mmp_history_destroy(spa_t *spa)
 	procfs_list_destroy(&shl->procfs_list);
 }
 
-/*
- * Set duration in existing "skip" record to how long we have waited for a leaf
- * vdev to become available.
- *
- * Important that we start search at the tail of the list where new
- * records are inserted, so this is normally an O(1) operation.
- */
+ 
 int
 spa_mmp_history_set_skip(spa_t *spa, uint64_t mmp_node_id)
 {
@@ -698,10 +622,7 @@ spa_mmp_history_set_skip(spa_t *spa, uint64_t mmp_node_id)
 	return (error);
 }
 
-/*
- * Set MMP write duration and error status in existing record.
- * See comment re: search order above spa_mmp_history_set_skip().
- */
+ 
 int
 spa_mmp_history_set(spa_t *spa, uint64_t mmp_node_id, int io_error,
     hrtime_t duration)
@@ -729,11 +650,7 @@ spa_mmp_history_set(spa_t *spa, uint64_t mmp_node_id, int io_error,
 	return (error);
 }
 
-/*
- * Add a new MMP historical record.
- * error == 0 : a write was issued.
- * error != 0 : a write was not issued because no leaves were found.
- */
+ 
 void
 spa_mmp_history_add(spa_t *spa, uint64_t txg, uint64_t timestamp,
     uint64_t mmp_delay, vdev_t *vd, int label, uint64_t mmp_node_id,
@@ -774,7 +691,7 @@ static void *
 spa_state_addr(kstat_t *ksp, loff_t n)
 {
 	if (n == 0)
-		return (ksp->ks_private);	/* return the spa_t */
+		return (ksp->ks_private);	 
 	return (NULL);
 }
 
@@ -786,13 +703,7 @@ spa_state_data(char *buf, size_t size, void *data)
 	return (0);
 }
 
-/*
- * Return the state of the pool in /proc/spl/kstat/zfs/<pool>/state.
- *
- * This is a lock-less read of the pool's state (unlike using 'zpool', which
- * can potentially block for seconds).  Because it doesn't block, it can useful
- * as a pool heartbeat value.
- */
+ 
 static void
 spa_state_init(spa_t *spa)
 {

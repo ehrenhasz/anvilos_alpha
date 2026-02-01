@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/perf_event.h>
 #include <linux/init.h>
@@ -43,7 +22,7 @@ struct amdgpu_pmu_event_attribute {
 	unsigned int type;
 };
 
-/* record to keep track of pmu entry per pmu type per device */
+ 
 struct amdgpu_pmu_entry {
 	struct list_head entry;
 	struct amdgpu_device *adev;
@@ -94,22 +73,7 @@ struct amdgpu_pmu_config {
 	unsigned int num_types;
 };
 
-/*
- * Events fall under two categories:
- *  - PMU typed
- *    Events in /sys/bus/event_source/devices/amdgpu_<pmu_type>_<dev_num> have
- *    performance counter operations handled by one IP <pmu_type>.  Formats and
- *    events should be defined by <pmu_type>_<asic_type>_formats and
- *    <pmu_type>_<asic_type>_events respectively.
- *
- *  - Event config typed
- *    Events in /sys/bus/event_source/devices/amdgpu_<dev_num> have performance
- *    counter operations that can be handled by multiple IPs dictated by their
- *    "type" format field.  Formats and events should be defined by
- *    amdgpu_pmu_formats and <asic_type>_events respectively.  Format field
- *    "type" is generated in amdgpu_pmu_event_show and defined in
- *    <asic_type>_event_config_types.
- */
+ 
 
 static struct amdgpu_pmu_attr amdgpu_pmu_formats[NUM_FORMATS_AMDGPU_PMU] = {
 	{ .name = "event", .config = "config:0-7" },
@@ -118,7 +82,7 @@ static struct amdgpu_pmu_attr amdgpu_pmu_formats[NUM_FORMATS_AMDGPU_PMU] = {
 	{ .name = "type", .config = "config:56-63"}
 };
 
-/* Vega20 events */
+ 
 static struct amdgpu_pmu_attr vega20_events[NUM_EVENTS_VEGA20_MAX] = {
 	{ .name = "xgmi_link0_data_outbound",
 			.config = "event=0x7,instance=0x46,umask=0x2" },
@@ -140,7 +104,7 @@ static struct amdgpu_pmu_config vega20_config = {
 	.num_types = ARRAY_SIZE(vega20_types)
 };
 
-/* Vega20 data fabric (DF) events */
+ 
 static struct amdgpu_pmu_attr df_vega20_formats[NUM_FORMATS_DF_VEGA20] = {
 	{ .name = "event", .config = "config:0-7" },
 	{ .name = "instance", .config = "config:8-15" },
@@ -175,7 +139,7 @@ static struct amdgpu_pmu_config df_vega20_config = {
 	.num_types = 0
 };
 
-/* Arcturus events */
+ 
 static struct amdgpu_pmu_attr arcturus_events[NUM_EVENTS_ARCTURUS_MAX] = {
 	{ .name = "xgmi_link0_data_outbound",
 			.config = "event=0x7,instance=0x4b,umask=0x2" },
@@ -205,23 +169,23 @@ static struct amdgpu_pmu_config arcturus_config = {
 	.num_types = ARRAY_SIZE(arcturus_types)
 };
 
-/* initialize perf counter */
+ 
 static int amdgpu_perf_event_init(struct perf_event *event)
 {
 	struct hw_perf_event *hwc = &event->hw;
 
-	/* test the event attr type check for PMU enumeration */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/* update the hw_perf_event struct with config data */
+	 
 	hwc->config = event->attr.config;
 	hwc->config_base = AMDGPU_PMU_PERF_TYPE_NONE;
 
 	return 0;
 }
 
-/* start perf counter */
+ 
 static void amdgpu_perf_start(struct perf_event *event, int flags)
 {
 	struct hw_perf_event *hwc = &event->hw;
@@ -245,8 +209,8 @@ static void amdgpu_perf_start(struct perf_event *event, int flags)
 	case AMDGPU_PMU_EVENT_CONFIG_TYPE_XGMI:
 		if (!(flags & PERF_EF_RELOAD)) {
 			target_cntr = pe->adev->df.funcs->pmc_start(pe->adev,
-						hwc->config, 0 /* unused */,
-						1 /* add counter */);
+						hwc->config, 0  ,
+						1  );
 			if (target_cntr < 0)
 				break;
 
@@ -263,7 +227,7 @@ static void amdgpu_perf_start(struct perf_event *event, int flags)
 	perf_event_update_userpage(event);
 }
 
-/* read perf counter */
+ 
 static void amdgpu_perf_read(struct perf_event *event)
 {
 	struct hw_perf_event *hwc = &event->hw;
@@ -293,7 +257,7 @@ static void amdgpu_perf_read(struct perf_event *event)
 	local64_add(count - prev, &event->count);
 }
 
-/* stop perf counter */
+ 
 static void amdgpu_perf_stop(struct perf_event *event, int flags)
 {
 	struct hw_perf_event *hwc = &event->hw;
@@ -328,7 +292,7 @@ static void amdgpu_perf_stop(struct perf_event *event, int flags)
 	hwc->state |= PERF_HES_UPTODATE;
 }
 
-/* add perf counter */
+ 
 static int amdgpu_perf_add(struct perf_event *event, int flags)
 {
 	struct hw_perf_event *hwc = &event->hw;
@@ -358,8 +322,8 @@ static int amdgpu_perf_add(struct perf_event *event, int flags)
 	case AMDGPU_PMU_EVENT_CONFIG_TYPE_DF:
 	case AMDGPU_PMU_EVENT_CONFIG_TYPE_XGMI:
 		target_cntr = pe->adev->df.funcs->pmc_start(pe->adev,
-						hwc->config, 0 /* unused */,
-						1 /* add counter */);
+						hwc->config, 0  ,
+						1  );
 		if (target_cntr < 0)
 			retval = target_cntr;
 		else
@@ -379,7 +343,7 @@ static int amdgpu_perf_add(struct perf_event *event, int flags)
 	return retval;
 }
 
-/* delete perf counter  */
+ 
 static void amdgpu_perf_del(struct perf_event *event, int flags)
 {
 	struct hw_perf_event *hwc = &event->hw;
@@ -479,7 +443,7 @@ err_fmt_attr_grp:
 	return -ENOMEM;
 }
 
-/* init pmu tracking per pmu type */
+ 
 static int init_pmu_entry_by_type_and_add(struct amdgpu_pmu_entry *pmu_entry,
 			struct amdgpu_pmu_config *config)
 {
@@ -573,7 +537,7 @@ err_out:
 	return ret;
 }
 
-/* destroy all pmu data associated with target device */
+ 
 void amdgpu_pmu_fini(struct amdgpu_device *adev)
 {
 	struct amdgpu_pmu_entry *pe, *temp;
@@ -616,7 +580,7 @@ static struct amdgpu_pmu_entry *create_pmu_entry(struct amdgpu_device *adev,
 	return pmu_entry;
 }
 
-/* init amdgpu_pmu */
+ 
 int amdgpu_pmu_init(struct amdgpu_device *adev)
 {
 	int ret = 0;

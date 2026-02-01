@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains main functions related to iSCSI DataSequenceInOrder=No
- * and DataPDUInOrder=No.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/slab.h>
 #include <linux/random.h>
@@ -87,10 +79,7 @@ redo:
 	}
 }
 
-/*
- *	Generate count random values into array.
- *	Use 0x80000000 to mark generates valued in array[].
- */
+ 
 static void iscsit_create_random_array(u32 *array, u32 count)
 {
 	int i, j, k;
@@ -278,10 +267,7 @@ static void iscsit_determine_counts_for_list(
 }
 
 
-/*
- *	Builds PDU and/or Sequence list, called while DataSequenceInOrder=No
- *	or DataPDUInOrder=No.
- */
+ 
 static int iscsit_do_build_pdu_and_seq_lists(
 	struct iscsit_cmd *cmd,
 	struct iscsi_build_list *bl)
@@ -496,9 +482,7 @@ int iscsit_build_pdu_and_seq_lists(
 	struct iscsit_session *sess = conn->sess;
 	struct iscsi_node_attrib *na;
 
-	/*
-	 * Do nothing if no OOO shenanigans
-	 */
+	 
 	if (sess->sess_ops->DataSequenceInOrder &&
 	    sess->sess_ops->DataPDUInOrder)
 		return 0;

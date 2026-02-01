@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Real time clock device driver for DA9063
- * Copyright (C) 2013-2015  Dialog Semiconductor Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -36,7 +33,7 @@ enum {
 };
 
 struct da9063_compatible_rtc_regmap {
-	/* REGS */
+	 
 	int rtc_enable_reg;
 	int rtc_enable_32k_crystal_reg;
 	int rtc_alarm_secs_reg;
@@ -44,7 +41,7 @@ struct da9063_compatible_rtc_regmap {
 	int rtc_count_secs_reg;
 	int rtc_count_year_reg;
 	int rtc_event_reg;
-	/* MASKS */
+	 
 	int rtc_enable_mask;
 	int rtc_crystal_mask;
 	int rtc_event_alarm_mask;
@@ -58,7 +55,7 @@ struct da9063_compatible_rtc_regmap {
 	int rtc_count_day_mask;
 	int rtc_count_month_mask;
 	int rtc_count_year_mask;
-	/* ALARM CONFIG */
+	 
 	int rtc_data_start;
 	int rtc_alarm_len;
 };
@@ -72,14 +69,14 @@ struct da9063_compatible_rtc {
 };
 
 static const struct da9063_compatible_rtc_regmap da9063_ad_regs = {
-	/* REGS */
+	 
 	.rtc_enable_reg             = DA9063_REG_CONTROL_E,
 	.rtc_alarm_secs_reg         = DA9063_AD_REG_ALARM_MI,
 	.rtc_alarm_year_reg         = DA9063_AD_REG_ALARM_Y,
 	.rtc_count_secs_reg         = DA9063_REG_COUNT_S,
 	.rtc_count_year_reg         = DA9063_REG_COUNT_Y,
 	.rtc_event_reg              = DA9063_REG_EVENT_A,
-	/* MASKS */
+	 
 	.rtc_enable_mask            = DA9063_RTC_EN,
 	.rtc_crystal_mask           = DA9063_CRYSTAL,
 	.rtc_enable_32k_crystal_reg = DA9063_REG_EN_32K,
@@ -95,20 +92,20 @@ static const struct da9063_compatible_rtc_regmap da9063_ad_regs = {
 	.rtc_count_day_mask         = DA9063_COUNT_DAY_MASK,
 	.rtc_count_month_mask       = DA9063_COUNT_MONTH_MASK,
 	.rtc_count_year_mask        = DA9063_COUNT_YEAR_MASK,
-	/* ALARM CONFIG */
+	 
 	.rtc_data_start             = RTC_MIN,
 	.rtc_alarm_len              = RTC_DATA_LEN - 1,
 };
 
 static const struct da9063_compatible_rtc_regmap da9063_bb_regs = {
-	/* REGS */
+	 
 	.rtc_enable_reg             = DA9063_REG_CONTROL_E,
 	.rtc_alarm_secs_reg         = DA9063_BB_REG_ALARM_S,
 	.rtc_alarm_year_reg         = DA9063_BB_REG_ALARM_Y,
 	.rtc_count_secs_reg         = DA9063_REG_COUNT_S,
 	.rtc_count_year_reg         = DA9063_REG_COUNT_Y,
 	.rtc_event_reg              = DA9063_REG_EVENT_A,
-	/* MASKS */
+	 
 	.rtc_enable_mask            = DA9063_RTC_EN,
 	.rtc_crystal_mask           = DA9063_CRYSTAL,
 	.rtc_enable_32k_crystal_reg = DA9063_REG_EN_32K,
@@ -124,20 +121,20 @@ static const struct da9063_compatible_rtc_regmap da9063_bb_regs = {
 	.rtc_count_day_mask         = DA9063_COUNT_DAY_MASK,
 	.rtc_count_month_mask       = DA9063_COUNT_MONTH_MASK,
 	.rtc_count_year_mask        = DA9063_COUNT_YEAR_MASK,
-	/* ALARM CONFIG */
+	 
 	.rtc_data_start             = RTC_SEC,
 	.rtc_alarm_len              = RTC_DATA_LEN,
 };
 
 static const struct da9063_compatible_rtc_regmap da9062_aa_regs = {
-	/* REGS */
+	 
 	.rtc_enable_reg             = DA9062AA_CONTROL_E,
 	.rtc_alarm_secs_reg         = DA9062AA_ALARM_S,
 	.rtc_alarm_year_reg         = DA9062AA_ALARM_Y,
 	.rtc_count_secs_reg         = DA9062AA_COUNT_S,
 	.rtc_count_year_reg         = DA9062AA_COUNT_Y,
 	.rtc_event_reg              = DA9062AA_EVENT_A,
-	/* MASKS */
+	 
 	.rtc_enable_mask            = DA9062AA_RTC_EN_MASK,
 	.rtc_crystal_mask           = DA9062AA_CRYSTAL_MASK,
 	.rtc_enable_32k_crystal_reg = DA9062AA_EN_32K,
@@ -152,7 +149,7 @@ static const struct da9063_compatible_rtc_regmap da9062_aa_regs = {
 	.rtc_count_day_mask         = DA9062AA_COUNT_DAY_MASK,
 	.rtc_count_month_mask       = DA9062AA_COUNT_MONTH_MASK,
 	.rtc_count_year_mask        = DA9062AA_COUNT_YEAR_MASK,
-	/* ALARM CONFIG */
+	 
 	.rtc_data_start             = RTC_SEC,
 	.rtc_alarm_len              = RTC_DATA_LEN,
 };
@@ -243,7 +240,7 @@ static int da9063_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm_secs = rtc_tm_to_time64(tm);
 	al_secs = rtc_tm_to_time64(&rtc->alarm_time);
 
-	/* handle the rtc synchronisation delay */
+	 
 	if (rtc->rtc_sync && al_secs - tm_secs == 1)
 		memcpy(tm, &rtc->alarm_time, sizeof(struct rtc_time));
 	else
@@ -478,10 +475,7 @@ static int da9063_rtc_probe(struct platform_device *pdev)
 
 	if (config->rtc_data_start != RTC_SEC) {
 		set_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->rtc_dev->features);
-		/*
-		 * TODO: some models have alarms on a minute boundary but still
-		 * support real hardware interrupts.
-		 */
+		 
 		clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->rtc_dev->features);
 	}
 

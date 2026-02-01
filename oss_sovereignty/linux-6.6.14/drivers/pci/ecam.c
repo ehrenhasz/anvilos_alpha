@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2016 Broadcom
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -11,19 +9,10 @@
 #include <linux/pci-ecam.h>
 #include <linux/slab.h>
 
-/*
- * On 64-bit systems, we do a single ioremap for the whole config space
- * since we have enough virtual address range available.  On 32-bit, we
- * ioremap the config space for each bus individually.
- */
+ 
 static const bool per_bus_mapping = !IS_ENABLED(CONFIG_64BIT);
 
-/*
- * Create a PCI config space window
- *  - reserve mem region
- *  - alloc struct pci_config_window with space for all mappings
- *  - ioremap the config space
- */
+ 
 struct pci_config_window *pci_ecam_create(struct device *dev,
 		struct resource *cfgres, struct resource *busr,
 		const struct pci_ecam_ops *ops)
@@ -41,7 +30,7 @@ struct pci_config_window *pci_ecam_create(struct device *dev,
 	if (!cfg)
 		return ERR_PTR(-ENOMEM);
 
-	/* ECAM-compliant platforms need not supply ops->bus_shift */
+	 
 	if (!bus_shift)
 		bus_shift = PCIE_ECAM_BUS_SHIFT;
 
@@ -161,9 +150,7 @@ static void pci_ecam_remove_bus(struct pci_bus *bus)
 	}
 }
 
-/*
- * Function to implement the pci_ops ->map_bus method
- */
+ 
 void __iomem *pci_ecam_map_bus(struct pci_bus *bus, unsigned int devfn,
 			       int where)
 {
@@ -196,7 +183,7 @@ void __iomem *pci_ecam_map_bus(struct pci_bus *bus, unsigned int devfn,
 }
 EXPORT_SYMBOL_GPL(pci_ecam_map_bus);
 
-/* ECAM ops */
+ 
 const struct pci_ecam_ops pci_generic_ecam_ops = {
 	.pci_ops	= {
 		.add_bus	= pci_ecam_add_bus,
@@ -209,7 +196,7 @@ const struct pci_ecam_ops pci_generic_ecam_ops = {
 EXPORT_SYMBOL_GPL(pci_generic_ecam_ops);
 
 #if defined(CONFIG_ACPI) && defined(CONFIG_PCI_QUIRKS)
-/* ECAM ops for 32-bit access only (non-compliant) */
+ 
 const struct pci_ecam_ops pci_32b_ops = {
 	.pci_ops	= {
 		.add_bus	= pci_ecam_add_bus,
@@ -220,7 +207,7 @@ const struct pci_ecam_ops pci_32b_ops = {
 	}
 };
 
-/* ECAM ops for 32-bit read only (non-compliant) */
+ 
 const struct pci_ecam_ops pci_32b_read_ops = {
 	.pci_ops	= {
 		.add_bus	= pci_ecam_add_bus,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	Copyright IBM Corp. 2001, 2007
- *	Authors:	Peter Tiedemann (ptiedem@de.ibm.com)
- *
- */
+
+ 
 
 #include <linux/stddef.h>
 #include <linux/string.h>
@@ -17,9 +13,7 @@
 #include <linux/debugfs.h>
 #include "ctcm_dbug.h"
 
-/*
- * Debug Facility Stuff
- */
+ 
 
 struct ctcm_dbf_info ctcm_dbf[CTCM_DBF_INFOS] = {
 	[CTCM_DBF_SETUP]     = {"ctc_setup", 8, 1, 64, CTC_DBF_INFO, NULL},
@@ -43,7 +37,7 @@ int ctcm_register_dbf_views(void)
 {
 	int x;
 	for (x = 0; x < CTCM_DBF_INFOS; x++) {
-		/* register the areas */
+		 
 		ctcm_dbf[x].id = debug_register(ctcm_dbf[x].name,
 						ctcm_dbf[x].pages,
 						ctcm_dbf[x].areas,
@@ -53,9 +47,9 @@ int ctcm_register_dbf_views(void)
 			return -ENOMEM;
 		}
 
-		/* register a view */
+		 
 		debug_register_view(ctcm_dbf[x].id, &debug_hex_ascii_view);
-		/* set a passing level */
+		 
 		debug_set_level(ctcm_dbf[x].id, ctcm_dbf[x].level);
 	}
 

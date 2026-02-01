@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:
- *      Mark Yao <mark.yao@rock-chips.com>
- *      Sandy Huang <hjc@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -36,11 +31,7 @@
 
 struct rockchip_lvds;
 
-/**
- * struct rockchip_lvds_soc_data - rockchip lvds Soc private data
- * @probe: LVDS platform probe function
- * @helper_funcs: LVDS connector helper functions
- */
+ 
 struct rockchip_lvds_soc_data {
 	int (*probe)(struct platform_device *pdev, struct rockchip_lvds *lvds);
 	const struct drm_encoder_helper_funcs *helper_funcs;
@@ -53,8 +44,8 @@ struct rockchip_lvds {
 	struct clk *pclk;
 	struct phy *dphy;
 	const struct rockchip_lvds_soc_data *soc_data;
-	int output; /* rgb lvds or dual lvds output */
-	int format; /* vesa or jeida format */
+	int output;  
+	int format;  
 	struct drm_device *drm_dev;
 	struct drm_panel *panel;
 	struct drm_bridge *bridge;
@@ -247,7 +238,7 @@ static int rk3288_lvds_grf_config(struct drm_encoder *encoder,
 	u32 val;
 	int ret;
 
-	/* iomux to LCD data/sync mode */
+	 
 	if (lvds->output == DISPLAY_OUTPUT_RGB)
 		if (lvds->pins && !IS_ERR(lvds->pins->default_state))
 			pinctrl_select_state(lvds->pins->p,
@@ -342,7 +333,7 @@ static int px30_lvds_poweron(struct rockchip_lvds *lvds)
 		return ret;
 	}
 
-	/* Enable LVDS mode */
+	 
 	ret = regmap_update_bits(lvds->grf, PX30_LVDS_GRF_PD_VO_CON1,
 				  PX30_LVDS_MODE_EN(1) | PX30_LVDS_P2S_EN(1),
 				  PX30_LVDS_MODE_EN(1) | PX30_LVDS_P2S_EN(1));
@@ -372,7 +363,7 @@ static int px30_lvds_grf_config(struct drm_encoder *encoder,
 		return -EINVAL;
 	}
 
-	/* Set format */
+	 
 	return regmap_update_bits(lvds->grf, PX30_LVDS_GRF_PD_VO_CON1,
 				  PX30_LVDS_FORMAT(lvds->format),
 				  PX30_LVDS_FORMAT(lvds->format));
@@ -496,14 +487,14 @@ static int px30_lvds_probe(struct platform_device *pdev,
 {
 	int ret;
 
-	/* MSB */
+	 
 	ret =  regmap_update_bits(lvds->grf, PX30_LVDS_GRF_PD_VO_CON1,
 				  PX30_LVDS_MSBSEL(1),
 				  PX30_LVDS_MSBSEL(1));
 	if (ret)
 		return ret;
 
-	/* PHY */
+	 
 	lvds->dphy = devm_phy_get(&pdev->dev, "dphy");
 	if (IS_ERR(lvds->dphy))
 		return PTR_ERR(lvds->dphy);
@@ -586,7 +577,7 @@ static int rockchip_lvds_bind(struct device *dev, struct device *master,
 	else
 		remote = lvds->bridge->of_node;
 	if (of_property_read_string(dev->of_node, "rockchip,output", &name))
-		/* default set it as output rgb */
+		 
 		lvds->output = DISPLAY_OUTPUT_RGB;
 	else
 		lvds->output = rockchip_lvds_name_to_output(name);
@@ -598,7 +589,7 @@ static int rockchip_lvds_bind(struct device *dev, struct device *master,
 	}
 
 	if (of_property_read_string(remote, "data-mapping", &name))
-		/* default set it as format vesa 18 */
+		 
 		lvds->format = LVDS_VESA_18;
 	else
 		lvds->format = rockchip_lvds_name_to_format(name);

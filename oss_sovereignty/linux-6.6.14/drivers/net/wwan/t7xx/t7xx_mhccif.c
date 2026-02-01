@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/completion.h>
@@ -33,11 +22,11 @@ static void t7xx_mhccif_clear_interrupts(struct t7xx_pci_dev *t7xx_dev, u32 mask
 {
 	void __iomem *mhccif_pbase = t7xx_dev->base_addr.mhccif_rc_base;
 
-	/* Clear level 2 interrupt */
+	 
 	iowrite32(mask, mhccif_pbase + REG_EP2RC_SW_INT_ACK);
-	/* Ensure write is complete */
+	 
 	t7xx_mhccif_read_sw_int_sts(t7xx_dev);
-	/* Clear level 1 interrupt */
+	 
 	t7xx_pcie_mac_clear_int_status(t7xx_dev, MHCCIF_INT);
 }
 

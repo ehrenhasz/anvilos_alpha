@@ -1,16 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
 
-/* Ethtool support for Mellanox Gigabit Ethernet driver
- *
- * Copyright (C) 2020-2021 NVIDIA CORPORATION & AFFILIATES
- */
+
+ 
 
 #include <linux/phy.h>
 
 #include "mlxbf_gige.h"
 #include "mlxbf_gige_regs.h"
 
-/* Start of struct ethtool_ops functions */
+ 
 static int mlxbf_gige_get_regs_len(struct net_device *netdev)
 {
 	return MLXBF_GIGE_MMIO_REG_SZ;
@@ -23,11 +20,7 @@ static void mlxbf_gige_get_regs(struct net_device *netdev,
 
 	regs->version = MLXBF_GIGE_REGS_VERSION;
 
-	/* Read entire MMIO register space and store results
-	 * into the provided buffer. By design, a read to an
-	 * offset without an existing register will be
-	 * acknowledged and return zero.
-	 */
+	 
 	memcpy_fromio(p, priv->base, MLXBF_GIGE_MMIO_REG_SZ);
 }
 
@@ -84,21 +77,7 @@ static void mlxbf_gige_get_ethtool_stats(struct net_device *netdev,
 {
 	struct mlxbf_gige *priv = netdev_priv(netdev);
 
-	/* Fill data array with interface statistics
-	 *
-	 * NOTE: the data writes must be in
-	 *       sync with the strings shown in
-	 *       the mlxbf_gige_ethtool_stats_keys[] array
-	 *
-	 * NOTE2: certain statistics below are zeroed upon
-	 *        port disable, so the calculation below
-	 *        must include the "cached" value of the stat
-	 *        plus the value read directly from hardware.
-	 *        Cached statistics are currently:
-	 *          rx_din_dropped_pkts
-	 *          rx_filter_passed_pkts
-	 *          rx_filter_discard_pkts
-	 */
+	 
 	*data++ = priv->stats.hw_access_errors;
 	*data++ = priv->stats.tx_invalid_checksums;
 	*data++ = priv->stats.tx_small_frames;

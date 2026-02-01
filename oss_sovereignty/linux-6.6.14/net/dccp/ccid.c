@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  net/dccp/ccid.c
- *
- *  An implementation of the DCCP protocol
- *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- *  CCID infrastructure
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -30,7 +23,7 @@ static struct ccid_operations *ccid_by_number(const u8 id)
 	return NULL;
 }
 
-/* check that up to @array_len members in @ccid_array are supported */
+ 
 bool ccid_support_check(u8 const *ccid_array, u8 array_len)
 {
 	while (array_len > 0)
@@ -39,13 +32,7 @@ bool ccid_support_check(u8 const *ccid_array, u8 array_len)
 	return true;
 }
 
-/**
- * ccid_get_builtin_ccids  -  Populate a list of built-in CCIDs
- * @ccid_array: pointer to copy into
- * @array_len: value to return length into
- *
- * This function allocates memory - caller must see that it is freed after use.
- */
+ 
 int ccid_get_builtin_ccids(u8 **ccid_array, u8 *array_len)
 {
 	*ccid_array = kmalloc(ARRAY_SIZE(ccids), gfp_any());

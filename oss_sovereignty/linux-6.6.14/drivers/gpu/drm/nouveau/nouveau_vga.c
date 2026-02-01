@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include <linux/vgaarb.h>
 #include <linux/vga_switcheroo.h>
 
@@ -65,11 +65,7 @@ nouveau_switcheroo_can_switch(struct pci_dev *pdev)
 {
 	struct drm_device *dev = pci_get_drvdata(pdev);
 
-	/*
-	 * FIXME: open_count is protected by drm_global_mutex but that would lead to
-	 * locking inversion with the driver load path. And the access here is
-	 * completely racy anyway. So don't bother with locking for now.
-	 */
+	 
 	return atomic_read(&dev->open_count) == 0;
 }
 
@@ -87,14 +83,14 @@ nouveau_vga_init(struct nouveau_drm *drm)
 	bool runtime = nouveau_pmops_runtime();
 	struct pci_dev *pdev;
 
-	/* only relevant for PCI devices */
+	 
 	if (!dev_is_pci(dev->dev))
 		return;
 	pdev = to_pci_dev(dev->dev);
 
 	vga_client_register(pdev, nouveau_vga_set_decode);
 
-	/* don't register Thunderbolt eGPU with vga_switcheroo */
+	 
 	if (pci_is_thunderbolt_attached(pdev))
 		return;
 
@@ -111,7 +107,7 @@ nouveau_vga_fini(struct nouveau_drm *drm)
 	bool runtime = nouveau_pmops_runtime();
 	struct pci_dev *pdev;
 
-	/* only relevant for PCI devices */
+	 
 	if (!dev_is_pci(dev->dev))
 		return;
 	pdev = to_pci_dev(dev->dev);

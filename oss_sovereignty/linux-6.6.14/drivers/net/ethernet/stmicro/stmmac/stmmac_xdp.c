@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021, Intel Corporation. */
+
+ 
 
 #include <net/xdp_sock_drv.h>
 
@@ -19,9 +19,7 @@ static int stmmac_xdp_enable_pool(struct stmmac_priv *priv,
 		return -EINVAL;
 
 	frame_size = xsk_pool_get_rx_frame_size(pool);
-	/* XDP ZC does not span multiple frame, make sure XSK pool buffer
-	 * size can at least store Q-in-Q frame.
-	 */
+	 
 	if (frame_size < ETH_FRAME_LEN + VLAN_HLEN * 2)
 		return -EOPNOTSUPP;
 
@@ -110,9 +108,7 @@ int stmmac_xdp_set_prog(struct stmmac_priv *priv, struct bpf_prog *prog,
 	if_running = netif_running(dev);
 
 	if (prog && dev->mtu > ETH_DATA_LEN) {
-		/* For now, the driver doesn't support XDP functionality with
-		 * jumbo frames so we return error.
-		 */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "Jumbo frames not supported");
 		return -EOPNOTSUPP;
 	}
@@ -128,7 +124,7 @@ int stmmac_xdp_set_prog(struct stmmac_priv *priv, struct bpf_prog *prog,
 	if (old_prog)
 		bpf_prog_put(old_prog);
 
-	/* Disable RX SPH for XDP operation */
+	 
 	priv->sph = priv->sph_cap && !stmmac_xdp_is_enabled(priv);
 
 	if (if_running && need_update)

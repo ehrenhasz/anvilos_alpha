@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 IBM Corp.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/uaccess.h>
@@ -79,7 +77,7 @@ static ssize_t guest_collect_vpd(struct cxl *adapter, struct cxl_afu *afu,
 	if (buf == NULL)
 		return -EINVAL;
 
-	/* number of entries in the list */
+	 
 	entries = len / SG_BUFFER_SIZE;
 	mod = len % SG_BUFFER_SIZE;
 	if (mod)
@@ -123,10 +121,7 @@ static ssize_t guest_collect_vpd(struct cxl *adapter, struct cxl_afu *afu,
 		entries, out);
 
 	if (!rc) {
-		/*
-		 * hcall returns in 'out' the size of available VPDs.
-		 * It fills the buffer with as much data as possible.
-		 */
+		 
 		if (out < len)
 			len = out;
 		rc = len;
@@ -502,19 +497,19 @@ static int guest_afu_cr_read64(struct cxl_afu *afu, int cr_idx, u64 offset,
 
 static int guest_afu_cr_write32(struct cxl_afu *afu, int cr, u64 off, u32 in)
 {
-	/* config record is not writable from guest */
+	 
 	return -EPERM;
 }
 
 static int guest_afu_cr_write16(struct cxl_afu *afu, int cr, u64 off, u16 in)
 {
-	/* config record is not writable from guest */
+	 
 	return -EPERM;
 }
 
 static int guest_afu_cr_write8(struct cxl_afu *afu, int cr, u64 off, u8 in)
 {
-	/* config record is not writable from guest */
+	 
 	return -EPERM;
 }
 
@@ -528,7 +523,7 @@ static int attach_afu_directed(struct cxl_context *ctx, u64 wed, u64 amr)
 	u64 mmio_addr, mmio_size;
 	__be64 flags = 0;
 
-	/* Must be 8 byte aligned and cannot cross a 4096 byte boundary */
+	 
 	if (!(elem = (struct cxl_process_element_hcall *)
 			get_zeroed_page(GFP_KERNEL)))
 		return -ENOMEM;
@@ -552,21 +547,18 @@ static int attach_afu_directed(struct cxl_context *ctx, u64 wed, u64 amr)
 		put_cred(cred);
 	}
 	elem->flags         = cpu_to_be64(flags);
-	elem->common.tid    = cpu_to_be32(0); /* Unused */
+	elem->common.tid    = cpu_to_be32(0);  
 	elem->common.pid    = cpu_to_be32(pid);
-	elem->common.csrp   = cpu_to_be64(0); /* disable */
-	elem->common.u.psl8.aurp0  = cpu_to_be64(0); /* disable */
-	elem->common.u.psl8.aurp1  = cpu_to_be64(0); /* disable */
+	elem->common.csrp   = cpu_to_be64(0);  
+	elem->common.u.psl8.aurp0  = cpu_to_be64(0);  
+	elem->common.u.psl8.aurp1  = cpu_to_be64(0);  
 
 	cxl_prefault(ctx, wed);
 
 	elem->common.u.psl8.sstp0  = cpu_to_be64(ctx->sstp0);
 	elem->common.u.psl8.sstp1  = cpu_to_be64(ctx->sstp1);
 
-	/*
-	 * Ensure we have at least one interrupt allocated to take faults for
-	 * kernel contexts that may not have allocated any AFU IRQs at all:
-	 */
+	 
 	if (ctx->irqs.range[0] == 0) {
 		rc = afu_register_irqs(ctx, 0);
 		if (rc)
@@ -600,17 +592,10 @@ static int attach_afu_directed(struct cxl_context *ctx, u64 wed, u64 amr)
 		}
 		if (ctx->afu->pp_psa && mmio_size &&
 			ctx->afu->pp_size == 0) {
-			/*
-			 * There's no property in the device tree to read the
-			 * pp_size. We only find out at the 1st attach.
-			 * Compared to bare-metal, it is too late and we
-			 * should really lock here. However, on powerVM,
-			 * pp_size is really only used to display in /sys.
-			 * Being discussed with pHyp for their next release.
-			 */
+			 
 			ctx->afu->pp_size = mmio_size;
 		}
-		/* from PAPR: process element is bytes 4-7 of process token */
+		 
 		ctx->external_pe = ctx->process_token & 0xFFFFFFFF;
 		pr_devel("CXL pe=%i is known as %i for pHyp, mmio_size=%#llx",
 			ctx->pe, ctx->external_pe, ctx->psn_size);
@@ -631,7 +616,7 @@ static int guest_attach_process(struct cxl_context *ctx, bool kernel, u64 wed, u
 	if (ctx->afu->current_mode == CXL_MODE_DIRECTED)
 		return attach_afu_directed(ctx, wed, amr);
 
-	/* dedicated mode not supported on FW840 */
+	 
 
 	return -EINVAL;
 }
@@ -960,24 +945,14 @@ int cxl_guest_init_afu(struct cxl *adapter, int slice, struct device_node *afu_n
 	if ((rc = guest_register_serr_irq(afu)))
 		goto err2;
 
-	/*
-	 * After we call this function we must not free the afu directly, even
-	 * if it returns an error!
-	 */
+	 
 	if ((rc = cxl_register_afu(afu)))
 		goto err_put_dev;
 
 	if ((rc = cxl_sysfs_afu_add(afu)))
 		goto err_del_dev;
 
-	/*
-	 * pHyp doesn't expose the programming models supported by the
-	 * AFU. pHyp currently only supports directed mode. If it adds
-	 * dedicated mode later, this version of cxl has no way to
-	 * detect it. So we'll initialize the driver, but the first
-	 * attach will fail.
-	 * Being discussed with pHyp to do better (likely new property)
-	 */
+	 
 	if (afu->max_procs_virtualised == 1)
 		afu->modes_supported = CXL_MODE_DEDICATED;
 	else
@@ -990,10 +965,7 @@ int cxl_guest_init_afu(struct cxl *adapter, int slice, struct device_node *afu_n
 
 	afu->enabled = true;
 
-	/*
-	 * wake up the cpu periodically to check the state
-	 * of the AFU using "afu" stored in the guest structure.
-	 */
+	 
 	afu->guest->parent = afu;
 	afu->guest->handle_err = true;
 	INIT_DELAYED_WORK(&afu->guest->work_err, afu_handle_errstate);
@@ -1027,7 +999,7 @@ void cxl_guest_remove_afu(struct cxl_afu *afu)
 	if (!afu)
 		return;
 
-	/* flush and stop pending job */
+	 
 	afu->guest->handle_err = false;
 	flush_delayed_work(&afu->guest->work_err);
 
@@ -1068,9 +1040,7 @@ static void free_adapter(struct cxl *adapter)
 
 static int properties_look_ok(struct cxl *adapter)
 {
-	/* The absence of this property means that the operational
-	 * status is unknown or okay
-	 */
+	 
 	if (strlen(adapter->guest->status) &&
 	    strcmp(adapter->guest->status, "okay")) {
 		pr_err("ABORTING:Bad operational status of the device\n");
@@ -1120,10 +1090,7 @@ struct cxl *cxl_guest_init_adapter(struct device_node *np, struct platform_devic
 	adapter->dev.release = release_adapter;
 	dev_set_drvdata(&pdev->dev, adapter);
 
-	/*
-	 * Hypervisor controls PSL timebase initialization (p1 register).
-	 * On FW840, PSL is initialized.
-	 */
+	 
 	adapter->psl_timebase_synced = true;
 
 	if ((rc = cxl_of_read_adapter_handle(adapter, np)))
@@ -1138,17 +1105,14 @@ struct cxl *cxl_guest_init_adapter(struct device_node *np, struct platform_devic
 	if ((rc = cxl_guest_add_chardev(adapter)))
 		goto err1;
 
-	/*
-	 * After we call this function we must not free the adapter directly,
-	 * even if it returns an error!
-	 */
+	 
 	if ((rc = cxl_register_adapter(adapter)))
 		goto err_put_dev;
 
 	if ((rc = cxl_sysfs_adapter_add(adapter)))
 		goto err_del_dev;
 
-	/* release the context lock as the adapter is configured */
+	 
 	cxl_adapter_context_unlock(adapter);
 
 	return adapter;

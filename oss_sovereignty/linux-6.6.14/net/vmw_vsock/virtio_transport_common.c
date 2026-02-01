@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * common code for virtio vsock
- *
- * Copyright (C) 2013-2015 Red Hat, Inc.
- * Author: Asias He <asias@redhat.com>
- *         Stefan Hajnoczi <stefanha@redhat.com>
- */
+
+ 
 #include <linux/spinlock.h>
 #include <linux/module.h>
 #include <linux/sched/signal.h>
@@ -20,10 +14,10 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/vsock_virtio_transport_common.h>
 
-/* How long to wait for graceful shutdown of a connection */
+ 
 #define VSOCK_CLOSE_TIMEOUT (8 * HZ)
 
-/* Threshold for detecting small packets to copy */
+ 
 #define GOOD_COPY_LEN  128
 
 static const struct virtio_transport *
@@ -37,10 +31,7 @@ virtio_transport_get_ops(struct vsock_sock *vsk)
 	return container_of(t, struct virtio_transport, transport);
 }
 
-/* Returns a new packet on success, otherwise returns NULL.
- *
- * If NULL is returned, errp is set to a negative errno.
- */
+ 
 static struct sk_buff *
 virtio_transport_alloc_skb(struct virtio_vsock_pkt_info *info,
 			   size_t len,
@@ -108,7 +99,7 @@ out:
 	return NULL;
 }
 
-/* Packet capture */
+ 
 static struct sk_buff *virtio_transport_build_skb(void *opaque)
 {
 	struct virtio_vsock_hdr *pkt_hdr;
@@ -118,10 +109,7 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
 	size_t payload_len;
 	void *payload_buf;
 
-	/* A packet could be split to fit the RX buffer, so we can retrieve
-	 * the payload length from the header and the buffer pointer taking
-	 * care of the offset in the original packet.
-	 */
+	 
 	pkt_hdr = virtio_vsock_hdr(pkt);
 	payload_len = pkt->len;
 	payload_buf = pkt->data;
@@ -133,7 +121,7 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
 
 	hdr = skb_put(skb, sizeof(*hdr));
 
-	/* pkt->hdr is little-endian so no need to byteswap here */
+	 
 	hdr->src_cid = pkt_hdr->src_cid;
 	hdr->src_port = pkt_hdr->src_port;
 	hdr->dst_cid = pkt_hdr->dst_cid;
@@ -191,11 +179,7 @@ static u16 virtio_transport_get_type(struct sock *sk)
 		return VIRTIO_VSOCK_TYPE_SEQPACKET;
 }
 
-/* This function can only be used on connecting/connected sockets,
- * since a socket assigned to a transport is required.
- *
- * Do not use on listener sockets!
- */
+ 
 static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
 					  struct virtio_vsock_pkt_info *info)
 {
@@ -224,10 +208,10 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
 
 	vvs = vsk->trans;
 
-	/* virtio_transport_get_credit might return less than pkt_len credit */
+	 
 	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
 
-	/* Do not send zero length OP_RW pkt */
+	 
 	if (pkt_len == 0 && info->op == VIRTIO_VSOCK_OP_RW)
 		return pkt_len;
 
@@ -253,12 +237,7 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
 		if (ret < 0)
 			break;
 
-		/* Both virtio and vhost 'send_pkt()' returns 'skb_len',
-		 * but for reliability use 'ret' instead of 'skb_len'.
-		 * Also if partial send happens (e.g. 'ret' != 'skb_len')
-		 * somehow, we break this loop, but account such returned
-		 * value in 'virtio_transport_put_credit()'.
-		 */
+		 
 		rest_len -= ret;
 
 		if (WARN_ONCE(ret != skb_len,
@@ -269,7 +248,7 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
 
 	virtio_transport_put_credit(vvs, rest_len);
 
-	/* Return number of bytes, if any data has been sent. */
+	 
 	if (rest_len != pkt_len)
 		ret = pkt_len - rest_len;
 
@@ -365,9 +344,7 @@ virtio_transport_stream_do_peek(struct vsock_sock *vsk,
 
 		spin_unlock_bh(&vvs->rx_lock);
 
-		/* sk_lock is held by caller so no one else can dequeue.
-		 * Unlock rx_lock since memcpy_to_msg() may sleep.
-		 */
+		 
 		err = memcpy_to_msg(msg, skb->data, bytes);
 		if (err)
 			goto out;
@@ -418,9 +395,7 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
 		if (bytes > skb->len)
 			bytes = skb->len;
 
-		/* sk_lock is held by caller so no one else can dequeue.
-		 * Unlock rx_lock since memcpy_to_msg() may sleep.
-		 */
+		 
 		spin_unlock_bh(&vvs->rx_lock);
 
 		err = memcpy_to_msg(msg, skb->data, bytes);
@@ -448,15 +423,7 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
 
 	spin_unlock_bh(&vvs->rx_lock);
 
-	/* To reduce the number of credit update messages,
-	 * don't update credits as long as lots of space is available.
-	 * Note: the limit chosen here is arbitrary. Setting the limit
-	 * too high causes extra messages. Too low causes transmitter
-	 * stalls. As stalls are in theory more expensive than extra
-	 * messages, we set the limit to a high value. TODO: experiment
-	 * with different values. Also send credit update message when
-	 * number of bytes in rx queue is not enough to wake up reader.
-	 */
+	 
 	if (fwd_cnt_delta &&
 	    (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE || low_rx_bytes))
 		virtio_transport_send_credit_update(vsk);
@@ -500,9 +467,7 @@ virtio_transport_seqpacket_do_peek(struct vsock_sock *vsk,
 
 			spin_unlock_bh(&vvs->rx_lock);
 
-			/* sk_lock is held by caller so no one else can dequeue.
-			 * Unlock rx_lock since memcpy_to_msg() may sleep.
-			 */
+			 
 			err = memcpy_to_msg(msg, skb->data, bytes);
 			if (err)
 				return err;
@@ -561,16 +526,12 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
 			if (bytes_to_copy) {
 				int err;
 
-				/* sk_lock is held by caller so no one else can dequeue.
-				 * Unlock rx_lock since memcpy_to_msg() may sleep.
-				 */
+				 
 				spin_unlock_bh(&vvs->rx_lock);
 
 				err = memcpy_to_msg(msg, skb->data, bytes_to_copy);
 				if (err) {
-					/* Copy of message failed. Rest of
-					 * fragments will be freed without copy.
-					 */
+					 
 					dequeued_len = err;
 				} else {
 					user_buf_len -= bytes_to_copy;
@@ -736,7 +697,7 @@ int virtio_transport_do_socket_init(struct vsock_sock *vsk,
 }
 EXPORT_SYMBOL_GPL(virtio_transport_do_socket_init);
 
-/* sk_lock held by the caller */
+ 
 void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
 {
 	struct virtio_vsock_sock *vvs = vsk->trans;
@@ -935,16 +896,14 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
 		.vsk = vsk,
 	};
 
-	/* Send RST only if the original pkt is not a RST pkt */
+	 
 	if (skb && le16_to_cpu(virtio_vsock_hdr(skb)->op) == VIRTIO_VSOCK_OP_RST)
 		return 0;
 
 	return virtio_transport_send_pkt_info(vsk, &info);
 }
 
-/* Normally packets are associated with a socket.  There may be no socket if an
- * attempt was made to connect to a socket that does not exist.
- */
+ 
 static int virtio_transport_reset_no_sock(const struct virtio_transport *t,
 					  struct sk_buff *skb)
 {
@@ -956,7 +915,7 @@ static int virtio_transport_reset_no_sock(const struct virtio_transport *t,
 	};
 	struct sk_buff *reply;
 
-	/* Send RST only if the original pkt is not a RST pkt */
+	 
 	if (le16_to_cpu(hdr->op) == VIRTIO_VSOCK_OP_RST)
 		return 0;
 
@@ -974,14 +933,12 @@ static int virtio_transport_reset_no_sock(const struct virtio_transport *t,
 	return t->send_pkt(reply);
 }
 
-/* This function should be called with sk_lock held and SOCK_DONE set */
+ 
 static void virtio_transport_remove_sock(struct vsock_sock *vsk)
 {
 	struct virtio_vsock_sock *vvs = vsk->trans;
 
-	/* We don't need to take rx_lock, as the socket is closing and we are
-	 * removing it.
-	 */
+	 
 	__skb_queue_purge(&vvs->rx_queue);
 	vsock_remove_sock(vsk);
 }
@@ -1020,7 +977,7 @@ static void virtio_transport_do_close(struct vsock_sock *vsk,
 
 		virtio_transport_remove_sock(vsk);
 
-		/* Release refcnt obtained when we scheduled the timeout */
+		 
 		sock_put(sk);
 	}
 }
@@ -1046,7 +1003,7 @@ static void virtio_transport_close_timeout(struct work_struct *work)
 	sock_put(sk);
 }
 
-/* User context, vsk->sk is locked */
+ 
 static bool virtio_transport_close(struct vsock_sock *vsk)
 {
 	struct sock *sk = &vsk->sk;
@@ -1055,7 +1012,7 @@ static bool virtio_transport_close(struct vsock_sock *vsk)
 	      sk->sk_state == TCP_CLOSING))
 		return true;
 
-	/* Already received SHUTDOWN from peer, reply with RST */
+	 
 	if ((vsk->peer_shutdown & SHUTDOWN_MASK) == SHUTDOWN_MASK) {
 		(void)virtio_transport_reset(vsk, NULL);
 		return true;
@@ -1154,10 +1111,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
 	if (le32_to_cpu(hdr->flags) & VIRTIO_VSOCK_SEQ_EOM)
 		vvs->msg_count++;
 
-	/* Try to copy small packets into the buffer of last packet queued,
-	 * to avoid wasting memory queueing the entire buffer with a small
-	 * payload.
-	 */
+	 
 	if (len <= GOOD_COPY_LEN && !skb_queue_empty(&vvs->rx_queue)) {
 		struct virtio_vsock_hdr *last_hdr;
 		struct sk_buff *last_skb;
@@ -1165,12 +1119,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
 		last_skb = skb_peek_tail(&vvs->rx_queue);
 		last_hdr = virtio_vsock_hdr(last_skb);
 
-		/* If there is space in the last packet queued, we copy the
-		 * new packet in its buffer. We avoid this if the last packet
-		 * queued has VIRTIO_VSOCK_SEQ_EOM set, because this is
-		 * delimiter of SEQPACKET message, so 'pkt' is the first packet
-		 * of a new message.
-		 */
+		 
 		if (skb->len < skb_tailroom(last_skb) &&
 		    !(le32_to_cpu(last_hdr->flags) & VIRTIO_VSOCK_SEQ_EOM)) {
 			memcpy(skb_put(last_skb, skb->len), skb->data, skb->len);
@@ -1218,11 +1167,7 @@ virtio_transport_recv_connected(struct sock *sk,
 				(void)virtio_transport_reset(vsk, NULL);
 				virtio_transport_do_close(vsk, true);
 			}
-			/* Remove this socket anyway because the remote peer sent
-			 * the shutdown. This way a new connection will succeed
-			 * if the remote peer uses the same source port,
-			 * even if the old socket is still unreleased, but now disconnected.
-			 */
+			 
 			vsock_remove_sock(vsk);
 		}
 		if (le32_to_cpu(virtio_vsock_hdr(skb)->flags))
@@ -1275,15 +1220,11 @@ static bool virtio_transport_space_update(struct sock *sk,
 	struct virtio_vsock_sock *vvs = vsk->trans;
 	bool space_available;
 
-	/* Listener sockets are not associated with any transport, so we are
-	 * not able to take the state to see if there is space available in the
-	 * remote peer, but since they are only used to receive requests, we
-	 * can assume that there is always space available in the other peer.
-	 */
+	 
 	if (!vvs)
 		return true;
 
-	/* buf_alloc and fwd_cnt is always included in the hdr */
+	 
 	spin_lock_bh(&vvs->tx_lock);
 	vvs->peer_buf_alloc = le32_to_cpu(hdr->buf_alloc);
 	vvs->peer_fwd_cnt = le32_to_cpu(hdr->fwd_cnt);
@@ -1292,7 +1233,7 @@ static bool virtio_transport_space_update(struct sock *sk,
 	return space_available;
 }
 
-/* Handle server socket */
+ 
 static int
 virtio_transport_recv_listen(struct sock *sk, struct sk_buff *skb,
 			     struct virtio_transport *t)
@@ -1332,9 +1273,7 @@ virtio_transport_recv_listen(struct sock *sk, struct sk_buff *skb,
 			le32_to_cpu(hdr->src_port));
 
 	ret = vsock_assign_transport(vchild, vsk);
-	/* Transport assigned (looking at remote_addr) must be the same
-	 * where we received the request.
-	 */
+	 
 	if (ret || vchild->transport != &t->transport) {
 		release_sock(child);
 		virtio_transport_reset_no_sock(t, skb);
@@ -1361,9 +1300,7 @@ static bool virtio_transport_valid_type(u16 type)
 	       (type == VIRTIO_VSOCK_TYPE_SEQPACKET);
 }
 
-/* We are under the virtio-vsock's vsock->rx_lock or vhost-vsock's vq->mutex
- * lock.
- */
+ 
 void virtio_transport_recv_pkt(struct virtio_transport *t,
 			       struct sk_buff *skb)
 {
@@ -1392,9 +1329,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
 		goto free_pkt;
 	}
 
-	/* The socket must be in connected or bound table
-	 * otherwise send reset back
-	 */
+	 
 	sk = vsock_find_connected_socket(&src, &dst);
 	if (!sk) {
 		sk = vsock_find_bound_socket(&dst);
@@ -1419,7 +1354,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
 
 	lock_sock(sk);
 
-	/* Check if sk has been closed before lock_sock */
+	 
 	if (sock_flag(sk, SOCK_DONE)) {
 		(void)virtio_transport_reset_no_sock(t, skb);
 		release_sock(sk);
@@ -1429,7 +1364,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
 
 	space_available = virtio_transport_space_update(sk, skb);
 
-	/* Update CID in case it has changed after a transport reset event */
+	 
 	if (vsk->local_addr.svm_cid != VMADDR_CID_ANY)
 		vsk->local_addr.svm_cid = dst.svm_cid;
 
@@ -1460,9 +1395,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
 
 	release_sock(sk);
 
-	/* Release refcnt obtained when we fetched this socket out of the
-	 * bound or connected list.
-	 */
+	 
 	sock_put(sk);
 	return;
 
@@ -1471,12 +1404,7 @@ free_pkt:
 }
 EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
 
-/* Remove skbs found in a queue that have a vsk that matches.
- *
- * Each skb is freed.
- *
- * Returns the count of skbs that were reply packets.
- */
+ 
 int virtio_transport_purge_skbs(void *vsk, struct sk_buff_head *queue)
 {
 	struct sk_buff_head freeme;
@@ -1513,9 +1441,7 @@ int virtio_transport_read_skb(struct vsock_sock *vsk, skb_read_actor_t recv_acto
 	int err;
 
 	spin_lock_bh(&vvs->rx_lock);
-	/* Use __skb_recv_datagram() for race-free handling of the receive. It
-	 * works for types other than dgrams.
-	 */
+	 
 	skb = __skb_recv_datagram(sk, &vvs->rx_queue, MSG_DONTWAIT, &off, &err);
 	spin_unlock_bh(&vvs->rx_lock);
 
@@ -1533,12 +1459,7 @@ int virtio_transport_notify_set_rcvlowat(struct vsock_sock *vsk, int val)
 
 	spin_lock_bh(&vvs->rx_lock);
 
-	/* If number of available bytes is less than new SO_RCVLOWAT value,
-	 * kick sender to send more data, because sender may sleep in its
-	 * 'send()' syscall waiting for enough space at our side. Also
-	 * don't send credit update when peer already knows actual value -
-	 * such transmission will be useless.
-	 */
+	 
 	send_update = (vvs->rx_bytes < val) &&
 		      (vvs->fwd_cnt != vvs->last_fwd_cnt);
 

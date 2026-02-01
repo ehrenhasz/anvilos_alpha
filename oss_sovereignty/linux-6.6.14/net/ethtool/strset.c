@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/ethtool.h>
 #include <linux/phy.h>
@@ -135,12 +135,7 @@ static const struct nla_policy get_stringset_policy[] = {
 	[ETHTOOL_A_STRINGSET_ID]	= { .type = NLA_U32 },
 };
 
-/**
- * strset_include() - test if a string set should be included in reply
- * @info: parsed client request
- * @data: pointer to request data structure
- * @id:   id of string set to check (ETH_SS_* constants)
- */
+ 
 static bool strset_include(const struct strset_req_info *info,
 			   const struct strset_reply_data *data, u32 id)
 {
@@ -320,7 +315,7 @@ err_strset:
 	return ret;
 }
 
-/* calculate size of ETHTOOL_A_STRSET_STRINGSET nest for one string set */
+ 
 static int strset_set_size(const struct strset_info *info, bool counts_only)
 {
 	unsigned int len = 0;
@@ -334,11 +329,11 @@ static int strset_set_size(const struct strset_info *info, bool counts_only)
 	for (i = 0; i < info->count; i++) {
 		const char *str = info->strings[i];
 
-		/* ETHTOOL_A_STRING_INDEX, ETHTOOL_A_STRING_VALUE, nest */
+		 
 		len += nla_total_size(nla_total_size(sizeof(u32)) +
 				      ethnl_strz_size(str));
 	}
-	/* ETHTOOL_A_STRINGSET_ID, ETHTOOL_A_STRINGSET_COUNT */
+	 
 	len = 2 * nla_total_size(sizeof(u32)) + nla_total_size(len);
 
 	return nla_total_size(len);
@@ -353,7 +348,7 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
 	int len = 0;
 	int ret;
 
-	len += nla_total_size(0); /* ETHTOOL_A_STRSET_STRINGSETS */
+	len += nla_total_size(0);  
 
 	for (i = 0; i < ETH_SS_COUNT; i++) {
 		const struct strset_info *set_info = &data->sets[i];
@@ -370,7 +365,7 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
 	return len;
 }
 
-/* fill one string into reply */
+ 
 static int strset_fill_string(struct sk_buff *skb,
 			      const struct strset_info *set_info, u32 idx)
 {
@@ -393,7 +388,7 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
-/* fill one string set into reply */
+ 
 static int strset_fill_set(struct sk_buff *skb,
 			   const struct strset_info *set_info, u32 id,
 			   bool counts_only)

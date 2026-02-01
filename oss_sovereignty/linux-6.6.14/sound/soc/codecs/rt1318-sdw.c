@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt1318-sdw.c -- rt1318 SDCA ALSA SoC amplifier audio driver
-//
-// Copyright(c) 2022 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/pm_runtime.h>
@@ -356,7 +356,7 @@ static int rt1318_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = true;
 
-	/* first we need to allocate memory for set bits in port lists */
+	 
 	prop->source_ports = BIT(2);
 	prop->sink_ports = BIT(1);
 
@@ -377,7 +377,7 @@ static int rt1318_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 		sizeof(*prop->sink_dpn_prop), GFP_KERNEL);
@@ -395,7 +395,7 @@ static int rt1318_read_prop(struct sdw_slave *slave)
 		j++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 20;
 
 	return 0;
@@ -412,16 +412,14 @@ static int rt1318_io_init(struct device *dev, struct sdw_slave *slave)
 	if (rt1318->first_hw_init) {
 		regcache_cache_bypass(rt1318->regmap, true);
 	} else {
-		/*
-		 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-		 */
-		/* update count of parent 'active' children */
+		 
+		 
 		pm_runtime_set_active(&slave->dev);
 	}
 
 	pm_runtime_get_noresume(&slave->dev);
 
-	/* blind write */
+	 
 	regmap_multi_reg_write(rt1318->regmap, rt1318_blind_write,
 		ARRAY_SIZE(rt1318_blind_write));
 
@@ -430,7 +428,7 @@ static int rt1318_io_init(struct device *dev, struct sdw_slave *slave)
 		regcache_mark_dirty(rt1318->regmap);
 	}
 
-	/* Mark Slave initialization complete */
+	 
 	rt1318->first_hw_init = true;
 	rt1318->hw_init = true;
 
@@ -449,14 +447,11 @@ static int rt1318_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		rt1318->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt1318->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt1318_io_init(&slave->dev, slave);
 }
 
@@ -508,7 +503,7 @@ static SOC_ENUM_SINGLE_DECL(rt1318_rx_data_ch_enum,
 
 static const struct snd_kcontrol_new rt1318_snd_controls[] = {
 
-	/* UDMPU Cluster Selection */
+	 
 	SOC_ENUM("RX Channel Select", rt1318_rx_data_ch_enum),
 };
 
@@ -519,19 +514,19 @@ static const struct snd_kcontrol_new rt1318_sto_dac =
 		0, 1, 1);
 
 static const struct snd_soc_dapm_widget rt1318_dapm_widgets[] = {
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("DP1RX", "DP1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("DP2TX", "DP2 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SWITCH("DAC", SND_SOC_NOPM, 0, 0, &rt1318_sto_dac),
 
-	/* Output */
+	 
 	SND_SOC_DAPM_PGA_E("CLASS D", SND_SOC_NOPM, 0, 0, NULL, 0,
 		rt1318_classd_event, SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
 	SND_SOC_DAPM_OUTPUT("SPOL"),
 	SND_SOC_DAPM_OUTPUT("SPOR"),
-	/* Input */
+	 
 	SND_SOC_DAPM_PGA("FB Data", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_SIGGEN("FB Gen"),
 };
@@ -582,8 +577,8 @@ static int rt1318_sdw_hw_params(struct snd_pcm_substream *substream,
 	if (!rt1318->sdw_slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
-	/* port 1 for playback */
+	 
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		direction = SDW_DATA_DIR_RX;
 		port = 1;
@@ -610,7 +605,7 @@ static int rt1318_sdw_hw_params(struct snd_pcm_substream *substream,
 		return retval;
 	}
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 16000:
 		sampling_rate = RT1318_SDCA_RATE_16000HZ;
@@ -636,7 +631,7 @@ static int rt1318_sdw_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* set sampling frequency */
+	 
 	regmap_write(rt1318->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_SMART_AMP, RT1318_SDCA_ENT_CS21, RT1318_SDCA_CTL_SAMPLE_FREQ_INDEX, 0),
 		sampling_rate);
@@ -660,10 +655,7 @@ static int rt1318_sdw_pcm_hw_free(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/*
- * slave_ops: callbacks for get_clock_stop_mode, clock_stop and
- * port_prep are not defined for now
- */
+ 
 static const struct sdw_slave_ops rt1318_slave_ops = {
 	.read_prop = rt1318_read_prop,
 	.update_status = rt1318_update_status,
@@ -747,10 +739,7 @@ static int rt1318_sdw_init(struct device *dev, struct regmap *regmap,
 
 	regcache_cache_only(rt1318->regmap, true);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt1318->hw_init = false;
 	rt1318->first_hw_init = false;
 
@@ -761,20 +750,16 @@ static int rt1318_sdw_init(struct device *dev, struct regmap *regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -786,7 +771,7 @@ static int rt1318_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap;
 
-	/* Regmap Initialization */
+	 
 	regmap = devm_regmap_init_sdw(slave, &rt1318_sdw_regmap);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);

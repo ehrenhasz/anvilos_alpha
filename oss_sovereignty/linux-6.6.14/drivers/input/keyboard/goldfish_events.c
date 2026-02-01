@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007 Google, Inc.
- * Copyright (C) 2012 Intel, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>

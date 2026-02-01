@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * kirkwood.h
- *
- * (c) 2010 Arnaud Patard <apatard@mandriva.com>
- */
+ 
+ 
 
 #ifndef _KIRKWOOD_AUDIO_H
 #define _KIRKWOOD_AUDIO_H
@@ -120,8 +116,8 @@
 
 #define KIRKWOOD_AUDIO_BUF_MAX			(16*1024*1024)
 
-/* Theses values come from the marvell alsa driver */
-/* need to find where they come from               */
+ 
+ 
 #define KIRKWOOD_SND_MIN_PERIODS		2
 #define KIRKWOOD_SND_MAX_PERIODS		16
 #define KIRKWOOD_SND_MIN_PERIOD_BYTES		256

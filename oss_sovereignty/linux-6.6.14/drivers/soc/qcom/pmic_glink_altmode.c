@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Ltd
- */
+
+ 
 #include <linux/auxiliary_bus.h>
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -93,7 +90,7 @@ struct pmic_glink_altmode {
 
 	unsigned int owner_id;
 
-	/* To synchronize WRITE_REQ acks */
+	 
 	struct mutex lock;
 
 	struct completion pan_ack;
@@ -110,10 +107,7 @@ static int pmic_glink_altmode_request(struct pmic_glink_altmode *altmode, u32 cm
 	unsigned long left;
 	int ret;
 
-	/*
-	 * The USBC_CMD_WRITE_REQ ack doesn't identify the request, so wait for
-	 * one ack at a time.
-	 */
+	 
 	mutex_lock(&altmode->lock);
 
 	req.hdr.owner = cpu_to_le32(altmode->owner_id);

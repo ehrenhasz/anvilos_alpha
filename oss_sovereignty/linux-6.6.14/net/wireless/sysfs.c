@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file provides /sys/class/ieee80211/<wiphy name>/
- * and some default attributes.
- *
- * Copyright 2005-2006	Jiri Benc <jbenc@suse.cz>
- * Copyright 2006	Johannes Berg <johannes@sipsolutions.net>
- * Copyright (C) 2020-2021, 2023 Intel Corporation
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -109,7 +102,7 @@ static int wiphy_suspend(struct device *dev)
 		if (rdev->ops->suspend)
 			ret = rdev_suspend(rdev, rdev->wiphy.wowlan_config);
 		if (ret == 1) {
-			/* Driver refuse to configure wowlan */
+			 
 			cfg80211_leave_all(rdev);
 			cfg80211_process_rdev_events(rdev);
 			cfg80211_process_wiphy_works(rdev, NULL);
@@ -129,7 +122,7 @@ static int wiphy_resume(struct device *dev)
 	struct cfg80211_registered_device *rdev = dev_to_rdev(dev);
 	int ret = 0;
 
-	/* Age scan results with time spent in suspend */
+	 
 	cfg80211_bss_age(rdev, ktime_get_boottime_seconds() - rdev->suspend_at);
 
 	rtnl_lock();

@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
 
-/*
- *  sof_sdw_rt700 - Helpers to handle RT700 from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -22,7 +20,7 @@ static const struct snd_soc_dapm_widget rt700_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route rt700_map[] = {
-	/* Headphones */
+	 
 	{ "Headphones", NULL, "rt700 HP" },
 	{ "Speaker", NULL, "rt700 SPK" },
 	{ "rt700 MIC2", NULL, "AMIC" },
@@ -116,10 +114,7 @@ int sof_sdw_rt700_init(struct snd_soc_card *card,
 		       struct sof_sdw_codec_info *info,
 		       bool playback)
 {
-	/*
-	 * headset should be initialized once.
-	 * Do it with dai link for playback.
-	 */
+	 
 	if (!playback)
 		return 0;
 

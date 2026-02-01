@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2021 Intel Corporation */
+
+ 
 #include <linux/crc8.h>
 #include <linux/pci.h>
 #include <linux/types.h>
@@ -7,7 +7,7 @@
 #include "adf_pfvf_msg.h"
 #include "adf_pfvf_utils.h"
 
-/* CRC Calculation */
+ 
 DECLARE_CRC8_TABLE(pfvf_crc8_table);
 #define ADF_PFVF_CRC8_POLYNOMIAL 0x97
 

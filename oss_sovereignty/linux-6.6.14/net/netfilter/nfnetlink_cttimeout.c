@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) 2012 by Pablo Neira Ayuso <pablo@netfilter.org>
- * (C) 2012 by Vyatta Inc. <http://www.vyatta.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -40,7 +37,7 @@ struct ctnl_timeout {
 	refcount_t		refcnt;
 	char			name[CTNL_TIMEOUT_NAME_MAX];
 
-	/* must be at the end */
+	 
 	struct nf_ct_timeout	timeout;
 };
 
@@ -130,9 +127,7 @@ static int cttimeout_new_timeout(struct sk_buff *skb,
 
 	if (matching) {
 		if (info->nlh->nlmsg_flags & NLM_F_REPLACE) {
-			/* You cannot replace one timeout policy by another of
-			 * different kind, sorry.
-			 */
+			 
 			if (matching->timeout.l3num != l3num ||
 			    matching->timeout.l4proto->l4proto != l4num)
 				return -EINVAL;
@@ -148,7 +143,7 @@ static int cttimeout_new_timeout(struct sk_buff *skb,
 
 	l4proto = nf_ct_l4proto_find(l4num);
 
-	/* This protocol is not supportted, skip. */
+	 
 	if (l4proto->l4proto != l4num) {
 		ret = -EOPNOTSUPP;
 		goto err_proto_put;
@@ -308,16 +303,14 @@ static int cttimeout_get_timeout(struct sk_buff *skb,
 	return ret;
 }
 
-/* try to delete object, fail if it is still in use. */
+ 
 static int ctnl_timeout_try_del(struct net *net, struct ctnl_timeout *timeout)
 {
 	int ret = 0;
 
-	/* We want to avoid races with ctnl_timeout_put. So only when the
-	 * current refcnt is 1, we decrease it to 0.
-	 */
+	 
 	if (refcount_dec_if_one(&timeout->refcnt)) {
-		/* We are protected by nfnl mutex. */
+		 
 		list_del_rcu(&timeout->head);
 		nf_ct_untimeout(net, &timeout->timeout);
 		kfree_rcu(timeout, rcu_head);
@@ -374,7 +367,7 @@ static int cttimeout_default_set(struct sk_buff *skb,
 	l4num = nla_get_u8(cda[CTA_TIMEOUT_L4PROTO]);
 	l4proto = nf_ct_l4proto_find(l4num);
 
-	/* This protocol is not supported, skip. */
+	 
 	if (l4proto->l4proto != l4num) {
 		ret = -EOPNOTSUPP;
 		goto err;
@@ -601,7 +594,7 @@ static void __net_exit cttimeout_net_pre_exit(struct net *net)
 		list_add(&cur->free_head, &pernet->nfct_timeout_freelist);
 	}
 
-	/* core calls synchronize_rcu() after this */
+	 
 }
 
 static void __net_exit cttimeout_net_exit(struct net *net)

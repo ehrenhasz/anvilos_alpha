@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2019, Jiaxun Yang <jiaxun.yang@flygoat.com>
- *  Loongson-1 platform IRQ support
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -22,11 +19,7 @@
 #define LS_REG_INTC_POL	0x10
 #define LS_REG_INTC_EDGE	0x14
 
-/**
- * struct ls1x_intc_priv - private ls1x-intc data.
- * @domain:		IRQ domain.
- * @intc_base:	IO Base of intc registers.
- */
+ 
 
 struct ls1x_intc_priv {
 	struct irq_domain	*domain;
@@ -125,7 +118,7 @@ static int __init ls1x_intc_of_init(struct device_node *node,
 		goto out_iounmap;
 	}
 
-	/* Set up an IRQ domain */
+	 
 	priv->domain = irq_domain_add_linear(node, 32, &irq_generic_chip_ops,
 					     NULL);
 	if (!priv->domain) {
@@ -143,13 +136,13 @@ static int __init ls1x_intc_of_init(struct device_node *node,
 		goto out_free_domain;
 	}
 
-	/* Mask all irqs */
+	 
 	writel(0x0, priv->intc_base + LS_REG_INTC_EN);
 
-	/* Ack all irqs */
+	 
 	writel(0xffffffff, priv->intc_base + LS_REG_INTC_CLR);
 
-	/* Set all irqs to high level triggered */
+	 
 	writel(0xffffffff, priv->intc_base + LS_REG_INTC_POL);
 
 	gc = irq_get_domain_generic_chip(priv->domain, 0);

@@ -1,25 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef SMU10_HWMGR_H
 #define SMU10_HWMGR_H
@@ -39,7 +18,7 @@
 #define DPMFlags_ACP_Enabled                      0x00000008
 #define DPMFlags_ForceHighestValid                0x40000000
 
-/* Do not change the following, it is also defined in SMU8.h */
+ 
 #define SMU_EnabledFeatureScoreboard_AcpDpmOn     0x00000001
 #define SMU_EnabledFeatureScoreboard_SclkDpmOn    0x00200000
 #define SMU_EnabledFeatureScoreboard_UvdDpmOn     0x01000000
@@ -86,7 +65,7 @@ struct smu10_power_level {
 	uint8_t rsv[3];
 };
 
-/*used for the nbpsFlags field in smu10_power state*/
+ 
 #define SMU10_POWERSTATE_FLAGS_NBPS_FORCEHIGH (1<<0)
 #define SMU10_POWERSTATE_FLAGS_NBPS_LOCKTOHIGH (1<<1)
 #define SMU10_POWERSTATE_FLAGS_NBPS_LOCKTOLOW (1<<2)
@@ -231,7 +210,7 @@ struct smu10_hwmgr {
 	bool pg_acp_init;
 	uint8_t disp_config;
 
-	/* PowerTune */
+	 
 	uint32_t power_containment_features;
 	bool cac_enabled;
 	bool disable_uvd_power_tune_feature;
@@ -239,12 +218,12 @@ struct smu10_hwmgr {
 	bool enable_tdc_limit_feature;
 
 
-	/* SMC SRAM Address of firmware header tables */
+	 
 	uint32_t sram_end;
 	uint32_t dpm_table_start;
 	uint32_t soft_regs_start;
 
-	/* start of SMU7_Fusion_DpmTable */
+	 
 
 	uint8_t uvd_level_count;
 	uint8_t vce_level_count;
@@ -264,7 +243,7 @@ struct smu10_hwmgr {
 	uint32_t max_sclk_level;
 	uint32_t num_of_clk_entries;
 
-	/* CPU Power State */
+	 
 	uint32_t                          separation_time;
 	bool                              cc6_disable;
 	bool                              pstate_disable;
@@ -285,7 +264,7 @@ struct smu10_hwmgr {
 	uint32_t                        gfx_actual_soft_min_freq;
 	uint32_t                        gfx_actual_soft_max_freq;
 	uint32_t                        gfx_min_freq_limit;
-	uint32_t                        gfx_max_freq_limit; /* in 10Khz*/
+	uint32_t                        gfx_max_freq_limit;  
 
 	bool                           vcn_power_gated;
 	bool                           vcn_dpg_mode;
@@ -308,7 +287,7 @@ struct pp_hwmgr;
 
 int smu10_init_function_pointers(struct pp_hwmgr *hwmgr);
 
-/* UMD PState SMU10 Msg Parameters in MHz */
+ 
 #define SMU10_UMD_PSTATE_GFXCLK                 700
 #define SMU10_UMD_PSTATE_SOCCLK                 626
 #define SMU10_UMD_PSTATE_FCLK                   933

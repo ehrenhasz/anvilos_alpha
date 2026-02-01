@@ -1,33 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/**************************************************************************
- *
- * Copyright (c) 2006-2009 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
-/*
- * Authors: Thomas Hellstrom <thellstrom-at-vmware-dot-com>
- */
+ 
+ 
+ 
 
 #define pr_fmt(fmt) "[TTM] " fmt
 
@@ -54,9 +27,7 @@ module_param_named(dma32_pages_limit, ttm_dma32_pages_limit, ulong, 0644);
 static atomic_long_t ttm_pages_allocated;
 static atomic_long_t ttm_dma32_pages_allocated;
 
-/*
- * Allocates a ttm structure for the given BO.
- */
+ 
 int ttm_tt_create(struct ttm_buffer_object *bo, bool zero_alloc)
 {
 	struct ttm_device *bdev = bo->bdev;
@@ -92,9 +63,7 @@ int ttm_tt_create(struct ttm_buffer_object *bo, bool zero_alloc)
 	return 0;
 }
 
-/*
- * Allocates storage for pointers to the pages that back the ttm.
- */
+ 
 static int ttm_tt_alloc_page_directory(struct ttm_tt *ttm)
 {
 	ttm->pages = kvcalloc(ttm->num_pages, sizeof(void*), GFP_KERNEL);
@@ -236,16 +205,7 @@ out_err:
 	return ret;
 }
 
-/**
- * ttm_tt_swapout - swap out tt object
- *
- * @bdev: TTM device structure.
- * @ttm: The struct ttm_tt.
- * @gfp_flags: Flags to use for memory allocation.
- *
- * Swapout a TT object to a shmem_file, return number of pages swapped out or
- * negative error code.
- */
+ 
 int ttm_tt_swapout(struct ttm_device *bdev, struct ttm_tt *ttm,
 		   gfp_t gfp_flags)
 {
@@ -373,7 +333,7 @@ void ttm_tt_unpopulate(struct ttm_device *bdev, struct ttm_tt *ttm)
 
 #ifdef CONFIG_DEBUG_FS
 
-/* Test the shrinker functions and dump the result */
+ 
 static int ttm_tt_debugfs_shrink_show(struct seq_file *m, void *data)
 {
 	struct ttm_operation_ctx ctx = { false, false };
@@ -386,11 +346,7 @@ DEFINE_SHOW_ATTRIBUTE(ttm_tt_debugfs_shrink);
 #endif
 
 
-/*
- * ttm_tt_mgr_init - register with the MM shrinker
- *
- * Register with the MM shrinker for swapping out BOs.
- */
+ 
 void ttm_tt_mgr_init(unsigned long num_pages, unsigned long num_dma32_pages)
 {
 #ifdef CONFIG_DEBUG_FS
@@ -428,13 +384,7 @@ static const struct ttm_kmap_iter_ops ttm_kmap_iter_tt_ops = {
 	.maps_tt = true,
 };
 
-/**
- * ttm_kmap_iter_tt_init - Initialize a struct ttm_kmap_iter_tt
- * @iter_tt: The struct ttm_kmap_iter_tt to initialize.
- * @tt: Struct ttm_tt holding page pointers of the struct ttm_resource.
- *
- * Return: Pointer to the embedded struct ttm_kmap_iter.
- */
+ 
 struct ttm_kmap_iter *
 ttm_kmap_iter_tt_init(struct ttm_kmap_iter_tt *iter_tt,
 		      struct ttm_tt *tt)

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * The "Virtual Machine Generation ID" is exposed via ACPI and changes when a
- * virtual machine forks or is cloned. This driver exists for shepherding that
- * information to random.c.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

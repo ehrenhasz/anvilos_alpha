@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max7359_keypad.c - MAX7359 Key Switch Controller Driver
- *
- * Copyright (C) 2009 Samsung Electronics
- * Kim Kyuwon <q1.kim@samsung.com>
- *
- * Based on pxa27x_keypad.c
- *
- * Datasheet: http://www.maxim-ic.com/quick_view2.cfm/qv_pk/5456
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -23,9 +14,7 @@
 #define MAX7359_MAX_KEY_NUM	(MAX7359_MAX_KEY_ROWS * MAX7359_MAX_KEY_COLS)
 #define MAX7359_ROW_SHIFT	3
 
-/*
- * MAX7359 registers
- */
+ 
 #define MAX7359_REG_KEYFIFO	0x00
 #define MAX7359_REG_CONFIG	0x01
 #define MAX7359_REG_DEBOUNCE	0x02
@@ -34,18 +23,14 @@
 #define MAX7359_REG_KEYREP	0x05
 #define MAX7359_REG_SLEEP	0x06
 
-/*
- * Configuration register bits
- */
+ 
 #define MAX7359_CFG_SLEEP	(1 << 7)
 #define MAX7359_CFG_INTERRUPT	(1 << 5)
 #define MAX7359_CFG_KEY_RELEASE	(1 << 3)
 #define MAX7359_CFG_WAKEUP	(1 << 1)
 #define MAX7359_CFG_TIMEOUT	(1 << 0)
 
-/*
- * Autosleep register values (ms)
- */
+ 
 #define MAX7359_AUTOSLEEP_8192	0x01
 #define MAX7359_AUTOSLEEP_4096	0x02
 #define MAX7359_AUTOSLEEP_2048	0x03
@@ -54,7 +39,7 @@
 #define MAX7359_AUTOSLEEP_256	0x06
 
 struct max7359_keypad {
-	/* matrix key code map */
+	 
 	unsigned short keycodes[MAX7359_MAX_KEY_NUM];
 
 	struct input_dev *input_dev;
@@ -81,7 +66,7 @@ static int max7359_read_reg(struct i2c_client *client, int reg)
 	return ret;
 }
 
-/* runs in an IRQ thread -- can (and will!) sleep */
+ 
 static irqreturn_t max7359_interrupt(int irq, void *dev_id)
 {
 	struct max7359_keypad *keypad = dev_id;
@@ -105,20 +90,13 @@ static irqreturn_t max7359_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Let MAX7359 fall into a deep sleep:
- * If no keys are pressed, enter sleep mode for 8192 ms. And if any
- * key is pressed, the MAX7359 returns to normal operating mode.
- */
+ 
 static inline void max7359_fall_deepsleep(struct i2c_client *client)
 {
 	max7359_write_reg(client, MAX7359_REG_SLEEP, MAX7359_AUTOSLEEP_8192);
 }
 
-/*
- * Let MAX7359 take a catnap:
- * Autosleep just for 256 ms.
- */
+ 
 static inline void max7359_take_catnap(struct i2c_client *client)
 {
 	max7359_write_reg(client, MAX7359_REG_SLEEP, MAX7359_AUTOSLEEP_256);
@@ -143,13 +121,13 @@ static void max7359_close(struct input_dev *dev)
 static void max7359_initialize(struct i2c_client *client)
 {
 	max7359_write_reg(client, MAX7359_REG_CONFIG,
-		MAX7359_CFG_KEY_RELEASE | /* Key release enable */
-		MAX7359_CFG_WAKEUP); /* Key press wakeup enable */
+		MAX7359_CFG_KEY_RELEASE |  
+		MAX7359_CFG_WAKEUP);  
 
-	/* Full key-scan functionality */
+	 
 	max7359_write_reg(client, MAX7359_REG_DEBOUNCE, 0x1F);
 
-	/* nINT asserts every debounce cycles */
+	 
 	max7359_write_reg(client, MAX7359_REG_INTERRUPT, 0x01);
 
 	max7359_fall_deepsleep(client);
@@ -169,7 +147,7 @@ static int max7359_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Detect MAX7359: The initial Keys FIFO value is '0x3F' */
+	 
 	ret = max7359_read_reg(client, MAX7359_REG_KEYFIFO);
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to detect device\n");
@@ -227,14 +205,14 @@ static int max7359_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Register the input device */
+	 
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(&client->dev, "failed to register input device\n");
 		return error;
 	}
 
-	/* Initialize MAX7359 */
+	 
 	max7359_initialize(client);
 
 	device_init_wakeup(&client->dev, 1);
@@ -261,7 +239,7 @@ static int max7359_resume(struct device *dev)
 	if (device_may_wakeup(&client->dev))
 		disable_irq_wake(client->irq);
 
-	/* Restore the default setting */
+	 
 	max7359_take_catnap(client);
 
 	return 0;

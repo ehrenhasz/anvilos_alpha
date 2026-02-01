@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file defines data structures and functions used in Machine
- * Driver for Intel platforms with Cirrus Logic Codecs.
- *
- * Copyright 2022 Intel Corporation.
- */
+
+ 
 #include <linux/module.h>
 #include <sound/sof.h>
 #include "../../codecs/cs35l41.h"
@@ -13,9 +8,7 @@
 #define CS35L41_HID "CSC3541"
 #define CS35L41_MAX_AMPS 4
 
-/*
- * Cirrus Logic CS35L41/CS35L53
- */
+ 
 static const struct snd_kcontrol_new cs35l41_kcontrols[] = {
 	SOC_DAPM_PIN_SWITCH("WL Spk"),
 	SOC_DAPM_PIN_SWITCH("WR Spk"),
@@ -31,7 +24,7 @@ static const struct snd_soc_dapm_widget cs35l41_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route cs35l41_dapm_routes[] = {
-	/* speaker */
+	 
 	{"WL Spk", NULL, "WL SPK"},
 	{"WR Spk", NULL, "WR SPK"},
 	{"TL Spk", NULL, "TL SPK"},
@@ -40,9 +33,7 @@ static const struct snd_soc_dapm_route cs35l41_dapm_routes[] = {
 
 static struct snd_soc_dai_link_component cs35l41_components[CS35L41_MAX_AMPS];
 
-/*
- * Mapping between ACPI instance id and speaker position.
- */
+ 
 static struct snd_soc_codec_conf cs35l41_codec_conf[CS35L41_MAX_AMPS];
 
 static int cs35l41_init(struct snd_soc_pcm_runtime *rtd)
@@ -73,19 +64,14 @@ static int cs35l41_init(struct snd_soc_pcm_runtime *rtd)
 	return ret;
 }
 
-/*
- * Channel map:
- *
- * TL/WL: ASPRX1 on slot 0, ASPRX2 on slot 1 (default)
- * TR/WR: ASPRX1 on slot 1, ASPRX2 on slot 0
- */
+ 
 static const struct {
 	unsigned int rx[2];
 } cs35l41_channel_map[] = {
-	{.rx = {0, 1}}, /* WL */
-	{.rx = {1, 0}}, /* WR */
-	{.rx = {0, 1}}, /* TL */
-	{.rx = {1, 0}}, /* TR */
+	{.rx = {0, 1}},  
+	{.rx = {1, 0}},  
+	{.rx = {0, 1}},  
+	{.rx = {1, 0}},  
 };
 
 static int cs35l41_hw_params(struct snd_pcm_substream *substream,
@@ -95,7 +81,7 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai;
 	int clk_freq, i, ret;
 
-	clk_freq = sof_dai_get_bclk(rtd); /* BCLK freq */
+	clk_freq = sof_dai_get_bclk(rtd);  
 
 	if (clk_freq <= 0) {
 		dev_err(rtd->dev, "fail to get bclk freq, ret %d\n", clk_freq);
@@ -103,7 +89,7 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	for_each_rtd_codec_dais(rtd, i, codec_dai) {
-		/* call dai driver's set_sysclk() callback */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, CS35L41_CLKID_SCLK,
 					     clk_freq, SND_SOC_CLOCK_IN);
 		if (ret < 0) {
@@ -112,7 +98,7 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
 			return ret;
 		}
 
-		/* call component driver's set_sysclk() callback */
+		 
 		ret = snd_soc_component_set_sysclk(codec_dai->component,
 						   CS35L41_CLKID_SCLK, 0,
 						   clk_freq, SND_SOC_CLOCK_IN);
@@ -122,7 +108,7 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
 			return ret;
 		}
 
-		/* setup channel map */
+		 
 		ret = snd_soc_dai_set_channel_map(codec_dai, 0, NULL,
 						  ARRAY_SIZE(cs35l41_channel_map[i].rx),
 						  (unsigned int *)cs35l41_channel_map[i].rx);
@@ -142,17 +128,7 @@ static const struct snd_soc_ops cs35l41_ops = {
 
 static const char * const cs35l41_name_prefixes[] = { "WL", "WR", "TL", "TR" };
 
-/*
- * Expected UIDs are integers (stored as strings).
- * UID Mapping is fixed:
- * UID 0x0 -> WL
- * UID 0x1 -> WR
- * UID 0x2 -> TL
- * UID 0x3 -> TR
- * Note: If there are less than 4 Amps, UIDs still map to WL/WR/TL/TR. Dynamic code will only create
- * dai links for UIDs which exist, and ignore non-existant ones. Only 2 or 4 amps are expected.
- * Return number of codecs found.
- */
+ 
 static int cs35l41_compute_codec_conf(void)
 {
 	static const char * const uid_strings[] = { "0", "1", "2", "3" };

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Facebook */
+
+ 
 #include <test_progs.h>
 #include <bpf/libbpf.h>
 #include <sys/types.h>
@@ -17,9 +17,7 @@ void test_sk_storage_omem_uncharge(void)
 		return;
 	map_fd = bpf_map__fd(skel->maps.sk_storage);
 
-	/* A standalone socket not binding to addr:port,
-	 * so nentns is not needed.
-	 */
+	 
 	sk_fd = socket(AF_INET6, SOCK_STREAM, 0);
 	if (!ASSERT_GE(sk_fd, 0, "socket"))
 		goto done;

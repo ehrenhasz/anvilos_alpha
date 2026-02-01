@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
@@ -105,12 +91,7 @@ static void ath_mci_adjust_aggr_limit(struct ath_btcoex *btcoex)
 	u32 wlan_airtime = btcoex->btcoex_period *
 				(100 - btcoex->duty_cycle) / 100;
 
-	/*
-	 * Scale: wlan_airtime is in ms, aggr_limit is in 0.25 ms.
-	 * When wlan_airtime is less than 4ms, aggregation limit has to be
-	 * adjusted half of wlan_airtime to ensure that the aggregation can fit
-	 * without collision with BT traffic.
-	 */
+	 
 	if ((wlan_airtime <= 4) &&
 	    (!mci->aggr_limit || (mci->aggr_limit > (2 * wlan_airtime))))
 		mci->aggr_limit = 2 * wlan_airtime;
@@ -153,10 +134,7 @@ static void ath_mci_update_scheme(struct ath_softc *sc)
 				"Single SCO, aggregation limit %d 1/4 ms\n",
 				mci->aggr_limit);
 		} else if (mci->num_pan || mci->num_other_acl) {
-			/*
-			 * For single PAN/FTP profile, allocate 35% for BT
-			 * to improve WLAN throughput.
-			 */
+			 
 			btcoex->duty_cycle = AR_SREV_9565(sc->sc_ah) ? 40 : 35;
 			btcoex->btcoex_period = 53;
 			ath_dbg(common, MCI,
@@ -268,7 +246,7 @@ static void ath_mci_set_concur_txprio(struct ath_softc *sc)
 	} else {
 		static const u8 prof_prio[] = {
 			50, 90, 94, 52
-		}; /* RFCOMM, A2DP, HID, PAN */
+		};  
 
 		stomp_txprio[ATH_BTCOEX_STOMP_LOW] =
 		stomp_txprio[ATH_BTCOEX_STOMP_NONE] = 0xff;
@@ -304,14 +282,7 @@ static u8 ath_mci_process_profile(struct ath_softc *sc,
 
 	entry = ath_mci_find_profile(mci, info);
 	if (entry) {
-		/*
-		 * Two MCI interrupts are generated while connecting to
-		 * headset and A2DP profile, but only one MCI interrupt
-		 * is generated with last added profile type while disconnecting
-		 * both profiles.
-		 * So while adding second profile type decrement
-		 * the first one.
-		 */
+		 
 		if (entry->type != info->type) {
 			DEC_PROF(mci, entry);
 			INC_PROF(mci, info);
@@ -337,7 +308,7 @@ static u8 ath_mci_process_status(struct ath_softc *sc,
 	struct ath_mci_profile_info info;
 	int i = 0, old_num_mgmt = mci->num_mgmt;
 
-	/* Link status type are not handled */
+	 
 	if (status->is_link)
 		return 0;
 
@@ -505,11 +476,7 @@ void ath_mci_intr(struct ath_softc *sc)
 		u32 payload[4] = { 0xffffffff, 0xffffffff,
 				   0xffffffff, 0xffffff00};
 
-		/*
-		 * The following REMOTE_RESET and SYS_WAKING used to sent
-		 * only when BT wake up. Now they are always sent, as a
-		 * recovery method to reset BT MCI's RX alignment.
-		 */
+		 
 		ar9003_mci_send_message(ah, MCI_REMOTE_RESET, 0,
 					payload, 16, true, false);
 		ar9003_mci_send_message(ah, MCI_SYS_WAKING, 0,
@@ -518,9 +485,7 @@ void ath_mci_intr(struct ath_softc *sc)
 		mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE;
 		ar9003_mci_state(ah, MCI_STATE_RESET_REQ_WAKE);
 
-		/*
-		 * always do this for recovery and 2G/5G toggling and LNA_TRANS
-		 */
+		 
 		ar9003_mci_state(ah, MCI_STATE_SET_BT_AWAKE);
 	}
 
@@ -568,10 +533,7 @@ void ath_mci_intr(struct ath_softc *sc)
 
 			pgpm += (offset >> 2);
 
-			/*
-			 * The first dword is timer.
-			 * The real data starts from 2nd dword.
-			 */
+			 
 			subtype = MCI_GPM_TYPE(pgpm);
 			opcode = MCI_GPM_OPCODE(pgpm);
 
@@ -667,7 +629,7 @@ void ath9k_mci_update_wlan_channels(struct ath_softc *sc, bool allow_all)
 	else if (IS_CHAN_HT40MINUS(chan))
 		chan_start -= 20;
 
-	/* adjust side band */
+	 
 	chan_start -= 7;
 	chan_end += 7;
 
@@ -684,7 +646,7 @@ void ath9k_mci_update_wlan_channels(struct ath_softc *sc, bool allow_all)
 		MCI_GPM_CLR_CHANNEL_BIT(&channelmap, i);
 
 send_wlan_chan:
-	/* update and send wlan channels info to BT */
+	 
 	for (i = 0; i < 4; i++)
 		mci->wlan_channels[i] = channelmap[i];
 	ar9003_mci_send_wlan_channels(ah);

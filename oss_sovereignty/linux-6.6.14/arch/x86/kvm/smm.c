@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kvm_host.h>
@@ -17,7 +17,7 @@
 
 static void check_smram_offsets(void)
 {
-	/* 32 bit SMRAM image */
+	 
 	CHECK_SMRAM32_OFFSET(reserved1,			0xFE00);
 	CHECK_SMRAM32_OFFSET(smbase,			0xFEF8);
 	CHECK_SMRAM32_OFFSET(smm_revision,		0xFEFC);
@@ -57,7 +57,7 @@ static void check_smram_offsets(void)
 	CHECK_SMRAM32_OFFSET(cr3,			0xFFF8);
 	CHECK_SMRAM32_OFFSET(cr0,			0xFFFC);
 
-	/* 64 bit SMRAM image */
+	 
 	CHECK_SMRAM64_OFFSET(es,			0xFE00);
 	CHECK_SMRAM64_OFFSET(cs,			0xFE10);
 	CHECK_SMRAM64_OFFSET(ss,			0xFE20);
@@ -118,14 +118,10 @@ void kvm_smm_changed(struct kvm_vcpu *vcpu, bool entering_smm)
 	} else {
 		vcpu->arch.hflags &= ~(HF_SMM_MASK | HF_SMM_INSIDE_NMI_MASK);
 
-		/* Process a latched INIT or SMI, if any.  */
+		 
 		kvm_make_request(KVM_REQ_EVENT, vcpu);
 
-		/*
-		 * Even if KVM_SET_SREGS2 loaded PDPTRs out of band,
-		 * on SMM exit we still need to reload them from
-		 * guest memory
-		 */
+		 
 		vcpu->arch.pdptrs_from_userspace = false;
 	}
 
@@ -296,14 +292,7 @@ void enter_smm(struct kvm_vcpu *vcpu)
 #endif
 		enter_smm_save_state_32(vcpu, &smram.smram32);
 
-	/*
-	 * Give enter_smm() a chance to make ISA-specific changes to the vCPU
-	 * state (e.g. leave guest mode) after we've saved the state into the
-	 * SMM state-save area.
-	 *
-	 * Kill the VM in the unlikely case of failure, because the VM
-	 * can be in undefined state in this case.
-	 */
+	 
 	if (static_call(kvm_x86_enter_smm)(vcpu, &smram))
 		goto error;
 
@@ -328,7 +317,7 @@ void enter_smm(struct kvm_vcpu *vcpu)
 
 	static_call(kvm_x86_set_cr4)(vcpu, 0);
 
-	/* Undocumented: IDT limit is set to zero on entry to SMM.  */
+	 
 	dt.address = dt.size = 0;
 	static_call(kvm_x86_set_idt)(vcpu, &dt);
 
@@ -425,7 +414,7 @@ static int rsm_enter_protected_mode(struct kvm_vcpu *vcpu,
 	int bad;
 	u64 pcid;
 
-	/* In order to later set CR4.PCIDE, CR3[11:0] must be zero.  */
+	 
 	pcid = 0;
 	if (cr4 & X86_CR4_PCIDE) {
 		pcid = cr3 & 0xfff;
@@ -436,11 +425,7 @@ static int rsm_enter_protected_mode(struct kvm_vcpu *vcpu,
 	if (bad)
 		return X86EMUL_UNHANDLEABLE;
 
-	/*
-	 * First enable PAE, long mode needs it before CR0.PG = 1 is set.
-	 * Then enable protected mode.	However, PCID cannot be enabled
-	 * if EFER.LMA=0, so set it separately.
-	 */
+	 
 	bad = kvm_set_cr4(vcpu, cr4 & ~X86_CR4_PCIDE);
 	if (bad)
 		return X86EMUL_UNHANDLEABLE;
@@ -588,22 +573,18 @@ int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 
 	kvm_smm_changed(vcpu, false);
 
-	/*
-	 * Get back to real mode, to prepare a safe state in which to load
-	 * CR0/CR3/CR4/EFER.  It's all a bit more complicated if the vCPU
-	 * supports long mode.
-	 */
+	 
 #ifdef CONFIG_X86_64
 	if (guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
 		struct kvm_segment cs_desc;
 		unsigned long cr4;
 
-		/* Zero CR4.PCIDE before CR0.PG.  */
+		 
 		cr4 = kvm_read_cr4(vcpu);
 		if (cr4 & X86_CR4_PCIDE)
 			kvm_set_cr4(vcpu, cr4 & ~X86_CR4_PCIDE);
 
-		/* A 32-bit code segment is required to clear EFER.LMA.  */
+		 
 		memset(&cs_desc, 0, sizeof(cs_desc));
 		cs_desc.type = 0xb;
 		cs_desc.s = cs_desc.g = cs_desc.present = 1;
@@ -611,7 +592,7 @@ int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 	}
 #endif
 
-	/* For the 64-bit case, this will clear EFER.LMA.  */
+	 
 	cr0 = kvm_read_cr0(vcpu);
 	if (cr0 & X86_CR0_PE)
 		kvm_set_cr0(vcpu, cr0 & ~(X86_CR0_PG | X86_CR0_PE));
@@ -620,22 +601,18 @@ int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 	if (guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
 		unsigned long cr4, efer;
 
-		/* Clear CR4.PAE before clearing EFER.LME. */
+		 
 		cr4 = kvm_read_cr4(vcpu);
 		if (cr4 & X86_CR4_PAE)
 			kvm_set_cr4(vcpu, cr4 & ~X86_CR4_PAE);
 
-		/* And finally go back to 32-bit mode.  */
+		 
 		efer = 0;
 		kvm_set_msr(vcpu, MSR_EFER, efer);
 	}
 #endif
 
-	/*
-	 * Give leave_smm() a chance to make ISA-specific changes to the vCPU
-	 * state (e.g. enter guest mode) before loading state from the SMM
-	 * state-save area.
-	 */
+	 
 	if (static_call(kvm_x86_leave_smm)(vcpu, &smram))
 		return X86EMUL_UNHANDLEABLE;
 

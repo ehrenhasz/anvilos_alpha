@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Tegra20 External Memory Controller driver
- *
- * Author: Dmitry Osipenko <digetx@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -212,18 +208,15 @@ struct tegra_emc {
 		unsigned long max_rate;
 	} debugfs;
 
-	/*
-	 * There are multiple sources in the EMC driver which could request
-	 * a min/max clock rate, these rates are contained in this array.
-	 */
+	 
 	struct emc_rate_request requested_rate[EMC_RATE_TYPE_MAX];
 
-	/* protect shared rate-change code path */
+	 
 	struct mutex rate_lock;
 
 	struct devfreq_simple_ondemand_data ondemand_data;
 
-	/* memory chip identity information */
+	 
 	union lpddr2_basic_config4 basic_conf4;
 	unsigned int manufacturer_id;
 	unsigned int revision_id1;
@@ -242,12 +235,12 @@ static irqreturn_t tegra_emc_isr(int irq, void *data)
 	if (!status)
 		return IRQ_NONE;
 
-	/* notify about HW problem */
+	 
 	if (status & EMC_REFRESH_OVERFLOW_INT)
 		dev_err_ratelimited(emc->dev,
 				    "refresh request overflow timeout\n");
 
-	/* clear interrupts */
+	 
 	writel_relaxed(status, emc->regs + EMC_INTSTATUS);
 
 	return IRQ_HANDLED;
@@ -285,12 +278,12 @@ static int emc_prepare_timing_change(struct tegra_emc *emc, unsigned long rate)
 	dev_dbg(emc->dev, "%s: using timing rate %lu for requested rate %lu\n",
 		__func__, timing->rate, rate);
 
-	/* program shadow registers */
+	 
 	for (i = 0; i < ARRAY_SIZE(timing->data); i++)
 		writel_relaxed(timing->data[i],
 			       emc->regs + emc_timing_registers[i]);
 
-	/* wait until programming has settled */
+	 
 	readl_relaxed(emc->regs + emc_timing_registers[i - 1]);
 
 	return 0;
@@ -304,7 +297,7 @@ static int emc_complete_timing_change(struct tegra_emc *emc, bool flush)
 	dev_dbg(emc->dev, "%s: flush %d\n", __func__, flush);
 
 	if (flush) {
-		/* manually initiate memory timing update */
+		 
 		writel_relaxed(EMC_TIMING_UPDATE,
 			       emc->regs + EMC_TIMING_CONTROL);
 		return 0;
@@ -381,10 +374,7 @@ static int load_one_timing_from_dt(struct tegra_emc *emc,
 		return err;
 	}
 
-	/*
-	 * The EMC clock rate is twice the bus rate, and the bus rate is
-	 * measured in kHz.
-	 */
+	 
 	timing->rate = rate * 2 * 1000;
 
 	dev_dbg(emc->dev, "%s: %pOF: EMC rate %lu\n",
@@ -544,16 +534,16 @@ static int emc_read_lpddr_mode_register(struct tegra_emc *emc,
 	u32 val, mr_mask = 0xff;
 	int err;
 
-	/* clear data-valid interrupt status */
+	 
 	writel_relaxed(EMC_MRR_DIVLD_INT, emc->regs + EMC_INTSTATUS);
 
-	/* issue mode register read request */
+	 
 	val  = FIELD_PREP(EMC_MRR_DEV_SELECTN, memory_dev);
 	val |= FIELD_PREP(EMC_MRR_MRR_MA, register_addr);
 
 	writel_relaxed(val, emc->regs + EMC_MRR);
 
-	/* wait for the LPDDR2 data-valid interrupt */
+	 
 	err = readl_relaxed_poll_timeout_atomic(emc->regs + EMC_INTSTATUS, val,
 						val & EMC_MRR_DIVLD_INT,
 						1, 100);
@@ -564,7 +554,7 @@ static int emc_read_lpddr_mode_register(struct tegra_emc *emc,
 		return err;
 	}
 
-	/* read out mode register data */
+	 
 	val = readl_relaxed(emc->regs + EMC_MRR);
 	*register_data = FIELD_GET(EMC_MRR_MRR_DATA, val) & mr_mask;
 
@@ -575,7 +565,7 @@ static void emc_read_lpddr_sdram_info(struct tegra_emc *emc,
 				      unsigned int emem_dev,
 				      bool print_out)
 {
-	/* these registers are standard for all LPDDR JEDEC memory chips */
+	 
 	emc_read_lpddr_mode_register(emc, emem_dev, 5, &emc->manufacturer_id);
 	emc_read_lpddr_mode_register(emc, emem_dev, 6, &emc->revision_id1);
 	emc_read_lpddr_mode_register(emc, emem_dev, 7, &emc->revision_id2);
@@ -604,10 +594,7 @@ static int emc_setup_hw(struct tegra_emc *emc)
 
 	emc_cfg = readl_relaxed(emc->regs + EMC_CFG_2);
 
-	/*
-	 * Depending on a memory type, DRAM should enter either self-refresh
-	 * or power-down state on EMC clock change.
-	 */
+	 
 	if (!(emc_cfg & EMC_CLKCHANGE_PD_ENABLE) &&
 	    !(emc_cfg & EMC_CLKCHANGE_SR_ENABLE)) {
 		dev_err(emc->dev,
@@ -615,15 +602,15 @@ static int emc_setup_hw(struct tegra_emc *emc)
 		return -EINVAL;
 	}
 
-	/* enable EMC and CAR to handshake on PLL divider/source changes */
+	 
 	emc_cfg |= EMC_CLKCHANGE_REQ_ENABLE;
 	writel_relaxed(emc_cfg, emc->regs + EMC_CFG_2);
 
-	/* initialize interrupt */
+	 
 	writel_relaxed(intmask, emc->regs + EMC_INTMASK);
 	writel_relaxed(intmask, emc->regs + EMC_INTSTATUS);
 
-	/* ensure that unwanted debug features are disabled */
+	 
 	emc_dbg = readl_relaxed(emc->regs + EMC_DBG);
 	emc_dbg |= EMC_DBG_CFG_PRIORITY;
 	emc_dbg &= ~EMC_DBG_READ_MUX_ASSEMBLY;
@@ -733,7 +720,7 @@ static int emc_request_rate(struct tegra_emc *emc,
 	unsigned int i;
 	int err;
 
-	/* select minimum and maximum rates among the requested rates */
+	 
 	for (i = 0; i < EMC_RATE_TYPE_MAX; i++, req++) {
 		if (i == type) {
 			min_rate = max(new_min_rate, min_rate);
@@ -750,10 +737,7 @@ static int emc_request_rate(struct tegra_emc *emc,
 		return -ERANGE;
 	}
 
-	/*
-	 * EMC rate-changes should go via OPP API because it manages voltage
-	 * changes.
-	 */
+	 
 	err = dev_pm_opp_set_rate(emc->dev, min_rate);
 	if (err)
 		return err;
@@ -790,30 +774,7 @@ static int emc_set_max_rate(struct tegra_emc *emc, unsigned long rate,
 	return ret;
 }
 
-/*
- * debugfs interface
- *
- * The memory controller driver exposes some files in debugfs that can be used
- * to control the EMC frequency. The top-level directory can be found here:
- *
- *   /sys/kernel/debug/emc
- *
- * It contains the following files:
- *
- *   - available_rates: This file contains a list of valid, space-separated
- *     EMC frequencies.
- *
- *   - min_rate: Writing a value to this file sets the given frequency as the
- *       floor of the permitted range. If this is higher than the currently
- *       configured EMC frequency, this will cause the frequency to be
- *       increased so that it stays within the valid range.
- *
- *   - max_rate: Similarily to the min_rate file, writing a value to this file
- *       sets the given frequency as the ceiling of the permitted range. If
- *       the value is lower than the currently configured EMC frequency, this
- *       will cause the frequency to be decreased so that it stays within the
- *       valid range.
- */
+ 
 
 static bool tegra_emc_validate_rate(struct tegra_emc *emc, unsigned long rate)
 {
@@ -956,7 +917,7 @@ emc_of_icc_xlate_extended(struct of_phandle_args *spec, void *data)
 	struct icc_node_data *ndata;
 	struct icc_node *node;
 
-	/* External Memory is the only possible ICC route */
+	 
 	list_for_each_entry(node, &provider->nodes, node_list) {
 		if (node->id != TEGRA_ICC_EMEM)
 			continue;
@@ -965,10 +926,7 @@ emc_of_icc_xlate_extended(struct of_phandle_args *spec, void *data)
 		if (!ndata)
 			return ERR_PTR(-ENOMEM);
 
-		/*
-		 * SRC and DST nodes should have matching TAG in order to have
-		 * it set by default for a requested path.
-		 */
+		 
 		ndata->tag = TEGRA_MC_ICC_TAG_ISO;
 		ndata->node = node;
 
@@ -987,11 +945,7 @@ static int emc_icc_set(struct icc_node *src, struct icc_node *dst)
 	unsigned int dram_data_bus_width_bytes;
 	int err;
 
-	/*
-	 * Tegra20 EMC runs on x2 clock rate of SDRAM bus because DDR data
-	 * is sampled on both clock edges.  This means that EMC clock rate
-	 * equals to the peak data-rate.
-	 */
+	 
 	dram_data_bus_width_bytes = emc->dram_bus_width / 8;
 	do_div(rate, dram_data_bus_width_bytes);
 	rate = min_t(u64, rate, U32_MAX);
@@ -1023,7 +977,7 @@ static int tegra_emc_interconnect_init(struct tegra_emc *emc)
 
 	icc_provider_init(&emc->provider);
 
-	/* create External Memory Controller node */
+	 
 	node = icc_node_create(TEGRA_ICC_EMC);
 	if (IS_ERR(node)) {
 		err = PTR_ERR(node);
@@ -1033,12 +987,12 @@ static int tegra_emc_interconnect_init(struct tegra_emc *emc)
 	node->name = "External Memory Controller";
 	icc_node_add(node, &emc->provider);
 
-	/* link External Memory Controller to External Memory (DRAM) */
+	 
 	err = icc_link_create(node, TEGRA_ICC_EMEM);
 	if (err)
 		goto remove_nodes;
 
-	/* create External Memory node */
+	 
 	node = icc_node_create(TEGRA_ICC_EMEM);
 	if (IS_ERR(node)) {
 		err = PTR_ERR(node);
@@ -1129,18 +1083,15 @@ static int tegra_emc_devfreq_get_dev_status(struct device *dev,
 {
 	struct tegra_emc *emc = dev_get_drvdata(dev);
 
-	/* freeze counters */
+	 
 	writel_relaxed(EMC_PWR_GATHER_DISABLE, emc->regs + EMC_STAT_CONTROL);
 
-	/*
-	 *  busy_time: number of clocks EMC request was accepted
-	 * total_time: number of clocks PWR_GATHER control was set to ENABLE
-	 */
+	 
 	stat->busy_time = readl_relaxed(emc->regs + EMC_STAT_PWR_COUNT);
 	stat->total_time = readl_relaxed(emc->regs + EMC_STAT_PWR_CLOCKS);
 	stat->current_frequency = clk_get_rate(emc->clk);
 
-	/* clear counters and restart */
+	 
 	writel_relaxed(EMC_PWR_GATHER_CLEAR, emc->regs + EMC_STAT_CONTROL);
 	writel_relaxed(EMC_PWR_GATHER_ENABLE, emc->regs + EMC_STAT_CONTROL);
 
@@ -1157,20 +1108,10 @@ static int tegra_emc_devfreq_init(struct tegra_emc *emc)
 {
 	struct devfreq *devfreq;
 
-	/*
-	 * PWR_COUNT is 1/2 of PWR_CLOCKS at max, and thus, the up-threshold
-	 * should be less than 50.  Secondly, multiple active memory clients
-	 * may cause over 20% of lost clock cycles due to stalls caused by
-	 * competing memory accesses.  This means that threshold should be
-	 * set to a less than 30 in order to have a properly working governor.
-	 */
+	 
 	emc->ondemand_data.upthreshold = 20;
 
-	/*
-	 * Reset statistic gathers state, select global bandwidth for the
-	 * statistics collection mode and set clocks counter saturation
-	 * limit to maximum.
-	 */
+	 
 	writel_relaxed(0x00000000, emc->regs + EMC_STAT_CONTROL);
 	writel_relaxed(0x00000000, emc->regs + EMC_STAT_LLMC_CONTROL);
 	writel_relaxed(0xffffffff, emc->regs + EMC_STAT_PWR_CLOCK_LIMIT);
@@ -1246,11 +1187,7 @@ static int tegra_emc_probe(struct platform_device *pdev)
 	tegra_emc_interconnect_init(emc);
 	tegra_emc_devfreq_init(emc);
 
-	/*
-	 * Don't allow the kernel module to be unloaded. Unloading adds some
-	 * extra complexity which doesn't really worth the effort in a case of
-	 * this driver.
-	 */
+	 
 	try_module_get(THIS_MODULE);
 
 	return 0;

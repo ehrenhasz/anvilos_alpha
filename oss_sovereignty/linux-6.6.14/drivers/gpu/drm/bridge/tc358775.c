@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TC358775 DSI to LVDS bridge driver
- *
- * Copyright (C) 2020 SMART Wireless Computing
- * Author: Vinay Simha BN <simhavcs@gmail.com>
- *
- */
-/* #define DEBUG */
+
+ 
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -30,102 +24,102 @@
 
 #define FLD_VAL(val, start, end) FIELD_PREP(GENMASK(start, end), val)
 
-/* Registers */
+ 
 
-/* DSI D-PHY Layer Registers */
-#define D0W_DPHYCONTTX  0x0004  /* Data Lane 0 DPHY Tx Control */
-#define CLW_DPHYCONTRX  0x0020  /* Clock Lane DPHY Rx Control */
-#define D0W_DPHYCONTRX  0x0024  /* Data Lane 0 DPHY Rx Control */
-#define D1W_DPHYCONTRX  0x0028  /* Data Lane 1 DPHY Rx Control */
-#define D2W_DPHYCONTRX  0x002C  /* Data Lane 2 DPHY Rx Control */
-#define D3W_DPHYCONTRX  0x0030  /* Data Lane 3 DPHY Rx Control */
-#define COM_DPHYCONTRX  0x0038  /* DPHY Rx Common Control */
-#define CLW_CNTRL       0x0040  /* Clock Lane Control */
-#define D0W_CNTRL       0x0044  /* Data Lane 0 Control */
-#define D1W_CNTRL       0x0048  /* Data Lane 1 Control */
-#define D2W_CNTRL       0x004C  /* Data Lane 2 Control */
-#define D3W_CNTRL       0x0050  /* Data Lane 3 Control */
-#define DFTMODE_CNTRL   0x0054  /* DFT Mode Control */
+ 
+#define D0W_DPHYCONTTX  0x0004   
+#define CLW_DPHYCONTRX  0x0020   
+#define D0W_DPHYCONTRX  0x0024   
+#define D1W_DPHYCONTRX  0x0028   
+#define D2W_DPHYCONTRX  0x002C   
+#define D3W_DPHYCONTRX  0x0030   
+#define COM_DPHYCONTRX  0x0038   
+#define CLW_CNTRL       0x0040   
+#define D0W_CNTRL       0x0044   
+#define D1W_CNTRL       0x0048   
+#define D2W_CNTRL       0x004C   
+#define D3W_CNTRL       0x0050   
+#define DFTMODE_CNTRL   0x0054   
 
-/* DSI PPI Layer Registers */
-#define PPI_STARTPPI    0x0104  /* START control bit of PPI-TX function. */
+ 
+#define PPI_STARTPPI    0x0104   
 #define PPI_START_FUNCTION      1
 
 #define PPI_BUSYPPI     0x0108
-#define PPI_LINEINITCNT 0x0110  /* Line Initialization Wait Counter  */
+#define PPI_LINEINITCNT 0x0110   
 #define PPI_LPTXTIMECNT 0x0114
-#define PPI_LANEENABLE  0x0134  /* Enables each lane at the PPI layer. */
-#define PPI_TX_RX_TA    0x013C  /* DSI Bus Turn Around timing parameters */
+#define PPI_LANEENABLE  0x0134   
+#define PPI_TX_RX_TA    0x013C   
 
-/* Analog timer function enable */
-#define PPI_CLS_ATMR    0x0140  /* Delay for Clock Lane in LPRX  */
-#define PPI_D0S_ATMR    0x0144  /* Delay for Data Lane 0 in LPRX */
-#define PPI_D1S_ATMR    0x0148  /* Delay for Data Lane 1 in LPRX */
-#define PPI_D2S_ATMR    0x014C  /* Delay for Data Lane 2 in LPRX */
-#define PPI_D3S_ATMR    0x0150  /* Delay for Data Lane 3 in LPRX */
+ 
+#define PPI_CLS_ATMR    0x0140   
+#define PPI_D0S_ATMR    0x0144   
+#define PPI_D1S_ATMR    0x0148   
+#define PPI_D2S_ATMR    0x014C   
+#define PPI_D3S_ATMR    0x0150   
 
-#define PPI_D0S_CLRSIPOCOUNT    0x0164  /* For lane 0 */
-#define PPI_D1S_CLRSIPOCOUNT    0x0168  /* For lane 1 */
-#define PPI_D2S_CLRSIPOCOUNT    0x016C  /* For lane 2 */
-#define PPI_D3S_CLRSIPOCOUNT    0x0170  /* For lane 3 */
+#define PPI_D0S_CLRSIPOCOUNT    0x0164   
+#define PPI_D1S_CLRSIPOCOUNT    0x0168   
+#define PPI_D2S_CLRSIPOCOUNT    0x016C   
+#define PPI_D3S_CLRSIPOCOUNT    0x0170   
 
-#define CLS_PRE         0x0180  /* Digital Counter inside of PHY IO */
-#define D0S_PRE         0x0184  /* Digital Counter inside of PHY IO */
-#define D1S_PRE         0x0188  /* Digital Counter inside of PHY IO */
-#define D2S_PRE         0x018C  /* Digital Counter inside of PHY IO */
-#define D3S_PRE         0x0190  /* Digital Counter inside of PHY IO */
-#define CLS_PREP        0x01A0  /* Digital Counter inside of PHY IO */
-#define D0S_PREP        0x01A4  /* Digital Counter inside of PHY IO */
-#define D1S_PREP        0x01A8  /* Digital Counter inside of PHY IO */
-#define D2S_PREP        0x01AC  /* Digital Counter inside of PHY IO */
-#define D3S_PREP        0x01B0  /* Digital Counter inside of PHY IO */
-#define CLS_ZERO        0x01C0  /* Digital Counter inside of PHY IO */
-#define D0S_ZERO        0x01C4  /* Digital Counter inside of PHY IO */
-#define D1S_ZERO        0x01C8  /* Digital Counter inside of PHY IO */
-#define D2S_ZERO        0x01CC  /* Digital Counter inside of PHY IO */
-#define D3S_ZERO        0x01D0  /* Digital Counter inside of PHY IO */
+#define CLS_PRE         0x0180   
+#define D0S_PRE         0x0184   
+#define D1S_PRE         0x0188   
+#define D2S_PRE         0x018C   
+#define D3S_PRE         0x0190   
+#define CLS_PREP        0x01A0   
+#define D0S_PREP        0x01A4   
+#define D1S_PREP        0x01A8   
+#define D2S_PREP        0x01AC   
+#define D3S_PREP        0x01B0   
+#define CLS_ZERO        0x01C0   
+#define D0S_ZERO        0x01C4   
+#define D1S_ZERO        0x01C8   
+#define D2S_ZERO        0x01CC   
+#define D3S_ZERO        0x01D0   
 
-#define PPI_CLRFLG      0x01E0  /* PRE Counters has reached set values */
-#define PPI_CLRSIPO     0x01E4  /* Clear SIPO values, Slave mode use only. */
-#define HSTIMEOUT       0x01F0  /* HS Rx Time Out Counter */
-#define HSTIMEOUTENABLE 0x01F4  /* Enable HS Rx Time Out Counter */
-#define DSI_STARTDSI    0x0204  /* START control bit of DSI-TX function */
+#define PPI_CLRFLG      0x01E0   
+#define PPI_CLRSIPO     0x01E4   
+#define HSTIMEOUT       0x01F0   
+#define HSTIMEOUTENABLE 0x01F4   
+#define DSI_STARTDSI    0x0204   
 #define DSI_RX_START	1
 
 #define DSI_BUSYDSI     0x0208
-#define DSI_LANEENABLE  0x0210  /* Enables each lane at the Protocol layer. */
-#define DSI_LANESTATUS0 0x0214  /* Displays lane is in HS RX mode. */
-#define DSI_LANESTATUS1 0x0218  /* Displays lane is in ULPS or STOP state */
+#define DSI_LANEENABLE  0x0210   
+#define DSI_LANESTATUS0 0x0214   
+#define DSI_LANESTATUS1 0x0218   
 
-#define DSI_INTSTATUS   0x0220  /* Interrupt Status */
-#define DSI_INTMASK     0x0224  /* Interrupt Mask */
-#define DSI_INTCLR      0x0228  /* Interrupt Clear */
-#define DSI_LPTXTO      0x0230  /* Low Power Tx Time Out Counter */
+#define DSI_INTSTATUS   0x0220   
+#define DSI_INTMASK     0x0224   
+#define DSI_INTCLR      0x0228   
+#define DSI_LPTXTO      0x0230   
 
-#define DSIERRCNT       0x0300  /* DSI Error Count */
-#define APLCTRL         0x0400  /* Application Layer Control */
-#define RDPKTLN         0x0404  /* Command Read Packet Length */
+#define DSIERRCNT       0x0300   
+#define APLCTRL         0x0400   
+#define RDPKTLN         0x0404   
 
-#define VPCTRL          0x0450  /* Video Path Control */
-#define HTIM1           0x0454  /* Horizontal Timing Control 1 */
-#define HTIM2           0x0458  /* Horizontal Timing Control 2 */
-#define VTIM1           0x045C  /* Vertical Timing Control 1 */
-#define VTIM2           0x0460  /* Vertical Timing Control 2 */
-#define VFUEN           0x0464  /* Video Frame Timing Update Enable */
-#define VFUEN_EN	BIT(0)  /* Upload Enable */
+#define VPCTRL          0x0450   
+#define HTIM1           0x0454   
+#define HTIM2           0x0458   
+#define VTIM1           0x045C   
+#define VTIM2           0x0460   
+#define VFUEN           0x0464   
+#define VFUEN_EN	BIT(0)   
 
-/* Mux Input Select for LVDS LINK Input */
-#define LV_MX0003        0x0480  /* Bit 0 to 3 */
-#define LV_MX0407        0x0484  /* Bit 4 to 7 */
-#define LV_MX0811        0x0488  /* Bit 8 to 11 */
-#define LV_MX1215        0x048C  /* Bit 12 to 15 */
-#define LV_MX1619        0x0490  /* Bit 16 to 19 */
-#define LV_MX2023        0x0494  /* Bit 20 to 23 */
-#define LV_MX2427        0x0498  /* Bit 24 to 27 */
+ 
+#define LV_MX0003        0x0480   
+#define LV_MX0407        0x0484   
+#define LV_MX0811        0x0488   
+#define LV_MX1215        0x048C   
+#define LV_MX1619        0x0490   
+#define LV_MX2023        0x0494   
+#define LV_MX2427        0x0498   
 #define LV_MX(b0, b1, b2, b3)	(FLD_VAL(b0, 4, 0) | FLD_VAL(b1, 12, 8) | \
 				FLD_VAL(b2, 20, 16) | FLD_VAL(b3, 28, 24))
 
-/* Input bit numbers used in mux registers */
+ 
 enum {
 	LVI_R0,
 	LVI_R1,
@@ -157,36 +151,36 @@ enum {
 	LVI_L0
 };
 
-#define LVCFG           0x049C  /* LVDS Configuration  */
-#define LVPHY0          0x04A0  /* LVDS PHY 0 */
-#define LV_PHY0_RST(v)          FLD_VAL(v, 22, 22) /* PHY reset */
+#define LVCFG           0x049C   
+#define LVPHY0          0x04A0   
+#define LV_PHY0_RST(v)          FLD_VAL(v, 22, 22)  
 #define LV_PHY0_IS(v)           FLD_VAL(v, 15, 14)
-#define LV_PHY0_ND(v)           FLD_VAL(v, 4, 0) /* Frequency range select */
-#define LV_PHY0_PRBS_ON(v)      FLD_VAL(v, 20, 16) /* Clock/Data Flag pins */
+#define LV_PHY0_ND(v)           FLD_VAL(v, 4, 0)  
+#define LV_PHY0_PRBS_ON(v)      FLD_VAL(v, 20, 16)  
 
-#define LVPHY1          0x04A4  /* LVDS PHY 1 */
-#define SYSSTAT         0x0500  /* System Status  */
-#define SYSRST          0x0504  /* System Reset  */
+#define LVPHY1          0x04A4   
+#define SYSSTAT         0x0500   
+#define SYSRST          0x0504   
 
-#define SYS_RST_I2CS	BIT(0) /* Reset I2C-Slave controller */
-#define SYS_RST_I2CM	BIT(1) /* Reset I2C-Master controller */
-#define SYS_RST_LCD	BIT(2) /* Reset LCD controller */
-#define SYS_RST_BM	BIT(3) /* Reset Bus Management controller */
-#define SYS_RST_DSIRX	BIT(4) /* Reset DSI-RX and App controller */
-#define SYS_RST_REG	BIT(5) /* Reset Register module */
+#define SYS_RST_I2CS	BIT(0)  
+#define SYS_RST_I2CM	BIT(1)  
+#define SYS_RST_LCD	BIT(2)  
+#define SYS_RST_BM	BIT(3)  
+#define SYS_RST_DSIRX	BIT(4)  
+#define SYS_RST_REG	BIT(5)  
 
-/* GPIO Registers */
-#define GPIOC           0x0520  /* GPIO Control  */
-#define GPIOO           0x0524  /* GPIO Output  */
-#define GPIOI           0x0528  /* GPIO Input  */
+ 
+#define GPIOC           0x0520   
+#define GPIOO           0x0524   
+#define GPIOI           0x0528   
 
-/* I2C Registers */
-#define I2CTIMCTRL      0x0540  /* I2C IF Timing and Enable Control */
-#define I2CMADDR        0x0544  /* I2C Master Addressing */
-#define WDATAQ          0x0548  /* Write Data Queue */
-#define RDATAQ          0x054C  /* Read Data Queue */
+ 
+#define I2CTIMCTRL      0x0540   
+#define I2CMADDR        0x0544   
+#define WDATAQ          0x0548   
+#define RDATAQ          0x054C   
 
-/* Chip ID and Revision ID Register */
+ 
 #define IDREG           0x0580
 
 #define LPX_PERIOD		4
@@ -197,13 +191,13 @@ enum {
 
 #define TC358775XBG_ID  0x00007500
 
-/* Debug Registers */
-#define DEBUG00         0x05A0  /* Debug */
-#define DEBUG01         0x05A4  /* LVDS Data */
+ 
+#define DEBUG00         0x05A0   
+#define DEBUG01         0x05A4   
 
 #define DSI_CLEN_BIT		BIT(0)
-#define DIVIDE_BY_3		3 /* PCLK=DCLK/3 */
-#define DIVIDE_BY_6		6 /* PCLK=DCLK/6 */
+#define DIVIDE_BY_3		3  
+#define DIVIDE_BY_6		6  
 #define LVCFG_LVEN_BIT		BIT(0)
 
 #define L0EN BIT(1)
@@ -269,7 +263,7 @@ struct tc_data {
 	struct regulator	*vddio;
 	struct gpio_desc	*reset_gpio;
 	struct gpio_desc	*stby_gpio;
-	u8			lvds_link; /* single-link or dual-link */
+	u8			lvds_link;  
 	u8			bpc;
 };
 
@@ -360,7 +354,7 @@ static void d2l_write(struct i2c_client *i2c, u16 addr, u32 val)
 			ret, addr);
 }
 
-/* helper function to access bus_formats */
+ 
 static struct drm_connector *get_connector(struct drm_encoder *encoder)
 {
 	struct drm_device *dev = encoder->dev;
@@ -426,7 +420,7 @@ static void tc_bridge_enable(struct drm_bridge *bridge)
 
 	if (tc->bpc == 8)
 		val = TC358775_VPCTRL_OPXLFMT(1);
-	else /* bpc = 6; */
+	else  
 		val = TC358775_VPCTRL_MSF(1);
 
 	dsiclk = mode->crtc_clock * 3 * tc->bpc / tc->num_dsi_lanes / 1000;
@@ -454,13 +448,10 @@ static void tc_bridge_enable(struct drm_bridge *bridge)
 	dev_dbg(tc->dev, "bus_formats %04x bpc %d\n",
 		connector->display_info.bus_formats[0],
 		tc->bpc);
-	/*
-	 * Default hardware register settings of tc358775 configured
-	 * with MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA jeida-24 format
-	 */
+	 
 	if (connector->display_info.bus_formats[0] ==
 		MEDIA_BUS_FMT_RGB888_1X7X4_SPWG) {
-		/* VESA-24 */
+		 
 		d2l_write(tc->i2c, LV_MX0003, LV_MX(LVI_R0, LVI_R1, LVI_R2, LVI_R3));
 		d2l_write(tc->i2c, LV_MX0407, LV_MX(LVI_R4, LVI_R7, LVI_R5, LVI_G0));
 		d2l_write(tc->i2c, LV_MX0811, LV_MX(LVI_G1, LVI_G2, LVI_G6, LVI_G7));
@@ -468,7 +459,7 @@ static void tc_bridge_enable(struct drm_bridge *bridge)
 		d2l_write(tc->i2c, LV_MX1619, LV_MX(LVI_B6, LVI_B7, LVI_B1, LVI_B2));
 		d2l_write(tc->i2c, LV_MX2023, LV_MX(LVI_B3, LVI_B4, LVI_B5, LVI_L0));
 		d2l_write(tc->i2c, LV_MX2427, LV_MX(LVI_HS, LVI_VS, LVI_DE, LVI_R6));
-	} else { /*  MEDIA_BUS_FMT_RGB666_1X7X3_SPWG - JEIDA-18 */
+	} else {  
 		d2l_write(tc->i2c, LV_MX0003, LV_MX(LVI_R0, LVI_R1, LVI_R2, LVI_R3));
 		d2l_write(tc->i2c, LV_MX0407, LV_MX(LVI_R4, LVI_L0, LVI_R5, LVI_G0));
 		d2l_write(tc->i2c, LV_MX0811, LV_MX(LVI_G1, LVI_G2, LVI_L0, LVI_L0));
@@ -497,10 +488,7 @@ tc_mode_valid(struct drm_bridge *bridge,
 {
 	struct tc_data *tc = bridge_to_tc(bridge);
 
-	/*
-	 * Maximum pixel clock speed 135MHz for single-link
-	 * 270MHz for dual-link
-	 */
+	 
 	if ((mode->clock > 135000 && tc->lvds_link == SINGLE_LINK) ||
 	    (mode->clock > 270000 && tc->lvds_link == DUAL_LINK))
 		return MODE_CLOCK_HIGH;
@@ -508,11 +496,11 @@ tc_mode_valid(struct drm_bridge *bridge,
 	switch (info->bus_formats[0]) {
 	case MEDIA_BUS_FMT_RGB888_1X7X4_SPWG:
 	case MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA:
-		/* RGB888 */
+		 
 		tc->bpc = 8;
 		break;
 	case MEDIA_BUS_FMT_RGB666_1X7X3_SPWG:
-		/* RGB666 */
+		 
 		tc->bpc = 6;
 		break;
 	default:
@@ -532,18 +520,15 @@ static int tc358775_parse_dt(struct device_node *np, struct tc_data *tc)
 	struct device_node *remote;
 	int dsi_lanes = -1;
 
-	/*
-	 * To get the data-lanes of dsi, we need to access the dsi0_out of port1
-	 *  of dsi0 endpoint from bridge port0 of d2l_in
-	 */
+	 
 	endpoint = of_graph_get_endpoint_by_regs(tc->dev->of_node,
 						 TC358775_DSI_IN, -1);
 	if (endpoint) {
-		/* dsi0_out node */
+		 
 		parent = of_graph_get_remote_port_parent(endpoint);
 		of_node_put(endpoint);
 		if (parent) {
-			/* dsi0 port 1 */
+			 
 			dsi_lanes = drm_of_get_data_lanes_count_ep(parent, 1, -1, 1, 4);
 			of_node_put(parent);
 		}
@@ -585,7 +570,7 @@ static int tc_bridge_attach(struct drm_bridge *bridge,
 {
 	struct tc_data *tc = bridge_to_tc(bridge);
 
-	/* Attach the panel-bridge to the dsi bridge */
+	 
 	return drm_bridge_attach(bridge->encoder, tc->panel_bridge,
 				 &tc->bridge, flags);
 }

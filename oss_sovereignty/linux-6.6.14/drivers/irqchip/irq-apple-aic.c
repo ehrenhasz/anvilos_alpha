@@ -1,47 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright The Asahi Linux Contributors
- *
- * Based on irq-lpc32xx:
- *   Copyright 2015-2016 Vladimir Zapolskiy <vz@mleia.com>
- * Based on irq-bcm2836:
- *   Copyright 2015 Broadcom
- */
 
-/*
- * AIC is a fairly simple interrupt controller with the following features:
- *
- * - 896 level-triggered hardware IRQs
- *   - Single mask bit per IRQ
- *   - Per-IRQ affinity setting
- *   - Automatic masking on event delivery (auto-ack)
- *   - Software triggering (ORed with hw line)
- * - 2 per-CPU IPIs (meant as "self" and "other", but they are
- *   interchangeable if not symmetric)
- * - Automatic prioritization (single event/ack register per CPU, lower IRQs =
- *   higher priority)
- * - Automatic masking on ack
- * - Default "this CPU" register view and explicit per-CPU views
- *
- * In addition, this driver also handles FIQs, as these are routed to the same
- * IRQ vector. These are used for Fast IPIs, the ARMv8 timer IRQs, and
- * performance counters (TODO).
- *
- * Implementation notes:
- *
- * - This driver creates two IRQ domains, one for HW IRQs and internal FIQs,
- *   and one for IPIs.
- * - Since Linux needs more than 2 IPIs, we implement a software IRQ controller
- *   and funnel all IPIs into one per-CPU IPI (the second "self" IPI is unused).
- * - FIQ hwirq numbers are assigned after true hwirqs, and are per-cpu.
- * - DT bindings use 3-cell form (like GIC):
- *   - <0 nr flags> - hwirq #nr
- *   - <1 nr flags> - FIQ #nr
- *     - nr=0  Physical HV timer
- *     - nr=1  Virtual HV timer
- *     - nr=2  Physical guest timer
- *     - nr=3  Virtual guest timer
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -64,9 +24,7 @@
 
 #include <dt-bindings/interrupt-controller/apple-aic.h>
 
-/*
- * AIC v1 registers (MMIO)
- */
+ 
 
 #define AIC_INFO		0x0004
 #define AIC_INFO_NR_IRQ		GENMASK(15, 0)
@@ -79,7 +37,7 @@
 #define AIC_EVENT_TYPE		GENMASK(23, 16)
 #define AIC_EVENT_NUM		GENMASK(15, 0)
 
-#define AIC_EVENT_TYPE_FIQ	0 /* Software use */
+#define AIC_EVENT_TYPE_FIQ	0  
 #define AIC_EVENT_TYPE_IRQ	1
 #define AIC_EVENT_TYPE_IPI	4
 #define AIC_EVENT_IPI_OTHER	1
@@ -104,9 +62,7 @@
 
 #define AIC_MAX_IRQ		0x400
 
-/*
- * AIC v2 registers (MMIO)
- */
+ 
 
 #define AIC2_VERSION		0x0000
 #define AIC2_VERSION_VER	GENMASK(7, 0)
@@ -134,24 +90,7 @@
 
 #define AIC2_IRQ_CFG		0x2000
 
-/*
- * AIC2 registers are laid out like this, starting at AIC2_IRQ_CFG:
- *
- * Repeat for each die:
- *   IRQ_CFG: u32 * MAX_IRQS
- *   SW_SET: u32 * (MAX_IRQS / 32)
- *   SW_CLR: u32 * (MAX_IRQS / 32)
- *   MASK_SET: u32 * (MAX_IRQS / 32)
- *   MASK_CLR: u32 * (MAX_IRQS / 32)
- *   HW_STATE: u32 * (MAX_IRQS / 32)
- *
- * This is followed by a set of event registers, each 16K page aligned.
- * The first one is the AP event register we will use. Unfortunately,
- * the actual implemented die count is not specified anywhere in the
- * capability registers, so we have to explicitly specify the event
- * register as a second reg entry in the device tree to remain
- * forward-compatible.
- */
+ 
 
 #define AIC2_IRQ_CFG_TARGET	GENMASK(3, 0)
 #define AIC2_IRQ_CFG_DELAY_IDX	GENMASK(7, 5)
@@ -159,15 +98,13 @@
 #define MASK_REG(x)		(4 * ((x) >> 5))
 #define MASK_BIT(x)		BIT((x) & GENMASK(4, 0))
 
-/*
- * IMP-DEF sysregs that control FIQ sources
- */
+ 
 
-/* IPI request registers */
+ 
 #define SYS_IMP_APL_IPI_RR_LOCAL_EL1	sys_reg(3, 5, 15, 0, 0)
 #define SYS_IMP_APL_IPI_RR_GLOBAL_EL1	sys_reg(3, 5, 15, 0, 1)
 #define IPI_RR_CPU			GENMASK(7, 0)
-/* Cluster only used for the GLOBAL register */
+ 
 #define IPI_RR_CLUSTER			GENMASK(23, 16)
 #define IPI_RR_TYPE			GENMASK(29, 28)
 #define IPI_RR_IMMEDIATE		0
@@ -175,19 +112,19 @@
 #define IPI_RR_DEFERRED			2
 #define IPI_RR_NOWAKE			3
 
-/* IPI status register */
+ 
 #define SYS_IMP_APL_IPI_SR_EL1		sys_reg(3, 5, 15, 1, 1)
 #define IPI_SR_PENDING			BIT(0)
 
-/* Guest timer FIQ enable register */
+ 
 #define SYS_IMP_APL_VM_TMR_FIQ_ENA_EL2	sys_reg(3, 5, 15, 1, 3)
 #define VM_TMR_FIQ_ENABLE_V		BIT(0)
 #define VM_TMR_FIQ_ENABLE_P		BIT(1)
 
-/* Deferred IPI countdown register */
+ 
 #define SYS_IMP_APL_IPI_CR_EL1		sys_reg(3, 5, 15, 3, 1)
 
-/* Uncore PMC control register */
+ 
 #define SYS_IMP_APL_UPMCR0_EL1		sys_reg(3, 7, 15, 0, 4)
 #define UPMCR0_IMODE			GENMASK(18, 16)
 #define UPMCR0_IMODE_OFF		0
@@ -195,11 +132,11 @@
 #define UPMCR0_IMODE_HALT		3
 #define UPMCR0_IMODE_FIQ		4
 
-/* Uncore PMC status register */
+ 
 #define SYS_IMP_APL_UPMSR_EL1		sys_reg(3, 7, 15, 6, 4)
 #define UPMSR_IACT			BIT(0)
 
-/* MPIDR fields */
+ 
 #define MPIDR_CPU(x)			MPIDR_AFFINITY_LEVEL(x, 0)
 #define MPIDR_CLUSTER(x)		MPIDR_AFFINITY_LEVEL(x, 1)
 
@@ -212,24 +149,16 @@
 #define AIC_HWIRQ_DIE(x)	FIELD_GET(AIC_EVENT_DIE, x)
 #define AIC_NR_SWIPI		32
 
-/*
- * FIQ hwirq index definitions: FIQ sources use the DT binding defines
- * directly, except that timers are special. At the irqchip level, the
- * two timer types are represented by their access method: _EL0 registers
- * or _EL02 registers. In the DT binding, the timers are represented
- * by their purpose (HV or guest). This mapping is for when the kernel is
- * running at EL2 (with VHE). When the kernel is running at EL1, the
- * mapping differs and aic_irq_domain_translate() performs the remapping.
- */
+ 
 enum fiq_hwirq {
-	/* Must be ordered as in apple-aic.h */
+	 
 	AIC_TMR_EL0_PHYS	= AIC_TMR_HV_PHYS,
 	AIC_TMR_EL0_VIRT	= AIC_TMR_HV_VIRT,
 	AIC_TMR_EL02_PHYS	= AIC_TMR_GUEST_PHYS,
 	AIC_TMR_EL02_VIRT	= AIC_TMR_GUEST_VIRT,
 	AIC_CPU_PMU_Effi	= AIC_CPU_PMU_E,
 	AIC_CPU_PMU_Perf	= AIC_CPU_PMU_P,
-	/* No need for this to be discovered from DT */
+	 
 	AIC_VGIC_MI,
 	AIC_NR_FIQ
 };
@@ -239,7 +168,7 @@ static DEFINE_STATIC_KEY_TRUE(use_fast_ipi);
 struct aic_info {
 	int version;
 
-	/* Register offsets */
+	 
 	u32 event;
 	u32 target_cpu;
 	u32 irq_cfg;
@@ -250,7 +179,7 @@ struct aic_info {
 
 	u32 die_stride;
 
-	/* Features */
+	 
 	bool fast_ipi;
 };
 
@@ -326,9 +255,7 @@ static void aic_ic_write(struct aic_irq_chip *ic, u32 reg, u32 val)
 	writel_relaxed(val, ic->base + reg);
 }
 
-/*
- * IRQ irqchip
- */
+ 
 
 static void aic_irq_mask(struct irq_data *d)
 {
@@ -354,10 +281,7 @@ static void aic_irq_unmask(struct irq_data *d)
 
 static void aic_irq_eoi(struct irq_data *d)
 {
-	/*
-	 * Reading the interrupt reason automatically acknowledges and masks
-	 * the IRQ, so we just unmask it here if needed.
-	 */
+	 
 	if (!irqd_irq_masked(d))
 		aic_irq_unmask(d);
 }
@@ -368,10 +292,7 @@ static void __exception_irq_entry aic_handle_irq(struct pt_regs *regs)
 	u32 event, type, irq;
 
 	do {
-		/*
-		 * We cannot use a relaxed read here, as reads from DMA buffers
-		 * need to be ordered after the IRQ fires.
-		 */
+		 
 		event = readl(ic->event + ic->info.event);
 		type = FIELD_GET(AIC_EVENT_TYPE, event);
 		irq = FIELD_GET(AIC_EVENT_NUM, event);
@@ -384,11 +305,7 @@ static void __exception_irq_entry aic_handle_irq(struct pt_regs *regs)
 			pr_err_ratelimited("Unknown IRQ event %d, %d\n", type, irq);
 	} while (event);
 
-	/*
-	 * vGIC maintenance interrupts end up here too, so we need to check
-	 * for them separately. It should however only trigger when NV is
-	 * in use, and be cleared when coming back from the handler.
-	 */
+	 
 	if (is_kernel_in_hyp_mode() &&
 	    (read_sysreg_s(SYS_ICH_HCR_EL2) & ICH_HCR_EN) &&
 	    read_sysreg_s(SYS_ICH_MISR_EL2) != 0) {
@@ -425,10 +342,7 @@ static int aic_irq_set_affinity(struct irq_data *d,
 
 static int aic_irq_set_type(struct irq_data *d, unsigned int type)
 {
-	/*
-	 * Some IRQs (e.g. MSIs) implicitly have edge semantics, and we don't
-	 * have a way to find out the type of any given IRQ, so just allow both.
-	 */
+	 
 	return (type == IRQ_TYPE_LEVEL_HIGH || type == IRQ_TYPE_EDGE_RISING) ? 0 : -EINVAL;
 }
 
@@ -449,9 +363,7 @@ static struct irq_chip aic2_chip = {
 	.irq_set_type = aic_irq_set_type,
 };
 
-/*
- * FIQ irqchip
- */
+ 
 
 static unsigned long aic_fiq_get_idx(struct irq_data *d)
 {
@@ -460,7 +372,7 @@ static unsigned long aic_fiq_get_idx(struct irq_data *d)
 
 static void aic_fiq_set_mask(struct irq_data *d)
 {
-	/* Only the guest timers have real mask bits, unfortunately. */
+	 
 	switch (aic_fiq_get_idx(d)) {
 	case AIC_TMR_EL02_PHYS:
 		sysreg_clear_set_s(SYS_IMP_APL_VM_TMR_FIQ_ENA_EL2, VM_TMR_FIQ_ENABLE_P, 0);
@@ -505,7 +417,7 @@ static void aic_fiq_unmask(struct irq_data *d)
 
 static void aic_fiq_eoi(struct irq_data *d)
 {
-	/* We mask to ack (where we can), so we need to unmask at EOI. */
+	 
 	if (__this_cpu_read(aic_fiq_unmasked) & BIT(aic_fiq_get_idx(d)))
 		aic_fiq_clear_mask(d);
 }
@@ -517,20 +429,7 @@ static void aic_fiq_eoi(struct irq_data *d)
 
 static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
 {
-	/*
-	 * It would be really nice if we had a system register that lets us get
-	 * the FIQ source state without having to peek down into sources...
-	 * but such a register does not seem to exist.
-	 *
-	 * So, we have these potential sources to test for:
-	 *  - Fast IPIs (not yet used)
-	 *  - The 4 timers (CNTP, CNTV for each of HV and guest)
-	 *  - Per-core PMCs (not yet supported)
-	 *  - Per-cluster uncore PMCs (not yet supported)
-	 *
-	 * Since not dealing with any of these results in a FIQ storm,
-	 * we check for everything here, even things we don't support yet.
-	 */
+	 
 
 	if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
 		if (static_branch_likely(&use_fast_ipi)) {
@@ -576,7 +475,7 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
 
 	if (FIELD_GET(UPMCR0_IMODE, read_sysreg_s(SYS_IMP_APL_UPMCR0_EL1)) == UPMCR0_IMODE_FIQ &&
 			(read_sysreg_s(SYS_IMP_APL_UPMSR_EL1) & UPMSR_IACT)) {
-		/* Same story with uncore PMCs */
+		 
 		pr_err_ratelimited("Uncore PMC FIQ fired. Masking.\n");
 		sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
 				   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
@@ -597,9 +496,7 @@ static struct irq_chip fiq_chip = {
 	.irq_set_type = aic_fiq_set_type,
 };
 
-/*
- * Main IRQ domain
- */
+ 
 
 static int aic_irq_domain_map(struct irq_domain *id, unsigned int irq,
 			      irq_hw_number_t hw)
@@ -670,10 +567,7 @@ static int aic_irq_domain_translate(struct irq_domain *id,
 			return -EINVAL;
 		*hwirq = AIC_FIQ_HWIRQ(args[0]);
 
-		/*
-		 * In EL1 the non-redirected registers are the guest's,
-		 * not EL2's, so remap the hwirqs to match.
-		 */
+		 
 		if (!is_kernel_in_hyp_mode()) {
 			switch (args[0]) {
 			case AIC_TMR_GUEST_PHYS:
@@ -739,9 +633,7 @@ static const struct irq_domain_ops aic_irq_domain_ops = {
 	.free		= aic_irq_domain_free,
 };
 
-/*
- * IPI irqchip
- */
+ 
 
 static void aic_ipi_send_fast(int cpu)
 {
@@ -761,13 +653,7 @@ static void aic_ipi_send_fast(int cpu)
 
 static void aic_handle_ipi(struct pt_regs *regs)
 {
-	/*
-	 * Ack the IPI. We need to order this after the AIC event read, but
-	 * that is enforced by normal MMIO ordering guarantees.
-	 *
-	 * For the Fast IPI case, this needs to be ordered before the vIPI
-	 * handling below, so we need to isb();
-	 */
+	 
 	if (static_branch_likely(&use_fast_ipi)) {
 		write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
 		isb();
@@ -777,10 +663,7 @@ static void aic_handle_ipi(struct pt_regs *regs)
 
 	ipi_mux_process();
 
-	/*
-	 * No ordering needed here; at worst this just changes the timing of
-	 * when the next IPI will be delivered.
-	 */
+	 
 	if (!static_branch_likely(&use_fast_ipi))
 		aic_ic_write(aic_irqc, AIC_IPI_MASK_CLR, AIC_IPI_OTHER);
 }
@@ -808,49 +691,41 @@ static int __init aic_init_smp(struct aic_irq_chip *irqc, struct device_node *no
 
 static int aic_init_cpu(unsigned int cpu)
 {
-	/* Mask all hard-wired per-CPU IRQ/FIQ sources */
+	 
 
-	/* Pending Fast IPI FIQs */
+	 
 	write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
 
-	/* Timer FIQs */
+	 
 	sysreg_clear_set(cntp_ctl_el0, 0, ARCH_TIMER_CTRL_IT_MASK);
 	sysreg_clear_set(cntv_ctl_el0, 0, ARCH_TIMER_CTRL_IT_MASK);
 
-	/* EL2-only (VHE mode) IRQ sources */
+	 
 	if (is_kernel_in_hyp_mode()) {
-		/* Guest timers */
+		 
 		sysreg_clear_set_s(SYS_IMP_APL_VM_TMR_FIQ_ENA_EL2,
 				   VM_TMR_FIQ_ENABLE_V | VM_TMR_FIQ_ENABLE_P, 0);
 
-		/* vGIC maintenance IRQ */
+		 
 		sysreg_clear_set_s(SYS_ICH_HCR_EL2, ICH_HCR_EN, 0);
 	}
 
-	/* PMC FIQ */
+	 
 	sysreg_clear_set_s(SYS_IMP_APL_PMCR0_EL1, PMCR0_IMODE | PMCR0_IACT,
 			   FIELD_PREP(PMCR0_IMODE, PMCR0_IMODE_OFF));
 
-	/* Uncore PMC FIQ */
+	 
 	sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
 			   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
 
-	/* Commit all of the above */
+	 
 	isb();
 
 	if (aic_irqc->info.version == 1) {
-		/*
-		 * Make sure the kernel's idea of logical CPU order is the same as AIC's
-		 * If we ever end up with a mismatch here, we will have to introduce
-		 * a mapping table similar to what other irqchip drivers do.
-		 */
+		 
 		WARN_ON(aic_ic_read(aic_irqc, AIC_WHOAMI) != smp_processor_id());
 
-		/*
-		 * Always keep IPIs unmasked at the hardware level (except auto-masking
-		 * by AIC during processing). We manage masks at the vIPI level.
-		 * These registers only exist on AICv1, AICv2 always uses fast IPIs.
-		 */
+		 
 		aic_ic_write(aic_irqc, AIC_IPI_ACK, AIC_IPI_SELF | AIC_IPI_OTHER);
 		if (static_branch_likely(&use_fast_ipi)) {
 			aic_ic_write(aic_irqc, AIC_IPI_MASK_SET, AIC_IPI_SELF | AIC_IPI_OTHER);
@@ -860,7 +735,7 @@ static int aic_init_cpu(unsigned int cpu)
 		}
 	}
 
-	/* Initialize the local mask state */
+	 
 	__this_cpu_write(aic_fiq_unmasked, 0);
 
 	return 0;
@@ -949,7 +824,7 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
 		irqc->nr_die = irqc->max_die = 1;
 
 		off = start_off = irqc->info.target_cpu;
-		off += sizeof(u32) * irqc->max_irq; /* TARGET_CPU */
+		off += sizeof(u32) * irqc->max_irq;  
 
 		irqc->event = irqc->base;
 
@@ -967,7 +842,7 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
 		irqc->max_die = FIELD_GET(AIC2_INFO3_MAX_DIE, info3);
 
 		off = start_off = irqc->info.irq_cfg;
-		off += sizeof(u32) * irqc->max_irq; /* IRQ_CFG */
+		off += sizeof(u32) * irqc->max_irq;  
 
 		irqc->event = of_iomap(node, 1);
 		if (WARN_ON(!irqc->event))
@@ -978,14 +853,14 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
 	}
 
 	irqc->info.sw_set = off;
-	off += sizeof(u32) * (irqc->max_irq >> 5); /* SW_SET */
+	off += sizeof(u32) * (irqc->max_irq >> 5);  
 	irqc->info.sw_clr = off;
-	off += sizeof(u32) * (irqc->max_irq >> 5); /* SW_CLR */
+	off += sizeof(u32) * (irqc->max_irq >> 5);  
 	irqc->info.mask_set = off;
-	off += sizeof(u32) * (irqc->max_irq >> 5); /* MASK_SET */
+	off += sizeof(u32) * (irqc->max_irq >> 5);  
 	irqc->info.mask_clr = off;
-	off += sizeof(u32) * (irqc->max_irq >> 5); /* MASK_CLR */
-	off += sizeof(u32) * (irqc->max_irq >> 5); /* HW_STATE */
+	off += sizeof(u32) * (irqc->max_irq >> 5);  
+	off += sizeof(u32) * (irqc->max_irq >> 5);  
 
 	if (irqc->info.fast_ipi)
 		static_branch_enable(&use_fast_ipi);
@@ -1050,7 +925,7 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
 			.fwnode		= of_node_to_fwnode(node),
 			.param_count	= 3,
 			.param		= {
-				[0]	= AIC_FIQ, /* This is a lie */
+				[0]	= AIC_FIQ,  
 				[1]	= AIC_VGIC_MI,
 				[2]	= IRQ_TYPE_LEVEL_HIGH,
 			},

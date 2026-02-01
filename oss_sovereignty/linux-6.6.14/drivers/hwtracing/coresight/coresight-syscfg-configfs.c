@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Linaro Limited, All rights reserved.
- * Author: Mike Leach <mike.leach@linaro.org>
- */
+
+ 
 
 #include <linux/configfs.h>
 
 #include "coresight-config.h"
 #include "coresight-syscfg-configfs.h"
 
-/* create a default ci_type. */
+ 
 static inline struct config_item_type *cscfg_create_ci_type(void)
 {
 	struct config_item_type *ci_type;
@@ -21,9 +18,9 @@ static inline struct config_item_type *cscfg_create_ci_type(void)
 	return ci_type;
 }
 
-/* configurations sub-group */
+ 
 
-/* attributes for the config view group */
+ 
 static ssize_t cscfg_cfg_description_show(struct config_item *item, char *page)
 {
 	struct cscfg_fs_config *fs_config = container_of(to_config_group(item),
@@ -48,7 +45,7 @@ static ssize_t cscfg_cfg_feature_refs_show(struct config_item *item, char *page)
 }
 CONFIGFS_ATTR_RO(cscfg_cfg_, feature_refs);
 
-/* list preset values in order of features and params */
+ 
 static ssize_t cscfg_cfg_values_show(struct config_item *item, char *page)
 {
 	const struct cscfg_feature_desc *feat_desc;
@@ -65,13 +62,10 @@ static ssize_t cscfg_cfg_values_show(struct config_item *item, char *page)
 
 	preset_idx = fs_preset->preset_num - 1;
 
-	/* start index on the correct array line */
+	 
 	val_idx = config_desc->nr_total_params * preset_idx;
 
-	/*
-	 * A set of presets is the sum of all params in used features,
-	 * in order of declaration of features and params in the features
-	 */
+	 
 	for (i = 0; i < config_desc->nr_feat_refs; i++) {
 		feat_desc = cscfg_get_named_feat_desc(config_desc->feat_ref_names[i]);
 		for (j = 0; j < feat_desc->nr_params; j++) {
@@ -133,18 +127,15 @@ static ssize_t cscfg_cfg_preset_store(struct config_item *item,
 
 	err = kstrtoint(page, 0, &preset);
 	if (!err) {
-		/*
-		 * presets start at 1, and go up to max (15),
-		 * but the config may provide fewer.
-		 */
+		 
 		if ((preset < 1) || (preset > fs_config->config_desc->nr_presets))
 			err = -EINVAL;
 	}
 
 	if (!err) {
-		/* set new value */
+		 
 		fs_config->preset = preset;
-		/* set on system if active */
+		 
 		if (fs_config->active)
 			cscfg_config_sysfs_set_preset(fs_config->preset);
 	}
@@ -218,7 +209,7 @@ static struct config_group *cscfg_create_config_group(struct cscfg_config_desc *
 	cfg_view->config_desc = config_desc;
 	config_group_init_type_name(&cfg_view->group, config_desc->name, &cscfg_config_view_type);
 
-	/* add in a preset<n> dir for each preset */
+	 
 	err = cscfg_add_preset_groups(cfg_view);
 	if (err)
 		return ERR_PTR(err);
@@ -226,7 +217,7 @@ static struct config_group *cscfg_create_config_group(struct cscfg_config_desc *
 	return &cfg_view->group;
 }
 
-/* attributes for features view */
+ 
 
 static ssize_t cscfg_feat_description_show(struct config_item *item, char *page)
 {
@@ -264,7 +255,7 @@ static ssize_t cscfg_feat_nr_params_show(struct config_item *item, char *page)
 }
 CONFIGFS_ATTR_RO(cscfg_feat_, nr_params);
 
-/* base feature desc attrib structures */
+ 
 static struct configfs_attribute *cscfg_feature_view_attrs[] = {
 	&cscfg_feat_attr_description,
 	&cscfg_feat_attr_matches,
@@ -314,11 +305,7 @@ static struct config_item_type cscfg_param_view_type = {
 	.ct_attrs = cscfg_param_view_attrs,
 };
 
-/*
- * configfs has far less functionality provided to add attributes dynamically than sysfs,
- * and the show and store fns pass the enclosing config_item so the actual attribute cannot
- * be determined. Therefore we add each item as a group directory, with a value attribute.
- */
+ 
 static int cscfg_create_params_group_items(struct cscfg_feature_desc *feat_desc,
 					   struct config_group *params_group)
 {
@@ -326,7 +313,7 @@ static int cscfg_create_params_group_items(struct cscfg_feature_desc *feat_desc,
 	struct cscfg_fs_param *param_item;
 	int i;
 
-	/* parameter items - as groups with default_value attribute */
+	 
 	for (i = 0; i < feat_desc->nr_params; i++) {
 		param_item = devm_kzalloc(dev, sizeof(struct cscfg_fs_param), GFP_KERNEL);
 		if (!param_item)
@@ -391,7 +378,7 @@ static struct config_group cscfg_configs_grp = {
 	},
 };
 
-/* add configuration to configurations group */
+ 
 int cscfg_configfs_add_config(struct cscfg_config_desc *config_desc)
 {
 	struct config_group *new_group;
@@ -425,7 +412,7 @@ static struct config_group cscfg_features_grp = {
 	},
 };
 
-/* add feature to features group */
+ 
 int cscfg_configfs_add_feature(struct cscfg_feature_desc *feat_desc)
 {
 	struct config_group *new_group;
@@ -467,7 +454,7 @@ int cscfg_configfs_init(struct cscfg_manager *cscfg_mgr)
 	config_group_init(&subsys->su_group);
 	mutex_init(&subsys->su_mutex);
 
-	/* Add default groups to subsystem */
+	 
 	config_group_init(&cscfg_configs_grp);
 	configfs_add_default_group(&cscfg_configs_grp, &subsys->su_group);
 

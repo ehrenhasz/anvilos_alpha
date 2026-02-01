@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Fd transport layer.  Includes deprecated socket layer.
- *
- *  Copyright (C) 2006 by Russ Cox <rsc@swtch.com>
- *  Copyright (C) 2004-2005 by Latchesar Ionkov <lucho@ionkov.net>
- *  Copyright (C) 2004-2008 by Eric Van Hensbergen <ericvh@gmail.com>
- *  Copyright (C) 1997-2002 by Ron Minnich <rminnich@sarnoff.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,7 +21,7 @@
 #include <net/9p/client.h>
 #include <net/9p/transport.h>
 
-#include <linux/syscalls.h> /* killme */
+#include <linux/syscalls.h>  
 
 #define P9_PORT 564
 #define MAX_SOCK_BUF (1024*1024)
@@ -37,13 +30,7 @@
 static struct p9_trans_module p9_tcp_trans;
 static struct p9_trans_module p9_fd_trans;
 
-/**
- * struct p9_fd_opts - per-transport options
- * @rfd: file descriptor for reading (trans=fd)
- * @wfd: file descriptor for writing (trans=fd)
- * @port: port to connect to (trans=tcp)
- * @privport: port is privileged
- */
+ 
 
 struct p9_fd_opts {
 	int rfd;
@@ -52,15 +39,12 @@ struct p9_fd_opts {
 	bool privport;
 };
 
-/*
-  * Option Parsing (code inspired by NFS code)
-  *  - a little lazy - parse all fd-transport options
-  */
+ 
 
 enum {
-	/* Options that take integer arguments */
+	 
 	Opt_port, Opt_rfdno, Opt_wfdno, Opt_err,
-	/* Options that take no arguments */
+	 
 	Opt_privport,
 };
 
@@ -73,10 +57,10 @@ static const match_table_t tokens = {
 };
 
 enum {
-	Rworksched = 1,		/* read work scheduled or running */
-	Rpending = 2,		/* can read */
-	Wworksched = 4,		/* write work scheduled or running */
-	Wpending = 8,		/* can write */
+	Rworksched = 1,		 
+	Rpending = 2,		 
+	Wworksched = 4,		 
+	Wpending = 8,		 
 };
 
 struct p9_poll_wait {
@@ -85,30 +69,7 @@ struct p9_poll_wait {
 	wait_queue_head_t *wait_addr;
 };
 
-/**
- * struct p9_conn - fd mux connection state information
- * @mux_list: list link for mux to manage multiple connections (?)
- * @client: reference to client instance for this connection
- * @err: error state
- * @req_lock: lock protecting req_list and requests statuses
- * @req_list: accounting for requests which have been sent
- * @unsent_req_list: accounting for requests that haven't been sent
- * @rreq: read request
- * @wreq: write request
- * @req: current request being processed (if any)
- * @tmp_buf: temporary buffer to read in header
- * @rc: temporary fcall for reading current frame
- * @wpos: write position for current frame
- * @wsize: amount of data to write for current frame
- * @wbuf: current write buffer
- * @poll_pending_link: pending links to be polled per conn
- * @poll_wait: array of wait_q's for various worker threads
- * @pt: poll state
- * @rq: current read work
- * @wq: current write work
- * @wsched: ????
- *
- */
+ 
 
 struct p9_conn {
 	struct list_head mux_list;
@@ -132,13 +93,7 @@ struct p9_conn {
 	unsigned long wsched;
 };
 
-/**
- * struct p9_trans_fd - transport state
- * @rd: reference to file to read from
- * @wr: reference of file to write to
- * @conn: connection state reference
- *
- */
+ 
 
 struct p9_trans_fd {
 	struct file *rd;
@@ -176,12 +131,7 @@ static void p9_mux_poll_stop(struct p9_conn *m)
 	flush_work(&p9_poll_work);
 }
 
-/**
- * p9_conn_cancel - cancel all pending requests with error
- * @m: mux data
- * @err: error code
- *
- */
+ 
 
 static void p9_conn_cancel(struct p9_conn *m, int err)
 {
@@ -240,13 +190,7 @@ p9_fd_poll(struct p9_client *client, struct poll_table_struct *pt, int *err)
 	return ret;
 }
 
-/**
- * p9_fd_read- read from a fd
- * @client: client instance
- * @v: buffer to receive data into
- * @len: size of receive buffer
- *
- */
+ 
 
 static int p9_fd_read(struct p9_client *client, void *v, int len)
 {
@@ -270,11 +214,7 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
 	return ret;
 }
 
-/**
- * p9_read_work - called when there is some data to be read from a transport
- * @work: container of work to be done
- *
- */
+ 
 
 static void p9_read_work(struct work_struct *work)
 {
@@ -292,7 +232,7 @@ static void p9_read_work(struct work_struct *work)
 	if (!m->rc.sdata) {
 		m->rc.sdata = m->tmp_buf;
 		m->rc.offset = 0;
-		m->rc.capacity = P9_HDRSZ; /* start by reading header */
+		m->rc.capacity = P9_HDRSZ;  
 	}
 
 	clear_bit(Rpending, &m->wsched);
@@ -310,11 +250,11 @@ static void p9_read_work(struct work_struct *work)
 
 	m->rc.offset += err;
 
-	/* header read in */
+	 
 	if ((!m->rreq) && (m->rc.offset == m->rc.capacity)) {
 		p9_debug(P9_DEBUG_TRANS, "got new header\n");
 
-		/* Header size */
+		 
 		m->rc.size = P9_HDRSZ;
 		err = p9_parse_header(&m->rc, &m->rc.size, NULL, NULL, 0);
 		if (err) {
@@ -357,9 +297,7 @@ static void p9_read_work(struct work_struct *work)
 		m->rc.capacity = m->rc.size;
 	}
 
-	/* packet is read in
-	 * not an else because some packets (like clunk) have no payload
-	 */
+	 
 	if ((m->rreq) && (m->rc.offset == m->rc.capacity)) {
 		p9_debug(P9_DEBUG_TRANS, "got new packet\n");
 		m->rreq->rc.size = m->rc.offset;
@@ -368,7 +306,7 @@ static void p9_read_work(struct work_struct *work)
 			list_del(&m->rreq->req_list);
 			p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
 		} else if (m->rreq->status == REQ_STATUS_FLSHD) {
-			/* Ignore replies associated with a cancelled request. */
+			 
 			p9_debug(P9_DEBUG_TRANS,
 				 "Ignore replies associated with a cancelled request\n");
 		} else {
@@ -408,13 +346,7 @@ error:
 	clear_bit(Rworksched, &m->wsched);
 }
 
-/**
- * p9_fd_write - write to a socket
- * @client: client instance
- * @v: buffer to send data from
- * @len: size of send buffer
- *
- */
+ 
 
 static int p9_fd_write(struct p9_client *client, void *v, int len)
 {
@@ -436,11 +368,7 @@ static int p9_fd_write(struct p9_client *client, void *v, int len)
 	return ret;
 }
 
-/**
- * p9_write_work - called when a transport can send some data
- * @work: container for work to be done
- *
- */
+ 
 
 static void p9_write_work(struct work_struct *work)
 {
@@ -540,14 +468,7 @@ static int p9_pollwake(wait_queue_entry_t *wait, unsigned int mode, int sync, vo
 	return 1;
 }
 
-/**
- * p9_pollwait - add poll task to the wait queue
- * @filp: file pointer being polled
- * @wait_address: wait_q to block on
- * @p: poll state
- *
- * called by files poll operation to add v9fs-poll task to files wait queue
- */
+ 
 
 static void
 p9_pollwait(struct file *filp, wait_queue_head_t *wait_address, poll_table *p)
@@ -574,12 +495,7 @@ p9_pollwait(struct file *filp, wait_queue_head_t *wait_address, poll_table *p)
 	add_wait_queue(wait_address, &pwait->wait);
 }
 
-/**
- * p9_conn_create - initialize the per-session mux data
- * @client: client instance
- *
- * Note: Creates the polling task if this is the first session.
- */
+ 
 
 static void p9_conn_create(struct p9_client *client)
 {
@@ -612,11 +528,7 @@ static void p9_conn_create(struct p9_client *client)
 	}
 }
 
-/**
- * p9_poll_mux - polls a mux and schedules read or write works if necessary
- * @m: connection to poll
- *
- */
+ 
 
 static void p9_poll_mux(struct p9_conn *m)
 {
@@ -652,16 +564,7 @@ static void p9_poll_mux(struct p9_conn *m)
 	}
 }
 
-/**
- * p9_fd_request - send 9P request
- * The function can sleep until the request is scheduled for sending.
- * The function can be interrupted. Return from the function is not
- * a guarantee that the request is sent successfully.
- *
- * @client: client instance
- * @req: request to be sent
- *
- */
+ 
 
 static int p9_fd_request(struct p9_client *client, struct p9_req_t *req)
 {
@@ -719,17 +622,13 @@ static int p9_fd_cancelled(struct p9_client *client, struct p9_req_t *req)
 	p9_debug(P9_DEBUG_TRANS, "client %p req %p\n", client, req);
 
 	spin_lock(&m->req_lock);
-	/* Ignore cancelled request if message has been received
-	 * before lock.
-	 */
+	 
 	if (req->status == REQ_STATUS_RCVD) {
 		spin_unlock(&m->req_lock);
 		return 0;
 	}
 
-	/* we haven't received a response for oldreq,
-	 * remove it from the list.
-	 */
+	 
 	list_del(&req->req_list);
 	WRITE_ONCE(req->status, REQ_STATUS_FLSHD);
 	spin_unlock(&m->req_lock);
@@ -753,13 +652,7 @@ static int p9_fd_show_options(struct seq_file *m, struct p9_client *clnt)
 	return 0;
 }
 
-/**
- * parse_opts - parse mount options into p9_fd_opts structure
- * @params: options string passed from mount
- * @opts: fd transport-specific structure to parse options into
- *
- * Returns 0 upon success, -ERRNO upon failure
- */
+ 
 
 static int parse_opts(char *params, struct p9_fd_opts *opts)
 {
@@ -832,14 +725,7 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
 		goto out_free_ts;
 	if (!(ts->rd->f_mode & FMODE_READ))
 		goto out_put_rd;
-	/* Prevent workers from hanging on IO when fd is a pipe.
-	 * It's technically possible for userspace or concurrent mounts to
-	 * modify this flag concurrently, which will likely result in a
-	 * broken filesystem. However, just having bad flags here should
-	 * not crash the kernel or cause any other sort of bug, so mark this
-	 * particular data race as intentional so that tooling (like KCSAN)
-	 * can allow it and detect further problems.
-	 */
+	 
 	data_race(ts->rd->f_flags |= O_NONBLOCK);
 	ts->wr = fget(wfd);
 	if (!ts->wr)
@@ -894,11 +780,7 @@ static int p9_socket_open(struct p9_client *client, struct socket *csocket)
 	return 0;
 }
 
-/**
- * p9_conn_destroy - cancels all pending requests of mux
- * @m: mux to destroy
- *
- */
+ 
 
 static void p9_conn_destroy(struct p9_conn *m)
 {
@@ -922,11 +804,7 @@ static void p9_conn_destroy(struct p9_conn *m)
 	m->client = NULL;
 }
 
-/**
- * p9_fd_close - shutdown file descriptor transport
- * @client: client instance
- *
- */
+ 
 
 static void p9_fd_close(struct p9_client *client)
 {
@@ -951,9 +829,7 @@ static void p9_fd_close(struct p9_client *client)
 	kfree(ts);
 }
 
-/*
- * stolen from NFS - maybe should be made a generic function?
- */
+ 
 static inline int valid_ipaddr4(const char *buf)
 {
 	int rc, count, in[4];
@@ -1148,14 +1024,7 @@ static struct p9_trans_module p9_fd_trans = {
 };
 MODULE_ALIAS_9P("fd");
 
-/**
- * p9_poll_workfn - poll worker thread
- * @work: work queue
- *
- * polls all v9fs transports for new events and queues the appropriate
- * work to the work queue
- *
- */
+ 
 
 static void p9_poll_workfn(struct work_struct *work)
 {

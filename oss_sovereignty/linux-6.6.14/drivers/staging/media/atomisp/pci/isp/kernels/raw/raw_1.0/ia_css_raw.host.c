@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "ia_css_frame.h"
 #include "ia_css_types.h"
@@ -29,7 +17,7 @@ static const struct ia_css_raw_configuration default_config = {
 	.pipe = (struct sh_css_sp_pipeline *)NULL,
 };
 
-/* MW: These areMIPI / ISYS properties, not camera function properties */
+ 
 static enum sh_stream_format
 css2isp_stream_format(enum atomisp_input_format from) {
 	switch (from)
@@ -74,10 +62,10 @@ int ia_css_raw_config(struct sh_css_isp_raw_isp_config *to,
 	int ret;
 
 #if !defined(ISP2401)
-	/* 2401 input system uses input width width */
+	 
 	in_info = internal_info;
 #else
-	/*in some cases, in_info is NULL*/
+	 
 	if (in_info)
 		(void)internal_info;
 	else
@@ -88,7 +76,7 @@ int ia_css_raw_config(struct sh_css_isp_raw_isp_config *to,
 	if (ret)
 		return ret;
 
-	/* Assume divisiblity here, may need to generalize to fixed point. */
+	 
 	assert((in_info->format == IA_CSS_FRAME_FORMAT_RAW_PACKED) ||
 	       (elems_a % to->port_b.elems == 0));
 

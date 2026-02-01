@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Testing module to load key from trusted PKCS#7 message
- *
- * Copyright (C) 2014 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "PKCS7key: "fmt
 #include <linux/key.h>
@@ -22,9 +18,7 @@ module_param_named(usage, pkcs7_usage, uint, S_IWUSR | S_IRUGO);
 MODULE_PARM_DESC(pkcs7_usage,
 		 "Usage to specify when verifying the PKCS#7 message");
 
-/*
- * Retrieve the PKCS#7 message content.
- */
+ 
 static int pkcs7_view_content(void *ctx, const void *data, size_t len,
 			      size_t asn1hdrlen)
 {
@@ -45,9 +39,7 @@ static int pkcs7_view_content(void *ctx, const void *data, size_t len,
 	return ret;
 }
 
-/*
- * Preparse a PKCS#7 wrapped and validated data blob.
- */
+ 
 static int pkcs7_preparse(struct key_preparsed_payload *prep)
 {
 	enum key_being_used_for usage = pkcs7_usage;
@@ -63,10 +55,7 @@ static int pkcs7_preparse(struct key_preparsed_payload *prep)
 				      pkcs7_view_content, prep);
 }
 
-/*
- * user defined keys take an arbitrary string as the description and an
- * arbitrary blob of data as the payload
- */
+ 
 static struct key_type key_type_pkcs7 = {
 	.name			= "pkcs7_test",
 	.preparse		= pkcs7_preparse,
@@ -78,9 +67,7 @@ static struct key_type key_type_pkcs7 = {
 	.read			= user_read,
 };
 
-/*
- * Module stuff
- */
+ 
 static int __init pkcs7_key_init(void)
 {
 	return register_key_type(&key_type_pkcs7);

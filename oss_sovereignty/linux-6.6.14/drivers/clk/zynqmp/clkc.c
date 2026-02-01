@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Zynq UltraScale+ MPSoC clock controller
- *
- *  Copyright (C) 2016-2019 Xilinx
- *
- * Based on drivers/clk/zynq/clkc.c
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -22,7 +16,7 @@
 #define MAX_NODES			6
 #define MAX_NAME_LEN			50
 
-/* Flags for parents */
+ 
 #define PARENT_CLK_SELF			0
 #define PARENT_CLK_NODE1		1
 #define PARENT_CLK_NODE2		2
@@ -45,29 +39,14 @@ enum clk_type {
 	CLK_TYPE_EXTERNAL,
 };
 
-/**
- * struct clock_parent - Clock parent
- * @name:	Parent name
- * @id:		Parent clock ID
- * @flag:	Parent flags
- */
+ 
 struct clock_parent {
 	char name[MAX_NAME_LEN];
 	int id;
 	u32 flag;
 };
 
-/**
- * struct zynqmp_clock - Clock
- * @clk_name:		Clock name
- * @valid:		Validity flag of clock
- * @type:		Clock type (Output/External)
- * @node:		Clock topology nodes
- * @num_nodes:		Number of nodes present in topology
- * @parent:		Parent of clock
- * @num_parents:	Number of parents of clock
- * @clk_id:		Clock id
- */
+ 
 struct zynqmp_clock {
 	char clk_name[MAX_NAME_LEN];
 	u32 valid;
@@ -137,12 +116,7 @@ static struct zynqmp_clock *clock;
 static struct clk_hw_onecell_data *zynqmp_data;
 static unsigned int clock_max_idx;
 
-/**
- * zynqmp_is_valid_clock() - Check whether clock is valid or not
- * @clk_id:	Clock index
- *
- * Return: 1 if clock is valid, 0 if clock is invalid else error code
- */
+ 
 static inline int zynqmp_is_valid_clock(u32 clk_id)
 {
 	if (clk_id >= clock_max_idx)
@@ -151,13 +125,7 @@ static inline int zynqmp_is_valid_clock(u32 clk_id)
 	return clock[clk_id].valid;
 }
 
-/**
- * zynqmp_get_clock_name() - Get name of clock from Clock index
- * @clk_id:	Clock index
- * @clk_name:	Name of clock
- *
- * Return: 0 on success else error code
- */
+ 
 static int zynqmp_get_clock_name(u32 clk_id, char *clk_name)
 {
 	int ret;
@@ -171,13 +139,7 @@ static int zynqmp_get_clock_name(u32 clk_id, char *clk_name)
 	return ret == 0 ? -EINVAL : ret;
 }
 
-/**
- * zynqmp_get_clock_type() - Get type of clock
- * @clk_id:	Clock index
- * @type:	Clock type: CLK_TYPE_OUTPUT or CLK_TYPE_EXTERNAL
- *
- * Return: 0 on success else error code
- */
+ 
 static int zynqmp_get_clock_type(u32 clk_id, u32 *type)
 {
 	int ret;
@@ -191,14 +153,7 @@ static int zynqmp_get_clock_type(u32 clk_id, u32 *type)
 	return ret == 0 ? -EINVAL : ret;
 }
 
-/**
- * zynqmp_pm_clock_get_num_clocks() - Get number of clocks in system
- * @nclocks:	Number of clocks in system/board.
- *
- * Call firmware API to get number of clocks.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pm_clock_get_num_clocks(u32 *nclocks)
 {
 	struct zynqmp_pm_query_data qdata = {0};
@@ -213,16 +168,7 @@ static int zynqmp_pm_clock_get_num_clocks(u32 *nclocks)
 	return ret;
 }
 
-/**
- * zynqmp_pm_clock_get_name() - Get the name of clock for given id
- * @clock_id:	ID of the clock to be queried
- * @response:	Name of the clock with the given id
- *
- * This function is used to get name of clock specified by given
- * clock ID.
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_pm_clock_get_name(u32 clock_id,
 				    struct name_resp *response)
 {
@@ -242,23 +188,7 @@ static int zynqmp_pm_clock_get_name(u32 clock_id,
 	return 0;
 }
 
-/**
- * zynqmp_pm_clock_get_topology() - Get the topology of clock for given id
- * @clock_id:	ID of the clock to be queried
- * @index:	Node index of clock topology
- * @response:	Buffer used for the topology response
- *
- * This function is used to get topology information for the clock
- * specified by given clock ID.
- *
- * This API will return 3 node of topology with a single response. To get
- * other nodes, master should call same API in loop with new
- * index till error is returned. E.g First call should have
- * index 0 which will return nodes 0,1 and 2. Next call, index
- * should be 3 which will return nodes 3,4 and 5 and so on.
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_pm_clock_get_topology(u32 clock_id, u32 index,
 					struct topology_resp *response)
 {
@@ -296,17 +226,7 @@ unsigned long zynqmp_clk_map_common_ccf_flags(const u32 zynqmp_flag)
 	return ccf_flag;
 }
 
-/**
- * zynqmp_clk_register_fixed_factor() - Register fixed factor with the
- *					clock framework
- * @name:		Name of this clock
- * @clk_id:		Clock ID
- * @parents:		Name of this clock's parents
- * @num_parents:	Number of parents
- * @nodes:		Clock topology node
- *
- * Return: clock hardware to the registered clock
- */
+ 
 struct clk_hw *zynqmp_clk_register_fixed_factor(const char *name, u32 clk_id,
 					const char * const *parents,
 					u8 num_parents,
@@ -339,23 +259,7 @@ struct clk_hw *zynqmp_clk_register_fixed_factor(const char *name, u32 clk_id,
 	return hw;
 }
 
-/**
- * zynqmp_pm_clock_get_parents() - Get the first 3 parents of clock for given id
- * @clock_id:	Clock ID
- * @index:	Parent index
- * @response:	Parents of the given clock
- *
- * This function is used to get 3 parents for the clock specified by
- * given clock ID.
- *
- * This API will return 3 parents with a single response. To get
- * other parents, master should call same API in loop with new
- * parent index till error is returned. E.g First call should have
- * index 0 which will return parents 0,1 and 2. Next call, index
- * should be 3 which will return parent 3,4 and 5 and so on.
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_pm_clock_get_parents(u32 clock_id, u32 index,
 				       struct parents_resp *response)
 {
@@ -373,15 +277,7 @@ static int zynqmp_pm_clock_get_parents(u32 clock_id, u32 index,
 	return ret;
 }
 
-/**
- * zynqmp_pm_clock_get_attributes() - Get the attributes of clock for given id
- * @clock_id:	Clock ID
- * @response:	Clock attributes response
- *
- * This function is used to get clock's attributes(e.g. valid, clock type, etc).
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_pm_clock_get_attributes(u32 clock_id,
 					  struct attr_resp *response)
 {
@@ -398,15 +294,7 @@ static int zynqmp_pm_clock_get_attributes(u32 clock_id,
 	return ret;
 }
 
-/**
- * __zynqmp_clock_get_topology() - Get topology data of clock from firmware
- *				   response data
- * @topology:		Clock topology
- * @response:		Clock topology data received from firmware
- * @nnodes:		Number of nodes
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int __zynqmp_clock_get_topology(struct clock_topology *topology,
 				       struct topology_resp *response,
 				       u32 *nnodes)
@@ -433,15 +321,7 @@ static int __zynqmp_clock_get_topology(struct clock_topology *topology,
 	return 0;
 }
 
-/**
- * zynqmp_clock_get_topology() - Get topology of clock from firmware using
- *				 PM_API
- * @clk_id:		Clock index
- * @topology:		Clock topology
- * @num_nodes:		Number of nodes
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_clock_get_topology(u32 clk_id,
 				     struct clock_topology *topology,
 				     u32 *num_nodes)
@@ -464,15 +344,7 @@ static int zynqmp_clock_get_topology(u32 clk_id,
 	return 0;
 }
 
-/**
- * __zynqmp_clock_get_parents() - Get parents info of clock from firmware
- *				   response data
- * @parents:		Clock parents
- * @response:		Clock parents data received from firmware
- * @nparent:		Number of parent
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int __zynqmp_clock_get_parents(struct clock_parent *parents,
 				      struct parents_resp *response,
 				      u32 *nparent)
@@ -501,14 +373,7 @@ static int __zynqmp_clock_get_parents(struct clock_parent *parents,
 	return 0;
 }
 
-/**
- * zynqmp_clock_get_parents() - Get parents info from firmware using PM_API
- * @clk_id:		Clock index
- * @parents:		Clock parents
- * @num_parents:	Total number of parents
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_clock_get_parents(u32 clk_id, struct clock_parent *parents,
 				    u32 *num_parents)
 {
@@ -517,7 +382,7 @@ static int zynqmp_clock_get_parents(u32 clk_id, struct clock_parent *parents,
 
 	*num_parents = 0;
 	do {
-		/* Get parents from firmware */
+		 
 		ret = zynqmp_pm_clock_get_parents(clock[clk_id].clk_id, j,
 						  &response);
 		if (ret)
@@ -533,15 +398,7 @@ static int zynqmp_clock_get_parents(u32 clk_id, struct clock_parent *parents,
 	return 0;
 }
 
-/**
- * zynqmp_get_parent_list() - Create list of parents name
- * @np:			Device node
- * @clk_id:		Clock index
- * @parent_list:	List of parent's name
- * @num_parents:	Total number of parents
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_get_parent_list(struct device_node *np, u32 clk_id,
 				  const char **parent_list, u32 *num_parents)
 {
@@ -574,15 +431,7 @@ static int zynqmp_get_parent_list(struct device_node *np, u32 clk_id,
 	return 0;
 }
 
-/**
- * zynqmp_register_clk_topology() - Register clock topology
- * @clk_id:		Clock index
- * @clk_name:		Clock Name
- * @num_parents:	Total number of parents
- * @parent_names:	List of parents name
- *
- * Return: Returns either clock hardware or error+reason
- */
+ 
 static struct clk_hw *zynqmp_register_clk_topology(int clk_id, char *clk_name,
 						   int num_parents,
 						   const char **parent_names)
@@ -598,10 +447,7 @@ static struct clk_hw *zynqmp_register_clk_topology(int clk_id, char *clk_name,
 	clk_dev_id = clock[clk_id].clk_id;
 
 	for (j = 0; j < num_nodes; j++) {
-		/*
-		 * Clock name received from firmware is output clock name.
-		 * Intermediate clock names are postfixed with type of clock.
-		 */
+		 
 		if (j != (num_nodes - 1)) {
 			clk_out[j] = kasprintf(GFP_KERNEL, "%s%s", clk_name,
 					    clk_type_postfix[nodes[j].type]);
@@ -630,12 +476,7 @@ static struct clk_hw *zynqmp_register_clk_topology(int clk_id, char *clk_name,
 	return hw;
 }
 
-/**
- * zynqmp_register_clocks() - Register clocks
- * @np:		Device node
- *
- * Return: 0 on success else error code
- */
+ 
 static int zynqmp_register_clocks(struct device_node *np)
 {
 	int ret;
@@ -645,18 +486,16 @@ static int zynqmp_register_clocks(struct device_node *np)
 	for (i = 0; i < clock_max_idx; i++) {
 		char clk_name[MAX_NAME_LEN];
 
-		/* get clock name, continue to next clock if name not found */
+		 
 		if (zynqmp_get_clock_name(i, clk_name))
 			continue;
 
-		/* Check if clock is valid and output clock.
-		 * Do not register invalid or external clock.
-		 */
+		 
 		ret = zynqmp_get_clock_type(i, &type);
 		if (ret || type != CLK_TYPE_OUTPUT)
 			continue;
 
-		/* Get parents of clock*/
+		 
 		if (zynqmp_get_parent_list(np, i, parent_names,
 					   &total_parents)) {
 			WARN_ONCE(1, "No parents found for %s\n",
@@ -680,9 +519,7 @@ static int zynqmp_register_clocks(struct device_node *np)
 	return 0;
 }
 
-/**
- * zynqmp_get_clock_info() - Get clock information from firmware using PM_API
- */
+ 
 static void zynqmp_get_clock_info(void)
 {
 	int i, ret;
@@ -697,7 +534,7 @@ static void zynqmp_get_clock_info(void)
 			continue;
 
 		clock[i].valid = FIELD_GET(CLK_ATTR_VALID, attr.attr[0]);
-		/* skip query for Invalid clock */
+		 
 		ret = zynqmp_is_valid_clock(i);
 		if (ret != CLK_ATTR_VALID)
 			continue;
@@ -716,10 +553,7 @@ static void zynqmp_get_clock_info(void)
 
 		zynqmp_pm_clock_get_name(clock[i].clk_id, &name);
 
-		/*
-		 * Terminate with NULL character in case name provided by firmware
-		 * is longer and truncated due to size limit.
-		 */
+		 
 		name.name[sizeof(name.name) - 1] = '\0';
 
 		if (!strcmp(name.name, RESERVED_CLK_NAME))
@@ -727,7 +561,7 @@ static void zynqmp_get_clock_info(void)
 		strscpy(clock[i].clk_name, name.name, MAX_NAME_LEN);
 	}
 
-	/* Get topology of all clock */
+	 
 	for (i = 0; i < clock_max_idx; i++) {
 		ret = zynqmp_get_clock_type(i, &type);
 		if (ret || type != CLK_TYPE_OUTPUT)
@@ -745,12 +579,7 @@ static void zynqmp_get_clock_info(void)
 	}
 }
 
-/**
- * zynqmp_clk_setup() - Setup the clock framework and register clocks
- * @np:		Device node
- *
- * Return: 0 on success else error code
- */
+ 
 static int zynqmp_clk_setup(struct device_node *np)
 {
 	int ret;

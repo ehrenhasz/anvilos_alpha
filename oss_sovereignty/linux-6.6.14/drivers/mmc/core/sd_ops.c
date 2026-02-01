@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/drivers/mmc/core/sd_ops.h
- *
- *  Copyright 2006-2007 Pierre Ossman
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -41,7 +37,7 @@ int mmc_app_cmd(struct mmc_host *host, struct mmc_card *card)
 	if (err)
 		return err;
 
-	/* Check that card supported application commands */
+	 
 	if (!mmc_host_is_spi(host) && !(cmd.resp[0] & R1_APP_CMD))
 		return -EOPNOTSUPP;
 
@@ -55,14 +51,11 @@ static int mmc_wait_for_app_cmd(struct mmc_host *host, struct mmc_card *card,
 	struct mmc_request mrq = {};
 	int i, err = -EIO;
 
-	/*
-	 * We have to resend MMC_APP_CMD for each attempt so
-	 * we cannot use the retries field in mmc_command.
-	 */
+	 
 	for (i = 0; i <= MMC_CMD_RETRIES; i++) {
 		err = mmc_app_cmd(host, card);
 		if (err) {
-			/* no point in retrying; no APP commands allowed */
+			 
 			if (mmc_host_is_spi(host)) {
 				if (cmd->resp[0] & R1_SPI_ILLEGAL_COMMAND)
 					break;
@@ -84,7 +77,7 @@ static int mmc_wait_for_app_cmd(struct mmc_host *host, struct mmc_card *card,
 		if (!cmd->error)
 			break;
 
-		/* no point in retrying illegal APP commands */
+		 
 		if (mmc_host_is_spi(host)) {
 			if (cmd->resp[0] & R1_SPI_ILLEGAL_COMMAND)
 				break;
@@ -122,7 +115,7 @@ int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 
 	cmd.opcode = SD_APP_OP_COND;
 	if (mmc_host_is_spi(host))
-		cmd.arg = ocr & (1 << 30); /* SPI only defines one bit */
+		cmd.arg = ocr & (1 << 30);  
 	else
 		cmd.arg = ocr;
 	cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
@@ -132,11 +125,11 @@ int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 		if (err)
 			break;
 
-		/* if we're just probing, do a single pass */
+		 
 		if (ocr == 0)
 			break;
 
-		/* otherwise wait until reset completes */
+		 
 		if (mmc_host_is_spi(host)) {
 			if (!(cmd.resp[0] & R1_SPI_IDLE))
 				break;
@@ -167,11 +160,7 @@ static int __mmc_send_if_cond(struct mmc_host *host, u32 ocr, u8 pcie_bits,
 	static const u8 test_pattern = 0xAA;
 	u8 result_pattern;
 
-	/*
-	 * To support SD 2.0 cards, we must always invoke SD_SEND_IF_COND
-	 * before SD_APP_OP_COND. This command will harmlessly fail for
-	 * SD 1.0 cards.
-	 */
+	 
 	cmd.opcode = SD_SEND_IF_COND;
 	cmd.arg = ((ocr & 0xFF8000) != 0) << 8 | pcie_bits << 8 | test_pattern;
 	cmd.flags = MMC_RSP_SPI_R7 | MMC_RSP_R7 | MMC_CMD_BCR;
@@ -206,10 +195,10 @@ int mmc_send_if_cond_pcie(struct mmc_host *host, u32 ocr)
 	int ret;
 
 	if (host->caps2 & MMC_CAP2_SD_EXP) {
-		/* Probe card for SD express support via PCIe. */
+		 
 		pcie_bits = 0x10;
 		if (host->caps2 & MMC_CAP2_SD_EXP_1_2V)
-			/* Probe also for 1.2V support. */
+			 
 			pcie_bits = 0x30;
 	}
 
@@ -217,7 +206,7 @@ int mmc_send_if_cond_pcie(struct mmc_host *host, u32 ocr)
 	if (ret)
 		return 0;
 
-	/* Continue with the SD express init, if the card supports it. */
+	 
 	resp &= 0x3000;
 	if (pcie_bits && resp) {
 		if (resp == 0x3000)
@@ -225,10 +214,7 @@ int mmc_send_if_cond_pcie(struct mmc_host *host, u32 ocr)
 		else
 			host->ios.timing = MMC_TIMING_SD_EXP;
 
-		/*
-		 * According to the spec the clock shall also be gated, but
-		 * let's leave this to the host driver for more flexibility.
-		 */
+		 
 		return host->ops->init_sd_express(host, &host->ios);
 	}
 
@@ -262,15 +248,13 @@ int mmc_app_send_scr(struct mmc_card *card)
 	struct scatterlist sg;
 	__be32 *scr;
 
-	/* NOTE: caller guarantees scr is heap-allocated */
+	 
 
 	err = mmc_app_cmd(card->host, card);
 	if (err)
 		return err;
 
-	/* dma onto stack is unsafe/nonportable, but callers to this
-	 * routine normally provide temporary on-stack buffers ...
-	 */
+	 
 	scr = kmalloc(sizeof(card->raw_scr), GFP_KERNEL);
 	if (!scr)
 		return -ENOMEM;
@@ -312,7 +296,7 @@ int mmc_sd_switch(struct mmc_card *card, int mode, int group,
 {
 	u32 cmd_args;
 
-	/* NOTE: caller guarantees resp is heap-allocated */
+	 
 
 	mode = !!mode;
 	value &= 0xF;
@@ -333,7 +317,7 @@ int mmc_app_sd_status(struct mmc_card *card, void *ssr)
 	struct mmc_data data = {};
 	struct scatterlist sg;
 
-	/* NOTE: caller guarantees ssr is heap-allocated */
+	 
 
 	err = mmc_app_cmd(card->host, card);
 	if (err)

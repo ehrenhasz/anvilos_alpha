@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Perf annotate functions.
- *
- * Copyright (C) 2020-2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 static int loongarch_call__parse(struct arch *arch, struct ins_operands *ops, struct map_symbol *ms)
 {

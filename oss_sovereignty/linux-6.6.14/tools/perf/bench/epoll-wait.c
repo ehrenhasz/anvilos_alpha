@@ -1,66 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifdef HAVE_EVENTFD_SUPPORT
-/*
- * Copyright (C) 2018 Davidlohr Bueso.
- *
- * This program benchmarks concurrent epoll_wait(2) monitoring multiple
- * file descriptors under one or two load balancing models. The first,
- * and default, is the single/combined queueing (which refers to a single
- * epoll instance for N worker threads):
- *
- *                          |---> [worker A]
- *                          |---> [worker B]
- *        [combined queue]  .---> [worker C]
- *                          |---> [worker D]
- *                          |---> [worker E]
- *
- * While the second model, enabled via --multiq option, uses multiple
- * queueing (which refers to one epoll instance per worker). For example,
- * short lived tcp connections in a high throughput httpd server will
- * distribute the accept()'ing  connections across CPUs. In this case each
- * worker does a limited  amount of processing.
- *
- *             [queue A]  ---> [worker]
- *             [queue B]  ---> [worker]
- *             [queue C]  ---> [worker]
- *             [queue D]  ---> [worker]
- *             [queue E]  ---> [worker]
- *
- * Naturally, the single queue will enforce more concurrency on the epoll
- * instance, and can therefore scale poorly compared to multiple queues.
- * However, this is a benchmark raw data and must be taken with a grain of
- * salt when choosing how to make use of sys_epoll.
+ 
 
- * Each thread has a number of private, nonblocking file descriptors,
- * referred to as fdmap. A writer thread will constantly be writing to
- * the fdmaps of all threads, minimizing each threads's chances of
- * epoll_wait not finding any ready read events and blocking as this
- * is not what we want to stress. The size of the fdmap can be adjusted
- * by the user; enlarging the value will increase the chances of
- * epoll_wait(2) blocking as the lineal writer thread will take "longer",
- * at least at a high level.
- *
- * Note that because fds are private to each thread, this workload does
- * not stress scenarios where multiple tasks are awoken per ready IO; ie:
- * EPOLLEXCLUSIVE semantics.
- *
- * The end result/metric is throughput: number of ops/second where an
- * operation consists of:
- *
- *   epoll_wait(2) + [others]
- *
- *        ... where [others] is the cost of re-adding the fd (EPOLLET),
- *            or rearming it (EPOLLONESHOT).
- *
- *
- * The purpose of this is program is that it be useful for measuring
- * kernel related changes to the sys_epoll, and not comparing different
- * IO polling methods, for example. Hence everything is very adhoc and
- * outputs raw microbenchmark numbers. Also this uses eventfd, similar
- * tools tend to use pipes or sockets, but the result is the same.
- */
-
-/* For the CLR_() macros */
+ 
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -92,22 +34,20 @@ static unsigned int nthreads = 0;
 static unsigned int nsecs    = 8;
 static bool wdone, done, __verbose, randomize, nonblocking;
 
-/*
- * epoll related shared variables.
- */
+ 
 
-/* Maximum number of nesting allowed inside epoll sets */
+ 
 #define EPOLL_MAXNESTS 4
 
 static int epollfd;
 static int *epollfdp;
 static bool noaffinity;
 static unsigned int nested = 0;
-static bool et; /* edge-trigger */
+static bool et;  
 static bool oneshot;
-static bool multiq; /* use an epoll instance per thread */
+static bool multiq;  
 
-/* amount of fds to monitor, per thread */
+ 
 static unsigned int nfds = 64;
 
 static struct mutex thread_lock;
@@ -117,14 +57,14 @@ static struct cond thread_parent, thread_worker;
 
 struct worker {
 	int tid;
-	int epollfd; /* for --multiq */
+	int epollfd;  
 	pthread_t thread;
 	unsigned long ops;
 	int *fdmap;
 };
 
 static const struct option options[] = {
-	/* general benchmark options */
+	 
 	OPT_UINTEGER('t', "threads", &nthreads, "Specify amount of threads"),
 	OPT_UINTEGER('r', "runtime", &nsecs, "Specify runtime (in seconds)"),
 	OPT_UINTEGER('f', "nfds",    &nfds,  "Specify amount of file descriptors to monitor for each thread"),
@@ -132,7 +72,7 @@ static const struct option options[] = {
 	OPT_BOOLEAN('R', "randomize", &randomize,   "Enable random write behaviour (default is lineal)"),
 	OPT_BOOLEAN( 'v', "verbose", &__verbose, "Verbose mode"),
 
-	/* epoll specific options */
+	 
 	OPT_BOOLEAN( 'm', "multiq",  &multiq,   "Use multiple epoll instances (one per thread)"),
 	OPT_BOOLEAN( 'B', "nonblocking", &nonblocking, "Nonblocking epoll_wait(2) behaviour"),
 	OPT_UINTEGER( 'N', "nested",  &nested,   "Nesting level epoll hierarchy (default is 0, no nesting)"),
@@ -148,12 +88,7 @@ static const char * const bench_epoll_wait_usage[] = {
 };
 
 
-/*
- * Arrange the N elements of ARRAY in random order.
- * Only effective if N is much smaller than RAND_MAX;
- * if this may not be the case, use a better random
- * number generator. -- Ben Pfaff.
- */
+ 
 static void shuffle(void *array, size_t n, size_t size)
 {
 	char *carray = array;
@@ -198,12 +133,7 @@ static void *workerfn(void *arg)
 	mutex_unlock(&thread_lock);
 
 	do {
-		/*
-		 * Block indefinitely waiting for the IN event.
-		 * In order to stress the epoll_wait(2) syscall,
-		 * call it event per event, instead of a larger
-		 * batch (max)limit.
-		 */
+		 
 		do {
 			ret = epoll_wait(efd, &ev, 1, to);
 		} while (ret < 0 && errno == EINTR);
@@ -222,7 +152,7 @@ static void *workerfn(void *arg)
 		}
 
 		if (oneshot) {
-			/* rearm the file descriptor with a new event mask */
+			 
 			ev.events |= EPOLLIN | EPOLLONESHOT;
 			ret = epoll_ctl(efd, EPOLL_CTL_MOD, fd, &ev);
 		}
@@ -256,8 +186,8 @@ static void nest_epollfd(struct worker *w)
 			err(EXIT_FAILURE, "epoll_create");
 	}
 
-	ev.events = EPOLLHUP; /* anything */
-	ev.data.u64 = i; /* any number */
+	ev.events = EPOLLHUP;  
+	ev.data.u64 = i;  
 
 	for (i = nested - 1; i; i--) {
 		if (epoll_ctl(epollfdp[i - 1], EPOLL_CTL_ADD,
@@ -273,7 +203,7 @@ static void toggle_done(int sig __maybe_unused,
 			siginfo_t *info __maybe_unused,
 			void *uc __maybe_unused)
 {
-	/* inform all threads that we're done for the day */
+	 
 	done = true;
 	gettimeofday(&bench__end, NULL);
 	timersub(&bench__end, &bench__start, &bench__runtime);
@@ -448,15 +378,13 @@ int bench_epoll_wait(int argc, const char **argv)
 	if (!cpu)
 		goto errmem;
 
-	/* a single, main epoll instance */
+	 
 	if (!multiq) {
 		epollfd = epoll_create(1);
 		if (epollfd < 0)
 			err(EXIT_FAILURE, "epoll_create");
 
-		/*
-		 * Deal with nested epolls, if any.
-		 */
+		 
 		if (nested)
 			nest_epollfd(NULL);
 	}
@@ -464,7 +392,7 @@ int bench_epoll_wait(int argc, const char **argv)
 	printinfo("Using %s queue model\n", multiq ? "multi" : "single");
 	printinfo("Nesting level(s): %d\n", nested);
 
-	/* default to the number of CPUs and leave one for the writer pthread */
+	 
 	if (!nthreads)
 		nthreads = perf_cpu_map__nr(cpu) - 1;
 
@@ -502,11 +430,7 @@ int bench_epoll_wait(int argc, const char **argv)
 	cond_broadcast(&thread_worker);
 	mutex_unlock(&thread_lock);
 
-	/*
-	 * At this point the workers should be blocked waiting for read events
-	 * to become ready. Launch the writer which will constantly be writing
-	 * to each thread's fdmap.
-	 */
+	 
 	ret = pthread_create(&wthread, NULL, writerfn,
 			     (void *)(struct worker *) worker);
 	if (ret)
@@ -516,18 +440,18 @@ int bench_epoll_wait(int argc, const char **argv)
 	toggle_done(0, NULL, NULL);
 	printinfo("main thread: toggling done\n");
 
-	sleep(1); /* meh */
+	sleep(1);  
 	wdone = true;
 	ret = pthread_join(wthread, NULL);
 	if (ret)
 		err(EXIT_FAILURE, "pthread_join");
 
-	/* cleanup & report results */
+	 
 	cond_destroy(&thread_parent);
 	cond_destroy(&thread_worker);
 	mutex_destroy(&thread_lock);
 
-	/* sort the array back before reporting */
+	 
 	if (randomize)
 		qsort(worker, nthreads, sizeof(struct worker), cmpworker);
 
@@ -558,4 +482,4 @@ int bench_epoll_wait(int argc, const char **argv)
 errmem:
 	err(EXIT_FAILURE, "calloc");
 }
-#endif // HAVE_EVENTFD_SUPPORT
+#endif 

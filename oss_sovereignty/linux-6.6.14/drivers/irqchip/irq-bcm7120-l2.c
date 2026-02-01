@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom BCM7120 style Level 2 interrupt controller driver
- *
- * Copyright (C) 2014 Broadcom Corporation
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME	": " fmt
 
@@ -25,7 +21,7 @@
 #include <linux/irqchip.h>
 #include <linux/irqchip/chained_irq.h>
 
-/* Register offset in the L2 interrupt controller */
+ 
 #define IRQEN		0x00
 #define IRQSTAT		0x04
 
@@ -97,7 +93,7 @@ static void bcm7120_l2_intc_resume(struct irq_chip_generic *gc)
 {
 	struct irq_chip_type *ct = gc->chip_types;
 
-	/* Restore the saved mask */
+	 
 	irq_gc_lock(gc);
 	irq_reg_writel(gc, gc->mask_cache, ct->regs.mask);
 	irq_gc_unlock(gc);
@@ -117,15 +113,7 @@ static int bcm7120_l2_intc_init_one(struct device_node *dn,
 		return -EINVAL;
 	}
 
-	/* For multiple parent IRQs with multiple words, this looks like:
-	 * <irq0_w0 irq0_w1 irq1_w0 irq1_w1 ...>
-	 *
-	 * We need to associate a given parent interrupt with its corresponding
-	 * map_mask in order to mask the status register with it because we
-	 * have the same handler being called for multiple parent interrupts.
-	 *
-	 * This is typically something needed on BCM7xxx (STB chips).
-	 */
+	 
 	for (idx = 0; idx < data->n_words; idx++) {
 		if (data->map_mask_prop) {
 			l1_data->irq_map_mask[idx] |=
@@ -166,7 +154,7 @@ static int __init bcm7120_l2_intc_iomap_7120(struct device_node *dn,
 	ret = of_property_read_u32_array(dn, "brcm,int-fwd-mask",
 					 data->irq_fwd_mask, data->n_words);
 	if (ret != 0 && ret != -EINVAL) {
-		/* property exists but has the wrong number of words */
+		 
 		pr_err("invalid brcm,int-fwd-mask property\n");
 		return -EINVAL;
 	}
@@ -271,9 +259,7 @@ static int __init bcm7120_l2_intc_probe(struct device_node *dn,
 		goto out_free_l1_data;
 	}
 
-	/* MIPS chips strapped for BE will automagically configure the
-	 * peripheral registers for CPU-native byte order.
-	 */
+	 
 	flags = IRQ_GC_INIT_MASK_CACHE;
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		flags |= IRQ_GC_BE_IO;
@@ -297,7 +283,7 @@ static int __init bcm7120_l2_intc_probe(struct device_node *dn,
 		gc->reg_base = data->pair_base[idx];
 		ct->regs.mask = data->en_offset[idx];
 
-		/* gc->reg_base is defined and so is gc->writel */
+		 
 		irq_reg_writel(gc, data->irq_fwd_mask[idx],
 			       data->en_offset[idx]);
 
@@ -307,17 +293,11 @@ static int __init bcm7120_l2_intc_probe(struct device_node *dn,
 		gc->suspend = bcm7120_l2_intc_suspend;
 		gc->resume = bcm7120_l2_intc_resume;
 
-		/*
-		 * Initialize mask-cache, in case we need it for
-		 * saving/restoring fwd mask even w/o any child interrupts
-		 * installed
-		 */
+		 
 		gc->mask_cache = irq_reg_readl(gc, ct->regs.mask);
 
 		if (data->can_wake) {
-			/* This IRQ chip can wake the system, set all
-			 * relevant child interrupts in wake_enabled mask
-			 */
+			 
 			gc->wake_enabled = 0xffffffff;
 			gc->wake_enabled &= ~gc->unused;
 			ct->chip.irq_set_wake = irq_gc_set_wake;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_GENERIC_FLAT_H
 #define _ASM_GENERIC_FLAT_H
 
@@ -23,4 +23,4 @@ static inline int flat_put_addr_at_rp(u32 __user *rp, u32 addr, u32 rel)
 #endif
 }
 
-#endif /* _ASM_GENERIC_FLAT_H */
+#endif  

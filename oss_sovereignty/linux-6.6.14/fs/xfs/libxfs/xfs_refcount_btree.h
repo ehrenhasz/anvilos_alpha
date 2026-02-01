@@ -1,14 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 #ifndef __XFS_REFCOUNT_BTREE_H__
 #define	__XFS_REFCOUNT_BTREE_H__
 
-/*
- * Reference Count Btree on-disk structures
- */
+ 
 
 struct xfs_buf;
 struct xfs_btree_cur;
@@ -16,16 +11,10 @@ struct xfs_mount;
 struct xfs_perag;
 struct xbtree_afakeroot;
 
-/*
- * Btree block header size
- */
+ 
 #define XFS_REFCOUNT_BLOCK_LEN	XFS_BTREE_SBLOCK_CRC_LEN
 
-/*
- * Record, key, and pointer address macros for btree blocks.
- *
- * (note that some of these may appear unused, but they are used in userspace)
- */
+ 
 #define XFS_REFCOUNT_REC_ADDR(block, index) \
 	((struct xfs_refcount_rec *) \
 		((char *)(block) + \
@@ -70,4 +59,4 @@ unsigned int xfs_refcountbt_maxlevels_ondisk(void);
 int __init xfs_refcountbt_init_cur_cache(void);
 void xfs_refcountbt_destroy_cur_cache(void);
 
-#endif	/* __XFS_REFCOUNT_BTREE_H__ */
+#endif	 

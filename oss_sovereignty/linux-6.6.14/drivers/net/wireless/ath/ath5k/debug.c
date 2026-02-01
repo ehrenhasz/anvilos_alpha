@@ -1,62 +1,4 @@
-/*
- * Copyright (c) 2007-2008 Bruno Randolf <bruno@thinktube.com>
- *
- *  This file is free software: you may copy, redistribute and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation, either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  This file is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
- * Copyright (c) 2004-2005 Atheros Communications, Inc.
- * Copyright (c) 2006 Devicescape Software, Inc.
- * Copyright (c) 2007 Jiri Slaby <jirislaby@gmail.com>
- * Copyright (c) 2007 Luis R. Rodriguez <mcgrof@winlab.rutgers.edu>
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    similar to the "NO WARRANTY" disclaimer below ("Disclaimer") and any
- *    redistribution must be conditioned upon including a substantially
- *    similar Disclaimer requirement for further binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT, MERCHANTIBILITY
- * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGES.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -75,7 +17,7 @@ static unsigned int ath5k_debug;
 module_param_named(debug, ath5k_debug, uint, 0);
 
 
-/* debugfs: registers */
+ 
 
 struct reg {
 	const char *name;
@@ -84,7 +26,7 @@ struct reg {
 
 #define REG_STRUCT_INIT(r) { #r, r }
 
-/* just a few random registers, might want to add more */
+ 
 static const struct reg regs[] = {
 	REG_STRUCT_INIT(AR5K_CR),
 	REG_STRUCT_INIT(AR5K_RXDP),
@@ -143,7 +85,7 @@ static void *reg_start(struct seq_file *seq, loff_t *pos)
 
 static void reg_stop(struct seq_file *seq, void *p)
 {
-	/* nothing to do */
+	 
 }
 
 static void *reg_next(struct seq_file *seq, void *p, loff_t *pos)
@@ -170,7 +112,7 @@ static const struct seq_operations registers_sops = {
 
 DEFINE_SEQ_ATTRIBUTE(registers);
 
-/* debugfs: beacons */
+ 
 
 static ssize_t read_file_beacon(struct file *file, char __user *user_buf,
 				   size_t count, loff_t *ppos)
@@ -251,7 +193,7 @@ static const struct file_operations fops_beacon = {
 };
 
 
-/* debugfs: reset */
+ 
 
 static ssize_t write_file_reset(struct file *file,
 				 const char __user *userbuf,
@@ -271,7 +213,7 @@ static const struct file_operations fops_reset = {
 };
 
 
-/* debugfs: debug level */
+ 
 
 static const struct {
 	enum ath5k_debug_level level;
@@ -337,7 +279,7 @@ static ssize_t write_file_debug(struct file *file,
 	for (i = 0; i < ARRAY_SIZE(dbg_info); i++) {
 		if (strncmp(buf, dbg_info[i].name,
 					strlen(dbg_info[i].name)) == 0) {
-			ah->debug.level ^= dbg_info[i].level; /* toggle bit */
+			ah->debug.level ^= dbg_info[i].level;  
 			break;
 		}
 	}
@@ -353,7 +295,7 @@ static const struct file_operations fops_debug = {
 };
 
 
-/* debugfs: antenna */
+ 
 
 static ssize_t read_file_antenna(struct file *file, char __user *user_buf,
 				   size_t count, loff_t *ppos)
@@ -466,7 +408,7 @@ static const struct file_operations fops_antenna = {
 	.llseek = default_llseek,
 };
 
-/* debugfs: misc */
+ 
 
 static ssize_t read_file_misc(struct file *file, char __user *user_buf,
 				   size_t count, loff_t *ppos)
@@ -521,7 +463,7 @@ static const struct file_operations fops_misc = {
 };
 
 
-/* debugfs: frameerrors */
+ 
 
 static ssize_t read_file_frameerrors(struct file *file, char __user *user_buf,
 				   size_t count, loff_t *ppos)
@@ -639,7 +581,7 @@ static const struct file_operations fops_frameerrors = {
 };
 
 
-/* debugfs: ani */
+ 
 
 static ssize_t read_file_ani(struct file *file, char __user *user_buf,
 				   size_t count, loff_t *ppos)
@@ -804,7 +746,7 @@ static const struct file_operations fops_ani = {
 };
 
 
-/* debugfs: queues etc */
+ 
 
 static ssize_t read_file_queue(struct file *file, char __user *user_buf,
 				   size_t count, loff_t *ppos)
@@ -876,7 +818,7 @@ static const struct file_operations fops_queue = {
 	.llseek = default_llseek,
 };
 
-/* debugfs: eeprom */
+ 
 
 struct eeprom_private {
 	u16 *buf;
@@ -889,10 +831,10 @@ static int open_file_eeprom(struct inode *inode, struct file *file)
 	struct ath5k_hw *ah = inode->i_private;
 	bool res;
 	int i, ret;
-	u32 eesize;	/* NB: in 16-bit words */
+	u32 eesize;	 
 	u16 val, *buf;
 
-	/* Get eeprom size */
+	 
 
 	res = ath5k_hw_nvram_read(ah, AR5K_EEPROM_SIZE_UPPER, &val);
 	if (!res)
@@ -910,7 +852,7 @@ static int open_file_eeprom(struct inode *inode, struct file *file)
 	if (eesize > 4096)
 		return -EINVAL;
 
-	/* Create buffer and read in eeprom */
+	 
 
 	buf = vmalloc(array_size(eesize, 2));
 	if (!buf) {
@@ -926,7 +868,7 @@ static int open_file_eeprom(struct inode *inode, struct file *file)
 		buf[i] = val;
 	}
 
-	/* Create private struct and assign to file */
+	 
 
 	ep = kmalloc(sizeof(*ep), GFP_KERNEL);
 	if (!ep) {
@@ -997,7 +939,7 @@ ath5k_debug_init_device(struct ath5k_hw *ah)
 			    &ah->ah_use_32khz_clock);
 }
 
-/* functions used in other places */
+ 
 
 void
 ath5k_debug_dump_bands(struct ath5k_hw *ah)

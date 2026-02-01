@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/crc32.h>
@@ -42,7 +39,7 @@ static u8 qed_vf_calculate_legacy(struct qed_vf_info *p_vf)
 	return legacy;
 }
 
-/* IOV ramrods */
+ 
 static int qed_sp_vf_start(struct qed_hwfn *p_hwfn, struct qed_vf_info *p_vf)
 {
 	struct vf_start_ramrod_data *p_ramrod = NULL;
@@ -51,7 +48,7 @@ static int qed_sp_vf_start(struct qed_hwfn *p_hwfn, struct qed_vf_info *p_vf)
 	int rc = -EINVAL;
 	u8 fp_minor;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_vf->opaque_fid;
@@ -113,7 +110,7 @@ static int qed_sp_vf_stop(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = opaque_vfid;
@@ -221,7 +218,7 @@ static bool qed_iov_validate_queue_mode(struct qed_hwfn *p_hwfn,
 		return mode == QED_IOV_VALIDATE_Q_ENABLE;
 	}
 
-	/* In case we haven't found any valid cid, then its disabled */
+	 
 	return mode == QED_IOV_VALIDATE_Q_DISABLE;
 }
 
@@ -319,7 +316,7 @@ static int qed_iov_post_vf_bulletin(struct qed_hwfn *p_hwfn,
 
 	p_bulletin = p_vf->bulletin.p_virt;
 
-	/* Increment bulletin board version and compute crc */
+	 
 	p_bulletin->version++;
 	p_bulletin->crc = crc32(0, (u8 *)p_bulletin + crc_size,
 				p_vf->bulletin.size - crc_size);
@@ -328,7 +325,7 @@ static int qed_iov_post_vf_bulletin(struct qed_hwfn *p_hwfn,
 		   "Posting Bulletin 0x%08x to VF[%d] (CRC 0x%08x)\n",
 		   p_bulletin->version, p_vf->relative_vf_id, p_bulletin->crc);
 
-	/* propagate bulletin board via dmae to vm memory */
+	 
 	memset(&params, 0, sizeof(params));
 	SET_FIELD(params.flags, QED_DMAE_PARAMS_DST_VF_VALID, 0x1);
 	params.dst_vfid = p_vf->abs_vf_id;
@@ -384,13 +381,10 @@ static int qed_iov_pci_cfg_info(struct qed_dev *cdev)
 		   iov->initial_vfs,
 		   iov->nr_virtfn, iov->offset, iov->stride, iov->pgsz);
 
-	/* Some sanity checks */
+	 
 	if (iov->num_vfs > NUM_OF_VFS(cdev) ||
 	    iov->total_vfs > NUM_OF_VFS(cdev)) {
-		/* This can happen only due to a bug. In this case we set
-		 * num_vfs to zero to avoid memory corruption in the code that
-		 * assumes max number of vfs
-		 */
+		 
 		DP_NOTICE(cdev,
 			  "IOV: Unexpected number of vfs set: %d setting num_vf to zero\n",
 			  iov->num_vfs);
@@ -468,7 +462,7 @@ static int qed_iov_allocate_vfdb(struct qed_hwfn *p_hwfn)
 	DP_VERBOSE(p_hwfn, QED_MSG_IOV,
 		   "%s for %d VFs\n", __func__, num_vfs);
 
-	/* Allocate PF Mailbox buffer (per-VF) */
+	 
 	p_iov_info->mbx_msg_size = sizeof(union vfpf_tlvs) * num_vfs;
 	p_v_addr = &p_iov_info->mbx_msg_virt_addr;
 	*p_v_addr = dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
@@ -478,7 +472,7 @@ static int qed_iov_allocate_vfdb(struct qed_hwfn *p_hwfn)
 	if (!*p_v_addr)
 		return -ENOMEM;
 
-	/* Allocate PF Mailbox Reply buffer (per-VF) */
+	 
 	p_iov_info->mbx_reply_size = sizeof(union pfvf_tlvs) * num_vfs;
 	p_v_addr = &p_iov_info->mbx_reply_virt_addr;
 	*p_v_addr = dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
@@ -591,7 +585,7 @@ int qed_iov_hw_info(struct qed_hwfn *p_hwfn)
 	if (IS_VF(p_hwfn->cdev))
 		return 0;
 
-	/* Learn the PCI configuration */
+	 
 	pos = pci_find_ext_capability(p_hwfn->cdev->pdev,
 				      PCI_EXT_CAP_ID_SRIOV);
 	if (!pos) {
@@ -599,7 +593,7 @@ int qed_iov_hw_info(struct qed_hwfn *p_hwfn)
 		return 0;
 	}
 
-	/* Allocate a new struct for IOV information */
+	 
 	cdev->p_iov_info = kzalloc(sizeof(*cdev->p_iov_info), GFP_KERNEL);
 	if (!cdev->p_iov_info)
 		return -ENOMEM;
@@ -610,10 +604,7 @@ int qed_iov_hw_info(struct qed_hwfn *p_hwfn)
 	if (rc)
 		return rc;
 
-	/* We want PF IOV to be synonemous with the existence of p_iov_info;
-	 * In case the capability is published but there are no VFs, simply
-	 * de-allocate the struct.
-	 */
+	 
 	if (!cdev->p_iov_info->total_vfs) {
 		DP_VERBOSE(p_hwfn, QED_MSG_IOV,
 			   "IOV capabilities, but no VFs are published\n");
@@ -622,15 +613,7 @@ int qed_iov_hw_info(struct qed_hwfn *p_hwfn)
 		return 0;
 	}
 
-	/* First VF index based on offset is tricky:
-	 *  - If ARI is supported [likely], offset - (16 - pf_id) would
-	 *    provide the number for eng0. 2nd engine Vfs would begin
-	 *    after the first engine's VFs.
-	 *  - If !ARI, VFs would start on next device.
-	 *    so offset - (256 - pf_id) would provide the number.
-	 * Utilize the fact that (256 - pf_id) is achieved only by later
-	 * to differentiate between the two.
-	 */
+	 
 
 	if (p_hwfn->cdev->p_iov_info->offset < (256 - p_hwfn->abs_pf_id)) {
 		u32 first = p_hwfn->cdev->p_iov_info->offset +
@@ -657,12 +640,12 @@ int qed_iov_hw_info(struct qed_hwfn *p_hwfn)
 static bool _qed_iov_pf_sanity_check(struct qed_hwfn *p_hwfn,
 				     int vfid, bool b_fail_malicious)
 {
-	/* Check PF supports sriov */
+	 
 	if (IS_VF(p_hwfn->cdev) || !IS_QED_SRIOV(p_hwfn->cdev) ||
 	    !IS_PF_SRIOV_ALLOC(p_hwfn))
 		return false;
 
-	/* Check VF validity */
+	 
 	if (!qed_iov_is_valid_vfid(p_hwfn, vfid, true, b_fail_malicious))
 		return false;
 
@@ -715,15 +698,15 @@ static void qed_iov_vf_igu_reset(struct qed_hwfn *p_hwfn,
 {
 	int i;
 
-	/* Set VF masks and configuration - pretend */
+	 
 	qed_fid_pretend(p_hwfn, p_ptt, (u16)vf->concrete_fid);
 
 	qed_wr(p_hwfn, p_ptt, IGU_REG_STATISTIC_NUM_VF_MSG_SENT, 0);
 
-	/* unpretend */
+	 
 	qed_fid_pretend(p_hwfn, p_ptt, (u16)p_hwfn->hw_info.concrete_fid);
 
-	/* iterate over all queues, clear sb consumer */
+	 
 	for (i = 0; i < vf->num_sbs; i++)
 		qed_int_igu_init_pure_rt_single(p_hwfn, p_ptt,
 						vf->igu_sbs[i],
@@ -747,7 +730,7 @@ static void qed_iov_vf_igu_set_int(struct qed_hwfn *p_hwfn,
 
 	qed_wr(p_hwfn, p_ptt, IGU_REG_VF_CONFIGURATION, igu_vf_conf);
 
-	/* unpretend */
+	 
 	qed_fid_pretend(p_hwfn, p_ptt, (u16)p_hwfn->hw_info.concrete_fid);
 }
 
@@ -758,9 +741,7 @@ qed_iov_enable_vf_access_msix(struct qed_hwfn *p_hwfn,
 	u8 current_max = 0;
 	int i;
 
-	/* For AH onward, configuration is per-PF. Find maximum of all
-	 * the currently enabled child VFs, and set the number to be that.
-	 */
+	 
 	if (!QED_IS_BB(p_hwfn->cdev)) {
 		qed_for_each_vf(p_hwfn, i) {
 			struct qed_vf_info *p_vf;
@@ -787,9 +768,7 @@ static int qed_iov_enable_vf_access(struct qed_hwfn *p_hwfn,
 	u32 igu_vf_conf = IGU_VF_CONF_FUNC_EN;
 	int rc;
 
-	/* It's possible VF was previously considered malicious -
-	 * clear the indication even if we're only going to disable VF.
-	 */
+	 
 	vf->b_malicious = false;
 
 	if (vf->to_disable)
@@ -817,7 +796,7 @@ static int qed_iov_enable_vf_access(struct qed_hwfn *p_hwfn,
 	qed_init_run(p_hwfn, p_ptt, PHASE_VF, vf->abs_vf_id,
 		     p_hwfn->hw_info.hw_mode);
 
-	/* unpretend */
+	 
 	qed_fid_pretend(p_hwfn, p_ptt, (u16)p_hwfn->hw_info.concrete_fid);
 
 	vf->state = VF_FREE;
@@ -825,19 +804,7 @@ static int qed_iov_enable_vf_access(struct qed_hwfn *p_hwfn,
 	return rc;
 }
 
-/**
- * qed_iov_config_perm_table() - Configure the permission zone table.
- *
- * @p_hwfn: HW device data.
- * @p_ptt: PTT window for writing the registers.
- * @vf: VF info data.
- * @enable: The actual permission for this VF.
- *
- * In E4, queue zone permission table size is 320x9. There
- * are 320 VF queues for single engine device (256 for dual
- * engine device), and each entry has the following format:
- * {Valid, VF[7:0]}
- */
+ 
 static void qed_iov_config_perm_table(struct qed_hwfn *p_hwfn,
 				      struct qed_ptt *p_ptt,
 				      struct qed_vf_info *vf, u8 enable)
@@ -860,12 +827,12 @@ static void qed_iov_enable_vf_traffic(struct qed_hwfn *p_hwfn,
 				      struct qed_ptt *p_ptt,
 				      struct qed_vf_info *vf)
 {
-	/* Reset vf in IGU - interrupts are still disabled */
+	 
 	qed_iov_vf_igu_reset(p_hwfn, p_ptt, vf);
 
 	qed_iov_vf_igu_set_int(p_hwfn, p_ptt, vf, 1);
 
-	/* Permission Table */
+	 
 	qed_iov_config_perm_table(p_hwfn, p_ptt, vf, true);
 }
 
@@ -896,7 +863,7 @@ static u8 qed_iov_alloc_vf_igu_sbs(struct qed_hwfn *p_hwfn,
 		       IGU_REG_MAPPING_MEMORY +
 		       sizeof(u32) * p_block->igu_sb_id, val);
 
-		/* Configure igu sb in CAU which were marked valid */
+		 
 		qed_init_cau_sb_entry(p_hwfn, &sb_entry,
 				      p_hwfn->rel_pf_id, vf->abs_vf_id, 1);
 
@@ -919,7 +886,7 @@ static void qed_iov_free_vf_igu_sbs(struct qed_hwfn *p_hwfn,
 	int idx, igu_id;
 	u32 addr, val;
 
-	/* Invalidate igu CAM lines and mark them as free */
+	 
 	for (idx = 0; idx < vf->num_sbs; idx++) {
 		igu_id = vf->igu_sbs[idx];
 		addr = IGU_REG_MAPPING_MEMORY + sizeof(u32) * igu_id;
@@ -1000,7 +967,7 @@ static int qed_iov_init_hw_for_vf(struct qed_hwfn *p_hwfn,
 		return -EINVAL;
 	}
 
-	/* Perform sanity checking on the requested queue_id */
+	 
 	for (i = 0; i < p_params->num_queues; i++) {
 		u16 min_vf_qzone = FEAT_NUM(p_hwfn, QED_PF_L2_QUE);
 		u16 max_vf_qzone = min_vf_qzone +
@@ -1024,7 +991,7 @@ static int qed_iov_init_hw_for_vf(struct qed_hwfn *p_hwfn,
 			return -EINVAL;
 		}
 
-		/* If client *really* wants, Tx qid can be shared with PF */
+		 
 		if (qid < min_vf_qzone)
 			DP_VERBOSE(p_hwfn,
 				   QED_MSG_IOV,
@@ -1032,7 +999,7 @@ static int qed_iov_init_hw_for_vf(struct qed_hwfn *p_hwfn,
 				   p_params->rel_vf_id, qid, i);
 	}
 
-	/* Limit number of queues according to number of CIDs */
+	 
 	qed_cxt_get_proto_cid_count(p_hwfn, PROTOCOLID_ETH, &cids);
 	DP_VERBOSE(p_hwfn,
 		   QED_MSG_IOV,
@@ -1048,7 +1015,7 @@ static int qed_iov_init_hw_for_vf(struct qed_hwfn *p_hwfn,
 		return -ENOMEM;
 	}
 
-	/* Choose queue number and index ranges */
+	 
 	vf->num_rxqs = num_of_vf_avaiable_chains;
 	vf->num_txqs = num_of_vf_avaiable_chains;
 
@@ -1064,7 +1031,7 @@ static int qed_iov_init_hw_for_vf(struct qed_hwfn *p_hwfn,
 			   p_queue->fw_rx_qid, p_queue->fw_tx_qid);
 	}
 
-	/* Update the link configuration in bulletin */
+	 
 	memcpy(&link_params, qed_mcp_get_link_params(p_hwfn),
 	       sizeof(link_params));
 	memcpy(&link_state, qed_mcp_get_link_state(p_hwfn), sizeof(link_state));
@@ -1103,25 +1070,20 @@ static int qed_iov_release_hw_for_vf(struct qed_hwfn *p_hwfn,
 
 	memset(&vf->p_vf_info, 0, sizeof(vf->p_vf_info));
 
-	/* Get the link configuration back in bulletin so
-	 * that when VFs are re-enabled they get the actual
-	 * link configuration.
-	 */
+	 
 	memcpy(&params, qed_mcp_get_link_params(p_hwfn), sizeof(params));
 	memcpy(&link, qed_mcp_get_link_state(p_hwfn), sizeof(link));
 	memcpy(&caps, qed_mcp_get_link_capabilities(p_hwfn), sizeof(caps));
 	qed_iov_set_link(p_hwfn, rel_vf_id, &params, &link, &caps);
 
-	/* Forget the VF's acquisition message */
+	 
 	memset(&vf->acquire, 0, sizeof(vf->acquire));
 
-	/* disablng interrupts and resetting permission table was done during
-	 * vf-close, however, we could get here without going through vf_close
-	 */
-	/* Disable Interrupts for VF */
+	 
+	 
 	qed_iov_vf_igu_set_int(p_hwfn, p_ptt, vf, 0);
 
-	/* Reset Permission table */
+	 
 	qed_iov_config_perm_table(p_hwfn, p_ptt, vf, 0);
 
 	vf->num_rxqs = 0;
@@ -1143,7 +1105,7 @@ static bool qed_iov_tlv_supported(u16 tlvtype)
 	return CHANNEL_TLV_NONE < tlvtype && tlvtype < CHANNEL_TLV_MAX;
 }
 
-/* place a given tlv on the tlv buffer, continuing current tlv list */
+ 
 void *qed_add_tlv(struct qed_hwfn *p_hwfn, u8 **offset, u16 type, u16 length)
 {
 	struct channel_tlv *tl = (struct channel_tlv *)*offset;
@@ -1151,14 +1113,14 @@ void *qed_add_tlv(struct qed_hwfn *p_hwfn, u8 **offset, u16 type, u16 length)
 	tl->type = type;
 	tl->length = length;
 
-	/* Offset should keep pointing to next TLV (the end of the last) */
+	 
 	*offset += length;
 
-	/* Return a pointer to the start of the added tlv */
+	 
 	return *offset - length;
 }
 
-/* list the types and lengths of the tlvs on the buffer */
+ 
 void qed_dp_tlv_list(struct qed_hwfn *p_hwfn, void *tlvs_list)
 {
 	u16 i = 1, total_length = 0;
@@ -1167,7 +1129,7 @@ void qed_dp_tlv_list(struct qed_hwfn *p_hwfn, void *tlvs_list)
 	do {
 		tlv = (struct channel_tlv *)((u8 *)tlvs_list + total_length);
 
-		/* output tlv */
+		 
 		DP_VERBOSE(p_hwfn, QED_MSG_IOV,
 			   "TLV number %d: type %d, length %d\n",
 			   i, tlv->type, tlv->length);
@@ -1175,7 +1137,7 @@ void qed_dp_tlv_list(struct qed_hwfn *p_hwfn, void *tlvs_list)
 		if (tlv->type == CHANNEL_TLV_LIST_END)
 			return;
 
-		/* Validate entry - protect against malicious VFs */
+		 
 		if (!tlv->length) {
 			DP_NOTICE(p_hwfn, "TLV of length 0 found\n");
 			return;
@@ -1217,10 +1179,7 @@ static void qed_iov_send_response(struct qed_hwfn *p_hwfn,
 			   (sizeof(union pfvf_tlvs) - sizeof(u64)) / 4,
 			   &params);
 
-	/* Once PF copies the rc to the VF, the latter can continue
-	 * and send an additional message. So we have to make sure the
-	 * channel would be re-set to ready prior to that.
-	 */
+	 
 	REG_WR(p_hwfn,
 	       GET_GTT_REG_ADDR(GTT_BAR0_MAP_REG_USDM_RAM,
 				USTORM_VF_PF_CHANNEL_READY, eng_vf_id), 1);
@@ -1271,7 +1230,7 @@ static u16 qed_iov_prep_vp_update_resp_tlvs(struct qed_hwfn *p_hwfn,
 
 	qed_add_tlv(p_hwfn, &p_mbx->offset, CHANNEL_TLV_VPORT_UPDATE, size);
 
-	/* Prepare response for all extended tlvs if they are found by PF */
+	 
 	for (i = 0; i < QED_IOV_VP_UPDATE_MAX; i++) {
 		if (!(tlvs_mask & BIT(i)))
 			continue;
@@ -1338,7 +1297,7 @@ static void qed_iov_clean_vf(struct qed_hwfn *p_hwfn, u8 vfid)
 	if (!vf_info)
 		return;
 
-	/* Clear the VF mac */
+	 
 	eth_zero_addr(vf_info->mac);
 
 	vf_info->rx_accept_mode = 0;
@@ -1354,7 +1313,7 @@ static void qed_iov_vf_cleanup(struct qed_hwfn *p_hwfn,
 	p_vf->vport_instance = 0;
 	p_vf->configured_features = 0;
 
-	/* If VF previously requested less resources, go back to default */
+	 
 	p_vf->num_rxqs = p_vf->num_sbs;
 	p_vf->num_txqs = p_vf->num_sbs;
 
@@ -1378,7 +1337,7 @@ static void qed_iov_vf_cleanup(struct qed_hwfn *p_hwfn,
 	qed_iov_clean_vf(p_hwfn, p_vf->relative_vf_id);
 }
 
-/* Returns either 0, or log(size) */
+ 
 static u32 qed_iov_vf_db_bar_size(struct qed_hwfn *p_hwfn,
 				  struct qed_ptt *p_ptt)
 {
@@ -1403,18 +1362,12 @@ qed_iov_vf_mbx_acquire_resc_cids(struct qed_hwfn *p_hwfn,
 
 	p_resp->num_cids = min_t(u8, p_req->num_cids, num_vf_cons);
 
-	/* If VF didn't bother asking for QIDs than don't bother limiting
-	 * number of CIDs. The VF doesn't care about the number, and this
-	 * has the likely result of causing an additional acquisition.
-	 */
+	 
 	if (!(p_vf->acquire.vfdev_info.capabilities &
 	      VFPF_ACQUIRE_CAP_QUEUE_QIDS))
 		return;
 
-	/* If doorbell bar was mapped by VF, limit the VF CIDs to an amount
-	 * that would make sure doorbells for all CIDs fall within the bar.
-	 * If it doesn't, make sure regview window is sufficient.
-	 */
+	 
 	if (p_vf->acquire.vfdev_info.capabilities &
 	    VFPF_ACQUIRE_CAP_PHYSICAL_BAR) {
 		bar_size = qed_iov_vf_db_bar_size(p_hwfn, p_ptt);
@@ -1440,7 +1393,7 @@ static u8 qed_iov_vf_mbx_acquire_resc(struct qed_hwfn *p_hwfn,
 {
 	u8 i;
 
-	/* Queue related information */
+	 
 	p_resp->num_rxqs = p_vf->num_rxqs;
 	p_resp->num_txqs = p_vf->num_txqs;
 	p_resp->num_sbs = p_vf->num_sbs;
@@ -1450,16 +1403,14 @@ static u8 qed_iov_vf_mbx_acquire_resc(struct qed_hwfn *p_hwfn,
 		p_resp->hw_sbs[i].sb_qid = 0;
 	}
 
-	/* These fields are filled for backward compatibility.
-	 * Unused by modern vfs.
-	 */
+	 
 	for (i = 0; i < p_resp->num_rxqs; i++) {
 		qed_fw_l2_queue(p_hwfn, p_vf->vf_queues[i].fw_rx_qid,
 				(u16 *)&p_resp->hw_qid[i]);
 		p_resp->cid[i] = i;
 	}
 
-	/* Filter related information */
+	 
 	p_resp->num_mac_filters = min_t(u8, p_vf->num_mac_filters,
 					p_req->num_mac_filters);
 	p_resp->num_vlan_filters = min_t(u8, p_vf->num_vlan_filters,
@@ -1467,12 +1418,10 @@ static u8 qed_iov_vf_mbx_acquire_resc(struct qed_hwfn *p_hwfn,
 
 	qed_iov_vf_mbx_acquire_resc_cids(p_hwfn, p_ptt, p_vf, p_req, p_resp);
 
-	/* This isn't really needed/enforced, but some legacy VFs might depend
-	 * on the correct filling of this field.
-	 */
+	 
 	p_resp->num_mc_filters = QED_MAX_MC_ADDRS;
 
-	/* Validate sufficient resources for VF */
+	 
 	if (p_resp->num_rxqs < p_req->num_rxqs ||
 	    p_resp->num_txqs < p_req->num_txqs ||
 	    p_resp->num_sbs < p_req->num_sbs ||
@@ -1498,9 +1447,7 @@ static u8 qed_iov_vf_mbx_acquire_resc(struct qed_hwfn *p_hwfn,
 			   p_resp->num_mc_filters,
 			   p_req->num_cids, p_resp->num_cids);
 
-		/* Some legacy OSes are incapable of correctly handling this
-		 * failure.
-		 */
+		 
 		if ((p_vf->acquire.vfdev_info.eth_fp_hsi_minor ==
 		     ETH_HSI_VER_NO_PKT_LEN_TUNN) &&
 		    (p_vf->acquire.vfdev_info.os_type ==
@@ -1546,10 +1493,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 
 	memset(resp, 0, sizeof(*resp));
 
-	/* Write the PF version so that VF would know which version
-	 * is supported - might be later overridden. This guarantees that
-	 * VF could recognize legacy PF based on lack of versions in reply.
-	 */
+	 
 	pfdev_info->major_fp_hsi = ETH_HSI_VER_MAJOR;
 	pfdev_info->minor_fp_hsi = ETH_HSI_VER_MINOR;
 
@@ -1561,7 +1505,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Validate FW compatibility */
+	 
 	if (req->vfdev_info.eth_fp_hsi_major != ETH_HSI_VER_MAJOR) {
 		if (req->vfdev_info.capabilities &
 		    VFPF_ACQUIRE_CAP_PRE_FP_HSI) {
@@ -1584,7 +1528,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* On 100g PFs, prevent old VFs from loading */
+	 
 	if ((p_hwfn->cdev->num_hwfns > 1) &&
 	    !(req->vfdev_info.capabilities & VFPF_ACQUIRE_CAP_100G)) {
 		DP_INFO(p_hwfn,
@@ -1593,7 +1537,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Store the acquire message */
+	 
 	memcpy(&vf->acquire, req, sizeof(vf->acquire));
 
 	vf->opaque_fid = req->vfdev_info.opaque_fid;
@@ -1602,7 +1546,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 	vf->bulletin.size = (vf->bulletin.size < req->bulletin_size) ?
 			    vf->bulletin.size : req->bulletin_size;
 
-	/* fill in pfdev info */
+	 
 	pfdev_info->chip_num = p_hwfn->cdev->chip_num;
 	pfdev_info->db_size = 0;
 	pfdev_info->indices_per_sb = PIS_PER_SB;
@@ -1612,13 +1556,11 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 	if (p_hwfn->cdev->num_hwfns > 1)
 		pfdev_info->capabilities |= PFVF_ACQUIRE_CAP_100G;
 
-	/* Share our ability to use multiple queue-ids only with VFs
-	 * that request it.
-	 */
+	 
 	if (req->vfdev_info.capabilities & VFPF_ACQUIRE_CAP_QUEUE_QIDS)
 		pfdev_info->capabilities |= PFVF_ACQUIRE_CAP_QUEUE_QIDS;
 
-	/* Share the sizes of the bars with VF */
+	 
 	resp->pfdev_info.bar_size = qed_iov_vf_db_bar_size(p_hwfn, p_ptt);
 
 	qed_iov_vf_mbx_acquire_stats(p_hwfn, &pfdev_info->stats_info);
@@ -1630,9 +1572,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 	pfdev_info->fw_rev = FW_REVISION_VERSION;
 	pfdev_info->fw_eng = FW_ENGINEERING_VERSION;
 
-	/* Incorrect when legacy, but doesn't matter as legacy isn't reading
-	 * this field.
-	 */
+	 
 	pfdev_info->minor_fp_hsi = min_t(u8, ETH_HSI_VER_MINOR,
 					 req->vfdev_info.eth_fp_hsi_minor);
 	pfdev_info->os_type = VFPF_ACQUIRE_OS_LINUX;
@@ -1641,15 +1581,13 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 	pfdev_info->dev_type = p_hwfn->cdev->type;
 	pfdev_info->chip_rev = p_hwfn->cdev->chip_rev;
 
-	/* Fill resources available to VF; Make sure there are enough to
-	 * satisfy the VF's request.
-	 */
+	 
 	vfpf_status = qed_iov_vf_mbx_acquire_resc(p_hwfn, p_ptt, vf,
 						  &req->resc_request, resc);
 	if (vfpf_status != PFVF_STATUS_SUCCESS)
 		goto out;
 
-	/* Start the VF in FW */
+	 
 	rc = qed_sp_vf_start(p_hwfn, vf);
 	if (rc) {
 		DP_NOTICE(p_hwfn, "Failed to start VF[%02x]\n", vf->abs_vf_id);
@@ -1657,7 +1595,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Fill agreed size of bulletin board in response */
+	 
 	resp->bulletin_size = vf->bulletin.size;
 	qed_iov_post_vf_bulletin(p_hwfn, vf->relative_vf_id, p_ptt);
 
@@ -1677,7 +1615,7 @@ static void qed_iov_vf_mbx_acquire(struct qed_hwfn *p_hwfn,
 		   resc->num_vlan_filters);
 	vf->state = VF_ACQUIRED;
 
-	/* Prepare Response */
+	 
 out:
 	qed_iov_prepare_resp(p_hwfn, p_ptt, vf, CHANNEL_TLV_ACQUIRE,
 			     sizeof(struct pfvf_acquire_resp_tlv), vfpf_status);
@@ -1729,7 +1667,7 @@ static int qed_iov_reconfigure_unicast_vlan(struct qed_hwfn *p_hwfn,
 	filter.vport_to_add_to = p_vf->vport_id;
 	filter.opcode = QED_FILTER_ADD;
 
-	/* Reconfigure vlans */
+	 
 	for (i = 0; i < QED_ETH_VF_NUM_VLAN_FILTERS + 1; i++) {
 		if (!p_vf->shadow_config.vlans[i].used)
 			continue;
@@ -1776,9 +1714,7 @@ static int qed_iov_configure_vport_forced(struct qed_hwfn *p_hwfn,
 
 	if ((events & BIT(MAC_ADDR_FORCED)) ||
 	    p_vf->p_vf_info.is_trusted_configured) {
-		/* Since there's no way [currently] of removing the MAC,
-		 * we can always assume this means we need to force it.
-		 */
+		 
 		memset(&filter, 0, sizeof(filter));
 		filter.type = QED_FILTER_MAC;
 		filter.opcode = QED_FILTER_REPLACE;
@@ -1816,7 +1752,7 @@ static int qed_iov_configure_vport_forced(struct qed_hwfn *p_hwfn,
 		filter.opcode = filter.vlan ? QED_FILTER_REPLACE :
 					      QED_FILTER_FLUSH;
 
-		/* Send the ramrod */
+		 
 		rc = qed_sp_eth_filter_ucast(p_hwfn, p_vf->opaque_fid,
 					     &filter, QED_SPQ_MODE_CB, NULL);
 		if (rc) {
@@ -1825,7 +1761,7 @@ static int qed_iov_configure_vport_forced(struct qed_hwfn *p_hwfn,
 			return rc;
 		}
 
-		/* Update the default-vlan & silent vlan stripping */
+		 
 		memset(&vport_update, 0, sizeof(vport_update));
 		vport_update.opaque_fid = p_vf->opaque_fid;
 		vport_update.vport_id = p_vf->vport_id;
@@ -1848,12 +1784,12 @@ static int qed_iov_configure_vport_forced(struct qed_hwfn *p_hwfn,
 			return rc;
 		}
 
-		/* Update all the Rx queues */
+		 
 		for (i = 0; i < QED_MAX_VF_CHAINS_PER_PF; i++) {
 			struct qed_vf_queue *p_queue = &p_vf->vf_queues[i];
 			struct qed_queue_cid *p_cid = NULL;
 
-			/* There can be at most 1 Rx queue on qzone. Find it */
+			 
 			p_cid = qed_iov_get_vf_rx_queue_cid(p_queue);
 			if (!p_cid)
 				continue;
@@ -1877,9 +1813,7 @@ static int qed_iov_configure_vport_forced(struct qed_hwfn *p_hwfn,
 			p_vf->configured_features &= ~BIT(VLAN_ADDR_FORCED);
 	}
 
-	/* If forced features are terminated, we need to configure the shadow
-	 * configuration back again.
-	 */
+	 
 	if (events)
 		qed_iov_reconfigure_unicast_shadow(p_hwfn, p_vf, events);
 
@@ -1912,7 +1846,7 @@ static void qed_iov_vf_mbx_start_vport(struct qed_hwfn *p_hwfn,
 
 	qed_iov_enable_vf_traffic(p_hwfn, p_ptt, vf);
 
-	/* Initialize Status block in CAU */
+	 
 	for (sb_id = 0; sb_id < vf->num_sbs; sb_id++) {
 		if (!start->sb_addr[sb_id]) {
 			DP_VERBOSE(p_hwfn, QED_MSG_IOV,
@@ -1929,10 +1863,7 @@ static void qed_iov_vf_mbx_start_vport(struct qed_hwfn *p_hwfn,
 	vf->mtu = start->mtu;
 	vf->shadow_config.inner_vlan_removal = start->inner_vlan_removal;
 
-	/* Take into consideration configuration forced by hypervisor;
-	 * If none is configured, use the supplied VF values [for old
-	 * vfs that would still be fine, since they passed '0' as padding].
-	 */
+	 
 	p_bitmap = &vf_info->bulletin.p_virt->valid_bitmap;
 	if (!(*p_bitmap & BIT(VFPF_BULLETIN_UNTAGGED_DEFAULT_FORCED))) {
 		u8 vf_req = start->only_untagged;
@@ -1953,7 +1884,7 @@ static void qed_iov_vf_mbx_start_vport(struct qed_hwfn *p_hwfn,
 	params.max_buffers_per_cqe = start->max_buffers_per_cqe;
 	params.mtu = vf->mtu;
 
-	/* Non trusted VFs should enable control frame filtering */
+	 
 	params.check_mac = !vf->p_vf_info.is_trusted_configured;
 
 	rc = qed_sp_eth_vport_start(p_hwfn, &params);
@@ -1964,7 +1895,7 @@ static void qed_iov_vf_mbx_start_vport(struct qed_hwfn *p_hwfn,
 	} else {
 		vf->vport_instance++;
 
-		/* Force configuration if needed on the newly opened vport */
+		 
 		qed_iov_configure_vport_forced(p_hwfn, vf, *p_bitmap);
 
 		__qed_iov_spoofchk_set(p_hwfn, vf, vf->req_spoofchk_val);
@@ -2000,7 +1931,7 @@ static void qed_iov_vf_mbx_stop_vport(struct qed_hwfn *p_hwfn,
 		status = PFVF_STATUS_FAILURE;
 	}
 
-	/* Forget the configuration on the vport */
+	 
 	vf->configured_features = 0;
 	memset(&vf->shadow_config, 0, sizeof(vf->shadow_config));
 
@@ -2021,10 +1952,7 @@ static void qed_iov_vf_mbx_start_rxq_resp(struct qed_hwfn *p_hwfn,
 
 	mbx->offset = (u8 *)mbx->reply_virt;
 
-	/* Taking a bigger struct instead of adding a TLV to list was a
-	 * mistake, but one which we're now stuck with, as some older
-	 * clients assume the size of the previous response.
-	 */
+	 
 	if (!b_legacy)
 		length = sizeof(*p_tlv);
 	else
@@ -2035,7 +1963,7 @@ static void qed_iov_vf_mbx_start_rxq_resp(struct qed_hwfn *p_hwfn,
 	qed_add_tlv(p_hwfn, &mbx->offset, CHANNEL_TLV_LIST_END,
 		    sizeof(struct channel_list_end_tlv));
 
-	/* Update the TLV with the response */
+	 
 	if ((status == PFVF_STATUS_SUCCESS) && !b_legacy) {
 		req = &mbx->req_virt->start_rxq;
 		p_tlv->offset = PXP_VF_BAR0_START_MSDM_ZONE_B +
@@ -2053,7 +1981,7 @@ static u8 qed_iov_vf_mbx_qid(struct qed_hwfn *p_hwfn,
 	struct qed_iov_vf_mbx *p_mbx = &p_vf->vf_mbx;
 	struct vfpf_qid_tlv *p_qid_tlv;
 
-	/* Search for the qid if the VF published its going to provide it */
+	 
 	if (!(p_vf->acquire.vfdev_info.capabilities &
 	      VFPF_ACQUIRE_CAP_QUEUE_QIDS)) {
 		if (b_is_tx)
@@ -2115,12 +2043,12 @@ static void qed_iov_vf_mbx_start_rxq(struct qed_hwfn *p_hwfn,
 
 	vf_legacy = qed_vf_calculate_legacy(vf);
 
-	/* Acquire a new queue-cid */
+	 
 	memset(&params, 0, sizeof(params));
 	params.queue_id = p_queue->fw_rx_qid;
 	params.vport_id = vf->vport_id;
 	params.stats_id = vf->abs_vf_id + 0x10;
-	/* Since IGU index is passed via sb_info, construct a dummy one */
+	 
 	memset(&sb_dummy, 0, sizeof(sb_dummy));
 	sb_dummy.igu_sb_id = req->hw_sb;
 	params.p_sb = &sb_dummy;
@@ -2136,9 +2064,7 @@ static void qed_iov_vf_mbx_start_rxq(struct qed_hwfn *p_hwfn,
 	if (!p_cid)
 		goto out;
 
-	/* Legacy VFs have their Producers in a different location, which they
-	 * calculate on their own and clean the producer prior to this.
-	 */
+	 
 	if (!(vf_legacy & QED_QCID_LEGACY_VF_RX_PROD))
 		qed_wr(p_hwfn, p_ptt, MSEM_REG_FAST_MEMORY +
 		       SEM_FAST_REG_INT_RAM +
@@ -2341,17 +2267,14 @@ static void qed_iov_vf_mbx_update_tunn_param(struct qed_hwfn *p_hwfn,
 	__qed_iov_pf_update_tun_param(p_req, &tunn.ip_gre,
 				      QED_MODE_IPGRE_TUNN, p_req->ipgre_clss);
 
-	/* If PF modifies VF's req then it should
-	 * still return an error in case of partial configuration
-	 * or modified configuration as opposed to requested one.
-	 */
+	 
 	rc = qed_pf_validate_modify_tunn_config(p_hwfn, &tunn_feature_mask,
 						&b_update_required, &tunn);
 
 	if (rc)
 		status = PFVF_STATUS_FAILURE;
 
-	/* If QED client is willing to update anything ? */
+	 
 	if (b_update_required) {
 		u16 geneve_port;
 
@@ -2391,10 +2314,7 @@ static void qed_iov_vf_mbx_start_txq_resp(struct qed_hwfn *p_hwfn,
 
 	mbx->offset = (u8 *)mbx->reply_virt;
 
-	/* Taking a bigger struct instead of adding a TLV to list was a
-	 * mistake, but one which we're now stuck with, as some older
-	 * clients assume the size of the previous response.
-	 */
+	 
 	if (p_vf->acquire.vfdev_info.eth_fp_hsi_minor ==
 	    ETH_HSI_VER_NO_PKT_LEN_TUNN)
 		b_legacy = true;
@@ -2409,7 +2329,7 @@ static void qed_iov_vf_mbx_start_txq_resp(struct qed_hwfn *p_hwfn,
 	qed_add_tlv(p_hwfn, &mbx->offset, CHANNEL_TLV_LIST_END,
 		    sizeof(struct channel_list_end_tlv));
 
-	/* Update the TLV with the response */
+	 
 	if ((status == PFVF_STATUS_SUCCESS) && !b_legacy)
 		p_tlv->offset = qed_db_addr_vf(cid, DQ_DEMS_LEGACY);
 
@@ -2451,12 +2371,12 @@ static void qed_iov_vf_mbx_start_txq(struct qed_hwfn *p_hwfn,
 
 	vf_legacy = qed_vf_calculate_legacy(vf);
 
-	/* Acquire a new queue-cid */
+	 
 	params.queue_id = p_queue->fw_tx_qid;
 	params.vport_id = vf->vport_id;
 	params.stats_id = vf->abs_vf_id + 0x10;
 
-	/* Since IGU index is passed via sb_info, construct a dummy one */
+	 
 	memset(&sb_dummy, 0, sizeof(sb_dummy));
 	sb_dummy.igu_sb_id = req->hw_sb;
 	params.p_sb = &sb_dummy;
@@ -2508,9 +2428,7 @@ static int qed_iov_vf_stop_rxqs(struct qed_hwfn *p_hwfn,
 
 	p_queue = &vf->vf_queues[rxq_id];
 
-	/* We've validated the index and the existence of the active RXQ -
-	 * now we need to make sure that it's using the correct qid.
-	 */
+	 
 	if (!p_queue->cids[qid_usage_idx].p_cid ||
 	    p_queue->cids[qid_usage_idx].b_is_tx) {
 		struct qed_queue_cid *p_cid;
@@ -2524,7 +2442,7 @@ static int qed_iov_vf_stop_rxqs(struct qed_hwfn *p_hwfn,
 		return -EINVAL;
 	}
 
-	/* Now that we know we have a valid Rx-queue - close it */
+	 
 	rc = qed_eth_rx_queue_stop(p_hwfn,
 				   p_queue->cids[qid_usage_idx].p_cid,
 				   false, cqe_completion);
@@ -2571,10 +2489,7 @@ static void qed_iov_vf_mbx_stop_rxqs(struct qed_hwfn *p_hwfn,
 	u8 qid_usage_idx;
 	int rc;
 
-	/* There has never been an official driver that used this interface
-	 * for stopping multiple queues, and it is now considered deprecated.
-	 * Validate this isn't used here.
-	 */
+	 
 	req = &mbx->req_virt->stop_rxqs;
 	if (req->num_rxqs != 1) {
 		DP_VERBOSE(p_hwfn, QED_MSG_IOV,
@@ -2584,7 +2499,7 @@ static void qed_iov_vf_mbx_stop_rxqs(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Find which qid-index is associated with the queue */
+	 
 	qid_usage_idx = qed_iov_vf_mbx_qid(p_hwfn, vf, false);
 	if (qid_usage_idx == QED_IOV_QID_INVALID)
 		goto out;
@@ -2609,10 +2524,7 @@ static void qed_iov_vf_mbx_stop_txqs(struct qed_hwfn *p_hwfn,
 	u8 qid_usage_idx;
 	int rc;
 
-	/* There has never been an official driver that used this interface
-	 * for stopping multiple queues, and it is now considered deprecated.
-	 * Validate this isn't used here.
-	 */
+	 
 	req = &mbx->req_virt->stop_txqs;
 	if (req->num_txqs != 1) {
 		DP_VERBOSE(p_hwfn, QED_MSG_IOV,
@@ -2622,7 +2534,7 @@ static void qed_iov_vf_mbx_stop_txqs(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Find which qid-index is associated with the queue */
+	 
 	qid_usage_idx = qed_iov_vf_mbx_qid(p_hwfn, vf, true);
 	if (qid_usage_idx == QED_IOV_QID_INVALID)
 		goto out;
@@ -2659,9 +2571,7 @@ static void qed_iov_vf_mbx_update_rxqs(struct qed_hwfn *p_hwfn,
 	if (qid_usage_idx == QED_IOV_QID_INVALID)
 		goto out;
 
-	/* There shouldn't exist a VF that uses queue-qids yet uses this
-	 * API with multiple Rx queues. Validate this.
-	 */
+	 
 	if ((vf->acquire.vfdev_info.capabilities &
 	     VFPF_ACQUIRE_CAP_QUEUE_QIDS) && req->num_rxqs != 1) {
 		DP_VERBOSE(p_hwfn, QED_MSG_IOV,
@@ -2670,9 +2580,7 @@ static void qed_iov_vf_mbx_update_rxqs(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Validate inputs - for the legacy case this is still true since
-	 * qid_usage_idx for each Rx queue would be LEGACY_QID_RX.
-	 */
+	 
 	for (i = req->rx_qid; i < req->rx_qid + req->num_rxqs; i++) {
 		if (!qed_iov_validate_rxq(p_hwfn, vf, i,
 					  QED_IOV_VALIDATE_Q_NA) ||
@@ -2686,7 +2594,7 @@ static void qed_iov_vf_mbx_update_rxqs(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* Prepare the handlers */
+	 
 	for (i = 0; i < req->num_rxqs; i++) {
 		u16 qid = req->rx_qid + i;
 
@@ -2774,7 +2682,7 @@ qed_iov_vp_update_vlan_param(struct qed_hwfn *p_hwfn,
 
 	p_vf->shadow_config.inner_vlan_removal = p_vlan_tlv->remove_vlan;
 
-	/* Ignore the VF request if we're forcing a vlan */
+	 
 	if (!(p_vf->configured_features & BIT(VLAN_ADDR_FORCED))) {
 		p_data->update_inner_vlan_removal_flg = 1;
 		p_data->inner_vlan_removal_flg = p_vlan_tlv->remove_vlan;
@@ -2989,10 +2897,7 @@ static int qed_iov_pre_update_vport(struct qed_hwfn *hwfn,
 	tlv_mask = BIT(QED_IOV_VP_UPDATE_ACCEPT_PARAM) |
 		   BIT(QED_IOV_VP_UPDATE_ACCEPT_ANY_VLAN);
 
-	/* Untrusted VFs can't even be trusted to know that fact.
-	 * Simply indicate everything is configured fine, and trace
-	 * configuration 'behind their back'.
-	 */
+	 
 	if (!(*tlvs & tlv_mask))
 		return 0;
 
@@ -3033,7 +2938,7 @@ static void qed_iov_vf_mbx_vport_update(struct qed_hwfn *p_hwfn,
 	u16 length;
 	int rc;
 
-	/* Valiate PF can send such a request */
+	 
 	if (!vf->vport_instance) {
 		DP_VERBOSE(p_hwfn,
 			   QED_MSG_IOV,
@@ -3053,9 +2958,7 @@ static void qed_iov_vf_mbx_vport_update(struct qed_hwfn *p_hwfn,
 	params.vport_id = vf->vport_id;
 	params.rss_params = NULL;
 
-	/* Search for extended tlvs list and update values
-	 * from VF in struct qed_sp_vport_update_params.
-	 */
+	 
 	qed_iov_vp_update_act_param(p_hwfn, &params, mbx, &tlvs_mask);
 	qed_iov_vp_update_vlan_param(p_hwfn, &params, vf, mbx, &tlvs_mask);
 	qed_iov_vp_update_tx_switch(p_hwfn, &params, mbx, &tlvs_mask);
@@ -3067,10 +2970,7 @@ static void qed_iov_vf_mbx_vport_update(struct qed_hwfn *p_hwfn,
 
 	tlvs_accepted = tlvs_mask;
 
-	/* Some of the extended TLVs need to be validated first; In that case,
-	 * they can update the mask without updating the accepted [so that
-	 * PF could communicate to VF it has rejected request].
-	 */
+	 
 	qed_iov_vp_update_rss_param(p_hwfn, vf, &params, p_rss_params,
 				    mbx, &tlvs_mask, &tlvs_accepted);
 
@@ -3110,7 +3010,7 @@ static int qed_iov_vf_update_vlan_shadow(struct qed_hwfn *p_hwfn,
 {
 	int i;
 
-	/* First remove entries and then add new ones */
+	 
 	if (p_params->opcode == QED_FILTER_REMOVE) {
 		for (i = 0; i < QED_ETH_VF_NUM_VLAN_FILTERS + 1; i++)
 			if (p_vf->shadow_config.vlans[i].used &&
@@ -3132,9 +3032,7 @@ static int qed_iov_vf_update_vlan_shadow(struct qed_hwfn *p_hwfn,
 			p_vf->shadow_config.vlans[i].used = false;
 	}
 
-	/* In forced mode, we're willing to remove entries - but we don't add
-	 * new ones.
-	 */
+	 
 	if (p_vf->bulletin.p_virt->valid_bitmap & BIT(VLAN_ADDR_FORCED))
 		return 0;
 
@@ -3168,15 +3066,15 @@ static int qed_iov_vf_update_mac_shadow(struct qed_hwfn *p_hwfn,
 {
 	int i;
 
-	/* If we're in forced-mode, we don't allow any change */
+	 
 	if (p_vf->bulletin.p_virt->valid_bitmap & BIT(MAC_ADDR_FORCED))
 		return 0;
 
-	/* Don't keep track of shadow copy since we don't intend to restore. */
+	 
 	if (p_vf->p_vf_info.is_trusted_configured)
 		return 0;
 
-	/* First remove entries and then add new ones */
+	 
 	if (p_params->opcode == QED_FILTER_REMOVE) {
 		for (i = 0; i < QED_ETH_VF_NUM_MAC_FILTERS; i++) {
 			if (ether_addr_equal(p_vf->shadow_config.macs[i],
@@ -3197,7 +3095,7 @@ static int qed_iov_vf_update_mac_shadow(struct qed_hwfn *p_hwfn,
 			eth_zero_addr(p_vf->shadow_config.macs[i]);
 	}
 
-	/* List the new MAC address */
+	 
 	if (p_params->opcode != QED_FILTER_ADD &&
 	    p_params->opcode != QED_FILTER_REPLACE)
 		return 0;
@@ -3248,7 +3146,7 @@ static int qed_iov_chk_ucast(struct qed_hwfn *hwfn,
 	if (!vf)
 		return -EINVAL;
 
-	/* No real decision to make; Store the configured MAC */
+	 
 	if (params->type == QED_FILTER_MAC ||
 	    params->type == QED_FILTER_MAC_VLAN) {
 		ether_addr_copy(vf->mac, params->mac);
@@ -3256,7 +3154,7 @@ static int qed_iov_chk_ucast(struct qed_hwfn *hwfn,
 		if (vf->is_trusted_configured) {
 			qed_iov_bulletin_set_mac(hwfn, vf->mac, vfid);
 
-			/* Update and post bulleitin again */
+			 
 			qed_schedule_iov(hwfn, QED_IOV_WQ_BULLETIN_UPDATE_FLAG);
 		}
 	}
@@ -3275,7 +3173,7 @@ static void qed_iov_vf_mbx_ucast_filter(struct qed_hwfn *p_hwfn,
 	struct qed_filter_ucast params;
 	int rc;
 
-	/* Prepare the unicast filter params */
+	 
 	memset(&params, 0, sizeof(struct qed_filter_ucast));
 	req = &mbx->req_virt->ucast_filter;
 	params.opcode = (enum qed_filter_opcode)req->opcode;
@@ -3306,19 +3204,17 @@ static void qed_iov_vf_mbx_ucast_filter(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Update shadow copy of the VF configuration */
+	 
 	if (qed_iov_vf_update_unicast_shadow(p_hwfn, vf, &params)) {
 		status = PFVF_STATUS_FAILURE;
 		goto out;
 	}
 
-	/* Determine if the unicast filtering is acceptible by PF */
+	 
 	if ((p_bulletin->valid_bitmap & BIT(VLAN_ADDR_FORCED)) &&
 	    (params.type == QED_FILTER_VLAN ||
 	     params.type == QED_FILTER_MAC_VLAN)) {
-		/* Once VLAN is forced or PVID is set, do not allow
-		 * to add/replace any further VLANs.
-		 */
+		 
 		if (params.opcode == QED_FILTER_ADD ||
 		    params.opcode == QED_FILTER_REPLACE)
 			status = PFVF_STATUS_FORCED;
@@ -3357,7 +3253,7 @@ static void qed_iov_vf_mbx_int_cleanup(struct qed_hwfn *p_hwfn,
 {
 	int i;
 
-	/* Reset the SBs */
+	 
 	for (i = 0; i < vf->num_sbs; i++)
 		qed_int_igu_init_pure_rt_single(p_hwfn, p_ptt,
 						vf->igu_sbs[i],
@@ -3374,10 +3270,10 @@ static void qed_iov_vf_mbx_close(struct qed_hwfn *p_hwfn,
 	u16 length = sizeof(struct pfvf_def_resp_tlv);
 	u8 status = PFVF_STATUS_SUCCESS;
 
-	/* Disable Interrupts for VF */
+	 
 	qed_iov_vf_igu_set_int(p_hwfn, p_ptt, vf, 0);
 
-	/* Reset Permission table */
+	 
 	qed_iov_config_perm_table(p_hwfn, p_ptt, vf, 0);
 
 	qed_iov_prepare_resp(p_hwfn, p_ptt, vf, CHANNEL_TLV_CLOSE,
@@ -3395,7 +3291,7 @@ static void qed_iov_vf_mbx_release(struct qed_hwfn *p_hwfn,
 	qed_iov_vf_cleanup(p_hwfn, p_vf);
 
 	if (p_vf->state != VF_STOPPED && p_vf->state != VF_FREE) {
-		/* Stopping the VF */
+		 
 		rc = qed_sp_vf_stop(p_hwfn, p_vf->concrete_fid,
 				    p_vf->opaque_fid);
 
@@ -3608,9 +3504,9 @@ qed_iov_vf_flr_poll_pbf(struct qed_hwfn *p_hwfn,
 	memset(cons, 0, MAX_NUM_EXT_VOQS * sizeof(u32));
 	memset(distance, 0, MAX_NUM_EXT_VOQS * sizeof(u32));
 
-	/* Read initial consumers & producers */
+	 
 	for (port_id = 0; port_id < max_ports_per_engine; port_id++) {
-		/* "max_phys_tcs_per_port" active TCs + 1 pure LB TC */
+		 
 		for (tc = 0; tc < max_phys_tcs_per_port + 1; tc++) {
 			tc_id = (tc < max_phys_tcs_per_port) ? tc : PURE_LB_TC;
 			voq = VOQ(port_id, tc_id, max_phys_tcs_per_port);
@@ -3622,12 +3518,12 @@ qed_iov_vf_flr_poll_pbf(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* Wait for consumers to pass the producers */
+	 
 	port_id = 0;
 	tc = 0;
 	for (cnt = 0; cnt < 50; cnt++) {
 		for (; port_id < max_ports_per_engine; port_id++) {
-			/* "max_phys_tcs_per_port" active TCs + 1 pure LB TC */
+			 
 			for (; tc < max_phys_tcs_per_port + 1; tc++) {
 				tc_id = (tc < max_phys_tcs_per_port) ?
 				    tc : PURE_LB_TC;
@@ -3701,7 +3597,7 @@ qed_iov_execute_vf_flr_cleanup(struct qed_hwfn *p_hwfn,
 
 		qed_iov_vf_cleanup(p_hwfn, p_vf);
 
-		/* If VF isn't active, no need for anything but SW */
+		 
 		if (!p_vf->b_init)
 			goto cleanup;
 
@@ -3715,16 +3611,12 @@ qed_iov_execute_vf_flr_cleanup(struct qed_hwfn *p_hwfn,
 			return rc;
 		}
 
-		/* Workaround to make VF-PF channel ready, as FW
-		 * doesn't do that as a part of FLR.
-		 */
+		 
 		REG_WR(p_hwfn,
 		       GET_GTT_REG_ADDR(GTT_BAR0_MAP_REG_USDM_RAM,
 					USTORM_VF_PF_CHANNEL_READY, vfid), 1);
 
-		/* VF_STOPPED has to be set only after final cleanup
-		 * but prior to re-enabling the VF.
-		 */
+		 
 		p_vf->state = VF_STOPPED;
 
 		rc = qed_iov_enable_vf_access(p_hwfn, p_ptt, p_vf);
@@ -3734,7 +3626,7 @@ qed_iov_execute_vf_flr_cleanup(struct qed_hwfn *p_hwfn,
 			return rc;
 		}
 cleanup:
-		/* Mark VF for ack and clean pending state */
+		 
 		if (p_vf->state == VF_RESET)
 			p_vf->state = VF_STOPPED;
 		ack_vfs[vfid / 32] |= BIT((vfid % 32));
@@ -3755,10 +3647,7 @@ qed_iov_vf_flr_cleanup(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
 
 	memset(ack_vfs, 0, sizeof(u32) * (VF_MAX_STATIC / 32));
 
-	/* Since BRB <-> PRS interface can't be tested as part of the flr
-	 * polling due to HW limitations, simply sleep a bit. And since
-	 * there's no need to wait per-vf, do it before looping.
-	 */
+	 
 	msleep(100);
 
 	for (i = 0; i < p_hwfn->cdev->p_iov_info->total_vfs; i++)
@@ -3784,7 +3673,7 @@ bool qed_iov_mark_vf_flr(struct qed_hwfn *p_hwfn, u32 *p_disabled_vfs)
 		return false;
 	}
 
-	/* Mark VFs */
+	 
 	for (i = 0; i < p_hwfn->cdev->p_iov_info->total_vfs; i++) {
 		struct qed_vf_info *p_vf;
 		u8 vfid;
@@ -3804,11 +3693,7 @@ bool qed_iov_mark_vf_flr(struct qed_hwfn *p_hwfn, u32 *p_disabled_vfs)
 
 			p_vf->state = VF_RESET;
 
-			/* No need to lock here, since pending_flr should
-			 * only change here and before ACKing MFw. Since
-			 * MFW will not trigger an additional attention for
-			 * VF flr until ACKs, we're safe.
-			 */
+			 
 			p_flr[rel_vf_id / 64] |= 1ULL << (rel_vf_id % 64);
 			found = true;
 		}
@@ -3888,7 +3773,7 @@ static void qed_iov_process_mbx_req(struct qed_hwfn *p_hwfn,
 
 	mbx = &p_vf->vf_mbx;
 
-	/* qed_iov_process_mbx_request */
+	 
 	if (!mbx->b_pending_msg) {
 		DP_NOTICE(p_hwfn,
 			  "VF[%02x]: Trying to process mailbox message when none is pending\n",
@@ -3903,7 +3788,7 @@ static void qed_iov_process_mbx_req(struct qed_hwfn *p_hwfn,
 		   "VF[%02x]: Processing mailbox message [type %04x]\n",
 		   p_vf->abs_vf_id, mbx->first_tlv.tl.type);
 
-	/* check if tlv type is known */
+	 
 	if (qed_iov_tlv_supported(mbx->first_tlv.tl.type) &&
 	    !p_vf->b_malicious) {
 		switch (mbx->first_tlv.tl.type) {
@@ -3969,12 +3854,7 @@ static void qed_iov_process_mbx_req(struct qed_hwfn *p_hwfn,
 				     sizeof(struct pfvf_def_resp_tlv),
 				     PFVF_STATUS_MALICIOUS);
 	} else {
-		/* unknown TLV - this may belong to a VF driver from the future
-		 * - a version written after this PF driver was written, which
-		 * supports features unknown as of yet. Too bad since we don't
-		 * support them. Or this may be because someone wrote a crappy
-		 * VF driver and is sending garbage over the channel.
-		 */
+		 
 		DP_NOTICE(p_hwfn,
 			  "VF[%02x]: unknown TLV. type %04x length %04x padding %08x reply address %llu\n",
 			  p_vf->abs_vf_id,
@@ -3982,9 +3862,7 @@ static void qed_iov_process_mbx_req(struct qed_hwfn *p_hwfn,
 			  mbx->first_tlv.tl.length,
 			  mbx->first_tlv.padding, mbx->first_tlv.reply_address);
 
-		/* Try replying in case reply address matches the acquisition's
-		 * posted address.
-		 */
+		 
 		if (p_vf->acquire.first_tlv.reply_address &&
 		    (mbx->first_tlv.reply_address ==
 		     p_vf->acquire.first_tlv.reply_address)) {
@@ -4041,12 +3919,10 @@ static int qed_sriov_vfpf_msg(struct qed_hwfn *p_hwfn,
 	if (!p_vf)
 		return 0;
 
-	/* List the physical address of the request so that handler
-	 * could later on copy the message from it.
-	 */
+	 
 	p_vf->vf_mbx.pending_req = HILO_64(vf_msg->hi, vf_msg->lo);
 
-	/* Mark the event and schedule the workqueue */
+	 
 	p_vf->vf_mbx.b_pending_msg = true;
 	qed_schedule_iov(p_hwfn, QED_IOV_WQ_MSG_FLAG);
 
@@ -4155,12 +4031,12 @@ static void qed_iov_bulletin_set_forced_mac(struct qed_hwfn *p_hwfn,
 
 	if (vf_info->p_vf_info.is_trusted_configured) {
 		feature = BIT(VFPF_BULLETIN_MAC_ADDR);
-		/* Trust mode will disable Forced MAC */
+		 
 		vf_info->bulletin.p_virt->valid_bitmap &=
 			~BIT(MAC_ADDR_FORCED);
 	} else {
 		feature = BIT(MAC_ADDR_FORCED);
-		/* Forced MAC will disable MAC_ADDR */
+		 
 		vf_info->bulletin.p_virt->valid_bitmap &=
 			~BIT(VFPF_BULLETIN_MAC_ADDR);
 	}
@@ -4308,7 +4184,7 @@ static int qed_iov_spoofchk_set(struct qed_hwfn *p_hwfn, int vfid, bool val)
 		goto out;
 
 	if (!qed_iov_vf_has_vport_instance(p_hwfn, vfid)) {
-		/* After VF VPORT start PF will configure spoof check */
+		 
 		vf->req_spoofchk_val = val;
 		rc = 0;
 		goto out;
@@ -4381,7 +4257,7 @@ static int qed_iov_configure_tx_rate(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	rl_id = abs_vp_id;	/* The "rl_id" is set as the "vport_id" */
+	rl_id = abs_vp_id;	 
 	return qed_init_global_rl(p_hwfn, p_ptt, rl_id, (u32)val,
 				  QM_RL_TYPE_NORMAL);
 }
@@ -4429,17 +4305,13 @@ static int qed_iov_get_vf_min_rate(struct qed_hwfn *p_hwfn, int vfid)
 		return 0;
 }
 
-/**
- * qed_schedule_iov - schedules IOV task for VF and PF
- * @hwfn: hardware function pointer
- * @flag: IOV flag for VF/PF
- */
+ 
 void qed_schedule_iov(struct qed_hwfn *hwfn, enum qed_iov_wq_flag flag)
 {
-	/* Memory barrier for setting atomic bit */
+	 
 	smp_mb__before_atomic();
 	set_bit(flag, &hwfn->iov_task_flags);
-	/* Memory barrier after setting atomic bit */
+	 
 	smp_mb__after_atomic();
 	DP_VERBOSE(hwfn, QED_MSG_IOV, "Scheduling iov task [Flag: %d]\n", flag);
 	queue_delayed_work(hwfn->iov_wq, &hwfn->iov_task, 0);
@@ -4462,7 +4334,7 @@ int qed_sriov_disable(struct qed_dev *cdev, bool pci_enabled)
 		if (cdev->hwfns[i].iov_wq)
 			flush_workqueue(cdev->hwfns[i].iov_wq);
 
-	/* Mark VFs for disablement */
+	 
 	qed_iov_set_vfs_to_disable(cdev, true);
 
 	if (cdev->p_iov_info && cdev->p_iov_info->num_vfs && pci_enabled)
@@ -4479,15 +4351,13 @@ int qed_sriov_disable(struct qed_dev *cdev, bool pci_enabled)
 		struct qed_hwfn *hwfn = &cdev->hwfns[i];
 		struct qed_ptt *ptt = qed_ptt_acquire(hwfn);
 
-		/* Failure to acquire the ptt in 100g creates an odd error
-		 * where the first engine has already relased IOV.
-		 */
+		 
 		if (!ptt) {
 			DP_ERR(hwfn, "Failed to acquire ptt\n");
 			return -EBUSY;
 		}
 
-		/* Clean WFQ db and configure equal weight for all vports */
+		 
 		qed_clean_wfq_db(hwfn, ptt);
 
 		qed_for_each_vf(hwfn, j) {
@@ -4496,7 +4366,7 @@ int qed_sriov_disable(struct qed_dev *cdev, bool pci_enabled)
 			if (!qed_iov_is_valid_vfid(hwfn, j, true, false))
 				continue;
 
-			/* Wait until VF is disabled before releasing */
+			 
 			for (k = 0; k < 100; k++) {
 				if (!qed_iov_is_vf_stopped(hwfn, j))
 					msleep(20);
@@ -4526,10 +4396,7 @@ static void qed_sriov_enable_qid_config(struct qed_hwfn *hwfn,
 {
 	u16 base, i;
 
-	/* Since we have an equal resource distribution per-VF, and we assume
-	 * PF has acquired the QED_PF_L2_QUE first queues, we start setting
-	 * sequentially from there.
-	 */
+	 
 	base = FEAT_NUM(hwfn, QED_PF_L2_QUE) + vfid * params->num_queues;
 
 	params->rel_vf_id = vfid;
@@ -4554,12 +4421,12 @@ static int qed_sriov_enable(struct qed_dev *cdev, int num)
 
 	memset(&params, 0, sizeof(params));
 
-	/* Initialize HW for VF access */
+	 
 	for_each_hwfn(cdev, j) {
 		hwfn = &cdev->hwfns[j];
 		ptt = qed_ptt_acquire(hwfn);
 
-		/* Make sure not to use more than 16 queues per VF */
+		 
 		params.num_queues = min_t(int,
 					  FEAT_NUM(hwfn, QED_VF_L2_QUE) / num,
 					  16);
@@ -4586,7 +4453,7 @@ static int qed_sriov_enable(struct qed_dev *cdev, int num)
 		qed_ptt_release(hwfn, ptt);
 	}
 
-	/* Enable SRIOV PCIe functions */
+	 
 	rc = pci_enable_sriov(cdev->pdev, num);
 	if (rc) {
 		DP_ERR(cdev, "Failed to enable sriov [%d]\n", rc);
@@ -4650,7 +4517,7 @@ static int qed_sriov_pf_set_mac(struct qed_dev *cdev, u8 *mac, int vfid)
 		if (!vf_info)
 			continue;
 
-		/* Set the MAC, and schedule the IOV task */
+		 
 		if (vf_info->is_trusted_configured)
 			ether_addr_copy(vf_info->mac, mac);
 		else
@@ -4686,7 +4553,7 @@ static int qed_sriov_pf_set_vlan(struct qed_dev *cdev, u16 vid, int vfid)
 		if (!vf_info)
 			continue;
 
-		/* Set the forced vlan, and schedule the IOV task */
+		 
 		vf_info->forced_vlan = vid;
 		qed_schedule_iov(hwfn, QED_IOV_WQ_SET_UNICAST_FILTER_FLAG);
 	}
@@ -4703,7 +4570,7 @@ static int qed_get_vf_config(struct qed_dev *cdev,
 	u32 tx_rate;
 	int ret;
 
-	/* Sanitize request */
+	 
 	if (IS_VF(cdev))
 		return -EINVAL;
 
@@ -4719,7 +4586,7 @@ static int qed_get_vf_config(struct qed_dev *cdev,
 	if (ret)
 		return ret;
 
-	/* Fill information about VF */
+	 
 	ivi->vf = vf_id;
 
 	if (is_valid_ether_addr(vf_info->forced_mac))
@@ -4749,7 +4616,7 @@ void qed_inform_vf_link_state(struct qed_hwfn *hwfn)
 	if (!hwfn->pf_iov_info)
 		return;
 
-	/* Update bulletin of all future possible VFs with link configuration */
+	 
 	for (i = 0; i < hwfn->cdev->p_iov_info->total_vfs; i++) {
 		struct qed_public_vf_info *vf_info;
 
@@ -4757,33 +4624,26 @@ void qed_inform_vf_link_state(struct qed_hwfn *hwfn)
 		if (!vf_info)
 			continue;
 
-		/* Only hwfn0 is actually interested in the link speed.
-		 * But since only it would receive an MFW indication of link,
-		 * need to take configuration from it - otherwise things like
-		 * rate limiting for hwfn1 VF would not work.
-		 */
+		 
 		memcpy(&params, qed_mcp_get_link_params(lead_hwfn),
 		       sizeof(params));
 		memcpy(&link, qed_mcp_get_link_state(lead_hwfn), sizeof(link));
 		memcpy(&caps, qed_mcp_get_link_capabilities(lead_hwfn),
 		       sizeof(caps));
 
-		/* Modify link according to the VF's configured link state */
+		 
 		switch (vf_info->link_state) {
 		case IFLA_VF_LINK_STATE_DISABLE:
 			link.link_up = false;
 			break;
 		case IFLA_VF_LINK_STATE_ENABLE:
 			link.link_up = true;
-			/* Set speed according to maximum supported by HW.
-			 * that is 40G for regular devices and 100G for CMT
-			 * mode devices.
-			 */
+			 
 			link.speed = (hwfn->cdev->num_hwfns > 1) ?
 				     100000 : 40000;
 			break;
 		default:
-			/* In auto mode pass PF link image to VF */
+			 
 			break;
 		}
 
@@ -4818,7 +4678,7 @@ static int qed_set_vf_link_state(struct qed_dev *cdev,
 {
 	int i;
 
-	/* Sanitize request */
+	 
 	if (IS_VF(cdev))
 		return -EINVAL;
 
@@ -4828,7 +4688,7 @@ static int qed_set_vf_link_state(struct qed_dev *cdev,
 		return -EINVAL;
 	}
 
-	/* Handle configuration of link state */
+	 
 	for_each_hwfn(cdev, i) {
 		struct qed_hwfn *hwfn = &cdev->hwfns[i];
 		struct qed_public_vf_info *vf;
@@ -4950,7 +4810,7 @@ static void qed_handle_vf_msg(struct qed_hwfn *hwfn)
 		   events[0], events[1], events[2]);
 
 	qed_for_each_vf(hwfn, i) {
-		/* Skip VFs with no pending messages */
+		 
 		if (!(events[i / 64] & (1ULL << (i % 64))))
 			continue;
 
@@ -4958,7 +4818,7 @@ static void qed_handle_vf_msg(struct qed_hwfn *hwfn)
 			   "Handling VF message from VF 0x%02x [Abs 0x%02x]\n",
 			   i, hwfn->cdev->p_iov_info->first_vf_in_pf + i);
 
-		/* Copy VF's message to PF's request buffer for that VF */
+		 
 		if (qed_iov_copy_vf_msg(hwfn, ptt, i))
 			continue;
 
@@ -5008,7 +4868,7 @@ static void qed_handle_pf_set_vf_unicast(struct qed_hwfn *hwfn)
 		if (!info)
 			continue;
 
-		/* Update data on bulletin board */
+		 
 		if (info->is_trusted_configured)
 			mac = qed_iov_bulletin_get_mac(hwfn, i);
 		else
@@ -5021,7 +4881,7 @@ static void qed_handle_pf_set_vf_unicast(struct qed_hwfn *hwfn)
 				   i,
 				   hwfn->cdev->p_iov_info->first_vf_in_pf + i);
 
-			/* Update bulletin board with MAC */
+			 
 			qed_set_bulletin_mac(hwfn, info, i);
 			update = true;
 		}
@@ -5075,15 +4935,13 @@ static void qed_update_mac_for_vf_trust_change(struct qed_hwfn *hwfn, int vf_id)
 	if (!vf_info || !vf)
 		return;
 
-	/* Force MAC converted to generic MAC in case of VF trust on */
+	 
 	if (vf_info->is_trusted_configured &&
 	    (vf->bulletin.p_virt->valid_bitmap & BIT(MAC_ADDR_FORCED))) {
 		force_mac = qed_iov_bulletin_get_forced_mac(hwfn, vf_id);
 
 		if (force_mac) {
-			/* Clear existing shadow copy of MAC to have a clean
-			 * slate.
-			 */
+			 
 			for (i = 0; i < QED_ETH_VF_NUM_MAC_FILTERS; i++) {
 				if (ether_addr_equal(vf->shadow_config.macs[i],
 						     vf_info->mac)) {
@@ -5103,7 +4961,7 @@ static void qed_update_mac_for_vf_trust_change(struct qed_hwfn *hwfn, int vf_id)
 		}
 	}
 
-	/* Update shadow copy with VF MAC when trust mode is turned off */
+	 
 	if (!vf_info->is_trusted_configured) {
 		u8 empty_mac[ETH_ALEN];
 
@@ -5119,9 +4977,7 @@ static void qed_update_mac_for_vf_trust_change(struct qed_hwfn *hwfn, int vf_id)
 				break;
 			}
 		}
-		/* Clear bulletin when trust mode is turned off,
-		 * to have a clean slate for next (normal) operations.
-		 */
+		 
 		qed_iov_bulletin_set_mac(hwfn, empty_mac, vf_id);
 		qed_schedule_iov(hwfn, QED_IOV_WQ_BULLETIN_UPDATE_FLAG);
 	}
@@ -5140,20 +4996,17 @@ static void qed_iov_handle_trust_change(struct qed_hwfn *hwfn)
 	flags = &params.accept_flags;
 
 	qed_for_each_vf(hwfn, i) {
-		/* Need to make sure current requested configuration didn't
-		 * flip so that we'll end up configuring something that's not
-		 * needed.
-		 */
+		 
 		vf_info = qed_iov_get_public_vf_info(hwfn, i, true);
 		if (vf_info->is_trusted_configured ==
 		    vf_info->is_trusted_request)
 			continue;
 		vf_info->is_trusted_configured = vf_info->is_trusted_request;
 
-		/* Handle forced MAC mode */
+		 
 		qed_update_mac_for_vf_trust_change(hwfn, i);
 
-		/* Validate that the VF has a configured vport */
+		 
 		vf = qed_iov_get_vf_info(hwfn, i, true);
 		if (!vf || !vf->vport_instance)
 			continue;
@@ -5181,7 +5034,7 @@ static void qed_iov_handle_trust_change(struct qed_hwfn *hwfn)
 			flags->tx_accept_filter = vf_info->tx_accept_mode;
 		}
 
-		/* Remove if needed; Otherwise this would set the mask */
+		 
 		if (!vf_info->is_trusted_configured) {
 			flags->rx_accept_filter &= ~mask;
 			flags->tx_accept_filter &= ~mask;
@@ -5268,9 +5121,7 @@ int qed_iov_wq_start(struct qed_dev *cdev)
 	for_each_hwfn(cdev, i) {
 		struct qed_hwfn *p_hwfn = &cdev->hwfns[i];
 
-		/* PFs needs a dedicated workqueue only if they support IOV.
-		 * VFs always require one.
-		 */
+		 
 		if (IS_PF(p_hwfn->cdev) && !IS_PF_SRIOV(p_hwfn))
 			continue;
 

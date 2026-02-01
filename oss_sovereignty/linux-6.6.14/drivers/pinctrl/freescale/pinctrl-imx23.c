@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Freescale i.MX23 pinctrl driver
-//
-// Author: Shawn Guo <shawn.guo@linaro.org>
-// Copyright 2012 Freescale Semiconductor, Inc.
+
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/mod_devicetable.h>
@@ -270,7 +270,7 @@ static int imx23_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id imx23_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx23-pinctrl", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver imx23_pinctrl_driver = {

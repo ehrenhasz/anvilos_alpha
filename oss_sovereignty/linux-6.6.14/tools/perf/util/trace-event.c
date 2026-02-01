@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -14,13 +14,7 @@
 #include "trace-event.h"
 #include "machine.h"
 
-/*
- * global trace_event object used by trace_event__tp_format
- *
- * TODO There's no cleanup call for this. Add some sort of
- * __exit function support and call trace_event__cleanup
- * there.
- */
+ 
 static struct trace_event tevent;
 static bool tevent_initialized;
 
@@ -67,9 +61,7 @@ void trace_event__cleanup(struct trace_event *t)
 	tep_free(t->pevent);
 }
 
-/*
- * Returns pointer with encoded error via <linux/err.h> interface.
- */
+ 
 static struct tep_event*
 tp_format(const char *sys, const char *name)
 {
@@ -97,9 +89,7 @@ tp_format(const char *sys, const char *name)
 	return event;
 }
 
-/*
- * Returns pointer with encoded error via <linux/err.h> interface.
- */
+ 
 struct tep_event*
 trace_event__tp_format(const char *sys, const char *name)
 {

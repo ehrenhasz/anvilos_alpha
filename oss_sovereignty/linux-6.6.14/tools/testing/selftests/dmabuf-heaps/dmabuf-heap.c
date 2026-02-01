@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <dirent.h>
 #include <errno.h>
@@ -158,7 +158,7 @@ static int test_alloc_and_import(char *heap_name)
 		ret = -1;
 		goto out;
 	}
-	/* mmap and write a simple pattern */
+	 
 	p = mmap(NULL,
 		 ONE_MEG,
 		 PROT_READ | PROT_WRITE,
@@ -229,14 +229,14 @@ static int test_alloc_zeroed(char *heap_name, size_t size)
 	if (heap_fd < 0)
 		return -1;
 
-	/* Allocate and fill a bunch of buffers */
+	 
 	for (i = 0; i < 32; i++) {
 		ret = dmabuf_heap_alloc(heap_fd, size, 0, &dmabuf_fd[i]);
 		if (ret < 0) {
 			printf("FAIL (Allocation (%i) failed)\n", i);
 			goto out;
 		}
-		/* mmap and fill with simple pattern */
+		 
 		p = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, dmabuf_fd[i], 0);
 		if (p == MAP_FAILED) {
 			printf("FAIL (mmap() failed!)\n");
@@ -248,11 +248,11 @@ static int test_alloc_zeroed(char *heap_name, size_t size)
 		dmabuf_sync(dmabuf_fd[i], DMA_BUF_SYNC_END);
 		munmap(p, size);
 	}
-	/* close them all */
+	 
 	for (i = 0; i < 32; i++)
 		close(dmabuf_fd[i]);
 
-	/* Allocate and validate all buffers are zeroed */
+	 
 	for (i = 0; i < 32; i++) {
 		ret = dmabuf_heap_alloc(heap_fd, size, 0, &dmabuf_fd[i]);
 		if (ret < 0) {
@@ -260,7 +260,7 @@ static int test_alloc_zeroed(char *heap_name, size_t size)
 			goto out;
 		}
 
-		/* mmap and validate everything is zero */
+		 
 		p = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, dmabuf_fd[i], 0);
 		if (p == MAP_FAILED) {
 			printf("FAIL (mmap() failed!)\n");
@@ -278,7 +278,7 @@ static int test_alloc_zeroed(char *heap_name, size_t size)
 		dmabuf_sync(dmabuf_fd[i], DMA_BUF_SYNC_END);
 		munmap(p, size);
 	}
-	/* close them all */
+	 
 	for (i = 0; i < 32; i++)
 		close(dmabuf_fd[i]);
 
@@ -295,7 +295,7 @@ out:
 	return ret;
 }
 
-/* Test the ioctl version compatibility w/ a smaller structure then expected */
+ 
 static int dmabuf_heap_alloc_older(int fd, size_t len, unsigned int flags,
 				   int *dmabuf_fd)
 {
@@ -323,7 +323,7 @@ static int dmabuf_heap_alloc_older(int fd, size_t len, unsigned int flags,
 	return ret;
 }
 
-/* Test the ioctl version compatibility w/ a larger structure then expected */
+ 
 static int dmabuf_heap_alloc_newer(int fd, size_t len, unsigned int flags,
 				   int *dmabuf_fd)
 {

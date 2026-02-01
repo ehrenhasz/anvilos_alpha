@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2013 Broadcom
- * Copyright (C) 2020 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <dt-bindings/soc/bcm-pmb.h>
 #include <linux/io.h>
@@ -40,8 +37,8 @@
 #define  BPCM_ZONE_CONTROL				0x00
 #define   BPCM_ZONE_CONTROL_MANUAL_CLK_EN		0x00000001
 #define   BPCM_ZONE_CONTROL_MANUAL_RESET_CTL		0x00000002
-#define   BPCM_ZONE_CONTROL_FREQ_SCALE_USED		0x00000004	/* R/O */
-#define   BPCM_ZONE_CONTROL_DPG_CAPABLE			0x00000008	/* R/O */
+#define   BPCM_ZONE_CONTROL_FREQ_SCALE_USED		0x00000004	 
+#define   BPCM_ZONE_CONTROL_DPG_CAPABLE			0x00000008	 
 #define   BPCM_ZONE_CONTROL_MANUAL_MEM_PWR		0x00000030
 #define   BPCM_ZONE_CONTROL_MANUAL_ISO_CTL		0x00000040
 #define   BPCM_ZONE_CONTROL_MANUAL_CTL			0x00000080
@@ -53,14 +50,14 @@
 #define   BPCM_ZONE_CONTROL_MEM_STBY			0x00002000
 #define   BPCM_ZONE_CONTROL_RESERVED			0x0007c000
 #define   BPCM_ZONE_CONTROL_PWR_CNTL_STATE		0x00f80000
-#define   BPCM_ZONE_CONTROL_FREQ_SCALAR_DYN_SEL		0x01000000	/* R/O */
-#define   BPCM_ZONE_CONTROL_PWR_OFF_STATE		0x02000000	/* R/O */
-#define   BPCM_ZONE_CONTROL_PWR_ON_STATE		0x04000000	/* R/O */
-#define   BPCM_ZONE_CONTROL_PWR_GOOD			0x08000000	/* R/O */
-#define   BPCM_ZONE_CONTROL_DPG_PWR_STATE		0x10000000	/* R/O */
-#define   BPCM_ZONE_CONTROL_MEM_PWR_STATE		0x20000000	/* R/O */
-#define   BPCM_ZONE_CONTROL_ISO_STATE			0x40000000	/* R/O */
-#define   BPCM_ZONE_CONTROL_RESET_STATE			0x80000000	/* R/O */
+#define   BPCM_ZONE_CONTROL_FREQ_SCALAR_DYN_SEL		0x01000000	 
+#define   BPCM_ZONE_CONTROL_PWR_OFF_STATE		0x02000000	 
+#define   BPCM_ZONE_CONTROL_PWR_ON_STATE		0x04000000	 
+#define   BPCM_ZONE_CONTROL_PWR_GOOD			0x08000000	 
+#define   BPCM_ZONE_CONTROL_DPG_PWR_STATE		0x10000000	 
+#define   BPCM_ZONE_CONTROL_MEM_PWR_STATE		0x20000000	 
+#define   BPCM_ZONE_CONTROL_ISO_STATE			0x40000000	 
+#define   BPCM_ZONE_CONTROL_RESET_STATE			0x80000000	 
 #define  BPCM_ZONE_CONFIG1				0x04
 #define  BPCM_ZONE_CONFIG2				0x08
 #define  BPCM_ZONE_FREQ_SCALAR_CONTROL			0x0c
@@ -173,7 +170,7 @@ static int bcm_pmb_power_off_device(struct bcm_pmb *pmb, int bus, u8 device)
 	u32 val;
 	int err;
 
-	/* Entire device can be powered off by powering off the 0th zone */
+	 
 	offset = BPCM_ZONE0 + BPCM_ZONE_CONTROL;
 
 	err = bcm_pmb_bpcm_read(pmb, bus, device, offset, &val);
@@ -216,7 +213,7 @@ static int bcm_pmb_power_on_sata(struct bcm_pmb *pmb, int bus, u8 device)
 	if (err)
 		return err;
 
-	/* Does not apply to the BCM963158 */
+	 
 	err = bcm_pmb_bpcm_write(pmb, bus, device, BPCM_MISC_CONTROL, 0);
 	if (err)
 		return err;

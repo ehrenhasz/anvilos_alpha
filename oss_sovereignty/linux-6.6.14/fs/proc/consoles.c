@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010 Werner Fink, Jiri Slaby
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/kernel.h>
@@ -9,9 +7,7 @@
 #include <linux/seq_file.h>
 #include <linux/tty_driver.h>
 
-/*
- * This is handler for /proc/consoles
- */
+ 
 static int show_console_dev(struct seq_file *m, void *v)
 {
 	static const struct {
@@ -34,11 +30,7 @@ static int show_console_dev(struct seq_file *m, void *v)
 		const struct tty_driver *driver;
 		int index;
 
-		/*
-		 * Take console_lock to serialize device() callback with
-		 * other console operations. For example, fg_console is
-		 * modified under console_lock when switching vt.
-		 */
+		 
 		console_lock();
 		driver = con->device(con, &index);
 		console_unlock();
@@ -72,11 +64,7 @@ static void *c_start(struct seq_file *m, loff_t *pos)
 	struct console *con;
 	loff_t off = 0;
 
-	/*
-	 * Hold the console_list_lock to guarantee safe traversal of the
-	 * console list. SRCU cannot be used because there is no
-	 * place to store the SRCU cookie.
-	 */
+	 
 	console_list_lock();
 	for_each_console(con)
 		if (off++ == *pos)

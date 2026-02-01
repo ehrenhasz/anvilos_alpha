@@ -1,27 +1,4 @@
-/*
-* Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -141,11 +118,11 @@ static const struct dce110_timing_generator_offsets dce112_tg_offsets[] = {
 	}
 };
 
-/* set register offset */
+ 
 #define SR(reg_name)\
 	.reg_name = mm ## reg_name
 
-/* set register offset with instance */
+ 
 #define SRI(reg_name, block, id)\
 	.reg_name = mm ## block ## id ## _ ## reg_name
 
@@ -393,7 +370,7 @@ static const struct resource_caps polaris_10_resource_cap = {
 		.num_timing_generator = 6,
 		.num_audio = 6,
 		.num_stream_encoder = 6,
-		.num_pll = 8, /* why 8? 6 combo PHY PLL + 2 regular PLLs? */
+		.num_pll = 8,  
 		.num_ddc = 6,
 };
 
@@ -401,7 +378,7 @@ static const struct resource_caps polaris_11_resource_cap = {
 		.num_timing_generator = 5,
 		.num_audio = 5,
 		.num_stream_encoder = 5,
-		.num_pll = 8, /* why 8? 6 combo PHY PLL + 2 regular PLLs? */
+		.num_pll = 8,  
 		.num_ddc = 5,
 };
 
@@ -606,7 +583,7 @@ static struct transform *dce112_transform_create(
 
 	dce_transform_construct(transform, ctx, inst,
 				&xfm_regs[inst], &xfm_shift, &xfm_mask);
-	transform->lb_memory_size = 0x1404; /*5124*/
+	transform->lb_memory_size = 0x1404;  
 	return &transform->base;
 }
 
@@ -963,7 +940,7 @@ enum dc_status resource_map_phy_clock_resources(
 		struct dc_stream_state *stream)
 {
 
-	/* acquire new resources */
+	 
 	struct pipe_ctx *pipe_ctx = resource_get_otg_master_for_stream(
 			&context->res_ctx, stream);
 
@@ -1072,20 +1049,18 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 	if (dc->bw_vbios && dc->bw_vbios->memory_type == bw_def_hbm)
 		memory_type_multiplier = MEMORY_TYPE_HBM;
 
-	/*do system clock  TODO PPLIB: after PPLIB implement,
-	 * then remove old way
-	 */
+	 
 	if (!dm_pp_get_clock_levels_by_type_with_latency(
 			dc->ctx,
 			DM_PP_CLOCK_TYPE_ENGINE_CLK,
 			&eng_clks)) {
 
-		/* This is only for temporary */
+		 
 		dm_pp_get_clock_levels_by_type(
 				dc->ctx,
 				DM_PP_CLOCK_TYPE_ENGINE_CLK,
 				&clks);
-		/* convert all the clock fro kHz to fix point mHz */
+		 
 		dc->bw_vbios->high_sclk = bw_frc_to_fixed(
 				clks.clocks_in_khz[clks.num_levels-1], 1000);
 		dc->bw_vbios->mid1_sclk  = bw_frc_to_fixed(
@@ -1103,7 +1078,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 		dc->bw_vbios->low_sclk  = bw_frc_to_fixed(
 				clks.clocks_in_khz[0], 1000);
 
-		/*do memory clock*/
+		 
 		dm_pp_get_clock_levels_by_type(
 				dc->ctx,
 				DM_PP_CLOCK_TYPE_MEMORY_CLK,
@@ -1121,7 +1096,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 		return;
 	}
 
-	/* convert all the clock fro kHz to fix point mHz  TODO: wloop data */
+	 
 	dc->bw_vbios->high_sclk = bw_frc_to_fixed(
 		eng_clks.data[eng_clks.num_levels-1].clocks_in_khz, 1000);
 	dc->bw_vbios->mid1_sclk  = bw_frc_to_fixed(
@@ -1139,17 +1114,13 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 	dc->bw_vbios->low_sclk  = bw_frc_to_fixed(
 			eng_clks.data[0].clocks_in_khz, 1000);
 
-	/*do memory clock*/
+	 
 	dm_pp_get_clock_levels_by_type_with_latency(
 			dc->ctx,
 			DM_PP_CLOCK_TYPE_MEMORY_CLK,
 			&mem_clks);
 
-	/* we don't need to call PPLIB for validation clock since they
-	 * also give us the highest sclk and highest mclk (UMA clock).
-	 * ALSO always convert UMA clock (from PPLIB)  to YCLK (HW formula):
-	 * YCLK = UMACLK*m_memoryTypeMultiplier
-	 */
+	 
 	dc->bw_vbios->low_yclk = bw_frc_to_fixed(
 		mem_clks.data[0].clocks_in_khz * memory_type_multiplier, 1000);
 	dc->bw_vbios->mid_yclk = bw_frc_to_fixed(
@@ -1159,11 +1130,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 		mem_clks.data[mem_clks.num_levels-1].clocks_in_khz * memory_type_multiplier,
 		1000);
 
-	/* Now notify PPLib/SMU about which Watermarks sets they should select
-	 * depending on DPM state they are in. And update BW MGR GFX Engine and
-	 * Memory clock member variables for Watermarks calculations for each
-	 * Watermark Set
-	 */
+	 
 	clk_ranges.num_wm_sets = 4;
 	clk_ranges.wm_clk_ranges[0].wm_set_id = WM_SET_A;
 	clk_ranges.wm_clk_ranges[0].wm_min_eng_clk_in_khz =
@@ -1178,7 +1145,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 	clk_ranges.wm_clk_ranges[1].wm_set_id = WM_SET_B;
 	clk_ranges.wm_clk_ranges[1].wm_min_eng_clk_in_khz =
 			eng_clks.data[eng_clks.num_levels*3/8].clocks_in_khz;
-	/* 5 GHz instead of data[7].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[1].wm_max_eng_clk_in_khz = 5000000;
 	clk_ranges.wm_clk_ranges[1].wm_min_mem_clk_in_khz =
 			mem_clks.data[0].clocks_in_khz;
@@ -1192,20 +1159,20 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 			eng_clks.data[eng_clks.num_levels*3/8].clocks_in_khz - 1;
 	clk_ranges.wm_clk_ranges[2].wm_min_mem_clk_in_khz =
 			mem_clks.data[mem_clks.num_levels>>1].clocks_in_khz;
-	/* 5 GHz instead of data[2].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[2].wm_max_mem_clk_in_khz = 5000000;
 
 	clk_ranges.wm_clk_ranges[3].wm_set_id = WM_SET_D;
 	clk_ranges.wm_clk_ranges[3].wm_min_eng_clk_in_khz =
 			eng_clks.data[eng_clks.num_levels*3/8].clocks_in_khz;
-	/* 5 GHz instead of data[7].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[3].wm_max_eng_clk_in_khz = 5000000;
 	clk_ranges.wm_clk_ranges[3].wm_min_mem_clk_in_khz =
 			mem_clks.data[mem_clks.num_levels>>1].clocks_in_khz;
-	/* 5 GHz instead of data[2].clockInKHz to cover Overdrive */
+	 
 	clk_ranges.wm_clk_ranges[3].wm_max_mem_clk_in_khz = 5000000;
 
-	/* Notify PP Lib/SMU which Watermarks to use for which clock ranges */
+	 
 	dm_pp_notify_wm_clock_changes(dc->ctx, &clk_ranges);
 }
 
@@ -1232,24 +1199,20 @@ static bool dce112_resource_construct(
 	pool->base.res_cap = dce112_resource_cap(&ctx->asic_id);
 	pool->base.funcs = &dce112_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 	pool->base.pipe_count = pool->base.res_cap->num_timing_generator;
 	pool->base.timing_generator_count = pool->base.res_cap->num_timing_generator;
 	dc->caps.max_downscale_ratio = 200;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 100; /*1.4 w/a not applied by default*/
+	dc->caps.i2c_speed_in_khz_hdcp = 100;  
 	dc->caps.max_cursor_size = 128;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dual_link_dvi = true;
 	dc->caps.extended_aux_timeout_support = false;
 	dc->debug = debug_defaults;
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
 	pool->base.clock_sources[DCE112_CLK_SRC_PLL0] =
 			dce112_clock_source_create(
@@ -1398,7 +1361,7 @@ static bool dce112_resource_construct(
 	for (i = 0; i < dc->caps.max_planes; ++i)
 		dc->caps.planes[i] = plane_cap;
 
-	/* Create hardware sequencer */
+	 
 	dce112_hw_sequencer_construct(dc);
 
 	bw_calcs_init(dc->bw_dceip, dc->bw_vbios, dc->ctx->asic_id);

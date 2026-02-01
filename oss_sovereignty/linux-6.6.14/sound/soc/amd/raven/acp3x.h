@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ALSA SoC PCM Driver
- *
- * Copyright 2016 Advanced Micro Devices, Inc.
- */
+ 
+ 
 
 #include "chip_offset_byte.h"
 #include <sound/pcm.h>

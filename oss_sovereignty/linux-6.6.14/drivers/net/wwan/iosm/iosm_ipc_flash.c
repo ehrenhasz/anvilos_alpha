@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2021 Intel Corporation.
- */
+
+ 
 
 #include "iosm_ipc_coredump.h"
 #include "iosm_ipc_devlink.h"
 #include "iosm_ipc_flash.h"
 
-/* This function will pack the data to be sent to the modem using the
- * payload, payload length and pack id
- */
+ 
 static int ipc_flash_proc_format_ebl_pack(struct iosm_flash_data *flash_req,
 					  u32 pack_length, u16 pack_id,
 					  u8 *payload, u32 payload_length)
@@ -33,9 +29,7 @@ static int ipc_flash_proc_format_ebl_pack(struct iosm_flash_data *flash_req,
 	return 0;
 }
 
-/* validate the response received from modem and
- * check the type of errors received
- */
+ 
 static int ipc_flash_proc_check_ebl_rsp(void *hdr_rsp, void *payload_rsp)
 {
 	struct iosm_ebl_error  *err_info = payload_rsp;
@@ -56,7 +50,7 @@ static int ipc_flash_proc_check_ebl_rsp(void *hdr_rsp, void *payload_rsp)
 	return 0;
 }
 
-/* Send data to the modem */
+ 
 static int ipc_flash_send_data(struct iosm_devlink *ipc_devlink, u32 size,
 			       u16 pack_id, u8 *payload, u32 payload_length)
 {
@@ -89,18 +83,13 @@ ipc_free_payload:
 	return ret;
 }
 
-/**
- * ipc_flash_link_establish - Flash link establishment
- * @ipc_imem:           Pointer to struct iosm_imem
- *
- * Returns:     0 on success and failure value on error
- */
+ 
 int ipc_flash_link_establish(struct iosm_imem *ipc_imem)
 {
 	u8 ler_data[IOSM_LER_RSP_SIZE];
 	u32 bytes_read;
 
-	/* Allocate channel for flashing/cd collection */
+	 
 	ipc_imem->ipc_devlink->devlink_sio.channel =
 					ipc_imem_sys_devlink_open(ipc_imem);
 
@@ -122,7 +111,7 @@ chl_open_fail:
 	return -EIO;
 }
 
-/* Receive data from the modem */
+ 
 static int ipc_flash_receive_data(struct iosm_devlink *ipc_devlink, u32 size,
 				  u8 *mdm_rsp)
 {
@@ -162,7 +151,7 @@ ipc_flash_recv_err:
 	return ret;
 }
 
-/* Function to send command to modem and receive response */
+ 
 static int ipc_flash_send_receive(struct iosm_devlink *ipc_devlink, u16 pack_id,
 				  u8 *payload, u32 payload_length, u8 *mdm_rsp)
 {
@@ -184,13 +173,7 @@ ipc_flash_send_rcv:
 	return ret;
 }
 
-/**
- * ipc_flash_boot_set_capabilities  - Set modem boot capabilities in flash
- * @ipc_devlink:        Pointer to devlink structure
- * @mdm_rsp:            Pointer to modem response buffer
- *
- * Returns:             0 on success and failure value on error
- */
+ 
 int ipc_flash_boot_set_capabilities(struct iosm_devlink *ipc_devlink,
 				    u8 *mdm_rsp)
 {
@@ -211,15 +194,13 @@ int ipc_flash_boot_set_capabilities(struct iosm_devlink *ipc_devlink,
 				IOSM_CAP_USE_EXT_CAP;
 	}
 
-	/* Write back the EBL capability to modem
-	 * Request Set Protcnf command
-	 */
+	 
 	return ipc_flash_send_receive(ipc_devlink, FLASH_SET_PROT_CONF,
 				     ipc_devlink->ebl_ctx.m_ebl_resp,
 				     IOSM_EBL_RSP_SIZE, mdm_rsp);
 }
 
-/* Read the SWID type and SWID value from the EBL */
+ 
 int ipc_flash_read_swid(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp)
 {
 	struct iosm_flash_msg_control cmd_msg;
@@ -261,13 +242,13 @@ ipc_swid_err:
 	return ret;
 }
 
-/* Function to check if full erase or conditional erase was successful */
+ 
 static int ipc_flash_erase_check(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp)
 {
 	int ret, count = 0;
 	u16 mdm_rsp_data;
 
-	/* Request Flash Erase Check */
+	 
 	do {
 		mdm_rsp_data = IOSM_MDM_SEND_DATA;
 		ret = ipc_flash_send_receive(ipc_devlink, FLASH_ERASE_CHECK,
@@ -299,7 +280,7 @@ ipc_erase_chk_err:
 	return ret;
 }
 
-/* Full erase function which will erase the nand flash through EBL command */
+ 
 static int ipc_flash_full_erase(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp)
 {
 	u32 erase_address = IOSM_ERASE_START_ADDR;
@@ -326,13 +307,13 @@ ipc_flash_erase_err:
 	return ret;
 }
 
-/* Logic for flashing all the Loadmaps available for individual fls file */
+ 
 static int ipc_flash_download_region(struct iosm_devlink *ipc_devlink,
 				     const struct firmware *fw, u8 *mdm_rsp)
 {
 	u32 raw_len, rest_len = fw->size - IOSM_DEVLINK_HDR_SIZE;
 	struct iosm_devlink_image *fls_data;
-	__le32 reg_info[2]; /* 0th position region address, 1st position size */
+	__le32 reg_info[2];  
 	u32 nand_address;
 	char *file_ptr;
 	int ret;
@@ -355,13 +336,13 @@ static int ipc_flash_download_region(struct iosm_devlink *ipc_devlink,
 			goto dl_region_fail;
 	}
 
-	/* Request Flash Set Address */
+	 
 	ret = ipc_flash_send_receive(ipc_devlink, FLASH_SET_ADDRESS,
 				     (u8 *)reg_info, IOSM_MDM_SEND_4, mdm_rsp);
 	if (ret)
 		goto dl_region_fail;
 
-	/* Request Flash Write Raw Image */
+	 
 	ret = ipc_flash_send_data(ipc_devlink, IOSM_EBL_DW_PACK_SIZE,
 				  FLASH_WRITE_IMAGE_RAW, (u8 *)&rest_len,
 				  IOSM_MDM_SEND_4);
@@ -388,14 +369,7 @@ dl_region_fail:
 	return ret;
 }
 
-/**
- * ipc_flash_send_fls  - Inject Modem subsystem fls file to device
- * @ipc_devlink:        Pointer to devlink structure
- * @fw:                 FW image
- * @mdm_rsp:            Pointer to modem response buffer
- *
- * Returns:             0 on success and failure value on error
- */
+ 
 int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
 		       const struct firmware *fw, u8 *mdm_rsp)
 {
@@ -412,7 +386,7 @@ int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
 			goto ipc_flash_err;
 	}
 
-	/* Request Sec Start */
+	 
 	if (!fls_data->download_region) {
 		ret = ipc_flash_send_receive(ipc_devlink, FLASH_SEC_START,
 					     (u8 *)fw->data +
@@ -421,13 +395,13 @@ int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
 		if (ret)
 			goto ipc_flash_err;
 	} else {
-		/* Download regions */
+		 
 		ret = ipc_flash_download_region(ipc_devlink, fw, mdm_rsp);
 		if (ret)
 			goto ipc_flash_err;
 
 		if (fls_data->last_region) {
-			/* Request Sec End */
+			 
 			flash_cmd = IOSM_MDM_SEND_DATA;
 			ret = ipc_flash_send_receive(ipc_devlink, FLASH_SEC_END,
 						     (u8 *)&flash_cmd,
@@ -439,13 +413,7 @@ ipc_flash_err:
 	return ret;
 }
 
-/**
- * ipc_flash_boot_psi - Inject PSI image
- * @ipc_devlink:        Pointer to devlink structure
- * @fw:                 FW image
- *
- * Returns:             0 on success and failure value on error
- */
+ 
 int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
 		       const struct firmware *fw)
 {
@@ -496,13 +464,7 @@ ipc_flash_psi_free:
 	return ret;
 }
 
-/**
- * ipc_flash_boot_ebl  - Inject EBL image
- * @ipc_devlink:        Pointer to devlink structure
- * @fw:                 FW image
- *
- * Returns:             0 on success and failure value on error
- */
+ 
 int ipc_flash_boot_ebl(struct iosm_devlink *ipc_devlink,
 		       const struct firmware *fw)
 {

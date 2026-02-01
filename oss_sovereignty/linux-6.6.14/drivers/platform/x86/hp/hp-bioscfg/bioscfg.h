@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Definitions for kernel modules using hp_bioscfg driver
- *
- *  Copyright (c) 2022 HP Development Company, L.P.
- */
+ 
 
 #ifndef _HP_BIOSCFG_H_
 #define _HP_BIOSCFG_H_
@@ -39,7 +34,7 @@
 #define COMMA_SEP		","
 #define SEMICOLON_SEP		";"
 
-/* Sure Admin Functions */
+ 
 
 #define UTF_PREFIX		"<utf-16/>"
 #define BEAM_PREFIX		"<BEAM/>"
@@ -176,18 +171,10 @@ struct password_data {
 	u8 encodings[MAX_ENCODINGS_SIZE][MAX_BUFF_SIZE];
 	bool is_enabled;
 
-	/*
-	 * 'role' identifies the type of authentication.
-	 * Two known types are bios-admin and power-on.
-	 * 'bios-admin' represents BIOS administrator password
-	 * 'power-on' represents a password required to use the system
-	 */
+	 
 	u32 role;
 
-	/*
-	 * 'mechanism' represents the means of authentication.
-	 * Only supported type currently is "password"
-	 */
+	 
 	u32 mechanism;
 };
 
@@ -223,7 +210,7 @@ struct bioscfg_priv {
 	struct mutex mutex;
 };
 
-/* global structure used by multiple WMI interfaces */
+ 
 extern struct bioscfg_priv bioscfg_drv;
 
 enum hp_wmi_data_type {
@@ -237,7 +224,7 @@ enum hp_wmi_data_type {
 };
 
 enum hp_wmi_data_elements {
-	/* Common elements */
+	 
 	NAME = 0,
 	VALUE = 1,
 	PATH = 2,
@@ -249,29 +236,29 @@ enum hp_wmi_data_elements {
 	PREREQUISITES = 8,
 	SECURITY_LEVEL = 9,
 
-	/* String elements */
+	 
 	STR_MIN_LENGTH = 10,
 	STR_MAX_LENGTH = 11,
 	STR_ELEM_CNT = 12,
 
-	/* Integer elements */
+	 
 	INT_LOWER_BOUND = 10,
 	INT_UPPER_BOUND = 11,
 	INT_SCALAR_INCREMENT = 12,
 	INT_ELEM_CNT = 13,
 
-	/* Enumeration elements */
+	 
 	ENUM_CURRENT_VALUE = 10,
 	ENUM_SIZE = 11,
 	ENUM_POSSIBLE_VALUES = 12,
 	ENUM_ELEM_CNT = 13,
 
-	/* Ordered list elements */
+	 
 	ORD_LIST_SIZE = 10,
 	ORD_LIST_ELEMENTS = 11,
 	ORD_ELEM_CNT = 12,
 
-	/* Password elements */
+	 
 	PSWD_MIN_LENGTH = 10,
 	PSWD_MAX_LENGTH = 11,
 	PSWD_SIZE = 12,
@@ -390,9 +377,9 @@ enum hp_wmi_data_elements {
 
 extern struct kobj_attribute common_display_langcode;
 
-/* Prototypes */
+ 
 
-/* String attributes */
+ 
 int hp_populate_string_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 				   int instance_id,
 				   struct kobject *attr_name_kobj);
@@ -402,7 +389,7 @@ int hp_populate_string_package_data(union acpi_object *str_obj,
 				    int instance_id,
 				    struct kobject *attr_name_kobj);
 
-/* Integer attributes */
+ 
 int hp_populate_integer_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 				    int instance_id,
 				    struct kobject *attr_name_kobj);
@@ -412,7 +399,7 @@ int hp_populate_integer_package_data(union acpi_object *integer_obj,
 				     int instance_id,
 				     struct kobject *attr_name_kobj);
 
-/* Enumeration attributes */
+ 
 int hp_populate_enumeration_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 					int instance_id,
 					struct kobject *attr_name_kobj);
@@ -422,7 +409,7 @@ int hp_populate_enumeration_package_data(union acpi_object *enum_obj,
 					 int instance_id,
 					 struct kobject *attr_name_kobj);
 
-/* Ordered list */
+ 
 int hp_populate_ordered_list_buffer_data(u8 *buffer_ptr,
 					 u32 *buffer_size,
 					 int instance_id,
@@ -433,7 +420,7 @@ int hp_populate_ordered_list_package_data(union acpi_object *order_obj,
 					  int instance_id,
 					  struct kobject *attr_name_kobj);
 
-/* Password authentication attributes */
+ 
 int hp_populate_password_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 				     int instance_id,
 				     struct kobject *attr_name_kobj);
@@ -445,22 +432,22 @@ int hp_get_password_instance_for_type(const char *name);
 int hp_clear_all_credentials(void);
 int hp_set_attribute(const char *a_name, const char *a_value);
 
-/* SPM attributes */
+ 
 void hp_exit_password_attributes(void);
 void hp_exit_secure_platform_attributes(void);
 int hp_populate_secure_platform_data(struct kobject *attr_name_kobj);
 int hp_populate_security_buffer(u16 *buffer, const char *authentication);
 
-/* Bios Attributes interface */
+ 
 int hp_wmi_set_bios_setting(u16 *input_buffer, u32 input_size);
 int hp_wmi_perform_query(int query, enum hp_wmi_command command,
 			 void *buffer, u32 insize, u32 outsize);
 
-/* Sure Start attributes */
+ 
 void hp_exit_sure_start_attributes(void);
 int hp_populate_sure_start_data(struct kobject *attr_name_kobj);
 
-/* Bioscfg */
+ 
 
 void hp_exit_attr_set_interface(void);
 int hp_init_attr_set_interface(void);

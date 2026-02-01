@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_THERM_H__
 #define __NVKM_THERM_H__
 #include <core/subdev.h>
@@ -60,7 +60,7 @@ struct nvkm_therm {
 	const struct nvkm_therm_func *func;
 	struct nvkm_subdev subdev;
 
-	/* automatic thermal management */
+	 
 	struct nvkm_alarm alarm;
 	spinlock_t lock;
 	struct nvbios_therm_trip_point *last_trip;
@@ -68,26 +68,26 @@ struct nvkm_therm {
 	int cstate;
 	int suspend;
 
-	/* bios */
+	 
 	struct nvbios_therm_sensor bios_sensor;
 
-	/* fan priv */
+	 
 	struct nvkm_fan *fan;
 
-	/* alarms priv */
+	 
 	struct {
 		spinlock_t alarm_program_lock;
 		struct nvkm_alarm therm_poll_alarm;
 		enum nvkm_therm_thrs_state alarm_state[NVKM_THERM_THRS_NR];
 	} sensor;
 
-	/* what should be done if the card overheats */
+	 
 	struct {
 		void (*downclock)(struct nvkm_therm *, bool active);
 		void (*pause)(struct nvkm_therm *, bool active);
 	} emergency;
 
-	/* ic */
+	 
 	struct i2c_client *ic;
 
 	int (*fan_get)(struct nvkm_therm *);

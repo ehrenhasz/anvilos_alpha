@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8183-da7219-max98357.c
-//	--  MT8183-DA7219-MAX98357 ALSA SoC machine driver
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: Shunli Wang <shunli.wang@mediatek.com>
+
+
+
+
+
+
+
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -170,7 +170,7 @@ static const struct snd_soc_ops mt8183_da7219_rt1015_i2s_ops = {
 static int mt8183_i2s_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 				      struct snd_pcm_hw_params *params)
 {
-	/* fix BE i2s format to S32_LE, clean param mask first */
+	 
 	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
 
@@ -182,7 +182,7 @@ static int mt8183_i2s_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 static int mt8183_rt1015_i2s_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 					     struct snd_pcm_hw_params *params)
 {
-	/* fix BE i2s format to S24_LE, clean param mask first */
+	 
 	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
 
@@ -271,7 +271,7 @@ static const struct snd_soc_ops mt8183_da7219_max98357_bt_sco_ops = {
 	.startup = mt8183_da7219_max98357_bt_sco_startup,
 };
 
-/* FE */
+ 
 SND_SOC_DAILINK_DEFS(playback1,
 	DAILINK_COMP_ARRAY(COMP_CPU("DL1")),
 	DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -312,7 +312,7 @@ SND_SOC_DAILINK_DEFS(playback_hdmi,
 	DAILINK_COMP_ARRAY(COMP_DUMMY()),
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* BE */
+ 
 SND_SOC_DAILINK_DEFS(primary_codec,
 	DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("mt6358-sound", "mt6358-snd-codec-aif1")),
@@ -418,7 +418,7 @@ static int mt8183_da7219_init(struct snd_soc_pcm_runtime *rtd)
 }
 
 static struct snd_soc_dai_link mt8183_da7219_dai_links[] = {
-	/* FE */
+	 
 	{
 		.name = "Playback_1",
 		.stream_name = "Playback_1",
@@ -495,7 +495,7 @@ static struct snd_soc_dai_link mt8183_da7219_dai_links[] = {
 		.dpcm_playback = 1,
 		SND_SOC_DAILINK_REG(playback_hdmi),
 	},
-	/* BE */
+	 
 	{
 		.name = "Primary Codec",
 		.no_pcm = 1,
@@ -586,7 +586,7 @@ mt8183_da7219_max98357_headset_init(struct snd_soc_component *component)
 	struct mt8183_da7219_max98357_priv *priv =
 			snd_soc_card_get_drvdata(component->card);
 
-	/* Enable Headset and 4 Buttons Jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(component->card,
 					 "Headset Jack",
 					 SND_JACK_HEADSET |
@@ -886,7 +886,7 @@ static struct platform_driver mt8183_da7219_max98357_driver = {
 
 module_platform_driver(mt8183_da7219_max98357_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8183-DA7219-MAX98357 ALSA SoC machine driver");
 MODULE_AUTHOR("Shunli Wang <shunli.wang@mediatek.com>");
 MODULE_LICENSE("GPL v2");

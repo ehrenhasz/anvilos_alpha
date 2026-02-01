@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Intel Corporation
- */
+
+ 
 
 #ifndef __IWLMEI_INTERNAL_H_
 #define __IWLMEI_INTERNAL_H_
@@ -17,4 +15,4 @@ rx_handler_result_t iwl_mei_rx_filter(struct sk_buff *skb,
 
 void iwl_mei_add_data_to_ring(struct sk_buff *skb, bool cb_tx);
 
-#endif /* __IWLMEI_INTERNAL_H_ */
+#endif  

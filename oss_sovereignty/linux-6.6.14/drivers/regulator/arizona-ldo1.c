@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// arizona-ldo1.c  --  LDO1 supply for Arizona devices
-//
-// Copyright 2012 Wolfson Microelectronics PLC.
-//
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -253,10 +253,7 @@ static int arizona_ldo1_common_init(struct platform_device *pdev,
 		}
 	}
 
-	/* We assume that high output = regulator off
-	 * Don't use devm, since we need to get against the parent device
-	 * so clean up would happen at the wrong time
-	 */
+	 
 	config.ena_gpiod = gpiod_get_optional(parent_dev, "wlf,ldoena",
 				GPIOD_OUT_LOW | GPIOD_FLAGS_BIT_NONEXCLUSIVE);
 	if (IS_ERR(config.ena_gpiod))
@@ -269,10 +266,7 @@ static int arizona_ldo1_common_init(struct platform_device *pdev,
 	else
 		config.init_data = &ldo1->init_data;
 
-	/*
-	 * LDO1 can only be used to supply DCVDD so if it has no
-	 * consumers then DCVDD is supplied externally.
-	 */
+	 
 	if (config.init_data->num_consumer_supplies == 0)
 		*external_dcvdd = true;
 
@@ -306,11 +300,7 @@ static int arizona_ldo1_probe(struct platform_device *pdev)
 
 	ldo1->regmap = arizona->regmap;
 
-	/*
-	 * Since the chip usually supplies itself we provide some
-	 * default init_data for it.  This will be overridden with
-	 * platform data if provided.
-	 */
+	 
 	switch (arizona->type) {
 	case WM5102:
 	case WM8997:
@@ -412,7 +402,7 @@ static void __exit madera_ldo1_exit(void)
 }
 module_exit(madera_ldo1_exit);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("Arizona LDO1 driver");
 MODULE_LICENSE("GPL");

@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright Red Hat Inc. 2017
- *
- * This file is part of the SCTP kernel implementation
- *
- * These functions manipulate sctp stream queue/scheduling.
- *
- * Please send any bug reports or fixes you make to the
- * email addresched(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
- */
+
+ 
 
 #include <linux/list.h>
 #include <net/sctp/sctp.h>
 #include <net/sctp/sm.h>
 #include <net/sctp/stream_sched.h>
 
-/* Priority handling
- * RFC DRAFT ndata section 3.4
- */
+ 
 
 static void sctp_sched_prio_unsched_all(struct sctp_stream *stream);
 
@@ -61,9 +46,7 @@ static struct sctp_stream_priorities *sctp_sched_prio_get_head(
 	struct sctp_stream_priorities *p;
 	int i;
 
-	/* Look into scheduled priorities first, as they are sorted and
-	 * we can find it fast IF it's scheduled.
-	 */
+	 
 	list_for_each_entry(p, &stream->prio_list, prio_sched) {
 		if (p->prio == prio)
 			return sctp_sched_prio_head_get(p);
@@ -71,22 +54,20 @@ static struct sctp_stream_priorities *sctp_sched_prio_get_head(
 			break;
 	}
 
-	/* No luck. So we search on all streams now. */
+	 
 	for (i = 0; i < stream->outcnt; i++) {
 		if (!SCTP_SO(stream, i)->ext)
 			continue;
 
 		p = SCTP_SO(stream, i)->ext->prio_head;
 		if (!p)
-			/* Means all other streams won't be initialized
-			 * as well.
-			 */
+			 
 			break;
 		if (p->prio == prio)
 			return sctp_sched_prio_head_get(p);
 	}
 
-	/* If not even there, allocate a new one. */
+	 
 	return sctp_sched_prio_new_head(stream, prio, gfp);
 }
 
@@ -107,19 +88,19 @@ static bool sctp_sched_prio_unsched(struct sctp_stream_out_ext *soute)
 	if (!list_empty(&soute->prio_list)) {
 		struct sctp_stream_priorities *prio_head = soute->prio_head;
 
-		/* Scheduled */
+		 
 		scheduled = true;
 
 		if (prio_head->next == soute)
-			/* Try to move to the next stream */
+			 
 			sctp_sched_prio_next_stream(prio_head);
 
 		list_del_init(&soute->prio_list);
 
-		/* Also unsched the priority if this was the last stream */
+		 
 		if (list_empty(&prio_head->active)) {
 			list_del_init(&prio_head->prio_sched);
-			/* If there is no stream left, clear next */
+			 
 			prio_head->next = NULL;
 		}
 	}
@@ -134,14 +115,11 @@ static void sctp_sched_prio_sched(struct sctp_stream *stream,
 
 	prio_head = soute->prio_head;
 
-	/* Nothing to do if already scheduled */
+	 
 	if (!list_empty(&soute->prio_list))
 		return;
 
-	/* Schedule the stream. If there is a next, we schedule the new
-	 * one before it, so it's the last in round robin order.
-	 * If there isn't, we also have to schedule the priority.
-	 */
+	 
 	if (prio_head->next) {
 		list_add(&soute->prio_list, prio_head->next->prio_list.prev);
 		return;
@@ -232,13 +210,11 @@ static struct sctp_chunk *sctp_sched_prio_dequeue(struct sctp_outq *q)
 	struct sctp_stream_out_ext *soute;
 	struct sctp_chunk *ch = NULL;
 
-	/* Bail out quickly if queue is empty */
+	 
 	if (list_empty(&q->out_chunk_list))
 		goto out;
 
-	/* Find which chunk is next. It's easy, it's either the current
-	 * one or the first chunk on the next active stream.
-	 */
+	 
 	if (stream->out_curr) {
 		soute = stream->out_curr->ext;
 	} else {
@@ -260,9 +236,7 @@ static void sctp_sched_prio_dequeue_done(struct sctp_outq *q,
 	struct sctp_stream_out_ext *soute;
 	__u16 sid;
 
-	/* Last chunk on that msg, move to the next stream on
-	 * this priority.
-	 */
+	 
 	sid = sctp_chunk_stream_no(ch);
 	soute = SCTP_SO(&q->asoc->stream, sid)->ext;
 	prio = soute->prio_head;

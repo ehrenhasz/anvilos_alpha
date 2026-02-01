@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * mlme_linux.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>.
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _MLME_OSDEP_C_
 
@@ -92,12 +79,8 @@ void r8712_os_indicate_disconnect(struct _adapter *adapter)
 
 	r8712_indicate_wx_disassoc_event(adapter);
 	netif_carrier_off(adapter->pnetdev);
-	if (adapter->securitypriv.AuthAlgrthm == 2) { /*/802.1x*/
-		/* We have to backup the PMK information for WiFi PMK Caching
-		 * test item. Backup the btkip_countermeasure information.
-		 * When the countermeasure is trigger, the driver have to
-		 * disconnect with AP for 60 seconds.
-		 */
+	if (adapter->securitypriv.AuthAlgrthm == 2) {  
+		 
 
 		memcpy(&backupPMKIDList[0],
 		       &adapter->securitypriv.PMKIDList[0],
@@ -109,19 +92,17 @@ void r8712_os_indicate_disconnect(struct _adapter *adapter)
 		       sizeof(struct security_priv));
 		timer_setup(&adapter->securitypriv.tkip_timer,
 			    r8712_use_tkipkey_handler, 0);
-		/* Restore the PMK information to securitypriv structure
-		 * for the following connection.
-		 */
+		 
 		memcpy(&adapter->securitypriv.PMKIDList[0],
 		       &backupPMKIDList[0],
 		       sizeof(struct RT_PMKID_LIST) * NUM_PMKID_CACHE);
 		adapter->securitypriv.PMKIDIndex = backupPMKIDIndex;
 		adapter->securitypriv.btkip_countermeasure =
 					 backupTKIPCountermeasure;
-	} else { /*reset values in securitypriv*/
+	} else {  
 		struct security_priv *sec_priv = &adapter->securitypriv;
 
-		sec_priv->AuthAlgrthm = 0; /*open system*/
+		sec_priv->AuthAlgrthm = 0;  
 		sec_priv->PrivacyAlgrthm = _NO_PRIVACY_;
 		sec_priv->PrivacyKeyIndex = 0;
 		sec_priv->XGrpPrivacy = _NO_PRIVACY_;

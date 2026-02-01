@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2020 NVIDIA Corporation */
+ 
+ 
 
 #ifndef _TEGRA_DRM_UAPI_H
 #define _TEGRA_DRM_UAPI_H
@@ -15,11 +15,11 @@ struct drm_file;
 struct drm_device;
 
 struct tegra_drm_file {
-	/* Legacy UAPI state */
+	 
 	struct idr legacy_contexts;
 	struct mutex lock;
 
-	/* New UAPI state */
+	 
 	struct xarray contexts;
 	struct xarray syncpoints;
 };

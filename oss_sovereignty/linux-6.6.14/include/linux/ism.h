@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Internal Shared Memory
- *
- *  Definitions for the ISM module
- *
- *  Copyright IBM Corp. 2022
- */
+ 
+ 
 #ifndef _ISM_H
 #define _ISM_H
 
@@ -22,19 +16,19 @@ struct ism_dmb {
 	dma_addr_t dma_addr;
 };
 
-/* Unless we gain unexpected popularity, this limit should hold for a while */
+ 
 #define MAX_CLIENTS		8
 #define ISM_NR_DMBS		1920
 
 struct ism_dev {
-	spinlock_t lock; /* protects the ism device */
+	spinlock_t lock;  
 	struct list_head list;
 	struct pci_dev *pdev;
 
 	struct ism_sba *sba;
 	dma_addr_t sba_dma_addr;
 	DECLARE_BITMAP(sba_bitmap, ISM_NR_DMBS);
-	u8 *sba_client_arr;	/* entries are indices into 'clients' array */
+	u8 *sba_client_arr;	 
 	void *priv[MAX_CLIENTS];
 
 	struct ism_eq *ieq;
@@ -60,12 +54,9 @@ struct ism_client {
 	void (*add)(struct ism_dev *dev);
 	void (*remove)(struct ism_dev *dev);
 	void (*handle_event)(struct ism_dev *dev, struct ism_event *event);
-	/* Parameter dmbemask contains a bit vector with updated DMBEs, if sent
-	 * via ism_move_data(). Callback function must handle all active bits
-	 * indicated by dmbemask.
-	 */
+	 
 	void (*handle_irq)(struct ism_dev *dev, unsigned int bit, u16 dmbemask);
-	/* Private area - don't touch! */
+	 
 	u8 id;
 };
 
@@ -90,4 +81,4 @@ u8  *ism_get_seid(void);
 
 const struct smcd_ops *ism_get_smcd_ops(void);
 
-#endif	/* _ISM_H */
+#endif	 

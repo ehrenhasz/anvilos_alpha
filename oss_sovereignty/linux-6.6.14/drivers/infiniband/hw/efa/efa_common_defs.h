@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-/*
- * Copyright 2018-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _EFA_COMMON_H_
 #define _EFA_COMMON_H_
@@ -26,4 +24,4 @@ struct efa_common_mem_addr {
 	u32 mem_addr_high;
 };
 
-#endif /* _EFA_COMMON_H_ */
+#endif  

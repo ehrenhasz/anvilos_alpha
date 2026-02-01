@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/idr.h>
@@ -55,10 +53,7 @@ static int spmi_device_match(struct device *dev, struct device_driver *drv)
 	return 0;
 }
 
-/**
- * spmi_device_add() - add a device previously constructed via spmi_device_alloc()
- * @sdev:	spmi_device to be added
- */
+ 
 int spmi_device_add(struct spmi_device *sdev)
 {
 	struct spmi_controller *ctrl = sdev->ctrl;
@@ -80,10 +75,7 @@ err_device_add:
 }
 EXPORT_SYMBOL_GPL(spmi_device_add);
 
-/**
- * spmi_device_remove(): remove an SPMI device
- * @sdev:	spmi_device to be removed
- */
+ 
 void spmi_device_remove(struct spmi_device *sdev)
 {
 	device_unregister(&sdev->dev);
@@ -131,17 +123,10 @@ static inline int spmi_write_cmd(struct spmi_controller *ctrl, u8 opcode,
 	return ret;
 }
 
-/**
- * spmi_register_read() - register read
- * @sdev:	SPMI device.
- * @addr:	slave register address (5-bit address).
- * @buf:	buffer to be populated with data from the Slave.
- *
- * Reads 1 byte of data from a Slave device register.
- */
+ 
 int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf)
 {
-	/* 5-bit register address */
+	 
 	if (addr > 0x1F)
 		return -EINVAL;
 
@@ -150,20 +135,11 @@ int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf)
 }
 EXPORT_SYMBOL_GPL(spmi_register_read);
 
-/**
- * spmi_ext_register_read() - extended register read
- * @sdev:	SPMI device.
- * @addr:	slave register address (8-bit address).
- * @buf:	buffer to be populated with data from the Slave.
- * @len:	the request number of bytes to read (up to 16 bytes).
- *
- * Reads up to 16 bytes of data from the extended register space on a
- * Slave device.
- */
+ 
 int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
 			   size_t len)
 {
-	/* 8-bit register address, up to 16 bytes */
+	 
 	if (len == 0 || len > 16)
 		return -EINVAL;
 
@@ -172,20 +148,11 @@ int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
 }
 EXPORT_SYMBOL_GPL(spmi_ext_register_read);
 
-/**
- * spmi_ext_register_readl() - extended register read long
- * @sdev:	SPMI device.
- * @addr:	slave register address (16-bit address).
- * @buf:	buffer to be populated with data from the Slave.
- * @len:	the request number of bytes to read (up to 8 bytes).
- *
- * Reads up to 8 bytes of data from the extended register space on a
- * Slave device using 16-bit address.
- */
+ 
 int spmi_ext_register_readl(struct spmi_device *sdev, u16 addr, u8 *buf,
 			    size_t len)
 {
-	/* 16-bit register address, up to 8 bytes */
+	 
 	if (len == 0 || len > 8)
 		return -EINVAL;
 
@@ -194,17 +161,10 @@ int spmi_ext_register_readl(struct spmi_device *sdev, u16 addr, u8 *buf,
 }
 EXPORT_SYMBOL_GPL(spmi_ext_register_readl);
 
-/**
- * spmi_register_write() - register write
- * @sdev:	SPMI device
- * @addr:	slave register address (5-bit address).
- * @data:	buffer containing the data to be transferred to the Slave.
- *
- * Writes 1 byte of data to a Slave device register.
- */
+ 
 int spmi_register_write(struct spmi_device *sdev, u8 addr, u8 data)
 {
-	/* 5-bit register address */
+	 
 	if (addr > 0x1F)
 		return -EINVAL;
 
@@ -213,13 +173,7 @@ int spmi_register_write(struct spmi_device *sdev, u8 addr, u8 data)
 }
 EXPORT_SYMBOL_GPL(spmi_register_write);
 
-/**
- * spmi_register_zero_write() - register zero write
- * @sdev:	SPMI device.
- * @data:	the data to be written to register 0 (7-bits).
- *
- * Writes data to register 0 of the Slave device.
- */
+ 
 int spmi_register_zero_write(struct spmi_device *sdev, u8 data)
 {
 	return spmi_write_cmd(sdev->ctrl, SPMI_CMD_ZERO_WRITE, sdev->usid, 0,
@@ -227,20 +181,11 @@ int spmi_register_zero_write(struct spmi_device *sdev, u8 data)
 }
 EXPORT_SYMBOL_GPL(spmi_register_zero_write);
 
-/**
- * spmi_ext_register_write() - extended register write
- * @sdev:	SPMI device.
- * @addr:	slave register address (8-bit address).
- * @buf:	buffer containing the data to be transferred to the Slave.
- * @len:	the request number of bytes to read (up to 16 bytes).
- *
- * Writes up to 16 bytes of data to the extended register space of a
- * Slave device.
- */
+ 
 int spmi_ext_register_write(struct spmi_device *sdev, u8 addr, const u8 *buf,
 			    size_t len)
 {
-	/* 8-bit register address, up to 16 bytes */
+	 
 	if (len == 0 || len > 16)
 		return -EINVAL;
 
@@ -249,20 +194,11 @@ int spmi_ext_register_write(struct spmi_device *sdev, u8 addr, const u8 *buf,
 }
 EXPORT_SYMBOL_GPL(spmi_ext_register_write);
 
-/**
- * spmi_ext_register_writel() - extended register write long
- * @sdev:	SPMI device.
- * @addr:	slave register address (16-bit address).
- * @buf:	buffer containing the data to be transferred to the Slave.
- * @len:	the request number of bytes to read (up to 8 bytes).
- *
- * Writes up to 8 bytes of data to the extended register space of a
- * Slave device using 16-bit address.
- */
+ 
 int spmi_ext_register_writel(struct spmi_device *sdev, u16 addr, const u8 *buf,
 			     size_t len)
 {
-	/* 4-bit Slave Identifier, 16-bit register address, up to 8 bytes */
+	 
 	if (len == 0 || len > 8)
 		return -EINVAL;
 
@@ -271,51 +207,28 @@ int spmi_ext_register_writel(struct spmi_device *sdev, u16 addr, const u8 *buf,
 }
 EXPORT_SYMBOL_GPL(spmi_ext_register_writel);
 
-/**
- * spmi_command_reset() - sends RESET command to the specified slave
- * @sdev:	SPMI device.
- *
- * The Reset command initializes the Slave and forces all registers to
- * their reset values. The Slave shall enter the STARTUP state after
- * receiving a Reset command.
- */
+ 
 int spmi_command_reset(struct spmi_device *sdev)
 {
 	return spmi_cmd(sdev->ctrl, SPMI_CMD_RESET, sdev->usid);
 }
 EXPORT_SYMBOL_GPL(spmi_command_reset);
 
-/**
- * spmi_command_sleep() - sends SLEEP command to the specified SPMI device
- * @sdev:	SPMI device.
- *
- * The Sleep command causes the Slave to enter the user defined SLEEP state.
- */
+ 
 int spmi_command_sleep(struct spmi_device *sdev)
 {
 	return spmi_cmd(sdev->ctrl, SPMI_CMD_SLEEP, sdev->usid);
 }
 EXPORT_SYMBOL_GPL(spmi_command_sleep);
 
-/**
- * spmi_command_wakeup() - sends WAKEUP command to the specified SPMI device
- * @sdev:	SPMI device.
- *
- * The Wakeup command causes the Slave to move from the SLEEP state to
- * the ACTIVE state.
- */
+ 
 int spmi_command_wakeup(struct spmi_device *sdev)
 {
 	return spmi_cmd(sdev->ctrl, SPMI_CMD_WAKEUP, sdev->usid);
 }
 EXPORT_SYMBOL_GPL(spmi_command_wakeup);
 
-/**
- * spmi_command_shutdown() - sends SHUTDOWN command to the specified SPMI device
- * @sdev:	SPMI device.
- *
- * The Shutdown command causes the Slave to enter the SHUTDOWN state.
- */
+ 
 int spmi_command_shutdown(struct spmi_device *sdev)
 {
 	return spmi_cmd(sdev->ctrl, SPMI_CMD_SHUTDOWN, sdev->usid);
@@ -387,13 +300,7 @@ static struct bus_type spmi_bus_type = {
 	.uevent		= spmi_drv_uevent,
 };
 
-/**
- * spmi_device_from_of() - get the associated SPMI device from a device node
- *
- * @np:		device node
- *
- * Returns the struct spmi_device associated with a device node or NULL.
- */
+ 
 struct spmi_device *spmi_device_from_of(struct device_node *np)
 {
 	struct device *dev = bus_find_device_by_of_node(&spmi_bus_type, np);
@@ -404,13 +311,7 @@ struct spmi_device *spmi_device_from_of(struct device_node *np)
 }
 EXPORT_SYMBOL_GPL(spmi_device_from_of);
 
-/**
- * spmi_device_alloc() - Allocate a new SPMI device
- * @ctrl:	associated controller
- *
- * Caller is responsible for either calling spmi_device_add() to add the
- * newly allocated controller, or calling spmi_device_put() to discard it.
- */
+ 
 struct spmi_device *spmi_device_alloc(struct spmi_controller *ctrl)
 {
 	struct spmi_device *sdev;
@@ -428,16 +329,7 @@ struct spmi_device *spmi_device_alloc(struct spmi_controller *ctrl)
 }
 EXPORT_SYMBOL_GPL(spmi_device_alloc);
 
-/**
- * spmi_controller_alloc() - Allocate a new SPMI controller
- * @parent:	parent device
- * @size:	size of private data
- *
- * Caller is responsible for either calling spmi_controller_add() to add the
- * newly allocated controller, or calling spmi_controller_put() to discard it.
- * The allocated private data region may be accessed via
- * spmi_controller_get_drvdata()
- */
+ 
 struct spmi_controller *spmi_controller_alloc(struct device *parent,
 					      size_t size)
 {
@@ -526,18 +418,12 @@ static void of_spmi_register_devices(struct spmi_controller *ctrl)
 	}
 }
 
-/**
- * spmi_controller_add() - Add an SPMI controller
- * @ctrl:	controller to be registered.
- *
- * Register a controller previously allocated via spmi_controller_alloc() with
- * the SPMI core.
- */
+ 
 int spmi_controller_add(struct spmi_controller *ctrl)
 {
 	int ret;
 
-	/* Can't register until after driver model init */
+	 
 	if (WARN_ON(!is_registered))
 		return -EAGAIN;
 
@@ -555,7 +441,7 @@ int spmi_controller_add(struct spmi_controller *ctrl)
 };
 EXPORT_SYMBOL_GPL(spmi_controller_add);
 
-/* Remove a device associated with a controller */
+ 
 static int spmi_ctrl_remove_device(struct device *dev, void *data)
 {
 	struct spmi_device *spmidev = to_spmi_device(dev);
@@ -565,13 +451,7 @@ static int spmi_ctrl_remove_device(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * spmi_controller_remove(): remove an SPMI controller
- * @ctrl:	controller to remove
- *
- * Remove a SPMI controller.  Caller is responsible for calling
- * spmi_controller_put() to discard the allocated controller.
- */
+ 
 void spmi_controller_remove(struct spmi_controller *ctrl)
 {
 	if (!ctrl)
@@ -582,14 +462,7 @@ void spmi_controller_remove(struct spmi_controller *ctrl)
 }
 EXPORT_SYMBOL_GPL(spmi_controller_remove);
 
-/**
- * __spmi_driver_register() - Register client driver with SPMI core
- * @sdrv:	client driver to be associated with client-device.
- * @owner:	module owner
- *
- * This API will register the client driver with the SPMI framework.
- * It is typically called from the driver's module-init function.
- */
+ 
 int __spmi_driver_register(struct spmi_driver *sdrv, struct module *owner)
 {
 	sdrv->driver.bus = &spmi_bus_type;

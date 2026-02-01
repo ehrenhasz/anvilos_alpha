@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2021 Advanced Micro Devices, Inc.
- *
- * Authors: AMD
- */
+
+ 
 
 #include "dm_services.h"
 #include "irq_service_dcn303.h"
@@ -38,7 +34,7 @@ static enum dc_irq_source to_dal_irq_source_dcn303(struct irq_service *irq_servi
 		return DC_IRQ_SOURCE_VUPDATE2;
 
 	case DCN_1_0__SRCID__DC_HPD1_INT:
-		/* generic src_id for all HPD and HPDRX interrupts */
+		 
 		switch (ext_id) {
 		case DCN_1_0__CTXID__DC_HPD1_INT:
 			return DC_IRQ_SOURCE_HPD1;
@@ -108,7 +104,7 @@ static const struct irq_source_info_funcs vline0_irq_info_funcs = {
 #undef BASE_INNER
 #define BASE_INNER(seg) DCN_BASE__INST0_SEG ## seg
 
-/* compile time expand base address. */
+ 
 #define BASE(seg) BASE_INNER(seg)
 
 #define SRI(reg_name, block, id)\
@@ -154,9 +150,7 @@ static const struct irq_source_info_funcs vline0_irq_info_funcs = {
 						.funcs = &pflip_irq_info_funcs\
 }
 
-/* vupdate_no_lock_int_entry maps to DC_IRQ_SOURCE_VUPDATEx, to match semantic
- * of DCE's DC_IRQ_SOURCE_VUPDATEx.
- */
+ 
 #define vupdate_no_lock_int_entry(reg_num)\
 	[DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
 		IRQ_REG_ENTRY(OTG, reg_num,\

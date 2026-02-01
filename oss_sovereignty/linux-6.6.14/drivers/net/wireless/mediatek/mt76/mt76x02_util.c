@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/module.h>
 #include "mt76x02.h"
@@ -164,7 +161,7 @@ int mt76x02_init_device(struct mt76x02_dev *dev)
 		wiphy->iface_combinations = mt76x02_if_comb;
 		wiphy->n_iface_combinations = ARRAY_SIZE(mt76x02_if_comb);
 
-		/* init led callbacks */
+		 
 		if (IS_ENABLED(CONFIG_MT76_LEDS)) {
 			dev->mphy.leds.cdev.brightness_set =
 					mt76x02_led_set_brightness;
@@ -301,7 +298,7 @@ mt76x02_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 	struct mt76x02_dev *dev = hw->priv;
 	unsigned int idx = 0;
 
-	/* Allow to change address in HW if we create first interface. */
+	 
 	if (!dev->mt76.vif_mask &&
 	    (((vif->addr[0] ^ dev->mphy.macaddr[0]) & ~GENMASK(4, 1)) ||
 	     memcmp(vif->addr + 1, dev->mphy.macaddr + 1, ETH_ALEN - 1)))
@@ -310,23 +307,11 @@ mt76x02_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 	if (vif->addr[0] & BIT(1))
 		idx = 1 + (((dev->mphy.macaddr[0] ^ vif->addr[0]) >> 2) & 7);
 
-	/*
-	 * Client mode typically only has one configurable BSSID register,
-	 * which is used for bssidx=0. This is linked to the MAC address.
-	 * Since mac80211 allows changing interface types, and we cannot
-	 * force the use of the primary MAC address for a station mode
-	 * interface, we need some other way of configuring a per-interface
-	 * remote BSSID.
-	 * The hardware provides an AP-Client feature, where bssidx 0-7 are
-	 * used for AP mode and bssidx 8-15 for client mode.
-	 * We shift the station interface bss index by 8 to force the
-	 * hardware to recognize the BSSID.
-	 * The resulting bssidx mismatch for unicast frames is ignored by hw.
-	 */
+	 
 	if (vif->type == NL80211_IFTYPE_STATION)
 		idx += 8;
 
-	/* vif is already set or idx is 8 for AP/Mesh/... */
+	 
 	if (dev->mt76.vif_mask & BIT_ULL(idx) ||
 	    (vif->type != NL80211_IFTYPE_STATION && idx > 7))
 		return -EBUSY;
@@ -415,7 +400,7 @@ int mt76x02_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	int idx = key->keyidx;
 	int ret;
 
-	/* fall back to sw encryption for unsupported ciphers */
+	 
 	switch (key->cipher) {
 	case WLAN_CIPHER_SUITE_WEP40:
 	case WLAN_CIPHER_SUITE_WEP104:
@@ -426,10 +411,7 @@ int mt76x02_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * The hardware does not support per-STA RX GTK, fall back
-	 * to software mode for these.
-	 */
+	 
 	if ((vif->type == NL80211_IFTYPE_ADHOC ||
 	     vif->type == NL80211_IFTYPE_MESH_POINT) &&
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||
@@ -437,17 +419,13 @@ int mt76x02_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return -EOPNOTSUPP;
 
-	/*
-	 * In USB AP mode, broadcast/multicast frames are setup in beacon
-	 * data registers and sent via HW beacons engine, they require to
-	 * be already encrypted.
-	 */
+	 
 	if (mt76_is_usb(&dev->mt76) &&
 	    vif->type == NL80211_IFTYPE_AP &&
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return -EOPNOTSUPP;
 
-	/* MT76x0 GTK offloading does not work with more than one VIF */
+	 
 	if (is_mt76x0(dev) && !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return -EOPNOTSUPP;
 
@@ -534,7 +512,7 @@ void mt76x02_set_tx_ackto(struct mt76x02_dev *dev)
 {
 	u8 ackto, sifs, slottime = dev->slottime;
 
-	/* As defined by IEEE 802.11-2007 17.3.8.6 */
+	 
 	slottime += 3 * dev->coverage_class;
 	mt76_rmw_field(dev, MT_BKOFF_SLOT_CFG,
 		       MT_BKOFF_SLOT_CFG_SLOTTIME, slottime);
@@ -613,7 +591,7 @@ void mt76x02_sw_scan_complete(struct ieee80211_hw *hw,
 
 	clear_bit(MT76_SCANNING, &dev->mphy.state);
 	if (dev->cal.gain_init_done) {
-		/* Restore AGC gain and resume calibration after scanning. */
+		 
 		dev->cal.low_gain = -1;
 		ieee80211_queue_delayed_work(hw, &dev->cal_work, 0);
 	}

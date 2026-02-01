@@ -1,22 +1,4 @@
-/* Calculate the size of physical memory.
-
-   Copyright (C) 2000-2001, 2003, 2005-2006, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #include <config.h>
 
@@ -63,16 +45,15 @@
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef GetModuleHandle
 # define GetModuleHandle GetModuleHandleA
 
-/* Avoid warnings from gcc -Wcast-function-type.  */
+ 
 # define GetProcAddress \
    (void *) GetProcAddress
 
-/*  MEMORYSTATUSEX is missing from older windows headers, so define
-    a local replacement.  */
+ 
 typedef struct
 {
   DWORD dwLength;
@@ -91,12 +72,12 @@ typedef BOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 
 #define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
 
-/* Return the total amount of physical memory.  */
+ 
 double
 physmem_total (void)
 {
 #if defined _SC_PHYS_PAGES && defined _SC_PAGESIZE
-  { /* This works on linux-gnu, kfreebsd-gnu, solaris2, and cygwin.  */
+  {  
     double pages = sysconf (_SC_PHYS_PAGES);
     double pagesize = sysconf (_SC_PAGESIZE);
     if (0 <= pages && 0 <= pagesize)
@@ -105,7 +86,7 @@ physmem_total (void)
 #endif
 
 #if HAVE_SYSINFO && HAVE_STRUCT_SYSINFO_MEM_UNIT
-  { /* This works on linux.  */
+  {  
     struct sysinfo si;
     if (sysinfo(&si) == 0)
       return (double) si.totalram * si.mem_unit;
@@ -113,7 +94,7 @@ physmem_total (void)
 #endif
 
 #if HAVE_PSTAT_GETSTATIC
-  { /* This works on hpux11.  */
+  {  
     struct pst_static pss;
     if (0 <= pstat_getstatic (&pss, sizeof pss, 1, 0))
       {
@@ -126,7 +107,7 @@ physmem_total (void)
 #endif
 
 #if HAVE_SYSMP && defined MP_SAGET && defined MPSA_RMINFO && defined _SC_PAGESIZE
-  { /* This works on irix6. */
+  {  
     struct rminfo realmem;
     if (sysmp (MP_SAGET, MPSA_RMINFO, &realmem, sizeof realmem) == 0)
       {
@@ -139,7 +120,7 @@ physmem_total (void)
 #endif
 
 #if HAVE_GETSYSINFO && defined GSI_PHYSMEM
-  { /* This works on Tru64 UNIX V4/5.  */
+  {  
     int physmem;
 
     if (getsysinfo (GSI_PHYSMEM, (caddr_t) &physmem, sizeof (physmem),
@@ -154,7 +135,7 @@ physmem_total (void)
 #endif
 
 #if HAVE_SYSCTL && !(defined __GLIBC__ && defined __linux__) && defined HW_PHYSMEM
-  { /* This works on *bsd, kfreebsd-gnu, and darwin.  */
+  {  
     unsigned int physmem;
     size_t len = sizeof physmem;
     static int mib[2] = { CTL_HW, HW_PHYSMEM };
@@ -166,19 +147,19 @@ physmem_total (void)
 #endif
 
 #if HAVE__SYSTEM_CONFIGURATION
-  /* This works on AIX.  */
+   
   return _system_configuration.physmem;
 #endif
 
 #if defined _WIN32
-  { /* this works on windows */
+  {  
     PFN_MS_EX pfnex;
     HMODULE h = GetModuleHandle ("kernel32.dll");
 
     if (!h)
       return 0.0;
 
-    /*  Use GlobalMemoryStatusEx if available.  */
+     
     if ((pfnex = (PFN_MS_EX) GetProcAddress (h, "GlobalMemoryStatusEx")))
       {
         lMEMORYSTATUSEX lms_ex;
@@ -188,8 +169,7 @@ physmem_total (void)
         return (double) lms_ex.ullTotalPhys;
       }
 
-    /*  Fall back to GlobalMemoryStatus which is always available.
-        but returns wrong results for physical memory > 4GB.  */
+     
     else
       {
         MEMORYSTATUS ms;
@@ -199,16 +179,16 @@ physmem_total (void)
   }
 #endif
 
-  /* Guess 64 MB.  It's probably an older host, so guess small.  */
+   
   return 64 * 1024 * 1024;
 }
 
-/* Return the amount of physical memory available.  */
+ 
 double
 physmem_available (void)
 {
 #if defined _SC_AVPHYS_PAGES && defined _SC_PAGESIZE
-  { /* This works on linux-gnu, kfreebsd-gnu, solaris2, and cygwin.  */
+  {  
     double pages = sysconf (_SC_AVPHYS_PAGES);
     double pagesize = sysconf (_SC_PAGESIZE);
     if (0 <= pages && 0 <= pagesize)
@@ -217,7 +197,7 @@ physmem_available (void)
 #endif
 
 #if HAVE_SYSINFO && HAVE_STRUCT_SYSINFO_MEM_UNIT
-  { /* This works on linux.  */
+  {  
     struct sysinfo si;
     if (sysinfo(&si) == 0)
       return ((double) si.freeram + si.bufferram) * si.mem_unit;
@@ -225,7 +205,7 @@ physmem_available (void)
 #endif
 
 #if HAVE_PSTAT_GETSTATIC && HAVE_PSTAT_GETDYNAMIC
-  { /* This works on hpux11.  */
+  {  
     struct pst_static pss;
     struct pst_dynamic psd;
     if (0 <= pstat_getstatic (&pss, sizeof pss, 1, 0)
@@ -240,7 +220,7 @@ physmem_available (void)
 #endif
 
 #if HAVE_SYSMP && defined MP_SAGET && defined MPSA_RMINFO && defined _SC_PAGESIZE
-  { /* This works on irix6. */
+  {  
     struct rminfo realmem;
     if (sysmp (MP_SAGET, MPSA_RMINFO, &realmem, sizeof realmem) == 0)
       {
@@ -253,7 +233,7 @@ physmem_available (void)
 #endif
 
 #if HAVE_TABLE && defined TBL_VMSTATS
-  { /* This works on Tru64 UNIX V4/5.  */
+  {  
     struct tbl_vmstats vmstats;
 
     if (table (TBL_VMSTATS, 0, &vmstats, 1, sizeof (vmstats)) == 1)
@@ -268,7 +248,7 @@ physmem_available (void)
 #endif
 
 #if HAVE_SYSCTL && !(defined __GLIBC__ && defined __linux__) && defined HW_USERMEM
-  { /* This works on *bsd, kfreebsd-gnu, and darwin.  */
+  {  
     unsigned int usermem;
     size_t len = sizeof usermem;
     static int mib[2] = { CTL_HW, HW_USERMEM };
@@ -280,14 +260,14 @@ physmem_available (void)
 #endif
 
 #if defined _WIN32
-  { /* this works on windows */
+  {  
     PFN_MS_EX pfnex;
     HMODULE h = GetModuleHandle ("kernel32.dll");
 
     if (!h)
       return 0.0;
 
-    /*  Use GlobalMemoryStatusEx if available.  */
+     
     if ((pfnex = (PFN_MS_EX) GetProcAddress (h, "GlobalMemoryStatusEx")))
       {
         lMEMORYSTATUSEX lms_ex;
@@ -297,8 +277,7 @@ physmem_available (void)
         return (double) lms_ex.ullAvailPhys;
       }
 
-    /*  Fall back to GlobalMemoryStatus which is always available.
-        but returns wrong results for physical memory > 4GB  */
+     
     else
       {
         MEMORYSTATUS ms;
@@ -308,7 +287,7 @@ physmem_available (void)
   }
 #endif
 
-  /* Guess 25% of physical memory.  */
+   
   return physmem_total () / 4;
 }
 
@@ -325,10 +304,6 @@ main (void)
   exit (0);
 }
 
-#endif /* DEBUG */
+#endif  
 
-/*
-Local Variables:
-compile-command: "gcc -DDEBUG -g -O -Wall -W physmem.c"
-End:
-*/
+ 

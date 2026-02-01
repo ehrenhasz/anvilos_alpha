@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * iteration_check.c: test races having to do with xarray iteration
- * Copyright (c) 2016 Intel Corporation
- * Author: Ross Zwisler <ross.zwisler@linux.intel.com>
- */
+
+ 
 #include <pthread.h>
 #include "test.h"
 
@@ -42,7 +38,7 @@ retry:
 		free(item);
 }
 
-/* relentlessly fill the array with tagged entries */
+ 
 static void *add_entries_fn(void *arg)
 {
 	rcu_register_thread();
@@ -60,10 +56,7 @@ static void *add_entries_fn(void *arg)
 	return NULL;
 }
 
-/*
- * Iterate over tagged entries, retrying when we find ourselves in a deleted
- * node and randomly pausing the iteration.
- */
+ 
 static void *tagged_iteration_fn(void *arg)
 {
 	XA_STATE(xas, &array, 0);
@@ -93,10 +86,7 @@ static void *tagged_iteration_fn(void *arg)
 	return NULL;
 }
 
-/*
- * Iterate over the entries, retrying when we find ourselves in a deleted
- * node and randomly pausing the iteration.
- */
+ 
 static void *untagged_iteration_fn(void *arg)
 {
 	XA_STATE(xas, &array, 0);
@@ -126,10 +116,7 @@ static void *untagged_iteration_fn(void *arg)
 	return NULL;
 }
 
-/*
- * Randomly remove entries to help induce retries in the
- * two iteration functions.
- */
+ 
 static void *remove_entries_fn(void *arg)
 {
 	rcu_register_thread();
@@ -161,7 +148,7 @@ static void *tag_entries_fn(void *arg)
 	return NULL;
 }
 
-/* This is a unit test for a bug found by the syzkaller tester */
+ 
 void iteration_test(unsigned order, unsigned test_duration)
 {
 	int i;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2021 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include "prestera.h"
 #include "prestera_hw.h"
@@ -13,7 +13,7 @@
 struct prestera_counter {
 	struct prestera_switch *sw;
 	struct delayed_work stats_dw;
-	struct mutex mtx;  /* protect block_list */
+	struct mutex mtx;   
 	struct prestera_counter_block **block_list;
 	u32 total_read;
 	u32 block_list_len;
@@ -29,7 +29,7 @@ struct prestera_counter_block {
 	u32 client;
 	struct idr counter_idr;
 	refcount_t refcnt;
-	struct mutex mtx;  /* protect stats and counter_idr */
+	struct mutex mtx;   
 	struct prestera_counter_stats *stats;
 	u8 *counter_flag;
 	bool is_updating;
@@ -77,7 +77,7 @@ static bool prestera_counter_block_decref(struct prestera_counter_block *block)
 	return refcount_dec_and_test(&block->refcnt);
 }
 
-/* must be called with prestera_counter_block_lock() */
+ 
 static void prestera_counter_stats_clear(struct prestera_counter_block *block,
 					 u32 counter_id)
 {
@@ -411,9 +411,7 @@ resched:
 	schedule_delayed_work(&counter->stats_dw, resched_time);
 }
 
-/* Can be executed without rtnl_lock().
- * So pay attention when something changing.
- */
+ 
 int prestera_counter_stats_get(struct prestera_counter *counter,
 			       struct prestera_counter_block *block,
 			       u32 counter_id, u64 *packets, u64 *bytes)

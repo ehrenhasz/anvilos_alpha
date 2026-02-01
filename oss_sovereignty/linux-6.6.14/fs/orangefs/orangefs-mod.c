@@ -1,30 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * Changes by Acxiom Corporation to add proc file handler for pvfs2 client
- * parameters, Copyright Acxiom Corporation, 2005.
- *
- * See COPYING in top-level directory.
- */
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
 #include "orangefs-debugfs.h"
 #include "orangefs-sysfs.h"
 
-/* ORANGEFS_VERSION is a ./configure define */
+ 
 #ifndef ORANGEFS_VERSION
 #define ORANGEFS_VERSION "upstream"
 #endif
 
-/*
- * global variables declared here
- */
+ 
 
 struct orangefs_stats orangefs_stats;
 
-/* the size of the hash tables for ops in progress */
+ 
 int hash_table_size = 509;
 
 static ulong module_parm_debug_mask;
@@ -56,25 +47,20 @@ module_param(module_parm_debug_mask, ulong, 0644);
 module_param(op_timeout_secs, int, 0);
 module_param(slot_timeout_secs, int, 0);
 
-/*
- * Blocks non-priority requests from being queued for servicing.  This
- * could be used for protecting the request list data structure, but
- * for now it's only being used to stall the op addition to the request
- * list
- */
+ 
 DEFINE_MUTEX(orangefs_request_mutex);
 
-/* hash table for storing operations waiting for matching downcall */
+ 
 struct list_head *orangefs_htable_ops_in_progress;
 DEFINE_SPINLOCK(orangefs_htable_ops_in_progress_lock);
 
-/* list for queueing upcall operations */
+ 
 LIST_HEAD(orangefs_request_list);
 
-/* used to protect the above orangefs_request_list */
+ 
 DEFINE_SPINLOCK(orangefs_request_list_lock);
 
-/* used for incoming request notification */
+ 
 DECLARE_WAIT_QUEUE_HEAD(orangefs_request_list_waitq);
 
 static int __init orangefs_init(void)
@@ -88,7 +74,7 @@ static int __init orangefs_init(void)
 	if (slot_timeout_secs < 0)
 		slot_timeout_secs = 0;
 
-	/* initialize global book keeping data structures */
+	 
 	ret = op_cache_initialize();
 	if (ret < 0)
 		goto out;
@@ -104,7 +90,7 @@ static int __init orangefs_init(void)
 		goto cleanup_inode;
 	}
 
-	/* initialize a doubly linked at each hash table index */
+	 
 	for (i = 0; i < hash_table_size; i++)
 		INIT_LIST_HEAD(&orangefs_htable_ops_in_progress[i]);
 
@@ -112,19 +98,7 @@ static int __init orangefs_init(void)
 	if (ret < 0)
 		goto cleanup_progress_table;
 
-	/*
-	 * Build the contents of /sys/kernel/debug/orangefs/debug-help
-	 * from the keywords in the kernel keyword/mask array.
-	 *
-	 * The keywords in the client keyword/mask array are
-	 * unknown at boot time.
-	 *
-	 * orangefs_prepare_debugfs_help_string will be used again
-	 * later to rebuild the debug-help-string after the client starts
-	 * and passes along the needed info. The argument signifies
-	 * which time orangefs_prepare_debugfs_help_string is being
-	 * called.
-	 */
+	 
 	ret = orangefs_prepare_debugfs_help_string(1);
 	if (ret)
 		goto cleanup_key_table;
@@ -135,7 +109,7 @@ static int __init orangefs_init(void)
 	if (ret)
 		goto sysfs_init_failed;
 
-	/* Initialize the orangefsdev subsystem. */
+	 
 	ret = orangefs_dev_init();
 	if (ret < 0) {
 		gossip_err("%s: could not initialize device subsystem %d!\n",
@@ -198,10 +172,7 @@ static void __exit orangefs_exit(void)
 	pr_info("orangefs: module version %s unloaded\n", ORANGEFS_VERSION);
 }
 
-/*
- * What we do in this function is to walk the list of operations
- * that are in progress in the hash table and mark them as purged as well.
- */
+ 
 void purge_inprogress_ops(void)
 {
 	int i;

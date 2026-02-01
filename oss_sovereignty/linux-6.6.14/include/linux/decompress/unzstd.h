@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef LINUX_DECOMPRESS_UNZSTD_H
 #define LINUX_DECOMPRESS_UNZSTD_H
 

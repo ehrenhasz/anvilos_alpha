@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbfileio - Debugger file I/O commands. These can't usually
- *              be used when running the debugger in Ring 0 (Kernel mode)
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -17,17 +12,7 @@ ACPI_MODULE_NAME("dbfileio")
 #ifdef ACPI_APPLICATION
 #include "acapps.h"
 #ifdef ACPI_DEBUGGER
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_close_debug_file
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: If open, close the current debug output file
- *
- ******************************************************************************/
+ 
 void acpi_db_close_debug_file(void)
 {
 
@@ -40,17 +25,7 @@ void acpi_db_close_debug_file(void)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_open_debug_file
- *
- * PARAMETERS:  name                - Filename to open
- *
- * RETURN:      None
- *
- * DESCRIPTION: Open a file where debug output will be directed.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_open_debug_file(char *name)
 {
@@ -69,17 +44,7 @@ void acpi_db_open_debug_file(char *name)
 }
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_load_tables
- *
- * PARAMETERS:  list_head       - List of ACPI tables to load
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load ACPI tables from a previously constructed table list.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_db_load_tables(struct acpi_new_table_desc *list_head)
 {
@@ -87,7 +52,7 @@ acpi_status acpi_db_load_tables(struct acpi_new_table_desc *list_head)
 	struct acpi_new_table_desc *table_list_head;
 	struct acpi_table_header *table;
 
-	/* Load all ACPI tables in the list */
+	 
 
 	table_list_head = list_head;
 	while (table_list_head) {

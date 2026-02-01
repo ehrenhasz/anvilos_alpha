@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/core/fib_rules.c		Generic Routing Rules
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -73,8 +69,7 @@ int fib_default_rule_add(struct fib_rules_ops *ops,
 	r->suppress_prefixlen = -1;
 	r->suppress_ifgroup = -1;
 
-	/* The lock is not required here, the list in unreacheable
-	 * at the moment this function is called */
+	 
 	list_add_tail(&r->list, &ops->rules_list);
 	return 0;
 }
@@ -374,7 +369,7 @@ static int call_fib_rule_notifiers(struct net *net,
 	return call_fib_notifiers(net, event_type, &info.info);
 }
 
-/* Called with rcu_read_lock() */
+ 
 int fib_rules_dump(struct net *net, struct notifier_block *nb, int family,
 		   struct netlink_ext_ack *extack)
 {
@@ -582,9 +577,7 @@ static int fib_nl2rule(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (tb[FRA_FWMARK]) {
 		nlrule->mark = nla_get_u32(tb[FRA_FWMARK]);
 		if (nlrule->mark)
-			/* compatibility: if the mark value is non-zero all bits
-			 * are compared unless a mask is explicitly specified.
-			 */
+			 
 			nlrule->mark_mask = 0xFFFFFFFF;
 	}
 
@@ -619,7 +612,7 @@ static int fib_nl2rule(struct sk_buff *skb, struct nlmsghdr *nlh,
 		}
 
 		nlrule->target = nla_get_u32(tb[FRA_GOTO]);
-		/* Backward jumps are prohibited to avoid endless loops */
+		 
 		if (nlrule->target <= nlrule->pref) {
 			NL_SET_ERR_MSG(extack, "Backward goto not supported");
 			goto errout_free;
@@ -842,10 +835,7 @@ int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr *nlh,
 		list_add_rcu(&rule->list, &ops->rules_list);
 
 	if (ops->unresolved_rules) {
-		/*
-		 * There are unresolved goto rules in the list, check if
-		 * any of them are pointing to this new rule.
-		 */
+		 
 		list_for_each_entry(r, &ops->rules_list, list) {
 			if (r->action == FR_ACT_GOTO &&
 			    r->target == rule->pref &&
@@ -941,13 +931,7 @@ int fib_nl_delrule(struct sk_buff *skb, struct nlmsghdr *nlh,
 			ops->unresolved_rules--;
 	}
 
-	/*
-	 * Check if this rule is a target to any of them. If so,
-	 * adjust to the next one with the same preference or
-	 * disable them. As this operation is eventually very
-	 * expensive, it is only performed if goto rules, except
-	 * current if it is goto rule, have actually been added.
-	 */
+	 
 	if (ops->nr_goto_rules > 0) {
 		struct fib_rule *n;
 
@@ -984,20 +968,20 @@ static inline size_t fib_rule_nlmsg_size(struct fib_rules_ops *ops,
 					 struct fib_rule *rule)
 {
 	size_t payload = NLMSG_ALIGN(sizeof(struct fib_rule_hdr))
-			 + nla_total_size(IFNAMSIZ) /* FRA_IIFNAME */
-			 + nla_total_size(IFNAMSIZ) /* FRA_OIFNAME */
-			 + nla_total_size(4) /* FRA_PRIORITY */
-			 + nla_total_size(4) /* FRA_TABLE */
-			 + nla_total_size(4) /* FRA_SUPPRESS_PREFIXLEN */
-			 + nla_total_size(4) /* FRA_SUPPRESS_IFGROUP */
-			 + nla_total_size(4) /* FRA_FWMARK */
-			 + nla_total_size(4) /* FRA_FWMASK */
-			 + nla_total_size_64bit(8) /* FRA_TUN_ID */
+			 + nla_total_size(IFNAMSIZ)  
+			 + nla_total_size(IFNAMSIZ)  
+			 + nla_total_size(4)  
+			 + nla_total_size(4)  
+			 + nla_total_size(4)  
+			 + nla_total_size(4)  
+			 + nla_total_size(4)  
+			 + nla_total_size(4)  
+			 + nla_total_size_64bit(8)  
 			 + nla_total_size(sizeof(struct fib_kuid_range))
-			 + nla_total_size(1) /* FRA_PROTOCOL */
-			 + nla_total_size(1) /* FRA_IP_PROTO */
-			 + nla_total_size(sizeof(struct fib_rule_port_range)) /* FRA_SPORT_RANGE */
-			 + nla_total_size(sizeof(struct fib_rule_port_range)); /* FRA_DPORT_RANGE */
+			 + nla_total_size(1)  
+			 + nla_total_size(1)  
+			 + nla_total_size(sizeof(struct fib_rule_port_range))  
+			 + nla_total_size(sizeof(struct fib_rule_port_range));  
 
 	if (ops->nlmsg_payload)
 		payload += ops->nlmsg_payload(rule);
@@ -1155,7 +1139,7 @@ static int fib_nl_dumprule(struct sk_buff *skb, struct netlink_callback *cb)
 
 	family = rtnl_msg_family(nlh);
 	if (family != AF_UNSPEC) {
-		/* Protocol specific dump request */
+		 
 		ops = lookup_rules_ops(net, family);
 		if (ops == NULL)
 			return -EAFNOSUPPORT;
@@ -1198,7 +1182,7 @@ static void notify_rule_change(int event, struct fib_rule *rule,
 
 	err = fib_nl_fill_rule(skb, rule, pid, nlh->nlmsg_seq, event, 0, ops);
 	if (err < 0) {
-		/* -EMSGSIZE implies BUG in fib_rule_nlmsg_size() */
+		 
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(skb);
 		goto errout;

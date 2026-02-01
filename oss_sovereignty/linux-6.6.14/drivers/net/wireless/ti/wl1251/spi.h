@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1251
- *
- * Copyright (c) 1998-2007 Texas Instruments Incorporated
- * Copyright (C) 2008 Nokia Corporation
- */
+ 
+ 
 
 #ifndef __WL1251_SPI_H__
 #define __WL1251_SPI_H__
@@ -24,7 +19,7 @@
 
 #define WSPI_INIT_CMD_START         0x00
 #define WSPI_INIT_CMD_TX            0x40
-/* the extra bypass bit is sampled by the TNET as '1' */
+ 
 #define WSPI_INIT_CMD_BYPASS_BIT    0x80
 #define WSPI_INIT_CMD_FIXEDBUSY_LEN 0x07
 #define WSPI_INIT_CMD_EN_FIXEDBUSY  0x80
@@ -42,4 +37,4 @@
 		((WL1251_BUSY_WORD_LEN - 4) / sizeof(u32))
 #define HW_ACCESS_WSPI_INIT_CMD_MASK  0
 
-#endif /* __WL1251_SPI_H__ */
+#endif  

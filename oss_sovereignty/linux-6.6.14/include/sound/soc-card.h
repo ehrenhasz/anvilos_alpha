@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * soc-card.h
- *
- * Copyright (C) 2019 Renesas Electronics Corp.
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+ 
 #ifndef __SOC_CARD_H
 #define __SOC_CARD_H
 
@@ -81,7 +75,7 @@ static inline int snd_soc_card_get_pci_ssid(struct snd_soc_card *card,
 
 	return 0;
 }
-#else /* !CONFIG_PCI */
+#else  
 static inline void snd_soc_card_set_pci_ssid(struct snd_soc_card *card,
 					     unsigned short vendor,
 					     unsigned short device)
@@ -94,9 +88,9 @@ static inline int snd_soc_card_get_pci_ssid(struct snd_soc_card *card,
 {
 	return -ENOENT;
 }
-#endif /* CONFIG_PCI */
+#endif  
 
-/* device driver data */
+ 
 static inline void snd_soc_card_set_drvdata(struct snd_soc_card *card,
 					    void *data)
 {
@@ -122,4 +116,4 @@ struct snd_soc_dai *snd_soc_card_get_codec_dai(struct snd_soc_card *card,
 	return NULL;
 }
 
-#endif /* __SOC_CARD_H */
+#endif  

@@ -1,27 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2017, The Linux Foundation
- */
+
+ 
 
 #include <linux/errno.h>
 #include "slimbus.h"
 
-/**
- * slim_ctrl_clk_pause() - Called by slimbus controller to enter/exit
- *			   'clock pause'
- * @ctrl: controller requesting bus to be paused or woken up
- * @wakeup: Wakeup this controller from clock pause.
- * @restart: Restart time value per spec used for clock pause. This value
- *	isn't used when controller is to be woken up.
- *
- * Slimbus specification needs this sequence to turn-off clocks for the bus.
- * The sequence involves sending 3 broadcast messages (reconfiguration
- * sequence) to inform all devices on the bus.
- * To exit clock-pause, controller typically wakes up active framer device.
- * This API executes clock pause reconfiguration sequence if wakeup is false.
- * If wakeup is true, controller's wakeup is called.
- * For entering clock-pause, -EBUSY is returned if a message txn in pending.
- */
+ 
 int slim_ctrl_clk_pause(struct slim_controller *ctrl, bool wakeup, u8 restart)
 {
 	int i, ret = 0;
@@ -42,10 +25,7 @@ int slim_ctrl_clk_pause(struct slim_controller *ctrl, bool wakeup, u8 restart)
 			return 0;
 		}
 
-		/*
-		 * Fine-tune calculation based on clock gear,
-		 * message-bandwidth after bandwidth management
-		 */
+		 
 		ret = wait_for_completion_timeout(&sched->pause_comp,
 				msecs_to_jiffies(100));
 		if (!ret) {
@@ -55,11 +35,7 @@ int slim_ctrl_clk_pause(struct slim_controller *ctrl, bool wakeup, u8 restart)
 		}
 		ret = 0;
 
-		/*
-		 * Slimbus framework will call controller wakeup
-		 * Controller should make sure that it sets active framer
-		 * out of clock pause
-		 */
+		 
 		if (sched->clk_state == SLIM_CLK_PAUSED && ctrl->wakeup)
 			ret = ctrl->wakeup(ctrl);
 		if (!ret)
@@ -69,7 +45,7 @@ int slim_ctrl_clk_pause(struct slim_controller *ctrl, bool wakeup, u8 restart)
 		return ret;
 	}
 
-	/* already paused */
+	 
 	if (ctrl->sched.clk_state == SLIM_CLK_PAUSED) {
 		mutex_unlock(&sched->m_reconf);
 		return 0;
@@ -77,7 +53,7 @@ int slim_ctrl_clk_pause(struct slim_controller *ctrl, bool wakeup, u8 restart)
 
 	spin_lock_irqsave(&ctrl->txn_lock, flags);
 	for (i = 0; i < SLIM_MAX_TIDS; i++) {
-		/* Pending response for a message */
+		 
 		if (idr_find(&ctrl->tid_idr, i)) {
 			spin_unlock_irqrestore(&ctrl->txn_lock, flags);
 			mutex_unlock(&sched->m_reconf);
@@ -88,7 +64,7 @@ int slim_ctrl_clk_pause(struct slim_controller *ctrl, bool wakeup, u8 restart)
 
 	sched->clk_state = SLIM_CLK_ENTERING_PAUSE;
 
-	/* clock pause sequence */
+	 
 	ret = slim_do_transfer(ctrl, &txn);
 	if (ret)
 		goto clk_pause_ret;

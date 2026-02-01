@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * BCM63XX CFE image tag parser
- *
- * Copyright © 2006-2008  Florian Fainelli <florian@openwrt.org>
- *			  Mike Albon <malbon@openwrt.org>
- * Copyright © 2009-2010  Daniel Dickinson <openwrt@cshore.neomailbox.net>
- * Copyright © 2011-2013  Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,15 +18,15 @@
 #ifdef CONFIG_MIPS
 #include <asm/bootinfo.h>
 #include <asm/fw/cfe/cfe_api.h>
-#endif /* CONFIG_MIPS */
+#endif  
 
-#define BCM963XX_CFE_BLOCK_SIZE		SZ_64K	/* always at least 64KiB */
+#define BCM963XX_CFE_BLOCK_SIZE		SZ_64K	 
 
 #define BCM963XX_CFE_MAGIC_OFFSET	0x4e0
 #define BCM963XX_CFE_VERSION_OFFSET	0x570
 #define BCM963XX_NVRAM_OFFSET		0x580
 
-/* Ensure strings read from flash structs are null terminated */
+ 
 #define STR_NULL_TERMINATE(x) \
 	do { char *_str = (x); _str[sizeof(x) - 1] = 0; } while (0)
 
@@ -43,7 +36,7 @@ static inline int bcm63xx_detect_cfe(void)
 
 #ifdef CONFIG_MIPS
 	ret = (fw_arg3 == CFE_EPTSEAL);
-#endif /* CONFIG_MIPS */
+#endif  
 
 	return ret;
 }
@@ -55,7 +48,7 @@ static int bcm63xx_read_nvram(struct mtd_info *master,
 	size_t retlen;
 	int ret;
 
-	/* extract nvram data */
+	 
 	ret = mtd_read(master, BCM963XX_NVRAM_OFFSET, BCM963XX_NVRAM_V5_SIZE,
 			&retlen, (void *)nvram);
 	if (ret)
@@ -97,7 +90,7 @@ static int bcm63xx_parse_cfe_nor_partitions(struct mtd_info *master,
 	if (!parts)
 		return -ENOMEM;
 
-	/* Start building partition list */
+	 
 	parts[curpart].name = "CFE";
 	parts[curpart].offset = 0;
 	parts[curpart].size = cfelen;
@@ -108,7 +101,7 @@ static int bcm63xx_parse_cfe_nor_partitions(struct mtd_info *master,
 	parts[curpart].size = nvramlen;
 	curpart++;
 
-	/* Global partition "linux" to make easy firmware upgrade */
+	 
 	parts[curpart].name = "linux";
 	parts[curpart].offset = cfelen;
 	parts[curpart].size = master->size - cfelen - nvramlen;

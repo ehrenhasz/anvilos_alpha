@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
 #include "nbio_v7_7.h"
@@ -170,19 +149,16 @@ static void nbio_v7_7_ih_control(struct amdgpu_device *adev)
 {
 	u32 interrupt_cntl;
 
-	/* setup interrupt control */
+	 
 	WREG32_SOC15(NBIO, 0, regBIF_BX1_INTERRUPT_CNTL2,
 		     adev->dummy_page_addr >> 8);
 
 	interrupt_cntl = RREG32_SOC15(NBIO, 0, regBIF_BX1_INTERRUPT_CNTL);
-	/*
-	 * INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=0 - dummy read disabled with msi, enabled without msi
-	 * INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=1 - dummy read controlled by IH_DUMMY_RD_EN
-	 */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, BIF_BX1_INTERRUPT_CNTL,
 				       IH_DUMMY_RD_OVERRIDE, 0);
 
-	/* INTERRUPT_CNTL__IH_REQ_NONSNOOP_EN_MASK=1 if ring is in non-cacheable memory, e.g., vram */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, BIF_BX1_INTERRUPT_CNTL,
 				       IH_REQ_NONSNOOP_EN, 0);
 
@@ -313,12 +289,12 @@ static void nbio_v7_7_get_clockgating_state(struct amdgpu_device *adev,
 {
 	uint32_t data;
 
-	/* AMD_CG_SUPPORT_BIF_MGCG */
+	 
 	data = RREG32_SOC15(NBIO, 0, regBIF0_CPM_CONTROL);
 	if (data & BIF0_CPM_CONTROL__LCLK_DYN_GATE_ENABLE_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_MGCG;
 
-	/* AMD_CG_SUPPORT_BIF_LS */
+	 
 	data = RREG32_SOC15(NBIO, 0, regBIF0_PCIE_CNTL2);
 	if (data & BIF0_PCIE_CNTL2__SLV_MEM_LS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_LS;

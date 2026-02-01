@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence PCIe platform  driver.
- *
- * Copyright (c) 2019, Cadence Design Systems
- * Author: Tom Joseph <tjoseph@cadence.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/of.h>
 #include <linux/of_pci.h>
@@ -14,12 +9,7 @@
 
 #define CDNS_PLAT_CPU_TO_BUS_ADDR	0x0FFFFFFF
 
-/**
- * struct cdns_plat_pcie - private data for this PCIe platform driver
- * @pcie: Cadence PCIe controller
- * @is_rc: Set to 1 indicates the PCIe controller mode is Root Complex,
- *         if 0 it is in Endpoint mode.
- */
+ 
 struct cdns_plat_pcie {
 	struct cdns_pcie        *pcie;
 	bool is_rc;

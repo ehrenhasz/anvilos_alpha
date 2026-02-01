@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Nuvoton Technology corporation.
+
+
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -15,14 +15,14 @@
 #include <linux/regmap.h>
 #include <linux/of_address.h>
 
-/* NPCM7xx GCR registers */
+ 
 #define NPCM_MDLR_OFFSET	0x7C
 #define NPCM7XX_MDLR_USBD0	BIT(9)
 #define NPCM7XX_MDLR_USBD1	BIT(8)
 #define NPCM7XX_MDLR_USBD2_4	BIT(21)
 #define NPCM7XX_MDLR_USBD5_9	BIT(22)
 
-/* NPCM8xx MDLR bits */
+ 
 #define NPCM8XX_MDLR_USBD0_3	BIT(9)
 #define NPCM8XX_MDLR_USBD4_7	BIT(22)
 #define NPCM8XX_MDLR_USBD8	BIT(24)
@@ -33,7 +33,7 @@
 #define NPCM_USB3PHYCTL_OFFSET	0x148
 #define NPCM_USBXPHYCTL_RS	BIT(28)
 
-/* NPCM7xx Reset registers */
+ 
 #define NPCM_SWRSTR		0x14
 #define NPCM_SWRST		BIT(2)
 
@@ -193,7 +193,7 @@ static void npcm_usb_reset_npcm7xx(struct npcm_rc_data *rc)
 	u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
 	u32 ipsrst3_bits = 0;
 
-	/* checking which USB device is enabled */
+	 
 	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
 	if (!(mdlr & NPCM7XX_MDLR_USBD0))
 		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
@@ -211,7 +211,7 @@ static void npcm_usb_reset_npcm7xx(struct npcm_rc_data *rc)
 				 NPCM_IPSRST3_USBD9);
 	}
 
-	/* assert reset USB PHY and USB devices */
+	 
 	iprst1 = readl(rc->base + NPCM_IPSRST1);
 	iprst2 = readl(rc->base + NPCM_IPSRST2);
 	iprst3 = readl(rc->base + NPCM_IPSRST3);
@@ -225,25 +225,25 @@ static void npcm_usb_reset_npcm7xx(struct npcm_rc_data *rc)
 	writel(iprst2, rc->base + NPCM_IPSRST2);
 	writel(iprst3, rc->base + NPCM_IPSRST3);
 
-	/* clear USB PHY RS bit */
+	 
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, 0);
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, 0);
 
-	/* deassert reset USB PHY */
+	 
 	iprst3 &= ~(NPCM_IPSRST3_USBPHY1 | NPCM_IPSRST3_USBPHY2);
 	writel(iprst3, rc->base + NPCM_IPSRST3);
 
 	udelay(50);
 
-	/* set USB PHY RS bit */
+	 
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
 
-	/* deassert reset USB devices*/
+	 
 	iprst1 &= ~ipsrst1_bits;
 	iprst2 &= ~ipsrst2_bits;
 	iprst3 &= ~ipsrst3_bits;
@@ -261,7 +261,7 @@ static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
 	u32 ipsrst3_bits = 0;
 	u32 ipsrst4_bits = NPCM_IPSRST4_USB_HOST2 | NPCM_IPSRST4_USBPHY3;
 
-	/* checking which USB device is enabled */
+	 
 	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
 	if (!(mdlr & NPCM8XX_MDLR_USBD0_3)) {
 		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
@@ -281,7 +281,7 @@ static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
 	if (!(mdlr & NPCM8XX_MDLR_USBD9))
 		ipsrst3_bits |= NPCM_IPSRST3_USBD9;
 
-	/* assert reset USB PHY and USB devices */
+	 
 	iprst1 = readl(rc->base + NPCM_IPSRST1);
 	iprst2 = readl(rc->base + NPCM_IPSRST2);
 	iprst3 = readl(rc->base + NPCM_IPSRST3);
@@ -298,7 +298,7 @@ static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
 	writel(iprst3, rc->base + NPCM_IPSRST3);
 	writel(iprst4, rc->base + NPCM_IPSRST4);
 
-	/* clear USB PHY RS bit */
+	 
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, 0);
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
@@ -306,13 +306,13 @@ static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, 0);
 
-	/* deassert reset USB PHY */
+	 
 	iprst3 &= ~(NPCM_IPSRST3_USBPHY1 | NPCM_IPSRST3_USBPHY2);
 	writel(iprst3, rc->base + NPCM_IPSRST3);
 	iprst4 &= ~NPCM_IPSRST4_USBPHY3;
 	writel(iprst4, rc->base + NPCM_IPSRST4);
 
-	/* set USB PHY RS bit */
+	 
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
@@ -320,7 +320,7 @@ static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
 	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
 
-	/* deassert reset USB devices*/
+	 
 	iprst1 &= ~ipsrst1_bits;
 	iprst2 &= ~ipsrst2_bits;
 	iprst3 &= ~ipsrst3_bits;
@@ -332,10 +332,7 @@ static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
 	writel(iprst4, rc->base + NPCM_IPSRST4);
 }
 
-/*
- *  The following procedure should be observed in USB PHY, USB device and
- *  USB host initialization at BMC boot
- */
+ 
 static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
 {
 	struct device *dev = &pdev->dev;

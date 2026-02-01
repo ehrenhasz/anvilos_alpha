@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "core.h"
 #include "peer.h"
@@ -302,18 +299,11 @@ static int __ath11k_peer_delete(struct ath11k *ar, u32 vdev_id, const u8 *addr)
 	spin_lock_bh(&ab->base_lock);
 
 	peer = ath11k_peer_find_by_addr(ab, addr);
-	/* Check if the found peer is what we want to remove.
-	 * While the sta is transitioning to another band we may
-	 * have 2 peer with the same addr assigned to different
-	 * vdev_id. Make sure we are deleting the correct peer.
-	 */
+	 
 	if (peer && peer->vdev_id == vdev_id)
 		ath11k_peer_rhash_delete(ab, peer);
 
-	/* Fallback to peer list search if the correct peer can't be found.
-	 * Skip the deletion of the peer from the rhash since it has already
-	 * been deleted in peer add.
-	 */
+	 
 	if (!peer)
 		peer = ath11k_peer_find(ab, vdev_id, addr);
 
@@ -392,9 +382,7 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
 			return -EINVAL;
 		}
 
-		/* Assume sta is transitioning to another band.
-		 * Remove here the peer from rhash.
-		 */
+		 
 		ath11k_peer_rhash_delete(ar->ab, peer);
 	}
 	spin_unlock_bh(&ar->ab->base_lock);
@@ -451,7 +439,7 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
 				       FIELD_PREP(HTT_TCL_META_DATA_PEER_ID,
 						  peer->peer_id);
 
-		/* set HTT extension valid bit to 0 by default */
+		 
 		arsta->tcl_metadata &= ~HTT_TCL_META_DATA_VALID_HTT;
 	}
 

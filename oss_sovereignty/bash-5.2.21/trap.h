@@ -1,22 +1,6 @@
-/* trap.h -- data structures used in the trap mechanism. */
+ 
 
-/* Copyright (C) 1993-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if !defined (_TRAP_H_)
 #define _TRAP_H_
@@ -26,30 +10,30 @@
 #if !defined (SIG_DFL)
 #include "bashtypes.h"
 #include <signal.h>
-#endif /* SIG_DFL */
+#endif  
 
 #if !defined (NSIG)
 #define NSIG 64
-#endif /* !NSIG */
+#endif  
 
 #define NO_SIG -1
 #define DEFAULT_SIG	SIG_DFL
 #define IGNORE_SIG	SIG_IGN
 
-/* Special shell trap names. */
+ 
 #define DEBUG_TRAP	NSIG
 #define ERROR_TRAP	NSIG+1
 #define RETURN_TRAP	NSIG+2
 #define EXIT_TRAP 	0
 
-/* system signals plus special bash traps */
+ 
 #define BASH_NSIG	NSIG+3
 
-/* Flags values for decode_signal() */
-#define DSIG_SIGPREFIX	0x01		/* don't allow `SIG' PREFIX */
-#define DSIG_NOCASE	0x02		/* case-insensitive comparison */
+ 
+#define DSIG_SIGPREFIX	0x01		 
+#define DSIG_NOCASE	0x02		 
 
-/* A value which can never be the target of a trap handler. */
+ 
 #define IMPOSSIBLE_TRAP_HANDLER (SigHandler *)initialize_traps
 
 #define signal_object_p(x,f) (decode_signal (x,f) != NO_SIG)
@@ -66,7 +50,7 @@ extern int running_trap;
 extern int trap_saved_exit_value;
 extern int suppress_debug_trap_verbose;
 
-/* Externally-visible functions declared in trap.c. */
+ 
 extern void initialize_traps PARAMS((void));
 
 extern void run_pending_traps PARAMS((void));
@@ -126,4 +110,4 @@ extern int any_signals_trapped PARAMS((void));
 extern void check_signals PARAMS((void));
 extern void check_signals_and_traps PARAMS((void));
 
-#endif /* _TRAP_H_ */
+#endif  

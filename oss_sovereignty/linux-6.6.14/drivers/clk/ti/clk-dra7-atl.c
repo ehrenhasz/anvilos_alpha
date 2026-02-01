@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRA7 ATL (Audio Tracking Logic) clock driver
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/clk.h>
@@ -41,12 +35,12 @@ struct dra7_atl_desc {
 	struct dra7_atl_clock_info *cinfo;
 	int id;
 
-	bool probed;		/* the driver for the IP has been loaded */
-	bool valid;		/* configured */
+	bool probed;		 
+	bool valid;		 
 	bool enabled;
-	u32 bws;		/* Baseband Word Select Mux */
-	u32 aws;		/* Audio Word Select Mux */
-	u32 divider;		/* Cached divider value */
+	u32 bws;		 
+	u32 aws;		 
+	u32 divider;		 
 };
 
 struct dra7_atl_clock_info {
@@ -251,7 +245,7 @@ static int of_dra7_atl_clk_probe(struct platform_device *pdev)
 		cdesc->cinfo = cinfo;
 		cdesc->id = i;
 
-		/* Get configuration for the ATL instances */
+		 
 		snprintf(prop, sizeof(prop), "atl%u", i);
 		cfg_node = of_get_child_by_name(node, prop);
 		if (cfg_node) {
@@ -270,10 +264,7 @@ static int of_dra7_atl_clk_probe(struct platform_device *pdev)
 		}
 
 		cdesc->probed = true;
-		/*
-		 * Enable the clock if it has been asked prior to loading the
-		 * hw driver
-		 */
+		 
 		if (cdesc->enabled)
 			atl_clk_enable(__clk_get_hw(clk));
 	}

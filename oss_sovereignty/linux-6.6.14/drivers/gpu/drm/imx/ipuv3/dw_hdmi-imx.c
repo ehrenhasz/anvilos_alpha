@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2011-2013 Freescale Semiconductor, Inc.
- *
- * derived from imx-hdmi.c(renamed to bridge/dw_hdmi.c now)
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/mfd/syscon.h>
@@ -78,7 +75,7 @@ static const struct dw_hdmi_mpll_config imx_mpll_cfg[] = {
 };
 
 static const struct dw_hdmi_curr_ctrl imx_cur_ctr[] = {
-	/*      pixelclk     bpp8    bpp10   bpp12 */
+	 
 	{
 		54000000, { 0x091c, 0x091c, 0x06dc },
 	}, {
@@ -96,13 +93,9 @@ static const struct dw_hdmi_curr_ctrl imx_cur_ctr[] = {
 	},
 };
 
-/*
- * Resistance term 133Ohm Cfg
- * PREEMP config 0.00
- * TX/CK level 10
- */
+ 
 static const struct dw_hdmi_phy_config imx_phy_config[] = {
-	/*pixelclk   symbol   term   vlev */
+	 
 	{ 216000000, 0x800d, 0x0005, 0x01ad},
 	{ ~0UL,      0x0000, 0x0000, 0x0000}
 };
@@ -142,7 +135,7 @@ imx6q_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
 {
 	if (mode->clock < 13500)
 		return MODE_CLOCK_LOW;
-	/* FIXME: Hardware is capable of 266MHz, but setup data is missing. */
+	 
 	if (mode->clock > 216000)
 		return MODE_CLOCK_HIGH;
 
@@ -156,7 +149,7 @@ imx6dl_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
 {
 	if (mode->clock < 13500)
 		return MODE_CLOCK_LOW;
-	/* FIXME: Hardware is capable of 270MHz, but setup data is missing. */
+	 
 	if (mode->clock > 216000)
 		return MODE_CLOCK_HIGH;
 

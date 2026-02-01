@@ -3,12 +3,12 @@
 This file tracks the granular tasks required to complete the objectives outlined in `ROADMAP.md`.
 
 ## Objective 0: Source Code Sovereignty & Sanitization
-- [ ] **Task 0.1: Verify OSS Asset Inventory:** Scan `oss_sovereignty` and report the list of all cloned projects.
-- [ ] **Task 0.2: Purge Non-x86 Architectures:** Identify and script the removal of all non-x86 architecture code.
-- [ ] **Task 0.3: Purge Non-English Localization & Documentation:** Identify and script the removal of all non-manpage documentation and localization files.
-- [ ] **Task 0.4: Strip All Source Code Comments:** Devise and report a script-based strategy to remove comments from all source files.
-- [ ] **Task 0.5: Aggressive Feature Pruning (Analysis Only):** For each component, analyze and list its sub-features, then await instructions on which ones to remove.
-- [ ] **Task 0.6: Update Official Roadmap:** This task. (Will be marked as done).
+- [x] **Task 0.1: Verify OSS Asset Inventory:** Scan `oss_sovereignty` and report the list of all cloned projects.
+- [x] **Task 0.2: Purge Non-x86 Architectures:** Identify and script the removal of all non-x86 architecture code.
+- [x] **Task 0.3: Purge Non-English Localization & Documentation:** Identify and script the removal of all non-manpage documentation and localization files.
+- [x] **Task 0.4: Strip All Source Code Comments:** Devise and report a script-based strategy to remove comments from all source files.
+- [x] **Task 0.5: Aggressive Feature Pruning (Analysis Only):** For each component, analyze and list its sub-features, then await instructions on which ones to remove.
+- [x] **Task 0.6: Update Official Roadmap:** This task. (Will be marked as done).
 
 
 ## Objective 1: Establish the Sovereign Build System

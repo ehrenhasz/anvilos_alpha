@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	NANO7240 SBC Watchdog device driver
- *
- *	Based on w83877f.c by Scott Jennings,
- *
- *	(c) Copyright 2007  Gilles GIGAN <gilles.gigan@jcu.edu.au>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,7 +25,7 @@
 
 #define SBC7240_TIMEOUT		30
 #define SBC7240_MAX_TIMEOUT		255
-static int timeout = SBC7240_TIMEOUT;	/* in seconds */
+static int timeout = SBC7240_TIMEOUT;	 
 module_param(timeout, int, 0);
 MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds. (1<=timeout<="
 		 __MODULE_STRING(SBC7240_MAX_TIMEOUT) ", default="
@@ -46,13 +40,11 @@ MODULE_PARM_DESC(nowayout, "Disable watchdog when closing device file");
 #define SBC7240_EXPECT_CLOSE_STATUS_BIT	2
 static unsigned long wdt_status;
 
-/*
- * Utility routines
- */
+ 
 
 static void wdt_disable(void)
 {
-	/* disable the watchdog */
+	 
 	if (test_and_clear_bit(SBC7240_ENABLED_STATUS_BIT, &wdt_status)) {
 		inb_p(SBC7240_DISABLE_PORT);
 		pr_info("Watchdog timer is now disabled\n");
@@ -61,7 +53,7 @@ static void wdt_disable(void)
 
 static void wdt_enable(void)
 {
-	/* enable the watchdog */
+	 
 	if (!test_and_set_bit(SBC7240_ENABLED_STATUS_BIT, &wdt_status)) {
 		inb_p(SBC7240_ENABLE_PORT);
 		pr_info("Watchdog timer is now enabled\n");
@@ -74,23 +66,21 @@ static int wdt_set_timeout(int t)
 		pr_err("timeout value must be 1<=x<=%d\n", SBC7240_MAX_TIMEOUT);
 		return -1;
 	}
-	/* set the timeout */
+	 
 	outb_p((unsigned)t, SBC7240_SET_TIMEOUT_PORT);
 	timeout = t;
 	pr_info("timeout set to %d seconds\n", t);
 	return 0;
 }
 
-/* Whack the dog */
+ 
 static inline void wdt_keepalive(void)
 {
 	if (test_bit(SBC7240_ENABLED_STATUS_BIT, &wdt_status))
 		inb_p(SBC7240_ENABLE_PORT);
 }
 
-/*
- * /dev/watchdog handling
- */
+ 
 static ssize_t fop_write(struct file *file, const char __user *buf,
 			 size_t count, loff_t *ppos)
 {
@@ -102,7 +92,7 @@ static ssize_t fop_write(struct file *file, const char __user *buf,
 			clear_bit(SBC7240_EXPECT_CLOSE_STATUS_BIT,
 				&wdt_status);
 
-			/* is there a magic char ? */
+			 
 			for (i = 0; i != count; i++) {
 				if (get_user(c, buf + i))
 					return -EFAULT;
@@ -219,9 +209,7 @@ static struct miscdevice wdt_miscdev = {
 	.fops = &wdt_fops,
 };
 
-/*
- *	Notifier for system down
- */
+ 
 
 static int wdt_notify_sys(struct notifier_block *this, unsigned long code,
 			  void *unused)
@@ -255,9 +243,7 @@ static int __init sbc7240_wdt_init(void)
 		goto err_out;
 	}
 
-	/* The IO port 0x043 used to disable the watchdog
-	 * is already claimed by the system timer, so we
-	 * can't request_region() it ...*/
+	 
 
 	if (timeout < 1 || timeout > SBC7240_MAX_TIMEOUT) {
 		timeout = SBC7240_TIMEOUT;

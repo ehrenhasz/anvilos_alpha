@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+
 
 #include <linux/irq.h>
 #include <linux/module.h>
@@ -15,19 +15,7 @@ struct ntb_msi {
 	u32 __iomem *peer_mws[];
 };
 
-/**
- * ntb_msi_init() - Initialize the MSI context
- * @ntb:	NTB device context
- *
- * This function must be called before any other ntb_msi function.
- * It initializes the context for MSI operations and maps
- * the peer memory windows.
- *
- * This function reserves the last N outbound memory windows (where N
- * is the number of peers).
- *
- * Return: Zero on success, otherwise a negative error number.
- */
+ 
 int ntb_msi_init(struct ntb_dev *ntb,
 		 void (*desc_changed)(void *ctx))
 {
@@ -78,20 +66,7 @@ unroll:
 }
 EXPORT_SYMBOL(ntb_msi_init);
 
-/**
- * ntb_msi_setup_mws() - Initialize the MSI inbound memory windows
- * @ntb:	NTB device context
- *
- * This function sets up the required inbound memory windows. It should be
- * called from a work function after a link up event.
- *
- * Over the entire network, this function will reserves the last N
- * inbound memory windows for each peer (where N is the number of peers).
- *
- * ntb_msi_init() must be called before this function.
- *
- * Return: Zero on success, otherwise a negative error number.
- */
+ 
 int ntb_msi_setup_mws(struct ntb_dev *ntb)
 {
 	struct msi_desc *desc;
@@ -165,12 +140,7 @@ error_out:
 }
 EXPORT_SYMBOL(ntb_msi_setup_mws);
 
-/**
- * ntb_msi_clear_mws() - Clear all inbound memory windows
- * @ntb:	NTB device context
- *
- * This function tears down the resources used by ntb_msi_setup_mws().
- */
+ 
 void ntb_msi_clear_mws(struct ntb_dev *ntb)
 {
 	int peer;
@@ -254,29 +224,7 @@ static int ntbm_msi_setup_callback(struct ntb_dev *ntb, struct msi_desc *entry,
 	return 0;
 }
 
-/**
- * ntbm_msi_request_threaded_irq() - allocate an MSI interrupt
- * @ntb:	NTB device context
- * @handler:	Function to be called when the IRQ occurs
- * @thread_fn:  Function to be called in a threaded interrupt context. NULL
- *              for clients which handle everything in @handler
- * @name:    An ascii name for the claiming device, dev_name(dev) if NULL
- * @dev_id:     A cookie passed back to the handler function
- * @msi_desc:	MSI descriptor data which triggers the interrupt
- *
- * This function assigns an interrupt handler to an unused
- * MSI interrupt and returns the descriptor used to trigger
- * it. The descriptor can then be sent to a peer to trigger
- * the interrupt.
- *
- * The interrupt resource is managed with devres so it will
- * be automatically freed when the NTB device is torn down.
- *
- * If an IRQ allocated with this function needs to be freed
- * separately, ntbm_free_irq() must be used.
- *
- * Return: IRQ number assigned on success, otherwise a negative error number.
- */
+ 
 int ntbm_msi_request_threaded_irq(struct ntb_dev *ntb, irq_handler_t handler,
 				  irq_handler_t thread_fn,
 				  const char *name, void *dev_id,
@@ -329,15 +277,7 @@ static int ntbm_msi_callback_match(struct device *dev, void *res, void *data)
 	return dr->ntb == ntb && dr->entry == data;
 }
 
-/**
- * ntbm_msi_free_irq() - free an interrupt
- * @ntb:	NTB device context
- * @irq:	Interrupt line to free
- * @dev_id:	Device identity to free
- *
- * This function should be used to manually free IRQs allocated with
- * ntbm_request_[threaded_]irq().
- */
+ 
 void ntbm_msi_free_irq(struct ntb_dev *ntb, unsigned int irq, void *dev_id)
 {
 	struct msi_desc *entry = irq_get_msi_desc(irq);
@@ -352,18 +292,7 @@ void ntbm_msi_free_irq(struct ntb_dev *ntb, unsigned int irq, void *dev_id)
 }
 EXPORT_SYMBOL(ntbm_msi_free_irq);
 
-/**
- * ntb_msi_peer_trigger() - Trigger an interrupt handler on a peer
- * @ntb:	NTB device context
- * @peer:	Peer index
- * @desc:	MSI descriptor data which triggers the interrupt
- *
- * This function triggers an interrupt on a peer. It requires
- * the descriptor structure to have been passed from that peer
- * by some other means.
- *
- * Return: Zero on success, otherwise a negative error number.
- */
+ 
 int ntb_msi_peer_trigger(struct ntb_dev *ntb, int peer,
 			 struct ntb_msi_desc *desc)
 {
@@ -380,20 +309,7 @@ int ntb_msi_peer_trigger(struct ntb_dev *ntb, int peer,
 }
 EXPORT_SYMBOL(ntb_msi_peer_trigger);
 
-/**
- * ntb_msi_peer_addr() - Get the DMA address to trigger a peer's MSI interrupt
- * @ntb:	NTB device context
- * @peer:	Peer index
- * @desc:	MSI descriptor data which triggers the interrupt
- * @msi_addr:   Physical address to trigger the interrupt
- *
- * This function allows using DMA engines to trigger an interrupt
- * (for example, trigger an interrupt to process the data after
- * sending it). To trigger the interrupt, write @desc.data to the address
- * returned in @msi_addr
- *
- * Return: Zero on success, otherwise a negative error number.
- */
+ 
 int ntb_msi_peer_addr(struct ntb_dev *ntb, int peer,
 		      struct ntb_msi_desc *desc,
 		      phys_addr_t *msi_addr)

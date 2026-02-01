@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+ 
+ 
 
 #ifndef _IONIC_H_
 #define _IONIC_H_
@@ -21,9 +21,9 @@ struct ionic_lif;
 #define DEVCMD_TIMEOUT			5
 #define IONIC_ADMINQ_TIME_SLICE		msecs_to_jiffies(100)
 
-#define IONIC_PHC_UPDATE_NS	10000000000	    /* 10s in nanoseconds */
-#define NORMAL_PPB		1000000000	    /* one billion parts per billion */
-#define SCALED_PPM		(1000000ull << 16)  /* 2^16 million parts per 2^16 million */
+#define IONIC_PHC_UPDATE_NS	10000000000	     
+#define NORMAL_PPB		1000000000	     
+#define SCALED_PPM		(1000000ull << 16)   
 
 struct ionic_vf {
 	u16	 index;
@@ -42,7 +42,7 @@ struct ionic {
 	struct device *dev;
 	struct devlink_port dl_port;
 	struct ionic_dev idev;
-	struct mutex dev_cmd_lock;	/* lock for dev_cmd operations */
+	struct mutex dev_cmd_lock;	 
 	struct dentry *dentry;
 	struct ionic_dev_bar bars[IONIC_BARS_MAX];
 	unsigned int num_bars;
@@ -56,7 +56,7 @@ struct ionic {
 	DECLARE_BITMAP(intrs, IONIC_INTR_CTRL_REGS_MAX);
 	struct work_struct nb_work;
 	struct notifier_block nb;
-	struct rw_semaphore vf_op_lock;	/* lock for VF operations */
+	struct rw_semaphore vf_op_lock;	 
 	struct ionic_vf *vfs;
 	int num_vfs;
 	struct timer_list watchdog_timer;
@@ -93,4 +93,4 @@ int ionic_port_reset(struct ionic *ionic);
 
 const char *ionic_vf_attr_to_str(enum ionic_vf_attr attr);
 
-#endif /* _IONIC_H_ */
+#endif  

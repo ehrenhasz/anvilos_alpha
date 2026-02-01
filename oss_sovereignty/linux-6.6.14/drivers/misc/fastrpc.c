@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2018, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -27,7 +27,7 @@
 #define MDSP_DOMAIN_ID (1)
 #define SDSP_DOMAIN_ID (2)
 #define CDSP_DOMAIN_ID (3)
-#define FASTRPC_DEV_MAX		4 /* adsp, mdsp, slpi, cdsp*/
+#define FASTRPC_DEV_MAX		4  
 #define FASTRPC_MAX_SESSIONS	14
 #define FASTRPC_MAX_VMIDS	16
 #define FASTRPC_ALIGN		128
@@ -42,32 +42,32 @@
 #define INIT_FILE_NAMELEN_MAX (128)
 #define FASTRPC_DEVICE_NAME	"fastrpc"
 
-/* Add memory to static PD pool, protection thru XPU */
+ 
 #define ADSP_MMAP_HEAP_ADDR  4
-/* MAP static DMA buffer on DSP User PD */
+ 
 #define ADSP_MMAP_DMA_BUFFER  6
-/* Add memory to static PD pool protection thru hypervisor */
+ 
 #define ADSP_MMAP_REMOTE_HEAP_ADDR  8
-/* Add memory to userPD pool, for user heap */
+ 
 #define ADSP_MMAP_ADD_PAGES 0x1000
-/* Add memory to userPD pool, for LLC heap */
+ 
 #define ADSP_MMAP_ADD_PAGES_LLC 0x3000,
 
 #define DSP_UNSUPPORTED_API (0x80000414)
-/* MAX NUMBER of DSP ATTRIBUTES SUPPORTED */
+ 
 #define FASTRPC_MAX_DSP_ATTRIBUTES (256)
 #define FASTRPC_MAX_DSP_ATTRIBUTES_LEN (sizeof(u32) * FASTRPC_MAX_DSP_ATTRIBUTES)
 
-/* Retrives number of input buffers from the scalars parameter */
+ 
 #define REMOTE_SCALARS_INBUFS(sc)	(((sc) >> 16) & 0x0ff)
 
-/* Retrives number of output buffers from the scalars parameter */
+ 
 #define REMOTE_SCALARS_OUTBUFS(sc)	(((sc) >> 8) & 0x0ff)
 
-/* Retrives number of input handles from the scalars parameter */
+ 
 #define REMOTE_SCALARS_INHANDLES(sc)	(((sc) >> 4) & 0x0f)
 
-/* Retrives number of output handles from the scalars parameter */
+ 
 #define REMOTE_SCALARS_OUTHANDLES(sc)	((sc) & 0x0f)
 
 #define REMOTE_SCALARS_LENGTH(sc)	(REMOTE_SCALARS_INBUFS(sc) +   \
@@ -87,7 +87,7 @@
 
 #define FASTRPC_CREATE_PROCESS_NARGS	6
 #define FASTRPC_CREATE_STATIC_PROCESS_NARGS	3
-/* Remote Method id table */
+ 
 #define FASTRPC_RMID_INIT_ATTACH	0
 #define FASTRPC_RMID_INIT_RELEASE	1
 #define FASTRPC_RMID_INIT_MMAP		4
@@ -98,7 +98,7 @@
 #define FASTRPC_RMID_INIT_MEM_MAP      10
 #define FASTRPC_RMID_INIT_MEM_UNMAP    11
 
-/* Protection Domain(PD) ids */
+ 
 #define ROOT_PD		(0)
 #define USER_PD		(1)
 #define SENSORS_PD	(2)
@@ -108,24 +108,24 @@
 static const char *domains[FASTRPC_DEV_MAX] = { "adsp", "mdsp",
 						"sdsp", "cdsp"};
 struct fastrpc_phy_page {
-	u64 addr;		/* physical address */
-	u64 size;		/* size of contiguous region */
+	u64 addr;		 
+	u64 size;		 
 };
 
 struct fastrpc_invoke_buf {
-	u32 num;		/* number of contiguous regions */
-	u32 pgidx;		/* index to start of contiguous region */
+	u32 num;		 
+	u32 pgidx;		 
 };
 
 struct fastrpc_remote_dmahandle {
-	s32 fd;		/* dma handle fd */
-	u32 offset;	/* dma handle offset */
-	u32 len;	/* dma handle length */
+	s32 fd;		 
+	u32 offset;	 
+	u32 len;	 
 };
 
 struct fastrpc_remote_buf {
-	u64 pv;		/* buffer pointer */
-	u64 len;	/* length of buffer */
+	u64 pv;		 
+	u64 len;	 
 };
 
 union fastrpc_remote_arg {
@@ -168,18 +168,18 @@ struct fastrpc_mem_unmap_req_msg {
 };
 
 struct fastrpc_msg {
-	int pid;		/* process group id */
-	int tid;		/* thread id */
-	u64 ctx;		/* invoke caller context */
-	u32 handle;	/* handle to invoke */
-	u32 sc;		/* scalars structure describing the data */
-	u64 addr;		/* physical address */
-	u64 size;		/* size of contiguous region */
+	int pid;		 
+	int tid;		 
+	u64 ctx;		 
+	u32 handle;	 
+	u32 sc;		 
+	u64 addr;		 
+	u64 size;		 
 };
 
 struct fastrpc_invoke_rsp {
-	u64 ctx;		/* invoke caller context */
-	int retval;		/* invoke return value */
+	u64 ctx;		 
+	int retval;		 
 };
 
 struct fastrpc_buf_overlap {
@@ -198,11 +198,11 @@ struct fastrpc_buf {
 	void *virt;
 	u64 phys;
 	u64 size;
-	/* Lock for dma buf attachments */
+	 
 	struct mutex lock;
 	struct list_head attachments;
-	/* mmap support */
-	struct list_head node; /* list of user requested mmaps */
+	 
+	struct list_head node;  
 	uintptr_t raddr;
 };
 
@@ -239,7 +239,7 @@ struct fastrpc_invoke_ctx {
 	u64 ctxid;
 	u64 msg_sz;
 	struct kref refcount;
-	struct list_head node; /* list of ctxs */
+	struct list_head node;  
 	struct completion work;
 	struct work_struct put_work;
 	struct fastrpc_msg msg;
@@ -271,7 +271,7 @@ struct fastrpc_channel_ctx {
 	struct idr ctx_idr;
 	struct list_head users;
 	struct kref refcount;
-	/* Flag if dsp attributes are cached */
+	 
 	bool valid_attributes;
 	u32 dsp_attributes[FASTRPC_MAX_DSP_ATTRIBUTES];
 	struct fastrpc_device *secure_fdevice;
@@ -302,9 +302,9 @@ struct fastrpc_user {
 	int tgid;
 	int pd;
 	bool is_secure_dev;
-	/* Lock for lists */
+	 
 	spinlock_t lock;
-	/* lock for allocations */
+	 
 	struct mutex mutex;
 };
 
@@ -527,9 +527,9 @@ static int olaps_cmp(const void *a, const void *b)
 {
 	struct fastrpc_buf_overlap *pa = (struct fastrpc_buf_overlap *)a;
 	struct fastrpc_buf_overlap *pb = (struct fastrpc_buf_overlap *)b;
-	/* sort with lowest starting buffer first */
+	 
 	int st = CMP(pa->start, pb->start);
-	/* sort with highest ending buffer first */
+	 
 	int ed = CMP(pb->end, pa->end);
 
 	return st == 0 ? ed : st;
@@ -549,7 +549,7 @@ static void fastrpc_get_buff_overlaps(struct fastrpc_invoke_ctx *ctx)
 	sort(ctx->olaps, ctx->nbufs, sizeof(*ctx->olaps), olaps_cmp, NULL);
 
 	for (i = 0; i < ctx->nbufs; ++i) {
-		/* Falling inside previous range */
+		 
 		if (ctx->olaps[i].start < max_end) {
 			ctx->olaps[i].mstart = max_end;
 			ctx->olaps[i].mend = ctx->olaps[i].end;
@@ -608,7 +608,7 @@ static struct fastrpc_invoke_ctx *fastrpc_context_alloc(
 		fastrpc_get_buff_overlaps(ctx);
 	}
 
-	/* Released in fastrpc_context_put() */
+	 
 	fastrpc_channel_ctx_get(cctx);
 
 	ctx->sc = sc;
@@ -803,10 +803,7 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
 	map->len = len;
 
 	if (attr & FASTRPC_ATTR_SECUREMAP) {
-		/*
-		 * If subsystem VMIDs are defined in DTSI, then do
-		 * hyp_assign from HLOS to those VM(s)
-		 */
+		 
 		u64 src_perms = BIT(QCOM_SCM_VMID_HLOS);
 		struct qcom_scm_vmperm dst_perms[2] = {0};
 
@@ -839,32 +836,7 @@ get_err:
 	return err;
 }
 
-/*
- * Fastrpc payload buffer with metadata looks like:
- *
- * >>>>>>  START of METADATA <<<<<<<<<
- * +---------------------------------+
- * |           Arguments             |
- * | type:(union fastrpc_remote_arg)|
- * |             (0 - N)             |
- * +---------------------------------+
- * |         Invoke Buffer list      |
- * | type:(struct fastrpc_invoke_buf)|
- * |           (0 - N)               |
- * +---------------------------------+
- * |         Page info list          |
- * | type:(struct fastrpc_phy_page)  |
- * |             (0 - N)             |
- * +---------------------------------+
- * |         Optional info           |
- * |(can be specific to SoC/Firmware)|
- * +---------------------------------+
- * >>>>>>>>  END of METADATA <<<<<<<<<
- * +---------------------------------+
- * |         Inline ARGS             |
- * |            (0-N)                |
- * +---------------------------------+
- */
+ 
 
 static int fastrpc_get_meta_size(struct fastrpc_invoke_ctx *ctx)
 {
@@ -1091,7 +1063,7 @@ static int fastrpc_put_args(struct fastrpc_invoke_ctx *ctx,
 		}
 	}
 
-	/* Clean up fdlist which is updated by DSP */
+	 
 	for (i = 0; i < FASTRPC_MAX_FDLIST; i++) {
 		if (!fdlist[i])
 			break;
@@ -1162,9 +1134,9 @@ static int fastrpc_internal_invoke(struct fastrpc_user *fl,  u32 kernel,
 	if (err)
 		goto bail;
 
-	/* make sure that all CPU memory writes are seen by DSP */
+	 
 	dma_wmb();
-	/* Send invoke buffer to remote dsp */
+	 
 	err = fastrpc_invoke_send(fl->sctx, ctx, kernel, handle);
 	if (err)
 		goto bail;
@@ -1179,21 +1151,21 @@ static int fastrpc_internal_invoke(struct fastrpc_user *fl,  u32 kernel,
 	if (err)
 		goto bail;
 
-	/* make sure that all memory writes by DSP are seen by CPU */
+	 
 	dma_rmb();
-	/* populate all the output buffers with results */
+	 
 	err = fastrpc_put_args(ctx, kernel);
 	if (err)
 		goto bail;
 
-	/* Check the response from remote dsp */
+	 
 	err = ctx->retval;
 	if (err)
 		goto bail;
 
 bail:
 	if (err != -ERESTARTSYS && err != -ETIMEDOUT) {
-		/* We are done with this compute context */
+		 
 		spin_lock(&fl->lock);
 		list_del(&ctx->node);
 		spin_unlock(&fl->lock);
@@ -1215,13 +1187,9 @@ bail:
 
 static bool is_session_rejected(struct fastrpc_user *fl, bool unsigned_pd_request)
 {
-	/* Check if the device node is non-secure and channel is secure*/
+	 
 	if (!fl->is_secure_dev && fl->cctx->secure) {
-		/*
-		 * Allow untrusted applications to offload only to Unsigned PD when
-		 * channel is configured as secure and block untrusted apps on channel
-		 * that does not support unsigned PD offload
-		 */
+		 
 		if (!fl->cctx->unsigned_support || !unsigned_pd_request) {
 			dev_err(&fl->cctx->rpdev->dev, "Error: Untrusted application trying to offload to signed PD");
 			return true;
@@ -1277,7 +1245,7 @@ static int fastrpc_init_create_static_process(struct fastrpc_user *fl,
 		if (err)
 			goto err_name;
 
-		/* Map if we have any heap VMIDs associated with this ADSP Static Process. */
+		 
 		if (fl->cctx->vmcount) {
 			err = qcom_scm_assign_mem(fl->cctx->remote_heap->phys,
 							(u64)fl->cctx->remote_heap->size,
@@ -1566,7 +1534,7 @@ static int fastrpc_device_open(struct inode *inode, struct file *filp)
 	if (!fl)
 		return -ENOMEM;
 
-	/* Released in fastrpc_device_release() */
+	 
 	fastrpc_channel_ctx_get(cctx);
 
 	filp->private_data = fl;
@@ -1627,14 +1595,7 @@ static int fastrpc_dmabuf_alloc(struct fastrpc_user *fl, char __user *argp)
 	}
 
 	if (copy_to_user(argp, &bp, sizeof(bp))) {
-		/*
-		 * The usercopy failed, but we can't do much about it, as
-		 * dma_buf_fd() already called fd_install() and made the
-		 * file descriptor accessible for the current process. It
-		 * might already be closed and dmabuf no longer valid when
-		 * we reach this point. Therefore "leak" the fd and rely on
-		 * the process exit path to do any required cleanup.
-		 */
+		 
 		return -EFAULT;
 	}
 
@@ -1667,7 +1628,7 @@ static int fastrpc_invoke(struct fastrpc_user *fl, char __user *argp)
 	if (copy_from_user(&inv, argp, sizeof(inv)))
 		return -EFAULT;
 
-	/* nscalars is truncated here to max supported value */
+	 
 	nscalars = REMOTE_SCALARS_LENGTH(inv.sc);
 	if (nscalars) {
 		args = kcalloc(nscalars, sizeof(*args), GFP_KERNEL);
@@ -1692,7 +1653,7 @@ static int fastrpc_get_info_from_dsp(struct fastrpc_user *fl, uint32_t *dsp_attr
 {
 	struct fastrpc_invoke_args args[2] = { 0 };
 
-	/* Capability filled in userspace */
+	 
 	dsp_attr_buf[0] = 0;
 
 	args[0].ptr = (u64)(uintptr_t)&dsp_attr_buf_len;
@@ -1718,7 +1679,7 @@ static int fastrpc_get_info_from_kernel(struct fastrpc_ioctl_capability *cap,
 	int err;
 
 	spin_lock_irqsave(&cctx->lock, flags);
-	/* check if we already have queried dsp for attributes */
+	 
 	if (cctx->valid_attributes) {
 		spin_unlock_irqrestore(&cctx->lock, flags);
 		goto done;
@@ -1766,7 +1727,7 @@ static int fastrpc_get_dsp_info(struct fastrpc_user *fl, char __user *argp)
 		return -ECHRNG;
 	}
 
-	/* Fastrpc Capablities does not support modem domain */
+	 
 	if (cap.domain == MDSP_DOMAIN_ID) {
 		dev_err(&fl->cctx->rpdev->dev, "Error: modem not supported %d\n", err);
 		return -ECHRNG;
@@ -1907,13 +1868,13 @@ static int fastrpc_req_mmap(struct fastrpc_user *fl, char __user *argp)
 		goto err_invoke;
 	}
 
-	/* update the buffer to be able to deallocate the memory on the DSP */
+	 
 	buf->raddr = (uintptr_t) rsp_msg.vaddr;
 
-	/* let the client know the address to use */
+	 
 	req.vaddrout = rsp_msg.vaddr;
 
-	/* Add memory to static PD pool, protection thru hypervisor */
+	 
 	if (req.flags == ADSP_MMAP_REMOTE_HEAP_ADDR && fl->cctx->vmcount) {
 		err = qcom_scm_assign_mem(buf->phys, (u64)buf->size,
 			&fl->cctx->perms, fl->cctx->vmperms, fl->cctx->vmcount);
@@ -2016,7 +1977,7 @@ static int fastrpc_req_mem_map(struct fastrpc_user *fl, char __user *argp)
 	if (copy_from_user(&req, argp, sizeof(req)))
 		return -EFAULT;
 
-	/* create SMMU mapping */
+	 
 	err = fastrpc_map_create(fl, req.fd, req.length, 0, &map);
 	if (err) {
 		dev_err(dev, "failed to map buffer, fd = %d\n", req.fd);
@@ -2055,14 +2016,14 @@ static int fastrpc_req_mem_map(struct fastrpc_user *fl, char __user *argp)
 		goto err_invoke;
 	}
 
-	/* update the buffer to be able to deallocate the memory on the DSP */
+	 
 	map->raddr = rsp_msg.vaddr;
 
-	/* let the client know the address to use */
+	 
 	req.vaddrout = rsp_msg.vaddr;
 
 	if (copy_to_user((void __user *)argp, &req, sizeof(req))) {
-		/* unmap the memory and release the buffer */
+		 
 		req_unmap.vaddr = (uintptr_t) rsp_msg.vaddr;
 		req_unmap.length = map->size;
 		fastrpc_req_mem_unmap_impl(fl, &req_unmap);
@@ -2304,7 +2265,7 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
 	case ADSP_DOMAIN_ID:
 	case MDSP_DOMAIN_ID:
 	case SDSP_DOMAIN_ID:
-		/* Unsigned PD offloading is only supported on CDSP*/
+		 
 		data->unsigned_support = false;
 		err = fastrpc_device_register(rdev, data, secure_dsp, domains[domain_id]);
 		if (err)
@@ -2312,7 +2273,7 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
 		break;
 	case CDSP_DOMAIN_ID:
 		data->unsigned_support = true;
-		/* Create both device nodes so that we can allow both Signed and Unsigned PD */
+		 
 		err = fastrpc_device_register(rdev, data, true, domains[domain_id]);
 		if (err)
 			goto fdev_error;
@@ -2374,7 +2335,7 @@ static void fastrpc_rpmsg_remove(struct rpmsg_device *rpdev)
 	struct fastrpc_user *user;
 	unsigned long flags;
 
-	/* No invocations past this point */
+	 
 	spin_lock_irqsave(&cctx->lock, flags);
 	cctx->rpdev = NULL;
 	list_for_each_entry(user, &cctx->users, user)
@@ -2424,11 +2385,7 @@ static int fastrpc_rpmsg_callback(struct rpmsg_device *rpdev, void *data,
 	ctx->retval = rsp->retval;
 	complete(&ctx->work);
 
-	/*
-	 * The DMA buffer associated with the context cannot be freed in
-	 * interrupt context so schedule it through a worker thread to
-	 * avoid a kernel BUG.
-	 */
+	 
 	schedule_work(&ctx->put_work);
 
 	return 0;

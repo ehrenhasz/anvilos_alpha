@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KUnit test for the Kernel Hashtable structures.
- *
- * Copyright (C) 2022, Google LLC.
- * Author: Rae Moar <rmoar@google.com>
- */
+
+ 
 #include <kunit/test.h>
 
 #include <linux/hashtable.h>
@@ -18,13 +13,11 @@ struct hashtable_test_entry {
 
 static void hashtable_test_hash_init(struct kunit *test)
 {
-	/* Test the different ways of initialising a hashtable. */
+	 
 	DEFINE_HASHTABLE(hash1, 2);
 	DECLARE_HASHTABLE(hash2, 3);
 
-	/* When using DECLARE_HASHTABLE, must use hash_init to
-	 * initialize the hashtable.
-	 */
+	 
 	hash_init(hash2);
 
 	KUNIT_EXPECT_TRUE(test, hash_empty(hash1));
@@ -42,7 +35,7 @@ static void hashtable_test_hash_empty(struct kunit *test)
 	a.data = 13;
 	hash_add(hash, &a.node, a.key);
 
-	/* Hashtable should no longer be empty. */
+	 
 	KUNIT_EXPECT_FALSE(test, hash_empty(hash));
 }
 
@@ -87,7 +80,7 @@ static void hashtable_test_hash_add(struct kunit *test)
 			KUNIT_FAIL(test, "Unexpected key in hashtable.");
 	}
 
-	/* Both entries should have been visited exactly once. */
+	 
 	KUNIT_EXPECT_EQ(test, a.visited, 1);
 	KUNIT_EXPECT_EQ(test, b.visited, 1);
 }
@@ -111,12 +104,12 @@ static void hashtable_test_hash_del(struct kunit *test)
 		KUNIT_EXPECT_NE(test, x->key, b.key);
 	}
 
-	/* The deleted entry should not have been visited. */
+	 
 	KUNIT_EXPECT_EQ(test, b.visited, 0);
 
 	hash_del(&a.node);
 
-	/* The hashtable should be empty. */
+	 
 	KUNIT_EXPECT_TRUE(test, hash_empty(hash));
 }
 
@@ -127,7 +120,7 @@ static void hashtable_test_hash_for_each(struct kunit *test)
 	int bkt, i, j, count;
 	DEFINE_HASHTABLE(hash, 3);
 
-	/* Add three entries to the hashtable. */
+	 
 	for (i = 0; i < 3; i++) {
 		entries[i].key = i;
 		entries[i].data = i + 10;
@@ -143,7 +136,7 @@ static void hashtable_test_hash_for_each(struct kunit *test)
 		count++;
 	}
 
-	/* Should have visited each entry exactly once. */
+	 
 	KUNIT_EXPECT_EQ(test, count, 3);
 	for (j = 0; j < 3; j++)
 		KUNIT_EXPECT_EQ(test, entries[j].visited, 1);
@@ -157,7 +150,7 @@ static void hashtable_test_hash_for_each_safe(struct kunit *test)
 	int bkt, i, j, count;
 	DEFINE_HASHTABLE(hash, 3);
 
-	/* Add three entries to the hashtable. */
+	 
 	for (i = 0; i < 3; i++) {
 		entries[i].key = i;
 		entries[i].data = i + 10;
@@ -172,11 +165,11 @@ static void hashtable_test_hash_for_each_safe(struct kunit *test)
 		KUNIT_ASSERT_LT_MSG(test, x->key, 3, "Unexpected key in hashtable.");
 		count++;
 
-		/* Delete entry during loop. */
+		 
 		hash_del(&x->node);
 	}
 
-	/* Should have visited each entry exactly once. */
+	 
 	KUNIT_EXPECT_EQ(test, count, 3);
 	for (j = 0; j < 3; j++)
 		KUNIT_EXPECT_EQ(test, entries[j].visited, 1);
@@ -190,7 +183,7 @@ static void hashtable_test_hash_for_each_possible(struct kunit *test)
 	int bkt, i, j, count;
 	DEFINE_HASHTABLE(hash, 5);
 
-	/* Add three entries with key = 0 to the hashtable. */
+	 
 	for (i = 0; i < 3; i++) {
 		entries[i].key = 0;
 		entries[i].data = i;
@@ -198,7 +191,7 @@ static void hashtable_test_hash_for_each_possible(struct kunit *test)
 		hash_add(hash, &entries[i].node, entries[i].key);
 	}
 
-	/* Add an entry with key = 1. */
+	 
 	entries[3].key = 1;
 	entries[3].data = 3;
 	entries[3].visited = 0;
@@ -212,21 +205,18 @@ static void hashtable_test_hash_for_each_possible(struct kunit *test)
 		count++;
 	}
 
-	/* Should have visited each entry with key = 0 exactly once. */
+	 
 	for (j = 0; j < 3; j++)
 		KUNIT_EXPECT_EQ(test, entries[j].visited, 1);
 
-	/* Save the buckets for the different keys. */
+	 
 	hash_for_each(hash, bkt, y, node) {
 		KUNIT_ASSERT_GE_MSG(test, y->key, 0, "Unexpected key in hashtable.");
 		KUNIT_ASSERT_LE_MSG(test, y->key, 1, "Unexpected key in hashtable.");
 		buckets[y->key] = bkt;
 	}
 
-	/* If entry with key = 1 is in the same bucket as the entries with
-	 * key = 0, check it was visited. Otherwise ensure that only three
-	 * entries were visited.
-	 */
+	 
 	if (buckets[0] == buckets[1]) {
 		KUNIT_EXPECT_EQ(test, count, 4);
 		KUNIT_EXPECT_EQ(test, entries[3].visited, 1);
@@ -245,7 +235,7 @@ static void hashtable_test_hash_for_each_possible_safe(struct kunit *test)
 	int bkt, i, j, count;
 	DEFINE_HASHTABLE(hash, 5);
 
-	/* Add three entries with key = 0 to the hashtable. */
+	 
 	for (i = 0; i < 3; i++) {
 		entries[i].key = 0;
 		entries[i].data = i;
@@ -253,7 +243,7 @@ static void hashtable_test_hash_for_each_possible_safe(struct kunit *test)
 		hash_add(hash, &entries[i].node, entries[i].key);
 	}
 
-	/* Add an entry with key = 1. */
+	 
 	entries[3].key = 1;
 	entries[3].data = 3;
 	entries[3].visited = 0;
@@ -266,25 +256,22 @@ static void hashtable_test_hash_for_each_possible_safe(struct kunit *test)
 		KUNIT_ASSERT_LT_MSG(test, x->data, 4, "Unexpected data in hashtable.");
 		count++;
 
-		/* Delete entry during loop. */
+		 
 		hash_del(&x->node);
 	}
 
-	/* Should have visited each entry with key = 0 exactly once. */
+	 
 	for (j = 0; j < 3; j++)
 		KUNIT_EXPECT_EQ(test, entries[j].visited, 1);
 
-	/* Save the buckets for the different keys. */
+	 
 	hash_for_each(hash, bkt, y, node) {
 		KUNIT_ASSERT_GE_MSG(test, y->key, 0, "Unexpected key in hashtable.");
 		KUNIT_ASSERT_LE_MSG(test, y->key, 1, "Unexpected key in hashtable.");
 		buckets[y->key] = bkt;
 	}
 
-	/* If entry with key = 1 is in the same bucket as the entries with
-	 * key = 0, check it was visited. Otherwise ensure that only three
-	 * entries were visited.
-	 */
+	 
 	if (buckets[0] == buckets[1]) {
 		KUNIT_EXPECT_EQ(test, count, 4);
 		KUNIT_EXPECT_EQ(test, entries[3].visited, 1);

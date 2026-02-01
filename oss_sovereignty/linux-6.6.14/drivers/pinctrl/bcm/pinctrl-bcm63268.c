@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for BCM63268 GPIO unit (pinctrl + GPIO)
- *
- * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright (C) 2016 Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/gpio/driver.h>
@@ -25,13 +20,13 @@
 #define BCM63268_MODE_REG		0x18
 #define BCM63268_CTRL_REG		0x1c
 #define BCM63268_BASEMODE_REG		0x38
-#define  BCM63268_BASEMODE_NAND		BIT(2) /* GPIOs 2-7, 24-31 */
-#define  BCM63268_BASEMODE_GPIO35	BIT(4) /* GPIO 35 */
-#define  BCM63268_BASEMODE_DECTPD	BIT(5) /* GPIOs 8/9 */
-#define  BCM63268_BASEMODE_VDSL_PHY_0	BIT(6) /* GPIOs 10/11 */
-#define  BCM63268_BASEMODE_VDSL_PHY_1	BIT(7) /* GPIOs 12/13 */
-#define  BCM63268_BASEMODE_VDSL_PHY_2	BIT(8) /* GPIOs 24/25 */
-#define  BCM63268_BASEMODE_VDSL_PHY_3	BIT(9) /* GPIOs 26/27 */
+#define  BCM63268_BASEMODE_NAND		BIT(2)  
+#define  BCM63268_BASEMODE_GPIO35	BIT(4)  
+#define  BCM63268_BASEMODE_DECTPD	BIT(5)  
+#define  BCM63268_BASEMODE_VDSL_PHY_0	BIT(6)  
+#define  BCM63268_BASEMODE_VDSL_PHY_1	BIT(7)  
+#define  BCM63268_BASEMODE_VDSL_PHY_2	BIT(8)  
+#define  BCM63268_BASEMODE_VDSL_PHY_3	BIT(9)  
 
 enum bcm63268_pinctrl_reg {
 	BCM63268_LEDCTRL,
@@ -233,7 +228,7 @@ static struct pingroup bcm63268_groups[] = {
 	BCM_PIN_GROUP(gpio50),
 	BCM_PIN_GROUP(gpio51),
 
-	/* multi pin groups */
+	 
 	BCM_PIN_GROUP(nand_grp),
 	BCM_PIN_GROUP(dectpd_grp),
 	BCM_PIN_GROUP(vdsl_phy0_grp),
@@ -515,15 +510,15 @@ static void bcm63268_set_gpio(struct bcm63xx_pinctrl *pc, unsigned pin)
 				   0);
 
 	if (pin < BCM63XX_BANK_GPIOS) {
-		/* base mode: 0 => gpio, 1 => mux function */
+		 
 		regmap_update_bits(pc->regs, BCM63268_MODE_REG, mask, 0);
 
-		/* pins 0-23 might be muxed to led */
+		 
 		if (pin < BCM63268_NUM_LEDS)
 			regmap_update_bits(pc->regs, BCM63268_LED_REG, mask,
 					   0);
 	} else if (pin < BCM63268_NUM_GPIOS) {
-		/* ctrl reg: 0 => wifi function, 1 => gpio */
+		 
 		regmap_update_bits(pc->regs, BCM63268_CTRL_REG, mask, mask);
 	}
 }
@@ -578,7 +573,7 @@ static int bcm63268_gpio_request_enable(struct pinctrl_dev *pctldev,
 {
 	struct bcm63xx_pinctrl *pc = pinctrl_dev_get_drvdata(pctldev);
 
-	/* disable all functions using this pin */
+	 
 	bcm63268_set_gpio(pc, offset);
 
 	return 0;
@@ -616,7 +611,7 @@ static int bcm63268_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id bcm63268_pinctrl_match[] = {
 	{ .compatible = "brcm,bcm63268-pinctrl", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver bcm63268_pinctrl_driver = {

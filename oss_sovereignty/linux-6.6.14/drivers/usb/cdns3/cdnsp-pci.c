@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence PCI Glue driver.
- *
- * Copyright (C) 2019 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -35,11 +28,7 @@
 
 static struct pci_dev *cdnsp_get_second_fun(struct pci_dev *pdev)
 {
-	/*
-	 * Gets the second function.
-	 * Platform has two function. The fist keeps resources for
-	 * Host/Device while the secon keeps resources for DRD/OTG.
-	 */
+	 
 	if (pdev->device == CDNS_DEVICE_ID)
 		return  pci_get_device(pdev->vendor, CDNS_DRD_ID, NULL);
 	else if (pdev->device == CDNS_DRD_ID)
@@ -57,10 +46,7 @@ static int cdnsp_pci_probe(struct pci_dev *pdev,
 	struct cdns *cdnsp;
 	int ret;
 
-	/*
-	 * For GADGET/HOST PCI (devfn) function number is 0,
-	 * for OTG PCI (devfn) function number is 1.
-	 */
+	 
 	if (!id || (pdev->devfn != PCI_DEV_FN_HOST_DEVICE &&
 		    pdev->devfn != PCI_DEV_FN_OTG))
 		return -EINVAL;
@@ -92,11 +78,11 @@ static int cdnsp_pci_probe(struct pci_dev *pdev,
 		}
 	}
 
-	/* For GADGET device function number is 0. */
+	 
 	if (pdev->devfn == 0) {
 		resource_size_t rsrc_start, rsrc_len;
 
-		/* Function 0: host(BAR_0) + device(BAR_1).*/
+		 
 		dev_dbg(dev, "Initialize resources\n");
 		rsrc_start = pci_resource_start(pdev, PCI_BAR_DEV);
 		rsrc_len = pci_resource_len(pdev, PCI_BAR_DEV);
@@ -126,7 +112,7 @@ static int cdnsp_pci_probe(struct pci_dev *pdev,
 		dev_dbg(dev, "USBSS-XHCI physical base addr: %pa\n",
 			&res->start);
 
-		/* Interrupt for XHCI, */
+		 
 		res = &cdnsp->xhci_res[1];
 		res->start = pdev->irq;
 		res->name = "host";
@@ -140,7 +126,7 @@ static int cdnsp_pci_probe(struct pci_dev *pdev,
 		dev_dbg(dev, "CDNSP-DRD physical base addr: %pa\n",
 			&res->start);
 
-		/* Interrupt for OTG/DRD. */
+		 
 		cdnsp->otg_irq = pdev->irq;
 	}
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
-  File: linux/posix_acl.h
-
-  (C) 2002 Andreas Gruenbacher, <a.gruenbacher@computer.org>
-*/
+ 
+ 
 
 
 #ifndef __LINUX_POSIX_ACL_H
@@ -37,9 +33,7 @@ struct posix_acl {
 	for(pa=(acl)->a_entries, pe=pa+(acl)->a_count; pa<pe; pa++)
 
 
-/*
- * Duplicate an ACL handle.
- */
+ 
 static inline struct posix_acl *
 posix_acl_dup(struct posix_acl *acl)
 {
@@ -48,9 +42,7 @@ posix_acl_dup(struct posix_acl *acl)
 	return acl;
 }
 
-/*
- * Free an ACL handle.
- */
+ 
 static inline void
 posix_acl_release(struct posix_acl *acl)
 {
@@ -59,7 +51,7 @@ posix_acl_release(struct posix_acl *acl)
 }
 
 
-/* posix_acl.c */
+ 
 
 extern void posix_acl_init(struct posix_acl *, int);
 extern struct posix_acl *posix_acl_alloc(int, gfp_t);
@@ -160,8 +152,8 @@ static inline int posix_acl_listxattr(struct inode *inode, char **buffer,
 {
 	return 0;
 }
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
 
 struct posix_acl *get_inode_acl(struct inode *inode, int type);
 
-#endif  /* __LINUX_POSIX_ACL_H */
+#endif   

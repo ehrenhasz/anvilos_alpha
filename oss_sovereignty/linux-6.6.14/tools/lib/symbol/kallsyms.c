@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "symbol/kallsyms.h"
 #include "api/io.h"
 #include <stdio.h>

@@ -1,45 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/**************************************************************************
- *
- * Copyright (c) 2009-2022 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
-/*
- * Authors: Thomas Hellstrom <thellstrom-at-vmware-dot-com>
- *
- * While no substantial code is shared, the prime code is inspired by
- * drm_prime.c, with
- * Authors:
- *      Dave Airlie <airlied@redhat.com>
- *      Rob Clark <rob.clark@linaro.org>
- */
-/** @file ttm_ref_object.c
- *
- * Base- and reference object implementation for the various
- * ttm objects. Implements reference counting, minimal security checks
- * and release on file close.
- */
+ 
+ 
+ 
+ 
 
 
 #define pr_fmt(fmt) "[TTM] " fmt
@@ -58,22 +20,7 @@ MODULE_IMPORT_NS(DMA_BUF);
 
 #define VMW_TTM_OBJECT_REF_HT_ORDER 10
 
-/**
- * struct ttm_object_file
- *
- * @tdev: Pointer to the ttm_object_device.
- *
- * @lock: Lock that protects the ref_list list and the
- * ref_hash hash tables.
- *
- * @ref_list: List of ttm_ref_objects to be destroyed at
- * file release.
- *
- * @ref_hash: Hash tables of ref objects, one per ttm_ref_type,
- * for fast lookup of ref objects given a base object.
- *
- * @refcount: reference/usage count
- */
+ 
 struct ttm_object_file {
 	struct ttm_object_device *tdev;
 	spinlock_t lock;
@@ -82,15 +29,7 @@ struct ttm_object_file {
 	struct kref refcount;
 };
 
-/*
- * struct ttm_object_device
- *
- * @object_lock: lock that protects idr.
- *
- * @object_count: Per device object count.
- *
- * This is the per-device data structure needed for ttm object management.
- */
+ 
 
 struct ttm_object_device {
 	spinlock_t object_lock;
@@ -100,26 +39,7 @@ struct ttm_object_device {
 	struct idr idr;
 };
 
-/*
- * struct ttm_ref_object
- *
- * @hash: Hash entry for the per-file object reference hash.
- *
- * @head: List entry for the per-file list of ref-objects.
- *
- * @kref: Ref count.
- *
- * @obj: Base object this ref object is referencing.
- *
- * @ref_type: Type of ref object.
- *
- * This is similar to an idr object, but it also has a hash table entry
- * that allows lookup with a pointer to the referenced object as a key. In
- * that way, one can easily detect whether a base object is referenced by
- * a particular ttm_object_file. It also carries a ref count to avoid creating
- * multiple ref objects if a ttm_object_file references the same base
- * object more than once.
- */
+ 
 
 struct ttm_ref_object {
 	struct rcu_head rcu_head;
@@ -234,11 +154,7 @@ static void ttm_release_base(struct kref *kref)
 	idr_remove(&tdev->idr, base->handle);
 	spin_unlock(&tdev->object_lock);
 
-	/*
-	 * Note: We don't use synchronize_rcu() here because it's far
-	 * too slow. It's up to the user to free the object using
-	 * call_rcu() or ttm_base_object_kfree().
-	 */
+	 
 
 	ttm_object_file_unref(&base->tfile);
 	if (base->refcount_release)
@@ -389,10 +305,7 @@ void ttm_object_file_release(struct ttm_object_file **p_tfile)
 	*p_tfile = NULL;
 	spin_lock(&tfile->lock);
 
-	/*
-	 * Since we release the lock within the loop, we have to
-	 * restart it from the beginning each time.
-	 */
+	 
 
 	while (!list_empty(&tfile->ref_list)) {
 		list = tfile->ref_list.next;
@@ -433,14 +346,7 @@ ttm_object_device_init(const struct dma_buf_ops *ops)
 	spin_lock_init(&tdev->object_lock);
 	atomic_set(&tdev->object_count, 0);
 
-	/*
-	 * Our base is at VMWGFX_NUM_MOB + 1 because we want to create
-	 * a seperate namespace for GEM handles (which are
-	 * 1..VMWGFX_NUM_MOB) and the surface handles. Some ioctl's
-	 * can take either handle as an argument so we want to
-	 * easily be able to tell whether the handle refers to a
-	 * GEM buffer or a surface.
-	 */
+	 
 	idr_init_base(&tdev->idr, VMWGFX_NUM_MOB + 1);
 	tdev->ops = *ops;
 	tdev->dmabuf_release = tdev->ops.release;
@@ -460,34 +366,13 @@ void ttm_object_device_release(struct ttm_object_device **p_tdev)
 	kfree(tdev);
 }
 
-/**
- * get_dma_buf_unless_doomed - get a dma_buf reference if possible.
- *
- * @dmabuf: Non-refcounted pointer to a struct dma-buf.
- *
- * Obtain a file reference from a lookup structure that doesn't refcount
- * the file, but synchronizes with its release method to make sure it has
- * not been freed yet. See for example kref_get_unless_zero documentation.
- * Returns true if refcounting succeeds, false otherwise.
- *
- * Nobody really wants this as a public API yet, so let it mature here
- * for some time...
- */
+ 
 static bool __must_check get_dma_buf_unless_doomed(struct dma_buf *dmabuf)
 {
 	return atomic_long_inc_not_zero(&dmabuf->file->f_count) != 0L;
 }
 
-/**
- * ttm_prime_refcount_release - refcount release method for a prime object.
- *
- * @p_base: Pointer to ttm_base_object pointer.
- *
- * This is a wrapper that calls the refcount_release founction of the
- * underlying object. At the same time it cleans up the prime object.
- * This function is called when all references to the base object we
- * derive from are gone.
- */
+ 
 static void ttm_prime_refcount_release(struct ttm_base_object **p_base)
 {
 	struct ttm_base_object *base = *p_base;
@@ -501,16 +386,7 @@ static void ttm_prime_refcount_release(struct ttm_base_object **p_base)
 		prime->refcount_release(&base);
 }
 
-/**
- * ttm_prime_dmabuf_release - Release method for the dma-bufs we export
- *
- * @dma_buf:
- *
- * This function first calls the dma_buf release method the driver
- * provides. Then it cleans up our dma_buf pointer used for lookup,
- * and finally releases the reference the dma_buf has on our base
- * object.
- */
+ 
 static void ttm_prime_dmabuf_release(struct dma_buf *dma_buf)
 {
 	struct ttm_prime_object *prime =
@@ -527,17 +403,7 @@ static void ttm_prime_dmabuf_release(struct dma_buf *dma_buf)
 	ttm_base_object_unref(&base);
 }
 
-/**
- * ttm_prime_fd_to_handle - Get a base object handle from a prime fd
- *
- * @tfile: A struct ttm_object_file identifying the caller.
- * @fd: The prime / dmabuf fd.
- * @handle: The returned handle.
- *
- * This function returns a handle to an object that previously exported
- * a dma-buf. Note that we don't handle imports yet, because we simply
- * have no consumers of that implementation.
- */
+ 
 int ttm_prime_fd_to_handle(struct ttm_object_file *tfile,
 			   int fd, u32 *handle)
 {
@@ -564,15 +430,7 @@ int ttm_prime_fd_to_handle(struct ttm_object_file *tfile,
 	return ret;
 }
 
-/**
- * ttm_prime_handle_to_fd - Return a dma_buf fd from a ttm prime object
- *
- * @tfile: Struct ttm_object_file identifying the caller.
- * @handle: Handle to the object we're exporting from.
- * @flags: flags for dma-buf creation. We just pass them on.
- * @prime_fd: The returned file descriptor.
- *
- */
+ 
 int ttm_prime_handle_to_fd(struct ttm_object_file *tfile,
 			   uint32_t handle, uint32_t flags,
 			   int *prime_fd)
@@ -610,9 +468,7 @@ int ttm_prime_handle_to_fd(struct ttm_object_file *tfile,
 		exp_info.flags = flags;
 		exp_info.priv = prime;
 
-		/*
-		 * Need to create a new dma_buf
-		 */
+		 
 
 		dma_buf = dma_buf_export(&exp_info);
 		if (IS_ERR(dma_buf)) {
@@ -621,9 +477,7 @@ int ttm_prime_handle_to_fd(struct ttm_object_file *tfile,
 			goto out_unref;
 		}
 
-		/*
-		 * dma_buf has taken the base object reference
-		 */
+		 
 		base = NULL;
 		prime->dma_buf = dma_buf;
 	}
@@ -642,19 +496,7 @@ out_unref:
 	return ret;
 }
 
-/**
- * ttm_prime_object_init - Initialize a ttm_prime_object
- *
- * @tfile: struct ttm_object_file identifying the caller
- * @size: The size of the dma_bufs we export.
- * @prime: The object to be initialized.
- * @shareable: See ttm_base_object_init
- * @type: See ttm_base_object_init
- * @refcount_release: See ttm_base_object_init
- *
- * Initializes an object which is compatible with the drm_prime model
- * for data sharing between processes and devices.
- */
+ 
 int ttm_prime_object_init(struct ttm_object_file *tfile, size_t size,
 			  struct ttm_prime_object *prime, bool shareable,
 			  enum ttm_object_type type,

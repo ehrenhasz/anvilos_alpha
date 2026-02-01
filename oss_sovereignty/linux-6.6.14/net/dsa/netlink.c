@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2022 NXP
- */
+
+ 
 #include <linux/netdevice.h>
 #include <net/rtnetlink.h>
 
@@ -38,7 +37,7 @@ static int dsa_changelink(struct net_device *dev, struct nlattr *tb[],
 
 static size_t dsa_get_size(const struct net_device *dev)
 {
-	return nla_total_size(sizeof(u32)) +	/* IFLA_DSA_MASTER  */
+	return nla_total_size(sizeof(u32)) +	 
 	       0;
 }
 

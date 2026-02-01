@@ -1,52 +1,10 @@
-/*
- * PMC-Sierra PM8001/8081/8088/8089 SAS/SATA based host adapters driver
- *
- * Copyright (c) 2008-2009 USI Co., Ltd.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- *
- */
+ 
 
 #include <linux/slab.h>
 #include "pm8001_sas.h"
 #include "pm80xx_tracepoints.h"
 
-/**
- * pm8001_find_tag - from sas task to find out  tag that belongs to this task
- * @task: the task sent to the LLDD
- * @tag: the found tag associated with the task
- */
+ 
 static int pm8001_find_tag(struct sas_task *task, u32 *tag)
 {
 	if (task->lldd_task) {
@@ -58,11 +16,7 @@ static int pm8001_find_tag(struct sas_task *task, u32 *tag)
 	return 0;
 }
 
-/**
-  * pm8001_tag_free - free the no more needed tag
-  * @pm8001_ha: our hba struct
-  * @tag: the found tag associated with the task
-  */
+ 
 void pm8001_tag_free(struct pm8001_hba_info *pm8001_ha, u32 tag)
 {
 	void *bitmap = pm8001_ha->rsvd_tags;
@@ -76,11 +30,7 @@ void pm8001_tag_free(struct pm8001_hba_info *pm8001_ha, u32 tag)
 	spin_unlock_irqrestore(&pm8001_ha->bitmap_lock, flags);
 }
 
-/**
-  * pm8001_tag_alloc - allocate a empty tag for task used.
-  * @pm8001_ha: our hba struct
-  * @tag_out: the found empty tag .
-  */
+ 
 int pm8001_tag_alloc(struct pm8001_hba_info *pm8001_ha, u32 *tag_out)
 {
 	void *bitmap = pm8001_ha->rsvd_tags;
@@ -96,21 +46,12 @@ int pm8001_tag_alloc(struct pm8001_hba_info *pm8001_ha, u32 *tag_out)
 	__set_bit(tag, bitmap);
 	spin_unlock_irqrestore(&pm8001_ha->bitmap_lock, flags);
 
-	/* reserved tags are in the lower region of the tagset */
+	 
 	*tag_out = tag;
 	return 0;
 }
 
-/**
- * pm8001_mem_alloc - allocate memory for pm8001.
- * @pdev: pci device.
- * @virt_addr: the allocated virtual address
- * @pphys_addr: DMA address for this device
- * @pphys_addr_hi: the physical address high byte address.
- * @pphys_addr_lo: the physical address low byte address.
- * @mem_size: memory size.
- * @align: requested byte alignment
- */
+ 
 int pm8001_mem_alloc(struct pci_dev *pdev, void **virt_addr,
 	dma_addr_t *pphys_addr, u32 *pphys_addr_hi,
 	u32 *pphys_addr_lo, u32 mem_size, u32 align)
@@ -133,11 +74,7 @@ int pm8001_mem_alloc(struct pci_dev *pdev, void **virt_addr,
 	return 0;
 }
 
-/**
-  * pm8001_find_ha_by_dev - from domain device which come from sas layer to
-  * find out our hba struct.
-  * @dev: the domain device which from sas layer.
-  */
+ 
 static
 struct pm8001_hba_info *pm8001_find_ha_by_dev(struct domain_device *dev)
 {
@@ -146,15 +83,7 @@ struct pm8001_hba_info *pm8001_find_ha_by_dev(struct domain_device *dev)
 	return pm8001_ha;
 }
 
-/**
-  * pm8001_phy_control - this function should be registered to
-  * sas_domain_function_template to provide libsas used, note: this is just
-  * control the HBA phy rather than other expander phy if you want control
-  * other phy, you should use SMP command.
-  * @sas_phy: which phy in HBA phys.
-  * @func: the operation.
-  * @funcdata: always NULL.
-  */
+ 
 int pm8001_phy_control(struct asd_sas_phy *sas_phy, enum phy_func func,
 	void *funcdata)
 {
@@ -169,10 +98,7 @@ int pm8001_phy_control(struct asd_sas_phy *sas_phy, enum phy_func func,
 	pm8001_ha->phy[phy_id].enable_completion = &completion;
 
 	if (PM8001_CHIP_DISP->fatal_errors(pm8001_ha)) {
-		/*
-		 * If the controller is in fatal error state,
-		 * we will not get a response from the controller
-		 */
+		 
 		pm8001_dbg(pm8001_ha, FAIL,
 			   "Phy control failed due to fatal errors\n");
 		return -EFAULT;
@@ -267,11 +193,7 @@ int pm8001_phy_control(struct asd_sas_phy *sas_phy, enum phy_func func,
 	return rc;
 }
 
-/**
-  * pm8001_scan_start - we should enable all HBA phys by sending the phy_start
-  * command to HBA.
-  * @shost: the scsi host data.
-  */
+ 
 void pm8001_scan_start(struct Scsi_Host *shost)
 {
 	int i;
@@ -279,7 +201,7 @@ void pm8001_scan_start(struct Scsi_Host *shost)
 	struct sas_ha_struct *sha = SHOST_TO_SAS_HA(shost);
 	DECLARE_COMPLETION_ONSTACK(completion);
 	pm8001_ha = sha->lldd_ha;
-	/* SAS_RE_INITIALIZATION not available in SPCv/ve */
+	 
 	if (pm8001_ha->chip_id == chip_8001)
 		PM8001_CHIP_DISP->sas_re_init_req(pm8001_ha);
 	for (i = 0; i < pm8001_ha->chip->n_phy; ++i) {
@@ -294,20 +216,15 @@ int pm8001_scan_finished(struct Scsi_Host *shost, unsigned long time)
 {
 	struct sas_ha_struct *ha = SHOST_TO_SAS_HA(shost);
 
-	/* give the phy enabling interrupt event time to come in (1s
-	* is empirically about all it takes) */
+	 
 	if (time < HZ)
 		return 0;
-	/* Wait for discovery to finish */
+	 
 	sas_drain_work(ha);
 	return 1;
 }
 
-/**
-  * pm8001_task_prep_smp - the dispatcher function, prepare data for smp task
-  * @pm8001_ha: our hba card information
-  * @ccb: the ccb which attached to smp task
-  */
+ 
 static int pm8001_task_prep_smp(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb)
 {
@@ -326,58 +243,40 @@ u32 pm8001_get_ncq_tag(struct sas_task *task, u32 *tag)
 	return 0;
 }
 
-/**
-  * pm8001_task_prep_ata - the dispatcher function, prepare data for sata task
-  * @pm8001_ha: our hba card information
-  * @ccb: the ccb which attached to sata task
-  */
+ 
 static int pm8001_task_prep_ata(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb)
 {
 	return PM8001_CHIP_DISP->sata_req(pm8001_ha, ccb);
 }
 
-/**
-  * pm8001_task_prep_internal_abort - the dispatcher function, prepare data
-  *				      for internal abort task
-  * @pm8001_ha: our hba card information
-  * @ccb: the ccb which attached to sata task
-  */
+ 
 static int pm8001_task_prep_internal_abort(struct pm8001_hba_info *pm8001_ha,
 					   struct pm8001_ccb_info *ccb)
 {
 	return PM8001_CHIP_DISP->task_abort(pm8001_ha, ccb);
 }
 
-/**
-  * pm8001_task_prep_ssp_tm - the dispatcher function, prepare task management data
-  * @pm8001_ha: our hba card information
-  * @ccb: the ccb which attached to TM
-  * @tmf: the task management IU
-  */
+ 
 static int pm8001_task_prep_ssp_tm(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb, struct sas_tmf_task *tmf)
 {
 	return PM8001_CHIP_DISP->ssp_tm_req(pm8001_ha, ccb, tmf);
 }
 
-/**
-  * pm8001_task_prep_ssp - the dispatcher function, prepare ssp data for ssp task
-  * @pm8001_ha: our hba card information
-  * @ccb: the ccb which attached to ssp task
-  */
+ 
 static int pm8001_task_prep_ssp(struct pm8001_hba_info *pm8001_ha,
 	struct pm8001_ccb_info *ccb)
 {
 	return PM8001_CHIP_DISP->ssp_io_req(pm8001_ha, ccb);
 }
 
- /* Find the local port id that's attached to this device */
+  
 static int sas_find_local_port_id(struct domain_device *dev)
 {
 	struct domain_device *pdev = dev->parent;
 
-	/* Directly attached device */
+	 
 	if (!pdev)
 		return dev->port->id;
 	while (pdev) {
@@ -421,12 +320,7 @@ static int pm8001_deliver_command(struct pm8001_hba_info *pm8001_ha,
 	return -EINVAL;
 }
 
-/**
-  * pm8001_queue_command - register for upper layer used, all IO commands sent
-  * to HBA are from this interface.
-  * @task: the task to be execute.
-  * @gfp_flags: gfp_flags
-  */
+ 
 int pm8001_queue_command(struct sas_task *task, gfp_t gfp_flags)
 {
 	struct task_status_struct *ts = &task->task_status;
@@ -520,11 +414,7 @@ err_out:
 	return rc;
 }
 
-/**
-  * pm8001_ccb_task_free - free the sg for ssp and smp command, free the ccb.
-  * @pm8001_ha: our hba card information
-  * @ccb: the ccb which attached to ssp task to free
-  */
+ 
 void pm8001_ccb_task_free(struct pm8001_hba_info *pm8001_ha,
 			  struct pm8001_ccb_info *ccb)
 {
@@ -551,18 +441,18 @@ void pm8001_ccb_task_free(struct pm8001_hba_info *pm8001_ha,
 	case SAS_PROTOCOL_STP:
 	case SAS_PROTOCOL_SSP:
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
 	if (sas_protocol_ata(task->task_proto)) {
-		/* For SCSI/ATA commands uldd_task points to ata_queued_cmd */
+		 
 		qc = task->uldd_task;
 		pm8001_dev = ccb->device;
 		trace_pm80xx_request_complete(pm8001_ha->id,
 			pm8001_dev ? pm8001_dev->attached_phy : PM8001_MAX_PHYS,
-			ccb->ccb_tag, 0 /* ctlr_opcode not known */,
-			qc ? qc->tf.command : 0, // ata opcode
+			ccb->ccb_tag, 0  ,
+			qc ? qc->tf.command : 0, 
 			pm8001_dev ? atomic_read(&pm8001_dev->running_req) : -1);
 	}
 
@@ -570,10 +460,7 @@ void pm8001_ccb_task_free(struct pm8001_hba_info *pm8001_ha,
 	pm8001_ccb_free(pm8001_ha, ccb);
 }
 
-/**
- * pm8001_alloc_dev - find a empty pm8001_device
- * @pm8001_ha: our hba card information
- */
+ 
 static struct pm8001_device *pm8001_alloc_dev(struct pm8001_hba_info *pm8001_ha)
 {
 	u32 dev;
@@ -590,11 +477,7 @@ static struct pm8001_device *pm8001_alloc_dev(struct pm8001_hba_info *pm8001_ha)
 	}
 	return NULL;
 }
-/**
-  * pm8001_find_dev - find a matching pm8001_device
-  * @pm8001_ha: our hba card information
-  * @device_id: device ID to match against
-  */
+ 
 struct pm8001_device *pm8001_find_dev(struct pm8001_hba_info *pm8001_ha,
 					u32 device_id)
 {
@@ -619,18 +502,7 @@ void pm8001_free_dev(struct pm8001_device *pm8001_dev)
 	pm8001_dev->sas_device = NULL;
 }
 
-/**
-  * pm8001_dev_found_notify - libsas notify a device is found.
-  * @dev: the device structure which sas layer used.
-  *
-  * when libsas find a sas domain device, it should tell the LLDD that
-  * device is found, and then LLDD register this device to HBA firmware
-  * by the command "OPC_INB_REG_DEV", after that the HBA will assign a
-  * device ID(according to device's sas address) and returned it to LLDD. From
-  * now on, we communicate with HBA FW with the device ID which HBA assigned
-  * rather than sas address. it is the necessary step for our HBA but it is
-  * the optional for other HBA driver.
-  */
+ 
 static int pm8001_dev_found_notify(struct domain_device *dev)
 {
 	unsigned long flags = 0;
@@ -669,9 +541,9 @@ static int pm8001_dev_found_notify(struct domain_device *dev)
 		if (dev->dev_type == SAS_SATA_DEV) {
 			pm8001_device->attached_phy =
 				dev->rphy->identify.phy_identifier;
-			flag = 1; /* directly sata */
+			flag = 1;  
 		}
-	} /*register this device to HBA*/
+	}  
 	pm8001_dbg(pm8001_ha, DISC, "Found device\n");
 	PM8001_CHIP_DISP->reg_dev_req(pm8001_ha, pm8001_device, flag);
 	spin_unlock_irqrestore(&pm8001_ha->lock, flags);
@@ -692,10 +564,7 @@ int pm8001_dev_found(struct domain_device *dev)
 
 #define PM8001_TASK_TIMEOUT 20
 
-/**
-  * pm8001_dev_gone_notify - see the comments for "pm8001_dev_found_notify"
-  * @dev: the device structure which sas layer used.
-  */
+ 
 static void pm8001_dev_gone_notify(struct domain_device *dev)
 {
 	unsigned long flags = 0;
@@ -730,7 +599,7 @@ void pm8001_dev_gone(struct domain_device *dev)
 	pm8001_dev_gone_notify(dev);
 }
 
-/* retry commands by ha, by task and/or by device */
+ 
 void pm8001_open_reject_retry(
 	struct pm8001_hba_info *pm8001_ha,
 	struct sas_task *task_to_close,
@@ -772,7 +641,7 @@ void pm8001_open_reject_retry(
 			continue;
 		ts = &task->task_status;
 		ts->resp = SAS_TASK_COMPLETE;
-		/* Force the midlayer to retry */
+		 
 		ts->stat = SAS_OPEN_REJECT;
 		ts->open_rej_reason = SAS_OREJ_RSVD_RETRY;
 		if (pm8001_dev)
@@ -789,7 +658,7 @@ void pm8001_open_reject_retry(
 			spin_unlock_irqrestore(&task->task_state_lock,
 				flags1);
 			pm8001_ccb_task_free(pm8001_ha, ccb);
-			mb();/* in order to force CPU ordering */
+			mb(); 
 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 			task->task_done(task);
 			spin_lock_irqsave(&pm8001_ha->lock, flags);
@@ -799,13 +668,7 @@ void pm8001_open_reject_retry(
 	spin_unlock_irqrestore(&pm8001_ha->lock, flags);
 }
 
-/**
- * pm8001_I_T_nexus_reset() - reset the initiator/target connection
- * @dev: the device structure for the device to reset.
- *
- * Standard mandates link reset for ATA (type 0) and hard reset for
- * SSP (type 1), only for RECOVERY
- */
+ 
 int pm8001_I_T_nexus_reset(struct domain_device *dev)
 {
 	int rc = TMF_RESP_FUNC_FAILED;
@@ -851,10 +714,7 @@ int pm8001_I_T_nexus_reset(struct domain_device *dev)
 	return rc;
 }
 
-/*
-* This function handle the IT_NEXUS_XXX event or completion
-* status code for SSP/SATA/SMP I/O request.
-*/
+ 
 int pm8001_I_T_nexus_event_handler(struct domain_device *dev)
 {
 	int rc = TMF_RESP_FUNC_FAILED;
@@ -878,30 +738,30 @@ int pm8001_I_T_nexus_event_handler(struct domain_device *dev)
 			rc = 0;
 			goto out;
 		}
-		/* send internal ssp/sata/smp abort command to FW */
+		 
 		sas_execute_internal_abort_dev(dev, 0, NULL);
 		msleep(100);
 
-		/* deregister the target device */
+		 
 		pm8001_dev_gone_notify(dev);
 		msleep(200);
 
-		/*send phy reset to hard reset target */
+		 
 		rc = sas_phy_reset(phy, 1);
 		msleep(2000);
 		pm8001_dev->setds_completion = &completion_setstate;
 
 		wait_for_completion(&completion_setstate);
 	} else {
-		/* send internal ssp/sata/smp abort command to FW */
+		 
 		sas_execute_internal_abort_dev(dev, 0, NULL);
 		msleep(100);
 
-		/* deregister the target device */
+		 
 		pm8001_dev_gone_notify(dev);
 		msleep(200);
 
-		/*send phy reset to hard reset target */
+		 
 		rc = sas_phy_reset(phy, 1);
 		msleep(2000);
 	}
@@ -912,7 +772,7 @@ out:
 
 	return rc;
 }
-/* mandatory SAM-3, the task reset the specified LUN*/
+ 
 int pm8001_lu_reset(struct domain_device *dev, u8 *lun)
 {
 	int rc = TMF_RESP_FUNC_FAILED;
@@ -921,10 +781,7 @@ int pm8001_lu_reset(struct domain_device *dev, u8 *lun)
 	DECLARE_COMPLETION_ONSTACK(completion_setstate);
 
 	if (PM8001_CHIP_DISP->fatal_errors(pm8001_ha)) {
-		/*
-		 * If the controller is in fatal error state,
-		 * we will not get a response from the controller
-		 */
+		 
 		pm8001_dbg(pm8001_ha, FAIL,
 			   "LUN reset failed due to fatal errors\n");
 		return rc;
@@ -942,13 +799,13 @@ int pm8001_lu_reset(struct domain_device *dev, u8 *lun)
 	} else {
 		rc = sas_lu_reset(dev, lun);
 	}
-	/* If failed, fall-through I_T_Nexus reset */
+	 
 	pm8001_dbg(pm8001_ha, EH, "for device[%x]:rc=%d\n",
 		   pm8001_dev->device_id, rc);
 	return rc;
 }
 
-/* optional SAM-3 */
+ 
 int pm8001_query_task(struct sas_task *task)
 {
 	u32 tag = 0xdeadbeef;
@@ -971,12 +828,12 @@ int pm8001_query_task(struct sas_task *task)
 
 		rc = sas_query_task(task, tag);
 		switch (rc) {
-		/* The task is still in Lun, release it then */
+		 
 		case TMF_RESP_FUNC_SUCC:
 			pm8001_dbg(pm8001_ha, EH,
 				   "The task is still in Lun\n");
 			break;
-		/* The task is not in Lun or failed, reset the phy */
+		 
 		case TMF_RESP_FUNC_FAILED:
 		case TMF_RESP_FUNC_COMPLETE:
 			pm8001_dbg(pm8001_ha, EH,
@@ -988,7 +845,7 @@ int pm8001_query_task(struct sas_task *task)
 	return rc;
 }
 
-/*  mandatory SAM-3, still need free task/ccb info, abort the specified task */
+ 
 int pm8001_abort_task(struct sas_task *task)
 {
 	struct pm8001_ccb_info *ccb = task->lldd_task;
@@ -1010,8 +867,8 @@ int pm8001_abort_task(struct sas_task *task)
 	phy_id = pm8001_dev->attached_phy;
 
 	if (PM8001_CHIP_DISP->fatal_errors(pm8001_ha)) {
-		// If the controller is seeing fatal errors
-		// abort task will not get a response from the controller
+		 
+		 
 		return TMF_RESP_FUNC_FAILED;
 	}
 
@@ -1042,13 +899,13 @@ int pm8001_abort_task(struct sas_task *task)
 			struct pm8001_phy *phy = pm8001_ha->phy + phy_id;
 			port_id = phy->port->port_id;
 
-			/* 1. Set Device state as Recovery */
+			 
 			pm8001_dev->setds_completion = &completion;
 			PM8001_CHIP_DISP->set_dev_state_req(pm8001_ha,
 				pm8001_dev, DS_IN_RECOVERY);
 			wait_for_completion(&completion);
 
-			/* 2. Send Phy Control Hard Reset */
+			 
 			reinit_completion(&completion);
 			phy->port_reset_status = PORT_RESET_TMO;
 			phy->reset_success = false;
@@ -1062,14 +919,7 @@ int pm8001_abort_task(struct sas_task *task)
 				goto out;
 			}
 
-			/* In the case of the reset timeout/fail we still
-			 * abort the command at the firmware. The assumption
-			 * here is that the drive is off doing something so
-			 * that it's not processing requests, and we want to
-			 * avoid getting a completion for this and either
-			 * leaking the task in libsas or losing the race and
-			 * getting a double free.
-			 */
+			 
 			pm8001_dbg(pm8001_ha, MSG,
 				   "Waiting for local phy ctl\n");
 			ret = wait_for_completion_timeout(&completion,
@@ -1078,9 +928,7 @@ int pm8001_abort_task(struct sas_task *task)
 				phy->enable_completion = NULL;
 				phy->reset_completion = NULL;
 			} else {
-				/* 3. Wait for Port Reset complete or
-				 * Port reset TMO
-				 */
+				 
 				pm8001_dbg(pm8001_ha, MSG,
 					   "Waiting for Port reset\n");
 				ret = wait_for_completion_timeout(
@@ -1094,18 +942,13 @@ int pm8001_abort_task(struct sas_task *task)
 					pm8001_dev_gone_notify(dev);
 					PM8001_CHIP_DISP->hw_event_ack_req(
 						pm8001_ha, 0,
-						0x07, /*HW_EVENT_PHY_DOWN ack*/
+						0x07,  
 						port_id, phy_id, 0, 0);
 					goto out;
 				}
 			}
 
-			/*
-			 * 4. SATA Abort ALL
-			 * we wait for the task to be aborted so that the task
-			 * is removed from the ccb. on success the caller is
-			 * going to free the task.
-			 */
+			 
 			ret = sas_execute_internal_abort_dev(dev, 0, NULL);
 			if (ret)
 				goto out;
@@ -1115,25 +958,20 @@ int pm8001_abort_task(struct sas_task *task)
 			if (!ret)
 				goto out;
 
-			/* 5. Set Device State as Operational */
+			 
 			reinit_completion(&completion);
 			pm8001_dev->setds_completion = &completion;
 			PM8001_CHIP_DISP->set_dev_state_req(pm8001_ha,
 				pm8001_dev, DS_OPERATIONAL);
 			wait_for_completion(&completion);
 		} else {
-			/*
-			 * Ensure that if we see a completion for the ccb
-			 * associated with the task which we are trying to
-			 * abort then we should not touch the sas_task as it
-			 * may race with libsas freeing it when return here.
-			 */
+			 
 			ccb->task = NULL;
 			ret = sas_execute_internal_abort_single(dev, tag, 0, NULL);
 		}
 		rc = TMF_RESP_FUNC_COMPLETE;
 	} else if (task->task_proto & SAS_PROTOCOL_SMP) {
-		/* SMP */
+		 
 		rc = sas_execute_internal_abort_single(dev, tag, 0, NULL);
 
 	}

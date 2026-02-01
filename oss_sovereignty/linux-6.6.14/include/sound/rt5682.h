@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/sound/rt5682.h -- Platform data for RT5682
- *
- * Copyright 2018 Realtek Microelectronics
- */
+ 
+ 
 
 #ifndef __LINUX_SND_RT5682_H
 #define __LINUX_SND_RT5682_H

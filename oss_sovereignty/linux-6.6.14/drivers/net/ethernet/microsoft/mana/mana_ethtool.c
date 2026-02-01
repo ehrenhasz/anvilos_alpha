@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+ 
 
 #include <linux/inetdevice.h>
 #include <linux/etherdevice.h>
@@ -127,7 +127,7 @@ static void mana_get_ethtool_stats(struct net_device *ndev,
 
 	if (!apc->port_is_up)
 		return;
-	/* we call mana function to update stats from GDMA */
+	 
 	mana_query_gf_stats(apc);
 
 	for (q = 0; q < ARRAY_SIZE(mana_eth_stats); q++)
@@ -215,7 +215,7 @@ static int mana_get_rxfh(struct net_device *ndev, u32 *indir, u8 *key,
 	int i;
 
 	if (hfunc)
-		*hfunc = ETH_RSS_HASH_TOP; /* Toeplitz */
+		*hfunc = ETH_RSS_HASH_TOP;  
 
 	if (indir) {
 		for (i = 0; i < MANA_INDIRECT_TABLE_SIZE; i++)
@@ -263,7 +263,7 @@ static int mana_set_rxfh(struct net_device *ndev, const u32 *indir,
 
 	err = mana_config_rss(apc, TRI_STATE_TRUE, update_hash, update_table);
 
-	if (err) { /* recover to original values */
+	if (err) {  
 		if (update_table) {
 			for (i = 0; i < MANA_INDIRECT_TABLE_SIZE; i++)
 				apc->indir_table[i] = save_table[i];
@@ -308,7 +308,7 @@ static int mana_set_channels(struct net_device *ndev,
 
 	netdev_err(ndev, "mana_attach failed: %d\n", err);
 
-	/* Try to roll it back to the old configuration. */
+	 
 	apc->num_queues = old_count;
 	err2 = mana_attach(ndev);
 	if (err2)

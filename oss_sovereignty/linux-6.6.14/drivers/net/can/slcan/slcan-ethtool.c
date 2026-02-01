@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2022 Amarula Solutions, Dario Binacchi <dario.binacchi@amarulasolutions.com>
- *
- */
+
+ 
 
 #include <linux/can/dev.h>
 #include <linux/ethtool.h>

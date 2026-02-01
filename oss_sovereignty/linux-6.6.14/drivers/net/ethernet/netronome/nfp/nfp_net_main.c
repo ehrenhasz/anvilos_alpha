@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_net_main.c
- * Netronome network device driver: Main entry point
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Alejandro Lucero <alejandro.lucero@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Rolf Neugebauer <rolf.neugebauer@netronome.com>
- */
+ 
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/kernel.h>
@@ -34,15 +27,7 @@
 
 #define NFP_PF_CSR_SLICE_SIZE	(32 * 1024)
 
-/**
- * nfp_net_get_mac_addr() - Get the MAC address.
- * @pf:       NFP PF handle
- * @netdev:   net_device to set MAC address on
- * @port:     NFP port structure
- *
- * First try to get the MAC address from NSP ETH table. If that
- * fails generate a random address.
- */
+ 
 void
 nfp_net_get_mac_addr(struct nfp_pf *pf, struct net_device *netdev,
 		     struct nfp_port *port)
@@ -109,7 +94,7 @@ nfp_net_pf_alloc_vnic(struct nfp_pf *pf, bool needs_netdev,
 	n_tx_rings = readl(ctrl_bar + NFP_NET_CFG_MAX_TXRINGS);
 	n_rx_rings = readl(ctrl_bar + NFP_NET_CFG_MAX_RXRINGS);
 
-	/* Allocate and initialise the vNIC */
+	 
 	nn = nfp_net_alloc(pf->pdev, pf->dev_info, ctrl_bar, needs_netdev,
 			   n_tx_rings, n_rx_rings);
 	if (IS_ERR(nn))
@@ -195,7 +180,7 @@ nfp_net_pf_alloc_vnics(struct nfp_pf *pf, void __iomem *ctrl_bar,
 
 		ctrl_bar += NFP_PF_CSR_SLICE_SIZE;
 
-		/* Kill the vNIC if app init marked it as invalid */
+		 
 		if (nn->port && nn->port->type == NFP_PORT_INVALID)
 			nfp_net_pf_free_vnic(pf, nn);
 	}
@@ -225,7 +210,7 @@ static int nfp_net_pf_alloc_irqs(struct nfp_pf *pf)
 	unsigned int wanted_irqs, num_irqs, vnics_left, irqs_left;
 	struct nfp_net *nn;
 
-	/* Get MSI-X vectors */
+	 
 	wanted_irqs = 0;
 	list_for_each_entry(nn, &pf->vnics, vnic_list)
 		wanted_irqs += NFP_NET_NON_Q_VECTORS + nn->dp.num_r_vecs;
@@ -243,7 +228,7 @@ static int nfp_net_pf_alloc_irqs(struct nfp_pf *pf)
 		return -ENOMEM;
 	}
 
-	/* Distribute IRQs to vNICs */
+	 
 	irqs_left = num_irqs;
 	vnics_left = pf->num_vnics;
 	list_for_each_entry(nn, &pf->vnics, vnic_list) {
@@ -272,7 +257,7 @@ static int nfp_net_pf_init_vnics(struct nfp_pf *pf)
 	unsigned int id;
 	int err;
 
-	/* Finish vNIC init and register */
+	 
 	id = 0;
 	list_for_each_entry(nn, &pf->vnics, vnic_list) {
 		if (!nfp_net_is_data_vnic(nn))
@@ -599,11 +584,11 @@ int nfp_net_refresh_port_table_sync(struct nfp_pf *pf)
 
 	devl_assert_locked(devlink);
 
-	/* Check for nfp_net_pci_remove() racing against us */
+	 
 	if (list_empty(&pf->vnics))
 		return 0;
 
-	/* Update state of all ports */
+	 
 	rtnl_lock();
 	list_for_each_entry(port, &pf->ports, port_list)
 		clear_bit(NFP_PORT_CHANGED, &port->flags);
@@ -625,12 +610,12 @@ int nfp_net_refresh_port_table_sync(struct nfp_pf *pf)
 
 	kfree(eth_table);
 
-	/* Resync repr state. This may cause reprs to be removed. */
+	 
 	err = nfp_reprs_resync_phys_ports(pf->app);
 	if (err)
 		return err;
 
-	/* Shoot off the ports which became invalid */
+	 
 	list_for_each_entry_safe(nn, next, &pf->vnics, vnic_list) {
 		if (!nn->port || nn->port->type != NFP_PORT_INVALID)
 			continue;
@@ -684,9 +669,7 @@ int nfp_net_refresh_eth_port(struct nfp_port *port)
 	return ret;
 }
 
-/*
- * PCI device functions
- */
+ 
 int nfp_net_pci_probe(struct nfp_pf *pf)
 {
 	struct devlink *devlink = priv_to_devlink(pf);
@@ -728,7 +711,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
 		goto err_unmap;
 	}
 
-	/* Determine stride */
+	 
 	if (nfp_net_fw_ver_eq(&fw_ver, 0, 0, 0, 1)) {
 		stride = 2;
 		nfp_warn(pf->cpp, "OBSOLETE Firmware detected - VF isolation not available\n");
@@ -761,7 +744,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
 
 	pf->ddir = nfp_net_debugfs_device_add(pf->pdev);
 
-	/* Allocate the vnics and do basic init */
+	 
 	err = nfp_net_pf_alloc_vnics(pf, ctrl_bar, qc_bar, stride);
 	if (err)
 		goto err_clean_ddir;
@@ -818,7 +801,7 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
 	}
 
 	nfp_net_pf_app_stop(pf);
-	/* stop app first, to avoid double free of ctrl vNIC's ddir */
+	 
 	nfp_net_debugfs_dir_clean(&pf->ddir);
 
 	nfp_devlink_params_unregister(pf);

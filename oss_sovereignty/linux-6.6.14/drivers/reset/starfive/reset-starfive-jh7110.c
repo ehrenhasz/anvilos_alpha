@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Reset driver for the StarFive JH7110 SoC
- *
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 
@@ -88,7 +84,7 @@ static const struct auxiliary_device_id jh7110_reset_ids[] = {
 		.name = "clk_starfive_jh7110_sys.rst-vo",
 		.driver_data = (kernel_ulong_t)&jh7110_vout_info,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(auxiliary, jh7110_reset_ids);
 

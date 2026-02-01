@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013-2014 Renesas Electronics Europe Ltd.
- * Author: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -58,10 +55,10 @@
 #define USDHI6_SD_CMD_APP		0x0040
 #define USDHI6_SD_CMD_MODE_RSP_AUTO	0x0000
 #define USDHI6_SD_CMD_MODE_RSP_NONE	0x0300
-#define USDHI6_SD_CMD_MODE_RSP_R1	0x0400	/* Also R5, R6, R7 */
-#define USDHI6_SD_CMD_MODE_RSP_R1B	0x0500	/* R1b */
+#define USDHI6_SD_CMD_MODE_RSP_R1	0x0400	 
+#define USDHI6_SD_CMD_MODE_RSP_R1B	0x0500	 
 #define USDHI6_SD_CMD_MODE_RSP_R2	0x0600
-#define USDHI6_SD_CMD_MODE_RSP_R3	0x0700	/* Also R4 */
+#define USDHI6_SD_CMD_MODE_RSP_R3	0x0700	 
 #define USDHI6_SD_CMD_DATA		0x0800
 #define USDHI6_SD_CMD_READ		0x1000
 #define USDHI6_SD_CMD_MULTI		0x2000
@@ -152,7 +149,7 @@ enum usdhi6_wait_for {
 
 struct usdhi6_page {
 	struct page *page;
-	void *mapped;		/* mapped page */
+	void *mapped;		 
 };
 
 struct usdhi6_host {
@@ -161,24 +158,24 @@ struct usdhi6_host {
 	void __iomem *base;
 	struct clk *clk;
 
-	/* SG memory handling */
+	 
 
-	/* Common for multiple and single block requests */
-	struct usdhi6_page pg;	/* current page from an SG */
-	void *blk_page;		/* either a mapped page, or the bounce buffer */
-	size_t offset;		/* offset within a page, including sg->offset */
+	 
+	struct usdhi6_page pg;	 
+	void *blk_page;		 
+	size_t offset;		 
 
-	/* Blocks, crossing a page boundary */
+	 
 	size_t head_len;
 	struct usdhi6_page head_pg;
 
-	/* A bounce buffer for unaligned blocks or blocks, crossing a page boundary */
+	 
 	struct scatterlist bounce_sg;
 	u8 bounce_buf[512];
 
-	/* Multiple block requests only */
-	struct scatterlist *sg;	/* current SG segment */
-	int page_idx;		/* page index within an SG segment */
+	 
+	struct scatterlist *sg;	 
+	int page_idx;		 
 
 	enum usdhi6_wait_for wait;
 	u32 status_mask;
@@ -190,21 +187,21 @@ struct usdhi6_host {
 	unsigned long rate;
 	bool app_cmd;
 
-	/* Timeout handling */
+	 
 	struct delayed_work timeout_work;
 	unsigned long timeout;
 
-	/* DMA support */
+	 
 	struct dma_chan *chan_rx;
 	struct dma_chan *chan_tx;
 	bool dma_active;
 
-	/* Pin control */
+	 
 	struct pinctrl *pinctrl;
 	struct pinctrl_state *pins_uhs;
 };
 
-/*			I/O primitives					*/
+ 
 
 static void usdhi6_write(struct usdhi6_host *host, u32 reg, u32 data)
 {
@@ -260,7 +257,7 @@ static void usdhi6_wait_for_brwe(struct usdhi6_host *host, bool read)
 
 static void usdhi6_only_cd(struct usdhi6_host *host)
 {
-	/* Mask all except card hotplug */
+	 
 	usdhi6_irq_enable(host, USDHI6_SD_INFO1_CARD_CD, 0);
 }
 
@@ -281,7 +278,7 @@ static int usdhi6_error_code(struct usdhi6_host *host)
 		int opc = host->mrq ? host->mrq->cmd->opcode : -1;
 
 		err = usdhi6_read(host, USDHI6_SD_ERR_STS2);
-		/* Response timeout is often normal, don't spam the log */
+		 
 		if (host->wait == USDHI6_WAIT_FOR_CMD)
 			dev_dbg(mmc_dev(host->mmc),
 				"T-out sts 0x%x, resp 0x%x, state %u, CMD%d\n",
@@ -303,14 +300,9 @@ static int usdhi6_error_code(struct usdhi6_host *host)
 	return -EIO;
 }
 
-/*			Scatter-Gather management			*/
+ 
 
-/*
- * In PIO mode we have to map each page separately, using kmap(). That way
- * adjacent pages are mapped to non-adjacent virtual addresses. That's why we
- * have to use a bounce buffer for blocks, crossing page boundaries. Such blocks
- * have been observed with an SDIO WiFi card (b43 driver).
- */
+ 
 static void usdhi6_blk_bounce(struct usdhi6_host *host,
 			      struct scatterlist *sg)
 {
@@ -338,7 +330,7 @@ static void usdhi6_blk_bounce(struct usdhi6_host *host,
 	       data->blksz - blk_head);
 }
 
-/* Only called for multiple block IO */
+ 
 static void usdhi6_sg_prep(struct usdhi6_host *host)
 {
 	struct mmc_request *mrq = host->mrq;
@@ -347,11 +339,11 @@ static void usdhi6_sg_prep(struct usdhi6_host *host)
 	usdhi6_write(host, USDHI6_SD_SECCNT, data->blocks);
 
 	host->sg = data->sg;
-	/* TODO: if we always map, this is redundant */
+	 
 	host->offset = host->sg->offset;
 }
 
-/* Map the first page in an SG segment: common for multiple and single block IO */
+ 
 static void *usdhi6_sg_map(struct usdhi6_host *host)
 {
 	struct mmc_data *data = host->mrq->data;
@@ -369,17 +361,11 @@ static void *usdhi6_sg_map(struct usdhi6_host *host)
 	host->pg.mapped = kmap(host->pg.page);
 	host->offset = sg->offset;
 
-	/*
-	 * Block size must be a power of 2 for multi-block transfers,
-	 * therefore blk_head is equal for all pages in this SG
-	 */
+	 
 	host->head_len = blk_head;
 
 	if (head < data->blksz)
-		/*
-		 * The first block in the SG crosses a page boundary.
-		 * Max blksz = 512, so blocks can only span 2 pages
-		 */
+		 
 		usdhi6_blk_bounce(host, sg);
 	else
 		host->blk_page = host->pg.mapped;
@@ -391,14 +377,14 @@ static void *usdhi6_sg_map(struct usdhi6_host *host)
 	return host->blk_page + host->offset;
 }
 
-/* Unmap the current page: common for multiple and single block IO */
+ 
 static void usdhi6_sg_unmap(struct usdhi6_host *host, bool force)
 {
 	struct mmc_data *data = host->mrq->data;
 	struct page *page = host->head_pg.page;
 
 	if (page) {
-		/* Previous block was cross-page boundary */
+		 
 		struct scatterlist *sg = data->sg_len > 1 ?
 			host->sg : data->sg;
 		size_t blk_head = host->head_len;
@@ -417,7 +403,7 @@ static void usdhi6_sg_unmap(struct usdhi6_host *host, bool force)
 
 		if (!force && sg_dma_len(sg) + sg->offset >
 		    (host->page_idx << PAGE_SHIFT) + data->blksz - blk_head)
-			/* More blocks in this SG, don't unmap the next page */
+			 
 			return;
 	}
 
@@ -431,34 +417,30 @@ static void usdhi6_sg_unmap(struct usdhi6_host *host, bool force)
 	host->pg.page = NULL;
 }
 
-/* Called from MMC_WRITE_MULTIPLE_BLOCK or MMC_READ_MULTIPLE_BLOCK */
+ 
 static void usdhi6_sg_advance(struct usdhi6_host *host)
 {
 	struct mmc_data *data = host->mrq->data;
 	size_t done, total;
 
-	/* New offset: set at the end of the previous block */
+	 
 	if (host->head_pg.page) {
-		/* Finished a cross-page block, jump to the new page */
+		 
 		host->page_idx++;
 		host->offset = data->blksz - host->head_len;
 		host->blk_page = host->pg.mapped;
 		usdhi6_sg_unmap(host, false);
 	} else {
 		host->offset += data->blksz;
-		/* The completed block didn't cross a page boundary */
+		 
 		if (host->offset == PAGE_SIZE) {
-			/* If required, we'll map the page below */
+			 
 			host->offset = 0;
 			host->page_idx++;
 		}
 	}
 
-	/*
-	 * Now host->blk_page + host->offset point at the end of our last block
-	 * and host->page_idx is the index of the page, in which our new block
-	 * is located, if any
-	 */
+	 
 
 	done = (host->page_idx << PAGE_SHIFT) + host->offset;
 	total = host->sg->offset + sg_dma_len(host->sg);
@@ -467,23 +449,19 @@ static void usdhi6_sg_advance(struct usdhi6_host *host)
 		done, total, host->offset);
 
 	if (done < total && host->offset) {
-		/* More blocks in this page */
+		 
 		if (host->offset + data->blksz > PAGE_SIZE)
-			/* We approached at a block, that spans 2 pages */
+			 
 			usdhi6_blk_bounce(host, host->sg);
 
 		return;
 	}
 
-	/* Finished current page or an SG segment */
+	 
 	usdhi6_sg_unmap(host, false);
 
 	if (done == total) {
-		/*
-		 * End of an SG segment or the complete SG: jump to the next
-		 * segment, we'll map it later in usdhi6_blk_read() or
-		 * usdhi6_blk_write()
-		 */
+		 
 		struct scatterlist *next = sg_next(host->sg);
 
 		host->page_idx = 0;
@@ -500,9 +478,9 @@ static void usdhi6_sg_advance(struct usdhi6_host *host)
 		return;
 	}
 
-	/* We cannot get here after crossing a page border */
+	 
 
-	/* Next page in the same SG */
+	 
 	host->pg.page = nth_page(sg_page(host->sg), host->page_idx);
 	host->pg.mapped = kmap(host->pg.page);
 	host->blk_page = host->pg.mapped;
@@ -512,7 +490,7 @@ static void usdhi6_sg_advance(struct usdhi6_host *host)
 		host->mrq->cmd->opcode, host->mrq);
 }
 
-/*			DMA handling					*/
+ 
 
 static void usdhi6_dma_release(struct usdhi6_host *host)
 {
@@ -601,7 +579,7 @@ static int usdhi6_dma_setup(struct usdhi6_host *host, struct dma_chan *chan,
 		__func__, data->sg_len, ret, cookie, desc);
 
 	if (cookie < 0) {
-		/* DMA failed, fall back to PIO */
+		 
 		if (ret >= 0)
 			ret = cookie;
 		usdhi6_dma_release(host);
@@ -629,7 +607,7 @@ static void usdhi6_dma_kill(struct usdhi6_host *host)
 
 	dev_dbg(mmc_dev(host->mmc), "%s(): SG of %u: %ux%u\n",
 		__func__, data->sg_len, data->blocks, data->blksz);
-	/* Abort DMA */
+	 
 	if (data->flags & MMC_DATA_READ)
 		dmaengine_terminate_sync(host->chan_rx);
 	else
@@ -653,11 +631,7 @@ static void usdhi6_dma_check_error(struct usdhi6_host *host)
 		return;
 	}
 
-	/*
-	 * The datasheet tells us to check a response from the card, whereas
-	 * responses only come after the command phase, not after the data
-	 * phase. Let's check anyway.
-	 */
+	 
 	if (host->irq_status & USDHI6_SD_INFO1_RSP_END)
 		dev_warn(mmc_dev(host->mmc), "Unexpected response received!\n");
 }
@@ -689,7 +663,7 @@ static void usdhi6_dma_request(struct usdhi6_host *host, phys_addr_t start)
 
 	cfg.direction = DMA_MEM_TO_DEV;
 	cfg.dst_addr = start + USDHI6_SD_BUF0;
-	cfg.dst_maxburst = 128;	/* 128 words * 4 bytes = 512 bytes */
+	cfg.dst_maxburst = 128;	 
 	cfg.src_addr = 0;
 	ret = dmaengine_slave_config(host->chan_tx, &cfg);
 	if (ret < 0)
@@ -706,7 +680,7 @@ static void usdhi6_dma_request(struct usdhi6_host *host, phys_addr_t start)
 
 	cfg.direction = DMA_DEV_TO_MEM;
 	cfg.src_addr = cfg.dst_addr;
-	cfg.src_maxburst = 128;	/* 128 words * 4 bytes = 512 bytes */
+	cfg.src_maxburst = 128;	 
 	cfg.dst_addr = 0;
 	ret = dmaengine_slave_config(host->chan_rx, &cfg);
 	if (ret < 0)
@@ -722,7 +696,7 @@ e_release_tx:
 	host->chan_tx = NULL;
 }
 
-/*			API helpers					*/
+ 
 
 static void usdhi6_clk_set(struct usdhi6_host *host, struct mmc_ios *ios)
 {
@@ -748,7 +722,7 @@ static void usdhi6_clk_set(struct usdhi6_host *host, struct mmc_ios *ios)
 
 		if (host->imclk <= rate) {
 			if (ios->timing != MMC_TIMING_UHS_DDR50) {
-				/* Cannot have 1-to-1 clock in DDR mode */
+				 
 				new_rate = host->imclk;
 				val |= 0xff;
 			} else {
@@ -770,10 +744,7 @@ static void usdhi6_clk_set(struct usdhi6_host *host, struct mmc_ios *ios)
 			rate, (val & 0xff) << 2, new_rate);
 	}
 
-	/*
-	 * if old or new rate is equal to input rate, have to switch the clock
-	 * off before changing and on after
-	 */
+	 
 	if (host->imclk == rate || host->imclk == host->rate || !rate)
 		usdhi6_write(host, USDHI6_SD_CLK_CTRL,
 			     val & ~USDHI6_SD_CLK_CTRL_SCLKEN);
@@ -796,7 +767,7 @@ static void usdhi6_set_power(struct usdhi6_host *host, struct mmc_ios *ios)
 	struct mmc_host *mmc = host->mmc;
 
 	if (!IS_ERR(mmc->supply.vmmc))
-		/* Errors ignored... */
+		 
 		mmc_regulator_set_ocr(mmc, mmc->supply.vmmc,
 				      ios->power_mode ? ios->vdd : 0);
 }
@@ -830,10 +801,7 @@ static void usdhi6_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		usdhi6_only_cd(host);
 		break;
 	case MMC_POWER_UP:
-		/*
-		 * We only also touch USDHI6_SD_OPTION from .request(), which
-		 * cannot race with MMC_POWER_UP
-		 */
+		 
 		ret = usdhi6_reset(host);
 		if (ret < 0) {
 			dev_err(mmc_dev(mmc), "Cannot reset the interface!\n");
@@ -844,11 +812,7 @@ static void usdhi6_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		break;
 	case MMC_POWER_ON:
 		option = usdhi6_read(host, USDHI6_SD_OPTION);
-		/*
-		 * The eMMC standard only allows 4 or 8 bits in the DDR mode,
-		 * the same probably holds for SD cards. We check here anyway,
-		 * since the datasheet explicitly requires 4 bits for DDR.
-		 */
+		 
 		if (ios->bus_width == MMC_BUS_WIDTH_1) {
 			if (ios->timing == MMC_TIMING_UHS_DDR50)
 				dev_err(mmc_dev(mmc),
@@ -868,7 +832,7 @@ static void usdhi6_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		usdhi6_clk_set(host, ios);
 }
 
-/* This is data timeout. Response timeout is fixed to 640 clock cycles */
+ 
 static void usdhi6_timeout_set(struct usdhi6_host *host)
 {
 	struct mmc_request *mrq = host->mrq;
@@ -882,10 +846,10 @@ static void usdhi6_timeout_set(struct usdhi6_host *host)
 			mrq->data->timeout_clks;
 
 	if (!ticks || ticks > 1 << 27)
-		/* Max timeout */
+		 
 		val = 14;
 	else if (ticks < 1 << 13)
-		/* Min timeout */
+		 
 		val = 0;
 	else
 		val = order_base_2(ticks) - 13;
@@ -893,7 +857,7 @@ static void usdhi6_timeout_set(struct usdhi6_host *host)
 	dev_dbg(mmc_dev(host->mmc), "Set %s timeout %lu ticks @ %lu Hz\n",
 		mrq->data ? "data" : "cmd", ticks, host->rate);
 
-	/* Timeout Counter mask: 0xf0 */
+	 
 	usdhi6_write(host, USDHI6_SD_OPTION, (val << USDHI6_SD_OPTION_TIMEOUT_SHIFT) |
 		     (usdhi6_read(host, USDHI6_SD_OPTION) & ~USDHI6_SD_OPTION_TIMEOUT_MASK));
 }
@@ -921,7 +885,7 @@ static void usdhi6_request_done(struct usdhi6_host *host)
 			data ? data->error : 1,
 			mrq->stop ? mrq->stop->error : 1);
 
-	/* Disable DMA */
+	 
 	usdhi6_write(host, USDHI6_CC_EXT_MODE, 0);
 	host->wait = USDHI6_WAIT_FOR_REQUEST;
 	host->mrq = NULL;
@@ -1052,7 +1016,7 @@ static int usdhi6_rq_start(struct usdhi6_host *host)
 				"Bad SG of %u: %ux%u @ %u\n", data->sg_len,
 				data->blksz, data->blocks, data->sg->offset);
 
-		/* Enable DMA for USDHI6_MIN_DMA bytes or more */
+		 
 		use_dma = data->blksz >= USDHI6_MIN_DMA &&
 			!(data->blksz % 4) &&
 			usdhi6_dma_start(host) >= DMA_MIN_COOKIE;
@@ -1071,18 +1035,18 @@ static int usdhi6_rq_start(struct usdhi6_host *host)
 			__func__, cmd->opcode);
 	}
 
-	/* We have to get a command completion interrupt with DMA too */
+	 
 	usdhi6_wait_for_resp(host);
 
 	host->wait = USDHI6_WAIT_FOR_CMD;
 	schedule_delayed_work(&host->timeout_work, host->timeout);
 
-	/* SEC bit is required to enable block counting by the core */
+	 
 	usdhi6_write(host, USDHI6_SD_STOP,
 		     data && data->blocks > 1 ? USDHI6_SD_STOP_SEC : 0);
 	usdhi6_write(host, USDHI6_SD_ARG, cmd->arg);
 
-	/* Kick command execution */
+	 
 	usdhi6_write(host, USDHI6_SD_CMD, opc);
 
 	return 0;
@@ -1109,32 +1073,20 @@ static void usdhi6_request(struct mmc_host *mmc, struct mmc_request *mrq)
 static int usdhi6_get_cd(struct mmc_host *mmc)
 {
 	struct usdhi6_host *host = mmc_priv(mmc);
-	/* Read is atomic, no need to lock */
+	 
 	u32 status = usdhi6_read(host, USDHI6_SD_INFO1) & USDHI6_SD_INFO1_CD;
 
-/*
- *	level	status.CD	CD_ACTIVE_HIGH	card present
- *	1	0		0		0
- *	1	0		1		1
- *	0	1		0		1
- *	0	1		1		0
- */
+ 
 	return !status ^ !(mmc->caps2 & MMC_CAP2_CD_ACTIVE_HIGH);
 }
 
 static int usdhi6_get_ro(struct mmc_host *mmc)
 {
 	struct usdhi6_host *host = mmc_priv(mmc);
-	/* No locking as above */
+	 
 	u32 status = usdhi6_read(host, USDHI6_SD_INFO1) & USDHI6_SD_INFO1_WP;
 
-/*
- *	level	status.WP	RO_ACTIVE_HIGH	card read-only
- *	1	0		0		0
- *	1	0		1		1
- *	0	1		0		1
- *	0	1		1		0
- */
+ 
 	return !status ^ !(mmc->caps2 & MMC_CAP2_RO_ACTIVE_HIGH);
 }
 
@@ -1191,7 +1143,7 @@ static int usdhi6_card_busy(struct mmc_host *mmc)
 	struct usdhi6_host *host = mmc_priv(mmc);
 	u32 tmp = usdhi6_read(host, USDHI6_SD_INFO2);
 
-	/* Card is busy if it is pulling dat[0] low */
+	 
 	return !(tmp & USDHI6_SD_INFO2_SDDAT0);
 }
 
@@ -1205,7 +1157,7 @@ static const struct mmc_host_ops usdhi6_ops = {
 	.card_busy = usdhi6_card_busy,
 };
 
-/*			State machine handlers				*/
+ 
 
 static void usdhi6_resp_cmd12(struct usdhi6_host *host)
 {
@@ -1219,19 +1171,7 @@ static void usdhi6_resp_read(struct usdhi6_host *host)
 	u32 *rsp = cmd->resp, tmp = 0;
 	int i;
 
-/*
- * RSP10	39-8
- * RSP32	71-40
- * RSP54	103-72
- * RSP76	127-104
- * R2-type response:
- * resp[0]	= r[127..96]
- * resp[1]	= r[95..64]
- * resp[2]	= r[63..32]
- * resp[3]	= r[31..0]
- * Other responses:
- * resp[0]	= r[39..8]
- */
+ 
 
 	if (mmc_resp_type(cmd) == MMC_RSP_NONE)
 		return;
@@ -1251,7 +1191,7 @@ static void usdhi6_resp_read(struct usdhi6_host *host)
 		}
 	else if (cmd->opcode == MMC_READ_MULTIPLE_BLOCK ||
 		 cmd->opcode == MMC_WRITE_MULTIPLE_BLOCK)
-		/* Read RSP54 to avoid conflict with auto CMD12 */
+		 
 		rsp[0] = usdhi6_read(host, USDHI6_SD_RSP54);
 	else
 		rsp[0] = usdhi6_read(host, USDHI6_SD_RSP10);
@@ -1353,7 +1293,7 @@ static int usdhi6_stop_cmd(struct usdhi6_host *host)
 			host->wait = USDHI6_WAIT_FOR_STOP;
 			return 0;
 		}
-		fallthrough;	/* Unsupported STOP command */
+		fallthrough;	 
 	default:
 		dev_err(mmc_dev(host->mmc),
 			"unsupported stop CMD%d for CMD%d\n",
@@ -1406,14 +1346,10 @@ static bool usdhi6_end_cmd(struct usdhi6_host *host)
 
 static bool usdhi6_read_block(struct usdhi6_host *host)
 {
-	/* ACCESS_END IRQ is already unmasked */
+	 
 	int ret = usdhi6_blk_read(host);
 
-	/*
-	 * Have to force unmapping both pages: the single block could have been
-	 * cross-page, in which case for single-block IO host->page_idx == 0.
-	 * So, if we don't force, the second page won't be unmapped.
-	 */
+	 
 	usdhi6_sg_unmap(host, true);
 
 	if (ret < 0)
@@ -1440,7 +1376,7 @@ static bool usdhi6_write_block(struct usdhi6_host *host)
 {
 	int ret = usdhi6_blk_write(host);
 
-	/* See comment in usdhi6_read_block() */
+	 
 	usdhi6_sg_unmap(host, true);
 
 	if (ret < 0)
@@ -1463,7 +1399,7 @@ static bool usdhi6_mwrite_block(struct usdhi6_host *host)
 		(host->wait != USDHI6_WAIT_FOR_DATA_END || !host->mrq->stop);
 }
 
-/*			Interrupt & timeout handlers			*/
+ 
 
 static irqreturn_t usdhi6_sd_bh(int irq, void *dev_id)
 {
@@ -1484,26 +1420,26 @@ static irqreturn_t usdhi6_sd_bh(int irq, void *dev_id)
 
 	switch (host->wait) {
 	case USDHI6_WAIT_FOR_REQUEST:
-		/* We're too late, the timeout has already kicked in */
+		 
 		return IRQ_HANDLED;
 	case USDHI6_WAIT_FOR_CMD:
-		/* Wait for data? */
+		 
 		io_wait = usdhi6_end_cmd(host);
 		break;
 	case USDHI6_WAIT_FOR_MREAD:
-		/* Wait for more data? */
+		 
 		io_wait = usdhi6_mread_block(host);
 		break;
 	case USDHI6_WAIT_FOR_READ:
-		/* Wait for data end? */
+		 
 		io_wait = usdhi6_read_block(host);
 		break;
 	case USDHI6_WAIT_FOR_MWRITE:
-		/* Wait data to write? */
+		 
 		io_wait = usdhi6_mwrite_block(host);
 		break;
 	case USDHI6_WAIT_FOR_WRITE:
-		/* Wait for data end? */
+		 
 		io_wait = usdhi6_write_block(host);
 		break;
 	case USDHI6_WAIT_FOR_DMA:
@@ -1539,7 +1475,7 @@ static irqreturn_t usdhi6_sd_bh(int irq, void *dev_id)
 
 	if (io_wait) {
 		schedule_delayed_work(&host->timeout_work, host->timeout);
-		/* Wait for more data or ACCESS_END */
+		 
 		if (!host->dma_active)
 			usdhi6_wait_for_brwe(host, mrq->data->flags & MMC_DATA_READ);
 		return IRQ_HANDLED;
@@ -1552,7 +1488,7 @@ static irqreturn_t usdhi6_sd_bh(int irq, void *dev_id)
 				    host->mrq->stop &&
 				    !host->mrq->stop->error &&
 				    !usdhi6_stop_cmd(host)) {
-					/* Sending STOP */
+					 
 					usdhi6_wait_for_resp(host);
 
 					schedule_delayed_work(&host->timeout_work,
@@ -1563,7 +1499,7 @@ static irqreturn_t usdhi6_sd_bh(int irq, void *dev_id)
 
 				data->bytes_xfered = data->blocks * data->blksz;
 			} else {
-				/* Data error: might need to unmap the last page */
+				 
 				dev_warn(mmc_dev(host->mmc), "%s(): data error %d\n",
 					 __func__, data->error);
 				usdhi6_sg_unmap(host, true);
@@ -1597,14 +1533,14 @@ static irqreturn_t usdhi6_sd(int irq, void *dev_id)
 
 	error = status2 & USDHI6_SD_INFO2_ERR;
 
-	/* Ack / clear interrupts */
+	 
 	if (USDHI6_SD_INFO1_IRQ & status)
 		usdhi6_write(host, USDHI6_SD_INFO1,
 			     0xffff & ~(USDHI6_SD_INFO1_IRQ & status));
 
 	if (USDHI6_SD_INFO2_IRQ & status2) {
 		if (error)
-			/* In error cases BWE and BRE aren't cleared automatically */
+			 
 			status2 |= USDHI6_SD_INFO2_BWE | USDHI6_SD_INFO2_BRE;
 
 		usdhi6_write(host, USDHI6_SD_INFO2,
@@ -1615,7 +1551,7 @@ static irqreturn_t usdhi6_sd(int irq, void *dev_id)
 	host->irq_status = status;
 
 	if (error) {
-		/* Don't pollute the log with unsupported command timeouts */
+		 
 		if (host->wait != USDHI6_WAIT_FOR_CMD ||
 		    error != USDHI6_SD_INFO2_RSP_TOUT)
 			dev_warn(mmc_dev(host->mmc),
@@ -1653,14 +1589,14 @@ static irqreturn_t usdhi6_cd(int irq, void *dev_id)
 	struct mmc_host *mmc = host->mmc;
 	u16 status;
 
-	/* We're only interested in hotplug events here */
+	 
 	status = usdhi6_read(host, USDHI6_SD_INFO1) & ~host->status_mask &
 		USDHI6_SD_INFO1_CARD;
 
 	if (!status)
 		return IRQ_NONE;
 
-	/* Ack */
+	 
 	usdhi6_write(host, USDHI6_SD_INFO1, ~status);
 
 	if (!work_pending(&mmc->detect.work) &&
@@ -1673,11 +1609,7 @@ static irqreturn_t usdhi6_cd(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Actually this should not be needed, if the built-in timeout works reliably in
- * the both PIO cases and DMA never fails. But if DMA does fail, a timeout
- * handler might be the only way to catch the error.
- */
+ 
 static void usdhi6_timeout_work(struct work_struct *work)
 {
 	struct delayed_work *d = to_delayed_work(work);
@@ -1701,7 +1633,7 @@ static void usdhi6_timeout_work(struct work_struct *work)
 	switch (host->wait) {
 	default:
 		dev_err(mmc_dev(host->mmc), "Invalid state %u\n", host->wait);
-		fallthrough;	/* mrq can be NULL, but is impossible */
+		fallthrough;	 
 	case USDHI6_WAIT_FOR_CMD:
 		usdhi6_error_code(host);
 		if (mrq)
@@ -1723,7 +1655,7 @@ static void usdhi6_timeout_work(struct work_struct *work)
 			host->offset, data->blocks, data->blksz, data->sg_len,
 			sg_dma_len(sg), sg->offset);
 		usdhi6_sg_unmap(host, true);
-		fallthrough;	/* page unmapped in USDHI6_WAIT_FOR_DATA_END */
+		fallthrough;	 
 	case USDHI6_WAIT_FOR_DATA_END:
 		usdhi6_error_code(host);
 		data->error = -ETIMEDOUT;
@@ -1733,7 +1665,7 @@ static void usdhi6_timeout_work(struct work_struct *work)
 		usdhi6_request_done(host);
 }
 
-/*			 Probe / release				*/
+ 
 
 static const struct of_device_id usdhi6_of_match[] = {
 	{.compatible = "renesas,usdhi6rol0"},
@@ -1778,10 +1710,7 @@ static int usdhi6_probe(struct platform_device *pdev)
 	host->mmc	= mmc;
 	host->wait	= USDHI6_WAIT_FOR_REQUEST;
 	host->timeout	= msecs_to_jiffies(USDHI6_REQ_TIMEOUT_MS);
-	/*
-	 * We use a fixed timeout of 4s, hence inform the core about it. A
-	 * future improvement should instead respect the cmd->busy_timeout.
-	 */
+	 
 	mmc->max_busy_timeout = USDHI6_REQ_TIMEOUT_MS;
 
 	host->pinctrl = devm_pinctrl_get(&pdev->dev);
@@ -1848,19 +1777,12 @@ static int usdhi6_probe(struct platform_device *pdev)
 	mmc->ops = &usdhi6_ops;
 	mmc->caps |= MMC_CAP_SD_HIGHSPEED | MMC_CAP_MMC_HIGHSPEED |
 		     MMC_CAP_SDIO_IRQ;
-	/* Set .max_segs to some random number. Feel free to adjust. */
+	 
 	mmc->max_segs = 32;
 	mmc->max_blk_size = 512;
 	mmc->max_req_size = PAGE_SIZE * mmc->max_segs;
 	mmc->max_blk_count = mmc->max_req_size / mmc->max_blk_size;
-	/*
-	 * Setting .max_seg_size to 1 page would simplify our page-mapping code,
-	 * But OTOH, having large segments makes DMA more efficient. We could
-	 * check, whether we managed to get DMA and fall back to 1 page
-	 * segments, but if we do manage to obtain DMA and then it fails at
-	 * run-time and we fall back to PIO, we will continue getting large
-	 * segments. So, we wouldn't be able to get rid of the code anyway.
-	 */
+	 
 	mmc->max_seg_size = mmc->max_req_size;
 	if (!mmc->f_max)
 		mmc->f_max = host->imclk;

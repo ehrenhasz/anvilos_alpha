@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_LPASS_AUDIO_CC_SC7280_H
 #define _DT_BINDINGS_CLK_QCOM_LPASS_AUDIO_CC_SC7280_H
 
-/* LPASS_AUDIO_CC clocks */
+ 
 #define LPASS_AUDIO_CC_PLL				0
 #define LPASS_AUDIO_CC_PLL_OUT_AUX2			1
 #define LPASS_AUDIO_CC_PLL_OUT_AUX2_DIV_CLK_SRC		2
@@ -24,12 +22,12 @@
 #define LPASS_AUDIO_CC_RX_MCLK_CLK			14
 #define LPASS_AUDIO_CC_RX_MCLK_CLK_SRC			15
 
-/* LPASS AUDIO CC CSR */
+ 
 #define LPASS_AUDIO_SWR_RX_CGCR				0
 #define LPASS_AUDIO_SWR_TX_CGCR				1
 #define LPASS_AUDIO_SWR_WSA_CGCR			2
 
-/* LPASS_AON_CC clocks */
+ 
 #define LPASS_AON_CC_PLL				0
 #define LPASS_AON_CC_PLL_OUT_EVEN			1
 #define LPASS_AON_CC_PLL_OUT_MAIN_CDIV_DIV_CLK_SRC	2
@@ -42,7 +40,7 @@
 #define LPASS_AON_CC_TX_MCLK_RCG_CLK_SRC		9
 #define LPASS_AON_CC_VA_MEM0_CLK			10
 
-/* LPASS_AON_CC power domains */
+ 
 #define LPASS_AON_CC_LPASS_AUDIO_HM_GDSC		0
 
 #endif

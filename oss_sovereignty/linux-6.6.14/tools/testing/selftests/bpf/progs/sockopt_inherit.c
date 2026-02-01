@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
@@ -57,16 +57,16 @@ int _getsockopt(struct bpf_sockopt *ctx)
 	__u8 *optval = ctx->optval;
 
 	if (ctx->level != SOL_CUSTOM)
-		goto out; /* only interested in SOL_CUSTOM */
+		goto out;  
 
 	if (optval + 1 > optval_end)
-		return 0; /* EPERM, bounds check */
+		return 0;  
 
 	storage = get_storage(ctx);
 	if (!storage)
-		return 0; /* EPERM, couldn't get sk storage */
+		return 0;  
 
-	ctx->retval = 0; /* Reset system call return value to zero */
+	ctx->retval = 0;  
 
 	optval[0] = storage->val;
 	ctx->optlen = 1;
@@ -74,7 +74,7 @@ int _getsockopt(struct bpf_sockopt *ctx)
 	return 1;
 
 out:
-	/* optval larger than PAGE_SIZE use kernel's buffer. */
+	 
 	if (ctx->optlen > page_size)
 		ctx->optlen = 0;
 	return 1;
@@ -88,14 +88,14 @@ int _setsockopt(struct bpf_sockopt *ctx)
 	__u8 *optval = ctx->optval;
 
 	if (ctx->level != SOL_CUSTOM)
-		goto out; /* only interested in SOL_CUSTOM */
+		goto out;  
 
 	if (optval + 1 > optval_end)
-		return 0; /* EPERM, bounds check */
+		return 0;  
 
 	storage = get_storage(ctx);
 	if (!storage)
-		return 0; /* EPERM, couldn't get sk storage */
+		return 0;  
 
 	storage->val = optval[0];
 	ctx->optlen = -1;
@@ -103,7 +103,7 @@ int _setsockopt(struct bpf_sockopt *ctx)
 	return 1;
 
 out:
-	/* optval larger than PAGE_SIZE use kernel's buffer. */
+	 
 	if (ctx->optlen > page_size)
 		ctx->optlen = 0;
 	return 1;

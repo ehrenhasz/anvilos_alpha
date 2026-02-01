@@ -1,48 +1,13 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1999-2010,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
-#include <tic.h>		/* struct tinfo_fkeys */
+#include <tic.h>		 
 
 MODULE_ID("$Id: init_keytry.c,v 1.19 2020/02/02 23:34:34 tom Exp $")
 
-/*
-**      _nc_init_keytry()
-**
-**      Construct the try for the current terminal's keypad keys.
-**
-*/
+ 
 
-/*
- * Internal entrypoints use SCREEN* parameter to obtain capabilities rather
- * than cur_term.
- */
+ 
 #undef CUR
 #define CUR SP_TERMTYPE
 
@@ -50,11 +15,9 @@ MODULE_ID("$Id: init_keytry.c,v 1.19 2020/02/02 23:34:34 tom Exp $")
 #undef	_nc_tinfo_fkeys
 #endif
 
-/* LINT_PREPRO
-#if 0*/
+ 
 #include <init_keytry.h>
-/* LINT_PREPRO
-#endif*/
+ 
 
 #if	BROKEN_LINKER
 const struct tinfo_fkeys *
@@ -67,10 +30,7 @@ _nc_tinfo_fkeysf(void)
 NCURSES_EXPORT(void)
 _nc_init_keytry(SCREEN *sp)
 {
-    /* The sp->_keytry value is initialized in newterm(), where the sp
-     * structure is created, because we can not tell where keypad() or
-     * mouse_activate() (which will call keyok()) are first called.
-     */
+     
 
     if (sp != 0) {
 	unsigned n;
@@ -83,11 +43,7 @@ _nc_init_keytry(SCREEN *sp)
 	    }
 	}
 #if NCURSES_XNAMES
-	/*
-	 * Add any of the extended strings to the tries if their name begins
-	 * with 'k', i.e., they follow the convention of other terminfo key
-	 * names.
-	 */
+	 
 	{
 	    TERMTYPE *tp = &(sp->_term->type);
 	    for (n = STRCOUNT; n < NUM_STRINGS(tp); ++n) {

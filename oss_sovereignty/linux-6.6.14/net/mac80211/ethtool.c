@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mac80211 ethtool hooks for cfg80211
- *
- * Copied from cfg.c - originally
- * Copyright 2006-2010	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2014	Intel Corporation (Author: Johannes Berg)
- * Copyright (C) 2018, 2022 Intel Corporation
- */
+
+ 
 #include <linux/types.h>
 #include <net/cfg80211.h>
 #include "ieee80211_i.h"
@@ -96,11 +89,7 @@ static void ieee80211_get_stats(struct net_device *dev,
 		data[i++] += sinfo.tx_retries;			\
 	} while (0)
 
-	/* For Managed stations, find the single station based on BSSID
-	 * and use that.  For interface types, iterate through all available
-	 * stations and add stats for any station that is assigned to this
-	 * network device.
-	 */
+	 
 
 	mutex_lock(&local->sta_mtx);
 
@@ -133,7 +122,7 @@ static void ieee80211_get_stats(struct net_device *dev,
 		i++;
 	} else {
 		list_for_each_entry(sta, &local->sta_list, list) {
-			/* Make sure this station belongs to the proper dev */
+			 
 			if (sta->sdata->dev != dev)
 				continue;
 
@@ -146,7 +135,7 @@ static void ieee80211_get_stats(struct net_device *dev,
 
 do_survey:
 	i = STA_STATS_LEN - STA_STATS_SURVEY_LEN;
-	/* Get survey stats for current channel */
+	 
 	survey.filled = 0;
 
 	rcu_read_lock();

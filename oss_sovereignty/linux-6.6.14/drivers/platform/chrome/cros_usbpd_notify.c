@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2020 Google LLC
- *
- * This driver serves as the receiver of cros_ec PD host events.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -23,16 +19,7 @@ struct cros_usbpd_notify_data {
 	struct notifier_block nb;
 };
 
-/**
- * cros_usbpd_register_notify - Register a notifier callback for PD events.
- * @nb: Notifier block pointer to register
- *
- * On ACPI platforms this corresponds to host events on the ECPD
- * "GOOG0003" ACPI device. On non-ACPI platforms this will filter mkbp events
- * for USB PD events.
- *
- * Return: 0 on success or negative error code.
- */
+ 
 int cros_usbpd_register_notify(struct notifier_block *nb)
 {
 	return blocking_notifier_chain_register(&cros_usbpd_notifier_list,
@@ -40,13 +27,7 @@ int cros_usbpd_register_notify(struct notifier_block *nb)
 }
 EXPORT_SYMBOL_GPL(cros_usbpd_register_notify);
 
-/**
- * cros_usbpd_unregister_notify - Unregister notifier callback for PD events.
- * @nb: Notifier block pointer to unregister
- *
- * Unregister a notifier callback that was previously registered with
- * cros_usbpd_register_notify().
- */
+ 
 void cros_usbpd_unregister_notify(struct notifier_block *nb)
 {
 	blocking_notifier_chain_unregister(&cros_usbpd_notifier_list, nb);
@@ -60,17 +41,14 @@ static void cros_usbpd_get_event_and_notify(struct device  *dev,
 	u32 event = 0;
 	int ret;
 
-	/*
-	 * We still send a 0 event out to older devices which don't
-	 * have the updated device heirarchy.
-	 */
+	 
 	if (!ec_dev) {
 		dev_dbg(dev,
 			"EC device inaccessible; sending 0 event status.\n");
 		goto send_notify;
 	}
 
-	/* Check for PD host events on EC. */
+	 
 	ret = cros_ec_cmd(ec_dev, 0, EC_CMD_PD_HOST_EVENT_STATUS,
 			  NULL, 0, &host_event_status, sizeof(host_event_status));
 	if (ret < 0) {
@@ -107,14 +85,10 @@ static int cros_usbpd_notify_probe_acpi(struct platform_device *pdev)
 	if (!pdnotify)
 		return -ENOMEM;
 
-	/* Get the EC device pointer needed to talk to the EC. */
+	 
 	ec_dev = dev_get_drvdata(dev->parent);
 	if (!ec_dev) {
-		/*
-		 * We continue even for older devices which don't have the
-		 * correct device heirarchy, namely, GOOG0003 is a child
-		 * of GOOG0004.
-		 */
+		 
 		dev_warn(dev, "Couldn't get Chrome EC device pointer.\n");
 	}
 
@@ -160,7 +134,7 @@ static struct platform_driver cros_usbpd_notify_acpi_driver = {
 	.remove = cros_usbpd_notify_remove_acpi,
 };
 
-#endif /* CONFIG_ACPI */
+#endif  
 
 static int cros_usbpd_notify_plat(struct notifier_block *nb,
 				  unsigned long queued_during_suspend,

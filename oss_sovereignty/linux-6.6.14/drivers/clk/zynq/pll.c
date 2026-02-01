@@ -1,25 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Zynq PLL driver
- *
- *  Copyright (C) 2013 Xilinx
- *
- *  Sören Brinkmann <soren.brinkmann@xilinx.com>
- */
+
+ 
 #include <linux/clk/zynq.h>
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
 #include <linux/io.h>
 
-/**
- * struct zynq_pll - pll clock
- * @hw:		Handle between common and hardware-specific interfaces
- * @pll_ctrl:	PLL control register
- * @pll_status:	PLL status register
- * @lock:	Register lock
- * @lockbit:	Indicates the associated PLL_LOCKED bit in the PLL status
- *		register.
- */
+ 
 struct zynq_pll {
 	struct clk_hw	hw;
 	void __iomem	*pll_ctrl;
@@ -29,7 +15,7 @@ struct zynq_pll {
 };
 #define to_zynq_pll(_hw)	container_of(_hw, struct zynq_pll, hw)
 
-/* Register bitfield defines */
+ 
 #define PLLCTRL_FBDIV_MASK	0x7f000
 #define PLLCTRL_FBDIV_SHIFT	12
 #define PLLCTRL_BPQUAL_MASK	(1 << 3)
@@ -41,13 +27,7 @@ struct zynq_pll {
 #define PLL_FBDIV_MIN	13
 #define PLL_FBDIV_MAX	66
 
-/**
- * zynq_pll_round_rate() - Round a clock frequency
- * @hw:		Handle between common and hardware-specific interfaces
- * @rate:	Desired clock frequency
- * @prate:	Clock frequency of parent clock
- * Return:	frequency closest to @rate the hardware can generate.
- */
+ 
 static long zynq_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 		unsigned long *prate)
 {
@@ -62,36 +42,21 @@ static long zynq_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	return *prate * fbdiv;
 }
 
-/**
- * zynq_pll_recalc_rate() - Recalculate clock frequency
- * @hw:			Handle between common and hardware-specific interfaces
- * @parent_rate:	Clock frequency of parent clock
- * Return:		current clock frequency.
- */
+ 
 static unsigned long zynq_pll_recalc_rate(struct clk_hw *hw,
 		unsigned long parent_rate)
 {
 	struct zynq_pll *clk = to_zynq_pll(hw);
 	u32 fbdiv;
 
-	/*
-	 * makes probably sense to redundantly save fbdiv in the struct
-	 * zynq_pll to save the IO access.
-	 */
+	 
 	fbdiv = (readl(clk->pll_ctrl) & PLLCTRL_FBDIV_MASK) >>
 			PLLCTRL_FBDIV_SHIFT;
 
 	return parent_rate * fbdiv;
 }
 
-/**
- * zynq_pll_is_enabled - Check if a clock is enabled
- * @hw:		Handle between common and hardware-specific interfaces
- * Return:	1 if the clock is enabled, 0 otherwise.
- *
- * Not sure this is a good idea, but since disabled means bypassed for
- * this clock implementation we say we are always enabled.
- */
+ 
 static int zynq_pll_is_enabled(struct clk_hw *hw)
 {
 	unsigned long flags = 0;
@@ -107,11 +72,7 @@ static int zynq_pll_is_enabled(struct clk_hw *hw)
 	return !(reg & (PLLCTRL_RESET_MASK | PLLCTRL_PWRDWN_MASK));
 }
 
-/**
- * zynq_pll_enable - Enable clock
- * @hw:		Handle between common and hardware-specific interfaces
- * Return: 0 on success
- */
+ 
 static int zynq_pll_enable(struct clk_hw *hw)
 {
 	unsigned long flags = 0;
@@ -123,7 +84,7 @@ static int zynq_pll_enable(struct clk_hw *hw)
 
 	pr_info("PLL: enable\n");
 
-	/* Power up PLL and wait for lock */
+	 
 	spin_lock_irqsave(clk->lock, flags);
 
 	reg = readl(clk->pll_ctrl);
@@ -137,11 +98,7 @@ static int zynq_pll_enable(struct clk_hw *hw)
 	return 0;
 }
 
-/**
- * zynq_pll_disable - Disable clock
- * @hw:		Handle between common and hardware-specific interfaces
- * Returns 0 on success
- */
+ 
 static void zynq_pll_disable(struct clk_hw *hw)
 {
 	unsigned long flags = 0;
@@ -153,7 +110,7 @@ static void zynq_pll_disable(struct clk_hw *hw)
 
 	pr_info("PLL: shutdown\n");
 
-	/* shut down PLL */
+	 
 	spin_lock_irqsave(clk->lock, flags);
 
 	reg = readl(clk->pll_ctrl);
@@ -171,16 +128,7 @@ static const struct clk_ops zynq_pll_ops = {
 	.recalc_rate = zynq_pll_recalc_rate
 };
 
-/**
- * clk_register_zynq_pll() - Register PLL with the clock framework
- * @name:	PLL name
- * @parent:	Parent clock name
- * @pll_ctrl:	Pointer to PLL control register
- * @pll_status:	Pointer to PLL status register
- * @lock_index:	Bit index to this PLL's lock status bit in @pll_status
- * @lock:	Register lock
- * Return:	handle to the registered clock.
- */
+ 
 struct clk *clk_register_zynq_pll(const char *name, const char *parent,
 		void __iomem *pll_ctrl, void __iomem *pll_status, u8 lock_index,
 		spinlock_t *lock)
@@ -202,7 +150,7 @@ struct clk *clk_register_zynq_pll(const char *name, const char *parent,
 	if (!pll)
 		return ERR_PTR(-ENOMEM);
 
-	/* Populate the struct */
+	 
 	pll->hw.init = &initd;
 	pll->pll_ctrl = pll_ctrl;
 	pll->pll_status = pll_status;

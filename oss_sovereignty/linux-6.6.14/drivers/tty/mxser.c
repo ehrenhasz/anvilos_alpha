@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *          mxser.c  -- MOXA Smartio/Industio family multiport serial driver.
- *
- *      Copyright (C) 1999-2006  Moxa Technologies (support@moxa.com).
- *	Copyright (C) 2006-2008  Jiri Slaby <jirislaby@gmail.com>
- *
- *      This code is loosely based on the 1.8 moxa driver which is based on
- *	Linux serial driver, written by Linus Torvalds, Theodore T'so and
- *	others.
- *
- *	Fed through a cleanup, indent and remove of non 2.6 code by Alan Cox
- *	<alan@lxorguk.ukuu.org.uk>. The original 1.8 code is available on
- *	www.moxa.com.
- *	- Fixed x86_64 cleanness
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -41,13 +27,9 @@
 #include <asm/irq.h>
 #include <linux/uaccess.h>
 
-/*
- *	Semi-public control interfaces
- */
+ 
 
-/*
- *	MOXA ioctls
- */
+ 
 
 #define MOXA			0x400
 #define MOXA_SET_OP_MODE	(MOXA + 66)
@@ -59,44 +41,38 @@
 #define RS485_4WIRE_MODE	3
 #define OP_MODE_MASK		3
 
-/* --------------------------------------------------- */
+ 
 
-/*
- * Follow just what Moxa Must chip defines.
- *
- * When LCR register (offset 0x03) is written the following value, the Must chip
- * will enter enhanced mode. And a write to EFR (offset 0x02) bit 6,7 will
- * change bank.
- */
+ 
 #define MOXA_MUST_ENTER_ENHANCED	0xBF
 
-/* when enhanced mode is enabled, access to general bank register */
+ 
 #define MOXA_MUST_GDL_REGISTER		0x07
 #define MOXA_MUST_GDL_MASK		0x7F
 #define MOXA_MUST_GDL_HAS_BAD_DATA	0x80
 
-#define MOXA_MUST_LSR_RERR		0x80	/* error in receive FIFO */
-/* enhanced register bank select and enhanced mode setting register */
-/* This works only when LCR register equals to 0xBF */
+#define MOXA_MUST_LSR_RERR		0x80	 
+ 
+ 
 #define MOXA_MUST_EFR_REGISTER		0x02
-#define MOXA_MUST_EFR_EFRB_ENABLE	0x10 /* enhanced mode enable */
-/* enhanced register bank set 0, 1, 2 */
+#define MOXA_MUST_EFR_EFRB_ENABLE	0x10  
+ 
 #define MOXA_MUST_EFR_BANK0		0x00
 #define MOXA_MUST_EFR_BANK1		0x40
 #define MOXA_MUST_EFR_BANK2		0x80
 #define MOXA_MUST_EFR_BANK3		0xC0
 #define MOXA_MUST_EFR_BANK_MASK		0xC0
 
-/* set XON1 value register, when LCR=0xBF and change to bank0 */
+ 
 #define MOXA_MUST_XON1_REGISTER		0x04
 
-/* set XON2 value register, when LCR=0xBF and change to bank0 */
+ 
 #define MOXA_MUST_XON2_REGISTER		0x05
 
-/* set XOFF1 value register, when LCR=0xBF and change to bank0 */
+ 
 #define MOXA_MUST_XOFF1_REGISTER	0x06
 
-/* set XOFF2 value register, when LCR=0xBF and change to bank0 */
+ 
 #define MOXA_MUST_XOFF2_REGISTER	0x07
 
 #define MOXA_MUST_RBRTL_REGISTER	0x04
@@ -108,26 +84,26 @@
 #define MOXA_MUST_ECR_REGISTER		0x06
 #define MOXA_MUST_CSR_REGISTER		0x07
 
-#define MOXA_MUST_FCR_GDA_MODE_ENABLE	0x20 /* good data mode enable */
-#define MOXA_MUST_FCR_GDA_ONLY_ENABLE	0x10 /* only good data put into RxFIFO */
+#define MOXA_MUST_FCR_GDA_MODE_ENABLE	0x20  
+#define MOXA_MUST_FCR_GDA_ONLY_ENABLE	0x10  
 
-#define MOXA_MUST_IER_ECTSI		0x80 /* enable CTS interrupt */
-#define MOXA_MUST_IER_ERTSI		0x40 /* enable RTS interrupt */
-#define MOXA_MUST_IER_XINT		0x20 /* enable Xon/Xoff interrupt */
-#define MOXA_MUST_IER_EGDAI		0x10 /* enable GDA interrupt */
+#define MOXA_MUST_IER_ECTSI		0x80  
+#define MOXA_MUST_IER_ERTSI		0x40  
+#define MOXA_MUST_IER_XINT		0x20  
+#define MOXA_MUST_IER_EGDAI		0x10  
 
 #define MOXA_MUST_RECV_ISR		(UART_IER_RDI | MOXA_MUST_IER_EGDAI)
 
-/* GDA interrupt pending */
+ 
 #define MOXA_MUST_IIR_GDA		0x1C
 #define MOXA_MUST_IIR_RDA		0x04
 #define MOXA_MUST_IIR_RTO		0x0C
 #define MOXA_MUST_IIR_LSR		0x06
 
-/* received Xon/Xoff or specical interrupt pending */
+ 
 #define MOXA_MUST_IIR_XSC		0x10
 
-/* RTS/CTS change state interrupt pending */
+ 
 #define MOXA_MUST_IIR_RTSCTS		0x20
 #define MOXA_MUST_IIR_MASK		0x3E
 
@@ -135,22 +111,22 @@
 #define MOXA_MUST_MCR_XON_ANY		0x80
 #define MOXA_MUST_MCR_TX_XON		0x08
 
-#define MOXA_MUST_EFR_SF_MASK		0x0F /* software flow control on chip mask value */
-#define MOXA_MUST_EFR_SF_TX1		0x08 /* send Xon1/Xoff1 */
-#define MOXA_MUST_EFR_SF_TX2		0x04 /* send Xon2/Xoff2 */
-#define MOXA_MUST_EFR_SF_TX12		0x0C /* send Xon1,Xon2/Xoff1,Xoff2 */
-#define MOXA_MUST_EFR_SF_TX_NO		0x00 /* don't send Xon/Xoff */
-#define MOXA_MUST_EFR_SF_TX_MASK	0x0C /* Tx software flow control mask */
-#define MOXA_MUST_EFR_SF_RX_NO		0x00 /* don't receive Xon/Xoff */
-#define MOXA_MUST_EFR_SF_RX1		0x02 /* receive Xon1/Xoff1 */
-#define MOXA_MUST_EFR_SF_RX2		0x01 /* receive Xon2/Xoff2 */
-#define MOXA_MUST_EFR_SF_RX12		0x03 /* receive Xon1,Xon2/Xoff1,Xoff2 */
-#define MOXA_MUST_EFR_SF_RX_MASK	0x03 /* Rx software flow control mask */
+#define MOXA_MUST_EFR_SF_MASK		0x0F  
+#define MOXA_MUST_EFR_SF_TX1		0x08  
+#define MOXA_MUST_EFR_SF_TX2		0x04  
+#define MOXA_MUST_EFR_SF_TX12		0x0C  
+#define MOXA_MUST_EFR_SF_TX_NO		0x00  
+#define MOXA_MUST_EFR_SF_TX_MASK	0x0C  
+#define MOXA_MUST_EFR_SF_RX_NO		0x00  
+#define MOXA_MUST_EFR_SF_RX1		0x02  
+#define MOXA_MUST_EFR_SF_RX2		0x01  
+#define MOXA_MUST_EFR_SF_RX12		0x03  
+#define MOXA_MUST_EFR_SF_RX_MASK	0x03  
 
 #define	MXSERMAJOR	 174
 
-#define MXSER_BOARDS		4	/* Max. boards */
-#define MXSER_PORTS_PER_BOARD	8	/* Max. ports per board */
+#define MXSER_BOARDS		4	 
+#define MXSER_PORTS_PER_BOARD	8	 
 #define MXSER_PORTS		(MXSER_BOARDS * MXSER_PORTS_PER_BOARD)
 #define MXSER_ISR_PASS_LIMIT	100
 
@@ -209,8 +185,7 @@ static const struct {
 #define UART_INFO_NUM	ARRAY_SIZE(Gpci_uart_info)
 
 
-/* driver_data correspond to the lines in the structure above
-   see also ISA probe function before you change something */
+ 
 static const struct pci_device_id mxser_pcibrds[] = {
 	{ PCI_DEVICE_DATA(MOXA, C168,		8) },
 	{ PCI_DEVICE_DATA(MOXA, C104,		4) },
@@ -223,7 +198,7 @@ static const struct pci_device_id mxser_pcibrds[] = {
 	{ PCI_DEVICE_DATA(MOXA, CP132U,		2) },
 	{ PCI_DEVICE_DATA(MOXA, CP134U,		4) },
 	{ PCI_DEVICE_DATA(MOXA, CP104JU,	4) },
-	{ PCI_DEVICE_DATA(MOXA, RC7000,		8) }, /* RC7000 */
+	{ PCI_DEVICE_DATA(MOXA, RC7000,		8) },  
 	{ PCI_DEVICE_DATA(MOXA, CP118U,		8) },
 	{ PCI_DEVICE_DATA(MOXA, CP102UL,	2) },
 	{ PCI_DEVICE_DATA(MOXA, CP102U,		2) },
@@ -244,7 +219,7 @@ MODULE_DEVICE_TABLE(pci, mxser_pcibrds);
 
 static int ttymajor = MXSERMAJOR;
 
-/* Variables for insmod */
+ 
 
 MODULE_AUTHOR("Casper Yang");
 MODULE_DESCRIPTION("MOXA Smartio/Industio Family Multiport Board Device Driver");
@@ -262,14 +237,14 @@ struct mxser_port {
 
 	u8 rx_high_water;
 	u8 rx_low_water;
-	int type;		/* UART type */
+	int type;		 
 
-	unsigned char x_char;	/* xon/xoff character */
-	u8 IER;			/* Interrupt Enable Register */
-	u8 MCR;			/* Modem control register */
-	u8 FCR;			/* FIFO control register */
+	unsigned char x_char;	 
+	u8 IER;			 
+	u8 MCR;			 
+	u8 FCR;			 
 
-	struct async_icount icount; /* kernel counters for 4 input interrupts */
+	struct async_icount icount;  
 	unsigned int timeout;
 
 	u8 read_status_mask;
@@ -404,7 +379,7 @@ static enum mxser_must_hwid mxser_must_get_hwid(unsigned long io)
 	}
 
 	hwid = mxser_get_must_hardware_id(io);
-	for (i = 1; i < UART_INFO_NUM; i++) /* 0 = OTHER_UART */
+	for (i = 1; i < UART_INFO_NUM; i++)  
 		if (hwid == Gpci_uart_info[i].type)
 			return hwid;
 
@@ -504,13 +479,10 @@ static int mxser_set_baud(struct tty_struct *tty, speed_t newspd)
 		quot = 0;
 	}
 
-	/*
-	 * worst case (128 * 1000 * 10 * 18432) needs 35 bits, so divide in the
-	 * u64 domain
-	 */
+	 
 	timeout = (u64)info->xmit_fifo_size * HZ * 10 * quot;
 	do_div(timeout, MXSER_BAUD_BASE);
-	info->timeout = timeout + HZ / 50; /* Add .02 seconds of slop */
+	info->timeout = timeout + HZ / 50;  
 
 	if (quot) {
 		info->MCR |= UART_MCR_DTR;
@@ -523,11 +495,11 @@ static int mxser_set_baud(struct tty_struct *tty, speed_t newspd)
 
 	cval = inb(info->ioaddr + UART_LCR);
 
-	outb(cval | UART_LCR_DLAB, info->ioaddr + UART_LCR);	/* set DLAB */
+	outb(cval | UART_LCR_DLAB, info->ioaddr + UART_LCR);	 
 
-	outb(quot & 0xff, info->ioaddr + UART_DLL);	/* LS of divisor */
-	outb(quot >> 8, info->ioaddr + UART_DLM);	/* MS of divisor */
-	outb(cval, info->ioaddr + UART_LCR);	/* reset DLAB */
+	outb(quot & 0xff, info->ioaddr + UART_DLL);	 
+	outb(quot >> 8, info->ioaddr + UART_DLM);	 
+	outb(cval, info->ioaddr + UART_LCR);	 
 
 	if (C_BAUD(tty) == BOTHER) {
 		quot = MXSER_BAUD_BASE % newspd;
@@ -568,10 +540,7 @@ static void mxser_handle_cts(struct tty_struct *tty, struct mxser_port *info,
 		__mxser_stop_tx(info);
 }
 
-/*
- * This routine is called to set the UART divisor registers to match
- * the specified baud rate for a serial port.
- */
+ 
 static void mxser_change_speed(struct tty_struct *tty,
 			       const struct ktermios *old_termios)
 {
@@ -581,14 +550,14 @@ static void mxser_change_speed(struct tty_struct *tty,
 	cflag = tty->termios.c_cflag;
 
 	if (mxser_set_baud(tty, tty_get_baud_rate(tty))) {
-		/* Use previous rate on a failure */
+		 
 		if (old_termios) {
 			speed_t baud = tty_termios_baud_rate(old_termios);
 			tty_encode_baud_rate(tty, baud, baud);
 		}
 	}
 
-	/* byte size and parity */
+	 
 	cval = UART_LCR_WLEN(tty_get_char_size(tty->termios.c_cflag));
 
 	if (cflag & CSTOPB)
@@ -623,7 +592,7 @@ static void mxser_change_speed(struct tty_struct *tty,
 		}
 	}
 
-	/* CTS flow control flag and modem status interrupts */
+	 
 	info->IER &= ~UART_IER_MSI;
 	info->MCR &= ~UART_MCR_AFE;
 	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
@@ -642,9 +611,7 @@ static void mxser_change_speed(struct tty_struct *tty,
 		info->IER |= UART_IER_MSI;
 	outb(info->IER, info->ioaddr + UART_IER);
 
-	/*
-	 * Set up parity check flag
-	 */
+	 
 	info->read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
 	if (I_INPCK(tty))
 		info->read_status_mask |= UART_LSR_FE | UART_LSR_PE;
@@ -656,10 +623,7 @@ static void mxser_change_speed(struct tty_struct *tty,
 	if (I_IGNBRK(tty)) {
 		info->ignore_status_mask |= UART_LSR_BI;
 		info->read_status_mask |= UART_LSR_BI;
-		/*
-		 * If we're ignore parity and break indicators, ignore
-		 * overruns too.  (For real raw support).
-		 */
+		 
 		if (I_IGNPAR(tty)) {
 			info->ignore_status_mask |=
 						UART_LSR_OE |
@@ -691,7 +655,7 @@ static u8 mxser_check_modem_status(struct tty_struct *tty,
 	if (!(msr & UART_MSR_ANY_DELTA))
 		return msr;
 
-	/* update input line counters */
+	 
 	if (msr & UART_MSR_TERI)
 		port->icount.rng++;
 	if (msr & UART_MSR_DDSR)
@@ -742,17 +706,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
 		goto err_free_xmit;
 	}
 
-	/*
-	 * Clear the FIFO buffers and disable them
-	 * (they will be reenabled in mxser_change_speed())
-	 */
+	 
 	mxser_disable_and_clear_FIFO(info);
 
-	/*
-	 * At this point there's no way the LSR could still be 0xFF;
-	 * if it is, then bail out, because there's likely no UART
-	 * here.
-	 */
+	 
 	if (inb(info->ioaddr + UART_LSR) == 0xff) {
 		spin_unlock_irqrestore(&info->slock, flags);
 		if (capable(CAP_SYS_ADMIN)) {
@@ -764,33 +721,25 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
 		goto err_free_xmit;
 	}
 
-	/*
-	 * Clear the interrupt registers.
-	 */
+	 
 	(void) inb(info->ioaddr + UART_LSR);
 	(void) inb(info->ioaddr + UART_RX);
 	(void) inb(info->ioaddr + UART_IIR);
 	(void) inb(info->ioaddr + UART_MSR);
 
-	/*
-	 * Now, initialize the UART
-	 */
-	outb(UART_LCR_WLEN8, info->ioaddr + UART_LCR);	/* reset DLAB */
+	 
+	outb(UART_LCR_WLEN8, info->ioaddr + UART_LCR);	 
 	info->MCR = UART_MCR_DTR | UART_MCR_RTS;
 	outb(info->MCR, info->ioaddr + UART_MCR);
 
-	/*
-	 * Finally, enable interrupts
-	 */
+	 
 	info->IER = UART_IER_MSI | UART_IER_RLSI | UART_IER_RDI;
 
 	if (info->board->must_hwid)
 		info->IER |= MOXA_MUST_IER_EGDAI;
-	outb(info->IER, info->ioaddr + UART_IER);	/* enable interrupts */
+	outb(info->IER, info->ioaddr + UART_IER);	 
 
-	/*
-	 * And clear the interrupt registers again for luck.
-	 */
+	 
 	(void) inb(info->ioaddr + UART_LSR);
 	(void) inb(info->ioaddr + UART_RX);
 	(void) inb(info->ioaddr + UART_IIR);
@@ -799,9 +748,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
 	clear_bit(TTY_IO_ERROR, &tty->flags);
 	kfifo_reset(&port->xmit_fifo);
 
-	/*
-	 * and set the speed of the serial port
-	 */
+	 
 	mxser_change_speed(tty, NULL);
 	spin_unlock_irqrestore(&info->slock, flags);
 
@@ -811,11 +758,7 @@ err_free_xmit:
 	return ret;
 }
 
-/*
- * To stop accepting input, we disable the receive line status interrupts, and
- * tell the interrupt driver to stop checking the data ready bit in the line
- * status register.
- */
+ 
 static void mxser_stop_rx(struct mxser_port *info)
 {
 	info->IER &= ~UART_IER_RLSI;
@@ -825,9 +768,7 @@ static void mxser_stop_rx(struct mxser_port *info)
 	outb(info->IER, info->ioaddr + UART_IER);
 }
 
-/*
- * This routine will shutdown a serial port
- */
+ 
 static void mxser_shutdown_port(struct tty_port *port)
 {
 	struct mxser_port *info = container_of(port, struct mxser_port, port);
@@ -837,19 +778,16 @@ static void mxser_shutdown_port(struct tty_port *port)
 
 	mxser_stop_rx(info);
 
-	/*
-	 * clear delta_msr_wait queue to avoid mem leaks: we may free the irq
-	 * here so the queue might never be waken up
-	 */
+	 
 	wake_up_interruptible(&info->port.delta_msr_wait);
 
 	info->IER = 0;
 	outb(0x00, info->ioaddr + UART_IER);
 
-	/* clear Rx/Tx FIFO's */
+	 
 	mxser_disable_and_clear_FIFO(info);
 
-	/* read data port to reset things */
+	 
 	(void) inb(info->ioaddr + UART_RX);
 
 
@@ -858,18 +796,13 @@ static void mxser_shutdown_port(struct tty_port *port)
 
 	spin_unlock_irqrestore(&info->slock, flags);
 
-	/* make sure ISR is not running while we free the buffer */
+	 
 	synchronize_irq(info->board->irq);
 
 	tty_port_free_xmit_buf(port);
 }
 
-/*
- * This routine is called whenever a serial port is opened.  It
- * enables interrupts for a serial port, linking in its async structure into
- * the IRQ chain.   It also performs the serial-specific
- * initialization for the tty structure.
- */
+ 
 static int mxser_open(struct tty_struct *tty, struct file *filp)
 {
 	struct tty_port *tport = tty->port;
@@ -959,11 +892,7 @@ static unsigned int mxser_chars_in_buffer(struct tty_struct *tty)
 	return kfifo_len(&info->port.xmit_fifo);
 }
 
-/*
- * ------------------------------------------------------------
- * friends of mxser_ioctl()
- * ------------------------------------------------------------
- */
+ 
 static int mxser_get_serial_info(struct tty_struct *tty,
 		struct serial_struct *ss)
 {
@@ -1030,10 +959,7 @@ static int mxser_set_serial_info(struct tty_struct *tty,
 		port->flags = (port->flags & ~ASYNC_USR_MASK) |
 				(ss->flags & ASYNC_USR_MASK);
 	} else {
-		/*
-		 * OK, past this point, all the error checking has been done.
-		 * At this point, we start making changes.....
-		 */
+		 
 		port->flags = ((port->flags & ~ASYNC_FLAGS) |
 				(ss->flags & ASYNC_FLAGS));
 		port->close_delay = close_delay;
@@ -1070,16 +996,7 @@ static int mxser_set_serial_info(struct tty_struct *tty,
 	return retval;
 }
 
-/*
- * mxser_get_lsr_info - get line status register info
- *
- * Purpose: Let user call ioctl() to get info when the UART physically
- *	    is emptied.  On bus types like RS485, the transmitter must
- *	    release the bus after transmitting. This must be done when
- *	    the transmit shift register is empty, not be done when the
- *	    transmit holding register is empty.  This functionality
- *	    allows an RS485 driver to be written in user space.
- */
+ 
 static int mxser_get_lsr_info(struct mxser_port *info,
 		unsigned int __user *value)
 {
@@ -1151,7 +1068,7 @@ static int mxser_cflags_changed(struct mxser_port *info, unsigned long arg,
 	int ret;
 
 	spin_lock_irqsave(&info->slock, flags);
-	cnow = info->icount;	/* atomic copy */
+	cnow = info->icount;	 
 	spin_unlock_irqrestore(&info->slock, flags);
 
 	ret =	((arg & TIOCM_RNG) && (cnow.rng != cprev->rng)) ||
@@ -1164,7 +1081,7 @@ static int mxser_cflags_changed(struct mxser_port *info, unsigned long arg,
 	return ret;
 }
 
-/* We should likely switch to TIOCGRS485/TIOCSRS485. */
+ 
 static int mxser_ioctl_op_mode(struct mxser_port *port, int index, bool set,
 		int __user *u_opmode)
 {
@@ -1215,17 +1132,12 @@ static int mxser_ioctl(struct tty_struct *tty,
 		return -EIO;
 
 	switch (cmd) {
-	case TIOCSERGETLSR:	/* Get line status register */
+	case TIOCSERGETLSR:	 
 		return  mxser_get_lsr_info(info, argp);
-		/*
-		 * Wait for any of the 4 modem inputs (DCD,RI,DSR,CTS) to change
-		 * - mask passed in arg for lines of interest
-		 *   (use |'ed TIOCM_RNG/DSR/CD/CTS for masking)
-		 * Caller should use TIOCGICOUNT to see which one it was
-		 */
+		 
 	case TIOCMIWAIT:
 		spin_lock_irqsave(&info->slock, flags);
-		cnow = info->icount;	/* note the counters on entry */
+		cnow = info->icount;	 
 		spin_unlock_irqrestore(&info->slock, flags);
 
 		return wait_event_interruptible(info->port.delta_msr_wait,
@@ -1236,12 +1148,7 @@ static int mxser_ioctl(struct tty_struct *tty,
 	return 0;
 }
 
-	/*
-	 * Get counter of input serial line interrupts (DCD,RI,DSR,CTS)
-	 * Return: write counters to the user passed counter struct
-	 * NB: both 1->0 and 0->1 transitions are counted except for
-	 *     RI where only 0->1 is counted.
-	 */
+	 
 
 static int mxser_get_icount(struct tty_struct *tty,
 		struct serial_icounter_struct *icount)
@@ -1269,10 +1176,7 @@ static int mxser_get_icount(struct tty_struct *tty,
 	return 0;
 }
 
-/*
- * This routine is called by the upper-layer tty layer to signal that
- * incoming characters should be throttled.
- */
+ 
 static void mxser_throttle(struct tty_struct *tty)
 {
 	struct mxser_port *info = tty->driver_data;
@@ -1299,7 +1203,7 @@ static void mxser_unthrottle(struct tty_struct *tty)
 {
 	struct mxser_port *info = tty->driver_data;
 
-	/* startrx */
+	 
 	if (I_IXOFF(tty)) {
 		if (info->x_char)
 			info->x_char = 0;
@@ -1322,12 +1226,7 @@ static void mxser_unthrottle(struct tty_struct *tty)
 	}
 }
 
-/*
- * mxser_stop() and mxser_start()
- *
- * This routines are called before setting or resetting tty->flow.stopped.
- * They enable or disable transmitter interrupts, as necessary.
- */
+ 
 static void mxser_stop(struct tty_struct *tty)
 {
 	struct mxser_port *info = tty->driver_data;
@@ -1365,7 +1264,7 @@ static void mxser_set_termios(struct tty_struct *tty,
 		mxser_start(tty);
 	}
 
-	/* Handle sw stopped */
+	 
 	if ((old_termios->c_iflag & IXON) && !I_IXON(tty)) {
 		tty->flow.stopped = 0;
 
@@ -1391,9 +1290,7 @@ static bool mxser_tx_empty(struct mxser_port *info)
 	return !(lsr & UART_LSR_TEMT);
 }
 
-/*
- * mxser_wait_until_sent() --- wait until the transmitter is empty
- */
+ 
 static void mxser_wait_until_sent(struct tty_struct *tty, int timeout)
 {
 	struct mxser_port *info = tty->driver_data;
@@ -1403,16 +1300,9 @@ static void mxser_wait_until_sent(struct tty_struct *tty, int timeout)
 		return;
 
 	if (info->xmit_fifo_size == 0)
-		return;		/* Just in case.... */
+		return;		 
 
-	/*
-	 * Set the check interval to be 1/5 of the estimated time to
-	 * send a single character, and make it at least 1.  The check
-	 * interval should also be less than the timeout.
-	 *
-	 * Note: we have to use pretty tight timings here to satisfy
-	 * the NIST-PCTS.
-	 */
+	 
 	char_time = (info->timeout - HZ / 50) / info->xmit_fifo_size;
 	char_time = char_time / 5;
 	if (char_time == 0)
@@ -1422,15 +1312,7 @@ static void mxser_wait_until_sent(struct tty_struct *tty, int timeout)
 
 	char_time = jiffies_to_msecs(char_time);
 
-	/*
-	 * If the transmitter hasn't cleared in twice the approximate
-	 * amount of time to send the entire FIFO, it probably won't
-	 * ever clear.  This assumes the UART isn't doing flow
-	 * control, which is currently the case.  Hence, if it ever
-	 * takes longer than info->timeout, this is probably due to a
-	 * UART bug of some kind.  So, we clamp the timeout parameter at
-	 * 2*info->timeout.
-	 */
+	 
 	if (!timeout || timeout > 2 * info->timeout)
 		timeout = 2 * info->timeout;
 
@@ -1445,9 +1327,7 @@ static void mxser_wait_until_sent(struct tty_struct *tty, int timeout)
 	}
 }
 
-/*
- * This routine is called by tty_hangup() when a hangup is signaled.
- */
+ 
 static void mxser_hangup(struct tty_struct *tty)
 {
 	struct mxser_port *info = tty->driver_data;
@@ -1456,9 +1336,7 @@ static void mxser_hangup(struct tty_struct *tty)
 	tty_port_hangup(&info->port);
 }
 
-/*
- * mxser_rs_break() --- routine which turns the break handling on or off
- */
+ 
 static int mxser_rs_break(struct tty_struct *tty, int break_state)
 {
 	struct mxser_port *info = tty->driver_data;
@@ -1653,9 +1531,7 @@ put_tty:
 	return error;
 }
 
-/*
- * This is the serial driver's generic interrupt routine
- */
+ 
 static irqreturn_t mxser_interrupt(int irq, void *dev_id)
 {
 	struct mxser_board *brd = dev_id;
@@ -1723,9 +1599,7 @@ static const struct tty_port_operations mxser_port_ops = {
 	.shutdown = mxser_shutdown_port,
 };
 
-/*
- * The MOXA Smartio/Industio serial driver boot-time initialization code!
- */
+ 
 
 static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
 {
@@ -1740,7 +1614,7 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
 		if (Gpci_uart_info[i].type == brd->must_hwid) {
 			brd->max_baud = Gpci_uart_info[i].max_baud;
 
-			/* exception....CP-102 */
+			 
 			if (high_baud)
 				brd->max_baud = 921600;
 			break;
@@ -1748,7 +1622,7 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
 	}
 
 	if (is_mu860) {
-		/* set to RS232 mode by default */
+		 
 		outb(0, brd->vector + 4);
 		outb(0, brd->vector + 0x0c);
 	}
@@ -1765,7 +1639,7 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
 		info->port.ops = &mxser_port_ops;
 		info->board = brd;
 
-		/* Enhance mode enabled here */
+		 
 		if (brd->must_hwid != MOXA_OTHER_UART)
 			mxser_must_set_enhance_mode(info->ioaddr, true);
 
@@ -1777,7 +1651,7 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
 		info->port.closing_wait = 30 * HZ;
 		spin_lock_init(&info->slock);
 
-		/* before set INT ISR, disable all int */
+		 
 		outb(inb(info->ioaddr + UART_IER) & 0xf0,
 			info->ioaddr + UART_IER);
 	}
@@ -1815,7 +1689,7 @@ static int mxser_probe(struct pci_dev *pdev,
 		goto err_zero;
 	}
 
-	/* io address */
+	 
 	ioaddress = pci_resource_start(pdev, 2);
 	retval = pci_request_region(pdev, 2, "mxser(IO)");
 	if (retval)
@@ -1825,14 +1699,14 @@ static int mxser_probe(struct pci_dev *pdev,
 	for (i = 0; i < nports; i++)
 		brd->ports[i].ioaddr = ioaddress + 8 * i;
 
-	/* vector */
+	 
 	ioaddress = pci_resource_start(pdev, 3);
 	retval = pci_request_region(pdev, 3, "mxser(vector)");
 	if (retval)
 		goto err_zero;
 	brd->vector = ioaddress;
 
-	/* irq */
+	 
 	brd->irq = pdev->irq;
 
 	mxser_initbrd(brd, ent->driver_data & MXSER_HIGHBAUD);
@@ -1897,7 +1771,7 @@ static int __init mxser_module_init(void)
 	if (IS_ERR(mxvar_sdriver))
 		return PTR_ERR(mxvar_sdriver);
 
-	/* Initialize the tty_driver structure */
+	 
 	mxvar_sdriver->name = "ttyMI";
 	mxvar_sdriver->major = ttymajor;
 	mxvar_sdriver->minor_start = 0;

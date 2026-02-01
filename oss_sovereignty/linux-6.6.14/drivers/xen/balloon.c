@@ -1,40 +1,4 @@
-/******************************************************************************
- * Xen balloon driver - enables returning/claiming memory to/from Xen.
- *
- * Copyright (c) 2003, B Dragovic
- * Copyright (c) 2003-2004, M Williamson, K Fraser
- * Copyright (c) 2005 Dan M. Smith, IBM Corporation
- * Copyright (c) 2010 Daniel Kiper
- *
- * Memory hotplug support was written by Daniel Kiper. Work on
- * it was sponsored by Google under Google Summer of Code 2010
- * program. Jeremy Fitzhardinge from Citrix was the mentor for
- * this project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
@@ -101,20 +65,10 @@ static struct ctl_table balloon_table[] = {
 #define xen_hotplug_unpopulated 0
 #endif
 
-/*
- * Use one extent per PAGE_SIZE to avoid to break down the page into
- * multiple frame.
- */
+ 
 #define EXTENT_ORDER (fls(XEN_PFN_PER_PAGE) - 1)
 
-/*
- * balloon_thread() state:
- *
- * BP_DONE: done or nothing to do,
- * BP_WAIT: wait to be rescheduled,
- * BP_EAGAIN: error, go to sleep,
- * BP_ECANCELED: error, balloon operation canceled.
- */
+ 
 
 static enum bp_state {
 	BP_DONE,
@@ -123,7 +77,7 @@ static enum bp_state {
 	BP_ECANCELED
 } balloon_state = BP_DONE;
 
-/* Main waiting point for xen-balloon thread. */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(balloon_thread_wq);
 
 static DEFINE_MUTEX(balloon_mutex);
@@ -131,25 +85,24 @@ static DEFINE_MUTEX(balloon_mutex);
 struct balloon_stats balloon_stats;
 EXPORT_SYMBOL_GPL(balloon_stats);
 
-/* We increase/decrease in batches which fit in a page */
+ 
 static xen_pfn_t frame_list[PAGE_SIZE / sizeof(xen_pfn_t)];
 
 
-/* List of ballooned pages, threaded through the mem_map array. */
+ 
 static LIST_HEAD(ballooned_pages);
 static DECLARE_WAIT_QUEUE_HEAD(balloon_wq);
 
-/* When ballooning out (allocating memory to return to Xen) we don't really
-   want the kernel to try too hard since that can trigger the oom killer. */
+ 
 #define GFP_BALLOON \
 	(GFP_HIGHUSER | __GFP_NOWARN | __GFP_NORETRY | __GFP_NOMEMALLOC)
 
-/* balloon_append: add the given page to the balloon. */
+ 
 static void balloon_append(struct page *page)
 {
 	__SetPageOffline(page);
 
-	/* Lowmem is re-populated first, so highmem pages go at list tail. */
+	 
 	if (PageHighMem(page)) {
 		list_add_tail(&page->lru, &ballooned_pages);
 		balloon_stats.balloon_high++;
@@ -160,7 +113,7 @@ static void balloon_append(struct page *page)
 	wake_up(&balloon_wq);
 }
 
-/* balloon_retrieve: rescue a page from the balloon, if it is not empty. */
+ 
 static struct page *balloon_retrieve(bool require_lowmem)
 {
 	struct page *page;
@@ -225,10 +178,7 @@ static void release_memory_resource(struct resource *resource)
 	if (!resource)
 		return;
 
-	/*
-	 * No need to reset region to identity mapped since we now
-	 * know that no I/O can be in this region
-	 */
+	 
 	release_resource(resource);
 	kfree(resource);
 }
@@ -267,10 +217,7 @@ static enum bp_state reserve_additional_memory(void)
 	credit = balloon_stats.target_pages + balloon_stats.target_unpopulated
 		- balloon_stats.total_pages;
 
-	/*
-	 * Already hotplugged enough pages?  Wait for them to be
-	 * onlined.
-	 */
+	 
 	if (credit <= 0)
 		return BP_WAIT;
 
@@ -283,21 +230,10 @@ static enum bp_state reserve_additional_memory(void)
 	nid = memory_add_physaddr_to_nid(resource->start);
 
 #ifdef CONFIG_XEN_HAVE_PVMMU
-	/*
-	 * We don't support PV MMU when Linux and Xen is using
-	 * different page granularity.
-	 */
+	 
 	BUILD_BUG_ON(XEN_PAGE_SIZE != PAGE_SIZE);
 
-        /*
-         * add_memory() will build page tables for the new memory so
-         * the p2m must contain invalid entries so the correct
-         * non-present PTEs will be written.
-         *
-         * If a failure occurs, the original (identity) p2m entries
-         * are not restored since this region is now known not to
-         * conflict with any devices.
-         */ 
+          
 	if (!xen_feature(XENFEAT_auto_translated_physmap)) {
 		unsigned long pfn, i;
 
@@ -311,14 +247,9 @@ static enum bp_state reserve_additional_memory(void)
 	}
 #endif
 
-	/*
-	 * add_memory_resource() will call online_pages() which in its turn
-	 * will call xen_online_page() callback causing deadlock if we don't
-	 * release balloon_mutex here. Unlocking here is safe because the
-	 * callers drop the mutex before trying again.
-	 */
+	 
 	mutex_unlock(&balloon_mutex);
-	/* add_memory_resource() requires the device_hotplug lock */
+	 
 	lock_device_hotplug();
 	rc = add_memory_resource(nid, resource, MHP_MERGE_RESOURCE);
 	unlock_device_hotplug();
@@ -371,7 +302,7 @@ static enum bp_state reserve_additional_memory(void)
 				     balloon_stats.target_unpopulated;
 	return BP_ECANCELED;
 }
-#endif /* CONFIG_XEN_BALLOON_MEMORY_HOTPLUG */
+#endif  
 
 static long current_credit(void)
 {
@@ -413,7 +344,7 @@ static enum bp_state increase_reservation(unsigned long nr_pages)
 
 		xenmem_reservation_va_mapping_update(1, &page, &frame_list[i]);
 
-		/* Relinquish the page back to the allocator. */
+		 
 		free_reserved_page(page);
 	}
 
@@ -445,19 +376,10 @@ static enum bp_state decrease_reservation(unsigned long nr_pages, gfp_t gfp)
 		list_add(&page->lru, &pages);
 	}
 
-	/*
-	 * Ensure that ballooned highmem pages don't have kmaps.
-	 *
-	 * Do this before changing the p2m as kmap_flush_unused()
-	 * reads PTEs to obtain pages (and hence needs the original
-	 * p2m entry).
-	 */
+	 
 	kmap_flush_unused();
 
-	/*
-	 * Setup the frame, update direct mapping, invalidate P2M,
-	 * and add to balloon.
-	 */
+	 
 	i = 0;
 	list_for_each_entry_safe(page, tmp, &pages, lru) {
 		frame_list[i++] = xen_page_to_gfn(page);
@@ -479,10 +401,7 @@ static enum bp_state decrease_reservation(unsigned long nr_pages, gfp_t gfp)
 	return state;
 }
 
-/*
- * Stop waiting if either state is BP_DONE and ballooning action is
- * needed, or if the credit has changed while state is not BP_DONE.
- */
+ 
 static bool balloon_thread_cond(long credit)
 {
 	if (balloon_state == BP_DONE)
@@ -491,12 +410,7 @@ static bool balloon_thread_cond(long credit)
 	return current_credit() != credit || kthread_should_stop();
 }
 
-/*
- * As this is a kthread it is guaranteed to run as a single instance only.
- * We may of course race updates of the target counts (which are protected
- * by the balloon lock), or with changes to the Xen hard limit, but we will
- * recover from these in time.
- */
+ 
 static int balloon_thread(void *unused)
 {
 	long credit;
@@ -555,10 +469,10 @@ static int balloon_thread(void *unused)
 	}
 }
 
-/* Resets the Xen limit, sets new target, and kicks off processing. */
+ 
 void balloon_set_new_target(unsigned long target)
 {
-	/* No need for lock. Not read-modify-write updates. */
+	 
 	balloon_stats.target_pages = target;
 	wake_up(&balloon_thread_wq);
 }
@@ -591,12 +505,7 @@ static int add_ballooned_pages(unsigned int nr_pages)
 	return 0;
 }
 
-/**
- * xen_alloc_ballooned_pages - get pages that have been ballooned out
- * @nr_pages: Number of pages to get
- * @pages: pages returned
- * @return 0 on success, error otherwise
- */
+ 
 int xen_alloc_ballooned_pages(unsigned int nr_pages, struct page **pages)
 {
 	unsigned int pgno = 0;
@@ -612,10 +521,7 @@ int xen_alloc_ballooned_pages(unsigned int nr_pages, struct page **pages)
 		if (page) {
 			pages[pgno++] = page;
 #ifdef CONFIG_XEN_HAVE_PVMMU
-			/*
-			 * We don't support PV MMU when Linux and Xen is using
-			 * different page granularity.
-			 */
+			 
 			BUILD_BUG_ON(XEN_PAGE_SIZE != PAGE_SIZE);
 
 			if (!xen_feature(XENFEAT_auto_translated_physmap)) {
@@ -635,21 +541,13 @@ int xen_alloc_ballooned_pages(unsigned int nr_pages, struct page **pages)
  out_undo:
 	mutex_unlock(&balloon_mutex);
 	xen_free_ballooned_pages(pgno, pages);
-	/*
-	 * NB: xen_free_ballooned_pages will only subtract pgno pages, but since
-	 * target_unpopulated is incremented with nr_pages at the start we need
-	 * to remove the remaining ones also, or accounting will be screwed.
-	 */
+	 
 	balloon_stats.target_unpopulated -= nr_pages - pgno;
 	return ret;
 }
 EXPORT_SYMBOL(xen_alloc_ballooned_pages);
 
-/**
- * xen_free_ballooned_pages - return pages retrieved with get_ballooned_pages
- * @nr_pages: Number of pages
- * @pages: pages to return
- */
+ 
 void xen_free_ballooned_pages(unsigned int nr_pages, struct page **pages)
 {
 	unsigned int i;
@@ -663,7 +561,7 @@ void xen_free_ballooned_pages(unsigned int nr_pages, struct page **pages)
 
 	balloon_stats.target_unpopulated -= nr_pages;
 
-	/* The balloon may be too large now. Shrink it if needed. */
+	 
 	if (current_credit())
 		wake_up(&balloon_thread_wq);
 
@@ -685,11 +583,7 @@ static void __init balloon_add_regions(void)
 
 		start_pfn = xen_extra_mem[i].start_pfn;
 
-		/*
-		 * If the amount of usable memory has been limited (e.g., with
-		 * the 'mem' command line parameter), don't add pages beyond
-		 * this limit.
-		 */
+		 
 		extra_pfn_end = min(max_pfn, start_pfn + pages);
 
 		for (pfn = start_pfn; pfn < extra_pfn_end; pfn++)
@@ -740,7 +634,7 @@ static int __init balloon_init(void)
 		return PTR_ERR(task);
 	}
 
-	/* Init the xen-balloon driver. */
+	 
 	xen_balloon_init();
 
 	return 0;
@@ -755,7 +649,7 @@ static int __init balloon_wait_finish(void)
 	if (!xen_domain())
 		return -ENODEV;
 
-	/* PV guests don't need to wait. */
+	 
 	if (xen_pv_domain() || !current_credit())
 		return 0;
 

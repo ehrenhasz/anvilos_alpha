@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 #include <linux/nbd.h>
@@ -10,9 +10,9 @@ void test_raw_tp_writable_reject_nbd_invalid(void)
 	int bpf_fd = -1, tp_fd = -1;
 
 	const struct bpf_insn program[] = {
-		/* r6 is our tp buffer */
+		 
 		BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1, 0),
-		/* one byte beyond the end of the nbd_request struct */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_6,
 			    sizeof(struct nbd_request)),
 		BPF_EXIT_INSN(),

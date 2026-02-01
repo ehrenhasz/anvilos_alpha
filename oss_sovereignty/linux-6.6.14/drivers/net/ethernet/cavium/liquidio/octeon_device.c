@@ -1,20 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
+ 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
 #include <linux/vmalloc.h>
@@ -30,14 +14,12 @@
 #include "cn23xx_pf_device.h"
 #include "cn23xx_vf_device.h"
 
-/** Default configuration
- *  for CN66XX OCTEON Models.
- */
+ 
 static struct octeon_config default_cn66xx_conf = {
 	.card_type                              = LIO_210SV,
 	.card_name                              = LIO_210SV_NAME,
 
-	/** IQ attributes */
+	 
 	.iq					= {
 		.max_iqs			= CN6XXX_CFG_IO_QUEUES,
 		.pending_list_size		=
@@ -48,7 +30,7 @@ static struct octeon_config default_cn66xx_conf = {
 	}
 	,
 
-	/** OQ attributes */
+	 
 	.oq					= {
 		.max_oqs			= CN6XXX_CFG_IO_QUEUES,
 		.refill_threshold		= CN6XXX_OQ_REFIL_THRESHOLD,
@@ -63,29 +45,27 @@ static struct octeon_config default_cn66xx_conf = {
 	.num_def_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 	.def_rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
-	/* For ethernet interface 0:  Port cfg Attributes */
+	 
 	.nic_if_cfg[0] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -94,27 +74,25 @@ static struct octeon_config default_cn66xx_conf = {
 	},
 
 	.nic_if_cfg[1] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -122,31 +100,29 @@ static struct octeon_config default_cn66xx_conf = {
 		.gmx_port_id			= 1,
 	},
 
-	/** Miscellaneous attributes */
+	 
 	.misc					= {
-		/* Host driver link query interval */
+		 
 		.oct_link_query_interval	= 100,
 
-		/* Octeon link query interval */
+		 
 		.host_link_query_interval	= 500,
 
 		.enable_sli_oq_bp		= 0,
 
-		/* Control queue group */
+		 
 		.ctrlq_grp			= 1,
 	}
 	,
 };
 
-/** Default configuration
- *  for CN68XX OCTEON Model.
- */
+ 
 
 static struct octeon_config default_cn68xx_conf = {
 	.card_type                              = LIO_410NV,
 	.card_name                              = LIO_410NV_NAME,
 
-	/** IQ attributes */
+	 
 	.iq					= {
 		.max_iqs			= CN6XXX_CFG_IO_QUEUES,
 		.pending_list_size		=
@@ -157,7 +133,7 @@ static struct octeon_config default_cn68xx_conf = {
 	}
 	,
 
-	/** OQ attributes */
+	 
 	.oq					= {
 		.max_oqs			= CN6XXX_CFG_IO_QUEUES,
 		.refill_threshold		= CN6XXX_OQ_REFIL_THRESHOLD,
@@ -173,27 +149,25 @@ static struct octeon_config default_cn68xx_conf = {
 	.def_rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 	.nic_if_cfg[0] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -202,27 +176,25 @@ static struct octeon_config default_cn68xx_conf = {
 	},
 
 	.nic_if_cfg[1] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -231,27 +203,25 @@ static struct octeon_config default_cn68xx_conf = {
 	},
 
 	.nic_if_cfg[2] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -260,27 +230,25 @@ static struct octeon_config default_cn68xx_conf = {
 	},
 
 	.nic_if_cfg[3] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -288,30 +256,28 @@ static struct octeon_config default_cn68xx_conf = {
 		.gmx_port_id			= 3,
 	},
 
-	/** Miscellaneous attributes */
+	 
 	.misc					= {
-		/* Host driver link query interval */
+		 
 		.oct_link_query_interval	= 100,
 
-		/* Octeon link query interval */
+		 
 		.host_link_query_interval	= 500,
 
 		.enable_sli_oq_bp		= 0,
 
-		/* Control queue group */
+		 
 		.ctrlq_grp			= 1,
 	}
 	,
 };
 
-/** Default configuration
- *  for CN68XX OCTEON Model.
- */
+ 
 static struct octeon_config default_cn68xx_210nv_conf = {
 	.card_type                              = LIO_210NV,
 	.card_name                              = LIO_210NV_NAME,
 
-	/** IQ attributes */
+	 
 
 	.iq					= {
 		.max_iqs			= CN6XXX_CFG_IO_QUEUES,
@@ -323,7 +289,7 @@ static struct octeon_config default_cn68xx_210nv_conf = {
 	}
 	,
 
-	/** OQ attributes */
+	 
 	.oq					= {
 		.max_oqs			= CN6XXX_CFG_IO_QUEUES,
 		.refill_threshold		= CN6XXX_OQ_REFIL_THRESHOLD,
@@ -339,27 +305,25 @@ static struct octeon_config default_cn68xx_210nv_conf = {
 	.def_rx_buf_size		= CN6XXX_OQ_BUF_SIZE,
 
 	.nic_if_cfg[0] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -368,27 +332,25 @@ static struct octeon_config default_cn68xx_210nv_conf = {
 	},
 
 	.nic_if_cfg[1] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN6XXX_MAX_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN6XXX_MAX_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN6XXX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -396,17 +358,17 @@ static struct octeon_config default_cn68xx_210nv_conf = {
 		.gmx_port_id			= 1,
 	},
 
-	/** Miscellaneous attributes */
+	 
 	.misc					= {
-		/* Host driver link query interval */
+		 
 		.oct_link_query_interval	= 100,
 
-		/* Octeon link query interval */
+		 
 		.host_link_query_interval	= 500,
 
 		.enable_sli_oq_bp		= 0,
 
-		/* Control queue group */
+		 
 		.ctrlq_grp			= 1,
 	}
 	,
@@ -415,7 +377,7 @@ static struct octeon_config default_cn68xx_210nv_conf = {
 static struct octeon_config default_cn23xx_conf = {
 	.card_type                              = LIO_23XX,
 	.card_name                              = LIO_23XX_NAME,
-	/** IQ attributes */
+	 
 	.iq = {
 		.max_iqs		= CN23XX_CFG_IO_QUEUES,
 		.pending_list_size	= (CN23XX_DEFAULT_IQ_DESCRIPTORS *
@@ -426,7 +388,7 @@ static struct octeon_config default_cn23xx_conf = {
 		.iq_intr_pkt		= CN23XX_DEF_IQ_INTR_THRESHOLD,
 	},
 
-	/** OQ attributes */
+	 
 	.oq = {
 		.max_oqs		= CN23XX_CFG_IO_QUEUES,
 		.pkts_per_intr	= CN23XX_OQ_PKTSPER_INTR,
@@ -440,29 +402,27 @@ static struct octeon_config default_cn23xx_conf = {
 	.num_def_tx_descs			= CN23XX_DEFAULT_IQ_DESCRIPTORS,
 	.def_rx_buf_size			= CN23XX_OQ_BUF_SIZE,
 
-	/* For ethernet interface 0:  Port cfg Attributes */
+	 
 	.nic_if_cfg[0] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN23XX_DEFAULT_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN23XX_DEFAULT_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN23XX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -471,27 +431,25 @@ static struct octeon_config default_cn23xx_conf = {
 	},
 
 	.nic_if_cfg[1] = {
-		/* Max Txqs: Half for each of the two ports :max_iq/2 */
+		 
 		.max_txqs			= MAX_TXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_txqs */
+		 
 		.num_txqs			= DEF_TXQS_PER_INTF,
 
-		/* Max Rxqs: Half for each of the two ports :max_oq/2  */
+		 
 		.max_rxqs			= MAX_RXQS_PER_INTF,
 
-		/* Actual configured value. Range could be: 1...max_rxqs */
+		 
 		.num_rxqs			= DEF_RXQS_PER_INTF,
 
-		/* Num of desc for rx rings */
+		 
 		.num_rx_descs			= CN23XX_DEFAULT_OQ_DESCRIPTORS,
 
-		/* Num of desc for tx rings */
+		 
 		.num_tx_descs			= CN23XX_DEFAULT_IQ_DESCRIPTORS,
 
-		/* SKB size, We need not change buf size even for Jumbo frames.
-		 * Octeon can send jumbo frames in 4 consecutive descriptors,
-		 */
+		 
 		.rx_buf_size			= CN23XX_OQ_BUF_SIZE,
 
 		.base_queue			= BASE_QUEUE_NOT_REQUESTED,
@@ -500,15 +458,15 @@ static struct octeon_config default_cn23xx_conf = {
 	},
 
 	.misc					= {
-		/* Host driver link query interval */
+		 
 		.oct_link_query_interval	= 100,
 
-		/* Octeon link query interval */
+		 
 		.host_link_query_interval	= 500,
 
 		.enable_sli_oq_bp		= 0,
 
-		/* Control queue group */
+		 
 		.ctrlq_grp			= 1,
 	}
 };
@@ -544,7 +502,7 @@ static atomic_t adapter_refcounts[MAX_OCTEON_DEVICES];
 static atomic_t adapter_fw_states[MAX_OCTEON_DEVICES];
 
 static u32 octeon_device_count;
-/* locks device array (i.e. octeon_device[]) */
+ 
 static DEFINE_SPINLOCK(octeon_devices_lock);
 
 static struct octeon_core_setup core_setup[MAX_OCTEON_DEVICES];
@@ -752,14 +710,7 @@ struct octeon_device *octeon_allocate_device(u32 pci_id,
 }
 EXPORT_SYMBOL_GPL(octeon_allocate_device);
 
-/** Register a device's bus location at initialization time.
- *  @param octeon_dev - pointer to the octeon device structure.
- *  @param bus        - PCIe bus #
- *  @param dev        - PCIe device #
- *  @param func       - PCIe function #
- *  @param is_pf      - TRUE for PF, FALSE for VF
- *  @return reference count of device's adapter
- */
+ 
 int octeon_register_device(struct octeon_device *oct,
 			   int bus, int dev, int func, int is_pf)
 {
@@ -772,7 +723,7 @@ int octeon_register_device(struct octeon_device *oct,
 	oct->adapter_refcount = &adapter_refcounts[oct->octeon_id];
 	atomic_set(oct->adapter_refcount, 0);
 
-	/* Like the reference count, the f/w state is shared 'per-adapter' */
+	 
 	oct->adapter_fw_state = &adapter_fw_states[oct->octeon_id];
 	atomic_set(oct->adapter_fw_state, FW_NEEDS_TO_BE_LOADED);
 
@@ -784,11 +735,9 @@ int octeon_register_device(struct octeon_device *oct,
 				__func__);
 			spin_unlock(&octeon_devices_lock);
 			atomic_inc(oct->adapter_refcount);
-			return 1; /* here, refcount is guaranteed to be 1 */
+			return 1;  
 		}
-		/* If another device is at same bus/dev, use its refcounter
-		 * (and f/w state variable).
-		 */
+		 
 		if ((octeon_device[idx]->loc.bus == bus) &&
 		    (octeon_device[idx]->loc.dev == dev)) {
 			oct->adapter_refcount =
@@ -810,10 +759,7 @@ int octeon_register_device(struct octeon_device *oct,
 }
 EXPORT_SYMBOL_GPL(octeon_register_device);
 
-/** Deregister a device at de-initialization time.
- *  @param octeon_dev - pointer to the octeon device structure.
- *  @return reference count of device's adapter
- */
+ 
 int octeon_deregister_device(struct octeon_device *oct)
 {
 	int refcount;
@@ -868,7 +814,7 @@ octeon_free_ioq_vector(struct octeon_device *oct)
 }
 EXPORT_SYMBOL_GPL(octeon_free_ioq_vector);
 
-/* this function is only for setting up the first queue */
+ 
 int octeon_setup_instr_queues(struct octeon_device *oct)
 {
 	u32 num_descs = 0;
@@ -903,7 +849,7 @@ int octeon_setup_instr_queues(struct octeon_device *oct)
 	txpciq.s.use_qpg = 0;
 	txpciq.s.qpg = 0;
 	if (octeon_init_instr_queue(oct, txpciq, num_descs)) {
-		/* prevent memory leak */
+		 
 		vfree(oct->instr_queue[0]);
 		oct->instr_queue[0] = NULL;
 		return 1;
@@ -961,10 +907,7 @@ int octeon_set_io_queues_off(struct octeon_device *oct)
 	} else if (oct->chip_id == OCTEON_CN23XX_VF_VID) {
 		u32 q_no;
 
-		/* IOQs will already be in reset.
-		 * If RST bit is set, wait for quiet bit to be set.
-		 * Once quiet bit is set, clear the RST bit.
-		 */
+		 
 		for (q_no = 0; q_no < oct->sriov_info.rings_per_vf; q_no++) {
 			u64 reg_val = octeon_read_csr64(
 				oct, CN23XX_VF_SLI_IQ_PKT_CONTROL64(q_no));
@@ -1007,7 +950,7 @@ void octeon_set_droq_pkt_op(struct octeon_device *oct,
 {
 	u32 reg_val = 0;
 
-	/* Disable the i/p and o/p queues for this Octeon. */
+	 
 	if (OCTEON_CN6XXX(oct)) {
 		reg_val = octeon_read_csr(oct, CN6XXX_SLI_PKT_OUT_ENB);
 
@@ -1113,23 +1056,7 @@ octeon_get_dispatch(struct octeon_device *octeon_dev, u16 opcode,
 	return fn;
 }
 
-/* octeon_register_dispatch_fn
- * Parameters:
- *   octeon_id - id of the octeon device.
- *   opcode    - opcode for which driver should call the registered function
- *   subcode   - subcode for which driver should call the registered function
- *   fn        - The function to call when a packet with "opcode" arrives in
- *		  octeon output queues.
- *   fn_arg    - The argument to be passed when calling function "fn".
- * Description:
- *   Registers a function and its argument to be called when a packet
- *   arrives in Octeon output queues with "opcode".
- * Returns:
- *   Success: 0
- *   Failure: 1
- * Locks:
- *   No locks are held.
- */
+ 
 int
 octeon_register_dispatch_fn(struct octeon_device *oct,
 			    u16 opcode,
@@ -1143,7 +1070,7 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
 	idx = combined_opcode & OCTEON_OPCODE_MASK;
 
 	spin_lock_bh(&oct->dispatch.lock);
-	/* Add dispatch function to first level of lookup table */
+	 
 	if (oct->dispatch.dlist[idx].opcode == 0) {
 		oct->dispatch.dlist[idx].opcode = combined_opcode;
 		oct->dispatch.dlist[idx].dispatch_fn = fn;
@@ -1155,9 +1082,7 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
 
 	spin_unlock_bh(&oct->dispatch.lock);
 
-	/* Check if there was a function already registered for this
-	 * opcode/subcode.
-	 */
+	 
 	pfn = octeon_get_dispatch(oct, opcode, subcode);
 	if (!pfn) {
 		struct octeon_dispatch *dispatch;
@@ -1172,9 +1097,7 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
 		dispatch->dispatch_fn = fn;
 		dispatch->arg = fn_arg;
 
-		/* Add dispatch function to linked list of fn ptrs
-		 * at the hashed index.
-		 */
+		 
 		spin_lock_bh(&oct->dispatch.lock);
 		list_add(&dispatch->list, &oct->dispatch.dlist[idx].list);
 		oct->dispatch.count++;
@@ -1298,14 +1221,12 @@ int octeon_get_rx_qsize(struct octeon_device *oct, u32 q_no)
 }
 EXPORT_SYMBOL_GPL(octeon_get_rx_qsize);
 
-/* Retruns the host firmware handshake OCTEON specific configuration */
+ 
 struct octeon_config *octeon_get_conf(struct octeon_device *oct)
 {
 	struct octeon_config *default_oct_conf = NULL;
 
-	/* check the OCTEON Device model & return the corresponding octeon
-	 * configuration
-	 */
+	 
 
 	if (OCTEON_CN6XXX(oct)) {
 		default_oct_conf =
@@ -1321,14 +1242,10 @@ struct octeon_config *octeon_get_conf(struct octeon_device *oct)
 }
 EXPORT_SYMBOL_GPL(octeon_get_conf);
 
-/* scratch register address is same in all the OCT-II and CN70XX models */
+ 
 #define CNXX_SLI_SCRATCH1   0x3C0
 
-/* Get the octeon device pointer.
- *  @param octeon_id  - The id for which the octeon device pointer is required.
- *  @return Success: Octeon device pointer.
- *  @return Failure: NULL.
- */
+ 
 struct octeon_device *lio_get_device(u32 octeon_id)
 {
 	if (octeon_id >= MAX_OCTEON_DEVICES)
@@ -1346,9 +1263,7 @@ u64 lio_pci_readq(struct octeon_device *oct, u64 addr)
 
 	spin_lock_irqsave(&oct->pci_win_lock, flags);
 
-	/* The windowed read happens when the LSB of the addr is written.
-	 * So write MSB first
-	 */
+	 
 	addrhi = (addr >> 32);
 	if ((oct->chip_id == OCTEON_CN66XX) ||
 	    (oct->chip_id == OCTEON_CN68XX) ||
@@ -1356,7 +1271,7 @@ u64 lio_pci_readq(struct octeon_device *oct, u64 addr)
 		addrhi |= 0x00060000;
 	writel(addrhi, oct->reg_list.pci_win_rd_addr_hi);
 
-	/* Read back to preserve ordering of writes */
+	 
 	readl(oct->reg_list.pci_win_rd_addr_hi);
 
 	writel(addr & 0xffffffff, oct->reg_list.pci_win_rd_addr_lo);
@@ -1380,9 +1295,9 @@ void lio_pci_writeq(struct octeon_device *oct,
 
 	writeq(addr, oct->reg_list.pci_win_wr_addr);
 
-	/* The write happens when the LSB is written. So write MSB first. */
+	 
 	writel(val >> 32, oct->reg_list.pci_win_wr_data_hi);
-	/* Read the MSB to ensure ordering of writes. */
+	 
 	readl(oct->reg_list.pci_win_wr_data_hi);
 
 	writel(val & 0xffffffff, oct->reg_list.pci_win_wr_data_lo);
@@ -1396,7 +1311,7 @@ int octeon_mem_access_ok(struct octeon_device *oct)
 	u64 access_okay = 0;
 	u64 lmc0_reset_ctl;
 
-	/* Check to make sure a DDR interface is enabled */
+	 
 	if (OCTEON_CN23XX_PF(oct)) {
 		lmc0_reset_ctl = lio_pci_readq(oct, CN23XX_LMC0_RESET_CTL);
 		access_okay =
@@ -1423,7 +1338,7 @@ int octeon_wait_for_ddr_init(struct octeon_device *oct, u32 *timeout)
 	     ms += HZ / 10) {
 		ret = octeon_mem_access_ok(oct);
 
-		/* wait 100 ms */
+		 
 		if (ret)
 			schedule_timeout_uninterruptible(HZ / 10);
 	}
@@ -1432,11 +1347,7 @@ int octeon_wait_for_ddr_init(struct octeon_device *oct, u32 *timeout)
 }
 EXPORT_SYMBOL_GPL(octeon_wait_for_ddr_init);
 
-/* Get the octeon id assigned to the octeon device passed as argument.
- *  This function is exported to other modules.
- *  @param dev - octeon device pointer passed as a void *.
- *  @return octeon device id
- */
+ 
 int lio_get_device_id(void *dev)
 {
 	struct octeon_device *octeon_dev = (struct octeon_device *)dev;
@@ -1454,7 +1365,7 @@ void lio_enable_irq(struct octeon_droq *droq, struct octeon_instr_queue *iq)
 	u32 pkts_pend;
 	struct octeon_device *oct = NULL;
 
-	/* the whole thing needs to be atomic, ideally */
+	 
 	if (droq) {
 		pkts_pend = (u32)atomic_read(&droq->pkts_pending);
 		writel(droq->pkt_count - pkts_pend, droq->pkts_sent_reg);
@@ -1466,17 +1377,15 @@ void lio_enable_irq(struct octeon_droq *droq, struct octeon_instr_queue *iq)
 		writel(iq->pkts_processed, iq->inst_cnt_reg);
 		iq->pkt_in_done -= iq->pkts_processed;
 		iq->pkts_processed = 0;
-		/* this write needs to be flushed before we release the lock */
+		 
 		spin_unlock_bh(&iq->lock);
 		oct = iq->oct_dev;
 	}
-	/*write resend. Writing RESEND in SLI_PKTX_CNTS should be enough
-	 *to trigger tx interrupts as well, if they are pending.
-	 */
+	 
 	if (oct && (OCTEON_CN23XX_PF(oct) || OCTEON_CN23XX_VF(oct))) {
 		if (droq)
 			writeq(CN23XX_INTR_RESEND, droq->pkts_sent_reg);
-		/*we race with firmrware here. read and write the IN_DONE_CNTS*/
+		 
 		else if (iq) {
 			instr_cnt =  readq(iq->inst_cnt_reg);
 			writeq(((instr_cnt & 0xFFFFFFFF00000000ULL) |

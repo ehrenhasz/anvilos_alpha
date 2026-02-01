@@ -1,22 +1,6 @@
-/* xmalloc.h -- defines for the `x' memory allocation functions */
+ 
 
-/* Copyright (C) 2001-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if !defined (_XMALLOC_H_)
 #define _XMALLOC_H_
@@ -24,7 +8,7 @@
 #include "stdc.h"
 #include "bashansi.h"
 
-/* Generic pointer type. */
+ 
 #ifndef PTR_T
 
 #if defined (__STDC__)
@@ -33,9 +17,9 @@
 #  define PTR_T char *
 #endif
 
-#endif /* PTR_T */
+#endif  
 
-/* Allocation functions in xmalloc.c */
+ 
 extern PTR_T xmalloc PARAMS((size_t));
 extern PTR_T xrealloc PARAMS((void *, size_t));
 extern void xfree PARAMS((void *));
@@ -61,6 +45,6 @@ extern PTR_T sh_malloc PARAMS((size_t, const char *, int));
 #endif
 #define malloc(x)	sh_malloc((x), __FILE__, __LINE__)
 
-#endif	/* USING_BASH_MALLOC */
+#endif	 
 
-#endif	/* _XMALLOC_H_ */
+#endif	 

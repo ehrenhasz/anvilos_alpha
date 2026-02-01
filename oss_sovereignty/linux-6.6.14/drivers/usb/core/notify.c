@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * All the USB notify logic
- *
- * (C) Copyright 2005 Greg Kroah-Hartman <gregkh@suse.de>
- *
- * notifier functions originally based on those in kernel/sys.c
- * but fixed up to not be so broken.
- *
- * Released under the GPLv2 only.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -20,25 +11,14 @@
 
 static BLOCKING_NOTIFIER_HEAD(usb_notifier_list);
 
-/**
- * usb_register_notify - register a notifier callback whenever a usb change happens
- * @nb: pointer to the notifier block for the callback events.
- *
- * These changes are either USB devices or busses being added or removed.
- */
+ 
 void usb_register_notify(struct notifier_block *nb)
 {
 	blocking_notifier_chain_register(&usb_notifier_list, nb);
 }
 EXPORT_SYMBOL_GPL(usb_register_notify);
 
-/**
- * usb_unregister_notify - unregister a notifier callback
- * @nb: pointer to the notifier block for the callback events.
- *
- * usb_register_notify() must have been previously called for this function
- * to work properly.
- */
+ 
 void usb_unregister_notify(struct notifier_block *nb)
 {
 	blocking_notifier_chain_unregister(&usb_notifier_list, nb);

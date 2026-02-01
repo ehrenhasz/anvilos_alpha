@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * userspace interface for pi433 radio module
- *
- * Pi433 is a 433MHz radio module for the Raspberry Pi.
- * It is based on the HopeRf Module RFM69CW. Therefore, inside of this
- * driver you'll find an abstraction of the rf69 chip.
- *
- * If needed this driver could also be extended to support other
- * devices based on HopeRf rf69 as well as HopeRf modules with a similar
- * interface such as RFM69HCW, RFM12, RFM95 and so on.
- *
- * Copyright (C) 2016 Wolf-Entwicklungen
- *	Marcus Wolf <linux@wolf-entwicklungen.de>
- */
+ 
+ 
 
 #ifndef PI433_H
 #define PI433_H
@@ -20,34 +7,16 @@
 #include <linux/types.h>
 #include "rf69_enum.h"
 
-/*---------------------------------------------------------------------------*/
+ 
 
 enum option_on_off {
 	OPTION_OFF,
 	OPTION_ON
 };
 
-/* IOCTL structs and commands */
+ 
 
-/**
- * struct pi433_tx_cfg
- * describes the configuration of the radio module for sending data
- * @frequency:
- * @bit_rate:
- * @modulation:
- * @data_mode:
- * @preamble_length:
- * @sync_pattern:
- * @tx_start_condition:
- * @payload_length:
- * @repetitions:
- *
- * ATTENTION:
- * If the contents of 'pi433_tx_cfg' ever change
- * incompatibly, then the ioctl number (see define below) must change.
- *
- * NOTE: struct layout is the same in 64bit and 32bit userspace.
- */
+ 
 #define PI433_TX_CFG_IOCTL_NR	0
 struct pi433_tx_cfg {
 	__u32			frequency;
@@ -62,7 +31,7 @@ struct pi433_tx_cfg {
 
 	__u16			repetitions;
 
-	/* packet format */
+	 
 	enum option_on_off	enable_preamble;
 	enum option_on_off	enable_sync;
 	enum option_on_off	enable_length_byte;
@@ -77,25 +46,7 @@ struct pi433_tx_cfg {
 	__u8			address_byte;
 };
 
-/**
- * struct pi433_rx_cfg
- * describes the configuration of the radio module for receiving data
- * @frequency:
- * @bit_rate:
- * @modulation:
- * @data_mode:
- * @preamble_length:
- * @sync_pattern:
- * @tx_start_condition:
- * @payload_length:
- * @repetitions:
- *
- * ATTENTION:
- * If the contents of 'pi433_rx_cfg' ever change
- * incompatibly, then the ioctl number (see define below) must change
- *
- * NOTE: struct layout is the same in 64bit and 32bit userspace.
- */
+ 
 #define PI433_RX_CFG_IOCTL_NR	1
 struct pi433_rx_cfg {
 	__u32			frequency;
@@ -108,20 +59,20 @@ struct pi433_rx_cfg {
 	enum threshold_decrement threshold_decrement;
 	enum antenna_impedance	antenna_impedance;
 	enum lna_gain		lna_gain;
-	enum mantisse		bw_mantisse;	/* normal: 0x50 */
-	__u8			bw_exponent;	/* during AFC: 0x8b */
+	enum mantisse		bw_mantisse;	 
+	__u8			bw_exponent;	 
 	enum dagc		dagc;
 
-	/* packet format */
+	 
 	enum option_on_off	enable_sync;
 
-	/* should be used in combination with sync, only */
+	 
 	enum option_on_off	enable_length_byte;
 
-	/* operational with sync, only */
+	 
 	enum address_filtering	enable_address_filtering;
 
-	/* only operational, if sync on and fixed length or length byte is used */
+	 
 	enum option_on_off	enable_crc;
 
 	__u8			sync_length;
@@ -145,4 +96,4 @@ struct pi433_rx_cfg {
 #define PI433_IOC_WR_RX_CFG                                             \
 	_IOW(PI433_IOC_MAGIC, PI433_RX_CFG_IOCTL_NR, char[sizeof(struct pi433_rx_cfg)])
 
-#endif /* PI433_H */
+#endif  

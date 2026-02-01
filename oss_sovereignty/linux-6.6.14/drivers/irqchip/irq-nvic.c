@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/irq/irq-nvic.c
- *
- * Copyright (C) 2008 ARM Limited, All Rights Reserved.
- * Copyright (C) 2013 Pengutronix
- *
- * Support for the Nested Vectored Interrupt Controller found on the
- * ARMv7-M CPUs (Cortex-M3/M4)
- */
+
+ 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
@@ -29,10 +21,7 @@
 #define NVIC_IPR		0x400
 
 #define NVIC_MAX_BANKS		16
-/*
- * Each bank handles 32 irqs. Only the 16th (= last) bank handles only
- * 16 irqs.
- */
+ 
 #define NVIC_MAX_IRQ		((NVIC_MAX_BANKS - 1) * 32 + 16)
 
 static struct irq_domain *nvic_irq_domain;
@@ -117,16 +106,14 @@ static int __init nvic_of_init(struct device_node *node,
 		gc->chip_types[0].regs.disable = NVIC_ICER;
 		gc->chip_types[0].chip.irq_mask = irq_gc_mask_disable_reg;
 		gc->chip_types[0].chip.irq_unmask = irq_gc_unmask_enable_reg;
-		/* This is a no-op as end of interrupt is signaled by the
-		 * exception return sequence.
-		 */
+		 
 		gc->chip_types[0].chip.irq_eoi = irq_gc_noop;
 
-		/* disable interrupts */
+		 
 		writel_relaxed(~0, gc->reg_base + NVIC_ICER);
 	}
 
-	/* Set priority on all interrupts */
+	 
 	for (i = 0; i < irqs; i += 4)
 		writel_relaxed(0, nvic_base + NVIC_IPR + i);
 

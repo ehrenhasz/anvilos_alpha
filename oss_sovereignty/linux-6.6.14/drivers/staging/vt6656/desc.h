@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose:The header file of descriptor
- *
- * Revision History:
- *
- * Author: Tevin Chen
- *
- * Date: May 21, 1996
- *
- */
+ 
+ 
 
 #ifndef __DESC_H__
 #define __DESC_H__
@@ -20,43 +8,37 @@
 #include <linux/types.h>
 #include <linux/mm.h>
 
-/* max transmit or receive buffer size */
-#define CB_MAX_BUF_SIZE     2900U       /* NOTE: must be multiple of 4 */
+ 
+#define CB_MAX_BUF_SIZE     2900U        
 
 #define MAX_TOTAL_SIZE_WITH_ALL_HEADERS CB_MAX_BUF_SIZE
 
 #define MAX_INTERRUPT_SIZE              32
 
-#define CB_MAX_RX_DESC      128         /* max # of descriptors */
-#define CB_MIN_RX_DESC      16          /* min # of RX descriptors */
-#define CB_MAX_TX_DESC      128         /* max # of descriptors */
-#define CB_MIN_TX_DESC      16          /* min # of TX descriptors */
+#define CB_MAX_RX_DESC      128          
+#define CB_MIN_RX_DESC      16           
+#define CB_MAX_TX_DESC      128          
+#define CB_MIN_TX_DESC      16           
 
-/*
- * bits in the RSR register
- */
+ 
 #define RSR_ADDRBROAD       BIT(7)
 #define RSR_ADDRMULTI       BIT(6)
 #define RSR_ADDRUNI         0x00
-#define RSR_IVLDTYP         BIT(5)	/* invalid packet type */
-#define RSR_IVLDLEN         BIT(4)	/* invalid len (> 2312 byte) */
+#define RSR_IVLDTYP         BIT(5)	 
+#define RSR_IVLDLEN         BIT(4)	 
 #define RSR_BSSIDOK         BIT(3)
 #define RSR_CRCOK           BIT(2)
 #define RSR_BCNSSIDOK       BIT(1)
 #define RSR_ADDROK          BIT(0)
 
-/*
- * bits in the new RSR register
- */
+ 
 #define NEWRSR_DECRYPTOK    BIT(4)
 #define NEWRSR_CFPIND       BIT(3)
 #define NEWRSR_HWUTSF       BIT(2)
 #define NEWRSR_BCNHITAID    BIT(1)
 #define NEWRSR_BCNHITAID0   BIT(0)
 
-/*
- * bits in the TSR register
- */
+ 
 #define TSR_RETRYTMO        BIT(3)
 #define TSR_TMO             BIT(2)
 #define TSR_ACKDATA         BIT(1)
@@ -78,7 +60,7 @@
 #define FIFOCTL_NEEDACK     0x0002
 #define FIFOCTL_LHEAD       0x0001
 
-/* WMAC definition Frag Control */
+ 
 #define FRAGCTL_AES         0x0300
 #define FRAGCTL_TKIP        0x0200
 #define FRAGCTL_LEGACY      0x0100
@@ -88,4 +70,4 @@
 #define FRAGCTL_STAFRAG     0x0001
 #define FRAGCTL_NONFRAG     0x0000
 
-#endif /* __DESC_H__ */
+#endif  

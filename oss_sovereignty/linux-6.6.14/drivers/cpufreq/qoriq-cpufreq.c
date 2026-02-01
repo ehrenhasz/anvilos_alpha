@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- *
- * CPU Frequency Scaling driver for Freescale QorIQ SoCs.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -20,20 +16,13 @@
 #include <linux/smp.h>
 #include <linux/platform_device.h>
 
-/**
- * struct cpu_data
- * @pclk: the parent clock of cpu
- * @table: frequency table
- */
+ 
 struct cpu_data {
 	struct clk **pclk;
 	struct cpufreq_frequency_table *table;
 };
 
-/**
- * struct soc_data - SoC specific data
- * @flags: SOC_xxx
- */
+ 
 struct soc_data {
 	u32 flags;
 };
@@ -45,7 +34,7 @@ static u32 get_bus_freq(void)
 	struct clk *pltclk;
 	int ret;
 
-	/* get platform freq by searching bus-frequency property */
+	 
 	soc = of_find_node_by_type(NULL, "soc");
 	if (soc) {
 		ret = of_property_read_u32(soc, "bus-frequency", &sysfreq);
@@ -54,7 +43,7 @@ static u32 get_bus_freq(void)
 			return sysfreq;
 	}
 
-	/* get platform freq by its clock name */
+	 
 	pltclk = clk_get(NULL, "cg-pll0-div1");
 	if (IS_ERR(pltclk)) {
 		pr_err("%s: can't get bus frequency %ld\n",
@@ -82,7 +71,7 @@ static struct clk *cpu_to_clk(int cpu)
 	return clk;
 }
 
-/* traverse cpu nodes to get cpu mask of sharing clock wire */
+ 
 static void set_affected_cpus(struct cpufreq_policy *policy)
 {
 	struct cpumask *dstp = policy->cpus;
@@ -101,7 +90,7 @@ static void set_affected_cpus(struct cpufreq_policy *policy)
 	}
 }
 
-/* reduce the duplicated frequencies in frequency table */
+ 
 static void freq_table_redup(struct cpufreq_frequency_table *freq_table,
 		int count)
 {
@@ -120,7 +109,7 @@ static void freq_table_redup(struct cpufreq_frequency_table *freq_table,
 	}
 }
 
-/* sort the frequencies in frequency table in descenting order */
+ 
 static void freq_table_sort(struct cpufreq_frequency_table *freq_table,
 		int count)
 {
@@ -141,7 +130,7 @@ static void freq_table_sort(struct cpufreq_frequency_table *freq_table,
 		}
 
 		if (ind != i) {
-			/* exchange the frequencies */
+			 
 			table.driver_data = freq_table[i].driver_data;
 			table.frequency = freq_table[i].frequency;
 			freq_table[i].driver_data = freq_table[ind].driver_data;
@@ -202,11 +191,11 @@ static int qoriq_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	policy->freq_table = table;
 	data->table = table;
 
-	/* update ->cpus if we have cluster, no harm if not */
+	 
 	set_affected_cpus(policy);
 	policy->driver_data = data;
 
-	/* Minimum transition latency is 12 platform clocks */
+	 
 	u64temp = 12ULL * NSEC_PER_SEC;
 	do_div(u64temp, get_bus_freq());
 	policy->cpuinfo.transition_latency = u64temp + 1;
@@ -260,7 +249,7 @@ static struct cpufreq_driver qoriq_cpufreq_driver = {
 };
 
 static const struct of_device_id qoriq_cpufreq_blacklist[] = {
-	/* e6500 cannot use cpufreq due to erratum A-008083 */
+	 
 	{ .compatible = "fsl,b4420-clockgen", },
 	{ .compatible = "fsl,b4860-clockgen", },
 	{ .compatible = "fsl,t2080-clockgen", },

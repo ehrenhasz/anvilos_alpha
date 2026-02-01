@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include "dr_types.h"
 
@@ -147,9 +147,7 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
 			MLX5_CAP_GEN(mdev, log_header_modify_argument_max_alloc);
 	}
 
-	/* geneve_tlv_option_0_exist is the indication of
-	 * STE support for lookup type flex_parser_ok
-	 */
+	 
 	caps->flex_parser_ok_bits_supp =
 		MLX5_CAP_FLOWTABLE(mdev,
 				   flow_table_properties_nic_receive.ft_field_support.geneve_tlv_option_0_exist);
@@ -292,10 +290,7 @@ int mlx5dr_cmd_sync_steering(struct mlx5_core_dev *mdev)
 {
 	u32 in[MLX5_ST_SZ_DW(sync_steering_in)] = {};
 
-	/* Skip SYNC in case the device is internal error state.
-	 * Besides a device error, this also happens when we're
-	 * in fast teardown
-	 */
+	 
 	if (mdev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
 		return 0;
 
@@ -319,7 +314,7 @@ int mlx5dr_cmd_set_fte_modify_and_vport(struct mlx5_core_dev *mdev,
 	int err;
 
 	inlen = MLX5_ST_SZ_BYTES(set_fte_in) +
-		1 * MLX5_ST_SZ_BYTES(dest_format_struct); /* One destination only */
+		1 * MLX5_ST_SZ_BYTES(dest_format_struct);  
 
 	in = kvzalloc(inlen, GFP_KERNEL);
 	if (!in)
@@ -475,9 +470,7 @@ int mlx5dr_cmd_create_flow_table(struct mlx5_core_dev *mdev,
 	MLX5_SET(flow_table_context, ft_mdev, level, attr->level);
 
 	if (attr->sw_owner) {
-		/* icm_addr_0 used for FDB RX / NIC TX / NIC_RX
-		 * icm_addr_1 used for FDB TX
-		 */
+		 
 		if (attr->table_type == MLX5_FLOW_TABLE_TYPE_NIC_RX) {
 			MLX5_SET64(flow_table_context, ft_mdev,
 				   sw_owner_icm_root_0, attr->icm_addr_rx);

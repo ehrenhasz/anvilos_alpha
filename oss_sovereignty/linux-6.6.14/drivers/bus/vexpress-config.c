@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2014 ARM Limited
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -54,7 +51,7 @@ struct vexpress_syscfg_func {
 	struct vexpress_syscfg *syscfg;
 	struct regmap *regmap;
 	int num_templates;
-	u32 template[]; /* Keep it last! */
+	u32 template[];  
 };
 
 struct vexpress_config_bridge_ops {
@@ -91,7 +88,7 @@ static void vexpress_config_unlock(void *arg)
 static void vexpress_config_find_prop(struct device_node *node,
 		const char *name, u32 *val)
 {
-	/* Default value */
+	 
 	*val = 0;
 
 	of_node_get(node);
@@ -174,7 +171,7 @@ static int vexpress_syscfg_exec(struct vexpress_syscfg_func *func,
 	command |= SYS_CFGCTRL_START;
 	command |= write ? SYS_CFGCTRL_WRITE : 0;
 
-	/* Use a canary for reads */
+	 
 	if (!write)
 		*data = 0xdeadbeef;
 
@@ -185,7 +182,7 @@ static int vexpress_syscfg_exec(struct vexpress_syscfg_func *func,
 	writel(command, syscfg->base + SYS_CFGCTRL);
 	mb();
 
-	/* The operation can take ages... Go to sleep, 100us initially */
+	 
 	tries = 100;
 	timeout = 100;
 	do {
@@ -270,10 +267,7 @@ static struct regmap *vexpress_syscfg_regmap_init(struct device *dev,
 	num = prop->length / sizeof(u32) / 2;
 	val = prop->value;
 
-	/*
-	 * "arm,vexpress-energy" function used to be described
-	 * by its first device only, now it requires both
-	 */
+	 
 	if (num == 1 && of_device_is_compatible(dev->of_node,
 			"arm,vexpress-energy")) {
 		num = 2;
@@ -378,7 +372,7 @@ static int vexpress_syscfg_probe(struct platform_device *pdev)
 			VEXPRESS_SITE_DB2 : VEXPRESS_SITE_DB1;
 	vexpress_config_set_master(master);
 
-	/* Confirm board type against DT property, if available */
+	 
 	if (of_property_read_u32(of_root, "arm,hbi", &dt_hbi) == 0) {
 		u32 id = readl(syscfg->base + (master == VEXPRESS_SITE_DB1 ?
 				 SYS_PROCID0 : SYS_PROCID1));

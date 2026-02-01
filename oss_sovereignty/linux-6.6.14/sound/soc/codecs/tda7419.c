@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TDA7419 audio processor driver
- *
- * Copyright 2018 Konsulko Group
- *
- * Author: Matt Porter <mporter@konsulko.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -380,7 +374,7 @@ static const char * const enum_coupling_mode[] = {
 static SOC_ENUM_SINGLE_DECL(soc_enum_coupling_mode,
 	TDA7419_SA_CLK_AC_REG, TDA7419_COUPLING_MODE, enum_coupling_mode);
 
-/* ASoC Controls */
+ 
 static struct snd_kcontrol_new tda7419_controls[] = {
 SOC_SINGLE_TLV("Main Source Capture Volume", TDA7419_MAIN_SRC_REG,
 	       TDA7419_MAIN_SRC_GAIN, 15, 0, tlv_src_gain),
@@ -592,12 +586,7 @@ static int tda7419_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/*
-	 * Reset registers to power-on defaults. The part does not provide a
-	 * soft-reset function and the registers are not readable. This ensures
-	 * that the cache matches register contents even if the registers have
-	 * been previously initialized and not power cycled before probe.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(tda7419_regmap_defaults); i++)
 		regmap_write(tda7419->regmap,
 			     tda7419_regmap_defaults[i].reg,

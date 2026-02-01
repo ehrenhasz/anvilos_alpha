@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for ADC module on the Cirrus Logic EP93xx series of SoCs
- *
- * Copyright (C) 2015 Alexander Sverdlin
- *
- * The driver uses polling to get the conversion status. According to EP93xx
- * datasheets, reading ADCResult register starts the conversion, but user is also
- * responsible for ensuring that delay between adjacent conversion triggers is
- * long enough so that maximum allowed conversion rate is not exceeded. This
- * basically renders IRQ mode unusable.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -23,14 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/of.h>
 
-/*
- * This code could benefit from real HR Timers, but jiffy granularity would
- * lower ADC conversion rate down to CONFIG_HZ, so we fallback to busy wait
- * in such case.
- *
- * HR Timers-based version loads CPU only up to 10% during back to back ADC
- * conversion, while busy wait-based version consumes whole CPU power.
- */
+ 
 #ifdef CONFIG_HIGH_RES_TIMERS
 #define ep93xx_adc_delay(usmin, usmax) usleep_range(usmin, usmax)
 #else
@@ -60,11 +43,7 @@ struct ep93xx_adc_priv {
 				   BIT(IIO_CHAN_INFO_OFFSET),	\
 }
 
-/*
- * Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
- * EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
- * not defined. So the last three are numbered randomly, let's say.
- */
+ 
 static const struct iio_chan_spec ep93xx_adc_channels[8] = {
 	EP93XX_ADC_CH(0, "YM",	0x608),
 	EP93XX_ADC_CH(1, "SXP",	0x680),
@@ -89,27 +68,21 @@ static int ep93xx_read_raw(struct iio_dev *iiodev,
 		mutex_lock(&priv->lock);
 		if (priv->lastch != channel->channel) {
 			priv->lastch = channel->channel;
-			/*
-			 * Switch register is software-locked, unlocking must be
-			 * immediately followed by write
-			 */
+			 
 			local_irq_disable();
 			writel_relaxed(0xAA, priv->base + EP93XX_ADC_SW_LOCK);
 			writel_relaxed(channel->address,
 				       priv->base + EP93XX_ADC_SWITCH);
 			local_irq_enable();
-			/*
-			 * Settling delay depends on module clock and could be
-			 * 2ms or 500us
-			 */
+			 
 			ep93xx_adc_delay(2000, 2000);
 		}
-		/* Start the conversion, eventually discarding old result */
+		 
 		readl_relaxed(priv->base + EP93XX_ADC_RESULT);
-		/* Ensure maximum conversion rate is not exceeded */
+		 
 		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
 				 DIV_ROUND_UP(1000000, 925));
-		/* At this point conversion must be completed, but anyway... */
+		 
 		ret = IIO_VAL_INT;
 		timeout = jiffies + msecs_to_jiffies(1) + 1;
 		while (1) {
@@ -133,12 +106,12 @@ static int ep93xx_read_raw(struct iio_dev *iiodev,
 		return ret;
 
 	case IIO_CHAN_INFO_OFFSET:
-		/* According to datasheet, range is -25000..25000 */
+		 
 		*value = 25000;
 		return IIO_VAL_INT;
 
 	case IIO_CHAN_INFO_SCALE:
-		/* Typical supply voltage is 3.3v */
+		 
 		*value = (1ULL << 32) * 3300 / 50000;
 		*shift = 32;
 		return IIO_VAL_FRACTIONAL_LOG2;
@@ -188,20 +161,11 @@ static int ep93xx_adc_probe(struct platform_device *pdev)
 	if (!pclk) {
 		dev_warn(&pdev->dev, "Cannot obtain parent clock\n");
 	} else {
-		/*
-		 * This is actually a place for improvement:
-		 * EP93xx ADC supports two clock divisors -- 4 and 16,
-		 * resulting in conversion rates 3750 and 925 samples per second
-		 * with 500us or 2ms settling time respectively.
-		 * One might find this interesting enough to be configurable.
-		 */
+		 
 		ret = clk_set_rate(priv->clk, clk_get_rate(pclk) / 16);
 		if (ret)
 			dev_warn(&pdev->dev, "Cannot set clock rate\n");
-		/*
-		 * We can tolerate rate setting failure because the module should
-		 * work in any case.
-		 */
+		 
 	}
 
 	ret = clk_prepare_enable(priv->clk);

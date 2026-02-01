@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2005-2014, 2021 Intel Corporation
- */
+ 
+ 
 #ifndef __iwl_agn_h__
 #define __iwl_agn_h__
 
@@ -9,15 +7,15 @@
 
 #include "dev.h"
 
-/* The first 11 queues (0-10) are used otherwise */
+ 
 #define IWLAGN_FIRST_AMPDU_QUEUE	11
 
-/* AUX (TX during scan dwell) queue */
+ 
 #define IWL_AUX_QUEUE		10
 
 #define IWL_INVALID_STATION	255
 
-/* device operations */
+ 
 extern const struct iwl_dvm_cfg iwl_dvm_1000_cfg;
 extern const struct iwl_dvm_cfg iwl_dvm_2000_cfg;
 extern const struct iwl_dvm_cfg iwl_dvm_105_cfg;
@@ -32,9 +30,7 @@ extern const struct iwl_dvm_cfg iwl_dvm_6030_cfg;
 
 #define TIME_UNIT		1024
 
-/*****************************************************
-* DRIVER STATUS FUNCTIONS
-******************************************************/
+ 
 #define STATUS_RF_KILL_HW	0
 #define STATUS_CT_KILL		1
 #define STATUS_ALIVE		2
@@ -71,18 +67,18 @@ bool iwl_check_for_ct_kill(struct iwl_priv *priv);
 
 void iwlagn_lift_passive_no_rx(struct iwl_priv *priv);
 
-/* MAC80211 */
+ 
 struct ieee80211_hw *iwl_alloc_all(void);
 int iwlagn_mac_setup_register(struct iwl_priv *priv,
 			      const struct iwl_ucode_capabilities *capa);
 void iwlagn_mac_unregister(struct iwl_priv *priv);
 
-/* commands */
+ 
 int iwl_dvm_send_cmd(struct iwl_priv *priv, struct iwl_host_cmd *cmd);
 int iwl_dvm_send_cmd_pdu(struct iwl_priv *priv, u8 id,
 			 u32 flags, u16 len, const void *data);
 
-/* RXON */
+ 
 void iwl_connection_init_rx_config(struct iwl_priv *priv,
 				   struct iwl_rxon_context *ctx);
 int iwlagn_set_pan_params(struct iwl_priv *priv);
@@ -103,7 +99,7 @@ void iwl_set_flags_for_band(struct iwl_priv *priv,
 			    enum nl80211_band band,
 			    struct ieee80211_vif *vif);
 
-/* uCode */
+ 
 int iwl_send_bt_env(struct iwl_priv *priv, u8 action, u8 type);
 void iwl_send_prio_tbl(struct iwl_priv *priv);
 int iwl_init_alive_start(struct iwl_priv *priv);
@@ -118,7 +114,7 @@ int iwl_dump_nic_event_log(struct iwl_priv *priv, bool full_log,
 			    char **buf);
 int iwlagn_hw_valid_rtc_data_addr(u32 addr);
 
-/* lib */
+ 
 int iwlagn_send_tx_power(struct iwl_priv *priv);
 void iwlagn_temperature(struct iwl_priv *priv);
 int iwlagn_txfifo_flush(struct iwl_priv *priv, u32 scd_q_msk);
@@ -139,13 +135,13 @@ int iwlagn_send_patterns(struct iwl_priv *priv,
 int iwlagn_suspend(struct iwl_priv *priv, struct cfg80211_wowlan *wowlan);
 #endif
 
-/* rx */
+ 
 int iwlagn_hwrate_to_mac80211_idx(u32 rate_n_flags, enum nl80211_band band);
 void iwl_setup_rx_handlers(struct iwl_priv *priv);
 void iwl_chswitch_done(struct iwl_priv *priv, bool is_success);
 
 
-/* tx */
+ 
 int iwlagn_tx_skb(struct iwl_priv *priv,
 		  struct ieee80211_sta *sta,
 		  struct sk_buff *skb);
@@ -186,7 +182,7 @@ static inline bool iwl_is_tx_success(u32 status)
 
 u8 iwl_toggle_tx_ant(struct iwl_priv *priv, u8 ant_idx, u8 valid);
 
-/* scan */
+ 
 void iwlagn_post_scan(struct iwl_priv *priv);
 int iwl_force_rf_reset(struct iwl_priv *priv, bool external);
 void iwl_init_scan_params(struct iwl_priv *priv);
@@ -202,19 +198,14 @@ int __must_check iwl_scan_initiate(struct iwl_priv *priv,
 				   enum iwl_scan_type scan_type,
 				   enum nl80211_band band);
 
-/* For faster active scanning, scan will move to the next channel if fewer than
- * PLCP_QUIET_THRESH packets are heard on this channel within
- * ACTIVE_QUIET_TIME after sending probe request.  This shortens the dwell
- * time if it's a quiet channel (nothing responded to our probe, and there's
- * no other traffic).
- * Disable "quiet" feature by setting PLCP_QUIET_THRESH to 0. */
-#define IWL_ACTIVE_QUIET_TIME       cpu_to_le16(10)  /* msec */
-#define IWL_PLCP_QUIET_THRESH       cpu_to_le16(1)  /* packets */
+ 
+#define IWL_ACTIVE_QUIET_TIME       cpu_to_le16(10)   
+#define IWL_PLCP_QUIET_THRESH       cpu_to_le16(1)   
 
 #define IWL_SCAN_CHECK_WATCHDOG		(HZ * 15)
 
 
-/* bt coex */
+ 
 void iwlagn_send_advance_bt_config(struct iwl_priv *priv);
 void iwlagn_bt_rx_handler_setup(struct iwl_priv *priv);
 void iwlagn_bt_setup_deferred_work(struct iwl_priv *priv);
@@ -237,16 +228,14 @@ static inline const char *iwl_get_agg_tx_fail_reason(u16 status) { return ""; }
 #endif
 
 
-/* station management */
+ 
 int iwlagn_manage_ibss_station(struct iwl_priv *priv,
 			       struct ieee80211_vif *vif, bool add);
-#define IWL_STA_DRIVER_ACTIVE BIT(0) /* driver entry is active */
-#define IWL_STA_UCODE_ACTIVE  BIT(1) /* ucode entry is active */
-#define IWL_STA_UCODE_INPROGRESS  BIT(2) /* ucode entry is in process of
-					    being activated */
-#define IWL_STA_LOCAL BIT(3) /* station state not directed by mac80211;
-				(this is for the IBSS BSSID stations) */
-#define IWL_STA_BCAST BIT(4) /* this station is the special bcast station */
+#define IWL_STA_DRIVER_ACTIVE BIT(0)  
+#define IWL_STA_UCODE_ACTIVE  BIT(1)  
+#define IWL_STA_UCODE_INPROGRESS  BIT(2)  
+#define IWL_STA_LOCAL BIT(3)  
+#define IWL_STA_BCAST BIT(4)  
 
 
 void iwl_restore_stations(struct iwl_priv *priv, struct iwl_rxon_context *ctx);
@@ -316,7 +305,7 @@ int iwl_update_bcast_station(struct iwl_priv *priv,
 			     struct iwl_rxon_context *ctx);
 int iwl_update_bcast_stations(struct iwl_priv *priv);
 
-/* rate */
+ 
 static inline u32 iwl_ant_idx_to_flags(u8 ant_idx)
 {
 	return BIT(ant_idx) << RATE_MCS_ANT_POS;
@@ -344,11 +333,11 @@ static inline void iwl_print_rx_config_cmd(struct iwl_priv *priv,
 }
 #endif
 
-/* status checks */
+ 
 
 static inline int iwl_is_ready(struct iwl_priv *priv)
 {
-	/* The adapter is 'ready' if READY EXIT_PENDING is not set */
+	 
 	return test_bit(STATUS_READY, &priv->status) &&
 	       !test_bit(STATUS_EXIT_PENDING, &priv->status);
 }
@@ -390,7 +379,7 @@ void iwl_dbgfs_register(struct iwl_priv *priv, struct dentry *dbgfs_dir);
 #else
 static inline void iwl_dbgfs_register(struct iwl_priv *priv,
 				      struct dentry *dbgfs_dir) { }
-#endif /* CONFIG_IWLWIFI_DEBUGFS */
+#endif  
 
 #ifdef CONFIG_IWLWIFI_DEBUG
 #define IWL_DEBUG_QUIET_RFKILL(m, fmt, args...)	\
@@ -413,6 +402,6 @@ do {									\
 		__iwl_err((m)->dev, IWL_ERR_MODE_TRACE_ONLY,		\
 			  fmt, ##args);					\
 } while (0)
-#endif				/* CONFIG_IWLWIFI_DEBUG */
+#endif				 
 
-#endif /* __iwl_agn_h__ */
+#endif  

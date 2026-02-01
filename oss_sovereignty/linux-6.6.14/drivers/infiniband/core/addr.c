@@ -1,37 +1,4 @@
-/*
- * Copyright (c) 2005 Voltaire Inc.  All rights reserved.
- * Copyright (c) 2002-2005, Network Appliance, Inc. All rights reserved.
- * Copyright (c) 1999-2005, Mellanox Technologies, Inc. All rights reserved.
- * Copyright (c) 2005 Intel Corporation.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/mutex.h>
 #include <linux/inetdevice.h>
@@ -62,7 +29,7 @@ struct addr_req {
 			 struct rdma_dev_addr *addr, void *context);
 	unsigned long timeout;
 	struct delayed_work work;
-	bool resolve_by_gid_attr;	/* Consider gid attr in resolve phase */
+	bool resolve_by_gid_attr;	 
 	int status;
 	u32 seq;
 };
@@ -116,7 +83,7 @@ static void ib_nl_process_good_ip_rsep(const struct nlmsghdr *nlh)
 	list_for_each_entry(req, &req_list, list) {
 		if (nlh->nlmsg_seq != req->seq)
 			continue;
-		/* We set the DGID part, the rest was set earlier */
+		 
 		rdma_addr_set_dgid(req->addr, &gid);
 		req->status = 0;
 		found = 1;
@@ -177,18 +144,16 @@ static int ib_nl_ip_send_msg(struct rdma_dev_addr *dev_addr,
 		return -ENODATA;
 	}
 
-	/* Construct the family header first */
+	 
 	header = skb_put(skb, NLMSG_ALIGN(sizeof(*header)));
 	header->ifindex = dev_addr->bound_dev_if;
 	nla_put(skb, attrtype, size, daddr);
 
-	/* Repair the nlmsg header length */
+	 
 	nlmsg_end(skb, nlh);
 	rdma_nl_multicast(&init_net, skb, RDMA_NL_GROUP_LS, GFP_KERNEL);
 
-	/* Make the request retry, so when we get the response from userspace
-	 * we will have something.
-	 */
+	 
 	return -ENODATA;
 }
 
@@ -223,15 +188,7 @@ int rdma_addr_size_kss(struct __kernel_sockaddr_storage *addr)
 }
 EXPORT_SYMBOL(rdma_addr_size_kss);
 
-/**
- * rdma_copy_src_l2_addr - Copy netdevice source addresses
- * @dev_addr:	Destination address pointer where to copy the addresses
- * @dev:	Netdevice whose source addresses to copy
- *
- * rdma_copy_src_l2_addr() copies source addresses from the specified netdevice.
- * This includes unicast address, broadcast address, device type and
- * interface index.
- */
+ 
 void rdma_copy_src_l2_addr(struct rdma_dev_addr *dev_addr,
 			   const struct net_device *dev)
 {
@@ -374,7 +331,7 @@ static int fetch_ha(const struct dst_entry *dst, struct rdma_dev_addr *dev_addr,
 
 	might_sleep();
 
-	/* If we have a gateway in IB mode then it must be an IB network */
+	 
 	if (has_gateway(dst, family) && dev_addr->network == RDMA_NETWORK_IB)
 		return ib_nl_fetch_ha(dev_addr, daddr, seq, family);
 	else
@@ -464,7 +421,7 @@ static int addr_resolve_neigh(const struct dst_entry *dst,
 		memcpy(addr->dst_dev_addr, addr->src_dev_addr, MAX_ADDR_LEN);
 	} else {
 		if (!(ndev_flags & IFF_NOARP)) {
-			/* If the device doesn't do ARP internally */
+			 
 			ret = fetch_ha(dst, addr, dst_in, seq);
 		}
 	}
@@ -483,11 +440,7 @@ static int copy_src_l2_addr(struct rdma_dev_addr *dev_addr,
 	else
 		rdma_copy_src_l2_addr(dev_addr, dst->dev);
 
-	/*
-	 * If there's a gateway and type of device not ARPHRD_INFINIBAND,
-	 * we're definitely in RoCE v2 (as RoCE v1 isn't routable) set the
-	 * network type accordingly.
-	 */
+	 
 	if (has_gateway(dst, dst_in->sa_family) &&
 	    ndev->type != ARPHRD_INFINIBAND)
 		dev_addr->network = dst_in->sa_family == AF_INET ?
@@ -507,14 +460,9 @@ static int rdma_set_src_addr_rcu(struct rdma_dev_addr *dev_addr,
 	struct net_device *ndev = READ_ONCE(dst->dev);
 
 	*ndev_flags = ndev->flags;
-	/* A physical device must be the RDMA device to use */
+	 
 	if (ndev->flags & IFF_LOOPBACK) {
-		/*
-		 * RDMA (IB/RoCE, iWarp) doesn't run on lo interface or
-		 * loopback IP address. So if route is resolved to loopback
-		 * interface, translate that to a real ndev based on non
-		 * loopback IP address.
-		 */
+		 
 		ndev = rdma_find_ndev_for_src_ip_rcu(dev_net(ndev), dst_in);
 		if (IS_ERR(ndev))
 			return -ENODEV;
@@ -531,13 +479,7 @@ static int set_addr_netns_by_gid_rcu(struct rdma_dev_addr *addr)
 	if (IS_ERR(ndev))
 		return PTR_ERR(ndev);
 
-	/*
-	 * Since we are holding the rcu, reading net and ifindex
-	 * are safe without any additional reference; because
-	 * change_net_namespace() in net/core/dev.c does rcu sync
-	 * after it changes the state to IFF_DOWN and before
-	 * updating netdev fields {net, ifindex}.
-	 */
+	 
 	addr->net = dev_net(ndev);
 	addr->bound_dev_if = ndev->ifindex;
 	return 0;
@@ -573,11 +515,7 @@ static int addr_resolve(struct sockaddr *src_in,
 			pr_warn_ratelimited("%s: missing gid_attr\n", __func__);
 			return -EINVAL;
 		}
-		/*
-		 * If the request is for a specific gid attribute of the
-		 * rdma_dev_addr, derive net from the netdevice of the
-		 * GID attribute.
-		 */
+		 
 		ret = set_addr_netns_by_gid_rcu(addr);
 		if (ret) {
 			rcu_read_unlock();
@@ -597,10 +535,7 @@ static int addr_resolve(struct sockaddr *src_in,
 	ret = rdma_set_src_addr_rcu(addr, &ndev_flags, dst_in, dst);
 	rcu_read_unlock();
 
-	/*
-	 * Resolve neighbor destination address if requested and
-	 * only if src addr translation didn't fail.
-	 */
+	 
 	if (!ret && resolve_neigh)
 		ret = addr_resolve_neigh(dst, dst_in, addr, ndev_flags, seq);
 
@@ -609,10 +544,7 @@ static int addr_resolve(struct sockaddr *src_in,
 	else
 		dst_release(dst);
 done:
-	/*
-	 * Clear the addr net to go back to its original state, only if it was
-	 * derived from GID attribute in this context.
-	 */
+	 
 	if (resolve_by_gid_attr)
 		rdma_addr_set_net_defaults(addr);
 	return ret;
@@ -634,7 +566,7 @@ static void process_one_req(struct work_struct *_work)
 		if (req->status && time_after_eq(jiffies, req->timeout)) {
 			req->status = -ETIMEDOUT;
 		} else if (req->status == -ENODATA) {
-			/* requeue the work for retrying again */
+			 
 			spin_lock_bh(&lock);
 			if (!list_empty(&req->list))
 				set_timeout(req, req->timeout);
@@ -648,10 +580,7 @@ static void process_one_req(struct work_struct *_work)
 	req->callback = NULL;
 
 	spin_lock_bh(&lock);
-	/*
-	 * Although the work will normally have been canceled by the workqueue,
-	 * it can still be requeued as long as it is on the req_list.
-	 */
+	 
 	cancel_delayed_work(&req->work);
 	if (!list_empty(&req->list)) {
 		list_del_init(&req->list);
@@ -760,13 +689,7 @@ int roce_resolve_route_from_path(struct sa_path_rec *rec,
 	return 0;
 }
 
-/**
- * rdma_addr_cancel - Cancel resolve ip request
- * @addr:	Pointer to address structure given previously
- *		during rdma_resolve_ip().
- * rdma_addr_cancel() is synchronous function which cancels any pending
- * request if there is any.
- */
+ 
 void rdma_addr_cancel(struct rdma_dev_addr *addr)
 {
 	struct addr_req *req, *temp_req;
@@ -775,10 +698,7 @@ void rdma_addr_cancel(struct rdma_dev_addr *addr)
 	spin_lock_bh(&lock);
 	list_for_each_entry_safe(req, temp_req, &req_list, list) {
 		if (req->addr == addr) {
-			/*
-			 * Removing from the list means we take ownership of
-			 * the req
-			 */
+			 
 			list_del_init(&req->list);
 			found = req;
 			break;
@@ -789,10 +709,7 @@ void rdma_addr_cancel(struct rdma_dev_addr *addr)
 	if (!found)
 		return;
 
-	/*
-	 * sync canceling the work after removing it from the req_list
-	 * guarentees no work is running and none will be started.
-	 */
+	 
 	cancel_delayed_work_sync(&found->work);
 	kfree(found);
 }

@@ -1,9 +1,4 @@
-/* Copyright (c) 2015 PLUMgrid, http://plumgrid.com
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include "vmlinux.h"
 #include "syscall_nrs.h"
 #include <linux/version.h>
@@ -20,7 +15,7 @@ struct {
 	__uint(key_size, sizeof(u32));
 	__uint(value_size, sizeof(u32));
 #ifdef __mips__
-	__uint(max_entries, 6000); /* MIPS n64 syscalls start at 5000 */
+	__uint(max_entries, 6000);  
 #else
 	__uint(max_entries, 1024);
 #endif
@@ -31,10 +26,10 @@ int bpf_prog1(struct pt_regs *ctx)
 {
 	int sc_nr = (int)PT_REGS_PARM1(ctx);
 
-	/* dispatch into next BPF program depending on syscall number */
+	 
 	bpf_tail_call(ctx, &progs, sc_nr);
 
-	/* fall through -> unknown syscall */
+	 
 	if (sc_nr >= __NR_getuid && sc_nr <= __NR_getsid) {
 		char fmt[] = "syscall=%d (one of get/set uid/pid/gid)\n";
 		bpf_trace_printk(fmt, sizeof(fmt), sc_nr);
@@ -42,7 +37,7 @@ int bpf_prog1(struct pt_regs *ctx)
 	return 0;
 }
 
-/* we jump here when syscall number == __NR_write */
+ 
 PROG(SYS__NR_write)(struct pt_regs *ctx)
 {
 	struct seccomp_data sd;

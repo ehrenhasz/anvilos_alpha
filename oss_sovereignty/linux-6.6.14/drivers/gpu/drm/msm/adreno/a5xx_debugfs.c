@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016-2017 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/debugfs.h>
@@ -88,7 +87,7 @@ static struct drm_info_list a5xx_debugfs_list[] = {
 	ENT(roq),
 };
 
-/* for debugfs files that can be written to, we can't use drm helper: */
+ 
 static int
 reset_set(void *data, u64 val)
 {
@@ -101,11 +100,7 @@ reset_set(void *data, u64 val)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EINVAL;
 
-	/* TODO do we care about trying to make sure the GPU is idle?
-	 * Since this is just a debug feature limited to CAP_SYS_ADMIN,
-	 * maybe it is fine to let the user keep both pieces if they
-	 * try to reset an active GPU.
-	 */
+	 
 
 	mutex_lock(&gpu->lock);
 

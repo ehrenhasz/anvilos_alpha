@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Common ACPI functions for hot plug platforms
- *
- * Copyright (C) 2006 Intel Corporation
- *
- * All rights reserved.
- *
- * Send feedback to <kristen.c.accardi@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -31,10 +23,7 @@
 
 static bool debug_acpi;
 
-/* acpi_run_oshp - get control of hotplug from the firmware
- *
- * @handle - the handle of the hotplug controller.
- */
+ 
 static acpi_status acpi_run_oshp(acpi_handle handle)
 {
 	acpi_status		status;
@@ -42,7 +31,7 @@ static acpi_status acpi_run_oshp(acpi_handle handle)
 
 	acpi_get_name(handle, ACPI_FULL_PATHNAME, &string);
 
-	/* run OSHP */
+	 
 	status = acpi_evaluate_object(handle, METHOD_NAME_OSHP, NULL, NULL);
 	if (ACPI_FAILURE(status))
 		if (status != AE_NOT_FOUND)
@@ -59,12 +48,7 @@ static acpi_status acpi_run_oshp(acpi_handle handle)
 	return status;
 }
 
-/**
- * acpi_get_hp_hw_control_from_firmware
- * @pdev: the pci_dev of the bridge that has a hotplug controller
- *
- * Attempt to take hotplug control from firmware.
- */
+ 
 int acpi_get_hp_hw_control_from_firmware(struct pci_dev *pdev)
 {
 	const struct pci_host_bridge *host;
@@ -73,41 +57,23 @@ int acpi_get_hp_hw_control_from_firmware(struct pci_dev *pdev)
 	acpi_handle chandle, handle;
 	struct acpi_buffer string = { ACPI_ALLOCATE_BUFFER, NULL };
 
-	/*
-	 * If there's no ACPI host bridge (i.e., ACPI support is compiled
-	 * into the kernel but the hardware platform doesn't support ACPI),
-	 * there's nothing to do here.
-	 */
+	 
 	host = pci_find_host_bridge(pdev->bus);
 	root = acpi_pci_find_root(ACPI_HANDLE(&host->dev));
 	if (!root)
 		return 0;
 
-	/*
-	 * If _OSC exists, it determines whether we're allowed to manage
-	 * the SHPC.  We executed it while enumerating the host bridge.
-	 */
+	 
 	if (root->osc_support_set) {
 		if (host->native_shpc_hotplug)
 			return 0;
 		return -ENODEV;
 	}
 
-	/*
-	 * In the absence of _OSC, we're always allowed to manage the SHPC.
-	 * However, if an OSHP method is present, we must execute it so the
-	 * firmware can transfer control to the OS, e.g., direct interrupts
-	 * to the OS instead of to the firmware.
-	 *
-	 * N.B. The PCI Firmware Spec (r3.2, sec 4.8) does not endorse
-	 * searching up the ACPI hierarchy, so the loops below are suspect.
-	 */
+	 
 	handle = ACPI_HANDLE(&pdev->dev);
 	if (!handle) {
-		/*
-		 * This hotplug controller was not listed in the ACPI name
-		 * space at all. Try to get ACPI handle of parent PCI bus.
-		 */
+		 
 		struct pci_bus *pbus;
 		for (pbus = pdev->bus; pbus; pbus = pbus->parent) {
 			handle = acpi_pci_get_bridge_handle(pbus);
@@ -156,13 +122,7 @@ static int pcihp_is_ejectable(acpi_handle handle)
 	return 0;
 }
 
-/**
- * acpi_pci_check_ejectable - check if handle is ejectable ACPI PCI slot
- * @pbus: the PCI bus of the PCI slot corresponding to 'handle'
- * @handle: ACPI handle to check
- *
- * Return 1 if handle is ejectable PCI slot, 0 otherwise.
- */
+ 
 int acpi_pci_check_ejectable(struct pci_bus *pbus, acpi_handle handle)
 {
 	acpi_handle bridge_handle, parent_handle;
@@ -189,12 +149,7 @@ check_hotplug(acpi_handle handle, u32 lvl, void *context, void **rv)
 	return AE_OK;
 }
 
-/**
- * acpi_pci_detect_ejectable - check if the PCI bus has ejectable slots
- * @handle: handle of the PCI bus to scan
- *
- * Returns 1 if the PCI bus has ACPI based ejectable slots, 0 otherwise.
- */
+ 
 int acpi_pci_detect_ejectable(acpi_handle handle)
 {
 	int found = 0;

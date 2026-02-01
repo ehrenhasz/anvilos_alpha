@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI driver for OMAP5
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com/
- *
- * Authors:
- *	Yong Zhi
- *	Mythri pk
- *	Archit Taneja <archit@ti.com>
- *	Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "HDMI"
 
@@ -74,23 +64,14 @@ static irqreturn_t hdmi_irq_handler(int irq, void *data)
 	if ((irqstatus & HDMI_IRQ_LINK_CONNECT) &&
 			irqstatus & HDMI_IRQ_LINK_DISCONNECT) {
 		u32 v;
-		/*
-		 * If we get both connect and disconnect interrupts at the same
-		 * time, turn off the PHY, clear interrupts, and restart, which
-		 * raises connect interrupt if a cable is connected, or nothing
-		 * if cable is not connected.
-		 */
+		 
 
 		hdmi_wp_set_phy_pwr(wp, HDMI_PHYPWRCMD_OFF);
 
-		/*
-		 * We always get bogus CONNECT & DISCONNECT interrupts when
-		 * setting the PHY to LDOON. To ignore those, we force the RXDET
-		 * line to 0 until the PHY power state has been changed.
-		 */
+		 
 		v = hdmi_read_reg(hdmi->phy.base, HDMI_TXPHY_PAD_CFG_CTRL);
-		v = FLD_MOD(v, 1, 15, 15); /* FORCE_RXDET_HIGH */
-		v = FLD_MOD(v, 0, 14, 7); /* RXDET_LINE */
+		v = FLD_MOD(v, 1, 15, 15);  
+		v = FLD_MOD(v, 0, 14, 7);  
 		hdmi_write_reg(hdmi->phy.base, HDMI_TXPHY_PAD_CFG_CTRL, v);
 
 		hdmi_wp_set_irqstatus(wp, HDMI_IRQ_LINK_CONNECT |
@@ -121,7 +102,7 @@ static int hdmi_power_on_core(struct omap_hdmi *hdmi)
 	if (r)
 		goto err_runtime_get;
 
-	/* Make selection of HDMI in DSS */
+	 
 	dss_select_hdmi_venc_clk_source(hdmi->dss, DSS_HDMI_M_PCLK);
 
 	hdmi->core_enabled = true;
@@ -162,13 +143,13 @@ static int hdmi_power_on_full(struct omap_hdmi *hdmi)
 	if (vm->flags & DISPLAY_FLAGS_DOUBLECLK)
 		pc *= 2;
 
-	/* DSS_HDMI_TCLK is bitclk / 10 */
+	 
 	pc *= 10;
 
 	dss_pll_calc_b(&hdmi->pll.pll, clk_get_rate(hdmi->pll.pll.clkin),
 		pc, &hdmi_cinfo);
 
-	/* disable and clear irqs */
+	 
 	hdmi_wp_clear_irqenable(&hdmi->wp, 0xffffffff);
 	hdmi_wp_set_irqstatus(&hdmi->wp,
 			hdmi_wp_get_irqstatus(&hdmi->wp));
@@ -307,9 +288,7 @@ static void hdmi_core_disable(struct omap_hdmi *hdmi)
 	mutex_unlock(&hdmi->lock);
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Bridge Operations
- */
+ 
 
 static int hdmi5_bridge_attach(struct drm_bridge *bridge,
 			       enum drm_bridge_attach_flags flags)
@@ -349,10 +328,7 @@ static void hdmi5_bridge_enable(struct drm_bridge *bridge,
 	unsigned long flags;
 	int ret;
 
-	/*
-	 * None of these should fail, as the bridge can't be enabled without a
-	 * valid CRTC to connector path with fully populated new states.
-	 */
+	 
 	connector = drm_atomic_get_new_connector_for_encoder(state,
 							     bridge->encoder);
 	if (WARN_ON(!connector))
@@ -447,7 +423,7 @@ static struct edid *hdmi5_bridge_get_edid(struct drm_bridge *bridge,
 	BUG_ON(r);
 
 	idlemode = REG_GET(hdmi->wp.base, HDMI_WP_SYSCONFIG, 3, 2);
-	/* No-idle mode */
+	 
 	REG_FLD_MOD(hdmi->wp.base, HDMI_WP_SYSCONFIG, 1, 3, 2);
 
 	hdmi5_core_ddc_init(&hdmi->core);
@@ -493,9 +469,7 @@ static void hdmi5_bridge_cleanup(struct omap_hdmi *hdmi)
 	drm_bridge_remove(&hdmi->bridge);
 }
 
-/* -----------------------------------------------------------------------------
- * Audio Callbacks
- */
+ 
 
 static int hdmi_audio_startup(struct device *dev,
 			      void (*abort_cb)(struct device *dev))
@@ -617,9 +591,7 @@ static int hdmi_audio_register(struct omap_hdmi *hdmi)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Component Bind & Unbind
- */
+ 
 
 static int hdmi5_bind(struct device *dev, struct device *master, void *data)
 {
@@ -666,9 +638,7 @@ static const struct component_ops hdmi5_component_ops = {
 	.unbind	= hdmi5_unbind,
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove, Suspend & Resume
- */
+ 
 
 static int hdmi5_init_output(struct omap_hdmi *hdmi)
 {

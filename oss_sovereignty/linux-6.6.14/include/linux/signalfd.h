@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  include/linux/signalfd.h
- *
- *  Copyright (C) 2007  Davide Libenzi <davidel@xmailserver.org>
- *
- */
+ 
+ 
 #ifndef _LINUX_SIGNALFD_H
 #define _LINUX_SIGNALFD_H
 
@@ -13,9 +8,7 @@
 
 #ifdef CONFIG_SIGNALFD
 
-/*
- * Deliver the signal to listening signalfd.
- */
+ 
 static inline void signalfd_notify(struct task_struct *tsk, int sig)
 {
 	if (unlikely(waitqueue_active(&tsk->sighand->signalfd_wqh)))
@@ -24,12 +17,12 @@ static inline void signalfd_notify(struct task_struct *tsk, int sig)
 
 extern void signalfd_cleanup(struct sighand_struct *sighand);
 
-#else /* CONFIG_SIGNALFD */
+#else  
 
 static inline void signalfd_notify(struct task_struct *tsk, int sig) { }
 
 static inline void signalfd_cleanup(struct sighand_struct *sighand) { }
 
-#endif /* CONFIG_SIGNALFD */
+#endif  
 
-#endif /* _LINUX_SIGNALFD_H */
+#endif  

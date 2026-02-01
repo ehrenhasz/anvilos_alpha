@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Analog Devices ADV748X HDMI receiver with AFE
- *
- * Copyright (C) 2017 Renesas Electronics Corp.
- *
- * Authors:
- *	Koji Matsuoka <koji.matsuoka.xm@renesas.com>
- *	Niklas Söderlund <niklas.soderlund@ragnatech.se>
- *	Kieran Bingham <kieran.bingham@ideasonboard.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -28,9 +19,7 @@
 
 #include "adv748x.h"
 
-/* -----------------------------------------------------------------------------
- * Register manipulation
- */
+ 
 
 #define ADV748X_REGMAP_CONF(n) \
 { \
@@ -135,12 +124,7 @@ static int adv748x_write_check(struct adv748x_state *state, u8 page, u8 reg,
 	return *error;
 }
 
-/* adv748x_write_block(): Write raw data with a maximum of I2C_SMBUS_BLOCK_MAX
- * size to one or more registers.
- *
- * A value of zero will be returned on success, a negative errno will
- * be returned in error cases.
- */
+ 
 int adv748x_write_block(struct adv748x_state *state, int client_page,
 			unsigned int init_reg, const void *val,
 			size_t val_len)
@@ -201,12 +185,7 @@ static int adv748x_initialise_clients(struct adv748x_state *state)
 	return 0;
 }
 
-/**
- * struct adv748x_reg_value - Register write instruction
- * @page:		Regmap page identifier
- * @reg:		I2C register
- * @value:		value to write to @page at @reg
- */
+ 
 struct adv748x_reg_value {
 	u8 page;
 	u8 reg;
@@ -230,9 +209,7 @@ static int adv748x_write_regs(struct adv748x_state *state,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * TXA and TXB
- */
+ 
 
 static int adv748x_power_up_tx(struct adv748x_csi2 *tx)
 {
@@ -240,13 +217,13 @@ static int adv748x_power_up_tx(struct adv748x_csi2 *tx)
 	u8 page = is_txa(tx) ? ADV748X_PAGE_TXA : ADV748X_PAGE_TXB;
 	int ret = 0;
 
-	/* Enable n-lane MIPI */
+	 
 	adv748x_write_check(state, page, 0x00, 0x80 | tx->active_lanes, &ret);
 
-	/* Set Auto DPHY Timing */
+	 
 	adv748x_write_check(state, page, 0x00, 0xa0 | tx->active_lanes, &ret);
 
-	/* ADI Required Write */
+	 
 	if (tx->src == &state->hdmi.sd) {
 		adv748x_write_check(state, page, 0xdb, 0x10, &ret);
 		adv748x_write_check(state, page, 0xd6, 0x07, &ret);
@@ -258,22 +235,22 @@ static int adv748x_power_up_tx(struct adv748x_csi2 *tx)
 	adv748x_write_check(state, page, 0x71, 0x33, &ret);
 	adv748x_write_check(state, page, 0x72, 0x11, &ret);
 
-	/* i2c_dphy_pwdn - 1'b0 */
+	 
 	adv748x_write_check(state, page, 0xf0, 0x00, &ret);
 
-	/* ADI Required Writes*/
+	 
 	adv748x_write_check(state, page, 0x31, 0x82, &ret);
 	adv748x_write_check(state, page, 0x1e, 0x40, &ret);
 
-	/* i2c_mipi_pll_en - 1'b1 */
+	 
 	adv748x_write_check(state, page, 0xda, 0x01, &ret);
 	usleep_range(2000, 2500);
 
-	/* Power-up CSI-TX */
+	 
 	adv748x_write_check(state, page, 0x00, 0x20 | tx->active_lanes, &ret);
 	usleep_range(1000, 1500);
 
-	/* ADI Required Writes */
+	 
 	adv748x_write_check(state, page, 0xc1, 0x2b, &ret);
 	usleep_range(1000, 1500);
 	adv748x_write_check(state, page, 0x31, 0x80, &ret);
@@ -287,17 +264,17 @@ static int adv748x_power_down_tx(struct adv748x_csi2 *tx)
 	u8 page = is_txa(tx) ? ADV748X_PAGE_TXA : ADV748X_PAGE_TXB;
 	int ret = 0;
 
-	/* ADI Required Writes */
+	 
 	adv748x_write_check(state, page, 0x31, 0x82, &ret);
 	adv748x_write_check(state, page, 0x1e, 0x00, &ret);
 
-	/* Enable n-lane MIPI */
+	 
 	adv748x_write_check(state, page, 0x00, 0x80 | tx->active_lanes, &ret);
 
-	/* i2c_mipi_pll_en - 1'b1 */
+	 
 	adv748x_write_check(state, page, 0xda, 0x01, &ret);
 
-	/* ADI Required Write */
+	 
 	adv748x_write_check(state, page, 0xc1, 0x3b, &ret);
 
 	return ret;
@@ -314,20 +291,14 @@ int adv748x_tx_power(struct adv748x_csi2 *tx, bool on)
 	if (val < 0)
 		return val;
 
-	/*
-	 * This test against BIT(6) is not documented by the datasheet, but was
-	 * specified in the downstream driver.
-	 * Track with a WARN_ONCE to determine if it is ever set by HW.
-	 */
+	 
 	WARN_ONCE((on && val & ADV748X_CSI_FS_AS_LS_UNKNOWN),
 			"Enabling with unknown bit set");
 
 	return on ? adv748x_power_up_tx(tx) : adv748x_power_down_tx(tx);
 }
 
-/* -----------------------------------------------------------------------------
- * Media Operations
- */
+ 
 static int adv748x_link_setup(struct media_entity *entity,
 			      const struct media_pad *local,
 			      const struct media_pad *remote, u32 flags)
@@ -342,11 +313,11 @@ static int adv748x_link_setup(struct media_entity *entity,
 		       ADV748X_IO_10_CSI4_IN_SEL_AFE;
 	u8 io10 = 0;
 
-	/* Refuse to enable multiple links to the same TX at the same time. */
+	 
 	if (enable && tx->src)
 		return -EINVAL;
 
-	/* Set or clear the source (HDMI or AFE) and the current TX. */
+	 
 	if (rsd == &state->afe.sd)
 		state->afe.tx = enable ? tx : NULL;
 	else
@@ -355,28 +326,20 @@ static int adv748x_link_setup(struct media_entity *entity,
 	tx->src = enable ? rsd : NULL;
 
 	if (state->afe.tx) {
-		/* AFE Requires TXA enabled, even when output to TXB */
+		 
 		io10 |= ADV748X_IO_10_CSI4_EN;
 		if (is_txa(tx)) {
-			/*
-			 * Output from the SD-core (480i and 576i) from the TXA
-			 * interface requires reducing the number of enabled
-			 * data lanes in order to guarantee a valid link
-			 * frequency.
-			 */
+			 
 			tx->active_lanes = min(tx->num_lanes, 2U);
 			io10 |= ADV748X_IO_10_CSI4_IN_SEL_AFE;
 		} else {
-			/* TXB has a single data lane, no need to adjust. */
+			 
 			io10 |= ADV748X_IO_10_CSI1_EN;
 		}
 	}
 
 	if (state->hdmi.tx) {
-		/*
-		 * Restore the number of active lanes, in case we have gone
-		 * through an AFE->TXA streaming sessions.
-		 */
+		 
 		tx->active_lanes = tx->num_lanes;
 		io10 |= ADV748X_IO_10_CSI4_EN;
 	}
@@ -393,84 +356,82 @@ static const struct media_entity_operations adv748x_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/* -----------------------------------------------------------------------------
- * HW setup
- */
+ 
 
-/* Initialize CP Core with RGB888 format. */
+ 
 static const struct adv748x_reg_value adv748x_init_hdmi[] = {
-	/* Disable chip powerdown & Enable HDMI Rx block */
+	 
 	{ADV748X_PAGE_IO, 0x00, 0x40},
 
-	{ADV748X_PAGE_REPEATER, 0x40, 0x83}, /* Enable HDCP 1.1 */
+	{ADV748X_PAGE_REPEATER, 0x40, 0x83},  
 
-	{ADV748X_PAGE_HDMI, 0x00, 0x08},/* Foreground Channel = A */
-	{ADV748X_PAGE_HDMI, 0x98, 0xff},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x99, 0xa3},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x9a, 0x00},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x9b, 0x0a},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x9d, 0x40},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0xcb, 0x09},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x3d, 0x10},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x3e, 0x7b},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x3f, 0x5e},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x4e, 0xfe},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x4f, 0x18},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x57, 0xa3},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x58, 0x04},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0x85, 0x10},/* ADI Required Write */
+	{ADV748X_PAGE_HDMI, 0x00, 0x08}, 
+	{ADV748X_PAGE_HDMI, 0x98, 0xff}, 
+	{ADV748X_PAGE_HDMI, 0x99, 0xa3}, 
+	{ADV748X_PAGE_HDMI, 0x9a, 0x00}, 
+	{ADV748X_PAGE_HDMI, 0x9b, 0x0a}, 
+	{ADV748X_PAGE_HDMI, 0x9d, 0x40}, 
+	{ADV748X_PAGE_HDMI, 0xcb, 0x09}, 
+	{ADV748X_PAGE_HDMI, 0x3d, 0x10}, 
+	{ADV748X_PAGE_HDMI, 0x3e, 0x7b}, 
+	{ADV748X_PAGE_HDMI, 0x3f, 0x5e}, 
+	{ADV748X_PAGE_HDMI, 0x4e, 0xfe}, 
+	{ADV748X_PAGE_HDMI, 0x4f, 0x18}, 
+	{ADV748X_PAGE_HDMI, 0x57, 0xa3}, 
+	{ADV748X_PAGE_HDMI, 0x58, 0x04}, 
+	{ADV748X_PAGE_HDMI, 0x85, 0x10}, 
 
-	{ADV748X_PAGE_HDMI, 0x83, 0x00},/* Enable All Terminations */
-	{ADV748X_PAGE_HDMI, 0xa3, 0x01},/* ADI Required Write */
-	{ADV748X_PAGE_HDMI, 0xbe, 0x00},/* ADI Required Write */
+	{ADV748X_PAGE_HDMI, 0x83, 0x00}, 
+	{ADV748X_PAGE_HDMI, 0xa3, 0x01}, 
+	{ADV748X_PAGE_HDMI, 0xbe, 0x00}, 
 
-	{ADV748X_PAGE_HDMI, 0x6c, 0x01},/* HPA Manual Enable */
-	{ADV748X_PAGE_HDMI, 0xf8, 0x01},/* HPA Asserted */
-	{ADV748X_PAGE_HDMI, 0x0f, 0x00},/* Audio Mute Speed Set to Fastest */
-	/* (Smallest Step Size) */
+	{ADV748X_PAGE_HDMI, 0x6c, 0x01}, 
+	{ADV748X_PAGE_HDMI, 0xf8, 0x01}, 
+	{ADV748X_PAGE_HDMI, 0x0f, 0x00}, 
+	 
 
-	{ADV748X_PAGE_IO, 0x04, 0x02},	/* RGB Out of CP */
-	{ADV748X_PAGE_IO, 0x12, 0xf0},	/* CSC Depends on ip Packets, SDR 444 */
-	{ADV748X_PAGE_IO, 0x17, 0x80},	/* Luma & Chroma can reach 254d */
-	{ADV748X_PAGE_IO, 0x03, 0x86},	/* CP-Insert_AV_Code */
+	{ADV748X_PAGE_IO, 0x04, 0x02},	 
+	{ADV748X_PAGE_IO, 0x12, 0xf0},	 
+	{ADV748X_PAGE_IO, 0x17, 0x80},	 
+	{ADV748X_PAGE_IO, 0x03, 0x86},	 
 
-	{ADV748X_PAGE_CP, 0x7c, 0x00},	/* ADI Required Write */
+	{ADV748X_PAGE_CP, 0x7c, 0x00},	 
 
-	{ADV748X_PAGE_IO, 0x0c, 0xe0},	/* Enable LLC_DLL & Double LLC Timing */
-	{ADV748X_PAGE_IO, 0x0e, 0xdd},	/* LLC/PIX/SPI PINS TRISTATED AUD */
+	{ADV748X_PAGE_IO, 0x0c, 0xe0},	 
+	{ADV748X_PAGE_IO, 0x0e, 0xdd},	 
 
-	{ADV748X_PAGE_EOR, 0xff, 0xff}	/* End of register table */
+	{ADV748X_PAGE_EOR, 0xff, 0xff}	 
 };
 
-/* Initialize AFE core with YUV8 format. */
+ 
 static const struct adv748x_reg_value adv748x_init_afe[] = {
-	{ADV748X_PAGE_IO, 0x00, 0x30},	/* Disable chip powerdown Rx */
-	{ADV748X_PAGE_IO, 0xf2, 0x01},	/* Enable I2C Read Auto-Increment */
+	{ADV748X_PAGE_IO, 0x00, 0x30},	 
+	{ADV748X_PAGE_IO, 0xf2, 0x01},	 
 
-	{ADV748X_PAGE_IO, 0x0e, 0xff},	/* LLC/PIX/AUD/SPI PINS TRISTATED */
+	{ADV748X_PAGE_IO, 0x0e, 0xff},	 
 
-	{ADV748X_PAGE_SDP, 0x0f, 0x00},	/* Exit Power Down Mode */
-	{ADV748X_PAGE_SDP, 0x52, 0xcd},	/* ADI Required Write */
+	{ADV748X_PAGE_SDP, 0x0f, 0x00},	 
+	{ADV748X_PAGE_SDP, 0x52, 0xcd},	 
 
-	{ADV748X_PAGE_SDP, 0x0e, 0x80},	/* ADI Required Write */
-	{ADV748X_PAGE_SDP, 0x9c, 0x00},	/* ADI Required Write */
-	{ADV748X_PAGE_SDP, 0x9c, 0xff},	/* ADI Required Write */
-	{ADV748X_PAGE_SDP, 0x0e, 0x00},	/* ADI Required Write */
+	{ADV748X_PAGE_SDP, 0x0e, 0x80},	 
+	{ADV748X_PAGE_SDP, 0x9c, 0x00},	 
+	{ADV748X_PAGE_SDP, 0x9c, 0xff},	 
+	{ADV748X_PAGE_SDP, 0x0e, 0x00},	 
 
-	/* ADI recommended writes for improved video quality */
-	{ADV748X_PAGE_SDP, 0x80, 0x51},	/* ADI Required Write */
-	{ADV748X_PAGE_SDP, 0x81, 0x51},	/* ADI Required Write */
-	{ADV748X_PAGE_SDP, 0x82, 0x68},	/* ADI Required Write */
+	 
+	{ADV748X_PAGE_SDP, 0x80, 0x51},	 
+	{ADV748X_PAGE_SDP, 0x81, 0x51},	 
+	{ADV748X_PAGE_SDP, 0x82, 0x68},	 
 
-	{ADV748X_PAGE_SDP, 0x03, 0x42},	/* Tri-S Output , PwrDwn 656 pads */
-	{ADV748X_PAGE_SDP, 0x04, 0xb5},	/* ITU-R BT.656-4 compatible */
-	{ADV748X_PAGE_SDP, 0x13, 0x00},	/* ADI Required Write */
+	{ADV748X_PAGE_SDP, 0x03, 0x42},	 
+	{ADV748X_PAGE_SDP, 0x04, 0xb5},	 
+	{ADV748X_PAGE_SDP, 0x13, 0x00},	 
 
-	{ADV748X_PAGE_SDP, 0x17, 0x41},	/* Select SH1 */
-	{ADV748X_PAGE_SDP, 0x31, 0x12},	/* ADI Required Write */
-	{ADV748X_PAGE_SDP, 0xe6, 0x4f},  /* V bit end pos manually in NTSC */
+	{ADV748X_PAGE_SDP, 0x17, 0x41},	 
+	{ADV748X_PAGE_SDP, 0x31, 0x12},	 
+	{ADV748X_PAGE_SDP, 0xe6, 0x4f},   
 
-	{ADV748X_PAGE_EOR, 0xff, 0xff}	/* End of register table */
+	{ADV748X_PAGE_EOR, 0xff, 0xff}	 
 };
 
 static int adv748x_sw_reset(struct adv748x_state *state)
@@ -483,13 +444,13 @@ static int adv748x_sw_reset(struct adv748x_state *state)
 
 	usleep_range(5000, 6000);
 
-	/* Disable CEC Wakeup from power-down mode */
+	 
 	ret = io_clrset(state, ADV748X_IO_REG_01, ADV748X_IO_REG_01_PWRDN_MASK,
 			ADV748X_IO_REG_01_PWRDNB);
 	if (ret)
 		return ret;
 
-	/* Enable I2C Read Auto-Increment for consecutive reads */
+	 
 	return io_write(state, ADV748X_IO_REG_F2,
 			ADV748X_IO_REG_F2_READ_AUTO_INC);
 }
@@ -507,7 +468,7 @@ static int adv748x_reset(struct adv748x_state *state)
 	if (ret < 0)
 		return ret;
 
-	/* Initialize CP and AFE cores. */
+	 
 	ret = adv748x_write_regs(state, adv748x_init_hdmi);
 	if (ret)
 		return ret;
@@ -520,16 +481,16 @@ static int adv748x_reset(struct adv748x_state *state)
 
 	adv_dbg(state, "AFE Default input set to %d\n", state->afe.input);
 
-	/* Reset TXA and TXB */
+	 
 	adv748x_tx_power(&state->txa, 1);
 	adv748x_tx_power(&state->txa, 0);
 	adv748x_tx_power(&state->txb, 1);
 	adv748x_tx_power(&state->txb, 0);
 
-	/* Disable chip powerdown & Enable HDMI Rx block */
+	 
 	io_write(state, ADV748X_IO_PD, ADV748X_IO_PD_RX_EN);
 
-	/* Conditionally enable TXa and TXb. */
+	 
 	if (is_tx_enabled(&state->txa)) {
 		regval |= ADV748X_IO_10_CSI4_EN;
 		adv748x_csi2_set_virtual_channel(&state->txa, 0);
@@ -540,7 +501,7 @@ static int adv748x_reset(struct adv748x_state *state)
 	}
 	io_write(state, ADV748X_IO_10, regval);
 
-	/* Use vid_std and v_freq as freerun resolution for CP */
+	 
 	cp_clrset(state, ADV748X_CP_CLMP_POS, ADV748X_CP_CLMP_POS_DIS_AUTO,
 					      ADV748X_CP_CLMP_POS_DIS_AUTO);
 
@@ -565,9 +526,7 @@ static int adv748x_identify_chip(struct adv748x_state *state)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Suspend / Resume
- */
+ 
 
 static int __maybe_unused adv748x_resume_early(struct device *dev)
 {
@@ -577,9 +536,7 @@ static int __maybe_unused adv748x_resume_early(struct device *dev)
 	return adv748x_reset(state);
 }
 
-/* -----------------------------------------------------------------------------
- * i2c driver
- */
+ 
 
 void adv748x_subdev_init(struct v4l2_subdev *sd, struct adv748x_state *state,
 			 const struct v4l2_subdev_ops *ops, u32 function,
@@ -588,13 +545,13 @@ void adv748x_subdev_init(struct v4l2_subdev *sd, struct adv748x_state *state,
 	v4l2_subdev_init(sd, ops);
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
-	/* the owner is the same as the i2c_client's driver owner */
+	 
 	sd->owner = state->dev->driver->owner;
 	sd->dev = state->dev;
 
 	v4l2_set_subdevdata(sd, state);
 
-	/* initialize name */
+	 
 	snprintf(sd->name, sizeof(sd->name), "%s %d-%04x %s",
 		state->dev->driver->name,
 		i2c_adapter_id(state->client->adapter),
@@ -678,16 +635,13 @@ static int adv748x_parse_dt(struct adv748x_state *state)
 		of_node_get(ep_np);
 		state->endpoints[ep.port] = ep_np;
 
-		/*
-		 * At least one input endpoint and one output endpoint shall
-		 * be defined.
-		 */
+		 
 		if (ep.port < ADV748X_PORT_TXA)
 			in_found = true;
 		else
 			out_found = true;
 
-		/* Store number of CSI-2 lanes used for TXA and TXB. */
+		 
 		ret = adv748x_parse_csi2_lanes(state, ep.port, ep_np);
 		if (ret)
 			return ret;
@@ -709,7 +663,7 @@ static int adv748x_probe(struct i2c_client *client)
 	struct adv748x_state *state;
 	int ret;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
@@ -724,25 +678,21 @@ static int adv748x_probe(struct i2c_client *client)
 	state->i2c_clients[ADV748X_PAGE_IO] = client;
 	i2c_set_clientdata(client, state);
 
-	/*
-	 * We can not use container_of to get back to the state with two TXs;
-	 * Initialize the TXs's fields unconditionally on the endpoint
-	 * presence to access them later.
-	 */
+	 
 	state->txa.state = state->txb.state = state;
 	state->txa.page = ADV748X_PAGE_TXA;
 	state->txb.page = ADV748X_PAGE_TXB;
 	state->txa.port = ADV748X_PORT_TXA;
 	state->txb.port = ADV748X_PORT_TXB;
 
-	/* Discover and process ports declared by the Device tree endpoints */
+	 
 	ret = adv748x_parse_dt(state);
 	if (ret) {
 		adv_err(state, "Failed to parse device tree");
 		goto err_free_mutex;
 	}
 
-	/* Configure IO Regmap region */
+	 
 	ret = adv748x_configure_regmap(state, ADV748X_PAGE_IO);
 	if (ret) {
 		adv_err(state, "Error configuring IO regmap region");
@@ -755,42 +705,42 @@ static int adv748x_probe(struct i2c_client *client)
 		goto err_cleanup_dt;
 	}
 
-	/* Configure remaining pages as I2C clients with regmap access */
+	 
 	ret = adv748x_initialise_clients(state);
 	if (ret) {
 		adv_err(state, "Failed to setup client regmap pages");
 		goto err_cleanup_clients;
 	}
 
-	/* SW reset ADV748X to its default values */
+	 
 	ret = adv748x_reset(state);
 	if (ret) {
 		adv_err(state, "Failed to reset hardware");
 		goto err_cleanup_clients;
 	}
 
-	/* Initialise HDMI */
+	 
 	ret = adv748x_hdmi_init(&state->hdmi);
 	if (ret) {
 		adv_err(state, "Failed to probe HDMI");
 		goto err_cleanup_clients;
 	}
 
-	/* Initialise AFE */
+	 
 	ret = adv748x_afe_init(&state->afe);
 	if (ret) {
 		adv_err(state, "Failed to probe AFE");
 		goto err_cleanup_hdmi;
 	}
 
-	/* Initialise TXA */
+	 
 	ret = adv748x_csi2_init(state, &state->txa);
 	if (ret) {
 		adv_err(state, "Failed to probe TXA");
 		goto err_cleanup_afe;
 	}
 
-	/* Initialise TXB */
+	 
 	ret = adv748x_csi2_init(state, &state->txb);
 	if (ret) {
 		adv_err(state, "Failed to probe TXB");

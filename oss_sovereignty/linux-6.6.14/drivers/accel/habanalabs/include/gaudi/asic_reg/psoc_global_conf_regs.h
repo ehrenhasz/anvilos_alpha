@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_PSOC_GLOBAL_CONF_REGS_H_
 #define ASIC_REG_PSOC_GLOBAL_CONF_REGS_H_
 
-/*
- *****************************************
- *   PSOC_GLOBAL_CONF (Prototype: GLOBAL_CONF)
- *****************************************
- */
+ 
 
 #define mmPSOC_GLOBAL_CONF_NON_RST_FLOPS_0                           0xC4B000
 
@@ -1059,4 +1047,4 @@
 
 #define mmPSOC_GLOBAL_CONF_RST_CTRL_53                               0xC4BCD4
 
-#endif /* ASIC_REG_PSOC_GLOBAL_CONF_REGS_H_ */
+#endif  

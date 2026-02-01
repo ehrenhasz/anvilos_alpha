@@ -1,39 +1,8 @@
-/****************************************************************************
- * Copyright 2020-2021,2022 Thomas E. Dickey                                *
- * Copyright 2008-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                        2008                    *
- ****************************************************************************/
+ 
 
-/*
- * tabs.c --  set terminal hard-tabstops
- */
+ 
 
 #define USE_LIBTINFO
 #include <progs.priv.h>
@@ -69,10 +38,7 @@ skip_csi(char *value)
     return value;
 }
 
-/*
- * If the terminal uses ANSI clear_all_tabs, then it is not necessary to first
- * move to the left margin before clearing tabs.
- */
+ 
 static bool
 ansi_clear_tabs(void)
 {
@@ -114,11 +80,7 @@ do_tabs(int *tab_list)
     putchar('\r');
 }
 
-/*
- * Decode a list of tab-stops from a string, returning an array of integers.
- * If the margin is positive (because the terminal does not support margins),
- * work around this by adding the margin to the decoded values.
- */
+ 
 static int *
 decode_tabs(const char *tab_list, int margin)
 {
@@ -160,9 +122,7 @@ decode_tabs(const char *tab_list, int margin)
     }
 
     if (result != 0) {
-	/*
-	 * If there is only one value, then it is an option such as "-8".
-	 */
+	 
 	if ((n == 0) && (value > 0)) {
 	    int step = value;
 	    value = 1;
@@ -172,9 +132,7 @@ decode_tabs(const char *tab_list, int margin)
 	    }
 	}
 
-	/*
-	 * Add the last value, if any.
-	 */
+	 
 	result[n++] = value + prior + margin;
 	result[n] = 0;
     }
@@ -188,7 +146,7 @@ print_ruler(int *tab_list, const char *new_line)
     int last = 0;
     int n;
 
-    /* first print a readable ruler */
+     
     for (n = 0; n < max_cols; n += 10) {
 	int ch = 1 + (n / 10);
 	char buffer[20];
@@ -201,7 +159,7 @@ print_ruler(int *tab_list, const char *new_line)
     }
     printf("%s", new_line);
 
-    /* now, print '*' for each stop */
+     
     for (n = 0, last = 0; (tab_list[n] > 0) && (last < max_cols); ++n) {
 	int stop = tab_list[n];
 
@@ -224,10 +182,7 @@ print_ruler(int *tab_list, const char *new_line)
     printf("%s", new_line);
 }
 
-/*
- * Write an '*' on each tabstop, to demonstrate whether it lines up with the
- * ruler.
- */
+ 
 static void
 write_tabs(int *tab_list, const char *new_line)
 {
@@ -236,16 +191,13 @@ write_tabs(int *tab_list, const char *new_line)
     while ((stop = *tab_list++) > 0 && stop <= max_cols) {
 	fputs((stop == 1) ? "*" : "\t*", stdout);
     };
-    /* also show a tab _past_ the stops */
+     
     if (stop < max_cols)
 	fputs("\t+", stdout);
     fputs(new_line, stdout);
 }
 
-/*
- * Trim leading/trailing blanks, as well as blanks after a comma.
- * Convert embedded blanks to commas.
- */
+ 
 static char *
 trimmed_tab_list(const char *source)
 {
@@ -290,13 +242,7 @@ comma_is_needed(const char *source)
     return result;
 }
 
-/*
- * Add a command-line parameter to the tab-list.  It can be blank- or comma-
- * separated (or a mixture).  For simplicity, empty tabs are ignored, e.g.,
- *	tabs 1,,6,11
- *	tabs 1,6,11
- * are treated the same.
- */
+ 
 static const char *
 add_to_tab_list(char **append, const char *value)
 {
@@ -334,30 +280,24 @@ add_to_tab_list(char **append, const char *value)
     return result;
 }
 
-/*
- * If the terminal supports it, (re)set the left margin and return true.
- * Otherwise, return false.
- */
+ 
 static bool
 do_set_margin(int margin, bool no_op)
 {
     bool result = FALSE;
 
-    if (margin == 0) {		/* 0 is special case for resetting */
+    if (margin == 0) {		 
 	if (VALID_STRING(clear_margins)) {
 	    result = TRUE;
 	    if (!no_op)
 		tputs(clear_margins, 1, putch);
 	}
-    } else if (margin-- < 0) {	/* margin will be 0-based from here on */
+    } else if (margin-- < 0) {	 
 	result = TRUE;
     } else if (VALID_STRING(set_left_margin)) {
 	result = TRUE;
 	if (!no_op) {
-	    /*
-	     * assuming we're on the first column of the line, move the cursor
-	     * to the column at which we will set a margin.
-	     */
+	     
 	    if (VALID_STRING(column_address)) {
 		tputs(TIPARM_1(column_address, margin), 1, putch);
 	    } else if (margin >= 1) {
@@ -388,9 +328,7 @@ do_set_margin(int margin, bool no_op)
     return result;
 }
 
-/*
- * Check for illegal characters in the tab-list.
- */
+ 
 static bool
 legal_tab_list(const char *tab_list)
 {
@@ -416,7 +354,7 @@ legal_tab_list(const char *tab_list)
 	    result = FALSE;
 	}
     } else {
-	/* if no list given, default to "tabs -8" */
+	 
     }
     return result;
 }
@@ -489,7 +427,7 @@ main(int argc, char *argv[])
     if ((term_name = getenv("TERM")) == 0)
 	term_name = "ansi+tabs";
 
-    /* cannot use getopt, since some options are two-character */
+     
     for (n = 1; n < argc; ++n) {
 	char *option = argv[n];
 	switch (option[0]) {
@@ -502,11 +440,11 @@ main(int argc, char *argv[])
 		    case '\0':
 			tab_list = "1,10,16,36,72";
 			option--;
-			/* Assembler, IBM S/370, first format */
+			 
 			break;
 		    case '2':
 			tab_list = "1,10,16,40,72";
-			/* Assembler, IBM S/370, second format */
+			 
 			break;
 		    }
 		    break;
@@ -516,39 +454,39 @@ main(int argc, char *argv[])
 		    case '\0':
 			tab_list = "1,8,12,16,20,55";
 			option--;
-			/* COBOL, normal format */
+			 
 			break;
 		    case '2':
 			tab_list = "1,6,10,14,49";
-			/* COBOL compact format */
+			 
 			break;
 		    case '3':
 			tab_list = "1,6,10,14,18,22,26,30,34,38,42,46,50,54,58,62,67";
-			/* COBOL compact format extended */
+			 
 			break;
 		    }
 		    break;
-		case 'd':	/* ncurses extension */
+		case 'd':	 
 		    debug = TRUE;
 		    break;
 		case 'f':
 		    tab_list = "1,7,11,15,19,23";
-		    /* FORTRAN */
+		     
 		    break;
-		case 'n':	/* ncurses extension */
+		case 'n':	 
 		    no_op = TRUE;
 		    break;
 		case 'p':
 		    tab_list = "1,5,9,13,17,21,25,29,33,37,41,45,49,53,57,61";
-		    /* PL/I */
+		     
 		    break;
 		case 's':
 		    tab_list = "1,10,55";
-		    /* SNOBOL */
+		     
 		    break;
 		case 'u':
 		    tab_list = "1,12,20,44";
-		    /* UNIVAC 1100 Assembler */
+		     
 		    break;
 		case 'T':
 		    ++n;
@@ -583,11 +521,7 @@ main(int argc, char *argv[])
 
 		switch (ch) {
 		case 'm':
-		    /*
-		     * The "+mXXX" option is unimplemented because only the long-obsolete
-		     * att510d implements smgl, which is needed to support
-		     * this option.
-		     */
+		     
 		    while ((ch = *++option) != '\0') {
 			if (isdigit(UChar(ch))) {
 			    ++digits;
@@ -601,7 +535,7 @@ main(int argc, char *argv[])
 		    margin = number;
 		    break;
 		default:
-		    /* special case of relative stops separated by spaces? */
+		     
 		    if (option == argv[n] + 1) {
 			tab_list = add_to_tab_list(&append, argv[n]);
 		    }
@@ -612,7 +546,7 @@ main(int argc, char *argv[])
 	default:
 	    if (append != 0) {
 		if (tab_list != (const char *) append) {
-		    /* one of the predefined options was used */
+		     
 		    free(append);
 		    append = 0;
 		}
@@ -646,7 +580,7 @@ main(int argc, char *argv[])
 
 	if (!no_op) {
 #if defined(TERMIOS) && defined(OCRNL)
-	    /* set tty modes to -ocrnl to allow \r */
+	     
 	    if (isatty(STDOUT_FILENO)) {
 		TTY new_settings = tty_settings;
 		new_settings.c_oflag &= (unsigned)~OCRNL;
@@ -664,9 +598,7 @@ main(int argc, char *argv[])
 	if (margin >= 0) {
 	    putch('\r');
 	    if (margin > 0) {
-		/* reset existing margin before setting margin, to reduce
-		 * problems moving left of the current margin.
-		 */
+		 
 		if (do_set_margin(0, no_op))
 		    putch('\r');
 	    }

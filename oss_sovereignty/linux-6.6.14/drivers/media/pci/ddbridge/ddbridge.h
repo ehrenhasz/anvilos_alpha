@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ddbridge.h: Digital Devices PCIe bridge driver
- *
- * Copyright (C) 2010-2017 Digital Devices GmbH
- *                         Ralph Metzler <rmetzler@digitaldevices.de>
- */
+ 
+ 
 
 #ifndef _DDBRIDGE_H_
 #define _DDBRIDGE_H_
@@ -112,7 +107,7 @@ struct ddb_info {
 	u8    fan_num;
 	u8    temp_num;
 	u8    temp_bus;
-	u8    con_clock; /* use a continuous clock */
+	u8    con_clock;  
 	u8    ts_quirks;
 #define TS_QUIRK_SERIAL   1
 #define TS_QUIRK_REVERSED 2
@@ -124,7 +119,7 @@ struct ddb_info {
 	const struct ddb_regmap *regmap;
 };
 
-#define DMA_MAX_BUFS 32      /* hardware table limit */
+#define DMA_MAX_BUFS 32       
 
 struct ddb;
 struct ddb_port;
@@ -142,7 +137,7 @@ struct ddb_dma {
 	u32                    bufval;
 
 	struct work_struct     work;
-	spinlock_t             lock; /* DMA lock */
+	spinlock_t             lock;  
 	wait_queue_head_t      wq;
 	int                    running;
 	u32                    stat;
@@ -215,7 +210,7 @@ struct ddb_port {
 	u32                    regs;
 	u32                    lnr;
 	struct ddb_i2c        *i2c;
-	struct mutex           i2c_gate_lock; /* I2C access lock */
+	struct mutex           i2c_gate_lock;  
 	u32                    class;
 #define DDB_PORT_NONE           0
 #define DDB_PORT_CI             1
@@ -277,7 +272,7 @@ struct ddb_port {
 #define TS_CAPTURE_LEN  (4096)
 
 struct ddb_lnb {
-	struct mutex           lock; /* lock lnb access */
+	struct mutex           lock;  
 	u32                    tone;
 	enum fe_sec_voltage    oldvoltage[4];
 	u32                    voltage[4];
@@ -295,13 +290,13 @@ struct ddb_link {
 	const struct ddb_info *info;
 	u32                    nr;
 	u32                    regs;
-	spinlock_t             lock; /* lock link access */
-	struct mutex           flash_mutex; /* lock flash access */
+	spinlock_t             lock;  
+	struct mutex           flash_mutex;  
 	struct ddb_lnb         lnb;
 	struct tasklet_struct  tasklet;
 	struct ddb_ids         ids;
 
-	spinlock_t             temp_lock; /* lock temp chip access */
+	spinlock_t             temp_lock;  
 	int                    overtemperature_error;
 	u8                     temp_tab[11];
 	struct ddb_irq         irq[256];
@@ -338,20 +333,20 @@ struct ddb {
 	u32                      ts_irq;
 	u32                      i2c_irq;
 
-	struct mutex             mutex; /* lock access to global ddb array */
+	struct mutex             mutex;  
 
 	u8                       tsbuf[TS_CAPTURE_LEN];
 };
 
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 int ddbridge_flashread(struct ddb *dev, u32 link, u8 *buf, u32 addr, u32 len);
 
-/****************************************************************************/
+ 
 
-/* ddbridge-core.c */
+ 
 struct ddb_irq *ddb_irq_set(struct ddb *dev, u32 link, u32 nr,
 			    void (*handler)(void *), void *data);
 void ddb_ports_detach(struct ddb *dev);
@@ -370,4 +365,4 @@ void ddb_unmap(struct ddb *dev);
 int ddb_exit_ddbridge(int stage, int error);
 int ddb_init_ddbridge(void);
 
-#endif /* _DDBRIDGE_H_ */
+#endif  

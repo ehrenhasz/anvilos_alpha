@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_RC6_TYPES_H
 #define INTEL_RC6_TYPES_H
@@ -13,7 +11,7 @@
 
 struct drm_i915_gem_object;
 
-/* RC6 residency types */
+ 
 enum intel_rc6_res_type {
 	INTEL_RC6_RES_RC6_LOCKED,
 	INTEL_RC6_RES_RC6,
@@ -40,4 +38,4 @@ struct intel_rc6 {
 	bool bios_state_captured : 1;
 };
 
-#endif /* INTEL_RC6_TYPES_H */
+#endif  

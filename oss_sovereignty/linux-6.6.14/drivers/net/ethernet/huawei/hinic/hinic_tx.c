@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/if_vlan.h>
 #include <linux/kernel.h>
@@ -70,10 +67,7 @@ enum hinic_offload_type {
 	TX_OFFLOAD_INVALID = BIT(3),
 };
 
-/**
- * hinic_txq_clean_stats - Clean the statistics of specific queue
- * @txq: Logical Tx Queue
- **/
+ 
 static void hinic_txq_clean_stats(struct hinic_txq *txq)
 {
 	struct hinic_txq_stats *txq_stats = &txq->txq_stats;
@@ -88,11 +82,7 @@ static void hinic_txq_clean_stats(struct hinic_txq *txq)
 	u64_stats_update_end(&txq_stats->syncp);
 }
 
-/**
- * hinic_txq_get_stats - get statistics of Tx Queue
- * @txq: Logical Tx Queue
- * @stats: return updated stats here
- **/
+ 
 void hinic_txq_get_stats(struct hinic_txq *txq, struct hinic_txq_stats *stats)
 {
 	struct hinic_txq_stats *txq_stats = &txq->txq_stats;
@@ -109,10 +99,7 @@ void hinic_txq_get_stats(struct hinic_txq *txq, struct hinic_txq_stats *stats)
 	} while (u64_stats_fetch_retry(&txq_stats->syncp, start));
 }
 
-/**
- * txq_stats_init - Initialize the statistics of specific queue
- * @txq: Logical Tx Queue
- **/
+ 
 static void txq_stats_init(struct hinic_txq *txq)
 {
 	struct hinic_txq_stats *txq_stats = &txq->txq_stats;
@@ -121,14 +108,7 @@ static void txq_stats_init(struct hinic_txq *txq)
 	hinic_txq_clean_stats(txq);
 }
 
-/**
- * tx_map_skb - dma mapping for skb and return sges
- * @nic_dev: nic device
- * @skb: the skb
- * @sges: returned sges
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int tx_map_skb(struct hinic_dev *nic_dev, struct sk_buff *skb,
 		      struct hinic_sge *sges)
 {
@@ -174,12 +154,7 @@ err_tx_map:
 	return -EFAULT;
 }
 
-/**
- * tx_unmap_skb - unmap the dma address of the skb
- * @nic_dev: nic device
- * @skb: the skb
- * @sges: the sges that are connected to the skb
- **/
+ 
 static void tx_unmap_skb(struct hinic_dev *nic_dev, struct sk_buff *skb,
 			 struct hinic_sge *sges)
 {
@@ -237,7 +212,7 @@ static void get_inner_l4_info(struct sk_buff *skb, union hinic_l4 *l4,
 	switch (l4_proto) {
 	case IPPROTO_TCP:
 		*l4_offload = TCP_OFFLOAD_ENABLE;
-		/* doff in unit of 4B */
+		 
 		*l4_len = l4->tcp->doff * 4;
 		*offset = *l4_len + TRANSPORT_OFFSET(l4->hdr, skb);
 		break;
@@ -249,7 +224,7 @@ static void get_inner_l4_info(struct sk_buff *skb, union hinic_l4 *l4,
 		break;
 
 	case IPPROTO_SCTP:
-		/* only csum offload support sctp */
+		 
 		if (offload_type != TX_OFFLOAD_CSUM)
 			break;
 
@@ -326,7 +301,7 @@ static int offload_tso(struct hinic_sq_task *task, u32 *queue_info,
 		network_hdr_len = skb_network_header_len(skb);
 	}
 
-	/* initialize inner IP header fields */
+	 
 	if (ip.v4->version == 4)
 		ip.v4->tot_len = 0;
 	else
@@ -411,7 +386,7 @@ static int offload_csum(struct hinic_sq_task *task, u32 *queue_info,
 			network_hdr_len = skb_network_header_len(skb);
 			break;
 		default:
-			/* Unsupported tunnel packet, disable csum offload */
+			 
 			skb_checksum_help(skb);
 			return 0;
 		}
@@ -473,13 +448,13 @@ static int hinic_tx_offload(struct sk_buff *skb, struct hinic_sq_task *task,
 	if (offload)
 		hinic_task_set_l2hdr(task, skb_network_offset(skb));
 
-	/* payload offset should not more than 221 */
+	 
 	if (HINIC_SQ_CTRL_GET(*queue_info, QUEUE_INFO_PLDOFF) >
 	    MAX_PAYLOAD_OFFSET) {
 		return -EPROTONOSUPPORT;
 	}
 
-	/* mss should not less than 80 */
+	 
 	if (HINIC_SQ_CTRL_GET(*queue_info, QUEUE_INFO_MSS) < HINIC_MSS_MIN) {
 		*queue_info = HINIC_SQ_CTRL_CLEAR(*queue_info, QUEUE_INFO_MSS);
 		*queue_info |= HINIC_SQ_CTRL_SET(HINIC_MSS_MIN, QUEUE_INFO_MSS);
@@ -594,9 +569,7 @@ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 	if (!sq_wqe) {
 		netif_stop_subqueue(netdev, qp->q_id);
 
-		/* Check for the case free_tx_poll is called in another cpu
-		 * and we stopped the subqueue after free_tx_poll check.
-		 */
+		 
 		sq_wqe = hinic_sq_get_wqe(txq->sq, wqe_size, &prod_idx);
 		if (sq_wqe) {
 			netif_wake_subqueue(nic_dev->netdev, qp->q_id);
@@ -644,12 +617,7 @@ update_error_stats:
 	return NETDEV_TX_OK;
 }
 
-/**
- * tx_free_skb - unmap and free skb
- * @nic_dev: nic device
- * @skb: the skb
- * @sges: the sges that are connected to the skb
- **/
+ 
 static void tx_free_skb(struct hinic_dev *nic_dev, struct sk_buff *skb,
 			struct hinic_sge *sges)
 {
@@ -658,10 +626,7 @@ static void tx_free_skb(struct hinic_dev *nic_dev, struct sk_buff *skb,
 	dev_kfree_skb_any(skb);
 }
 
-/**
- * free_all_tx_skbs - free all skbs in tx queue
- * @txq: tx queue
- **/
+ 
 static void free_all_tx_skbs(struct hinic_txq *txq)
 {
 	struct hinic_dev *nic_dev = netdev_priv(txq->netdev);
@@ -687,13 +652,7 @@ static void free_all_tx_skbs(struct hinic_txq *txq)
 	}
 }
 
-/**
- * free_tx_poll - free finished tx skbs in tx queue that connected to napi
- * @napi: napi
- * @budget: number of tx
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int free_tx_poll(struct napi_struct *napi, int budget)
 {
 	struct hinic_txq *txq = container_of(napi, struct hinic_txq, napi);
@@ -714,15 +673,13 @@ static int free_tx_poll(struct napi_struct *napi, int budget)
 
 		dma_rmb();
 
-		/* Reading a WQEBB to get real WQE size and consumer index. */
+		 
 		sq_wqe = hinic_sq_read_wqebb(sq, &skb, &wqe_size, &sw_ci);
 		if (!sq_wqe ||
 		    (((hw_ci - sw_ci) & wq->mask) * wq->wqebb_size < wqe_size))
 			break;
 
-		/* If this WQE have multiple WQEBBs, we will read again to get
-		 * full size WQE.
-		 */
+		 
 		if (wqe_size > wq->wqebb_size) {
 			sq_wqe = hinic_sq_read_wqe(sq, &skb, wqe_size, &sw_ci);
 			if (unlikely(!sq_wqe))
@@ -782,7 +739,7 @@ static irqreturn_t tx_irq(int irq, void *data)
 	nic_dev = netdev_priv(txq->netdev);
 
 	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
-		/* Disable the interrupt until napi will be completed */
+		 
 		hinic_hwdev_set_msix_state(nic_dev->hwdev,
 					   txq->sq->msix_entry,
 					   HINIC_MSIX_DISABLE);
@@ -847,14 +804,7 @@ static void tx_free_irq(struct hinic_txq *txq)
 	netif_napi_del(&txq->napi);
 }
 
-/**
- * hinic_init_txq - Initialize the Tx Queue
- * @txq: Logical Tx Queue
- * @sq: Hardware Tx Queue to connect the Logical queue with
- * @netdev: network device to connect the Logical queue with
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_init_txq(struct hinic_txq *txq, struct hinic_sq *sq,
 		   struct net_device *netdev)
 {
@@ -916,10 +866,7 @@ err_alloc_free_sges:
 	return err;
 }
 
-/**
- * hinic_clean_txq - Clean the Tx Queue
- * @txq: Logical Tx Queue
- **/
+ 
 void hinic_clean_txq(struct hinic_txq *txq)
 {
 	struct net_device *netdev = txq->netdev;

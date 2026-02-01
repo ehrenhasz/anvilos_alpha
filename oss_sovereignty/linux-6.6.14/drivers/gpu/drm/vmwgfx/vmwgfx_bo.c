@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright © 2011-2023 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
@@ -40,11 +15,7 @@ static void vmw_bo_release(struct vmw_bo *vbo)
 	drm_gem_object_release(&vbo->tbo.base);
 }
 
-/**
- * vmw_bo_free - vmw_bo destructor
- *
- * @bo: Pointer to the embedded struct ttm_buffer_object
- */
+ 
 static void vmw_bo_free(struct ttm_buffer_object *bo)
 {
 	struct vmw_bo *vbo = to_vmw_bo(&bo->base);
@@ -55,16 +26,7 @@ static void vmw_bo_free(struct ttm_buffer_object *bo)
 	kfree(vbo);
 }
 
-/**
- * vmw_bo_pin_in_placement - Validate a buffer to placement.
- *
- * @dev_priv:  Driver private.
- * @buf:  DMA buffer to move.
- * @placement:  The placement to pin it.
- * @interruptible:  Use interruptible wait.
- * Return: Zero on success, Negative error code on failure. In particular
- * -ERESTARTSYS if interrupted by a signal
- */
+ 
 static int vmw_bo_pin_in_placement(struct vmw_private *dev_priv,
 				   struct vmw_bo *buf,
 				   struct ttm_placement *placement,
@@ -90,18 +52,7 @@ err:
 }
 
 
-/**
- * vmw_bo_pin_in_vram_or_gmr - Move a buffer to vram or gmr.
- *
- * This function takes the reservation_sem in write mode.
- * Flushes and unpins the query bo to avoid failures.
- *
- * @dev_priv:  Driver private.
- * @buf:  DMA buffer to move.
- * @interruptible:  Use interruptible wait.
- * Return: Zero on success, Negative error code on failure. In particular
- * -ERESTARTSYS if interrupted by a signal
- */
+ 
 int vmw_bo_pin_in_vram_or_gmr(struct vmw_private *dev_priv,
 			      struct vmw_bo *buf,
 			      bool interruptible)
@@ -138,18 +89,7 @@ err:
 }
 
 
-/**
- * vmw_bo_pin_in_vram - Move a buffer to vram.
- *
- * This function takes the reservation_sem in write mode.
- * Flushes and unpins the query bo to avoid failures.
- *
- * @dev_priv:  Driver private.
- * @buf:  DMA buffer to move.
- * @interruptible:  Use interruptible wait.
- * Return: Zero on success, Negative error code on failure. In particular
- * -ERESTARTSYS if interrupted by a signal
- */
+ 
 int vmw_bo_pin_in_vram(struct vmw_private *dev_priv,
 		       struct vmw_bo *buf,
 		       bool interruptible)
@@ -159,18 +99,7 @@ int vmw_bo_pin_in_vram(struct vmw_private *dev_priv,
 }
 
 
-/**
- * vmw_bo_pin_in_start_of_vram - Move a buffer to start of vram.
- *
- * This function takes the reservation_sem in write mode.
- * Flushes and unpins the query bo to avoid failures.
- *
- * @dev_priv:  Driver private.
- * @buf:  DMA buffer to pin.
- * @interruptible:  Use interruptible wait.
- * Return: Zero on success, Negative error code on failure. In particular
- * -ERESTARTSYS if interrupted by a signal
- */
+ 
 int vmw_bo_pin_in_start_of_vram(struct vmw_private *dev_priv,
 				struct vmw_bo *buf,
 				bool interruptible)
@@ -184,11 +113,7 @@ int vmw_bo_pin_in_start_of_vram(struct vmw_private *dev_priv,
 	if (unlikely(ret != 0))
 		goto err_unlock;
 
-	/*
-	 * Is this buffer already in vram but not at the start of it?
-	 * In that case, evict it first because TTM isn't good at handling
-	 * that situation.
-	 */
+	 
 	if (bo->resource->mem_type == TTM_PL_VRAM &&
 	    bo->resource->start < PFN_UP(bo->resource->size) &&
 	    bo->resource->start > 0 &&
@@ -206,7 +131,7 @@ int vmw_bo_pin_in_start_of_vram(struct vmw_private *dev_priv,
 	buf->places[0].lpfn = PFN_UP(bo->resource->size);
 	ret = ttm_bo_validate(bo, &buf->placement, &ctx);
 
-	/* For some reason we didn't end up at the start of vram */
+	 
 	WARN_ON(ret == 0 && bo->resource->start != 0);
 	if (!ret)
 		vmw_bo_pin_reserved(buf, true);
@@ -218,17 +143,7 @@ err_unlock:
 }
 
 
-/**
- * vmw_bo_unpin - Unpin the buffer given buffer, does not move the buffer.
- *
- * This function takes the reservation_sem in write mode.
- *
- * @dev_priv:  Driver private.
- * @buf:  DMA buffer to unpin.
- * @interruptible:  Use interruptible wait.
- * Return: Zero on success, Negative error code on failure. In particular
- * -ERESTARTSYS if interrupted by a signal
- */
+ 
 int vmw_bo_unpin(struct vmw_private *dev_priv,
 		 struct vmw_bo *buf,
 		 bool interruptible)
@@ -248,13 +163,7 @@ err:
 	return ret;
 }
 
-/**
- * vmw_bo_get_guest_ptr - Get the guest ptr representing the current placement
- * of a buffer.
- *
- * @bo: Pointer to a struct ttm_buffer_object. Must be pinned or reserved.
- * @ptr: SVGAGuestPtr returning the result.
- */
+ 
 void vmw_bo_get_guest_ptr(const struct ttm_buffer_object *bo,
 			  SVGAGuestPtr *ptr)
 {
@@ -268,13 +177,7 @@ void vmw_bo_get_guest_ptr(const struct ttm_buffer_object *bo,
 }
 
 
-/**
- * vmw_bo_pin_reserved - Pin or unpin a buffer object without moving it.
- *
- * @vbo: The buffer object. Must be reserved.
- * @pin: Whether to pin or unpin.
- *
- */
+ 
 void vmw_bo_pin_reserved(struct vmw_bo *vbo, bool pin)
 {
 	struct ttm_operation_ctx ctx = { false, true };
@@ -308,21 +211,7 @@ void vmw_bo_pin_reserved(struct vmw_bo *vbo, bool pin)
 		ttm_bo_unpin(bo);
 }
 
-/**
- * vmw_bo_map_and_cache - Map a buffer object and cache the map
- *
- * @vbo: The buffer object to map
- * Return: A kernel virtual address or NULL if mapping failed.
- *
- * This function maps a buffer object into the kernel address space, or
- * returns the virtual kernel address of an already existing map. The virtual
- * address remains valid as long as the buffer object is pinned or reserved.
- * The cached map is torn down on either
- * 1) Buffer object move
- * 2) Buffer object swapout
- * 3) Buffer object destruction
- *
- */
+ 
 void *vmw_bo_map_and_cache(struct vmw_bo *vbo)
 {
 	struct ttm_buffer_object *bo = &vbo->tbo;
@@ -342,14 +231,7 @@ void *vmw_bo_map_and_cache(struct vmw_bo *vbo)
 }
 
 
-/**
- * vmw_bo_unmap - Tear down a cached buffer object map.
- *
- * @vbo: The buffer object whose map we are tearing down.
- *
- * This function tears down a cached map set up using
- * vmw_bo_map_and_cache().
- */
+ 
 void vmw_bo_unmap(struct vmw_bo *vbo)
 {
 	if (vbo->map.bo == NULL)
@@ -360,16 +242,7 @@ void vmw_bo_unmap(struct vmw_bo *vbo)
 }
 
 
-/**
- * vmw_bo_init - Initialize a vmw buffer object
- *
- * @dev_priv: Pointer to the device private struct
- * @vmw_bo: Buffer object to initialize
- * @params: Parameters used to initialize the buffer object
- * @destroy: The function used to delete the buffer object
- * Returns: Zero on success, negative error code on error.
- *
- */
+ 
 static int vmw_bo_init(struct vmw_private *dev_priv,
 		       struct vmw_bo *vmw_bo,
 		       struct vmw_bo_params *params,
@@ -418,9 +291,7 @@ int vmw_bo_create(struct vmw_private *vmw,
 		return -ENOMEM;
 	}
 
-	/*
-	 * vmw_bo_init will delete the *p_bo object if it fails
-	 */
+	 
 	ret = vmw_bo_init(vmw, *p_bo, params, vmw_bo_free);
 	if (unlikely(ret != 0))
 		goto out_error;
@@ -431,20 +302,7 @@ out_error:
 	return ret;
 }
 
-/**
- * vmw_user_bo_synccpu_grab - Grab a struct vmw_bo for cpu
- * access, idling previous GPU operations on the buffer and optionally
- * blocking it for further command submissions.
- *
- * @vmw_bo: Pointer to the buffer object being grabbed for CPU access
- * @flags: Flags indicating how the grab should be performed.
- * Return: Zero on success, Negative error code on error. In particular,
- * -EBUSY will be returned if a dontblock operation is requested and the
- * buffer object is busy, and -ERESTARTSYS will be returned if a wait is
- * interrupted by a signal.
- *
- * A blocking grab will be automatically released when @tfile is closed.
- */
+ 
 static int vmw_user_bo_synccpu_grab(struct vmw_bo *vmw_bo,
 				    uint32_t flags)
 {
@@ -480,14 +338,7 @@ static int vmw_user_bo_synccpu_grab(struct vmw_bo *vmw_bo,
 	return ret;
 }
 
-/**
- * vmw_user_bo_synccpu_release - Release a previous grab for CPU access,
- * and unblock command submission on the buffer if blocked.
- *
- * @filp: Identifying the caller.
- * @handle: Handle identifying the buffer object.
- * @flags: Flags indicating the type of release.
- */
+ 
 static int vmw_user_bo_synccpu_release(struct drm_file *filp,
 				       uint32_t handle,
 				       uint32_t flags)
@@ -506,18 +357,7 @@ static int vmw_user_bo_synccpu_release(struct drm_file *filp,
 }
 
 
-/**
- * vmw_user_bo_synccpu_ioctl - ioctl function implementing the synccpu
- * functionality.
- *
- * @dev: Identifies the drm device.
- * @data: Pointer to the ioctl argument.
- * @file_priv: Identifies the caller.
- * Return: Zero on success, negative error code on error.
- *
- * This function checks the ioctl arguments for validity and calls the
- * relevant synccpu functions.
- */
+ 
 int vmw_user_bo_synccpu_ioctl(struct drm_device *dev, void *data,
 			      struct drm_file *file_priv)
 {
@@ -568,17 +408,7 @@ int vmw_user_bo_synccpu_ioctl(struct drm_device *dev, void *data,
 	return 0;
 }
 
-/**
- * vmw_bo_unref_ioctl - Generic handle close ioctl.
- *
- * @dev: Identifies the drm device.
- * @data: Pointer to the ioctl argument.
- * @file_priv: Identifies the caller.
- * Return: Zero on success, negative error code on error.
- *
- * This function checks the ioctl arguments for validity and closes a
- * handle to a TTM base object, optionally freeing the object.
- */
+ 
 int vmw_bo_unref_ioctl(struct drm_device *dev, void *data,
 		       struct drm_file *file_priv)
 {
@@ -589,17 +419,7 @@ int vmw_bo_unref_ioctl(struct drm_device *dev, void *data,
 }
 
 
-/**
- * vmw_user_bo_lookup - Look up a vmw user buffer object from a handle.
- *
- * @filp: The file the handle is registered with.
- * @handle: The user buffer object handle
- * @out: Pointer to a where a pointer to the embedded
- * struct vmw_bo should be placed.
- * Return: Zero on success, Negative error code on error.
- *
- * The vmw buffer object pointer will be refcounted (both ttm and gem)
- */
+ 
 int vmw_user_bo_lookup(struct drm_file *filp,
 		       u32 handle,
 		       struct vmw_bo **out)
@@ -618,18 +438,7 @@ int vmw_user_bo_lookup(struct drm_file *filp,
 	return 0;
 }
 
-/**
- * vmw_bo_fence_single - Utility function to fence a single TTM buffer
- *                       object without unreserving it.
- *
- * @bo:             Pointer to the struct ttm_buffer_object to fence.
- * @fence:          Pointer to the fence. If NULL, this function will
- *                  insert a fence into the command stream..
- *
- * Contrary to the ttm_eu version of this function, it takes only
- * a single buffer object instead of a list, and it also doesn't
- * unreserve the buffer object, which needs to be done separately.
- */
+ 
 void vmw_bo_fence_single(struct ttm_buffer_object *bo,
 			 struct vmw_fence_obj *fence)
 {
@@ -647,24 +456,13 @@ void vmw_bo_fence_single(struct ttm_buffer_object *bo,
 		dma_resv_add_fence(bo->base.resv, &fence->base,
 				   DMA_RESV_USAGE_KERNEL);
 	else
-		/* Last resort fallback when we are OOM */
+		 
 		dma_fence_wait(&fence->base, false);
 	dma_fence_put(&fence->base);
 }
 
 
-/**
- * vmw_dumb_create - Create a dumb kms buffer
- *
- * @file_priv: Pointer to a struct drm_file identifying the caller.
- * @dev: Pointer to the drm device.
- * @args: Pointer to a struct drm_mode_create_dumb structure
- * Return: Zero on success, negative error code on failure.
- *
- * This is a driver callback for the core drm create_dumb functionality.
- * Note that this is very similar to the vmw_bo_alloc ioctl, except
- * that the arguments have a different format.
- */
+ 
 int vmw_dumb_create(struct drm_file *file_priv,
 		    struct drm_device *dev,
 		    struct drm_mode_create_dumb *args)
@@ -675,15 +473,12 @@ int vmw_dumb_create(struct drm_file *file_priv,
 	int ret;
 
 	switch (cpp) {
-	case 1: /* DRM_FORMAT_C8 */
-	case 2: /* DRM_FORMAT_RGB565 */
-	case 4: /* DRM_FORMAT_XRGB8888 */
+	case 1:  
+	case 2:  
+	case 4:  
 		break;
 	default:
-		/*
-		 * Dumb buffers don't allow anything else.
-		 * This is tested via IGT's dumb_buffers
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -693,51 +488,30 @@ int vmw_dumb_create(struct drm_file *file_priv,
 	ret = vmw_gem_object_create_with_handle(dev_priv, file_priv,
 						args->size, &args->handle,
 						&vbo);
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(&vbo->tbo.base);
 	return ret;
 }
 
-/**
- * vmw_bo_swap_notify - swapout notify callback.
- *
- * @bo: The buffer object to be swapped out.
- */
+ 
 void vmw_bo_swap_notify(struct ttm_buffer_object *bo)
 {
-	/* Kill any cached kernel maps before swapout */
+	 
 	vmw_bo_unmap(to_vmw_bo(&bo->base));
 }
 
 
-/**
- * vmw_bo_move_notify - TTM move_notify_callback
- *
- * @bo: The TTM buffer object about to move.
- * @mem: The struct ttm_resource indicating to what memory
- *       region the move is taking place.
- *
- * Detaches cached maps and device bindings that require that the
- * buffer doesn't move.
- */
+ 
 void vmw_bo_move_notify(struct ttm_buffer_object *bo,
 			struct ttm_resource *mem)
 {
 	struct vmw_bo *vbo = to_vmw_bo(&bo->base);
 
-	/*
-	 * Kill any cached kernel maps before move to or from VRAM.
-	 * With other types of moves, the underlying pages stay the same,
-	 * and the map can be kept.
-	 */
+	 
 	if (mem->mem_type == TTM_PL_VRAM || bo->resource->mem_type == TTM_PL_VRAM)
 		vmw_bo_unmap(vbo);
 
-	/*
-	 * If we're moving a backup MOB out of MOB placement, then make sure we
-	 * read back all resource content first, and unbind the MOB from
-	 * the resource.
-	 */
+	 
 	if (mem->mem_type != VMW_PL_MOB && bo->resource->mem_type == VMW_PL_MOB)
 		vmw_resource_unbind_list(vbo);
 }
@@ -747,9 +521,7 @@ set_placement_list(struct ttm_place *pl, u32 domain)
 {
 	u32 n = 0;
 
-	/*
-	 * The placements are ordered according to our preferences
-	 */
+	 
 	if (domain & VMW_BO_DOMAIN_MOB) {
 		pl[n].mem_type = VMW_PL_MOB;
 		pl[n].flags = 0;

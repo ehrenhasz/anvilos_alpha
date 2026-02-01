@@ -1,15 +1,4 @@
-/*
- * Atmel AT91 SAM9 & SAMA5 SoCs reset code
- *
- * Copyright (C) 2007 Atmel Corporation.
- * Copyright (C) BitBox Ltd 2010
- * Copyright (C) 2011 Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcosoft.com>
- * Copyright (C) 2014 Free Electrons
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -25,35 +14,25 @@
 
 #include <dt-bindings/reset/sama7g5-reset.h>
 
-#define AT91_RSTC_CR	0x00		/* Reset Controller Control Register */
-#define AT91_RSTC_PROCRST	BIT(0)		/* Processor Reset */
-#define AT91_RSTC_PERRST	BIT(2)		/* Peripheral Reset */
-#define AT91_RSTC_EXTRST	BIT(3)		/* External Reset */
-#define AT91_RSTC_KEY		(0xa5 << 24)	/* KEY Password */
+#define AT91_RSTC_CR	0x00		 
+#define AT91_RSTC_PROCRST	BIT(0)		 
+#define AT91_RSTC_PERRST	BIT(2)		 
+#define AT91_RSTC_EXTRST	BIT(3)		 
+#define AT91_RSTC_KEY		(0xa5 << 24)	 
 
-#define AT91_RSTC_SR	0x04		/* Reset Controller Status Register */
-#define AT91_RSTC_URSTS		BIT(0)		/* User Reset Status */
-#define AT91_RSTC_RSTTYP	GENMASK(10, 8)	/* Reset Type */
-#define AT91_RSTC_NRSTL		BIT(16)		/* NRST Pin Level */
-#define AT91_RSTC_SRCMP		BIT(17)		/* Software Reset Command in Progress */
+#define AT91_RSTC_SR	0x04		 
+#define AT91_RSTC_URSTS		BIT(0)		 
+#define AT91_RSTC_RSTTYP	GENMASK(10, 8)	 
+#define AT91_RSTC_NRSTL		BIT(16)		 
+#define AT91_RSTC_SRCMP		BIT(17)		 
 
-#define AT91_RSTC_MR	0x08		/* Reset Controller Mode Register */
-#define AT91_RSTC_URSTEN	BIT(0)		/* User Reset Enable */
-#define AT91_RSTC_URSTASYNC	BIT(2)		/* User Reset Asynchronous Control */
-#define AT91_RSTC_URSTIEN	BIT(4)		/* User Reset Interrupt Enable */
-#define AT91_RSTC_ERSTL		GENMASK(11, 8)	/* External Reset Length */
+#define AT91_RSTC_MR	0x08		 
+#define AT91_RSTC_URSTEN	BIT(0)		 
+#define AT91_RSTC_URSTASYNC	BIT(2)		 
+#define AT91_RSTC_URSTIEN	BIT(4)		 
+#define AT91_RSTC_ERSTL		GENMASK(11, 8)	 
 
-/**
- * enum reset_type - reset types
- * @RESET_TYPE_GENERAL:		first power-up reset
- * @RESET_TYPE_WAKEUP:		return from backup mode
- * @RESET_TYPE_WATCHDOG:	watchdog fault
- * @RESET_TYPE_SOFTWARE:	processor reset required by software
- * @RESET_TYPE_USER:		NRST pin detected low
- * @RESET_TYPE_CPU_FAIL:	CPU clock failure detection
- * @RESET_TYPE_XTAL_FAIL:	32KHz crystal failure dectection fault
- * @RESET_TYPE_ULP2:		ULP2 reset
- */
+ 
 enum reset_type {
 	RESET_TYPE_GENERAL	= 0,
 	RESET_TYPE_WAKEUP	= 1,
@@ -65,19 +44,7 @@ enum reset_type {
 	RESET_TYPE_ULP2		= 8,
 };
 
-/**
- * struct at91_reset - AT91 reset specific data structure
- * @rstc_base:		base address for system reset
- * @ramc_base:		array with base addresses of RAM controllers
- * @dev_base:		base address for devices reset
- * @sclk:		slow clock
- * @data:		platform specific reset data
- * @rcdev:		reset controller device
- * @lock:		lock for devices reset register access
- * @nb:			reset notifier block
- * @args:		SoC specific system reset arguments
- * @ramc_lpr:		SDRAM Controller Low Power Register
- */
+ 
 struct at91_reset {
 	void __iomem *rstc_base;
 	void __iomem *ramc_base[2];
@@ -93,13 +60,7 @@ struct at91_reset {
 
 #define to_at91_reset(r)	container_of(r, struct at91_reset, rcdev)
 
-/**
- * struct at91_reset_data - AT91 reset data
- * @reset_args:			SoC specific system reset arguments
- * @n_device_reset:		number of device resets
- * @device_reset_min_id:	min id for device reset
- * @device_reset_max_id:	max id for device reset
- */
+ 
 struct at91_reset_data {
 	u32 reset_args;
 	u32 n_device_reset;
@@ -107,33 +68,29 @@ struct at91_reset_data {
 	u8 device_reset_max_id;
 };
 
-/*
-* unless the SDRAM is cleanly shutdown before we hit the
-* reset register it can be left driving the data bus and
-* killing the chance of a subsequent boot from NAND
-*/
+ 
 static int at91_reset(struct notifier_block *this, unsigned long mode,
 		      void *cmd)
 {
 	struct at91_reset *reset = container_of(this, struct at91_reset, nb);
 
 	asm volatile(
-		/* Align to cache lines */
+		 
 		".balign 32\n\t"
 
-		/* Disable SDRAM0 accesses */
+		 
 		"	tst	%0, #0\n\t"
 		"	beq	1f\n\t"
 		"	str	%3, [%0, #" __stringify(AT91_DDRSDRC_RTR) "]\n\t"
-		/* Power down SDRAM0 */
+		 
 		"	str	%4, [%0, %6]\n\t"
-		/* Disable SDRAM1 accesses */
+		 
 		"1:	tst	%1, #0\n\t"
 		"	beq	2f\n\t"
 		"	strne	%3, [%1, #" __stringify(AT91_DDRSDRC_RTR) "]\n\t"
-		/* Power down SDRAM1 */
+		 
 		"	strne	%4, [%1, %6]\n\t"
-		/* Reset CPU */
+		 
 		"2:	str	%5, [%2, #" __stringify(AT91_RSTC_CR) "]\n\t"
 
 		"	b	.\n\t"
@@ -207,7 +164,7 @@ static const struct of_device_id at91_ramc_of_match[] = {
 		.compatible = "atmel,at91sam9g45-ddramc",
 		.data = (void *)AT91_DDRSDRC_LPR,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct at91_reset_data sam9260 = {
@@ -250,7 +207,7 @@ static const struct of_device_id at91_reset_of_match[] = {
 		.compatible = "microchip,sama7g5-rstc",
 		.data = &sama7g5,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, at91_reset_of_match);
 
@@ -355,7 +312,7 @@ static int __init at91_reset_probe(struct platform_device *pdev)
 	}
 
 	if (!of_device_is_compatible(pdev->dev.of_node, "atmel,sama5d3-rstc")) {
-		/* we need to shutdown the ddr controller, so get ramc base */
+		 
 		for_each_matching_node_and_match(np, at91_ramc_of_match, &match) {
 			reset->ramc_lpr = (u32)match->data;
 			reset->ramc_base[idx] = devm_of_iomap(&pdev->dev, np, 0, NULL);

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt700.c -- rt700 ALSA SoC audio driver
-//
-// Copyright(c) 2019 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -171,9 +171,9 @@ static void rt700_jack_detect_handler(struct work_struct *work)
 	if (ret < 0)
 		goto io_error;
 
-	/* pin attached */
+	 
 	if (jack_status & (1 << 31)) {
-		/* jack in */
+		 
 		if (rt700->jack_type == 0) {
 			ret = rt700_headset_detect(rt700);
 			if (ret < 0)
@@ -181,11 +181,11 @@ static void rt700_jack_detect_handler(struct work_struct *work)
 			if (rt700->jack_type == SND_JACK_HEADSET)
 				btn_type = rt700_button_detect(rt700);
 		} else if (rt700->jack_type == SND_JACK_HEADSET) {
-			/* jack is already in, report button event */
+			 
 			btn_type = rt700_button_detect(rt700);
 		}
 	} else {
-		/* jack out */
+		 
 		rt700->jack_type = 0;
 	}
 
@@ -200,7 +200,7 @@ static void rt700_jack_detect_handler(struct work_struct *work)
 			SND_JACK_BTN_2 | SND_JACK_BTN_3);
 
 	if (btn_type) {
-		/* button released */
+		 
 		snd_soc_jack_report(rt700->hs_jack, rt700->jack_type,
 			SND_JACK_HEADSET |
 			SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -228,17 +228,17 @@ static void rt700_btn_check_handler(struct work_struct *work)
 	if (ret < 0)
 		goto io_error;
 
-	/* pin attached */
+	 
 	if (jack_status & (1 << 31)) {
 		if (rt700->jack_type == SND_JACK_HEADSET) {
-			/* jack is already in, report button event */
+			 
 			btn_type = rt700_button_detect(rt700);
 		}
 	} else {
 		rt700->jack_type = 0;
 	}
 
-	/* cbj comparator */
+	 
 	ret = rt700_index_read(rt700->regmap, RT700_COMBO_JACK_AUTO_CTL2, &reg);
 	if (ret < 0)
 		goto io_error;
@@ -254,7 +254,7 @@ static void rt700_btn_check_handler(struct work_struct *work)
 			SND_JACK_BTN_2 | SND_JACK_BTN_3);
 
 	if (btn_type) {
-		/* button released */
+		 
 		snd_soc_jack_report(rt700->hs_jack, rt700->jack_type,
 			SND_JACK_HEADSET |
 			SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -275,13 +275,13 @@ static void rt700_jack_init(struct rt700_priv *rt700)
 	struct snd_soc_dapm_context *dapm =
 		snd_soc_component_get_dapm(rt700->component);
 
-	/* power on */
+	 
 	if (dapm->bias_level <= SND_SOC_BIAS_STANDBY)
 		regmap_write(rt700->regmap,
 			RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
 	if (rt700->hs_jack) {
-		/* Enable Jack Detection */
+		 
 		regmap_write(rt700->regmap,
 			RT700_SET_MIC2_UNSOLICITED_ENABLE, 0x82);
 		regmap_write(rt700->regmap,
@@ -306,7 +306,7 @@ static void rt700_jack_init(struct rt700_priv *rt700)
 		dev_dbg(&rt700->slave->dev, "in %s disable\n", __func__);
 	}
 
-	/* power off */
+	 
 	if (dapm->bias_level <= SND_SOC_BIAS_STANDBY)
 		regmap_write(rt700->regmap,
 			RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
@@ -320,7 +320,7 @@ static int rt700_set_jack_detect(struct snd_soc_component *component,
 
 	rt700->hs_jack = hs_jack;
 
-	/* we can only resume if the device was initialized at least once */
+	 
 	if (!rt700->first_hw_init)
 		return 0;
 
@@ -331,7 +331,7 @@ static int rt700_set_jack_detect(struct snd_soc_component *component,
 			return ret;
 		}
 
-		/* pm_runtime not enabled yet */
+		 
 		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
 		return 0;
 	}
@@ -348,17 +348,17 @@ static void rt700_get_gain(struct rt700_priv *rt700, unsigned int addr_h,
 				unsigned int addr_l, unsigned int val_h,
 				unsigned int *r_val, unsigned int *l_val)
 {
-	/* R Channel */
+	 
 	*r_val = (val_h << 8);
 	regmap_read(rt700->regmap, addr_l, r_val);
 
-	/* L Channel */
+	 
 	val_h |= 0x20;
 	*l_val = (val_h << 8);
 	regmap_read(rt700->regmap, addr_h, l_val);
 }
 
-/* For Verb-Set Amplifier Gain (Verb ID = 3h) */
+ 
 static int rt700_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
 {
@@ -372,29 +372,29 @@ static int rt700_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 	unsigned int read_ll, read_rl;
 	int i;
 
-	/* Can't use update bit function, so read the original value first */
+	 
 	addr_h = mc->reg;
 	addr_l = mc->rreg;
-	if (mc->shift == RT700_DIR_OUT_SFT) /* output */
+	if (mc->shift == RT700_DIR_OUT_SFT)  
 		val_h = 0x80;
-	else /* input */
+	else  
 		val_h = 0x0;
 
 	rt700_get_gain(rt700, addr_h, addr_l, val_h, &read_rl, &read_ll);
 
-	/* L Channel */
+	 
 	if (mc->invert) {
-		/* for mute */
+		 
 		val_ll = (mc->max - ucontrol->value.integer.value[0]) << 7;
-		/* keep gain */
+		 
 		read_ll = read_ll & 0x7f;
 		val_ll |= read_ll;
 	} else {
-		/* for gain */
+		 
 		val_ll = ((ucontrol->value.integer.value[0]) & 0x7f);
 		if (val_ll > mc->max)
 			val_ll = mc->max;
-		/* keep mute status */
+		 
 		read_ll = read_ll & 0x80;
 		val_ll |= read_ll;
 	}
@@ -403,46 +403,46 @@ static int rt700_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 		regmap_write(rt700->regmap,
 				RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
-	/* R Channel */
+	 
 	if (mc->invert) {
-		/* for mute */
+		 
 		val_lr = (mc->max - ucontrol->value.integer.value[1]) << 7;
-		/* keep gain */
+		 
 		read_rl = read_rl & 0x7f;
 		val_lr |= read_rl;
 	} else {
-		/* for gain */
+		 
 		val_lr = ((ucontrol->value.integer.value[1]) & 0x7f);
 		if (val_lr > mc->max)
 			val_lr = mc->max;
-		/* keep mute status */
+		 
 		read_rl = read_rl & 0x80;
 		val_lr |= read_rl;
 	}
 
-	for (i = 0; i < 3; i++) { /* retry 3 times at most */
+	for (i = 0; i < 3; i++) {  
 		if (val_ll == val_lr) {
-			/* Set both L/R channels at the same time */
+			 
 			val_h = (1 << mc->shift) | (3 << 4);
 			regmap_write(rt700->regmap,
 				addr_h, (val_h << 8 | val_ll));
 			regmap_write(rt700->regmap,
 				addr_l, (val_h << 8 | val_ll));
 		} else {
-			/* Lch*/
+			 
 			val_h = (1 << mc->shift) | (1 << 5);
 			regmap_write(rt700->regmap,
 				addr_h, (val_h << 8 | val_ll));
 
-			/* Rch */
+			 
 			val_h = (1 << mc->shift) | (1 << 4);
 			regmap_write(rt700->regmap,
 				addr_l, (val_h << 8 | val_lr));
 		}
-		/* check result */
-		if (mc->shift == RT700_DIR_OUT_SFT) /* output */
+		 
+		if (mc->shift == RT700_DIR_OUT_SFT)  
 			val_h = 0x80;
-		else /* input */
+		else  
 			val_h = 0x0;
 
 		rt700_get_gain(rt700, addr_h, addr_l, val_h,
@@ -469,19 +469,19 @@ static int rt700_set_amp_gain_get(struct snd_kcontrol *kcontrol,
 
 	addr_h = mc->reg;
 	addr_l = mc->rreg;
-	if (mc->shift == RT700_DIR_OUT_SFT) /* output */
+	if (mc->shift == RT700_DIR_OUT_SFT)  
 		val_h = 0x80;
-	else /* input */
+	else  
 		val_h = 0x0;
 
 	rt700_get_gain(rt700, addr_h, addr_l, val_h, &read_rl, &read_ll);
 
 	if (mc->invert) {
-		/* for mute status */
+		 
 		read_ll = !((read_ll & 0x80) >> RT700_MUTE_SFT);
 		read_rl = !((read_rl & 0x80) >> RT700_MUTE_SFT);
 	} else {
-		/* for gain */
+		 
 		read_ll = read_ll & 0x7f;
 		read_rl = read_rl & 0x7f;
 	}
@@ -540,7 +540,7 @@ static int rt700_mux_get(struct snd_kcontrol *kcontrol,
 	else
 		return -EINVAL;
 
-	/* vid = 0xf01 */
+	 
 	reg = RT700_VERB_SET_CONNECT_SEL | nid;
 	ret = regmap_read(rt700->regmap, reg, &val);
 	if (ret < 0)
@@ -576,7 +576,7 @@ static int rt700_mux_put(struct snd_kcontrol *kcontrol,
 	else
 		return -EINVAL;
 
-	/* Verb ID = 0x701h */
+	 
 	val = snd_soc_enum_item_to_val(e, item[0]) << e->shift_l;
 
 	reg = RT700_VERB_SET_CONNECT_SEL | nid;
@@ -914,10 +914,10 @@ static int rt700_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (!rt700->slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
+	 
 	snd_sdw_params_to_config(substream, params, &stream_config, &port_config);
 
-	/* This code assumes port 1 for playback and port 2 for capture */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		port_config.num = 1;
 	else
@@ -942,7 +942,7 @@ static int rt700_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (params_channels(params) <= 16) {
-		/* bit 3:0 Number of Channel */
+		 
 		val |= (params_channels(params) - 1);
 	} else {
 		dev_err(component->dev, "Unsupported channels %d\n",
@@ -951,7 +951,7 @@ static int rt700_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	switch (params_width(params)) {
-	/* bit 6:4 Bits per Sample */
+	 
 	case 8:
 		break;
 	case 16:
@@ -970,7 +970,7 @@ static int rt700_pcm_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* 48Khz */
+	 
 	regmap_write(rt700->regmap, RT700_DAC_FORMAT_H, val);
 	regmap_write(rt700->regmap, RT700_ADC_FORMAT_H, val);
 
@@ -1044,7 +1044,7 @@ static struct snd_soc_dai_driver rt700_dai[] = {
 	},
 };
 
-/* Bus clock frequency */
+ 
 #define RT700_CLK_FREQ_9600000HZ 9600000
 #define RT700_CLK_FREQ_12000000HZ 12000000
 #define RT700_CLK_FREQ_6000000HZ 6000000
@@ -1115,10 +1115,7 @@ int rt700_init(struct device *dev, struct regmap *sdw_regmap,
 	INIT_DELAYED_WORK(&rt700->jack_btn_check_work,
 			  rt700_btn_check_handler);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt700->hw_init = false;
 	rt700->first_hw_init = false;
 
@@ -1129,20 +1126,16 @@ int rt700_init(struct device *dev, struct regmap *sdw_regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 	dev_dbg(&slave->dev, "%s\n", __func__);
 
 	return 0;
@@ -1161,23 +1154,21 @@ int rt700_io_init(struct device *dev, struct sdw_slave *slave)
 	if (rt700->first_hw_init)
 		regcache_cache_bypass(rt700->regmap, true);
 
-	/*
-	 * PM runtime is only enabled when a Slave reports as Attached
-	 */
+	 
 	if (!rt700->first_hw_init)
-		/* PM runtime status is marked as 'active' only when a Slave reports as Attached */
+		 
 		pm_runtime_set_active(&slave->dev);
 
 	pm_runtime_get_noresume(&slave->dev);
 
-	/* reset */
+	 
 	regmap_write(rt700->regmap, 0xff01, 0x0000);
 	regmap_write(rt700->regmap, 0x7520, 0x001a);
 	regmap_write(rt700->regmap, 0x7420, 0xc003);
 
-	/* power on */
+	 
 	regmap_write(rt700->regmap, RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
-	/* Set Pin Widget */
+	 
 	regmap_write(rt700->regmap, RT700_SET_PIN_HP, 0x40);
 	regmap_write(rt700->regmap, RT700_SET_PIN_SPK, 0x40);
 	regmap_write(rt700->regmap, RT700_SET_EAPD_SPK, RT700_EAPD_HIGH);
@@ -1185,7 +1176,7 @@ int rt700_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_write(rt700->regmap, RT700_SET_PIN_DMIC2, 0x20);
 	regmap_write(rt700->regmap, RT700_SET_PIN_MIC2, 0x20);
 
-	/* Set Configuration Default */
+	 
 	regmap_write(rt700->regmap, 0x4f12, 0x91);
 	regmap_write(rt700->regmap, 0x4e12, 0xd6);
 	regmap_write(rt700->regmap, 0x4d12, 0x11);
@@ -1200,24 +1191,21 @@ int rt700_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_write(rt700->regmap, 0x4d19, 0x90);
 	regmap_write(rt700->regmap, 0x4c19, 0x80);
 
-	/* Enable Line2 */
+	 
 	regmap_write(rt700->regmap,  0x371b, 0x40);
 	regmap_write(rt700->regmap,  0x731b, 0xb0);
 	regmap_write(rt700->regmap,  0x839b, 0x00);
 
-	/* Set index */
+	 
 	rt700_index_write(rt700->regmap, 0x4a, 0x201b);
 	rt700_index_write(rt700->regmap, 0x45, 0x5089);
 	rt700_index_write(rt700->regmap, 0x6b, 0x5064);
 	rt700_index_write(rt700->regmap, 0x48, 0xd249);
 
-	/* Finish Initial Settings, set power to D3 */
+	 
 	regmap_write(rt700->regmap, RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
 
-	/*
-	 * if set_jack callback occurred early than io_init,
-	 * we set up the jack detection function now
-	 */
+	 
 	if (rt700->hs_jack)
 		rt700_jack_init(rt700);
 
@@ -1227,7 +1215,7 @@ int rt700_io_init(struct device *dev, struct sdw_slave *slave)
 	} else
 		rt700->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt700->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);

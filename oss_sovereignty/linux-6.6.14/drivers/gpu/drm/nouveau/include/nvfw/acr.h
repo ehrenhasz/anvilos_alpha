@@ -73,7 +73,7 @@ struct lsf_signature_v1 {
 	u32 supports_versioning;
 	u32 version;
 	u32 depmap_count;
-	u8 depmap[11/*LSF_LSB_DEPMAP_SIZE*/ * 2 * 4];
+	u8 depmap[11  * 2 * 4];
 	u8 kdf[16];
 };
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cmt_speech.c - HSI CMT speech driver
- *
- * Copyright (C) 2008,2009,2010 Nokia Corporation. All rights reserved.
- *
- * Contact: Kai Vehmanen <kai.vehmanen@nokia.com>
- * Original author: Peter Ujfalusi <peter.ujfalusi@nokia.com>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -40,13 +33,13 @@ struct cs_char {
 	struct list_head	chardev_queue;
 	struct list_head	dataind_queue;
 	int			dataind_pending;
-	/* mmap things */
+	 
 	unsigned long		mmap_base;
 	unsigned long		mmap_size;
 	spinlock_t		lock;
 	struct fasync_struct	*async_queue;
 	wait_queue_head_t	wait;
-	/* hsi channel ids */
+	 
 	int                     channel_id_cmd;
 	int                     channel_id_data;
 };
@@ -60,16 +53,13 @@ struct cs_char {
 #define TARGET_REMOTE			(1 << CS_DOMAIN_SHIFT)
 #define TARGET_LOCAL			0
 
-/* Number of pre-allocated commands buffers */
+ 
 #define CS_MAX_CMDS		        4
 
-/*
- * During data transfers, transactions must be handled
- * within 20ms (fixed value in cmtspeech HSI protocol)
- */
+ 
 #define CS_QOS_LATENCY_FOR_DATA_USEC	20000
 
-/* Timeout to wait for pending HSI transfers to complete */
+ 
 #define CS_HSI_TRANSFER_TIMEOUT_MS      500
 
 
@@ -85,7 +75,7 @@ struct cs_hsi_iface {
 	unsigned int			control_state;
 	unsigned int			data_state;
 
-	/* state exposed to application */
+	 
 	struct cs_mmap_config_block	*mmap_cfg;
 
 	unsigned long			mmap_base;
@@ -94,8 +84,7 @@ struct cs_hsi_iface {
 	unsigned int			rx_slot;
 	unsigned int			tx_slot;
 
-	/* note: for security reasons, we do not trust the contents of
-	 * mmap_cfg, but instead duplicate the variables here */
+	 
 	unsigned int			buf_size;
 	unsigned int			rx_bufs;
 	unsigned int			tx_bufs;
@@ -103,7 +92,7 @@ struct cs_hsi_iface {
 	unsigned int			rx_offsets[CS_MAX_BUFFERS];
 	unsigned int			tx_offsets[CS_MAX_BUFFERS];
 
-	/* size of aligned memory blocks */
+	 
 	unsigned int			slot_size;
 	unsigned int			flags;
 
@@ -555,13 +544,7 @@ static int cs_hsi_write_on_control(struct cs_hsi_iface *hi, u32 message)
 		cs_hsi_control_write_error(hi, msg);
 	}
 
-	/*
-	 * Make sure control read is always pending when issuing
-	 * new control writes. This is needed as the controller
-	 * may flush our messages if e.g. the peer device reboots
-	 * unexpectedly (and we cannot directly resubmit a new read from
-	 * the message destructor; see cs_cmd_destructor()).
-	 */
+	 
 	if (!(hi->control_state & SSI_CHANNEL_STATE_READING)) {
 		dev_err(&hi->cl->device, "Restarting control reads\n");
 		cs_hsi_read_on_control(hi);
@@ -587,7 +570,7 @@ static void cs_hsi_read_on_data_complete(struct hsi_msg *msg)
 	payload |= hi->rx_slot;
 	hi->rx_slot++;
 	hi->rx_slot %= hi->rx_ptr_boundary;
-	/* expose current rx ptr in mmap area */
+	 
 	hi->mmap_cfg->rx_ptr = hi->rx_slot;
 	if (unlikely(waitqueue_active(&hi->datawait)))
 		wake_up_interruptible(&hi->datawait);
@@ -629,19 +612,14 @@ static void cs_hsi_peek_on_data_complete(struct hsi_msg *msg)
 		cs_hsi_data_read_error(hi, msg);
 }
 
-/*
- * Read/write transaction is ongoing. Returns false if in
- * SSI_CHANNEL_STATE_POLL state.
- */
+ 
 static inline int cs_state_xfer_active(unsigned int state)
 {
 	return (state & SSI_CHANNEL_STATE_WRITING) ||
 		(state & SSI_CHANNEL_STATE_READING);
 }
 
-/*
- * No pending read/writes
- */
+ 
 static inline int cs_state_idle(unsigned int state)
 {
 	return !(state & ~SSI_CHANNEL_STATE_ERROR);
@@ -793,13 +771,7 @@ static void set_buffer_sizes(struct cs_hsi_iface *hi, int rx_bufs, int tx_bufs)
 	hi->mmap_cfg->tx_bufs = tx_bufs;
 
 	if (hi->flags & CS_FEAT_ROLLING_RX_COUNTER) {
-		/*
-		 * For more robust overrun detection, let the rx
-		 * pointer run in range 0..'boundary-1'. Boundary
-		 * is a multiple of rx_bufs, and limited in max size
-		 * by RX_PTR_MAX_SHIFT to allow for fast ptr-diff
-		 * calculation.
-		 */
+		 
 		hi->rx_ptr_boundary = (rx_bufs << RX_PTR_BOUNDARY_SHIFT);
 		hi->mmap_cfg->rx_ptr_boundary = hi->rx_ptr_boundary;
 	} else {
@@ -827,9 +799,7 @@ static int check_buf_params(struct cs_hsi_iface *hi,
 	return r;
 }
 
-/*
- * Block until pending data transfers have completed.
- */
+ 
 static int cs_hsi_data_sync(struct cs_hsi_iface *hi)
 {
 	int r = 0;
@@ -850,10 +820,7 @@ static int cs_hsi_data_sync(struct cs_hsi_iface *hi)
 			r = -ERESTARTSYS;
 			goto out;
 		}
-		/*
-		 * prepare_to_wait must be called with hi->lock held
-		 * so that callbacks can check for waitqueue_active()
-		 */
+		 
 		prepare_to_wait(&hi->datawait, &wait, TASK_INTERRUPTIBLE);
 		spin_unlock_bh(&hi->lock);
 		s = schedule_timeout(
@@ -928,15 +895,12 @@ static int cs_hsi_buf_config(struct cs_hsi_iface *hi,
 	unsigned int old_state = hi->iface_state;
 
 	spin_lock_bh(&hi->lock);
-	/* Prevent new transactions during buffer reconfig */
+	 
 	if (old_state == CS_STATE_CONFIGURED)
 		hi->iface_state = CS_STATE_OPENED;
 	spin_unlock_bh(&hi->lock);
 
-	/*
-	 * make sure that no non-zero data reads are ongoing before
-	 * proceeding to change the buffer layout
-	 */
+	 
 	r = cs_hsi_data_sync(hi);
 	if (r < 0)
 		return r;
@@ -1062,15 +1026,11 @@ static void cs_hsi_stop(struct cs_hsi_iface *hi)
 	cs_hsi_set_wakeline(hi, 0);
 	ssip_slave_put_master(hi->master);
 
-	/* hsi_release_port() needs to be called with CS_STATE_CLOSED */
+	 
 	hi->iface_state = CS_STATE_CLOSED;
 	hsi_release_port(hi->cl);
 
-	/*
-	 * hsi_release_port() should flush out all the pending
-	 * messages, so cs_state_idle() should be true for both
-	 * control and data channels.
-	 */
+	 
 	WARN_ON(!cs_state_idle(hi->control_state));
 	WARN_ON(!cs_state_idle(hi->data_state));
 
@@ -1298,7 +1258,7 @@ static int cs_char_open(struct inode *unused, struct file *file)
 		goto out3;
 	}
 
-	/* these are only used in release so lock not needed */
+	 
 	cs_char_data.mmap_base = p;
 	cs_char_data.mmap_size = CS_MMAP_SIZE;
 

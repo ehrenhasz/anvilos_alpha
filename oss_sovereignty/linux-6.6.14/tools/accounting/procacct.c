@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* procacct.c
- *
- * Demonstrator of fetching resource data on task exit, as a way
- * to accumulate accurate program resource usage statistics, without
- * prior identification of the programs. For that, the fields for
- * device and inode of the program executable binary file are also
- * extracted in addition to the command string.
- *
- * The TGID together with the PID and the AGROUP flag allow
- * identification of threads in a process and single-threaded processes.
- * The ac_tgetime field gives proper whole-process walltime.
- *
- * Written (changed) by Thomas Orgis, University of Hamburg in 2022
- *
- * This is a cheap derivation (inheriting the style) of getdelays.c:
- *
- * Utility to get per-pid and per-tgid delay accounting statistics
- * Also illustrates usage of the taskstats interface
- *
- * Copyright (C) Shailabh Nagar, IBM Corp. 2005
- * Copyright (C) Balbir Singh, IBM Corp. 2006
- * Copyright (c) Jay Lan, SGI. 2006
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,11 +19,7 @@
 #include <linux/taskstats.h>
 #include <linux/kdev_t.h>
 
-/*
- * Generic macros for dealing with netlink sockets. Might be duplicated
- * elsewhere. It is recommended that commercial grade applications use
- * libnl or libnetlink and use the interfaces provided by the library
- */
+ 
 #define GENLMSG_DATA(glh)	((void *)(NLMSG_DATA(glh) + GENL_HDRLEN))
 #define GENLMSG_PAYLOAD(glh)	(NLMSG_PAYLOAD(glh, 0) - GENL_HDRLEN)
 #define NLA_DATA(na)		((void *)((char *)(na) + NLA_HDRLEN))
@@ -70,9 +44,9 @@ int print_task_context_switch_counts;
 		}				\
 	}
 
-/* Maximum size of response requested or message sent */
+ 
 #define MAX_MSG_SIZE	1024
-/* Maximum number of cpus expected to be specified in a cpumask */
+ 
 #define MAX_CPUS	32
 
 struct msgtemplate {
@@ -89,9 +63,7 @@ static void usage(void)
 	fprintf(stderr, "  -v: debug on\n");
 }
 
-/*
- * Create a raw netlink socket and bind
- */
+ 
 static int create_nl_socket(int protocol)
 {
 	int fd;
@@ -162,10 +134,7 @@ static int send_cmd(int sd, __u16 nlmsg_type, __u32 nlmsg_pid,
 }
 
 
-/*
- * Probe the controller in genetlink to find the family id
- * for the TASKSTATS family
- */
+ 
 static int get_family_id(int sd)
 {
 	struct {
@@ -183,7 +152,7 @@ static int get_family_id(int sd)
 			CTRL_ATTR_FAMILY_NAME, (void *)name,
 			strlen(TASKSTATS_GENL_NAME)+1);
 	if (rc < 0)
-		return 0;	/* sendto() failure? */
+		return 0;	 
 
 	rep_len = recv(sd, &ans, sizeof(ans), 0);
 	if (ans.n.nlmsg_type == NLMSG_ERROR ||
@@ -202,7 +171,7 @@ static int get_family_id(int sd)
 
 static void print_procacct(struct taskstats *t)
 {
-	/* First letter: T is a mere thread, G the last in a group, U  unknown. */
+	 
 	printf(
 		"%c pid=%lu tgid=%lu uid=%lu wall=%llu gwall=%llu cpu=%llu vmpeak=%llu rsspeak=%llu dev=%lu:%lu inode=%llu comm=%s\n"
 	,	t->version >= 12 ? (t->ac_flag & AGROUP ? 'P' : 'T') : '?'
@@ -381,7 +350,7 @@ int main(int argc, char *argv[])
 			switch (na->nla_type) {
 			case TASKSTATS_TYPE_AGGR_PID:
 			case TASKSTATS_TYPE_AGGR_TGID:
-				/* For nested attributes, na follows */
+				 
 				handle_aggr(mother, na, fd);
 				break;
 			default:

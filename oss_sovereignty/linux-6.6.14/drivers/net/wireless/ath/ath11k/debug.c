@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include "core.h"
@@ -101,10 +99,10 @@ void ath11k_dbg_dump(struct ath11k_base *ab,
 		}
 	}
 
-	/* tracing code doesn't like null strings */
+	 
 	trace_ath11k_log_dbg_dump(ab, msg ? msg : "", prefix ? prefix : "",
 				  buf, len);
 }
 EXPORT_SYMBOL(ath11k_dbg_dump);
 
-#endif /* CONFIG_ATH11K_DEBUG */
+#endif  

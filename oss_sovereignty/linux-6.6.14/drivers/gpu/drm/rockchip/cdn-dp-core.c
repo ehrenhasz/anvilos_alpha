@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author: Chris Zhong <zyw@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -211,12 +208,7 @@ static bool cdn_dp_check_sink_connection(struct cdn_dp_device *dp)
 
 	port = dp->port[dp->active_port];
 
-	/*
-	 * Attempt to read sink count, retry in case the sink may not be ready.
-	 *
-	 * Sinks are *supposed* to come up within 1ms from an off state, but
-	 * some docks need more time to power up.
-	 */
+	 
 	while (time_before(jiffies, timeout)) {
 		if (!extcon_get_state(port->extcon, EXTCON_DISP_DP))
 			return false;
@@ -291,7 +283,7 @@ cdn_dp_connector_mode_valid(struct drm_connector *connector,
 	u32 requested, actual, rate, sink_max, source_max = 0;
 	u8 lanes, bpc;
 
-	/* If DP is disconnected, every mode is invalid */
+	 
 	if (!dp->connected)
 		return MODE_BAD;
 
@@ -319,7 +311,7 @@ cdn_dp_connector_mode_valid(struct drm_connector *connector,
 
 	actual = rate * lanes / 100;
 
-	/* efficiency is about 0.8 */
+	 
 	actual = actual * 8 / 10;
 
 	if (requested > actual) {
@@ -521,7 +513,7 @@ static int cdn_dp_enable(struct cdn_dp_device *dp)
 		goto err_clk_disable;
 	}
 
-	/* only enable the port that connected with downstream device */
+	 
 	for (i = port->id; i < dp->ports; i++) {
 		port = dp->port[i];
 		lanes = cdn_dp_get_port_lanes(port);
@@ -588,7 +580,7 @@ static bool cdn_dp_check_link_status(struct cdn_dp_device *dp)
 		return false;
 	}
 
-	/* if link training is requested we should perform it always */
+	 
 	return drm_dp_channel_eq_ok(link_status, min(port->lanes, sink_lanes));
 }
 
@@ -678,15 +670,7 @@ static void cdn_dp_encoder_disable(struct drm_encoder *encoder)
 	}
 	mutex_unlock(&dp->lock);
 
-	/*
-	 * In the following 2 cases, we need to run the event_work to re-enable
-	 * the DP:
-	 * 1. If there is not just one port device is connected, and remove one
-	 *    device from a port, the DP will be disabled here, at this case,
-	 *    run the event_work to re-open DP for the other port.
-	 * 2. If re-training or re-config failed, the DP will be disabled here.
-	 *    run the event_work to re-connect it.
-	 */
+	 
 	if (!dp->connected && cdn_dp_connected_port(dp))
 		schedule_work(&dp->event_work);
 }
@@ -916,7 +900,7 @@ static int cdn_dp_request_firmware(struct cdn_dp_device *dp)
 	if (dp->fw_loaded)
 		return 0;
 
-	/* Drop the lock before getting the firmware to avoid blocking boot */
+	 
 	mutex_unlock(&dp->lock);
 
 	while (time_before(jiffies, timeout)) {
@@ -963,12 +947,12 @@ static void cdn_dp_pd_event_work(struct work_struct *work)
 
 	dp->connected = true;
 
-	/* Not connected, notify userspace to disable the block */
+	 
 	if (!cdn_dp_connected_port(dp)) {
 		DRM_DEV_INFO(dp->dev, "Not connected. Disabling cdn\n");
 		dp->connected = false;
 
-	/* Connected but not enabled, enable the block */
+	 
 	} else if (!dp->active) {
 		DRM_DEV_INFO(dp->dev, "Connected, not enabled. Enabling cdn\n");
 		ret = cdn_dp_enable(dp);
@@ -977,12 +961,12 @@ static void cdn_dp_pd_event_work(struct work_struct *work)
 			dp->connected = false;
 		}
 
-	/* Enabled and connected to a dongle without a sink, notify userspace */
+	 
 	} else if (!cdn_dp_check_sink_connection(dp)) {
 		DRM_DEV_INFO(dp->dev, "Connected without sink. Assert hpd\n");
 		dp->connected = false;
 
-	/* Enabled and connected with a sink, re-train if requested */
+	 
 	} else if (!cdn_dp_check_link_status(dp)) {
 		unsigned int rate = dp->max_rate;
 		unsigned int lanes = dp->max_lanes;
@@ -996,7 +980,7 @@ static void cdn_dp_pd_event_work(struct work_struct *work)
 			goto out;
 		}
 
-		/* If training result is changed, update the video config */
+		 
 		if (mode->clock &&
 		    (rate != dp->max_rate || lanes != dp->max_lanes)) {
 			ret = cdn_dp_config_video(dp);
@@ -1025,11 +1009,7 @@ static int cdn_dp_pd_event(struct notifier_block *nb,
 						event_nb);
 	struct cdn_dp_device *dp = port->dp;
 
-	/*
-	 * It would be nice to be able to just do the work inline right here.
-	 * However, we need to make a bunch of calls that might sleep in order
-	 * to turn on the block/phy, so use a worker instead.
-	 */
+	 
 	schedule_work(&dp->event_work);
 
 	return NOTIFY_DONE;

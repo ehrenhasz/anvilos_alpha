@@ -1,26 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
+ 
 
 #ifndef KFD_DEVICE_QUEUE_MANAGER_H_
 #define KFD_DEVICE_QUEUE_MANAGER_H_
@@ -79,54 +58,7 @@ union GRBM_GFX_INDEX_BITS {
 	float f32All;
 };
 
-/**
- * struct device_queue_manager_ops
- *
- * @create_queue: Queue creation routine.
- *
- * @destroy_queue: Queue destruction routine.
- *
- * @update_queue: Queue update routine.
- *
- * @exeute_queues: Dispatches the queues list to the H/W.
- *
- * @register_process: This routine associates a specific process with device.
- *
- * @unregister_process: destroys the associations between process to device.
- *
- * @initialize: Initializes the pipelines and memory module for that device.
- *
- * @start: Initializes the resources/modules the device needs for queues
- * execution. This function is called on device initialization and after the
- * system woke up after suspension.
- *
- * @stop: This routine stops execution of all the active queue running on the
- * H/W and basically this function called on system suspend.
- *
- * @uninitialize: Destroys all the device queue manager resources allocated in
- * initialize routine.
- *
- * @create_kernel_queue: Creates kernel queue. Used for debug queue.
- *
- * @destroy_kernel_queue: Destroys kernel queue. Used for debug queue.
- *
- * @set_cache_memory_policy: Sets memory policy (cached/ non cached) for the
- * memory apertures.
- *
- * @process_termination: Clears all process queues belongs to that device.
- *
- * @evict_process_queues: Evict all active queues of a process
- *
- * @restore_process_queues: Restore all evicted queues of a process
- *
- * @get_wave_state: Retrieves context save state and optionally copies the
- * control stack, if kept in the MQD, to the given userspace address.
- *
- * @reset_queues: reset queues which consume RAS poison
- * @get_queue_checkpoint_info: Retrieves queue size information for CRIU checkpoint.
- *
- * @checkpoint_mqd: checkpoint queue MQD contents for CRIU.
- */
+ 
 
 struct device_queue_manager_ops {
 	int	(*create_queue)(struct device_queue_manager *dqm,
@@ -211,17 +143,7 @@ struct device_queue_manager_asic_ops {
 				 struct kfd_node *dev);
 };
 
-/**
- * struct device_queue_manager
- *
- * This struct is a base class for the kfd queues scheduler in the
- * device level. The device base class should expose the basic operations
- * for queue creation and queue destruction. This base class hides the
- * scheduling mode of the driver and the specific implementation of the
- * concrete device. This class is the only class in the queues scheduler
- * that configures the H/W.
- *
- */
+ 
 
 struct device_queue_manager {
 	struct device_queue_manager_ops ops;
@@ -230,7 +152,7 @@ struct device_queue_manager {
 	struct mqd_manager	*mqd_mgrs[KFD_MQD_TYPE_MAX];
 	struct packet_manager	packet_mgr;
 	struct kfd_node		*dev;
-	struct mutex		lock_hidden; /* use dqm_lock/unlock(dqm) */
+	struct mutex		lock_hidden;  
 	struct list_head	queues;
 	unsigned int		saved_flags;
 	unsigned int		processes_count;
@@ -242,7 +164,7 @@ struct device_queue_manager {
 	unsigned int		*allocated_queues;
 	DECLARE_BITMAP(sdma_bitmap, KFD_MAX_SDMA_QUEUES);
 	DECLARE_BITMAP(xgmi_sdma_bitmap, KFD_MAX_SDMA_QUEUES);
-	/* the pasid mapping for each kfd vmid */
+	 
 	uint16_t		vmid_pasid[VMID_NUM];
 	uint64_t		pipelines_addr;
 	uint64_t		fence_gpu_addr;
@@ -252,14 +174,14 @@ struct device_queue_manager {
 	int			sched_policy;
 	uint32_t		trap_debug_vmid;
 
-	/* hw exception  */
+	 
 	bool			is_hws_hang;
 	bool			is_resetting;
 	struct work_struct	hw_exception_work;
 	struct kfd_mem_obj	hiq_sdma_mqd;
 	bool			sched_running;
 
-	/* used for GFX 9.4.3 only */
+	 
 	uint32_t		current_logical_xcc_start;
 
 	uint32_t		wait_times;
@@ -314,10 +236,7 @@ get_sh_mem_bases_nybble_64(struct kfd_process_device *pdd)
 	return (pdd->lds_base >> 60) & 0x0E;
 }
 
-/* The DQM lock can be taken in MMU notifiers. Make sure no reclaim-FS
- * happens while holding this lock anywhere to prevent deadlocks when
- * an MMU notifier runs in reclaim-FS context.
- */
+ 
 static inline void dqm_lock(struct device_queue_manager *dqm)
 {
 	mutex_lock(&dqm->lock_hidden);
@@ -331,7 +250,7 @@ static inline void dqm_unlock(struct device_queue_manager *dqm)
 
 static inline int read_sdma_queue_counter(uint64_t __user *q_rptr, uint64_t *val)
 {
-	/* SDMA activity counter is stored at queue's RPTR + 0x8 location. */
+	 
 	return get_user(*val, q_rptr + 1);
 }
-#endif /* KFD_DEVICE_QUEUE_MANAGER_H_ */
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt7986-reg.h  --  MediaTek 7986 audio driver reg definition
- *
- * Copyright (c) 2023 MediaTek Inc.
- * Authors: Vic Wu <vic.wu@mediatek.com>
- *          Maso Huang <maso.huang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT7986_REG_H_
 #define _MT7986_REG_H_
@@ -71,23 +65,23 @@
 #define AFE_IRQ_CNT_SHIFT               0
 #define AFE_IRQ_CNT_MASK	        0xffffff
 
-/* AUDIO_TOP_CON2 */
+ 
 #define CLK_OUT5_PDN                    BIT(14)
 #define CLK_OUT5_PDN_MASK               BIT(14)
 #define CLK_IN5_PDN                     BIT(7)
 #define CLK_IN5_PDN_MASK                BIT(7)
 
-/* AUDIO_TOP_CON4 */
+ 
 #define PDN_APLL_TUNER2                 BIT(12)
 #define PDN_APLL_TUNER2_MASK            BIT(12)
 
-/* AUDIO_ENGEN_CON0 */
+ 
 #define AUD_APLL2_EN                    BIT(3)
 #define AUD_APLL2_EN_MASK               BIT(3)
 #define AUD_26M_EN                      BIT(0)
 #define AUD_26M_EN_MASK                 BIT(0)
 
-/* AFE_DL0_CON0 */
+ 
 #define DL0_ON_SFT                      28
 #define DL0_ON_MASK                     0x1
 #define DL0_ON_MASK_SFT                 BIT(28)
@@ -110,7 +104,7 @@
 #define DL0_HD_MODE_MASK                0x3
 #define DL0_HD_MODE_MASK_SFT            (0x3 << 0)
 
-/* AFE_VUL0_CON0 */
+ 
 #define VUL0_ON_SFT                     28
 #define VUL0_ON_MASK                    0x1
 #define VUL0_ON_MASK_SFT                BIT(28)
@@ -127,7 +121,7 @@
 #define VUL0_HD_MODE_MASK               0x3
 #define VUL0_HD_MODE_MASK_SFT           (0x3 << 0)
 
-/* AFE_IRQ_MCU_CON */
+ 
 #define IRQ_MCU_MODE_SFT                4
 #define IRQ_MCU_MODE_MASK               0x1f
 #define IRQ_MCU_MODE_MASK_SFT           (0x1f << 4)
@@ -144,24 +138,24 @@
 #define IRQ2_MCU_CLR_MASK               0x1
 #define IRQ2_MCU_CLR_MASK_SFT           BIT(2)
 
-/* ETDM_IN5_CON2 */
+ 
 #define IN_CLK_SRC(x)                   ((x) << 10)
 #define IN_CLK_SRC_SFT                  10
 #define IN_CLK_SRC_MASK                 GENMASK(12, 10)
 
-/* ETDM_IN5_CON3 */
+ 
 #define IN_SEL_FS(x)                    ((x) << 26)
 #define IN_SEL_FS_SFT                   26
 #define IN_SEL_FS_MASK                  GENMASK(30, 26)
 
-/* ETDM_IN5_CON4 */
+ 
 #define IN_RELATCH(x)                   ((x) << 20)
 #define IN_RELATCH_SFT                  20
 #define IN_RELATCH_MASK                 GENMASK(24, 20)
 #define IN_CLK_INV                      BIT(18)
 #define IN_CLK_INV_MASK                 BIT(18)
 
-/* ETDM_IN5_CON0 & ETDM_OUT5_CON0 */
+ 
 #define RELATCH_SRC_MASK                GENMASK(30, 28)
 #define ETDM_CH_NUM_MASK                GENMASK(27, 23)
 #define ETDM_WRD_LEN_MASK               GENMASK(20, 16)
@@ -172,7 +166,7 @@
 #define ETDM_EN                         BIT(0)
 #define ETDM_EN_MASK                    BIT(0)
 
-/* ETDM_OUT5_CON4 */
+ 
 #define OUT_RELATCH(x)                  ((x) << 24)
 #define OUT_RELATCH_SFT                 24
 #define OUT_RELATCH_MASK                GENMASK(28, 24)
@@ -183,13 +177,13 @@
 #define OUT_SEL_FS_SFT                  0
 #define OUT_SEL_FS_MASK                 GENMASK(4, 0)
 
-/* ETDM_OUT5_CON5 */
+ 
 #define ETDM_CLK_DIV                    BIT(12)
 #define ETDM_CLK_DIV_MASK               BIT(12)
 #define OUT_CLK_INV                     BIT(9)
 #define OUT_CLK_INV_MASK                BIT(9)
 
-/* ETDM_4_7_COWORK_CON0 */
+ 
 #define OUT_SEL(x)                      ((x) << 12)
 #define OUT_SEL_SFT                     12
 #define OUT_SEL_MASK                    GENMASK(15, 12)

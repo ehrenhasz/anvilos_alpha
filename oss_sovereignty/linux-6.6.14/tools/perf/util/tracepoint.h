@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_TRACEPOINT_H
 #define __PERF_TRACEPOINT_H
 
@@ -22,4 +22,4 @@ int tp_event_has_id(const char *dir_path, struct dirent *evt_dir);
 
 int is_valid_tracepoint(const char *event_string);
 
-#endif /* __PERF_TRACEPOINT_H */
+#endif  

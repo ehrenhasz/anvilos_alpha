@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 HGST, a Western Digital Company.
- */
+
+ 
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <rdma/ib_verbs.h>
@@ -9,14 +7,14 @@
 #include "core_priv.h"
 
 #include <trace/events/rdma_core.h>
-/* Max size for shared CQ, may require tuning */
+ 
 #define IB_MAX_SHARED_CQ_SZ		4096U
 
-/* # of WCs to poll for with a single call to ib_poll_cq */
+ 
 #define IB_POLL_BATCH			16
 #define IB_POLL_BATCH_DIRECT		8
 
-/* # of WCs to iterate over before yielding */
+ 
 #define IB_POLL_BUDGET_IRQ		256
 #define IB_POLL_BUDGET_WORKQUEUE	65536
 
@@ -96,11 +94,7 @@ static int __ib_process_cq(struct ib_cq *cq, int budget, struct ib_wc *wcs,
 
 	trace_cq_process(cq);
 
-	/*
-	 * budget might be (-1) if the caller does not
-	 * want to bound this call, thus we need unsigned
-	 * minimum here.
-	 */
+	 
 	while ((n = __poll_cq(cq, min_t(u32, batch,
 					budget - completed), wcs)) > 0) {
 		for (i = 0; i < n; i++) {
@@ -121,20 +115,7 @@ static int __ib_process_cq(struct ib_cq *cq, int budget, struct ib_wc *wcs,
 	return completed;
 }
 
-/**
- * ib_process_cq_direct - process a CQ in caller context
- * @cq:		CQ to process
- * @budget:	number of CQEs to poll for
- *
- * This function is used to process all outstanding CQ entries.
- * It does not offload CQ processing to a different context and does
- * not ask for completion interrupts from the HCA.
- * Using direct processing on CQ with non IB_POLL_DIRECT type may trigger
- * concurrent processing.
- *
- * Note: do not pass -1 as %budget unless it is guaranteed that the number
- * of completions that will be processed is small.
- */
+ 
 int ib_process_cq_direct(struct ib_cq *cq, int budget)
 {
 	struct ib_wc wcs[IB_POLL_BATCH_DIRECT];
@@ -195,20 +176,7 @@ static void ib_cq_completion_workqueue(struct ib_cq *cq, void *private)
 	queue_work(cq->comp_wq, &cq->work);
 }
 
-/**
- * __ib_alloc_cq - allocate a completion queue
- * @dev:		device to allocate the CQ for
- * @private:		driver private data, accessible from cq->cq_context
- * @nr_cqe:		number of CQEs to allocate
- * @comp_vector:	HCA completion vectors for this CQ
- * @poll_ctx:		context to poll the CQ from.
- * @caller:		module owner name.
- *
- * This is the proper interface to allocate a CQ for in-kernel users. A
- * CQ allocated with this interface will automatically be polled from the
- * specified context. The ULP must use wr->wr_cqe instead of wr->wr_id
- * to use this CQ abstraction.
- */
+ 
 struct ib_cq *__ib_alloc_cq(struct ib_device *dev, void *private, int nr_cqe,
 			    int comp_vector, enum ib_poll_context poll_ctx,
 			    const char *caller)
@@ -283,17 +251,7 @@ out_free_cq:
 }
 EXPORT_SYMBOL(__ib_alloc_cq);
 
-/**
- * __ib_alloc_cq_any - allocate a completion queue
- * @dev:		device to allocate the CQ for
- * @private:		driver private data, accessible from cq->cq_context
- * @nr_cqe:		number of CQEs to allocate
- * @poll_ctx:		context to poll the CQ from
- * @caller:		module owner name
- *
- * Attempt to spread ULP Completion Queues over each device's interrupt
- * vectors. A simple best-effort mechanism is used.
- */
+ 
 struct ib_cq *__ib_alloc_cq_any(struct ib_device *dev, void *private,
 				int nr_cqe, enum ib_poll_context poll_ctx,
 				const char *caller)
@@ -311,10 +269,7 @@ struct ib_cq *__ib_alloc_cq_any(struct ib_device *dev, void *private,
 }
 EXPORT_SYMBOL(__ib_alloc_cq_any);
 
-/**
- * ib_free_cq - free a completion queue
- * @cq:		completion queue to free.
- */
+ 
 void ib_free_cq(struct ib_cq *cq)
 {
 	int ret;
@@ -377,11 +332,7 @@ static int ib_alloc_cqs(struct ib_device *dev, unsigned int nr_cqes,
 		return -EINVAL;
 	}
 
-	/*
-	 * Allocate at least as many CQEs as requested, and otherwise
-	 * a reasonable batch size so that we can share CQs between
-	 * multiple users instead of allocating a larger number of CQs.
-	 */
+	 
 	nr_cqes = min_t(unsigned int, dev->attrs.max_cqe,
 			max(nr_cqes, IB_MAX_SHARED_CQ_SZ));
 	nr_cqs = min_t(unsigned int, dev->num_comp_vectors, num_online_cpus());
@@ -409,22 +360,7 @@ out_free_cqs:
 	return ret;
 }
 
-/**
- * ib_cq_pool_get() - Find the least used completion queue that matches
- *   a given cpu hint (or least used for wild card affinity) and fits
- *   nr_cqe.
- * @dev: rdma device
- * @nr_cqe: number of needed cqe entries
- * @comp_vector_hint: completion vector hint (-1) for the driver to assign
- *   a comp vector based on internal counter
- * @poll_ctx: cq polling context
- *
- * Finds a cq that satisfies @comp_vector_hint and @nr_cqe requirements and
- * claim entries in it for us.  In case there is no available cq, allocate
- * a new cq with the requirements and add it to the device pool.
- * IB_POLL_DIRECT cannot be used for shared cqs so it is not a valid value
- * for @poll_ctx.
- */
+ 
 struct ib_cq *ib_cq_pool_get(struct ib_device *dev, unsigned int nr_cqe,
 			     int comp_vector_hint,
 			     enum ib_poll_context poll_ctx)
@@ -441,7 +377,7 @@ struct ib_cq *ib_cq_pool_get(struct ib_device *dev, unsigned int nr_cqe,
 
 	num_comp_vectors =
 		min_t(unsigned int, dev->num_comp_vectors, num_online_cpus());
-	/* Project the affinty to the device completion vector range */
+	 
 	if (comp_vector_hint < 0) {
 		comp_vector_hint =
 			(READ_ONCE(default_comp_vector) + 1) % num_comp_vectors;
@@ -449,18 +385,12 @@ struct ib_cq *ib_cq_pool_get(struct ib_device *dev, unsigned int nr_cqe,
 	}
 	vector = comp_vector_hint % num_comp_vectors;
 
-	/*
-	 * Find the least used CQ with correct affinity and
-	 * enough free CQ entries
-	 */
+	 
 	while (!found) {
 		spin_lock_irq(&dev->cq_pools_lock);
 		list_for_each_entry(cq, &dev->cq_pools[poll_ctx],
 				    pool_entry) {
-			/*
-			 * Check to see if we have found a CQ with the
-			 * correct completion vector
-			 */
+			 
 			if (vector != cq->comp_vector)
 				continue;
 			if (cq->cqe_used + nr_cqe > cq->cqe)
@@ -477,10 +407,7 @@ struct ib_cq *ib_cq_pool_get(struct ib_device *dev, unsigned int nr_cqe,
 		}
 		spin_unlock_irq(&dev->cq_pools_lock);
 
-		/*
-		 * Didn't find a match or ran out of CQs in the device
-		 * pool, allocate a new array of CQs.
-		 */
+		 
 		ret = ib_alloc_cqs(dev, nr_cqe, poll_ctx);
 		if (ret)
 			return ERR_PTR(ret);
@@ -490,11 +417,7 @@ struct ib_cq *ib_cq_pool_get(struct ib_device *dev, unsigned int nr_cqe,
 }
 EXPORT_SYMBOL(ib_cq_pool_get);
 
-/**
- * ib_cq_pool_put - Return a CQ taken from a shared pool.
- * @cq: The CQ to return.
- * @nr_cqe: The max number of cqes that the user had requested.
- */
+ 
 void ib_cq_pool_put(struct ib_cq *cq, unsigned int nr_cqe)
 {
 	if (WARN_ON_ONCE(nr_cqe > cq->cqe_used))

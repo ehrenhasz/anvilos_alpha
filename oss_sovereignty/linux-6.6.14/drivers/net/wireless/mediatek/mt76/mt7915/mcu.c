@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/fs.h>
 #include "mt7915.h"
@@ -100,7 +100,7 @@ mt7915_mcu_set_sta_he_mcs(struct ieee80211_sta *sta, __le16 *he_mcs,
 		mcs_map &= ~(0x3 << (nss * 2));
 		mcs_map |= mcs << (nss * 2);
 
-		/* only support 2ss on 160MHz for mt7915 */
+		 
 		if (is_mt7915(&dev->mt76) && nss > 1 &&
 		    sta->deflink.bandwidth == IEEE80211_STA_RX_BW_160)
 			break;
@@ -136,7 +136,7 @@ mt7915_mcu_set_sta_vht_mcs(struct ieee80211_sta *sta, __le16 *vht_mcs,
 
 		vht_mcs[nss] = cpu_to_le16(mcs & mask[nss]);
 
-		/* only support 2ss on 160MHz for mt7915 */
+		 
 		if (is_mt7915(&dev->mt76) && nss > 1 &&
 		    sta->deflink.bandwidth == IEEE80211_STA_RX_BW_160)
 			break;
@@ -431,7 +431,7 @@ mt7915_mcu_add_nested_subtlv(struct sk_buff *skb, int sub_tag, int sub_len,
 	return ptlv;
 }
 
-/** bss info **/
+ 
 struct mt7915_he_obss_narrow_bw_ru_data {
 	bool tolerated;
 };
@@ -468,10 +468,7 @@ static bool mt7915_check_he_obss_narrow_bw_ru(struct ieee80211_hw *hw,
 			  mt7915_check_he_obss_narrow_bw_ru_iter,
 			  &iter_data);
 
-	/*
-	 * If there is at least one AP on radar channel that cannot
-	 * tolerate 26-tone RU UL OFDMA transmissions using HE TB PPDU.
-	 */
+	 
 	return !iter_data.tolerated;
 }
 
@@ -653,7 +650,7 @@ int mt7915_mcu_add_bss_info(struct mt7915_phy *phy,
 	if (IS_ERR(skb))
 		return PTR_ERR(skb);
 
-	/* bss_omac must be first */
+	 
 	if (enable)
 		mt76_connac_mcu_bss_omac_tlv(skb, vif);
 
@@ -681,7 +678,7 @@ out:
 				     MCU_EXT_CMD(BSS_INFO_UPDATE), true);
 }
 
-/** starec & wtbl **/
+ 
 int mt7915_mcu_add_tx_ba(struct mt7915_dev *dev,
 			 struct ieee80211_ampdu_params *params,
 			 bool enable)
@@ -1053,9 +1050,9 @@ static void
 mt7915_mcu_sta_sounding_rate(struct sta_rec_bf *bf)
 {
 	bf->sounding_phy = MT_PHY_TYPE_OFDM;
-	bf->ndp_rate = 0;				/* mcs0 */
-	bf->ndpa_rate = MT7915_CFEND_RATE_DEFAULT;	/* ofdm 24m */
-	bf->rept_poll_rate = MT7915_CFEND_RATE_DEFAULT;	/* ofdm 24m */
+	bf->ndp_rate = 0;				 
+	bf->ndpa_rate = MT7915_CFEND_RATE_DEFAULT;	 
+	bf->rept_poll_rate = MT7915_CFEND_RATE_DEFAULT;	 
 }
 
 static void
@@ -1152,7 +1149,7 @@ mt7915_mcu_sta_bfer_he(struct ieee80211_sta *sta, struct ieee80211_vif *vif,
 	if (sta->deflink.bandwidth != IEEE80211_STA_RX_BW_160)
 		return;
 
-	/* go over for 160MHz and 80p80 */
+	 
 	if (pe->phy_cap_info[0] &
 	    IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_160MHZ_IN_5G) {
 		mcs_map = le16_to_cpu(pc->he_mcs_nss_supp.rx_mcs_160);
@@ -1191,9 +1188,9 @@ mt7915_mcu_sta_bfer_tlv(struct mt7915_dev *dev, struct sk_buff *skb,
 	struct tlv *tlv;
 	const u8 matrix[4][4] = {
 		{0, 0, 0, 0},
-		{1, 1, 0, 0},	/* 2x1, 2x2, 2x3, 2x4 */
-		{2, 4, 4, 0},	/* 3x1, 3x2, 3x3, 3x4 */
-		{3, 5, 6, 0}	/* 4x1, 4x2, 4x3, 4x4 */
+		{1, 1, 0, 0},	 
+		{2, 4, 4, 0},	 
+		{3, 5, 6, 0}	 
 	};
 	bool ebf;
 
@@ -1207,10 +1204,7 @@ mt7915_mcu_sta_bfer_tlv(struct mt7915_dev *dev, struct sk_buff *skb,
 	tlv = mt76_connac_mcu_add_tlv(skb, STA_REC_BF, sizeof(*bf));
 	bf = (struct sta_rec_bf *)tlv;
 
-	/* he: eBF only, in accordance with spec
-	 * vht: support eBF and iBF
-	 * ht: iBF only, since mac80211 lacks of eBF support
-	 */
+	 
 	if (sta->deflink.he_cap.has_he && ebf)
 		mt7915_mcu_sta_bfer_he(sta, vif, phy, bf);
 	else if (sta->deflink.vht_cap.vht_supported)
@@ -1281,7 +1275,7 @@ mt7915_mcu_sta_bfee_tlv(struct mt7915_dev *dev, struct sk_buff *skb,
 				 pc->cap);
 	}
 
-	/* reply with identity matrix to avoid 2x2 BF negative gain */
+	 
 	bfee->fb_identity_matrix = (nrow == 1 && tx_ant == 2);
 }
 
@@ -1432,14 +1426,14 @@ mt7915_mcu_add_rate_ctrl_fixed(struct mt7915_dev *dev,
 	}
 #undef __sta_phy_bitrate_mask_check
 
-	/* fall back to auto rate control */
+	 
 	if (mask->control[band].gi == NL80211_TXRATE_DEFAULT_GI &&
 	    mask->control[band].he_gi == GENMASK(7, 0) &&
 	    mask->control[band].he_ltf == GENMASK(7, 0) &&
 	    nrates != 1)
 		return 0;
 
-	/* fixed single rate */
+	 
 	if (nrates == 1) {
 		ret = mt7915_mcu_set_fixed_rate_ctrl(dev, vif, sta, &phy,
 						     RATE_PARAM_FIXED_MCS);
@@ -1447,16 +1441,13 @@ mt7915_mcu_add_rate_ctrl_fixed(struct mt7915_dev *dev,
 			return ret;
 	}
 
-	/* fixed GI */
+	 
 	if (mask->control[band].gi != NL80211_TXRATE_DEFAULT_GI ||
 	    mask->control[band].he_gi != GENMASK(7, 0)) {
 		struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
 		u32 addr;
 
-		/* firmware updates only TXCMD but doesn't take WTBL into
-		 * account, so driver should update here to reflect the
-		 * actual txrate hardware sends out.
-		 */
+		 
 		addr = mt7915_mac_wtbl_lmac_addr(dev, msta->wcid.idx, 7);
 		if (sta->deflink.he_cap.has_he)
 			mt76_rmw_field(dev, addr, GENMASK(31, 24), phy.sgi);
@@ -1469,7 +1460,7 @@ mt7915_mcu_add_rate_ctrl_fixed(struct mt7915_dev *dev,
 			return ret;
 	}
 
-	/* fixed HE_LTF */
+	 
 	if (mask->control[band].he_ltf != GENMASK(7, 0)) {
 		ret = mt7915_mcu_set_fixed_rate_ctrl(dev, vif, sta, &phy,
 						     RATE_PARAM_FIXED_HE_LTF);
@@ -1596,16 +1587,11 @@ int mt7915_mcu_add_rate_ctrl(struct mt7915_dev *dev, struct ieee80211_vif *vif,
 	if (IS_ERR(skb))
 		return PTR_ERR(skb);
 
-	/* firmware rc algorithm refers to sta_rec_he for HE control.
-	 * once dev->rc_work changes the settings driver should also
-	 * update sta_rec_he here.
-	 */
+	 
 	if (changed)
 		mt7915_mcu_sta_he_tlv(skb, sta, vif);
 
-	/* sta_rec_ra accommodates BW, NSS and only MCS range format
-	 * i.e 0-{7,8,9} for VHT.
-	 */
+	 
 	mt7915_mcu_sta_rate_ctrl_tlv(skb, dev, vif, sta);
 
 	ret = mt76_mcu_skb_send_msg(&dev->mt76, skb,
@@ -1613,10 +1599,7 @@ int mt7915_mcu_add_rate_ctrl(struct mt7915_dev *dev, struct ieee80211_vif *vif,
 	if (ret)
 		return ret;
 
-	/* sta_rec_ra_fixed accommodates single rate, (HE)GI and HE_LTE,
-	 * and updates as peer fixed rate parameters, which overrides
-	 * sta_rec_ra and firmware rate control algorithm.
-	 */
+	 
 	return mt7915_mcu_add_rate_ctrl_fixed(dev, vif, sta);
 }
 
@@ -1663,21 +1646,21 @@ int mt7915_mcu_add_sta(struct mt7915_dev *dev, struct ieee80211_vif *vif,
 	if (IS_ERR(skb))
 		return PTR_ERR(skb);
 
-	/* starec basic */
+	 
 	mt76_connac_mcu_sta_basic_tlv(&dev->mt76, skb, vif, sta, enable,
 				      !rcu_access_pointer(dev->mt76.wcid[msta->wcid.idx]));
 	if (!enable)
 		goto out;
 
-	/* tag order is in accordance with firmware dependency. */
+	 
 	if (sta) {
-		/* starec bfer */
+		 
 		mt7915_mcu_sta_bfer_tlv(dev, skb, vif, sta);
-		/* starec ht */
+		 
 		mt7915_mcu_sta_ht_tlv(skb, sta);
-		/* starec vht */
+		 
 		mt7915_mcu_sta_vht_tlv(skb, sta);
-		/* starec uapsd */
+		 
 		mt76_connac_mcu_sta_uapsd(skb, vif, sta);
 	}
 
@@ -1688,13 +1671,13 @@ int mt7915_mcu_add_sta(struct mt7915_dev *dev, struct ieee80211_vif *vif,
 	}
 
 	if (sta) {
-		/* starec amsdu */
+		 
 		mt7915_mcu_sta_amsdu_tlv(dev, skb, vif, sta);
-		/* starec he */
+		 
 		mt7915_mcu_sta_he_tlv(skb, sta, vif);
-		/* starec muru */
+		 
 		mt7915_mcu_sta_muru_tlv(dev, skb, sta, vif);
-		/* starec bfee */
+		 
 		mt7915_mcu_sta_bfee_tlv(dev, skb, vif, sta);
 	}
 
@@ -1825,11 +1808,9 @@ mt7915_mcu_beacon_mbss(struct sk_buff *rskb, struct sk_buff *skb,
 			const u8 *idx_ie;
 
 			if (sub_elem->id || sub_elem->datalen < 4)
-				continue; /* not a valid BSS profile */
+				continue;  
 
-			/* Find WLAN_EID_MULTI_BSSID_IDX
-			 * in the merged nontransmitted profile
-			 */
+			 
 			idx_ie = cfg80211_find_ie(WLAN_EID_MULTI_BSSID_IDX,
 						  sub_elem->data,
 						  sub_elem->datalen);
@@ -1949,7 +1930,7 @@ mt7915_mcu_add_inband_discov(struct mt7915_dev *dev, struct ieee80211_vif *vif,
 					       len, &bcn->sub_ntlv, &bcn->len);
 	discov = (struct bss_info_inband_discovery *)sub_tlv;
 	discov->tx_mode = OFFLOAD_TX_MODE_SU;
-	/* 0: UNSOL PROBE RESP, 1: FILS DISCOV */
+	 
 	discov->tx_type = !!(changed & BSS_CHANGED_FILS_DISCOVERY);
 	discov->tx_interval = interval;
 	discov->prob_rsp_len = cpu_to_le16(MT_TXD_SIZE + skb->len);
@@ -2031,7 +2012,7 @@ static int mt7915_driver_own(struct mt7915_dev *dev, u8 band)
 		return -EIO;
 	}
 
-	/* clear irq when the driver own success */
+	 
 	mt76_wr(dev, MT_TOP_LPCR_HOST_BAND_IRQ_STAT(band),
 		MT_TOP_LPCR_HOST_BAND_STAT);
 
@@ -2056,9 +2037,9 @@ static int mt7915_load_firmware(struct mt7915_dev *dev)
 {
 	int ret;
 
-	/* make sure fw is download state */
+	 
 	if (mt7915_firmware_state(dev, false)) {
-		/* restart firmware once */
+		 
 		mt76_connac_mcu_restart(&dev->mt76);
 		ret = mt7915_firmware_state(dev, false);
 		if (ret) {
@@ -2159,7 +2140,7 @@ int mt7915_mcu_muru_debug_get(struct mt7915_phy *phy)
 
 	mu_stats = (struct mt7915_mcu_muru_stats *)(skb->data);
 
-	/* accumulate stats, these are clear-on-read */
+	 
 #define __dl_u32(s)	 phy->mib.dl_##s += le32_to_cpu(mu_stats->dl.s)
 #define __ul_u32(s)	 phy->mib.ul_##s += le32_to_cpu(mu_stats->ul.s)
 	__dl_u32(cck_cnt);
@@ -2319,15 +2300,13 @@ int mt7915_mcu_init_firmware(struct mt7915_dev *dev)
 {
 	int ret;
 
-	/* force firmware operation mode into normal state,
-	 * which should be set before firmware download stage.
-	 */
+	 
 	mt76_wr(dev, MT_SWDEF_MODE, MT_SWDEF_NORMAL_MODE);
 
 	ret = mt7915_driver_own(dev, 0);
 	if (ret)
 		return ret;
-	/* set driver own for band1 when two hif exist */
+	 
 	if (dev->hif2) {
 		ret = mt7915_driver_own(dev, 1);
 		if (ret)
@@ -2521,13 +2500,13 @@ int mt7915_mcu_set_pulse_th(struct mt7915_dev *dev,
 	struct {
 		__le32 tag;
 
-		__le32 max_width;		/* us */
-		__le32 max_pwr;			/* dbm */
-		__le32 min_pwr;			/* dbm */
-		__le32 min_stgr_pri;		/* us */
-		__le32 max_stgr_pri;		/* us */
-		__le32 min_cr_pri;		/* us */
-		__le32 max_cr_pri;		/* us */
+		__le32 max_width;		 
+		__le32 max_pwr;			 
+		__le32 min_pwr;			 
+		__le32 min_stgr_pri;		 
+		__le32 max_stgr_pri;		 
+		__le32 min_cr_pri;		 
+		__le32 max_cr_pri;		 
 	} __packed req = {
 		.tag = cpu_to_le32(0x3),
 
@@ -2608,7 +2587,7 @@ mt7915_mcu_background_chain_ctrl(struct mt7915_phy *phy,
 	struct ieee80211_channel *chan = mphy->chandef.chan;
 	int freq = mphy->chandef.center_freq1;
 	struct mt7915_mcu_background_chain_ctrl req = {
-		.monitor_scan_type = 2, /* simple rx */
+		.monitor_scan_type = 2,  
 	};
 
 	if (!chandef && cmd != CH_SWITCH_BACKGROUND_SCAN_STOP)
@@ -2659,7 +2638,7 @@ int mt7915_mcu_rdd_background_enable(struct mt7915_phy *phy,
 	struct mt7915_dev *dev = phy->dev;
 	int err, region;
 
-	if (!chandef) { /* disable offchain */
+	if (!chandef) {  
 		err = mt76_connac_mcu_rdd_cmd(&dev->mt76, RDD_STOP, MT_RX_SEL2,
 					      0, 0);
 		if (err)
@@ -2707,10 +2686,10 @@ int mt7915_mcu_set_chan_info(struct mt7915_phy *phy, int cmd)
 		u8 center_ch;
 		u8 bw;
 		u8 tx_path_num;
-		u8 rx_path;	/* mask or num */
+		u8 rx_path;	 
 		u8 switch_reason;
 		u8 band_idx;
-		u8 center_ch2;	/* for 80+80 only */
+		u8 center_ch2;	 
 		__le16 cac_case;
 		u8 channel_band;
 		u8 rsv0;
@@ -2905,10 +2884,7 @@ int mt7915_mcu_apply_group_cal(struct mt7915_dev *dev)
 	if (!(eep[MT_EE_DO_PRE_CAL] & MT_EE_WIFI_CAL_GROUP))
 		return 0;
 
-	/*
-	 * Items: Rx DCOC, RSSI DCOC, Tx TSSI DCOC, Tx LPFG
-	 * Tx FDIQ, Tx DCIQ, Rx FDIQ, Rx FIIQ, ADCDCOC
-	 */
+	 
 	while (total > 0) {
 		int ret, len;
 
@@ -2993,7 +2969,7 @@ int mt7915_mcu_apply_tx_dpd(struct mt7915_phy *phy)
 	if (idx < 0)
 		return -EINVAL;
 
-	/* Items: Tx DPD, Tx Flatness */
+	 
 	idx = idx * 2;
 	cal += MT_EE_CAL_GROUP_SIZE;
 
@@ -3023,7 +2999,7 @@ int mt7915_mcu_get_chan_mib_info(struct mt7915_phy *phy, bool chan_switch)
 	int i, ret, len, offs_cc;
 	u64 cc_tx;
 
-	/* strict order */
+	 
 	if (is_mt7915(&dev->mt76)) {
 		static const u32 chip_offs[] = {
 			MIB_NON_WIFI_TIME,
@@ -3060,7 +3036,7 @@ int mt7915_mcu_get_chan_mib_info(struct mt7915_phy *phy, bool chan_switch)
 	res = (struct mt7915_mcu_mib *)(skb->data + offs_cc);
 
 #define __res_u64(s) le64_to_cpu(res[s].data)
-	/* subtract Tx backoff time from Tx duration */
+	 
 	cc_tx = is_mt7915(&dev->mt76) ? __res_u64(1) - __res_u64(4) : __res_u64(1);
 
 	if (chan_switch)
@@ -3110,7 +3086,7 @@ int mt7915_mcu_set_thermal_throttling(struct mt7915_phy *phy, u8 state)
 	};
 	int level, ret;
 
-	/* set duty cycle and level */
+	 
 	for (level = 0; level < 4; level++) {
 		req.duty.duty_level = level;
 		req.duty.duty_cycle = state;
@@ -3150,9 +3126,9 @@ int mt7915_mcu_set_thermal_protect(struct mt7915_phy *phy)
 	if (ret)
 		return ret;
 
-	/* set high-temperature trigger threshold */
+	 
 	req.ctrl.ctrl_id = THERMAL_PROTECT_ENABLE;
-	/* add a safety margin ~10 */
+	 
 	req.restore_temp = cpu_to_le32(phy->throttle_temp[0] - 10);
 	req.trigger_temp = cpu_to_le32(phy->throttle_temp[1]);
 	req.sustain_time = cpu_to_le16(10);
@@ -3172,7 +3148,7 @@ int mt7915_mcu_set_txpower_frame_min(struct mt7915_phy *phy, s8 txpower)
 	} __packed req = {
 		.format_id = TX_POWER_LIMIT_FRAME_MIN,
 		.band_idx = phy->mt76->band_idx,
-		.txpower_min = txpower * 2, /* 0.5db */
+		.txpower_min = txpower * 2,  
 	};
 
 	return mt76_mcu_send_msg(&dev->mt76,
@@ -3388,7 +3364,7 @@ int mt7915_mcu_set_txbf(struct mt7915_dev *dev, u8 action)
 				u8 sta_num;
 				u8 rsv;
 				u8 wlan_idx[4];
-				__le32 snd_period;	/* ms */
+				__le32 snd_period;	 
 			} __packed snd;
 			struct {
 				bool ebf;
@@ -3471,7 +3447,7 @@ mt7915_mcu_set_obss_spr_pd(struct mt7915_phy *phy,
 	int ret;
 	u8 max_th = 82, non_srg_max_th = 62;
 
-	/* disable firmware dynamical PD asjustment */
+	 
 	ret = mt7915_mcu_enable_obss_spr(phy, SPR_ENABLE_DPD, false);
 	if (ret)
 		return ret;
@@ -3527,7 +3503,7 @@ mt7915_mcu_set_obss_spr_siga(struct mt7915_phy *phy, struct ieee80211_vif *vif,
 	else
 		return 0;
 
-	/* switch to normal AP mode */
+	 
 	ret = mt7915_mcu_enable_obss_spr(phy, SPR_ENABLE_MODE, 0);
 	if (ret)
 		return ret;
@@ -3579,16 +3555,16 @@ int mt7915_mcu_add_obss_spr(struct mt7915_phy *phy, struct ieee80211_vif *vif,
 {
 	int ret;
 
-	/* enable firmware scene detection algorithms */
+	 
 	ret = mt7915_mcu_enable_obss_spr(phy, SPR_ENABLE_SD, sr_scene_detect);
 	if (ret)
 		return ret;
 
-	/* firmware dynamically adjusts PD threshold so skip manual control */
+	 
 	if (sr_scene_detect && !he_obss_pd->enable)
 		return 0;
 
-	/* enable spatial reuse */
+	 
 	ret = mt7915_mcu_enable_obss_spr(phy, SPR_ENABLE, he_obss_pd->enable);
 	if (ret)
 		return ret;
@@ -3600,17 +3576,17 @@ int mt7915_mcu_add_obss_spr(struct mt7915_phy *phy, struct ieee80211_vif *vif,
 	if (ret)
 		return ret;
 
-	/* set SRG/non-SRG OBSS PD threshold */
+	 
 	ret = mt7915_mcu_set_obss_spr_pd(phy, he_obss_pd);
 	if (ret)
 		return ret;
 
-	/* Set SR prohibit */
+	 
 	ret = mt7915_mcu_set_obss_spr_siga(phy, vif, he_obss_pd);
 	if (ret)
 		return ret;
 
-	/* set SRG BSS color/BSSID bitmap */
+	 
 	return mt7915_mcu_set_obss_spr_bitmap(phy, he_obss_pd);
 }
 
@@ -3756,11 +3732,9 @@ int mt7915_mcu_twt_agrt_update(struct mt7915_dev *dev,
 		u8 tbl_idx;
 		u8 cmd;
 		u8 own_mac_idx;
-		u8 flowid; /* 0xff for group id */
-		__le16 peer_id; /* specify the peer_id (msb=0)
-				 * or group_id (msb=1)
-				 */
-		u8 duration; /* 256 us */
+		u8 flowid;  
+		__le16 peer_id;  
+		u8 duration;  
 		u8 bss_idx;
 		__le64 start_tsf;
 		__le16 mantissa;
@@ -3809,9 +3783,7 @@ int mt7915_mcu_wed_wa_tx_stats(struct mt7915_dev *dev, u16 wlan_idx)
 		__le16 wlan_idx;
 		u8 __rsv[2];
 
-		/* tx_bytes is deprecated since WA byte counter uses u32,
-		 * which easily leads to overflow.
-		 */
+		 
 		__le32 tx_bytes;
 		__le32 tx_packets;
 	} *res;

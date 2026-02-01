@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Red Hat, Inc.
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * Command line processing and common functions for ring benchmarking.
- */
+
+ 
 #define _GNU_SOURCE
 #include <getopt.h>
 #include <pthread.h>
@@ -135,7 +130,7 @@ static void __attribute__((__flatten__)) run_guest(void)
 			} else
 				r = -1;
 
-			/* Flush out completed bufs if any */
+			 
 			if (get_buf(&len, &buf)) {
 				++completed;
 				if (__builtin_expect(completed == bufs, false))
@@ -363,7 +358,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* does nothing here, used to make sure all smp APIs compile */
+	 
 	smp_acquire();
 	smp_release();
 	smp_mb();

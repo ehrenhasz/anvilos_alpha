@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT76_CONNAC_H
 #define __MT76_CONNAC_H
@@ -275,7 +275,7 @@ static inline u8 mt76_connac_chan_bw(struct cfg80211_chan_def *chandef)
 
 static inline u8 mt76_connac_lmac_mapping(u8 ac)
 {
-	/* LMAC uses the reverse order of mac80211 AC indexes */
+	 
 	return 3 - ac;
 }
 
@@ -425,7 +425,7 @@ void mt76_connac2_txwi_free(struct mt76_dev *dev, struct mt76_txwi_cache *t,
 			    struct list_head *free_list);
 void mt76_connac2_tx_token_put(struct mt76_dev *dev);
 
-/* connac3 */
+ 
 void mt76_connac3_mac_decode_he_radiotap(struct sk_buff *skb, __le32 *rxv,
 					 u8 mode);
-#endif /* __MT76_CONNAC_H */
+#endif  

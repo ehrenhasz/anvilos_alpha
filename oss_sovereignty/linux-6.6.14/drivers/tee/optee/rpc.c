@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, Linaro Limited
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -169,7 +167,7 @@ static void handle_rpc_func_cmd_wait(struct optee_msg_arg *arg)
 
 	msec_to_wait = arg->params[0].u.value.a;
 
-	/* Go to interruptible sleep */
+	 
 	msleep_interruptible(msec_to_wait);
 
 	arg->ret = TEEC_SUCCESS;
@@ -224,7 +222,7 @@ struct tee_shm *optee_rpc_cmd_alloc_suppl(struct tee_context *ctx, size_t sz)
 		return ERR_PTR(-ENOMEM);
 
 	mutex_lock(&optee->supp.mutex);
-	/* Increases count as secure world doesn't have a reference */
+	 
 	shm = tee_shm_get_from_id(optee->supp.ctx, param.u.value.c);
 	mutex_unlock(&optee->supp.mutex);
 	return shm;
@@ -239,17 +237,7 @@ void optee_rpc_cmd_free_suppl(struct tee_context *ctx, struct tee_shm *shm)
 	param.u.value.b = tee_shm_get_id(shm);
 	param.u.value.c = 0;
 
-	/*
-	 * Match the tee_shm_get_from_id() in cmd_alloc_suppl() as secure
-	 * world has released its reference.
-	 *
-	 * It's better to do this before sending the request to supplicant
-	 * as we'd like to let the process doing the initial allocation to
-	 * do release the last reference too in order to avoid stacking
-	 * many pending fput() on the client process. This could otherwise
-	 * happen if secure world does many allocate and free in a single
-	 * invoke.
-	 */
+	 
 	tee_shm_put(shm);
 
 	optee_supp_thrd_req(ctx, OPTEE_RPC_CMD_SHM_FREE, 1, &param);

@@ -1,39 +1,26 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Renesas R-Car SRC support
-//
-// Copyright (C) 2013 Renesas Solutions Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-/*
- * You can use Synchronous Sampling Rate Convert (if no DVC)
- *
- *	amixer set "SRC Out Rate" on
- *	aplay xxx.wav &
- *	amixer set "SRC Out Rate" 96000 // convert rate to 96000Hz
- *	amixer set "SRC Out Rate" 22050 // convert rate to 22050Hz
- */
 
-/*
- * you can enable below define if you don't need
- * SSI interrupt status debug message when debugging
- * see rsnd_print_irq_status()
- *
- * #define RSND_DEBUG_NO_IRQ_STATUS 1
- */
+
+
+
+
+
+ 
+
+ 
 
 #include "rsnd.h"
 
 #define SRC_NAME "src"
 
-/* SCU_SYSTEM_STATUS0/1 */
+ 
 #define OUF_SRC(id)	((1 << (id + 16)) | (1 << id))
 
 struct rsnd_src {
 	struct rsnd_mod mod;
 	struct rsnd_mod *dma;
-	struct rsnd_kctrl_cfg_s sen;  /* sync convert enable */
-	struct rsnd_kctrl_cfg_s sync; /* sync convert */
+	struct rsnd_kctrl_cfg_s sen;   
+	struct rsnd_kctrl_cfg_s sync;  
 	int irq;
 };
 
@@ -53,15 +40,7 @@ struct rsnd_src {
 	     i++)
 
 
-/*
- *		image of SRC (Sampling Rate Converter)
- *
- * 96kHz   <-> +-----+	48kHz	+-----+	 48kHz	+-------+
- * 48kHz   <-> | SRC | <------>	| SSI |	<----->	| codec |
- * 44.1kHz <-> +-----+		+-----+		+-------+
- * ...
- *
- */
+ 
 
 static void rsnd_src_activation(struct rsnd_mod *mod)
 {
@@ -119,21 +98,12 @@ unsigned int rsnd_src_get_rate(struct rsnd_priv *priv,
 	unsigned int rate = 0;
 	int is_play = rsnd_io_is_play(io);
 
-	/*
-	 * Playback
-	 * runtime_rate -> [SRC] -> convert_rate
-	 *
-	 * Capture
-	 * convert_rate -> [SRC] -> runtime_rate
-	 */
+	 
 
 	if (is_play == is_in)
 		return runtime->rate;
 
-	/*
-	 * return convert rate if SRC is used,
-	 * otherwise, return runtime->rate as usual
-	 */
+	 
 	if (src_mod)
 		rate = rsnd_src_convert_rate(io, src_mod);
 
@@ -144,57 +114,57 @@ unsigned int rsnd_src_get_rate(struct rsnd_priv *priv,
 }
 
 static const u32 bsdsr_table_pattern1[] = {
-	0x01800000, /* 6 - 1/6 */
-	0x01000000, /* 6 - 1/4 */
-	0x00c00000, /* 6 - 1/3 */
-	0x00800000, /* 6 - 1/2 */
-	0x00600000, /* 6 - 2/3 */
-	0x00400000, /* 6 - 1   */
+	0x01800000,  
+	0x01000000,  
+	0x00c00000,  
+	0x00800000,  
+	0x00600000,  
+	0x00400000,  
 };
 
 static const u32 bsdsr_table_pattern2[] = {
-	0x02400000, /* 6 - 1/6 */
-	0x01800000, /* 6 - 1/4 */
-	0x01200000, /* 6 - 1/3 */
-	0x00c00000, /* 6 - 1/2 */
-	0x00900000, /* 6 - 2/3 */
-	0x00600000, /* 6 - 1   */
+	0x02400000,  
+	0x01800000,  
+	0x01200000,  
+	0x00c00000,  
+	0x00900000,  
+	0x00600000,  
 };
 
 static const u32 bsisr_table[] = {
-	0x00100060, /* 6 - 1/6 */
-	0x00100040, /* 6 - 1/4 */
-	0x00100030, /* 6 - 1/3 */
-	0x00100020, /* 6 - 1/2 */
-	0x00100020, /* 6 - 2/3 */
-	0x00100020, /* 6 - 1   */
+	0x00100060,  
+	0x00100040,  
+	0x00100030,  
+	0x00100020,  
+	0x00100020,  
+	0x00100020,  
 };
 
 static const u32 chan288888[] = {
-	0x00000006, /* 1 to 2 */
-	0x000001fe, /* 1 to 8 */
-	0x000001fe, /* 1 to 8 */
-	0x000001fe, /* 1 to 8 */
-	0x000001fe, /* 1 to 8 */
-	0x000001fe, /* 1 to 8 */
+	0x00000006,  
+	0x000001fe,  
+	0x000001fe,  
+	0x000001fe,  
+	0x000001fe,  
+	0x000001fe,  
 };
 
 static const u32 chan244888[] = {
-	0x00000006, /* 1 to 2 */
-	0x0000001e, /* 1 to 4 */
-	0x0000001e, /* 1 to 4 */
-	0x000001fe, /* 1 to 8 */
-	0x000001fe, /* 1 to 8 */
-	0x000001fe, /* 1 to 8 */
+	0x00000006,  
+	0x0000001e,  
+	0x0000001e,  
+	0x000001fe,  
+	0x000001fe,  
+	0x000001fe,  
 };
 
 static const u32 chan222222[] = {
-	0x00000006, /* 1 to 2 */
-	0x00000006, /* 1 to 2 */
-	0x00000006, /* 1 to 2 */
-	0x00000006, /* 1 to 2 */
-	0x00000006, /* 1 to 2 */
-	0x00000006, /* 1 to 2 */
+	0x00000006,  
+	0x00000006,  
+	0x00000006,  
+	0x00000006,  
+	0x00000006,  
+	0x00000006,  
 };
 
 static void rsnd_src_set_convert_rate(struct rsnd_dai_stream *io,
@@ -223,7 +193,7 @@ static void rsnd_src_set_convert_rate(struct rsnd_dai_stream *io,
 
 	chan = rsnd_runtime_channel_original(io);
 
-	/* 6 - 1/6 are very enough ratio for SRC_BSDSR */
+	 
 	if (fin == fout)
 		ratio = 0;
 	else if (fin > fout)
@@ -238,14 +208,10 @@ static void rsnd_src_set_convert_rate(struct rsnd_dai_stream *io,
 
 	use_src = (fin != fout) | rsnd_src_sync_is_enabled(mod);
 
-	/*
-	 * SRC_ADINR
-	 */
+	 
 	adinr = rsnd_get_adinr_bit(mod, io) | chan;
 
-	/*
-	 * SRC_IFSCR / SRC_IFSVR
-	 */
+	 
 	ifscr = 0;
 	fsrate = 0;
 	if (use_src) {
@@ -257,9 +223,7 @@ static void rsnd_src_set_convert_rate(struct rsnd_dai_stream *io,
 		fsrate = n;
 	}
 
-	/*
-	 * SRC_SRCCR / SRC_ROUTE_MODE0
-	 */
+	 
 	cr	= 0x00011110;
 	route	= 0x0;
 	if (use_src) {
@@ -272,13 +236,7 @@ static void rsnd_src_set_convert_rate(struct rsnd_dai_stream *io,
 		}
 	}
 
-	/*
-	 * SRC_BSDSR / SRC_BSISR
-	 *
-	 * see
-	 *	Combination of Register Setting Related to
-	 *	FSO/FSI Ratio and Channel, Latency
-	 */
+	 
 	switch (rsnd_mod_id(mod)) {
 	case 0:
 		chptn		= chan288888;
@@ -306,9 +264,7 @@ static void rsnd_src_set_convert_rate(struct rsnd_dai_stream *io,
 		goto convert_rate_err;
 	}
 
-	/*
-	 * E3 need to overwrite
-	 */
+	 
 	if (rsnd_is_e3(priv))
 		switch (rsnd_mod_id(mod)) {
 		case 0:
@@ -324,21 +280,21 @@ static void rsnd_src_set_convert_rate(struct rsnd_dai_stream *io,
 	    idx >= ARRAY_SIZE(chan222222))
 		goto convert_rate_err;
 
-	/* BUSIF_MODE */
+	 
 	tmp = rsnd_get_busif_shift(io, mod);
 	i_busif = ( is_play ? tmp : 0) | 1;
 	o_busif = (!is_play ? tmp : 0) | 1;
 
 	rsnd_mod_write(mod, SRC_ROUTE_MODE0, route);
 
-	rsnd_mod_write(mod, SRC_SRCIR, 1);	/* initialize */
+	rsnd_mod_write(mod, SRC_SRCIR, 1);	 
 	rsnd_mod_write(mod, SRC_ADINR, adinr);
 	rsnd_mod_write(mod, SRC_IFSCR, ifscr);
 	rsnd_mod_write(mod, SRC_IFSVR, fsrate);
 	rsnd_mod_write(mod, SRC_SRCCR, cr);
 	rsnd_mod_write(mod, SRC_BSDSR, bsdsr_table[idx]);
 	rsnd_mod_write(mod, SRC_BSISR, bsisr_table[idx]);
-	rsnd_mod_write(mod, SRC_SRCIR, 0);	/* cancel initialize */
+	rsnd_mod_write(mod, SRC_SRCIR, 0);	 
 
 	rsnd_mod_write(mod, SRC_I_BUSIF_MODE, i_busif);
 	rsnd_mod_write(mod, SRC_O_BUSIF_MODE, o_busif);
@@ -367,21 +323,13 @@ static int rsnd_src_irq(struct rsnd_mod *mod,
 	sys_int_mask = OUF_SRC(id);
 	int_val = 0x3300;
 
-	/*
-	 * IRQ is not supported on non-DT
-	 * see
-	 *	rsnd_src_probe_()
-	 */
+	 
 	if ((irq <= 0) || !enable) {
 		sys_int_val = 0;
 		int_val = 0;
 	}
 
-	/*
-	 * WORKAROUND
-	 *
-	 * ignore over flow error when rsnd_src_sync_is_enabled()
-	 */
+	 
 	if (rsnd_src_sync_is_enabled(mod))
 		sys_int_val = sys_int_val & 0xffff;
 
@@ -410,11 +358,7 @@ static bool rsnd_src_error_occurred(struct rsnd_mod *mod)
 
 	val0 = val1 = OUF_SRC(rsnd_mod_id(mod));
 
-	/*
-	 * WORKAROUND
-	 *
-	 * ignore over flow error when rsnd_src_sync_is_enabled()
-	 */
+	 
 	if (rsnd_src_sync_is_enabled(mod))
 		val0 = val0 & 0xffff;
 
@@ -436,11 +380,7 @@ static int rsnd_src_start(struct rsnd_mod *mod,
 {
 	u32 val;
 
-	/*
-	 * WORKAROUND
-	 *
-	 * Enable SRC output if you want to use sync convert together with DVC
-	 */
+	 
 	val = (rsnd_io_to_mod_dvc(io) && !rsnd_src_sync_is_enabled(mod)) ?
 		0x01 : 0x11;
 
@@ -465,7 +405,7 @@ static int rsnd_src_init(struct rsnd_mod *mod,
 	struct rsnd_src *src = rsnd_mod_to_src(mod);
 	int ret;
 
-	/* reset sync convert_rate */
+	 
 	src->sync.val = 0;
 
 	ret = rsnd_mod_power_on(mod);
@@ -491,7 +431,7 @@ static int rsnd_src_quit(struct rsnd_mod *mod,
 
 	rsnd_mod_power_off(mod);
 
-	/* reset sync convert_rate */
+	 
 	src->sync.val = 0;
 
 	return 0;
@@ -505,7 +445,7 @@ static void __rsnd_src_interrupt(struct rsnd_mod *mod,
 
 	spin_lock(&priv->lock);
 
-	/* ignore all cases if not working */
+	 
 	if (!rsnd_io_is_working(io))
 		goto rsnd_src_interrupt_out;
 
@@ -540,11 +480,7 @@ static int rsnd_src_probe_(struct rsnd_mod *mod,
 	int ret;
 
 	if (irq > 0) {
-		/*
-		 * IRQ is not supported on non-DT
-		 * see
-		 *	rsnd_src_irq()
-		 */
+		 
 		ret = devm_request_irq(dev, irq,
 				       rsnd_src_interrupt,
 				       IRQF_SHARED,
@@ -565,20 +501,13 @@ static int rsnd_src_pcm_new(struct rsnd_mod *mod,
 	struct rsnd_src *src = rsnd_mod_to_src(mod);
 	int ret;
 
-	/*
-	 * enable SRC sync convert if possible
-	 */
+	 
 
-	/*
-	 * It can't use SRC Synchronous convert
-	 * when Capture if it uses CMD
-	 */
+	 
 	if (rsnd_io_to_mod_cmd(io) && !rsnd_io_is_play(io))
 		return 0;
 
-	/*
-	 * enable sync convert
-	 */
+	 
 	ret = rsnd_kctrl_new_s(mod, io, rtd,
 			       rsnd_io_is_play(io) ?
 			       "SRC Out Rate Switch" :
@@ -651,13 +580,13 @@ int rsnd_src_probe(struct rsnd_priv *priv)
 	char name[RSND_SRC_NAME_SIZE];
 	int i, nr, ret;
 
-	/* This driver doesn't support Gen1 at this point */
+	 
 	if (rsnd_is_gen1(priv))
 		return 0;
 
 	node = rsnd_src_of_node(priv);
 	if (!node)
-		return 0; /* not used is not error */
+		return 0;  
 
 	nr = rsnd_node_count(priv, node, SRC_NAME);
 	if (!nr) {

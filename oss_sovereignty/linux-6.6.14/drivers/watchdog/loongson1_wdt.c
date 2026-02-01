@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Yang Ling <gnaygnil@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -10,7 +8,7 @@
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
 
-/* Loongson 1 Watchdog Register Definitions */
+ 
 #define WDT_EN			0x0
 #define WDT_TIMER		0x4
 #define WDT_SET			0x8
@@ -150,7 +148,7 @@ static int ls1x_wdt_probe(struct platform_device *pdev)
 static const struct of_device_id ls1x_wdt_dt_ids[] = {
 	{ .compatible = "loongson,ls1b-wdt", },
 	{ .compatible = "loongson,ls1c-wdt", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ls1x_wdt_dt_ids);
 #endif

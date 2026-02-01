@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rfd77402.c - Support for RF Digital RFD77402 Time-of-Flight (distance) sensor
- *
- * Copyright 2017 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
- *
- * 7-bit I2C slave address 0x4c
- *
- * TODO: interrupt
- * https://media.digikey.com/pdf/Data%20Sheets/RF%20Digital%20PDFs/RFD77402.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -18,7 +9,7 @@
 
 #define RFD77402_DRV_NAME "rfd77402"
 
-#define RFD77402_ICSR		0x00 /* Interrupt Control Status Register */
+#define RFD77402_ICSR		0x00  
 #define RFD77402_ICSR_INT_MODE	BIT(2)
 #define RFD77402_ICSR_INT_POL	BIT(3)
 #define RFD77402_ICSR_RESULT	BIT(4)
@@ -63,7 +54,7 @@
 
 #define RFD77402_MOD_CHIP_ID	0x28
 
-/* magic configuration values from datasheet */
+ 
 static const struct {
 	u8 reg;
 	u16 val;
@@ -78,7 +69,7 @@ static const struct {
 
 struct rfd77402_data {
 	struct i2c_client *client;
-	/* Serialize reads from the sensor */
+	 
 	struct mutex lock;
 };
 
@@ -175,7 +166,7 @@ static int rfd77402_read_raw(struct iio_dev *indio_dev,
 		*val = ret;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* 1 LSB is 1 mm */
+		 
 		*val = 0;
 		*val2 = 1000;
 		return IIO_VAL_INT_PLUS_MICRO;
@@ -197,13 +188,13 @@ static int rfd77402_init(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* configure INT pad as push-pull, active low */
+	 
 	ret = i2c_smbus_write_byte_data(client, RFD77402_ICSR,
 					RFD77402_ICSR_INT_MODE);
 	if (ret < 0)
 		return ret;
 
-	/* I2C configuration */
+	 
 	ret = i2c_smbus_write_word_data(client, RFD77402_I2C_INIT_CFG,
 					RFD77402_I2C_ADDR_INCR |
 					RFD77402_I2C_DATA_INCR |
@@ -212,7 +203,7 @@ static int rfd77402_init(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* set initialization */
+	 
 	ret = i2c_smbus_write_word_data(client, RFD77402_PMU_CFG, 0x0500);
 	if (ret < 0)
 		return ret;
@@ -222,7 +213,7 @@ static int rfd77402_init(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* set initialization */
+	 
 	ret = i2c_smbus_write_word_data(client, RFD77402_PMU_CFG, 0x0600);
 	if (ret < 0)
 		return ret;
@@ -266,7 +257,7 @@ static int rfd77402_probe(struct i2c_client *client)
 	ret = i2c_smbus_read_word_data(client, RFD77402_MOD_CHIP_ID);
 	if (ret < 0)
 		return ret;
-	if (ret != 0xad01 && ret != 0xad02) /* known chip ids */
+	if (ret != 0xad01 && ret != 0xad02)  
 		return -ENODEV;
 
 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));

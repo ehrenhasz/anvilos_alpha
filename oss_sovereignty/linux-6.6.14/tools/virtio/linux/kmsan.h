@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_KMSAN_H
 #define _LINUX_KMSAN_H
 
@@ -9,4 +9,4 @@ inline void kmsan_handle_dma(struct page *page, size_t offset, size_t size,
 {
 }
 
-#endif /* _LINUX_KMSAN_H */
+#endif  

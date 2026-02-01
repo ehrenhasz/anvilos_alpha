@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SPI access driver for TI TPS6594/TPS6593/LP8764 PMICs
- *
- * Copyright (C) 2023 BayLibre Incorporated - https://www.baylibre.com/
- */
+
+ 
 
 #include <linux/crc8.h>
 #include <linux/module.h>

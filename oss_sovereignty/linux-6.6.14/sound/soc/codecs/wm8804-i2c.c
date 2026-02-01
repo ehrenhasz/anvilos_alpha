@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8804-i2c.c  --  WM8804 S/PDIF transceiver driver - I2C
- *
- * Copyright 2015 Cirrus Logic Inc
- *
- * Author: Charles Keepax <ckeepax@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -46,8 +40,8 @@ MODULE_DEVICE_TABLE(of, wm8804_of_match);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id wm8804_acpi_match[] = {
-	{ "1AEC8804", 0 }, /* Wolfson PCI ID + part ID */
-	{ "10138804", 0 }, /* Cirrus Logic PCI ID + part ID */
+	{ "1AEC8804", 0 },  
+	{ "10138804", 0 },  
 	{ },
 };
 MODULE_DEVICE_TABLE(acpi, wm8804_acpi_match);

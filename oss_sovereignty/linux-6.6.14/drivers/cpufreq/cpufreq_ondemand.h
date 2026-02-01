@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header file for CPUFreq ondemand governor and related code.
- *
- * Copyright (C) 2016, Intel Corporation
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+ 
+ 
 
 #include "cpufreq_governor.h"
 

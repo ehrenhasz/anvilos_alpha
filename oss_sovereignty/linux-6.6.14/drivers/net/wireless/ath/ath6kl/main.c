@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2004-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -88,7 +73,7 @@ static void ath6kl_sta_cleanup(struct ath6kl *ar, u8 i)
 	struct ath6kl_sta *sta = &ar->sta_list[i];
 	struct ath6kl_mgmt_buff *entry, *tmp;
 
-	/* empty the queued pkts in the PS queue if any */
+	 
 	spin_lock_bh(&sta->psq_lock);
 	skb_queue_purge(&sta->psq);
 	skb_queue_purge(&sta->apsdq);
@@ -186,7 +171,7 @@ void ath6kl_cookie_cleanup(struct ath6kl *ar)
 
 void ath6kl_free_cookie(struct ath6kl *ar, struct ath6kl_cookie *cookie)
 {
-	/* Insert first */
+	 
 
 	if (!ar || !cookie)
 		return;
@@ -196,10 +181,7 @@ void ath6kl_free_cookie(struct ath6kl *ar, struct ath6kl_cookie *cookie)
 	ar->cookie_count++;
 }
 
-/*
- * Read from the hardware through its diagnostic window. No cooperation
- * from the firmware is required for this.
- */
+ 
 int ath6kl_diag_read32(struct ath6kl *ar, u32 address, u32 *value)
 {
 	int ret;
@@ -214,10 +196,7 @@ int ath6kl_diag_read32(struct ath6kl *ar, u32 address, u32 *value)
 	return 0;
 }
 
-/*
- * Write to the ATH6KL through its diagnostic window. No cooperation from
- * the Target is required for this.
- */
+ 
 int ath6kl_diag_write32(struct ath6kl *ar, u32 address, __le32 value)
 {
 	int ret;
@@ -288,7 +267,7 @@ int ath6kl_read_fwlogs(struct ath6kl *ar)
 	if (ret)
 		goto out;
 
-	/* Get the contents of the ring buffer */
+	 
 	if (debug_hdr_addr == 0) {
 		ath6kl_warn("Invalid address for debug_hdr_addr\n");
 		ret = -EINVAL;
@@ -388,7 +367,7 @@ void ath6kl_connect_ap_mode_bss(struct ath6kl_vif *vif, u16 channel)
 			ath6kl_install_static_wep_keys(vif);
 		if (!ik->valid || ik->key_type != WAPI_CRYPT)
 			break;
-		/* for WAPI, we need to set the delayed group key, continue: */
+		 
 		fallthrough;
 	case WPA_PSK_AUTH:
 	case WPA2_PSK_AUTH:
@@ -412,7 +391,7 @@ void ath6kl_connect_ap_mode_bss(struct ath6kl_vif *vif, u16 channel)
 	}
 
 	if (ar->last_ch != channel)
-		/* we actually don't know the phymode, default to HT20 */
+		 
 		ath6kl_cfg80211_ch_switch_notify(vif, channel, WMI_11G_HT20);
 
 	ath6kl_wmi_bssfilter_cmd(ar->wmi, vif->fw_vif_idx, NONE_BSS_FILTER, 0);
@@ -454,27 +433,19 @@ void ath6kl_connect_ap_mode_sta(struct ath6kl_vif *vif, u16 aid, u8 *mac_addr,
 		if (pos + 2 + pos[1] > ies + ies_len)
 			break;
 		if (pos[0] == WLAN_EID_RSN)
-			wpa_ie = pos; /* RSN IE */
+			wpa_ie = pos;  
 		else if (pos[0] == WLAN_EID_VENDOR_SPECIFIC &&
 			 pos[1] >= 4 &&
 			 pos[2] == 0x00 && pos[3] == 0x50 && pos[4] == 0xf2) {
 			if (pos[5] == 0x01)
-				wpa_ie = pos; /* WPA IE */
+				wpa_ie = pos;  
 			else if (pos[5] == 0x04) {
-				wpa_ie = pos; /* WPS IE */
-				break; /* overrides WPA/RSN IE */
+				wpa_ie = pos;  
+				break;  
 			}
 		} else if (pos[0] == 0x44 && wpa_ie == NULL) {
-			/*
-			 * Note: WAPI Parameter Set IE re-uses Element ID that
-			 * was officially allocated for BSS AC Access Delay. As
-			 * such, we need to be a bit more careful on when
-			 * parsing the frame. However, BSS AC Access Delay
-			 * element is not supposed to be included in
-			 * (Re)Association Request frames, so this should not
-			 * cause problems.
-			 */
-			wpa_ie = pos; /* WAPI IE */
+			 
+			wpa_ie = pos;  
 			break;
 		}
 		pos += 2 + pos[1];
@@ -484,12 +455,12 @@ void ath6kl_connect_ap_mode_sta(struct ath6kl_vif *vif, u16 aid, u8 *mac_addr,
 			   wpa_ie ? 2 + wpa_ie[1] : 0,
 			   keymgmt, ucipher, auth, apsd_info);
 
-	/* send event to application */
+	 
 	sinfo = kzalloc(sizeof(*sinfo), GFP_KERNEL);
 	if (!sinfo)
 		return;
 
-	/* TODO: sinfo.generation */
+	 
 
 	sinfo->assoc_req_ies = ies;
 	sinfo->assoc_req_ies_len = ies_len;
@@ -514,16 +485,12 @@ void ath6kl_disconnect(struct ath6kl_vif *vif)
 	if (test_bit(CONNECTED, &vif->flags) ||
 	    test_bit(CONNECT_PEND, &vif->flags)) {
 		ath6kl_wmi_disconnect_cmd(vif->ar->wmi, vif->fw_vif_idx);
-		/*
-		 * Disconnect command is issued, clear the connect pending
-		 * flag. The connected flag will be cleared in
-		 * disconnect event notification.
-		 */
+		 
 		clear_bit(CONNECT_PEND, &vif->flags);
 	}
 }
 
-/* WMI Event handlers */
+ 
 
 void ath6kl_ready_event(void *devt, u8 *datap, u32 sw_ver, u32 abi_ver,
 			enum wmi_phy_cap cap)
@@ -550,7 +517,7 @@ void ath6kl_ready_event(void *devt, u8 *datap, u32 sw_ver, u32 abi_ver,
 			 (ar->version.wlan_ver & 0x0000ffff));
 	}
 
-	/* indicate to the waiting thread that the ready event was received */
+	 
 	set_bit(WMI_READY, &ar->flag);
 	wake_up(&ar->event_wq);
 }
@@ -582,10 +549,7 @@ static int ath6kl_commit_ch_switch(struct ath6kl_vif *vif, u16 channel)
 
 	switch (vif->nw_type) {
 	case AP_NETWORK:
-		/*
-		 * reconfigure any saved RSN IE capabilites in the beacon /
-		 * probe response to stay in sync with the supplicant.
-		 */
+		 
 		if (vif->rsn_capab &&
 		    test_bit(ATH6KL_FW_CAPABILITY_RSN_CAP_OVERRIDE,
 			     ar->fw_capabilities))
@@ -615,7 +579,7 @@ static void ath6kl_check_ch_switch(struct ath6kl *ar, u16 channel)
 		if (ar->want_ch_switch & (1 << vif->fw_vif_idx))
 			res = ath6kl_commit_ch_switch(vif, channel);
 
-		/* if channel switch failed, oh well we tried */
+		 
 		ar->want_ch_switch &= ~(1 << vif->fw_vif_idx);
 
 		if (res)
@@ -650,7 +614,7 @@ void ath6kl_connect_event(struct ath6kl_vif *vif, u16 channel, u8 *bssid,
 
 	netif_wake_queue(vif->ndev);
 
-	/* Update connect & link status atomically */
+	 
 	spin_lock_bh(&vif->if_lock);
 	set_bit(CONNECTED, &vif->flags);
 	clear_bit(CONNECT_PEND, &vif->flags);
@@ -679,10 +643,7 @@ void ath6kl_tkip_micerr_event(struct ath6kl_vif *vif, u8 keyid, bool ismcast)
 	struct ath6kl *ar = vif->ar;
 	u8 tsc[6];
 
-	/*
-	 * For AP case, keyid will have aid of STA which sent pkt with
-	 * MIC error. Use this aid to get MAC & send it to hostapd.
-	 */
+	 
 	if (vif->nw_type == AP_NETWORK) {
 		sta = ath6kl_find_sta_by_aid(ar, (keyid >> 2));
 		if (!sta)
@@ -691,7 +652,7 @@ void ath6kl_tkip_micerr_event(struct ath6kl_vif *vif, u8 keyid, bool ismcast)
 		ath6kl_dbg(ATH6KL_DBG_TRC,
 			   "ap tkip mic error received from aid=%d\n", keyid);
 
-		memset(tsc, 0, sizeof(tsc)); /* FIX: get correct TSC */
+		memset(tsc, 0, sizeof(tsc));  
 		cfg80211_michael_mic_failure(vif->ndev, sta->mac,
 					     NL80211_KEYTYPE_PAIRWISE, keyid,
 					     tsc, GFP_KERNEL);
@@ -877,16 +838,13 @@ void ath6kl_pspoll_event(struct ath6kl_vif *vif, u8 aid)
 
 	if (!conn)
 		return;
-	/*
-	 * Send out a packet queued on ps queue. When the ps queue
-	 * becomes empty update the PVB for this station.
-	 */
+	 
 	spin_lock_bh(&conn->psq_lock);
 	psq_empty  = skb_queue_empty(&conn->psq) && (conn->mgmt_psq_len == 0);
 	spin_unlock_bh(&conn->psq_lock);
 
 	if (psq_empty)
-		/* TODO: Send out a NULL data frame */
+		 
 		return;
 
 	spin_lock_bh(&conn->psq_lock);
@@ -927,15 +885,7 @@ void ath6kl_dtimexpiry_event(struct ath6kl_vif *vif)
 	struct sk_buff *skb;
 	struct ath6kl *ar = vif->ar;
 
-	/*
-	 * If there are no associated STAs, ignore the DTIM expiry event.
-	 * There can be potential race conditions where the last associated
-	 * STA may disconnect & before the host could clear the 'Indicate
-	 * DTIM' request to the firmware, the firmware would have just
-	 * indicated a DTIM expiry event. The race is between 'clear DTIM
-	 * expiry cmd' going from the host to the firmware & the DTIM
-	 * expiry event happening from the firmware to the host.
-	 */
+	 
 	if (!ar->sta_list_index)
 		return;
 
@@ -946,7 +896,7 @@ void ath6kl_dtimexpiry_event(struct ath6kl_vif *vif)
 	if (mcastq_empty)
 		return;
 
-	/* set the STA flag to dtim_expired for the frame to go out */
+	 
 	set_bit(DTIM_EXPIRED, &vif->flags);
 
 	spin_lock_bh(&ar->mcastpsq_lock);
@@ -961,7 +911,7 @@ void ath6kl_dtimexpiry_event(struct ath6kl_vif *vif)
 
 	clear_bit(DTIM_EXPIRED, &vif->flags);
 
-	/* clear the LSB of the BitMapCtl field of the TIM IE */
+	 
 	ath6kl_wmi_set_pvb_cmd(ar->wmi, vif->fw_vif_idx, MCAST_AID, 0);
 }
 
@@ -972,23 +922,23 @@ void ath6kl_disconnect_event(struct ath6kl_vif *vif, u8 reason, u8 *bssid,
 	struct ath6kl *ar = vif->ar;
 
 	if (vif->nw_type == AP_NETWORK) {
-		/* disconnect due to other STA vif switching channels */
+		 
 		if (reason == BSS_DISCONNECTED &&
 		    prot_reason_status == WMI_AP_REASON_STA_ROAM) {
 			ar->want_ch_switch |= 1 << vif->fw_vif_idx;
-			/* bail back to this channel if STA vif fails connect */
+			 
 			ar->last_ch = le16_to_cpu(vif->profile.ch);
 		}
 
 		if (prot_reason_status == WMI_AP_REASON_MAX_STA) {
-			/* send max client reached notification to user space */
+			 
 			cfg80211_conn_failed(vif->ndev, bssid,
 					     NL80211_CONN_FAIL_MAX_CLIENTS,
 					     GFP_KERNEL);
 		}
 
 		if (prot_reason_status == WMI_AP_REASON_ACL) {
-			/* send blocked client notification to user space */
+			 
 			cfg80211_conn_failed(vif->ndev, bssid,
 					     NL80211_CONN_FAIL_BLOCKED_CLIENT,
 					     GFP_KERNEL);
@@ -997,20 +947,20 @@ void ath6kl_disconnect_event(struct ath6kl_vif *vif, u8 reason, u8 *bssid,
 		if (!ath6kl_remove_sta(ar, bssid, prot_reason_status))
 			return;
 
-		/* if no more associated STAs, empty the mcast PS q */
+		 
 		if (ar->sta_list_index == 0) {
 			spin_lock_bh(&ar->mcastpsq_lock);
 			skb_queue_purge(&ar->mcastpsq);
 			spin_unlock_bh(&ar->mcastpsq_lock);
 
-			/* clear the LSB of the TIM IE's BitMapCtl field */
+			 
 			if (test_bit(WMI_READY, &ar->flag))
 				ath6kl_wmi_set_pvb_cmd(ar->wmi, vif->fw_vif_idx,
 						       MCAST_AID, 0);
 		}
 
 		if (!is_broadcast_ether_addr(bssid)) {
-			/* send event to application */
+			 
 			cfg80211_del_sta(vif->ndev, bssid, GFP_KERNEL);
 		}
 
@@ -1031,11 +981,7 @@ void ath6kl_disconnect_event(struct ath6kl_vif *vif, u8 reason, u8 *bssid,
 
 	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "disconnect reason is %d\n", reason);
 
-	/*
-	 * If the event is due to disconnect cmd from the host, only they
-	 * the target would stop trying to connect. Under any other
-	 * condition, target would keep trying to connect.
-	 */
+	 
 	if (reason == DISCONNECT_CMD) {
 		if (!ar->usr_bss_filter && test_bit(WMI_READY, &ar->flag))
 			ath6kl_wmi_bssfilter_cmd(ar->wmi, vif->fw_vif_idx,
@@ -1051,10 +997,10 @@ void ath6kl_disconnect_event(struct ath6kl_vif *vif, u8 reason, u8 *bssid,
 		}
 	}
 
-	/* restart disconnected concurrent vifs waiting for new channel */
+	 
 	ath6kl_check_ch_switch(ar, ar->last_ch);
 
-	/* update connect & link status atomically */
+	 
 	spin_lock_bh(&vif->if_lock);
 	clear_bit(CONNECTED, &vif->flags);
 	netif_carrier_off(vif->ndev);
@@ -1166,7 +1112,7 @@ static void ath6kl_set_multicast_list(struct net_device *ndev)
 	    !test_bit(WLAN_ENABLED, &vif->flags))
 		return;
 
-	/* Enable multicast-all filter. */
+	 
 	mc_all_on = !!(ndev->flags & IFF_PROMISC) ||
 		    !!(ndev->flags & IFF_ALLMULTI) ||
 		    !!(mc_count > ATH6K_MAX_MC_FILTERS_PER_LIST);
@@ -1188,7 +1134,7 @@ static void ath6kl_set_multicast_list(struct net_device *ndev)
 		clear_bit(NETDEV_MCAST_ALL_OFF, &vif->flags);
 	}
 
-	/* Enable/disable "multicast-all" filter*/
+	 
 	ath6kl_dbg(ATH6KL_DBG_TRC, "%s multicast-all filter\n",
 		   mc_all_on ? "enabling" : "disabling");
 
@@ -1203,7 +1149,7 @@ static void ath6kl_set_multicast_list(struct net_device *ndev)
 	if (test_bit(NETDEV_MCAST_ALL_ON, &vif->flags))
 		return;
 
-	/* Keep the driver and firmware mcast list in sync. */
+	 
 	list_for_each_entry_safe(mc_filter, tmp, &vif->mc_filter, list) {
 		found = false;
 		netdev_for_each_mc_addr(ha, ndev) {
@@ -1215,10 +1161,7 @@ static void ath6kl_set_multicast_list(struct net_device *ndev)
 		}
 
 		if (!found) {
-			/*
-			 * Delete the filter which was previously set
-			 * but not in the new request.
-			 */
+			 
 			ath6kl_dbg(ATH6KL_DBG_TRC,
 				   "Removing %pM from multicast filter\n",
 				   mc_filter->hw_addr);
@@ -1258,7 +1201,7 @@ static void ath6kl_set_multicast_list(struct net_device *ndev)
 
 			memcpy(mc_filter->hw_addr, ha->addr,
 			       ATH6KL_MCAST_FILTER_MAC_ADDR_SIZE);
-			/* Set the multicast filter */
+			 
 			ath6kl_dbg(ATH6KL_DBG_TRC,
 				   "Adding %pM to multicast filter list\n",
 				   mc_filter->hw_addr);

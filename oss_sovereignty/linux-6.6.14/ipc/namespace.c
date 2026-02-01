@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/ipc/namespace.c
- * Copyright (C) 2006 Pavel Emelyanov <xemul@openvz.org> OpenVZ, SWsoft Inc.
- */
+
+ 
 
 #include <linux/ipc.h>
 #include <linux/msg.h>
@@ -19,9 +16,7 @@
 
 #include "util.h"
 
-/*
- * The work queue is used to avoid the cost of synchronize_rcu in kern_unmount.
- */
+ 
 static void free_ipc(struct work_struct *unused);
 static DECLARE_WORK(free_ipc_work, free_ipc);
 
@@ -46,11 +41,7 @@ static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
  again:
 	ucounts = inc_ipc_namespaces(user_ns);
 	if (!ucounts) {
-		/*
-		 * IPC namespaces are freed asynchronously, by free_ipc_work.
-		 * If frees were pending, flush_work will wait, and
-		 * return true. Fail the allocation if no frees are pending.
-		 */
+		 
 		if (flush_work(&free_ipc_work))
 			goto again;
 		goto fail;
@@ -112,14 +103,7 @@ struct ipc_namespace *copy_ipcs(unsigned long flags,
 	return create_ipc_ns(user_ns, ns);
 }
 
-/*
- * free_ipcs - free all ipcs of one type
- * @ns:   the namespace to remove the ipcs from
- * @ids:  the table of ipcs to free
- * @free: the function called to free each individual ipc
- *
- * Called for each kind of ipc when an ipc_namespace exits.
- */
+ 
 void free_ipcs(struct ipc_namespace *ns, struct ipc_ids *ids,
 	       void (*free)(struct ipc_namespace *, struct kern_ipc_perm *))
 {
@@ -145,10 +129,7 @@ void free_ipcs(struct ipc_namespace *ns, struct ipc_ids *ids,
 
 static void free_ipc_ns(struct ipc_namespace *ns)
 {
-	/*
-	 * Caller needs to wait for an RCU grace period to have passed
-	 * after making the mount point inaccessible to new accesses.
-	 */
+	 
 	mntput(ns->mq_mnt);
 	sem_exit_ns(ns);
 	msg_exit_ns(ns);
@@ -172,29 +153,14 @@ static void free_ipc(struct work_struct *unused)
 	llist_for_each_entry_safe(n, t, node, mnt_llist)
 		mnt_make_shortterm(n->mq_mnt);
 
-	/* Wait for any last users to have gone away. */
+	 
 	synchronize_rcu();
 
 	llist_for_each_entry_safe(n, t, node, mnt_llist)
 		free_ipc_ns(n);
 }
 
-/*
- * put_ipc_ns - drop a reference to an ipc namespace.
- * @ns: the namespace to put
- *
- * If this is the last task in the namespace exiting, and
- * it is dropping the refcount to 0, then it can race with
- * a task in another ipc namespace but in a mounts namespace
- * which has this ipcns's mqueuefs mounted, doing some action
- * with one of the mqueuefs files.  That can raise the refcount.
- * So dropping the refcount, and raising the refcount when
- * accessing it through the VFS, are protected with mq_lock.
- *
- * (Clearly, a task raising the refcount on its own ipc_ns
- * needn't take mq_lock since it can't race with the last task
- * in the ipcns exiting).
- */
+ 
 void put_ipc_ns(struct ipc_namespace *ns)
 {
 	if (refcount_dec_and_lock(&ns->ns.count, &mq_lock)) {

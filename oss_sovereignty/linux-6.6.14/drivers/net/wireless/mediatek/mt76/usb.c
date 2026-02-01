@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include "mt76.h"
@@ -164,11 +162,7 @@ static void mt76u_copy(struct mt76_dev *dev, u32 offset,
 	int current_batch_size;
 	int i = 0;
 
-	/* Assure that always a multiple of 4 bytes are copied,
-	 * otherwise beacons can be corrupted.
-	 * See: "mt76: round up length on mt76_wr_copy"
-	 * Commit 850e8f6fbd5d0003b0
-	 */
+	 
 	len = round_up(len, 4);
 
 	mutex_lock(&usb->usb_ctrl_mtx);
@@ -480,9 +474,7 @@ mt76u_build_rx_skb(struct mt76_dev *dev, void *data,
 	if (SKB_WITH_OVERHEAD(buf_size) < head_room + len) {
 		struct page *page;
 
-		/* slow path, not enough space for data and
-		 * skb_shared_info
-		 */
+		 
 		skb = alloc_skb(MT_SKB_HEAD_LEN, GFP_ATOMIC);
 		if (!skb)
 			return NULL;
@@ -497,7 +489,7 @@ mt76u_build_rx_skb(struct mt76_dev *dev, void *data,
 		return skb;
 	}
 
-	/* fast path */
+	 
 	skb = build_skb(data, buf_size);
 	if (!skb)
 		return NULL;
@@ -910,7 +902,7 @@ static u8 mt76u_ac_to_hwq(struct mt76_dev *dev, u8 ac)
 {
 	if (mt76_chip(dev) == 0x7663) {
 		static const u8 lmac_queue_map[] = {
-			/* ac to lmac mapping */
+			 
 			[IEEE80211_AC_BK] = 0,
 			[IEEE80211_AC_BE] = 1,
 			[IEEE80211_AC_VI] = 2,
@@ -918,7 +910,7 @@ static u8 mt76u_ac_to_hwq(struct mt76_dev *dev, u8 ac)
 		};
 
 		if (WARN_ON(ac >= ARRAY_SIZE(lmac_queue_map)))
-			return 1; /* BE */
+			return 1;  
 
 		return lmac_queue_map[ac];
 	}
@@ -1010,9 +1002,7 @@ void mt76u_stop_tx(struct mt76_dev *dev)
 
 		mt76_worker_disable(&dev->tx_worker);
 
-		/* On device removal we maight queue skb's, but mt76u_tx_kick()
-		 * will fail to submit urb, cleanup those skb's manually.
-		 */
+		 
 		for (i = 0; i < IEEE80211_NUM_ACS; i++) {
 			q = dev->phy.q_tx[i];
 			if (!q)

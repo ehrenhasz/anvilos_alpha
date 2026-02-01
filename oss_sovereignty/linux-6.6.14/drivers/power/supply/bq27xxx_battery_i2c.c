@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BQ27xxx battery monitor I2C driver
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -144,7 +139,7 @@ static int bq27xxx_battery_i2c_probe(struct i2c_client *client)
 	char *name;
 	int num;
 
-	/* Get new ID for the new battery device */
+	 
 	mutex_lock(&battery_mutex);
 	num = idr_alloc(&battery_id, client, 0, 0, GFP_KERNEL);
 	mutex_unlock(&battery_mutex);
@@ -173,7 +168,7 @@ static int bq27xxx_battery_i2c_probe(struct i2c_client *client)
 	if (ret)
 		goto err_failed;
 
-	/* Schedule a polling after about 1 min */
+	 
 	schedule_delayed_work(&di->work, 60 * HZ);
 
 	i2c_set_clientdata(client, di);

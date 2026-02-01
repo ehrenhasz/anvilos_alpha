@@ -1,32 +1,11 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef CZ_PP_SMC_H
 #define CZ_PP_SMC_H
 
 #pragma pack(push, 1)
 
-/* Fan control algorithm:*/
+ 
 #define FDO_MODE_HARDWARE 0
 #define FDO_MODE_PIECE_WISE_LINEAR 1
 
@@ -42,10 +21,7 @@ enum DPM_ARRAY {
     DPM_ARRAY_SOFT_MIN
 };
 
-/*
- * Return codes for driver to SMC communication.
- * Leave these #define-s, enums might not be exactly 8-bits on the microcontroller.
- */
+ 
 #define PPSMC_Result_OK             ((uint16_t)0x01)
 #define PPSMC_Result_NoMore         ((uint16_t)0x02)
 #define PPSMC_Result_NotNow         ((uint16_t)0x03)
@@ -55,9 +31,7 @@ enum DPM_ARRAY {
 
 #define PPSMC_isERROR(x)            ((uint16_t)0x80 & (x))
 
-/*
- * Supported driver messages
- */
+ 
 #define PPSMC_MSG_Test                        ((uint16_t) 0x1)
 #define PPSMC_MSG_GetFeatureStatus            ((uint16_t) 0x2)
 #define PPSMC_MSG_EnableAllSmuFeatures        ((uint16_t) 0x3)
@@ -166,10 +140,10 @@ enum DPM_ARRAY {
 #define PPSMC_MSG_SetWatermarkFrequency       ((uint16_t) 0x26E)
 #define PPSMC_MSG_SetDisplaySizePowerParams   ((uint16_t) 0x26F)
 
-/* REMOVE LATER*/
+ 
 #define PPSMC_MSG_DPM_ForceState              ((uint16_t) 0x104)
 
-/* Feature Enable Masks*/
+ 
 #define NB_DPM_MASK             0x00000800
 #define VDDGFX_MASK             0x00800000
 #define VCE_DPM_MASK            0x00400000

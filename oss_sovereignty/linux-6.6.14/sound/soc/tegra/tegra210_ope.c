@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_ope.c - Tegra210 OPE driver
-//
-// Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -73,7 +73,7 @@ static int tegra210_ope_hw_params(struct snd_pcm_substream *substream,
 	struct tegra210_ope *ope = snd_soc_dai_get_drvdata(dai);
 	int err;
 
-	/* Set RX and TX CIF */
+	 
 	err = tegra210_ope_set_audio_cif(ope, params,
 					 TEGRA210_OPE_RX_CIF_CTRL);
 	if (err) {
@@ -100,17 +100,7 @@ static int tegra210_ope_component_probe(struct snd_soc_component *cmpnt)
 	tegra210_peq_component_init(cmpnt);
 	tegra210_mbdrc_component_init(cmpnt);
 
-	/*
-	 * The OPE, PEQ and MBDRC functionalities are combined under one
-	 * device registered by OPE driver. In fact OPE HW block includes
-	 * sub blocks PEQ and MBDRC. However driver registers separate
-	 * regmap interfaces for each of these. ASoC core depends on
-	 * dev_get_regmap() to populate the regmap field for a given ASoC
-	 * component. A component can have one regmap reference and since
-	 * the DAPM routes depend on OPE regmap only, below explicit
-	 * assignment is done to highlight this. This is needed for ASoC
-	 * core to access correct regmap during DAPM path setup.
-	 */
+	 
 	snd_soc_component_init_regmap(cmpnt, ope->regmap);
 
 	return 0;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * devres.c  --  Voltage/Current Regulator framework devres implementation.
- *
- * Copyright 2013 Linaro Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -39,30 +35,14 @@ static struct regulator *_devm_regulator_get(struct device *dev, const char *id,
 	return regulator;
 }
 
-/**
- * devm_regulator_get - Resource managed regulator_get()
- * @dev: device to supply
- * @id:  supply name or regulator ID.
- *
- * Managed regulator_get(). Regulators returned from this function are
- * automatically regulator_put() on driver detach. See regulator_get() for more
- * information.
- */
+ 
 struct regulator *devm_regulator_get(struct device *dev, const char *id)
 {
 	return _devm_regulator_get(dev, id, NORMAL_GET);
 }
 EXPORT_SYMBOL_GPL(devm_regulator_get);
 
-/**
- * devm_regulator_get_exclusive - Resource managed regulator_get_exclusive()
- * @dev: device to supply
- * @id:  supply name or regulator ID.
- *
- * Managed regulator_get_exclusive(). Regulators returned from this function
- * are automatically regulator_put() on driver detach. See regulator_get() for
- * more information.
- */
+ 
 struct regulator *devm_regulator_get_exclusive(struct device *dev,
 					       const char *id)
 {
@@ -97,47 +77,21 @@ static int _devm_regulator_get_enable(struct device *dev, const char *id,
 	return ret;
 }
 
-/**
- * devm_regulator_get_enable_optional - Resource managed regulator get and enable
- * @dev: device to supply
- * @id:  supply name or regulator ID.
- *
- * Get and enable regulator for duration of the device life-time.
- * regulator_disable() and regulator_put() are automatically called on driver
- * detach. See regulator_get_optional() and regulator_enable() for more
- * information.
- */
+ 
 int devm_regulator_get_enable_optional(struct device *dev, const char *id)
 {
 	return _devm_regulator_get_enable(dev, id, OPTIONAL_GET);
 }
 EXPORT_SYMBOL_GPL(devm_regulator_get_enable_optional);
 
-/**
- * devm_regulator_get_enable - Resource managed regulator get and enable
- * @dev: device to supply
- * @id:  supply name or regulator ID.
- *
- * Get and enable regulator for duration of the device life-time.
- * regulator_disable() and regulator_put() are automatically called on driver
- * detach. See regulator_get() and regulator_enable() for more
- * information.
- */
+ 
 int devm_regulator_get_enable(struct device *dev, const char *id)
 {
 	return _devm_regulator_get_enable(dev, id, NORMAL_GET);
 }
 EXPORT_SYMBOL_GPL(devm_regulator_get_enable);
 
-/**
- * devm_regulator_get_optional - Resource managed regulator_get_optional()
- * @dev: device to supply
- * @id:  supply name or regulator ID.
- *
- * Managed regulator_get_optional(). Regulators returned from this
- * function are automatically regulator_put() on driver detach. See
- * regulator_get_optional() for more information.
- */
+ 
 struct regulator *devm_regulator_get_optional(struct device *dev,
 					      const char *id)
 {
@@ -155,14 +109,7 @@ static int devm_regulator_match(struct device *dev, void *res, void *data)
 	return *r == data;
 }
 
-/**
- * devm_regulator_put - Resource managed regulator_put()
- * @regulator: regulator to free
- *
- * Deallocate a regulator allocated with devm_regulator_get(). Normally
- * this function will not need to be called and the resource management
- * code will ensure that the resource is freed.
- */
+ 
 void devm_regulator_put(struct regulator *regulator)
 {
 	int rc;
@@ -210,21 +157,7 @@ static int _devm_regulator_bulk_get(struct device *dev, int num_consumers,
 	return ret;
 }
 
-/**
- * devm_regulator_bulk_get - managed get multiple regulator consumers
- *
- * @dev:           device to supply
- * @num_consumers: number of consumers to register
- * @consumers:     configuration of consumers; clients are stored here.
- *
- * @return 0 on success, an errno on failure.
- *
- * This helper function allows drivers to get several regulator
- * consumers in one operation with management, the regulators will
- * automatically be freed when the device is unbound.  If any of the
- * regulators cannot be acquired then any regulators that were
- * allocated will be freed before returning to the caller.
- */
+ 
 int devm_regulator_bulk_get(struct device *dev, int num_consumers,
 			    struct regulator_bulk_data *consumers)
 {
@@ -232,22 +165,7 @@ int devm_regulator_bulk_get(struct device *dev, int num_consumers,
 }
 EXPORT_SYMBOL_GPL(devm_regulator_bulk_get);
 
-/**
- * devm_regulator_bulk_get_exclusive - managed exclusive get of multiple
- * regulator consumers
- *
- * @dev:           device to supply
- * @num_consumers: number of consumers to register
- * @consumers:     configuration of consumers; clients are stored here.
- *
- * @return 0 on success, an errno on failure.
- *
- * This helper function allows drivers to exclusively get several
- * regulator consumers in one operation with management, the regulators
- * will automatically be freed when the device is unbound.  If any of
- * the regulators cannot be acquired then any regulators that were
- * allocated will be freed before returning to the caller.
- */
+ 
 int devm_regulator_bulk_get_exclusive(struct device *dev, int num_consumers,
 				      struct regulator_bulk_data *consumers)
 {
@@ -255,20 +173,7 @@ int devm_regulator_bulk_get_exclusive(struct device *dev, int num_consumers,
 }
 EXPORT_SYMBOL_GPL(devm_regulator_bulk_get_exclusive);
 
-/**
- * devm_regulator_bulk_get_const - devm_regulator_bulk_get() w/ const data
- *
- * @dev:           device to supply
- * @num_consumers: number of consumers to register
- * @in_consumers:  const configuration of consumers
- * @out_consumers: in_consumers is copied here and this is passed to
- *		   devm_regulator_bulk_get().
- *
- * This is a convenience function to allow bulk regulator configuration
- * to be stored "static const" in files.
- *
- * Return: 0 on success, an errno on failure.
- */
+ 
 int devm_regulator_bulk_get_const(struct device *dev, int num_consumers,
 				  const struct regulator_bulk_data *in_consumers,
 				  struct regulator_bulk_data **out_consumers)
@@ -289,23 +194,11 @@ static int devm_regulator_bulk_match(struct device *dev, void *res,
 	struct regulator_bulk_devres *match = res;
 	struct regulator_bulk_data *target = data;
 
-	/*
-	 * We check the put uses same consumer list as the get did.
-	 * We _could_ scan all entries in consumer array and check the
-	 * regulators match but ATM I don't see the need. We can change this
-	 * later if needed.
-	 */
+	 
 	return match->consumers == target;
 }
 
-/**
- * devm_regulator_bulk_put - Resource managed regulator_bulk_put()
- * @consumers: consumers to free
- *
- * Deallocate regulators allocated with devm_regulator_bulk_get(). Normally
- * this function will not need to be called and the resource management
- * code will ensure that the resource is freed.
- */
+ 
 void devm_regulator_bulk_put(struct regulator_bulk_data *consumers)
 {
 	int rc;
@@ -327,21 +220,7 @@ static void devm_regulator_bulk_disable(void *res)
 		regulator_disable(devres->consumers[i].consumer);
 }
 
-/**
- * devm_regulator_bulk_get_enable - managed get'n enable multiple regulators
- *
- * @dev:           device to supply
- * @num_consumers: number of consumers to register
- * @id:            list of supply names or regulator IDs
- *
- * @return 0 on success, an errno on failure.
- *
- * This helper function allows drivers to get several regulator
- * consumers in one operation with management, the regulators will
- * automatically be freed when the device is unbound.  If any of the
- * regulators cannot be acquired then any regulators that were
- * allocated will be freed before returning to the caller.
- */
+ 
 int devm_regulator_bulk_get_enable(struct device *dev, int num_consumers,
 				   const char * const *id)
 {
@@ -393,17 +272,7 @@ static void devm_rdev_release(struct device *dev, void *res)
 	regulator_unregister(*(struct regulator_dev **)res);
 }
 
-/**
- * devm_regulator_register - Resource managed regulator_register()
- * @dev:            device to supply
- * @regulator_desc: regulator to register
- * @config:         runtime configuration for regulator
- *
- * Called by regulator drivers to register a regulator.  Returns a
- * valid pointer to struct regulator_dev on success or an ERR_PTR() on
- * error.  The regulator will automatically be released when the device
- * is unbound.
- */
+ 
 struct regulator_dev *devm_regulator_register(struct device *dev,
 				  const struct regulator_desc *regulator_desc,
 				  const struct regulator_config *config)
@@ -448,19 +317,7 @@ static void devm_regulator_destroy_supply_alias(struct device *dev, void *res)
 	regulator_unregister_supply_alias(match->dev, match->id);
 }
 
-/**
- * devm_regulator_register_supply_alias - Resource managed
- * regulator_register_supply_alias()
- *
- * @dev:       device to supply
- * @id:        supply name or regulator ID
- * @alias_dev: device that should be used to lookup the supply
- * @alias_id:  supply name or regulator ID that should be used to lookup the
- * supply
- *
- * The supply alias will automatically be unregistered when the source
- * device is unbound.
- */
+ 
 int devm_regulator_register_supply_alias(struct device *dev, const char *id,
 					 struct device *alias_dev,
 					 const char *alias_id)
@@ -504,25 +361,7 @@ static void devm_regulator_unregister_supply_alias(struct device *dev,
 		WARN_ON(rc);
 }
 
-/**
- * devm_regulator_bulk_register_supply_alias - Managed register
- * multiple aliases
- *
- * @dev:       device to supply
- * @id:        list of supply names or regulator IDs
- * @alias_dev: device that should be used to lookup the supply
- * @alias_id:  list of supply names or regulator IDs that should be used to
- *             lookup the supply
- * @num_id:    number of aliases to register
- *
- * @return 0 on success, an errno on failure.
- *
- * This helper function allows drivers to register several supply
- * aliases in one operation, the aliases will be automatically
- * unregisters when the source device is unbound.  If any of the
- * aliases cannot be registered any aliases that were registered
- * will be removed before returning to the caller.
- */
+ 
 int devm_regulator_bulk_register_supply_alias(struct device *dev,
 					      const char *const *id,
 					      struct device *alias_dev,
@@ -575,16 +414,7 @@ static void devm_regulator_destroy_notifier(struct device *dev, void *res)
 	regulator_unregister_notifier(match->regulator, match->nb);
 }
 
-/**
- * devm_regulator_register_notifier - Resource managed
- * regulator_register_notifier
- *
- * @regulator: regulator source
- * @nb:        notifier block
- *
- * The notifier will be registers under the consumer device and be
- * automatically be unregistered when the source device is unbound.
- */
+ 
 int devm_regulator_register_notifier(struct regulator *regulator,
 				     struct notifier_block *nb)
 {
@@ -612,17 +442,7 @@ int devm_regulator_register_notifier(struct regulator *regulator,
 }
 EXPORT_SYMBOL_GPL(devm_regulator_register_notifier);
 
-/**
- * devm_regulator_unregister_notifier - Resource managed
- * regulator_unregister_notifier()
- *
- * @regulator: regulator source
- * @nb:        notifier block
- *
- * Unregister a notifier registered with devm_regulator_register_notifier().
- * Normally this function will not need to be called and the resource
- * management code will ensure that the resource is freed.
- */
+ 
 void devm_regulator_unregister_notifier(struct regulator *regulator,
 					struct notifier_block *nb)
 {
@@ -644,31 +464,7 @@ static void regulator_irq_helper_drop(void *res)
 	regulator_irq_helper_cancel(&res);
 }
 
-/**
- * devm_regulator_irq_helper - resource managed registration of IRQ based
- * regulator event/error notifier
- *
- * @dev:		device to which lifetime the helper's lifetime is
- *			bound.
- * @d:			IRQ helper descriptor.
- * @irq:		IRQ used to inform events/errors to be notified.
- * @irq_flags:		Extra IRQ flags to be OR'ed with the default
- *			IRQF_ONESHOT when requesting the (threaded) irq.
- * @common_errs:	Errors which can be flagged by this IRQ for all rdevs.
- *			When IRQ is re-enabled these errors will be cleared
- *			from all associated regulators
- * @per_rdev_errs:	Optional error flag array describing errors specific
- *			for only some of the regulators. These errors will be
- *			or'ed with common errors. If this is given the array
- *			should contain rdev_amount flags. Can be set to NULL
- *			if there is no regulator specific error flags for this
- *			IRQ.
- * @rdev:		Array of pointers to regulators associated with this
- *			IRQ.
- * @rdev_amount:	Amount of regulators associated with this IRQ.
- *
- * Return: handle to irq_helper or an ERR_PTR() encoded error code.
- */
+ 
 void *devm_regulator_irq_helper(struct device *dev,
 				const struct regulator_irq_desc *d, int irq,
 				int irq_flags, int common_errs,

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BOOTROM Greybus driver.
- *
- * Copyright 2016 Google Inc.
- * Copyright 2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/jiffies.h>
@@ -14,13 +9,10 @@
 
 #include "firmware.h"
 
-/* Timeout, in jiffies, within which the next request must be received */
+ 
 #define NEXT_REQ_TIMEOUT_MS	1000
 
-/*
- * FIXME: Reduce this timeout once svc core handles parallel processing of
- * events from the SVC, which are handled sequentially today.
- */
+ 
 #define MODE_SWITCH_TIMEOUT_MS	10000
 
 enum next_request_type {
@@ -37,7 +29,7 @@ struct gb_bootrom {
 	u8			protocol_minor;
 	enum next_request_type	next_request;
 	struct delayed_work	dwork;
-	struct mutex		mutex; /* Protects bootrom->fw */
+	struct mutex		mutex;  
 };
 
 static void free_firmware(struct gb_bootrom *bootrom)
@@ -82,7 +74,7 @@ static void gb_bootrom_timedout(struct work_struct *work)
 	free_firmware(bootrom);
 	mutex_unlock(&bootrom->mutex);
 
-	/* TODO: Power-off Module ? */
+	 
 }
 
 static void gb_bootrom_set_timeout(struct gb_bootrom *bootrom,
@@ -98,16 +90,7 @@ static void gb_bootrom_cancel_timeout(struct gb_bootrom *bootrom)
 	cancel_delayed_work_sync(&bootrom->dwork);
 }
 
-/*
- * The es2 chip doesn't have VID/PID programmed into the hardware and we need to
- * hack that up to distinguish different modules and their firmware blobs.
- *
- * This fetches VID/PID (over bootrom protocol) for es2 chip only, when VID/PID
- * already sent during hotplug are 0.
- *
- * Otherwise, we keep intf->vendor_id/product_id same as what's passed
- * during hotplug.
- */
+ 
 static void bootrom_es2_fixup_vid_pid(struct gb_bootrom *bootrom)
 {
 	struct gb_bootrom_get_vid_pid_response response;
@@ -126,13 +109,7 @@ static void bootrom_es2_fixup_vid_pid(struct gb_bootrom *bootrom)
 		return;
 	}
 
-	/*
-	 * NOTE: This is hacked, so that the same values of VID/PID can be used
-	 * by next firmware level as well. The uevent for bootrom will still
-	 * have VID/PID as 0, though after this point the sysfs files will start
-	 * showing the updated values. But yeah, that's a bit racy as the same
-	 * sysfs files would be showing 0 before this point.
-	 */
+	 
 	intf->vendor_id = le32_to_cpu(response.vendor_id);
 	intf->product_id = le32_to_cpu(response.product_id);
 
@@ -140,7 +117,7 @@ static void bootrom_es2_fixup_vid_pid(struct gb_bootrom *bootrom)
 		intf->vendor_id, intf->product_id);
 }
 
-/* This returns path of the firmware blob on the disk */
+ 
 static int find_firmware(struct gb_bootrom *bootrom, u8 stage)
 {
 	struct gb_connection *connection = bootrom->connection;
@@ -148,30 +125,26 @@ static int find_firmware(struct gb_bootrom *bootrom, u8 stage)
 	char firmware_name[49];
 	int rc;
 
-	/* Already have a firmware, free it */
+	 
 	free_firmware(bootrom);
 
-	/* Bootrom protocol is only supported for loading Stage 2 firmware */
+	 
 	if (stage != 2) {
 		dev_err(&connection->bundle->dev, "Invalid boot stage: %u\n",
 			stage);
 		return -EINVAL;
 	}
 
-	/*
-	 * Create firmware name
-	 *
-	 * XXX Name it properly..
-	 */
+	 
 	snprintf(firmware_name, sizeof(firmware_name),
 		 FW_NAME_PREFIX "%08x_%08x_%08x_%08x_s2l.tftf",
 		 intf->ddbl1_manufacturer_id, intf->ddbl1_product_id,
 		 intf->vendor_id, intf->product_id);
 
-	// FIXME:
-	// Turn to dev_dbg later after everyone has valid bootloaders with good
-	// ids, but leave this as dev_info for now to make it easier to track
-	// down "empty" vid/pid modules.
+	 
+	 
+	 
+	 
 	dev_info(&connection->bundle->dev, "Firmware file '%s' requested\n",
 		 firmware_name);
 
@@ -194,7 +167,7 @@ static int gb_bootrom_firmware_size_request(struct gb_operation *op)
 	struct device *dev = &op->connection->bundle->dev;
 	int ret;
 
-	/* Disable timeouts */
+	 
 	gb_bootrom_cancel_timeout(bootrom);
 
 	if (op->request->payload_size != sizeof(*size_request)) {
@@ -230,7 +203,7 @@ unlock:
 
 queue_work:
 	if (!ret) {
-		/* Refresh timeout */
+		 
 		gb_bootrom_set_timeout(bootrom, NEXT_REQ_GET_FIRMWARE,
 				       NEXT_REQ_TIMEOUT_MS);
 	}
@@ -249,7 +222,7 @@ static int gb_bootrom_get_firmware(struct gb_operation *op)
 	enum next_request_type next_request;
 	int ret = 0;
 
-	/* Disable timeouts */
+	 
 	gb_bootrom_cancel_timeout(bootrom);
 
 	if (op->request->payload_size != sizeof(*firmware_request)) {
@@ -297,7 +270,7 @@ unlock:
 	mutex_unlock(&bootrom->mutex);
 
 queue_work:
-	/* Refresh timeout */
+	 
 	if (!ret && (offset + size == fw->size))
 		next_request = NEXT_REQ_READY_TO_BOOT;
 	else
@@ -317,7 +290,7 @@ static int gb_bootrom_ready_to_boot(struct gb_operation *op)
 	u8 status;
 	int ret = 0;
 
-	/* Disable timeouts */
+	 
 	gb_bootrom_cancel_timeout(bootrom);
 
 	if (op->request->payload_size != sizeof(*rtb_request)) {
@@ -331,23 +304,17 @@ static int gb_bootrom_ready_to_boot(struct gb_operation *op)
 	rtb_request = op->request->payload;
 	status = rtb_request->status;
 
-	/* Return error if the blob was invalid */
+	 
 	if (status == GB_BOOTROM_BOOT_STATUS_INVALID) {
 		ret = -EINVAL;
 		goto queue_work;
 	}
 
-	/*
-	 * XXX Should we return error for insecure firmware?
-	 */
+	 
 	dev_dbg(dev, "ready to boot: 0x%x, 0\n", status);
 
 queue_work:
-	/*
-	 * Refresh timeout, the Interface shall load the new personality and
-	 * send a new hotplug request, which shall get rid of the bootrom
-	 * connection. As that can take some time, increase the timeout a bit.
-	 */
+	 
 	gb_bootrom_set_timeout(bootrom, NEXT_REQ_MODE_SWITCH,
 			       MODE_SWITCH_TIMEOUT_MS);
 
@@ -458,11 +425,11 @@ static int gb_bootrom_probe(struct gb_bundle *bundle,
 	if (ret)
 		goto err_connection_disable;
 
-	/* Refresh timeout */
+	 
 	gb_bootrom_set_timeout(bootrom, NEXT_REQ_FIRMWARE_SIZE,
 			       NEXT_REQ_TIMEOUT_MS);
 
-	/* Tell bootrom we're ready. */
+	 
 	ret = gb_operation_sync(connection, GB_BOOTROM_TYPE_AP_READY, NULL, 0,
 				NULL, 0);
 	if (ret) {
@@ -495,15 +462,10 @@ static void gb_bootrom_disconnect(struct gb_bundle *bundle)
 
 	gb_connection_disable(bootrom->connection);
 
-	/* Disable timeouts */
+	 
 	gb_bootrom_cancel_timeout(bootrom);
 
-	/*
-	 * Release firmware:
-	 *
-	 * As the connection and the delayed work are already disabled, we don't
-	 * need to lock access to bootrom->fw here.
-	 */
+	 
 	free_firmware(bootrom);
 
 	gb_connection_destroy(bootrom->connection);

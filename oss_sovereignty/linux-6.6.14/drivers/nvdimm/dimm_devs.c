@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/moduleparam.h>
 #include <linux/vmalloc.h>
@@ -18,10 +16,7 @@
 
 static DEFINE_IDA(dimm_ida);
 
-/*
- * Retrieve bus and dimm handle and return if this bus supports
- * get_config_data commands
- */
+ 
 int nvdimm_check_config_data(struct device *dev)
 {
 	struct nvdimm *nvdimm = to_nvdimm(dev);
@@ -51,10 +46,7 @@ static int validate_dimm(struct nvdimm_drvdata *ndd)
 	return rc;
 }
 
-/**
- * nvdimm_init_nsarea - determine the geometry of a dimm's namespace area
- * @nvdimm: dimm to initialize
- */
+ 
 int nvdimm_init_nsarea(struct nvdimm_drvdata *ndd)
 {
 	struct nd_cmd_get_config_size *cmd = &ndd->nsarea;
@@ -67,7 +59,7 @@ int nvdimm_init_nsarea(struct nvdimm_drvdata *ndd)
 		return rc;
 
 	if (cmd->config_size)
-		return 0; /* already valid */
+		return 0;  
 
 	memset(cmd, 0, sizeof(*cmd));
 	nd_desc = nvdimm_bus->nd_desc;
@@ -116,7 +108,7 @@ int nvdimm_get_config_data(struct nvdimm_drvdata *ndd, void *buf,
 			break;
 		}
 
-		/* out_buf should be valid, copy it into our output buffer */
+		 
 		memcpy(buf + buf_offset, cmd->out_buf, cmd->in_length);
 	}
 	kvfree(cmd);
@@ -152,7 +144,7 @@ int nvdimm_set_config_data(struct nvdimm_drvdata *ndd, size_t offset,
 		cmd->in_length = min(max_cmd_size, len);
 		memcpy(cmd->in_buf, buf + buf_offset, cmd->in_length);
 
-		/* status is output in the last 4-bytes of the command buffer */
+		 
 		cmd_size = sizeof(*cmd) + cmd->in_length + sizeof(u32);
 
 		rc = nd_desc->ndctl(nd_desc, to_nvdimm(ndd->dev),
@@ -303,10 +295,7 @@ static ssize_t state_show(struct device *dev, struct device_attribute *attr,
 {
 	struct nvdimm *nvdimm = to_nvdimm(dev);
 
-	/*
-	 * The state may be in the process of changing, userspace should
-	 * quiesce probing if it wants a static answer
-	 */
+	 
 	nvdimm_bus_lock(dev);
 	nvdimm_bus_unlock(dev);
 	return sprintf(buf, "%s\n", atomic_read(&nvdimm->busy)
@@ -354,10 +343,7 @@ static ssize_t security_show(struct device *dev,
 {
 	struct nvdimm *nvdimm = to_nvdimm(dev);
 
-	/*
-	 * For the test version we need to poll the "hardware" in order
-	 * to get the updated status for unlock testing.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_NVDIMM_SECURITY_TEST))
 		nvdimm->sec.flags = nvdimm_security_flags(nvdimm, NVDIMM_USER);
 
@@ -388,11 +374,7 @@ static ssize_t security_store(struct device *dev,
 {
 	ssize_t rc;
 
-	/*
-	 * Require all userspace triggered security management to be
-	 * done while probing is idle and the DIMM is not in active use
-	 * in any region.
-	 */
+	 
 	device_lock(dev);
 	nvdimm_bus_lock(dev);
 	wait_nvdimm_bus_probe_idle(dev);
@@ -425,7 +407,7 @@ static umode_t nvdimm_visible(struct kobject *kobj, struct attribute *a, int n)
 		return 0;
 
 	if (a == &dev_attr_security.attr) {
-		/* Are there any state mutation ops (make writable)? */
+		 
 		if (nvdimm->sec.ops->freeze || nvdimm->sec.ops->disable
 				|| nvdimm->sec.ops->change_key
 				|| nvdimm->sec.ops->erase
@@ -615,11 +597,8 @@ struct nvdimm *__nvdimm_create(struct nvdimm_bus *nvdimm_bus,
 	nvdimm->fw_ops = fw_ops;
 	nvdimm->sec.overwrite_tmo = 0;
 	INIT_DELAYED_WORK(&nvdimm->dwork, nvdimm_security_overwrite_query);
-	/*
-	 * Security state must be initialized before device_add() for
-	 * attribute visibility.
-	 */
-	/* get security state and extended (master) state */
+	 
+	 
 	nvdimm->sec.flags = nvdimm_security_flags(nvdimm, NVDIMM_USER);
 	nvdimm->sec.ext_flags = nvdimm_security_flags(nvdimm, NVDIMM_MASTER);
 	device_initialize(dev);
@@ -638,7 +617,7 @@ void nvdimm_delete(struct nvdimm *nvdimm)
 	struct device *dev = &nvdimm->dev;
 	bool dev_put = false;
 
-	/* We are shutting down. Make state frozen artificially. */
+	 
 	nvdimm_bus_lock(dev);
 	set_bit(NVDIMM_SECURITY_FROZEN, &nvdimm->sec.flags);
 	if (test_and_clear_bit(NDD_WORK_PENDING, &nvdimm->flags))
@@ -717,12 +696,7 @@ static unsigned long dpa_align(struct nd_region *nd_region)
 	return nd_region->align / nd_region->ndr_mappings;
 }
 
-/**
- * nd_pmem_max_contiguous_dpa - For the given dimm+region, return the max
- *			   contiguous unallocated dpa range.
- * @nd_region: constrain available space check to this reference region
- * @nd_mapping: container of dpa-resource-root + labels
- */
+ 
 resource_size_t nd_pmem_max_contiguous_dpa(struct nd_region *nd_region,
 					   struct nd_mapping *nd_mapping)
 {
@@ -732,7 +706,7 @@ resource_size_t nd_pmem_max_contiguous_dpa(struct nd_region *nd_region,
 	struct resource *res;
 	unsigned long align;
 
-	/* if a dimm is disabled the available capacity is zero */
+	 
 	if (!ndd)
 		return 0;
 
@@ -748,7 +722,7 @@ resource_size_t nd_pmem_max_contiguous_dpa(struct nd_region *nd_region,
 
 		if (strcmp(res->name, "pmem-reserve") != 0)
 			continue;
-		/* trim free space relative to current alignment setting */
+		 
 		start = ALIGN(res->start, align);
 		end = ALIGN_DOWN(res->end + 1, align) - 1;
 		if (end < start)
@@ -760,14 +734,7 @@ resource_size_t nd_pmem_max_contiguous_dpa(struct nd_region *nd_region,
 	return max;
 }
 
-/**
- * nd_pmem_available_dpa - for the given dimm+region account unallocated dpa
- * @nd_mapping: container of dpa-resource-root + labels
- * @nd_region: constrain available space check to this reference region
- *
- * Validate that a PMEM label, if present, aligns with the start of an
- * interleave set.
- */
+ 
 resource_size_t nd_pmem_available_dpa(struct nd_region *nd_region,
 				      struct nd_mapping *nd_mapping)
 {
@@ -800,7 +767,7 @@ resource_size_t nd_pmem_available_dpa(struct nd_region *nd_region,
 		} else if (end >= map_start && end <= map_end) {
 			busy += end - start + 1;
 		} else if (map_start > start && map_start < end) {
-			/* total eclipse of the mapping */
+			 
 			busy += nd_mapping->size;
 		}
 	}
@@ -834,11 +801,7 @@ struct resource *nvdimm_allocate_dpa(struct nvdimm_drvdata *ndd,
 	return res;
 }
 
-/**
- * nvdimm_allocated_dpa - sum up the dpa currently allocated to this label_id
- * @nvdimm: container of dpa-resource-root + labels
- * @label_id: dpa resource name of the form pmem-<human readable uuid>
- */
+ 
 resource_size_t nvdimm_allocated_dpa(struct nvdimm_drvdata *ndd,
 		struct nd_label_id *label_id)
 {
@@ -864,7 +827,7 @@ static int count_dimms(struct device *dev, void *c)
 int nvdimm_bus_check_dimm_count(struct nvdimm_bus *nvdimm_bus, int dimm_count)
 {
 	int count = 0;
-	/* Flush any possible dimm registration failures */
+	 
 	nd_synchronize();
 
 	device_for_each_child(&nvdimm_bus->dev, &count, count_dimms);

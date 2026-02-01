@@ -1,18 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR copyleft-next-0.3.1
-/*
- * kmod stress test driver
- *
- * Copyright (C) 2017 Luis R. Rodriguez <mcgrof@kernel.org>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-/*
- * This driver provides an interface to trigger and test the kernel's
- * module loader through a series of configurations and a few triggers.
- * To test this driver use the following script as root:
- *
- * tools/testing/selftests/kmod/kmod.sh --help
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,26 +27,14 @@ module_param(force_init_test, bool_enable_only, 0644);
 MODULE_PARM_DESC(force_init_test,
 		 "Force kicking a test immediately after driver loads");
 
-/*
- * For device allocation / registration
- */
+ 
 static DEFINE_MUTEX(reg_dev_mutex);
 static LIST_HEAD(reg_test_devs);
 
-/*
- * num_test_devs actually represents the *next* ID of the next
- * device we will allow to create.
- */
+ 
 static int num_test_devs;
 
-/**
- * enum kmod_test_case - linker table test case
- * @TEST_KMOD_DRIVER: stress tests request_module()
- * @TEST_KMOD_FS_TYPE: stress tests get_fs_type()
- *
- * If you add a  test case, please be sure to review if you need to set
- * @need_mod_put for your tests case.
- */
+ 
 enum kmod_test_case {
 	__TEST_KMOD_INVALID = 0,
 
@@ -76,20 +54,7 @@ struct test_config {
 
 struct kmod_test_device;
 
-/**
- * struct kmod_test_device_info - thread info
- *
- * @ret_sync: return value if request_module() is used, sync request for
- * 	@TEST_KMOD_DRIVER
- * @fs_sync: return value of get_fs_type() for @TEST_KMOD_FS_TYPE
- * @thread_idx: thread ID
- * @test_dev: test device test is being performed under
- * @need_mod_put: Some tests (get_fs_type() is one) requires putting the module
- *	(module_put(fs_sync->owner)) when done, otherwise you will not be able
- *	to unload the respective modules and re-test. We use this to keep
- *	accounting of when we need this and to help out in case we need to
- *	error out and deal with module_put() on error.
- */
+ 
 struct kmod_test_device_info {
 	int ret_sync;
 	struct file_system_type *fs_sync;
@@ -99,22 +64,7 @@ struct kmod_test_device_info {
 	bool need_mod_put;
 };
 
-/**
- * struct kmod_test_device - test device to help test kmod
- *
- * @dev_idx: unique ID for test device
- * @config: configuration for the test
- * @misc_dev: we use a misc device under the hood
- * @dev: pointer to misc_dev's own struct device
- * @config_mutex: protects configuration of test
- * @trigger_mutex: the test trigger can only be fired once at a time
- * @thread_lock: protects @done count, and the @info per each thread
- * @done: number of threads which have completed or failed
- * @test_is_oom: when we run out of memory, use this to halt moving forward
- * @kthreads_done: completion used to signal when all work is done
- * @list: needed to be part of the reg_test_devs
- * @info: array of info for each thread
- */
+ 
 struct kmod_test_device {
 	int dev_idx;
 	struct test_config config;
@@ -164,7 +114,7 @@ static struct kmod_test_device *dev_to_test_dev(struct device *dev)
 	return misc_dev_to_test_dev(misc_dev);
 }
 
-/* Must run with thread_mutex held */
+ 
 static void kmod_test_done_check(struct kmod_test_device *test_dev,
 				 unsigned int idx)
 {
@@ -218,7 +168,7 @@ static int run_request(void *data)
 		info->need_mod_put = true;
 		break;
 	default:
-		/* __trigger_config_run() already checked for test sanity */
+		 
 		BUG();
 		return -EINVAL;
 	}
@@ -243,10 +193,7 @@ static int tally_work_test(struct kmod_test_device_info *info)
 
 	switch (config->test_case) {
 	case TEST_KMOD_DRIVER:
-		/*
-		 * Only capture errors, if one is found that's
-		 * enough, for now.
-		 */
+		 
 		if (info->ret_sync != 0)
 			err_ret = info->ret_sync;
 		dev_info(test_dev->dev,
@@ -254,7 +201,7 @@ static int tally_work_test(struct kmod_test_device_info *info)
 			 info->thread_idx, info->ret_sync);
 		break;
 	case TEST_KMOD_FS_TYPE:
-		/* For now we make this simple */
+		 
 		if (!info->fs_sync)
 			err_ret = -EINVAL;
 		dev_info(test_dev->dev, "Sync thread %u fs: %s\n",
@@ -268,15 +215,7 @@ static int tally_work_test(struct kmod_test_device_info *info)
 	return err_ret;
 }
 
-/*
- * XXX: add result option to display if all errors did not match.
- * For now we just keep any error code if one was found.
- *
- * If this ran it means *all* tasks were created fine and we
- * are now just collecting results.
- *
- * Only propagate errors, do not override with a subsequent success case.
- */
+ 
 static void tally_up_work(struct kmod_test_device *test_dev)
 {
 	struct test_config *config = &test_dev->config;
@@ -296,10 +235,7 @@ static void tally_up_work(struct kmod_test_device *test_dev)
 			err_ret = ret;
 	}
 
-	/*
-	 * Note: request_module() returns 256 for a module not found even
-	 * though modprobe itself returns 1.
-	 */
+	 
 	config->test_result = err_ret;
 
 	mutex_unlock(&test_dev->thread_mutex);
@@ -354,13 +290,7 @@ static void test_dev_kmod_stop_tests(struct kmod_test_device *test_dev)
 			kthread_stop(info->task_sync);
 		}
 
-		/*
-		 * info->task_sync is well protected, it can only be
-		 * NULL or a pointer to a struct. If its NULL we either
-		 * never ran, or we did and we completed the work. Completed
-		 * tasks *always* put the module for us. This is a sanity
-		 * check -- just in case.
-		 */
+		 
 		if (info->task_sync && info->need_mod_put)
 			test_kmod_put_module(info);
 	}
@@ -368,12 +298,7 @@ static void test_dev_kmod_stop_tests(struct kmod_test_device *test_dev)
 	mutex_unlock(&test_dev->thread_mutex);
 }
 
-/*
- * Only wait *iff* we did not run into any errors during all of our thread
- * set up. If run into any issues we stop threads and just bail out with
- * an error to the trigger. This also means we don't need any tally work
- * for any threads which fail.
- */
+ 
 static int try_requests(struct kmod_test_device *test_dev)
 {
 	struct test_config *config = &test_dev->config;
@@ -490,10 +415,7 @@ static ssize_t config_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(config);
 
-/*
- * This ensures we don't allow kicking threads through if our configuration
- * is faulty.
- */
+ 
 static int __trigger_config_run(struct kmod_test_device *test_dev)
 {
 	struct test_config *config = &test_dev->config;
@@ -527,19 +449,7 @@ static int trigger_config_run(struct kmod_test_device *test_dev)
 	dev_info(test_dev->dev, "General test result: %d\n",
 		 config->test_result);
 
-	/*
-	 * We must return 0 after a trigger even unless something went
-	 * wrong with the setup of the test. If the test setup went fine
-	 * then userspace must just check the result of config->test_result.
-	 * One issue with relying on the return from a call in the kernel
-	 * is if the kernel returns a positive value using this trigger
-	 * will not return the value to userspace, it would be lost.
-	 *
-	 * By not relying on capturing the return value of tests we are using
-	 * through the trigger it also us to run tests with set -e and only
-	 * fail when something went wrong with the driver upon trigger
-	 * requests.
-	 */
+	 
 	ret = 0;
 
 out:
@@ -560,22 +470,12 @@ trigger_config_store(struct device *dev,
 	if (test_dev->test_is_oom)
 		return -ENOMEM;
 
-	/* For all intents and purposes we don't care what userspace
-	 * sent this trigger, we care only that we were triggered.
-	 * We treat the return value only for caputuring issues with
-	 * the test setup. At this point all the test variables should
-	 * have been allocated so typically this should never fail.
-	 */
+	 
 	ret = trigger_config_run(test_dev);
 	if (unlikely(ret < 0))
 		goto out;
 
-	/*
-	 * Note: any return > 0 will be treated as success
-	 * and the error value will not be available to userspace.
-	 * Do not rely on trying to send to userspace a test value
-	 * return value as positive return errors will be lost.
-	 */
+	 
 	if (WARN_ON(ret > 0))
 		return -EINVAL;
 
@@ -585,11 +485,7 @@ out:
 }
 static DEVICE_ATTR_WO(trigger_config);
 
-/*
- * XXX: move to kstrncpy() once merged.
- *
- * Users should use kfree_const() when freeing these.
- */
+ 
 static int __kstrncpy(char **dst, const char *name, size_t count, gfp_t gfp)
 {
 	*dst = kstrndup(name, count, gfp);
@@ -657,9 +553,7 @@ static ssize_t config_test_driver_store(struct device *dev,
 	return copied;
 }
 
-/*
- * As per sysfs_kf_seq_show() the buf is max PAGE_SIZE.
- */
+ 
 static ssize_t config_test_show_str(struct mutex *config_mutex,
 				    char *dst,
 				    char *src)
@@ -777,10 +671,7 @@ static int kmod_config_sync_info(struct kmod_test_device *test_dev)
 	return 0;
 }
 
-/*
- * Old kernels may not have this, if you want to port this code to
- * test it on older kernels.
- */
+ 
 #ifdef get_kmod_umh_limit
 static unsigned int kmod_init_test_thread_limit(void)
 {
@@ -890,7 +781,7 @@ static int test_dev_config_update_uint_sync(struct kmod_test_device *test_dev,
 	}
 
 	mutex_unlock(&test_dev->config_mutex);
-	/* Always return full write size even if we didn't consume all */
+	 
 	return size;
 }
 
@@ -914,7 +805,7 @@ static int test_dev_config_update_uint_range(struct kmod_test_device *test_dev,
 	*config = val;
 	mutex_unlock(&test_dev->config_mutex);
 
-	/* Always return full write size even if we didn't consume all */
+	 
 	return size;
 }
 
@@ -932,7 +823,7 @@ static int test_dev_config_update_int(struct kmod_test_device *test_dev,
 	mutex_lock(&test_dev->config_mutex);
 	*config = val;
 	mutex_unlock(&test_dev->config_mutex);
-	/* Always return full write size even if we didn't consume all */
+	 
 	return size;
 }
 
@@ -1124,7 +1015,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
 
 	mutex_lock(&reg_dev_mutex);
 
-	/* int should suffice for number of devices, test for wrap */
+	 
 	if (num_test_devs + 1 == INT_MAX) {
 		pr_err("reached limit of number of test devices\n");
 		goto out;
@@ -1166,13 +1057,7 @@ static int __init test_kmod_init(void)
 		return -ENODEV;
 	}
 
-	/*
-	 * With some work we might be able to gracefully enable
-	 * testing with this driver built-in, for now this seems
-	 * rather risky. For those willing to try have at it,
-	 * and enable the below. Good luck! If that works, try
-	 * lowering the init level for more fun.
-	 */
+	 
 	if (force_init_test) {
 		ret = trigger_config_run_type(test_dev,
 					      TEST_KMOD_DRIVER, "tun");

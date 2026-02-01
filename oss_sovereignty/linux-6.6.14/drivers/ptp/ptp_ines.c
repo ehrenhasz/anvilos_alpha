@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 MOSER-BAER AG
-//
+
+
+
+
 
 #define pr_fmt(fmt) "InES_PTP: " fmt
 
@@ -25,13 +25,13 @@ MODULE_AUTHOR("Richard Cochran <richardcochran@gmail.com>");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");
 
-/* GLOBAL register */
+ 
 #define MCAST_MAC_SELECT_SHIFT	2
 #define MCAST_MAC_SELECT_MASK	0x3
 #define IO_RESET		BIT(1)
 #define PTP_RESET		BIT(0)
 
-/* VERSION register */
+ 
 #define IF_MAJOR_VER_SHIFT	12
 #define IF_MAJOR_VER_MASK	0xf
 #define IF_MINOR_VER_SHIFT	8
@@ -41,7 +41,7 @@ MODULE_LICENSE("GPL");
 #define FPGA_MINOR_VER_SHIFT	0
 #define FPGA_MINOR_VER_MASK	0xf
 
-/* INT_STAT register */
+ 
 #define RX_INTR_STATUS_3	BIT(5)
 #define RX_INTR_STATUS_2	BIT(4)
 #define RX_INTR_STATUS_1	BIT(3)
@@ -49,7 +49,7 @@ MODULE_LICENSE("GPL");
 #define TX_INTR_STATUS_2	BIT(1)
 #define TX_INTR_STATUS_1	BIT(0)
 
-/* INT_MSK register */
+ 
 #define RX_INTR_MASK_3		BIT(5)
 #define RX_INTR_MASK_2		BIT(4)
 #define RX_INTR_MASK_1		BIT(3)
@@ -57,7 +57,7 @@ MODULE_LICENSE("GPL");
 #define TX_INTR_MASK_2		BIT(1)
 #define TX_INTR_MASK_1		BIT(0)
 
-/* BUF_STAT register */
+ 
 #define RX_FIFO_NE_3		BIT(5)
 #define RX_FIFO_NE_2		BIT(4)
 #define RX_FIFO_NE_1		BIT(3)
@@ -65,7 +65,7 @@ MODULE_LICENSE("GPL");
 #define TX_FIFO_NE_2		BIT(1)
 #define TX_FIFO_NE_1		BIT(0)
 
-/* PORT_CONF register */
+ 
 #define CM_ONE_STEP		BIT(6)
 #define PHY_SPEED_SHIFT		4
 #define PHY_SPEED_MASK		0x3
@@ -74,7 +74,7 @@ MODULE_LICENSE("GPL");
 #define PTP_MODE_SHIFT		0
 #define PTP_MODE_MASK		0x3
 
-/* TS_STAT_TX register */
+ 
 #define TS_ENABLE		BIT(15)
 #define DATA_READ_POS_SHIFT	8
 #define DATA_READ_POS_MASK	0x1f
@@ -150,7 +150,7 @@ struct ines_port {
 	bool				txts_enabled;
 	unsigned int			index;
 	struct delayed_work		ts_work;
-	/* lock protects event list and tx_skb */
+	 
 	spinlock_t			lock;
 	struct sk_buff			*tx_skb;
 	struct list_head		events;

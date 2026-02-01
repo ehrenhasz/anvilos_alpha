@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt8173-max98090.c  --  MT8173 MAX98090 ALSA SoC machine driver
- *
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Koro Chen <koro.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -69,7 +64,7 @@ static int mt8173_max98090_init(struct snd_soc_pcm_runtime *runtime)
 	struct snd_soc_card *card = runtime->card;
 	struct snd_soc_component *component = asoc_rtd_to_codec(runtime, 0)->component;
 
-	/* enable jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(card, "Headphone", SND_JACK_HEADSET,
 					 &mt8173_max98090_jack,
 					 mt8173_max98090_jack_pins,
@@ -97,9 +92,9 @@ SND_SOC_DAILINK_DEFS(hifi,
 	DAILINK_COMP_ARRAY(COMP_CODEC(NULL, "HiFi")),
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* Digital audio interface glue - connects codec <---> CPU */
+ 
 static struct snd_soc_dai_link mt8173_max98090_dais[] = {
-	/* Front End DAI links */
+	 
 	{
 		.name = "MAX98090 Playback",
 		.stream_name = "MAX98090 Playback",
@@ -116,7 +111,7 @@ static struct snd_soc_dai_link mt8173_max98090_dais[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(capture),
 	},
-	/* Back End DAI links */
+	 
 	{
 		.name = "Codec",
 		.no_pcm = 1,
@@ -203,7 +198,7 @@ static struct platform_driver mt8173_max98090_driver = {
 
 module_platform_driver(mt8173_max98090_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8173 MAX98090 ALSA SoC machine driver");
 MODULE_AUTHOR("Koro Chen <koro.chen@mediatek.com>");
 MODULE_LICENSE("GPL v2");

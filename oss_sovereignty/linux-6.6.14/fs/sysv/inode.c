@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/sysv/inode.c
- *
- *  minix/inode.c
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  xenix/inode.c
- *  Copyright (C) 1992  Doug Evans
- *
- *  coh/inode.c
- *  Copyright (C) 1993  Pascal Haible, Bruno Haible
- *
- *  sysv/inode.c
- *  Copyright (C) 1993  Paul B. Monday
- *
- *  sysv/inode.c
- *  Copyright (C) 1993  Bruno Haible
- *  Copyright (C) 1997, 1998  Krzysztof G. Baranowski
- *
- *  This file contains code for allocating/freeing inodes and for read/writing
- *  the superblock.
- */
+
+ 
 
 #include <linux/highuid.h>
 #include <linux/slab.h>
@@ -39,11 +18,7 @@ static int sysv_sync_fs(struct super_block *sb, int wait)
 
 	mutex_lock(&sbi->s_lock);
 
-	/*
-	 * If we are going to write out the super block,
-	 * then attach current time stamp.
-	 * But if the filesystem was marked clean, keep it clean.
-	 */
+	 
 	old_time = fs32_to_cpu(sbi, *sbi->s_sb_time);
 	if (sbi->s_type == FSTYPE_SYSV4) {
 		if (*sbi->s_sb_state == cpu_to_fs32(sbi, 0x7c269d38u - old_time))
@@ -72,7 +47,7 @@ static void sysv_put_super(struct super_block *sb)
 	struct sysv_sb_info *sbi = SYSV_SB(sb);
 
 	if (!sb_rdonly(sb)) {
-		/* XXX ext2 also updates the state here */
+		 
 		mark_buffer_dirty(sbi->s_bh1);
 		if (sbi->s_bh1 != sbi->s_bh2)
 			mark_buffer_dirty(sbi->s_bh2);
@@ -102,9 +77,7 @@ static int sysv_statfs(struct dentry *dentry, struct kstatfs *buf)
 	return 0;
 }
 
-/* 
- * NXI <-> N0XI for PDP, XIN <-> XIN0 for le32, NIX <-> 0NIX for be32
- */
+ 
 static inline void read3byte(struct sysv_sb_info *sbi,
 	unsigned char * from, unsigned char * to)
 {
@@ -194,7 +167,7 @@ struct inode *sysv_iget(struct super_block *sb, unsigned int ino)
 		       inode->i_sb->s_id);
 		goto bad_inode;
 	}
-	/* SystemV FS: kludge permissions if ino==SYSV_ROOT_INO ?? */
+	 
 	inode->i_mode = fs16_to_cpu(sbi, raw_inode->i_mode);
 	i_uid_write(inode, (uid_t)fs16_to_cpu(sbi, raw_inode->i_uid));
 	i_gid_write(inode, (gid_t)fs16_to_cpu(sbi, raw_inode->i_gid));
@@ -347,10 +320,7 @@ int __init sysv_init_icache(void)
 
 void sysv_destroy_icache(void)
 {
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(sysv_inode_cachep);
 }

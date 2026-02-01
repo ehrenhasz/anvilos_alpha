@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PowerNV OPAL IPMI driver
- *
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #define pr_fmt(fmt)        "ipmi-powernv: " fmt
 
@@ -22,12 +18,7 @@ struct ipmi_smi_powernv {
 	struct ipmi_smi		*intf;
 	unsigned int		irq;
 
-	/**
-	 * We assume that there can only be one outstanding request, so
-	 * keep the pending message in cur_msg. We protect this from concurrent
-	 * updates through send & recv calls, (and consequently opal_msg, which
-	 * is in-use when cur_msg is set) with msg_lock
-	 */
+	 
 	spinlock_t		msg_lock;
 	struct ipmi_smi_msg	*cur_msg;
 	struct opal_ipmi_msg	*opal_msg;
@@ -59,13 +50,13 @@ static void ipmi_powernv_send(void *send_info, struct ipmi_smi_msg *msg)
 	int comp, rc;
 	size_t size;
 
-	/* ensure data_len will fit in the opal_ipmi_msg buffer... */
+	 
 	if (msg->data_size > IPMI_MAX_MSG_LENGTH) {
 		comp = IPMI_REQ_LEN_EXCEEDED_ERR;
 		goto err;
 	}
 
-	/* ... and that we at least have netfn and cmd bytes */
+	 
 	if (msg->data_size < 2) {
 		comp = IPMI_REQ_LEN_INVALID_ERR;
 		goto err;
@@ -78,7 +69,7 @@ static void ipmi_powernv_send(void *send_info, struct ipmi_smi_msg *msg)
 		goto err_unlock;
 	}
 
-	/* format our data for the OPAL API */
+	 
 	opal_msg = smi->opal_msg;
 	opal_msg->version = OPAL_IPMI_MSG_FORMAT_VERSION_1;
 	opal_msg->netfn = msg->data[0];
@@ -86,7 +77,7 @@ static void ipmi_powernv_send(void *send_info, struct ipmi_smi_msg *msg)
 	if (msg->data_size > 2)
 		memcpy(opal_msg->data, msg->data + 2, msg->data_size - 2);
 
-	/* data_size already includes the netfn and cmd bytes */
+	 
 	size = sizeof(*opal_msg) + msg->data_size - 2;
 
 	pr_devel("%s: opal_ipmi_send(0x%llx, %p, %ld)\n", __func__,
@@ -138,7 +129,7 @@ static int ipmi_powernv_recv(struct ipmi_smi_powernv *smi)
 	pr_devel("%s:   -> %d (size %lld)\n", __func__,
 			rc, rc == 0 ? size : 0);
 	if (rc) {
-		/* If came via the poll, and response was not yet ready */
+		 
 		if (rc == OPAL_EMPTY) {
 			spin_unlock_irqrestore(&smi->msg_lock, flags);
 			return 0;

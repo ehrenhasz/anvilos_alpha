@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH11K_DBRING_H
 #define ATH11K_DBRING_H
@@ -41,7 +39,7 @@ struct ath11k_dbring_cap {
 struct ath11k_dbring {
 	struct dp_srng refill_srng;
 	struct idr bufs_idr;
-	/* Protects bufs_idr */
+	 
 	spinlock_t idr_lock;
 	dma_addr_t tp_addr;
 	dma_addr_t hp_addr;
@@ -78,4 +76,4 @@ void ath11k_dbring_srng_cleanup(struct ath11k *ar, struct ath11k_dbring *ring);
 void ath11k_dbring_buf_cleanup(struct ath11k *ar, struct ath11k_dbring *ring);
 int ath11k_dbring_validate_buffer(struct ath11k *ar, void *data, u32 size);
 
-#endif /* ATH11K_DBRING_H */
+#endif  

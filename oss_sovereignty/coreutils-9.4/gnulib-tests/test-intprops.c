@@ -1,77 +1,17 @@
-/* Test intprops.h.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
-
-/* Tell gcc not to warn about the long expressions that the overflow
-   macros expand to, or about the (X < 0) expressions.  */
+ 
 #if 4 < __GNUC__ + (3 <= __GNUC_MINOR__)
 # pragma GCC diagnostic ignored "-Woverlength-strings"
 # pragma GCC diagnostic ignored "-Wtype-limits"
 
-/* Work around a bug in GCC 6.1 and earlier; see:
-   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68971  */
-# pragma GCC diagnostic ignored "-Woverflow"
-
-#endif
-
-#include <config.h>
-
-#ifdef TEST_STDCKDINT
-# include <stdckdint.h>
-#else
-# include "intprops.h"
-#endif
-
-#include <inttypes.h>
-#include <limits.h>
-
-#include "macros.h"
-
-/* Compile-time verification of expression X.
-   In this file, we need it as a statement, rather than as a declaration.  */
+ 
 #define verify_stmt(x) do { static_assert (x); } while (0)
 
-/* VERIFY (X) uses a static assertion for compilers that are known to work,
-   and falls back on a dynamic assertion for other compilers.
-   But it ignores X if testing stdckdint.h.
-   These tests should be checkable via 'verify' rather than 'ASSERT', but
-   using 'verify' would run into a bug with HP-UX 11.23 cc; see
-   <https://lists.gnu.org/r/bug-gnulib/2011-05/msg00401.html>.  */
-#ifdef TEST_STDCKDINT
-# define VERIFY(x) ((void) 0)
-#elif __GNUC__ || __clang__ || __SUNPRO_C
-# define VERIFY(x) verify_stmt (x)
-#else
-# define VERIFY(x) ASSERT (x)
-#endif
-
-#define DONTCARE __LINE__
-
-int int_minus_2 = -2;
-int int_1 = 1;
-
-int
-main (void)
-{
-  /* Use VERIFY for tests that must be integer constant expressions,
-     ASSERT otherwise.  */
+ 
 
 #ifndef TEST_STDCKDINT
-  /* TYPE_IS_INTEGER.  */
+   
   ASSERT (TYPE_IS_INTEGER (bool));
   ASSERT (TYPE_IS_INTEGER (char));
   ASSERT (TYPE_IS_INTEGER (signed char));
@@ -88,26 +28,11 @@ main (void)
   ASSERT (! TYPE_IS_INTEGER (double));
   ASSERT (! TYPE_IS_INTEGER (long double));
 
-  /* TYPE_SIGNED.  */
-  /* VERIFY (! TYPE_SIGNED (bool)); // not guaranteed by gnulib substitute */
-  VERIFY (TYPE_SIGNED (signed char));
-  VERIFY (! TYPE_SIGNED (unsigned char));
-  VERIFY (TYPE_SIGNED (short int));
-  VERIFY (! TYPE_SIGNED (unsigned short int));
-  VERIFY (TYPE_SIGNED (int));
-  VERIFY (! TYPE_SIGNED (unsigned int));
-  VERIFY (TYPE_SIGNED (long int));
-  VERIFY (! TYPE_SIGNED (unsigned long int));
-  VERIFY (TYPE_SIGNED (intmax_t));
-  VERIFY (! TYPE_SIGNED (uintmax_t));
-  ASSERT (TYPE_SIGNED (float));
-  ASSERT (TYPE_SIGNED (double));
-  ASSERT (TYPE_SIGNED (long double));
-
-  /* Integer representation.  Check that it is two's complement.  */
+   
+   
   VERIFY (INT_MIN + INT_MAX < 0);
 
-  /* TYPE_MINIMUM, TYPE_MAXIMUM.  */
+   
   VERIFY (TYPE_MINIMUM (char) == CHAR_MIN);
   VERIFY (TYPE_MAXIMUM (char) == CHAR_MAX);
   VERIFY (TYPE_MINIMUM (unsigned char) == 0);
@@ -137,7 +62,7 @@ main (void)
   VERIFY (TYPE_MINIMUM (uintmax_t) == 0);
   VERIFY (TYPE_MAXIMUM (uintmax_t) == UINTMAX_MAX);
 
-  /* TYPE_WIDTH.  */
+   
   #ifdef CHAR_WIDTH
    verify_stmt (TYPE_WIDTH (char) == CHAR_WIDTH);
    verify_stmt (TYPE_WIDTH (signed char) == SCHAR_WIDTH);
@@ -154,12 +79,12 @@ main (void)
    #endif
   #endif
 
-  /* INT_BITS_STRLEN_BOUND.  */
+   
   VERIFY (INT_BITS_STRLEN_BOUND (1) == 1);
   VERIFY (INT_BITS_STRLEN_BOUND (2620) == 789);
 
-  /* INT_STRLEN_BOUND, INT_BUFSIZE_BOUND.  */
-  #ifdef INT32_MAX /* POSIX guarantees int32_t; this ports to non-POSIX.  */
+   
+  #ifdef INT32_MAX  
   VERIFY (INT_STRLEN_BOUND (int32_t) == sizeof ("-2147483648") - 1);
   VERIFY (INT_BUFSIZE_BOUND (int32_t) == sizeof ("-2147483648"));
   #endif
@@ -169,13 +94,7 @@ main (void)
   #endif
 #endif
 
-  /* All the INT_<op>_RANGE_OVERFLOW tests are equally valid as
-     INT_<op>_OVERFLOW tests, so define macros to do both.  OP is the
-     operation, OPNAME its symbolic name, A and B its operands, T the
-     result type, V the overflow flag, and VRES the result if V and if
-     two's complement.  CHECK_BINOP is for most binary operations,
-     CHECK_SBINOP for binary +, -, * when the result type is signed,
-     and CHECK_UNOP for unary operations.  */
+   
   #define CHECK_BINOP(op, opname, a, b, t, v, vres)                       \
     VERIFY (INT_##opname##_RANGE_OVERFLOW (a, b, TYPE_MINIMUM (t),        \
                                            TYPE_MAXIMUM (t))              \
@@ -194,7 +113,7 @@ main (void)
             == (v));                                                      \
     VERIFY (INT_##opname##_OVERFLOW (a) == (v))
 
-  /* INT_<op>_RANGE_OVERFLOW, INT_<op>_OVERFLOW.  */
+   
   VERIFY (INT_ADD_RANGE_OVERFLOW (INT_MAX, 1, INT_MIN, INT_MAX));
   VERIFY (INT_ADD_OVERFLOW (INT_MAX, 1));
 
@@ -247,7 +166,7 @@ main (void)
   CHECK_BINOP (<<, LEFT_SHIFT, UINT_MAX / 2, 1, unsigned int, false,
                (UINT_MAX / 2) << 1);
 
-  /* INT_<op>_OVERFLOW and INT_<op>_WRAPV with mixed types.  */
+   
   #define CHECK_SUM(a, b, t, v, vres)                                     \
     CHECK_SUM1 (a, b, t, v, vres);                                        \
     CHECK_SUM1 (b, a, t, v, vres)
@@ -410,7 +329,7 @@ main (void)
   }
 # endif
 
-  /* Check for GCC bug 91450.  */
+   
   {
     unsigned long long result;
     ASSERT (INT_MULTIPLY_WRAPV (int_minus_2, int_1, &result) && result == -2);

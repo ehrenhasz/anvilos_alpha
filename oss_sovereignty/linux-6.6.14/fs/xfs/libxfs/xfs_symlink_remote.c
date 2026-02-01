@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * Copyright (c) 2012-2013 Red Hat, Inc.
- * All rights reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_format.h"
@@ -18,10 +14,7 @@
 #include "xfs_log.h"
 
 
-/*
- * Each contiguous block has a header, so it is not just a simple pathlen
- * to FSB conversion.
- */
+ 
 int
 xfs_symlink_blocks(
 	struct xfs_mount *mp,
@@ -57,11 +50,7 @@ xfs_symlink_hdr_set(
 	return sizeof(struct xfs_dsymlink_hdr);
 }
 
-/*
- * Checking of the symlink header is split into two parts. the verifier does
- * CRC, location and bounds checking, the unpacking function checks the path
- * parameters and owner.
- */
+ 
 bool
 xfs_symlink_hdr_ok(
 	xfs_ino_t		ino,
@@ -78,7 +67,7 @@ xfs_symlink_hdr_ok(
 	if (ino != be64_to_cpu(dsl->sl_owner))
 		return false;
 
-	/* ok */
+	 
 	return true;
 }
 
@@ -115,7 +104,7 @@ xfs_symlink_read_verify(
 	struct xfs_mount *mp = bp->b_mount;
 	xfs_failaddr_t	fa;
 
-	/* no verification of non-crc buffers */
+	 
 	if (!xfs_has_crc(mp))
 		return;
 
@@ -136,7 +125,7 @@ xfs_symlink_write_verify(
 	struct xfs_buf_log_item	*bip = bp->b_log_item;
 	xfs_failaddr_t		fa;
 
-	/* no verification of non-crc buffers */
+	 
 	if (!xfs_has_crc(mp))
 		return;
 
@@ -180,10 +169,7 @@ xfs_symlink_local_to_remote(
 		return;
 	}
 
-	/*
-	 * As this symlink fits in an inode literal area, it must also fit in
-	 * the smallest buffer the filesystem supports.
-	 */
+	 
 	ASSERT(BBTOB(bp->b_length) >=
 			ifp->if_bytes + sizeof(struct xfs_dsymlink_hdr));
 
@@ -196,10 +182,7 @@ xfs_symlink_local_to_remote(
 					ifp->if_bytes - 1);
 }
 
-/*
- * Verify the in-memory consistency of an inline symlink data fork. This
- * does not do on-disk format checks.
- */
+ 
 xfs_failaddr_t
 xfs_symlink_shortform_verify(
 	struct xfs_inode	*ip)
@@ -211,22 +194,19 @@ xfs_symlink_shortform_verify(
 
 	ASSERT(ifp->if_format == XFS_DINODE_FMT_LOCAL);
 
-	/*
-	 * Zero length symlinks should never occur in memory as they are
-	 * never allowed to exist on disk.
-	 */
+	 
 	if (!size)
 		return __this_address;
 
-	/* No negative sizes or overly long symlink targets. */
+	 
 	if (size < 0 || size > XFS_SYMLINK_MAXLEN)
 		return __this_address;
 
-	/* No NULLs in the target either. */
+	 
 	if (memchr(sfp, 0, size - 1))
 		return __this_address;
 
-	/* We /did/ null-terminate the buffer, right? */
+	 
 	if (*endp != 0)
 		return __this_address;
 	return NULL;

@@ -1,16 +1,12 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
- * Microchip VCAP API kunit test suite
- */
+
+ 
 
 #include <kunit/test.h>
 #include "vcap_api.h"
 #include "vcap_api_client.h"
 #include "vcap_model_kunit.h"
 
-/* First we have the test infrastructure that emulates the platform
- * implementation
- */
+ 
 #define TEST_BUF_CNT 100
 #define TEST_BUF_SZ  350
 #define STREAMWSIZE 64
@@ -27,7 +23,7 @@ static int test_move_addr;
 static int test_move_offset;
 static int test_move_count;
 
-/* Callback used by the VCAP API */
+ 
 static enum vcap_keyfield_set test_val_keyset(struct net_device *ndev,
 					      struct vcap_admin *admin,
 					      struct vcap_rule *rule,
@@ -69,7 +65,7 @@ static enum vcap_keyfield_set test_val_keyset(struct net_device *ndev,
 	return -EINVAL;
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_add_def_fields(struct net_device *ndev,
 				struct vcap_admin *admin,
 				struct vcap_rule *rule)
@@ -80,7 +76,7 @@ static void test_add_def_fields(struct net_device *ndev,
 		vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS, VCAP_BIT_0);
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_erase(struct vcap_admin *admin)
 {
 	if (test_cache_erase_count) {
@@ -91,7 +87,7 @@ static void test_cache_erase(struct vcap_admin *admin)
 	}
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_init(struct net_device *ndev, struct vcap_admin *admin,
 			    u32 start, u32 count)
 {
@@ -99,7 +95,7 @@ static void test_cache_init(struct net_device *ndev, struct vcap_admin *admin,
 	test_init_count = count;
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_read(struct net_device *ndev, struct vcap_admin *admin,
 			    enum vcap_selection sel, u32 start, u32 count)
 {
@@ -116,7 +112,7 @@ static void test_cache_read(struct net_device *ndev, struct vcap_admin *admin,
 				 __LINE__, start + idx, keystr[idx]);
 		}
 		for (idx = 0; idx < count; ++idx) {
-			/* Invert the mask before decoding starts */
+			 
 			mskstr[idx] = ~mskstr[idx];
 			pr_debug("%s:%d: mskdata[%02d]: 0x%08x\n", __func__,
 				 __LINE__, start + idx, mskstr[idx]);
@@ -141,7 +137,7 @@ static void test_cache_read(struct net_device *ndev, struct vcap_admin *admin,
 	}
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_write(struct net_device *ndev, struct vcap_admin *admin,
 			     enum vcap_selection sel, u32 start, u32 count)
 {
@@ -157,7 +153,7 @@ static void test_cache_write(struct net_device *ndev, struct vcap_admin *admin,
 				 __LINE__, start + idx, keystr[idx]);
 		}
 		for (idx = 0; idx < count; ++idx) {
-			/* Invert the mask before encoding starts */
+			 
 			mskstr[idx] = ~mskstr[idx];
 			pr_debug("%s:%d: mskdata[%02d]: 0x%08x\n", __func__,
 				 __LINE__, start + idx, mskstr[idx]);
@@ -183,7 +179,7 @@ static void test_cache_write(struct net_device *ndev, struct vcap_admin *admin,
 	}
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_update(struct net_device *ndev, struct vcap_admin *admin,
 			      enum vcap_command cmd,
 			      enum vcap_selection sel, u32 addr)
@@ -203,7 +199,7 @@ static void test_cache_move(struct net_device *ndev, struct vcap_admin *admin,
 	test_move_count = count;
 }
 
-/* Provide port information via a callback interface */
+ 
 static int vcap_test_port_info(struct net_device *ndev,
 			       struct vcap_admin *admin,
 			       struct vcap_output_print *out)
@@ -231,7 +227,7 @@ static struct vcap_control test_vctrl = {
 
 static void vcap_test_api_init(struct vcap_admin *admin)
 {
-	/* Initialize the shared objects */
+	 
 	INIT_LIST_HEAD(&test_vctrl.list);
 	INIT_LIST_HEAD(&admin->list);
 	INIT_LIST_HEAD(&admin->rules);
@@ -242,7 +238,7 @@ static void vcap_test_api_init(struct vcap_admin *admin)
 	test_updateaddridx = 0;
 }
 
-/* Helper function to create a rule of a specific size */
+ 
 static void test_vcap_xn_rule_creator(struct kunit *test, int cid,
 				      enum vcap_user user, u16 priority,
 				      int id, int size, int expected_addr)
@@ -253,7 +249,7 @@ static void test_vcap_xn_rule_creator(struct kunit *test, int cid,
 	enum vcap_actionfield_set actionset = VCAP_AFS_NO_VALUE;
 	int ret;
 
-	/* init before testing */
+	 
 	memset(test_updateaddr, 0, sizeof(test_updateaddr));
 	test_updateaddridx = 0;
 	test_move_addr = 0;
@@ -281,23 +277,23 @@ static void test_vcap_xn_rule_creator(struct kunit *test, int cid,
 		break;
 	}
 
-	/* Check that a valid size was used */
+	 
 	KUNIT_ASSERT_NE(test, VCAP_KFS_NO_VALUE, keyset);
 
-	/* Allocate the rule */
+	 
 	rule = vcap_alloc_rule(&test_vctrl, &test_netdev, cid, user, priority,
 			       id);
 	KUNIT_EXPECT_PTR_NE(test, NULL, rule);
 
 	ri = (struct vcap_rule_internal *)rule;
 
-	/* Override rule keyset */
+	 
 	ret = vcap_set_rule_set_keyset(rule, keyset);
 
-	/* Add rule actions : there must be at least one action */
+	 
 	ret = vcap_rule_add_action_u32(rule, VCAP_AF_ISDX_VAL, 0);
 
-	/* Override rule actionset */
+	 
 	ret = vcap_set_rule_set_actionset(rule, actionset);
 
 	ret = vcap_val_rule(rule, ETH_P_ALL);
@@ -306,14 +302,14 @@ static void test_vcap_xn_rule_creator(struct kunit *test, int cid,
 	KUNIT_EXPECT_EQ(test, actionset, rule->actionset);
 	KUNIT_EXPECT_EQ(test, size, ri->size);
 
-	/* Add rule with write callback */
+	 
 	ret = vcap_add_rule(rule);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	KUNIT_EXPECT_EQ(test, expected_addr, ri->addr);
 	vcap_free_rule(rule);
 }
 
-/* Prepare testing rule deletion */
+ 
 static void test_init_rule_deletion(void)
 {
 	test_move_addr = 0;
@@ -323,7 +319,7 @@ static void test_init_rule_deletion(void)
 	test_init_count = 0;
 }
 
-/* Define the test cases. */
+ 
 
 static void vcap_api_set_bit_1_test(struct kunit *test)
 {
@@ -528,7 +524,7 @@ static void vcap_api_encode_field_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, (u32)0x0, stream[11]);
 }
 
-/* In this testcase the subword is smaller than a register */
+ 
 static void vcap_api_encode_short_field_test(struct kunit *test)
 {
 	struct vcap_stream_iter iter;
@@ -614,7 +610,7 @@ static void vcap_api_encode_keyfield_test(struct kunit *test)
 	vcap_test_api_init(&admin);
 	vcap_encode_keyfield(&rule, &ckf, &rf, tgt);
 
-	/* Key */
+	 
 	KUNIT_EXPECT_EQ(test, (u32)0x0, keywords[0]);
 	KUNIT_EXPECT_EQ(test, (u32)0x0, keywords[1]);
 	KUNIT_EXPECT_EQ(test, (u32)(0x04a1 << 6), keywords[2]);
@@ -623,7 +619,7 @@ static void vcap_api_encode_keyfield_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, (u32)0x0, keywords[5]);
 	KUNIT_EXPECT_EQ(test, (u32)0x0, keywords[6]);
 
-	/* Mask */
+	 
 	KUNIT_EXPECT_EQ(test, (u32)0x0, maskwords[0]);
 	KUNIT_EXPECT_EQ(test, (u32)0x0, maskwords[1]);
 	KUNIT_EXPECT_EQ(test, (u32)(0x0fff << 6), maskwords[2]);
@@ -640,7 +636,7 @@ static void vcap_api_encode_max_keyfield_test(struct kunit *test)
 	u32 maskwords[6] = {0};
 	struct vcap_admin admin = {
 		.vtype = VCAP_TYPE_IS2,
-		/* IS2 sw_width = 52 bit */
+		 
 		.cache = {
 			.keystream = keywords,
 			.maskstream = maskwords,
@@ -692,10 +688,10 @@ static void vcap_api_encode_max_keyfield_test(struct kunit *test)
 
 	vcap_encode_keyfield(&rule, &ckf, &rf, tgt);
 
-	/* Key */
+	 
 	for (idx = 0; idx < ARRAY_SIZE(keyres); ++idx)
 		KUNIT_EXPECT_EQ(test, keyres[idx], keywords[idx]);
-	/* Mask */
+	 
 	for (idx = 0; idx < ARRAY_SIZE(mskres); ++idx)
 		KUNIT_EXPECT_EQ(test, mskres[idx], maskwords[idx]);
 }
@@ -705,7 +701,7 @@ static void vcap_api_encode_actionfield_test(struct kunit *test)
 	u32 actwords[16] = {0};
 	int sw_width = 21;
 	struct vcap_admin admin = {
-		.vtype = VCAP_TYPE_ES2, /* act_width = 21 */
+		.vtype = VCAP_TYPE_ES2,  
 		.cache = {
 			.actionstream = actwords,
 		},
@@ -737,7 +733,7 @@ static void vcap_api_encode_actionfield_test(struct kunit *test)
 
 	vcap_encode_actionfield(&rule, &caf, &rf, tgt);
 
-	/* Action */
+	 
 	KUNIT_EXPECT_EQ(test, (u32)0x0, actwords[0]);
 	KUNIT_EXPECT_EQ(test, (u32)((0x32 << (35 + 2 + 1 - sw_width)) & 0x1fffff), actwords[1]);
 	KUNIT_EXPECT_EQ(test, (u32)((0x32 >> ((2 * sw_width) - 38 - 1))), actwords[2]);
@@ -797,11 +793,11 @@ static void vcap_api_vcap_keyfields_test(struct kunit *test)
 	ft = vcap_keyfields(&test_vctrl, VCAP_TYPE_IS2, VCAP_KFS_MAC_ETYPE);
 	KUNIT_EXPECT_PTR_NE(test, NULL, ft);
 
-	/* Keyset that is not available and within the maximum keyset enum value */
+	 
 	ft = vcap_keyfields(&test_vctrl, VCAP_TYPE_ES2, VCAP_KFS_PURE_5TUPLE_IP4);
 	KUNIT_EXPECT_PTR_EQ(test, NULL, ft);
 
-	/* Keyset that is not available and beyond the maximum keyset enum value */
+	 
 	ft = vcap_keyfields(&test_vctrl, VCAP_TYPE_ES2, VCAP_KFS_LL_FULL);
 	KUNIT_EXPECT_PTR_EQ(test, NULL, ft);
 }
@@ -872,7 +868,7 @@ static void vcap_api_encode_rule_keyset_test(struct kunit *test)
 		{
 			.ctrl.key = VCAP_KF_L2_DMAC,
 			.ctrl.type = VCAP_FIELD_U48,
-			/* Opposite endianness */
+			 
 			.data.u48.value = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06},
 			.data.u48.mask = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
 		},
@@ -892,7 +888,7 @@ static void vcap_api_encode_rule_keyset_test(struct kunit *test)
 	int idx;
 	int ret;
 
-	/* Empty entry list */
+	 
 	INIT_LIST_HEAD(&rule.data.keyfields);
 	ret = vcap_encode_rule_keyset(&rule);
 	KUNIT_EXPECT_EQ(test, -EINVAL, ret);
@@ -902,8 +898,8 @@ static void vcap_api_encode_rule_keyset_test(struct kunit *test)
 	ret = vcap_encode_rule_keyset(&rule);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* The key and mask values below are from an actual Sparx5 rule config */
-	/* Key */
+	 
+	 
 	KUNIT_EXPECT_EQ(test, (u32)0x00000042, keywords[0]);
 	KUNIT_EXPECT_EQ(test, (u32)0x00000000, keywords[1]);
 	KUNIT_EXPECT_EQ(test, (u32)0x00000000, keywords[2]);
@@ -917,7 +913,7 @@ static void vcap_api_encode_rule_keyset_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, (u32)0x00000000, keywords[10]);
 	KUNIT_EXPECT_EQ(test, (u32)0x00000000, keywords[11]);
 
-	/* Mask: they will be inverted when applied to the register */
+	 
 	KUNIT_EXPECT_EQ(test, (u32)~0x00b07f80, maskwords[0]);
 	KUNIT_EXPECT_EQ(test, (u32)~0xfff00000, maskwords[1]);
 	KUNIT_EXPECT_EQ(test, (u32)~0xfffffffc, maskwords[2]);
@@ -968,10 +964,10 @@ static void vcap_api_encode_rule_actionset_test(struct kunit *test)
 	int idx;
 	int ret;
 
-	/* Empty entry list */
+	 
 	INIT_LIST_HEAD(&rule.data.actionfields);
 	ret = vcap_encode_rule_actionset(&rule);
-	/* We allow rules with no actions */
+	 
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
 	for (idx = 0; idx < ARRAY_SIZE(caf); idx++)
@@ -979,7 +975,7 @@ static void vcap_api_encode_rule_actionset_test(struct kunit *test)
 	ret = vcap_encode_rule_actionset(&rule);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* The action values below are from an actual Sparx5 rule config */
+	 
 	KUNIT_EXPECT_EQ(test, (u32)0x00000002, actwords[0]);
 	KUNIT_EXPECT_EQ(test, (u32)0x00000000, actwords[1]);
 	KUNIT_EXPECT_EQ(test, (u32)0x00000000, actwords[2]);
@@ -1252,9 +1248,9 @@ static void vcap_api_rule_find_keyset_failed_test(struct kunit *test)
 		}, {
 			.ctrl.key = VCAP_KF_8021Q_PCP_CLS,
 		}, {
-			.ctrl.key = VCAP_KF_ETYPE_LEN_IS, /* Not with ARP */
+			.ctrl.key = VCAP_KF_ETYPE_LEN_IS,  
 		}, {
-			.ctrl.key = VCAP_KF_ETYPE, /* Not with ARP */
+			.ctrl.key = VCAP_KF_ETYPE,  
 		},
 	};
 	int idx;
@@ -1329,7 +1325,7 @@ static void vcap_api_rule_find_keyset_many_test(struct kunit *test)
 
 static void vcap_api_encode_rule_test(struct kunit *test)
 {
-	/* Data used by VCAP Library callback */
+	 
 	static u32 keydata[32] = {};
 	static u32 mskdata[32] = {};
 	static u32 actdata[32] = {};
@@ -1367,26 +1363,26 @@ static void vcap_api_encode_rule_test(struct kunit *test)
 	u32 port_mask_rng_mask = 0x0f;
 	u32 igr_port_mask_value = 0xffabcd01;
 	u32 igr_port_mask_mask = ~0;
-	/* counter is written as the first operation */
+	 
 	u32 expwriteaddr[] = {792, 792, 793, 794, 795, 796, 797};
 	int idx;
 
 	vcap_test_api_init(&is2_admin);
 
-	/* Allocate the rule */
+	 
 	rule = vcap_alloc_rule(&test_vctrl, &test_netdev, vcap_chain_id, user,
 			       priority, id);
 	KUNIT_EXPECT_PTR_NE(test, NULL, rule);
 	ri = (struct vcap_rule_internal *)rule;
 
-	/* Add rule keys */
+	 
 	ret = vcap_rule_add_key_u48(rule, VCAP_KF_L2_DMAC, &dmac);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	ret = vcap_rule_add_key_u48(rule, VCAP_KF_L2_SMAC, &smac);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	ret = vcap_rule_add_key_bit(rule, VCAP_KF_ETYPE_LEN_IS, VCAP_BIT_1);
 	KUNIT_EXPECT_EQ(test, 0, ret);
-	/* Cannot add the same field twice */
+	 
 	ret = vcap_rule_add_key_bit(rule, VCAP_KF_ETYPE_LEN_IS, VCAP_BIT_1);
 	KUNIT_EXPECT_EQ(test, -EINVAL, ret);
 	ret = vcap_rule_add_key_bit(rule, VCAP_KF_IF_IGR_PORT_MASK_L3,
@@ -1399,7 +1395,7 @@ static void vcap_api_encode_rule_test(struct kunit *test)
 				    igr_port_mask_value, igr_port_mask_mask);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* Add rule actions */
+	 
 	ret = vcap_rule_add_action_bit(rule, VCAP_AF_POLICE_ENA, VCAP_BIT_1);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	ret = vcap_rule_add_action_u32(rule, VCAP_AF_CNT_ID, id);
@@ -1409,11 +1405,11 @@ static void vcap_api_encode_rule_test(struct kunit *test)
 	ret = vcap_rule_add_action_u32(rule, VCAP_AF_MATCH_ID_MASK, 1);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* For now the actionset is hardcoded */
+	 
 	ret = vcap_set_rule_set_actionset(rule, VCAP_AFS_BASE_TYPE);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* Validation with validate keyset callback */
+	 
 	ret = vcap_val_rule(rule, ETH_P_ALL);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	KUNIT_EXPECT_EQ(test, VCAP_KFS_MAC_ETYPE, rule->keyset);
@@ -1422,19 +1418,19 @@ static void vcap_api_encode_rule_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 2, ri->keyset_sw_regs);
 	KUNIT_EXPECT_EQ(test, 4, ri->actionset_sw_regs);
 
-	/* Enable lookup, so the rule will be written */
+	 
 	ret = vcap_enable_lookups(&test_vctrl, &test_netdev, 0,
 				  rule->vcap_chain_id, rule->cookie, true);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* Add rule with write callback */
+	 
 	ret = vcap_add_rule(rule);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	KUNIT_EXPECT_EQ(test, 792, is2_admin.last_used_addr);
 	for (idx = 0; idx < ARRAY_SIZE(expwriteaddr); ++idx)
 		KUNIT_EXPECT_EQ(test, expwriteaddr[idx], test_updateaddr[idx]);
 
-	/* Check that the rule has been added */
+	 
 	ret = list_empty(&is2_admin.rules);
 	KUNIT_EXPECT_EQ(test, false, ret);
 	KUNIT_EXPECT_EQ(test, 0, ret);
@@ -1444,9 +1440,7 @@ static void vcap_api_encode_rule_test(struct kunit *test)
 
 	vcap_free_rule(rule);
 
-	/* Check that the rule has been freed: tricky to access since this
-	 * memory should not be accessible anymore
-	 */
+	 
 	KUNIT_EXPECT_PTR_NE(test, NULL, rule);
 	ret = list_empty(&rule->keyfields);
 	KUNIT_EXPECT_EQ(test, true, ret);
@@ -1568,7 +1562,7 @@ static void vcap_api_get_rule_counter_test(struct kunit *test)
 
 static void vcap_api_rule_insert_in_order_test(struct kunit *test)
 {
-	/* Data used by VCAP Library callback */
+	 
 	static u32 keydata[32] = {};
 	static u32 mskdata[32] = {};
 	static u32 actdata[32] = {};
@@ -1590,9 +1584,7 @@ static void vcap_api_rule_insert_in_order_test(struct kunit *test)
 
 	vcap_test_api_init(&admin);
 
-	/* Create rules with different sizes and check that they are placed
-	 * at the correct address in the VCAP according to size
-	 */
+	 
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 10, 500, 12, 780);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 20, 400, 6, 774);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 30, 300, 3, 771);
@@ -1606,7 +1598,7 @@ static void vcap_api_rule_insert_in_order_test(struct kunit *test)
 
 static void vcap_api_rule_insert_reverse_order_test(struct kunit *test)
 {
-	/* Data used by VCAP Library callback */
+	 
 	static u32 keydata[32] = {};
 	static u32 mskdata[32] = {};
 	static u32 actdata[32] = {};
@@ -1631,9 +1623,7 @@ static void vcap_api_rule_insert_reverse_order_test(struct kunit *test)
 
 	vcap_test_api_init(&admin);
 
-	/* Create rules with different sizes and check that they are placed
-	 * at the correct address in the VCAP according to size
-	 */
+	 
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 20, 200, 2, 798);
 	KUNIT_EXPECT_EQ(test, 0, test_move_offset);
 	KUNIT_EXPECT_EQ(test, 0, test_move_count);
@@ -1669,7 +1659,7 @@ static void vcap_api_rule_insert_reverse_order_test(struct kunit *test)
 
 static void vcap_api_rule_remove_at_end_test(struct kunit *test)
 {
-	/* Data used by VCAP Library callback */
+	 
 	static u32 keydata[32] = {};
 	static u32 mskdata[32] = {};
 	static u32 actdata[32] = {};
@@ -1693,15 +1683,13 @@ static void vcap_api_rule_remove_at_end_test(struct kunit *test)
 	vcap_test_api_init(&admin);
 	test_init_rule_deletion();
 
-	/* Create rules with different sizes and check that they are placed
-	 * at the correct address in the VCAP according to size
-	 */
+	 
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 10, 500, 12, 780);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 20, 400, 6, 774);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 30, 300, 3, 771);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 40, 200, 2, 768);
 
-	/* Remove rules again from the end */
+	 
 	ret = vcap_del_rule(&test_vctrl, &test_netdev, 200);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	KUNIT_EXPECT_EQ(test, 0, test_move_addr);
@@ -1741,7 +1729,7 @@ static void vcap_api_rule_remove_at_end_test(struct kunit *test)
 
 static void vcap_api_rule_remove_in_middle_test(struct kunit *test)
 {
-	/* Data used by VCAP Library callback */
+	 
 	static u32 keydata[32] = {};
 	static u32 mskdata[32] = {};
 	static u32 actdata[32] = {};
@@ -1764,15 +1752,13 @@ static void vcap_api_rule_remove_in_middle_test(struct kunit *test)
 
 	vcap_test_api_init(&admin);
 
-	/* Create rules with different sizes and check that they are placed
-	 * at the correct address in the VCAP according to size
-	 */
+	 
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 10, 500, 12, 780);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 20, 400, 6, 774);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 30, 300, 3, 771);
 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 40, 200, 2, 768);
 
-	/* Remove rules in the middle */
+	 
 	test_init_rule_deletion();
 	ret = vcap_del_rule(&test_vctrl, &test_netdev, 400);
 	KUNIT_EXPECT_EQ(test, 0, ret);
@@ -1816,7 +1802,7 @@ static void vcap_api_rule_remove_in_middle_test(struct kunit *test)
 
 static void vcap_api_rule_remove_in_front_test(struct kunit *test)
 {
-	/* Data used by VCAP Library callback */
+	 
 	static u32 keydata[32] = {};
 	static u32 mskdata[32] = {};
 	static u32 actdata[32] = {};
@@ -2013,7 +1999,7 @@ static void vcap_api_filter_unsupported_keys_test(struct kunit *test)
 	enum vcap_key_field keylist[] = {
 		VCAP_KF_TYPE,
 		VCAP_KF_LOOKUP_FIRST_IS,
-		VCAP_KF_ARP_ADDR_SPACE_OK_IS,  /* arp keys are not in keyset */
+		VCAP_KF_ARP_ADDR_SPACE_OK_IS,   
 		VCAP_KF_ARP_PROTO_SPACE_OK_IS,
 		VCAP_KF_ARP_LEN_OK_IS,
 		VCAP_KF_ARP_TGT_MATCH_IS,
@@ -2039,7 +2025,7 @@ static void vcap_api_filter_unsupported_keys_test(struct kunit *test)
 	bool ret;
 	int idx;
 
-	/* Add all keys to the rule */
+	 
 	INIT_LIST_HEAD(&ri.data.keyfields);
 	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
 		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
@@ -2051,12 +2037,12 @@ static void vcap_api_filter_unsupported_keys_test(struct kunit *test)
 
 	KUNIT_EXPECT_EQ(test, 14, ARRAY_SIZE(keylist));
 
-	/* Drop unsupported keys from the rule */
+	 
 	ret = vcap_filter_rule_keys(&ri.data, NULL, 0, true);
 
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* Check remaining keys in the rule */
+	 
 	idx = 0;
 	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
 		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);
@@ -2163,7 +2149,7 @@ static void vcap_api_filter_keylist_test(struct kunit *test)
 	bool ret;
 	int idx;
 
-	/* Add all keys to the rule */
+	 
 	INIT_LIST_HEAD(&ri.data.keyfields);
 	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
 		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
@@ -2175,13 +2161,13 @@ static void vcap_api_filter_keylist_test(struct kunit *test)
 
 	KUNIT_EXPECT_EQ(test, 38, ARRAY_SIZE(keylist));
 
-	/* Drop listed keys from the rule */
+	 
 	ret = vcap_filter_rule_keys(&ri.data, droplist, ARRAY_SIZE(droplist),
 				    false);
 
 	KUNIT_EXPECT_EQ(test, 0, ret);
 
-	/* Check remaining keys in the rule */
+	 
 	idx = 0;
 	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
 		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);

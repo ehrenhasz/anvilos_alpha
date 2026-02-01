@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2016-2019 Intel Corporation
- */
+
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/ktime.h>
@@ -53,33 +51,7 @@ static inline struct intel_guc *ct_to_guc(struct intel_guc_ct *ct)
 #define CT_PROBE_ERROR(_ct, _fmt, ...) \
 	guc_probe_error(ct_to_guc(ct), "CT: " _fmt, ##__VA_ARGS__)
 
-/**
- * DOC: CTB Blob
- *
- * We allocate single blob to hold both CTB descriptors and buffers:
- *
- *      +--------+-----------------------------------------------+------+
- *      | offset | contents                                      | size |
- *      +========+===============================================+======+
- *      | 0x0000 | H2G `CTB Descriptor`_ (send)                  |      |
- *      +--------+-----------------------------------------------+  4K  |
- *      | 0x0800 | G2H `CTB Descriptor`_ (recv)                  |      |
- *      +--------+-----------------------------------------------+------+
- *      | 0x1000 | H2G `CT Buffer`_ (send)                       | n*4K |
- *      |        |                                               |      |
- *      +--------+-----------------------------------------------+------+
- *      | 0x1000 | G2H `CT Buffer`_ (recv)                       | m*4K |
- *      | + n*4K |                                               |      |
- *      +--------+-----------------------------------------------+------+
- *
- * Size of each `CT Buffer`_ must be multiple of 4K.
- * We don't expect too many messages in flight at any time, unless we are
- * using the GuC submission. In that case each request requires a minimum
- * 2 dwords which gives us a maximum 256 queue'd requests. Hopefully this
- * enough space to avoid backpressure on the driver. We increase the size
- * of the receive buffer (relative to the send) to ensure a G2H response
- * CTB has a landing spot.
- */
+ 
 #define CTB_DESC_SIZE		ALIGN(sizeof(struct guc_ct_buffer_desc), SZ_2K)
 #define CTB_H2G_BUFFER_SIZE	(SZ_4K)
 #define CTB_G2H_BUFFER_SIZE	(4 * CTB_H2G_BUFFER_SIZE)
@@ -106,10 +78,7 @@ enum { CTB_OWNER_HOST = 0 };
 static void ct_receive_tasklet_func(struct tasklet_struct *t);
 static void ct_incoming_request_worker_func(struct work_struct *w);
 
-/**
- * intel_guc_ct_init_early - Initialize CT state without requiring device access
- * @ct: pointer to CT struct
- */
+ 
 void intel_guc_ct_init_early(struct intel_guc_ct *ct)
 {
 	spin_lock_init(&ct->ctbs.send.lock);
@@ -169,7 +138,7 @@ static int guc_action_control_ctb(struct intel_guc *guc, u32 control)
 
 	GEM_BUG_ON(control != GUC_CTB_CONTROL_DISABLE && control != GUC_CTB_CONTROL_ENABLE);
 
-	/* CT control must go over MMIO */
+	 
 	ret = intel_guc_send_mmio(guc, request, ARRAY_SIZE(request), NULL, 0);
 
 	return ret > 0 ? -EPROTO : ret;
@@ -219,14 +188,7 @@ failed:
 	return err;
 }
 
-/**
- * intel_guc_ct_init - Init buffer-based communication
- * @ct: pointer to CT struct
- *
- * Allocate memory required for buffer-based communication.
- *
- * Return: 0 on success, a negative errno code on failure.
- */
+ 
 int intel_guc_ct_init(struct intel_guc_ct *ct)
 {
 	struct intel_guc *guc = ct_to_guc(ct);
@@ -254,7 +216,7 @@ int intel_guc_ct_init(struct intel_guc_ct *ct)
 
 	CT_DEBUG(ct, "base=%#x size=%u\n", intel_guc_ggtt_offset(guc, ct->vma), blob_size);
 
-	/* store pointers to desc and cmds for send ctb */
+	 
 	desc = blob;
 	cmds = blob + 2 * CTB_DESC_SIZE;
 	cmds_size = CTB_H2G_BUFFER_SIZE;
@@ -265,7 +227,7 @@ int intel_guc_ct_init(struct intel_guc_ct *ct)
 
 	guc_ct_buffer_init(&ct->ctbs.send, desc, cmds, cmds_size, resv_space);
 
-	/* store pointers to desc and cmds for recv ctb */
+	 
 	desc = blob + CTB_DESC_SIZE;
 	cmds = blob + 2 * CTB_DESC_SIZE + CTB_H2G_BUFFER_SIZE;
 	cmds_size = CTB_G2H_BUFFER_SIZE;
@@ -279,12 +241,7 @@ int intel_guc_ct_init(struct intel_guc_ct *ct)
 	return 0;
 }
 
-/**
- * intel_guc_ct_fini - Fini buffer-based communication
- * @ct: pointer to CT struct
- *
- * Deallocate memory required for buffer-based communication.
- */
+ 
 void intel_guc_ct_fini(struct intel_guc_ct *ct)
 {
 	GEM_BUG_ON(ct->enabled);
@@ -294,12 +251,7 @@ void intel_guc_ct_fini(struct intel_guc_ct *ct)
 	memset(ct, 0, sizeof(*ct));
 }
 
-/**
- * intel_guc_ct_enable - Enable buffer based command transport.
- * @ct: pointer to CT struct
- *
- * Return: 0 on success, a negative errno code on failure.
- */
+ 
 int intel_guc_ct_enable(struct intel_guc_ct *ct)
 {
 	struct intel_guc *guc = ct_to_guc(ct);
@@ -309,23 +261,20 @@ int intel_guc_ct_enable(struct intel_guc_ct *ct)
 
 	GEM_BUG_ON(ct->enabled);
 
-	/* vma should be already allocated and map'ed */
+	 
 	GEM_BUG_ON(!ct->vma);
 	GEM_BUG_ON(!i915_gem_object_has_pinned_pages(ct->vma->obj));
 	base = intel_guc_ggtt_offset(guc, ct->vma);
 
-	/* blob should start with send descriptor */
+	 
 	blob = __px_vaddr(ct->vma->obj);
 	GEM_BUG_ON(blob != ct->ctbs.send.desc);
 
-	/* (re)initialize descriptors */
+	 
 	guc_ct_buffer_reset(&ct->ctbs.send);
 	guc_ct_buffer_reset(&ct->ctbs.recv);
 
-	/*
-	 * Register both CT buffers starting with RECV buffer.
-	 * Descriptors are in first half of the blob.
-	 */
+	 
 	desc = base + ptrdiff(ct->ctbs.recv.desc, blob);
 	cmds = base + ptrdiff(ct->ctbs.recv.cmds, blob);
 	size = ct->ctbs.recv.size * 4;
@@ -359,10 +308,7 @@ err_out:
 	return err;
 }
 
-/**
- * intel_guc_ct_disable - Disable buffer based command transport.
- * @ct: pointer to CT struct
- */
+ 
 void intel_guc_ct_disable(struct intel_guc_ct *ct)
 {
 	struct intel_guc *guc = ct_to_guc(ct);
@@ -386,7 +332,7 @@ static void ct_track_lost_and_found(struct intel_guc_ct *ct, u32 fence, u32 acti
 
 	n = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
 
-	/* May be called under spinlock, so avoid sleeping */
+	 
 	ct->requests.lost_and_found[lost].stack = stack_depot_save(entries, n, GFP_NOWAIT);
 #endif
 	ct->requests.lost_and_found[lost].fence = fence;
@@ -396,13 +342,13 @@ static void ct_track_lost_and_found(struct intel_guc_ct *ct, u32 fence, u32 acti
 
 static u32 ct_get_next_fence(struct intel_guc_ct *ct)
 {
-	/* For now it's trivial */
+	 
 	return ++ct->requests.last_fence;
 }
 
 static int ct_write(struct intel_guc_ct *ct,
 		    const u32 *action,
-		    u32 len /* in dwords */,
+		    u32 len  ,
 		    u32 fence, u32 flags)
 {
 	struct intel_guc_ct_buffer *ctb = &ct->ctbs.send;
@@ -435,11 +381,7 @@ static int ct_write(struct intel_guc_ct *ct,
 	}
 #endif
 
-	/*
-	 * dw0: CT header (including fence)
-	 * dw1: HXG header (including action code)
-	 * dw2+: action data
-	 */
+	 
 	header = FIELD_PREP(GUC_CTB_MSG_0_FORMAT, GUC_CTB_FORMAT_HXG) |
 		 FIELD_PREP(GUC_CTB_MSG_0_NUM_DWORDS, len) |
 		 FIELD_PREP(GUC_CTB_MSG_0_FENCE, fence);
@@ -470,18 +412,15 @@ static int ct_write(struct intel_guc_ct *ct,
 				FIELD_GET(GUC_HXG_EVENT_MSG_0_ACTION, action[0]));
 #endif
 
-	/*
-	 * make sure H2G buffer update and LRC tail update (if this triggering a
-	 * submission) are visible before updating the descriptor tail
-	 */
+	 
 	intel_guc_write_barrier(ct_to_guc(ct));
 
-	/* update local copies */
+	 
 	ctb->tail = tail;
 	GEM_BUG_ON(atomic_read(&ctb->space) < len + GUC_CTB_HDR_LEN);
 	atomic_sub(len + GUC_CTB_HDR_LEN, &ctb->space);
 
-	/* now update descriptor */
+	 
 	WRITE_ONCE(desc->tail, tail);
 
 	return 0;
@@ -494,33 +433,13 @@ corrupted:
 	return -EPIPE;
 }
 
-/**
- * wait_for_ct_request_update - Wait for CT request state update.
- * @ct:		pointer to CT
- * @req:	pointer to pending request
- * @status:	placeholder for status
- *
- * For each sent request, GuC shall send back CT response message.
- * Our message handler will update status of tracked request once
- * response message with given fence is received. Wait here and
- * check for valid response status value.
- *
- * Return:
- * *	0 response received (status is valid)
- * *	-ETIMEDOUT no response within hardcoded timeout
- */
+ 
 static int wait_for_ct_request_update(struct intel_guc_ct *ct, struct ct_request *req, u32 *status)
 {
 	int err;
 	bool ct_enabled;
 
-	/*
-	 * Fast commands should complete in less than 10us, so sample quickly
-	 * up to that length of time, then switch to a slower sleep-wait loop.
-	 * No GuC command should ever take longer than 10ms but many GuC
-	 * commands can be inflight at time, so use a 1s timeout on the slower
-	 * sleep-wait loop.
-	 */
+	 
 #define GUC_CTB_RESPONSE_TIMEOUT_SHORT_MS 10
 #define GUC_CTB_RESPONSE_TIMEOUT_LONG_MS 1000
 #define done \
@@ -571,10 +490,7 @@ static inline bool g2h_has_room(struct intel_guc_ct *ct, u32 g2h_len_dw)
 {
 	struct intel_guc_ct_buffer *ctb = &ct->ctbs.recv;
 
-	/*
-	 * We leave a certain amount of space in the G2H CTB buffer for
-	 * unexpected G2H CTBs (e.g. logging, engine hang, etc...)
-	 */
+	 
 	return !g2h_len_dw || atomic_read(&ctb->space) >= g2h_len_dw;
 }
 
@@ -630,7 +546,7 @@ static int has_room_nb(struct intel_guc_ct *ct, u32 h2g_dw, u32 g2h_dw)
 		if (ct->stall_time == KTIME_MAX)
 			ct->stall_time = ktime_get();
 
-		/* Be paranoid and kick G2H tasklet to free credits */
+		 
 		if (!g2h)
 			tasklet_hi_schedule(&ct->receive_tasklet);
 
@@ -705,12 +621,7 @@ static int ct_send(struct intel_guc_ct *ct,
 resend:
 	send_again = false;
 
-	/*
-	 * We use a lazy spin wait loop here as we believe that if the CT
-	 * buffers are sized correctly the flow control condition should be
-	 * rare. Reserving the maximum size in the G2H credits as we don't know
-	 * how big the response is going to be.
-	 */
+	 
 retry:
 	spin_lock_irqsave(&ctb->lock, flags);
 	if (unlikely(!h2g_has_room(ct, len + GUC_CTB_HDR_LEN) ||
@@ -755,9 +666,7 @@ retry:
 	g2h_release_space(ct, GUC_CTB_HXG_MSG_MAX_LEN);
 	if (unlikely(err)) {
 		if (err == -ENODEV)
-			/* wait_for_ct_request_update returns -ENODEV on reset/suspend in progress.
-			 * In this case, output is debug rather than error info
-			 */
+			 
 			CT_DEBUG(ct, "Request %#x (fence %u) cancelled as CTB is disabled\n",
 				 action[0], request.fence);
 		else
@@ -779,14 +688,14 @@ retry:
 	}
 
 	if (response_buf) {
-		/* There shall be no data in the status */
+		 
 		WARN_ON(FIELD_GET(GUC_HXG_RESPONSE_MSG_0_DATA0, request.status));
-		/* Return actual response len */
+		 
 		err = request.response_len;
 	} else {
-		/* There shall be no response payload */
+		 
 		WARN_ON(request.response_len);
-		/* Return data decoded from the status dword */
+		 
 		err = FIELD_GET(GUC_HXG_RESPONSE_MSG_0_DATA0, *status);
 	}
 
@@ -801,13 +710,11 @@ unlink:
 	return err;
 }
 
-/*
- * Command Transport (CT) buffer based GuC send function.
- */
+ 
 int intel_guc_ct_send(struct intel_guc_ct *ct, const u32 *action, u32 len,
 		      u32 *response_buf, u32 response_buf_size, u32 flags)
 {
-	u32 status = ~0; /* undefined */
+	u32 status = ~0;  
 	int ret;
 
 	if (unlikely(!ct->enabled)) {
@@ -852,10 +759,7 @@ static void ct_free_msg(struct ct_incoming_msg *msg)
 	kfree(msg);
 }
 
-/*
- * Return: number available remaining dwords to read (0 if empty)
- *         or a negative error code on failure
- */
+ 
 static int ct_read(struct intel_guc_ct *ct, struct ct_incoming_msg **msg)
 {
 	struct intel_guc_ct_buffer *ctb = &ct->ctbs.recv;
@@ -876,11 +780,7 @@ static int ct_read(struct intel_guc_ct *ct, struct ct_incoming_msg **msg)
 		u32 status = desc->status;
 
 		if (status & GUC_CTB_STATUS_UNUSED) {
-			/*
-			 * Potentially valid if a CLIENT_RESET request resulted in
-			 * contexts/engines being reset. But should never happen as
-			 * no contexts should be active when CLIENT_RESET is sent.
-			 */
+			 
 			CT_ERROR(ct, "Unexpected G2H after GuC has stopped!\n");
 			status &= ~GUC_CTB_STATUS_UNUSED;
 		}
@@ -906,14 +806,14 @@ static int ct_read(struct intel_guc_ct *ct, struct ct_incoming_msg **msg)
 		goto corrupted;
 	}
 
-	/* tail == head condition indicates empty */
+	 
 	available = tail - head;
 	if (unlikely(available == 0)) {
 		*msg = NULL;
 		return 0;
 	}
 
-	/* beware of buffer wrap case */
+	 
 	if (unlikely(available < 0))
 		available += size;
 	CT_DEBUG(ct, "available %d (%u:%u:%u)\n", available, head, tail, size);
@@ -922,7 +822,7 @@ static int ct_read(struct intel_guc_ct *ct, struct ct_incoming_msg **msg)
 	header = cmds[head];
 	head = (head + 1) % size;
 
-	/* message len with header */
+	 
 	len = FIELD_GET(GUC_CTB_MSG_0_NUM_DWORDS, header) + GUC_CTB_MSG_MIN_LEN;
 	if (unlikely(len > (u32)available)) {
 		CT_ERROR(ct, "Incomplete message %*ph %*ph %*ph\n",
@@ -954,10 +854,10 @@ static int ct_read(struct intel_guc_ct *ct, struct ct_incoming_msg **msg)
 	}
 	CT_DEBUG(ct, "received %*ph\n", 4 * len, (*msg)->msg);
 
-	/* update local copies */
+	 
 	ctb->head = head;
 
-	/* now update descriptor */
+	 
 	WRITE_ONCE(desc->head, head);
 
 	intel_guc_write_barrier(ct_to_guc(ct));
@@ -1182,11 +1082,7 @@ static int ct_handle_event(struct intel_guc_ct *ct, struct ct_incoming_msg *requ
 
 	GEM_BUG_ON(FIELD_GET(GUC_HXG_MSG_0_TYPE, hxg[0]) != GUC_HXG_TYPE_EVENT);
 
-	/*
-	 * Adjusting the space must be done in IRQ or deadlock can occur as the
-	 * CTB processing in the below workqueue can send CTBs which creates a
-	 * circular dependency if the space was returned there.
-	 */
+	 
 	switch (action) {
 	case INTEL_GUC_ACTION_SCHED_CONTEXT_MODE_DONE:
 	case INTEL_GUC_ACTION_DEREGISTER_CONTEXT_DONE:
@@ -1257,10 +1153,7 @@ static void ct_handle_msg(struct intel_guc_ct *ct, struct ct_incoming_msg *msg)
 	}
 }
 
-/*
- * Return: number available remaining dwords to read (0 if empty)
- *         or a negative error code on failure
- */
+ 
 static int ct_receive(struct intel_guc_ct *ct)
 {
 	struct ct_incoming_msg *msg = NULL;
@@ -1298,10 +1191,7 @@ static void ct_receive_tasklet_func(struct tasklet_struct *t)
 	ct_try_receive_message(ct);
 }
 
-/*
- * When we're communicating with the GuC over CT, GuC uses events
- * to notify us about new messages being posted on the RECV buffer.
- */
+ 
 void intel_guc_ct_event_handler(struct intel_guc_ct *ct)
 {
 	if (unlikely(!ct->enabled)) {

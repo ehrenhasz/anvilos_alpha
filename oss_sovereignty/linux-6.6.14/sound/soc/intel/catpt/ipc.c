@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/irqreturn.h>
 #include "core.h"
@@ -26,11 +26,7 @@ void catpt_ipc_init(struct catpt_ipc *ipc, struct device *dev)
 
 static int catpt_ipc_arm(struct catpt_ipc *ipc, struct catpt_fw_ready *config)
 {
-	/*
-	 * Both tx and rx are put into and received from outbox. Inbox is
-	 * only used for notifications where payload size is known upfront,
-	 * thus no separate buffer is allocated for it.
-	 */
+	 
 	ipc->rx.data = devm_kzalloc(ipc->dev, config->outbox_size, GFP_KERNEL);
 	if (!ipc->rx.data)
 		return -ENOMEM;
@@ -76,7 +72,7 @@ static int catpt_wait_msg_completion(struct catpt_dev *cdev, int timeout)
 	if (ipc->rx.rsp.status != CATPT_REPLY_PENDING)
 		return 0;
 
-	/* wait for delayed reply */
+	 
 	ret = wait_for_completion_timeout(&ipc->busy_completion,
 					  msecs_to_jiffies(timeout));
 	return ret ? 0 : -ETIMEDOUT;
@@ -106,7 +102,7 @@ static int catpt_dsp_do_send_msg(struct catpt_dev *cdev,
 		dev_crit(cdev->dev, "communication severed: %d, rebooting dsp..\n",
 			 ret);
 		ipc->ready = false;
-		/* TODO: attempt recovery */
+		 
 		return ret;
 	}
 
@@ -199,7 +195,7 @@ static void catpt_dsp_process_response(struct catpt_dev *cdev, u32 header)
 
 	if (msg.fw_ready) {
 		struct catpt_fw_ready config;
-		/* to fit 32b header original address is shifted right by 3 */
+		 
 		u32 off = msg.mailbox_address << 3;
 
 		memcpy_fromio(&config, cdev->lpe_ba + off, sizeof(config));
@@ -215,7 +211,7 @@ static void catpt_dsp_process_response(struct catpt_dev *cdev, u32 header)
 		dev_err(cdev->dev, "ADSP device coredump received\n");
 		ipc->ready = false;
 		catpt_coredump(cdev);
-		/* TODO: attempt recovery */
+		 
 		break;
 
 	case CATPT_GLB_STREAM_MESSAGE:
@@ -225,7 +221,7 @@ static void catpt_dsp_process_response(struct catpt_dev *cdev, u32 header)
 			break;
 		default:
 			catpt_dsp_copy_rx(cdev, header);
-			/* signal completion of delayed reply */
+			 
 			complete(&ipc->busy_completion);
 			break;
 		}
@@ -246,16 +242,16 @@ irqreturn_t catpt_dsp_irq_thread(int irq, void *dev_id)
 	ipcd = catpt_readl_shim(cdev, IPCD);
 	trace_catpt_ipc_notify(ipcd);
 
-	/* ensure there is delayed reply or notification to process */
+	 
 	if (!(ipcd & CATPT_IPCD_BUSY))
 		return IRQ_NONE;
 
 	catpt_dsp_process_response(cdev, ipcd);
 
-	/* tell DSP processing is completed */
+	 
 	catpt_updatel_shim(cdev, IPCD, CATPT_IPCD_BUSY | CATPT_IPCD_DONE,
 			   CATPT_IPCD_DONE);
-	/* unmask dsp BUSY interrupt */
+	 
 	catpt_updatel_shim(cdev, IMC, CATPT_IMC_IPCDB, 0);
 
 	return IRQ_HANDLED;
@@ -270,9 +266,9 @@ irqreturn_t catpt_dsp_irq_handler(int irq, void *dev_id)
 	isc = catpt_readl_shim(cdev, ISC);
 	trace_catpt_irq(isc);
 
-	/* immediate reply */
+	 
 	if (isc & CATPT_ISC_IPCCD) {
-		/* mask host DONE interrupt */
+		 
 		catpt_updatel_shim(cdev, IMC, CATPT_IMC_IPCCD, CATPT_IMC_IPCCD);
 
 		ipcc = catpt_readl_shim(cdev, IPCC);
@@ -280,16 +276,16 @@ irqreturn_t catpt_dsp_irq_handler(int irq, void *dev_id)
 		catpt_dsp_copy_rx(cdev, ipcc);
 		complete(&cdev->ipc.done_completion);
 
-		/* tell DSP processing is completed */
+		 
 		catpt_updatel_shim(cdev, IPCC, CATPT_IPCC_DONE, 0);
-		/* unmask host DONE interrupt */
+		 
 		catpt_updatel_shim(cdev, IMC, CATPT_IMC_IPCCD, 0);
 		ret = IRQ_HANDLED;
 	}
 
-	/* delayed reply or notification */
+	 
 	if (isc & CATPT_ISC_IPCDB) {
-		/* mask dsp BUSY interrupt */
+		 
 		catpt_updatel_shim(cdev, IMC, CATPT_IMC_IPCDB, CATPT_IMC_IPCDB);
 		ret = IRQ_WAKE_THREAD;
 	}

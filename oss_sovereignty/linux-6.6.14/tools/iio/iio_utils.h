@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef _IIO_UTILS_H_
 #define _IIO_UTILS_H_
 
-/* IIO - useful set of util functionality
- *
- * Copyright (c) 2008 Jonathan Cameron
- */
+ 
 
 #include <stdint.h>
 
-/* Made up value to limit allocation sizes */
+ 
 #define IIO_MAX_NAME_LENGTH 64
 
 #define FORMAT_SCAN_ELEMENTS_DIR "%s/buffer%d"
@@ -20,21 +17,7 @@
 
 extern const char *iio_dir;
 
-/**
- * struct iio_channel_info - information about a given channel
- * @name: channel name
- * @generic_name: general name for channel type
- * @scale: scale factor to be applied for conversion to si units
- * @offset: offset to be applied for conversion to si units
- * @index: the channel index in the buffer output
- * @bytes: number of bytes occupied in buffer output
- * @bits_used: number of valid bits of data
- * @shift: amount of bits to shift right data before applying bit mask
- * @mask: a bit mask for the raw output
- * @be: flag if data is big endian
- * @is_signed: is the raw value stored signed
- * @location: data offset for this channel inside the buffer (in bytes)
- **/
+ 
 struct iio_channel_info {
 	char *name;
 	char *generic_name;
@@ -76,4 +59,4 @@ int read_sysfs_posint(const char *filename, const char *basedir);
 int read_sysfs_float(const char *filename, const char *basedir, float *val);
 int read_sysfs_string(const char *filename, const char *basedir, char *str);
 
-#endif /* _IIO_UTILS_H_ */
+#endif  

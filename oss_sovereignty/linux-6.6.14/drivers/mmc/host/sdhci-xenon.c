@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Marvell Xenon SDHC as a platform device
- *
- * Copyright (C) 2016 Marvell, All Rights Reserved.
- *
- * Author:	Hu Ziji <huziji@marvell.com>
- * Date:	2016-8-24
- *
- * Inspired by Jisheng Zhang <jszhang@marvell.com>
- * Special thanks to Video BG4 project team.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -30,7 +20,7 @@ static int xenon_enable_internal_clk(struct sdhci_host *host)
 	reg = sdhci_readl(host, SDHCI_CLOCK_CONTROL);
 	reg |= SDHCI_CLOCK_INT_EN;
 	sdhci_writel(host, reg, SDHCI_CLOCK_CONTROL);
-	/* Wait max 20 ms */
+	 
 	timeout = ktime_add_ms(ktime_get(), 20);
 	while (1) {
 		bool timedout = ktime_after(ktime_get(), timeout);
@@ -48,7 +38,7 @@ static int xenon_enable_internal_clk(struct sdhci_host *host)
 	return 0;
 }
 
-/* Set SDCLK-off-while-idle */
+ 
 static void xenon_set_sdclk_off_idle(struct sdhci_host *host,
 				     unsigned char sdhc_id, bool enable)
 {
@@ -56,7 +46,7 @@ static void xenon_set_sdclk_off_idle(struct sdhci_host *host,
 	u32 mask;
 
 	reg = sdhci_readl(host, XENON_SYS_OP_CTRL);
-	/* Get the bit shift basing on the SDHC index */
+	 
 	mask = (0x1 << (XENON_SDCLK_IDLEOFF_ENABLE_SHIFT + sdhc_id));
 	if (enable)
 		reg |= mask;
@@ -66,7 +56,7 @@ static void xenon_set_sdclk_off_idle(struct sdhci_host *host,
 	sdhci_writel(host, reg, XENON_SYS_OP_CTRL);
 }
 
-/* Enable/Disable the Auto Clock Gating function */
+ 
 static void xenon_set_acg(struct sdhci_host *host, bool enable)
 {
 	u32 reg;
@@ -79,7 +69,7 @@ static void xenon_set_acg(struct sdhci_host *host, bool enable)
 	sdhci_writel(host, reg, XENON_SYS_OP_CTRL);
 }
 
-/* Enable this SDHC */
+ 
 static void xenon_enable_sdhc(struct sdhci_host *host,
 			      unsigned char sdhc_id)
 {
@@ -90,14 +80,11 @@ static void xenon_enable_sdhc(struct sdhci_host *host,
 	sdhci_writel(host, reg, XENON_SYS_OP_CTRL);
 
 	host->mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY;
-	/*
-	 * Force to clear BUS_TEST to
-	 * skip bus_test_pre and bus_test_post
-	 */
+	 
 	host->mmc->caps &= ~MMC_CAP_BUS_WIDTH_TEST;
 }
 
-/* Disable this SDHC */
+ 
 static void xenon_disable_sdhc(struct sdhci_host *host,
 			       unsigned char sdhc_id)
 {
@@ -108,7 +95,7 @@ static void xenon_disable_sdhc(struct sdhci_host *host,
 	sdhci_writel(host, reg, XENON_SYS_OP_CTRL);
 }
 
-/* Enable Parallel Transfer Mode */
+ 
 static void xenon_enable_sdhc_parallel_tran(struct sdhci_host *host,
 					    unsigned char sdhc_id)
 {
@@ -119,7 +106,7 @@ static void xenon_enable_sdhc_parallel_tran(struct sdhci_host *host,
 	sdhci_writel(host, reg, XENON_SYS_EXT_OP_CTRL);
 }
 
-/* Mask command conflict error */
+ 
 static void xenon_mask_cmd_conflict_err(struct sdhci_host *host)
 {
 	u32  reg;
@@ -135,12 +122,12 @@ static void xenon_retune_setup(struct sdhci_host *host)
 	struct xenon_priv *priv = sdhci_pltfm_priv(pltfm_host);
 	u32 reg;
 
-	/* Disable the Re-Tuning Request functionality */
+	 
 	reg = sdhci_readl(host, XENON_SLOT_RETUNING_REQ_CTRL);
 	reg &= ~XENON_RETUNING_COMPATIBLE;
 	sdhci_writel(host, reg, XENON_SLOT_RETUNING_REQ_CTRL);
 
-	/* Disable the Re-tuning Interrupt */
+	 
 	reg = sdhci_readl(host, SDHCI_SIGNAL_ENABLE);
 	reg &= ~SDHCI_INT_RETUNE;
 	sdhci_writel(host, reg, SDHCI_SIGNAL_ENABLE);
@@ -148,31 +135,25 @@ static void xenon_retune_setup(struct sdhci_host *host)
 	reg &= ~SDHCI_INT_RETUNE;
 	sdhci_writel(host, reg, SDHCI_INT_ENABLE);
 
-	/* Force to use Tuning Mode 1 */
+	 
 	host->tuning_mode = SDHCI_TUNING_MODE_1;
-	/* Set re-tuning period */
+	 
 	host->tuning_count = 1 << (priv->tuning_count - 1);
 }
 
-/*
- * Operations inside struct sdhci_ops
- */
-/* Recover the Register Setting cleared during SOFTWARE_RESET_ALL */
+ 
+ 
 static void xenon_reset_exit(struct sdhci_host *host,
 			     unsigned char sdhc_id, u8 mask)
 {
-	/* Only SOFTWARE RESET ALL will clear the register setting */
+	 
 	if (!(mask & SDHCI_RESET_ALL))
 		return;
 
-	/* Disable tuning request and auto-retuning again */
+	 
 	xenon_retune_setup(host);
 
-	/*
-	 * The ACG should be turned off at the early init time, in order
-	 * to solve a possible issues with the 1.8V regulator stabilization.
-	 * The feature is enabled in later stage.
-	 */
+	 
 	xenon_set_acg(host, false);
 
 	xenon_set_sdclk_off_idle(host, sdhc_id, false);
@@ -189,17 +170,14 @@ static void xenon_reset(struct sdhci_host *host, u8 mask)
 	xenon_reset_exit(host, priv->sdhc_id, mask);
 }
 
-/*
- * Xenon defines different values for HS200 and HS400
- * in Host_Control_2
- */
+ 
 static void xenon_set_uhs_signaling(struct sdhci_host *host,
 				    unsigned int timing)
 {
 	u16 ctrl_2;
 
 	ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
-	/* Select Bus Speed Mode for host */
+	 
 	ctrl_2 &= ~SDHCI_CTRL_UHS_MASK;
 	if (timing == MMC_TIMING_MMC_HS200)
 		ctrl_2 |= XENON_CTRL_HS200;
@@ -239,7 +217,7 @@ static void xenon_set_power(struct sdhci_host *host, unsigned char mode,
 
 static void xenon_voltage_switch(struct sdhci_host *host)
 {
-	/* Wait for 5ms after set 1.8V signal enable bit */
+	 
 	usleep_range(5000, 5500);
 }
 
@@ -270,9 +248,7 @@ static const struct sdhci_pltfm_data sdhci_xenon_pdata = {
 		  SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN,
 };
 
-/*
- * Xenon Specific Operations in mmc_host_ops
- */
+ 
 static void xenon_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct sdhci_host *host = mmc_priv(mmc);
@@ -280,13 +256,7 @@ static void xenon_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	struct xenon_priv *priv = sdhci_pltfm_priv(pltfm_host);
 	u32 reg;
 
-	/*
-	 * HS400/HS200/eMMC HS doesn't have Preset Value register.
-	 * However, sdhci_set_ios will read HS400/HS200 Preset register.
-	 * Disable Preset Value register for HS400/HS200.
-	 * eMMC HS with preset_enabled set will trigger a bug in
-	 * get_preset_value().
-	 */
+	 
 	if ((ios->timing == MMC_TIMING_MMC_HS400) ||
 	    (ios->timing == MMC_TIMING_MMC_HS200) ||
 	    (ios->timing == MMC_TIMING_MMC_HS)) {
@@ -313,42 +283,26 @@ static int xenon_start_signal_voltage_switch(struct mmc_host *mmc,
 {
 	struct sdhci_host *host = mmc_priv(mmc);
 
-	/*
-	 * Before SD/SDIO set signal voltage, SD bus clock should be
-	 * disabled. However, sdhci_set_clock will also disable the Internal
-	 * clock in mmc_set_signal_voltage().
-	 * If Internal clock is disabled, the 3.3V/1.8V bit can not be updated.
-	 * Thus here manually enable internal clock.
-	 *
-	 * After switch completes, it is unnecessary to disable internal clock,
-	 * since keeping internal clock active obeys SD spec.
-	 */
+	 
 	xenon_enable_internal_clk(host);
 
 	xenon_soc_pad_ctrl(host, ios->signal_voltage);
 
-	/*
-	 * If Vqmmc is fixed on platform, vqmmc regulator should be unavailable.
-	 * Thus SDHCI_CTRL_VDD_180 bit might not work then.
-	 * Skip the standard voltage switch to avoid any issue.
-	 */
+	 
 	if (PTR_ERR(mmc->supply.vqmmc) == -ENODEV)
 		return 0;
 
 	return sdhci_start_signal_voltage_switch(mmc, ios);
 }
 
-/*
- * Update card type.
- * priv->init_card_type will be used in PHY timing adjustment.
- */
+ 
 static void xenon_init_card(struct mmc_host *mmc, struct mmc_card *card)
 {
 	struct sdhci_host *host = mmc_priv(mmc);
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
 	struct xenon_priv *priv = sdhci_pltfm_priv(pltfm_host);
 
-	/* Update card type*/
+	 
 	priv->init_card_type = card->type;
 }
 
@@ -360,11 +314,7 @@ static int xenon_execute_tuning(struct mmc_host *mmc, u32 opcode)
 		host->timing == MMC_TIMING_MMC_DDR52)
 		return 0;
 
-	/*
-	 * Currently force Xenon driver back to support mode 1 only,
-	 * even though Xenon might claim to support mode 2 or mode 3.
-	 * It requires more time to test mode 2/mode 3 on more platforms.
-	 */
+	 
 	if (host->tuning_mode != SDHCI_TUNING_MODE_1)
 		xenon_retune_setup(host);
 
@@ -382,15 +332,12 @@ static void xenon_enable_sdio_irq(struct mmc_host *mmc, int enable)
 	sdhci_enable_sdio_irq(mmc, enable);
 
 	if (enable) {
-		/*
-		 * Set SDIO Card Inserted indication
-		 * to enable detecting SDIO async irq.
-		 */
+		 
 		reg = sdhci_readl(host, XENON_SYS_CFG_INFO);
 		reg |= (1 << (sdhc_id + XENON_SLOT_TYPE_SDIO_SHIFT));
 		sdhci_writel(host, reg, XENON_SYS_CFG_INFO);
 	} else {
-		/* Clear SDIO Card Inserted indication */
+		 
 		reg = sdhci_readl(host, XENON_SYS_CFG_INFO);
 		reg &= ~(1 << (sdhc_id + XENON_SLOT_TYPE_SDIO_SHIFT));
 		sdhci_writel(host, reg, XENON_SYS_CFG_INFO);
@@ -407,12 +354,7 @@ static void xenon_replace_mmc_host_ops(struct sdhci_host *host)
 	host->mmc_host_ops.enable_sdio_irq = xenon_enable_sdio_irq;
 }
 
-/*
- * Parse Xenon specific DT properties:
- * sdhc-id: the index of current SDHC.
- *	    Refer to XENON_SYS_CFG_INFO register
- * tun-count: the interval between re-tuning
- */
+ 
 static int xenon_probe_params(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -423,7 +365,7 @@ static int xenon_probe_params(struct platform_device *pdev)
 	u32 sdhc_id, nr_sdhc;
 	u32 tuning_count;
 
-	/* Disable HS200 on Armada AP806 */
+	 
 	if (priv->hw_version == XENON_AP806)
 		host->quirks2 |= SDHCI_QUIRK2_BROKEN_HS200;
 
@@ -459,16 +401,16 @@ static int xenon_sdhc_prepare(struct sdhci_host *host)
 	struct xenon_priv *priv = sdhci_pltfm_priv(pltfm_host);
 	u8 sdhc_id = priv->sdhc_id;
 
-	/* Enable SDHC */
+	 
 	xenon_enable_sdhc(host, sdhc_id);
 
-	/* Enable ACG */
+	 
 	xenon_set_acg(host, true);
 
-	/* Enable Parallel Transfer Mode */
+	 
 	xenon_enable_sdhc_parallel_tran(host, sdhc_id);
 
-	/* Disable SDCLK-Off-While-Idle before card init */
+	 
 	xenon_set_sdclk_off_idle(host, sdhc_id, false);
 
 	xenon_mask_cmd_conflict_err(host);
@@ -482,7 +424,7 @@ static void xenon_sdhc_unprepare(struct sdhci_host *host)
 	struct xenon_priv *priv = sdhci_pltfm_priv(pltfm_host);
 	u8 sdhc_id = priv->sdhc_id;
 
-	/* disable SDHC */
+	 
 	xenon_disable_sdhc(host, sdhc_id);
 }
 
@@ -504,10 +446,7 @@ static int xenon_probe(struct platform_device *pdev)
 
 	priv->hw_version = (unsigned long)device_get_match_data(&pdev->dev);
 
-	/*
-	 * Link Xenon specific mmc_host_ops function,
-	 * to replace standard ones in sdhci_ops.
-	 */
+	 
 	xenon_replace_mmc_host_ops(host);
 
 	if (dev->of_node) {
@@ -541,7 +480,7 @@ static int xenon_probe(struct platform_device *pdev)
 
 	xenon_set_acg(host, false);
 
-	/* Xenon specific parameters parse */
+	 
 	err = xenon_probe_params(pdev);
 	if (err)
 		goto err_clk_axi;
@@ -628,11 +567,7 @@ static int xenon_runtime_suspend(struct device *dev)
 		mmc_retune_needed(host->mmc);
 
 	clk_disable_unprepare(pltfm_host->clk);
-	/*
-	 * Need to update the priv->clock here, or when runtime resume
-	 * back, phy don't aware the clock change and won't adjust phy
-	 * which will cause cmd err
-	 */
+	 
 	priv->clock = 0;
 	return 0;
 }
@@ -665,7 +600,7 @@ out:
 	clk_disable_unprepare(pltfm_host->clk);
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops sdhci_xenon_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(xenon_suspend,

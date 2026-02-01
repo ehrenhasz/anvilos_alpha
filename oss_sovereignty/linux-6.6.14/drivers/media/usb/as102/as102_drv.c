@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Abilis Systems Single DVB-T Receiver
- * Copyright (C) 2008 Pierrick Hascoet <pierrick.hascoet@abilis.com>
- * Copyright (C) 2010 Devin Heitmueller <dheitmueller@kernellabs.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -13,7 +9,7 @@
 #include <linux/uaccess.h>
 #include <linux/usb.h>
 
-/* header file for usb device driver*/
+ 
 #include "as102_drv.h"
 #include "as10x_cmd.h"
 #include "as102_fe.h"
@@ -174,7 +170,7 @@ static int as102_set_tune(void *priv, struct as10x_tune_args *tune_args)
 	struct as10x_bus_adapter_t *bus_adap = priv;
 	int ret;
 
-	/* Set frontend arguments */
+	 
 	if (mutex_lock_interruptible(&bus_adap->lock))
 		return -EBUSY;
 
@@ -196,7 +192,7 @@ static int as102_get_tps(void *priv, struct as10x_tps *tps)
 	if (mutex_lock_interruptible(&bus_adap->lock))
 		return -EBUSY;
 
-	/* send abilis command: GET_TPS */
+	 
 	ret = as10x_cmd_get_tps(bus_adap, tps);
 
 	mutex_unlock(&bus_adap->lock);
@@ -212,7 +208,7 @@ static int as102_get_status(void *priv, struct as10x_tune_status *tstate)
 	if (mutex_lock_interruptible(&bus_adap->lock))
 		return -EBUSY;
 
-	/* send abilis command: GET_TUNE_STATUS */
+	 
 	ret = as10x_cmd_get_tune_status(bus_adap, tstate);
 	if (ret < 0) {
 		dev_dbg(&bus_adap->usb_dev->dev,
@@ -233,7 +229,7 @@ static int as102_get_stats(void *priv, struct as10x_demod_stats *demod_stats)
 	if (mutex_lock_interruptible(&bus_adap->lock))
 		return -EBUSY;
 
-	/* send abilis command: GET_TUNE_STATUS */
+	 
 	ret = as10x_cmd_get_demod_stats(bus_adap, demod_stats);
 	if (ret < 0) {
 		dev_dbg(&bus_adap->usb_dev->dev,
@@ -322,7 +318,7 @@ int as102_dvb_register(struct as102_dev_t *as102_dev)
 		goto edmxdinit;
 	}
 
-	/* Attach the frontend */
+	 
 	as102_dev->dvb_fe = dvb_attach(as102_attach, as102_dev->name,
 				       &as102_fe_ops,
 				       &as102_dev->bus_adap,
@@ -341,16 +337,13 @@ int as102_dvb_register(struct as102_dev_t *as102_dev)
 		goto efereg;
 	}
 
-	/* init bus mutex for token locking */
+	 
 	mutex_init(&as102_dev->bus_adap.lock);
 
-	/* init start / stop stream mutex */
+	 
 	mutex_init(&as102_dev->sem);
 
-	/*
-	 * try to load as102 firmware. If firmware upload failed, we'll be
-	 * able to upload it later.
-	 */
+	 
 	if (fw_upload)
 		try_then_request_module(as102_fw_upload(&as102_dev->bus_adap),
 				"firmware_class");
@@ -369,17 +362,17 @@ edmxinit:
 
 void as102_dvb_unregister(struct as102_dev_t *as102_dev)
 {
-	/* unregister as102 frontend */
+	 
 	dvb_unregister_frontend(as102_dev->dvb_fe);
 
-	/* detach frontend */
+	 
 	dvb_frontend_detach(as102_dev->dvb_fe);
 
-	/* unregister demux device */
+	 
 	dvb_dmxdev_release(&as102_dev->dvb_dmxdev);
 	dvb_dmx_release(&as102_dev->dvb_dmx);
 
-	/* unregister dvb adapter */
+	 
 	dvb_unregister_adapter(&as102_dev->dvb_adap);
 
 	pr_info("Unregistered device %s", as102_dev->name);
@@ -387,7 +380,7 @@ void as102_dvb_unregister(struct as102_dev_t *as102_dev)
 
 module_usb_driver(as102_usb_driver);
 
-/* modinfo details */
+ 
 MODULE_DESCRIPTION(DRIVER_FULL_NAME);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Pierrick Hascoet <pierrick.hascoet@abilis.com>");

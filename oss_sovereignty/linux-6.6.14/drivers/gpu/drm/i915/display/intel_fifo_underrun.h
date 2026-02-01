@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_FIFO_UNDERRUN_H__
 #define __INTEL_FIFO_UNDERRUN_H__
@@ -26,4 +24,4 @@ void intel_pch_fifo_underrun_irq_handler(struct drm_i915_private *dev_priv,
 void intel_check_cpu_fifo_underruns(struct drm_i915_private *dev_priv);
 void intel_check_pch_fifo_underruns(struct drm_i915_private *dev_priv);
 
-#endif /* __INTEL_FIFO_UNDERRUN_H__ */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-* Copyright (c) 2016 MediaTek Inc.
-* Author: Tiffany Lin <tiffany.lin@mediatek.com>
-*/
+
+ 
 
 #include <linux/errno.h>
 #include <linux/wait.h>
@@ -49,7 +46,7 @@ int mtk_vcodec_wait_for_done_ctx(void *priv, int command, unsigned int timeout_m
 					       timeout_jiff);
 
 	if (!ret) {
-		status = -1;	/* timeout */
+		status = -1;	 
 		dev_err(&pdev->dev, "[%d] cmd=%d, type=%d, dec timeout=%ums (%d %d)",
 			ctx_id, command, ctx_type, timeout_ms,
 			ctx_int_cond[hw_id], ctx_int_type[hw_id]);

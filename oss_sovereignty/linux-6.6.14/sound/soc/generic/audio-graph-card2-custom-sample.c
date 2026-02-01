@@ -1,27 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// audio-graph-card2-custom-sample.c
-//
-// Copyright (C) 2020 Renesas Electronics Corp.
-// Copyright (C) 2020 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
+
+
+
+
+
+
+
 #include <linux/module.h>
 #include <linux/of_gpio.h>
 #include <linux/platform_device.h>
 #include <sound/graph_card.h>
 
-/*
- * Custom driver can have own priv
- * which includes asoc_simple_priv.
- */
+ 
 struct custom_priv {
 	struct asoc_simple_priv simple_priv;
 
-	/* custom driver's own params */
+	 
 	int custom_params;
 };
 
-/* You can get custom_priv from simple_priv */
+ 
 #define simple_to_custom(simple) container_of((simple), struct custom_priv, simple_priv)
 
 static int custom_card_probe(struct snd_soc_card *card)
@@ -34,7 +31,7 @@ static int custom_card_probe(struct snd_soc_card *card)
 
 	custom_priv->custom_params = 1;
 
-	/* you can use generic probe function */
+	 
 	return asoc_graph_card_probe(card);
 }
 
@@ -42,7 +39,7 @@ static int custom_hook_pre(struct asoc_simple_priv *priv)
 {
 	struct device *dev = simple_priv_to_dev(priv);
 
-	/* You can custom before parsing */
+	 
 	dev_info(dev, "hook : %s\n", __func__);
 
 	return 0;
@@ -53,10 +50,10 @@ static int custom_hook_post(struct asoc_simple_priv *priv)
 	struct device *dev = simple_priv_to_dev(priv);
 	struct snd_soc_card *card;
 
-	/* You can custom after parsing */
+	 
 	dev_info(dev, "hook : %s\n", __func__);
 
-	/* overwrite .probe sample */
+	 
 	card = simple_priv_to_card(priv);
 	card->probe = custom_card_probe;
 
@@ -69,10 +66,7 @@ static int custom_normal(struct asoc_simple_priv *priv,
 {
 	struct device *dev = simple_priv_to_dev(priv);
 
-	/*
-	 * You can custom Normal parsing
-	 * before/affter audio_graph2_link_normal()
-	 */
+	 
 	dev_info(dev, "hook : %s\n", __func__);
 
 	return audio_graph2_link_normal(priv, lnk, li);
@@ -84,10 +78,7 @@ static int custom_dpcm(struct asoc_simple_priv *priv,
 {
 	struct device *dev = simple_priv_to_dev(priv);
 
-	/*
-	 * You can custom DPCM parsing
-	 * before/affter audio_graph2_link_dpcm()
-	 */
+	 
 	dev_info(dev, "hook : %s\n", __func__);
 
 	return audio_graph2_link_dpcm(priv, lnk, li);
@@ -99,18 +90,13 @@ static int custom_c2c(struct asoc_simple_priv *priv,
 {
 	struct device *dev = simple_priv_to_dev(priv);
 
-	/*
-	 * You can custom Codec2Codec parsing
-	 * before/affter audio_graph2_link_c2c()
-	 */
+	 
 	dev_info(dev, "hook : %s\n", __func__);
 
 	return audio_graph2_link_c2c(priv, lnk, li);
 }
 
-/*
- * audio-graph-card2 has many hooks for your customizing.
- */
+ 
 static struct graph2_custom_hooks custom_hooks = {
 	.hook_pre	= custom_hook_pre,
 	.hook_post	= custom_hook_post,
@@ -130,7 +116,7 @@ static int custom_startup(struct snd_pcm_substream *substream)
 	return asoc_simple_startup(substream);
 }
 
-/* You can use custom ops */
+ 
 static const struct snd_soc_ops custom_ops = {
 	.startup	= custom_startup,
 	.shutdown	= asoc_simple_shutdown,
@@ -149,17 +135,17 @@ static int custom_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	simple_priv		= &custom_priv->simple_priv;
-	simple_priv->ops	= &custom_ops; /* customize dai_link ops */
+	simple_priv->ops	= &custom_ops;  
 
-	/* "audio-graph-card2-custom-sample" is too long */
+	 
 	simple_priv->snd_card.name = "card2-custom";
 
-	/* use audio-graph-card2 parsing with own custom hooks */
+	 
 	ret = audio_graph2_parse_of(simple_priv, dev, &custom_hooks);
 	if (ret < 0)
 		return ret;
 
-	/* customize more if needed */
+	 
 
 	return 0;
 }

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2018 Google LLC.
- *
- * Driver for Semtech's SX9310/SX9311 capacitive proximity/button solution.
- * Based on SX9500 driver and Semtech driver using the input framework
- * <https://my.syncplicity.com/share/teouwsim8niiaud/
- *          linux-driver-SX9310_NoSmartHSensing>.
- * Reworked in April 2019 by Evan Green <evgreen@chromium.org>
- * and in January 2020 by Daniel Campello <campello@chromium.org>.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -25,7 +16,7 @@
 
 #include "sx_common.h"
 
-/* Register definitions. */
+ 
 #define SX9310_REG_IRQ_SRC				SX_COMMON_REG_IRQ_SRC
 #define SX9310_REG_STAT0				0x01
 #define SX9310_REG_STAT1				0x02
@@ -105,7 +96,7 @@
 #define   SX9310_REG_SAR_CTRL0_SARDEB_4_SAMPLES		(0x02 << 5)
 #define   SX9310_REG_SAR_CTRL0_SARHYST_8		(0x02 << 3)
 #define SX9310_REG_SAR_CTRL1				0x2b
-/* Each increment of the slope register is 0.0078125. */
+ 
 #define   SX9310_REG_SAR_CTRL1_SLOPE(_hnslope)		(_hnslope / 78125)
 #define SX9310_REG_SAR_CTRL2				0x2c
 #define   SX9310_REG_SAR_CTRL2_SAROFFSET_DEFAULT	0x3c
@@ -129,7 +120,7 @@
 #define SX9310_REG_RESET				0x7f
 
 
-/* 4 hardware channels, as defined in STAT0: COMB, CS2, CS1 and CS0. */
+ 
 #define SX9310_NUM_CHANNELS				4
 static_assert(SX9310_NUM_CHANNELS <= SX_COMMON_MAX_NUM_CHANNELS);
 
@@ -160,38 +151,35 @@ static_assert(SX9310_NUM_CHANNELS <= SX_COMMON_MAX_NUM_CHANNELS);
 #define SX9310_CHANNEL(idx) SX9310_NAMED_CHANNEL(idx, NULL)
 
 static const struct iio_chan_spec sx9310_channels[] = {
-	SX9310_CHANNEL(0),			/* CS0 */
-	SX9310_CHANNEL(1),			/* CS1 */
-	SX9310_CHANNEL(2),			/* CS2 */
-	SX9310_NAMED_CHANNEL(3, "comb"),	/* COMB */
+	SX9310_CHANNEL(0),			 
+	SX9310_CHANNEL(1),			 
+	SX9310_CHANNEL(2),			 
+	SX9310_NAMED_CHANNEL(3, "comb"),	 
 
 	IIO_CHAN_SOFT_TIMESTAMP(4),
 };
 
-/*
- * Each entry contains the integer part (val) and the fractional part, in micro
- * seconds. It conforms to the IIO output IIO_VAL_INT_PLUS_MICRO.
- */
+ 
 static const struct {
 	int val;
 	int val2;
 } sx9310_samp_freq_table[] = {
-	{ 500, 0 }, /* 0000: Min (no idle time) */
-	{ 66, 666666 }, /* 0001: 15 ms */
-	{ 33, 333333 }, /* 0010: 30 ms (Typ.) */
-	{ 22, 222222 }, /* 0011: 45 ms */
-	{ 16, 666666 }, /* 0100: 60 ms */
-	{ 11, 111111 }, /* 0101: 90 ms */
-	{ 8, 333333 }, /* 0110: 120 ms */
-	{ 5, 0 }, /* 0111: 200 ms */
-	{ 2, 500000 }, /* 1000: 400 ms */
-	{ 1, 666666 }, /* 1001: 600 ms */
-	{ 1, 250000 }, /* 1010: 800 ms */
-	{ 1, 0 }, /* 1011: 1 s */
-	{ 0, 500000 }, /* 1100: 2 s */
-	{ 0, 333333 }, /* 1101: 3 s */
-	{ 0, 250000 }, /* 1110: 4 s */
-	{ 0, 200000 }, /* 1111: 5 s */
+	{ 500, 0 },  
+	{ 66, 666666 },  
+	{ 33, 333333 },  
+	{ 22, 222222 },  
+	{ 16, 666666 },  
+	{ 11, 111111 },  
+	{ 8, 333333 },  
+	{ 5, 0 },  
+	{ 2, 500000 },  
+	{ 1, 666666 },  
+	{ 1, 250000 },  
+	{ 1, 0 },  
+	{ 0, 500000 },  
+	{ 0, 333333 },  
+	{ 0, 250000 },  
+	{ 0, 200000 },  
 };
 static const unsigned int sx9310_scan_period_table[] = {
 	2,   15,  30,  45,   60,   90,	 120,  200,
@@ -263,10 +251,7 @@ static int sx9310_read_prox_data(struct sx_common_data *data,
 	return regmap_bulk_read(data->regmap, chan->address, val, sizeof(*val));
 }
 
-/*
- * If we have no interrupt support, we have to wait for a scan period
- * after enabling a channel to get a result.
- */
+ 
 static int sx9310_wait_for_sample(struct sx_common_data *data)
 {
 	int ret;
@@ -447,7 +432,7 @@ static int sx9310_read_hysteresis(struct sx_common_data *data,
 	if (!regval)
 		regval = 5;
 
-	/* regval is at most 5 */
+	 
 	*val = pthresh >> (5 - regval);
 
 	return IIO_VAL_INT;
@@ -728,11 +713,7 @@ static int sx9310_write_raw(struct iio_dev *indio_dev,
 static const struct sx_common_reg_default sx9310_default_regs[] = {
 	{ SX9310_REG_IRQ_MSK, 0x00 },
 	{ SX9310_REG_IRQ_FUNC, 0x00 },
-	/*
-	 * The lower 4 bits should not be set as it enable sensors measurements.
-	 * Turning the detection on before the configuration values are set to
-	 * good values can cause the device to return erroneous readings.
-	 */
+	 
 	{ SX9310_REG_PROX_CTRL0, SX9310_REG_PROX_CTRL0_SCANPERIOD_15MS },
 	{ SX9310_REG_PROX_CTRL1, 0x00 },
 	{ SX9310_REG_PROX_CTRL2, SX9310_REG_PROX_CTRL2_COMBMODE_CS1_CS2 |
@@ -767,7 +748,7 @@ static const struct sx_common_reg_default sx9310_default_regs[] = {
 	{ SX9310_REG_SAR_CTRL2, SX9310_REG_SAR_CTRL2_SAROFFSET_DEFAULT },
 };
 
-/* Activate all channels and perform an initial compensation. */
+ 
 static int sx9310_init_compensation(struct iio_dev *indio_dev)
 {
 	struct sx_common_data *data = iio_priv(indio_dev);
@@ -779,7 +760,7 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
-	/* run the compensation phase on all channels */
+	 
 	ret = regmap_write(data->regmap, SX9310_REG_PROX_CTRL0,
 			   ctrl0 | SX9310_REG_PROX_CTRL0_SENSOREN_MASK);
 	if (ret)
@@ -887,7 +868,7 @@ sx9310_get_default_reg(struct device *dev, int idx,
 		if (ret)
 			break;
 
-		/* Powers of 2, except for a gap between 16 and 64 */
+		 
 		pos = clamp(ilog2(pos), 3, 11) - (pos >= 32 ? 4 : 3);
 		reg_def->def &= ~SX9310_REG_PROX_CTRL7_AVGPOSFILT_MASK;
 		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL7_AVGPOSFILT_MASK,
@@ -1043,11 +1024,7 @@ static struct i2c_driver sx9310_driver = {
 		.of_match_table = sx9310_of_match,
 		.pm = pm_sleep_ptr(&sx9310_pm_ops),
 
-		/*
-		 * Lots of i2c transfers in probe + over 200 ms waiting in
-		 * sx9310_init_compensation() mean a slow probe; prefer async
-		 * so we don't delay boot if we're builtin to the kernel.
-		 */
+		 
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 	.probe		= sx9310_probe,

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// RTC driver for Maxim MAX8997
-//
-// Copyright (C) 2013 Samsung Electronics Co.Ltd
-//
-//  based on rtc-max8998.c
+
+
+
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,24 +17,24 @@
 #include <linux/mfd/max8997-private.h>
 #include <linux/irqdomain.h>
 
-/* Module parameter for WTSR function control */
+ 
 static int wtsr_en = 1;
 module_param(wtsr_en, int, 0444);
 MODULE_PARM_DESC(wtsr_en, "Watchdog Timeout & Software Reset (default=on)");
-/* Module parameter for SMPL function control */
+ 
 static int smpl_en = 1;
 module_param(smpl_en, int, 0444);
 MODULE_PARM_DESC(smpl_en, "Sudden Momentary Power Loss (default=on)");
 
-/* RTC Control Register */
+ 
 #define BCD_EN_SHIFT			0
 #define BCD_EN_MASK			(1 << BCD_EN_SHIFT)
 #define MODEL24_SHIFT			1
 #define MODEL24_MASK			(1 << MODEL24_SHIFT)
-/* RTC Update Register1 */
+ 
 #define RTC_UDR_SHIFT			0
 #define RTC_UDR_MASK			(1 << RTC_UDR_SHIFT)
-/* WTSR and SMPL Register */
+ 
 #define WTSRT_SHIFT			0
 #define SMPLT_SHIFT			2
 #define WTSR_EN_SHIFT			6
@@ -43,10 +43,10 @@ MODULE_PARM_DESC(smpl_en, "Sudden Momentary Power Loss (default=on)");
 #define SMPLT_MASK			(3 << SMPLT_SHIFT)
 #define WTSR_EN_MASK			(1 << WTSR_EN_SHIFT)
 #define SMPL_EN_MASK			(1 << SMPL_EN_SHIFT)
-/* RTC Hour register */
+ 
 #define HOUR_PM_SHIFT			6
 #define HOUR_PM_MASK			(1 << HOUR_PM_SHIFT)
-/* RTC Alarm Enable */
+ 
 #define ALARM_ENABLE_SHIFT		7
 #define ALARM_ENABLE_MASK		(1 << ALARM_ENABLE_SHIFT)
 
@@ -120,9 +120,7 @@ static inline int max8997_rtc_set_update_reg(struct max8997_rtc_info *info)
 		dev_err(info->dev, "%s: fail to write update reg(%d)\n",
 				__func__, ret);
 	else {
-		/* Minimum 16ms delay required before RTC update.
-		 * Otherwise, we may read and update based on out-of-date
-		 * value */
+		 
 		msleep(20);
 	}
 
@@ -210,7 +208,7 @@ static int max8997_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		goto out;
 	}
 
-	if (val & (1 << 4)) /* RTCA1 */
+	if (val & (1 << 4))  
 		alrm->pending = 1;
 
 out:
@@ -428,7 +426,7 @@ static int max8997_rtc_init_reg(struct max8997_rtc_info *info)
 	u8 data[2];
 	int ret;
 
-	/* Set RTC control register : Binary mode, 24hour mdoe */
+	 
 	data[0] = (1 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
 	data[1] = (0 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
 

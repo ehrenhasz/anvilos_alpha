@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXRS450/ADXRS453 Digital Output Gyroscope Driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -20,24 +16,24 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-#define ADXRS450_STARTUP_DELAY	50 /* ms */
+#define ADXRS450_STARTUP_DELAY	50  
 
-/* The MSB for the spi commands */
+ 
 #define ADXRS450_SENSOR_DATA    (0x20 << 24)
 #define ADXRS450_WRITE_DATA	(0x40 << 24)
 #define ADXRS450_READ_DATA	(0x80 << 24)
 
-#define ADXRS450_RATE1	0x00	/* Rate Registers */
-#define ADXRS450_TEMP1	0x02	/* Temperature Registers */
-#define ADXRS450_LOCST1	0x04	/* Low CST Memory Registers */
-#define ADXRS450_HICST1	0x06	/* High CST Memory Registers */
-#define ADXRS450_QUAD1	0x08	/* Quad Memory Registers */
-#define ADXRS450_FAULT1	0x0A	/* Fault Registers */
-#define ADXRS450_PID1	0x0C	/* Part ID Register 1 */
-#define ADXRS450_SNH	0x0E	/* Serial Number Registers, 4 bytes */
+#define ADXRS450_RATE1	0x00	 
+#define ADXRS450_TEMP1	0x02	 
+#define ADXRS450_LOCST1	0x04	 
+#define ADXRS450_HICST1	0x06	 
+#define ADXRS450_QUAD1	0x08	 
+#define ADXRS450_FAULT1	0x0A	 
+#define ADXRS450_PID1	0x0C	 
+#define ADXRS450_SNH	0x0E	 
 #define ADXRS450_SNL	0x10
-#define ADXRS450_DNC1	0x12	/* Dynamic Null Correction Registers */
-/* Check bits */
+#define ADXRS450_DNC1	0x12	 
+ 
 #define ADXRS450_P	0x01
 #define ADXRS450_CHK	0x02
 #define ADXRS450_CST	0x04
@@ -63,13 +59,7 @@ enum {
 	ID_ADXRS453,
 };
 
-/**
- * struct adxrs450_state - device instance specific data
- * @us:			actual spi_device
- * @buf_lock:		mutex to protect tx and rx
- * @tx:			transmit buffer
- * @rx:			receive buffer
- **/
+ 
 struct adxrs450_state {
 	struct spi_device	*us;
 	struct mutex		buf_lock;
@@ -78,13 +68,7 @@ struct adxrs450_state {
 
 };
 
-/**
- * adxrs450_spi_read_reg_16() - read 2 bytes from a register pair
- * @indio_dev: device associated with child of actual iio_dev
- * @reg_address: the address of the lower of the two registers, which should be
- *	an even address, the second register's address is reg_address + 1.
- * @val: somewhere to pass back the value read
- **/
+ 
 static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
 				    u8 reg_address,
 				    u16 *val)
@@ -126,13 +110,7 @@ error_ret:
 	return ret;
 }
 
-/**
- * adxrs450_spi_write_reg_16() - write 2 bytes data to a register pair
- * @indio_dev: device associated with child of actual actual iio_dev
- * @reg_address: the address of the lower of the two registers,which should be
- *	an even address, the second register's address is reg_address + 1.
- * @val: value to be written.
- **/
+ 
 static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
 				     u8 reg_address,
 				     u16 val)
@@ -152,16 +130,12 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
 	if (ret)
 		dev_err(&st->us->dev, "problem while writing 16 bit register 0x%02x\n",
 			reg_address);
-	usleep_range(100, 1000); /* enforce sequential transfer delay 0.1ms */
+	usleep_range(100, 1000);  
 	mutex_unlock(&st->buf_lock);
 	return ret;
 }
 
-/**
- * adxrs450_spi_sensor_data() - read 2 bytes sensor data
- * @indio_dev: device associated with child of actual iio_dev
- * @val: somewhere to pass back the value read
- **/
+ 
 static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
 {
 	struct adxrs450_state *st = iio_priv(indio_dev);
@@ -195,12 +169,7 @@ error_ret:
 	return ret;
 }
 
-/**
- * adxrs450_spi_initial() - use for initializing procedure.
- * @st: device instance specific data
- * @val: somewhere to pass back the value read
- * @chk: Whether to perform fault check
- **/
+ 
 static int adxrs450_spi_initial(struct adxrs450_state *st,
 		u32 *val, char chk)
 {
@@ -231,7 +200,7 @@ error_ret:
 	return ret;
 }
 
-/* Recommended Startup Sequence by spec */
+ 
 static int adxrs450_initial_setup(struct iio_dev *indio_dev)
 {
 	u32 t;
@@ -414,14 +383,14 @@ static int adxrs450_probe(struct spi_device *spi)
 	struct adxrs450_state *st;
 	struct iio_dev *indio_dev;
 
-	/* setup the industrialio driver allocated elements */
+	 
 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
 	if (!indio_dev)
 		return -ENOMEM;
 	st = iio_priv(indio_dev);
 	st->us = spi;
 	mutex_init(&st->buf_lock);
-	/* This is only used for removal purposes */
+	 
 	spi_set_drvdata(spi, indio_dev);
 
 	indio_dev->info = &adxrs450_info;
@@ -435,7 +404,7 @@ static int adxrs450_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Get the device into a sane initial state */
+	 
 	ret = adxrs450_initial_setup(indio_dev);
 	if (ret)
 		return ret;

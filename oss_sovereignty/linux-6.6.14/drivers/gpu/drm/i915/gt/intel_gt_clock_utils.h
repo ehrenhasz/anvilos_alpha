@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_GT_CLOCK_UTILS_H__
 #define __INTEL_GT_CLOCK_UTILS_H__
@@ -24,4 +22,4 @@ u64 intel_gt_pm_interval_to_ns(const struct intel_gt *gt, u64 count);
 u64 intel_gt_ns_to_clock_interval(const struct intel_gt *gt, u64 ns);
 u64 intel_gt_ns_to_pm_interval(const struct intel_gt *gt, u64 ns);
 
-#endif /* __INTEL_GT_CLOCK_UTILS_H__ */
+#endif  

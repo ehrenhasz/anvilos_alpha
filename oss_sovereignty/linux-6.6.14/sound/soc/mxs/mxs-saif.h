@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+ 
+ 
 
 
 #ifndef _MXS_SAIF_H
@@ -12,7 +10,7 @@
 #define SAIF_DATA	0x20
 #define SAIF_VERSION	0X30
 
-/* SAIF_CTRL */
+ 
 #define BM_SAIF_CTRL_SFTRST		0x80000000
 #define BM_SAIF_CTRL_CLKGATE		0x40000000
 #define BP_SAIF_CTRL_BITCLK_MULT_RATE	27
@@ -48,7 +46,7 @@
 #define BM_SAIF_CTRL_READ_MODE		0x00000002
 #define BM_SAIF_CTRL_RUN		0x00000001
 
-/* SAIF_STAT */
+ 
 #define BM_SAIF_STAT_PRESENT		0x80000000
 #define BP_SAIF_STAT_RSRVD2		17
 #define BM_SAIF_STAT_RSRVD2		0x7FFE0000
@@ -69,7 +67,7 @@
 		(((v) << 1) & BM_SAIF_STAT_RSRVD0)
 #define BM_SAIF_STAT_BUSY		0x00000001
 
-/* SAFI_DATA */
+ 
 #define BP_SAIF_DATA_PCM_RIGHT		16
 #define BM_SAIF_DATA_PCM_RIGHT		0xFFFF0000
 #define BF_SAIF_DATA_PCM_RIGHT(v) \
@@ -79,7 +77,7 @@
 #define BF_SAIF_DATA_PCM_LEFT(v)	\
 		(((v) << 0) & BM_SAIF_DATA_PCM_LEFT)
 
-/* SAIF_VERSION */
+ 
 #define BP_SAIF_VERSION_MAJOR		24
 #define BM_SAIF_VERSION_MAJOR		0xFF000000
 #define BF_SAIF_VERSION_MAJOR(v) \

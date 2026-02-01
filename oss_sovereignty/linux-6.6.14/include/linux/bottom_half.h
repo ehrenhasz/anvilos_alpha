@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_BH_H
 #define _LINUX_BH_H
 
@@ -39,4 +39,4 @@ extern bool local_bh_blocked(void);
 static inline bool local_bh_blocked(void) { return false; }
 #endif
 
-#endif /* _LINUX_BH_H */
+#endif  

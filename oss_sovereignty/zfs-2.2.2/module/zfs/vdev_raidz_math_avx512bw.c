@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2016 Romain Dolbeau. All rights reserved.
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
+ 
+ 
 
 #include <sys/isa_defs.h>
 
@@ -242,7 +220,7 @@ static const uint8_t __attribute__((aligned(64))) _mul_mask = 0x0F;
 	case 2:								\
 		__asm(							\
 		    "vpbroadcastb (%[mask]), %%" _0f "\n"		\
-		    /* upper bits */					\
+		     					\
 		    "vbroadcasti32x4 0x00(%[lt]), %%" _ltmod "\n"	\
 		    "vbroadcasti32x4 0x10(%[lt]), %%" _ltmul "\n"	\
 									\
@@ -257,7 +235,7 @@ static const uint8_t __attribute__((aligned(64))) _mul_mask = 0x0F;
 		    "vpshufb %%" _bs ", %%" _ltmod ", %%" _tb "\n"	\
 		    "vpshufb %%" _as ", %%" _ltmul ", %%" _as "\n"	\
 		    "vpshufb %%" _bs ", %%" _ltmul ", %%" _bs "\n"	\
-		    /* lower bits */					\
+		     					\
 		    "vbroadcasti32x4 0x20(%[lt]), %%" _ltmod "\n"	\
 		    "vbroadcasti32x4 0x30(%[lt]), %%" _ltmul "\n"	\
 									\
@@ -299,11 +277,7 @@ static const uint8_t __attribute__((aligned(64))) _mul_mask = 0x0F;
 #define	raidz_math_begin()	kfpu_begin()
 #define	raidz_math_end()	kfpu_end()
 
-/*
- * ZERO, COPY, and MUL operations are already 2x unrolled, which means that
- * the stride of these operations for avx512 must not exceed 4. Otherwise, a
- * single step would exceed 512B block size.
- */
+ 
 
 #define	SYN_STRIDE		4
 
@@ -410,4 +384,4 @@ const raidz_impl_ops_t vdev_raidz_avx512bw_impl = {
 	.name = "avx512bw"
 };
 
-#endif /* defined(__x86_64) && defined(HAVE_AVX512BW) */
+#endif  

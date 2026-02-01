@@ -1,31 +1,4 @@
-/*
- *	linux/drivers/video/pmag-aa-fb.c
- *	Copyright 2002 Karsten Merker <merker@debian.org>
- *
- *	PMAG-AA TurboChannel framebuffer card support ... derived from
- *	pmag-ba-fb.c, which is Copyright (C) 1999, 2000, 2001 by
- *	Michael Engel <engel@unix-ag.org>, Karsten Merker <merker@debian.org>
- *	and Harald Koerfgen <hkoerfg@web.de>, which itself is derived from
- *	"HP300 Topcat framebuffer support (derived from macfb of all things)
- *	Phil Blundell <philb@gnu.org> 1998"
- *	Copyright (c) 2016  Maciej W. Rozycki
- *
- *	This file is subject to the terms and conditions of the GNU General
- *	Public License.  See the file COPYING in the main directory of this
- *	archive for more details.
- *
- *	2002-09-28  Karsten Merker <merker@linuxtag.org>
- *		Version 0.01: First try to get a PMAG-AA running.
- *
- *	2003-02-24  Thiemo Seufer  <seufer@csv.ica.uni-stuttgart.de>
- *		Version 0.02: Major code cleanup.
- *
- *	2003-09-21  Thiemo Seufer  <seufer@csv.ica.uni-stuttgart.de>
- *		Hardware cursor support.
- *
- *	2016-02-21  Maciej W. Rozycki  <macro@linux-mips.org>
- *		Version 0.03: Rewritten for the new FB and TC APIs.
- */
+ 
 
 #include <linux/compiler.h>
 #include <linux/errno.h>
@@ -40,25 +13,18 @@
 #include "bt455.h"
 #include "bt431.h"
 
-/* Version information */
+ 
 #define DRIVER_VERSION "0.03"
 #define DRIVER_AUTHOR "Karsten Merker <merker@linuxtag.org>"
 #define DRIVER_DESCRIPTION "PMAG-AA Framebuffer Driver"
 
-/*
- * Bt455 RAM DAC register base offset (rel. to TC slot base address).
- */
+ 
 #define PMAG_AA_BT455_OFFSET		0x100000
 
-/*
- * Bt431 cursor generator offset (rel. to TC slot base address).
- */
+ 
 #define PMAG_AA_BT431_OFFSET		0x180000
 
-/*
- * Begin of PMAG-AA framebuffer memory relative to TC slot address,
- * resolution is 1280x1024x1 (8 bits deep, but only LSB is used).
- */
+ 
 #define PMAG_AA_ONBOARD_FBMEM_OFFSET	0x200000
 
 struct aafb_par {
@@ -136,7 +102,7 @@ static int aafb_cursor(struct fb_info *info, struct fb_cursor *cursor)
 	return 0;
 }
 
-/* 0 unblanks, any other blanks. */
+ 
 
 static int aafb_blank(int blank, struct fb_info *info)
 {
@@ -173,7 +139,7 @@ static int pmagaafb_probe(struct device *dev)
 	info->fix = aafb_fix;
 	info->var = aafb_defined;
 
-	/* Request the I/O MEM resource. */
+	 
 	start = tdev->resource.start;
 	len = tdev->resource.end - start + 1;
 	if (!request_mem_region(start, len, dev_name(dev))) {
@@ -183,7 +149,7 @@ static int pmagaafb_probe(struct device *dev)
 		goto err_alloc;
 	}
 
-	/* MMIO mapping setup. */
+	 
 	info->fix.mmio_start = start + PMAG_AA_BT455_OFFSET;
 	par->mmio = ioremap(info->fix.mmio_start, info->fix.mmio_len);
 	if (!par->mmio) {
@@ -194,7 +160,7 @@ static int pmagaafb_probe(struct device *dev)
 	par->bt455 = par->mmio - PMAG_AA_BT455_OFFSET + PMAG_AA_BT455_OFFSET;
 	par->bt431 = par->mmio - PMAG_AA_BT455_OFFSET + PMAG_AA_BT431_OFFSET;
 
-	/* Frame buffer mapping setup. */
+	 
 	info->fix.smem_start = start + PMAG_AA_ONBOARD_FBMEM_OFFSET;
 	info->screen_base = ioremap(info->fix.smem_start,
 					    info->fix.smem_len);
@@ -205,11 +171,11 @@ static int pmagaafb_probe(struct device *dev)
 	}
 	info->screen_size = info->fix.smem_len;
 
-	/* Init colormap. */
+	 
 	bt455_write_cmap_entry(par->bt455, 0, 0x0);
 	bt455_write_cmap_next(par->bt455, 0xf);
 
-	/* Init hardware cursor. */
+	 
 	bt431_erase_cursor(par->bt431);
 	bt431_init_cursor(par->bt431);
 
@@ -260,9 +226,7 @@ static int pmagaafb_remove(struct device *dev)
 	return 0;
 }
 
-/*
- * Initialise the framebuffer.
- */
+ 
 static const struct tc_device_id pmagaafb_tc_table[] = {
 	{ "DEC     ", "PMAG-AA " },
 	{ }

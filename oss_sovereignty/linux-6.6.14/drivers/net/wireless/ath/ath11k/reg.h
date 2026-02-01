@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH11K_REG_H
 #define ATH11K_REG_H
@@ -12,7 +10,7 @@
 struct ath11k_base;
 struct ath11k;
 
-/* DFS regdomains supported by Firmware */
+ 
 enum ath11k_dfs_region {
 	ATH11K_DFS_REG_UNSET,
 	ATH11K_DFS_REG_FCC,
@@ -24,7 +22,7 @@ enum ath11k_dfs_region {
 	ATH11K_DFS_REG_UNDEF,
 };
 
-/* ATH11K Regulatory API's */
+ 
 void ath11k_reg_init(struct ath11k *ar);
 void ath11k_reg_free(struct ath11k_base *ab);
 void ath11k_regd_update_work(struct work_struct *work);

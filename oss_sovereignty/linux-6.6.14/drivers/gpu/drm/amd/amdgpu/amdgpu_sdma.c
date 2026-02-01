@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include "amdgpu.h"
@@ -27,12 +6,10 @@
 #include "amdgpu_ras.h"
 
 #define AMDGPU_CSA_SDMA_SIZE 64
-/* SDMA CSA reside in the 3rd page of CSA */
+ 
 #define AMDGPU_CSA_SDMA_OFFSET (4096 * 2)
 
-/*
- * GPU SDMA IP block helpers function.
- */
+ 
 
 struct amdgpu_sdma_instance *amdgpu_sdma_get_instance_from_ring(struct amdgpu_ring *ring)
 {
@@ -71,7 +48,7 @@ uint64_t amdgpu_sdma_get_csa_mc_addr(struct amdgpu_ring *ring,
 	uint32_t index = 0;
 	int r;
 
-	/* don't enable OS preemption on SDMA under SRIOV */
+	 
 	if (amdgpu_sriov_vf(adev) || vmid == 0 || !adev->gfx.mcbp)
 		return 0;
 
@@ -249,8 +226,7 @@ int amdgpu_sdma_init_microcode(struct amdgpu_device *adev,
 				if (!duplicate && (instance != i))
 					continue;
 				else {
-					/* Use a single copy per SDMA firmware type. PSP uses the same instance for all
-					 * groups of SDMAs */
+					 
 					if (adev->ip_versions[SDMA0_HWIP][0] == IP_VERSION(4, 4, 2) &&
 					    adev->firmware.load_type == AMDGPU_FW_LOAD_PSP &&
 					    adev->sdma.num_inst_per_aid == i) {
@@ -315,9 +291,7 @@ int amdgpu_sdma_ras_sw_init(struct amdgpu_device *adev)
 	int err = 0;
 	struct amdgpu_sdma_ras *ras = NULL;
 
-	/* adev->sdma.ras is NULL, which means sdma does not
-	 * support ras function, then do nothing here.
-	 */
+	 
 	if (!adev->sdma.ras)
 		return 0;
 
@@ -334,11 +308,11 @@ int amdgpu_sdma_ras_sw_init(struct amdgpu_device *adev)
 	ras->ras_block.ras_comm.type = AMDGPU_RAS_ERROR__MULTI_UNCORRECTABLE;
 	adev->sdma.ras_if = &ras->ras_block.ras_comm;
 
-	/* If not define special ras_late_init function, use default ras_late_init */
+	 
 	if (!ras->ras_block.ras_late_init)
 		ras->ras_block.ras_late_init = amdgpu_sdma_ras_late_init;
 
-	/* If not defined special ras_cb function, use default ras_cb */
+	 
 	if (!ras->ras_block.ras_cb)
 		ras->ras_block.ras_cb = amdgpu_sdma_process_ras_data_cb;
 

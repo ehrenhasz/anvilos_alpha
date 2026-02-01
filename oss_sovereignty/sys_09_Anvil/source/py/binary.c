@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2017 Paul Sokolovsky
- * Copyright (c) 2014-2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -36,7 +11,7 @@
 #include "py/objint.h"
 #include "py/runtime.h"
 
-// Helpers to work with binary-encoded data
+
 
 #ifndef alignof
 #define alignof(type) offsetof(struct { char c; type t; }, t)
@@ -86,13 +61,13 @@ size_t mp_binary_get_size(char struct_type, char val_type, size_t *palign) {
             }
             break;
         case '@': {
-            // TODO:
-            // The simplest heuristic for alignment is to align by value
-            // size, but that doesn't work for "bigger than int" types,
-            // for example, long long may very well have long alignment
-            // So, we introduce separate alignment handling, but having
-            // formal support for that is different from actually supporting
-            // particular (or any) ABI.
+            
+            
+            
+            
+            
+            
+            
             switch (val_type) {
                 case BYTEARRAY_TYPECODE:
                 case 'b':
@@ -180,13 +155,13 @@ static float mp_decode_half_float(uint16_t hf) {
     uint16_t m = hf & 0x3ff;
     int e = (hf >> 10) & 0x1f;
     if (e == 0x1f) {
-        // Half-float is infinity.
+        
         e = 0xff;
     } else if (e) {
-        // Half-float is normal.
+        
         e += 127 - 15;
     } else if (m) {
-        // Half-float is subnormal, make it normal.
+        
         e = 127 - 15;
         while (!(m & 0x400)) {
             m <<= 1;
@@ -208,18 +183,18 @@ static uint16_t mp_encode_half_float(float x) {
 
     uint16_t m = (fpu.i >> 13) & 0x3ff;
     if (fpu.i & (1 << 12)) {
-        // Round up.
+        
         ++m;
     }
     int e = (fpu.i >> 23) & 0xff;
 
     if (e == 0xff) {
-        // Infinity.
+        
         e = 0x1f;
     } else if (e != 0) {
         e -= 127 - 15;
         if (e < 0) {
-            // Underflow: denormalized, or zero.
+            
             if (e >= -11) {
                 m = (m | 0x400) >> -e;
                 if (m & 1) {
@@ -232,7 +207,7 @@ static uint16_t mp_encode_half_float(float x) {
             }
             e = 0;
         } else if (e > 0x3f) {
-            // Overflow: infinity.
+            
             e = 0x1f;
             m = 0;
         }
@@ -280,19 +255,19 @@ mp_obj_t mp_binary_get_val_array(char typecode, void *p, size_t index) {
         case 'd':
             return mp_obj_new_float_from_d(((double *)p)[index]);
         #endif
-        // Extension to CPython: array of objects
+        
         case 'O':
             return ((mp_obj_t *)p)[index];
-        // Extension to CPython: array of pointers
+        
         case 'P':
             return mp_obj_new_int((mp_int_t)(uintptr_t)((void **)p)[index]);
     }
     return MP_OBJ_NEW_SMALL_INT(val);
 }
 
-// The long long type is guaranteed to hold at least 64 bits, and size is at
-// most 8 (for q and Q), so we will always be able to parse the given data
-// and fit it into a long long.
+
+
+
 long long mp_binary_get_int(size_t size, bool is_signed, bool big_endian, const byte *src) {
     int delta;
     if (!big_endian) {
@@ -322,7 +297,7 @@ mp_obj_t mp_binary_get_val(char struct_type, char val_type, byte *p_base, byte *
 
     size_t size = mp_binary_get_size(struct_type, val_type, &align);
     if (struct_type == '@') {
-        // Align p relative to p_base
+        
         p = p_base + (uintptr_t)MP_ALIGN(p - p_base, align);
         #if MP_ENDIANNESS_LITTLE
         struct_type = '<';
@@ -374,7 +349,7 @@ void mp_binary_set_int(size_t val_sz, bool big_endian, byte *dest, mp_uint_t val
     if (MP_ENDIANNESS_LITTLE && !big_endian) {
         memcpy(dest, &val, val_sz);
     } else if (MP_ENDIANNESS_BIG && big_endian) {
-        // only copy the least-significant val_sz bytes
+        
         memcpy(dest, (byte *)&val + sizeof(mp_uint_t) - val_sz, val_sz);
     } else {
         const byte *src;
@@ -395,7 +370,7 @@ void mp_binary_set_val(char struct_type, char val_type, mp_obj_t val_in, byte *p
 
     size_t size = mp_binary_get_size(struct_type, val_type, &align);
     if (struct_type == '@') {
-        // Align p relative to p_base
+        
         p = p_base + (uintptr_t)MP_ALIGN(p - p_base, align);
         if (MP_ENDIANNESS_LITTLE) {
             struct_type = '<';
@@ -450,7 +425,7 @@ void mp_binary_set_val(char struct_type, char val_type, mp_obj_t val_in, byte *p
             #endif
 
             val = mp_obj_get_int(val_in);
-            // zero/sign extend if needed
+            
             if (MP_BYTES_PER_OBJ_WORD < 8 && size > sizeof(val)) {
                 int c = (mp_int_t)val < 0 ? 0xff : 0x00;
                 memset(p, c, size);
@@ -474,7 +449,7 @@ void mp_binary_set_val_array(char typecode, void *p, size_t index, mp_obj_t val_
             ((double *)p)[index] = mp_obj_get_float_to_d(val_in);
             break;
         #endif
-        // Extension to CPython: array of objects
+        
         case 'O':
             ((mp_obj_t *)p)[index] = val_in;
             break;
@@ -534,7 +509,7 @@ void mp_binary_set_val_array_from_int(char typecode, void *p, size_t index, mp_i
             ((double *)p)[index] = (double)val;
             break;
         #endif
-        // Extension to CPython: array of pointers
+        
         case 'P':
             ((void **)p)[index] = (void *)(uintptr_t)val;
             break;

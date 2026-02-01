@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_util.h>
 #include <kvm_util.h>
 #include <processor.h>
@@ -94,7 +94,7 @@ static void write_##reg_name(int num, uint64_t val)	\
 	}						\
 }
 
-/* Define write_dbgbcr()/write_dbgbvr()/write_dbgwcr()/write_dbgwvr() */
+ 
 GEN_DEBUG_WRITE_REG(dbgbcr)
 GEN_DEBUG_WRITE_REG(dbgbvr)
 GEN_DEBUG_WRITE_REG(dbgwcr)
@@ -114,7 +114,7 @@ static void reset_debug_state(void)
 	write_sysreg(0, mdscr_el1);
 	write_sysreg(0, contextidr_el1);
 
-	/* Reset all bcr/bvr/wcr/wvr registers */
+	 
 	dfr0 = read_sysreg(id_aa64dfr0_el1);
 	brps = FIELD_GET(ARM64_FEATURE_MASK(ID_AA64DFR0_BRPS), dfr0);
 	for (i = 0; i <= brps; i++) {
@@ -180,13 +180,13 @@ static void install_wp_ctx(uint8_t addr_wp, uint8_t ctx_bp, uint64_t addr,
 	uint32_t wcr;
 	uint64_t ctx_bcr;
 
-	/* Setup a context-aware breakpoint for Linked Context ID Match */
+	 
 	ctx_bcr = DBGBCR_LEN8 | DBGBCR_EXEC | DBGBCR_EL1 | DBGBCR_E |
 		  DBGBCR_BT_CTX_LINK;
 	write_dbgbcr(ctx_bp, ctx_bcr);
 	write_dbgbvr(ctx_bp, ctx);
 
-	/* Setup a linked watchpoint (linked to the context-aware breakpoint) */
+	 
 	wcr = DBGWCR_LEN8 | DBGWCR_RD | DBGWCR_WR | DBGWCR_EL1 | DBGWCR_E |
 	      DBGWCR_WT_LINK | ((uint32_t)ctx_bp << DBGWCR_LBN_SHIFT);
 	write_dbgwcr(addr_wp, wcr);
@@ -201,16 +201,13 @@ void install_hw_bp_ctx(uint8_t addr_bp, uint8_t ctx_bp, uint64_t addr,
 {
 	uint32_t addr_bcr, ctx_bcr;
 
-	/* Setup a context-aware breakpoint for Linked Context ID Match */
+	 
 	ctx_bcr = DBGBCR_LEN8 | DBGBCR_EXEC | DBGBCR_EL1 | DBGBCR_E |
 		  DBGBCR_BT_CTX_LINK;
 	write_dbgbcr(ctx_bp, ctx_bcr);
 	write_dbgbvr(ctx_bp, ctx);
 
-	/*
-	 * Setup a normal breakpoint for Linked Address Match, and link it
-	 * to the context-aware breakpoint.
-	 */
+	 
 	addr_bcr = DBGBCR_LEN8 | DBGBCR_EXEC | DBGBCR_EL1 | DBGBCR_E |
 		   DBGBCR_BT_ADDR_LINK_CTX |
 		   ((uint32_t)ctx_bp << DBGBCR_LBN_SHIFT);
@@ -236,41 +233,41 @@ static volatile char write_data;
 
 static void guest_code(uint8_t bpn, uint8_t wpn, uint8_t ctx_bpn)
 {
-	uint64_t ctx = 0xabcdef;	/* a random context number */
+	uint64_t ctx = 0xabcdef;	 
 
-	/* Software-breakpoint */
+	 
 	reset_debug_state();
 	asm volatile("sw_bp: brk #0");
 	GUEST_ASSERT_EQ(sw_bp_addr, PC(sw_bp));
 
-	/* Hardware-breakpoint */
+	 
 	reset_debug_state();
 	install_hw_bp(bpn, PC(hw_bp));
 	asm volatile("hw_bp: nop");
 	GUEST_ASSERT_EQ(hw_bp_addr, PC(hw_bp));
 
-	/* Hardware-breakpoint + svc */
+	 
 	reset_debug_state();
 	install_hw_bp(bpn, PC(bp_svc));
 	asm volatile("bp_svc: svc #0");
 	GUEST_ASSERT_EQ(hw_bp_addr, PC(bp_svc));
 	GUEST_ASSERT_EQ(svc_addr, PC(bp_svc) + 4);
 
-	/* Hardware-breakpoint + software-breakpoint */
+	 
 	reset_debug_state();
 	install_hw_bp(bpn, PC(bp_brk));
 	asm volatile("bp_brk: brk #0");
 	GUEST_ASSERT_EQ(sw_bp_addr, PC(bp_brk));
 	GUEST_ASSERT_EQ(hw_bp_addr, PC(bp_brk));
 
-	/* Watchpoint */
+	 
 	reset_debug_state();
 	install_wp(wpn, PC(write_data));
 	write_data = 'x';
 	GUEST_ASSERT_EQ(write_data, 'x');
 	GUEST_ASSERT_EQ(wp_data_addr, PC(write_data));
 
-	/* Single-step */
+	 
 	reset_debug_state();
 	install_ss();
 	ss_idx = 0;
@@ -283,14 +280,14 @@ static void guest_code(uint8_t bpn, uint8_t wpn, uint8_t ctx_bpn)
 	GUEST_ASSERT_EQ(ss_addr[1], PC(ss_start) + 4);
 	GUEST_ASSERT_EQ(ss_addr[2], PC(ss_start) + 8);
 
-	/* OS Lock does not block software-breakpoint */
+	 
 	reset_debug_state();
 	enable_os_lock();
 	sw_bp_addr = 0;
 	asm volatile("sw_bp2: brk #0");
 	GUEST_ASSERT_EQ(sw_bp_addr, PC(sw_bp2));
 
-	/* OS Lock blocking hardware-breakpoint */
+	 
 	reset_debug_state();
 	enable_os_lock();
 	install_hw_bp(bpn, PC(hw_bp2));
@@ -298,7 +295,7 @@ static void guest_code(uint8_t bpn, uint8_t wpn, uint8_t ctx_bpn)
 	asm volatile("hw_bp2: nop");
 	GUEST_ASSERT_EQ(hw_bp_addr, 0);
 
-	/* OS Lock blocking watchpoint */
+	 
 	reset_debug_state();
 	enable_os_lock();
 	write_data = '\0';
@@ -308,7 +305,7 @@ static void guest_code(uint8_t bpn, uint8_t wpn, uint8_t ctx_bpn)
 	GUEST_ASSERT_EQ(write_data, 'x');
 	GUEST_ASSERT_EQ(wp_data_addr, 0);
 
-	/* OS Lock blocking single-step */
+	 
 	reset_debug_state();
 	enable_os_lock();
 	ss_addr[0] = 0;
@@ -320,21 +317,21 @@ static void guest_code(uint8_t bpn, uint8_t wpn, uint8_t ctx_bpn)
 		     : : : "x0");
 	GUEST_ASSERT_EQ(ss_addr[0], 0);
 
-	/* Linked hardware-breakpoint */
+	 
 	hw_bp_addr = 0;
 	reset_debug_state();
 	install_hw_bp_ctx(bpn, ctx_bpn, PC(hw_bp_ctx), ctx);
-	/* Set context id */
+	 
 	write_sysreg(ctx, contextidr_el1);
 	isb();
 	asm volatile("hw_bp_ctx: nop");
 	write_sysreg(0, contextidr_el1);
 	GUEST_ASSERT_EQ(hw_bp_addr, PC(hw_bp_ctx));
 
-	/* Linked watchpoint */
+	 
 	reset_debug_state();
 	install_wp_ctx(wpn, ctx_bpn, PC(write_data), ctx);
-	/* Set context id */
+	 
 	write_sysreg(ctx, contextidr_el1);
 	isb();
 	write_data = 'x';
@@ -381,25 +378,14 @@ static void guest_code_ss(int test_cnt)
 	uint64_t bvr, wvr, w_bvr, w_wvr;
 
 	for (i = 0; i < test_cnt; i++) {
-		/* Bits [1:0] of dbg{b,w}vr are RES0 */
+		 
 		w_bvr = i << 2;
 		w_wvr = i << 2;
 
-		/*
-		 * Enable Single Step execution.  Note!  This _must_ be a bare
-		 * ucall as the ucall() path uses atomic operations to manage
-		 * the ucall structures, and the built-in "atomics" are usually
-		 * implemented via exclusive access instructions.  The exlusive
-		 * monitor is cleared on ERET, and so taking debug exceptions
-		 * during a LDREX=>STREX sequence will prevent forward progress
-		 * and hang the guest/test.
-		 */
+		 
 		GUEST_UCALL_NONE();
 
-		/*
-		 * The userspace will verify that the pc is as expected during
-		 * single step execution between iter_ss_begin and iter_ss_end.
-		 */
+		 
 		asm volatile("iter_ss_begin:nop\n");
 
 		write_sysreg(w_bvr, dbgbvr0_el1);
@@ -407,7 +393,7 @@ static void guest_code_ss(int test_cnt)
 		bvr = read_sysreg(dbgbvr0_el1);
 		wvr = read_sysreg(dbgwvr0_el1);
 
-		/* Userspace disables Single Step when the end is nigh. */
+		 
 		asm volatile("iter_ss_end:\n");
 
 		GUEST_ASSERT_EQ(bvr, w_bvr);
@@ -443,7 +429,7 @@ static void test_guest_debug_exceptions(uint8_t bpn, uint8_t wpn, uint8_t ctx_bp
 	vm_install_sync_handler(vm, VECTOR_SYNC_CURRENT,
 				ESR_EC_SVC64, guest_svc_handler);
 
-	/* Specify bpn/wpn/ctx_bpn to be tested */
+	 
 	vcpu_args_set(vcpu, 3, bpn, wpn, ctx_bpn);
 	pr_debug("Use bpn#%d, wpn#%d and ctx_bpn#%d\n", bpn, wpn, ctx_bpn);
 
@@ -483,7 +469,7 @@ void test_single_step_from_userspace(int test_cnt)
 			cmd = get_ucall(vcpu, &uc);
 			if (cmd == UCALL_ABORT) {
 				REPORT_GUEST_ASSERT(uc);
-				/* NOT REACHED */
+				 
 			} else if (cmd == UCALL_DONE) {
 				break;
 			}
@@ -500,7 +486,7 @@ void test_single_step_from_userspace(int test_cnt)
 
 		TEST_ASSERT(ss_enable, "Unexpected KVM_EXIT_DEBUG");
 
-		/* Check if the current pc is expected. */
+		 
 		vcpu_get_reg(vcpu, ARM64_CORE_REG(regs.pc), &pc);
 		TEST_ASSERT(!test_pc || pc == test_pc,
 			    "Unexpected pc 0x%lx (expected 0x%lx)",
@@ -514,11 +500,7 @@ void test_single_step_from_userspace(int test_cnt)
 			continue;
 		}
 
-		/*
-		 * If the current pc is between iter_ss_bgin and
-		 * iter_ss_end, the pc for the next KVM_EXIT_DEBUG should
-		 * be the current pc + 4.
-		 */
+		 
 		if ((pc >= (uint64_t)&iter_ss_begin) &&
 		    (pc < (uint64_t)&iter_ss_end))
 			test_pc = pc + 4;
@@ -529,35 +511,32 @@ void test_single_step_from_userspace(int test_cnt)
 	kvm_vm_free(vm);
 }
 
-/*
- * Run debug testing using the various breakpoint#, watchpoint# and
- * context-aware breakpoint# with the given ID_AA64DFR0_EL1 configuration.
- */
+ 
 void test_guest_debug_exceptions_all(uint64_t aa64dfr0)
 {
 	uint8_t brp_num, wrp_num, ctx_brp_num, normal_brp_num, ctx_brp_base;
 	int b, w, c;
 
-	/* Number of breakpoints */
+	 
 	brp_num = FIELD_GET(ARM64_FEATURE_MASK(ID_AA64DFR0_BRPS), aa64dfr0) + 1;
 	__TEST_REQUIRE(brp_num >= 2, "At least two breakpoints are required");
 
-	/* Number of watchpoints */
+	 
 	wrp_num = FIELD_GET(ARM64_FEATURE_MASK(ID_AA64DFR0_WRPS), aa64dfr0) + 1;
 
-	/* Number of context aware breakpoints */
+	 
 	ctx_brp_num = FIELD_GET(ARM64_FEATURE_MASK(ID_AA64DFR0_CTX_CMPS), aa64dfr0) + 1;
 
 	pr_debug("%s brp_num:%d, wrp_num:%d, ctx_brp_num:%d\n", __func__,
 		 brp_num, wrp_num, ctx_brp_num);
 
-	/* Number of normal (non-context aware) breakpoints */
+	 
 	normal_brp_num = brp_num - ctx_brp_num;
 
-	/* Lowest context aware breakpoint number */
+	 
 	ctx_brp_base = normal_brp_num;
 
-	/* Run tests with all supported breakpoints/watchpoints */
+	 
 	for (c = ctx_brp_base; c < ctx_brp_base + ctx_brp_num; c++) {
 		for (b = 0; b < normal_brp_num; b++) {
 			for (w = 0; w < wrp_num; w++)

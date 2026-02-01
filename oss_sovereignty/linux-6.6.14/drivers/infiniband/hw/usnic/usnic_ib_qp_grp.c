@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2013, Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/bug.h>
 #include <linux/errno.h>
 #include <linux/spinlock.h>
@@ -96,10 +65,7 @@ static struct usnic_vnic_res_chunk *
 get_qp_res_chunk(struct usnic_ib_qp_grp *qp_grp)
 {
 	lockdep_assert_held(&qp_grp->lock);
-	/*
-	 * The QP res chunk, used to derive qp indices,
-	 * are just indices of the RQs
-	 */
+	 
 	return usnic_ib_qp_grp_get_chunk(qp_grp, USNIC_VNIC_RES_TYPE_RQ);
 }
 
@@ -214,12 +180,12 @@ create_roce_custom_flow(struct usnic_ib_qp_grp *qp_grp,
 	trans_type = trans_spec->trans_type;
 	port_num = trans_spec->usnic_roce.port_num;
 
-	/* Reserve Port */
+	 
 	port_num = usnic_transport_rsrv_port(trans_type, port_num);
 	if (port_num == 0)
 		return ERR_PTR(-EINVAL);
 
-	/* Create Flow */
+	 
 	usnic_fwd_init_usnic_filter(&filter, port_num);
 	err = init_filter_action(qp_grp, &uaction);
 	if (err)
@@ -231,7 +197,7 @@ create_roce_custom_flow(struct usnic_ib_qp_grp *qp_grp,
 		goto out_unreserve_port;
 	}
 
-	/* Create Flow Handle */
+	 
 	qp_flow = kzalloc(sizeof(*qp_flow), GFP_ATOMIC);
 	if (!qp_flow) {
 		err = -ENOMEM;
@@ -277,7 +243,7 @@ create_udp_flow(struct usnic_ib_qp_grp *qp_grp,
 	trans_type = trans_spec->trans_type;
 	sock_fd = trans_spec->udp.sock_fd;
 
-	/* Get and check socket */
+	 
 	sock = usnic_transport_get_socket(sock_fd);
 	if (IS_ERR_OR_NULL(sock))
 		return ERR_CAST(sock);
@@ -292,7 +258,7 @@ create_udp_flow(struct usnic_ib_qp_grp *qp_grp,
 		goto out_put_sock;
 	}
 
-	/* Create flow */
+	 
 	usnic_fwd_init_udp_filter(&filter, addr, port_num);
 	err = init_filter_action(qp_grp, &uaction);
 	if (err)
@@ -304,7 +270,7 @@ create_udp_flow(struct usnic_ib_qp_grp *qp_grp,
 		goto out_put_sock;
 	}
 
-	/* Create qp_flow */
+	 
 	qp_flow = kzalloc(sizeof(*qp_flow), GFP_ATOMIC);
 	if (!qp_flow) {
 		err = -ENOMEM;
@@ -404,7 +370,7 @@ int usnic_ib_qp_grp_modify(struct usnic_ib_qp_grp *qp_grp,
 	case IB_QPS_RESET:
 		switch (old_state) {
 		case IB_QPS_RESET:
-			/* NO-OP */
+			 
 			break;
 		case IB_QPS_INIT:
 			release_and_remove_all_flows(qp_grp);
@@ -431,9 +397,7 @@ int usnic_ib_qp_grp_modify(struct usnic_ib_qp_grp *qp_grp,
 					break;
 				}
 			} else {
-				/*
-				 * Optional to specify filters.
-				 */
+				 
 				status = 0;
 			}
 			break;
@@ -446,10 +410,7 @@ int usnic_ib_qp_grp_modify(struct usnic_ib_qp_grp *qp_grp,
 					break;
 				}
 			} else {
-				/*
-				 * Doesn't make sense to go into INIT state
-				 * from INIT state w/o adding filters.
-				 */
+				 
 				status = -EINVAL;
 			}
 			break;
@@ -475,7 +436,7 @@ int usnic_ib_qp_grp_modify(struct usnic_ib_qp_grp *qp_grp,
 	case IB_QPS_RTS:
 		switch (old_state) {
 		case IB_QPS_RTR:
-			/* NO-OP FOR NOW */
+			 
 			break;
 		default:
 			status = -EINVAL;
@@ -539,7 +500,7 @@ alloc_res_chunk_list(struct usnic_vnic *vnic,
 	for (res_lst_sz = 0;
 		res_spec->resources[res_lst_sz].type != USNIC_VNIC_RES_TYPE_EOL;
 		res_lst_sz++) {
-		/* Do Nothing */
+		 
 	}
 
 	res_chunk_list = kcalloc(res_lst_sz + 1, sizeof(*res_chunk_list),
@@ -649,11 +610,7 @@ static int qp_grp_id_from_flow(struct usnic_ib_qp_grp_flow *qp_flow,
 							&port_num);
 		if (err)
 			return err;
-		/*
-		 * Copy port_num to stack first and then to *id,
-		 * so that the short to int cast works for little
-		 * and big endian systems.
-		 */
+		 
 		*id = port_num;
 		break;
 	default:

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt)    "fsl-pamu: %s: " fmt, __func__
 
@@ -17,7 +14,7 @@
 
 #include <asm/mpc85xx.h>
 
-/* define indexes for each operation mapping scenario */
+ 
 #define OMI_QMAN        0x00
 #define OMI_FMAN        0x01
 #define OMI_QMAN_PRIV   0x02
@@ -26,36 +23,23 @@
 #define make64(high, low) (((u64)(high) << 32) | (low))
 
 struct pamu_isr_data {
-	void __iomem *pamu_reg_base;	/* Base address of PAMU regs */
-	unsigned int count;		/* The number of PAMUs */
+	void __iomem *pamu_reg_base;	 
+	unsigned int count;		 
 };
 
 static struct paace *ppaact;
 static struct paace *spaact;
 
-static bool probed;			/* Has PAMU been probed? */
+static bool probed;			 
 
-/*
- * Table for matching compatible strings, for device tree
- * guts node, for QorIQ SOCs.
- * "fsl,qoriq-device-config-2.0" corresponds to T4 & B4
- * SOCs. For the older SOCs "fsl,qoriq-device-config-1.0"
- * string would be used.
- */
+ 
 static const struct of_device_id guts_device_ids[] = {
 	{ .compatible = "fsl,qoriq-device-config-1.0", },
 	{ .compatible = "fsl,qoriq-device-config-2.0", },
 	{}
 };
 
-/*
- * Table for matching compatible strings, for device tree
- * L3 cache controller node.
- * "fsl,t4240-l3-cache-controller" corresponds to T4,
- * "fsl,b4860-l3-cache-controller" corresponds to B4 &
- * "fsl,p4080-l3-cache-controller" corresponds to other,
- * SOCs.
- */
+ 
 static const struct of_device_id l3_device_ids[] = {
 	{ .compatible = "fsl,t4240-l3-cache-controller", },
 	{ .compatible = "fsl,b4860-l3-cache-controller", },
@@ -63,16 +47,10 @@ static const struct of_device_id l3_device_ids[] = {
 	{}
 };
 
-/* maximum subwindows permitted per liodn */
+ 
 static u32 max_subwindow_count;
 
-/**
- * pamu_get_ppaace() - Return the primary PACCE
- * @liodn: liodn PAACT index for desired PAACE
- *
- * Returns the ppace pointer upon success else return
- * null.
- */
+ 
 static struct paace *pamu_get_ppaace(int liodn)
 {
 	if (!ppaact || liodn >= PAACE_NUMBER_ENTRIES) {
@@ -83,12 +61,7 @@ static struct paace *pamu_get_ppaace(int liodn)
 	return &ppaact[liodn];
 }
 
-/**
- * pamu_enable_liodn() - Set valid bit of PACCE
- * @liodn: liodn PAACT index for desired PAACE
- *
- * Returns 0 upon success else error code < 0 returned
- */
+ 
 int pamu_enable_liodn(int liodn)
 {
 	struct paace *ppaace;
@@ -104,7 +77,7 @@ int pamu_enable_liodn(int liodn)
 		return -EINVAL;
 	}
 
-	/* Ensure that all other stores to the ppaace complete first */
+	 
 	mb();
 
 	set_bf(ppaace->addr_bitfields, PAACE_AF_V, PAACE_V_VALID);
@@ -113,12 +86,7 @@ int pamu_enable_liodn(int liodn)
 	return 0;
 }
 
-/**
- * pamu_disable_liodn() - Clears valid bit of PACCE
- * @liodn: liodn PAACT index for desired PAACE
- *
- * Returns 0 upon success else error code < 0 returned
- */
+ 
 int pamu_disable_liodn(int liodn)
 {
 	struct paace *ppaace;
@@ -135,20 +103,17 @@ int pamu_disable_liodn(int liodn)
 	return 0;
 }
 
-/* Derive the window size encoding for a particular PAACE entry */
+ 
 static unsigned int map_addrspace_size_to_wse(phys_addr_t addrspace_size)
 {
-	/* Bug if not a power of 2 */
+	 
 	BUG_ON(addrspace_size & (addrspace_size - 1));
 
-	/* window size is 2^(WSE+1) bytes */
+	 
 	return fls64(addrspace_size) - 2;
 }
 
-/*
- * Set the PAACE type as primary and set the coherency required domain
- * attribute
- */
+ 
 static void pamu_init_ppaace(struct paace *ppaace)
 {
 	set_bf(ppaace->addr_bitfields, PAACE_AF_PT, PAACE_PT_PRIMARY);
@@ -157,10 +122,7 @@ static void pamu_init_ppaace(struct paace *ppaace)
 	       PAACE_M_COHERENCE_REQ);
 }
 
-/*
- * Function used for updating stash destination for the coressponding
- * LIODN.
- */
+ 
 int pamu_update_paace_stash(int liodn, u32 value)
 {
 	struct paace *paace;
@@ -177,17 +139,7 @@ int pamu_update_paace_stash(int liodn, u32 value)
 	return 0;
 }
 
-/**
- * pamu_config_ppaace() - Sets up PPAACE entry for specified liodn
- *
- * @liodn: Logical IO device number
- * @omi: Operation mapping index -- if ~omi == 0 then omi not defined
- * @stashid: cache stash id for associated cpu -- if ~stashid == 0 then
- *	     stashid not defined
- * @prot: window permissions
- *
- * Returns 0 upon success else error code < 0 returned
- */
+ 
 int pamu_config_ppaace(int liodn, u32 omi, u32 stashid, int prot)
 {
 	struct paace *ppaace;
@@ -196,7 +148,7 @@ int pamu_config_ppaace(int liodn, u32 omi, u32 stashid, int prot)
 	if (!ppaace)
 		return -ENOENT;
 
-	/* window size is 2^(WSE+1) bytes */
+	 
 	set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE,
 	       map_addrspace_size_to_wse(1ULL << 36));
 
@@ -205,7 +157,7 @@ int pamu_config_ppaace(int liodn, u32 omi, u32 stashid, int prot)
 	ppaace->wbah = 0;
 	set_bf(ppaace->addr_bitfields, PPAACE_AF_WBAL, 0);
 
-	/* set up operation mapping if it's configured */
+	 
 	if (omi < OME_NUMBER_ENTRIES) {
 		set_bf(ppaace->impl_attr, PAACE_IA_OTM, PAACE_OTM_INDEXED);
 		ppaace->op_encode.index_ot.omi = omi;
@@ -214,7 +166,7 @@ int pamu_config_ppaace(int liodn, u32 omi, u32 stashid, int prot)
 		return -ENODEV;
 	}
 
-	/* configure stash id */
+	 
 	if (~stashid != 0)
 		set_bf(ppaace->impl_attr, PAACE_IA_CID, stashid);
 
@@ -229,13 +181,7 @@ int pamu_config_ppaace(int liodn, u32 omi, u32 stashid, int prot)
 	return 0;
 }
 
-/**
- * get_ome_index() - Returns the index in the operation mapping table
- *                   for device.
- * @omi_index: pointer for storing the index value
- * @dev: target device
- *
- */
+ 
 void get_ome_index(u32 *omi_index, struct device *dev)
 {
 	if (of_device_is_compatible(dev->of_node, "fsl,qman-portal"))
@@ -244,15 +190,7 @@ void get_ome_index(u32 *omi_index, struct device *dev)
 		*omi_index = OMI_QMAN_PRIV;
 }
 
-/**
- * get_stash_id - Returns stash destination id corresponding to a
- *                cache type and vcpu.
- * @stash_dest_hint: L1, L2 or L3
- * @vcpu: vpcu target for a particular cache type.
- *
- * Returs stash on success or ~(u32)0 on failure.
- *
- */
+ 
 u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
 {
 	const u32 *prop;
@@ -261,7 +199,7 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
 	int len, found = 0;
 	int i;
 
-	/* Fastpath, exit early if L3/CPC cache is target for stashing */
+	 
 	if (stash_dest_hint == PAMU_ATTR_CACHE_L3) {
 		node = of_find_matching_node(NULL, l3_device_ids);
 		if (node) {
@@ -289,7 +227,7 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
 	}
 found_cpu_node:
 
-	/* find the hwnode that represents the cache */
+	 
 	for (cache_level = PAMU_ATTR_CACHE_L1; (cache_level < PAMU_ATTR_CACHE_L3) && found; cache_level++) {
 		if (stash_dest_hint == cache_level) {
 			prop = of_get_property(node, "cache-stash-id", NULL);
@@ -307,11 +245,11 @@ found_cpu_node:
 		if (!prop) {
 			pr_debug("can't find next-level-cache at %pOF\n", node);
 			of_node_put(node);
-			return ~(u32)0;  /* can't traverse any further */
+			return ~(u32)0;   
 		}
 		of_node_put(node);
 
-		/* advance to next node in cache hierarchy */
+		 
 		node = of_find_node_by_phandle(*prop);
 		if (!node) {
 			pr_debug("Invalid node for cache hierarchy\n");
@@ -324,23 +262,19 @@ found_cpu_node:
 	return ~(u32)0;
 }
 
-/* Identify if the PAACT table entry belongs to QMAN, BMAN or QMAN Portal */
+ 
 #define QMAN_PAACE 1
 #define QMAN_PORTAL_PAACE 2
 #define BMAN_PAACE 3
 
-/*
- * Setup operation mapping and stash destinations for QMAN and QMAN portal.
- * Memory accesses to QMAN and BMAN private memory need not be coherent, so
- * clear the PAACE entry coherency attribute for them.
- */
+ 
 static void setup_qbman_paace(struct paace *ppaace, int  paace_type)
 {
 	switch (paace_type) {
 	case QMAN_PAACE:
 		set_bf(ppaace->impl_attr, PAACE_IA_OTM, PAACE_OTM_INDEXED);
 		ppaace->op_encode.index_ot.omi = OMI_QMAN_PRIV;
-		/* setup QMAN Private data stashing for the L3 cache */
+		 
 		set_bf(ppaace->impl_attr, PAACE_IA_CID, get_stash_id(PAMU_ATTR_CACHE_L3, 0));
 		set_bf(ppaace->domain_attr.to_host.coherency_required, PAACE_DA_HOST_CR,
 		       0);
@@ -348,7 +282,7 @@ static void setup_qbman_paace(struct paace *ppaace, int  paace_type)
 	case QMAN_PORTAL_PAACE:
 		set_bf(ppaace->impl_attr, PAACE_IA_OTM, PAACE_OTM_INDEXED);
 		ppaace->op_encode.index_ot.omi = OMI_QMAN;
-		/* Set DQRR and Frame stashing for the L3 cache */
+		 
 		set_bf(ppaace->impl_attr, PAACE_IA_CID, get_stash_id(PAMU_ATTR_CACHE_L3, 0));
 		break;
 	case BMAN_PAACE:
@@ -358,17 +292,12 @@ static void setup_qbman_paace(struct paace *ppaace, int  paace_type)
 	}
 }
 
-/*
- * Setup the operation mapping table for various devices. This is a static
- * table where each table index corresponds to a particular device. PAMU uses
- * this table to translate device transaction to appropriate corenet
- * transaction.
- */
+ 
 static void setup_omt(struct ome *omt)
 {
 	struct ome *ome;
 
-	/* Configure OMI_QMAN */
+	 
 	ome = &omt[OMI_QMAN];
 
 	ome->moe[IOE_READ_IDX] = EOE_VALID | EOE_READ;
@@ -379,38 +308,35 @@ static void setup_omt(struct ome *omt)
 	ome->moe[IOE_DIRECT0_IDX] = EOE_VALID | EOE_LDEC;
 	ome->moe[IOE_DIRECT1_IDX] = EOE_VALID | EOE_LDECPE;
 
-	/* Configure OMI_FMAN */
+	 
 	ome = &omt[OMI_FMAN];
 	ome->moe[IOE_READ_IDX]  = EOE_VALID | EOE_READI;
 	ome->moe[IOE_WRITE_IDX] = EOE_VALID | EOE_WRITE;
 
-	/* Configure OMI_QMAN private */
+	 
 	ome = &omt[OMI_QMAN_PRIV];
 	ome->moe[IOE_READ_IDX]  = EOE_VALID | EOE_READ;
 	ome->moe[IOE_WRITE_IDX] = EOE_VALID | EOE_WRITE;
 	ome->moe[IOE_EREAD0_IDX] = EOE_VALID | EOE_RSA;
 	ome->moe[IOE_EWRITE0_IDX] = EOE_VALID | EOE_WWSA;
 
-	/* Configure OMI_CAAM */
+	 
 	ome = &omt[OMI_CAAM];
 	ome->moe[IOE_READ_IDX]  = EOE_VALID | EOE_READI;
 	ome->moe[IOE_WRITE_IDX] = EOE_VALID | EOE_WRITE;
 }
 
-/*
- * Get the maximum number of PAACT table entries
- * and subwindows supported by PAMU
- */
+ 
 static void get_pamu_cap_values(unsigned long pamu_reg_base)
 {
 	u32 pc_val;
 
 	pc_val = in_be32((u32 *)(pamu_reg_base + PAMU_PC3));
-	/* Maximum number of subwindows per liodn */
+	 
 	max_subwindow_count = 1 << (1 + PAMU_PC3_MWCE(pc_val));
 }
 
-/* Setup PAMU registers pointing to PAACT, SPAACT and OMT */
+ 
 static int setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu_reg_size,
 			  phys_addr_t ppaact_phys, phys_addr_t spaact_phys,
 			  phys_addr_t omt_phys)
@@ -422,7 +348,7 @@ static int setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu_reg_si
 	pamu_regs = (struct pamu_mmap_regs *)
 		(pamu_reg_base + PAMU_MMAP_REGS_BASE);
 
-	/* set up pointers to corenet control blocks */
+	 
 
 	out_be32(&pamu_regs->ppbah, upper_32_bits(ppaact_phys));
 	out_be32(&pamu_regs->ppbal, lower_32_bits(ppaact_phys));
@@ -442,11 +368,7 @@ static int setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu_reg_si
 	out_be32(&pamu_regs->olah, upper_32_bits(omt_phys));
 	out_be32(&pamu_regs->olal, lower_32_bits(omt_phys));
 
-	/*
-	 * set PAMU enable bit,
-	 * allow ppaact & omt to be cached
-	 * & enable PAMU access violation interrupts.
-	 */
+	 
 
 	out_be32((u32 *)(pamu_reg_base + PAMU_PICS),
 		 PAMU_ACCESS_VIOLATION_ENABLE);
@@ -454,7 +376,7 @@ static int setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu_reg_si
 	return 0;
 }
 
-/* Enable all device LIODNS */
+ 
 static void setup_liodns(void)
 {
 	int i, len;
@@ -474,7 +396,7 @@ static void setup_liodns(void)
 			}
 			ppaace = pamu_get_ppaace(liodn);
 			pamu_init_ppaace(ppaace);
-			/* window size is 2^(WSE+1) bytes */
+			 
 			set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE, 35);
 			ppaace->wbah = 0;
 			set_bf(ppaace->addr_bitfields, PPAACE_AF_WBAL, 0);
@@ -525,31 +447,26 @@ static irqreturn_t pamu_av_isr(int irq, void *arg)
 			phys = make64(in_be32(p + PAMU_POEAH),
 				      in_be32(p + PAMU_POEAL));
 
-			/* Assume that POEA points to a PAACE */
+			 
 			if (phys) {
 				u32 *paace = phys_to_virt(phys);
 
-				/* Only the first four words are relevant */
+				 
 				for (j = 0; j < 4; j++)
 					pr_emerg("PAACE[%u]=%08x\n",
 						 j, in_be32(paace + j));
 			}
 
-			/* clear access violation condition */
+			 
 			out_be32(p + PAMU_AVS1, avs1 & PAMU_AV_MASK);
 			paace = pamu_get_ppaace(avs1 >> PAMU_AVS1_LIODN_SHIFT);
 			BUG_ON(!paace);
-			/* check if we got a violation for a disabled LIODN */
+			 
 			if (!get_bf(paace->addr_bitfields, PAACE_AF_V)) {
-				/*
-				 * As per hardware erratum A-003638, access
-				 * violation can be reported for a disabled
-				 * LIODN. If we hit that condition, disable
-				 * access violation reporting.
-				 */
+				 
 				pics &= ~PAMU_ACCESS_VIOLATION_ENABLE;
 			} else {
-				/* Disable the LIODN */
+				 
 				ret = pamu_disable_liodn(avs1 >> PAMU_AVS1_LIODN_SHIFT);
 				BUG_ON(ret);
 				pr_emerg("Disabling liodn %x\n",
@@ -572,20 +489,18 @@ static irqreturn_t pamu_av_isr(int irq, void *arg)
 #define LAW_SIZE_4K		0xb
 
 struct ccsr_law {
-	u32	lawbarh;	/* LAWn base address high */
-	u32	lawbarl;	/* LAWn base address low */
-	u32	lawar;		/* LAWn attributes */
+	u32	lawbarh;	 
+	u32	lawbarl;	 
+	u32	lawar;		 
 	u32	reserved;
 };
 
-/*
- * Create a coherence subdomain for a given memory block.
- */
+ 
 static int create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
 {
 	struct device_node *np;
 	const __be32 *iprop;
-	void __iomem *lac = NULL;	/* Local Access Control registers */
+	void __iomem *lac = NULL;	 
 	struct ccsr_law __iomem *law;
 	void __iomem *ccm = NULL;
 	u32 __iomem *csdids;
@@ -616,7 +531,7 @@ static int create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
 		goto error;
 	}
 
-	/* LAW registers are at offset 0xC00 */
+	 
 	law = lac + 0xC00;
 
 	of_node_put(np);
@@ -645,22 +560,22 @@ static int create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
 		goto error;
 	}
 
-	/* The undocumented CSDID registers are at offset 0x600 */
+	 
 	csdids = ccm + 0x600;
 
 	of_node_put(np);
 	np = NULL;
 
-	/* Find an unused coherence subdomain ID */
+	 
 	for (csd_id = 0; csd_id < num_csds; csd_id++) {
 		if (!csdids[csd_id])
 			break;
 	}
 
-	/* Store the Port ID in the (undocumented) proper CIDMRxx register */
+	 
 	csdids[csd_id] = csd_port_id;
 
-	/* Find the DDR LAW that maps to our buffer. */
+	 
 	for (i = 0; i < num_laws; i++) {
 		if (law[i].lawar & LAWAR_EN) {
 			phys_addr_t law_start, law_end;
@@ -677,15 +592,15 @@ static int create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
 	}
 
 	if (i == 0 || i == num_laws) {
-		/* This should never happen */
+		 
 		ret = -ENOENT;
 		goto error;
 	}
 
-	/* Find a free LAW entry */
+	 
 	while (law[--i].lawar & LAWAR_EN) {
 		if (i == 0) {
-			/* No higher priority LAW slots available */
+			 
 			ret = -ENOENT;
 			goto error;
 		}
@@ -711,35 +626,27 @@ error:
 	return ret;
 }
 
-/*
- * Table of SVRs and the corresponding PORT_ID values. Port ID corresponds to a
- * bit map of snoopers for a given range of memory mapped by a LAW.
- *
- * All future CoreNet-enabled SOCs will have this erratum(A-004510) fixed, so this
- * table should never need to be updated.  SVRs are guaranteed to be unique, so
- * there is no worry that a future SOC will inadvertently have one of these
- * values.
- */
+ 
 static const struct {
 	u32 svr;
 	u32 port_id;
 } port_id_map[] = {
-	{(SVR_P2040 << 8) | 0x10, 0xFF000000},	/* P2040 1.0 */
-	{(SVR_P2040 << 8) | 0x11, 0xFF000000},	/* P2040 1.1 */
-	{(SVR_P2041 << 8) | 0x10, 0xFF000000},	/* P2041 1.0 */
-	{(SVR_P2041 << 8) | 0x11, 0xFF000000},	/* P2041 1.1 */
-	{(SVR_P3041 << 8) | 0x10, 0xFF000000},	/* P3041 1.0 */
-	{(SVR_P3041 << 8) | 0x11, 0xFF000000},	/* P3041 1.1 */
-	{(SVR_P4040 << 8) | 0x20, 0xFFF80000},	/* P4040 2.0 */
-	{(SVR_P4080 << 8) | 0x20, 0xFFF80000},	/* P4080 2.0 */
-	{(SVR_P5010 << 8) | 0x10, 0xFC000000},	/* P5010 1.0 */
-	{(SVR_P5010 << 8) | 0x20, 0xFC000000},	/* P5010 2.0 */
-	{(SVR_P5020 << 8) | 0x10, 0xFC000000},	/* P5020 1.0 */
-	{(SVR_P5021 << 8) | 0x10, 0xFF800000},	/* P5021 1.0 */
-	{(SVR_P5040 << 8) | 0x10, 0xFF800000},	/* P5040 1.0 */
+	{(SVR_P2040 << 8) | 0x10, 0xFF000000},	 
+	{(SVR_P2040 << 8) | 0x11, 0xFF000000},	 
+	{(SVR_P2041 << 8) | 0x10, 0xFF000000},	 
+	{(SVR_P2041 << 8) | 0x11, 0xFF000000},	 
+	{(SVR_P3041 << 8) | 0x10, 0xFF000000},	 
+	{(SVR_P3041 << 8) | 0x11, 0xFF000000},	 
+	{(SVR_P4040 << 8) | 0x20, 0xFFF80000},	 
+	{(SVR_P4080 << 8) | 0x20, 0xFFF80000},	 
+	{(SVR_P5010 << 8) | 0x10, 0xFC000000},	 
+	{(SVR_P5010 << 8) | 0x20, 0xFC000000},	 
+	{(SVR_P5020 << 8) | 0x10, 0xFC000000},	 
+	{(SVR_P5021 << 8) | 0x10, 0xFF800000},	 
+	{(SVR_P5040 << 8) | 0x10, 0xFF800000},	 
 };
 
-#define SVR_SECURITY	0x80000	/* The Security (E) bit */
+#define SVR_SECURITY	0x80000	 
 
 static int fsl_pamu_probe(struct platform_device *pdev)
 {
@@ -763,11 +670,7 @@ static int fsl_pamu_probe(struct platform_device *pdev)
 	unsigned int order = 0;
 	u32 csd_port_id = 0;
 	unsigned i;
-	/*
-	 * enumerate all PAMUs and allocate and setup PAMU tables
-	 * for each of them,
-	 * NOTE : All PAMUs share the same LIODN tables.
-	 */
+	 
 
 	if (WARN_ON(probed))
 		return -EBUSY;
@@ -793,7 +696,7 @@ static int fsl_pamu_probe(struct platform_device *pdev)
 	data->pamu_reg_base = pamu_regs;
 	data->count = size / PAMU_OFFSET;
 
-	/* The ISR needs access to the regs, so we won't iounmap them */
+	 
 	ret = request_irq(irq, pamu_av_isr, 0, "pamu", data);
 	if (ret < 0) {
 		dev_err(dev, "error %i installing ISR for irq %i\n", ret, irq);
@@ -815,14 +718,10 @@ static int fsl_pamu_probe(struct platform_device *pdev)
 		goto error;
 	}
 
-	/* read in the PAMU capability registers */
+	 
 	get_pamu_cap_values((unsigned long)pamu_regs);
-	/*
-	 * To simplify the allocation of a coherency domain, we allocate the
-	 * PAACT and the OMT in the same memory buffer.  Unfortunately, this
-	 * wastes more memory compared to allocating the buffers separately.
-	 */
-	/* Determine how much memory we need */
+	 
+	 
 	mem_size = (PAGE_SIZE << get_order(PAACT_SIZE)) +
 		(PAGE_SIZE << get_order(SPAACT_SIZE)) +
 		(PAGE_SIZE << get_order(OMT_SIZE));
@@ -838,7 +737,7 @@ static int fsl_pamu_probe(struct platform_device *pdev)
 	ppaact = page_address(p);
 	ppaact_phys = page_to_phys(p);
 
-	/* Make sure the memory is naturally aligned */
+	 
 	if (ppaact_phys & ((PAGE_SIZE << order) - 1)) {
 		dev_err(dev, "PAACT/OMT block is unaligned\n");
 		ret = -ENOMEM;
@@ -850,9 +749,9 @@ static int fsl_pamu_probe(struct platform_device *pdev)
 
 	dev_dbg(dev, "ppaact virt=%p phys=%pa\n", ppaact, &ppaact_phys);
 
-	/* Check to see if we need to implement the work-around on this SOC */
+	 
 
-	/* Determine the Port ID for our coherence subdomain */
+	 
 	for (i = 0; i < ARRAY_SIZE(port_id_map); i++) {
 		if (port_id_map[i].svr == (mfspr(SPRN_SVR) & ~SVR_SECURITY)) {
 			csd_port_id = port_id_map[i].port_id;
@@ -884,18 +783,18 @@ static int fsl_pamu_probe(struct platform_device *pdev)
 		pamu_reg_base = (unsigned long)pamu_regs + pamu_reg_off;
 		setup_one_pamu(pamu_reg_base, pamu_reg_off, ppaact_phys,
 			       spaact_phys, omt_phys);
-		/* Disable PAMU bypass for this PAMU */
+		 
 		pamubypenr &= ~pamu_counter;
 	}
 
 	setup_omt(omt);
 
-	/* Enable all relevant PAMU(s) */
+	 
 	out_be32(&guts_regs->pamubypenr, pamubypenr);
 
 	iounmap(guts_regs);
 
-	/* Enable DMA for the LIODNs in the device tree */
+	 
 
 	setup_liodns();
 
@@ -936,24 +835,9 @@ static __init int fsl_pamu_init(void)
 	struct device_node *np;
 	int ret;
 
-	/*
-	 * The normal OF process calls the probe function at some
-	 * indeterminate later time, after most drivers have loaded.  This is
-	 * too late for us, because PAMU clients (like the Qman driver)
-	 * depend on PAMU being initialized early.
-	 *
-	 * So instead, we "manually" call our probe function by creating the
-	 * platform devices ourselves.
-	 */
+	 
 
-	/*
-	 * We assume that there is only one PAMU node in the device tree.  A
-	 * single PAMU node represents all of the PAMU devices in the SOC
-	 * already.   Everything else already makes that assumption, and the
-	 * binding for the PAMU nodes doesn't allow for any parent-child
-	 * relationships anyway.  In other words, support for more than one
-	 * PAMU node would require significant changes to a lot of code.
-	 */
+	 
 
 	np = of_find_compatible_node(NULL, NULL, "fsl,pamu");
 	if (!np) {

@@ -1,26 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright 2016-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
+ 
 
 #ifndef F32_MES_PM4_PACKETS_H
 #define F32_MES_PM4_PACKETS_H
@@ -29,20 +8,16 @@
 #define PM4_MES_HEADER_DEFINED
 union PM4_MES_TYPE_3_HEADER {
 	struct {
-		uint32_t reserved1 : 8; /* < reserved */
-		uint32_t opcode    : 8; /* < IT opcode */
-		uint32_t count     : 14;/* < number of DWORDs - 1 in the
-					 *   information body.
-					 */
-		uint32_t type      : 2; /* < packet identifier.
-					 *   It should be 3 for type 3 packets
-					 */
+		uint32_t reserved1 : 8;  
+		uint32_t opcode    : 8;  
+		uint32_t count     : 14; 
+		uint32_t type      : 2;  
 	};
 	uint32_t u32All;
 };
-#endif /* PM4_MES_HEADER_DEFINED */
+#endif  
 
-/*--------------------MES_SET_RESOURCES--------------------*/
+ 
 
 #ifndef PM4_MES_SET_RESOURCES_DEFINED
 #define PM4_MES_SET_RESOURCES_DEFINED
@@ -55,7 +30,7 @@ enum mes_set_resources_queue_type_enum {
 
 struct pm4_mes_set_resources {
 	union {
-		union PM4_MES_TYPE_3_HEADER	header;		/* header */
+		union PM4_MES_TYPE_3_HEADER	header;		 
 		uint32_t			ordinal1;
 	};
 
@@ -95,14 +70,14 @@ struct pm4_mes_set_resources {
 };
 #endif
 
-/*--------------------MES_RUN_LIST--------------------*/
+ 
 
 #ifndef PM4_MES_RUN_LIST_DEFINED
 #define PM4_MES_RUN_LIST_DEFINED
 
 struct pm4_mes_runlist {
 	union {
-		union PM4_MES_TYPE_3_HEADER header; /* header */
+		union PM4_MES_TYPE_3_HEADER header;  
 		uint32_t ordinal1;
 	};
 
@@ -132,14 +107,14 @@ struct pm4_mes_runlist {
 };
 #endif
 
-/*--------------------MES_MAP_PROCESS--------------------*/
+ 
 
 #ifndef PM4_MES_MAP_PROCESS_DEFINED
 #define PM4_MES_MAP_PROCESS_DEFINED
 
 struct pm4_mes_map_process {
 	union {
-		union PM4_MES_TYPE_3_HEADER header;	/* header */
+		union PM4_MES_TYPE_3_HEADER header;	 
 		uint32_t ordinal1;
 	};
 
@@ -198,14 +173,14 @@ struct pm4_mes_map_process {
 
 #endif
 
-/*--------------------MES_MAP_PROCESS_VM--------------------*/
+ 
 
 #ifndef PM4_MES_MAP_PROCESS_VM_DEFINED
 #define PM4_MES_MAP_PROCESS_VM_DEFINED
 
 struct PM4_MES_MAP_PROCESS_VM {
 	union {
-		union PM4_MES_TYPE_3_HEADER header;	/* header */
+		union PM4_MES_TYPE_3_HEADER header;	 
 		uint32_t ordinal1;
 	};
 
@@ -242,7 +217,7 @@ struct PM4_MES_MAP_PROCESS_VM {
 };
 #endif
 
-/*--------------------MES_MAP_QUEUES--------------------*/
+ 
 
 #ifndef PM4_MES_MAP_QUEUES_VI_DEFINED
 #define PM4_MES_MAP_QUEUES_VI_DEFINED
@@ -272,7 +247,7 @@ enum mes_map_queues_extended_engine_sel_enum {
 
 struct pm4_mes_map_queues {
 	union {
-		union PM4_MES_TYPE_3_HEADER   header;            /* header */
+		union PM4_MES_TYPE_3_HEADER   header;             
 		uint32_t            ordinal1;
 	};
 
@@ -309,7 +284,7 @@ struct pm4_mes_map_queues {
 };
 #endif
 
-/*--------------------MES_QUERY_STATUS--------------------*/
+ 
 
 #ifndef PM4_MES_QUERY_STATUS_DEFINED
 #define PM4_MES_QUERY_STATUS_DEFINED
@@ -334,7 +309,7 @@ enum mes_query_status_engine_sel_enum {
 
 struct pm4_mes_query_status {
 	union {
-		union PM4_MES_TYPE_3_HEADER   header;            /* header */
+		union PM4_MES_TYPE_3_HEADER   header;             
 		uint32_t            ordinal1;
 	};
 
@@ -368,7 +343,7 @@ struct pm4_mes_query_status {
 };
 #endif
 
-/*--------------------MES_UNMAP_QUEUES--------------------*/
+ 
 
 #ifndef PM4_MES_UNMAP_QUEUES_DEFINED
 #define PM4_MES_UNMAP_QUEUES_DEFINED
@@ -399,7 +374,7 @@ enum mes_unmap_queues_extended_engine_sel_enum {
 
 struct pm4_mes_unmap_queues {
 	union {
-		union PM4_MES_TYPE_3_HEADER   header;            /* header */
+		union PM4_MES_TYPE_3_HEADER   header;             
 		uint32_t            ordinal1;
 	};
 
@@ -503,7 +478,7 @@ enum mec_release_mem_data_sel_enum {
 
 struct pm4_mec_release_mem {
 	union {
-		union PM4_MES_TYPE_3_HEADER header;     /*header */
+		union PM4_MES_TYPE_3_HEADER header;      
 		unsigned int ordinal1;
 	};
 
@@ -616,7 +591,7 @@ enum WRITE_DATA_cache_policy_enum {
 
 struct pm4_mec_write_data_mmio {
 	union {
-		union PM4_MES_TYPE_3_HEADER header;     /*header */
+		union PM4_MES_TYPE_3_HEADER header;      
 		unsigned int ordinal1;
 	};
 

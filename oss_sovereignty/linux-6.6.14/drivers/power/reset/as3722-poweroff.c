@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Power off driver for ams AS3722 device.
- *
- * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/mfd/as3722.h>
 #include <linux/module.h>

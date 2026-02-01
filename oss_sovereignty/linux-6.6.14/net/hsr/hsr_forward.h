@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * include file for HSR and PRP.
- */
+ 
+ 
 
 #ifndef __HSR_FORWARD_H
 #define __HSR_FORWARD_H
@@ -28,4 +22,4 @@ int prp_fill_frame_info(__be16 proto, struct sk_buff *skb,
 			struct hsr_frame_info *frame);
 int hsr_fill_frame_info(__be16 proto, struct sk_buff *skb,
 			struct hsr_frame_info *frame);
-#endif /* __HSR_FORWARD_H */
+#endif  

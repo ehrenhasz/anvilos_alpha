@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include "hclge_main.h"
 #include "hclge_mbx.h"
@@ -13,21 +13,11 @@ static u16 hclge_errno_to_resp(int errno)
 {
 	int resp = abs(errno);
 
-	/* The status for pf to vf msg cmd is u16, constrainted by HW.
-	 * We need to keep the same type with it.
-	 * The intput errno is the stander error code, it's safely to
-	 * use a u16 to store the abs(errno).
-	 */
+	 
 	return (u16)resp;
 }
 
-/* hclge_gen_resp_to_vf: used to generate a synchronous response to VF when PF
- * receives a mailbox message from VF.
- * @vport: pointer to struct hclge_vport
- * @vf_to_pf_req: pointer to hclge_mbx_vf_to_pf_cmd of the original mailbox
- *		  message
- * @resp_status: indicate to VF whether its request success(0) or failed.
- */
+ 
 static int hclge_gen_resp_to_vf(struct hclge_vport *vport,
 				struct hclge_mbx_vf_to_pf_cmd *vf_to_pf_req,
 				struct hclge_respond_to_vf_msg *resp_msg)
@@ -45,9 +35,7 @@ static int hclge_gen_resp_to_vf(struct hclge_vport *vport,
 			"PF fail to gen resp to VF len %u exceeds max len %u\n",
 			resp_msg->len,
 			HCLGE_MBX_MAX_RESP_DATA_SIZE);
-		/* If resp_msg->len is too long, set the value to max length
-		 * and return the msg to VF
-		 */
+		 
 		resp_msg->len = HCLGE_MBX_MAX_RESP_DATA_SIZE;
 	}
 
@@ -132,7 +120,7 @@ static int hclge_inform_vf_reset(struct hclge_vport *vport, u16 reset_type)
 	dest_vfid = (u8)vport->vport_id;
 	msg_data = cpu_to_le16(reset_type);
 
-	/* send this requested info to VF */
+	 
 	return hclge_send_mbx_msg(vport, (u8 *)&msg_data, sizeof(msg_data),
 				  HCLGE_MBX_ASSERTING_RESET, dest_vfid);
 }
@@ -167,16 +155,7 @@ static void hclge_free_vector_ring_chain(struct hnae3_ring_chain_node *head)
 	}
 }
 
-/* hclge_get_ring_chain_from_mbx: get ring type & tqp id & int_gl idx
- * from mailbox message
- * msg[0]: opcode
- * msg[1]: <not relevant to this function>
- * msg[2]: ring_num
- * msg[3]: first ring type (TX|RX)
- * msg[4]: first tqp id
- * msg[5]: first int_gl idx
- * msg[6] ~ msg[14]: other ring type, tqp id and int_gl idx
- */
+ 
 static int hclge_get_ring_chain_from_mbx(
 			struct hclge_mbx_vf_to_pf_cmd *req,
 			struct hnae3_ring_chain_node *ring_chain,
@@ -364,9 +343,7 @@ static int hclge_set_vf_uc_mac_addr(struct hclge_vport *vport,
 		const u8 *old_addr = (const u8 *)
 		(&mbx_req->msg.data[HCLGE_MBX_VF_OLD_MAC_ADDR_OFFSET]);
 
-		/* If VF MAC has been configured by the host then it
-		 * cannot be overridden by the MAC specified by the VM.
-		 */
+		 
 		if (!is_zero_ether_addr(vport->vf_info.mac) &&
 		    !ether_addr_equal(mac_addr, vport->vf_info.mac))
 			return -EPERM;
@@ -455,11 +432,7 @@ static int hclge_set_vf_vlan_cfg(struct hclge_vport *vport,
 	case HCLGE_MBX_VLAN_RX_OFF_CFG:
 		return hclge_en_hw_strip_rxvtag(handle, msg_cmd->enable);
 	case HCLGE_MBX_GET_PORT_BASE_VLAN_STATE:
-		/* vf does not need to know about the port based VLAN state
-		 * on device HNAE3_DEVICE_VERSION_V3. So always return disable
-		 * on device HNAE3_DEVICE_VERSION_V3 if vf queries the port
-		 * based VLAN state.
-		 */
+		 
 		resp_msg->data[0] =
 			hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3 ?
 			HNAE3_PORT_BASE_VLAN_DISABLE :
@@ -516,7 +489,7 @@ static void hclge_get_vf_queue_info(struct hclge_vport *vport,
 	struct hclge_mbx_vf_queue_info *queue_info;
 	struct hclge_dev *hdev = vport->back;
 
-	/* get the queue related info */
+	 
 	queue_info = (struct hclge_mbx_vf_queue_info *)resp_msg->data;
 	queue_info->num_tqps = cpu_to_le16(vport->alloc_tqps);
 	queue_info->rss_size = cpu_to_le16(vport->nic.kinfo.rss_size);
@@ -539,7 +512,7 @@ static void hclge_get_vf_queue_depth(struct hclge_vport *vport,
 	struct hclge_mbx_vf_queue_depth *queue_depth;
 	struct hclge_dev *hdev = vport->back;
 
-	/* get the queue depth info */
+	 
 	queue_depth = (struct hclge_mbx_vf_queue_depth *)resp_msg->data;
 	queue_depth->num_tx_desc = cpu_to_le16(hdev->num_tx_desc);
 	queue_depth->num_rx_desc = cpu_to_le16(hdev->num_rx_desc);
@@ -572,7 +545,7 @@ int hclge_push_vf_link_status(struct hclge_vport *vport)
 	struct hclge_dev *hdev = vport->back;
 	u16 link_status;
 
-	/* mac.link can only be 0 or 1 */
+	 
 	switch (vport->vf_info.link_state) {
 	case IFLA_VF_LINK_STATE_ENABLE:
 		link_status = HCLGE_VF_LINK_STATE_UP;
@@ -591,7 +564,7 @@ int hclge_push_vf_link_status(struct hclge_vport *vport)
 	link_info.duplex = cpu_to_le16(hdev->hw.mac.duplex);
 	link_info.flag = HCLGE_MBX_PUSH_LINK_STATUS_EN;
 
-	/* send this requested info to VF */
+	 
 	return hclge_send_mbx_msg(vport, (u8 *)&link_info, sizeof(link_info),
 				  HCLGE_MBX_LINK_STAT_CHANGE, vport->vport_id);
 }
@@ -633,9 +606,7 @@ static int hclge_mbx_reset_vf_queue(struct hclge_vport *vport,
 	resp_msg->data[0] = HCLGE_RESET_ALL_QUEUE_DONE;
 	resp_msg->len = sizeof(u8);
 
-	/* pf will reset vf's all queues at a time. So it is unnecessary
-	 * to reset queues if queue_id > 0, just return success.
-	 */
+	 
 	if (queue_id > 0)
 		return 0;
 
@@ -754,9 +725,7 @@ static int hclge_get_rss_key(struct hclge_vport *vport,
 	index = mbx_req->msg.data[0];
 	rss_cfg = &hdev->rss_cfg;
 
-	/* Check the query index of rss_hash_key from VF, make sure no
-	 * more than the size of rss_hash_key.
-	 */
+	 
 	if (((index + 1) * HCLGE_RSS_MBX_RESP_LEN) >
 	      sizeof(rss_cfg->rss_hash_key)) {
 		dev_warn(&hdev->pdev->dev,
@@ -1084,7 +1053,7 @@ static void hclge_mbx_request_handling(struct hclge_mbx_ops_param *param)
 			"un-supported mailbox message, code = %u\n",
 			param->req->msg.code);
 
-	/* PF driver should not reply IMP */
+	 
 	if (hnae3_get_bit(param->req->mbx_need_resp, HCLGE_MBX_NEED_RESP_B) &&
 	    param->req->msg.code < HCLGE_MBX_GET_VF_FLR_STATUS) {
 		param->resp_msg->status = ret;
@@ -1110,7 +1079,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
 	unsigned int flag;
 
 	param.resp_msg = &resp_msg;
-	/* handle all the mailbox requests in the queue */
+	 
 	while (!hclge_cmd_crq_empty(&hdev->hw)) {
 		if (test_bit(HCLGE_COMM_STATE_CMD_DISABLE,
 			     &hdev->hw.hw.comm_state)) {
@@ -1128,7 +1097,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
 				 "dropped invalid mailbox message, code = %u\n",
 				 req->msg.code);
 
-			/* dropping/not processing this invalid message */
+			 
 			crq->desc[crq->next_to_use].flag = 0;
 			hclge_mbx_ring_ptr_move_crq(crq);
 			continue;
@@ -1136,7 +1105,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
 
 		trace_hclge_pf_mbx_get(hdev, req);
 
-		/* clear the resp_msg before processing every mailbox message */
+		 
 		memset(&resp_msg, 0, sizeof(resp_msg));
 		param.vport = &hdev->vport[req->mbx_src_vfid];
 		param.req = req;
@@ -1146,7 +1115,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
 		hclge_mbx_ring_ptr_move_crq(crq);
 	}
 
-	/* Write back CMDQ_RQ header pointer, M7 need this pointer */
+	 
 	hclge_write_dev(&hdev->hw, HCLGE_COMM_NIC_CRQ_HEAD_REG,
 			crq->next_to_use);
 }

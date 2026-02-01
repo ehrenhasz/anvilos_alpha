@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM spi
 
@@ -166,11 +166,7 @@ TRACE_EVENT(spi_message_done,
                   (unsigned)__entry->actual, (unsigned)__entry->frame)
 );
 
-/*
- * Consider a buffer valid if non-NULL and if it doesn't match the dummy buffer
- * that only exist to work with controllers that have SPI_CONTROLLER_MUST_TX or
- * SPI_CONTROLLER_MUST_RX.
- */
+ 
 #define spi_valid_txbuf(msg, xfer) \
 	(xfer->tx_buf && xfer->tx_buf != msg->spi->controller->dummy_tx)
 #define spi_valid_rxbuf(msg, xfer) \
@@ -233,7 +229,7 @@ DEFINE_EVENT(spi_transfer, spi_transfer_stop,
 
 );
 
-#endif /* _TRACE_POWER_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

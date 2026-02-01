@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_DEVICE_H__
 #define __NVKM_DEVICE_H__
 #include <core/oclass.h>
@@ -110,7 +110,7 @@ struct nvkm_device_chip {
 struct nvkm_device *nvkm_device_find(u64 name);
 int nvkm_device_list(u64 *name, int size);
 
-/* privileged register interface accessor macros */
+ 
 #define nvkm_rd08(d,a) ioread8((d)->pri + (a))
 #define nvkm_rd16(d,a) ioread16_native((d)->pri + (a))
 #define nvkm_rd32(d,a) ioread32_native((d)->pri + (a))
@@ -134,7 +134,7 @@ struct nvkm_device_oclass {
 
 extern const struct nvkm_sclass nvkm_udevice_sclass;
 
-/* device logging */
+ 
 #define nvdev_printk_(d,l,p,f,a...) do {                                       \
 	const struct nvkm_device *_device = (d);                               \
 	if (_device->debug >= (l))                                             \

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UFS PHY driver data for Samsung EXYNOS7 SoC
- *
- * Copyright (C) 2020 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include "phy-samsung-ufs.h"
 
@@ -13,7 +9,7 @@
 
 #define EXYNOS7_EMBEDDED_COMBO_PHY_CDR_LOCK_STATUS	0x5e
 
-/* Calibration for phy initialization */
+ 
 static const struct samsung_ufs_phy_cfg exynos7_pre_init_cfg[] = {
 	PHY_COMN_REG_CFG(0x00f, 0xfa, PWR_MODE_ANY),
 	PHY_COMN_REG_CFG(0x010, 0x82, PWR_MODE_ANY),
@@ -32,12 +28,12 @@ static const struct samsung_ufs_phy_cfg exynos7_pre_init_cfg[] = {
 	END_UFS_PHY_CFG
 };
 
-/* Calibration for HS mode series A/B */
+ 
 static const struct samsung_ufs_phy_cfg exynos7_pre_pwr_hs_cfg[] = {
 	PHY_COMN_REG_CFG(0x00f, 0xfa, PWR_MODE_HS_ANY),
 	PHY_COMN_REG_CFG(0x010, 0x82, PWR_MODE_HS_ANY),
 	PHY_COMN_REG_CFG(0x011, 0x1e, PWR_MODE_HS_ANY),
-	/* Setting order: 1st(0x16, 2nd(0x15) */
+	 
 	PHY_COMN_REG_CFG(0x016, 0xff, PWR_MODE_HS_ANY),
 	PHY_COMN_REG_CFG(0x015, 0x80, PWR_MODE_HS_ANY),
 	PHY_COMN_REG_CFG(0x017, 0x94, PWR_MODE_HS_ANY),
@@ -55,7 +51,7 @@ static const struct samsung_ufs_phy_cfg exynos7_pre_pwr_hs_cfg[] = {
 	END_UFS_PHY_CFG
 };
 
-/* Calibration for HS mode series A/B atfer PMC */
+ 
 static const struct samsung_ufs_phy_cfg exynos7_post_pwr_hs_cfg[] = {
 	PHY_COMN_REG_CFG(0x015, 0x00, PWR_MODE_HS_ANY),
 	PHY_TRSV_REG_CFG(0x04d, 0x83, PWR_MODE_HS_ANY),

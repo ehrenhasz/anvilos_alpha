@@ -9,8 +9,8 @@ double fmod(double x, double y)
 	int sx = ux.i>>63;
 	uint64_t i;
 
-	/* in the followings uxi should be ux.i, but then gcc wrongly adds */
-	/* float load/store to inner loops ruining performance and code size */
+	 
+	 
 	uint64_t uxi = ux.i;
 
 	if (uy.i<<1 == 0 || isnan(y) || ex == 0x7ff)
@@ -21,7 +21,7 @@ double fmod(double x, double y)
 		return x;
 	}
 
-	/* normalize x and y */
+	 
 	if (!ex) {
 		for (i = uxi<<12; i>>63 == 0; ex--, i <<= 1);
 		uxi <<= -ex + 1;
@@ -37,7 +37,7 @@ double fmod(double x, double y)
 		uy.i |= 1ULL << 52;
 	}
 
-	/* x mod y */
+	 
 	for (; ex > ey; ex--) {
 		i = uxi - uy.i;
 		if (i >> 63 == 0) {
@@ -55,7 +55,7 @@ double fmod(double x, double y)
 	}
 	for (; uxi>>52 == 0; uxi <<= 1, ex--);
 
-	/* scale result */
+	 
 	if (ex > 0) {
 		uxi -= 1ULL << 52;
 		uxi |= (uint64_t)ex << 52;

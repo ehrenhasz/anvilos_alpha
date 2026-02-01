@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Sysfs attributes of bridge
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Stephen Hemminger		<shemminger@osdl.org>
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/kernel.h>
@@ -19,15 +13,11 @@
 
 #include "br_private.h"
 
-/* IMPORTANT: new bridge options must be added with netlink support only
- *            please do not add new sysfs entries
- */
+ 
 
 #define to_bridge(cd)	((struct net_bridge *)netdev_priv(to_net_dev(cd)))
 
-/*
- * Common code for storing bridge parameters.
- */
+ 
 static ssize_t store_bridge_parm(struct device *d,
 				 const char *buf, size_t len,
 				 int (*set)(struct net_bridge *br, unsigned long val,
@@ -318,9 +308,9 @@ static ssize_t group_addr_store(struct device *d,
 	if (!is_link_local_ether_addr(new_addr))
 		return -EINVAL;
 
-	if (new_addr[5] == 1 ||		/* 802.3x Pause address */
-	    new_addr[5] == 2 ||		/* 802.3ad Slow protocols */
-	    new_addr[5] == 3)		/* 802.1X PAE address */
+	if (new_addr[5] == 1 ||		 
+	    new_addr[5] == 2 ||		 
+	    new_addr[5] == 3)		 
 		return -EINVAL;
 
 	if (!rtnl_trylock())
@@ -476,7 +466,7 @@ static ssize_t hash_elasticity_show(struct device *d,
 static int set_elasticity(struct net_bridge *br, unsigned long val,
 			  struct netlink_ext_ack *extack)
 {
-	/* 16 is RHT_ELASTICITY */
+	 
 	NL_SET_ERR_MSG_MOD(extack,
 			   "the hash_elasticity option has been deprecated and is always 16");
 	return 0;
@@ -995,12 +985,7 @@ static const struct attribute_group bridge_group = {
 	.attrs = bridge_attrs,
 };
 
-/*
- * Export the forwarding information table as a binary file
- * The records are struct __fdb_entry.
- *
- * Returns the number of bytes read.
- */
+ 
 static ssize_t brforward_read(struct file *filp, struct kobject *kobj,
 			      struct bin_attribute *bin_attr,
 			      char *buf, loff_t off, size_t count)
@@ -1009,7 +994,7 @@ static ssize_t brforward_read(struct file *filp, struct kobject *kobj,
 	struct net_bridge *br = to_bridge(dev);
 	int n;
 
-	/* must read whole records */
+	 
 	if (off % sizeof(struct __fdb_entry) != 0)
 		return -EINVAL;
 
@@ -1029,17 +1014,7 @@ static struct bin_attribute bridge_forward = {
 	.read = brforward_read,
 };
 
-/*
- * Add entries in sysfs onto the existing network class device
- * for the bridge.
- *   Adds a attribute group "bridge" containing tuning parameters.
- *   Binary attribute containing the forward table
- *   Sub directory to hold links to interfaces.
- *
- * Note: the ifobj exists only to be a subdirectory
- *   to hold links.  The ifobj exists in same data structure
- *   as it's parent the bridge so reference counting works.
- */
+ 
 int br_sysfs_addbr(struct net_device *dev)
 {
 	struct kobject *brobj = &dev->dev.kobj;

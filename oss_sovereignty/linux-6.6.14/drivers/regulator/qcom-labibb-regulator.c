@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/of_irq.h>
@@ -110,14 +110,14 @@ static int qcom_labibb_ocp_hw_enable(struct regulator_dev *rdev)
 	struct labibb_regulator *vreg = rdev_get_drvdata(rdev);
 	int ret;
 
-	/* Clear irq latch status to avoid spurious event */
+	 
 	ret = regmap_update_bits(rdev->regmap,
 				 vreg->base + REG_LABIBB_INT_LATCHED_CLR,
 				 LABIBB_INT_VREG_OK, 1);
 	if (ret)
 		return ret;
 
-	/* Enable OCP HW interrupt */
+	 
 	return regmap_update_bits(rdev->regmap,
 				  vreg->base + REG_LABIBB_INT_EN_SET,
 				  LABIBB_INT_VREG_OK, 1);
@@ -132,16 +132,7 @@ static int qcom_labibb_ocp_hw_disable(struct regulator_dev *rdev)
 				  LABIBB_INT_VREG_OK, 1);
 }
 
-/**
- * qcom_labibb_check_ocp_status - Check the Over-Current Protection status
- * @vreg: Main driver structure
- *
- * This function checks the STATUS1 register for the VREG_OK bit: if it is
- * set, then there is no Over-Current event.
- *
- * Returns: Zero if there is no over-current, 1 if in over-current or
- *          negative number for error
- */
+ 
 static int qcom_labibb_check_ocp_status(struct labibb_regulator *vreg)
 {
 	u32 cur_status;
@@ -155,27 +146,7 @@ static int qcom_labibb_check_ocp_status(struct labibb_regulator *vreg)
 	return !(cur_status & LABIBB_STATUS1_VREG_OK_BIT);
 }
 
-/**
- * qcom_labibb_ocp_recovery_worker - Handle OCP event
- * @work: OCP work structure
- *
- * This is the worker function to handle the Over Current Protection
- * hardware event; This will check if the hardware is still
- * signaling an over-current condition and will eventually stop
- * the regulator if such condition is still signaled after
- * LABIBB_MAX_OCP_COUNT times.
- *
- * If the driver that is consuming the regulator did not take action
- * for the OCP condition, or the hardware did not stabilize, a cut
- * of the LAB and IBB regulators will be forced (regulators will be
- * disabled).
- *
- * As last, if the writes to shut down the LAB/IBB regulators fail
- * for more than LABIBB_MAX_FATAL_COUNT, then a kernel panic will be
- * triggered, as a last resort to protect the hardware from burning;
- * this, however, is expected to never happen, but this is kept to
- * try to further ensure that we protect the hardware at all costs.
- */
+ 
 static void qcom_labibb_ocp_recovery_worker(struct work_struct *work)
 {
 	struct labibb_regulator *vreg;
@@ -187,19 +158,11 @@ static void qcom_labibb_ocp_recovery_worker(struct work_struct *work)
 	ops = vreg->rdev->desc->ops;
 
 	if (vreg->ocp_irq_count >= LABIBB_MAX_OCP_COUNT) {
-		/*
-		 * If we tried to disable the regulator multiple times but
-		 * we kept failing, there's only one last hope to save our
-		 * hardware from the death: raise a kernel bug, reboot and
-		 * hope that the bootloader kindly saves us. This, though
-		 * is done only as paranoid checking, because failing the
-		 * regmap write to disable the vreg is almost impossible,
-		 * since we got here after multiple regmap R/W.
-		 */
+		 
 		BUG_ON(vreg->fatal_count > LABIBB_MAX_FATAL_COUNT);
 		dev_err(&vreg->rdev->dev, "LABIBB: CRITICAL: Disabling regulator\n");
 
-		/* Disable the regulator immediately to avoid damage */
+		 
 		ret = ops->disable(vreg->rdev);
 		if (ret) {
 			vreg->fatal_count++;
@@ -218,14 +181,14 @@ static void qcom_labibb_ocp_recovery_worker(struct work_struct *work)
 
 	ret = qcom_labibb_ocp_hw_enable(vreg->rdev);
 	if (ret) {
-		/* We cannot trust it without OCP enabled. */
+		 
 		dev_err(vreg->dev, "Cannot enable OCP IRQ\n");
 		vreg->ocp_irq_count++;
 		goto reschedule;
 	}
 
 	enable_irq(vreg->ocp_irq);
-	/* Everything went fine: reset the OCP count! */
+	 
 	vreg->ocp_irq_count = 0;
 	return;
 
@@ -234,44 +197,22 @@ reschedule:
 			 msecs_to_jiffies(OCP_RECOVERY_INTERVAL_MS));
 }
 
-/**
- * qcom_labibb_ocp_isr - Interrupt routine for OverCurrent Protection
- * @irq:  Interrupt number
- * @chip: Main driver structure
- *
- * Over Current Protection (OCP) will signal to the client driver
- * that an over-current event has happened and then will schedule
- * a recovery worker.
- *
- * Disabling and eventually re-enabling the regulator is expected
- * to be done by the driver, as some hardware may be triggering an
- * over-current condition only at first initialization or it may
- * be expected only for a very brief amount of time, after which
- * the attached hardware may be expected to stabilize its current
- * draw.
- *
- * Returns: IRQ_HANDLED for success or IRQ_NONE for failure.
- */
+ 
 static irqreturn_t qcom_labibb_ocp_isr(int irq, void *chip)
 {
 	struct labibb_regulator *vreg = chip;
 	const struct regulator_ops *ops = vreg->rdev->desc->ops;
 	int ret;
 
-	/* If the regulator is not enabled, this is a fake event */
+	 
 	if (!ops->is_enabled(vreg->rdev))
 		return IRQ_HANDLED;
 
-	/* If we tried to recover for too many times it's not getting better */
+	 
 	if (vreg->ocp_irq_count > LABIBB_MAX_OCP_COUNT)
 		return IRQ_NONE;
 
-	/*
-	 * If we (unlikely) can't read this register, to prevent hardware
-	 * damage at all costs, we assume that the overcurrent event was
-	 * real; Moreover, if the status register is not signaling OCP,
-	 * it was a spurious event, so it's all ok.
-	 */
+	 
 	ret = qcom_labibb_check_ocp_status(vreg);
 	if (ret == 0) {
 		vreg->ocp_irq_count = 0;
@@ -279,26 +220,23 @@ static irqreturn_t qcom_labibb_ocp_isr(int irq, void *chip)
 	}
 	vreg->ocp_irq_count++;
 
-	/*
-	 * Disable the interrupt temporarily, or it will fire continuously;
-	 * we will re-enable it in the recovery worker function.
-	 */
+	 
 	disable_irq_nosync(irq);
 
-	/* Warn the user for overcurrent */
+	 
 	dev_warn(vreg->dev, "Over-Current interrupt fired!\n");
 
-	/* Disable the interrupt to avoid hogging */
+	 
 	ret = qcom_labibb_ocp_hw_disable(vreg->rdev);
 	if (ret)
 		goto end;
 
-	/* Signal overcurrent event to drivers */
+	 
 	regulator_notifier_call_chain(vreg->rdev,
 				      REGULATOR_EVENT_OVER_CURRENT, NULL);
 
 end:
-	/* Schedule the recovery work */
+	 
 	schedule_delayed_work(&vreg->ocp_recovery_work,
 			      msecs_to_jiffies(OCP_RECOVERY_INTERVAL_MS));
 	if (ret)
@@ -315,14 +253,11 @@ static int qcom_labibb_set_ocp(struct regulator_dev *rdev, int lim,
 	u32 irq_flags = IRQF_ONESHOT;
 	int irq_trig_low, ret;
 
-	/*
-	 * labibb supports only protection - and does not support setting
-	 * limit. Furthermore, we don't support disabling protection.
-	 */
+	 
 	if (lim || severity != REGULATOR_SEVERITY_PROT || !enable)
 		return -EINVAL;
 
-	/* If there is no OCP interrupt, there's nothing to set */
+	 
 	if (vreg->ocp_irq <= 0)
 		return -EINVAL;
 
@@ -331,7 +266,7 @@ static int qcom_labibb_set_ocp(struct regulator_dev *rdev, int lim,
 	if (!ocp_irq_name)
 		return -ENOMEM;
 
-	/* IRQ polarities - LAB: trigger-low, IBB: trigger-high */
+	 
 	switch (vreg->type) {
 	case QCOM_LAB_TYPE:
 		irq_flags |= IRQF_TRIGGER_LOW;
@@ -345,7 +280,7 @@ static int qcom_labibb_set_ocp(struct regulator_dev *rdev, int lim,
 		return -EINVAL;
 	}
 
-	/* Activate OCP HW level interrupt */
+	 
 	ret = regmap_update_bits(rdev->regmap,
 				 vreg->base + REG_LABIBB_INT_SET_TYPE,
 				 LABIBB_INT_VREG_OK,
@@ -353,7 +288,7 @@ static int qcom_labibb_set_ocp(struct regulator_dev *rdev, int lim,
 	if (ret)
 		return ret;
 
-	/* Set OCP interrupt polarity */
+	 
 	ret = regmap_update_bits(rdev->regmap,
 				 vreg->base + REG_LABIBB_INT_POLARITY_HIGH,
 				 LABIBB_INT_VREG_OK, !irq_trig_low);
@@ -374,23 +309,13 @@ static int qcom_labibb_set_ocp(struct regulator_dev *rdev, int lim,
 					 ocp_irq_name, vreg);
 }
 
-/**
- * qcom_labibb_check_sc_status - Check the Short Circuit Protection status
- * @vreg: Main driver structure
- *
- * This function checks the STATUS1 register on both LAB and IBB regulators
- * for the ShortCircuit bit: if it is set on *any* of them, then we have
- * experienced a short-circuit event.
- *
- * Returns: Zero if there is no short-circuit, 1 if in short-circuit or
- *          negative number for error
- */
+ 
 static int qcom_labibb_check_sc_status(struct labibb_regulator *vreg)
 {
 	u32 ibb_status, ibb_reg, lab_status, lab_reg;
 	int ret;
 
-	/* We have to work on both regulators due to PBS... */
+	 
 	lab_reg = ibb_reg = vreg->base + REG_LABIBB_STATUS1;
 	if (vreg->type == QCOM_LAB_TYPE)
 		ibb_reg -= PMI8998_IBB_LAB_REG_OFFSET;
@@ -408,23 +333,7 @@ static int qcom_labibb_check_sc_status(struct labibb_regulator *vreg)
 	       !!(ibb_status & LABIBB_STATUS1_SC_BIT);
 }
 
-/**
- * qcom_labibb_sc_recovery_worker - Handle Short Circuit event
- * @work: SC work structure
- *
- * This is the worker function to handle the Short Circuit Protection
- * hardware event; This will check if the hardware is still
- * signaling a short-circuit condition and will eventually never
- * re-enable the regulator if such condition is still signaled after
- * LABIBB_MAX_SC_COUNT times.
- *
- * If the driver that is consuming the regulator did not take action
- * for the SC condition, or the hardware did not stabilize, this
- * worker will stop rescheduling, leaving the regulators disabled
- * as already done by the Portable Batch System (PBS).
- *
- * Returns: IRQ_HANDLED for success or IRQ_NONE for failure.
- */
+ 
 static void qcom_labibb_sc_recovery_worker(struct work_struct *work)
 {
 	struct labibb_regulator *vreg;
@@ -437,23 +346,15 @@ static void qcom_labibb_sc_recovery_worker(struct work_struct *work)
 			    sc_recovery_work.work);
 	ops = vreg->rdev->desc->ops;
 
-	/*
-	 * If we tried to check the regulator status multiple times but we
-	 * kept failing, then just bail out, as the Portable Batch System
-	 * (PBS) will disable the vregs for us, preventing hardware damage.
-	 */
+	 
 	if (vreg->fatal_count > LABIBB_MAX_FATAL_COUNT)
 		return;
 
-	/* Too many short-circuit events. Throw in the towel. */
+	 
 	if (vreg->sc_count > LABIBB_MAX_SC_COUNT)
 		return;
 
-	/*
-	 * The Portable Batch System (PBS) automatically disables LAB
-	 * and IBB when a short-circuit event is detected, so we have to
-	 * check and work on both of them at the same time.
-	 */
+	 
 	lab_reg = ibb_reg = vreg->base + REG_LABIBB_ENABLE_CTL;
 	if (vreg->type == QCOM_LAB_TYPE)
 		ibb_reg -= PMI8998_IBB_LAB_REG_OFFSET;
@@ -488,48 +389,24 @@ static void qcom_labibb_sc_recovery_worker(struct work_struct *work)
 		goto reschedule;
 
 
-	/*
-	 * If we have reached this point, we either have successfully
-	 * recovered from the SC condition or we had a spurious SC IRQ,
-	 * which means that we can re-enable the regulators, if they
-	 * have ever been disabled by the PBS.
-	 */
+	 
 	ret = ops->enable(vreg->rdev);
 	if (ret)
 		goto reschedule;
 
-	/* Everything went fine: reset the OCP count! */
+	 
 	vreg->sc_count = 0;
 	enable_irq(vreg->sc_irq);
 	return;
 
 reschedule:
-	/*
-	 * Now that we have done basic handling of the short-circuit,
-	 * reschedule this worker in the regular system workqueue, as
-	 * taking action is not truly urgent anymore.
-	 */
+	 
 	vreg->sc_count++;
 	mod_delayed_work(system_wq, &vreg->sc_recovery_work,
 			 msecs_to_jiffies(SC_RECOVERY_INTERVAL_MS));
 }
 
-/**
- * qcom_labibb_sc_isr - Interrupt routine for Short Circuit Protection
- * @irq:  Interrupt number
- * @chip: Main driver structure
- *
- * Short Circuit Protection (SCP) will signal to the client driver
- * that a regulation-out event has happened and then will schedule
- * a recovery worker.
- *
- * The LAB and IBB regulators will be automatically disabled by the
- * Portable Batch System (PBS) and they will be enabled again by
- * the worker function if the hardware stops signaling the short
- * circuit event.
- *
- * Returns: IRQ_HANDLED for success or IRQ_NONE for failure.
- */
+ 
 static irqreturn_t qcom_labibb_sc_isr(int irq, void *chip)
 {
 	struct labibb_regulator *vreg = chip;
@@ -537,20 +414,17 @@ static irqreturn_t qcom_labibb_sc_isr(int irq, void *chip)
 	if (vreg->sc_count > LABIBB_MAX_SC_COUNT)
 		return IRQ_NONE;
 
-	/* Warn the user for short circuit */
+	 
 	dev_warn(vreg->dev, "Short-Circuit interrupt fired!\n");
 
-	/*
-	 * Disable the interrupt temporarily, or it will fire continuously;
-	 * we will re-enable it in the recovery worker function.
-	 */
+	 
 	disable_irq_nosync(irq);
 
-	/* Signal out of regulation event to drivers */
+	 
 	regulator_notifier_call_chain(vreg->rdev,
 				      REGULATOR_EVENT_REGULATION_OUT, NULL);
 
-	/* Schedule the short-circuit handling as high-priority work */
+	 
 	mod_delayed_work(system_highpri_wq, &vreg->sc_recovery_work,
 			 msecs_to_jiffies(SC_RECOVERY_INTERVAL_MS));
 	return IRQ_HANDLED;
@@ -578,7 +452,7 @@ static int qcom_labibb_set_current_limit(struct regulator_dev *rdev,
 	if (sel < 0)
 		return -EINVAL;
 
-	/* Current limit setting needs secure access */
+	 
 	ret = regmap_write(vreg->regmap, vreg->base + REG_LABIBB_SEC_ACCESS,
 			   LABIBB_SEC_UNLOCK_CODE);
 	if (ret)
@@ -631,10 +505,10 @@ static int qcom_labibb_get_table_sel(const int *table, int sz, u32 value)
 	return -EINVAL;
 }
 
-/* IBB discharge resistor values in KOhms */
+ 
 static const int dischg_resistor_values[] = { 300, 64, 32, 16 };
 
-/* Soft start time in microseconds */
+ 
 static const int soft_start_values[] = { 200, 400, 600, 800 };
 
 static int qcom_labibb_of_parse_cb(struct device_node *np,
@@ -784,9 +658,7 @@ static int qcom_labibb_regulator_probe(struct platform_device *pdev)
 		char *sc_irq_name;
 		int irq = 0;
 
-		/* Validate if the type of regulator is indeed
-		 * what's mentioned in DT.
-		 */
+		 
 		ret = regmap_read(reg_regmap, reg_data->base + REG_PERPH_TYPE,
 				  &type);
 		if (ret < 0) {
@@ -816,7 +688,7 @@ static int qcom_labibb_regulator_probe(struct platform_device *pdev)
 		if (!reg_node)
 			return -EINVAL;
 
-		/* The Short Circuit interrupt is critical */
+		 
 		irq = of_irq_get_byname(reg_node, "sc-err");
 		if (irq <= 0) {
 			if (irq == 0)
@@ -828,7 +700,7 @@ static int qcom_labibb_regulator_probe(struct platform_device *pdev)
 		}
 		vreg->sc_irq = irq;
 
-		/* OverCurrent Protection IRQ is optional */
+		 
 		irq = of_irq_get_byname(reg_node, "ocp");
 		vreg->ocp_irq = irq;
 		vreg->ocp_irq_count = 0;
@@ -847,16 +719,16 @@ static int qcom_labibb_regulator_probe(struct platform_device *pdev)
 
 		switch (vreg->type) {
 		case QCOM_LAB_TYPE:
-			/* LAB Limits: 200-1600mA */
+			 
 			vreg->uA_limits.uA_min  = 200000;
 			vreg->uA_limits.uA_step = 200000;
 			vreg->uA_limits.ovr_val = LAB_CURRENT_LIMIT_OVERRIDE_EN;
 			break;
 		case QCOM_IBB_TYPE:
-			/* IBB Limits: 0-1550mA */
+			 
 			vreg->uA_limits.uA_min  = 0;
 			vreg->uA_limits.uA_step = 50000;
-			vreg->uA_limits.ovr_val = 0; /* No override bit */
+			vreg->uA_limits.ovr_val = 0;  
 			break;
 		default:
 			return -EINVAL;

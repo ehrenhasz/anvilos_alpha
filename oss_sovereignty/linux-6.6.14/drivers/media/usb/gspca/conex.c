@@ -1,17 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *		Connexant Cx11646 library
- *		Copyright (C) 2004 Michel Xhaard mxhaard@magic.fr
- *
- * V4L2 by Jean-Francois Moine <http://moinejf.free.fr>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #define MODULE_NAME "conex"
 
 #include "gspca.h"
-#define CONEX_CAM 1		/* special JPEG header */
+#define CONEX_CAM 1		 
 #include "jpeg.h"
 
 MODULE_AUTHOR("Michel Xhaard <mxhaard@users.sourceforge.net>");
@@ -20,9 +15,9 @@ MODULE_LICENSE("GPL");
 
 #define QUALITY 50
 
-/* specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev;	/* !! must be the first item */
+	struct gspca_dev gspca_dev;	 
 	struct v4l2_ctrl *brightness;
 	struct v4l2_ctrl *contrast;
 	struct v4l2_ctrl *sat;
@@ -53,7 +48,7 @@ static const struct v4l2_pix_format vga_mode[] = {
 		.priv = 0},
 };
 
-/* the read bytes are found in gspca_dev->usb_buf */
+ 
 static void reg_r(struct gspca_dev *gspca_dev,
 		  __u16 index,
 		  __u16 len)
@@ -76,7 +71,7 @@ static void reg_r(struct gspca_dev *gspca_dev,
 		  index, gspca_dev->usb_buf[0]);
 }
 
-/* the bytes to write are in gspca_dev->usb_buf */
+ 
 static void reg_w_val(struct gspca_dev *gspca_dev,
 			__u16 index,
 			__u8 val)
@@ -206,12 +201,12 @@ static const __u8 cxsensor[] = {
 	0x88, 0x12, 0x70, 0x01,
 	0x88, 0x0d, 0x02, 0x01,
 	0x88, 0x0f, 0x00, 0x01,
-	0x88, 0x03, 0x71, 0x01, 0x88, 0x04, 0x00, 0x01,	/* 3 */
+	0x88, 0x03, 0x71, 0x01, 0x88, 0x04, 0x00, 0x01,	 
 	0x88, 0x02, 0x10, 0x01,
-	0x88, 0x00, 0xD4, 0x01, 0x88, 0x01, 0x01, 0x01,	/* 5 */
+	0x88, 0x00, 0xD4, 0x01, 0x88, 0x01, 0x01, 0x01,	 
 	0x88, 0x0B, 0x00, 0x01,
 	0x88, 0x0A, 0x0A, 0x01,
-	0x88, 0x00, 0x08, 0x01, 0x88, 0x01, 0x00, 0x01,	/* 8 */
+	0x88, 0x00, 0x08, 0x01, 0x88, 0x01, 0x00, 0x01,	 
 	0x88, 0x05, 0x01, 0x01,
 	0xA1, 0x18, 0x00, 0x01,
 	0x00
@@ -220,12 +215,9 @@ static const __u8 cxsensor[] = {
 static const __u8 reg20[] = { 0x10, 0x42, 0x81, 0x19, 0xd3, 0xff, 0xa7, 0xff };
 static const __u8 reg28[] = { 0x87, 0x00, 0x87, 0x00, 0x8f, 0xff, 0xea, 0xff };
 static const __u8 reg10[] = { 0xb1, 0xb1 };
-static const __u8 reg71a[] = { 0x08, 0x18, 0x0a, 0x1e };	/* 640 */
+static const __u8 reg71a[] = { 0x08, 0x18, 0x0a, 0x1e };	 
 static const __u8 reg71b[] = { 0x04, 0x0c, 0x05, 0x0f };
-	/* 352{0x04,0x0a,0x06,0x12}; //352{0x05,0x0e,0x06,0x11}; //352 */
-static const __u8 reg71c[] = { 0x02, 0x07, 0x03, 0x09 };
-					/* 320{0x04,0x0c,0x05,0x0f}; //320 */
-static const __u8 reg71d[] = { 0x02, 0x07, 0x03, 0x09 };	/* 176 */
+	 
 static const __u8 reg7b[] = { 0x00, 0xff, 0x00, 0xff, 0x00, 0xff };
 
 static void cx_sensor(struct gspca_dev*gspca_dev)
@@ -247,7 +239,7 @@ static void cx_sensor(struct gspca_dev*gspca_dev)
 		reg_w(gspca_dev, 0x0071, reg71b, 4);
 		break;
 	default:
-/*	case 2: */
+ 
 		reg_w(gspca_dev, 0x0071, reg71c, 4);
 		break;
 	case 3:
@@ -274,7 +266,7 @@ static void cx_sensor(struct gspca_dev*gspca_dev)
 }
 
 static const __u8 cx_inits_176[] = {
-	0x33, 0x81, 0xB0, 0x00, 0x90, 0x00, 0x0A, 0x03,	/* 176x144 */
+	0x33, 0x81, 0xB0, 0x00, 0x90, 0x00, 0x0A, 0x03,	 
 	0x00, 0x03, 0x03, 0x03, 0x1B, 0x05, 0x30, 0x03,
 	0x65, 0x15, 0x18, 0x25, 0x03, 0x25, 0x08, 0x30,
 	0x3B, 0x25, 0x10, 0x00, 0x04, 0x00, 0x00, 0x00,
@@ -325,7 +317,7 @@ static void cx11646_initsize(struct gspca_dev *gspca_dev)
 		cxinit = cx_inits_352;
 		break;
 	default:
-/*	case 2: */
+ 
 		cxinit = cx_inits_320;
 		break;
 	case 3:
@@ -358,7 +350,7 @@ static void cx11646_initsize(struct gspca_dev *gspca_dev)
 }
 
 static const __u8 cx_jpeg_init[][8] = {
-	{0xff, 0xd8, 0xff, 0xdb, 0x00, 0x84, 0x00, 0x15},	/* 1 */
+	{0xff, 0xd8, 0xff, 0xdb, 0x00, 0x84, 0x00, 0x15},	 
 	{0x0f, 0x10, 0x12, 0x10, 0x0d, 0x15, 0x12, 0x11},
 	{0x12, 0x18, 0x16, 0x15, 0x19, 0x20, 0x35, 0x22},
 	{0x20, 0x1d, 0x1d, 0x20, 0x41, 0x2e, 0x31, 0x26},
@@ -436,12 +428,12 @@ static const __u8 cx_jpeg_init[][8] = {
 	{0x00, 0xF0, 0x01, 0x40, 0x03, 0x00, 0x21, 0x00},
 	{0x01, 0x11, 0x01, 0x02, 0x11, 0x01, 0xFF, 0xDA},
 	{0x00, 0x0C, 0x03, 0x00, 0x00, 0x01, 0x11, 0x02},
-	{0x11, 0x00, 0x3F, 0x00, 0xFF, 0xD9, 0x00, 0x00}	/* 79 */
+	{0x11, 0x00, 0x3F, 0x00, 0xFF, 0xD9, 0x00, 0x00}	 
 };
 
 
 static const __u8 cxjpeg_640[][8] = {
-	{0xff, 0xd8, 0xff, 0xdb, 0x00, 0x84, 0x00, 0x10},	/* 1 */
+	{0xff, 0xd8, 0xff, 0xdb, 0x00, 0x84, 0x00, 0x10},	 
 	{0x0b, 0x0c, 0x0e, 0x0c, 0x0a, 0x10, 0x0e, 0x0d},
 	{0x0e, 0x12, 0x11, 0x10, 0x13, 0x18, 0x28, 0x1a},
 	{0x18, 0x16, 0x16, 0x18, 0x31, 0x23, 0x25, 0x1d},
@@ -467,7 +459,7 @@ static const __u8 cxjpeg_640[][8] = {
 	{0x03, 0x00, 0x21, 0x00, 0x01, 0x11, 0x01, 0x02},
 	{0x11, 0x01, 0xFF, 0xDA, 0x00, 0x0C, 0x03, 0x00},
 	{0x00, 0x01, 0x11, 0x02, 0x11, 0x00, 0x3F, 0x00},
-	{0xFF, 0xD9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}	/* 27 */
+	{0xFF, 0xD9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}	 
 };
 static const __u8 cxjpeg_352[][8] = {
 	{0xff, 0xd8, 0xff, 0xdb, 0x00, 0x84, 0x00, 0x0d},
@@ -525,7 +517,7 @@ static const __u8 cxjpeg_320[][8] = {
 	{0x03, 0x00, 0x21, 0x00, 0x01, 0x11, 0x01, 0x02},
 	{0x11, 0x01, 0xFF, 0xDA, 0x00, 0x0C, 0x03, 0x00},
 	{0x00, 0x01, 0x11, 0x02, 0x11, 0x00, 0x3F, 0x00},
-	{0xFF, 0xD9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}	/* 27 */
+	{0xFF, 0xD9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}	 
 };
 static const __u8 cxjpeg_176[][8] = {
 	{0xff, 0xd8, 0xff, 0xdb, 0x00, 0x84, 0x00, 0x0d},
@@ -556,7 +548,7 @@ static const __u8 cxjpeg_176[][8] = {
 	{0x00, 0x01, 0x11, 0x02, 0x11, 0x00, 0x3F, 0x00},
 	{0xFF, 0xD9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 };
-/* 640 take with the zcx30x part */
+ 
 static const __u8 cxjpeg_qtable[][8] = {
 	{0xff, 0xd8, 0xff, 0xdb, 0x00, 0x84, 0x00, 0x08},
 	{0x06, 0x06, 0x07, 0x06, 0x05, 0x08, 0x07, 0x07},
@@ -575,7 +567,7 @@ static const __u8 cxjpeg_qtable[][8] = {
 	{0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32},
 	{0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32},
 	{0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32},
-	{0xFF, 0xD9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}	/* 18 */
+	{0xFF, 0xD9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}	 
 };
 
 
@@ -637,7 +629,7 @@ static void cx11646_jpeg(struct gspca_dev*gspca_dev)
 		Reg55 = 0x16;
 		break;
 	default:
-/*	case 2: */
+ 
 		for (i = 0; i < 27; i++) {
 			if (i == 26)
 				length = 2;
@@ -665,19 +657,19 @@ static void cx11646_jpeg(struct gspca_dev*gspca_dev)
 	reg_w_val(gspca_dev, 0x0053, 0xc0);
 	reg_w_val(gspca_dev, 0x00fc, 0xe1);
 	reg_w_val(gspca_dev, 0x0000, 0x00);
-	/* wait for completion */
+	 
 	retry = 50;
 	do {
 		reg_r(gspca_dev, 0x0002, 1);
-							/* 0x07 until 0x00 */
+							 
 		if (gspca_dev->usb_buf[0] == 0x00)
 			break;
 		reg_w_val(gspca_dev, 0x0053, 0x00);
 	} while (--retry);
 	if (retry == 0)
 		gspca_err(gspca_dev, "Damned Errors sending jpeg Table\n");
-	/* send the qtable now */
-	reg_r(gspca_dev, 0x0001, 1);		/* -> 0x18 */
+	 
+	reg_r(gspca_dev, 0x0001, 1);		 
 	length = 8;
 	for (i = 0; i < 18; i++) {
 		if (i == 17)
@@ -685,26 +677,26 @@ static void cx11646_jpeg(struct gspca_dev*gspca_dev)
 		reg_w(gspca_dev, 0x0008, cxjpeg_qtable[i], length);
 
 	}
-	reg_r(gspca_dev, 0x0002, 1);	/* 0x00 */
-	reg_r(gspca_dev, 0x0053, 1);	/* 0x00 */
+	reg_r(gspca_dev, 0x0002, 1);	 
+	reg_r(gspca_dev, 0x0053, 1);	 
 	reg_w_val(gspca_dev, 0x0054, 0x02);
 	reg_w_val(gspca_dev, 0x0054, 0x01);
 	reg_w_val(gspca_dev, 0x0000, 0x94);
 	reg_w_val(gspca_dev, 0x0053, 0xc0);
 
-	reg_r(gspca_dev, 0x0038, 1);		/* 0x40 */
-	reg_r(gspca_dev, 0x0038, 1);		/* 0x40 */
-	reg_r(gspca_dev, 0x001f, 1);		/* 0x38 */
+	reg_r(gspca_dev, 0x0038, 1);		 
+	reg_r(gspca_dev, 0x0038, 1);		 
+	reg_r(gspca_dev, 0x001f, 1);		 
 	reg_w(gspca_dev, 0x0012, reg12, 5);
 	reg_w(gspca_dev, 0x00e5, regE5_8, 8);
 	reg_r(gspca_dev, 0x00e8, 8);
 	reg_w(gspca_dev, 0x00e5, regE5a, 4);
-	reg_r(gspca_dev, 0x00e8, 1);		/* 0x00 */
+	reg_r(gspca_dev, 0x00e8, 1);		 
 	reg_w_val(gspca_dev, 0x009a, 0x01);
 	reg_w(gspca_dev, 0x00e5, regE5b, 4);
-	reg_r(gspca_dev, 0x00e8, 1);		/* 0x00 */
+	reg_r(gspca_dev, 0x00e8, 1);		 
 	reg_w(gspca_dev, 0x00e5, regE5c, 4);
-	reg_r(gspca_dev, 0x00e8, 1);		/* 0x00 */
+	reg_r(gspca_dev, 0x00e8, 1);		 
 
 	reg_w(gspca_dev, 0x0051, reg51, 2);
 	reg_w(gspca_dev, 0x0010, reg10, 2);
@@ -728,22 +720,22 @@ static void cx11646_init1(struct gspca_dev *gspca_dev)
 	reg_w_val(gspca_dev, 0x003c, 0xff);
 	reg_w_val(gspca_dev, 0x003f, 0x1f);
 	reg_w_val(gspca_dev, 0x003d, 0x40);
-/*	reg_w_val(gspca_dev, 0x003d, 0x60); */
-	reg_r(gspca_dev, 0x0099, 1);			/* ->0x07 */
+ 
+	reg_r(gspca_dev, 0x0099, 1);			 
 
 	while (cx_sensor_init[i][0]) {
 		reg_w_val(gspca_dev, 0x00e5, cx_sensor_init[i][0]);
-		reg_r(gspca_dev, 0x00e8, 1);		/* -> 0x00 */
+		reg_r(gspca_dev, 0x00e8, 1);		 
 		if (i == 1) {
 			reg_w_val(gspca_dev, 0x00ed, 0x01);
-			reg_r(gspca_dev, 0x00ed, 1);	/* -> 0x01 */
+			reg_r(gspca_dev, 0x00ed, 1);	 
 		}
 		i++;
 	}
 	reg_w_val(gspca_dev, 0x00c3, 0x00);
 }
 
-/* this function is called at probe time */
+ 
 static int sd_config(struct gspca_dev *gspca_dev,
 			const struct usb_device_id *id)
 {
@@ -755,7 +747,7 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	return 0;
 }
 
-/* this function is called at probe and resume time */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	cx11646_init1(gspca_dev);
@@ -770,10 +762,10 @@ static int sd_start(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 
-	/* create the JPEG header */
+	 
 	jpeg_define(sd->jpeg_hdr, gspca_dev->pixfmt.height,
 			gspca_dev->pixfmt.width,
-			0x22);		/* JPEG 411 */
+			0x22);		 
 	jpeg_set_qual(sd->jpeg_hdr, QUALITY);
 
 	cx11646_initsize(gspca_dev);
@@ -783,7 +775,7 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* called on streamoff with alt 0 and on disconnect */
+ 
 static void sd_stop0(struct gspca_dev *gspca_dev)
 {
 	int retry = 50;
@@ -795,7 +787,7 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 	reg_w_val(gspca_dev, 0x0053, 0x00);
 
 	while (retry--) {
-/*		reg_r(gspca_dev, 0x0002, 1);*/
+ 
 		reg_r(gspca_dev, 0x0053, 1);
 		if (gspca_dev->usb_buf[0] == 0)
 			break;
@@ -809,17 +801,17 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 }
 
 static void sd_pkt_scan(struct gspca_dev *gspca_dev,
-			u8 *data,			/* isoc packet */
-			int len)			/* iso packet length */
+			u8 *data,			 
+			int len)			 
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 
 	if (data[0] == 0xff && data[1] == 0xd8) {
 
-		/* start of frame */
+		 
 		gspca_frame_add(gspca_dev, LAST_PACKET, NULL, 0);
 
-		/* put the JPEG header in the new frame */
+		 
 		gspca_frame_add(gspca_dev, FIRST_PACKET,
 				sd->jpeg_hdr, JPEG_HDR_SZ);
 		data += 2;
@@ -837,7 +829,7 @@ static void setbrightness(struct gspca_dev *gspca_dev, s32 val, s32 sat)
 	reg_w(gspca_dev, 0x00e5, regE5cbx, 8);
 	reg_r(gspca_dev, 0x00e8, 8);
 	reg_w(gspca_dev, 0x00e5, regE5c, 4);
-	reg_r(gspca_dev, 0x00e8, 1);		/* 0x00 */
+	reg_r(gspca_dev, 0x00e8, 1);		 
 
 	reg51c[0] = 0x77;
 	reg51c[1] = sat;
@@ -848,13 +840,13 @@ static void setbrightness(struct gspca_dev *gspca_dev, s32 val, s32 sat)
 
 static void setcontrast(struct gspca_dev *gspca_dev, s32 val, s32 sat)
 {
-	__u8 regE5acx[] = { 0x88, 0x0a, 0x0c, 0x01 };	/* seem MSB */
-/*	__u8 regE5bcx[] = { 0x88, 0x0b, 0x12, 0x01};	 * LSB */
+	__u8 regE5acx[] = { 0x88, 0x0a, 0x0c, 0x01 };	 
+ 
 	__u8 reg51c[2];
 
 	regE5acx[2] = val;
 	reg_w(gspca_dev, 0x00e5, regE5acx, 4);
-	reg_r(gspca_dev, 0x00e8, 1);		/* 0x00 */
+	reg_r(gspca_dev, 0x00e8, 1);		 
 	reg51c[0] = 0x77;
 	reg51c[1] = sat;
 	reg_w(gspca_dev, 0x0051, reg51c, 2);
@@ -912,7 +904,7 @@ static int sd_init_controls(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* sub-driver description */
+ 
 static const struct sd_desc sd_desc = {
 	.name = MODULE_NAME,
 	.config = sd_config,
@@ -923,14 +915,14 @@ static const struct sd_desc sd_desc = {
 	.pkt_scan = sd_pkt_scan,
 };
 
-/* -- module initialisation -- */
+ 
 static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x0572, 0x0041)},
 	{}
 };
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* -- device connect -- */
+ 
 static int sd_probe(struct usb_interface *intf,
 			const struct usb_device_id *id)
 {

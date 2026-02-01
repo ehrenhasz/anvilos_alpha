@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * S1G handling
- * Copyright(c) 2020 Adapt-IP
- */
+
+ 
 #include <linux/ieee80211.h>
 #include <net/mac80211.h>
 #include "ieee80211_i.h"
@@ -10,7 +7,7 @@
 
 void ieee80211_s1g_sta_rate_init(struct sta_info *sta)
 {
-	/* avoid indicating legacy bitrates for S1G STAs */
+	 
 	sta->deflink.tx_stats.last_rate.flags |= IEEE80211_TX_RC_S1G_MCS;
 	sta->deflink.rx_stats.last_rate =
 			STA_STATS_FIELD(TYPE, STA_STATS_RATE_TYPE_S1G);
@@ -102,7 +99,7 @@ ieee80211_s1g_rx_twt_setup(struct ieee80211_sub_if_data *sdata,
 
 	twt_agrt->req_type &= cpu_to_le16(~IEEE80211_TWT_REQTYPE_REQUEST);
 
-	/* broadcast TWT not supported yet */
+	 
 	if (twt->control & IEEE80211_TWT_CONTROL_NEG_TYPE_BROADCAST) {
 		twt_agrt->req_type &=
 			~cpu_to_le16(IEEE80211_TWT_REQTYPE_SETUP_CMD);
@@ -112,7 +109,7 @@ ieee80211_s1g_rx_twt_setup(struct ieee80211_sub_if_data *sdata,
 		goto out;
 	}
 
-	/* TWT Information not supported yet */
+	 
 	twt->control |= IEEE80211_TWT_CONTROL_RX_DISABLED;
 
 	drv_add_twt_setup(sdata->local, sdata, &sta->sta, twt);
@@ -189,7 +186,7 @@ void ieee80211_s1g_status_twt_action(struct ieee80211_sub_if_data *sdata,
 
 	switch (mgmt->u.action.u.s1g.action_code) {
 	case WLAN_S1G_TWT_SETUP:
-		/* process failed twt setup frames */
+		 
 		ieee80211_s1g_tx_twt_setup_fail(sdata, sta, skb);
 		break;
 	default:

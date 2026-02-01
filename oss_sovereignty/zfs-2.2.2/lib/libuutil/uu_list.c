@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 
 
@@ -38,14 +16,7 @@
 #define	NODE_TO_ELEM(lp, n) \
 	((void *)((uintptr_t)(n) - (lp)->ul_offset))
 
-/*
- * uu_list_index_ts define a location for insertion.  They are simply a
- * pointer to the object after the insertion point.  We store a mark
- * in the low-bits of the index, to help prevent mistakes.
- *
- * When debugging, the index mark changes on every insert and delete, to
- * catch stale references.
- */
+ 
 #define	INDEX_MAX		(sizeof (uintptr_t) - 1)
 #define	INDEX_NEXT(m)		(((m) == INDEX_MAX)? 1 : ((m) + 1) & INDEX_MAX)
 
@@ -273,9 +244,7 @@ list_insert(uu_list_t *lp, uu_list_node_impl_t *np, uu_list_node_impl_t *prev,
 			    "not initialized, or already in a list.\n",
 			    (void *)lp, NODE_TO_ELEM(lp, np), (void *)np);
 		}
-		/*
-		 * invalidate outstanding uu_list_index_ts.
-		 */
+		 
 		lp->ul_index = INDEX_NEXT(lp->ul_index);
 	}
 	np->uln_next = next;
@@ -409,11 +378,7 @@ list_walk_init(uu_list_walk_t *wp, uu_list_t *lp, uint32_t flags)
 		wp->ulw_next_result = lp->ul_null_node.uln_prev;
 
 	if (lp->ul_debug || robust) {
-		/*
-		 * Add this walker to the list's list of walkers so
-		 * uu_list_remove() can advance us if somebody tries to
-		 * remove ulw_next_result.
-		 */
+		 
 		wp->ulw_next = next = &lp->ul_null_walk;
 		wp->ulw_prev = prev = next->ulw_prev;
 		next->ulw_prev = wp;
@@ -439,7 +404,7 @@ list_walk_advance(uu_list_walk_t *wp, uu_list_t *lp)
 static void
 list_walk_fini(uu_list_walk_t *wp)
 {
-	/* GLXXX debugging? */
+	 
 	if (wp->ulw_next != NULL) {
 		wp->ulw_next->ulw_prev = wp->ulw_prev;
 		wp->ulw_prev->ulw_next = wp->ulw_next;
@@ -544,16 +509,11 @@ uu_list_remove(uu_list_t *lp, void *elem)
 		if (np->uln_prev == NULL)
 			uu_panic("uu_list_remove(%p, %p): elem not on list\n",
 			    (void *)lp, elem);
-		/*
-		 * invalidate outstanding uu_list_index_ts.
-		 */
+		 
 		lp->ul_index = INDEX_NEXT(lp->ul_index);
 	}
 
-	/*
-	 * robust walkers must be advanced.  In debug mode, non-robust
-	 * walkers are also on the list.  If there are any, it's an error.
-	 */
+	 
 	for (wp = lp->ul_null_walk.ulw_next; wp != &lp->ul_null_walk;
 	    wp = wp->ulw_next) {
 		if (wp->ulw_robust) {
@@ -579,9 +539,7 @@ uu_list_teardown(uu_list_t *lp, void **cookie)
 {
 	void *ep;
 
-	/*
-	 * XXX: disable list modification until list is empty
-	 */
+	 
 	if (lp->ul_debug && *cookie != NULL)
 		uu_panic("uu_list_teardown(%p, %p): unexpected cookie\n",
 		    (void *)lp, (void *)cookie);
@@ -690,9 +648,7 @@ uu_list_prev(uu_list_t *lp, void *elem)
 	return (NODE_TO_ELEM(lp, n));
 }
 
-/*
- * called from uu_lockup() and uu_release(), as part of our fork1()-safety.
- */
+ 
 void
 uu_list_lockup(void)
 {

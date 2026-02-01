@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2019 Chelsio Communications.  All rights reserved. */
+
+ 
 
 #include "cxgb4.h"
 #include "cxgb4_tc_mqprio.h"
@@ -41,7 +41,7 @@ static int cxgb4_mqprio_validate(struct net_device *dev,
 		return -EINVAL;
 	}
 
-	/* Convert from Mbps to bps */
+	 
 	max_link_rate = (u64)speed * 1000 * 1000;
 
 	for (i = 0; i < mqprio->qopt.num_tc; i++) {
@@ -54,11 +54,7 @@ static int cxgb4_mqprio_validate(struct net_device *dev,
 			start_b = mqprio->qopt.offset[j];
 			end_b = start_b + mqprio->qopt.count[j] - 1;
 
-			/* If queue count is 0, then the traffic
-			 * belonging to this class will not use
-			 * ETHOFLD queues. So, no need to validate
-			 * further.
-			 */
+			 
 			if (!mqprio->qopt.count[i])
 				break;
 
@@ -73,7 +69,7 @@ static int cxgb4_mqprio_validate(struct net_device *dev,
 			}
 		}
 
-		/* Convert byte per second to bits per second */
+		 
 		min_rate += (mqprio->min_rate[i] * 8);
 		max_rate += (mqprio->max_rate[i] * 8);
 	}
@@ -155,7 +151,7 @@ static int cxgb4_mqprio_alloc_hw_resources(struct net_device *dev)
 	int ret, msix = 0;
 	u32 i;
 
-	/* Allocate ETHOFLD hardware queue structures if not done already */
+	 
 	if (!refcount_read(&adap->tc_mqprio->refcnt)) {
 		adap->sge.eohw_rxq = kcalloc(adap->sge.eoqsets,
 					     sizeof(struct sge_ofld_rxq),
@@ -183,7 +179,7 @@ static int cxgb4_mqprio_alloc_hw_resources(struct net_device *dev)
 		eorxq = &adap->sge.eohw_rxq[pi->first_qset + i];
 		eotxq = &adap->sge.eohw_txq[pi->first_qset + i];
 
-		/* Allocate Rxqs for receiving ETHOFLD Tx completions */
+		 
 		if (msix >= 0) {
 			msix = cxgb4_get_msix_idx_from_bmap(adap);
 			if (msix < 0) {
@@ -212,14 +208,14 @@ static int cxgb4_mqprio_alloc_hw_resources(struct net_device *dev)
 		if (ret)
 			goto out_free_queues;
 
-		/* Allocate ETHOFLD hardware Txqs */
+		 
 		eotxq->q.size = CXGB4_EOHW_TXQ_DEFAULT_DESC_NUM;
 		ret = t4_sge_alloc_ethofld_txq(adap, eotxq, dev,
 					       eorxq->rspq.cntxt_id);
 		if (ret)
 			goto out_free_queues;
 
-		/* Allocate IRQs, set IRQ affinity, and start Rx */
+		 
 		if (adap->flags & CXGB4_USING_MSIX) {
 			ret = request_irq(eorxq->msix->vec, t4_sge_intr_msix, 0,
 					  eorxq->msix->desc, &eorxq->rspq);
@@ -277,11 +273,11 @@ static void cxgb4_mqprio_free_hw_resources(struct net_device *dev)
 	struct sge_eohw_txq *eotxq;
 	u32 i;
 
-	/* Return if no ETHOFLD structures have been allocated yet */
+	 
 	if (!refcount_read(&adap->tc_mqprio->refcnt))
 		return;
 
-	/* Return if no hardware queues have been allocated */
+	 
 	if (!adap->sge.eohw_rxq[pi->first_qset].rspq.desc)
 		return;
 
@@ -289,10 +285,7 @@ static void cxgb4_mqprio_free_hw_resources(struct net_device *dev)
 		eorxq = &adap->sge.eohw_rxq[pi->first_qset + i];
 		eotxq = &adap->sge.eohw_txq[pi->first_qset + i];
 
-		/* Device removal path will already disable NAPI
-		 * before unregistering netdevice. So, only disable
-		 * NAPI if we're not in device removal path
-		 */
+		 
 		if (!(adap->flags & CXGB4_SHUTTING_DOWN))
 			cxgb4_quiesce_rx(&eorxq->rspq);
 
@@ -307,7 +300,7 @@ static void cxgb4_mqprio_free_hw_resources(struct net_device *dev)
 		t4_sge_free_ethofld_txq(adap, eotxq);
 	}
 
-	/* Free up ETHOFLD structures if there are no users */
+	 
 	if (refcount_dec_and_test(&adap->tc_mqprio->refcnt)) {
 		kfree(adap->sge.eohw_txq);
 		kfree(adap->sge.eohw_rxq);
@@ -337,14 +330,11 @@ static int cxgb4_mqprio_alloc_tc(struct net_device *dev,
 	tc_port_mqprio = &adap->tc_mqprio->port_mqprio[pi->port_id];
 	p.u.params.channel = pi->tx_chan;
 	for (i = 0; i < mqprio->qopt.num_tc; i++) {
-		/* Convert from bytes per second to Kbps */
+		 
 		p.u.params.minrate = div_u64(mqprio->min_rate[i] * 8, 1000);
 		p.u.params.maxrate = div_u64(mqprio->max_rate[i] * 8, 1000);
 
-		/* Request larger burst buffer for smaller MTU, so
-		 * that hardware can work on more data per burst
-		 * cycle.
-		 */
+		 
 		if (dev->mtu <= ETH_DATA_LEN)
 			p.u.params.burstsize = 8 * dev->mtu;
 
@@ -409,9 +399,7 @@ static void cxgb4_mqprio_class_unbind(struct net_device *dev,
 	struct adapter *adap = netdev2adap(dev);
 	struct ch_sched_flowc fe;
 
-	/* If we're shutting down, interrupts are disabled and no completions
-	 * come back. So, skip waiting for completions in this scenario.
-	 */
+	 
 	if (!(adap->flags & CXGB4_SHUTTING_DOWN))
 		init_completion(&eosw_txq->completion);
 
@@ -471,12 +459,7 @@ static int cxgb4_mqprio_enable_offload(struct net_device *dev,
 	memcpy(&tc_port_mqprio->mqprio, mqprio,
 	       sizeof(struct tc_mqprio_qopt_offload));
 
-	/* Inform the stack about the configured tc params.
-	 *
-	 * Set the correct queue map. If no queue count has been
-	 * specified, then send the traffic through default NIC
-	 * queues; instead of ETHOFLD queues.
-	 */
+	 
 	ret = netdev_set_num_tc(dev, mqprio->qopt.num_tc);
 	if (ret)
 		goto out_free_eotids;
@@ -561,7 +544,7 @@ static void cxgb4_mqprio_disable_offload(struct net_device *dev)
 
 	cxgb4_mqprio_free_hw_resources(dev);
 
-	/* Free up the traffic classes */
+	 
 	cxgb4_mqprio_free_tc(dev);
 
 	memset(&tc_port_mqprio->mqprio, 0,
@@ -583,11 +566,7 @@ int cxgb4_setup_tc_mqprio(struct net_device *dev,
 
 	mutex_lock(&adap->tc_mqprio->mqprio_mutex);
 
-	/* To configure tc params, the current allocated EOTIDs must
-	 * be freed up. However, they can't be freed up if there's
-	 * traffic running on the interface. So, ensure interface is
-	 * down before configuring tc params.
-	 */
+	 
 	if (netif_running(dev)) {
 		netif_tx_stop_all_queues(dev);
 		netif_carrier_off(dev);
@@ -596,15 +575,11 @@ int cxgb4_setup_tc_mqprio(struct net_device *dev,
 
 	cxgb4_mqprio_disable_offload(dev);
 
-	/* If requested for clear, then just return since resources are
-	 * already freed up by now.
-	 */
+	 
 	if (!mqprio->qopt.num_tc)
 		goto out;
 
-	/* Allocate free available traffic classes and configure
-	 * their rate parameters.
-	 */
+	 
 	ret = cxgb4_mqprio_alloc_tc(dev, mqprio);
 	if (ret)
 		goto out;

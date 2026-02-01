@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <uapi/linux/if_link.h>
 #include <test_progs.h>
 #include "test_xdp_link.skel.h"
@@ -40,60 +40,60 @@ void serial_test_xdp_link(void)
 		goto cleanup;
 	id2 = prog_info.id;
 
-	/* set initial prog attachment */
+	 
 	err = bpf_xdp_attach(IFINDEX_LO, prog_fd1, XDP_FLAGS_REPLACE, &opts);
 	if (!ASSERT_OK(err, "fd_attach"))
 		goto cleanup;
 
-	/* validate prog ID */
+	 
 	err = bpf_xdp_query_id(IFINDEX_LO, 0, &id0);
 	if (!ASSERT_OK(err, "id1_check_err") || !ASSERT_EQ(id0, id1, "id1_check_val"))
 		goto cleanup;
 
-	/* BPF link is not allowed to replace prog attachment */
+	 
 	link = bpf_program__attach_xdp(skel1->progs.xdp_handler, IFINDEX_LO);
 	if (!ASSERT_ERR_PTR(link, "link_attach_should_fail")) {
 		bpf_link__destroy(link);
-		/* best-effort detach prog */
+		 
 		opts.old_prog_fd = prog_fd1;
 		bpf_xdp_detach(IFINDEX_LO, XDP_FLAGS_REPLACE, &opts);
 		goto cleanup;
 	}
 
-	/* detach BPF program */
+	 
 	opts.old_prog_fd = prog_fd1;
 	err = bpf_xdp_detach(IFINDEX_LO, XDP_FLAGS_REPLACE, &opts);
 	if (!ASSERT_OK(err, "prog_detach"))
 		goto cleanup;
 
-	/* now BPF link should attach successfully */
+	 
 	link = bpf_program__attach_xdp(skel1->progs.xdp_handler, IFINDEX_LO);
 	if (!ASSERT_OK_PTR(link, "link_attach"))
 		goto cleanup;
 	skel1->links.xdp_handler = link;
 
-	/* validate prog ID */
+	 
 	err = bpf_xdp_query_id(IFINDEX_LO, 0, &id0);
 	if (!ASSERT_OK(err, "id1_check_err") || !ASSERT_EQ(id0, id1, "id1_check_val"))
 		goto cleanup;
 
-	/* BPF prog attach is not allowed to replace BPF link */
+	 
 	opts.old_prog_fd = prog_fd1;
 	err = bpf_xdp_attach(IFINDEX_LO, prog_fd2, XDP_FLAGS_REPLACE, &opts);
 	if (!ASSERT_ERR(err, "prog_attach_fail"))
 		goto cleanup;
 
-	/* Can't force-update when BPF link is active */
+	 
 	err = bpf_xdp_attach(IFINDEX_LO, prog_fd2, 0, NULL);
 	if (!ASSERT_ERR(err, "prog_update_fail"))
 		goto cleanup;
 
-	/* Can't force-detach when BPF link is active */
+	 
 	err = bpf_xdp_detach(IFINDEX_LO, 0, NULL);
 	if (!ASSERT_ERR(err, "prog_detach_fail"))
 		goto cleanup;
 
-	/* BPF link is not allowed to replace another BPF link */
+	 
 	link = bpf_program__attach_xdp(skel2->progs.xdp_handler, IFINDEX_LO);
 	if (!ASSERT_ERR_PTR(link, "link_attach_should_fail")) {
 		bpf_link__destroy(link);
@@ -103,7 +103,7 @@ void serial_test_xdp_link(void)
 	bpf_link__destroy(skel1->links.xdp_handler);
 	skel1->links.xdp_handler = NULL;
 
-	/* new link attach should succeed */
+	 
 	link = bpf_program__attach_xdp(skel2->progs.xdp_handler, IFINDEX_LO);
 	if (!ASSERT_OK_PTR(link, "link_attach"))
 		goto cleanup;
@@ -113,7 +113,7 @@ void serial_test_xdp_link(void)
 	if (!ASSERT_OK(err, "id2_check_err") || !ASSERT_EQ(id0, id2, "id2_check_val"))
 		goto cleanup;
 
-	/* updating program under active BPF link works as expected */
+	 
 	err = bpf_link__update_program(link, skel1->progs.xdp_handler);
 	if (!ASSERT_OK(err, "link_upd"))
 		goto cleanup;
@@ -128,7 +128,7 @@ void serial_test_xdp_link(void)
 	ASSERT_EQ(link_info.prog_id, id1, "link_prog_id");
 	ASSERT_EQ(link_info.xdp.ifindex, IFINDEX_LO, "link_ifindex");
 
-	/* updating program under active BPF link with different type fails */
+	 
 	err = bpf_link__update_program(link, skel1->progs.tc_handler);
 	if (!ASSERT_ERR(err, "link_upd_invalid"))
 		goto cleanup;
@@ -143,7 +143,7 @@ void serial_test_xdp_link(void)
 
 	ASSERT_OK(err, "link_info");
 	ASSERT_EQ(link_info.prog_id, id1, "link_prog_id");
-	/* ifindex should be zeroed out */
+	 
 	ASSERT_EQ(link_info.xdp.ifindex, 0, "link_ifindex");
 
 cleanup:

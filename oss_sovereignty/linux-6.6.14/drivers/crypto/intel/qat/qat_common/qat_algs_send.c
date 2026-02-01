@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2022 Intel Corporation */
+
+ 
 #include <crypto/algapi.h>
 #include "adf_transport.h"
 #include "qat_algs_send.h"
@@ -28,10 +28,7 @@ void qat_alg_send_backlog(struct qat_instance_backlog *backlog)
 	spin_lock_bh(&backlog->lock);
 	list_for_each_entry_safe(req, tmp, &backlog->list, list) {
 		if (adf_send_message(req->tx_ring, req->fw_req)) {
-			/* The HW ring is full. Do nothing.
-			 * qat_alg_send_backlog() will be invoked again by
-			 * another callback.
-			 */
+			 
 			break;
 		}
 		list_del(&req->list);
@@ -46,15 +43,15 @@ static bool qat_alg_try_enqueue(struct qat_alg_req *req)
 	struct adf_etr_ring_data *tx_ring = req->tx_ring;
 	u32 *fw_req = req->fw_req;
 
-	/* Check if any request is already backlogged */
+	 
 	if (!list_empty(&backlog->list))
 		return false;
 
-	/* Check if ring is nearly full */
+	 
 	if (adf_ring_nearly_full(tx_ring))
 		return false;
 
-	/* Try to enqueue to HW ring */
+	 
 	if (adf_send_message(tx_ring, fw_req))
 		return false;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip Generic Register Files setup
- *
- * Copyright (c) 2016 Heiko Stuebner <heiko@sntech.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mfd/syscon.h>
@@ -28,10 +24,7 @@ struct rockchip_grf_info {
 #define RK3036_GRF_SOC_CON0		0x140
 
 static const struct rockchip_grf_value rk3036_defaults[] __initconst = {
-	/*
-	 * Disable auto jtag/sdmmc switching that causes issues with the
-	 * clock-framework and the mmc controllers making them unreliable.
-	 */
+	 
 	{ "jtag switching", RK3036_GRF_SOC_CON0, HIWORD_UPDATE(0, 1, 11) },
 };
 
@@ -162,7 +155,7 @@ static const struct of_device_id rockchip_grf_dt_match[] __initconst = {
 		.compatible = "rockchip,rk3588-sys-grf",
 		.data = (void *)&rk3588_sysgrf,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static int __init rockchip_grf_init(void)

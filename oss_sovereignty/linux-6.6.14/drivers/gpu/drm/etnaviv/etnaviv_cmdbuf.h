@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2017 Etnaviv Project
- */
+ 
+ 
 
 #ifndef __ETNAVIV_CMDBUF_H__
 #define __ETNAVIV_CMDBUF_H__
@@ -15,9 +13,9 @@ struct etnaviv_cmdbuf_suballoc;
 struct etnaviv_perfmon_request;
 
 struct etnaviv_cmdbuf {
-	/* suballocator this cmdbuf is allocated from */
+	 
 	struct etnaviv_cmdbuf_suballoc *suballoc;
-	/* cmdbuf properties */
+	 
 	int suballoc_offset;
 	void *vaddr;
 	u32 size;
@@ -43,4 +41,4 @@ u32 etnaviv_cmdbuf_get_va(struct etnaviv_cmdbuf *buf,
 			  struct etnaviv_vram_mapping *mapping);
 dma_addr_t etnaviv_cmdbuf_get_pa(struct etnaviv_cmdbuf *buf);
 
-#endif /* __ETNAVIV_CMDBUF_H__ */
+#endif  

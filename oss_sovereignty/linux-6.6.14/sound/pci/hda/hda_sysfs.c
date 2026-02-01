@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sysfs interface for HD-audio codec
- *
- * Copyright (c) 2014 Takashi Iwai <tiwai@suse.de>
- *
- * split from hda_hwdep.c
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -20,10 +14,10 @@
 #include <sound/hda_hwdep.h>
 #include <sound/minors.h>
 
-/* hint string pair */
+ 
 struct hda_hint {
 	const char *key;
-	const char *val;	/* contained in the same alloc as key */
+	const char *val;	 
 };
 
 #ifdef CONFIG_PM
@@ -47,7 +41,7 @@ static ssize_t power_off_acct_show(struct device *dev,
 
 static DEVICE_ATTR_RO(power_on_acct);
 static DEVICE_ATTR_RO(power_off_acct);
-#endif /* CONFIG_PM */
+#endif  
 
 #define CODEC_INFO_SHOW(type, field)				\
 static ssize_t type##_show(struct device *dev,			\
@@ -110,9 +104,7 @@ static ssize_t driver_pin_configs_show(struct device *dev,
 
 #ifdef CONFIG_SND_HDA_RECONFIG
 
-/*
- * sysfs interface
- */
+ 
 
 static int clear_codec(struct hda_codec *codec)
 {
@@ -148,9 +140,7 @@ static int reconfig_codec(struct hda_codec *codec)
 	return err;
 }
 
-/*
- * allocate a string at most len chars, and remove the trailing EOL
- */
+ 
 static char *kstrndup_noeol(const char *src, size_t len)
 {
 	char *s = kstrndup(src, len, GFP_KERNEL);
@@ -319,7 +309,7 @@ static int parse_hints(struct hda_codec *codec, const char *buf)
 	key = kstrndup_noeol(buf, 1024);
 	if (!key)
 		return -ENOMEM;
-	/* extract key and val */
+	 
 	val = strchr(key, '=');
 	if (!val) {
 		kfree(key);
@@ -332,13 +322,13 @@ static int parse_hints(struct hda_codec *codec, const char *buf)
 	mutex_lock(&codec->user_mutex);
 	hint = get_hint(codec, key);
 	if (hint) {
-		/* replace */
+		 
 		kfree(hint->key);
 		hint->key = key;
 		hint->val = val;
 		goto unlock;
 	}
-	/* allocate a new hint entry */
+	 
 	if (codec->hints.used >= MAX_HINTS)
 		hint = NULL;
 	else
@@ -400,21 +390,14 @@ static ssize_t user_pin_configs_store(struct device *dev,
 	return count;
 }
 
-/* sysfs attributes exposed only when CONFIG_SND_HDA_RECONFIG=y */
+ 
 static DEVICE_ATTR_RW(init_verbs);
 static DEVICE_ATTR_RW(hints);
 static DEVICE_ATTR_RW(user_pin_configs);
 static DEVICE_ATTR_WO(reconfig);
 static DEVICE_ATTR_WO(clear);
 
-/**
- * snd_hda_get_hint - Look for hint string
- * @codec: the HDA codec
- * @key: the hint key string
- *
- * Look for a hint key/value pair matching with the given key string
- * and returns the value string.  If nothing found, returns NULL.
- */
+ 
 const char *snd_hda_get_hint(struct hda_codec *codec, const char *key)
 {
 	struct hda_hint *hint = get_hint(codec, key);
@@ -422,15 +405,7 @@ const char *snd_hda_get_hint(struct hda_codec *codec, const char *key)
 }
 EXPORT_SYMBOL_GPL(snd_hda_get_hint);
 
-/**
- * snd_hda_get_bool_hint - Get a boolean hint value
- * @codec: the HDA codec
- * @key: the hint key string
- *
- * Look for a hint key/value pair matching with the given key string
- * and returns a boolean value parsed from the value.  If no matching
- * key is found, return a negative value.
- */
+ 
 int snd_hda_get_bool_hint(struct hda_codec *codec, const char *key)
 {
 	const char *p;
@@ -442,8 +417,8 @@ int snd_hda_get_bool_hint(struct hda_codec *codec, const char *key)
 		ret = -ENOENT;
 	else {
 		switch (toupper(*p)) {
-		case 'T': /* true */
-		case 'Y': /* yes */
+		case 'T':  
+		case 'Y':  
 		case '1':
 			ret = 1;
 			break;
@@ -457,16 +432,7 @@ int snd_hda_get_bool_hint(struct hda_codec *codec, const char *key)
 }
 EXPORT_SYMBOL_GPL(snd_hda_get_bool_hint);
 
-/**
- * snd_hda_get_int_hint - Get an integer hint value
- * @codec: the HDA codec
- * @key: the hint key string
- * @valp: pointer to store a value
- *
- * Look for a hint key/value pair matching with the given key string
- * and stores the integer value to @valp.  If no matching key is found,
- * return a negative error code.  Otherwise it returns zero.
- */
+ 
 int snd_hda_get_int_hint(struct hda_codec *codec, const char *key, int *valp)
 {
 	const char *p;
@@ -487,11 +453,9 @@ int snd_hda_get_int_hint(struct hda_codec *codec, const char *key, int *valp)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(snd_hda_get_int_hint);
-#endif /* CONFIG_SND_HDA_RECONFIG */
+#endif  
 
-/*
- * common sysfs attributes
- */
+ 
 #ifdef CONFIG_SND_HDA_RECONFIG
 #define RECONFIG_DEVICE_ATTR(name)	DEVICE_ATTR_RW(name)
 #else
@@ -511,7 +475,7 @@ static DEVICE_ATTR_RO(driver_pin_configs);
 
 #ifdef CONFIG_SND_HDA_PATCH_LOADER
 
-/* parser mode */
+ 
 enum {
 	LINE_MODE_NONE,
 	LINE_MODE_CODEC,
@@ -531,9 +495,7 @@ static inline int strmatch(const char *a, const char *b)
 	return strncasecmp(a, b, strlen(b)) == 0;
 }
 
-/* parse the contents after the line "[codec]"
- * accept only the line with three numbers, and assign the current codec
- */
+ 
 static void parse_codec_mode(char *buf, struct hda_bus *bus,
 			     struct hda_codec **codecp)
 {
@@ -553,10 +515,7 @@ static void parse_codec_mode(char *buf, struct hda_bus *bus,
 	}
 }
 
-/* parse the contents after the other command tags, [pincfg], [verb],
- * [vendor_id], [subsystem_id], [revision_id], [chip_name], [hint] and [model]
- * just pass to the sysfs helper (only when any codec was specified)
- */
+ 
 static void parse_pincfg_mode(char *buf, struct hda_bus *bus,
 			      struct hda_codec **codecp)
 {
@@ -650,7 +609,7 @@ static const struct hda_patch_item patch_items[NUM_LINE_MODES] = {
 	},
 };
 
-/* check the line starting with '[' -- change the parser mode accodingly */
+ 
 static int parse_line_mode(char *buf, struct hda_bus *bus)
 {
 	int i;
@@ -665,12 +624,7 @@ static int parse_line_mode(char *buf, struct hda_bus *bus)
 	return LINE_MODE_NONE;
 }
 
-/* copy one line from the buffer in fw, and update the fields in fw
- * return zero if it reaches to the end of the buffer, or non-zero
- * if successfully copied a line
- *
- * the spaces at the beginning and the end of the line are stripped
- */
+ 
 static int get_line_from_fw(char *buf, int size, size_t *fw_size_p,
 			    const void **fw_data_p)
 {
@@ -703,12 +657,7 @@ static int get_line_from_fw(char *buf, int size, size_t *fw_size_p,
 	return 1;
 }
 
-/**
- * snd_hda_load_patch - load a "patch" firmware file and parse it
- * @bus: HD-audio bus
- * @fw_size: the firmware byte size
- * @fw_buf: the firmware data
- */
+ 
 int snd_hda_load_patch(struct hda_bus *bus, size_t fw_size, const void *fw_buf)
 {
 	char buf[128];
@@ -729,11 +678,9 @@ int snd_hda_load_patch(struct hda_bus *bus, size_t fw_size, const void *fw_buf)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_hda_load_patch);
-#endif /* CONFIG_SND_HDA_PATCH_LOADER */
+#endif  
 
-/*
- * sysfs entries
- */
+ 
 static struct attribute *hda_dev_attrs[] = {
 	&dev_attr_vendor_id.attr,
 	&dev_attr_subsystem_id.attr,
@@ -784,11 +731,11 @@ void snd_hda_sysfs_clear(struct hda_codec *codec)
 	struct hda_hint *hint;
 	int i;
 
-	/* clear init verbs */
+	 
 	snd_array_free(&codec->init_verbs);
-	/* clear hints */
+	 
 	snd_array_for_each(&codec->hints, i, hint) {
-		kfree(hint->key); /* we don't need to free hint->val */
+		kfree(hint->key);  
 	}
 	snd_array_free(&codec->hints);
 	snd_array_free(&codec->user_pins);

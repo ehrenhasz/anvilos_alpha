@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for TPS65219 Push Button
-//
-// Copyright (C) 2022 BayLibre Incorporated - https://www.baylibre.com/
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/input.h>
@@ -106,11 +106,11 @@ static int tps65219_pb_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* Enable interrupts for the pushbutton */
+	 
 	regmap_clear_bits(tps->regmap, TPS65219_REG_MASK_CONFIG,
 			  TPS65219_REG_MASK_INT_FOR_PB_MASK);
 
-	/* Set PB/EN/VSENSE pin to be a pushbutton */
+	 
 	regmap_update_bits(tps->regmap, TPS65219_REG_MFP_2_CONFIG,
 			   TPS65219_MFP_2_EN_PB_VSENSE_MASK, TPS65219_MFP_2_PB);
 
@@ -122,7 +122,7 @@ static void tps65219_pb_remove(struct platform_device *pdev)
 	struct tps65219 *tps = dev_get_drvdata(pdev->dev.parent);
 	int ret;
 
-	/* Disable interrupt for the pushbutton */
+	 
 	ret = regmap_set_bits(tps->regmap, TPS65219_REG_MASK_CONFIG,
 			      TPS65219_REG_MASK_INT_FOR_PB_MASK);
 	if (ret)
@@ -131,7 +131,7 @@ static void tps65219_pb_remove(struct platform_device *pdev)
 
 static const struct platform_device_id tps65219_pwrbtn_id_table[] = {
 	{ "tps65219-pwrbutton", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65219_pwrbtn_id_table);
 

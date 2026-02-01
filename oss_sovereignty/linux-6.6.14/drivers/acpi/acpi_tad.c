@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ACPI Time and Alarm (TAD) Device Driver
- *
- * Copyright (C) 2018 Intel Corporation
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- *
- * This driver is based on Section 9.18 of the ACPI 6.2 specification revision.
- *
- * It only supports the system wakeup capabilities of the TAD.
- *
- * Provided are sysfs attributes, available under the TAD platform device,
- * allowing user space to manage the AC and DC wakeup timers of the TAD:
- * set and read their values, set and check their expire timer wake policies,
- * check and clear their status and check the capabilities of the TAD reported
- * by AML.  The DC timer attributes are only present if the TAD supports a
- * separate DC alarm timer.
- *
- * The wakeup events handling and power management of the TAD is expected to
- * be taken care of by the ACPI PM domain attached to its platform device.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -30,7 +11,7 @@
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Rafael J. Wysocki");
 
-/* ACPI TAD capability flags (ACPI 6.2, Section 9.18.2) */
+ 
 #define ACPI_TAD_AC_WAKE	BIT(0)
 #define ACPI_TAD_DC_WAKE	BIT(1)
 #define ACPI_TAD_RT		BIT(2)
@@ -41,11 +22,11 @@ MODULE_AUTHOR("Rafael J. Wysocki");
 #define ACPI_TAD_DC_S4_WAKE	BIT(7)
 #define ACPI_TAD_DC_S5_WAKE	BIT(8)
 
-/* ACPI TAD alarm timer selection */
+ 
 #define ACPI_TAD_AC_TIMER	(u32)0
 #define ACPI_TAD_DC_TIMER	(u32)1
 
-/* Special value for disabled timer or expired timer wake policy. */
+ 
 #define ACPI_TAD_WAKE_DISABLED	(~(u32)0)
 
 struct acpi_tad_driver_data {
@@ -53,17 +34,17 @@ struct acpi_tad_driver_data {
 };
 
 struct acpi_tad_rt {
-	u16 year;  /* 1900 - 9999 */
-	u8 month;  /* 1 - 12 */
-	u8 day;    /* 1 - 31 */
-	u8 hour;   /* 0 - 23 */
-	u8 minute; /* 0 - 59 */
-	u8 second; /* 0 - 59 */
-	u8 valid;  /* 0 (failed) or 1 (success) for reads, 0 for writes */
-	u16 msec;  /* 1 - 1000 */
-	s16 tz;    /* -1440 to 1440 or 2047 (unspecified) */
+	u16 year;   
+	u8 month;   
+	u8 day;     
+	u8 hour;    
+	u8 minute;  
+	u8 second;  
+	u8 valid;   
+	u16 msec;   
+	s16 tz;     
 	u8 daylight;
-	u8 padding[3]; /* must be 0 */
+	u8 padding[3];  
 } __packed;
 
 static int acpi_tad_set_real_time(struct device *dev, struct acpi_tad_rt *rt)
@@ -596,10 +577,7 @@ static int acpi_tad_probe(struct platform_device *pdev)
 		dev_info(dev, "Unable to install space handler\n");
 		return -ENODEV;
 	}
-	/*
-	 * Initialization failure messages are mostly about firmware issues, so
-	 * print them at the "info" level.
-	 */
+	 
 	status = acpi_evaluate_integer(handle, "_GCP", NULL, &caps);
 	if (ACPI_FAILURE(status)) {
 		dev_info(dev, "Unable to get capabilities\n");
@@ -628,19 +606,11 @@ static int acpi_tad_probe(struct platform_device *pdev)
 	dd->capabilities = caps;
 	dev_set_drvdata(dev, dd);
 
-	/*
-	 * Assume that the ACPI PM domain has been attached to the device and
-	 * simply enable system wakeup and runtime PM and put the device into
-	 * runtime suspend.  Everything else should be taken care of by the ACPI
-	 * PM domain callbacks.
-	 */
+	 
 	device_init_wakeup(dev, true);
 	dev_pm_set_driver_flags(dev, DPM_FLAG_SMART_SUSPEND |
 				     DPM_FLAG_MAY_SKIP_RESUME);
-	/*
-	 * The platform bus type layer tells the ACPI PM domain powers up the
-	 * device, so set the runtime PM status of it to "active".
-	 */
+	 
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
 	pm_runtime_suspend(dev);
@@ -665,7 +635,7 @@ static int acpi_tad_probe(struct platform_device *pdev)
 
 fail:
 	acpi_tad_remove(pdev);
-	/* Don't fallthrough because cmos rtc space handler is removed in acpi_tad_remove() */
+	 
 	return ret;
 
 remove_handler:

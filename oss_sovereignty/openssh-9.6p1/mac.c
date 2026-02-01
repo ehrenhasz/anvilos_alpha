@@ -1,27 +1,5 @@
-/* $OpenBSD: mac.c,v 1.35 2019/09/06 04:53:27 djm Exp $ */
-/*
- * Copyright (c) 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -41,22 +19,22 @@
 
 #include "openbsd-compat/openssl-compat.h"
 
-#define SSH_DIGEST	1	/* SSH_DIGEST_XXX */
-#define SSH_UMAC	2	/* UMAC (not integrated with OpenSSL) */
+#define SSH_DIGEST	1	 
+#define SSH_UMAC	2	 
 #define SSH_UMAC128	3
 
 struct macalg {
 	char		*name;
 	int		type;
 	int		alg;
-	int		truncatebits;	/* truncate digest if != 0 */
-	int		key_len;	/* just for UMAC */
-	int		len;		/* just for UMAC */
-	int		etm;		/* Encrypt-then-MAC */
+	int		truncatebits;	 
+	int		key_len;	 
+	int		len;		 
+	int		etm;		 
 };
 
 static const struct macalg macs[] = {
-	/* Encrypt-and-MAC (encrypt-and-authenticate) variants */
+	 
 	{ "hmac-sha1",				SSH_DIGEST, SSH_DIGEST_SHA1, 0, 0, 0, 0 },
 	{ "hmac-sha1-96",			SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 0 },
 	{ "hmac-sha2-256",			SSH_DIGEST, SSH_DIGEST_SHA256, 0, 0, 0, 0 },
@@ -66,7 +44,7 @@ static const struct macalg macs[] = {
 	{ "umac-64@openssh.com",		SSH_UMAC, 0, 0, 128, 64, 0 },
 	{ "umac-128@openssh.com",		SSH_UMAC128, 0, 0, 128, 128, 0 },
 
-	/* Encrypt-then-MAC variants */
+	 
 	{ "hmac-sha1-etm@openssh.com",		SSH_DIGEST, SSH_DIGEST_SHA1, 0, 0, 0, 1 },
 	{ "hmac-sha1-96-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 1 },
 	{ "hmac-sha2-256-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA256, 0, 0, 0, 1 },
@@ -79,7 +57,7 @@ static const struct macalg macs[] = {
 	{ NULL,					0, 0, 0, 0, 0, 0 }
 };
 
-/* Returns a list of supported MACs separated by the specified char. */
+ 
 char *
 mac_alg_list(char sep)
 {
@@ -178,7 +156,7 @@ mac_compute(struct sshmac *mac, u_int32_t seqno,
 	switch (mac->type) {
 	case SSH_DIGEST:
 		put_u32(b, seqno);
-		/* reset HMAC context */
+		 
 		if (ssh_hmac_init(mac->hmac_ctx, NULL, 0) < 0 ||
 		    ssh_hmac_update(mac->hmac_ctx, b, sizeof(b)) < 0 ||
 		    ssh_hmac_update(mac->hmac_ctx, data, datalen) < 0 ||
@@ -239,7 +217,7 @@ mac_clear(struct sshmac *mac)
 	mac->umac_ctx = NULL;
 }
 
-/* XXX copied from ciphers_valid */
+ 
 #define	MAC_SEP	","
 int
 mac_valid(const char *names)

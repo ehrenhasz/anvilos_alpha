@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2009 - 2014 Intel Corporation. All rights reserved.
- * Copyright(C) 2016        Intel Deutschland GmbH
- * Copyright(c) 2018        Intel Corporation
- *****************************************************************************/
+ 
+ 
 
 #ifndef __IWLWIFI_DEVICE_TRACE
 #include <linux/skbuff.h>
@@ -16,24 +11,20 @@ static inline bool iwl_trace_data(struct sk_buff *skb)
 {
 	struct ieee80211_hdr *hdr = (void *)skb->data;
 	__le16 fc = hdr->frame_control;
-	int offs = 24; /* start with normal header length */
+	int offs = 24;  
 
 	if (!ieee80211_is_data(fc))
 		return false;
 
-	/* Try to determine if the frame is EAPOL. This might have false
-	 * positives (if there's no RFC 1042 header and we compare to some
-	 * payload instead) but since we're only doing tracing that's not
-	 * a problem.
-	 */
+	 
 
 	if (ieee80211_has_a4(fc))
 		offs += 6;
 	if (ieee80211_is_data_qos(fc))
 		offs += 2;
-	/* don't account for crypto - these are unencrypted */
+	 
 
-	/* also account for the RFC 1042 header, of course */
+	 
 	offs += 6;
 
 	return skb->len <= offs + 2 ||
@@ -60,7 +51,7 @@ static inline size_t iwl_rx_trace_len(const struct iwl_trans *trans,
 	hdr = (void *)((u8 *)cmd + hdr_offset);
 	if (!ieee80211_is_data(hdr->frame_control))
 		return len;
-	/* maybe try to identify EAPOL frames? */
+	 
 	return sizeof(__le32) + sizeof(*cmd) + trans->rx_mpdu_cmd_hdr_size +
 		ieee80211_hdrlen(hdr->frame_control);
 }
@@ -92,4 +83,4 @@ static inline void trace_ ## name(proto) {}
 #include "iwl-devtrace-data.h"
 #include "iwl-devtrace-iwlwifi.h"
 
-#endif /* __IWLWIFI_DEVICE_TRACE */
+#endif  

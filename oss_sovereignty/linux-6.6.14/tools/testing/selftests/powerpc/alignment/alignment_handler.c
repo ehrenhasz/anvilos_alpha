@@ -1,35 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test the powerpc alignment handler on POWER8/POWER9
- *
- * Copyright (C) 2017 IBM Corporation (Michael Neuling, Andrew Donnellan)
- */
 
-/*
- * This selftest exercises the powerpc alignment fault handler.
- *
- * We create two sets of source and destination buffers, one in regular memory,
- * the other cache-inhibited (by default we use /dev/fb0 for this, but an
- * alterative path for cache-inhibited memory may be provided, e.g. memtrace).
- *
- * We initialise the source buffers, then use whichever set of load/store
- * instructions is under test to copy bytes from the source buffers to the
- * destination buffers. For the regular buffers, these instructions will
- * execute normally. For the cache-inhibited buffers, these instructions
- * will trap and cause an alignment fault, and the alignment fault handler
- * will emulate the particular instruction under test. We then compare the
- * destination buffers to ensure that the native and emulated cases give the
- * same result.
- *
- * TODO:
- *   - Any FIXMEs below
- *   - Test VSX regs < 32 and > 32
- *   - Test all loads and stores
- *   - Check update forms do update register
- *   - Test alignment faults over page boundary
- *
- * Some old binutils may not support all the instructions.
- */
+ 
+
+ 
 
 
 #include <sys/mman.h>
@@ -134,15 +106,15 @@ void sighandler(int sig, siginfo_t *info, void *ctx)
 #define LOAD_VSX_8LS_PREFIX_TEST(op, tail) TESTP(op, op, PSTXV ## tail, 0, 32)
 #define STORE_VSX_8LS_PREFIX_TEST(op, tail) TESTP(op, PLXV ## tail, op, 32, 0)
 
-/* FIXME: Unimplemented tests: */
-// STORE_DFORM_TEST(stq)   /* FIXME: need two registers for quad */
-// STORE_DFORM_TEST(stswi) /* FIXME: string instruction */
-
-// STORE_XFORM_TEST(stwat) /* AMO can't emulate or run on CI */
-// STORE_XFORM_TEST(stdat) /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+ 
 
 
-/* preload byte by byte */
+
+
+
+
+
+ 
 void preload_data(void *dst, int offset, int width)
 {
 	char *c = dst;
@@ -168,7 +140,7 @@ int test_memcpy(void *dst, void *src, int size, int offset,
 	gotsig = 0;
 	testing = 1;
 
-	test_func(s, d); /* run the actual test */
+	test_func(s, d);  
 
 	testing = 0;
 	if (gotsig) {
@@ -214,10 +186,7 @@ int test_memcmp(void *s1, void *s2, int n, int offset, char *test_name)
 	return 0;
 }
 
-/*
- * Do two memcpy tests using the same instructions. One cachable
- * memory and the other doesn't.
- */
+ 
 int do_test(char *test_name, void (*test_func)(char *, char *))
 {
 	int offset, width, fd, rc, r;
@@ -257,22 +226,18 @@ int do_test(char *test_name, void (*test_func)(char *, char *))
 	}
 
 	rc = 0;
-	/*
-	 * offset = 0 is aligned but tests the workaround for the P9N
-	 * DD2.1 vector CI load issue (see 5080332c2c89 "powerpc/64s:
-	 * Add workaround for P9 vector CI load issue")
-	 */
+	 
 	for (offset = 0; offset < 16; offset++) {
-		width = 16; /* vsx == 16 bytes */
+		width = 16;  
 		r = 0;
 
-		/* load pattern into memory byte by byte */
+		 
 		preload_data(ci0, offset, width);
-		preload_data(mem0, offset, width); // FIXME: remove??
+		preload_data(mem0, offset, width);  
 		memcpy(ci0, mem0, bufsize);
-		memcpy(ci1, mem1, bufsize); /* initialise output to the same */
+		memcpy(ci1, mem1, bufsize);  
 
-		/* sanity check */
+		 
 		test_memcmp(mem0, ci0, width, offset, test_name);
 
 		r |= test_memcpy(ci1,  ci0,  width, offset, test_func);
@@ -507,16 +472,7 @@ int test_alignment_handler_vmx(void)
 	printf("VMX\n");
 	LOAD_VMX_XFORM_TEST(lvx);
 
-	/*
-	 * FIXME: These loads only load part of the register, so our
-	 * testing method doesn't work. Also they don't take alignment
-	 * faults, so it's kinda pointless anyway
-	 *
-	 LOAD_VMX_XFORM_TEST(lvebx)
-	 LOAD_VMX_XFORM_TEST(lvehx)
-	 LOAD_VMX_XFORM_TEST(lvewx)
-	 LOAD_VMX_XFORM_TEST(lvxl)
-	*/
+	 
 	STORE_VMX_XFORM_TEST(stvx);
 	STORE_VMX_XFORM_TEST(stvebx);
 	STORE_VMX_XFORM_TEST(stvehx);

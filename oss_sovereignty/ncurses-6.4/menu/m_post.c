@@ -1,54 +1,14 @@
-/****************************************************************************
- * Copyright 2020-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2010,2012 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1995,1997                                    *
- ****************************************************************************/
+ 
 
-/***************************************************************************
-* Module m_post                                                            *
-* Write or erase menus from associated subwindows                          *
-***************************************************************************/
+ 
 
 #include "menu.priv.h"
 
 MODULE_ID("$Id: m_post.c,v 1.38 2022/09/24 09:38:44 tom Exp $")
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void _nc_Post_Item(MENU *menu, ITEM *item)
-|
-|   Description   :  Draw the item in the menus window at the current
-|                    window position
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 _nc_Post_Item(const MENU *menu, const ITEM *item)
 {
@@ -63,20 +23,13 @@ _nc_Post_Item(const MENU *menu, const ITEM *item)
 
   getyx(menu->win, item_y, item_x);
 
-  /* We need a marker iff
-     - it is a onevalued menu and it is the current item
-     - or it has a selection value
-   */
+   
   wattron(menu->win, (int)menu->back);
   if (item->value || (item == menu->curitem))
     {
       if (menu->marklen)
 	{
-	  /* In a multi selection menu we use the fore attribute
-	     for a selected marker that is not the current one.
-	     This improves visualization of the menu, because now
-	     always the 'normal' marker denotes the current
-	     item. */
+	   
 	  if (!(menu->opt & O_ONEVALUE) && item->value && item != menu->curitem)
 	    {
 	      wattron(menu->win, (int)menu->fore);
@@ -90,15 +43,13 @@ _nc_Post_Item(const MENU *menu, const ITEM *item)
 	    }
 	}
     }
-  else				/* otherwise we have to wipe out the marker area */
+  else				 
     for (ch = ' ', i = menu->marklen; i > 0; i--)
       waddch(menu->win, ch);
   wattroff(menu->win, (int)menu->back);
   count += menu->marklen;
 
-  /* First we have to calculate the attribute depending on selectability
-     and selection status
-   */
+   
   if (!(item->opt & O_SELECTABLE))
     {
       wattron(menu->win, (int)menu->grey);
@@ -126,7 +77,7 @@ _nc_Post_Item(const MENU *menu, const ITEM *item)
     }
   count += menu->namelen;
 
-  /* Show description if required and available */
+   
   if ((menu->opt & O_SHOWDESC) && menu->desclen > 0)
     {
       int m = menu->spc_desc / 2;
@@ -180,7 +131,7 @@ _nc_Post_Item(const MENU *menu, const ITEM *item)
 	}
     }
 
-  /* Remove attributes */
+   
   if (isfore)
     wattroff(menu->win, (int)menu->fore);
   if (isback)
@@ -189,14 +140,7 @@ _nc_Post_Item(const MENU *menu, const ITEM *item)
     wattroff(menu->win, (int)menu->grey);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  void _nc_Draw_Menu(const MENU *)
-|
-|   Description   :  Display the menu in its windows
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(void)
 _nc_Draw_Menu(const MENU *menu)
 {
@@ -260,19 +204,7 @@ _nc_Draw_Menu(const MENU *menu)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  int post_menu(MENU* menu)
-|
-|   Description   :  Post a menu to the screen. This makes it visible.
-|
-|   Return Values :  E_OK                - success
-|                    E_BAD_ARGUMENT      - not a valid menu pointer
-|                    E_SYSTEM_ERROR      - error in lower layers
-|                    E_NOT_CONNECTED     - No items connected to menu
-|                    E_BAD_STATE         - Menu in userexit routine
-|                    E_POSTED            - Menu already posted
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(int)
 post_menu(MENU *menu)
 {
@@ -334,17 +266,7 @@ post_menu(MENU *menu)
   RETURN(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnmenu
-|   Function      :  int unpost_menu(MENU*)
-|
-|   Description   :  Detach menu from screen
-|
-|   Return Values :  E_OK              - success
-|                    E_BAD_ARGUMENT    - not a valid menu pointer
-|                    E_BAD_STATE       - menu in userexit routine
-|                    E_NOT_POSTED      - menu is not posted
-+--------------------------------------------------------------------------*/
+ 
 MENU_EXPORT(int)
 unpost_menu(MENU *menu)
 {
@@ -381,4 +303,4 @@ unpost_menu(MENU *menu)
   RETURN(E_OK);
 }
 
-/* m_post.c ends here */
+ 

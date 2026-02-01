@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Authors: Ludovic Barre <ludovic.barre@st.com> for STMicroelectronics.
- *          Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/dma-mapping.h>
@@ -127,7 +123,7 @@ static int stm32_rproc_mem_alloc(struct rproc *rproc,
 		return -ENOMEM;
 	}
 
-	/* Update memory entry va */
+	 
 	mem->va = va;
 
 	return 0;
@@ -219,7 +215,7 @@ static int stm32_rproc_prepare(struct rproc *rproc)
 	u64 da;
 	int index = 0;
 
-	/* Register associated reserved memory regions */
+	 
 	of_phandle_iterator_init(&it, np, "memory-region", NULL, 0);
 	while (of_phandle_iterator_next(&it) == 0) {
 		rmem = of_reserved_mem_lookup(it.node);
@@ -236,9 +232,9 @@ static int stm32_rproc_prepare(struct rproc *rproc)
 			return -EINVAL;
 		}
 
-		/*  No need to map vdev buffer */
+		 
 		if (strcmp(it.node->name, "vdev0buffer")) {
-			/* Register memory region */
+			 
 			mem = rproc_mem_entry_init(dev, NULL,
 						   (dma_addr_t)rmem->base,
 						   rmem->size, da,
@@ -250,7 +246,7 @@ static int stm32_rproc_prepare(struct rproc *rproc)
 				rproc_coredump_add_segment(rproc, da,
 							   rmem->size);
 		} else {
-			/* Register reserved memory for vdev buffer alloc */
+			 
 			mem = rproc_of_resm_mem_entry_init(dev, index,
 							   rmem->size,
 							   rmem->base,
@@ -348,7 +344,7 @@ static const struct stm32_mbox stm32_rproc_mbox[MBOX_NB_MBX] = {
 		.client = {
 			.tx_block = true,
 			.tx_done = NULL,
-			.tx_tout = 500, /* 500 ms time out */
+			.tx_tout = 500,  
 		},
 	},
 	{
@@ -357,7 +353,7 @@ static const struct stm32_mbox stm32_rproc_mbox[MBOX_NB_MBX] = {
 		.client = {
 			.tx_block = true,
 			.tx_done = NULL,
-			.tx_tout = 200, /* 200 ms time out to detach should be fair enough */
+			.tx_tout = 200,  
 		},
 	}
 };
@@ -371,7 +367,7 @@ static int stm32_rproc_request_mbox(struct rproc *rproc)
 	const unsigned char *name;
 	struct mbox_client *cl;
 
-	/* Initialise mailbox structure table */
+	 
 	memcpy(ddata->mb, stm32_rproc_mbox, sizeof(stm32_rproc_mbox));
 
 	for (i = 0; i < MBOX_NB_MBX; i++) {
@@ -414,28 +410,23 @@ static int stm32_rproc_set_hold_boot(struct rproc *rproc, bool hold)
 	struct arm_smccc_res smc_res;
 	int val, err;
 
-	/*
-	 * Three ways to manage the hold boot
-	 * - using SCMI: the hold boot is managed as a reset,
-	 * - using Linux(no SCMI): the hold boot is managed as a syscon register
-	 * - using SMC call (deprecated): use SMC reset interface
-	 */
+	 
 
 	val = hold ? HOLD_BOOT : RELEASE_BOOT;
 
 	if (ddata->hold_boot_rst) {
-		/* Use the SCMI reset controller */
+		 
 		if (!hold)
 			err = reset_control_deassert(ddata->hold_boot_rst);
 		else
 			err =  reset_control_assert(ddata->hold_boot_rst);
 	} else if (IS_ENABLED(CONFIG_HAVE_ARM_SMCCC) && ddata->hold_boot_smc) {
-		/* Use the SMC call */
+		 
 		arm_smccc_smc(STM32_SMC_RCC, STM32_SMC_REG_WRITE,
 			      hold_boot.reg, val, 0, 0, 0, 0, &smc_res);
 		err = smc_res.a0;
 	} else {
-		/* Use syscon */
+		 
 		err = regmap_update_bits(hold_boot.map, hold_boot.reg,
 					 hold_boot.mask, val);
 	}
@@ -475,7 +466,7 @@ static int stm32_rproc_start(struct rproc *rproc)
 
 	stm32_rproc_add_coredump_trace(rproc);
 
-	/* clear remote proc Deep Sleep */
+	 
 	if (ddata->pdds.map) {
 		err = regmap_update_bits(ddata->pdds.map, ddata->pdds.reg,
 					 ddata->pdds.mask, 0);
@@ -504,7 +495,7 @@ static int stm32_rproc_detach(struct rproc *rproc)
 	struct stm32_rproc *ddata = rproc->priv;
 	int err, idx;
 
-	/* Inform the remote processor of the detach */
+	 
 	idx = stm32_rproc_mbox_idx(rproc, STM32_MBX_DETACH);
 	if (idx >= 0 && ddata->mb[idx].chan) {
 		err = mbox_send_message(ddata->mb[idx].chan, "stop");
@@ -512,7 +503,7 @@ static int stm32_rproc_detach(struct rproc *rproc)
 			dev_warn(&rproc->dev, "warning: remote FW detach without ack\n");
 	}
 
-	/* Allow remote processor to auto-reboot */
+	 
 	return stm32_rproc_set_hold_boot(rproc, false);
 }
 
@@ -521,7 +512,7 @@ static int stm32_rproc_stop(struct rproc *rproc)
 	struct stm32_rproc *ddata = rproc->priv;
 	int err, idx;
 
-	/* request shutdown of the remote processor */
+	 
 	if (rproc->state != RPROC_OFFLINE && rproc->state != RPROC_CRASHED) {
 		idx = stm32_rproc_mbox_idx(rproc, STM32_MBX_SHUTDOWN);
 		if (idx >= 0 && ddata->mb[idx].chan) {
@@ -541,7 +532,7 @@ static int stm32_rproc_stop(struct rproc *rproc)
 		return err;
 	}
 
-	/* to allow platform Standby power mode, set remote proc Deep Sleep */
+	 
 	if (ddata->pdds.map) {
 		err = regmap_update_bits(ddata->pdds.map, ddata->pdds.reg,
 					 ddata->pdds.mask, 1);
@@ -551,7 +542,7 @@ static int stm32_rproc_stop(struct rproc *rproc)
 		}
 	}
 
-	/* update coprocessor state to OFF if available */
+	 
 	if (ddata->m4_state.map) {
 		err = regmap_update_bits(ddata->m4_state.map,
 					 ddata->m4_state.reg,
@@ -623,7 +614,7 @@ stm32_rproc_get_loaded_rsc_table(struct rproc *rproc, size_t *table_sz)
 	u32 rsc_da;
 	int err;
 
-	/* The resource table has already been mapped, nothing to do */
+	 
 	if (ddata->rsc_va)
 		goto done;
 
@@ -634,7 +625,7 @@ stm32_rproc_get_loaded_rsc_table(struct rproc *rproc, size_t *table_sz)
 	}
 
 	if (!rsc_da)
-		/* no rsc table */
+		 
 		return ERR_PTR(-ENOENT);
 
 	err = stm32_rproc_da_to_pa(rproc, rsc_da, &rsc_pa);
@@ -650,12 +641,7 @@ stm32_rproc_get_loaded_rsc_table(struct rproc *rproc, size_t *table_sz)
 	}
 
 done:
-	/*
-	 * Assuming the resource table fits in 1kB is fair.
-	 * Notice for the detach, that this 1 kB memory area has to be reserved in the coprocessor
-	 * firmware for the resource table. On detach, the remoteproc core re-initializes this
-	 * entire area by overwriting it with the initial values stored in rproc->clean_table.
-	 */
+	 
 	*table_sz = RSC_TBL_SIZE;
 	return (struct resource_table *)ddata->rsc_va;
 }
@@ -735,23 +721,14 @@ static int stm32_rproc_parse_dt(struct platform_device *pdev,
 
 	ddata->rst = devm_reset_control_get_optional(dev, "mcu_rst");
 	if (!ddata->rst) {
-		/* Try legacy fallback method: get it by index */
+		 
 		ddata->rst = devm_reset_control_get_by_index(dev, 0);
 	}
 	if (IS_ERR(ddata->rst))
 		return dev_err_probe(dev, PTR_ERR(ddata->rst),
 				     "failed to get mcu_reset\n");
 
-	/*
-	 * Three ways to manage the hold boot
-	 * - using SCMI: the hold boot is managed as a reset
-	 *    The DT "reset-mames" property should be defined with 2 items:
-	 *        reset-names = "mcu_rst", "hold_boot";
-	 * - using SMC call (deprecated): use SMC reset interface
-	 *    The DT "reset-mames" property is optional, "st,syscfg-tz" is required
-	 * - default(no SCMI, no SMC): the hold boot is managed as a syscon register
-	 *    The DT "reset-mames" property is optional, "st,syscfg-holdboot" is required
-	 */
+	 
 
 	ddata->hold_boot_rst = devm_reset_control_get_optional(dev, "hold_boot");
 	if (IS_ERR(ddata->hold_boot_rst))
@@ -759,7 +736,7 @@ static int stm32_rproc_parse_dt(struct platform_device *pdev,
 				     "failed to get hold_boot reset\n");
 
 	if (!ddata->hold_boot_rst && IS_ENABLED(CONFIG_HAVE_ARM_SMCCC)) {
-		/* Manage the MCU_BOOT using SMC call */
+		 
 		err = stm32_rproc_get_syscon(np, "st,syscfg-tz", &tz);
 		if (!err) {
 			err = regmap_read(tz.map, tz.reg, &tzen);
@@ -772,7 +749,7 @@ static int stm32_rproc_parse_dt(struct platform_device *pdev,
 	}
 
 	if (!ddata->hold_boot_rst && !ddata->hold_boot_smc) {
-		/* Default: hold boot manage it through the syscon controller */
+		 
 		err = stm32_rproc_get_syscon(np, "st,syscfg-holdboot",
 					     &ddata->hold_boot);
 		if (err) {
@@ -787,27 +764,24 @@ static int stm32_rproc_parse_dt(struct platform_device *pdev,
 
 	*auto_boot = of_property_read_bool(np, "st,auto-boot");
 
-	/*
-	 * See if we can check the M4 status, i.e if it was started
-	 * from the boot loader or not.
-	 */
+	 
 	err = stm32_rproc_get_syscon(np, "st,syscfg-m4-state",
 				     &ddata->m4_state);
 	if (err) {
-		/* remember this */
+		 
 		ddata->m4_state.map = NULL;
-		/* no coprocessor state syscon (optional) */
+		 
 		dev_warn(dev, "m4 state not supported\n");
 
-		/* no need to go further */
+		 
 		return 0;
 	}
 
-	/* See if we can get the resource table */
+	 
 	err = stm32_rproc_get_syscon(np, "st,syscfg-rsc-tbl",
 				     &ddata->rsctbl);
 	if (err) {
-		/* no rsc table syscon (optional) */
+		 
 		dev_warn(dev, "rsc tbl syscon not supported\n");
 	}
 
@@ -817,12 +791,9 @@ static int stm32_rproc_parse_dt(struct platform_device *pdev,
 static int stm32_rproc_get_m4_status(struct stm32_rproc *ddata,
 				     unsigned int *state)
 {
-	/* See stm32_rproc_parse_dt() */
+	 
 	if (!ddata->m4_state.map) {
-		/*
-		 * We couldn't get the coprocessor's state, assume
-		 * it is not running.
-		 */
+		 
 		*state = M4_STATE_OFF;
 		return 0;
 	}

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence USBSS and USBSSP DRD Driver.
- *
- * Copyright (C) 2018-2019 Cadence.
- * Copyright (C) 2017-2018 NXP
- * Copyright (C) 2019 Texas Instruments
- *
- * Author: Peter Chen <peter.chen@nxp.com>
- *         Pawel Laszczak <pawell@cadence.com>
- *         Roger Quadros <rogerq@ti.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
@@ -74,12 +64,7 @@ static void cdns_exit_roles(struct cdns *cdns)
 	cdns_drd_exit(cdns);
 }
 
-/**
- * cdns_core_init_role - initialize role of operation
- * @cdns: Pointer to cdns structure
- *
- * Returns 0 on success otherwise negative errno
- */
+ 
 static int cdns_core_init_role(struct cdns *cdns)
 {
 	struct device *dev = cdns->dev;
@@ -90,11 +75,7 @@ static int cdns_core_init_role(struct cdns *cdns)
 	dr_mode = usb_get_dr_mode(dev);
 	cdns->role = USB_ROLE_NONE;
 
-	/*
-	 * If driver can't read mode by means of usb_get_dr_mode function then
-	 * chooses mode according with Kernel configuration. This setting
-	 * can be restricted later depending on strap pin configuration.
-	 */
+	 
 	if (dr_mode == USB_DR_MODE_UNKNOWN) {
 		if (cdns->version == CDNSP_CONTROLLER_V2) {
 			if (IS_ENABLED(CONFIG_USB_CDNSP_HOST) &&
@@ -115,10 +96,7 @@ static int cdns_core_init_role(struct cdns *cdns)
 		}
 	}
 
-	/*
-	 * At this point cdns->dr_mode contains strap configuration.
-	 * Driver try update this setting considering kernel configuration
-	 */
+	 
 	best_dr_mode = cdns->dr_mode;
 
 	ret = cdns_idle_init(cdns);
@@ -171,7 +149,7 @@ static int cdns_core_init_role(struct cdns *cdns)
 	if (ret)
 		goto err;
 
-	/* Initialize idle role to start with */
+	 
 	ret = cdns_role_start(cdns, USB_ROLE_NONE);
 	if (ret)
 		goto err;
@@ -203,12 +181,7 @@ err:
 	return ret;
 }
 
-/**
- * cdns_hw_role_state_machine  - role switch state machine based on hw events.
- * @cdns: Pointer to controller structure.
- *
- * Returns next role to be entered based on hw events.
- */
+ 
 static enum usb_role cdns_hw_role_state_machine(struct cdns *cdns)
 {
 	enum usb_role role = USB_ROLE_NONE;
@@ -226,30 +199,22 @@ static enum usb_role cdns_hw_role_state_machine(struct cdns *cdns)
 	id = cdns_get_id(cdns);
 	vbus = cdns_get_vbus(cdns);
 
-	/*
-	 * Role change state machine
-	 * Inputs: ID, VBUS
-	 * Previous state: cdns->role
-	 * Next state: role
-	 */
+	 
 	role = cdns->role;
 
 	switch (role) {
 	case USB_ROLE_NONE:
-		/*
-		 * Driver treats USB_ROLE_NONE synonymous to IDLE state from
-		 * controller specification.
-		 */
+		 
 		if (!id)
 			role = USB_ROLE_HOST;
 		else if (vbus)
 			role = USB_ROLE_DEVICE;
 		break;
-	case USB_ROLE_HOST: /* from HOST, we can only change to NONE */
+	case USB_ROLE_HOST:  
 		if (id)
 			role = USB_ROLE_NONE;
 		break;
-	case USB_ROLE_DEVICE: /* from GADGET, we can only change to NONE*/
+	case USB_ROLE_DEVICE:  
 		if (!vbus)
 			role = USB_ROLE_NONE;
 		break;
@@ -267,7 +232,7 @@ static int cdns_idle_role_start(struct cdns *cdns)
 
 static void cdns_idle_role_stop(struct cdns *cdns)
 {
-	/* Program Lane swap and bring PHY out of RESET */
+	 
 	phy_reset(cdns->usb3_phy);
 }
 
@@ -291,16 +256,13 @@ static int cdns_idle_init(struct cdns *cdns)
 	return 0;
 }
 
-/**
- * cdns_hw_role_switch - switch roles based on HW state
- * @cdns: controller
- */
+ 
 int cdns_hw_role_switch(struct cdns *cdns)
 {
 	enum usb_role real_role, current_role;
 	int ret = 0;
 
-	/* Depends on role switch class */
+	 
 	if (cdns->role_sw)
 		return 0;
 
@@ -309,7 +271,7 @@ int cdns_hw_role_switch(struct cdns *cdns)
 	current_role = cdns->role;
 	real_role = cdns_hw_role_state_machine(cdns);
 
-	/* Do nothing if nothing changed */
+	 
 	if (current_role == real_role)
 		goto exit;
 
@@ -319,7 +281,7 @@ int cdns_hw_role_switch(struct cdns *cdns)
 
 	ret = cdns_role_start(cdns, real_role);
 	if (ret) {
-		/* Back to current role */
+		 
 		dev_err(cdns->dev, "set %d has failed, back to %d\n",
 			real_role, current_role);
 		ret = cdns_role_start(cdns, current_role);
@@ -332,13 +294,7 @@ exit:
 	return ret;
 }
 
-/**
- * cdns_role_get - get current role of controller.
- *
- * @sw: pointer to USB role switch structure
- *
- * Returns role
- */
+ 
 static enum usb_role cdns_role_get(struct usb_role_switch *sw)
 {
 	struct cdns *cdns = usb_role_switch_get_drvdata(sw);
@@ -346,15 +302,7 @@ static enum usb_role cdns_role_get(struct usb_role_switch *sw)
 	return cdns->role;
 }
 
-/**
- * cdns_role_set - set current role of controller.
- *
- * @sw: pointer to USB role switch structure
- * @role: the previous role
- * Handles below events:
- * - Role switch for dual-role devices
- * - USB_ROLE_GADGET <--> USB_ROLE_NONE for peripheral-only devices
- */
+ 
 static int cdns_role_set(struct usb_role_switch *sw, enum usb_role role)
 {
 	struct cdns *cdns = usb_role_switch_get_drvdata(sw);
@@ -396,13 +344,7 @@ pm_put:
 }
 
 
-/**
- * cdns_wakeup_irq - interrupt handler for wakeup events
- * @irq: irq number for cdns3/cdnsp core device
- * @data: structure of cdns
- *
- * Returns IRQ_HANDLED or IRQ_NONE
- */
+ 
 static irqreturn_t cdns_wakeup_irq(int irq, void *data)
 {
 	struct cdns *cdns = data;
@@ -419,12 +361,7 @@ static irqreturn_t cdns_wakeup_irq(int irq, void *data)
 	return IRQ_NONE;
 }
 
-/**
- * cdns_init - probe for cdns3/cdnsp core device
- * @cdns: Pointer to cdns structure.
- *
- * Returns 0 on success otherwise negative errno
- */
+ 
 int cdns_init(struct cdns *cdns)
 {
 	struct device *dev = cdns->dev;
@@ -489,12 +426,7 @@ role_switch_unregister:
 }
 EXPORT_SYMBOL_GPL(cdns_init);
 
-/**
- * cdns_remove - unbind drd driver and clean up
- * @cdns: Pointer to cdns structure.
- *
- * Returns 0 on success otherwise negative errno
- */
+ 
 int cdns_remove(struct cdns *cdns)
 {
 	cdns_exit_roles(cdns);
@@ -573,7 +505,7 @@ void cdns_set_active(struct cdns *cdns, u8 set_active)
 	return;
 }
 EXPORT_SYMBOL_GPL(cdns_set_active);
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 MODULE_AUTHOR("Peter Chen <peter.chen@nxp.com>");
 MODULE_AUTHOR("Pawel Laszczak <pawell@cadence.com>");

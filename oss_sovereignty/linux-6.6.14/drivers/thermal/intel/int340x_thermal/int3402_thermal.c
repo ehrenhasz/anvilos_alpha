@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * INT3402 thermal driver for memory temperature reporting
- *
- * Copyright (C) 2014, Intel Corporation
- * Authors: Aaron Lu <aaron.lu@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2022, Athira Rajeev, IBM Corp.
- * Copyright 2022, Madhavan Srinivasan, IBM Corp.
- * Copyright 2022, Kajol Jain, IBM Corp.
- */
+
+ 
 
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -18,26 +14,26 @@
 
 #define PAGE_SIZE               sysconf(_SC_PAGESIZE)
 
-/* Storage for platform version */
+ 
 int pvr;
 u64 platform_extended_mask;
 
-/* Mask and Shift for Event code fields */
-int ev_mask_pmcxsel, ev_shift_pmcxsel;		//pmcxsel field
-int ev_mask_marked, ev_shift_marked;		//marked filed
-int ev_mask_comb, ev_shift_comb;		//combine field
-int ev_mask_unit, ev_shift_unit;		//unit field
-int ev_mask_pmc, ev_shift_pmc;			//pmc field
-int ev_mask_cache, ev_shift_cache;		//Cache sel field
-int ev_mask_sample, ev_shift_sample;		//Random sampling field
-int ev_mask_thd_sel, ev_shift_thd_sel;		//thresh_sel field
-int ev_mask_thd_start, ev_shift_thd_start;	//thresh_start field
-int ev_mask_thd_stop, ev_shift_thd_stop;	//thresh_stop field
-int ev_mask_thd_cmp, ev_shift_thd_cmp;		//thresh cmp field
-int ev_mask_sm, ev_shift_sm;			//SDAR mode field
-int ev_mask_rsq, ev_shift_rsq;			//radix scope qual field
-int ev_mask_l2l3, ev_shift_l2l3;		//l2l3 sel field
-int ev_mask_mmcr3_src, ev_shift_mmcr3_src;	//mmcr3 field
+ 
+int ev_mask_pmcxsel, ev_shift_pmcxsel;		
+int ev_mask_marked, ev_shift_marked;		
+int ev_mask_comb, ev_shift_comb;		
+int ev_mask_unit, ev_shift_unit;		
+int ev_mask_pmc, ev_shift_pmc;			
+int ev_mask_cache, ev_shift_cache;		
+int ev_mask_sample, ev_shift_sample;		
+int ev_mask_thd_sel, ev_shift_thd_sel;		
+int ev_mask_thd_start, ev_shift_thd_start;	
+int ev_mask_thd_stop, ev_shift_thd_stop;	
+int ev_mask_thd_cmp, ev_shift_thd_cmp;		
+int ev_mask_sm, ev_shift_sm;			
+int ev_mask_rsq, ev_shift_rsq;			
+int ev_mask_l2l3, ev_shift_l2l3;		
+int ev_mask_mmcr3_src, ev_shift_mmcr3_src;	
 
 static void init_ev_encodes(void)
 {
@@ -90,7 +86,7 @@ static void init_ev_encodes(void)
 	}
 }
 
-/* Return the extended regs mask value */
+ 
 static u64 perf_get_platform_reg_mask(void)
 {
 	if (have_hwcap2(PPC_FEATURE2_ARCH_3_1))
@@ -125,17 +121,11 @@ int platform_check_for_tests(void)
 {
 	pvr = PVR_VER(mfspr(SPRN_PVR));
 
-	/*
-	 * Check for supported platforms
-	 * for sampling test
-	 */
+	 
 	if ((pvr != POWER10) && (pvr != POWER9))
 		goto out;
 
-	/*
-	 * Check PMU driver registered by looking for
-	 * PPC_FEATURE2_EBB bit in AT_HWCAP2
-	 */
+	 
 	if (!have_hwcap2(PPC_FEATURE2_EBB) || !have_hwcap2(PPC_FEATURE2_ARCH_3_00))
 		goto out;
 
@@ -151,7 +141,7 @@ int check_pvr_for_sampling_tests(void)
 	SKIP_IF(platform_check_for_tests());
 
 	platform_extended_mask = perf_get_platform_reg_mask();
-	/* check if platform supports extended regs */
+	 
 	if (check_extended_regs_support())
 		goto out;
 
@@ -163,10 +153,7 @@ out:
 	return -1;
 }
 
-/*
- * Allocate mmap buffer of "mmap_pages" number of
- * pages.
- */
+ 
 void *event_sample_buf_mmap(int fd, int mmap_pages)
 {
 	size_t page_size = sysconf(_SC_PAGESIZE);
@@ -190,13 +177,7 @@ void *event_sample_buf_mmap(int fd, int mmap_pages)
 	return buff;
 }
 
-/*
- * Post process the mmap buffer.
- * - If sample_count != NULL then return count of total
- *   number of samples present in the mmap buffer.
- * - If sample_count == NULL then return the address
- *   of first sample from the mmap buffer
- */
+ 
 void *__event_read_samples(void *sample_buff, size_t *size, u64 *sample_count)
 {
 	size_t page_size = sysconf(_SC_PAGESIZE);
@@ -204,31 +185,19 @@ void *__event_read_samples(void *sample_buff, size_t *size, u64 *sample_count)
 	struct perf_event_mmap_page *metadata_page = sample_buff;
 	unsigned long data_head, data_tail;
 
-	/*
-	 * PERF_RECORD_SAMPLE:
-	 * struct {
-	 *     struct perf_event_header hdr;
-	 *     u64 data[];
-	 * };
-	 */
+	 
 
 	data_head = metadata_page->data_head;
-	/* sync memory before reading sample */
+	 
 	mb();
 	data_tail = metadata_page->data_tail;
 
-	/* Check for sample_count */
+	 
 	if (sample_count)
 		*sample_count = 0;
 
 	while (1) {
-		/*
-		 * Reads the mmap data buffer by moving
-		 * the data_tail to know the last read data.
-		 * data_head points to head in data buffer.
-		 * refer "struct perf_event_mmap_page" in
-		 * "include/uapi/linux/perf_event.h".
-		 */
+		 
 		if (data_head - data_tail < sizeof(header))
 			return NULL;
 
@@ -280,28 +249,11 @@ u64 *get_intr_regs(struct event *event, void *sample_buff)
 		return NULL;
 
 	if (type & PERF_SAMPLE_BRANCH_STACK) {
-		/*
-		 * PERF_RECORD_SAMPLE and PERF_SAMPLE_BRANCH_STACK:
-		 * struct {
-		 *     struct perf_event_header hdr;
-		 *     u64 number_of_branches;
-		 *     struct perf_branch_entry[number_of_branches];
-		 *     u64 data[];
-		 * };
-		 * struct perf_branch_entry {
-		 *     u64	from;
-		 *     u64	to;
-		 *     u64	misc;
-		 * };
-		 */
+		 
 		intr_regs += ((*intr_regs) * 3) + 1;
 	}
 
-	/*
-	 * First entry in the sample buffer used to specify
-	 * PERF_SAMPLE_REGS_ABI_64, skip perf regs abi to access
-	 * interrupt registers.
-	 */
+	 
 	++intr_regs;
 
 	return intr_regs;
@@ -458,15 +410,7 @@ int get_thresh_cmp_val(struct event event)
 	if (!value)
 		return value;
 
-	/*
-	 * Incase of P10, thresh_cmp value is not part of raw event code
-	 * and provided via attr.config1 parameter. To program threshold in MMCRA,
-	 * take a 18 bit number N and shift right 2 places and increment
-	 * the exponent E by 1 until the upper 10 bits of N are zero.
-	 * Write E to the threshold exponent and write the lower 8 bits of N
-	 * to the threshold mantissa.
-	 * The max threshold that can be written is 261120.
-	 */
+	 
 	if (value > 261120)
 		value = 261120;
 	while ((64 - __builtin_clzl(value)) > 8) {
@@ -474,11 +418,7 @@ int get_thresh_cmp_val(struct event event)
 		value >>= 2;
 	}
 
-	/*
-	 * Note that it is invalid to write a mantissa with the
-	 * upper 2 bits of mantissa being zero, unless the
-	 * exponent is also zero.
-	 */
+	 
 	if (!(value & 0xC0) && exp)
 		result = -1;
 	else
@@ -486,11 +426,7 @@ int get_thresh_cmp_val(struct event event)
 	return result;
 }
 
-/*
- * Utility function to check for generic compat PMU
- * by comparing base_platform value from auxv and real
- * PVR value.
- */
+ 
 static bool auxv_generic_compat_pmu(void)
 {
 	int base_pvr = 0;
@@ -503,13 +439,7 @@ static bool auxv_generic_compat_pmu(void)
 	return (!base_pvr);
 }
 
-/*
- * Check for generic compat PMU.
- * First check for presence of pmu_name from
- * "/sys/bus/event_source/devices/cpu/caps".
- * If doesn't exist, fallback to using value
- * auxv.
- */
+ 
 bool check_for_generic_compat_pmu(void)
 {
 	char pmu_name[256];
@@ -525,9 +455,7 @@ bool check_for_generic_compat_pmu(void)
 		return false;
 }
 
-/*
- * Check if system is booted in compat mode.
- */
+ 
 bool check_for_compat_mode(void)
 {
 	char *platform = auxv_platform();

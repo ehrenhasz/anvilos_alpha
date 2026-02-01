@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020-2021, Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -1599,7 +1596,7 @@ static struct clk_branch gcc_cfg_noc_usb3_sec_axi_clk = {
 	},
 };
 
-/* For CPUSS functionality the AHB clock needs to be left enabled */
+ 
 static struct clk_branch gcc_cpuss_ahb_clk = {
 	.halt_reg = 0x48000,
 	.halt_check = BRANCH_HALT_VOTED,
@@ -3150,7 +3147,7 @@ static struct clk_branch gcc_sdcc4_apps_clk = {
 	},
 };
 
-/* For CPUSS functionality the SYS NOC clock needs to be left enabled */
+ 
 static struct clk_branch gcc_sys_noc_cpuss_ahb_clk = {
 	.halt_reg = 0x4819c,
 	.halt_check = BRANCH_HALT_VOTED,
@@ -4579,13 +4576,7 @@ static int gcc_sc8180x_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/*
-	 * Enable the following always-on clocks:
-	 * GCC_VIDEO_AHB_CLK, GCC_CAMERA_AHB_CLK, GCC_DISP_AHB_CLK,
-	 * GCC_VIDEO_XO_CLK, GCC_CAMERA_XO_CLK, GCC_DISP_XO_CLK,
-	 * GCC_CPUSS_GNOC_CLK, GCC_CPUSS_DVM_BUS_CLK, GCC_NPU_CFG_AHB_CLK and
-	 * GCC_GPU_CFG_AHB_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0xb004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0xb008, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0xb00c, BIT(0), BIT(0));
@@ -4597,7 +4588,7 @@ static int gcc_sc8180x_probe(struct platform_device *pdev)
 	regmap_update_bits(regmap, 0x4d004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x71004, BIT(0), BIT(0));
 
-	/* Disable the GPLL0 active input to NPU and GPU via MISC registers */
+	 
 	regmap_update_bits(regmap, 0x4d110, 0x3, 0x3);
 	regmap_update_bits(regmap, 0x71028, 0x3, 0x3);
 

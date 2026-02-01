@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Host1x init for Tegra210 SoCs
- *
- * Copyright (c) 2015 NVIDIA Corporation.
- */
 
-/* include hw specification */
+ 
+
+ 
 #include "host1x05.h"
 #include "host1x05_hardware.h"
 
-/* include code */
+ 
 #define HOST1X_HW 5
 
 #include "cdma_hw.c"

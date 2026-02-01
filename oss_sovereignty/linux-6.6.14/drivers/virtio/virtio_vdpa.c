@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VIRTIO based driver for vDPA device
- *
- * Copyright (c) 2020, Red Hat. All rights reserved.
- *     Author: Jason Wang <jasowang@redhat.com>
- *
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -29,17 +23,17 @@ struct virtio_vdpa_device {
 	struct vdpa_device *vdpa;
 	u64 features;
 
-	/* The lock to protect virtqueue list */
+	 
 	spinlock_t lock;
-	/* List of virtio_vdpa_vq_info */
+	 
 	struct list_head virtqueues;
 };
 
 struct virtio_vdpa_vq_info {
-	/* the actual virtqueue */
+	 
 	struct virtqueue *vq;
 
-	/* the list node for the virtqueues list */
+	 
 	struct list_head node;
 };
 
@@ -154,7 +148,7 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
 	struct vdpa_callback cb;
 	struct virtqueue *vq;
 	u64 desc_addr, driver_addr, device_addr;
-	/* Assume split virtqueue, switch to packed if necessary */
+	 
 	struct vdpa_vq_state state = {0};
 	unsigned long flags;
 	u32 align, max_num, min_num = 1;
@@ -167,7 +161,7 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
 	if (index >= vdpa->nvqs)
 		return ERR_PTR(-ENOENT);
 
-	/* We cannot accept VIRTIO_F_NOTIFICATION_DATA without kick_vq_with_data */
+	 
 	if (__virtio_test_bit(vdev, VIRTIO_F_NOTIFICATION_DATA)) {
 		if (ops->kick_vq_with_data)
 			notify = virtio_vdpa_notify_with_data;
@@ -175,11 +169,11 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
 			__virtio_clear_bit(vdev, VIRTIO_F_NOTIFICATION_DATA);
 	}
 
-	/* Queue shouldn't already be set up. */
+	 
 	if (ops->get_vq_ready(vdpa, index))
 		return ERR_PTR(-ENOENT);
 
-	/* Allocate and fill out our active queue description */
+	 
 	info = kmalloc(sizeof(*info), GFP_KERNEL);
 	if (!info)
 		return ERR_PTR(-ENOMEM);
@@ -195,7 +189,7 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
 
 	may_reduce_num = (max_num == min_num) ? false : true;
 
-	/* Create the vring */
+	 
 	align = ops->get_vq_align(vdpa);
 
 	if (ops->get_vq_dma_dev)
@@ -212,7 +206,7 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
 
 	vq->num_max = max_num;
 
-	/* Setup virtqueue callback */
+	 
 	cb.callback = callback ? virtio_vdpa_virtqueue_cb : NULL;
 	cb.private = info;
 	cb.trigger = NULL;
@@ -230,7 +224,7 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
 		goto err_vq;
 	}
 
-	/* reset virtqueue state index */
+	 
 	if (virtio_has_feature(vdev, VIRTIO_F_RING_PACKED)) {
 		struct vdpa_vq_state_packed *s = &state.packed;
 
@@ -258,7 +252,7 @@ err_vq:
 	vring_del_virtqueue(vq);
 error_new_virtqueue:
 	ops->set_vq_ready(vdpa, index, 0);
-	/* VDPA driver should make sure vq is stopeed here */
+	 
 	WARN_ON(ops->get_vq_ready(vdpa, index));
 	kfree(info);
 	return ERR_PTR(err);
@@ -277,7 +271,7 @@ static void virtio_vdpa_del_vq(struct virtqueue *vq)
 	list_del(&info->node);
 	spin_unlock_irqrestore(&vd_dev->lock, flags);
 
-	/* Select and deactivate the queue (best effort) */
+	 
 	ops->set_vq_ready(vdpa, index, 0);
 
 	vring_del_virtqueue(vq);
@@ -320,7 +314,7 @@ create_affinity_masks(unsigned int nvecs, struct irq_affinity *affd)
 	if (!masks)
 		return NULL;
 
-	/* Fill out vectors at the beginning that don't need affinity */
+	 
 	for (curvec = 0; curvec < affd->pre_vectors; curvec++)
 		cpumask_setall(&masks[curvec]);
 
@@ -342,7 +336,7 @@ create_affinity_masks(unsigned int nvecs, struct irq_affinity *affd)
 		usedvecs += this_vecs;
 	}
 
-	/* Fill out vectors at the end that don't need affinity */
+	 
 	if (usedvecs >= affvecs)
 		curvec = affd->pre_vectors + affvecs;
 	else
@@ -420,7 +414,7 @@ static int virtio_vdpa_finalize_features(struct virtio_device *vdev)
 {
 	struct vdpa_device *vdpa = vd_get_vdpa(vdev);
 
-	/* Give virtio_ring a chance to accept features. */
+	 
 	vring_transport_features(vdev);
 
 	return vdpa_set_features(vdpa, vdev->features);

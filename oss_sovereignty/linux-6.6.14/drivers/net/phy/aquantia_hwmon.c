@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* HWMON driver for Aquantia PHY
- *
- * Author: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
- * Author: Andrew Lunn <andrew@lunn.ch>
- * Author: Heiner Kallweit <hkallweit1@gmail.com>
- */
+
+ 
 
 #include <linux/phy.h>
 #include <linux/device.h>
@@ -13,7 +8,7 @@
 
 #include "aquantia.h"
 
-/* Vendor specific 1, MDIO_MMD_VEND2 */
+ 
 #define VEND1_THERMAL_PROV_HIGH_TEMP_FAIL	0xc421
 #define VEND1_THERMAL_PROV_LOW_TEMP_FAIL	0xc422
 #define VEND1_THERMAL_PROV_HIGH_TEMP_WARN	0xc423
@@ -60,7 +55,7 @@ static int aqr_hwmon_get(struct phy_device *phydev, int reg, long *value)
 	if (temp < 0)
 		return temp;
 
-	/* 16 bit value is 2's complement with LSB = 1/256th degree Celsius */
+	 
 	*value = (s16)temp * 1000 / 256;
 
 	return 0;
@@ -75,7 +70,7 @@ static int aqr_hwmon_set(struct phy_device *phydev, int reg, long value)
 
 	temp = value * 256 / 1000;
 
-	/* temp is in s16 range and we're interested in lower 16 bits only */
+	 
 	return phy_write_mmd(phydev, MDIO_MMD_VEND1, reg, (u16)temp);
 }
 

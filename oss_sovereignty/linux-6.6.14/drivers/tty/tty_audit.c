@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Creating audit events from TTY input.
- *
- * Copyright (C) 2007 Red Hat, Inc.  All rights reserved.
- *
- * Authors: Miloslav Trmac <mitr@redhat.com>
- */
+
+ 
 
 #include <linux/audit.h>
 #include <linux/slab.h>
@@ -13,11 +7,11 @@
 #include "tty.h"
 
 struct tty_audit_buf {
-	struct mutex mutex;	/* Protects all data below */
-	dev_t dev;		/* The TTY which the data is from */
+	struct mutex mutex;	 
+	dev_t dev;		 
 	bool icanon;
 	size_t valid;
-	u8 *data;		/* Allocated size N_TTY_BUF_SIZE */
+	u8 *data;		 
 };
 
 static struct tty_audit_buf *tty_audit_buf_ref(void)
@@ -82,12 +76,7 @@ static void tty_audit_log(const char *description, dev_t dev,
 	audit_log_end(ab);
 }
 
-/*
- *	tty_audit_buf_push	-	Push buffered data out
- *
- *	Generate an audit message from the contents of @buf, which is owned by
- *	the current task.  @buf->mutex must be locked.
- */
+ 
 static void tty_audit_buf_push(struct tty_audit_buf *buf)
 {
 	if (buf->valid == 0)
@@ -100,15 +89,7 @@ static void tty_audit_buf_push(struct tty_audit_buf *buf)
 	buf->valid = 0;
 }
 
-/**
- *	tty_audit_exit	-	Handle a task exit
- *
- *	Make sure all buffered data is written out and deallocate the buffer.
- *	Only needs to be called if current->signal->tty_audit_buf != %NULL.
- *
- *	The process is single-threaded at this point; no other threads share
- *	current->signal.
- */
+ 
 void tty_audit_exit(void)
 {
 	struct tty_audit_buf *buf;
@@ -121,19 +102,13 @@ void tty_audit_exit(void)
 	tty_audit_buf_free(buf);
 }
 
-/*
- *	tty_audit_fork	-	Copy TTY audit state for a new task
- *
- *	Set up TTY audit state in @sig from current.  @sig needs no locking.
- */
+ 
 void tty_audit_fork(struct signal_struct *sig)
 {
 	sig->audit_tty = current->signal->audit_tty;
 }
 
-/*
- *	tty_audit_tiocsti	-	Log TIOCSTI
- */
+ 
 void tty_audit_tiocsti(const struct tty_struct *tty, u8 ch)
 {
 	dev_t dev;
@@ -146,11 +121,7 @@ void tty_audit_tiocsti(const struct tty_struct *tty, u8 ch)
 		tty_audit_log("ioctl=TIOCSTI", dev, &ch, 1);
 }
 
-/*
- *	tty_audit_push	-	Flush current's pending audit data
- *
- *	Returns 0 if success, -EPERM if tty audit is disabled
- */
+ 
 int tty_audit_push(void)
 {
 	struct tty_audit_buf *buf;
@@ -167,13 +138,7 @@ int tty_audit_push(void)
 	return 0;
 }
 
-/*
- *	tty_audit_buf_get	-	Get an audit buffer.
- *
- *	Get an audit buffer, allocate it if necessary.  Return %NULL
- *	if out of memory or ERR_PTR(-ESRCH) if tty_audit_exit() has already
- *	occurred.  Otherwise, return a new reference to the buffer.
- */
+ 
 static struct tty_audit_buf *tty_audit_buf_get(void)
 {
 	struct tty_audit_buf *buf;
@@ -188,17 +153,13 @@ static struct tty_audit_buf *tty_audit_buf_get(void)
 		return NULL;
 	}
 
-	/* Race to use this buffer, free it if another wins */
+	 
 	if (cmpxchg(&current->signal->tty_audit_buf, NULL, buf) != NULL)
 		tty_audit_buf_free(buf);
 	return tty_audit_buf_ref();
 }
 
-/*
- *	tty_audit_add_data	-	Add data for TTY auditing.
- *
- *	Audit @data of @size from @tty, if necessary.
- */
+ 
 void tty_audit_add_data(const struct tty_struct *tty, const void *data,
 			size_t size)
 {

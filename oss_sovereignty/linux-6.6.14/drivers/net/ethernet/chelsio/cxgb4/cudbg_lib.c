@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- */
+
+ 
 
 #include <linux/sort.h>
 #include <linux/string.h>
@@ -17,32 +15,32 @@
 #include "cxgb4_tc_mqprio.h"
 
 static const u32 t6_tp_pio_array[][IREG_NUM_ELEM] = {
-	{0x7e40, 0x7e44, 0x020, 28}, /* t6_tp_pio_regs_20_to_3b */
-	{0x7e40, 0x7e44, 0x040, 10}, /* t6_tp_pio_regs_40_to_49 */
-	{0x7e40, 0x7e44, 0x050, 10}, /* t6_tp_pio_regs_50_to_59 */
-	{0x7e40, 0x7e44, 0x060, 14}, /* t6_tp_pio_regs_60_to_6d */
-	{0x7e40, 0x7e44, 0x06F, 1}, /* t6_tp_pio_regs_6f */
-	{0x7e40, 0x7e44, 0x070, 6}, /* t6_tp_pio_regs_70_to_75 */
-	{0x7e40, 0x7e44, 0x130, 18}, /* t6_tp_pio_regs_130_to_141 */
-	{0x7e40, 0x7e44, 0x145, 19}, /* t6_tp_pio_regs_145_to_157 */
-	{0x7e40, 0x7e44, 0x160, 1}, /* t6_tp_pio_regs_160 */
-	{0x7e40, 0x7e44, 0x230, 25}, /* t6_tp_pio_regs_230_to_248 */
-	{0x7e40, 0x7e44, 0x24a, 3}, /* t6_tp_pio_regs_24c */
-	{0x7e40, 0x7e44, 0x8C0, 1} /* t6_tp_pio_regs_8c0 */
+	{0x7e40, 0x7e44, 0x020, 28},  
+	{0x7e40, 0x7e44, 0x040, 10},  
+	{0x7e40, 0x7e44, 0x050, 10},  
+	{0x7e40, 0x7e44, 0x060, 14},  
+	{0x7e40, 0x7e44, 0x06F, 1},  
+	{0x7e40, 0x7e44, 0x070, 6},  
+	{0x7e40, 0x7e44, 0x130, 18},  
+	{0x7e40, 0x7e44, 0x145, 19},  
+	{0x7e40, 0x7e44, 0x160, 1},  
+	{0x7e40, 0x7e44, 0x230, 25},  
+	{0x7e40, 0x7e44, 0x24a, 3},  
+	{0x7e40, 0x7e44, 0x8C0, 1}  
 };
 
 static const u32 t5_tp_pio_array[][IREG_NUM_ELEM] = {
-	{0x7e40, 0x7e44, 0x020, 28}, /* t5_tp_pio_regs_20_to_3b */
-	{0x7e40, 0x7e44, 0x040, 19}, /* t5_tp_pio_regs_40_to_52 */
-	{0x7e40, 0x7e44, 0x054, 2}, /* t5_tp_pio_regs_54_to_55 */
-	{0x7e40, 0x7e44, 0x060, 13}, /* t5_tp_pio_regs_60_to_6c */
-	{0x7e40, 0x7e44, 0x06F, 1}, /* t5_tp_pio_regs_6f */
-	{0x7e40, 0x7e44, 0x120, 4}, /* t5_tp_pio_regs_120_to_123 */
-	{0x7e40, 0x7e44, 0x12b, 2}, /* t5_tp_pio_regs_12b_to_12c */
-	{0x7e40, 0x7e44, 0x12f, 21}, /* t5_tp_pio_regs_12f_to_143 */
-	{0x7e40, 0x7e44, 0x145, 19}, /* t5_tp_pio_regs_145_to_157 */
-	{0x7e40, 0x7e44, 0x230, 25}, /* t5_tp_pio_regs_230_to_248 */
-	{0x7e40, 0x7e44, 0x8C0, 1} /* t5_tp_pio_regs_8c0 */
+	{0x7e40, 0x7e44, 0x020, 28},  
+	{0x7e40, 0x7e44, 0x040, 19},  
+	{0x7e40, 0x7e44, 0x054, 2},  
+	{0x7e40, 0x7e44, 0x060, 13},  
+	{0x7e40, 0x7e44, 0x06F, 1},  
+	{0x7e40, 0x7e44, 0x120, 4},  
+	{0x7e40, 0x7e44, 0x12b, 2},  
+	{0x7e40, 0x7e44, 0x12f, 21},  
+	{0x7e40, 0x7e44, 0x145, 19},  
+	{0x7e40, 0x7e44, 0x230, 25},  
+	{0x7e40, 0x7e44, 0x8C0, 1}  
 };
 
 static const u32 t6_tp_tm_pio_array[][IREG_NUM_ELEM] = {
@@ -80,29 +78,29 @@ static const u32 t5_sge_dbg_index_array[2][IREG_NUM_ELEM] = {
 };
 
 static const u32 t6_sge_qbase_index_array[] = {
-	/* 1 addr reg SGE_QBASE_INDEX and 4 data reg SGE_QBASE_MAP[0-3] */
+	 
 	0x1250, 0x1240, 0x1244, 0x1248, 0x124c,
 };
 
 static const u32 t5_pcie_pdbg_array[][IREG_NUM_ELEM] = {
-	{0x5a04, 0x5a0c, 0x00, 0x20}, /* t5_pcie_pdbg_regs_00_to_20 */
-	{0x5a04, 0x5a0c, 0x21, 0x20}, /* t5_pcie_pdbg_regs_21_to_40 */
-	{0x5a04, 0x5a0c, 0x41, 0x10}, /* t5_pcie_pdbg_regs_41_to_50 */
+	{0x5a04, 0x5a0c, 0x00, 0x20},  
+	{0x5a04, 0x5a0c, 0x21, 0x20},  
+	{0x5a04, 0x5a0c, 0x41, 0x10},  
 };
 
 static const u32 t5_pcie_cdbg_array[][IREG_NUM_ELEM] = {
-	{0x5a10, 0x5a18, 0x00, 0x20}, /* t5_pcie_cdbg_regs_00_to_20 */
-	{0x5a10, 0x5a18, 0x21, 0x18}, /* t5_pcie_cdbg_regs_21_to_37 */
+	{0x5a10, 0x5a18, 0x00, 0x20},  
+	{0x5a10, 0x5a18, 0x21, 0x18},  
 };
 
 static const u32 t5_pm_rx_array[][IREG_NUM_ELEM] = {
-	{0x8FD0, 0x8FD4, 0x10000, 0x20}, /* t5_pm_rx_regs_10000_to_10020 */
-	{0x8FD0, 0x8FD4, 0x10021, 0x0D}, /* t5_pm_rx_regs_10021_to_1002c */
+	{0x8FD0, 0x8FD4, 0x10000, 0x20},  
+	{0x8FD0, 0x8FD4, 0x10021, 0x0D},  
 };
 
 static const u32 t5_pm_tx_array[][IREG_NUM_ELEM] = {
-	{0x8FF0, 0x8FF4, 0x10000, 0x20}, /* t5_pm_tx_regs_10000_to_10020 */
-	{0x8FF0, 0x8FF4, 0x10021, 0x1D}, /* t5_pm_tx_regs_10021_to_1003c */
+	{0x8FF0, 0x8FF4, 0x10000, 0x20},  
+	{0x8FF0, 0x8FF4, 0x10021, 0x1D},  
 };
 
 static const u32 t5_pcie_config_array[][2] = {
@@ -123,59 +121,59 @@ static const u32 t5_pcie_config_array[][2] = {
 };
 
 static const u32 t6_ma_ireg_array[][IREG_NUM_ELEM] = {
-	{0x78f8, 0x78fc, 0xa000, 23}, /* t6_ma_regs_a000_to_a016 */
-	{0x78f8, 0x78fc, 0xa400, 30}, /* t6_ma_regs_a400_to_a41e */
-	{0x78f8, 0x78fc, 0xa800, 20} /* t6_ma_regs_a800_to_a813 */
+	{0x78f8, 0x78fc, 0xa000, 23},  
+	{0x78f8, 0x78fc, 0xa400, 30},  
+	{0x78f8, 0x78fc, 0xa800, 20}  
 };
 
 static const u32 t6_ma_ireg_array2[][IREG_NUM_ELEM] = {
-	{0x78f8, 0x78fc, 0xe400, 17}, /* t6_ma_regs_e400_to_e600 */
-	{0x78f8, 0x78fc, 0xe640, 13} /* t6_ma_regs_e640_to_e7c0 */
+	{0x78f8, 0x78fc, 0xe400, 17},  
+	{0x78f8, 0x78fc, 0xe640, 13}  
 };
 
 static const u32 t6_up_cim_reg_array[][IREG_NUM_ELEM + 1] = {
-	{0x7b50, 0x7b54, 0x2000, 0x20, 0}, /* up_cim_2000_to_207c */
-	{0x7b50, 0x7b54, 0x2080, 0x1d, 0}, /* up_cim_2080_to_20fc */
-	{0x7b50, 0x7b54, 0x00, 0x20, 0}, /* up_cim_00_to_7c */
-	{0x7b50, 0x7b54, 0x80, 0x20, 0}, /* up_cim_80_to_fc */
-	{0x7b50, 0x7b54, 0x100, 0x11, 0}, /* up_cim_100_to_14c */
-	{0x7b50, 0x7b54, 0x200, 0x10, 0}, /* up_cim_200_to_23c */
-	{0x7b50, 0x7b54, 0x240, 0x2, 0}, /* up_cim_240_to_244 */
-	{0x7b50, 0x7b54, 0x250, 0x2, 0}, /* up_cim_250_to_254 */
-	{0x7b50, 0x7b54, 0x260, 0x2, 0}, /* up_cim_260_to_264 */
-	{0x7b50, 0x7b54, 0x270, 0x2, 0}, /* up_cim_270_to_274 */
-	{0x7b50, 0x7b54, 0x280, 0x20, 0}, /* up_cim_280_to_2fc */
-	{0x7b50, 0x7b54, 0x300, 0x20, 0}, /* up_cim_300_to_37c */
-	{0x7b50, 0x7b54, 0x380, 0x14, 0}, /* up_cim_380_to_3cc */
-	{0x7b50, 0x7b54, 0x4900, 0x4, 0x4}, /* up_cim_4900_to_4c60 */
-	{0x7b50, 0x7b54, 0x4904, 0x4, 0x4}, /* up_cim_4904_to_4c64 */
-	{0x7b50, 0x7b54, 0x4908, 0x4, 0x4}, /* up_cim_4908_to_4c68 */
-	{0x7b50, 0x7b54, 0x4910, 0x4, 0x4}, /* up_cim_4910_to_4c70 */
-	{0x7b50, 0x7b54, 0x4914, 0x4, 0x4}, /* up_cim_4914_to_4c74 */
-	{0x7b50, 0x7b54, 0x4920, 0x10, 0x10}, /* up_cim_4920_to_4a10 */
-	{0x7b50, 0x7b54, 0x4924, 0x10, 0x10}, /* up_cim_4924_to_4a14 */
-	{0x7b50, 0x7b54, 0x4928, 0x10, 0x10}, /* up_cim_4928_to_4a18 */
-	{0x7b50, 0x7b54, 0x492c, 0x10, 0x10}, /* up_cim_492c_to_4a1c */
+	{0x7b50, 0x7b54, 0x2000, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x2080, 0x1d, 0},  
+	{0x7b50, 0x7b54, 0x00, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x80, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x100, 0x11, 0},  
+	{0x7b50, 0x7b54, 0x200, 0x10, 0},  
+	{0x7b50, 0x7b54, 0x240, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x250, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x260, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x270, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x280, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x300, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x380, 0x14, 0},  
+	{0x7b50, 0x7b54, 0x4900, 0x4, 0x4},  
+	{0x7b50, 0x7b54, 0x4904, 0x4, 0x4},  
+	{0x7b50, 0x7b54, 0x4908, 0x4, 0x4},  
+	{0x7b50, 0x7b54, 0x4910, 0x4, 0x4},  
+	{0x7b50, 0x7b54, 0x4914, 0x4, 0x4},  
+	{0x7b50, 0x7b54, 0x4920, 0x10, 0x10},  
+	{0x7b50, 0x7b54, 0x4924, 0x10, 0x10},  
+	{0x7b50, 0x7b54, 0x4928, 0x10, 0x10},  
+	{0x7b50, 0x7b54, 0x492c, 0x10, 0x10},  
 };
 
 static const u32 t5_up_cim_reg_array[][IREG_NUM_ELEM + 1] = {
-	{0x7b50, 0x7b54, 0x2000, 0x20, 0}, /* up_cim_2000_to_207c */
-	{0x7b50, 0x7b54, 0x2080, 0x19, 0}, /* up_cim_2080_to_20ec */
-	{0x7b50, 0x7b54, 0x00, 0x20, 0}, /* up_cim_00_to_7c */
-	{0x7b50, 0x7b54, 0x80, 0x20, 0}, /* up_cim_80_to_fc */
-	{0x7b50, 0x7b54, 0x100, 0x11, 0}, /* up_cim_100_to_14c */
-	{0x7b50, 0x7b54, 0x200, 0x10, 0}, /* up_cim_200_to_23c */
-	{0x7b50, 0x7b54, 0x240, 0x2, 0}, /* up_cim_240_to_244 */
-	{0x7b50, 0x7b54, 0x250, 0x2, 0}, /* up_cim_250_to_254 */
-	{0x7b50, 0x7b54, 0x260, 0x2, 0}, /* up_cim_260_to_264 */
-	{0x7b50, 0x7b54, 0x270, 0x2, 0}, /* up_cim_270_to_274 */
-	{0x7b50, 0x7b54, 0x280, 0x20, 0}, /* up_cim_280_to_2fc */
-	{0x7b50, 0x7b54, 0x300, 0x20, 0}, /* up_cim_300_to_37c */
-	{0x7b50, 0x7b54, 0x380, 0x14, 0}, /* up_cim_380_to_3cc */
+	{0x7b50, 0x7b54, 0x2000, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x2080, 0x19, 0},  
+	{0x7b50, 0x7b54, 0x00, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x80, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x100, 0x11, 0},  
+	{0x7b50, 0x7b54, 0x200, 0x10, 0},  
+	{0x7b50, 0x7b54, 0x240, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x250, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x260, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x270, 0x2, 0},  
+	{0x7b50, 0x7b54, 0x280, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x300, 0x20, 0},  
+	{0x7b50, 0x7b54, 0x380, 0x14, 0},  
 };
 
 static const u32 t6_hma_ireg_array[][IREG_NUM_ELEM] = {
-	{0x51320, 0x51324, 0xa000, 32} /* t6_hma_regs_a000_to_a01f */
+	{0x51320, 0x51324, 0xa000, 32}  
 };
 
 u32 cudbg_get_entity_length(struct adapter *adap, u32 entity)
@@ -208,7 +206,7 @@ u32 cudbg_get_entity_length(struct adapter *adap, u32 entity)
 			len = adap->params.cim_la_size / 8;
 			len *= 8 * sizeof(u32);
 		}
-		len += sizeof(u32); /* for reading CIM LA configuration */
+		len += sizeof(u32);  
 		break;
 	case CUDBG_CIM_MA_LA:
 		len = 2 * CIM_MALA_SIZE * 5 * sizeof(u32);
@@ -404,9 +402,7 @@ u32 cudbg_get_entity_length(struct adapter *adap, u32 entity)
 	case CUDBG_HMA:
 		value = t4_read_reg(adap, MA_TARGET_MEM_ENABLE_A);
 		if (value & HMA_MUX_F) {
-			/* In T6, there's no MC1.  So, HMA shares MC1
-			 * address space.
-			 */
+			 
 			value = t4_read_reg(adap, MA_EXT_MEMORY1_BAR_A);
 			len = EXT_MEM1_SIZE_G(value);
 		}
@@ -438,7 +434,7 @@ static int cudbg_do_compression(struct cudbg_init *pdbg_init,
 	bytes_left = pin_buff->size;
 	bytes_read = 0;
 	while (bytes_left > 0) {
-		/* Do compression in smaller chunks */
+		 
 		bytes = min_t(unsigned long, bytes_left,
 			      (unsigned long)CUDBG_CHUNK_SIZE);
 		temp_in_buff.data = (char *)pin_buff->data + bytes_read;
@@ -483,9 +479,7 @@ static int is_fw_attached(struct cudbg_init *pdbg_init)
 	return 1;
 }
 
-/* This function will add additional padding bytes into debug_buffer to make it
- * 4 byte aligned.
- */
+ 
 void cudbg_align_debug_buffer(struct cudbg_buffer *dbg_buff,
 			      struct cudbg_entity_hdr *entity_hdr)
 {
@@ -553,7 +547,7 @@ int cudbg_fill_meminfo(struct adapter *padap,
 		meminfo_buff->mem[i].idx = i;
 	}
 
-	/* Find and sort the populated memory ranges */
+	 
 	i = 0;
 	lo = t4_read_reg(padap, MA_TARGET_MEM_ENABLE_A);
 	if (lo & EDRAM0_ENABLE_F) {
@@ -624,7 +618,7 @@ int cudbg_fill_meminfo(struct adapter *padap,
 		}
 	}
 
-	if (!i) /* no memory available */
+	if (!i)  
 		return CUDBG_STATUS_ENTITY_NOT_FOUND;
 
 	meminfo_buff->avail_c = i;
@@ -640,7 +634,7 @@ int cudbg_fill_meminfo(struct adapter *padap,
 	(md++)->base = t4_read_reg(padap, TP_CMM_MM_TX_FLST_BASE_A);
 	(md++)->base = t4_read_reg(padap, TP_CMM_MM_PS_FLST_BASE_A);
 
-	/* the next few have explicit upper bounds */
+	 
 	md->base = t4_read_reg(padap, TP_PMM_TX_BASE_A);
 	md->limit = md->base - 1 +
 		    t4_read_reg(padap, TP_PMM_TX_PAGE_SIZE_A) *
@@ -665,7 +659,7 @@ int cudbg_fill_meminfo(struct adapter *padap,
 		md->limit = 0;
 	} else {
 		md->base = 0;
-		md->idx = ARRAY_SIZE(cudbg_region);  /* hide it */
+		md->idx = ARRAY_SIZE(cudbg_region);   
 	}
 	md++;
 
@@ -717,10 +711,10 @@ int cudbg_fill_meminfo(struct adapter *padap,
 	if (padap->vres.ocq.size)
 		md->limit = md->base + padap->vres.ocq.size - 1;
 	else
-		md->idx = ARRAY_SIZE(cudbg_region);  /* hide it */
+		md->idx = ARRAY_SIZE(cudbg_region);   
 	md++;
 
-	/* add any address-space holes, there can be up to 3 */
+	 
 	for (n = 0; n < i - 1; n++)
 		if (meminfo_buff->avail[n].limit <
 		    meminfo_buff->avail[n + 1].base)
@@ -852,7 +846,7 @@ int cudbg_collect_fw_devlog(struct cudbg_init *pdbg_init,
 	if (rc)
 		return rc;
 
-	/* Collect FW devlog */
+	 
 	if (dparams->start != 0) {
 		spin_lock(&padap->win0_lock);
 		rc = t4_memory_rw(padap, padap->params.drv_memwin,
@@ -978,16 +972,16 @@ static int cudbg_read_cim_ibq(struct cudbg_init *pdbg_init,
 	int no_of_read_words, rc = 0;
 	u32 qsize;
 
-	/* collect CIM IBQ */
+	 
 	qsize = CIM_IBQ_SIZE * 4 * sizeof(u32);
 	rc = cudbg_get_buff(pdbg_init, dbg_buff, qsize, &temp_buff);
 	if (rc)
 		return rc;
 
-	/* t4_read_cim_ibq will return no. of read words or error */
+	 
 	no_of_read_words = t4_read_cim_ibq(padap, qid,
 					   (u32 *)temp_buff.data, qsize);
-	/* no_of_read_words is less than or equal to 0 means error */
+	 
 	if (no_of_read_words <= 0) {
 		if (!no_of_read_words)
 			rc = CUDBG_SYSTEM_ERROR;
@@ -1049,7 +1043,7 @@ u32 cudbg_cim_obq_size(struct adapter *padap, int qid)
 	t4_write_reg(padap, CIM_QUEUE_CONFIG_REF_A, OBQSELECT_F |
 		     QUENUMSELECT_V(qid));
 	value = t4_read_reg(padap, CIM_QUEUE_CONFIG_CTRL_A);
-	value = CIMQSIZE_G(value) * 64; /* size in number of words */
+	value = CIMQSIZE_G(value) * 64;  
 	return value * sizeof(u32);
 }
 
@@ -1062,16 +1056,16 @@ static int cudbg_read_cim_obq(struct cudbg_init *pdbg_init,
 	int no_of_read_words, rc = 0;
 	u32 qsize;
 
-	/* collect CIM OBQ */
+	 
 	qsize =  cudbg_cim_obq_size(padap, qid);
 	rc = cudbg_get_buff(pdbg_init, dbg_buff, qsize, &temp_buff);
 	if (rc)
 		return rc;
 
-	/* t4_read_cim_obq will return no. of read words or error */
+	 
 	no_of_read_words = t4_read_cim_obq(padap, qid,
 					   (u32 *)temp_buff.data, qsize);
-	/* no_of_read_words is less than or equal to 0 means error */
+	 
 	if (no_of_read_words <= 0) {
 		if (!no_of_read_words)
 			rc = CUDBG_SYSTEM_ERROR;
@@ -1154,7 +1148,7 @@ static int cudbg_meminfo_get_mem_index(struct adapter *padap,
 		flag = EDC1_FLAG;
 		break;
 	case MEM_MC0:
-		/* Some T5 cards have both MC0 and MC1. */
+		 
 		flag = is_t5(padap->params.chip) ? MC0_FLAG : MC_FLAG;
 		break;
 	case MEM_MC1:
@@ -1177,7 +1171,7 @@ static int cudbg_meminfo_get_mem_index(struct adapter *padap,
 	return CUDBG_STATUS_ENTITY_NOT_FOUND;
 }
 
-/* Fetch the @region_name's start and end from @meminfo. */
+ 
 static int cudbg_get_mem_region(struct adapter *padap,
 				struct cudbg_meminfo *meminfo,
 				u8 mem_type, const char *region_name,
@@ -1198,7 +1192,7 @@ static int cudbg_get_mem_region(struct adapter *padap,
 	idx = i;
 	for (i = 0; i < meminfo->mem_c; i++) {
 		if (meminfo->mem[i].idx >= ARRAY_SIZE(cudbg_region))
-			continue; /* Skip holes */
+			continue;  
 
 		if (!(meminfo->mem[i].limit))
 			meminfo->mem[i].limit =
@@ -1206,7 +1200,7 @@ static int cudbg_get_mem_region(struct adapter *padap,
 				meminfo->mem[i + 1].base - 1 : ~0;
 
 		if (meminfo->mem[i].idx == idx) {
-			/* Check if the region exists in @mem_type memory */
+			 
 			if (meminfo->mem[i].base < meminfo->avail[mc].base &&
 			    meminfo->mem[i].limit < meminfo->avail[mc].base)
 				return -EINVAL;
@@ -1226,9 +1220,7 @@ static int cudbg_get_mem_region(struct adapter *padap,
 	return 0;
 }
 
-/* Fetch and update the start and end of the requested memory region w.r.t 0
- * in the corresponding EDC/MC/HMA.
- */
+ 
 static int cudbg_get_mem_relative(struct adapter *padap,
 				  struct cudbg_meminfo *meminfo,
 				  u8 mem_type, u32 *out_base, u32 *out_end)
@@ -1253,7 +1245,7 @@ static int cudbg_get_mem_relative(struct adapter *padap,
 	return 0;
 }
 
-/* Get TX and RX Payload region */
+ 
 static int cudbg_get_payload_range(struct adapter *padap, u8 mem_type,
 				   const char *region_name,
 				   struct cudbg_region_info *payload)
@@ -1291,14 +1283,13 @@ static int cudbg_memory_read(struct cudbg_init *pdbg_init, int win,
 	u64 *buf;
 	int ret;
 
-	/* Argument sanity checks ...
-	 */
+	 
 	if (addr & 0x3 || (uintptr_t)hbuf & 0x3)
 		return -EINVAL;
 
 	buf = (u64 *)hbuf;
 
-	/* Try to do 64-bit reads.  Residual will be handled later. */
+	 
 	resid = len & 0x7;
 	len -= resid;
 
@@ -1313,21 +1304,17 @@ static int cudbg_memory_read(struct cudbg_init *pdbg_init, int win,
 	pos = addr & ~(mem_aperture - 1);
 	offset = addr - pos;
 
-	/* Set up initial PCI-E Memory Window to cover the start of our
-	 * transfer.
-	 */
+	 
 	t4_memory_update_win(adap, win, pos | win_pf);
 
-	/* Transfer data from the adapter */
+	 
 	while (len > 0) {
 		*buf++ = le64_to_cpu((__force __le64)
 				     t4_read_reg64(adap, mem_base + offset));
 		offset += sizeof(u64);
 		len -= sizeof(u64);
 
-		/* If we've reached the end of our current window aperture,
-		 * move the PCI-E Memory Window on to the next.
-		 */
+		 
 		if (offset == mem_aperture) {
 			pos += mem_aperture;
 			offset = 0;
@@ -1336,16 +1323,14 @@ static int cudbg_memory_read(struct cudbg_init *pdbg_init, int win,
 	}
 
 	res_buf = (u32 *)buf;
-	/* Read residual in 32-bit multiples */
+	 
 	while (resid > sizeof(u32)) {
 		*res_buf++ = le32_to_cpu((__force __le32)
 					 t4_read_reg(adap, mem_base + offset));
 		offset += sizeof(u32);
 		resid -= sizeof(u32);
 
-		/* If we've reached the end of our current window aperture,
-		 * move the PCI-E Memory Window on to the next.
-		 */
+		 
 		if (offset == mem_aperture) {
 			pos += mem_aperture;
 			offset = 0;
@@ -1353,7 +1338,7 @@ static int cudbg_memory_read(struct cudbg_init *pdbg_init, int win,
 		}
 	}
 
-	/* Transfer residual < 32-bits */
+	 
 	if (resid)
 		t4_memory_rw_residual(adap, resid, mem_base + offset,
 				      (u8 *)res_buf, T4_MEMORY_READ);
@@ -1378,7 +1363,7 @@ static int cudbg_read_fw_mem(struct cudbg_init *pdbg_init,
 	int rc = 0;
 	u8 i;
 
-	/* Get TX/RX Payload region range if they exist */
+	 
 	memset(payload, 0, sizeof(payload));
 	for (i = 0; i < ARRAY_SIZE(region_name); i++) {
 		rc = cudbg_get_payload_range(padap, mem_type, region_name[i],
@@ -1387,7 +1372,7 @@ static int cudbg_read_fw_mem(struct cudbg_init *pdbg_init,
 			return rc;
 
 		if (payload[i].exist) {
-			/* Align start and end to avoid wrap around */
+			 
 			payload[i].start = roundup(payload[i].start,
 						   CUDBG_CHUNK_SIZE);
 			payload[i].end = rounddown(payload[i].end,
@@ -1397,11 +1382,7 @@ static int cudbg_read_fw_mem(struct cudbg_init *pdbg_init,
 
 	bytes_left = tot_len;
 	while (bytes_left > 0) {
-		/* As MC size is huge and read through PIO access, this
-		 * loop will hold cpu for a longer time. OS may think that
-		 * the process is hanged and will generate CPU stall traces.
-		 * So yield the cpu regularly.
-		 */
+		 
 		yield_count++;
 		if (!(yield_count % CUDBG_YIELD_ITERATION))
 			schedule();
@@ -1416,7 +1397,7 @@ static int cudbg_read_fw_mem(struct cudbg_init *pdbg_init,
 			if (payload[i].exist &&
 			    bytes_read >= payload[i].start &&
 			    bytes_read + bytes <= payload[i].end)
-				/* TX and RX Payload regions can't overlap */
+				 
 				goto skip_read;
 
 		spin_lock(&padap->win0_lock);
@@ -1449,7 +1430,7 @@ static void cudbg_t4_fwcache(struct cudbg_init *pdbg_init,
 	int rc;
 
 	if (is_fw_attached(pdbg_init)) {
-		/* Flush uP dcache before reading edcX/mcX  */
+		 
 		rc = t4_fwcache(padap, FW_PARAM_DEV_FWCACHE_FLUSH);
 		if (rc)
 			cudbg_err->sys_warn = rc;
@@ -1680,7 +1661,7 @@ int cudbg_collect_tp_indirect(struct cudbg_init *pdbg_init,
 
 	ch_tp_pio = (struct ireg_buf *)temp_buff.data;
 
-	/* TP_PIO */
+	 
 	if (is_t5(padap->params.chip))
 		n = sizeof(t5_tp_pio_array) / (IREG_NUM_ELEM * sizeof(u32));
 	else if (is_t6(padap->params.chip))
@@ -1706,7 +1687,7 @@ int cudbg_collect_tp_indirect(struct cudbg_init *pdbg_init,
 		ch_tp_pio++;
 	}
 
-	/* TP_TM_PIO */
+	 
 	if (is_t5(padap->params.chip))
 		n = sizeof(t5_tp_tm_pio_array) / (IREG_NUM_ELEM * sizeof(u32));
 	else if (is_t6(padap->params.chip))
@@ -1732,7 +1713,7 @@ int cudbg_collect_tp_indirect(struct cudbg_init *pdbg_init,
 		ch_tp_pio++;
 	}
 
-	/* TP_MIB_INDEX */
+	 
 	if (is_t5(padap->params.chip))
 		n = sizeof(t5_tp_mib_index_array) /
 		    (IREG_NUM_ELEM * sizeof(u32));
@@ -1776,9 +1757,7 @@ static void cudbg_read_sge_qbase_indirect_reg(struct adapter *padap,
 		buff = qbase->pf_data_value[func];
 	} else {
 		buff = qbase->vf_data_value[func];
-		/* In SGE_QBASE_INDEX,
-		 * Entries 0->7 are PF0->7, Entries 8->263 are VFID0->256.
-		 */
+		 
 		func += 8;
 	}
 
@@ -1799,10 +1778,7 @@ int cudbg_collect_sge_indirect(struct cudbg_init *pdbg_init,
 	int i, rc;
 	u32 size;
 
-	/* Accessing SGE_QBASE_MAP[0-3] and SGE_QBASE_INDEX regs can
-	 * lead to SGE missing doorbells under heavy traffic. So, only
-	 * collect them when adapter is idle.
-	 */
+	 
 	for_each_port(padap, i) {
 		padap_running = netif_running(padap->port[i]);
 		if (padap_running)
@@ -1838,9 +1814,7 @@ int cudbg_collect_sge_indirect(struct cudbg_init *pdbg_init,
 	if (CHELSIO_CHIP_VERSION(padap->params.chip) > CHELSIO_T5 &&
 	    !padap_running) {
 		sge_qbase = (struct sge_qbase_reg_field *)ch_sge_dbg;
-		/* 1 addr reg SGE_QBASE_INDEX and 4 data reg
-		 * SGE_QBASE_MAP[0-3]
-		 */
+		 
 		sge_qbase->reg_addr = t6_sge_qbase_index_array[0];
 		for (i = 0; i < SGE_QBASE_DATA_REG_NUM; i++)
 			sge_qbase->reg_data[i] =
@@ -1976,7 +1950,7 @@ int cudbg_collect_clk_info(struct cudbg_init *pdbg_init,
 		return rc;
 
 	clk_info_buff = (struct cudbg_clk_info *)temp_buff.data;
-	clk_info_buff->cclk_ps = 1000000000 / padap->params.vpd.cclk; /* psec */
+	clk_info_buff->cclk_ps = 1000000000 / padap->params.vpd.cclk;  
 	clk_info_buff->res = t4_read_reg(padap, TP_TIMER_RESOLUTION_A);
 	clk_info_buff->tre = TIMERRESOLUTION_G(clk_info_buff->res);
 	clk_info_buff->dack_re = DELAYEDACKRESOLUTION_G(clk_info_buff->res);
@@ -2022,7 +1996,7 @@ int cudbg_collect_pcie_indirect(struct cudbg_init *pdbg_init,
 		return rc;
 
 	ch_pcie = (struct ireg_buf *)temp_buff.data;
-	/* PCIE_PDBG */
+	 
 	for (i = 0; i < n; i++) {
 		struct ireg_field *pcie_pio = &ch_pcie->tp_pio;
 		u32 *buff = ch_pcie->outbuf;
@@ -2040,7 +2014,7 @@ int cudbg_collect_pcie_indirect(struct cudbg_init *pdbg_init,
 		ch_pcie++;
 	}
 
-	/* PCIE_CDBG */
+	 
 	n = sizeof(t5_pcie_cdbg_array) / (IREG_NUM_ELEM * sizeof(u32));
 	for (i = 0; i < n; i++) {
 		struct ireg_field *pcie_pio = &ch_pcie->tp_pio;
@@ -2078,7 +2052,7 @@ int cudbg_collect_pm_indirect(struct cudbg_init *pdbg_init,
 		return rc;
 
 	ch_pm = (struct ireg_buf *)temp_buff.data;
-	/* PM_RX */
+	 
 	for (i = 0; i < n; i++) {
 		struct ireg_field *pm_pio = &ch_pm->tp_pio;
 		u32 *buff = ch_pm->outbuf;
@@ -2096,7 +2070,7 @@ int cudbg_collect_pm_indirect(struct cudbg_init *pdbg_init,
 		ch_pm++;
 	}
 
-	/* PM_TX */
+	 
 	n = sizeof(t5_pm_tx_array) / (IREG_NUM_ELEM * sizeof(u32));
 	for (i = 0; i < n; i++) {
 		struct ireg_field *pm_pio = &ch_pm->tp_pio;
@@ -2141,9 +2115,7 @@ int cudbg_collect_tid(struct cudbg_init *pdbg_init,
 	tid1->ver_hdr.size = sizeof(struct cudbg_tid_info_region_rev1) -
 			     sizeof(struct cudbg_ver_hdr);
 
-	/* If firmware is not attached/alive, use backdoor register
-	 * access to collect dump.
-	 */
+	 
 	if (!is_fw_attached(pdbg_init))
 		goto fill_tid;
 
@@ -2269,7 +2241,7 @@ static int cudbg_get_ctxt_region_info(struct adapter *padap,
 	if (rc)
 		return rc;
 
-	/* Get EGRESS and INGRESS context region size */
+	 
 	for (i = CTXT_EGRESS; i <= CTXT_INGRESS; i++) {
 		found = 0;
 		memset(&mem_desc, 0, sizeof(struct cudbg_mem_desc));
@@ -2297,17 +2269,15 @@ static int cudbg_get_ctxt_region_info(struct adapter *padap,
 			ctx_info[i].exist = false;
 	}
 
-	/* Get FLM and CNM max qid. */
+	 
 	value = t4_read_reg(padap, SGE_FLM_CFG_A);
 
-	/* Get number of data freelist queues */
+	 
 	flq = HDRSTARTFLQ_G(value);
 	ctx_info[CTXT_FLM].exist = true;
 	ctx_info[CTXT_FLM].end = (CUDBG_MAX_FL_QIDS >> flq) * SGE_CTXT_SIZE;
 
-	/* The number of CONM contexts are same as number of freelist
-	 * queues.
-	 */
+	 
 	ctx_info[CTXT_CNM].exist = true;
 	ctx_info[CTXT_CNM].end = ctx_info[CTXT_FLM].end;
 
@@ -2321,7 +2291,7 @@ int cudbg_dump_context_size(struct adapter *padap)
 	u32 i, size = 0;
 	int rc;
 
-	/* Get max valid qid for each type of queue */
+	 
 	rc = cudbg_get_ctxt_region_info(padap, region_info, mem_type);
 	if (rc)
 		return rc;
@@ -2346,13 +2316,7 @@ static void cudbg_read_sge_ctxt(struct cudbg_init *pdbg_init, u32 cid,
 	struct adapter *padap = pdbg_init->adap;
 	int rc = -1;
 
-	/* Under heavy traffic, the SGE Queue contexts registers will be
-	 * frequently accessed by firmware.
-	 *
-	 * To avoid conflicts with firmware, always ask firmware to fetch
-	 * the SGE Queue contexts via mailbox. On failure, fallback to
-	 * accessing hardware registers directly.
-	 */
+	 
 	if (is_fw_attached(pdbg_init))
 		rc = t4_sge_ctxt_rd(padap, padap->mbox, cid, ctype, data);
 	if (rc)
@@ -2401,7 +2365,7 @@ int cudbg_collect_dump_context(struct cudbg_init *pdbg_init,
 	u8 i, k;
 	int rc;
 
-	/* Get max valid qid for each type of queue */
+	 
 	rc = cudbg_get_ctxt_region_info(padap, region_info, mem_type);
 	if (rc)
 		return rc;
@@ -2415,9 +2379,7 @@ int cudbg_collect_dump_context(struct cudbg_init *pdbg_init,
 	if (rc)
 		return rc;
 
-	/* Get buffer with enough space to read the biggest context
-	 * region in memory.
-	 */
+	 
 	max_ctx_size = max(region_info[CTXT_EGRESS].end -
 			   region_info[CTXT_EGRESS].start + 1,
 			   region_info[CTXT_INGRESS].end -
@@ -2431,10 +2393,7 @@ int cudbg_collect_dump_context(struct cudbg_init *pdbg_init,
 
 	buff = (struct cudbg_ch_cntxt *)temp_buff.data;
 
-	/* Collect EGRESS and INGRESS context data.
-	 * In case of failures, fallback to collecting via FW or
-	 * backdoor access.
-	 */
+	 
 	for (i = CTXT_EGRESS; i <= CTXT_INGRESS; i++) {
 		if (!region_info[i].exist) {
 			max_ctx_qid = CUDBG_LOWMEM_MAX_CTXT_QIDS;
@@ -2446,9 +2405,7 @@ int cudbg_collect_dump_context(struct cudbg_init *pdbg_init,
 		max_ctx_size = region_info[i].end - region_info[i].start + 1;
 		max_ctx_qid = max_ctx_size / SGE_CTXT_SIZE;
 
-		/* If firmware is not attached/alive, use backdoor register
-		 * access to collect dump.
-		 */
+		 
 		if (is_fw_attached(pdbg_init)) {
 			t4_sge_ctxt_flush(padap, padap->mbox, i);
 
@@ -2471,9 +2428,7 @@ int cudbg_collect_dump_context(struct cudbg_init *pdbg_init,
 			src_off = (u64 *)(ctx_buf + j * SGE_CTXT_SIZE);
 			dst_off = (__be64 *)buff->data;
 
-			/* The data is stored in 64-bit cpu order.  Convert it
-			 * to big endian before parsing.
-			 */
+			 
 			for (k = 0; k < SGE_CTXT_SIZE / sizeof(u64); k++)
 				dst_off[k] = cpu_to_be64(src_off[k]);
 
@@ -2489,13 +2444,11 @@ int cudbg_collect_dump_context(struct cudbg_init *pdbg_init,
 
 	kvfree(ctx_buf);
 
-	/* Collect FREELIST and CONGESTION MANAGER contexts */
+	 
 	max_ctx_size = region_info[CTXT_FLM].end -
 		       region_info[CTXT_FLM].start + 1;
 	max_ctx_qid = max_ctx_size / SGE_CTXT_SIZE;
-	/* Since FLM and CONM are 1-to-1 mapped, the below function
-	 * will fetch both FLM and CONM contexts.
-	 */
+	 
 	cudbg_get_sge_ctxt_fw(pdbg_init, max_ctx_qid, CTXT_FLM, &buff);
 
 	return cudbg_write_and_release_buff(pdbg_init, &temp_buff, dbg_buff);
@@ -2545,13 +2498,9 @@ static int cudbg_collect_tcam_index(struct cudbg_init *pdbg_init,
 	int rc = 0;
 
 	if (CHELSIO_CHIP_VERSION(padap->params.chip) >= CHELSIO_T6) {
-		/* CtlReqID   - 1: use Host Driver Requester ID
-		 * CtlCmdType - 0: Read, 1: Write
-		 * CtlTcamSel - 0: TCAM0, 1: TCAM1
-		 * CtlXYBitSel- 0: Y bit, 1: X bit
-		 */
+		 
 
-		/* Read tcamy */
+		 
 		ctl = CTLREQID_V(1) | CTLCMDTYPE_V(0) | CTLXYBITSEL_V(0);
 		if (idx < 256)
 			ctl |= CTLTCAMINDEX_V(idx) | CTLTCAMSEL_V(0);
@@ -2565,12 +2514,9 @@ static int cudbg_collect_tcam_index(struct cudbg_init *pdbg_init,
 		data2 = t4_read_reg(padap, MPS_CLS_TCAM_RDATA2_REQ_ID1_A);
 		tcam->lookup_type = DATALKPTYPE_G(data2);
 
-		/* 0 - Outer header, 1 - Inner header
-		 * [71:48] bit locations are overloaded for
-		 * outer vs. inner lookup types.
-		 */
+		 
 		if (tcam->lookup_type && tcam->lookup_type != DATALKPTYPE_M) {
-			/* Inner header VNI */
+			 
 			tcam->vniy = (data2 & DATAVIDH2_F) | DATAVIDH1_G(data2);
 			tcam->vniy = (tcam->vniy << 16) | VIDL_G(val);
 			tcam->dip_hit = data2 & DATADIPHIT_F;
@@ -2581,7 +2527,7 @@ static int cudbg_collect_tcam_index(struct cudbg_init *pdbg_init,
 
 		tcam->port_num = DATAPORTNUM_G(data2);
 
-		/* Read tcamx. Change the control param */
+		 
 		ctl |= CTLXYBITSEL_V(1);
 		t4_write_reg(padap, MPS_CLS_TCAM_DATA2_CTL_A, ctl);
 		val = t4_read_reg(padap, MPS_CLS_TCAM_RDATA1_REQ_ID1_A);
@@ -2589,7 +2535,7 @@ static int cudbg_collect_tcam_index(struct cudbg_init *pdbg_init,
 		tcamx |= t4_read_reg(padap, MPS_CLS_TCAM_RDATA0_REQ_ID1_A);
 		data2 = t4_read_reg(padap, MPS_CLS_TCAM_RDATA2_REQ_ID1_A);
 		if (tcam->lookup_type && tcam->lookup_type != DATALKPTYPE_M) {
-			/* Inner header VNI mask */
+			 
 			tcam->vnix = (data2 & DATAVIDH2_F) | DATAVIDH1_G(data2);
 			tcam->vnix = (tcam->vnix << 16) | VIDL_G(val);
 		}
@@ -2598,7 +2544,7 @@ static int cudbg_collect_tcam_index(struct cudbg_init *pdbg_init,
 		tcamx = t4_read_reg64(padap, MPS_CLS_TCAM_X_L(idx));
 	}
 
-	/* If no entry, return */
+	 
 	if (tcamx & tcamy)
 		return rc;
 
@@ -2624,18 +2570,14 @@ static int cudbg_collect_tcam_index(struct cudbg_init *pdbg_init,
 			htons(FW_LDST_CMD_FID_V(FW_LDST_MPS_RPLC) |
 			      FW_LDST_CMD_IDX_V(idx));
 
-		/* If firmware is not attached/alive, use backdoor register
-		 * access to collect dump.
-		 */
+		 
 		if (is_fw_attached(pdbg_init))
 			rc = t4_wr_mbox(padap, padap->mbox, &ldst_cmd,
 					sizeof(ldst_cmd), &ldst_cmd);
 
 		if (rc || !is_fw_attached(pdbg_init)) {
 			cudbg_mps_rpl_backdoor(padap, &mps_rplc);
-			/* Ignore error since we collected directly from
-			 * reading registers.
-			 */
+			 
 			rc = 0;
 		} else {
 			mps_rplc = ldst_cmd.u.mps.rplc;
@@ -2751,20 +2693,20 @@ static int cudbg_read_tid(struct cudbg_init *pdbg_init, u32 tid,
 	int i, cmd_retry = 8;
 	u32 val;
 
-	/* Fill REQ_DATA regs with 0's */
+	 
 	for (i = 0; i < NUM_LE_DB_DBGI_REQ_DATA_INSTANCES; i++)
 		t4_write_reg(padap, LE_DB_DBGI_REQ_DATA_A + (i << 2), 0);
 
-	/* Write DBIG command */
+	 
 	val = DBGICMD_V(4) | DBGITID_V(tid);
 	t4_write_reg(padap, LE_DB_DBGI_REQ_TCAM_CMD_A, val);
 	tid_data->dbig_cmd = val;
 
-	val = DBGICMDSTRT_F | DBGICMDMODE_V(1); /* LE mode */
+	val = DBGICMDSTRT_F | DBGICMDMODE_V(1);  
 	t4_write_reg(padap, LE_DB_DBGI_CONFIG_A, val);
 	tid_data->dbig_conf = val;
 
-	/* Poll the DBGICMDBUSY bit */
+	 
 	val = 1;
 	while (val) {
 		val = t4_read_reg(padap, LE_DB_DBGI_CONFIG_A);
@@ -2774,13 +2716,13 @@ static int cudbg_read_tid(struct cudbg_init *pdbg_init, u32 tid,
 			return CUDBG_SYSTEM_ERROR;
 	}
 
-	/* Check RESP status */
+	 
 	val = t4_read_reg(padap, LE_DB_DBGI_RSP_STATUS_A);
 	tid_data->dbig_rsp_stat = val;
 	if (!(val & 1))
 		return CUDBG_SYSTEM_ERROR;
 
-	/* Read RESP data */
+	 
 	for (i = 0; i < NUM_LE_DB_DBGI_RSP_DATA_INSTANCES; i++)
 		tid_data->data[i] = t4_read_reg(padap,
 						LE_DB_DBGI_RSP_DATA_A +
@@ -2838,30 +2780,30 @@ void cudbg_fill_le_tcam_info(struct adapter *padap,
 {
 	u32 value;
 
-	/* Get the LE regions */
-	value = t4_read_reg(padap, LE_DB_TID_HASHBASE_A); /* hash base index */
+	 
+	value = t4_read_reg(padap, LE_DB_TID_HASHBASE_A);  
 	tcam_region->tid_hash_base = value;
 
-	/* Get routing table index */
+	 
 	value = t4_read_reg(padap, LE_DB_ROUTING_TABLE_INDEX_A);
 	tcam_region->routing_start = value;
 
-	/* Get clip table index. For T6 there is separate CLIP TCAM */
+	 
 	if (is_t6(padap->params.chip))
 		value = t4_read_reg(padap, LE_DB_CLCAM_TID_BASE_A);
 	else
 		value = t4_read_reg(padap, LE_DB_CLIP_TABLE_INDEX_A);
 	tcam_region->clip_start = value;
 
-	/* Get filter table index */
+	 
 	value = t4_read_reg(padap, LE_DB_FILTER_TABLE_INDEX_A);
 	tcam_region->filter_start = value;
 
-	/* Get server table index */
+	 
 	value = t4_read_reg(padap, LE_DB_SERVER_INDEX_A);
 	tcam_region->server_start = value;
 
-	/* Check whether hash is enabled and calculate the max tids */
+	 
 	value = t4_read_reg(padap, LE_DB_CONFIG_A);
 	if ((value >> HASHEN_S) & 1) {
 		value = t4_read_reg(padap, LE_DB_HASH_CONFIG_A);
@@ -2874,7 +2816,7 @@ void cudbg_fill_le_tcam_info(struct adapter *padap,
 			tcam_region->max_tid = value +
 					       tcam_region->tid_hash_base;
 		}
-	} else { /* hash not enabled */
+	} else {  
 		if (is_t6(padap->params.chip))
 			tcam_region->max_tid = (value & ASLIPCOMPEN_F) ?
 					       CUDBG_MAX_TID_COMP_EN :
@@ -2910,12 +2852,12 @@ int cudbg_collect_le_tcam(struct cudbg_init *pdbg_init,
 	memcpy(temp_buff.data, &tcam_region, sizeof(struct cudbg_tcam));
 	bytes = sizeof(struct cudbg_tcam);
 	tid_data = (struct cudbg_tid_data *)(temp_buff.data + bytes);
-	/* read all tid */
+	 
 	for (i = 0; i < tcam_region.max_tid; ) {
 		rc = cudbg_read_tid(pdbg_init, i, tid_data);
 		if (rc) {
 			cudbg_err->sys_warn = CUDBG_STATUS_PARTIAL_DATA;
-			/* Update tcam header and exit */
+			 
 			tcam_region.max_tid = i;
 			memcpy(temp_buff.data, &tcam_region,
 			       sizeof(struct cudbg_tcam));
@@ -2923,12 +2865,12 @@ int cudbg_collect_le_tcam(struct cudbg_init *pdbg_init,
 		}
 
 		if (cudbg_is_ipv6_entry(tid_data, tcam_region)) {
-			/* T6 CLIP TCAM: ipv6 takes 4 entries */
+			 
 			if (is_t6(padap->params.chip) &&
 			    i >= tcam_region.clip_start &&
 			    i < tcam_region.clip_start + CUDBG_T6_CLIP)
 				i += 4;
-			else /* Main TCAM: ipv6 takes two tids */
+			else  
 				i += 2;
 		} else {
 			i++;
@@ -3174,7 +3116,7 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
 		return rc;
 
 	pbt = (struct cudbg_pbt_tables *)temp_buff.data;
-	/* PBT dynamic entries */
+	 
 	addr = CUDBG_CHAC_PBT_ADDR;
 	for (i = 0; i < CUDBG_PBT_DYNAMIC_ENTRIES; i++) {
 		rc = t4_cim_read(padap, addr + (i * 4), 1,
@@ -3186,8 +3128,8 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
 		}
 	}
 
-	/* PBT static entries */
-	/* static entries start when bit 6 is set */
+	 
+	 
 	addr = CUDBG_CHAC_PBT_ADDR + (1 << 6);
 	for (i = 0; i < CUDBG_PBT_STATIC_ENTRIES; i++) {
 		rc = t4_cim_read(padap, addr + (i * 4), 1,
@@ -3199,7 +3141,7 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
 		}
 	}
 
-	/* LRF entries */
+	 
 	addr = CUDBG_CHAC_PBT_LRF;
 	for (i = 0; i < CUDBG_LRF_ENTRIES; i++) {
 		rc = t4_cim_read(padap, addr + (i * 4), 1,
@@ -3211,7 +3153,7 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
 		}
 	}
 
-	/* PBT data entries */
+	 
 	addr = CUDBG_CHAC_PBT_DATA;
 	for (i = 0; i < CUDBG_PBT_DATA_ENTRIES; i++) {
 		rc = t4_cim_read(padap, addr + (i * 4), 1,
@@ -3254,7 +3196,7 @@ int cudbg_collect_mbox_log(struct cudbg_init *pdbg_init,
 			entry_idx -= log->size;
 
 		entry = mbox_cmd_log_entry(log, entry_idx);
-		/* skip over unused entries */
+		 
 		if (entry->timestamp == 0)
 			continue;
 
@@ -3310,7 +3252,7 @@ void cudbg_fill_qdesc_num_and_size(const struct adapter *padap,
 {
 	u32 tot_entries = 0, tot_size = 0;
 
-	/* NIC TXQ, RXQ, FLQ, and CTRLQ */
+	 
 	tot_entries += MAX_ETH_QSETS * 3;
 	tot_entries += MAX_CTRL_QUEUES;
 
@@ -3320,15 +3262,15 @@ void cudbg_fill_qdesc_num_and_size(const struct adapter *padap,
 	tot_size += MAX_CTRL_QUEUES * MAX_CTRL_TXQ_ENTRIES *
 		    MAX_CTRL_TXQ_DESC_SIZE;
 
-	/* FW_EVTQ and INTRQ */
+	 
 	tot_entries += INGQ_EXTRAS;
 	tot_size += INGQ_EXTRAS * MAX_RSPQ_ENTRIES * MAX_RXQ_DESC_SIZE;
 
-	/* PTP_TXQ */
+	 
 	tot_entries += 1;
 	tot_size += MAX_TXQ_ENTRIES * MAX_TXQ_DESC_SIZE;
 
-	/* ULD TXQ, RXQ, and FLQ */
+	 
 	tot_entries += CXGB4_TX_MAX * MAX_OFLD_QSETS;
 	tot_entries += CXGB4_ULD_MAX * MAX_ULD_QSETS * 2;
 
@@ -3339,12 +3281,12 @@ void cudbg_fill_qdesc_num_and_size(const struct adapter *padap,
 	tot_size += CXGB4_ULD_MAX * MAX_ULD_QSETS * MAX_RX_BUFFERS *
 		    MAX_FL_DESC_SIZE;
 
-	/* ULD CIQ */
+	 
 	tot_entries += CXGB4_ULD_MAX * MAX_ULD_QSETS;
 	tot_size += CXGB4_ULD_MAX * MAX_ULD_QSETS * SGE_MAX_IQ_SIZE *
 		    MAX_RXQ_DESC_SIZE;
 
-	/* ETHOFLD TXQ, RXQ, and FLQ */
+	 
 	tot_entries += MAX_OFLD_QSETS * 3;
 	tot_size += MAX_OFLD_QSETS * MAX_TXQ_ENTRIES * MAX_TXQ_DESC_SIZE;
 
@@ -3419,38 +3361,38 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
 	QDESC_GET(flq, flq->desc, type, label); \
 } while (0)
 
-	/* NIC TXQ */
+	 
 	for (i = 0; i < s->ethqsets; i++)
 		QDESC_GET_TXQ(&s->ethtxq[i].q, CUDBG_QTYPE_NIC_TXQ, out);
 
-	/* NIC RXQ */
+	 
 	for (i = 0; i < s->ethqsets; i++)
 		QDESC_GET_RXQ(&s->ethrxq[i].rspq, CUDBG_QTYPE_NIC_RXQ, out);
 
-	/* NIC FLQ */
+	 
 	for (i = 0; i < s->ethqsets; i++)
 		QDESC_GET_FLQ(&s->ethrxq[i].fl, CUDBG_QTYPE_NIC_FLQ, out);
 
-	/* NIC CTRLQ */
+	 
 	for (i = 0; i < padap->params.nports; i++)
 		QDESC_GET_TXQ(&s->ctrlq[i].q, CUDBG_QTYPE_CTRLQ, out);
 
-	/* FW_EVTQ */
+	 
 	QDESC_GET_RXQ(&s->fw_evtq, CUDBG_QTYPE_FWEVTQ, out);
 
-	/* INTRQ */
+	 
 	QDESC_GET_RXQ(&s->intrq, CUDBG_QTYPE_INTRQ, out);
 
-	/* PTP_TXQ */
+	 
 	QDESC_GET_TXQ(&s->ptptxq.q, CUDBG_QTYPE_PTP_TXQ, out);
 
-	/* ULD Queues */
+	 
 	mutex_lock(&uld_mutex);
 
 	if (s->uld_txq_info) {
 		struct sge_uld_txq_info *utxq;
 
-		/* ULD TXQ */
+		 
 		for (j = 0; j < CXGB4_TX_MAX; j++) {
 			if (!s->uld_txq_info[j])
 				continue;
@@ -3467,7 +3409,7 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
 		struct sge_uld_rxq_info *urxq;
 		u32 base;
 
-		/* ULD RXQ */
+		 
 		for (j = 0; j < CXGB4_ULD_MAX; j++) {
 			if (!s->uld_rxq_info[j])
 				continue;
@@ -3479,7 +3421,7 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
 					      out_unlock_uld);
 		}
 
-		/* ULD FLQ */
+		 
 		for (j = 0; j < CXGB4_ULD_MAX; j++) {
 			if (!s->uld_rxq_info[j])
 				continue;
@@ -3491,7 +3433,7 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
 					      out_unlock_uld);
 		}
 
-		/* ULD CIQ */
+		 
 		for (j = 0; j < CXGB4_ULD_MAX; j++) {
 			if (!s->uld_rxq_info[j])
 				continue;
@@ -3510,13 +3452,13 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
 		goto out;
 
 	mutex_lock(&padap->tc_mqprio->mqprio_mutex);
-	/* ETHOFLD TXQ */
+	 
 	if (s->eohw_txq)
 		for (i = 0; i < s->eoqsets; i++)
 			QDESC_GET_TXQ(&s->eohw_txq[i].q,
 				      CUDBG_QTYPE_ETHOFLD_TXQ, out_unlock_mqprio);
 
-	/* ETHOFLD RXQ and FLQ */
+	 
 	if (s->eohw_rxq) {
 		for (i = 0; i < s->eoqsets; i++)
 			QDESC_GET_RXQ(&s->eohw_rxq[i].rspq,

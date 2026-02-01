@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ascot2e.c
- *
- * Sony Ascot3E DVB-T/T2/C/C2 tuner driver
- *
- * Copyright 2012 Sony Corporation
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
-  */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -146,7 +137,7 @@ static int ascot2e_write_regs(struct ascot2e_priv *priv,
 
 static int ascot2e_write_reg(struct ascot2e_priv *priv, u8 reg, u8 val)
 {
-	u8 tmp = val; /* see gcc.gnu.org/bugzilla/show_bug.cgi?id=81715 */
+	u8 tmp = val;  
 
 	return ascot2e_write_regs(priv, reg, &tmp, 1);
 }
@@ -332,33 +323,33 @@ static int ascot2e_set_params(struct dvb_frontend *fe)
 	if (priv->state == STATE_SLEEP)
 		ascot2e_leave_power_save(priv);
 
-	/* IF_OUT_SEL / AGC_SEL setting */
+	 
 	data[0] = 0x00;
 	if (ascot2e_sett[tv_system].agc_sel != ASCOT2E_AUTO) {
-		/* AGC pin setting from parameter table */
+		 
 		data[0] |= (u8)(
 			(ascot2e_sett[tv_system].agc_sel & 0x03) << 3);
 	}
 	if (ascot2e_sett[tv_system].if_out_sel != ASCOT2E_AUTO) {
-		/* IFOUT pin setting from parameter table */
+		 
 		data[0] |= (u8)(
 			(ascot2e_sett[tv_system].if_out_sel & 0x01) << 2);
 	}
-	/* Set bit[4:2] only */
+	 
 	ascot2e_set_reg_bits(priv, 0x05, data[0], 0x1c);
-	/* 0x06 - 0x0F */
-	/* REF_R setting (0x06) */
+	 
+	 
 	if (tv_system == ASCOT2E_DTV_DVBC_6 ||
 			tv_system == ASCOT2E_DTV_DVBC_8) {
-		/* xtal, xtal*2 */
+		 
 		data[0] = (frequency > 500000) ? 16 : 32;
 	} else {
-		/* xtal/8, xtal/4 */
+		 
 		data[0] = (frequency > 500000) ? 2 : 4;
 	}
-	/* XOSC_SEL=100uA */
+	 
 	data[1] = 0x04;
-	/* KBW setting (0x08), KC0 setting (0x09), KC1 setting (0x0A) */
+	 
 	if (tv_system == ASCOT2E_DTV_DVBC_6 ||
 			tv_system == ASCOT2E_DTV_DVBC_8) {
 		data[2] = 18;
@@ -369,36 +360,32 @@ static int ascot2e_set_params(struct dvb_frontend *fe)
 		data[3] = 10;
 		data[4] = 30;
 	}
-	/* ORDER/R2_RANGE/R2_BANK/C2_BANK setting (0x0B) */
+	 
 	if (tv_system == ASCOT2E_DTV_DVBC_6 ||
 			tv_system == ASCOT2E_DTV_DVBC_8)
 		data[5] = (frequency > 500000) ? 0x08 : 0x0c;
 	else
 		data[5] = (frequency > 500000) ? 0x30 : 0x38;
-	/* Set MIX_OLL (0x0C) value from parameter table */
+	 
 	data[6] = ascot2e_sett[tv_system].mix_oll;
-	/* Set RF_GAIN (0x0D) setting from parameter table */
+	 
 	if (ascot2e_sett[tv_system].rf_gain == ASCOT2E_AUTO) {
-		/* RF_GAIN auto control enable */
+		 
 		ascot2e_write_reg(priv, 0x4E, 0x01);
-		/* RF_GAIN Default value */
+		 
 		data[7] = 0x00;
 	} else {
-		/* RF_GAIN auto control disable */
+		 
 		ascot2e_write_reg(priv, 0x4E, 0x00);
 		data[7] = ascot2e_sett[tv_system].rf_gain;
 	}
-	/* Set IF_BPF_GC/FIF_OFFSET (0x0E) value from parameter table */
+	 
 	data[8] = (u8)((ascot2e_sett[tv_system].fif_offset << 3) |
 		(ascot2e_sett[tv_system].if_bpf_gc & 0x07));
-	/* Set BW_OFFSET (0x0F) value from parameter table */
+	 
 	data[9] = ascot2e_sett[tv_system].bw_offset;
 	ascot2e_write_regs(priv, 0x06, data, 10);
-	/*
-	 * 0x45 - 0x47
-	 * LNA optimization setting
-	 * RF_LNA_DIST1-5, RF_LNA_CM
-	 */
+	 
 	if (tv_system == ASCOT2E_DTV_DVBC_6 ||
 			tv_system == ASCOT2E_DTV_DVBC_8) {
 		data[0] = 0x0F;
@@ -410,39 +397,33 @@ static int ascot2e_set_params(struct dvb_frontend *fe)
 		data[2] = 0x03;
 	}
 	ascot2e_write_regs(priv, 0x45, data, 3);
-	/* 0x49 - 0x4A
-	 Set RF_OLDET_ENX/RF_OLDET_OLL value from parameter table */
+	 
 	data[0] = ascot2e_sett[tv_system].rf_oldet;
-	/* Set IF_BPF_F0 value from parameter table */
+	 
 	data[1] = ascot2e_sett[tv_system].if_bpf_f0;
 	ascot2e_write_regs(priv, 0x49, data, 2);
-	/*
-	 * Tune now
-	 * RFAGC fast mode / RFAGC auto control enable
-	 * (set bit[7], bit[5:4] only)
-	 * vco_cal = 1, set MIX_OL_CPU_EN
-	 */
+	 
 	ascot2e_set_reg_bits(priv, 0x0c, 0x90, 0xb0);
-	/* Logic wake up, CPU wake up */
+	 
 	data[0] = 0xc4;
 	data[1] = 0x40;
 	ascot2e_write_regs(priv, 0x03, data, 2);
-	/* 0x10 - 0x14 */
-	data[0] = (u8)(frequency & 0xFF);         /* 0x10: FRF_L */
-	data[1] = (u8)((frequency >> 8) & 0xFF);  /* 0x11: FRF_M */
-	data[2] = (u8)((frequency >> 16) & 0x0F); /* 0x12: FRF_H (bit[3:0]) */
-	/* 0x12: BW (bit[5:4]) */
+	 
+	data[0] = (u8)(frequency & 0xFF);          
+	data[1] = (u8)((frequency >> 8) & 0xFF);   
+	data[2] = (u8)((frequency >> 16) & 0x0F);  
+	 
 	data[2] |= (u8)(ascot2e_sett[tv_system].bw << 4);
-	data[3] = 0xFF; /* 0x13: VCO calibration enable */
-	data[4] = 0xFF; /* 0x14: Analog block enable */
-	/* Tune (Burst write) */
+	data[3] = 0xFF;  
+	data[4] = 0xFF;  
+	 
 	ascot2e_write_regs(priv, 0x10, data, 5);
 	msleep(50);
-	/* CPU deep sleep */
+	 
 	ascot2e_write_reg(priv, 0x04, 0x00);
-	/* Logic sleep */
+	 
 	ascot2e_write_reg(priv, 0x03, 0xC0);
-	/* RFAGC normal mode (set bit[5:4] only) */
+	 
 	ascot2e_set_reg_bits(priv, 0x0C, 0x00, 0x30);
 	priv->frequency = frequency;
 	return 0;
@@ -488,34 +469,34 @@ struct dvb_frontend *ascot2e_attach(struct dvb_frontend *fe,
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 
-	/* 16 MHz xTal frequency */
+	 
 	data[0] = 16;
-	/* VCO current setting */
+	 
 	data[1] = 0x06;
-	/* Logic wake up, CPU boot */
+	 
 	data[2] = 0xC4;
 	data[3] = 0x40;
 	ascot2e_write_regs(priv, 0x01, data, 4);
-	/* RFVGA optimization setting (RF_DIST0 - RF_DIST2) */
+	 
 	data[0] = 0x10;
 	data[1] = 0x3F;
 	data[2] = 0x25;
 	ascot2e_write_regs(priv, 0x22, data, 3);
-	/* PLL mode setting */
+	 
 	ascot2e_write_reg(priv, 0x28, 0x1e);
-	/* RSSI setting */
+	 
 	ascot2e_write_reg(priv, 0x59, 0x04);
-	/* TODO check CPU HW error state here */
+	 
 	msleep(80);
-	/* Xtal oscillator current control setting */
+	 
 	ascot2e_write_reg(priv, 0x4c, 0x01);
-	/* XOSC_SEL=100uA */
+	 
 	ascot2e_write_reg(priv, 0x07, 0x04);
-	/* CPU deep sleep */
+	 
 	ascot2e_write_reg(priv, 0x04, 0x00);
-	/* Logic sleep */
+	 
 	ascot2e_write_reg(priv, 0x03, 0xc0);
-	/* Power save setting */
+	 
 	data[0] = 0x00;
 	data[1] = 0x04;
 	ascot2e_write_regs(priv, 0x14, data, 2);

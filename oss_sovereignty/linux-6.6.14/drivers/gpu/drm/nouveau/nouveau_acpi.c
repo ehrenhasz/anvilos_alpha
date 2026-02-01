@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include <linux/pci.h>
 #include <linux/acpi.h>
 #include <linux/slab.h>
@@ -30,7 +30,7 @@
 
 #define NOUVEAU_DSM_OPTIMUS_SET_POWERDOWN (NOUVEAU_DSM_OPTIMUS_POWERDOWN_PS3 | NOUVEAU_DSM_OPTIMUS_FLAGS_CHANGED)
 
-/* result of the optimus caps function */
+ 
 #define OPTIMUS_ENABLED (1 << 0)
 #define OPTIMUS_STATUS_MASK (3 << 3)
 #define OPTIMUS_STATUS_OFF  (0 << 3)
@@ -41,7 +41,7 @@
 #define OPTIMUS_DYNAMIC_PWR_CAP (1 << 24)
 
 #define OPTIMUS_AUDIO_CAPS_MASK (3 << 27)
-#define OPTIMUS_HDA_CODEC_MASK (2 << 27) /* hda bios control */
+#define OPTIMUS_HDA_CODEC_MASK (2 << 27)  
 
 static struct nouveau_dsm_priv {
 	bool dsm_detected;
@@ -79,7 +79,7 @@ static int nouveau_optimus_dsm(acpi_handle handle, int func, int arg, uint32_t *
 		.buffer.pointer = args_buff
 	};
 
-	/* ACPI is little endian, AABBCCDD becomes {DD,CC,BB,AA} */
+	 
 	for (i = 0; i < 4; i++)
 		args_buff[i] = (arg >> i * 8) & 0xFF;
 
@@ -102,26 +102,16 @@ static int nouveau_optimus_dsm(acpi_handle handle, int func, int arg, uint32_t *
 	return 0;
 }
 
-/*
- * On some platforms, _DSM(nouveau_op_dsm_muid, func0) has special
- * requirements on the fourth parameter, so a private implementation
- * instead of using acpi_check_dsm().
- */
+ 
 static int nouveau_dsm_get_optimus_functions(acpi_handle handle)
 {
 	int result;
 
-	/*
-	 * Function 0 returns a Buffer containing available functions.
-	 * The args parameter is ignored for function 0, so just put 0 in it
-	 */
+	 
 	if (nouveau_optimus_dsm(handle, 0, 0, &result))
 		return 0;
 
-	/*
-	 * ACPI Spec v4 9.14.1: if bit 0 is zero, no function is supported.
-	 * If the n-th bit is enabled, function n is supported
-	 */
+	 
 	if (result & 1 && result & (1 << NOUVEAU_DSM_OPTIMUS_CAPS))
 		return result;
 	return 0;
@@ -184,8 +174,7 @@ static int nouveau_dsm_power_state(enum vga_switcheroo_client_id id,
 	if (id == VGA_SWITCHEROO_IGD)
 		return 0;
 
-	/* Optimus laptops have the card already disabled in
-	 * nouveau_switcheroo_set_state */
+	 
 	if (!nouveau_dsm_priv.dsm_detected)
 		return 0;
 
@@ -194,11 +183,11 @@ static int nouveau_dsm_power_state(enum vga_switcheroo_client_id id,
 
 static enum vga_switcheroo_client_id nouveau_dsm_get_client_id(struct pci_dev *pdev)
 {
-	/* easy option one - intel vendor ID means Integrated */
+	 
 	if (pdev->vendor == PCI_VENDOR_ID_INTEL)
 		return VGA_SWITCHEROO_IGD;
 
-	/* is this device on Bus 0? - this may need improving */
+	 
 	if (pdev->bus->number == 0)
 		return VGA_SWITCHEROO_IGD;
 
@@ -243,7 +232,7 @@ static void nouveau_dsm_pci_probe(struct pci_dev *pdev, acpi_handle *dhandle_out
 				      1 << NOUVEAU_DSM_POWER);
 	optimus_funcs = nouveau_dsm_get_optimus_functions(dhandle);
 
-	/* Does not look like a Nvidia device. */
+	 
 	if (!supports_mux && !optimus_funcs)
 		return;
 
@@ -277,13 +266,13 @@ static bool nouveau_dsm_detect(void)
 	bool guid_valid;
 	bool ret = false;
 
-	/* lookup the MXM GUID */
+	 
 	guid_valid = mxm_wmi_supported();
 
 	if (guid_valid)
 		printk("MXM: GUID detected in BIOS\n");
 
-	/* now do DSM detection */
+	 
 	while ((pdev = pci_get_class(PCI_CLASS_DISPLAY_VGA << 8, pdev)) != NULL) {
 		vga_count++;
 
@@ -298,7 +287,7 @@ static bool nouveau_dsm_detect(void)
 				      &has_optimus_flags, &has_power_resources);
 	}
 
-	/* find the optimus DSM or the old v1 DSM */
+	 
 	if (has_optimus) {
 		nouveau_dsm_priv.dhandle = dhandle;
 		acpi_get_name(nouveau_dsm_priv.dhandle, ACPI_FULL_PATHNAME,
@@ -336,7 +325,7 @@ void nouveau_register_dsm_handler(void)
 	vga_switcheroo_register_handler(&nouveau_dsm_handler, 0);
 }
 
-/* Must be called for Optimus models before the card can be turned off */
+ 
 void nouveau_switcheroo_optimus_dsm(void)
 {
 	u32 result = 0;

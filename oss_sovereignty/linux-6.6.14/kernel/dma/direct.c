@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018-2020 Christoph Hellwig.
- *
- * DMA operations that map physical memory directly without using an IOMMU.
- */
-#include <linux/memblock.h> /* for max_pfn */
+
+ 
+#include <linux/memblock.h>  
 #include <linux/export.h>
 #include <linux/mm.h>
 #include <linux/dma-map-ops.h>
@@ -15,11 +11,7 @@
 #include <linux/slab.h>
 #include "direct.h"
 
-/*
- * Most architectures use ZONE_DMA for the first 16 Megabytes, but some use
- * it for entirely different regions. In that case the arch code needs to
- * override the variable below for dma-direct to work properly.
- */
+ 
 unsigned int zone_dma_bits __ro_after_init = 24;
 
 static inline dma_addr_t phys_to_dma_direct(struct device *dev,
@@ -50,14 +42,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
 		dev->coherent_dma_mask,
 		dev->bus_dma_limit);
 
-	/*
-	 * Optimistically try the zone that the physical address mask falls
-	 * into first.  If that returns memory that isn't actually addressable
-	 * we will fallback to the next lower zone and try again.
-	 *
-	 * Note that GFP_DMA32 and GFP_DMA are no ops without the corresponding
-	 * zones.
-	 */
+	 
 	*phys_limit = dma_to_phys(dev, dma_limit);
 	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
 		return GFP_DMA;
@@ -159,10 +144,7 @@ again:
 	return page;
 }
 
-/*
- * Check if a potentially blocking operations needs to dip into the atomic
- * pools for the given device/gfp.
- */
+ 
 static bool dma_direct_use_pool(struct device *dev, gfp_t gfp)
 {
 	return !gfpflags_allow_blocking(gfp) && !is_swiotlb_for_alloc(dev);
@@ -195,11 +177,11 @@ static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
 	if (!page)
 		return NULL;
 
-	/* remove any dirty cache lines on the kernel alias */
+	 
 	if (!PageHighMem(page))
 		arch_dma_prep_coherent(page, size);
 
-	/* return the page pointer as the opaque cookie */
+	 
 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
 	return page;
 }
@@ -220,10 +202,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
 		return dma_direct_alloc_no_mapping(dev, size, dma_handle, gfp);
 
 	if (!dev_is_dma_coherent(dev)) {
-		/*
-		 * Fallback to the arch handler if it exists.  This should
-		 * eventually go away.
-		 */
+		 
 		if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
 		    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
 		    !IS_ENABLED(CONFIG_DMA_GLOBAL_POOL) &&
@@ -231,19 +210,12 @@ void *dma_direct_alloc(struct device *dev, size_t size,
 			return arch_dma_alloc(dev, size, dma_handle, gfp,
 					      attrs);
 
-		/*
-		 * If there is a global pool, always allocate from it for
-		 * non-coherent devices.
-		 */
+		 
 		if (IS_ENABLED(CONFIG_DMA_GLOBAL_POOL))
 			return dma_alloc_from_global_coherent(dev, size,
 					dma_handle);
 
-		/*
-		 * Otherwise remap if the architecture is asking for it.  But
-		 * given that remapping memory is a blocking operation we'll
-		 * instead have to dip into the atomic pools.
-		 */
+		 
 		remap = IS_ENABLED(CONFIG_DMA_DIRECT_REMAP);
 		if (remap) {
 			if (dma_direct_use_pool(dev, gfp))
@@ -256,23 +228,16 @@ void *dma_direct_alloc(struct device *dev, size_t size,
 		}
 	}
 
-	/*
-	 * Decrypting memory may block, so allocate the memory from the atomic
-	 * pools if we can't block.
-	 */
+	 
 	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
 
-	/* we always manually zero the memory once we are done */
+	 
 	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
 	if (!page)
 		return NULL;
 
-	/*
-	 * dma_alloc_contiguous can return highmem pages depending on a
-	 * combination the cma= arguments and per-arch setup.  These need to be
-	 * remapped to return a kernel virtual address.
-	 */
+	 
 	if (PageHighMem(page)) {
 		remap = true;
 		set_uncached = false;
@@ -284,10 +249,10 @@ void *dma_direct_alloc(struct device *dev, size_t size,
 		if (force_dma_unencrypted(dev))
 			prot = pgprot_decrypted(prot);
 
-		/* remove any dirty cache lines on the kernel alias */
+		 
 		arch_dma_prep_coherent(page, size);
 
-		/* create a coherent mapping */
+		 
 		ret = dma_common_contiguous_remap(page, size, prot,
 				__builtin_return_address(0));
 		if (!ret)
@@ -325,7 +290,7 @@ void dma_direct_free(struct device *dev, size_t size,
 
 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
 	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev)) {
-		/* cpu_addr is a struct page cookie, not a kernel address */
+		 
 		dma_free_contiguous(dev, cpu_addr, size);
 		return;
 	}
@@ -346,7 +311,7 @@ void dma_direct_free(struct device *dev, size_t size,
 		return;
 	}
 
-	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
+	 
 	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
 		return;
@@ -393,7 +358,7 @@ void dma_direct_free_pages(struct device *dev, size_t size,
 {
 	void *vaddr = page_address(page);
 
-	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
+	 
 	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
 	    dma_free_from_pool(dev, vaddr, size))
 		return;
@@ -452,10 +417,7 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
 		arch_sync_dma_for_cpu_all();
 }
 
-/*
- * Unmaps segments, except for ones marked as pci_p2pdma which do not
- * require any further action as they contain a bus address.
- */
+ 
 void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
 		int nents, enum dma_data_direction dir, unsigned long attrs)
 {
@@ -487,12 +449,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
 			case PCI_P2PDMA_MAP_BUS_ADDR:
 				continue;
 			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-				/*
-				 * Any P2P mapping that traverses the PCI
-				 * host bridge must be mapped with CPU physical
-				 * address and not PCI bus addresses. This is
-				 * done with dma_direct_map_page() below.
-				 */
+				 
 				break;
 			default:
 				ret = -EREMOTEIO;
@@ -579,20 +536,11 @@ int dma_direct_supported(struct device *dev, u64 mask)
 {
 	u64 min_mask = (max_pfn - 1) << PAGE_SHIFT;
 
-	/*
-	 * Because 32-bit DMA masks are so common we expect every architecture
-	 * to be able to satisfy them - either by not supporting more physical
-	 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
-	 * architecture needs to use an IOMMU instead of the direct mapping.
-	 */
+	 
 	if (mask >= DMA_BIT_MASK(32))
 		return 1;
 
-	/*
-	 * This check needs to be against the actual bit mask value, so use
-	 * phys_to_dma_unencrypted() here so that the SME encryption mask isn't
-	 * part of the check.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_ZONE_DMA))
 		min_mask = min_t(u64, min_mask, DMA_BIT_MASK(zone_dma_bits));
 	return mask >= phys_to_dma_unencrypted(dev, min_mask);
@@ -600,7 +548,7 @@ int dma_direct_supported(struct device *dev, u64 mask)
 
 size_t dma_direct_max_mapping_size(struct device *dev)
 {
-	/* If SWIOTLB is active, use its maximum mapping size */
+	 
 	if (is_swiotlb_active(dev) &&
 	    (dma_addressing_limited(dev) || is_swiotlb_force_bounce(dev)))
 		return swiotlb_max_mapping_size(dev);
@@ -613,22 +561,7 @@ bool dma_direct_need_sync(struct device *dev, dma_addr_t dma_addr)
 	       is_swiotlb_buffer(dev, dma_to_phys(dev, dma_addr));
 }
 
-/**
- * dma_direct_set_offset - Assign scalar offset for a single DMA range.
- * @dev:	device pointer; needed to "own" the alloced memory.
- * @cpu_start:  beginning of memory region covered by this offset.
- * @dma_start:  beginning of DMA/PCI region covered by this offset.
- * @size:	size of the region.
- *
- * This is for the simple case of a uniform offset which cannot
- * be discovered by "dma-ranges".
- *
- * It returns -ENOMEM if out of memory, -EINVAL if a map
- * already exists, 0 otherwise.
- *
- * Note: any call to this from a driver is a bug.  The mapping needs
- * to be described by the device tree or other firmware interfaces.
- */
+ 
 int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
 			 dma_addr_t dma_start, u64 size)
 {

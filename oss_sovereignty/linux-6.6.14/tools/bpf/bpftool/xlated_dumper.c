@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -47,15 +47,15 @@ out:
 		dd->sym_mapping = tmp;
 		sym = &dd->sym_mapping[dd->sym_count];
 
-		/* module is optional */
+		 
 		sym->module[0] = '\0';
-		/* trim the square brackets around the module name */
+		 
 		if (sscanf(buff, "%p %*c %s [%[^]]s", &address, sym->name, sym->module) < 2)
 			continue;
 		sym->address = (unsigned long)address;
 		if (!strcmp(sym->name, "__bpf_call_base")) {
 			dd->address_call_base = sym->address;
-			/* sysctl kernel.kptr_restrict was set */
+			 
 			if (!sym->address)
 				goto out;
 		}
@@ -109,14 +109,14 @@ print_insn_for_graph(void *private_data, const char *fmt, ...)
 	while (*p != '\0') {
 		if (*p == '\n') {
 			memmove(p + 3, p, strlen(buf) + 1 - (p - buf));
-			/* Align each instruction dump row left. */
+			 
 			*p++ = '\\';
 			*p++ = 'l';
-			/* Output multiline concatenation. */
+			 
 			*p++ = '\\';
 		} else if (*p == '<' || *p == '>' || *p == '|' || *p == '&') {
 			memmove(p + 1, p, strlen(buf) + 1 - (p - buf));
-			/* Escape special character. */
+			 
 			*p++ = '\\';
 		}
 
@@ -148,7 +148,7 @@ static const char *print_call_pcrel(struct dump_data *dd,
 				    const struct bpf_insn *insn)
 {
 	if (!dd->nr_jited_ksyms)
-		/* Do not show address for interpreted programs */
+		 
 		snprintf(dd->scratch_buff, sizeof(dd->scratch_buff),
 			"%+d", insn->off);
 	else if (sym)

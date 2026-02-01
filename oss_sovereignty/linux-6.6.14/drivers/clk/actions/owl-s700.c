@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Actions Semi S700 clock driver
- *
- * Copyright (c) 2014 Actions Semi Inc.
- * Author: David Liu <liuwei@actions-semi.com>
- *
- * Author: Pathiban Nallathambi <pn@denx.de>
- * Author: Saravanan Sekar <sravanhome@gmail.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -73,7 +65,7 @@
 
 static struct clk_pll_table clk_audio_pll_table[] = {
 	{0, 45158400}, {1, 49152000},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_pll_table clk_cvbs_pll_table[] = {
@@ -83,10 +75,10 @@ static struct clk_pll_table clk_cvbs_pll_table[] = {
 	{36, 38 * 12000000}, {37, 39 * 12000000}, {38, 40 * 12000000},
 	{39, 41 * 12000000}, {40, 42 * 12000000}, {41, 43 * 12000000},
 	{42, 44 * 12000000}, {43, 45 * 12000000},
-	{ /* sentinel */ }
+	{   }
 };
 
-/* pll clocks */
+ 
 static OWL_PLL_NO_PARENT(clk_core_pll,   "core_pll", CMU_COREPLL, 12000000, 9, 0, 8,  4, 174, NULL, CLK_IGNORE_UNUSED);
 static OWL_PLL_NO_PARENT(clk_dev_pll,    "dev_pll", CMU_DEVPLL,  6000000, 8, 0, 8, 8, 126, NULL, CLK_IGNORE_UNUSED);
 static OWL_PLL_NO_PARENT(clk_ddr_pll,    "ddr_pll", CMU_DDRPLL, 6000000, 8, 0, 8,  2,  180, NULL, CLK_IGNORE_UNUSED);
@@ -112,7 +104,7 @@ static const char *lcd_clk_mux_p[] = { "display_pll", "dev_clk" };
 static const char *i2s_clk_mux_p[] = { "audio_pll" };
 static const char *sensor_clk_mux_p[] = { "hosc", "si"};
 
-/* mux clocks */
+ 
 static OWL_MUX(clk_cpu, "cpu_clk", cpu_clk_mux_p,  CMU_BUSCLK, 0, 2, CLK_SET_RATE_PARENT);
 static OWL_MUX(clk_dev, "dev_clk", dev_clk_p, CMU_DEVPLL, 12, 1, CLK_SET_RATE_PARENT);
 static OWL_MUX(clk_noc0_clk_mux, "noc0_clk_mux", noc_clk_mux_p, CMU_BUSCLK, 4, 3, CLK_SET_RATE_PARENT);
@@ -120,7 +112,7 @@ static OWL_MUX(clk_noc1_clk_mux, "noc1_clk_mux", noc_clk_mux_p, CMU_BUSCLK1, 4, 
 static OWL_MUX(clk_hp_clk_mux, "hp_clk_mux", noc_clk_mux_p, CMU_BUSCLK1, 8, 3, CLK_SET_RATE_PARENT);
 
 static struct clk_factor_table sd_factor_table[] = {
-	/* bit0 ~ 4 */
+	 
 	{0, 1, 1}, {1, 1, 2}, {2, 1, 3}, {3, 1, 4},
 	{4, 1, 5}, {5, 1, 6}, {6, 1, 7}, {7, 1, 8},
 	{8, 1, 9}, {9, 1, 10}, {10, 1, 11}, {11, 1, 12},
@@ -129,7 +121,7 @@ static struct clk_factor_table sd_factor_table[] = {
 	{20, 1, 21}, {21, 1, 22}, {22, 1, 23}, {23, 1, 24},
 	{24, 1, 25}, {25, 1, 26},
 
-	/* bit8: /128 */
+	 
 	{256, 1, 1 * 128}, {257, 1, 2 * 128}, {258, 1, 3 * 128}, {259, 1, 4 * 128},
 	{260, 1, 5 * 128}, {261, 1, 6 * 128}, {262, 1, 7 * 128}, {263, 1, 8 * 128},
 	{264, 1, 9 * 128}, {265, 1, 10 * 128}, {266, 1, 11 * 128}, {267, 1, 12 * 128},
@@ -138,35 +130,35 @@ static struct clk_factor_table sd_factor_table[] = {
 	{276, 1, 21 * 128}, {277, 1, 22 * 128}, {278, 1, 23 * 128}, {279, 1, 24 * 128},
 	{280, 1, 25 * 128}, {281, 1, 26 * 128},
 
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_factor_table lcd_factor_table[] = {
-	/* bit0 ~ 3 */
+	 
 	{0, 1, 1}, {1, 1, 2}, {2, 1, 3}, {3, 1, 4},
 	{4, 1, 5}, {5, 1, 6}, {6, 1, 7}, {7, 1, 8},
 	{8, 1, 9}, {9, 1, 10}, {10, 1, 11}, {11, 1, 12},
 
-	/* bit8: /7 */
+	 
 	{256, 1, 1 * 7}, {257, 1, 2 * 7}, {258, 1, 3 * 7}, {259, 1, 4 * 7},
 	{260, 1, 5 * 7}, {261, 1, 6 * 7}, {262, 1, 7 * 7}, {263, 1, 8 * 7},
 	{264, 1, 9 * 7}, {265, 1, 10 * 7}, {266, 1, 11 * 7}, {267, 1, 12 * 7},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table hdmia_div_table[] = {
 	{0, 1},   {1, 2},   {2, 3},   {3, 4},
 	{4, 6},   {5, 8},   {6, 12},  {7, 16},
 	{8, 24},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_div_table rmii_div_table[] = {
 	{0, 4},   {1, 10},
-	{ /* sentinel */ }
+	{   }
 };
 
-/* divider clocks */
+ 
 static OWL_DIVIDER(clk_noc0, "noc0_clk", "noc0_clk_mux", CMU_BUSCLK, 16, 2, NULL, 0, 0);
 static OWL_DIVIDER(clk_noc1, "noc1_clk", "noc1_clk_mux", CMU_BUSCLK1, 16, 2, NULL, 0, 0);
 static OWL_DIVIDER(clk_noc1_clk_div, "noc1_clk_div", "noc1_clk", CMU_BUSCLK1, 20, 1, NULL, 0, 0);
@@ -181,16 +173,16 @@ static struct clk_factor_table de_factor_table[] = {
 	{0, 1, 1}, {1, 2, 3}, {2, 1, 2}, {3, 2, 5},
 	{4, 1, 3}, {5, 1, 4}, {6, 1, 6}, {7, 1, 8},
 	{8, 1, 12},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct clk_factor_table hde_factor_table[] = {
 	{0, 1, 1}, {1, 2, 3}, {2, 1, 2}, {3, 2, 5},
 	{4, 1, 3}, {5, 1, 4}, {6, 1, 6}, {7, 1, 8},
-	{ /* sentinel */ }
+	{   }
 };
 
-/* gate clocks */
+ 
 static OWL_GATE(clk_gpio, "gpio", "apb_clk", CMU_DEVCLKEN1, 25, 0, 0);
 static OWL_GATE(clk_dmac, "dmac", "hp_clk_div", CMU_DEVCLKEN0, 17, 0, 0);
 static OWL_GATE(clk_timer, "timer", "hosc", CMU_DEVCLKEN1, 22, 0, 0);
@@ -217,7 +209,7 @@ static OWL_GATE_NO_PARENT(clk_usb2h1_phy, "usbh1_phy", CMU_USBPLL, 11, 0, 0);
 static OWL_GATE_NO_PARENT(clk_usb2h1_cce, "usbh1_cce", CMU_DEVCLKEN0, 27, 0, 0);
 static OWL_GATE_NO_PARENT(clk_irc_switch, "irc_switch", CMU_DEVCLKEN1, 15, 0, 0);
 
-/* composite clocks */
+ 
 
 static OWL_COMP_DIV(clk_csi, "csi", csi_clk_mux_p,
 			OWL_MUX_HW(CMU_CSICLK, 4, 1),
@@ -370,7 +362,7 @@ static OWL_COMP_FACTOR(clk_lcd, "lcd", lcd_clk_mux_p,
 			0);
 
 static OWL_COMP_DIV(clk_hdmi_audio, "hdmia", i2s_clk_mux_p,
-			OWL_MUX_HW(CMU_AUDIOPLL, 24, 1), /*CMU_AUDIOPLL 24,1 unused*/
+			OWL_MUX_HW(CMU_AUDIOPLL, 24, 1),  
 			OWL_GATE_HW(CMU_DEVCLKEN1, 28, 0),
 			OWL_DIVIDER_HW(CMU_AUDIOPLL, 24, 4, 0, hdmia_div_table),
 			0);
@@ -387,7 +379,7 @@ static OWL_COMP_DIV(clk_i2stx, "i2stx", i2s_clk_mux_p,
 			OWL_DIVIDER_HW(CMU_AUDIOPLL, 16, 4, 0, hdmia_div_table),
 			0);
 
-/* for bluetooth pcm communication */
+ 
 static OWL_COMP_FIXED_FACTOR(clk_pcm1, "pcm1", "audio_pll",
 			OWL_GATE_HW(CMU_DEVCLKEN1, 31, 0),
 			1, 2, 0);
@@ -619,10 +611,7 @@ static int s700_clk_probe(struct platform_device *pdev)
 	desc = &s700_clk_desc;
 	owl_clk_regmap_init(pdev, desc);
 
-	/*
-	 * FIXME: Reset controller registration should be moved to
-	 * common code, once all SoCs of Owl family supports it.
-	 */
+	 
 	reset = devm_kzalloc(&pdev->dev, sizeof(*reset), GFP_KERNEL);
 	if (!reset)
 		return -ENOMEM;
@@ -642,7 +631,7 @@ static int s700_clk_probe(struct platform_device *pdev)
 
 static const struct of_device_id s700_clk_of_match[] = {
 	{ .compatible = "actions,s700-cmu", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver s700_clk_driver = {

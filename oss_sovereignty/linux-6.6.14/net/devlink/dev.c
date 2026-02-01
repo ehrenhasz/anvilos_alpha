@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include <net/genetlink.h>
 #include <net/sock.h>
@@ -23,7 +20,7 @@ struct devlink_reload_combination {
 
 static const struct devlink_reload_combination devlink_reload_invalid_combinations[] = {
 	{
-		/* can't reinitialize driver with no down time */
+		 
 		.action = DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
 		.limit = DEVLINK_RELOAD_LIMIT_NO_RESET,
 	},
@@ -105,11 +102,7 @@ devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink, bool is_r
 			goto action_info_nest_cancel;
 
 		for (j = 0; j <= DEVLINK_RELOAD_LIMIT_MAX; j++) {
-			/* Remote stats are shown even if not locally supported.
-			 * Stats of actions with unspecified limit are shown
-			 * though drivers don't need to register unspecified
-			 * limit.
-			 */
+			 
 			if ((!is_remote && j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
 			     !devlink_reload_limit_is_supported(devlink, j)) ||
 			    devlink_reload_combination_is_invalid(i, j))
@@ -294,20 +287,7 @@ devlink_reload_stats_update(struct devlink *devlink, enum devlink_reload_limit l
 				      actions_performed);
 }
 
-/**
- *	devlink_remote_reload_actions_performed - Update devlink on reload actions
- *	  performed which are not a direct result of devlink reload call.
- *
- *	This should be called by a driver after performing reload actions in case it was not
- *	a result of devlink reload call. For example fw_activate was performed as a result
- *	of devlink reload triggered fw_activate on another host.
- *	The motivation for this function is to keep data on reload actions performed on this
- *	function whether it was done due to direct devlink reload call or not.
- *
- *	@devlink: devlink
- *	@limit: reload limit
- *	@actions_performed: bitmask of actions performed
- */
+ 
 void devlink_remote_reload_actions_performed(struct devlink *devlink,
 					     enum devlink_reload_limit limit,
 					     u32 actions_performed)
@@ -364,11 +344,7 @@ static void devlink_reload_netns_change(struct devlink *devlink,
 					struct net *curr_net,
 					struct net *dest_net)
 {
-	/* Userspace needs to be notified about devlink objects
-	 * removed from original and entering new network namespace.
-	 * The rest of the devlink objects are re-created during
-	 * reload process so the notifications are generated separatelly.
-	 */
+	 
 	devlink_notify_unregister(devlink);
 	write_pnet(&devlink->_net, dest_net);
 	devlink_notify_register(devlink);
@@ -403,7 +379,7 @@ int devlink_reload(struct devlink *devlink, struct net *dest_net,
 		return err;
 
 	WARN_ON(!(*actions_performed & BIT(action)));
-	/* Catch driver on updating the remote action within devlink reload */
+	 
 	WARN_ON(memcmp(remote_reload_stats, devlink->stats.remote_reload_stats,
 		       sizeof(remote_reload_stats)));
 	devlink_reload_stats_update(devlink, limit, *actions_performed);
@@ -481,7 +457,7 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
 		for (limit = 0 ; limit <= DEVLINK_RELOAD_LIMIT_MAX ; limit++)
 			if (limits_selected & BIT(limit))
 				break;
-		/* UAPI enables multiselection, but currently it is not used */
+		 
 		if (limits_selected != BIT(limit)) {
 			NL_SET_ERR_MSG(info->extack, "Multiselection of limit is not supported");
 			return -EOPNOTSUPP;
@@ -516,7 +492,7 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
 
 	if (err)
 		return err;
-	/* For backward compatibility generate reply only if attributes used by user */
+	 
 	if (!info->attrs[DEVLINK_ATTR_RELOAD_ACTION] && !info->attrs[DEVLINK_ATTR_RELOAD_LIMITS])
 		return 0;
 

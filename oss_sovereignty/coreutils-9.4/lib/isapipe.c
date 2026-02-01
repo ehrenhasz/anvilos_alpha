@@ -1,21 +1,4 @@
-/* Test whether a file descriptor is a pipe.
-
-   Copyright (C) 2006, 2008-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #include <config.h>
 
@@ -24,12 +7,12 @@
 #include <errno.h>
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* Windows platforms.  */
+ 
 
-/* Get GetFileType.  */
+ 
 # include <windows.h>
 
-/* Get _get_osfhandle.  */
+ 
 # if GNULIB_MSVC_NOTHROW
 #  include "msvc-nothrow.h"
 # else
@@ -51,22 +34,18 @@ isapipe (int fd)
 }
 
 #else
-/* Unix platforms.  */
+ 
 
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <unistd.h>
 
-/* The maximum link count for pipes; (nlink_t) -1 if not known.  */
+ 
 # ifndef PIPE_LINK_COUNT_MAX
 #  define PIPE_LINK_COUNT_MAX ((nlink_t) (-1))
 # endif
 
-/* Return 1 if FD is a pipe, 0 if not, -1 (setting errno) on error.
-
-   Test fairly strictly whether FD is a pipe.  lseek and checking for
-   ESPIPE does not suffice, since many non-pipe files cause lseek to
-   fail with errno == ESPIPE.  */
+ 
 
 int
 isapipe (int fd)
@@ -79,15 +58,7 @@ isapipe (int fd)
   if (fstat_result != 0)
     return fstat_result;
 
-  /* We want something that succeeds only for pipes, but on
-     POSIX-conforming hosts S_ISFIFO succeeds for both FIFOs and pipes
-     and we know of no portable, reliable way to distinguish them in
-     general.  However, in practice pipes always have a link count <=
-     PIPE_LINK_COUNT_MAX (unless someone attaches them to the file
-     system name space using fattach, in which case they're not really
-     pipes any more), so test for that as well.
-
-     On Darwin 7.7, pipes are sockets, so check for those instead.  */
+   
 
   if (! ((HAVE_FIFO_PIPES == 0 || HAVE_FIFO_PIPES == 1)
          && PIPE_LINK_COUNT_MAX != (nlink_t) -1)

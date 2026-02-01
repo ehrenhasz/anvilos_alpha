@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ampere Computing SoC's SMPro Hardware Monitoring Driver
- *
- * Copyright (c) 2022, Ampere Computing LLC
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
 #include <linux/hwmon.h>
@@ -15,7 +11,7 @@
 #include <linux/property.h>
 #include <linux/regmap.h>
 
-/* Logical Power Sensor Registers */
+ 
 #define SOC_TEMP		0x10
 #define SOC_VRD_TEMP		0x11
 #define DIMM_VRD_TEMP		0x12
@@ -239,7 +235,7 @@ static int smpro_read_in(struct device *dev, u32 attr, int channel, long *val)
 		ret = regmap_read(hwmon->regmap, voltage[channel].reg, &value);
 		if (ret < 0)
 			return ret;
-		/* 15-bit value in 1mV */
+		 
 		*val = value & 0x7fff;
 		return 0;
 	default:
@@ -258,7 +254,7 @@ static int smpro_read_curr(struct device *dev, u32 attr, int channel, long *val)
 		ret = regmap_read(hwmon->regmap, curr_sensor[channel].reg, &value);
 		if (ret < 0)
 			return ret;
-		/* Scale reported by the hardware is 1mA */
+		 
 		*val = value & 0x7fff;
 		return 0;
 	default:
@@ -281,7 +277,7 @@ static int smpro_read_power(struct device *dev, u32 attr, int channel, long *val
 		ret = regmap_read(hwmon->regmap, power[channel].reg_ext, &val_mw);
 		if (ret)
 			return ret;
-		/* 10-bit value */
+		 
 		*val_pwr = (val & 0x3ff) * 1000000 + (val_mw & 0x3ff) * 1000;
 		return 0;
 

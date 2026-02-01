@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __SDIO_HAL_H__
 #define __SDIO_HAL_H__
 
@@ -17,4 +13,4 @@ void rtw_set_hal_ops(struct adapter *padapter);
 
 void rtl8723bs_set_hal_ops(struct adapter *padapter);
 
-#endif /* __SDIO_HAL_H__ */
+#endif  

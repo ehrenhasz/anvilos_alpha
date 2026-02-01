@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * gpio-event-mon - monitor GPIO line events from userspace
- *
- * Copyright (C) 2016 Linus Walleij
- *
- * Usage:
- *	gpio-event-mon -n <device-name> -o <offset>
- */
+
+ 
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -55,7 +48,7 @@ int monitor_device(const char *device_name,
 	else
 		lfd = ret;
 
-	/* Read initial states */
+	 
 	values.mask = 0;
 	values.bits = 0;
 	for (i = 0; i < num_lines; i++)

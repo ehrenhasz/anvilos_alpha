@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * lv0104cs.c: LV0104CS Ambient Light Sensor Driver
- *
- * Copyright (C) 2018
- * Author: Jeff LaBundy <jeff@labundy.com>
- *
- * 7-bit I2C slave address: 0x13
- *
- * Link to data sheet: https://www.onsemi.com/pub/Collateral/LV0104CS-D.PDF
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -170,7 +161,7 @@ static int lv0104cs_get_lux(struct lv0104cs_private *lv0104cs,
 	if (ret)
 		return ret;
 
-	/* wait for integration time to pass (with margin) */
+	 
 	switch (lv0104cs->int_time) {
 	case LV0104CS_INTEG_12_5MS:
 		msleep(50);
@@ -196,7 +187,7 @@ static int lv0104cs_get_lux(struct lv0104cs_private *lv0104cs,
 	if (ret)
 		return ret;
 
-	/* convert ADC output to lux */
+	 
 	switch (lv0104cs->scale) {
 	case LV0104CS_SCALE_0_25X:
 		*val = adc_output * 4;
@@ -278,7 +269,7 @@ static int lv0104cs_set_calibscale(struct lv0104cs_private *lv0104cs,
 	int floor, ceil, mid;
 	int ret, i, index;
 
-	/* round to nearest quantized calibscale (sensitivity) */
+	 
 	for (i = 0; i < ARRAY_SIZE(lv0104cs_calibscales) - 1; i++) {
 		floor = lv0104cs_calibscales[i].val * 1000000
 				+ lv0104cs_calibscales[i].val2;
@@ -286,13 +277,13 @@ static int lv0104cs_set_calibscale(struct lv0104cs_private *lv0104cs,
 				+ lv0104cs_calibscales[i + 1].val2;
 		mid = (floor + ceil) / 2;
 
-		/* round down */
+		 
 		if (calibscale >= floor && calibscale < mid) {
 			index = i;
 			break;
 		}
 
-		/* round up */
+		 
 		if (calibscale >= mid && calibscale <= ceil) {
 			index = i + 1;
 			break;
@@ -304,7 +295,7 @@ static int lv0104cs_set_calibscale(struct lv0104cs_private *lv0104cs,
 
 	mutex_lock(&lv0104cs->lock);
 
-	/* set calibscale (sensitivity) */
+	 
 	ret = lv0104cs_write_reg(lv0104cs->client,
 			lv0104cs_calibscales[index].regval);
 	if (ret)
@@ -323,7 +314,7 @@ static int lv0104cs_set_scale(struct lv0104cs_private *lv0104cs,
 {
 	int i;
 
-	/* hard matching */
+	 
 	for (i = 0; i < ARRAY_SIZE(lv0104cs_scales); i++) {
 		if (val != lv0104cs_scales[i].val)
 			continue;
@@ -347,7 +338,7 @@ static int lv0104cs_set_int_time(struct lv0104cs_private *lv0104cs,
 {
 	int i;
 
-	/* hard matching */
+	 
 	for (i = 0; i < ARRAY_SIZE(lv0104cs_int_times); i++) {
 		if (val != lv0104cs_int_times[i].val)
 			continue;

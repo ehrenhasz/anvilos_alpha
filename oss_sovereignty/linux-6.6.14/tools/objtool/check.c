@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015-2017 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+
+ 
 
 #include <string.h>
 #include <stdlib.h>
@@ -72,11 +70,11 @@ static struct instruction *next_insn_same_func(struct objtool_file *file,
 	if (next && insn_func(next) == func)
 		return next;
 
-	/* Check if we're already in the subfunction: */
+	 
 	if (func == func->cfunc)
 		return NULL;
 
-	/* Move to the subfunction: */
+	 
 	return find_insn(file, func->cfunc->sec, func->cfunc->offset);
 }
 
@@ -156,35 +154,25 @@ static bool is_jump_table_jump(struct instruction *insn)
 	if (insn_jump_table(insn))
 		return true;
 
-	/* Retpoline alternative for a jump table? */
+	 
 	return alt_group && alt_group->orig_group &&
 	       insn_jump_table(alt_group->orig_group->first_insn);
 }
 
 static bool is_sibling_call(struct instruction *insn)
 {
-	/*
-	 * Assume only STT_FUNC calls have jump-tables.
-	 */
+	 
 	if (insn_func(insn)) {
-		/* An indirect jump is either a sibling call or a jump to a table. */
+		 
 		if (insn->type == INSN_JUMP_DYNAMIC)
 			return !is_jump_table_jump(insn);
 	}
 
-	/* add_jump_destinations() sets insn_call_dest(insn) for sibling calls. */
+	 
 	return (is_static_jump(insn) && insn_call_dest(insn));
 }
 
-/*
- * This checks to see if the given function is a "noreturn" function.
- *
- * For global functions which are outside the scope of this object file, we
- * have to keep a manual list of them.
- *
- * For local functions, we have to detect them manually by simply looking for
- * the lack of a return instruction.
- */
+ 
 static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
 				int recursion)
 {
@@ -226,26 +214,18 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
 	if (empty)
 		return false;
 
-	/*
-	 * A function can have a sibling call instead of a return.  In that
-	 * case, the function's dead-end status depends on whether the target
-	 * of the sibling call returns.
-	 */
+	 
 	func_for_each_insn(file, func, insn) {
 		if (is_sibling_call(insn)) {
 			struct instruction *dest = insn->jump_dest;
 
 			if (!dest)
-				/* sibling call to another file */
+				 
 				return false;
 
-			/* local sibling call */
+			 
 			if (recursion == 5) {
-				/*
-				 * Infinite recursion: two functions have
-				 * sibling calls to each other.  This is a very
-				 * rare case.  It means they aren't dead ends.
-				 */
+				 
 				return false;
 			}
 
@@ -280,11 +260,7 @@ static void init_insn_state(struct objtool_file *file, struct insn_state *state,
 	memset(state, 0, sizeof(*state));
 	init_cfi_state(&state->cfi);
 
-	/*
-	 * We need the full vmlinux for noinstr validation, otherwise we can
-	 * not correctly determine insn_call_dest(insn)->sec (external symbols
-	 * do not have a section).
-	 */
+	 
 	if (opts.link && opts.noinstr && sec)
 		state->noinstr = sec->noinstr;
 }
@@ -361,10 +337,7 @@ static void *cfi_hash_alloc(unsigned long size)
 static unsigned long nr_insns;
 static unsigned long nr_insns_visited;
 
-/*
- * Call the arch-specific instruction decoder for all the instructions and add
- * them to the global instruction list.
- */
+ 
 static int decode_instructions(struct objtool_file *file)
 {
 	struct section *sec;
@@ -392,12 +365,7 @@ static int decode_instructions(struct objtool_file *file)
 		    !strncmp(sec->name, ".text..__x86.", 13))
 			sec->noinstr = true;
 
-		/*
-		 * .init.text code is ran before userspace and thus doesn't
-		 * strictly need retpolines, except for modules which are
-		 * loaded late, they very much do need retpoline in their
-		 * .init.text
-		 */
+		 
 		if (!strcmp(sec->name, ".init.text") && !opts.module)
 			sec->init = true;
 
@@ -428,11 +396,7 @@ static int decode_instructions(struct objtool_file *file)
 
 			prev_len = insn->len;
 
-			/*
-			 * By default, "ud2" is a dead end unless otherwise
-			 * annotated, because GCC 7 inserts it for certain
-			 * divide-by-zero cases.
-			 */
+			 
 			if (insn->type == INSN_BUG)
 				insn->dead_end = true;
 
@@ -440,14 +404,14 @@ static int decode_instructions(struct objtool_file *file)
 			nr_insns++;
 		}
 
-//		printf("%s: last chunk used: %d\n", sec->name, (int)idx);
+ 
 
 		sec_for_each_sym(sec, func) {
 			if (func->type != STT_NOTYPE && func->type != STT_FUNC)
 				continue;
 
 			if (func->offset == sec->sh.sh_size) {
-				/* Heuristic: likely an "end" symbol */
+				 
 				if (func->type == STT_NOTYPE)
 					continue;
 				WARN("%s(): STT_FUNC at end of section",
@@ -486,9 +450,7 @@ static int decode_instructions(struct objtool_file *file)
 	return 0;
 }
 
-/*
- * Read the pv_ops[] .data table to find the static initialized values.
- */
+ 
 static int add_pv_ops(struct objtool_file *file, const char *symname)
 {
 	struct symbol *sym, *func;
@@ -524,9 +486,7 @@ static int add_pv_ops(struct objtool_file *file, const char *symname)
 	return 0;
 }
 
-/*
- * Allocate and initialize file->pv_ops[].
- */
+ 
 static int init_pv_ops(struct objtool_file *file)
 {
 	static const char *pv_ops_tables[] = {
@@ -576,9 +536,7 @@ static struct instruction *find_last_insn(struct objtool_file *file,
 	return insn;
 }
 
-/*
- * Mark "ud2" instructions and manually annotated dead ends.
- */
+ 
 static int add_dead_ends(struct objtool_file *file)
 {
 	struct section *rsec;
@@ -586,9 +544,7 @@ static int add_dead_ends(struct objtool_file *file)
 	struct instruction *insn;
 	s64 addend;
 
-	/*
-	 * Check for manually annotated dead ends.
-	 */
+	 
 	rsec = find_section_by_name(file->elf, ".rela.discard.unreachable");
 	if (!rsec)
 		goto reachable;
@@ -622,12 +578,7 @@ static int add_dead_ends(struct objtool_file *file)
 	}
 
 reachable:
-	/*
-	 * These manually annotated reachable checks are needed for GCC 4.4,
-	 * where the Linux unreachable() macro isn't supported.  In that case
-	 * GCC doesn't know the "ud2" is fatal, so it generates code as if it's
-	 * not a dead end.
-	 */
+	 
 	rsec = find_section_by_name(file->elf, ".rela.discard.reachable");
 	if (!rsec)
 		return 0;
@@ -691,19 +642,19 @@ static int create_static_call_sections(struct objtool_file *file)
 	if (!sec)
 		return -1;
 
-	/* Allow modules to modify the low bits of static_call_site::key */
+	 
 	sec->sh.sh_flags |= SHF_WRITE;
 
 	idx = 0;
 	list_for_each_entry(insn, &file->static_call_list, call_node) {
 
-		/* populate reloc for 'addr' */
+		 
 		if (!elf_init_reloc_text_sym(file->elf, sec,
 					     idx * sizeof(*site), idx * 2,
 					     insn->sec, insn->offset))
 			return -1;
 
-		/* find key symbol */
+		 
 		key_name = strdup(insn_call_dest(insn)->name);
 		if (!key_name) {
 			perror("strdup");
@@ -726,20 +677,12 @@ static int create_static_call_sections(struct objtool_file *file)
 				return -1;
 			}
 
-			/*
-			 * For modules(), the key might not be exported, which
-			 * means the module can make static calls but isn't
-			 * allowed to change them.
-			 *
-			 * In that case we temporarily set the key to be the
-			 * trampoline address.  This is fixed up in
-			 * static_call_add_module().
-			 */
+			 
 			key_sym = insn_call_dest(insn);
 		}
 		free(key_name);
 
-		/* populate reloc for 'key' */
+		 
 		if (!elf_init_reloc_data_sym(file->elf, sec,
 					     idx * sizeof(*site) + 4,
 					     (idx * 2) + 1, key_sym,
@@ -1015,9 +958,7 @@ static int create_direct_call_sections(struct objtool_file *file)
 	return 0;
 }
 
-/*
- * Warnings shouldn't be reported for ignored functions.
- */
+ 
 static void add_ignores(struct objtool_file *file)
 {
 	struct instruction *insn;
@@ -1052,18 +993,12 @@ static void add_ignores(struct objtool_file *file)
 	}
 }
 
-/*
- * This is a whitelist of functions that is allowed to be called with AC set.
- * The list is meant to be minimal and only contains compiler instrumentation
- * ABI and a few functions used to implement *_{to,from}_user() functions.
- *
- * These functions must not directly change AC, but may PUSHF/POPF.
- */
+ 
 static const char *uaccess_safe_builtin[] = {
-	/* KASAN */
+	 
 	"kasan_report",
 	"kasan_check_range",
-	/* KASAN out-of-line */
+	 
 	"__asan_loadN_noabort",
 	"__asan_load1_noabort",
 	"__asan_load2_noabort",
@@ -1078,7 +1013,7 @@ static const char *uaccess_safe_builtin[] = {
 	"__asan_store16_noabort",
 	"__kasan_check_read",
 	"__kasan_check_write",
-	/* KASAN in-line */
+	 
 	"__asan_report_load_n_noabort",
 	"__asan_report_load1_noabort",
 	"__asan_report_load2_noabort",
@@ -1091,7 +1026,7 @@ static const char *uaccess_safe_builtin[] = {
 	"__asan_report_store4_noabort",
 	"__asan_report_store8_noabort",
 	"__asan_report_store16_noabort",
-	/* KCSAN */
+	 
 	"__kcsan_check_access",
 	"__kcsan_mb",
 	"__kcsan_wmb",
@@ -1102,7 +1037,7 @@ static const char *uaccess_safe_builtin[] = {
 	"kcsan_check_scoped_accesses",
 	"kcsan_disable_current",
 	"kcsan_enable_current_nowarn",
-	/* KCSAN/TSAN */
+	 
 	"__tsan_func_entry",
 	"__tsan_func_exit",
 	"__tsan_read_range",
@@ -1184,7 +1119,7 @@ static const char *uaccess_safe_builtin[] = {
 	"__tsan_atomic_signal_fence",
 	"__tsan_unaligned_read16",
 	"__tsan_unaligned_write16",
-	/* KCOV */
+	 
 	"write_comp_data",
 	"check_kcov_mode",
 	"__sanitizer_cov_trace_pc",
@@ -1197,7 +1132,7 @@ static const char *uaccess_safe_builtin[] = {
 	"__sanitizer_cov_trace_cmp4",
 	"__sanitizer_cov_trace_cmp8",
 	"__sanitizer_cov_trace_switch",
-	/* KMSAN */
+	 
 	"kmsan_copy_to_user",
 	"kmsan_report",
 	"kmsan_unpoison_entry_regs",
@@ -1217,20 +1152,20 @@ static const char *uaccess_safe_builtin[] = {
 	"__msan_metadata_ptr_for_store_n",
 	"__msan_poison_alloca",
 	"__msan_warning",
-	/* UBSAN */
+	 
 	"ubsan_type_mismatch_common",
 	"__ubsan_handle_type_mismatch",
 	"__ubsan_handle_type_mismatch_v1",
 	"__ubsan_handle_shift_out_of_bounds",
 	"__ubsan_handle_load_invalid_value",
-	/* STACKLEAK */
+	 
 	"stackleak_track_stack",
-	/* misc */
+	 
 	"csum_partial_copy_generic",
 	"copy_mc_fragile",
 	"copy_mc_fragile_handle_tail",
 	"copy_mc_enhanced_fast_string",
-	"ftrace_likely_update", /* CONFIG_TRACE_BRANCH_PROFILING */
+	"ftrace_likely_update",  
 	"rep_stos_alternative",
 	"rep_movs_alternative",
 	"__copy_user_nocache",
@@ -1254,12 +1189,7 @@ static void add_uaccess_safe(struct objtool_file *file)
 	}
 }
 
-/*
- * FIXME: For now, just ignore any alternatives which add retpolines.  This is
- * a temporary hack, as it doesn't allow ORC to unwind from inside a retpoline.
- * But it at least allows objtool to understand the control flow *around* the
- * retpoline.
- */
+ 
 static int add_ignore_alternatives(struct objtool_file *file)
 {
 	struct section *rsec;
@@ -1288,28 +1218,19 @@ static int add_ignore_alternatives(struct objtool_file *file)
 	return 0;
 }
 
-/*
- * Symbols that replace INSN_CALL_DYNAMIC, every (tail) call to such a symbol
- * will be added to the .retpoline_sites section.
- */
+ 
 __weak bool arch_is_retpoline(struct symbol *sym)
 {
 	return false;
 }
 
-/*
- * Symbols that replace INSN_RETURN, every (tail) call to such a symbol
- * will be added to the .return_sites section.
- */
+ 
 __weak bool arch_is_rethunk(struct symbol *sym)
 {
 	return false;
 }
 
-/*
- * Symbols that are embedded inside other instructions, because sometimes crazy
- * code exists. These are mostly ignored for validation purposes.
- */
+ 
 __weak bool arch_is_embedded_insn(struct symbol *sym)
 {
 	return false;
@@ -1355,12 +1276,7 @@ static void annotate_call_site(struct objtool_file *file,
 	if (!sym)
 		sym = reloc->sym;
 
-	/*
-	 * Alternative replacement code is just template code which is
-	 * sometimes copied to the original instruction. For now, don't
-	 * annotate it. (In the future we might consider annotating the
-	 * original instruction if/when it ever makes sense to do so.)
-	 */
+	 
 	if (!strcmp(insn->sec->name, ".altinstr_replacement"))
 		return;
 
@@ -1374,11 +1290,7 @@ static void annotate_call_site(struct objtool_file *file,
 		return;
 	}
 
-	/*
-	 * Many compilers cannot disable KCOV or sanitizer calls with a function
-	 * attribute so they need a little help, NOP out any such calls from
-	 * noinstr text.
-	 */
+	 
 	if (opts.hack_noinstr && insn->sec->noinstr && sym->profiling_func) {
 		if (reloc)
 			set_reloc_type(file->elf, reloc, R_NONE);
@@ -1391,12 +1303,7 @@ static void annotate_call_site(struct objtool_file *file,
 		insn->type = sibling ? INSN_RETURN : INSN_NOP;
 
 		if (sibling) {
-			/*
-			 * We've replaced the tail-call JMP insn by two new
-			 * insn: RET; INT3, except we only have a single struct
-			 * insn here. Mark it retpoline_safe to avoid the SLS
-			 * warning, instead of adding another insn.
-			 */
+			 
 			insn->retpoline_safe = true;
 		}
 
@@ -1435,13 +1342,7 @@ static void add_call_dest(struct objtool_file *file, struct instruction *insn,
 	if (!dest)
 		return;
 
-	/*
-	 * Whatever stack impact regular CALLs have, should be undone
-	 * by the RETURN of the called function.
-	 *
-	 * Annotated intra-function calls retain the stack_ops but
-	 * are converted to JUMP, see read_intra_function_calls().
-	 */
+	 
 	remove_insn_ops(insn);
 
 	annotate_call_site(file, insn, sibling);
@@ -1449,10 +1350,7 @@ static void add_call_dest(struct objtool_file *file, struct instruction *insn,
 
 static void add_retpoline_call(struct objtool_file *file, struct instruction *insn)
 {
-	/*
-	 * Retpoline calls/jumps are really dynamic calls/jumps in disguise,
-	 * so convert them accordingly.
-	 */
+	 
 	switch (insn->type) {
 	case INSN_CALL:
 		insn->type = INSN_CALL_DYNAMIC;
@@ -1469,13 +1367,7 @@ static void add_retpoline_call(struct objtool_file *file, struct instruction *in
 
 	insn->retpoline_safe = true;
 
-	/*
-	 * Whatever stack impact regular CALLs have, should be undone
-	 * by the RETURN of the called function.
-	 *
-	 * Annotated intra-function calls retain the stack_ops but
-	 * are converted to JUMP, see read_intra_function_calls().
-	 */
+	 
 	remove_insn_ops(insn);
 
 	annotate_call_site(file, insn, false);
@@ -1483,10 +1375,7 @@ static void add_retpoline_call(struct objtool_file *file, struct instruction *in
 
 static void add_return_call(struct objtool_file *file, struct instruction *insn, bool add)
 {
-	/*
-	 * Return thunk tail calls are really just returns in disguise,
-	 * so convert them accordingly.
-	 */
+	 
 	insn->type = INSN_RETURN;
 	insn->retpoline_safe = true;
 
@@ -1500,7 +1389,7 @@ static bool is_first_func_insn(struct objtool_file *file,
 	if (insn->offset == sym->offset)
 		return true;
 
-	/* Allow direct CALL/JMP past ENDBR */
+	 
 	if (opts.ibt) {
 		struct instruction *prev = prev_insn_same_sym(file, insn);
 
@@ -1512,35 +1401,30 @@ static bool is_first_func_insn(struct objtool_file *file,
 	return false;
 }
 
-/*
- * A sibling call is a tail-call to another symbol -- to differentiate from a
- * recursive tail-call which is to the same symbol.
- */
+ 
 static bool jump_is_sibling_call(struct objtool_file *file,
 				 struct instruction *from, struct instruction *to)
 {
 	struct symbol *fs = from->sym;
 	struct symbol *ts = to->sym;
 
-	/* Not a sibling call if from/to a symbol hole */
+	 
 	if (!fs || !ts)
 		return false;
 
-	/* Not a sibling call if not targeting the start of a symbol. */
+	 
 	if (!is_first_func_insn(file, to, ts))
 		return false;
 
-	/* Disallow sibling calls into STT_NOTYPE */
+	 
 	if (ts->type == STT_NOTYPE)
 		return false;
 
-	/* Must not be self to be a sibling */
+	 
 	return fs->pfunc != ts->pfunc;
 }
 
-/*
- * Find the destination instructions for all jumps.
- */
+ 
 static int add_jump_destinations(struct objtool_file *file)
 {
 	struct instruction *insn, *jump_dest;
@@ -1550,10 +1434,7 @@ static int add_jump_destinations(struct objtool_file *file)
 
 	for_each_insn(file, insn) {
 		if (insn->jump_dest) {
-			/*
-			 * handle_group_alt() may have previously set
-			 * 'jump_dest' for some alternatives.
-			 */
+			 
 			continue;
 		}
 		if (!is_static_jump(insn))
@@ -1573,10 +1454,7 @@ static int add_jump_destinations(struct objtool_file *file)
 			add_return_call(file, insn, true);
 			continue;
 		} else if (insn_func(insn)) {
-			/*
-			 * External sibling call or internal sibling call with
-			 * STT_FUNC reloc.
-			 */
+			 
 			add_call_dest(file, insn, reloc->sym, true);
 			continue;
 		} else if (reloc->sym->sec->idx) {
@@ -1584,7 +1462,7 @@ static int add_jump_destinations(struct objtool_file *file)
 			dest_off = reloc->sym->sym.st_value +
 				   arch_dest_reloc_offset(reloc_addend(reloc));
 		} else {
-			/* non-func asm code jumping to another file */
+			 
 			continue;
 		}
 
@@ -1592,14 +1470,7 @@ static int add_jump_destinations(struct objtool_file *file)
 		if (!jump_dest) {
 			struct symbol *sym = find_symbol_by_offset(dest_sec, dest_off);
 
-			/*
-			 * This is a special case for retbleed_untrain_ret().
-			 * It jumps to __x86_return_thunk(), but objtool
-			 * can't find the thunk's starting RET
-			 * instruction, because the RET is also in the
-			 * middle of another instruction.  Objtool only
-			 * knows about the outer instruction.
-			 */
+			 
 			if (sym && sym->embedded_insn) {
 				add_return_call(file, insn, false);
 				continue;
@@ -1610,27 +1481,11 @@ static int add_jump_destinations(struct objtool_file *file)
 			return -1;
 		}
 
-		/*
-		 * Cross-function jump.
-		 */
+		 
 		if (insn_func(insn) && insn_func(jump_dest) &&
 		    insn_func(insn) != insn_func(jump_dest)) {
 
-			/*
-			 * For GCC 8+, create parent/child links for any cold
-			 * subfunctions.  This is _mostly_ redundant with a
-			 * similar initialization in read_symbols().
-			 *
-			 * If a function has aliases, we want the *first* such
-			 * function in the symbol table to be the subfunction's
-			 * parent.  In that case we overwrite the
-			 * initialization done in read_symbols().
-			 *
-			 * However this code can't completely replace the
-			 * read_symbols() code because this doesn't detect the
-			 * case where the parent function's only reference to a
-			 * subfunction is through a jump table.
-			 */
+			 
 			if (!strstr(insn_func(insn)->name, ".cold") &&
 			    strstr(insn_func(jump_dest)->name, ".cold")) {
 				insn_func(insn)->cfunc = insn_func(jump_dest);
@@ -1639,10 +1494,7 @@ static int add_jump_destinations(struct objtool_file *file)
 		}
 
 		if (jump_is_sibling_call(file, insn, jump_dest)) {
-			/*
-			 * Internal sibling call without reloc or with
-			 * STT_SECTION reloc.
-			 */
+			 
 			add_call_dest(file, insn, insn_func(jump_dest), true);
 			continue;
 		}
@@ -1664,9 +1516,7 @@ static struct symbol *find_call_destination(struct section *sec, unsigned long o
 	return call_dest;
 }
 
-/*
- * Find the destination instructions for all calls.
- */
+ 
 static int add_call_destinations(struct objtool_file *file)
 {
 	struct instruction *insn;
@@ -1719,10 +1569,7 @@ static int add_call_destinations(struct objtool_file *file)
 	return 0;
 }
 
-/*
- * The .alternatives section requires some extra special care over and above
- * other special sections because alternatives are patched in place.
- */
+ 
 static int handle_group_alt(struct objtool_file *file,
 			    struct special_alt *special_alt,
 			    struct instruction *orig_insn,
@@ -1779,13 +1626,7 @@ static int handle_group_alt(struct objtool_file *file,
 	}
 
 	if (special_alt->new_len < special_alt->orig_len) {
-		/*
-		 * Insert a fake nop at the end to make the replacement
-		 * alt_group the same size as the original.  This is needed to
-		 * allow propagate_alt_cfi() to do its magic.  When the last
-		 * instruction affects the stack, the instruction after it (the
-		 * nop) will propagate the new state to the shared CFI array.
-		 */
+		 
 		nop = malloc(sizeof(*nop));
 		if (!nop) {
 			WARN("malloc failed");
@@ -1820,14 +1661,7 @@ static int handle_group_alt(struct objtool_file *file,
 		insn->sym = orig_insn->sym;
 		insn->alt_group = new_alt_group;
 
-		/*
-		 * Since alternative replacement code is copy/pasted by the
-		 * kernel after applying relocations, generally such code can't
-		 * have relative-address relocation references to outside the
-		 * .altinstr_replacement section, unless the arch's
-		 * alternatives code can adjust the relative offsets
-		 * accordingly.
-		 */
+		 
 		alt_reloc = insn_reloc(file, insn);
 		if (alt_reloc && arch_pc_relative_reloc(alt_reloc) &&
 		    !arch_support_alt_relocation(special_alt, insn, alt_reloc)) {
@@ -1867,11 +1701,7 @@ end:
 	return 0;
 }
 
-/*
- * A jump table entry can either convert a nop to a jump or a jump to a nop.
- * If the original instruction is a jump, make the alt entry an effective nop
- * by just skipping the original instruction.
- */
+ 
 static int handle_jump_alt(struct objtool_file *file,
 			   struct special_alt *special_alt,
 			   struct instruction *orig_insn,
@@ -1913,12 +1743,7 @@ static int handle_jump_alt(struct objtool_file *file,
 	return 0;
 }
 
-/*
- * Read all the special sections which have alternate instructions which can be
- * patched in or redirected to at runtime.  Each instruction having alternate
- * instruction(s) has them added to its insn->alts list, which will be
- * traversed in validate_branch().
- */
+ 
 static int add_special_section_alts(struct objtool_file *file)
 {
 	struct list_head special_alts;
@@ -2009,21 +1834,18 @@ static int add_jump_table(struct objtool_file *file, struct instruction *insn,
 	struct reloc *reloc = table;
 	struct alternative *alt;
 
-	/*
-	 * Each @reloc is a switch table relocation which points to the target
-	 * instruction.
-	 */
+	 
 	for_each_reloc_from(table->sec, reloc) {
 
-		/* Check for the end of the table: */
+		 
 		if (reloc != table && reloc == next_table)
 			break;
 
-		/* Make sure the table entries are consecutive: */
+		 
 		if (prev_offset && reloc_offset(reloc) != prev_offset + 8)
 			break;
 
-		/* Detect function pointers from contiguous objects: */
+		 
 		if (reloc->sym->sec == pfunc->sec &&
 		    reloc_addend(reloc) == pfunc->offset)
 			break;
@@ -2032,7 +1854,7 @@ static int add_jump_table(struct objtool_file *file, struct instruction *insn,
 		if (!dest_insn)
 			break;
 
-		/* Make sure the destination is in the same function: */
+		 
 		if (!insn_func(dest_insn) || insn_func(dest_insn)->pfunc != pfunc)
 			break;
 
@@ -2056,10 +1878,7 @@ static int add_jump_table(struct objtool_file *file, struct instruction *insn,
 	return 0;
 }
 
-/*
- * find_jump_table() - Given a dynamic jump, find the switch jump table
- * associated with it.
- */
+ 
 static struct reloc *find_jump_table(struct objtool_file *file,
 				      struct symbol *func,
 				      struct instruction *insn)
@@ -2067,11 +1886,7 @@ static struct reloc *find_jump_table(struct objtool_file *file,
 	struct reloc *table_reloc;
 	struct instruction *dest_insn, *orig_insn = insn;
 
-	/*
-	 * Backward search using the @first_jump_src links, these help avoid
-	 * much of the 'in between' code. Which avoids us getting confused by
-	 * it.
-	 */
+	 
 	for (;
 	     insn && insn_func(insn) && insn_func(insn)->pfunc == func;
 	     insn = insn->first_jump_src ?: prev_insn_same_sym(file, insn)) {
@@ -2079,7 +1894,7 @@ static struct reloc *find_jump_table(struct objtool_file *file,
 		if (insn != orig_insn && insn->type == INSN_JUMP_DYNAMIC)
 			break;
 
-		/* allow small jumps within the range */
+		 
 		if (insn->type == INSN_JUMP_UNCONDITIONAL &&
 		    insn->jump_dest &&
 		    (insn->jump_dest->offset <= insn->offset ||
@@ -2099,10 +1914,7 @@ static struct reloc *find_jump_table(struct objtool_file *file,
 	return NULL;
 }
 
-/*
- * First pass: Mark the head of each jump table so that in the next pass,
- * we know when a given jump table ends and the next one starts.
- */
+ 
 static void mark_func_jump_tables(struct objtool_file *file,
 				    struct symbol *func)
 {
@@ -2113,11 +1925,7 @@ static void mark_func_jump_tables(struct objtool_file *file,
 		if (!last)
 			last = insn;
 
-		/*
-		 * Store back-pointers for unconditional forward jumps such
-		 * that find_jump_table() can back-track using those and
-		 * avoid some potentially confusing code.
-		 */
+		 
 		if (insn->type == INSN_JUMP_UNCONDITIONAL && insn->jump_dest &&
 		    insn->offset > last->offset &&
 		    insn->jump_dest->offset > insn->offset &&
@@ -2166,11 +1974,7 @@ static int add_func_jump_tables(struct objtool_file *file,
 	return ret;
 }
 
-/*
- * For some switch statements, gcc generates a jump table in the .rodata
- * section which contains a list of addresses within the function to jump to.
- * This finds these jump tables and adds them to the insn->alts lists.
- */
+ 
 static int add_jump_table_alts(struct objtool_file *file)
 {
 	struct symbol *func;
@@ -2457,11 +2261,7 @@ static int read_intra_function_calls(struct objtool_file *file)
 			return -1;
 		}
 
-		/*
-		 * Treat intra-function CALLs as JMPs, but with a stack_op.
-		 * See add_call_destinations(), which strips stack_ops from
-		 * normal CALLs.
-		 */
+		 
 		insn->type = INSN_JUMP_UNCONDITIONAL;
 
 		dest_off = arch_jump_destination(insn);
@@ -2476,24 +2276,14 @@ static int read_intra_function_calls(struct objtool_file *file)
 	return 0;
 }
 
-/*
- * Return true if name matches an instrumentation function, where calls to that
- * function from noinstr code can safely be removed, but compilers won't do so.
- */
+ 
 static bool is_profiling_func(const char *name)
 {
-	/*
-	 * Many compilers cannot disable KCOV with a function attribute.
-	 */
+	 
 	if (!strncmp(name, "__sanitizer_cov_", 16))
 		return true;
 
-	/*
-	 * Some compilers currently do not remove __tsan_func_entry/exit nor
-	 * __tsan_atomic_signal_fence (used for barrier instrumentation) with
-	 * the __no_sanitize_thread attribute, remove them. Once the kernel's
-	 * minimum Clang version is 14.0, this can be removed.
-	 */
+	 
 	if (!strncmp(name, "__tsan_func_", 12) ||
 	    !strcmp(name, "__tsan_atomic_signal_fence"))
 		return true;
@@ -2537,16 +2327,7 @@ static void mark_rodata(struct objtool_file *file)
 	struct section *sec;
 	bool found = false;
 
-	/*
-	 * Search for the following rodata sections, each of which can
-	 * potentially contain jump tables:
-	 *
-	 * - .rodata: can contain GCC switch tables
-	 * - .rodata.<func>: same, if -fdata-sections is being used
-	 * - .rodata..c_jump_table: contains C annotated jump tables
-	 *
-	 * .rodata.str1.* sections are ignored; they don't contain jump tables.
-	 */
+	 
 	for_each_sec(file, sec) {
 		if (!strncmp(sec->name, ".rodata", 7) &&
 		    !strstr(sec->name, ".str1.")) {
@@ -2568,9 +2349,7 @@ static int decode_sections(struct objtool_file *file)
 	if (ret)
 		return ret;
 
-	/*
-	 * Must be before add_{jump_call}_destination.
-	 */
+	 
 	ret = classify_symbols(file);
 	if (ret)
 		return ret;
@@ -2586,17 +2365,12 @@ static int decode_sections(struct objtool_file *file)
 	if (ret)
 		return ret;
 
-	/*
-	 * Must be before read_unwind_hints() since that needs insn->noendbr.
-	 */
+	 
 	ret = read_noendbr_hints(file);
 	if (ret)
 		return ret;
 
-	/*
-	 * Must be before add_jump_destinations(), which depends on 'func'
-	 * being set for alternatives, to enable proper sibling call detection.
-	 */
+	 
 	if (opts.stackval || opts.orc || opts.uaccess || opts.noinstr) {
 		ret = add_special_section_alts(file);
 		if (ret)
@@ -2607,10 +2381,7 @@ static int decode_sections(struct objtool_file *file)
 	if (ret)
 		return ret;
 
-	/*
-	 * Must be before add_call_destination(); it changes INSN_CALL to
-	 * INSN_JUMP.
-	 */
+	 
 	ret = read_intra_function_calls(file);
 	if (ret)
 		return ret;
@@ -2619,10 +2390,7 @@ static int decode_sections(struct objtool_file *file)
 	if (ret)
 		return ret;
 
-	/*
-	 * Must be after add_call_destinations() such that it can override
-	 * dead_end_function() marks.
-	 */
+	 
 	ret = add_dead_ends(file);
 	if (ret)
 		return ret;
@@ -2719,15 +2487,15 @@ static int update_cfi_state_regs(struct instruction *insn,
 	if (cfa->base != CFI_SP && cfa->base != CFI_SP_INDIRECT)
 		return 0;
 
-	/* push */
+	 
 	if (op->dest.type == OP_DEST_PUSH || op->dest.type == OP_DEST_PUSHF)
 		cfa->offset += 8;
 
-	/* pop */
+	 
 	if (op->src.type == OP_SRC_POP || op->src.type == OP_SRC_POPF)
 		cfa->offset -= 8;
 
-	/* add immediate to sp */
+	 
 	if (op->dest.type == OP_DEST_REG && op->src.type == OP_SRC_ADD &&
 	    op->dest.reg == CFI_SP && op->src.reg == CFI_SP)
 		cfa->offset -= op->src.offset;
@@ -2750,59 +2518,7 @@ static void restore_reg(struct cfi_state *cfi, unsigned char reg)
 	cfi->regs[reg].offset = initial_func_cfi.regs[reg].offset;
 }
 
-/*
- * A note about DRAP stack alignment:
- *
- * GCC has the concept of a DRAP register, which is used to help keep track of
- * the stack pointer when aligning the stack.  r10 or r13 is used as the DRAP
- * register.  The typical DRAP pattern is:
- *
- *   4c 8d 54 24 08		lea    0x8(%rsp),%r10
- *   48 83 e4 c0		and    $0xffffffffffffffc0,%rsp
- *   41 ff 72 f8		pushq  -0x8(%r10)
- *   55				push   %rbp
- *   48 89 e5			mov    %rsp,%rbp
- *				(more pushes)
- *   41 52			push   %r10
- *				...
- *   41 5a			pop    %r10
- *				(more pops)
- *   5d				pop    %rbp
- *   49 8d 62 f8		lea    -0x8(%r10),%rsp
- *   c3				retq
- *
- * There are some variations in the epilogues, like:
- *
- *   5b				pop    %rbx
- *   41 5a			pop    %r10
- *   41 5c			pop    %r12
- *   41 5d			pop    %r13
- *   41 5e			pop    %r14
- *   c9				leaveq
- *   49 8d 62 f8		lea    -0x8(%r10),%rsp
- *   c3				retq
- *
- * and:
- *
- *   4c 8b 55 e8		mov    -0x18(%rbp),%r10
- *   48 8b 5d e0		mov    -0x20(%rbp),%rbx
- *   4c 8b 65 f0		mov    -0x10(%rbp),%r12
- *   4c 8b 6d f8		mov    -0x8(%rbp),%r13
- *   c9				leaveq
- *   49 8d 62 f8		lea    -0x8(%r10),%rsp
- *   c3				retq
- *
- * Sometimes r13 is used as the DRAP register, in which case it's saved and
- * restored beforehand:
- *
- *   41 55			push   %r13
- *   4c 8d 6c 24 10		lea    0x10(%rsp),%r13
- *   48 83 e4 f0		and    $0xfffffffffffffff0,%rsp
- *				...
- *   49 8d 65 f0		lea    -0x10(%r13),%rsp
- *   41 5d			pop    %r13
- *   c3				retq
- */
+ 
 static int update_cfi_state(struct instruction *insn,
 			    struct instruction *next_insn,
 			    struct cfi_state *cfi, struct stack_op *op)
@@ -2810,11 +2526,11 @@ static int update_cfi_state(struct instruction *insn,
 	struct cfi_reg *cfa = &cfi->cfa;
 	struct cfi_reg *regs = cfi->regs;
 
-	/* ignore UNWIND_HINT_UNDEFINED regions */
+	 
 	if (cfi->force_undefined)
 		return 0;
 
-	/* stack operations don't make sense with an undefined CFA */
+	 
 	if (cfa->base == CFI_UNDEFINED) {
 		if (insn_func(insn)) {
 			WARN_INSN(insn, "undefined stack state");
@@ -2837,7 +2553,7 @@ static int update_cfi_state(struct instruction *insn,
 			    cfa->base == CFI_SP &&
 			    check_reg_frame_pos(&regs[CFI_BP], -cfa->offset)) {
 
-				/* mov %rsp, %rbp */
+				 
 				cfa->base = op->dest.reg;
 				cfi->bp_scratch = false;
 			}
@@ -2845,7 +2561,7 @@ static int update_cfi_state(struct instruction *insn,
 			else if (op->src.reg == CFI_SP &&
 				 op->dest.reg == CFI_BP && cfi->drap) {
 
-				/* drap: mov %rsp, %rbp */
+				 
 				regs[CFI_BP].base = CFI_BP;
 				regs[CFI_BP].offset = -cfi->stack_size;
 				cfi->bp_scratch = false;
@@ -2853,16 +2569,7 @@ static int update_cfi_state(struct instruction *insn,
 
 			else if (op->src.reg == CFI_SP && cfa->base == CFI_SP) {
 
-				/*
-				 * mov %rsp, %reg
-				 *
-				 * This is needed for the rare case where GCC
-				 * does:
-				 *
-				 *   mov    %rsp, %rax
-				 *   ...
-				 *   mov    %rax, %rsp
-				 */
+				 
 				cfi->vals[op->dest.reg].base = CFI_CFA;
 				cfi->vals[op->dest.reg].offset = -cfi->stack_size;
 			}
@@ -2870,28 +2577,17 @@ static int update_cfi_state(struct instruction *insn,
 			else if (op->src.reg == CFI_BP && op->dest.reg == CFI_SP &&
 				 (cfa->base == CFI_BP || cfa->base == cfi->drap_reg)) {
 
-				/*
-				 * mov %rbp, %rsp
-				 *
-				 * Restore the original stack pointer (Clang).
-				 */
+				 
 				cfi->stack_size = -cfi->regs[CFI_BP].offset;
 			}
 
 			else if (op->dest.reg == cfa->base) {
 
-				/* mov %reg, %rsp */
+				 
 				if (cfa->base == CFI_SP &&
 				    cfi->vals[op->src.reg].base == CFI_CFA) {
 
-					/*
-					 * This is needed for the rare case
-					 * where GCC does something dumb like:
-					 *
-					 *   lea    0x8(%rsp), %rcx
-					 *   ...
-					 *   mov    %rcx, %rsp
-					 */
+					 
 					cfa->offset = -cfi->vals[op->src.reg].offset;
 					cfi->stack_size = cfa->offset;
 
@@ -2899,32 +2595,7 @@ static int update_cfi_state(struct instruction *insn,
 					   cfi->vals[op->src.reg].base == CFI_SP_INDIRECT &&
 					   cfi->vals[op->src.reg].offset == cfa->offset) {
 
-					/*
-					 * Stack swizzle:
-					 *
-					 * 1: mov %rsp, (%[tos])
-					 * 2: mov %[tos], %rsp
-					 *    ...
-					 * 3: pop %rsp
-					 *
-					 * Where:
-					 *
-					 * 1 - places a pointer to the previous
-					 *     stack at the Top-of-Stack of the
-					 *     new stack.
-					 *
-					 * 2 - switches to the new stack.
-					 *
-					 * 3 - pops the Top-of-Stack to restore
-					 *     the original stack.
-					 *
-					 * Note: we set base to SP_INDIRECT
-					 * here and preserve offset. Therefore
-					 * when the unwinder reaches ToS it
-					 * will dereference SP and then add the
-					 * offset to find the next frame, IOW:
-					 * (%rsp) + offset.
-					 */
+					 
 					cfa->base = CFI_SP_INDIRECT;
 
 				} else {
@@ -2937,12 +2608,7 @@ static int update_cfi_state(struct instruction *insn,
 				 cfi->vals[op->src.reg].base == CFI_SP_INDIRECT &&
 				 cfi->vals[op->src.reg].offset == cfa->offset) {
 
-				/*
-				 * The same stack swizzle case 2) as above. But
-				 * because we can't change cfa->base, case 3)
-				 * will become a regular POP. Pretend we're a
-				 * PUSH so things don't go unbalanced.
-				 */
+				 
 				cfi->stack_size += 8;
 			}
 
@@ -2952,7 +2618,7 @@ static int update_cfi_state(struct instruction *insn,
 		case OP_SRC_ADD:
 			if (op->dest.reg == CFI_SP && op->src.reg == CFI_SP) {
 
-				/* add imm, %rsp */
+				 
 				cfi->stack_size -= op->src.offset;
 				if (cfa->base == CFI_SP)
 					cfa->offset -= op->src.offset;
@@ -2961,26 +2627,17 @@ static int update_cfi_state(struct instruction *insn,
 
 			if (op->dest.reg == CFI_SP && op->src.reg == CFI_BP) {
 
-				/* lea disp(%rbp), %rsp */
+				 
 				cfi->stack_size = -(op->src.offset + regs[CFI_BP].offset);
 				break;
 			}
 
 			if (op->src.reg == CFI_SP && cfa->base == CFI_SP) {
 
-				/* drap: lea disp(%rsp), %drap */
+				 
 				cfi->drap_reg = op->dest.reg;
 
-				/*
-				 * lea disp(%rsp), %reg
-				 *
-				 * This is needed for the rare case where GCC
-				 * does something dumb like:
-				 *
-				 *   lea    0x8(%rsp), %rcx
-				 *   ...
-				 *   mov    %rcx, %rsp
-				 */
+				 
 				cfi->vals[op->dest.reg].base = CFI_CFA;
 				cfi->vals[op->dest.reg].offset = \
 					-cfi->stack_size + op->src.offset;
@@ -2991,7 +2648,7 @@ static int update_cfi_state(struct instruction *insn,
 			if (cfi->drap && op->dest.reg == CFI_SP &&
 			    op->src.reg == cfi->drap_reg) {
 
-				 /* drap: lea disp(%drap), %rsp */
+				  
 				cfa->base = CFI_SP;
 				cfa->offset = cfi->stack_size = -op->src.offset;
 				cfi->drap_reg = CFI_UNDEFINED;
@@ -3015,16 +2672,13 @@ static int update_cfi_state(struct instruction *insn,
 			}
 
 			if (cfi->drap_reg != CFI_UNDEFINED) {
-				/* drap: and imm, %rsp */
+				 
 				cfa->base = cfi->drap_reg;
 				cfa->offset = cfi->stack_size = 0;
 				cfi->drap = true;
 			}
 
-			/*
-			 * Older versions of GCC (4.8ish) realign the stack
-			 * without DRAP, with a frame pointer.
-			 */
+			 
 
 			break;
 
@@ -3032,14 +2686,14 @@ static int update_cfi_state(struct instruction *insn,
 		case OP_SRC_POPF:
 			if (op->dest.reg == CFI_SP && cfa->base == CFI_SP_INDIRECT) {
 
-				/* pop %rsp; # restore from a stack swizzle */
+				 
 				cfa->base = CFI_SP;
 				break;
 			}
 
 			if (!cfi->drap && op->dest.reg == cfa->base) {
 
-				/* pop %rbp */
+				 
 				cfa->base = CFI_SP;
 			}
 
@@ -3047,14 +2701,14 @@ static int update_cfi_state(struct instruction *insn,
 			    op->dest.reg == cfi->drap_reg &&
 			    cfi->drap_offset == -cfi->stack_size) {
 
-				/* drap: pop %drap */
+				 
 				cfa->base = cfi->drap_reg;
 				cfa->offset = 0;
 				cfi->drap_offset = -1;
 
 			} else if (cfi->stack_size == -regs[op->dest.reg].offset) {
 
-				/* pop %reg */
+				 
 				restore_reg(cfi, op->dest.reg);
 			}
 
@@ -3068,7 +2722,7 @@ static int update_cfi_state(struct instruction *insn,
 			if (!cfi->drap && op->dest.reg == cfa->base &&
 			    op->dest.reg == CFI_BP) {
 
-				/* mov disp(%rsp), %rbp */
+				 
 				cfa->base = CFI_SP;
 				cfa->offset = cfi->stack_size;
 			}
@@ -3076,7 +2730,7 @@ static int update_cfi_state(struct instruction *insn,
 			if (cfi->drap && op->src.reg == CFI_BP &&
 			    op->src.offset == cfi->drap_offset) {
 
-				/* drap: mov disp(%rbp), %drap */
+				 
 				cfa->base = cfi->drap_reg;
 				cfa->offset = 0;
 				cfi->drap_offset = -1;
@@ -3085,20 +2739,20 @@ static int update_cfi_state(struct instruction *insn,
 			if (cfi->drap && op->src.reg == CFI_BP &&
 			    op->src.offset == regs[op->dest.reg].offset) {
 
-				/* drap: mov disp(%rbp), %reg */
+				 
 				restore_reg(cfi, op->dest.reg);
 
 			} else if (op->src.reg == cfa->base &&
 			    op->src.offset == regs[op->dest.reg].offset + cfa->offset) {
 
-				/* mov disp(%rbp), %reg */
-				/* mov disp(%rsp), %reg */
+				 
+				 
 				restore_reg(cfi, op->dest.reg);
 
 			} else if (op->src.reg == CFI_SP &&
 				   op->src.offset == regs[op->dest.reg].offset + cfi->stack_size) {
 
-				/* mov disp(%rsp), %reg */
+				 
 				restore_reg(cfi, op->dest.reg);
 			}
 
@@ -3123,31 +2777,31 @@ static int update_cfi_state(struct instruction *insn,
 		if (cfi->drap) {
 			if (op->src.reg == cfa->base && op->src.reg == cfi->drap_reg) {
 
-				/* drap: push %drap */
+				 
 				cfa->base = CFI_BP_INDIRECT;
 				cfa->offset = -cfi->stack_size;
 
-				/* save drap so we know when to restore it */
+				 
 				cfi->drap_offset = -cfi->stack_size;
 
 			} else if (op->src.reg == CFI_BP && cfa->base == cfi->drap_reg) {
 
-				/* drap: push %rbp */
+				 
 				cfi->stack_size = 0;
 
 			} else {
 
-				/* drap: push %reg */
+				 
 				save_reg(cfi, op->src.reg, CFI_BP, -cfi->stack_size);
 			}
 
 		} else {
 
-			/* push %reg */
+			 
 			save_reg(cfi, op->src.reg, CFI_CFA, -cfi->stack_size);
 		}
 
-		/* detect when asm code uses rbp as a scratch register */
+		 
 		if (opts.stackval && insn_func(insn) && op->src.reg == CFI_BP &&
 		    cfa->base != CFI_BP)
 			cfi->bp_scratch = true;
@@ -3158,34 +2812,34 @@ static int update_cfi_state(struct instruction *insn,
 		if (cfi->drap) {
 			if (op->src.reg == cfa->base && op->src.reg == cfi->drap_reg) {
 
-				/* drap: mov %drap, disp(%rbp) */
+				 
 				cfa->base = CFI_BP_INDIRECT;
 				cfa->offset = op->dest.offset;
 
-				/* save drap offset so we know when to restore it */
+				 
 				cfi->drap_offset = op->dest.offset;
 			} else {
 
-				/* drap: mov reg, disp(%rbp) */
+				 
 				save_reg(cfi, op->src.reg, CFI_BP, op->dest.offset);
 			}
 
 		} else if (op->dest.reg == cfa->base) {
 
-			/* mov reg, disp(%rbp) */
-			/* mov reg, disp(%rsp) */
+			 
+			 
 			save_reg(cfi, op->src.reg, CFI_CFA,
 				 op->dest.offset - cfi->cfa.offset);
 
 		} else if (op->dest.reg == CFI_SP) {
 
-			/* mov reg, disp(%rsp) */
+			 
 			save_reg(cfi, op->src.reg, CFI_CFA,
 				 op->dest.offset - cfi->stack_size);
 
 		} else if (op->src.reg == CFI_SP && op->dest.offset == 0) {
 
-			/* mov %rsp, (%reg); # setup a stack swizzle. */
+			 
 			cfi->vals[op->dest.reg].base = CFI_SP_INDIRECT;
 			cfi->vals[op->dest.reg].offset = cfa->offset;
 		}
@@ -3198,7 +2852,7 @@ static int update_cfi_state(struct instruction *insn,
 			return -1;
 		}
 
-		/* pop mem */
+		 
 		cfi->stack_size -= 8;
 		if (cfa->base == CFI_SP)
 			cfa->offset -= 8;
@@ -3213,15 +2867,7 @@ static int update_cfi_state(struct instruction *insn,
 	return 0;
 }
 
-/*
- * The stack layouts of alternatives instructions can sometimes diverge when
- * they have stack modifications.  That's fine as long as the potential stack
- * layouts don't conflict at any given potential instruction boundary.
- *
- * Flatten the CFIs of the different alternative code streams (both original
- * and replacement) into a single shared CFI array which can be used to detect
- * conflicts and nicely feed a linear array of ORC entries to the unwinder.
- */
+ 
 static int propagate_alt_cfi(struct objtool_file *file, struct instruction *insn)
 {
 	struct cfi_state **alt_cfi;
@@ -3397,10 +3043,7 @@ static inline bool noinstr_call_dest(struct objtool_file *file,
 				     struct instruction *insn,
 				     struct symbol *func)
 {
-	/*
-	 * We can't deal with indirect function calls at present;
-	 * assume they're instrumented.
-	 */
+	 
 	if (!func) {
 		if (file->pv_ops)
 			return pv_call_dest(file, insn);
@@ -3408,23 +3051,15 @@ static inline bool noinstr_call_dest(struct objtool_file *file,
 		return false;
 	}
 
-	/*
-	 * If the symbol is from a noinstr section; we good.
-	 */
+	 
 	if (func->sec->noinstr)
 		return true;
 
-	/*
-	 * If the symbol is a static_call trampoline, we can't tell.
-	 */
+	 
 	if (func->static_call_tramp)
 		return true;
 
-	/*
-	 * The __ubsan_handle_*() calls are like WARN(), they only happen when
-	 * something 'BAD' happened. At the risk of taking the machine down,
-	 * let them proceed to get the message out.
-	 */
+	 
 	if (!strncmp(func->name, "__ubsan_handle_", 15))
 		return true;
 
@@ -3506,19 +3141,10 @@ static struct instruction *next_insn_to_validate(struct objtool_file *file,
 {
 	struct alt_group *alt_group = insn->alt_group;
 
-	/*
-	 * Simulate the fact that alternatives are patched in-place.  When the
-	 * end of a replacement alt_group is reached, redirect objtool flow to
-	 * the end of the original alt_group.
-	 *
-	 * insn->alts->insn -> alt_group->first_insn
-	 *		       ...
-	 *		       alt_group->last_insn
-	 *		       [alt_group->nop]      -> next(orig_group->last_insn)
-	 */
+	 
 	if (alt_group) {
 		if (alt_group->nop) {
-			/* ->nop implies ->orig_group */
+			 
 			if (insn == alt_group->last_insn)
 				return alt_group->nop;
 			if (insn == alt_group->nop)
@@ -3534,12 +3160,7 @@ next_orig:
 	return next_insn_same_sec(file, alt_group->orig_group->last_insn);
 }
 
-/*
- * Follow the branch starting at the given instruction, and recursively follow
- * any other branches (jumps).  Meanwhile, track the frame pointer state at
- * each instruction and validate all the rules described in
- * tools/objtool/Documentation/objtool.txt.
- */
+ 
 static int validate_branch(struct objtool_file *file, struct symbol *func,
 			   struct instruction *insn, struct insn_state state)
 {
@@ -3555,7 +3176,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
 		next_insn = next_insn_to_validate(file, insn);
 
 		if (func && insn_func(insn) && func != insn_func(insn)->pfunc) {
-			/* Ignore KCFI type preambles, which always fall through */
+			 
 			if (!strncmp(func->name, "__cfi_", 6) ||
 			    !strncmp(func->name, "__pfx_", 6))
 				return 0;
@@ -3614,7 +3235,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
 
 			state.cfi = *insn->cfi;
 		} else {
-			/* XXX track if we actually changed state.cfi */
+			 
 
 			if (prev_insn && !cficmp(prev_insn->cfi, &state.cfi)) {
 				insn->cfi = prev_insn->cfi;
@@ -3811,12 +3432,7 @@ static int validate_unwind_hints(struct objtool_file *file, struct section *sec)
 	return warnings;
 }
 
-/*
- * Validate rethunk entry constraint: must untrain RET before the first RET.
- *
- * Follow every branch (intra-function) and ensure VALIDATE_UNRET_END comes
- * before an actual RET instruction.
- */
+ 
 static int validate_unret(struct objtool_file *file, struct instruction *insn)
 {
 	struct instruction *next, *dest;
@@ -3877,7 +3493,7 @@ static int validate_unret(struct objtool_file *file, struct instruction *insn)
 				break;
 			}
 
-			/* fallthrough */
+			 
 		case INSN_CALL:
 			dest = find_insn(file, insn_call_dest(insn)->sec,
 					 insn_call_dest(insn)->offset);
@@ -3892,10 +3508,7 @@ static int validate_unret(struct objtool_file *file, struct instruction *insn)
 				BT_INSN(insn, "(call)");
 				return ret;
 			}
-			/*
-			 * If a call returns without error, it must have seen UNTRAIN_RET.
-			 * Therefore any non-error return is a success.
-			 */
+			 
 			return 0;
 
 		case INSN_RETURN:
@@ -3921,10 +3534,7 @@ static int validate_unret(struct objtool_file *file, struct instruction *insn)
 	return 0;
 }
 
-/*
- * Validate that all branches starting at VALIDATE_UNRET_BEGIN encounter
- * VALIDATE_UNRET_END before RET.
- */
+ 
 static int validate_unrets(struct objtool_file *file)
 {
 	struct instruction *insn;
@@ -3999,46 +3609,31 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
 	if (insn->ignore || insn->type == INSN_NOP || insn->type == INSN_TRAP)
 		return true;
 
-	/*
-	 * Ignore alternative replacement instructions.  This can happen
-	 * when a whitelisted function uses one of the ALTERNATIVE macros.
-	 */
+	 
 	if (!strcmp(insn->sec->name, ".altinstr_replacement") ||
 	    !strcmp(insn->sec->name, ".altinstr_aux"))
 		return true;
 
-	/*
-	 * Whole archive runs might encounter dead code from weak symbols.
-	 * This is where the linker will have dropped the weak symbol in
-	 * favour of a regular symbol, but leaves the code in place.
-	 *
-	 * In this case we'll find a piece of code (whole function) that is not
-	 * covered by a !section symbol. Ignore them.
-	 */
+	 
 	if (opts.link && !insn_func(insn)) {
 		int size = find_symbol_hole_containing(insn->sec, insn->offset);
 		unsigned long end = insn->offset + size;
 
-		if (!size) /* not a hole */
+		if (!size)  
 			return false;
 
-		if (size < 0) /* hole until the end */
+		if (size < 0)  
 			return true;
 
 		sec_for_each_insn_continue(file, insn) {
-			/*
-			 * If we reach a visited instruction at or before the
-			 * end of the hole, ignore the unreachable.
-			 */
+			 
 			if (insn->visited)
 				return true;
 
 			if (insn->offset >= end)
 				break;
 
-			/*
-			 * If this hole jumps to a .cold function, mark it ignore too.
-			 */
+			 
 			if (insn->jump_dest && insn_func(insn->jump_dest) &&
 			    strstr(insn_func(insn->jump_dest)->name, ".cold")) {
 				struct instruction *dest = insn->jump_dest;
@@ -4056,14 +3651,7 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
 	if (insn_func(insn)->static_call_tramp)
 		return true;
 
-	/*
-	 * CONFIG_UBSAN_TRAP inserts a UD2 when it sees
-	 * __builtin_unreachable().  The BUG() macro has an unreachable() after
-	 * the UD2, which causes GCC's undefined trap logic to emit another UD2
-	 * (or occasionally a JMP to UD2).
-	 *
-	 * It may also insert a UD2 after calling a __noreturn function.
-	 */
+	 
 	prev_insn = prev_insn_same_sec(file, insn);
 	if (prev_insn->dead_end &&
 	    (insn->type == INSN_BUG ||
@@ -4071,12 +3659,7 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
 	      insn->jump_dest && insn->jump_dest->type == INSN_BUG)))
 		return true;
 
-	/*
-	 * Check if this (or a subsequent) instruction is related to
-	 * CONFIG_UBSAN or CONFIG_KASAN.
-	 *
-	 * End the search at 5 instructions to avoid going into the weeds.
-	 */
+	 
 	for (i = 0; i < 5; i++) {
 
 		if (is_kasan_insn(insn) || is_ubsan_insn(insn))
@@ -4134,14 +3717,11 @@ static int add_prefix_symbol(struct objtool_file *file, struct symbol *func)
 		return -1;
 
 	if (!insn->cfi) {
-		/*
-		 * This can happen if stack validation isn't enabled or the
-		 * function is annotated with STACK_FRAME_NON_STANDARD.
-		 */
+		 
 		return 0;
 	}
 
-	/* Propagate insn->cfi to the prefix code */
+	 
 	cfi = cfi_hash_find_or_add(insn->cfi);
 	for (; prev != insn; prev = next_insn_same_sec(file, prev))
 		prev->cfi = cfi;
@@ -4286,10 +3866,7 @@ static int validate_ibt_insn(struct objtool_file *file, struct instruction *insn
 	unsigned long off;
 	int warnings = 0;
 
-	/*
-	 * Looking for function pointer load relocations.  Ignore
-	 * direct/indirect branches:
-	 */
+	 
 	switch (insn->type) {
 	case INSN_CALL:
 	case INSN_CALL_DYNAMIC:
@@ -4310,10 +3887,7 @@ static int validate_ibt_insn(struct objtool_file *file, struct instruction *insn
 					      reloc_offset(reloc) + 1,
 					      (insn->offset + insn->len) - (reloc_offset(reloc) + 1))) {
 
-		/*
-		 * static_call_update() references the trampoline, which
-		 * doesn't have (or need) ENDBR.  Skip warning in that case.
-		 */
+		 
 		if (reloc->sym->static_call_tramp)
 			continue;
 
@@ -4335,34 +3909,15 @@ static int validate_ibt_insn(struct objtool_file *file, struct instruction *insn
 
 		if (insn_func(dest) && insn_func(insn) &&
 		    insn_func(dest)->pfunc == insn_func(insn)->pfunc) {
-			/*
-			 * Anything from->to self is either _THIS_IP_ or
-			 * IRET-to-self.
-			 *
-			 * There is no sane way to annotate _THIS_IP_ since the
-			 * compiler treats the relocation as a constant and is
-			 * happy to fold in offsets, skewing any annotation we
-			 * do, leading to vast amounts of false-positives.
-			 *
-			 * There's also compiler generated _THIS_IP_ through
-			 * KCOV and such which we have no hope of annotating.
-			 *
-			 * As such, blanket accept self-references without
-			 * issue.
-			 */
+			 
 			continue;
 		}
 
-		/*
-		 * Accept anything ANNOTATE_NOENDBR.
-		 */
+		 
 		if (dest->noendbr)
 			continue;
 
-		/*
-		 * Accept if this is the instruction after a symbol
-		 * that is (no)endbr -- typical code-range usage.
-		 */
+		 
 		if (noendbr_range(file, dest))
 			continue;
 
@@ -4399,11 +3954,7 @@ static int validate_ibt_data_reloc(struct objtool_file *file,
 	return 1;
 }
 
-/*
- * Validate IBT rules and remove used ENDBR instructions from the seal list.
- * Unused ENDBR instructions will be annotated for sealing (i.e., replaced with
- * NOPs) later, in create_ibt_endbr_seal_sections().
- */
+ 
 static int validate_ibt(struct objtool_file *file)
 {
 	struct section *sec;
@@ -4416,17 +3967,14 @@ static int validate_ibt(struct objtool_file *file)
 
 	for_each_sec(file, sec) {
 
-		/* Already done by validate_ibt_insn() */
+		 
 		if (sec->sh.sh_flags & SHF_EXECINSTR)
 			continue;
 
 		if (!sec->rsec)
 			continue;
 
-		/*
-		 * These sections can reference text addresses, but not with
-		 * the intent to indirect branch to them.
-		 */
+		 
 		if ((!strncmp(sec->name, ".discard", 8) &&
 		     strcmp(sec->name, ".discard.ibt_endbr_noseal"))	||
 		    !strncmp(sec->name, ".debug", 6)			||
@@ -4491,24 +4039,9 @@ static bool ignore_noreturn_call(struct instruction *insn)
 {
 	struct symbol *call_dest = insn_call_dest(insn);
 
-	/*
-	 * FIXME: hack, we need a real noreturn solution
-	 *
-	 * Problem is, exc_double_fault() may or may not return, depending on
-	 * whether CONFIG_X86_ESPFIX64 is set.  But objtool has no visibility
-	 * to the kernel config.
-	 *
-	 * Other potential ways to fix it:
-	 *
-	 *   - have compiler communicate __noreturn functions somehow
-	 *   - remove CONFIG_X86_ESPFIX64
-	 *   - read the .config file
-	 *   - add a cmdline option
-	 *   - create a generic objtool annotation format (vs a bunch of custom
-	 *     formats) and annotate it
-	 */
+	 
 	if (!strcmp(call_dest->name, "exc_double_fault")) {
-		/* prevent further unreachable warnings for the caller */
+		 
 		insn->sym->warned = 1;
 		return true;
 	}
@@ -4547,7 +4080,7 @@ static int validate_reachable_instructions(struct objtool_file *file)
 	return warnings;
 }
 
-/* 'funcs' is a space-separated list of function names */
+ 
 static int disas_funcs(const char *funcs)
 {
 	const char *objdump_str, *cross_compile;
@@ -4577,7 +4110,7 @@ static int disas_funcs(const char *funcs)
 				"}"
 			"}' 1>&2";
 
-	/* fake snprintf() to calculate the size */
+	 
 	size = snprintf(NULL, 0, objdump_str, cross_compile, objname, funcs) + 1;
 	if (size <= 0) {
 		WARN("objdump string size calculation failed");
@@ -4586,7 +4119,7 @@ static int disas_funcs(const char *funcs)
 
 	cmd = malloc(size);
 
-	/* real snprintf() */
+	 
 	snprintf(cmd, size, objdump_str, cross_compile, objname, funcs);
 	ret = system(cmd);
 	if (ret) {
@@ -4627,11 +4160,7 @@ struct insn_chunk {
 	struct insn_chunk *next;
 };
 
-/*
- * Reduce peak RSS usage by freeing insns memory before writing the ELF file,
- * which can trigger more allocations for .debug_* sections whose data hasn't
- * been read yet.
- */
+ 
 static void free_insns(struct objtool_file *file)
 {
 	struct instruction *insn;
@@ -4709,10 +4238,7 @@ int check(struct objtool_file *file)
 	}
 
 	if (opts.unret) {
-		/*
-		 * Must be after validate_branch() and friends, it plays
-		 * further games with insn->visited.
-		 */
+		 
 		ret = validate_unrets(file);
 		if (ret < 0)
 			return ret;
@@ -4809,10 +4335,6 @@ int check(struct objtool_file *file)
 	}
 
 out:
-	/*
-	 *  For now, don't fail the kernel build on fatal warnings.  These
-	 *  errors are still fairly common due to the growing matrix of
-	 *  supported toolchains and their recent pace of change.
-	 */
+	 
 	return 0;
 }

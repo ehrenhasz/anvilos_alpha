@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ OR MIT */
-/*
- * Copyright 2021 NXP
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_IMX8ULP_H
 #define __DT_BINDINGS_CLOCK_IMX8ULP_H
 
 #define IMX8ULP_CLK_DUMMY			0
 
-/* CGC1 */
+ 
 #define IMX8ULP_CLK_SPLL2			5
 #define IMX8ULP_CLK_SPLL3			6
 #define IMX8ULP_CLK_A35_SEL			7
@@ -63,7 +61,7 @@
 
 #define IMX8ULP_CLK_CGC1_END			56
 
-/* CGC2 */
+ 
 #define IMX8ULP_CLK_PLL4_PRE_SEL	0
 #define IMX8ULP_CLK_PLL4		1
 #define IMX8ULP_CLK_PLL4_VCODIV		2
@@ -116,7 +114,7 @@
 
 #define IMX8ULP_CLK_CGC2_END		49
 
-/* PCC3 */
+ 
 #define IMX8ULP_CLK_WDOG3		0
 #define IMX8ULP_CLK_WDOG4		1
 #define IMX8ULP_CLK_LPIT1		2
@@ -168,7 +166,7 @@
 
 #define IMX8ULP_CLK_PCC3_END		48
 
-/* PCC4 */
+ 
 #define IMX8ULP_CLK_FLEXSPI2		0
 #define IMX8ULP_CLK_TPM6		1
 #define IMX8ULP_CLK_TPM7		2
@@ -195,7 +193,7 @@
 
 #define IMX8ULP_CLK_PCC4_END		23
 
-/* PCC5 */
+ 
 #define IMX8ULP_CLK_TPM8		0
 #define IMX8ULP_CLK_SAI6		1
 #define IMX8ULP_CLK_SAI7		2

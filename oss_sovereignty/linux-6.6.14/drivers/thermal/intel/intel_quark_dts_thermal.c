@@ -1,59 +1,4 @@
-/*
- * intel_quark_dts_thermal.c
- *
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- * Copyright(c) 2015 Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * Contact Information:
- *  Ong Boon Leong <boon.leong.ong@intel.com>
- *  Intel Malaysia, Penang
- *
- * BSD LICENSE
- *
- * Copyright(c) 2015 Intel Corporation.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *   * Neither the name of Intel Corporation nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Quark DTS thermal driver is implemented by referencing
- * intel_soc_dts_thermal.c.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -64,22 +9,22 @@
 #include <asm/cpu_device_id.h>
 #include <asm/iosf_mbi.h>
 
-/* DTS reset is programmed via QRK_MBI_UNIT_SOC */
+ 
 #define QRK_DTS_REG_OFFSET_RESET	0x34
 #define QRK_DTS_RESET_BIT		BIT(0)
 
-/* DTS enable is programmed via QRK_MBI_UNIT_RMU */
+ 
 #define QRK_DTS_REG_OFFSET_ENABLE	0xB0
 #define QRK_DTS_ENABLE_BIT		BIT(15)
 
-/* Temperature Register is read via QRK_MBI_UNIT_RMU */
+ 
 #define QRK_DTS_REG_OFFSET_TEMP		0xB1
 #define QRK_DTS_MASK_TEMP		0xFF
 #define QRK_DTS_OFFSET_TEMP		0
 #define QRK_DTS_OFFSET_REL_TEMP		16
 #define QRK_DTS_TEMP_BASE		50
 
-/* Programmable Trip Point Register is configured via QRK_MBI_UNIT_RMU */
+ 
 #define QRK_DTS_REG_OFFSET_PTPS		0xB2
 #define QRK_DTS_MASK_TP_THRES		0xFF
 #define QRK_DTS_SHIFT_TP		8
@@ -87,15 +32,15 @@
 #define QRK_DTS_ID_TP_HOT		1
 #define QRK_DTS_SAFE_TP_THRES		105
 
-/* Thermal Sensor Register Lock */
+ 
 #define QRK_DTS_REG_OFFSET_LOCK		0x71
 #define QRK_DTS_LOCK_BIT		BIT(5)
 
-/* Quark DTS has 2 trip points: hot & catastrophic */
+ 
 #define QRK_MAX_DTS_TRIPS	2
-/* If DTS not locked, all trip points are configurable */
+ 
 #define QRK_DTS_WR_MASK_SET	0x3
-/* If DTS locked, all trip points are not configurable */
+ 
 #define QRK_DTS_WR_MASK_CLR	0
 
 #define DEFAULT_POLL_DELAY	2000
@@ -187,12 +132,7 @@ static int get_trip_temp(int trip)
 	if (status)
 		return THERMAL_TEMP_INVALID;
 
-	/*
-	 * Thermal Sensor Programmable Trip Point Register has 8-bit
-	 * fields for critical (catastrophic) and hot set trip point
-	 * thresholds. The threshold value is always offset by its
-	 * temperature base (50 degree Celsius).
-	 */
+	 
 	temp = (out >> (trip * QRK_DTS_SHIFT_TP)) & QRK_DTS_MASK_TP_THRES;
 	temp -= QRK_DTS_TEMP_BASE;
 
@@ -218,21 +158,11 @@ static int update_trip_temp(struct soc_sensor_entry *aux_entry,
 	if (ret)
 		goto failed;
 
-	/*
-	 * Protection against unsafe trip point thresdhold value.
-	 * As Quark X1000 data-sheet does not provide any recommendation
-	 * regarding the safe trip point threshold value to use, we choose
-	 * the safe value according to the threshold value set by UEFI BIOS.
-	 */
+	 
 	if (temp > QRK_DTS_SAFE_TP_THRES)
 		temp = QRK_DTS_SAFE_TP_THRES;
 
-	/*
-	 * Thermal Sensor Programmable Trip Point Register has 8-bit
-	 * fields for critical (catastrophic) and hot set trip point
-	 * thresholds. The threshold value is always offset by its
-	 * temperature base (50 degree Celsius).
-	 */
+	 
 	temp_out = temp + QRK_DTS_TEMP_BASE;
 	out = (store_ptps & ~(QRK_DTS_MASK_TP_THRES <<
 		(trip * QRK_DTS_SHIFT_TP)));
@@ -267,11 +197,7 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd,
 	if (ret)
 		return ret;
 
-	/*
-	 * Thermal Sensor Temperature Register has 8-bit field
-	 * for temperature value (offset by temperature base
-	 * 50 degree Celsius).
-	 */
+	 
 	out = (out >> QRK_DTS_OFFSET_TEMP) & QRK_DTS_MASK_TEMP;
 	*temp = out - QRK_DTS_TEMP_BASE;
 
@@ -331,7 +257,7 @@ static struct soc_sensor_entry *alloc_soc_dts(void)
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* Check if DTS register is locked */
+	 
 	err = iosf_mbi_read(QRK_MBI_UNIT_RMU, MBI_REG_READ,
 			    QRK_DTS_REG_OFFSET_LOCK, &out);
 	if (err)
@@ -345,16 +271,16 @@ static struct soc_sensor_entry *alloc_soc_dts(void)
 		wr_mask = QRK_DTS_WR_MASK_SET;
 	}
 
-	/* Store DTS default state if DTS registers are not locked */
+	 
 	if (!aux_entry->locked) {
-		/* Store DTS default enable for restore on exit */
+		 
 		err = iosf_mbi_read(QRK_MBI_UNIT_RMU, MBI_REG_READ,
 				    QRK_DTS_REG_OFFSET_ENABLE,
 				    &aux_entry->store_dts_enable);
 		if (err)
 			goto err_ret;
 
-		/* Store DTS default PTPS register for restore on exit */
+		 
 		err = iosf_mbi_read(QRK_MBI_UNIT_RMU, MBI_REG_READ,
 				    QRK_DTS_REG_OFFSET_PTPS,
 				    &aux_entry->store_ptps);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <string.h>
 #include <errno.h>
@@ -53,7 +53,7 @@ static void test_syncookie_helper(struct ipv6hdr *ip6h, struct tcphdr *th,
 			gen_cookie = (__u32)mss_cookie;
 		}
 	} else if (gen_cookie) {
-		/* It was in cookie mode */
+		 
 		int ret = bpf_tcp_check_syncookie(tp, ip6h, sizeof(*ip6h),
 						  th, sizeof(*th));
 
@@ -80,7 +80,7 @@ static int handle_ip6_tcp(struct ipv6hdr *ip6h, struct __sk_buff *skb)
 	if (th + 1 > data_end)
 		return TC_ACT_OK;
 
-	/* Is it the testing traffic? */
+	 
 	if (th->dest != srv_sa6.sin6_port)
 		return TC_ACT_OK;
 

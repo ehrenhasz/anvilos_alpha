@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/circ_buf.h>
@@ -80,7 +80,7 @@ struct prestera_ldr_regs {
 #define PRESTERA_LDR_REG_BASE(fw)	((fw)->ldr_regs)
 #define PRESTERA_LDR_REG_ADDR(fw, reg)	(PRESTERA_LDR_REG_BASE(fw) + (reg))
 
-/* fw loader registers */
+ 
 #define PRESTERA_LDR_READY_REG		PRESTERA_LDR_REG_OFFSET(ldr_ready)
 #define PRESTERA_LDR_IMG_SIZE_REG	PRESTERA_LDR_REG_OFFSET(ldr_img_size)
 #define PRESTERA_LDR_CTL_REG		PRESTERA_LDR_REG_OFFSET(ldr_ctl_flags)
@@ -133,7 +133,7 @@ struct prestera_fw_regs {
 
 #define PRESTERA_FW_READY_MAGIC		0xcafebabe
 
-/* fw registers */
+ 
 #define PRESTERA_FW_READY_REG		PRESTERA_FW_REG_OFFSET(fw_ready)
 
 #define PRESTERA_CMD_BUF_OFFS_REG	PRESTERA_FW_REG_OFFSET(cmd_offs)
@@ -157,11 +157,11 @@ struct prestera_fw_regs {
 #define PRESTERA_FW_STATUS_REG		PRESTERA_FW_REG_OFFSET(fw_status)
 #define PRESTERA_RX_STATUS_REG		PRESTERA_FW_REG_OFFSET(rx_status)
 
-/* PRESTERA_CMD_REQ_CTL_REG flags */
+ 
 #define PRESTERA_CMD_F_REQ_SENT		BIT(0)
 #define PRESTERA_CMD_F_REPL_RCVD	BIT(1)
 
-/* PRESTERA_CMD_RCV_CTL_REG flags */
+ 
 #define PRESTERA_CMD_F_REPL_SENT	BIT(0)
 
 #define PRESTERA_FW_EVT_CTL_STATUS_MASK	GENMASK(1, 0)
@@ -200,7 +200,7 @@ struct prestera_fw_evtq {
 };
 
 struct prestera_fw_cmdq {
-	/* serialize access to dev->send_req */
+	 
 	struct mutex cmd_mtx;
 	u8 __iomem *addr;
 	size_t len;
@@ -392,7 +392,7 @@ static int prestera_fw_cmd_send(struct prestera_fw *fw, int qid,
 	if (ALIGN(in_size, 4) > prestera_fw_cmdq_len(fw, qid))
 		return -EMSGSIZE;
 
-	/* wait for finish previous reply from FW */
+	 
 	err = prestera_fw_wait_reg32(fw, PRESTERA_CMDQ_RCV_CTL_REG(qid), 0, 30);
 	if (err) {
 		dev_err(fw->dev.dev, "finish reply from FW is timed out\n");
@@ -406,7 +406,7 @@ static int prestera_fw_cmd_send(struct prestera_fw *fw, int qid,
 	prestera_fw_write(fw, PRESTERA_CMDQ_REQ_CTL_REG(qid),
 			  PRESTERA_CMD_F_REQ_SENT);
 
-	/* wait for reply from FW */
+	 
 	err = prestera_fw_wait_reg32(fw, PRESTERA_CMDQ_RCV_CTL_REG(qid),
 				     PRESTERA_CMD_F_REPL_SENT, waitms);
 	if (err) {
@@ -864,7 +864,7 @@ static int prestera_pci_probe(struct pci_dev *pdev,
 		goto err_mem_ioremap;
 	}
 
-	/* AC5X devices use second half of BAR2 */
+	 
 	if (prestera_pci_pp_use_bar2(pdev)) {
 		pp_addr = mem_addr + prestera_pci_pp_bar2_offs(pdev);
 		mem_addr = mem_addr + prestera_pci_fw_bar2_offs(pdev);

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell CN10K MCS driver
- *
- * Copyright (C) 2022 Marvell.
- */
+ 
+ 
 
 #ifndef MCS_H
 #define MCS_H
@@ -40,10 +37,10 @@
 #define MCS_CTRLPKT_COMBO_RULE_OFFSET		20
 #define MCS_CTRLPKT_MAC_EN_RULE_OFFSET		24
 
-/* Reserved resources for default bypass entry */
+ 
 #define MCS_RSRC_RSVD_CNT		1
 
-/* MCS Interrupt Vector */
+ 
 #define MCS_CNF10KB_INT_VEC_IP	0x13
 #define MCS_CN10KB_INT_VEC_IP	0x53
 
@@ -81,7 +78,7 @@
 				 MCS_CPM_RX_INT_PN_THRESH_REACHED)
 
 struct mcs_pfvf {
-	u64 intr_mask;	/* Enabled Interrupt mask */
+	u64 intr_mask;	 
 };
 
 struct mcs_intr_event {
@@ -110,7 +107,7 @@ struct mcs_rsrc_map {
 	u16 *secy2pf_map;
 	u16 *sc2pf_map;
 	u16 *sa2pf_map;
-	u16 *flowid2secy_map;	/* bitmap flowid mapped to secy*/
+	u16 *flowid2secy_map;	 
 	u16 *ctrlpktrule2pf_map;
 	struct rsrc_bmap	flow_ids;
 	struct rsrc_bmap	secy;
@@ -127,7 +124,7 @@ struct hwinfo {
 	u8 mcs_x2p_intf;
 	u8 lmac_cnt;
 	u8 mcs_blks;
-	unsigned long	lmac_bmap; /* bitmap of enabled mcs lmac */
+	unsigned long	lmac_bmap;  
 	u16 ip_vec;
 };
 
@@ -138,11 +135,11 @@ struct mcs {
 	struct hwinfo		*hw;
 	struct mcs_rsrc_map	tx;
 	struct mcs_rsrc_map	rx;
-	u16                     pf_map[MCS_MAX_PFS]; /* List of PCIFUNC mapped to MCS */
+	u16                     pf_map[MCS_MAX_PFS];  
 	u8			mcs_id;
 	struct mcs_ops		*mcs_ops;
 	struct list_head	mcs_list;
-	/* Lock for mcs stats */
+	 
 	struct mutex		stats_lock;
 	struct mcs_pfvf		*pf;
 	struct mcs_pfvf		*vf;
@@ -174,7 +171,7 @@ static inline u64 mcs_reg_read(struct mcs *mcs, u64 offset)
 	return readq(mcs->reg_base + offset);
 }
 
-/* MCS APIs */
+ 
 struct mcs *mcs_get_pdata(int mcs_id);
 int mcs_get_blkcnt(void);
 int mcs_set_lmac_channels(int mcs_id, u16 base);
@@ -209,7 +206,7 @@ int mcs_free_ctrlpktrule(struct mcs *mcs, struct mcs_free_ctrl_pkt_rule_req *req
 int mcs_ctrlpktrule_write(struct mcs *mcs, struct mcs_ctrl_pkt_rule_write_req *req);
 bool is_mcs_bypass(int mcs_id);
 
-/* CN10K-B APIs */
+ 
 void cn10kb_mcs_set_hw_capabilities(struct mcs *mcs);
 void cn10kb_mcs_tx_sa_mem_map_write(struct mcs *mcs, struct mcs_tx_sc_sa_map *map);
 void cn10kb_mcs_flowid_secy_map(struct mcs *mcs, struct secy_mem_map *map, int dir);
@@ -218,7 +215,7 @@ void cn10kb_mcs_parser_cfg(struct mcs *mcs);
 void cn10kb_mcs_pab_intr_handler(struct mcs *mcs, u64 intr, enum mcs_direction dir);
 void cn10kb_mcs_bbe_intr_handler(struct mcs *mcs, u64 intr, enum mcs_direction dir);
 
-/* CNF10K-B APIs */
+ 
 struct mcs_ops *cnf10kb_get_mac_ops(void);
 void cnf10kb_mcs_set_hw_capabilities(struct mcs *mcs);
 void cnf10kb_mcs_tx_sa_mem_map_write(struct mcs *mcs, struct mcs_tx_sc_sa_map *map);
@@ -230,7 +227,7 @@ void cnf10kb_mcs_tx_pn_wrapped_handler(struct mcs *mcs);
 void cnf10kb_mcs_bbe_intr_handler(struct mcs *mcs, u64 intr, enum mcs_direction dir);
 void cnf10kb_mcs_pab_intr_handler(struct mcs *mcs, u64 intr, enum mcs_direction dir);
 
-/* Stats APIs */
+ 
 void mcs_get_sc_stats(struct mcs *mcs, struct mcs_sc_stats *stats, int id, int dir);
 void mcs_get_sa_stats(struct mcs *mcs, struct mcs_sa_stats *stats, int id, int dir);
 void mcs_get_port_stats(struct mcs *mcs, struct mcs_port_stats *stats, int id, int dir);
@@ -243,4 +240,4 @@ int mcs_set_force_clk_en(struct mcs *mcs, bool set);
 
 int mcs_add_intr_wq_entry(struct mcs *mcs, struct mcs_intr_event *event);
 
-#endif /* MCS_H */
+#endif  

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2020 Google LLC.
- */
+
+ 
 
 #include <test_progs.h>
 #include <linux/limits.h>
@@ -42,22 +40,12 @@ static int run_set_secureexec(int map_fd, int secureexec)
 		dup2(null_fd, STDERR_FILENO);
 		close(null_fd);
 
-		/* Ensure that all executions from hereon are
-		 * secure by setting a local storage which is read by
-		 * the bprm_creds_for_exec hook and sets bprm->secureexec.
-		 */
+		 
 		ret = update_storage(map_fd, secureexec);
 		if (ret)
 			exit(ret);
 
-		/* If the binary is executed with securexec=1, the dynamic
-		 * loader ingores and unsets certain variables like LD_PRELOAD,
-		 * TMPDIR etc. TMPDIR is used here to simplify the example, as
-		 * LD_PRELOAD requires a real .so file.
-		 *
-		 * If the value of TMPDIR is set, the bash command returns 10
-		 * and if the value is unset, it returns 20.
-		 */
+		 
 		execle("/bin/bash", "bash", "-c",
 		       "[[ -z \"${TMPDIR}\" ]] || exit 10 && exit 20", NULL,
 		       bash_envp);
@@ -66,11 +54,11 @@ static int run_set_secureexec(int map_fd, int secureexec)
 		waitpid(child_pid, &child_status, 0);
 		ret = WEXITSTATUS(child_status);
 
-		/* If a secureexec occurred, the exit status should be 20 */
+		 
 		if (secureexec && ret == 20)
 			return 0;
 
-		/* If normal execution happened, the exit code should be 10 */
+		 
 		if (!secureexec && ret == 10)
 			return 0;
 	}
@@ -91,15 +79,15 @@ void test_test_bprm_opts(void)
 	if (CHECK(err, "attach", "attach failed: %d\n", err))
 		goto close_prog;
 
-	/* Run the test with the secureexec bit unset */
+	 
 	err = run_set_secureexec(bpf_map__fd(skel->maps.secure_exec_task_map),
-				 0 /* secureexec */);
+				 0  );
 	if (CHECK(err, "run_set_secureexec:0", "err = %d\n", err))
 		goto close_prog;
 
-	/* Run the test with the secureexec bit set */
+	 
 	err = run_set_secureexec(bpf_map__fd(skel->maps.secure_exec_task_map),
-				 1 /* secureexec */);
+				 1  );
 	if (CHECK(err, "run_set_secureexec:1", "err = %d\n", err))
 		goto close_prog;
 

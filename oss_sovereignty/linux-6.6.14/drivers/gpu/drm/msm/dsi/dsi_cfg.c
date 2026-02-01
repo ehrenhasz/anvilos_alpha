@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dsi_cfg.h"
 
@@ -10,9 +8,9 @@ static const char * const dsi_v2_bus_clk_names[] = {
 };
 
 static const struct regulator_bulk_data apq8064_dsi_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 100000 },	/* 1.2 V */
-	{ .supply = "avdd", .init_load_uA = 10000 },	/* 3.0 V */
-	{ .supply = "vddio", .init_load_uA = 100000 },	/* 1.8 V */
+	{ .supply = "vdda", .init_load_uA = 100000 },	 
+	{ .supply = "avdd", .init_load_uA = 10000 },	 
+	{ .supply = "vddio", .init_load_uA = 100000 },	 
 };
 
 static const struct msm_dsi_config apq8064_dsi_cfg = {
@@ -31,9 +29,9 @@ static const char * const dsi_6g_bus_clk_names[] = {
 };
 
 static const struct regulator_bulk_data msm8974_apq8084_regulators[] = {
-	{ .supply = "vdd", .init_load_uA = 150000 },	/* 3.0 V */
-	{ .supply = "vdda", .init_load_uA = 100000 },	/* 1.2 V */
-	{ .supply = "vddio", .init_load_uA = 100000 },	/* 1.8 V */
+	{ .supply = "vdd", .init_load_uA = 150000 },	 
+	{ .supply = "vdda", .init_load_uA = 100000 },	 
+	{ .supply = "vddio", .init_load_uA = 100000 },	 
 };
 
 static const struct msm_dsi_config msm8974_apq8084_dsi_cfg = {
@@ -52,8 +50,8 @@ static const char * const dsi_v1_3_1_clk_names[] = {
 };
 
 static const struct regulator_bulk_data dsi_v1_3_1_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 100000 },	/* 1.2 V */
-	{ .supply = "vddio", .init_load_uA = 100000 },	/* 1.8 V */
+	{ .supply = "vdda", .init_load_uA = 100000 },	 
+	{ .supply = "vddio", .init_load_uA = 100000 },	 
 };
 
 static const struct msm_dsi_config msm8916_dsi_cfg = {
@@ -79,10 +77,10 @@ static const struct msm_dsi_config msm8976_dsi_cfg = {
 };
 
 static const struct regulator_bulk_data msm8994_dsi_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 100000 },	/* 1.25 V */
-	{ .supply = "vddio", .init_load_uA = 100000 },	/* 1.8 V */
-	{ .supply = "vcca", .init_load_uA = 10000 },	/* 1.0 V */
-	{ .supply = "vdd", .init_load_uA = 100000 },	/* 1.8 V */
+	{ .supply = "vdda", .init_load_uA = 100000 },	 
+	{ .supply = "vddio", .init_load_uA = 100000 },	 
+	{ .supply = "vcca", .init_load_uA = 10000 },	 
+	{ .supply = "vdd", .init_load_uA = 100000 },	 
 	{ .supply = "lab_reg", .init_load_uA = -1 },
 	{ .supply = "ibb_reg", .init_load_uA = -1 },
 };
@@ -99,9 +97,9 @@ static const struct msm_dsi_config msm8994_dsi_cfg = {
 };
 
 static const struct regulator_bulk_data msm8996_dsi_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 18160 },	/* 1.25 V */
-	{ .supply = "vcca", .init_load_uA = 17000 },	/* 0.925 V */
-	{ .supply = "vddio", .init_load_uA = 100000 },	/* 1.8 V */
+	{ .supply = "vdda", .init_load_uA = 18160 },	 
+	{ .supply = "vcca", .init_load_uA = 17000 },	 
+	{ .supply = "vddio", .init_load_uA = 100000 },	 
 };
 
 static const struct msm_dsi_config msm8996_dsi_cfg = {
@@ -120,8 +118,8 @@ static const char * const dsi_msm8998_bus_clk_names[] = {
 };
 
 static const struct regulator_bulk_data msm8998_dsi_regulators[] = {
-	{ .supply = "vdd", .init_load_uA = 367000 },	/* 0.9 V */
-	{ .supply = "vdda", .init_load_uA = 62800 },	/* 1.2 V */
+	{ .supply = "vdd", .init_load_uA = 367000 },	 
+	{ .supply = "vdda", .init_load_uA = 62800 },	 
 };
 
 static const struct msm_dsi_config msm8998_dsi_cfg = {
@@ -140,7 +138,7 @@ static const char * const dsi_sdm660_bus_clk_names[] = {
 };
 
 static const struct regulator_bulk_data sdm660_dsi_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 12560 },	/* 1.2 V */
+	{ .supply = "vdda", .init_load_uA = 12560 },	 
 };
 
 static const struct msm_dsi_config sdm660_dsi_cfg = {
@@ -159,7 +157,7 @@ static const char * const dsi_v2_4_clk_names[] = {
 };
 
 static const struct regulator_bulk_data dsi_v2_4_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 21800 },	/* 1.2 V */
+	{ .supply = "vdda", .init_load_uA = 21800 },	 
 	{ .supply = "refgen" },
 };
 
@@ -170,13 +168,13 @@ static const struct msm_dsi_config sdm845_dsi_cfg = {
 	.bus_clk_names = dsi_v2_4_clk_names,
 	.num_bus_clks = ARRAY_SIZE(dsi_v2_4_clk_names),
 	.io_start = {
-		{ 0xae94000, 0xae96000 }, /* SDM845 / SDM670 */
-		{ 0x5e94000 }, /* QCM2290 / SM6115 / SM6125 / SM6375 */
+		{ 0xae94000, 0xae96000 },  
+		{ 0x5e94000 },  
 	},
 };
 
 static const struct regulator_bulk_data sm8550_dsi_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 16800 },	/* 1.2 V */
+	{ .supply = "vdda", .init_load_uA = 16800 },	 
 };
 
 static const struct msm_dsi_config sm8550_dsi_cfg = {
@@ -191,7 +189,7 @@ static const struct msm_dsi_config sm8550_dsi_cfg = {
 };
 
 static const struct regulator_bulk_data sc7280_dsi_regulators[] = {
-	{ .supply = "vdda", .init_load_uA = 8350 },	/* 1.2 V */
+	{ .supply = "vdda", .init_load_uA = 8350 },	 
 	{ .supply = "refgen" },
 };
 

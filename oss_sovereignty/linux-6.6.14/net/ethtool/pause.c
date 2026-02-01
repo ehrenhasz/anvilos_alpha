@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -92,13 +92,13 @@ static int pause_prepare_data(const struct ethnl_req_info *req_base,
 static int pause_reply_size(const struct ethnl_req_info *req_base,
 			    const struct ethnl_reply_data *reply_base)
 {
-	int n = nla_total_size(sizeof(u8)) +	/* _PAUSE_AUTONEG */
-		nla_total_size(sizeof(u8)) +	/* _PAUSE_RX */
-		nla_total_size(sizeof(u8));	/* _PAUSE_TX */
+	int n = nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8));	 
 
 	if (req_base->flags & ETHTOOL_FLAG_STATS)
-		n += nla_total_size(0) +	/* _PAUSE_STATS */
-		     nla_total_size(sizeof(u32)) + /* _PAUSE_STATS_SRC */
+		n += nla_total_size(0) +	 
+		     nla_total_size(sizeof(u32)) +  
 		     nla_total_size_64bit(sizeof(u64)) * ETHTOOL_PAUSE_STAT_CNT;
 	return n;
 }
@@ -160,7 +160,7 @@ static int pause_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* PAUSE_SET */
+ 
 
 const struct nla_policy ethnl_pause_set_policy[] = {
 	[ETHTOOL_A_PAUSE_HEADER]		=

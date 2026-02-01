@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test cases for SL[AOU]B/page initialization at alloc/free time.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
@@ -25,7 +23,7 @@
 				num_tests, __func__);			\
 	} while (0)
 
-/* Calculate the number of uninitialized bytes in the buffer. */
+ 
 static int __init count_nonzero_bytes(void *ptr, size_t size)
 {
 	int i, ret = 0;
@@ -37,7 +35,7 @@ static int __init count_nonzero_bytes(void *ptr, size_t size)
 	return ret;
 }
 
-/* Fill a buffer with garbage, skipping |skip| first bytes. */
+ 
 static void __init fill_with_garbage_skip(void *ptr, int size, size_t skip)
 {
 	unsigned int *p = (unsigned int *)((char *)ptr + skip);
@@ -87,7 +85,7 @@ err:
 	return 1;
 }
 
-/* Test the page allocator by calling alloc_pages with different orders. */
+ 
 static int __init test_pages(int *total_failures)
 {
 	int failures = 0, num_tests = 0;
@@ -101,7 +99,7 @@ static int __init test_pages(int *total_failures)
 	return num_tests;
 }
 
-/* Test kmalloc() with given parameters. */
+ 
 static int __init do_kmalloc_size(size_t size, int *total_failures)
 {
 	void *buf;
@@ -125,7 +123,7 @@ err:
 	return 1;
 }
 
-/* Test vmalloc() with given parameters. */
+ 
 static int __init do_vmalloc_size(size_t size, int *total_failures)
 {
 	void *buf;
@@ -149,7 +147,7 @@ err:
 	return 1;
 }
 
-/* Test kmalloc()/vmalloc() by allocating objects of different sizes. */
+ 
 static int __init test_kvmalloc(int *total_failures)
 {
 	int failures = 0, num_tests = 0;
@@ -168,22 +166,13 @@ static int __init test_kvmalloc(int *total_failures)
 
 #define CTOR_BYTES (sizeof(unsigned int))
 #define CTOR_PATTERN (0x41414141)
-/* Initialize the first 4 bytes of the object. */
+ 
 static void test_ctor(void *obj)
 {
 	*(unsigned int *)obj = CTOR_PATTERN;
 }
 
-/*
- * Check the invariants for the buffer allocated from a slab cache.
- * If the cache has a test constructor, the first 4 bytes of the object must
- * always remain equal to CTOR_PATTERN.
- * If the cache isn't an RCU-typesafe one, or if the allocation is done with
- * __GFP_ZERO, then the object contents must be zeroed after allocation.
- * If the cache is an RCU-typesafe one, the object contents must never be
- * zeroed after the first use. This is checked by memcmp() in
- * do_kmem_cache_size().
- */
+ 
 static bool __init check_buf(void *buf, int size, bool want_ctor,
 			     bool want_rcu, bool want_zero)
 {
@@ -207,12 +196,7 @@ static bool __init check_buf(void *buf, int size, bool want_ctor,
 #define BULK_SIZE 100
 static void *bulk_array[BULK_SIZE];
 
-/*
- * Test kmem_cache with given parameters:
- *  want_ctor - use a constructor;
- *  want_rcu - use SLAB_TYPESAFE_BY_RCU;
- *  want_zero - use __GFP_ZERO.
- */
+ 
 static int __init do_kmem_cache_size(size_t size, bool want_ctor,
 				     bool want_rcu, bool want_zero,
 				     int *total_failures)
@@ -227,7 +211,7 @@ static int __init do_kmem_cache_size(size_t size, bool want_ctor,
 			      want_rcu ? SLAB_TYPESAFE_BY_RCU : 0,
 			      want_ctor ? test_ctor : NULL);
 	for (iter = 0; iter < 10; iter++) {
-		/* Do a test of bulk allocations */
+		 
 		if (!want_rcu && !want_ctor) {
 			int ret;
 
@@ -243,7 +227,7 @@ static int __init do_kmem_cache_size(size_t size, bool want_ctor,
 		}
 
 		buf = kmem_cache_alloc(c, alloc_mask);
-		/* Check that buf is zeroed, if it must be. */
+		 
 		fail |= check_buf(buf, size, want_ctor, want_rcu, want_zero);
 		fill_with_garbage_skip(buf, size, want_ctor ? CTOR_BYTES : 0);
 
@@ -252,25 +236,15 @@ static int __init do_kmem_cache_size(size_t size, bool want_ctor,
 			continue;
 		}
 
-		/*
-		 * If this is an RCU cache, use a critical section to ensure we
-		 * can touch objects after they're freed.
-		 */
+		 
 		rcu_read_lock();
-		/*
-		 * Copy the buffer to check that it's not wiped on
-		 * free().
-		 */
+		 
 		buf_copy = kmalloc(size, GFP_ATOMIC);
 		if (buf_copy)
 			memcpy(buf_copy, buf, size);
 
 		kmem_cache_free(c, buf);
-		/*
-		 * Check that |buf| is intact after kmem_cache_free().
-		 * |want_zero| is false, because we wrote garbage to
-		 * the buffer already.
-		 */
+		 
 		fail |= check_buf(buf, size, want_ctor, want_rcu,
 				  false);
 		if (buf_copy) {
@@ -285,10 +259,7 @@ static int __init do_kmem_cache_size(size_t size, bool want_ctor,
 	return 1;
 }
 
-/*
- * Check that the data written to an RCU-allocated object survives
- * reallocation.
- */
+ 
 static int __init do_kmem_cache_rcu_persistent(int size, int *total_failures)
 {
 	struct kmem_cache *c;
@@ -317,10 +288,7 @@ static int __init do_kmem_cache_rcu_persistent(int size, int *total_failures)
 	}
 	memcpy(buf_contents, buf, size);
 	kmem_cache_free(c, buf);
-	/*
-	 * Run for a fixed number of iterations. If we never hit saved_ptr,
-	 * assume the test passes.
-	 */
+	 
 	for (iter = 0; iter < maxiter; iter++) {
 		buf = kmem_cache_alloc(c, GFP_KERNEL);
 		used_objects[iter] = buf;
@@ -371,10 +339,7 @@ static int __init do_kmem_cache_size_bulk(int size, int *total_failures)
 	return 1;
 }
 
-/*
- * Test kmem_cache allocation by creating caches of different sizes, with and
- * without constructors, with and without SLAB_TYPESAFE_BY_RCU.
- */
+ 
 static int __init test_kmemcache(int *total_failures)
 {
 	int failures = 0, num_tests = 0;
@@ -399,7 +364,7 @@ static int __init test_kmemcache(int *total_failures)
 	return num_tests;
 }
 
-/* Test the behavior of SLAB_TYPESAFE_BY_RCU caches of different sizes. */
+ 
 static int __init test_rcu_persistent(int *total_failures)
 {
 	int failures = 0, num_tests = 0;
@@ -414,10 +379,7 @@ static int __init test_rcu_persistent(int *total_failures)
 	return num_tests;
 }
 
-/*
- * Run the tests. Each test function returns the number of executed tests and
- * updates |failures| with the number of failed tests.
- */
+ 
 static int __init test_meminit_init(void)
 {
 	int failures = 0, num_tests = 0;

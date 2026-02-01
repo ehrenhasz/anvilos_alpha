@@ -1,19 +1,4 @@
-/* Synopsys DesignWare Core Enterprise Ethernet (XLGMAC) Driver
- *
- * Copyright (c) 2017 Synopsys, Inc. (www.synopsys.com)
- *
- * This program is dual-licensed; you may select either version 2 of
- * the GNU General Public License ("GPL") or BSD license ("BSD").
- *
- * This Synopsys DWC XLGMAC software driver and associated documentation
- * (hereinafter the "Software") is an unsupported proprietary work of
- * Synopsys, Inc. unless otherwise expressly agreed to in writing between
- * Synopsys and you. The Software IS NOT an item of Licensed Software or a
- * Licensed Product under any End User Software License Agreement or
- * Agreement for Licensed Products with Synopsys or any supplement thereto.
- * Synopsys is a registered trademark of Synopsys, Inc. Other names included
- * in the SOFTWARE may be the trademarks of their respective owners.
- */
+ 
 
 #include <linux/netdevice.h>
 #include <linux/tcp.h>
@@ -48,9 +33,7 @@ static int xlgmac_maybe_stop_tx_queue(
 		netif_stop_subqueue(pdata->netdev, channel->queue_index);
 		ring->tx.queue_stopped = 1;
 
-		/* If we haven't notified the hardware because of xmit_more
-		 * support, tell it now
-		 */
+		 
 		if (ring->tx.xmit_more)
 			pdata->hw_ops.tx_start_xmit(channel, ring);
 
@@ -91,9 +74,7 @@ static int xlgmac_prep_tso(struct sk_buff *skb,
 		  pkt_info->tcp_header_len, pkt_info->tcp_payload_len);
 	XLGMAC_PR("mss=%u\n", pkt_info->mss);
 
-	/* Update the number of packets that will ultimately be transmitted
-	 * along with the extra bytes for each extra packet
-	 */
+	 
 	pkt_info->tx_packets = skb_shinfo(skb)->gso_segs;
 	pkt_info->tx_bytes += (pkt_info->tx_packets - 1) * pkt_info->header_len;
 
@@ -130,13 +111,13 @@ static void xlgmac_prep_tx_pkt(struct xlgmac_pdata *pdata,
 	pkt_info->tx_bytes = skb->len;
 
 	if (xlgmac_is_tso(skb)) {
-		/* TSO requires an extra descriptor if mss is different */
+		 
 		if (skb_shinfo(skb)->gso_size != ring->tx.cur_mss) {
 			context_desc = 1;
 			pkt_info->desc_count++;
 		}
 
-		/* TSO requires an extra descriptor for TSO header */
+		 
 		pkt_info->desc_count++;
 
 		pkt_info->attributes = XLGMAC_SET_REG_BITS(
@@ -157,9 +138,9 @@ static void xlgmac_prep_tx_pkt(struct xlgmac_pdata *pdata,
 					1);
 
 	if (skb_vlan_tag_present(skb)) {
-		/* VLAN requires an extra descriptor if tag is different */
+		 
 		if (skb_vlan_tag_get(skb) != ring->tx.cur_vlan_ctag)
-			/* We can share with the TSO context descriptor */
+			 
 			if (!context_desc) {
 				context_desc = 1;
 				pkt_info->desc_count++;
@@ -258,10 +239,7 @@ static irqreturn_t xlgmac_isr(int irq, void *data)
 
 	hw_ops = &pdata->hw_ops;
 
-	/* The DMA interrupt status register also reports MAC and MTL
-	 * interrupts. So for polling mode, we just need to check for
-	 * this register to be non-zero
-	 */
+	 
 	dma_isr = readl(pdata->mac_regs + DMA_ISR);
 	if (!dma_isr)
 		return IRQ_HANDLED;
@@ -278,21 +256,18 @@ static irqreturn_t xlgmac_isr(int irq, void *data)
 		netif_dbg(pdata, intr, pdata->netdev, "DMA_CH%u_ISR=%#010x\n",
 			  i, dma_ch_isr);
 
-		/* The TI or RI interrupt bits may still be set even if using
-		 * per channel DMA interrupts. Check to be sure those are not
-		 * enabled before using the private data napi structure.
-		 */
+		 
 		ti = XLGMAC_GET_REG_BITS(dma_ch_isr, DMA_CH_SR_TI_POS,
 					 DMA_CH_SR_TI_LEN);
 		ri = XLGMAC_GET_REG_BITS(dma_ch_isr, DMA_CH_SR_RI_POS,
 					 DMA_CH_SR_RI_LEN);
 		if (!pdata->per_channel_irq && (ti || ri)) {
 			if (napi_schedule_prep(&pdata->napi)) {
-				/* Disable Tx and Rx interrupts */
+				 
 				xlgmac_disable_rx_tx_ints(pdata);
 
 				pdata->stats.napi_poll_isr++;
-				/* Turn on polling */
+				 
 				__napi_schedule_irqoff(&pdata->napi);
 			}
 		}
@@ -313,14 +288,14 @@ static irqreturn_t xlgmac_isr(int irq, void *data)
 					DMA_CH_SR_RBU_LEN))
 			pdata->stats.rx_buffer_unavailable++;
 
-		/* Restart the device on a Fatal Bus Error */
+		 
 		if (XLGMAC_GET_REG_BITS(dma_ch_isr, DMA_CH_SR_FBE_POS,
 					DMA_CH_SR_FBE_LEN)) {
 			pdata->stats.fatal_bus_error++;
 			schedule_work(&pdata->restart_work);
 		}
 
-		/* Clear all interrupt signals */
+		 
 		writel(dma_ch_isr, XLGMAC_DMA_REG(channel, DMA_CH_SR));
 	}
 
@@ -344,14 +319,12 @@ static irqreturn_t xlgmac_dma_isr(int irq, void *data)
 {
 	struct xlgmac_channel *channel = data;
 
-	/* Per channel DMA interrupts are enabled, so we use the per
-	 * channel napi structure and not the private data napi structure
-	 */
+	 
 	if (napi_schedule_prep(&channel->napi)) {
-		/* Disable Tx and Rx interrupts */
+		 
 		disable_irq_nosync(channel->dma_irq);
 
-		/* Turn on polling */
+		 
 		__napi_schedule_irqoff(&channel->napi);
 	}
 
@@ -367,14 +340,14 @@ static void xlgmac_tx_timer(struct timer_list *t)
 	napi = (pdata->per_channel_irq) ? &channel->napi : &pdata->napi;
 
 	if (napi_schedule_prep(napi)) {
-		/* Disable Tx and Rx interrupts */
+		 
 		if (pdata->per_channel_irq)
 			disable_irq_nosync(channel->dma_irq);
 		else
 			xlgmac_disable_rx_tx_ints(pdata);
 
 		pdata->stats.napi_poll_txtimer++;
-		/* Turn on polling */
+		 
 		__napi_schedule(napi);
 	}
 
@@ -491,7 +464,7 @@ static int xlgmac_request_irqs(struct xlgmac_pdata *pdata)
 	return 0;
 
 err_irq:
-	/* Using an unsigned int, 'i' will go to UINT_MAX and exit */
+	 
 	for (i--, channel--; i < pdata->channel_count; i--, channel--)
 		devm_free_irq(pdata->dev, channel->dma_irq, channel);
 
@@ -611,7 +584,7 @@ static void xlgmac_stop(struct xlgmac_pdata *pdata)
 
 static void xlgmac_restart_dev(struct xlgmac_pdata *pdata)
 {
-	/* If not running, "restart" will happen on open */
+	 
 	if (!netif_running(pdata->netdev))
 		return;
 
@@ -644,15 +617,15 @@ static int xlgmac_open(struct net_device *netdev)
 
 	desc_ops = &pdata->desc_ops;
 
-	/* TODO: Initialize the phy */
+	 
 
-	/* Calculate the Rx buffer size before allocating rings */
+	 
 	ret = xlgmac_calc_rx_buf_size(netdev, netdev->mtu);
 	if (ret < 0)
 		return ret;
 	pdata->rx_buf_size = ret;
 
-	/* Allocate the channels and rings */
+	 
 	ret = desc_ops->alloc_channels_and_rings(pdata);
 	if (ret)
 		return ret;
@@ -679,10 +652,10 @@ static int xlgmac_close(struct net_device *netdev)
 
 	desc_ops = &pdata->desc_ops;
 
-	/* Stop the device */
+	 
 	xlgmac_stop(pdata);
 
-	/* Free the channels and rings */
+	 
 	desc_ops->free_channels_and_rings(pdata);
 
 	return 0;
@@ -724,11 +697,11 @@ static netdev_tx_t xlgmac_xmit(struct sk_buff *skb, struct net_device *netdev)
 		return NETDEV_TX_OK;
 	}
 
-	/* Prepare preliminary packet info for TX */
+	 
 	memset(tx_pkt_info, 0, sizeof(*tx_pkt_info));
 	xlgmac_prep_tx_pkt(pdata, ring, skb, tx_pkt_info);
 
-	/* Check that there are enough descriptors available */
+	 
 	ret = xlgmac_maybe_stop_tx_queue(channel, ring,
 					 tx_pkt_info->desc_count);
 	if (ret)
@@ -748,16 +721,16 @@ static netdev_tx_t xlgmac_xmit(struct sk_buff *skb, struct net_device *netdev)
 		return NETDEV_TX_OK;
 	}
 
-	/* Report on the actual number of bytes (to be) sent */
+	 
 	netdev_tx_sent_queue(txq, tx_pkt_info->tx_bytes);
 
-	/* Configure required descriptor fields for transmission */
+	 
 	hw_ops->dev_xmit(channel);
 
 	if (netif_msg_pktdata(pdata))
 		xlgmac_print_pkt(netdev, skb, true);
 
-	/* Stop the queue in advance if there may not be enough descriptors */
+	 
 	xlgmac_maybe_stop_tx_queue(channel, ring, XLGMAC_TX_MAX_DESC_NR);
 
 	return NETDEV_TX_OK;
@@ -873,7 +846,7 @@ static void xlgmac_poll_controller(struct net_device *netdev)
 		enable_irq(pdata->dev_irq);
 	}
 }
-#endif /* CONFIG_NET_POLL_CONTROLLER */
+#endif  
 
 static int xlgmac_set_features(struct net_device *netdev,
 			       netdev_features_t features)
@@ -961,7 +934,7 @@ static void xlgmac_rx_refresh(struct xlgmac_channel *channel)
 	while (ring->dirty != ring->cur) {
 		desc_data = XLGMAC_GET_DESC_DATA(ring, ring->dirty);
 
-		/* Reset desc_data values */
+		 
 		desc_ops->unmap_desc_data(pdata, desc_data);
 
 		if (desc_ops->map_rx_buffer(pdata, ring, desc_data))
@@ -972,12 +945,10 @@ static void xlgmac_rx_refresh(struct xlgmac_channel *channel)
 		ring->dirty++;
 	}
 
-	/* Make sure everything is written before the register write */
+	 
 	wmb();
 
-	/* Update the Rx Tail Pointer Register with address of
-	 * the last cleaned entry
-	 */
+	 
 	desc_data = XLGMAC_GET_DESC_DATA(ring, ring->dirty - 1);
 	writel(lower_32_bits(desc_data->dma_desc_addr),
 	       XLGMAC_DMA_REG(channel, DMA_CH_RDTR_LO));
@@ -996,9 +967,7 @@ static struct sk_buff *xlgmac_create_skb(struct xlgmac_pdata *pdata,
 	if (!skb)
 		return NULL;
 
-	/* Start with the header buffer which may contain just the header
-	 * or the header plus data
-	 */
+	 
 	dma_sync_single_range_for_cpu(pdata->dev, desc_data->rx.hdr.dma_base,
 				      desc_data->rx.hdr.dma_off,
 				      desc_data->rx.hdr.dma_len,
@@ -1013,7 +982,7 @@ static struct sk_buff *xlgmac_create_skb(struct xlgmac_pdata *pdata,
 
 	len -= copy_len;
 	if (len) {
-		/* Add the remaining data as a frag */
+		 
 		dma_sync_single_range_for_cpu(pdata->dev,
 					      desc_data->rx.buf.dma_base,
 					      desc_data->rx.buf.dma_off,
@@ -1047,13 +1016,13 @@ static int xlgmac_tx_poll(struct xlgmac_channel *channel)
 	desc_ops = &pdata->desc_ops;
 	hw_ops = &pdata->hw_ops;
 
-	/* Nothing to do if there isn't a Tx ring for this channel */
+	 
 	if (!ring)
 		return 0;
 
 	cur = ring->cur;
 
-	/* Be sure we get ring->cur before accessing descriptor data */
+	 
 	smp_rmb();
 
 	txq = netdev_get_tx_queue(netdev, channel->queue_index);
@@ -1066,9 +1035,7 @@ static int xlgmac_tx_poll(struct xlgmac_channel *channel)
 		if (!hw_ops->tx_complete(dma_desc))
 			break;
 
-		/* Make sure descriptor fields are read after reading
-		 * the OWN bit
-		 */
+		 
 		dma_rmb();
 
 		if (netif_msg_tx_done(pdata))
@@ -1079,7 +1046,7 @@ static int xlgmac_tx_poll(struct xlgmac_channel *channel)
 			tx_bytes += desc_data->tx.bytes;
 		}
 
-		/* Free the SKB and reset the descriptor for re-use */
+		 
 		desc_ops->unmap_desc_data(pdata, desc_data);
 		hw_ops->tx_desc_reset(desc_data);
 
@@ -1121,7 +1088,7 @@ static int xlgmac_rx_poll(struct xlgmac_channel *channel, int budget)
 
 	hw_ops = &pdata->hw_ops;
 
-	/* Nothing to do if there isn't a Rx ring for this channel */
+	 
 	if (!ring)
 		return 0;
 
@@ -1133,7 +1100,7 @@ static int xlgmac_rx_poll(struct xlgmac_channel *channel, int budget)
 	desc_data = XLGMAC_GET_DESC_DATA(ring, ring->cur);
 	pkt_info = &ring->pkt_info;
 	while (packet_count < budget) {
-		/* First time in loop see if we need to restore state */
+		 
 		if (!received && desc_data->state_saved) {
 			skb = desc_data->state.skb;
 			error = desc_data->state.error;
@@ -1170,7 +1137,7 @@ read_again:
 					RX_PACKET_ATTRIBUTES_CONTEXT_POS,
 					RX_PACKET_ATTRIBUTES_CONTEXT_LEN);
 
-		/* Earlier error, just drain the remaining data */
+		 
 		if ((incomplete || context_next) && error)
 			goto read_again;
 
@@ -1183,7 +1150,7 @@ read_again:
 		}
 
 		if (!context) {
-			/* Length is cumulative, get this descriptor's length */
+			 
 			dma_desc_len = desc_data->rx.len - len;
 			len += dma_desc_len;
 
@@ -1216,7 +1183,7 @@ read_again:
 		if (!skb)
 			goto next_packet;
 
-		/* Be sure we don't exceed the configured MTU */
+		 
 		max_len = netdev->mtu + ETH_HLEN;
 		if (!(netdev->features & NETIF_F_HW_VLAN_CTAG_RX) &&
 		    (skb->protocol == htons(ETH_P_8021Q)))
@@ -1262,7 +1229,7 @@ next_packet:
 		packet_count++;
 	}
 
-	/* Check if we need to save state before leaving */
+	 
 	if (received && (incomplete || context_next)) {
 		desc_data = XLGMAC_GET_DESC_DATA(ring, ring->cur);
 		desc_data->state_saved = 1;
@@ -1285,18 +1252,18 @@ static int xlgmac_one_poll(struct napi_struct *napi, int budget)
 
 	XLGMAC_PR("budget=%d\n", budget);
 
-	/* Cleanup Tx ring first */
+	 
 	xlgmac_tx_poll(channel);
 
-	/* Process Rx ring next */
+	 
 	processed = xlgmac_rx_poll(channel, budget);
 
-	/* If we processed everything, we are done */
+	 
 	if (processed < budget) {
-		/* Turn off polling */
+		 
 		napi_complete_done(napi, processed);
 
-		/* Enable Tx and Rx interrupts */
+		 
 		enable_irq(channel->dma_irq);
 	}
 
@@ -1324,22 +1291,22 @@ static int xlgmac_all_poll(struct napi_struct *napi, int budget)
 
 		channel = pdata->channel_head;
 		for (i = 0; i < pdata->channel_count; i++, channel++) {
-			/* Cleanup Tx ring first */
+			 
 			xlgmac_tx_poll(channel);
 
-			/* Process Rx ring next */
+			 
 			if (ring_budget > (budget - processed))
 				ring_budget = budget - processed;
 			processed += xlgmac_rx_poll(channel, ring_budget);
 		}
 	} while ((processed < budget) && (processed != last_processed));
 
-	/* If we processed everything, we are done */
+	 
 	if (processed < budget) {
-		/* Turn off polling */
+		 
 		napi_complete_done(napi, processed);
 
-		/* Enable Tx and Rx interrupts */
+		 
 		xlgmac_enable_rx_tx_ints(pdata);
 	}
 

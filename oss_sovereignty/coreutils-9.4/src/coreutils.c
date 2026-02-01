@@ -1,23 +1,4 @@
-/* Copyright (C) 2014-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* coreutils.c aggregates the functionality of every other tool into a single
-   binary multiplexed by the value of argv[0]. This is enabled by passing
-   --enable-single-binary to configure.
-
-   Written by Alex Deymo <deymo@chromium.org>.  */
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -30,16 +11,14 @@
 #include "quote.h"
 
 #ifdef SINGLE_BINARY
-/* Declare the main function on each one of the selected tools.  This name
-   needs to match the one passed as CFLAGS on single-binary.mk (generated
-   by gen-single-binary.sh). */
+ 
 # define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
   int single_binary_main_##main_name (int, char **);
 # include "coreutils.h"
 # undef SINGLE_BINARY_PROGRAM
 #endif
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "coreutils"
 
 #define AUTHORS \
@@ -95,13 +74,13 @@ launch_program (char const *prog_name, int prog_argc, char **prog_argv)
 {
   int (*prog_main) (int, char **) = nullptr;
 
-  /* Ensure that at least one parameter was passed.  */
+   
   if (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
     return;
 
 #ifdef SINGLE_BINARY
   if (false);
-  /* Look up the right main program.  */
+   
 # define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
   else if (STREQ (prog_name_str, prog_name)) \
     prog_main = single_binary_main_##main_name;
@@ -113,13 +92,11 @@ launch_program (char const *prog_name, int prog_argc, char **prog_argv)
     return;
 
 #if HAVE_PRCTL && defined PR_SET_NAME
-  /* Not being able to set the program name is not a fatal error.  */
+   
   prctl (PR_SET_NAME, prog_argv[0]);
 #endif
 #if HAVE_PRCTL && defined PR_SET_MM_ARG_START
-  /* Shift the beginning of the command line to prog_argv[0] (if set) so
-     /proc/$pid/cmdline reflects a more specific value.  Note one needs
-     CAP_SYS_RESOURCE or root privileges for this to succeed.  */
+   
   prctl (PR_SET_MM, PR_SET_MM_ARG_START, prog_argv[0], 0, 0);
 #endif
 
@@ -132,29 +109,22 @@ main (int argc, char **argv)
   char *prog_name = last_component (argv[0]);
   int optc;
 
-  /* Map external name to internal name.  */
+   
   char ginstall[] = "ginstall";
   if (STREQ (prog_name, "install"))
     prog_name = ginstall;
 
-  /* If this program is called directly as "coreutils" or if the value of
-     argv[0] is an unknown tool (which "coreutils" is), we proceed and parse
-     the options.  */
+   
   launch_program (prog_name, argc, argv);
 
-  /* No known program was selected via argv[0].  Try parsing the first
-     argument as --coreutils-prog=PROGRAM to determine the program.  The
-     invocation for this case should be:
-       path/to/coreutils --coreutils-prog=someprog someprog ...
-     The third argument is what the program will see as argv[0].  */
+   
 
   if (argc >= 2)
     {
       size_t nskip = 0;
       char *arg_name = nullptr;
 
-      /* If calling coreutils directly, the "script" name isn't passed.
-         Distinguish the two cases with a -shebang suffix.  */
+       
       if (STRPREFIX (argv[1], "--coreutils-prog="))
         {
           nskip = 1;
@@ -172,15 +142,14 @@ main (int argc, char **argv)
 
       if (nskip)
         {
-          argv[nskip] = arg_name; /* XXX: Discards any specified path.  */
+          argv[nskip] = arg_name;  
           launch_program (prog_name, argc - nskip, argv + nskip);
           error (EXIT_FAILURE, 0, _("unknown program %s"),
                  quote (prog_name));
         }
     }
 
-  /* No known program was selected.  From here on, we behave like any other
-     coreutils program.  */
+   
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
   setlocale (LC_ALL, "");
@@ -196,8 +165,7 @@ main (int argc, char **argv)
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
       }
 
-  /* Only print the error message when no options have been passed
-     to coreutils.  */
+   
   if (optind == 1 && prog_name && !STREQ (prog_name, "coreutils"))
     error (0, 0, _("unknown program %s"),
            quote (prog_name));

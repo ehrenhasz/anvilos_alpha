@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-* Analogix DP (Display Port) core interface driver.
-*
-* Copyright (C) 2012 Samsung Electronics Co., Ltd.
-* Author: Jingoo Han <jg1.han@samsung.com>
-*/
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -52,7 +47,7 @@ static int analogix_dp_init_dp(struct analogix_dp_device *dp)
 	analogix_dp_init_analog_param(dp);
 	analogix_dp_init_interrupt(dp);
 
-	/* SW defined function Normal operation */
+	 
 	analogix_dp_enable_sw_function(dp);
 
 	analogix_dp_config_interrupt(dp);
@@ -77,19 +72,11 @@ static int analogix_dp_detect_hpd(struct analogix_dp_device *dp)
 		usleep_range(1000, 1100);
 	}
 
-	/*
-	 * Some edp screen do not have hpd signal, so we can't just
-	 * return failed when hpd plug in detect failed, DT property
-	 * "force-hpd" would indicate whether driver need this.
-	 */
+	 
 	if (!dp->force_hpd)
 		return -ETIMEDOUT;
 
-	/*
-	 * The eDP TRM indicate that if HPD_STATUS(RO) is 0, AUX CH
-	 * will not work, so we need to give a force hpd action to
-	 * set HPD_STATUS manually.
-	 */
+	 
 	dev_dbg(dp->dev, "failed to get hpd plug status, try to force hpd\n");
 
 	analogix_dp_force_hpd(dp);
@@ -124,7 +111,7 @@ static int analogix_dp_enable_sink_psr(struct analogix_dp_device *dp)
 	unsigned char psr_en;
 	int ret;
 
-	/* Disable psr function */
+	 
 	ret = drm_dp_dpcd_readb(&dp->aux, DP_PSR_EN_CFG, &psr_en);
 	if (ret != 1) {
 		dev_err(dp->dev, "failed to get psr config\n");
@@ -138,7 +125,7 @@ static int analogix_dp_enable_sink_psr(struct analogix_dp_device *dp)
 		goto end;
 	}
 
-	/* Main-Link transmitter remains active during PSR active states */
+	 
 	psr_en = DP_PSR_CRC_VERIFICATION;
 	ret = drm_dp_dpcd_writeb(&dp->aux, DP_PSR_EN_CFG, psr_en);
 	if (ret != 1) {
@@ -146,7 +133,7 @@ static int analogix_dp_enable_sink_psr(struct analogix_dp_device *dp)
 		goto end;
 	}
 
-	/* Enable psr function */
+	 
 	psr_en = DP_PSR_ENABLE | DP_PSR_CRC_VERIFICATION;
 	ret = drm_dp_dpcd_writeb(&dp->aux, DP_PSR_EN_CFG, psr_en);
 	if (ret != 1) {
@@ -269,29 +256,29 @@ static int analogix_dp_link_start(struct analogix_dp_device *dp)
 	for (lane = 0; lane < lane_count; lane++)
 		dp->link_train.cr_loop[lane] = 0;
 
-	/* Set link rate and count as you want to establish*/
+	 
 	analogix_dp_set_link_bandwidth(dp, dp->link_train.link_rate);
 	analogix_dp_set_lane_count(dp, dp->link_train.lane_count);
 
-	/* Setup RX configuration */
+	 
 	buf[0] = dp->link_train.link_rate;
 	buf[1] = dp->link_train.lane_count;
 	retval = drm_dp_dpcd_write(&dp->aux, DP_LINK_BW_SET, buf, 2);
 	if (retval < 0)
 		return retval;
-	/* set enhanced mode if available */
+	 
 	retval = analogix_dp_set_enhanced_mode(dp);
 	if (retval < 0) {
 		dev_err(dp->dev, "failed to set enhance mode\n");
 		return retval;
 	}
 
-	/* Set TX pre-emphasis to minimum */
+	 
 	for (lane = 0; lane < lane_count; lane++)
 		analogix_dp_set_lane_lane_pre_emphasis(dp,
 			PRE_EMPHASIS_LEVEL_0, lane);
 
-	/* Wait for PLL lock */
+	 
 	pll_tries = 0;
 	while (analogix_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
 		if (pll_tries == DP_TIMEOUT_LOOP_COUNT) {
@@ -303,10 +290,10 @@ static int analogix_dp_link_start(struct analogix_dp_device *dp)
 		usleep_range(90, 120);
 	}
 
-	/* Set training pattern 1 */
+	 
 	analogix_dp_set_training_pattern(dp, TRAINING_PTN1);
 
-	/* Set RX training pattern */
+	 
 	retval = drm_dp_dpcd_writeb(&dp->aux, DP_TRAINING_PATTERN_SET,
 				    DP_LINK_SCRAMBLING_DISABLE |
 					DP_TRAINING_PATTERN_1);
@@ -484,7 +471,7 @@ static int analogix_dp_process_clock_recovery(struct analogix_dp_device *dp)
 		return retval;
 
 	if (analogix_dp_clock_recovery_ok(link_status, lane_count) == 0) {
-		/* set training pattern 2 for EQ */
+		 
 		analogix_dp_set_training_pattern(dp, TRAINING_PTN2);
 
 		retval = drm_dp_dpcd_writeb(&dp->aux, DP_TRAINING_PATTERN_SET,
@@ -568,7 +555,7 @@ static int analogix_dp_process_equalizer_training(struct analogix_dp_device *dp)
 	analogix_dp_get_adjust_training_lane(dp, adjust_request);
 
 	if (!analogix_dp_channel_eq_ok(link_status, link_align, lane_count)) {
-		/* traing pattern Set to Normal */
+		 
 		retval = analogix_dp_training_pattern_dis(dp);
 		if (retval < 0)
 			return retval;
@@ -589,7 +576,7 @@ static int analogix_dp_process_equalizer_training(struct analogix_dp_device *dp)
 		return 0;
 	}
 
-	/* not all locked */
+	 
 	dp->link_train.eq_loop++;
 
 	if (dp->link_train.eq_loop > MAX_EQ_LOOP) {
@@ -615,12 +602,7 @@ static void analogix_dp_get_max_rx_bandwidth(struct analogix_dp_device *dp,
 {
 	u8 data;
 
-	/*
-	 * For DP rev.1.1, Maximum link rate of Main Link lanes
-	 * 0x06 = 1.62 Gbps, 0x0a = 2.7 Gbps
-	 * For DP rev.1.2, Maximum link rate of Main Link lanes
-	 * 0x06 = 1.62 Gbps, 0x0a = 2.7 Gbps, 0x14 = 5.4Gbps
-	 */
+	 
 	drm_dp_dpcd_readb(&dp->aux, DP_MAX_LINK_RATE, &data);
 	*bandwidth = data;
 }
@@ -630,10 +612,7 @@ static void analogix_dp_get_max_rx_lane_count(struct analogix_dp_device *dp,
 {
 	u8 data;
 
-	/*
-	 * For DP rev.1.1, Maximum number of Main Link lanes
-	 * 0x01 = 1 lane, 0x02 = 2 lanes, 0x04 = 4 lanes
-	 */
+	 
 	drm_dp_dpcd_readb(&dp->aux, DP_MAX_LANE_COUNT, &data);
 	*lane_count = DPCD_MAX_LANE_COUNT(data);
 }
@@ -644,13 +623,10 @@ static int analogix_dp_full_link_train(struct analogix_dp_device *dp,
 	int retval = 0;
 	bool training_finished = false;
 
-	/*
-	 * MACRO_RST must be applied after the PLL_LOCK to avoid
-	 * the DP inter pair skew issue for at least 10 us
-	 */
+	 
 	analogix_dp_reset_macro(dp);
 
-	/* Initialize by reading RX's DPCD */
+	 
 	analogix_dp_get_max_rx_bandwidth(dp, &dp->link_train.link_rate);
 	analogix_dp_get_max_rx_lane_count(dp, &dp->link_train.lane_count);
 
@@ -668,18 +644,18 @@ static int analogix_dp_full_link_train(struct analogix_dp_device *dp,
 		dp->link_train.lane_count = (u8)LANE_COUNT1;
 	}
 
-	/* Setup TX lane count & rate */
+	 
 	if (dp->link_train.lane_count > max_lanes)
 		dp->link_train.lane_count = max_lanes;
 	if (dp->link_train.link_rate > max_rate)
 		dp->link_train.link_rate = max_rate;
 
-	/* All DP analog module power up */
+	 
 	analogix_dp_set_analog_power_down(dp, POWER_ALL, 0);
 
 	dp->link_train.lt_state = START;
 
-	/* Process here */
+	 
 	while (!retval && !training_finished) {
 		switch (dp->link_train.lt_state) {
 		case START:
@@ -734,22 +710,19 @@ static int analogix_dp_fast_link_train(struct analogix_dp_device *dp)
 		return ret;
 	}
 
-	/* source Set training pattern 1 */
+	 
 	analogix_dp_set_training_pattern(dp, TRAINING_PTN1);
-	/* From DP spec, pattern must be on-screen for a minimum 500us */
+	 
 	usleep_range(500, 600);
 
 	analogix_dp_set_training_pattern(dp, TRAINING_PTN2);
-	/* From DP spec, pattern must be on-screen for a minimum 500us */
+	 
 	usleep_range(500, 600);
 
-	/* TODO: enhanced_mode?*/
+	 
 	analogix_dp_set_training_pattern(dp, DP_NONE);
 
-	/*
-	 * Useful for debugging issues with fast link training, disable for more
-	 * speed
-	 */
+	 
 	if (verify_fast_training) {
 		ret = drm_dp_dpcd_readb(&dp->aux, DP_LANE_ALIGN_STATUS_UPDATED,
 					&link_align);
@@ -819,19 +792,19 @@ static int analogix_dp_config_video(struct analogix_dp_device *dp)
 		usleep_range(1000, 1001);
 	}
 
-	/* Set to use the register calculated M/N video */
+	 
 	analogix_dp_set_video_cr_mn(dp, CALCULATED_M, 0, 0);
 
-	/* For video bist, Video timing must be generated by register */
+	 
 	analogix_dp_set_video_timing_mode(dp, VIDEO_TIMING_FROM_CAPTURE);
 
-	/* Disable video mute */
+	 
 	analogix_dp_enable_video_mute(dp, 0);
 
-	/* Configure video slave mode */
+	 
 	analogix_dp_enable_video_master(dp, 0);
 
-	/* Enable video */
+	 
 	analogix_dp_start_video(dp);
 
 	timeout_loop = 0;
@@ -941,7 +914,7 @@ static int analogix_dp_commit(struct analogix_dp_device *dp)
 {
 	int ret;
 
-	/* Keep the panel disabled while we configure video */
+	 
 	if (dp->plat_data->panel) {
 		if (drm_panel_disable(dp->plat_data->panel))
 			DRM_ERROR("failed to disable the panel\n");
@@ -966,7 +939,7 @@ static int analogix_dp_commit(struct analogix_dp_device *dp)
 		return ret;
 	}
 
-	/* Safe to enable the panel now */
+	 
 	if (dp->plat_data->panel) {
 		ret = drm_panel_enable(dp->plat_data->panel);
 		if (ret) {
@@ -975,7 +948,7 @@ static int analogix_dp_commit(struct analogix_dp_device *dp)
 		}
 	}
 
-	/* Check whether panel supports fast training */
+	 
 	ret = analogix_dp_fast_link_train_detection(dp);
 	if (ret)
 		return ret;
@@ -1001,7 +974,7 @@ static int analogix_dp_enable_psr(struct analogix_dp_device *dp)
 	else if (sink == DP_PSR_SINK_ACTIVE_RFB)
 		return 0;
 
-	/* Prepare VSC packet as per EDP 1.4 spec, Table 6.9 */
+	 
 	memset(&psr_vsc, 0, sizeof(psr_vsc));
 	psr_vsc.sdp_header.HB0 = 0;
 	psr_vsc.sdp_header.HB1 = 0x7;
@@ -1046,7 +1019,7 @@ static int analogix_dp_disable_psr(struct analogix_dp_device *dp)
 		return ret;
 	}
 
-	/* Prepare VSC packet as per EDP 1.4 spec, Table 6.9 */
+	 
 	memset(&psr_vsc, 0, sizeof(psr_vsc));
 	psr_vsc.sdp_header.HB0 = 0;
 	psr_vsc.sdp_header.HB1 = 0x7;
@@ -1059,19 +1032,7 @@ static int analogix_dp_disable_psr(struct analogix_dp_device *dp)
 	return analogix_dp_send_psr_spd(dp, &psr_vsc, true);
 }
 
-/*
- * This function is a bit of a catch-all for panel preparation, hopefully
- * simplifying the logic of functions that need to prepare/unprepare the panel
- * below.
- *
- * If @prepare is true, this function will prepare the panel. Conversely, if it
- * is false, the panel will be unprepared.
- *
- * If @is_modeset_prepare is true, the function will disregard the current state
- * of the panel and either prepare/unprepare the panel based on @prepare. Once
- * it finishes, it will update dp->panel_is_modeset to reflect the current state
- * of the panel.
- */
+ 
 static int analogix_dp_prepare_panel(struct analogix_dp_device *dp,
 				     bool prepare, bool is_modeset_prepare)
 {
@@ -1082,10 +1043,7 @@ static int analogix_dp_prepare_panel(struct analogix_dp_device *dp,
 
 	mutex_lock(&dp->panel_lock);
 
-	/*
-	 * Exit early if this is a temporary prepare/unprepare and we're already
-	 * modeset (since we neither want to prepare twice or unprepare early).
-	 */
+	 
 	if (dp->panel_is_modeset && !is_modeset_prepare)
 		goto out;
 
@@ -1250,12 +1208,7 @@ static int analogix_dp_bridge_attach(struct drm_bridge *bridge,
 		drm_connector_attach_encoder(connector, encoder);
 	}
 
-	/*
-	 * NOTE: the connector registration is implemented in analogix
-	 * platform driver, that to say connector would be exist after
-	 * plat_data->attch return, that's why we record the connector
-	 * point after plat attached.
-	 */
+	 
 	if (dp->plat_data->attach) {
 		ret = dp->plat_data->attach(dp->plat_data, bridge, connector);
 		if (ret) {
@@ -1320,7 +1273,7 @@ analogix_dp_bridge_atomic_pre_enable(struct drm_bridge *bridge,
 		return;
 
 	old_crtc_state = drm_atomic_get_old_crtc_state(old_state, crtc);
-	/* Don't touch the panel if we're coming back from PSR */
+	 
 	if (old_crtc_state && old_crtc_state->self_refresh_active)
 		return;
 
@@ -1350,11 +1303,7 @@ static int analogix_dp_set_bridge(struct analogix_dp_device *dp)
 	if (ret)
 		goto out_dp_init;
 
-	/*
-	 * According to DP spec v1.3 chap 3.5.1.2 Link Training,
-	 * We should first make sure the HPD signal is asserted high by device
-	 * when we want to establish a link with it.
-	 */
+	 
 	ret = analogix_dp_detect_hpd(dp);
 	if (ret) {
 		DRM_ERROR("failed to get hpd single ret = %d\n", ret);
@@ -1400,7 +1349,7 @@ analogix_dp_bridge_atomic_enable(struct drm_bridge *bridge,
 		return;
 
 	old_crtc_state = drm_atomic_get_old_crtc_state(old_state, crtc);
-	/* Not a full enable, just disable PSR and continue */
+	 
 	if (old_crtc_state && old_crtc_state->self_refresh_active) {
 		ret = analogix_dp_disable_psr(dp);
 		if (ret)
@@ -1479,7 +1428,7 @@ analogix_dp_bridge_atomic_disable(struct drm_bridge *bridge,
 	if (!new_crtc_state)
 		goto out;
 
-	/* Don't do a full disable on PSR transitions */
+	 
 	if (new_crtc_state->self_refresh_active)
 		return;
 
@@ -1489,7 +1438,7 @@ out:
 		old_crtc_state = drm_atomic_get_old_crtc_state(old_state,
 							       old_crtc);
 
-		/* When moving from PSR to fully disabled, exit PSR first. */
+		 
 		if (old_crtc_state && old_crtc_state->self_refresh_active) {
 			ret = analogix_dp_disable_psr(dp);
 			if (ret)
@@ -1533,12 +1482,12 @@ static void analogix_dp_bridge_mode_set(struct drm_bridge *bridge,
 	struct device_node *dp_node = dp->dev->of_node;
 	int vic;
 
-	/* Input video interlaces & hsync pol & vsync pol */
+	 
 	video->interlaced = !!(mode->flags & DRM_MODE_FLAG_INTERLACE);
 	video->v_sync_polarity = !!(mode->flags & DRM_MODE_FLAG_NVSYNC);
 	video->h_sync_polarity = !!(mode->flags & DRM_MODE_FLAG_NHSYNC);
 
-	/* Input video dynamic_range & colorimetry */
+	 
 	vic = drm_match_cea_mode(mode);
 	if ((vic == 6) || (vic == 7) || (vic == 21) || (vic == 22) ||
 	    (vic == 2) || (vic == 3) || (vic == 17) || (vic == 18)) {
@@ -1552,7 +1501,7 @@ static void analogix_dp_bridge_mode_set(struct drm_bridge *bridge,
 		video->ycbcr_coeff = COLOR_YCBCR709;
 	}
 
-	/* Input vide bpc and color_formats */
+	 
 	switch (display_info->bpc) {
 	case 12:
 		video->color_depth = COLOR_12;
@@ -1577,13 +1526,7 @@ static void analogix_dp_bridge_mode_set(struct drm_bridge *bridge,
 	else
 		video->color_space = COLOR_RGB;
 
-	/*
-	 * NOTE: those property parsing code is used for providing backward
-	 * compatibility for samsung platform.
-	 * Due to we used the "of_property_read_u32" interfaces, when this
-	 * property isn't present, the "video_info" can keep the original
-	 * values and wouldn't be modified.
-	 */
+	 
 	of_property_read_u32(dp_node, "samsung,color-space",
 			     &video->color_space);
 	of_property_read_u32(dp_node, "samsung,dynamic-range",
@@ -1639,18 +1582,12 @@ static int analogix_dp_dt_parse_pdata(struct analogix_dp_device *dp)
 	switch (dp->plat_data->dev_type) {
 	case RK3288_DP:
 	case RK3399_EDP:
-		/*
-		 * Like Rk3288 DisplayPort TRM indicate that "Main link
-		 * containing 4 physical lanes of 2.7/1.62 Gbps/lane".
-		 */
+		 
 		video_info->max_link_rate = 0x0A;
 		video_info->max_lane_count = 0x04;
 		break;
 	case EXYNOS_DP:
-		/*
-		 * NOTE: those property parseing code is used for
-		 * providing backward compatibility for samsung platform.
-		 */
+		 
 		of_property_read_u32(dp_node, "samsung,link-rate",
 				     &video_info->max_link_rate);
 		of_property_read_u32(dp_node, "samsung,lane-count",
@@ -1705,11 +1642,7 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
 	mutex_init(&dp->panel_lock);
 	dp->panel_is_modeset = false;
 
-	/*
-	 * platform dp driver need containor_of the plat_data to get
-	 * the driver private data, so we need to store the point of
-	 * plat_data, not the context of plat_data.
-	 */
+	 
 	dp->plat_data = plat_data;
 
 	ret = analogix_dp_dt_parse_pdata(dp);
@@ -1721,10 +1654,7 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
 		dev_err(dp->dev, "no DP phy configured\n");
 		ret = PTR_ERR(dp->phy);
 		if (ret) {
-			/*
-			 * phy itself is not enabled, so we can move forward
-			 * assigning NULL to phy pointer.
-			 */
+			 
 			if (ret == -ENOSYS || ret == -ENODEV)
 				dp->phy = NULL;
 			else
@@ -1750,7 +1680,7 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
 
 	dp->force_hpd = of_property_read_bool(dev->of_node, "force-hpd");
 
-	/* Try two different names */
+	 
 	dp->hpd_gpiod = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
 	if (!dp->hpd_gpiod)
 		dp->hpd_gpiod = devm_gpiod_get_optional(dev, "samsung,hpd",
@@ -1763,13 +1693,7 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
 	}
 
 	if (dp->hpd_gpiod) {
-		/*
-		 * Set up the hotplug GPIO from the device tree as an interrupt.
-		 * Simply specifying a different interrupt in the device tree
-		 * doesn't work since we handle hotplug rather differently when
-		 * using a GPIO.  We also need the actual GPIO specifier so
-		 * that we can get the current state of the GPIO.
-		 */
+		 
 		dp->irq = gpiod_to_irq(dp->hpd_gpiod);
 		irq_flags = IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING;
 	} else {

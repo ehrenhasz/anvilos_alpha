@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the ps-mode pin configuration.
- *
- * Copyright (c) 2021 Xilinx, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -15,19 +11,10 @@
 #include <linux/slab.h>
 #include <linux/firmware/xlnx-zynqmp.h>
 
-/* 4-bit boot mode pins */
+ 
 #define MODE_PINS			4
 
-/**
- * modepin_gpio_get_value - Get the state of the specified pin of GPIO device
- * @chip:	gpio_chip instance to be worked on
- * @pin:	gpio pin number within the device
- *
- * This function reads the state of the specified pin of the GPIO device.
- *
- * Return: 0 if the pin is low, 1 if pin is high, -EINVAL wrong pin configured
- *         or error value.
- */
+ 
 static int modepin_gpio_get_value(struct gpio_chip *chip, unsigned int pin)
 {
 	u32 regval = 0;
@@ -37,26 +24,14 @@ static int modepin_gpio_get_value(struct gpio_chip *chip, unsigned int pin)
 	if (ret)
 		return ret;
 
-	/* When [0:3] corresponding bit is set, then read output bit [8:11],
-	 * if the bit is clear then read input bit [4:7] for status or value.
-	 */
+	 
 	if (regval & BIT(pin))
 		return !!(regval & BIT(pin + 8));
 	else
 		return !!(regval & BIT(pin + 4));
 }
 
-/**
- * modepin_gpio_set_value - Modify the state of the pin with specified value
- * @chip:	gpio_chip instance to be worked on
- * @pin:	gpio pin number within the device
- * @state:	value used to modify the state of the specified pin
- *
- * This function reads the state of the specified pin of the GPIO device, mask
- * with the capture state of GPIO pin, and update pin of GPIO device.
- *
- * Return:	None.
- */
+ 
 static void modepin_gpio_set_value(struct gpio_chip *chip, unsigned int pin,
 				   int state)
 {
@@ -65,7 +40,7 @@ static void modepin_gpio_set_value(struct gpio_chip *chip, unsigned int pin,
 
 	zynqmp_pm_bootmode_read(&bootpin_val);
 
-	/* Configure pin as an output by set bit [0:3] */
+	 
 	bootpin_val |= BIT(pin);
 
 	if (state)
@@ -73,44 +48,26 @@ static void modepin_gpio_set_value(struct gpio_chip *chip, unsigned int pin,
 	else
 		bootpin_val &= ~BIT(pin + 8);
 
-	/* Configure bootpin value */
+	 
 	ret = zynqmp_pm_bootmode_write(bootpin_val);
 	if (ret)
 		pr_err("modepin: set value error %d for pin %d\n", ret, pin);
 }
 
-/**
- * modepin_gpio_dir_in - Set the direction of the specified GPIO pin as input
- * @chip:	gpio_chip instance to be worked on
- * @pin:	gpio pin number within the device
- *
- * Return: 0 always
- */
+ 
 static int modepin_gpio_dir_in(struct gpio_chip *chip, unsigned int pin)
 {
 	return 0;
 }
 
-/**
- * modepin_gpio_dir_out - Set the direction of the specified GPIO pin as output
- * @chip:	gpio_chip instance to be worked on
- * @pin:	gpio pin number within the device
- * @state:	value to be written to specified pin
- *
- * Return: 0 always
- */
+ 
 static int modepin_gpio_dir_out(struct gpio_chip *chip, unsigned int pin,
 				int state)
 {
 	return 0;
 }
 
-/**
- * modepin_gpio_probe - Initialization method for modepin_gpio
- * @pdev:		platform device instance
- *
- * Return: 0 on success, negative error otherwise.
- */
+ 
 static int modepin_gpio_probe(struct platform_device *pdev)
 {
 	struct gpio_chip *chip;
@@ -122,7 +79,7 @@ static int modepin_gpio_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, chip);
 
-	/* configure the gpio chip */
+	 
 	chip->base = -1;
 	chip->ngpio = MODE_PINS;
 	chip->owner = THIS_MODULE;
@@ -133,7 +90,7 @@ static int modepin_gpio_probe(struct platform_device *pdev)
 	chip->direction_output = modepin_gpio_dir_out;
 	chip->label = dev_name(&pdev->dev);
 
-	/* modepin gpio registration */
+	 
 	status = devm_gpiochip_add_data(&pdev->dev, chip, chip);
 	if (status)
 		return dev_err_probe(&pdev->dev, status,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI HD3SS3220 Type-C DRP Port Controller Driver
- *
- * Copyright (C) 2019 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,14 +16,14 @@
 #define HD3SS3220_REG_GEN_CTRL		0x0A
 #define HD3SS3220_REG_DEV_REV		0xA0
 
-/* Register HD3SS3220_REG_CN_STAT_CTRL*/
+ 
 #define HD3SS3220_REG_CN_STAT_CTRL_ATTACHED_STATE_MASK	(BIT(7) | BIT(6))
 #define HD3SS3220_REG_CN_STAT_CTRL_AS_DFP		BIT(6)
 #define HD3SS3220_REG_CN_STAT_CTRL_AS_UFP		BIT(7)
 #define HD3SS3220_REG_CN_STAT_CTRL_TO_ACCESSORY		(BIT(7) | BIT(6))
 #define HD3SS3220_REG_CN_STAT_CTRL_INT_STATUS		BIT(4)
 
-/* Register HD3SS3220_REG_GEN_CTRL*/
+ 
 #define HD3SS3220_REG_GEN_CTRL_SRC_PREF_MASK		(BIT(2) | BIT(1))
 #define HD3SS3220_REG_GEN_CTRL_SRC_PREF_DRP_DEFAULT	0x00
 #define HD3SS3220_REG_GEN_CTRL_SRC_PREF_DRP_TRY_SNK	BIT(1)
@@ -190,7 +186,7 @@ static int hd3ss3220_probe(struct i2c_client *client)
 
 	hd3ss3220_set_source_pref(hd3ss3220,
 				  HD3SS3220_REG_GEN_CTRL_SRC_PREF_DRP_DEFAULT);
-	/* For backward compatibility check the connector child node first */
+	 
 	connector = device_get_named_child_node(hd3ss3220->dev, "connector");
 	if (connector) {
 		hd3ss3220->role_sw = fwnode_usb_role_switch_get(connector);

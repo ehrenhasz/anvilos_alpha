@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * HD audio Component Binding Interface
- *
- * Copyright (C) 2021 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- */
+ 
+ 
 
 #include <linux/component.h>
 

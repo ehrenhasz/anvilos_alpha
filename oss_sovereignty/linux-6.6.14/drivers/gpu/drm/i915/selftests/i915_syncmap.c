@@ -1,26 +1,4 @@
-/*
- * Copyright © 2017 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include "../i915_selftest.h"
 #include "i915_random.h"
@@ -51,7 +29,7 @@ __sync_print(struct i915_syncmap *p,
 		*sz -= len;
 	}
 
-	/* We mark bits after the prefix as "X" */
+	 
 	len = scnprintf(buf, *sz, "0x%016llx", p->prefix << p->height << SHIFT);
 	buf += len;
 	*sz -= len;
@@ -134,10 +112,7 @@ static int igt_syncmap_init(void *arg)
 {
 	struct i915_syncmap *sync = (void *)~0ul;
 
-	/*
-	 * Cursory check that we can initialise a random pointer and transform
-	 * it into the root pointer of a syncmap.
-	 */
+	 
 
 	i915_syncmap_init(&sync);
 	return check_syncmap_free(&sync);
@@ -207,9 +182,7 @@ static int igt_syncmap_one(void *arg)
 	unsigned long max = 1;
 	int err;
 
-	/*
-	 * Check that inserting a new id, creates a leaf and only that leaf.
-	 */
+	 
 
 	i915_syncmap_init(&sync);
 
@@ -276,22 +249,7 @@ static int igt_syncmap_join_above(void *arg)
 
 	i915_syncmap_init(&sync);
 
-	/*
-	 * When we have a new id that doesn't fit inside the existing tree,
-	 * we need to add a new layer above.
-	 *
-	 * 1: 0x00000001
-	 * 2: 0x00000010
-	 * 3: 0x00000100
-	 * 4: 0x00001000
-	 * ...
-	 * Each pass the common prefix shrinks and we have to insert a join.
-	 * Each join will only contain two branches, the latest of which
-	 * is always a leaf.
-	 *
-	 * If we then reuse the same set of contexts, we expect to build an
-	 * identical tree.
-	 */
+	 
 	for (pass = 0; pass < 3; pass++) {
 		for (order = 0; order < 64; order += SHIFT) {
 			u64 context = BIT_ULL(order);
@@ -302,7 +260,7 @@ static int igt_syncmap_join_above(void *arg)
 				goto out;
 
 			join = sync->parent;
-			if (!join) /* very first insert will have no parents */
+			if (!join)  
 				continue;
 
 			if (!join->height) {
@@ -337,10 +295,7 @@ static int igt_syncmap_join_below(void *arg)
 
 	i915_syncmap_init(&sync);
 
-	/*
-	 * Check that we can split a compacted branch by replacing it with
-	 * a join.
-	 */
+	 
 	for (step = 0; step < KSYNCMAP; step++) {
 		for (order = 64 - SHIFT; order > 0; order -= SHIFT) {
 			u64 context = step * BIT_ULL(order);
@@ -404,17 +359,14 @@ static int igt_syncmap_neighbours(void *arg)
 	struct i915_syncmap *sync;
 	int err = -ENODEV;
 
-	/*
-	 * Each leaf holds KSYNCMAP seqno. Check that when we create KSYNCMAP
-	 * neighbouring ids, they all fit into the same leaf.
-	 */
+	 
 
 	i915_syncmap_init(&sync);
 	do {
 		u64 context = i915_prandom_u64_state(&prng) & ~MASK;
 		unsigned int idx;
 
-		if (i915_syncmap_is_later(&sync, context, 0)) /* Skip repeats */
+		if (i915_syncmap_is_later(&sync, context, 0))  
 			continue;
 
 		for (idx = 0; idx < KSYNCMAP; idx++) {
@@ -451,20 +403,13 @@ static int igt_syncmap_compact(void *arg)
 
 	i915_syncmap_init(&sync);
 
-	/*
-	 * The syncmap are "space efficient" compressed radix trees - any
-	 * branch with only one child is skipped and replaced by the child.
-	 *
-	 * If we construct a tree with ids that are neighbouring at a non-zero
-	 * height, we form a join but each child of that join is directly a
-	 * leaf holding the single id.
-	 */
+	 
 	for (order = SHIFT; order < 64; order += SHIFT) {
 		err = check_syncmap_free(&sync);
 		if (err)
 			goto out;
 
-		/* Create neighbours in the parent */
+		 
 		for (idx = 0; idx < KSYNCMAP; idx++) {
 			u64 context = idx * BIT_ULL(order) + idx;
 
@@ -503,7 +448,7 @@ static int igt_syncmap_compact(void *arg)
 			goto out;
 		}
 
-		/* Each of our children should be a leaf */
+		 
 		for (idx = 0; idx < KSYNCMAP; idx++) {
 			struct i915_syncmap *leaf = __sync_child(sync)[idx];
 
@@ -550,11 +495,7 @@ static int igt_syncmap_random(void *arg)
 
 	i915_syncmap_init(&sync);
 
-	/*
-	 * Having tried to test the individual operations within i915_syncmap,
-	 * run a smoketest exploring the entire u64 space with random
-	 * insertions.
-	 */
+	 
 
 	count = 0;
 	phase = jiffies + HZ/100 + 1;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include <net/genetlink.h>
 #define CREATE_TRACE_POINTS
@@ -47,7 +44,7 @@ void devl_assert_locked(struct devlink *devlink)
 EXPORT_SYMBOL_GPL(devl_assert_locked);
 
 #ifdef CONFIG_LOCKDEP
-/* For use in conjunction with LOCKDEP only e.g. rcu_dereference_protected() */
+ 
 bool devl_lock_is_held(struct devlink *devlink)
 {
 	return lockdep_is_held(&devlink->lock);
@@ -73,15 +70,7 @@ void devl_unlock(struct devlink *devlink)
 }
 EXPORT_SYMBOL_GPL(devl_unlock);
 
-/**
- * devlink_try_get() - try to obtain a reference on a devlink instance
- * @devlink: instance to reference
- *
- * Obtain a reference on a devlink instance. A reference on a devlink instance
- * only implies that it's safe to take the instance lock. It does not imply
- * that the instance is registered, use devl_is_registered() after taking
- * the instance lock to check registration status.
- */
+ 
 struct devlink *__must_check devlink_try_get(struct devlink *devlink)
 {
 	if (refcount_inc_not_zero(&devlink->refcount))
@@ -131,10 +120,7 @@ next:
 	goto retry;
 }
 
-/**
- * devl_register - Register devlink instance
- * @devlink: devlink
- */
+ 
 int devl_register(struct devlink *devlink)
 {
 	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
@@ -155,10 +141,7 @@ void devlink_register(struct devlink *devlink)
 }
 EXPORT_SYMBOL_GPL(devlink_register);
 
-/**
- * devl_unregister - Unregister devlink instance
- * @devlink: devlink
- */
+ 
 void devl_unregister(struct devlink *devlink)
 {
 	ASSERT_DEVLINK_REGISTERED(devlink);
@@ -177,18 +160,7 @@ void devlink_unregister(struct devlink *devlink)
 }
 EXPORT_SYMBOL_GPL(devlink_unregister);
 
-/**
- *	devlink_alloc_ns - Allocate new devlink instance resources
- *	in specific namespace
- *
- *	@ops: ops
- *	@priv_size: size of user private data
- *	@net: net namespace
- *	@dev: parent device
- *
- *	Allocate new devlink instance resources, including devlink index
- *	and name.
- */
+ 
 struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
 				 size_t priv_size, struct net *net,
 				 struct device *dev)
@@ -240,11 +212,7 @@ err_xa_alloc:
 }
 EXPORT_SYMBOL_GPL(devlink_alloc_ns);
 
-/**
- *	devlink_free - Free devlink instance resources
- *
- *	@devlink: devlink
- */
+ 
 void devlink_free(struct devlink *devlink)
 {
 	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
@@ -278,9 +246,7 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
 	unsigned long index;
 	int err;
 
-	/* In case network namespace is getting destroyed, reload
-	 * all devlink instances from this namespace into init_net.
-	 */
+	 
 	devlinks_xa_for_each_registered_get(net, index, devlink) {
 		devl_lock(devlink);
 		err = 0;

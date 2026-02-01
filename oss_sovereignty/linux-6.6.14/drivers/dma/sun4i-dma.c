@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2014 Emilio López
- * Emilio López <emilio@elopez.com.ar>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
@@ -19,7 +16,7 @@
 
 #include "virt-dma.h"
 
-/** Common macros to normal and dedicated DMA registers **/
+ 
 
 #define SUN4I_DMA_CFG_LOADING			BIT(31)
 #define SUN4I_DMA_CFG_DST_DATA_WIDTH(width)	((width) << 25)
@@ -31,66 +28,66 @@
 #define SUN4I_DMA_CFG_SRC_ADDR_MODE(mode)	((mode) << 5)
 #define SUN4I_DMA_CFG_SRC_DRQ_TYPE(type)	(type)
 
-/** Normal DMA register values **/
+ 
 
-/* Normal DMA source/destination data request type values */
+ 
 #define SUN4I_NDMA_DRQ_TYPE_SDRAM		0x16
 #define SUN4I_NDMA_DRQ_TYPE_LIMIT		(0x1F + 1)
 
-/** Normal DMA register layout **/
+ 
 
-/* Dedicated DMA source/destination address mode values */
+ 
 #define SUN4I_NDMA_ADDR_MODE_LINEAR		0
 #define SUN4I_NDMA_ADDR_MODE_IO			1
 
-/* Normal DMA configuration register layout */
+ 
 #define SUN4I_NDMA_CFG_CONT_MODE		BIT(30)
 #define SUN4I_NDMA_CFG_WAIT_STATE(n)		((n) << 27)
 #define SUN4I_NDMA_CFG_DST_NON_SECURE		BIT(22)
 #define SUN4I_NDMA_CFG_BYTE_COUNT_MODE_REMAIN	BIT(15)
 #define SUN4I_NDMA_CFG_SRC_NON_SECURE		BIT(6)
 
-/** Dedicated DMA register values **/
+ 
 
-/* Dedicated DMA source/destination address mode values */
+ 
 #define SUN4I_DDMA_ADDR_MODE_LINEAR		0
 #define SUN4I_DDMA_ADDR_MODE_IO			1
 #define SUN4I_DDMA_ADDR_MODE_HORIZONTAL_PAGE	2
 #define SUN4I_DDMA_ADDR_MODE_VERTICAL_PAGE	3
 
-/* Dedicated DMA source/destination data request type values */
+ 
 #define SUN4I_DDMA_DRQ_TYPE_SDRAM		0x1
 #define SUN4I_DDMA_DRQ_TYPE_LIMIT		(0x1F + 1)
 
-/** Dedicated DMA register layout **/
+ 
 
-/* Dedicated DMA configuration register layout */
+ 
 #define SUN4I_DDMA_CFG_BUSY			BIT(30)
 #define SUN4I_DDMA_CFG_CONT_MODE		BIT(29)
 #define SUN4I_DDMA_CFG_DST_NON_SECURE		BIT(28)
 #define SUN4I_DDMA_CFG_BYTE_COUNT_MODE_REMAIN	BIT(15)
 #define SUN4I_DDMA_CFG_SRC_NON_SECURE		BIT(12)
 
-/* Dedicated DMA parameter register layout */
+ 
 #define SUN4I_DDMA_PARA_DST_DATA_BLK_SIZE(n)	(((n) - 1) << 24)
 #define SUN4I_DDMA_PARA_DST_WAIT_CYCLES(n)	(((n) - 1) << 16)
 #define SUN4I_DDMA_PARA_SRC_DATA_BLK_SIZE(n)	(((n) - 1) << 8)
 #define SUN4I_DDMA_PARA_SRC_WAIT_CYCLES(n)	(((n) - 1) << 0)
 
-/** DMA register offsets **/
+ 
 
-/* General register offsets */
+ 
 #define SUN4I_DMA_IRQ_ENABLE_REG		0x0
 #define SUN4I_DMA_IRQ_PENDING_STATUS_REG	0x4
 
-/* Normal DMA register offsets */
+ 
 #define SUN4I_NDMA_CHANNEL_REG_BASE(n)		(0x100 + (n) * 0x20)
 #define SUN4I_NDMA_CFG_REG			0x0
 #define SUN4I_NDMA_SRC_ADDR_REG			0x4
 #define SUN4I_NDMA_DST_ADDR_REG		0x8
 #define SUN4I_NDMA_BYTE_COUNT_REG		0xC
 
-/* Dedicated DMA register offsets */
+ 
 #define SUN4I_DDMA_CHANNEL_REG_BASE(n)		(0x300 + (n) * 0x20)
 #define SUN4I_DDMA_CFG_REG			0x0
 #define SUN4I_DDMA_SRC_ADDR_REG			0x4
@@ -98,14 +95,9 @@
 #define SUN4I_DDMA_BYTE_COUNT_REG		0xC
 #define SUN4I_DDMA_PARA_REG			0x18
 
-/** DMA Driver **/
+ 
 
-/*
- * Normal DMA has 8 channels, and Dedicated DMA has another 8, so
- * that's 16 channels. As for endpoints, there's 29 and 21
- * respectively. Given that the Normal DMA endpoints (other than
- * SDRAM) can be used as tx/rx, we need 78 vchans in total
- */
+ 
 #define SUN4I_NDMA_NR_MAX_CHANNELS	8
 #define SUN4I_DDMA_NR_MAX_CHANNELS	8
 #define SUN4I_DMA_NR_MAX_CHANNELS					\
@@ -115,29 +107,24 @@
 #define SUN4I_DMA_NR_MAX_VCHANS						\
 	(SUN4I_NDMA_NR_MAX_VCHANS + SUN4I_DDMA_NR_MAX_VCHANS)
 
-/* This set of SUN4I_DDMA timing parameters were found experimentally while
- * working with the SPI driver and seem to make it behave correctly */
+ 
 #define SUN4I_DDMA_MAGIC_SPI_PARAMETERS \
 	(SUN4I_DDMA_PARA_DST_DATA_BLK_SIZE(1) |			\
 	 SUN4I_DDMA_PARA_SRC_DATA_BLK_SIZE(1) |				\
 	 SUN4I_DDMA_PARA_DST_WAIT_CYCLES(2) |				\
 	 SUN4I_DDMA_PARA_SRC_WAIT_CYCLES(2))
 
-/*
- * Normal DMA supports individual transfers (segments) up to 128k.
- * Dedicated DMA supports transfers up to 16M. We can only report
- * one size limit, so we have to use the smaller value.
- */
+ 
 #define SUN4I_NDMA_MAX_SEG_SIZE		SZ_128K
 #define SUN4I_DDMA_MAX_SEG_SIZE		SZ_16M
 #define SUN4I_DMA_MAX_SEG_SIZE		SUN4I_NDMA_MAX_SEG_SIZE
 
 struct sun4i_dma_pchan {
-	/* Register base of channel */
+	 
 	void __iomem			*base;
-	/* vchan currently being serviced */
+	 
 	struct sun4i_dma_vchan		*vchan;
-	/* Is this a dedicated pchan? */
+	 
 	int				is_dedicated;
 };
 
@@ -160,7 +147,7 @@ struct sun4i_dma_promise {
 	struct list_head		list;
 };
 
-/* A contract is a set of promises */
+ 
 struct sun4i_dma_contract {
 	struct virt_dma_desc		vd;
 	struct list_head		demands;
@@ -205,7 +192,7 @@ static int convert_burst(u32 maxburst)
 	if (maxburst > 8)
 		return -EINVAL;
 
-	/* 1 -> 0, 4 -> 1, 8 -> 2 */
+	 
 	return (maxburst >> 2);
 }
 
@@ -214,7 +201,7 @@ static int convert_buswidth(enum dma_slave_buswidth addr_width)
 	if (addr_width > DMA_SLAVE_BUSWIDTH_4_BYTES)
 		return -EINVAL;
 
-	/* 8 (1 byte) -> 0, 16 (2 bytes) -> 1, 32 (4 bytes) -> 2 */
+	 
 	return (addr_width >> 1);
 }
 
@@ -232,10 +219,7 @@ static struct sun4i_dma_pchan *find_and_use_pchan(struct sun4i_dma_dev *priv,
 	unsigned long flags;
 	int i, max;
 
-	/*
-	 * pchans 0-SUN4I_NDMA_NR_MAX_CHANNELS are normal, and
-	 * SUN4I_NDMA_NR_MAX_CHANNELS+ are dedicated ones
-	 */
+	 
 	if (vchan->is_dedicated) {
 		i = SUN4I_NDMA_NR_MAX_CHANNELS;
 		max = SUN4I_DMA_NR_MAX_CHANNELS;
@@ -273,10 +257,7 @@ static void release_pchan(struct sun4i_dma_dev *priv,
 static void configure_pchan(struct sun4i_dma_pchan *pchan,
 			    struct sun4i_dma_promise *d)
 {
-	/*
-	 * Configure addresses and misc parameters depending on type
-	 * SUN4I_DDMA has an extra field with timing parameters
-	 */
+	 
 	if (pchan->is_dedicated) {
 		writel_relaxed(d->src, pchan->base + SUN4I_DDMA_SRC_ADDR_REG);
 		writel_relaxed(d->dst, pchan->base + SUN4I_DDMA_DST_ADDR_REG);
@@ -318,15 +299,7 @@ static void set_pchan_interrupt(struct sun4i_dma_dev *priv,
 	spin_unlock_irqrestore(&priv->lock, flags);
 }
 
-/*
- * Execute pending operations on a vchan
- *
- * When given a vchan, this function will try to acquire a suitable
- * pchan and, if successful, will configure it to fulfill a promise
- * from the next pending contract.
- *
- * This function must be called with &vchan->vc.lock held.
- */
+ 
 static int __execute_vchan_pending(struct sun4i_dma_dev *priv,
 				   struct sun4i_dma_vchan *vchan)
 {
@@ -338,15 +311,12 @@ static int __execute_vchan_pending(struct sun4i_dma_dev *priv,
 
 	lockdep_assert_held(&vchan->vc.lock);
 
-	/* We need a pchan to do anything, so secure one if available */
+	 
 	pchan = find_and_use_pchan(priv, vchan);
 	if (!pchan)
 		return -EBUSY;
 
-	/*
-	 * Channel endpoints must not be repeated, so if this vchan
-	 * has already submitted some work, we can't do anything else
-	 */
+	 
 	if (vchan->processing) {
 		dev_dbg(chan2dev(&vchan->vc.chan),
 			"processing something to this endpoint already\n");
@@ -355,7 +325,7 @@ static int __execute_vchan_pending(struct sun4i_dma_dev *priv,
 	}
 
 	do {
-		/* Figure out which contract we're working with today */
+		 
 		vd = vchan_next_desc(&vchan->vc);
 		if (!vd) {
 			dev_dbg(chan2dev(&vchan->vc.chan),
@@ -366,7 +336,7 @@ static int __execute_vchan_pending(struct sun4i_dma_dev *priv,
 
 		contract = to_sun4i_dma_contract(vd);
 		if (list_empty(&contract->demands)) {
-			/* The contract has been completed so mark it as such */
+			 
 			list_del(&contract->vd.node);
 			vchan_cookie_complete(&contract->vd);
 			dev_dbg(chan2dev(&vchan->vc.chan),
@@ -374,12 +344,12 @@ static int __execute_vchan_pending(struct sun4i_dma_dev *priv,
 		}
 	} while (list_empty(&contract->demands));
 
-	/* Now find out what we need to do */
+	 
 	promise = list_first_entry(&contract->demands,
 				   struct sun4i_dma_promise, list);
 	vchan->processing = promise;
 
-	/* ... and make it reality */
+	 
 	if (promise) {
 		vchan->contract = contract;
 		vchan->pchan = pchan;
@@ -430,15 +400,7 @@ static int sanitize_config(struct dma_slave_config *sconfig,
 	return 0;
 }
 
-/*
- * Generate a promise, to be used in a normal DMA contract.
- *
- * A NDMA promise contains all the information required to program the
- * normal part of the DMA Engine and get data copied. A non-executed
- * promise will live in the demands list on a contract. Once it has been
- * completed, it will be moved to the completed demands list for later freeing.
- * All linked promises will be freed when the corresponding contract is freed
- */
+ 
 static struct sun4i_dma_promise *
 generate_ndma_promise(struct dma_chan *chan, dma_addr_t src, dma_addr_t dest,
 		      size_t len, struct dma_slave_config *sconfig,
@@ -466,25 +428,25 @@ generate_ndma_promise(struct dma_chan *chan, dma_addr_t src, dma_addr_t dest,
 		sconfig->src_maxburst, sconfig->dst_maxburst,
 		sconfig->src_addr_width, sconfig->dst_addr_width);
 
-	/* Source burst */
+	 
 	ret = convert_burst(sconfig->src_maxburst);
 	if (ret < 0)
 		goto fail;
 	promise->cfg |= SUN4I_DMA_CFG_SRC_BURST_LENGTH(ret);
 
-	/* Destination burst */
+	 
 	ret = convert_burst(sconfig->dst_maxburst);
 	if (ret < 0)
 		goto fail;
 	promise->cfg |= SUN4I_DMA_CFG_DST_BURST_LENGTH(ret);
 
-	/* Source bus width */
+	 
 	ret = convert_buswidth(sconfig->src_addr_width);
 	if (ret < 0)
 		goto fail;
 	promise->cfg |= SUN4I_DMA_CFG_SRC_DATA_WIDTH(ret);
 
-	/* Destination bus width */
+	 
 	ret = convert_buswidth(sconfig->dst_addr_width);
 	if (ret < 0)
 		goto fail;
@@ -497,15 +459,7 @@ fail:
 	return NULL;
 }
 
-/*
- * Generate a promise, to be used in a dedicated DMA contract.
- *
- * A DDMA promise contains all the information required to program the
- * Dedicated part of the DMA Engine and get data copied. A non-executed
- * promise will live in the demands list on a contract. Once it has been
- * completed, it will be moved to the completed demands list for later freeing.
- * All linked promises will be freed when the corresponding contract is freed
- */
+ 
 static struct sun4i_dma_promise *
 generate_ddma_promise(struct dma_chan *chan, dma_addr_t src, dma_addr_t dest,
 		      size_t len, struct dma_slave_config *sconfig)
@@ -523,25 +477,25 @@ generate_ddma_promise(struct dma_chan *chan, dma_addr_t src, dma_addr_t dest,
 	promise->cfg = SUN4I_DMA_CFG_LOADING |
 		SUN4I_DDMA_CFG_BYTE_COUNT_MODE_REMAIN;
 
-	/* Source burst */
+	 
 	ret = convert_burst(sconfig->src_maxburst);
 	if (ret < 0)
 		goto fail;
 	promise->cfg |= SUN4I_DMA_CFG_SRC_BURST_LENGTH(ret);
 
-	/* Destination burst */
+	 
 	ret = convert_burst(sconfig->dst_maxburst);
 	if (ret < 0)
 		goto fail;
 	promise->cfg |= SUN4I_DMA_CFG_DST_BURST_LENGTH(ret);
 
-	/* Source bus width */
+	 
 	ret = convert_buswidth(sconfig->src_addr_width);
 	if (ret < 0)
 		goto fail;
 	promise->cfg |= SUN4I_DMA_CFG_SRC_DATA_WIDTH(ret);
 
-	/* Destination bus width */
+	 
 	ret = convert_buswidth(sconfig->dst_addr_width);
 	if (ret < 0)
 		goto fail;
@@ -554,14 +508,7 @@ fail:
 	return NULL;
 }
 
-/*
- * Generate a contract
- *
- * Contracts function as DMA descriptors. As our hardware does not support
- * linked lists, we need to implement SG via software. We use a contract
- * to hold all the pieces of the request and process them serially one
- * after another. Each piece is represented as a promise.
- */
+ 
 static struct sun4i_dma_contract *generate_dma_contract(void)
 {
 	struct sun4i_dma_contract *contract;
@@ -576,13 +523,7 @@ static struct sun4i_dma_contract *generate_dma_contract(void)
 	return contract;
 }
 
-/*
- * Get next promise on a cyclic transfer
- *
- * Cyclic contracts contain a series of promises which are executed on a
- * loop. This function returns the next promise from a cyclic contract,
- * so it can be programmed into the hardware.
- */
+ 
 static struct sun4i_dma_promise *
 get_next_cyclic_promise(struct sun4i_dma_contract *contract)
 {
@@ -600,15 +541,13 @@ get_next_cyclic_promise(struct sun4i_dma_contract *contract)
 	return promise;
 }
 
-/*
- * Free a contract and all its associated promises
- */
+ 
 static void sun4i_dma_free_contract(struct virt_dma_desc *vd)
 {
 	struct sun4i_dma_contract *contract = to_sun4i_dma_contract(vd);
 	struct sun4i_dma_promise *promise, *tmp;
 
-	/* Free all the demands and completed demands */
+	 
 	list_for_each_entry_safe(promise, tmp, &contract->demands, list)
 		kfree(promise);
 
@@ -631,11 +570,7 @@ sun4i_dma_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest,
 	if (!contract)
 		return NULL;
 
-	/*
-	 * We can only do the copy to bus aligned addresses, so
-	 * choose the best one so we get decent performance. We also
-	 * maximize the burst size for this same reason.
-	 */
+	 
 	sconfig->src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	sconfig->dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	sconfig->src_maxburst = 8;
@@ -652,7 +587,7 @@ sun4i_dma_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest,
 		return NULL;
 	}
 
-	/* Configure memcpy mode */
+	 
 	if (vchan->is_dedicated) {
 		promise->cfg |= SUN4I_DMA_CFG_SRC_DRQ_TYPE(SUN4I_DDMA_DRQ_TYPE_SDRAM) |
 				SUN4I_DMA_CFG_DST_DRQ_TYPE(SUN4I_DDMA_DRQ_TYPE_SDRAM);
@@ -661,10 +596,10 @@ sun4i_dma_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest,
 				SUN4I_DMA_CFG_DST_DRQ_TYPE(SUN4I_NDMA_DRQ_TYPE_SDRAM);
 	}
 
-	/* Fill the contract with our only promise */
+	 
 	list_add_tail(&promise->list, &contract->demands);
 
-	/* And add it to the vchan */
+	 
 	return vchan_tx_prep(&vchan->vc, &contract->vd, flags);
 }
 
@@ -719,38 +654,9 @@ sun4i_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t buf, size_t len,
 			    SUN4I_DMA_CFG_SRC_ADDR_MODE(io_mode);
 	}
 
-	/*
-	 * We will be using half done interrupts to make two periods
-	 * out of a promise, so we need to program the DMA engine less
-	 * often
-	 */
+	 
 
-	/*
-	 * The engine can interrupt on half-transfer, so we can use
-	 * this feature to program the engine half as often as if we
-	 * didn't use it (keep in mind the hardware doesn't support
-	 * linked lists).
-	 *
-	 * Say you have a set of periods (| marks the start/end, I for
-	 * interrupt, P for programming the engine to do a new
-	 * transfer), the easy but slow way would be to do
-	 *
-	 *  |---|---|---|---| (periods / promises)
-	 *  P  I,P I,P I,P  I
-	 *
-	 * Using half transfer interrupts you can do
-	 *
-	 *  |-------|-------| (promises as configured on hw)
-	 *  |---|---|---|---| (periods)
-	 *  P   I  I,P  I   I
-	 *
-	 * Which requires half the engine programming for the same
-	 * functionality.
-	 *
-	 * This only works if two periods fit in a single promise. That will
-	 * always be the case for dedicated DMA, where the hardware has a much
-	 * larger maximum transfer size than advertised to clients.
-	 */
+	 
 	if (vchan->is_dedicated || period_len <= SUN4I_NDMA_MAX_SEG_SIZE / 2) {
 		period_len *= 2;
 		contract->use_half_int = 1;
@@ -758,7 +664,7 @@ sun4i_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t buf, size_t len,
 
 	nr_periods = DIV_ROUND_UP(len, period_len);
 	for (i = 0; i < nr_periods; i++) {
-		/* Calculate the offset in the buffer and the length needed */
+		 
 		offset = i * period_len;
 		plength = min((len - offset), period_len);
 		if (dir == DMA_MEM_TO_DEV)
@@ -766,7 +672,7 @@ sun4i_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t buf, size_t len,
 		else
 			dest = buf + offset;
 
-		/* Make the promise */
+		 
 		if (vchan->is_dedicated)
 			promise = generate_ddma_promise(chan, src, dest,
 							plength, sconfig);
@@ -775,16 +681,16 @@ sun4i_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t buf, size_t len,
 							plength, sconfig, dir);
 
 		if (!promise) {
-			/* TODO: should we free everything? */
+			 
 			return NULL;
 		}
 		promise->cfg |= endpoints;
 
-		/* Then add it to the contract */
+		 
 		list_add_tail(&promise->list, &contract->demands);
 	}
 
-	/* And add it to the vchan */
+	 
 	return vchan_tx_prep(&vchan->vc, &contract->vd, flags);
 }
 
@@ -837,7 +743,7 @@ sun4i_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 			    SUN4I_DMA_CFG_SRC_ADDR_MODE(io_mode);
 
 	for_each_sg(sgl, sg, sg_len, i) {
-		/* Figure out addresses */
+		 
 		if (dir == DMA_MEM_TO_DEV) {
 			srcaddr = sg_dma_address(sg);
 			dstaddr = sconfig->dst_addr;
@@ -846,18 +752,10 @@ sun4i_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 			dstaddr = sg_dma_address(sg);
 		}
 
-		/*
-		 * These are the magic DMA engine timings that keep SPI going.
-		 * I haven't seen any interface on DMAEngine to configure
-		 * timings, and so far they seem to work for everything we
-		 * support, so I've kept them here. I don't know if other
-		 * devices need different timings because, as usual, we only
-		 * have the "para" bitfield meanings, but no comment on what
-		 * the values should be when doing a certain operation :|
-		 */
+		 
 		para = SUN4I_DDMA_MAGIC_SPI_PARAMETERS;
 
-		/* And make a suitable promise */
+		 
 		if (vchan->is_dedicated)
 			promise = generate_ddma_promise(chan, srcaddr, dstaddr,
 							sg_dma_len(sg),
@@ -868,19 +766,16 @@ sun4i_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 							sconfig, dir);
 
 		if (!promise)
-			return NULL; /* TODO: should we free everything? */
+			return NULL;  
 
 		promise->cfg |= endpoints;
 		promise->para = para;
 
-		/* Then add it to the contract */
+		 
 		list_add_tail(&promise->list, &contract->demands);
 	}
 
-	/*
-	 * Once we've got all the promises ready, add the contract
-	 * to the pending list on the vchan
-	 */
+	 
 	return vchan_tx_prep(&vchan->vc, &contract->vd, flags);
 }
 
@@ -896,10 +791,7 @@ static int sun4i_dma_terminate_all(struct dma_chan *chan)
 	vchan_get_all_descriptors(&vchan->vc, &head);
 	spin_unlock_irqrestore(&vchan->vc.lock, flags);
 
-	/*
-	 * Clearing the configuration register will halt the pchan. Interrupts
-	 * may still trigger, so don't forget to disable them.
-	 */
+	 
 	if (pchan) {
 		if (pchan->is_dedicated)
 			writel(0, pchan->base + SUN4I_DDMA_CFG_REG);
@@ -910,7 +802,7 @@ static int sun4i_dma_terminate_all(struct dma_chan *chan)
 	}
 
 	spin_lock_irqsave(&vchan->vc.lock, flags);
-	/* Clear these so the vchan is usable again */
+	 
 	vchan->processing = NULL;
 	vchan->pchan = NULL;
 	spin_unlock_irqrestore(&vchan->vc.lock, flags);
@@ -939,11 +831,11 @@ static struct dma_chan *sun4i_dma_of_xlate(struct of_phandle_args *dma_spec,
 	u8 is_dedicated = dma_spec->args[0];
 	u8 endpoint = dma_spec->args[1];
 
-	/* Check if type is Normal or Dedicated */
+	 
 	if (is_dedicated != 0 && is_dedicated != 1)
 		return NULL;
 
-	/* Make sure the endpoint looks sane */
+	 
 	if ((is_dedicated && endpoint >= SUN4I_DDMA_DRQ_TYPE_LIMIT) ||
 	    (!is_dedicated && endpoint >= SUN4I_NDMA_DRQ_TYPE_LIMIT))
 		return NULL;
@@ -952,7 +844,7 @@ static struct dma_chan *sun4i_dma_of_xlate(struct of_phandle_args *dma_spec,
 	if (!chan)
 		return NULL;
 
-	/* Assign the endpoint to the vchan */
+	 
 	vchan = to_sun4i_dma_vchan(chan);
 	vchan->is_dedicated = is_dedicated;
 	vchan->endpoint = endpoint;
@@ -986,11 +878,7 @@ static enum dma_status sun4i_dma_tx_status(struct dma_chan *chan,
 	list_for_each_entry(promise, &contract->demands, list)
 		bytes += promise->len;
 
-	/*
-	 * The hardware is configured to return the remaining byte
-	 * quantity. If possible, replace the first listed element's
-	 * full size with the actual remaining amount
-	 */
+	 
 	promise = list_first_entry_or_null(&contract->demands,
 					   struct sun4i_dma_promise, list);
 	if (promise && pchan) {
@@ -1017,10 +905,7 @@ static void sun4i_dma_issue_pending(struct dma_chan *chan)
 
 	spin_lock_irqsave(&vchan->vc.lock, flags);
 
-	/*
-	 * If there are pending transactions for this vchan, push one of
-	 * them into the engine to get the ball rolling.
-	 */
+	 
 	if (vchan_issue_pending(&vchan->vc))
 		__execute_vchan_pending(priv, vchan);
 
@@ -1047,37 +932,19 @@ handle_pending:
 	for_each_set_bit(bit, &pendirq, 32) {
 		pchan = &pchans[bit >> 1];
 		vchan = pchan->vchan;
-		if (!vchan) /* a terminated channel may still interrupt */
+		if (!vchan)  
 			continue;
 		contract = vchan->contract;
 
-		/*
-		 * Disable the IRQ and free the pchan if it's an end
-		 * interrupt (odd bit)
-		 */
+		 
 		if (bit & 1) {
 			spin_lock(&vchan->vc.lock);
 
-			/*
-			 * Move the promise into the completed list now that
-			 * we're done with it
-			 */
+			 
 			list_move_tail(&vchan->processing->list,
 				       &contract->completed_demands);
 
-			/*
-			 * Cyclic DMA transfers are special:
-			 * - There's always something we can dispatch
-			 * - We need to run the callback
-			 * - Latency is very important, as this is used by audio
-			 * We therefore just cycle through the list and dispatch
-			 * whatever we have here, reusing the pchan. There's
-			 * no need to run the thread after this.
-			 *
-			 * For non-cyclic transfers we need to look around,
-			 * so we can program some more work, or notify the
-			 * client that their transfers have been completed.
-			 */
+			 
 			if (contract->is_cyclic) {
 				promise = get_next_cyclic_promise(contract);
 				vchan->processing = promise;
@@ -1094,7 +961,7 @@ handle_pending:
 
 			spin_unlock(&vchan->vc.lock);
 		} else {
-			/* Half done interrupt */
+			 
 			if (contract->is_cyclic)
 				vchan_cyclic_callback(&contract->vd);
 			else
@@ -1102,20 +969,17 @@ handle_pending:
 		}
 	}
 
-	/* Disable the IRQs for events we handled */
+	 
 	spin_lock(&priv->lock);
 	irqs = readl_relaxed(priv->base + SUN4I_DMA_IRQ_ENABLE_REG);
 	writel_relaxed(irqs & ~disableirqs,
 		       priv->base + SUN4I_DMA_IRQ_ENABLE_REG);
 	spin_unlock(&priv->lock);
 
-	/* Writing 1 to the pending field will clear the pending interrupt */
+	 
 	writel_relaxed(pendirq, priv->base + SUN4I_DMA_IRQ_PENDING_STATUS_REG);
 
-	/*
-	 * If a pchan was freed, we may be able to schedule something else,
-	 * so have a look around
-	 */
+	 
 	if (free_room) {
 		for (i = 0; i < SUN4I_DMA_NR_MAX_VCHANS; i++) {
 			vchan = &priv->vchans[i];
@@ -1125,10 +989,7 @@ handle_pending:
 		}
 	}
 
-	/*
-	 * Handle newer interrupts if some showed up, but only do it once
-	 * to avoid a too long a loop
-	 */
+	 
 	if (allow_mitigation) {
 		pendirq = readl_relaxed(priv->base +
 					SUN4I_DMA_IRQ_PENDING_STATUS_REG);
@@ -1204,11 +1065,7 @@ static int sun4i_dma_probe(struct platform_device *pdev)
 	if (!priv->vchans || !priv->pchans)
 		return -ENOMEM;
 
-	/*
-	 * [0..SUN4I_NDMA_NR_MAX_CHANNELS) are normal pchans, and
-	 * [SUN4I_NDMA_NR_MAX_CHANNELS..SUN4I_DMA_NR_MAX_CHANNELS) are
-	 * dedicated ones
-	 */
+	 
 	for (i = 0; i < SUN4I_NDMA_NR_MAX_CHANNELS; i++)
 		priv->pchans[i].base = priv->base +
 			SUN4I_NDMA_CHANNEL_REG_BASE(i);
@@ -1233,10 +1090,7 @@ static int sun4i_dma_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Make sure the IRQs are all disabled and accounted for. The bootloader
-	 * likes to leave these dirty
-	 */
+	 
 	writel(0, priv->base + SUN4I_DMA_IRQ_ENABLE_REG);
 	writel(0xFFFFFFFF, priv->base + SUN4I_DMA_IRQ_PENDING_STATUS_REG);
 
@@ -1275,7 +1129,7 @@ static int sun4i_dma_remove(struct platform_device *pdev)
 {
 	struct sun4i_dma_dev *priv = platform_get_drvdata(pdev);
 
-	/* Disable IRQ so no more work is scheduled */
+	 
 	disable_irq(priv->irq);
 
 	of_dma_controller_free(pdev->dev.of_node);
@@ -1288,7 +1142,7 @@ static int sun4i_dma_remove(struct platform_device *pdev)
 
 static const struct of_device_id sun4i_dma_match[] = {
 	{ .compatible = "allwinner,sun4i-a10-dma" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, sun4i_dma_match);
 

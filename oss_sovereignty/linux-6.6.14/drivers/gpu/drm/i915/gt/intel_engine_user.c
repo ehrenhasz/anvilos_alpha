@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/list_sort.h>
@@ -50,7 +48,7 @@ static const u16 uabi_classes[] = {
 	[VIDEO_DECODE_CLASS] = I915_ENGINE_CLASS_VIDEO,
 	[VIDEO_ENHANCEMENT_CLASS] = I915_ENGINE_CLASS_VIDEO_ENHANCE,
 	[COMPUTE_CLASS] = I915_ENGINE_CLASS_COMPUTE,
-	[OTHER_CLASS] = I915_NO_UABI_CLASS, /* Not exposed to users, no uabi class. */
+	[OTHER_CLASS] = I915_NO_UABI_CLASS,  
 };
 
 static int engine_cmp(void *priv, const struct list_head *A,
@@ -110,7 +108,7 @@ static void set_scheduler_caps(struct drm_i915_private *i915)
 
 	enabled = 0;
 	disabled = 0;
-	for_each_uabi_engine(engine, i915) { /* all engines must agree! */
+	for_each_uabi_engine(engine, i915) {  
 		int i;
 
 		if (engine->sched_engine->schedule)
@@ -221,7 +219,7 @@ void intel_engines_driver_register(struct drm_i915_private *i915)
 				     uabi_node);
 
 		if (intel_gt_has_unrecoverable_error(engine->gt))
-			continue; /* ignore incomplete engines */
+			continue;  
 
 		GEM_BUG_ON(engine->class >= ARRAY_SIZE(uabi_classes));
 		engine->uabi_class = uabi_classes[engine->class];
@@ -235,10 +233,7 @@ void intel_engines_driver_register(struct drm_i915_private *i915)
 		}
 		engine->uabi_instance = name_instance;
 
-		/*
-		 * Replace the internal name with the final user and log facing
-		 * name.
-		 */
+		 
 		engine_rename(engine,
 			      intel_engine_class_repr(engine->class),
 			      name_instance);
@@ -253,7 +248,7 @@ void intel_engines_driver_register(struct drm_i915_private *i915)
 						    engine->uabi_class,
 						    engine->uabi_instance) != engine);
 
-		/* Fix up the mapping to match default execbuf::user_map[] */
+		 
 		add_legacy_ring(&ring, engine);
 
 		prev = &engine->uabi_node;
@@ -291,10 +286,7 @@ void intel_engines_driver_register(struct drm_i915_private *i915)
 			}
 		}
 
-		/*
-		 * Make sure that classes with multiple engine instances all
-		 * share the same basic configuration.
-		 */
+		 
 		isolation = intel_engines_has_context_isolation(i915);
 		for_each_uabi_engine(engine, i915) {
 			unsigned int bit = BIT(engine->uabi_class);

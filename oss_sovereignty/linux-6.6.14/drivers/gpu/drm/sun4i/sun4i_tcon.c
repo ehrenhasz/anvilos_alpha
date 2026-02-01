@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/ioport.h>
@@ -126,11 +121,11 @@ static void sun4i_tcon_setup_lvds_phy(struct sun4i_tcon *tcon,
 		     SUN4I_TCON0_LVDS_ANA0_PD |
 		     SUN4I_TCON0_LVDS_ANA0_DCHS);
 
-	udelay(2); /* delay at least 1200 ns */
+	udelay(2);  
 	regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS_ANA1_REG,
 			   SUN4I_TCON0_LVDS_ANA1_INIT,
 			   SUN4I_TCON0_LVDS_ANA1_INIT);
-	udelay(1); /* delay at least 120 ns */
+	udelay(1);  
 	regmap_update_bits(tcon->regs, SUN4I_TCON0_LVDS_ANA1_REG,
 			   SUN4I_TCON0_LVDS_ANA1_UPDATE,
 			   SUN4I_TCON0_LVDS_ANA1_UPDATE);
@@ -240,12 +235,7 @@ void sun4i_tcon_enable_vblank(struct sun4i_tcon *tcon, bool enable)
 }
 EXPORT_SYMBOL(sun4i_tcon_enable_vblank);
 
-/*
- * This function is a helper for TCON output muxing. The TCON output
- * muxing control register in earlier SoCs (without the TCON TOP block)
- * are located in TCON0. This helper returns a pointer to TCON0's
- * sun4i_tcon structure, or NULL if not found.
- */
+ 
 static struct sun4i_tcon *sun4i_get_tcon0(struct drm_device *drm)
 {
 	struct sun4i_drv *drv = drm->dev_private;
@@ -297,16 +287,11 @@ static void sun4i_tcon0_mode_set_dithering(struct sun4i_tcon *tcon,
 	u32 bus_format = 0;
 	u32 val = 0;
 
-	/* XXX Would this ever happen? */
+	 
 	if (!connector)
 		return;
 
-	/*
-	 * FIXME: Undocumented bits
-	 *
-	 * The whole dithering process and these parameters are not
-	 * explained in the vendor documents or BSP kernel code.
-	 */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_FRM_SEED_PR_REG, 0x11111111);
 	regmap_write(tcon->regs, SUN4I_TCON0_FRM_SEED_PG_REG, 0x11111111);
 	regmap_write(tcon->regs, SUN4I_TCON0_FRM_SEED_PB_REG, 0x11111111);
@@ -318,28 +303,28 @@ static void sun4i_tcon0_mode_set_dithering(struct sun4i_tcon *tcon,
 	regmap_write(tcon->regs, SUN4I_TCON0_FRM_TBL2_REG, 0x57575555);
 	regmap_write(tcon->regs, SUN4I_TCON0_FRM_TBL3_REG, 0x7f7f7777);
 
-	/* Do dithering if panel only supports 6 bits per color */
+	 
 	if (connector->display_info.bpc == 6)
 		val |= SUN4I_TCON0_FRM_CTL_EN;
 
 	if (connector->display_info.num_bus_formats == 1)
 		bus_format = connector->display_info.bus_formats[0];
 
-	/* Check the connection format */
+	 
 	switch (bus_format) {
 	case MEDIA_BUS_FMT_RGB565_1X16:
-		/* R and B components are only 5 bits deep */
+		 
 		val |= SUN4I_TCON0_FRM_CTL_MODE_R;
 		val |= SUN4I_TCON0_FRM_CTL_MODE_B;
 		fallthrough;
 	case MEDIA_BUS_FMT_RGB666_1X18:
 	case MEDIA_BUS_FMT_RGB666_1X7X3_SPWG:
-		/* Fall through: enable dithering */
+		 
 		val |= SUN4I_TCON0_FRM_CTL_EN;
 		break;
 	}
 
-	/* Write dithering settings */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON_FRM_CTL_REG, val);
 }
 
@@ -347,7 +332,7 @@ static void sun4i_tcon0_mode_set_cpu(struct sun4i_tcon *tcon,
 				     const struct drm_encoder *encoder,
 				     const struct drm_display_mode *mode)
 {
-	/* TODO support normal CPU interface modes */
+	 
 	struct sun6i_dsi *dsi = encoder_to_sun6i_dsi(encoder);
 	struct mipi_dsi_device *device = dsi->device;
 	u8 bpp = mipi_dsi_pixel_format_to_bpp(device->format);
@@ -355,20 +340,18 @@ static void sun4i_tcon0_mode_set_cpu(struct sun4i_tcon *tcon,
 	u32 block_space, start_delay;
 	u32 tcon_div;
 
-	/*
-	 * dclk is required to run at 1/4 the DSI per-lane bit rate.
-	 */
+	 
 	tcon->dclk_min_div = SUN6I_DSI_TCON_DIV;
 	tcon->dclk_max_div = SUN6I_DSI_TCON_DIV;
 	clk_set_rate(tcon->dclk, mode->crtc_clock * 1000 * (bpp / lanes)
 						  / SUN6I_DSI_TCON_DIV);
 
-	/* Set the resolution */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC0_REG,
 		     SUN4I_TCON0_BASIC0_X(mode->crtc_hdisplay) |
 		     SUN4I_TCON0_BASIC0_Y(mode->crtc_vdisplay));
 
-	/* Set dithering if needed */
+	 
 	sun4i_tcon0_mode_set_dithering(tcon, sun4i_tcon_get_connector(encoder));
 
 	regmap_update_bits(tcon->regs, SUN4I_TCON0_CTL_REG,
@@ -384,12 +367,7 @@ static void sun4i_tcon0_mode_set_cpu(struct sun4i_tcon *tcon,
 		     SUN4I_TCON0_CPU_IF_TRI_FIFO_EN |
 		     SUN4I_TCON0_CPU_IF_TRI_EN);
 
-	/*
-	 * This looks suspicious, but it works...
-	 *
-	 * The datasheet says that this should be set higher than 20 *
-	 * pixel cycle, but it's not clear what a pixel cycle is.
-	 */
+	 
 	regmap_read(tcon->regs, SUN4I_TCON0_DCLK_REG, &tcon_div);
 	tcon_div &= GENMASK(6, 0);
 	block_space = mode->htotal * bpp / (tcon_div * lanes);
@@ -409,15 +387,12 @@ static void sun4i_tcon0_mode_set_cpu(struct sun4i_tcon *tcon,
 		     SUN4I_TCON0_CPU_TRI2_TRANS_START_SET(10) |
 		     SUN4I_TCON0_CPU_TRI2_START_DELAY(start_delay));
 
-	/*
-	 * The Allwinner BSP has a comment that the period should be
-	 * the display clock * 15, but uses an hardcoded 3000...
-	 */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON_SAFE_PERIOD_REG,
 		     SUN4I_TCON_SAFE_PERIOD_NUM(3000) |
 		     SUN4I_TCON_SAFE_PERIOD_MODE(3));
 
-	/* Enable the output on the pins */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_IO_TRI_REG,
 		     0xe0000000);
 }
@@ -436,42 +411,36 @@ static void sun4i_tcon0_mode_set_lvds(struct sun4i_tcon *tcon,
 	tcon->dclk_max_div = 7;
 	clk_set_rate(tcon->dclk, mode->crtc_clock * 1000);
 
-	/* Set the resolution */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC0_REG,
 		     SUN4I_TCON0_BASIC0_X(mode->crtc_hdisplay) |
 		     SUN4I_TCON0_BASIC0_Y(mode->crtc_vdisplay));
 
-	/* Set dithering if needed */
+	 
 	sun4i_tcon0_mode_set_dithering(tcon, sun4i_tcon_get_connector(encoder));
 
-	/* Adjust clock delay */
+	 
 	clk_delay = sun4i_tcon_get_clk_delay(mode, 0);
 	regmap_update_bits(tcon->regs, SUN4I_TCON0_CTL_REG,
 			   SUN4I_TCON0_CTL_CLK_DELAY_MASK,
 			   SUN4I_TCON0_CTL_CLK_DELAY(clk_delay));
 
-	/*
-	 * This is called a backporch in the register documentation,
-	 * but it really is the back porch + hsync
-	 */
+	 
 	bp = mode->crtc_htotal - mode->crtc_hsync_start;
 	DRM_DEBUG_DRIVER("Setting horizontal total %d, backporch %d\n",
 			 mode->crtc_htotal, bp);
 
-	/* Set horizontal display timings */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC1_REG,
 		     SUN4I_TCON0_BASIC1_H_TOTAL(mode->htotal) |
 		     SUN4I_TCON0_BASIC1_H_BACKPORCH(bp));
 
-	/*
-	 * This is called a backporch in the register documentation,
-	 * but it really is the back porch + hsync
-	 */
+	 
 	bp = mode->crtc_vtotal - mode->crtc_vsync_start;
 	DRM_DEBUG_DRIVER("Setting vertical total %d, backporch %d\n",
 			 mode->crtc_vtotal, bp);
 
-	/* Set vertical display timings */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC2_REG,
 		     SUN4I_TCON0_BASIC2_V_TOTAL(mode->crtc_vtotal * 2) |
 		     SUN4I_TCON0_BASIC2_V_BACKPORCH(bp));
@@ -484,7 +453,7 @@ static void sun4i_tcon0_mode_set_lvds(struct sun4i_tcon *tcon,
 
 	regmap_write(tcon->regs, SUN4I_TCON0_LVDS_IF_REG, reg);
 
-	/* Setup the polarity of the various signals */
+	 
 	if (!(mode->flags & DRM_MODE_FLAG_PHSYNC))
 		val |= SUN4I_TCON0_IO_POL_HSYNC_POSITIVE;
 
@@ -493,12 +462,12 @@ static void sun4i_tcon0_mode_set_lvds(struct sun4i_tcon *tcon,
 
 	regmap_write(tcon->regs, SUN4I_TCON0_IO_POL_REG, val);
 
-	/* Map output pins to channel 0 */
+	 
 	regmap_update_bits(tcon->regs, SUN4I_TCON_GCTL_REG,
 			   SUN4I_TCON_GCTL_IOMAP_MASK,
 			   SUN4I_TCON_GCTL_IOMAP_TCON0);
 
-	/* Enable the output on the pins */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_IO_TRI_REG, 0xe0000000);
 }
 
@@ -518,47 +487,41 @@ static void sun4i_tcon0_mode_set_rgb(struct sun4i_tcon *tcon,
 	tcon->dclk_max_div = 127;
 	clk_set_rate(tcon->dclk, mode->crtc_clock * 1000);
 
-	/* Set the resolution */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC0_REG,
 		     SUN4I_TCON0_BASIC0_X(mode->crtc_hdisplay) |
 		     SUN4I_TCON0_BASIC0_Y(mode->crtc_vdisplay));
 
-	/* Set dithering if needed */
+	 
 	sun4i_tcon0_mode_set_dithering(tcon, connector);
 
-	/* Adjust clock delay */
+	 
 	clk_delay = sun4i_tcon_get_clk_delay(mode, 0);
 	regmap_update_bits(tcon->regs, SUN4I_TCON0_CTL_REG,
 			   SUN4I_TCON0_CTL_CLK_DELAY_MASK,
 			   SUN4I_TCON0_CTL_CLK_DELAY(clk_delay));
 
-	/*
-	 * This is called a backporch in the register documentation,
-	 * but it really is the back porch + hsync
-	 */
+	 
 	bp = mode->crtc_htotal - mode->crtc_hsync_start;
 	DRM_DEBUG_DRIVER("Setting horizontal total %d, backporch %d\n",
 			 mode->crtc_htotal, bp);
 
-	/* Set horizontal display timings */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC1_REG,
 		     SUN4I_TCON0_BASIC1_H_TOTAL(mode->crtc_htotal) |
 		     SUN4I_TCON0_BASIC1_H_BACKPORCH(bp));
 
-	/*
-	 * This is called a backporch in the register documentation,
-	 * but it really is the back porch + hsync
-	 */
+	 
 	bp = mode->crtc_vtotal - mode->crtc_vsync_start;
 	DRM_DEBUG_DRIVER("Setting vertical total %d, backporch %d\n",
 			 mode->crtc_vtotal, bp);
 
-	/* Set vertical display timings */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_BASIC2_REG,
 		     SUN4I_TCON0_BASIC2_V_TOTAL(mode->crtc_vtotal * 2) |
 		     SUN4I_TCON0_BASIC2_V_BACKPORCH(bp));
 
-	/* Set Hsync and Vsync length */
+	 
 	hsync = mode->crtc_hsync_end - mode->crtc_hsync_start;
 	vsync = mode->crtc_vsync_end - mode->crtc_vsync_start;
 	DRM_DEBUG_DRIVER("Setting HSYNC %d, VSYNC %d\n", hsync, vsync);
@@ -566,7 +529,7 @@ static void sun4i_tcon0_mode_set_rgb(struct sun4i_tcon *tcon,
 		     SUN4I_TCON0_BASIC3_V_SYNC(vsync) |
 		     SUN4I_TCON0_BASIC3_H_SYNC(hsync));
 
-	/* Setup the polarity of the various signals */
+	 
 	if (mode->flags & DRM_MODE_FLAG_PHSYNC)
 		val |= SUN4I_TCON0_IO_POL_HSYNC_POSITIVE;
 
@@ -586,12 +549,12 @@ static void sun4i_tcon0_mode_set_rgb(struct sun4i_tcon *tcon,
 			   SUN4I_TCON0_IO_POL_DE_NEGATIVE,
 			   val);
 
-	/* Map output pins to channel 0 */
+	 
 	regmap_update_bits(tcon->regs, SUN4I_TCON_GCTL_REG,
 			   SUN4I_TCON_GCTL_IOMAP_MASK,
 			   SUN4I_TCON_GCTL_IOMAP_TCON0);
 
-	/* Enable the output on the pins */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_IO_TRI_REG, 0);
 }
 
@@ -604,16 +567,16 @@ static void sun4i_tcon1_mode_set(struct sun4i_tcon *tcon,
 
 	WARN_ON(!tcon->quirks->has_channel_1);
 
-	/* Configure the dot clock */
+	 
 	clk_set_rate(tcon->sclk1, mode->crtc_clock * 1000);
 
-	/* Adjust clock delay */
+	 
 	clk_delay = sun4i_tcon_get_clk_delay(mode, 1);
 	regmap_update_bits(tcon->regs, SUN4I_TCON1_CTL_REG,
 			   SUN4I_TCON1_CTL_CLK_DELAY_MASK,
 			   SUN4I_TCON1_CTL_CLK_DELAY(clk_delay));
 
-	/* Set interlaced mode */
+	 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		val = SUN4I_TCON1_CTL_INTERLACE_ENABLE;
 	else
@@ -622,22 +585,22 @@ static void sun4i_tcon1_mode_set(struct sun4i_tcon *tcon,
 			   SUN4I_TCON1_CTL_INTERLACE_ENABLE,
 			   val);
 
-	/* Set the input resolution */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON1_BASIC0_REG,
 		     SUN4I_TCON1_BASIC0_X(mode->crtc_hdisplay) |
 		     SUN4I_TCON1_BASIC0_Y(mode->crtc_vdisplay));
 
-	/* Set the upscaling resolution */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON1_BASIC1_REG,
 		     SUN4I_TCON1_BASIC1_X(mode->crtc_hdisplay) |
 		     SUN4I_TCON1_BASIC1_Y(mode->crtc_vdisplay));
 
-	/* Set the output resolution */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON1_BASIC2_REG,
 		     SUN4I_TCON1_BASIC2_X(mode->crtc_hdisplay) |
 		     SUN4I_TCON1_BASIC2_Y(mode->crtc_vdisplay));
 
-	/* Set horizontal display timings */
+	 
 	bp = mode->crtc_htotal - mode->crtc_hsync_start;
 	DRM_DEBUG_DRIVER("Setting horizontal total %d, backporch %d\n",
 			 mode->htotal, bp);
@@ -649,29 +612,17 @@ static void sun4i_tcon1_mode_set(struct sun4i_tcon *tcon,
 	DRM_DEBUG_DRIVER("Setting vertical total %d, backporch %d\n",
 			 mode->crtc_vtotal, bp);
 
-	/*
-	 * The vertical resolution needs to be doubled in all
-	 * cases. We could use crtc_vtotal and always multiply by two,
-	 * but that leads to a rounding error in interlace when vtotal
-	 * is odd.
-	 *
-	 * This happens with TV's PAL for example, where vtotal will
-	 * be 625, crtc_vtotal 312, and thus crtc_vtotal * 2 will be
-	 * 624, which apparently confuses the hardware.
-	 *
-	 * To work around this, we will always use vtotal, and
-	 * multiply by two only if we're not in interlace.
-	 */
+	 
 	vtotal = mode->vtotal;
 	if (!(mode->flags & DRM_MODE_FLAG_INTERLACE))
 		vtotal = vtotal * 2;
 
-	/* Set vertical display timings */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON1_BASIC4_REG,
 		     SUN4I_TCON1_BASIC4_V_TOTAL(vtotal) |
 		     SUN4I_TCON1_BASIC4_V_BACKPORCH(bp));
 
-	/* Set Hsync and Vsync length */
+	 
 	hsync = mode->crtc_hsync_end - mode->crtc_hsync_start;
 	vsync = mode->crtc_vsync_end - mode->crtc_vsync_start;
 	DRM_DEBUG_DRIVER("Setting HSYNC %d, VSYNC %d\n", hsync, vsync);
@@ -679,7 +630,7 @@ static void sun4i_tcon1_mode_set(struct sun4i_tcon *tcon,
 		     SUN4I_TCON1_BASIC5_V_SYNC(vsync) |
 		     SUN4I_TCON1_BASIC5_H_SYNC(hsync));
 
-	/* Setup the polarity of multiple signals */
+	 
 	if (tcon->quirks->polarity_in_ch0) {
 		val = 0;
 
@@ -691,7 +642,7 @@ static void sun4i_tcon1_mode_set(struct sun4i_tcon *tcon,
 
 		regmap_write(tcon->regs, SUN4I_TCON0_IO_POL_REG, val);
 	} else {
-		/* according to vendor driver, this bit must be always set */
+		 
 		val = SUN4I_TCON1_IO_POL_UNKNOWN;
 
 		if (mode->flags & DRM_MODE_FLAG_PHSYNC)
@@ -703,7 +654,7 @@ static void sun4i_tcon1_mode_set(struct sun4i_tcon *tcon,
 		regmap_write(tcon->regs, SUN4I_TCON1_IO_POL_REG, val);
 	}
 
-	/* Map output pins to channel 1 */
+	 
 	regmap_update_bits(tcon->regs, SUN4I_TCON_GCTL_REG,
 			   SUN4I_TCON_GCTL_IOMAP_MASK,
 			   SUN4I_TCON_GCTL_IOMAP_TCON1);
@@ -715,7 +666,7 @@ void sun4i_tcon_mode_set(struct sun4i_tcon *tcon,
 {
 	switch (encoder->encoder_type) {
 	case DRM_MODE_ENCODER_DSI:
-		/* DSI is tied to special case of CPU interface */
+		 
 		sun4i_tcon0_mode_set_cpu(tcon, encoder, mode);
 		break;
 	case DRM_MODE_ENCODER_LVDS:
@@ -768,7 +719,7 @@ static irqreturn_t sun4i_tcon_handler(int irq, void *private)
 	drm_crtc_handle_vblank(&scrtc->crtc);
 	sun4i_tcon_finish_page_flip(drm, scrtc);
 
-	/* Acknowledge the interrupt */
+	 
 	regmap_update_bits(tcon->regs, SUN4I_TCON_GINT0_REG,
 			   SUN4I_TCON_GINT0_VBLANK_INT(0) |
 			   SUN4I_TCON_GINT0_VBLANK_INT(1) |
@@ -853,33 +804,19 @@ static int sun4i_tcon_init_regmap(struct device *dev,
 		return PTR_ERR(tcon->regs);
 	}
 
-	/* Make sure the TCON is disabled and all IRQs are off */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON_GCTL_REG, 0);
 	regmap_write(tcon->regs, SUN4I_TCON_GINT0_REG, 0);
 	regmap_write(tcon->regs, SUN4I_TCON_GINT1_REG, 0);
 
-	/* Disable IO lines and set them to tristate */
+	 
 	regmap_write(tcon->regs, SUN4I_TCON0_IO_TRI_REG, ~0);
 	regmap_write(tcon->regs, SUN4I_TCON1_IO_TRI_REG, ~0);
 
 	return 0;
 }
 
-/*
- * On SoCs with the old display pipeline design (Display Engine 1.0),
- * the TCON is always tied to just one backend. Hence we can traverse
- * the of_graph upwards to find the backend our tcon is connected to,
- * and take its ID as our own.
- *
- * We can either identify backends from their compatible strings, which
- * means maintaining a large list of them. Or, since the backend is
- * registered and binded before the TCON, we can just go through the
- * list of registered backends and compare the device node.
- *
- * As the structures now store engines instead of backends, here this
- * function in fact searches the corresponding engine, and the ID is
- * requested via the get_id function of the engine.
- */
+ 
 static struct sunxi_engine *
 sun4i_tcon_find_engine_traverse(struct sun4i_drv *drv,
 				struct device_node *node,
@@ -893,19 +830,11 @@ sun4i_tcon_find_engine_traverse(struct sun4i_drv *drv,
 	if (!port)
 		return ERR_PTR(-EINVAL);
 
-	/*
-	 * This only works if there is only one path from the TCON
-	 * to any display engine. Otherwise the probe order of the
-	 * TCONs and display engines is not guaranteed. They may
-	 * either bind to the wrong one, or worse, bind to the same
-	 * one if additional checks are not done.
-	 *
-	 * Bail out if there are multiple input connections.
-	 */
+	 
 	if (of_get_available_child_count(port) != 1)
 		goto out_put_port;
 
-	/* Get the first connection without specifying an ID */
+	 
 	ep = of_get_next_available_child(port, NULL);
 	if (!ep)
 		goto out_put_port;
@@ -914,25 +843,18 @@ sun4i_tcon_find_engine_traverse(struct sun4i_drv *drv,
 	if (!remote)
 		goto out_put_ep;
 
-	/* does this node match any registered engines? */
+	 
 	list_for_each_entry(engine, &drv->engine_list, list)
 		if (remote == engine->node)
 			goto out_put_remote;
 
-	/*
-	 * According to device tree binding input ports have even id
-	 * number and output ports have odd id. Since component with
-	 * more than one input and one output (TCON TOP) exits, correct
-	 * remote input id has to be calculated by subtracting 1 from
-	 * remote output id. If this for some reason can't be done, 0
-	 * is used as input port id.
-	 */
+	 
 	of_node_put(port);
 	port = of_graph_get_remote_port(ep);
 	if (!of_property_read_u32(port, "reg", &reg) && reg > 0)
 		reg -= 1;
 
-	/* keep looking through upstream ports */
+	 
 	engine = sun4i_tcon_find_engine_traverse(drv, remote, reg);
 
 out_put_remote:
@@ -945,22 +867,13 @@ out_put_port:
 	return engine;
 }
 
-/*
- * The device tree binding says that the remote endpoint ID of any
- * connection between components, up to and including the TCON, of
- * the display pipeline should be equal to the actual ID of the local
- * component. Thus we can look at any one of the input connections of
- * the TCONs, and use that connection's remote endpoint ID as our own.
- *
- * Since the user of this function already finds the input port,
- * the port is passed in directly without further checks.
- */
+ 
 static int sun4i_tcon_of_get_id_from_port(struct device_node *port)
 {
 	struct device_node *ep;
 	int ret = -EINVAL;
 
-	/* try finding an upstream endpoint */
+	 
 	for_each_available_child_of_node(port, ep) {
 		struct device_node *remote;
 		u32 reg;
@@ -979,11 +892,7 @@ static int sun4i_tcon_of_get_id_from_port(struct device_node *port)
 	return ret;
 }
 
-/*
- * Once we know the TCON's id, we can look through the list of
- * engines to find a matching one. We assume all engines have
- * been probed and added to the list.
- */
+ 
 static struct sunxi_engine *sun4i_tcon_get_engine_by_id(struct sun4i_drv *drv,
 							int id)
 {
@@ -1016,50 +925,14 @@ static int sun4i_tcon_get_index(struct sun4i_drv *drv)
 	struct list_head *pos;
 	int size = 0;
 
-	/*
-	 * Because TCON is added to the list at the end of the probe
-	 * (after this function is called), index of the current TCON
-	 * will be same as current TCON list size.
-	 */
+	 
 	list_for_each(pos, &drv->tcon_list)
 		++size;
 
 	return size;
 }
 
-/*
- * On SoCs with the old display pipeline design (Display Engine 1.0),
- * we assumed the TCON was always tied to just one backend. However
- * this proved not to be the case. On the A31, the TCON can select
- * either backend as its source. On the A20 (and likely on the A10),
- * the backend can choose which TCON to output to.
- *
- * The device tree binding says that the remote endpoint ID of any
- * connection between components, up to and including the TCON, of
- * the display pipeline should be equal to the actual ID of the local
- * component. Thus we should be able to look at any one of the input
- * connections of the TCONs, and use that connection's remote endpoint
- * ID as our own.
- *
- * However  the connections between the backend and TCON were assumed
- * to be always singular, and their endpoit IDs were all incorrectly
- * set to 0. This means for these old device trees, we cannot just look
- * up the remote endpoint ID of a TCON input endpoint. TCON1 would be
- * incorrectly identified as TCON0.
- *
- * This function first checks if the TCON node has 2 input endpoints.
- * If so, then the device tree is a corrected version, and it will use
- * sun4i_tcon_of_get_id() and sun4i_tcon_get_engine_by_id() from above
- * to fetch the ID and engine directly. If not, then it is likely an
- * old device trees, where the endpoint IDs were incorrect, but did not
- * have endpoint connections between the backend and TCON across
- * different display pipelines. It will fall back to the old method of
- * traversing the  of_graph to try and find a matching engine by device
- * node.
- *
- * In the case of single display pipeline device trees, either method
- * works.
- */
+ 
 static struct sunxi_engine *sun4i_tcon_find_engine(struct sun4i_drv *drv,
 						   struct device_node *node)
 {
@@ -1070,38 +943,24 @@ static struct sunxi_engine *sun4i_tcon_find_engine(struct sun4i_drv *drv,
 	if (!port)
 		return ERR_PTR(-EINVAL);
 
-	/*
-	 * Is this a corrected device tree with cross pipeline
-	 * connections between the backend and TCON?
-	 */
+	 
 	if (of_get_child_count(port) > 1) {
 		int id;
 
-		/*
-		 * When pipeline has the same number of TCONs and engines which
-		 * are represented by frontends/backends (DE1) or mixers (DE2),
-		 * we match them by their respective IDs. However, if pipeline
-		 * contains TCON TOP, chances are that there are either more
-		 * TCONs than engines (R40) or TCONs with non-consecutive ids.
-		 * (H6). In that case it's easier just use TCON index in list
-		 * as an id. That means that on R40, any 2 TCONs can be enabled
-		 * in DT out of 4 (there are 2 mixers). Due to the design of
-		 * TCON TOP, remaining 2 TCONs can't be connected to anything
-		 * anyway.
-		 */
+		 
 		if (sun4i_tcon_connected_to_tcon_top(node))
 			id = sun4i_tcon_get_index(drv);
 		else
 			id = sun4i_tcon_of_get_id_from_port(port);
 
-		/* Get our engine by matching our ID */
+		 
 		engine = sun4i_tcon_get_engine_by_id(drv, id);
 
 		of_node_put(port);
 		return engine;
 	}
 
-	/* Fallback to old method by traversing input endpoints */
+	 
 	of_node_put(port);
 	return sun4i_tcon_find_engine_traverse(drv, node, 0);
 }
@@ -1153,7 +1012,7 @@ static int sun4i_tcon_bind(struct device *dev, struct device *master,
 		}
 	}
 
-	/* Make sure our TCON is reset */
+	 
 	ret = reset_control_reset(tcon->lcd_rst);
 	if (ret) {
 		dev_err(dev, "Couldn't deassert our reset line\n");
@@ -1161,13 +1020,7 @@ static int sun4i_tcon_bind(struct device *dev, struct device *master,
 	}
 
 	if (tcon->quirks->supports_lvds) {
-		/*
-		 * This can only be made optional since we've had DT
-		 * nodes without the LVDS reset properties.
-		 *
-		 * If the property is missing, just disable LVDS, and
-		 * print a warning.
-		 */
+		 
 		tcon->lvds_rst = devm_reset_control_get_optional(dev, "lvds");
 		if (IS_ERR(tcon->lvds_rst)) {
 			dev_err(dev, "Couldn't get our reset line\n");
@@ -1179,13 +1032,7 @@ static int sun4i_tcon_bind(struct device *dev, struct device *master,
 			has_lvds_rst = false;
 		}
 
-		/*
-		 * This can only be made optional since we've had DT
-		 * nodes without the LVDS reset properties.
-		 *
-		 * If the property is missing, just disable LVDS, and
-		 * print a warning.
-		 */
+		 
 		if (tcon->quirks->has_lvds_alt) {
 			tcon->lvds_pll = devm_clk_get(dev, "lvds-alt");
 			if (IS_ERR(tcon->lvds_pll)) {
@@ -1246,11 +1093,7 @@ static int sun4i_tcon_bind(struct device *dev, struct device *master,
 	}
 
 	if (tcon->quirks->has_channel_0) {
-		/*
-		 * If we have an LVDS panel connected to the TCON, we should
-		 * just probe the LVDS connector. Otherwise, just probe RGB as
-		 * we used to.
-		 */
+		 
 		remote = of_graph_get_remote_node(dev->of_node, 1, 0);
 		if (of_device_is_compatible(remote, "panel-lvds"))
 			if (can_lvds)
@@ -1266,16 +1109,7 @@ static int sun4i_tcon_bind(struct device *dev, struct device *master,
 	}
 
 	if (tcon->quirks->needs_de_be_mux) {
-		/*
-		 * We assume there is no dynamic muxing of backends
-		 * and TCONs, so we select the backend with same ID.
-		 *
-		 * While dynamic selection might be interesting, since
-		 * the CRTC is tied to the TCON, while the layers are
-		 * tied to the backends, this means, we will need to
-		 * switch between groups of layers. There might not be
-		 * a way to represent this constraint in DRM.
-		 */
+		 
 		regmap_update_bits(tcon->regs, SUN4I_TCON0_CTL_REG,
 				   SUN4I_TCON0_CTL_SRC_SEL_MASK,
 				   tcon->id);
@@ -1321,7 +1155,7 @@ static int sun4i_tcon_probe(struct platform_device *pdev)
 
 	quirks = of_device_get_match_data(&pdev->dev);
 
-	/* panels and bridges are present only on TCONs with channel 0 */
+	 
 	if (quirks->has_channel_0) {
 		ret = drm_of_find_panel_or_bridge(node, 1, 0, &panel, &bridge);
 		if (ret == -EPROBE_DEFER)
@@ -1336,7 +1170,7 @@ static void sun4i_tcon_remove(struct platform_device *pdev)
 	component_del(&pdev->dev, &sun4i_tcon_ops);
 }
 
-/* platform specific TCON muxing callbacks */
+ 
 static int sun4i_a10_tcon_set_mux(struct sun4i_tcon *tcon,
 				  const struct drm_encoder *encoder)
 {
@@ -1348,7 +1182,7 @@ static int sun4i_a10_tcon_set_mux(struct sun4i_tcon *tcon,
 
 	switch (encoder->encoder_type) {
 	case DRM_MODE_ENCODER_TMDS:
-		/* HDMI */
+		 
 		shift = 8;
 		break;
 	default:
@@ -1371,9 +1205,7 @@ static int sun5i_a13_tcon_set_mux(struct sun4i_tcon *tcon,
 	else
 		val = 0;
 
-	/*
-	 * FIXME: Undocumented bits
-	 */
+	 
 	return regmap_write(tcon->regs, SUN4I_TCON_MUX_CTRL_REG, val);
 }
 
@@ -1388,11 +1220,11 @@ static int sun6i_tcon_set_mux(struct sun4i_tcon *tcon,
 
 	switch (encoder->encoder_type) {
 	case DRM_MODE_ENCODER_TMDS:
-		/* HDMI */
+		 
 		shift = 8;
 		break;
 	default:
-		/* TODO A31 has MIPI DSI but A31s does not */
+		 
 		return -EINVAL;
 	}
 
@@ -1409,7 +1241,7 @@ static int sun8i_r40_tcon_tv_set_mux(struct sun4i_tcon *tcon,
 	struct platform_device *pdev;
 	int id, ret;
 
-	/* find TCON TOP platform device and TCON id */
+	 
 
 	port = of_graph_get_port_by_id(tcon->dev->of_node, 0);
 	if (!port)
@@ -1482,7 +1314,7 @@ static const struct sun4i_tcon_quirks sun7i_a20_tcon0_quirks = {
 	.has_channel_0		= true,
 	.has_channel_1		= true,
 	.dclk_min_div		= 4,
-	/* Same display pipeline structure as A10 */
+	 
 	.set_mux		= sun4i_a10_tcon_set_mux,
 	.setup_lvds_phy		= sun4i_tcon_setup_lvds_phy,
 };
@@ -1491,7 +1323,7 @@ static const struct sun4i_tcon_quirks sun7i_a20_quirks = {
 	.has_channel_0		= true,
 	.has_channel_1		= true,
 	.dclk_min_div		= 4,
-	/* Same display pipeline structure as A10 */
+	 
 	.set_mux		= sun4i_a10_tcon_set_mux,
 };
 
@@ -1542,7 +1374,7 @@ static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
 	.set_mux		= sun8i_r40_tcon_tv_set_mux,
 };
 
-/* sun4i_drv uses this list to check if a device node is a TCON */
+ 
 const struct of_device_id sun4i_tcon_of_table[] = {
 	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
 	{ .compatible = "allwinner,sun5i-a13-tcon", .data = &sun5i_a13_quirks },

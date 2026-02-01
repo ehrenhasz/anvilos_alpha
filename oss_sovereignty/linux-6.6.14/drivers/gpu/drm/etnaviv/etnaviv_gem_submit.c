@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Etnaviv Project
- */
+
+ 
 
 #include <drm/drm_file.h>
 #include <linux/dma-fence-array.h>
@@ -19,12 +17,10 @@
 #include "etnaviv_perfmon.h"
 #include "etnaviv_sched.h"
 
-/*
- * Cmdstream submission:
- */
+ 
 
 #define BO_INVALID_FLAGS ~(ETNA_SUBMIT_BO_READ | ETNA_SUBMIT_BO_WRITE)
-/* make sure these don't conflict w/ ETNAVIV_SUBMIT_BO_x */
+ 
 #define BO_LOCKED   0x4000
 #define BO_PINNED   0x2000
 
@@ -81,9 +77,7 @@ static int submit_lookup_objects(struct etnaviv_gem_submit *submit,
 			submit->bos[i].va = bo->presumed;
 		}
 
-		/* normally use drm_gem_object_lookup(), but for bulk lookup
-		 * all under single table_lock just hit object_idr directly:
-		 */
+		 
 		obj = idr_find(&file->object_idr, bo->handle);
 		if (!obj) {
 			DRM_ERROR("invalid handle %u at index %u\n",
@@ -92,10 +86,7 @@ static int submit_lookup_objects(struct etnaviv_gem_submit *submit,
 			goto out_unlock;
 		}
 
-		/*
-		 * Take a refcount on the object. The file table lock
-		 * prevents the object_idr's refcount on this being dropped.
-		 */
+		 
 		drm_gem_object_get(obj);
 
 		submit->bos[i].obj = to_etnaviv_bo(obj);
@@ -159,7 +150,7 @@ fail:
 
 		obj = &submit->bos[contended].obj->base;
 
-		/* we lost out in a seqno race, lock and retry.. */
+		 
 		ret = dma_resv_lock_slow_interruptible(obj->resv, ticket);
 		if (!ret) {
 			submit->bos[contended].flags |= BO_LOCKED;
@@ -255,7 +246,7 @@ static int submit_bo(struct etnaviv_gem_submit *submit, u32 idx,
 	return 0;
 }
 
-/* process the reloc's and patch up the cmdstream as needed: */
+ 
 static int submit_reloc(struct etnaviv_gem_submit *submit, void *stream,
 		u32 size, const struct drm_etnaviv_gem_submit_reloc *relocs,
 		u32 nr_relocs)
@@ -264,7 +255,7 @@ static int submit_reloc(struct etnaviv_gem_submit *submit, void *stream,
 	u32 *ptr = stream;
 	int ret;
 
-	/* Submits using softpin don't blend with relocs */
+	 
 	if ((submit->flags & ETNA_SUBMIT_SOFTPIN) && nr_relocs != 0)
 		return -EINVAL;
 
@@ -284,7 +275,7 @@ static int submit_reloc(struct etnaviv_gem_submit *submit, void *stream,
 			return -EINVAL;
 		}
 
-		/* offset in dwords: */
+		 
 		off = r->submit_offset / 4;
 
 		if ((off >= size ) ||
@@ -324,7 +315,7 @@ static int submit_perfmon_validate(struct etnaviv_gem_submit *submit,
 		if (ret)
 			return ret;
 
-		/* at offset 0 a sequence number gets stored used for userspace sync */
+		 
 		if (r->read_offset == 0) {
 			DRM_ERROR("perfmon request: offset is 0");
 			return -EINVAL;
@@ -374,7 +365,7 @@ static void submit_cleanup(struct kref *kref)
 	for (i = 0; i < submit->nr_bos; i++) {
 		struct etnaviv_gem_object *etnaviv_obj = submit->bos[i].obj;
 
-		/* unpin all objects */
+		 
 		if (submit->bos[i].flags & BO_PINNED) {
 			etnaviv_gem_mapping_unreference(submit->bos[i].mapping);
 			atomic_dec(&etnaviv_obj->gpu_active);
@@ -382,7 +373,7 @@ static void submit_cleanup(struct kref *kref)
 			submit->bos[i].flags &= ~BO_PINNED;
 		}
 
-		/* if the GPU submit failed, objects might still be locked */
+		 
 		submit_unlock_object(submit, i);
 		drm_gem_object_put(&etnaviv_obj->base);
 	}
@@ -390,10 +381,7 @@ static void submit_cleanup(struct kref *kref)
 	wake_up_all(&submit->gpu->fence_event);
 
 	if (submit->out_fence) {
-		/*
-		 * Remove from user fence array before dropping the reference,
-		 * so fence can not be found in lookup anymore.
-		 */
+		 
 		xa_erase(&submit->gpu->user_fences, submit->out_fence_id);
 		dma_fence_put(submit->out_fence);
 	}
@@ -464,10 +452,7 @@ int etnaviv_ioctl_gem_submit(struct drm_device *dev, void *data,
 		return -EINVAL;
 	}
 
-	/*
-	 * Copy the command submission and bo array to kernel space in
-	 * one go, and do this outside of any locks.
-	 */
+	 
 	bos = kvmalloc_array(args->nr_bos, sizeof(*bos), GFP_KERNEL);
 	relocs = kvmalloc_array(args->nr_relocs, sizeof(*relocs), GFP_KERNEL);
 	pmrs = kvmalloc_array(args->nr_pmrs, sizeof(*pmrs), GFP_KERNEL);
@@ -593,20 +578,11 @@ int etnaviv_ioctl_gem_submit(struct drm_device *dev, void *data,
 	submit_attach_object_fences(submit);
 
 	if (args->flags & ETNA_SUBMIT_FENCE_FD_OUT) {
-		/*
-		 * This can be improved: ideally we want to allocate the sync
-		 * file before kicking off the GPU job and just attach the
-		 * fence to the sync file here, eliminating the ENOMEM
-		 * possibility at this stage.
-		 */
+		 
 		sync_file = sync_file_create(submit->out_fence);
 		if (!sync_file) {
 			ret = -ENOMEM;
-			/*
-			 * When this late error is hit, the submit has already
-			 * been handed over to the scheduler. At this point
-			 * the sched_job must not be cleaned up.
-			 */
+			 
 			goto err_submit_put;
 		}
 		fd_install(out_fence_fd, sync_file->file);

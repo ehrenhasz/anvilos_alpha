@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
- */
+
+ 
 
 #include "mana_ib.h"
 
@@ -182,7 +180,7 @@ static int mana_gd_allocate_doorbell_page(struct gdma_context *gc,
 	req.num_resources = 1;
 	req.alignment = 1;
 
-	/* Have GDMA start searching from 0 */
+	 
 	req.allocated_resources = 0;
 
 	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
@@ -214,7 +212,7 @@ int mana_ib_alloc_ucontext(struct ib_ucontext *ibcontext,
 	dev = mdev->gdma_dev;
 	gc = dev->gdma_context;
 
-	/* Allocate a doorbell page index */
+	 
 	ret = mana_gd_allocate_doorbell_page(gc, &doorbell_page);
 	if (ret) {
 		ibdev_dbg(ibdev, "Failed to allocate doorbell page %d\n", ret);
@@ -333,7 +331,7 @@ int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev, struct ib_umem *umem,
 	gc = mdev->gdma_context;
 	hwc = gc->hwc.driver_data;
 
-	/* Hardware requires dma region to align to chosen page size */
+	 
 	page_sz = ib_umem_find_best_pgsz(umem, PAGE_SZ_BM, 0);
 	if (!page_sz) {
 		ibdev_dbg(&dev->ib_dev, "failed to find page size.\n");
@@ -384,7 +382,7 @@ int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev, struct ib_umem *umem,
 			expected_status = GDMA_STATUS_MORE_ENTRIES;
 
 		if (!num_pages_processed) {
-			/* First create message */
+			 
 			err = mana_ib_gd_first_dma_region(dev, gc, create_req,
 							  tail, gdma_region,
 							  expected_status);
@@ -399,7 +397,7 @@ int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev, struct ib_umem *umem,
 			add_req->reserved3 = 0;
 			page_addr_list = add_req->page_addr_list;
 		} else {
-			/* Subsequent create messages */
+			 
 			err = mana_ib_gd_add_dma_region(dev, gc, add_req, tail,
 							expected_status);
 			if (err)
@@ -409,7 +407,7 @@ int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev, struct ib_umem *umem,
 		num_pages_processed += tail;
 		tail = 0;
 
-		/* The remaining pages to create */
+		 
 		num_pages_to_handle =
 			min_t(size_t,
 			      num_pages_total - num_pages_processed,
@@ -454,7 +452,7 @@ int mana_ib_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
 		return -EINVAL;
 	}
 
-	/* Map to the page indexed by ucontext->doorbell */
+	 
 	pfn = (gc->phys_db_page_base +
 	       gc->db_page_size * mana_ucontext->doorbell) >>
 	      PAGE_SHIFT;
@@ -474,10 +472,7 @@ int mana_ib_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
 int mana_ib_get_port_immutable(struct ib_device *ibdev, u32 port_num,
 			       struct ib_port_immutable *immutable)
 {
-	/*
-	 * This version only support RAW_PACKET
-	 * other values need to be filled for other types
-	 */
+	 
 	immutable->core_cap_flags = RDMA_CORE_PORT_RAW_PACKET;
 
 	return 0;
@@ -489,11 +484,7 @@ int mana_ib_query_device(struct ib_device *ibdev, struct ib_device_attr *props,
 	props->max_qp = MANA_MAX_NUM_QUEUES;
 	props->max_qp_wr = MAX_SEND_BUFFERS_PER_QUEUE;
 
-	/*
-	 * max_cqe could be potentially much bigger.
-	 * As this version of driver only support RAW QP, set it to the same
-	 * value as max_qp_wr
-	 */
+	 
 	props->max_cqe = MAX_SEND_BUFFERS_PER_QUEUE;
 
 	props->max_mr_size = MANA_IB_MAX_MR_SIZE;
@@ -507,14 +498,14 @@ int mana_ib_query_device(struct ib_device *ibdev, struct ib_device_attr *props,
 int mana_ib_query_port(struct ib_device *ibdev, u32 port,
 		       struct ib_port_attr *props)
 {
-	/* This version doesn't return port properties */
+	 
 	return 0;
 }
 
 int mana_ib_query_gid(struct ib_device *ibdev, u32 port, int index,
 		      union ib_gid *gid)
 {
-	/* This version doesn't return GID properties */
+	 
 	return 0;
 }
 

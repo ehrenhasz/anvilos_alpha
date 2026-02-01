@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <uapi/linux/mman.h> /* To get things like MAP_HUGETLB even on older libc headers */
+#include <uapi/linux/mman.h>  
 #include <linux/perf_event.h>
 #include <linux/zalloc.h>
 #include "cpumap.h"
@@ -98,10 +98,7 @@ static int find_func_symbol_cb(void *arg, const char *name, char type,
 {
 	struct process_symbol_args *args = arg;
 
-	/*
-	 * Must be a function or at least an alias, as in PARISC64, where "_text" is
-	 * an 'A' to the same address as "_stext".
-	 */
+	 
 	if (!(kallsyms__is_function(type) ||
 	      type == 'A') || strcmp(name, args->name))
 		return 0;
@@ -643,10 +640,7 @@ struct map *thread__find_map(struct thread *thread, u8 cpumode, u64 addr,
 	al->maps = maps__get(maps);
 	al->map = map__get(maps__find(maps, al->addr));
 	if (al->map != NULL) {
-		/*
-		 * Kernel maps might be changed when loading symbols so loading
-		 * must be done prior to using kernel maps.
-		 */
+		 
 		if (load_map)
 			map__load(al->map);
 		al->addr = map__map_ip(al->map, al->addr);
@@ -655,11 +649,7 @@ struct map *thread__find_map(struct thread *thread, u8 cpumode, u64 addr,
 	return al->map;
 }
 
-/*
- * For branch stacks or branch samples, the sample cpumode might not be correct
- * because it applies only to the sample 'ip' and not necessary to 'addr' or
- * branch stack addresses. If possible, use a fallback to deal with those cases.
- */
+ 
 struct map *thread__find_map_fb(struct thread *thread, u8 cpumode, u64 addr,
 				struct addr_location *al)
 {
@@ -704,10 +694,7 @@ static bool check_address_range(struct intlist *addr_list, int addr_range,
 	return false;
 }
 
-/*
- * Callers need to drop the reference to al->thread, obtained in
- * machine__findnew_thread()
- */
+ 
 int machine__resolve(struct machine *machine, struct addr_location *al,
 		     struct perf_sample *sample)
 {

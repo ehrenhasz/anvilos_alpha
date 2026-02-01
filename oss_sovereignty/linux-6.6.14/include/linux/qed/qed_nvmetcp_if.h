@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* Copyright 2021 Marvell. All rights reserved. */
+ 
+ 
 
 #ifndef _QED_NVMETCP_IF_H
 #define _QED_NVMETCP_IF_H
@@ -18,13 +18,13 @@ typedef int (*nvmetcp_event_cb_t) (void *context,
 
 struct qed_dev_nvmetcp_info {
 	struct qed_dev_info common;
-	u8 port_id;  /* Physical port */
+	u8 port_id;   
 	u8 num_cqs;
 };
 
 #define MAX_TID_BLOCKS_NVMETCP (512)
 struct qed_nvmetcp_tid {
-	u32 size;		/* In bytes per task */
+	u32 size;		 
 	u32 num_tids_per_block;
 	u8 *blocks[MAX_TID_BLOCKS_NVMETCP];
 };
@@ -36,13 +36,13 @@ struct qed_nvmetcp_id_params {
 };
 
 struct qed_nvmetcp_params_offload {
-	/* FW initializations */
+	 
 	dma_addr_t sq_pbl_addr;
 	dma_addr_t nvmetcp_cccid_itid_table_addr;
 	u16 nvmetcp_cccid_max_range;
 	u8 default_cq;
 
-	/* Networking and TCP stack initializations */
+	 
 	struct qed_nvmetcp_id_params src;
 	struct qed_nvmetcp_id_params dst;
 	u32 ka_timeout;
@@ -67,7 +67,7 @@ struct qed_nvmetcp_params_update {
 	u32 max_recv_pdu_length;
 	u32 max_send_pdu_length;
 
-	/* Placeholder: pfv, cpda, hpda */
+	 
 
 	bool hdr_digest_en;
 	bool data_digest_en;
@@ -78,12 +78,12 @@ struct qed_nvmetcp_cb_ops {
 };
 
 struct nvmetcp_sge {
-	struct regpair sge_addr; /* SGE address */
-	__le32 sge_len; /* SGE length */
+	struct regpair sge_addr;  
+	__le32 sge_len;  
 	__le32 reserved;
 };
 
-/* IO path HSI function SGL params */
+ 
 struct storage_sgl_task_params {
 	struct nvmetcp_sge *sgl;
 	struct regpair sgl_phys_addr;
@@ -92,103 +92,21 @@ struct storage_sgl_task_params {
 	bool small_mid_sge;
 };
 
-/* IO path HSI function FW task context params */
+ 
 struct nvmetcp_task_params {
-	void *context; /* Output parameter - set/filled by the HSI function */
+	void *context;  
 	struct nvmetcp_wqe *sqe;
-	u32 tx_io_size; /* in bytes (Without DIF, if exists) */
-	u32 rx_io_size; /* in bytes (Without DIF, if exists) */
+	u32 tx_io_size;  
+	u32 rx_io_size;  
 	u16 conn_icid;
 	u16 itid;
-	struct regpair opq; /* qedn_task_ctx address */
+	struct regpair opq;  
 	u16 host_cccid;
 	u8 cq_rss_number;
 	bool send_write_incapsule;
 };
 
-/**
- * struct qed_nvmetcp_ops - qed NVMeTCP operations.
- * @common:		common operations pointer
- * @ll2:		light L2 operations pointer
- * @fill_dev_info:	fills NVMeTCP specific information
- *			@param cdev
- *			@param info
- *			@return 0 on success, otherwise error value.
- * @register_ops:	register nvmetcp operations
- *			@param cdev
- *			@param ops - specified using qed_nvmetcp_cb_ops
- *			@param cookie - driver private
- * @start:		nvmetcp in FW
- *			@param cdev
- *			@param tasks - qed will fill information about tasks
- *			return 0 on success, otherwise error value.
- * @stop:		nvmetcp in FW
- *			@param cdev
- *			return 0 on success, otherwise error value.
- * @acquire_conn:	acquire a new nvmetcp connection
- *			@param cdev
- *			@param handle - qed will fill handle that should be
- *				used henceforth as identifier of the
- *				connection.
- *			@param p_doorbell - qed will fill the address of the
- *				doorbell.
- *			@return 0 on success, otherwise error value.
- * @release_conn:	release a previously acquired nvmetcp connection
- *			@param cdev
- *			@param handle - the connection handle.
- *			@return 0 on success, otherwise error value.
- * @offload_conn:	configures an offloaded connection
- *			@param cdev
- *			@param handle - the connection handle.
- *			@param conn_info - the configuration to use for the
- *				offload.
- *			@return 0 on success, otherwise error value.
- * @update_conn:	updates an offloaded connection
- *			@param cdev
- *			@param handle - the connection handle.
- *			@param conn_info - the configuration to use for the
- *				offload.
- *			@return 0 on success, otherwise error value.
- * @destroy_conn:	stops an offloaded connection
- *			@param cdev
- *			@param handle - the connection handle.
- *			@return 0 on success, otherwise error value.
- * @clear_sq:		clear all task in sq
- *			@param cdev
- *			@param handle - the connection handle.
- *			@return 0 on success, otherwise error value.
- * @add_src_tcp_port_filter: Add source tcp port filter
- *			@param cdev
- *			@param src_port
- * @remove_src_tcp_port_filter: Remove source tcp port filter
- *			@param cdev
- *			@param src_port
- * @add_dst_tcp_port_filter: Add destination tcp port filter
- *			@param cdev
- *			@param dest_port
- * @remove_dst_tcp_port_filter: Remove destination tcp port filter
- *			@param cdev
- *			@param dest_port
- * @clear_all_filters: Clear all filters.
- *			@param cdev
- * @init_read_io: Init read IO.
- *			@task_params
- *			@cmd_pdu_header
- *			@nvme_cmd
- *			@sgl_task_params
- * @init_write_io: Init write IO.
- *			@task_params
- *			@cmd_pdu_header
- *			@nvme_cmd
- *			@sgl_task_params
- * @init_icreq_exchange: Exchange ICReq.
- *			@task_params
- *			@init_conn_req_pdu_hdr
- *			@tx_sgl_task_params
- *			@rx_sgl_task_params
- * @init_task_cleanup: Init task cleanup.
- *			@task_params
- */
+ 
 struct qed_nvmetcp_ops {
 	const struct qed_common_ops *common;
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 
  #ifndef __HAL_PHY_RF_H__
  #define __HAL_PHY_RF_H__
@@ -39,4 +35,4 @@ void ODM_ClearTxPowerTrackingState(struct dm_odm_t *pDM_Odm);
 
 void ODM_TXPowerTrackingCallback_ThermalMeter(struct adapter *Adapter);
 
-#endif	/*  #ifndef __HAL_PHY_RF_H__ */
+#endif	 

@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ispstat.h
- *
- * TI OMAP3 ISP - Statistics core
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc
- *
- * Contacts: David Cohen <dacohen@gmail.com>
- *	     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+ 
+ 
 
 #ifndef OMAP3_ISP_STAT_H
 #define OMAP3_ISP_STAT_H
@@ -25,9 +14,9 @@
 #define STAT_MAX_BUFS		5
 #define STAT_NEVENTS		8
 
-#define STAT_BUF_DONE		0	/* Buffer is ready */
-#define STAT_NO_BUF		1	/* An error has occurred */
-#define STAT_BUF_WAITING_DMA	2	/* Histogram only: DMA is running */
+#define STAT_BUF_DONE		0	 
+#define STAT_NO_BUF		1	 
+#define STAT_BUF_WAITING_DMA	2	 
 
 struct dma_chan;
 struct ispstat;
@@ -44,32 +33,22 @@ struct ispstat_buffer {
 };
 
 struct ispstat_ops {
-	/*
-	 * Validate new params configuration.
-	 * new_conf->buf_size value must be changed to the exact buffer size
-	 * necessary for the new configuration if it's smaller.
-	 */
+	 
 	int (*validate_params)(struct ispstat *stat, void *new_conf);
 
-	/*
-	 * Save new params configuration.
-	 * stat->priv->buf_size value must be set to the exact buffer size for
-	 * the new configuration.
-	 * stat->update is set to 1 if new configuration is different than
-	 * current one.
-	 */
+	 
 	void (*set_params)(struct ispstat *stat, void *new_conf);
 
-	/* Apply stored configuration. */
+	 
 	void (*setup_regs)(struct ispstat *stat, void *priv);
 
-	/* Enable/Disable module. */
+	 
 	void (*enable)(struct ispstat *stat, int enable);
 
-	/* Verify is module is busy. */
+	 
 	int (*busy)(struct ispstat *stat);
 
-	/* Used for specific operations during generic buf process task. */
+	 
 	int (*buf_process)(struct ispstat *stat);
 };
 
@@ -83,24 +62,24 @@ enum ispstat_state_t {
 
 struct ispstat {
 	struct v4l2_subdev subdev;
-	struct media_pad pad;	/* sink pad */
+	struct media_pad pad;	 
 
-	/* Control */
+	 
 	unsigned configured:1;
 	unsigned update:1;
 	unsigned buf_processing:1;
 	unsigned sbl_ovl_recover:1;
 	u8 inc_config;
 	atomic_t buf_err;
-	enum ispstat_state_t state;	/* enabling/disabling state */
+	enum ispstat_state_t state;	 
 	struct isp_device *isp;
-	void *priv;		/* pointer to priv config struct */
-	void *recover_priv;	/* pointer to recover priv configuration */
-	struct mutex ioctl_lock; /* serialize private ioctl */
+	void *priv;		 
+	void *recover_priv;	 
+	struct mutex ioctl_lock;  
 
 	const struct ispstat_ops *ops;
 
-	/* Buffer */
+	 
 	u8 wait_acc_frames;
 	u16 config_counter;
 	u32 frame_number;
@@ -114,12 +93,7 @@ struct ispstat {
 };
 
 struct ispstat_generic_config {
-	/*
-	 * Fields must be in the same order as in:
-	 *  - omap3isp_h3a_aewb_config
-	 *  - omap3isp_h3a_af_config
-	 *  - omap3isp_hist_config
-	 */
+	 
 	u32 buf_size;
 	u16 config_counter;
 };
@@ -153,4 +127,4 @@ int omap3isp_stat_register_entities(struct ispstat *stat,
 				    struct v4l2_device *vdev);
 void omap3isp_stat_unregister_entities(struct ispstat *stat);
 
-#endif /* OMAP3_ISP_STAT_H */
+#endif  

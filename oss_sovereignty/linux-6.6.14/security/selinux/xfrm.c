@@ -1,33 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Security-Enhanced Linux (SELinux) security module
- *
- *  This file contains the SELinux XFRM hook function implementations.
- *
- *  Authors:  Serge Hallyn <sergeh@us.ibm.com>
- *	      Trent Jaeger <jaegert@us.ibm.com>
- *
- *  Updated: Venkat Yekkirala <vyekkirala@TrustedCS.com>
- *
- *           Granular IPSec Associations for use in MLS environments.
- *
- *  Copyright (C) 2005 International Business Machines Corporation
- *  Copyright (C) 2006 Trusted Computer Solutions, Inc.
- */
 
-/*
- * USAGE:
- * NOTES:
- *   1. Make sure to enable the following options in your kernel config:
- *	CONFIG_SECURITY=y
- *	CONFIG_SECURITY_NETWORK=y
- *	CONFIG_SECURITY_NETWORK_XFRM=y
- *	CONFIG_SECURITY_SELINUX=m/y
- * ISSUES:
- *   1. Caching packets, so they are not dropped during negotiation
- *   2. Emulating a reasonable SO_PEERSEC across machines
- *   3. Testing addition of sk_policy's with security context via setsockopt
- */
+ 
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/security.h>
@@ -46,12 +20,10 @@
 #include "objsec.h"
 #include "xfrm.h"
 
-/* Labeled XFRM instance counter */
+ 
 atomic_t selinux_xfrm_refcount __read_mostly = ATOMIC_INIT(0);
 
-/*
- * Returns true if the context is an LSM/SELinux context.
- */
+ 
 static inline int selinux_authorizable_ctx(struct xfrm_sec_ctx *ctx)
 {
 	return (ctx &&
@@ -59,18 +31,13 @@ static inline int selinux_authorizable_ctx(struct xfrm_sec_ctx *ctx)
 		(ctx->ctx_alg == XFRM_SC_ALG_SELINUX));
 }
 
-/*
- * Returns true if the xfrm contains a security blob for SELinux.
- */
+ 
 static inline int selinux_authorizable_xfrm(struct xfrm_state *x)
 {
 	return selinux_authorizable_ctx(x->security);
 }
 
-/*
- * Allocates a xfrm_sec_state and populates it using the supplied security
- * xfrm_user_sec_ctx context.
- */
+ 
 static int selinux_xfrm_alloc_user(struct xfrm_sec_ctx **ctxp,
 				   struct xfrm_user_sec_ctx *uctx,
 				   gfp_t gfp)
@@ -117,9 +84,7 @@ err:
 	return rc;
 }
 
-/*
- * Free the xfrm_sec_ctx structure.
- */
+ 
 static void selinux_xfrm_free(struct xfrm_sec_ctx *ctx)
 {
 	if (!ctx)
@@ -129,9 +94,7 @@ static void selinux_xfrm_free(struct xfrm_sec_ctx *ctx)
 	kfree(ctx);
 }
 
-/*
- * Authorize the deletion of a labeled SA or policy rule.
- */
+ 
 static int selinux_xfrm_delete(struct xfrm_sec_ctx *ctx)
 {
 	const struct task_security_struct *tsec = selinux_cred(current_cred());
@@ -144,20 +107,16 @@ static int selinux_xfrm_delete(struct xfrm_sec_ctx *ctx)
 			    NULL);
 }
 
-/*
- * LSM hook implementation that authorizes that a flow can use a xfrm policy
- * rule.
- */
+ 
 int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid)
 {
 	int rc;
 
-	/* All flows should be treated as polmatch'ing an otherwise applicable
-	 * "non-labeled" policy. This would prevent inadvertent "leaks". */
+	 
 	if (!ctx)
 		return 0;
 
-	/* Context sid is either set to label or ANY_ASSOC */
+	 
 	if (!selinux_authorizable_ctx(ctx))
 		return -EINVAL;
 
@@ -166,10 +125,7 @@ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid)
 	return (rc == -EACCES ? -ESRCH : rc);
 }
 
-/*
- * LSM hook implementation that authorizes that a state matches
- * the given policy, flow combo.
- */
+ 
 int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
 				      struct xfrm_policy *xp,
 				      const struct flowi_common *flic)
@@ -179,18 +135,18 @@ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
 
 	if (!xp->security)
 		if (x->security)
-			/* unlabeled policy and labeled SA can't match */
+			 
 			return 0;
 		else
-			/* unlabeled policy and unlabeled SA match all flows */
+			 
 			return 1;
 	else
 		if (!x->security)
-			/* unlabeled SA and labeled policy can't match */
+			 
 			return 0;
 		else
 			if (!selinux_authorizable_xfrm(x))
-				/* Not a SELinux-labeled SA */
+				 
 				return 0;
 
 	state_sid = x->security->ctx_sid;
@@ -199,9 +155,7 @@ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
 	if (flic_sid != state_sid)
 		return 0;
 
-	/* We don't need a separate SA Vs. policy polmatch check since the SA
-	 * is now of the same label as the flow and a flow Vs. policy polmatch
-	 * check had already happened in selinux_xfrm_policy_lookup() above. */
+	 
 	return (avc_has_perm(flic_sid, state_sid,
 			     SECCLASS_ASSOCIATION, ASSOCIATION__SENDTO,
 			     NULL) ? 0 : 1);
@@ -252,10 +206,7 @@ out:
 	return 0;
 }
 
-/*
- * LSM hook implementation that checks and/or returns the xfrm sid for the
- * incoming packet.
- */
+ 
 int selinux_xfrm_decode_session(struct sk_buff *skb, u32 *sid, int ckall)
 {
 	if (skb == NULL) {
@@ -276,9 +227,7 @@ int selinux_xfrm_skb_sid(struct sk_buff *skb, u32 *sid)
 	return rc;
 }
 
-/*
- * LSM hook implementation that allocs and transfers uctx spec to xfrm_policy.
- */
+ 
 int selinux_xfrm_policy_alloc(struct xfrm_sec_ctx **ctxp,
 			      struct xfrm_user_sec_ctx *uctx,
 			      gfp_t gfp)
@@ -286,10 +235,7 @@ int selinux_xfrm_policy_alloc(struct xfrm_sec_ctx **ctxp,
 	return selinux_xfrm_alloc_user(ctxp, uctx, gfp);
 }
 
-/*
- * LSM hook implementation that copies security data structure from old to new
- * for policy cloning.
- */
+ 
 int selinux_xfrm_policy_clone(struct xfrm_sec_ctx *old_ctx,
 			      struct xfrm_sec_ctx **new_ctxp)
 {
@@ -308,36 +254,26 @@ int selinux_xfrm_policy_clone(struct xfrm_sec_ctx *old_ctx,
 	return 0;
 }
 
-/*
- * LSM hook implementation that frees xfrm_sec_ctx security information.
- */
+ 
 void selinux_xfrm_policy_free(struct xfrm_sec_ctx *ctx)
 {
 	selinux_xfrm_free(ctx);
 }
 
-/*
- * LSM hook implementation that authorizes deletion of labeled policies.
- */
+ 
 int selinux_xfrm_policy_delete(struct xfrm_sec_ctx *ctx)
 {
 	return selinux_xfrm_delete(ctx);
 }
 
-/*
- * LSM hook implementation that allocates a xfrm_sec_state, populates it using
- * the supplied security context, and assigns it to the xfrm_state.
- */
+ 
 int selinux_xfrm_state_alloc(struct xfrm_state *x,
 			     struct xfrm_user_sec_ctx *uctx)
 {
 	return selinux_xfrm_alloc_user(&x->security, uctx, GFP_KERNEL);
 }
 
-/*
- * LSM hook implementation that allocates a xfrm_sec_state and populates based
- * on a secid.
- */
+ 
 int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
 				     struct xfrm_sec_ctx *polsec, u32 secid)
 {
@@ -376,29 +312,19 @@ out:
 	return rc;
 }
 
-/*
- * LSM hook implementation that frees xfrm_state security information.
- */
+ 
 void selinux_xfrm_state_free(struct xfrm_state *x)
 {
 	selinux_xfrm_free(x->security);
 }
 
-/*
- * LSM hook implementation that authorizes deletion of labeled SAs.
- */
+ 
 int selinux_xfrm_state_delete(struct xfrm_state *x)
 {
 	return selinux_xfrm_delete(x->security);
 }
 
-/*
- * LSM hook that controls access to unlabelled packets.  If
- * a xfrm_state is authorizable (defined by macro) then it was
- * already authorized by the IPSec process.  If not, then
- * we need to check for unlabelled access since this may not have
- * gone thru the IPSec process.
- */
+ 
 int selinux_xfrm_sock_rcv_skb(u32 sk_sid, struct sk_buff *skb,
 			      struct common_audit_data *ad)
 {
@@ -418,20 +344,12 @@ int selinux_xfrm_sock_rcv_skb(u32 sk_sid, struct sk_buff *skb,
 		}
 	}
 
-	/* This check even when there's no association involved is intended,
-	 * according to Trent Jaeger, to make sure a process can't engage in
-	 * non-IPsec communication unless explicitly allowed by policy. */
+	 
 	return avc_has_perm(sk_sid, peer_sid,
 			    SECCLASS_ASSOCIATION, ASSOCIATION__RECVFROM, ad);
 }
 
-/*
- * POSTROUTE_LAST hook's XFRM processing:
- * If we have no security association, then we need to determine
- * whether the socket is allowed to send to an unlabelled destination.
- * If we do have a authorizable security association, then it has already been
- * checked in the selinux_xfrm_state_pol_flow_match hook above.
- */
+ 
 int selinux_xfrm_postroute_last(u32 sk_sid, struct sk_buff *skb,
 				struct common_audit_data *ad, u8 proto)
 {
@@ -441,9 +359,7 @@ int selinux_xfrm_postroute_last(u32 sk_sid, struct sk_buff *skb,
 	case IPPROTO_AH:
 	case IPPROTO_ESP:
 	case IPPROTO_COMP:
-		/* We should have already seen this packet once before it
-		 * underwent xfrm(s). No need to subject it to the unlabeled
-		 * check. */
+		 
 		return 0;
 	default:
 		break;
@@ -461,9 +377,7 @@ int selinux_xfrm_postroute_last(u32 sk_sid, struct sk_buff *skb,
 		}
 	}
 
-	/* This check even when there's no association involved is intended,
-	 * according to Trent Jaeger, to make sure a process can't engage in
-	 * non-IPsec communication unless explicitly allowed by policy. */
+	 
 	return avc_has_perm(sk_sid, SECINITSID_UNLABELED,
 			    SECCLASS_ASSOCIATION, ASSOCIATION__SENDTO, ad);
 }

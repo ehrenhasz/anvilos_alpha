@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/mlx5/vport.h>
 #include <rdma/ib_mad.h>
@@ -61,9 +31,7 @@ static int mlx5_MAD_IFC(struct mlx5_ib_dev *dev, int ignore_mkey,
 	if (!can_do_mad_ifc(dev, port, (struct ib_mad *)in_mad))
 		return -EPERM;
 
-	/* Key check traps can't be generated unless we have in_wc to
-	 * tell us where to send the trap.
-	 */
+	 
 	if (ignore_mkey || !in_wc)
 		op_modifier |= 0x1;
 	if (ignore_bkey || !in_wc)
@@ -109,9 +77,7 @@ static void pma_cnt_ext_assign(struct ib_pma_portcounters_ext *pma_cnt_ext,
 static void pma_cnt_assign(struct ib_pma_portcounters *pma_cnt,
 			   void *out)
 {
-	/* Traffic counters will be reported in
-	 * their 64bit form via ib_pma_portcounters_ext by default.
-	 */
+	 
 	void *out_pma = MLX5_ADDR_OF(ppcnt_reg, out,
 				     counter_set);
 
@@ -180,21 +146,18 @@ static int process_pma_cmd(struct mlx5_ib_dev *dev, u32 port_num,
 
 	mdev = mlx5_ib_get_native_port_mdev(dev, port_num, &mdev_port_num);
 	if (!mdev) {
-		/* Fail to get the native port, likely due to 2nd port is still
-		 * unaffiliated. In such case default to 1st port and attached
-		 * PF device.
-		 */
+		 
 		native_port = false;
 		mdev = dev->mdev;
 		mdev_port_num = 1;
 	}
 	if (MLX5_CAP_GEN(dev->mdev, num_ports) == 1) {
-		/* set local port to one for Function-Per-Port HCA. */
+		 
 		mdev = dev->mdev;
 		mdev_port_num = 1;
 	}
 
-	/* Declaring support of extended counters */
+	 
 	if (in_mad->mad_hdr.attr_id == IB_PMA_CLASS_PORT_INFO) {
 		struct ib_class_port_info cpi = {};
 
@@ -268,8 +231,7 @@ int mlx5_ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 		    method != IB_MGMT_METHOD_TRAP_REPRESS)
 			return IB_MAD_RESULT_SUCCESS;
 
-		/* Don't process SMInfo queries -- the SMA can't handle them.
-		 */
+		 
 		if (in->mad_hdr.attr_id == IB_SMP_ATTR_SM_INFO)
 			return IB_MAD_RESULT_SUCCESS;
 	} break;
@@ -295,12 +257,12 @@ int mlx5_ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 	if (err)
 		return IB_MAD_RESULT_FAILURE;
 
-	/* set return bit in status of directed route responses */
+	 
 	if (mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 		out->mad_hdr.status |= cpu_to_be16(1 << 15);
 
 	if (method == IB_MGMT_METHOD_TRAP_REPRESS)
-		/* no response for trap repress */
+		 
 		return IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_CONSUMED;
 
 	return IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_REPLY;
@@ -555,7 +517,7 @@ int mlx5_query_mad_ifc_port(struct ib_device *ibdev, u32 port,
 	if (!in_mad || !out_mad)
 		goto out;
 
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 
 	ib_init_query_mad(in_mad);
 	in_mad->attr_id  = IB_SMP_ATTR_PORT_INFO;
@@ -595,16 +557,16 @@ int mlx5_query_mad_ifc_port(struct ib_device *ibdev, u32 port,
 			props->active_width = out_mad->data[31] & 0x1f;
 	}
 
-	/* Check if extended speeds (EDR/FDR/...) are supported */
+	 
 	if (props->port_cap_flags & IB_PORT_EXTENDED_SPEEDS_SUP) {
 		ext_active_speed = out_mad->data[62] >> 4;
 
 		switch (ext_active_speed) {
 		case 1:
-			props->active_speed = 16; /* FDR */
+			props->active_speed = 16;  
 			break;
 		case 2:
-			props->active_speed = 32; /* EDR */
+			props->active_speed = 32;  
 			break;
 		case 4:
 			if (props->port_cap_flags & IB_PORT_CAP_MASK2_SUP &&
@@ -619,7 +581,7 @@ int mlx5_query_mad_ifc_port(struct ib_device *ibdev, u32 port,
 		}
 	}
 
-	/* If reported active speed is QDR, check if is FDR-10 */
+	 
 	if (props->active_speed == 4) {
 		if (dev->port_caps[port - 1].ext_port_cap &
 		    MLX_EXT_PORT_CAP_FLAG_EXTENDED_PORT_INFO) {
@@ -632,7 +594,7 @@ int mlx5_query_mad_ifc_port(struct ib_device *ibdev, u32 port,
 			if (err)
 				goto out;
 
-			/* Checking LinkSpeedActive for FDR-10 */
+			 
 			if (out_mad->data[15] & 0x1)
 				props->active_speed = 8;
 		}

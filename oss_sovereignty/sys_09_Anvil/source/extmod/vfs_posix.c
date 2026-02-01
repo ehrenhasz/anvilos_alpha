@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2017-2018 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/mperrno.h"
@@ -44,7 +20,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #ifdef _MSC_VER
-#include <direct.h> // For mkdir etc.
+#include <direct.h> 
 #endif
 #ifdef _WIN32
 #include <windows.h>
@@ -113,7 +89,7 @@ static mp_obj_t vfs_posix_make_new(const mp_obj_type_t *type, size_t n_args, siz
     vstr_init(&vfs->root, 0);
     if (n_args == 1) {
         const char *root = mp_obj_str_get_str(args[0]);
-        // if the root is relative, make it absolute, otherwise we'll get confused by chdir
+        
         #ifdef _WIN32
         char buf[MICROPY_ALLOC_PATH_MAX + 1];
         DWORD result = GetFullPathNameA(root, sizeof(buf), buf, NULL);
@@ -226,11 +202,11 @@ static mp_obj_t vfs_posix_ilistdir_it_iternext(mp_obj_t self_in) {
         const char *fn = dirent->d_name;
 
         if (fn[0] == '.' && (fn[1] == 0 || (fn[1] == '.' && fn[2] == 0))) {
-            // skip . and ..
+            
             continue;
         }
 
-        // make 3-tuple with info about this entry
+        
         mp_obj_tuple_t *t = MP_OBJ_TO_PTR(mp_obj_new_tuple(3, NULL));
 
         if (self->is_str) {
@@ -252,7 +228,7 @@ static mp_obj_t vfs_posix_ilistdir_it_iternext(mp_obj_t self_in) {
         }
         #endif
         #else
-        // DT_UNKNOWN should have 0 value on any reasonable system
+        
         t->items[1] = MP_OBJ_NEW_SMALL_INT(0);
         #endif
 
@@ -441,4 +417,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &vfs_posix_locals_dict
     );
 
-#endif // MICROPY_VFS_POSIX
+#endif 

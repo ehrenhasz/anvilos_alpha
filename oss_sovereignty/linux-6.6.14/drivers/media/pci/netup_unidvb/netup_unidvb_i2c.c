@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * netup_unidvb_i2c.c
- *
- * Internal I2C bus driver for NetUP Universal Dual DVB-CI
- *
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -19,7 +11,7 @@
 #define NETUP_I2C_BUS1_ADDR		0x4840
 #define NETUP_I2C_TIMEOUT		1000
 
-/* twi_ctrl0_stat reg bits */
+ 
 #define TWI_IRQEN_COMPL	0x1
 #define TWI_IRQEN_ANACK 0x2
 #define TWI_IRQEN_DNACK 0x4
@@ -29,16 +21,16 @@
 #define TWI_IRQ_TX	0x800
 #define TWI_IRQ_RX	0x1000
 #define TWI_IRQEN	(TWI_IRQEN_COMPL | TWI_IRQEN_ANACK | TWI_IRQEN_DNACK)
-/* twi_addr_ctrl1 reg bits*/
+ 
 #define TWI_TRANSFER	0x100
 #define TWI_NOSTOP	0x200
 #define TWI_SOFT_RESET	0x2000
-/* twi_clkdiv reg value */
+ 
 #define TWI_CLKDIV	156
-/* fifo_stat_ctrl reg bits */
+ 
 #define FIFO_IRQEN	0x8000
 #define FIFO_RESET	0x4000
-/* FIFO size */
+ 
 #define FIFO_SIZE	16
 
 struct netup_i2c_fifo_regs {
@@ -335,7 +327,7 @@ static void netup_i2c_remove(struct netup_unidvb_dev *ndev, int bus_num)
 	}
 	i2c = &ndev->i2c[bus_num];
 	netup_i2c_reset(i2c);
-	/* remove adapter */
+	 
 	i2c_del_adapter(&i2c->adap);
 	dev_info(&ndev->pci_dev->dev,
 		"netup_i2c_remove: unregistered I2C bus %d\n", bus_num);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * DRM driver for display panels connected to a Sitronix ST7715R or ST7735R
- * display controller in SPI mode.
- *
- * Copyright 2017 David Lechner <david@lechnology.com>
- * Copyright (C) 2019 Glider bvba
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -47,11 +41,11 @@ struct st7735r_cfg {
 	unsigned int left_offset;
 	unsigned int top_offset;
 	unsigned int write_only:1;
-	unsigned int rgb:1;		/* RGB (vs. BGR) */
+	unsigned int rgb:1;		 
 };
 
 struct st7735r_priv {
-	struct mipi_dbi_dev dbidev;	/* Must be first for .release() */
+	struct mipi_dbi_dev dbidev;	 
 	const struct st7735r_cfg *cfg;
 };
 
@@ -138,7 +132,7 @@ static const struct drm_simple_display_pipe_funcs st7735r_pipe_funcs = {
 
 static const struct st7735r_cfg jd_t18003_t01_cfg = {
 	.mode		= { DRM_SIMPLE_MODE(128, 160, 28, 35) },
-	/* Cannot read from Adafruit 1.8" display via SPI */
+	 
 	.write_only	= true,
 };
 

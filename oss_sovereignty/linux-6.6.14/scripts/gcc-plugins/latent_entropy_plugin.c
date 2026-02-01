@@ -1,79 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012-2016 by the PaX Team <pageexec@freemail.hu>
- * Copyright 2016 by Emese Revfy <re.emese@gmail.com>
- *
- * Note: the choice of the license means that the compilation process is
- *       NOT 'eligible' as defined by gcc's library exception to the GPL v3,
- *       but for the kernel it doesn't matter since it doesn't link against
- *       any of the gcc libraries
- *
- * This gcc plugin helps generate a little bit of entropy from program state,
- * used throughout the uptime of the kernel. Here is an instrumentation example:
- *
- * before:
- * void __latent_entropy test(int argc, char *argv[])
- * {
- *	if (argc <= 1)
- *		printf("%s: no command arguments :(\n", *argv);
- *	else
- *		printf("%s: %d command arguments!\n", *argv, args - 1);
- * }
- *
- * after:
- * void __latent_entropy test(int argc, char *argv[])
- * {
- *	// latent_entropy_execute() 1.
- *	unsigned long local_entropy;
- *	// init_local_entropy() 1.
- *	void *local_entropy_frameaddr;
- *	// init_local_entropy() 3.
- *	unsigned long tmp_latent_entropy;
- *
- *	// init_local_entropy() 2.
- *	local_entropy_frameaddr = __builtin_frame_address(0);
- *	local_entropy = (unsigned long) local_entropy_frameaddr;
- *
- *	// init_local_entropy() 4.
- *	tmp_latent_entropy = latent_entropy;
- *	// init_local_entropy() 5.
- *	local_entropy ^= tmp_latent_entropy;
- *
- *	// latent_entropy_execute() 3.
- *	if (argc <= 1) {
- *		// perturb_local_entropy()
- *		local_entropy += 4623067384293424948;
- *		printf("%s: no command arguments :(\n", *argv);
- *		// perturb_local_entropy()
- *	} else {
- *		local_entropy ^= 3896280633962944730;
- *		printf("%s: %d command arguments!\n", *argv, args - 1);
- *	}
- *
- *	// latent_entropy_execute() 4.
- *	tmp_latent_entropy = rol(tmp_latent_entropy, local_entropy);
- *	latent_entropy = tmp_latent_entropy;
- * }
- *
- * TODO:
- * - add ipa pass to identify not explicitly marked candidate functions
- * - mix in more program state (function arguments/return values,
- *   loop variables, etc)
- * - more instrumentation control via attribute parameters
- *
- * BUGS:
- * - none known
- *
- * Options:
- * -fplugin-arg-latent_entropy_plugin-disable
- *
- * Attribute: __attribute__((latent_entropy))
- *  The latent_entropy gcc attribute can be only on functions and variables.
- *  If it is on a function then the plugin will instrument it. If the attribute
- *  is on a variable then the plugin will initialize it with a random value.
- *  The variable must be an integer, an integer array type or a structure
- *  with integer fields.
- */
+
+ 
 
 #include "gcc-common.h"
 
@@ -192,12 +118,12 @@ static tree handle_latent_entropy_attribute(tree *node, tree name,
 				CONSTRUCTOR_APPEND_ELT(vals, fld, random_const);
 			}
 
-			/* Initialize the fields with random constants */
+			 
 			DECL_INITIAL(*node) = build_constructor(type, vals);
 			break;
 		}
 
-		/* Initialize the variable with a random constant */
+		 
 		case INTEGER_TYPE:
 			DECL_INITIAL(*node) = tree_get_random_const(type);
 			break;
@@ -232,10 +158,7 @@ static tree handle_latent_entropy_attribute(tree *node, tree name,
 				CONSTRUCTOR_APPEND_ELT(vals, cst, rand_cst);
 			}
 
-			/*
-			 * Initialize the elements of the array with random
-			 * constants
-			 */
+			 
 			DECL_INITIAL(*node) = build_constructor(type, vals);
 			break;
 		}
@@ -264,11 +187,11 @@ static bool latent_entropy_gate(void)
 {
 	tree list;
 
-	/* don't bother with noreturn functions for now */
+	 
 	if (TREE_THIS_VOLATILE(current_function_decl))
 		return false;
 
-	/* gcc-4.5 doesn't discover some trivial noreturn functions */
+	 
 	if (EDGE_COUNT(EXIT_BLOCK_PTR_FOR_FN(cfun)->preds) == 0)
 		return false;
 
@@ -286,18 +209,7 @@ static tree create_var(tree type, const char *name)
 	return var;
 }
 
-/*
- * Set up the next operation and its constant operand to use in the latent
- * entropy PRNG. When RHS is specified, the request is for perturbing the
- * local latent entropy variable, otherwise it is for perturbing the global
- * latent entropy variable where the two operands are already given by the
- * local and global latent entropy variables themselves.
- *
- * The operation is one of add/xor/rol when instrumenting the local entropy
- * variable and one of add/xor when perturbing the global entropy variable.
- * Rotation is not used for the latter case because it would transmit less
- * entropy to the global variable than the other two operations.
- */
+ 
 static enum tree_code get_op(tree *rhs)
 {
 	static enum tree_code op;
@@ -313,10 +225,7 @@ static enum tree_code get_op(tree *rhs)
 	case PLUS_EXPR:
 		if (rhs) {
 			op = LROTATE_EXPR;
-			/*
-			 * This code limits the value of random_const to
-			 * the size of a long for the rotation
-			 */
+			 
 			random_const %= TYPE_PRECISION(long_unsigned_type_node);
 			break;
 		}
@@ -358,23 +267,23 @@ static void __perturb_latent_entropy(gimple_stmt_iterator *gsi,
 	tree temp;
 	enum tree_code op;
 
-	/* 1. create temporary copy of latent_entropy */
+	 
 	temp = create_var(long_unsigned_type_node, "temp_latent_entropy");
 
-	/* 2. read... */
+	 
 	add_referenced_var(latent_entropy_decl);
 	mark_sym_for_renaming(latent_entropy_decl);
 	assign = gimple_build_assign(temp, latent_entropy_decl);
 	gsi_insert_before(gsi, assign, GSI_NEW_STMT);
 	update_stmt(assign);
 
-	/* 3. ...modify... */
+	 
 	op = get_op(NULL);
 	assign = create_assign(op, temp, temp, local_entropy);
 	gsi_insert_after(gsi, assign, GSI_NEW_STMT);
 	update_stmt(assign);
 
-	/* 4. ...write latent_entropy */
+	 
 	assign = gimple_build_assign(latent_entropy_decl, temp);
 	gsi_insert_after(gsi, assign, GSI_NEW_STMT);
 	update_stmt(assign);
@@ -436,10 +345,10 @@ static void init_local_entropy(basic_block bb, tree local_entropy)
 	unsigned HOST_WIDE_INT rand_cst;
 	gimple_stmt_iterator gsi = gsi_after_labels(bb);
 
-	/* 1. create local_entropy_frameaddr */
+	 
 	frame_addr = create_var(ptr_type_node, "local_entropy_frameaddr");
 
-	/* 2. local_entropy_frameaddr = __builtin_frame_address() */
+	 
 	fndecl = builtin_decl_implicit(BUILT_IN_FRAME_ADDRESS);
 	call = gimple_build_call(fndecl, 1, integer_zero_node);
 	gimple_call_set_lhs(call, frame_addr);
@@ -451,17 +360,17 @@ static void init_local_entropy(basic_block bb, tree local_entropy)
 	gsi_insert_after(&gsi, assign, GSI_NEW_STMT);
 	update_stmt(assign);
 
-	/* 3. create temporary copy of latent_entropy */
+	 
 	tmp = create_var(long_unsigned_type_node, "temp_latent_entropy");
 
-	/* 4. read the global entropy variable into local entropy */
+	 
 	add_referenced_var(latent_entropy_decl);
 	mark_sym_for_renaming(latent_entropy_decl);
 	assign = gimple_build_assign(tmp, latent_entropy_decl);
 	gsi_insert_after(&gsi, assign, GSI_NEW_STMT);
 	update_stmt(assign);
 
-	/* 5. mix local_entropy_frameaddr into local entropy */
+	 
 	assign = create_assign(BIT_XOR_EXPR, local_entropy, local_entropy, tmp);
 	gsi_insert_after(&gsi, assign, GSI_NEW_STMT);
 	update_stmt(assign);
@@ -506,7 +415,7 @@ static unsigned int latent_entropy_execute(void)
 	if (!create_latent_entropy_decl())
 		return 0;
 
-	/* prepare for step 2 below */
+	 
 	gcc_assert(single_succ_p(ENTRY_BLOCK_PTR_FOR_FN(cfun)));
 	bb = single_succ(ENTRY_BLOCK_PTR_FOR_FN(cfun));
 	if (!single_pred_p(bb)) {
@@ -515,24 +424,21 @@ static unsigned int latent_entropy_execute(void)
 		bb = single_succ(ENTRY_BLOCK_PTR_FOR_FN(cfun));
 	}
 
-	/* 1. create the local entropy variable */
+	 
 	local_entropy = create_var(long_unsigned_type_node, "local_entropy");
 
-	/* 2. initialize the local entropy variable */
+	 
 	init_local_entropy(bb, local_entropy);
 
 	bb = bb->next_bb;
 
-	/*
-	 * 3. instrument each BB with an operation on the
-	 *    local entropy variable
-	 */
+	 
 	while (bb != EXIT_BLOCK_PTR_FOR_FN(cfun)) {
 		perturb_local_entropy(bb, local_entropy);
 		bb = bb->next_bb;
 	}
 
-	/* 4. mix local entropy into the global entropy variable */
+	 
 	perturb_latent_entropy(local_entropy);
 	return 0;
 }
@@ -546,7 +452,7 @@ static void latent_entropy_start_unit(void *gcc_data __unused,
 	if (in_lto_p)
 		return;
 
-	/* extern volatile unsigned long latent_entropy */
+	 
 	quals = TYPE_QUALS(long_unsigned_type_node) | TYPE_QUAL_VOLATILE;
 	type = build_qualified_type(long_unsigned_type_node, quals);
 	id = get_identifier("latent_entropy");
@@ -577,10 +483,7 @@ __visible int plugin_init(struct plugin_name_args *plugin_info,
 	const struct plugin_argument * const argv = plugin_info->argv;
 	int i;
 
-	/*
-	 * Call get_random_seed() with noinit=true, so that this returns
-	 * 0 in the case where no seed has been passed via -frandom-seed.
-	 */
+	 
 	deterministic_seed = get_random_seed(true);
 
 	static const struct ggc_root_tab gt_ggc_r_gt_latent_entropy[] = {

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Intel Broxton PMC
- *
- * (C) Copyright 2014 - 2020 Intel Corporation
- *
- * This driver is based on Intel SCU IPC driver (intel_scu_ipc.c) by
- * Sreedhara DS <sreedhara.ds@intel.com>
- *
- * The PMC (Power Management Controller) running on the ARC processor
- * communicates with another entity running in the IA (Intel Architecture)
- * core through an IPC (Intel Processor Communications) mechanism which in
- * turn sends messages between the IA and the PMC.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -26,7 +14,7 @@
 
 #include <asm/intel_scu_ipc.h>
 
-/* Residency with clock rate at 19.2MHz to usecs */
+ 
 #define S0IX_RESIDENCY_IN_USECS(d, s)		\
 ({						\
 	u64 result = 10ull * ((d) + (s));	\
@@ -34,7 +22,7 @@
 	result;					\
 })
 
-/* Resources exported from IFWI */
+ 
 #define PLAT_RESOURCE_IPC_INDEX		0
 #define PLAT_RESOURCE_IPC_SIZE		0x1000
 #define PLAT_RESOURCE_GCR_OFFSET	0x1000
@@ -48,12 +36,7 @@
 #define PLAT_RESOURCE_GTD_IFACE_INDEX	7
 #define PLAT_RESOURCE_ACPI_IO_INDEX	0
 
-/*
- * BIOS does not create an ACPI device for each PMC function, but
- * exports multiple resources from one ACPI device (IPC) for multiple
- * functions. This driver is responsible for creating a child device and
- * to export resources for those functions.
- */
+ 
 #define SMI_EN_OFFSET			0x0040
 #define SMI_EN_SIZE			4
 #define TCO_BASE_OFFSET			0x0060
@@ -62,7 +45,7 @@
 #define TELEM_PMC_SSRAM_OFFSET		0x1b00
 #define TELEM_PUNIT_SSRAM_OFFSET	0x1a00
 
-/* Commands */
+ 
 #define PMC_NORTHPEAK_CTRL		0xed
 
 static inline bool is_gcr_valid(u32 offset)
@@ -70,16 +53,7 @@ static inline bool is_gcr_valid(u32 offset)
 	return offset < PLAT_RESOURCE_GCR_SIZE - 8;
 }
 
-/**
- * intel_pmc_gcr_read64() - Read a 64-bit PMC GCR register
- * @pmc: PMC device pointer
- * @offset: offset of GCR register from GCR address base
- * @data: data pointer for storing the register output
- *
- * Reads the 64-bit PMC GCR register at given offset.
- *
- * Return: Negative value on error or 0 on success.
- */
+ 
 int intel_pmc_gcr_read64(struct intel_pmc_dev *pmc, u32 offset, u64 *data)
 {
 	if (!is_gcr_valid(offset))
@@ -93,18 +67,7 @@ int intel_pmc_gcr_read64(struct intel_pmc_dev *pmc, u32 offset, u64 *data)
 }
 EXPORT_SYMBOL_GPL(intel_pmc_gcr_read64);
 
-/**
- * intel_pmc_gcr_update() - Update PMC GCR register bits
- * @pmc: PMC device pointer
- * @offset: offset of GCR register from GCR address base
- * @mask: bit mask for update operation
- * @val: update value
- *
- * Updates the bits of given GCR register as specified by
- * @mask and @val.
- *
- * Return: Negative value on error or 0 on success.
- */
+ 
 int intel_pmc_gcr_update(struct intel_pmc_dev *pmc, u32 offset, u32 mask, u32 val)
 {
 	u32 new_val;
@@ -121,21 +84,12 @@ int intel_pmc_gcr_update(struct intel_pmc_dev *pmc, u32 offset, u32 mask, u32 va
 	new_val = readl(pmc->gcr_mem_base + offset);
 	spin_unlock(&pmc->gcr_lock);
 
-	/* Check whether the bit update is successful */
+	 
 	return (new_val & mask) != (val & mask) ? -EIO : 0;
 }
 EXPORT_SYMBOL_GPL(intel_pmc_gcr_update);
 
-/**
- * intel_pmc_s0ix_counter_read() - Read S0ix residency
- * @pmc: PMC device pointer
- * @data: Out param that contains current S0ix residency count.
- *
- * Writes to @data how many usecs the system has been in low-power S0ix
- * state.
- *
- * Return: An error code or 0 on success.
- */
+ 
 int intel_pmc_s0ix_counter_read(struct intel_pmc_dev *pmc, u64 *data)
 {
 	u64 deep, shlw;
@@ -150,19 +104,7 @@ int intel_pmc_s0ix_counter_read(struct intel_pmc_dev *pmc, u64 *data)
 }
 EXPORT_SYMBOL_GPL(intel_pmc_s0ix_counter_read);
 
-/**
- * simplecmd_store() - Send a simple IPC command
- * @dev: Device under the attribute is
- * @attr: Attribute in question
- * @buf: Buffer holding data to be stored to the attribute
- * @count: Number of bytes in @buf
- *
- * Expects a string with two integers separated with space. These two
- * values hold command and subcommand that is send to PMC.
- *
- * Return: Number number of bytes written (@count) or negative errno in
- *	   case of error.
- */
+ 
 static ssize_t simplecmd_store(struct device *dev, struct device_attribute *attr,
 			       const char *buf, size_t count)
 {
@@ -186,19 +128,7 @@ static ssize_t simplecmd_store(struct device *dev, struct device_attribute *attr
 }
 static DEVICE_ATTR_WO(simplecmd);
 
-/**
- * northpeak_store() - Enable or disable Northpeak
- * @dev: Device under the attribute is
- * @attr: Attribute in question
- * @buf: Buffer holding data to be stored to the attribute
- * @count: Number of bytes in @buf
- *
- * Expects an unsigned integer. Non-zero enables Northpeak and zero
- * disables it.
- *
- * Return: Number number of bytes written (@count) or negative errno in
- *	   case of error.
- */
+ 
 static ssize_t northpeak_store(struct device *dev, struct device_attribute *attr,
 			       const char *buf, size_t count)
 {
@@ -212,7 +142,7 @@ static ssize_t northpeak_store(struct device *dev, struct device_attribute *attr
 	if (ret)
 		return ret;
 
-	/* Northpeak is enabled if subcmd == 1 and disabled if it is 0 */
+	 
 	if (val)
 		subcmd = 1;
 	else
@@ -318,12 +248,12 @@ static int intel_pmc_get_resources(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* IPC registers */
+	 
 	scu_data->mem.flags = res->flags;
 	scu_data->mem.start = res->start;
 	scu_data->mem.end = res->start + PLAT_RESOURCE_IPC_SIZE - 1;
 
-	/* GCR registers */
+	 
 	gcr_res.flags = res->flags;
 	gcr_res.start = res->start + PLAT_RESOURCE_GCR_OFFSET;
 	gcr_res.end = gcr_res.start + PLAT_RESOURCE_GCR_SIZE - 1;
@@ -332,12 +262,12 @@ static int intel_pmc_get_resources(struct platform_device *pdev,
 	if (IS_ERR(pmc->gcr_mem_base))
 		return PTR_ERR(pmc->gcr_mem_base);
 
-	/* Only register iTCO watchdog if there is no WDAT ACPI table */
+	 
 	ret = intel_pmc_get_tco_resources(pdev);
 	if (ret)
 		return ret;
 
-	/* BIOS data register */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM,
 				    PLAT_RESOURCE_BIOS_DATA_INDEX);
 	if (!res) {
@@ -346,7 +276,7 @@ static int intel_pmc_get_resources(struct platform_device *pdev,
 	}
 	punit_res[npunit_res++] = *res;
 
-	/* BIOS interface register */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM,
 				    PLAT_RESOURCE_BIOS_IFACE_INDEX);
 	if (!res) {
@@ -355,25 +285,25 @@ static int intel_pmc_get_resources(struct platform_device *pdev,
 	}
 	punit_res[npunit_res++] = *res;
 
-	/* ISP data register, optional */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM,
 				    PLAT_RESOURCE_ISP_DATA_INDEX);
 	if (res)
 		punit_res[npunit_res++] = *res;
 
-	/* ISP interface register, optional */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM,
 				    PLAT_RESOURCE_ISP_IFACE_INDEX);
 	if (res)
 		punit_res[npunit_res++] = *res;
 
-	/* GTD data register, optional */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM,
 				    PLAT_RESOURCE_GTD_DATA_INDEX);
 	if (res)
 		punit_res[npunit_res++] = *res;
 
-	/* GTD interface register, optional */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM,
 				    PLAT_RESOURCE_GTD_IFACE_INDEX);
 	if (res)
@@ -381,7 +311,7 @@ static int intel_pmc_get_resources(struct platform_device *pdev,
 
 	punit.num_resources = npunit_res;
 
-	/* Telemetry SSRAM is optional */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM,
 				    PLAT_RESOURCE_TELEM_SSRAM_INDEX);
 	if (res)

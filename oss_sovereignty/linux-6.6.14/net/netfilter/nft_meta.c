@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- * Copyright (c) 2014 Intel Corporation
- * Author: Tomasz Bursztyka <tomasz.bursztyka@linux.intel.com>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netlink.h>
@@ -20,13 +14,13 @@
 #include <net/dst.h>
 #include <net/ip.h>
 #include <net/sock.h>
-#include <net/tcp_states.h> /* for TCP_TIME_WAIT */
+#include <net/tcp_states.h>  
 #include <net/netfilter/nf_tables.h>
 #include <net/netfilter/nf_tables_core.h>
 #include <net/netfilter/nft_meta.h>
 #include <net/netfilter/nf_tables_offload.h>
 
-#include <uapi/linux/netfilter_bridge.h> /* NF_BR_PRE_ROUTING */
+#include <uapi/linux/netfilter_bridge.h>  
 
 #define NFT_META_SECS_PER_MINUTE	60
 #define NFT_META_SECS_PER_HOUR		3600
@@ -890,7 +884,7 @@ static const struct nft_expr_ops nft_meta_inner_ops = {
 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_meta)),
 	.init		= nft_meta_inner_init,
 	.dump		= nft_meta_get_dump,
-	/* direct call to nft_meta_inner_eval(). */
+	 
 };
 
 struct nft_expr_type nft_meta_type __read_mostly = {
@@ -1008,4 +1002,4 @@ struct nft_object_type nft_secmark_obj_type __read_mostly = {
 	.policy		= nft_secmark_policy,
 	.owner		= THIS_MODULE,
 };
-#endif /* CONFIG_NETWORK_SECMARK */
+#endif  

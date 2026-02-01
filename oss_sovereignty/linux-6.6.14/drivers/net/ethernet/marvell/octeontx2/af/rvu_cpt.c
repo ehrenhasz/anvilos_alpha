@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/pci.h>
@@ -12,11 +8,11 @@
 #include "mbox.h"
 #include "rvu.h"
 
-/* CPT PF device id */
+ 
 #define	PCI_DEVID_OTX2_CPT_PF	0xA0FD
 #define	PCI_DEVID_OTX2_CPT10K_PF 0xA0F2
 
-/* Length of initial context fetch in 128 byte words */
+ 
 #define CPT_CTX_ILEN    1ULL
 
 #define cpt_get_eng_sts(e_min, e_max, rsp, etype)                   \
@@ -63,7 +59,7 @@ static irqreturn_t cpt_af_flt_intr_handler(int vec, void *ptr)
 			break;
 		}
 		grp = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng)) & 0xFF;
-		/* Disable and enable the engine which triggers fault */
+		 
 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng), 0x0);
 		val = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng));
 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng), val & ~1ULL);
@@ -152,7 +148,7 @@ static void cpt_10k_unregister_interrupts(struct rvu_block *block, int off)
 	int blkaddr = block->addr;
 	int i;
 
-	/* Disable all CPT AF interrupts */
+	 
 	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(0), ~0ULL);
 	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(1), ~0ULL);
 	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(2), 0xFFFF);
@@ -185,7 +181,7 @@ static void cpt_unregister_interrupts(struct rvu *rvu, int blkaddr)
 	if (!is_rvu_otx2(rvu))
 		return cpt_10k_unregister_interrupts(block, offs);
 
-	/* Disable all CPT AF interrupts */
+	 
 	for (i = 0; i < CPT_AF_INT_VEC_RVU; i++)
 		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(i), ~0ULL);
 	rvu_write64(rvu, blkaddr, CPT_AF_RVU_INT_ENA_W1C, 0x1);
@@ -404,18 +400,18 @@ int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
 	if (!num_lfs)
 		return CPT_AF_ERR_LF_INVALID;
 
-	/* Check if requested 'CPTLF <=> NIXLF' mapping is valid */
+	 
 	if (req->nix_pf_func) {
-		/* If default, use 'this' CPTLF's PFFUNC */
+		 
 		if (req->nix_pf_func == RVU_DEFAULT_PF_FUNC)
 			req->nix_pf_func = pcifunc;
 		if (!is_pffunc_map_valid(rvu, req->nix_pf_func, BLKTYPE_NIX))
 			return CPT_AF_ERR_NIX_PF_FUNC_INVALID;
 	}
 
-	/* Check if requested 'CPTLF <=> SSOLF' mapping is valid */
+	 
 	if (req->sso_pf_func) {
-		/* If default, use 'this' CPTLF's PFFUNC */
+		 
 		if (req->sso_pf_func == RVU_DEFAULT_PF_FUNC)
 			req->sso_pf_func = pcifunc;
 		if (!is_pffunc_map_valid(rvu, req->sso_pf_func, BLKTYPE_SSO))
@@ -427,7 +423,7 @@ int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
 		if (cptlf < 0)
 			return CPT_AF_ERR_LF_INVALID;
 
-		/* Set CPT LF group and priority */
+		 
 		val = (u64)req->eng_grpmsk << 48 | 1;
 		if (!is_rvu_otx2(rvu)) {
 			if (req->ctx_ilen_valid)
@@ -438,9 +434,7 @@ int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
 
 		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
 
-		/* Set CPT LF NIX_PF_FUNC and SSO_PF_FUNC. EXE_LDWB is set
-		 * on reset.
-		 */
+		 
 		val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf));
 		val &= ~(GENMASK_ULL(63, 48) | GENMASK_ULL(47, 32));
 		val |= ((u64)req->nix_pf_func << 48 |
@@ -468,10 +462,10 @@ static int cpt_lf_free(struct rvu *rvu, struct msg_req *req, int blkaddr)
 		if (cptlf < 0)
 			return CPT_AF_ERR_LF_INVALID;
 
-		/* Perform teardown */
+		 
 		rvu_cpt_lf_teardown(rvu, pcifunc, blkaddr, cptlf, slot);
 
-		/* Reset LF */
+		 
 		err = rvu_lf_reset(rvu, block, cptlf);
 		if (err) {
 			dev_err(rvu->dev, "Failed to reset blkaddr %d LF%d\n",
@@ -506,18 +500,15 @@ static int cpt_inline_ipsec_cfg_inbound(struct rvu *rvu, int blkaddr, u8 cptlf,
 
 	val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf));
 	if (req->enable && (val & BIT_ULL(16))) {
-		/* IPSec inline outbound path is already enabled for a given
-		 * CPT LF, HRM states that inline inbound & outbound paths
-		 * must not be enabled at the same time for a given CPT LF
-		 */
+		 
 		return CPT_AF_ERR_INLINE_IPSEC_INB_ENA;
 	}
-	/* Check if requested 'CPTLF <=> SSOLF' mapping is valid */
+	 
 	if (sso_pf_func && !is_pffunc_map_valid(rvu, sso_pf_func, BLKTYPE_SSO))
 		return CPT_AF_ERR_SSO_PF_FUNC_INVALID;
 
 	nix_sel = (blkaddr == BLKADDR_CPT1) ? 1 : 0;
-	/* Enable CPT LF for IPsec inline inbound operations */
+	 
 	if (req->enable)
 		val |= BIT_ULL(9);
 	else
@@ -527,19 +518,17 @@ static int cpt_inline_ipsec_cfg_inbound(struct rvu *rvu, int blkaddr, u8 cptlf,
 	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
 
 	if (sso_pf_func) {
-		/* Set SSO_PF_FUNC */
+		 
 		val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf));
 		val |= (u64)sso_pf_func << 32;
 		val |= (u64)req->nix_pf_func << 48;
 		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), val);
 	}
 	if (req->sso_pf_func_ovrd)
-		/* Set SSO_PF_FUNC_OVRD for inline IPSec */
+		 
 		rvu_write64(rvu, blkaddr, CPT_AF_ECO, 0x1);
 
-	/* Configure the X2P Link register with the cpt base channel number and
-	 * range of channels it should propagate to X2P
-	 */
+	 
 	if (!is_rvu_otx2(rvu)) {
 		val = (ilog2(NIX_CHAN_CPT_X2P_MASK + 1) << 16);
 		val |= (u64)rvu->hw->cpt_chan_base;
@@ -561,18 +550,15 @@ static int cpt_inline_ipsec_cfg_outbound(struct rvu *rvu, int blkaddr, u8 cptlf,
 
 	val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf));
 	if (req->enable && (val & BIT_ULL(9))) {
-		/* IPSec inline inbound path is already enabled for a given
-		 * CPT LF, HRM states that inline inbound & outbound paths
-		 * must not be enabled at the same time for a given CPT LF
-		 */
+		 
 		return CPT_AF_ERR_INLINE_IPSEC_OUT_ENA;
 	}
 
-	/* Check if requested 'CPTLF <=> NIXLF' mapping is valid */
+	 
 	if (nix_pf_func && !is_pffunc_map_valid(rvu, nix_pf_func, BLKTYPE_NIX))
 		return CPT_AF_ERR_NIX_PF_FUNC_INVALID;
 
-	/* Enable CPT LF for IPsec inline outbound operations */
+	 
 	if (req->enable)
 		val |= BIT_ULL(16);
 	else
@@ -580,7 +566,7 @@ static int cpt_inline_ipsec_cfg_outbound(struct rvu *rvu, int blkaddr, u8 cptlf,
 	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
 
 	if (nix_pf_func) {
-		/* Set NIX_PF_FUNC */
+		 
 		val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf));
 		val |= (u64)nix_pf_func << 48;
 		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), val);
@@ -643,7 +629,7 @@ static bool is_valid_offset(struct rvu *rvu, struct cpt_rd_wr_reg_msg *req)
 	if (blkaddr < 0)
 		return false;
 
-	/* Registers that can be accessed from PF/VF */
+	 
 	if ((offset & 0xFF000) ==  CPT_AF_LFX_CTL(0) ||
 	    (offset & 0xFF000) ==  CPT_AF_LFX_CTL2(0)) {
 		if (offset & 7)
@@ -654,10 +640,10 @@ static bool is_valid_offset(struct rvu *rvu, struct cpt_rd_wr_reg_msg *req)
 		pfvf = rvu_get_pfvf(rvu, req->hdr.pcifunc);
 		num_lfs = rvu_get_rsrc_mapcount(pfvf, block->addr);
 		if (lf >= num_lfs)
-			/* Slot is not valid for that PF/VF */
+			 
 			return false;
 
-		/* Translate local LF used by VFs to global CPT LF */
+		 
 		lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr],
 				req->hdr.pcifunc, lf);
 		if (lf < 0)
@@ -665,7 +651,7 @@ static bool is_valid_offset(struct rvu *rvu, struct cpt_rd_wr_reg_msg *req)
 
 		return true;
 	} else if (!(req->hdr.pcifunc & RVU_PFVF_FUNC_MASK)) {
-		/* Registers that can be accessed from PF */
+		 
 		switch (offset) {
 		case CPT_AF_DIAG:
 		case CPT_AF_CTL:
@@ -702,7 +688,7 @@ int rvu_mbox_handler_cpt_rd_wr_register(struct rvu *rvu,
 	if (blkaddr < 0)
 		return blkaddr;
 
-	/* This message is accepted only if sent from CPT PF/VF */
+	 
 	if (!is_cpt_pf(rvu, req->hdr.pcifunc) &&
 	    !is_cpt_vf(rvu, req->hdr.pcifunc))
 		return CPT_AF_ERR_ACCESS_DENIED;
@@ -768,15 +754,15 @@ static void get_eng_sts(struct rvu *rvu, struct cpt_sts_rsp *rsp, int blkaddr)
 	max_ies = (reg >> 16) & 0xffff;
 	max_aes = (reg >> 32) & 0xffff;
 
-	/* Get AE status */
+	 
 	e_min = max_ses + max_ies;
 	e_max = max_ses + max_ies + max_aes;
 	cpt_get_eng_sts(e_min, e_max, rsp, ae);
-	/* Get SE status */
+	 
 	e_min = 0;
 	e_max = max_ses;
 	cpt_get_eng_sts(e_min, e_max, rsp, se);
-	/* Get IE status */
+	 
 	e_min = max_ses;
 	e_max = max_ses + max_ies;
 	cpt_get_eng_sts(e_min, e_max, rsp, ie);
@@ -791,17 +777,17 @@ int rvu_mbox_handler_cpt_sts(struct rvu *rvu, struct cpt_sts_req *req,
 	if (blkaddr < 0)
 		return blkaddr;
 
-	/* This message is accepted only if sent from CPT PF/VF */
+	 
 	if (!is_cpt_pf(rvu, req->hdr.pcifunc) &&
 	    !is_cpt_vf(rvu, req->hdr.pcifunc))
 		return CPT_AF_ERR_ACCESS_DENIED;
 
 	get_ctx_pc(rvu, rsp, blkaddr);
 
-	/* Get CPT engines status */
+	 
 	get_eng_sts(rvu, rsp, blkaddr);
 
-	/* Read CPT instruction PC registers */
+	 
 	rsp->inst_req_pc = rvu_read64(rvu, blkaddr, CPT_AF_INST_REQ_PC);
 	rsp->inst_lat_pc = rvu_read64(rvu, blkaddr, CPT_AF_INST_LATENCY_PC);
 	rsp->rd_req_pc = rvu_read64(rvu, blkaddr, CPT_AF_RD_REQ_PC);
@@ -829,7 +815,7 @@ static void cpt_rxc_time_cfg(struct rvu *rvu, struct cpt_rxc_time_cfg_req *req,
 	u64 dfrg_reg;
 
 	if (save) {
-		/* Save older config */
+		 
 		dfrg_reg = rvu_read64(rvu, blkaddr, CPT_AF_RXC_DFRG);
 		save->zombie_thres = FIELD_GET(RXC_ZOMBIE_THRES, dfrg_reg);
 		save->zombie_limit = FIELD_GET(RXC_ZOMBIE_LIMIT, dfrg_reg);
@@ -858,7 +844,7 @@ int rvu_mbox_handler_cpt_rxc_time_cfg(struct rvu *rvu,
 	if (blkaddr < 0)
 		return blkaddr;
 
-	/* This message is accepted only if sent from CPT PF/VF */
+	 
 	if (!is_cpt_pf(rvu, req->hdr.pcifunc) &&
 	    !is_cpt_vf(rvu, req->hdr.pcifunc))
 		return CPT_AF_ERR_ACCESS_DENIED;
@@ -941,9 +927,7 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
 	if (is_rvu_otx2(rvu))
 		return;
 
-	/* Set time limit to minimum values, so that rxc entries will be
-	 * flushed out quickly.
-	 */
+	 
 	req.step = 1;
 	req.zombie_thres = 1;
 	req.zombie_limit = 1;
@@ -977,7 +961,7 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
 	if (timeout == 0)
 		dev_warn(rvu->dev, "Poll for RXC zombie count hits hard loop counter\n");
 
-	/* Restore config */
+	 
 	cpt_rxc_time_cfg(rvu, &prev, blkaddr, NULL);
 }
 
@@ -995,7 +979,7 @@ static void cpt_lf_disable_iqueue(struct rvu *rvu, int blkaddr, int slot)
 	u64 qsize, pending;
 	int i = 0;
 
-	/* Disable instructions enqueuing */
+	 
 	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_ALIASX(slot, CPT_LF_CTL), 0x0);
 
 	inprog = rvu_read64(rvu, blkaddr,
@@ -1020,7 +1004,7 @@ static void cpt_lf_disable_iqueue(struct rvu *rvu, int blkaddr, int slot)
 		dev_warn(rvu->dev, "TIMEOUT: CPT poll on pending instructions\n");
 
 	timeout = 1000000;
-	/* Wait for CPT queue to become execution-quiescent */
+	 
 	do {
 		inprog = rvu_read64(rvu, blkaddr,
 				    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
@@ -1036,7 +1020,7 @@ static void cpt_lf_disable_iqueue(struct rvu *rvu, int blkaddr, int slot)
 
 	if (timeout == 0)
 		dev_warn(rvu->dev, "TIMEOUT: CPT poll on inflight count\n");
-	/* Wait for 2 us to flush all queue writes to memory */
+	 
 	udelay(2);
 }
 
@@ -1048,7 +1032,7 @@ int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf, int s
 		cpt_rxc_teardown(rvu, blkaddr);
 
 	mutex_lock(&rvu->alias_lock);
-	/* Enable BAR2 ALIAS for this pcifunc. */
+	 
 	reg = BIT_ULL(16) | pcifunc;
 	rvu_bar2_sel_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, reg);
 
@@ -1088,7 +1072,7 @@ static int cpt_inline_inb_lf_cmd_send(struct rvu *rvu, int blkaddr,
 	}
 	*res = 0xFFFF;
 
-	/* Send mbox message to CPT PF */
+	 
 	req = (struct cpt_inst_lmtst_req *)
 	       otx2_mbox_alloc_msg_rsp(&rvu->afpf_wq_info.mbox_up,
 				       cpt_pf_num, sizeof(*req),
@@ -1101,22 +1085,20 @@ static int cpt_inline_inb_lf_cmd_send(struct rvu *rvu, int blkaddr,
 	req->hdr.id = MBOX_MSG_CPT_INST_LMTST;
 
 	inst = req->inst;
-	/* Prepare CPT_INST_S */
+	 
 	inst[0] = 0;
 	inst[1] = res_daddr;
-	/* AF PF FUNC */
+	 
 	inst[2] = 0;
-	/* Set QORD */
+	 
 	inst[3] = 1;
 	inst[4] = 0;
 	inst[5] = 0;
 	inst[6] = 0;
-	/* Set EGRP */
+	 
 	inst[7] = CPT_SE_IE_EGRP << 61;
 
-	/* Subtract 1 from the NIX-CPT credit count to preserve
-	 * credit counts.
-	 */
+	 
 	cpt_idx = (blkaddr == BLKADDR_CPT0) ? 0 : 1;
 	rvu_write64(rvu, nix_blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx),
 		    BIT_ULL(22) - 1);
@@ -1126,7 +1108,7 @@ static int cpt_inline_inb_lf_cmd_send(struct rvu *rvu, int blkaddr,
 	if (rc)
 		dev_warn(rvu->dev, "notification to pf %d failed\n",
 			 cpt_pf_num);
-	/* Wait for CPT instruction to be completed */
+	 
 	do {
 		mdelay(1);
 		if (*res == 0xFFFF)
@@ -1166,14 +1148,12 @@ int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc)
 
 	blkaddr = (nix_blkaddr == BLKADDR_NIX1) ? BLKADDR_CPT1 : BLKADDR_CPT0;
 
-	/* Submit CPT_INST_S to track when all packets have been
-	 * flushed through for the NIX PF FUNC in inline inbound case.
-	 */
+	 
 	rc = cpt_inline_inb_lf_cmd_send(rvu, blkaddr, nix_blkaddr);
 	if (rc)
 		return rc;
 
-	/* Wait for rxc entries to be flushed out */
+	 
 	cpt_rxc_teardown(rvu, blkaddr);
 
 	reg = rvu_read64(rvu, blkaddr, CPT_AF_CONSTANTS0);
@@ -1188,7 +1168,7 @@ int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc)
 		goto unlock;
 	}
 
-	/* Enable BAR2 ALIAS for this pcifunc. */
+	 
 	reg = BIT_ULL(16) | pcifunc;
 	rvu_bar2_sel_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, reg);
 
@@ -1213,7 +1193,7 @@ unlock:
 
 int rvu_cpt_init(struct rvu *rvu)
 {
-	/* Retrieve CPT PF number */
+	 
 	rvu->cpt_pf_num = get_cpt_pf_num(rvu);
 	spin_lock_init(&rvu->cpt_intr_lock);
 

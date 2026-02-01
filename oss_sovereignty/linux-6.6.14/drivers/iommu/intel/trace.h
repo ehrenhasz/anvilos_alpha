@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Intel IOMMU trace support
- *
- * Copyright (C) 2019 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM intel_iommu
 
@@ -89,9 +83,9 @@ TRACE_EVENT(prq_report,
 				      __entry->dw1, __entry->dw2, __entry->dw3)
 	)
 );
-#endif /* _TRACE_INTEL_IOMMU_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/iommu/intel/

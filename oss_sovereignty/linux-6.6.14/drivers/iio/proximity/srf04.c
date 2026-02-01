@@ -1,39 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SRF04: ultrasonic sensor for distance measuring by using GPIOs
- *
- * Copyright (c) 2017 Andreas Klinger <ak@it-klinger.de>
- *
- * For details about the device see:
- * https://www.robot-electronics.co.uk/htm/srf04tech.htm
- *
- * the measurement cycle as timing diagram looks like:
- *
- *          +---+
- * GPIO     |   |
- * trig:  --+   +------------------------------------------------------
- *          ^   ^
- *          |<->|
- *         udelay(trigger_pulse_us)
- *
- * ultra           +-+ +-+ +-+
- * sonic           | | | | | |
- * burst: ---------+ +-+ +-+ +-----------------------------------------
- *                           .
- * ultra                     .              +-+ +-+ +-+
- * sonic                     .              | | | | | |
- * echo:  ----------------------------------+ +-+ +-+ +----------------
- *                           .                        .
- *                           +------------------------+
- * GPIO                      |                        |
- * echo:  -------------------+                        +---------------
- *                           ^                        ^
- *                           interrupt                interrupt
- *                           (ts_rising)              (ts_falling)
- *                           |<---------------------->|
- *                              pulse time measured
- *                              --> one round trip of ultra sonic waves
- */
+
+ 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
 #include <linux/kernel.h>
@@ -104,10 +70,7 @@ static int srf04_read(struct srf04_data *data)
 		if (ret < 0)
 			return ret;
 	}
-	/*
-	 * just one read-echo-cycle can take place at a time
-	 * ==> lock against concurrent reading calls
-	 */
+	 
 	mutex_lock(&data->lock);
 
 	reinit_completion(&data->rising);
@@ -122,7 +85,7 @@ static int srf04_read(struct srf04_data *data)
 		pm_runtime_put_autosuspend(data->dev);
 	}
 
-	/* it should not take more than 20 ms until echo is rising */
+	 
 	ret = wait_for_completion_killable_timeout(&data->rising, HZ/50);
 	if (ret < 0) {
 		mutex_unlock(&data->lock);
@@ -132,7 +95,7 @@ static int srf04_read(struct srf04_data *data)
 		return -ETIMEDOUT;
 	}
 
-	/* it cannot take more than 50 ms until echo is falling */
+	 
 	ret = wait_for_completion_killable_timeout(&data->falling, HZ/20);
 	if (ret < 0) {
 		mutex_unlock(&data->lock);
@@ -147,44 +110,13 @@ static int srf04_read(struct srf04_data *data)
 	mutex_unlock(&data->lock);
 
 	dt_ns = ktime_to_ns(ktime_dt);
-	/*
-	 * measuring more than 6,45 meters is beyond the capabilities of
-	 * the supported sensors
-	 * ==> filter out invalid results for not measuring echos of
-	 *     another us sensor
-	 *
-	 * formula:
-	 *         distance     6,45 * 2 m
-	 * time = ---------- = ------------ = 40438871 ns
-	 *          speed         319 m/s
-	 *
-	 * using a minimum speed at -20 °C of 319 m/s
-	 */
+	 
 	if (dt_ns > 40438871)
 		return -EIO;
 
 	time_ns = dt_ns;
 
-	/*
-	 * the speed as function of the temperature is approximately:
-	 *
-	 * speed = 331,5 + 0,6 * Temp
-	 *   with Temp in °C
-	 *   and speed in m/s
-	 *
-	 * use 343,5 m/s as ultrasonic speed at 20 °C here in absence of the
-	 * temperature
-	 *
-	 * therefore:
-	 *             time     343,5     time * 106
-	 * distance = ------ * ------- = ------------
-	 *             10^6         2         617176
-	 *   with time in ns
-	 *   and distance in mm (one way)
-	 *
-	 * because we limit to 6,45 meters the multiplication with 106 just
-	 * fits into 32 bit
-	 */
+	 
 	distance_mm = time_ns * 106 / 617176;
 
 	return distance_mm;
@@ -208,10 +140,7 @@ static int srf04_read_raw(struct iio_dev *indio_dev,
 		*val = ret;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * theoretical maximum resolution is 3 mm
-		 * 1 LSB is 1 mm
-		 */
+		 
 		*val = 0;
 		*val2 = 1000;
 		return IIO_VAL_INT_PLUS_MICRO;

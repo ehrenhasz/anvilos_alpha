@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/completion.h>
@@ -70,21 +68,17 @@
 #define ADC_CHANNEL_OFFSET			0x8
 #define ADC_CHANNEL_MASK			GENMASK(7, 0)
 
-/*
- * Conversion time varies based on the decimation, clock rate, fast average
- * samples and measurements queued across different VADC peripherals.
- * Set the timeout to a max of 100ms.
- */
+ 
 #define ADC5_CONV_TIME_MIN_US			263
 #define ADC5_CONV_TIME_MAX_US			264
 #define ADC5_CONV_TIME_RETRY			400
 #define ADC5_CONV_TIMEOUT			msecs_to_jiffies(100)
 
-/* Digital version >= 5.3 supports hw_settle_2 */
+ 
 #define ADC5_HW_SETTLE_DIFF_MINOR		3
 #define ADC5_HW_SETTLE_DIFF_MAJOR		5
 
-/* For PMIC7 */
+ 
 #define ADC_APP_SID				0x40
 #define ADC_APP_SID_MASK			GENMASK(3, 0)
 #define ADC7_CONV_TIMEOUT			msecs_to_jiffies(10)
@@ -100,22 +94,7 @@ enum adc5_cal_val {
 	ADC5_NEW_CAL
 };
 
-/**
- * struct adc5_channel_prop - ADC channel property.
- * @channel: channel number, refer to the channel list.
- * @cal_method: calibration method.
- * @cal_val: calibration value
- * @decimation: sampling rate supported for the channel.
- * @sid: slave id of PMIC owning the channel, for PMIC7.
- * @prescale: channel scaling performed on the input signal.
- * @hw_settle_time: the time between AMUX being configured and the
- *	start of conversion.
- * @avg_samples: ability to provide single result from the ADC
- *	that is an average of multiple measurements.
- * @scale_fn_type: Represents the scaling function to convert voltage
- *	physical units desired by the client for the channel.
- * @channel_name: Channel name used in device tree.
- */
+ 
 struct adc5_channel_prop {
 	unsigned int		channel;
 	enum adc5_cal_method	cal_method;
@@ -129,19 +108,7 @@ struct adc5_channel_prop {
 	const char		*channel_name;
 };
 
-/**
- * struct adc5_chip - ADC private structure.
- * @regmap: SPMI ADC5 peripheral register map field.
- * @dev: SPMI ADC5 device.
- * @base: base address for the ADC peripheral.
- * @nchannels: number of ADC channels.
- * @chan_props: array of ADC channel properties.
- * @iio_chans: array of IIO channels specification.
- * @poll_eoc: use polling instead of interrupt.
- * @complete: ADC result notification after interrupt is received.
- * @lock: ADC lock for access to the peripheral.
- * @data: software configuration data.
- */
+ 
 struct adc5_chip {
 	struct regmap		*regmap;
 	struct device		*dev;
@@ -220,15 +187,15 @@ static int adc5_poll_wait_eoc(struct adc5_chip *adc)
 static void adc5_update_dig_param(struct adc5_chip *adc,
 			struct adc5_channel_prop *prop, u8 *data)
 {
-	/* Update calibration value */
+	 
 	*data &= ~ADC5_USR_DIG_PARAM_CAL_VAL;
 	*data |= (prop->cal_val << ADC5_USR_DIG_PARAM_CAL_VAL_SHIFT);
 
-	/* Update calibration select */
+	 
 	*data &= ~ADC5_USR_DIG_PARAM_CAL_SEL;
 	*data |= (prop->cal_method << ADC5_USR_DIG_PARAM_CAL_SEL_SHIFT);
 
-	/* Update decimation ratio select */
+	 
 	*data &= ~ADC5_USR_DIG_PARAM_DEC_RATIO_SEL;
 	*data |= (prop->decimation << ADC5_USR_DIG_PARAM_DEC_RATIO_SEL_SHIFT);
 }
@@ -239,29 +206,29 @@ static int adc5_configure(struct adc5_chip *adc,
 	int ret;
 	u8 buf[6];
 
-	/* Read registers 0x42 through 0x46 */
+	 
 	ret = adc5_read(adc, ADC5_USR_DIG_PARAM, buf, sizeof(buf));
 	if (ret)
 		return ret;
 
-	/* Digital param selection */
+	 
 	adc5_update_dig_param(adc, prop, &buf[0]);
 
-	/* Update fast average sample value */
+	 
 	buf[1] &= (u8) ~ADC5_USR_FAST_AVG_CTL_SAMPLES_MASK;
 	buf[1] |= prop->avg_samples;
 
-	/* Select ADC channel */
+	 
 	buf[2] = prop->channel;
 
-	/* Select HW settle delay for channel */
+	 
 	buf[3] &= (u8) ~ADC5_USR_HW_SETTLE_DELAY_MASK;
 	buf[3] |= prop->hw_settle_time;
 
-	/* Select ADC enable */
+	 
 	buf[4] |= ADC5_USR_EN_CTL1_ADC_EN;
 
-	/* Select CONV request */
+	 
 	buf[5] |= ADC5_USR_CONV_REQ_REQ;
 
 	if (!adc->poll_eoc)
@@ -284,21 +251,21 @@ static int adc7_configure(struct adc5_chip *adc,
 	if (ret)
 		return ret;
 
-	/* Digital param selection */
+	 
 	adc5_update_dig_param(adc, prop, &buf[0]);
 
-	/* Update fast average sample value */
+	 
 	buf[1] &= ~ADC5_USR_FAST_AVG_CTL_SAMPLES_MASK;
 	buf[1] |= prop->avg_samples;
 
-	/* Select ADC channel */
+	 
 	buf[2] = prop->channel;
 
-	/* Select HW settle delay for channel */
+	 
 	buf[3] &= ~ADC5_USR_HW_SETTLE_DELAY_MASK;
 	buf[3] |= prop->hw_settle_time;
 
-	/* Select CONV request */
+	 
 	conv_req = ADC5_USR_CONV_REQ_REQ;
 
 	if (!adc->poll_eoc)
@@ -368,7 +335,7 @@ static int adc7_do_conversion(struct adc5_chip *adc,
 		goto unlock;
 	}
 
-	/* No support for polling mode at present */
+	 
 	wait_for_completion_timeout(&adc->complete, ADC7_CONV_TIMEOUT);
 
 	ret = adc5_read(adc, ADC5_USR_STATUS1, &status, 1);
@@ -497,7 +464,7 @@ struct adc5_channels {
 	enum vadc_scale_fn_type scale_fn_type;
 };
 
-/* In these definitions, _pre refers to an index into adc5_prescale_ratios. */
+ 
 #define ADC5_CHAN(_dname, _type, _mask, _pre, _scale)			\
 	{								\
 		.datasheet_name = _dname,				\
@@ -536,7 +503,7 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
 					SCALE_HW_CALIB_DEFAULT)
 	[ADC5_CHG_TEMP]		= ADC5_CHAN_TEMP("chg_temp", 0,
 					SCALE_HW_CALIB_PM5_CHG_TEMP)
-	/* Charger prescales SBUx and MID_CHG to fit within 1.8V upper unit */
+	 
 	[ADC5_SBUx]		= ADC5_CHAN_VOLT("chg_sbux", 1,
 					SCALE_HW_CALIB_DEFAULT)
 	[ADC5_MID_CHG_DIV6]	= ADC5_CHAN_VOLT("chg_mid_chg", 3,
@@ -641,7 +608,7 @@ static int adc5_get_fw_channel_data(struct adc5_chip *adc,
 	if (!name)
 		return -ENOMEM;
 
-	/* Cut the address part */
+	 
 	name[strchrnul(name, '@') - name] = '\0';
 
 	ret = fwnode_property_read_u32(fwnode, "reg", &chan);
@@ -650,9 +617,9 @@ static int adc5_get_fw_channel_data(struct adc5_chip *adc,
 		return ret;
 	}
 
-	/* Value read from "reg" is virtual channel number */
+	 
 
-	/* virtual channel number = sid << 8 | channel number */
+	 
 
 	if (adc->data->info == &adc7_info) {
 		sid = chan >> ADC_CHANNEL_OFFSET;
@@ -664,7 +631,7 @@ static int adc5_get_fw_channel_data(struct adc5_chip *adc,
 		return -EINVAL;
 	}
 
-	/* the channel has DT description */
+	 
 	prop->channel = chan;
 	prop->sid = sid;
 
@@ -714,7 +681,7 @@ static int adc5_get_fw_channel_data(struct adc5_chip *adc,
 
 		dev_dbg(dev, "dig_ver:minor:%d, major:%d\n", dig_version[0],
 						dig_version[1]);
-		/* Digital controller >= 5.3 have hw_settle_2 option */
+		 
 		if ((dig_version[0] >= ADC5_HW_SETTLE_DIFF_MINOR &&
 			dig_version[1] >= ADC5_HW_SETTLE_DIFF_MAJOR) ||
 			adc->data->info == &adc7_info)
@@ -750,10 +717,7 @@ static int adc5_get_fw_channel_data(struct adc5_chip *adc,
 	else
 		prop->cal_method = ADC5_ABSOLUTE_CAL;
 
-	/*
-	 * Default to using timer calibration. Using a fresh calibration value
-	 * for every conversion will increase the overall time for a request.
-	 */
+	 
 	prop->cal_val = ADC5_TIMER_CAL;
 
 	dev_dbg(dev, "%02x name %s\n", chan, name);

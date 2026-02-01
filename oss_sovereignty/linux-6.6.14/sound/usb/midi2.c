@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MIDI 2.0 support
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/string.h>
@@ -31,7 +29,7 @@ static bool midi2_ump_probe = true;
 module_param(midi2_ump_probe, bool, 0444);
 MODULE_PARM_DESC(midi2_ump_probe, "Probe UMP v1.1 support at first.");
 
-/* stream direction; just shorter names */
+ 
 enum {
 	STR_OUT = SNDRV_RAWMIDI_STREAM_OUTPUT,
 	STR_IN = SNDRV_RAWMIDI_STREAM_INPUT
@@ -44,64 +42,64 @@ struct snd_usb_midi2_endpoint;
 struct snd_usb_midi2_ump;
 struct snd_usb_midi2_interface;
 
-/* URB context */
+ 
 struct snd_usb_midi2_urb {
 	struct urb *urb;
 	struct snd_usb_midi2_endpoint *ep;
-	unsigned int index;		/* array index */
+	unsigned int index;		 
 };
 
-/* A USB MIDI input/output endpoint */
+ 
 struct snd_usb_midi2_endpoint {
 	struct usb_device *dev;
-	const struct usb_ms20_endpoint_descriptor *ms_ep; /* reference to EP descriptor */
-	struct snd_usb_midi2_endpoint *pair;	/* bidirectional pair EP */
-	struct snd_usb_midi2_ump *rmidi;	/* assigned UMP EP pair */
-	struct snd_ump_endpoint *ump;		/* assigned UMP EP */
-	int direction;			/* direction (STR_IN/OUT) */
-	unsigned int endpoint;		/* EP number */
-	unsigned int pipe;		/* URB pipe */
-	unsigned int packets;		/* packet buffer size in bytes */
-	unsigned int interval;		/* interval for INT EP */
-	wait_queue_head_t wait;		/* URB waiter */
-	spinlock_t lock;		/* URB locking */
-	struct snd_rawmidi_substream *substream; /* NULL when closed */
-	unsigned int num_urbs;		/* number of allocated URBs */
-	unsigned long urb_free;		/* bitmap for free URBs */
-	unsigned long urb_free_mask;	/* bitmask for free URBs */
-	atomic_t running;		/* running status */
-	atomic_t suspended;		/* saved running status for suspend */
-	bool disconnected;		/* shadow of umidi->disconnected */
-	struct list_head list;		/* list to umidi->ep_list */
+	const struct usb_ms20_endpoint_descriptor *ms_ep;  
+	struct snd_usb_midi2_endpoint *pair;	 
+	struct snd_usb_midi2_ump *rmidi;	 
+	struct snd_ump_endpoint *ump;		 
+	int direction;			 
+	unsigned int endpoint;		 
+	unsigned int pipe;		 
+	unsigned int packets;		 
+	unsigned int interval;		 
+	wait_queue_head_t wait;		 
+	spinlock_t lock;		 
+	struct snd_rawmidi_substream *substream;  
+	unsigned int num_urbs;		 
+	unsigned long urb_free;		 
+	unsigned long urb_free_mask;	 
+	atomic_t running;		 
+	atomic_t suspended;		 
+	bool disconnected;		 
+	struct list_head list;		 
 	struct snd_usb_midi2_urb urbs[NUM_URBS];
 };
 
-/* A UMP endpoint - one or two USB MIDI endpoints are assigned */
+ 
 struct snd_usb_midi2_ump {
 	struct usb_device *dev;
-	struct snd_usb_midi2_interface *umidi;	/* reference to MIDI iface */
-	struct snd_ump_endpoint *ump;		/* assigned UMP EP object */
-	struct snd_usb_midi2_endpoint *eps[2];	/* USB MIDI endpoints */
-	int index;				/* rawmidi device index */
-	unsigned char usb_block_id;		/* USB GTB id used for finding a pair */
-	bool ump_parsed;			/* Parsed UMP 1.1 EP/FB info*/
-	struct list_head list;		/* list to umidi->rawmidi_list */
+	struct snd_usb_midi2_interface *umidi;	 
+	struct snd_ump_endpoint *ump;		 
+	struct snd_usb_midi2_endpoint *eps[2];	 
+	int index;				 
+	unsigned char usb_block_id;		 
+	bool ump_parsed;			 
+	struct list_head list;		 
 };
 
-/* top-level instance per USB MIDI interface */
+ 
 struct snd_usb_midi2_interface {
-	struct snd_usb_audio *chip;	/* assigned USB-audio card */
-	struct usb_interface *iface;	/* assigned USB interface */
+	struct snd_usb_audio *chip;	 
+	struct usb_interface *iface;	 
 	struct usb_host_interface *hostif;
-	const char *blk_descs;		/* group terminal block descriptors */
-	unsigned int blk_desc_size;	/* size of GTB descriptors */
+	const char *blk_descs;		 
+	unsigned int blk_desc_size;	 
 	bool disconnected;
-	struct list_head ep_list;	/* list of endpoints */
-	struct list_head rawmidi_list;	/* list of UMP rawmidis */
-	struct list_head list;		/* list to chip->midi_v2_list */
+	struct list_head ep_list;	 
+	struct list_head rawmidi_list;	 
+	struct list_head list;		 
 };
 
-/* submit URBs as much as possible; used for both input and output */
+ 
 static void do_submit_urbs_locked(struct snd_usb_midi2_endpoint *ep,
 				  int (*prepare)(struct snd_usb_midi2_endpoint *,
 						 struct urb *))
@@ -133,7 +131,7 @@ static void do_submit_urbs_locked(struct snd_usb_midi2_endpoint *ep,
 	}
 }
 
-/* prepare for output submission: copy from rawmidi buffer to urb packet */
+ 
 static int prepare_output_urb(struct snd_usb_midi2_endpoint *ep,
 			      struct urb *urb)
 {
@@ -155,7 +153,7 @@ static void submit_output_urbs_locked(struct snd_usb_midi2_endpoint *ep)
 	do_submit_urbs_locked(ep, prepare_output_urb);
 }
 
-/* URB completion for output; re-filling and re-submit */
+ 
 static void output_urb_complete(struct urb *urb)
 {
 	struct snd_usb_midi2_urb *ctx = urb->context;
@@ -171,7 +169,7 @@ static void output_urb_complete(struct urb *urb)
 	spin_unlock_irqrestore(&ep->lock, flags);
 }
 
-/* prepare for input submission: just set the buffer length */
+ 
 static int prepare_input_urb(struct snd_usb_midi2_endpoint *ep,
 			     struct urb *urb)
 {
@@ -184,7 +182,7 @@ static void submit_input_urbs_locked(struct snd_usb_midi2_endpoint *ep)
 	do_submit_urbs_locked(ep, prepare_input_urb);
 }
 
-/* URB completion for input; copy into rawmidi buffer and resubmit */
+ 
 static void input_urb_complete(struct urb *urb)
 {
 	struct snd_usb_midi2_urb *ctx = urb->context;
@@ -196,7 +194,7 @@ static void input_urb_complete(struct urb *urb)
 	if (ep->disconnected || urb->status < 0)
 		goto dequeue;
 	len = urb->actual_length;
-	len &= ~3; /* align UMP */
+	len &= ~3;  
 	if (len > ep->packets)
 		len = ep->packets;
 	if (len > 0) {
@@ -211,7 +209,7 @@ static void input_urb_complete(struct urb *urb)
 	spin_unlock_irqrestore(&ep->lock, flags);
 }
 
-/* URB submission helper; for both direction */
+ 
 static void submit_io_urbs(struct snd_usb_midi2_endpoint *ep)
 {
 	unsigned long flags;
@@ -226,7 +224,7 @@ static void submit_io_urbs(struct snd_usb_midi2_endpoint *ep)
 	spin_unlock_irqrestore(&ep->lock, flags);
 }
 
-/* kill URBs for close, suspend and disconnect */
+ 
 static void kill_midi_urbs(struct snd_usb_midi2_endpoint *ep, bool suspending)
 {
 	int i;
@@ -243,7 +241,7 @@ static void kill_midi_urbs(struct snd_usb_midi2_endpoint *ep, bool suspending)
 	}
 }
 
-/* wait until all URBs get freed */
+ 
 static void drain_urb_queue(struct snd_usb_midi2_endpoint *ep)
 {
 	if (!ep)
@@ -257,7 +255,7 @@ static void drain_urb_queue(struct snd_usb_midi2_endpoint *ep)
 	spin_unlock_irq(&ep->lock);
 }
 
-/* release URBs for an EP */
+ 
 static void free_midi_urbs(struct snd_usb_midi2_endpoint *ep)
 {
 	struct snd_usb_midi2_urb *ctx;
@@ -278,8 +276,8 @@ static void free_midi_urbs(struct snd_usb_midi2_endpoint *ep)
 	ep->num_urbs = 0;
 }
 
-/* allocate URBs for an EP */
-/* the callers should handle allocation errors via free_midi_urbs() */
+ 
+ 
 static int alloc_midi_urbs(struct snd_usb_midi2_endpoint *ep)
 {
 	struct snd_usb_midi2_urb *ctx;
@@ -340,7 +338,7 @@ ump_to_endpoint(struct snd_ump_endpoint *ump, int dir)
 	return rmidi->eps[dir];
 }
 
-/* ump open callback */
+ 
 static int snd_usb_midi_v2_open(struct snd_ump_endpoint *ump, int dir)
 {
 	struct snd_usb_midi2_endpoint *ep = ump_to_endpoint(ump, dir);
@@ -360,7 +358,7 @@ static int snd_usb_midi_v2_open(struct snd_ump_endpoint *ump, int dir)
 	return 0;
 }
 
-/* ump close callback */
+ 
 static void snd_usb_midi_v2_close(struct snd_ump_endpoint *ump, int dir)
 {
 	struct snd_usb_midi2_endpoint *ep = ump_to_endpoint(ump, dir);
@@ -372,7 +370,7 @@ static void snd_usb_midi_v2_close(struct snd_ump_endpoint *ump, int dir)
 	}
 }
 
-/* ump trigger callback */
+ 
 static void snd_usb_midi_v2_trigger(struct snd_ump_endpoint *ump, int dir,
 				    int up)
 {
@@ -383,7 +381,7 @@ static void snd_usb_midi_v2_trigger(struct snd_ump_endpoint *ump, int dir,
 		submit_io_urbs(ep);
 }
 
-/* ump drain callback */
+ 
 static void snd_usb_midi_v2_drain(struct snd_ump_endpoint *ump, int dir)
 {
 	struct snd_usb_midi2_endpoint *ep = ump_to_endpoint(ump, dir);
@@ -391,7 +389,7 @@ static void snd_usb_midi_v2_drain(struct snd_ump_endpoint *ump, int dir)
 	drain_urb_queue(ep);
 }
 
-/* allocate and start all input streams */
+ 
 static int start_input_streams(struct snd_usb_midi2_interface *umidi)
 {
 	struct snd_usb_midi2_endpoint *ep;
@@ -428,7 +426,7 @@ static const struct snd_ump_ops snd_usb_midi_v2_ump_ops = {
 	.drain = snd_usb_midi_v2_drain,
 };
 
-/* create a USB MIDI 2.0 endpoint object */
+ 
 static int create_midi2_endpoint(struct snd_usb_midi2_interface *umidi,
 				 struct usb_host_endpoint *hostep,
 				 const struct usb_ms20_endpoint_descriptor *ms_ep)
@@ -474,7 +472,7 @@ static int create_midi2_endpoint(struct snd_usb_midi2_interface *umidi,
 	return 0;
 }
 
-/* destructor for endpoint; from snd_usb_midi_v2_free() */
+ 
 static void free_midi2_endpoint(struct snd_usb_midi2_endpoint *ep)
 {
 	list_del(&ep->list);
@@ -482,7 +480,7 @@ static void free_midi2_endpoint(struct snd_usb_midi2_endpoint *ep)
 	kfree(ep);
 }
 
-/* call all endpoint destructors */
+ 
 static void free_all_midi2_endpoints(struct snd_usb_midi2_interface *umidi)
 {
 	struct snd_usb_midi2_endpoint *ep;
@@ -494,7 +492,7 @@ static void free_all_midi2_endpoints(struct snd_usb_midi2_interface *umidi)
 	}
 }
 
-/* find a MIDI STREAMING descriptor with a given subtype */
+ 
 static void *find_usb_ms_endpoint_descriptor(struct usb_host_endpoint *hostep,
 					     unsigned char subtype)
 {
@@ -517,7 +515,7 @@ static void *find_usb_ms_endpoint_descriptor(struct usb_host_endpoint *hostep,
 	return NULL;
 }
 
-/* get the full group terminal block descriptors and return the size */
+ 
 static int get_group_terminal_block_descs(struct snd_usb_midi2_interface *umidi)
 {
 	struct usb_host_interface *hostif = umidi->hostif;
@@ -560,7 +558,7 @@ static int get_group_terminal_block_descs(struct snd_usb_midi2_interface *umidi)
 	return 0;
 }
 
-/* find the corresponding group terminal block descriptor */
+ 
 static const struct usb_ms20_gr_trm_block_descriptor *
 find_group_terminal_block(struct snd_usb_midi2_interface *umidi, int id)
 {
@@ -584,14 +582,14 @@ find_group_terminal_block(struct snd_usb_midi2_interface *umidi, int id)
 	return NULL;
 }
 
-/* fill up the information from GTB */
+ 
 static int parse_group_terminal_block(struct snd_usb_midi2_ump *rmidi,
 				      const struct usb_ms20_gr_trm_block_descriptor *desc)
 {
 	struct snd_ump_endpoint *ump = rmidi->ump;
 	unsigned int protocol, protocol_caps;
 
-	/* set default protocol */
+	 
 	switch (desc->bMIDIProtocol) {
 	case USB_MS_MIDI_PROTO_1_0_64:
 	case USB_MS_MIDI_PROTO_1_0_64_JRTS:
@@ -634,7 +632,7 @@ static int parse_group_terminal_block(struct snd_usb_midi2_ump *rmidi,
 	return 0;
 }
 
-/* allocate and parse for each assigned group terminal block */
+ 
 static int parse_group_terminal_blocks(struct snd_usb_midi2_interface *umidi)
 {
 	struct snd_usb_midi2_ump *rmidi;
@@ -659,7 +657,7 @@ static int parse_group_terminal_blocks(struct snd_usb_midi2_interface *umidi)
 	return 0;
 }
 
-/* parse endpoints included in the given interface and create objects */
+ 
 static int parse_midi_2_0_endpoints(struct snd_usb_midi2_interface *umidi)
 {
 	struct usb_host_interface *hostif = umidi->hostif;
@@ -754,7 +752,7 @@ static int create_midi2_ump(struct snd_usb_midi2_interface *umidi,
 	return 0;
 }
 
-/* find the UMP EP with the given USB block id */
+ 
 static struct snd_usb_midi2_ump *
 find_midi2_ump(struct snd_usb_midi2_interface *umidi, int blk_id)
 {
@@ -767,7 +765,7 @@ find_midi2_ump(struct snd_usb_midi2_interface *umidi, int blk_id)
 	return NULL;
 }
 
-/* look for the matching output endpoint and create UMP object if found */
+ 
 static int find_matching_ep_partner(struct snd_usb_midi2_interface *umidi,
 				    struct snd_usb_midi2_endpoint *ep,
 				    int blk_id)
@@ -781,7 +779,7 @@ static int find_matching_ep_partner(struct snd_usb_midi2_interface *umidi,
 		if (pair_ep->direction != STR_OUT)
 			continue;
 		if (pair_ep->pair)
-			continue; /* already paired */
+			continue;  
 		for (blk = 0; blk < pair_ep->ms_ep->bNumGrpTrmBlock; blk++) {
 			if (pair_ep->ms_ep->baAssoGrpTrmBlkID[blk] == blk_id) {
 				usb_audio_dbg(umidi->chip,
@@ -794,10 +792,7 @@ static int find_matching_ep_partner(struct snd_usb_midi2_interface *umidi,
 	return 0;
 }
 
-/* Call UMP helper to parse UMP endpoints;
- * this needs to be called after starting the input streams for bi-directional
- * communications
- */
+ 
 static int parse_ump_endpoints(struct snd_usb_midi2_interface *umidi)
 {
 	struct snd_usb_midi2_ump *rmidi;
@@ -813,13 +808,13 @@ static int parse_ump_endpoints(struct snd_usb_midi2_interface *umidi)
 		} else {
 			if (err == -ENOMEM)
 				return err;
-			/* fall back to GTB later */
+			 
 		}
 	}
 	return 0;
 }
 
-/* create a UMP block from a GTB entry */
+ 
 static int create_gtb_block(struct snd_usb_midi2_ump *rmidi, int dir, int blk)
 {
 	struct snd_usb_midi2_interface *umidi = rmidi->umidi;
@@ -838,7 +833,7 @@ static int create_gtb_block(struct snd_usb_midi2_ump *rmidi, int dir, int blk)
 		      __le16_to_cpu(desc->wMaxInputBandwidth),
 		      __le16_to_cpu(desc->wMaxOutputBandwidth));
 
-	/* assign the direction */
+	 
 	switch (desc->bGrpTrmBlkType) {
 	case USB_MS_GR_TRM_BLOCK_TYPE_BIDIRECTIONAL:
 		type = SNDRV_UMP_DIR_BIDIRECTION;
@@ -852,15 +847,15 @@ static int create_gtb_block(struct snd_usb_midi2_ump *rmidi, int dir, int blk)
 	default:
 		usb_audio_dbg(umidi->chip, "Unsupported GTB type %d\n",
 			      desc->bGrpTrmBlkType);
-		return 0; /* unsupported */
+		return 0;  
 	}
 
-	/* guess work: set blk-1 as the (0-based) block ID */
+	 
 	err = snd_ump_block_new(rmidi->ump, blk - 1, type,
 				desc->nGroupTrm, desc->nNumGroupTrm,
 				&fb);
 	if (err == -EBUSY)
-		return 0; /* already present */
+		return 0;  
 	else if (err)
 		return err;
 
@@ -879,7 +874,7 @@ static int create_gtb_block(struct snd_usb_midi2_ump *rmidi, int dir, int blk)
 	return 0;
 }
 
-/* Create UMP blocks for each UMP EP */
+ 
 static int create_blocks_from_gtb(struct snd_usb_midi2_interface *umidi)
 {
 	struct snd_usb_midi2_ump *rmidi;
@@ -888,12 +883,12 @@ static int create_blocks_from_gtb(struct snd_usb_midi2_interface *umidi)
 	list_for_each_entry(rmidi, &umidi->rawmidi_list, list) {
 		if (!rmidi->ump)
 			continue;
-		/* Blocks have been already created? */
+		 
 		if (rmidi->ump_parsed || rmidi->ump->info.num_blocks)
 			continue;
-		/* GTB is static-only */
+		 
 		rmidi->ump->info.flags |= SNDRV_UMP_EP_INFO_STATIC_BLOCKS;
-		/* loop over GTBs */
+		 
 		for (dir = 0; dir < 2; dir++) {
 			if (!rmidi->eps[dir])
 				continue;
@@ -909,7 +904,7 @@ static int create_blocks_from_gtb(struct snd_usb_midi2_interface *umidi)
 	return 0;
 }
 
-/* attach legacy rawmidis */
+ 
 static int attach_legacy_rawmidi(struct snd_usb_midi2_interface *umidi)
 {
 #if IS_ENABLED(CONFIG_SND_UMP_LEGACY_RAWMIDI)
@@ -937,13 +932,13 @@ static void snd_usb_midi_v2_free(struct snd_usb_midi2_interface *umidi)
 	kfree(umidi);
 }
 
-/* parse the interface for MIDI 2.0 */
+ 
 static int parse_midi_2_0(struct snd_usb_midi2_interface *umidi)
 {
 	struct snd_usb_midi2_endpoint *ep;
 	int blk, id, err;
 
-	/* First, create an object for each USB MIDI Endpoint */
+	 
 	err = parse_midi_2_0_endpoints(umidi);
 	if (err < 0)
 		return err;
@@ -952,13 +947,9 @@ static int parse_midi_2_0(struct snd_usb_midi2_interface *umidi)
 		return -ENODEV;
 	}
 
-	/*
-	 * Next, look for EP I/O pairs that are found in group terminal blocks
-	 * A UMP object is created for each EP I/O pair as bidirecitonal
-	 * UMP EP
-	 */
+	 
 	list_for_each_entry(ep, &umidi->ep_list, list) {
-		/* only input in this loop; output is matched in find_midi_ump() */
+		 
 		if (ep->direction != STR_IN)
 			continue;
 		for (blk = 0; blk < ep->ms_ep->bNumGrpTrmBlock; blk++) {
@@ -969,13 +960,10 @@ static int parse_midi_2_0(struct snd_usb_midi2_interface *umidi)
 		}
 	}
 
-	/*
-	 * For the remaining EPs, treat as singles, create a UMP object with
-	 * unidirectional EP
-	 */
+	 
 	list_for_each_entry(ep, &umidi->ep_list, list) {
 		if (ep->rmidi)
-			continue; /* already paired */
+			continue;  
 		for (blk = 0; blk < ep->ms_ep->bNumGrpTrmBlock; blk++) {
 			id = ep->ms_ep->baAssoGrpTrmBlkID[blk];
 			if (find_midi2_ump(umidi, id))
@@ -996,7 +984,7 @@ static int parse_midi_2_0(struct snd_usb_midi2_interface *umidi)
 	return 0;
 }
 
-/* is the given interface for MIDI 2.0? */
+ 
 static bool is_midi2_altset(struct usb_host_interface *hostif)
 {
 	struct usb_ms_header_descriptor *ms_header =
@@ -1011,7 +999,7 @@ static bool is_midi2_altset(struct usb_host_interface *hostif)
 	return le16_to_cpu(ms_header->bcdMSC) == USB_MS_REV_MIDI_2_0;
 }
 
-/* change the altsetting */
+ 
 static int set_altset(struct snd_usb_midi2_interface *umidi)
 {
 	usb_audio_dbg(umidi->chip, "Setting host iface %d:%d\n",
@@ -1022,7 +1010,7 @@ static int set_altset(struct snd_usb_midi2_interface *umidi)
 				 umidi->hostif->desc.bAlternateSetting);
 }
 
-/* fill UMP Endpoint name string from USB descriptor */
+ 
 static void fill_ump_ep_name(struct snd_ump_endpoint *ump,
 			     struct usb_device *dev, int id)
 {
@@ -1030,13 +1018,13 @@ static void fill_ump_ep_name(struct snd_ump_endpoint *ump,
 
 	usb_string(dev, id, ump->info.name, sizeof(ump->info.name));
 
-	/* trim superfluous "MIDI" suffix */
+	 
 	len = strlen(ump->info.name);
 	if (len > 5 && !strcmp(ump->info.name + len - 5, " MIDI"))
 		ump->info.name[len - 5] = 0;
 }
 
-/* fill the fallback name string for each rawmidi instance */
+ 
 static void set_fallback_rawmidi_names(struct snd_usb_midi2_interface *umidi)
 {
 	struct usb_device *dev = umidi->chip->dev;
@@ -1045,19 +1033,19 @@ static void set_fallback_rawmidi_names(struct snd_usb_midi2_interface *umidi)
 
 	list_for_each_entry(rmidi, &umidi->rawmidi_list, list) {
 		ump = rmidi->ump;
-		/* fill UMP EP name from USB descriptors */
+		 
 		if (!*ump->info.name && umidi->hostif->desc.iInterface)
 			fill_ump_ep_name(ump, dev, umidi->hostif->desc.iInterface);
 		else if (!*ump->info.name && dev->descriptor.iProduct)
 			fill_ump_ep_name(ump, dev, dev->descriptor.iProduct);
-		/* fill fallback name */
+		 
 		if (!*ump->info.name)
 			sprintf(ump->info.name, "USB MIDI %d", rmidi->index);
-		/* copy as rawmidi name if not set */
+		 
 		if (!*ump->core.name)
 			strscpy(ump->core.name, ump->info.name,
 				sizeof(ump->core.name));
-		/* use serial number string as unique UMP product id */
+		 
 		if (!*ump->info.product_id && dev->descriptor.iSerialNumber)
 			usb_string(dev, dev->descriptor.iSerialNumber,
 				   ump->info.product_id,
@@ -1065,7 +1053,7 @@ static void set_fallback_rawmidi_names(struct snd_usb_midi2_interface *umidi)
 	}
 }
 
-/* create MIDI interface; fallback to MIDI 1.0 if needed */
+ 
 int snd_usb_midi_v2_create(struct snd_usb_audio *chip,
 			   struct usb_interface *iface,
 			   const struct snd_usb_audio_quirk *quirk,
@@ -1078,7 +1066,7 @@ int snd_usb_midi_v2_create(struct snd_usb_audio *chip,
 	usb_audio_dbg(chip, "Parsing interface %d...\n",
 		      iface->altsetting[0].desc.bInterfaceNumber);
 
-	/* fallback to MIDI 1.0? */
+	 
 	if (!midi2_enable) {
 		usb_audio_info(chip, "Falling back to MIDI 1.0 by module option\n");
 		goto fallback_to_midi1;
@@ -1119,14 +1107,14 @@ int snd_usb_midi_v2_create(struct snd_usb_audio *chip,
 		goto error;
 	}
 
-	/* assume only altset 1 corresponding to MIDI 2.0 interface */
+	 
 	err = parse_midi_2_0(umidi);
 	if (err < 0) {
 		usb_audio_err(chip, "Failed to parse MIDI 2.0 interface\n");
 		goto error;
 	}
 
-	/* parse USB group terminal blocks */
+	 
 	err = parse_group_terminal_blocks(umidi);
 	if (err < 0) {
 		usb_audio_err(chip, "Failed to parse GTB\n");
@@ -1194,7 +1182,7 @@ static void resume_midi2_endpoint(struct snd_usb_midi2_endpoint *ep)
 	ep->running = ep->suspended;
 	if (ep->direction == STR_IN)
 		submit_io_urbs(ep);
-	/* FIXME: does it all? */
+	 
 }
 
 void snd_usb_midi_v2_resume_all(struct snd_usb_audio *chip)
@@ -1224,7 +1212,7 @@ void snd_usb_midi_v2_disconnect_all(struct snd_usb_audio *chip)
 	}
 }
 
-/* release the MIDI instance */
+ 
 void snd_usb_midi_v2_free_all(struct snd_usb_audio *chip)
 {
 	struct snd_usb_midi2_interface *umidi, *next;

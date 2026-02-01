@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM kyber
 
@@ -89,7 +89,7 @@ TRACE_EVENT(kyber_throttled,
 );
 
 #define _TRACE_KYBER_H
-#endif /* _TRACE_KYBER_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell NFC-over-I2C driver: I2C interface related functions
- *
- * Copyright (C) 2015, Marvell International Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -28,7 +24,7 @@ static int nfcmrvl_i2c_read(struct nfcmrvl_i2c_drv_data *drv_data,
 	int ret;
 	struct nci_ctrl_hdr nci_hdr;
 
-	/* Read NCI header to know the payload size */
+	 
 	ret = i2c_master_recv(drv_data->i2c, (u8 *)&nci_hdr, NCI_CTRL_HDR_SIZE);
 	if (ret != NCI_CTRL_HDR_SIZE) {
 		nfc_err(&drv_data->i2c->dev, "cannot read NCI header\n");
@@ -40,11 +36,11 @@ static int nfcmrvl_i2c_read(struct nfcmrvl_i2c_drv_data *drv_data,
 	if (!*skb)
 		return -ENOMEM;
 
-	/* Copy NCI header into the SKB */
+	 
 	skb_put_data(*skb, &nci_hdr, NCI_CTRL_HDR_SIZE);
 
 	if (nci_hdr.plen) {
-		/* Read the NCI payload */
+		 
 		ret = i2c_master_recv(drv_data->i2c,
 				      skb_put(*skb, nci_hdr.plen),
 				      nci_hdr.plen);
@@ -119,7 +115,7 @@ static int nfcmrvl_i2c_nci_send(struct nfcmrvl_private *priv,
 
 	ret = i2c_master_send(drv_data->i2c, skb->data, skb->len);
 
-	/* Retry if chip was in standby */
+	 
 	if (ret == -EREMOTEIO) {
 		nfc_info(drv_data->dev, "chip may sleep, retry\n");
 		usleep_range(6000, 10000);
@@ -214,7 +210,7 @@ static int nfcmrvl_i2c_probe(struct i2c_client *client)
 	if (!pdata)
 		return -EINVAL;
 
-	/* Request the read IRQ */
+	 
 	ret = devm_request_threaded_irq(&drv_data->i2c->dev, pdata->irq,
 					NULL, nfcmrvl_i2c_int_irq_thread_fn,
 					pdata->irq_polarity | IRQF_ONESHOT,

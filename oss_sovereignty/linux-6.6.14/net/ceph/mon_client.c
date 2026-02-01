@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/module.h>
@@ -14,23 +14,7 @@
 #include <linux/ceph/decode.h>
 #include <linux/ceph/auth.h>
 
-/*
- * Interact with Ceph monitor cluster.  Handle requests for new map
- * versions, and periodically resend as needed.  Also implement
- * statfs() and umount().
- *
- * A small cluster of Ceph "monitors" are responsible for managing critical
- * cluster configuration and state information.  An odd number (e.g., 3, 5)
- * of cmon daemons use a modified version of the Paxos part-time parliament
- * algorithm to manage the MDS map (mds cluster membership), OSD map, and
- * list of clients who have mounted the file system.
- *
- * We maintain an open, active session with a monitor at all times in order to
- * receive timely MDSMap updates.  We periodically send a keepalive byte on the
- * TCP socket to ensure we detect a failure.  If the connection does break, we
- * randomly hunt for a new monitor.  Once the connection is reestablished, we
- * resend any outstanding requests.
- */
+ 
 
 static const struct ceph_connection_operations mon_con_ops;
 
@@ -50,7 +34,7 @@ static int decode_mon_info(void **p, void *end, bool msgr2,
 		return ret;
 
 	mon_info_end = *p + struct_len;
-	ceph_decode_skip_string(p, end, e_inval);  /* skip mon name */
+	ceph_decode_skip_string(p, end, e_inval);   
 	ret = ceph_decode_entity_addrvec(p, end, msgr2, addr);
 	if (ret)
 		return ret;
@@ -62,11 +46,7 @@ e_inval:
 	return -EINVAL;
 }
 
-/*
- * Decode a monmap blob (e.g., during mount).
- *
- * Assume MonMap v3 (i.e. encoding with MONNAMES and MONENC).
- */
+ 
 static struct ceph_monmap *ceph_monmap_decode(void **p, void *end, bool msgr2)
 {
 	struct ceph_monmap *monmap = NULL;
@@ -93,22 +73,22 @@ static struct ceph_monmap *ceph_monmap_decode(void **p, void *end, bool msgr2)
 		u32 feat_struct_len;
 		u8 feat_struct_v;
 
-		*p += sizeof(struct ceph_timespec);  /* skip last_changed */
-		*p += sizeof(struct ceph_timespec);  /* skip created */
+		*p += sizeof(struct ceph_timespec);   
+		*p += sizeof(struct ceph_timespec);   
 
 		ret = ceph_start_decoding(p, end, 1, "mon_feature_t",
 					  &feat_struct_v, &feat_struct_len);
 		if (ret)
 			goto fail;
 
-		*p += feat_struct_len;  /* skip persistent_features */
+		*p += feat_struct_len;   
 
 		ret = ceph_start_decoding(p, end, 1, "mon_feature_t",
 					  &feat_struct_v, &feat_struct_len);
 		if (ret)
 			goto fail;
 
-		*p += feat_struct_len;  /* skip optional_features */
+		*p += feat_struct_len;   
 	}
 	ceph_decode_32_safe(p, end, num_mon, e_inval);
 
@@ -126,11 +106,11 @@ static struct ceph_monmap *ceph_monmap_decode(void **p, void *end, bool msgr2)
 	monmap->epoch = epoch;
 	monmap->num_mon = num_mon;
 
-	/* legacy_mon_addr map or mon_info map */
+	 
 	for (i = 0; i < num_mon; i++) {
 		struct ceph_entity_inst *inst = &monmap->mon_inst[i];
 
-		ceph_decode_skip_string(p, end, e_inval);  /* skip mon name */
+		ceph_decode_skip_string(p, end, e_inval);   
 		inst->name.type = CEPH_ENTITY_TYPE_MON;
 		inst->name.num = cpu_to_le64(i);
 
@@ -154,9 +134,7 @@ fail:
 	return ERR_PTR(ret);
 }
 
-/*
- * return true if *addr is included in the monmap.
- */
+ 
 int ceph_monmap_contains(struct ceph_monmap *m, struct ceph_entity_addr *addr)
 {
 	int i;
@@ -169,22 +147,18 @@ int ceph_monmap_contains(struct ceph_monmap *m, struct ceph_entity_addr *addr)
 	return 0;
 }
 
-/*
- * Send an auth request.
- */
+ 
 static void __send_prepared_auth_request(struct ceph_mon_client *monc, int len)
 {
 	monc->pending_auth = 1;
 	monc->m_auth->front.iov_len = len;
 	monc->m_auth->hdr.front_len = cpu_to_le32(len);
 	ceph_msg_revoke(monc->m_auth);
-	ceph_msg_get(monc->m_auth);  /* keep our ref */
+	ceph_msg_get(monc->m_auth);   
 	ceph_con_send(&monc->con, monc->m_auth);
 }
 
-/*
- * Close monitor session, if any.
- */
+ 
 static void __close_session(struct ceph_mon_client *monc)
 {
 	dout("__close_session closing mon%d\n", monc->cur_mon);
@@ -198,10 +172,7 @@ static void __close_session(struct ceph_mon_client *monc)
 	ceph_auth_reset(monc->auth);
 }
 
-/*
- * Pick a new monitor at random and set cur_mon.  If we are repicking
- * (i.e. cur_mon is already set), be sure to pick a different one.
- */
+ 
 static void pick_new_mon(struct ceph_mon_client *monc)
 {
 	int old_mon = monc->cur_mon;
@@ -233,9 +204,7 @@ static void pick_new_mon(struct ceph_mon_client *monc)
 	     monc->cur_mon, monc->monmap->num_mon);
 }
 
-/*
- * Open a session with a new monitor.
- */
+ 
 static void __open_session(struct ceph_mon_client *monc)
 {
 	int ret;
@@ -249,26 +218,21 @@ static void __open_session(struct ceph_mon_client *monc)
 			monc->hunt_mult = CEPH_MONC_HUNT_MAX_MULT;
 	}
 
-	monc->sub_renew_after = jiffies; /* i.e., expired */
+	monc->sub_renew_after = jiffies;  
 	monc->sub_renew_sent = 0;
 
 	dout("%s opening mon%d\n", __func__, monc->cur_mon);
 	ceph_con_open(&monc->con, CEPH_ENTITY_TYPE_MON, monc->cur_mon,
 		      &monc->monmap->mon_inst[monc->cur_mon].addr);
 
-	/*
-	 * Queue a keepalive to ensure that in case of an early fault
-	 * the messenger doesn't put us into STANDBY state and instead
-	 * retries.  This also ensures that our timestamp is valid by
-	 * the time we finish hunting and delayed_work() checks it.
-	 */
+	 
 	ceph_con_keepalive(&monc->con);
 	if (ceph_msgr2(monc->client)) {
 		monc->pending_auth = 1;
 		return;
 	}
 
-	/* initiate authentication handshake */
+	 
 	ret = ceph_auth_build_hello(monc->auth,
 				    monc->m_auth->front.iov_base,
 				    monc->m_auth->front_alloc_len);
@@ -295,15 +259,13 @@ void ceph_monc_reopen_session(struct ceph_mon_client *monc)
 
 static void un_backoff(struct ceph_mon_client *monc)
 {
-	monc->hunt_mult /= 2; /* reduce by 50% */
+	monc->hunt_mult /= 2;  
 	if (monc->hunt_mult < 1)
 		monc->hunt_mult = 1;
 	dout("%s hunt_mult now %d\n", __func__, monc->hunt_mult);
 }
 
-/*
- * Reschedule delayed work timer.
- */
+ 
 static void __schedule_delayed(struct ceph_mon_client *monc)
 {
 	unsigned long delay;
@@ -325,10 +287,7 @@ const char *ceph_sub_str[] = {
 	[CEPH_SUB_MDSMAP] = "mdsmap",
 };
 
-/*
- * Send subscribe request for one or more maps, according to
- * monc->subs.
- */
+ 
 static void __send_subscribe(struct ceph_mon_client *monc)
 {
 	struct ceph_msg *msg = monc->m_subscribe;
@@ -342,7 +301,7 @@ static void __send_subscribe(struct ceph_mon_client *monc)
 	BUG_ON(monc->cur_mon < 0);
 
 	if (!monc->sub_renew_sent)
-		monc->sub_renew_sent = jiffies | 1; /* never 0 */
+		monc->sub_renew_sent = jiffies | 1;  
 
 	msg->hdr.version = cpu_to_le16(2);
 
@@ -350,7 +309,7 @@ static void __send_subscribe(struct ceph_mon_client *monc)
 		if (monc->subs[i].want)
 			num++;
 	}
-	BUG_ON(num < 1); /* monmap sub is always there */
+	BUG_ON(num < 1);  
 	ceph_encode_32(&p, num);
 	for (i = 0; i < ARRAY_SIZE(monc->subs); i++) {
 		char buf[32];
@@ -391,10 +350,7 @@ static void handle_subscribe_ack(struct ceph_mon_client *monc,
 
 	mutex_lock(&monc->mutex);
 	if (monc->sub_renew_sent) {
-		/*
-		 * This is only needed for legacy (infernalis or older)
-		 * MONs -- see delayed_work().
-		 */
+		 
 		monc->sub_renew_after = monc->sub_renew_sent +
 					    (seconds >> 1) * HZ - 1;
 		dout("%s sent %lu duration %d renew after %lu\n", __func__,
@@ -411,12 +367,7 @@ bad:
 	ceph_msg_dump(msg);
 }
 
-/*
- * Register interest in a map
- *
- * @sub: one of CEPH_SUB_*
- * @epoch: X for "every map since X", or 0 for "just the latest"
- */
+ 
 static bool __ceph_monc_want_map(struct ceph_mon_client *monc, int sub,
 				 u32 epoch, bool continuous)
 {
@@ -451,11 +402,7 @@ bool ceph_monc_want_map(struct ceph_mon_client *monc, int sub, u32 epoch,
 }
 EXPORT_SYMBOL(ceph_monc_want_map);
 
-/*
- * Keep track of which maps we have
- *
- * @sub: one of CEPH_SUB_*
- */
+ 
 static void __ceph_monc_got_map(struct ceph_mon_client *monc, int sub,
 				u32 epoch)
 {
@@ -487,12 +434,7 @@ void ceph_monc_renew_subs(struct ceph_mon_client *monc)
 }
 EXPORT_SYMBOL(ceph_monc_renew_subs);
 
-/*
- * Wait for an osdmap with a given epoch.
- *
- * @epoch: epoch to wait for
- * @timeout: in jiffies, 0 means "wait forever"
- */
+ 
 int ceph_monc_wait_osdmap(struct ceph_mon_client *monc, u32 epoch,
 			  unsigned long timeout)
 {
@@ -520,10 +462,7 @@ int ceph_monc_wait_osdmap(struct ceph_mon_client *monc, u32 epoch,
 }
 EXPORT_SYMBOL(ceph_monc_wait_osdmap);
 
-/*
- * Open a session with a random monitor.  Request monmap and osdmap,
- * which are waited upon in __ceph_open_session().
- */
+ 
 int ceph_monc_open_session(struct ceph_mon_client *monc)
 {
 	mutex_lock(&monc->mutex);
@@ -573,9 +512,7 @@ out:
 	wake_up_all(&client->auth_wq);
 }
 
-/*
- * generic requests (currently statfs, mon_get_version)
- */
+ 
 DEFINE_RB_FUNCS(generic_request, struct ceph_mon_generic_request, tid, node)
 
 static void release_generic_request(struct kref *kref)
@@ -698,7 +635,7 @@ static int wait_generic_request(struct ceph_mon_generic_request *req)
 	if (ret)
 		cancel_generic_request(req);
 	else
-		ret = req->result; /* completed */
+		ret = req->result;  
 
 	return ret;
 }
@@ -722,19 +659,13 @@ static struct ceph_msg *get_generic_reply(struct ceph_connection *con,
 		dout("get_generic_reply %lld got %p\n", tid, req->reply);
 		*skip = 0;
 		m = ceph_msg_get(req->reply);
-		/*
-		 * we don't need to track the connection reading into
-		 * this reply because we only have one open connection
-		 * at a time, ever.
-		 */
+		 
 	}
 	mutex_unlock(&monc->mutex);
 	return m;
 }
 
-/*
- * statfs
- */
+ 
 static void handle_statfs_reply(struct ceph_mon_client *monc,
 				struct ceph_msg *msg)
 {
@@ -755,7 +686,7 @@ static void handle_statfs_reply(struct ceph_mon_client *monc,
 	}
 
 	req->result = 0;
-	*req->u.st = reply->st; /* struct */
+	*req->u.st = reply->st;  
 	__finish_generic_request(req);
 	mutex_unlock(&monc->mutex);
 
@@ -767,9 +698,7 @@ bad:
 	ceph_msg_dump(msg);
 }
 
-/*
- * Do a synchronous statfs().
- */
+ 
 int ceph_monc_do_statfs(struct ceph_mon_client *monc, u64 data_pool,
 			struct ceph_statfs *buf)
 {
@@ -795,7 +724,7 @@ int ceph_monc_do_statfs(struct ceph_mon_client *monc, u64 data_pool,
 
 	mutex_lock(&monc->mutex);
 	register_generic_request(req);
-	/* fill out request */
+	 
 	h = req->request->front.iov_base;
 	h->monhdr.have_version = 0;
 	h->monhdr.session_mon = cpu_to_le16(-1);
@@ -879,7 +808,7 @@ __ceph_monc_get_version(struct ceph_mon_client *monc, const char *what,
 		void *p = req->request->front.iov_base;
 		void *const end = p + req->request->front_alloc_len;
 
-		ceph_encode_64(&p, req->tid); /* handle */
+		ceph_encode_64(&p, req->tid);  
 		ceph_encode_string(&p, end, what, strlen(what));
 		WARN_ON(p != end);
 	}
@@ -893,11 +822,7 @@ err_put_req:
 	return ERR_PTR(-ENOMEM);
 }
 
-/*
- * Send MMonGetVersion and wait for the reply.
- *
- * @what: one of "mdsmap", "osdmap" or "monmap"
- */
+ 
 int ceph_monc_get_version(struct ceph_mon_client *monc, const char *what,
 			  u64 *newest)
 {
@@ -917,11 +842,7 @@ int ceph_monc_get_version(struct ceph_mon_client *monc, const char *what,
 }
 EXPORT_SYMBOL(ceph_monc_get_version);
 
-/*
- * Send MMonGetVersion,
- *
- * @what: one of "mdsmap", "osdmap" or "monmap"
- */
+ 
 int ceph_monc_get_version_async(struct ceph_mon_client *monc, const char *what,
 				ceph_monc_callback_t cb, u64 private_data)
 {
@@ -1034,11 +955,7 @@ int ceph_monc_blocklist_add(struct ceph_mon_client *monc,
 			     &client_addr->in_addr,
 			     le32_to_cpu(client_addr->nonce));
 	if (ret == -EINVAL) {
-		/*
-		 * The monitor returns EINVAL on an unrecognized command.
-		 * Try the legacy command -- it is exactly the same except
-		 * for the name.
-		 */
+		 
 		ret = do_mon_command(monc,
 				     "{ \"prefix\": \"osd blacklist\", \
 					\"blacklistop\": \"add\", \
@@ -1049,19 +966,12 @@ int ceph_monc_blocklist_add(struct ceph_mon_client *monc,
 	if (ret)
 		return ret;
 
-	/*
-	 * Make sure we have the osdmap that includes the blocklist
-	 * entry.  This is needed to ensure that the OSDs pick up the
-	 * new blocklist before processing any future requests from
-	 * this client.
-	 */
+	 
 	return ceph_wait_for_latest_osdmap(monc->client, 0);
 }
 EXPORT_SYMBOL(ceph_monc_blocklist_add);
 
-/*
- * Resend pending generic requests.
- */
+ 
 static void __resend_generic_request(struct ceph_mon_client *monc)
 {
 	struct ceph_mon_generic_request *req;
@@ -1075,11 +985,7 @@ static void __resend_generic_request(struct ceph_mon_client *monc)
 	}
 }
 
-/*
- * Delayed work.  If we haven't mounted yet, retry.  Otherwise,
- * renew/retry subscription as needed (in case it is timing out, or we
- * got an ENOMEM).  And keep the monitor connection alive.
- */
+ 
 static void delayed_work(struct work_struct *work)
 {
 	struct ceph_mon_client *monc =
@@ -1119,10 +1025,7 @@ static void delayed_work(struct work_struct *work)
 	mutex_unlock(&monc->mutex);
 }
 
-/*
- * On startup, we build a temporary monmap populated with the IPs
- * provided by mount(2).
- */
+ 
 static int build_initial_monmap(struct ceph_mon_client *monc)
 {
 	__le32 my_type = ceph_msgr2(monc->client) ?
@@ -1131,7 +1034,7 @@ static int build_initial_monmap(struct ceph_mon_client *monc)
 	int num_mon = opt->num_mon;
 	int i;
 
-	/* build initial monmap */
+	 
 	monc->monmap = kzalloc(struct_size(monc->monmap, mon_inst, num_mon),
 			       GFP_KERNEL);
 	if (!monc->monmap)
@@ -1164,8 +1067,8 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 	if (err)
 		goto out;
 
-	/* connection */
-	/* authentication */
+	 
+	 
 	monc->auth = ceph_auth_init(cl->options->name, cl->options->key,
 				    cl->options->con_modes);
 	if (IS_ERR(monc->auth)) {
@@ -1176,7 +1079,7 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 		CEPH_ENTITY_TYPE_AUTH | CEPH_ENTITY_TYPE_MON |
 		CEPH_ENTITY_TYPE_OSD | CEPH_ENTITY_TYPE_MDS;
 
-	/* msgs */
+	 
 	err = -ENOMEM;
 	monc->m_subscribe_ack = ceph_msg_new(CEPH_MSG_MON_SUBSCRIBE_ACK,
 				     sizeof(struct ceph_mon_subscribe_ack),
@@ -1239,12 +1142,7 @@ void ceph_monc_stop(struct ceph_mon_client *monc)
 	monc->cur_mon = -1;
 	mutex_unlock(&monc->mutex);
 
-	/*
-	 * flush msgr queue before we destroy ourselves to ensure that:
-	 *  - any work that references our embedded con is finished.
-	 *  - any osd_client or other work that may reference an authorizer
-	 *    finishes before we shut down the auth subsystem.
-	 */
+	 
 	ceph_msgr_flush();
 
 	ceph_auth_destroy(monc->auth);
@@ -1331,7 +1229,7 @@ static int __validate_auth(struct ceph_mon_client *monc)
 	ret = ceph_build_auth(monc->auth, monc->m_auth->front.iov_base,
 			      monc->m_auth->front_alloc_len);
 	if (ret <= 0)
-		return ret; /* either an error, or no need to authenticate */
+		return ret;  
 	__send_prepared_auth_request(monc, ret);
 	return 0;
 }
@@ -1429,9 +1327,7 @@ static int mon_handle_auth_bad_method(struct ceph_connection *con,
 	return 0;
 }
 
-/*
- * handle incoming message
- */
+ 
 static void mon_dispatch(struct ceph_connection *con, struct ceph_msg *msg)
 {
 	struct ceph_mon_client *monc = con->private;
@@ -1467,7 +1363,7 @@ static void mon_dispatch(struct ceph_connection *con, struct ceph_msg *msg)
 		break;
 
 	default:
-		/* can the chained handler handle it? */
+		 
 		if (monc->client->extra_mon_dispatch &&
 		    monc->client->extra_mon_dispatch(monc->client, msg) == 0)
 			break;
@@ -1478,9 +1374,7 @@ static void mon_dispatch(struct ceph_connection *con, struct ceph_msg *msg)
 	ceph_msg_put(msg);
 }
 
-/*
- * Allocate memory for incoming message
- */
+ 
 static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
 				      struct ceph_msg_header *hdr,
 				      int *skip)
@@ -1506,11 +1400,7 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
 		if (le64_to_cpu(hdr->tid) != 0)
 			return get_generic_reply(con, hdr, skip);
 
-		/*
-		 * Older OSDs don't set reply tid even if the original
-		 * request had a non-zero tid.  Work around this weirdness
-		 * by allocating a new message.
-		 */
+		 
 		fallthrough;
 	case CEPH_MSG_MON_MAP:
 	case CEPH_MSG_MDS_MAP:
@@ -1518,7 +1408,7 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
 	case CEPH_MSG_FS_MAP_USER:
 		m = ceph_msg_new(type, front_len, GFP_NOFS, false);
 		if (!m)
-			return NULL;	/* ENOMEM--return skip == 0 */
+			return NULL;	 
 		break;
 	}
 
@@ -1537,10 +1427,7 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
 	return m;
 }
 
-/*
- * If the monitor connection resets, pick a new monitor and resubmit
- * any pending requests.
- */
+ 
 static void mon_fault(struct ceph_connection *con)
 {
 	struct ceph_mon_client *monc = con->private;
@@ -1559,11 +1446,7 @@ static void mon_fault(struct ceph_connection *con)
 	mutex_unlock(&monc->mutex);
 }
 
-/*
- * We can ignore refcounting on the connection struct, as all references
- * will come from the messenger workqueue, which is drained prior to
- * mon_client destruction.
- */
+ 
 static struct ceph_connection *mon_get_con(struct ceph_connection *con)
 {
 	return con;

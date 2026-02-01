@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "head.h"
 #include "atom.h"
 #include "core.h"
@@ -35,9 +15,7 @@ headc57d_or(struct nv50_head *head, struct nv50_head_atom *asyh)
 	u8 depth;
 	int ret;
 
-	/*XXX: This is a dirty hack until OR depth handling is
-	 *     improved later for deep colour etc.
-	 */
+	 
 	switch (asyh->or.depth) {
 	case 6: depth = 5; break;
 	case 5: depth = 4; break;
@@ -72,7 +50,7 @@ headc57d_procamp(struct nv50_head *head, struct nv50_head_atom *asyh)
 	if ((ret = PUSH_WAIT(push, 2)))
 		return ret;
 
-	//TODO:
+	
 	PUSH_MTHD(push, NVC57D, HEAD_SET_PROCAMP(i),
 		  NVDEF(NVC57D, HEAD_SET_PROCAMP, COLOR_SPACE, RGB) |
 		  NVDEF(NVC57D, HEAD_SET_PROCAMP, CHROMA_LPF, DISABLE) |
@@ -119,7 +97,7 @@ headc57d_olut_set(struct nv50_head *head, struct nv50_head_atom *asyh)
 static void
 headc57d_olut_load_8(struct drm_color_lut *in, int size, void __iomem *mem)
 {
-	memset_io(mem, 0x00, 0x20); /* VSS header. */
+	memset_io(mem, 0x00, 0x20);  
 	mem += 0x20;
 
 	while (size--) {
@@ -141,9 +119,7 @@ headc57d_olut_load_8(struct drm_color_lut *in, int size, void __iomem *mem)
 		}
 	}
 
-	/* INTERPOLATE modes require a "next" entry to interpolate with,
-	 * so we replicate the last entry to deal with this for now.
-	 */
+	 
 	writew(readw(mem - 8), mem + 0);
 	writew(readw(mem - 6), mem + 2);
 	writew(readw(mem - 4), mem + 4);
@@ -152,7 +128,7 @@ headc57d_olut_load_8(struct drm_color_lut *in, int size, void __iomem *mem)
 static void
 headc57d_olut_load(struct drm_color_lut *in, int size, void __iomem *mem)
 {
-	memset_io(mem, 0x00, 0x20); /* VSS header. */
+	memset_io(mem, 0x00, 0x20);  
 	mem += 0x20;
 
 	for (; size--; in++, mem += 0x08) {
@@ -161,9 +137,7 @@ headc57d_olut_load(struct drm_color_lut *in, int size, void __iomem *mem)
 		writew(drm_color_lut_extract(in-> blue, 16), mem + 4);
 	}
 
-	/* INTERPOLATE modes require a "next" entry to interpolate with,
-	 * so we replicate the last entry to deal with this for now.
-	 */
+	 
 	writew(readw(mem - 8), mem + 0);
 	writew(readw(mem - 6), mem + 2);
 	writew(readw(mem - 4), mem + 4);
@@ -176,7 +150,7 @@ headc57d_olut(struct nv50_head *head, struct nv50_head_atom *asyh, int size)
 		return false;
 
 	asyh->olut.mode = NVC57D_HEAD_SET_OLUT_CONTROL_MODE_DIRECT10;
-	asyh->olut.size = 4 /* VSS header. */ + 1024 + 1 /* Entries. */;
+	asyh->olut.size = 4   + 1024 + 1  ;
 	asyh->olut.output_mode = NVC57D_HEAD_SET_OLUT_CONTROL_INTERPOLATE_ENABLE;
 	if (size == 256)
 		asyh->olut.load = headc57d_olut_load_8;
@@ -212,7 +186,7 @@ headc57d_mode(struct nv50_head *head, struct nv50_head_atom *asyh)
 		  NVVAL(NVC57D, HEAD_SET_RASTER_BLANK_START, X, m->h.blanks) |
 		  NVVAL(NVC57D, HEAD_SET_RASTER_BLANK_START, Y, m->v.blanks));
 
-	//XXX:
+	
 	PUSH_NVSQ(push, NVC57D, 0x2074 + (i * 0x400), m->v.blank2e << 16 | m->v.blank2s);
 	PUSH_NVSQ(push, NVC57D, 0x2008 + (i * 0x400), m->interlace);
 
@@ -222,7 +196,7 @@ headc57d_mode(struct nv50_head *head, struct nv50_head_atom *asyh)
 	PUSH_MTHD(push, NVC57D, HEAD_SET_PIXEL_CLOCK_FREQUENCY_MAX(i),
 		  NVVAL(NVC57D, HEAD_SET_PIXEL_CLOCK_FREQUENCY_MAX, HERTZ, m->clock * 1000));
 
-	/*XXX: HEAD_USAGE_BOUNDS, doesn't belong here. */
+	 
 	PUSH_MTHD(push, NVC57D, HEAD_SET_HEAD_USAGE_BOUNDS(i),
 		  NVDEF(NVC57D, HEAD_SET_HEAD_USAGE_BOUNDS, CURSOR, USAGE_W256_H256) |
 		  NVDEF(NVC57D, HEAD_SET_HEAD_USAGE_BOUNDS, OLUT_ALLOWED, TRUE) |
@@ -248,6 +222,6 @@ headc57d = {
 	.dither = headc37d_dither,
 	.procamp = headc57d_procamp,
 	.or = headc57d_or,
-	/* TODO: flexible window mappings */
+	 
 	.static_wndw_map = headc37d_static_wndw_map,
 };

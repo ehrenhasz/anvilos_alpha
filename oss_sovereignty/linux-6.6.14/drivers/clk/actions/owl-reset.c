@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// Actions Semi Owl SoCs Reset Management Unit driver
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/regmap.h>
@@ -51,10 +51,7 @@ static int owl_reset_status(struct reset_controller_dev *rcdev,
 	if (ret)
 		return ret;
 
-	/*
-	 * The reset control API expects 0 if reset is not asserted,
-	 * which is the opposite of what our hardware uses.
-	 */
+	 
 	return !(map->bit & reg);
 }
 

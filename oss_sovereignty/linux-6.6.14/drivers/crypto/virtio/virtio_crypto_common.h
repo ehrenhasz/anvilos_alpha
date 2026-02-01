@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Common header for Virtio crypto device.
- *
- * Copyright 2016 HUAWEI TECHNOLOGIES CO., LTD.
- */
+ 
+ 
 
 #ifndef _VIRTIO_CRYPTO_COMMON_H
 #define _VIRTIO_CRYPTO_COMMON_H
@@ -17,15 +14,15 @@
 #include <uapi/linux/virtio_crypto.h>
 
 
-/* Internal representation of a data virtqueue */
+ 
 struct data_queue {
-	/* Virtqueue associated with this send _queue */
+	 
 	struct virtqueue *vq;
 
-	/* To protect the vq operations for the dataq */
+	 
 	spinlock_t lock;
 
-	/* Name of the tx queue: dataq.$index */
+	 
 	char name[32];
 
 	struct crypto_engine *engine;
@@ -37,25 +34,22 @@ struct virtio_crypto {
 	struct virtqueue *ctrl_vq;
 	struct data_queue *data_vq;
 
-	/* Work struct for config space updates */
+	 
 	struct work_struct config_work;
 
-	/* To protect the vq operations for the controlq */
+	 
 	spinlock_t ctrl_lock;
 
-	/* Maximum of data queues supported by the device */
+	 
 	u32 max_data_queues;
 
-	/* Number of queue currently used by the driver */
+	 
 	u32 curr_queue;
 
-	/*
-	 * Specifies the services mask which the device support,
-	 * see VIRTIO_CRYPTO_SERVICE_*
-	 */
+	 
 	u32 crypto_services;
 
-	/* Detailed algorithms mask */
+	 
 	u32 cipher_algo_l;
 	u32 cipher_algo_h;
 	u32 hash_algo;
@@ -64,11 +58,11 @@ struct virtio_crypto {
 	u32 aead_algo;
 	u32 akcipher_algo;
 
-	/* Maximum length of cipher key */
+	 
 	u32 max_cipher_key_len;
-	/* Maximum length of authenticated key */
+	 
 	u32 max_auth_key_len;
-	/* Maximum size of per request */
+	 
 	u64 max_size;
 
 	unsigned long status;
@@ -77,20 +71,16 @@ struct virtio_crypto {
 	struct module *owner;
 	uint8_t dev_id;
 
-	/* Does the affinity hint is set for virtqueues? */
+	 
 	bool affinity_hint_set;
 };
 
 struct virtio_crypto_sym_session_info {
-	/* Backend session id, which come from the host side */
+	 
 	__u64 session_id;
 };
 
-/*
- * Note: there are padding fields in request, clear them to zero before
- *       sending to host to avoid to divulge any information.
- * Ex, virtio_crypto_ctrl_request::ctrl::u::destroy_session::padding[48]
- */
+ 
 struct virtio_crypto_ctrl_request {
 	struct virtio_crypto_op_ctrl_req ctrl;
 	struct virtio_crypto_session_input input;
@@ -151,4 +141,4 @@ int virtio_crypto_ctrl_vq_request(struct virtio_crypto *vcrypto, struct scatterl
 				  unsigned int out_sgs, unsigned int in_sgs,
 				  struct virtio_crypto_ctrl_request *vc_ctrl_req);
 
-#endif /* _VIRTIO_CRYPTO_COMMON_H */
+#endif  

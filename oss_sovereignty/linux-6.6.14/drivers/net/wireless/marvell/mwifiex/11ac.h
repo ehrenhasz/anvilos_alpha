@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: 802.11ac
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_11AC_H_
 #define _MWIFIEX_11AC_H_
@@ -30,4 +26,4 @@ int mwifiex_cmd_11ac_cfg(struct mwifiex_private *priv,
 			 struct mwifiex_11ac_vht_cfg *cfg);
 void mwifiex_fill_vht_cap_tlv(struct mwifiex_private *priv,
 			      struct ieee80211_vht_cap *vht_cap, u8 bands);
-#endif /* _MWIFIEX_11AC_H_ */
+#endif  

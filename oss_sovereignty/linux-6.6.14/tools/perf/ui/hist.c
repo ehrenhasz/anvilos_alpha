@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
@@ -14,7 +14,7 @@
 #include "../util/thread.h"
 #include "../util/util.h"
 
-/* hist period print (hpp) functions */
+ 
 
 #define hpp__call_print_fn(hpp, fn, fmt, ...)			\
 ({								\
@@ -62,10 +62,7 @@ static int __hpp__fmt(struct perf_hpp *hpp, struct hist_entry *he,
 			idx_delta = evsel__group_idx(evsel) - prev_idx - 1;
 
 			while (idx_delta--) {
-				/*
-				 * zero-fill group members in the middle which
-				 * have no sample
-				 */
+				 
 				if (fmt_percent) {
 					ret += hpp__call_print_fn(hpp, print_fn,
 								  fmt, len, 0.0);
@@ -89,9 +86,7 @@ static int __hpp__fmt(struct perf_hpp *hpp, struct hist_entry *he,
 		idx_delta = nr_members - prev_idx - 1;
 
 		while (idx_delta--) {
-			/*
-			 * zero-fill group members at last which have no sample
-			 */
+			 
 			if (fmt_percent) {
 				ret += hpp__call_print_fn(hpp, print_fn,
 							  fmt, len, 0.0);
@@ -102,10 +97,7 @@ static int __hpp__fmt(struct perf_hpp *hpp, struct hist_entry *he,
 		}
 	}
 
-	/*
-	 * Restore original buf and size as it's where caller expects
-	 * the result will be saved.
-	 */
+	 
 	hpp->buf = buf;
 	hpp->size = size;
 
@@ -124,7 +116,7 @@ int hpp__fmt(struct perf_hpp_fmt *fmt, struct perf_hpp *hpp,
 	}
 
 	if (fmt_percent)
-		len -= 2; /* 2 for a space and a % sign */
+		len -= 2;  
 	else
 		len -= 1;
 
@@ -268,9 +260,7 @@ static int __hpp__sort_acc(struct hist_entry *a, struct hist_entry *b,
 	s64 ret = 0;
 
 	if (symbol_conf.cumulate_callchain) {
-		/*
-		 * Put caller above callee when they have equal period.
-		 */
+		 
 		ret = field_cmp(get_field(a), get_field(b));
 		if (ret)
 			return ret;
@@ -540,10 +530,7 @@ struct perf_hpp_list perf_hpp_list = {
 
 static void fmt_free(struct perf_hpp_fmt *fmt)
 {
-	/*
-	 * At this point fmt should be completely
-	 * unhooked, if not it's a bug.
-	 */
+	 
 	BUG_ON(!list_empty(&fmt->list));
 	BUG_ON(!list_empty(&fmt->sort_list));
 
@@ -560,14 +547,12 @@ void perf_hpp__init(void)
 
 		INIT_LIST_HEAD(&fmt->list);
 
-		/* sort_list may be linked by setup_sorting() */
+		 
 		if (fmt->sort_list.next == NULL)
 			INIT_LIST_HEAD(&fmt->sort_list);
 	}
 
-	/*
-	 * If user specified field order, no need to setup default fields.
-	 */
+	 
 	if (is_strict_order(field_order))
 		return;
 
@@ -649,11 +634,11 @@ void perf_hpp__setup_output_field(struct perf_hpp_list *list)
 {
 	struct perf_hpp_fmt *fmt;
 
-	/* append sort keys to output field */
+	 
 	perf_hpp_list__for_each_sort_list(list, fmt) {
 		struct perf_hpp_fmt *pos;
 
-		/* skip sort-only fields ("sort_compute" in perf diff) */
+		 
 		if (!fmt->entry && !fmt->color)
 			continue;
 
@@ -672,7 +657,7 @@ void perf_hpp__append_sort_keys(struct perf_hpp_list *list)
 {
 	struct perf_hpp_fmt *fmt;
 
-	/* append output fields to sort keys */
+	 
 	perf_hpp_list__for_each_format(list, fmt) {
 		struct perf_hpp_fmt *pos;
 
@@ -692,14 +677,14 @@ void perf_hpp__reset_output_field(struct perf_hpp_list *list)
 {
 	struct perf_hpp_fmt *fmt, *tmp;
 
-	/* reset output fields */
+	 
 	perf_hpp_list__for_each_format_safe(list, fmt, tmp) {
 		list_del_init(&fmt->list);
 		list_del_init(&fmt->sort_list);
 		fmt_free(fmt);
 	}
 
-	/* reset sort keys */
+	 
 	perf_hpp_list__for_each_sort_list_safe(list, fmt, tmp) {
 		list_del_init(&fmt->list);
 		list_del_init(&fmt->sort_list);
@@ -707,9 +692,7 @@ void perf_hpp__reset_output_field(struct perf_hpp_list *list)
 	}
 }
 
-/*
- * See hists__fprintf to match the column widths
- */
+ 
 unsigned int hists__sort_list_width(struct hists *hists)
 {
 	struct perf_hpp_fmt *fmt;
@@ -729,7 +712,7 @@ unsigned int hists__sort_list_width(struct hists *hists)
 		ret += fmt->width(fmt, &dummy_hpp, hists);
 	}
 
-	if (verbose > 0 && hists__has(hists, sym)) /* Addr + origin */
+	if (verbose > 0 && hists__has(hists, sym))  
 		ret += 3 + BITS_PER_LONG / 4;
 
 	return ret;
@@ -798,7 +781,7 @@ void hists__reset_column_width(struct hists *hists)
 	hists__for_each_format(hists, fmt)
 		perf_hpp__reset_width(fmt, hists);
 
-	/* hierarchy entries have their own hpp list */
+	 
 	list_for_each_entry(node, &hists->hpp_formats, list) {
 		perf_hpp_list__for_each_format(&node->hpp, fmt)
 			perf_hpp__reset_width(fmt, hists);

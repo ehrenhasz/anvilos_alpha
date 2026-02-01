@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -31,7 +31,7 @@ static void lima_pp_handle_irq(struct lima_ip *ip, u32 state)
 
 		pipe->error = true;
 
-		/* mask all interrupts before hard reset */
+		 
 		pp_write(LIMA_PP_INT_MASK, 0);
 	}
 
@@ -45,7 +45,7 @@ static irqreturn_t lima_pp_irq_handler(int irq, void *data)
 	struct lima_sched_pipe *pipe = dev->pipe + lima_pipe_pp;
 	u32 state = pp_read(LIMA_PP_INT_STATUS);
 
-	/* for shared irq case */
+	 
 	if (!state)
 		return IRQ_NONE;
 
@@ -66,7 +66,7 @@ static irqreturn_t lima_pp_bcast_irq_handler(int irq, void *data)
 	struct lima_sched_pipe *pipe = dev->pipe + lima_pipe_pp;
 	struct drm_lima_m450_pp_frame *frame;
 
-	/* for shared irq case */
+	 
 	if (!pipe->current_task)
 		return IRQ_NONE;
 
@@ -79,9 +79,7 @@ static irqreturn_t lima_pp_bcast_irq_handler(int irq, void *data)
 		if (pipe->done & (1 << i))
 			continue;
 
-		/* status read first in case int state change in the middle
-		 * which may miss the interrupt handling
-		 */
+		 
 		status = pp_read(LIMA_PP_STATUS);
 		state = pp_read(LIMA_PP_INT_STATUS);
 
@@ -271,7 +269,7 @@ void lima_pp_fini(struct lima_ip *ip)
 
 int lima_pp_bcast_resume(struct lima_ip *ip)
 {
-	/* PP has been reset by individual PP resume */
+	 
 	ip->data.async_reset = false;
 	return 0;
 }

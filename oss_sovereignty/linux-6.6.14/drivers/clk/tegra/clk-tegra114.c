@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk-provider.h>
@@ -16,33 +14,33 @@
 #include "clk-id.h"
 
 #define RST_DFLL_DVCO			0x2F4
-#define CPU_FINETRIM_SELECT		0x4d4	/* override default prop dlys */
-#define CPU_FINETRIM_DR			0x4d8	/* rise->rise prop dly A */
-#define CPU_FINETRIM_R			0x4e4	/* rise->rise prop dly inc A */
+#define CPU_FINETRIM_SELECT		0x4d4	 
+#define CPU_FINETRIM_DR			0x4d8	 
+#define CPU_FINETRIM_R			0x4e4	 
 
-/* RST_DFLL_DVCO bitfields */
+ 
 #define DVFS_DFLL_RESET_SHIFT		0
 
-/* CPU_FINETRIM_SELECT and CPU_FINETRIM_DR bitfields */
-#define CPU_FINETRIM_1_FCPU_1		BIT(0)	/* fcpu0 */
-#define CPU_FINETRIM_1_FCPU_2		BIT(1)	/* fcpu1 */
-#define CPU_FINETRIM_1_FCPU_3		BIT(2)	/* fcpu2 */
-#define CPU_FINETRIM_1_FCPU_4		BIT(3)	/* fcpu3 */
-#define CPU_FINETRIM_1_FCPU_5		BIT(4)	/* fl2 */
-#define CPU_FINETRIM_1_FCPU_6		BIT(5)	/* ftop */
+ 
+#define CPU_FINETRIM_1_FCPU_1		BIT(0)	 
+#define CPU_FINETRIM_1_FCPU_2		BIT(1)	 
+#define CPU_FINETRIM_1_FCPU_3		BIT(2)	 
+#define CPU_FINETRIM_1_FCPU_4		BIT(3)	 
+#define CPU_FINETRIM_1_FCPU_5		BIT(4)	 
+#define CPU_FINETRIM_1_FCPU_6		BIT(5)	 
 
-/* CPU_FINETRIM_R bitfields */
-#define CPU_FINETRIM_R_FCPU_1_SHIFT	0		/* fcpu0 */
+ 
+#define CPU_FINETRIM_R_FCPU_1_SHIFT	0		 
 #define CPU_FINETRIM_R_FCPU_1_MASK	(0x3 << CPU_FINETRIM_R_FCPU_1_SHIFT)
-#define CPU_FINETRIM_R_FCPU_2_SHIFT	2		/* fcpu1 */
+#define CPU_FINETRIM_R_FCPU_2_SHIFT	2		 
 #define CPU_FINETRIM_R_FCPU_2_MASK	(0x3 << CPU_FINETRIM_R_FCPU_2_SHIFT)
-#define CPU_FINETRIM_R_FCPU_3_SHIFT	4		/* fcpu2 */
+#define CPU_FINETRIM_R_FCPU_3_SHIFT	4		 
 #define CPU_FINETRIM_R_FCPU_3_MASK	(0x3 << CPU_FINETRIM_R_FCPU_3_SHIFT)
-#define CPU_FINETRIM_R_FCPU_4_SHIFT	6		/* fcpu3 */
+#define CPU_FINETRIM_R_FCPU_4_SHIFT	6		 
 #define CPU_FINETRIM_R_FCPU_4_MASK	(0x3 << CPU_FINETRIM_R_FCPU_4_SHIFT)
-#define CPU_FINETRIM_R_FCPU_5_SHIFT	8		/* fl2 */
+#define CPU_FINETRIM_R_FCPU_5_SHIFT	8		 
 #define CPU_FINETRIM_R_FCPU_5_MASK	(0x3 << CPU_FINETRIM_R_FCPU_5_SHIFT)
-#define CPU_FINETRIM_R_FCPU_6_SHIFT	10		/* ftop */
+#define CPU_FINETRIM_R_FCPU_6_SHIFT	10		 
 #define CPU_FINETRIM_R_FCPU_6_MASK	(0x3 << CPU_FINETRIM_R_FCPU_6_SHIFT)
 
 #define TEGRA114_CLK_PERIPH_BANKS	5
@@ -105,11 +103,11 @@
 #define CLK_SOURCE_CSITE 0x1d4
 #define CLK_SOURCE_EMC 0x19c
 
-/* PLLM override registers */
+ 
 #define PMC_PLLM_WB0_OVERRIDE 0x1dc
 #define PMC_PLLM_WB0_OVERRIDE_2 0x2b0
 
-/* Tegra CPU clock and reset control regs */
+ 
 #define CLK_RST_CONTROLLER_CPU_CMPLX_STATUS	0x470
 
 #define MUX8(_name, _parents, _offset, \
@@ -167,10 +165,10 @@ static const struct pdiv_map pllxc_p[] = {
 static struct tegra_clk_pll_freq_table pll_c_freq_table[] = {
 	{ 12000000, 624000000, 104, 1, 2, 0 },
 	{ 12000000, 600000000, 100, 1, 2, 0 },
-	{ 13000000, 600000000,  92, 1, 2, 0 }, /* actual: 598.0 MHz */
-	{ 16800000, 600000000,  71, 1, 2, 0 }, /* actual: 596.4 MHz */
-	{ 19200000, 600000000,  62, 1, 2, 0 }, /* actual: 595.2 MHz */
-	{ 26000000, 600000000,  92, 2, 2, 0 }, /* actual: 598.0 MHz */
+	{ 13000000, 600000000,  92, 1, 2, 0 },  
+	{ 16800000, 600000000,  71, 1, 2, 0 },  
+	{ 19200000, 600000000,  62, 1, 2, 0 },  
+	{ 26000000, 600000000,  92, 2, 2, 0 },  
 	{        0,         0,   0, 0, 0, 0 },
 };
 
@@ -178,7 +176,7 @@ static struct tegra_clk_pll_params pll_c_params = {
 	.input_min = 12000000,
 	.input_max = 800000000,
 	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 50 MHz */
+	.cf_max = 19200000,  
 	.vco_min = 600000000,
 	.vco_max = 1400000000,
 	.base_reg = PLLC_BASE,
@@ -218,10 +216,10 @@ static const struct pdiv_map pllc_p[] = {
 
 static struct tegra_clk_pll_freq_table pll_cx_freq_table[] = {
 	{ 12000000, 600000000, 100, 1, 2, 0 },
-	{ 13000000, 600000000,  92, 1, 2, 0 }, /* actual: 598.0 MHz */
-	{ 16800000, 600000000,  71, 1, 2, 0 }, /* actual: 596.4 MHz */
-	{ 19200000, 600000000,  62, 1, 2, 0 }, /* actual: 595.2 MHz */
-	{ 26000000, 600000000,  92, 2, 2, 0 }, /* actual: 598.0 MHz */
+	{ 13000000, 600000000,  92, 1, 2, 0 },  
+	{ 16800000, 600000000,  71, 1, 2, 0 },  
+	{ 19200000, 600000000,  62, 1, 2, 0 },  
+	{ 26000000, 600000000,  92, 2, 2, 0 },  
 	{        0,         0,   0, 0, 0, 0 },
 };
 
@@ -288,11 +286,11 @@ static const struct pdiv_map pllm_p[] = {
 };
 
 static struct tegra_clk_pll_freq_table pll_m_freq_table[] = {
-	{ 12000000, 800000000, 66, 1, 1, 0 }, /* actual: 792.0 MHz */
-	{ 13000000, 800000000, 61, 1, 1, 0 }, /* actual: 793.0 MHz */
-	{ 16800000, 800000000, 47, 1, 1, 0 }, /* actual: 789.6 MHz */
-	{ 19200000, 800000000, 41, 1, 1, 0 }, /* actual: 787.2 MHz */
-	{ 26000000, 800000000, 61, 2, 1, 0 }, /* actual: 793.0 MHz */
+	{ 12000000, 800000000, 66, 1, 1, 0 },  
+	{ 13000000, 800000000, 61, 1, 1, 0 },  
+	{ 16800000, 800000000, 47, 1, 1, 0 },  
+	{ 19200000, 800000000, 41, 1, 1, 0 },  
+	{ 26000000, 800000000, 61, 2, 1, 0 },  
 	{        0,         0,  0, 0, 0, 0 },
 };
 
@@ -300,7 +298,7 @@ static struct tegra_clk_pll_params pll_m_params = {
 	.input_min = 12000000,
 	.input_max = 500000000,
 	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 50 MHz */
+	.cf_max = 19200000,  
 	.vco_min = 400000000,
 	.vco_max = 1066000000,
 	.base_reg = PLLM_BASE,
@@ -482,12 +480,12 @@ static struct tegra_clk_pll_params pll_u_params = {
 };
 
 static struct tegra_clk_pll_freq_table pll_x_freq_table[] = {
-	/* 1 GHz */
-	{ 12000000, 1000000000, 83, 1, 1, 0 }, /* actual: 996.0 MHz */
-	{ 13000000, 1000000000, 76, 1, 1, 0 }, /* actual: 988.0 MHz */
-	{ 16800000, 1000000000, 59, 1, 1, 0 }, /* actual: 991.2 MHz */
-	{ 19200000, 1000000000, 52, 1, 1, 0 }, /* actual: 998.4 MHz */
-	{ 26000000, 1000000000, 76, 2, 1, 0 }, /* actual: 988.0 MHz */
+	 
+	{ 12000000, 1000000000, 83, 1, 1, 0 },  
+	{ 13000000, 1000000000, 76, 1, 1, 0 },  
+	{ 16800000, 1000000000, 59, 1, 1, 0 },  
+	{ 19200000, 1000000000, 52, 1, 1, 0 },  
+	{ 26000000, 1000000000, 76, 2, 1, 0 },  
 	{        0,          0,  0, 0, 0, 0 },
 };
 
@@ -495,7 +493,7 @@ static struct tegra_clk_pll_params pll_x_params = {
 	.input_min = 12000000,
 	.input_max = 800000000,
 	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 50 MHz */
+	.cf_max = 19200000,  
 	.vco_min = 700000000,
 	.vco_max = 2400000000U,
 	.base_reg = PLLX_BASE,
@@ -516,7 +514,7 @@ static struct tegra_clk_pll_params pll_x_params = {
 };
 
 static struct tegra_clk_pll_freq_table pll_e_freq_table[] = {
-	/* PLLE special case: use cpcon field to store cml divider value */
+	 
 	{ 336000000, 100000000, 100, 21, 16, 11 },
 	{ 312000000, 100000000, 200, 26, 24, 13 },
 	{  12000000, 100000000, 200,  1, 24, 13 },
@@ -584,7 +582,7 @@ static struct tegra_clk_pll_params pll_re_vco_params = {
 	.input_min = 12000000,
 	.input_max = 1000000000,
 	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 38 MHz */
+	.cf_max = 19200000,  
 	.vco_min = 300000000,
 	.vco_max = 600000000,
 	.base_reg = PLLRE_BASE,
@@ -599,7 +597,7 @@ static struct tegra_clk_pll_params pll_re_vco_params = {
 		 TEGRA_PLL_LOCK_MISC,
 };
 
-/* possible OSC frequencies in Hz */
+ 
 static unsigned long tegra114_input_freq[] = {
 	[ 0] = 13000000,
 	[ 1] = 16800000,
@@ -612,7 +610,7 @@ static unsigned long tegra114_input_freq[] = {
 
 #define MASK(x) (BIT(x) - 1)
 
-/* peripheral mux definitions */
+ 
 
 static const char *mux_plld_out0_plld2_out0[] = {
 	"pll_d_out0", "pll_d2_out0",
@@ -891,7 +889,7 @@ static void __init tegra114_fixed_clk_init(void __iomem *clk_base)
 {
 	struct clk *clk;
 
-	/* clk_32k */
+	 
 	clk = clk_register_fixed_rate(NULL, "clk_32k", NULL, 0, 32768);
 	clks[TEGRA114_CLK_CLK_32K] = clk;
 }
@@ -901,12 +899,12 @@ static void __init tegra114_pll_init(void __iomem *clk_base,
 {
 	struct clk *clk;
 
-	/* PLLC */
+	 
 	clk = tegra_clk_register_pllxc("pll_c", "pll_ref", clk_base,
 			pmc, 0, &pll_c_params, NULL);
 	clks[TEGRA114_CLK_PLL_C] = clk;
 
-	/* PLLC_OUT1 */
+	 
 	clk = tegra_clk_register_divider("pll_c_out1_div", "pll_c",
 			clk_base + PLLC_OUT, 0, TEGRA_DIVIDER_ROUND_UP,
 			8, 8, 1, NULL);
@@ -915,22 +913,22 @@ static void __init tegra114_pll_init(void __iomem *clk_base,
 				CLK_SET_RATE_PARENT, 0, NULL);
 	clks[TEGRA114_CLK_PLL_C_OUT1] = clk;
 
-	/* PLLC2 */
+	 
 	clk = tegra_clk_register_pllc("pll_c2", "pll_ref", clk_base, pmc, 0,
 			     &pll_c2_params, NULL);
 	clks[TEGRA114_CLK_PLL_C2] = clk;
 
-	/* PLLC3 */
+	 
 	clk = tegra_clk_register_pllc("pll_c3", "pll_ref", clk_base, pmc, 0,
 			     &pll_c3_params, NULL);
 	clks[TEGRA114_CLK_PLL_C3] = clk;
 
-	/* PLLM */
+	 
 	clk = tegra_clk_register_pllm("pll_m", "pll_ref", clk_base, pmc,
 			     CLK_SET_RATE_GATE, &pll_m_params, NULL);
 	clks[TEGRA114_CLK_PLL_M] = clk;
 
-	/* PLLM_OUT1 */
+	 
 	clk = tegra_clk_register_divider("pll_m_out1_div", "pll_m",
 				clk_base + PLLM_OUT, 0, TEGRA_DIVIDER_ROUND_UP,
 				8, 8, 1, NULL);
@@ -939,57 +937,57 @@ static void __init tegra114_pll_init(void __iomem *clk_base,
 				CLK_SET_RATE_PARENT, 0, NULL);
 	clks[TEGRA114_CLK_PLL_M_OUT1] = clk;
 
-	/* PLLM_UD */
+	 
 	clk = clk_register_fixed_factor(NULL, "pll_m_ud", "pll_m",
 					CLK_SET_RATE_PARENT, 1, 1);
 
-	/* PLLU */
+	 
 	clk = tegra_clk_register_pllu_tegra114("pll_u", "pll_ref", clk_base, 0,
 					       &pll_u_params, &pll_u_lock);
 	clks[TEGRA114_CLK_PLL_U] = clk;
 
-	/* PLLU_480M */
+	 
 	clk = clk_register_gate(NULL, "pll_u_480M", "pll_u",
 				CLK_SET_RATE_PARENT, clk_base + PLLU_BASE,
 				22, 0, &pll_u_lock);
 	clks[TEGRA114_CLK_PLL_U_480M] = clk;
 
-	/* PLLU_60M */
+	 
 	clk = clk_register_fixed_factor(NULL, "pll_u_60M", "pll_u",
 					CLK_SET_RATE_PARENT, 1, 8);
 	clks[TEGRA114_CLK_PLL_U_60M] = clk;
 
-	/* PLLU_48M */
+	 
 	clk = clk_register_fixed_factor(NULL, "pll_u_48M", "pll_u",
 					CLK_SET_RATE_PARENT, 1, 10);
 	clks[TEGRA114_CLK_PLL_U_48M] = clk;
 
-	/* PLLU_12M */
+	 
 	clk = clk_register_fixed_factor(NULL, "pll_u_12M", "pll_u",
 					CLK_SET_RATE_PARENT, 1, 40);
 	clks[TEGRA114_CLK_PLL_U_12M] = clk;
 
-	/* PLLD */
+	 
 	clk = tegra_clk_register_pll("pll_d", "pll_ref", clk_base, pmc, 0,
 			    &pll_d_params, &pll_d_lock);
 	clks[TEGRA114_CLK_PLL_D] = clk;
 
-	/* PLLD_OUT0 */
+	 
 	clk = clk_register_fixed_factor(NULL, "pll_d_out0", "pll_d",
 					CLK_SET_RATE_PARENT, 1, 2);
 	clks[TEGRA114_CLK_PLL_D_OUT0] = clk;
 
-	/* PLLD2 */
+	 
 	clk = tegra_clk_register_pll("pll_d2", "pll_ref", clk_base, pmc, 0,
 			    &pll_d2_params, &pll_d2_lock);
 	clks[TEGRA114_CLK_PLL_D2] = clk;
 
-	/* PLLD2_OUT0 */
+	 
 	clk = clk_register_fixed_factor(NULL, "pll_d2_out0", "pll_d2",
 					CLK_SET_RATE_PARENT, 1, 2);
 	clks[TEGRA114_CLK_PLL_D2_OUT0] = clk;
 
-	/* PLLRE */
+	 
 	clk = tegra_clk_register_pllre("pll_re_vco", "pll_ref", clk_base, pmc,
 			     0, &pll_re_vco_params, &pll_re_lock, pll_ref_freq);
 	clks[TEGRA114_CLK_PLL_RE_VCO] = clk;
@@ -999,7 +997,7 @@ static void __init tegra114_pll_init(void __iomem *clk_base,
 					 pll_re_div_table, &pll_re_lock);
 	clks[TEGRA114_CLK_PLL_RE_OUT] = clk;
 
-	/* PLLE */
+	 
 	clk = tegra_clk_register_plle_tegra114("pll_e_out0", "pll_ref",
 				      clk_base, 0, &pll_e_params, NULL);
 	clks[TEGRA114_CLK_PLL_E_OUT0] = clk;
@@ -1018,19 +1016,19 @@ static __init void tegra114_periph_clk_init(void __iomem *clk_base,
 	struct tegra_periph_init_data *data;
 	unsigned int i;
 
-	/* xusb_ss_div2 */
+	 
 	clk = clk_register_fixed_factor(NULL, "xusb_ss_div2", "xusb_ss_src", 0,
 					1, 2);
 	clks[TEGRA114_CLK_XUSB_SS_DIV2] = clk;
 
-	/* dsia mux */
+	 
 	clk = clk_register_mux(NULL, "dsia_mux", mux_plld_out0_plld2_out0,
 			       ARRAY_SIZE(mux_plld_out0_plld2_out0),
 			       CLK_SET_RATE_NO_REPARENT,
 			       clk_base + PLLD_BASE, 25, 1, 0, &pll_d_lock);
 	clks[TEGRA114_CLK_DSIA_MUX] = clk;
 
-	/* dsib mux */
+	 
 	clk = clk_register_mux(NULL, "dsib_mux", mux_plld_out0_plld2_out0,
 			       ARRAY_SIZE(mux_plld_out0_plld2_out0),
 			       CLK_SET_RATE_NO_REPARENT,
@@ -1045,7 +1043,7 @@ static __init void tegra114_periph_clk_init(void __iomem *clk_base,
 					     0, 82, periph_clk_enb_refcnt);
 	clks[TEGRA114_CLK_DSIB] = clk;
 
-	/* emc mux */
+	 
 	clk = clk_register_mux(NULL, "emc_mux", mux_pllmcp_clkm,
 			       ARRAY_SIZE(mux_pllmcp_clkm),
 			       CLK_SET_RATE_NO_REPARENT,
@@ -1071,7 +1069,7 @@ static __init void tegra114_periph_clk_init(void __iomem *clk_base,
 				&pll_p_params);
 }
 
-/* Tegra114 CPU clock and reset control functions */
+ 
 static void tegra114_wait_cpu_in_reset(u32 cpu)
 {
 	unsigned int reg;
@@ -1079,18 +1077,18 @@ static void tegra114_wait_cpu_in_reset(u32 cpu)
 	do {
 		reg = readl(clk_base + CLK_RST_CONTROLLER_CPU_CMPLX_STATUS);
 		cpu_relax();
-	} while (!(reg & (1 << cpu)));  /* check CPU been reset or not */
+	} while (!(reg & (1 << cpu)));   
 }
 
 static void tegra114_disable_cpu_clock(u32 cpu)
 {
-	/* flow controller would take care in the power sequence. */
+	 
 }
 
 #ifdef CONFIG_PM_SLEEP
 static void tegra114_cpu_clock_suspend(void)
 {
-	/* switch coresite to clk_m, save off original source */
+	 
 	tegra114_cpu_clk_sctx.clk_csite_src =
 				readl(clk_base + CLK_SOURCE_CSITE);
 	writel(3 << 30, clk_base + CLK_SOURCE_CSITE);
@@ -1127,10 +1125,7 @@ static const struct of_device_id pmc_match[] __initconst = {
 	{ },
 };
 
-/*
- * dfll_soc/dfll_ref apparently must be kept enabled, otherwise I2C5
- * breaks
- */
+ 
 static struct tegra_clk_init_table init_table[] __initdata = {
 	{ TEGRA114_CLK_UARTA, TEGRA114_CLK_PLL_P, 408000000, 0 },
 	{ TEGRA114_CLK_UARTB, TEGRA114_CLK_PLL_P, 408000000, 0 },
@@ -1167,7 +1162,7 @@ static struct tegra_clk_init_table init_table[] __initdata = {
 	{ TEGRA114_CLK_I2S4_SYNC, TEGRA114_CLK_CLK_MAX, 24000000, 0 },
 	{ TEGRA114_CLK_VIMCLK_SYNC, TEGRA114_CLK_CLK_MAX, 24000000, 0 },
 	{ TEGRA114_CLK_PWM, TEGRA114_CLK_PLL_P, 408000000, 0 },
-	/* must be the last entry */
+	 
 	{ TEGRA114_CLK_CLK_MAX, TEGRA114_CLK_CLK_MAX, 0, 0 },
 };
 
@@ -1176,30 +1171,19 @@ static void __init tegra114_clock_apply_init_table(void)
 	tegra_init_from_table(init_table, clks, TEGRA114_CLK_CLK_MAX);
 }
 
-/**
- * tegra114_car_barrier - wait for pending writes to the CAR to complete
- *
- * Wait for any outstanding writes to the CAR MMIO space from this CPU
- * to complete before continuing execution.  No return value.
- */
+ 
 static void tegra114_car_barrier(void)
 {
-	wmb();		/* probably unnecessary */
+	wmb();		 
 	readl_relaxed(clk_base + CPU_FINETRIM_SELECT);
 }
 
-/**
- * tegra114_clock_tune_cpu_trimmers_high - use high-voltage propagation delays
- *
- * When the CPU rail voltage is in the high-voltage range, use the
- * built-in hardwired clock propagation delays in the CPU clock
- * shaper.  No return value.
- */
+ 
 void tegra114_clock_tune_cpu_trimmers_high(void)
 {
 	u32 select = 0;
 
-	/* Use hardwired rise->rise & fall->fall clock propagation delays */
+	 
 	select |= ~(CPU_FINETRIM_1_FCPU_1 | CPU_FINETRIM_1_FCPU_2 |
 		    CPU_FINETRIM_1_FCPU_3 | CPU_FINETRIM_1_FCPU_4 |
 		    CPU_FINETRIM_1_FCPU_5 | CPU_FINETRIM_1_FCPU_6);
@@ -1209,24 +1193,12 @@ void tegra114_clock_tune_cpu_trimmers_high(void)
 }
 EXPORT_SYMBOL(tegra114_clock_tune_cpu_trimmers_high);
 
-/**
- * tegra114_clock_tune_cpu_trimmers_low - use low-voltage propagation delays
- *
- * When the CPU rail voltage is in the low-voltage range, use the
- * extended clock propagation delays set by
- * tegra114_clock_tune_cpu_trimmers_init().  The intention is to
- * maintain the input clock duty cycle that the FCPU subsystem
- * expects.  No return value.
- */
+ 
 void tegra114_clock_tune_cpu_trimmers_low(void)
 {
 	u32 select = 0;
 
-	/*
-	 * Use software-specified rise->rise & fall->fall clock
-	 * propagation delays (from
-	 * tegra114_clock_tune_cpu_trimmers_init()
-	 */
+	 
 	select |= (CPU_FINETRIM_1_FCPU_1 | CPU_FINETRIM_1_FCPU_2 |
 		   CPU_FINETRIM_1_FCPU_3 | CPU_FINETRIM_1_FCPU_4 |
 		   CPU_FINETRIM_1_FCPU_5 | CPU_FINETRIM_1_FCPU_6);
@@ -1236,28 +1208,19 @@ void tegra114_clock_tune_cpu_trimmers_low(void)
 }
 EXPORT_SYMBOL(tegra114_clock_tune_cpu_trimmers_low);
 
-/**
- * tegra114_clock_tune_cpu_trimmers_init - set up and enable clk prop delays
- *
- * Program extended clock propagation delays into the FCPU clock
- * shaper and enable them.  XXX Define the purpose - peak current
- * reduction?  No return value.
- */
-/* XXX Initial voltage rail state assumption issues? */
+ 
+ 
 void tegra114_clock_tune_cpu_trimmers_init(void)
 {
 	u32 dr = 0, r = 0;
 
-	/* Increment the rise->rise clock delay by four steps */
+	 
 	r |= (CPU_FINETRIM_R_FCPU_1_MASK | CPU_FINETRIM_R_FCPU_2_MASK |
 	      CPU_FINETRIM_R_FCPU_3_MASK | CPU_FINETRIM_R_FCPU_4_MASK |
 	      CPU_FINETRIM_R_FCPU_5_MASK | CPU_FINETRIM_R_FCPU_6_MASK);
 	writel_relaxed(r, clk_base + CPU_FINETRIM_R);
 
-	/*
-	 * Use the rise->rise clock propagation delay specified in the
-	 * r field
-	 */
+	 
 	dr |= (CPU_FINETRIM_1_FCPU_1 | CPU_FINETRIM_1_FCPU_2 |
 	       CPU_FINETRIM_1_FCPU_3 | CPU_FINETRIM_1_FCPU_4 |
 	       CPU_FINETRIM_1_FCPU_5 | CPU_FINETRIM_1_FCPU_6);
@@ -1267,11 +1230,7 @@ void tegra114_clock_tune_cpu_trimmers_init(void)
 }
 EXPORT_SYMBOL(tegra114_clock_tune_cpu_trimmers_init);
 
-/**
- * tegra114_clock_assert_dfll_dvco_reset - assert the DFLL's DVCO reset
- *
- * Assert the reset line of the DFLL's DVCO.  No return value.
- */
+ 
 void tegra114_clock_assert_dfll_dvco_reset(void)
 {
 	u32 v;
@@ -1283,12 +1242,7 @@ void tegra114_clock_assert_dfll_dvco_reset(void)
 }
 EXPORT_SYMBOL(tegra114_clock_assert_dfll_dvco_reset);
 
-/**
- * tegra114_clock_deassert_dfll_dvco_reset - deassert the DFLL's DVCO reset
- *
- * Deassert the reset line of the DFLL's DVCO, allowing the DVCO to
- * operate.  No return value.
- */
+ 
 void tegra114_clock_deassert_dfll_dvco_reset(void)
 {
 	u32 v;

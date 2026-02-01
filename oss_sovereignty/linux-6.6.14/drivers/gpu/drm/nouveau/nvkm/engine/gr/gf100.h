@@ -1,26 +1,4 @@
-/*
- * Copyright 2010 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #ifndef __GF100_GR_H__
 #define __GF100_GR_H__
 #define gf100_gr(p) container_of((p), struct gf100_gr, base)
@@ -83,10 +61,7 @@ struct gf100_gr {
 
 	bool firmware;
 
-	/*
-	 * Used if the register packs are loaded from NVIDIA fw instead of
-	 * using hardcoded arrays. To be allocated with vzalloc().
-	 */
+	 
 	struct gf100_gr_pack *sw_nonctx;
 	struct gf100_gr_pack *sw_nonctx1;
 	struct gf100_gr_pack *sw_nonctx2;
@@ -330,7 +305,7 @@ void gf100_gr_icmd(struct gf100_gr *, const struct gf100_gr_pack *);
 void gf100_gr_mthd(struct gf100_gr *, const struct gf100_gr_pack *);
 int  gf100_gr_init_ctxctl(struct gf100_gr *);
 
-/* register init value lists */
+ 
 
 extern const struct gf100_gr_init gf100_gr_init_main_0[];
 extern const struct gf100_gr_init gf100_gr_init_fe_0[];

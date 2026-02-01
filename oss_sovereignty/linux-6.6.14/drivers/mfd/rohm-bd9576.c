@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2021 ROHM Semiconductors
- *
- * ROHM BD9576MUF and BD9573MUF PMIC driver
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -22,11 +18,7 @@ enum {
 	BD957X_WDT_CELL,
 };
 
-/*
- * Due to the BD9576MUF nasty IRQ behaviour we don't always populate IRQs.
- * These will be added to regulator resources only if IRQ information for the
- * PMIC is populated in device-tree.
- */
+ 
 static const struct resource bd9576_regulator_irqs[] = {
 	DEFINE_RES_IRQ_NAMED(BD9576_INT_THERM, "bd9576-temp"),
 	DEFINE_RES_IRQ_NAMED(BD9576_INT_OVD, "bd9576-ovd"),
@@ -109,10 +101,7 @@ static int bd957x_i2c_probe(struct i2c_client *i2c)
 	case ROHM_CHIP_TYPE_BD9573:
 		cells = bd9573_mfd_cells;
 		num_cells = ARRAY_SIZE(bd9573_mfd_cells);
-		/*
-		 * BD9573 only supports fatal IRQs which we can not handle
-		 * because SoC is going to lose the power.
-		 */
+		 
 		usable_irqs = false;
 		break;
 	default:
@@ -125,14 +114,7 @@ static int bd957x_i2c_probe(struct i2c_client *i2c)
 		return dev_err_probe(&i2c->dev, PTR_ERR(regmap),
 				     "Failed to initialize Regmap\n");
 
-	/*
-	 * BD9576 behaves badly. It kepts IRQ line asserted for the whole
-	 * duration of detected HW condition (like over temperature). So we
-	 * don't require IRQ to be populated.
-	 * If IRQ information is not given, then we mask all IRQs and do not
-	 * provide IRQ resources to regulator driver - which then just omits
-	 * the notifiers.
-	 */
+	 
 	if (usable_irqs) {
 		struct regmap_irq_chip_data *irq_data;
 		struct mfd_cell *regulators;

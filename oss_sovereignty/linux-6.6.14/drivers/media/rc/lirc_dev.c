@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * LIRC base driver
- *
- * by Artur Lipowski <alipowski@interia.pl>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,54 +19,44 @@
 
 static dev_t lirc_base_dev;
 
-/* Used to keep track of allocated lirc devices */
+ 
 static DEFINE_IDA(lirc_ida);
 
-/* Only used for sysfs but defined to void otherwise */
+ 
 static struct class *lirc_class;
 
-/**
- * lirc_raw_event() - Send raw IR data to lirc to be relayed to userspace
- *
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:		the struct ir_raw_event descriptor of the pulse/space
- */
+ 
 void lirc_raw_event(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	unsigned long flags;
 	struct lirc_fh *fh;
 	int sample;
 
-	/* Receiver overflow, data missing */
+	 
 	if (ev.overflow) {
-		/*
-		 * Send lirc overflow message. This message is unknown to
-		 * lircd, but it will interpret this as a long space as
-		 * long as the value is set to high value. This resets its
-		 * decoder state.
-		 */
+		 
 		sample = LIRC_OVERFLOW(LIRC_VALUE_MASK);
 		dev_dbg(&dev->dev, "delivering overflow to lirc_dev\n");
 
-	/* Carrier reports */
+	 
 	} else if (ev.carrier_report) {
 		sample = LIRC_FREQUENCY(ev.carrier);
 		dev_dbg(&dev->dev, "carrier report (freq: %d)\n", sample);
 
-	/* Packet end */
+	 
 	} else if (ev.timeout) {
 		dev->gap_start = ktime_get();
 
 		sample = LIRC_TIMEOUT(ev.duration);
 		dev_dbg(&dev->dev, "timeout report (duration: %d)\n", sample);
 
-	/* Normal sample */
+	 
 	} else {
 		if (dev->gap_start) {
 			u64 duration = ktime_us_delta(ktime_get(),
 						      dev->gap_start);
 
-			/* Cap by LIRC_VALUE_MASK */
+			 
 			duration = min_t(u64, duration, LIRC_VALUE_MASK);
 
 			spin_lock_irqsave(&dev->lirc_fh_lock, flags);
@@ -86,10 +72,7 @@ void lirc_raw_event(struct rc_dev *dev, struct ir_raw_event ev)
 			ev.duration, TO_STR(ev.pulse));
 	}
 
-	/*
-	 * bpf does not care about the gap generated above; that exists
-	 * for backwards compatibility
-	 */
+	 
 	lirc_bpf_run(dev, sample);
 
 	spin_lock_irqsave(&dev->lirc_fh_lock, flags);
@@ -100,12 +83,7 @@ void lirc_raw_event(struct rc_dev *dev, struct ir_raw_event ev)
 	spin_unlock_irqrestore(&dev->lirc_fh_lock, flags);
 }
 
-/**
- * lirc_scancode_event() - Send scancode data to lirc to be relayed to
- *		userspace. This can be called in atomic context.
- * @dev:	the struct rc_dev descriptor of the device
- * @lsc:	the struct lirc_scancode describing the decoded scancode
- */
+ 
 void lirc_scancode_event(struct rc_dev *dev, struct lirc_scancode *lsc)
 {
 	unsigned long flags;
@@ -222,7 +200,7 @@ static ssize_t lirc_transmit(struct file *file, const char __user *buf,
 	size_t count;
 	ktime_t start;
 	s64 towait;
-	unsigned int duration = 0; /* signal duration in us */
+	unsigned int duration = 0;  
 	int i;
 
 	ret = mutex_lock_interruptible(&dev->lock);
@@ -258,7 +236,7 @@ static ssize_t lirc_transmit(struct file *file, const char __user *buf,
 			goto out_unlock;
 		}
 
-		/* We only have encoders for 32-bit protocols. */
+		 
 		if (scan.scancode > U32_MAX ||
 		    !rc_validate_scancode(scan.rc_proto, scan.scancode)) {
 			ret = -EINVAL;
@@ -276,7 +254,7 @@ static ssize_t lirc_transmit(struct file *file, const char __user *buf,
 		if (ret < 0)
 			goto out_kfree_raw;
 
-		/* drop trailing space */
+		 
 		if (!(ret % 2))
 			count = ret - 1;
 		else
@@ -335,11 +313,7 @@ static ssize_t lirc_transmit(struct file *file, const char __user *buf,
 	kfree(raw);
 	mutex_unlock(&dev->lock);
 
-	/*
-	 * The lircd gap calculation expects the write function to
-	 * wait for the actual IR signal to be transmitted before
-	 * returning.
-	 */
+	 
 	towait = ktime_us_delta(ktime_add_us(start, duration),
 				ktime_get());
 	if (towait > 0) {
@@ -416,7 +390,7 @@ static long lirc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		break;
 
-	/* mode support */
+	 
 	case LIRC_GET_REC_MODE:
 		if (dev->driver_type == RC_DRIVER_IR_RAW_TX)
 			ret = -ENOTTY;
@@ -460,7 +434,7 @@ static long lirc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			fh->send_mode = val;
 		break;
 
-	/* TX settings */
+	 
 	case LIRC_SET_TRANSMITTER_MASK:
 		if (!dev->s_tx_mask)
 			ret = -ENOTTY;
@@ -484,7 +458,7 @@ static long lirc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = dev->s_tx_duty_cycle(dev, val);
 		break;
 
-	/* RX settings */
+	 
 	case LIRC_SET_REC_CARRIER:
 		if (!dev->s_rx_carrier_range)
 			ret = -ENOTTY;
@@ -525,7 +499,7 @@ static long lirc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = dev->s_carrier_report(dev, !!val);
 		break;
 
-	/* Generic timeout support */
+	 
 	case LIRC_GET_MIN_TIMEOUT:
 		if (!dev->max_timeout)
 			ret = -ENOTTY;
@@ -691,7 +665,7 @@ static ssize_t lirc_read(struct file *file, char __user *buffer, size_t length,
 
 	if (fh->rec_mode == LIRC_MODE_MODE2)
 		return lirc_read_mode2(file, buffer, length);
-	else /* LIRC_MODE_SCANCODE */
+	else  
 		return lirc_read_scancode(file, buffer, length);
 }
 

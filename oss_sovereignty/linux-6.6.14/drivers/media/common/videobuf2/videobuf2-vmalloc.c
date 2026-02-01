@@ -1,14 +1,4 @@
-/*
- * videobuf2-vmalloc.c - vmalloc memory allocator for videobuf2
- *
- * Copyright (C) 2010 Samsung Electronics
- *
- * Author: Pawel Osciak <pawel@osciak.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -97,10 +87,7 @@ static void *vb2_vmalloc_get_userptr(struct vb2_buffer *vb, struct device *dev,
 	if (frame_vector_to_pages(vec) < 0) {
 		unsigned long *nums = frame_vector_pfns(vec);
 
-		/*
-		 * We cannot get page pointers for these pfns. Check memory is
-		 * physically contiguous and use direct mapping.
-		 */
+		 
 		for (i = 1; i < n_pages; i++)
 			if (nums[i-1] + 1 != nums[i])
 				goto fail_map;
@@ -181,14 +168,10 @@ static int vb2_vmalloc_mmap(void *buf_priv, struct vm_area_struct *vma)
 		return ret;
 	}
 
-	/*
-	 * Make sure that vm_areas for 2 buffers won't be merged together
-	 */
+	 
 	vm_flags_set(vma, VM_DONTEXPAND);
 
-	/*
-	 * Use common vm_area operations to track buffer refcount.
-	 */
+	 
 	vma->vm_private_data	= &buf->handler;
 	vma->vm_ops		= &vb2_common_vm_ops;
 
@@ -198,9 +181,9 @@ static int vb2_vmalloc_mmap(void *buf_priv, struct vm_area_struct *vma)
 }
 
 #ifdef CONFIG_HAS_DMA
-/*********************************************/
-/*         DMABUF ops for exporters          */
-/*********************************************/
+ 
+ 
+ 
 
 struct vb2_vmalloc_attachment {
 	struct sg_table sgt;
@@ -257,7 +240,7 @@ static void vb2_vmalloc_dmabuf_ops_detach(struct dma_buf *dbuf,
 
 	sgt = &attach->sgt;
 
-	/* release the scatterlist cache */
+	 
 	if (attach->dma_dir != DMA_NONE)
 		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
 	sg_free_table(sgt);
@@ -272,17 +255,17 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
 	struct sg_table *sgt;
 
 	sgt = &attach->sgt;
-	/* return previously mapped sg table */
+	 
 	if (attach->dma_dir == dma_dir)
 		return sgt;
 
-	/* release any previous cache */
+	 
 	if (attach->dma_dir != DMA_NONE) {
 		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
 		attach->dma_dir = DMA_NONE;
 	}
 
-	/* mapping to the client with new direction */
+	 
 	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
 		pr_err("failed to map scatterlist\n");
 		return ERR_PTR(-EIO);
@@ -296,12 +279,12 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
 static void vb2_vmalloc_dmabuf_ops_unmap(struct dma_buf_attachment *db_attach,
 	struct sg_table *sgt, enum dma_data_direction dma_dir)
 {
-	/* nothing to be done here */
+	 
 }
 
 static void vb2_vmalloc_dmabuf_ops_release(struct dma_buf *dbuf)
 {
-	/* drop reference obtained in vb2_vmalloc_get_dmabuf */
+	 
 	vb2_vmalloc_put(dbuf->priv);
 }
 
@@ -351,17 +334,17 @@ static struct dma_buf *vb2_vmalloc_get_dmabuf(struct vb2_buffer *vb,
 	if (IS_ERR(dbuf))
 		return NULL;
 
-	/* dmabuf keeps reference to vb2 buffer */
+	 
 	refcount_inc(&buf->refcount);
 
 	return dbuf;
 }
-#endif /* CONFIG_HAS_DMA */
+#endif  
 
 
-/*********************************************/
-/*       callbacks for DMABUF buffers        */
-/*********************************************/
+ 
+ 
+ 
 
 static int vb2_vmalloc_map_dmabuf(void *mem_priv)
 {

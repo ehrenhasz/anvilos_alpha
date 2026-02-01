@@ -1,38 +1,38 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// TSE-850 audio - ASoC driver for the Axentia TSE-850 with a PCM5142 codec
-//
-// Copyright (C) 2016 Axentia Technologies AB
-//
-// Author: Peter Rosin <peda@axentia.se>
-//
-//               loop1 relays
-//   IN1 +---o  +------------+  o---+ OUT1
-//            \                /
-//             +              +
-//             |   /          |
-//             +--o  +--.     |
-//             |  add   |     |
-//             |        V     |
-//             |      .---.   |
-//   DAC +----------->|Sum|---+
-//             |      '---'   |
-//             |              |
-//             +              +
-//
-//   IN2 +---o--+------------+--o---+ OUT2
-//               loop2 relays
-//
-// The 'loop1' gpio pin controls two relays, which are either in loop
-// position, meaning that input and output are directly connected, or
-// they are in mixer position, meaning that the signal is passed through
-// the 'Sum' mixer. Similarly for 'loop2'.
-//
-// In the above, the 'loop1' relays are inactive, thus feeding IN1 to the
-// mixer (if 'add' is active) and feeding the mixer output to OUT1. The
-// 'loop2' relays are active, short-cutting the TSE-850 from channel 2.
-// IN1, IN2, OUT1 and OUT2 are TSE-850 connectors and DAC is the PCB name
-// of the (filtered) output from the PCM5142 codec.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/gpio.h>
@@ -140,10 +140,7 @@ static int tse850_put_mix(struct snd_kcontrol *kctrl,
 	if (tse850->add_cache == connect)
 		return 0;
 
-	/*
-	 * Hmmm, this gpiod_set_value_cansleep call should probably happen
-	 * inside snd_soc_dapm_mixer_update_power in the loop.
-	 */
+	 
 	gpiod_set_value_cansleep(tse850->add, connect);
 	tse850->add_cache = connect;
 
@@ -163,15 +160,7 @@ static int tse850_get_ana(struct snd_kcontrol *kctrl,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Map regulator output values like so:
-	 *      -11.5V to "Low" (enum 0)
-	 * 11.5V-12.5V to "12V" (enum 1)
-	 * 12.5V-13.5V to "13V" (enum 2)
-	 *     ...
-	 * 18.5V-19.5V to "19V" (enum 8)
-	 * 19.5V-      to "20V" (enum 9)
-	 */
+	 
 	if (ret < 11000000)
 		ret = 11000000;
 	else if (ret > 20000000)
@@ -197,15 +186,7 @@ static int tse850_put_ana(struct snd_kcontrol *kctrl,
 	if (uV >= e->items)
 		return -EINVAL;
 
-	/*
-	 * Map enum zero (Low) to 2 volts on the regulator, do this since
-	 * the ana regulator is supplied by the system 12V voltage and
-	 * requesting anything below the system voltage causes the system
-	 * voltage to be passed through the regulator. Also, the ana
-	 * regulator induces noise when requesting voltages near the
-	 * system voltage. So, by mapping Low to 2V, that noise is
-	 * eliminated when all that is needed is 12V (the system voltage).
-	 */
+	 
 	if (uV)
 		uV = 11000000 + (1000000 * uV);
 	else
@@ -265,15 +246,7 @@ static const struct snd_soc_dapm_widget tse850_dapm_widgets[] = {
 	SND_SOC_DAPM_OUT_DRV("OUT", SND_SOC_NOPM, 0, 0, &out, 1),
 };
 
-/*
- * These connections are not entirely correct, since both IN1 and IN2
- * are always fed to MIX (if the "IN switch" is set so), i.e. without
- * regard to the loop1 and loop2 relays that according to this only
- * control MUX1 and MUX2 but in fact also control how the input signals
- * are routed.
- * But, 1) I don't know how to do it right, and 2) it doesn't seem to
- * matter in practice since nothing is powered in those sections anyway.
- */
+ 
 static const struct snd_soc_dapm_route tse850_intercon[] = {
 	{ "OUT1", NULL, "MUX1" },
 	{ "OUT2", NULL, "MUX2" },
@@ -290,7 +263,7 @@ static const struct snd_soc_dapm_route tse850_intercon[] = {
 	{ "MIX", "IN Switch", "IN1" },
 	{ "MIX", "IN Switch", "IN2" },
 
-	/* connect board input to the codec left channel output pin */
+	 
 	{ "DAC", NULL, "OUTL" },
 };
 
@@ -423,7 +396,7 @@ static void tse850_remove(struct platform_device *pdev)
 
 static const struct of_device_id tse850_dt_ids[] = {
 	{ .compatible = "axentia,tse850-pcm5142", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tse850_dt_ids);
 
@@ -438,7 +411,7 @@ static struct platform_driver tse850_driver = {
 
 module_platform_driver(tse850_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
 MODULE_DESCRIPTION("ALSA SoC driver for TSE-850 with PCM5142 codec");
 MODULE_LICENSE("GPL v2");

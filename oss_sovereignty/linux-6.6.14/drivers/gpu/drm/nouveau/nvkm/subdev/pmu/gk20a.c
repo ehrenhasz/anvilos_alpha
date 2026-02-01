@@ -1,24 +1,4 @@
-/*
- * Copyright (c) 2014, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 #define gk20a_pmu(p) container_of((p), struct gk20a_pmu, base)
 #include "priv.h"
 
@@ -71,7 +51,7 @@ gk20a_pmu_dvfs_get_target_state(struct gk20a_pmu *pmu,
 	struct nvkm_clk *clk = pmu->base.subdev.device->clk;
 	int cur_level, level;
 
-	/* For GK20A, the performance level is directly mapped to pstate */
+	 
 	level = cur_level = clk->pstate;
 
 	if (load > data->p_load_max) {
@@ -125,10 +105,7 @@ gk20a_pmu_dvfs_work(struct nvkm_alarm *alarm)
 	u32 utilization = 0;
 	int state;
 
-	/*
-	 * The PMU is initialized before CLK and VOLT, so we have to make sure the
-	 * CLK and VOLT are ready here.
-	 */
+	 
 	if (!clk || !volt)
 		goto resched;
 
@@ -178,7 +155,7 @@ gk20a_pmu_init(struct nvkm_pmu *pmu)
 		return ret;
 	}
 
-	/* init pwr perf counter */
+	 
 	nvkm_falcon_wr32(falcon, 0x504 + (BUSY_SLOT * 0x10), 0x00200001);
 	nvkm_falcon_wr32(falcon, 0x50c + (BUSY_SLOT * 0x10), 0x00000002);
 	nvkm_falcon_wr32(falcon, 0x50c + (CLK_SLOT * 0x10), 0x00000003);

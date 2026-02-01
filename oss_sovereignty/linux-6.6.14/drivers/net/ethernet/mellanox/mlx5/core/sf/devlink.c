@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Ltd */
+
+ 
 
 #include <linux/mlx5/driver.h>
 #include "eswitch.h"
@@ -21,11 +21,11 @@ struct mlx5_sf {
 };
 
 struct mlx5_sf_table {
-	struct mlx5_core_dev *dev; /* To refer from notifier context. */
-	struct xarray port_indices; /* port index based lookup. */
+	struct mlx5_core_dev *dev;  
+	struct xarray port_indices;  
 	refcount_t refcount;
 	struct completion disable_complete;
-	struct mutex sf_state_lock; /* Serializes sf state among user cmds & vhca event handler. */
+	struct mutex sf_state_lock;  
 	struct notifier_block esw_nb;
 	struct notifier_block vhca_nb;
 };
@@ -364,11 +364,7 @@ static void mlx5_sf_dealloc(struct mlx5_sf_table *table, struct mlx5_sf *sf)
 	if (sf->hw_state == MLX5_VHCA_STATE_ALLOCATED) {
 		mlx5_sf_free(table, sf);
 	} else if (mlx5_sf_is_active(sf)) {
-		/* Even if its active, it is treated as in_use because by the time,
-		 * it is disabled here, it may getting used. So it is safe to
-		 * always look for the event to ensure that it is recycled only after
-		 * firmware gives confirmation that it is detached by the driver.
-		 */
+		 
 		mlx5_cmd_sf_disable_hca(table->dev, sf->hw_fn_id);
 		mlx5_sf_hw_table_sf_deferred_free(table->dev, sf->controller, sf->id);
 		kfree(sf);
@@ -442,9 +438,7 @@ static int mlx5_sf_vhca_event(struct notifier_block *nb, unsigned long opcode, v
 	if (!sf)
 		goto sf_err;
 
-	/* When driver is attached or detached to a function, an event
-	 * notifies such state change.
-	 */
+	 
 	update = mlx5_sf_state_update_check(sf, event->new_vhca_state);
 	if (update)
 		sf->hw_state = event->new_vhca_state;
@@ -468,9 +462,7 @@ static void mlx5_sf_deactivate_all(struct mlx5_sf_table *table)
 	unsigned long index;
 	struct mlx5_sf *sf;
 
-	/* At this point, no new user commands can start and no vhca event can
-	 * arrive. It is safe to destroy all user created SFs.
-	 */
+	 
 	xa_for_each(&table->port_indices, index, sf) {
 		mlx5_eswitch_unload_sf_vport(esw, sf->hw_fn_id);
 		mlx5_sf_id_erase(table, sf);
@@ -483,9 +475,7 @@ static void mlx5_sf_table_disable(struct mlx5_sf_table *table)
 	if (!refcount_read(&table->refcount))
 		return;
 
-	/* Balances with refcount_set; drop the reference so that new user cmd cannot start
-	 * and new vhca event handler cannot run.
-	 */
+	 
 	mlx5_sf_table_put(table);
 	wait_for_completion(&table->disable_complete);
 

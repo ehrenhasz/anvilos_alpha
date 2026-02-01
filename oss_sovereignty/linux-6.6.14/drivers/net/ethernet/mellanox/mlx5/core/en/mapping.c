@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2018 Mellanox Technologies */
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/slab.h>
@@ -17,13 +17,13 @@ static DEFINE_MUTEX(shared_ctx_lock);
 struct mapping_ctx {
 	struct xarray xarray;
 	DECLARE_HASHTABLE(ht, 8);
-	struct mutex lock; /* Guards hashtable and xarray */
+	struct mutex lock;  
 	unsigned long max_id;
 	size_t data_size;
 	bool delayed_removal;
 	struct delayed_work dwork;
 	struct list_head pending_list;
-	spinlock_t pending_list_lock; /* Guards pending list */
+	spinlock_t pending_list_lock;  
 	u64 id;
 	u8 type;
 	struct list_head list;

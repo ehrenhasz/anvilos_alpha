@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_INCLUDE_MFD_IMX25_TSADC_H_
 #define _LINUX_INCLUDE_MFD_IMX25_TSADC_H_
 
@@ -15,7 +15,7 @@ struct mx25_tsadc {
 #define MX25_TSC_TGSR			0x04
 #define MX25_TSC_TICR			0x08
 
-/* The same register layout for TC and GC queue */
+ 
 #define MX25_ADCQ_FIFO			0x00
 #define MX25_ADCQ_CR			0x04
 #define MX25_ADCQ_SR			0x08
@@ -26,7 +26,7 @@ struct mx25_tsadc {
 
 #define MX25_ADCQ_MR_MASK		0xffffffff
 
-/* TGCR */
+ 
 #define MX25_TGCR_PDBTIME(x)		((x) << 25)
 #define MX25_TGCR_PDBTIME_MASK		GENMASK(31, 25)
 #define MX25_TGCR_PDBEN			BIT(24)
@@ -43,21 +43,21 @@ struct mx25_tsadc {
 #define MX25_TGCR_TSC_RST		BIT(1)
 #define MX25_TGCR_CLK_EN		BIT(0)
 
-/* TGSR */
+ 
 #define MX25_TGSR_SLP_INT		BIT(2)
 #define MX25_TGSR_GCQ_INT		BIT(1)
 #define MX25_TGSR_TCQ_INT		BIT(0)
 
-/* ADCQ_ITEM_* */
+ 
 #define _MX25_ADCQ_ITEM(item, x)	((x) << ((item) * 4))
 #define MX25_ADCQ_ITEM(item, x)		((item) >= 8 ? \
 		_MX25_ADCQ_ITEM((item) - 8, (x)) : _MX25_ADCQ_ITEM((item), (x)))
 
-/* ADCQ_FIFO (TCQFIFO and GCQFIFO) */
+ 
 #define MX25_ADCQ_FIFO_DATA(x)		(((x) >> 4) & 0xfff)
 #define MX25_ADCQ_FIFO_ID(x)		((x) & 0xf)
 
-/* ADCQ_CR (TCQR and GCQR) */
+ 
 #define MX25_ADCQ_CR_PDCFG_LEVEL	BIT(19)
 #define MX25_ADCQ_CR_PDMSK		BIT(18)
 #define MX25_ADCQ_CR_FRST		BIT(17)
@@ -75,7 +75,7 @@ struct mx25_tsadc {
 #define MX25_ADCQ_CR_QSM_FQS		0x2
 #define MX25_ADCQ_CR_QSM_FQS_PD		0x3
 
-/* ADCQ_SR (TCQSR and GCQSR) */
+ 
 #define MX25_ADCQ_SR_FDRY		BIT(15)
 #define MX25_ADCQ_SR_FULL		BIT(14)
 #define MX25_ADCQ_SR_EMPT		BIT(13)
@@ -86,7 +86,7 @@ struct mx25_tsadc {
 #define MX25_ADCQ_SR_EOQ		BIT(1)
 #define MX25_ADCQ_SR_PD			BIT(0)
 
-/* ADCQ_MR (TCQMR and GCQMR) */
+ 
 #define MX25_ADCQ_MR_FDRY_DMA		BIT(31)
 #define MX25_ADCQ_MR_FER_DMA		BIT(22)
 #define MX25_ADCQ_MR_FUR_DMA		BIT(21)
@@ -100,7 +100,7 @@ struct mx25_tsadc {
 #define MX25_ADCQ_MR_EOQ_IRQ		BIT(1)
 #define MX25_ADCQ_MR_PD_IRQ		BIT(0)
 
-/* ADCQ_CFG (TICR, TCC0-7,GCC0-7) */
+ 
 #define MX25_ADCQ_CFG_SETTLING_TIME(x)	((x) << 24)
 #define MX25_ADCQ_CFG_IGS		(1 << 20)
 #define MX25_ADCQ_CFG_NOS_MASK		GENMASK(19, 16)
@@ -138,4 +138,4 @@ struct mx25_tsadc {
 #define MX25_ADCQ_CFG_REFN_MASK		GENMASK(3, 2)
 #define MX25_ADCQ_CFG_PENIACK		(1 << 1)
 
-#endif  /* _LINUX_INCLUDE_MFD_IMX25_TSADC_H_ */
+#endif   

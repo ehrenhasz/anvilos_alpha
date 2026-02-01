@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   ALSA sequencer /proc info
- *   Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
- */
+ 
+ 
 #ifndef __SND_SEQ_INFO_H
 #define __SND_SEQ_INFO_H
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    Samsung S5H1409 VSB/QAM demodulator driver
 
-    Copyright (C) 2006 Steven Toth <stoth@linuxtv.org>
-
-
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -20,12 +14,12 @@ struct s5h1409_state {
 
 	struct i2c_adapter *i2c;
 
-	/* configuration settings */
+	 
 	const struct s5h1409_config *config;
 
 	struct dvb_frontend frontend;
 
-	/* previous uncorrected block counter */
+	 
 	enum fe_modulation current_modulation;
 
 	u32 current_frequency;
@@ -33,7 +27,7 @@ struct s5h1409_state {
 
 	u32 is_qam_locked;
 
-	/* QAM tuning state goes through the following state transitions */
+	 
 #define QAM_STATE_UNTUNED 0
 #define QAM_STATE_TUNING_STARTED 1
 #define QAM_STATE_INTERLEAVE_SET 2
@@ -49,7 +43,7 @@ MODULE_PARM_DESC(debug, "Enable verbose debug messages");
 
 #define dprintk	if (debug) printk
 
-/* Register values to initialise the demod, this will set VSB by default */
+ 
 static struct init_tab {
 	u8	reg;
 	u16	data;
@@ -101,7 +95,7 @@ static struct init_tab {
 	{ 0xb1, 0x000e, },
 };
 
-/* VSB SNR lookup table */
+ 
 static struct vsb_snr_tab {
 	u16	val;
 	u16	data;
@@ -148,7 +142,7 @@ static struct vsb_snr_tab {
 	{    0,   0, },
 };
 
-/* QAM64 SNR lookup table */
+ 
 static struct qam64_snr_tab {
 	u16	val;
 	u16	data;
@@ -220,7 +214,7 @@ static struct qam64_snr_tab {
 	{  255,   0, },
 };
 
-/* QAM256 SNR lookup table */
+ 
 static struct qam256_snr_tab {
 	u16	val;
 	u16	data;
@@ -297,7 +291,7 @@ static struct qam256_snr_tab {
 	{  255,   0, },
 };
 
-/* 8 bit registers, 16 bit values */
+ 
 static int s5h1409_writereg(struct s5h1409_state *state, u8 reg, u16 data)
 {
 	int ret;
@@ -382,9 +376,9 @@ static int s5h1409_set_spectralinversion(struct dvb_frontend *fe, int inverted)
 	dprintk("%s(%d)\n", __func__, inverted);
 
 	if (inverted == 1)
-		return s5h1409_writereg(state, 0x1b, 0x1101); /* Inverted */
+		return s5h1409_writereg(state, 0x1b, 0x1101);  
 	else
-		return s5h1409_writereg(state, 0x1b, 0x0110); /* Normal */
+		return s5h1409_writereg(state, 0x1b, 0x0110);  
 }
 
 static int s5h1409_enable_modulation(struct dvb_frontend *fe,
@@ -471,18 +465,16 @@ static void s5h1409_set_qam_amhum_mode(struct dvb_frontend *fe)
 	u16 reg;
 
 	if (state->qam_state < QAM_STATE_INTERLEAVE_SET) {
-		/* We should not perform amhum optimization until
-		   the interleave mode has been configured */
+		 
 		return;
 	}
 
 	if (state->qam_state == QAM_STATE_QAM_OPTIMIZED_L3) {
-		/* We've already reached the maximum optimization level, so
-		   don't bother banging on the status registers */
+		 
 		return;
 	}
 
-	/* QAM EQ lock check */
+	 
 	reg = s5h1409_readreg(state, 0xf0);
 
 	if ((reg >> 13) & 0x1) {
@@ -526,7 +518,7 @@ static void s5h1409_set_qam_amhum_mode_legacy(struct dvb_frontend *fe)
 	if (state->is_qam_locked)
 		return;
 
-	/* QAM EQ lock check */
+	 
 	reg = s5h1409_readreg(state, 0xf0);
 
 	if ((reg >> 13) & 0x1) {
@@ -556,13 +548,13 @@ static void s5h1409_set_qam_interleave_mode(struct dvb_frontend *fe)
 	u16 reg, reg1, reg2;
 
 	if (state->qam_state >= QAM_STATE_INTERLEAVE_SET) {
-		/* We've done the optimization already */
+		 
 		return;
 	}
 
 	reg = s5h1409_readreg(state, 0xf1);
 
-	/* Master lock */
+	 
 	if ((reg >> 15) & 0x1) {
 		if (state->qam_state == QAM_STATE_UNTUNED ||
 		    state->qam_state == QAM_STATE_TUNING_STARTED) {
@@ -595,7 +587,7 @@ static void s5h1409_set_qam_interleave_mode_legacy(struct dvb_frontend *fe)
 
 	reg = s5h1409_readreg(state, 0xf1);
 
-	/* Master lock */
+	 
 	if ((reg >> 15) & 0x1) {
 		if (state->qam_state != 2) {
 			state->qam_state = 2;
@@ -618,7 +610,7 @@ static void s5h1409_set_qam_interleave_mode_legacy(struct dvb_frontend *fe)
 	}
 }
 
-/* Talk to the demod, set the FEC, GUARD, QAM settings etc */
+ 
 static int s5h1409_set_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
@@ -640,15 +632,12 @@ static int s5h1409_set_frontend(struct dvb_frontend *fe)
 			fe->ops.i2c_gate_ctrl(fe, 0);
 	}
 
-	/* Issue a reset to the demod so it knows to resync against the
-	   newly tuned frequency */
+	 
 	s5h1409_softreset(fe);
 
-	/* Optimize the demod for QAM */
+	 
 	if (state->current_modulation != VSB_8) {
-		/* This almost certainly applies to all boards, but for now
-		   only do it for the HVR-1600.  Once the other boards are
-		   tested, the "legacy" versions can just go away */
+		 
 		if (state->config->hvr1600_opt == S5H1409_HVR1600_OPTIMIZE) {
 			s5h1409_set_qam_interleave_mode(fe);
 			s5h1409_set_qam_amhum_mode(fe);
@@ -687,12 +676,11 @@ static int s5h1409_set_mpeg_timing(struct dvb_frontend *fe, int mode)
 		return -EINVAL;
 	}
 
-	/* Configure MPEG Signal Timing charactistics */
+	 
 	return s5h1409_writereg(state, 0xac, val);
 }
 
-/* Reset the demod hardware and reset all of the configuration registers
-   to a default state. */
+ 
 static int s5h1409_init(struct dvb_frontend *fe)
 {
 	int i;
@@ -706,30 +694,28 @@ static int s5h1409_init(struct dvb_frontend *fe)
 	for (i = 0; i < ARRAY_SIZE(init_tab); i++)
 		s5h1409_writereg(state, init_tab[i].reg, init_tab[i].data);
 
-	/* The datasheet says that after initialisation, VSB is default */
+	 
 	state->current_modulation = VSB_8;
 
-	/* Optimize for the HVR-1600 if appropriate.  Note that some of these
-	   may get folded into the generic case after testing with other
-	   devices */
+	 
 	if (state->config->hvr1600_opt == S5H1409_HVR1600_OPTIMIZE) {
-		/* VSB AGC REF */
+		 
 		s5h1409_writereg(state, 0x09, 0x0050);
 
-		/* Unknown but Windows driver does it... */
+		 
 		s5h1409_writereg(state, 0x21, 0x0001);
 		s5h1409_writereg(state, 0x50, 0x030e);
 
-		/* QAM AGC REF */
+		 
 		s5h1409_writereg(state, 0x82, 0x0800);
 	}
 
 	if (state->config->output_mode == S5H1409_SERIAL_OUTPUT)
 		s5h1409_writereg(state, 0xab,
-			s5h1409_readreg(state, 0xab) | 0x100); /* Serial */
+			s5h1409_readreg(state, 0xab) | 0x100);  
 	else
 		s5h1409_writereg(state, 0xab,
-			s5h1409_readreg(state, 0xab) & 0xfeff); /* Parallel */
+			s5h1409_readreg(state, 0xab) & 0xfeff);  
 
 	s5h1409_set_spectralinversion(fe, state->config->inversion);
 	s5h1409_set_if_freq(fe, state->if_freq);
@@ -737,7 +723,7 @@ static int s5h1409_init(struct dvb_frontend *fe)
 	s5h1409_set_mpeg_timing(fe, state->config->mpeg_timing);
 	s5h1409_softreset(fe);
 
-	/* Note: Leaving the I2C gate closed. */
+	 
 	s5h1409_i2c_gate_ctrl(fe, 0);
 
 	return 0;
@@ -751,18 +737,16 @@ static int s5h1409_read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 	*status = 0;
 
-	/* Optimize the demod for QAM */
+	 
 	if (state->current_modulation != VSB_8) {
-		/* This almost certainly applies to all boards, but for now
-		   only do it for the HVR-1600.  Once the other boards are
-		   tested, the "legacy" versions can just go away */
+		 
 		if (state->config->hvr1600_opt == S5H1409_HVR1600_OPTIMIZE) {
 			s5h1409_set_qam_interleave_mode(fe);
 			s5h1409_set_qam_amhum_mode(fe);
 		}
 	}
 
-	/* Get the demodulator status */
+	 
 	reg = s5h1409_readreg(state, 0xf1);
 	if (reg & 0x1000)
 		*status |= FE_HAS_VITERBI;
@@ -775,7 +759,7 @@ static int s5h1409_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			*status |= FE_HAS_CARRIER | FE_HAS_SIGNAL;
 		break;
 	case S5H1409_TUNERLOCKING:
-		/* Get the tuner status */
+		 
 		if (fe->ops.tuner_ops.get_status) {
 			if (fe->ops.i2c_gate_ctrl)
 				fe->ops.i2c_gate_ctrl(fe, 1);
@@ -867,13 +851,7 @@ static int s5h1409_read_snr(struct dvb_frontend *fe, u16 *snr)
 static int s5h1409_read_signal_strength(struct dvb_frontend *fe,
 					u16 *signal_strength)
 {
-	/* borrowed from lgdt330x.c
-	 *
-	 * Calculate strength from SNR up to 35dB
-	 * Even though the SNR can go higher than 35dB,
-	 * there is some comfort factor in having a range of
-	 * strong signals that can show at 100%
-	 */
+	 
 	u16 snr;
 	u32 tmp;
 	int ret = s5h1409_read_snr(fe, &snr);
@@ -881,15 +859,12 @@ static int s5h1409_read_signal_strength(struct dvb_frontend *fe,
 	*signal_strength = 0;
 
 	if (0 == ret) {
-		/* The following calculation method was chosen
-		 * purely for the sake of code re-use from the
-		 * other demod drivers that use this method */
+		 
 
-		/* Convert from SNR in dB * 10 to 8.24 fixed-point */
+		 
 		tmp = (snr * ((1 << 24) / 10));
 
-		/* Convert from 8.24 fixed-point to
-		 * scale the range 0 - 35*2^24 into 0 - 65535*/
+		 
 		if (tmp >= 8960 * 0x10000)
 			*signal_strength = 0xffff;
 		else
@@ -945,23 +920,23 @@ struct dvb_frontend *s5h1409_attach(const struct s5h1409_config *config,
 	struct s5h1409_state *state = NULL;
 	u16 reg;
 
-	/* allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(struct s5h1409_state), GFP_KERNEL);
 	if (state == NULL)
 		goto error;
 
-	/* setup the state */
+	 
 	state->config = config;
 	state->i2c = i2c;
 	state->current_modulation = 0;
 	state->if_freq = S5H1409_VSB_IF_FREQ;
 
-	/* check if the demod exists */
+	 
 	reg = s5h1409_readreg(state, 0x04);
 	if ((reg != 0x0066) && (reg != 0x007f))
 		goto error;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops, &s5h1409_ops,
 	       sizeof(struct dvb_frontend_ops));
 	state->frontend.demodulator_priv = state;
@@ -972,7 +947,7 @@ struct dvb_frontend *s5h1409_attach(const struct s5h1409_config *config,
 		goto error;
 	}
 
-	/* Note: Leaving the I2C gate open here. */
+	 
 	s5h1409_i2c_gate_ctrl(&state->frontend, 1);
 
 	return &state->frontend;

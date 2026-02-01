@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * tools/testing/selftests/kvm/include/x86_64/svm.h
- * This is a copy of arch/x86/include/asm/svm.h
- *
- */
+ 
+ 
 
 #ifndef SELFTEST_KVM_SVM_H
 #define SELFTEST_KVM_SVM_H
@@ -71,12 +67,10 @@ struct hv_vmcb_enlightenments {
 	u64 reserved;
 } __packed;
 
-/*
- * Hyper-V uses the software reserved clean bit in VMCB
- */
+ 
 #define HV_VMCB_NESTED_ENLIGHTENMENTS (1U << 31)
 
-/* Synthetic VM-Exit */
+ 
 #define HV_SVM_EXITCODE_ENL			0xf0000000
 #define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH	(1)
 
@@ -116,17 +110,14 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 	u64 next_rip;
 	u8 insn_len;
 	u8 insn_bytes[15];
-	u64 avic_backing_page;	/* Offset 0xe0 */
-	u8 reserved_6[8];	/* Offset 0xe8 */
-	u64 avic_logical_id;	/* Offset 0xf0 */
-	u64 avic_physical_id;	/* Offset 0xf8 */
+	u64 avic_backing_page;	 
+	u8 reserved_6[8];	 
+	u64 avic_logical_id;	 
+	u64 avic_physical_id;	 
 	u8 reserved_7[8];
-	u64 vmsa_pa;		/* Used for an SEV-ES guest */
+	u64 vmsa_pa;		 
 	u8 reserved_8[720];
-	/*
-	 * Offset 0x3e0, 32 bytes reserved
-	 * for use by hypervisor/software.
-	 */
+	 
 	union {
 		struct hv_vmcb_enlightenments hv_enlightenments;
 		u8 reserved_sw[32];
@@ -323,4 +314,4 @@ struct __attribute__ ((__packed__)) vmcb {
 
 #define SVM_CR0_SELECTIVE_MASK (X86_CR0_TS | X86_CR0_MP)
 
-#endif /* SELFTEST_KVM_SVM_H */
+#endif  

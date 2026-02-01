@@ -1,20 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __LINUX_INITRD_H
 #define __LINUX_INITRD_H
 
-#define INITRD_MINOR 250 /* shouldn't collide with /dev/ram* too soon ... */
+#define INITRD_MINOR 250  
 
-/* starting block # of image */
+ 
 extern int rd_image_start;
 
-/* size of a single RAM disk */
+ 
 extern unsigned long rd_size;
 
-/* 1 if it is not an error if initrd_start < memory_start */
+ 
 extern int initrd_below_start_ok;
 
-/* free_initrd_mem always gets called with the next two as arguments.. */
+ 
 extern unsigned long initrd_start, initrd_end;
 extern void free_initrd_mem(unsigned long, unsigned long);
 
@@ -34,4 +34,4 @@ extern unsigned long __initramfs_size;
 
 void console_on_rootfs(void);
 
-#endif /* __LINUX_INITRD_H */
+#endif  

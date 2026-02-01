@@ -1,34 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *    Eddie Dong <eddie.dong@intel.com>
- *
- * Contributors:
- *    Niu Bing <bing.niu@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- */
+ 
 
 #ifndef _GVT_H_
 #define _GVT_H_
@@ -60,7 +30,7 @@
 
 #define GVT_MAX_VGPU 8
 
-/* Describe per-platform limitations. */
+ 
 struct intel_gvt_device_info {
 	u32 max_support_vgpus;
 	u32 cfg_space_size;
@@ -74,7 +44,7 @@ struct intel_gvt_device_info {
 	u32 max_surface_size;
 };
 
-/* GM resources owned by a vGPU */
+ 
 struct intel_vgpu_gm {
 	u64 aperture_sz;
 	u64 hidden_sz;
@@ -84,7 +54,7 @@ struct intel_vgpu_gm {
 
 #define INTEL_GVT_MAX_NUM_FENCES 32
 
-/* Fences owned by a vGPU */
+ 
 struct intel_vgpu_fence {
 	struct i915_fence_reg *regs[INTEL_GVT_MAX_NUM_FENCES];
 	u32 base;
@@ -189,10 +159,7 @@ struct intel_vgpu {
 	bool failsafe;
 	unsigned int resetting_eng;
 
-	/* Both sched_data and sched_ctl can be seen a part of the global gvt
-	 * scheduler structure. So below 2 vgpu data are protected
-	 * by sched_lock, not vgpu_lock.
-	 */
+	 
 	void *sched_data;
 	struct vgpu_sched_ctl sched_ctl;
 
@@ -207,7 +174,7 @@ struct intel_vgpu {
 	struct intel_vgpu_submission submission;
 	struct radix_tree_root page_track_tree;
 	u32 hws_pga[I915_NUM_ENGINES];
-	/* Set on PCI_D3, reset on DMLR, not reflecting the actual PM state */
+	 
 	bool d3_entered;
 
 	struct dentry *debugfs;
@@ -224,10 +191,7 @@ struct intel_vgpu {
 	struct eventfd_ctx *intx_trigger;
 	struct eventfd_ctx *msi_trigger;
 
-	/*
-	 * Two caches are used to avoid mapping duplicated pages (eg.
-	 * scratch pages). This help to reduce dma setup overhead.
-	 */
+	 
 	struct rb_root gfn_cache;
 	struct rb_root dma_addr_cache;
 	unsigned long nr_cache_entries;
@@ -239,7 +203,7 @@ struct intel_vgpu {
 #undef NR_BKT
 };
 
-/* validating GM healthy status*/
+ 
 #define vgpu_is_vm_unhealthy(ret_val) \
 	(((ret_val) == -EBADRQC) || ((ret_val) == -EFAULT))
 
@@ -252,7 +216,7 @@ struct intel_gvt_fence {
 	unsigned long vgpu_allocated_fence_num;
 };
 
-/* Special MMIO blocks. */
+ 
 struct gvt_mmio_block {
 	unsigned int device;
 	i915_reg_t   offset;
@@ -265,25 +229,23 @@ struct gvt_mmio_block {
 
 struct intel_gvt_mmio {
 	u16 *mmio_attribute;
-/* Register contains RO bits */
+ 
 #define F_RO		(1 << 0)
-/* Register contains graphics address */
+ 
 #define F_GMADR		(1 << 1)
-/* Mode mask registers with high 16 bits as the mask bits */
+ 
 #define F_MODE_MASK	(1 << 2)
-/* This reg can be accessed by GPU commands */
+ 
 #define F_CMD_ACCESS	(1 << 3)
-/* This reg has been accessed by a VM */
+ 
 #define F_ACCESSED	(1 << 4)
-/* This reg requires save & restore during host PM suspend/resume */
+ 
 #define F_PM_SAVE	(1 << 5)
-/* This reg could be accessed by unaligned address */
+ 
 #define F_UNALIGN	(1 << 6)
-/* This reg is in GVT's mmio save-restor list and in hardware
- * logical context image
- */
+ 
 #define F_SR_IN_CTX	(1 << 7)
-/* Value of command write of this reg needs to be patched */
+ 
 #define F_CMD_WRITE_PATCH	(1 << 8)
 
 	struct gvt_mmio_block *mmio_block;
@@ -304,11 +266,7 @@ struct intel_vgpu_config {
 	unsigned int high_mm;
 	unsigned int fence;
 
-	/*
-	 * A vGPU with a weight of 8 will get twice as much GPU as a vGPU with
-	 * a weight of 4 on a contended host, different vGPU type has different
-	 * weight set. Legal weights range from 1 to 16.
-	 */
+	 
 	unsigned int weight;
 	enum intel_vgpu_edid edid;
 	const char *name;
@@ -321,15 +279,13 @@ struct intel_vgpu_type {
 };
 
 struct intel_gvt {
-	/* GVT scope lock, protect GVT itself, and all resource currently
-	 * not yet protected by special locks(vgpu and scheduler lock).
-	 */
+	 
 	struct mutex lock;
-	/* scheduler scope lock, protect gvt and vgpu schedule related data */
+	 
 	struct mutex sched_lock;
 
 	struct intel_gt *gt;
-	struct idr vgpu_idr;	/* vGPU IDR pool */
+	struct idr vgpu_idr;	 
 
 	struct intel_gvt_device_info device_info;
 	struct intel_gvt_gm gm;
@@ -350,9 +306,7 @@ struct intel_gvt {
 	struct task_struct *service_thread;
 	wait_queue_head_t service_thread_wq;
 
-	/* service_request is always used in bit operation, we should always
-	 * use it with atomic bit ops so that no need to use gvt big lock.
-	 */
+	 
 	unsigned long service_request;
 
 	struct {
@@ -374,13 +328,13 @@ static inline struct intel_gvt *to_gvt(struct drm_i915_private *i915)
 }
 
 enum {
-	/* Scheduling trigger by timer */
+	 
 	INTEL_GVT_REQUEST_SCHED = 0,
 
-	/* Scheduling trigger by event */
+	 
 	INTEL_GVT_REQUEST_EVENT_SCHED = 1,
 
-	/* per-vGPU vblank emulation request */
+	 
 	INTEL_GVT_REQUEST_EMULATE_VBLANK = 2,
 	INTEL_GVT_REQUEST_EMULATE_VBLANK_MAX = INTEL_GVT_REQUEST_EMULATE_VBLANK
 		+ GVT_MAX_VGPU,
@@ -396,7 +350,7 @@ static inline void intel_gvt_request_service(struct intel_gvt *gvt,
 void intel_gvt_free_firmware(struct intel_gvt *gvt);
 int intel_gvt_load_firmware(struct intel_gvt *gvt);
 
-/* Aperture/GM space definitions for GVT device */
+ 
 #define MB_TO_BYTES(mb) ((mb) << 20ULL)
 #define BYTES_TO_MB(b) ((b) >> 20ULL)
 
@@ -406,7 +360,7 @@ int intel_gvt_load_firmware(struct intel_gvt *gvt);
 
 #define gvt_to_ggtt(gvt)	((gvt)->gt->ggtt)
 
-/* Aperture/GM space definitions for GVT device */
+ 
 #define gvt_aperture_sz(gvt)	  gvt_to_ggtt(gvt)->mappable_end
 #define gvt_aperture_pa_base(gvt) gvt_to_ggtt(gvt)->gmadr.start
 
@@ -425,7 +379,7 @@ int intel_gvt_load_firmware(struct intel_gvt *gvt);
 
 #define gvt_fence_sz(gvt) (gvt_to_ggtt(gvt)->num_fences)
 
-/* Aperture/GM space definitions for vGPU */
+ 
 #define vgpu_aperture_offset(vgpu)	((vgpu)->gm.low_gm_node.start)
 #define vgpu_hidden_offset(vgpu)	((vgpu)->gm.high_gm_node.start)
 #define vgpu_aperture_sz(vgpu)		((vgpu)->gm.aperture_sz)
@@ -450,7 +404,7 @@ int intel_gvt_load_firmware(struct intel_gvt *gvt);
 #define vgpu_fence_base(vgpu) (vgpu->fence.base)
 #define vgpu_fence_sz(vgpu) (vgpu->fence.size)
 
-/* ring context size i.e. the first 0x50 dwords*/
+ 
 #define RING_CTX_SIZE 320
 
 int intel_vgpu_alloc_resource(struct intel_vgpu *vgpu,
@@ -460,8 +414,7 @@ void intel_vgpu_free_resource(struct intel_vgpu *vgpu);
 void intel_vgpu_write_fence(struct intel_vgpu *vgpu,
 	u32 fence, u64 value);
 
-/* Macros for easily accessing vGPU virtual/shadow register.
-   Explicitly seperate use for typed MMIO reg or real offset.*/
+ 
 #define vgpu_vreg_t(vgpu, reg) \
 	(*(u32 *)(vgpu->mmio.vreg + i915_mmio_reg_offset(reg)))
 #define vgpu_vreg(vgpu, offset) \
@@ -480,15 +433,12 @@ static inline void intel_vgpu_write_pci_bar(struct intel_vgpu *vgpu,
 {
 	u32 *pval;
 
-	/* BAR offset should be 32 bits algiend */
+	 
 	offset = rounddown(offset, 4);
 	pval = (u32 *)(vgpu_cfg_space(vgpu) + offset);
 
 	if (low) {
-		/*
-		 * only update bit 31 - bit 4,
-		 * leave the bit 3 - bit 0 unchanged.
-		 */
+		 
 		*pval = (val & GENMASK(31, 4)) | (*pval & GENMASK(3, 0));
 	} else {
 		*pval = val;
@@ -513,7 +463,7 @@ void intel_gvt_deactivate_vgpu(struct intel_vgpu *vgpu);
 int intel_gvt_set_opregion(struct intel_vgpu *vgpu);
 int intel_gvt_set_edid(struct intel_vgpu *vgpu, int port_num);
 
-/* validating GM functions */
+ 
 #define vgpu_gmadr_is_aperture(vgpu, gmadr) \
 	((gmadr >= vgpu_aperture_gmadr_base(vgpu)) && \
 	 (gmadr <= vgpu_aperture_gmadr_end(vgpu)))
@@ -560,7 +510,7 @@ void intel_vgpu_emulate_hotplug(struct intel_vgpu *vgpu, bool connected);
 
 static inline u64 intel_vgpu_get_bar_gpa(struct intel_vgpu *vgpu, int bar)
 {
-	/* We are 64bit bar. */
+	 
 	return (*(u64 *)(vgpu->cfg_space.virtual_cfg_space + bar)) &
 			PCI_BASE_ADDRESS_MEM_MASK;
 }
@@ -592,96 +542,49 @@ static inline void mmio_hw_access_post(struct intel_gt *gt)
 	intel_runtime_pm_put_unchecked(gt->uncore->rpm);
 }
 
-/**
- * intel_gvt_mmio_set_accessed - mark a MMIO has been accessed
- * @gvt: a GVT device
- * @offset: register offset
- *
- */
+ 
 static inline void intel_gvt_mmio_set_accessed(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	gvt->mmio.mmio_attribute[offset >> 2] |= F_ACCESSED;
 }
 
-/**
- * intel_gvt_mmio_is_cmd_accessible - if a MMIO could be accessed by command
- * @gvt: a GVT device
- * @offset: register offset
- *
- * Returns:
- * True if an MMIO is able to be accessed by GPU commands
- */
+ 
 static inline bool intel_gvt_mmio_is_cmd_accessible(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	return gvt->mmio.mmio_attribute[offset >> 2] & F_CMD_ACCESS;
 }
 
-/**
- * intel_gvt_mmio_set_cmd_accessible -
- *				mark a MMIO could be accessible by command
- * @gvt: a GVT device
- * @offset: register offset
- *
- */
+ 
 static inline void intel_gvt_mmio_set_cmd_accessible(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	gvt->mmio.mmio_attribute[offset >> 2] |= F_CMD_ACCESS;
 }
 
-/**
- * intel_gvt_mmio_is_unalign - mark a MMIO could be accessed unaligned
- * @gvt: a GVT device
- * @offset: register offset
- *
- */
+ 
 static inline bool intel_gvt_mmio_is_unalign(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	return gvt->mmio.mmio_attribute[offset >> 2] & F_UNALIGN;
 }
 
-/**
- * intel_gvt_mmio_has_mode_mask - if a MMIO has a mode mask
- * @gvt: a GVT device
- * @offset: register offset
- *
- * Returns:
- * True if a MMIO has a mode mask in its higher 16 bits, false if it isn't.
- *
- */
+ 
 static inline bool intel_gvt_mmio_has_mode_mask(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	return gvt->mmio.mmio_attribute[offset >> 2] & F_MODE_MASK;
 }
 
-/**
- * intel_gvt_mmio_is_sr_in_ctx -
- *		check if an MMIO has F_SR_IN_CTX mask
- * @gvt: a GVT device
- * @offset: register offset
- *
- * Returns:
- * True if an MMIO has an F_SR_IN_CTX  mask, false if it isn't.
- *
- */
+ 
 static inline bool intel_gvt_mmio_is_sr_in_ctx(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	return gvt->mmio.mmio_attribute[offset >> 2] & F_SR_IN_CTX;
 }
 
-/**
- * intel_gvt_mmio_set_sr_in_ctx -
- *		mask an MMIO in GVT's mmio save-restore list and also
- *		in hardware logical context image
- * @gvt: a GVT device
- * @offset: register offset
- *
- */
+ 
 static inline void intel_gvt_mmio_set_sr_in_ctx(
 			struct intel_gvt *gvt, unsigned int offset)
 {
@@ -689,45 +592,21 @@ static inline void intel_gvt_mmio_set_sr_in_ctx(
 }
 
 void intel_gvt_debugfs_add_vgpu(struct intel_vgpu *vgpu);
-/**
- * intel_gvt_mmio_set_cmd_write_patch -
- *				mark an MMIO if its cmd write needs to be
- *				patched
- * @gvt: a GVT device
- * @offset: register offset
- *
- */
+ 
 static inline void intel_gvt_mmio_set_cmd_write_patch(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	gvt->mmio.mmio_attribute[offset >> 2] |= F_CMD_WRITE_PATCH;
 }
 
-/**
- * intel_gvt_mmio_is_cmd_write_patch - check if an mmio's cmd access needs to
- * be patched
- * @gvt: a GVT device
- * @offset: register offset
- *
- * Returns:
- * True if GPU commmand write to an MMIO should be patched
- */
+ 
 static inline bool intel_gvt_mmio_is_cmd_write_patch(
 			struct intel_gvt *gvt, unsigned int offset)
 {
 	return gvt->mmio.mmio_attribute[offset >> 2] & F_CMD_WRITE_PATCH;
 }
 
-/**
- * intel_gvt_read_gpa - copy data from GPA to host data buffer
- * @vgpu: a vGPU
- * @gpa: guest physical address
- * @buf: host data buffer
- * @len: data length
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 static inline int intel_gvt_read_gpa(struct intel_vgpu *vgpu, unsigned long gpa,
 		void *buf, unsigned long len)
 {
@@ -736,16 +615,7 @@ static inline int intel_gvt_read_gpa(struct intel_vgpu *vgpu, unsigned long gpa,
 	return vfio_dma_rw(&vgpu->vfio_device, gpa, buf, len, false);
 }
 
-/**
- * intel_gvt_write_gpa - copy data from host data buffer to GPA
- * @vgpu: a vGPU
- * @gpa: guest physical address
- * @buf: host data buffer
- * @len: data length
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 static inline int intel_gvt_write_gpa(struct intel_vgpu *vgpu,
 		unsigned long gpa, void *buf, unsigned long len)
 {

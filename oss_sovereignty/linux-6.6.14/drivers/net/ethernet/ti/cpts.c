@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI Common Platform Time Sync
- *
- * Copyright (C) 2012 Richard Cochran <richardcochran@gmail.com>
- *
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/if.h>
@@ -20,9 +15,9 @@
 
 #include "cpts.h"
 
-#define CPTS_SKB_TX_WORK_TIMEOUT 1 /* jiffies */
-#define CPTS_SKB_RX_TX_TMO 100 /*ms */
-#define CPTS_EVENT_RX_TX_TIMEOUT (100) /* ms */
+#define CPTS_SKB_TX_WORK_TIMEOUT 1  
+#define CPTS_SKB_RX_TX_TMO 100  
+#define CPTS_EVENT_RX_TX_TIMEOUT (100)  
 
 struct cpts_skb_cb_data {
 	u32 skb_mtype_seqid;
@@ -99,9 +94,7 @@ static void cpts_purge_txq(struct cpts *cpts)
 		dev_dbg(cpts->dev, "txq cleaned up %d\n", removed);
 }
 
-/*
- * Returns zero if matching event type was found.
- */
+ 
 static int cpts_fifo_read(struct cpts *cpts, int match)
 {
 	struct ptp_clock_event pevent;
@@ -195,7 +188,7 @@ static void cpts_update_cur_time(struct cpts *cpts, int match,
 
 	reinit_completion(&cpts->ts_push_complete);
 
-	/* use spin_lock_irqsave() here as it has to run very fast */
+	 
 	spin_lock_irqsave(&cpts->lock, flags);
 	ptp_read_system_prets(sts);
 	cpts_write32(cpts, TS_PUSH, ts_push);
@@ -211,7 +204,7 @@ static void cpts_update_cur_time(struct cpts *cpts, int match,
 		dev_err(cpts->dev, "cpts: obtain a time stamp timeout\n");
 }
 
-/* PTP clock operations */
+ 
 
 static int cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
@@ -348,7 +341,7 @@ static bool cpts_match_tx_ts(struct cpts *cpts, struct cpts_event *event)
 		}
 
 		if (time_after(jiffies, skb_cb->tmo)) {
-			/* timeout any expired skbs over 1s */
+			 
 			dev_dbg(cpts->dev, "expiring tx timestamp from txq\n");
 			__skb_unlink(skb, &txq_list);
 			dev_consume_skb_any(skb);
@@ -497,10 +490,7 @@ void cpts_rx_timestamp(struct cpts *cpts, struct sk_buff *skb)
 	int ret;
 	u64 ns;
 
-	/* cpts_rx_timestamp() is called before eth_type_trans(), so
-	 * skb MAC Hdr properties are not configured yet. Hence need to
-	 * reset skb MAC header here
-	 */
+	 
 	skb_reset_mac_header(skb);
 	ret = cpts_skb_get_mtype_seqid(skb, &skb_cb->skb_mtype_seqid);
 	if (!ret)
@@ -537,9 +527,9 @@ void cpts_tx_timestamp(struct cpts *cpts, struct sk_buff *skb)
 	dev_dbg(cpts->dev, "%s mtype seqid %08x\n",
 		__func__, skb_cb->skb_mtype_seqid);
 
-	/* Always defer TX TS processing to PTP worker */
+	 
 	skb_get(skb);
-	/* get the timestamp for timeouts */
+	 
 	skb_cb->tmo = jiffies + msecs_to_jiffies(CPTS_SKB_RX_TX_TMO);
 	skb_queue_tail(&cpts->txq, skb);
 	ptp_schedule_worker(cpts->clock, 0);
@@ -594,7 +584,7 @@ void cpts_unregister(struct cpts *cpts)
 	cpts_write32(cpts, 0, int_enable);
 	cpts_write32(cpts, 0, control);
 
-	/* Drop all packet */
+	 
 	skb_queue_purge(&cpts->txq);
 
 	clk_disable(cpts->refclk);
@@ -608,18 +598,14 @@ static void cpts_calc_mult_shift(struct cpts *cpts)
 
 	freq = clk_get_rate(cpts->refclk);
 
-	/* Calc the maximum number of seconds which we can run before
-	 * wrapping around.
-	 */
+	 
 	maxsec = cpts->cc.mask;
 	do_div(maxsec, freq);
-	/* limit conversation rate to 10 sec as higher values will produce
-	 * too small mult factors and so reduce the conversion accuracy
-	 */
+	 
 	if (maxsec > 10)
 		maxsec = 10;
 
-	/* Calc overflow check period (maxsec / 2) */
+	 
 	cpts->ov_check_period = (HZ * maxsec) / 2;
 	dev_info(cpts->dev, "cpts: overflow check period %lu (jiffies)\n",
 		 cpts->ov_check_period);
@@ -649,7 +635,7 @@ static int cpts_of_mux_clk_setup(struct cpts *cpts, struct device_node *node)
 
 	refclk_np = of_get_child_by_name(node, "cpts-refclk-mux");
 	if (!refclk_np)
-		/* refclk selection supported not for all SoCs */
+		 
 		return 0;
 
 	num_parents = of_clk_get_parent_count(refclk_np);
@@ -759,7 +745,7 @@ struct cpts *cpts_create(struct device *dev, void __iomem *regs,
 
 	cpts->refclk = devm_get_clk_from_child(dev, node, "cpts");
 	if (IS_ERR(cpts->refclk))
-		/* try get clk from dev node for compatibility */
+		 
 		cpts->refclk = devm_clk_get(dev, "cpts");
 
 	if (IS_ERR(cpts->refclk)) {
@@ -781,9 +767,7 @@ struct cpts *cpts_create(struct device *dev, void __iomem *regs,
 		cpts->info.n_ext_ts = n_ext_ts;
 
 	cpts_calc_mult_shift(cpts);
-	/* save cc.mult original value as it can be modified
-	 * by cpts_ptp_adjfine().
-	 */
+	 
 	cpts->cc_mult = cpts->cc.mult;
 
 	return cpts;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Core driver for WM8400.
- *
- * Copyright 2008 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/bug.h>
@@ -41,20 +35,14 @@ static int wm8400_register_codec(struct wm8400 *wm8400)
 	return devm_mfd_add_devices(wm8400->dev, -1, &cell, 1, NULL, 0, NULL);
 }
 
-/*
- * wm8400_init - Generic initialisation
- *
- * The WM8400 can be configured as either an I2C or SPI device.  Probe
- * functions for each bus set up the accessors then call into this to
- * set up the device itself.
- */
+ 
 static int wm8400_init(struct wm8400 *wm8400,
 		       struct wm8400_platform_data *pdata)
 {
 	unsigned int reg;
 	int ret;
 
-	/* Check that this is actually a WM8400 */
+	 
 	ret = regmap_read(wm8400->regmap, WM8400_RESET_ID, &reg);
 	if (ret != 0) {
 		dev_err(wm8400->dev, "Chip ID register read failed\n");
@@ -103,12 +91,7 @@ static const struct regmap_config wm8400_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/**
- * wm8400_reset_codec_reg_cache - Reset cached codec registers to
- * their default values.
- *
- * @wm8400: pointer to local driver data structure
- */
+ 
 void wm8400_reset_codec_reg_cache(struct wm8400 *wm8400)
 {
 	regmap_reinit_cache(wm8400->regmap, &wm8400_regmap_config);

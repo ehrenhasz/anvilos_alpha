@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  i2c slave support for Atmel's AT91 Two-Wire Interface (TWI)
- *
- *  Copyright (C) 2017 Juergen Fitschen <me@jue.yt>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -22,7 +18,7 @@ static irqreturn_t atmel_twi_interrupt_slave(int irq, void *dev_id)
 	if (!irqstatus)
 		return IRQ_NONE;
 
-	/* slave address has been detected on I2C bus */
+	 
 	if (irqstatus & AT91_TWI_SVACC) {
 		if (status & AT91_TWI_SVREAD) {
 			i2c_slave_event(dev->slave,
@@ -39,19 +35,19 @@ static irqreturn_t atmel_twi_interrupt_slave(int irq, void *dev_id)
 		at91_twi_write(dev, AT91_TWI_IDR, AT91_TWI_SVACC);
 	}
 
-	/* byte transmitted to remote master */
+	 
 	if (irqstatus & AT91_TWI_TXRDY) {
 		i2c_slave_event(dev->slave, I2C_SLAVE_READ_PROCESSED, &value);
 		writeb_relaxed(value, dev->base + AT91_TWI_THR);
 	}
 
-	/* byte received from remote master */
+	 
 	if (irqstatus & AT91_TWI_RXRDY) {
 		value = readb_relaxed(dev->base + AT91_TWI_RHR);
 		i2c_slave_event(dev->slave, I2C_SLAVE_WRITE_RECEIVED, &value);
 	}
 
-	/* master sent stop */
+	 
 	if (irqstatus & AT91_TWI_EOSACC) {
 		at91_twi_write(dev, AT91_TWI_IDR,
 			       AT91_TWI_TXRDY | AT91_TWI_RXRDY | AT91_TWI_EOSACC);
@@ -72,7 +68,7 @@ static int at91_reg_slave(struct i2c_client *slave)
 	if (slave->flags & I2C_CLIENT_TEN)
 		return -EAFNOSUPPORT;
 
-	/* Make sure twi_clk doesn't get turned off! */
+	 
 	pm_runtime_get_sync(dev->dev);
 
 	dev->slave = slave;

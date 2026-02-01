@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NetLabel Domain Hash Table
- *
- * This file manages the domain hash table that NetLabel uses to determine
- * which network labeling protocol to use for a given domain.  The NetLabel
- * system manages static and dynamic label mappings for network protocols such
- * as CIPSO and RIPSO.
- *
- * Author: Paul Moore <paul@paul-moore.com>
- */
 
-/*
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006, 2008
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/rculist.h>
@@ -37,9 +26,8 @@ struct netlbl_domhsh_tbl {
 	u32 size;
 };
 
-/* Domain hash table */
-/* updates should be so rare that having one spinlock for the entire hash table
- * should be okay */
+ 
+ 
 static DEFINE_SPINLOCK(netlbl_domhsh_lock);
 #define netlbl_domhsh_rcu_deref(p) \
 	rcu_dereference_check(p, lockdep_is_held(&netlbl_domhsh_lock))
@@ -47,20 +35,9 @@ static struct netlbl_domhsh_tbl __rcu *netlbl_domhsh;
 static struct netlbl_dom_map __rcu *netlbl_domhsh_def_ipv4;
 static struct netlbl_dom_map __rcu *netlbl_domhsh_def_ipv6;
 
-/*
- * Domain Hash Table Helper Functions
- */
+ 
 
-/**
- * netlbl_domhsh_free_entry - Frees a domain hash table entry
- * @entry: the entry's RCU field
- *
- * Description:
- * This function is designed to be used as a callback to the call_rcu()
- * function so that the memory allocated to a hash table entry can be released
- * safely.
- *
- */
+ 
 static void netlbl_domhsh_free_entry(struct rcu_head *entry)
 {
 	struct netlbl_dom_map *ptr;
@@ -69,7 +46,7 @@ static void netlbl_domhsh_free_entry(struct rcu_head *entry)
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
 	struct netlbl_af6list *tmp6;
-#endif /* IPv6 */
+#endif  
 
 	ptr = container_of(entry, struct netlbl_dom_map, rcu);
 	if (ptr->def.type == NETLBL_NLTYPE_ADDRSELECT) {
@@ -84,32 +61,21 @@ static void netlbl_domhsh_free_entry(struct rcu_head *entry)
 			netlbl_af6list_remove_entry(iter6);
 			kfree(netlbl_domhsh_addr6_entry(iter6));
 		}
-#endif /* IPv6 */
+#endif  
 		kfree(ptr->def.addrsel);
 	}
 	kfree(ptr->domain);
 	kfree(ptr);
 }
 
-/**
- * netlbl_domhsh_hash - Hashing function for the domain hash table
- * @key: the domain name to hash
- *
- * Description:
- * This is the hashing function for the domain hash table, it returns the
- * correct bucket number for the domain.  The caller is responsible for
- * ensuring that the hash table is protected with either a RCU read lock or the
- * hash table lock.
- *
- */
+ 
 static u32 netlbl_domhsh_hash(const char *key)
 {
 	u32 iter;
 	u32 val;
 	u32 len;
 
-	/* This is taken (with slight modification) from
-	 * security/selinux/ss/symtab.c:symhash() */
+	 
 
 	for (iter = 0, val = 0, len = strlen(key); iter < len; iter++)
 		val = (val << 4 | (val >> (8 * sizeof(u32) - 4))) ^ key[iter];
@@ -121,19 +87,7 @@ static bool netlbl_family_match(u16 f1, u16 f2)
 	return (f1 == f2) || (f1 == AF_UNSPEC) || (f2 == AF_UNSPEC);
 }
 
-/**
- * netlbl_domhsh_search - Search for a domain entry
- * @domain: the domain
- * @family: the address family
- *
- * Description:
- * Searches the domain hash table and returns a pointer to the hash table
- * entry if found, otherwise NULL is returned.  @family may be %AF_UNSPEC
- * which matches any address family entries.  The caller is responsible for
- * ensuring that the hash table is protected with either a RCU read lock or the
- * hash table lock.
- *
- */
+ 
 static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain,
 						   u16 family)
 {
@@ -155,20 +109,7 @@ static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain,
 	return NULL;
 }
 
-/**
- * netlbl_domhsh_search_def - Search for a domain entry
- * @domain: the domain
- * @family: the address family
- *
- * Description:
- * Searches the domain hash table and returns a pointer to the hash table
- * entry if an exact match is found, if an exact match is not present in the
- * hash table then the default entry is returned if valid otherwise NULL is
- * returned.  @family may be %AF_UNSPEC which matches any address family
- * entries.  The caller is responsible ensuring that the hash table is
- * protected with either a RCU read lock or the hash table lock.
- *
- */
+ 
 static struct netlbl_dom_map *netlbl_domhsh_search_def(const char *domain,
 						       u16 family)
 {
@@ -191,20 +132,7 @@ static struct netlbl_dom_map *netlbl_domhsh_search_def(const char *domain,
 	return NULL;
 }
 
-/**
- * netlbl_domhsh_audit_add - Generate an audit entry for an add event
- * @entry: the entry being added
- * @addr4: the IPv4 address information
- * @addr6: the IPv6 address information
- * @result: the result code
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Generate an audit record for adding a new NetLabel/LSM mapping entry with
- * the given information.  Caller is responsible for holding the necessary
- * locks.
- *
- */
+ 
 static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 				    struct netlbl_af4list *addr4,
 				    struct netlbl_af6list *addr6,
@@ -235,7 +163,7 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 			calipso = map6->def.calipso;
 			netlbl_af6list_audit_addr(audit_buf, 0, NULL,
 						  &addr6->addr, &addr6->mask);
-#endif /* IPv6 */
+#endif  
 		} else {
 			type = entry->def.type;
 			cipsov4 = entry->def.cipso;
@@ -263,14 +191,7 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 	}
 }
 
-/**
- * netlbl_domhsh_validate - Validate a new domain mapping entry
- * @entry: the entry to validate
- *
- * This function validates the new domain mapping entry to ensure that it is
- * a valid entry.  Returns zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 {
 	struct netlbl_af4list *iter4;
@@ -278,7 +199,7 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
 	struct netlbl_domaddr6_map *map6;
-#endif /* IPv6 */
+#endif  
 
 	if (entry == NULL)
 		return -EINVAL;
@@ -336,7 +257,7 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 				return -EINVAL;
 			}
 		}
-#endif /* IPv6 */
+#endif  
 		break;
 	default:
 		return -EINVAL;
@@ -345,20 +266,9 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 	return 0;
 }
 
-/*
- * Domain Hash Table Functions
- */
+ 
 
-/**
- * netlbl_domhsh_init - Init for the domain hash
- * @size: the number of bits to use for the hash buckets
- *
- * Description:
- * Initializes the domain hash table, should be called only by
- * netlbl_user_init() during initialization.  Returns zero on success, non-zero
- * values on error.
- *
- */
+ 
 int __init netlbl_domhsh_init(u32 size)
 {
 	u32 iter;
@@ -388,20 +298,7 @@ int __init netlbl_domhsh_init(u32 size)
 	return 0;
 }
 
-/**
- * netlbl_domhsh_add - Adds a entry to the domain hash table
- * @entry: the entry to add
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Adds a new entry to the domain hash table and handles any updates to the
- * lower level protocol handler (i.e. CIPSO).  @entry->family may be set to
- * %AF_UNSPEC which will add an entry that matches all address families.  This
- * is only useful for the unlabelled type and will only succeed if there is no
- * existing entry for any address family with the same domain.  Returns zero
- * on success, negative on failure.
- *
- */
+ 
 int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		      struct netlbl_audit *audit_info)
 {
@@ -412,16 +309,13 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
 	struct netlbl_af6list *tmp6;
-#endif /* IPv6 */
+#endif  
 
 	ret_val = netlbl_domhsh_validate(entry);
 	if (ret_val != 0)
 		return ret_val;
 
-	/* XXX - we can remove this RCU read lock as the spinlock protects the
-	 *       entire function, but before we do we need to fixup the
-	 *       netlbl_af[4,6]list RCU functions to do "the right thing" with
-	 *       respect to rcu_dereference() when only a spinlock is held. */
+	 
 	rcu_read_lock();
 	spin_lock(&netlbl_domhsh_lock);
 	if (entry->domain != NULL)
@@ -468,8 +362,7 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 						   entry_b);
 				break;
 			default:
-				/* Already checked in
-				 * netlbl_domhsh_validate(). */
+				 
 				ret_val = -EINVAL;
 				goto add_return;
 			}
@@ -485,7 +378,7 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 						   &entry->def.addrsel->list6)
 				netlbl_domhsh_audit_add(entry, NULL, iter6,
 							ret_val, audit_info);
-#endif /* IPv6 */
+#endif  
 		} else
 			netlbl_domhsh_audit_add(entry, NULL, NULL,
 						ret_val, audit_info);
@@ -497,8 +390,7 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		old_list4 = &entry_old->def.addrsel->list4;
 		old_list6 = &entry_old->def.addrsel->list6;
 
-		/* we only allow the addition of address selectors if all of
-		 * the selectors do not exist in the existing domain map */
+		 
 		netlbl_af4list_foreach_rcu(iter4, &entry->def.addrsel->list4)
 			if (netlbl_af4list_search_exact(iter4->addr,
 							iter4->mask,
@@ -514,7 +406,7 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 				ret_val = -EEXIST;
 				goto add_return;
 			}
-#endif /* IPv6 */
+#endif  
 
 		netlbl_af4list_foreach_safe(iter4, tmp4,
 					    &entry->def.addrsel->list4) {
@@ -537,8 +429,8 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 			if (ret_val != 0)
 				goto add_return;
 		}
-#endif /* IPv6 */
-		/* cleanup the new entry since we've moved everything over */
+#endif  
+		 
 		netlbl_domhsh_free_entry(&entry->rcu);
 	} else
 		ret_val = -EINVAL;
@@ -549,35 +441,14 @@ add_return:
 	return ret_val;
 }
 
-/**
- * netlbl_domhsh_add_default - Adds the default entry to the domain hash table
- * @entry: the entry to add
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Adds a new default entry to the domain hash table and handles any updates
- * to the lower level protocol handler (i.e. CIPSO).  Returns zero on success,
- * negative on failure.
- *
- */
+ 
 int netlbl_domhsh_add_default(struct netlbl_dom_map *entry,
 			      struct netlbl_audit *audit_info)
 {
 	return netlbl_domhsh_add(entry, audit_info);
 }
 
-/**
- * netlbl_domhsh_remove_entry - Removes a given entry from the domain table
- * @entry: the entry to remove
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes an entry from the domain hash table and handles any updates to the
- * lower level protocol handler (i.e. CIPSO).  Caller is responsible for
- * ensuring that the RCU read lock is held.  Returns zero on success, negative
- * on failure.
- *
- */
+ 
 int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 			       struct netlbl_audit *audit_info)
 {
@@ -588,7 +459,7 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
 	struct netlbl_domaddr6_map *map6;
-#endif /* IPv6 */
+#endif  
 
 	if (entry == NULL)
 		return -ENOENT;
@@ -628,7 +499,7 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 			map6 = netlbl_domhsh_addr6_entry(iter6);
 			calipso_doi_putdef(map6->def.calipso);
 		}
-#endif /* IPv6 */
+#endif  
 		break;
 	case NETLBL_NLTYPE_CIPSOV4:
 		cipso_v4_doi_putdef(entry->def.cipso);
@@ -637,26 +508,14 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 	case NETLBL_NLTYPE_CALIPSO:
 		calipso_doi_putdef(entry->def.calipso);
 		break;
-#endif /* IPv6 */
+#endif  
 	}
 	call_rcu(&entry->rcu, netlbl_domhsh_free_entry);
 
 	return ret_val;
 }
 
-/**
- * netlbl_domhsh_remove_af4 - Removes an address selector entry
- * @domain: the domain
- * @addr: IPv4 address
- * @mask: IPv4 address mask
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes an individual address selector from a domain mapping and potentially
- * the entire mapping if it is empty.  Returns zero on success, negative values
- * on failure.
- *
- */
+ 
 int netlbl_domhsh_remove_af4(const char *domain,
 			     const struct in_addr *addr,
 			     const struct in_addr *mask,
@@ -667,7 +526,7 @@ int netlbl_domhsh_remove_af4(const char *domain,
 	struct netlbl_af4list *iter4;
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
-#endif /* IPv6 */
+#endif  
 	struct netlbl_domaddr4_map *entry;
 
 	rcu_read_lock();
@@ -692,15 +551,13 @@ int netlbl_domhsh_remove_af4(const char *domain,
 #if IS_ENABLED(CONFIG_IPV6)
 	netlbl_af6list_foreach_rcu(iter6, &entry_map->def.addrsel->list6)
 		goto remove_af4_single_addr;
-#endif /* IPv6 */
-	/* the domain mapping is empty so remove it from the mapping table */
+#endif  
+	 
 	netlbl_domhsh_remove_entry(entry_map, audit_info);
 
 remove_af4_single_addr:
 	rcu_read_unlock();
-	/* yick, we can't use call_rcu here because we don't have a rcu head
-	 * pointer but hopefully this should be a rare case so the pause
-	 * shouldn't be a problem */
+	 
 	synchronize_rcu();
 	entry = netlbl_domhsh_addr4_entry(entry_addr);
 	cipso_v4_doi_putdef(entry->def.cipso);
@@ -713,19 +570,7 @@ remove_af4_failure:
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/**
- * netlbl_domhsh_remove_af6 - Removes an address selector entry
- * @domain: the domain
- * @addr: IPv6 address
- * @mask: IPv6 address mask
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes an individual address selector from a domain mapping and potentially
- * the entire mapping if it is empty.  Returns zero on success, negative values
- * on failure.
- *
- */
+ 
 int netlbl_domhsh_remove_af6(const char *domain,
 			     const struct in6_addr *addr,
 			     const struct in6_addr *mask,
@@ -758,14 +603,12 @@ int netlbl_domhsh_remove_af6(const char *domain,
 		goto remove_af6_single_addr;
 	netlbl_af6list_foreach_rcu(iter6, &entry_map->def.addrsel->list6)
 		goto remove_af6_single_addr;
-	/* the domain mapping is empty so remove it from the mapping table */
+	 
 	netlbl_domhsh_remove_entry(entry_map, audit_info);
 
 remove_af6_single_addr:
 	rcu_read_unlock();
-	/* yick, we can't use call_rcu here because we don't have a rcu head
-	 * pointer but hopefully this should be a rare case so the pause
-	 * shouldn't be a problem */
+	 
 	synchronize_rcu();
 	entry = netlbl_domhsh_addr6_entry(entry_addr);
 	calipso_doi_putdef(entry->def.calipso);
@@ -776,21 +619,9 @@ remove_af6_failure:
 	rcu_read_unlock();
 	return -ENOENT;
 }
-#endif /* IPv6 */
+#endif  
 
-/**
- * netlbl_domhsh_remove - Removes an entry from the domain hash table
- * @domain: the domain to remove
- * @family: address family
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes an entry from the domain hash table and handles any updates to the
- * lower level protocol handler (i.e. CIPSO).  @family may be %AF_UNSPEC which
- * removes all address family entries.  Returns zero on success, negative on
- * failure.
- *
- */
+ 
 int netlbl_domhsh_remove(const char *domain, u16 family,
 			 struct netlbl_audit *audit_info)
 {
@@ -825,35 +656,13 @@ done:
 	return ret_val;
 }
 
-/**
- * netlbl_domhsh_remove_default - Removes the default entry from the table
- * @family: address family
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes/resets the default entry corresponding to @family from the domain
- * hash table and handles any updates to the lower level protocol handler
- * (i.e. CIPSO).  @family may be %AF_UNSPEC which removes all address family
- * entries.  Returns zero on success, negative on failure.
- *
- */
+ 
 int netlbl_domhsh_remove_default(u16 family, struct netlbl_audit *audit_info)
 {
 	return netlbl_domhsh_remove(NULL, family, audit_info);
 }
 
-/**
- * netlbl_domhsh_getentry - Get an entry from the domain hash table
- * @domain: the domain name to search for
- * @family: address family
- *
- * Description:
- * Look through the domain hash table searching for an entry to match @domain,
- * with address family @family, return a pointer to a copy of the entry or
- * NULL.  The caller is responsible for ensuring that rcu_read_[un]lock() is
- * called.
- *
- */
+ 
 struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain, u16 family)
 {
 	if (family == AF_UNSPEC)
@@ -861,17 +670,7 @@ struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain, u16 family)
 	return netlbl_domhsh_search_def(domain, family);
 }
 
-/**
- * netlbl_domhsh_getentry_af4 - Get an entry from the domain hash table
- * @domain: the domain name to search for
- * @addr: the IP address to search for
- *
- * Description:
- * Look through the domain hash table searching for an entry to match @domain
- * and @addr, return a pointer to a copy of the entry or NULL.  The caller is
- * responsible for ensuring that rcu_read_[un]lock() is called.
- *
- */
+ 
 struct netlbl_dommap_def *netlbl_domhsh_getentry_af4(const char *domain,
 						     __be32 addr)
 {
@@ -891,17 +690,7 @@ struct netlbl_dommap_def *netlbl_domhsh_getentry_af4(const char *domain,
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/**
- * netlbl_domhsh_getentry_af6 - Get an entry from the domain hash table
- * @domain: the domain name to search for
- * @addr: the IP address to search for
- *
- * Description:
- * Look through the domain hash table searching for an entry to match @domain
- * and @addr, return a pointer to a copy of the entry or NULL.  The caller is
- * responsible for ensuring that rcu_read_[un]lock() is called.
- *
- */
+ 
 struct netlbl_dommap_def *netlbl_domhsh_getentry_af6(const char *domain,
 						   const struct in6_addr *addr)
 {
@@ -919,23 +708,9 @@ struct netlbl_dommap_def *netlbl_domhsh_getentry_af6(const char *domain,
 		return NULL;
 	return &(netlbl_domhsh_addr6_entry(addr_iter)->def);
 }
-#endif /* IPv6 */
+#endif  
 
-/**
- * netlbl_domhsh_walk - Iterate through the domain mapping hash table
- * @skip_bkt: the number of buckets to skip at the start
- * @skip_chain: the number of entries to skip in the first iterated bucket
- * @callback: callback for each entry
- * @cb_arg: argument for the callback function
- *
- * Description:
- * Iterate over the domain mapping hash table, skipping the first @skip_bkt
- * buckets and @skip_chain entries.  For each entry in the table call
- * @callback, if @callback returns a negative value stop 'walking' through the
- * table and return.  Updates the values in @skip_bkt and @skip_chain on
- * return.  Returns zero on success, negative values on failure.
- *
- */
+ 
 int netlbl_domhsh_walk(u32 *skip_bkt,
 		     u32 *skip_chain,
 		     int (*callback) (struct netlbl_dom_map *entry, void *arg),

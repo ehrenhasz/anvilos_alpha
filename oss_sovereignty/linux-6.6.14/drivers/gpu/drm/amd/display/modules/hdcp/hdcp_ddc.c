@@ -1,33 +1,10 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "hdcp.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define HDCP_I2C_ADDR 0x3a	/* 0x74 >> 1*/
-#define KSV_READ_SIZE 0xf	/* 0x6803b - 0x6802c */
+#define HDCP_I2C_ADDR 0x3a	 
+#define KSV_READ_SIZE 0xf	 
 #define HDCP_MAX_AUX_TRANSACTION_SIZE 16
 
 #define DP_CP_IRQ (1 << 2)
@@ -35,7 +12,7 @@
 enum mod_hdcp_ddc_message_id {
 	MOD_HDCP_MESSAGE_ID_INVALID = -1,
 
-	/* HDCP 1.4 */
+	 
 
 	MOD_HDCP_MESSAGE_ID_READ_BKSV = 0,
 	MOD_HDCP_MESSAGE_ID_READ_RI_R0,
@@ -53,7 +30,7 @@ enum mod_hdcp_ddc_message_id {
 	MOD_HDCP_MESSAGE_ID_READ_KSV_FIFO,
 	MOD_HDCP_MESSAGE_ID_READ_BINFO,
 
-	/* HDCP 2.2 */
+	 
 
 	MOD_HDCP_MESSAGE_ID_HDCP2VERSION,
 	MOD_HDCP_MESSAGE_ID_RX_CAPS,
@@ -279,7 +256,7 @@ enum mod_hdcp_status mod_hdcp_read_r0p(struct mod_hdcp *hdcp)
 			sizeof(hdcp->auth.msg.hdcp1.r0p));
 }
 
-/* special case, reading repeatedly at the same address, don't use read() */
+ 
 enum mod_hdcp_status mod_hdcp_read_ksvlist(struct mod_hdcp *hdcp)
 {
 	enum mod_hdcp_status status;

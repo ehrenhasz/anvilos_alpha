@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * NVIDIA Tegra Video decoder driver
- *
- * Copyright (C) 2016-2019 GRATE-DRIVER project
- */
+ 
+ 
 
 #ifndef TEGRA_VDE_H
 #define TEGRA_VDE_H
@@ -239,4 +235,4 @@ tegra_vde_reg_base_name(struct tegra_vde *vde, void __iomem *base)
 int tegra_vde_v4l2_init(struct tegra_vde *vde);
 void tegra_vde_v4l2_deinit(struct tegra_vde *vde);
 
-#endif /* TEGRA_VDE_H */
+#endif  

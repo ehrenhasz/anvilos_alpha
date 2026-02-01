@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Shared helper functions for devices from the ADAU family
- *
- * Copyright 2011-2016 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/gcd.h>
 #include <linux/kernel.h>
@@ -49,7 +44,7 @@ int adau_calc_pll_cfg(unsigned int freq_in, unsigned int freq_out,
 	regs[3] = n & 0xff;
 	regs[4] = (r << 3) | (div << 1);
 	if (m != 0)
-		regs[4] |= 1; /* Fractional mode */
+		regs[4] |= 1;  
 
 	return 0;
 }

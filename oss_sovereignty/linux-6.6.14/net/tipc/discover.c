@@ -1,64 +1,19 @@
-/*
- * net/tipc/discover.c
- *
- * Copyright (c) 2003-2006, 2014-2018, Ericsson AB
- * Copyright (c) 2005-2006, 2010-2011, Wind River Systems
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "core.h"
 #include "node.h"
 #include "discover.h"
 
-/* min delay during bearer start up */
+ 
 #define TIPC_DISC_INIT	msecs_to_jiffies(125)
-/* max delay if bearer has no links */
+ 
 #define TIPC_DISC_FAST	msecs_to_jiffies(1000)
-/* max delay if bearer has links */
+ 
 #define TIPC_DISC_SLOW	msecs_to_jiffies(60000)
-/* indicates no timer in use */
+ 
 #define TIPC_DISC_INACTIVE	0xffffffff
 
-/**
- * struct tipc_discoverer - information about an ongoing link setup request
- * @bearer_id: identity of bearer issuing requests
- * @net: network namespace instance
- * @dest: destination address for request messages
- * @domain: network domain to which links can be established
- * @num_nodes: number of nodes currently discovered (i.e. with an active link)
- * @lock: spinlock for controlling access to requests
- * @skb: request message to be (repeatedly) sent
- * @timer: timer governing period between requests
- * @timer_intv: current interval between requests (in ms)
- */
+ 
 struct tipc_discoverer {
 	u32 bearer_id;
 	struct tipc_media_addr dest;
@@ -71,13 +26,7 @@ struct tipc_discoverer {
 	unsigned long timer_intv;
 };
 
-/**
- * tipc_disc_init_msg - initialize a link setup message
- * @net: the applicable net namespace
- * @skb: buffer containing message
- * @mtyp: message type (request or response)
- * @b: ptr to bearer issuing message
- */
+ 
 static void tipc_disc_init_msg(struct net *net, struct sk_buff *skb,
 			       u32 mtyp,  struct tipc_bearer *b)
 {
@@ -117,12 +66,7 @@ static void tipc_disc_msg_xmit(struct net *net, u32 mtyp, u32 dst,
 	tipc_bearer_xmit_skb(net, b->identity, skb, maddr);
 }
 
-/**
- * disc_dupl_alert - issue node address duplication alert
- * @b: pointer to bearer detecting duplication
- * @node_addr: duplicated node address
- * @media_addr: media address advertised by duplicated node
- */
+ 
 static void disc_dupl_alert(struct tipc_bearer *b, u32 node_addr,
 			    struct tipc_media_addr *media_addr)
 {
@@ -134,10 +78,7 @@ static void disc_dupl_alert(struct tipc_bearer *b, u32 node_addr,
 		media_addr_str, b->name);
 }
 
-/* tipc_disc_addr_trial(): - handle an address uniqueness trial from peer
- * Returns true if message should be dropped by caller, i.e., if it is a
- * trial message or we are inside trial period. Otherwise false.
- */
+ 
 static bool tipc_disc_addr_trial_msg(struct tipc_discoverer *d,
 				     struct tipc_media_addr *maddr,
 				     struct tipc_bearer *b,
@@ -155,25 +96,25 @@ static bool tipc_disc_addr_trial_msg(struct tipc_discoverer *d,
 		if (!trial)
 			return true;
 
-		/* Ignore if somebody else already gave new suggestion */
+		 
 		if (dst != tn->trial_addr)
 			return true;
 
-		/* Otherwise update trial address and restart trial period */
+		 
 		tn->trial_addr = sugg_addr;
 		msg_set_prevnode(buf_msg(d->skb), sugg_addr);
 		tn->addr_trial_end = jiffies + msecs_to_jiffies(1000);
 		return true;
 	}
 
-	/* Apply trial address if we just left trial period */
+	 
 	if (!trial && !self) {
 		schedule_work(&tn->work);
 		msg_set_prevnode(buf_msg(d->skb), tn->trial_addr);
 		msg_set_type(buf_msg(d->skb), DSC_REQ_MSG);
 	}
 
-	/* Accept regular link requests/responses only after trial period */
+	 
 	if (mtyp != DSC_TRIAL_MSG)
 		return trial;
 
@@ -184,12 +125,7 @@ static bool tipc_disc_addr_trial_msg(struct tipc_discoverer *d,
 	return true;
 }
 
-/**
- * tipc_disc_rcv - handle incoming discovery message (request or response)
- * @net: applicable net namespace
- * @skb: buffer containing message
- * @b: bearer that message arrived on
- */
+ 
 void tipc_disc_rcv(struct net *net, struct sk_buff *skb,
 		   struct tipc_bearer *b)
 {
@@ -228,7 +164,7 @@ void tipc_disc_rcv(struct net *net, struct sk_buff *skb,
 		pr_warn_ratelimited("Rcv corrupt discovery message\n");
 		return;
 	}
-	/* Ignore discovery messages from own node */
+	 
 	if (!memcmp(&maddr, &b->addr, sizeof(maddr)))
 		return;
 	if (net_id != tn->net_id)
@@ -238,7 +174,7 @@ void tipc_disc_rcv(struct net *net, struct sk_buff *skb,
 		return;
 	self = tipc_own_addr(net);
 
-	/* Message from somebody using this node's address */
+	 
 	if (in_own_node(net, src)) {
 		disc_dupl_alert(b, self, &maddr);
 		return;
@@ -258,8 +194,7 @@ void tipc_disc_rcv(struct net *net, struct sk_buff *skb,
 	tipc_disc_msg_xmit(net, DSC_RESP_MSG, src, self, 0, &maddr, b);
 }
 
-/* tipc_disc_add_dest - increment set of discovered nodes
- */
+ 
 void tipc_disc_add_dest(struct tipc_discoverer *d)
 {
 	spin_lock_bh(&d->lock);
@@ -267,8 +202,7 @@ void tipc_disc_add_dest(struct tipc_discoverer *d)
 	spin_unlock_bh(&d->lock);
 }
 
-/* tipc_disc_remove_dest - decrement set of discovered nodes
- */
+ 
 void tipc_disc_remove_dest(struct tipc_discoverer *d)
 {
 	int intv, num;
@@ -284,12 +218,7 @@ void tipc_disc_remove_dest(struct tipc_discoverer *d)
 	spin_unlock_bh(&d->lock);
 }
 
-/* tipc_disc_timeout - send a periodic link setup request
- * Called whenever a link setup request timer associated with a bearer expires.
- * - Keep doubling time between sent request until limit is reached;
- * - Hold at fast polling rate if we don't have any associated nodes
- * - Otherwise hold at slow polling rate
- */
+ 
 static void tipc_disc_timeout(struct timer_list *t)
 {
 	struct tipc_discoverer *d = from_timer(d, t, timer);
@@ -301,13 +230,13 @@ static void tipc_disc_timeout(struct timer_list *t)
 
 	spin_lock_bh(&d->lock);
 
-	/* Stop searching if only desired node has been found */
+	 
 	if (tipc_node(d->domain) && d->num_nodes) {
 		d->timer_intv = TIPC_DISC_INACTIVE;
 		goto exit;
 	}
 
-	/* Did we just leave trial period ? */
+	 
 	if (!time_before(jiffies, tn->addr_trial_end) && !tipc_own_addr(net)) {
 		mod_timer(&d->timer, jiffies + TIPC_DISC_INIT);
 		spin_unlock_bh(&d->lock);
@@ -315,7 +244,7 @@ static void tipc_disc_timeout(struct timer_list *t)
 		return;
 	}
 
-	/* Adjust timeout interval according to discovery phase */
+	 
 	if (time_before(jiffies, tn->addr_trial_end)) {
 		d->timer_intv = TIPC_DISC_INIT;
 	} else {
@@ -338,15 +267,7 @@ exit:
 		tipc_bearer_xmit_skb(net, bearer_id, skb, &maddr);
 }
 
-/**
- * tipc_disc_create - create object to send periodic link setup requests
- * @net: the applicable net namespace
- * @b: ptr to bearer issuing requests
- * @dest: destination address for request messages
- * @skb: pointer to created frame
- *
- * Return: 0 if successful, otherwise -errno.
- */
+ 
 int tipc_disc_create(struct net *net, struct tipc_bearer *b,
 		     struct tipc_media_addr *dest, struct sk_buff **skb)
 {
@@ -363,7 +284,7 @@ int tipc_disc_create(struct net *net, struct tipc_bearer *b,
 	}
 	tipc_disc_init_msg(net, d->skb, DSC_REQ_MSG, b);
 
-	/* Do we need an address trial period first ? */
+	 
 	if (!tipc_own_addr(net)) {
 		tn->addr_trial_end = jiffies + msecs_to_jiffies(1000);
 		msg_set_type(buf_msg(d->skb), DSC_TRIAL_MSG);
@@ -382,10 +303,7 @@ int tipc_disc_create(struct net *net, struct tipc_bearer *b,
 	return 0;
 }
 
-/**
- * tipc_disc_delete - destroy object sending periodic link setup requests
- * @d: ptr to link dest structure
- */
+ 
 void tipc_disc_delete(struct tipc_discoverer *d)
 {
 	timer_shutdown_sync(&d->timer);
@@ -393,11 +311,7 @@ void tipc_disc_delete(struct tipc_discoverer *d)
 	kfree(d);
 }
 
-/**
- * tipc_disc_reset - reset object to send periodic link setup requests
- * @net: the applicable net namespace
- * @b: ptr to bearer issuing requests
- */
+ 
 void tipc_disc_reset(struct net *net, struct tipc_bearer *b)
 {
 	struct tipc_discoverer *d = b->disc;

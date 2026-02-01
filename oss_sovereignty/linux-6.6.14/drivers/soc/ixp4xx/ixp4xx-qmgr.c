@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel IXP4xx Queue Manager driver for Linux
- *
- * Copyright (C) 2007 Krzysztof Halasa <khc@pm.waw.pl>
- */
+
+ 
 
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
@@ -18,7 +14,7 @@ static struct qmgr_regs __iomem *qmgr_regs;
 static int qmgr_irq_1;
 static int qmgr_irq_2;
 static spinlock_t qmgr_lock;
-static u32 used_sram_bitmap[4]; /* 128 16-dword pages */
+static u32 used_sram_bitmap[4];  
 static void (*irq_handlers[QUEUES])(void *pdev);
 static void *irq_pdevs[QUEUES];
 
@@ -29,7 +25,7 @@ char qmgr_queue_descs[QUEUES][32];
 void qmgr_put_entry(unsigned int queue, u32 val)
 {
 #if DEBUG_QMGR
-	BUG_ON(!qmgr_queue_descs[queue]); /* not yet requested */
+	BUG_ON(!qmgr_queue_descs[queue]);  
 
 	printk(KERN_DEBUG "Queue %s(%i) put %X\n",
 	       qmgr_queue_descs[queue], queue, val);
@@ -42,7 +38,7 @@ u32 qmgr_get_entry(unsigned int queue)
 	u32 val;
 	val = __raw_readl(&qmgr_regs->acc[queue][0]);
 #if DEBUG_QMGR
-	BUG_ON(!qmgr_queue_descs[queue]); /* not yet requested */
+	BUG_ON(!qmgr_queue_descs[queue]);  
 
 	printk(KERN_DEBUG "Queue %s(%i) get %X\n",
 	       qmgr_queue_descs[queue], queue, val);
@@ -63,24 +59,14 @@ static int __qmgr_get_stat2(unsigned int queue)
 		>> ((queue & 0xF) << 1)) & 0x3;
 }
 
-/**
- * qmgr_stat_empty() - checks if a hardware queue is empty
- * @queue:	queue number
- *
- * Returns non-zero value if the queue is empty.
- */
+ 
 int qmgr_stat_empty(unsigned int queue)
 {
 	BUG_ON(queue >= HALF_QUEUES);
 	return __qmgr_get_stat1(queue) & QUEUE_STAT1_EMPTY;
 }
 
-/**
- * qmgr_stat_below_low_watermark() - checks if a queue is below low watermark
- * @queue:	queue number
- *
- * Returns non-zero value if the queue is below low watermark.
- */
+ 
 int qmgr_stat_below_low_watermark(unsigned int queue)
 {
 	if (queue >= HALF_QUEUES)
@@ -89,12 +75,7 @@ int qmgr_stat_below_low_watermark(unsigned int queue)
 	return __qmgr_get_stat1(queue) & QUEUE_STAT1_NEARLY_EMPTY;
 }
 
-/**
- * qmgr_stat_full() - checks if a hardware queue is full
- * @queue:	queue number
- *
- * Returns non-zero value if the queue is full.
- */
+ 
 int qmgr_stat_full(unsigned int queue)
 {
 	if (queue >= HALF_QUEUES)
@@ -103,12 +84,7 @@ int qmgr_stat_full(unsigned int queue)
 	return __qmgr_get_stat1(queue) & QUEUE_STAT1_FULL;
 }
 
-/**
- * qmgr_stat_overflow() - checks if a hardware queue experienced overflow
- * @queue:	queue number
- *
- * Returns non-zero value if the queue experienced overflow.
- */
+ 
 int qmgr_stat_overflow(unsigned int queue)
 {
 	return __qmgr_get_stat2(queue) & QUEUE_STAT2_OVERFLOW;
@@ -124,12 +100,12 @@ void qmgr_set_irq(unsigned int queue, int src,
 		u32 __iomem *reg;
 		int bit;
 		BUG_ON(src > QUEUE_IRQ_SRC_NOT_FULL);
-		reg = &qmgr_regs->irqsrc[queue >> 3]; /* 8 queues per u32 */
-		bit = (queue % 8) * 4; /* 3 bits + 1 reserved bit per queue */
+		reg = &qmgr_regs->irqsrc[queue >> 3];  
+		bit = (queue % 8) * 4;  
 		__raw_writel((__raw_readl(reg) & ~(7 << bit)) | (src << bit),
 			     reg);
 	} else
-		/* IRQ source for queues 32-63 is fixed */
+		 
 		BUG_ON(src != QUEUE_IRQ_SRC_NOT_NEARLY_EMPTY);
 
 	irq_handlers[queue] = handler;
@@ -143,16 +119,16 @@ static irqreturn_t qmgr_irq1_a0(int irq, void *pdev)
 	int i, ret = 0;
 	u32 en_bitmap, src, stat;
 
-	/* ACK - it may clear any bits so don't rely on it */
+	 
 	__raw_writel(0xFFFFFFFF, &qmgr_regs->irqstat[0]);
 
 	en_bitmap = __raw_readl(&qmgr_regs->irqen[0]);
 	while (en_bitmap) {
-		i = __fls(en_bitmap); /* number of the last "low" queue */
+		i = __fls(en_bitmap);  
 		en_bitmap &= ~BIT(i);
 		src = __raw_readl(&qmgr_regs->irqsrc[i >> 3]);
 		stat = __raw_readl(&qmgr_regs->stat1[i >> 3]);
-		if (src & 4) /* the IRQ condition is inverted */
+		if (src & 4)  
 			stat = ~stat;
 		if (stat & BIT(src & 3)) {
 			irq_handlers[i](irq_pdevs[i]);
@@ -168,13 +144,13 @@ static irqreturn_t qmgr_irq2_a0(int irq, void *pdev)
 	int i, ret = 0;
 	u32 req_bitmap;
 
-	/* ACK - it may clear any bits so don't rely on it */
+	 
 	__raw_writel(0xFFFFFFFF, &qmgr_regs->irqstat[1]);
 
 	req_bitmap = __raw_readl(&qmgr_regs->irqen[1]) &
 		     __raw_readl(&qmgr_regs->statne_h);
 	while (req_bitmap) {
-		i = __fls(req_bitmap); /* number of the last "high" queue */
+		i = __fls(req_bitmap);  
 		req_bitmap &= ~BIT(i);
 		irq_handlers[HALF_QUEUES + i](irq_pdevs[HALF_QUEUES + i]);
 		ret = IRQ_HANDLED;
@@ -190,10 +166,10 @@ static irqreturn_t qmgr_irq(int irq, void *pdev)
 
 	if (!req_bitmap)
 		return 0;
-	__raw_writel(req_bitmap, &qmgr_regs->irqstat[half]); /* ACK */
+	__raw_writel(req_bitmap, &qmgr_regs->irqstat[half]);  
 
 	while (req_bitmap) {
-		i = __fls(req_bitmap); /* number of the last queue */
+		i = __fls(req_bitmap);  
 		req_bitmap &= ~BIT(i);
 		i += half * HALF_QUEUES;
 		irq_handlers[i](irq_pdevs[i]);
@@ -223,7 +199,7 @@ void qmgr_disable_irq(unsigned int queue)
 	spin_lock_irqsave(&qmgr_lock, flags);
 	__raw_writel(__raw_readl(&qmgr_regs->irqen[half]) & ~mask,
 		     &qmgr_regs->irqen[half]);
-	__raw_writel(mask, &qmgr_regs->irqstat[half]); /* clear */
+	__raw_writel(mask, &qmgr_regs->irqstat[half]);  
 	spin_unlock_irqrestore(&qmgr_lock, flags);
 }
 
@@ -236,17 +212,17 @@ static inline void shift_mask(u32 *mask)
 }
 
 #if DEBUG_QMGR
-int qmgr_request_queue(unsigned int queue, unsigned int len /* dwords */,
+int qmgr_request_queue(unsigned int queue, unsigned int len  ,
 		       unsigned int nearly_empty_watermark,
 		       unsigned int nearly_full_watermark,
 		       const char *desc_format, const char* name)
 #else
-int __qmgr_request_queue(unsigned int queue, unsigned int len /* dwords */,
+int __qmgr_request_queue(unsigned int queue, unsigned int len  ,
 			 unsigned int nearly_empty_watermark,
 			 unsigned int nearly_full_watermark)
 #endif
 {
-	u32 cfg, addr = 0, mask[4]; /* in 16-dwords */
+	u32 cfg, addr = 0, mask[4];  
 	int err;
 
 	BUG_ON(queue >= QUEUES);
@@ -277,7 +253,7 @@ int __qmgr_request_queue(unsigned int queue, unsigned int len /* dwords */,
 
 	cfg |= nearly_empty_watermark << 26;
 	cfg |= nearly_full_watermark << 29;
-	len /= 16;		/* in 16-dwords: 1, 2, 4 or 8 */
+	len /= 16;		 
 	mask[1] = mask[2] = mask[3] = 0;
 
 	if (!try_module_get(THIS_MODULE))
@@ -294,7 +270,7 @@ int __qmgr_request_queue(unsigned int queue, unsigned int len /* dwords */,
 		    !(used_sram_bitmap[1] & mask[1]) &&
 		    !(used_sram_bitmap[2] & mask[2]) &&
 		    !(used_sram_bitmap[3] & mask[3]))
-			break; /* found free space */
+			break;  
 
 		addr++;
 		shift_mask(mask);
@@ -330,13 +306,13 @@ void qmgr_release_queue(unsigned int queue)
 {
 	u32 cfg, addr, mask[4];
 
-	BUG_ON(queue >= QUEUES); /* not in valid range */
+	BUG_ON(queue >= QUEUES);  
 
 	spin_lock_irq(&qmgr_lock);
 	cfg = __raw_readl(&qmgr_regs->sram[queue]);
 	addr = (cfg >> 14) & 0xFF;
 
-	BUG_ON(!addr);		/* not requested */
+	BUG_ON(!addr);		 
 
 	switch ((cfg >> 24) & 3) {
 	case 0: mask[0] = 0x1; break;
@@ -366,7 +342,7 @@ void qmgr_release_queue(unsigned int queue)
 	used_sram_bitmap[1] &= ~mask[1];
 	used_sram_bitmap[2] &= ~mask[2];
 	used_sram_bitmap[3] &= ~mask[3];
-	irq_handlers[queue] = NULL; /* catch IRQ bugs */
+	irq_handlers[queue] = NULL;  
 	spin_unlock_irq(&qmgr_lock);
 
 	module_put(THIS_MODULE);
@@ -396,14 +372,14 @@ static int ixp4xx_qmgr_probe(struct platform_device *pdev)
 		return irq2 ? irq2 : -EINVAL;
 	qmgr_irq_2 = irq2;
 
-	/* reset qmgr registers */
+	 
 	for (i = 0; i < 4; i++) {
 		__raw_writel(0x33333333, &qmgr_regs->stat1[i]);
 		__raw_writel(0, &qmgr_regs->irqsrc[i]);
 	}
 	for (i = 0; i < 2; i++) {
 		__raw_writel(0, &qmgr_regs->stat2[i]);
-		__raw_writel(0xFFFFFFFF, &qmgr_regs->irqstat[i]); /* clear */
+		__raw_writel(0xFFFFFFFF, &qmgr_regs->irqstat[i]);  
 		__raw_writel(0, &qmgr_regs->irqen[i]);
 	}
 
@@ -435,7 +411,7 @@ static int ixp4xx_qmgr_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	used_sram_bitmap[0] = 0xF; /* 4 first pages reserved for config */
+	used_sram_bitmap[0] = 0xF;  
 	spin_lock_init(&qmgr_lock);
 
 	dev_info(dev, "IXP4xx Queue Manager initialized.\n");

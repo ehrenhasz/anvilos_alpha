@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -44,7 +44,7 @@ char *ceph_osdmap_state_str(char *str, int len, u32 state)
 	return str;
 }
 
-/* maps */
+ 
 
 static int calc_bits_of(unsigned int t)
 {
@@ -56,18 +56,14 @@ static int calc_bits_of(unsigned int t)
 	return b;
 }
 
-/*
- * the foo_mask is the smallest value 2^n-1 that is >= foo.
- */
+ 
 static void calc_pg_masks(struct ceph_pg_pool_info *pi)
 {
 	pi->pg_num_mask = (1 << calc_bits_of(pi->pg_num-1)) - 1;
 	pi->pgp_num_mask = (1 << calc_bits_of(pi->pgp_num-1)) - 1;
 }
 
-/*
- * decode crush map
- */
+ 
 static int crush_decode_uniform_bucket(void **p, void *end,
 				       struct crush_bucket_uniform *b)
 {
@@ -305,9 +301,7 @@ fail:
 	return ERR_PTR(ret);
 }
 
-/*
- * Assumes @arg is zero-initialized.
- */
+ 
 static int decode_choose_arg(void **p, void *end, struct crush_choose_arg *arg)
 {
 	int ret;
@@ -406,7 +400,7 @@ static void crush_finalize(struct crush_map *c)
 {
 	__s32 b;
 
-	/* Space for the array of pointers to per-bucket workspace */
+	 
 	c->working_size = sizeof(struct crush_work) +
 	    c->max_buckets * sizeof(struct crush_work_bucket *);
 
@@ -416,14 +410,11 @@ static void crush_finalize(struct crush_map *c)
 
 		switch (c->buckets[b]->alg) {
 		default:
-			/*
-			 * The base case, permutation variables and
-			 * the pointer to the permutation array.
-			 */
+			 
 			c->working_size += sizeof(struct crush_work_bucket);
 			break;
 		}
-		/* Every bucket has a permutation array. */
+		 
 		c->working_size += c->buckets[b]->size * sizeof(__u32);
 	}
 }
@@ -447,7 +438,7 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 	c->names = RB_ROOT;
 	c->choose_args = RB_ROOT;
 
-        /* set tunables to default values */
+         
         c->choose_local_tries = 2;
         c->choose_local_fallback_tries = 5;
         c->choose_total_tries = 19;
@@ -471,7 +462,7 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 	if (c->rules == NULL)
 		goto badmem;
 
-	/* buckets */
+	 
 	for (i = 0; i < c->max_buckets; i++) {
 		int size = 0;
 		u32 alg;
@@ -562,7 +553,7 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 		}
 	}
 
-	/* rules */
+	 
 	dout("rule vec is %p\n", c->rules);
 	for (i = 0; i < c->max_rules; i++) {
 		u32 yes;
@@ -579,7 +570,7 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 		dout("crush_decode rule %d off %x %p to %p\n",
 		     i, (int)(*p-start), *p, end);
 
-		/* len */
+		 
 		ceph_decode_32_safe(p, end, yes, bad);
 #if BITS_PER_LONG == 32
 		if (yes > (ULONG_MAX - sizeof(*r))
@@ -592,7 +583,7 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 		dout(" rule %d is at %p\n", i, r);
 		c->rules[i] = r;
 		r->len = yes;
-		ceph_decode_copy_safe(p, end, &r->mask, 4, bad); /* 4 u8's */
+		ceph_decode_copy_safe(p, end, &r->mask, 4, bad);  
 		ceph_decode_need(p, end, r->len*3*sizeof(u32), bad);
 		for (j = 0; j < r->len; j++) {
 			r->steps[j].op = ceph_decode_32(p);
@@ -609,9 +600,9 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 	if (err)
 		goto fail;
 
-	ceph_decode_skip_map(p, end, 32, string, bad); /* rule_name_map */
+	ceph_decode_skip_map(p, end, 32, string, bad);  
 
-        /* tunables */
+         
         ceph_decode_need(p, end, 3*sizeof(u32), done);
         c->choose_local_tries = ceph_decode_32(p);
         c->choose_local_fallback_tries =  ceph_decode_32(p);
@@ -633,7 +624,7 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 	dout("crush decode tunable chooseleaf_vary_r = %d\n",
 	     c->chooseleaf_vary_r);
 
-	/* skip straw_calc_version, allowed_bucket_algs */
+	 
 	ceph_decode_need(p, end, sizeof(u8) + sizeof(u32), done);
 	*p += sizeof(u8) + sizeof(u32);
 
@@ -643,11 +634,11 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
 	     c->chooseleaf_stable);
 
 	if (*p != end) {
-		/* class_map */
+		 
 		ceph_decode_skip_map(p, end, 32, 32, bad);
-		/* class_name */
+		 
 		ceph_decode_skip_map(p, end, 32, string, bad);
-		/* class_bucket */
+		 
 		ceph_decode_skip_map_of_map(p, end, 32, 32, 32, bad);
 	}
 
@@ -723,16 +714,11 @@ static void free_pg_mapping(struct ceph_pg_mapping *pg)
 	kfree(pg);
 }
 
-/*
- * rbtree of pg_mapping for handling pg_temp (explicit mapping of pgid
- * to a set of osds) and primary_temp (explicit primary setting)
- */
+ 
 DEFINE_RB_FUNCS2(pg_mapping, struct ceph_pg_mapping, pgid, ceph_pg_compare,
 		 RB_BYPTR, const struct ceph_pg *, node)
 
-/*
- * rbtree of pg pool info
- */
+ 
 DEFINE_RB_FUNCS(pg_pool, struct ceph_pg_pool_info, id, node)
 
 struct ceph_pg_pool_info *ceph_pg_pool_by_id(struct ceph_osdmap *map, u64 id)
@@ -792,8 +778,8 @@ static int decode_pool(void **p, void *end, struct ceph_pg_pool_info *pi)
 	void *pool_end;
 
 	ceph_decode_need(p, end, 2 + 4, bad);
-	ev = ceph_decode_8(p);  /* encoding version */
-	cv = ceph_decode_8(p); /* compat version */
+	ev = ceph_decode_8(p);   
+	cv = ceph_decode_8(p);  
 	if (ev < 5) {
 		pr_warn("got v %d < 5 cv %d of ceph_pg_pool\n", ev, cv);
 		return -EINVAL;
@@ -814,26 +800,26 @@ static int decode_pool(void **p, void *end, struct ceph_pg_pool_info *pi)
 	pi->pg_num = ceph_decode_32(p);
 	pi->pgp_num = ceph_decode_32(p);
 
-	*p += 4 + 4;  /* skip lpg* */
-	*p += 4;      /* skip last_change */
-	*p += 8 + 4;  /* skip snap_seq, snap_epoch */
+	*p += 4 + 4;   
+	*p += 4;       
+	*p += 8 + 4;   
 
-	/* skip snaps */
+	 
 	num = ceph_decode_32(p);
 	while (num--) {
-		*p += 8;  /* snapid key */
-		*p += 1 + 1; /* versions */
+		*p += 8;   
+		*p += 1 + 1;  
 		len = ceph_decode_32(p);
 		*p += len;
 	}
 
-	/* skip removed_snaps */
+	 
 	num = ceph_decode_32(p);
 	*p += num * (8 + 8);
 
-	*p += 8;  /* skip auid */
+	*p += 8;   
 	pi->flags = ceph_decode_64(p);
-	*p += 4;  /* skip crash_replay_interval */
+	*p += 4;   
 
 	if (ev >= 7)
 		pi->min_size = ceph_decode_8(p);
@@ -841,15 +827,15 @@ static int decode_pool(void **p, void *end, struct ceph_pg_pool_info *pi)
 		pi->min_size = pi->size - pi->size / 2;
 
 	if (ev >= 8)
-		*p += 8 + 8;  /* skip quota_max_* */
+		*p += 8 + 8;   
 
 	if (ev >= 9) {
-		/* skip tiers */
+		 
 		num = ceph_decode_32(p);
 		*p += num * 8;
 
-		*p += 8;  /* skip tier_of */
-		*p += 1;  /* skip cache_mode */
+		*p += 8;   
+		*p += 1;   
 
 		pi->read_tier = ceph_decode_64(p);
 		pi->write_tier = ceph_decode_64(p);
@@ -859,79 +845,76 @@ static int decode_pool(void **p, void *end, struct ceph_pg_pool_info *pi)
 	}
 
 	if (ev >= 10) {
-		/* skip properties */
+		 
 		num = ceph_decode_32(p);
 		while (num--) {
 			len = ceph_decode_32(p);
-			*p += len; /* key */
+			*p += len;  
 			len = ceph_decode_32(p);
-			*p += len; /* val */
+			*p += len;  
 		}
 	}
 
 	if (ev >= 11) {
-		/* skip hit_set_params */
-		*p += 1 + 1; /* versions */
+		 
+		*p += 1 + 1;  
 		len = ceph_decode_32(p);
 		*p += len;
 
-		*p += 4; /* skip hit_set_period */
-		*p += 4; /* skip hit_set_count */
+		*p += 4;  
+		*p += 4;  
 	}
 
 	if (ev >= 12)
-		*p += 4; /* skip stripe_width */
+		*p += 4;  
 
 	if (ev >= 13) {
-		*p += 8; /* skip target_max_bytes */
-		*p += 8; /* skip target_max_objects */
-		*p += 4; /* skip cache_target_dirty_ratio_micro */
-		*p += 4; /* skip cache_target_full_ratio_micro */
-		*p += 4; /* skip cache_min_flush_age */
-		*p += 4; /* skip cache_min_evict_age */
+		*p += 8;  
+		*p += 8;  
+		*p += 4;  
+		*p += 4;  
+		*p += 4;  
+		*p += 4;  
 	}
 
 	if (ev >=  14) {
-		/* skip erasure_code_profile */
+		 
 		len = ceph_decode_32(p);
 		*p += len;
 	}
 
-	/*
-	 * last_force_op_resend_preluminous, will be overridden if the
-	 * map was encoded with RESEND_ON_SPLIT
-	 */
+	 
 	if (ev >= 15)
 		pi->last_force_request_resend = ceph_decode_32(p);
 	else
 		pi->last_force_request_resend = 0;
 
 	if (ev >= 16)
-		*p += 4; /* skip min_read_recency_for_promote */
+		*p += 4;  
 
 	if (ev >= 17)
-		*p += 8; /* skip expected_num_objects */
+		*p += 8;  
 
 	if (ev >= 19)
-		*p += 4; /* skip cache_target_dirty_high_ratio_micro */
+		*p += 4;  
 
 	if (ev >= 20)
-		*p += 4; /* skip min_write_recency_for_promote */
+		*p += 4;  
 
 	if (ev >= 21)
-		*p += 1; /* skip use_gmt_hitset */
+		*p += 1;  
 
 	if (ev >= 22)
-		*p += 1; /* skip fast_read */
+		*p += 1;  
 
 	if (ev >= 23) {
-		*p += 4; /* skip hit_set_grade_decay_rate */
-		*p += 4; /* skip hit_set_search_last_n */
+		*p += 4;  
+		*p += 4;  
 	}
 
 	if (ev >= 24) {
-		/* skip opts */
-		*p += 1 + 1; /* versions */
+		 
+		*p += 1 + 1;  
 		len = ceph_decode_32(p);
 		*p += len;
 	}
@@ -939,7 +922,7 @@ static int decode_pool(void **p, void *end, struct ceph_pg_pool_info *pi)
 	if (ev >= 25)
 		pi->last_force_request_resend = ceph_decode_32(p);
 
-	/* ignore the rest */
+	 
 
 	*p = pool_end;
 	calc_pg_masks(pi);
@@ -980,13 +963,7 @@ bad:
 	return -EINVAL;
 }
 
-/*
- * CRUSH workspaces
- *
- * workspace_manager framework borrowed from fs/btrfs/compression.c.
- * Two simplifications: there is only one type of workspace and there
- * is always at least one workspace.
- */
+ 
 static struct crush_work *alloc_workspace(const struct crush_map *c)
 {
 	struct crush_work *work;
@@ -1044,10 +1021,7 @@ static void cleanup_workspace_manager(struct workspace_manager *wsm)
 	wsm->free_ws = 0;
 }
 
-/*
- * Finds an available workspace or allocates a new one.  If it's not
- * possible to allocate a new one, waits until there is one.
- */
+ 
 static struct crush_work *get_workspace(struct workspace_manager *wsm,
 					const struct crush_map *c)
 {
@@ -1083,21 +1057,14 @@ again:
 		atomic_dec(&wsm->total_ws);
 		wake_up(&wsm->ws_wait);
 
-		/*
-		 * Do not return the error but go back to waiting.  We
-		 * have the initial workspace and the CRUSH computation
-		 * time is bounded so we will get it eventually.
-		 */
+		 
 		WARN_ON(atomic_read(&wsm->total_ws) < 1);
 		goto again;
 	}
 	return work;
 }
 
-/*
- * Puts a workspace back on the list or frees it if we have enough
- * idle ones sitting around.
- */
+ 
 static void put_workspace(struct workspace_manager *wsm,
 			  struct crush_work *work)
 {
@@ -1117,9 +1084,7 @@ wake:
 		wake_up(&wsm->ws_wait);
 }
 
-/*
- * osd map
- */
+ 
 struct ceph_osdmap *ceph_osdmap_alloc(void)
 {
 	struct ceph_osdmap *map;
@@ -1189,11 +1154,7 @@ void ceph_osdmap_destroy(struct ceph_osdmap *map)
 	kfree(map);
 }
 
-/*
- * Adjust max_osd value, (re)allocate arrays.
- *
- * The new elements are properly initialized.
- */
+ 
 static int osdmap_set_max_osd(struct ceph_osdmap *map, u32 max)
 {
 	u32 *state;
@@ -1282,11 +1243,7 @@ static int osdmap_set_crush(struct ceph_osdmap *map, struct crush_map *crush)
 #define OSDMAP_WRAPPER_COMPAT_VER	7
 #define OSDMAP_CLIENT_DATA_COMPAT_VER	1
 
-/*
- * Return 0 or error.  On success, *v is set to 0 for old (v6) osdmaps,
- * to struct_v of the client_data section for new (v7 and above)
- * osdmaps.
- */
+ 
 static int get_osdmap_client_data_v(void **p, void *end,
 				    const char *prefix, u8 *v)
 {
@@ -1303,7 +1260,7 @@ static int get_osdmap_client_data_v(void **p, void *end,
 				OSDMAP_WRAPPER_COMPAT_VER, prefix);
 			return -EINVAL;
 		}
-		*p += 4; /* ignore wrapper struct_len */
+		*p += 4;  
 
 		ceph_decode_8_safe(p, end, struct_v, e_inval);
 		ceph_decode_8_safe(p, end, struct_compat, e_inval);
@@ -1313,7 +1270,7 @@ static int get_osdmap_client_data_v(void **p, void *end,
 				OSDMAP_CLIENT_DATA_COMPAT_VER, prefix);
 			return -EINVAL;
 		}
-		*p += 4; /* ignore client data struct_len */
+		*p += 4;  
 	} else {
 		u16 version;
 
@@ -1325,7 +1282,7 @@ static int get_osdmap_client_data_v(void **p, void *end,
 			return -EINVAL;
 		}
 
-		/* old osdmap encoding */
+		 
 		struct_v = 0;
 	}
 
@@ -1417,7 +1374,7 @@ static int decode_pg_mapping(void **p, void *end, struct rb_root *mapping_root,
 				return PTR_ERR(pg);
 
 			if (pg) {
-				pg->pgid = pgid; /* struct */
+				pg->pgid = pgid;  
 				insert_pg_mapping(mapping_root, pg);
 			}
 		}
@@ -1437,7 +1394,7 @@ static struct ceph_pg_mapping *__decode_pg_temp(void **p, void *end,
 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	if (len == 0 && incremental)
-		return NULL;	/* new_pg_temp: [] to remove */
+		return NULL;	 
 	if (len > (SIZE_MAX - sizeof(*pg)) / sizeof(u32))
 		return ERR_PTR(-EINVAL);
 
@@ -1476,7 +1433,7 @@ static struct ceph_pg_mapping *__decode_primary_temp(void **p, void *end,
 
 	ceph_decode_32_safe(p, end, osd, e_inval);
 	if (osd == (u32)-1 && incremental)
-		return NULL;	/* new_primary_temp: -1 to remove */
+		return NULL;	 
 
 	pg = alloc_pg_mapping(0);
 	if (!pg)
@@ -1660,9 +1617,7 @@ static int decode_old_pg_upmap_items(void **p, void *end,
 	return decode_pg_mapping(p, end, &map->pg_upmap_items, NULL, true);
 }
 
-/*
- * decode a full map.
- */
+ 
 static int osdmap_decode(void **p, void *end, bool msgr2,
 			 struct ceph_osdmap *map)
 {
@@ -1679,7 +1634,7 @@ static int osdmap_decode(void **p, void *end, bool msgr2,
 	if (err)
 		goto bad;
 
-	/* fsid, epoch, created, modified */
+	 
 	ceph_decode_need(p, end, sizeof(map->fsid) + sizeof(u32) +
 			 sizeof(map->created) + sizeof(map->modified), e_inval);
 	ceph_decode_copy(p, &map->fsid, sizeof(map->fsid));
@@ -1687,12 +1642,12 @@ static int osdmap_decode(void **p, void *end, bool msgr2,
 	ceph_decode_copy(p, &map->created, sizeof(map->created));
 	ceph_decode_copy(p, &map->modified, sizeof(map->modified));
 
-	/* pools */
+	 
 	err = decode_pools(p, end, map);
 	if (err)
 		goto bad;
 
-	/* pool_name */
+	 
 	err = decode_pool_names(p, end, map);
 	if (err)
 		goto bad;
@@ -1701,15 +1656,15 @@ static int osdmap_decode(void **p, void *end, bool msgr2,
 
 	ceph_decode_32_safe(p, end, map->flags, e_inval);
 
-	/* max_osd */
+	 
 	ceph_decode_32_safe(p, end, max, e_inval);
 
-	/* (re)alloc osd arrays */
+	 
 	err = osdmap_set_max_osd(map, max);
 	if (err)
 		goto bad;
 
-	/* osd_state, osd_weight, osd_addrs->client_addr */
+	 
 	ceph_decode_need(p, end, 3*sizeof(u32) +
 			 map->max_osd*(struct_v >= 5 ? sizeof(u32) :
 						       sizeof(u8)) +
@@ -1747,19 +1702,19 @@ static int osdmap_decode(void **p, void *end, bool msgr2,
 		dout("%s osd%d addr %s\n", __func__, i, ceph_pr_addr(addr));
 	}
 
-	/* pg_temp */
+	 
 	err = decode_pg_temp(p, end, map);
 	if (err)
 		goto bad;
 
-	/* primary_temp */
+	 
 	if (struct_v >= 1) {
 		err = decode_primary_temp(p, end, map);
 		if (err)
 			goto bad;
 	}
 
-	/* primary_affinity */
+	 
 	if (struct_v >= 2) {
 		err = decode_primary_affinity(p, end, map);
 		if (err)
@@ -1768,7 +1723,7 @@ static int osdmap_decode(void **p, void *end, bool msgr2,
 		WARN_ON(map->osd_primary_affinity);
 	}
 
-	/* crush */
+	 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	err = osdmap_set_crush(map, crush_decode(*p, min(*p + len, end)));
 	if (err)
@@ -1776,7 +1731,7 @@ static int osdmap_decode(void **p, void *end, bool msgr2,
 
 	*p += len;
 	if (struct_v >= 3) {
-		/* erasure_code_profiles */
+		 
 		ceph_decode_skip_map_of_map(p, end, string, string, string,
 					    e_inval);
 	}
@@ -1794,7 +1749,7 @@ static int osdmap_decode(void **p, void *end, bool msgr2,
 		WARN_ON(!RB_EMPTY_ROOT(&map->pg_upmap_items));
 	}
 
-	/* ignore the rest */
+	 
 	*p = end;
 
 	dout("full osdmap epoch %d max_osd %d\n", map->epoch, map->max_osd);
@@ -1811,9 +1766,7 @@ bad:
 	return err;
 }
 
-/*
- * Allocate and decode a full map.
- */
+ 
 struct ceph_osdmap *ceph_osdmap_decode(void **p, void *end, bool msgr2)
 {
 	struct ceph_osdmap *map;
@@ -1832,14 +1785,7 @@ struct ceph_osdmap *ceph_osdmap_decode(void **p, void *end, bool msgr2)
 	return map;
 }
 
-/*
- * Encoding order is (new_up_client, new_state, new_weight).  Need to
- * apply in the (new_weight, new_state, new_up_client) order, because
- * an incremental map may look like e.g.
- *
- *     new_up_client: { osd=6, addr=... } # set osd_state and addr
- *     new_state: { osd=6, xorstate=EXISTS } # clear osd_state
- */
+ 
 static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
 				      bool msgr2, struct ceph_osdmap *map)
 {
@@ -1870,7 +1816,7 @@ static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
 	ceph_decode_need(p, end, len, e_inval);
 	*p += len;
 
-	/* new_weight */
+	 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	while (len--) {
 		s32 osd;
@@ -1885,10 +1831,7 @@ static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
 			    (w == CEPH_OSD_OUT ? "(out)" : ""));
 		map->osd_weight[osd] = w;
 
-		/*
-		 * If we are marking in, set the EXISTS, and clear the
-		 * AUTOOUT and NEW bits.
-		 */
+		 
 		if (w) {
 			map->osd_state[osd] |= CEPH_OSD_EXISTS;
 			map->osd_state[osd] &= ~(CEPH_OSD_AUTOOUT |
@@ -1897,7 +1840,7 @@ static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
 	}
 	new_weight_end = *p;
 
-	/* new_state (up/down) */
+	 
 	*p = new_state;
 	len = ceph_decode_32(p);
 	while (len--) {
@@ -1929,7 +1872,7 @@ static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
 		}
 	}
 
-	/* new_up_client */
+	 
 	*p = new_up_client;
 	len = ceph_decode_32(p);
 	while (len--) {
@@ -1959,9 +1902,7 @@ e_inval:
 	return -EINVAL;
 }
 
-/*
- * decode and apply an incremental map update.
- */
+ 
 struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 					     struct ceph_osdmap *map)
 {
@@ -1982,7 +1923,7 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 	if (err)
 		goto bad;
 
-	/* fsid, epoch, modified, new_pool_max, new_flags */
+	 
 	ceph_decode_need(p, end, sizeof(fsid) + sizeof(u32) + sizeof(modified) +
 			 sizeof(u64) + sizeof(u32), e_inval);
 	ceph_decode_copy(p, &fsid, sizeof(fsid));
@@ -1992,7 +1933,7 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 	new_pool_max = ceph_decode_64(p);
 	new_flags = ceph_decode_32(p);
 
-	/* full map? */
+	 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	if (len > 0) {
 		dout("apply_incremental full map len %d, %p to %p\n",
@@ -2000,7 +1941,7 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 		return ceph_osdmap_decode(p, min(*p+len, end), msgr2);
 	}
 
-	/* new crush? */
+	 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	if (len > 0) {
 		err = osdmap_set_crush(map,
@@ -2010,13 +1951,13 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 		*p += len;
 	}
 
-	/* new flags? */
+	 
 	if (new_flags >= 0)
 		map->flags = new_flags;
 	if (new_pool_max >= 0)
 		map->pool_max = new_pool_max;
 
-	/* new max? */
+	 
 	ceph_decode_32_safe(p, end, max, e_inval);
 	if (max >= 0) {
 		err = osdmap_set_max_osd(map, max);
@@ -2027,17 +1968,17 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 	map->epoch++;
 	map->modified = modified;
 
-	/* new_pools */
+	 
 	err = decode_new_pools(p, end, map);
 	if (err)
 		goto bad;
 
-	/* new_pool_names */
+	 
 	err = decode_pool_names(p, end, map);
 	if (err)
 		goto bad;
 
-	/* old_pool */
+	 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	while (len--) {
 		struct ceph_pg_pool_info *pi;
@@ -2048,24 +1989,24 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 			__remove_pg_pool(&map->pg_pools, pi);
 	}
 
-	/* new_up_client, new_state, new_weight */
+	 
 	err = decode_new_up_state_weight(p, end, struct_v, msgr2, map);
 	if (err)
 		goto bad;
 
-	/* new_pg_temp */
+	 
 	err = decode_new_pg_temp(p, end, map);
 	if (err)
 		goto bad;
 
-	/* new_primary_temp */
+	 
 	if (struct_v >= 1) {
 		err = decode_new_primary_temp(p, end, map);
 		if (err)
 			goto bad;
 	}
 
-	/* new_primary_affinity */
+	 
 	if (struct_v >= 2) {
 		err = decode_new_primary_affinity(p, end, map);
 		if (err)
@@ -2073,10 +2014,10 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 	}
 
 	if (struct_v >= 3) {
-		/* new_erasure_code_profiles */
+		 
 		ceph_decode_skip_map_of_map(p, end, string, string, string,
 					    e_inval);
-		/* old_erasure_code_profiles */
+		 
 		ceph_decode_skip_set(p, end, string, e_inval);
 	}
 
@@ -2098,7 +2039,7 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end, bool msgr2,
 			goto bad;
 	}
 
-	/* ignore the rest */
+	 
 	*p = end;
 
 	dout("inc osdmap epoch %d max_osd %d\n", map->epoch, map->max_osd);
@@ -2140,7 +2081,7 @@ void ceph_oid_copy(struct ceph_object_id *dest,
 	ceph_oid_destroy(dest);
 
 	if (src->name != src->inline_name) {
-		/* very rare, see ceph_object_id definition */
+		 
 		dest->name = kmalloc(src->name_len + 1,
 				     GFP_NOIO | __GFP_NOFAIL);
 	} else {
@@ -2166,9 +2107,7 @@ int oid_printf_vargs(struct ceph_object_id *oid, const char *fmt, va_list ap)
 	return 0;
 }
 
-/*
- * If oid doesn't fit into inline buffer, BUG.
- */
+ 
 void ceph_oid_printf(struct ceph_object_id *oid, const char *fmt, ...)
 {
 	va_list ap;
@@ -2205,9 +2144,7 @@ int oid_aprintf_vargs(struct ceph_object_id *oid, gfp_t gfp,
 	return 0;
 }
 
-/*
- * If oid doesn't fit into inline buffer, allocate.
- */
+ 
 int ceph_oid_aprintf(struct ceph_object_id *oid, gfp_t gfp,
 		     const char *fmt, ...)
 {
@@ -2229,9 +2166,7 @@ void ceph_oid_destroy(struct ceph_object_id *oid)
 }
 EXPORT_SYMBOL(ceph_oid_destroy);
 
-/*
- * osds only
- */
+ 
 static bool __osds_equal(const struct ceph_osds *lhs,
 			 const struct ceph_osds *rhs)
 {
@@ -2242,9 +2177,7 @@ static bool __osds_equal(const struct ceph_osds *lhs,
 	return false;
 }
 
-/*
- * osds + primary
- */
+ 
 static bool osds_equal(const struct ceph_osds *lhs,
 		       const struct ceph_osds *rhs)
 {
@@ -2257,15 +2190,15 @@ static bool osds_equal(const struct ceph_osds *lhs,
 
 static bool osds_valid(const struct ceph_osds *set)
 {
-	/* non-empty set */
+	 
 	if (set->size > 0 && set->primary >= 0)
 		return true;
 
-	/* empty can_shift_osds set */
+	 
 	if (!set->size && set->primary == -1)
 		return true;
 
-	/* empty !can_shift_osds set - all NONE */
+	 
 	if (set->size > 0 && set->primary == -1) {
 		int i;
 
@@ -2356,19 +2289,19 @@ static bool primary_changed(const struct ceph_osds *old_acting,
 			    const struct ceph_osds *new_acting)
 {
 	if (!old_acting->size && !new_acting->size)
-		return false; /* both still empty */
+		return false;  
 
 	if (!old_acting->size ^ !new_acting->size)
-		return true; /* was empty, now not, or vice versa */
+		return true;  
 
 	if (old_acting->primary != new_acting->primary)
-		return true; /* primary changed */
+		return true;  
 
 	if (calc_pg_rank(old_acting->primary, old_acting) !=
 	    calc_pg_rank(new_acting->primary, new_acting))
 		return true;
 
-	return false; /* same primary (tho replicas may have changed) */
+	return false;  
 }
 
 bool ceph_osds_changed(const struct ceph_osds *old_acting,
@@ -2384,12 +2317,7 @@ bool ceph_osds_changed(const struct ceph_osds *old_acting,
 	return false;
 }
 
-/*
- * Map an object into a PG.
- *
- * Should only be called with target_oid and target_oloc (as opposed to
- * base_oid and base_oloc), since tiering isn't taken into account.
- */
+ 
 void __ceph_object_locator_to_pg(struct ceph_pg_pool_info *pi,
 				 const struct ceph_object_id *oid,
 				 const struct ceph_object_locator *oloc,
@@ -2440,9 +2368,7 @@ int ceph_object_locator_to_pg(struct ceph_osdmap *osdmap,
 }
 EXPORT_SYMBOL(ceph_object_locator_to_pg);
 
-/*
- * Map a raw PG (full precision ps) into an actual PG.
- */
+ 
 static void raw_pg_to_pg(struct ceph_pg_pool_info *pi,
 			 const struct ceph_pg *raw_pgid,
 			 struct ceph_pg *pgid)
@@ -2452,39 +2378,26 @@ static void raw_pg_to_pg(struct ceph_pg_pool_info *pi,
 				     pi->pg_num_mask);
 }
 
-/*
- * Map a raw PG (full precision ps) into a placement ps (placement
- * seed).  Include pool id in that value so that different pools don't
- * use the same seeds.
- */
+ 
 static u32 raw_pg_to_pps(struct ceph_pg_pool_info *pi,
 			 const struct ceph_pg *raw_pgid)
 {
 	if (pi->flags & CEPH_POOL_FLAG_HASHPSPOOL) {
-		/* hash pool id and seed so that pool PGs do not overlap */
+		 
 		return crush_hash32_2(CRUSH_HASH_RJENKINS1,
 				      ceph_stable_mod(raw_pgid->seed,
 						      pi->pgp_num,
 						      pi->pgp_num_mask),
 				      raw_pgid->pool);
 	} else {
-		/*
-		 * legacy behavior: add ps and pool together.  this is
-		 * not a great approach because the PGs from each pool
-		 * will overlap on top of each other: 0.5 == 1.4 ==
-		 * 2.3 == ...
-		 */
+		 
 		return ceph_stable_mod(raw_pgid->seed, pi->pgp_num,
 				       pi->pgp_num_mask) +
 		       (unsigned)raw_pgid->pool;
 	}
 }
 
-/*
- * Magic value used for a "default" fallback choose_args, used if the
- * crush_choose_arg_map passed to do_crush() does not exist.  If this
- * also doesn't exist, fall back to canonical weights.
- */
+ 
 #define CEPH_DEFAULT_CHOOSE_ARGS	-1
 
 static int do_crush(struct ceph_osdmap *map, int ruleno, int x,
@@ -2521,7 +2434,7 @@ static void remove_nonexistent_osds(struct ceph_osdmap *osdmap,
 	if (ceph_can_shift_osds(pi)) {
 		int removed = 0;
 
-		/* shift left */
+		 
 		for (i = 0; i < set->size; i++) {
 			if (!ceph_osd_exists(osdmap, set->osds[i])) {
 				removed++;
@@ -2532,7 +2445,7 @@ static void remove_nonexistent_osds(struct ceph_osdmap *osdmap,
 		}
 		set->size -= removed;
 	} else {
-		/* set dne devices to NONE */
+		 
 		for (i = 0; i < set->size; i++) {
 			if (!ceph_osd_exists(osdmap, set->osds[i]))
 				set->osds[i] = CRUSH_ITEM_NONE;
@@ -2540,12 +2453,7 @@ static void remove_nonexistent_osds(struct ceph_osdmap *osdmap,
 	}
 }
 
-/*
- * Calculate raw set (CRUSH output) for given PG and filter out
- * nonexistent OSDs.  ->primary is undefined for a raw set.
- *
- * Placement seed (CRUSH input) is returned through @ppps.
- */
+ 
 static void pg_to_raw_osds(struct ceph_osdmap *osdmap,
 			   struct ceph_pg_pool_info *pi,
 			   const struct ceph_pg *raw_pgid,
@@ -2588,7 +2496,7 @@ static void pg_to_raw_osds(struct ceph_osdmap *osdmap,
 	remove_nonexistent_osds(osdmap, pi, raw);
 }
 
-/* apply pg_upmap[_items] mappings */
+ 
 static void apply_upmap(struct ceph_osdmap *osdmap,
 			const struct ceph_pg *pgid,
 			struct ceph_osds *raw)
@@ -2598,36 +2506,33 @@ static void apply_upmap(struct ceph_osdmap *osdmap,
 
 	pg = lookup_pg_mapping(&osdmap->pg_upmap, pgid);
 	if (pg) {
-		/* make sure targets aren't marked out */
+		 
 		for (i = 0; i < pg->pg_upmap.len; i++) {
 			int osd = pg->pg_upmap.osds[i];
 
 			if (osd != CRUSH_ITEM_NONE &&
 			    osd < osdmap->max_osd &&
 			    osdmap->osd_weight[osd] == 0) {
-				/* reject/ignore explicit mapping */
+				 
 				return;
 			}
 		}
 		for (i = 0; i < pg->pg_upmap.len; i++)
 			raw->osds[i] = pg->pg_upmap.osds[i];
 		raw->size = pg->pg_upmap.len;
-		/* check and apply pg_upmap_items, if any */
+		 
 	}
 
 	pg = lookup_pg_mapping(&osdmap->pg_upmap_items, pgid);
 	if (pg) {
-		/*
-		 * Note: this approach does not allow a bidirectional swap,
-		 * e.g., [[1,2],[2,1]] applied to [0,1,2] -> [0,2,1].
-		 */
+		 
 		for (i = 0; i < pg->pg_upmap_items.len; i++) {
 			int from = pg->pg_upmap_items.from_to[i][0];
 			int to = pg->pg_upmap_items.from_to[i][1];
 			int pos = -1;
 			bool exists = false;
 
-			/* make sure replacement doesn't already appear */
+			 
 			for (j = 0; j < raw->size; j++) {
 				int osd = raw->osds[j];
 
@@ -2635,7 +2540,7 @@ static void apply_upmap(struct ceph_osdmap *osdmap,
 					exists = true;
 					break;
 				}
-				/* ignore mapping if target is marked out */
+				 
 				if (osd == from && pos < 0 &&
 				    !(to != CRUSH_ITEM_NONE &&
 				      to < osdmap->max_osd &&
@@ -2649,26 +2554,20 @@ static void apply_upmap(struct ceph_osdmap *osdmap,
 	}
 }
 
-/*
- * Given raw set, calculate up set and up primary.  By definition of an
- * up set, the result won't contain nonexistent or down OSDs.
- *
- * This is done in-place - on return @set is the up set.  If it's
- * empty, ->primary will remain undefined.
- */
+ 
 static void raw_to_up_osds(struct ceph_osdmap *osdmap,
 			   struct ceph_pg_pool_info *pi,
 			   struct ceph_osds *set)
 {
 	int i;
 
-	/* ->primary is undefined for a raw set */
+	 
 	BUG_ON(set->primary != -1);
 
 	if (ceph_can_shift_osds(pi)) {
 		int removed = 0;
 
-		/* shift left */
+		 
 		for (i = 0; i < set->size; i++) {
 			if (ceph_osd_is_down(osdmap, set->osds[i])) {
 				removed++;
@@ -2681,7 +2580,7 @@ static void raw_to_up_osds(struct ceph_osdmap *osdmap,
 		if (set->size > 0)
 			set->primary = set->osds[0];
 	} else {
-		/* set down/dne devices to NONE */
+		 
 		for (i = set->size - 1; i >= 0; i--) {
 			if (ceph_osd_is_down(osdmap, set->osds[i]))
 				set->osds[i] = CRUSH_ITEM_NONE;
@@ -2699,10 +2598,7 @@ static void apply_primary_affinity(struct ceph_osdmap *osdmap,
 	int i;
 	int pos = -1;
 
-	/*
-	 * Do we have any non-default primary_affinity values for these
-	 * osds?
-	 */
+	 
 	if (!osdmap->osd_primary_affinity)
 		return;
 
@@ -2718,11 +2614,7 @@ static void apply_primary_affinity(struct ceph_osdmap *osdmap,
 	if (i == up->size)
 		return;
 
-	/*
-	 * Pick the primary.  Feed both the seed (for the pg) and the
-	 * osd into the hash/rng so that a proportional fraction of an
-	 * osd's pgs get rejected as primary.
-	 */
+	 
 	for (i = 0; i < up->size; i++) {
 		int osd = up->osds[i];
 		u32 aff;
@@ -2734,11 +2626,7 @@ static void apply_primary_affinity(struct ceph_osdmap *osdmap,
 		if (aff < CEPH_OSD_MAX_PRIMARY_AFFINITY &&
 		    (crush_hash32_2(CRUSH_HASH_RJENKINS1,
 				    pps, osd) >> 16) >= aff) {
-			/*
-			 * We chose not to use this primary.  Note it
-			 * anyway as a fallback in case we don't pick
-			 * anyone else, but keep looking.
-			 */
+			 
 			if (pos < 0)
 				pos = i;
 		} else {
@@ -2752,21 +2640,14 @@ static void apply_primary_affinity(struct ceph_osdmap *osdmap,
 	up->primary = up->osds[pos];
 
 	if (ceph_can_shift_osds(pi) && pos > 0) {
-		/* move the new primary to the front */
+		 
 		for (i = pos; i > 0; i--)
 			up->osds[i] = up->osds[i - 1];
 		up->osds[0] = up->primary;
 	}
 }
 
-/*
- * Get pg_temp and primary_temp mappings for given PG.
- *
- * Note that a PG may have none, only pg_temp, only primary_temp or
- * both pg_temp and primary_temp mappings.  This means @temp isn't
- * always a valid OSD set on return: in the "only primary_temp" case,
- * @temp will have its ->primary >= 0 but ->size == 0.
- */
+ 
 static void get_temp_osds(struct ceph_osdmap *osdmap,
 			  struct ceph_pg_pool_info *pi,
 			  const struct ceph_pg *pgid,
@@ -2777,7 +2658,7 @@ static void get_temp_osds(struct ceph_osdmap *osdmap,
 
 	ceph_osds_init(temp);
 
-	/* pg_temp? */
+	 
 	pg = lookup_pg_mapping(&osdmap->pg_temp, pgid);
 	if (pg) {
 		for (i = 0; i < pg->pg_temp.len; i++) {
@@ -2791,7 +2672,7 @@ static void get_temp_osds(struct ceph_osdmap *osdmap,
 			}
 		}
 
-		/* apply pg_temp's primary */
+		 
 		for (i = 0; i < temp->size; i++) {
 			if (temp->osds[i] != CRUSH_ITEM_NONE) {
 				temp->primary = temp->osds[i];
@@ -2800,19 +2681,13 @@ static void get_temp_osds(struct ceph_osdmap *osdmap,
 		}
 	}
 
-	/* primary_temp? */
+	 
 	pg = lookup_pg_mapping(&osdmap->primary_temp, pgid);
 	if (pg)
 		temp->primary = pg->primary_temp.osd;
 }
 
-/*
- * Map a PG to its acting set as well as its up set.
- *
- * Acting set is used for data mapping purposes, while up set can be
- * recorded for detecting interval changes and deciding whether to
- * resend a request.
- */
+ 
 void ceph_pg_to_up_acting_osds(struct ceph_osdmap *osdmap,
 			       struct ceph_pg_pool_info *pi,
 			       const struct ceph_pg *raw_pgid,
@@ -2852,7 +2727,7 @@ bool ceph_pg_to_primary_shard(struct ceph_osdmap *osdmap,
 	raw_pg_to_pg(pi, raw_pgid, &pgid);
 
 	if (ceph_can_shift_osds(pi)) {
-		spgid->pgid = pgid; /* struct */
+		spgid->pgid = pgid;  
 		spgid->shard = CEPH_SPG_NOSHARD;
 		return true;
 	}
@@ -2860,7 +2735,7 @@ bool ceph_pg_to_primary_shard(struct ceph_osdmap *osdmap,
 	ceph_pg_to_up_acting_osds(osdmap, pi, &pgid, &up, &acting);
 	for (i = 0; i < acting.size; i++) {
 		if (acting.osds[i] == acting.primary) {
-			spgid->pgid = pgid; /* struct */
+			spgid->pgid = pgid;  
 			spgid->shard = i;
 			return true;
 		}
@@ -2869,9 +2744,7 @@ bool ceph_pg_to_primary_shard(struct ceph_osdmap *osdmap,
 	return false;
 }
 
-/*
- * Return acting primary for given PG, or -1 if none.
- */
+ 
 int ceph_pg_to_acting_primary(struct ceph_osdmap *osdmap,
 			      const struct ceph_pg *raw_pgid)
 {
@@ -2917,12 +2790,7 @@ static int crush_loc_compare(const struct crush_loc *loc1,
 DEFINE_RB_FUNCS2(crush_loc, struct crush_loc_node, cl_loc, crush_loc_compare,
 		 RB_BYPTR, const struct crush_loc *, cl_node)
 
-/*
- * Parses a set of <bucket type name>':'<bucket name> pairs separated
- * by '|', e.g. "rack:foo1|rack:foo2|datacenter:bar".
- *
- * Note that @crush_location is modified by strsep().
- */
+ 
 int ceph_parse_crush_location(char *crush_location, struct rb_root *locs)
 {
 	struct crush_loc_node *loc;
@@ -3003,9 +2871,7 @@ void ceph_clear_crush_locs(struct rb_root *locs)
 	}
 }
 
-/*
- * [a-zA-Z0-9-_.]+
- */
+ 
 static bool is_valid_crush_name(const char *name)
 {
 	do {
@@ -3019,16 +2885,7 @@ static bool is_valid_crush_name(const char *name)
 	return true;
 }
 
-/*
- * Gets the parent of an item.  Returns its id (<0 because the
- * parent is always a bucket), type id (>0 for the same reason,
- * via @parent_type_id) and location (via @parent_loc).  If no
- * parent, returns 0.
- *
- * Does a linear search, as there are no parent pointers of any
- * kind.  Note that the result is ambiguous for items that occur
- * multiple times in the map.
- */
+ 
 static int get_immediate_parent(struct crush_map *c, int id,
 				u16 *parent_type_id,
 				struct crush_loc *parent_loc)
@@ -3042,7 +2899,7 @@ static int get_immediate_parent(struct crush_map *c, int id,
 		if (!b)
 			continue;
 
-		/* ignore per-class shadow hierarchy */
+		 
 		cn = lookup_crush_name(&c->names, b->id);
 		if (!cn || !is_valid_crush_name(cn->cn_name))
 			continue;
@@ -3059,46 +2916,21 @@ static int get_immediate_parent(struct crush_map *c, int id,
 		}
 	}
 
-	return 0;  /* no parent */
+	return 0;   
 }
 
-/*
- * Calculates the locality/distance from an item to a client
- * location expressed in terms of CRUSH hierarchy as a set of
- * (bucket type name, bucket name) pairs.  Specifically, looks
- * for the lowest-valued bucket type for which the location of
- * @id matches one of the locations in @locs, so for standard
- * bucket types (host = 1, rack = 3, datacenter = 8, zone = 9)
- * a matching host is closer than a matching rack and a matching
- * data center is closer than a matching zone.
- *
- * Specifying multiple locations (a "multipath" location) such
- * as "rack=foo1 rack=foo2 datacenter=bar" is allowed -- @locs
- * is a multimap.  The locality will be:
- *
- * - 3 for OSDs in racks foo1 and foo2
- * - 8 for OSDs in data center bar
- * - -1 for all other OSDs
- *
- * The lowest possible bucket type is 1, so the best locality
- * for an OSD is 1 (i.e. a matching host).  Locality 0 would be
- * the OSD itself.
- */
+ 
 int ceph_get_crush_locality(struct ceph_osdmap *osdmap, int id,
 			    struct rb_root *locs)
 {
 	struct crush_loc loc;
 	u16 type_id;
 
-	/*
-	 * Instead of repeated get_immediate_parent() calls,
-	 * the location of @id could be obtained with a single
-	 * depth-first traversal.
-	 */
+	 
 	for (;;) {
 		id = get_immediate_parent(osdmap->crush, id, &type_id, &loc);
 		if (id >= 0)
-			return -1;  /* not local */
+			return -1;   
 
 		if (lookup_crush_loc(locs, &loc))
 			return type_id;

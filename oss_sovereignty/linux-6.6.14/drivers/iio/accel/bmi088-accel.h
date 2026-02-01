@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef BMI088_ACCEL_H
 #define BMI088_ACCEL_H
 
@@ -22,4 +22,4 @@ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
 			    enum bmi_device_type type);
 void bmi088_accel_core_remove(struct device *dev);
 
-#endif /* BMI088_ACCEL_H */
+#endif  

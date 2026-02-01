@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
 
 #include "test_progs.h"
 #include "testing_helpers.h"
@@ -14,12 +14,9 @@ void test_prog_tests_framework(void)
 {
 	struct test_state *state = env.test_state;
 
-	/* in all the ASSERT calls below we need to return on the first
-	 * error due to the fact that we are cleaning the test state after
-	 * each dummy subtest
-	 */
+	 
 
-	/* test we properly count skipped tests with subtests */
+	 
 	if (test__start_subtest("test_good_subtest"))
 		test__end_subtest();
 	if (!ASSERT_EQ(state->skip_cnt, 0, "skip_cnt_check"))

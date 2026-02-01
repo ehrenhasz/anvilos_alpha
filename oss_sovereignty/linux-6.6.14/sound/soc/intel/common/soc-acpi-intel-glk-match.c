@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-acpi-intel-glk-match.c - tables and support for GLK ACPI enumeration.
- *
- * Copyright (c) 2018, Intel Corporation.
- *
- */
+
+ 
 
 #include <sound/soc-acpi.h>
 #include <sound/soc-acpi-intel-match.h>
@@ -58,7 +53,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_glk_machines[] = {
 	{
 		.comp_ids = &essx_83x6,
 		.drv_name = "sof-essx8336",
-		.sof_tplg_filename = "sof-glk-es8336", /* the tplg suffix is added at run time */
+		.sof_tplg_filename = "sof-glk-es8336",  
 		.tplg_quirk_mask = SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER |
 					SND_SOC_ACPI_TPLG_INTEL_SSP_MSB |
 					SND_SOC_ACPI_TPLG_INTEL_DMIC_NUMBER,

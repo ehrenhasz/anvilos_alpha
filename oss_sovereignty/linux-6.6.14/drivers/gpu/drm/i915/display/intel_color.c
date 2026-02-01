@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "i915_reg.h"
 #include "intel_color.h"
@@ -30,50 +8,22 @@
 
 struct intel_color_funcs {
 	int (*color_check)(struct intel_crtc_state *crtc_state);
-	/*
-	 * Program non-arming double buffered color management registers
-	 * before vblank evasion. The registers should then latch after
-	 * the arming register is written (by color_commit_arm()) during
-	 * the next vblank start, alongside any other double buffered
-	 * registers involved with the same commit. This hook is optional.
-	 */
+	 
 	void (*color_commit_noarm)(const struct intel_crtc_state *crtc_state);
-	/*
-	 * Program arming double buffered color management registers
-	 * during vblank evasion. The registers (and whatever other registers
-	 * they arm that were written by color_commit_noarm) should then latch
-	 * during the next vblank start, alongside any other double buffered
-	 * registers involved with the same commit.
-	 */
+	 
 	void (*color_commit_arm)(const struct intel_crtc_state *crtc_state);
-	/*
-	 * Perform any extra tasks needed after all the
-	 * double buffered registers have been latched.
-	 */
+	 
 	void (*color_post_update)(const struct intel_crtc_state *crtc_state);
-	/*
-	 * Load LUTs (and other single buffered color management
-	 * registers). Will (hopefully) be called during the vblank
-	 * following the latching of any double buffered registers
-	 * involved with the same commit.
-	 */
+	 
 	void (*load_luts)(const struct intel_crtc_state *crtc_state);
-	/*
-	 * Read out the LUTs from the hardware into the software state.
-	 * Used by eg. the hardware state checker.
-	 */
+	 
 	void (*read_luts)(struct intel_crtc_state *crtc_state);
-	/*
-	 * Compare the LUTs
-	 */
+	 
 	bool (*lut_equal)(const struct intel_crtc_state *crtc_state,
 			  const struct drm_property_blob *blob1,
 			  const struct drm_property_blob *blob2,
 			  bool is_pre_csc_lut);
-	/*
-	 * Read out the CSCs (if any) from the hardware into the
-	 * software state. Used by eg. the hardware state checker.
-	 */
+	 
 	void (*read_csc)(struct intel_crtc_state *crtc_state);
 };
 
@@ -94,35 +44,14 @@ struct intel_color_funcs {
 
 #define LEGACY_LUT_LENGTH		256
 
-/*
- * ILK+ csc matrix:
- *
- * |R/Cr|   | c0 c1 c2 |   ( |R/Cr|   |preoff0| )   |postoff0|
- * |G/Y | = | c3 c4 c5 | x ( |G/Y | + |preoff1| ) + |postoff1|
- * |B/Cb|   | c6 c7 c8 |   ( |B/Cb|   |preoff2| )   |postoff2|
- *
- * ILK/SNB don't have explicit post offsets, and instead
- * CSC_MODE_YUV_TO_RGB and CSC_BLACK_SCREEN_OFFSET are used:
- *  CSC_MODE_YUV_TO_RGB=0 + CSC_BLACK_SCREEN_OFFSET=0 -> 1/2, 0, 1/2
- *  CSC_MODE_YUV_TO_RGB=0 + CSC_BLACK_SCREEN_OFFSET=1 -> 1/2, 1/16, 1/2
- *  CSC_MODE_YUV_TO_RGB=1 + CSC_BLACK_SCREEN_OFFSET=0 -> 0, 0, 0
- *  CSC_MODE_YUV_TO_RGB=1 + CSC_BLACK_SCREEN_OFFSET=1 -> 1/16, 1/16, 1/16
- */
+ 
 
-/*
- * Extract the CSC coefficient from a CTM coefficient (in U32.32 fixed point
- * format). This macro takes the coefficient we want transformed and the
- * number of fractional bits.
- *
- * We only have a 9 bits precision window which slides depending on the value
- * of the CTM coefficient and we write the value from bit 3. We also round the
- * value.
- */
+ 
 #define ILK_CSC_COEFF_FP(coeff, fbits)	\
 	(clamp_val(((coeff) >> (32 - (fbits) - 3)) + 4, 0, 0xfff) & 0xff8)
 
 #define ILK_CSC_COEFF_1_0 0x7800
-#define ILK_CSC_COEFF_LIMITED_RANGE ((235 - 16) << (12 - 8)) /* exponent 0 */
+#define ILK_CSC_COEFF_LIMITED_RANGE ((235 - 16) << (12 - 8))  
 #define ILK_CSC_POSTOFF_LIMITED_RANGE (16 << (12 - 8))
 
 static const struct intel_csc_matrix ilk_csc_matrix_identity = {
@@ -135,7 +64,7 @@ static const struct intel_csc_matrix ilk_csc_matrix_identity = {
 	.postoff = {},
 };
 
-/* Full range RGB -> limited range RGB matrix */
+ 
 static const struct intel_csc_matrix ilk_csc_matrix_limited_range = {
 	.preoff = {},
 	.coeff = {
@@ -150,7 +79,7 @@ static const struct intel_csc_matrix ilk_csc_matrix_limited_range = {
 	},
 };
 
-/* BT.709 full range RGB -> limited range YCbCr matrix */
+ 
 static const struct intel_csc_matrix ilk_csc_matrix_rgb_to_ycbcr = {
 	.preoff = {},
 	.coeff = {
@@ -173,10 +102,7 @@ static bool lut_is_legacy(const struct drm_property_blob *lut)
 	return lut && drm_color_lut_size(lut) == LEGACY_LUT_LENGTH;
 }
 
-/*
- * When using limited range, multiply the matrix given by userspace by
- * the matrix that we would use for the limited range.
- */
+ 
 static u64 *ctm_mult_by_limited(u64 *result, const u64 *input)
 {
 	int i;
@@ -187,11 +113,7 @@ static u64 *ctm_mult_by_limited(u64 *result, const u64 *input)
 		u32 abs_coeff = clamp_val(CTM_COEFF_ABS(user_coeff), 0,
 					  CTM_COEFF_4_0 - 1) >> 2;
 
-		/*
-		 * By scaling every co-efficient with limited range (16-235)
-		 * vs full range (0-255) the final o/p will be scaled down to
-		 * fit in the limited range supported by the panel.
-		 */
+		 
 		result[i] = mul_u32_u32(limited_coeff, abs_coeff) >> 30;
 		result[i] |= user_coeff & CTM_COEFF_SIGN;
 	}
@@ -281,19 +203,7 @@ static void skl_read_csc(struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 
-	/*
-	 * Display WA #1184: skl,glk
-	 * Wa_1406463849: icl
-	 *
-	 * Danger! On SKL-ICL *reads* from the CSC coeff/offset registers
-	 * will disarm an already armed CSC double buffer update.
-	 * So this must not be called while armed. Fortunately the state checker
-	 * readout happens only after the update has been already been latched.
-	 *
-	 * On earlier and later platforms only writes to said registers will
-	 * disarm the update. This is considered normal behavior and also
-	 * happens with various other hardware units.
-	 */
+	 
 	if (crtc_state->csc_enable)
 		ilk_read_pipe_csc(crtc, &crtc_state->csc);
 }
@@ -366,11 +276,7 @@ static void icl_read_csc(struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 
-	/*
-	 * Wa_1406463849: icl
-	 *
-	 * See skl_read_csc()
-	 */
+	 
 	if (crtc_state->csc_mode & ICL_CSC_ENABLE)
 		ilk_read_pipe_csc(crtc, &crtc_state->csc);
 
@@ -382,11 +288,11 @@ static bool ilk_limited_range(const struct intel_crtc_state *crtc_state)
 {
 	struct drm_i915_private *i915 = to_i915(crtc_state->uapi.crtc->dev);
 
-	/* icl+ have dedicated output CSC */
+	 
 	if (DISPLAY_VER(i915) >= 11)
 		return false;
 
-	/* pre-hsw have TRANSCONF_COLOR_RANGE_SELECT */
+	 
 	if (DISPLAY_VER(i915) < 7 || IS_IVYBRIDGE(i915))
 		return false;
 
@@ -438,7 +344,7 @@ static void ilk_csc_convert_ctm(const struct intel_crtc_state *crtc_state,
 	u64 temp[9];
 	int i;
 
-	/* for preoff/postoff */
+	 
 	if (limited_color_range)
 		ilk_csc_copy(i915, csc, &ilk_csc_matrix_limited_range);
 	else
@@ -449,22 +355,16 @@ static void ilk_csc_convert_ctm(const struct intel_crtc_state *crtc_state,
 	else
 		input = ctm->matrix;
 
-	/*
-	 * Convert fixed point S31.32 input to format supported by the
-	 * hardware.
-	 */
+	 
 	for (i = 0; i < 9; i++) {
 		u64 abs_coeff = ((1ULL << 63) - 1) & input[i];
 
-		/*
-		 * Clamp input value to min/max supported by
-		 * hardware.
-		 */
+		 
 		abs_coeff = clamp_val(abs_coeff, 0, CTM_COEFF_4_0 - 1);
 
 		csc->coeff[i] = 0;
 
-		/* sign bit */
+		 
 		if (CTM_COEFF_NEGATIVE(input[i]))
 			csc->coeff[i] |= 1 << 15;
 
@@ -506,12 +406,7 @@ static void ilk_assign_csc(struct intel_crtc_state *crtc_state)
 
 		ilk_csc_copy(i915, &crtc_state->csc, &ilk_csc_matrix_limited_range);
 	} else if (crtc_state->csc_enable) {
-		/*
-		 * On GLK both pipe CSC and degamma LUT are controlled
-		 * by csc_enable. Hence for the cases where the degama
-		 * LUT is needed but CSC is not we need to load an
-		 * identity matrix.
-		 */
+		 
 		drm_WARN_ON(&i915->drm, !IS_GEMINILAKE(i915));
 
 		ilk_csc_copy(i915, &crtc_state->csc, &ilk_csc_matrix_identity);
@@ -572,10 +467,10 @@ static u16 ctm_to_twos_complement(u64 coeff, int int_bits, int frac_bits)
 {
 	s64 c = CTM_COEFF_ABS(coeff);
 
-	/* leave an extra bit for rounding */
+	 
 	c >>= 32 - frac_bits - 1;
 
-	/* round and drop the extra bit */
+	 
 	c = (c + 1) >> 1;
 
 	if (CTM_COEFF_NEGATIVE(coeff))
@@ -587,14 +482,7 @@ static u16 ctm_to_twos_complement(u64 coeff, int int_bits, int frac_bits)
 	return c & (BIT(int_bits + frac_bits) - 1);
 }
 
-/*
- * VLV/CHV Wide Gamut Color Correction (WGC) CSC
- * |r|   | c0 c1 c2 |   |r|
- * |g| = | c3 c4 c5 | x |g|
- * |b|   | c6 c7 c8 |   |b|
- *
- * Coefficients are two's complement s2.10.
- */
+ 
 static void vlv_wgc_csc_convert_ctm(const struct intel_crtc_state *crtc_state,
 				    struct intel_csc_matrix *csc)
 {
@@ -679,14 +567,7 @@ static void vlv_assign_csc(struct intel_crtc_state *crtc_state)
 	}
 }
 
-/*
- * CHV Color Gamut Mapping (CGM) CSC
- * |r|   | c0 c1 c2 |   |r|
- * |g| = | c3 c4 c5 | x |g|
- * |b|   | c6 c7 c8 |   |b|
- *
- * Coefficients are two's complement s4.12.
- */
+ 
 static void chv_cgm_csc_convert_ctm(const struct intel_crtc_state *crtc_state,
 				    struct intel_csc_matrix *csc)
 {
@@ -777,7 +658,7 @@ static void chv_assign_csc(struct intel_crtc_state *crtc_state)
 	}
 }
 
-/* convert hw value with given bit_precision to lut property val */
+ 
 static u32 intel_color_lut_pack(u32 val, int bit_precision)
 {
 	u32 max = 0xffff >> (16 - bit_precision);
@@ -804,7 +685,7 @@ static void i9xx_lut_8_pack(struct drm_color_lut *entry, u32 val)
 	entry->blue = intel_color_lut_pack(REG_FIELD_GET(PALETTE_BLUE_MASK, val), 8);
 }
 
-/* i8xx/i9xx+ 10bit slope format "even DW" (low 8 bits) */
+ 
 static u32 _i9xx_lut_10_ldw(u16 a)
 {
 	return drm_color_lut_extract(a, 10) & 0xff;
@@ -817,7 +698,7 @@ static u32 i9xx_lut_10_ldw(const struct drm_color_lut *color)
 		REG_FIELD_PREP(PALETTE_BLUE_MASK, _i9xx_lut_10_ldw(color[0].blue));
 }
 
-/* i8xx/i9xx+ 10bit slope format "odd DW" (high 2 bits + slope) */
+ 
 static u32 _i9xx_lut_10_udw(u16 a, u16 b)
 {
 	unsigned int mantissa, exponent;
@@ -825,7 +706,7 @@ static u32 _i9xx_lut_10_udw(u16 a, u16 b)
 	a = drm_color_lut_extract(a, 10);
 	b = drm_color_lut_extract(b, 10);
 
-	/* b = a + 8 * m * 2 ^ -e */
+	 
 	mantissa = clamp(b - a, 0, 0x7f);
 	exponent = 3;
 	while (mantissa > 0xf) {
@@ -877,7 +758,7 @@ static void i9xx_lut_10_pack_slope(struct drm_color_lut *color,
 	color->blue += b_mant << (3 - b_exp);
 }
 
-/* i965+ "10.6" bit interpolated format "even DW" (low 8 bits) */
+ 
 static u32 i965_lut_10p6_ldw(const struct drm_color_lut *color)
 {
 	return REG_FIELD_PREP(PALETTE_RED_MASK, color->red & 0xff) |
@@ -885,7 +766,7 @@ static u32 i965_lut_10p6_ldw(const struct drm_color_lut *color)
 		REG_FIELD_PREP(PALETTE_BLUE_MASK, color->blue & 0xff);
 }
 
-/* i965+ "10.6" interpolated format "odd DW" (high 8 bits) */
+ 
 static u32 i965_lut_10p6_udw(const struct drm_color_lut *color)
 {
 	return REG_FIELD_PREP(PALETTE_RED_MASK, color->red >> 8) |
@@ -905,7 +786,7 @@ static void i965_lut_10p6_pack(struct drm_color_lut *entry, u32 ldw, u32 udw)
 
 static u16 i965_lut_11p6_max_pack(u32 val)
 {
-	/* PIPEGCMAX is 11.6, clamp to 10.6 */
+	 
 	return clamp_val(val, 0, 0xffff);
 }
 
@@ -923,7 +804,7 @@ static void ilk_lut_10_pack(struct drm_color_lut *entry, u32 val)
 	entry->blue = intel_color_lut_pack(REG_FIELD_GET(PREC_PALETTE_10_BLUE_MASK, val), 10);
 }
 
-/* ilk+ "12.4" interpolated format (low 6 bits) */
+ 
 static u32 ilk_lut_12p4_ldw(const struct drm_color_lut *color)
 {
 	return REG_FIELD_PREP(PREC_PALETTE_12P4_RED_LDW_MASK, color->red & 0x3f) |
@@ -931,7 +812,7 @@ static u32 ilk_lut_12p4_ldw(const struct drm_color_lut *color)
 		REG_FIELD_PREP(PREC_PALETTE_12P4_BLUE_LDW_MASK, color->blue & 0x3f);
 }
 
-/* ilk+ "12.4" interpolated format (high 10 bits) */
+ 
 static u32 ilk_lut_12p4_udw(const struct drm_color_lut *color)
 {
 	return REG_FIELD_PREP(PREC_PALETTE_12P4_RED_UDW_MASK, color->red >> 6) |
@@ -951,29 +832,13 @@ static void ilk_lut_12p4_pack(struct drm_color_lut *entry, u32 ldw, u32 udw)
 
 static void icl_color_commit_noarm(const struct intel_crtc_state *crtc_state)
 {
-	/*
-	 * Despite Wa_1406463849, ICL no longer suffers from the SKL
-	 * DC5/PSR CSC black screen issue (see skl_color_commit_noarm()).
-	 * Possibly due to the extra sticky CSC arming
-	 * (see icl_color_post_update()).
-	 *
-	 * On TGL+ all CSC arming issues have been properly fixed.
-	 */
+	 
 	icl_load_csc_matrix(crtc_state);
 }
 
 static void skl_color_commit_noarm(const struct intel_crtc_state *crtc_state)
 {
-	/*
-	 * Possibly related to display WA #1184, SKL CSC loses the latched
-	 * CSC coeff/offset register values if the CSC registers are disarmed
-	 * between DC5 exit and PSR exit. This will cause the plane(s) to
-	 * output all black (until CSC_MODE is rearmed and properly latched).
-	 * Once PSR exit (and proper register latching) has occurred the
-	 * danger is over. Thus when PSR is enabled the CSC coeff/offset
-	 * register programming will be peformed from skl_color_commit_arm()
-	 * which is called after PSR exit.
-	 */
+	 
 	if (!crtc_state->has_psr)
 		ilk_load_csc_matrix(crtc_state);
 }
@@ -985,7 +850,7 @@ static void ilk_color_commit_noarm(const struct intel_crtc_state *crtc_state)
 
 static void i9xx_color_commit_arm(const struct intel_crtc_state *crtc_state)
 {
-	/* update TRANSCONF GAMMA_MODE */
+	 
 	i9xx_set_pipeconf(crtc_state);
 }
 
@@ -994,7 +859,7 @@ static void ilk_color_commit_arm(const struct intel_crtc_state *crtc_state)
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 	struct drm_i915_private *i915 = to_i915(crtc->base.dev);
 
-	/* update TRANSCONF GAMMA_MODE */
+	 
 	ilk_set_pipeconf(crtc_state);
 
 	intel_de_write_fw(i915, PIPE_CSC_MODE(crtc->pipe),
@@ -1023,11 +888,7 @@ static void skl_color_commit_arm(const struct intel_crtc_state *crtc_state)
 	if (crtc_state->has_psr)
 		ilk_load_csc_matrix(crtc_state);
 
-	/*
-	 * We don't (yet) allow userspace to control the pipe background color,
-	 * so force it to black, but apply pipe gamma and CSC appropriately
-	 * so that its handling will match how we program our planes.
-	 */
+	 
 	if (crtc_state->gamma_enable)
 		val |= SKL_BOTTOM_COLOR_GAMMA_ENABLE;
 	if (crtc_state->csc_enable)
@@ -1047,10 +908,7 @@ static void icl_color_commit_arm(const struct intel_crtc_state *crtc_state)
 	struct drm_i915_private *i915 = to_i915(crtc->base.dev);
 	enum pipe pipe = crtc->pipe;
 
-	/*
-	 * We don't (yet) allow userspace to control the pipe background color,
-	 * so force it to black.
-	 */
+	 
 	intel_de_write(i915, SKL_BOTTOM_COLOR(pipe), 0);
 
 	intel_de_write(i915, GAMMA_MODE(crtc->pipe),
@@ -1065,20 +923,7 @@ static void icl_color_post_update(const struct intel_crtc_state *crtc_state)
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 	struct drm_i915_private *i915 = to_i915(crtc->base.dev);
 
-	/*
-	 * Despite Wa_1406463849, ICL CSC is no longer disarmed by
-	 * coeff/offset register *writes*. Instead, once CSC_MODE
-	 * is armed it stays armed, even after it has been latched.
-	 * Afterwards the coeff/offset registers become effectively
-	 * self-arming. That self-arming must be disabled before the
-	 * next icl_color_commit_noarm() tries to write the next set
-	 * of coeff/offset registers. Fortunately register *reads*
-	 * do still disarm the CSC. Naturally this must not be done
-	 * until the previously written CSC registers have actually
-	 * been latched.
-	 *
-	 * TGL+ no longer need this workaround.
-	 */
+	 
 	intel_de_read_fw(i915, PIPE_CSC_PREOFF_HI(crtc->pipe));
 }
 
@@ -1310,11 +1155,7 @@ static int ivb_lut_10_size(u32 prec_index)
 		return 1024;
 }
 
-/*
- * IVB/HSW Bspec / PAL_PREC_INDEX:
- * "Restriction : Index auto increment mode is not
- *  supported and must not be enabled."
- */
+ 
 static void ivb_load_lut_10(const struct intel_crtc_state *crtc_state,
 			    const struct drm_property_blob *blob,
 			    u32 prec_index)
@@ -1331,15 +1172,12 @@ static void ivb_load_lut_10(const struct intel_crtc_state *crtc_state,
 			      ilk_lut_10(&lut[i]));
 	}
 
-	/*
-	 * Reset the index, otherwise it prevents the legacy palette to be
-	 * written properly.
-	 */
+	 
 	ilk_lut_write(crtc_state, PREC_PAL_INDEX(pipe),
 		      PAL_PREC_INDEX_VALUE(0));
 }
 
-/* On BDW+ the index auto increment mode actually works */
+ 
 static void bdw_load_lut_10(const struct intel_crtc_state *crtc_state,
 			    const struct drm_property_blob *blob,
 			    u32 prec_index)
@@ -1359,10 +1197,7 @@ static void bdw_load_lut_10(const struct intel_crtc_state *crtc_state,
 		ilk_lut_write(crtc_state, PREC_PAL_DATA(pipe),
 			      ilk_lut_10(&lut[i]));
 
-	/*
-	 * Reset the index, otherwise it prevents the legacy palette to be
-	 * written properly.
-	 */
+	 
 	ilk_lut_write(crtc_state, PREC_PAL_INDEX(pipe),
 		      PAL_PREC_INDEX_VALUE(0));
 }
@@ -1372,7 +1207,7 @@ static void ivb_load_lut_ext_max(const struct intel_crtc_state *crtc_state)
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 	enum pipe pipe = crtc->pipe;
 
-	/* Program the max register to clamp values > 1.0. */
+	 
 	ilk_lut_write(crtc_state, PREC_PAL_EXT_GC_MAX(pipe, 0), 1 << 16);
 	ilk_lut_write(crtc_state, PREC_PAL_EXT_GC_MAX(pipe, 1), 1 << 16);
 	ilk_lut_write(crtc_state, PREC_PAL_EXT_GC_MAX(pipe, 2), 1 << 16);
@@ -1383,7 +1218,7 @@ static void glk_load_lut_ext2_max(const struct intel_crtc_state *crtc_state)
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 	enum pipe pipe = crtc->pipe;
 
-	/* Program the max register to clamp values > 1.0. */
+	 
 	ilk_lut_write(crtc_state, PREC_PAL_EXT2_GC_MAX(pipe, 0), 1 << 16);
 	ilk_lut_write(crtc_state, PREC_PAL_EXT2_GC_MAX(pipe, 1), 1 << 16);
 	ilk_lut_write(crtc_state, PREC_PAL_EXT2_GC_MAX(pipe, 2), 1 << 16);
@@ -1453,11 +1288,7 @@ static int glk_degamma_lut_size(struct drm_i915_private *i915)
 		return 35;
 }
 
-/*
- * change_lut_val_precision: helper function to upscale or downscale lut values.
- * Parameters 'to' and 'from' needs to be less than 32. This should be sufficient
- * as currently there are no lut values exceeding 32 bit.
- */
+ 
 static u32 change_lut_val_precision(u32 lut_val, int to, int from)
 {
 	return mul_u32_u32(lut_val, (1 << to)) / (1 << from);
@@ -1472,11 +1303,7 @@ static void glk_load_degamma_lut(const struct intel_crtc_state *crtc_state,
 	int i, lut_size = drm_color_lut_size(blob);
 	enum pipe pipe = crtc->pipe;
 
-	/*
-	 * When setting the auto-increment bit, the hardware seems to
-	 * ignore the index bits, so we need to reset it to index 0
-	 * separately.
-	 */
+	 
 	ilk_lut_write(crtc_state, PRE_CSC_GAMC_INDEX(pipe),
 		      PRE_CSC_GAMC_INDEX_VALUE(0));
 	ilk_lut_write(crtc_state, PRE_CSC_GAMC_INDEX(pipe),
@@ -1484,19 +1311,7 @@ static void glk_load_degamma_lut(const struct intel_crtc_state *crtc_state,
 		      PRE_CSC_GAMC_INDEX_VALUE(0));
 
 	for (i = 0; i < lut_size; i++) {
-		/*
-		 * First lut_size entries represent range from 0 to 1.0
-		 * 3 additional lut entries will represent extended range
-		 * inputs 3.0 and 7.0 respectively, currently clamped
-		 * at 1.0. Since the precision is 16bit, the user
-		 * value can be directly filled to register.
-		 * The pipe degamma table in GLK+ onwards doesn't
-		 * support different values per channel, so this just
-		 * programs green value which will be equal to Red and
-		 * Blue into the lut registers.
-		 * ToDo: Extend to max 7.0. Enable 32 bit input value
-		 * as compared to just 16 to achieve this.
-		 */
+		 
 		u32 lut_val;
 
 		if (DISPLAY_VER(i915) >= 14)
@@ -1508,7 +1323,7 @@ static void glk_load_degamma_lut(const struct intel_crtc_state *crtc_state,
 			      lut_val);
 	}
 
-	/* Clamp values > 1.0. */
+	 
 	while (i++ < glk_degamma_lut_size(i915))
 		ilk_lut_write(crtc_state, PRE_CSC_GAMC_DATA(pipe), 1 << 16);
 
@@ -1545,7 +1360,7 @@ ivb_load_lut_max(const struct intel_crtc_state *crtc_state,
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 	enum pipe pipe = crtc->pipe;
 
-	/* FIXME LUT entries are 16 bit only, so we can prog 0xFFFF max */
+	 
 	ilk_lut_write(crtc_state, PREC_PAL_GC_MAX(pipe, 0), color->red);
 	ilk_lut_write(crtc_state, PREC_PAL_GC_MAX(pipe, 1), color->green);
 	ilk_lut_write(crtc_state, PREC_PAL_GC_MAX(pipe, 2), color->blue);
@@ -1560,13 +1375,7 @@ icl_program_gamma_superfine_segment(const struct intel_crtc_state *crtc_state)
 	enum pipe pipe = crtc->pipe;
 	int i;
 
-	/*
-	 * Program Super Fine segment (let's call it seg1)...
-	 *
-	 * Super Fine segment's step is 1/(8 * 128 * 256) and it has
-	 * 9 entries, corresponding to values 0, 1/(8 * 128 * 256),
-	 * 2/(8 * 128 * 256) ... 8/(8 * 128 * 256).
-	 */
+	 
 	ilk_lut_write(crtc_state, PREC_PAL_MULTI_SEG_INDEX(pipe),
 		      PAL_PREC_MULTI_SEG_INDEX_VALUE(0));
 	ilk_lut_write(crtc_state, PREC_PAL_MULTI_SEG_INDEX(pipe),
@@ -1596,16 +1405,7 @@ icl_program_gamma_multi_segment(const struct intel_crtc_state *crtc_state)
 	enum pipe pipe = crtc->pipe;
 	int i;
 
-	/*
-	 * Program Fine segment (let's call it seg2)...
-	 *
-	 * Fine segment's step is 1/(128 * 256) i.e. 1/(128 * 256), 2/(128 * 256)
-	 * ... 256/(128 * 256). So in order to program fine segment of LUT we
-	 * need to pick every 8th entry in the LUT, and program 256 indexes.
-	 *
-	 * PAL_PREC_INDEX[0] and PAL_PREC_INDEX[1] map to seg2[1],
-	 * seg2[0] being unused by the hardware.
-	 */
+	 
 	ilk_lut_write(crtc_state, PREC_PAL_INDEX(pipe),
 		      PAL_PREC_INDEX_VALUE(0));
 	ilk_lut_write(crtc_state, PREC_PAL_INDEX(pipe),
@@ -1621,18 +1421,7 @@ icl_program_gamma_multi_segment(const struct intel_crtc_state *crtc_state)
 			      ilk_lut_12p4_udw(entry));
 	}
 
-	/*
-	 * Program Coarse segment (let's call it seg3)...
-	 *
-	 * Coarse segment starts from index 0 and it's step is 1/256 ie 0,
-	 * 1/256, 2/256 ... 256/256. As per the description of each entry in LUT
-	 * above, we need to pick every (8 * 128)th entry in LUT, and
-	 * program 256 of those.
-	 *
-	 * Spec is not very clear about if entries seg3[0] and seg3[1] are
-	 * being used or not, but we still need to program these to advance
-	 * the index.
-	 */
+	 
 	for (i = 0; i < 256; i++) {
 		entry = &lut[i * 8 * 128];
 
@@ -1645,7 +1434,7 @@ icl_program_gamma_multi_segment(const struct intel_crtc_state *crtc_state)
 	ilk_lut_write(crtc_state, PREC_PAL_INDEX(pipe),
 		      PAL_PREC_INDEX_VALUE(0));
 
-	/* The last entry in the LUT is to be programmed in GCMAX */
+	 
 	entry = &lut[256 * 8 * 128];
 	ivb_load_lut_max(crtc_state, entry);
 }
@@ -1819,7 +1608,7 @@ void intel_color_prepare_commit(struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 
-	/* FIXME DSB has issues loading LUTs, disable it for now */
+	 
 	return;
 
 	if (!crtc_state->pre_csc_lut && !crtc_state->post_csc_lut)
@@ -1869,11 +1658,7 @@ static bool chv_can_preload_luts(const struct intel_crtc_state *new_crtc_state)
 	const struct intel_crtc_state *old_crtc_state =
 		intel_atomic_get_old_crtc_state(state, crtc);
 
-	/*
-	 * CGM_PIPE_MODE is itself single buffered. We'd have to
-	 * somehow split it out from chv_load_luts() if we wanted
-	 * the ability to preload the CGM LUTs/CSC without tearing.
-	 */
+	 
 	if (old_crtc_state->cgm_mode || new_crtc_state->cgm_mode)
 		return false;
 
@@ -1904,10 +1689,7 @@ bool intel_color_lut_equal(const struct intel_crtc_state *crtc_state,
 {
 	struct drm_i915_private *i915 = to_i915(crtc_state->uapi.crtc->dev);
 
-	/*
-	 * FIXME c8_planes readout missing thus
-	 * .read_luts() doesn't read out post_csc_lut.
-	 */
+	 
 	if (!is_pre_csc_lut && crtc_state->c8_planes)
 		return true;
 
@@ -1920,11 +1702,7 @@ static bool need_plane_update(struct intel_plane *plane,
 {
 	struct drm_i915_private *i915 = to_i915(plane->base.dev);
 
-	/*
-	 * On pre-SKL the pipe gamma enable and pipe csc enable for
-	 * the pipe bottom color are configured via the primary plane.
-	 * We have to reconfigure that even if the plane is inactive.
-	 */
+	 
 	return crtc_state->active_planes & BIT(plane->id) ||
 		(DISPLAY_VER(i915) < 9 &&
 		 plane->id == PLANE_PRIMARY);
@@ -1963,7 +1741,7 @@ intel_color_add_affected_planes(struct intel_crtc_state *new_crtc_state)
 		new_crtc_state->async_flip_planes = 0;
 		new_crtc_state->do_async_flip = false;
 
-		/* plane control register changes blocked by CxSR */
+		 
 		if (HAS_GMCH(i915))
 			new_crtc_state->disable_cxsr = true;
 	}
@@ -2032,7 +1810,7 @@ static int _check_luts(const struct intel_crtc_state *crtc_state,
 	const struct drm_property_blob *degamma_lut = crtc_state->hw.degamma_lut;
 	int gamma_length, degamma_length;
 
-	/* C8 relies on its palette being stored in the legacy LUT */
+	 
 	if (crtc_state->c8_planes && !lut_is_legacy(crtc_state->hw.gamma_lut)) {
 		drm_dbg_kms(&i915->drm,
 			    "C8 pixelformat requires the legacy LUT\n");
@@ -2097,7 +1875,7 @@ void intel_color_assert_luts(const struct intel_crtc_state *crtc_state)
 {
 	struct drm_i915_private *i915 = to_i915(crtc_state->uapi.crtc->dev);
 
-	/* make sure {pre,post}_csc_lut were correctly assigned */
+	 
 	if (DISPLAY_VER(i915) >= 11 || HAS_GMCH(i915)) {
 		drm_WARN_ON(&i915->drm,
 			    crtc_state->pre_csc_lut != crtc_state->hw.degamma_lut);
@@ -2164,10 +1942,7 @@ static int i9xx_color_check(struct intel_crtc_state *crtc_state)
 	return 0;
 }
 
-/*
- * VLV color pipeline:
- * u0.10 -> WGC csc -> u0.10 -> pipe gamma -> u0.10
- */
+ 
 static int vlv_color_check(struct intel_crtc_state *crtc_state)
 {
 	int ret;
@@ -2209,24 +1984,13 @@ static u32 chv_cgm_mode(const struct intel_crtc_state *crtc_state)
 	    !lut_is_legacy(crtc_state->hw.gamma_lut))
 		cgm_mode |= CGM_PIPE_MODE_GAMMA;
 
-	/*
-	 * Toggling the CGM CSC on/off outside of the tiny window
-	 * between start of vblank and frame start causes underruns.
-	 * Always enable the CGM CSC as a workaround.
-	 */
+	 
 	cgm_mode |= CGM_PIPE_MODE_CSC;
 
 	return cgm_mode;
 }
 
-/*
- * CHV color pipeline:
- * u0.10 -> CGM degamma -> u0.14 -> CGM csc -> u0.14 -> CGM gamma ->
- * u0.10 -> WGC csc -> u0.10 -> pipe gamma -> u0.10
- *
- * We always bypass the WGC csc and use the CGM csc
- * instead since it has degamma and better precision.
- */
+ 
 static int chv_color_check(struct intel_crtc_state *crtc_state)
 {
 	int ret;
@@ -2235,10 +1999,7 @@ static int chv_color_check(struct intel_crtc_state *crtc_state)
 	if (ret)
 		return ret;
 
-	/*
-	 * Pipe gamma will be used only for the legacy LUT.
-	 * Otherwise we bypass it and use the CGM gamma instead.
-	 */
+	 
 	crtc_state->gamma_enable =
 		lut_is_legacy(crtc_state->hw.gamma_lut) &&
 		!crtc_state->c8_planes;
@@ -2247,10 +2008,7 @@ static int chv_color_check(struct intel_crtc_state *crtc_state)
 
 	crtc_state->cgm_mode = chv_cgm_mode(crtc_state);
 
-	/*
-	 * We always bypass the WGC CSC and use the CGM CSC
-	 * instead since it has degamma and better precision.
-	 */
+	 
 	crtc_state->wgc_enable = false;
 
 	ret = intel_color_add_affected_planes(crtc_state);
@@ -2291,12 +2049,7 @@ static u32 ilk_gamma_mode(const struct intel_crtc_state *crtc_state)
 
 static u32 ilk_csc_mode(const struct intel_crtc_state *crtc_state)
 {
-	/*
-	 * CSC comes after the LUT in RGB->YCbCr mode.
-	 * RGB->YCbCr needs the limited range offsets added to
-	 * the output. RGB limited range output is handled by
-	 * the hw automagically elsewhere.
-	 */
+	 
 	if (crtc_state->output_format != INTEL_OUTPUT_FORMAT_RGB)
 		return CSC_BLACK_SCREEN_OFFSET;
 
@@ -2402,10 +2155,7 @@ static u32 ivb_csc_mode(const struct intel_crtc_state *crtc_state)
 {
 	bool limited_color_range = ilk_csc_limited_range(crtc_state);
 
-	/*
-	 * CSC comes after the LUT in degamma, RGB->YCbCr,
-	 * and RGB full->limited range mode.
-	 */
+	 
 	if (crtc_state->hw.degamma_lut ||
 	    crtc_state->output_format != INTEL_OUTPUT_FORMAT_RGB ||
 	    limited_color_range)
@@ -2553,12 +2303,7 @@ static int glk_assign_luts(struct intel_crtc_state *crtc_state)
 
 	drm_property_replace_blob(&crtc_state->pre_csc_lut, crtc_state->hw.degamma_lut);
 
-	/*
-	 * On GLK+ both pipe CSC and degamma LUT are controlled
-	 * by csc_enable. Hence for the cases where the CSC is
-	 * needed but degamma LUT is not we need to load a
-	 * linear degamma LUT.
-	 */
+	 
 	if (crtc_state->csc_enable && !crtc_state->pre_csc_lut)
 		drm_property_replace_blob(&crtc_state->pre_csc_lut,
 					  i915->display.color.glk_linear_degamma_lut);
@@ -2605,7 +2350,7 @@ static int glk_color_check(struct intel_crtc_state *crtc_state)
 		crtc_state->hw.gamma_lut &&
 		!crtc_state->c8_planes;
 
-	/* On GLK+ degamma LUT is controlled by csc_enable */
+	 
 	crtc_state->csc_enable =
 		glk_use_pre_csc_lut_for_gamma(crtc_state) ||
 		crtc_state->hw.degamma_lut ||
@@ -2647,11 +2392,7 @@ static u32 icl_gamma_mode(const struct intel_crtc_state *crtc_state)
 	if (!crtc_state->hw.gamma_lut ||
 	    lut_is_legacy(crtc_state->hw.gamma_lut))
 		gamma_mode |= GAMMA_MODE_MODE_8BIT;
-	/*
-	 * Enable 10bit gamma for D13
-	 * ToDo: Extend to Logarithmic Gamma once the new UAPI
-	 * is accepted and implemented by a userspace consumer
-	 */
+	 
 	else if (DISPLAY_VER(i915) >= 13)
 		gamma_mode |= GAMMA_MODE_MODE_10BIT;
 	else
@@ -2935,7 +2676,7 @@ static bool i9xx_lut_equal(const struct intel_crtc_state *crtc_state,
 		return intel_lut_equal(blob1, blob2, 0,
 				       i9xx_pre_csc_lut_precision(crtc_state));
 
-	/* 10bit mode last entry is implicit, just skip it */
+	 
 	if (crtc_state->gamma_mode == GAMMA_MODE_MODE_10BIT)
 		check_size = 128;
 
@@ -3019,7 +2760,7 @@ static bool icl_lut_equal(const struct intel_crtc_state *crtc_state,
 		return intel_lut_equal(blob1, blob2, 0,
 				       icl_pre_csc_lut_precision(crtc_state));
 
-	/* hw readout broken except for the super fine segment :( */
+	 
 	if ((crtc_state->gamma_mode & GAMMA_MODE_MODE_MASK) ==
 	    GAMMA_MODE_MODE_12BIT_MULTI_SEG)
 		check_size = 9;
@@ -3290,11 +3031,7 @@ static void ilk_read_luts(struct intel_crtc_state *crtc_state)
 	}
 }
 
-/*
- * IVB/HSW Bspec / PAL_PREC_INDEX:
- * "Restriction : Index auto increment mode is not
- *  supported and must not be enabled."
- */
+ 
 static struct drm_property_blob *ivb_read_lut_10(struct intel_crtc *crtc,
 						 u32 prec_index)
 {
@@ -3359,7 +3096,7 @@ static void ivb_read_luts(struct intel_crtc_state *crtc_state)
 	}
 }
 
-/* On BDW+ the index auto increment mode actually works */
+ 
 static struct drm_property_blob *bdw_read_lut_10(struct intel_crtc *crtc,
 						 u32 prec_index)
 {
@@ -3442,11 +3179,7 @@ static struct drm_property_blob *glk_read_degamma_lut(struct intel_crtc *crtc)
 
 	lut = blob->data;
 
-	/*
-	 * When setting the auto-increment bit, the hardware seems to
-	 * ignore the index bits, so we need to reset it to index 0
-	 * separately.
-	 */
+	 
 	intel_de_write_fw(dev_priv, PRE_CSC_GAMC_INDEX(pipe),
 			  PRE_CSC_GAMC_INDEX_VALUE(0));
 	intel_de_write_fw(dev_priv, PRE_CSC_GAMC_INDEX(pipe),
@@ -3456,11 +3189,7 @@ static struct drm_property_blob *glk_read_degamma_lut(struct intel_crtc *crtc)
 	for (i = 0; i < lut_size; i++) {
 		u32 val = intel_de_read_fw(dev_priv, PRE_CSC_GAMC_DATA(pipe));
 
-		/*
-		 * For MTL and beyond, convert back the 24 bit lut values
-		 * read from HW to 16 bit values to maintain parity with
-		 * userspace values
-		 */
+		 
 		if (DISPLAY_VER(dev_priv) >= 14)
 			val = change_lut_val_precision(val, 16, 24);
 
@@ -3531,11 +3260,7 @@ icl_read_lut_multi_segment(struct intel_crtc *crtc)
 	intel_de_write_fw(i915, PREC_PAL_MULTI_SEG_INDEX(pipe),
 			  PAL_PREC_MULTI_SEG_INDEX_VALUE(0));
 
-	/*
-	 * FIXME readouts from PAL_PREC_DATA register aren't giving
-	 * correct values in the case of fine and coarse segments.
-	 * Restricting readouts only for super fine segment as of now.
-	 */
+	 
 
 	return blob;
 }
@@ -3693,14 +3418,7 @@ void intel_color_crtc_init(struct intel_crtc *crtc)
 	degamma_lut_size = DISPLAY_INFO(i915)->color.degamma_lut_size;
 	has_ctm = DISPLAY_VER(i915) >= 5;
 
-	/*
-	 * "DPALETTE_A: NOTE: The 8-bit (non-10-bit) mode is the
-	 *  only mode supported by Alviso and Grantsdale."
-	 *
-	 * Actually looks like this affects all of gen3.
-	 * Confirmed on alv,cst,pnv. Mobile gen2 parts (alm,mgm)
-	 * are confirmed not to suffer from this restriction.
-	 */
+	 
 	if (DISPLAY_VER(i915) == 3 && crtc->pipe == PIPE_A)
 		gamma_lut_size = 256;
 

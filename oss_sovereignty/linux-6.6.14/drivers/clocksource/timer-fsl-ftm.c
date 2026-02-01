@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale FlexTimer Module (FTM) timer driver.
- *
- * Copyright 2014 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -49,7 +45,7 @@ static inline void ftm_counter_enable(void __iomem *base)
 {
 	u32 val;
 
-	/* select and enable counter clock source */
+	 
 	val = ftm_readl(base + FTM_SC);
 	val &= ~(FTM_SC_PS_MASK | FTM_SC_CLK_MASK);
 	val |= priv->ps | FTM_SC_CLK(1);
@@ -60,7 +56,7 @@ static inline void ftm_counter_disable(void __iomem *base)
 {
 	u32 val;
 
-	/* disable counter clock source */
+	 
 	val = ftm_readl(base + FTM_SC);
 	val &= ~(FTM_SC_PS_MASK | FTM_SC_CLK_MASK);
 	ftm_writel(val, base + FTM_SC);
@@ -95,11 +91,7 @@ static inline void ftm_irq_disable(void __iomem *base)
 
 static inline void ftm_reset_counter(void __iomem *base)
 {
-	/*
-	 * The CNT register contains the FTM counter value.
-	 * Reset clears the CNT register. Writing any value to COUNT
-	 * updates the counter with its initial value, CNTIN.
-	 */
+	 
 	ftm_writel(0x00, base + FTM_CNT);
 }
 
@@ -111,24 +103,13 @@ static u64 notrace ftm_read_sched_clock(void)
 static int ftm_set_next_event(unsigned long delta,
 				struct clock_event_device *unused)
 {
-	/*
-	 * The CNNIN and MOD are all double buffer registers, writing
-	 * to the MOD register latches the value into a buffer. The MOD
-	 * register is updated with the value of its write buffer with
-	 * the following scenario:
-	 * a, the counter source clock is disabled.
-	 */
+	 
 	ftm_counter_disable(priv->clkevt_base);
 
-	/* Force the value of CNTIN to be loaded into the FTM counter */
+	 
 	ftm_reset_counter(priv->clkevt_base);
 
-	/*
-	 * The counter increments until the value of MOD is reached,
-	 * at which point the counter is reloaded with the value of CNTIN.
-	 * The TOF (the overflow flag) bit is set when the FTM counter
-	 * changes from MOD to CNTIN. So we should using the delta - 1.
-	 */
+	 
 	ftm_writel(delta - 1, priv->clkevt_base + FTM_MOD);
 
 	ftm_counter_enable(priv->clkevt_base);
@@ -277,10 +258,7 @@ static int __init ftm_calc_closest_round_cyc(unsigned long freq)
 {
 	priv->ps = 0;
 
-	/* The counter register is only using the lower 16 bits, and
-	 * if the 'freq' value is to big here, then the periodic_cyc
-	 * may exceed 0xFFFF.
-	 */
+	 
 	do {
 		priv->periodic_cyc = DIV_ROUND_CLOSEST(freq,
 						HZ * (1 << priv->ps++));

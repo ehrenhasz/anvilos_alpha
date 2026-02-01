@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file implements handling of
- * Arm Generic Diagnostic Dump and Reset Interface table (AGDI)
- *
- * Copyright (c) 2022, Ampere Computing LLC
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: AGDI: " fmt
 

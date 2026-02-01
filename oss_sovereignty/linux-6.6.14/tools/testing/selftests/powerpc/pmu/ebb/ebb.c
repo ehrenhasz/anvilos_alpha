@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
 
-#define _GNU_SOURCE	/* For CPU_ZERO etc. */
+ 
+
+#define _GNU_SOURCE	 
 
 #include <sched.h>
 #include <sys/wait.h>
@@ -34,18 +32,18 @@ void reset_ebb_with_clear_mask(unsigned long mmcr0_clear_mask)
 {
 	u64 val;
 
-	/* 2) clear MMCR0[PMAO] - docs say BESCR[PMEO] should do this */
-	/* 3) set MMCR0[PMAE]	- docs say BESCR[PME] should do this */
+	 
+	 
 	val = mfspr(SPRN_MMCR0);
 	mtspr(SPRN_MMCR0, (val & ~mmcr0_clear_mask) | MMCR0_PMAE);
 
-	/* 4) clear BESCR[PMEO] */
+	 
 	mtspr(SPRN_BESCRR, BESCR_PMEO);
 
-	/* 5) set BESCR[PME] */
+	 
 	mtspr(SPRN_BESCRS, BESCR_PME);
 
-	/* 6) rfebb 1 - done in our caller */
+	 
 }
 
 void reset_ebb(void)
@@ -53,14 +51,14 @@ void reset_ebb(void)
 	reset_ebb_with_clear_mask(MMCR0_PMAO | MMCR0_FC);
 }
 
-/* Called outside of the EBB handler to check MMCR0 is sane */
+ 
 int ebb_check_mmcr0(void)
 {
 	u64 val;
 
 	val = mfspr(SPRN_MMCR0);
 	if ((val & (MMCR0_FC | MMCR0_PMAO)) == MMCR0_FC) {
-		/* It's OK if we see FC & PMAO, but not FC by itself */
+		 
 		printf("Outside of loop, only FC set 0x%llx\n", val);
 		return 1;
 	}
@@ -148,11 +146,11 @@ void setup_ebb_handler(void (*callee)(void))
 
 	ebb_user_func = callee;
 
-	/* Ensure ebb_user_func is set before we set the handler */
+	 
 	mb();
 	mtspr(SPRN_EBBHR, entry);
 
-	/* Make sure the handler is set before we return */
+	 
 	mb();
 }
 
@@ -254,7 +252,7 @@ int count_pmc(int pmc, uint32_t sample_period)
 	uint32_t start_value;
 	u64 val;
 
-	/* 0) Read PMC */
+	 
 	start_value = pmc_sample_period(sample_period);
 
 	val = read_pmc(pmc);
@@ -265,10 +263,10 @@ int count_pmc(int pmc, uint32_t sample_period)
 
 	trace_log_reg(ebb_state.trace, SPRN_PMC1 + pmc - 1, val);
 
-	/* 1) Reset PMC */
+	 
 	write_pmc(pmc, start_value);
 
-	/* Report if we overflowed */
+	 
 	return val >= COUNTER_OVERFLOW;
 }
 
@@ -276,7 +274,7 @@ int ebb_event_enable(struct event *e)
 {
 	int rc;
 
-	/* Ensure any SPR writes are ordered vs us */
+	 
 	mb();
 
 	rc = ioctl(e->fd, PERF_EVENT_IOC_ENABLE);
@@ -285,7 +283,7 @@ int ebb_event_enable(struct event *e)
 
 	rc = event_read(e);
 
-	/* Ditto */
+	 
 	mb();
 
 	return rc;
@@ -299,21 +297,21 @@ void ebb_freeze_pmcs(void)
 
 void ebb_unfreeze_pmcs(void)
 {
-	/* Unfreeze counters */
+	 
 	mtspr(SPRN_MMCR0, mfspr(SPRN_MMCR0) & ~MMCR0_FC);
 	mb();
 }
 
 void ebb_global_enable(void)
 {
-	/* Enable EBBs globally and PMU EBBs */
+	 
 	mtspr(SPRN_BESCR, 0x8000000100000000ull);
 	mb();
 }
 
 void ebb_global_disable(void)
 {
-	/* Disable EBBs & freeze counters, events are still scheduled */
+	 
 	mtspr(SPRN_BESCRR, BESCR_PME);
 	mb();
 }
@@ -321,7 +319,7 @@ void ebb_global_disable(void)
 bool ebb_is_supported(void)
 {
 #ifdef PPC_FEATURE2_EBB
-	/* EBB requires at least POWER8 */
+	 
 	return have_hwcap2(PPC_FEATURE2_EBB);
 #else
 	return false;
@@ -369,11 +367,7 @@ int ebb_child(union pipe read_pipe, union pipe write_pipe)
 	FAIL_IF(event_enable(&event));
 
 	if (event_read(&event)) {
-		/*
-		 * Some tests expect to fail here, so don't report an error on
-		 * this line, and return a distinguisable error code. Tell the
-		 * parent an error happened.
-		 */
+		 
 		notify_parent_of_error(write_pipe);
 		return 2;
 	}
@@ -387,7 +381,7 @@ int ebb_child(union pipe read_pipe, union pipe write_pipe)
 	while (ebb_state.stats.ebb_count < 20) {
 		FAIL_IF(core_busy_loop());
 
-		/* To try and hit SIGILL case */
+		 
 		val  = mfspr(SPRN_MMCRA);
 		val |= mfspr(SPRN_MMCR2);
 		val |= mfspr(SPRN_MMCR0);

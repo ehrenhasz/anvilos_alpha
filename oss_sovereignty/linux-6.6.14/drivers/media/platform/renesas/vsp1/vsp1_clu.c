@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_clu.c  --  R-Car VSP1 Cubic Look-Up Table
- *
- * Copyright (C) 2015-2016 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/slab.h>
@@ -21,9 +15,7 @@
 
 #define CLU_SIZE				(17 * 17 * 17)
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_clu_write(struct vsp1_clu *clu,
 				  struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -31,9 +23,7 @@ static inline void vsp1_clu_write(struct vsp1_clu *clu,
 	vsp1_dl_body_write(dlb, reg, data);
 }
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 #define V4L2_CID_VSP1_CLU_TABLE			(V4L2_CID_USER_BASE | 0x1001)
 #define V4L2_CID_VSP1_CLU_MODE			(V4L2_CID_USER_BASE | 0x1002)
@@ -112,9 +102,7 @@ static const struct v4l2_ctrl_config clu_mode_control = {
 	.qmenu = clu_mode_menu,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Pad Operations
- */
+ 
 
 static const unsigned int clu_codes[] = {
 	MEDIA_BUS_FMT_ARGB8888_1X32,
@@ -150,9 +138,7 @@ static int clu_set_format(struct v4l2_subdev *subdev,
 					  CLU_MAX_SIZE, CLU_MAX_SIZE);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static const struct v4l2_subdev_pad_ops clu_pad_ops = {
 	.init_cfg = vsp1_entity_init_cfg,
@@ -166,9 +152,7 @@ static const struct v4l2_subdev_ops clu_ops = {
 	.pad    = &clu_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void clu_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -178,10 +162,7 @@ static void clu_configure_stream(struct vsp1_entity *entity,
 	struct vsp1_clu *clu = to_clu(&entity->subdev);
 	struct v4l2_mbus_framefmt *format;
 
-	/*
-	 * The yuv_mode can't be changed during streaming. Cache it internally
-	 * for future runtime configuration calls.
-	 */
+	 
 	format = vsp1_entity_get_pad_format(&clu->entity,
 					    clu->entity.config,
 					    CLU_PAD_SINK);
@@ -198,7 +179,7 @@ static void clu_configure_frame(struct vsp1_entity *entity,
 	unsigned long flags;
 	u32 ctrl = VI6_CLU_CTRL_AAI | VI6_CLU_CTRL_MVS | VI6_CLU_CTRL_EN;
 
-	/* 2D mode can only be used with the YCbCr pixel encoding. */
+	 
 	if (clu->mode == V4L2_CID_VSP1_CLU_MODE_2D && clu->yuv_mode)
 		ctrl |= VI6_CLU_CTRL_AX1I_2D | VI6_CLU_CTRL_AX2I_2D
 		     |  VI6_CLU_CTRL_OS0_2D | VI6_CLU_CTRL_OS1_2D
@@ -214,7 +195,7 @@ static void clu_configure_frame(struct vsp1_entity *entity,
 	if (clu_dlb) {
 		vsp1_dl_list_add_body(dl, clu_dlb);
 
-		/* Release our local reference. */
+		 
 		vsp1_dl_body_put(clu_dlb);
 	}
 }
@@ -232,9 +213,7 @@ static const struct vsp1_entity_operations clu_entity_ops = {
 	.destroy = clu_destroy,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_clu *vsp1_clu_create(struct vsp1_device *vsp1)
 {
@@ -255,18 +234,13 @@ struct vsp1_clu *vsp1_clu_create(struct vsp1_device *vsp1)
 	if (ret < 0)
 		return ERR_PTR(ret);
 
-	/*
-	 * Pre-allocate a body pool, with 3 bodies allowing a userspace update
-	 * before the hardware has committed a previous set of tables, handling
-	 * both the queued and pending dl entries. One extra entry is added to
-	 * the CLU_SIZE to allow for the VI6_CLU_ADDR header.
-	 */
+	 
 	clu->pool = vsp1_dl_body_pool_create(clu->entity.vsp1, 3, CLU_SIZE + 1,
 					     0);
 	if (!clu->pool)
 		return ERR_PTR(-ENOMEM);
 
-	/* Initialize the control handler. */
+	 
 	v4l2_ctrl_handler_init(&clu->ctrls, 2);
 	v4l2_ctrl_new_custom(&clu->ctrls, &clu_table_control, NULL);
 	v4l2_ctrl_new_custom(&clu->ctrls, &clu_mode_control, NULL);

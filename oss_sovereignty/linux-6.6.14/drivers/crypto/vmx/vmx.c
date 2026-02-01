@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Routines supporting VMX instructions on the Power 8
- *
- * Copyright (C) 2015 International Business Machines Inc.
- *
- * Author: Marcelo Henrique Cerri <mhcerri@br.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>

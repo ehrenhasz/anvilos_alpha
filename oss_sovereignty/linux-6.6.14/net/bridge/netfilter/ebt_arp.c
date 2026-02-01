@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebt_arp
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *	Tim Gardner <timg@tpi.com>
- *
- *  April, 2002
- *
- */
+
+ 
 #include <linux/if_arp.h>
 #include <linux/if_ether.h>
 #include <linux/module.h>

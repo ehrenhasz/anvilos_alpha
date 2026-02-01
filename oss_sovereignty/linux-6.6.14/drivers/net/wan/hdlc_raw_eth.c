@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic HDLC support routines for Linux
- * HDLC Ethernet emulation support
- *
- * Copyright (C) 2002-2006 Krzysztof Halasa <khc@pm.waw.pl>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/etherdevice.h>
@@ -25,7 +20,7 @@ static int raw_eth_ioctl(struct net_device *dev, struct if_settings *ifs);
 static netdev_tx_t eth_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	int pad = ETH_ZLEN - skb->len;
-	if (pad > 0) {		/* Pad the frame with zeros */
+	if (pad > 0) {		 
 		int len = skb->len;
 		if (skb_tailroom(skb) < pad)
 			if (pskb_expand_head(skb, 0, pad, GFP_ATOMIC)) {
@@ -63,7 +58,7 @@ static int raw_eth_ioctl(struct net_device *dev, struct if_settings *ifs)
 			return -EINVAL;
 		ifs->type = IF_PROTO_HDLC_ETH;
 		if (ifs->size < size) {
-			ifs->size = size; /* data size wanted */
+			ifs->size = size;  
 			return -ENOBUFS;
 		}
 		if (copy_to_user(raw_s, hdlc->state, size))

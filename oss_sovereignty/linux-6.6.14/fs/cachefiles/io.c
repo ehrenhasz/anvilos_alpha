@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* kiocb-using read/write
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/mount.h>
 #include <linux/slab.h>
@@ -26,7 +22,7 @@ struct cachefiles_kiocb {
 	netfs_io_terminated_t	term_func;
 	void			*term_func_priv;
 	bool			was_async;
-	unsigned int		inval_counter;	/* Copy of cookie->inval_counter */
+	unsigned int		inval_counter;	 
 	u64			b_writing;
 };
 
@@ -39,9 +35,7 @@ static inline void cachefiles_put_kiocb(struct cachefiles_kiocb *ki)
 	}
 }
 
-/*
- * Handle completion of a read from the cache.
- */
+ 
 static void cachefiles_read_complete(struct kiocb *iocb, long ret)
 {
 	struct cachefiles_kiocb *ki = container_of(iocb, struct cachefiles_kiocb, iocb);
@@ -67,9 +61,7 @@ static void cachefiles_read_complete(struct kiocb *iocb, long ret)
 	cachefiles_put_kiocb(ki);
 }
 
-/*
- * Initiate a read from the cache.
- */
+ 
 static int cachefiles_read(struct netfs_cache_resources *cres,
 			   loff_t start_pos,
 			   struct iov_iter *iter,
@@ -95,9 +87,7 @@ static int cachefiles_read(struct netfs_cache_resources *cres,
 	       file, file_inode(file)->i_ino, start_pos, len,
 	       i_size_read(file_inode(file)));
 
-	/* If the caller asked us to seek for data before doing the read, then
-	 * we should do that now.  If we find a gap, we fill it with zeros.
-	 */
+	 
 	if (read_hole != NETFS_READ_HOLE_IGNORE) {
 		loff_t off = start_pos, off2;
 
@@ -111,10 +101,7 @@ static int cachefiles_read(struct netfs_cache_resources *cres,
 		}
 
 		if (off2 == -ENXIO || off2 >= start_pos + len) {
-			/* The region is beyond the EOF or there's no more data
-			 * in the region, so clear the rest of the buffer and
-			 * return success.
-			 */
+			 
 			ret = -ENODATA;
 			if (read_hole == NETFS_READ_HOLE_FAIL)
 				goto presubmission_error;
@@ -166,9 +153,7 @@ static int cachefiles_read(struct netfs_cache_resources *cres,
 	case -ERESTARTNOINTR:
 	case -ERESTARTNOHAND:
 	case -ERESTART_RESTARTBLOCK:
-		/* There's no easy way to restart the syscall since other AIO's
-		 * may be already running. Just fail this IO with EINTR.
-		 */
+		 
 		ret = -EINTR;
 		fallthrough;
 	default:
@@ -190,10 +175,7 @@ presubmission_error:
 	return ret;
 }
 
-/*
- * Query the occupancy of the cache in a region, returning where the next chunk
- * of data starts and how long it is.
- */
+ 
 static int cachefiles_query_occupancy(struct netfs_cache_resources *cres,
 				      loff_t start, size_t len, size_t granularity,
 				      loff_t *_data_start, size_t *_data_len)
@@ -220,21 +202,21 @@ static int cachefiles_query_occupancy(struct netfs_cache_resources *cres,
 	if (off == 0)
 		off = vfs_llseek(file, start, SEEK_DATA);
 	if (off == -ENXIO)
-		return -ENODATA; /* Beyond EOF */
+		return -ENODATA;  
 	if (off < 0 && off >= (loff_t)-MAX_ERRNO)
-		return -ENOBUFS; /* Error. */
+		return -ENOBUFS;  
 	if (round_up(off, granularity) >= start + len)
-		return -ENODATA; /* No data in range */
+		return -ENODATA;  
 
 	off2 = cachefiles_inject_read_error();
 	if (off2 == 0)
 		off2 = vfs_llseek(file, off, SEEK_HOLE);
 	if (off2 == -ENXIO)
-		return -ENODATA; /* Beyond EOF */
+		return -ENODATA;  
 	if (off2 < 0 && off2 >= (loff_t)-MAX_ERRNO)
-		return -ENOBUFS; /* Error. */
+		return -ENOBUFS;  
 
-	/* Round away partial blocks */
+	 
 	off = round_up(off, granularity);
 	off2 = round_down(off2, granularity);
 	if (off2 <= off)
@@ -248,9 +230,7 @@ static int cachefiles_query_occupancy(struct netfs_cache_resources *cres,
 	return 0;
 }
 
-/*
- * Handle completion of a write to the cache.
- */
+ 
 static void cachefiles_write_complete(struct kiocb *iocb, long ret)
 {
 	struct cachefiles_kiocb *ki = container_of(iocb, struct cachefiles_kiocb, iocb);
@@ -272,9 +252,7 @@ static void cachefiles_write_complete(struct kiocb *iocb, long ret)
 	cachefiles_put_kiocb(ki);
 }
 
-/*
- * Initiate a write to the cache.
- */
+ 
 int __cachefiles_write(struct cachefiles_object *object,
 		       struct file *file,
 		       loff_t start_pos,
@@ -338,9 +316,7 @@ int __cachefiles_write(struct cachefiles_object *object,
 	case -ERESTARTNOINTR:
 	case -ERESTARTNOHAND:
 	case -ERESTART_RESTARTBLOCK:
-		/* There's no easy way to restart the syscall since other AIO's
-		 * may be already running. Just fail this IO with EINTR.
-		 */
+		 
 		ret = -EINTR;
 		fallthrough;
 	default:
@@ -407,7 +383,7 @@ cachefiles_do_prepare_read(struct netfs_cache_resources *cres,
 			goto out_no_object;
 	}
 
-	/* The object and the file may be being created in the background. */
+	 
 	if (!file) {
 		why = cachefiles_trace_read_no_file;
 		if (!fscache_wait_for_operation(cres, FSCACHE_WANT_READ))
@@ -489,10 +465,7 @@ out_no_object:
 	return ret;
 }
 
-/*
- * Prepare a read operation, shortening it to a cached/uncached
- * boundary as appropriate.
- */
+ 
 static enum netfs_io_source cachefiles_prepare_read(struct netfs_io_subrequest *subreq,
 						    loff_t i_size)
 {
@@ -501,10 +474,7 @@ static enum netfs_io_source cachefiles_prepare_read(struct netfs_io_subrequest *
 					  &subreq->flags, subreq->rreq->inode->i_ino);
 }
 
-/*
- * Prepare an on-demand read operation, shortening it to a cached/uncached
- * boundary as appropriate.
- */
+ 
 static enum netfs_io_source
 cachefiles_prepare_ondemand_read(struct netfs_cache_resources *cres,
 				 loff_t start, size_t *_len, loff_t i_size,
@@ -513,9 +483,7 @@ cachefiles_prepare_ondemand_read(struct netfs_cache_resources *cres,
 	return cachefiles_do_prepare_read(cres, start, _len, i_size, _flags, ino);
 }
 
-/*
- * Prepare for a write to occur.
- */
+ 
 int __cachefiles_prepare_write(struct cachefiles_object *object,
 			       struct file *file,
 			       loff_t *_start, size_t *_len,
@@ -526,15 +494,12 @@ int __cachefiles_prepare_write(struct cachefiles_object *object,
 	size_t len = *_len, down;
 	int ret;
 
-	/* Round to DIO size */
+	 
 	down = start - round_down(start, PAGE_SIZE);
 	*_start = start - down;
 	*_len = round_up(down + len, PAGE_SIZE);
 
-	/* We need to work out whether there's sufficient disk space to perform
-	 * the write - but we can skip that check if we have space already
-	 * allocated.
-	 */
+	 
 	if (no_space_allocated_yet)
 		goto check_space;
 
@@ -543,21 +508,18 @@ int __cachefiles_prepare_write(struct cachefiles_object *object,
 		pos = vfs_llseek(file, *_start, SEEK_DATA);
 	if (pos < 0 && pos >= (loff_t)-MAX_ERRNO) {
 		if (pos == -ENXIO)
-			goto check_space; /* Unallocated tail */
+			goto check_space;  
 		trace_cachefiles_io_error(object, file_inode(file), pos,
 					  cachefiles_trace_seek_error);
 		return pos;
 	}
 	if ((u64)pos >= (u64)*_start + *_len)
-		goto check_space; /* Unallocated region */
+		goto check_space;  
 
-	/* We have a block that's at least partially filled - if we're low on
-	 * space, we need to see if it's fully allocated.  If it's not, we may
-	 * want to cull it.
-	 */
+	 
 	if (cachefiles_has_space(cache, 0, *_len / PAGE_SIZE,
 				 cachefiles_has_space_check) == 0)
-		return 0; /* Enough space to simply overwrite the whole block */
+		return 0;  
 
 	pos = cachefiles_inject_read_error();
 	if (pos == 0)
@@ -568,9 +530,9 @@ int __cachefiles_prepare_write(struct cachefiles_object *object,
 		return pos;
 	}
 	if ((u64)pos >= (u64)*_start + *_len)
-		return 0; /* Fully allocated */
+		return 0;  
 
-	/* Partially allocated, but insufficient space: cull. */
+	 
 	fscache_count_no_write_space();
 	ret = cachefiles_inject_remove_error();
 	if (ret == 0)
@@ -615,9 +577,7 @@ static int cachefiles_prepare_write(struct netfs_cache_resources *cres,
 	return ret;
 }
 
-/*
- * Clean up an operation.
- */
+ 
 static void cachefiles_end_operation(struct netfs_cache_resources *cres)
 {
 	struct file *file = cachefiles_cres_file(cres);
@@ -637,9 +597,7 @@ static const struct netfs_cache_ops cachefiles_netfs_cache_ops = {
 	.query_occupancy	= cachefiles_query_occupancy,
 };
 
-/*
- * Open the cache file when beginning a cache operation.
- */
+ 
 bool cachefiles_begin_operation(struct netfs_cache_resources *cres,
 				enum fscache_want_state want_state)
 {

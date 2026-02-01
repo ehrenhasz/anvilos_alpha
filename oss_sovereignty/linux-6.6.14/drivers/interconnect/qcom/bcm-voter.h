@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_BCM_VOTER_H__
 #define __DRIVERS_INTERCONNECT_QCOM_BCM_VOTER_H__

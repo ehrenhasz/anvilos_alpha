@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2019 Microchip Inc.
- *
- * Author: Lars Povlsen <lars.povlsen@microchip.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_SPARX5_H
 #define _DT_BINDINGS_CLK_SPARX5_H

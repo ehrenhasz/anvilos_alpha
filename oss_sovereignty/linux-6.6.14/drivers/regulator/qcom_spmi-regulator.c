@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -21,7 +19,7 @@
 #include <linux/mfd/syscon.h>
 #include <linux/io.h>
 
-/* Pin control enable input pins. */
+ 
 #define SPMI_REGULATOR_PIN_CTRL_ENABLE_NONE		0x00
 #define SPMI_REGULATOR_PIN_CTRL_ENABLE_EN0		0x01
 #define SPMI_REGULATOR_PIN_CTRL_ENABLE_EN1		0x02
@@ -29,7 +27,7 @@
 #define SPMI_REGULATOR_PIN_CTRL_ENABLE_EN3		0x08
 #define SPMI_REGULATOR_PIN_CTRL_ENABLE_HW_DEFAULT	0x10
 
-/* Pin control high power mode input pins. */
+ 
 #define SPMI_REGULATOR_PIN_CTRL_HPM_NONE		0x00
 #define SPMI_REGULATOR_PIN_CTRL_HPM_EN0			0x01
 #define SPMI_REGULATOR_PIN_CTRL_HPM_EN1			0x02
@@ -38,13 +36,10 @@
 #define SPMI_REGULATOR_PIN_CTRL_HPM_SLEEP_B		0x10
 #define SPMI_REGULATOR_PIN_CTRL_HPM_HW_DEFAULT		0x20
 
-/*
- * Used with enable parameters to specify that hardware default register values
- * should be left unaltered.
- */
+ 
 #define SPMI_REGULATOR_USE_HW_DEFAULT			2
 
-/* Soft start strength of a voltage switch type regulator */
+ 
 enum spmi_vs_soft_start_str {
 	SPMI_VS_SOFT_START_STR_0P05_UA = 0,
 	SPMI_VS_SOFT_START_STR_0P25_UA,
@@ -53,39 +48,14 @@ enum spmi_vs_soft_start_str {
 	SPMI_VS_SOFT_START_STR_HW_DEFAULT,
 };
 
-/**
- * struct spmi_regulator_init_data - spmi-regulator initialization data
- * @pin_ctrl_enable:        Bit mask specifying which hardware pins should be
- *				used to enable the regulator, if any
- *			    Value should be an ORing of
- *				SPMI_REGULATOR_PIN_CTRL_ENABLE_* constants.  If
- *				the bit specified by
- *				SPMI_REGULATOR_PIN_CTRL_ENABLE_HW_DEFAULT is
- *				set, then pin control enable hardware registers
- *				will not be modified.
- * @pin_ctrl_hpm:           Bit mask specifying which hardware pins should be
- *				used to force the regulator into high power
- *				mode, if any
- *			    Value should be an ORing of
- *				SPMI_REGULATOR_PIN_CTRL_HPM_* constants.  If
- *				the bit specified by
- *				SPMI_REGULATOR_PIN_CTRL_HPM_HW_DEFAULT is
- *				set, then pin control mode hardware registers
- *				will not be modified.
- * @vs_soft_start_strength: This parameter sets the soft start strength for
- *				voltage switch type regulators.  Its value
- *				should be one of SPMI_VS_SOFT_START_STR_*.  If
- *				its value is SPMI_VS_SOFT_START_STR_HW_DEFAULT,
- *				then the soft start strength will be left at its
- *				default hardware value.
- */
+ 
 struct spmi_regulator_init_data {
 	unsigned				pin_ctrl_enable;
 	unsigned				pin_ctrl_hpm;
 	enum spmi_vs_soft_start_str		vs_soft_start_strength;
 };
 
-/* These types correspond to unique register layouts. */
+ 
 enum spmi_regulator_logical_type {
 	SPMI_REGULATOR_LOGICAL_TYPE_SMPS,
 	SPMI_REGULATOR_LOGICAL_TYPE_LDO,
@@ -195,11 +165,7 @@ enum spmi_common_regulator_registers {
 	SPMI_COMMON_REG_STEP_CTRL		= 0x61,
 };
 
-/*
- * Second common register layout used by newer devices starting with ftsmps426
- * Note that some of the registers from the first common layout remain
- * unchanged and their definition is not duplicated.
- */
+ 
 enum spmi_ftsmps426_regulator_registers {
 	SPMI_FTSMPS426_REG_VOLTAGE_LSB		= 0x40,
 	SPMI_FTSMPS426_REG_VOLTAGE_MSB		= 0x41,
@@ -207,9 +173,7 @@ enum spmi_ftsmps426_regulator_registers {
 	SPMI_FTSMPS426_REG_VOLTAGE_ULS_MSB	= 0x69,
 };
 
-/*
- * Third common register layout
- */
+ 
 enum spmi_hfsmps_regulator_registers {
 	SPMI_HFSMPS_REG_STEP_CTRL		= 0x3c,
 	SPMI_HFSMPS_REG_PULL_DOWN		= 0xa0,
@@ -245,7 +209,7 @@ enum spmi_saw3_registers {
 	SAW3_VERSION				= 0xFD0,
 };
 
-/* Used for indexing into ctrl_reg.  These are offets from 0x40 */
+ 
 enum spmi_common_control_register_index {
 	SPMI_COMMON_IDX_VOLTAGE_RANGE		= 0,
 	SPMI_COMMON_IDX_VOLTAGE_SET		= 1,
@@ -253,7 +217,7 @@ enum spmi_common_control_register_index {
 	SPMI_COMMON_IDX_ENABLE			= 6,
 };
 
-/* Common regulator control register layout */
+ 
 #define SPMI_COMMON_ENABLE_MASK			0x80
 #define SPMI_COMMON_ENABLE			0x80
 #define SPMI_COMMON_DISABLE			0x00
@@ -263,7 +227,7 @@ enum spmi_common_control_register_index {
 #define SPMI_COMMON_ENABLE_FOLLOW_HW_EN0_MASK	0x01
 #define SPMI_COMMON_ENABLE_FOLLOW_ALL_MASK	0x0f
 
-/* Common regulator mode register layout */
+ 
 #define SPMI_COMMON_MODE_HPM_MASK		0x80
 #define SPMI_COMMON_MODE_AUTO_MASK		0x40
 #define SPMI_COMMON_MODE_BYPASS_MASK		0x20
@@ -282,7 +246,7 @@ enum spmi_common_control_register_index {
 
 #define SPMI_FTSMPS426_MODE_MASK		0x07
 
-/* Third common regulator mode register values */
+ 
 #define SPMI_HFSMPS_MODE_BYPASS_MASK		2
 #define SPMI_HFSMPS_MODE_RETENTION_MASK		3
 #define SPMI_HFSMPS_MODE_LPM_MASK		4
@@ -291,24 +255,24 @@ enum spmi_common_control_register_index {
 
 #define SPMI_HFSMPS_MODE_MASK			0x07
 
-/* Common regulator pull down control register layout */
+ 
 #define SPMI_COMMON_PULL_DOWN_ENABLE_MASK	0x80
 
-/* LDO regulator current limit control register layout */
+ 
 #define SPMI_LDO_CURRENT_LIMIT_ENABLE_MASK	0x80
 
-/* LDO regulator soft start control register layout */
+ 
 #define SPMI_LDO_SOFT_START_ENABLE_MASK		0x80
 
-/* VS regulator over current protection control register layout */
+ 
 #define SPMI_VS_OCP_OVERRIDE			0x01
 #define SPMI_VS_OCP_NO_OVERRIDE			0x00
 
-/* VS regulator soft start control register layout */
+ 
 #define SPMI_VS_SOFT_START_ENABLE_MASK		0x80
 #define SPMI_VS_SOFT_START_SEL_MASK		0x03
 
-/* Boost regulator current limit control register layout */
+ 
 #define SPMI_BOOST_CURRENT_LIMIT_ENABLE_MASK	0x80
 #define SPMI_BOOST_CURRENT_LIMIT_MASK		0x07
 
@@ -322,69 +286,40 @@ enum spmi_common_control_register_index {
 #define SPMI_FTSMPS_STEP_CTRL_DELAY_MASK	0x07
 #define SPMI_FTSMPS_STEP_CTRL_DELAY_SHIFT	0
 
-/* Clock rate in kHz of the FTSMPS regulator reference clock. */
+ 
 #define SPMI_FTSMPS_CLOCK_RATE		19200
 
-/* Minimum voltage stepper delay for each step. */
+ 
 #define SPMI_FTSMPS_STEP_DELAY		8
 #define SPMI_DEFAULT_STEP_DELAY		20
 
-/*
- * The ratio SPMI_FTSMPS_STEP_MARGIN_NUM/SPMI_FTSMPS_STEP_MARGIN_DEN is used to
- * adjust the step rate in order to account for oscillator variance.
- */
+ 
 #define SPMI_FTSMPS_STEP_MARGIN_NUM	4
 #define SPMI_FTSMPS_STEP_MARGIN_DEN	5
 
-/* slew_rate has units of uV/us. */
+ 
 #define SPMI_HFSMPS_SLEW_RATE_38p4 38400
 
 #define SPMI_FTSMPS426_STEP_CTRL_DELAY_MASK	0x03
 #define SPMI_FTSMPS426_STEP_CTRL_DELAY_SHIFT	0
 
-/* Clock rate in kHz of the FTSMPS426 regulator reference clock. */
+ 
 #define SPMI_FTSMPS426_CLOCK_RATE		4800
 
 #define SPMI_HFS430_CLOCK_RATE			1600
 
-/* Minimum voltage stepper delay for each step. */
+ 
 #define SPMI_FTSMPS426_STEP_DELAY		2
 
-/*
- * The ratio SPMI_FTSMPS426_STEP_MARGIN_NUM/SPMI_FTSMPS426_STEP_MARGIN_DEN is
- * used to adjust the step rate in order to account for oscillator variance.
- */
+ 
 #define SPMI_FTSMPS426_STEP_MARGIN_NUM	10
 #define SPMI_FTSMPS426_STEP_MARGIN_DEN	11
 
 
-/* VSET value to decide the range of ULT SMPS */
+ 
 #define ULT_SMPS_RANGE_SPLIT 0x60
 
-/**
- * struct spmi_voltage_range - regulator set point voltage mapping description
- * @min_uV:		Minimum programmable output voltage resulting from
- *			set point register value 0x00
- * @max_uV:		Maximum programmable output voltage
- * @step_uV:		Output voltage increase resulting from the set point
- *			register value increasing by 1
- * @set_point_min_uV:	Minimum allowed voltage
- * @set_point_max_uV:	Maximum allowed voltage.  This may be tweaked in order
- *			to pick which range should be used in the case of
- *			overlapping set points.
- * @n_voltages:		Number of preferred voltage set points present in this
- *			range
- * @range_sel:		Voltage range register value corresponding to this range
- *
- * The following relationships must be true for the values used in this struct:
- * (max_uV - min_uV) % step_uV == 0
- * (set_point_min_uV - min_uV) % step_uV == 0*
- * (set_point_max_uV - min_uV) % step_uV == 0*
- * n_voltages = (set_point_max_uV - set_point_min_uV) / step_uV + 1
- *
- * *Note, set_point_min_uV == set_point_max_uV == 0 is allowed in order to
- * specify that the voltage range has meaning, but is not preferred.
- */
+ 
 struct spmi_voltage_range {
 	int					min_uV;
 	int					max_uV;
@@ -395,10 +330,7 @@ struct spmi_voltage_range {
 	u8					range_sel;
 };
 
-/*
- * The ranges specified in the spmi_voltage_set_points struct must be listed
- * so that range[i].set_point_max_uV < range[i+1].set_point_min_uV.
- */
+ 
 struct spmi_voltage_set_points {
 	struct spmi_voltage_range		*range;
 	int					count;
@@ -482,13 +414,7 @@ struct spmi_voltage_set_points name##_set_points = { \
 	.count	= ARRAY_SIZE(name##_ranges), \
 }
 
-/*
- * These tables contain the physically available PMIC regulator voltage setpoint
- * ranges.  Where two ranges overlap in hardware, one of the ranges is trimmed
- * to ensure that the setpoints available to software are monotonically
- * increasing and unique.  The set_voltage callback functions expect these
- * properties to hold.
- */
+ 
 static struct spmi_voltage_range pldo_ranges[] = {
 	SPMI_VOLTAGE_RANGE(2,  750000,  750000, 1537500, 1537500, 12500),
 	SPMI_VOLTAGE_RANGE(3, 1500000, 1550000, 3075000, 3075000, 25000),
@@ -671,7 +597,7 @@ static int spmi_regulator_select_voltage(struct spmi_regulator *vreg,
 	int lim_min_uV, lim_max_uV, i, range_id, range_max_uV;
 	int selector, voltage_sel;
 
-	/* Check if request voltage is outside of physically settable range. */
+	 
 	lim_min_uV = vreg->set_points->range[0].set_point_min_uV;
 	lim_max_uV =
 	  vreg->set_points->range[vreg->set_points->count - 1].set_point_max_uV;
@@ -686,7 +612,7 @@ static int spmi_regulator_select_voltage(struct spmi_regulator *vreg,
 		return -EINVAL;
 	}
 
-	/* Find the range which uV is inside of. */
+	 
 	for (i = vreg->set_points->count - 1; i > 0; i--) {
 		range_max_uV = vreg->set_points->range[i - 1].set_point_max_uV;
 		if (uV > range_max_uV && range_max_uV > 0)
@@ -696,10 +622,7 @@ static int spmi_regulator_select_voltage(struct spmi_regulator *vreg,
 	range_id = i;
 	range = &vreg->set_points->range[range_id];
 
-	/*
-	 * Force uV to be an allowed set point by applying a ceiling function to
-	 * the uV value.
-	 */
+	 
 	voltage_sel = DIV_ROUND_UP(uV - range->min_uV, range->step_uV);
 	uV = voltage_sel * range->step_uV + range->min_uV;
 
@@ -731,10 +654,7 @@ static int spmi_sw_selector_to_hw(struct spmi_regulator *vreg,
 
 	for (; range < end; range++) {
 		if (selector < range->n_voltages) {
-			/*
-			 * hardware selectors between set point min and real
-			 * min are invalid so we ignore them
-			 */
+			 
 			offset = range->set_point_min_uV - range->min_uV;
 			offset /= range->step_uV;
 			*voltage_sel = selector + offset;
@@ -758,12 +678,7 @@ static int spmi_hw_selector_to_sw(struct spmi_regulator *vreg, u8 hw_sel,
 
 	for (; r < end; r++) {
 		if (r == range && range->n_voltages) {
-			/*
-			 * hardware selectors between set point min and real
-			 * min and between set point max and real max are
-			 * invalid so we return an error if they're
-			 * programmed into the hardware
-			 */
+			 
 			offset = range->set_point_min_uV - range->min_uV;
 			offset /= range->step_uV;
 			if (hw_sel < offset)
@@ -815,22 +730,16 @@ static int spmi_regulator_select_voltage_same_range(struct spmi_regulator *vreg,
 		uV = range->min_uV;
 
 	if (uV < range->min_uV || uV > range->max_uV) {
-		/* Current range doesn't support the requested voltage. */
+		 
 		goto different_range;
 	}
 
-	/*
-	 * Force uV to be an allowed set point by applying a ceiling function to
-	 * the uV value.
-	 */
+	 
 	uV = DIV_ROUND_UP(uV - range->min_uV, range->step_uV);
 	uV = uV * range->step_uV + range->min_uV;
 
 	if (uV > max_uV) {
-		/*
-		 * No set point in the current voltage range is within the
-		 * requested min_uV to max_uV range.
-		 */
+		 
 		goto different_range;
 	}
 
@@ -861,10 +770,7 @@ static int spmi_regulator_common_map_voltage(struct regulator_dev *rdev,
 {
 	struct spmi_regulator *vreg = rdev_get_drvdata(rdev);
 
-	/*
-	 * Favor staying in the current voltage range if possible.  This avoids
-	 * voltage spikes that occur when changing the voltage range.
-	 */
+	 
 	return spmi_regulator_select_voltage_same_range(vreg, min_uV, max_uV);
 }
 
@@ -958,10 +864,7 @@ static int spmi_regulator_single_range_set_voltage(struct regulator_dev *rdev,
 	struct spmi_regulator *vreg = rdev_get_drvdata(rdev);
 	u8 sel = selector;
 
-	/*
-	 * Certain types of regulators do not have a range select register so
-	 * only voltage set register needs to be written.
-	 */
+	 
 	return spmi_vreg_write(vreg, SPMI_COMMON_REG_VOLTAGE_SET, &sel, 1);
 }
 
@@ -989,13 +892,7 @@ static int spmi_regulator_ult_lo_smps_set_voltage(struct regulator_dev *rdev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Calculate VSET based on range
-	 * In case of range 0: voltage_sel is a 7 bit value, can be written
-	 *			witout any modification.
-	 * In case of range 1: voltage_sel is a 5 bit value, bits[7-5] set to
-	 *			[011].
-	 */
+	 
 	if (range_sel == 1)
 		voltage_sel |= ULT_SMPS_RANGE_SPLIT;
 
@@ -1295,24 +1192,20 @@ static irqreturn_t spmi_regulator_vs_ocp_isr(int irq, void *data)
 	ocp_trigger_delay_us = ktime_us_delta(ocp_irq_time,
 						vreg->vs_enable_time);
 
-	/*
-	 * Reset the OCP count if there is a large delay between switch enable
-	 * and when OCP triggers.  This is indicative of a hotplug event as
-	 * opposed to a fault.
-	 */
+	 
 	if (ocp_trigger_delay_us > SPMI_VS_OCP_FAULT_DELAY_US)
 		vreg->ocp_count = 0;
 
-	/* Wait for switch output to settle back to 0 V after OCP triggered. */
+	 
 	udelay(SPMI_VS_OCP_FALL_DELAY_US);
 
 	vreg->ocp_count++;
 
 	if (vreg->ocp_count == 1) {
-		/* Immediately clear the over current condition. */
+		 
 		spmi_regulator_vs_clear_ocp(vreg);
 	} else if (vreg->ocp_count <= vreg->ocp_max_retries) {
-		/* Schedule the over current clear task to run later. */
+		 
 		schedule_delayed_work(&vreg->ocp_work,
 			msecs_to_jiffies(vreg->ocp_retry_delay_ms) + 1);
 	} else {
@@ -1343,14 +1236,14 @@ static void spmi_saw_set_vdd(void *data)
 	regmap_read(saw_regmap, SAW3_VCTL, &vctl);
 	regmap_read(saw_regmap, SAW3_SPM_PMIC_DATA_3, &data3);
 
-	/* select the band */
+	 
 	vctl &= ~SAW3_VCTL_CLEAR_MASK;
 	vctl |= (u32)voltage_sel;
 
 	data3 &= ~SAW3_VCTL_CLEAR_MASK;
 	data3 |= (u32)voltage_sel;
 
-	/* If AVS is enabled, switch it off during the voltage change */
+	 
 	avs_enabled = SAW3_AVS_CTL_EN_MASK & avs_ctl;
 	if (avs_enabled) {
 		avs_ctl &= ~SAW3_AVS_CTL_TGGL_MASK;
@@ -1372,7 +1265,7 @@ static void spmi_saw_set_vdd(void *data)
 
 	} while (time_before(jiffies, timeout));
 
-	/* After successful voltage change, switch the AVS back on */
+	 
 	if (avs_enabled) {
 		pmic_sts &= 0x3f;
 		avs_ctl &= ~SAW3_AVS_CTL_CLEAR_MASK;
@@ -1400,7 +1293,7 @@ spmi_regulator_saw_set_voltage(struct regulator_dev *rdev, unsigned selector)
 		return -EINVAL;
 	}
 
-	/* Always do the SAW register writes on the first CPU */
+	 
 	return smp_call_function_single(0, spmi_saw_set_vdd, \
 					&voltage_sel, true);
 }
@@ -1577,11 +1470,11 @@ static const struct regulator_ops spmi_hfsmps_ops = {
 	.set_pull_down		= spmi_regulator_hfsmps_set_pull_down,
 };
 
-/* Maximum possible digital major revision value */
+ 
 #define INF 0xFF
 
 static const struct spmi_regulator_mapping supported_regulators[] = {
-	/*           type subtype dig_min dig_max ltype ops setpoints hpm_min */
+	 
 	SPMI_VREG(LDO,   HT_P600,  0, INF, HFS430, hfs430, ht_p600, 10000),
 	SPMI_VREG(LDO,   HT_P150,  0, INF, HFS430, hfs430, ht_p150, 10000),
 	SPMI_VREG(BUCK,  GP_CTL,   0, INF, SMPS,   smps,   smps,   100000),
@@ -1778,13 +1671,13 @@ static int spmi_regulator_init_slew_rate(struct spmi_regulator *vreg)
 	delay = reg & SPMI_FTSMPS_STEP_CTRL_DELAY_MASK;
 	delay >>= SPMI_FTSMPS_STEP_CTRL_DELAY_SHIFT;
 
-	/* slew_rate has units of uV/us */
+	 
 	slew_rate = SPMI_FTSMPS_CLOCK_RATE * range->step_uV * (1 << step);
 	slew_rate /= 1000 * (step_delay << delay);
 	slew_rate *= SPMI_FTSMPS_STEP_MARGIN_NUM;
 	slew_rate /= SPMI_FTSMPS_STEP_MARGIN_DEN;
 
-	/* Ensure that the slew rate is greater than 0 */
+	 
 	vreg->slew_rate = max(slew_rate, 1);
 
 	return ret;
@@ -1807,13 +1700,13 @@ static int spmi_regulator_init_slew_rate_ftsmps426(struct spmi_regulator *vreg,
 	delay = reg & SPMI_FTSMPS426_STEP_CTRL_DELAY_MASK;
 	delay >>= SPMI_FTSMPS426_STEP_CTRL_DELAY_SHIFT;
 
-	/* slew_rate has units of uV/us */
+	 
 	slew_rate = clock_rate * range->step_uV;
 	slew_rate /= 1000 * (SPMI_FTSMPS426_STEP_DELAY << delay);
 	slew_rate *= SPMI_FTSMPS426_STEP_MARGIN_NUM;
 	slew_rate /= SPMI_FTSMPS426_STEP_MARGIN_DEN;
 
-	/* Ensure that the slew rate is greater than 0 */
+	 
 	vreg->slew_rate = max(slew_rate, 1);
 
 	return ret;
@@ -1852,7 +1745,7 @@ static int spmi_regulator_init_registers(struct spmi_regulator *vreg,
 	if (ret)
 		return ret;
 
-	/* Set up enable pin control. */
+	 
 	if (!(data->pin_ctrl_enable & SPMI_REGULATOR_PIN_CTRL_ENABLE_HW_DEFAULT)) {
 		switch (type) {
 		case SPMI_REGULATOR_LOGICAL_TYPE_SMPS:
@@ -1868,7 +1761,7 @@ static int spmi_regulator_init_registers(struct spmi_regulator *vreg,
 		}
 	}
 
-	/* Set up mode pin control. */
+	 
 	if (!(data->pin_ctrl_hpm & SPMI_REGULATOR_PIN_CTRL_HPM_HW_DEFAULT)) {
 		switch (type) {
 		case SPMI_REGULATOR_LOGICAL_TYPE_SMPS:
@@ -1892,12 +1785,12 @@ static int spmi_regulator_init_registers(struct spmi_regulator *vreg,
 		}
 	}
 
-	/* Write back any control register values that were modified. */
+	 
 	ret = spmi_vreg_write(vreg, SPMI_COMMON_REG_VOLTAGE_RANGE, ctrl_reg, 8);
 	if (ret)
 		return ret;
 
-	/* Set soft start strength and over current protection for VS. */
+	 
 	if (type == SPMI_REGULATOR_LOGICAL_TYPE_VS) {
 		if (data->vs_soft_start_strength
 				!= SPMI_VS_SOFT_START_STR_HW_DEFAULT) {
@@ -1916,15 +1809,12 @@ static int spmi_regulator_init_registers(struct spmi_regulator *vreg,
 static void spmi_regulator_get_dt_config(struct spmi_regulator *vreg,
 		struct device_node *node, struct spmi_regulator_init_data *data)
 {
-	/*
-	 * Initialize configuration parameters to use hardware default in case
-	 * no value is specified via device tree.
-	 */
+	 
 	data->pin_ctrl_enable	    = SPMI_REGULATOR_PIN_CTRL_ENABLE_HW_DEFAULT;
 	data->pin_ctrl_hpm	    = SPMI_REGULATOR_PIN_CTRL_HPM_HW_DEFAULT;
 	data->vs_soft_start_strength	= SPMI_VS_SOFT_START_STR_HW_DEFAULT;
 
-	/* These bindings are optional, so it is okay if they aren't found. */
+	 
 	of_property_read_u32(node, "qcom,ocp-max-retries",
 		&vreg->ocp_max_retries);
 	of_property_read_u32(node, "qcom,ocp-retry-delay",
@@ -2066,7 +1956,7 @@ static const struct spmi_regulator_data pm660_regulators[] = {
 	{ "l1", 0x4000, "vdd_l1_l6_l7", },
 	{ "l2", 0x4100, "vdd_l2_l3", },
 	{ "l3", 0x4200, "vdd_l2_l3", },
-	/* l4 is unaccessible on PM660 */
+	 
 	{ "l5", 0x4400, "vdd_l5", },
 	{ "l6", 0x4500, "vdd_l1_l6_l7", },
 	{ "l7", 0x4600, "vdd_l1_l6_l7", },
@@ -2337,7 +2227,7 @@ static const struct spmi_regulator_data pmp8074_regulators[] = {
 	{ "l7", 0x4600, "vdd_l7"},
 	{ "l8", 0x4700, "vdd_l3_l8"},
 	{ "l9", 0x4800, "vdd_l9"},
-	/* l10 is currently unsupported HT_P50 */
+	 
 	{ "l11", 0x4a00, "vdd_l10_l11_l12_l13"},
 	{ "l12", 0x4b00, "vdd_l10_l11_l12_l13"},
 	{ "l13", 0x4c00, "vdd_l10_l11_l12_l13"},
@@ -2460,7 +2350,7 @@ static int qcom_spmi_regulator_probe(struct platform_device *pdev)
 		}
 
 		if (vreg->set_points && vreg->set_points->count == 1) {
-			/* since there is only one range */
+			 
 			range = vreg->set_points->range;
 			vreg->desc.uV_step = range->step_uV;
 		}

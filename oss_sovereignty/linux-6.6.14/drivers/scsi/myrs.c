@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Linux Driver for Mylex DAC960/AcceleRAID/eXtremeRAID PCI RAID Controllers
- *
- * This driver supports the newer, SCSI-based firmware interface only.
- *
- * Copyright 2017 Hannes Reinecke, SUSE Linux GmbH <hare@suse.com>
- *
- * Based on the original DAC960 driver, which has
- * Copyright 1998-2001 by Leonard N. Zubkoff <lnz@dandelion.com>
- * Portions Copyright 2002 by Mylex (An IBM Business Unit)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -87,9 +77,7 @@ static char *myrs_raid_level_name(enum myrs_raid_level level)
 	return NULL;
 }
 
-/*
- * myrs_reset_cmd - clears critical fields in struct myrs_cmdblk
- */
+ 
 static inline void myrs_reset_cmd(struct myrs_cmdblk *cmd_blk)
 {
 	union myrs_cmd_mbox *mbox = &cmd_blk->mbox;
@@ -98,9 +86,7 @@ static inline void myrs_reset_cmd(struct myrs_cmdblk *cmd_blk)
 	cmd_blk->status = 0;
 }
 
-/*
- * myrs_qcmd - queues Command for DAC960 V2 Series Controllers.
- */
+ 
 static void myrs_qcmd(struct myrs_hba *cs, struct myrs_cmdblk *cmd_blk)
 {
 	void __iomem *base = cs->io_base;
@@ -122,9 +108,7 @@ static void myrs_qcmd(struct myrs_hba *cs, struct myrs_cmdblk *cmd_blk)
 	cs->next_cmd_mbox = next_mbox;
 }
 
-/*
- * myrs_exec_cmd - executes V2 Command and waits for completion.
- */
+ 
 static void myrs_exec_cmd(struct myrs_hba *cs,
 		struct myrs_cmdblk *cmd_blk)
 {
@@ -139,9 +123,7 @@ static void myrs_exec_cmd(struct myrs_hba *cs,
 	wait_for_completion(&complete);
 }
 
-/*
- * myrs_report_progress - prints progress message
- */
+ 
 static void myrs_report_progress(struct myrs_hba *cs, unsigned short ldev_num,
 		unsigned char *msg, unsigned long blocks,
 		unsigned long size)
@@ -152,9 +134,7 @@ static void myrs_report_progress(struct myrs_hba *cs, unsigned short ldev_num,
 		     (100 * (int)(blocks >> 7)) / (int)(size >> 7));
 }
 
-/*
- * myrs_get_ctlr_info - executes a Controller Information IOCTL Command
- */
+ 
 static unsigned char myrs_get_ctlr_info(struct myrs_hba *cs)
 {
 	struct myrs_cmdblk *cmd_blk = &cs->dcmd_blk;
@@ -213,9 +193,7 @@ static unsigned char myrs_get_ctlr_info(struct myrs_hba *cs)
 	return status;
 }
 
-/*
- * myrs_get_ldev_info - executes a Logical Device Information IOCTL Command
- */
+ 
 static unsigned char myrs_get_ldev_info(struct myrs_hba *cs,
 		unsigned short ldev_num, struct myrs_ldev_info *ldev_info)
 {
@@ -300,9 +278,7 @@ static unsigned char myrs_get_ldev_info(struct myrs_hba *cs,
 	return status;
 }
 
-/*
- * myrs_get_pdev_info - executes a "Read Physical Device Information" Command
- */
+ 
 static unsigned char myrs_get_pdev_info(struct myrs_hba *cs,
 		unsigned char channel, unsigned char target, unsigned char lun,
 		struct myrs_pdev_info *pdev_info)
@@ -344,9 +320,7 @@ static unsigned char myrs_get_pdev_info(struct myrs_hba *cs,
 	return status;
 }
 
-/*
- * myrs_dev_op - executes a "Device Operation" Command
- */
+ 
 static unsigned char myrs_dev_op(struct myrs_hba *cs,
 		enum myrs_ioctl_opcode opcode, enum myrs_opdev opdev)
 {
@@ -368,10 +342,7 @@ static unsigned char myrs_dev_op(struct myrs_hba *cs,
 	return status;
 }
 
-/*
- * myrs_translate_pdev - translates a Physical Device Channel and
- * TargetID into a Logical Device.
- */
+ 
 static unsigned char myrs_translate_pdev(struct myrs_hba *cs,
 		unsigned char channel, unsigned char target, unsigned char lun,
 		struct myrs_devmap *devmap)
@@ -413,9 +384,7 @@ static unsigned char myrs_translate_pdev(struct myrs_hba *cs,
 	return status;
 }
 
-/*
- * myrs_get_event - executes a Get Event Command
- */
+ 
 static unsigned char myrs_get_event(struct myrs_hba *cs,
 		unsigned int event_num, struct myrs_event *event_buf)
 {
@@ -448,9 +417,7 @@ static unsigned char myrs_get_event(struct myrs_hba *cs,
 	return status;
 }
 
-/*
- * myrs_get_fwstatus - executes a Get Health Status Command
- */
+ 
 static unsigned char myrs_get_fwstatus(struct myrs_hba *cs)
 {
 	struct myrs_cmdblk *cmd_blk = &cs->mcmd_blk;
@@ -475,9 +442,7 @@ static unsigned char myrs_get_fwstatus(struct myrs_hba *cs)
 	return status;
 }
 
-/*
- * myrs_enable_mmio_mbox - enables the Memory Mailbox Interface
- */
+ 
 static bool myrs_enable_mmio_mbox(struct myrs_hba *cs,
 		enable_mbox_t enable_mbox_fn)
 {
@@ -495,13 +460,13 @@ static bool myrs_enable_mmio_mbox(struct myrs_hba *cs,
 			return false;
 		}
 
-	/* Temporary dma mapping, used only in the scope of this function */
+	 
 	mbox = dma_alloc_coherent(&pdev->dev, sizeof(union myrs_cmd_mbox),
 				  &mbox_addr, GFP_KERNEL);
 	if (dma_mapping_error(&pdev->dev, mbox_addr))
 		return false;
 
-	/* These are the base addresses for the command memory mailbox array */
+	 
 	cs->cmd_mbox_size = MYRS_MAX_CMD_MBOX * sizeof(union myrs_cmd_mbox);
 	cmd_mbox = dma_alloc_coherent(&pdev->dev, cs->cmd_mbox_size,
 				      &cs->cmd_mbox_addr, GFP_KERNEL);
@@ -516,7 +481,7 @@ static bool myrs_enable_mmio_mbox(struct myrs_hba *cs,
 	cs->prev_cmd_mbox1 = cs->last_cmd_mbox;
 	cs->prev_cmd_mbox2 = cs->last_cmd_mbox - 1;
 
-	/* These are the base addresses for the status memory mailbox array */
+	 
 	cs->stat_mbox_size = MYRS_MAX_STAT_MBOX * sizeof(struct myrs_stat_mbox);
 	stat_mbox = dma_alloc_coherent(&pdev->dev, cs->stat_mbox_size,
 				       &cs->stat_mbox_addr, GFP_KERNEL);
@@ -546,7 +511,7 @@ static bool myrs_enable_mmio_mbox(struct myrs_hba *cs,
 	if (!cs->event_buf)
 		goto out_free;
 
-	/* Enable the Memory Mailbox Interface. */
+	 
 	memset(mbox, 0, sizeof(union myrs_cmd_mbox));
 	mbox->set_mbox.id = 1;
 	mbox->set_mbox.opcode = MYRS_CMD_OP_IOCTL;
@@ -574,9 +539,7 @@ out_free:
 	return (status == MYRS_STATUS_SUCCESS);
 }
 
-/*
- * myrs_get_config - reads the Configuration Information
- */
+ 
 static int myrs_get_config(struct myrs_hba *cs)
 {
 	struct myrs_ctlr_info *info = cs->ctlr_info;
@@ -586,7 +549,7 @@ static int myrs_get_config(struct myrs_hba *cs)
 	unsigned char fw_version[12];
 	int i, model_len;
 
-	/* Get data into dma-able area, then copy into permanent location */
+	 
 	mutex_lock(&cs->cinfo_mutex);
 	status = myrs_get_ctlr_info(cs);
 	mutex_unlock(&cs->cinfo_mutex);
@@ -596,7 +559,7 @@ static int myrs_get_config(struct myrs_hba *cs)
 		return -ENODEV;
 	}
 
-	/* Initialize the Controller Model Name and Full Model Name fields. */
+	 
 	model_len = sizeof(info->ctlr_name);
 	if (model_len > sizeof(model)-1)
 		model_len = sizeof(model)-1;
@@ -607,7 +570,7 @@ static int myrs_get_config(struct myrs_hba *cs)
 	model[++model_len] = '\0';
 	strcpy(cs->model_name, "DAC960 ");
 	strcat(cs->model_name, model);
-	/* Initialize the Controller Firmware Version field. */
+	 
 	sprintf(fw_version, "%d.%02d-%02d",
 		info->fw_major_version, info->fw_minor_version,
 		info->fw_turn_number);
@@ -621,7 +584,7 @@ static int myrs_get_config(struct myrs_hba *cs)
 			fw_version);
 		return -ENODEV;
 	}
-	/* Initialize the Controller Channels and Targets. */
+	 
 	shost->max_channel = info->physchan_present + info->virtchan_present;
 	shost->max_id = info->max_targets[0];
 	for (i = 1; i < 16; i++) {
@@ -631,14 +594,7 @@ static int myrs_get_config(struct myrs_hba *cs)
 			shost->max_id = info->max_targets[i];
 	}
 
-	/*
-	 * Initialize the Controller Queue Depth, Driver Queue Depth,
-	 * Logical Drive Count, Maximum Blocks per Command, Controller
-	 * Scatter/Gather Limit, and Driver Scatter/Gather Limit.
-	 * The Driver Queue Depth must be at most three less than
-	 * the Controller Queue Depth; tag '1' is reserved for
-	 * direct commands, and tag '2' for monitoring commands.
-	 */
+	 
 	shost->can_queue = info->max_tcq - 3;
 	if (shost->can_queue > MYRS_MAX_CMD_MBOX - 3)
 		shost->can_queue = MYRS_MAX_CMD_MBOX - 3;
@@ -679,14 +635,12 @@ static int myrs_get_config(struct myrs_hba *cs)
 	return 0;
 }
 
-/*
- * myrs_log_event - prints a Controller Event message
- */
+ 
 static struct {
 	int ev_code;
 	unsigned char *ev_msg;
 } myrs_ev_list[] = {
-	/* Physical Device Events (0x0000 - 0x007F) */
+	 
 	{ 0x0001, "P Online" },
 	{ 0x0002, "P Standby" },
 	{ 0x0005, "P Automatic Rebuild Started" },
@@ -738,7 +692,7 @@ static struct {
 	{ 0x003A, "P Start Rebuild Failed due to Physical Drive Too Small" },
 	{ 0x003C, "P Temporarily Offline Device Automatically Made Online" },
 	{ 0x003D, "P Standby Rebuild Started" },
-	/* Logical Device Events (0x0080 - 0x00FF) */
+	 
 	{ 0x0080, "M Consistency Check Started" },
 	{ 0x0081, "M Consistency Check Completed" },
 	{ 0x0082, "M Consistency Check Cancelled" },
@@ -773,7 +727,7 @@ static struct {
 	{ 0x00A0, "L Temporarily Offline RAID-5/3 Drive Made Online" },
 	{ 0x00A1, "L Temporarily Offline RAID-6/1/0/7 Drive Made Online" },
 	{ 0x00A2, "L Standby Rebuild Started" },
-	/* Fault Management Events (0x0100 - 0x017F) */
+	 
 	{ 0x0140, "E Fan %d Failed" },
 	{ 0x0141, "E Fan %d OK" },
 	{ 0x0142, "E Fan %d Not Present" },
@@ -787,7 +741,7 @@ static struct {
 	{ 0x014A, "E Enclosure Management Unit %d Access Critical" },
 	{ 0x014B, "E Enclosure Management Unit %d Access OK" },
 	{ 0x014C, "E Enclosure Management Unit %d Access Offline" },
-	/* Controller Events (0x0180 - 0x01FF) */
+	 
 	{ 0x0181, "C Cache Write Back Error" },
 	{ 0x0188, "C Battery Backup Unit Found" },
 	{ 0x0189, "C Battery Backup Unit Charge Level Low" },
@@ -800,7 +754,7 @@ static struct {
 	{ 0x01A2, "C Battery Backup Unit Failed" },
 	{ 0x01AB, "C Mirror Race Recovery Failed" },
 	{ 0x01AC, "C Mirror Race on Critical Drive" },
-	/* Controller Internal Processor Events */
+	 
 	{ 0x0380, "C Internal Controller Hung" },
 	{ 0x0381, "C Internal Controller Firmware Breakpoint" },
 	{ 0x0390, "C Internal Controller i960 Processor Specific Error" },
@@ -928,9 +882,7 @@ static void myrs_log_event(struct myrs_hba *cs, struct myrs_event *ev)
 	}
 }
 
-/*
- * SCSI sysfs interface functions
- */
+ 
 static ssize_t raid_state_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -1526,9 +1478,7 @@ static struct attribute *myrs_shost_attrs[] = {
 
 ATTRIBUTE_GROUPS(myrs_shost);
 
-/*
- * SCSI midlayer interface
- */
+ 
 static int myrs_host_reset(struct scsi_cmnd *scmd)
 {
 	struct Scsi_Host *shost = scmd->device->host;
@@ -1555,7 +1505,7 @@ static void myrs_mode_sense(struct myrs_hba *cs, struct scsi_cmnd *scmd,
 	}
 	memset(modes, 0, sizeof(modes));
 	modes[0] = mode_len - 1;
-	modes[2] = 0x10; /* Enable FUA */
+	modes[2] = 0x10;  
 	if (ldev_info->ldev_control.wce == MYRS_LOGICALDEVICE_RO)
 		modes[2] |= 0x80;
 	if (!dbd) {
@@ -1612,7 +1562,7 @@ static int myrs_queuecommand(struct Scsi_Host *shost,
 
 			if ((scmd->cmnd[2] & 0x3F) != 0x3F &&
 			    (scmd->cmnd[2] & 0x3F) != 0x08) {
-				/* Illegal request, invalid field in CDB */
+				 
 				scsi_build_sense(scmd, 0, ILLEGAL_REQUEST, 0x24, 0);
 			} else {
 				myrs_mode_sense(cs, scmd, ldev_info);
@@ -1891,7 +1841,7 @@ static int myrs_slave_configure(struct scsi_device *sdev)
 		return -ENXIO;
 
 	if (sdev->channel < cs->ctlr_info->physchan_present) {
-		/* Skip HBA device */
+		 
 		if (sdev->type == TYPE_RAID)
 			return -ENXIO;
 		sdev->no_uld_attach = 1;
@@ -1950,14 +1900,9 @@ static struct myrs_hba *myrs_alloc_host(struct pci_dev *pdev,
 	return cs;
 }
 
-/*
- * RAID template functions
- */
+ 
 
-/**
- * myrs_is_raid - return boolean indicating device is raid volume
- * @dev: the device struct object
- */
+ 
 static int
 myrs_is_raid(struct device *dev)
 {
@@ -1967,10 +1912,7 @@ myrs_is_raid(struct device *dev)
 	return (sdev->channel >= cs->ctlr_info->physchan_present) ? 1 : 0;
 }
 
-/**
- * myrs_get_resync - get raid volume resync percent complete
- * @dev: the device struct object
- */
+ 
 static void
 myrs_get_resync(struct device *dev)
 {
@@ -1991,10 +1933,7 @@ myrs_get_resync(struct device *dev)
 	raid_set_resync(myrs_raid_template, dev, percent_complete);
 }
 
-/**
- * myrs_get_state - get raid volume status
- * @dev: the device struct object
- */
+ 
 static void
 myrs_get_state(struct device *dev)
 {
@@ -2035,9 +1974,7 @@ static struct raid_function_template myrs_raid_functions = {
 	.get_state	= myrs_get_state,
 };
 
-/*
- * PCI interface functions
- */
+ 
 static void myrs_flush_cache(struct myrs_hba *cs)
 {
 	myrs_dev_op(cs, MYRS_IOCTL_FLUSH_DEVICE_DATA, MYRS_RAID_CONTROLLER);
@@ -2221,7 +2158,7 @@ static bool myrs_create_mempools(struct pci_dev *pdev, struct myrs_hba *cs)
 		return false;
 	}
 
-	/* Initialize the Monitoring Timer. */
+	 
 	INIT_DELAYED_WORK(&cs->monitor_work, myrs_monitor);
 	queue_delayed_work(cs->work_q, &cs->monitor_work, 1);
 
@@ -2263,7 +2200,7 @@ static void myrs_cleanup(struct myrs_hba *cs)
 {
 	struct pci_dev *pdev = cs->pdev;
 
-	/* Free the memory mailbox, status, and related structures */
+	 
 	myrs_unmap(cs);
 
 	if (cs->mmio_base) {
@@ -2304,7 +2241,7 @@ static struct myrs_hba *myrs_detect(struct pci_dev *pdev,
 
 	pci_set_drvdata(pdev, cs);
 	spin_lock_init(&cs->queue_lock);
-	/* Map the Controller Register Window. */
+	 
 	if (mmio_size < PAGE_SIZE)
 		mmio_size = PAGE_SIZE;
 	cs->mmio_base = ioremap(cs->pci_addr & PAGE_MASK, mmio_size);
@@ -2318,7 +2255,7 @@ static struct myrs_hba *myrs_detect(struct pci_dev *pdev,
 	if (privdata->hw_init(pdev, cs, cs->io_base))
 		goto Failure;
 
-	/* Acquire shared access to the IRQ Channel. */
+	 
 	if (request_irq(pdev->irq, irq_handler, IRQF_SHARED, "myrs", cs) < 0) {
 		dev_err(&pdev->dev,
 			"Unable to acquire IRQ Channel %d\n", pdev->irq);
@@ -2334,11 +2271,7 @@ Failure:
 	return NULL;
 }
 
-/*
- * myrs_err_status reports Controller BIOS Messages passed through
- * the Error Status Register when the driver performs the BIOS handshaking.
- * It returns true for fatal errors and false otherwise.
- */
+ 
 
 static bool myrs_err_status(struct myrs_hba *cs, unsigned char status,
 		unsigned char parm0, unsigned char parm1)
@@ -2387,13 +2320,9 @@ static bool myrs_err_status(struct myrs_hba *cs, unsigned char status,
 	return false;
 }
 
-/*
- * Hardware-specific functions
- */
+ 
 
-/*
- * DAC960 GEM Series Controllers.
- */
+ 
 
 static inline void DAC960_GEM_hw_mbox_new_cmd(void __iomem *base)
 {
@@ -2481,10 +2410,10 @@ static inline void DAC960_GEM_write_cmd_mbox(union myrs_cmd_mbox *mem_mbox,
 {
 	memcpy(&mem_mbox->words[1], &mbox->words[1],
 	       sizeof(union myrs_cmd_mbox) - sizeof(unsigned int));
-	/* Barrier to avoid reordering */
+	 
 	wmb();
 	mem_mbox->words[0] = mbox->words[0];
-	/* Barrier to force PCI access */
+	 
 	mb();
 }
 
@@ -2624,9 +2553,7 @@ static struct myrs_privdata DAC960_GEM_privdata = {
 	.mmio_size =		DAC960_GEM_mmio_size,
 };
 
-/*
- * DAC960 BA Series Controllers.
- */
+ 
 
 static inline void DAC960_BA_hw_mbox_new_cmd(void __iomem *base)
 {
@@ -2698,10 +2625,10 @@ static inline void DAC960_BA_write_cmd_mbox(union myrs_cmd_mbox *mem_mbox,
 {
 	memcpy(&mem_mbox->words[1], &mbox->words[1],
 	       sizeof(union myrs_cmd_mbox) - sizeof(unsigned int));
-	/* Barrier to avoid reordering */
+	 
 	wmb();
 	mem_mbox->words[0] = mbox->words[0];
-	/* Barrier to force PCI access */
+	 
 	mb();
 }
 
@@ -2843,9 +2770,7 @@ static struct myrs_privdata DAC960_BA_privdata = {
 	.mmio_size =		DAC960_BA_mmio_size,
 };
 
-/*
- * DAC960 LP Series Controllers.
- */
+ 
 
 static inline void DAC960_LP_hw_mbox_new_cmd(void __iomem *base)
 {
@@ -2917,10 +2842,10 @@ static inline void DAC960_LP_write_cmd_mbox(union myrs_cmd_mbox *mem_mbox,
 {
 	memcpy(&mem_mbox->words[1], &mbox->words[1],
 	       sizeof(union myrs_cmd_mbox) - sizeof(unsigned int));
-	/* Barrier to avoid reordering */
+	 
 	wmb();
 	mem_mbox->words[0] = mbox->words[0];
-	/* Barrier to force PCI access */
+	 
 	mb();
 }
 
@@ -3062,9 +2987,7 @@ static struct myrs_privdata DAC960_LP_privdata = {
 	.mmio_size =		DAC960_LP_mmio_size,
 };
 
-/*
- * Module functions
- */
+ 
 static int
 myrs_probe(struct pci_dev *dev, const struct pci_device_id *entry)
 {

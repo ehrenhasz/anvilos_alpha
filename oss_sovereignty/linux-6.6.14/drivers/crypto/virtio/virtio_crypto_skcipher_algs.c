@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /* Algorithms supported by virtio crypto device
-  *
-  * Authors: Gonglei <arei.gonglei@huawei.com>
-  *
-  * Copyright 2016 HUAWEI TECHNOLOGIES CO., LTD.
-  */
+
+  
 
 #include <crypto/engine.h>
 #include <crypto/internal/skcipher.h>
@@ -26,12 +21,12 @@ struct virtio_crypto_skcipher_ctx {
 struct virtio_crypto_sym_request {
 	struct virtio_crypto_request base;
 
-	/* Cipher or aead */
+	 
 	uint32_t type;
 	struct virtio_crypto_skcipher_ctx *skcipher_ctx;
 	struct skcipher_request *skcipher_req;
 	uint8_t *iv;
-	/* Encryption? */
+	 
 	bool encrypt;
 };
 
@@ -42,10 +37,7 @@ struct virtio_crypto_algo {
 	struct skcipher_engine_alg algo;
 };
 
-/*
- * The algs_lock protects the below global virtio_crypto_active_devs
- * and crypto algorithms registion.
- */
+ 
 static DEFINE_MUTEX(algs_lock);
 static void virtio_crypto_skcipher_finalize_req(
 	struct virtio_crypto_sym_request *vc_sym_req,
@@ -60,7 +52,7 @@ static void virtio_crypto_dataq_sym_callback
 	struct skcipher_request *ablk_req;
 	int error;
 
-	/* Finish the encrypt or decrypt process */
+	 
 	if (vc_sym_req->type == VIRTIO_CRYPTO_SYM_OP_CIPHER) {
 		switch (vc_req->status) {
 		case VIRTIO_CRYPTO_OK:
@@ -124,10 +116,7 @@ static int virtio_crypto_alg_skcipher_init_session(
 	struct virtio_crypto_sym_create_session_req *sym_create_session;
 	struct virtio_crypto_ctrl_request *vc_ctrl_req;
 
-	/*
-	 * Avoid to do DMA from the stack, switch to using
-	 * dynamically-allocated for the key
-	 */
+	 
 	uint8_t *cipher_key = kmemdup(key, keylen, GFP_ATOMIC);
 
 	if (!cipher_key)
@@ -139,16 +128,16 @@ static int virtio_crypto_alg_skcipher_init_session(
 		goto out;
 	}
 
-	/* Pad ctrl header */
+	 
 	ctrl = &vc_ctrl_req->ctrl;
 	ctrl->header.opcode = cpu_to_le32(VIRTIO_CRYPTO_CIPHER_CREATE_SESSION);
 	ctrl->header.algo = cpu_to_le32(alg);
-	/* Set the default dataqueue id to 0 */
+	 
 	ctrl->header.queue_id = 0;
 
 	input = &vc_ctrl_req->input;
 	input->status = cpu_to_le32(VIRTIO_CRYPTO_ERR);
-	/* Pad cipher's parameters */
+	 
 	sym_create_session = &ctrl->u.sym_create_session;
 	sym_create_session->op_type = cpu_to_le32(VIRTIO_CRYPTO_SYM_OP_CIPHER);
 	sym_create_session->u.cipher.para.algo = ctrl->header.algo;
@@ -158,11 +147,11 @@ static int virtio_crypto_alg_skcipher_init_session(
 	sg_init_one(&outhdr, ctrl, sizeof(*ctrl));
 	sgs[num_out++] = &outhdr;
 
-	/* Set key */
+	 
 	sg_init_one(&key_sg, cipher_key, keylen);
 	sgs[num_out++] = &key_sg;
 
-	/* Return status and session id back */
+	 
 	sg_init_one(&inhdr, input, sizeof(*input));
 	sgs[num_out + num_in++] = &inhdr;
 
@@ -208,10 +197,10 @@ static int virtio_crypto_alg_skcipher_close_session(
 
 	ctrl_status = &vc_ctrl_req->ctrl_status;
 	ctrl_status->status = VIRTIO_CRYPTO_ERR;
-	/* Pad ctrl header */
+	 
 	ctrl = &vc_ctrl_req->ctrl;
 	ctrl->header.opcode = cpu_to_le32(VIRTIO_CRYPTO_CIPHER_DESTROY_SESSION);
-	/* Set the default virtqueue id to 0 */
+	 
 	ctrl->header.queue_id = 0;
 
 	destroy_session = &ctrl->u.destroy_session;
@@ -224,7 +213,7 @@ static int virtio_crypto_alg_skcipher_close_session(
 	sg_init_one(&outhdr, ctrl, sizeof(*ctrl));
 	sgs[num_out++] = &outhdr;
 
-	/* Return status and session id back */
+	 
 	sg_init_one(&status_sg, &ctrl_status->status, sizeof(ctrl_status->status));
 	sgs[num_out + num_in++] = &status_sg;
 
@@ -262,12 +251,12 @@ static int virtio_crypto_alg_skcipher_init_sessions(
 	if (virtio_crypto_alg_validate_key(keylen, &alg))
 		return -EINVAL;
 
-	/* Create encryption session */
+	 
 	ret = virtio_crypto_alg_skcipher_init_session(ctx,
 			alg, key, keylen, 1);
 	if (ret)
 		return ret;
-	/* Create decryption session */
+	 
 	ret = virtio_crypto_alg_skcipher_init_session(ctx,
 			alg, key, keylen, 0);
 	if (ret) {
@@ -277,7 +266,7 @@ static int virtio_crypto_alg_skcipher_init_sessions(
 	return 0;
 }
 
-/* Note: kernel crypto API realization */
+ 
 static int virtio_crypto_skcipher_setkey(struct crypto_skcipher *tfm,
 					 const uint8_t *key,
 					 unsigned int keylen)
@@ -291,7 +280,7 @@ static int virtio_crypto_skcipher_setkey(struct crypto_skcipher *tfm,
 		return ret;
 
 	if (!ctx->vcrypto) {
-		/* New key */
+		 
 		int node = virtio_crypto_get_current_node();
 		struct virtio_crypto *vcrypto =
 				      virtcrypto_get_dev_node(node,
@@ -303,7 +292,7 @@ static int virtio_crypto_skcipher_setkey(struct crypto_skcipher *tfm,
 
 		ctx->vcrypto = vcrypto;
 	} else {
-		/* Rekeying, we should close the created sessions previously */
+		 
 		virtio_crypto_alg_skcipher_close_session(ctx, 1);
 		virtio_crypto_alg_skcipher_close_session(ctx, 0);
 	}
@@ -351,7 +340,7 @@ __virtio_crypto_skcipher_do_req(struct virtio_crypto_sym_request *vc_sym_req,
 	pr_debug("virtio_crypto: Number of sgs (src_nents: %d, dst_nents: %d)\n",
 			src_nents, dst_nents);
 
-	/* Why 3?  outhdr + iv + inhdr */
+	 
 	sg_total = src_nents + dst_nents + 3;
 	sgs = kcalloc_node(sg_total, sizeof(*sgs), GFP_KERNEL,
 				dev_to_node(&vcrypto->vdev->dev));
@@ -367,7 +356,7 @@ __virtio_crypto_skcipher_do_req(struct virtio_crypto_sym_request *vc_sym_req,
 
 	vc_req->req_data = req_data;
 	vc_sym_req->type = VIRTIO_CRYPTO_SYM_OP_CIPHER;
-	/* Head of operation */
+	 
 	if (vc_sym_req->encrypt) {
 		req_data->header.session_id =
 			cpu_to_le64(ctx->enc_sess_info.session_id);
@@ -405,16 +394,13 @@ __virtio_crypto_skcipher_do_req(struct virtio_crypto_sym_request *vc_sym_req,
 	req_data->u.sym_req.u.cipher.para.dst_data_len =
 			cpu_to_le32((uint32_t)dst_len);
 
-	/* Outhdr */
+	 
 	sg_init_one(&outhdr, req_data, sizeof(*req_data));
 	sgs[num_out++] = &outhdr;
 
-	/* IV */
+	 
 
-	/*
-	 * Avoid to do DMA from the stack, switch to using
-	 * dynamically-allocated for the IV
-	 */
+	 
 	iv = kzalloc_node(ivsize, GFP_ATOMIC,
 				dev_to_node(&vcrypto->vdev->dev));
 	if (!iv) {
@@ -431,15 +417,15 @@ __virtio_crypto_skcipher_do_req(struct virtio_crypto_sym_request *vc_sym_req,
 	sgs[num_out++] = &iv_sg;
 	vc_sym_req->iv = iv;
 
-	/* Source data */
+	 
 	for (sg = req->src; src_nents; sg = sg_next(sg), src_nents--)
 		sgs[num_out++] = sg;
 
-	/* Destination data */
+	 
 	for (sg = req->dst; sg; sg = sg_next(sg))
 		sgs[num_out + num_in++] = sg;
 
-	/* Status */
+	 
 	sg_init_one(&status_sg, &vc_req->status, sizeof(vc_req->status));
 	sgs[num_out + num_in++] = &status_sg;
 
@@ -471,7 +457,7 @@ static int virtio_crypto_skcipher_encrypt(struct skcipher_request *req)
 				skcipher_request_ctx(req);
 	struct virtio_crypto_request *vc_req = &vc_sym_req->base;
 	struct virtio_crypto *vcrypto = ctx->vcrypto;
-	/* Use the first data virtqueue as default */
+	 
 	struct data_queue *data_vq = &vcrypto->data_vq[0];
 
 	if (!req->cryptlen)
@@ -496,7 +482,7 @@ static int virtio_crypto_skcipher_decrypt(struct skcipher_request *req)
 				skcipher_request_ctx(req);
 	struct virtio_crypto_request *vc_req = &vc_sym_req->base;
 	struct virtio_crypto *vcrypto = ctx->vcrypto;
-	/* Use the first data virtqueue as default */
+	 
 	struct data_queue *data_vq = &vcrypto->data_vq[0];
 
 	if (!req->cryptlen)

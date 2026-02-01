@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2021 Analog Devices, Inc.
- * Author: Cosmin Tanislav <cosmin.tanislav@analog.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -160,10 +157,7 @@ struct adxl367_state {
 	struct device			*dev;
 	struct regmap			*regmap;
 
-	/*
-	 * Synchronize access to members of driver state, and ensure atomicity
-	 * of consecutive regmap operations.
-	 */
+	 
 	struct mutex		lock;
 
 	enum adxl367_odr	odr;
@@ -208,7 +202,7 @@ static const int adxl367_samp_freq_tbl[][2] = {
 	[ADXL367_ODR_400HZ]  = {400, 0},
 };
 
-/* (g * 2) * 9.80665 * 1000000 / (2^14 - 1) */
+ 
 static const int adxl367_range_scale_tbl[][2] = {
 	[ADXL367_2G_RANGE] = {0, 2394347},
 	[ADXL367_4G_RANGE] = {0, 4788695},
@@ -281,10 +275,7 @@ static int adxl367_set_measure_en(struct adxl367_state *st, bool en)
 	if (ret)
 		return ret;
 
-	/*
-	 * Wait for acceleration output to settle after entering
-	 * measure mode.
-	 */
+	 
 	if (en)
 		msleep(100);
 
@@ -504,7 +495,7 @@ static int adxl367_set_range(struct iio_dev *indio_dev,
 
 	adxl367_scale_act_thresholds(st, st->range, range);
 
-	/* Activity thresholds depend on range */
+	 
 	ret = _adxl367_set_act_threshold(st, ADXL367_ACTIVITY,
 					 st->act_threshold);
 	if (ret)
@@ -533,7 +524,7 @@ static int adxl367_time_ms_to_samples(struct adxl367_state *st, unsigned int ms)
 {
 	int freq_hz = adxl367_samp_freq_tbl[st->odr][0];
 	int freq_microhz = adxl367_samp_freq_tbl[st->odr][1];
-	/* Scale to decihertz to prevent precision loss in 12.5Hz case. */
+	 
 	int freq_dhz = freq_hz * 10 + freq_microhz / 100000;
 
 	return DIV_ROUND_CLOSEST(ms * freq_dhz, 10000);
@@ -620,7 +611,7 @@ static int _adxl367_set_odr(struct adxl367_state *st, enum adxl367_odr odr)
 	if (ret)
 		return ret;
 
-	/* Activity timers depend on ODR */
+	 
 	ret = _adxl367_set_act_time_ms(st, st->act_time_ms);
 	if (ret)
 		return ret;
@@ -786,7 +777,7 @@ static int adxl367_get_status(struct adxl367_state *st, u8 *status,
 {
 	int ret;
 
-	/* Read STATUS, FIFO_ENT_L and FIFO_ENT_H */
+	 
 	ret = regmap_bulk_read(st->regmap, ADXL367_REG_STATUS,
 			       st->status_buf, sizeof(st->status_buf));
 	if (ret)

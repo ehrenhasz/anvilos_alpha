@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012 - 2014 Allwinner Tech
- * Pan Nan <pannan@allwinnertech.com>
- *
- * Copyright (C) 2014 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -151,7 +145,7 @@ static inline void sun6i_spi_drain_fifo(struct sun6i_spi *sspi)
 	u32 len;
 	u8 byte;
 
-	/* See how much data is available */
+	 
 	len = sun6i_spi_get_rx_fifo_count(sspi);
 
 	while (len--) {
@@ -167,7 +161,7 @@ static inline void sun6i_spi_fill_fifo(struct sun6i_spi *sspi)
 	int len;
 	u8 byte;
 
-	/* See how much data we can fit */
+	 
 	cnt = sspi->cfg->fifo_depth - sun6i_spi_get_tx_fifo_count(sspi);
 
 	len = min((int)cnt, sspi->len);
@@ -295,29 +289,20 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 	sspi->len = tfr->len;
 	use_dma = master->can_dma ? master->can_dma(master, spi, tfr) : false;
 
-	/* Clear pending interrupts */
+	 
 	sun6i_spi_write(sspi, SUN6I_INT_STA_REG, ~0);
 
-	/* Reset FIFO */
+	 
 	sun6i_spi_write(sspi, SUN6I_FIFO_CTL_REG,
 			SUN6I_FIFO_CTL_RF_RST | SUN6I_FIFO_CTL_TF_RST);
 
 	reg = 0;
 
 	if (!use_dma) {
-		/*
-		 * Setup FIFO interrupt trigger level
-		 * Here we choose 3/4 of the full fifo depth, as it's
-		 * the hardcoded value used in old generation of Allwinner
-		 * SPI controller. (See spi-sun4i.c)
-		 */
+		 
 		trig_level = sspi->cfg->fifo_depth / 4 * 3;
 	} else {
-		/*
-		 * Setup FIFO DMA request trigger level
-		 * We choose 1/2 of the full fifo depth, that value will
-		 * be used as DMA burst length.
-		 */
+		 
 		trig_level = sspi->cfg->fifo_depth / 2;
 
 		if (tfr->tx_buf)
@@ -331,10 +316,7 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 
 	sun6i_spi_write(sspi, SUN6I_FIFO_CTL_REG, reg);
 
-	/*
-	 * Setup the transfer control register: Chip Select,
-	 * polarities, etc.
-	 */
+	 
 	reg = sun6i_spi_read(sspi, SUN6I_TFR_CTL_REG);
 
 	if (spi->mode & SPI_CPOL)
@@ -352,10 +334,7 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 	else
 		reg &= ~SUN6I_TFR_CTL_FBS;
 
-	/*
-	 * If it's a TX only transfer, we don't want to fill the RX
-	 * FIFO with bogus data
-	 */
+	 
 	if (sspi->rx_buf) {
 		reg &= ~SUN6I_TFR_CTL_DHB;
 		rx_len = tfr->len;
@@ -363,7 +342,7 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 		reg |= SUN6I_TFR_CTL_DHB;
 	}
 
-	/* We want to control the chip select manually */
+	 
 	reg |= SUN6I_TFR_CTL_CS_MANUAL;
 
 	sun6i_spi_write(sspi, SUN6I_TFR_CTL_REG, reg);
@@ -371,26 +350,13 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 	if (sspi->cfg->has_clk_ctl) {
 		unsigned int mclk_rate = clk_get_rate(sspi->mclk);
 
-		/* Ensure that we have a parent clock fast enough */
+		 
 		if (mclk_rate < (2 * tfr->speed_hz)) {
 			clk_set_rate(sspi->mclk, 2 * tfr->speed_hz);
 			mclk_rate = clk_get_rate(sspi->mclk);
 		}
 
-		/*
-		 * Setup clock divider.
-		 *
-		 * We have two choices there. Either we can use the clock
-		 * divide rate 1, which is calculated thanks to this formula:
-		 * SPI_CLK = MOD_CLK / (2 ^ cdr)
-		 * Or we can use CDR2, which is calculated with the formula:
-		 * SPI_CLK = MOD_CLK / (2 * (cdr + 1))
-		 * Wether we use the former or the latter is set through the
-		 * DRS bit.
-		 *
-		 * First try CDR2, and if we can't reach the expected
-		 * frequency, fall back to CDR1.
-		 */
+		 
 		div_cdr1 = DIV_ROUND_UP(mclk_rate, tfr->speed_hz);
 		div_cdr2 = DIV_ROUND_UP(div_cdr1, 2);
 		if (div_cdr2 <= (SUN6I_CLK_CTL_CDR2_MASK + 1)) {
@@ -407,15 +373,7 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 		clk_set_rate(sspi->mclk, tfr->speed_hz);
 		tfr->effective_speed_hz = clk_get_rate(sspi->mclk);
 
-		/*
-		 * Configure work mode.
-		 *
-		 * There are three work modes depending on the controller clock
-		 * frequency:
-		 * - normal sample mode           : CLK <= 24MHz SDM=1 SDC=0
-		 * - delay half-cycle sample mode : CLK <= 40MHz SDM=0 SDC=0
-		 * - delay one-cycle sample mode  : CLK >= 80MHz SDM=0 SDC=1
-		 */
+		 
 		reg = sun6i_spi_read(sspi, SUN6I_TFR_CTL_REG);
 		reg &= ~(SUN6I_TFR_CTL_SDM | SUN6I_TFR_CTL_SDC);
 
@@ -427,12 +385,12 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 		sun6i_spi_write(sspi, SUN6I_TFR_CTL_REG, reg);
 	}
 
-	/* Finally enable the bus - doing so before might raise SCK to HIGH */
+	 
 	reg = sun6i_spi_read(sspi, SUN6I_GBL_CTL_REG);
 	reg |= SUN6I_GBL_CTL_BUS_ENABLE;
 	sun6i_spi_write(sspi, SUN6I_GBL_CTL_REG, reg);
 
-	/* Setup the transfer now... */
+	 
 	if (sspi->tx_buf) {
 		tx_len = tfr->len;
 		nbits = tfr->tx_nbits;
@@ -452,13 +410,13 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 		reg = FIELD_PREP(SUN6I_BURST_CTL_CNT_STC_MASK, tx_len);
 	}
 
-	/* Setup the counters */
+	 
 	sun6i_spi_write(sspi, SUN6I_BURST_CTL_CNT_REG, reg);
 	sun6i_spi_write(sspi, SUN6I_BURST_CNT_REG, tfr->len);
 	sun6i_spi_write(sspi, SUN6I_XMIT_CNT_REG, tx_len);
 
 	if (!use_dma) {
-		/* Fill the TX FIFO */
+		 
 		sun6i_spi_fill_fifo(sspi);
 	} else {
 		ret = sun6i_spi_prepare_dma(sspi, tfr);
@@ -470,7 +428,7 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 		}
 	}
 
-	/* Enable the interrupts */
+	 
 	reg = SUN6I_INT_CTL_TC;
 
 	if (!use_dma) {
@@ -482,7 +440,7 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 
 	sun6i_spi_write(sspi, SUN6I_INT_CTL_REG, reg);
 
-	/* Start the transfer */
+	 
 	reg = sun6i_spi_read(sspi, SUN6I_TFR_CTL_REG);
 	sun6i_spi_write(sspi, SUN6I_TFR_CTL_REG, reg | SUN6I_TFR_CTL_XCH);
 
@@ -495,10 +453,7 @@ static int sun6i_spi_transfer_one(struct spi_master *master,
 		sun6i_spi_drain_fifo(sspi);
 	} else {
 		if (timeout && rx_len) {
-			/*
-			 * Even though RX on the peripheral side has finished
-			 * RX DMA might still be in flight
-			 */
+			 
 			timeout = wait_for_completion_timeout(&sspi->dma_rx_done,
 							      timeout);
 			if (!timeout)
@@ -530,30 +485,30 @@ static irqreturn_t sun6i_spi_handler(int irq, void *dev_id)
 	struct sun6i_spi *sspi = dev_id;
 	u32 status = sun6i_spi_read(sspi, SUN6I_INT_STA_REG);
 
-	/* Transfer complete */
+	 
 	if (status & SUN6I_INT_CTL_TC) {
 		sun6i_spi_write(sspi, SUN6I_INT_STA_REG, SUN6I_INT_CTL_TC);
 		complete(&sspi->done);
 		return IRQ_HANDLED;
 	}
 
-	/* Receive FIFO 3/4 full */
+	 
 	if (status & SUN6I_INT_CTL_RF_RDY) {
 		sun6i_spi_drain_fifo(sspi);
-		/* Only clear the interrupt _after_ draining the FIFO */
+		 
 		sun6i_spi_write(sspi, SUN6I_INT_STA_REG, SUN6I_INT_CTL_RF_RDY);
 		return IRQ_HANDLED;
 	}
 
-	/* Transmit FIFO 3/4 empty */
+	 
 	if (status & SUN6I_INT_CTL_TF_ERQ) {
 		sun6i_spi_fill_fifo(sspi);
 
 		if (!sspi->len)
-			/* nothing left to transmit */
+			 
 			sun6i_spi_disable_interrupt(sspi, SUN6I_INT_CTL_TF_ERQ);
 
-		/* Only clear the interrupt _after_ re-seeding the FIFO */
+		 
 		sun6i_spi_write(sspi, SUN6I_INT_STA_REG, SUN6I_INT_CTL_TF_ERQ);
 
 		return IRQ_HANDLED;
@@ -617,11 +572,7 @@ static bool sun6i_spi_can_dma(struct spi_master *master,
 {
 	struct sun6i_spi *sspi = spi_master_get_devdata(master);
 
-	/*
-	 * If the number of spi words to transfer is less or equal than
-	 * the fifo length we can just fill the fifo and wait for a single
-	 * irq, so don't bother setting up dma
-	 */
+	 
 	return xfer->len > sspi->cfg->fifo_depth;
 }
 
@@ -702,7 +653,7 @@ static int sun6i_spi_probe(struct platform_device *pdev)
 
 	master->dma_tx = dma_request_chan(&pdev->dev, "tx");
 	if (IS_ERR(master->dma_tx)) {
-		/* Check tx to see if we need defer probing driver */
+		 
 		if (PTR_ERR(master->dma_tx) == -EPROBE_DEFER) {
 			ret = -EPROBE_DEFER;
 			goto err_free_master;
@@ -727,10 +678,7 @@ static int sun6i_spi_probe(struct platform_device *pdev)
 		master->can_dma = sun6i_spi_can_dma;
 	}
 
-	/*
-	 * This wake-up/shutdown pattern is to be able to have the
-	 * device woken up, even if runtime_pm is disabled
-	 */
+	 
 	ret = sun6i_spi_runtime_resume(&pdev->dev);
 	if (ret) {
 		dev_err(&pdev->dev, "Couldn't resume the device\n");

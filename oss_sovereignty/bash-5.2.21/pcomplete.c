@@ -1,22 +1,6 @@
-/* pcomplete.c - functions to generate lists of matches for programmable completion. */
+ 
 
-/* Copyright (C) 1999-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -89,7 +73,7 @@ extern char *signal_names[];
 #if defined (PREFER_STDARG)
 static void debug_printf (const char *, ...)  __attribute__((__format__ (printf, 1, 2)));
 #endif
-#endif /* DEBUG */
+#endif  
 
 static int it_init_joblist PARAMS((ITEMLIST *, int));
 
@@ -152,33 +136,33 @@ static int progcomp_debug = 0;
 int prog_completion_enabled = 1;
 
 #ifdef ALIAS
-int progcomp_alias = 0;	/* unavailable to user code for now */
+int progcomp_alias = 0;	 
 #endif
 
-/* These are used to manage the arrays of strings for possible completions. */
+ 
 ITEMLIST it_aliases = { 0, it_init_aliases, (STRINGLIST *)0 };
 ITEMLIST it_arrayvars  = { LIST_DYNAMIC, it_init_arrayvars, (STRINGLIST *)0 };
 ITEMLIST it_bindings  = { 0, it_init_bindings, (STRINGLIST *)0 };
 ITEMLIST it_builtins  = { 0, it_init_builtins, (STRINGLIST *)0 };
-ITEMLIST it_commands = { LIST_DYNAMIC };	/* unused */
-ITEMLIST it_directories = { LIST_DYNAMIC };	/* unused */
+ITEMLIST it_commands = { LIST_DYNAMIC };	 
+ITEMLIST it_directories = { LIST_DYNAMIC };	 
 ITEMLIST it_disabled = { 0, it_init_disabled, (STRINGLIST *)0 };
 ITEMLIST it_enabled = { 0, it_init_enabled, (STRINGLIST *)0 };
 ITEMLIST it_exports  = { LIST_DYNAMIC, it_init_exported, (STRINGLIST *)0 };
-ITEMLIST it_files = { LIST_DYNAMIC };		/* unused */
+ITEMLIST it_files = { LIST_DYNAMIC };		 
 ITEMLIST it_functions  = { 0, it_init_functions, (STRINGLIST *)0 };
 ITEMLIST it_helptopics  = { 0, it_init_helptopics, (STRINGLIST *)0 };
 ITEMLIST it_hostnames  = { LIST_DYNAMIC, it_init_hostnames, (STRINGLIST *)0 };
-ITEMLIST it_groups = { LIST_DYNAMIC };		/* unused */
+ITEMLIST it_groups = { LIST_DYNAMIC };		 
 ITEMLIST it_jobs = { LIST_DYNAMIC, it_init_jobs, (STRINGLIST *)0 };
 ITEMLIST it_keywords = { 0, it_init_keywords, (STRINGLIST *)0 };
 ITEMLIST it_running = { LIST_DYNAMIC, it_init_running, (STRINGLIST *)0 };
-ITEMLIST it_services = { LIST_DYNAMIC };	/* unused */
+ITEMLIST it_services = { LIST_DYNAMIC };	 
 ITEMLIST it_setopts = { 0, it_init_setopts, (STRINGLIST *)0 };
 ITEMLIST it_shopts = { 0, it_init_shopts, (STRINGLIST *)0 };
 ITEMLIST it_signals = { 0, it_init_signals, (STRINGLIST *)0 };
 ITEMLIST it_stopped = { LIST_DYNAMIC, it_init_stopped, (STRINGLIST *)0 };
-ITEMLIST it_users = { LIST_DYNAMIC };		/* unused */
+ITEMLIST it_users = { LIST_DYNAMIC };		 
 ITEMLIST it_variables = { LIST_DYNAMIC, it_init_variables, (STRINGLIST *)0 };
 
 COMPSPEC *pcomp_curcs;
@@ -189,7 +173,7 @@ char *pcomp_line;
 int pcomp_ind;
 
 #ifdef DEBUG
-/* Debugging code */
+ 
 static void
 #if defined (PREFER_STDARG)
 debug_printf (const char *format, ...)
@@ -216,7 +200,7 @@ debug_printf (format, va_alist)
 }
 #endif
 
-/* Functions to manage the item lists */
+ 
 
 void
 set_itemlist_dirty (it)
@@ -270,9 +254,7 @@ shouldexp_filterpat (s)
   return 0;
 }
 
-/* Replace any instance of `&' in PAT with TEXT.  Backslash may be used to
-   quote a `&' and inhibit substitution.  Returns a new string.  This just
-   calls stringlib.c:strcreplace(). */
+ 
 static char *
 preproc_filterpat (pat, text)
      char *pat;
@@ -284,11 +266,7 @@ preproc_filterpat (pat, text)
   return ret;
 }
 	
-/* Remove any match of FILTERPAT from SL.  A `&' in FILTERPAT is replaced by
-   TEXT.  A leading `!' in FILTERPAT negates the pattern; in this case
-   any member of SL->list that does *not* match will be removed.  This returns
-   a new STRINGLIST with the matching members of SL *copied*.  Any
-   non-matching members of SL->list are *freed*. */   
+    
 STRINGLIST *
 filter_stringlist (sl, filterpat, text)
      STRINGLIST *sl;
@@ -305,7 +283,7 @@ filter_stringlist (sl, filterpat, text)
   npat = shouldexp_filterpat (filterpat) ? preproc_filterpat (filterpat, text) : filterpat;
 
 #if defined (EXTENDED_GLOB)
-  not = (npat[0] == '!' && (extended_glob == 0 || npat[1] != '('));	/*)*/
+  not = (npat[0] == '!' && (extended_glob == 0 || npat[1] != '('));	 
 #else
   not = (npat[0] == '!');
 #endif
@@ -328,9 +306,7 @@ filter_stringlist (sl, filterpat, text)
   return ret;
 }
 
-/* Turn an array of strings returned by rl_completion_matches into a STRINGLIST.
-   This understands how rl_completion_matches sets matches[0] (the lcd of the
-   strings in the list, unless it's the only match). */
+ 
 STRINGLIST *
 completions_to_stringlist (matches)
      char **matches;
@@ -359,8 +335,7 @@ completions_to_stringlist (matches)
   return sl;
 }
 
-/* Functions to manage the various ITEMLISTs that we populate internally.
-   The caller is responsible for setting ITP->flags correctly. */
+ 
 
 static int
 it_init_aliases (itp)
@@ -436,8 +411,8 @@ it_init_bindings (itp)
   char **blist;
   STRINGLIST *sl;
 
-  /* rl_funmap_names allocates blist, but not its members */
-  blist = (char **)rl_funmap_names ();	/* XXX fix const later */
+   
+  blist = (char **)rl_funmap_names ();	 
   sl = strlist_create (0);
   sl->list = blist;
   sl->list_size = 0;
@@ -519,8 +494,7 @@ it_init_functions (itp)
   return 0;
 }
 
-/* Like it_init_builtins, but includes everything the help builtin looks at,
-   not just builtins with an active implementing function. */
+ 
 static int
 it_init_helptopics (itp)
      ITEMLIST *itp;
@@ -563,7 +537,7 @@ it_init_joblist (itp, jstate)
   register PROCESS *p;
   char *s, *t;
   JOB *j;
-  JOB_STATE ws;		/* wanted state */
+  JOB_STATE ws;		 
 
   ws = JNONE;
   if (jstate == 0)
@@ -683,11 +657,7 @@ it_init_shopts (itp)
   return 0;
 }
 
-/* Generate a list of all matches for TEXT using the STRINGLIST in itp->slist
-   as the list of possibilities.  If the itemlist has been marked dirty or
-   it should be regenerated every time, destroy the old STRINGLIST and make a
-   new one before trying the match.  TEXT is dequoted before attempting a
-   match. */
+ 
 static STRINGLIST *
 gen_matches_from_itemlist (itp, text)
      ITEMLIST *itp;
@@ -724,69 +694,41 @@ gen_matches_from_itemlist (itp, text)
   return ret;
 }
 
-/* A wrapper for rl_filename_completion_function that dequotes the filename
-   before attempting completions. */
+ 
 static char *
 pcomp_filename_completion_function (text, state)
      const char *text;
      int state;
 {
-  static char *dfn;	/* dequoted filename */
+  static char *dfn;	 
   int iscompgen, iscompleting;
 
   if (state == 0)
     {
       FREE (dfn);
-      /* remove backslashes quoting special characters in filenames. */
-      /* There are roughly three paths we can follow to get here:
-		1.  complete -f
-		2.  compgen -f "$word" from a completion function
-		3.  compgen -f "$word" from the command line
-	 They all need to be handled.
-
-	 In the first two cases, readline will run the filename dequoting
-	 function in rl_filename_completion_function if it found a filename
-	 quoting character in the word to be completed
-	 (rl_completion_found_quote).  We run the dequoting function here
-	 if we're running compgen, we're not completing, and the
-	 rl_filename_completion_function won't dequote the filename
-	 (rl_completion_found_quote == 0). */
+       
+       
       iscompgen = this_shell_builtin == compgen_builtin;
       iscompleting = RL_ISSTATE (RL_STATE_COMPLETING);
       if (iscompgen && iscompleting == 0 && rl_completion_found_quote == 0
 	  && rl_filename_dequoting_function)
 	{
-	  /* Use rl_completion_quote_character because any single or
-	     double quotes have been removed by the time TEXT makes it
-	     here, and we don't want to remove backslashes inside
-	     quoted strings. */
+	   
 	  dfn = (*rl_filename_dequoting_function) ((char *)text, rl_completion_quote_character);
 	}
-      /* Intended to solve a mismatched assumption by bash-completion.  If
-	 the text to be completed is empty, but bash-completion turns it into
-	 a quoted string ('') assuming that this code will dequote it before
-	 calling readline, do the dequoting. */
+       
       else if (iscompgen && iscompleting &&
 	       pcomp_curtxt && *pcomp_curtxt == 0 &&
 	       text && (*text == '\'' || *text == '"') && text[1] == text[0] && text[2] == 0 && 
 	       rl_filename_dequoting_function)
 	dfn = (*rl_filename_dequoting_function) ((char *)text, rl_completion_quote_character);
-      /* Another mismatched assumption by bash-completion.  If compgen is being
-      	 run as part of bash-completion, and the argument to compgen is not
-      	 the same as the word originally passed to the programmable completion
-      	 code, dequote the argument if it has quote characters.  It's an
-      	 attempt to detect when bash-completion is quoting its filename
-      	 argument before calling compgen. */
-      /* We could check whether gen_shell_function_matches is in the call
-	 stack by checking whether the gen-shell-function-matches tag is in
-	 the unwind-protect stack, but there's no function to do that yet.
-	 We could simply check whether we're executing in a function by
-	 checking variable_context, and may end up doing that. */
+       
+       
       else if (iscompgen && iscompleting && rl_filename_dequoting_function &&
 	       pcomp_curtxt && text &&
 	       STREQ (pcomp_curtxt, text) == 0 &&
 	       variable_context &&
-	       sh_contains_quotes (text))	/* guess */
+	       sh_contains_quotes (text))	 
 	dfn = (*rl_filename_dequoting_function) ((char *)text, rl_completion_quote_character);
       else
 	dfn = savestring (text);
@@ -820,7 +762,7 @@ pcomp_filename_completion_function (text, state)
       } \
   } while (0)
 
-/* Functions to generate lists of matches from the actions member of CS. */
+ 
 
 static STRINGLIST *
 gen_action_completions (cs, text)
@@ -828,7 +770,7 @@ gen_action_completions (cs, text)
      const char *text;
 {
   STRINGLIST *ret, *tmatches;
-  char **cmatches;	/* from rl_completion_matches ... */
+  char **cmatches;	 
   unsigned long flags;
   int t;
 
@@ -860,16 +802,13 @@ gen_action_completions (cs, text)
   GEN_XCOMPS(flags, CA_GROUP, text, bash_groupname_completion_function, cmatches, ret, tmatches);
   GEN_XCOMPS(flags, CA_SERVICE, text, bash_servicename_completion_function, cmatches, ret, tmatches);
 
-  /* And lastly, the special case for directories */
+   
   if (flags & CA_DIRECTORY)
     {
       t = rl_filename_completion_desired;
-      rl_completion_mark_symlink_dirs = 1;	/* override user preference */
+      rl_completion_mark_symlink_dirs = 1;	 
       cmatches = bash_directory_completion_matches (text);
-      /* If we did not want filename completion before this, and there are
-	 no matches, turn off rl_filename_completion_desired so whatever
-	 matches we get are not treated as filenames (it gets turned on by
-	 rl_filename_completion_function unconditionally). */
+       
       if (t == 0 && cmatches == 0 && rl_filename_completion_desired == 1)
         rl_filename_completion_desired = 0;
       tmatches = completions_to_stringlist (cmatches);
@@ -881,11 +820,7 @@ gen_action_completions (cs, text)
   return ret;
 }
 
-/* Generate a list of matches for CS->globpat.  Unresolved: should this use
-   TEXT as a match prefix, or just go without?  Currently, the code does not
-   use TEXT, just globs CS->globpat and returns the results.  If we do decide
-   to use TEXT, we should call quote_string_for_globbing before the call to
-   glob_filename (in which case we could use shell_glob_filename). */
+ 
 static STRINGLIST *
 gen_globpat_matches (cs, text)
       COMPSPEC *cs;
@@ -904,8 +839,7 @@ gen_globpat_matches (cs, text)
   return sl;
 }
 
-/* Perform the shell word expansions on CS->words and return the results.
-   Again, this ignores TEXT. */
+ 
 static STRINGLIST *
 gen_wordlist_matches (cs, text)
      COMPSPEC *cs;
@@ -914,22 +848,17 @@ gen_wordlist_matches (cs, text)
   WORD_LIST *l, *l2;
   STRINGLIST *sl;
   int nw, tlen;
-  char *ntxt;		/* dequoted TEXT to use in comparisons */
+  char *ntxt;		 
 
   if (cs->words == 0 || cs->words[0] == '\0')
     return ((STRINGLIST *)NULL);
 
-  /* This used to be a simple expand_string(cs->words, 0), but that won't
-     do -- there's no way to split a simple list into individual words
-     that way, since the shell semantics say that word splitting is done
-     only on the results of expansion.  split_at_delims also handles embedded
-     quoted strings and preserves the quotes for the expand_words_shellexp
-     function call that follows. */
-  /* XXX - this is where this function spends most of its time */
+   
+   
   l = split_at_delims (cs->words, strlen (cs->words), (char *)NULL, -1, 0, (int *)NULL, (int *)NULL);
   if (l == 0)
     return ((STRINGLIST *)NULL);
-  /* This will jump back to the top level if the expansion fails... */
+   
   l2 = expand_words_shellexp (l);
   dispose_words (l);
 
@@ -975,7 +904,7 @@ bind_comp_words (lwords)
   VUNSETATTR (v, att_invisible);
   return v;
 }
-#endif /* ARRAY_VARS */
+#endif  
 
 static void
 bind_compfunc_variables (line, ind, lwords, cw, exported)
@@ -990,13 +919,12 @@ bind_compfunc_variables (line, ind, lwords, cw, exported)
   size_t llen;
   int c;
 
-  /* Set the variables that the function expects while it executes.  Maybe
-     these should be in the function environment (temporary_env). */
+   
   v = bind_variable ("COMP_LINE", line, 0);
   if (v && exported)
     VSETATTR(v, att_exported);
 
-  /* Post bash-4.2: COMP_POINT is characters instead of bytes. */
+   
   c = line[ind];
   line[ind] = '\0';
   llen = MB_STRLEN (line);
@@ -1016,8 +944,7 @@ bind_compfunc_variables (line, ind, lwords, cw, exported)
   if (v && exported)
     VSETATTR(v, att_exported);
 
-  /* Since array variables can't be exported, we don't bother making the
-     array of words. */
+   
   if (exported == 0)
     {
 #ifdef ARRAY_VARS
@@ -1046,17 +973,7 @@ unbind_compfunc_variables (exported)
     array_needs_making = 1;
 }
 
-/* Build the list of words to pass to a function or external command
-   as arguments.  When the function or command is invoked,
-
-	$0 == function or command being invoked
-   	$1 == command name
-   	$2 == word to be completed (possibly null)
-   	$3 == previous word
-
-   Functions can access all of the words in the current command line
-   with the COMP_WORDS array.  External commands cannot; they have to
-   make do with the COMP_LINE and COMP_POINT variables. */
+ 
 
 static WORD_LIST *
 build_arg_list (cmd, cname, text, lwords, ind)
@@ -1072,16 +989,16 @@ build_arg_list (cmd, cname, text, lwords, ind)
 
   ret = (WORD_LIST *)NULL;
   w = make_word (cmd);
-  ret = make_word_list (w, (WORD_LIST *)NULL);	/* $0 */
+  ret = make_word_list (w, (WORD_LIST *)NULL);	 
 
-  w = make_word (cname);			/* $1 */
+  w = make_word (cname);			 
   cl = ret->next = make_word_list (w, (WORD_LIST *)NULL);
 
   w = make_word (text);
-  cl->next = make_word_list (w, (WORD_LIST *)NULL);	/* $2 */
+  cl->next = make_word_list (w, (WORD_LIST *)NULL);	 
   cl = cl->next;
 
-  /* Search lwords for current word */
+   
   for (l = lwords, i = 1; l && i < ind-1; l = l->next, i++)
     ;
   w = (l && l->word) ? copy_word (l->word) : make_word ("");
@@ -1090,17 +1007,7 @@ build_arg_list (cmd, cname, text, lwords, ind)
   return ret;
 }
 
-/* Build a command string with
-	$0 == cs->funcname	(function to execute for completion list)
-   	$1 == command name	(command being completed)
-   	$2 = word to be completed (possibly null)
-   	$3 = previous word
-   and run in the current shell.  The function should put its completion
-   list into the array variable COMPREPLY.  We build a STRINGLIST
-   from the results and return it.
-
-   Since the shell function should return its list of matches in an array
-   variable, this does nothing if arrays are not compiled into the shell. */
+ 
 
 static STRINGLIST *
 gen_shell_function_matches (cs, cmd, text, line, ind, lwords, nw, cw, foundp)
@@ -1142,8 +1049,7 @@ gen_shell_function_matches (cs, cmd, text, line, ind, lwords, nw, cw, foundp)
   return ((STRINGLIST *)NULL);
 #else
 
-  /* We pass cw - 1 because command_line_to_word_list returns indices that are
-     1-based, while bash arrays are 0-based. */
+   
   bind_compfunc_variables (line, ind, lwords, cw - 1, 0);
 
   cmdlist = build_arg_list (funcname, cmd, text, lwords, cw);
@@ -1166,11 +1072,11 @@ gen_shell_function_matches (cs, cmd, text, line, ind, lwords, nw, cw, foundp)
   if (foundp)
     *foundp = found;
 
-  /* Now clean up and destroy everything. */
+   
   dispose_words (cmdlist);
   unbind_compfunc_variables (0);
 
-  /* The list of completions is returned in the array variable COMPREPLY. */
+   
   v = find_variable ("COMPREPLY");
   if (v == 0)
     return ((STRINGLIST *)NULL);
@@ -1184,28 +1090,20 @@ gen_shell_function_matches (cs, cmd, text, line, ind, lwords, nw, cw, foundp)
     sl = (STRINGLIST *)NULL;
   else
     {
-      /* XXX - should we filter the list of completions so only those matching
-	 TEXT are returned?  Right now, we do not. */
+       
       sl = strlist_create (0);
       sl->list = array_to_argv (a, 0);
       sl->list_len = sl->list_size = array_num_elements (a);
     }
 
-  /* XXX - should we unbind COMPREPLY here? */
+   
   unbind_variable_noref ("COMPREPLY");
 
   return (sl);
 #endif
 }
 
-/* Build a command string with
-	$0 == cs->command	(command to execute for completion list)
-   	$1 == command name	(command being completed)
-	$2 == word to be completed (possibly null)
-	$3 == previous word
-   and run it with command substitution.  Parse the results, one word
-   per line, with backslashes allowed to escape newlines.  Build a
-   STRINGLIST from the results and return it. */
+ 
 
 static STRINGLIST *
 gen_command_matches (cs, cmd, text, line, ind, lwords, nw, cw)
@@ -1226,20 +1124,20 @@ gen_command_matches (cs, cmd, text, line, ind, lwords, nw, cw)
   bind_compfunc_variables (line, ind, lwords, cw, 1);
   cmdlist = build_arg_list (cs->command, cmd, text, lwords, cw);
 
-  /* Estimate the size needed for the buffer. */
+   
   n = strlen (cs->command);
   cmdsize = n + 1;
   for (cl = cmdlist->next; cl; cl = cl->next)
     cmdsize += STRLEN (cl->word->word) + 3;
   cmdsize += 2;
 
-  /* allocate the string for the command and fill it in. */
+   
   cscmd = (char *)xmalloc (cmdsize + 1);
 
-  strcpy (cscmd, cs->command);			/* $0 */
+  strcpy (cscmd, cs->command);			 
   cmdlen = n;
   cscmd[cmdlen++] = ' ';
-  for (cl = cmdlist->next; cl; cl = cl->next)   /* $1, $2, $3, ... */
+  for (cl = cmdlist->next; cl; cl = cl->next)    
     {
       t = sh_single_quote (cl->word->word ? cl->word->word : "");
       n = strlen (t);
@@ -1257,7 +1155,7 @@ gen_command_matches (cs, cmd, text, line, ind, lwords, nw, cw)
   if (tw)
     dispose_word_desc (tw);
 
-  /* Now clean up and destroy everything. */
+   
   dispose_words (cmdlist);
   free (cscmd);
   unbind_compfunc_variables (1);
@@ -1268,8 +1166,7 @@ gen_command_matches (cs, cmd, text, line, ind, lwords, nw, cw)
       return ((STRINGLIST *)NULL);
     }
 
-  /* Now break CSBUF up at newlines, with backslash allowed to escape a
-     newline, and put the individual words into a STRINGLIST. */
+   
   sl = strlist_create (16);
   for (ws = 0; csbuf[ws]; )
     {
@@ -1302,7 +1199,7 @@ command_line_to_word_list (line, llen, sentinel, nwp, cwp)
   const char *delims;
 
 #if 0
-  delims = "()<>;&| \t\n";	/* shell metacharacters break words */
+  delims = "()<>;&| \t\n";	 
 #else
   delims = rl_completer_word_break_characters;
 #endif
@@ -1310,7 +1207,7 @@ command_line_to_word_list (line, llen, sentinel, nwp, cwp)
   return (ret);
 }
 
-/* Evaluate COMPSPEC *cs and return all matches for WORD. */
+ 
 
 STRINGLIST *
 gen_compspec_completions (cs, cmd, word, start, end, foundp)
@@ -1343,7 +1240,7 @@ gen_compspec_completions (cs, cmd, word, start, end, foundp)
     }
 #endif
 
-  /* Now we start generating completions based on the other members of CS. */
+   
   if (cs->globpat)
     {
       tmatches = gen_globpat_matches (cs, word);
@@ -1385,9 +1282,7 @@ gen_compspec_completions (cs, cmd, word, start, end, foundp)
   line = (char *)NULL;
   if (cs->command || cs->funcname)
     {
-      /* If we have a command or function to execute, we need to first break
-	 the command line into individual words, find the number of words,
-	 and find the word in the list containing the word to be completed. */
+       
       line = substring (pcomp_line, start, end);
       llen = end - start;
 
@@ -1396,7 +1291,7 @@ gen_compspec_completions (cs, cmd, word, start, end, foundp)
 		line, llen, pcomp_ind - start, &nw, &cw);
 #endif
       lwords = command_line_to_word_list (line, llen, pcomp_ind - start, &nw, &cw);
-      /* If we skipped a NULL word at the beginning of the line, add it back */
+       
       if (lwords && lwords->word && cmd[0] == 0 && lwords->word->word[0] != 0)
 	{
 	  lw = make_bare_word (cmd);
@@ -1496,10 +1391,7 @@ gen_compspec_completions (cs, cmd, word, start, end, foundp)
   if (cs->prefix || cs->suffix)
     ret = strlist_prefix_suffix (ret, cs->prefix, cs->suffix);
 
-  /* If no matches have been generated and the user has specified that
-      directory completion should be done as a default, call
-      gen_action_completions again to generate a list of matching directory
-      names. */
+   
   if ((ret == 0 || ret->list_len == 0) && (cs->options & COPT_DIRNAMES))
     {
       tcs = compspec_create ();
@@ -1525,23 +1417,20 @@ void
 pcomp_set_readline_variables (flags, nval)
      int flags, nval;
 {
-  /* If the user specified that the compspec returns filenames, make
-     sure that readline knows it. */
+   
   if (flags & COPT_FILENAMES)
     rl_filename_completion_desired = nval;
-  /* If the user doesn't want a space appended, tell readline. */
+   
   if (flags & COPT_NOSPACE)
     rl_completion_suppress_append = nval;
-  /* The value here is inverted, since the default is on and the `noquote'
-     option is supposed to turn it off */
+   
   if (flags & COPT_NOQUOTE)
     rl_filename_quoting_desired = 1 - nval;
   if (flags & COPT_NOSORT)
     rl_sort_completion_matches = 1 - nval;
 }
 
-/* Set or unset FLAGS in the options word of the current compspec.
-   SET_OR_UNSET is 1 for setting, 0 for unsetting. */
+ 
 void
 pcomp_set_compspec_options (cs, flags, set_or_unset)
      COMPSPEC *cs;
@@ -1581,7 +1470,7 @@ gen_progcomp_completions (ocmd, cmd, word, start, end, foundp, retryp, lastcs)
 
   if (*lastcs)
     compspec_dispose (*lastcs);
-  cs->refcount++;	/* XXX */
+  cs->refcount++;	 
   *lastcs = cs;
 
   cs = compspec_copy (cs);
@@ -1600,7 +1489,7 @@ gen_progcomp_completions (ocmd, cmd, word, start, end, foundp, retryp, lastcs)
   pcomp_curcmd = oldcmd;
   pcomp_curtxt = oldtxt;
 
-  /* We need to conditionally handle setting *retryp here */
+   
   if (retryp)
     *retryp = foundp && (*foundp & PCOMP_RETRYFAIL);    	
 
@@ -1614,10 +1503,7 @@ gen_progcomp_completions (ocmd, cmd, word, start, end, foundp, retryp, lastcs)
   return ret;  
 }
 
-/* The driver function for the programmable completion code.  Returns a list
-   of matches for WORD, which is an argument to command CMD.  START and END
-   bound the command currently being completed in pcomp_line (usually
-   rl_line_buffer). */
+ 
 char **
 programmable_completions (cmd, word, start, end, foundp)
      const char *cmd;
@@ -1647,8 +1533,7 @@ programmable_completions (cmd, word, start, end, foundp)
     {
       retry = 0;
 
-      /* We look at the basename of CMD if the full command does not have
-	 an associated COMPSPEC. */
+       
       ret = gen_progcomp_completions (ocmd, ocmd, word, start, oend, &found, &retry, &lastcs);
       if (found == 0)
 	{
@@ -1661,25 +1546,21 @@ programmable_completions (cmd, word, start, end, foundp)
 	ret = gen_progcomp_completions (DEFAULTCMD, ocmd, word, start, oend, &found, &retry, &lastcs);
 
 #if defined (ALIAS)
-      /* Look up any alias for CMD, try to gen completions for it */
-      /* Look up the alias, find the value, build a new line replacing CMD
-	 with that value, offsetting PCOMP_IND and END appropriately, reset
-	 PCOMP_LINE to the new line and OCMD with the new command name, then
-	 call gen_progcomp_completions again. We could use alias_expand for
-	 this, but it does more (and less) than we need right now. */
+       
+       
       if (found == 0 && retry == 0 && progcomp_alias && (al = find_alias (ocmd)))
 	{
 	  char *ncmd, *nline, *ntxt;
 	  int ind, lendiff;
 	  size_t nlen, olen, llen;
 
-	  /* We found an alias for OCMD. Take the value and build a new line */
+	   
 	  ntxt = al->value;
 	  nlen = strlen (ntxt);
 	  if (nlen == 0)
 	    break;
 	  olen = strlen (ocmd);
-	  lendiff = nlen - olen;	/* can be negative */
+	  lendiff = nlen - olen;	 
 	  llen = strlen (pcomp_line);
 
 	  nline = (char *)xmalloc (llen + lendiff + 1);
@@ -1688,23 +1569,21 @@ programmable_completions (cmd, word, start, end, foundp)
 	  strncpy (nline + start, ntxt, nlen);
 	  strcpy (nline + start + nlen, pcomp_line + start + olen);
 
-	  /* Find the first word of the alias value and use that as OCMD. We
-	     don't check the alias value to see whether it begins with a valid
-	     command name, so this can be fooled. */
+	   
 	  ind = skip_to_delim (ntxt, 0, "()<>;&| \t\n", SD_NOJMP|SD_COMPLETE);
 	  if (ind > 0)
 	    ncmd = substring (ntxt, 0, ind);
 	  else
 	    {
 	      free (nline);
-	      break;		/* will free pcomp_line and ocmd later */
+	      break;		 
 	    }
 
-	  /* Adjust PCOMP_IND and OEND appropriately */
+	   
 	  pcomp_ind += lendiff;
 	  oend += lendiff;
 
-	  /* Set up values with new line. WORD stays the same. */
+	   
 	  if (ocmd != cmd)
 	    free (ocmd);
 	  if (pcomp_line != rl_line_buffer)
@@ -1713,10 +1592,10 @@ programmable_completions (cmd, word, start, end, foundp)
 	  ocmd = ncmd;
 	  pcomp_line = nline;
 
-	  /* And go back and start over. */
+	   
 	  retry = 1;
 	}
-#endif /* ALIAS */
+#endif  
 
       count++;
 
@@ -1744,14 +1623,14 @@ programmable_completions (cmd, word, start, end, foundp)
   if (foundp)
     *foundp = found;
 
-  if (lastcs)	/* XXX - should be while? */
+  if (lastcs)	 
     compspec_dispose (lastcs);
 
-  /* XXX restore pcomp_line and pcomp_ind? */
+   
   pcomp_line = rl_line_buffer;
   pcomp_ind = rl_point;
 
   return (rmatches);
 }
 
-#endif /* PROGRAMMABLE_COMPLETION */
+#endif  

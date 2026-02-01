@@ -1,14 +1,4 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2001-2007 Red Hat, Inc.
- * Copyright © 2004-2010 David Woodhouse <dwmw2@infradead.org>
- *
- * Created by David Woodhouse <dwmw2@infradead.org>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -57,12 +47,10 @@ __jffs2_dbg_acct_sanity_check(struct jffs2_sb_info *c,
 	spin_unlock(&c->erase_completion_lock);
 }
 
-#endif /* JFFS2_DBG_SANITY_CHECKS */
+#endif  
 
 #ifdef JFFS2_DBG_PARANOIA_CHECKS
-/*
- * Check the fragtree.
- */
+ 
 void
 __jffs2_dbg_fragtree_paranoia_check(struct jffs2_inode_info *f)
 {
@@ -90,11 +78,7 @@ __jffs2_dbg_fragtree_paranoia_check_nolock(struct jffs2_inode_info *f)
 				bitched = 1;
 			}
 
-			/* A hole node which isn't multi-page should be garbage-collected
-			   and merged anyway, so we just check for the frag size here,
-			   rather than mucking around with actually reading the node
-			   and checking the compression type, which is the real way
-			   to tell a hole node. */
+			 
 			if (frag->ofs & (PAGE_SIZE-1) && frag_prev(frag)
 					&& frag_prev(frag)->size < PAGE_SIZE && frag_prev(frag)->node) {
 				JFFS2_ERROR("REF_PRISTINE node at 0x%08x had a previous non-hole frag in the same page. Tell dwmw2.\n",
@@ -118,9 +102,7 @@ __jffs2_dbg_fragtree_paranoia_check_nolock(struct jffs2_inode_info *f)
 	}
 }
 
-/*
- * Check if the flash contains all 0xFF before we start writing.
- */
+ 
 void
 __jffs2_dbg_prewrite_paranoia_check(struct jffs2_sb_info *c,
 				    uint32_t ofs, int len)
@@ -294,9 +276,7 @@ do {									\
 	}
 }
 
-/*
- * Check the space accounting and node_ref list correctness for the JFFS2 erasable block 'jeb'.
- */
+ 
 void
 __jffs2_dbg_acct_paranoia_check(struct jffs2_sb_info *c,
 				struct jffs2_eraseblock *jeb)
@@ -354,7 +334,7 @@ __jffs2_dbg_acct_paranoia_check_nolock(struct jffs2_sb_info *c,
 	}
 
 #if 0
-	/* This should work when we implement ref->__totlen elemination */
+	 
 	if (my_dirty_size != jeb->dirty_size + jeb->wasted_size) {
 		JFFS2_ERROR("Calculated dirty+wasted size %#08x != stored dirty + wasted size %#08x\n",
 			my_dirty_size, jeb->dirty_size + jeb->wasted_size);
@@ -382,12 +362,10 @@ error:
 	BUG();
 
 }
-#endif /* JFFS2_DBG_PARANOIA_CHECKS */
+#endif  
 
 #if defined(JFFS2_DBG_DUMPS) || defined(JFFS2_DBG_PARANOIA_CHECKS)
-/*
- * Dump the node_refs of the 'jeb' JFFS2 eraseblock.
- */
+ 
 void
 __jffs2_dbg_dump_node_refs(struct jffs2_sb_info *c,
 			   struct jffs2_eraseblock *jeb)
@@ -428,9 +406,7 @@ __jffs2_dbg_dump_node_refs_nolock(struct jffs2_sb_info *c,
 	printk("\n");
 }
 
-/*
- * Dump an eraseblock's space accounting.
- */
+ 
 void
 __jffs2_dbg_dump_jeb(struct jffs2_sb_info *c, struct jffs2_eraseblock *jeb)
 {
@@ -766,9 +742,7 @@ __jffs2_dbg_dump_buffer(unsigned char *buf, int len, uint32_t offs)
 	printk("\n");
 }
 
-/*
- * Dump a JFFS2 node.
- */
+ 
 void
 __jffs2_dbg_dump_node(struct jffs2_sb_info *c, uint32_t ofs)
 {
@@ -863,4 +837,4 @@ __jffs2_dbg_dump_node(struct jffs2_sb_info *c, uint32_t ofs)
 		break;
 	}
 }
-#endif /* JFFS2_DBG_DUMPS || JFFS2_DBG_PARANOIA_CHECKS */
+#endif  

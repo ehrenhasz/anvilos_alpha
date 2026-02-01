@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * PC-Engines APUv2/APUv3 board platform driver
- * for GPIO buttons and LEDs
- *
- * Copyright (C) 2018 metux IT consult
- * Author: Enrico Weigelt <info@metux.net>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -21,12 +15,9 @@
 #include <linux/input.h>
 #include <linux/platform_data/gpio/gpio-amd-fch.h>
 
-/*
- * NOTE: this driver only supports APUv2/3 - not APUv1, as this one
- * has completely different register layouts.
- */
+ 
 
-/* Register mappings */
+ 
 #define APU2_GPIO_REG_LED1		AMD_FCH_GPIO_REG_GPIO57
 #define APU2_GPIO_REG_LED2		AMD_FCH_GPIO_REG_GPIO58
 #define APU2_GPIO_REG_LED3		AMD_FCH_GPIO_REG_GPIO59_DEVSLP1
@@ -35,7 +26,7 @@
 #define APU2_GPIO_REG_MPCIE2		AMD_FCH_GPIO_REG_GPIO55_DEVSLP0
 #define APU2_GPIO_REG_MPCIE3		AMD_FCH_GPIO_REG_GPIO51
 
-/* Order in which the GPIO lines are defined in the register list */
+ 
 #define APU2_GPIO_LINE_LED1		0
 #define APU2_GPIO_LINE_LED2		1
 #define APU2_GPIO_LINE_LED3		2
@@ -44,7 +35,7 @@
 #define APU2_GPIO_LINE_MPCIE2		5
 #define APU2_GPIO_LINE_MPCIE3		6
 
-/* GPIO device */
+ 
 
 static int apu2_gpio_regs[] = {
 	[APU2_GPIO_LINE_LED1]		= APU2_GPIO_REG_LED1,
@@ -72,7 +63,7 @@ static const struct amd_fch_gpio_pdata board_apu2 = {
 	.gpio_names	= apu2_gpio_names,
 };
 
-/* GPIO LEDs device */
+ 
 
 static const struct gpio_led apu2_leds[] = {
 	{ .name = "apu:green:1" },
@@ -94,11 +85,11 @@ static struct gpiod_lookup_table gpios_led_table = {
 				NULL, 1, GPIO_ACTIVE_LOW),
 		GPIO_LOOKUP_IDX(AMD_FCH_GPIO_DRIVER_NAME, APU2_GPIO_LINE_LED3,
 				NULL, 2, GPIO_ACTIVE_LOW),
-		{} /* Terminating entry */
+		{}  
 	}
 };
 
-/* GPIO keyboard device */
+ 
 
 static struct gpio_keys_button apu2_keys_buttons[] = {
 	{
@@ -124,16 +115,16 @@ static struct gpiod_lookup_table gpios_key_table = {
 	.table = {
 		GPIO_LOOKUP_IDX(AMD_FCH_GPIO_DRIVER_NAME, APU2_GPIO_LINE_MODESW,
 				NULL, 0, GPIO_ACTIVE_LOW),
-		{} /* Terminating entry */
+		{}  
 	}
 };
 
-/* Board setup */
+ 
 
-/* Note: matching works on string prefix, so "apu2" must come before "apu" */
+ 
 static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 
-	/* APU2 w/ legacy BIOS < 4.0.8 */
+	 
 	{
 		.ident		= "apu2",
 		.matches	= {
@@ -142,7 +133,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		},
 		.driver_data	= (void *)&board_apu2,
 	},
-	/* APU2 w/ legacy BIOS >= 4.0.8 */
+	 
 	{
 		.ident		= "apu2",
 		.matches	= {
@@ -151,7 +142,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		},
 		.driver_data	= (void *)&board_apu2,
 	},
-	/* APU2 w/ mainline BIOS */
+	 
 	{
 		.ident		= "apu2",
 		.matches	= {
@@ -161,7 +152,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		.driver_data	= (void *)&board_apu2,
 	},
 
-	/* APU3 w/ legacy BIOS < 4.0.8 */
+	 
 	{
 		.ident		= "apu3",
 		.matches	= {
@@ -170,7 +161,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		},
 		.driver_data = (void *)&board_apu2,
 	},
-	/* APU3 w/ legacy BIOS >= 4.0.8 */
+	 
 	{
 		.ident       = "apu3",
 		.matches     = {
@@ -179,7 +170,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		},
 		.driver_data = (void *)&board_apu2,
 	},
-	/* APU3 w/ mainline BIOS */
+	 
 	{
 		.ident       = "apu3",
 		.matches     = {
@@ -188,7 +179,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		},
 		.driver_data = (void *)&board_apu2,
 	},
-	/* APU4 w/ legacy BIOS < 4.0.8 */
+	 
 	{
 		.ident        = "apu4",
 		.matches    = {
@@ -197,7 +188,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		},
 		.driver_data = (void *)&board_apu2,
 	},
-	/* APU4 w/ legacy BIOS >= 4.0.8 */
+	 
 	{
 		.ident       = "apu4",
 		.matches     = {
@@ -206,7 +197,7 @@ static const struct dmi_system_id apu_gpio_dmi_table[] __initconst = {
 		},
 		.driver_data = (void *)&board_apu2,
 	},
-	/* APU4 w/ mainline BIOS */
+	 
 	{
 		.ident       = "apu4",
 		.matches     = {

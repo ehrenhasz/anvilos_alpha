@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2023 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew Davis <afd@ti.com>
- *
- * Based on the TPS65912 driver
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
@@ -20,14 +15,14 @@ struct tps65086_gpio {
 static int tps65086_gpio_get_direction(struct gpio_chip *chip,
 				       unsigned offset)
 {
-	/* This device is output only */
+	 
 	return GPIO_LINE_DIRECTION_OUT;
 }
 
 static int tps65086_gpio_direction_input(struct gpio_chip *chip,
 					 unsigned offset)
 {
-	/* This device is output only */
+	 
 	return -EINVAL;
 }
 
@@ -36,7 +31,7 @@ static int tps65086_gpio_direction_output(struct gpio_chip *chip,
 {
 	struct tps65086_gpio *gpio = gpiochip_get_data(chip);
 
-	/* Set the initial value */
+	 
 	regmap_update_bits(gpio->tps->regmap, TPS65086_GPOCTRL,
 			   BIT(4 + offset), value ? BIT(4 + offset) : 0);
 
@@ -94,7 +89,7 @@ static int tps65086_gpio_probe(struct platform_device *pdev)
 
 static const struct platform_device_id tps65086_gpio_id_table[] = {
 	{ "tps65086-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65086_gpio_id_table);
 

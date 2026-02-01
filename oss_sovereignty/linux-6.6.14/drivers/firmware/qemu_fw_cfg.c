@@ -1,31 +1,4 @@
-/*
- * drivers/firmware/qemu_fw_cfg.c
- *
- * Copyright 2015 Carnegie Mellon University
- *
- * Expose entries from QEMU's firmware configuration (fw_cfg) device in
- * sysfs (read-only, under "/sys/firmware/qemu_fw_cfg/...").
- *
- * The fw_cfg device may be instantiated via either an ACPI node (on x86
- * and select subsets of aarch64), a Device Tree node (on arm), or using
- * a kernel module (or command line) parameter with the following syntax:
- *
- *      [qemu_fw_cfg.]ioport=<size>@<base>[:<ctrl_off>:<data_off>[:<dma_off>]]
- * or
- *      [qemu_fw_cfg.]mmio=<size>@<base>[:<ctrl_off>:<data_off>[:<dma_off>]]
- *
- * where:
- *      <size>     := size of ioport or mmio range
- *      <base>     := physical base address of ioport or mmio range
- *      <ctrl_off> := (optional) offset of control register
- *      <data_off> := (optional) offset of data register
- *      <dma_off> := (optional) offset of dma register
- *
- * e.g.:
- *      qemu_fw_cfg.ioport=12@0x510:0:1:4	(the default on x86)
- * or
- *      qemu_fw_cfg.mmio=16@0x9020000:8:0:16	(the default on arm)
- */
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -43,10 +16,10 @@ MODULE_AUTHOR("Gabriel L. Somlo <somlo@cmu.edu>");
 MODULE_DESCRIPTION("QEMU fw_cfg sysfs support");
 MODULE_LICENSE("GPL");
 
-/* fw_cfg revision attribute, in /sys/firmware/qemu_fw_cfg top-level dir. */
+ 
 static u32 fw_cfg_rev;
 
-/* fw_cfg device i/o register addresses */
+ 
 static bool fw_cfg_is_mmio;
 static phys_addr_t fw_cfg_p_base;
 static resource_size_t fw_cfg_p_size;
@@ -55,10 +28,10 @@ static void __iomem *fw_cfg_reg_ctrl;
 static void __iomem *fw_cfg_reg_data;
 static void __iomem *fw_cfg_reg_dma;
 
-/* atomic access to fw_cfg device (potentially slow i/o, so using mutex) */
+ 
 static DEFINE_MUTEX(fw_cfg_dev_lock);
 
-/* pick appropriate endianness for selector key */
+ 
 static void fw_cfg_sel_endianness(u16 key)
 {
 	if (fw_cfg_is_mmio)
@@ -73,13 +46,13 @@ static inline bool fw_cfg_dma_enabled(void)
 	return (fw_cfg_rev & FW_CFG_VERSION_DMA) && fw_cfg_reg_dma;
 }
 
-/* qemu fw_cfg device is sync today, but spec says it may become async */
+ 
 static void fw_cfg_wait_for_control(struct fw_cfg_dma_access *d)
 {
 	for (;;) {
 		u32 ctrl = be32_to_cpu(READ_ONCE(d->control));
 
-		/* do not reorder the read to d->control */
+		 
 		rmb();
 		if ((ctrl & ~FW_CFG_DMA_CTL_ERROR) == 0)
 			return;
@@ -100,7 +73,7 @@ static ssize_t fw_cfg_dma_transfer(void *address, u32 length, u32 control)
 		goto end;
 	}
 
-	/* fw_cfg device does not need IOMMU protection, so use physical addresses */
+	 
 	*d = (struct fw_cfg_dma_access) {
 		.address = cpu_to_be64(address ? virt_to_phys(address) : 0),
 		.length = cpu_to_be32(length),
@@ -110,7 +83,7 @@ static ssize_t fw_cfg_dma_transfer(void *address, u32 length, u32 control)
 	dma = virt_to_phys(d);
 
 	iowrite32be((u64)dma >> 32, fw_cfg_reg_dma);
-	/* force memory to sync before notifying device via MMIO */
+	 
 	wmb();
 	iowrite32be(dma, fw_cfg_reg_dma + 4);
 
@@ -127,19 +100,17 @@ end:
 }
 #endif
 
-/* read chunk of given fw_cfg blob (caller responsible for sanity-check) */
+ 
 static ssize_t fw_cfg_read_blob(u16 key,
 				void *buf, loff_t pos, size_t count)
 {
 	u32 glk = -1U;
 	acpi_status status;
 
-	/* If we have ACPI, ensure mutual exclusion against any potential
-	 * device access by the firmware, e.g. via AML methods:
-	 */
+	 
 	status = acpi_acquire_global_lock(ACPI_WAIT_FOREVER, &glk);
 	if (ACPI_FAILURE(status) && status != AE_NOT_CONFIGURED) {
-		/* Should never get here */
+		 
 		WARN(1, "fw_cfg_read_blob: Failed to lock ACPI!\n");
 		memset(buf, 0, count);
 		return -EINVAL;
@@ -157,7 +128,7 @@ static ssize_t fw_cfg_read_blob(u16 key,
 }
 
 #ifdef CONFIG_CRASH_CORE
-/* write chunk of given fw_cfg blob (caller responsible for sanity-check) */
+ 
 static ssize_t fw_cfg_write_blob(u16 key,
 				 void *buf, loff_t pos, size_t count)
 {
@@ -165,12 +136,10 @@ static ssize_t fw_cfg_write_blob(u16 key,
 	acpi_status status;
 	ssize_t ret = count;
 
-	/* If we have ACPI, ensure mutual exclusion against any potential
-	 * device access by the firmware, e.g. via AML methods:
-	 */
+	 
 	status = acpi_acquire_global_lock(ACPI_WAIT_FOREVER, &glk);
 	if (ACPI_FAILURE(status) && status != AE_NOT_CONFIGURED) {
-		/* Should never get here */
+		 
 		WARN(1, "%s: Failed to lock ACPI!\n", __func__);
 		return -EINVAL;
 	}
@@ -195,9 +164,9 @@ end:
 
 	return ret;
 }
-#endif /* CONFIG_CRASH_CORE */
+#endif  
 
-/* clean up fw_cfg device i/o */
+ 
 static void fw_cfg_io_cleanup(void)
 {
 	if (fw_cfg_is_mmio) {
@@ -209,19 +178,19 @@ static void fw_cfg_io_cleanup(void)
 	}
 }
 
-/* arch-specific ctrl & data register offsets are not available in ACPI, DT */
+ 
 #if !(defined(FW_CFG_CTRL_OFF) && defined(FW_CFG_DATA_OFF))
 # if (defined(CONFIG_ARM) || defined(CONFIG_ARM64))
 #  define FW_CFG_CTRL_OFF 0x08
 #  define FW_CFG_DATA_OFF 0x00
 #  define FW_CFG_DMA_OFF 0x10
-# elif defined(CONFIG_PARISC)	/* parisc */
+# elif defined(CONFIG_PARISC)	 
 #  define FW_CFG_CTRL_OFF 0x00
 #  define FW_CFG_DATA_OFF 0x04
-# elif (defined(CONFIG_PPC_PMAC) || defined(CONFIG_SPARC32)) /* ppc/mac,sun4m */
+# elif (defined(CONFIG_PPC_PMAC) || defined(CONFIG_SPARC32))  
 #  define FW_CFG_CTRL_OFF 0x00
 #  define FW_CFG_DATA_OFF 0x02
-# elif (defined(CONFIG_X86) || defined(CONFIG_SPARC64)) /* x86, sun4u */
+# elif (defined(CONFIG_X86) || defined(CONFIG_SPARC64))  
 #  define FW_CFG_CTRL_OFF 0x00
 #  define FW_CFG_DATA_OFF 0x01
 #  define FW_CFG_DMA_OFF 0x04
@@ -230,13 +199,13 @@ static void fw_cfg_io_cleanup(void)
 # endif
 #endif
 
-/* initialize fw_cfg device i/o from platform data */
+ 
 static int fw_cfg_do_platform_probe(struct platform_device *pdev)
 {
 	char sig[FW_CFG_SIG_SIZE];
 	struct resource *range, *ctrl, *data, *dma;
 
-	/* acquire i/o range details */
+	 
 	fw_cfg_is_mmio = false;
 	range = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (!range) {
@@ -268,7 +237,7 @@ static int fw_cfg_do_platform_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* were custom register offsets provided (e.g. on the command line)? */
+	 
 	ctrl = platform_get_resource_byname(pdev, IORESOURCE_REG, "ctrl");
 	data = platform_get_resource_byname(pdev, IORESOURCE_REG, "data");
 	dma = platform_get_resource_byname(pdev, IORESOURCE_REG, "dma");
@@ -276,7 +245,7 @@ static int fw_cfg_do_platform_probe(struct platform_device *pdev)
 		fw_cfg_reg_ctrl = fw_cfg_dev_base + ctrl->start;
 		fw_cfg_reg_data = fw_cfg_dev_base + data->start;
 	} else {
-		/* use architecture-specific offsets */
+		 
 		fw_cfg_reg_ctrl = fw_cfg_dev_base + FW_CFG_CTRL_OFF;
 		fw_cfg_reg_data = fw_cfg_dev_base + FW_CFG_DATA_OFF;
 	}
@@ -288,7 +257,7 @@ static int fw_cfg_do_platform_probe(struct platform_device *pdev)
 		fw_cfg_reg_dma = fw_cfg_dev_base + FW_CFG_DMA_OFF;
 #endif
 
-	/* verify fw_cfg device signature */
+	 
 	if (fw_cfg_read_blob(FW_CFG_SIGNATURE, sig,
 				0, FW_CFG_SIG_SIZE) < 0 ||
 		memcmp(sig, "QEMU", FW_CFG_SIG_SIZE) != 0) {
@@ -310,7 +279,7 @@ static const struct kobj_attribute fw_cfg_rev_attr = {
 	.show = fw_cfg_showrev,
 };
 
-/* fw_cfg_sysfs_entry type */
+ 
 struct fw_cfg_sysfs_entry {
 	struct kobject kobj;
 	u32 size;
@@ -334,39 +303,37 @@ static ssize_t fw_cfg_write_vmcoreinfo(const struct fw_cfg_file *f)
 		.size = cpu_to_le32(VMCOREINFO_NOTE_SIZE),
 		.paddr = cpu_to_le64(paddr_vmcoreinfo_note())
 	};
-	/* spare ourself reading host format support for now since we
-	 * don't know what else to format - host may ignore ours
-	 */
+	 
 	ret = fw_cfg_write_blob(be16_to_cpu(f->select), data,
 				0, sizeof(struct fw_cfg_vmcoreinfo));
 
 	kfree(data);
 	return ret;
 }
-#endif /* CONFIG_CRASH_CORE */
+#endif  
 
-/* get fw_cfg_sysfs_entry from kobject member */
+ 
 static inline struct fw_cfg_sysfs_entry *to_entry(struct kobject *kobj)
 {
 	return container_of(kobj, struct fw_cfg_sysfs_entry, kobj);
 }
 
-/* fw_cfg_sysfs_attribute type */
+ 
 struct fw_cfg_sysfs_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct fw_cfg_sysfs_entry *entry, char *buf);
 };
 
-/* get fw_cfg_sysfs_attribute from attribute member */
+ 
 static inline struct fw_cfg_sysfs_attribute *to_attr(struct attribute *attr)
 {
 	return container_of(attr, struct fw_cfg_sysfs_attribute, attr);
 }
 
-/* global cache of fw_cfg_sysfs_entry objects */
+ 
 static LIST_HEAD(fw_cfg_entry_cache);
 
-/* kobjects removed lazily by kernel, mutual exclusion needed */
+ 
 static DEFINE_SPINLOCK(fw_cfg_cache_lock);
 
 static inline void fw_cfg_sysfs_cache_enlist(struct fw_cfg_sysfs_entry *entry)
@@ -394,7 +361,7 @@ static void fw_cfg_sysfs_cache_cleanup(void)
 	}
 }
 
-/* per-entry attributes and show methods */
+ 
 
 #define FW_CFG_SYSFS_ATTR(_attr) \
 struct fw_cfg_sysfs_attribute fw_cfg_sysfs_attr_##_attr = { \
@@ -429,7 +396,7 @@ static struct attribute *fw_cfg_sysfs_entry_attrs[] = {
 };
 ATTRIBUTE_GROUPS(fw_cfg_sysfs_entry);
 
-/* sysfs_ops: find fw_cfg_[entry, attribute] and call appropriate show method */
+ 
 static ssize_t fw_cfg_sysfs_attr_show(struct kobject *kobj, struct attribute *a,
 				      char *buf)
 {
@@ -443,7 +410,7 @@ static const struct sysfs_ops fw_cfg_sysfs_attr_ops = {
 	.show = fw_cfg_sysfs_attr_show,
 };
 
-/* release: destructor, to be called via kobject_put() */
+ 
 static void fw_cfg_sysfs_release_entry(struct kobject *kobj)
 {
 	struct fw_cfg_sysfs_entry *entry = to_entry(kobj);
@@ -451,14 +418,14 @@ static void fw_cfg_sysfs_release_entry(struct kobject *kobj)
 	kfree(entry);
 }
 
-/* kobj_type: ties together all properties required to register an entry */
+ 
 static struct kobj_type fw_cfg_sysfs_entry_ktype = {
 	.default_groups = fw_cfg_sysfs_entry_groups,
 	.sysfs_ops = &fw_cfg_sysfs_attr_ops,
 	.release = fw_cfg_sysfs_release_entry,
 };
 
-/* raw-read method and attribute */
+ 
 static ssize_t fw_cfg_sysfs_read_raw(struct file *filp, struct kobject *kobj,
 				     struct bin_attribute *bin_attr,
 				     char *buf, loff_t pos, size_t count)
@@ -479,16 +446,7 @@ static struct bin_attribute fw_cfg_sysfs_attr_raw = {
 	.read = fw_cfg_sysfs_read_raw,
 };
 
-/*
- * Create a kset subdirectory matching each '/' delimited dirname token
- * in 'name', starting with sysfs kset/folder 'dir'; At the end, create
- * a symlink directed at the given 'target'.
- * NOTE: We do this on a best-effort basis, since 'name' is not guaranteed
- * to be a well-behaved path name. Whenever a symlink vs. kset directory
- * name collision occurs, the kernel will issue big scary warnings while
- * refusing to add the offending link or directory. We follow up with our
- * own, slightly less scary error messages explaining the situation :)
- */
+ 
 static int fw_cfg_build_symlink(struct kset *dir,
 				struct kobject *target, const char *name)
 {
@@ -500,36 +458,36 @@ static int fw_cfg_build_symlink(struct kset *dir,
 	if (!dir || !target || !name || !*name)
 		return -EINVAL;
 
-	/* clone a copy of name for parsing */
+	 
 	name_copy = p = kstrdup(name, GFP_KERNEL);
 	if (!name_copy)
 		return -ENOMEM;
 
-	/* create folders for each dirname token, then symlink for basename */
+	 
 	while ((tok = strsep(&p, "/")) && *tok) {
 
-		/* last (basename) token? If so, add symlink here */
+		 
 		if (!p || !*p) {
 			ret = sysfs_create_link(&dir->kobj, target, tok);
 			break;
 		}
 
-		/* does the current dir contain an item named after tok ? */
+		 
 		ko = kset_find_obj(dir, tok);
 		if (ko) {
-			/* drop reference added by kset_find_obj */
+			 
 			kobject_put(ko);
 
-			/* ko MUST be a kset - we're about to use it as one ! */
+			 
 			if (ko->ktype != dir->kobj.ktype) {
 				ret = -EINVAL;
 				break;
 			}
 
-			/* descend into already existing subdirectory */
+			 
 			dir = to_kset(ko);
 		} else {
-			/* create new subdirectory kset */
+			 
 			subdir = kzalloc(sizeof(struct kset), GFP_KERNEL);
 			if (!subdir) {
 				ret = -ENOMEM;
@@ -548,36 +506,36 @@ static int fw_cfg_build_symlink(struct kset *dir,
 				break;
 			}
 
-			/* descend into newly created subdirectory */
+			 
 			dir = subdir;
 		}
 	}
 
-	/* we're done with cloned copy of name */
+	 
 	kfree(name_copy);
 	return ret;
 }
 
-/* recursively unregister fw_cfg/by_name/ kset directory tree */
+ 
 static void fw_cfg_kset_unregister_recursive(struct kset *kset)
 {
 	struct kobject *k, *next;
 
 	list_for_each_entry_safe(k, next, &kset->list, entry)
-		/* all set members are ksets too, but check just in case... */
+		 
 		if (k->ktype == kset->kobj.ktype)
 			fw_cfg_kset_unregister_recursive(to_kset(k));
 
-	/* symlinks are cleanly and automatically removed with the directory */
+	 
 	kset_unregister(kset);
 }
 
-/* kobjects & kset representing top-level, by_key, and by_name folders */
+ 
 static struct kobject *fw_cfg_top_ko;
 static struct kobject *fw_cfg_sel_ko;
 static struct kset *fw_cfg_fname_kset;
 
-/* register an individual fw_cfg file */
+ 
 static int fw_cfg_register_file(const struct fw_cfg_file *f)
 {
 	int err;
@@ -592,31 +550,31 @@ static int fw_cfg_register_file(const struct fw_cfg_file *f)
 	}
 #endif
 
-	/* allocate new entry */
+	 
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 	if (!entry)
 		return -ENOMEM;
 
-	/* set file entry information */
+	 
 	entry->size = be32_to_cpu(f->size);
 	entry->select = be16_to_cpu(f->select);
 	strscpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
 
-	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
+	 
 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
 				   fw_cfg_sel_ko, "%d", entry->select);
 	if (err)
 		goto err_put_entry;
 
-	/* add raw binary content access */
+	 
 	err = sysfs_create_bin_file(&entry->kobj, &fw_cfg_sysfs_attr_raw);
 	if (err)
 		goto err_del_entry;
 
-	/* try adding "/sys/firmware/qemu_fw_cfg/by_name/" symlink */
+	 
 	fw_cfg_build_symlink(fw_cfg_fname_kset, &entry->kobj, entry->name);
 
-	/* success, add entry to global cache */
+	 
 	fw_cfg_sysfs_cache_enlist(entry);
 	return 0;
 
@@ -627,7 +585,7 @@ err_put_entry:
 	return err;
 }
 
-/* iterate over all fw_cfg directory entries, registering each one */
+ 
 static int fw_cfg_register_dir_entries(void)
 {
 	int ret = 0;
@@ -664,7 +622,7 @@ end:
 	return ret;
 }
 
-/* unregister top-level or by_key folder */
+ 
 static inline void fw_cfg_kobj_cleanup(struct kobject *kobj)
 {
 	kobject_del(kobj);
@@ -676,16 +634,11 @@ static int fw_cfg_sysfs_probe(struct platform_device *pdev)
 	int err;
 	__le32 rev;
 
-	/* NOTE: If we supported multiple fw_cfg devices, we'd first create
-	 * a subdirectory named after e.g. pdev->id, then hang per-device
-	 * by_key (and by_name) subdirectories underneath it. However, only
-	 * one fw_cfg device exist system-wide, so if one was already found
-	 * earlier, we might as well stop here.
-	 */
+	 
 	if (fw_cfg_sel_ko)
 		return -EBUSY;
 
-	/* create by_key and by_name subdirs of /sys/firmware/qemu_fw_cfg/ */
+	 
 	err = -ENOMEM;
 	fw_cfg_sel_ko = kobject_create_and_add("by_key", fw_cfg_top_ko);
 	if (!fw_cfg_sel_ko)
@@ -694,12 +647,12 @@ static int fw_cfg_sysfs_probe(struct platform_device *pdev)
 	if (!fw_cfg_fname_kset)
 		goto err_name;
 
-	/* initialize fw_cfg device i/o from platform data */
+	 
 	err = fw_cfg_do_platform_probe(pdev);
 	if (err)
 		goto err_probe;
 
-	/* get revision number, add matching top-level attribute */
+	 
 	err = fw_cfg_read_blob(FW_CFG_ID, &rev, 0, sizeof(rev));
 	if (err < 0)
 		goto err_probe;
@@ -709,12 +662,12 @@ static int fw_cfg_sysfs_probe(struct platform_device *pdev)
 	if (err)
 		goto err_rev;
 
-	/* process fw_cfg file directory entry, registering each file */
+	 
 	err = fw_cfg_register_dir_entries();
 	if (err)
 		goto err_dir;
 
-	/* success */
+	 
 	pr_debug("fw_cfg: loaded.\n");
 	return 0;
 
@@ -770,16 +723,14 @@ static struct platform_driver fw_cfg_sysfs_driver = {
 
 static struct platform_device *fw_cfg_cmdline_dev;
 
-/* this probably belongs in e.g. include/linux/types.h,
- * but right now we are the only ones doing it...
- */
+ 
 #ifdef CONFIG_PHYS_ADDR_T_64BIT
 #define __PHYS_ADDR_PREFIX "ll"
 #else
 #define __PHYS_ADDR_PREFIX ""
 #endif
 
-/* use special scanf/printf modifier for phys_addr_t, resource_size_t */
+ 
 #define PH_ADDR_SCAN_FMT "@%" __PHYS_ADDR_PREFIX "i%n" \
 			 ":%" __PHYS_ADDR_PREFIX "i" \
 			 ":%" __PHYS_ADDR_PREFIX "i%n" \
@@ -803,31 +754,23 @@ static int fw_cfg_cmdline_set(const char *arg, const struct kernel_param *kp)
 	resource_size_t size, ctrl_off, data_off, dma_off;
 	int processed, consumed = 0;
 
-	/* only one fw_cfg device can exist system-wide, so if one
-	 * was processed on the command line already, we might as
-	 * well stop here.
-	 */
+	 
 	if (fw_cfg_cmdline_dev) {
-		/* avoid leaking previously registered device */
+		 
 		platform_device_unregister(fw_cfg_cmdline_dev);
 		return -EINVAL;
 	}
 
-	/* consume "<size>" portion of command line argument */
+	 
 	size = memparse(arg, &str);
 
-	/* get "@<base>[:<ctrl_off>:<data_off>[:<dma_off>]]" chunks */
+	 
 	processed = sscanf(str, PH_ADDR_SCAN_FMT,
 			   &base, &consumed,
 			   &ctrl_off, &data_off, &consumed,
 			   &dma_off, &consumed);
 
-	/* sscanf() must process precisely 1, 3 or 4 chunks:
-	 * <base> is mandatory, optionally followed by <ctrl_off>
-	 * and <data_off>, and <dma_off>;
-	 * there must be no extra characters after the last chunk,
-	 * so str[consumed] must be '\0'.
-	 */
+	 
 	if (str[consumed] ||
 	    (processed != 1 && processed != 3 && processed != 4))
 		return -EINVAL;
@@ -837,7 +780,7 @@ static int fw_cfg_cmdline_set(const char *arg, const struct kernel_param *kp)
 	res[0].flags = !strcmp(kp->name, "mmio") ? IORESOURCE_MEM :
 						   IORESOURCE_IO;
 
-	/* insert register offsets, if provided */
+	 
 	if (processed > 1) {
 		res[1].name = "ctrl";
 		res[1].start = ctrl_off;
@@ -852,9 +795,7 @@ static int fw_cfg_cmdline_set(const char *arg, const struct kernel_param *kp)
 		res[3].flags = IORESOURCE_REG;
 	}
 
-	/* "processed" happens to nicely match the number of resources
-	 * we need to pass in to this platform device.
-	 */
+	 
 	fw_cfg_cmdline_dev = platform_device_register_simple("fw_cfg",
 					PLATFORM_DEVID_NONE, res, processed);
 
@@ -863,10 +804,7 @@ static int fw_cfg_cmdline_set(const char *arg, const struct kernel_param *kp)
 
 static int fw_cfg_cmdline_get(char *buf, const struct kernel_param *kp)
 {
-	/* stay silent if device was not configured via the command
-	 * line, or if the parameter name (ioport/mmio) doesn't match
-	 * the device setting
-	 */
+	 
 	if (!fw_cfg_cmdline_dev ||
 	    (!strcmp(kp->name, "mmio") ^
 	     (fw_cfg_cmdline_dev->resource[0].flags == IORESOURCE_MEM)))
@@ -892,7 +830,7 @@ static int fw_cfg_cmdline_get(char *buf, const struct kernel_param *kp)
 				fw_cfg_cmdline_dev->resource[3].start);
 	}
 
-	/* Should never get here */
+	 
 	WARN(1, "Unexpected number of resources: %d\n",
 		fw_cfg_cmdline_dev->num_resources);
 	return 0;
@@ -906,13 +844,13 @@ static const struct kernel_param_ops fw_cfg_cmdline_param_ops = {
 device_param_cb(ioport, &fw_cfg_cmdline_param_ops, NULL, S_IRUSR);
 device_param_cb(mmio, &fw_cfg_cmdline_param_ops, NULL, S_IRUSR);
 
-#endif /* CONFIG_FW_CFG_SYSFS_CMDLINE */
+#endif  
 
 static int __init fw_cfg_sysfs_init(void)
 {
 	int ret;
 
-	/* create /sys/firmware/qemu_fw_cfg/ top level directory */
+	 
 	fw_cfg_top_ko = kobject_create_and_add("qemu_fw_cfg", firmware_kobj);
 	if (!fw_cfg_top_ko)
 		return -ENOMEM;
@@ -932,7 +870,7 @@ static void __exit fw_cfg_sysfs_exit(void)
 	platform_device_unregister(fw_cfg_cmdline_dev);
 #endif
 
-	/* clean up /sys/firmware/qemu_fw_cfg/ */
+	 
 	fw_cfg_kobj_cleanup(fw_cfg_top_ko);
 }
 

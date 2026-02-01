@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 MediaTek Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/cpufreq.h>
@@ -72,7 +70,7 @@ mtk_cpufreq_get_cpu_power(struct device *cpu_dev, unsigned long *uW,
 	i--;
 
 	*KHz = data->table[i].frequency;
-	/* Provide micro-Watts value to the Energy Model */
+	 
 	*uW = readl_relaxed(data->reg_bases[REG_EM_POWER_TBL] +
 			    i * LUT_ROW_SIZE);
 
@@ -226,7 +224,7 @@ static int mtk_cpufreq_hw_cpu_init(struct cpufreq_policy *policy)
 	unsigned int latency;
 	int ret;
 
-	/* Get the bases of cpufreq for domains */
+	 
 	ret = mtk_cpu_resources_init(pdev, policy, platform_get_drvdata(pdev));
 	if (ret) {
 		dev_info(&pdev->dev, "CPUFreq resource init failed\n");
@@ -242,7 +240,7 @@ static int mtk_cpufreq_hw_cpu_init(struct cpufreq_policy *policy)
 	policy->cpuinfo.transition_latency = latency;
 	policy->fast_switch_possible = true;
 
-	/* HW should be in enabled state to proceed now */
+	 
 	writel_relaxed(0x1, data->reg_bases[REG_FREQ_ENABLE]);
 	if (readl_poll_timeout(data->reg_bases[REG_FREQ_HW_STATE], sig,
 			       (sig & pwr_hw) == pwr_hw, POLL_USEC,
@@ -265,7 +263,7 @@ static int mtk_cpufreq_hw_cpu_exit(struct cpufreq_policy *policy)
 	struct resource *res = data->res;
 	void __iomem *base = data->base;
 
-	/* HW should be in paused state now */
+	 
 	writel_relaxed(0x0, data->reg_bases[REG_FREQ_ENABLE]);
 	iounmap(base);
 	release_mem_region(res->start, resource_size(res));

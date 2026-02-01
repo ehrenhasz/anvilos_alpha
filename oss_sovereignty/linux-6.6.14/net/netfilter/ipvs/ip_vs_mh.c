@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* IPVS:	Maglev Hashing scheduling module
- *
- * Authors:	Inju Song <inju.song@navercorp.com>
- *
- */
 
-/* The mh algorithm is to assign a preference list of all the lookup
- * table positions to each destination and populate the table with
- * the most-preferred position of destinations. Then it is to select
- * destination with the hash key of source IP address through looking
- * up a the lookup table.
- *
- * The algorithm is detailed in:
- * [3.4 Consistent Hasing]
-https://www.usenix.org/system/files/conference/nsdi16/nsdi16-paper-eisenbud.pdf
- *
- */
+ 
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -32,25 +18,25 @@ https://www.usenix.org/system/files/conference/nsdi16/nsdi16-paper-eisenbud.pdf
 #include <linux/bitops.h>
 #include <linux/gcd.h>
 
-#define IP_VS_SVC_F_SCHED_MH_FALLBACK	IP_VS_SVC_F_SCHED1 /* MH fallback */
-#define IP_VS_SVC_F_SCHED_MH_PORT	IP_VS_SVC_F_SCHED2 /* MH use port */
+#define IP_VS_SVC_F_SCHED_MH_FALLBACK	IP_VS_SVC_F_SCHED1  
+#define IP_VS_SVC_F_SCHED_MH_PORT	IP_VS_SVC_F_SCHED2  
 
 struct ip_vs_mh_lookup {
-	struct ip_vs_dest __rcu	*dest;	/* real server (cache) */
+	struct ip_vs_dest __rcu	*dest;	 
 };
 
 struct ip_vs_mh_dest_setup {
-	unsigned int	offset; /* starting offset */
-	unsigned int	skip;	/* skip */
-	unsigned int	perm;	/* next_offset */
-	int		turns;	/* weight / gcd() and rshift */
+	unsigned int	offset;  
+	unsigned int	skip;	 
+	unsigned int	perm;	 
+	int		turns;	 
 };
 
-/* Available prime numbers for MH table */
+ 
 static int primes[] = {251, 509, 1021, 2039, 4093,
 		       8191, 16381, 32749, 65521, 131071};
 
-/* For IPVS MH entry hash table */
+ 
 #ifndef CONFIG_IP_VS_MH_TAB_INDEX
 #define CONFIG_IP_VS_MH_TAB_INDEX	12
 #endif
@@ -77,14 +63,14 @@ static inline void generate_hash_secret(hsiphash_key_t *hash1,
 	hash2->key[1] = 2654446892UL;
 }
 
-/* Helper function to determine if server is unavailable */
+ 
 static inline bool is_unavailable(struct ip_vs_dest *dest)
 {
 	return atomic_read(&dest->weight) <= 0 ||
 	       dest->flags & IP_VS_DEST_F_OVERLOAD;
 }
 
-/* Returns hash value for IPVS MH entry */
+ 
 static inline unsigned int
 ip_vs_mh_hashkey(int af, const union nf_inet_addr *addr,
 		 __be16 port, hsiphash_key_t *key, unsigned int offset)
@@ -101,7 +87,7 @@ ip_vs_mh_hashkey(int af, const union nf_inet_addr *addr,
 	return hsiphash(&v, sizeof(v), key);
 }
 
-/* Reset all the hash buckets of the specified table. */
+ 
 static void ip_vs_mh_reset(struct ip_vs_mh_state *s)
 {
 	int i;
@@ -127,14 +113,11 @@ static int ip_vs_mh_permutate(struct ip_vs_mh_state *s,
 	struct ip_vs_dest *dest;
 	int lw;
 
-	/* If gcd is smaller then 1, number of dests or
-	 * all last_weight of dests are zero. So, skip
-	 * permutation for the dests.
-	 */
+	 
 	if (s->gcd < 1)
 		return 0;
 
-	/* Set dest_setup for the dests permutation */
+	 
 	p = &svc->destinations;
 	ds = &s->dest_setup[0];
 	while ((p = p->next) != &svc->destinations) {
@@ -165,10 +148,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
 	struct ip_vs_mh_dest_setup *ds;
 	struct ip_vs_dest *dest, *new_dest;
 
-	/* If gcd is smaller then 1, number of dests or
-	 * all last_weight of dests are zero. So, skip
-	 * the population for the dests and reset lookup table.
-	 */
+	 
 	if (s->gcd < 1) {
 		ip_vs_mh_reset(s);
 		return 0;
@@ -187,7 +167,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
 
 		ds = &s->dest_setup[0];
 		while (p != &svc->destinations) {
-			/* Ignore added server with zero weight */
+			 
 			if (ds->turns < 1) {
 				p = p->next;
 				ds++;
@@ -196,7 +176,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
 
 			c = ds->perm;
 			while (test_bit(c, table)) {
-				/* Add skip, mod IP_VS_MH_TAB_SIZE */
+				 
 				ds->perm += ds->skip;
 				if (ds->perm >= IP_VS_MH_TAB_SIZE)
 					ds->perm -= IP_VS_MH_TAB_SIZE;
@@ -230,7 +210,7 @@ out:
 	return 0;
 }
 
-/* Get ip_vs_dest associated with supplied parameters. */
+ 
 static inline struct ip_vs_dest *
 ip_vs_mh_get(struct ip_vs_service *svc, struct ip_vs_mh_state *s,
 	     const union nf_inet_addr *addr, __be16 port)
@@ -242,7 +222,7 @@ ip_vs_mh_get(struct ip_vs_service *svc, struct ip_vs_mh_state *s,
 	return (!dest || is_unavailable(dest)) ? NULL : dest;
 }
 
-/* As ip_vs_mh_get, but with fallback if selected server is unavailable */
+ 
 static inline struct ip_vs_dest *
 ip_vs_mh_get_fallback(struct ip_vs_service *svc, struct ip_vs_mh_state *s,
 		      const union nf_inet_addr *addr, __be16 port)
@@ -251,7 +231,7 @@ ip_vs_mh_get_fallback(struct ip_vs_service *svc, struct ip_vs_mh_state *s,
 	unsigned int hash, ihash;
 	struct ip_vs_dest *dest;
 
-	/* First try the dest it's supposed to go to */
+	 
 	ihash = ip_vs_mh_hashkey(svc->af, addr, port,
 				 &s->hash1, 0) % IP_VS_MH_TAB_SIZE;
 	dest = rcu_dereference(s->lookup[ihash].dest);
@@ -263,9 +243,7 @@ ip_vs_mh_get_fallback(struct ip_vs_service *svc, struct ip_vs_mh_state *s,
 	IP_VS_DBG_BUF(6, "MH: selected unavailable server %s:%u, reselecting",
 		      IP_VS_DBG_ADDR(dest->af, &dest->addr), ntohs(dest->port));
 
-	/* If the original dest is unavailable, loop around the table
-	 * starting from ihash to find a new dest
-	 */
+	 
 	for (offset = 0; offset < IP_VS_MH_TAB_SIZE; offset++) {
 		roffset = (offset + ihash) % IP_VS_MH_TAB_SIZE;
 		hash = ip_vs_mh_hashkey(svc->af, addr, port, &s->hash1,
@@ -284,7 +262,7 @@ ip_vs_mh_get_fallback(struct ip_vs_service *svc, struct ip_vs_mh_state *s,
 	return NULL;
 }
 
-/* Assign all the hash buckets of the specified table with the service. */
+ 
 static int ip_vs_mh_reassign(struct ip_vs_mh_state *s,
 			     struct ip_vs_service *svc)
 {
@@ -337,19 +315,14 @@ static int ip_vs_mh_gcd_weight(struct ip_vs_service *svc)
 	return g;
 }
 
-/* To avoid assigning huge weight for the MH table,
- * calculate shift value with gcd.
- */
+ 
 static int ip_vs_mh_shift_weight(struct ip_vs_service *svc, int gcd)
 {
 	struct ip_vs_dest *dest;
 	int new_weight, weight = 0;
 	int mw, shift;
 
-	/* If gcd is smaller then 1, number of dests or
-	 * all last_weight of dests are zero. So, return
-	 * shift value as zero.
-	 */
+	 
 	if (gcd < 1)
 		return 0;
 
@@ -359,12 +332,10 @@ static int ip_vs_mh_shift_weight(struct ip_vs_service *svc, int gcd)
 			weight = new_weight;
 	}
 
-	/* Because gcd is greater than zero,
-	 * the maximum weight and gcd are always greater than zero
-	 */
+	 
 	mw = weight / gcd;
 
-	/* shift = occupied bits of weight/gcd - MH highest bits */
+	 
 	shift = fls(mw) - IP_VS_MH_TAB_BITS;
 	return (shift >= 0) ? shift : 0;
 }
@@ -383,7 +354,7 @@ static int ip_vs_mh_init_svc(struct ip_vs_service *svc)
 	int ret;
 	struct ip_vs_mh_state *s;
 
-	/* Allocate the MH table for this service */
+	 
 	s = kzalloc(sizeof(*s), GFP_KERNEL);
 	if (!s)
 		return -ENOMEM;
@@ -403,7 +374,7 @@ static int ip_vs_mh_init_svc(struct ip_vs_service *svc)
 		  "MH lookup table (memory=%zdbytes) allocated for current service\n",
 		  sizeof(struct ip_vs_mh_lookup) * IP_VS_MH_TAB_SIZE);
 
-	/* Assign the lookup table with current dests */
+	 
 	ret = ip_vs_mh_reassign(s, svc);
 	if (ret < 0) {
 		ip_vs_mh_reset(s);
@@ -411,7 +382,7 @@ static int ip_vs_mh_init_svc(struct ip_vs_service *svc)
 		return ret;
 	}
 
-	/* No more failures, attach state */
+	 
 	svc->sched_data = s;
 	return 0;
 }
@@ -420,7 +391,7 @@ static void ip_vs_mh_done_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_mh_state *s = svc->sched_data;
 
-	/* Got to clean up lookup entry here */
+	 
 	ip_vs_mh_reset(s);
 
 	call_rcu(&s->rcu_head, ip_vs_mh_state_free);
@@ -436,21 +407,17 @@ static int ip_vs_mh_dest_changed(struct ip_vs_service *svc,
 	s->gcd = ip_vs_mh_gcd_weight(svc);
 	s->rshift = ip_vs_mh_shift_weight(svc, s->gcd);
 
-	/* Assign the lookup table with the updated service */
+	 
 	return ip_vs_mh_reassign(s, svc);
 }
 
-/* Helper function to get port number */
+ 
 static inline __be16
 ip_vs_mh_get_port(const struct sk_buff *skb, struct ip_vs_iphdr *iph)
 {
 	__be16 _ports[2], *ports;
 
-	/* At this point we know that we have a valid packet of some kind.
-	 * Because ICMP packets are only guaranteed to have the first 8
-	 * bytes, let's just grab the ports.  Fortunately they're in the
-	 * same position for all three of the protocols we care about.
-	 */
+	 
 	switch (iph->protocol) {
 	case IPPROTO_TCP:
 	case IPPROTO_UDP:
@@ -469,7 +436,7 @@ ip_vs_mh_get_port(const struct sk_buff *skb, struct ip_vs_iphdr *iph)
 	}
 }
 
-/* Maglev Hashing scheduling */
+ 
 static struct ip_vs_dest *
 ip_vs_mh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		  struct ip_vs_iphdr *iph)
@@ -507,7 +474,7 @@ ip_vs_mh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 	return dest;
 }
 
-/* IPVS MH Scheduler structure */
+ 
 static struct ip_vs_scheduler ip_vs_mh_scheduler = {
 	.name =			"mh",
 	.refcnt =		ATOMIC_INIT(0),

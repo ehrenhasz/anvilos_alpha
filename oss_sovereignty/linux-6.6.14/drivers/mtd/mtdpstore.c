@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define dev_fmt(fmt) "mtdoops-pstore: " fmt
 
@@ -14,14 +14,10 @@ static struct mtdpstore_context {
 	struct pstore_blk_config info;
 	struct pstore_device_info dev;
 	struct mtd_info *mtd;
-	unsigned long *rmmap;		/* removed bit map */
-	unsigned long *usedmap;		/* used bit map */
-	/*
-	 * used for panic write
-	 * As there are no block_isbad for panic case, we should keep this
-	 * status before panic to ensure panic_write not failed.
-	 */
-	unsigned long *badmap;		/* bad block bit map */
+	unsigned long *rmmap;		 
+	unsigned long *usedmap;		 
+	 
+	unsigned long *badmap;		 
 } oops_cxt;
 
 static int mtdpstore_block_isbad(struct mtdpstore_context *cxt, loff_t off)
@@ -200,13 +196,7 @@ static int mtdpstore_erase_do(struct mtdpstore_context *cxt, loff_t off)
 	return ret;
 }
 
-/*
- * called while removing file
- *
- * Avoiding over erasing, do erase block only when the whole block is unused.
- * If the block contains valid log, do erase lazily on flush_removed() when
- * unregister.
- */
+ 
 static ssize_t mtdpstore_erase(size_t size, loff_t off)
 {
 	struct mtdpstore_context *cxt = &oops_cxt;
@@ -216,24 +206,17 @@ static ssize_t mtdpstore_erase(size_t size, loff_t off)
 
 	mtdpstore_mark_unused(cxt, off);
 
-	/* If the block still has valid data, mtdpstore do erase lazily */
+	 
 	if (likely(mtdpstore_block_is_used(cxt, off))) {
 		mtdpstore_mark_removed(cxt, off);
 		return 0;
 	}
 
-	/* all zones are unused, erase it */
+	 
 	return mtdpstore_erase_do(cxt, off);
 }
 
-/*
- * What is security for mtdpstore?
- * As there is no erase for panic case, we should ensure at least one zone
- * is writable. Otherwise, panic write will fail.
- * If zone is used, write operation will return -ENOMSG, which means that
- * pstore/blk will try one by one until gets an empty zone. So, it is not
- * needed to ensure the next zone is empty, but at least one.
- */
+ 
 static int mtdpstore_security(struct mtdpstore_context *cxt, loff_t off)
 {
 	int ret = 0, i;
@@ -246,12 +229,12 @@ static int mtdpstore_security(struct mtdpstore_context *cxt, loff_t off)
 	for (i = 0; i < zonecnt; i++) {
 		u32 num = (zonenum + i) % zonecnt;
 
-		/* found empty zone */
+		 
 		if (!test_bit(num, cxt->usedmap))
 			return 0;
 	}
 
-	/* If there is no any empty zone, we have no way but to do erase */
+	 
 	while (blkcnt--) {
 		div64_u64_rem(off + erasesize, cxt->mtd->size, (u64 *)&off);
 
@@ -281,7 +264,7 @@ static ssize_t mtdpstore_write(const char *buf, size_t size, loff_t off)
 	if (mtdpstore_block_isbad(cxt, off))
 		return -ENOMSG;
 
-	/* zone is used, please try next one */
+	 
 	if (mtdpstore_is_used(cxt, off))
 		return -ENOMSG;
 
@@ -303,10 +286,7 @@ static inline bool mtdpstore_is_io_error(int ret)
 	return ret < 0 && !mtd_is_bitflip(ret) && !mtd_is_eccerr(ret);
 }
 
-/*
- * All zones will be read as pstore/blk will read zone one by one when do
- * recover.
- */
+ 
 static ssize_t mtdpstore_read(char *buf, size_t size, loff_t off)
 {
 	struct mtdpstore_context *cxt = &oops_cxt;
@@ -326,20 +306,15 @@ static ssize_t mtdpstore_read(char *buf, size_t size, loff_t off)
 		if (mtdpstore_is_io_error(ret)) {
 			dev_err(&mtd->dev, "read failure at %lld (%zu of %zu read), err %d\n",
 					off + done, retlen, size - done, ret);
-			/* the zone may be broken, try next one */
+			 
 			return -ENOMSG;
 		}
 
-		/*
-		 * ECC error. The impact on log data is so small. Maybe we can
-		 * still read it and try to understand. So mtdpstore just hands
-		 * over what it gets and user can judge whether the data is
-		 * valid or not.
-		 */
+		 
 		if (mtd_is_eccerr(ret)) {
 			dev_err(&mtd->dev, "ecc error at %lld (%zu of %zu read), err %d\n",
 					off + done, retlen, size - done, ret);
-			/* driver may not set retlen when ecc error */
+			 
 			retlen = retlen == 0 ? size - done : retlen;
 		}
 	}
@@ -363,7 +338,7 @@ static ssize_t mtdpstore_panic_write(const char *buf, size_t size, loff_t off)
 	if (mtdpstore_panic_block_isbad(cxt, off))
 		return -ENOMSG;
 
-	/* zone is used, please try next one */
+	 
 	if (mtdpstore_is_used(cxt, off))
 		return -ENOMSG;
 
@@ -398,12 +373,7 @@ static void mtdpstore_notify_add(struct mtd_info *mtd)
 				mtd->index);
 		return;
 	}
-	/*
-	 * kmsg_size must be aligned to 4096 Bytes, which is limited by
-	 * psblk. The default value of kmsg_size is 64KB. If kmsg_size
-	 * is larger than erasesize, some errors will occur since mtdpstore
-	 * is designed on it.
-	 */
+	 
 	if (mtd->erasesize < info->kmsg_size) {
 		dev_err(&mtd->dev, "eraseblock size of MTD partition %d too small\n",
 				mtd->index);
@@ -423,7 +393,7 @@ static void mtdpstore_notify_add(struct mtd_info *mtd)
 	longcnt = BITS_TO_LONGS(div_u64(mtd->size, mtd->erasesize));
 	cxt->badmap = kcalloc(longcnt, sizeof(long), GFP_KERNEL);
 
-	/* just support dmesg right now */
+	 
 	cxt->dev.flags = PSTORE_FLAGS_DMESG;
 	cxt->dev.zone.read = mtdpstore_read;
 	cxt->dev.zone.write = mtdpstore_write;
@@ -454,23 +424,23 @@ static int mtdpstore_flush_removed_do(struct mtdpstore_context *cxt,
 	if (!buf)
 		return -ENOMEM;
 
-	/* 1st. read to cache */
+	 
 	ret = mtd_read(mtd, off, mtd->erasesize, &retlen, buf);
 	if (mtdpstore_is_io_error(ret))
 		goto free;
 
-	/* 2nd. erase block */
+	 
 	erase.len = mtd->erasesize;
 	erase.addr = off;
 	ret = mtd_erase(mtd, &erase);
 	if (ret)
 		goto free;
 
-	/* 3rd. write back */
+	 
 	while (size) {
 		unsigned int zonesize = cxt->info.kmsg_size;
 
-		/* there is valid data on block, write back */
+		 
 		if (mtdpstore_is_used(cxt, off)) {
 			ret = mtd_write(mtd, off, zonesize, &retlen, buf);
 			if (ret)
@@ -487,13 +457,7 @@ free:
 	return ret;
 }
 
-/*
- * What does mtdpstore_flush_removed() do?
- * When user remove any log file on pstore filesystem, mtdpstore should do
- * something to ensure log file removed. If the whole block is no longer used,
- * it's nice to erase the block. However if the block still contains valid log,
- * what mtdpstore can do is to erase and write the valid log back.
- */
+ 
 static int mtdpstore_flush_removed(struct mtdpstore_context *cxt)
 {
 	struct mtd_info *mtd = cxt->mtd;
@@ -558,7 +522,7 @@ static int __init mtdpstore_init(void)
 		return -EINVAL;
 	}
 
-	/* Setup the MTD device to use */
+	 
 	ret = kstrtoint((char *)info->device, 0, &cxt->index);
 	if (ret)
 		cxt->index = -1;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 Broadcom Corporation
- *
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -36,17 +33,7 @@
 
 struct bcm_kona_wdt {
 	void __iomem *base;
-	/*
-	 * One watchdog tick is 1/(2^resolution) seconds. Resolution can take
-	 * the values 0-15, meaning one tick can be 1s to 30.52us. Our default
-	 * resolution of 4 means one tick is 62.5ms.
-	 *
-	 * The watchdog counter is 20 bits. Depending on resolution, the maximum
-	 * counter value of 0xfffff expires after about 12 days (resolution 0)
-	 * down to only 32s (resolution 15). The default resolution of 4 gives
-	 * us a maximum of about 18 hours and 12 minutes before the watchdog
-	 * times out.
-	 */
+	 
 	int resolution;
 	spinlock_t lock;
 #ifdef CONFIG_BCM_KONA_WDT_DEBUG
@@ -60,11 +47,7 @@ static int secure_register_read(struct bcm_kona_wdt *wdt, uint32_t offset)
 	uint32_t val;
 	unsigned count = 0;
 
-	/*
-	 * If the WD_LOAD_FLAG is set, the watchdog counter field is being
-	 * updated in hardware. Once the WD timer is updated in hardware, it
-	 * gets cleared.
-	 */
+	 
 	do {
 		if (unlikely(count > 1))
 			udelay(5);
@@ -73,16 +56,16 @@ static int secure_register_read(struct bcm_kona_wdt *wdt, uint32_t offset)
 	} while ((val & SECWDOG_WD_LOAD_FLAG) && count < SECWDOG_MAX_TRY);
 
 #ifdef CONFIG_BCM_KONA_WDT_DEBUG
-	/* Remember the maximum number iterations due to WD_LOAD_FLAG */
+	 
 	if (count > wdt->busy_count)
 		wdt->busy_count = count;
 #endif
 
-	/* This is the only place we return a negative value. */
+	 
 	if (val & SECWDOG_WD_LOAD_FLAG)
 		return -ETIMEDOUT;
 
-	/* We always mask out reserved bits. */
+	 
 	val &= SECWDOG_RESERVED_MASK;
 
 	return val;
@@ -162,7 +145,7 @@ static void bcm_kona_wdt_debug_exit(struct platform_device *pdev)
 static void bcm_kona_wdt_debug_init(struct platform_device *pdev) {}
 static void bcm_kona_wdt_debug_exit(struct platform_device *pdev) {}
 
-#endif /* CONFIG_BCM_KONA_WDT_DEBUG */
+#endif  
 
 static int bcm_kona_wdt_ctrl_reg_modify(struct bcm_kona_wdt *wdt,
 					unsigned mask, unsigned newval)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for Dummy Frontend
- *
- *  Written by Emard <emard@softhome.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -56,11 +52,7 @@ static int dvb_dummy_fe_read_ucblocks(struct dvb_frontend *fe, u32 *ucblocks)
 	return 0;
 }
 
-/*
- * Should only be implemented if it actually reads something from the hardware.
- * Also, it should check for the locks, in order to avoid report wrong data
- * to userspace.
- */
+ 
 static int dvb_dummy_fe_get_frontend(struct dvb_frontend *fe,
 				     struct dtv_frontend_properties *p)
 {
@@ -113,12 +105,12 @@ struct dvb_frontend *dvb_dummy_fe_ofdm_attach(void)
 {
 	struct dvb_dummy_fe_state *state = NULL;
 
-	/* allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(struct dvb_dummy_fe_state), GFP_KERNEL);
 	if (!state)
 		return NULL;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops,
 	       &dvb_dummy_fe_ofdm_ops,
 	       sizeof(struct dvb_frontend_ops));
@@ -134,12 +126,12 @@ struct dvb_frontend *dvb_dummy_fe_qpsk_attach(void)
 {
 	struct dvb_dummy_fe_state *state = NULL;
 
-	/* allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(struct dvb_dummy_fe_state), GFP_KERNEL);
 	if (!state)
 		return NULL;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops,
 	       &dvb_dummy_fe_qpsk_ops,
 	       sizeof(struct dvb_frontend_ops));
@@ -155,12 +147,12 @@ struct dvb_frontend *dvb_dummy_fe_qam_attach(void)
 {
 	struct dvb_dummy_fe_state *state = NULL;
 
-	/* allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(struct dvb_dummy_fe_state), GFP_KERNEL);
 	if (!state)
 		return NULL;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops,
 	       &dvb_dummy_fe_qam_ops,
 	       sizeof(struct dvb_frontend_ops));
@@ -216,9 +208,9 @@ static const struct dvb_frontend_ops dvb_dummy_fe_qam_ops = {
 		.frequency_min_hz	=  51 * MHz,
 		.frequency_max_hz	= 858 * MHz,
 		.frequency_stepsize_hz	= 62500,
-		/* symbol_rate_min: SACLK/64 == (XIN/2)/64 */
+		 
 		.symbol_rate_min	= (57840000 / 2) / 64,
-		.symbol_rate_max	= (57840000 / 2) / 4,   /* SACLK/4 */
+		.symbol_rate_max	= (57840000 / 2) / 4,    
 		.caps = FE_CAN_QAM_16 |
 			FE_CAN_QAM_32 |
 			FE_CAN_QAM_64 |

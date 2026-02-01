@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DVB USB framework
- *
- * Copyright (C) 2004-6 Patrick Boettcher <patrick.boettcher@posteo.de>
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "dvb_usb_common.h"
 
@@ -35,7 +30,7 @@ static int dvb_usb_v2_generic_io(struct dvb_usb_device *d,
 		return -EIO;
 	}
 
-	/* an answer is expected */
+	 
 	if (rbuf && rlen) {
 		if (d->props->generic_bulk_ctrl_delay)
 			usleep_range(d->props->generic_bulk_ctrl_delay,

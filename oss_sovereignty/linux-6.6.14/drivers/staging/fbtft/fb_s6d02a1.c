@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the S6D02A1 LCD Controller
- *
- * Based on fb_st7735r.c by Noralf Tronnes
- * Init code from UTFT library by Henning Karlsen
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -26,7 +21,7 @@ static const s16 default_init_sequence[] = {
 	-1, 0xfb, 0x21, 0x00, 0x02, 0x04, 0x07, 0x0a, 0x0b,
 	0x0c, 0x0c, 0x16, 0x1e, 0x30, 0x3f, 0x01, 0x02,
 
-	/* power setting sequence */
+	 
 	-1, 0xfd, 0x00, 0x00, 0x00, 0x17, 0x10, 0x00, 0x01,
 	0x01, 0x00, 0x1f, 0x1f,
 
@@ -78,7 +73,7 @@ static const s16 default_init_sequence[] = {
 	-1, 0xf4, 0x00, 0x09, 0x00, 0x00, 0x00, 0x3f, 0x3f,
 	0x07, 0x00, 0x3C, 0x36, 0x00, 0x3C, 0x36, 0x00,
 
-	/* initializing sequence */
+	 
 
 	-1, MIPI_DCS_SET_ADDRESS_MODE, 0x08,
 
@@ -86,13 +81,13 @@ static const s16 default_init_sequence[] = {
 
 	-1, MIPI_DCS_SET_PIXEL_FORMAT, 0x05,
 
-	/* gamma setting - possible values 0x01, 0x02, 0x04, 0x08 */
+	 
 	-1, MIPI_DCS_SET_GAMMA_CURVE, 0x01,
 
 	-2, 150,
 	-1, MIPI_DCS_SET_DISPLAY_ON,
 	-1, MIPI_DCS_WRITE_MEMORY_START,
-	/* end marker */
+	 
 	-3
 
 };
@@ -113,14 +108,7 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 #define MV BIT(5)
 static int set_var(struct fbtft_par *par)
 {
-	/*
-	 * Memory data access control (0x36h)
-	 * RGB/BGR:
-	 *	1. Mode selection pin SRGB
-	 *		RGB H/W pin for color filter setting: 0=RGB, 1=BGR
-	 *	2. MADCTL RGB bit
-	 *		RGB-BGR ORDER color filter panel: 0=RGB, 1=BGR
-	 */
+	 
 	switch (par->info->var.rotate) {
 	case 0:
 		write_reg(par, MIPI_DCS_SET_ADDRESS_MODE,

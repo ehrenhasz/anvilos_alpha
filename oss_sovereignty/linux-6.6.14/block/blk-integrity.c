@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * blk-integrity.c - Block layer data integrity extensions
- *
- * Copyright (C) 2007, 2008 Oracle Corporation
- * Written by: Martin K. Petersen <martin.petersen@oracle.com>
- */
+
+ 
 
 #include <linux/blk-integrity.h>
 #include <linux/backing-dev.h>
@@ -16,14 +11,7 @@
 
 #include "blk.h"
 
-/**
- * blk_rq_count_integrity_sg - Count number of integrity scatterlist elements
- * @q:		request queue
- * @bio:	bio with integrity metadata attached
- *
- * Description: Returns the number of elements required in a
- * scatterlist corresponding to the integrity metadata in a bio.
- */
+ 
 int blk_rq_count_integrity_sg(struct request_queue *q, struct bio *bio)
 {
 	struct bio_vec iv, ivprv = { NULL };
@@ -55,16 +43,7 @@ new_segment:
 }
 EXPORT_SYMBOL(blk_rq_count_integrity_sg);
 
-/**
- * blk_rq_map_integrity_sg - Map integrity metadata into a scatterlist
- * @q:		request queue
- * @bio:	bio with integrity metadata attached
- * @sglist:	target scatterlist
- *
- * Description: Map the integrity vectors in request into a
- * scatterlist.  The scatterlist must be big enough to hold all
- * elements.  I.e. sized using blk_rq_count_integrity_sg().
- */
+ 
 int blk_rq_map_integrity_sg(struct request_queue *q, struct bio *bio,
 			    struct scatterlist *sglist)
 {
@@ -107,17 +86,7 @@ new_segment:
 }
 EXPORT_SYMBOL(blk_rq_map_integrity_sg);
 
-/**
- * blk_integrity_compare - Compare integrity profile of two disks
- * @gd1:	Disk to compare
- * @gd2:	Disk to compare
- *
- * Description: Meta-devices like DM and MD need to verify that all
- * sub-devices use the same integrity format before advertising to
- * upper layers that they can send/receive integrity metadata.  This
- * function can be used to check whether two gendisk devices have
- * compatible integrity formats.
- */
+ 
 int blk_integrity_compare(struct gendisk *gd1, struct gendisk *gd2)
 {
 	struct blk_integrity *b1 = &gd1->queue->integrity;
@@ -348,17 +317,7 @@ static const struct blk_integrity_profile nop_profile = {
 	.complete_fn = blk_integrity_nop_complete,
 };
 
-/**
- * blk_integrity_register - Register a gendisk as being integrity-capable
- * @disk:	struct gendisk pointer to make integrity-aware
- * @template:	block integrity profile to register
- *
- * Description: When a device needs to advertise itself as being able to
- * send/receive integrity metadata it must use this function to register
- * the capability with the block layer. The template is a blk_integrity
- * struct with values appropriate for the underlying hardware. See
- * Documentation/block/data-integrity.rst.
- */
+ 
 void blk_integrity_register(struct gendisk *disk, struct blk_integrity *template)
 {
 	struct blk_integrity *bi = &disk->queue->integrity;
@@ -382,13 +341,7 @@ void blk_integrity_register(struct gendisk *disk, struct blk_integrity *template
 }
 EXPORT_SYMBOL(blk_integrity_register);
 
-/**
- * blk_integrity_unregister - Unregister block integrity profile
- * @disk:	disk whose integrity profile to unregister
- *
- * Description: This function unregisters the integrity capability from
- * a block device.
- */
+ 
 void blk_integrity_unregister(struct gendisk *disk)
 {
 	struct blk_integrity *bi = &disk->queue->integrity;
@@ -396,7 +349,7 @@ void blk_integrity_unregister(struct gendisk *disk)
 	if (!bi->profile)
 		return;
 
-	/* ensure all bios are off the integrity workqueue */
+	 
 	blk_flush_integrity();
 	blk_queue_flag_clear(QUEUE_FLAG_STABLE_WRITES, disk->queue);
 	memset(bi, 0, sizeof(*bi));

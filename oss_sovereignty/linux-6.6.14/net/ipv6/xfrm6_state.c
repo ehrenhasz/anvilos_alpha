@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xfrm6_state.c: based on xfrm4_state.c
- *
- * Authors:
- *	Mitsuru KANDA @USAGI
- *	Kazunori MIYAZAWA @USAGI
- *	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
- *		IPv6 support
- *	YOSHIFUJI Hideaki @USAGI
- *		Split up af-specific portion
- *
- */
+
+ 
 
 #include <net/xfrm.h>
 

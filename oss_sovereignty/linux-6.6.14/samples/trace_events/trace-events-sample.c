@@ -1,13 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/kthread.h>
 
-/*
- * Any file that uses trace points, must include the header.
- * But only one file, must include the header by defining
- * CREATE_TRACE_POINTS first.  This will make the C code that
- * creates the handles for the trace points.
- */
+ 
 #define CREATE_TRACE_POINTS
 #include "trace-events-sample.h"
 
@@ -36,7 +31,7 @@ static void do_simple_thread_func(int cnt, const char *fmt, ...)
 
 	va_start(va, fmt);
 
-	/* Silly tracepoints */
+	 
 	trace_foo_bar("hello", cnt, array, random_strings[len],
 		      current->cpus_ptr, fmt, &va);
 
@@ -76,7 +71,7 @@ static void simple_thread_func_fn(int cnt)
 	set_current_state(TASK_INTERRUPTIBLE);
 	schedule_timeout(HZ);
 
-	/* More silly tracepoints */
+	 
 	trace_foo_bar_with_fn("Look at me", cnt);
 	trace_foo_with_template_fn("Look at me too", cnt);
 }
@@ -101,11 +96,7 @@ int foo_bar_reg(void)
 		goto out;
 
 	pr_info("Starting thread for foo_bar_fn\n");
-	/*
-	 * We shouldn't be able to start a trace when the module is
-	 * unloading (there's other locks to prevent that). But
-	 * for consistency sake, we still take the thread_mutex.
-	 */
+	 
 	simple_tsk_fn = kthread_run(simple_thread_fn, NULL, "event-sample-fn");
  out:
 	mutex_unlock(&thread_mutex);

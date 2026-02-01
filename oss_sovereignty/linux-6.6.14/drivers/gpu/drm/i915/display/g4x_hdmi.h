@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef _G4X_HDMI_H_
 #define _G4X_HDMI_H_

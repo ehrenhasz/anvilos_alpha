@@ -1,103 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * comedi/drivers/pcl730.c
- * Driver for Advantech PCL-730 and clones
- * José Luis Sánchez
- */
 
-/*
- * Driver: pcl730
- * Description: Advantech PCL-730 (& compatibles)
- * Devices: [Advantech] PCL-730 (pcl730), PCM-3730 (pcm3730), PCL-725 (pcl725),
- *   PCL-733 (pcl733), PCL-734 (pcl734),
- *   [ADLink] ACL-7130 (acl7130), ACL-7225b (acl7225b),
- *   [ICP] ISO-730 (iso730), P8R8-DIO (p8r8dio), P16R16-DIO (p16r16dio),
- *   [Diamond Systems] OPMM-1616-XT (opmm-1616-xt), PEARL-MM-P (pearl-mm-p),
- *   IR104-PBF (ir104-pbf),
- * Author: José Luis Sánchez (jsanchezv@teleline.es)
- * Status: untested
- *
- * Configuration options:
- *   [0] - I/O port base
- *
- * Interrupts are not supported.
- * The ACL-7130 card has an 8254 timer/counter not supported by this driver.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 
-/*
- * Register map
- *
- * The register map varies slightly depending on the board type but
- * all registers are 8-bit.
- *
- * The boardinfo 'io_range' is used to allow comedi to request the
- * proper range required by the board.
- *
- * The comedi_subdevice 'private' data is used to pass the register
- * offset to the (*insn_bits) functions to read/write the correct
- * registers.
- *
- * The basic register mapping looks like this:
- *
- *     BASE+0  Isolated outputs 0-7 (write) / inputs 0-7 (read)
- *     BASE+1  Isolated outputs 8-15 (write) / inputs 8-15 (read)
- *     BASE+2  TTL outputs 0-7 (write) / inputs 0-7 (read)
- *     BASE+3  TTL outputs 8-15 (write) / inputs 8-15 (read)
- *
- * The pcm3730 board does not have register BASE+1.
- *
- * The pcl725 and p8r8dio only have registers BASE+0 and BASE+1:
- *
- *     BASE+0  Isolated outputs 0-7 (write) (read back on p8r8dio)
- *     BASE+1  Isolated inputs 0-7 (read)
- *
- * The acl7225b and p16r16dio boards have this register mapping:
- *
- *     BASE+0  Isolated outputs 0-7 (write) (read back)
- *     BASE+1  Isolated outputs 8-15 (write) (read back)
- *     BASE+2  Isolated inputs 0-7 (read)
- *     BASE+3  Isolated inputs 8-15 (read)
- *
- * The pcl733 and pcl733 boards have this register mapping:
- *
- *     BASE+0  Isolated outputs 0-7 (write) or inputs 0-7 (read)
- *     BASE+1  Isolated outputs 8-15 (write) or inputs 8-15 (read)
- *     BASE+2  Isolated outputs 16-23 (write) or inputs 16-23 (read)
- *     BASE+3  Isolated outputs 24-31 (write) or inputs 24-31 (read)
- *
- * The opmm-1616-xt board has this register mapping:
- *
- *     BASE+0  Isolated outputs 0-7 (write) (read back)
- *     BASE+1  Isolated outputs 8-15 (write) (read back)
- *     BASE+2  Isolated inputs 0-7 (read)
- *     BASE+3  Isolated inputs 8-15 (read)
- *
- *     These registers are not currently supported:
- *
- *     BASE+2  Relay select register (write)
- *     BASE+3  Board reset control register (write)
- *     BASE+4  Interrupt control register (write)
- *     BASE+4  Change detect 7-0 status register (read)
- *     BASE+5  LED control register (write)
- *     BASE+5  Change detect 15-8 status register (read)
- *
- * The pearl-mm-p board has this register mapping:
- *
- *     BASE+0  Isolated outputs 0-7 (write)
- *     BASE+1  Isolated outputs 8-15 (write)
- *
- * The ir104-pbf board has this register mapping:
- *
- *     BASE+0  Isolated outputs 0-7 (write) (read back)
- *     BASE+1  Isolated outputs 8-15 (write) (read back)
- *     BASE+2  Isolated outputs 16-19 (write) (read back)
- *     BASE+4  Isolated inputs 0-7 (read)
- *     BASE+5  Isolated inputs 8-15 (read)
- *     BASE+6  Isolated inputs 16-19 (read)
- */
+ 
 
 struct pcl730_board {
 	const char *name;
@@ -162,7 +71,7 @@ static const struct pcl730_board pcl730_boards[] = {
 		.n_iso_in_chan	= 8,
 	}, {
 		.name		= "acl7225b",
-		.io_range	= 0x08,		/* only 4 are used */
+		.io_range	= 0x08,		 
 		.is_acl7225b	= 1,
 		.has_readback	= 1,
 		.n_subdevs	= 2,
@@ -280,7 +189,7 @@ static int pcl730_attach(struct comedi_device *dev,
 	subdev = 0;
 
 	if (board->n_iso_out_chan) {
-		/* Isolated Digital Outputs */
+		 
 		s = &dev->subdevices[subdev++];
 		s->type		= COMEDI_SUBD_DO;
 		s->subdev_flags	= SDF_WRITABLE;
@@ -290,13 +199,13 @@ static int pcl730_attach(struct comedi_device *dev,
 		s->insn_bits	= pcl730_do_insn_bits;
 		s->private	= (void *)0;
 
-		/* get the initial state if supported */
+		 
 		if (board->has_readback)
 			s->state = pcl730_get_bits(dev, s);
 	}
 
 	if (board->n_iso_in_chan) {
-		/* Isolated Digital Inputs */
+		 
 		s = &dev->subdevices[subdev++];
 		s->type		= COMEDI_SUBD_DI;
 		s->subdev_flags	= SDF_READABLE;
@@ -310,7 +219,7 @@ static int pcl730_attach(struct comedi_device *dev,
 	}
 
 	if (board->has_ttl_io) {
-		/* TTL Digital Outputs */
+		 
 		s = &dev->subdevices[subdev++];
 		s->type		= COMEDI_SUBD_DO;
 		s->subdev_flags	= SDF_WRITABLE;
@@ -320,7 +229,7 @@ static int pcl730_attach(struct comedi_device *dev,
 		s->insn_bits	= pcl730_do_insn_bits;
 		s->private	= (void *)2;
 
-		/* TTL Digital Inputs */
+		 
 		s = &dev->subdevices[subdev++];
 		s->type		= COMEDI_SUBD_DI;
 		s->subdev_flags	= SDF_READABLE;

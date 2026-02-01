@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Routines for control of the TEA6330T circuit via i2c bus
- *  Sound fader control circuit for car radios by Philips Semiconductors
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -16,18 +12,18 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Routines for control of the TEA6330T circuit via i2c bus");
 MODULE_LICENSE("GPL");
 
-#define TEA6330T_ADDR			(0x80>>1) /* fixed address */
+#define TEA6330T_ADDR			(0x80>>1)  
 
-#define TEA6330T_SADDR_VOLUME_LEFT	0x00	/* volume left */
-#define TEA6330T_SADDR_VOLUME_RIGHT	0x01	/* volume right */
-#define TEA6330T_SADDR_BASS		0x02	/* bass control */
-#define TEA6330T_SADDR_TREBLE		0x03	/* treble control */
-#define TEA6330T_SADDR_FADER		0x04	/* fader control */
-#define   TEA6330T_MFN			0x20	/* mute control for selected channels */
-#define   TEA6330T_FCH			0x10	/* select fader channels - front or rear */
-#define TEA6330T_SADDR_AUDIO_SWITCH	0x05	/* audio switch */
-#define   TEA6330T_GMU			0x80	/* mute control, general mute */
-#define   TEA6330T_EQN			0x40	/* equalizer switchover (0=equalizer-on) */
+#define TEA6330T_SADDR_VOLUME_LEFT	0x00	 
+#define TEA6330T_SADDR_VOLUME_RIGHT	0x01	 
+#define TEA6330T_SADDR_BASS		0x02	 
+#define TEA6330T_SADDR_TREBLE		0x03	 
+#define TEA6330T_SADDR_FADER		0x04	 
+#define   TEA6330T_MFN			0x20	 
+#define   TEA6330T_FCH			0x10	 
+#define TEA6330T_SADDR_AUDIO_SWITCH	0x05	 
+#define   TEA6330T_GMU			0x80	 
+#define   TEA6330T_EQN			0x40	 
 
 
 struct tea6330t {
@@ -305,10 +301,10 @@ int snd_tea6330t_update_mixer(struct snd_card *card,
 
 	snd_i2c_lock(bus);
 
-	/* turn fader off and handle equalizer */
+	 
 	tea->regs[TEA6330T_SADDR_FADER] = 0x3f;
 	tea->regs[TEA6330T_SADDR_AUDIO_SWITCH] = equalizer ? 0 : TEA6330T_EQN;
-	/* initialize mixer */
+	 
 	if (!tea->equalizer) {
 		tea->max_bass = 9;
 		tea->max_treble = 8;
@@ -328,7 +324,7 @@ int snd_tea6330t_update_mixer(struct snd_card *card,
 	tea->regs[TEA6330T_SADDR_BASS] = default_bass;
 	tea->regs[TEA6330T_SADDR_TREBLE] = default_treble;
 
-	/* compose I2C message and put the hardware to initial state */
+	 
 	bytes[0] = TEA6330T_SADDR_VOLUME_LEFT;
 	for (idx = 0; idx < 6; idx++)
 		bytes[idx+1] = tea->regs[idx];

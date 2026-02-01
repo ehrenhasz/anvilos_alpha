@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* miscellaneous bits
- *
- * Copyright (C) 2002, 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -12,18 +8,16 @@
 #include "afs_fs.h"
 #include "protocol_uae.h"
 
-/*
- * convert an AFS abort code to a Linux error number
- */
+ 
 int afs_abort_to_error(u32 abort_code)
 {
 	switch (abort_code) {
-		/* Low errno codes inserted into abort namespace */
+		 
 	case 13:		return -EACCES;
 	case 27:		return -EFBIG;
 	case 30:		return -EROFS;
 
-		/* VICE "special error" codes; 101 - 111 */
+		 
 	case VSALVAGE:		return -EIO;
 	case VNOVNODE:		return -ENOENT;
 	case VNOVOL:		return -ENOMEDIUM;
@@ -36,7 +30,7 @@ int afs_abort_to_error(u32 abort_code)
 	case VBUSY:		return -EBUSY;
 	case VMOVED:		return -ENXIO;
 
-		/* Volume Location server errors */
+		 
 	case AFSVL_IDEXIST:		return -EEXIST;
 	case AFSVL_IO:			return -EREMOTEIO;
 	case AFSVL_NAMEEXIST:		return -EEXIST;
@@ -66,7 +60,7 @@ int afs_abort_to_error(u32 abort_code)
 	case AFSVL_PERM:		return -EACCES;
 	case AFSVL_NOMEM:		return -EREMOTEIO;
 
-		/* Unified AFS error table */
+		 
 	case UAEPERM:			return -EPERM;
 	case UAENOENT:			return -ENOENT;
 	case UAEAGAIN:			return -EAGAIN;
@@ -88,7 +82,7 @@ int afs_abort_to_error(u32 abort_code)
 	case UAENOMEDIUM:		return -ENOMEDIUM;
 	case UAEDQUOT:			return -EDQUOT;
 
-		/* RXKAD abort codes; from include/rxrpc/packet.h.  ET "RXK" == 0x1260B00 */
+		 
 	case RXKADINCONSISTENCY: return -EPROTO;
 	case RXKADPACKETSHORT:	return -EPROTO;
 	case RXKADLEVELFAIL:	return -EKEYREJECTED;
@@ -109,9 +103,7 @@ int afs_abort_to_error(u32 abort_code)
 	}
 }
 
-/*
- * Select the error to report from a set of errors.
- */
+ 
 void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
 {
 	switch (error) {
@@ -157,7 +149,7 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
 		if (e->error == -ECONNRESET)
 			return;
 		fallthrough;
-	case -ECONNRESET: /* Responded, but call expired. */
+	case -ECONNRESET:  
 		if (e->responded)
 			return;
 		e->error = error;
@@ -166,7 +158,7 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
 	case -ECONNABORTED:
 		error = afs_abort_to_error(abort_code);
 		fallthrough;
-	case -ENETRESET: /* Responded, but we seem to have changed address */
+	case -ENETRESET:  
 		e->responded = true;
 		e->error = error;
 		return;

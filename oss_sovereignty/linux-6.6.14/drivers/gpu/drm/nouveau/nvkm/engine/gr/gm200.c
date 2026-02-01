@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "gf100.h"
 #include "ctxgf100.h"
 
@@ -38,9 +16,7 @@ gm200_gr_nofw(struct gf100_gr *gr, int ver, const struct gf100_gr_fwif *fwif)
 	return -ENODEV;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 static void
 gm200_gr_acr_bld_patch(struct nvkm_acr *acr, u32 bld, s64 adjust)
@@ -129,8 +105,8 @@ gm200_gr_init_rop_active_fbps(struct gf100_gr *gr)
 {
 	struct nvkm_device *device = gr->base.engine.subdev.device;
 	const u32 fbp_count = nvkm_rd32(device, 0x12006c);
-	nvkm_mask(device, 0x408850, 0x0000000f, fbp_count); /* zrop */
-	nvkm_mask(device, 0x408958, 0x0000000f, fbp_count); /* crop */
+	nvkm_mask(device, 0x408850, 0x0000000f, fbp_count);  
+	nvkm_mask(device, 0x408958, 0x0000000f, fbp_count);  
 }
 
 static u8
@@ -151,19 +127,14 @@ gm200_gr_tile_map_2_8[] = {
 int
 gm200_gr_oneinit_sm_id(struct gf100_gr *gr)
 {
-	/*XXX: There's a different algorithm here I've not yet figured out. */
+	 
 	return gf100_gr_oneinit_sm_id(gr);
 }
 
 void
 gm200_gr_oneinit_tiles(struct gf100_gr *gr)
 {
-	/*XXX: Not sure what this is about.  The algorithm from NVGPU
-	 *     seems to work for all boards I tried from earlier (and
-	 *     later) GPUs except in these specific configurations.
-	 *
-	 *     Let's just hardcode them for now.
-	 */
+	 
 	if (gr->gpc_nr == 2 && gr->tpc_total == 8) {
 		memcpy(gr->tile, gm200_gr_tile_map_2_8, gr->tpc_total);
 		gr->screen_tile_row_offset = 1;

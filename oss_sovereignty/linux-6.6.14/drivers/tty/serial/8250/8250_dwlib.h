@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Synopsys DesignWare 8250 library header file. */
+ 
+ 
 
 #include <linux/io.h>
 #include <linux/notifier.h>
@@ -12,16 +12,16 @@ struct clk;
 struct reset_control;
 
 struct dw8250_port_data {
-	/* Port properties */
+	 
 	int			line;
 
-	/* DMA operations */
+	 
 	struct uart_8250_dma	dma;
 
-	/* Hardware configuration */
+	 
 	u8			dlf_size;
 
-	/* RS485 variables */
+	 
 	bool			hw_rs485_support;
 };
 

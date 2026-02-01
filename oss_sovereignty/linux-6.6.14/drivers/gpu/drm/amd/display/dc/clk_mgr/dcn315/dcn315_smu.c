@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "core_types.h"
 #include "clk_mgr_internal.h"
@@ -77,39 +54,35 @@ static const struct IP_BASE NBIO_BASE = { { { { 0x00000000, 0x00000014, 0x00000D
 
 #define mmMP1_C2PMSG_3                            0x3B1050C
 
-#define VBIOSSMC_MSG_TestMessage                  0x01 ///< To check if PMFW is alive and responding. Requirement specified by PMFW team
-#define VBIOSSMC_MSG_GetPmfwVersion               0x02 ///< Get PMFW version
-#define VBIOSSMC_MSG_Spare0                       0x03 ///< Spare0
-#define VBIOSSMC_MSG_SetDispclkFreq               0x04 ///< Set display clock frequency in MHZ
-#define VBIOSSMC_MSG_Spare1                       0x05 ///< Spare1
-#define VBIOSSMC_MSG_SetDppclkFreq                0x06 ///< Set DPP clock frequency in MHZ
-#define VBIOSSMC_MSG_SetHardMinDcfclkByFreq       0x07 ///< Set DCF clock frequency hard min in MHZ
-#define VBIOSSMC_MSG_SetMinDeepSleepDcfclk        0x08 ///< Set DCF clock minimum frequency in deep sleep in MHZ
-#define VBIOSSMC_MSG_GetDtbclkFreq                0x09 ///< Get display dtb clock frequency in MHZ in case VMIN does not support phy frequency
-#define VBIOSSMC_MSG_SetDtbClk                    0x0A ///< Set dtb clock frequency, return frequemcy in MHZ
-#define VBIOSSMC_MSG_SetDisplayCount              0x0B ///< Inform PMFW of number of display connected
-#define VBIOSSMC_MSG_EnableTmdp48MHzRefclkPwrDown 0x0C ///< To ask PMFW turn off TMDP 48MHz refclk during display off to save power
-#define VBIOSSMC_MSG_UpdatePmeRestore             0x0D ///< To ask PMFW to write into Azalia for PME wake up event
-#define VBIOSSMC_MSG_SetVbiosDramAddrHigh         0x0E ///< Set DRAM address high 32 bits for WM table transfer
-#define VBIOSSMC_MSG_SetVbiosDramAddrLow          0x0F ///< Set DRAM address low 32 bits for WM table transfer
-#define VBIOSSMC_MSG_TransferTableSmu2Dram        0x10 ///< Transfer table from PMFW SRAM to system DRAM
-#define VBIOSSMC_MSG_TransferTableDram2Smu        0x11 ///< Transfer table from system DRAM to PMFW
-#define VBIOSSMC_MSG_SetDisplayIdleOptimizations  0x12 ///< Set Idle state optimization for display off
-#define VBIOSSMC_MSG_GetDprefclkFreq              0x13 ///< Get DPREF clock frequency. Return in MHZ
-#define VBIOSSMC_Message_Count                    0x14 ///< Total number of VBIS and DAL messages
+#define VBIOSSMC_MSG_TestMessage                  0x01 
+#define VBIOSSMC_MSG_GetPmfwVersion               0x02 
+#define VBIOSSMC_MSG_Spare0                       0x03 
+#define VBIOSSMC_MSG_SetDispclkFreq               0x04 
+#define VBIOSSMC_MSG_Spare1                       0x05 
+#define VBIOSSMC_MSG_SetDppclkFreq                0x06 
+#define VBIOSSMC_MSG_SetHardMinDcfclkByFreq       0x07 
+#define VBIOSSMC_MSG_SetMinDeepSleepDcfclk        0x08 
+#define VBIOSSMC_MSG_GetDtbclkFreq                0x09 
+#define VBIOSSMC_MSG_SetDtbClk                    0x0A 
+#define VBIOSSMC_MSG_SetDisplayCount              0x0B 
+#define VBIOSSMC_MSG_EnableTmdp48MHzRefclkPwrDown 0x0C 
+#define VBIOSSMC_MSG_UpdatePmeRestore             0x0D 
+#define VBIOSSMC_MSG_SetVbiosDramAddrHigh         0x0E 
+#define VBIOSSMC_MSG_SetVbiosDramAddrLow          0x0F 
+#define VBIOSSMC_MSG_TransferTableSmu2Dram        0x10 
+#define VBIOSSMC_MSG_TransferTableDram2Smu        0x11 
+#define VBIOSSMC_MSG_SetDisplayIdleOptimizations  0x12 
+#define VBIOSSMC_MSG_GetDprefclkFreq              0x13 
+#define VBIOSSMC_Message_Count                    0x14 
 
 #define VBIOSSMC_Status_BUSY                      0x0
-#define VBIOSSMC_Result_OK                        0x01 ///< Message Response OK
-#define VBIOSSMC_Result_Failed                    0xFF ///< Message Response Failed
-#define VBIOSSMC_Result_UnknownCmd                0xFE ///< Message Response Unknown Command
-#define VBIOSSMC_Result_CmdRejectedPrereq         0xFD ///< Message Response Command Failed Prerequisite
-#define VBIOSSMC_Result_CmdRejectedBusy           0xFC ///< Message Response Command Rejected due to PMFW is busy. Sender should retry sending this message
+#define VBIOSSMC_Result_OK                        0x01 
+#define VBIOSSMC_Result_Failed                    0xFF 
+#define VBIOSSMC_Result_UnknownCmd                0xFE 
+#define VBIOSSMC_Result_CmdRejectedPrereq         0xFD 
+#define VBIOSSMC_Result_CmdRejectedBusy           0xFC 
 
-/*
- * Function to be used instead of REG_WAIT macro because the wait ends when
- * the register is NOT EQUAL to zero, and because the translation in msg_if.h
- * won't work with REG_WAIT.
- */
+ 
 static uint32_t dcn315_smu_wait_for_response(struct clk_mgr_internal *clk_mgr, unsigned int delay_us, unsigned int max_retries)
 {
 	uint32_t res_val = VBIOSSMC_Status_BUSY;
@@ -145,14 +118,14 @@ static int dcn315_smu_send_msg_with_param(
 		return -1;
 	}
 
-	/* First clear response register */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_38, VBIOSSMC_Status_BUSY);
 
-	/* Set the parameter register for the SMU message, unit is Mhz */
+	 
 	REG_WRITE(MP1_SMN_C2PMSG_37, param);
 
 	for (i = 0; i < SMU_REGISTER_WRITE_RETRY_COUNT; i++) {
-		/* Trigger the message transaction by writing the message ID */
+		 
 		generic_write_indirect_reg(CTX,
 			REG_NBIO(RSMU_INDEX), REG_NBIO(RSMU_DATA),
 			mmMP1_C2PMSG_3, msg_id);
@@ -191,7 +164,7 @@ int dcn315_smu_set_dispclk(struct clk_mgr_internal *clk_mgr, int requested_dispc
 	if (!clk_mgr->smu_present)
 		return requested_dispclk_khz;
 
-	/*  Unit of SMU msg parameter is Mhz */
+	 
 	actual_dispclk_set_mhz = dcn315_smu_send_msg_with_param(
 			clk_mgr,
 			VBIOSSMC_MSG_SetDispclkFreq,
@@ -263,7 +236,7 @@ void dcn315_smu_set_display_idle_optimization(struct clk_mgr_internal *clk_mgr, 
 	if (!clk_mgr->smu_present)
 		return;
 
-	//TODO: Work with smu team to define optimization options.
+	
 	dcn315_smu_send_msg_with_param(
 		clk_mgr,
 		VBIOSSMC_MSG_SetDisplayIdleOptimizations,

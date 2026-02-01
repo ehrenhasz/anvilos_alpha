@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pinctrl / GPIO driver for StarFive JH7110 SoC sys controller
- *
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -33,7 +28,7 @@
 
 #define JH7110_SYS_REGS_NUM		174
 
-/* registers */
+ 
 #define JH7110_SYS_DOEN			0x000
 #define JH7110_SYS_DOUT			0x040
 #define JH7110_SYS_GPI			0x080
@@ -385,13 +380,13 @@ static int jh7110_sys_init_hw(struct gpio_chip *gc)
 	struct jh7110_pinctrl *sfp = container_of(gc,
 			struct jh7110_pinctrl, gc);
 
-	/* mask all GPIO interrupts */
+	 
 	writel(0U, sfp->base + JH7110_SYS_GPIOIE0);
 	writel(0U, sfp->base + JH7110_SYS_GPIOIE1);
-	/* clear edge interrupt flags */
+	 
 	writel(~0U, sfp->base + JH7110_SYS_GPIOIC0);
 	writel(~0U, sfp->base + JH7110_SYS_GPIOIC1);
-	/* enable GPIO interrupts */
+	 
 	writel(1U, sfp->base + JH7110_SYS_GPIOEN);
 	return 0;
 }
@@ -431,7 +426,7 @@ static const struct of_device_id jh7110_sys_pinctrl_of_match[] = {
 		.compatible = "starfive,jh7110-sys-pinctrl",
 		.data = &jh7110_sys_pinctrl_info,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7110_sys_pinctrl_of_match);
 

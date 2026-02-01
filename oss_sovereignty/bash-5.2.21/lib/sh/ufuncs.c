@@ -1,22 +1,6 @@
-/* ufuncs - sleep and alarm functions that understand fractional values */
+ 
 
-/* Copyright (C) 2008,2009-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -31,7 +15,7 @@
 #include <errno.h>
 #if !defined (errno)
 extern int errno;
-#endif /* !errno */
+#endif  
 
 #if defined (HAVE_SELECT)
 #  include "posixselect.h"
@@ -40,7 +24,7 @@ extern int errno;
 #  include "stat-time.h"
 #endif
 
-/* A version of `alarm' using setitimer if it's available. */
+ 
 
 #if defined (HAVE_SETITIMER)
 unsigned int
@@ -56,9 +40,9 @@ falarm(secs, usecs)
   it.it_value.tv_usec = usecs;
 
   if (setitimer(ITIMER_REAL, &it, &oit) < 0)
-    return (-1);		/* XXX will be converted to unsigned */
+    return (-1);		 
 
-  /* Backwards compatibility with alarm(3) */
+   
   if (oit.it_value.tv_usec)
     oit.it_value.tv_sec++;
   return (oit.it_value.tv_sec);
@@ -78,10 +62,9 @@ falarm (secs, usecs)
     }
   return (alarm (secs));
 }
-#endif /* !HAVE_SETITIMER */
+#endif  
 
-/* A version of sleep using fractional seconds and select.  I'd like to use
-   `usleep', but it's already taken */
+ 
 
 #if defined (HAVE_TIMEVAL) && (defined (HAVE_SELECT) || defined (HAVE_PSELECT))
 int
@@ -108,7 +91,7 @@ fsleep(sec, usec)
   sigemptyset (&prevmask);
   tv.tv_sec = sec;
   tv.tv_usec = usec;
-#endif /* !HAVE_PSELECT */
+#endif  
 
   do
     {
@@ -121,20 +104,20 @@ fsleep(sec, usec)
 #endif
       e = errno;
       if (r < 0 && errno == EINTR)
-	return -1;		/* caller will handle */
+	return -1;		 
       errno = e;
     }
   while (r < 0 && errno == EINTR);
 
   return r;
 }
-#else /* !HAVE_TIMEVAL || !HAVE_SELECT */
+#else  
 int
 fsleep(sec, usec)
      long sec, usec;
 {
-  if (usec >= 500000)	/* round */
+  if (usec >= 500000)	 
    sec++;
   return (sleep(sec));
 }
-#endif /* !HAVE_TIMEVAL || !HAVE_SELECT */
+#endif  

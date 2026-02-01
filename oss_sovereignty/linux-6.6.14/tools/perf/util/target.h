@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PERF_TARGET_H
 #define _PERF_TARGET_H
 
@@ -24,16 +24,10 @@ struct target {
 enum target_errno {
 	TARGET_ERRNO__SUCCESS		= 0,
 
-	/*
-	 * Choose an arbitrary negative big number not to clash with standard
-	 * errno since SUS requires the errno has distinct positive values.
-	 * See 'Issue 6' in the link below.
-	 *
-	 * http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/errno.h.html
-	 */
+	 
 	__TARGET_ERRNO__START		= -10000,
 
-	/* for target__validate() */
+	 
 	TARGET_ERRNO__PID_OVERRIDE_CPU	= __TARGET_ERRNO__START,
 	TARGET_ERRNO__PID_OVERRIDE_UID,
 	TARGET_ERRNO__UID_OVERRIDE_CPU,
@@ -45,7 +39,7 @@ enum target_errno {
 	TARGET_ERRNO__BPF_OVERRIDE_UID,
 	TARGET_ERRNO__BPF_OVERRIDE_THREAD,
 
-	/* for target__parse_uid() */
+	 
 	TARGET_ERRNO__INVALID_UID,
 	TARGET_ERRNO__USER_NOT_FOUND,
 
@@ -74,12 +68,7 @@ static inline bool target__none(struct target *target)
 
 static inline bool target__enable_on_exec(struct target *target)
 {
-	/*
-	 * Normally enable_on_exec should be set if:
-	 *  1) The tracee process is forked (not attaching to existed task or cpu).
-	 *  2) And initial_delay is not configured.
-	 * Otherwise, we enable tracee events manually.
-	 */
+	 
 	return target__none(target) && !target->initial_delay;
 }
 
@@ -103,4 +92,4 @@ static inline bool target__uses_dummy_map(struct target *target)
 	return use_dummy;
 }
 
-#endif /* _PERF_TARGET_H */
+#endif  

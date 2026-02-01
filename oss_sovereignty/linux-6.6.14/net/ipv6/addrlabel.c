@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IPv6 Address Label subsystem
- * for the IPv6 "Default" Source Address Selection
- *
- * Copyright (C)2007 USAGI/WIDE Project
- */
-/*
- * Author:
- *	YOSHIFUJI Hideaki @ USAGI/WIDE Project <yoshfuji@linux-ipv6.org>
- */
+
+ 
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -26,9 +18,7 @@
 #define ADDRLABEL(x...) do { ; } while (0)
 #endif
 
-/*
- * Policy Table
- */
+ 
 struct ip6addrlbl_entry {
 	struct in6_addr prefix;
 	int prefixlen;
@@ -39,26 +29,7 @@ struct ip6addrlbl_entry {
 	struct rcu_head rcu;
 };
 
-/*
- * Default policy table (RFC6724 + extensions)
- *
- * prefix		addr_type	label
- * -------------------------------------------------------------------------
- * ::1/128		LOOPBACK	0
- * ::/0			N/A		1
- * 2002::/16		N/A		2
- * ::/96		COMPATv4	3
- * ::ffff:0:0/96	V4MAPPED	4
- * fc00::/7		N/A		5		ULA (RFC 4193)
- * 2001::/32		N/A		6		Teredo (RFC 4380)
- * 2001:10::/28		N/A		7		ORCHID (RFC 4843)
- * fec0::/10		N/A		11		Site-local
- *							(deprecated by RFC3879)
- * 3ffe::/16		N/A		12		6bone
- *
- * Note: 0xffffffff is used if we do not have any policies.
- * Note: Labels for ULA and 6to4 are different from labels listed in RFC6724.
- */
+ 
 
 #define IPV6_ADDR_LABEL_DEFAULT	0xffffffffUL
 
@@ -68,49 +39,49 @@ static const __net_initconst struct ip6addrlbl_init_table
 	int prefixlen;
 	u32 label;
 } ip6addrlbl_init_table[] = {
-	{	/* ::/0 */
+	{	 
 		.prefix = &in6addr_any,
 		.label = 1,
-	}, {	/* fc00::/7 */
+	}, {	 
 		.prefix = &(struct in6_addr){ { { 0xfc } } } ,
 		.prefixlen = 7,
 		.label = 5,
-	}, {	/* fec0::/10 */
+	}, {	 
 		.prefix = &(struct in6_addr){ { { 0xfe, 0xc0 } } },
 		.prefixlen = 10,
 		.label = 11,
-	}, {	/* 2002::/16 */
+	}, {	 
 		.prefix = &(struct in6_addr){ { { 0x20, 0x02 } } },
 		.prefixlen = 16,
 		.label = 2,
-	}, {	/* 3ffe::/16 */
+	}, {	 
 		.prefix = &(struct in6_addr){ { { 0x3f, 0xfe } } },
 		.prefixlen = 16,
 		.label = 12,
-	}, {	/* 2001::/32 */
+	}, {	 
 		.prefix = &(struct in6_addr){ { { 0x20, 0x01 } } },
 		.prefixlen = 32,
 		.label = 6,
-	}, {	/* 2001:10::/28 */
+	}, {	 
 		.prefix = &(struct in6_addr){ { { 0x20, 0x01, 0x00, 0x10 } } },
 		.prefixlen = 28,
 		.label = 7,
-	}, {	/* ::ffff:0:0 */
+	}, {	 
 		.prefix = &(struct in6_addr){ { { [10] = 0xff, [11] = 0xff } } },
 		.prefixlen = 96,
 		.label = 4,
-	}, {	/* ::/96 */
+	}, {	 
 		.prefix = &in6addr_any,
 		.prefixlen = 96,
 		.label = 3,
-	}, {	/* ::1/128 */
+	}, {	 
 		.prefix = &in6addr_loopback,
 		.prefixlen = 128,
 		.label = 0,
 	}
 };
 
-/* Find label */
+ 
 static bool __ip6addrlbl_match(const struct ip6addrlbl_entry *p,
 			       const struct in6_addr *addr,
 			       int addrtype, int ifindex)
@@ -156,7 +127,7 @@ u32 ipv6_addr_label(struct net *net,
 	return label;
 }
 
-/* allocate one entry */
+ 
 static struct ip6addrlbl_entry *ip6addrlbl_alloc(const struct in6_addr *prefix,
 						 int prefixlen, int ifindex,
 						 u32 label)
@@ -199,7 +170,7 @@ static struct ip6addrlbl_entry *ip6addrlbl_alloc(const struct in6_addr *prefix,
 	return newp;
 }
 
-/* add a label */
+ 
 static int __ip6addrlbl_add(struct net *net, struct ip6addrlbl_entry *newp,
 			    int replace)
 {
@@ -238,7 +209,7 @@ out:
 	return ret;
 }
 
-/* add a label */
+ 
 static int ip6addrlbl_add(struct net *net,
 			  const struct in6_addr *prefix, int prefixlen,
 			  int ifindex, u32 label, int replace)
@@ -261,7 +232,7 @@ static int ip6addrlbl_add(struct net *net,
 	return ret;
 }
 
-/* remove a label */
+ 
 static int __ip6addrlbl_del(struct net *net,
 			    const struct in6_addr *prefix, int prefixlen,
 			    int ifindex)
@@ -303,7 +274,7 @@ static int ip6addrlbl_del(struct net *net,
 	return ret;
 }
 
-/* add default label */
+ 
 static int __net_init ip6addrlbl_net_init(struct net *net)
 {
 	struct ip6addrlbl_entry *p = NULL;
@@ -340,7 +311,7 @@ static void __net_exit ip6addrlbl_net_exit(struct net *net)
 	struct ip6addrlbl_entry *p = NULL;
 	struct hlist_node *n;
 
-	/* Remove all labels belonging to the exiting net */
+	 
 	spin_lock(&net->ipv6.ip6addrlbl_table.lock);
 	hlist_for_each_entry_safe(p, n, &net->ipv6.ip6addrlbl_table.head, list) {
 		hlist_del_rcu(&p->list);
@@ -528,8 +499,8 @@ static int ip6addrlbl_dump(struct sk_buff *skb, struct netlink_callback *cb)
 static inline int ip6addrlbl_msgsize(void)
 {
 	return NLMSG_ALIGN(sizeof(struct ifaddrlblmsg))
-		+ nla_total_size(16)	/* IFAL_ADDRESS */
-		+ nla_total_size(4);	/* IFAL_LABEL */
+		+ nla_total_size(16)	 
+		+ nla_total_size(4);	 
 }
 
 static int ip6addrlbl_valid_get_req(struct sk_buff *skb,

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2022 Intel Corporation */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/iopoll.h>
 #include "adf_accel_devices.h"
@@ -39,13 +39,13 @@ static int send_host_msg(struct adf_accel_dev *accel_dev)
 	if (ret)
 		pm_idle_support = true;
 
-	/* Send HOST_MSG */
+	 
 	msg = FIELD_PREP(ADF_GEN4_PM_MSG_PAYLOAD_BIT_MASK,
 			 pm_idle_support ? PM_SET_MIN : PM_NO_CHANGE);
 	msg |= ADF_GEN4_PM_MSG_PENDING;
 	ADF_CSR_WR(pmisc, ADF_GEN4_PM_HOST_MSG, msg);
 
-	/* Poll status register to make sure the HOST_MSG has been processed */
+	 
 	return read_poll_timeout(ADF_CSR_RD, msg,
 				!(msg & ADF_GEN4_PM_MSG_PENDING),
 				ADF_GEN4_PM_MSG_POLL_DELAY_US,
@@ -62,18 +62,18 @@ static void pm_bh_handler(struct work_struct *work)
 	u32 pm_int_sts = pm_data->pm_int_sts;
 	u32 val;
 
-	/* PM Idle interrupt */
+	 
 	if (pm_int_sts & ADF_GEN4_PM_IDLE_STS) {
-		/* Issue host message to FW */
+		 
 		if (send_host_msg(accel_dev))
 			dev_warn_ratelimited(&GET_DEV(accel_dev),
 					     "Failed to send host msg to FW\n");
 	}
 
-	/* Clear interrupt status */
+	 
 	ADF_CSR_WR(pmisc, ADF_GEN4_PM_INTERRUPT, pm_int_sts);
 
-	/* Reenable PM interrupt */
+	 
 	val = ADF_CSR_RD(pmisc, ADF_GEN4_ERRMSK2);
 	val &= ~ADF_GEN4_PM_SOU;
 	ADF_CSR_WR(pmisc, ADF_GEN4_ERRMSK2, val);
@@ -89,7 +89,7 @@ bool adf_gen4_handle_pm_interrupt(struct adf_accel_dev *accel_dev)
 	u32 errmsk2;
 	u32 val;
 
-	/* Only handle the interrupt triggered by PM */
+	 
 	errmsk2 = ADF_CSR_RD(pmisc, ADF_GEN4_ERRMSK2);
 	if (errmsk2 & ADF_GEN4_PM_SOU)
 		return false;
@@ -98,7 +98,7 @@ bool adf_gen4_handle_pm_interrupt(struct adf_accel_dev *accel_dev)
 	if (!(errsou2 & ADF_GEN4_PM_SOU))
 		return false;
 
-	/* Disable interrupt */
+	 
 	val = ADF_CSR_RD(pmisc, ADF_GEN4_ERRMSK2);
 	val |= ADF_GEN4_PM_SOU;
 	ADF_CSR_WR(pmisc, ADF_GEN4_ERRMSK2, val);
@@ -129,15 +129,15 @@ int adf_gen4_enable_pm(struct adf_accel_dev *accel_dev)
 	if (ret)
 		return ret;
 
-	/* Enable default PM interrupts: IDLE, THROTTLE */
+	 
 	val = ADF_CSR_RD(pmisc, ADF_GEN4_PM_INTERRUPT);
 	val |= ADF_GEN4_PM_INT_EN_DEFAULT;
 
-	/* Clear interrupt status */
+	 
 	val |= ADF_GEN4_PM_INT_STS_MASK;
 	ADF_CSR_WR(pmisc, ADF_GEN4_PM_INTERRUPT, val);
 
-	/* Unmask PM Interrupt */
+	 
 	val = ADF_CSR_RD(pmisc, ADF_GEN4_ERRMSK2);
 	val &= ~ADF_GEN4_PM_SOU;
 	ADF_CSR_WR(pmisc, ADF_GEN4_ERRMSK2, val);

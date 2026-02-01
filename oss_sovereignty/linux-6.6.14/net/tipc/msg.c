@@ -1,38 +1,4 @@
-/*
- * net/tipc/msg.c: TIPC message header routines
- *
- * Copyright (c) 2000-2006, 2014-2015, Ericsson AB
- * Copyright (c) 2005, 2010-2011, Wind River Systems
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <net/sock.h>
 #include "core.h"
@@ -54,17 +20,7 @@
 const int one_page_mtu = PAGE_SIZE - SKB_DATA_ALIGN(BUF_OVERHEAD) -
 			 SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 
-/**
- * tipc_buf_acquire - creates a TIPC message buffer
- * @size: message size (including TIPC header)
- * @gfp: memory allocation flags
- *
- * Return: a new buffer with data pointers set to the specified size.
- *
- * NOTE:
- * Headroom is reserved to allow prepending of a data link header.
- * There may also be unrequested tailroom present at the buffer's end.
- */
+ 
 struct sk_buff *tipc_buf_acquire(u32 size, gfp_t gfp)
 {
 	struct sk_buff *skb;
@@ -114,13 +70,7 @@ struct sk_buff *tipc_msg_create(uint user, uint type,
 	return buf;
 }
 
-/* tipc_buf_append(): Append a buffer to the fragment list of another buffer
- * @*headbuf: in:  NULL for first frag, otherwise value returned from prev call
- *            out: set when successful non-complete reassembly, otherwise NULL
- * @*buf:     in:  the buffer to append. Always defined
- *            out: head buf after successful complete reassembly, otherwise NULL
- * Returns 1 when reassembly complete, otherwise 0
- */
+ 
 int tipc_buf_append(struct sk_buff **headbuf, struct sk_buff **buf)
 {
 	struct sk_buff *head = *headbuf;
@@ -188,16 +138,7 @@ err:
 	return 0;
 }
 
-/**
- * tipc_msg_append(): Append data to tail of an existing buffer queue
- * @_hdr: header to be used
- * @m: the data to be appended
- * @mss: max allowable size of buffer
- * @dlen: size of data to be appended
- * @txq: queue to append to
- *
- * Return: the number of 1k blocks appended or errno value
- */
+ 
 int tipc_msg_append(struct tipc_msg *_hdr, struct msghdr *m, int dlen,
 		    int mss, struct sk_buff_head *txq)
 {
@@ -238,24 +179,14 @@ int tipc_msg_append(struct tipc_msg *_hdr, struct msghdr *m, int dlen,
 	return total - accounted;
 }
 
-/* tipc_msg_validate - validate basic format of received message
- *
- * This routine ensures a TIPC message has an acceptable header, and at least
- * as much data as the header indicates it should.  The routine also ensures
- * that the entire message header is stored in the main fragment of the message
- * buffer, to simplify future access to message header fields.
- *
- * Note: Having extra info present in the message header or data areas is OK.
- * TIPC will ignore the excess, under the assumption that it is optional info
- * introduced by a later release of the protocol.
- */
+ 
 bool tipc_msg_validate(struct sk_buff **_skb)
 {
 	struct sk_buff *skb = *_skb;
 	struct tipc_msg *hdr;
 	int msz, hsz;
 
-	/* Ensure that flow control ratio condition is satisfied */
+	 
 	if (unlikely(skb->truesize / buf_roundup_len(skb) >= 4)) {
 		skb = skb_copy_expand(skb, BUF_HEADROOM, 0, GFP_ATOMIC);
 		if (!skb)
@@ -292,17 +223,7 @@ bool tipc_msg_validate(struct sk_buff **_skb)
 	return true;
 }
 
-/**
- * tipc_msg_fragment - build a fragment skb list for TIPC message
- *
- * @skb: TIPC message skb
- * @hdr: internal msg header to be put on the top of the fragments
- * @pktmax: max size of a fragment incl. the header
- * @frags: returned fragment skb list
- *
- * Return: 0 if the fragmentation is successful, otherwise: -EINVAL
- * or -ENOMEM
- */
+ 
 int tipc_msg_fragment(struct sk_buff *skb, const struct tipc_msg *hdr,
 		      int pktmax, struct sk_buff_head *frags)
 {
@@ -311,7 +232,7 @@ int tipc_msg_fragment(struct sk_buff *skb, const struct tipc_msg *hdr,
 	struct sk_buff *_skb;
 	u8 *data;
 
-	/* Non-linear buffer? */
+	 
 	if (skb_linearize(skb))
 		return -ENOMEM;
 
@@ -327,17 +248,17 @@ int tipc_msg_fragment(struct sk_buff *skb, const struct tipc_msg *hdr,
 			eat = dmax;
 		else
 			eat = dsz % dmax;
-		/* Allocate a new fragment */
+		 
 		_skb = tipc_buf_acquire(INT_H_SIZE + eat, GFP_ATOMIC);
 		if (!_skb)
 			goto error;
 		skb_orphan(_skb);
 		__skb_queue_tail(frags, _skb);
-		/* Copy header & data to the fragment */
+		 
 		skb_copy_to_linear_data(_skb, hdr, INT_H_SIZE);
 		skb_copy_to_linear_data_offset(_skb, INT_H_SIZE, data, eat);
 		data += eat;
-		/* Update the fragment's header */
+		 
 		_hdr = buf_msg(_skb);
 		msg_set_fragm_no(_hdr, pktno);
 		msg_set_nof_fragms(_hdr, nof_fragms);
@@ -351,20 +272,7 @@ error:
 	return -ENOMEM;
 }
 
-/**
- * tipc_msg_build - create buffer chain containing specified header and data
- * @mhdr: Message header, to be prepended to data
- * @m: User message
- * @offset: buffer offset for fragmented messages (FIXME)
- * @dsz: Total length of user data
- * @pktmax: Max packet size that can be used
- * @list: Buffer or chain of buffers to be returned to caller
- *
- * Note that the recursive call we are making here is safe, since it can
- * logically go only one further level down.
- *
- * Return: message data size or errno: -ENOMEM, -EFAULT
- */
+ 
 int tipc_msg_build(struct tipc_msg *mhdr, struct msghdr *m, int offset,
 		   int dsz, int pktmax, struct sk_buff_head *list)
 {
@@ -381,11 +289,11 @@ int tipc_msg_build(struct tipc_msg *mhdr, struct msghdr *m, int offset,
 
 	msg_set_size(mhdr, msz);
 
-	/* No fragmentation needed? */
+	 
 	if (likely(msz <= pktmax)) {
 		skb = tipc_buf_acquire(msz, GFP_KERNEL);
 
-		/* Fall back to smaller MTU if node local message */
+		 
 		if (unlikely(!skb)) {
 			if (pktmax != MAX_MSG_SIZE)
 				return -ENOMEM;
@@ -407,14 +315,14 @@ int tipc_msg_build(struct tipc_msg *mhdr, struct msghdr *m, int offset,
 		goto error;
 	}
 
-	/* Prepare reusable fragment header */
+	 
 	tipc_msg_init(msg_prevnode(mhdr), &pkthdr, MSG_FRAGMENTER,
 		      FIRST_FRAGMENT, INT_H_SIZE, msg_destnode(mhdr));
 	msg_set_size(&pkthdr, pktmax);
 	msg_set_fragm_no(&pkthdr, pktno);
 	msg_set_importance(&pkthdr, msg_importance(mhdr));
 
-	/* Prepare first fragment */
+	 
 	skb = tipc_buf_acquire(pktmax, GFP_KERNEL);
 	if (!skb)
 		return -ENOMEM;
@@ -441,7 +349,7 @@ int tipc_msg_build(struct tipc_msg *mhdr, struct msghdr *m, int offset,
 		if (!drem)
 			break;
 
-		/* Prepare new fragment: */
+		 
 		if (drem < (pktmax - INT_H_SIZE))
 			pktsz = drem + INT_H_SIZE;
 		else
@@ -469,14 +377,7 @@ error:
 	return rc;
 }
 
-/**
- * tipc_msg_bundle - Append contents of a buffer to tail of an existing one
- * @bskb: the bundle buffer to append to
- * @msg: message to be appended
- * @max: max allowable size for the bundle buffer
- *
- * Return: "true" if bundling has been performed, otherwise "false"
- */
+ 
 static bool tipc_msg_bundle(struct sk_buff *bskb, struct tipc_msg *msg,
 			    u32 max)
 {
@@ -500,26 +401,14 @@ static bool tipc_msg_bundle(struct sk_buff *bskb, struct tipc_msg *msg,
 	return true;
 }
 
-/**
- * tipc_msg_try_bundle - Try to bundle a new message to the last one
- * @tskb: the last/target message to which the new one will be appended
- * @skb: the new message skb pointer
- * @mss: max message size (header inclusive)
- * @dnode: destination node for the message
- * @new_bundle: if this call made a new bundle or not
- *
- * Return: "true" if the new message skb is potential for bundling this time or
- * later, in the case a bundling has been done this time, the skb is consumed
- * (the skb pointer = NULL).
- * Otherwise, "false" if the skb cannot be bundled at all.
- */
+ 
 bool tipc_msg_try_bundle(struct sk_buff *tskb, struct sk_buff **skb, u32 mss,
 			 u32 dnode, bool *new_bundle)
 {
 	struct tipc_msg *msg, *inner, *outer;
 	u32 tsz;
 
-	/* First, check if the new buffer is suitable for bundling */
+	 
 	msg = buf_msg(*skb);
 	if (msg_user(msg) == MSG_FRAGMENTER)
 		return false;
@@ -530,17 +419,17 @@ bool tipc_msg_try_bundle(struct sk_buff *tskb, struct sk_buff **skb, u32 mss,
 	if (mss <= INT_H_SIZE + msg_size(msg))
 		return false;
 
-	/* Ok, but the last/target buffer can be empty? */
+	 
 	if (unlikely(!tskb))
 		return true;
 
-	/* Is it a bundle already? Try to bundle the new message to it */
+	 
 	if (msg_user(buf_msg(tskb)) == MSG_BUNDLER) {
 		*new_bundle = false;
 		goto bundle;
 	}
 
-	/* Make a new bundle of the two messages if possible */
+	 
 	tsz = msg_size(buf_msg(tskb));
 	if (unlikely(mss < BUF_ALIGN(INT_H_SIZE + tsz) + msg_size(msg)))
 		return true;
@@ -565,15 +454,7 @@ bundle:
 	return true;
 }
 
-/**
- *  tipc_msg_extract(): extract bundled inner packet from buffer
- *  @skb: buffer to be extracted from.
- *  @iskb: extracted inner buffer, to be returned
- *  @pos: position in outer message of msg to be extracted.
- *  Returns position of next msg.
- *  Consumes outer buffer when last packet extracted
- *  Return: true when there is an extracted buffer, otherwise false
- */
+ 
 bool tipc_msg_extract(struct sk_buff *skb, struct sk_buff **iskb, int *pos)
 {
 	struct tipc_msg *hdr, *ihdr;
@@ -610,14 +491,7 @@ none:
 	return false;
 }
 
-/**
- * tipc_msg_reverse(): swap source and destination addresses and add error code
- * @own_node: originating node id for reversed message
- * @skb:  buffer containing message to be reversed; will be consumed
- * @err:  error code to be set in message, if any
- * Replaces consumed buffer with new one when successful
- * Return: true if success, otherwise false
- */
+ 
 bool tipc_msg_reverse(u32 own_node,  struct sk_buff **skb, int err)
 {
 	struct sk_buff *_skb = *skb;
@@ -635,22 +509,22 @@ bool tipc_msg_reverse(u32 own_node,  struct sk_buff **skb, int err)
 	if (msg_errcode(_hdr))
 		goto exit;
 
-	/* Never return SHORT header */
+	 
 	if (hlen == SHORT_H_SIZE)
 		hlen = BASIC_H_SIZE;
 
-	/* Don't return data along with SYN+, - sender has a clone */
+	 
 	if (msg_is_syn(_hdr) && err == TIPC_ERR_OVERLOAD)
 		dlen = 0;
 
-	/* Allocate new buffer to return */
+	 
 	*skb = tipc_buf_acquire(hlen + dlen, GFP_ATOMIC);
 	if (!*skb)
 		goto exit;
 	memcpy((*skb)->data, _skb->data, msg_hdr_sz(_hdr));
 	memcpy((*skb)->data + hlen, msg_data(_hdr), dlen);
 
-	/* Build reverse header in new buffer */
+	 
 	hdr = buf_msg(*skb);
 	msg_set_hdr_sz(hdr, hlen);
 	msg_set_errcode(hdr, err);
@@ -686,14 +560,7 @@ bool tipc_msg_skb_clone(struct sk_buff_head *msg, struct sk_buff_head *cpy)
 	return true;
 }
 
-/**
- * tipc_msg_lookup_dest(): try to find new destination for named message
- * @net: pointer to associated network namespace
- * @skb: the buffer containing the message.
- * @err: error code to be used by caller if lookup fails
- * Does not consume buffer
- * Return: true if a destination is found, false otherwise
- */
+ 
 bool tipc_msg_lookup_dest(struct net *net, struct sk_buff *skb, int *err)
 {
 	struct tipc_msg *msg = buf_msg(skb);
@@ -730,8 +597,7 @@ bool tipc_msg_lookup_dest(struct net *net, struct sk_buff *skb, int *err)
 	return true;
 }
 
-/* tipc_msg_assemble() - assemble chain of fragments into one message
- */
+ 
 bool tipc_msg_assemble(struct sk_buff_head *list)
 {
 	struct sk_buff *skb, *tmp = NULL;
@@ -754,9 +620,7 @@ bool tipc_msg_assemble(struct sk_buff_head *list)
 	return false;
 }
 
-/* tipc_msg_reassemble() - clone a buffer chain of fragments and
- *                         reassemble the clones into one message
- */
+ 
 bool tipc_msg_reassemble(struct sk_buff_head *list, struct sk_buff_head *rcvq)
 {
 	struct sk_buff *skb, *_skb;
@@ -764,7 +628,7 @@ bool tipc_msg_reassemble(struct sk_buff_head *list, struct sk_buff_head *rcvq)
 	struct sk_buff *head = NULL;
 	int hdr_len;
 
-	/* Copy header if single buffer */
+	 
 	if (skb_queue_len(list) == 1) {
 		skb = skb_peek(list);
 		hdr_len = skb_headroom(skb) + msg_hdr_sz(buf_msg(skb));
@@ -775,7 +639,7 @@ bool tipc_msg_reassemble(struct sk_buff_head *list, struct sk_buff_head *rcvq)
 		return true;
 	}
 
-	/* Clone all fragments and reassemble */
+	 
 	skb_queue_walk(list, skb) {
 		frag = skb_clone(skb, GFP_ATOMIC);
 		if (!frag)
@@ -811,11 +675,7 @@ bool tipc_msg_pskb_copy(u32 dst, struct sk_buff_head *msg,
 	return true;
 }
 
-/* tipc_skb_queue_sorted(); sort pkt into list according to sequence number
- * @list: list to be appended to
- * @seqno: sequence number of buffer to add
- * @skb: buffer to add
- */
+ 
 bool __tipc_skb_queue_sorted(struct sk_buff_head *list, u16 seqno,
 			     struct sk_buff *skb)
 {

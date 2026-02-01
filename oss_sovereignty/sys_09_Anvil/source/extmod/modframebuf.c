@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -36,7 +12,7 @@
 
 typedef struct _mp_obj_framebuf_t {
     mp_obj_base_t base;
-    mp_obj_t buf_obj; // need to store this to prevent GC from reclaiming buf
+    mp_obj_t buf_obj; 
     void *buf;
     uint16_t width, height, stride;
     uint8_t format;
@@ -56,7 +32,7 @@ typedef struct _mp_framebuf_p_t {
     fill_rect_t fill_rect;
 } mp_framebuf_p_t;
 
-// constants for formats
+
 #define FRAMEBUF_MVLSB    (0)
 #define FRAMEBUF_RGB565   (1)
 #define FRAMEBUF_GS2_HMSB (5)
@@ -65,7 +41,7 @@ typedef struct _mp_framebuf_p_t {
 #define FRAMEBUF_MHLSB    (3)
 #define FRAMEBUF_MHMSB    (4)
 
-// Functions for MHLSB and MHMSB
+
 
 static void mono_horiz_setpixel(const mp_obj_framebuf_t *fb, unsigned int x, unsigned int y, uint32_t col) {
     size_t index = (x + y * fb->stride) >> 3;
@@ -93,7 +69,7 @@ static void mono_horiz_fill_rect(const mp_obj_framebuf_t *fb, unsigned int x, un
     }
 }
 
-// Functions for MVLSB format
+
 
 static void mvlsb_setpixel(const mp_obj_framebuf_t *fb, unsigned int x, unsigned int y, uint32_t col) {
     size_t index = (y >> 3) * fb->stride + x;
@@ -117,7 +93,7 @@ static void mvlsb_fill_rect(const mp_obj_framebuf_t *fb, unsigned int x, unsigne
     }
 }
 
-// Functions for RGB565 format
+
 
 static void rgb565_setpixel(const mp_obj_framebuf_t *fb, unsigned int x, unsigned int y, uint32_t col) {
     ((uint16_t *)fb->buf)[x + y * fb->stride] = col;
@@ -137,7 +113,7 @@ static void rgb565_fill_rect(const mp_obj_framebuf_t *fb, unsigned int x, unsign
     }
 }
 
-// Functions for GS2_HMSB format
+
 
 static void gs2_hmsb_setpixel(const mp_obj_framebuf_t *fb, unsigned int x, unsigned int y, uint32_t col) {
     uint8_t *pixel = &((uint8_t *)fb->buf)[(x + y * fb->stride) >> 2];
@@ -161,7 +137,7 @@ static void gs2_hmsb_fill_rect(const mp_obj_framebuf_t *fb, unsigned int x, unsi
     }
 }
 
-// Functions for GS4_HMSB format
+
 
 static void gs4_hmsb_setpixel(const mp_obj_framebuf_t *fb, unsigned int x, unsigned int y, uint32_t col) {
     uint8_t *pixel = &((uint8_t *)fb->buf)[(x + y * fb->stride) >> 1];
@@ -212,7 +188,7 @@ static void gs4_hmsb_fill_rect(const mp_obj_framebuf_t *fb, unsigned int x, unsi
     }
 }
 
-// Functions for GS8 format
+
 
 static void gs8_setpixel(const mp_obj_framebuf_t *fb, unsigned int x, unsigned int y, uint32_t col) {
     uint8_t *pixel = &((uint8_t *)fb->buf)[(x + y * fb->stride)];
@@ -257,11 +233,11 @@ static inline uint32_t getpixel(const mp_obj_framebuf_t *fb, unsigned int x, uns
 
 static void fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, uint32_t col) {
     if (h < 1 || w < 1 || x + w <= 0 || y + h <= 0 || y >= fb->height || x >= fb->width) {
-        // No operation needed.
+        
         return;
     }
 
-    // clip to the framebuffer
+    
     int xend = MIN(fb->width, x + w);
     int yend = MIN(fb->height, y + h);
     x = MAX(x, 0);
@@ -350,7 +326,7 @@ static MP_DEFINE_CONST_FUN_OBJ_2(framebuf_fill_obj, framebuf_fill);
 
 static mp_obj_t framebuf_fill_rect(size_t n_args, const mp_obj_t *args_in) {
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
-    mp_int_t args[5]; // x, y, w, h, col
+    mp_int_t args[5]; 
     framebuf_args(args_in, args, 5);
     fill_rect(self, args[0], args[1], args[2], args[3], args[4]);
     return mp_const_none;
@@ -363,10 +339,10 @@ static mp_obj_t framebuf_pixel(size_t n_args, const mp_obj_t *args_in) {
     mp_int_t y = mp_obj_get_int(args_in[2]);
     if (0 <= x && x < self->width && 0 <= y && y < self->height) {
         if (n_args == 3) {
-            // get
+            
             return MP_OBJ_NEW_SMALL_INT(getpixel(self, x, y));
         } else {
-            // set
+            
             setpixel(self, x, y, mp_obj_get_int(args_in[3]));
         }
     }
@@ -378,7 +354,7 @@ static mp_obj_t framebuf_hline(size_t n_args, const mp_obj_t *args_in) {
     (void)n_args;
 
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
-    mp_int_t args[4]; // x, y, w, col
+    mp_int_t args[4]; 
     framebuf_args(args_in, args, 4);
 
     fill_rect(self, args[0], args[1], args[2], 1, args[3]);
@@ -391,7 +367,7 @@ static mp_obj_t framebuf_vline(size_t n_args, const mp_obj_t *args_in) {
     (void)n_args;
 
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
-    mp_int_t args[4]; // x, y, h, col
+    mp_int_t args[4]; 
     framebuf_args(args_in, args, 4);
 
     fill_rect(self, args[0], args[1], 1, args[2], args[3]);
@@ -402,7 +378,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(framebuf_vline_obj, 5, 5, framebuf_vl
 
 static mp_obj_t framebuf_rect(size_t n_args, const mp_obj_t *args_in) {
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
-    mp_int_t args[5]; // x, y, w, h, col
+    mp_int_t args[5]; 
     framebuf_args(args_in, args, 5);
     if (n_args > 6 && mp_obj_is_true(args_in[6])) {
         fill_rect(self, args[0], args[1], args[2], args[3], args[4]);
@@ -480,7 +456,7 @@ static mp_obj_t framebuf_line(size_t n_args, const mp_obj_t *args_in) {
     (void)n_args;
 
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
-    mp_int_t args[5]; // x1, y1, x2, y2, col
+    mp_int_t args[5]; 
     framebuf_args(args_in, args, 5);
 
     line(self, args[0], args[1], args[2], args[3], args[4]);
@@ -489,8 +465,8 @@ static mp_obj_t framebuf_line(size_t n_args, const mp_obj_t *args_in) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(framebuf_line_obj, 6, 6, framebuf_line);
 
-// Q2 Q1
-// Q3 Q4
+
+
 #define ELLIPSE_MASK_FILL (0x10)
 #define ELLIPSE_MASK_ALL (0x0f)
 #define ELLIPSE_MASK_Q1 (0x01)
@@ -523,7 +499,7 @@ static void draw_ellipse_points(const mp_obj_framebuf_t *fb, mp_int_t cx, mp_int
 static mp_obj_t framebuf_ellipse(size_t n_args, const mp_obj_t *args_in) {
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
     mp_int_t args[5];
-    framebuf_args(args_in, args, 5); // cx, cy, xradius, yradius, col
+    framebuf_args(args_in, args, 5); 
     mp_int_t mask = (n_args > 6 && mp_obj_is_true(args_in[6])) ? ELLIPSE_MASK_FILL : 0;
     if (n_args > 7) {
         mask |= mp_obj_get_int(args_in[7]) & ELLIPSE_MASK_ALL;
@@ -539,7 +515,7 @@ static mp_obj_t framebuf_ellipse(size_t n_args, const mp_obj_t *args_in) {
     mp_int_t ellipse_error = 0;
     mp_int_t stoppingx = two_bsquare * args[2];
     mp_int_t stoppingy = 0;
-    while (stoppingx >= stoppingy) {   // 1st set of points,  y' > -1
+    while (stoppingx >= stoppingy) {   
         draw_ellipse_points(self, args[0], args[1], x, y, args[4], mask);
         y += 1;
         stoppingy += two_asquare;
@@ -552,7 +528,7 @@ static mp_obj_t framebuf_ellipse(size_t n_args, const mp_obj_t *args_in) {
             xchange += two_bsquare;
         }
     }
-    // 1st point set is done start the 2nd set of points
+    
     x = 0;
     y = args[3];
     xchange = args[3] * args[3];
@@ -560,7 +536,7 @@ static mp_obj_t framebuf_ellipse(size_t n_args, const mp_obj_t *args_in) {
     ellipse_error = 0;
     stoppingx = 0;
     stoppingy = two_asquare * args[3];
-    while (stoppingx <= stoppingy) {  // 2nd set of points, y' < -1
+    while (stoppingx <= stoppingy) {  
         draw_ellipse_points(self, args[0], args[1], x, y, args[4], mask);
         x += 1;
         stoppingx += two_bsquare;
@@ -591,7 +567,7 @@ static mp_obj_t framebuf_poly(size_t n_args, const mp_obj_t *args_in) {
 
     mp_buffer_info_t bufinfo;
     mp_get_buffer_raise(args_in[3], &bufinfo, MP_BUFFER_READ);
-    // If an odd number of values was given, this rounds down to multiple of two.
+    
     int n_poly = bufinfo.len / (mp_binary_get_size('@', bufinfo.typecode, NULL) * 2);
 
     if (n_poly == 0) {
@@ -602,14 +578,14 @@ static mp_obj_t framebuf_poly(size_t n_args, const mp_obj_t *args_in) {
     bool fill = n_args > 5 && mp_obj_is_true(args_in[5]);
 
     if (fill) {
-        // This implements an integer version of http://alienryderflex.com/polygon_fill/
+        
 
-        // The idea is for each scan line, compute the sorted list of x
-        // coordinates where the scan line intersects the polygon edges,
-        // then fill between each resulting pair.
+        
+        
+        
 
-        // Restrict just to the scan lines that include the vertical extent of
-        // this polygon.
+        
+        
         mp_int_t y_min = INT_MAX, y_max = INT_MIN;
         for (int i = 0; i < n_poly; i++) {
             mp_int_t py = poly_int(&bufinfo, i * 2 + 1);
@@ -618,7 +594,7 @@ static mp_obj_t framebuf_poly(size_t n_args, const mp_obj_t *args_in) {
         }
 
         for (mp_int_t row = y_min; row <= y_max; row++) {
-            // Each node is the x coordinate where an edge crosses this scan line.
+            
             mp_int_t nodes[n_poly];
             int n_nodes = 0;
             mp_int_t px1 = poly_int(&bufinfo, 0);
@@ -628,23 +604,23 @@ static mp_obj_t framebuf_poly(size_t n_args, const mp_obj_t *args_in) {
                 mp_int_t py2 = poly_int(&bufinfo, i--);
                 mp_int_t px2 = poly_int(&bufinfo, i--);
 
-                // Don't include the bottom pixel of a given edge to avoid
-                // duplicating the node with the start of the next edge. This
-                // will miss some pixels on the boundary, and in particular
-                // at a local minima or inflection point.
+                
+                
+                
+                
                 if (py1 != py2 && ((py1 > row && py2 <= row) || (py1 <= row && py2 > row))) {
                     mp_int_t node = (32 * px1 + 32 * (px2 - px1) * (row - py1) / (py2 - py1) + 16) / 32;
                     nodes[n_nodes++] = node;
                 } else if (row == MAX(py1, py2)) {
-                    // At local-minima, try and manually fill in the pixels that get missed above.
+                    
                     if (py1 < py2) {
                         setpixel_checked(self, x + px2, y + py2, col, 1);
                     } else if (py2 < py1) {
                         setpixel_checked(self, x + px1, y + py1, col, 1);
                     } else {
-                        // Even though this is a hline and would be faster to
-                        // use fill_rect, use line() because it handles x2 <
-                        // x1.
+                        
+                        
+                        
                         line(self, x + px1, y + py1, x + px2, y + py2, col);
                     }
                 }
@@ -657,7 +633,7 @@ static mp_obj_t framebuf_poly(size_t n_args, const mp_obj_t *args_in) {
                 continue;
             }
 
-            // Sort the nodes left-to-right (bubble-sort for code size).
+            
             i = 0;
             while (i < n_nodes - 1) {
                 if (nodes[i] > nodes[i + 1]) {
@@ -672,13 +648,13 @@ static mp_obj_t framebuf_poly(size_t n_args, const mp_obj_t *args_in) {
                 }
             }
 
-            // Fill between each pair of nodes.
+            
             for (i = 0; i < n_nodes; i += 2) {
                 fill_rect(self, x + nodes[i], y + row, (nodes[i + 1] - nodes[i]) + 1, 1, col);
             }
         }
     } else {
-        // Outline only.
+        
         mp_int_t px1 = poly_int(&bufinfo, 0);
         mp_int_t py1 = poly_int(&bufinfo, 1);
         int i = n_poly * 2 - 1;
@@ -695,7 +671,7 @@ static mp_obj_t framebuf_poly(size_t n_args, const mp_obj_t *args_in) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(framebuf_poly_obj, 5, 6, framebuf_poly);
 
-#endif // MICROPY_PY_ARRAY
+#endif 
 
 static mp_obj_t framebuf_blit(size_t n_args, const mp_obj_t *args_in) {
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
@@ -722,11 +698,11 @@ static mp_obj_t framebuf_blit(size_t n_args, const mp_obj_t *args_in) {
         (-x >= source->width) ||
         (-y >= source->height)
         ) {
-        // Out of bounds, no-op.
+        
         return mp_const_none;
     }
 
-    // Clip.
+    
     int x0 = MAX(0, x);
     int y0 = MAX(0, y);
     int x1 = MAX(0, -x);
@@ -797,7 +773,7 @@ static mp_obj_t framebuf_scroll(mp_obj_t self_in, mp_obj_t xstep_in, mp_obj_t ys
 static MP_DEFINE_CONST_FUN_OBJ_3(framebuf_scroll_obj, framebuf_scroll);
 
 static mp_obj_t framebuf_text(size_t n_args, const mp_obj_t *args_in) {
-    // extract arguments
+    
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(args_in[0]);
     const char *str = mp_obj_str_get_str(args_in[1]);
     mp_int_t x0 = mp_obj_get_int(args_in[2]);
@@ -807,22 +783,22 @@ static mp_obj_t framebuf_text(size_t n_args, const mp_obj_t *args_in) {
         col = mp_obj_get_int(args_in[4]);
     }
 
-    // loop over chars
+    
     for (; *str; ++str) {
-        // get char and make sure its in range of font
+        
         int chr = *(uint8_t *)str;
         if (chr < 32 || chr > 127) {
             chr = 127;
         }
-        // get char data
+        
         const uint8_t *chr_data = &font_petme128_8x8[(chr - 32) * 8];
-        // loop over char data
+        
         for (int j = 0; j < 8; j++, x0++) {
-            if (0 <= x0 && x0 < self->width) { // clip x
-                uint vline_data = chr_data[j]; // each byte is a column of 8 pixels, LSB at top
-                for (int y = y0; vline_data; vline_data >>= 1, y++) { // scan over vertical column
-                    if (vline_data & 1) { // only draw if pixel set
-                        if (0 <= y && y < self->height) { // clip y
+            if (0 <= x0 && x0 < self->width) { 
+                uint vline_data = chr_data[j]; 
+                for (int y = y0; vline_data; vline_data >>= 1, y++) { 
+                    if (vline_data & 1) { 
+                        if (0 <= y && y < self->height) { 
                             setpixel(self, x0, y, col);
                         }
                     }
@@ -864,8 +840,8 @@ static MP_DEFINE_CONST_OBJ_TYPE(
 #endif
 
 #if !MICROPY_ENABLE_DYNRUNTIME
-// This factory function is provided for backwards compatibility with the old
-// FrameBuffer1 class which did not support a format argument.
+
+
 static mp_obj_t legacy_framebuffer1(size_t n_args, const mp_obj_t *args_in) {
     mp_obj_t args[] = {args_in[0], args_in[1], args_in[2], MP_OBJ_NEW_SMALL_INT(FRAMEBUF_MVLSB), n_args >= 4 ? args_in[3] : args_in[1] };
     return framebuf_make_new(&mp_type_framebuf, 5, 0, args);
@@ -896,4 +872,4 @@ const mp_obj_module_t mp_module_framebuf = {
 MP_REGISTER_MODULE(MP_QSTR_framebuf, mp_module_framebuf);
 #endif
 
-#endif // MICROPY_PY_FRAMEBUF
+#endif 

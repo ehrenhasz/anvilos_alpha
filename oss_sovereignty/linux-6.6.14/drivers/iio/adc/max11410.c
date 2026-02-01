@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAX11410 SPI ADC driver
- *
- * Copyright 2022 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -134,7 +130,7 @@ struct max11410_state {
 	struct spi_device *spi_dev;
 	struct iio_trigger *trig;
 	struct completion completion;
-	struct mutex lock; /* Prevent changing channel config during sampling */
+	struct mutex lock;  
 	struct regmap *regmap;
 	struct regulator *avdd;
 	struct regulator *vrefp[3];
@@ -165,14 +161,14 @@ static const struct iio_chan_spec chanspec_template = {
 
 static unsigned int max11410_reg_size(unsigned int reg)
 {
-	/* Registers from 0x00 to 0x10 are 1 byte, the rest are 3 bytes long. */
+	 
 	return reg <= 0x10 ? 1 : 3;
 }
 
 static int max11410_write_reg(struct max11410_state *st, unsigned int reg,
 			      unsigned int val)
 {
-	/* This driver only needs to write 8-bit registers */
+	 
 	if (max11410_reg_size(reg) != 1)
 		return -EINVAL;
 
@@ -401,14 +397,14 @@ static int max11410_sample(struct max11410_state *st, int *sample_raw,
 	if (st->irq > 0)
 		reinit_completion(&st->completion);
 
-	/* Start Conversion */
+	 
 	ret = max11410_write_reg(st, MAX11410_REG_CONV_START,
 				 MAX11410_CONV_TYPE_SINGLE);
 	if (ret)
 		return ret;
 
 	if (st->irq > 0) {
-		/* Wait for an interrupt. */
+		 
 		ret = wait_for_completion_timeout(&st->completion,
 						  msecs_to_jiffies(MAX11410_CONVERSION_TIMEOUT_MS));
 		if (!ret)
@@ -416,7 +412,7 @@ static int max11410_sample(struct max11410_state *st, int *sample_raw,
 	} else {
 		int ret2;
 
-		/* Wait for status register Conversion Ready flag */
+		 
 		ret = read_poll_timeout(max11410_read_reg, ret2,
 					ret2 || (val & MAX11410_STATUS_CONV_READY_BIT),
 					5000, MAX11410_CONVERSION_TIMEOUT_MS * 1000,
@@ -427,7 +423,7 @@ static int max11410_sample(struct max11410_state *st, int *sample_raw,
 			return ret2;
 	}
 
-	/* Read ADC Data */
+	 
 	return max11410_read_reg(st, MAX11410_REG_DATA0, sample_raw);
 }
 
@@ -521,7 +517,7 @@ static int max11410_write_raw(struct iio_dev *indio_dev,
 		if (!scale_avail)
 			return -EOPNOTSUPP;
 
-		/* Accept values in range 0.000001 <= scale < 1.000000 */
+		 
 		if (val != 0 || val2 == 0)
 			return -EINVAL;
 
@@ -529,7 +525,7 @@ static int max11410_write_raw(struct iio_dev *indio_dev,
 		if (ret)
 			return ret;
 
-		/* Convert from INT_PLUS_MICRO to FRACTIONAL_LOG2 */
+		 
 		val2 = val2 * DIV_ROUND_CLOSEST(BIT(24), 1000000);
 		val2 = DIV_ROUND_CLOSEST(scale_avail[0], val2);
 		gain = order_base_2(val2);
@@ -652,7 +648,7 @@ static int max11410_buffer_postenable(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
-	/* Start continuous conversion. */
+	 
 	return max11410_write_reg(st, MAX11410_REG_CONV_START,
 				  MAX11410_CONV_TYPE_CONTINUOUS);
 }
@@ -661,7 +657,7 @@ static int max11410_buffer_predisable(struct iio_dev *indio_dev)
 {
 	struct max11410_state *st = iio_priv(indio_dev);
 
-	/* Stop continuous conversion. */
+	 
 	return max11410_write_reg(st, MAX11410_REG_CONV_START,
 				  MAX11410_CONV_TYPE_SINGLE);
 }
@@ -709,7 +705,7 @@ static int max11410_parse_channels(struct max11410_state *st,
 		return dev_err_probe(&indio_dev->dev, -ENODEV,
 				     "FW has no channels defined\n");
 
-	/* Reserve space for soft timestamp channel */
+	 
 	num_ch++;
 	channels = devm_kcalloc(dev, num_ch, sizeof(*channels), GFP_KERNEL);
 	if (!channels)
@@ -786,7 +782,7 @@ static int max11410_parse_channels(struct max11410_state *st,
 		cfg->sig_path = sig_path;
 		cfg->gain = 0;
 
-		/* Enable scale_available property if input mode is PGA */
+		 
 		if (sig_path == MAX11410_PGA_SIG_PATH_PGA) {
 			__set_bit(IIO_CHAN_INFO_SCALE,
 				  &chanspec.info_mask_separate_available);
@@ -861,7 +857,7 @@ static int max11410_calibrate(struct max11410_state *st, u32 cal_type)
 	if (ret)
 		return ret;
 
-	/* Wait for status register Calibration Ready flag */
+	 
 	ret = read_poll_timeout(max11410_read_reg, ret2,
 				ret2 || (val & MAX11410_STATUS_CAL_READY_BIT),
 				50000, MAX11410_CALIB_TIMEOUT_MS * 1000, true,
@@ -894,7 +890,7 @@ static int max11410_self_calibrate(struct max11410_state *st)
 	if (ret)
 		return ret;
 
-	/* PGA calibrations */
+	 
 	for (i = 1; i < 8; ++i) {
 		ret = regmap_write_bits(st->regmap, MAX11410_REG_PGA,
 					MAX11410_PGA_GAIN_MASK, i);
@@ -906,7 +902,7 @@ static int max11410_self_calibrate(struct max11410_state *st)
 			return ret;
 	}
 
-	/* Cleanup */
+	 
 	ret = regmap_write_bits(st->regmap, MAX11410_REG_PGA,
 				MAX11410_PGA_GAIN_MASK, 0);
 	if (ret)
@@ -965,10 +961,7 @@ static int max11410_probe(struct spi_device *spi)
 			return ret;
 	}
 
-	/*
-	 * Regulators must be configured before parsing channels for
-	 * validating "adi,reference" property of each channel.
-	 */
+	 
 	ret = max11410_parse_channels(st, indio_dev);
 	if (ret)
 		return ret;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMD MP2 Sensors transport driver
- *
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- * Authors: Nehal Bakulchandra Shah <Nehal-bakulchandra.shah@amd.com>
- *	    Sandeep Singh <sandeep.singh@amd.com>
- *	    Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+
+ 
 #include <linux/hid.h>
 #include <linux/wait.h>
 #include <linux/sched.h>
@@ -16,14 +9,7 @@
 
 #define AMD_SFH_RESPONSE_TIMEOUT	1500
 
-/**
- * amdtp_hid_parse() - hid-core .parse() callback
- * @hid:	hid device instance
- *
- * This function gets called during call to hid_add_device
- *
- * Return: 0 on success and non zero on error
- */
+ 
 static int amdtp_hid_parse(struct hid_device *hid)
 {
 	struct amdtp_hid_data *hid_data = hid->driver_data;
@@ -33,7 +19,7 @@ static int amdtp_hid_parse(struct hid_device *hid)
 			      cli_data->report_descr_sz[hid_data->index]);
 }
 
-/* Empty callbacks with success return code */
+ 
 static int amdtp_hid_start(struct hid_device *hid)
 {
 	return 0;

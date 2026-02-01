@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mtu3_dr.c - dual role switch and host glue layer
- *
- * Copyright (C) 2016 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+ 
 
 #include "mtu3.h"
 #include "mtu3_dr.h"
@@ -25,7 +19,7 @@ static void toggle_opstate(struct ssusb_mtk *ssusb)
 	mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
 }
 
-/* only port0 supports dual-role mode */
+ 
 static int ssusb_port0_switch(struct ssusb_mtk *ssusb,
 	int version, bool tohost)
 {
@@ -36,24 +30,24 @@ static int ssusb_port0_switch(struct ssusb_mtk *ssusb,
 		version, tohost ? "host" : "device");
 
 	if (version == USB2_PORT) {
-		/* 1. power off and disable u2 port0 */
+		 
 		value = mtu3_readl(ibase, SSUSB_U2_CTRL(0));
 		value |= SSUSB_U2_PORT_PDN | SSUSB_U2_PORT_DIS;
 		mtu3_writel(ibase, SSUSB_U2_CTRL(0), value);
 
-		/* 2. power on, enable u2 port0 and select its mode */
+		 
 		value = mtu3_readl(ibase, SSUSB_U2_CTRL(0));
 		value &= ~(SSUSB_U2_PORT_PDN | SSUSB_U2_PORT_DIS);
 		value = tohost ? (value | SSUSB_U2_PORT_HOST_SEL) :
 			(value & (~SSUSB_U2_PORT_HOST_SEL));
 		mtu3_writel(ibase, SSUSB_U2_CTRL(0), value);
 	} else {
-		/* 1. power off and disable u3 port0 */
+		 
 		value = mtu3_readl(ibase, SSUSB_U3_CTRL(0));
 		value |= SSUSB_U3_PORT_PDN | SSUSB_U3_PORT_DIS;
 		mtu3_writel(ibase, SSUSB_U3_CTRL(0), value);
 
-		/* 2. power on, enable u3 port0 and select its mode */
+		 
 		value = mtu3_readl(ibase, SSUSB_U3_CTRL(0));
 		value &= ~(SSUSB_U3_PORT_PDN | SSUSB_U3_PORT_DIS);
 		value = tohost ? (value | SSUSB_U3_PORT_HOST_SEL) :
@@ -79,7 +73,7 @@ static void switch_port_to_host(struct ssusb_mtk *ssusb)
 
 	ssusb_check_clocks(ssusb, check_clk);
 
-	/* after all clocks are stable */
+	 
 	toggle_opstate(ssusb);
 }
 
@@ -105,7 +99,7 @@ int ssusb_set_vbus(struct otg_switch_mtk *otg_sx, int is_on)
 	struct regulator *vbus = otg_sx->vbus;
 	int ret;
 
-	/* vbus is optional */
+	 
 	if (!vbus)
 		return 0;
 
@@ -136,7 +130,7 @@ static void ssusb_mode_sw_work(struct work_struct *work)
 	current_role = ssusb->is_host ? USB_ROLE_HOST : USB_ROLE_DEVICE;
 
 	if (desired_role == USB_ROLE_NONE) {
-		/* the default mode is host as probe does */
+		 
 		desired_role = USB_ROLE_HOST;
 		if (otg_sx->default_role == USB_ROLE_DEVICE)
 			desired_role = USB_ROLE_DEVICE;
@@ -199,7 +193,7 @@ static int ssusb_extcon_register(struct otg_switch_mtk *otg_sx)
 	struct extcon_dev *edev = otg_sx->edev;
 	int ret;
 
-	/* extcon is optional */
+	 
 	if (!edev)
 		return 0;
 
@@ -214,19 +208,14 @@ static int ssusb_extcon_register(struct otg_switch_mtk *otg_sx)
 	ret = extcon_get_state(edev, EXTCON_USB_HOST);
 	dev_dbg(ssusb->dev, "EXTCON_USB_HOST: %d\n", ret);
 
-	/* default as host, switch to device mode if needed */
+	 
 	if (!ret)
 		ssusb_set_mode(otg_sx, USB_ROLE_DEVICE);
 
 	return 0;
 }
 
-/*
- * We provide an interface via debugfs to switch between host and device modes
- * depending on user input.
- * This is useful in special cases, such as uses TYPE-A receptacle but also
- * wants to support dual-role mode.
- */
+ 
 void ssusb_mode_switch(struct ssusb_mtk *ssusb, int to_host)
 {
 	struct otg_switch_mtk *otg_sx = &ssusb->otg_switch;

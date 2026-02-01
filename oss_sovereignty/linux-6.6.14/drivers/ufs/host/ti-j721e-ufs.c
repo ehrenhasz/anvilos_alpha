@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
-//
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -33,7 +33,7 @@ static int ti_j721e_ufs_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto disable_pm;
 
-	/* Select MPHY refclk frequency */
+	 
 	clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(clk)) {
 		ret = PTR_ERR(clk);
@@ -45,7 +45,7 @@ static int ti_j721e_ufs_probe(struct platform_device *pdev)
 		reg |= TI_UFS_SS_CLK_26MHZ;
 	devm_clk_put(dev, clk);
 
-	/*  Take UFS slave device out of reset */
+	 
 	reg |= TI_UFS_SS_RST_N_PCS;
 	writel(reg, regbase + TI_UFS_SS_CTRL);
 

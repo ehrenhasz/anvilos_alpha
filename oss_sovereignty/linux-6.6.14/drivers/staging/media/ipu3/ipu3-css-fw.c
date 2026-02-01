@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include <linux/device.h>
 #include <linux/firmware.h>
@@ -123,7 +123,7 @@ int imgu_css_fw_init(struct imgu_css *css)
 	if (r)
 		return r;
 
-	/* Check and display fw header info */
+	 
 
 	css->fwp = (struct imgu_fw_header *)css->fw->data;
 	if (css->fw->size < struct_size(css->fwp, binary_header, 1) ||
@@ -137,7 +137,7 @@ int imgu_css_fw_init(struct imgu_css *css)
 		 css->fwp->file_header.version, css->fwp->file_header.binary_nr,
 		 css->fw->size);
 
-	/* Validate and display info on fw binaries */
+	 
 
 	binary_nr = css->fwp->file_header.binary_nr;
 
@@ -232,7 +232,7 @@ int imgu_css_fw_init(struct imgu_css *css)
 	if (css->fw_bl == -1 || css->fw_sp[0] == -1 || css->fw_sp[1] == -1)
 		goto bad_fw;
 
-	/* Allocate and map fw binaries into IMGU */
+	 
 
 	css->binary = kcalloc(binary_nr, sizeof(*css->binary), GFP_KERNEL);
 	if (!css->binary) {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2014-2023 Broadcom
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -67,7 +65,7 @@ static inline void brcmstb_waketmr_clear_alarm(struct brcmstb_waketmr *timer)
 	(void)readl_relaxed(timer->base + BRCMSTB_WKTMR_EVENT);
 	if (timer->alarm_expired) {
 		timer->alarm_expired = false;
-		/* maintain call balance */
+		 
 		enable_irq(timer->alarm_irq);
 	}
 }
@@ -79,7 +77,7 @@ static void brcmstb_waketmr_set_alarm(struct brcmstb_waketmr *timer,
 
 	brcmstb_waketmr_clear_alarm(timer);
 
-	/* Make sure we are actually counting in seconds */
+	 
 	writel_relaxed(timer->rate, timer->base + BRCMSTB_WKTMR_PRESCALER);
 
 	writel_relaxed(secs, timer->base + BRCMSTB_WKTMR_ALARM);
@@ -106,7 +104,7 @@ static irqreturn_t brcmstb_alarm_irq(int irq, void *data)
 {
 	struct brcmstb_waketmr *timer = data;
 
-	/* Ignore spurious interrupts */
+	 
 	if (!brcmstb_waketmr_is_pending(timer))
 		return IRQ_HANDLED;
 
@@ -169,7 +167,7 @@ static int brcmstb_waketmr_prepare_suspend(struct brcmstb_waketmr *timer)
 	return 0;
 }
 
-/* If enabled as a wakeup-source, arm the timer when powering off */
+ 
 static int brcmstb_waketmr_reboot(struct notifier_block *nb,
 		unsigned long action, void *data)
 {
@@ -177,7 +175,7 @@ static int brcmstb_waketmr_reboot(struct notifier_block *nb,
 
 	timer = container_of(nb, struct brcmstb_waketmr, reboot_notifier);
 
-	/* Set timer for cold boot */
+	 
 	if (action == SYS_POWER_OFF)
 		brcmstb_waketmr_prepare_suspend(timer);
 
@@ -237,7 +235,7 @@ static int brcmstb_waketmr_alarm_enable(struct device *dev,
 		if (timer->alarm_irq) {
 			if (timer->alarm_expired) {
 				timer->alarm_expired = false;
-				/* maintain call balance */
+				 
 				enable_irq(timer->alarm_irq);
 			}
 			enable_irq(timer->alarm_irq);
@@ -292,10 +290,7 @@ static int brcmstb_waketmr_probe(struct platform_device *pdev)
 	if (IS_ERR(timer->rtc))
 		return PTR_ERR(timer->rtc);
 
-	/*
-	 * Set wakeup capability before requesting wakeup interrupt, so we can
-	 * process boot-time "wakeups" (e.g., from S5 soft-off)
-	 */
+	 
 	device_init_wakeup(dev, true);
 
 	ret = platform_get_irq(pdev, 0);
@@ -323,7 +318,7 @@ static int brcmstb_waketmr_probe(struct platform_device *pdev)
 
 	brcmstb_waketmr_clear_alarm(timer);
 
-	/* Attempt to initialize non-wake irq */
+	 
 	ret = platform_get_irq(pdev, 1);
 	if (ret > 0) {
 		timer->alarm_irq = (unsigned int)ret;
@@ -375,7 +370,7 @@ static int brcmstb_waketmr_suspend_noirq(struct device *dev)
 {
 	struct brcmstb_waketmr *timer = dev_get_drvdata(dev);
 
-	/* Catch any alarms occurring prior to noirq */
+	 
 	if (timer->alarm_expired && device_may_wakeup(dev))
 		return -EBUSY;
 
@@ -402,7 +397,7 @@ static int brcmstb_waketmr_resume(struct device *dev)
 #define brcmstb_waketmr_suspend		NULL
 #define brcmstb_waketmr_suspend_noirq	NULL
 #define brcmstb_waketmr_resume		NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops brcmstb_waketmr_pm_ops = {
 	.suspend	= brcmstb_waketmr_suspend,
@@ -412,7 +407,7 @@ static const struct dev_pm_ops brcmstb_waketmr_pm_ops = {
 
 static const __maybe_unused struct of_device_id brcmstb_waketmr_of_match[] = {
 	{ .compatible = "brcm,brcmstb-waketimer" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver brcmstb_waketmr_driver = {

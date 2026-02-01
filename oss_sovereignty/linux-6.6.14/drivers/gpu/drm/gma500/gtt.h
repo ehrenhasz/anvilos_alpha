@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/**************************************************************************
- * Copyright (c) 2007-2008, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
+ 
+ 
 
 #ifndef _PSB_GTT_H_
 #define _PSB_GTT_H_
@@ -12,7 +8,7 @@
 
 struct drm_psb_private;
 
-/* This wants cleaning up with respect to the psb_dev and un-needed stuff */
+ 
 struct psb_gtt {
 	uint32_t gatt_start;
 	uint32_t mmu_gatt_start;
@@ -24,7 +20,7 @@ struct psb_gtt {
 	unsigned long vram_stolen_size;
 };
 
-/* Exported functions */
+ 
 int psb_gtt_init(struct drm_device *dev);
 void psb_gtt_fini(struct drm_device *dev);
 int psb_gtt_resume(struct drm_device *dev);

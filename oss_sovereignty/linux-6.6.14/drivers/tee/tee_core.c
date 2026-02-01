@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2016, Linaro Limited
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -23,20 +21,12 @@
 
 #define TEE_UUID_NS_NAME_SIZE	128
 
-/*
- * TEE Client UUID name space identifier (UUIDv4)
- *
- * Value here is random UUID that is allocated as name space identifier for
- * forming Client UUID's for TEE environment using UUIDv5 scheme.
- */
+ 
 static const uuid_t tee_client_uuid_ns = UUID_INIT(0x58ac9ca0, 0x2086, 0x4683,
 						   0xa1, 0xb8, 0xec, 0x4b,
 						   0xc0, 0x8e, 0x01, 0xb6);
 
-/*
- * Unprivileged devices in the lower half range and privileged devices in
- * the upper half range.
- */
+ 
 static DECLARE_BITMAP(dev_mask, TEE_NUM_DEVICES);
 static DEFINE_SPINLOCK(driver_lock);
 
@@ -114,10 +104,7 @@ static int tee_open(struct inode *inode, struct file *filp)
 	if (IS_ERR(ctx))
 		return PTR_ERR(ctx);
 
-	/*
-	 * Default user-space behaviour is to wait for tee-supplicant
-	 * if not present for any requests in this context.
-	 */
+	 
 	ctx->supp_nowait = false;
 	filp->private_data = ctx;
 	return 0;
@@ -129,18 +116,7 @@ static int tee_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/**
- * uuid_v5() - Calculate UUIDv5
- * @uuid: Resulting UUID
- * @ns: Name space ID for UUIDv5 function
- * @name: Name for UUIDv5 function
- * @size: Size of name
- *
- * UUIDv5 is specific in RFC 4122.
- *
- * This implements section (for SHA-1):
- * 4.3.  Algorithm for Creating a Name-Based UUID
- */
+ 
 static int uuid_v5(uuid_t *uuid, const uuid_t *ns, const void *name,
 		   size_t size)
 {
@@ -183,7 +159,7 @@ static int uuid_v5(uuid_t *uuid, const uuid_t *ns, const void *name,
 
 	memcpy(uuid->b, hash, UUID_SIZE);
 
-	/* Tag for version 5 */
+	 
 	uuid->b[6] = (hash[6] & 0x0F) | 0x50;
 	uuid->b[8] = (hash[8] & 0x3F) | 0x80;
 
@@ -206,23 +182,12 @@ int tee_session_calc_client_uuid(uuid_t *uuid, u32 connection_method,
 
 	if (connection_method == TEE_IOCTL_LOGIN_PUBLIC ||
 	    connection_method == TEE_IOCTL_LOGIN_REE_KERNEL) {
-		/* Nil UUID to be passed to TEE environment */
+		 
 		uuid_copy(uuid, &uuid_null);
 		return 0;
 	}
 
-	/*
-	 * In Linux environment client UUID is based on UUIDv5.
-	 *
-	 * Determine client UUID with following semantics for 'name':
-	 *
-	 * For TEEC_LOGIN_USER:
-	 * uid=<uid>
-	 *
-	 * For TEEC_LOGIN_GROUP:
-	 * gid=<gid>
-	 *
-	 */
+	 
 
 	name = kzalloc(TEE_UUID_NS_NAME_SIZE, GFP_KERNEL);
 	if (!name)
@@ -293,7 +258,7 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
 	if (copy_from_user(&data, udata, sizeof(data)))
 		return -EFAULT;
 
-	/* Currently no input flags are supported */
+	 
 	if (data.flags)
 		return -EINVAL;
 
@@ -309,11 +274,7 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
 	else
 		ret = tee_shm_get_fd(shm);
 
-	/*
-	 * When user space closes the file descriptor the shared memory
-	 * should be freed or if tee_shm_get_fd() failed then it will
-	 * be freed immediately.
-	 */
+	 
 	tee_shm_put(shm);
 	return ret;
 }
@@ -329,7 +290,7 @@ tee_ioctl_shm_register(struct tee_context *ctx,
 	if (copy_from_user(&data, udata, sizeof(data)))
 		return -EFAULT;
 
-	/* Currently no input flags are supported */
+	 
 	if (data.flags)
 		return -EINVAL;
 
@@ -344,11 +305,7 @@ tee_ioctl_shm_register(struct tee_context *ctx,
 		ret = -EFAULT;
 	else
 		ret = tee_shm_get_fd(shm);
-	/*
-	 * When user space closes the file descriptor the shared memory
-	 * should be freed or if tee_shm_get_fd() failed then it will
-	 * be freed immediately.
-	 */
+	 
 	tee_shm_put(shm);
 	return ret;
 }
@@ -366,7 +323,7 @@ static int params_from_user(struct tee_context *ctx, struct tee_param *params,
 		if (copy_from_user(&ip, uparams + n, sizeof(ip)))
 			return -EFAULT;
 
-		/* All unused attribute bits has to be zero */
+		 
 		if (ip.attr & ~TEE_IOCTL_PARAM_ATTR_MASK)
 			return -EINVAL;
 
@@ -384,37 +341,21 @@ static int params_from_user(struct tee_context *ctx, struct tee_param *params,
 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INPUT:
 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT:
 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INOUT:
-			/*
-			 * If a NULL pointer is passed to a TA in the TEE,
-			 * the ip.c IOCTL parameters is set to TEE_MEMREF_NULL
-			 * indicating a NULL memory reference.
-			 */
+			 
 			if (ip.c != TEE_MEMREF_NULL) {
-				/*
-				 * If we fail to get a pointer to a shared
-				 * memory object (and increase the ref count)
-				 * from an identifier we return an error. All
-				 * pointers that has been added in params have
-				 * an increased ref count. It's the callers
-				 * responibility to do tee_shm_put() on all
-				 * resolved pointers.
-				 */
+				 
 				shm = tee_shm_get_from_id(ctx, ip.c);
 				if (IS_ERR(shm))
 					return PTR_ERR(shm);
 
-				/*
-				 * Ensure offset + size does not overflow
-				 * offset and does not overflow the size of
-				 * the referred shared memory object.
-				 */
+				 
 				if ((ip.a + ip.b) < ip.a ||
 				    (ip.a + ip.b) > shm->size) {
 					tee_shm_put(shm);
 					return -EINVAL;
 				}
 			} else if (ctx->cap_memref_null) {
-				/* Pass NULL pointer to OP-TEE */
+				 
 				shm = NULL;
 			} else {
 				return -EINVAL;
@@ -425,7 +366,7 @@ static int params_from_user(struct tee_context *ctx, struct tee_param *params,
 			params[n].u.memref.shm = shm;
 			break;
 		default:
-			/* Unknown attribute */
+			 
 			return -EINVAL;
 		}
 	}
@@ -521,15 +462,12 @@ static int tee_ioctl_open_session(struct tee_context *ctx,
 	}
 	rc = params_to_user(uparams, arg.num_params, params);
 out:
-	/*
-	 * If we've succeeded to open the session but failed to communicate
-	 * it back to user space, close the session again to avoid leakage.
-	 */
+	 
 	if (rc && have_session && ctx->teedev->desc->ops->close_session)
 		ctx->teedev->desc->ops->close_session(ctx, arg.session);
 
 	if (params) {
-		/* Decrease ref count for all valid shared memory pointers */
+		 
 		for (n = 0; n < arg.num_params; n++)
 			if (tee_param_is_memref(params + n) &&
 			    params[n].u.memref.shm)
@@ -591,7 +529,7 @@ static int tee_ioctl_invoke(struct tee_context *ctx,
 	rc = params_to_user(uparams, arg.num_params, params);
 out:
 	if (params) {
-		/* Decrease ref count for all valid shared memory pointers */
+		 
 		for (n = 0; n < arg.num_params; n++)
 			if (tee_param_is_memref(params + n) &&
 			    params[n].u.memref.shm)
@@ -655,7 +593,7 @@ static int params_to_supp(struct tee_context *ctx,
 			ip.b = p->u.memref.size;
 			if (!p->u.memref.shm) {
 				ip.a = 0;
-				ip.c = (u64)-1; /* invalid shm id */
+				ip.c = (u64)-1;  
 				break;
 			}
 			ip.a = p->u.memref.shm_offs;
@@ -738,7 +676,7 @@ static int params_from_supp(struct tee_param *params, size_t num_params,
 		if (copy_from_user(&ip, uparams + n, sizeof(ip)))
 			return -EFAULT;
 
-		/* All unused attribute bits has to be zero */
+		 
 		if (ip.attr & ~TEE_IOCTL_PARAM_ATTR_MASK)
 			return -EINVAL;
 
@@ -746,20 +684,14 @@ static int params_from_supp(struct tee_param *params, size_t num_params,
 		switch (ip.attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) {
 		case TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_OUTPUT:
 		case TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INOUT:
-			/* Only out and in/out values can be updated */
+			 
 			p->u.value.a = ip.a;
 			p->u.value.b = ip.b;
 			p->u.value.c = ip.c;
 			break;
 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT:
 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INOUT:
-			/*
-			 * Only the size of the memref can be updated.
-			 * Since we don't have access to the original
-			 * parameters here, only store the supplied size.
-			 * The driver will copy the updated size into the
-			 * original parameters.
-			 */
+			 
 			p->u.memref.shm = NULL;
 			p->u.memref.shm_offs = 0;
 			p->u.memref.size = ip.b;
@@ -782,7 +714,7 @@ static int tee_ioctl_supp_send(struct tee_context *ctx,
 	u32 num_params;
 	u32 ret;
 
-	/* Not valid for this driver */
+	 
 	if (!ctx->teedev->desc->ops->supp_send)
 		return -EINVAL;
 
@@ -864,18 +796,7 @@ static void tee_release_device(struct device *dev)
 	kfree(teedev);
 }
 
-/**
- * tee_device_alloc() - Allocate a new struct tee_device instance
- * @teedesc:	Descriptor for this driver
- * @dev:	Parent device for this device
- * @pool:	Shared memory pool, NULL if not used
- * @driver_data: Private driver data for this device
- *
- * Allocates a new struct tee_device instance. The device is
- * removed by tee_device_unregister().
- *
- * @returns a pointer to a 'struct tee_device' or an ERR_PTR on failure
- */
+ 
 struct tee_device *tee_device_alloc(const struct tee_desc *teedesc,
 				    struct device *dev,
 				    struct tee_shm_pool *pool,
@@ -937,7 +858,7 @@ struct tee_device *tee_device_alloc(const struct tee_desc *teedesc,
 	dev_set_drvdata(&teedev->dev, driver_data);
 	device_initialize(&teedev->dev);
 
-	/* 1 as tee_device_unregister() does one final tee_device_put() */
+	 
 	teedev->num_users = 1;
 	init_completion(&teedev->c_no_users);
 	mutex_init(&teedev->mutex);
@@ -980,15 +901,7 @@ static struct attribute *tee_dev_attrs[] = {
 
 ATTRIBUTE_GROUPS(tee_dev);
 
-/**
- * tee_device_register() - Registers a TEE device
- * @teedev:	Device to register
- *
- * tee_device_unregister() need to be called to remove the @teedev if
- * this function fails.
- *
- * @returns < 0 on failure
- */
+ 
 int tee_device_register(struct tee_device *teedev)
 {
 	int rc;
@@ -1017,7 +930,7 @@ EXPORT_SYMBOL_GPL(tee_device_register);
 void tee_device_put(struct tee_device *teedev)
 {
 	mutex_lock(&teedev->mutex);
-	/* Shouldn't put in this state */
+	 
 	if (!WARN_ON(!teedev->desc)) {
 		teedev->num_users--;
 		if (!teedev->num_users) {
@@ -1040,14 +953,7 @@ bool tee_device_get(struct tee_device *teedev)
 	return true;
 }
 
-/**
- * tee_device_unregister() - Removes a TEE device
- * @teedev:	Device to unregister
- *
- * This function should be called to remove the @teedev even if
- * tee_device_register() hasn't been called yet. Does nothing if
- * @teedev is NULL.
- */
+ 
 void tee_device_unregister(struct tee_device *teedev)
 {
 	if (!teedev)
@@ -1059,10 +965,7 @@ void tee_device_unregister(struct tee_device *teedev)
 	tee_device_put(teedev);
 	wait_for_completion(&teedev->c_no_users);
 
-	/*
-	 * No need to take a mutex any longer now since teedev->desc was
-	 * set to NULL before teedev->c_no_users was completed.
-	 */
+	 
 
 	teedev->pool = NULL;
 
@@ -1070,11 +973,7 @@ void tee_device_unregister(struct tee_device *teedev)
 }
 EXPORT_SYMBOL_GPL(tee_device_unregister);
 
-/**
- * tee_get_drvdata() - Return driver_data pointer
- * @teedev:	Device containing the driver_data pointer
- * @returns the driver_data pointer supplied to tee_device_alloc().
- */
+ 
 void *tee_get_drvdata(struct tee_device *teedev)
 {
 	return dev_get_drvdata(&teedev->dev);
@@ -1125,13 +1024,7 @@ tee_client_open_context(struct tee_context *start,
 	} while (IS_ERR(ctx) && PTR_ERR(ctx) != -ENOMEM);
 
 	put_device(put_dev);
-	/*
-	 * Default behaviour for in kernel client is to not wait for
-	 * tee-supplicant if not present for any requests in this context.
-	 * Also this flag could be configured again before call to
-	 * tee_client_open_session() if any in kernel client requires
-	 * different behaviour.
-	 */
+	 
 	if (!IS_ERR(ctx))
 		ctx->supp_nowait = true;
 

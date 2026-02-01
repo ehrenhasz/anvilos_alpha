@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * The OCOTP driver for Sunplus	SP7021
- *
- * Copyright (C) 2019 Sunplus Technology Inc., All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -17,11 +13,7 @@
 #include <linux/nvmem-provider.h>
 #include <linux/platform_device.h>
 
-/*
- * OTP memory
- * Each bank contains 4 words (32 bits).
- * Bank 0 starts at offset 0 from the base.
- */
+ 
 
 #define OTP_WORDS_PER_BANK		4
 #define OTP_WORD_SIZE			sizeof(u32)
@@ -30,10 +22,10 @@
 #define QAC628_OTP_SIZE			(QAC628_OTP_NUM_BANKS * OTP_WORDS_PER_BANK * OTP_WORD_SIZE)
 #define OTP_READ_TIMEOUT_US		200000
 
-/* HB_GPIO */
+ 
 #define ADDRESS_8_DATA			0x20
 
-/* OTP_RX */
+ 
 #define OTP_CONTROL_2			0x48
 #define OTP_RD_PERIOD			GENMASK(15, 8)
 #define OTP_RD_PERIOD_MASK		~GENMASK(15, 8)

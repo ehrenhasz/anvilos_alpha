@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-vid-cap.c - video capture support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -21,7 +17,7 @@
 #include "vivid-kthread-cap.h"
 #include "vivid-vid-cap.h"
 
-/* Sizes must be in increasing order */
+ 
 static const struct v4l2_frmsize_discrete webcam_sizes[] = {
 	{  320, 180 },
 	{  640, 360 },
@@ -31,10 +27,7 @@ static const struct v4l2_frmsize_discrete webcam_sizes[] = {
 	{ 3840, 2160 },
 };
 
-/*
- * Intervals must be in increasing order and there must be twice as many
- * elements in this array as there are in webcam_sizes.
- */
+ 
 static const struct v4l2_fract webcam_intervals[] = {
 	{  1, 1 },
 	{  1, 2 },
@@ -42,19 +35,19 @@ static const struct v4l2_fract webcam_intervals[] = {
 	{  1, 5 },
 	{  1, 10 },
 	{  2, 25 },
-	{  1, 15 }, /* 7 - maximum for 2160p */
+	{  1, 15 },  
 	{  1, 25 },
-	{  1, 30 }, /* 9 - maximum for 1080p */
+	{  1, 30 },  
 	{  1, 40 },
 	{  1, 50 },
-	{  1, 60 }, /* 12 - maximum for 720p */
+	{  1, 60 },  
 	{  1, 120 },
 };
 
-/* Limit maximum FPS rates for high resolutions */
-#define IVAL_COUNT_720P 12 /* 720p and up is limited to 60 fps */
-#define IVAL_COUNT_1080P 9 /* 1080p and up is limited to 30 fps */
-#define IVAL_COUNT_2160P 7 /* 2160p and up is limited to 15 fps */
+ 
+#define IVAL_COUNT_720P 12  
+#define IVAL_COUNT_1080P 9  
+#define IVAL_COUNT_2160P 7  
 
 static inline unsigned int webcam_ival_count(const struct vivid_dev *dev,
 					     unsigned int frmsize_idx)
@@ -68,7 +61,7 @@ static inline unsigned int webcam_ival_count(const struct vivid_dev *dev,
 	if (webcam_sizes[frmsize_idx].height >= 720)
 		return IVAL_COUNT_720P;
 
-	/* For low resolutions, allow all FPS rates */
+	 
 	return ARRAY_SIZE(webcam_intervals);
 }
 
@@ -82,27 +75,18 @@ static int vid_cap_queue_setup(struct vb2_queue *vq,
 	unsigned p;
 
 	if (dev->field_cap == V4L2_FIELD_ALTERNATE) {
-		/*
-		 * You cannot use read() with FIELD_ALTERNATE since the field
-		 * information (TOP/BOTTOM) cannot be passed back to the user.
-		 */
+		 
 		if (vb2_fileio_is_active(vq))
 			return -EINVAL;
 	}
 
 	if (dev->queue_setup_error) {
-		/*
-		 * Error injection: test what happens if queue_setup() returns
-		 * an error.
-		 */
+		 
 		dev->queue_setup_error = false;
 		return -EINVAL;
 	}
 	if (*nplanes) {
-		/*
-		 * Check if the number of requested planes match
-		 * the number of buffers in the current format. You can't mix that.
-		 */
+		 
 		if (*nplanes != buffers)
 			return -EINVAL;
 		for (p = 0; p < buffers; p++) {
@@ -142,10 +126,7 @@ static int vid_cap_buf_prepare(struct vb2_buffer *vb)
 		return -EINVAL;
 
 	if (dev->buf_prepare_error) {
-		/*
-		 * Error injection: test what happens if buf_prepare() returns
-		 * an error.
-		 */
+		 
 		dev->buf_prepare_error = false;
 		return -EINVAL;
 	}
@@ -179,10 +160,7 @@ static void vid_cap_buf_finish(struct vb2_buffer *vb)
 	if (!vivid_is_sdtv_cap(dev))
 		return;
 
-	/*
-	 * Set the timecode. Rarely used, so it is interesting to
-	 * test this.
-	 */
+	 
 	vbuf->flags |= V4L2_BUF_FLAG_TIMECODE;
 	if (dev->std_cap[dev->input] & V4L2_STD_525_60)
 		fps = 30;
@@ -238,7 +216,7 @@ static int vid_cap_start_streaming(struct vb2_queue *vq, unsigned count)
 	return err;
 }
 
-/* abort streaming and wait for last buffer */
+ 
 static void vid_cap_stop_streaming(struct vb2_queue *vq)
 {
 	struct vivid_dev *dev = vb2_get_drv_priv(vq);
@@ -267,20 +245,13 @@ const struct vb2_ops vivid_vid_cap_qops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/*
- * Determine the 'picture' quality based on the current TV frequency: either
- * COLOR for a good 'signal', GRAY (grayscale picture) for a slightly off
- * signal or NOISE for no signal.
- */
+ 
 void vivid_update_quality(struct vivid_dev *dev)
 {
 	unsigned freq_modulus;
 
 	if (dev->loop_video && (vivid_is_svid_cap(dev) || vivid_is_hdmi_cap(dev))) {
-		/*
-		 * The 'noise' will only be replaced by the actual video
-		 * if the output video matches the input video settings.
-		 */
+		 
 		tpg_s_quality(&dev->tpg, TPG_QUAL_NOISE, 0);
 		return;
 	}
@@ -299,27 +270,20 @@ void vivid_update_quality(struct vivid_dev *dev)
 		return;
 	}
 
-	/*
-	 * There is a fake channel every 6 MHz at 49.25, 55.25, etc.
-	 * From +/- 0.25 MHz around the channel there is color, and from
-	 * +/- 1 MHz there is grayscale (chroma is lost).
-	 * Everywhere else it is just noise.
-	 */
-	freq_modulus = (dev->tv_freq - 676 /* (43.25-1) * 16 */) % (6 * 16);
+	 
+	freq_modulus = (dev->tv_freq - 676  ) % (6 * 16);
 	if (freq_modulus > 2 * 16) {
 		tpg_s_quality(&dev->tpg, TPG_QUAL_NOISE,
 			next_pseudo_random32(dev->tv_freq ^ 0x55) & 0x3f);
 		return;
 	}
-	if (freq_modulus < 12 /*0.75 * 16*/ || freq_modulus > 20 /*1.25 * 16*/)
+	if (freq_modulus < 12   || freq_modulus > 20  )
 		tpg_s_quality(&dev->tpg, TPG_QUAL_GRAY, 0);
 	else
 		tpg_s_quality(&dev->tpg, TPG_QUAL_COLOR, 0);
 }
 
-/*
- * Get the current picture quality and the associated afc value.
- */
+ 
 static enum tpg_quality vivid_get_quality(struct vivid_dev *dev, s32 *afc)
 {
 	unsigned freq_modulus;
@@ -330,13 +294,8 @@ static enum tpg_quality vivid_get_quality(struct vivid_dev *dev, s32 *afc)
 	    tpg_g_quality(&dev->tpg) == TPG_QUAL_NOISE)
 		return tpg_g_quality(&dev->tpg);
 
-	/*
-	 * There is a fake channel every 6 MHz at 49.25, 55.25, etc.
-	 * From +/- 0.25 MHz around the channel there is color, and from
-	 * +/- 1 MHz there is grayscale (chroma is lost).
-	 * Everywhere else it is just gray.
-	 */
-	freq_modulus = (dev->tv_freq - 676 /* (43.25-1) * 16 */) % (6 * 16);
+	 
+	freq_modulus = (dev->tv_freq - 676  ) % (6 * 16);
 	if (afc)
 		*afc = freq_modulus - 1 * 16;
 	return TPG_QUAL_GRAY;
@@ -367,10 +326,7 @@ static enum tpg_pixel_aspect vivid_get_pixel_aspect(const struct vivid_dev *dev)
 	return TPG_PIXEL_ASPECT_SQUARE;
 }
 
-/*
- * Called whenever the format has to be reset which can occur when
- * changing inputs, standard, timings, etc.
- */
+ 
 void vivid_update_format_cap(struct vivid_dev *dev, bool keep_controls)
 {
 	struct v4l2_bt_timings *bt = &dev->dv_timings_cap[dev->input].bt;
@@ -421,10 +377,7 @@ void vivid_update_format_cap(struct vivid_dev *dev, bool keep_controls)
 		else
 			dev->field_cap = V4L2_FIELD_NONE;
 
-		/*
-		 * We can be called from within s_ctrl, in that case we can't
-		 * set/get controls. Luckily we don't need to in that case.
-		 */
+		 
 		if (keep_controls || !dev->colorspace)
 			break;
 		if (bt->flags & V4L2_DV_FL_IS_CE_VIDEO) {
@@ -452,10 +405,7 @@ void vivid_update_format_cap(struct vivid_dev *dev, bool keep_controls)
 	tpg_s_pixel_aspect(&dev->tpg, vivid_get_pixel_aspect(dev));
 	tpg_update_mv_step(&dev->tpg);
 
-	/*
-	 * We can be called from within s_ctrl, in that case we can't
-	 * modify controls. Luckily we don't need to in that case.
-	 */
+	 
 	if (keep_controls)
 		return;
 
@@ -464,7 +414,7 @@ void vivid_update_format_cap(struct vivid_dev *dev, bool keep_controls)
 	v4l2_ctrl_modify_dimensions(dev->pixel_array, dims);
 }
 
-/* Map the field to something that is valid for the current input */
+ 
 static enum v4l2_field vivid_field_cap(struct vivid_dev *dev, enum v4l2_field field)
 {
 	if (vivid_is_sdtv_cap(dev)) {
@@ -613,13 +563,13 @@ int vivid_try_fmt_vid_cap(struct file *file, void *priv,
 		mp->height = r.height / factor;
 	}
 
-	/* This driver supports custom bytesperline values */
+	 
 
 	mp->num_planes = fmt->buffers;
 	for (p = 0; p < fmt->buffers; p++) {
-		/* Calculate the minimum supported bytesperline value */
+		 
 		bytesperline = (mp->width * fmt->bit_depth[p]) >> 3;
-		/* Calculate the maximum supported bytesperline value */
+		 
 		max_bpl = (MAX_ZOOM * MAX_WIDTH * fmt->bit_depth[p]) >> 3;
 
 		if (pfmt[p].bytesperline > max_bpl)
@@ -690,7 +640,7 @@ int vivid_s_fmt_vid_cap(struct file *file, void *priv,
 	if (V4L2_FIELD_HAS_T_OR_B(mp->field))
 		factor = 2;
 
-	/* Note: the webcam input doesn't support scaling, cropping or composing */
+	 
 
 	if (!vivid_is_webcam(dev) &&
 	    (dev->has_scaler_cap || dev->has_crop_cap || dev->has_compose_cap)) {
@@ -755,7 +705,7 @@ int vivid_s_fmt_vid_cap(struct file *file, void *priv,
 	} else if (vivid_is_webcam(dev)) {
 		unsigned int ival_sz = webcam_ival_count(dev, dev->webcam_size_idx);
 
-		/* Guaranteed to be a match */
+		 
 		for (i = 0; i < ARRAY_SIZE(webcam_sizes); i++)
 			if (webcam_sizes[i].width == mp->width &&
 					webcam_sizes[i].height == mp->height)
@@ -1190,19 +1140,13 @@ int vidioc_s_input(struct file *file, void *priv, unsigned i)
 		}
 	}
 
-	/*
-	 * Modify the brightness range depending on the input.
-	 * This makes it easy to use vivid to test if applications can
-	 * handle control range modifications and is also how this is
-	 * typically used in practice as different inputs may be hooked
-	 * up to different receivers with different control ranges.
-	 */
+	 
 	brightness = 128 * i + dev->input_brightness[i];
 	v4l2_ctrl_modify_range(dev->brightness,
 			128 * i, 255 + 128 * i, 1, 128 + 128 * i);
 	v4l2_ctrl_s_ctrl(dev->brightness, brightness);
 
-	/* Restore per-input states. */
+	 
 	v4l2_ctrl_activate(dev->ctrl_dv_timings_signal_mode,
 			   vivid_is_hdmi_cap(dev));
 	v4l2_ctrl_activate(dev->ctrl_dv_timings, vivid_is_hdmi_cap(dev) &&
@@ -1342,7 +1286,7 @@ int vivid_video_g_tuner(struct file *file, void *fh, struct v4l2_tuner *vt)
 	return 0;
 }
 
-/* Must remain in sync with the vivid_ctrl_standard_strings array */
+ 
 const v4l2_std_id vivid_standard[] = {
 	V4L2_STD_NTSC_M,
 	V4L2_STD_NTSC_M_JP,
@@ -1362,7 +1306,7 @@ const v4l2_std_id vivid_standard[] = {
 	V4L2_STD_UNKNOWN
 };
 
-/* Must remain in sync with the vivid_standard array */
+ 
 const char * const vivid_ctrl_standard_strings[] = {
 	"NTSC-M",
 	"NTSC-M-JP",
@@ -1442,7 +1386,7 @@ static void find_aspect_ratio(u32 width, u32 height,
 	} else if (!(height % 9) && ((height * 15 / 9) == width)) {
 		*num = 15;
 		*denom = 9;
-	} else { /* default to 16:9 */
+	} else {  
 		*num = 16;
 		*denom = 9;
 	}
@@ -1585,7 +1529,7 @@ int vidioc_s_edid(struct file *file, void *_fh,
 	v4l2_ctrl_s_ctrl(dev->ctrl_tx_hotplug, display_present);
 
 set_phys_addr:
-	/* TODO: a proper hotplug detect cycle should be emulated here */
+	 
 	cec_s_phys_addr(dev->cec_rx_adap, phys_addr, false);
 
 	for (i = 0; i < MAX_OUTPUTS && dev->cec_tx_adap[i]; i++)
@@ -1625,7 +1569,7 @@ int vidioc_enum_framesizes(struct file *file, void *fh,
 	return 0;
 }
 
-/* timeperframe is arbitrary and continuous */
+ 
 int vidioc_enum_frameintervals(struct file *file, void *priv,
 					     struct v4l2_frmivalenum *fival)
 {
@@ -1705,7 +1649,7 @@ int vivid_vid_cap_s_parm(struct file *file, void *priv,
 	dev->webcam_ival_idx = i;
 	tpf = webcam_intervals[dev->webcam_ival_idx];
 
-	/* resync the thread's timings */
+	 
 	dev->cap_seq_resync = true;
 	dev->timeperframe_vid_cap = tpf;
 	parm->parm.capture.capability   = V4L2_CAP_TIMEPERFRAME;

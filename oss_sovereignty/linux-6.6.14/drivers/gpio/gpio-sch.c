@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO interface for Intel Poulsbo SCH
- *
- *  Copyright (c) 2010 CompuLab Ltd
- *  Author: Denis Turischev <denis@compulab.co.il>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -30,10 +25,7 @@
 #define CORE_BANK_OFFSET	0x00
 #define RESUME_BANK_OFFSET	0x20
 
-/*
- * iLB datasheet describes GPE0BLK registers, in particular GPE0E.GPIO bit.
- * Document Number: 328195-001
- */
+ 
 #define GPE0E_GPIO	14
 
 struct sch_gpio {
@@ -42,7 +34,7 @@ struct sch_gpio {
 	unsigned short iobase;
 	unsigned short resume_base;
 
-	/* GPE handling */
+	 
 	u32 gpe;
 	acpi_gpe_handler gpe_handler;
 };
@@ -135,15 +127,7 @@ static int sch_gpio_direction_out(struct gpio_chip *gc, unsigned int gpio_num,
 	sch_gpio_reg_set(sch, gpio_num, GIO, 0);
 	spin_unlock_irqrestore(&sch->lock, flags);
 
-	/*
-	 * according to the datasheet, writing to the level register has no
-	 * effect when GPIO is programmed as input.
-	 * Actually the level register is read-only when configured as input.
-	 * Thus presetting the output level before switching to output is _NOT_ possible.
-	 * Hence we set the level after configuring the GPIO as output.
-	 * But we cannot prevent a short low pulse if direction is set to high
-	 * and an external pull-up is connected.
-	 */
+	 
 	sch_gpio_set(gc, gpio_num, val);
 	return 0;
 }
@@ -276,10 +260,10 @@ static u32 sch_gpio_gpe_handler(acpi_handle gpe_device, u32 gpe, void *context)
 	for_each_set_bit(offset, &pending, sch->chip.ngpio)
 		generic_handle_domain_irq(gc->irq.domain, offset);
 
-	/* Set returning value depending on whether we handled an interrupt */
+	 
 	ret = pending ? ACPI_INTERRUPT_HANDLED : ACPI_INTERRUPT_NOT_HANDLED;
 
-	/* Acknowledge GPE to ACPICA */
+	 
 	ret |= ACPI_REENABLE_GPE;
 
 	return ret;
@@ -347,17 +331,10 @@ static int sch_gpio_probe(struct platform_device *pdev)
 		sch->resume_base = 10;
 		sch->chip.ngpio = 14;
 
-		/*
-		 * GPIO[6:0] enabled by default
-		 * GPIO7 is configured by the CMC as SLPIOVR
-		 * Enable GPIO[9:8] core powered gpios explicitly
-		 */
+		 
 		sch_gpio_reg_set(sch, 8, GEN, 1);
 		sch_gpio_reg_set(sch, 9, GEN, 1);
-		/*
-		 * SUS_GPIO[2:0] enabled by default
-		 * Enable SUS_GPIO3 resume powered gpio explicitly
-		 */
+		 
 		sch_gpio_reg_set(sch, 13, GEN, 1);
 		break;
 
@@ -388,7 +365,7 @@ static int sch_gpio_probe(struct platform_device *pdev)
 	girq->default_type = IRQ_TYPE_NONE;
 	girq->handler = handle_bad_irq;
 
-	/* GPE setup is optional */
+	 
 	sch->gpe = GPE0E_GPIO;
 	sch->gpe_handler = sch_gpio_gpe_handler;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 Pengutronix
- */
+ 
+ 
 
 #ifndef IMX_VDOA_H
 #define IMX_VDOA_H
@@ -47,4 +45,4 @@ static inline int vdoa_wait_for_completion(struct vdoa_ctx *ctx)
 
 #endif
 
-#endif /* IMX_VDOA_H */
+#endif  

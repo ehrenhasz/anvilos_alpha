@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sched.h>
 #include <stdio.h>
@@ -183,7 +183,7 @@ static bool is_shared_mount(const char *path)
 	return false;
 }
 
-/* Attempt to de-conflict with the selftests tree. */
+ 
 #ifndef SKIP
 #define SKIP(s, ...)	XFAIL(s, ##__VA_ARGS__)
 #endif

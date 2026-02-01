@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2021 Intel Corporation
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
- *
- * iommufd provides control over the IOMMU HW objects created by IOMMU kernel
- * drivers. IOMMU HW objects revolve around IO page tables that map incoming DMA
- * addresses (IOVA) to CPU addresses.
- */
+
+ 
 #define pr_fmt(fmt) "iommufd: " fmt
 
 #include <linux/file.h>
@@ -41,24 +35,12 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
 	if (!obj)
 		return ERR_PTR(-ENOMEM);
 	obj->type = type;
-	/*
-	 * In most cases the destroy_rwsem is obtained with try so it doesn't
-	 * interact with lockdep, however on destroy we have to sleep. This
-	 * means if we have to destroy an object while holding a get on another
-	 * object it triggers lockdep. Using one locking class per object type
-	 * is a simple and reasonable way to avoid this.
-	 */
+	 
 	__init_rwsem(&obj->destroy_rwsem, "iommufd_object::destroy_rwsem",
 		     &obj_keys[type]);
 	refcount_set(&obj->users, 1);
 
-	/*
-	 * Reserve an ID in the xarray but do not publish the pointer yet since
-	 * the caller hasn't initialized it yet. Once the pointer is published
-	 * in the xarray and visible to other threads we can't reliably destroy
-	 * it anymore, so the caller must complete all errorable operations
-	 * before calling iommufd_object_finalize().
-	 */
+	 
 	rc = xa_alloc(&ictx->objects, &obj->id, XA_ZERO_ENTRY,
 		      xa_limit_31b, GFP_KERNEL_ACCOUNT);
 	if (rc)
@@ -69,26 +51,18 @@ out_free:
 	return ERR_PTR(rc);
 }
 
-/*
- * Allow concurrent access to the object.
- *
- * Once another thread can see the object pointer it can prevent object
- * destruction. Expect for special kernel-only objects there is no in-kernel way
- * to reliably destroy a single object. Thus all APIs that are creating objects
- * must use iommufd_object_abort() to handle their errors and only call
- * iommufd_object_finalize() once object creation cannot fail.
- */
+ 
 void iommufd_object_finalize(struct iommufd_ctx *ictx,
 			     struct iommufd_object *obj)
 {
 	void *old;
 
 	old = xa_store(&ictx->objects, obj->id, obj, GFP_KERNEL);
-	/* obj->id was returned from xa_alloc() so the xa_store() cannot fail */
+	 
 	WARN_ON(old);
 }
 
-/* Undo _iommufd_object_alloc() if iommufd_object_finalize() was not called */
+ 
 void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj)
 {
 	void *old;
@@ -98,10 +72,7 @@ void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj)
 	kfree(obj);
 }
 
-/*
- * Abort an object that has been fully initialized and needs destroy, but has
- * not been finalized.
- */
+ 
 void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
 				      struct iommufd_object *obj)
 {
@@ -129,10 +100,7 @@ struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
 	return obj;
 }
 
-/*
- * Remove the given object id from the xarray if the only reference to the
- * object is held by the xarray. The caller must call ops destroy().
- */
+ 
 static struct iommufd_object *iommufd_object_remove(struct iommufd_ctx *ictx,
 						    u32 id, bool extra_put)
 {
@@ -146,10 +114,7 @@ static struct iommufd_object *iommufd_object_remove(struct iommufd_ctx *ictx,
 		goto out_xa;
 	}
 
-	/*
-	 * If the caller is holding a ref on obj we put it here under the
-	 * spinlock.
-	 */
+	 
 	if (extra_put)
 		refcount_dec(&obj->users);
 
@@ -165,26 +130,17 @@ static struct iommufd_object *iommufd_object_remove(struct iommufd_ctx *ictx,
 out_xa:
 	xa_unlock(&ictx->objects);
 
-	/* The returned object reference count is zero */
+	 
 	return obj;
 }
 
-/*
- * The caller holds a users refcount and wants to destroy the object. Returns
- * true if the object was destroyed. In all cases the caller no longer has a
- * reference on obj.
- */
+ 
 void __iommufd_object_destroy_user(struct iommufd_ctx *ictx,
 				   struct iommufd_object *obj, bool allow_fail)
 {
 	struct iommufd_object *ret;
 
-	/*
-	 * The purpose of the destroy_rwsem is to ensure deterministic
-	 * destruction of objects used by external drivers and destroyed by this
-	 * function. Any temporary increment of the refcount must hold the read
-	 * side of this, such as during ioctl execution.
-	 */
+	 
 	down_write(&obj->destroy_rwsem);
 	ret = iommufd_object_remove(ictx, obj->id, true);
 	up_write(&obj->destroy_rwsem);
@@ -192,11 +148,7 @@ void __iommufd_object_destroy_user(struct iommufd_ctx *ictx,
 	if (allow_fail && IS_ERR(ret))
 		return;
 
-	/*
-	 * If there is a bug and we couldn't destroy the object then we did put
-	 * back the caller's refcount and will eventually try to free it again
-	 * during close.
-	 */
+	 
 	if (WARN_ON(IS_ERR(ret)))
 		return;
 
@@ -225,10 +177,7 @@ static int iommufd_fops_open(struct inode *inode, struct file *filp)
 	if (!ictx)
 		return -ENOMEM;
 
-	/*
-	 * For compatibility with VFIO when /dev/vfio/vfio is opened we default
-	 * to the same rlimit accounting as vfio uses.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER) &&
 	    filp->private_data == &vfio_misc_dev) {
 		ictx->account_mode = IOPT_PAGES_ACCOUNT_MM;
@@ -247,15 +196,7 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
 	struct iommufd_ctx *ictx = filp->private_data;
 	struct iommufd_object *obj;
 
-	/*
-	 * The objects in the xarray form a graph of "users" counts, and we have
-	 * to destroy them in a depth first manner. Leaf objects will reduce the
-	 * users count of interior objects when they are destroyed.
-	 *
-	 * Repeatedly destroying all the "1 users" leaf objects will progress
-	 * until the entire list is destroyed. If this can't progress then there
-	 * is some bug related to object refcounting.
-	 */
+	 
 	while (!xa_empty(&ictx->objects)) {
 		unsigned int destroyed = 0;
 		unsigned long index;
@@ -268,7 +209,7 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
 			iommufd_object_ops[obj->type].destroy(obj);
 			kfree(obj);
 		}
-		/* Bug related to users refcount */
+		 
 		if (WARN_ON(!destroyed))
 			break;
 	}
@@ -406,26 +347,14 @@ static const struct file_operations iommufd_fops = {
 	.unlocked_ioctl = iommufd_fops_ioctl,
 };
 
-/**
- * iommufd_ctx_get - Get a context reference
- * @ictx: Context to get
- *
- * The caller must already hold a valid reference to ictx.
- */
+ 
 void iommufd_ctx_get(struct iommufd_ctx *ictx)
 {
 	get_file(ictx->file);
 }
 EXPORT_SYMBOL_NS_GPL(iommufd_ctx_get, IOMMUFD);
 
-/**
- * iommufd_ctx_from_file - Acquires a reference to the iommufd context
- * @file: File to obtain the reference from
- *
- * Returns a pointer to the iommufd_ctx, otherwise ERR_PTR. The struct file
- * remains owned by the caller and the caller must still do fput. On success
- * the caller is responsible to call iommufd_ctx_put().
- */
+ 
 struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
 {
 	struct iommufd_ctx *ictx;
@@ -438,13 +367,7 @@ struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
 }
 EXPORT_SYMBOL_NS_GPL(iommufd_ctx_from_file, IOMMUFD);
 
-/**
- * iommufd_ctx_from_fd - Acquires a reference to the iommufd context
- * @fd: File descriptor to obtain the reference from
- *
- * Returns a pointer to the iommufd_ctx, otherwise ERR_PTR. On success
- * the caller is responsible to call iommufd_ctx_put().
- */
+ 
 struct iommufd_ctx *iommufd_ctx_from_fd(int fd)
 {
 	struct file *file;
@@ -457,15 +380,12 @@ struct iommufd_ctx *iommufd_ctx_from_fd(int fd)
 		fput(file);
 		return ERR_PTR(-EBADFD);
 	}
-	/* fget is the same as iommufd_ctx_get() */
+	 
 	return file->private_data;
 }
 EXPORT_SYMBOL_NS_GPL(iommufd_ctx_from_fd, IOMMUFD);
 
-/**
- * iommufd_ctx_put - Put back a reference
- * @ictx: Context to put back
- */
+ 
 void iommufd_ctx_put(struct iommufd_ctx *ictx)
 {
 	fput(ictx->file);

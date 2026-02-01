@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- * Author: Naveen Kumar G <naveen.gaddipati@stericsson.com> for ST-Ericsson
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -136,24 +133,7 @@
 
 #define DRIVER_TP	"bu21013_tp"
 
-/**
- * struct bu21013_ts - touch panel data structure
- * @client: pointer to the i2c client
- * @in_dev: pointer to the input device structure
- * @props: the device coordinate transformation properties
- * @regulator: pointer to the Regulator used for touch screen
- * @cs_gpiod: chip select GPIO line
- * @int_gpiod: touch interrupt GPIO line
- * @touch_x_max: maximum X coordinate reported by the device
- * @touch_y_max: maximum Y coordinate reported by the device
- * @x_flip: indicates that the driver should invert X coordinate before
- *	reporting
- * @y_flip: indicates that the driver should invert Y coordinate before
- *	reporting
- * @touch_stopped: touch stop flag
- *
- * Touch panel device data structure
- */
+ 
 struct bu21013_ts {
 	struct i2c_client *client;
 	struct input_dev *in_dev;
@@ -441,7 +421,7 @@ static int bu21013_probe(struct i2c_client *client)
 	ts->in_dev = in_dev;
 	input_set_drvdata(in_dev, ts);
 
-	/* register the device to input subsystem */
+	 
 	in_dev->name = DRIVER_TP;
 	in_dev->id.bustype = BUS_I2C;
 
@@ -453,7 +433,7 @@ static int bu21013_probe(struct i2c_client *client)
 
 	touchscreen_parse_properties(in_dev, true, &ts->props);
 
-	/* Adjust for the legacy "flip" properties, if present */
+	 
 	if (!ts->props.invert_x &&
 	    device_property_read_bool(dev, "rohm,flip-x")) {
 		info = &in_dev->absinfo[ABS_MT_POSITION_X];
@@ -494,7 +474,7 @@ static int bu21013_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Named "CS" on the chip, DT binding is "reset" */
+	 
 	ts->cs_gpiod = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(ts->cs_gpiod))
 		return dev_err_probe(dev, PTR_ERR(ts->cs_gpiod), "failed to get CS GPIO\n");
@@ -507,7 +487,7 @@ static int bu21013_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Named "INT" on the chip, DT binding is "touch" */
+	 
 	ts->int_gpiod = devm_gpiod_get_optional(dev, "touch", GPIOD_IN);
 	error = PTR_ERR_OR_ZERO(ts->int_gpiod);
 	if (error)
@@ -516,7 +496,7 @@ static int bu21013_probe(struct i2c_client *client)
 	if (ts->int_gpiod)
 		gpiod_set_consumer_name(ts->int_gpiod, "BU21013 INT");
 
-	/* configure the touch panel controller */
+	 
 	error = bu21013_init_chip(ts);
 	if (error) {
 		dev_err(dev, "error in bu21013 config\n");
@@ -545,9 +525,9 @@ static void bu21013_remove(struct i2c_client *client)
 {
 	struct bu21013_ts *ts = i2c_get_clientdata(client);
 
-	/* Make sure IRQ will exit quickly even if there is contact */
+	 
 	ts->touch_stopped = true;
-	/* The resources will be freed by devm */
+	 
 }
 
 static int bu21013_suspend(struct device *dev)

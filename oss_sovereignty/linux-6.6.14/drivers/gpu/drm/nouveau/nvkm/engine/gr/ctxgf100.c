@@ -1,26 +1,4 @@
-/*
- * Copyright 2010 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "ctxgf100.h"
 
 #include <subdev/fb.h>
@@ -28,9 +6,7 @@
 #include <subdev/timer.h>
 #include <engine/fifo.h>
 
-/*******************************************************************************
- * PGRAPH context register lists
- ******************************************************************************/
+ 
 
 static const struct gf100_gr_init
 gf100_grctx_init_icmd_0[] = {
@@ -987,9 +963,7 @@ gf100_grctx_pack_tpc[] = {
 	{}
 };
 
-/*******************************************************************************
- * PGRAPH context implementation
- ******************************************************************************/
+ 
 
 void
 gf100_grctx_patch_wr32(struct gf100_gr_chan *chan, u32 addr, u32 data)
@@ -1097,11 +1071,11 @@ gf100_grctx_generate_rop_mapping(struct gf100_gr *gr)
 	u8  shift, ntpcv;
 	int i;
 
-	/* Pack tile map into register format. */
+	 
 	for (i = 0; i < 32; i++)
 		data[i / 6] |= (gr->tile[i] & 0x07) << ((i % 6) * 5);
 
-	/* Magic. */
+	 
 	shift = 0;
 	ntpcv = gr->tpc_total;
 	while (!(ntpcv & (1 << 4))) {
@@ -1115,20 +1089,20 @@ gf100_grctx_generate_rop_mapping(struct gf100_gr *gr)
 	for (i = 1; i < 7; i++)
 		data2[1] |= ((1 << (i + 5)) % ntpcv) << ((i - 1) * 5);
 
-	/* GPC_BROADCAST */
+	 
 	nvkm_wr32(device, 0x418bb8, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset);
 	for (i = 0; i < 6; i++)
 		nvkm_wr32(device, 0x418b08 + (i * 4), data[i]);
 
-	/* GPC_BROADCAST.TP_BROADCAST */
+	 
 	nvkm_wr32(device, 0x419bd0, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset | data2[0]);
 	nvkm_wr32(device, 0x419be4, data2[1]);
 	for (i = 0; i < 6; i++)
 		nvkm_wr32(device, 0x419b00 + (i * 4), data[i]);
 
-	/* UNK78xx */
+	 
 	nvkm_wr32(device, 0x4078bc, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset);
 	for (i = 0; i < 6; i++)
@@ -1154,14 +1128,14 @@ gf100_grctx_alpha_beta_map[17][32] = {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	},
-	//XXX: 3
+	
 	[4] = {
 		1, 1, 1, 1, 1, 1, 1, 1,
 		2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 		3, 3, 3, 3, 3, 3, 3, 3,
 	},
-	//XXX: 5
-	//XXX: 6
+	
+	
 	[7] = {
 		1, 1, 1, 1,
 		2, 2, 2, 2, 2, 2,
@@ -1179,8 +1153,8 @@ gf100_grctx_alpha_beta_map[17][32] = {
 		6, 6, 6, 6, 6,
 		7, 7, 7,
 	},
-	//XXX: 9
-	//XXX: 10
+	
+	
 	[11] = {
 		1, 1,
 		2, 2, 2, 2,
@@ -1193,8 +1167,8 @@ gf100_grctx_alpha_beta_map[17][32] = {
 		9, 9, 9, 9,
 		10, 10,
 	},
-	//XXX: 12
-	//XXX: 13
+	
+	
 	[14] = {
 		1, 1,
 		2, 2,
@@ -1443,7 +1417,7 @@ gf100_grctx_generate(struct gf100_gr *gr, struct gf100_gr_chan *chan, struct nvk
 	int ret, i;
 	u64 addr;
 
-	/* NV_PGRAPH_FE_PWR_MODE_FORCE_ON. */
+	 
 	nvkm_wr32(device, 0x404170, 0x00000012);
 	nvkm_msec(device, 2000,
 		if (!(nvkm_rd32(device, 0x404170) & 0x00000010))
@@ -1453,23 +1427,23 @@ gf100_grctx_generate(struct gf100_gr *gr, struct gf100_gr_chan *chan, struct nvk
 	if (grctx->unkn88c)
 		grctx->unkn88c(gr, true);
 
-	/* Reset FECS. */
+	 
 	gr->func->fecs.reset(gr);
 
 	if (grctx->unkn88c)
 		grctx->unkn88c(gr, false);
 
-	/* NV_PGRAPH_FE_PWR_MODE_AUTO. */
+	 
 	nvkm_wr32(device, 0x404170, 0x00000010);
 	nvkm_msec(device, 2000,
 		if (!(nvkm_rd32(device, 0x404170) & 0x00000010))
 			break;
 	);
 
-	/* Init SCC RAM. */
+	 
 	nvkm_wr32(device, 0x40802c, 0x00000001);
 
-	/* Allocate memory to store context, and dummy global context buffers. */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST,
 			      CB_RESERVED + gr->size, 0, true, &data);
 	if (ret)
@@ -1483,13 +1457,13 @@ gf100_grctx_generate(struct gf100_gr *gr, struct gf100_gr_chan *chan, struct nvk
 	if (ret)
 		goto done;
 
-	/* Setup context pointer. */
+	 
 	nvkm_kmap(inst);
 	nvkm_wo32(inst, 0x0210, lower_32_bits(ctx->addr + CB_RESERVED) | 4);
 	nvkm_wo32(inst, 0x0214, upper_32_bits(ctx->addr + CB_RESERVED));
 	nvkm_done(inst);
 
-	/* Make channel current. */
+	 
 	addr = inst->addr >> 12;
 	if (gr->firmware) {
 		ret = gf100_gr_fecs_bind_pointer(gr, 0x80000000 | addr);
@@ -1515,9 +1489,7 @@ gf100_grctx_generate(struct gf100_gr *gr, struct gf100_gr_chan *chan, struct nvk
 	grctx->main(chan);
 
 	if (!gr->firmware) {
-		/* Trigger a context unload by unsetting the "next channel valid" bit
-		 * and faking a context switch interrupt.
-		 */
+		 
 		nvkm_mask(device, 0x409b04, 0x80000000, 0x00000000);
 		nvkm_wr32(device, 0x409000, 0x00000100);
 		if (nvkm_msec(device, 2000,

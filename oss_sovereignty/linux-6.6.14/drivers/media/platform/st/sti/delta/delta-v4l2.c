@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Hugues Fruchet <hugues.fruchet@st.com>
- *          Jean-Christophe Trotin <jean-christophe.trotin@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -31,7 +26,7 @@
 #define call_dec_op(dec, op, args...)\
 		((dec && (dec)->op) ? (dec)->op(args) : 0)
 
-/* registry of available decoders */
+ 
 static const struct delta_dec *delta_decoders[] = {
 #ifdef CONFIG_VIDEO_STI_DELTA_MJPEG
 	&mjpegdec,
@@ -61,7 +56,7 @@ static inline int frame_stride(u32 w, u32 fmt)
 static void dump_au(struct delta_ctx *ctx, struct delta_au *au)
 {
 	struct delta_dev *delta = ctx->dev;
-	u32 size = 10;	/* dump first & last 10 bytes */
+	u32 size = 10;	 
 	u8 *data = (u8 *)(au->vaddr);
 
 	if (au->size <= (size * 2))
@@ -77,7 +72,7 @@ static void dump_au(struct delta_ctx *ctx, struct delta_au *au)
 static void dump_frame(struct delta_ctx *ctx, struct delta_frame *frame)
 {
 	struct delta_dev *delta = ctx->dev;
-	u32 size = 10;	/* dump first 10 bytes */
+	u32 size = 10;	 
 	u8 *data = (u8 *)(frame->vaddr);
 
 	dev_dbg(delta->dev, "%s dump frame[%d] dts=%lld type=%s field=%s data=%*ph\n",
@@ -103,14 +98,14 @@ static void delta_frame_done(struct delta_ctx *ctx, struct delta_frame *frame,
 
 	dump_frame(ctx, frame);
 
-	/* decoded frame is now output to user */
+	 
 	frame->state |= DELTA_FRAME_OUT;
 
 	vbuf = &frame->vbuf;
 	vbuf->sequence = ctx->frame_num++;
 	v4l2_m2m_buf_done(vbuf, err ? VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
 
-	if (frame->info.size) /* ignore EOS */
+	if (frame->info.size)  
 		ctx->output_frames++;
 }
 
@@ -120,7 +115,7 @@ static void requeue_free_frames(struct delta_ctx *ctx)
 	struct delta_frame *frame;
 	unsigned int i;
 
-	/* requeue all free frames */
+	 
 	for (i = 0; i < ctx->nb_of_frames; i++) {
 		frame = ctx->frames[i];
 		if (frame->state == DELTA_FRAME_FREE) {
@@ -135,13 +130,13 @@ static int delta_recycle(struct delta_ctx *ctx, struct delta_frame *frame)
 {
 	const struct delta_dec *dec = ctx->dec;
 
-	/* recycle frame on decoder side */
+	 
 	call_dec_op(dec, recycle, ctx, frame);
 
-	/* this frame is no more output */
+	 
 	frame->state &= ~DELTA_FRAME_OUT;
 
-	/* requeue free frame */
+	 
 	if (frame->state == DELTA_FRAME_FREE) {
 		struct vb2_v4l2_buffer *vbuf = &frame->vbuf;
 
@@ -149,7 +144,7 @@ static int delta_recycle(struct delta_ctx *ctx, struct delta_frame *frame)
 		frame->state = DELTA_FRAME_M2M;
 	}
 
-	/* reset other frame fields */
+	 
 	frame->flags = 0;
 	frame->dts = 0;
 
@@ -166,10 +161,7 @@ static void delta_push_dts(struct delta_ctx *ctx, u64 val)
 
 	INIT_LIST_HEAD(&dts->list);
 
-	/*
-	 * protected by global lock acquired
-	 * by V4L2 when calling delta_vb2_au_queue
-	 */
+	 
 	dts->val = val;
 	list_add_tail(&dts->list, &ctx->dts);
 }
@@ -179,10 +171,7 @@ static void delta_pop_dts(struct delta_ctx *ctx, u64 *val)
 	struct delta_dev *delta = ctx->dev;
 	struct delta_dts *dts;
 
-	/*
-	 * protected by global lock acquired
-	 * by V4L2 when calling delta_vb2_au_queue
-	 */
+	 
 	if (list_empty(&ctx->dts)) {
 		dev_warn(delta->dev, "%s no dts to pop ... output dts = 0\n",
 			 ctx->name);
@@ -203,16 +192,13 @@ static void delta_flush_dts(struct delta_ctx *ctx)
 	struct delta_dts *dts;
 	struct delta_dts *next;
 
-	/*
-	 * protected by global lock acquired
-	 * by V4L2 when calling delta_vb2_au_queue
-	 */
+	 
 
-	/* free all pending dts */
+	 
 	list_for_each_entry_safe(dts, next, &ctx->dts, list)
 		kfree(dts);
 
-	/* reset list */
+	 
 	INIT_LIST_HEAD(&ctx->dts);
 }
 
@@ -221,7 +207,7 @@ static inline int frame_alignment(u32 fmt)
 	switch (fmt) {
 	case V4L2_PIX_FMT_NV12:
 	case V4L2_PIX_FMT_NV21:
-		/* multiple of 2 */
+		 
 		return 2;
 	default:
 		return 1;
@@ -230,12 +216,7 @@ static inline int frame_alignment(u32 fmt)
 
 static inline int estimated_au_size(u32 w, u32 h)
 {
-	/*
-	 * for a MJPEG stream encoded from YUV422 pixel format,
-	 * assuming a compression ratio of 2, the maximum size
-	 * of an access unit is (width x height x 2) / 2,
-	 * so (width x height)
-	 */
+	 
 	return (w * h);
 }
 
@@ -356,11 +337,11 @@ static int delta_open_decoder(struct delta_ctx *ctx, u32 streamformat,
 	dev_dbg(delta->dev, "%s one decoder matching %4.4s => %4.4s\n",
 		ctx->name, (char *)&streamformat, (char *)&pixelformat);
 
-	/* update instance name */
+	 
 	snprintf(ctx->name, sizeof(ctx->name), "[%3d:%4.4s]",
 		 delta->instance_id, (char *)&streamformat);
 
-	/* open decoder instance */
+	 
 	ret = call_dec_op(dec, open, ctx);
 	if (ret) {
 		dev_err(delta->dev, "%s failed to open decoder instance (%d)\n",
@@ -375,9 +356,7 @@ static int delta_open_decoder(struct delta_ctx *ctx, u32 streamformat,
 	return ret;
 }
 
-/*
- * V4L2 ioctl operations
- */
+ 
 
 static int delta_querycap(struct file *file, void *priv,
 			  struct v4l2_capability *cap)
@@ -474,7 +453,7 @@ static int delta_g_fmt_frame(struct file *file, void *fh, struct v4l2_format *f)
 	pix->sizeimage = frameinfo->size;
 
 	if (ctx->flags & DELTA_FLAG_STREAMINFO) {
-		/* align colorspace & friends on stream ones if any set */
+		 
 		frameinfo->colorspace = streaminfo->colorspace;
 		frameinfo->xfer_func = streaminfo->xfer_func;
 		frameinfo->ycbcr_enc = streaminfo->ycbcr_enc;
@@ -507,7 +486,7 @@ static int delta_try_fmt_stream(struct file *file, void *priv,
 		return -EINVAL;
 	}
 
-	/* adjust width & height */
+	 
 	width = pix->width;
 	height = pix->height;
 	v4l_bound_align_image
@@ -561,7 +540,7 @@ static int delta_try_fmt_frame(struct file *file, void *priv,
 		return -EINVAL;
 	}
 
-	/* adjust width & height */
+	 
 	width = pix->width;
 	height = pix->height;
 	v4l_bound_align_image(&pix->width,
@@ -576,7 +555,7 @@ static int delta_try_fmt_frame(struct file *file, void *priv,
 			"%s V4L2 TRY_FMT (CAPTURE): resolution updated %dx%d -> %dx%d to fit min/max/alignment\n",
 			ctx->name, width, height, pix->width, pix->height);
 
-	/* default decoder alignment constraint */
+	 
 	width = ALIGN(pix->width, DELTA_WIDTH_ALIGNMENT);
 	height = ALIGN(pix->height, DELTA_HEIGHT_ALIGNMENT);
 	if ((pix->width != width) || (pix->height != height))
@@ -658,12 +637,7 @@ static int delta_s_fmt_frame(struct file *file, void *fh, struct v4l2_format *f)
 	}
 
 	if (ctx->state < DELTA_STATE_READY) {
-		/*
-		 * decoder not yet opened and valid stream header not found,
-		 * could not negotiate format with decoder, check at least
-		 * pixel format & negotiate resolution boundaries
-		 * and alignment...
-		 */
+		 
 		ret = delta_try_fmt_frame(file, fh, f);
 		if (ret) {
 			dev_dbg(delta->dev,
@@ -675,7 +649,7 @@ static int delta_s_fmt_frame(struct file *file, void *fh, struct v4l2_format *f)
 		return 0;
 	}
 
-	/* set frame information to decoder */
+	 
 	memset(&frameinfo, 0, sizeof(frameinfo));
 	frameinfo.pixelformat = pix->pixelformat;
 	frameinfo.width = pix->width;
@@ -692,7 +666,7 @@ static int delta_s_fmt_frame(struct file *file, void *fh, struct v4l2_format *f)
 	if (ret)
 		return ret;
 
-	/* then get what decoder can really do */
+	 
 	ret = call_dec_op(dec, get_frameinfo, ctx, &frameinfo);
 	if (ret)
 		return ret;
@@ -732,7 +706,7 @@ static int delta_g_selection(struct file *file, void *fh,
 	    (frameinfo->flags & DELTA_FRAMEINFO_FLAG_CROP)) {
 		crop = frameinfo->crop;
 	} else {
-		/* default to video dimensions */
+		 
 		crop.left = 0;
 		crop.top = 0;
 		crop.width = frameinfo->width;
@@ -742,12 +716,12 @@ static int delta_g_selection(struct file *file, void *fh,
 	switch (s->target) {
 	case V4L2_SEL_TGT_COMPOSE:
 	case V4L2_SEL_TGT_COMPOSE_DEFAULT:
-		/* visible area inside video */
+		 
 		s->r = crop;
 		break;
 	case V4L2_SEL_TGT_COMPOSE_PADDED:
 	case V4L2_SEL_TGT_COMPOSE_BOUNDS:
-		/* up to aligned dimensions */
+		 
 		s->r.left = 0;
 		s->r.top = 0;
 		s->r.width = frameinfo->aligned_width;
@@ -766,22 +740,18 @@ static void delta_complete_eos(struct delta_ctx *ctx,
 	struct delta_dev *delta = ctx->dev;
 	const struct v4l2_event ev = {.type = V4L2_EVENT_EOS};
 
-	/*
-	 * Send EOS to user:
-	 * - by returning an empty frame flagged to V4L2_BUF_FLAG_LAST
-	 * - and then send EOS event
-	 */
+	 
 
-	/* empty frame */
+	 
 	frame->info.size = 0;
 
-	/* set the last buffer flag */
+	 
 	frame->flags |= V4L2_BUF_FLAG_LAST;
 
-	/* release frame to user */
+	 
 	delta_frame_done(ctx, frame, 0);
 
-	/* send EOS event */
+	 
 	v4l2_event_queue_fh(&ctx->fh, &ev);
 
 	dev_dbg(delta->dev, "%s EOS completed\n", ctx->name);
@@ -815,35 +785,35 @@ static int delta_decoder_stop_cmd(struct delta_ctx *ctx, void *fh)
 	if (ctx->state != DELTA_STATE_READY)
 		return 0;
 
-	/* drain the decoder */
+	 
 	call_dec_op(dec, drain, ctx);
 
-	/* release to user drained frames */
+	 
 	while (1) {
 		frame = NULL;
 		ret = call_dec_op(dec, get_frame, ctx, &frame);
 		if (ret == -ENODATA) {
-			/* no more decoded frames */
+			 
 			break;
 		}
 		if (frame) {
 			dev_dbg(delta->dev, "%s drain frame[%d]\n",
 				ctx->name, frame->index);
 
-			/* pop timestamp and mark frame with it */
+			 
 			delta_pop_dts(ctx, &frame->dts);
 
-			/* release decoded frame to user */
+			 
 			delta_frame_done(ctx, frame, 0);
 		}
 	}
 
-	/* try to complete EOS */
+	 
 	ret = delta_get_free_frame(ctx, &frame);
 	if (ret)
 		goto delay_eos;
 
-	/* new frame available, EOS can now be completed */
+	 
 	delta_complete_eos(ctx, frame);
 
 	ctx->state = DELTA_STATE_EOS;
@@ -851,12 +821,7 @@ static int delta_decoder_stop_cmd(struct delta_ctx *ctx, void *fh)
 	return 0;
 
 delay_eos:
-	/*
-	 * EOS completion from driver is delayed because
-	 * we don't have a free empty frame available.
-	 * EOS completion is so delayed till next frame_queue() call
-	 * to be sure to have a free empty frame available.
-	 */
+	 
 	ctx->state = DELTA_STATE_WF_EOS;
 	dev_dbg(delta->dev, "%s EOS delayed\n", ctx->name);
 
@@ -889,7 +854,7 @@ static int delta_subscribe_event(struct v4l2_fh *fh,
 	return 0;
 }
 
-/* v4l2 ioctl ops */
+ 
 static const struct v4l2_ioctl_ops delta_ioctl_ops = {
 	.vidioc_querycap = delta_querycap,
 	.vidioc_enum_fmt_vid_cap = delta_enum_fmt_frame,
@@ -915,9 +880,7 @@ static const struct v4l2_ioctl_ops delta_ioctl_ops = {
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
 };
 
-/*
- * mem-to-mem operations
- */
+ 
 
 static void delta_run_work(struct work_struct *work)
 {
@@ -935,7 +898,7 @@ static void delta_run_work(struct work_struct *work)
 		return;
 	}
 
-	/* protect instance against reentrancy */
+	 
 	mutex_lock(&ctx->lock);
 
 	vbuf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
@@ -948,54 +911,46 @@ static void delta_run_work(struct work_struct *work)
 	au->size = vb2_get_plane_payload(&vbuf->vb2_buf, 0);
 	au->dts = vbuf->vb2_buf.timestamp;
 
-	/* dump access unit */
+	 
 	dump_au(ctx, au);
 
-	/* enable the hardware */
+	 
 	if (!dec->pm) {
 		ret = delta_get_sync(ctx);
 		if (ret)
 			goto err;
 	}
 
-	/* decode this access unit */
+	 
 	ret = call_dec_op(dec, decode, ctx, au);
 
-	/*
-	 * if the (-ENODATA) value is returned, it refers to the interlaced
-	 * stream case for which 2 access units are needed to get 1 frame.
-	 * So, this returned value doesn't mean that the decoding fails, but
-	 * indicates that the timestamp information of the access unit shall
-	 * not be taken into account, and that the V4L2 buffer associated with
-	 * the access unit shall be flagged with V4L2_BUF_FLAG_ERROR to inform
-	 * the user of this situation
-	 */
+	 
 	if (ret == -ENODATA) {
 		discard = true;
 	} else if (ret) {
 		dev_err(delta->dev, "%s decoding failed (%d)\n",
 			ctx->name, ret);
 
-		/* disable the hardware */
+		 
 		if (!dec->pm)
 			delta_put_autosuspend(ctx);
 
 		goto err;
 	}
 
-	/* disable the hardware */
+	 
 	if (!dec->pm)
 		delta_put_autosuspend(ctx);
 
-	/* push au timestamp in FIFO */
+	 
 	if (!discard)
 		delta_push_dts(ctx, au->dts);
 
-	/* get available decoded frames */
+	 
 	while (1) {
 		ret = call_dec_op(dec, get_frame, ctx, &frame);
 		if (ret == -ENODATA) {
-			/* no more decoded frames */
+			 
 			goto out;
 		}
 		if (ret) {
@@ -1010,10 +965,10 @@ static void delta_run_work(struct work_struct *work)
 			goto out;
 		}
 
-		/* pop timestamp and mark frame with it */
+		 
 		delta_pop_dts(ctx, &frame->dts);
 
-		/* release decoded frame to user */
+		 
 		delta_frame_done(ctx, frame, 0);
 	}
 
@@ -1077,16 +1032,14 @@ static int delta_job_ready(void *priv)
 	return 1;
 }
 
-/* mem-to-mem ops */
+ 
 static const struct v4l2_m2m_ops delta_m2m_ops = {
 	.device_run     = delta_device_run,
 	.job_ready	= delta_job_ready,
 	.job_abort      = delta_job_abort,
 };
 
-/*
- * VB2 queue operations
- */
+ 
 
 static int delta_vb2_au_queue_setup(struct vb2_queue *vq,
 				    unsigned int *num_buffers,
@@ -1120,7 +1073,7 @@ static int delta_vb2_au_prepare(struct vb2_buffer *vb)
 	struct delta_au *au = to_au(vbuf);
 
 	if (!au->prepared) {
-		/* get memory addresses */
+		 
 		au->vaddr = vb2_plane_vaddr(&au->vbuf.vb2_buf, 0);
 		au->paddr = vb2_dma_contig_plane_dma_addr
 				(&au->vbuf.vb2_buf, 0);
@@ -1165,15 +1118,11 @@ static int delta_setup_frame(struct delta_ctx *ctx,
 	ctx->frames[ctx->nb_of_frames] = frame;
 	ctx->nb_of_frames++;
 
-	/* setup frame on decoder side */
+	 
 	return call_dec_op(dec, setup_frame, ctx, frame);
 }
 
-/*
- * default implementation of get_frameinfo decoder ops
- * matching frame information from stream information
- * & with default pixel format & default alignment.
- */
+ 
 int delta_get_frameinfo_default(struct delta_ctx *ctx,
 				struct delta_frameinfo *frameinfo)
 {
@@ -1203,10 +1152,7 @@ int delta_get_frameinfo_default(struct delta_ctx *ctx,
 	return 0;
 }
 
-/*
- * default implementation of recycle decoder ops
- * consisting to relax the "decoded" frame state
- */
+ 
 int delta_recycle_default(struct delta_ctx *pctx,
 			  struct delta_frame *frame)
 {
@@ -1273,7 +1219,7 @@ int delta_get_sync(struct delta_ctx *ctx)
 	struct delta_dev *delta = ctx->dev;
 	int ret = 0;
 
-	/* enable the hardware */
+	 
 	ret = pm_runtime_resume_and_get(delta->dev);
 	if (ret < 0) {
 		dev_err(delta->dev, "%s pm_runtime_resume_and_get failed (%d)\n",
@@ -1319,7 +1265,7 @@ static int delta_vb2_au_start_streaming(struct vb2_queue *q,
 		return 0;
 
 	if (ctx->state == DELTA_STATE_WF_FORMAT) {
-		/* open decoder if not yet done */
+		 
 		ret = delta_open_decoder(ctx,
 					 ctx->streaminfo.streamformat,
 					 ctx->frameinfo.pixelformat, &dec);
@@ -1329,11 +1275,7 @@ static int delta_vb2_au_start_streaming(struct vb2_queue *q,
 		ctx->state = DELTA_STATE_WF_STREAMINFO;
 	}
 
-	/*
-	 * first buffer should contain stream header,
-	 * decode it to get the infos related to stream
-	 * such as width, height, dpb, ...
-	 */
+	 
 	vbuf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
 	if (!vbuf) {
 		dev_err(delta->dev, "%s failed to start streaming, no stream header buffer enqueued\n",
@@ -1347,10 +1289,10 @@ static int delta_vb2_au_start_streaming(struct vb2_queue *q,
 
 	delta_push_dts(ctx, au->dts);
 
-	/* dump access unit */
+	 
 	dump_au(ctx, au);
 
-	/* decode this access unit */
+	 
 	ret = call_dec_op(dec, decode, ctx, au);
 	if (ret) {
 		dev_err(delta->dev, "%s failed to start streaming, header decoding failed (%d)\n",
@@ -1382,10 +1324,7 @@ static int delta_vb2_au_start_streaming(struct vb2_queue *q,
 	return 0;
 
 err:
-	/*
-	 * return all buffers to vb2 in QUEUED state.
-	 * This will give ownership back to userspace
-	 */
+	 
 	if (vbuf)
 		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_QUEUED);
 
@@ -1401,7 +1340,7 @@ static void delta_vb2_au_stop_streaming(struct vb2_queue *q)
 
 	delta_flush_dts(ctx);
 
-	/* return all buffers to vb2 in ERROR state */
+	 
 	while ((vbuf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx)))
 		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
 
@@ -1422,12 +1361,7 @@ static int delta_vb2_frame_queue_setup(struct vb2_queue *vq,
 	struct delta_frameinfo *frameinfo = &ctx->frameinfo;
 	unsigned int size = frameinfo->size;
 
-	/*
-	 * the number of output buffers needed for decoding =
-	 * user need (*num_buffers given, usually for display pipeline) +
-	 * stream need (streaminfo->dpb) +
-	 * decoding peak smoothing (depends on DELTA IP perf)
-	 */
+	 
 	if (*num_buffers < DELTA_MIN_FRAME_USER) {
 		dev_dbg(delta->dev,
 			"%s num_buffers too low (%d), increasing to %d\n",
@@ -1447,7 +1381,7 @@ static int delta_vb2_frame_queue_setup(struct vb2_queue *vq,
 	if (*num_planes)
 		return sizes[0] < size ? -EINVAL : 0;
 
-	/* single plane for Y and CbCr */
+	 
 	*num_planes = 1;
 
 	sizes[0] = size;
@@ -1496,7 +1430,7 @@ static void delta_vb2_frame_finish(struct vb2_buffer *vb)
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
 	struct delta_frame *frame = to_frame(vbuf);
 
-	/* update V4L2 fields for user */
+	 
 	vb2_set_plane_payload(&vbuf->vb2_buf, 0, frame->info.size);
 	vb->timestamp = frame->dts;
 	vbuf->field = frame->field;
@@ -1511,16 +1445,16 @@ static void delta_vb2_frame_queue(struct vb2_buffer *vb)
 	struct delta_frame *frame = to_frame(vbuf);
 
 	if (ctx->state == DELTA_STATE_WF_EOS) {
-		/* new frame available, EOS can now be completed */
+		 
 		delta_complete_eos(ctx, frame);
 
 		ctx->state = DELTA_STATE_EOS;
 
-		/* return, no need to recycle this buffer to decoder */
+		 
 		return;
 	}
 
-	/* recycle this frame */
+	 
 	delta_recycle(ctx, frame);
 }
 
@@ -1536,10 +1470,7 @@ static void delta_vb2_frame_stop_streaming(struct vb2_queue *q)
 
 	call_dec_op(dec, flush, ctx);
 
-	/*
-	 * return all buffers to vb2 in ERROR state
-	 * & reset each frame state to OUT
-	 */
+	 
 	for (i = 0; i < ctx->nb_of_frames; i++) {
 		frame = ctx->frames[i];
 		if (!(frame->state & DELTA_FRAME_OUT)) {
@@ -1554,7 +1485,7 @@ static void delta_vb2_frame_stop_streaming(struct vb2_queue *q)
 	ctx->aborting = false;
 }
 
-/* VB2 queue ops */
+ 
 static const struct vb2_ops delta_vb2_au_ops = {
 	.queue_setup = delta_vb2_au_queue_setup,
 	.buf_prepare = delta_vb2_au_prepare,
@@ -1575,9 +1506,7 @@ static const struct vb2_ops delta_vb2_frame_ops = {
 	.stop_streaming = delta_vb2_frame_stop_streaming,
 };
 
-/*
- * V4L2 file operations
- */
+ 
 
 static int queue_init(void *priv,
 		      struct vb2_queue *src_vq, struct vb2_queue *dst_vq)
@@ -1587,12 +1516,12 @@ static int queue_init(void *priv,
 	struct delta_dev *delta = ctx->dev;
 	int ret;
 
-	/* setup vb2 queue for stream input */
+	 
 	q = src_vq;
 	q->type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 	q->io_modes = VB2_MMAP | VB2_DMABUF;
 	q->drv_priv = ctx;
-	/* overload vb2 buf with private au struct */
+	 
 	q->buf_struct_size = sizeof(struct delta_au);
 	q->ops = &delta_vb2_au_ops;
 	q->mem_ops = &vb2_dma_contig_memops;
@@ -1604,12 +1533,12 @@ static int queue_init(void *priv,
 	if (ret)
 		return ret;
 
-	/* setup vb2 queue for frame output */
+	 
 	q = dst_vq;
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_DMABUF;
 	q->drv_priv = ctx;
-	/* overload vb2 buf with private frame struct */
+	 
 	q->buf_struct_size = sizeof(struct delta_frame)
 			     + DELTA_MAX_FRAME_PRIV_SIZE;
 	q->ops = &delta_vb2_frame_ops;
@@ -1652,27 +1581,24 @@ static int delta_open(struct file *file)
 		goto err_fh_del;
 	}
 
-	/*
-	 * wait stream format to determine which
-	 * decoder to open
-	 */
+	 
 	ctx->state = DELTA_STATE_WF_FORMAT;
 
 	INIT_LIST_HEAD(&ctx->dts);
 
-	/* set the instance name */
+	 
 	delta->instance_id++;
 	snprintf(ctx->name, sizeof(ctx->name), "[%3d:----]",
 		 delta->instance_id);
 
-	/* default parameters for frame and stream */
+	 
 	set_default_params(ctx);
 
-	/* enable ST231 clocks */
+	 
 	if (clk_prepare_enable(delta->clk_st231))
 		dev_warn(delta->dev, "failed to enable st231 clk\n");
 
-	/* enable FLASH_PROMIP clock */
+	 
 	if (clk_prepare_enable(delta->clk_flash_promip))
 		dev_warn(delta->dev, "failed to enable delta promip clk\n");
 
@@ -1700,13 +1626,10 @@ static int delta_release(struct file *file)
 
 	mutex_lock(&delta->lock);
 
-	/* close decoder */
+	 
 	call_dec_op(dec, close, ctx);
 
-	/*
-	 * trace a summary of instance
-	 * before closing (debug purpose)
-	 */
+	 
 	delta_trace_summary(ctx);
 
 	v4l2_m2m_ctx_release(ctx->fh.m2m_ctx);
@@ -1714,10 +1637,10 @@ static int delta_release(struct file *file)
 	v4l2_fh_del(&ctx->fh);
 	v4l2_fh_exit(&ctx->fh);
 
-	/* disable ST231 clocks */
+	 
 	clk_disable_unprepare(delta->clk_st231);
 
-	/* disable FLASH_PROMIP clock */
+	 
 	clk_disable_unprepare(delta->clk_flash_promip);
 
 	dev_dbg(delta->dev, "%s decoder instance released\n", ctx->name);
@@ -1728,7 +1651,7 @@ static int delta_release(struct file *file)
 	return 0;
 }
 
-/* V4L2 file ops */
+ 
 static const struct v4l2_file_operations delta_fops = {
 	.owner = THIS_MODULE,
 	.open = delta_open,
@@ -1738,9 +1661,7 @@ static const struct v4l2_file_operations delta_fops = {
 	.poll = v4l2_m2m_fop_poll,
 };
 
-/*
- * Platform device operations
- */
+ 
 
 static int delta_register_device(struct delta_dev *delta)
 {
@@ -1824,7 +1745,7 @@ static int delta_probe(struct platform_device *pdev)
 
 	mutex_init(&delta->lock);
 
-	/* get clock resources */
+	 
 	delta->clk_delta = devm_clk_get(dev, "delta");
 	if (IS_ERR(delta->clk_delta)) {
 		dev_dbg(dev, "%s can't get delta clock\n", DELTA_PREFIX);
@@ -1844,13 +1765,13 @@ static int delta_probe(struct platform_device *pdev)
 		delta->clk_flash_promip = NULL;
 	}
 
-	/* init pm_runtime used for power management */
+	 
 	pm_runtime_set_autosuspend_delay(dev, DELTA_HW_AUTOSUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_set_suspended(dev);
 	pm_runtime_enable(dev);
 
-	/* init firmware ipc channel */
+	 
 	ret = delta_ipc_init(delta);
 	if (ret) {
 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
@@ -1858,13 +1779,13 @@ static int delta_probe(struct platform_device *pdev)
 		goto err_pm_disable;
 	}
 
-	/* register all available decoders */
+	 
 	register_decoders(delta);
 
-	/* register all supported formats */
+	 
 	register_formats(delta);
 
-	/* register on V4L2 */
+	 
 	ret = v4l2_device_register(dev, &delta->v4l2_dev);
 	if (ret) {
 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
@@ -1880,7 +1801,7 @@ static int delta_probe(struct platform_device *pdev)
 		goto err_v4l2;
 	}
 
-	/* register device */
+	 
 	ret = delta_register_device(delta);
 	if (ret)
 		goto err_work_queue;
@@ -1935,7 +1856,7 @@ static int delta_runtime_resume(struct device *dev)
 	return 0;
 }
 
-/* PM ops */
+ 
 static const struct dev_pm_ops delta_pm_ops = {
 	.runtime_suspend = delta_runtime_suspend,
 	.runtime_resume = delta_runtime_resume,
@@ -1946,7 +1867,7 @@ static const struct of_device_id delta_match_types[] = {
 	 .compatible = "st,st-delta",
 	},
 	{
-	 /* end node */
+	  
 	}
 };
 

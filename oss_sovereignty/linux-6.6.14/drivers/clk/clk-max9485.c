@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -14,7 +14,7 @@
 
 #define MAX9485_NUM_CLKS 4
 
-/* This chip has only one register of 8 bit width. */
+ 
 
 #define MAX9485_FS_12KHZ	(0 << 0)
 #define MAX9485_FS_32KHZ	(1 << 0)
@@ -36,10 +36,7 @@ struct max9485_rate {
 	u8 reg_value;
 };
 
-/*
- * Ordered by frequency. For frequency the hardware can generate with
- * multiple settings, the one with lowest jitter is listed first.
- */
+ 
 static const struct max9485_rate max9485_rates[] = {
 	{  3072000, MAX9485_FS_12KHZ   | MAX9485_SCALE_256 },
 	{  4608000, MAX9485_FS_12KHZ   | MAX9485_SCALE_384 },
@@ -62,7 +59,7 @@ static const struct max9485_rate max9485_rates[] = {
 	{ 49152000, MAX9485_FS_32KHZ   | MAX9485_SCALE_768 | MAX9485_DOUBLE },
 	{ 67737600, MAX9485_FS_44_1KHZ | MAX9485_SCALE_768 | MAX9485_DOUBLE },
 	{ 73728000, MAX9485_FS_48KHZ   | MAX9485_SCALE_768 | MAX9485_DOUBLE },
-	{ } /* sentinel */
+	{ }  
 };
 
 struct max9485_driver_data;
@@ -123,9 +120,7 @@ static void max9485_clk_unprepare(struct clk_hw *hw)
 	max9485_update_bits(clk_hw->drvdata, clk_hw->enable_bit, 0);
 }
 
-/*
- * CLKOUT - configurable clock output
- */
+ 
 static int max9485_clkout_set_rate(struct clk_hw *hw, unsigned long rate,
 				   unsigned long parent_rate)
 {
@@ -165,28 +160,19 @@ static long max9485_clkout_round_rate(struct clk_hw *hw, unsigned long rate,
 	const struct max9485_rate *curr, *prev = NULL;
 
 	for (curr = max9485_rates; curr->out != 0; curr++) {
-		/* Exact matches */
+		 
 		if (curr->out == rate)
 			return rate;
 
-		/*
-		 * Find the first entry that has a frequency higher than the
-		 * requested one.
-		 */
+		 
 		if (curr->out > rate) {
 			unsigned int mid;
 
-			/*
-			 * If this is the first entry, clamp the value to the
-			 * lowest possible frequency.
-			 */
+			 
 			if (!prev)
 				return curr->out;
 
-			/*
-			 * Otherwise, determine whether the previous entry or
-			 * current one is closer.
-			 */
+			 
 			mid = prev->out + ((curr->out - prev->out) / 2);
 
 			return (mid > rate) ? prev->out : curr->out;
@@ -195,7 +181,7 @@ static long max9485_clkout_round_rate(struct clk_hw *hw, unsigned long rate,
 		prev = curr;
 	}
 
-	/* If the last entry was still too high, clamp the value */
+	 
 	return prev->out;
 }
 

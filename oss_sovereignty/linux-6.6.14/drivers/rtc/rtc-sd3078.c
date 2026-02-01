@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Real Time Clock (RTC) Driver for sd3078
- * Copyright (C) 2018 Zoro Li
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/i2c.h>
@@ -29,11 +26,7 @@
 
 #define NUM_TIME_REGS   (SD3078_REG_YR - SD3078_REG_SC + 1)
 
-/*
- * The sd3078 has write protection
- * and we can choose whether or not to use it.
- * Write protection is turned off by default.
- */
+ 
 #define WRITE_PROTECT_EN	0
 
 struct sd3078 {
@@ -41,14 +34,7 @@ struct sd3078 {
 	struct regmap		*regmap;
 };
 
-/*
- * In order to prevent arbitrary modification of the time register,
- * when modification of the register,
- * the "write" bit needs to be written in a certain order.
- * 1. set WRITE1 bit
- * 2. set WRITE2 bit
- * 3. set WRITE3 bit
- */
+ 
 static void sd3078_enable_reg_write(struct sd3078 *sd3078)
 {
 	regmap_update_bits(sd3078->regmap, SD3078_REG_CTRL2,
@@ -60,15 +46,7 @@ static void sd3078_enable_reg_write(struct sd3078 *sd3078)
 }
 
 #if WRITE_PROTECT_EN
-/*
- * In order to prevent arbitrary modification of the time register,
- * we should disable the write function.
- * when disable write,
- * the "write" bit needs to be clear in a certain order.
- * 1. clear WRITE2 bit
- * 2. clear WRITE3 bit
- * 3. clear WRITE1 bit
- */
+ 
 static void sd3078_disable_reg_write(struct sd3078 *sd3078)
 {
 	regmap_update_bits(sd3078->regmap, SD3078_REG_CTRL1,
@@ -98,17 +76,13 @@ static int sd3078_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_sec	= bcd2bin(rtc_data[SD3078_REG_SC] & 0x7F);
 	tm->tm_min	= bcd2bin(rtc_data[SD3078_REG_MN] & 0x7F);
 
-	/*
-	 * The sd3078 supports 12/24 hour mode.
-	 * When getting time,
-	 * we need to convert the 12 hour mode to the 24 hour mode.
-	 */
+	 
 	hour = rtc_data[SD3078_REG_HR];
-	if (hour & 0x80) /* 24H MODE */
+	if (hour & 0x80)  
 		tm->tm_hour = bcd2bin(rtc_data[SD3078_REG_HR] & 0x3F);
-	else if (hour & 0x20) /* 12H MODE PM */
+	else if (hour & 0x20)  
 		tm->tm_hour = bcd2bin(rtc_data[SD3078_REG_HR] & 0x1F) + 12;
-	else /* 12H MODE AM */
+	else  
 		tm->tm_hour = bcd2bin(rtc_data[SD3078_REG_HR] & 0x1F);
 
 	tm->tm_mday = bcd2bin(rtc_data[SD3078_REG_DM] & 0x3F);

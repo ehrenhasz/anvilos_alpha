@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 #include <test_progs.h>
 #include "test_stacktrace_build_id.skel.h"
 
 void test_get_stackid_cannot_attach(void)
 {
 	struct perf_event_attr attr = {
-		/* .type = PERF_TYPE_SOFTWARE, */
+		 
 		.type = PERF_TYPE_HARDWARE,
 		.config = PERF_COUNT_HW_CPU_CYCLES,
 		.precise_ip = 1,
@@ -26,16 +26,16 @@ void test_get_stackid_cannot_attach(void)
 	if (CHECK(!skel, "skel_open", "skeleton open failed\n"))
 		return;
 
-	/* override program type */
+	 
 	bpf_program__set_type(skel->progs.oncpu, BPF_PROG_TYPE_PERF_EVENT);
 
 	err = test_stacktrace_build_id__load(skel);
 	if (CHECK(err, "skel_load", "skeleton load failed: %d\n", err))
 		goto cleanup;
 
-	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
-			 0 /* cpu 0 */, -1 /* group id */,
-			 0 /* flags */);
+	pmu_fd = syscall(__NR_perf_event_open, &attr, -1  ,
+			 0  , -1  ,
+			 0  );
 	if (pmu_fd < 0 && (errno == ENOENT || errno == EOPNOTSUPP)) {
 		printf("%s:SKIP:cannot open PERF_COUNT_HW_CPU_CYCLES with precise_ip > 0\n",
 		       __func__);
@@ -51,12 +51,12 @@ void test_get_stackid_cannot_attach(void)
 	ASSERT_ERR_PTR(skel->links.oncpu, "attach_perf_event_no_callchain");
 	close(pmu_fd);
 
-	/* add PERF_SAMPLE_CALLCHAIN, attach should succeed */
+	 
 	attr.sample_type |= PERF_SAMPLE_CALLCHAIN;
 
-	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
-			 0 /* cpu 0 */, -1 /* group id */,
-			 0 /* flags */);
+	pmu_fd = syscall(__NR_perf_event_open, &attr, -1  ,
+			 0  , -1  ,
+			 0  );
 
 	if (CHECK(pmu_fd < 0, "perf_event_open", "err %d errno %d\n",
 		  pmu_fd, errno))
@@ -68,12 +68,12 @@ void test_get_stackid_cannot_attach(void)
 	bpf_link__destroy(skel->links.oncpu);
 	close(pmu_fd);
 
-	/* add exclude_callchain_kernel, attach should fail */
+	 
 	attr.exclude_callchain_kernel = 1;
 
-	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
-			 0 /* cpu 0 */, -1 /* group id */,
-			 0 /* flags */);
+	pmu_fd = syscall(__NR_perf_event_open, &attr, -1  ,
+			 0  , -1  ,
+			 0  );
 
 	if (CHECK(pmu_fd < 0, "perf_event_open", "err %d errno %d\n",
 		  pmu_fd, errno))

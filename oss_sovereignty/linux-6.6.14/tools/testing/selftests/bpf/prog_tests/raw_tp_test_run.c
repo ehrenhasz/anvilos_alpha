@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2019 Facebook */
+
+ 
 #include <test_progs.h>
 #include <linux/bpf.h>
 #include "bpf/libbpf_internal.h"
@@ -66,13 +66,13 @@ void test_raw_tp_test_run(void)
 		ASSERT_EQ(opts.retval, expected_retval, "check_retval");
 	}
 
-	/* invalid cpu ID should fail with ENXIO */
+	 
 	opts.cpu = 0xffffffff;
 	err = bpf_prog_test_run_opts(prog_fd, &opts);
 	ASSERT_EQ(errno, ENXIO, "test_run_opts should fail with ENXIO");
 	ASSERT_ERR(err, "test_run_opts_fail");
 
-	/* non-zero cpu w/o BPF_F_TEST_RUN_ON_CPU should fail with EINVAL */
+	 
 	opts.cpu = 1;
 	opts.flags = 0;
 	err = bpf_prog_test_run_opts(prog_fd, &opts);

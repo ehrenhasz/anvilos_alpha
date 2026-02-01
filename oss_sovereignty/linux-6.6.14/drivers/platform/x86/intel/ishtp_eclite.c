@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel ECLite opregion driver for talking to ECLite firmware running on
- * Intel Integrated Sensor Hub (ISH) using ISH Transport Protocol (ISHTP)
- *
- * Copyright (c) 2021, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -87,12 +82,12 @@ struct ishtp_opregion_dev {
 	wait_queue_head_t read_wait;
 	struct work_struct event_work;
 	struct work_struct reset_work;
-	/* lock for opregion context */
+	 
 	struct mutex lock;
 
 };
 
-/* eclite ishtp client UUID: 6a19cc4b-d760-4de3-b14d-f25ebd0fbcd9 */
+ 
 static const struct ishtp_device_id ecl_ishtp_id_table[] = {
 	{ .guid = GUID_INIT(0x6a19cc4b, 0xd760, 0x4de3,
 		  0xb1, 0x4d, 0xf2, 0x5e, 0xbd, 0xf, 0xbc, 0xd9), },
@@ -100,20 +95,12 @@ static const struct ishtp_device_id ecl_ishtp_id_table[] = {
 };
 MODULE_DEVICE_TABLE(ishtp, ecl_ishtp_id_table);
 
-/* ACPI DSM UUID: 91d936a7-1f01-49c6-a6b4-72f00ad8d8a5 */
+ 
 static const guid_t ecl_acpi_guid =
 	GUID_INIT(0x91d936a7, 0x1f01, 0x49c6, 0xa6,
 		  0xb4, 0x72, 0xf0, 0x0a, 0xd8, 0xd8, 0xa5);
 
-/**
- * ecl_ish_cl_read() - Read data from eclite FW
- *
- * @opr_dev:  pointer to opregion device
- *
- * This function issues a read request to eclite FW and waits until it
- * receives a response. When response is received the read data is copied to
- * opregion buffer.
- */
+ 
 static int ecl_ish_cl_read(struct ishtp_opregion_dev *opr_dev)
 {
 	struct ecl_message_header header;
@@ -159,13 +146,7 @@ static int ecl_ish_cl_read(struct ishtp_opregion_dev *opr_dev)
 	return 0;
 }
 
-/**
- * ecl_ish_cl_write() - This function writes data to eclite FW.
- *
- * @opr_dev:  pointer to opregion device
- *
- * This function writes data to eclite FW.
- */
+ 
 static int ecl_ish_cl_write(struct ishtp_opregion_dev *opr_dev)
 {
 	struct ecl_message message;
@@ -288,7 +269,7 @@ static int acpi_find_eclite_device(struct ishtp_opregion_dev *opr_dev)
 {
 	struct acpi_device *adev;
 
-	/* Find ECLite device and save reference */
+	 
 	adev = acpi_dev_get_first_match_dev("INTC1035", NULL, -1);
 	if (!adev) {
 		dev_err(cl_data_to_dev(opr_dev), "eclite ACPI device not found\n");
@@ -437,7 +418,7 @@ static void ecl_ishtp_cl_event_cb(struct ishtp_cl_device *cl_device)
 		else if (header->data_type == ECL_MSG_EVENT)
 			ecl_ish_process_rx_event(opr_dev);
 		else
-			/* Got an event with wrong data_type, ignore it */
+			 
 			dev_err(cl_data_to_dev(opr_dev),
 				"[ish_cb] Received wrong data_type\n");
 
@@ -461,7 +442,7 @@ static int ecl_ishtp_cl_init(struct ishtp_cl *ecl_ishtp_cl)
 
 	dev = ishtp_get_ishtp_device(ecl_ishtp_cl);
 
-	/* Connect to FW client */
+	 
 	ishtp_set_tx_ring_size(ecl_ishtp_cl, ECL_CL_TX_RING_SIZE);
 	ishtp_set_rx_ring_size(ecl_ishtp_cl, ECL_CL_RX_RING_SIZE);
 
@@ -575,7 +556,7 @@ static int ecl_ishtp_cl_probe(struct ishtp_cl_device *cl_device)
 	INIT_WORK(&opr_dev->event_work, ecl_acpi_invoke_dsm);
 	INIT_WORK(&opr_dev->reset_work, ecl_ishtp_cl_reset_handler);
 
-	/* Initialize ish client device */
+	 
 	rv = ecl_ishtp_cl_init(ecl_ishtp_cl);
 	if (rv) {
 		dev_err(cl_data_to_dev(opr_dev), "Client init failed\n");
@@ -593,17 +574,17 @@ static int ecl_ishtp_cl_probe(struct ishtp_cl_device *cl_device)
 		goto err_exit;
 	}
 
-	/* Register a handler for eclite fw events */
+	 
 	ishtp_register_event_cb(cl_device, ecl_ishtp_cl_event_cb);
 
-	/* Now init opregion handlers */
+	 
 	rv = acpi_opregion_init(opr_dev);
 	if (rv) {
 		dev_err(cl_data_to_dev(opr_dev), "ACPI opregion init failed\n");
 		goto err_exit;
 	}
 
-	/* Reprobe devices depending on ECLite - battery, fan, etc. */
+	 
 	acpi_dev_clear_dependencies(opr_dev->adev);
 
 	return 0;
@@ -663,10 +644,7 @@ static int ecl_ishtp_cl_suspend(struct device *device)
 
 static int ecl_ishtp_cl_resume(struct device *device)
 {
-	/* A reset is expected to call after an Sx. At this point
-	 * we are not sure if the link is up or not to restore anything,
-	 * so do nothing in resume path
-	 */
+	 
 	return 0;
 }
 

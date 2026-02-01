@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARM Specific GTDT table Support
- *
- * Copyright (C) 2016, Linaro Ltd.
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- *         Fu Wei <fu.wei@linaro.org>
- *         Hanjun Guo <hanjun.guo@linaro.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/init.h>
@@ -19,15 +12,7 @@
 #undef pr_fmt
 #define pr_fmt(fmt) "ACPI GTDT: " fmt
 
-/**
- * struct acpi_gtdt_descriptor - Store the key info of GTDT for all functions
- * @gtdt:	The pointer to the struct acpi_table_gtdt of GTDT table.
- * @gtdt_end:	The pointer to the end of GTDT table.
- * @platform_timer:	The pointer to the start of Platform Timer Structure
- *
- * The struct store the key info of GTDT table, it should be initialized by
- * acpi_gtdt_init.
- */
+ 
 struct acpi_gtdt_descriptor {
 	struct acpi_table_gtdt *gtdt;
 	void *gtdt_end;
@@ -82,16 +67,7 @@ static int __init map_gt_gsi(u32 interrupt, u32 flags)
 	return acpi_register_gsi(NULL, interrupt, trigger, polarity);
 }
 
-/**
- * acpi_gtdt_map_ppi() - Map the PPIs of per-cpu arch_timer.
- * @type:	the type of PPI.
- *
- * Note: Secure state is not managed by the kernel on ARM64 systems.
- * So we only handle the non-secure timer PPIs,
- * ARCH_TIMER_PHYS_SECURE_PPI is treated as invalid type.
- *
- * Return: the mapped PPI value, 0 if error.
- */
+ 
 int __init acpi_gtdt_map_ppi(int type)
 {
 	struct acpi_table_gtdt *gtdt = acpi_gtdt_desc.gtdt;
@@ -114,13 +90,7 @@ int __init acpi_gtdt_map_ppi(int type)
 	return 0;
 }
 
-/**
- * acpi_gtdt_c3stop() - Got c3stop info from GTDT according to the type of PPI.
- * @type:	the type of PPI.
- *
- * Return: true if the timer HW state is lost when a CPU enters an idle state,
- * false otherwise
- */
+ 
 bool __init acpi_gtdt_c3stop(int type)
 {
 	struct acpi_table_gtdt *gtdt = acpi_gtdt_desc.gtdt;
@@ -142,16 +112,7 @@ bool __init acpi_gtdt_c3stop(int type)
 	return false;
 }
 
-/**
- * acpi_gtdt_init() - Get the info of GTDT table to prepare for further init.
- * @table:			The pointer to GTDT table.
- * @platform_timer_count:	It points to a integer variable which is used
- *				for storing the number of platform timers.
- *				This pointer could be NULL, if the caller
- *				doesn't need this info.
- *
- * Return: 0 if success, -EINVAL if error.
- */
+ 
 int __init acpi_gtdt_init(struct acpi_table_header *table,
 			  int *platform_timer_count)
 {
@@ -207,20 +168,14 @@ static int __init gtdt_parse_timer_block(struct acpi_gtdt_timer_block *block,
 	}
 
 	timer_mem->cntctlbase = (phys_addr_t)block->block_address;
-	/*
-	 * The CNTCTLBase frame is 4KB (register offsets 0x000 - 0xFFC).
-	 * See ARM DDI 0487A.k_iss10775, page I1-5129, Table I1-3
-	 * "CNTCTLBase memory map".
-	 */
+	 
 	timer_mem->size = SZ_4K;
 
 	gtdt_frame = (void *)block + block->timer_offset;
 	if (gtdt_frame + block->timer_count != (void *)block + block->header.length)
 		return -EINVAL;
 
-	/*
-	 * Get the GT timer Frame data for every GT Block Timer
-	 */
+	 
 	for (i = 0; i < block->timer_count; i++, gtdt_frame++) {
 		if (gtdt_frame->common_flags & ACPI_GTDT_GT_IS_SECURE_TIMER)
 			continue;
@@ -230,7 +185,7 @@ static int __init gtdt_parse_timer_block(struct acpi_gtdt_timer_block *block,
 
 		frame = &timer_mem->frame[gtdt_frame->frame_number];
 
-		/* duplicate frame */
+		 
 		if (frame->valid)
 			goto error;
 
@@ -257,11 +212,7 @@ static int __init gtdt_parse_timer_block(struct acpi_gtdt_timer_block *block,
 		}
 
 		frame->cntbase = gtdt_frame->base_address;
-		/*
-		 * The CNTBaseN frame is 4KB (register offsets 0x000 - 0xFFC).
-		 * See ARM DDI 0487A.k_iss10775, page I1-5130, Table I1-4
-		 * "CNTBaseN memory map".
-		 */
+		 
 		frame->size = SZ_4K;
 		frame->valid = true;
 	}
@@ -288,16 +239,7 @@ error:
 	return -EINVAL;
 }
 
-/**
- * acpi_arch_timer_mem_init() - Get the info of all GT blocks in GTDT table.
- * @timer_mem:	The pointer to the array of struct arch_timer_mem for returning
- *		the result of parsing. The element number of this array should
- *		be platform_timer_count(the total number of platform timers).
- * @timer_count: It points to a integer variable which is used for storing the
- *		number of GT blocks we have parsed.
- *
- * Return: 0 if success, -EINVAL/-ENODEV if error.
- */
+ 
 int __init acpi_arch_timer_mem_init(struct arch_timer_mem *timer_mem,
 				    int *timer_count)
 {
@@ -322,19 +264,14 @@ int __init acpi_arch_timer_mem_init(struct arch_timer_mem *timer_mem,
 	return 0;
 }
 
-/*
- * Initialize a SBSA generic Watchdog platform device info from GTDT
- */
+ 
 static int __init gtdt_import_sbsa_gwdt(struct acpi_gtdt_watchdog *wd,
 					int index)
 {
 	struct platform_device *pdev;
 	int irq;
 
-	/*
-	 * According to SBSA specification the size of refresh and control
-	 * frames of SBSA Generic Watchdog is SZ_4K(Offset 0x000 – 0xFFF).
-	 */
+	 
 	struct resource res[] = {
 		DEFINE_RES_MEM(wd->control_frame_address, SZ_4K),
 		DEFINE_RES_MEM(wd->refresh_frame_address, SZ_4K),
@@ -358,11 +295,7 @@ static int __init gtdt_import_sbsa_gwdt(struct acpi_gtdt_watchdog *wd,
 		nr_res--;
 	}
 
-	/*
-	 * Add a platform device named "sbsa-gwdt" to match the platform driver.
-	 * "sbsa-gwdt": SBSA(Server Base System Architecture) Generic Watchdog
-	 * The platform driver can get device info below by matching this name.
-	 */
+	 
 	pdev = platform_device_register_simple("sbsa-gwdt", index, res, nr_res);
 	if (IS_ERR(pdev)) {
 		if (irq > 0)
@@ -385,15 +318,7 @@ static int __init gtdt_sbsa_gwdt_init(void)
 	if (ACPI_FAILURE(acpi_get_table(ACPI_SIG_GTDT, 0, &table)))
 		return -EINVAL;
 
-	/*
-	 * Note: Even though the global variable acpi_gtdt_desc has been
-	 * initialized by acpi_gtdt_init() while initializing the arch timers,
-	 * when we call this function to get SBSA watchdogs info from GTDT, the
-	 * pointers stashed in it are stale (since they are early temporary
-	 * mappings carried out before acpi_permanent_mmap is set) and we need
-	 * to re-initialize them with permanent mapped pointer values to let the
-	 * GTDT parsing possible.
-	 */
+	 
 	ret = acpi_gtdt_init(table, &timer_count);
 	if (ret || !timer_count)
 		goto out_put_gtdt;

@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2018-2020 Intel Corporation.
 
-/*
- * Intel SOF Machine Driver for Intel platforms with TI PCM512x codec,
- * e.g. Up or Up2 with Hifiberry DAC+ HAT
- */
+
+
+ 
 #include <linux/clk.h>
 #include <linux/dmi.h>
 #include <linux/i2c.h>
@@ -31,7 +28,7 @@
 
 #define IDISP_CODEC_MASK	0x4
 
-/* Default: SSP5 */
+ 
 static unsigned long sof_pcm512x_quirk =
 	SOF_PCM512X_SSP_CODEC(5) |
 	SOF_PCM512X_ENABLE_SSP_CAPTURE |
@@ -78,7 +75,7 @@ static int sof_hdmi_init(struct snd_soc_pcm_runtime *rtd)
 	if (!pcm)
 		return -ENOMEM;
 
-	/* dai_link id is 1:1 mapped to the PCM device */
+	 
 	pcm->device = rtd->dai_link->id;
 	pcm->codec_dai = dai;
 
@@ -126,7 +123,7 @@ static const struct snd_soc_ops sof_pcm512x_ops = {
 
 static struct snd_soc_dai_link_component platform_component[] = {
 	{
-		/* name might be overridden during probe */
+		 
 		.name = "0000:00:1f.3"
 	}
 };
@@ -136,7 +133,7 @@ static int sof_card_late_probe(struct snd_soc_card *card)
 	struct sof_card_private *ctx = snd_soc_card_get_drvdata(card);
 	struct sof_hdmi_pcm *pcm;
 
-	/* HDMI is not supported by SOF on Baytrail/CherryTrail */
+	 
 	if (is_legacy_cpu)
 		return 0;
 
@@ -164,13 +161,13 @@ static const struct snd_soc_dapm_widget dmic_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route sof_map[] = {
-	/* Speaker */
+	 
 	{"Ext Spk", NULL, "OUTR"},
 	{"Ext Spk", NULL, "OUTL"},
 };
 
 static const struct snd_soc_dapm_route dmic_map[] = {
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 };
 
@@ -183,7 +180,7 @@ static int dmic_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(dmic_widgets));
 	if (ret) {
 		dev_err(card->dev, "DMic widget addition failed: %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -196,7 +193,7 @@ static int dmic_init(struct snd_soc_pcm_runtime *rtd)
 	return ret;
 }
 
-/* sof audio machine driver for pcm512x codec */
+ 
 static struct snd_soc_card sof_audio_card_pcm512x = {
 	.name = "pcm512x",
 	.owner = THIS_MODULE,
@@ -233,7 +230,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	if (!links || !cpus)
 		goto devm_err;
 
-	/* codec SSP */
+	 
 	links[id].name = devm_kasprintf(dev, GFP_KERNEL,
 					"SSP%d-Codec", ssp_codec);
 	if (!links[id].name)
@@ -247,9 +244,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	links[id].init = sof_pcm512x_codec_init;
 	links[id].ops = &sof_pcm512x_ops;
 	links[id].dpcm_playback = 1;
-	/*
-	 * capture only supported with specific versions of the Hifiberry DAC+
-	 */
+	 
 	if (sof_pcm512x_quirk & SOF_PCM512X_ENABLE_SSP_CAPTURE)
 		links[id].dpcm_capture = 1;
 	links[id].no_pcm = 1;
@@ -270,15 +265,15 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	}
 	id++;
 
-	/* dmic */
+	 
 	if (dmic_be_num > 0) {
-		/* at least we have dmic01 */
+		 
 		links[id].name = "dmic01";
 		links[id].cpus = &cpus[id];
 		links[id].cpus->dai_name = "DMIC01 Pin";
 		links[id].init = dmic_init;
 		if (dmic_be_num > 1) {
-			/* set up 2 BE links at most */
+			 
 			links[id + 1].name = "dmic16k";
 			links[id + 1].cpus = &cpus[id + 1];
 			links[id + 1].cpus->dai_name = "DMIC16k Pin";
@@ -299,7 +294,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		id++;
 	}
 
-	/* HDMI */
+	 
 	if (hdmi_num > 0) {
 		idisp_components = devm_kcalloc(dev, hdmi_num,
 				sizeof(struct snd_soc_dai_link_component),
@@ -321,10 +316,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		if (!links[id].cpus->dai_name)
 			goto devm_err;
 
-		/*
-		 * topology cannot be loaded if codec is missing, so
-		 * use the dummy codec if needed
-		 */
+		 
 		if (idisp_codec) {
 			idisp_components[i - 1].name = "ehdaudio0D2";
 			idisp_components[i - 1].dai_name =
@@ -367,7 +359,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 	if (soc_intel_is_byt() || soc_intel_is_cht()) {
 		is_legacy_cpu = true;
 		dmic_be_num = 0;
-		/* default quirk for legacy cpu */
+		 
 		sof_pcm512x_quirk = SOF_PCM512X_SSP_CODEC(2);
 	} else {
 		dmic_be_num = 2;
@@ -375,7 +367,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 		    (mach->mach_params.codec_mask & IDISP_CODEC_MASK))
 			ctx->idisp_codec = true;
 
-		/* links are always present in topology */
+		 
 		hdmi_num = 3;
 	}
 
@@ -388,7 +380,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 	if (!(sof_pcm512x_quirk & SOF_PCM512X_ENABLE_DMIC))
 		dmic_be_num = 0;
 
-	/* compute number of dai links */
+	 
 	sof_audio_card_pcm512x.num_links = 1 + dmic_be_num + hdmi_num;
 
 	dai_links = sof_card_dai_links_create(&pdev->dev, ssp_codec,
@@ -403,7 +395,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 
 	sof_audio_card_pcm512x.dev = &pdev->dev;
 
-	/* set platform name for each dailink */
+	 
 	ret = snd_soc_fixup_dai_links_platform_name(&sof_audio_card_pcm512x,
 						    mach->mach_params.platform);
 	if (ret)

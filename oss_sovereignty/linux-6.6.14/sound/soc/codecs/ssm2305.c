@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Analog Devices SSM2305 Amplifier Driver
-//
-// Copyright (C) 2018 Pengutronix, Marco Felsch <kernel@pengutronix.de>
-//
+
+
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -12,7 +12,7 @@
 #define DRV_NAME "ssm2305"
 
 struct ssm2305 {
-	/* shutdown gpio  */
+	 
 	struct gpio_desc *gpiod_shutdown;
 };
 
@@ -29,7 +29,7 @@ static int ssm2305_power_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget ssm2305_dapm_widgets[] = {
-	/* Stereo input/output */
+	 
 	SND_SOC_DAPM_INPUT("L_IN"),
 	SND_SOC_DAPM_INPUT("R_IN"),
 	SND_SOC_DAPM_OUTPUT("L_OUT"),
@@ -58,14 +58,14 @@ static int ssm2305_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct ssm2305 *priv;
 
-	/* Allocate the private data */
+	 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
 	platform_set_drvdata(pdev, priv);
 
-	/* Get shutdown gpio */
+	 
 	priv->gpiod_shutdown = devm_gpiod_get(dev, "shutdown",
 					      GPIOD_OUT_LOW);
 	if (IS_ERR(priv->gpiod_shutdown))

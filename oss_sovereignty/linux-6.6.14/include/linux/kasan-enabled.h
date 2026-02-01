@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_KASAN_ENABLED_H
 #define _LINUX_KASAN_ENABLED_H
 
@@ -18,7 +18,7 @@ static inline bool kasan_hw_tags_enabled(void)
 	return kasan_enabled();
 }
 
-#else /* CONFIG_KASAN_HW_TAGS */
+#else  
 
 static inline bool kasan_enabled(void)
 {
@@ -30,6 +30,6 @@ static inline bool kasan_hw_tags_enabled(void)
 	return false;
 }
 
-#endif /* CONFIG_KASAN_HW_TAGS */
+#endif  
 
-#endif /* LINUX_KASAN_ENABLED_H */
+#endif  

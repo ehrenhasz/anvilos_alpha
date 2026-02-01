@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _GDM_LTE_H_
 #define _GDM_LTE_H_
@@ -68,4 +68,4 @@ int register_lte_device(struct phy_dev *phy_dev, struct device *dev,
 			u8 *mac_address);
 void unregister_lte_device(struct phy_dev *phy_dev);
 
-#endif /* _GDM_LTE_H_ */
+#endif  

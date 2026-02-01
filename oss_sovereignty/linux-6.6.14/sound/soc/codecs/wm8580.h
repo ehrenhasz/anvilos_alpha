@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wm8580.h  --  audio driver for WM8580
- *
- * Copyright 2008 Samsung Electronics.
- * Author: Ryu Euiyoul
- *         ryu.real@gmail.com
- */
+ 
+ 
 
 #ifndef _WM8580_H
 #define _WM8580_H

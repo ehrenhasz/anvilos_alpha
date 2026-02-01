@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic EP93xx GPIO handling
- *
- * Copyright (c) 2008 Ryan Mallon
- * Copyright (c) 2011 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * Based on code originally from:
- *  linux/arch/arm/mach-ep93xx/core.c
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -23,21 +15,18 @@
 #define EP93XX_GPIO_A_INT_STATUS 0xa0
 #define EP93XX_GPIO_B_INT_STATUS 0xbc
 
-/* Maximum value for gpio line identifiers */
+ 
 #define EP93XX_GPIO_LINE_MAX 63
 
-/* Number of GPIO chips in EP93XX */
+ 
 #define EP93XX_GPIO_CHIP_NUM 8
 
-/* Maximum value for irq capable line identifiers */
+ 
 #define EP93XX_GPIO_LINE_MAX_IRQ 23
 
 #define EP93XX_GPIO_A_IRQ_BASE 64
 #define EP93XX_GPIO_B_IRQ_BASE 72
-/*
- * Static mapping of GPIO bank F IRQS:
- * F0..F7 (16..24) to irq 80..87.
- */
+ 
 #define EP93XX_GPIO_F_IRQ_BASE 80
 
 struct ep93xx_gpio_irq_chip {
@@ -68,9 +57,7 @@ static struct ep93xx_gpio_irq_chip *to_ep93xx_gpio_irq_chip(struct gpio_chip *gc
 	return egc->eic;
 }
 
-/*************************************************************************
- * Interrupt handling for EP93xx on-chip GPIOs
- *************************************************************************/
+ 
 #define EP93XX_INT_TYPE1_OFFSET		0x00
 #define EP93XX_INT_TYPE2_OFFSET		0x04
 #define EP93XX_INT_EOI_OFFSET		0x08
@@ -120,12 +107,7 @@ static void ep93xx_gpio_ab_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(irqchip, desc);
 
-	/*
-	 * Dispatch the IRQs to the irqdomain of each A and B
-	 * gpiochip irqdomains depending on what has fired.
-	 * The tricky part is that the IRQ line is shared
-	 * between bank A and B and each has their own gpiochip.
-	 */
+	 
 	stat = readb(epg->base + EP93XX_GPIO_A_INT_STATUS);
 	for_each_set_bit(offset, &stat, 8)
 		generic_handle_domain_irq(epg->gc[0].gc.irq.domain,
@@ -141,14 +123,10 @@ static void ep93xx_gpio_ab_irq_handler(struct irq_desc *desc)
 
 static void ep93xx_gpio_f_irq_handler(struct irq_desc *desc)
 {
-	/*
-	 * map discontiguous hw irq range to continuous sw irq range:
-	 *
-	 *  IRQ_EP93XX_GPIO{0..7}MUX -> EP93XX_GPIO_LINE_F{0..7}
-	 */
+	 
 	struct irq_chip *irqchip = irq_desc_get_chip(desc);
 	unsigned int irq = irq_desc_get_irq(desc);
-	int port_f_idx = (irq & 7) ^ 4; /* {20..23,48..51} -> {0..7} */
+	int port_f_idx = (irq & 7) ^ 4;  
 	int gpio_irq = EP93XX_GPIO_F_IRQ_BASE + port_f_idx;
 
 	chained_irq_enter(irqchip, desc);
@@ -164,7 +142,7 @@ static void ep93xx_gpio_irq_ack(struct irq_data *d)
 	int port_mask = BIT(d->irq & 7);
 
 	if (irqd_get_trigger_type(d) == IRQ_TYPE_EDGE_BOTH) {
-		eic->int_type2 ^= port_mask; /* switch edge direction */
+		eic->int_type2 ^= port_mask;  
 		ep93xx_gpio_update_int_params(epg, eic);
 	}
 
@@ -179,7 +157,7 @@ static void ep93xx_gpio_irq_mask_ack(struct irq_data *d)
 	int port_mask = BIT(d->irq & 7);
 
 	if (irqd_get_trigger_type(d) == IRQ_TYPE_EDGE_BOTH)
-		eic->int_type2 ^= port_mask; /* switch edge direction */
+		eic->int_type2 ^= port_mask;  
 
 	eic->int_unmasked &= ~port_mask;
 	ep93xx_gpio_update_int_params(epg, eic);
@@ -210,11 +188,7 @@ static void ep93xx_gpio_irq_unmask(struct irq_data *d)
 	ep93xx_gpio_update_int_params(epg, eic);
 }
 
-/*
- * gpio_int_type1 controls whether the interrupt is level (0) or
- * edge (1) triggered, while gpio_int_type2 controls whether it
- * triggers on low/falling (0) or high/rising (1).
- */
+ 
 static int ep93xx_gpio_irq_type(struct irq_data *d, unsigned int type)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
@@ -249,11 +223,11 @@ static int ep93xx_gpio_irq_type(struct irq_data *d, unsigned int type)
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
 		eic->int_type1 |= port_mask;
-		/* set initial polarity based on current input level */
+		 
 		if (gc->get(gc, offset))
-			eic->int_type2 &= ~port_mask; /* falling */
+			eic->int_type2 &= ~port_mask;  
 		else
-			eic->int_type2 |= port_mask; /* rising */
+			eic->int_type2 |= port_mask;  
 		handler = handle_edge_irq;
 		break;
 	default:
@@ -269,9 +243,7 @@ static int ep93xx_gpio_irq_type(struct irq_data *d, unsigned int type)
 	return 0;
 }
 
-/*************************************************************************
- * gpiolib interface for EP93xx on-chip GPIOs
- *************************************************************************/
+ 
 struct ep93xx_gpio_bank {
 	const char	*label;
 	int		data;
@@ -296,14 +268,14 @@ struct ep93xx_gpio_bank {
 	}
 
 static struct ep93xx_gpio_bank ep93xx_gpio_banks[] = {
-	/* Bank A has 8 IRQs */
+	 
 	EP93XX_GPIO_BANK("A", 0x00, 0x10, 0x90, 0, true, false, EP93XX_GPIO_A_IRQ_BASE),
-	/* Bank B has 8 IRQs */
+	 
 	EP93XX_GPIO_BANK("B", 0x04, 0x14, 0xac, 8, true, false, EP93XX_GPIO_B_IRQ_BASE),
 	EP93XX_GPIO_BANK("C", 0x08, 0x18, 0x00, 40, false, false, 0),
 	EP93XX_GPIO_BANK("D", 0x0c, 0x1c, 0x00, 24, false, false, 0),
 	EP93XX_GPIO_BANK("E", 0x20, 0x24, 0x00, 32, false, false, 0),
-	/* Bank F has 8 IRQs */
+	 
 	EP93XX_GPIO_BANK("F", 0x30, 0x34, 0x4c, 16, false, true, EP93XX_GPIO_F_IRQ_BASE),
 	EP93XX_GPIO_BANK("G", 0x38, 0x3c, 0x00, 48, false, false, 0),
 	EP93XX_GPIO_BANK("H", 0x40, 0x44, 0x00, 56, false, false, 0),
@@ -389,15 +361,12 @@ static int ep93xx_gpio_add_bank(struct ep93xx_gpio_chip *egc,
 		girq->first = bank->irq_base;
 	}
 
-	/* Only bank F has especially funky IRQ handling */
+	 
 	if (bank->has_hierarchical_irq) {
 		int gpio_irq;
 		int i;
 
-		/*
-		 * FIXME: convert this to use hierarchical IRQ support!
-		 * this requires fixing the root irqchip to be hierarchical.
-		 */
+		 
 		girq->parent_handler = ep93xx_gpio_f_irq_handler;
 		girq->num_parents = 8;
 		girq->parents = devm_kcalloc(dev, girq->num_parents,
@@ -405,7 +374,7 @@ static int ep93xx_gpio_add_bank(struct ep93xx_gpio_chip *egc,
 					     GFP_KERNEL);
 		if (!girq->parents)
 			return -ENOMEM;
-		/* Pick resources 1..8 for these IRQs */
+		 
 		for (i = 0; i < girq->num_parents; i++) {
 			girq->parents[i] = platform_get_irq(pdev, i + 1);
 			gpio_irq = bank->irq_base + i;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Daniel Hsiao <daniel.hsiao@mediatek.com>
- *	Kai-Sean Yang <kai-sean.yang@mediatek.com>
- *	Tiffany Lin <tiffany.lin@mediatek.com>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/slab.h>
@@ -25,13 +20,7 @@
 #define VP9_MAX_FRM_BUF_NODE_NUM (VP9_MAX_FRM_BUF_NUM * 2)
 #define VP9_SEG_ID_SZ 0x12000
 
-/**
- * struct vp9_dram_buf - contains buffer info for vpu
- * @va : cpu address
- * @pa : iova address
- * @sz : buffer size
- * @padding : for 64 bytes alignment
- */
+ 
 struct vp9_dram_buf {
 	unsigned long va;
 	unsigned long pa;
@@ -39,98 +28,33 @@ struct vp9_dram_buf {
 	unsigned int padding;
 };
 
-/**
- * struct vp9_fb_info - contains frame buffer info
- * @fb : frmae buffer
- * @reserved : reserved field used by vpu
- */
+ 
 struct vp9_fb_info {
 	struct vdec_fb *fb;
 	unsigned int reserved[32];
 };
 
-/**
- * struct vp9_ref_cnt_buf - contains reference buffer information
- * @buf : referenced frame buffer
- * @ref_cnt : referenced frame buffer's reference count.
- *	When reference count=0, remove it from reference list
- */
+ 
 struct vp9_ref_cnt_buf {
 	struct vp9_fb_info buf;
 	unsigned int ref_cnt;
 };
 
-/**
- * struct vp9_ref_buf - contains current frame's reference buffer information
- * @buf : reference buffer
- * @idx : reference buffer index to frm_bufs
- * @reserved : reserved field used by vpu
- */
+ 
 struct vp9_ref_buf {
 	struct vp9_fb_info *buf;
 	unsigned int idx;
 	unsigned int reserved[6];
 };
 
-/**
- * struct vp9_sf_ref_fb - contains frame buffer info
- * @fb : super frame reference frame buffer
- * @used : this reference frame info entry is used
- * @padding : for 64 bytes size align
- */
+ 
 struct vp9_sf_ref_fb {
 	struct vdec_fb fb;
 	int used;
 	int padding;
 };
 
-/*
- * struct vdec_vp9_vsi - shared buffer between host and VPU firmware
- *	AP-W/R : AP is writer/reader on this item
- *	VPU-W/R: VPU is write/reader on this item
- * @sf_bs_buf : super frame backup buffer (AP-W, VPU-R)
- * @sf_ref_fb : record supoer frame reference buffer information
- *	(AP-R/W, VPU-R/W)
- * @sf_next_ref_fb_idx : next available super frame (AP-W, VPU-R)
- * @sf_frm_cnt : super frame count, filled by vpu (AP-R, VPU-W)
- * @sf_frm_offset : super frame offset, filled by vpu (AP-R, VPU-W)
- * @sf_frm_sz : super frame size, filled by vpu (AP-R, VPU-W)
- * @sf_frm_idx : current super frame (AP-R, VPU-W)
- * @sf_init : inform super frame info already parsed by vpu (AP-R, VPU-W)
- * @fb : capture buffer (AP-W, VPU-R)
- * @bs : bs buffer (AP-W, VPU-R)
- * @cur_fb : current show capture buffer (AP-R/W, VPU-R/W)
- * @pic_w : picture width (AP-R, VPU-W)
- * @pic_h : picture height (AP-R, VPU-W)
- * @buf_w : codec width (AP-R, VPU-W)
- * @buf_h : coded height (AP-R, VPU-W)
- * @buf_sz_y_bs : ufo compressed y plane size (AP-R, VPU-W)
- * @buf_sz_c_bs : ufo compressed cbcr plane size (AP-R, VPU-W)
- * @buf_len_sz_y : size used to store y plane ufo info (AP-R, VPU-W)
- * @buf_len_sz_c : size used to store cbcr plane ufo info (AP-R, VPU-W)
-
- * @profile : profile sparsed from vpu (AP-R, VPU-W)
- * @show_frame : [BIT(0)] display this frame or not (AP-R, VPU-W)
- *	[BIT(1)] reset segment data or not (AP-R, VPU-W)
- *	[BIT(2)] trig decoder hardware or not (AP-R, VPU-W)
- *	[BIT(3)] ask VPU to set bits(0~4) accordingly (AP-W, VPU-R)
- *	[BIT(4)] do not reset segment data before every frame (AP-R, VPU-W)
- * @show_existing_frame : inform this frame is show existing frame
- *	(AP-R, VPU-W)
- * @frm_to_show_idx : index to show frame (AP-R, VPU-W)
-
- * @refresh_frm_flags : indicate when frame need to refine reference count
- *	(AP-R, VPU-W)
- * @resolution_changed : resolution change in this frame (AP-R, VPU-W)
-
- * @frm_bufs : maintain reference buffer info (AP-R/W, VPU-R/W)
- * @ref_frm_map : maintain reference buffer map info (AP-R/W, VPU-R/W)
- * @new_fb_idx : index to frm_bufs array (AP-R, VPU-W)
- * @frm_num : decoded frame number, include sub-frame count (AP-R, VPU-W)
- * @mv_buf : motion vector working buffer (AP-W, VPU-R)
- * @frm_refs : maintain three reference buffer info (AP-R/W, VPU-R/W)
- * @seg_id_buf : segmentation map working buffer (AP-W, VPU-R)
- */
+ 
 struct vdec_vp9_vsi {
 	unsigned char sf_bs_buf[VP9_SUPER_FRAME_BS_SZ];
 	struct vp9_sf_ref_fb sf_ref_fb[VP9_MAX_FRM_BUF_NUM-1];
@@ -169,23 +93,7 @@ struct vdec_vp9_vsi {
 
 };
 
-/*
- * struct vdec_vp9_inst - vp9 decode instance
- * @mv_buf : working buffer for mv
- * @seg_id_buf : working buffer for segmentation map
- * @dec_fb : vdec_fb node to link fb to different fb_xxx_list
- * @available_fb_node_list : current available vdec_fb node
- * @fb_use_list : current used or referenced vdec_fb
- * @fb_free_list : current available to free vdec_fb
- * @fb_disp_list : current available to display vdec_fb
- * @cur_fb : current frame buffer
- * @ctx : current decode context
- * @vpu : vpu instance information
- * @vsi : shared buffer between host and VPU firmware
- * @total_frm_cnt : total frame count, it do not include sub-frames in super
- *	    frame
- * @mem : instance memory information
- */
+ 
 struct vdec_vp9_inst {
 	struct mtk_vcodec_mem mv_buf;
 	struct mtk_vcodec_mem seg_id_buf;
@@ -302,11 +210,7 @@ static void vp9_free_all_sf_ref_fb(struct vdec_vp9_inst *inst)
 	}
 }
 
-/* For each sub-frame except the last one, the driver will dynamically
- * allocate reference buffer by calling vp9_get_sf_ref_fb()
- * The last sub-frame will use the original fb provided by the
- * vp9_dec_decode() interface
- */
+ 
 static int vp9_get_sf_ref_fb(struct vdec_vp9_inst *inst)
 {
 	int idx;
@@ -398,7 +302,7 @@ static bool vp9_alloc_work_buf(struct vdec_vp9_inst *inst)
 		mtk_vdec_err(inst->ctx, "Cannot allocate mv_buf");
 		return false;
 	}
-	/* Set the va again */
+	 
 	vsi->mv_buf.va = (unsigned long)mem->va;
 	vsi->mv_buf.pa = (unsigned long)mem->dma_addr;
 	vsi->mv_buf.sz = (unsigned int)mem->size;
@@ -415,7 +319,7 @@ static bool vp9_alloc_work_buf(struct vdec_vp9_inst *inst)
 		mtk_vdec_err(inst->ctx, "Cannot allocate seg_id_buf");
 		return false;
 	}
-	/* Set the va again */
+	 
 	vsi->seg_id_buf.va = (unsigned long)mem->va;
 	vsi->seg_id_buf.pa = (unsigned long)mem->dma_addr;
 	vsi->seg_id_buf.sz = (unsigned int)mem->size;
@@ -450,7 +354,7 @@ static bool vp9_add_to_fb_disp_list(struct vdec_vp9_inst *inst,
 	return true;
 }
 
-/* If any buffer updating is signaled it should be done here. */
+ 
 static void vp9_swap_frm_bufs(struct vdec_vp9_inst *inst)
 {
 	struct vdec_vp9_vsi *vsi = inst->vsi;
@@ -468,10 +372,7 @@ static void vp9_swap_frm_bufs(struct vdec_vp9_inst *inst)
 	vsi->frm_bufs[vsi->new_fb_idx].ref_cnt--;
 
 	if (frm_to_show->fb != inst->cur_fb) {
-		/* This frame is show exist frame and no decode output
-		 * copy frame data from frm_to_show to current CAPTURE
-		 * buffer
-		 */
+		 
 		if ((frm_to_show->fb != NULL) &&
 			(inst->cur_fb->base_y.size >=
 			frm_to_show->fb->base_y.size) &&
@@ -484,10 +385,7 @@ static void vp9_swap_frm_bufs(struct vdec_vp9_inst *inst)
 				(void *)frm_to_show->fb->base_c.va,
 				frm_to_show->fb->base_c.size);
 		} else {
-			/* After resolution change case, current CAPTURE buffer
-			 * may have less buffer size than frm_to_show buffer
-			 * size
-			 */
+			 
 			if (frm_to_show->fb != NULL)
 				mtk_vdec_err(inst->ctx,
 					     "base_y.size=%zu, frm_to_show: base_y.size=%zu",
@@ -505,9 +403,7 @@ static void vp9_swap_frm_bufs(struct vdec_vp9_inst *inst)
 		}
 	}
 
-	/* when ref_cnt ==0, move this fb to fb_free_list. v4l2 driver will
-	 * clean fb_free_list
-	 */
+	 
 	if (vsi->frm_bufs[vsi->new_fb_idx].ref_cnt == 0) {
 		if (!vp9_is_sf_ref_fb(
 			inst, vsi->frm_bufs[vsi->new_fb_idx].buf.fb)) {
@@ -523,9 +419,7 @@ static void vp9_swap_frm_bufs(struct vdec_vp9_inst *inst)
 		}
 	}
 
-	/* if this super frame and it is not last sub-frame, get next fb for
-	 * sub-frame decode
-	 */
+	 
 	if (vsi->sf_frm_cnt > 0 && vsi->sf_frm_idx != vsi->sf_frm_cnt - 1)
 		vsi->sf_next_ref_fb_idx = vp9_get_sf_ref_fb(inst);
 }
@@ -662,12 +556,12 @@ static void vp9_reset(struct vdec_vp9_inst *inst)
 	if (vpu_dec_reset(&inst->vpu))
 		mtk_vdec_err(inst->ctx, "vp9_dec_vpu_reset failed");
 
-	/* Set the va again, since vpu_dec_reset will clear mv_buf in vpu */
+	 
 	inst->vsi->mv_buf.va = (unsigned long)inst->mv_buf.va;
 	inst->vsi->mv_buf.pa = (unsigned long)inst->mv_buf.dma_addr;
 	inst->vsi->mv_buf.sz = (unsigned long)inst->mv_buf.size;
 
-	/* Set the va again, since vpu_dec_reset will clear seg_id_buf in vpu */
+	 
 	inst->vsi->seg_id_buf.va = (unsigned long)inst->seg_id_buf.va;
 	inst->vsi->seg_id_buf.pa = (unsigned long)inst->seg_id_buf.dma_addr;
 	inst->vsi->seg_id_buf.sz = (unsigned long)inst->seg_id_buf.size;
@@ -932,9 +826,7 @@ static int vdec_vp9_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 					vsi->frm_to_show_idx);
 		}
 
-		/* VPU assign the buffer pointer in its address space,
-		 * reassign here
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(vsi->frm_refs); i++) {
 			unsigned int idx = vsi->frm_refs[i].idx;
 

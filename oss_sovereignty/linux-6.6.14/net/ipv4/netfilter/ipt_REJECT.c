@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is a module which is used for rejecting packets.
- */
 
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+ 
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -59,7 +55,7 @@ reject_tg(struct sk_buff *skb, const struct xt_action_param *par)
 		nf_send_reset(xt_net(par), par->state->sk, skb, hook);
 		break;
 	case IPT_ICMP_ECHOREPLY:
-		/* Doesn't happen. */
+		 
 		break;
 	}
 
@@ -75,7 +71,7 @@ static int reject_tg_check(const struct xt_tgchk_param *par)
 		pr_info_ratelimited("ECHOREPLY no longer supported.\n");
 		return -EINVAL;
 	} else if (rejinfo->with == IPT_TCP_RESET) {
-		/* Must specify that it's a TCP packet */
+		 
 		if (e->ip.proto != IPPROTO_TCP ||
 		    (e->ip.invflags & XT_INV_PROTO)) {
 			pr_info_ratelimited("TCP_RESET invalid for non-tcp\n");

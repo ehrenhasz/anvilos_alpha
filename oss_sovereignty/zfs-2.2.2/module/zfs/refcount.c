@@ -1,39 +1,13 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2021 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/zfs_refcount.h>
 
 #ifdef	ZFS_DEBUG
-/*
- * Reference count tracking is disabled by default.  It's memory requirements
- * are reasonable, however as implemented it consumes a significant amount of
- * cpu time.  Until its performance is improved it should be manually enabled.
- */
+ 
 int reference_tracking_enable = B_FALSE;
-static uint_t reference_history = 3; /* tunable */
+static uint_t reference_history = 3;  
 
 static kmem_cache_t *reference_cache;
 
@@ -287,11 +261,7 @@ zfs_refcount_transfer_ownership(zfs_refcount_t *rc, const void *current_holder,
 	    new_holder));
 }
 
-/*
- * If tracking is enabled, return true if a reference exists that matches
- * the "holder" tag. If tracking is disabled, then return true if a reference
- * might be held.
- */
+ 
 boolean_t
 zfs_refcount_held(zfs_refcount_t *rc, const void *holder)
 {
@@ -314,11 +284,7 @@ zfs_refcount_held(zfs_refcount_t *rc, const void *holder)
 	return (res);
 }
 
-/*
- * If tracking is enabled, return true if a reference does not exist that
- * matches the "holder" tag. If tracking is disabled, always return true
- * since the reference might not be held.
- */
+ 
 boolean_t
 zfs_refcount_not_held(zfs_refcount_t *rc, const void *holder)
 {
@@ -349,11 +315,11 @@ EXPORT_SYMBOL(zfs_refcount_add);
 EXPORT_SYMBOL(zfs_refcount_remove);
 EXPORT_SYMBOL(zfs_refcount_held);
 
-/* BEGIN CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs, , reference_tracking_enable, INT, ZMOD_RW,
 	"Track reference holders to refcount_t objects");
 
 ZFS_MODULE_PARAM(zfs, , reference_history, UINT, ZMOD_RW,
 	"Maximum reference holders being tracked");
-/* END CSTYLED */
-#endif	/* ZFS_DEBUG */
+ 
+#endif	 

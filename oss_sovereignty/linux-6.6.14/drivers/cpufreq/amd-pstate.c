@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * amd-pstate.c - AMD Processor P-state Frequency Driver
- *
- * Copyright (C) 2021 Advanced Micro Devices, Inc. All Rights Reserved.
- *
- * Author: Huang Rui <ray.huang@amd.com>
- *
- * AMD P-State introduces a new CPU performance scaling design for AMD
- * processors using the ACPI Collaborative Performance and Power Control (CPPC)
- * feature which works with the AMD SMU firmware providing a finer grained
- * frequency control range. It is to replace the legacy ACPI P-States control,
- * allows a flexible, low-latency interface for the Linux kernel to directly
- * communicate the performance hints to hardware.
- *
- * AMD P-State is supported on recent AMD Zen base CPU series include some of
- * Zen2 and Zen3 processors. _CPC needs to be present in the ACPI tables of AMD
- * P-State supported system. And there are two types of hardware implementations
- * for AMD P-State: 1) Full MSR Solution and 2) Shared Memory Solution.
- * X86_FEATURE_CPPC CPU feature flag is used to distinguish the different types.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -50,37 +31,14 @@
 #define AMD_PSTATE_TRANSITION_LATENCY	20000
 #define AMD_PSTATE_TRANSITION_DELAY	1000
 
-/*
- * TODO: We need more time to fine tune processors with shared memory solution
- * with community together.
- *
- * There are some performance drops on the CPU benchmarks which reports from
- * Suse. We are co-working with them to fine tune the shared memory solution. So
- * we disable it by default to go acpi-cpufreq on these processors and add a
- * module parameter to be able to enable it manually for debugging.
- */
+ 
 static struct cpufreq_driver *current_pstate_driver;
 static struct cpufreq_driver amd_pstate_driver;
 static struct cpufreq_driver amd_pstate_epp_driver;
 static int cppc_state = AMD_PSTATE_UNDEFINED;
 static bool cppc_enabled;
 
-/*
- * AMD Energy Preference Performance (EPP)
- * The EPP is used in the CCLK DPM controller to drive
- * the frequency that a core is going to operate during
- * short periods of activity. EPP values will be utilized for
- * different OS profiles (balanced, performance, power savings)
- * display strings corresponding to EPP index in the
- * energy_perf_strings[]
- *	index		String
- *-------------------------------------
- *	0		default
- *	1		performance
- *	2		balance_performance
- *	3		balance_power
- *	4		power
- */
+ 
 enum energy_perf_value_index {
 	EPP_INDEX_DEFAULT = 0,
 	EPP_INDEX_PERFORMANCE,
@@ -266,9 +224,9 @@ static int cppc_enable(bool enable)
 		if (ret)
 			return ret;
 
-		/* Enable autonomous mode for EPP */
+		 
 		if (cppc_state == AMD_PSTATE_ACTIVE) {
-			/* Set desired perf as zero to allow EPP firmware control */
+			 
 			perf_ctrls.desired_perf = 0;
 			ret = cppc_set_perf(cpu, &perf_ctrls);
 			if (ret)
@@ -297,11 +255,7 @@ static int pstate_init_perf(struct amd_cpudata *cpudata)
 	if (ret)
 		return ret;
 
-	/*
-	 * TODO: Introduce AMD specific power feature.
-	 *
-	 * CPPC entry doesn't indicate the highest performance in some ASICs.
-	 */
+	 
 	highest_perf = amd_get_highest_perf();
 	if (highest_perf > AMD_CPPC_HIGHEST_PERF(cap1))
 		highest_perf = AMD_CPPC_HIGHEST_PERF(cap1);
@@ -515,11 +469,7 @@ static int amd_pstate_update_freq(struct cpufreq_policy *policy,
 				     cpudata->max_freq);
 
 	WARN_ON(fast_switch && !policy->fast_switch_enabled);
-	/*
-	 * If fast_switch is desired, then there aren't any registered
-	 * transition notifiers. See comment for
-	 * cpufreq_enable_fast_switch().
-	 */
+	 
 	if (!fast_switch)
 		cpufreq_freq_transition_begin(policy, &freqs);
 
@@ -598,7 +548,7 @@ static int amd_get_min_freq(struct amd_cpudata *cpudata)
 	if (ret)
 		return ret;
 
-	/* Switch to khz */
+	 
 	return cppc_perf.lowest_freq * 1000;
 }
 
@@ -621,7 +571,7 @@ static int amd_get_max_freq(struct amd_cpudata *cpudata)
 
 	max_freq = nominal_freq * boost_ratio >> SCHED_CAPACITY_SHIFT;
 
-	/* Switch to khz */
+	 
 	return max_freq * 1000;
 }
 
@@ -633,7 +583,7 @@ static int amd_get_nominal_freq(struct amd_cpudata *cpudata)
 	if (ret)
 		return ret;
 
-	/* Switch to khz */
+	 
 	return cppc_perf.nominal_freq * 1000;
 }
 
@@ -658,7 +608,7 @@ static int amd_get_lowest_nonlinear_freq(struct amd_cpudata *cpudata)
 
 	lowest_nonlinear_freq = nominal_freq * lowest_nonlinear_ratio >> SCHED_CAPACITY_SHIFT;
 
-	/* Switch to khz */
+	 
 	return lowest_nonlinear_freq * 1000;
 }
 
@@ -712,10 +662,7 @@ static int amd_pstate_cpu_init(struct cpufreq_policy *policy)
 	struct device *dev;
 	struct amd_cpudata *cpudata;
 
-	/*
-	 * Resetting PERF_CTL_MSR will put the CPU in P0 frequency,
-	 * which is ideal for initialization process.
-	 */
+	 
 	amd_perf_ctl_reset(policy->cpu);
 	dev = get_cpu_device(policy->cpu);
 	if (!dev)
@@ -752,7 +699,7 @@ static int amd_pstate_cpu_init(struct cpufreq_policy *policy)
 	policy->cpuinfo.min_freq = min_freq;
 	policy->cpuinfo.max_freq = max_freq;
 
-	/* It will be updated by governor */
+	 
 	policy->cur = policy->cpuinfo.min_freq;
 
 	if (boot_cpu_has(X86_FEATURE_CPPC))
@@ -772,7 +719,7 @@ static int amd_pstate_cpu_init(struct cpufreq_policy *policy)
 		goto free_cpudata2;
 	}
 
-	/* Initial processor data capability frequencies */
+	 
 	cpudata->max_freq = max_freq;
 	cpudata->min_freq = min_freq;
 	cpudata->max_limit_freq = max_freq;
@@ -829,13 +776,9 @@ static int amd_pstate_cpu_suspend(struct cpufreq_policy *policy)
 	return ret;
 }
 
-/* Sysfs attributes */
+ 
 
-/*
- * This frequency is to indicate the maximum hardware frequency.
- * If boost is not active but supported, the frequency will be larger than the
- * one in cpuinfo.
- */
+ 
 static ssize_t show_amd_pstate_max_freq(struct cpufreq_policy *policy,
 					char *buf)
 {
@@ -862,10 +805,7 @@ static ssize_t show_amd_pstate_lowest_nonlinear_freq(struct cpufreq_policy *poli
 	return sysfs_emit(buf, "%u\n", freq);
 }
 
-/*
- * In some of ASICs, the highest_perf is not the one in the _CPC table, so we
- * need to expose it to sysfs.
- */
+ 
 static ssize_t show_amd_pstate_highest_perf(struct cpufreq_policy *policy,
 					    char *buf)
 {
@@ -1135,10 +1075,7 @@ static int amd_pstate_epp_cpu_init(struct cpufreq_policy *policy)
 	struct device *dev;
 	u64 value;
 
-	/*
-	 * Resetting PERF_CTL_MSR will put the CPU in P0 frequency,
-	 * which is ideal for initialization process.
-	 */
+	 
 	amd_perf_ctl_reset(policy->cpu);
 	dev = get_cpu_device(policy->cpu);
 	if (!dev)
@@ -1168,10 +1105,10 @@ static int amd_pstate_epp_cpu_init(struct cpufreq_policy *policy)
 
 	policy->cpuinfo.min_freq = min_freq;
 	policy->cpuinfo.max_freq = max_freq;
-	/* It will be updated by governor */
+	 
 	policy->cur = policy->cpuinfo.min_freq;
 
-	/* Initial processor data capability frequencies */
+	 
 	cpudata->max_freq = max_freq;
 	cpudata->min_freq = min_freq;
 	cpudata->nominal_freq = nominal_freq;
@@ -1184,10 +1121,7 @@ static int amd_pstate_epp_cpu_init(struct cpufreq_policy *policy)
 	policy->min = policy->cpuinfo.min_freq;
 	policy->max = policy->cpuinfo.max_freq;
 
-	/*
-	 * Set the policy to provide a valid fallback value in case
-	 * the default cpufreq governor is neither powersave nor performance.
-	 */
+	 
 	if (amd_pstate_acpi_pm_profile_server() ||
 	    amd_pstate_acpi_pm_profile_undefined())
 		policy->policy = CPUFREQ_POLICY_PERFORMANCE;
@@ -1245,33 +1179,30 @@ static void amd_pstate_epp_update_limit(struct cpufreq_policy *policy)
 	if (cpudata->policy == CPUFREQ_POLICY_PERFORMANCE)
 		min_perf = max_perf;
 
-	/* Initial min/max values for CPPC Performance Controls Register */
+	 
 	value &= ~AMD_CPPC_MIN_PERF(~0L);
 	value |= AMD_CPPC_MIN_PERF(min_perf);
 
 	value &= ~AMD_CPPC_MAX_PERF(~0L);
 	value |= AMD_CPPC_MAX_PERF(max_perf);
 
-	/* CPPC EPP feature require to set zero to the desire perf bit */
+	 
 	value &= ~AMD_CPPC_DES_PERF(~0L);
 	value |= AMD_CPPC_DES_PERF(0);
 
 	cpudata->epp_policy = cpudata->policy;
 
-	/* Get BIOS pre-defined epp value */
+	 
 	epp = amd_pstate_get_epp(cpudata, value);
 	if (epp < 0) {
-		/**
-		 * This return value can only be negative for shared_memory
-		 * systems where EPP register read/write not supported.
-		 */
+		 
 		return;
 	}
 
 	if (cpudata->policy == CPUFREQ_POLICY_PERFORMANCE)
 		epp = 0;
 
-	/* Set initial EPP value */
+	 
 	if (boot_cpu_has(X86_FEATURE_CPPC)) {
 		value &= ~GENMASK_ULL(31, 24);
 		value |= (u64)epp << 24;
@@ -1348,7 +1279,7 @@ static void amd_pstate_epp_offline(struct cpufreq_policy *policy)
 	if (boot_cpu_has(X86_FEATURE_CPPC)) {
 		cpudata->epp_policy = CPUFREQ_POLICY_UNKNOWN;
 
-		/* Set max perf same as min perf */
+		 
 		value &= ~AMD_CPPC_MAX_PERF(~0L);
 		value |= AMD_CPPC_MAX_PERF(min_perf);
 		value &= ~AMD_CPPC_MIN_PERF(~0L);
@@ -1390,14 +1321,14 @@ static int amd_pstate_epp_suspend(struct cpufreq_policy *policy)
 	struct amd_cpudata *cpudata = policy->driver_data;
 	int ret;
 
-	/* avoid suspending when EPP is not enabled */
+	 
 	if (cppc_state != AMD_PSTATE_ACTIVE)
 		return 0;
 
-	/* set this flag to avoid setting core offline*/
+	 
 	cpudata->suspended = true;
 
-	/* disable CPPC in lowlevel firmware */
+	 
 	ret = amd_pstate_enable(false);
 	if (ret)
 		pr_err("failed to suspend, return %d\n", ret);
@@ -1412,7 +1343,7 @@ static int amd_pstate_epp_resume(struct cpufreq_policy *policy)
 	if (cpudata->suspended) {
 		mutex_lock(&amd_pstate_limits_lock);
 
-		/* enable amd pstate from suspend state*/
+		 
 		amd_pstate_epp_reenable(cpudata);
 
 		mutex_unlock(&amd_pstate_limits_lock);
@@ -1483,17 +1414,13 @@ static int __init amd_pstate_init(void)
 		return -ENODEV;
 	}
 
-	/* don't keep reloading if cpufreq_driver exists */
+	 
 	if (cpufreq_get_current_driver())
 		return -EEXIST;
 
 	switch (cppc_state) {
 	case AMD_PSTATE_UNDEFINED:
-		/* Disable on the following configs by default:
-		 * 1. Undefined platforms
-		 * 2. Server platforms
-		 * 3. Shared memory designs
-		 */
+		 
 		if (amd_pstate_acpi_pm_profile_undefined() ||
 		    amd_pstate_acpi_pm_profile_server() ||
 		    !boot_cpu_has(X86_FEATURE_CPPC)) {
@@ -1514,7 +1441,7 @@ static int __init amd_pstate_init(void)
 		return -EINVAL;
 	}
 
-	/* capability check */
+	 
 	if (boot_cpu_has(X86_FEATURE_CPPC)) {
 		pr_debug("AMD CPPC MSR based functionality is supported\n");
 		if (cppc_state != AMD_PSTATE_ACTIVE)
@@ -1526,7 +1453,7 @@ static int __init amd_pstate_init(void)
 		static_call_update(amd_pstate_update_perf, cppc_update_perf);
 	}
 
-	/* enable amd pstate feature */
+	 
 	ret = amd_pstate_enable(true);
 	if (ret) {
 		pr_err("failed to enable with return %d\n", ret);

@@ -1,12 +1,4 @@
-/*
- * Sonics Silicon Backplane
- * GPIO driver
- *
- * Copyright 2011, Broadcom Corporation
- * Copyright 2012, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -18,9 +10,7 @@
 #include <linux/ssb/ssb.h>
 
 
-/**************************************************
- * Shared
- **************************************************/
+ 
 
 #if IS_ENABLED(CONFIG_SSB_EMBEDDED)
 static int ssb_gpio_to_irq(struct gpio_chip *chip, unsigned int gpio)
@@ -34,9 +24,7 @@ static int ssb_gpio_to_irq(struct gpio_chip *chip, unsigned int gpio)
 }
 #endif
 
-/**************************************************
- * ChipCommon
- **************************************************/
+ 
 
 static int ssb_gpio_chipco_get_value(struct gpio_chip *chip, unsigned int gpio)
 {
@@ -77,9 +65,9 @@ static int ssb_gpio_chipco_request(struct gpio_chip *chip, unsigned int gpio)
 	struct ssb_bus *bus = gpiochip_get_data(chip);
 
 	ssb_chipco_gpio_control(&bus->chipco, 1 << gpio, 0);
-	/* clear pulldown */
+	 
 	ssb_chipco_gpio_pulldown(&bus->chipco, 1 << gpio, 0);
-	/* Set pullup */
+	 
 	ssb_chipco_gpio_pullup(&bus->chipco, 1 << gpio, 1 << gpio);
 
 	return 0;
@@ -89,7 +77,7 @@ static void ssb_gpio_chipco_free(struct gpio_chip *chip, unsigned int gpio)
 {
 	struct ssb_bus *bus = gpiochip_get_data(chip);
 
-	/* clear pullup */
+	 
 	ssb_chipco_gpio_pullup(&bus->chipco, 1 << gpio, 0);
 }
 
@@ -230,10 +218,7 @@ static int ssb_gpio_chipco_init(struct ssb_bus *bus)
 	chip->to_irq		= ssb_gpio_to_irq;
 #endif
 	chip->ngpio		= 16;
-	/* There is just one SoC in one device and its GPIO addresses should be
-	 * deterministic to address them more easily. The other buses could get
-	 * a random base number.
-	 */
+	 
 	if (bus->bustype == SSB_BUSTYPE_SSB)
 		chip->base		= 0;
 	else
@@ -252,9 +237,7 @@ static int ssb_gpio_chipco_init(struct ssb_bus *bus)
 	return 0;
 }
 
-/**************************************************
- * EXTIF
- **************************************************/
+ 
 
 #ifdef CONFIG_SSB_DRIVER_EXTIF
 
@@ -425,10 +408,7 @@ static int ssb_gpio_extif_init(struct ssb_bus *bus)
 	chip->to_irq		= ssb_gpio_to_irq;
 #endif
 	chip->ngpio		= 5;
-	/* There is just one SoC in one device and its GPIO addresses should be
-	 * deterministic to address them more easily. The other buses could get
-	 * a random base number.
-	 */
+	 
 	if (bus->bustype == SSB_BUSTYPE_SSB)
 		chip->base		= 0;
 	else
@@ -454,9 +434,7 @@ static int ssb_gpio_extif_init(struct ssb_bus *bus)
 }
 #endif
 
-/**************************************************
- * Init
- **************************************************/
+ 
 
 int ssb_gpio_init(struct ssb_bus *bus)
 {

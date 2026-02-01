@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for Xceive XC4000 "QAM/8VSB single chip tuner"
- *
- *  Copyright (c) 2007 Xceive Corporation
- *  Copyright (c) 2007 Steven Toth <stoth@linuxtv.org>
- *  Copyright (c) 2009 Devin Heitmueller <dheitmueller@kernellabs.com>
- *  Copyright (c) 2009 Davide Ferri <d.ferri@zero11.it>
- *  Copyright (c) 2010 Istvan Varga <istvan_v@mailbox.hu>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -52,7 +44,7 @@ static LIST_HEAD(hybrid_tuner_instance_list);
 #define dprintk(level, fmt, arg...) if (debug >= level) \
 	printk(KERN_INFO "%s: " fmt, "xc4000", ## arg)
 
-/* struct for storing firmware table */
+ 
 struct firmware_description {
 	unsigned int  type;
 	v4l2_std_id   id;
@@ -101,21 +93,21 @@ struct xc4000_priv {
 #define XC4000_DEFAULT_FIRMWARE "dvb-fe-xc4000-1.4.fw"
 #define XC4000_DEFAULT_FIRMWARE_NEW "dvb-fe-xc4000-1.4.1.fw"
 
-/* Misc Defines */
+ 
 #define MAX_TV_STANDARD			24
 #define XC_MAX_I2C_WRITE_LENGTH		64
 #define XC_POWERED_DOWN			0x80000000U
 
-/* Signal Types */
+ 
 #define XC_RF_MODE_AIR			0
 #define XC_RF_MODE_CABLE		1
 
-/* Product id */
+ 
 #define XC_PRODUCT_ID_FW_NOT_LOADED	0x2000
 #define XC_PRODUCT_ID_XC4000		0x0FA0
 #define XC_PRODUCT_ID_XC4100		0x1004
 
-/* Registers (Write-only) */
+ 
 #define XREG_INIT         0x00
 #define XREG_VIDEO_MODE   0x01
 #define XREG_AUDIO_MODE   0x02
@@ -128,7 +120,7 @@ struct xc4000_priv {
 #define XREG_SMOOTHEDCVBS 0x0E
 #define XREG_AMPLITUDE    0x10
 
-/* Registers (Read-only) */
+ 
 #define XREG_ADC_ENV      0x00
 #define XREG_QUALITY      0x01
 #define XREG_FRAME_LINES  0x02
@@ -141,38 +133,7 @@ struct xc4000_priv {
 #define XREG_SIGNAL_LEVEL 0x0A
 #define XREG_NOISE_LEVEL  0x0B
 
-/*
-   Basic firmware description. This will remain with
-   the driver for documentation purposes.
-
-   This represents an I2C firmware file encoded as a
-   string of unsigned char. Format is as follows:
-
-   char[0  ]=len0_MSB  -> len = len_MSB * 256 + len_LSB
-   char[1  ]=len0_LSB  -> length of first write transaction
-   char[2  ]=data0 -> first byte to be sent
-   char[3  ]=data1
-   char[4  ]=data2
-   char[   ]=...
-   char[M  ]=dataN  -> last byte to be sent
-   char[M+1]=len1_MSB  -> len = len_MSB * 256 + len_LSB
-   char[M+2]=len1_LSB  -> length of second write transaction
-   char[M+3]=data0
-   char[M+4]=data1
-   ...
-   etc.
-
-   The [len] value should be interpreted as follows:
-
-   len= len_MSB _ len_LSB
-   len=1111_1111_1111_1111   : End of I2C_SEQUENCE
-   len=0000_0000_0000_0000   : Reset command: Do hardware reset
-   len=0NNN_NNNN_NNNN_NNNN   : Normal transaction: number of bytes = {1:32767)
-   len=1WWW_WWWW_WWWW_WWWW   : Wait command: wait for {1:32767} ms
-
-   For the RESET and WAIT commands, the two following bytes will contain
-   immediately the length of the following transaction.
-*/
+ 
 
 struct XC_TV_STANDARD {
 	const char  *Name;
@@ -181,7 +142,7 @@ struct XC_TV_STANDARD {
 	u16	    int_freq;
 };
 
-/* Tuner standards */
+ 
 #define XC4000_MN_NTSC_PAL_BTSC		0
 #define XC4000_MN_NTSC_PAL_A2		1
 #define XC4000_MN_NTSC_PAL_EIAJ		2
@@ -304,18 +265,16 @@ static int xc_load_i2c_sequence(struct dvb_frontend *fe, const u8 *i2c_sequence)
 		(i2c_sequence[index + 1] != 0xFF)) {
 		len = i2c_sequence[index] * 256 + i2c_sequence[index+1];
 		if (len == 0x0000) {
-			/* RESET command */
-			/* NOTE: this is ignored, as the reset callback was */
-			/* already called by check_firmware() */
+			 
+			 
+			 
 			index += 2;
 		} else if (len & 0x8000) {
-			/* WAIT command */
+			 
 			msleep(len & 0x7FFF);
 			index += 2;
 		} else {
-			/* Send i2c data whilst ensuring individual transactions
-			 * do not exceed XC_MAX_I2C_WRITE_LENGTH bytes.
-			 */
+			 
 			index += 2;
 			buf[0] = i2c_sequence[index];
 			buf[1] = i2c_sequence[index + 1];
@@ -353,7 +312,7 @@ static int xc_set_tv_standard(struct xc4000_priv *priv,
 		__func__,
 		xc4000_standard[priv->video_standard].Name);
 
-	/* Don't complain when the request fails because of i2c stretching */
+	 
 	priv->ignore_i2c_write_errors = 1;
 
 	ret = xc_write_reg(priv, XREG_VIDEO_MODE, video_mode);
@@ -393,10 +352,8 @@ static int xc_set_rf_frequency(struct xc4000_priv *priv, u32 freq_hz)
 
 	freq_code = (u16)(freq_hz / 15625);
 
-	/* WAS: Starting in firmware version 1.1.44, Xceive recommends using the
-	   FINERFREQ for all normal tuning (the doc indicates reg 0x03 should
-	   only be used for fast scanning for channel lock) */
-	/* WAS: XREG_FINERFREQ */
+	 
+	 
 	return xc_write_reg(priv, XREG_RF_FREQ, freq_code);
 }
 
@@ -500,7 +457,7 @@ static int xc_tune_channel(struct xc4000_priv *priv, u32 freq_hz)
 
 	dprintk(1, "%s(%u)\n", __func__, freq_hz);
 
-	/* Don't complain when the request fails because of i2c stretching */
+	 
 	priv->ignore_i2c_write_errors = 1;
 	result = xc_set_rf_frequency(priv, freq_hz);
 	priv->ignore_i2c_write_errors = 0;
@@ -508,16 +465,13 @@ static int xc_tune_channel(struct xc4000_priv *priv, u32 freq_hz)
 	if (result != 0)
 		return 0;
 
-	/* wait for lock only in analog TV mode */
+	 
 	if ((priv->cur_fw.type & (FM | DTV6 | DTV7 | DTV78 | DTV8)) == 0) {
 		if (xc_wait_for_lock(priv) != 1)
 			found = 0;
 	}
 
-	/* Wait for stats to stabilize.
-	 * Frame Lines needs two frame times after initial lock
-	 * before it is valid.
-	 */
+	 
 	msleep(debug ? 100 : 10);
 
 	if (debug)
@@ -628,7 +582,7 @@ static int seek_firmware(struct dvb_frontend *fe, unsigned int type,
 	if (((type & ~SCODE) == 0) && (*id == 0))
 		*id = V4L2_STD_PAL;
 
-	/* Seek for generic video standard match */
+	 
 	for (i = 0; i < priv->firm_size; i++) {
 		v4l2_std_id	id_diff_mask =
 			(priv->firm[i].id ^ (*id)) & (*id);
@@ -642,7 +596,7 @@ static int seek_firmware(struct dvb_frontend *fe, unsigned int type,
 			continue;
 
 		nr_diffs = hweight64(id_diff_mask) + hweight32(type_diff_mask);
-		if (!nr_diffs)	/* Supports all the requested standards */
+		if (!nr_diffs)	 
 			goto found;
 
 		if (nr_diffs < best_nr_diffs) {
@@ -651,7 +605,7 @@ static int seek_firmware(struct dvb_frontend *fe, unsigned int type,
 		}
 	}
 
-	/* FIXME: Would make sense to seek for type "hint" match ? */
+	 
 	if (best_i < 0) {
 		i = -ENOENT;
 		goto ret;
@@ -690,7 +644,7 @@ static int load_firmware(struct dvb_frontend *fe, unsigned int type,
 
 	p = priv->firm[pos].ptr;
 
-	/* Don't complain when the request fails because of i2c stretching */
+	 
 	priv->ignore_i2c_write_errors = 1;
 
 	rc = xc_load_i2c_sequence(fe, p);
@@ -783,7 +737,7 @@ static int xc4000_fwupload(struct dvb_frontend *fe)
 			goto corrupt;
 		}
 
-		/* Checks if there's enough bytes to read */
+		 
 		if (endp - p < sizeof(type) + sizeof(id) + sizeof(size))
 			goto header;
 
@@ -895,7 +849,7 @@ static int load_scode(struct dvb_frontend *fe, unsigned int type,
 	scode_buf[0] = 0x00;
 	memcpy(&scode_buf[1], p, 12);
 
-	/* Enter direct-mode */
+	 
 	rc = xc_write_reg(priv, XREG_DIRECTSITTING_MODE, 0);
 	if (rc < 0) {
 		printk(KERN_ERR "failed to put device into direct mode!\n");
@@ -904,12 +858,11 @@ static int load_scode(struct dvb_frontend *fe, unsigned int type,
 
 	rc = xc_send_i2c_data(priv, scode_buf, 13);
 	if (rc != 0) {
-		/* Even if the send failed, make sure we set back to indirect
-		   mode */
+		 
 		printk(KERN_ERR "Failed to set scode %d\n", rc);
 	}
 
-	/* Switch back to indirect-mode */
+	 
 	memset(indirect_mode, 0, sizeof(indirect_mode));
 	indirect_mode[4] = 0x88;
 	xc_send_i2c_data(priv, indirect_mode, sizeof(indirect_mode));
@@ -956,21 +909,21 @@ retry:
 		printk(KERN_CONT "scode_nr %d\n", new_fw.scode_nr);
 	}
 
-	/* No need to reload base firmware if it matches */
+	 
 	if (priv->cur_fw.type & BASE) {
 		dprintk(1, "BASE firmware not changed.\n");
 		goto skip_base;
 	}
 
-	/* Updating BASE - forget about all currently loaded firmware */
+	 
 	memset(&priv->cur_fw, 0, sizeof(priv->cur_fw));
 
-	/* Reset is needed before loading firmware */
+	 
 	rc = xc4000_tuner_reset(fe);
 	if (rc < 0)
 		goto fail;
 
-	/* BASE firmwares are all std0 */
+	 
 	std0 = 0;
 	rc = load_firmware(fe, BASE, &std0);
 	if (rc < 0) {
@@ -978,7 +931,7 @@ retry:
 		goto fail;
 	}
 
-	/* Load INIT1, if needed */
+	 
 	dprintk(1, "Load init1 firmware, if exists\n");
 
 	rc = load_firmware(fe, BASE | INIT1, &std0);
@@ -991,20 +944,17 @@ retry:
 	}
 
 skip_base:
-	/*
-	 * No need to reload standard specific firmware if base firmware
-	 * was not reloaded and requested video standards have not changed.
-	 */
+	 
 	if (priv->cur_fw.type == (BASE | new_fw.type) &&
 	    priv->cur_fw.std_req == std) {
 		dprintk(1, "Std-specific firmware already loaded.\n");
 		goto skip_std_specific;
 	}
 
-	/* Reloading std-specific firmware forces a SCODE update */
+	 
 	priv->cur_fw.scode_table = 0;
 
-	/* Load the standard firmware */
+	 
 	rc = load_firmware(fe, new_fw.type, &new_fw.id);
 
 	if (rc < 0)
@@ -1017,7 +967,7 @@ skip_std_specific:
 		goto check_device;
 	}
 
-	/* Load SCODE firmware, if exists */
+	 
 	rc = load_scode(fe, new_fw.type | new_fw.scode_table, &new_fw.id,
 			new_fw.int_freq, new_fw.scode_nr);
 	if (rc != 0)
@@ -1038,7 +988,7 @@ check_device:
 	dprintk(1, "Device is Xceive %d version %d.%d, firmware version %d.%d\n",
 		hwmodel, hw_major, hw_minor, fw_major, fw_minor);
 
-	/* Check firmware version against what we downloaded. */
+	 
 	if (priv->firm_version != ((fw_major << 8) | fw_minor)) {
 		printk(KERN_WARNING
 		       "Incorrect readback of firmware version %d.%d.\n",
@@ -1046,7 +996,7 @@ check_device:
 		goto fail;
 	}
 
-	/* Check that the tuner hardware model remains consistent over time. */
+	 
 	if (priv->hwmodel == 0 &&
 	    (hwmodel == XC_PRODUCT_ID_XC4000 ||
 	     hwmodel == XC_PRODUCT_ID_XC4100)) {
@@ -1061,12 +1011,7 @@ check_device:
 
 	priv->cur_fw = new_fw;
 
-	/*
-	 * By setting BASE in cur_fw.type only after successfully loading all
-	 * firmwares, we can:
-	 * 1. Identify that BASE firmware with type=0 has been loaded;
-	 * 2. Tell whether BASE firmware was just changed the next time through.
-	 */
+	 
 	priv->cur_fw.type |= BASE;
 
 	return 0;
@@ -1198,7 +1143,7 @@ static int xc4000_set_params(struct dvb_frontend *fe)
 	dprintk(1, "%s() frequency=%d (compensated)\n",
 		__func__, priv->freq_hz);
 
-	/* Make sure the correct firmware type is loaded */
+	 
 	if (check_firmware(fe, type, 0, priv->if_khz) != 0)
 		goto fail;
 
@@ -1218,8 +1163,8 @@ static int xc4000_set_params(struct dvb_frontend *fe)
 		ret = xc_set_tv_standard(priv, video_mode, audio_mode);
 		if (ret != 0) {
 			printk(KERN_ERR "xc4000: xc_set_tv_standard failed\n");
-			/* DJH - do not return when it fails... */
-			/* goto fail; */
+			 
+			 
 		}
 	}
 
@@ -1238,7 +1183,7 @@ static int xc4000_set_params(struct dvb_frontend *fe)
 	}
 	if (ret != 0) {
 		printk(KERN_ERR "xc4000: setting registers failed\n");
-		/* goto fail; */
+		 
 	}
 
 	xc_tune_channel(priv, priv->freq_hz);
@@ -1283,11 +1228,11 @@ static int xc4000_set_analog_params(struct dvb_frontend *fe,
 
 	mutex_lock(&priv->lock);
 
-	/* params->frequency is in units of 62.5khz */
+	 
 	priv->freq_hz = params->frequency * 62500;
 
 	params->std &= V4L2_STD_ALL;
-	/* if std is not defined, choose one */
+	 
 	if (!params->std)
 		params->std = V4L2_STD_PAL_BG;
 
@@ -1333,7 +1278,7 @@ static int xc4000_set_analog_params(struct dvb_frontend *fe,
 	}
 
 	if (params->std & V4L2_STD_PAL_I) {
-		/* default to NICAM audio standard */
+		 
 		params->std = V4L2_STD_PAL_I | V4L2_STD_NICAM;
 		if (audio_std & XC4000_AUDIO_STD_MONO)
 			priv->video_standard = XC4000_I_PAL_NICAM_MONO;
@@ -1357,7 +1302,7 @@ static int xc4000_set_analog_params(struct dvb_frontend *fe,
 	}
 
 	if (params->std & V4L2_STD_SECAM_DK) {
-		/* default to A2 audio standard */
+		 
 		params->std = V4L2_STD_SECAM_DK | V4L2_STD_A2;
 		if (audio_std & XC4000_AUDIO_STD_L) {
 			type = 0;
@@ -1374,7 +1319,7 @@ static int xc4000_set_analog_params(struct dvb_frontend *fe,
 	}
 
 	if (params->std & V4L2_STD_SECAM_L) {
-		/* default to NICAM audio standard */
+		 
 		type = 0;
 		params->std = V4L2_STD_SECAM_L | V4L2_STD_NICAM;
 		priv->video_standard = XC4000_L_SECAM_NICAM;
@@ -1382,7 +1327,7 @@ static int xc4000_set_analog_params(struct dvb_frontend *fe,
 	}
 
 	if (params->std & V4L2_STD_SECAM_LC) {
-		/* default to NICAM audio standard */
+		 
 		type = 0;
 		params->std = V4L2_STD_SECAM_LC | V4L2_STD_NICAM;
 		priv->video_standard = XC4000_LC_SECAM_NICAM;
@@ -1390,7 +1335,7 @@ static int xc4000_set_analog_params(struct dvb_frontend *fe,
 	}
 
 tune_channel:
-	/* FIXME: it could be air. */
+	 
 	priv->rf_mode = XC_RF_MODE_CABLE;
 
 	if (check_firmware(fe, type, params->std,
@@ -1459,30 +1404,24 @@ static int xc4000_get_signal(struct dvb_frontend *fe, u16 *strength)
 	if (rc < 0)
 		goto ret;
 
-	/* Information from real testing of DVB-T and radio part,
-	   coefficient for one dB is 0xff.
-	 */
+	 
 	tuner_dbg("Signal strength: -%ddB (%05d)\n", value >> 8, value);
 
-	/* all known digital modes */
+	 
 	if ((priv->video_standard == XC4000_DTV6) ||
 	    (priv->video_standard == XC4000_DTV7) ||
 	    (priv->video_standard == XC4000_DTV7_8) ||
 	    (priv->video_standard == XC4000_DTV8))
 		goto digital;
 
-	/* Analog mode has NOISE LEVEL important, signal
-	   depends only on gain of antenna and amplifiers,
-	   but it doesn't tell anything about real quality
-	   of reception.
-	 */
+	 
 	mutex_lock(&priv->lock);
 	rc = xc4000_readreg(priv, XREG_NOISE_LEVEL, &value);
 	mutex_unlock(&priv->lock);
 
 	tuner_dbg("Noise level: %ddB (%05d)\n", value >> 8, value);
 
-	/* highest noise level: 32dB */
+	 
 	if (value >= 0x2000) {
 		value = 0;
 	} else {
@@ -1491,14 +1430,12 @@ static int xc4000_get_signal(struct dvb_frontend *fe, u16 *strength)
 
 	goto ret;
 
-	/* Digital mode has SIGNAL LEVEL important and real
-	   noise level is stored in demodulator registers.
-	 */
+	 
 digital:
-	/* best signal: -50dB */
+	 
 	if (value <= 0x3200) {
 		value = 0xffff;
-	/* minimum: -114dB - should be 0x7200 but real zero is 0x713A */
+	 
 	} else if (value >= 0x713A) {
 		value = 0;
 	} else {
@@ -1577,11 +1514,11 @@ static int xc4000_sleep(struct dvb_frontend *fe)
 
 	mutex_lock(&priv->lock);
 
-	/* Avoid firmware reload on slow devices */
+	 
 	if ((no_poweroff == 2 ||
 	     (no_poweroff == 0 && priv->default_pm != 0)) &&
 	    (priv->cur_fw.type & BASE) != 0) {
-		/* force reset and firmware reload */
+		 
 		priv->cur_fw.type = XC_POWERED_DOWN;
 
 		if (xc_write_reg(priv, XREG_POWER_DOWN, 0) != 0) {
@@ -1662,9 +1599,9 @@ struct dvb_frontend *xc4000_attach(struct dvb_frontend *fe,
 	case 0:
 		goto fail;
 	case 1:
-		/* new tuner instance */
+		 
 		priv->bandwidth = 6000000;
-		/* set default configuration */
+		 
 		priv->if_khz = 4560;
 		priv->default_pm = 0;
 		priv->dvb_amplitude = 134;
@@ -1673,22 +1610,20 @@ struct dvb_frontend *xc4000_attach(struct dvb_frontend *fe,
 		fe->tuner_priv = priv;
 		break;
 	default:
-		/* existing tuner instance */
+		 
 		fe->tuner_priv = priv;
 		break;
 	}
 
 	if (cfg->if_khz != 0) {
-		/* copy configuration if provided by the caller */
+		 
 		priv->if_khz = cfg->if_khz;
 		priv->default_pm = cfg->default_pm;
 		priv->dvb_amplitude = cfg->dvb_amplitude;
 		priv->set_smoothedcvbs = cfg->set_smoothedcvbs;
 	}
 
-	/* Check if firmware has been loaded. It is possible that another
-	   instance of the driver has loaded the firmware.
-	 */
+	 
 
 	if (instance == 1) {
 		if (xc4000_readreg(priv, XREG_PRODUCT_ID, &id) != 0)

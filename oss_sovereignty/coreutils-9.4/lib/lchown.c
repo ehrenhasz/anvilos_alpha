@@ -1,22 +1,4 @@
-/* Provide a stub lchown function for systems that lack it.
-
-   Copyright (C) 1998-1999, 2002, 2004, 2006-2007, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Jim Meyering */
+ 
 
 #include <config.h>
 
@@ -28,16 +10,12 @@
 
 #if !HAVE_LCHOWN
 
-/* If the system chown does not follow symlinks, we don't want it
-   replaced by gnulib's chown, which does follow symlinks.  */
+ 
 # if CHOWN_MODIFIES_SYMLINK
 #  undef chown
 # endif
 
-/* Work just like chown, except when FILE is a symbolic link.
-   In that case, set errno to EOPNOTSUPP and return -1.
-   But if autoconf tests determined that chown modifies
-   symlinks, then just call chown.  */
+ 
 
 int
 lchown (const char *file, uid_t uid, gid_t gid)
@@ -55,17 +33,17 @@ lchown (const char *file, uid_t uid, gid_t gid)
 
   return chown (file, uid, gid);
 
-# else /* !HAVE_CHOWN */
+# else  
   errno = ENOSYS;
   return -1;
 # endif
 }
 
-#else /* HAVE_LCHOWN */
+#else  
 
 # undef lchown
 
-/* Work around trailing slash bugs in lchown.  */
+ 
 int
 rpl_lchown (const char *file, uid_t uid, gid_t gid)
 {
@@ -101,10 +79,7 @@ rpl_lchown (const char *file, uid_t uid, gid_t gid)
       && (uid == st.st_uid || uid == (uid_t) -1)
       && (gid == st.st_gid || gid == (gid_t) -1))
     {
-      /* No change in ownership, but at least one argument was not -1,
-         so we are required to update ctime.  Since lchown succeeded,
-         we assume that lchmod will do likewise.  But if the system
-         lacks lchmod and lutimes, we are out of luck.  Oh well.  */
+       
       result = lchmod (file, st.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO
                                            | S_ISUID | S_ISGID | S_ISVTX));
     }
@@ -113,4 +88,4 @@ rpl_lchown (const char *file, uid_t uid, gid_t gid)
   return result;
 }
 
-#endif /* HAVE_LCHOWN */
+#endif  

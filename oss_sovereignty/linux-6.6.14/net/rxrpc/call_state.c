@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Call state changing functions.
- *
- * Copyright (C) 2022 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include "ar-internal.h"
 
-/*
- * Transition a call to the complete state.
- */
+ 
 bool rxrpc_set_call_completion(struct rxrpc_call *call,
 				 enum rxrpc_call_completion compl,
 				 u32 abort_code,
@@ -21,7 +15,7 @@ bool rxrpc_set_call_completion(struct rxrpc_call *call,
 	call->abort_code = abort_code;
 	call->error = error;
 	call->completion = compl;
-	/* Allow reader of completion state to operate locklessly */
+	 
 	rxrpc_set_call_state(call, RXRPC_CALL_COMPLETE);
 	trace_rxrpc_call_complete(call);
 	wake_up(&call->waitq);
@@ -29,17 +23,13 @@ bool rxrpc_set_call_completion(struct rxrpc_call *call,
 	return true;
 }
 
-/*
- * Record that a call successfully completed.
- */
+ 
 bool rxrpc_call_completed(struct rxrpc_call *call)
 {
 	return rxrpc_set_call_completion(call, RXRPC_CALL_SUCCEEDED, 0, 0);
 }
 
-/*
- * Record that a call is locally aborted.
- */
+ 
 bool rxrpc_abort_call(struct rxrpc_call *call, rxrpc_seq_t seq,
 		      u32 abort_code, int error, enum rxrpc_abort_reason why)
 {
@@ -53,10 +43,7 @@ bool rxrpc_abort_call(struct rxrpc_call *call, rxrpc_seq_t seq,
 	return true;
 }
 
-/*
- * Record that a call errored out before even getting off the ground, thereby
- * setting the state to allow it to be destroyed.
- */
+ 
 void rxrpc_prefail_call(struct rxrpc_call *call, enum rxrpc_call_completion compl,
 			int error)
 {

@@ -1,19 +1,5 @@
-/* $OpenBSD: ssh-ed25519.c,v 1.19 2022/10/28 00:44:44 djm Exp $ */
-/*
- * Copyright (c) 2013 Markus Friedl <markus@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -92,7 +78,7 @@ static int
 ssh_ed25519_copy_public(const struct sshkey *from, struct sshkey *to)
 {
 	if (from->ed25519_pk == NULL)
-		return 0; /* XXX SSH_ERR_INTERNAL_ERROR ? */
+		return 0;  
 	if ((to->ed25519_pk = malloc(ED25519_PK_SZ)) == NULL)
 		return SSH_ERR_ALLOC_FAIL;
 	memcpy(to->ed25519_pk, from->ed25519_pk, ED25519_PK_SZ);
@@ -134,8 +120,8 @@ ssh_ed25519_deserialize_private(const char *ktype, struct sshbuf *b,
 		goto out;
 	}
 	key->ed25519_sk = ed25519_sk;
-	ed25519_sk = NULL; /* transferred */
-	/* success */
+	ed25519_sk = NULL;  
+	 
 	r = 0;
  out:
 	freezero(ed25519_sk, sklen);
@@ -170,10 +156,10 @@ ssh_ed25519_sign(struct sshkey *key,
 
 	if ((ret = crypto_sign_ed25519(sig, &smlen, data, datalen,
 	    key->ed25519_sk)) != 0 || smlen <= datalen) {
-		r = SSH_ERR_INVALID_ARGUMENT; /* XXX better error? */
+		r = SSH_ERR_INVALID_ARGUMENT;  
 		goto out;
 	}
-	/* encode signature */
+	 
 	if ((b = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -191,7 +177,7 @@ ssh_ed25519_sign(struct sshkey *key,
 	}
 	if (lenp != NULL)
 		*lenp = len;
-	/* success */
+	 
 	r = 0;
  out:
 	sshbuf_free(b);
@@ -259,55 +245,55 @@ ssh_ed25519_verify(const struct sshkey *key,
 		r = SSH_ERR_SIGNATURE_INVALID;
 		goto out;
 	}
-	/* XXX compare 'm' and 'data' ? */
-	/* success */
+	 
+	 
 	r = 0;
  out:
 	if (sm != NULL)
 		freezero(sm, smlen);
 	if (m != NULL)
-		freezero(m, smlen); /* NB mlen may be invalid if r != 0 */
+		freezero(m, smlen);  
 	sshbuf_free(b);
 	free(ktype);
 	return r;
 }
 
-/* NB. not static; used by ED25519-SK */
+ 
 const struct sshkey_impl_funcs sshkey_ed25519_funcs = {
-	/* .size = */		NULL,
-	/* .alloc = */		NULL,
-	/* .cleanup = */	ssh_ed25519_cleanup,
-	/* .equal = */		ssh_ed25519_equal,
-	/* .ssh_serialize_public = */ ssh_ed25519_serialize_public,
-	/* .ssh_deserialize_public = */ ssh_ed25519_deserialize_public,
-	/* .ssh_serialize_private = */ ssh_ed25519_serialize_private,
-	/* .ssh_deserialize_private = */ ssh_ed25519_deserialize_private,
-	/* .generate = */	ssh_ed25519_generate,
-	/* .copy_public = */	ssh_ed25519_copy_public,
-	/* .sign = */		ssh_ed25519_sign,
-	/* .verify = */		ssh_ed25519_verify,
+	 		NULL,
+	 		NULL,
+	 	ssh_ed25519_cleanup,
+	 		ssh_ed25519_equal,
+	  ssh_ed25519_serialize_public,
+	  ssh_ed25519_deserialize_public,
+	  ssh_ed25519_serialize_private,
+	  ssh_ed25519_deserialize_private,
+	 	ssh_ed25519_generate,
+	 	ssh_ed25519_copy_public,
+	 		ssh_ed25519_sign,
+	 		ssh_ed25519_verify,
 };
 
 const struct sshkey_impl sshkey_ed25519_impl = {
-	/* .name = */		"ssh-ed25519",
-	/* .shortname = */	"ED25519",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ED25519,
-	/* .nid = */		0,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	256,
-	/* .funcs = */		&sshkey_ed25519_funcs,
+	 		"ssh-ed25519",
+	 	"ED25519",
+	 		NULL,
+	 		KEY_ED25519,
+	 		0,
+	 		0,
+	 	0,
+	 	256,
+	 		&sshkey_ed25519_funcs,
 };
 
 const struct sshkey_impl sshkey_ed25519_cert_impl = {
-	/* .name = */		"ssh-ed25519-cert-v01@openssh.com",
-	/* .shortname = */	"ED25519-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ED25519_CERT,
-	/* .nid = */		0,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	256,
-	/* .funcs = */		&sshkey_ed25519_funcs,
+	 		"ssh-ed25519-cert-v01@openssh.com",
+	 	"ED25519-CERT",
+	 		NULL,
+	 		KEY_ED25519_CERT,
+	 		0,
+	 		1,
+	 	0,
+	 	256,
+	 		&sshkey_ed25519_funcs,
 };

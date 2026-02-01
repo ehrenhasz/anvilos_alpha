@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - I2C support
-//
-// Copyright 2011 Wolfson Microelectronics plc
-//
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <linux/i2c.h>
@@ -144,9 +144,7 @@ static int regmap_i2c_gather_write(void *context,
 	struct i2c_msg xfer[2];
 	int ret;
 
-	/* If the I2C controller can't do a gather tell the core, it
-	 * will substitute in a linear write for us.
-	 */
+	 
 	if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_NOSTART))
 		return -ENOTSUPP;
 
@@ -278,7 +276,7 @@ static int regmap_i2c_smbus_i2c_read_reg16(void *context, const void *reg,
 
 	count = 0;
 	do {
-		/* Current Address Read */
+		 
 		ret = i2c_smbus_read_byte(i2c);
 		if (ret < 0)
 			break;
@@ -331,7 +329,7 @@ static const struct regmap_bus *regmap_get_i2c_bus(struct i2c_client *i2c,
 		case REGMAP_ENDIAN_BIG:
 			bus = &regmap_smbus_word_swapped;
 			break;
-		default:		/* everything else is not supported */
+		default:		 
 			break;
 		}
 	else if (config->val_bits == 8 && config->reg_bits == 8 &&

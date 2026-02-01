@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright(c) 2020, Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __INTEL_PXP_TEE_H__
 #define __INTEL_PXP_TEE_H__
@@ -19,4 +17,4 @@ int intel_pxp_tee_stream_message(struct intel_pxp *pxp,
 				 void *msg_in, size_t msg_in_len,
 				 void *msg_out, size_t msg_out_len);
 
-#endif /* __INTEL_PXP_TEE_H__ */
+#endif  

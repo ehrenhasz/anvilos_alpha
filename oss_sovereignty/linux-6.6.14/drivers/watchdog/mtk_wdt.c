@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Mediatek Watchdog Driver
- *
- * Copyright (C) 2014 Matthias Brugger
- *
- * Matthias Brugger <matthias.bgg@gmail.com>
- *
- * Based on sunxi_wdt.c
- */
+
+ 
 
 #include <dt-bindings/reset/mt2712-resets.h>
 #include <dt-bindings/reset/mediatek,mt6795-resets.h>
@@ -67,7 +59,7 @@ static unsigned int timeout;
 struct mtk_wdt_dev {
 	struct watchdog_device wdt_dev;
 	void __iomem *wdt_base;
-	spinlock_t lock; /* protects WDT_SWSYSRST reg */
+	spinlock_t lock;  
 	struct reset_controller_dev rcdev;
 	bool disable_wdt_extrst;
 	bool reset_by_toprgu;
@@ -215,17 +207,11 @@ static int mtk_wdt_set_timeout(struct watchdog_device *wdt_dev,
 	u32 reg;
 
 	wdt_dev->timeout = timeout;
-	/*
-	 * In dual mode, irq will be triggered at timeout / 2
-	 * the real timeout occurs at timeout
-	 */
+	 
 	if (wdt_dev->pretimeout)
 		wdt_dev->pretimeout = timeout / 2;
 
-	/*
-	 * One bit is the value of 512 ticks
-	 * The clock has 32 KHz
-	 */
+	 
 	reg = WDT_LENGTH_TIMEOUT((timeout - wdt_dev->pretimeout) << 6)
 			| WDT_LENGTH_KEY;
 	iowrite32(reg, wdt_base + WDT_LENGTH);
@@ -449,7 +435,7 @@ static const struct of_device_id mtk_wdt_dt_ids[] = {
 	{ .compatible = "mediatek,mt8188-wdt", .data = &mt8188_data },
 	{ .compatible = "mediatek,mt8192-wdt", .data = &mt8192_data },
 	{ .compatible = "mediatek,mt8195-wdt", .data = &mt8195_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mtk_wdt_dt_ids);
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI AMx3 Wakeup M3 Remote Processor driver
- *
- * Copyright (C) 2014-2015 Texas Instruments, Inc.
- *
- * Dave Gerlach <d-gerlach@ti.com>
- * Suman Anna <s-anna@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -25,13 +18,7 @@
 
 #define WKUPM3_MEM_MAX	2
 
-/**
- * struct wkup_m3_mem - WkupM3 internal memory structure
- * @cpu_addr: MPU virtual address of the memory region
- * @bus_addr: Bus address used to access the memory region
- * @dev_addr: Device address from Wakeup M3 view
- * @size: Size of the memory region
- */
+ 
 struct wkup_m3_mem {
 	void __iomem *cpu_addr;
 	phys_addr_t bus_addr;
@@ -39,13 +26,7 @@ struct wkup_m3_mem {
 	size_t size;
 };
 
-/**
- * struct wkup_m3_rproc - WkupM3 remote processor state
- * @rproc: rproc handle
- * @pdev: pointer to platform device
- * @mem: WkupM3 memory information
- * @rsts: reset control
- */
+ 
 struct wkup_m3_rproc {
 	struct rproc *rproc;
 	struct platform_device *pdev;
@@ -103,7 +84,7 @@ static void *wkup_m3_rproc_da_to_va(struct rproc *rproc, u64 da, size_t len, boo
 		if (da >= wkupm3->mem[i].dev_addr && da + len <=
 		    wkupm3->mem[i].dev_addr +  wkupm3->mem[i].size) {
 			offset = da -  wkupm3->mem[i].dev_addr;
-			/* __force to make sparse happy with type conversion */
+			 
 			va = (__force void *)(wkupm3->mem[i].cpu_addr + offset);
 			break;
 		}
@@ -129,7 +110,7 @@ static int wkup_m3_rproc_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct wkup_m3_platform_data *pdata = dev->platform_data;
-	/* umem always needs to be processed first */
+	 
 	const char *mem_names[WKUPM3_MEM_MAX] = { "umem", "dmem" };
 	struct wkup_m3_rproc *wkupm3;
 	const char *fw_name;
@@ -194,12 +175,7 @@ static int wkup_m3_rproc_probe(struct platform_device *pdev)
 		wkupm3->mem[i].bus_addr = res->start;
 		wkupm3->mem[i].size = resource_size(res);
 		addrp = of_get_address(dev->of_node, i, &size, NULL);
-		/*
-		 * The wkupm3 has umem at address 0 in its view, so the device
-		 * addresses for each memory region is computed as a relative
-		 * offset of the bus address for umem, and therefore needs to be
-		 * processed first.
-		 */
+		 
 		if (!strcmp(mem_names[i], "umem"))
 			l4_offset = be32_to_cpu(*addrp);
 		wkupm3->mem[i].dev_addr = be32_to_cpu(*addrp) - l4_offset;

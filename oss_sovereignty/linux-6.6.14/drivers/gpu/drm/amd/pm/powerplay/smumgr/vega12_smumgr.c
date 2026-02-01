@@ -1,25 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "smumgr.h"
 #include "vega12_inc.h"
@@ -32,11 +11,7 @@
 #include "pp_debug.h"
 
 
-/*
- * Copy table from SMC into driver FB
- * @param   hwmgr    the address of the HW manager
- * @param   table_id    the driver's table ID to copy from
- */
+ 
 static int vega12_copy_table_from_smc(struct pp_hwmgr *hwmgr,
 				      uint8_t *table, int16_t table_id)
 {
@@ -76,11 +51,7 @@ static int vega12_copy_table_from_smc(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/*
- * Copy table from Driver FB into SMC
- * @param   hwmgr    the address of the HW manager
- * @param   table_id    the table to copy from
- */
+ 
 static int vega12_copy_table_to_smc(struct pp_hwmgr *hwmgr,
 				    uint8_t *table, int16_t table_id)
 {
@@ -227,7 +198,7 @@ static int vega12_smu_init(struct pp_hwmgr *hwmgr)
 
 	hwmgr->smu_backend = priv;
 
-	/* allocate space for pptable */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(PPTable_t),
 			PAGE_SIZE,
@@ -241,7 +212,7 @@ static int vega12_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_PPTABLE].version = 0x01;
 	priv->smu_tables.entry[TABLE_PPTABLE].size = sizeof(PPTable_t);
 
-	/* allocate space for watermarks table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 				      sizeof(Watermarks_t),
 				      PAGE_SIZE,
@@ -272,7 +243,7 @@ static int vega12_smu_init(struct pp_hwmgr *hwmgr)
 		priv->smu_tables.entry[TABLE_PMSTATUSLOG].size = tools_size;
 	}
 
-	/* allocate space for AVFS Fuse table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 				      sizeof(AvfsFuseOverride_t),
 				      PAGE_SIZE,
@@ -287,7 +258,7 @@ static int vega12_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_AVFS_FUSE_OVERRIDE].version = 0x01;
 	priv->smu_tables.entry[TABLE_AVFS_FUSE_OVERRIDE].size = sizeof(AvfsFuseOverride_t);
 
-	/* allocate space for OverDrive table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 				      sizeof(OverDriveTable_t),
 				      PAGE_SIZE,
@@ -301,7 +272,7 @@ static int vega12_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[TABLE_OVERDRIVE].version = 0x01;
 	priv->smu_tables.entry[TABLE_OVERDRIVE].size = sizeof(OverDriveTable_t);
 
-	/* allocate space for SMU_METRICS table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 				      sizeof(SmuMetrics_t),
 				      PAGE_SIZE,

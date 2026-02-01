@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <getopt.h>
 #include <limits.h>
@@ -21,7 +21,7 @@
 
 #define RANDOM_BATCH -1
 
-/* Unused */
+ 
 void *__kmalloc_fake, *__kfree_ignore_start, *__kfree_ignore_end;
 
 struct vq_info {
@@ -30,7 +30,7 @@ struct vq_info {
 	int num;
 	int idx;
 	void *ring;
-	/* copy used for control */
+	 
 	struct vring vring;
 	struct virtqueue *vq;
 };
@@ -151,10 +151,7 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
 	assert(r >= 0);
 }
 
-/* TODO: this is pretty bad: we get a cache line bounce
- * for the wait queue on poll and another one on read,
- * plus the read which is there just to clear the
- * current state. */
+ 
 static void wait_for_interrupt(struct vdev_info *dev)
 {
 	int i;
@@ -224,7 +221,7 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
 				assert(!r);
 			}
 
-			/* Flush out completed bufs if any */
+			 
 			while (virtqueue_get_buf(vq->vq, &len)) {
 				++completed;
 				r = 0;

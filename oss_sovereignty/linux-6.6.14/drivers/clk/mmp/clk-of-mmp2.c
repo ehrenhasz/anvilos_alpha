@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mmp2 clock framework source file
- *
- * Copyright (C) 2012 Marvell
- * Chao Xie <xiechao.mail@gmail.com>
- * Copyright (C) 2020 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -71,7 +65,7 @@
 #define MPMU_I2S0_PLL		0x40
 #define MPMU_I2S1_PLL		0x44
 #define MPMU_ACGR		0x1024
-/* MMP3 specific below */
+ 
 #define MPMU_PLL3_CR		0x50
 #define MPMU_PLL3_CTRL1		0x58
 #define MPMU_PLL1_CTRL		0x5c
@@ -144,8 +138,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
 };
 
 static struct mmp_clk_factor_tbl uart_factor_tbl[] = {
-	{.num = 8125, .den = 1536},	/*14.745MHZ */
-	{.num = 3521, .den = 689},	/*19.23MHZ */
+	{.num = 8125, .den = 1536},	 
+	{.num = 3521, .den = 689},	 
 };
 
 static struct mmp_clk_factor_masks i2s_factor_masks = {
@@ -158,15 +152,15 @@ static struct mmp_clk_factor_masks i2s_factor_masks = {
 };
 
 static struct mmp_clk_factor_tbl i2s_factor_tbl[] = {
-	{.num = 24868, .den =  511},	/*  2.0480 MHz */
-	{.num = 28003, .den =  793},	/*  2.8224 MHz */
-	{.num = 24941, .den = 1025},	/*  4.0960 MHz */
-	{.num = 28003, .den = 1586},	/*  5.6448 MHz */
-	{.num = 31158, .den = 2561},	/*  8.1920 MHz */
-	{.num = 16288, .den = 1845},	/* 11.2896 MHz */
-	{.num = 20772, .den = 2561},	/* 12.2880 MHz */
-	{.num =  8144, .den = 1845},	/* 22.5792 MHz */
-	{.num = 10386, .den = 2561},	/* 24.5760 MHz */
+	{.num = 24868, .den =  511},	 
+	{.num = 28003, .den =  793},	 
+	{.num = 24941, .den = 1025},	 
+	{.num = 28003, .den = 1586},	 
+	{.num = 31158, .den = 2561},	 
+	{.num = 16288, .den = 1845},	 
+	{.num = 20772, .den = 2561},	 
+	{.num =  8144, .den = 1845},	 
+	{.num = 10386, .den = 2561},	 
 };
 
 static DEFINE_SPINLOCK(acgr_lock);
@@ -261,7 +255,7 @@ static struct mmp_param_gate_clk apbc_gate_clks[] = {
 	{MMP2_CLK_PWM1, "pwm1_clk", "pll1_48", CLK_SET_RATE_PARENT, APBC_PWM1, 0x7, 0x3, 0x0, 0, &reset_lock},
 	{MMP2_CLK_PWM2, "pwm2_clk", "pll1_48", CLK_SET_RATE_PARENT, APBC_PWM2, 0x7, 0x3, 0x0, 0, &reset_lock},
 	{MMP2_CLK_PWM3, "pwm3_clk", "pll1_48", CLK_SET_RATE_PARENT, APBC_PWM3, 0x7, 0x3, 0x0, 0, &reset_lock},
-	/* The gate clocks has mux parent. */
+	 
 	{MMP2_CLK_UART0, "uart0_clk", "uart0_mux", CLK_SET_RATE_PARENT, APBC_UART0, 0x7, 0x3, 0x0, 0, &uart0_lock},
 	{MMP2_CLK_UART1, "uart1_clk", "uart1_mux", CLK_SET_RATE_PARENT, APBC_UART1, 0x7, 0x3, 0x0, 0, &uart1_lock},
 	{MMP2_CLK_UART2, "uart2_clk", "uart2_mux", CLK_SET_RATE_PARENT, APBC_UART2, 0x7, 0x3, 0x0, 0, &uart2_lock},
@@ -362,7 +356,7 @@ static struct mmp_param_gate_clk apmu_gate_clks[] = {
 	{MMP2_CLK_USB, "usb_clk", "usb_pll", 0, APMU_USB, 0x9, 0x9, 0x0, 0, &usb_lock},
 	{MMP2_CLK_USBHSIC0, "usbhsic0_clk", "usb_pll", 0, APMU_USBHSIC0, 0x1b, 0x1b, 0x0, 0, &usbhsic0_lock},
 	{MMP2_CLK_USBHSIC1, "usbhsic1_clk", "usb_pll", 0, APMU_USBHSIC1, 0x1b, 0x1b, 0x0, 0, &usbhsic1_lock},
-	/* The gate clocks has mux parent. */
+	 
 	{MMP2_CLK_SDH0, "sdh0_clk", "sdh_mix_clk", CLK_SET_RATE_PARENT, APMU_SDH0, 0x1b, 0x1b, 0x0, 0, &sdh_lock},
 	{MMP2_CLK_SDH1, "sdh1_clk", "sdh_mix_clk", CLK_SET_RATE_PARENT, APMU_SDH1, 0x1b, 0x1b, 0x0, 0, &sdh_lock},
 	{MMP2_CLK_SDH2, "sdh2_clk", "sdh_mix_clk", CLK_SET_RATE_PARENT, APMU_SDH2, 0x1b, 0x1b, 0x0, 0, &sdh_lock},

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1.h  --  R-Car VSP1 Driver
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_H__
 #define __VSP1_H__
 
@@ -124,4 +118,4 @@ static inline void vsp1_write(struct vsp1_device *vsp1, u32 reg, u32 data)
 	iowrite32(data, vsp1->mmio + reg);
 }
 
-#endif /* __VSP1_H__ */
+#endif  

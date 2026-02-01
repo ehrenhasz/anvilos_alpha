@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/****************************************************************
-
-Siano Mobile Silicon, Inc.
-MDTV receiver kernel modules.
-Copyright (C) 2006-2008, Uri Shkolnik, Anatoly Greenblat
-
-
-****************************************************************/
+ 
+ 
 
 #ifndef __SMS_CORE_API_H__
 #define __SMS_CORE_API_H__
@@ -28,11 +21,7 @@ Copyright (C) 2006-2008, Uri Shkolnik, Anatoly Greenblat
 
 #include "smsir.h"
 
-/*
- * Define the firmware names used by the driver.
- * Those should match what's used at smscoreapi.c and sms-cards.c
- * including the MODULE_FIRMWARE() macros at the end of smscoreapi.c
- */
+ 
 #define SMS_FW_ATSC_DENVER         "atsc_denver.inp"
 #define SMS_FW_CMMB_MING_APP       "cmmb_ming_app.inp"
 #define SMS_FW_CMMB_VEGA_12MHZ     "cmmb_vega_12mhz.inp"
@@ -105,12 +94,12 @@ typedef int (*onresponse_t)(void *context, struct smscore_buffer_t *cb);
 typedef void (*onremove_t)(void *context);
 
 struct smscore_buffer_t {
-	/* public members, once passed to clients can be changed freely */
+	 
 	struct list_head entry;
 	int size;
 	int offset;
 
-	/* private members, read-only for clients */
+	 
 	void *p;
 	dma_addr_t phys;
 	unsigned long offset_in_common;
@@ -176,34 +165,31 @@ struct smscore_device_t {
 
 	gfp_t gfp_buf_flags;
 
-	/* host <--> device messages */
+	 
 	struct completion version_ex_done, data_download_done, trigger_done;
 	struct completion data_validity_done, device_ready_done;
 	struct completion init_device_done, reload_start_done, resume_done;
 	struct completion gpio_configuration_done, gpio_set_level_done;
 	struct completion gpio_get_level_done, ir_init_done;
 
-	/* Buffer management */
+	 
 	wait_queue_head_t buffer_mng_waitq;
 
-	/* GPIO */
+	 
 	int gpio_get_res;
 
-	/* Target hardware board */
+	 
 	int board_id;
 
-	/* Firmware */
+	 
 	u8 *fw_buf;
 	u32 fw_buf_size;
 	u16 fw_version;
 
-	/* Infrared (IR) */
+	 
 	struct ir_t ir;
 
-	/*
-	 * Identify if device is USB or not.
-	 * Used by smsdvb-sysfs to know the root node for debugfs
-	 */
+	 
 	bool is_usb_device;
 
 	int led_state;
@@ -213,7 +199,7 @@ struct smscore_device_t {
 #endif
 };
 
-/* GPIO definitions for antenna frequency domain control (SMS8021) */
+ 
 #define SMS_ANTENNA_GPIO_0					1
 #define SMS_ANTENNA_GPIO_1					0
 
@@ -610,7 +596,7 @@ struct sms_msg_hdr {
 	u16	msg_type;
 	u8	msg_src_id;
 	u8	msg_dst_id;
-	u16	msg_length; /* length of entire message, including header */
+	u16	msg_length;  
 	u16	msg_flags;
 };
 
@@ -638,15 +624,13 @@ struct sms_data_download {
 struct sms_version_res {
 	struct sms_msg_hdr	x_msg_header;
 
-	u16		chip_model; /* e.g. 0x1102 for SMS-1102 "Nova" */
-	u8		step; /* 0 - step A */
-	u8		metal_fix; /* 0 - Metal 0 */
+	u16		chip_model;  
+	u8		step;  
+	u8		metal_fix;  
 
-	/* firmware_id 0xFF if ROM, otherwise the
-	 * value indicated by SMSHOSTLIB_DEVICE_MODES_E */
+	 
 	u8 firmware_id;
-	/* supported_protocols Bitwise OR combination of
-					     * supported protocols */
+	 
 	u8 supported_protocols;
 
 	u8		version_major;
@@ -669,91 +653,67 @@ struct sms_firmware {
 	u8			payload[1];
 };
 
-/* statistics information returned as response for
- * SmsHostApiGetstatistics_Req */
+ 
 struct sms_stats {
-	u32 reserved;		/* reserved */
+	u32 reserved;		 
 
-	/* Common parameters */
-	u32 is_rf_locked;		/* 0 - not locked, 1 - locked */
-	u32 is_demod_locked;	/* 0 - not locked, 1 - locked */
-	u32 is_external_lna_on;	/* 0 - external LNA off, 1 - external LNA on */
+	 
+	u32 is_rf_locked;		 
+	u32 is_demod_locked;	 
+	u32 is_external_lna_on;	 
 
-	/* Reception quality */
-	s32 SNR;		/* dB */
-	u32 ber;		/* Post Viterbi ber [1E-5] */
-	u32 FIB_CRC;		/* CRC errors percentage, valid only for DAB */
-	u32 ts_per;		/* Transport stream PER,
-	0xFFFFFFFF indicate N/A, valid only for DVB-T/H */
-	u32 MFER;		/* DVB-H frame error rate in percentage,
-	0xFFFFFFFF indicate N/A, valid only for DVB-H */
-	s32 RSSI;		/* dBm */
-	s32 in_band_pwr;		/* In band power in dBM */
-	s32 carrier_offset;	/* Carrier Offset in bin/1024 */
+	 
+	s32 SNR;		 
+	u32 ber;		 
+	u32 FIB_CRC;		 
+	u32 ts_per;		 
+	u32 MFER;		 
+	s32 RSSI;		 
+	s32 in_band_pwr;		 
+	s32 carrier_offset;	 
 
-	/* Transmission parameters */
-	u32 frequency;		/* frequency in Hz */
-	u32 bandwidth;		/* bandwidth in MHz, valid only for DVB-T/H */
-	u32 transmission_mode;	/* Transmission Mode, for DAB modes 1-4,
-	for DVB-T/H FFT mode carriers in Kilos */
-	u32 modem_state;		/* from SMSHOSTLIB_DVB_MODEM_STATE_ET,
-	valid only for DVB-T/H */
-	u32 guard_interval;	/* Guard Interval from
-	SMSHOSTLIB_GUARD_INTERVALS_ET,	valid only for DVB-T/H */
-	u32 code_rate;		/* Code Rate from SMSHOSTLIB_CODE_RATE_ET,
-	valid only for DVB-T/H */
-	u32 lp_code_rate;		/* Low Priority Code Rate from
-	SMSHOSTLIB_CODE_RATE_ET, valid only for DVB-T/H */
-	u32 hierarchy;		/* hierarchy from SMSHOSTLIB_HIERARCHY_ET,
-	valid only for DVB-T/H */
-	u32 constellation;	/* constellation from
-	SMSHOSTLIB_CONSTELLATION_ET, valid only for DVB-T/H */
+	 
+	u32 frequency;		 
+	u32 bandwidth;		 
+	u32 transmission_mode;	 
+	u32 modem_state;		 
+	u32 guard_interval;	 
+	u32 code_rate;		 
+	u32 lp_code_rate;		 
+	u32 hierarchy;		 
+	u32 constellation;	 
 
-	/* Burst parameters, valid only for DVB-H */
-	u32 burst_size;		/* Current burst size in bytes,
-	valid only for DVB-H */
-	u32 burst_duration;	/* Current burst duration in mSec,
-	valid only for DVB-H */
-	u32 burst_cycle_time;	/* Current burst cycle time in mSec,
-	valid only for DVB-H */
-	u32 calc_burst_cycle_time;/* Current burst cycle time in mSec,
-	as calculated by demodulator, valid only for DVB-H */
-	u32 num_of_rows;		/* Number of rows in MPE table,
-	valid only for DVB-H */
-	u32 num_of_padd_cols;	/* Number of padding columns in MPE table,
-	valid only for DVB-H */
-	u32 num_of_punct_cols;	/* Number of puncturing columns in MPE table,
-	valid only for DVB-H */
-	u32 error_ts_packets;	/* Number of erroneous
-	transport-stream packets */
-	u32 total_ts_packets;	/* Total number of transport-stream packets */
-	u32 num_of_valid_mpe_tlbs;	/* Number of MPE tables which do not include
-	errors after MPE RS decoding */
-	u32 num_of_invalid_mpe_tlbs;/* Number of MPE tables which include errors
-	after MPE RS decoding */
-	u32 num_of_corrected_mpe_tlbs;/* Number of MPE tables which were
-	corrected by MPE RS decoding */
-	/* Common params */
-	u32 ber_error_count;	/* Number of erroneous SYNC bits. */
-	u32 ber_bit_count;	/* Total number of SYNC bits. */
+	 
+	u32 burst_size;		 
+	u32 burst_duration;	 
+	u32 burst_cycle_time;	 
+	u32 calc_burst_cycle_time; 
+	u32 num_of_rows;		 
+	u32 num_of_padd_cols;	 
+	u32 num_of_punct_cols;	 
+	u32 error_ts_packets;	 
+	u32 total_ts_packets;	 
+	u32 num_of_valid_mpe_tlbs;	 
+	u32 num_of_invalid_mpe_tlbs; 
+	u32 num_of_corrected_mpe_tlbs; 
+	 
+	u32 ber_error_count;	 
+	u32 ber_bit_count;	 
 
-	/* Interface information */
-	u32 sms_to_host_tx_errors;	/* Total number of transmission errors. */
+	 
+	u32 sms_to_host_tx_errors;	 
 
-	/* DAB/T-DMB */
-	u32 pre_ber;		/* DAB/T-DMB only: Pre Viterbi ber [1E-5] */
+	 
+	u32 pre_ber;		 
 
-	/* DVB-H TPS parameters */
-	u32 cell_id;		/* TPS Cell ID in bits 15..0, bits 31..16 zero;
-	 if set to 0xFFFFFFFF cell_id not yet recovered */
-	u32 dvbh_srv_ind_hp;	/* DVB-H service indication info, bit 1 -
-	Time Slicing indicator, bit 0 - MPE-FEC indicator */
-	u32 dvbh_srv_ind_lp;	/* DVB-H service indication info, bit 1 -
-	Time Slicing indicator, bit 0 - MPE-FEC indicator */
+	 
+	u32 cell_id;		 
+	u32 dvbh_srv_ind_hp;	 
+	u32 dvbh_srv_ind_lp;	 
 
-	u32 num_mpe_received;	/* DVB-H, Num MPE section received */
+	u32 num_mpe_received;	 
 
-	u32 reservedFields[10];	/* reserved */
+	u32 reservedFields[10];	 
 };
 
 struct sms_msg_statistics_info {
@@ -761,130 +721,112 @@ struct sms_msg_statistics_info {
 
 	struct sms_stats stat;
 
-	/* Split the calc of the SNR in DAB */
-	u32 signal; /* dB */
-	u32 noise; /* dB */
+	 
+	u32 signal;  
+	u32 noise;  
 
 };
 
 struct sms_isdbt_layer_stats {
-	/* Per-layer information */
-	u32 code_rate; /* Code Rate from SMSHOSTLIB_CODE_RATE_ET,
-		       * 255 means layer does not exist */
-	u32 constellation; /* constellation from SMSHOSTLIB_CONSTELLATION_ET,
-			    * 255 means layer does not exist */
-	u32 ber; /* Post Viterbi ber [1E-5], 0xFFFFFFFF indicate N/A */
-	u32 ber_error_count; /* Post Viterbi Error Bits Count */
-	u32 ber_bit_count; /* Post Viterbi Total Bits Count */
-	u32 pre_ber; /* Pre Viterbi ber [1E-5], 0xFFFFFFFF indicate N/A */
-	u32 ts_per; /* Transport stream PER [%], 0xFFFFFFFF indicate N/A */
-	u32 error_ts_packets; /* Number of erroneous transport-stream packets */
-	u32 total_ts_packets; /* Total number of transport-stream packets */
-	u32 ti_ldepth_i; /* Time interleaver depth I parameter,
-			* 255 means layer does not exist */
-	u32 number_of_segments; /* Number of segments in layer A,
-			       * 255 means layer does not exist */
-	u32 tmcc_errors; /* TMCC errors */
+	 
+	u32 code_rate;  
+	u32 constellation;  
+	u32 ber;  
+	u32 ber_error_count;  
+	u32 ber_bit_count;  
+	u32 pre_ber;  
+	u32 ts_per;  
+	u32 error_ts_packets;  
+	u32 total_ts_packets;  
+	u32 ti_ldepth_i;  
+	u32 number_of_segments;  
+	u32 tmcc_errors;  
 };
 
 struct sms_isdbt_stats {
-	u32 statistics_type; /* Enumerator identifying the type of the
-				* structure.  Values are the same as
-				* SMSHOSTLIB_DEVICE_MODES_E
-				*
-				* This field MUST always be first in any
-				* statistics structure */
+	u32 statistics_type;  
 
-	u32 full_size; /* Total size of the structure returned by the modem.
-		       * If the size requested by the host is smaller than
-		       * full_size, the struct will be truncated */
+	u32 full_size;  
 
-	/* Common parameters */
-	u32 is_rf_locked; /* 0 - not locked, 1 - locked */
-	u32 is_demod_locked; /* 0 - not locked, 1 - locked */
-	u32 is_external_lna_on; /* 0 - external LNA off, 1 - external LNA on */
+	 
+	u32 is_rf_locked;  
+	u32 is_demod_locked;  
+	u32 is_external_lna_on;  
 
-	/* Reception quality */
-	s32  SNR; /* dB */
-	s32  RSSI; /* dBm */
-	s32  in_band_pwr; /* In band power in dBM */
-	s32  carrier_offset; /* Carrier Offset in Hz */
+	 
+	s32  SNR;  
+	s32  RSSI;  
+	s32  in_band_pwr;  
+	s32  carrier_offset;  
 
-	/* Transmission parameters */
-	u32 frequency; /* frequency in Hz */
-	u32 bandwidth; /* bandwidth in MHz */
-	u32 transmission_mode; /* ISDB-T transmission mode */
-	u32 modem_state; /* 0 - Acquisition, 1 - Locked */
-	u32 guard_interval; /* Guard Interval, 1 divided by value */
-	u32 system_type; /* ISDB-T system type (ISDB-T / ISDB-Tsb) */
-	u32 partial_reception; /* TRUE - partial reception, FALSE otherwise */
-	u32 num_of_layers; /* Number of ISDB-T layers in the network */
+	 
+	u32 frequency;  
+	u32 bandwidth;  
+	u32 transmission_mode;  
+	u32 modem_state;  
+	u32 guard_interval;  
+	u32 system_type;  
+	u32 partial_reception;  
+	u32 num_of_layers;  
 
-	/* Per-layer information */
-	/* Layers A, B and C */
+	 
+	 
 	struct sms_isdbt_layer_stats	layer_info[3];
-	/* Per-layer statistics, see sms_isdbt_layer_stats */
+	 
 
-	/* Interface information */
-	u32 sms_to_host_tx_errors; /* Total number of transmission errors. */
+	 
+	u32 sms_to_host_tx_errors;  
 };
 
 struct sms_isdbt_stats_ex {
-	u32 statistics_type; /* Enumerator identifying the type of the
-				* structure.  Values are the same as
-				* SMSHOSTLIB_DEVICE_MODES_E
-				*
-				* This field MUST always be first in any
-				* statistics structure */
+	u32 statistics_type;  
 
-	u32 full_size; /* Total size of the structure returned by the modem.
-		       * If the size requested by the host is smaller than
-		       * full_size, the struct will be truncated */
+	u32 full_size;  
 
-	/* Common parameters */
-	u32 is_rf_locked; /* 0 - not locked, 1 - locked */
-	u32 is_demod_locked; /* 0 - not locked, 1 - locked */
-	u32 is_external_lna_on; /* 0 - external LNA off, 1 - external LNA on */
+	 
+	u32 is_rf_locked;  
+	u32 is_demod_locked;  
+	u32 is_external_lna_on;  
 
-	/* Reception quality */
-	s32  SNR; /* dB */
-	s32  RSSI; /* dBm */
-	s32  in_band_pwr; /* In band power in dBM */
-	s32  carrier_offset; /* Carrier Offset in Hz */
+	 
+	s32  SNR;  
+	s32  RSSI;  
+	s32  in_band_pwr;  
+	s32  carrier_offset;  
 
-	/* Transmission parameters */
-	u32 frequency; /* frequency in Hz */
-	u32 bandwidth; /* bandwidth in MHz */
-	u32 transmission_mode; /* ISDB-T transmission mode */
-	u32 modem_state; /* 0 - Acquisition, 1 - Locked */
-	u32 guard_interval; /* Guard Interval, 1 divided by value */
-	u32 system_type; /* ISDB-T system type (ISDB-T / ISDB-Tsb) */
-	u32 partial_reception; /* TRUE - partial reception, FALSE otherwise */
-	u32 num_of_layers; /* Number of ISDB-T layers in the network */
+	 
+	u32 frequency;  
+	u32 bandwidth;  
+	u32 transmission_mode;  
+	u32 modem_state;  
+	u32 guard_interval;  
+	u32 system_type;  
+	u32 partial_reception;  
+	u32 num_of_layers;  
 
-	u32 segment_number; /* Segment number for ISDB-Tsb */
-	u32 tune_bw;	   /* Tuned bandwidth - BW_ISDBT_1SEG / BW_ISDBT_3SEG */
+	u32 segment_number;  
+	u32 tune_bw;	    
 
-	/* Per-layer information */
-	/* Layers A, B and C */
+	 
+	 
 	struct sms_isdbt_layer_stats	layer_info[3];
-	/* Per-layer statistics, see sms_isdbt_layer_stats */
+	 
 
-	/* Interface information */
-	u32 reserved1;    /* Was sms_to_host_tx_errors - obsolete . */
- /* Proprietary information */
-	u32 ext_antenna;    /* Obsolete field. */
+	 
+	u32 reserved1;     
+  
+	u32 ext_antenna;     
 	u32 reception_quality;
-	u32 ews_alert_active;   /* signals if EWS alert is currently on */
-	u32 lna_on_off;	/* Internal LNA state: 0: OFF, 1: ON */
+	u32 ews_alert_active;    
+	u32 lna_on_off;	 
 
-	u32 rf_agc_level;	 /* RF AGC Level [linear units], full gain = 65535 (20dB) */
-	u32 bb_agc_level;    /* Baseband AGC level [linear units], full gain = 65535 (71.5dB) */
-	u32 fw_errors_counter;   /* Application errors - should be always zero */
-	u8 FwErrorsHistoryArr[8]; /* Last FW errors IDs - first is most recent, last is oldest */
+	u32 rf_agc_level;	  
+	u32 bb_agc_level;     
+	u32 fw_errors_counter;    
+	u8 FwErrorsHistoryArr[8];  
 
-	s32  MRC_SNR;     /* dB */
-	u32 snr_full_res;    /* dB x 65536 */
+	s32  MRC_SNR;      
+	u32 snr_full_res;     
 	u32 reserved4[4];
 };
 
@@ -921,108 +863,94 @@ struct sms_pid_data {
 			_stat.transmission_mode = 4;
 
 struct sms_tx_stats {
-	u32 frequency;		/* frequency in Hz */
-	u32 bandwidth;		/* bandwidth in MHz */
-	u32 transmission_mode;	/* FFT mode carriers in Kilos */
-	u32 guard_interval;	/* Guard Interval from
-	SMSHOSTLIB_GUARD_INTERVALS_ET */
-	u32 code_rate;		/* Code Rate from SMSHOSTLIB_CODE_RATE_ET */
-	u32 lp_code_rate;		/* Low Priority Code Rate from
-	SMSHOSTLIB_CODE_RATE_ET */
-	u32 hierarchy;		/* hierarchy from SMSHOSTLIB_HIERARCHY_ET */
-	u32 constellation;	/* constellation from
-	SMSHOSTLIB_CONSTELLATION_ET */
+	u32 frequency;		 
+	u32 bandwidth;		 
+	u32 transmission_mode;	 
+	u32 guard_interval;	 
+	u32 code_rate;		 
+	u32 lp_code_rate;		 
+	u32 hierarchy;		 
+	u32 constellation;	 
 
-	/* DVB-H TPS parameters */
-	u32 cell_id;		/* TPS Cell ID in bits 15..0, bits 31..16 zero;
-	 if set to 0xFFFFFFFF cell_id not yet recovered */
-	u32 dvbh_srv_ind_hp;	/* DVB-H service indication info, bit 1 -
-	 Time Slicing indicator, bit 0 - MPE-FEC indicator */
-	u32 dvbh_srv_ind_lp;	/* DVB-H service indication info, bit 1 -
-	 Time Slicing indicator, bit 0 - MPE-FEC indicator */
-	u32 is_demod_locked;	/* 0 - not locked, 1 - locked */
+	 
+	u32 cell_id;		 
+	u32 dvbh_srv_ind_hp;	 
+	u32 dvbh_srv_ind_lp;	 
+	u32 is_demod_locked;	 
 };
 
 struct sms_rx_stats {
-	u32 is_rf_locked;		/* 0 - not locked, 1 - locked */
-	u32 is_demod_locked;	/* 0 - not locked, 1 - locked */
-	u32 is_external_lna_on;	/* 0 - external LNA off, 1 - external LNA on */
+	u32 is_rf_locked;		 
+	u32 is_demod_locked;	 
+	u32 is_external_lna_on;	 
 
-	u32 modem_state;		/* from SMSHOSTLIB_DVB_MODEM_STATE_ET */
-	s32 SNR;		/* dB */
-	u32 ber;		/* Post Viterbi ber [1E-5] */
-	u32 ber_error_count;	/* Number of erroneous SYNC bits. */
-	u32 ber_bit_count;	/* Total number of SYNC bits. */
-	u32 ts_per;		/* Transport stream PER,
-	0xFFFFFFFF indicate N/A */
-	u32 MFER;		/* DVB-H frame error rate in percentage,
-	0xFFFFFFFF indicate N/A, valid only for DVB-H */
-	s32 RSSI;		/* dBm */
-	s32 in_band_pwr;		/* In band power in dBM */
-	s32 carrier_offset;	/* Carrier Offset in bin/1024 */
-	u32 error_ts_packets;	/* Number of erroneous
-	transport-stream packets */
-	u32 total_ts_packets;	/* Total number of transport-stream packets */
+	u32 modem_state;		 
+	s32 SNR;		 
+	u32 ber;		 
+	u32 ber_error_count;	 
+	u32 ber_bit_count;	 
+	u32 ts_per;		 
+	u32 MFER;		 
+	s32 RSSI;		 
+	s32 in_band_pwr;		 
+	s32 carrier_offset;	 
+	u32 error_ts_packets;	 
+	u32 total_ts_packets;	 
 
-	s32 MRC_SNR;		/* dB */
-	s32 MRC_RSSI;		/* dBm */
-	s32 mrc_in_band_pwr;	/* In band power in dBM */
+	s32 MRC_SNR;		 
+	s32 MRC_RSSI;		 
+	s32 mrc_in_band_pwr;	 
 };
 
 struct sms_rx_stats_ex {
-	u32 is_rf_locked;		/* 0 - not locked, 1 - locked */
-	u32 is_demod_locked;	/* 0 - not locked, 1 - locked */
-	u32 is_external_lna_on;	/* 0 - external LNA off, 1 - external LNA on */
+	u32 is_rf_locked;		 
+	u32 is_demod_locked;	 
+	u32 is_external_lna_on;	 
 
-	u32 modem_state;		/* from SMSHOSTLIB_DVB_MODEM_STATE_ET */
-	s32 SNR;		/* dB */
-	u32 ber;		/* Post Viterbi ber [1E-5] */
-	u32 ber_error_count;	/* Number of erroneous SYNC bits. */
-	u32 ber_bit_count;	/* Total number of SYNC bits. */
-	u32 ts_per;		/* Transport stream PER,
-	0xFFFFFFFF indicate N/A */
-	u32 MFER;		/* DVB-H frame error rate in percentage,
-	0xFFFFFFFF indicate N/A, valid only for DVB-H */
-	s32 RSSI;		/* dBm */
-	s32 in_band_pwr;		/* In band power in dBM */
-	s32 carrier_offset;	/* Carrier Offset in bin/1024 */
-	u32 error_ts_packets;	/* Number of erroneous
-	transport-stream packets */
-	u32 total_ts_packets;	/* Total number of transport-stream packets */
+	u32 modem_state;		 
+	s32 SNR;		 
+	u32 ber;		 
+	u32 ber_error_count;	 
+	u32 ber_bit_count;	 
+	u32 ts_per;		 
+	u32 MFER;		 
+	s32 RSSI;		 
+	s32 in_band_pwr;		 
+	s32 carrier_offset;	 
+	u32 error_ts_packets;	 
+	u32 total_ts_packets;	 
 
 	s32  ref_dev_ppm;
 	s32  freq_dev_hz;
 
-	s32 MRC_SNR;		/* dB */
-	s32 MRC_RSSI;		/* dBm */
-	s32 mrc_in_band_pwr;	/* In band power in dBM */
+	s32 MRC_SNR;		 
+	s32 MRC_RSSI;		 
+	s32 mrc_in_band_pwr;	 
 };
 
 #define	SRVM_MAX_PID_FILTERS 8
 
-/* statistics information returned as response for
- * SmsHostApiGetstatisticsEx_Req for DVB applications, SMS1100 and up */
+ 
 struct sms_stats_dvb {
-	/* Reception */
+	 
 	struct sms_rx_stats reception_data;
 
-	/* Transmission parameters */
+	 
 	struct sms_tx_stats transmission_data;
 
-	/* Burst parameters, valid only for DVB-H */
+	 
 	struct sms_pid_data pid_data[SRVM_MAX_PID_FILTERS];
 };
 
-/* statistics information returned as response for
- * SmsHostApiGetstatisticsEx_Req for DVB applications, SMS1100 and up */
+ 
 struct sms_stats_dvb_ex {
-	/* Reception */
+	 
 	struct sms_rx_stats_ex reception_data;
 
-	/* Transmission parameters */
+	 
 	struct sms_tx_stats transmission_data;
 
-	/* Burst parameters, valid only for DVB-H */
+	 
 	struct sms_pid_data pid_data[SRVM_MAX_PID_FILTERS];
 };
 
@@ -1043,15 +971,15 @@ struct sms_srvm_signal_status {
 };
 
 struct sms_i2c_req {
-	u32	device_address; /* I2c device address */
-	u32	write_count; /* number of bytes to write */
-	u32	read_count; /* number of bytes to read */
+	u32	device_address;  
+	u32	write_count;  
+	u32	read_count;  
 	u8	Data[1];
 };
 
 struct sms_i2c_res {
-	u32	status; /* non-zero value in case of failure */
-	u32	read_count; /* number of bytes read */
+	u32	status;  
+	u32	read_count;  
 	u8	Data[1];
 };
 
@@ -1071,11 +999,11 @@ struct smscore_config_gpio {
 #define SMS_GPIO_INPUTCHARACTERISTICS_SCHMITT 1
 	u8 inputcharacteristics;
 
-	/* 10xx */
+	 
 #define SMS_GPIO_OUTPUT_SLEW_RATE_FAST 0
 #define SMS_GPIO_OUTPUT_SLEW_WRATE_SLOW 1
 
-	/* 11xx */
+	 
 #define SMS_GPIO_OUTPUT_SLEW_RATE_0_45_V_NS	0
 #define SMS_GPIO_OUTPUT_SLEW_RATE_0_9_V_NS	1
 #define SMS_GPIO_OUTPUT_SLEW_RATE_1_7_V_NS	2
@@ -1083,13 +1011,13 @@ struct smscore_config_gpio {
 
 	u8 outputslewrate;
 
-	/* 10xx */
+	 
 #define SMS_GPIO_OUTPUTDRIVING_S_4mA  0
 #define SMS_GPIO_OUTPUTDRIVING_S_8mA  1
 #define SMS_GPIO_OUTPUTDRIVING_S_12mA 2
 #define SMS_GPIO_OUTPUTDRIVING_S_16mA 3
 
-	/* 11xx*/
+	 
 #define SMS_GPIO_OUTPUTDRIVING_1_5mA	0
 #define SMS_GPIO_OUTPUTDRIVING_2_8mA	1
 #define SMS_GPIO_OUTPUTDRIVING_4mA	2
@@ -1144,12 +1072,12 @@ struct smscore_buffer_t *smscore_getbuffer(struct smscore_device_t *coredev);
 extern void smscore_putbuffer(struct smscore_device_t *coredev,
 			      struct smscore_buffer_t *cb);
 
-/* old GPIO management */
+ 
 int smscore_configure_gpio(struct smscore_device_t *coredev, u32 pin,
 			   struct smscore_config_gpio *pinconfig);
 int smscore_set_gpio(struct smscore_device_t *coredev, u32 pin, int level);
 
-/* new GPIO management */
+ 
 extern int smscore_gpio_configure(struct smscore_device_t *coredev, u8 pin_num,
 		struct smscore_config_gpio *p_gpio_config);
 extern int smscore_gpio_set_level(struct smscore_device_t *coredev, u8 pin_num,
@@ -1163,6 +1091,6 @@ int smscore_get_board_id(struct smscore_device_t *core);
 int smscore_led_state(struct smscore_device_t *core, int led);
 
 
-/* ------------------------------------------------------------------------ */
+ 
 
-#endif /* __SMS_CORE_API_H__ */
+#endif  

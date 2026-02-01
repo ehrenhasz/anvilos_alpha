@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST SPEAr1310-miphy driver
- *
- * Copyright (C) 2014 ST Microelectronics
- * Pratyush Anand <pratyush.anand@gmail.com>
- * Mohit Kumar <mohit.kumar.dhaka@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -18,7 +12,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* SPEAr1310 Registers */
+ 
 #define SPEAR1310_PCIE_SATA_CFG			0x3A4
 	#define SPEAR1310_PCIE_SATA2_SEL_PCIE		(0 << 31)
 	#define SPEAR1310_PCIE_SATA1_SEL_PCIE		(0 << 30)
@@ -99,13 +93,13 @@ enum spear1310_miphy_mode {
 };
 
 struct spear1310_miphy_priv {
-	/* instance id of this phy */
+	 
 	u32				id;
-	/* phy mode: 0 for SATA 1 for PCIe */
+	 
 	enum spear1310_miphy_mode	mode;
-	/* regmap for any soc specific misc registers */
+	 
 	struct regmap			*misc;
-	/* phy struct pointer */
+	 
 	struct phy			*phy;
 };
 

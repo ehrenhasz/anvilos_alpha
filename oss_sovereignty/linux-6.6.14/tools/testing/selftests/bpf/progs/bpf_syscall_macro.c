@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2022 Sony Group Corporation */
+
+ 
 #include <vmlinux.h>
 
 #include <bpf/bpf_core_read.h>
@@ -41,7 +41,7 @@ int BPF_KPROBE(handle_sys_prctl)
 
 	real_regs = PT_REGS_SYSCALL_REGS(ctx);
 
-	/* test for PT_REGS_PARM */
+	 
 
 #if !defined(bpf_target_arm64) && !defined(bpf_target_s390)
 	bpf_probe_read_kernel(&tmp, sizeof(tmp), &PT_REGS_PARM1_SYSCALL(real_regs));
@@ -53,7 +53,7 @@ int BPF_KPROBE(handle_sys_prctl)
 	bpf_probe_read_kernel(&arg4, sizeof(arg4), &PT_REGS_PARM4_SYSCALL(real_regs));
 	bpf_probe_read_kernel(&arg5, sizeof(arg5), &PT_REGS_PARM5_SYSCALL(real_regs));
 
-	/* test for the CORE variant of PT_REGS_PARM */
+	 
 	arg1_core = PT_REGS_PARM1_CORE_SYSCALL(real_regs);
 	arg2_core = PT_REGS_PARM2_CORE_SYSCALL(real_regs);
 	arg3_core = PT_REGS_PARM3_CORE_SYSCALL(real_regs);

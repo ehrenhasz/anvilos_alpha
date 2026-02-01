@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_nic.c: Definition of common code for NIC. */
+ 
+
+ 
 
 #include "aq_nic.h"
 #include "aq_ring.h"
@@ -65,7 +61,7 @@ static void aq_nic_rss_init(struct aq_nic_s *self, unsigned int num_rss_queues)
 		rss_params->indirection_table[i] = i & (num_rss_queues - 1);
 }
 
-/* Recalculate the number of vectors */
+ 
 static void aq_nic_cfg_update_num_vecs(struct aq_nic_s *self)
 {
 	struct aq_nic_cfg_s *cfg = &self->aq_nic_cfg;
@@ -74,7 +70,7 @@ static void aq_nic_cfg_update_num_vecs(struct aq_nic_s *self)
 	cfg->vecs = min(cfg->vecs, num_online_cpus());
 	if (self->irqvecs > AQ_HW_SERVICE_IRQS)
 		cfg->vecs = min(cfg->vecs, self->irqvecs - AQ_HW_SERVICE_IRQS);
-	/* cfg->vecs should be power of 2 for RSS */
+	 
 	cfg->vecs = rounddown_pow_of_two(cfg->vecs);
 
 	if (ATL_HW_IS_CHIP_FEATURE(self->aq_hw, ANTIGUA)) {
@@ -87,12 +83,12 @@ static void aq_nic_cfg_update_num_vecs(struct aq_nic_s *self)
 	else
 		cfg->tc_mode = AQ_TC_MODE_4TCS;
 
-	/*rss rings */
+	 
 	cfg->num_rss_queues = min(cfg->vecs, AQ_CFG_NUM_RSS_QUEUES_DEF);
 	aq_nic_rss_init(self, cfg->num_rss_queues);
 }
 
-/* Checks hw_caps and 'corrects' aq_nic_cfg in runtime */
+ 
 void aq_nic_cfg_start(struct aq_nic_s *self)
 {
 	struct aq_nic_cfg_s *cfg = &self->aq_nic_cfg;
@@ -119,7 +115,7 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
 	cfg->is_lro = AQ_CFG_IS_LRO_DEF;
 	cfg->is_ptp = true;
 
-	/*descriptors */
+	 
 	cfg->rxds = min(cfg->aq_hw_caps->rxds_max, AQ_CFG_RXDS_DEF);
 	cfg->txds = min(cfg->aq_hw_caps->txds_max, AQ_CFG_TXDS_DEF);
 
@@ -134,10 +130,7 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
 		cfg->vecs = 1U;
 	}
 
-	/* Check if we have enough vectors allocated for
-	 * link status IRQ. If no - we'll know link state from
-	 * slower service task.
-	 */
+	 
 	if (AQ_HW_SERVICE_IRQS > 0 && cfg->vecs + 1 <= self->irqvecs)
 		cfg->link_irq_vec = cfg->vecs;
 	else
@@ -178,10 +171,7 @@ static int aq_nic_update_link_status(struct aq_nic_s *self)
 			aq_ptp_link_change(self);
 		}
 
-		/* Driver has to update flow control settings on RX block
-		 * on any link event.
-		 * We should query FW whether it negotiated FC.
-		 */
+		 
 		if (self->aq_hw_ops->hw_set_fc)
 			self->aq_hw_ops->hw_set_fc(self->aq_hw, fc, 0);
 	}
@@ -290,9 +280,7 @@ exit:
 
 static bool aq_nic_is_valid_ether_addr(const u8 *addr)
 {
-	/* Some engineering samples of Aquantia NICs are provisioned with a
-	 * partially populated MAC, which is still invalid.
-	 */
+	 
 	return !(addr[0] == 0 && addr[1] == 0 && addr[2] == 0);
 }
 
@@ -315,7 +303,7 @@ int aq_nic_ndev_register(struct aq_nic_s *self)
 #endif
 
 	if (platform_get_ethdev_address(&self->pdev->dev, self->ndev) != 0) {
-		// If DT has none or an invalid one, ask device for MAC address
+		 
 		mutex_lock(&self->fwreq_mutex);
 		err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
 		mutex_unlock(&self->fwreq_mutex);
@@ -414,7 +402,7 @@ int aq_nic_init(struct aq_nic_s *self)
 	mutex_unlock(&self->fwreq_mutex);
 	if (err < 0)
 		goto err_exit;
-	/* Restore default settings */
+	 
 	aq_nic_set_downshift(self, self->aq_nic_cfg.downshift_counter);
 	aq_nic_set_media_detect(self, self->aq_nic_cfg.is_media_detect ?
 				AQ_HW_MEDIA_DETECT_CNT : 0);
@@ -429,11 +417,7 @@ int aq_nic_init(struct aq_nic_s *self)
 		self->aq_hw->phy_id = HW_ATL_PHY_ID_MAX;
 		err = aq_phy_init(self->aq_hw);
 
-		/* Disable the PTP on NICs where it's known to cause datapath
-		 * problems.
-		 * Ideally this should have been done by PHY provisioning, but
-		 * many units have been shipped with enabled PTP block already.
-		 */
+		 
 		if (self->aq_nic_cfg.aq_hw_caps->quirks & AQ_NIC_QUIRK_BAD_PTP)
 			if (self->aq_hw->phy_id != HW_ATL_PHY_ID_MAX)
 				aq_phy_disable_ptp(self->aq_hw);
@@ -701,7 +685,7 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, struct sk_buff *skb,
 		} else if (l4proto == IPPROTO_UDP) {
 			dx_buff->is_gso_udp = 1U;
 			dx_buff->len_l4 = sizeof(struct udphdr);
-			/* UDP GSO Hardware does not replace packet length. */
+			 
 			udp_hdr(skb)->len = htons(dx_buff->mss +
 						  dx_buff->len_l4);
 		} else {
@@ -850,7 +834,7 @@ int aq_nic_xmit_xdpf(struct aq_nic_s *aq_nic, struct aq_ring_s *tx_ring,
 
 	aq_ring_update_queue_state(tx_ring);
 
-	/* Above status update may stop the queue. Check this. */
+	 
 	if (__netif_subqueue_stopped(aq_nic_get_ndev(aq_nic), queue_index))
 		goto out;
 
@@ -889,7 +873,7 @@ int aq_nic_xmit(struct aq_nic_s *self, struct sk_buff *skb)
 		goto err_exit;
 	}
 
-	/* Above status update may stop the queue. Check this. */
+	 
 	if (__netif_subqueue_stopped(self->ndev,
 				     AQ_NIC_RING2QMAP(self, ring->idx))) {
 		err = NETDEV_TX_BUSY;
@@ -1208,7 +1192,7 @@ void aq_nic_get_link_ksettings(struct aq_nic_s *self,
 		ethtool_link_ksettings_add_link_mode(cmd, advertising,
 						     Pause);
 
-	/* Asym is when either RX or TX, but not both */
+	 
 	if (!!(self->aq_nic_cfg.fc.cur & AQ_NIC_FC_TX) ^
 	    !!(self->aq_nic_cfg.fc.cur & AQ_NIC_FC_RX))
 		ethtool_link_ksettings_add_link_mode(cmd, advertising,
@@ -1588,7 +1572,7 @@ int aq_nic_set_media_detect(struct aq_nic_s *self, int val)
 	err = self->aq_fw_ops->set_media_detect(self->aq_hw, !!val);
 	mutex_unlock(&self->fwreq_mutex);
 
-	/* msecs plays no role - configuration is always fixed in PHY */
+	 
 	if (!err)
 		cfg->is_media_detect = !!val;
 
@@ -1603,9 +1587,7 @@ int aq_nic_setup_tc_mqprio(struct aq_nic_s *self, u32 tcs, u8 *prio_tc_map)
 	int err = 0;
 	int i;
 
-	/* if already the same configuration or
-	 * disable request (tcs is 0) and we already is disabled
-	 */
+	 
 	if (tcs == cfg->tcs || (tcs == 0 && !cfg->is_qos))
 		return 0;
 
@@ -1630,7 +1612,7 @@ int aq_nic_setup_tc_mqprio(struct aq_nic_s *self, u32 tcs, u8 *prio_tc_map)
 
 	netdev_set_num_tc(self->ndev, cfg->tcs);
 
-	/* Changing the number of TCs might change the number of vectors */
+	 
 	aq_nic_cfg_update_num_vecs(self);
 	if (prev_vecs != cfg->vecs) {
 		err = aq_nic_realloc_vectors(self);

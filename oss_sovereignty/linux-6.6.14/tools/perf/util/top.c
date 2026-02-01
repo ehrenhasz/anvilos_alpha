@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- *
- * Refactored from builtin-top.c, see that files for further copyright notes.
- */
+
+ 
 
 #include "event.h"
 #include "evlist.h"

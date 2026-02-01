@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_edid.h>
 

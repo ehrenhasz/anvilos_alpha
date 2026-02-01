@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef TARGET_CORE_IBLOCK_H
 #define TARGET_CORE_IBLOCK_H
 
@@ -36,4 +36,4 @@ struct iblock_dev {
 	struct iblock_dev_plug *ibd_plug;
 } ____cacheline_aligned;
 
-#endif /* TARGET_CORE_IBLOCK_H */
+#endif  

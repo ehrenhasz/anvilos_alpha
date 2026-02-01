@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * An hwmon driver for the Microchip TC74
- *
- * Copyright 2015 Maciej Szmigiero <mail@maciej.szmigiero.name>
- *
- * Based on ad7414.c:
- *	Copyright 2006 Stefan Roese, DENX Software Engineering
- *	Copyright 2008 Sean MacLennan, PIKA Technologies
- *	Copyright 2008 Frank Edelhaeuser, Spansion Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -21,16 +12,16 @@
 #include <linux/slab.h>
 #include <linux/sysfs.h>
 
-/* TC74 registers */
+ 
 #define TC74_REG_TEMP		0x00
 #define TC74_REG_CONFIG		0x01
 
 struct tc74_data {
 	struct i2c_client	*client;
-	struct mutex		lock;	/* atomic read data updates */
-	bool			valid;	/* validity of fields below */
-	unsigned long		next_update;	/* In jiffies */
-	s8			temp_input;	/* Temp value in dC */
+	struct mutex		lock;	 
+	bool			valid;	 
+	unsigned long		next_update;	 
+	s8			temp_input;	 
 };
 
 static int tc74_update_device(struct device *dev)
@@ -56,7 +47,7 @@ static int tc74_update_device(struct device *dev)
 		}
 
 		if (!(value & BIT(6))) {
-			/* not ready yet */
+			 
 
 			ret = -EAGAIN;
 			goto ret_unlock;
@@ -120,7 +111,7 @@ static int tc74_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->lock);
 
-	/* Make sure the chip is powered up. */
+	 
 	conf = i2c_smbus_read_byte_data(client, TC74_REG_CONFIG);
 	if (conf < 0) {
 		dev_err(dev, "unable to read config register\n");

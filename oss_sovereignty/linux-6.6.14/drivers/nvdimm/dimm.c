@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/vmalloc.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -26,17 +24,13 @@ static int nvdimm_probe(struct device *dev)
 
 	rc = nvdimm_check_config_data(dev);
 	if (rc) {
-		/* not required for non-aliased nvdimm, ex. NVDIMM-N */
+		 
 		if (rc == -ENOTTY)
 			rc = 0;
 		return rc;
 	}
 
-	/*
-	 * The locked status bit reflects explicit status codes from the
-	 * label reading commands, revalidate it each time the driver is
-	 * activated and re-reads the label area.
-	 */
+	 
 	nvdimm_clear_locked(dev);
 
 	ndd = kzalloc(sizeof(*ndd), GFP_KERNEL);
@@ -53,40 +47,23 @@ static int nvdimm_probe(struct device *dev)
 	get_device(dev);
 	kref_init(&ndd->kref);
 
-	/*
-	 * Attempt to unlock, if the DIMM supports security commands,
-	 * otherwise the locked indication is determined by explicit
-	 * status codes from the label reading commands.
-	 */
+	 
 	rc = nvdimm_security_unlock(dev);
 	if (rc < 0)
 		dev_dbg(dev, "failed to unlock dimm: %d\n", rc);
 
 
-	/*
-	 * EACCES failures reading the namespace label-area-properties
-	 * are interpreted as the DIMM capacity being locked but the
-	 * namespace labels themselves being accessible.
-	 */
+	 
 	rc = nvdimm_init_nsarea(ndd);
 	if (rc == -EACCES) {
-		/*
-		 * See nvdimm_namespace_common_probe() where we fail to
-		 * allow namespaces to probe while the DIMM is locked,
-		 * but we do allow for namespace enumeration.
-		 */
+		 
 		nvdimm_set_locked(dev);
 		rc = 0;
 	}
 	if (rc)
 		goto err;
 
-	/*
-	 * EACCES failures reading the namespace label-data are
-	 * interpreted as the label area being locked in addition to the
-	 * DIMM capacity. We fail the dimm probe to prevent regions from
-	 * attempting to parse the label area.
-	 */
+	 
 	rc = nd_label_data_init(ndd);
 	if (rc == -EACCES)
 		nvdimm_set_locked(dev);

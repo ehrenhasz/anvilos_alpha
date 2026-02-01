@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #ifdef __KERNEL__
 #include <linux/bpf.h>
@@ -74,11 +74,11 @@ static bool is_flex_arr(const struct btf *btf,
 {
 	const struct btf_type *t;
 
-	/* not a flexible array, if not inside a struct or has non-zero size */
+	 
 	if (!acc->name || arr->nelems > 0)
 		return false;
 
-	/* has to be the last member of enclosing struct */
+	 
 	t = btf_type_by_id(btf, acc->type_id);
 	return acc->idx == btf_vlen(t) - 1;
 }
@@ -147,9 +147,9 @@ int __bpf_core_types_are_compat(const struct btf *local_btf, __u32 local_id,
 				const struct btf *targ_btf, __u32 targ_id, int level)
 {
 	const struct btf_type *local_type, *targ_type;
-	int depth = 32; /* max recursion depth */
+	int depth = 32;  
 
-	/* caller made sure that names match (ignoring flavor suffix) */
+	 
 	local_type = btf_type_by_id(local_btf, local_id);
 	targ_type = btf_type_by_id(targ_btf, targ_id);
 	if (!btf_kind_core_compat(local_type, targ_type))
@@ -177,9 +177,7 @@ recur:
 	case BTF_KIND_ENUM64:
 		return 1;
 	case BTF_KIND_INT:
-		/* just reject deprecated bitfield-like integers; all other
-		 * integers are by default compatible between each other
-		 */
+		 
 		return btf_int_offset(local_type) == 0 && btf_int_offset(targ_type) == 0;
 	case BTF_KIND_PTR:
 		local_id = local_type->type;
@@ -211,7 +209,7 @@ recur:
 				return err;
 		}
 
-		/* tail recurse for return type check */
+		 
 		skip_mods_and_typedefs(local_btf, local_type->type, &local_id);
 		skip_mods_and_typedefs(targ_btf, targ_type->type, &targ_id);
 		goto recur;
@@ -223,43 +221,7 @@ recur:
 	}
 }
 
-/*
- * Turn bpf_core_relo into a low- and high-level spec representation,
- * validating correctness along the way, as well as calculating resulting
- * field bit offset, specified by accessor string. Low-level spec captures
- * every single level of nestedness, including traversing anonymous
- * struct/union members. High-level one only captures semantically meaningful
- * "turning points": named fields and array indicies.
- * E.g., for this case:
- *
- *   struct sample {
- *       int __unimportant;
- *       struct {
- *           int __1;
- *           int __2;
- *           int a[7];
- *       };
- *   };
- *
- *   struct sample *s = ...;
- *
- *   int x = &s->a[3]; // access string = '0:1:2:3'
- *
- * Low-level spec has 1:1 mapping with each element of access string (it's
- * just a parsed access string representation): [0, 1, 2, 3].
- *
- * High-level spec will capture only 3 points:
- *   - initial zero-index access by pointer (&s->... is the same as &s[0]...);
- *   - field 'a' access (corresponds to '2' in low-level spec);
- *   - array element #3 access (corresponds to '3' in low-level spec).
- *
- * Type-based relocations (TYPE_EXISTS/TYPE_MATCHES/TYPE_SIZE,
- * TYPE_ID_LOCAL/TYPE_ID_TARGET) don't capture any field information. Their
- * spec and raw_spec are kept empty.
- *
- * Enum value-based relocations (ENUMVAL_EXISTS/ENUMVAL_VALUE) use access
- * string to specify enumerator's value index that need to be relocated.
- */
+ 
 int bpf_core_parse_spec(const char *prog_name, const struct btf *btf,
 			const struct bpf_core_relo *relo,
 			struct bpf_core_spec *spec)
@@ -280,14 +242,14 @@ int bpf_core_parse_spec(const char *prog_name, const struct btf *btf,
 	spec->root_type_id = relo->type_id;
 	spec->relo_kind = relo->kind;
 
-	/* type-based relocations don't have a field access string */
+	 
 	if (core_relo_is_type_based(relo->kind)) {
 		if (strcmp(spec_str, "0"))
 			return -EINVAL;
 		return 0;
 	}
 
-	/* parse spec_str="0:1:2:3:4" into array raw_spec=[0, 1, 2, 3, 4] */
+	 
 	while (*spec_str) {
 		if (*spec_str == ':')
 			++spec_str;
@@ -316,7 +278,7 @@ int bpf_core_parse_spec(const char *prog_name, const struct btf *btf,
 		if (!btf_is_any_enum(t) || spec->raw_len > 1 || access_idx >= btf_vlen(t))
 			return -EINVAL;
 
-		/* record enumerator name in a first accessor */
+		 
 		name_off = btf_is_enum(t) ? btf_enum(t)[access_idx].name_off
 					  : btf_enum64(t)[access_idx].name_off;
 		acc->name = btf__name_by_offset(btf, name_off);
@@ -392,23 +354,7 @@ int bpf_core_parse_spec(const char *prog_name, const struct btf *btf,
 	return 0;
 }
 
-/* Check two types for compatibility for the purpose of field access
- * relocation. const/volatile/restrict and typedefs are skipped to ensure we
- * are relocating semantically compatible entities:
- *   - any two STRUCTs/UNIONs are compatible and can be mixed;
- *   - any two FWDs are compatible, if their names match (modulo flavor suffix);
- *   - any two PTRs are always compatible;
- *   - for ENUMs, names should be the same (ignoring flavor suffix) or at
- *     least one of enums should be anonymous;
- *   - for ENUMs, check sizes, names are ignored;
- *   - for INT, size and signedness are ignored;
- *   - any two FLOATs are always compatible;
- *   - for ARRAY, dimensionality is ignored, element types are checked for
- *     compatibility recursively;
- *   - everything else shouldn't be ever a target of relocation.
- * These rules are not set in stone and probably will be adjusted as we get
- * more experience with using BPF CO-RE relocations.
- */
+ 
 static int bpf_core_fields_are_compat(const struct btf *local_btf,
 				      __u32 local_id,
 				      const struct btf *targ_btf,
@@ -442,15 +388,13 @@ recur:
 		targ_name = btf__name_by_offset(targ_btf, targ_type->name_off);
 		local_len = bpf_core_essential_name_len(local_name);
 		targ_len = bpf_core_essential_name_len(targ_name);
-		/* one of them is anonymous or both w/ same flavor-less names */
+		 
 		return local_len == 0 || targ_len == 0 ||
 		       (local_len == targ_len &&
 			strncmp(local_name, targ_name, local_len) == 0);
 	}
 	case BTF_KIND_INT:
-		/* just reject deprecated bitfield-like integers; all other
-		 * integers are by default compatible between each other
-		 */
+		 
 		return btf_int_offset(local_type) == 0 &&
 		       btf_int_offset(targ_type) == 0;
 	case BTF_KIND_ARRAY:
@@ -462,22 +406,7 @@ recur:
 	}
 }
 
-/*
- * Given single high-level named field accessor in local type, find
- * corresponding high-level accessor for a target type. Along the way,
- * maintain low-level spec for target as well. Also keep updating target
- * bit offset.
- *
- * Searching is performed through recursive exhaustive enumeration of all
- * fields of a struct/union. If there are any anonymous (embedded)
- * structs/unions, they are recursively searched as well. If field with
- * desired name is found, check compatibility between local and target types,
- * before returning result.
- *
- * 1 is returned, if field is found.
- * 0 is returned if no compatible field is found.
- * <0 is returned on error.
- */
+ 
 static int bpf_core_match_member(const struct btf *local_btf,
 				 const struct bpf_core_accessor *local_acc,
 				 const struct btf *targ_btf,
@@ -509,24 +438,24 @@ static int bpf_core_match_member(const struct btf *local_btf,
 
 		bit_offset = btf_member_bit_offset(targ_type, i);
 
-		/* too deep struct/union/array nesting */
+		 
 		if (spec->raw_len == BPF_CORE_SPEC_MAX_LEN)
 			return -E2BIG;
 
-		/* speculate this member will be the good one */
+		 
 		spec->bit_offset += bit_offset;
 		spec->raw_spec[spec->raw_len++] = i;
 
 		targ_name = btf__name_by_offset(targ_btf, m->name_off);
 		if (str_is_empty(targ_name)) {
-			/* embedded struct/union, we need to go deeper */
+			 
 			found = bpf_core_match_member(local_btf, local_acc,
 						      targ_btf, m->type,
 						      spec, next_targ_id);
-			if (found) /* either found or error */
+			if (found)  
 				return found;
 		} else if (strcmp(local_name, targ_name) == 0) {
-			/* matching named field */
+			 
 			struct bpf_core_accessor *targ_acc;
 
 			targ_acc = &spec->spec[spec->len++];
@@ -539,10 +468,10 @@ static int bpf_core_match_member(const struct btf *local_btf,
 							   local_member->type,
 							   targ_btf, m->type);
 			if (!found)
-				spec->len--; /* pop accessor */
+				spec->len--;  
 			return found;
 		}
-		/* member turned out not to be what we looked for */
+		 
 		spec->bit_offset -= bit_offset;
 		spec->raw_len--;
 	}
@@ -550,10 +479,7 @@ static int bpf_core_match_member(const struct btf *local_btf,
 	return 0;
 }
 
-/*
- * Try to match local spec to a target type and, if successful, produce full
- * target spec (high-level, low-level + bit offset).
- */
+ 
 static int bpf_core_spec_match(struct bpf_core_spec *local_spec,
 			       const struct btf *targ_btf, __u32 targ_id,
 			       struct bpf_core_spec *targ_spec)
@@ -587,7 +513,7 @@ static int bpf_core_spec_match(struct bpf_core_spec *local_spec,
 		size_t local_essent_len, targ_essent_len;
 		const char *targ_name;
 
-		/* has to resolve to an enum */
+		 
 		targ_type = skip_mods_and_typedefs(targ_spec->btf, targ_id, &targ_id);
 		if (!btf_is_any_enum(targ_type))
 			return 0;
@@ -634,10 +560,7 @@ static int bpf_core_spec_match(struct bpf_core_spec *local_spec,
 			if (matched <= 0)
 				return matched;
 		} else {
-			/* for i=0, targ_id is already treated as array element
-			 * type (because it's the original struct), for others
-			 * we should find array element type first
-			 */
+			 
 			if (i > 0) {
 				const struct btf_array *a;
 				bool flex;
@@ -654,7 +577,7 @@ static int bpf_core_spec_match(struct bpf_core_spec *local_spec,
 					return -EINVAL;
 			}
 
-			/* too deep struct/union/array nesting */
+			 
 			if (targ_spec->raw_len == BPF_CORE_SPEC_MAX_LEN)
 				return -E2BIG;
 
@@ -697,16 +620,16 @@ static int bpf_core_calc_field_relo(const char *prog_name,
 	}
 
 	if (!spec)
-		return -EUCLEAN; /* request instruction poisoning */
+		return -EUCLEAN;  
 
 	acc = &spec->spec[spec->len - 1];
 	t = btf_type_by_id(spec->btf, acc->type_id);
 
-	/* a[n] accessor needs special handling */
+	 
 	if (!acc->name) {
 		if (relo->kind == BPF_CORE_FIELD_BYTE_OFFSET) {
 			*val = spec->bit_offset / 8;
-			/* remember field size for load/store mem size */
+			 
 			sz = btf__resolve_size(spec->btf, acc->type_id);
 			if (sz < 0)
 				return -EINVAL;
@@ -736,10 +659,10 @@ static int bpf_core_calc_field_relo(const char *prog_name,
 	if (bitfield) {
 		byte_sz = mt->size;
 		byte_off = bit_off / 8 / byte_sz * byte_sz;
-		/* figure out smallest int size necessary for bitfield load */
+		 
 		while (bit_off + bit_sz - byte_off * 8 > byte_sz * 8) {
 			if (byte_sz >= 8) {
-				/* bitfield can't be read with 64-bit read */
+				 
 				pr_warn("prog '%s': relo %d at insn #%d can't be satisfied for bitfield\n",
 					prog_name, relo->kind, relo->insn_off / 8);
 				return -E2BIG;
@@ -756,10 +679,7 @@ static int bpf_core_calc_field_relo(const char *prog_name,
 		bit_sz = byte_sz * 8;
 	}
 
-	/* for bitfields, all the relocatable aspects are ambiguous and we
-	 * might disagree with compiler, so turn off validation of expected
-	 * value, except for signedness
-	 */
+	 
 	if (validate)
 		*validate = !bitfield;
 
@@ -778,7 +698,7 @@ static int bpf_core_calc_field_relo(const char *prog_name,
 		*val = (btf_is_any_enum(mt) && BTF_INFO_KFLAG(mt->info)) ||
 		       (btf_is_int(mt) && (btf_int_encoding(mt) & BTF_INT_SIGNED));
 		if (validate)
-			*validate = true; /* signedness is never ambiguous */
+			*validate = true;  
 		break;
 	case BPF_CORE_FIELD_LSHIFT_U64:
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -790,7 +710,7 @@ static int bpf_core_calc_field_relo(const char *prog_name,
 	case BPF_CORE_FIELD_RSHIFT_U64:
 		*val = 64 - bit_sz;
 		if (validate)
-			*validate = true; /* right shift is never ambiguous */
+			*validate = true;  
 		break;
 	case BPF_CORE_FIELD_EXISTS:
 	default:
@@ -806,11 +726,11 @@ static int bpf_core_calc_type_relo(const struct bpf_core_relo *relo,
 {
 	__s64 sz;
 
-	/* by default, always check expected value in bpf_insn */
+	 
 	if (validate)
 		*validate = true;
 
-	/* type-based relos return zero when target type is not found */
+	 
 	if (!spec) {
 		*val = 0;
 		return 0;
@@ -819,9 +739,7 @@ static int bpf_core_calc_type_relo(const struct bpf_core_relo *relo,
 	switch (relo->kind) {
 	case BPF_CORE_TYPE_ID_TARGET:
 		*val = spec->root_type_id;
-		/* type ID, embedded in bpf_insn, might change during linking,
-		 * so enforcing it is pointless
-		 */
+		 
 		if (validate)
 			*validate = false;
 		break;
@@ -836,7 +754,7 @@ static int bpf_core_calc_type_relo(const struct bpf_core_relo *relo,
 		*val = sz;
 		break;
 	case BPF_CORE_TYPE_ID_LOCAL:
-	/* BPF_CORE_TYPE_ID_LOCAL is handled specially and shouldn't get here */
+	 
 	default:
 		return -EOPNOTSUPP;
 	}
@@ -856,7 +774,7 @@ static int bpf_core_calc_enumval_relo(const struct bpf_core_relo *relo,
 		break;
 	case BPF_CORE_ENUMVAL_VALUE:
 		if (!spec)
-			return -EUCLEAN; /* request instruction poisoning */
+			return -EUCLEAN;  
 		t = btf_type_by_id(spec->btf, spec->spec[0].type_id);
 		if (btf_is_enum(t))
 			*val = btf_enum(t)[spec->spec[0].idx].val;
@@ -870,12 +788,7 @@ static int bpf_core_calc_enumval_relo(const struct bpf_core_relo *relo,
 	return 0;
 }
 
-/* Calculate original and target relocation values, given local and target
- * specs and relocation kind. These values are calculated for each candidate.
- * If there are multiple candidates, resulting values should all be consistent
- * with each other. Otherwise, libbpf will refuse to proceed due to ambiguity.
- * If instruction has to be poisoned, *poison will be set to true.
- */
+ 
 static int bpf_core_calc_relo(const char *prog_name,
 			      const struct bpf_core_relo *relo,
 			      int relo_idx,
@@ -902,10 +815,7 @@ static int bpf_core_calc_relo(const char *prog_name,
 						      &res->new_type_id, NULL);
 		if (err)
 			goto done;
-		/* Validate if it's safe to adjust load/store memory size.
-		 * Adjustments are performed only if original and new memory
-		 * sizes differ.
-		 */
+		 
 		res->fail_memsz_adjust = false;
 		if (res->orig_sz != res->new_sz) {
 			const struct btf_type *orig_t, *new_t;
@@ -913,20 +823,7 @@ static int bpf_core_calc_relo(const char *prog_name,
 			orig_t = btf_type_by_id(local_spec->btf, res->orig_type_id);
 			new_t = btf_type_by_id(targ_spec->btf, res->new_type_id);
 
-			/* There are two use cases in which it's safe to
-			 * adjust load/store's mem size:
-			 *   - reading a 32-bit kernel pointer, while on BPF
-			 *   size pointers are always 64-bit; in this case
-			 *   it's safe to "downsize" instruction size due to
-			 *   pointer being treated as unsigned integer with
-			 *   zero-extended upper 32-bits;
-			 *   - reading unsigned integers, again due to
-			 *   zero-extension is preserving the value correctly.
-			 *
-			 * In all other cases it's incorrect to attempt to
-			 * load/store field because read value will be
-			 * incorrect, so we poison relocated instruction.
-			 */
+			 
 			if (btf_is_ptr(orig_t) && btf_is_ptr(new_t))
 				goto done;
 			if (btf_is_int(orig_t) && btf_is_int(new_t) &&
@@ -934,9 +831,7 @@ static int bpf_core_calc_relo(const char *prog_name,
 			    btf_int_encoding(new_t) != BTF_INT_SIGNED)
 				goto done;
 
-			/* mark as invalid mem size adjustment, but this will
-			 * only be checked for LDX/STX/ST insns
-			 */
+			 
 			res->fail_memsz_adjust = true;
 		}
 	} else if (core_relo_is_type_based(relo->kind)) {
@@ -949,11 +844,11 @@ static int bpf_core_calc_relo(const char *prog_name,
 
 done:
 	if (err == -EUCLEAN) {
-		/* EUCLEAN is used to signal instruction poisoning request */
+		 
 		res->poison = true;
 		err = 0;
 	} else if (err == -EOPNOTSUPP) {
-		/* EOPNOTSUPP means unknown/unsupported relocation */
+		 
 		pr_warn("prog '%s': relo #%d: unrecognized CO-RE relocation %s (%d) at insn #%d\n",
 			prog_name, relo_idx, core_relo_kind_str(relo->kind),
 			relo->kind, relo->insn_off / 8);
@@ -962,10 +857,7 @@ done:
 	return err;
 }
 
-/*
- * Turn instruction for which CO_RE relocation failed into invalid one with
- * distinct signature.
- */
+ 
 static void bpf_core_poison_insn(const char *prog_name, int relo_idx,
 				 int insn_idx, struct bpf_insn *insn)
 {
@@ -975,11 +867,8 @@ static void bpf_core_poison_insn(const char *prog_name, int relo_idx,
 	insn->dst_reg = 0;
 	insn->src_reg = 0;
 	insn->off = 0;
-	/* if this instruction is reachable (not a dead code),
-	 * verifier will complain with the following message:
-	 * invalid func unknown#195896080
-	 */
-	insn->imm = 195896080; /* => 0xbad2310 => "bad relo" */
+	 
+	insn->imm = 195896080;  
 }
 
 static int insn_bpf_size_to_bytes(struct bpf_insn *insn)
@@ -1004,23 +893,7 @@ static int insn_bytes_to_bpf_size(__u32 sz)
 	}
 }
 
-/*
- * Patch relocatable BPF instruction.
- *
- * Patched value is determined by relocation kind and target specification.
- * For existence relocations target spec will be NULL if field/type is not found.
- * Expected insn->imm value is determined using relocation kind and local
- * spec, and is checked before patching instruction. If actual insn->imm value
- * is wrong, bail out with error.
- *
- * Currently supported classes of BPF instruction are:
- * 1. rX = <imm> (assignment with immediate operand);
- * 2. rX += <imm> (arithmetic operations with immediate operand);
- * 3. rX = <imm64> (load with 64-bit immediate value);
- * 4. rX = *(T *)(rY + <off>), where T is one of {u8, u16, u32, u64};
- * 5. *(T *)(rX + <off>) = rY, where T is one of {u8, u16, u32, u64};
- * 6. *(T *)(rX + <off>) = <imm>, where T is one of {u8, u16, u32, u64}.
- */
+ 
 int bpf_core_patch_insn(const char *prog_name, struct bpf_insn *insn,
 			int insn_idx, const struct bpf_core_relo *relo,
 			int relo_idx, const struct bpf_core_relo_res *res)
@@ -1032,9 +905,7 @@ int bpf_core_patch_insn(const char *prog_name, struct bpf_insn *insn,
 
 	if (res->poison) {
 poison:
-		/* poison second part of ldimm64 to avoid confusing error from
-		 * verifier about "unknown opcode 00"
-		 */
+		 
 		if (is_ldimm64_insn(insn))
 			bpf_core_poison_insn(prog_name, relo_idx, insn_idx + 1, insn + 1);
 		bpf_core_poison_insn(prog_name, relo_idx, insn_idx, insn);
@@ -1149,10 +1020,7 @@ poison:
 	return 0;
 }
 
-/* Output spec definition in the format:
- * [<type-id>] (<type-name>) + <raw-spec> => <offset>@<spec>,
- * where <spec> is a C-syntax view of recorded field access, e.g.: x.a[3].b
- */
+ 
 int bpf_core_format_spec(char *buf, size_t buf_sz, const struct bpf_core_spec *spec)
 {
 	const struct btf_type *t;
@@ -1227,56 +1095,7 @@ int bpf_core_format_spec(char *buf, size_t buf_sz, const struct bpf_core_spec *s
 #undef append_buf
 }
 
-/*
- * Calculate CO-RE relocation target result.
- *
- * The outline and important points of the algorithm:
- * 1. For given local type, find corresponding candidate target types.
- *    Candidate type is a type with the same "essential" name, ignoring
- *    everything after last triple underscore (___). E.g., `sample`,
- *    `sample___flavor_one`, `sample___flavor_another_one`, are all candidates
- *    for each other. Names with triple underscore are referred to as
- *    "flavors" and are useful, among other things, to allow to
- *    specify/support incompatible variations of the same kernel struct, which
- *    might differ between different kernel versions and/or build
- *    configurations.
- *
- *    N.B. Struct "flavors" could be generated by bpftool's BTF-to-C
- *    converter, when deduplicated BTF of a kernel still contains more than
- *    one different types with the same name. In that case, ___2, ___3, etc
- *    are appended starting from second name conflict. But start flavors are
- *    also useful to be defined "locally", in BPF program, to extract same
- *    data from incompatible changes between different kernel
- *    versions/configurations. For instance, to handle field renames between
- *    kernel versions, one can use two flavors of the struct name with the
- *    same common name and use conditional relocations to extract that field,
- *    depending on target kernel version.
- * 2. For each candidate type, try to match local specification to this
- *    candidate target type. Matching involves finding corresponding
- *    high-level spec accessors, meaning that all named fields should match,
- *    as well as all array accesses should be within the actual bounds. Also,
- *    types should be compatible (see bpf_core_fields_are_compat for details).
- * 3. It is supported and expected that there might be multiple flavors
- *    matching the spec. As long as all the specs resolve to the same set of
- *    offsets across all candidates, there is no error. If there is any
- *    ambiguity, CO-RE relocation will fail. This is necessary to accommodate
- *    imperfection of BTF deduplication, which can cause slight duplication of
- *    the same BTF type, if some directly or indirectly referenced (by
- *    pointer) type gets resolved to different actual types in different
- *    object files. If such a situation occurs, deduplicated BTF will end up
- *    with two (or more) structurally identical types, which differ only in
- *    types they refer to through pointer. This should be OK in most cases and
- *    is not an error.
- * 4. Candidate types search is performed by linearly scanning through all
- *    types in target BTF. It is anticipated that this is overall more
- *    efficient memory-wise and not significantly worse (if not better)
- *    CPU-wise compared to prebuilding a map from all local type names to
- *    a list of candidate type names. It's also sped up by caching resolved
- *    list of matching candidates per each local "root" type ID, that has at
- *    least one bpf_core_relo associated with it. This list is shared
- *    between multiple relocations for the same type ID and is updated as some
- *    of the candidates are pruned due to structural incompatibility.
- */
+ 
 int bpf_core_calc_relo_insn(const char *prog_name,
 			    const struct bpf_core_relo *relo,
 			    int relo_idx,
@@ -1316,9 +1135,9 @@ int bpf_core_calc_relo_insn(const char *prog_name,
 	bpf_core_format_spec(spec_buf, sizeof(spec_buf), local_spec);
 	pr_debug("prog '%s': relo #%d: %s\n", prog_name, relo_idx, spec_buf);
 
-	/* TYPE_ID_LOCAL relo is special and doesn't need candidate search */
+	 
 	if (relo->kind == BPF_CORE_TYPE_ID_LOCAL) {
-		/* bpf_insn's imm value could get out of sync during linking */
+		 
 		memset(targ_res, 0, sizeof(*targ_res));
 		targ_res->validate = false;
 		targ_res->poison = false;
@@ -1327,7 +1146,7 @@ int bpf_core_calc_relo_insn(const char *prog_name,
 		return 0;
 	}
 
-	/* libbpf doesn't support candidate search for anonymous types */
+	 
 	if (str_is_empty(local_name)) {
 		pr_warn("prog '%s': relo #%d: <%s> (%d) relocation doesn't support anonymous types\n",
 			prog_name, relo_idx, core_relo_kind_str(relo->kind), relo->kind);
@@ -1359,19 +1178,14 @@ int bpf_core_calc_relo_insn(const char *prog_name,
 			*targ_res = cand_res;
 			*targ_spec = *cand_spec;
 		} else if (cand_spec->bit_offset != targ_spec->bit_offset) {
-			/* if there are many field relo candidates, they
-			 * should all resolve to the same bit offset
-			 */
+			 
 			pr_warn("prog '%s': relo #%d: field offset ambiguity: %u != %u\n",
 				prog_name, relo_idx, cand_spec->bit_offset,
 				targ_spec->bit_offset);
 			return -EINVAL;
 		} else if (cand_res.poison != targ_res->poison ||
 			   cand_res.new_val != targ_res->new_val) {
-			/* all candidates should result in the same relocation
-			 * decision and value, otherwise it's dangerous to
-			 * proceed due to ambiguity
-			 */
+			 
 			pr_warn("prog '%s': relo #%d: relocation decision ambiguity: %s %llu != %s %llu\n",
 				prog_name, relo_idx,
 				cand_res.poison ? "failure" : "success",
@@ -1384,33 +1198,16 @@ int bpf_core_calc_relo_insn(const char *prog_name,
 		cands->cands[j++] = cands->cands[i];
 	}
 
-	/*
-	 * For BPF_CORE_FIELD_EXISTS relo or when used BPF program has field
-	 * existence checks or kernel version/config checks, it's expected
-	 * that we might not find any candidates. In this case, if field
-	 * wasn't found in any candidate, the list of candidates shouldn't
-	 * change at all, we'll just handle relocating appropriately,
-	 * depending on relo's kind.
-	 */
+	 
 	if (j > 0)
 		cands->len = j;
 
-	/*
-	 * If no candidates were found, it might be both a programmer error,
-	 * as well as expected case, depending whether instruction w/
-	 * relocation is guarded in some way that makes it unreachable (dead
-	 * code) if relocation can't be resolved. This is handled in
-	 * bpf_core_patch_insn() uniformly by replacing that instruction with
-	 * BPF helper call insn (using invalid helper ID). If that instruction
-	 * is indeed unreachable, then it will be ignored and eliminated by
-	 * verifier. If it was an error, then verifier will complain and point
-	 * to a specific instruction number in its log.
-	 */
+	 
 	if (j == 0) {
 		pr_debug("prog '%s': relo #%d: no matching targets found\n",
 			 prog_name, relo_idx);
 
-		/* calculate single target relo result explicitly */
+		 
 		err = bpf_core_calc_relo(prog_name, relo, relo_idx, local_spec, NULL, targ_res);
 		if (err)
 			return err;
@@ -1450,9 +1247,7 @@ static int bpf_core_enums_match(const struct btf *local_btf, const struct btf_ty
 	if (local_vlen > targ_vlen)
 		return 0;
 
-	/* iterate over the local enum's variants and make sure each has
-	 * a symbolic name correspondent in the target
-	 */
+	 
 	for (i = 0; i < local_vlen; i++) {
 		bool matched = false;
 		__u32 local_n_off, targ_n_off;
@@ -1488,7 +1283,7 @@ static int bpf_core_composites_match(const struct btf *local_btf, const struct b
 	if (local_vlen > targ_vlen)
 		return 0;
 
-	/* check that all local members have a match in the target */
+	 
 	for (i = 0; i < local_vlen; i++, local_m++) {
 		const struct btf_member *targ_m = btf_members(targ_t);
 		bool matched = false;
@@ -1514,38 +1309,12 @@ static int bpf_core_composites_match(const struct btf *local_btf, const struct b
 	return 1;
 }
 
-/* Check that two types "match". This function assumes that root types were
- * already checked for name match.
- *
- * The matching relation is defined as follows:
- * - modifiers and typedefs are stripped (and, hence, effectively ignored)
- * - generally speaking types need to be of same kind (struct vs. struct, union
- *   vs. union, etc.)
- *   - exceptions are struct/union behind a pointer which could also match a
- *     forward declaration of a struct or union, respectively, and enum vs.
- *     enum64 (see below)
- * Then, depending on type:
- * - integers:
- *   - match if size and signedness match
- * - arrays & pointers:
- *   - target types are recursively matched
- * - structs & unions:
- *   - local members need to exist in target with the same name
- *   - for each member we recursively check match unless it is already behind a
- *     pointer, in which case we only check matching names and compatible kind
- * - enums:
- *   - local variants have to have a match in target by symbolic name (but not
- *     numeric value)
- *   - size has to match (but enum may match enum64 and vice versa)
- * - function pointers:
- *   - number and position of arguments in local type has to match target
- *   - for each argument and the return value we recursively check match
- */
+ 
 int __bpf_core_types_match(const struct btf *local_btf, __u32 local_id, const struct btf *targ_btf,
 			   __u32 targ_id, bool behind_ptr, int level)
 {
 	const struct btf_type *local_t, *targ_t;
-	int depth = 32; /* max recursion depth */
+	int depth = 32;  
 	__u16 local_k, targ_k;
 
 	if (level <= 0)
@@ -1561,10 +1330,7 @@ recur:
 	if (!local_t || !targ_t)
 		return -EINVAL;
 
-	/* While the name check happens after typedefs are skipped, root-level
-	 * typedefs would still be name-matched as that's the contract with
-	 * callers.
-	 */
+	 
 	if (!bpf_core_names_match(local_btf, local_t->name_off, targ_btf, targ_t->name_off))
 		return 0;
 
@@ -1581,16 +1347,14 @@ recur:
 			if (local_k == targ_k)
 				return local_f == BTF_INFO_KFLAG(targ_t->info);
 
-			/* for forward declarations kflag dictates whether the
-			 * target is a struct (0) or union (1)
-			 */
+			 
 			return (targ_k == BTF_KIND_STRUCT && !local_f) ||
 			       (targ_k == BTF_KIND_UNION && local_f);
 		} else {
 			if (local_k != targ_k)
 				return 0;
 
-			/* match if the forward declaration is for the same kind */
+			 
 			return local_f == BTF_INFO_KFLAG(targ_t->info);
 		}
 	}
@@ -1674,7 +1438,7 @@ recur:
 				return err;
 		}
 
-		/* tail recurse for return type check */
+		 
 		local_id = local_t->type;
 		targ_id = targ_t->type;
 		goto recur;

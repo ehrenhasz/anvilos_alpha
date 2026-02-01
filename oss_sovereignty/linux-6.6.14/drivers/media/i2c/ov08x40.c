@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022 Intel Corporation.
+
+
 
 #include <linux/acpi.h>
 #include <linux/i2c.h>
@@ -28,46 +28,46 @@
 #define OV08X40_REG_SOFTWARE_RST	0x0103
 #define OV08X40_SOFTWARE_RST		0x01
 
-/* Chip ID */
+ 
 #define OV08X40_REG_CHIP_ID		0x300a
 #define OV08X40_CHIP_ID			0x560858
 
-/* V_TIMING internal */
+ 
 #define OV08X40_REG_VTS			0x380e
 #define OV08X40_VTS_30FPS		0x1388
 #define OV08X40_VTS_BIN_30FPS		0x115c
 #define OV08X40_VTS_MAX			0x7fff
 
-/* H TIMING internal */
+ 
 #define OV08X40_REG_HTS			0x380c
 #define OV08X40_HTS_30FPS		0x0280
 
-/* Exposure control */
+ 
 #define OV08X40_REG_EXPOSURE		0x3500
 #define OV08X40_EXPOSURE_MAX_MARGIN 31
 #define OV08X40_EXPOSURE_MIN		1
 #define OV08X40_EXPOSURE_STEP		1
 #define OV08X40_EXPOSURE_DEFAULT	0x40
 
-/* Short Exposure control */
+ 
 #define OV08X40_REG_SHORT_EXPOSURE	0x3540
 
-/* Analog gain control */
+ 
 #define OV08X40_REG_ANALOG_GAIN		0x3508
 #define OV08X40_ANA_GAIN_MIN		0x80
 #define OV08X40_ANA_GAIN_MAX		0x07c0
 #define OV08X40_ANA_GAIN_STEP		1
 #define OV08X40_ANA_GAIN_DEFAULT	0x80
 
-/* Digital gain control */
+ 
 #define OV08X40_REG_DGTL_GAIN_H		0x350a
 #define OV08X40_REG_DGTL_GAIN_M		0x350b
 #define OV08X40_REG_DGTL_GAIN_L		0x350c
 
-#define OV08X40_DGTL_GAIN_MIN		1024	     /* Min = 1 X */
-#define OV08X40_DGTL_GAIN_MAX		(4096 - 1)   /* Max = 4 X */
-#define OV08X40_DGTL_GAIN_DEFAULT	2560	     /* Default gain = 2.5 X */
-#define OV08X40_DGTL_GAIN_STEP		1            /* Each step = 1/1024 */
+#define OV08X40_DGTL_GAIN_MIN		1024	      
+#define OV08X40_DGTL_GAIN_MAX		(4096 - 1)    
+#define OV08X40_DGTL_GAIN_DEFAULT	2560	      
+#define OV08X40_DGTL_GAIN_STEP		1             
 
 #define OV08X40_DGTL_GAIN_L_SHIFT	6
 #define OV08X40_DGTL_GAIN_L_MASK	0x3
@@ -76,7 +76,7 @@
 #define OV08X40_DGTL_GAIN_H_SHIFT	10
 #define OV08X40_DGTL_GAIN_H_MASK	0x1F
 
-/* Test Pattern Control */
+ 
 #define OV08X40_REG_TEST_PATTERN	0x50C1
 #define OV08X40_REG_ISP             0x5000
 #define OV08X40_REG_SHORT_TEST_PATTERN  0x53C1
@@ -84,14 +84,14 @@
 #define OV08X40_TEST_PATTERN_MASK	0xcf
 #define OV08X40_TEST_PATTERN_BAR_SHIFT	4
 
-/* Flip Control */
+ 
 #define OV08X40_REG_VFLIP		0x3820
 #define OV08X40_REG_MIRROR		0x3821
 
-/* Horizontal Window Offset */
+ 
 #define OV08X40_REG_H_WIN_OFFSET	0x3811
 
-/* Vertical Window Offset */
+ 
 #define OV08X40_REG_V_WIN_OFFSET	0x3813
 
 enum {
@@ -108,30 +108,30 @@ struct ov08x40_reg_list {
 	const struct ov08x40_reg *regs;
 };
 
-/* Link frequency config */
+ 
 struct ov08x40_link_freq_config {
-	/* registers for this link frequency */
+	 
 	struct ov08x40_reg_list reg_list;
 };
 
-/* Mode : resolution and related config&values */
+ 
 struct ov08x40_mode {
-	/* Frame width */
+	 
 	u32 width;
-	/* Frame height */
+	 
 	u32 height;
 
 	u32 lanes;
-	/* V-timing */
+	 
 	u32 vts_def;
 	u32 vts_min;
 
-	/* HTS */
+	 
 	u32 hts;
 
-	/* Index of Link frequency config to be used */
+	 
 	u32 link_freq_index;
-	/* Default register values */
+	 
 	struct ov08x40_reg_list reg_list;
 };
 
@@ -2352,16 +2352,13 @@ static const char * const ov08x40_test_pattern_menu[] = {
 	"Vertical Color Bar Type 4"
 };
 
-/* Configurations for supported link frequencies */
+ 
 #define OV08X40_LINK_FREQ_400MHZ	400000000ULL
 
 #define OV08X40_EXT_CLK			19200000
 #define OV08X40_DATA_LANES		4
 
-/*
- * pixel_rate = link_freq * data-rate * nr_of_lanes / bits_per_sample
- * data rate => double data rate; number of lanes => 4; bits per pixel => 10
- */
+ 
 static u64 link_freq_to_pixel_rate(u64 f)
 {
 	f *= 2 * OV08X40_DATA_LANES;
@@ -2370,12 +2367,12 @@ static u64 link_freq_to_pixel_rate(u64 f)
 	return f;
 }
 
-/* Menu items for LINK_FREQ V4L2 control */
+ 
 static const s64 link_freq_menu_items[] = {
 	OV08X40_LINK_FREQ_400MHZ,
 };
 
-/* Link frequency configs */
+ 
 static const struct ov08x40_link_freq_config link_freq_configs[] = {
 	[OV08X40_LINK_FREQ_400MHZ_INDEX] = {
 		.reg_list = {
@@ -2385,7 +2382,7 @@ static const struct ov08x40_link_freq_config link_freq_configs[] = {
 	},
 };
 
-/* Mode configs */
+ 
 static const struct ov08x40_mode supported_modes[] = {
 	{
 		.width = 3856,
@@ -2420,26 +2417,26 @@ struct ov08x40 {
 	struct media_pad pad;
 
 	struct v4l2_ctrl_handler ctrl_handler;
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov08x40_mode *cur_mode;
 
-	/* Mutex for serialized access */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 };
 
 #define to_ov08x40(_sd)	container_of(_sd, struct ov08x40, sd)
 
-/* Read registers up to 4 at a time */
+ 
 static int ov08x40_read_reg(struct ov08x40 *ov08x,
 			    u16 reg, u32 len, u32 *val)
 {
@@ -2454,13 +2451,13 @@ static int ov08x40_read_reg(struct ov08x40 *ov08x,
 		return -EINVAL;
 
 	data_be_p = (u8 *)&data_be;
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -2475,7 +2472,7 @@ static int ov08x40_read_reg(struct ov08x40 *ov08x,
 	return 0;
 }
 
-/* Write registers up to 4 at a time */
+ 
 static int ov08x40_write_reg(struct ov08x40 *ov08x,
 			     u16 reg, u32 len, u32 __val)
 {
@@ -2504,7 +2501,7 @@ static int ov08x40_write_reg(struct ov08x40 *ov08x,
 	return 0;
 }
 
-/* Write a list of registers */
+ 
 static int ov08x40_write_regs(struct ov08x40 *ov08x,
 			      const struct ov08x40_reg *regs, u32 len)
 {
@@ -2543,13 +2540,13 @@ static int ov08x40_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 
 	mutex_lock(&ov08x->mutex);
 
-	/* Initialize try_fmt */
+	 
 	try_fmt->width = default_mode->width;
 	try_fmt->height = default_mode->height;
 	try_fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
 	try_fmt->field = V4L2_FIELD_NONE;
 
-	/* No crop or compose */
+	 
 	mutex_unlock(&ov08x->mutex);
 
 	return 0;
@@ -2560,9 +2557,7 @@ static int ov08x40_update_digital_gain(struct ov08x40 *ov08x, u32 d_gain)
 	int ret;
 	u32 val;
 
-	/*
-	 * 0x350C[1:0], 0x350B[7:0], 0x350A[4:0]
-	 */
+	 
 
 	val = (d_gain & OV08X40_DGTL_GAIN_L_MASK) << OV08X40_DGTL_GAIN_L_SHIFT;
 	ret = ov08x40_write_reg(ov08x, OV08X40_REG_DGTL_GAIN_L,
@@ -2669,10 +2664,10 @@ static int ov08x40_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max = ov08x->cur_mode->height + ctrl->val - OV08X40_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(ov08x->exposure,
 					 ov08x->exposure->minimum,
@@ -2680,10 +2675,7 @@ static int ov08x40_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	}
 
-	/*
-	 * Applying V4L2 control value only happens
-	 * when power is up for streaming
-	 */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -2736,7 +2728,7 @@ static int ov08x40_enum_mbus_code(struct v4l2_subdev *sd,
 				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
-	/* Only one bayer order(GRBG) is supported */
+	 
 	if (code->index > 0)
 		return -EINVAL;
 
@@ -2819,7 +2811,7 @@ ov08x40_set_pad_format(struct v4l2_subdev *sd,
 
 	mutex_lock(&ov08x->mutex);
 
-	/* Only one raw bayer(GRBG) order is supported */
+	 
 	if (fmt->format.code != MEDIA_BUS_FMT_SGRBG10_1X10)
 		fmt->format.code = MEDIA_BUS_FMT_SGRBG10_1X10;
 
@@ -2838,7 +2830,7 @@ ov08x40_set_pad_format(struct v4l2_subdev *sd,
 		pixel_rate = link_freq_to_pixel_rate(link_freq);
 		__v4l2_ctrl_s_ctrl_int64(ov08x->pixel_rate, pixel_rate);
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = ov08x->cur_mode->vts_def -
 			     ov08x->cur_mode->height;
 		vblank_min = ov08x->cur_mode->vts_min -
@@ -2865,7 +2857,7 @@ static int ov08x40_start_streaming(struct ov08x40 *ov08x)
 	const struct ov08x40_reg_list *reg_list;
 	int ret, link_freq_index;
 
-	/* Get out of from software reset */
+	 
 	ret = ov08x40_write_reg(ov08x, OV08X40_REG_SOFTWARE_RST,
 				OV08X40_REG_VALUE_08BIT, OV08X40_SOFTWARE_RST);
 	if (ret) {
@@ -2883,7 +2875,7 @@ static int ov08x40_start_streaming(struct ov08x40 *ov08x)
 		return ret;
 	}
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &ov08x->cur_mode->reg_list;
 	ret = ov08x40_write_reg_list(ov08x, reg_list);
 	if (ret) {
@@ -2891,7 +2883,7 @@ static int ov08x40_start_streaming(struct ov08x40 *ov08x)
 		return ret;
 	}
 
-	/* Apply customized values from user */
+	 
 	ret =  __v4l2_ctrl_handler_setup(ov08x->sd.ctrl_handler);
 	if (ret)
 		return ret;
@@ -2901,7 +2893,7 @@ static int ov08x40_start_streaming(struct ov08x40 *ov08x)
 				 OV08X40_MODE_STREAMING);
 }
 
-/* Stop streaming */
+ 
 static int ov08x40_stop_streaming(struct ov08x40 *ov08x)
 {
 	return ov08x40_write_reg(ov08x, OV08X40_REG_MODE_SELECT,
@@ -2925,10 +2917,7 @@ static int ov08x40_set_stream(struct v4l2_subdev *sd, int enable)
 		if (ret < 0)
 			goto err_unlock;
 
-		/*
-		 * Apply default & customized values
-		 * and then start streaming.
-		 */
+		 
 		ret = ov08x40_start_streaming(ov08x);
 		if (ret)
 			goto err_rpm_put;
@@ -2981,7 +2970,7 @@ error:
 	return ret;
 }
 
-/* Verify chip ID */
+ 
 static int ov08x40_identify_module(struct ov08x40 *ov08x)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov08x->sd);
@@ -3060,7 +3049,7 @@ static int ov08x40_init_controls(struct ov08x40 *ov08x)
 
 	pixel_rate_max = link_freq_to_pixel_rate(link_freq_menu_items[0]);
 	pixel_rate_min = 0;
-	/* By default, PIXEL_RATE is read only */
+	 
 	ov08x->pixel_rate = v4l2_ctrl_new_std(ctrl_hdlr, &ov08x40_ctrl_ops,
 					      V4L2_CID_PIXEL_RATE,
 					      pixel_rate_min, pixel_rate_max,
@@ -3093,7 +3082,7 @@ static int ov08x40_init_controls(struct ov08x40 *ov08x)
 			  OV08X40_ANA_GAIN_MIN, OV08X40_ANA_GAIN_MAX,
 			  OV08X40_ANA_GAIN_STEP, OV08X40_ANA_GAIN_DEFAULT);
 
-	/* Digital gain */
+	 
 	v4l2_ctrl_new_std(ctrl_hdlr, &ov08x40_ctrl_ops, V4L2_CID_DIGITAL_GAIN,
 			  OV08X40_DGTL_GAIN_MIN, OV08X40_DGTL_GAIN_MAX,
 			  OV08X40_DGTL_GAIN_STEP, OV08X40_DGTL_GAIN_DEFAULT);
@@ -3216,7 +3205,7 @@ static int ov08x40_probe(struct i2c_client *client)
 	struct ov08x40 *ov08x;
 	int ret;
 
-	/* Check HW config */
+	 
 	ret = ov08x40_check_hwcfg(&client->dev);
 	if (ret) {
 		dev_err(&client->dev, "failed to check hwcfg: %d", ret);
@@ -3227,30 +3216,30 @@ static int ov08x40_probe(struct i2c_client *client)
 	if (!ov08x)
 		return -ENOMEM;
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&ov08x->sd, client, &ov08x40_subdev_ops);
 
-	/* Check module identity */
+	 
 	ret = ov08x40_identify_module(ov08x);
 	if (ret) {
 		dev_err(&client->dev, "failed to find sensor: %d\n", ret);
 		return ret;
 	}
 
-	/* Set default mode to max resolution */
+	 
 	ov08x->cur_mode = &supported_modes[0];
 
 	ret = ov08x40_init_controls(ov08x);
 	if (ret)
 		return ret;
 
-	/* Initialize subdev */
+	 
 	ov08x->sd.internal_ops = &ov08x40_internal_ops;
 	ov08x->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	ov08x->sd.entity.ops = &ov08x40_subdev_entity_ops;
 	ov08x->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
-	/* Initialize source pad */
+	 
 	ov08x->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&ov08x->sd.entity, 1, &ov08x->pad);
 	if (ret) {
@@ -3262,10 +3251,7 @@ static int ov08x40_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto error_media_entity;
 
-	/*
-	 * Device is already turned on by i2c-core with ACPI domain PM.
-	 * Enable runtime PM and turn off the device.
-	 */
+	 
 	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
 	pm_runtime_idle(&client->dev);
@@ -3301,7 +3287,7 @@ static const struct dev_pm_ops ov08x40_pm_ops = {
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id ov08x40_acpi_ids[] = {
 	{"OVTI08F4"},
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(acpi, ov08x40_acpi_ids);

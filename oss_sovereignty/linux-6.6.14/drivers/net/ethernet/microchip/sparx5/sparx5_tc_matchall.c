@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip VCAP API
- *
- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include "sparx5_tc.h"
 #include "vcap_api.h"

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MStar MSC313 MPLL driver
- *
- * Copyright (C) 2020 Daniel Palmer <daniel@thingy.jp>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/of_address.h>

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI j721e Cadence MHDP8546 DP wrapper
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/platform_device.h>
@@ -38,7 +33,7 @@
 #define DPTX_SRC_VIF_1_EN		BIT(1)
 #define DPTX_SRC_VIF_0_EN		BIT(0)
 
-/* TODO turn DPTX_IPCFG fw_mem_clk_en at pm_runtime_suspend. */
+ 
 
 static int cdns_mhdp_j721e_init(struct cdns_mhdp_device *mhdp)
 {
@@ -50,18 +45,14 @@ static int cdns_mhdp_j721e_init(struct cdns_mhdp_device *mhdp)
 
 static void cdns_mhdp_j721e_enable(struct cdns_mhdp_device *mhdp)
 {
-	/*
-	 * Enable VIF_0 and select DPI2 as its input. DSS0 DPI0 is connected
-	 * to eDP DPI2. This is the only supported SST configuration on
-	 * J721E.
-	 */
+	 
 	writel(DPTX_SRC_VIF_0_EN | DPTX_SRC_VIF_0_SEL_DPI2,
 	       mhdp->j721e_regs + DPTX_SRC_CFG);
 }
 
 static void cdns_mhdp_j721e_disable(struct cdns_mhdp_device *mhdp)
 {
-	/* Put everything to defaults  */
+	 
 	writel(0, mhdp->j721e_regs + DPTX_DSC_CFG);
 }
 

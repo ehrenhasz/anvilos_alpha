@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Facebook.  All rights reserved.
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/stacktrace.h>
@@ -14,22 +12,14 @@
 #include "fs.h"
 #include "accessors.h"
 
-/*
- * Used to keep track the roots and number of refs each root has for a given
- * bytenr.  This just tracks the number of direct references, no shared
- * references.
- */
+ 
 struct root_entry {
 	u64 root_objectid;
 	u64 num_refs;
 	struct rb_node node;
 };
 
-/*
- * These are meant to represent what should exist in the extent tree, these can
- * be used to verify the extent tree is consistent as these should all match
- * what the extent tree says.
- */
+ 
 struct ref_entry {
 	u64 root_objectid;
 	u64 parent;
@@ -41,13 +31,7 @@ struct ref_entry {
 
 #define MAX_TRACE	16
 
-/*
- * Whenever we add/remove a reference we record the action.  The action maps
- * back to the delayed ref action.  We hold the ref we are changing in the
- * action so we can account for the history properly, and we record the root we
- * were called with since it could be different from ref_root.  We also store
- * stack traces because that's how I roll.
- */
+ 
 struct ref_action {
 	int action;
 	u64 root;
@@ -57,12 +41,7 @@ struct ref_action {
 	unsigned int trace_len;
 };
 
-/*
- * One of these for every block we reference, it holds the roots and references
- * to it as well as all of the ref actions that have occurred to it.  We never
- * free it until we unmount the file system in order to make sure re-allocations
- * are happening properly.
- */
+ 
 struct block_entry {
 	u64 bytenr;
 	u64 len;
@@ -551,7 +530,7 @@ static int process_leaf(struct btrfs_root *root,
 	return ret;
 }
 
-/* Walk down to the leaf from the given level */
+ 
 static int walk_down_tree(struct btrfs_root *root, struct btrfs_path *path,
 			  int level, u64 *bytenr, u64 *num_bytes,
 			  int *tree_block_level)
@@ -580,7 +559,7 @@ static int walk_down_tree(struct btrfs_root *root, struct btrfs_path *path,
 	return ret;
 }
 
-/* Walk up to the next node that needs to be processed */
+ 
 static int walk_up_tree(struct btrfs_path *path, int *level)
 {
 	int l;
@@ -616,10 +595,7 @@ static void dump_ref_action(struct btrfs_fs_info *fs_info,
 	__print_stack_trace(fs_info, ra);
 }
 
-/*
- * Dumps all the information from the block entry to printk, it's going to be
- * awesome.
- */
+ 
 static void dump_block_entry(struct btrfs_fs_info *fs_info,
 			     struct block_entry *be)
 {
@@ -651,14 +627,7 @@ static void dump_block_entry(struct btrfs_fs_info *fs_info,
 		dump_ref_action(fs_info, ra);
 }
 
-/*
- * btrfs_ref_tree_mod: called when we modify a ref for a bytenr
- *
- * This will add an action item to the given bytenr and do sanity checks to make
- * sure we haven't messed something up.  If we are making a new allocation and
- * this block entry has history we will delete all previous actions as long as
- * our sanity checks pass as they are no longer needed.
- */
+ 
 int btrfs_ref_tree_mod(struct btrfs_fs_info *fs_info,
 		       struct btrfs_ref *generic_ref)
 {
@@ -706,12 +675,7 @@ int btrfs_ref_tree_mod(struct btrfs_fs_info *fs_info,
 	ref->num_refs = (action == BTRFS_DROP_DELAYED_REF) ? -1 : 1;
 
 	memcpy(&ra->ref, ref, sizeof(struct ref_entry));
-	/*
-	 * Save the extra info from the delayed ref in the ref action to make it
-	 * easier to figure out what is happening.  The real ref's we add to the
-	 * ref tree need to reflect what we save on disk so it matches any
-	 * on-disk refs we pre-loaded.
-	 */
+	 
 	ra->ref.owner = owner;
 	ra->ref.offset = offset;
 	ra->ref.root_objectid = ref_root;
@@ -721,17 +685,10 @@ int btrfs_ref_tree_mod(struct btrfs_fs_info *fs_info,
 	ra->action = action;
 	ra->root = generic_ref->real_root;
 
-	/*
-	 * This is an allocation, preallocate the block_entry in case we haven't
-	 * used it before.
-	 */
+	 
 	ret = -EINVAL;
 	if (action == BTRFS_ADD_DELAYED_EXTENT) {
-		/*
-		 * For subvol_create we'll just pass in whatever the parent root
-		 * is and the new root objectid, so let's not treat the passed
-		 * in root as if it really has a ref for this bytenr.
-		 */
+		 
 		be = add_block_entry(fs_info, bytenr, num_bytes, ref_root);
 		if (IS_ERR(be)) {
 			kfree(ref);
@@ -772,11 +729,7 @@ int btrfs_ref_tree_mod(struct btrfs_fs_info *fs_info,
 				ret = -ENOMEM;
 				goto out;
 			}
-			/*
-			 * This is the root that is modifying us, so it's the
-			 * one we want to lookup below when we modify the
-			 * re->num_refs.
-			 */
+			 
 			ref_root = generic_ref->real_root;
 			re->root_objectid = generic_ref->real_root;
 			re->num_refs = 0;
@@ -858,12 +811,7 @@ int btrfs_ref_tree_mod(struct btrfs_fs_info *fs_info,
 	if (!parent && !re) {
 		re = lookup_root_entry(&be->roots, ref_root);
 		if (!re) {
-			/*
-			 * This shouldn't happen because we will add our re
-			 * above when we lookup the be with !parent, but just in
-			 * case catch this case so we don't panic because I
-			 * didn't think of some other corner case.
-			 */
+			 
 			btrfs_err(fs_info, "failed to find root %llu for %llu",
 				  generic_ref->real_root, be->bytenr);
 			dump_block_entry(fs_info, be);
@@ -891,7 +839,7 @@ out:
 	return ret;
 }
 
-/* Free up the ref cache */
+ 
 void btrfs_free_ref_cache(struct btrfs_fs_info *fs_info)
 {
 	struct block_entry *be;
@@ -931,17 +879,14 @@ void btrfs_free_ref_tree_range(struct btrfs_fs_info *fs_info, u64 start,
 			be = entry;
 			break;
 		}
-		/* We want to get as close to start as possible */
+		 
 		if (be == NULL ||
 		    (entry->bytenr < start && be->bytenr > start) ||
 		    (entry->bytenr < start && entry->bytenr > be->bytenr))
 			be = entry;
 	}
 
-	/*
-	 * Could have an empty block group, maybe have something to check for
-	 * this case to verify we were actually empty?
-	 */
+	 
 	if (!be) {
 		spin_unlock(&fs_info->ref_verify_lock);
 		return;
@@ -974,7 +919,7 @@ void btrfs_free_ref_tree_range(struct btrfs_fs_info *fs_info, u64 start,
 	spin_unlock(&fs_info->ref_verify_lock);
 }
 
-/* Walk down all roots and build the ref tree, meant to be called at mount */
+ 
 int btrfs_build_ref_tree(struct btrfs_fs_info *fs_info)
 {
 	struct btrfs_root *extent_root;
@@ -999,12 +944,7 @@ int btrfs_build_ref_tree(struct btrfs_fs_info *fs_info)
 	path->locks[level] = BTRFS_READ_LOCK;
 
 	while (1) {
-		/*
-		 * We have to keep track of the bytenr/num_bytes we last hit
-		 * because we could have run out of space for an inline ref, and
-		 * would have had to added a ref key item which may appear on a
-		 * different leaf from the original extent item.
-		 */
+		 
 		ret = walk_down_tree(extent_root, path, level,
 				     &bytenr, &num_bytes, &tree_block_level);
 		if (ret)

@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_PDMA0_CORE_CTX_AXUSER_REGS_H_
 #define ASIC_REG_PDMA0_CORE_CTX_AXUSER_REGS_H_
 
-/*
- *****************************************
- *   PDMA0_CORE_CTX_AXUSER
- *   (Prototype: AXUSER)
- *****************************************
- */
+ 
 
 #define mmPDMA0_CORE_CTX_AXUSER_HB_ASID 0x4C8B800
 
@@ -58,4 +45,4 @@
 
 #define mmPDMA0_CORE_CTX_AXUSER_LB_OVRD 0x4C8B84C
 
-#endif /* ASIC_REG_PDMA0_CORE_CTX_AXUSER_REGS_H_ */
+#endif  

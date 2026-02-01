@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -42,10 +42,10 @@ static void cpu_stat_print(void)
 	char state_str[sizeof("cstate-9")];
 	struct cpu_stat_data *data;
 
-	/* Clear screen */
+	 
 	printf("\033[2J");
 
-	/* Header */
+	 
 	printf("\nCPU states statistics:\n");
 	printf("%-10s ", "state(ms)");
 
@@ -95,14 +95,7 @@ static void cpu_stat_update(int cstate_fd, int pstate_fd)
 	}
 }
 
-/*
- * This function is copied from 'idlestat' tool function
- * idlestat_wake_all() in idlestate.c.
- *
- * It sets the self running task affinity to cpus one by one so can wake up
- * the specific CPU to handle scheduling; this results in all cpus can be
- * waken up once and produce ftrace event 'trace_cpu_idle'.
- */
+ 
 static int cpu_stat_inject_cpu_idle_event(void)
 {
 	int rcpu, i, ret;
@@ -117,16 +110,16 @@ static int cpu_stat_inject_cpu_idle_event(void)
 	if (rcpu < 0)
 		return -1;
 
-	/* Keep track of the CPUs we will run on */
+	 
 	sched_getaffinity(0, sizeof(original_cpumask), &original_cpumask);
 
 	for (i = 0; i < ret; i++) {
 
-		/* Pointless to wake up ourself */
+		 
 		if (i == rcpu)
 			continue;
 
-		/* Pointless to wake CPUs we will not run on */
+		 
 		if (!CPU_ISSET(i, &original_cpumask))
 			continue;
 
@@ -136,20 +129,12 @@ static int cpu_stat_inject_cpu_idle_event(void)
 		sched_setaffinity(0, sizeof(cpumask), &cpumask);
 	}
 
-	/* Enable all the CPUs of the original mask */
+	 
 	sched_setaffinity(0, sizeof(original_cpumask), &original_cpumask);
 	return 0;
 }
 
-/*
- * It's possible to have no any frequency change for long time and cannot
- * get ftrace event 'trace_cpu_frequency' for long period, this introduces
- * big deviation for pstate statistics.
- *
- * To solve this issue, below code forces to set 'scaling_max_freq' to 208MHz
- * for triggering ftrace event 'trace_cpu_frequency' and then recovery back to
- * the maximum frequency value 1.2GHz.
- */
+ 
 static int cpu_stat_inject_cpu_frequency_event(void)
 {
 	int len, fd;
@@ -207,7 +192,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

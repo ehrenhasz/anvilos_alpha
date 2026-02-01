@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2011-2018 Magewell Electronics Co., Ltd. (Nanjing)
- * Author: Yong Deng <yong.deng@magewell.com>
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -23,7 +18,7 @@
 #include "sun6i_csi_capture.h"
 #include "sun6i_csi_reg.h"
 
-/* ISP */
+ 
 
 int sun6i_csi_isp_complete(struct sun6i_csi_device *csi_dev,
 			   struct v4l2_device *v4l2_dev)
@@ -42,10 +37,7 @@ static int sun6i_csi_isp_detect(struct sun6i_csi_device *csi_dev)
 	struct device *dev = csi_dev->dev;
 	struct fwnode_handle *handle;
 
-	/*
-	 * ISP is not available if not connected via fwnode graph.
-	 * This will also check that the remote parent node is available.
-	 */
+	 
 	handle = fwnode_graph_get_endpoint_by_id(dev_fwnode(dev),
 						 SUN6I_CSI_PORT_ISP, 0,
 						 FWNODE_GRAPH_ENDPOINT_NEXT);
@@ -65,13 +57,13 @@ static int sun6i_csi_isp_detect(struct sun6i_csi_device *csi_dev)
 	return 0;
 }
 
-/* Media */
+ 
 
 static const struct media_device_ops sun6i_csi_media_ops = {
 	.link_notify = v4l2_pipeline_link_notify,
 };
 
-/* V4L2 */
+ 
 
 static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
 {
@@ -81,7 +73,7 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
 	struct device *dev = csi_dev->dev;
 	int ret;
 
-	/* Media Device */
+	 
 
 	strscpy(media_dev->model, SUN6I_CSI_DESCRIPTION,
 		sizeof(media_dev->model));
@@ -97,7 +89,7 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
 		goto error_media;
 	}
 
-	/* V4L2 Device */
+	 
 
 	v4l2_dev->mdev = media_dev;
 
@@ -128,7 +120,7 @@ static void sun6i_csi_v4l2_cleanup(struct sun6i_csi_device *csi_dev)
 	media_device_cleanup(&v4l2->media_dev);
 }
 
-/* Platform */
+ 
 
 static irqreturn_t sun6i_csi_interrupt(int irq, void *private)
 {
@@ -240,7 +232,7 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
 	if (!variant)
 		return -EINVAL;
 
-	/* Registers */
+	 
 
 	io_base = devm_platform_ioremap_resource(platform_dev, 0);
 	if (IS_ERR(io_base))
@@ -253,7 +245,7 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
 		return PTR_ERR(csi_dev->regmap);
 	}
 
-	/* Clocks */
+	 
 
 	csi_dev->clock_mod = devm_clk_get(dev, "mod");
 	if (IS_ERR(csi_dev->clock_mod)) {
@@ -274,7 +266,7 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
 		return ret;
 	}
 
-	/* Reset */
+	 
 
 	csi_dev->reset = devm_reset_control_get_shared(dev, NULL);
 	if (IS_ERR(csi_dev->reset)) {
@@ -283,7 +275,7 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
 		goto error_clock_rate_exclusive;
 	}
 
-	/* Interrupt */
+	 
 
 	irq = platform_get_irq(platform_dev, 0);
 	if (irq < 0) {
@@ -298,7 +290,7 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
 		goto error_clock_rate_exclusive;
 	}
 
-	/* Runtime PM */
+	 
 
 	pm_runtime_enable(dev);
 
@@ -337,12 +329,7 @@ static int sun6i_csi_probe(struct platform_device *platform_dev)
 	if (ret)
 		goto error_resources;
 
-	/*
-	 * Register our own v4l2 and media devices when there is no ISP around.
-	 * Otherwise the ISP will use async subdev registration with our bridge,
-	 * which will provide v4l2 and media devices that are used to register
-	 * the video interface.
-	 */
+	 
 	if (!csi_dev->isp_available) {
 		ret = sun6i_csi_v4l2_setup(csi_dev);
 		if (ret)

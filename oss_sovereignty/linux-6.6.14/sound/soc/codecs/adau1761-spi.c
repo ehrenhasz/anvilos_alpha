@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for ADAU1361/ADAU1461/ADAU1761/ADAU1961 codec
- *
- * Copyright 2014 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -18,10 +13,7 @@ static void adau1761_spi_switch_mode(struct device *dev)
 {
 	struct spi_device *spi = to_spi_device(dev);
 
-	/*
-	 * To get the device into SPI mode CLATCH has to be pulled low three
-	 * times.  Do this by issuing three dummy reads.
-	 */
+	 
 	spi_w8r8(spi, 0x00);
 	spi_w8r8(spi, 0x00);
 	spi_w8r8(spi, 0x00);

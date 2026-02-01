@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2015-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "mac.h"
 
@@ -66,17 +63,7 @@ static int ath10k_wow_cleanup(struct ath10k *ar)
 	return 0;
 }
 
-/*
- * Convert a 802.3 format to a 802.11 format.
- *         +------------+-----------+--------+----------------+
- * 802.3:  |dest mac(6B)|src mac(6B)|type(2B)|     body...    |
- *         +------------+-----------+--------+----------------+
- *                |__         |_______    |____________  |________
- *                   |                |                |          |
- *         +--+------------+----+-----------+---------------+-----------+
- * 802.11: |4B|dest mac(6B)| 6B |src mac(6B)|  8B  |type(2B)|  body...  |
- *         +--+------------+----+-----------+---------------+-----------+
- */
+ 
 static void ath10k_wow_convert_8023_to_80211(struct cfg80211_pkt_pattern *new,
 					     const struct cfg80211_pkt_pattern *old)
 {
@@ -107,15 +94,15 @@ static void ath10k_wow_convert_8023_to_80211(struct cfg80211_pkt_pattern *new,
 	memcpy(hdr_8023_bit_mask + old->pkt_offset,
 	       old->mask, ETH_HLEN - old->pkt_offset);
 
-	/* Copy destination address */
+	 
 	memcpy(new_hdr_pattern->addr1, old_hdr_pattern->h_dest, ETH_ALEN);
 	memcpy(new_hdr_mask->addr1, old_hdr_mask->h_dest, ETH_ALEN);
 
-	/* Copy source address */
+	 
 	memcpy(new_hdr_pattern->addr3, old_hdr_pattern->h_source, ETH_ALEN);
 	memcpy(new_hdr_mask->addr3, old_hdr_mask->h_source, ETH_ALEN);
 
-	/* Copy logic link type */
+	 
 	memcpy(&new_rfc_pattern->snap_type,
 	       &old_hdr_pattern->h_proto,
 	       sizeof(old_hdr_pattern->h_proto));
@@ -123,7 +110,7 @@ static void ath10k_wow_convert_8023_to_80211(struct cfg80211_pkt_pattern *new,
 	       &old_hdr_mask->h_proto,
 	       sizeof(old_hdr_mask->h_proto));
 
-	/* Calculate new pkt_offset */
+	 
 	if (old->pkt_offset < ETH_ALEN)
 		new->pkt_offset = old->pkt_offset +
 			offsetof(struct ieee80211_hdr_3addr, addr1);
@@ -134,7 +121,7 @@ static void ath10k_wow_convert_8023_to_80211(struct cfg80211_pkt_pattern *new,
 	else
 		new->pkt_offset = old->pkt_offset + hdr_len + rfc_len - ETH_HLEN;
 
-	/* Calculate new hdr end offset */
+	 
 	if (total_len > ETH_HLEN)
 		hdr_80211_end_offset = hdr_len + rfc_len;
 	else if (total_len > offsetof(struct ethhdr, h_proto))
@@ -156,7 +143,7 @@ static void ath10k_wow_convert_8023_to_80211(struct cfg80211_pkt_pattern *new,
 	       new->pattern_len);
 
 	if (total_len > ETH_HLEN) {
-		/* Copy frame body */
+		 
 		memcpy((u8 *)new->pattern + new->pattern_len,
 		       (void *)old->pattern + ETH_HLEN - old->pkt_offset,
 		       total_len - ETH_HLEN);
@@ -186,7 +173,7 @@ static int ath10k_wmi_pno_check(struct ath10k *ar, u32 vdev_id,
 	if (nd_config->n_channels > WMI_PNO_MAX_NETW_CHANNELS_EX)
 		return -EINVAL;
 
-	/* Filling per profile  params */
+	 
 	for (i = 0; i < pno->uc_networks_count; i++) {
 		ssid_len = nd_config->match_sets[i].ssid.ssid_len;
 
@@ -202,7 +189,7 @@ static int ath10k_wmi_pno_check(struct ath10k *ar, u32 vdev_id,
 		pno->a_networks[i].encryption     = 0;
 		pno->a_networks[i].bcast_nw_type  = 0;
 
-		/*Copying list of valid channel into request */
+		 
 		pno->a_networks[i].channel_count = nd_config->n_channels;
 		pno->a_networks[i].rssi_threshold = nd_config->match_sets[i].rssi_thold;
 
@@ -212,7 +199,7 @@ static int ath10k_wmi_pno_check(struct ath10k *ar, u32 vdev_id,
 		}
 	}
 
-	/* set scan to passive if no SSIDs are specified in the request */
+	 
 	if (nd_config->n_ssids == 0)
 		pno->do_passive_scan = true;
 	else
@@ -248,7 +235,7 @@ static int ath10k_wmi_pno_check(struct ath10k *ar, u32 vdev_id,
 	}
 
 	if (nd_config->flags & NL80211_SCAN_FLAG_RANDOM_ADDR) {
-		/* enable mac randomization */
+		 
 		pno->enable_pno_scan_randomization = 1;
 		memcpy(pno->mac_addr, nd_config->mac_addr, ETH_ALEN);
 		memcpy(pno->mac_addr_mask, nd_config->mac_addr_mask, ETH_ALEN);
@@ -256,7 +243,7 @@ static int ath10k_wmi_pno_check(struct ath10k *ar, u32 vdev_id,
 
 	pno->delay_start_time = nd_config->delay;
 
-	/* Current FW does not support min-max range for dwell time */
+	 
 	pno->active_max_time = WMI_ACTIVE_MAX_CHANNEL_TIME;
 	pno->passive_max_time = WMI_PASSIVE_MAX_CHANNEL_TIME;
 	return ret;
@@ -271,7 +258,7 @@ static int ath10k_vif_wow_set_wakeups(struct ath10k_vif *arvif,
 	const struct cfg80211_pkt_pattern *patterns = wowlan->patterns;
 	int pattern_id = 0;
 
-	/* Setup requested WOW features */
+	 
 	switch (arvif->vdev_type) {
 	case WMI_VDEV_TYPE_IBSS:
 		__set_bit(WOW_BEACON_EVENT, &wow_mask);
@@ -332,7 +319,7 @@ static int ath10k_vif_wow_set_wakeups(struct ath10k_vif *arvif,
 		new_pattern.mask = ath_bitmask;
 		if (patterns[i].pattern_len > WOW_MAX_PATTERN_SIZE)
 			continue;
-		/* convert bytemask to bitmask */
+		 
 		for (j = 0; j < patterns[i].pattern_len; j++)
 			if (patterns[i].mask[j / 8] & BIT(j % 8))
 				bitmask[j] = 0xff;

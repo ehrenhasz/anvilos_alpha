@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #ifndef __I915_SELFTESTS_IGT_RESET_H__
 #define __I915_SELFTESTS_IGT_RESET_H__

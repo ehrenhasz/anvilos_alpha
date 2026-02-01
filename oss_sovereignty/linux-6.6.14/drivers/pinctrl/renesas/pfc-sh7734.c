@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SH7734 processor support - PFC hardware block
- *
- * Copyright (C) 2012  Renesas Solutions Corp.
- * Copyright (C) 2012  Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <cpu/sh7734.h>
 
@@ -31,21 +26,21 @@ enum {
 	PINMUX_RESERVED = 0,
 
 	PINMUX_DATA_BEGIN,
-	GP_ALL(DATA), /* GP_0_0_DATA -> GP_5_11_DATA */
+	GP_ALL(DATA),  
 	PINMUX_DATA_END,
 
 	PINMUX_INPUT_BEGIN,
-	GP_ALL(IN), /* GP_0_0_IN -> GP_5_11_IN */
+	GP_ALL(IN),  
 	PINMUX_INPUT_END,
 
 	PINMUX_OUTPUT_BEGIN,
-	GP_ALL(OUT), /* GP_0_0_OUT -> GP_5_11_OUT */
+	GP_ALL(OUT),  
 	PINMUX_OUTPUT_END,
 
 	PINMUX_FUNCTION_BEGIN,
-	GP_ALL(FN), /* GP_0_0_FN -> GP_5_11_FN */
+	GP_ALL(FN),  
 
-	/* GPSR0 */
+	 
 	FN_IP1_9_8, FN_IP1_11_10, FN_IP1_13_12, FN_IP1_15_14,
 	FN_IP0_7_6, FN_IP0_9_8, FN_IP0_11_10, FN_IP0_13_12,
 	FN_IP0_15_14, FN_IP0_17_16, FN_IP0_19_18, FN_IP0_21_20,
@@ -55,7 +50,7 @@ enum {
 	FN_IP0_5_4, FN_IP1_17_16, FN_IP1_19_18, FN_IP1_22_20,
 	FN_IP1_25_23, FN_IP1_28_26, FN_IP1_31_29, FN_IP2_2_0,
 
-	/* GPSR1 */
+	 
 	FN_IP3_20, FN_IP3_29_27, FN_IP11_20_19, FN_IP11_22_21,
 	FN_IP2_16_14, FN_IP2_19_17, FN_IP2_22_20, FN_IP2_24_23,
 	FN_IP2_27_25, FN_IP2_30_28, FN_IP3_1_0, FN_CLKOUT,
@@ -65,7 +60,7 @@ enum {
 	FN_WE1, FN_IP2_4_3, FN_IP3_23_21, FN_IP3_26_24,
 	FN_IP2_7_5, FN_IP2_10_8, FN_IP2_13_11, FN_IP11_25_23,
 
-	/* GPSR2 */
+	 
 	FN_IP11_6_4, FN_IP11_9_7, FN_IP11_11_10, FN_IP4_2_0,
 	FN_IP8_29_28, FN_IP11_27_26, FN_IP8_22_20, FN_IP8_25_23,
 	FN_IP11_12, FN_IP8_27_26, FN_IP4_5_3, FN_IP4_8_6,
@@ -75,7 +70,7 @@ enum {
 	FN_IP5_8_6, FN_IP5_11_9, FN_IP5_14_12, FN_IP5_17_15,
 	FN_IP5_20_18, FN_IP5_22_21, FN_IP5_24_23, FN_IP5_26_25,
 
-	/* GPSR3 */
+	 
 	FN_IP6_2_0, FN_IP6_5_3, FN_IP6_7_6, FN_IP6_9_8,
 	FN_IP6_11_10, FN_IP6_13_12, FN_IP6_15_14, FN_IP6_17_16,
 	FN_IP6_20_18, FN_IP6_23_21, FN_IP7_2_0, FN_IP7_5_3,
@@ -85,23 +80,23 @@ enum {
 	FN_IP8_7_6, FN_IP8_9_8, FN_IP8_11_10, FN_IP8_13_12,
 	FN_IP8_15_14, FN_IP8_17_16, FN_IP8_19_18, FN_IP9_1_0,
 
-	/* GPSR4 */
+	 
 	FN_IP9_19_18, FN_IP9_21_20, FN_IP9_23_22, FN_IP9_25_24,
 	FN_IP9_11_10, FN_IP9_13_12, FN_IP9_15_14, FN_IP9_17_16,
 	FN_IP9_3_2, FN_IP9_5_4, FN_IP9_7_6, FN_IP9_9_8,
 	FN_IP9_27_26, FN_IP9_29_28, FN_IP10_2_0, FN_IP10_5_3,
 	FN_IP10_8_6, FN_IP10_11_9, FN_IP10_14_12, FN_IP10_15,
 	FN_IP10_18_16, FN_IP10_21_19, FN_IP11_0, FN_IP11_1,
-	FN_SCL0, FN_IP11_2, FN_PENC0, FN_IP11_15_13, /* Need check*/
+	FN_SCL0, FN_IP11_2, FN_PENC0, FN_IP11_15_13,  
 	FN_USB_OVC0, FN_IP11_18_16,
 	FN_IP10_22, FN_IP10_24_23,
 
-	/* GPSR5 */
+	 
 	FN_IP10_25, FN_IP11_3, FN_IRQ2_B, FN_IRQ3_B,
-	FN_IP10_27_26, /* 10 */
-	FN_IP10_29_28, /* 11 */
+	FN_IP10_27_26,  
+	FN_IP10_29_28,  
 
-	/* IPSR0 */
+	 
 	FN_A15, FN_ST0_VCO_CLKIN, FN_LCD_DATA15_A, FN_TIOC3D_C,
 	FN_A14, FN_LCD_DATA14_A, FN_TIOC3C_C,
 	FN_A13, FN_LCD_DATA13_A, FN_TIOC3B_C,
@@ -119,7 +114,7 @@ enum {
 	FN_A1, FN_ST0_REQ, FN_LCD_DATA1_A, FN_TCLKB_C,
 	FN_A0, FN_ST0_CLKIN, FN_LCD_DATA0_A, FN_TCLKA_C,
 
-	/* IPSR1 */
+	 
 	FN_D3, FN_SD0_DAT3_A, FN_MMC_D3_A, FN_ST1_D6, FN_FD3_A,
 	FN_D2, FN_SD0_DAT2_A, FN_MMC_D2_A, FN_ST1_D5, FN_FD2_A,
 	FN_D1, FN_SD0_DAT1_A, FN_MMC_D1_A, FN_ST1_D4, FN_FD1_A,
@@ -135,7 +130,7 @@ enum {
 	FN_A17, FN_ST1_VCO_CLKIN, FN_LCD_CL1_A,	FN_TIOC4B_C,
 	FN_A16, FN_ST0_PWM, FN_LCD_DON_A, FN_TIOC4A_C,
 
-	/* IPSR2 */
+	 
 	FN_D14, FN_TX2_B, FN_FSE_A, FN_ET0_TX_CLK_B,
 	FN_D13, FN_RX2_B, FN_FRB_A,	FN_ET0_ETXD6_B,
 	FN_D12, FN_FWE_A, FN_ET0_ETXD5_B,
@@ -152,7 +147,7 @@ enum {
 	FN_D5, FN_SD0_WP_A, FN_MMC_D5_A, FN_FD5_A,
 	FN_D4, FN_SD0_CD_A, FN_MMC_D4_A, FN_ST1_D7, FN_FD4_A,
 
-	/* IPSR3 */
+	 
 	FN_DRACK0, FN_SD1_DAT2_A, FN_ATAG, FN_TCLK1_A, FN_ET0_ETXD7,
 	FN_EX_WAIT2, FN_SD1_DAT1_A, FN_DACK2, FN_CAN1_RX_C,
 		FN_ET0_MAGIC_C, FN_ET0_ETXD6_A,
@@ -168,7 +163,7 @@ enum {
 	FN_CS1_A26, FN_QIO3_B,
 	FN_D15, FN_SCK2_B,
 
-	/* IPSR4 */
+	 
 	FN_SCK2_A, FN_VI0_G3,
 	FN_RTS1_B, FN_VI0_G2,
 	FN_CTS1_B, FN_VI0_DATA7_VI0_G1,
@@ -183,7 +178,7 @@ enum {
 	FN_HRTS0_A, FN_RTS1_A, FN_VI0_HSYNC, FN_RMII0_TXD_EN_A, FN_ET0_RX_DV,
 	FN_HCTS0_A, FN_CTS1_A, FN_VI0_FIELD, FN_RMII0_RXD1_A, FN_ET0_ERXD7,
 
-	/* IPSR5 */
+	 
 	FN_SD2_CLK_A, FN_RX2_A, FN_VI0_G4, FN_ET0_RX_CLK_B,
 	FN_SD2_CMD_A, FN_TX2_A, FN_VI0_G5, FN_ET0_ERXD2_B,
 	FN_SD2_DAT0_A, FN_RX3_A, FN_VI0_R0, FN_ET0_ERXD3_B,
@@ -195,7 +190,7 @@ enum {
 	FN_REF125CK, FN_ADTRG, FN_RX5_C,
 	FN_REF50CK, FN_CTS1_E, FN_HCTS0_D,
 
-	/* IPSR6 */
+	 
 	FN_DU0_DR0, FN_SCIF_CLK_B, FN_HRX0_D, FN_IETX_A, FN_TCLKA_A, FN_HIFD00,
 	FN_DU0_DR1, FN_SCK0_B, FN_HTX0_D, FN_IERX_A, FN_TCLKB_A, FN_HIFD01,
 	FN_DU0_DR2, FN_RX0_B, FN_TCLKC_A, FN_HIFD02,
@@ -207,7 +202,7 @@ enum {
 	FN_DU0_DG0, FN_TX1_C, FN_HSCK0_D, FN_IECLK_A, FN_TIOC1A_A, FN_HIFD08,
 	FN_DU0_DG1, FN_CTS1_C, FN_HRTS0_D, FN_TIOC1B_A, FN_HIFD09,
 
-	/* IPSR7 */
+	 
 	FN_DU0_DG2, FN_RTS1_C, FN_RMII0_MDC_B, FN_TIOC2A_A, FN_HIFD10,
 	FN_DU0_DG3, FN_SCK2_C, FN_RMII0_MDIO_B, FN_TIOC2B_A, FN_HIFD11,
 	FN_DU0_DG4, FN_RX2_C, FN_RMII0_CRS_DV_B, FN_TIOC3A_A, FN_HIFD12,
@@ -220,7 +215,7 @@ enum {
 	FN_DU0_DB3, FN_TX5_B, FN_TIOC4D_A, FN_HIFRD,
 	FN_DU0_DB4, FN_HIFINT,
 
-	/* IPSR8 */
+	 
 	FN_DU0_DB5, FN_HIFDREQ,
 	FN_DU0_DB6, FN_HIFRDY,
 	FN_DU0_DB7, FN_SSI_SCK0_B, FN_HIFEBL_B,
@@ -236,7 +231,7 @@ enum {
 	FN_IRQ2_A, FN_CTS0_A, FN_HCTS0_B, FN_ET0_ERXD2_A,
 	FN_IRQ3_A, FN_RTS0_A, FN_HRTS0_B, FN_ET0_ERXD3_A,
 
-	/* IPSR9 */
+	 
 	FN_VI1_CLK_A, FN_FD0_B, FN_LCD_DATA0_B,
 	FN_VI1_0_A, FN_FD1_B, FN_LCD_DATA1_B,
 	FN_VI1_1_A, FN_FD2_B, FN_LCD_DATA2_B,
@@ -253,7 +248,7 @@ enum {
 	FN_SSI_WS1_A, FN_VI1_2_B, FN_LCD_DATA13_B,
 	FN_SSI_SDATA1_A, FN_VI1_3_B, FN_LCD_DATA14_B,
 
-	/* IPSR10 */
+	 
 	FN_SSI_SCK23, FN_VI1_4_B, FN_RX1_D, FN_FCLE_B, FN_LCD_DATA15_B,
 	FN_SSI_WS23, FN_VI1_5_B, FN_TX1_D, FN_HSCK0_C, FN_FALE_B, FN_LCD_DON_B,
 	FN_SSI_SDATA2, FN_VI1_6_B, FN_HRX0_C, FN_FRE_B, FN_LCD_CL1_B,
@@ -268,7 +263,7 @@ enum {
 	FN_CAN0_RX_A, FN_IRQ0_B, FN_MLB_SIG,
 	FN_CAN1_TX_A, FN_TX5_C, FN_MLB_DAT,
 
-	/* IPSR11 */
+	 
 	FN_SCL1, FN_SCIF_CLK_C,
 	FN_SDA1, FN_RX1_E,
 	FN_SDA0, FN_HIFEBL_A,
@@ -285,7 +280,7 @@ enum {
 	FN_DACK1, FN_HSPI_CS_B, FN_TX4_B, FN_ET0_RX_CLK_A,
 	FN_PRESETOUT, FN_ST_CLKOUT,
 
-	/* MOD_SEL1 */
+	 
 	FN_SEL_IEBUS_0, FN_SEL_IEBUS_1,
 	FN_SEL_RQSPI_0, FN_SEL_RQSPI_1,
 	FN_SEL_VIN1_0, FN_SEL_VIN1_1,
@@ -312,7 +307,7 @@ enum {
 	FN_SEL_MMC_0, FN_SEL_MMC_1,
 	FN_SEL_INTC_0, FN_SEL_INTC_1,
 
-	/* MOD_SEL2 */
+	 
 	FN_SEL_MTU2_CLK_0, FN_SEL_MTU2_CLK_1,
 	FN_SEL_MTU2_CH4_0, FN_SEL_MTU2_CH4_1,
 	FN_SEL_MTU2_CH3_0, FN_SEL_MTU2_CH3_1,
@@ -343,7 +338,7 @@ enum {
 
 	IRQ2_B_MARK, IRQ3_B_MARK,
 
-	/* IPSR0 */
+	 
 	A15_MARK, ST0_VCO_CLKIN_MARK, LCD_DATA15_A_MARK, TIOC3D_C_MARK,
 	A14_MARK, LCD_DATA14_A_MARK, TIOC3C_C_MARK,
 	A13_MARK, LCD_DATA13_A_MARK, TIOC3B_C_MARK,
@@ -361,7 +356,7 @@ enum {
 	A1_MARK, ST0_REQ_MARK, LCD_DATA1_A_MARK, TCLKB_C_MARK,
 	A0_MARK, ST0_CLKIN_MARK, LCD_DATA0_A_MARK, TCLKA_C_MARK,
 
-	/* IPSR1 */
+	 
 	D3_MARK, SD0_DAT3_A_MARK, MMC_D3_A_MARK, ST1_D6_MARK, FD3_A_MARK,
 	D2_MARK, SD0_DAT2_A_MARK, MMC_D2_A_MARK, ST1_D5_MARK, FD2_A_MARK,
 	D1_MARK, SD0_DAT1_A_MARK, MMC_D1_A_MARK, ST1_D4_MARK, FD1_A_MARK,
@@ -377,7 +372,7 @@ enum {
 	A17_MARK, ST1_VCO_CLKIN_MARK, LCD_CL1_A_MARK, TIOC4B_C_MARK,
 	A16_MARK, ST0_PWM_MARK, LCD_DON_A_MARK, TIOC4A_C_MARK,
 
-	/* IPSR2 */
+	 
 	D14_MARK, TX2_B_MARK, FSE_A_MARK, ET0_TX_CLK_B_MARK,
 	D13_MARK, RX2_B_MARK, FRB_A_MARK, ET0_ETXD6_B_MARK,
 	D12_MARK, FWE_A_MARK, ET0_ETXD5_B_MARK,
@@ -397,7 +392,7 @@ enum {
 	D4_MARK, SD0_CD_A_MARK, MMC_D4_A_MARK, ST1_D7_MARK,
 		FD4_A_MARK,
 
-	/* IPSR3 */
+	 
 	DRACK0_MARK, SD1_DAT2_A_MARK, ATAG_MARK, TCLK1_A_MARK, ET0_ETXD7_MARK,
 	EX_WAIT2_MARK, SD1_DAT1_A_MARK, DACK2_MARK, CAN1_RX_C_MARK,
 		ET0_MAGIC_C_MARK, ET0_ETXD6_A_MARK,
@@ -418,7 +413,7 @@ enum {
 	CS1_A26_MARK, QIO3_B_MARK,
 	D15_MARK, SCK2_B_MARK,
 
-	/* IPSR4 */
+	 
 	SCK2_A_MARK, VI0_G3_MARK,
 	RTS1_B_MARK, VI0_G2_MARK,
 	CTS1_B_MARK, VI0_DATA7_VI0_G1_MARK,
@@ -439,7 +434,7 @@ enum {
 	HCTS0_A_MARK, CTS1_A_MARK, VI0_FIELD_MARK,
 		RMII0_RXD1_A_MARK, ET0_ERXD7_MARK,
 
-	/* IPSR5 */
+	 
 	SD2_CLK_A_MARK, RX2_A_MARK, VI0_G4_MARK, ET0_RX_CLK_B_MARK,
 	SD2_CMD_A_MARK, TX2_A_MARK, VI0_G5_MARK, ET0_ERXD2_B_MARK,
 	SD2_DAT0_A_MARK, RX3_A_MARK, VI0_R0_MARK, ET0_ERXD3_B_MARK,
@@ -451,7 +446,7 @@ enum {
 	REF125CK_MARK, ADTRG_MARK, RX5_C_MARK,
 	REF50CK_MARK, CTS1_E_MARK, HCTS0_D_MARK,
 
-	/* IPSR6 */
+	 
 	DU0_DR0_MARK, SCIF_CLK_B_MARK, HRX0_D_MARK, IETX_A_MARK,
 		TCLKA_A_MARK, HIFD00_MARK,
 	DU0_DR1_MARK, SCK0_B_MARK, HTX0_D_MARK, IERX_A_MARK,
@@ -467,7 +462,7 @@ enum {
 	DU0_DG1_MARK, CTS1_C_MARK, HRTS0_D_MARK, TIOC1B_A_MARK,
 		HIFD09_MARK,
 
-	/* IPSR7 */
+	 
 	DU0_DG2_MARK, RTS1_C_MARK, RMII0_MDC_B_MARK, TIOC2A_A_MARK,
 		HIFD10_MARK,
 	DU0_DG3_MARK, SCK2_C_MARK, RMII0_MDIO_B_MARK, TIOC2B_A_MARK,
@@ -489,7 +484,7 @@ enum {
 	DU0_DB3_MARK, TX5_B_MARK, TIOC4D_A_MARK, HIFRD_MARK,
 	DU0_DB4_MARK, HIFINT_MARK,
 
-	/* IPSR8 */
+	 
 	DU0_DB5_MARK, HIFDREQ_MARK,
 	DU0_DB6_MARK, HIFRDY_MARK,
 	DU0_DB7_MARK, SSI_SCK0_B_MARK, HIFEBL_B_MARK,
@@ -506,7 +501,7 @@ enum {
 	IRQ2_A_MARK, CTS0_A_MARK, HCTS0_B_MARK, ET0_ERXD2_A_MARK,
 	IRQ3_A_MARK, RTS0_A_MARK, HRTS0_B_MARK, ET0_ERXD3_A_MARK,
 
-	/* IPSR9 */
+	 
 	VI1_CLK_A_MARK, FD0_B_MARK, LCD_DATA0_B_MARK,
 	VI1_0_A_MARK, FD1_B_MARK, LCD_DATA1_B_MARK,
 	VI1_1_A_MARK, FD2_B_MARK, LCD_DATA2_B_MARK,
@@ -523,7 +518,7 @@ enum {
 	SSI_WS1_A_MARK, VI1_2_B_MARK, LCD_DATA13_B_MARK,
 	SSI_SDATA1_A_MARK, VI1_3_B_MARK, LCD_DATA14_B_MARK,
 
-	/* IPSR10 */
+	 
 	SSI_SCK23_MARK, VI1_4_B_MARK, RX1_D_MARK, FCLE_B_MARK,
 		LCD_DATA15_B_MARK,
 	SSI_WS23_MARK, VI1_5_B_MARK, TX1_D_MARK, HSCK0_C_MARK,
@@ -545,7 +540,7 @@ enum {
 	CAN0_RX_A_MARK, IRQ0_B_MARK, MLB_SIG_MARK,
 	CAN1_TX_A_MARK, TX5_C_MARK, MLB_DAT_MARK,
 
-	/* IPSR11 */
+	 
 	SCL1_MARK, SCIF_CLK_C_MARK,
 	SDA1_MARK, RX1_E_MARK,
 	SDA0_MARK, HIFEBL_A_MARK,
@@ -571,7 +566,7 @@ enum {
 };
 
 static const u16 pinmux_data[] = {
-	PINMUX_DATA_GP_ALL(), /* PINMUX_DATA(GP_M_N_DATA, GP_M_N_FN...), */
+	PINMUX_DATA_GP_ALL(),  
 
 	PINMUX_SINGLE(CLKOUT),
 	PINMUX_SINGLE(BS),
@@ -586,7 +581,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_SINGLE(IRQ2_B),
 	PINMUX_SINGLE(IRQ3_B),
 
-	/* IPSR0 */
+	 
 	PINMUX_IPSR_GPSR(IP0_1_0, A0),
 	PINMUX_IPSR_GPSR(IP0_1_0, ST0_CLKIN),
 	PINMUX_IPSR_MSEL(IP0_1_0, LCD_DATA0_A, SEL_LCDC_0),
@@ -665,7 +660,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP0_31_30, TIOC3D_C, SEL_MTU2_CH3_1),
 
 
-	/* IPSR1 */
+	 
 	PINMUX_IPSR_GPSR(IP1_1_0, A16),
 	PINMUX_IPSR_GPSR(IP1_1_0, ST0_PWM),
 	PINMUX_IPSR_MSEL(IP1_1_0, LCD_DON_A, SEL_LCDC_0),
@@ -734,7 +729,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_GPSR(IP1_31_29, ST1_D6),
 	PINMUX_IPSR_MSEL(IP1_31_29, FD3_A, SEL_FLCTL_0),
 
-	/* IPSR2 */
+	 
 	PINMUX_IPSR_GPSR(IP2_2_0, D4),
 	PINMUX_IPSR_MSEL(IP2_2_0, SD0_CD_A, SEL_SDHI0_0),
 	PINMUX_IPSR_MSEL(IP2_2_0, MMC_D4_A, SEL_MMC_0),
@@ -797,7 +792,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP2_30_28, FSE_A, SEL_FLCTL_0),
 	PINMUX_IPSR_MSEL(IP2_30_28, ET0_TX_CLK_B, SEL_ET0_1),
 
-	/* IPSR3 */
+	 
 	PINMUX_IPSR_GPSR(IP3_1_0, D15),
 	PINMUX_IPSR_MSEL(IP3_1_0, SCK2_B, SEL_SCIF2_1),
 
@@ -862,7 +857,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP3_29_27, TCLK1_A, SEL_TMU_0),
 	PINMUX_IPSR_GPSR(IP3_29_27, ET0_ETXD7),
 
-	/* IPSR4 */
+	 
 	PINMUX_IPSR_MSEL(IP4_2_0, HCTS0_A, SEL_HSCIF_0),
 	PINMUX_IPSR_MSEL(IP4_2_0, CTS1_A, SEL_SCIF1_0),
 	PINMUX_IPSR_GPSR(IP4_2_0, VI0_FIELD),
@@ -923,7 +918,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP4_31_30, SCK2_A, SEL_SCIF2_0),
 	PINMUX_IPSR_GPSR(IP4_31_30, VI0_G3),
 
-	/* IPSR5 */
+	 
 	PINMUX_IPSR_MSEL(IP5_2_0, SD2_CLK_A, SEL_SDHI2_0),
 	PINMUX_IPSR_MSEL(IP5_2_0, RX2_A, SEL_SCIF2_0),
 	PINMUX_IPSR_GPSR(IP5_2_0, VI0_G4),
@@ -970,7 +965,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP5_26_25, CTS1_E, SEL_SCIF1_3),
 	PINMUX_IPSR_MSEL(IP5_26_25, HCTS0_D, SEL_HSCIF_3),
 
-	/* IPSR6 */
+	 
 	PINMUX_IPSR_GPSR(IP6_2_0, DU0_DR0),
 	PINMUX_IPSR_MSEL(IP6_2_0, SCIF_CLK_B, SEL_SCIF_CLK_1),
 	PINMUX_IPSR_MSEL(IP6_2_0, HRX0_D, SEL_HSCIF_3),
@@ -1028,7 +1023,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP6_23_21, TIOC1B_A, SEL_MTU2_CH1_0),
 	PINMUX_IPSR_GPSR(IP6_23_21, HIFD09),
 
-	/* IPSR7 */
+	 
 	PINMUX_IPSR_GPSR(IP7_2_0, DU0_DG2),
 	PINMUX_IPSR_MSEL(IP7_2_0, RTS1_C, SEL_SCIF1_2),
 	PINMUX_IPSR_MSEL(IP7_2_0, RMII0_MDC_B, SEL_RMII_1),
@@ -1090,7 +1085,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_GPSR(IP7_30_29, DU0_DB4),
 	PINMUX_IPSR_GPSR(IP7_30_29, HIFINT),
 
-	/* IPSR8 */
+	 
 	PINMUX_IPSR_GPSR(IP8_1_0, DU0_DB5),
 	PINMUX_IPSR_GPSR(IP8_1_0, HIFDREQ),
 
@@ -1152,7 +1147,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP8_29_28, HRTS0_B, SEL_HSCIF_1),
 	PINMUX_IPSR_MSEL(IP8_29_28, ET0_ERXD3_A, SEL_ET0_0),
 
-	/* IPSR9 */
+	 
 	PINMUX_IPSR_MSEL(IP9_1_0, VI1_CLK_A, SEL_VIN1_0),
 	PINMUX_IPSR_MSEL(IP9_1_0, FD0_B, SEL_FLCTL_1),
 	PINMUX_IPSR_MSEL(IP9_1_0, LCD_DATA0_B, SEL_LCDC_1),
@@ -1215,7 +1210,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP9_29_28, VI1_3_B, SEL_VIN1_1),
 	PINMUX_IPSR_MSEL(IP9_29_28, LCD_DATA14_B, SEL_LCDC_1),
 
-	/* IPSE10 */
+	 
 	PINMUX_IPSR_GPSR(IP10_2_0, SSI_SCK23),
 	PINMUX_IPSR_MSEL(IP10_2_0, VI1_4_B, SEL_VIN1_1),
 	PINMUX_IPSR_MSEL(IP10_2_0, RX1_D, SEL_SCIF1_3),
@@ -1280,7 +1275,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_IPSR_MSEL(IP10_29_28, TX5_C, SEL_SCIF1_2),
 	PINMUX_IPSR_GPSR(IP10_29_28, MLB_DAT),
 
-	/* IPSR11 */
+	 
 	PINMUX_IPSR_GPSR(IP11_0, SCL1),
 	PINMUX_IPSR_MSEL(IP11_0, SCIF_CLK_C, SEL_SCIF_CLK_2),
 
@@ -1360,7 +1355,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SCL0), GPIO_FN(PENC0), GPIO_FN(USB_OVC0),
 	GPIO_FN(IRQ2_B), GPIO_FN(IRQ3_B),
 
-	/* IPSR0 */
+	 
 	GPIO_FN(A0), GPIO_FN(ST0_CLKIN), GPIO_FN(LCD_DATA0_A),
 	GPIO_FN(TCLKA_C),
 	GPIO_FN(A1), GPIO_FN(ST0_REQ), GPIO_FN(LCD_DATA1_A),
@@ -1391,7 +1386,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(A15), GPIO_FN(ST0_VCO_CLKIN), GPIO_FN(LCD_DATA15_A),
 	GPIO_FN(TIOC3D_C),
 
-	/* IPSR1 */
+	 
 	GPIO_FN(A16), GPIO_FN(ST0_PWM), GPIO_FN(LCD_DON_A),
 	GPIO_FN(TIOC4A_C),
 	GPIO_FN(A17), GPIO_FN(ST1_VCO_CLKIN), GPIO_FN(LCD_CL1_A),
@@ -1415,7 +1410,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(D3), GPIO_FN(SD0_DAT3_A), GPIO_FN(MMC_D3_A),
 	GPIO_FN(ST1_D6), GPIO_FN(FD3_A),
 
-	/* IPSR2 */
+	 
 	GPIO_FN(D4), GPIO_FN(SD0_CD_A), GPIO_FN(MMC_D4_A), GPIO_FN(ST1_D7),
 	GPIO_FN(FD4_A),
 	GPIO_FN(D5), GPIO_FN(SD0_WP_A), GPIO_FN(MMC_D5_A), GPIO_FN(FD5_A),
@@ -1436,7 +1431,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(D13), GPIO_FN(RX2_B), GPIO_FN(FRB_A), GPIO_FN(ET0_ETXD6_B),
 	GPIO_FN(D14), GPIO_FN(TX2_B), GPIO_FN(FSE_A), GPIO_FN(ET0_TX_CLK_B),
 
-	/* IPSR3 */
+	 
 	GPIO_FN(D15), GPIO_FN(SCK2_B),
 	GPIO_FN(CS1_A26), GPIO_FN(QIO3_B),
 	GPIO_FN(EX_CS1), GPIO_FN(RX3_B), GPIO_FN(ATACS0), GPIO_FN(QIO2_B),
@@ -1458,7 +1453,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(DRACK0), GPIO_FN(SD1_DAT2_A), GPIO_FN(ATAG), GPIO_FN(TCLK1_A),
 	GPIO_FN(ET0_ETXD7),
 
-	/* IPSR4 */
+	 
 	GPIO_FN(HCTS0_A), GPIO_FN(CTS1_A), GPIO_FN(VI0_FIELD),
 		GPIO_FN(RMII0_RXD1_A), GPIO_FN(ET0_ERXD7),
 	GPIO_FN(HRTS0_A), GPIO_FN(RTS1_A), GPIO_FN(VI0_HSYNC),
@@ -1479,7 +1474,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(RTS1_B), GPIO_FN(VI0_G2),
 	GPIO_FN(SCK2_A), GPIO_FN(VI0_G3),
 
-	/* IPSR5 */
+	 
 	GPIO_FN(REF50CK), GPIO_FN(CTS1_E), GPIO_FN(HCTS0_D),
 	GPIO_FN(REF125CK), GPIO_FN(ADTRG), GPIO_FN(RX5_C),
 	GPIO_FN(SD2_WP_A), GPIO_FN(TX5_A), GPIO_FN(VI0_R5),
@@ -1498,7 +1493,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SD2_CLK_A), GPIO_FN(RX2_A), GPIO_FN(VI0_G4),
 		GPIO_FN(ET0_RX_CLK_B),
 
-	/* IPSR6 */
+	 
 	GPIO_FN(DU0_DG1), GPIO_FN(CTS1_C), GPIO_FN(HRTS0_D),
 		GPIO_FN(TIOC1B_A), GPIO_FN(HIFD09),
 	GPIO_FN(DU0_DG0), GPIO_FN(TX1_C), GPIO_FN(HSCK0_D),
@@ -1518,7 +1513,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(DU0_DR0), GPIO_FN(SCIF_CLK_B), GPIO_FN(HRX0_D),
 		GPIO_FN(IETX_A), GPIO_FN(TCLKA_A), GPIO_FN(HIFD00),
 
-	/* IPSR7 */
+	 
 	GPIO_FN(DU0_DB4), GPIO_FN(HIFINT),
 	GPIO_FN(DU0_DB3), GPIO_FN(TX5_B), GPIO_FN(TIOC4D_A), GPIO_FN(HIFRD),
 	GPIO_FN(DU0_DB2), GPIO_FN(RX5_B), GPIO_FN(RMII0_TXD1_B),
@@ -1540,7 +1535,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(DU0_DG2), GPIO_FN(RTS1_C), GPIO_FN(RMII0_MDC_B),
 		GPIO_FN(TIOC2A_A), GPIO_FN(HIFD10),
 
-	/* IPSR8 */
+	 
 	GPIO_FN(IRQ3_A), GPIO_FN(RTS0_A), GPIO_FN(HRTS0_B),
 		GPIO_FN(ET0_ERXD3_A),
 	GPIO_FN(IRQ2_A), GPIO_FN(CTS0_A), GPIO_FN(HCTS0_B),
@@ -1567,7 +1562,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(DU0_DB6), GPIO_FN(HIFRDY),
 	GPIO_FN(DU0_DB5), GPIO_FN(HIFDREQ),
 
-	/* IPSR9 */
+	 
 	GPIO_FN(SSI_SDATA1_A), GPIO_FN(VI1_3_B), GPIO_FN(LCD_DATA14_B),
 	GPIO_FN(SSI_WS1_A), GPIO_FN(VI1_2_B), GPIO_FN(LCD_DATA13_B),
 	GPIO_FN(SSI_SCK1_A), GPIO_FN(VI1_1_B), GPIO_FN(TIOC2B_B),
@@ -1586,7 +1581,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(VI1_0_A), GPIO_FN(FD1_B), GPIO_FN(LCD_DATA1_B),
 	GPIO_FN(VI1_CLK_A), GPIO_FN(FD0_B), GPIO_FN(LCD_DATA0_B),
 
-	/* IPSR10 */
+	 
 	GPIO_FN(CAN1_TX_A), GPIO_FN(TX5_C), GPIO_FN(MLB_DAT),
 	GPIO_FN(CAN0_RX_A), GPIO_FN(IRQ0_B), GPIO_FN(MLB_SIG),
 	GPIO_FN(CAN1_RX_A), GPIO_FN(IRQ1_B),
@@ -1608,7 +1603,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SSI_SCK23), GPIO_FN(VI1_4_B), GPIO_FN(RX1_D),
 		GPIO_FN(FCLE_B), GPIO_FN(LCD_DATA15_B),
 
-	/* IPSR11 */
+	 
 	GPIO_FN(PRESETOUT), GPIO_FN(ST_CLKOUT),
 	GPIO_FN(DACK1), GPIO_FN(HSPI_CS_B), GPIO_FN(TX4_B),
 		GPIO_FN(ET0_RX_CLK_A),
@@ -1808,10 +1803,10 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("GPSR5", 0xFFFC0018, 32,
 			     GROUP(-20, 1, 1, -6, 1, 1, 1, 1),
 			     GROUP(
-		/* GP5_31_12 RESERVED */
+		 
 		GP_5_11_FN, FN_IP10_29_28,
 		GP_5_10_FN, FN_IP10_27_26,
-		/* GP5_9_4 RESERVED */
+		 
 		GP_5_3_FN, FN_IRQ3_B,
 		GP_5_2_FN, FN_IRQ2_B,
 		GP_5_1_FN, FN_IP11_3,
@@ -1821,279 +1816,279 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("IPSR0", 0xFFFC001C, 32,
 			GROUP(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
 			GROUP(
-		/* IP0_31_30 [2] */
+		 
 		FN_A15, FN_ST0_VCO_CLKIN, FN_LCD_DATA15_A,
 			FN_TIOC3D_C,
-		/* IP0_29_28 [2] */
+		 
 		FN_A14, FN_LCD_DATA14_A, FN_TIOC3C_C, 0,
-		/* IP0_27_26 [2] */
+		 
 		FN_A13, FN_LCD_DATA13_A, FN_TIOC3B_C, 0,
-		/* IP0_25_24 [2] */
+		 
 		FN_A12, FN_LCD_DATA12_A, FN_TIOC3A_C, 0,
-		/* IP0_23_22 [2] */
+		 
 		FN_A11, FN_ST0_D7, FN_LCD_DATA11_A, FN_TIOC2B_C,
-		/* IP0_21_20 [2] */
+		 
 		FN_A10, FN_ST0_D6, FN_LCD_DATA10_A, FN_TIOC2A_C,
-		/* IP0_19_18 [2] */
+		 
 		FN_A9, FN_ST0_D5, FN_LCD_DATA9_A, FN_TIOC1B_C,
-		/* IP0_17_16 [2] */
+		 
 		FN_A8, FN_ST0_D4, FN_LCD_DATA8_A, FN_TIOC1A_C,
-		/* IP0_15_14 [2] */
+		 
 		FN_A7, FN_ST0_D3, FN_LCD_DATA7_A, FN_TIOC0D_C,
-		/* IP0_13_12 [2] */
+		 
 		FN_A6, FN_ST0_D2, FN_LCD_DATA6_A, FN_TIOC0C_C,
-		/* IP0_11_10 [2] */
+		 
 		FN_A5, FN_ST0_D1, FN_LCD_DATA5_A, FN_TIOC0B_C,
-		/* IP0_9_8 [2] */
+		 
 		FN_A4, FN_ST0_D0, FN_LCD_DATA4_A, FN_TIOC0A_C,
-		/* IP0_7_6 [2] */
+		 
 		FN_A3, FN_ST0_VLD, FN_LCD_DATA3_A, FN_TCLKD_C,
-		/* IP0_5_4 [2] */
+		 
 		FN_A2, FN_ST0_SYC, FN_LCD_DATA2_A, FN_TCLKC_C,
-		/* IP0_3_2 [2] */
+		 
 		FN_A1, FN_ST0_REQ, FN_LCD_DATA1_A, FN_TCLKB_C,
-		/* IP0_1_0 [2] */
+		 
 		FN_A0, FN_ST0_CLKIN, FN_LCD_DATA0_A, FN_TCLKA_C ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR1", 0xFFFC0020, 32,
 			GROUP(3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
 			GROUP(
-		/* IP1_31_29 [3] */
+		 
 		FN_D3, FN_SD0_DAT3_A, FN_MMC_D3_A, FN_ST1_D6,
 			FN_FD3_A, 0, 0, 0,
-		/* IP1_28_26 [3] */
+		 
 		FN_D2, FN_SD0_DAT2_A, FN_MMC_D2_A, FN_ST1_D5,
 			FN_FD2_A, 0, 0, 0,
-		/* IP1_25_23 [3] */
+		 
 		FN_D1, FN_SD0_DAT1_A, FN_MMC_D1_A, FN_ST1_D4,
 			FN_FD1_A, 0, 0, 0,
-		/* IP1_22_20 [3] */
+		 
 		FN_D0, FN_SD0_DAT0_A, FN_MMC_D0_A, FN_ST1_D3,
 			FN_FD0_A, 0, 0, 0,
-		/* IP1_19_18 [2] */
+		 
 		FN_A25, FN_TX2_D, FN_ST1_D2, 0,
-		/* IP1_17_16 [2] */
+		 
 		FN_A24, FN_RX2_D, FN_ST1_D1, 0,
-		/* IP1_15_14 [2] */
+		 
 		FN_A23, FN_ST1_D0, FN_LCD_M_DISP_A, 0,
-		/* IP1_13_12 [2] */
+		 
 		FN_A22, FN_ST1_VLD, FN_LCD_VEPWC_A, 0,
-		/* IP1_11_10 [2] */
+		 
 		FN_A21, FN_ST1_SYC, FN_LCD_VCPWC_A, 0,
-		/* IP1_9_8 [2] */
+		 
 		FN_A20, FN_ST1_REQ, FN_LCD_FLM_A, 0,
-		/* IP1_7_6 [2] */
+		 
 		FN_A19, FN_ST1_CLKIN, FN_LCD_CLK_A,	FN_TIOC4D_C,
-		/* IP1_5_4 [2] */
+		 
 		FN_A18, FN_ST1_PWM, FN_LCD_CL2_A, FN_TIOC4C_C,
-		/* IP1_3_2 [2] */
+		 
 		FN_A17, FN_ST1_VCO_CLKIN, FN_LCD_CL1_A,	FN_TIOC4B_C,
-		/* IP1_1_0 [2] */
+		 
 		FN_A16, FN_ST0_PWM, FN_LCD_DON_A, FN_TIOC4A_C ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR2", 0xFFFC0024, 32,
 			     GROUP(-1, 3, 3, 2, 3, 3, 3, 3, 3, 3, 2, 3),
 			     GROUP(
-		/* IP2_31 [1] RESERVED */
-		/* IP2_30_28 [3] */
+		 
+		 
 		FN_D14, FN_TX2_B, 0, FN_FSE_A,
 			FN_ET0_TX_CLK_B, 0, 0, 0,
-		/* IP2_27_25 [3] */
+		 
 		FN_D13, FN_RX2_B, 0, FN_FRB_A,
 			FN_ET0_ETXD6_B, 0, 0, 0,
-		/* IP2_24_23 [2] */
+		 
 		FN_D12, 0, FN_FWE_A, FN_ET0_ETXD5_B,
-		/* IP2_22_20 [3] */
+		 
 		FN_D11, FN_RSPI_MISO_A, 0, FN_QMI_QIO1_A,
 			FN_FRE_A, FN_ET0_ETXD3_B, 0, 0,
-		/* IP2_19_17 [3] */
+		 
 		FN_D10, FN_RSPI_MOSI_A, 0, FN_QMO_QIO0_A,
 			FN_FALE_A, FN_ET0_ETXD2_B, 0, 0,
-		/* IP2_16_14 [3] */
+		 
 		FN_D9, FN_SD0_CMD_A, FN_MMC_CMD_A, FN_QIO3_A,
 			FN_FCLE_A, FN_ET0_ETXD1_B, 0, 0,
-		/* IP2_13_11 [3] */
+		 
 		FN_D8, FN_SD0_CLK_A, FN_MMC_CLK_A, FN_QIO2_A,
 			FN_FCE_A, FN_ET0_GTX_CLK_B, 0, 0,
-		/* IP2_10_8 [3] */
+		 
 		FN_D7, FN_RSPI_SSL_A, FN_MMC_D7_A, FN_QSSL_A,
 			FN_FD7_A, 0, 0, 0,
-		/* IP2_7_5 [3] */
+		 
 		FN_D6, FN_RSPI_RSPCK_A, FN_MMC_D6_A, FN_QSPCLK_A,
 			FN_FD6_A, 0, 0, 0,
-		/* IP2_4_3 [2] */
+		 
 		FN_D5, FN_SD0_WP_A, FN_MMC_D5_A, FN_FD5_A,
-		/* IP2_2_0 [3] */
+		 
 		FN_D4, FN_SD0_CD_A, FN_MMC_D4_A, FN_ST1_D7,
 			FN_FD4_A, 0, 0, 0 ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR3", 0xFFFC0028, 32,
 			     GROUP(-2, 3, 3, 3, 1, 2, 3, 3, 3, 3, 3, 1, 2),
 			     GROUP(
-	    /* IP3_31_30 [2] RESERVED */
-	    /* IP3_29_27 [3] */
+	     
+	     
 		FN_DRACK0, FN_SD1_DAT2_A, FN_ATAG, FN_TCLK1_A,
 		FN_ET0_ETXD7, 0, 0, 0,
-	    /* IP3_26_24 [3] */
+	     
 		FN_EX_WAIT2, FN_SD1_DAT1_A, FN_DACK2, FN_CAN1_RX_C,
 		FN_ET0_MAGIC_C, FN_ET0_ETXD6_A, 0, 0,
-	    /* IP3_23_21 [3] */
+	     
 		FN_EX_WAIT1, FN_SD1_DAT0_A, FN_DREQ2, FN_CAN1_TX_C,
 		FN_ET0_LINK_C, FN_ET0_ETXD5_A, 0, 0,
-	    /* IP3_20 [1] */
+	     
 		FN_EX_WAIT0, FN_TCLK1_B,
-	    /* IP3_19_18 [2] */
+	     
 		FN_RD_WR, FN_TCLK0, FN_CAN_CLK_B, FN_ET0_ETXD4,
-	    /* IP3_17_15 [3] */
+	     
 		FN_EX_CS5, FN_SD1_CMD_A, FN_ATADIR, FN_QSSL_B,
 		FN_ET0_ETXD3_A, 0, 0, 0,
-	    /* IP3_14_12 [3] */
+	     
 		FN_EX_CS4, FN_SD1_WP_A, FN_ATAWR, FN_QMI_QIO1_B,
 		FN_ET0_ETXD2_A, 0, 0, 0,
-	    /* IP3_11_9 [3] */
+	     
 		FN_EX_CS3, FN_SD1_CD_A, FN_ATARD, FN_QMO_QIO0_B,
 		FN_ET0_ETXD1_A, 0, 0, 0,
-	    /* IP3_8_6 [3] */
+	     
 		FN_EX_CS2, FN_TX3_B, FN_ATACS1, FN_QSPCLK_B,
 		FN_ET0_GTX_CLK_A, 0, 0, 0,
-	    /* IP3_5_3 [3] */
+	     
 		FN_EX_CS1, FN_RX3_B, FN_ATACS0, FN_QIO2_B,
 		FN_ET0_ETXD0, 0, 0, 0,
-	    /* IP3_2 [1] */
+	     
 		FN_CS1_A26, FN_QIO3_B,
-	    /* IP3_1_0 [2] */
+	     
 		FN_D15, FN_SCK2_B, 0, 0 ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR4", 0xFFFC002C, 32,
 			     GROUP(2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3),
 			     GROUP(
-	    /* IP4_31_30 [2] */
+	     
 		0, FN_SCK2_A, FN_VI0_G3, 0,
-	    /* IP4_29_28 [2] */
+	     
 		0, FN_RTS1_B, FN_VI0_G2, 0,
-	    /* IP4_27_26 [2] */
+	     
 		0, FN_CTS1_B, FN_VI0_DATA7_VI0_G1, 0,
-	    /* IP4_25_24 [2] */
+	     
 		0, FN_TX1_B, FN_VI0_DATA6_VI0_G0, FN_ET0_PHY_INT_A,
-	    /* IP4_23_22 [2] */
+	     
 		0, FN_RX1_B, FN_VI0_DATA5_VI0_B5, FN_ET0_MAGIC_A,
-	    /* IP4_21_20 [2] */
+	     
 		0, FN_SCK1_B, FN_VI0_DATA4_VI0_B4, FN_ET0_LINK_A,
-	    /* IP4_19_18 [2] */
+	     
 		0, FN_RTS0_B, FN_VI0_DATA3_VI0_B3, FN_ET0_MDIO_A,
-	    /* IP4_17_15 [3] */
+	     
 		0, FN_CTS0_B, FN_VI0_DATA2_VI0_B2, FN_RMII0_MDIO_A,
 			FN_ET0_MDC, 0, 0, 0,
-	    /* IP4_14_12 [3] */
+	     
 		FN_HTX0_A, FN_TX1_A, FN_VI0_DATA1_VI0_B1, FN_RMII0_MDC_A,
 			FN_ET0_COL, 0, 0, 0,
-	    /* IP4_11_9 [3] */
+	     
 		FN_HRX0_A, FN_RX1_A, FN_VI0_DATA0_VI0_B0, FN_RMII0_CRS_DV_A,
 			FN_ET0_CRS, 0, 0, 0,
-	    /* IP4_8_6 [3] */
+	     
 		FN_HSCK0_A, FN_SCK1_A, FN_VI0_VSYNC, FN_RMII0_RX_ER_A,
 			FN_ET0_RX_ER, 0, 0, 0,
-	    /* IP4_5_3 [3] */
+	     
 		FN_HRTS0_A, FN_RTS1_A, FN_VI0_HSYNC, FN_RMII0_TXD_EN_A,
 			FN_ET0_RX_DV, 0, 0, 0,
-	    /* IP4_2_0 [3] */
+	     
 		FN_HCTS0_A, FN_CTS1_A, FN_VI0_FIELD, FN_RMII0_RXD1_A,
 			FN_ET0_ERXD7, 0, 0, 0 ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR5", 0xFFFC0030, 32,
 			     GROUP(-5, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3),
 			     GROUP(
-	    /* IP5_31_27 [5] RESERVED */
-	    /* IP5_26_25 [2] */
+	     
+	     
 		FN_REF50CK, FN_CTS1_E, FN_HCTS0_D, 0,
-	    /* IP5_24_23 [2] */
+	     
 		FN_REF125CK, FN_ADTRG, FN_RX5_C, 0,
-	    /* IP5_22_21 [2] */
+	     
 		FN_SD2_WP_A, FN_TX5_A, FN_VI0_R5, 0,
-	    /* IP5_20_18 [3] */
+	     
 		FN_SD2_CD_A, FN_RX5_A, FN_VI0_R4, 0,
 		0, 0, 0, FN_ET0_PHY_INT_B,
-	    /* IP5_17_15 [3] */
+	     
 		FN_SD2_DAT3_A, FN_TX4_A, FN_VI0_R3, 0,
 		0, 0, 0, FN_ET0_MAGIC_B,
-	    /* IP5_14_12 [3] */
+	     
 		FN_SD2_DAT2_A, FN_RX4_A, FN_VI0_R2, 0,
 		0, 0, 0, FN_ET0_LINK_B,
-	    /* IP5_11_9 [3] */
+	     
 		FN_SD2_DAT1_A, FN_TX3_A, FN_VI0_R1, 0,
 		0, 0, 0, FN_ET0_MDIO_B,
-	    /* IP5_8_6 [3] */
+	     
 		FN_SD2_DAT0_A, FN_RX3_A, FN_VI0_R0, 0,
 		0, 0, 0, FN_ET0_ERXD3_B,
-	    /* IP5_5_3 [3] */
+	     
 		FN_SD2_CMD_A, FN_TX2_A, FN_VI0_G5, 0,
 		0, 0, 0, FN_ET0_ERXD2_B,
-	    /* IP5_2_0 [3] */
+	     
 		FN_SD2_CLK_A, FN_RX2_A, FN_VI0_G4, 0,
 		FN_ET0_RX_CLK_B, 0, 0, 0 ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR6", 0xFFFC0034, 32,
 			     GROUP(-8, 3, 3, 2, 2, 2, 2, 2, 2, 3, 3),
 			     GROUP(
-	    /* IP5_31_24 [8] RESERVED */
-	    /* IP6_23_21 [3] */
+	     
+	     
 		FN_DU0_DG1, FN_CTS1_C, FN_HRTS0_D, FN_TIOC1B_A,
 		FN_HIFD09, 0, 0, 0,
-	    /* IP6_20_18 [3] */
+	     
 		FN_DU0_DG0, FN_TX1_C, FN_HSCK0_D, FN_IECLK_A,
 		FN_TIOC1A_A, FN_HIFD08, 0, 0,
-	    /* IP6_17_16 [2] */
+	     
 		FN_DU0_DR7, FN_RX1_C, FN_TIOC0D_A, FN_HIFD07,
-	    /* IP6_15_14 [2] */
+	     
 		FN_DU0_DR6, FN_SCK1_C, FN_TIOC0C_A, FN_HIFD06,
-	    /* IP6_13_12 [2] */
+	     
 		FN_DU0_DR5, FN_RTS0_C, FN_TIOC0B_A, FN_HIFD05,
-	    /* IP6_11_10 [2] */
+	     
 		FN_DU0_DR4, FN_CTS0_C, FN_TIOC0A_A, FN_HIFD04,
-	    /* IP6_9_8 [2] */
+	     
 		FN_DU0_DR3, FN_TX0_B, FN_TCLKD_A, FN_HIFD03,
-	    /* IP6_7_6 [2] */
+	     
 		FN_DU0_DR2, FN_RX0_B, FN_TCLKC_A, FN_HIFD02,
-	    /* IP6_5_3 [3] */
+	     
 		FN_DU0_DR1, FN_SCK0_B, FN_HTX0_D, FN_IERX_A,
 		FN_TCLKB_A, FN_HIFD01, 0, 0,
-	    /* IP6_2_0 [3] */
+	     
 		FN_DU0_DR0, FN_SCIF_CLK_B, FN_HRX0_D, FN_IETX_A,
 		FN_TCLKA_A, FN_HIFD00, 0, 0 ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR7", 0xFFFC0038, 32,
 			     GROUP(-1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3),
 			     GROUP(
-	    /* IP7_31 [1] RESERVED */
-	    /* IP7_30_29 [2] */
+	     
+	     
 		FN_DU0_DB4, 0, FN_HIFINT, 0,
-	    /* IP7_28_27 [2] */
+	     
 		FN_DU0_DB3, FN_TX5_B, FN_TIOC4D_A, FN_HIFRD,
-	    /* IP7_26_24 [3] */
+	     
 		FN_DU0_DB2, FN_RX5_B, FN_RMII0_TXD1_B, FN_TIOC4C_A,
 		FN_HIFWR, 0, 0, 0,
-	    /* IP7_23_21 [3] */
+	     
 		FN_DU0_DB1, FN_TX4_C, FN_RMII0_TXD0_B, FN_TIOC4B_A,
 		FN_HIFRS, 0, 0, 0,
-	    /* IP7_20_18 [3] */
+	     
 		FN_DU0_DB0, FN_RX4_C, FN_RMII0_TXD_EN_B, FN_TIOC4A_A,
 		FN_HIFCS, 0, 0, 0,
-	    /* IP7_17_15 [3] */
+	     
 		FN_DU0_DG7, FN_TX3_C, FN_RMII0_RXD1_B, FN_TIOC3D_A,
 		FN_HIFD15, 0, 0, 0,
-	    /* IP7_14_12 [3] */
+	     
 		FN_DU0_DG6, FN_RX3_C, FN_RMII0_RXD0_B, FN_TIOC3C_A,
 		FN_HIFD14, 0, 0, 0,
-	    /* IP7_11_9 [3] */
+	     
 		FN_DU0_DG5, FN_TX2_C, FN_RMII0_RX_ER_B, FN_TIOC3B_A,
 		FN_HIFD13, 0, 0, 0,
-	    /* IP7_8_6 [3] */
+	     
 		FN_DU0_DG4, FN_RX2_C, FN_RMII0_CRS_DV_B, FN_TIOC3A_A,
 		FN_HIFD12, 0, 0, 0,
-	    /* IP7_5_3 [3] */
+	     
 		FN_DU0_DG3, FN_SCK2_C, FN_RMII0_MDIO_B, FN_TIOC2B_A,
 		FN_HIFD11, 0, 0, 0,
-	    /* IP7_2_0 [3] */
+	     
 		FN_DU0_DG2, FN_RTS1_C, FN_RMII0_MDC_B, FN_TIOC2A_A,
 		FN_HIFD10, 0, 0, 0 ))
 	},
@@ -2101,110 +2096,110 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 			     GROUP(-2, 2, 2, 3, 3, 2, 2, 2, 2, 2, 2, 2,
 				   2, 2, 2),
 			     GROUP(
-	    /* IP9_31_30 [2] RESERVED */
-	    /* IP8_29_28 [2] */
+	     
+	     
 		FN_IRQ3_A, FN_RTS0_A, FN_HRTS0_B, FN_ET0_ERXD3_A,
-	    /* IP8_27_26 [2] */
+	     
 		FN_IRQ2_A, FN_CTS0_A, FN_HCTS0_B, FN_ET0_ERXD2_A,
-	    /* IP8_25_23 [3] */
+	     
 		FN_IRQ1_A, 0, FN_HSPI_RX_B, FN_TX3_E,
 			FN_ET0_ERXD1, 0, 0, 0,
-	    /* IP8_22_20 [3] */
+	     
 		FN_IRQ0_A, 0, FN_HSPI_TX_B, FN_RX3_E,
 			FN_ET0_ERXD0, 0, 0, 0,
-	    /* IP8_19_18 [2] */
+	     
 		FN_DU0_CDE, FN_HTX0_B, FN_AUDIO_CLKB_B, FN_LCD_VCPWC_B,
-	    /* IP8_17_16 [2] */
+	     
 		FN_DU0_DISP, FN_CAN0_TX_B, FN_HRX0_B, FN_AUDIO_CLKA_B,
-	    /* IP8_15_14 [2] */
+	     
 		FN_DU0_EXODDF_DU0_ODDF, FN_CAN0_RX_B, FN_HSCK0_B,
 			FN_SSI_SDATA1_B,
-	    /* IP8_13_12 [2] */
+	     
 		FN_DU0_EXVSYNC_DU0_VSYNC, 0, FN_HSPI_RX0_C, FN_SSI_WS1_B,
-	    /* IP8_11_10 [2] */
+	     
 		FN_DU0_EXHSYNC_DU0_HSYNC, 0, FN_HSPI_TX0_C, FN_SSI_SCK1_B,
-	    /* IP8_9_8 [2] */
+	     
 		FN_DU0_DOTCLKOUT, 0, FN_HSPI_CLK0_C, FN_SSI_SDATA0_B,
-	    /* IP8_7_6 [2] */
+	     
 		FN_DU0_DOTCLKIN, 0, FN_HSPI_CS0_C, FN_SSI_WS0_B,
-	    /* IP8_5_4 [2] */
+	     
 		FN_DU0_DB7, 0, FN_SSI_SCK0_B, FN_HIFEBL_B,
-	    /* IP8_3_2 [2] */
+	     
 		FN_DU0_DB6, 0, FN_HIFRDY, 0,
-	    /* IP8_1_0 [2] */
+	     
 		FN_DU0_DB5, 0, FN_HIFDREQ, 0 ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR9", 0xFFFC0040, 32,
 			     GROUP(-2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 				   2, 2, 2, 2),
 			     GROUP(
-	    /* IP9_31_30 [2] RESERVED */
-	    /* IP9_29_28 [2] */
+	     
+	     
 		FN_SSI_SDATA1_A, FN_VI1_3_B, FN_LCD_DATA14_B, 0,
-	    /* IP9_27_26 [2] */
+	     
 		FN_SSI_WS1_A, FN_VI1_2_B, FN_LCD_DATA13_B, 0,
-	    /* IP9_25_24 [2] */
+	     
 		FN_SSI_SCK1_A, FN_VI1_1_B, FN_TIOC2B_B, FN_LCD_DATA12_B,
-	    /* IP9_23_22 [2] */
+	     
 		FN_SSI_SDATA0_A, FN_VI1_0_B, FN_TIOC2A_B, FN_LCD_DATA11_B,
-	    /* IP9_21_20 [2] */
+	     
 		FN_SSI_WS0_A, FN_TIOC1B_B, FN_LCD_DATA10_B, 0,
-	    /* IP9_19_18 [2] */
+	     
 		FN_SSI_SCK0_A, FN_TIOC1A_B, FN_LCD_DATA9_B, 0,
-	    /* IP9_17_16 [2] */
+	     
 		FN_VI1_7_A, FN_FCE_B, FN_LCD_DATA8_B, 0,
-	    /* IP9_15_14 [2] */
+	     
 		FN_VI1_6_A, 0, FN_FD7_B, FN_LCD_DATA7_B,
-	    /* IP9_13_12 [2] */
+	     
 		FN_VI1_5_A, 0, FN_FD6_B, FN_LCD_DATA6_B,
-	    /* IP9_11_10 [2] */
+	     
 		FN_VI1_4_A, 0, FN_FD5_B, FN_LCD_DATA5_B,
-	    /* IP9_9_8 [2] */
+	     
 		FN_VI1_3_A, 0, FN_FD4_B, FN_LCD_DATA4_B,
-	    /* IP9_7_6 [2] */
+	     
 		FN_VI1_2_A, 0, FN_FD3_B, FN_LCD_DATA3_B,
-	    /* IP9_5_4 [2] */
+	     
 		FN_VI1_1_A, 0, FN_FD2_B, FN_LCD_DATA2_B,
-	    /* IP9_3_2 [2] */
+	     
 		FN_VI1_0_A, 0, FN_FD1_B, FN_LCD_DATA1_B,
-	    /* IP9_1_0 [2] */
+	     
 		FN_VI1_CLK_A, 0, FN_FD0_B, FN_LCD_DATA0_B ))
 	},
 	{ PINMUX_CFG_REG_VAR("IPSR10", 0xFFFC0044, 32,
 			     GROUP(-2, 2, 2, 1, 2, 1, 3, 3, 1, 3, 3, 3, 3, 3),
 			     GROUP(
-	    /* IP9_31_30 [2] RESERVED */
-	    /* IP10_29_28 [2] */
+	     
+	     
 		FN_CAN1_TX_A, FN_TX5_C, FN_MLB_DAT, 0,
-	    /* IP10_27_26 [2] */
+	     
 		FN_CAN0_RX_A, FN_IRQ0_B, FN_MLB_SIG, 0,
-	    /* IP10_25 [1] */
+	     
 		FN_CAN1_RX_A, FN_IRQ1_B,
-	    /* IP10_24_23 [2] */
+	     
 		FN_CAN0_TX_A, FN_TX4_D, FN_MLB_CLK, 0,
-	    /* IP10_22 [1] */
+	     
 		FN_CAN_CLK_A, FN_RX4_D,
-	    /* IP10_21_19 [3] */
+	     
 		FN_AUDIO_CLKOUT, FN_TX1_E, 0, FN_HRTS0_C, FN_FSE_B,
 		FN_LCD_M_DISP_B, 0, 0,
-	    /* IP10_18_16 [3] */
+	     
 		FN_AUDIO_CLKC, FN_SCK1_E, 0, FN_HCTS0_C, FN_FRB_B,
 		FN_LCD_VEPWC_B, 0, 0,
-	    /* IP10_15 [1] */
+	     
 		FN_AUDIO_CLKB_A, FN_LCD_CLK_B,
-	    /* IP10_14_12 [3] */
+	     
 		FN_AUDIO_CLKA_A, FN_VI1_CLK_B, FN_SCK1_D, FN_IECLK_B,
 		FN_LCD_FLM_B, 0, 0, 0,
-	    /* IP10_11_9 [3] */
+	     
 		FN_SSI_SDATA3, FN_VI1_7_B, 0, FN_HTX0_C, FN_FWE_B,
 		FN_LCD_CL2_B, 0, 0,
-	    /* IP10_8_6 [3] */
+	     
 		FN_SSI_SDATA2, FN_VI1_6_B, 0, FN_HRX0_C, FN_FRE_B,
 		FN_LCD_CL1_B, 0, 0,
-	    /* IP10_5_3 [3] */
+	     
 		FN_SSI_WS23, FN_VI1_5_B, FN_TX1_D, FN_HSCK0_C, FN_FALE_B,
 		FN_LCD_DON_B, 0, 0,
-	    /* IP10_2_0 [3] */
+	     
 		FN_SSI_SCK23, FN_VI1_4_B, FN_RX1_D, FN_FCLE_B,
 		FN_LCD_DATA15_B, 0, 0, 0 ))
 	},
@@ -2212,133 +2207,133 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 			     GROUP(-3, 1, 2, 3, 2, 2, 3, 3, 1, 2, 3, 3,
 				   1, 1, 1, 1),
 			     GROUP(
-	    /* IP11_31_29 [3] RESERVED */
-	    /* IP11_28 [1] */
+	     
+	     
 		FN_PRESETOUT, FN_ST_CLKOUT,
-	    /* IP11_27_26 [2] */
+	     
 		FN_DACK1, FN_HSPI_CS_B, FN_TX4_B, FN_ET0_RX_CLK_A,
-	    /* IP11_25_23 [3] */
+	     
 		FN_DREQ1, FN_HSPI_CLK_B, FN_RX4_B, FN_ET0_PHY_INT_C,
 		FN_ET0_TX_CLK_A, 0, 0, 0,
-	    /* IP11_22_21 [2] */
+	     
 		FN_DACK0, FN_SD1_DAT3_A, FN_ET0_TX_ER, 0,
-	    /* IP11_20_19 [2] */
+	     
 		FN_DREQ0, FN_SD1_CLK_A, FN_ET0_TX_EN, 0,
-	    /* IP11_18_16 [3] */
+	     
 		FN_USB_OVC1, FN_RX3_D, FN_CAN1_RX_B, FN_RX5_D,
 		FN_IERX_B, 0, 0, 0,
-	    /* IP11_15_13 [3] */
+	     
 		FN_PENC1, FN_TX3_D, FN_CAN1_TX_B, FN_TX5_D,
 		FN_IETX_B, 0, 0, 0,
-	    /* IP11_12 [1] */
+	     
 		FN_TX0_A, FN_HSPI_TX_A,
-	    /* IP11_11_10 [2] */
+	     
 		FN_RX0_A, FN_HSPI_RX_A, FN_RMII0_RXD0_A, FN_ET0_ERXD6,
-	    /* IP11_9_7 [3] */
+	     
 		FN_SCK0_A, FN_HSPI_CS_A, FN_VI0_CLKENB, FN_RMII0_TXD1_A,
 		FN_ET0_ERXD5, 0, 0, 0,
-	    /* IP11_6_4 [3] */
+	     
 		FN_SCIF_CLK_A, FN_HSPI_CLK_A, FN_VI0_CLK, FN_RMII0_TXD0_A,
 		FN_ET0_ERXD4, 0, 0, 0,
-	    /* IP11_3 [1] */
+	     
 		FN_SDSELF, FN_RTS1_E,
-	    /* IP11_2 [1] */
+	     
 		FN_SDA0, FN_HIFEBL_A,
-	    /* IP11_1 [1] */
+	     
 		FN_SDA1, FN_RX1_E,
-	    /* IP11_0 [1] */
+	     
 		FN_SCL1, FN_SCIF_CLK_C ))
 	},
 	{ PINMUX_CFG_REG_VAR("MOD_SEL1", 0xFFFC004C, 32,
 			     GROUP(-3, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2,
 				   2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 			     GROUP(
-		/* SEL1_31_29 [3] RESERVED */
-		/* SEL1_28 [1] */
+		 
+		 
 		FN_SEL_IEBUS_0, FN_SEL_IEBUS_1,
-		/* SEL1_27 [1] */
+		 
 		FN_SEL_RQSPI_0, FN_SEL_RQSPI_1,
-		/* SEL1_26 [1] */
+		 
 		FN_SEL_VIN1_0, FN_SEL_VIN1_1,
-		/* SEL1_25 [1] */
+		 
 		FN_SEL_HIF_0, FN_SEL_HIF_1,
-		/* SEL1_24 [1] */
+		 
 		FN_SEL_RSPI_0, FN_SEL_RSPI_1,
-		/* SEL1_23 [1] */
+		 
 		FN_SEL_LCDC_0, FN_SEL_LCDC_1,
-		/* SEL1_22_21 [2] */
+		 
 		FN_SEL_ET0_CTL_0, FN_SEL_ET0_CTL_1, FN_SEL_ET0_CTL_2, 0,
-		/* SEL1_20 [1] */
+		 
 		FN_SEL_ET0_0, FN_SEL_ET0_1,
-		/* SEL1_19 [1] */
+		 
 		FN_SEL_RMII_0, FN_SEL_RMII_1,
-		/* SEL1_18 [1] */
+		 
 		FN_SEL_TMU_0, FN_SEL_TMU_1,
-		/* SEL1_17_16 [2] */
+		 
 		FN_SEL_HSPI_0, FN_SEL_HSPI_1, FN_SEL_HSPI_2, 0,
-		/* SEL1_15_14 [2] */
+		 
 		FN_SEL_HSCIF_0, FN_SEL_HSCIF_1, FN_SEL_HSCIF_2, FN_SEL_HSCIF_3,
-		/* SEL1_13 [1] */
+		 
 		FN_SEL_RCAN_CLK_0, FN_SEL_RCAN_CLK_1,
-		/* SEL1_12_11 [2] */
+		 
 		FN_SEL_RCAN1_0, FN_SEL_RCAN1_1, FN_SEL_RCAN1_2, 0,
-		/* SEL1_10 [1] */
+		 
 		FN_SEL_RCAN0_0, FN_SEL_RCAN0_1,
-		/* SEL1_9 [1] */
+		 
 		FN_SEL_SDHI2_0, FN_SEL_SDHI2_1,
-		/* SEL1_8 [1] */
+		 
 		FN_SEL_SDHI1_0, FN_SEL_SDHI1_1,
-		/* SEL1_7 [1] */
+		 
 		FN_SEL_SDHI0_0, FN_SEL_SDHI0_1,
-		/* SEL1_6 [1] */
+		 
 		FN_SEL_SSI1_0, FN_SEL_SSI1_1,
-		/* SEL1_5 [1] */
+		 
 		FN_SEL_SSI0_0, FN_SEL_SSI0_1,
-		/* SEL1_4 [1] */
+		 
 		FN_SEL_AUDIO_CLKB_0, FN_SEL_AUDIO_CLKB_1,
-		/* SEL1_3 [1] */
+		 
 		FN_SEL_AUDIO_CLKA_0, FN_SEL_AUDIO_CLKA_1,
-		/* SEL1_2 [1] */
+		 
 		FN_SEL_FLCTL_0, FN_SEL_FLCTL_1,
-		/* SEL1_1 [1] */
+		 
 		FN_SEL_MMC_0, FN_SEL_MMC_1,
-		/* SEL1_0 [1] */
+		 
 		FN_SEL_INTC_0, FN_SEL_INTC_1 ))
 	},
 	{ PINMUX_CFG_REG_VAR("MOD_SEL2", 0xFFFC0050, 32,
 			     GROUP(-8, 1, 1, 1, 2, 2, 1, 2, 2, 3, 2, 3, 2, 2),
 			     GROUP(
-		/* SEL2_31_24 [8] RESERVED */
-		/* SEL2_23 [1] */
+		 
+		 
 		FN_SEL_MTU2_CLK_0, FN_SEL_MTU2_CLK_1,
-		/* SEL2_22 [1] */
+		 
 		FN_SEL_MTU2_CH4_0, FN_SEL_MTU2_CH4_1,
-		/* SEL2_21 [1] */
+		 
 		FN_SEL_MTU2_CH3_0, FN_SEL_MTU2_CH3_1,
-		/* SEL2_20_19 [2] */
+		 
 		FN_SEL_MTU2_CH2_0, FN_SEL_MTU2_CH2_1, FN_SEL_MTU2_CH2_2, 0,
-		/* SEL2_18_17 [2] */
+		 
 		FN_SEL_MTU2_CH1_0, FN_SEL_MTU2_CH1_1, FN_SEL_MTU2_CH1_2, 0,
-		/* SEL2_16 [1] */
+		 
 		FN_SEL_MTU2_CH0_0, FN_SEL_MTU2_CH0_1,
-		/* SEL2_15_14 [2] */
+		 
 		FN_SEL_SCIF5_0, FN_SEL_SCIF5_1, FN_SEL_SCIF5_2, FN_SEL_SCIF5_3,
-		/* SEL2_13_12 [2] */
+		 
 		FN_SEL_SCIF4_0, FN_SEL_SCIF4_1, FN_SEL_SCIF4_2, FN_SEL_SCIF4_3,
-		/* SEL2_11_9 [3] */
+		 
 		FN_SEL_SCIF3_0, FN_SEL_SCIF3_1, FN_SEL_SCIF3_2, FN_SEL_SCIF3_3,
 		FN_SEL_SCIF3_4, 0, 0, 0,
-		/* SEL2_8_7 [2] */
+		 
 		FN_SEL_SCIF2_0, FN_SEL_SCIF2_1, FN_SEL_SCIF2_2, FN_SEL_SCIF2_3,
-		/* SEL2_6_4 [3] */
+		 
 		FN_SEL_SCIF1_0, FN_SEL_SCIF1_1, FN_SEL_SCIF1_2, FN_SEL_SCIF1_3,
 			FN_SEL_SCIF1_4, 0, 0, 0,
-		/* SEL2_3_2 [2] */
+		 
 		FN_SEL_SCIF0_0, FN_SEL_SCIF0_1, FN_SEL_SCIF0_2, 0,
-		/* SEL2_1_0 [2] */
+		 
 		FN_SEL_SCIF_CLK_0, FN_SEL_SCIF_CLK_1, FN_SEL_SCIF_CLK_2, 0  ))
 	},
-	/* GPIO 0 - 5*/
+	 
 	{ PINMUX_CFG_REG("INOUTSEL0", 0xFFC40004, 32, 1, GROUP(GP_INOUTSEL(0)))
 	},
 	{ PINMUX_CFG_REG("INOUTSEL1", 0xFFC41004, 32, 1, GROUP(GP_INOUTSEL(1)))
@@ -2352,7 +2347,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("INOUTSEL5", 0xffc45004, 32,
 			     GROUP(-20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 			     GROUP(
-		/* GP5_31_12 RESERVED */
+		 
 		GP_5_11_IN, GP_5_11_OUT,
 		GP_5_10_IN, GP_5_10_OUT,
 		GP_5_9_IN, GP_5_9_OUT,
@@ -2366,11 +2361,11 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		GP_5_1_IN, GP_5_1_OUT,
 		GP_5_0_IN, GP_5_0_OUT ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct pinmux_data_reg pinmux_data_regs[] = {
-	/* GPIO 0 - 5*/
+	 
 	{ PINMUX_DATA_REG("INDT0", 0xFFC4000C, 32, GROUP(GP_INDT(0))) },
 	{ PINMUX_DATA_REG("INDT1", 0xFFC4100C, 32, GROUP(GP_INDT(1))) },
 	{ PINMUX_DATA_REG("INDT2", 0xFFC4200C, 32, GROUP(GP_INDT(2))) },
@@ -2383,7 +2378,7 @@ static const struct pinmux_data_reg pinmux_data_regs[] = {
 		GP_5_7_DATA, GP_5_6_DATA, GP_5_5_DATA, GP_5_4_DATA,
 		GP_5_3_DATA, GP_5_2_DATA, GP_5_1_DATA, GP_5_0_DATA ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 const struct sh_pfc_soc_info sh7734_pinmux_info = {

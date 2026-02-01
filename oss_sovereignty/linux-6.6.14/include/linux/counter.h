@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Counter interface
- * Copyright (C) 2018 William Breathitt Gray
- */
+ 
+ 
 #ifndef _COUNTER_H_
 #define _COUNTER_H_
 
@@ -35,120 +32,7 @@ enum counter_comp_type {
 	COUNTER_COMP_ARRAY,
 };
 
-/**
- * struct counter_comp - Counter component node
- * @type:		Counter component data type
- * @name:		device-specific component name
- * @priv:		component-relevant data
- * @action_read:	Synapse action mode read callback. The read value of the
- *			respective Synapse action mode should be passed back via
- *			the action parameter.
- * @device_u8_read:	Device u8 component read callback. The read value of the
- *			respective Device u8 component should be passed back via
- *			the val parameter.
- * @count_u8_read:	Count u8 component read callback. The read value of the
- *			respective Count u8 component should be passed back via
- *			the val parameter.
- * @signal_u8_read:	Signal u8 component read callback. The read value of the
- *			respective Signal u8 component should be passed back via
- *			the val parameter.
- * @device_u32_read:	Device u32 component read callback. The read value of
- *			the respective Device u32 component should be passed
- *			back via the val parameter.
- * @count_u32_read:	Count u32 component read callback. The read value of the
- *			respective Count u32 component should be passed back via
- *			the val parameter.
- * @signal_u32_read:	Signal u32 component read callback. The read value of
- *			the respective Signal u32 component should be passed
- *			back via the val parameter.
- * @device_u64_read:	Device u64 component read callback. The read value of
- *			the respective Device u64 component should be passed
- *			back via the val parameter.
- * @count_u64_read:	Count u64 component read callback. The read value of the
- *			respective Count u64 component should be passed back via
- *			the val parameter.
- * @signal_u64_read:	Signal u64 component read callback. The read value of
- *			the respective Signal u64 component should be passed
- *			back via the val parameter.
- * @signal_array_u32_read:	Signal u32 array component read callback. The
- *				index of the respective Count u32 array
- *				component element is passed via the idx
- *				parameter. The read value of the respective
- *				Count u32 array component element should be
- *				passed back via the val parameter.
- * @device_array_u64_read:	Device u64 array component read callback. The
- *				index of the respective Device u64 array
- *				component element is passed via the idx
- *				parameter. The read value of the respective
- *				Device u64 array component element should be
- *				passed back via the val parameter.
- * @count_array_u64_read:	Count u64 array component read callback. The
- *				index of the respective Count u64 array
- *				component element is passed via the idx
- *				parameter. The read value of the respective
- *				Count u64 array component element should be
- *				passed back via the val parameter.
- * @signal_array_u64_read:	Signal u64 array component read callback. The
- *				index of the respective Count u64 array
- *				component element is passed via the idx
- *				parameter. The read value of the respective
- *				Count u64 array component element should be
- *				passed back via the val parameter.
- * @action_write:	Synapse action mode write callback. The write value of
- *			the respective Synapse action mode is passed via the
- *			action parameter.
- * @device_u8_write:	Device u8 component write callback. The write value of
- *			the respective Device u8 component is passed via the val
- *			parameter.
- * @count_u8_write:	Count u8 component write callback. The write value of
- *			the respective Count u8 component is passed via the val
- *			parameter.
- * @signal_u8_write:	Signal u8 component write callback. The write value of
- *			the respective Signal u8 component is passed via the val
- *			parameter.
- * @device_u32_write:	Device u32 component write callback. The write value of
- *			the respective Device u32 component is passed via the
- *			val parameter.
- * @count_u32_write:	Count u32 component write callback. The write value of
- *			the respective Count u32 component is passed via the val
- *			parameter.
- * @signal_u32_write:	Signal u32 component write callback. The write value of
- *			the respective Signal u32 component is passed via the
- *			val parameter.
- * @device_u64_write:	Device u64 component write callback. The write value of
- *			the respective Device u64 component is passed via the
- *			val parameter.
- * @count_u64_write:	Count u64 component write callback. The write value of
- *			the respective Count u64 component is passed via the val
- *			parameter.
- * @signal_u64_write:	Signal u64 component write callback. The write value of
- *			the respective Signal u64 component is passed via the
- *			val parameter.
- * @signal_array_u32_write:	Signal u32 array component write callback. The
- *				index of the respective Signal u32 array
- *				component element is passed via the idx
- *				parameter. The write value of the respective
- *				Signal u32 array component element is passed via
- *				the val parameter.
- * @device_array_u64_write:	Device u64 array component write callback. The
- *				index of the respective Device u64 array
- *				component element is passed via the idx
- *				parameter. The write value of the respective
- *				Device u64 array component element is passed via
- *				the val parameter.
- * @count_array_u64_write:	Count u64 array component write callback. The
- *				index of the respective Count u64 array
- *				component element is passed via the idx
- *				parameter. The write value of the respective
- *				Count u64 array component element is passed via
- *				the val parameter.
- * @signal_array_u64_write:	Signal u64 array component write callback. The
- *				index of the respective Signal u64 array
- *				component element is passed via the idx
- *				parameter. The write value of the respective
- *				Signal u64 array component element is passed via
- *				the val parameter.
- */
+ 
 struct counter_comp {
 	enum counter_comp_type type;
 	const char *name;
@@ -223,13 +107,7 @@ struct counter_comp {
 	};
 };
 
-/**
- * struct counter_signal - Counter Signal node
- * @id:		unique ID used to identify the Signal
- * @name:	device-specific Signal name
- * @ext:	optional array of Signal extensions
- * @num_ext:	number of Signal extensions specified in @ext
- */
+ 
 struct counter_signal {
 	int id;
 	const char *name;
@@ -238,12 +116,7 @@ struct counter_signal {
 	size_t num_ext;
 };
 
-/**
- * struct counter_synapse - Counter Synapse node
- * @actions_list:	array of available action modes
- * @num_actions:	number of action modes specified in @actions_list
- * @signal:		pointer to the associated Signal
- */
+ 
 struct counter_synapse {
 	const enum counter_synapse_action *actions_list;
 	size_t num_actions;
@@ -251,17 +124,7 @@ struct counter_synapse {
 	struct counter_signal *signal;
 };
 
-/**
- * struct counter_count - Counter Count node
- * @id:			unique ID used to identify the Count
- * @name:		device-specific Count name
- * @functions_list:	array of available function modes
- * @num_functions:	number of function modes specified in @functions_list
- * @synapses:		array of Synapses for initialization
- * @num_synapses:	number of Synapses specified in @synapses
- * @ext:		optional array of Count extensions
- * @num_ext:		number of Count extensions specified in @ext
- */
+ 
 struct counter_count {
 	int id;
 	const char *name;
@@ -276,13 +139,7 @@ struct counter_count {
 	size_t num_ext;
 };
 
-/**
- * struct counter_event_node - Counter Event node
- * @l:		list of current watching Counter events
- * @event:	event that triggers
- * @channel:	event channel
- * @comp_list:	list of components to watch when event triggers
- */
+ 
 struct counter_event_node {
 	struct list_head l;
 	u8 event;
@@ -290,37 +147,7 @@ struct counter_event_node {
 	struct list_head comp_list;
 };
 
-/**
- * struct counter_ops - Callbacks from driver
- * @signal_read:	optional read callback for Signals. The read level of
- *			the respective Signal should be passed back via the
- *			level parameter.
- * @count_read:		read callback for Counts. The read value of the
- *			respective Count should be passed back via the value
- *			parameter.
- * @count_write:	optional write callback for Counts. The write value for
- *			the respective Count is passed in via the value
- *			parameter.
- * @function_read:	read callback the Count function modes. The read
- *			function mode of the respective Count should be passed
- *			back via the function parameter.
- * @function_write:	optional write callback for Count function modes. The
- *			function mode to write for the respective Count is
- *			passed in via the function parameter.
- * @action_read:	optional read callback the Synapse action modes. The
- *			read action mode of the respective Synapse should be
- *			passed back via the action parameter.
- * @action_write:	optional write callback for Synapse action modes. The
- *			action mode to write for the respective Synapse is
- *			passed in via the action parameter.
- * @events_configure:	optional write callback to configure events. The list of
- *			struct counter_event_node may be accessed via the
- *			events_list member of the counter parameter.
- * @watch_validate:	optional callback to validate a watch. The Counter
- *			component watch configuration is passed in via the watch
- *			parameter. A return value of 0 indicates a valid Counter
- *			component watch configuration.
- */
+ 
 struct counter_ops {
 	int (*signal_read)(struct counter_device *counter,
 			   struct counter_signal *signal,
@@ -348,30 +175,7 @@ struct counter_ops {
 			      const struct counter_watch *watch);
 };
 
-/**
- * struct counter_device - Counter data structure
- * @name:		name of the device
- * @parent:		optional parent device providing the counters
- * @ops:		callbacks from driver
- * @signals:		array of Signals
- * @num_signals:	number of Signals specified in @signals
- * @counts:		array of Counts
- * @num_counts:		number of Counts specified in @counts
- * @ext:		optional array of Counter device extensions
- * @num_ext:		number of Counter device extensions specified in @ext
- * @priv:		optional private data supplied by driver
- * @dev:		internal device structure
- * @chrdev:		internal character device structure
- * @events_list:	list of current watching Counter events
- * @events_list_lock:	lock to protect Counter events list operations
- * @next_events_list:	list of next watching Counter events
- * @n_events_list_lock:	lock to protect Counter next events list operations
- * @events:		queue of detected Counter events
- * @events_wait:	wait queue to allow blocking reads of Counter events
- * @events_in_lock:	lock to protect Counter events queue in operations
- * @events_out_lock:	lock to protect Counter events queue out operations
- * @ops_exist_lock:	lock to prevent use during removal
- */
+ 
 struct counter_device {
 	const char *name;
 	struct device *parent;
@@ -629,4 +433,4 @@ struct counter_array {
 	.priv = &(_array), \
 }
 
-#endif /* _COUNTER_H_ */
+#endif  

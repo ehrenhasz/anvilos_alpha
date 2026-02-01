@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #include "i915_drv.h"
 #include "gt/intel_gt.h"

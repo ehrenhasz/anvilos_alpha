@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_PMU_H__
 #define __NVKM_PMU_H__
 #include <core/subdev.h>
@@ -53,7 +53,7 @@ int gm20b_pmu_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct 
 int gp102_pmu_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pmu **);
 int gp10b_pmu_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pmu **);
 
-/* interface to MEMX process running on PMU */
+ 
 struct nvkm_memx;
 int  nvkm_memx_init(struct nvkm_pmu *, struct nvkm_memx **);
 int  nvkm_memx_fini(struct nvkm_memx **, bool exec);

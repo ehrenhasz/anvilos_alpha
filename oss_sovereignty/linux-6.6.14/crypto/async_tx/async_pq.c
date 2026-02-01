@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright(c) 2007 Yuri Tikhonov <yur@emcraft.com>
- * Copyright(c) 2009 Intel Corporation
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -11,26 +8,16 @@
 #include <linux/async_tx.h>
 #include <linux/gfp.h>
 
-/*
- * struct pq_scribble_page - space to hold throwaway P or Q buffer for
- * synchronous gen_syndrome
- */
+ 
 static struct page *pq_scribble_page;
 
-/* the struct page *blocks[] parameter passed to async_gen_syndrome()
- * and async_syndrome_val() contains the 'P' destination address at
- * blocks[disks-2] and the 'Q' destination address at blocks[disks-1]
- *
- * note: these are macros as they are used as lvalues
- */
+ 
 #define P(b, d) (b[d-2])
 #define Q(b, d) (b[d-1])
 
 #define MAX_DISKS 255
 
-/*
- * do_async_gen_syndrome - asynchronously calculate P and/or Q
- */
+ 
 static __async_inline struct dma_async_tx_descriptor *
 do_async_gen_syndrome(struct dma_chan *chan,
 		      const unsigned char *scfs, int disks,
@@ -51,10 +38,7 @@ do_async_gen_syndrome(struct dma_chan *chan,
 	while (src_cnt > 0) {
 		submit->flags = flags_orig;
 		pq_src_cnt = min(src_cnt, dma_maxpq(dma, dma_flags));
-		/* if we are submitting additional pqs, leave the chain open,
-		 * clear the callback parameters, and leave the destination
-		 * buffers mapped
-		 */
+		 
 		if (src_cnt > pq_src_cnt) {
 			submit->flags &= ~ASYNC_TX_ACK;
 			submit->flags |= ASYNC_TX_FENCE;
@@ -69,9 +53,7 @@ do_async_gen_syndrome(struct dma_chan *chan,
 		if (submit->flags & ASYNC_TX_FENCE)
 			dma_flags |= DMA_PREP_FENCE;
 
-		/* Drivers force forward progress in case they can not provide
-		 * a descriptor
-		 */
+		 
 		for (;;) {
 			dma_dest[0] = unmap->addr[disks - 2];
 			dma_dest[1] = unmap->addr[disks - 1];
@@ -90,7 +72,7 @@ do_async_gen_syndrome(struct dma_chan *chan,
 		async_tx_submit(chan, tx, submit);
 		submit->depend_tx = tx;
 
-		/* drop completed sources */
+		 
 		src_cnt -= pq_src_cnt;
 		src_off += pq_src_cnt;
 
@@ -100,9 +82,7 @@ do_async_gen_syndrome(struct dma_chan *chan,
 	return tx;
 }
 
-/*
- * do_sync_gen_syndrome - synchronously calculate a raid6 syndrome
- */
+ 
 static void
 do_sync_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 		     size_t len, struct async_submit_ctl *submit)
@@ -118,7 +98,7 @@ do_sync_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 
 	for (i = 0; i < disks; i++) {
 		if (blocks[i] == NULL) {
-			BUG_ON(i > disks - 3); /* P or Q can't be zero */
+			BUG_ON(i > disks - 3);  
 			srcs[i] = (void*)raid6_empty_zero_page;
 		} else {
 			srcs[i] = page_address(blocks[i]) + offsets[i];
@@ -152,27 +132,7 @@ is_dma_pq_aligned_offs(struct dma_device *dev, unsigned int *offs,
 	return true;
 }
 
-/**
- * async_gen_syndrome - asynchronously calculate a raid6 syndrome
- * @blocks: source blocks from idx 0..disks-3, P @ disks-2 and Q @ disks-1
- * @offsets: offset array into each block (src and dest) to start transaction
- * @disks: number of blocks (including missing P or Q, see below)
- * @len: length of operation in bytes
- * @submit: submission/completion modifiers
- *
- * General note: This routine assumes a field of GF(2^8) with a
- * primitive polynomial of 0x11d and a generator of {02}.
- *
- * 'disks' note: callers can optionally omit either P or Q (but not
- * both) from the calculation by setting blocks[disks-2] or
- * blocks[disks-1] to NULL.  When P or Q is omitted 'len' must be <=
- * PAGE_SIZE as a temporary buffer of this size is used in the
- * synchronous path.  'disks' always accounts for both destination
- * buffers.  If any source buffers (blocks[i] where i < disks - 2) are
- * set to NULL those buffers will be replaced with the raid6_zero_page
- * in the synchronous path and omitted in the hardware-asynchronous
- * path.
- */
+ 
 struct dma_async_tx_descriptor *
 async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 		   size_t len, struct async_submit_ctl *submit)
@@ -189,7 +149,7 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 	if (device)
 		unmap = dmaengine_get_unmap_data(device->dev, disks, GFP_NOWAIT);
 
-	/* XORing P/Q is only implemented in software */
+	 
 	if (unmap && !(submit->flags & ASYNC_TX_PQ_XOR_DST) &&
 	    (src_cnt <= dma_maxpq(device, 0) ||
 	     dma_maxpq(device, DMA_PREP_CONTINUE) > 0) &&
@@ -199,13 +159,11 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 		unsigned char coefs[MAX_DISKS];
 		int i, j;
 
-		/* run the p+q asynchronously */
+		 
 		pr_debug("%s: (async) disks: %d len: %zu\n",
 			 __func__, disks, len);
 
-		/* convert source addresses being careful to collapse 'empty'
-		 * sources and update the coefficients accordingly
-		 */
+		 
 		unmap->len = len;
 		for (i = 0, j = 0; i < src_cnt; i++) {
 			if (blocks[i] == NULL)
@@ -217,10 +175,7 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 			j++;
 		}
 
-		/*
-		 * DMAs use destinations as sources,
-		 * so use BIDIRECTIONAL mapping
-		 */
+		 
 		unmap->bidi_cnt++;
 		if (P(blocks, disks))
 			unmap->addr[j++] = dma_map_page(device->dev, P(blocks, disks),
@@ -248,10 +203,10 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 
 	dmaengine_unmap_put(unmap);
 
-	/* run the pq synchronously */
+	 
 	pr_debug("%s: (sync) disks: %d len: %zu\n", __func__, disks, len);
 
-	/* wait for any prerequisite operations */
+	 
 	async_tx_quiesce(&submit->depend_tx);
 
 	if (!P(blocks, disks)) {
@@ -278,22 +233,7 @@ pq_val_chan(struct async_submit_ctl *submit, struct page **blocks, int disks, si
 				     disks, len);
 }
 
-/**
- * async_syndrome_val - asynchronously validate a raid6 syndrome
- * @blocks: source blocks from idx 0..disks-3, P @ disks-2 and Q @ disks-1
- * @offsets: common offset into each block (src and dest) to start transaction
- * @disks: number of blocks (including missing P or Q, see below)
- * @len: length of operation in bytes
- * @pqres: on val failure SUM_CHECK_P_RESULT and/or SUM_CHECK_Q_RESULT are set
- * @spare: temporary result buffer for the synchronous case
- * @s_off: spare buffer page offset
- * @submit: submission / completion modifiers
- *
- * The same notes from async_gen_syndrome apply to the 'blocks',
- * and 'disks' parameters of this routine.  The synchronous path
- * requires a temporary result buffer and submit->scribble to be
- * specified.
- */
+ 
 struct dma_async_tx_descriptor *
 async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 		   size_t len, enum sum_check_flags *pqres, struct page *spare,
@@ -384,17 +324,13 @@ async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 		pr_debug("%s: (sync) disks: %d len: %zu\n",
 			 __func__, disks, len);
 
-		/* caller must provide a temporary result buffer and
-		 * allow the input parameters to be preserved
-		 */
+		 
 		BUG_ON(!spare || !scribble);
 
-		/* wait for any prerequisite operations */
+		 
 		async_tx_quiesce(&submit->depend_tx);
 
-		/* recompute p and/or q into the temporary buffer and then
-		 * check to see the result matches the current value
-		 */
+		 
 		tx = NULL;
 		*pqres = 0;
 		if (p_src) {
@@ -421,7 +357,7 @@ async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 			*pqres |= !!memcmp(q, s, len) << SUM_CHECK_Q;
 		}
 
-		/* restore P, Q and submit */
+		 
 		P(blocks, disks) = p_src;
 		P(offsets, disks) = p_off;
 		Q(blocks, disks) = q_src;

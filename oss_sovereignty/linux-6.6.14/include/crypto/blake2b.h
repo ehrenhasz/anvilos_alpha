@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+ 
 
 #ifndef _CRYPTO_BLAKE2B_H
 #define _CRYPTO_BLAKE2B_H
@@ -19,7 +19,7 @@ enum blake2b_lengths {
 };
 
 struct blake2b_state {
-	/* 'h', 't', and 'f' are used in assembly code, so keep them as-is. */
+	 
 	u64 h[8];
 	u64 t[2];
 	u64 f[2];
@@ -63,4 +63,4 @@ static inline void __blake2b_init(struct blake2b_state *state, size_t outlen,
 	}
 }
 
-#endif /* _CRYPTO_BLAKE2B_H */
+#endif  

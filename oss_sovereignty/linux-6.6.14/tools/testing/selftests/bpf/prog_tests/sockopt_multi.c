@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "cgroup_helpers.h"
 
@@ -13,7 +13,7 @@ static int run_getsockopt_test(struct sockopt_multi *obj, int cg_parent,
 	__u8 buf;
 	int err;
 
-	/* Set IP_TOS to the expected value (0x80). */
+	 
 
 	buf = 0x80;
 	err = setsockopt(sock_fd, SOL_IP, IP_TOS, &buf, 1);
@@ -36,10 +36,7 @@ static int run_getsockopt_test(struct sockopt_multi *obj, int cg_parent,
 		goto detach;
 	}
 
-	/* Attach child program and make sure it returns new value:
-	 * - kernel:      -> 0x80
-	 * - child:  0x80 -> 0x90
-	 */
+	 
 
 	link_child = bpf_program__attach_cgroup(obj->progs._getsockopt_child,
 						cg_child);
@@ -60,11 +57,7 @@ static int run_getsockopt_test(struct sockopt_multi *obj, int cg_parent,
 		goto detach;
 	}
 
-	/* Attach parent program and make sure it returns new value:
-	 * - kernel:      -> 0x80
-	 * - child:  0x80 -> 0x90
-	 * - parent: 0x90 -> 0xA0
-	 */
+	 
 
 	link_parent = bpf_program__attach_cgroup(obj->progs._getsockopt_parent,
 						 cg_parent);
@@ -85,11 +78,7 @@ static int run_getsockopt_test(struct sockopt_multi *obj, int cg_parent,
 		goto detach;
 	}
 
-	/* Setting unexpected initial sockopt should return EPERM:
-	 * - kernel: -> 0x40
-	 * - child:  unexpected 0x40, EPERM
-	 * - parent: unexpected 0x40, EPERM
-	 */
+	 
 
 	buf = 0x40;
 	err = setsockopt(sock_fd, SOL_IP, IP_TOS, &buf, 1);
@@ -106,10 +95,7 @@ static int run_getsockopt_test(struct sockopt_multi *obj, int cg_parent,
 		goto detach;
 	}
 
-	/* Detach child program and make sure we still get EPERM:
-	 * - kernel: -> 0x40
-	 * - parent: unexpected 0x40, EPERM
-	 */
+	 
 
 	bpf_link__destroy(link_child);
 	link_child = NULL;
@@ -122,10 +108,7 @@ static int run_getsockopt_test(struct sockopt_multi *obj, int cg_parent,
 		goto detach;
 	}
 
-	/* Set initial value to the one the parent program expects:
-	 * - kernel:      -> 0x90
-	 * - parent: 0x90 -> 0xA0
-	 */
+	 
 
 	buf = 0x90;
 	err = setsockopt(sock_fd, SOL_IP, IP_TOS, &buf, 1);
@@ -164,7 +147,7 @@ static int run_setsockopt_test(struct sockopt_multi *obj, int cg_parent,
 	__u8 buf;
 	int err;
 
-	/* Set IP_TOS to the expected value (0x80). */
+	 
 
 	buf = 0x80;
 	err = setsockopt(sock_fd, SOL_IP, IP_TOS, &buf, 1);
@@ -187,7 +170,7 @@ static int run_setsockopt_test(struct sockopt_multi *obj, int cg_parent,
 		goto detach;
 	}
 
-	/* Attach child program and make sure it adds 0x10. */
+	 
 
 	link_child = bpf_program__attach_cgroup(obj->progs._setsockopt,
 						cg_child);
@@ -215,7 +198,7 @@ static int run_setsockopt_test(struct sockopt_multi *obj, int cg_parent,
 		goto detach;
 	}
 
-	/* Attach parent program and make sure it adds another 0x10. */
+	 
 
 	link_parent = bpf_program__attach_cgroup(obj->progs._setsockopt,
 						 cg_parent);

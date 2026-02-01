@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* include/video/platform_lcd.h
- *
- * Copyright 2008 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- *
- * Generic platform-device LCD power control interface.
-*/
+ 
+ 
 
 struct plat_lcd_data;
 struct fb_info;

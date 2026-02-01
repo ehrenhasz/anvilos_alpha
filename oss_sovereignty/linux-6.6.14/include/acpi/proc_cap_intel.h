@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/* Vendor specific processor capabilities bit definition
- * for Intel processors. Those bits are used to convey OSPM
- * power management capabilities to the platform.
- */
+ 
 
 #ifndef __PROC_CAP_INTEL_H__
 #define __PROC_CAP_INTEL_H__
@@ -37,4 +34,4 @@
 						 ACPI_PROC_CAP_C_C1_FFH  | \
 						 ACPI_PROC_CAP_C_C2C3_FFH)
 
-#endif /* __PROC_CAP_INTEL_H__ */
+#endif  

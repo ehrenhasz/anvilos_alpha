@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 Dmitry Safonov, Arista Networks
- *
- * MAP_POPULATE | MAP_PRIVATE should COW VMA pages.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -87,7 +83,7 @@ int main(int argc, char **argv)
 	BUG_ON(smap == MAP_FAILED, "mmap()");
 
 	*smap = 0xdeadbabe;
-	/* Probably unnecessary, but let it be. */
+	 
 	ret = msync(smap, MMAP_SZ, MS_SYNC);
 	BUG_ON(ret, "msync()");
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2016-2018 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_cache.h>
 
@@ -131,12 +129,7 @@ static void intel_timeline_fini(struct rcu_head *rcu)
 	i915_vma_put(timeline->hwsp_ggtt);
 	i915_active_fini(&timeline->active);
 
-	/*
-	 * A small race exists between intel_gt_retire_requests_timeout and
-	 * intel_timeline_exit which could result in the syncmap not getting
-	 * free'd. Rather than work to hard to seal this race, simply cleanup
-	 * the syncmap on fini.
-	 */
+	 
 	i915_syncmap_free(&timeline->sync);
 
 	kfree(timeline);
@@ -174,7 +167,7 @@ intel_timeline_create_from_engine(struct intel_engine_cs *engine,
 	if (IS_ERR(tl))
 		return tl;
 
-	/* Borrow a nearby lock; we only create these timelines during init */
+	 
 	mutex_lock(&hwsp->vm->mutex);
 	list_add_tail(&tl->engine_link, &engine->status_page.timelines);
 	mutex_unlock(&hwsp->vm->mutex);
@@ -223,7 +216,7 @@ int intel_timeline_pin(struct intel_timeline *tl, struct i915_gem_ww_ctx *ww)
 void intel_timeline_reset_seqno(const struct intel_timeline *tl)
 {
 	u32 *hwsp_seqno = (u32 *)tl->hwsp_seqno;
-	/* Must be pinned to be writable, and no requests in flight. */
+	 
 	GEM_BUG_ON(!atomic_read(&tl->pin_count));
 
 	memset(hwsp_seqno + 1, 0, TIMELINE_SEQNO_BYTES - sizeof(*hwsp_seqno));
@@ -235,24 +228,7 @@ void intel_timeline_enter(struct intel_timeline *tl)
 {
 	struct intel_gt_timelines *timelines = &tl->gt->timelines;
 
-	/*
-	 * Pretend we are serialised by the timeline->mutex.
-	 *
-	 * While generally true, there are a few exceptions to the rule
-	 * for the engine->kernel_context being used to manage power
-	 * transitions. As the engine_park may be called from under any
-	 * timeline, it uses the power mutex as a global serialisation
-	 * lock to prevent any other request entering its timeline.
-	 *
-	 * The rule is generally tl->mutex, otherwise engine->wakeref.mutex.
-	 *
-	 * However, intel_gt_retire_request() does not know which engine
-	 * it is retiring along and so cannot partake in the engine-pm
-	 * barrier, and there we use the tl->active_count as a means to
-	 * pin the timeline in the active_list while the locks are dropped.
-	 * Ergo, as that is outside of the engine-pm barrier, we need to
-	 * use atomic to manipulate tl->active_count.
-	 */
+	 
 	lockdep_assert_held(&tl->mutex);
 
 	if (atomic_add_unless(&tl->active_count, 1, 0))
@@ -260,12 +236,7 @@ void intel_timeline_enter(struct intel_timeline *tl)
 
 	spin_lock(&timelines->lock);
 	if (!atomic_fetch_inc(&tl->active_count)) {
-		/*
-		 * The HWSP is volatile, and may have been lost while inactive,
-		 * e.g. across suspend/resume. Be paranoid, and ensure that
-		 * the HWSP value matches our seqno so we don't proclaim
-		 * the next request as already complete.
-		 */
+		 
 		intel_timeline_reset_seqno(tl);
 		list_add_tail(&tl->link, &timelines->active_list);
 	}
@@ -276,7 +247,7 @@ void intel_timeline_exit(struct intel_timeline *tl)
 {
 	struct intel_gt_timelines *timelines = &tl->gt->timelines;
 
-	/* See intel_timeline_enter() */
+	 
 	lockdep_assert_held(&tl->mutex);
 
 	GEM_BUG_ON(!atomic_read(&tl->active_count));
@@ -288,11 +259,7 @@ void intel_timeline_exit(struct intel_timeline *tl)
 		list_del(&tl->link);
 	spin_unlock(&timelines->lock);
 
-	/*
-	 * Since this timeline is idle, all bariers upon which we were waiting
-	 * must also be complete and so we can discard the last used barriers
-	 * without loss of information.
-	 */
+	 
 	i915_syncmap_free(&tl->sync);
 }
 
@@ -310,7 +277,7 @@ __intel_timeline_get_seqno(struct intel_timeline *tl,
 {
 	u32 next_ofs = offset_in_page(tl->hwsp_offset + TIMELINE_SEQNO_BYTES);
 
-	/* w/a: bit 5 needs to be zero for MI_FLUSH_DW address. */
+	 
 	if (TIMELINE_SEQNO_BYTES <= BIT(5) && (next_ofs & BIT(5)))
 		next_ofs = offset_in_page(next_ofs + BIT(5));
 
@@ -329,7 +296,7 @@ int intel_timeline_get_seqno(struct intel_timeline *tl,
 {
 	*seqno = timeline_advance(tl);
 
-	/* Replace the HWSP on wraparound for HW semaphores */
+	 
 	if (unlikely(!*seqno && tl->has_initial_breadcrumb))
 		return __intel_timeline_get_seqno(tl, seqno);
 
@@ -350,12 +317,12 @@ int intel_timeline_read_hwsp(struct i915_request *from,
 		tl = NULL;
 
 	if (tl) {
-		/* hwsp_offset may wraparound, so use from->hwsp_seqno */
+		 
 		*hwsp = i915_ggtt_offset(tl->hwsp_ggtt) +
 			offset_in_page(from->hwsp_seqno);
 	}
 
-	/* ensure we wait on the right request, if not, we completed */
+	 
 	if (tl && __i915_request_is_complete(from)) {
 		i915_active_release(&tl->active);
 		tl = NULL;
@@ -365,7 +332,7 @@ int intel_timeline_read_hwsp(struct i915_request *from,
 	if (!tl)
 		return 1;
 
-	/* Can't do semaphore waits on kernel context */
+	 
 	if (!tl->has_initial_breadcrumb) {
 		err = -EINVAL;
 		goto out;
@@ -432,7 +399,7 @@ void intel_gt_show_timelines(struct intel_gt *gt,
 
 		intel_timeline_get(tl);
 		GEM_BUG_ON(!atomic_read(&tl->active_count));
-		atomic_inc(&tl->active_count); /* pin the list element */
+		atomic_inc(&tl->active_count);  
 		spin_unlock(&timelines->lock);
 
 		count = 0;
@@ -470,12 +437,12 @@ void intel_gt_show_timelines(struct intel_gt *gt,
 		mutex_unlock(&tl->mutex);
 		spin_lock(&timelines->lock);
 
-		/* Resume list iteration after reacquiring spinlock */
+		 
 		list_safe_reset_next(tl, tn, link);
 		if (atomic_dec_and_test(&tl->active_count))
 			list_del(&tl->link);
 
-		/* Defer the final release to after the spinlock */
+		 
 		if (refcount_dec_and_test(&tl->kref.refcount)) {
 			GEM_BUG_ON(atomic_read(&tl->active_count));
 			list_add(&tl->link, &free);

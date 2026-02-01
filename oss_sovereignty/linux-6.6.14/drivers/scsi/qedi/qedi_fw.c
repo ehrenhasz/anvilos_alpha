@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <scsi/scsi_tcq.h>
@@ -202,7 +199,7 @@ static void qedi_process_tmf_resp(struct qedi_ctx *qedi,
 	resp_hdr_ptr =  (struct iscsi_tm_rsp *)qedi_cmd->tmf_resp_buf;
 	memset(resp_hdr_ptr, 0, sizeof(struct iscsi_tm_rsp));
 
-	/* Fill up the header */
+	 
 	resp_hdr_ptr->opcode = cqe_tmp_response->opcode;
 	resp_hdr_ptr->flags = cqe_tmp_response->hdr_flags;
 	resp_hdr_ptr->response = cqe_tmp_response->hdr_response;
@@ -233,7 +230,7 @@ static void qedi_process_tmf_resp(struct qedi_ctx *qedi,
 	case ISCSI_TM_FUNC_TARGET_WARM_RESET:
 	case ISCSI_TM_FUNC_TARGET_COLD_RESET:
 		if (qedi_conn->ep_disconnect_starting) {
-			/* Session is down so ep_disconnect will clean up */
+			 
 			spin_unlock(&qedi_conn->tmf_work_lock);
 			goto unblock_sess;
 		}
@@ -327,7 +324,7 @@ static void qedi_get_rq_bdq_buf(struct qedi_ctx *qedi,
 		  len, qedi->bdq_prod_idx,
 		  (qedi->bdq_prod_idx % qedi->rq_num_entries));
 
-	/* Obtain buffer address from rqe_opaque */
+	 
 	idx = cqe->rqe_opaque;
 	if (idx > (QEDI_BDQ_NUM - 1)) {
 		QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_CONN,
@@ -362,7 +359,7 @@ static void qedi_put_rq_bdq_buf(struct qedi_ctx *qedi,
 	u16 idx = 0;
 	struct scsi_bd *pbl;
 
-	/* Obtain buffer address from rqe_opaque */
+	 
 	idx = cqe->rqe_opaque;
 	if (idx > (QEDI_BDQ_NUM - 1)) {
 		QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_CONN,
@@ -383,7 +380,7 @@ static void qedi_put_rq_bdq_buf(struct qedi_ctx *qedi,
 	pbl->opaque.iscsi_opaque.reserved_zero[2] = 0;
 	pbl->opaque.iscsi_opaque.opaque = cpu_to_le32(idx);
 
-	/* Increment producer to let f/w know we've handled the frame */
+	 
 	qedi->bdq_prod_idx += count;
 
 	writew(qedi->bdq_prod_idx, qedi->bdq_primary_prod);
@@ -446,7 +443,7 @@ static int qedi_process_nopin_mesg(struct qedi_ctx *qedi,
 		goto done;
 	}
 
-	/* Response to one of our nop-outs */
+	 
 	if (task) {
 		cmd = task->dd_data;
 		hdr->flags = ISCSI_FLAG_CMD_FINAL;
@@ -595,7 +592,7 @@ static void qedi_scsi_completion(struct qedi_ctx *qedi,
 		cqe->cqe_common.error_bitmap.error_bits.cqe_error_status_bits;
 
 	spin_lock_bh(&session->back_lock);
-	/* get the scsi command */
+	 
 	sc_cmd = cmd->scsi_cmd;
 
 	if (!sc_cmd) {
@@ -634,9 +631,7 @@ static void qedi_scsi_completion(struct qedi_ctx *qedi,
 		memcpy((char *)conn->data, (char *)cmd->sense_buffer, datalen);
 	}
 
-	/* If f/w reports data underrun err then set residual to IO transfer
-	 * length, set Underrun flag and clear Overrun flag explicitly
-	 */
+	 
 	if (unlikely(cqe_err_bits &&
 		     GET_FIELD(cqe_err_bits, CQE_ERROR_BITMAP_UNDER_RUN_ERR))) {
 		QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_INFO,
@@ -748,12 +743,12 @@ static void qedi_process_cmd_cleanup_resp(struct qedi_ctx *qedi,
 		return;
 	}
 
-	/* Based on this itt get the corresponding qedi_cmd */
+	 
 	spin_lock_bh(&qedi_conn->tmf_work_lock);
 	list_for_each_entry_safe(work, work_tmp, &qedi_conn->tmf_work_list,
 				 list) {
 		if (work->rtid == proto_itt) {
-			/* We found the command */
+			 
 			qedi_cmd = work->qedi_cmd;
 			if (!qedi_cmd->list_tmf_work) {
 				QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_SCSI_TM,
@@ -875,7 +870,7 @@ void qedi_fp_process_cqes(struct qedi_work *work)
 			return;
 		}
 
-		/* Process NOPIN local completion */
+		 
 		nopout_hdr = (struct iscsi_nopout *)task->hdr;
 		if ((nopout_hdr->itt == RESERVED_ITT) &&
 		    (cqe->cqe_solicited.itid != (u16)RESERVED_ITT)) {
@@ -884,7 +879,7 @@ void qedi_fp_process_cqes(struct qedi_work *work)
 		} else {
 			cqe->cqe_solicited.itid =
 					       qedi_get_itt(cqe->cqe_solicited);
-			/* Process other solicited responses */
+			 
 			qedi_mtask_completion(qedi, cqe, task, q_conn, que_idx);
 		}
 		break;
@@ -924,14 +919,11 @@ static void qedi_ring_doorbell(struct qedi_conn *qedi_conn)
 {
 	qedi_conn->ep->db_data.sq_prod = qedi_conn->ep->fw_sq_prod_idx;
 
-	/* wmb - Make sure fw idx is coherent */
+	 
 	wmb();
 	writel(*(u32 *)&qedi_conn->ep->db_data, qedi_conn->ep->p_doorbell);
 
-	/* Make sure fw write idx is coherent, and include both memory barriers
-	 * as a failsafe as for some architectures the call is the same but on
-	 * others they are two different assembly operations.
-	 */
+	 
 	wmb();
 	QEDI_INFO(&qedi_conn->qedi->dbg_ctx, QEDI_LOG_MP_REQ,
 		  "prod_idx=0x%x, fw_prod_idx=0x%x, cid=0x%x\n",
@@ -947,7 +939,7 @@ static u16 qedi_get_wqe_idx(struct qedi_conn *qedi_conn)
 	ep = qedi_conn->ep;
 	rval = ep->sq_prod_idx;
 
-	/* Increament SQ index */
+	 
 	ep->sq_prod_idx++;
 	ep->fw_sq_prod_idx++;
 	if (ep->sq_prod_idx == QEDI_SQ_SIZE)
@@ -993,7 +985,7 @@ int qedi_send_iscsi_login(struct qedi_conn *qedi_conn,
 	memset(&login_req_pdu_header, 0, sizeof(login_req_pdu_header));
 	memset(&tx_sgl_task_params, 0, sizeof(tx_sgl_task_params));
 	memset(&rx_sgl_task_params, 0, sizeof(rx_sgl_task_params));
-	/* Update header info */
+	 
 	login_req_pdu_header.opcode = login_hdr->opcode;
 	login_req_pdu_header.version_min = login_hdr->min_version;
 	login_req_pdu_header.version_max = login_hdr->max_version;
@@ -1011,7 +1003,7 @@ int qedi_send_iscsi_login(struct qedi_conn *qedi_conn,
 	login_req_pdu_header.exp_stat_sn = be32_to_cpu(login_hdr->exp_statsn);
 	login_req_pdu_header.exp_stat_sn = 0;
 
-	/* Fill tx AHS and rx buffer */
+	 
 	tx_sgl_task_params.sgl =
 			       (struct scsi_sge *)qedi_conn->gen_pdu.req_bd_tbl;
 	tx_sgl_task_params.sgl_phys_addr.lo =
@@ -1030,7 +1022,7 @@ int qedi_send_iscsi_login(struct qedi_conn *qedi_conn,
 	rx_sgl_task_params.total_buffer_size = resp_sge->sge_len;
 	rx_sgl_task_params.num_sges = 1;
 
-	/* Fill fw input params */
+	 
 	task_params.context = fw_task_ctx;
 	task_params.conn_icid = (u16)qedi_conn->iscsi_conn_id;
 	task_params.itid = tid;
@@ -1095,7 +1087,7 @@ int qedi_send_iscsi_logout(struct qedi_conn *qedi_conn,
 	memset(&tx_sgl_task_params, 0, sizeof(tx_sgl_task_params));
 	memset(&rx_sgl_task_params, 0, sizeof(rx_sgl_task_params));
 
-	/* Update header info */
+	 
 	logout_pdu_header.opcode = logout_hdr->opcode;
 	logout_pdu_header.reason_code = 0x80 | logout_hdr->flags;
 	qedi_update_itt_map(qedi, tid, task->itt, qedi_cmd);
@@ -1104,7 +1096,7 @@ int qedi_send_iscsi_logout(struct qedi_conn *qedi_conn,
 	logout_pdu_header.cmd_sn = be32_to_cpu(logout_hdr->cmdsn);
 	logout_pdu_header.cid = qedi_conn->iscsi_conn_id;
 
-	/* Fill fw input params */
+	 
 	task_params.context = fw_task_ctx;
 	task_params.conn_icid = (u16)qedi_conn->iscsi_conn_id;
 	task_params.itid = tid;
@@ -1144,7 +1136,7 @@ int qedi_cleanup_all_io(struct qedi_ctx *qedi, struct qedi_conn *qedi_conn,
 	struct iscsi_conn *conn = qedi_conn->cls_conn->dd_data;
 	struct iscsi_session *session = conn->session;
 
-	/* From recovery, task is NULL or from tmf resp valid task */
+	 
 	if (task) {
 		tmf_hdr = (struct iscsi_tm *)task->hdr;
 
@@ -1232,7 +1224,7 @@ int qedi_cleanup_all_io(struct qedi_ctx *qedi, struct qedi_conn *qedi_conn,
 				    qedi_mark_device_missing);
 	qedi_ops->common->drain(qedi->cdev);
 
-	/* Enable IOs for all other sessions except current.*/
+	 
 	if (!wait_event_interruptible_timeout(qedi_conn->wait_queue,
 				(qedi_conn->cmd_cleanup_req ==
 				 atomic_read(&qedi_conn->cmd_cleanup_cmpl)) ||
@@ -1338,10 +1330,7 @@ static void qedi_abort_work(struct work_struct *work)
 		spin_unlock_bh(&conn->session->back_lock);
 		QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_INFO,
 			  "Task already completed\n");
-		/*
-		 * We have to still send the TMF because libiscsi needs the
-		 * response to avoid a timeout.
-		 */
+		 
 		goto send_tmf;
 	}
 	spin_unlock_bh(&conn->session->back_lock);
@@ -1454,7 +1443,7 @@ static int send_iscsi_tmf(struct qedi_conn *qedi_conn, struct iscsi_task *mtask,
 	memset(&task_params, 0, sizeof(task_params));
 	memset(&tmf_pdu_header, 0, sizeof(tmf_pdu_header));
 
-	/* Update header info */
+	 
 	qedi_update_itt_map(qedi, tid, mtask->itt, qedi_cmd);
 	tmf_pdu_header.itt = qedi_set_itt(tid, get_itt(mtask->itt));
 	tmf_pdu_header.cmd_sn = be32_to_cpu(tmf_hdr->cmdsn);
@@ -1478,7 +1467,7 @@ static int send_iscsi_tmf(struct qedi_conn *qedi_conn, struct iscsi_task *mtask,
 	tmf_pdu_header.hdr_second_dword = ntoh24(tmf_hdr->dlength);
 	tmf_pdu_header.ref_cmd_sn = be32_to_cpu(tmf_hdr->refcmdsn);
 
-	/* Fill fw input params */
+	 
 	task_params.context = fw_task_ctx;
 	task_params.conn_icid = (u16)qedi_conn->iscsi_conn_id;
 	task_params.itid = tid;
@@ -1572,7 +1561,7 @@ int qedi_send_iscsi_text(struct qedi_conn *qedi_conn,
 	memset(&tx_sgl_task_params, 0, sizeof(tx_sgl_task_params));
 	memset(&rx_sgl_task_params, 0, sizeof(rx_sgl_task_params));
 
-	/* Update header info */
+	 
 	text_request_pdu_header.opcode = text_hdr->opcode;
 	text_request_pdu_header.flags_attr = text_hdr->flags;
 
@@ -1583,7 +1572,7 @@ int qedi_send_iscsi_text(struct qedi_conn *qedi_conn,
 	text_request_pdu_header.exp_stat_sn = be32_to_cpu(text_hdr->exp_statsn);
 	text_request_pdu_header.hdr_second_dword = ntoh24(text_hdr->dlength);
 
-	/* Fill tx AHS and rx buffer */
+	 
 	tx_sgl_task_params.sgl =
 			       (struct scsi_sge *)qedi_conn->gen_pdu.req_bd_tbl;
 	tx_sgl_task_params.sgl_phys_addr.lo =
@@ -1602,7 +1591,7 @@ int qedi_send_iscsi_text(struct qedi_conn *qedi_conn,
 	rx_sgl_task_params.total_buffer_size = resp_sge->sge_len;
 	rx_sgl_task_params.num_sges = 1;
 
-	/* Fill fw input params */
+	 
 	task_params.context = fw_task_ctx;
 	task_params.conn_icid = (u16)qedi_conn->iscsi_conn_id;
 	task_params.itid = tid;
@@ -1671,7 +1660,7 @@ int qedi_send_iscsi_nopout(struct qedi_conn *qedi_conn,
 	memset(&tx_sgl_task_params, 0, sizeof(tx_sgl_task_params));
 	memset(&rx_sgl_task_params, 0, sizeof(rx_sgl_task_params));
 
-	/* Update header info */
+	 
 	nop_out_pdu_header.opcode = nopout_hdr->opcode;
 	SET_FIELD(nop_out_pdu_header.flags_attr, ISCSI_NOP_OUT_HDR_CONST1, 1);
 	SET_FIELD(nop_out_pdu_header.flags_attr, ISCSI_NOP_OUT_HDR_RSRV, 0);
@@ -1698,7 +1687,7 @@ int qedi_send_iscsi_nopout(struct qedi_conn *qedi_conn,
 		spin_unlock(&qedi_conn->list_lock);
 	}
 
-	/* Fill tx AHS and rx buffer */
+	 
 	if (data_len) {
 		tx_sgl_task_params.sgl =
 			       (struct scsi_sge *)qedi_conn->gen_pdu.req_bd_tbl;
@@ -1719,7 +1708,7 @@ int qedi_send_iscsi_nopout(struct qedi_conn *qedi_conn,
 		rx_sgl_task_params.num_sges = 1;
 	}
 
-	/* Fill fw input params */
+	 
 	task_params.context = fw_task_ctx;
 	task_params.conn_icid = (u16)qedi_conn->iscsi_conn_id;
 	task_params.itid = tid;
@@ -1793,10 +1782,7 @@ static int qedi_map_scsi_sg(struct qedi_ctx *qedi, struct qedi_cmd *cmd)
 	sg_count = dma_map_sg(&qedi->pdev->dev, scsi_sglist(sc),
 			      scsi_sg_count(sc), sc->sc_data_direction);
 
-	/*
-	 * New condition to send single SGE as cached-SGL.
-	 * Single SGE with length less than 64K.
-	 */
+	 
 	sg = scsi_sglist(sc);
 	if ((sg_count == 1) && (sg_dma_len(sg) <= MAX_SGLEN_FOR_CACHESGL)) {
 		sg_len = sg_dma_len(sg);
@@ -1818,25 +1804,16 @@ static int qedi_map_scsi_sg(struct qedi_ctx *qedi, struct qedi_cmd *cmd)
 		addr = (u64)sg_dma_address(sg);
 		end_addr = (addr + sg_len);
 
-		/*
-		 * first sg elem in the 'list',
-		 * check if end addr is page-aligned.
-		 */
+		 
 		if ((i == 0) && (sg_count > 1) && (end_addr % QEDI_PAGE_SIZE))
 			cmd->use_slowpath = true;
 
-		/*
-		 * last sg elem in the 'list',
-		 * check if start addr is page-aligned.
-		 */
+		 
 		else if ((i == (sg_count - 1)) &&
 			 (sg_count > 1) && (addr % QEDI_PAGE_SIZE))
 			cmd->use_slowpath = true;
 
-		/*
-		 * middle sg elements in list,
-		 * check if start and end addr is page-aligned
-		 */
+		 
 		else if ((i != 0) && (i != (sg_count - 1)) &&
 			 ((addr % QEDI_PAGE_SIZE) ||
 			 (end_addr % QEDI_PAGE_SIZE)))
@@ -1944,7 +1921,7 @@ void qedi_trace_io(struct qedi_ctx *qedi, struct iscsi_task *task,
 	io_log->blk_req_cpu = smp_processor_id();
 
 	if (direction == QEDI_IO_TRACE_REQ) {
-		/* For requests we only care about the submission CPU */
+		 
 		io_log->req_cpu = smp_processor_id() % qedi->num_queues;
 		io_log->intr_cpu = 0;
 		io_log->blk_rsp_cpu = 0;
@@ -2019,7 +1996,7 @@ int qedi_iscsi_send_ioreq(struct iscsi_task *task)
 	memset(&cmd_params, 0, sizeof(cmd_params));
 
 	cq_idx = smp_processor_id() % qedi->num_queues;
-	/* Update header info */
+	 
 	SET_FIELD(cmd_pdu_header.flags_attr, ISCSI_CMD_HDR_ATTR,
 		  ISCSI_ATTR_SIMPLE);
 	if (hdr->cdb[0] != TEST_UNIT_READY) {
@@ -2045,7 +2022,7 @@ int qedi_iscsi_send_ioreq(struct iscsi_task *task)
 	cmd_pdu_header.hdr_first_byte = hdr->opcode;
 	qedi_cpy_scsi_cdb(sc, (u32 *)cmd_pdu_header.cdb);
 
-	/* Fill tx AHS and rx buffer */
+	 
 	if (task_type == ISCSI_TASK_TYPE_INITIATOR_WRITE) {
 		tx_sgl_task_params.sgl = cmd->io_tbl.sge_tbl;
 		tx_sgl_task_params.sgl_phys_addr.lo =
@@ -2066,7 +2043,7 @@ int qedi_iscsi_send_ioreq(struct iscsi_task *task)
 		rx_sgl_task_params.num_sges = cmd->io_tbl.sge_valid;
 	}
 
-	/* Add conn param */
+	 
 	conn_params.first_burst_length = conn->session->first_burst;
 	conn_params.max_send_pdu_length = conn->max_xmit_dlength;
 	conn_params.max_burst_length = conn->session->max_burst;
@@ -2075,11 +2052,11 @@ int qedi_iscsi_send_ioreq(struct iscsi_task *task)
 	if (conn->session->imm_data_en)
 		conn_params.immediate_data = true;
 
-	/* Add cmd params */
+	 
 	cmd_params.sense_data_buffer_phys_addr.lo = (u32)cmd->sense_buffer_dma;
 	cmd_params.sense_data_buffer_phys_addr.hi =
 					(u32)((u64)cmd->sense_buffer_dma >> 32);
-	/* Fill fw input params */
+	 
 	task_params.context = fw_task_ctx;
 	task_params.conn_icid = (u16)qedi_conn->iscsi_conn_id;
 	task_params.itid = tid;

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef CT20K1REG_H
 #define CT20K1REG_H
 
-/* 20k1 registers */
+ 
 #define 	DSPXRAM_START 			0x000000
 #define 	DSPXRAM_END 			0x013FFC
 #define 	DSPAXRAM_START 			0x020000
@@ -329,7 +327,7 @@
 #define 	DSP3YGPRAM_START 		0x107800
 #define 	DSP3YGPRAM_END 			0x1079FC
 
-/* end of DSP reg definitions */
+ 
 
 #define  	DSPAIMAP_START			0x108000
 #define  	DSPAIMAP_END			0x1083FC
@@ -452,7 +450,7 @@
 #define		SRCLA				0x1B001C
 #define		SRCCTLSWR			0x1B0020
 
-/* SRC HERE */
+ 
 #define		SRCALBA				0x1B002C
 #define		SRCMCTL				0x1B012C
 #define		SRCCERR				0x1B022C
@@ -628,4 +626,4 @@
 #define I2SD_L    0x18L
 #define I2SD_R    0x19L
 
-#endif /* CT20K1REG_H */
+#endif  

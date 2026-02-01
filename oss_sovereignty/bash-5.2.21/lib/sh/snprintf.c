@@ -1,58 +1,10 @@
-/* snprintf - formatted output to strings, with bounds checking and allocation */
-
-/*
- build a test version with
-   gcc -g -DDRIVER -I../.. -I../../include -o test-snprintf snprintf.c fmtu*long.o
-*/
  
-/*
-   Unix snprintf implementation.
-   derived from inetutils/libinetutils/snprintf.c Version 1.1
 
-   Copyright (C) 2001-2020 Free Software Foundation, Inc.
+ 
+ 
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-   
-   Original (pre-bash) Revision History:
-
-   1.1:
-      *  added changes from Miles Bader
-      *  corrected a bug with %f
-      *  added support for %#g
-      *  added more comments :-)
-   1.0:
-      *  supporting must ANSI syntaxic_sugars
-   0.0:
-      *  support %s %c %d
-
- THANKS(for the patches and ideas):
-     Miles Bader
-     Cyrille Rustom
-     Jacek Slabocewiz
-     Mike Parker(mouse)
-
-*/
-
-/*
- * Currently doesn't handle (and bash/readline doesn't use):
- *	* *M$ width, precision specifications
- *	* %N$ numbered argument conversions
- *	* support for `F' is imperfect with ldfallback(), since underlying
- *	  printf may not handle it -- should ideally have another autoconf test
- */
+ 
 
 #define FLOATING_POINT
 
@@ -60,7 +12,7 @@
 #  include <config.h>
 #endif
 
-/* GCC 4.2 on Snow Leopard doesn't like the snprintf prototype */
+ 
 #if defined(DEBUG) && !defined (MACOSX)
 #  undef HAVE_SNPRINTF
 #  undef HAVE_ASPRINTF
@@ -109,8 +61,8 @@
 #endif
 
 #ifdef FLOATING_POINT
-#  include <float.h>	/* for manifest constants */
-#  include <stdio.h>	/* for sprintf */
+#  include <float.h>	 
+#  include <stdio.h>	 
 #endif
 
 #include <typemax.h>
@@ -125,10 +77,10 @@
 #ifndef DRIVER
 #  include "shell.h"
 #else
-#  define FL_PREFIX     0x01    /* add 0x, 0X, or 0 prefix as appropriate */
-#  define FL_ADDBASE    0x02    /* add base# prefix to converted value */
-#  define FL_HEXUPPER   0x04    /* use uppercase when converting to hex */
-#  define FL_UNSIGNED   0x08    /* don't add any sign */
+#  define FL_PREFIX     0x01     
+#  define FL_ADDBASE    0x02     
+#  define FL_HEXUPPER   0x04     
+#  define FL_UNSIGNED   0x08     
 extern char *fmtulong PARAMS((unsigned long int, int, char *, size_t, int));
 extern char *fmtullong PARAMS((unsigned long long int, int, char *, size_t, int));
 #endif
@@ -137,44 +89,40 @@ extern char *fmtullong PARAMS((unsigned long long int, int, char *, size_t, int)
 #  define FREE(x)	if (x) free (x)
 #endif
 
-/* Bound on length of the string representing an integer value of type T.
-   Subtract one for the sign bit if T is signed;
-   302 / 1000 is log10 (2) rounded up;
-   add one for integer division truncation;
-   add one more for a minus sign if t is signed.  */
+ 
 #ifndef INT_STRLEN_BOUND
 #define INT_STRLEN_BOUND(t) \
   ((sizeof (t) * CHAR_BIT - TYPE_SIGNED (t)) * 302 / 1000 \
      + 1 + TYPE_SIGNED (t))
 #endif
 
-/* conversion flags */
-#define PF_ALTFORM	0x00001		/* # */
-#define PF_HEXPREFIX	0x00002		/* 0[Xx] */
-#define PF_LADJUST	0x00004		/* - */
-#define PF_ZEROPAD	0x00008		/* 0 */
-#define PF_PLUS		0x00010		/* + */
-#define PF_SPACE	0x00020		/* ' ' */
-#define PF_THOUSANDS	0x00040		/* ' */
+ 
+#define PF_ALTFORM	0x00001		 
+#define PF_HEXPREFIX	0x00002		 
+#define PF_LADJUST	0x00004		 
+#define PF_ZEROPAD	0x00008		 
+#define PF_PLUS		0x00010		 
+#define PF_SPACE	0x00020		 
+#define PF_THOUSANDS	0x00040		 
 
-#define PF_DOT		0x00080		/* `.precision' */
-#define PF_STAR_P	0x00100		/* `*' after precision */
-#define PF_STAR_W	0x00200		/* `*' before or without precision */
+#define PF_DOT		0x00080		 
+#define PF_STAR_P	0x00100		 
+#define PF_STAR_W	0x00200		 
 
-/* length modifiers */
-#define PF_SIGNEDCHAR	0x00400		/* hh */
-#define PF_SHORTINT	0x00800		/* h */
-#define PF_LONGINT	0x01000		/* l */
-#define PF_LONGLONG	0x02000		/* ll */
-#define PF_LONGDBL	0x04000		/* L */
-#define PF_INTMAX_T	0x08000		/* j */
-#define PF_SIZE_T	0x10000		/* z */
-#define PF_PTRDIFF_T	0x20000		/* t */
+ 
+#define PF_SIGNEDCHAR	0x00400		 
+#define PF_SHORTINT	0x00800		 
+#define PF_LONGINT	0x01000		 
+#define PF_LONGLONG	0x02000		 
+#define PF_LONGDBL	0x04000		 
+#define PF_INTMAX_T	0x08000		 
+#define PF_SIZE_T	0x10000		 
+#define PF_PTRDIFF_T	0x20000		 
 
-#define PF_ALLOCBUF	0x40000		/* for asprintf, vasprintf */
+#define PF_ALLOCBUF	0x40000		 
 
-#define PFM_SN		0x01		/* snprintf, vsnprintf */
-#define PFM_AS		0x02		/* asprintf, vasprintf */
+#define PFM_SN		0x01		 
+#define PFM_AS		0x02		 
 
 #define ASBUFSIZE	128
 
@@ -187,39 +135,13 @@ static int decpoint;
 static int thoussep;
 static char *grouping;
 
-/* 
- * For the FLOATING POINT FORMAT :
- *  the challenge was finding a way to
- *  manipulate the Real numbers without having
- *  to resort to mathematical function(it
- *  would require to link with -lm) and not
- *  going down to the bit pattern(not portable)
- *
- *  so a number, a real is:
-
-      real = integral + fraction
-
-      integral = ... + a(2)*10^2 + a(1)*10^1 + a(0)*10^0
-      fraction = b(1)*10^-1 + b(2)*10^-2 + ...
-
-      where:
-       0 <= a(i) => 9 
-       0 <= b(i) => 9 
  
-    from then it was simple math
- */
 
-/*
- * size of the buffer for the integral part
- * and the fraction part 
- */
-#define MAX_INT  99 + 1 /* 1 for the null */
+ 
+#define MAX_INT  99 + 1  
 #define MAX_FRACT 307 + 1
 
-/* 
- * These functions use static buffers to store the results,
- * and so are not reentrant
- */
+ 
 #define itoa(n) fmtulong(n, 10, intbuf, sizeof(intbuf), 0);
 #define dtoa(n, p, f) numtoa(n, 10, p, f)
 
@@ -227,8 +149,7 @@ static char *grouping;
 
 #define GETARG(type)	(va_arg(args, type))
 
-/* Macros that do proper sign extension and handle length modifiers.  Used
-   for the integer conversion specifiers. */
+ 
 #define GETSIGNED(p) \
   (((p)->flags & PF_LONGINT) \
 	? GETARG (long) \
@@ -253,23 +174,23 @@ static char *grouping;
   if (sizeof (type) > sizeof (long)) \
     (p)->flags |= PF_LONGLONG;
 
-/* this struct holds everything we need */
+ 
 struct DATA
 {
   int length;
-  char *base;		/* needed for [v]asprintf */
+  char *base;		 
   char *holder;
   int counter;
   const char *pf;
 
-/* FLAGS */
+ 
   int flags;
   int justify;
   int width, precision;
   char pad;
 };
 
-/* the floating point stuff */
+ 
 #ifdef FLOATING_POINT
 static double pow_10 PARAMS((int));
 static int log_10 PARAMS((double));
@@ -280,7 +201,7 @@ static char *numtoa PARAMS((double, int, int, char **));
 static void init_data PARAMS((struct DATA *, char *, size_t, const char *, int));
 static void init_conv_flag PARAMS((struct DATA *));
 
-/* for the format */
+ 
 #ifdef FLOATING_POINT
 static void floating PARAMS((struct DATA *, double));
 static void exponent PARAMS((struct DATA *, double));
@@ -339,28 +260,25 @@ static void xfree PARAMS((void *));
 #  include <xmalloc.h>
 #endif
 
-/* those are defines specific to snprintf to hopefully
- * make the code clearer :-)
- */
+ 
 #define RIGHT 1
 #define LEFT  0
 #define NOT_FOUND -1
 #define FOUND 1
 #define MAX_FIELD 15
 
-/* round off to the precision */
+ 
 #define ROUND(d, p) \
 	    (d < 0.) ? \
 	     d - pow_10(-(p)->precision) * 0.5 : \
 	     d + pow_10(-(p)->precision) * 0.5
 
-/* set default precision */
+ 
 #define DEF_PREC(p) \
 	    if ((p)->precision == NOT_FOUND) \
 	      (p)->precision = 6
 
-/* put a char.  increment the number of chars written even if we've exceeded
-   the vsnprintf/snprintf buffer size (for the return value) */
+ 
 #define PUT_CHAR(c, p) \
 	do \
 	  { \
@@ -368,7 +286,7 @@ static void xfree PARAMS((void *));
 	      { \
 		(p)->length += ASBUFSIZE; \
 		(p)->base = (char *)xrealloc((p)->base, (p)->length); \
-		(p)->holder = (p)->base + (p)->counter; /* in case reallocated */ \
+		(p)->holder = (p)->base + (p)->counter;   \
 	      } \
 	    if ((p)->counter < (p)->length) \
 	      *(p)->holder++ = (c); \
@@ -376,7 +294,7 @@ static void xfree PARAMS((void *));
 	  } \
 	while (0)
 
-/* Output a string.  P->WIDTH has already been adjusted for padding. */
+ 
 #define PUT_STRING(string, len, p) \
 	do \
 	  { \
@@ -398,25 +316,25 @@ static void xfree PARAMS((void *));
 	    if (((p)->flags & PF_SPACE) && (d) > zero) \
 	      PUT_CHAR(' ', p)
 
-/* pad right */ 
+  
 #define PAD_RIGHT(p) \
 	    if ((p)->width > 0 && (p)->justify != LEFT) \
 	      for (; (p)->width > 0; (p)->width--) \
 		 PUT_CHAR((p)->pad, p)
 
-/* pad left */
+ 
 #define PAD_LEFT(p) \
 	    if ((p)->width > 0 && (p)->justify == LEFT) \
 	      for (; (p)->width > 0; (p)->width--) \
 		 PUT_CHAR((p)->pad, p)
 
-/* pad with zeros from decimal precision */
+ 
 #define PAD_ZERO(p) \
 	if ((p)->precision > 0) \
 	  for (; (p)->precision > 0; (p)->precision--) \
 	    PUT_CHAR('0', p)
 
-/* if width and prec. in the args */
+ 
 #define STAR_ARGS(p) \
 	do { \
 	    if ((p)->flags & PF_STAR_W) \
@@ -446,7 +364,7 @@ static void xfree PARAMS((void *));
 	{ \
 	  struct lconv *lv; \
 	  if ((d) == 0) { \
-	  (d) = '.'; (t) = -1; (g) = 0; /* defaults */ \
+	  (d) = '.'; (t) = -1; (g) = 0;   \
 	  lv = localeconv(); \
 	  if (lv) \
 	    { \
@@ -466,16 +384,14 @@ static void xfree PARAMS((void *));
 #endif
 
 #ifdef FLOATING_POINT
-/*
- * Find the nth power of 10
- */
+ 
 static double
 pow_10(n)
      int n;
 { 
   double P;
 
-  /* handle common cases with fast switch statement. */
+   
   switch (n)
     {
     case -3:	return .001;
@@ -503,16 +419,7 @@ pow_10(n)
   return P;
 }
 
-/*
- * Find the integral part of the log in base 10 
- * Note: this not a real log10()
-	 I just need and approximation(integerpart) of x in:
-	  10^x ~= r
- * log_10(200) = 2;
- * log_10(250) = 2;
- *
- * NOTE: do not call this with r == 0 -- an infinite loop results.
- */
+ 
 static int
 log_10(r)
      double r;
@@ -543,11 +450,7 @@ log_10(r)
     }
 }
 
-/*
- * This function return the fraction part of a double
- * and set in ip the integral part.
- * In many ways it resemble the modf() found on most Un*x
- */
+ 
 static double
 integral(real, ip)
      double real;
@@ -557,26 +460,26 @@ integral(real, ip)
   double i, s, p;
   double real_integral = 0.;
 
-  /* take care of the obvious */
-  /* equal to zero ? */
+   
+   
   if (real == 0.)
     {
       *ip = 0.;
       return (0.);
     }
 
-  /* negative number ? */
+   
   if (real < 0.)
     real = -real;
 
-  /* a fraction ? */
+   
   if ( real < 1.)
     {
       *ip = 0.;
       return real;
     }
 
-  /* the real work :-) */
+   
   for (j = log_10(real); j >= 0; j--)
     {
       p = pow_10(j);
@@ -591,12 +494,7 @@ integral(real, ip)
 }
 
 #define PRECISION 1.e-6
-/* 
- * return an ascii representation of the integral part of the number
- * and set fract to be an ascii representation of the fraction part
- * the container for the fraction and the integral part or statically
- * declare with fix size 
- */
+ 
 static char *
 numtoa(number, base, precision, fract)
      double number;
@@ -604,19 +502,19 @@ numtoa(number, base, precision, fract)
      char **fract;
 {
   register int i, j;
-  double ip, fp; /* integer and fraction part */
+  double ip, fp;  
   double fraction;
   int digits, sign;
   static char integral_part[MAX_INT];
   static char fraction_part[MAX_FRACT];
   int ch;
 
-  /* taking care of the obvious case: 0.0 */
+   
   if (number == 0.)
     { 
       integral_part[0] = '0';
       integral_part[1] = '\0';
-      /* The fractional part has to take the precision into account */
+       
       for (ch = 0; ch < precision-1; ch++)
  	fraction_part[ch] = '0';
       fraction_part[ch] = '0';
@@ -626,21 +524,21 @@ numtoa(number, base, precision, fract)
       return integral_part;
     }
 
-  /* -0 is tricky */
+   
   sign = (number == -0.) ? '-' : ((number < 0.) ? '-' : '+');
   digits = MAX_INT - 1;
 
-  /* for negative numbers */
+   
   if (sign == '-')
     {
       number = -number;
-      digits--; /* sign consume one digit */
+      digits--;  
     }
 
   fraction = integral(number, &ip);
   number = ip;
 
-  /* do the integral part */
+   
   if (ip == 0.)
     {
       integral_part[0] = '0';
@@ -652,34 +550,34 @@ numtoa(number, base, precision, fract)
 	{
 	  number /= base;
 	  fp = integral(number, &ip);
-	  ch = (int)((fp + PRECISION)*base); /* force to round */
+	  ch = (int)((fp + PRECISION)*base);  
 	  integral_part[i] = (ch <= 9) ? ch + '0' : ch + 'a' - 10;
 	  if (! ISXDIGIT((unsigned char)integral_part[i]))
-	    break;	/* bail out overflow !! */
+	    break;	 
 	  number = ip;
 	 }
     }
      
-  /* Oh No !! out of bound, ho well fill it up ! */
+   
   if (number != 0.)
     for (i = 0; i < digits; ++i)
       integral_part[i] = '9';
 
-  /* put the sign ? */
+   
   if (sign == '-')
     integral_part[i++] = '-';
 
   integral_part[i] = '\0';
 
-  /* reverse every thing */
+   
   for ( i--, j = 0; j < i; j++, i--)
     SWAP_INT(integral_part[i], integral_part[j]);  
 
-  /* the fractional part */
+   
   for (i=0, fp=fraction; precision > 0 && i < MAX_FRACT ; i++, precision--)
     {
       fraction_part[i] = (int)((fp + PRECISION)*10. + '0');
-      if (! DIGIT(fraction_part[i])) /* underflow ? */
+      if (! DIGIT(fraction_part[i]))  
 	break;
       fp = (fp*10.0) - (double)(long)((fp + PRECISION)*10.);
     }
@@ -692,9 +590,7 @@ numtoa(number, base, precision, fract)
 }
 #endif
 
-/* for %d and friends, it puts in holder
- * the representation with the right padding
- */
+ 
 static void
 number(p, d, base)
      struct DATA *p;
@@ -705,15 +601,14 @@ number(p, d, base)
   long sd;
   int flags;
 
-  /* An explicit precision turns off the zero-padding flag and sets the
-     pad character back to space. */
+   
   if ((p->flags & PF_ZEROPAD) && p->precision >= 0 && (p->flags & PF_DOT))
     {
       p->flags &= ~PF_ZEROPAD;
       p->pad = ' ';
     }
 
-  sd = d;	/* signed for ' ' padding in base 10 */
+  sd = d;	 
   flags = 0;
   flags = (*p->pf == 'x' || *p->pf == 'X' || *p->pf == 'o' || *p->pf == 'u' || *p->pf == 'U') ? FL_UNSIGNED : 0;
   if (*p->pf == 'X')
@@ -728,7 +623,7 @@ number(p, d, base)
 	tmp = t;
     }
 
-  /* need to add one for any `+', but we only add one in base 10 */
+   
   p->width -= strlen(tmp) + (base == 10 && d > 0 && (p->flags & PF_PLUS));
   PAD_RIGHT(p);
 
@@ -768,9 +663,7 @@ number(p, d, base)
 }
 
 #ifdef HAVE_LONG_LONG_INT
-/*
- * identical to number() but works for `long long'
- */
+ 
 static void
 lnumber(p, d, base)
      struct DATA *p;
@@ -781,15 +674,14 @@ lnumber(p, d, base)
   long long sd;
   int flags;
 
-  /* An explicit precision turns off the zero-padding flag and sets the
-     pad character back to space. */
+   
   if ((p->flags & PF_ZEROPAD) && p->precision >= 0 && (p->flags & PF_DOT))
     {
       p->flags &= ~PF_ZEROPAD;
       p->pad = ' ';
     }
 
-  sd = d;	/* signed for ' ' padding in base 10 */
+  sd = d;	 
   flags = (*p->pf == 'x' || *p->pf == 'X' || *p->pf == 'o' || *p->pf == 'u' || *p->pf == 'U') ? FL_UNSIGNED : 0;
   if (*p->pf == 'X')
     flags |= FL_HEXUPPER;
@@ -803,7 +695,7 @@ lnumber(p, d, base)
 	tmp = t;
     }
 
-  /* need to add one for any `+', but we only add one in base 10 */
+   
   p->width -= strlen(tmp) + (base == 10 && d > 0 && (p->flags & PF_PLUS));
   PAD_RIGHT(p);
 
@@ -854,7 +746,7 @@ pointer(p, d)
   p->width -= strlen(tmp);
   PAD_RIGHT(p);
 
-  /* prefix '0x' for pointers */
+   
   PUT_CHAR('0', p);
   PUT_CHAR('x', p);
 
@@ -867,7 +759,7 @@ pointer(p, d)
   PAD_LEFT(p);
 }
 
-/* %s strings */
+ 
 static void
 strings(p, tmp)
      struct DATA *p;
@@ -876,7 +768,7 @@ strings(p, tmp)
   size_t len;
 
   len = strlen(tmp);
-  if (p->precision != NOT_FOUND) /* the smallest number */
+  if (p->precision != NOT_FOUND)  
     len = (len < p->precision ? len : p->precision);
   p->width -= len;
 
@@ -884,7 +776,7 @@ strings(p, tmp)
 }
 
 #if HANDLE_MULTIBYTE
-/* %ls wide-character strings */
+ 
 static void
 wstrings(p, tmp)
      struct DATA *p;
@@ -916,7 +808,7 @@ wstrings(p, tmp)
     }
   if (len == (size_t)-1)
     {
-      /* invalid multibyte sequence; bail now. */
+       
       FREE (os);      
       return;
     }
@@ -941,25 +833,23 @@ wchars (p, wc)
   memset (&mbs, '\0', sizeof (mbstate_t));
   len = wcrtomb (lbuf, wc, &mbs);
   if (len == (size_t)-1)
-    /* conversion failed; bail now. */
+     
     return;
   p->width -= len;
   l = lbuf;
   PUT_STRING (l, len, p);
   free (lbuf);
 }
-#endif /* HANDLE_MULTIBYTE */
+#endif  
 
 #ifdef FLOATING_POINT
 
-/* Check for [+-]infinity and NaN.  If MODE == 1, we check for Infinity, else
-   (mode == 2) we check for NaN.  This does the necessary printing.  Returns
-   1 if Inf or Nan, 0 if not. */
+ 
 static int
 chkinfnan(p, d, mode)
      struct DATA *p;
      double d;
-     int mode;		/* == 1 for inf, == 2 for nan */
+     int mode;		 
 {
   int i;
   char *tmp;
@@ -985,7 +875,7 @@ chkinfnan(p, d, mode)
   return 1;
 }
 
-/* %f %F %g %G floating point representation */
+ 
 static void
 floating(p, d)
      struct DATA *p;
@@ -995,7 +885,7 @@ floating(p, d)
   int i;
 
   if (d != 0 && (chkinfnan(p, d, 1) || chkinfnan(p, d, 2)))
-    return;	/* already printed nan or inf */
+    return;	 
 
   GETLOCALEDATA(decpoint, thoussep, grouping);
   DEF_PREC(p);
@@ -1007,16 +897,16 @@ floating(p, d)
 
   if ((*p->pf == 'g' || *p->pf == 'G') && (p->flags & PF_ALTFORM) == 0)
     {
-      /* smash the trailing zeros unless altform */
+       
       for (i = strlen(tmp2) - 1; i >= 0 && tmp2[i] == '0'; i--)
 	tmp2[i] = '\0'; 
       if (tmp2[0] == '\0')
 	p->precision = 0;
     }
 
-  /* calculate the padding. 1 for the dot */
+   
   p->width = p->width -
-  	    /* XXX - should this be d>0. && (p->flags & PF_PLUS) ? */
+  	     
 #if 0
 	    ((d > 0. && p->justify == RIGHT) ? 1:0) -
 #else
@@ -1024,7 +914,7 @@ floating(p, d)
 #endif
 	    ((p->flags & PF_SPACE) ? 1:0) -
 	    strlen(tmp) - p->precision -
-	    ((p->precision != 0 || (p->flags & PF_ALTFORM)) ? 1 : 0);	/* radix char */
+	    ((p->precision != 0 || (p->flags & PF_ALTFORM)) ? 1 : 0);	 
 
   if (p->pad == ' ')
     {
@@ -1042,21 +932,21 @@ floating(p, d)
 
   while (*tmp)
     {
-      PUT_CHAR(*tmp, p);	/* the integral */
+      PUT_CHAR(*tmp, p);	 
       tmp++;
     }
   FREE (t);
 
   if (p->precision != 0 || (p->flags & PF_ALTFORM))
-    PUT_CHAR(decpoint, p);  /* put the '.' */
+    PUT_CHAR(decpoint, p);   
 
   for (; *tmp2; tmp2++)
-    PUT_CHAR(*tmp2, p); /* the fraction */
+    PUT_CHAR(*tmp2, p);  
   
   PAD_LEFT(p);
 } 
 
-/* %e %E %g %G exponent representation */
+ 
 static void
 exponent(p, d)
      struct DATA *p;
@@ -1066,7 +956,7 @@ exponent(p, d)
   int j, i;
 
   if (d != 0 && (chkinfnan(p, d, 1) || chkinfnan(p, d, 2)))
-    return;	/* already printed nan or inf */
+    return;	 
 
   GETLOCALEDATA(decpoint, thoussep, grouping);
   DEF_PREC(p);
@@ -1075,16 +965,15 @@ exponent(p, d)
   else
     {
       j = log_10(d);
-      d = d / pow_10(j);  /* get the Mantissa */
+      d = d / pow_10(j);   
       d = ROUND(d, p);		  
     }
   tmp = dtoa(d, p->precision, &tmp2);
 
-  /* 1 for unit, 1 for the '.', 1 for 'e|E',
-   * 1 for '+|-', 2 for 'exp'  (but no `.' if precision == 0 */
-  /* calculate how much padding need */
+   
+   
   p->width = p->width - 
-  	    /* XXX - should this be d>0. && (p->flags & PF_PLUS) ? */
+  	     
 #if 0
 	     ((d > 0. && p->justify == RIGHT) ? 1:0) -
 #else
@@ -1114,23 +1003,23 @@ exponent(p, d)
     }
 
   if (p->precision != 0 || (p->flags & PF_ALTFORM))
-      PUT_CHAR(decpoint, p);  /* the '.' */
+      PUT_CHAR(decpoint, p);   
 
   if ((*p->pf == 'g' || *p->pf == 'G') && (p->flags & PF_ALTFORM) == 0)
-    /* smash the trailing zeros unless altform */
+     
     for (i = strlen(tmp2) - 1; i >= 0 && tmp2[i] == '0'; i--)
       tmp2[i] = '\0'; 
 
   for (; *tmp2; tmp2++)
-    PUT_CHAR(*tmp2, p); /* the fraction */
+    PUT_CHAR(*tmp2, p);  
 
-  /* the exponent put the 'e|E' */
+   
   if (*p->pf == 'g' || *p->pf == 'e')
     PUT_CHAR('e', p);
   else
     PUT_CHAR('E', p);
 
-  /* the sign of the exp */
+   
   if (j >= 0)
     PUT_CHAR('+', p);
   else
@@ -1140,12 +1029,11 @@ exponent(p, d)
     }
 
    tmp = itoa(j);
-   /* pad out to at least two spaces.  pad with `0' if the exponent is a
-      single digit. */
+    
    if (j <= 9)
      PUT_CHAR('0', p);
 
-   /* the exponent */
+    
    while (*tmp)
      {
        PUT_CHAR(*tmp, p);
@@ -1156,9 +1044,7 @@ exponent(p, d)
 }
 #endif
 
-/* Return a new string with the digits in S grouped according to the locale's
-   grouping info and thousands separator.  If no grouping should be performed,
-   this returns NULL; the caller needs to check for it. */
+ 
 static char *
 groupnum (s)
      char *s;
@@ -1169,7 +1055,7 @@ groupnum (s)
   if (grouping == 0 || *grouping <= 0 || *grouping == CHAR_MAX)
     return ((char *)NULL);
 
-  /* find min grouping to size returned string */
+   
   for (len = *grouping, g = grouping; *g; g++)
       if (*g > 0 && *g < len)
 	len = *g;
@@ -1188,17 +1074,17 @@ groupnum (s)
     {
       *--re = *--se;
 
-      /* handle `-' inserted by numtoa() and the fmtu* family here. */
+       
       if (se > s && se[-1] == '-')
 	continue;
 
-      /* begin new group. */
+       
       if (--len == 0 && se > s)
 	{
 	  *--re = thoussep;
-	  len = *++g;		/* was g++, but that uses first char twice (glibc bug, too) */
+	  len = *++g;		 
 	  if (*g == '\0')
-	    len = *--g;		/* use previous grouping */
+	    len = *--g;		 
 	  else if (*g == CHAR_MAX)
 	    {
 	      do
@@ -1219,12 +1105,12 @@ groupnum (s)
   return ret;
 }
 
-/* initialize the conversion specifiers */
+ 
 static void
 init_conv_flag (p)
      struct DATA *p;
 {
-  p->flags &= PF_ALLOCBUF;		/* preserve PF_ALLOCBUF flag */
+  p->flags &= PF_ALLOCBUF;		 
   p->precision = p->width = NOT_FOUND;
   p->justify = NOT_FOUND;
   p->pad = ' ';
@@ -1238,7 +1124,7 @@ init_data (p, string, length, format, mode)
      const char *format;
      int mode;
 {
-  p->length = length - 1; /* leave room for '\0' */
+  p->length = length - 1;  
   p->holder = p->base = string;
   p->pf = format;
   p->counter = 0;
@@ -1257,9 +1143,9 @@ vsnprintf_internal(data, string, length, format, args)
      va_list args;
 #endif
 {
-  double d; /* temporary holder */
+  double d;  
 #ifdef HAVE_LONG_DOUBLE
-  long double ld;	/* for later */
+  long double ld;	 
 #endif
   unsigned long ul;
 #ifdef HAVE_UNSIGNED_LONG_LONG_INT
@@ -1274,17 +1160,14 @@ vsnprintf_internal(data, string, length, format, args)
   const char *convstart;
   int negprec;
 
-  /* Sanity check, the string length must be >= 0.  C99 actually says that
-     LENGTH can be zero here, in the case of snprintf/vsnprintf (it's never
-     0 in the case of asprintf/vasprintf), and the return value is the number
-     of characters that would have been written. */
+   
   if (length < 0)
     return -1;
 
   if (format == 0)
     return 0;
 
-  /* Reset these for each call because the locale might have changed. */
+   
   decpoint = thoussep = 0;
   grouping = 0;
 
@@ -1298,13 +1181,13 @@ vsnprintf_internal(data, string, length, format, args)
 	}
 
       convstart = data->pf;
-      init_conv_flag (data); /* initialise format flags */
+      init_conv_flag (data);  
 
       state = 1;
       for (state = 1; state && *data->pf; )
 	{
 	  c = *(++data->pf);
-	      /* fmtend = data->pf */
+	       
 #if defined (FLOATING_POINT) && defined (HAVE_LONG_DOUBLE)
 	  if (data->flags & PF_LONGDBL)
 	    {
@@ -1322,12 +1205,12 @@ vsnprintf_internal(data, string, length, format, args)
 		  goto conv_break;
 		}
 	    }
-#endif /* FLOATING_POINT && HAVE_LONG_DOUBLE */
+#endif  
 
 	  switch (c)
 	    {
-	      /* Parse format flags */
-	      case '\0': /* a NULL here ? ? bail out */
+	       
+	      case '\0':  
 		*data->holder = '\0';
 		return data->counter;
 		break;
@@ -1366,10 +1249,7 @@ vsnprintf_internal(data, string, length, format, args)
 		continue;
 
 	      case '0':
-		/* If we're not specifying precision (in which case we've seen
-		   a `.') and we're not performing left-adjustment (in which
-		   case the `0' is ignored), a `0' is taken as the zero-padding
-		   flag. */
+		 
 	        if ((data->flags & (PF_DOT|PF_LADJUST)) == 0)
 		  {
 		    data->flags |= PF_ZEROPAD;
@@ -1386,7 +1266,7 @@ vsnprintf_internal(data, string, length, format, args)
 		    c = *(++data->pf);
 		  }
 		while (DIGIT(c));
-		data->pf--;		/* went too far */
+		data->pf--;		 
 		if (n < 0)
 		  n = 0;
 		if (data->flags & PF_DOT)
@@ -1395,13 +1275,13 @@ vsnprintf_internal(data, string, length, format, args)
 		  data->width = n;
 		continue;
 
-	      /* optional precision */
+	       
 	      case '.':
 		data->flags |= PF_DOT;
 		data->precision = 0;
 		continue;
 
-	      /* length modifiers */
+	       
 	      case 'h':
 		data->flags |= (data->flags & PF_SHORTINT) ? PF_SIGNEDCHAR : PF_SHORTINT;
 		continue;
@@ -1427,9 +1307,9 @@ vsnprintf_internal(data, string, length, format, args)
 		SET_SIZE_FLAGS(data, ptrdiff_t);
 		continue;
 		
-	      /* Conversion specifiers */
+	       
 #ifdef FLOATING_POINT
-	      case 'f':  /* float, double */
+	      case 'f':   
 	      case 'F':
 		STAR_ARGS(data);
 		d = GETDOUBLE(data);
@@ -1443,21 +1323,16 @@ conv_break:
 		DEF_PREC(data);
 		d = GETDOUBLE(data);
 		i = (d != 0.) ? log_10(d) : -1;
-		/*
-		 * for '%g|%G' ANSI: use f if exponent
-		 * is in the range or [-4,p] exclusively
-		 * else use %e|%E
-		 */
+		 
 		if (-4 < i && i < data->precision)
 		  {
-		    /* reset precision */
+		     
 		    data->precision -= i + 1;
 		    floating(data, d);
 		  }
 		else
 		  {
-		    /* reduce precision by 1 because of leading digit before
-		       decimal point in e format, unless specified as 0. */
+		     
 		    if (data->precision > 0)
 		      data->precision--;
 		    exponent(data, d);
@@ -1465,7 +1340,7 @@ conv_break:
 		state = 0;
 		break;
 	      case 'e':
-	      case 'E':  /* Exponent double */
+	      case 'E':   
 		STAR_ARGS(data);
 		d = GETDOUBLE(data);
 		exponent(data, d);
@@ -1479,11 +1354,11 @@ conv_break:
 		dfallback(data, convstart, data->pf, d);
 		state = 0;
 		break;
-#  endif /* HAVE_PRINTF_A_FORMAT */
-#endif /* FLOATING_POINT */
+#  endif  
+#endif  
 	      case 'U':
 		data->flags |= PF_LONGINT;
-		/* FALLTHROUGH */
+		 
 	      case 'u':
 		STAR_ARGS(data);
 #ifdef HAVE_LONG_LONG_INT
@@ -1502,8 +1377,8 @@ conv_break:
 		break;
 	      case 'D':
 		data->flags |= PF_LONGINT;
-		/* FALLTHROUGH */
-	      case 'd':  /* decimal */
+		 
+	      case 'd':   
 	      case 'i':
 		STAR_ARGS(data);
 #ifdef HAVE_LONG_LONG_INT
@@ -1520,7 +1395,7 @@ conv_break:
 		  }
 		state = 0;
 		break;
-	      case 'o':  /* octal */
+	      case 'o':   
 		STAR_ARGS(data);
 #ifdef HAVE_LONG_LONG_INT
 		if (data->flags & PF_LONGLONG)
@@ -1537,7 +1412,7 @@ conv_break:
 		state = 0;
 		break;
 	      case 'x': 
-	      case 'X':  /* hexadecimal */
+	      case 'X':   
 		STAR_ARGS(data);
 #ifdef HAVE_LONG_LONG_INT
 		if (data->flags & PF_LONGLONG)
@@ -1562,9 +1437,9 @@ conv_break:
 #if HANDLE_MULTIBYTE
 	      case 'C':
 		data->flags |= PF_LONGINT;
-		/* FALLTHROUGH */
+		 
 #endif
-	      case 'c': /* character */
+	      case 'c':  
 		STAR_ARGS(data);
 #if HANDLE_MULTIBYTE
 		if (data->flags & PF_LONGINT)
@@ -1583,9 +1458,9 @@ conv_break:
 #if HANDLE_MULTIBYTE
 	      case 'S':
 		data->flags |= PF_LONGINT;
-		/* FALLTHROUGH */
+		 
 #endif
-	      case 's':  /* string */
+	      case 's':   
 		STAR_ARGS(data);
 #if HANDLE_MULTIBYTE
 		if (data->flags & PF_LONGINT)
@@ -1615,29 +1490,26 @@ conv_break:
 		  *(GETARG (int *)) = data->counter;
 		state = 0;
 		break;
-	      case '%':  /* nothing just % */
+	      case '%':   
 		PUT_CHAR('%', data);
 		state = 0;
 		break;
   	      default:
-		/* is this an error ? maybe bail out */
+		 
 		state = 0;
 		break;
-	} /* end switch */
-      } /* end of `%' for loop */
-    } /* end of format string for loop */
+	}  
+      }  
+    }  
 
   if (data->length >= 0)
-    *data->holder = '\0'; /* the end ye ! */
+    *data->holder = '\0';  
 
   return data->counter;
 }
 
 #if defined (FLOATING_POINT) && defined (HAVE_LONG_DOUBLE)
-/*
- * Printing floating point numbers accurately is an art.  I'm not good
- * at it.  Fall back to sprintf for long double formats.
- */
+ 
 static void
 ldfallback (data, fs, fe, ld)
      struct DATA *data;
@@ -1667,10 +1539,10 @@ ldfallback (data, fs, fe, ld)
     PUT_CHAR (*x, data);    
   xfree (obuf);
 }
-#endif /* FLOATING_POINT && HAVE_LONG_DOUBLE */
+#endif  
 
 #ifdef FLOATING_POINT
-/* Used for %a, %A if the libc printf supports them. */
+ 
 static void
 dfallback (data, fs, fe, d)
      struct DATA *data;
@@ -1697,7 +1569,7 @@ dfallback (data, fs, fe, d)
   for (x = obuf; *x; x++)
     PUT_CHAR (*x, data);    
 }
-#endif /* FLOATING_POINT */
+#endif  
 
 #if !HAVE_SNPRINTF
 
@@ -1747,7 +1619,7 @@ snprintf(string, length, format, va_alist)
   return rval;
 }
 
-#endif /* HAVE_SNPRINTF */
+#endif  
 
 #if !HAVE_ASPRINTF
 
@@ -1768,7 +1640,7 @@ vasprintf(stringp, format, args)
   string = (char *)xmalloc(ASBUFSIZE);
   init_data (&data, string, ASBUFSIZE, format, PFM_AS);
   r = vsnprintf_internal(&data, string, ASBUFSIZE, format, args);
-  *stringp = data.base;		/* not string in case reallocated */
+  *stringp = data.base;		 
   return r;
 }
 
@@ -1794,9 +1666,9 @@ asprintf(stringp, format, va_alist)
   return rval;
 }
 
-#endif /* !HAVE_ASPRINTF */
+#endif  
 
-#endif /* !HAVE_SNPRINTF || !HAVE_ASPRINTF */
+#endif  
 
 #ifdef DRIVER
 
@@ -1840,7 +1712,7 @@ xfree(x)
     free (x);
 }
 
-/* set of small tests for snprintf() */
+ 
 main()
 {
   char holder[100];
@@ -1859,13 +1731,8 @@ main()
   si = snprintf((char *)NULL, 16, "abcde\n");
   printf("snprintf returns %d with NULL first argument and non-zero size\n", si);
   
-/*
-  printf("Suite of test for snprintf:\n");
-  printf("a_format\n");
-  printf("printf() format\n");
-  printf("snprintf() format\n\n");
-*/
-/* Checking the field widths */
+ 
+ 
 
   printf("/%%ld %%ld/, 336, 336\n");
   snprintf(holder, sizeof holder, "/%ld %ld/\n", 336, 336);
@@ -1903,7 +1770,7 @@ main()
   printf("%s\n", h);
 
 
-/* floating points */
+ 
 
   printf("/%%f/, 1234.56\n");
   snprintf(holder, sizeof holder, "/%f/\n", 1234.56);
@@ -1962,7 +1829,7 @@ main()
   printf("%s\n", h);
 
 #define BLURB "Outstanding acting !"
-/* strings precisions */
+ 
 
   printf("/%%2s/, \"%s\"\n", BLURB);
   snprintf(holder, sizeof holder, "/%2s/\n", BLURB);
@@ -1992,7 +1859,7 @@ main()
   printf("%s", holder);
   printf("%s\n", h);
 
-/* see some flags */
+ 
 
   printf("%%x %%X %%#x, 31, 31, 31\n");
   snprintf(holder, sizeof holder, "%x %X %#x\n", 31, 31, 31);
@@ -2008,7 +1875,7 @@ main()
   printf("%s", holder);
   printf("%s\n", h);
 
-/* other flags */
+ 
 
   printf("/%%g/, 31.4\n");
   snprintf(holder, sizeof holder, "/%g/\n", 31.4);
@@ -2060,7 +1927,7 @@ main()
   printf("%s\n", h);
 
 #define BIG "Hello this is a too big string for the buffer"
-/*  printf("A buffer to small of 10, trying to put this:\n");*/
+ 
   printf("<%%>, %s\n", BIG); 
   i = snprintf(holder, 10, "%s\n", BIG);
   i = asprintf(&h, "%s", BIG);
@@ -2130,7 +1997,7 @@ main()
   printf ("<%d> <%s>\n", si, holder);
   printf ("<%d> <%s>\n\n", ai, h);
 
-  /* huh? */
+   
   printf("/%%g/, 421.2345\n");
   snprintf(holder, sizeof holder, "/%g/\n", 421.2345);
   asprintf(&h, "/%g/\n", 421.2345);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2001,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #ifndef __XFS_FSOPS_H__
 #define	__XFS_FSOPS_H__
 
@@ -16,4 +13,4 @@ extern int xfs_fs_goingdown(xfs_mount_t *mp, uint32_t inflags);
 extern int xfs_fs_reserve_ag_blocks(struct xfs_mount *mp);
 extern int xfs_fs_unreserve_ag_blocks(struct xfs_mount *mp);
 
-#endif	/* __XFS_FSOPS_H__ */
+#endif	 

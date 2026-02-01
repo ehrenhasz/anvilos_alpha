@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Real Time Clock interface for XScale PXA27x and PXA3xx
- *
- * Copyright (C) 2008 Robert Jarzmik
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -21,24 +17,22 @@
 #define RTC_DEF_TRIM		0
 #define MAXFREQ_PERIODIC	1000
 
-/*
- * PXA Registers and bits definitions
- */
-#define RTSR_PICE	(1 << 15)	/* Periodic interrupt count enable */
-#define RTSR_PIALE	(1 << 14)	/* Periodic interrupt Alarm enable */
-#define RTSR_PIAL	(1 << 13)	/* Periodic interrupt detected */
-#define RTSR_SWALE2	(1 << 11)	/* RTC stopwatch alarm2 enable */
-#define RTSR_SWAL2	(1 << 10)	/* RTC stopwatch alarm2 detected */
-#define RTSR_SWALE1	(1 << 9)	/* RTC stopwatch alarm1 enable */
-#define RTSR_SWAL1	(1 << 8)	/* RTC stopwatch alarm1 detected */
-#define RTSR_RDALE2	(1 << 7)	/* RTC alarm2 enable */
-#define RTSR_RDAL2	(1 << 6)	/* RTC alarm2 detected */
-#define RTSR_RDALE1	(1 << 5)	/* RTC alarm1 enable */
-#define RTSR_RDAL1	(1 << 4)	/* RTC alarm1 detected */
-#define RTSR_HZE	(1 << 3)	/* HZ interrupt enable */
-#define RTSR_ALE	(1 << 2)	/* RTC alarm interrupt enable */
-#define RTSR_HZ		(1 << 1)	/* HZ rising-edge detected */
-#define RTSR_AL		(1 << 0)	/* RTC alarm detected */
+ 
+#define RTSR_PICE	(1 << 15)	 
+#define RTSR_PIALE	(1 << 14)	 
+#define RTSR_PIAL	(1 << 13)	 
+#define RTSR_SWALE2	(1 << 11)	 
+#define RTSR_SWAL2	(1 << 10)	 
+#define RTSR_SWALE1	(1 << 9)	 
+#define RTSR_SWAL1	(1 << 8)	 
+#define RTSR_RDALE2	(1 << 7)	 
+#define RTSR_RDAL2	(1 << 6)	 
+#define RTSR_RDALE1	(1 << 5)	 
+#define RTSR_RDAL1	(1 << 4)	 
+#define RTSR_HZE	(1 << 3)	 
+#define RTSR_ALE	(1 << 2)	 
+#define RTSR_HZ		(1 << 1)	 
+#define RTSR_AL		(1 << 0)	 
 #define RTSR_TRIG_MASK	(RTSR_AL | RTSR_HZ | RTSR_RDAL1 | RTSR_RDAL2\
 			 | RTSR_SWAL1 | RTSR_SWAL2)
 #define RYxR_YEAR_S	9
@@ -75,7 +69,7 @@ struct pxa_rtc {
 	struct resource	*ress;
 	void __iomem		*base;
 	struct rtc_device	*rtc;
-	spinlock_t		lock;		/* Protects this structure */
+	spinlock_t		lock;		 
 };
 
 
@@ -134,18 +128,18 @@ static irqreturn_t pxa_rtc_irq(int irq, void *dev_id)
 
 	spin_lock(&pxa_rtc->lock);
 
-	/* clear interrupt sources */
+	 
 	rtsr = rtc_readl(pxa_rtc, RTSR);
 	rtc_writel(pxa_rtc, RTSR, rtsr);
 
-	/* temporary disable rtc interrupts */
+	 
 	rtsr_clear_bits(pxa_rtc, RTSR_RDALE1 | RTSR_PIALE | RTSR_HZE);
 
-	/* clear alarm interrupt if it has occurred */
+	 
 	if (rtsr & RTSR_RDAL1)
 		rtsr &= ~RTSR_RDALE1;
 
-	/* update irq data & counter */
+	 
 	if (rtsr & RTSR_RDAL1)
 		events |= RTC_AF | RTC_IRQF;
 	if (rtsr & RTSR_HZ)
@@ -155,7 +149,7 @@ static irqreturn_t pxa_rtc_irq(int irq, void *dev_id)
 
 	rtc_update_irq(pxa_rtc->rtc, 1, events);
 
-	/* enable back rtc interrupts */
+	 
 	rtc_writel(pxa_rtc, RTSR, rtsr & ~RTSR_TRIG_MASK);
 
 	spin_unlock(&pxa_rtc->lock);

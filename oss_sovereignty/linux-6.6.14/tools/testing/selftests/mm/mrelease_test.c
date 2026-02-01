@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2022 Google LLC
- */
+
+ 
 #define _GNU_SOURCE
 #include <errno.h>
 #include <stdbool.h>
@@ -20,7 +18,7 @@
 static int alloc_noexit(unsigned long nr_pages, int pipefd)
 {
 	int ppid = getppid();
-	int timeout = 10; /* 10sec timeout to get killed */
+	int timeout = 10;  
 	unsigned long i;
 	char *buf;
 
@@ -34,13 +32,13 @@ static int alloc_noexit(unsigned long nr_pages, int pipefd)
 	for (i = 0; i < nr_pages; i++)
 		*((unsigned long *)(buf + (i * psize()))) = i;
 
-	/* Signal the parent that the child is ready */
+	 
 	if (write(pipefd, "", 1) < 0) {
 		perror("write");
 		return KSFT_FAIL;
 	}
 
-	/* Wait to be killed (when reparenting happens) */
+	 
 	while (getppid() == ppid && timeout > 0) {
 		sleep(1);
 		timeout--;
@@ -51,21 +49,18 @@ static int alloc_noexit(unsigned long nr_pages, int pipefd)
 	return (timeout > 0) ? KSFT_PASS : KSFT_FAIL;
 }
 
-/* The process_mrelease calls in this test are expected to fail */
+ 
 static void run_negative_tests(int pidfd)
 {
 	int res;
-	/* Test invalid flags. Expect to fail with EINVAL error code. */
+	 
 	if (!syscall(__NR_process_mrelease, pidfd, (unsigned int)-1) ||
 			errno != EINVAL) {
 		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
 		perror("process_mrelease with wrong flags");
 		exit(res);
 	}
-	/*
-	 * Test reaping while process is alive with no pending SIGKILL.
-	 * Expect to fail with EINVAL error code.
-	 */
+	 
 	if (!syscall(__NR_process_mrelease, pidfd, 0) || errno != EINVAL) {
 		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
 		perror("process_mrelease on a live process");
@@ -77,7 +72,7 @@ static int child_main(int pipefd[], size_t size)
 {
 	int res;
 
-	/* Allocate and fault-in memory and wait to be killed */
+	 
 	close(pipefd[0]);
 	res = alloc_noexit(MB(size) / psize(), pipefd[1]);
 	close(pipefd[1]);
@@ -93,20 +88,17 @@ int main(void)
 	char byte;
 	int res;
 
-	/* Test a wrong pidfd */
+	 
 	if (!syscall(__NR_process_mrelease, -1, 0) || errno != EBADF) {
 		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
 		perror("process_mrelease with wrong pidfd");
 		exit(res);
 	}
 
-	/* Start the test with 1MB child memory allocation */
+	 
 	size = 1;
 retry:
-	/*
-	 * Pipe for the child to signal when it's done allocating
-	 * memory
-	 */
+	 
 	if (pipe(pipefd)) {
 		perror("pipe");
 		exit(KSFT_FAIL);
@@ -120,17 +112,14 @@ retry:
 	}
 
 	if (pid == 0) {
-		/* Child main routine */
+		 
 		res = child_main(pipefd, size);
 		exit(res);
 	}
 
-	/*
-	 * Parent main routine:
-	 * Wait for the child to finish allocations, then kill and reap
-	 */
+	 
 	close(pipefd[1]);
-	/* Block until the child is ready */
+	 
 	res = read(pipefd[0], &byte, 1);
 	close(pipefd[0]);
 	if (res < 0) {
@@ -148,7 +137,7 @@ retry:
 		exit(KSFT_FAIL);
 	}
 
-	/* Run negative tests which require a live child */
+	 
 	run_negative_tests(pidfd);
 
 	if (kill(pid, SIGKILL)) {
@@ -159,13 +148,7 @@ retry:
 
 	success = (syscall(__NR_process_mrelease, pidfd, 0) == 0);
 	if (!success) {
-		/*
-		 * If we failed to reap because the child exited too soon,
-		 * before we could call process_mrelease. Double child's memory
-		 * which causes it to spend more time on cleanup and increases
-		 * our chances of reaping its memory before it exits.
-		 * Retry until we succeed or reach MAX_SIZE_MB.
-		 */
+		 
 		if (errno == ESRCH) {
 			retry = (size <= MAX_SIZE_MB);
 		} else {
@@ -176,7 +159,7 @@ retry:
 		}
 	}
 
-	/* Cleanup to prevent zombies */
+	 
 	if (waitpid(pid, NULL, 0) < 0) {
 		perror("waitpid");
 		exit(KSFT_FAIL);

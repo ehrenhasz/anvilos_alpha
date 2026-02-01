@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmw_vmci_defs.h>
 #include <linux/vmw_vmci_api.h>
@@ -47,60 +43,47 @@ enum {
 	VMCI_NOTIFY_RESOURCE_ACTION_DESTROY = 2,
 };
 
-/*
- * VMCI driver initialization. This block can also be used to
- * pass initial group membership etc.
- */
+ 
 struct vmci_init_blk {
 	u32 cid;
 	u32 flags;
 };
 
-/* VMCIqueue_pairAllocInfo_VMToVM */
+ 
 struct vmci_qp_alloc_info_vmvm {
 	struct vmci_handle handle;
 	u32 peer;
 	u32 flags;
 	u64 produce_size;
 	u64 consume_size;
-	u64 produce_page_file;	  /* User VA. */
-	u64 consume_page_file;	  /* User VA. */
-	u64 produce_page_file_size;  /* Size of the file name array. */
-	u64 consume_page_file_size;  /* Size of the file name array. */
+	u64 produce_page_file;	   
+	u64 consume_page_file;	   
+	u64 produce_page_file_size;   
+	u64 consume_page_file_size;   
 	s32 result;
 	u32 _pad;
 };
 
-/* VMCISetNotifyInfo: Used to pass notify flag's address to the host driver. */
+ 
 struct vmci_set_notify_info {
 	u64 notify_uva;
 	s32 result;
 	u32 _pad;
 };
 
-/*
- * Per-instance host state
- */
+ 
 struct vmci_host_dev {
 	struct vmci_ctx *context;
 	int user_version;
 	enum vmci_obj_type ct_type;
-	struct mutex lock;  /* Mutex lock for vmci context access */
+	struct mutex lock;   
 };
 
 static struct vmci_ctx *host_context;
 static bool vmci_host_device_initialized;
 static atomic_t vmci_host_active_users = ATOMIC_INIT(0);
 
-/*
- * Determines whether the VMCI host personality is
- * available. Since the core functionality of the host driver is
- * always present, all guests could possibly use the host
- * personality. However, to minimize the deviation from the
- * pre-unified driver state of affairs, we only consider the host
- * device active if there is no active guest device or if there
- * are VMX'en with active VMCI contexts using the host device.
- */
+ 
 bool vmci_host_code_active(void)
 {
 	return vmci_host_device_initialized &&
@@ -113,9 +96,7 @@ int vmci_host_users(void)
 	return atomic_read(&vmci_host_active_users);
 }
 
-/*
- * Called on open of /dev/vmci.
- */
+ 
 static int vmci_host_open(struct inode *inode, struct file *filp)
 {
 	struct vmci_host_dev *vmci_host_dev;
@@ -131,10 +112,7 @@ static int vmci_host_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * Called on close of /dev/vmci, most often when the process
- * exits.
- */
+ 
 static int vmci_host_close(struct inode *inode, struct file *filp)
 {
 	struct vmci_host_dev *vmci_host_dev = filp->private_data;
@@ -143,12 +121,7 @@ static int vmci_host_close(struct inode *inode, struct file *filp)
 		vmci_ctx_destroy(vmci_host_dev->context);
 		vmci_host_dev->context = NULL;
 
-		/*
-		 * The number of active contexts is used to track whether any
-		 * VMX'en are using the host personality. It is incremented when
-		 * a context is created through the IOCTL_VMCI_INIT_CONTEXT
-		 * ioctl.
-		 */
+		 
 		atomic_dec(&vmci_host_active_users);
 	}
 	vmci_host_dev->ct_type = VMCIOBJ_NOT_SET;
@@ -158,10 +131,7 @@ static int vmci_host_close(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * This is used to wake up the VMX when a VMCI call arrives, or
- * to wake up select() or poll() at the next clock tick.
- */
+ 
 static __poll_t vmci_host_poll(struct file *filp, poll_table *wait)
 {
 	struct vmci_host_dev *vmci_host_dev = filp->private_data;
@@ -169,13 +139,10 @@ static __poll_t vmci_host_poll(struct file *filp, poll_table *wait)
 	__poll_t mask = 0;
 
 	if (vmci_host_dev->ct_type == VMCIOBJ_CONTEXT) {
-		/*
-		 * Read context only if ct_type == VMCIOBJ_CONTEXT to make
-		 * sure that context is initialized
-		 */
+		 
 		context = vmci_host_dev->context;
 
-		/* Check for VMCI calls to this VM context. */
+		 
 		if (wait)
 			poll_wait(filp, &context->host_context.wait_queue,
 				  wait);
@@ -191,12 +158,7 @@ static __poll_t vmci_host_poll(struct file *filp, poll_table *wait)
 	return mask;
 }
 
-/*
- * Copies the handles of a handle array into a user buffer, and
- * returns the new length in userBufferSize. If the copy to the
- * user buffer fails, the functions still returns VMCI_SUCCESS,
- * but retval != 0.
- */
+ 
 static int drv_cp_harray_to_user(void __user *user_buf_uva,
 				 u64 *user_buf_size,
 				 struct vmci_handle_arr *handle_array,
@@ -220,10 +182,7 @@ static int drv_cp_harray_to_user(void __user *user_buf_uva,
 	return VMCI_SUCCESS;
 }
 
-/*
- * Sets up a given context for notify to work. Maps the notify
- * boolean in user VA into kernel space.
- */
+ 
 static int vmci_host_setup_notify(struct vmci_ctx *context,
 				  unsigned long uva)
 {
@@ -234,15 +193,10 @@ static int vmci_host_setup_notify(struct vmci_ctx *context,
 		return VMCI_ERROR_DUPLICATE_ENTRY;
 	}
 
-	/*
-	 * We are using 'bool' internally, but let's make sure we explicit
-	 * about the size.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(bool) != sizeof(u8));
 
-	/*
-	 * Lock physical page backing a given user VA.
-	 */
+	 
 	retval = get_user_pages_fast(uva, 1, FOLL_WRITE, &context->notify_page);
 	if (retval != 1) {
 		context->notify_page = NULL;
@@ -251,9 +205,7 @@ static int vmci_host_setup_notify(struct vmci_ctx *context,
 	if (context->notify_page == NULL)
 		return VMCI_ERROR_UNAVAILABLE;
 
-	/*
-	 * Map the locked page and set up notify pointer.
-	 */
+	 
 	context->notify = kmap(context->notify_page) + (uva & (PAGE_SIZE - 1));
 	vmci_ctx_check_signal_notify(context);
 
@@ -269,19 +221,7 @@ static int vmci_host_get_version(struct vmci_host_dev *vmci_host_dev,
 			return -EFAULT;
 	}
 
-	/*
-	 * The basic logic here is:
-	 *
-	 * If the user sends in a version of 0 tell it our version.
-	 * If the user didn't send in a version, tell it our version.
-	 * If the user sent in an old version, tell it -its- version.
-	 * If the user sent in an newer version, tell it our version.
-	 *
-	 * The rationale behind telling the caller its version is that
-	 * Workstation 6.5 required that VMX and VMCI kernel module were
-	 * version sync'd.  All new VMX users will be programmed to
-	 * handle the VMCI kernel module version.
-	 */
+	 
 
 	if (vmci_host_dev->user_version > 0 &&
 	    vmci_host_dev->user_version < VMCI_VERSION_HOSTQP) {
@@ -333,10 +273,7 @@ static int vmci_host_do_init_context(struct vmci_host_dev *vmci_host_dev,
 		goto out;
 	}
 
-	/*
-	 * Copy cid to userlevel, we do this to allow the VMX
-	 * to enforce its policy on cid generation.
-	 */
+	 
 	init_block.cid = vmci_ctx_get_id(vmci_host_dev->context);
 	if (copy_to_user(uptr, &init_block, sizeof(init_block))) {
 		vmci_ctx_destroy(vmci_host_dev->context);
@@ -405,7 +342,7 @@ static int vmci_host_do_send_datagram(struct vmci_host_dev *vmci_host_dev,
 		 dg->src.context, dg->src.resource,
 		 (unsigned long long)dg->payload_size);
 
-	/* Get source context id. */
+	 
 	cid = vmci_ctx_get_id(vmci_host_dev->context);
 	send_info.result = vmci_datagram_dispatch(cid, dg, true);
 	kfree(dg);
@@ -536,18 +473,12 @@ static int vmci_host_do_queuepair_setva(struct vmci_host_dev *vmci_host_dev,
 		return -EFAULT;
 
 	if (set_va_info.va) {
-		/*
-		 * VMX is passing down a new VA for the queue
-		 * pair mapping.
-		 */
+		 
 		result = vmci_qp_broker_map(set_va_info.handle,
 					    vmci_host_dev->context,
 					    set_va_info.va);
 	} else {
-		/*
-		 * The queue pair is about to be unmapped by
-		 * the VMX.
-		 */
+		 
 		result = vmci_qp_broker_unmap(set_va_info.handle,
 					 vmci_host_dev->context, 0);
 	}
@@ -578,28 +509,10 @@ static int vmci_host_do_queuepair_setpf(struct vmci_host_dev *vmci_host_dev,
 	if (copy_from_user(&page_file_info, uptr, sizeof(*info)))
 		return -EFAULT;
 
-	/*
-	 * Communicate success pre-emptively to the caller.  Note that the
-	 * basic premise is that it is incumbent upon the caller not to look at
-	 * the info.result field until after the ioctl() returns.  And then,
-	 * only if the ioctl() result indicates no error.  We send up the
-	 * SUCCESS status before calling SetPageStore() store because failing
-	 * to copy up the result code means unwinding the SetPageStore().
-	 *
-	 * It turns out the logic to unwind a SetPageStore() opens a can of
-	 * worms.  For example, if a host had created the queue_pair and a
-	 * guest attaches and SetPageStore() is successful but writing success
-	 * fails, then ... the host has to be stopped from writing (anymore)
-	 * data into the queue_pair.  That means an additional test in the
-	 * VMCI_Enqueue() code path.  Ugh.
-	 */
+	 
 
 	if (put_user(VMCI_SUCCESS, &info->result)) {
-		/*
-		 * In this case, we can't write a result field of the
-		 * caller's info block.  So, we don't even try to
-		 * SetPageStore().
-		 */
+		 
 		return -EFAULT;
 	}
 
@@ -609,23 +522,7 @@ static int vmci_host_do_queuepair_setpf(struct vmci_host_dev *vmci_host_dev,
 						vmci_host_dev->context);
 	if (result < VMCI_SUCCESS) {
 		if (put_user(result, &info->result)) {
-			/*
-			 * Note that in this case the SetPageStore()
-			 * call failed but we were unable to
-			 * communicate that to the caller (because the
-			 * copy_to_user() call failed).  So, if we
-			 * simply return an error (in this case
-			 * -EFAULT) then the caller will know that the
-			 *  SetPageStore failed even though we couldn't
-			 *  put the result code in the result field and
-			 *  indicate exactly why it failed.
-			 *
-			 * That says nothing about the issue where we
-			 * were once able to write to the caller's info
-			 * memory and now can't.  Something more
-			 * serious is probably going on than the fact
-			 * that SetPageStore() didn't work.
-			 */
+			 
 			return -EFAULT;
 		}
 	}

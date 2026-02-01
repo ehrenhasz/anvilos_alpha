@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014 Intel Corporation
- */
+ 
+ 
 
 #ifndef __GEN8_ENGINE_CS_H__
 #define __GEN8_ENGINE_CS_H__
@@ -9,7 +7,7 @@
 #include <linux/string.h>
 #include <linux/types.h>
 
-#include "i915_gem.h" /* GEM_BUG_ON */
+#include "i915_gem.h"  
 #include "intel_gt_regs.h"
 #include "intel_gpu_commands.h"
 
@@ -83,7 +81,7 @@ __gen8_emit_write_rcs(u32 *cs, u32 value, u32 offset, u32 flags0, u32 flags1)
 	*cs++ = offset;
 	*cs++ = 0;
 	*cs++ = value;
-	*cs++ = 0; /* We're thrashing one extra dword. */
+	*cs++ = 0;  
 
 	return cs;
 }
@@ -91,7 +89,7 @@ __gen8_emit_write_rcs(u32 *cs, u32 value, u32 offset, u32 flags0, u32 flags1)
 static inline u32*
 gen8_emit_ggtt_write_rcs(u32 *cs, u32 value, u32 gtt_offset, u32 flags)
 {
-	/* We're using qword write, offset should be aligned to 8 bytes. */
+	 
 	GEM_BUG_ON(!IS_ALIGNED(gtt_offset, 8));
 
 	return __gen8_emit_write_rcs(cs,
@@ -104,7 +102,7 @@ gen8_emit_ggtt_write_rcs(u32 *cs, u32 value, u32 gtt_offset, u32 flags)
 static inline u32*
 gen12_emit_ggtt_write_rcs(u32 *cs, u32 value, u32 gtt_offset, u32 flags0, u32 flags1)
 {
-	/* We're using qword write, offset should be aligned to 8 bytes. */
+	 
 	GEM_BUG_ON(!IS_ALIGNED(gtt_offset, 8));
 
 	return __gen8_emit_write_rcs(cs,
@@ -128,9 +126,9 @@ __gen8_emit_flush_dw(u32 *cs, u32 value, u32 gtt_offset, u32 flags)
 static inline u32 *
 gen8_emit_ggtt_write(u32 *cs, u32 value, u32 gtt_offset, u32 flags)
 {
-	/* w/a: bit 5 needs to be zero for MI_FLUSH_DW address. */
+	 
 	GEM_BUG_ON(gtt_offset & (1 << 5));
-	/* Offset should be aligned to 8 bytes for both (QW/DW) write types */
+	 
 	GEM_BUG_ON(!IS_ALIGNED(gtt_offset, 8));
 
 	return __gen8_emit_flush_dw(cs,
@@ -139,4 +137,4 @@ gen8_emit_ggtt_write(u32 *cs, u32 value, u32 gtt_offset, u32 flags)
 				    flags | MI_FLUSH_DW_OP_STOREDW);
 }
 
-#endif /* __GEN8_ENGINE_CS_H__ */
+#endif  

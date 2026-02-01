@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Mediatek 8250 driver.
- *
- * Copyright (c) 2014 MundoReader S.L.
- * Author: Matthias Brugger <matthias.bgg@gmail.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/module.h>
@@ -22,40 +17,40 @@
 
 #include "8250.h"
 
-#define MTK_UART_HIGHS		0x09	/* Highspeed register */
-#define MTK_UART_SAMPLE_COUNT	0x0a	/* Sample count register */
-#define MTK_UART_SAMPLE_POINT	0x0b	/* Sample point register */
-#define MTK_UART_RATE_FIX	0x0d	/* UART Rate Fix Register */
-#define MTK_UART_ESCAPE_DAT	0x10	/* Escape Character register */
-#define MTK_UART_ESCAPE_EN	0x11	/* Escape Enable register */
-#define MTK_UART_DMA_EN		0x13	/* DMA Enable register */
-#define MTK_UART_RXTRI_AD	0x14	/* RX Trigger address */
-#define MTK_UART_FRACDIV_L	0x15	/* Fractional divider LSB address */
-#define MTK_UART_FRACDIV_M	0x16	/* Fractional divider MSB address */
+#define MTK_UART_HIGHS		0x09	 
+#define MTK_UART_SAMPLE_COUNT	0x0a	 
+#define MTK_UART_SAMPLE_POINT	0x0b	 
+#define MTK_UART_RATE_FIX	0x0d	 
+#define MTK_UART_ESCAPE_DAT	0x10	 
+#define MTK_UART_ESCAPE_EN	0x11	 
+#define MTK_UART_DMA_EN		0x13	 
+#define MTK_UART_RXTRI_AD	0x14	 
+#define MTK_UART_FRACDIV_L	0x15	 
+#define MTK_UART_FRACDIV_M	0x16	 
 #define MTK_UART_DEBUG0	0x18
-#define MTK_UART_IER_XOFFI	0x20	/* Enable XOFF character interrupt */
-#define MTK_UART_IER_RTSI	0x40	/* Enable RTS Modem status interrupt */
-#define MTK_UART_IER_CTSI	0x80	/* Enable CTS Modem status interrupt */
+#define MTK_UART_IER_XOFFI	0x20	 
+#define MTK_UART_IER_RTSI	0x40	 
+#define MTK_UART_IER_CTSI	0x80	 
 
-#define MTK_UART_EFR		38	/* I/O: Extended Features Register */
-#define MTK_UART_EFR_EN		0x10	/* Enable enhancement feature */
-#define MTK_UART_EFR_RTS	0x40	/* Enable hardware rx flow control */
-#define MTK_UART_EFR_CTS	0x80	/* Enable hardware tx flow control */
-#define MTK_UART_EFR_NO_SW_FC	0x0	/* no sw flow control */
-#define MTK_UART_EFR_XON1_XOFF1	0xa	/* XON1/XOFF1 as sw flow control */
-#define MTK_UART_EFR_XON2_XOFF2	0x5	/* XON2/XOFF2 as sw flow control */
-#define MTK_UART_EFR_SW_FC_MASK	0xf	/* Enable CTS Modem status interrupt */
+#define MTK_UART_EFR		38	 
+#define MTK_UART_EFR_EN		0x10	 
+#define MTK_UART_EFR_RTS	0x40	 
+#define MTK_UART_EFR_CTS	0x80	 
+#define MTK_UART_EFR_NO_SW_FC	0x0	 
+#define MTK_UART_EFR_XON1_XOFF1	0xa	 
+#define MTK_UART_EFR_XON2_XOFF2	0x5	 
+#define MTK_UART_EFR_SW_FC_MASK	0xf	 
 #define MTK_UART_EFR_HW_FC	(MTK_UART_EFR_RTS | MTK_UART_EFR_CTS)
 #define MTK_UART_DMA_EN_TX	0x2
 #define MTK_UART_DMA_EN_RX	0x5
 
-#define MTK_UART_ESCAPE_CHAR	0x77	/* Escape char added under sw fc */
+#define MTK_UART_ESCAPE_CHAR	0x77	 
 #define MTK_UART_RX_SIZE	0x8000
 #define MTK_UART_TX_TRIGGER	1
 #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
 
-#define MTK_UART_XON1		40	/* I/O: Xon character 1 */
-#define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
+#define MTK_UART_XON1		40	 
+#define MTK_UART_XOFF1		42	 
 
 #ifdef CONFIG_SERIAL_8250_DMA
 enum dma_rx_status {
@@ -78,7 +73,7 @@ struct mtk8250_data {
 	int			rx_wakeup_irq;
 };
 
-/* flow control mode */
+ 
 enum {
 	MTK_UART_FC_NONE,
 	MTK_UART_FC_SW,
@@ -193,7 +188,7 @@ static int mtk8250_startup(struct uart_port *port)
 	struct uart_8250_port *up = up_to_u8250p(port);
 	struct mtk8250_data *data = port->private_data;
 
-	/* disable DMA for console */
+	 
 	if (uart_console(port))
 		up->dma = NULL;
 
@@ -222,7 +217,7 @@ static void mtk8250_shutdown(struct uart_port *port)
 
 static void mtk8250_disable_intrs(struct uart_8250_port *up, int mask)
 {
-	/* Port locked to synchronize UART_IER access against the console. */
+	 
 	lockdep_assert_held_once(&up->port.lock);
 
 	serial_out(up, UART_IER, serial_in(up, UART_IER) & (~mask));
@@ -230,7 +225,7 @@ static void mtk8250_disable_intrs(struct uart_8250_port *up, int mask)
 
 static void mtk8250_enable_intrs(struct uart_8250_port *up, int mask)
 {
-	/* Port locked to synchronize UART_IER access against the console. */
+	 
 	lockdep_assert_held_once(&up->port.lock);
 
 	serial_out(up, UART_IER, serial_in(up, UART_IER) | mask);
@@ -241,7 +236,7 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
 	struct uart_port *port = &up->port;
 	int lcr = serial_in(up, UART_LCR);
 
-	/* Port locked to synchronize UART_IER access against the console. */
+	 
 	lockdep_assert_held_once(&port->lock);
 
 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
@@ -267,7 +262,7 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
 		serial_out(up, UART_MCR, UART_MCR_RTS);
 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
 
-		/*enable hw flow control*/
+		 
 		serial_out(up, MTK_UART_EFR, MTK_UART_EFR_HW_FC |
 			(serial_in(up, MTK_UART_EFR) &
 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
@@ -277,12 +272,12 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
 		mtk8250_enable_intrs(up, MTK_UART_IER_CTSI | MTK_UART_IER_RTSI);
 		break;
 
-	case MTK_UART_FC_SW:	/*MTK software flow control */
+	case MTK_UART_FC_SW:	 
 		serial_out(up, MTK_UART_ESCAPE_DAT, MTK_UART_ESCAPE_CHAR);
 		serial_out(up, MTK_UART_ESCAPE_EN, 0x01);
 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
 
-		/*enable sw flow control */
+		 
 		serial_out(up, MTK_UART_EFR, MTK_UART_EFR_XON1_XOFF1 |
 			(serial_in(up, MTK_UART_EFR) &
 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
@@ -324,34 +319,14 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
 	}
 #endif
 
-	/*
-	 * Store the requested baud rate before calling the generic 8250
-	 * set_termios method. Standard 8250 port expects bauds to be
-	 * no higher than (uartclk / 16) so the baud will be clamped if it
-	 * gets out of that bound. Mediatek 8250 port supports speed
-	 * higher than that, therefore we'll get original baud rate back
-	 * after calling the generic set_termios method and recalculate
-	 * the speed later in this method.
-	 */
+	 
 	baud = tty_termios_baud_rate(termios);
 
 	serial8250_do_set_termios(port, termios, NULL);
 
 	tty_termios_encode_baud_rate(termios, baud, baud);
 
-	/*
-	 * Mediatek UARTs use an extra highspeed register (MTK_UART_HIGHS)
-	 *
-	 * We need to recalcualte the quot register, as the claculation depends
-	 * on the vaule in the highspeed register.
-	 *
-	 * Some baudrates are not supported by the chip, so we use the next
-	 * lower rate supported and update termios c_flag.
-	 *
-	 * If highspeed register is set to 3, we need to specify sample count
-	 * and sample point to increase accuracy. If not, we reset the
-	 * registers to their default values.
-	 */
+	 
 	baud = uart_get_baud_rate(port, termios, old,
 				  port->uartclk / 16 / UART_DIV_MAX,
 				  port->uartclk);
@@ -364,22 +339,17 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
 		quot = DIV_ROUND_UP(port->uartclk, 256 * baud);
 	}
 
-	/*
-	 * Ok, we're now changing the port state.  Do it with
-	 * interrupts disabled.
-	 */
+	 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/*
-	 * Update the per-port timeout.
-	 */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
-	/* set DLAB we have cval saved in up->lcr from the call to the core */
+	 
 	serial_port_out(port, UART_LCR, up->lcr | UART_LCR_DLAB);
 	serial_dl_write(up, quot);
 
-	/* reset DLAB */
+	 
 	serial_port_out(port, UART_LCR, up->lcr);
 
 	if (baud >= 115200) {
@@ -390,7 +360,7 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
 		serial_port_out(port, MTK_UART_SAMPLE_POINT,
 					(tmp >> 1) - 1);
 
-		/*count fraction to set fractoin register */
+		 
 		fraction = ((port->uartclk  * 100) / baud / quot) % 100;
 		fraction = DIV_ROUND_CLOSEST(fraction, 10);
 		serial_port_out(port, MTK_UART_FRACDIV_L,
@@ -417,7 +387,7 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
 		up->port.cons->cflag = termios->c_cflag;
 
 	spin_unlock_irqrestore(&port->lock, flags);
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 }
@@ -427,7 +397,7 @@ static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
 	struct mtk8250_data *data = dev_get_drvdata(dev);
 	struct uart_8250_port *up = serial8250_get_port(data->line);
 
-	/* wait until UART in idle status */
+	 
 	while
 		(serial_in(up, MTK_UART_DEBUG0));
 
@@ -473,10 +443,7 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
 
 	data->uart_clk = devm_clk_get(&pdev->dev, "baud");
 	if (IS_ERR(data->uart_clk)) {
-		/*
-		 * For compatibility with older device trees try unnamed
-		 * clk when no baud clk can be found.
-		 */
+		 
 		data->uart_clk = devm_clk_get(&pdev->dev, NULL);
 		if (IS_ERR(data->uart_clk)) {
 			dev_warn(&pdev->dev, "Can't get uart clock\n");
@@ -563,7 +530,7 @@ static int mtk8250_probe(struct platform_device *pdev)
 		uart.dma = data->dma;
 #endif
 
-	/* Disable Rate Fix function */
+	 
 	writel(0x0, uart.port.membase +
 			(MTK_UART_RATE_FIX << uart.port.regshift));
 
@@ -641,7 +608,7 @@ static const struct dev_pm_ops mtk8250_pm_ops = {
 
 static const struct of_device_id mtk8250_of_match[] = {
 	{ .compatible = "mediatek,mt6577-uart" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mtk8250_of_match);
 

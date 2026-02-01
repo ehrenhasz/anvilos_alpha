@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * V4L2 Capture ISI subdev for i.MX8QXP/QM platform
- *
- * ISI is a Image Sensor Interface of i.MX8QXP/QM platform, which
- * used to process image from camera sensor to memory or DC
- * Copyright 2019-2020 NXP
- */
+ 
+ 
 
 #ifndef __MXC_ISI_CORE_H__
 #define __MXC_ISI_CORE_H__
@@ -33,7 +27,7 @@ struct media_intf_devnode;
 struct regmap;
 struct v4l2_m2m_dev;
 
-/* Pipeline pads */
+ 
 #define MXC_ISI_PIPE_PAD_SINK		0
 #define MXC_ISI_PIPE_PAD_SOURCE		1
 #define MXC_ISI_PIPE_PADS_NUM		2
@@ -74,7 +68,7 @@ enum mxc_isi_encoding {
 };
 
 enum mxc_isi_input_id {
-	/* Inputs from the crossbar switch range from 0 to 15 */
+	 
 	MXC_ISI_INPUT_MEM = 16,
 };
 
@@ -119,17 +113,17 @@ struct mxc_isi_reg {
 };
 
 struct mxc_isi_ier_reg {
-	/* Overflow Y/U/V trigger enable*/
+	 
 	struct mxc_isi_reg oflw_y_buf_en;
 	struct mxc_isi_reg oflw_u_buf_en;
 	struct mxc_isi_reg oflw_v_buf_en;
 
-	/* Excess overflow Y/U/V trigger enable*/
+	 
 	struct mxc_isi_reg excs_oflw_y_buf_en;
 	struct mxc_isi_reg excs_oflw_u_buf_en;
 	struct mxc_isi_reg excs_oflw_v_buf_en;
 
-	/* Panic Y/U/V trigger enable*/
+	 
 	struct mxc_isi_reg panic_y_buf_en;
 	struct mxc_isi_reg panic_v_buf_en;
 	struct mxc_isi_reg panic_u_buf_en;
@@ -202,7 +196,7 @@ struct mxc_isi_video {
 	struct video_device		vdev;
 	struct media_pad		pad;
 
-	/* Protects is_streaming, and the vdev and vb2_q operations */
+	 
 	struct mutex			lock;
 	bool				is_streaming;
 
@@ -222,7 +216,7 @@ struct mxc_isi_video {
 	struct list_head		out_active;
 	struct list_head		out_discard;
 	u32				frame_count;
-	/* Protects out_pending, out_active, out_discard and frame_count */
+	 
 	spinlock_t			buf_lock;
 
 	struct mxc_isi_dma_buffer	discard_buffer[MXC_MAX_PLANES];
@@ -242,10 +236,7 @@ struct mxc_isi_pipe {
 
 	struct mxc_isi_video		video;
 
-	/*
-	 * Protects use_count, irq_handler, res_available, res_acquired,
-	 * chained_res, and the CHNL_CTRL register.
-	 */
+	 
 	struct mutex			lock;
 	unsigned int			use_count;
 	mxc_isi_pipe_irq_t		irq_handler;
@@ -267,7 +258,7 @@ struct mxc_isi_m2m {
 	struct media_intf_devnode	*intf;
 	struct v4l2_m2m_dev		*m2m_dev;
 
-	/* Protects last_ctx, usage_count and chained_count */
+	 
 	struct mutex			lock;
 
 	struct mxc_isi_m2m_ctx		*last_ctx;
@@ -403,4 +394,4 @@ static inline void mxc_isi_debug_cleanup(struct mxc_isi_dev *isi)
 }
 #endif
 
-#endif /* __MXC_ISI_CORE_H__ */
+#endif  

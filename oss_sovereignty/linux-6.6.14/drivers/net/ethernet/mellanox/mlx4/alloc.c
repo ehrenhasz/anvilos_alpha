@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2007 Cisco Systems, Inc.  All rights reserved.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -173,7 +142,7 @@ void mlx4_bitmap_free_range(struct mlx4_bitmap *bitmap, u32 obj, int cnt,
 int mlx4_bitmap_init(struct mlx4_bitmap *bitmap, u32 num, u32 mask,
 		     u32 reserved_bot, u32 reserved_top)
 {
-	/* num must be a power of 2 */
+	 
 	if (num != roundup_pow_of_two(num))
 		return -EINVAL;
 
@@ -204,7 +173,7 @@ struct mlx4_zone_allocator {
 	struct list_head		prios;
 	u32				last_uid;
 	u32				mask;
-	/* protect the zone_allocator from concurrent accesses */
+	 
 	spinlock_t			lock;
 	enum mlx4_zone_alloc_flags	flags;
 };
@@ -281,13 +250,13 @@ int mlx4_zone_add_one(struct mlx4_zone_allocator *zone_alloc,
 	return 0;
 }
 
-/* Should be called under a lock */
+ 
 static void __mlx4_zone_remove_one_entry(struct mlx4_zone_entry *entry)
 {
 	struct mlx4_zone_allocator *zone_alloc = entry->allocator;
 
 	if (!list_empty(&entry->prio_list)) {
-		/* Check if we need to add an alternative node to the prio list */
+		 
 		if (!list_is_last(&entry->list, &zone_alloc->entries)) {
 			struct mlx4_zone_entry *next = list_first_entry(&entry->list,
 									typeof(*next),
@@ -332,7 +301,7 @@ void mlx4_zone_allocator_destroy(struct mlx4_zone_allocator *zone_alloc)
 	kfree(zone_alloc);
 }
 
-/* Should be called under a lock */
+ 
 static u32 __mlx4_alloc_from_zone(struct mlx4_zone_entry *zone, int count,
 				  int align, u32 skip_mask, u32 *puid)
 {
@@ -414,14 +383,14 @@ out:
 	return res;
 }
 
-/* Should be called under a lock */
+ 
 static void __mlx4_free_from_zone(struct mlx4_zone_entry *zone, u32 obj,
 				  u32 count)
 {
 	mlx4_bitmap_free_range(zone->bitmap, obj - zone->offset, count, zone->use_rr);
 }
 
-/* Should be called under a lock */
+ 
 static struct mlx4_zone_entry *__mlx4_find_zone_by_uid(
 		struct mlx4_zone_allocator *zones, u32 uid)
 {
@@ -474,19 +443,14 @@ out:
 	return res;
 }
 
-/* Should be called under a lock */
+ 
 static struct mlx4_zone_entry *__mlx4_find_zone_by_uid_unique(
 		struct mlx4_zone_allocator *zones, u32 obj)
 {
 	struct mlx4_zone_entry *zone, *zone_candidate = NULL;
 	u32 dist = (u32)-1;
 
-	/* Search for the smallest zone that this obj could be
-	 * allocated from. This is done in order to handle
-	 * situations when small bitmaps are allocated from bigger
-	 * bitmaps (and the allocated space is marked as reserved in
-	 * the bigger bitmap.
-	 */
+	 
 	list_for_each_entry(zone, &zones->entries, list) {
 		if (obj >= zone->offset) {
 			u32 mobj = (obj - zone->offset) & zones->mask;
@@ -598,11 +562,7 @@ static int mlx4_buf_direct_alloc(struct mlx4_dev *dev, int size,
 	return 0;
 }
 
-/* Handling for queue buffers -- we allocate a bunch of memory and
- * register it in a memory region at HCA virtual address 0. If the
- *  requested size is > max_direct, we split the allocation into
- *  multiple pages, so we don't require too much contiguous memory.
- */
+ 
 int mlx4_buf_alloc(struct mlx4_dev *dev, int size, int max_direct,
 		   struct mlx4_buf *buf)
 {
@@ -732,7 +692,7 @@ int mlx4_db_alloc(struct mlx4_dev *dev, struct mlx4_db *db, int order)
 
 	list_add(&pgdir->list, &priv->pgdir_list);
 
-	/* This should never fail -- we just allocated an empty page: */
+	 
 	WARN_ON(mlx4_alloc_db_from_pgdir(pgdir, db, order));
 
 out:

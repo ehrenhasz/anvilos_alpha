@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ47xx SoCs TCU clocks driver
- * Copyright (C) 2019 Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -15,7 +12,7 @@
 
 #include <dt-bindings/clock/ingenic,tcu.h>
 
-/* 8 channels max + watchdog + OST */
+ 
 #define TCU_CLK_COUNT	10
 
 #undef pr_fmt
@@ -100,10 +97,7 @@ static bool ingenic_tcu_enable_regs(struct clk_hw *hw)
 	struct ingenic_tcu *tcu = tcu_clk->tcu;
 	bool enabled = false;
 
-	/*
-	 * According to the programming manual, a timer channel's registers can
-	 * only be accessed when the channel's stop bit is clear.
-	 */
+	 
 	enabled = !!ingenic_tcu_is_enabled(hw);
 	regmap_write(tcu->map, TCU_REG_TSCR, BIT(info->gate_bit));
 
@@ -175,7 +169,7 @@ static u8 ingenic_tcu_get_prescale(unsigned long rate, unsigned long req_rate)
 		if ((rate >> (prescale * 2)) <= req_rate)
 			return prescale;
 
-	return 5; /* /1024 divider */
+	return 5;  
 }
 
 static int ingenic_tcu_determine_rate(struct clk_hw *hw,
@@ -282,7 +276,7 @@ static int __init ingenic_tcu_register_clock(struct ingenic_tcu *tcu,
 	tcu_clk->info = info;
 	tcu_clk->tcu = tcu;
 
-	/* Reset channel and clock divider, set default parent */
+	 
 	ingenic_tcu_enable_regs(&tcu_clk->hw);
 	regmap_update_bits(tcu->map, info->tcsr_reg, 0xffff, BIT(parent));
 	ingenic_tcu_disable_regs(&tcu_clk->hw);
@@ -318,7 +312,7 @@ static const struct ingenic_soc_info jz4770_soc_info = {
 
 static const struct ingenic_soc_info x1000_soc_info = {
 	.num_channels = 8,
-	.has_ost = false, /* X1000 has OST, but it not belong TCU */
+	.has_ost = false,  
 	.has_tcu_clk = true,
 	.allow_missing_tcu_clk = true,
 };
@@ -329,7 +323,7 @@ static const struct of_device_id __maybe_unused ingenic_tcu_of_match[] __initcon
 	{ .compatible = "ingenic,jz4760-tcu", .data = &jz4770_soc_info, },
 	{ .compatible = "ingenic,jz4770-tcu", .data = &jz4770_soc_info, },
 	{ .compatible = "ingenic,x1000-tcu", .data = &x1000_soc_info, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init ingenic_tcu_probe(struct device_node *np)
@@ -356,13 +350,7 @@ static int __init ingenic_tcu_probe(struct device_node *np)
 		if (IS_ERR(tcu->clk)) {
 			ret = PTR_ERR(tcu->clk);
 
-			/*
-			 * Old device trees for some SoCs did not include the
-			 * TCU clock because this driver (incorrectly) didn't
-			 * use it. In this case we complain loudly and attempt
-			 * to continue without the clock, which might work if
-			 * booting with workarounds like "clk_ignore_unused".
-			 */
+			 
 			if (tcu->soc_info->allow_missing_tcu_clk && ret == -EINVAL) {
 				pr_warn("TCU clock missing from device tree, please update your device tree\n");
 				tcu->clk = NULL;
@@ -398,13 +386,7 @@ static int __init ingenic_tcu_probe(struct device_node *np)
 		}
 	}
 
-	/*
-	 * We set EXT as the default parent clock for all the TCU clocks
-	 * except for the watchdog one, where we set the RTC clock as the
-	 * parent. Since the EXT and PCLK are much faster than the RTC clock,
-	 * the watchdog would kick after a maximum time of 5s, and we might
-	 * want a slower kicking time.
-	 */
+	 
 	ret = ingenic_tcu_register_clock(tcu, TCU_CLK_WDT, TCU_PARENT_RTC,
 					 &ingenic_tcu_watchdog_clk_info,
 					 tcu->clocks);

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (C) 2020 Intel Corporation.
-//
-// Intel KeemBay Platform driver.
-//
+
+
+
+
+
+
 
 #include <linux/bitrev.h>
 #include <linux/clk.h>
@@ -52,28 +52,7 @@ static const struct snd_pcm_hardware kmb_pcm_hardware = {
 	.fifo_size = 16,
 };
 
-/*
- * Convert to ADV7511 HDMI hardware format.
- * ADV7511 HDMI chip need parity bit replaced by block start bit and
- * with the preamble bits left out.
- * ALSA IEC958 subframe format:
- * bit 0-3  = preamble (0x8 = block start)
- *     4-7  = AUX (=0)
- *     8-27 = audio data (without AUX if 24bit sample)
- *     28   = validity
- *     29   = user data
- *     30   = channel status
- *     31   = parity
- *
- * ADV7511 IEC958 subframe format:
- * bit 0-23  = audio data
- *     24    = validity
- *     25    = user data
- *     26    = channel status
- *     27    = block start
- *     28-31 = 0
- * MSB to LSB bit reverse by software as hardware not supporting it.
- */
+ 
 static void hdmi_reformat_iec958(struct snd_pcm_runtime *runtime,
 				 struct kmb_i2s_info *kmb_i2s,
 				 unsigned int tx_ptr)
@@ -86,7 +65,7 @@ static void hdmi_reformat_iec958(struct snd_pcm_runtime *runtime,
 		j = 0;
 		do {
 			temp = buf[tx_ptr][j];
-			/* Replace parity with block start*/
+			 
 			assign_bit(31, &temp, (BIT(3) & temp));
 			sample = bitrev32(temp);
 			buf[tx_ptr][j] = sample << 4;
@@ -108,7 +87,7 @@ static unsigned int kmb_pcm_tx_fn(struct kmb_i2s_info *kmb_i2s,
 	if (kmb_i2s->iec958_fmt)
 		hdmi_reformat_iec958(runtime, kmb_i2s, tx_ptr);
 
-	/* KMB i2s uses two separate L/R FIFO */
+	 
 	for (i = 0; i < kmb_i2s->fifo_th; i++) {
 		if (kmb_i2s->config.data_width == 16) {
 			writel(((u16(*)[2])buf)[tx_ptr][0], i2s_base + LRBR_LTHR(0));
@@ -139,7 +118,7 @@ static unsigned int kmb_pcm_rx_fn(struct kmb_i2s_info *kmb_i2s,
 	void *buf = runtime->dma_area;
 	int i, j;
 
-	/* KMB i2s uses two separate L/R FIFO */
+	 
 	for (i = 0; i < kmb_i2s->fifo_th; i++) {
 		for (j = 0; j < chan / 2; j++) {
 			if (kmb_i2s->config.data_width == 16) {
@@ -170,7 +149,7 @@ static inline void kmb_i2s_disable_channels(struct kmb_i2s_info *kmb_i2s,
 {
 	u32 i;
 
-	/* Disable all channels regardless of configuration*/
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		for (i = 0; i < MAX_ISR; i++)
 			writel(0, kmb_i2s->i2s_base + TER(i));
@@ -307,18 +286,12 @@ static irqreturn_t kmb_i2s_irq_handler(int irq, void *dev_id)
 
 	kmb_i2s_clear_irqs(kmb_i2s, SNDRV_PCM_STREAM_PLAYBACK);
 	kmb_i2s_clear_irqs(kmb_i2s, SNDRV_PCM_STREAM_CAPTURE);
-	/* Only check TX interrupt if TX is active */
+	 
 	tx_enabled = readl(kmb_i2s->i2s_base + ITER);
 
-	/*
-	 * Data available. Retrieve samples from FIFO
-	 */
+	 
 
-	/*
-	 * 8 channel audio will have isr[0..2] triggered,
-	 * reading the specific isr based on the audio configuration,
-	 * to avoid reading the buffers too early.
-	 */
+	 
 	switch (config->chan_nr) {
 	case 2:
 		if (isr[0] & ISR_RXDA)
@@ -338,20 +311,18 @@ static irqreturn_t kmb_i2s_irq_handler(int irq, void *dev_id)
 	}
 
 	for (i = 0; i < config->chan_nr / 2; i++) {
-		/*
-		 * Check if TX fifo is empty. If empty fill FIFO with samples
-		 */
+		 
 		if ((isr[i] & ISR_TXFE) && tx_enabled) {
 			kmb_pcm_operation(kmb_i2s, true);
 			ret = IRQ_HANDLED;
 		}
 
-		/* Error Handling: TX */
+		 
 		if (isr[i] & ISR_TXFO) {
 			dev_dbg(kmb_i2s->dev, "TX overrun (ch_id=%d)\n", i);
 			ret = IRQ_HANDLED;
 		}
-		/* Error Handling: RX */
+		 
 		if (isr[i] & ISR_RXFO) {
 			dev_dbg(kmb_i2s->dev, "RX overrun (ch_id=%d)\n", i);
 			ret = IRQ_HANDLED;
@@ -365,7 +336,7 @@ static int kmb_platform_pcm_new(struct snd_soc_component *component,
 				struct snd_soc_pcm_runtime *soc_runtime)
 {
 	size_t size = kmb_pcm_hardware.buffer_bytes_max;
-	/* Use SNDRV_DMA_TYPE_CONTINUOUS as KMB doesn't use PCI sg buffer */
+	 
 	snd_pcm_set_managed_buffer_all(soc_runtime->pcm,
 				       SNDRV_DMA_TYPE_CONTINUOUS,
 				       NULL, size, size);
@@ -419,7 +390,7 @@ static inline void kmb_i2s_enable_dma(struct kmb_i2s_info *kmb_i2s, u32 stream)
 	u32 dma_reg;
 
 	dma_reg = readl(kmb_i2s->i2s_base + I2S_DMACR);
-	/* Enable DMA handshake for stream */
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
 		dma_reg |= I2S_DMAEN_TXBLOCK;
 	else
@@ -433,7 +404,7 @@ static inline void kmb_i2s_disable_dma(struct kmb_i2s_info *kmb_i2s, u32 stream)
 	u32 dma_reg;
 
 	dma_reg = readl(kmb_i2s->i2s_base + I2S_DMACR);
-	/* Disable DMA handshake for stream */
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		dma_reg &= ~I2S_DMAEN_TXBLOCK;
 		writel(1, kmb_i2s->i2s_base + I2S_RTXDMA);
@@ -449,7 +420,7 @@ static void kmb_i2s_start(struct kmb_i2s_info *kmb_i2s,
 {
 	struct i2s_clk_config_data *config = &kmb_i2s->config;
 
-	/* I2S Programming sequence in Keem_Bay_VPU_DB_v1.1 */
+	 
 	writel(1, kmb_i2s->i2s_base + IER);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -472,7 +443,7 @@ static void kmb_i2s_start(struct kmb_i2s_info *kmb_i2s,
 static void kmb_i2s_stop(struct kmb_i2s_info *kmb_i2s,
 			 struct snd_pcm_substream *substream)
 {
-	/* I2S Programming sequence in Keem_Bay_VPU_DB_v1.1 */
+	 
 	kmb_i2s_clear_irqs(kmb_i2s, substream->stream);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -531,9 +502,7 @@ static int kmb_dai_trigger(struct snd_pcm_substream *substream,
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* Keep track of i2s activity before turn off
-		 * the i2s interface
-		 */
+		 
 		kmb_i2s->active++;
 		kmb_i2s_start(kmb_i2s, substream);
 		break;
@@ -621,10 +590,7 @@ static int kmb_dai_hw_params(struct snd_pcm_substream *substream,
 	switch (config->chan_nr) {
 	case 8:
 	case 4:
-		/*
-		 * Platform is not capable of providing clocks for
-		 * multi channel audio
-		 */
+		 
 		if (kmb_i2s->clock_provider)
 			return -EINVAL;
 
@@ -635,10 +601,7 @@ static int kmb_dai_hw_params(struct snd_pcm_substream *substream,
 		writel(write_val, kmb_i2s->pss_base + I2S_GEN_CFG_0);
 		break;
 	case 2:
-		/*
-		 * Platform is only capable of providing clocks need for
-		 * 2 channel master mode
-		 */
+		 
 		if (!(kmb_i2s->clock_provider))
 			return -EINVAL;
 
@@ -660,7 +623,7 @@ static int kmb_dai_hw_params(struct snd_pcm_substream *substream,
 	config->sample_rate = params_rate(hw_params);
 
 	if (kmb_i2s->clock_provider) {
-		/* Only 2 ch supported in Master mode */
+		 
 		u32 bitclk = config->sample_rate * config->data_width * 2;
 
 		ret = clk_set_rate(kmb_i2s->clk_i2s, bitclk);
@@ -710,7 +673,7 @@ static int kmb_dai_hw_free(struct snd_pcm_substream *substream,
 			   struct snd_soc_dai *cpu_dai)
 {
 	struct kmb_i2s_info *kmb_i2s = snd_soc_dai_get_drvdata(cpu_dai);
-	/* I2S Programming sequence in Keem_Bay_VPU_DB_v1.1 */
+	 
 	if (kmb_i2s->use_pio)
 		kmb_i2s_clear_irqs(kmb_i2s, substream->stream);
 
@@ -842,7 +805,7 @@ static int kmb_plat_dai_probe(struct platform_device *pdev)
 	}
 	kmb_i2s_dai = (struct snd_soc_dai_driver *) match->data;
 
-	/* Prepare the related clocks */
+	 
 	kmb_i2s->clk_apb = devm_clk_get(dev, "apb_clk");
 	if (IS_ERR(kmb_i2s->clk_apb)) {
 		dev_err(dev, "Failed to get apb clock\n");
@@ -912,7 +875,7 @@ static int kmb_plat_dai_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* To ensure none of the channels are enabled at boot up */
+	 
 	kmb_i2s_disable_channels(kmb_i2s, SNDRV_PCM_STREAM_PLAYBACK);
 	kmb_i2s_disable_channels(kmb_i2s, SNDRV_PCM_STREAM_CAPTURE);
 

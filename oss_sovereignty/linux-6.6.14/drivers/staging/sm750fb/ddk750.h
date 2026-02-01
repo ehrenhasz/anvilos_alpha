@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *         Copyright (c) 2007 by Silicon Motion, Inc. (SMI)
- *
- *  RegSC.h --- SM718 SDK
- *  This file contains the definitions for the System Configuration registers.
- */
+ 
+ 
 
 #ifndef DDK750_H__
 #define DDK750_H__

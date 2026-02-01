@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2007, Intel Corporation.
- *
- * Authors: Thomas Hellstrom <thomas-at-tungstengraphics-dot-com>
- **************************************************************************/
+
+ 
 
 #include <linux/spinlock.h>
 
@@ -24,7 +20,7 @@ static void psb_lid_timer_func(struct timer_list *t)
 		goto lid_timer_schedule;
 
 	if ((readl(lid_state)) & 0x01) {
-		/*lid state is open*/
+		 
 		REG_WRITE(PP_CONTROL, REG_READ(PP_CONTROL) | POWER_TARGET_ON);
 		do {
 			pp_status = REG_READ(PP_STATUS);
@@ -32,7 +28,7 @@ static void psb_lid_timer_func(struct timer_list *t)
 			 (pp_status & PP_SEQUENCE_MASK) != 0);
 
 		if (REG_READ(PP_STATUS) & PP_ON) {
-			/*FIXME: should be backlight level before*/
+			 
 			psb_intel_lvds_set_brightness(dev, 100);
 		} else {
 			DRM_DEBUG("LVDS panel never powered up");

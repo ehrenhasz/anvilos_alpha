@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  IPv6 IOAM Lightweight Tunnel implementation
- *
- *  Author:
- *  Justin Iurman <justin.iurman@uliege.be>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
@@ -27,7 +22,7 @@
 
 struct ioam6_lwt_encap {
 	struct ipv6_hopopt_hdr eh;
-	u8 pad[2];			/* 2-octet padding for 4n-alignment */
+	u8 pad[2];			 
 	struct ioam6_hdr ioamh;
 	struct ioam6_trace_hdr traceh;
 } __packed;
@@ -306,7 +301,7 @@ static int ioam6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 
 	ilwt = ioam6_lwt_state(dst->lwtstate);
 
-	/* Check for insertion frequency (i.e., "k over n" insertions) */
+	 
 	pkt_cnt = atomic_fetch_inc(&ilwt->pkt_cnt);
 	if (pkt_cnt % ilwt->freq.n >= ilwt->freq.k)
 		goto out;
@@ -316,7 +311,7 @@ static int ioam6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 	switch (ilwt->mode) {
 	case IOAM6_IPTUNNEL_MODE_INLINE:
 do_inline:
-		/* Direct insertion - if there is no Hop-by-Hop yet */
+		 
 		if (ipv6_hdr(skb)->nexthdr == NEXTHDR_HOP)
 			goto out;
 
@@ -327,17 +322,14 @@ do_inline:
 		break;
 	case IOAM6_IPTUNNEL_MODE_ENCAP:
 do_encap:
-		/* Encapsulation (ip6ip6) */
+		 
 		err = ioam6_do_encap(net, skb, &ilwt->tuninfo, &ilwt->tundst);
 		if (unlikely(err))
 			goto drop;
 
 		break;
 	case IOAM6_IPTUNNEL_MODE_AUTO:
-		/* Automatic (RFC8200 compliant):
-		 *  - local packets -> INLINE mode
-		 *  - in-transit packets -> ENCAP mode
-		 */
+		 
 		if (!skb->dev)
 			goto do_inline;
 

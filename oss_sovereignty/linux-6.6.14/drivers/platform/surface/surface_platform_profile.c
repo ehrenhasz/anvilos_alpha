@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Surface Platform Profile / Performance Mode driver for Surface System
- * Aggregator Module (thermal subsystem).
- *
- * Copyright (C) 2021-2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/kernel.h>
@@ -99,7 +94,7 @@ static int convert_profile_to_ssam(struct ssam_device *sdev, enum platform_profi
 		return SSAM_TMP_PROFILE_BEST_PERFORMANCE;
 
 	default:
-		/* This should have already been caught by platform_profile_store(). */
+		 
 		WARN(true, "unsupported platform profile");
 		return -EOPNOTSUPP;
 	}

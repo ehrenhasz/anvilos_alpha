@@ -1,27 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*****************************************************************************
- *	Copyright(c) 2007,  RealTEK Technology Inc. All Right Reserved.
- *
- * Module:		Hal819xUsbDM.h	(RTL8192  Header H File)
- *
- *
- * Note:		For dynamic control definition constant structure.
- *
- *
- * Export:
- *
- * Abbrev:
- *
- * History:
- *	Data		Who		Remark
- *	10/04/2007  MHC		Create initial version.
- *
- *****************************************************************************/
- /* Check to see if the file has been included already.  */
+ 
+ 
+  
 #ifndef	__R8192UDM_H__
 #define __R8192UDM_H__
 
-/*--------------------------Define Parameters-------------------------------*/
+ 
 #define         DM_DIG_THRESH_HIGH                      40
 #define         DM_DIG_THRESH_LOW                       35
 
@@ -45,23 +28,23 @@
 #define         VERY_LOW_RSSI                           15
 #define         CTS_TO_SELF_TH_VAL                      30
 
-/* defined by vivi, for tx power track */
+ 
 #define         E_FOR_TX_POWER_TRACK                   300
-/* Dynamic Tx Power Control Threshold */
+ 
 #define         TX_POWER_NEAR_FIELD_THRESH_HIGH         68
 #define         TX_POWER_NEAR_FIELD_THRESH_LOW          62
-/* added by amy for atheros AP */
+ 
 #define         TX_POWER_ATHEROAP_THRESH_HIGH           78
 #define         TX_POWER_ATHEROAP_THRESH_LOW            72
 
-/* defined by vivi, for showing on UI */
+ 
 #define         CURRENT_TX_RATE_REG                  0x1b8
 #define         INITIAL_TX_RATE_REG                  0x1b9
 #define         TX_RETRY_COUNT_REG                   0x1ac
 #define         REG_C38_TH                              20
-/*--------------------------Define Parameters-------------------------------*/
+ 
 
-/*------------------------------Define structure----------------------------*/
+ 
 
 enum dig_algorithm {
 	DIG_ALGO_BY_FALSE_ALARM = 0,
@@ -90,7 +73,7 @@ enum dig_cck_cs_ratio_state {
 	DIG_CS_RATIO_HIGHER = 1,
 };
 
-/* 2007/10/04 MH Define upper and lower threshold of DIG enable or disable. */
+ 
 struct dig {
 	u8                                 dig_enable_flag;
 	enum dig_algorithm                 dig_algorithm;
@@ -138,23 +121,23 @@ struct dynamic_rx_path_sel {
 };
 
 struct tx_config_cmd {
-	u32     cmd_op;        /* Command packet type. */
-	u32     cmd_length;    /* Command packet length. */
+	u32     cmd_op;         
+	u32     cmd_length;     
 	u32     cmd_value;
 };
 
-/*------------------------------Define structure----------------------------*/
+ 
 
-/*------------------------Export global variable----------------------------*/
+ 
 extern struct dig dm_digtable;
 extern u8 dm_shadow[16][256];
-/*------------------------Export global variable----------------------------*/
+ 
 
-/*------------------------Export Marco Definition---------------------------*/
+ 
 
-/*------------------------Export Marco Definition---------------------------*/
+ 
 
-/*--------------------------Exported Function prototype---------------------*/
+ 
 void init_hal_dm(struct net_device *dev);
 void deinit_hal_dm(struct net_device *dev);
 void hal_dm_watchdog(struct net_device *dev);
@@ -169,8 +152,8 @@ void dm_rf_pathcheck_workitemcallback(struct work_struct *work);
 void dm_fsync_work_callback(struct work_struct *work);
 void dm_cck_txpower_adjust(struct net_device *dev, bool  binch14);
 void dm_initialize_txpower_tracking(struct net_device *dev);
-/*--------------------------Exported Function prototype---------------------*/
+ 
 
-#endif	/*__R8192UDM_H__ */
+#endif	 
 
-/* End of r8192U_dm.h */
+ 

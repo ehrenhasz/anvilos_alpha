@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ddbridge-i2c.c: Digital Devices bridge i2c driver
- *
- * Copyright (C) 2010-2017 Digital Devices GmbH
- *                         Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -26,7 +20,7 @@
 #include "ddbridge-regs.h"
 #include "ddbridge-io.h"
 
-/******************************************************************************/
+ 
 
 static int ddb_i2c_cmd(struct ddb_i2c *i2c, u32 adr, u32 cmd)
 {
@@ -160,7 +154,7 @@ static int ddb_i2c_add(struct ddb *dev, struct ddb_i2c *i2c,
 	i2c->bsize = regmap->i2c_buf->size;
 	i2c->wbuf = DDB_LINK_TAG(link) |
 		(regmap->i2c_buf->base + i2c->bsize * i);
-	i2c->rbuf = i2c->wbuf; /* + i2c->bsize / 2 */
+	i2c->rbuf = i2c->wbuf;  
 	i2c->regs = DDB_LINK_TAG(link) |
 		(regmap->i2c->base + regmap->i2c->size * i);
 	ddbwritel(dev, I2C_SPEED_100, i2c->regs + I2C_TIMING);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2012 Simon Arlott
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clockchips.h>

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1998  Grant R. Guenther <grant@torque.net>
- *
- * fit2.c is a low-level protocol driver for the older version
- * of the Fidelity International Technology parallel port adapter.
- * This adapter is used in their TransDisk 2000 and older TransDisk
- * 3000 portable hard-drives.  As far as I can tell, this device
- * supports 4-bit mode _only_.
- *
- * Newer models of the FIT products use an enhanced protocol.
- * The "fit3" protocol module should support current drives.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -23,15 +12,7 @@
 
 #define j44(a, b)	(((a >> 4) & 0x0f) | (b & 0xf0))
 
-/*
- * cont = 0 - access the IDE register file
- * cont = 1 - access the IDE command set
- *
- * NB: The FIT adapter does not appear to use the control registers.
- * So, we map ALT_STATUS to STATUS and NO-OP writes to the device
- * control register - this means that IDE reset will not work on these
- * devices.
- */
+ 
 
 static void fit2_write_regr(struct pi_adapter *pi, int cont, int regr, int val)
 {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:
- *      Chris Zhong <zyw@rock-chips.com>
- *      Nickey Yang <nickey.yang@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/iopoll.h>
@@ -187,11 +182,7 @@
 #define RK3568_DSI0_TURNDISABLE		BIT(2)
 #define RK3568_DSI0_FORCERXMODE		BIT(0)
 
-/*
- * Note these registers do not appear in the datasheet, they are
- * however present in the BSP driver which is where these values
- * come from. Name GRF_VO_CON3 is assumed.
- */
+ 
 #define RK3568_GRF_VO_CON3		0x36c
 #define RK3568_DSI1_SKEWCALHS		(0x1f << 11)
 #define RK3568_DSI1_FORCETXSTOPMODE	(0xf << 4)
@@ -262,21 +253,21 @@ struct dw_mipi_dsi_rockchip {
 	struct clk *grf_clk;
 	struct clk *phy_cfg_clk;
 
-	/* dual-channel */
+	 
 	bool is_slave;
 	struct dw_mipi_dsi_rockchip *slave;
 
-	/* optional external dphy */
+	 
 	struct phy *phy;
 	union phy_configure_opts phy_opts;
 
-	/* being a phy for other mipi hosts */
+	 
 	unsigned int usage_mode;
 	struct mutex usage_mutex;
 	struct phy *dphy;
 	struct phy_configure_opts_mipi_dphy dphy_config;
 
-	unsigned int lane_mbps; /* per lane */
+	unsigned int lane_mbps;  
 	u16 input_div;
 	u16 feedback_div;
 	u32 format;
@@ -302,7 +293,7 @@ struct dphy_pll_parameter_map {
 	u8 lpfctrl;
 };
 
-/* The table is based on 27MHz DPHY pll reference clock. */
+ 
 static const struct dphy_pll_parameter_map dppa_map[] = {
 	{  89, 0x00, CP_CURRENT_3UA, LPF_RESISTORS_13KOHM },
 	{  99, 0x10, CP_CURRENT_3UA, LPF_RESISTORS_13KOHM },
@@ -365,11 +356,7 @@ static void dw_mipi_dsi_phy_write(struct dw_mipi_dsi_rockchip *dsi,
 				  u8 test_code,
 				  u8 test_data)
 {
-	/*
-	 * With the falling edge on TESTCLK, the TESTDIN[7:0] signal content
-	 * is latched internally as the current test code. Test data is
-	 * programmed internally by rising edge on TESTCLK.
-	 */
+	 
 	dsi_write(dsi, DSI_PHY_TST_CTRL0, PHY_TESTCLK | PHY_UNTESTCLR);
 
 	dsi_write(dsi, DSI_PHY_TST_CTRL1, PHY_TESTEN | PHY_TESTDOUT(0) |
@@ -383,17 +370,13 @@ static void dw_mipi_dsi_phy_write(struct dw_mipi_dsi_rockchip *dsi,
 	dsi_write(dsi, DSI_PHY_TST_CTRL0, PHY_TESTCLK | PHY_UNTESTCLR);
 }
 
-/*
- * ns2bc - Nanoseconds to byte clock cycles
- */
+ 
 static inline unsigned int ns2bc(struct dw_mipi_dsi_rockchip *dsi, int ns)
 {
 	return DIV_ROUND_UP(ns * dsi->lane_mbps / 8, 1000);
 }
 
-/*
- * ns2ui - Nanoseconds to UI time periods
- */
+ 
 static inline unsigned int ns2ui(struct dw_mipi_dsi_rockchip *dsi, int ns)
 {
 	return DIV_ROUND_UP(ns * dsi->lane_mbps, 1000);
@@ -407,18 +390,7 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
 	if (dsi->phy)
 		return 0;
 
-	/*
-	 * Get vco from frequency(lane_mbps)
-	 * vco	frequency table
-	 * 000 - between   80 and  200 MHz
-	 * 001 - between  200 and  300 MHz
-	 * 010 - between  300 and  500 MHz
-	 * 011 - between  500 and  700 MHz
-	 * 100 - between  700 and  900 MHz
-	 * 101 - between  900 and 1100 MHz
-	 * 110 - between 1100 and 1300 MHz
-	 * 111 - between 1300 and 1500 MHz
-	 */
+	 
 	vco = (dsi->lane_mbps < 200) ? 0 : (dsi->lane_mbps + 100) / 200;
 
 	i = max_mbps_to_parameter(dsi->lane_mbps);
@@ -455,12 +427,7 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
 	dw_mipi_dsi_phy_write(dsi, PLL_LOOP_DIVIDER_RATIO,
 			      LOOP_DIV_LOW_SEL(dsi->feedback_div) |
 			      LOW_PROGRAM_EN);
-	/*
-	 * We need set PLL_INPUT_AND_LOOP_DIVIDER_RATIOS_CONTROL immediately
-	 * to make the configured LSB effective according to IP simulation
-	 * and lab test results.
-	 * Only in this way can we get correct mipi phy pll frequency.
-	 */
+	 
 	dw_mipi_dsi_phy_write(dsi, PLL_INPUT_AND_LOOP_DIVIDER_RATIOS_CONTROL,
 			      PLL_LOOP_DIV_EN | PLL_INPUT_DIV_EN);
 	dw_mipi_dsi_phy_write(dsi, PLL_LOOP_DIVIDER_RATIO,
@@ -565,7 +532,7 @@ dw_mipi_dsi_get_lane_mbps(void *priv_data, const struct drm_display_mode *mode,
 
 	mpclk = DIV_ROUND_UP(mode->clock, MSEC_PER_SEC);
 	if (mpclk) {
-		/* take 1 / 0.8, since mbps must big than bandwidth of RGB */
+		 
 		tmp = mpclk * (bpp / lanes) * 10 / 8;
 		if (tmp < max_mbps)
 			target_mbps = tmp;
@@ -574,7 +541,7 @@ dw_mipi_dsi_get_lane_mbps(void *priv_data, const struct drm_display_mode *mode,
 				      "DPHY clock frequency is out of range\n");
 	}
 
-	/* for external phy only a the mipi_dphy_config is necessary */
+	 
 	if (dsi->phy) {
 		phy_mipi_dphy_get_default_config(mode->clock * 1000 * 10 / 8,
 						 bpp, lanes,
@@ -588,26 +555,22 @@ dw_mipi_dsi_get_lane_mbps(void *priv_data, const struct drm_display_mode *mode,
 	fin = clk_get_rate(dsi->pllref_clk);
 	fout = target_mbps * USEC_PER_SEC;
 
-	/* constraint: 5Mhz <= Fref / N <= 40MHz */
+	 
 	min_prediv = DIV_ROUND_UP(fin, 40 * USEC_PER_SEC);
 	max_prediv = fin / (5 * USEC_PER_SEC);
 
-	/* constraint: 80MHz <= Fvco <= 1500Mhz */
+	 
 	fvco_min = 80 * USEC_PER_SEC;
 	fvco_max = 1500 * USEC_PER_SEC;
 
 	for (_prediv = min_prediv; _prediv <= max_prediv; _prediv++) {
 		u64 tmp;
 		u32 delta;
-		/* Fvco = Fref * M / N */
+		 
 		tmp = (u64)fout * _prediv;
 		do_div(tmp, fin);
 		_fbdiv = tmp;
-		/*
-		 * Due to the use of a "by 2 pre-scaler," the range of the
-		 * feedback multiplication value M is limited to even division
-		 * numbers, and m must be greater than 6, not bigger than 512.
-		 */
+		 
 		if (_fbdiv < 6 || _fbdiv > 512)
 			continue;
 
@@ -656,7 +619,7 @@ struct hstt {
 	}				\
 }
 
-/* Table A-3 High-Speed Transition Times */
+ 
 static struct hstt hstt_table[] = {
 	HSTT(  90,  32, 20,  26, 13),
 	HSTT( 100,  35, 23,  28, 14),
@@ -788,11 +751,7 @@ static void dw_mipi_dsi_encoder_enable(struct drm_encoder *encoder)
 	if (mux < 0)
 		return;
 
-	/*
-	 * For the RK3399, the clk of grf must be enabled before writing grf
-	 * register. And for RK3288 or other soc, this grf_clk must be NULL,
-	 * the clk_prepare_enable return true directly.
-	 */
+	 
 	ret = clk_prepare_enable(dsi->grf_clk);
 	if (ret) {
 		DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
@@ -848,7 +807,7 @@ static struct device
 					       match->compatible))) {
 		struct device_node *remote;
 
-		/* found ourself */
+		 
 		if (node == dsi->dev->of_node)
 			continue;
 
@@ -856,18 +815,14 @@ static struct device
 		if (!remote)
 			continue;
 
-		/* same display device in port1-ep0 for both */
+		 
 		if (remote == local) {
 			struct dw_mipi_dsi_rockchip *dsi2;
 			struct platform_device *pdev;
 
 			pdev = of_find_device_by_node(node);
 
-			/*
-			 * we have found the second, so will either return it
-			 * or return with an error. In any case won't need the
-			 * nodes anymore nor continue the loop.
-			 */
+			 
 			of_node_put(remote);
 			of_node_put(node);
 			of_node_put(local);
@@ -922,7 +877,7 @@ static int dw_mipi_dsi_rockchip_bind(struct device *dev,
 			return -EINVAL;
 		}
 
-		/* we are the slave in dual-DSI */
+		 
 		if (!master1) {
 			dsi->is_slave = true;
 			return 0;
@@ -949,12 +904,7 @@ static int dw_mipi_dsi_rockchip_bind(struct device *dev,
 		goto out_pm_runtime;
 	}
 
-	/*
-	 * With the GRF clock running, write lane and dual-mode configurations
-	 * that won't change immediately. If we waited until enable() to do
-	 * this, things like panel preparation would not be able to send
-	 * commands over DSI.
-	 */
+	 
 	ret = clk_prepare_enable(dsi->grf_clk);
 	if (ret) {
 		DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
@@ -1097,11 +1047,7 @@ static int dw_mipi_dsi_rockchip_dphy_bind(struct device *dev,
 					  struct device *master,
 					  void *data)
 {
-	/*
-	 * Nothing to do when used as a dphy.
-	 * Just make the rest of Rockchip-DRM happy
-	 * by being here.
-	 */
+	 
 
 	return 0;
 }
@@ -1110,7 +1056,7 @@ static void dw_mipi_dsi_rockchip_dphy_unbind(struct device *dev,
 					     struct device *master,
 					     void *data)
 {
-	/* Nothing to do when used as a dphy. */
+	 
 }
 
 static const struct component_ops dw_mipi_dsi_rockchip_dphy_ops = {
@@ -1236,7 +1182,7 @@ static int dw_mipi_dsi_dphy_power_on(struct phy *phy)
 		goto err_phy_cfg_clk;
 	}
 
-	/* do soc-variant specific init */
+	 
 	if (dsi->cdata->dphy_rx_power_on) {
 		ret = dsi->cdata->dphy_rx_power_on(phy);
 		if (ret < 0) {
@@ -1245,10 +1191,7 @@ static int dw_mipi_dsi_dphy_power_on(struct phy *phy)
 		}
 	}
 
-	/*
-	 * Configure hsfreqrange according to frequency values
-	 * Set clock lane and hsfreqrange by lane0(test code 0x44)
-	 */
+	 
 	dw_mipi_dsi_phy_write(dsi, HS_RX_CONTROL_OF_LANE_CLK, 0);
 	dw_mipi_dsi_phy_write(dsi, HS_RX_CONTROL_OF_LANE_0,
 			      HSFREQRANGE_SEL(dppa_map[i].hsfreqrange));
@@ -1256,7 +1199,7 @@ static int dw_mipi_dsi_dphy_power_on(struct phy *phy)
 	dw_mipi_dsi_phy_write(dsi, HS_RX_CONTROL_OF_LANE_2, 0);
 	dw_mipi_dsi_phy_write(dsi, HS_RX_CONTROL_OF_LANE_3, 0);
 
-	/* Normal operation */
+	 
 	dw_mipi_dsi_phy_write(dsi, 0x0, 0);
 
 	clk_disable_unprepare(dsi->phy_cfg_clk);
@@ -1313,10 +1256,7 @@ static int __maybe_unused dw_mipi_dsi_rockchip_resume(struct device *dev)
 	struct dw_mipi_dsi_rockchip *dsi = dev_get_drvdata(dev);
 	int ret;
 
-	/*
-	 * Re-configure DSI state, if we were previously initialized. We need
-	 * to do this before rockchip_drm_drv tries to re-enable() any panels.
-	 */
+	 
 	if (dsi->dsi_bound) {
 		ret = clk_prepare_enable(dsi->grf_clk);
 		if (ret) {
@@ -1375,7 +1315,7 @@ static int dw_mipi_dsi_rockchip_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* try to get a possible external dphy */
+	 
 	dsi->phy = devm_phy_optional_get(dev, "dphy");
 	if (IS_ERR(dsi->phy)) {
 		ret = PTR_ERR(dsi->phy);
@@ -1393,10 +1333,7 @@ static int dw_mipi_dsi_rockchip_probe(struct platform_device *pdev)
 	dsi->pllref_clk = devm_clk_get(dev, "ref");
 	if (IS_ERR(dsi->pllref_clk)) {
 		if (dsi->phy) {
-			/*
-			 * if external phy is present, pll will be
-			 * generated there.
-			 */
+			 
 			dsi->pllref_clk = NULL;
 		} else {
 			ret = PTR_ERR(dsi->pllref_clk);
@@ -1487,7 +1424,7 @@ static const struct rockchip_dw_dsi_chip_data px30_chip_data[] = {
 
 		.max_data_lanes = 4,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct rockchip_dw_dsi_chip_data rk3288_chip_data[] = {
@@ -1507,17 +1444,14 @@ static const struct rockchip_dw_dsi_chip_data rk3288_chip_data[] = {
 
 		.max_data_lanes = 4,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int rk3399_dphy_tx1rx1_init(struct phy *phy)
 {
 	struct dw_mipi_dsi_rockchip *dsi = phy_get_drvdata(phy);
 
-	/*
-	 * Set TX1RX1 source to isp1.
-	 * Assume ISP0 is supplied by the RX0 dphy.
-	 */
+	 
 	regmap_write(dsi->grf_regmap, RK3399_GRF_SOC_CON24,
 		     HIWORD_UPDATE(0, RK3399_TXRX_SRC_SEL_ISP0));
 	regmap_write(dsi->grf_regmap, RK3399_GRF_SOC_CON24,
@@ -1534,7 +1468,7 @@ static int rk3399_dphy_tx1rx1_power_on(struct phy *phy)
 {
 	struct dw_mipi_dsi_rockchip *dsi = phy_get_drvdata(phy);
 
-	/* tester reset pulse */
+	 
 	dsi_write(dsi, DSI_PHY_TST_CTRL0, PHY_TESTCLK | PHY_TESTCLR);
 	usleep_range(100, 150);
 
@@ -1548,7 +1482,7 @@ static int rk3399_dphy_tx1rx1_power_on(struct phy *phy)
 	regmap_write(dsi->grf_regmap, RK3399_GRF_SOC_CON23,
 		     HIWORD_UPDATE(0, RK3399_DSI1_FORCETXSTOPMODE));
 
-	/* Disable lane turn around, which is ignored in receive mode */
+	 
 	regmap_write(dsi->grf_regmap, RK3399_GRF_SOC_CON24,
 		     HIWORD_UPDATE(0, RK3399_TXRX_TURNREQUEST));
 	regmap_write(dsi->grf_regmap, RK3399_GRF_SOC_CON23,
@@ -1559,7 +1493,7 @@ static int rk3399_dphy_tx1rx1_power_on(struct phy *phy)
 	dsi_write(dsi, DSI_PHY_TST_CTRL0, PHY_TESTCLK | PHY_UNTESTCLR);
 	usleep_range(100, 150);
 
-	/* Enable dphy lanes */
+	 
 	regmap_write(dsi->grf_regmap, RK3399_GRF_SOC_CON23,
 		     HIWORD_UPDATE(GENMASK(dsi->dphy_config.lanes - 1, 0),
 				   RK3399_DSI1_ENABLE));
@@ -1626,7 +1560,7 @@ static const struct rockchip_dw_dsi_chip_data rk3399_chip_data[] = {
 		.dphy_rx_power_on = rk3399_dphy_tx1rx1_power_on,
 		.dphy_rx_power_off = rk3399_dphy_tx1rx1_power_off,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct rockchip_dw_dsi_chip_data rk3568_chip_data[] = {
@@ -1648,7 +1582,7 @@ static const struct rockchip_dw_dsi_chip_data rk3568_chip_data[] = {
 					  RK3568_DSI1_FORCERXMODE),
 		.max_data_lanes = 4,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct of_device_id dw_mipi_dsi_rockchip_dt_ids[] = {
@@ -1665,7 +1599,7 @@ static const struct of_device_id dw_mipi_dsi_rockchip_dt_ids[] = {
 	 .compatible = "rockchip,rk3568-mipi-dsi",
 	 .data = &rk3568_chip_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dw_mipi_dsi_rockchip_dt_ids);
 
@@ -1676,11 +1610,7 @@ struct platform_driver dw_mipi_dsi_rockchip_driver = {
 		.of_match_table = dw_mipi_dsi_rockchip_dt_ids,
 		.pm	= &dw_mipi_dsi_rockchip_pm_ops,
 		.name	= "dw-mipi-dsi-rockchip",
-		/*
-		 * For dual-DSI display, one DSI pokes at the other DSI's
-		 * drvdata in dw_mipi_dsi_rockchip_find_second(). This is not
-		 * safe for asynchronous probe.
-		 */
+		 
 		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };

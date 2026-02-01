@@ -1,13 +1,11 @@
-/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
+ 
 #include <linux/blk-mq.h>
 
 #define VERSION "85"
 #define AOE_MAJOR 152
 #define DEVICE_NAME "aoe"
 
-/* set AOE_PARTITIONS to 1 to use whole-disks only
- * default is 16, which is 15 partitions plus the whole disk
- */
+ 
 #ifndef AOE_PARTITIONS
 #define AOE_PARTITIONS (16)
 #endif
@@ -71,19 +69,19 @@ struct aoe_cfghdr {
 };
 
 enum {
-	DEVFL_UP = 1,	/* device is installed in system and ready for AoE->ATA commands */
-	DEVFL_TKILL = (1<<1),	/* flag for timer to know when to kill self */
-	DEVFL_EXT = (1<<2),	/* device accepts lba48 commands */
-	DEVFL_GDALLOC = (1<<3),	/* need to alloc gendisk */
-	DEVFL_GD_NOW = (1<<4),	/* allocating gendisk */
-	DEVFL_KICKME = (1<<5),	/* slow polling network card catch */
-	DEVFL_NEWSIZE = (1<<6),	/* need to update dev size in block layer */
-	DEVFL_FREEING = (1<<7),	/* set when device is being cleaned up */
-	DEVFL_FREED = (1<<8),	/* device has been cleaned up */
+	DEVFL_UP = 1,	 
+	DEVFL_TKILL = (1<<1),	 
+	DEVFL_EXT = (1<<2),	 
+	DEVFL_GDALLOC = (1<<3),	 
+	DEVFL_GD_NOW = (1<<4),	 
+	DEVFL_KICKME = (1<<5),	 
+	DEVFL_NEWSIZE = (1<<6),	 
+	DEVFL_FREEING = (1<<7),	 
+	DEVFL_FREED = (1<<8),	 
 };
 
 enum {
-	DEFAULTBCNT = 2 * 512,	/* 2 sectors */
+	DEFAULTBCNT = 2 * 512,	 
 	MIN_BUFS = 16,
 	NTARGETS = 4,
 	NAOEIFS = 8,
@@ -96,8 +94,8 @@ enum {
 	RTTAVG_INIT = USEC_PER_SEC / 4 << RTTSCALE,
 	RTTDEV_INIT = RTTAVG_INIT / 4,
 
-	HARD_SCORN_SECS = 10,	/* try another remote port after this */
-	MAX_TAINT = 1000,	/* cap on aoetgt taint */
+	HARD_SCORN_SECS = 10,	 
+	MAX_TAINT = 1000,	 
 };
 
 struct aoe_req {
@@ -118,12 +116,12 @@ enum frame_flags {
 struct frame {
 	struct list_head head;
 	u32 tag;
-	ktime_t sent;			/* high-res time packet was sent */
+	ktime_t sent;			 
 	ulong waited;
 	ulong waited_total;
-	struct aoetgt *t;		/* parent target I belong to */
-	struct sk_buff *skb;		/* command skb freed on module exit */
-	struct sk_buff *r_skb;		/* response skb for async processing */
+	struct aoetgt *t;		 
+	struct sk_buff *skb;		 
+	struct sk_buff *r_skb;		 
 	struct buf *buf;
 	struct bvec_iter iter;
 	char flags;
@@ -137,17 +135,17 @@ struct aoeif {
 
 struct aoetgt {
 	unsigned char addr[6];
-	ushort nframes;		/* cap on frames to use */
-	struct aoedev *d;			/* parent device I belong to */
-	struct list_head ffree;			/* list of free frames */
+	ushort nframes;		 
+	struct aoedev *d;			 
+	struct list_head ffree;			 
 	struct aoeif ifs[NAOEIFS];
-	struct aoeif *ifp;	/* current aoeif in use */
-	ushort nout;		/* number of AoE commands outstanding */
-	ushort maxout;		/* current value for max outstanding */
-	ushort next_cwnd;	/* incr maxout after decrementing to zero */
-	ushort ssthresh;	/* slow start threshold */
-	ulong falloc;		/* number of allocated frames */
-	int taint;		/* how much we want to avoid this aoetgt */
+	struct aoeif *ifp;	 
+	ushort nout;		 
+	ushort maxout;		 
+	ushort next_cwnd;	 
+	ushort ssthresh;	 
+	ulong falloc;		 
+	int taint;		 
 	int minbcnt;
 	int wpkts, rpkts;
 	char nout_probes;
@@ -157,16 +155,16 @@ struct aoedev {
 	struct aoedev *next;
 	ulong sysminor;
 	ulong aoemajor;
-	u32 rttavg;		/* scaled AoE round trip time average */
-	u32 rttdev;		/* scaled round trip time mean deviation */
+	u32 rttavg;		 
+	u32 rttdev;		 
 	u16 aoeminor;
 	u16 flags;
-	u16 nopen;		/* (bd_openers isn't available without sleeping) */
-	u16 fw_ver;		/* version of blade's firmware */
-	u16 lasttag;		/* last tag sent */
+	u16 nopen;		 
+	u16 fw_ver;		 
+	u16 lasttag;		 
 	u16 useme;
 	ulong ref;
-	struct work_struct work;/* disk create work struct */
+	struct work_struct work; 
 	struct gendisk *gd;
 	struct dentry *debugfs;
 	struct request_queue *blkq;
@@ -177,23 +175,23 @@ struct aoedev {
 	struct timer_list timer;
 	spinlock_t lock;
 	struct sk_buff_head skbpool;
-	mempool_t *bufpool;	/* for deadlock-free Buf allocation */
-	struct {		/* pointers to work in progress */
+	mempool_t *bufpool;	 
+	struct {		 
 		struct buf *buf;
 		struct bio *nxbio;
 		struct request *rq;
 	} ip;
 	ulong maxbcnt;
-	struct list_head factive[NFACTIVE];	/* hash of active frames */
-	struct list_head rexmitq; /* deferred retransmissions */
+	struct list_head factive[NFACTIVE];	 
+	struct list_head rexmitq;  
 	struct aoetgt **targets;
-	ulong ntargets;		/* number of allocated aoetgt pointers */
-	struct aoetgt **tgt;	/* target in use when working */
+	ulong ntargets;		 
+	struct aoetgt **tgt;	 
 	ulong kicked;
 	char ident[512];
 };
 
-/* kthread tracking */
+ 
 struct ktstate {
 	struct completion rendez;
 	struct task_struct *task;

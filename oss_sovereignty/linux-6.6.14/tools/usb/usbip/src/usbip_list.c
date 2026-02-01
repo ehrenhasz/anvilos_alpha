@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #include <sys/types.h>
 #include <libudev.h>
@@ -180,15 +174,13 @@ static int list_devices(bool parsable)
 	int ret = -1;
 	const char *devpath;
 
-	/* Create libudev context. */
+	 
 	udev = udev_new();
 
-	/* Create libudev device enumeration. */
+	 
 	enumerate = udev_enumerate_new(udev);
 
-	/* Take only USB devices that are not hubs and do not have
-	 * the bInterfaceNumber attribute, i.e. are not interfaces.
-	 */
+	 
 	udev_enumerate_add_match_subsystem(enumerate, "usb");
 	udev_enumerate_add_nomatch_sysattr(enumerate, "bDeviceClass", "09");
 	udev_enumerate_add_nomatch_sysattr(enumerate, "bInterfaceNumber", NULL);
@@ -196,12 +188,12 @@ static int list_devices(bool parsable)
 
 	devices = udev_enumerate_get_list_entry(enumerate);
 
-	/* Show information about each device. */
+	 
 	udev_list_entry_foreach(dev_list_entry, devices) {
 		path = udev_list_entry_get_name(dev_list_entry);
 		dev = udev_device_new_from_syspath(udev, path);
 
-		/* Ignore devices attached to vhci_hcd */
+		 
 		devpath = udev_device_get_devpath(dev);
 		if (strstr(devpath, USBIP_VHCI_DRV_NAME)) {
 			dbg("Skip the device %s already attached to %s\n",
@@ -209,7 +201,7 @@ static int list_devices(bool parsable)
 			continue;
 		}
 
-		/* Get device information. */
+		 
 		idVendor = udev_device_get_sysattr_value(dev, "idVendor");
 		idProduct = udev_device_get_sysattr_value(dev, "idProduct");
 		bConfValue = udev_device_get_sysattr_value(dev,
@@ -223,12 +215,12 @@ static int list_devices(bool parsable)
 			goto err_out;
 		}
 
-		/* Get product name. */
+		 
 		usbip_names_get_product(product_name, sizeof(product_name),
 					strtol(idVendor, NULL, 16),
 					strtol(idProduct, NULL, 16));
 
-		/* Print information. */
+		 
 		print_device(busid, idVendor, idProduct, parsable);
 		print_product_name(product_name, parsable);
 
@@ -279,11 +271,11 @@ static int list_gadget_devices(bool parsable)
 		dev = udev_device_new_from_syspath(udev, path);
 
 		driver = udev_device_get_driver(dev);
-		/* We only have mechanism to enumerate gadgets bound to vudc */
+		 
 		if (driver == NULL || strcmp(driver, USBIP_DEVICE_DRV_NAME))
 			continue;
 
-		/* Get device information. */
+		 
 		descriptors = udev_device_get_sysattr_value(dev,
 				VUDC_DEVICE_DESCR_FILE);
 
@@ -301,12 +293,12 @@ static int list_gadget_devices(bool parsable)
 		sprintf(idProduct_buf, "0x%4x", idVendor);
 		busid = udev_device_get_sysname(dev);
 
-		/* Get product name. */
+		 
 		usbip_names_get_product(product_name, sizeof(product_name),
 					le16toh(idVendor),
 					le16toh(idProduct));
 
-		/* Print information. */
+		 
 		print_device(busid, idVendor_buf, idProduct_buf, parsable);
 		print_product_name(product_name, parsable);
 

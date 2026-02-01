@@ -1152,20 +1152,20 @@
 {
        "pkt > pkt_end taken check",
        .insns = {
-       BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,                //  0. r2 = *(u32 *)(r1 + data_end)
+       BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,                
                    offsetof(struct __sk_buff, data_end)),
-       BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1,                //  1. r4 = *(u32 *)(r1 + data)
+       BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1,                
                    offsetof(struct __sk_buff, data)),
-       BPF_MOV64_REG(BPF_REG_3, BPF_REG_4),                    //  2. r3 = r4
-       BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 42),                  //  3. r3 += 42
-       BPF_MOV64_IMM(BPF_REG_1, 0),                            //  4. r1 = 0
-       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 2),          //  5. if r3 > r2 goto 8
-       BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, 14),                  //  6. r4 += 14
-       BPF_MOV64_REG(BPF_REG_1, BPF_REG_4),                    //  7. r1 = r4
-       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 1),          //  8. if r3 > r2 goto 10
-       BPF_LDX_MEM(BPF_H, BPF_REG_2, BPF_REG_1, 9),            //  9. r2 = *(u8 *)(r1 + 9)
-       BPF_MOV64_IMM(BPF_REG_0, 0),                            // 10. r0 = 0
-       BPF_EXIT_INSN(),                                        // 11. exit
+       BPF_MOV64_REG(BPF_REG_3, BPF_REG_4),                    
+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 42),                  
+       BPF_MOV64_IMM(BPF_REG_1, 0),                            
+       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 2),          
+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, 14),                  
+       BPF_MOV64_REG(BPF_REG_1, BPF_REG_4),                    
+       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 1),          
+       BPF_LDX_MEM(BPF_H, BPF_REG_2, BPF_REG_1, 9),            
+       BPF_MOV64_IMM(BPF_REG_0, 0),                            
+       BPF_EXIT_INSN(),                                        
        },
        .result = ACCEPT,
        .prog_type = BPF_PROG_TYPE_SK_SKB,
@@ -1174,20 +1174,20 @@
 {
        "pkt_end < pkt taken check",
        .insns = {
-       BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,                //  0. r2 = *(u32 *)(r1 + data_end)
+       BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,                
                    offsetof(struct __sk_buff, data_end)),
-       BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1,                //  1. r4 = *(u32 *)(r1 + data)
+       BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1,                
                    offsetof(struct __sk_buff, data)),
-       BPF_MOV64_REG(BPF_REG_3, BPF_REG_4),                    //  2. r3 = r4
-       BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 42),                  //  3. r3 += 42
-       BPF_MOV64_IMM(BPF_REG_1, 0),                            //  4. r1 = 0
-       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 2),          //  5. if r3 > r2 goto 8
-       BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, 14),                  //  6. r4 += 14
-       BPF_MOV64_REG(BPF_REG_1, BPF_REG_4),                    //  7. r1 = r4
-       BPF_JMP_REG(BPF_JLT, BPF_REG_2, BPF_REG_3, 1),          //  8. if r2 < r3 goto 10
-       BPF_LDX_MEM(BPF_H, BPF_REG_2, BPF_REG_1, 9),            //  9. r2 = *(u8 *)(r1 + 9)
-       BPF_MOV64_IMM(BPF_REG_0, 0),                            // 10. r0 = 0
-       BPF_EXIT_INSN(),                                        // 11. exit
+       BPF_MOV64_REG(BPF_REG_3, BPF_REG_4),                    
+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 42),                  
+       BPF_MOV64_IMM(BPF_REG_1, 0),                            
+       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 2),          
+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, 14),                  
+       BPF_MOV64_REG(BPF_REG_1, BPF_REG_4),                    
+       BPF_JMP_REG(BPF_JLT, BPF_REG_2, BPF_REG_3, 1),          
+       BPF_LDX_MEM(BPF_H, BPF_REG_2, BPF_REG_1, 9),            
+       BPF_MOV64_IMM(BPF_REG_0, 0),                            
+       BPF_EXIT_INSN(),                                        
        },
        .result = ACCEPT,
        .prog_type = BPF_PROG_TYPE_SK_SKB,

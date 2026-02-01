@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NetLabel CALIPSO/IPv6 Support
- *
- * This file defines the CALIPSO/IPv6 functions for the NetLabel system.  The
- * NetLabel system manages static and dynamic label mappings for network
- * protocols such as CIPSO and CALIPSO.
- *
- * Authors: Paul Moore <paul@paul-moore.com>
- *          Huw Davies <huw@codeweavers.com>
- */
 
-/* (c) Copyright Hewlett-Packard Development Company, L.P., 2006
- * (c) Copyright Huw Davies <huw@codeweavers.com>, 2015
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -32,23 +21,23 @@
 #include "netlabel_mgmt.h"
 #include "netlabel_domainhash.h"
 
-/* Argument struct for calipso_doi_walk() */
+ 
 struct netlbl_calipso_doiwalk_arg {
 	struct netlink_callback *nl_cb;
 	struct sk_buff *skb;
 	u32 seq;
 };
 
-/* Argument struct for netlbl_domhsh_walk() */
+ 
 struct netlbl_domhsh_walk_arg {
 	struct netlbl_audit *audit_info;
 	u32 doi;
 };
 
-/* NetLabel Generic NETLINK CALIPSO family */
+ 
 static struct genl_family netlbl_calipso_gnl_family;
 
-/* NetLabel Netlink attribute policy */
+ 
 static const struct nla_policy calipso_genl_policy[NLBL_CALIPSO_A_MAX + 1] = {
 	[NLBL_CALIPSO_A_DOI] = { .type = NLA_U32 },
 	[NLBL_CALIPSO_A_MTYPE] = { .type = NLA_U32 },
@@ -56,14 +45,7 @@ static const struct nla_policy calipso_genl_policy[NLBL_CALIPSO_A_MAX + 1] = {
 
 static const struct netlbl_calipso_ops *calipso_ops;
 
-/**
- * netlbl_calipso_ops_register - Register the CALIPSO operations
- * @ops: ops to register
- *
- * Description:
- * Register the CALIPSO packet engine operations.
- *
- */
+ 
 const struct netlbl_calipso_ops *
 netlbl_calipso_ops_register(const struct netlbl_calipso_ops *ops)
 {
@@ -76,19 +58,8 @@ static const struct netlbl_calipso_ops *netlbl_calipso_ops_get(void)
 	return READ_ONCE(calipso_ops);
 }
 
-/* NetLabel Command Handlers
- */
-/**
- * netlbl_calipso_add_pass - Adds a CALIPSO pass DOI definition
- * @info: the Generic NETLINK info block
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Create a new CALIPSO_MAP_PASS DOI definition based on the given ADD message
- * and add it to the CALIPSO engine.  Return zero on success and non-zero on
- * error.
- *
- */
+ 
+ 
 static int netlbl_calipso_add_pass(struct genl_info *info,
 				   struct netlbl_audit *audit_info)
 {
@@ -107,16 +78,7 @@ static int netlbl_calipso_add_pass(struct genl_info *info,
 	return ret_val;
 }
 
-/**
- * netlbl_calipso_add - Handle an ADD message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Create a new DOI definition based on the given ADD message and add it to the
- * CALIPSO engine.  Returns zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_calipso_add(struct sk_buff *skb, struct genl_info *info)
 {
 	int ret_val = -EINVAL;
@@ -142,16 +104,7 @@ static int netlbl_calipso_add(struct sk_buff *skb, struct genl_info *info)
 	return ret_val;
 }
 
-/**
- * netlbl_calipso_list - Handle a LIST message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated LIST message and respond accordingly.
- * Returns zero on success and negative values on error.
- *
- */
+ 
 static int netlbl_calipso_list(struct sk_buff *skb, struct genl_info *info)
 {
 	int ret_val;
@@ -201,18 +154,7 @@ list_failure:
 	return ret_val;
 }
 
-/**
- * netlbl_calipso_listall_cb - calipso_doi_walk() callback for LISTALL
- * @doi_def: the CALIPSO DOI definition
- * @arg: the netlbl_calipso_doiwalk_arg structure
- *
- * Description:
- * This function is designed to be used as a callback to the
- * calipso_doi_walk() function for use in generating a response for a LISTALL
- * message.  Returns the size of the message on success, negative values on
- * failure.
- *
- */
+ 
 static int netlbl_calipso_listall_cb(struct calipso_doi *doi_def, void *arg)
 {
 	int ret_val = -ENOMEM;
@@ -242,16 +184,7 @@ listall_cb_failure:
 	return ret_val;
 }
 
-/**
- * netlbl_calipso_listall - Handle a LISTALL message
- * @skb: the NETLINK buffer
- * @cb: the NETLINK callback
- *
- * Description:
- * Process a user generated LISTALL message and respond accordingly.  Returns
- * zero on success and negative values on error.
- *
- */
+ 
 static int netlbl_calipso_listall(struct sk_buff *skb,
 				  struct netlink_callback *cb)
 {
@@ -268,18 +201,7 @@ static int netlbl_calipso_listall(struct sk_buff *skb,
 	return skb->len;
 }
 
-/**
- * netlbl_calipso_remove_cb - netlbl_calipso_remove() callback for REMOVE
- * @entry: LSM domain mapping entry
- * @arg: the netlbl_domhsh_walk_arg structure
- *
- * Description:
- * This function is intended for use by netlbl_calipso_remove() as the callback
- * for the netlbl_domhsh_walk() function; it removes LSM domain map entries
- * which are associated with the CALIPSO DOI specified in @arg.  Returns zero on
- * success, negative values on failure.
- *
- */
+ 
 static int netlbl_calipso_remove_cb(struct netlbl_dom_map *entry, void *arg)
 {
 	struct netlbl_domhsh_walk_arg *cb_arg = arg;
@@ -291,16 +213,7 @@ static int netlbl_calipso_remove_cb(struct netlbl_dom_map *entry, void *arg)
 	return 0;
 }
 
-/**
- * netlbl_calipso_remove - Handle a REMOVE message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated REMOVE message and respond accordingly.  Returns
- * zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_calipso_remove(struct sk_buff *skb, struct genl_info *info)
 {
 	int ret_val = -EINVAL;
@@ -326,8 +239,7 @@ static int netlbl_calipso_remove(struct sk_buff *skb, struct genl_info *info)
 	return ret_val;
 }
 
-/* NetLabel Generic NETLINK Command Definitions
- */
+ 
 
 static const struct genl_small_ops netlbl_calipso_ops[] = {
 	{
@@ -372,35 +284,15 @@ static struct genl_family netlbl_calipso_gnl_family __ro_after_init = {
 	.resv_start_op = NLBL_CALIPSO_C_LISTALL + 1,
 };
 
-/* NetLabel Generic NETLINK Protocol Functions
- */
+ 
 
-/**
- * netlbl_calipso_genl_init - Register the CALIPSO NetLabel component
- *
- * Description:
- * Register the CALIPSO packet NetLabel component with the Generic NETLINK
- * mechanism.  Returns zero on success, negative values on failure.
- *
- */
+ 
 int __init netlbl_calipso_genl_init(void)
 {
 	return genl_register_family(&netlbl_calipso_gnl_family);
 }
 
-/**
- * calipso_doi_add - Add a new DOI to the CALIPSO protocol engine
- * @doi_def: the DOI structure
- * @audit_info: NetLabel audit information
- *
- * Description:
- * The caller defines a new DOI for use by the CALIPSO engine and calls this
- * function to add it to the list of acceptable domains.  The caller must
- * ensure that the mapping table specified in @doi_def->map meets all of the
- * requirements of the mapping type (see calipso.h for details).  Returns
- * zero on success and non-zero on failure.
- *
- */
+ 
 int calipso_doi_add(struct calipso_doi *doi_def,
 		    struct netlbl_audit *audit_info)
 {
@@ -412,14 +304,7 @@ int calipso_doi_add(struct calipso_doi *doi_def,
 	return ret_val;
 }
 
-/**
- * calipso_doi_free - Frees a DOI definition
- * @doi_def: the DOI definition
- *
- * Description:
- * This function frees all of the memory associated with a DOI definition.
- *
- */
+ 
 void calipso_doi_free(struct calipso_doi *doi_def)
 {
 	const struct netlbl_calipso_ops *ops = netlbl_calipso_ops_get();
@@ -428,17 +313,7 @@ void calipso_doi_free(struct calipso_doi *doi_def)
 		ops->doi_free(doi_def);
 }
 
-/**
- * calipso_doi_remove - Remove an existing DOI from the CALIPSO protocol engine
- * @doi: the DOI value
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes a DOI definition from the CALIPSO engine.  The NetLabel routines will
- * be called to release their own LSM domain mappings as well as our own
- * domain list.  Returns zero on success and negative values on failure.
- *
- */
+ 
 int calipso_doi_remove(u32 doi, struct netlbl_audit *audit_info)
 {
 	int ret_val = -ENOMSG;
@@ -449,16 +324,7 @@ int calipso_doi_remove(u32 doi, struct netlbl_audit *audit_info)
 	return ret_val;
 }
 
-/**
- * calipso_doi_getdef - Returns a reference to a valid DOI definition
- * @doi: the DOI value
- *
- * Description:
- * Searches for a valid DOI definition and if one is found it is returned to
- * the caller.  Otherwise NULL is returned.  The caller must ensure that
- * calipso_doi_putdef() is called when the caller is done.
- *
- */
+ 
 struct calipso_doi *calipso_doi_getdef(u32 doi)
 {
 	struct calipso_doi *ret_val = NULL;
@@ -469,14 +335,7 @@ struct calipso_doi *calipso_doi_getdef(u32 doi)
 	return ret_val;
 }
 
-/**
- * calipso_doi_putdef - Releases a reference for the given DOI definition
- * @doi_def: the DOI definition
- *
- * Description:
- * Releases a DOI definition reference obtained from calipso_doi_getdef().
- *
- */
+ 
 void calipso_doi_putdef(struct calipso_doi *doi_def)
 {
 	const struct netlbl_calipso_ops *ops = netlbl_calipso_ops_get();
@@ -485,19 +344,7 @@ void calipso_doi_putdef(struct calipso_doi *doi_def)
 		ops->doi_putdef(doi_def);
 }
 
-/**
- * calipso_doi_walk - Iterate through the DOI definitions
- * @skip_cnt: skip past this number of DOI definitions, updated
- * @callback: callback for each DOI definition
- * @cb_arg: argument for the callback function
- *
- * Description:
- * Iterate over the DOI definition list, skipping the first @skip_cnt entries.
- * For each entry call @callback, if @callback returns a negative value stop
- * 'walking' through the list and return.  Updates the value in @skip_cnt upon
- * return.  Returns zero on success, negative values on failure.
- *
- */
+ 
 int calipso_doi_walk(u32 *skip_cnt,
 		     int (*callback)(struct calipso_doi *doi_def, void *arg),
 		     void *cb_arg)
@@ -510,18 +357,7 @@ int calipso_doi_walk(u32 *skip_cnt,
 	return ret_val;
 }
 
-/**
- * calipso_sock_getattr - Get the security attributes from a sock
- * @sk: the sock
- * @secattr: the security attributes
- *
- * Description:
- * Query @sk to see if there is a CALIPSO option attached to the sock and if
- * there is return the CALIPSO security attributes in @secattr.  This function
- * requires that @sk be locked, or privately held, but it does not do any
- * locking itself.  Returns zero on success and negative values on failure.
- *
- */
+ 
 int calipso_sock_getattr(struct sock *sk, struct netlbl_lsm_secattr *secattr)
 {
 	int ret_val = -ENOMSG;
@@ -532,20 +368,7 @@ int calipso_sock_getattr(struct sock *sk, struct netlbl_lsm_secattr *secattr)
 	return ret_val;
 }
 
-/**
- * calipso_sock_setattr - Add a CALIPSO option to a socket
- * @sk: the socket
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the specific security attributes of the socket
- *
- * Description:
- * Set the CALIPSO option on the given socket using the DOI definition and
- * security attributes passed to the function.  This function requires
- * exclusive access to @sk, which means it either needs to be in the
- * process of being created or locked.  Returns zero on success and negative
- * values on failure.
- *
- */
+ 
 int calipso_sock_setattr(struct sock *sk,
 			 const struct calipso_doi *doi_def,
 			 const struct netlbl_lsm_secattr *secattr)
@@ -558,14 +381,7 @@ int calipso_sock_setattr(struct sock *sk,
 	return ret_val;
 }
 
-/**
- * calipso_sock_delattr - Delete the CALIPSO option from a socket
- * @sk: the socket
- *
- * Description:
- * Removes the CALIPSO option from a socket, if present.
- *
- */
+ 
 void calipso_sock_delattr(struct sock *sk)
 {
 	const struct netlbl_calipso_ops *ops = netlbl_calipso_ops_get();
@@ -574,18 +390,7 @@ void calipso_sock_delattr(struct sock *sk)
 		ops->sock_delattr(sk);
 }
 
-/**
- * calipso_req_setattr - Add a CALIPSO option to a connection request socket
- * @req: the connection request socket
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the specific security attributes of the socket
- *
- * Description:
- * Set the CALIPSO option on the given socket using the DOI definition and
- * security attributes passed to the function.  Returns zero on success and
- * negative values on failure.
- *
- */
+ 
 int calipso_req_setattr(struct request_sock *req,
 			const struct calipso_doi *doi_def,
 			const struct netlbl_lsm_secattr *secattr)
@@ -598,14 +403,7 @@ int calipso_req_setattr(struct request_sock *req,
 	return ret_val;
 }
 
-/**
- * calipso_req_delattr - Delete the CALIPSO option from a request socket
- * @req: the request socket
- *
- * Description:
- * Removes the CALIPSO option from a request socket, if present.
- *
- */
+ 
 void calipso_req_delattr(struct request_sock *req)
 {
 	const struct netlbl_calipso_ops *ops = netlbl_calipso_ops_get();
@@ -614,15 +412,7 @@ void calipso_req_delattr(struct request_sock *req)
 		ops->req_delattr(req);
 }
 
-/**
- * calipso_optptr - Find the CALIPSO option in the packet
- * @skb: the packet
- *
- * Description:
- * Parse the packet's IP header looking for a CALIPSO option.  Returns a pointer
- * to the start of the CALIPSO option on success, NULL if one if not found.
- *
- */
+ 
 unsigned char *calipso_optptr(const struct sk_buff *skb)
 {
 	unsigned char *ret_val = NULL;
@@ -633,16 +423,7 @@ unsigned char *calipso_optptr(const struct sk_buff *skb)
 	return ret_val;
 }
 
-/**
- * calipso_getattr - Get the security attributes from a memory block.
- * @calipso: the CALIPSO option
- * @secattr: the security attributes
- *
- * Description:
- * Inspect @calipso and return the security attributes in @secattr.
- * Returns zero on success and negative values on failure.
- *
- */
+ 
 int calipso_getattr(const unsigned char *calipso,
 		    struct netlbl_lsm_secattr *secattr)
 {
@@ -654,17 +435,7 @@ int calipso_getattr(const unsigned char *calipso,
 	return ret_val;
 }
 
-/**
- * calipso_skbuff_setattr - Set the CALIPSO option on a packet
- * @skb: the packet
- * @doi_def: the CALIPSO DOI to use
- * @secattr: the security attributes
- *
- * Description:
- * Set the CALIPSO option on the given packet based on the security attributes.
- * Returns a pointer to the IP header on success and NULL on failure.
- *
- */
+ 
 int calipso_skbuff_setattr(struct sk_buff *skb,
 			   const struct calipso_doi *doi_def,
 			   const struct netlbl_lsm_secattr *secattr)
@@ -677,15 +448,7 @@ int calipso_skbuff_setattr(struct sk_buff *skb,
 	return ret_val;
 }
 
-/**
- * calipso_skbuff_delattr - Delete any CALIPSO options from a packet
- * @skb: the packet
- *
- * Description:
- * Removes any and all CALIPSO options from the given packet.  Returns zero on
- * success, negative values on failure.
- *
- */
+ 
 int calipso_skbuff_delattr(struct sk_buff *skb)
 {
 	int ret_val = -ENOMSG;
@@ -696,14 +459,7 @@ int calipso_skbuff_delattr(struct sk_buff *skb)
 	return ret_val;
 }
 
-/**
- * calipso_cache_invalidate - Invalidates the current CALIPSO cache
- *
- * Description:
- * Invalidates and frees any entries in the CALIPSO cache.  Returns zero on
- * success and negative values on failure.
- *
- */
+ 
 void calipso_cache_invalidate(void)
 {
 	const struct netlbl_calipso_ops *ops = netlbl_calipso_ops_get();
@@ -712,16 +468,7 @@ void calipso_cache_invalidate(void)
 		ops->cache_invalidate();
 }
 
-/**
- * calipso_cache_add - Add an entry to the CALIPSO cache
- * @calipso_ptr: the CALIPSO option
- * @secattr: the packet's security attributes
- *
- * Description:
- * Add a new entry into the CALIPSO label mapping cache.
- * Returns zero on success, negative values on failure.
- *
- */
+ 
 int calipso_cache_add(const unsigned char *calipso_ptr,
 		      const struct netlbl_lsm_secattr *secattr)
 

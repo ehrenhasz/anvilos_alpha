@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <stdint.h>
 #include "resctrl.h"
 
 struct read_format {
-	__u64 nr;			/* The number of events */
+	__u64 nr;			 
 	struct {
-		__u64 value;		/* The value of the event */
+		__u64 value;		 
 	} values[2];
 };
 
@@ -53,7 +53,7 @@ static void initialize_llc_perf(void)
 	memset(&pea_llc_miss, 0, sizeof(struct perf_event_attr));
 	memset(&rf_cqm, 0, sizeof(struct read_format));
 
-	/* Initialize perf_event_attr structures for HW_CACHE_MISSES */
+	 
 	initialize_perf_event_attr();
 
 	pea_llc_miss.config = PERF_COUNT_HW_CACHE_MISSES;
@@ -69,27 +69,19 @@ static int reset_enable_llc_perf(pid_t pid, int cpu_no)
 	if (ret < 0)
 		return ret;
 
-	/* Start counters to log values */
+	 
 	ioctl_perf_event_ioc_reset_enable();
 
 	return 0;
 }
 
-/*
- * get_llc_perf:	llc cache miss through perf events
- * @llc_perf_miss:	LLC miss counter that is filled on success
- *
- * Perf events like HW_CACHE_MISSES could be used to validate number of
- * cache lines allocated.
- *
- * Return: =0 on success.  <0 on failure.
- */
+ 
 static int get_llc_perf(unsigned long *llc_perf_miss)
 {
 	__u64 total_misses;
 	int ret;
 
-	/* Stop counters after one span to get miss rate */
+	 
 
 	ioctl(fd_lm, PERF_EVENT_IOC_DISABLE, 0);
 
@@ -105,19 +97,7 @@ static int get_llc_perf(unsigned long *llc_perf_miss)
 	return 0;
 }
 
-/*
- * Get LLC Occupancy as reported by RESCTRL FS
- * For CMT,
- * 1. If con_mon grp and mon grp given, then read from mon grp in
- * con_mon grp
- * 2. If only con_mon grp given, then read from con_mon grp
- * 3. If both not given, then read from root con_mon grp
- * For CAT,
- * 1. If con_mon grp given, then read from it
- * 2. If con_mon grp not given, then read from root con_mon grp
- *
- * Return: =0 on success.  <0 on failure.
- */
+ 
 static int get_llc_occu_resctrl(unsigned long *llc_occupancy)
 {
 	FILE *fp;
@@ -139,15 +119,7 @@ static int get_llc_occu_resctrl(unsigned long *llc_occupancy)
 	return 0;
 }
 
-/*
- * print_results_cache:	the cache results are stored in a file
- * @filename:		file that stores the results
- * @bm_pid:		child pid that runs benchmark
- * @llc_value:		perf miss value /
- *			llc occupancy value reported by resctrl FS
- *
- * Return:		0 on success. non-zero on failure.
- */
+ 
 static int print_results_cache(char *filename, int bm_pid,
 			       unsigned long llc_value)
 {
@@ -175,9 +147,7 @@ int measure_cache_vals(struct resctrl_val_param *param, int bm_pid)
 	unsigned long llc_perf_miss = 0, llc_occu_resc = 0, llc_value = 0;
 	int ret;
 
-	/*
-	 * Measure cache miss from perf.
-	 */
+	 
 	if (!strncmp(param->resctrl_val, CAT_STR, sizeof(CAT_STR))) {
 		ret = get_llc_perf(&llc_perf_miss);
 		if (ret < 0)
@@ -185,9 +155,7 @@ int measure_cache_vals(struct resctrl_val_param *param, int bm_pid)
 		llc_value = llc_perf_miss;
 	}
 
-	/*
-	 * Measure llc occupancy from resctrl.
-	 */
+	 
 	if (!strncmp(param->resctrl_val, CMT_STR, sizeof(CMT_STR))) {
 		ret = get_llc_occu_resctrl(&llc_occu_resc);
 		if (ret < 0)
@@ -201,14 +169,7 @@ int measure_cache_vals(struct resctrl_val_param *param, int bm_pid)
 	return 0;
 }
 
-/*
- * cache_val:		execute benchmark and measure LLC occupancy resctrl
- * and perf cache miss for the benchmark
- * @param:		parameters passed to cache_val()
- * @span:		buffer size for the benchmark
- *
- * Return:		0 on success. non-zero on failure.
- */
+ 
 int cat_val(struct resctrl_val_param *param, size_t span)
 {
 	int memflush = 1, operation = 0, ret = 0;
@@ -220,12 +181,12 @@ int cat_val(struct resctrl_val_param *param, size_t span)
 
 	bm_pid = getpid();
 
-	/* Taskset benchmark to specified cpu */
+	 
 	ret = taskset_benchmark(bm_pid, param->cpu_no);
 	if (ret)
 		return ret;
 
-	/* Write benchmark to specified con_mon grp, mon_grp in resctrl FS*/
+	 
 	ret = write_bm_pid_to_resctrl(bm_pid, param->ctrlgrp, param->mongrp,
 				      resctrl_val);
 	if (ret)
@@ -233,7 +194,7 @@ int cat_val(struct resctrl_val_param *param, size_t span)
 
 	initialize_llc_perf();
 
-	/* Test runs until the callback setup() tells the test to stop. */
+	 
 	while (1) {
 		ret = param->setup(param);
 		if (ret == END_OF_TESTS) {
@@ -265,19 +226,7 @@ pe_close:
 	return ret;
 }
 
-/*
- * show_cache_info:	show cache test result information
- * @sum_llc_val:	sum of LLC cache result data
- * @no_of_bits:		number of bits
- * @cache_span:		cache span in bytes for CMT or in lines for CAT
- * @max_diff:		max difference
- * @max_diff_percent:	max difference percentage
- * @num_of_runs:	number of runs
- * @platform:		show test information on this platform
- * @cmt:		CMT test or CAT test
- *
- * Return:		0 on success. non-zero on failure.
- */
+ 
 int show_cache_info(unsigned long sum_llc_val, int no_of_bits,
 		    size_t cache_span, unsigned long max_diff,
 		    unsigned long max_diff_percent, unsigned long num_of_runs,

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2003-2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
 
-/* Kernel module implementing an IP set type: the hash:net type */
+ 
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/module.h>
@@ -19,26 +19,26 @@
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
 #define IPSET_TYPE_REV_MIN	0
-/*				1    Range as input support for IPv4 added */
-/*				2    nomatch flag support added */
-/*				3    Counters support added */
-/*				4    Comments support added */
-/*				5    Forceadd support added */
-/*				6    skbinfo support added */
-#define IPSET_TYPE_REV_MAX	7 /* bucketsize, initval support added */
+ 
+ 
+ 
+ 
+ 
+ 
+#define IPSET_TYPE_REV_MAX	7  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
 IP_SET_MODULE_DESC("hash:net", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_hash:net");
 
-/* Type specific function prefix */
+ 
 #define HTYPE		hash_net
 #define IP_SET_HASH_WITH_NETS
 
-/* IPv4 variant */
+ 
 
-/* Member elements  */
+ 
 struct hash_net4_elem {
 	__be32 ip;
 	u16 padding0;
@@ -46,7 +46,7 @@ struct hash_net4_elem {
 	u8 cidr;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_net4_data_equal(const struct hash_net4_elem *ip1,
@@ -208,7 +208,7 @@ hash_net4_uadt(struct ip_set *set, struct nlattr *tb[],
 	return ret;
 }
 
-/* IPv6 variant */
+ 
 
 struct hash_net6_elem {
 	union nf_inet_addr ip;
@@ -217,7 +217,7 @@ struct hash_net6_elem {
 	u8 cidr;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_net6_data_equal(const struct hash_net6_elem *ip1,

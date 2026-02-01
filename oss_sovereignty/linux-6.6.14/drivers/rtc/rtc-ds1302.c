@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Dallas DS1302 RTC Support
- *
- *  Copyright (C) 2002 David McCullough
- *  Copyright (C) 2003 - 2007 Paul Mundt
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/init.h>
@@ -15,24 +10,24 @@
 #include <linux/rtc.h>
 #include <linux/spi/spi.h>
 
-#define	RTC_CMD_READ	0x81		/* Read command */
-#define	RTC_CMD_WRITE	0x80		/* Write command */
+#define	RTC_CMD_READ	0x81		 
+#define	RTC_CMD_WRITE	0x80		 
 
-#define	RTC_CMD_WRITE_ENABLE	0x00		/* Write enable */
-#define	RTC_CMD_WRITE_DISABLE	0x80		/* Write disable */
+#define	RTC_CMD_WRITE_ENABLE	0x00		 
+#define	RTC_CMD_WRITE_DISABLE	0x80		 
 
-#define RTC_ADDR_RAM0	0x20		/* Address of RAM0 */
-#define RTC_ADDR_TCR	0x08		/* Address of trickle charge register */
-#define RTC_CLCK_BURST	0x1F		/* Address of clock burst */
-#define	RTC_CLCK_LEN	0x08		/* Size of clock burst */
-#define	RTC_ADDR_CTRL	0x07		/* Address of control register */
-#define	RTC_ADDR_YEAR	0x06		/* Address of year register */
-#define	RTC_ADDR_DAY	0x05		/* Address of day of week register */
-#define	RTC_ADDR_MON	0x04		/* Address of month register */
-#define	RTC_ADDR_DATE	0x03		/* Address of day of month register */
-#define	RTC_ADDR_HOUR	0x02		/* Address of hour register */
-#define	RTC_ADDR_MIN	0x01		/* Address of minute register */
-#define	RTC_ADDR_SEC	0x00		/* Address of second register */
+#define RTC_ADDR_RAM0	0x20		 
+#define RTC_ADDR_TCR	0x08		 
+#define RTC_CLCK_BURST	0x1F		 
+#define	RTC_CLCK_LEN	0x08		 
+#define	RTC_ADDR_CTRL	0x07		 
+#define	RTC_ADDR_YEAR	0x06		 
+#define	RTC_ADDR_DAY	0x05		 
+#define	RTC_ADDR_MON	0x04		 
+#define	RTC_ADDR_DATE	0x03		 
+#define	RTC_ADDR_HOUR	0x02		 
+#define	RTC_ADDR_MIN	0x01		 
+#define	RTC_ADDR_SEC	0x00		 
 
 static int ds1302_rtc_set_time(struct device *dev, struct rtc_time *time)
 {
@@ -41,7 +36,7 @@ static int ds1302_rtc_set_time(struct device *dev, struct rtc_time *time)
 	u8		*bp;
 	int		status;
 
-	/* Enable writing */
+	 
 	bp = buf;
 	*bp++ = RTC_ADDR_CTRL << 1 | RTC_CMD_WRITE;
 	*bp++ = RTC_CMD_WRITE_ENABLE;
@@ -51,7 +46,7 @@ static int ds1302_rtc_set_time(struct device *dev, struct rtc_time *time)
 	if (status)
 		return status;
 
-	/* Write registers starting at the first time/date address. */
+	 
 	bp = buf;
 	*bp++ = RTC_CLCK_BURST << 1 | RTC_CMD_WRITE;
 
@@ -64,7 +59,7 @@ static int ds1302_rtc_set_time(struct device *dev, struct rtc_time *time)
 	*bp++ = bin2bcd(time->tm_year % 100);
 	*bp++ = RTC_CMD_WRITE_DISABLE;
 
-	/* use write-then-read since dma from stack is nonportable */
+	 
 	return spi_write_then_read(spi, buf, sizeof(buf),
 			NULL, 0);
 }
@@ -76,15 +71,13 @@ static int ds1302_rtc_get_time(struct device *dev, struct rtc_time *time)
 	u8		buf[RTC_CLCK_LEN - 1];
 	int		status;
 
-	/* Use write-then-read to get all the date/time registers
-	 * since dma from stack is nonportable
-	 */
+	 
 	status = spi_write_then_read(spi, &addr, sizeof(addr),
 			buf, sizeof(buf));
 	if (status < 0)
 		return status;
 
-	/* Decode the registers */
+	 
 	time->tm_sec = bcd2bin(buf[RTC_ADDR_SEC]);
 	time->tm_min = bcd2bin(buf[RTC_ADDR_MIN]);
 	time->tm_hour = bcd2bin(buf[RTC_ADDR_HOUR]);
@@ -109,10 +102,7 @@ static int ds1302_probe(struct spi_device *spi)
 	u8		*bp;
 	int		status;
 
-	/* Sanity check board setup data.  This may be hooked up
-	 * in 3wire mode, but we don't care.  Note that unless
-	 * there's an inverter in place, this needs SPI_CS_HIGH!
-	 */
+	 
 	if (spi->bits_per_word && (spi->bits_per_word != 8)) {
 		dev_err(&spi->dev, "bad word length\n");
 		return -EINVAL;
@@ -188,14 +178,14 @@ static int ds1302_probe(struct spi_device *spi)
 #ifdef CONFIG_OF
 static const struct of_device_id ds1302_dt_ids[] = {
 	{ .compatible = "maxim,ds1302", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ds1302_dt_ids);
 #endif
 
 static const struct spi_device_id ds1302_spi_ids[] = {
 	{ .name = "ds1302", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, ds1302_spi_ids);
 

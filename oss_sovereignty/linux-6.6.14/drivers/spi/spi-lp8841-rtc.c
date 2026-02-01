@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SPI master driver for ICP DAS LP-8841 RTC
- *
- * Copyright (C) 2016 Sergei Ianovich
- *
- * based on
- *
- * Dallas DS1302 RTC Support
- * Copyright (C) 2002 David McCullough
- * Copyright (C) 2003 - 2007 Paul Mundt
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -25,11 +15,7 @@
 #define SPI_LP8841_RTC_MOSI	0x08
 #define SPI_LP8841_RTC_MISO	0x01
 
-/*
- * REVISIT If there is support for SPI_3WIRE and SPI_LSB_FIRST in SPI
- * GPIO driver, this SPI driver can be replaced by a simple GPIO driver
- * providing 3 GPIO pins.
- */
+ 
 
 struct spi_lp8841_rtc {
 	void		*iomem;
@@ -67,19 +53,19 @@ bitbang_txrx_be_cpha0_lsb(struct spi_lp8841_rtc *data,
 		unsigned usecs, unsigned cpol, unsigned flags,
 		u32 word, u8 bits)
 {
-	/* if (cpol == 0) this is SPI_MODE_0; else this is SPI_MODE_2 */
+	 
 
 	u32 shift = 32 - bits;
-	/* clock starts at inactive polarity */
+	 
 	for (; likely(bits); bits--) {
 
-		/* setup LSB (to slave) on leading edge */
+		 
 		if ((flags & SPI_CONTROLLER_NO_TX) == 0)
 			setmosi(data, (word & 1));
 
-		usleep_range(usecs, usecs + 1);	/* T(setup) */
+		usleep_range(usecs, usecs + 1);	 
 
-		/* sample LSB (from slave) on trailing edge */
+		 
 		word >>= 1;
 		if ((flags & SPI_CONTROLLER_NO_RX) == 0)
 			word |= (getmiso(data) << 31);
@@ -212,7 +198,7 @@ spi_lp8841_rtc_probe(struct platform_device *pdev)
 		goto err_put_master;
 	}
 
-	/* register with the SPI framework */
+	 
 	ret = devm_spi_register_master(&pdev->dev, master);
 	if (ret) {
 		dev_err(&pdev->dev, "cannot register spi master\n");

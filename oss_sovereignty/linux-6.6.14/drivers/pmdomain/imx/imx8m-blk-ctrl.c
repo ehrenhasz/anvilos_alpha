@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2021 Pengutronix, Lucas Stach <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -23,7 +21,7 @@
 
 #define BLK_SFT_RSTN	0x0
 #define BLK_CLK_EN	0x4
-#define BLK_MIPI_RESET_DIV	0x8 /* Mini/Nano/Plus DISPLAY_BLK_CTRL only */
+#define BLK_MIPI_RESET_DIV	0x8  
 
 struct imx8m_blk_ctrl_domain;
 
@@ -46,13 +44,7 @@ struct imx8m_blk_ctrl_domain_data {
 	u32 rst_mask;
 	u32 clk_mask;
 
-	/*
-	 * i.MX8M Mini, Nano and Plus have a third DISPLAY_BLK_CTRL register
-	 * which is used to control the reset for the MIPI Phy.
-	 * Since it's only present in certain circumstances,
-	 * an if-statement should be used before setting and clearing this
-	 * register.
-	 */
+	 
 	u32 mipi_phy_rst_mask;
 };
 
@@ -89,7 +81,7 @@ static int imx8m_blk_ctrl_power_on(struct generic_pm_domain *genpd)
 	struct imx8m_blk_ctrl *bc = domain->bc;
 	int ret;
 
-	/* make sure bus domain is awake */
+	 
 	ret = pm_runtime_get_sync(bc->bus_power_dev);
 	if (ret < 0) {
 		pm_runtime_put_noidle(bc->bus_power_dev);
@@ -97,12 +89,12 @@ static int imx8m_blk_ctrl_power_on(struct generic_pm_domain *genpd)
 		return ret;
 	}
 
-	/* put devices into reset */
+	 
 	regmap_clear_bits(bc->regmap, BLK_SFT_RSTN, data->rst_mask);
 	if (data->mipi_phy_rst_mask)
 		regmap_clear_bits(bc->regmap, BLK_MIPI_RESET_DIV, data->mipi_phy_rst_mask);
 
-	/* enable upstream and blk-ctrl clocks to allow reset to propagate */
+	 
 	ret = clk_bulk_prepare_enable(data->num_clks, domain->clks);
 	if (ret) {
 		dev_err(bc->dev, "failed to enable clocks\n");
@@ -110,17 +102,17 @@ static int imx8m_blk_ctrl_power_on(struct generic_pm_domain *genpd)
 	}
 	regmap_set_bits(bc->regmap, BLK_CLK_EN, data->clk_mask);
 
-	/* power up upstream GPC domain */
+	 
 	ret = pm_runtime_get_sync(domain->power_dev);
 	if (ret < 0) {
 		dev_err(bc->dev, "failed to power up peripheral domain\n");
 		goto clk_disable;
 	}
 
-	/* wait for reset to propagate */
+	 
 	udelay(5);
 
-	/* release reset */
+	 
 	regmap_set_bits(bc->regmap, BLK_SFT_RSTN, data->rst_mask);
 	if (data->mipi_phy_rst_mask)
 		regmap_set_bits(bc->regmap, BLK_MIPI_RESET_DIV, data->mipi_phy_rst_mask);
@@ -129,7 +121,7 @@ static int imx8m_blk_ctrl_power_on(struct generic_pm_domain *genpd)
 	if (ret)
 		dev_err(bc->dev, "failed to set icc bw\n");
 
-	/* disable upstream clocks */
+	 
 	clk_bulk_disable_unprepare(data->num_clks, domain->clks);
 
 	return 0;
@@ -148,17 +140,17 @@ static int imx8m_blk_ctrl_power_off(struct generic_pm_domain *genpd)
 	const struct imx8m_blk_ctrl_domain_data *data = domain->data;
 	struct imx8m_blk_ctrl *bc = domain->bc;
 
-	/* put devices into reset and disable clocks */
+	 
 	if (data->mipi_phy_rst_mask)
 		regmap_clear_bits(bc->regmap, BLK_MIPI_RESET_DIV, data->mipi_phy_rst_mask);
 
 	regmap_clear_bits(bc->regmap, BLK_SFT_RSTN, data->rst_mask);
 	regmap_clear_bits(bc->regmap, BLK_CLK_EN, data->clk_mask);
 
-	/* power down upstream GPC domain */
+	 
 	pm_runtime_put(domain->power_dev);
 
-	/* allow bus domain to suspend */
+	 
 	pm_runtime_put(bc->bus_power_dev);
 
 	return 0;
@@ -234,7 +226,7 @@ static int imx8m_blk_ctrl_probe(struct platform_device *pdev)
 
 		for (j = 0; j < data->num_paths; j++) {
 			domain->paths[j].name = data->path_names[j];
-			/* Fake value for now, just let ICC could configure NoC mode/priority */
+			 
 			domain->paths[j].avg_bw = 1;
 			domain->paths[j].peak_bw = 1;
 		}
@@ -280,16 +272,7 @@ static int imx8m_blk_ctrl_probe(struct platform_device *pdev)
 			goto cleanup_pds;
 		}
 
-		/*
-		 * We use runtime PM to trigger power on/off of the upstream GPC
-		 * domain, as a strict hierarchical parent/child power domain
-		 * setup doesn't allow us to meet the sequencing requirements.
-		 * This means we have nested locking of genpd locks, without the
-		 * nesting being visible at the genpd level, so we need a
-		 * separate lock class to make lockdep aware of the fact that
-		 * this are separate domain locks that can be nested without a
-		 * self-deadlock.
-		 */
+		 
 		lockdep_set_class(&domain->genpd.mlock,
 				  &blk_ctrl_genpd_lock_class);
 
@@ -357,14 +340,7 @@ static int imx8m_blk_ctrl_suspend(struct device *dev)
 	struct imx8m_blk_ctrl *bc = dev_get_drvdata(dev);
 	int ret, i;
 
-	/*
-	 * This may look strange, but is done so the generic PM_SLEEP code
-	 * can power down our domains and more importantly power them up again
-	 * after resume, without tripping over our usage of runtime PM to
-	 * control the upstream GPC domains. Things happen in the right order
-	 * in the system suspend/resume paths due to the device parent/child
-	 * hierarchy.
-	 */
+	 
 	ret = pm_runtime_get_sync(bc->bus_power_dev);
 	if (ret < 0) {
 		pm_runtime_put_noidle(bc->bus_power_dev);
@@ -419,24 +395,15 @@ static int imx8mm_vpu_power_notifier(struct notifier_block *nb,
 	if (action != GENPD_NOTIFY_ON && action != GENPD_NOTIFY_PRE_OFF)
 		return NOTIFY_OK;
 
-	/*
-	 * The ADB in the VPUMIX domain has no separate reset and clock
-	 * enable bits, but is ungated together with the VPU clocks. To
-	 * allow the handshake with the GPC to progress we put the VPUs
-	 * in reset and ungate the clocks.
-	 */
+	 
 	regmap_clear_bits(bc->regmap, BLK_SFT_RSTN, BIT(0) | BIT(1) | BIT(2));
 	regmap_set_bits(bc->regmap, BLK_CLK_EN, BIT(0) | BIT(1) | BIT(2));
 
 	if (action == GENPD_NOTIFY_ON) {
-		/*
-		 * On power up we have no software backchannel to the GPC to
-		 * wait for the ADB handshake to happen, so we just delay for a
-		 * bit. On power down the GPC driver waits for the handshake.
-		 */
+		 
 		udelay(5);
 
-		/* set "fuse" bits to enable the VPUs */
+		 
 		regmap_set_bits(bc->regmap, 0x8, 0xffffffff);
 		regmap_set_bits(bc->regmap, 0xc, 0xffffffff);
 		regmap_set_bits(bc->regmap, 0x10, 0xffffffff);
@@ -529,15 +496,11 @@ static int imx8mm_disp_power_notifier(struct notifier_block *nb,
 	if (action != GENPD_NOTIFY_ON && action != GENPD_NOTIFY_PRE_OFF)
 		return NOTIFY_OK;
 
-	/* Enable bus clock and deassert bus reset */
+	 
 	regmap_set_bits(bc->regmap, BLK_CLK_EN, BIT(12));
 	regmap_set_bits(bc->regmap, BLK_SFT_RSTN, BIT(6));
 
-	/*
-	 * On power up we have no software backchannel to the GPC to
-	 * wait for the ADB handshake to happen, so we just delay for a
-	 * bit. On power down the GPC driver waits for the handshake.
-	 */
+	 
 	if (action == GENPD_NOTIFY_ON)
 		udelay(5);
 
@@ -599,15 +562,11 @@ static int imx8mn_disp_power_notifier(struct notifier_block *nb,
 	if (action != GENPD_NOTIFY_ON && action != GENPD_NOTIFY_PRE_OFF)
 		return NOTIFY_OK;
 
-	/* Enable bus clock and deassert bus reset */
+	 
 	regmap_set_bits(bc->regmap, BLK_CLK_EN, BIT(8));
 	regmap_set_bits(bc->regmap, BLK_SFT_RSTN, BIT(8));
 
-	/*
-	 * On power up we have no software backchannel to the GPC to
-	 * wait for the ADB handshake to happen, so we just delay for a
-	 * bit. On power down the GPC driver waits for the handshake.
-	 */
+	 
 	if (action == GENPD_NOTIFY_ON)
 		udelay(5);
 
@@ -673,23 +632,15 @@ static int imx8mp_media_power_notifier(struct notifier_block *nb,
 	if (action != GENPD_NOTIFY_ON && action != GENPD_NOTIFY_PRE_OFF)
 		return NOTIFY_OK;
 
-	/* Enable bus clock and deassert bus reset */
+	 
 	regmap_set_bits(bc->regmap, BLK_CLK_EN, BIT(8));
 	regmap_set_bits(bc->regmap, BLK_SFT_RSTN, BIT(8));
 
 	if (action == GENPD_NOTIFY_ON) {
-		/*
-		 * On power up we have no software backchannel to the GPC to
-		 * wait for the ADB handshake to happen, so we just delay for a
-		 * bit. On power down the GPC driver waits for the handshake.
-		 */
+		 
 		udelay(5);
 
-		/*
-		 * Set panic read hurry level for both LCDIF interfaces to
-		 * maximum priority to minimize chances of display FIFO
-		 * underflow.
-		 */
+		 
 		regmap_set_bits(bc->regmap, LCDIF_ARCACHE_CTRL,
 				FIELD_PREP(LCDIF_1_RD_HURRY, 7) |
 				FIELD_PREP(LCDIF_0_RD_HURRY, 7));
@@ -698,11 +649,7 @@ static int imx8mp_media_power_notifier(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
-/*
- * From i.MX 8M Plus Applications Processor Reference Manual, Rev. 1,
- * section 13.2.2, 13.2.3
- * isp-ahb and dwe are not in Figure 13-5. Media BLK_CTRL Clocks
- */
+ 
 static const struct imx8m_blk_ctrl_domain_data imx8mp_media_blk_ctl_domain_data[] = {
 	[IMX8MP_MEDIABLK_PD_MIPI_DSI_1] = {
 		.name = "mediablk-mipi-dsi-1",
@@ -808,25 +755,15 @@ static int imx8mq_vpu_power_notifier(struct notifier_block *nb,
 	if (action != GENPD_NOTIFY_ON && action != GENPD_NOTIFY_PRE_OFF)
 		return NOTIFY_OK;
 
-	/*
-	 * The ADB in the VPUMIX domain has no separate reset and clock
-	 * enable bits, but is ungated and reset together with the VPUs. The
-	 * reset and clock enable inputs to the ADB is a logical OR of the
-	 * VPU bits. In order to set the G2 fuse bits, the G2 clock must
-	 * also be enabled.
-	 */
+	 
 	regmap_set_bits(bc->regmap, BLK_SFT_RSTN, BIT(0) | BIT(1));
 	regmap_set_bits(bc->regmap, BLK_CLK_EN, BIT(0) | BIT(1));
 
 	if (action == GENPD_NOTIFY_ON) {
-		/*
-		 * On power up we have no software backchannel to the GPC to
-		 * wait for the ADB handshake to happen, so we just delay for a
-		 * bit. On power down the GPC driver waits for the handshake.
-		 */
+		 
 		udelay(5);
 
-		/* set "fuse" bits to enable the VPUs */
+		 
 		regmap_set_bits(bc->regmap, 0x8, 0xffffffff);
 		regmap_set_bits(bc->regmap, 0xc, 0xffffffff);
 		regmap_set_bits(bc->regmap, 0x10, 0xffffffff);
@@ -881,7 +818,7 @@ static const struct of_device_id imx8m_blk_ctrl_of_match[] = {
 		.compatible = "fsl,imx8mp-vpu-blk-ctrl",
 		.data = &imx8mp_vpu_blk_ctl_dev_data
 	}, {
-		/* Sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, imx8m_blk_ctrl_of_match);

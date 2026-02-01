@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_tpg.c
- *
- * This file contains generic Target Portal Group related functions.
- *
- * (c) Copyright 2002-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/net.h>
 #include <linux/string.h>
@@ -33,10 +24,7 @@
 extern struct se_device *g_lun0_dev;
 static DEFINE_XARRAY_ALLOC(tpg_xa);
 
-/*	__core_tpg_get_initiator_node_acl():
- *
- *	mutex_lock(&tpg->acl_node_mutex); must be held when calling
- */
+ 
 struct se_node_acl *__core_tpg_get_initiator_node_acl(
 	struct se_portal_group *tpg,
 	const char *initiatorname)
@@ -51,24 +39,13 @@ struct se_node_acl *__core_tpg_get_initiator_node_acl(
 	return NULL;
 }
 
-/*	core_tpg_get_initiator_node_acl():
- *
- *
- */
+ 
 struct se_node_acl *core_tpg_get_initiator_node_acl(
 	struct se_portal_group *tpg,
 	unsigned char *initiatorname)
 {
 	struct se_node_acl *acl;
-	/*
-	 * Obtain se_node_acl->acl_kref using fabric driver provided
-	 * initiatorname[] during node acl endpoint lookup driven by
-	 * new se_session login.
-	 *
-	 * The reference is held until se_session shutdown -> release
-	 * occurs via fabric driver invoked transport_deregister_session()
-	 * or transport_free_session() code.
-	 */
+	 
 	mutex_lock(&tpg->acl_node_mutex);
 	acl = __core_tpg_get_initiator_node_acl(tpg, initiatorname);
 	if (acl) {
@@ -97,10 +74,7 @@ void core_allocate_nexus_loss_ua(
 }
 EXPORT_SYMBOL(core_allocate_nexus_loss_ua);
 
-/*	core_tpg_add_node_to_devs():
- *
- *
- */
+ 
 void core_tpg_add_node_to_devs(
 	struct se_node_acl *acl,
 	struct se_portal_group *tpg,
@@ -117,17 +91,11 @@ void core_tpg_add_node_to_devs(
 
 		dev = rcu_dereference_check(lun->lun_se_dev,
 					    lockdep_is_held(&tpg->tpg_lun_mutex));
-		/*
-		 * By default in LIO-Target $FABRIC_MOD,
-		 * demo_mode_write_protect is ON, or READ_ONLY;
-		 */
+		 
 		if (!tpg->se_tpg_tfo->tpg_check_demo_mode_write_protect(tpg)) {
 			lun_access_ro = false;
 		} else {
-			/*
-			 * Allow only optical drives to issue R/W in default RO
-			 * demo mode.
-			 */
+			 
 			if (dev->transport->get_device_type(dev) == TYPE_DISK)
 				lun_access_ro = true;
 			else
@@ -142,11 +110,7 @@ void core_tpg_add_node_to_devs(
 
 		core_enable_device_list_for_node(lun, NULL, lun->unpacked_lun,
 						 lun_access_ro, acl, tpg);
-		/*
-		 * Check to see if there are any existing persistent reservation
-		 * APTPL pre-registrations that need to be enabled for this dynamic
-		 * LUN ACL now..
-		 */
+		 
 		core_scsi3_check_aptpl_registration(dev, tpg, lun, acl,
 						    lun->unpacked_lun);
 	}
@@ -255,22 +219,11 @@ struct se_node_acl *core_tpg_check_initiator_node_acl(
 	acl = target_alloc_node_acl(tpg, initiatorname);
 	if (!acl)
 		return NULL;
-	/*
-	 * When allocating a dynamically generated node_acl, go ahead
-	 * and take the extra kref now before returning to the fabric
-	 * driver caller.
-	 *
-	 * Note this reference will be released at session shutdown
-	 * time within transport_free_session() code.
-	 */
+	 
 	kref_get(&acl->acl_kref);
 	acl->dynamic_node_acl = 1;
 
-	/*
-	 * Here we only create demo-mode MappedLUNs from the active
-	 * TPG LUNs if the fabric is not explicitly asking for
-	 * tpg_check_demo_mode_login_only() == 1.
-	 */
+	 
 	if ((tpg->se_tpg_tfo->tpg_check_demo_mode_login_only == NULL) ||
 	    (tpg->se_tpg_tfo->tpg_check_demo_mode_login_only(tpg) != 1))
 		core_tpg_add_node_to_devs(acl, tpg, NULL);
@@ -355,10 +308,7 @@ void core_tpg_del_initiator_node_acl(struct se_node_acl *acl)
 	target_shutdown_sessions(acl);
 
 	target_put_nacl(acl);
-	/*
-	 * Wait for last target_put_nacl() to complete in target_complete_nacl()
-	 * for active fabric session transport_deregister_session() callbacks.
-	 */
+	 
 	wait_for_completion(&acl->acl_free_comp);
 
 	core_tpg_wait_for_nacl_pr_ref(acl);
@@ -372,33 +322,20 @@ void core_tpg_del_initiator_node_acl(struct se_node_acl *acl)
 	kfree(acl);
 }
 
-/*	core_tpg_set_initiator_node_queue_depth():
- *
- *
- */
+ 
 int core_tpg_set_initiator_node_queue_depth(
 	struct se_node_acl *acl,
 	u32 queue_depth)
 {
 	struct se_portal_group *tpg = acl->se_tpg;
 
-	/*
-	 * Allow the setting of se_node_acl queue_depth to be idempotent,
-	 * and not force a session shutdown event if the value is not
-	 * changing.
-	 */
+	 
 	if (acl->queue_depth == queue_depth)
 		return 0;
-	/*
-	 * User has requested to change the queue depth for a Initiator Node.
-	 * Change the value in the Node's struct se_node_acl, and call
-	 * target_set_nacl_queue_depth() to set the new queue depth.
-	 */
+	 
 	target_set_nacl_queue_depth(tpg, acl, queue_depth);
 
-	/*
-	 * Shutdown all pending sessions to force session reinstatement.
-	 */
+	 
 	target_shutdown_sessions(acl);
 
 	pr_debug("Successfully changed queue depth to: %d for Initiator"
@@ -410,12 +347,7 @@ int core_tpg_set_initiator_node_queue_depth(
 }
 EXPORT_SYMBOL(core_tpg_set_initiator_node_queue_depth);
 
-/*	core_tpg_set_initiator_node_tag():
- *
- *	Initiator nodeacl tags are not used internally, but may be used by
- *	userspace to emulate aliases or groups.
- *	Returns length of newly-set tag or -EINVAL.
- */
+ 
 int core_tpg_set_initiator_node_tag(
 	struct se_portal_group *tpg,
 	struct se_node_acl *acl,
@@ -502,7 +434,7 @@ int target_tpg_disable(struct se_portal_group *se_tpg)
 	return ret;
 }
 
-/* Does not change se_wwn->priv. */
+ 
 int core_tpg_register(
 	struct se_wwn *se_wwn,
 	struct se_portal_group *se_tpg,
@@ -512,16 +444,7 @@ int core_tpg_register(
 
 	if (!se_tpg)
 		return -EINVAL;
-	/*
-	 * For the typical case where core_tpg_register() is called by a
-	 * fabric driver from target_core_fabric_ops->fabric_make_tpg()
-	 * configfs context, use the original tf_ops pointer already saved
-	 * by target-core in target_fabric_make_wwn().
-	 *
-	 * Otherwise, for special cases like iscsi-target discovery TPGs
-	 * the caller is responsible for setting ->se_tpg_tfo ahead of
-	 * calling core_tpg_register().
-	 */
+	 
 	if (se_wwn)
 		se_tpg->se_tpg_tfo = se_wwn->wwn_tf->tf_ops;
 
@@ -580,11 +503,7 @@ int core_tpg_deregister(struct se_portal_group *se_tpg)
 	mutex_lock(&se_tpg->acl_node_mutex);
 	list_splice_init(&se_tpg->acl_node_list, &node_list);
 	mutex_unlock(&se_tpg->acl_node_mutex);
-	/*
-	 * Release any remaining demo-mode generated se_node_acl that have
-	 * not been released because of TFO->tpg_check_demo_mode_cache() == 1
-	 * in transport_deregister_session().
-	 */
+	 
 	list_for_each_entry_safe(nacl, nacl_tmp, &node_list, acl_list) {
 		list_del_init(&nacl->acl_list);
 
@@ -674,21 +593,13 @@ void core_tpg_remove_lun(
 	struct se_portal_group *tpg,
 	struct se_lun *lun)
 {
-	/*
-	 * rcu_dereference_raw protected by se_lun->lun_group symlink
-	 * reference to se_device->dev_group.
-	 */
+	 
 	struct se_device *dev = rcu_dereference_raw(lun->lun_se_dev);
 
 	lun->lun_shutdown = true;
 
 	core_clear_lun_from_tpg(lun, tpg);
-	/*
-	 * Wait for any active I/O references to percpu se_lun->lun_ref to
-	 * be released.  Also, se_lun->lun_ref is now used by PR and ALUA
-	 * logic when referencing a remote target port during ALL_TGT_PT=1
-	 * and generating UNIT_ATTENTIONs for ALUA access state transition.
-	 */
+	 
 	transport_clear_lun_ref(lun);
 
 	mutex_lock(&tpg->tpg_lun_mutex);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Novatek NT11205 i2c touchscreen controller as found
- * on the Acer Iconia One 7 B1-750 tablet.
- *
- * Copyright (c) 2023 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -21,7 +16,7 @@
 #define NVT_TS_TOUCH_SIZE		6
 
 #define NVT_TS_PARAMETERS_START		0x78
-/* These are offsets from NVT_TS_PARAMETERS_START */
+ 
 #define NVT_TS_PARAMS_WIDTH		0x04
 #define NVT_TS_PARAMS_HEIGHT		0x06
 #define NVT_TS_PARAMS_MAX_TOUCH		0x09
@@ -209,11 +204,11 @@ static int nvt_ts_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Wait for controller to come out of reset before params read */
+	 
 	msleep(100);
 	error = nvt_ts_read_data(data->client, NVT_TS_PARAMETERS_START,
 				 data->buf, NVT_TS_PARAMS_SIZE);
-	gpiod_set_value_cansleep(data->reset_gpio, 1); /* Put back in reset */
+	gpiod_set_value_cansleep(data->reset_gpio, 1);  
 	if (error)
 		return error;
 

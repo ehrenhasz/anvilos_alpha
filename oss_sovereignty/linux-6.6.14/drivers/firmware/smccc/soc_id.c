@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020 Arm Limited
- */
+
+ 
 
 #define pr_fmt(fmt) "SMCCC: SOC_ID: " fmt
 
@@ -14,11 +12,7 @@
 #include <linux/sys_soc.h>
 
 #define SMCCC_SOC_ID_JEP106_BANK_IDX_MASK	GENMASK(30, 24)
-/*
- * As per the SMC Calling Convention specification v1.2 (ARM DEN 0028C)
- * Section 7.4 SMCCC_ARCH_SOC_ID bits[23:16] are JEP-106 identification
- * code with parity bit for the SiP. We can drop the parity bit.
- */
+ 
 #define SMCCC_SOC_ID_JEP106_ID_CODE_MASK	GENMASK(22, 16)
 #define SMCCC_SOC_ID_IMP_DEF_SOC_ID_MASK	GENMASK(15, 0)
 

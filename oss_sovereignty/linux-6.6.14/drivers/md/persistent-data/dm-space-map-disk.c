@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-space-map-common.h"
 #include "dm-space-map-disk.h"
@@ -17,11 +13,9 @@
 
 #define DM_MSG_PREFIX "space map disk"
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Space map interface.
- */
+ 
 struct sm_disk {
 	struct dm_space_map sm;
 
@@ -133,15 +127,10 @@ static int sm_disk_new_block(struct dm_space_map *sm, dm_block_t *b)
 	int32_t nr_allocations;
 	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
 
-	/*
-	 * Any block we allocate has to be free in both the old and current ll.
-	 */
+	 
 	r = sm_ll_find_common_free_block(&smd->old_ll, &smd->ll, smd->begin, smd->ll.nr_blocks, b);
 	if (r == -ENOSPC)
-		/*
-		 * There's no free block between smd->begin and the end of the metadata device.
-		 * We search before smd->begin in case something has been freed.
-		 */
+		 
 		r = sm_ll_find_common_free_block(&smd->old_ll, &smd->ll, 0, smd->begin, b);
 
 	if (r)
@@ -195,7 +184,7 @@ static int sm_disk_copy_root(struct dm_space_map *sm, void *where_le, size_t max
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static struct dm_space_map ops = {
 	.destroy = sm_disk_destroy,
@@ -278,4 +267,4 @@ bad:
 }
 EXPORT_SYMBOL_GPL(dm_sm_disk_open);
 
-/*----------------------------------------------------------------*/
+ 

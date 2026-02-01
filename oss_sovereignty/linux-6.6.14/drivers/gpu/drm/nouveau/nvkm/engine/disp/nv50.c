@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "chan.h"
 #include "head.h"
@@ -91,9 +69,7 @@ nv50_pior_power(struct nvkm_ior *pior, bool normal, bool pu, bool data, bool vsy
 void
 nv50_pior_depth(struct nvkm_ior *ior, struct nvkm_ior_state *state, u32 ctrl)
 {
-	/* GF119 moves this information to per-head methods, which is
-	 * a lot more convenient, and where our shared code expect it.
-	 */
+	 
 	if (state->head && state == &ior->asy) {
 		struct nvkm_head *head = nvkm_head_find(ior->disp, __ffs(state->head));
 
@@ -103,7 +79,7 @@ nv50_pior_depth(struct nvkm_ior *ior, struct nvkm_ior_state *state, u32 ctrl)
 			case 6: state->or.depth = 30; break;
 			case 5: state->or.depth = 24; break;
 			case 2: state->or.depth = 18; break;
-			case 0: state->or.depth = 18; break; /*XXX*/
+			case 0: state->or.depth = 18; break;  
 			default:
 				state->or.depth = 18;
 				WARN_ON(1);
@@ -363,7 +339,7 @@ nv50_head_rgpos(struct nvkm_head *head, u16 *hline, u16 *vline)
 	struct nvkm_device *device = head->disp->engine.subdev.device;
 	const u32 hoff = head->id * 0x800;
 
-	/* vline read locks hline. */
+	 
 	*vline = nvkm_rd32(device, 0x616340 + hoff) & 0x0000ffff;
 	*hline = nvkm_rd32(device, 0x616344 + hoff) & 0x0000ffff;
 }
@@ -603,7 +579,7 @@ nv50_disp_dmac_fini(struct nvkm_disp_chan *chan)
 	int ctrl = chan->chid.ctrl;
 	int user = chan->chid.user;
 
-	/* deactivate channel */
+	 
 	nvkm_mask(device, 0x610200 + (ctrl * 0x0010), 0x00001010, 0x00001000);
 	nvkm_mask(device, 0x610200 + (ctrl * 0x0010), 0x00000003, 0x00000000);
 	if (nvkm_msec(device, 2000,
@@ -625,7 +601,7 @@ nv50_disp_dmac_init(struct nvkm_disp_chan *chan)
 	int ctrl = chan->chid.ctrl;
 	int user = chan->chid.user;
 
-	/* initialise channel for dma command submission */
+	 
 	nvkm_wr32(device, 0x610204 + (ctrl * 0x0010), chan->push);
 	nvkm_wr32(device, 0x610208 + (ctrl * 0x0010), 0x00010000);
 	nvkm_wr32(device, 0x61020c + (ctrl * 0x0010), ctrl);
@@ -633,7 +609,7 @@ nv50_disp_dmac_init(struct nvkm_disp_chan *chan)
 	nvkm_wr32(device, 0x640000 + (ctrl * 0x1000), chan->suspend_put);
 	nvkm_wr32(device, 0x610200 + (ctrl * 0x0010), 0x00000013);
 
-	/* wait for it to go inactive */
+	 
 	if (nvkm_msec(device, 2000,
 		if (!(nvkm_rd32(device, 0x610200 + (ctrl * 0x10)) & 0x80000000))
 			break;
@@ -911,7 +887,7 @@ nv50_disp_core_fini(struct nvkm_disp_chan *chan)
 	struct nvkm_subdev *subdev = &chan->disp->engine.subdev;
 	struct nvkm_device *device = subdev->device;
 
-	/* deactivate channel */
+	 
 	nvkm_mask(device, 0x610200, 0x00000010, 0x00000000);
 	nvkm_mask(device, 0x610200, 0x00000003, 0x00000000);
 	if (nvkm_msec(device, 2000,
@@ -931,13 +907,13 @@ nv50_disp_core_init(struct nvkm_disp_chan *chan)
 	struct nvkm_subdev *subdev = &chan->disp->engine.subdev;
 	struct nvkm_device *device = subdev->device;
 
-	/* attempt to unstick channel from some unknown state */
+	 
 	if ((nvkm_rd32(device, 0x610200) & 0x009f0000) == 0x00020000)
 		nvkm_mask(device, 0x610200, 0x00800000, 0x00800000);
 	if ((nvkm_rd32(device, 0x610200) & 0x003f0000) == 0x00030000)
 		nvkm_mask(device, 0x610200, 0x00600000, 0x00600000);
 
-	/* initialise channel for dma command submission */
+	 
 	nvkm_wr32(device, 0x610204, chan->push);
 	nvkm_wr32(device, 0x610208, 0x00010000);
 	nvkm_wr32(device, 0x61020c, 0x00000000);
@@ -945,7 +921,7 @@ nv50_disp_core_init(struct nvkm_disp_chan *chan)
 	nvkm_wr32(device, 0x640000, chan->suspend_put);
 	nvkm_wr32(device, 0x610200, 0x01000013);
 
-	/* wait for it to go inactive */
+	 
 	if (nvkm_msec(device, 2000,
 		if (!(nvkm_rd32(device, 0x610200) & 0x80000000))
 			break;
@@ -1008,12 +984,12 @@ nv50_disp_super_ied_on(struct nvkm_head *head,
 		return;
 	}
 
-	/* Lookup IED table for the device. */
+	 
 	data = nv50_disp_super_iedt(head, outp, &ver, &hdr, &cnt, &len, &iedt);
 	if (!data)
 		return;
 
-	/* Lookup IEDT runtime settings for the current configuration. */
+	 
 	if (ior->type == SOR) {
 		if (ior->asy.proto == LVDS) {
 			if (head->asy.or.depth == 24)
@@ -1031,7 +1007,7 @@ nv50_disp_super_ied_on(struct nvkm_head *head,
 		return;
 	}
 
-	/* Execute the OnInt[23] script for the current frequency. */
+	 
 	data = nvbios_oclk_match(bios, iedtrs.clkcmp[id], khz);
 	if (!data) {
 		OUTP_DBG(outp, "missing IEDT RSS %d for %02x:%02x %d khz",
@@ -1105,16 +1081,16 @@ nv50_disp_super_3_0(struct nvkm_disp *disp, struct nvkm_head *head)
 {
 	struct nvkm_ior *ior;
 
-	/* Determine which OR, if any, we're attaching to the head. */
+	 
 	HEAD_DBG(head, "supervisor 3.0");
 	ior = nv50_disp_super_ior_asy(head);
 	if (!ior)
 		return;
 
-	/* Execute OnInt3 IED script. */
+	 
 	nv50_disp_super_ied_on(head, ior, 1, head->asy.hz / 1000);
 
-	/* OR-specific handling. */
+	 
 	if (ior->func->war_3)
 		ior->func->war_3(ior);
 }
@@ -1132,13 +1108,13 @@ nv50_disp_super_2_2_dp(struct nvkm_head *head, struct nvkm_ior *ior)
 	u32 best_diff = 64 * symbol;
 	u64 h, v;
 
-	/* symbols/hblank - algorithm taken from comments in tegra driver */
+	 
 	h = head->asy.hblanke + head->asy.htotal - head->asy.hblanks - 7;
 	h = h * linkKBps;
 	do_div(h, khz);
 	h = h - (3 * ior->dp.ef) - (12 / ior->dp.nr);
 
-	/* symbols/vblank - algorithm taken from comments in tegra driver */
+	 
 	v = head->asy.vblanks - head->asy.vblanke - 25;
 	v = v * linkKBps;
 	do_div(v, khz);
@@ -1146,19 +1122,19 @@ nv50_disp_super_2_2_dp(struct nvkm_head *head, struct nvkm_ior *ior)
 
 	ior->func->dp->audio_sym(ior, head->id, h, v);
 
-	/* watermark / activesym */
+	 
 	link_data_rate = (khz * head->asy.or.depth / 8) / ior->dp.nr;
 
-	/* calculate ratio of packed data rate to link symbol rate */
+	 
 	link_ratio = link_data_rate * symbol;
 	do_div(link_ratio, linkKBps);
 
 	for (TU = 64; ior->func->dp->activesym && TU >= 32; TU--) {
-		/* calculate average number of valid symbols in each TU */
+		 
 		u32 tu_valid = link_ratio * TU;
 		u32 calc, diff;
 
-		/* find a hw representation for the fraction.. */
+		 
 		VTUi = tu_valid / symbol;
 		calc = VTUi * symbol;
 		diff = tu_valid - calc;
@@ -1184,10 +1160,7 @@ nv50_disp_super_2_2_dp(struct nvkm_head *head, struct nvkm_ior *ior)
 
 			diff = calc - tu_valid;
 		} else {
-			/* no remainder, but the hw doesn't like the fractional
-			 * part to be zero.  decrement the integer part and
-			 * have the fraction add a whole symbol back
-			 */
+			 
 			VTUa = 0;
 			VTUf = 1;
 			VTUi--;
@@ -1215,7 +1188,7 @@ nv50_disp_super_2_2_dp(struct nvkm_head *head, struct nvkm_ior *ior)
 		bestTU = 64;
 	}
 
-	/* XXX close to vbios numbers, but not right */
+	 
 	unk  = (symbol - link_ratio) * bestTU;
 	unk *= link_ratio;
 	do_div(unk, symbol);
@@ -1232,7 +1205,7 @@ nv50_disp_super_2_2(struct nvkm_disp *disp, struct nvkm_head *head)
 	struct nvkm_outp *outp;
 	struct nvkm_ior *ior;
 
-	/* Determine which OR, if any, we're attaching from the head. */
+	 
 	HEAD_DBG(head, "supervisor 2.2");
 	ior = nv50_disp_super_ior_asy(head);
 	if (!ior)
@@ -1240,35 +1213,27 @@ nv50_disp_super_2_2(struct nvkm_disp *disp, struct nvkm_head *head)
 
 	outp = ior->asy.outp;
 
-	/* For some reason, NVIDIA decided not to:
-	 *
-	 * A) Give dual-link LVDS a separate EVO protocol, like for TMDS.
-	 *  and
-	 * B) Use SetControlOutputResource.PixelDepth on LVDS.
-	 *
-	 * Override the values we usually read from HW with the same
-	 * data we pass though an ioctl instead.
-	 */
+	 
 	if (outp && ior->type == SOR && ior->asy.proto == LVDS) {
 		head->asy.or.depth = outp->lvds.bpc8 ? 24 : 18;
 		ior->asy.link      = outp->lvds.dual ? 3 : 1;
 	}
 
-	/* Handle any link training, etc. */
+	 
 	if (outp && outp->func->acquire)
 		outp->func->acquire(outp);
 
-	/* Execute OnInt2 IED script. */
+	 
 	nv50_disp_super_ied_on(head, ior, 0, khz);
 
-	/* Program RG clock divider. */
+	 
 	head->func->rgclk(head, ior->asy.rgdiv);
 
-	/* Mode-specific internal DP configuration. */
+	 
 	if (ior->type == SOR && ior->asy.proto == DP)
 		nv50_disp_super_2_2_dp(head, ior);
 
-	/* OR-specific handling. */
+	 
 	ior->func->clock(ior);
 	if (ior->func->war_2)
 		ior->func->war_2(ior);
@@ -1290,18 +1255,16 @@ nv50_disp_super_2_0(struct nvkm_disp *disp, struct nvkm_head *head)
 	struct nvkm_outp *outp;
 	struct nvkm_ior *ior;
 
-	/* Determine which OR, if any, we're detaching from the head. */
+	 
 	HEAD_DBG(head, "supervisor 2.0");
 	ior = nv50_disp_super_ior_arm(head);
 	if (!ior)
 		return;
 
-	/* Execute OffInt2 IED script. */
+	 
 	nv50_disp_super_ied_off(head, ior, 2);
 
-	/* If we're shutting down the OR's only active head, execute
-	 * the output path's disable function.
-	 */
+	 
 	if (ior->arm.head == (1 << head->id)) {
 		if ((outp = ior->arm.outp) && outp->func->disable)
 			outp->func->disable(outp, ior);
@@ -1313,13 +1276,13 @@ nv50_disp_super_1_0(struct nvkm_disp *disp, struct nvkm_head *head)
 {
 	struct nvkm_ior *ior;
 
-	/* Determine which OR, if any, we're detaching from the head. */
+	 
 	HEAD_DBG(head, "supervisor 1.0");
 	ior = nv50_disp_super_ior_arm(head);
 	if (!ior)
 		return;
 
-	/* Execute OffInt1 IED script. */
+	 
 	nv50_disp_super_ied_off(head, ior, 1);
 }
 
@@ -1487,7 +1450,7 @@ void
 nv50_disp_fini(struct nvkm_disp *disp)
 {
 	struct nvkm_device *device = disp->engine.subdev.device;
-	/* disable all interrupts */
+	 
 	nvkm_wr32(device, 0x610024, 0x00000000);
 	nvkm_wr32(device, 0x610020, 0x00000000);
 }
@@ -1500,14 +1463,11 @@ nv50_disp_init(struct nvkm_disp *disp)
 	u32 tmp;
 	int i;
 
-	/* The below segments of code copying values from one register to
-	 * another appear to inform EVO of the display capabilities or
-	 * something similar.  NFI what the 0x614004 caps are for..
-	 */
+	 
 	tmp = nvkm_rd32(device, 0x614004);
 	nvkm_wr32(device, 0x610184, tmp);
 
-	/* ... CRTC caps */
+	 
 	list_for_each_entry(head, &disp->heads, head) {
 		tmp = nvkm_rd32(device, 0x616100 + (head->id * 0x800));
 		nvkm_wr32(device, 0x610190 + (head->id * 0x10), tmp);
@@ -1519,25 +1479,25 @@ nv50_disp_init(struct nvkm_disp *disp)
 		nvkm_wr32(device, 0x61019c + (head->id * 0x10), tmp);
 	}
 
-	/* ... DAC caps */
+	 
 	for (i = 0; i < disp->dac.nr; i++) {
 		tmp = nvkm_rd32(device, 0x61a000 + (i * 0x800));
 		nvkm_wr32(device, 0x6101d0 + (i * 0x04), tmp);
 	}
 
-	/* ... SOR caps */
+	 
 	for (i = 0; i < disp->sor.nr; i++) {
 		tmp = nvkm_rd32(device, 0x61c000 + (i * 0x800));
 		nvkm_wr32(device, 0x6101e0 + (i * 0x04), tmp);
 	}
 
-	/* ... PIOR caps */
+	 
 	for (i = 0; i < disp->pior.nr; i++) {
 		tmp = nvkm_rd32(device, 0x61e000 + (i * 0x800));
 		nvkm_wr32(device, 0x6101f0 + (i * 0x04), tmp);
 	}
 
-	/* steal display away from vbios, or something like that */
+	 
 	if (nvkm_rd32(device, 0x610024) & 0x00000100) {
 		nvkm_wr32(device, 0x610024, 0x00000100);
 		nvkm_mask(device, 0x6194e8, 0x00000001, 0x00000000);
@@ -1548,10 +1508,10 @@ nv50_disp_init(struct nvkm_disp *disp)
 			return -EBUSY;
 	}
 
-	/* point at display engine memory area (hash table, objects) */
+	 
 	nvkm_wr32(device, 0x610010, (disp->inst->addr >> 8) | 9);
 
-	/* enable supervisor interrupts, disable everything else */
+	 
 	nvkm_wr32(device, 0x61002c, 0x00000370);
 	nvkm_wr32(device, 0x610028, 0x00000000);
 	return 0;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulators driver for Marvell 88PM8607
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/err.h>
@@ -324,7 +319,7 @@ static int pm8607_regulator_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
 	if (res) {
-		/* There're resources in 88PM8607 regulator driver */
+		 
 		for (i = 0; i < ARRAY_SIZE(pm8607_regulator_info); i++) {
 			info = &pm8607_regulator_info[i];
 			if (info->desc.vsel_reg == res->start)
@@ -336,13 +331,13 @@ static int pm8607_regulator_probe(struct platform_device *pdev)
 			return -EINVAL;
 		}
 	} else {
-		/* There's no resource in 88PM8606 PREG regulator driver */
+		 
 		info = &pm8606_regulator_info[0];
-		/* i is used to check regulator ID */
+		 
 		i = -1;
 	}
 
-	/* check DVC ramp slope double */
+	 
 	if ((i == PM8607_ID_BUCK3) && chip->buck3_double)
 		info->slope_double = 1;
 

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _EMAC_SGMII_H_
 #define _EMAC_SGMII_H_
@@ -8,12 +7,7 @@
 struct emac_adapter;
 struct platform_device;
 
-/** emac_sgmii - internal emac phy
- * @init initialization function
- * @open called when the driver is opened
- * @close called when the driver is closed
- * @link_change called when the link state changes
- */
+ 
 struct sgmii_ops {
 	int (*init)(struct emac_adapter *adpt);
 	int (*open)(struct emac_adapter *adpt);
@@ -22,13 +16,7 @@ struct sgmii_ops {
 	void (*reset)(struct emac_adapter *adpt);
 };
 
-/** emac_sgmii - internal emac phy
- * @base base address
- * @digital per-lane digital block
- * @irq the interrupt number
- * @decode_error_count reference count of consecutive decode errors
- * @sgmii_ops sgmii ops
- */
+ 
 struct emac_sgmii {
 	void __iomem		*base;
 	void __iomem		*digital;

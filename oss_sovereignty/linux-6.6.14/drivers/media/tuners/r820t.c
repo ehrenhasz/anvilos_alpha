@@ -1,24 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0
-// Rafael Micro R820T driver
-//
-// Copyright (C) 2013 Mauro Carvalho Chehab
-//
-// This driver was written from scratch, based on an existing driver
-// that it is part of rtl-sdr git tree, released under GPLv2:
-//	https://groups.google.com/forum/#!topic/ultra-cheap-sdr/Y3rBEOFtHug
-//	https://github.com/n1gp/gr-baz
-//
-// From what I understood from the threads, the original driver was converted
-// to userspace from a Realtek tree. I couldn't find the original tree.
-// However, the original driver look awkward on my eyes. So, I decided to
-// write a new version from it from the scratch, while trying to reproduce
-// everything found there.
-//
-// TODO:
-//	After locking, the original driver seems to have some routines to
-//		improve reception. This was not implemented here yet.
-//
-//	RF Gain set/get is not implemented.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,10 +30,7 @@
 #include "tuner-i2c.h"
 #include "r820t.h"
 
-/*
- * FIXME: I think that there are only 32 registers, but better safe than
- *	  sorry. After finishing the driver, we may review it.
- */
+ 
 #define REG_SHADOW_START	5
 #define NUM_REGS		27
 #define NUM_IMR			5
@@ -50,9 +47,7 @@ module_param(no_imr_cal, int, 0444);
 MODULE_PARM_DESC(no_imr_cal, "Disable IMR calibration at module init");
 
 
-/*
- * enums and structures
- */
+ 
 
 enum xtal_cap_value {
 	XTAL_LOW_CAP_30P = 0,
@@ -77,7 +72,7 @@ struct r820t_priv {
 	u8				regs[NUM_REGS];
 	u8				buf[NUM_REGS + 1];
 	enum xtal_cap_value		xtal_cap_sel;
-	u16				pll;	/* kHz */
+	u16				pll;	 
 	u32				int_freq;
 	u8				fil_cal_code;
 	bool				imr_done;
@@ -85,11 +80,11 @@ struct r820t_priv {
 	bool				init_done;
 	struct r820t_sect_type		imr_data[NUM_IMR];
 
-	/* Store current mode */
+	 
 	u32				delsys;
 	enum v4l2_tuner_type		type;
 	v4l2_std_id			std;
-	u32				bw;	/* in MHz */
+	u32				bw;	 
 };
 
 struct r820t_freq_range {
@@ -100,218 +95,216 @@ struct r820t_freq_range {
 	u8	xtal_cap20p;
 	u8	xtal_cap10p;
 	u8	xtal_cap0p;
-	u8	imr_mem;		/* Not used, currently */
+	u8	imr_mem;		 
 };
 
 #define VCO_POWER_REF   0x02
 #define DIP_FREQ	32000000
 
-/*
- * Static constants
- */
+ 
 
 static LIST_HEAD(hybrid_tuner_instance_list);
 static DEFINE_MUTEX(r820t_list_mutex);
 
-/* Those initial values start from REG_SHADOW_START */
+ 
 static const u8 r820t_init_array[NUM_REGS] = {
-	0x83, 0x32, 0x75,			/* 05 to 07 */
-	0xc0, 0x40, 0xd6, 0x6c,			/* 08 to 0b */
-	0xf5, 0x63, 0x75, 0x68,			/* 0c to 0f */
-	0x6c, 0x83, 0x80, 0x00,			/* 10 to 13 */
-	0x0f, 0x00, 0xc0, 0x30,			/* 14 to 17 */
-	0x48, 0xcc, 0x60, 0x00,			/* 18 to 1b */
-	0x54, 0xae, 0x4a, 0xc0			/* 1c to 1f */
+	0x83, 0x32, 0x75,			 
+	0xc0, 0x40, 0xd6, 0x6c,			 
+	0xf5, 0x63, 0x75, 0x68,			 
+	0x6c, 0x83, 0x80, 0x00,			 
+	0x0f, 0x00, 0xc0, 0x30,			 
+	0x48, 0xcc, 0x60, 0x00,			 
+	0x54, 0xae, 0x4a, 0xc0			 
 };
 
-/* Tuner frequency ranges */
+ 
 static const struct r820t_freq_range freq_ranges[] = {
 	{
 		.freq = 0,
-		.open_d = 0x08,		/* low */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0xdf,		/* R27[7:0]  band2,band0 */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.open_d = 0x08,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0xdf,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 50,		/* Start freq, in MHz */
-		.open_d = 0x08,		/* low */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0xbe,		/* R27[7:0]  band4,band1  */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.freq = 50,		 
+		.open_d = 0x08,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0xbe,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 55,		/* Start freq, in MHz */
-		.open_d = 0x08,		/* low */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x8b,		/* R27[7:0]  band7,band4 */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.freq = 55,		 
+		.open_d = 0x08,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x8b,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 60,		/* Start freq, in MHz */
-		.open_d = 0x08,		/* low */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x7b,		/* R27[7:0]  band8,band4 */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.freq = 60,		 
+		.open_d = 0x08,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x7b,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 65,		/* Start freq, in MHz */
-		.open_d = 0x08,		/* low */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x69,		/* R27[7:0]  band9,band6 */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.freq = 65,		 
+		.open_d = 0x08,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x69,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 70,		/* Start freq, in MHz */
-		.open_d = 0x08,		/* low */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x58,		/* R27[7:0]  band10,band7 */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.freq = 70,		 
+		.open_d = 0x08,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x58,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 75,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x44,		/* R27[7:0]  band11,band11 */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.freq = 75,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x44,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 80,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x44,		/* R27[7:0]  band11,band11 */
-		.xtal_cap20p = 0x02,	/* R16[1:0]  20pF (10)   */
+		.freq = 80,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x44,		 
+		.xtal_cap20p = 0x02,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 90,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x34,		/* R27[7:0]  band12,band11 */
-		.xtal_cap20p = 0x01,	/* R16[1:0]  10pF (01)   */
+		.freq = 90,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x34,		 
+		.xtal_cap20p = 0x01,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 100,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x34,		/* R27[7:0]  band12,band11 */
-		.xtal_cap20p = 0x01,	/* R16[1:0]  10pF (01)    */
+		.freq = 100,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x34,		 
+		.xtal_cap20p = 0x01,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 0,
 	}, {
-		.freq = 110,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x24,		/* R27[7:0]  band13,band11 */
-		.xtal_cap20p = 0x01,	/* R16[1:0]  10pF (01)   */
+		.freq = 110,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x24,		 
+		.xtal_cap20p = 0x01,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 1,
 	}, {
-		.freq = 120,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x24,		/* R27[7:0]  band13,band11 */
-		.xtal_cap20p = 0x01,	/* R16[1:0]  10pF (01)   */
+		.freq = 120,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x24,		 
+		.xtal_cap20p = 0x01,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 1,
 	}, {
-		.freq = 140,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x14,		/* R27[7:0]  band14,band11 */
-		.xtal_cap20p = 0x01,	/* R16[1:0]  10pF (01)   */
+		.freq = 140,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x14,		 
+		.xtal_cap20p = 0x01,	 
 		.xtal_cap10p = 0x01,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 1,
 	}, {
-		.freq = 180,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x13,		/* R27[7:0]  band14,band12 */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 180,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x13,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 1,
 	}, {
-		.freq = 220,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x13,		/* R27[7:0]  band14,band12 */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 220,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x13,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 2,
 	}, {
-		.freq = 250,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x11,		/* R27[7:0]  highest,highest */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 250,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x11,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 2,
 	}, {
-		.freq = 280,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x02,	/* R26[7:6]=0 (LPF)  R26[1:0]=2 (low) */
-		.tf_c = 0x00,		/* R27[7:0]  highest,highest */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 280,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x02,	 
+		.tf_c = 0x00,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 2,
 	}, {
-		.freq = 310,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x41,	/* R26[7:6]=1 (bypass)  R26[1:0]=1 (middle) */
-		.tf_c = 0x00,		/* R27[7:0]  highest,highest */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 310,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x41,	 
+		.tf_c = 0x00,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 2,
 	}, {
-		.freq = 450,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x41,	/* R26[7:6]=1 (bypass)  R26[1:0]=1 (middle) */
-		.tf_c = 0x00,		/* R27[7:0]  highest,highest */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 450,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x41,	 
+		.tf_c = 0x00,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 3,
 	}, {
-		.freq = 588,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x40,	/* R26[7:6]=1 (bypass)  R26[1:0]=0 (highest) */
-		.tf_c = 0x00,		/* R27[7:0]  highest,highest */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 588,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x40,	 
+		.tf_c = 0x00,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 3,
 	}, {
-		.freq = 650,		/* Start freq, in MHz */
-		.open_d = 0x00,		/* high */
-		.rf_mux_ploy = 0x40,	/* R26[7:6]=1 (bypass)  R26[1:0]=0 (highest) */
-		.tf_c = 0x00,		/* R27[7:0]  highest,highest */
-		.xtal_cap20p = 0x00,	/* R16[1:0]  0pF (00)   */
+		.freq = 650,		 
+		.open_d = 0x00,		 
+		.rf_mux_ploy = 0x40,	 
+		.tf_c = 0x00,		 
+		.xtal_cap20p = 0x00,	 
 		.xtal_cap10p = 0x00,
 		.xtal_cap0p = 0x00,
 		.imr_mem = 4,
@@ -346,9 +339,7 @@ static const char *r820t_chip_enum_to_str(enum r820t_chip chip)
 	}
 }
 
-/*
- * I2C read/write code and shadow registers logic
- */
+ 
 static void shadow_store(struct r820t_priv *priv, u8 reg, const u8 *val,
 			 int len)
 {
@@ -374,7 +365,7 @@ static int r820t_write(struct r820t_priv *priv, u8 reg, const u8 *val,
 {
 	int rc, size, pos = 0;
 
-	/* Store the shadow registers */
+	 
 	shadow_store(priv, reg, val, len);
 
 	do {
@@ -383,7 +374,7 @@ static int r820t_write(struct r820t_priv *priv, u8 reg, const u8 *val,
 		else
 			size = len;
 
-		/* Fill I2C buffer */
+		 
 		priv->buf[0] = reg;
 		memcpy(&priv->buf[1], &val[pos], size);
 
@@ -408,7 +399,7 @@ static int r820t_write(struct r820t_priv *priv, u8 reg, const u8 *val,
 
 static inline int r820t_write_reg(struct r820t_priv *priv, u8 reg, u8 val)
 {
-	u8 tmp = val; /* work around GCC PR81715 with asan-stack=1 */
+	u8 tmp = val;  
 
 	return r820t_write(priv, reg, &tmp, 1);
 }
@@ -453,7 +444,7 @@ static int r820t_read(struct r820t_priv *priv, u8 reg, u8 *val, int len)
 		return -EREMOTEIO;
 	}
 
-	/* Copy data to the output buffer */
+	 
 	for (i = 0; i < len; i++)
 		val[i] = bitrev8(p[i]);
 
@@ -463,9 +454,7 @@ static int r820t_read(struct r820t_priv *priv, u8 reg, u8 *val, int len)
 	return 0;
 }
 
-/*
- * r820t tuning logic
- */
+ 
 
 static int r820t_set_mux(struct r820t_priv *priv, u32 freq)
 {
@@ -473,7 +462,7 @@ static int r820t_set_mux(struct r820t_priv *priv, u32 freq)
 	int i, rc;
 	u8 val, reg08, reg09;
 
-	/* Get the proper frequency range */
+	 
 	freq = freq / 1000000;
 	for (i = 0; i < ARRAY_SIZE(freq_ranges) - 1; i++) {
 		if (freq < freq_ranges[i + 1].freq)
@@ -483,22 +472,22 @@ static int r820t_set_mux(struct r820t_priv *priv, u32 freq)
 
 	tuner_dbg("set r820t range#%d for frequency %d MHz\n", i, freq);
 
-	/* Open Drain */
+	 
 	rc = r820t_write_reg_mask(priv, 0x17, range->open_d, 0x08);
 	if (rc < 0)
 		return rc;
 
-	/* RF_MUX,Polymux */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1a, range->rf_mux_ploy, 0xc3);
 	if (rc < 0)
 		return rc;
 
-	/* TF BAND */
+	 
 	rc = r820t_write_reg(priv, 0x1b, range->tf_c);
 	if (rc < 0)
 		return rc;
 
-	/* XTAL CAP & Drive */
+	 
 	switch (priv->xtal_cap_sel) {
 	case XTAL_LOW_CAP_30P:
 	case XTAL_LOW_CAP_20P:
@@ -541,7 +530,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	u32 vco_freq;
 	int rc, i;
 	unsigned sleep_time = 10000;
-	u32 vco_fra;		/* VCO contribution by SDM (kHz) */
+	u32 vco_fra;		 
 	u32 vco_min  = 1770000;
 	u32 vco_max  = vco_min * 2;
 	u32 pll_ref;
@@ -554,16 +543,16 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	u8 ni, si, nint, vco_fine_tune, val;
 	u8 data[5];
 
-	/* Frequency in kHz */
+	 
 	freq = freq / 1000;
 	pll_ref = priv->cfg->xtal / 1000;
 
 #if 0
-	/* Doesn't exist on rtl-sdk, and on field tests, caused troubles */
+	 
 	if ((priv->cfg->rafael_chip == CHIP_R620D) ||
 	   (priv->cfg->rafael_chip == CHIP_R828D) ||
 	   (priv->cfg->rafael_chip == CHIP_R828)) {
-		/* ref set refdiv2, reffreq = Xtal/2 on ATV application */
+		 
 		if (type != V4L2_TUNER_DIGITAL_TV) {
 			pll_ref /= 2;
 			refdiv2 = 0x10;
@@ -581,17 +570,17 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	if (rc < 0)
 		return rc;
 
-	/* set pll autotune = 128kHz */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1a, 0x00, 0x0c);
 	if (rc < 0)
 		return rc;
 
-	/* set VCO current = 100 */
+	 
 	rc = r820t_write_reg_mask(priv, 0x12, 0x80, 0xe0);
 	if (rc < 0)
 		return rc;
 
-	/* Calculate divider */
+	 
 	while (mix_div <= 64) {
 		if (((freq * mix_div) >= vco_min) &&
 		   ((freq * mix_div) < vco_max)) {
@@ -614,10 +603,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	tuner_dbg("mix_div=%d div_num=%d vco_fine_tune=%d\n",
 			mix_div, div_num, vco_fine_tune);
 
-	/*
-	 * XXX: R828D/16MHz seems to have always vco_fine_tune=1.
-	 * Due to that, this calculation goes wrong.
-	 */
+	 
 	if (priv->cfg->rafael_chip != CHIP_R828D) {
 		if (vco_fine_tune > VCO_POWER_REF)
 			div_num = div_num - 1;
@@ -633,7 +619,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	nint = vco_freq / (2 * pll_ref);
 	vco_fra = vco_freq - 2 * pll_ref * nint;
 
-	/* boundary spur prevention */
+	 
 	if (vco_fra < pll_ref / 64) {
 		vco_fra = 0;
 	} else if (vco_fra > pll_ref * 127 / 64) {
@@ -652,7 +638,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	if (rc < 0)
 		return rc;
 
-	/* pw_sdm */
+	 
 	if (!vco_fra)
 		val = 0x08;
 	else
@@ -662,7 +648,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	if (rc < 0)
 		return rc;
 
-	/* sdm calculator */
+	 
 	while (vco_fra > 1) {
 		if (vco_fra > (2 * pll_ref / n_sdm)) {
 			sdm = sdm + 32768 / (n_sdm / 2);
@@ -686,7 +672,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	for (i = 0; i < 2; i++) {
 		usleep_range(sleep_time, sleep_time + 1000);
 
-		/* Check if PLL has locked */
+		 
 		rc = r820t_read(priv, 0x00, data, 3);
 		if (rc < 0)
 			return rc;
@@ -694,7 +680,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 			break;
 
 		if (!i) {
-			/* Didn't lock. Increase VCO current */
+			 
 			rc = r820t_write_reg_mask(priv, 0x12, 0x60, 0xe0);
 			if (rc < 0)
 				return rc;
@@ -709,7 +695,7 @@ static int r820t_set_pll(struct r820t_priv *priv, enum v4l2_tuner_type type,
 	priv->has_lock = true;
 	tuner_dbg("tuner has lock at frequency %d kHz\n", freq);
 
-	/* set pll autotune = 8kHz */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1a, 0x08, 0x08);
 
 	return rc;
@@ -730,52 +716,52 @@ static int r820t_sysfreq_sel(struct r820t_priv *priv, u32 freq,
 	case SYS_DVBT:
 		if ((freq == 506000000) || (freq == 666000000) ||
 		   (freq == 818000000)) {
-			mixer_top = 0x14;	/* mixer top:14 , top-1, low-discharge */
-			lna_top = 0xe5;		/* detect bw 3, lna top:4, predet top:2 */
-			cp_cur = 0x28;		/* 101, 0.2 */
-			div_buf_cur = 0x20;	/* 10, 200u */
+			mixer_top = 0x14;	 
+			lna_top = 0xe5;		 
+			cp_cur = 0x28;		 
+			div_buf_cur = 0x20;	 
 		} else {
-			mixer_top = 0x24;	/* mixer top:13 , top-1, low-discharge */
-			lna_top = 0xe5;		/* detect bw 3, lna top:4, predet top:2 */
-			cp_cur = 0x38;		/* 111, auto */
-			div_buf_cur = 0x30;	/* 11, 150u */
+			mixer_top = 0x24;	 
+			lna_top = 0xe5;		 
+			cp_cur = 0x38;		 
+			div_buf_cur = 0x30;	 
 		}
-		lna_vth_l = 0x53;		/* lna vth 0.84	,  vtl 0.64 */
-		mixer_vth_l = 0x75;		/* mixer vth 1.04, vtl 0.84 */
+		lna_vth_l = 0x53;		 
+		mixer_vth_l = 0x75;		 
 		air_cable1_in = 0x00;
 		cable2_in = 0x00;
 		pre_dect = 0x40;
 		lna_discharge = 14;
-		filter_cur = 0x40;		/* 10, low */
+		filter_cur = 0x40;		 
 		break;
 	case SYS_DVBT2:
-		mixer_top = 0x24;	/* mixer top:13 , top-1, low-discharge */
-		lna_top = 0xe5;		/* detect bw 3, lna top:4, predet top:2 */
-		lna_vth_l = 0x53;	/* lna vth 0.84	,  vtl 0.64 */
-		mixer_vth_l = 0x75;	/* mixer vth 1.04, vtl 0.84 */
+		mixer_top = 0x24;	 
+		lna_top = 0xe5;		 
+		lna_vth_l = 0x53;	 
+		mixer_vth_l = 0x75;	 
 		air_cable1_in = 0x00;
 		cable2_in = 0x00;
 		pre_dect = 0x40;
 		lna_discharge = 14;
-		cp_cur = 0x38;		/* 111, auto */
-		div_buf_cur = 0x30;	/* 11, 150u */
-		filter_cur = 0x40;	/* 10, low */
+		cp_cur = 0x38;		 
+		div_buf_cur = 0x30;	 
+		filter_cur = 0x40;	 
 		break;
 	case SYS_ISDBT:
-		mixer_top = 0x24;	/* mixer top:13 , top-1, low-discharge */
-		lna_top = 0xe5;		/* detect bw 3, lna top:4, predet top:2 */
-		lna_vth_l = 0x75;	/* lna vth 1.04	,  vtl 0.84 */
-		mixer_vth_l = 0x75;	/* mixer vth 1.04, vtl 0.84 */
+		mixer_top = 0x24;	 
+		lna_top = 0xe5;		 
+		lna_vth_l = 0x75;	 
+		mixer_vth_l = 0x75;	 
 		air_cable1_in = 0x00;
 		cable2_in = 0x00;
 		pre_dect = 0x40;
 		lna_discharge = 14;
-		cp_cur = 0x38;		/* 111, auto */
-		div_buf_cur = 0x30;	/* 11, 150u */
-		filter_cur = 0x40;	/* 10, low */
+		cp_cur = 0x38;		 
+		div_buf_cur = 0x30;	 
+		filter_cur = 0x40;	 
 		break;
 	case SYS_DVBC_ANNEX_A:
-		mixer_top = 0x24;       /* mixer top:13 , top-1, low-discharge */
+		mixer_top = 0x24;        
 		lna_top = 0xe5;
 		lna_vth_l = 0x62;
 		mixer_vth_l = 0x75;
@@ -783,22 +769,22 @@ static int r820t_sysfreq_sel(struct r820t_priv *priv, u32 freq,
 		cable2_in = 0x00;
 		pre_dect = 0x40;
 		lna_discharge = 14;
-		cp_cur = 0x38;          /* 111, auto */
-		div_buf_cur = 0x30;     /* 11, 150u */
-		filter_cur = 0x40;      /* 10, low */
+		cp_cur = 0x38;           
+		div_buf_cur = 0x30;      
+		filter_cur = 0x40;       
 		break;
-	default: /* DVB-T 8M */
-		mixer_top = 0x24;	/* mixer top:13 , top-1, low-discharge */
-		lna_top = 0xe5;		/* detect bw 3, lna top:4, predet top:2 */
-		lna_vth_l = 0x53;	/* lna vth 0.84	,  vtl 0.64 */
-		mixer_vth_l = 0x75;	/* mixer vth 1.04, vtl 0.84 */
+	default:  
+		mixer_top = 0x24;	 
+		lna_top = 0xe5;		 
+		lna_vth_l = 0x53;	 
+		mixer_vth_l = 0x75;	 
 		air_cable1_in = 0x00;
 		cable2_in = 0x00;
 		pre_dect = 0x40;
 		lna_discharge = 14;
-		cp_cur = 0x38;		/* 111, auto */
-		div_buf_cur = 0x30;	/* 11, 150u */
-		filter_cur = 0x40;	/* 10, low */
+		cp_cur = 0x38;		 
+		div_buf_cur = 0x30;	 
+		filter_cur = 0x40;	 
 		break;
 	}
 
@@ -833,7 +819,7 @@ static int r820t_sysfreq_sel(struct r820t_priv *priv, u32 freq,
 	if (rc < 0)
 		return rc;
 
-	/* Air-IN only for Astrometa */
+	 
 	rc = r820t_write_reg_mask(priv, 0x05, air_cable1_in, 0x60);
 	if (rc < 0)
 		return rc;
@@ -850,89 +836,75 @@ static int r820t_sysfreq_sel(struct r820t_priv *priv, u32 freq,
 	rc = r820t_write_reg_mask(priv, 0x0a, filter_cur, 0x60);
 	if (rc < 0)
 		return rc;
-	/*
-	 * Original driver initializes regs 0x05 and 0x06 with the
-	 * same value again on this point. Probably, it is just an
-	 * error there
-	 */
+	 
 
-	/*
-	 * Set LNA
-	 */
+	 
 
 	tuner_dbg("adjusting LNA parameters\n");
 	if (type != V4L2_TUNER_ANALOG_TV) {
-		/* LNA TOP: lowest */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1d, 0, 0x38);
 		if (rc < 0)
 			return rc;
 
-		/* 0: normal mode */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1c, 0, 0x04);
 		if (rc < 0)
 			return rc;
 
-		/* 0: PRE_DECT off */
+		 
 		rc = r820t_write_reg_mask(priv, 0x06, 0, 0x40);
 		if (rc < 0)
 			return rc;
 
-		/* agc clk 250hz */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1a, 0x30, 0x30);
 		if (rc < 0)
 			return rc;
 
 		msleep(250);
 
-		/* write LNA TOP = 3 */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1d, 0x18, 0x38);
 		if (rc < 0)
 			return rc;
 
-		/*
-		 * write discharge mode
-		 * FIXME: IMHO, the mask here is wrong, but it matches
-		 * what's there at the original driver
-		 */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1c, mixer_top, 0x04);
 		if (rc < 0)
 			return rc;
 
-		/* LNA discharge current */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1e, lna_discharge, 0x1f);
 		if (rc < 0)
 			return rc;
 
-		/* agc clk 60hz */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1a, 0x20, 0x30);
 		if (rc < 0)
 			return rc;
 	} else {
-		/* PRE_DECT off */
+		 
 		rc = r820t_write_reg_mask(priv, 0x06, 0, 0x40);
 		if (rc < 0)
 			return rc;
 
-		/* write LNA TOP */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1d, lna_top, 0x38);
 		if (rc < 0)
 			return rc;
 
-		/*
-		 * write discharge mode
-		 * FIXME: IMHO, the mask here is wrong, but it matches
-		 * what's there at the original driver
-		 */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1c, mixer_top, 0x04);
 		if (rc < 0)
 			return rc;
 
-		/* LNA discharge current */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1e, lna_discharge, 0x1f);
 		if (rc < 0)
 			return rc;
 
-		/* agc clk 1Khz, external det1 cap 1u */
+		 
 		rc = r820t_write_reg_mask(priv, 0x1a, 0x00, 0x30);
 		if (rc < 0)
 			return rc;
@@ -962,104 +934,99 @@ static int r820t_set_tv_standard(struct r820t_priv *priv,
 	if (delsys == SYS_ISDBT) {
 		if_khz = 4063;
 		filt_cal_lo = 59000;
-		filt_gain = 0x10;	/* +3db, 6mhz on */
-		img_r = 0x00;		/* image negative */
-		filt_q = 0x10;		/* r10[4]:low q(1'b1) */
-		hp_cor = 0x6a;		/* 1.7m disable, +2cap, 1.25mhz */
-		ext_enable = 0x40;	/* r30[6], ext enable; r30[5]:0 ext at lna max */
-		loop_through = 0x00;	/* r5[7], lt on */
-		lt_att = 0x00;		/* r31[7], lt att enable */
-		flt_ext_widest = 0x80;	/* r15[7]: flt_ext_wide on */
-		polyfil_cur = 0x60;	/* r25[6:5]:min */
+		filt_gain = 0x10;	 
+		img_r = 0x00;		 
+		filt_q = 0x10;		 
+		hp_cor = 0x6a;		 
+		ext_enable = 0x40;	 
+		loop_through = 0x00;	 
+		lt_att = 0x00;		 
+		flt_ext_widest = 0x80;	 
+		polyfil_cur = 0x60;	 
 	} else if (delsys == SYS_DVBC_ANNEX_A) {
 		if_khz = 5070;
 		filt_cal_lo = 73500;
-		filt_gain = 0x10;	/* +3db, 6mhz on */
-		img_r = 0x00;		/* image negative */
-		filt_q = 0x10;		/* r10[4]:low q(1'b1) */
-		hp_cor = 0x0b;		/* 1.7m disable, +0cap, 1.0mhz */
-		ext_enable = 0x40;	/* r30[6]=1 ext enable; r30[5]:1 ext at lna max-1 */
-		loop_through = 0x00;	/* r5[7], lt on */
-		lt_att = 0x00;		/* r31[7], lt att enable */
-		flt_ext_widest = 0x00;	/* r15[7]: flt_ext_wide off */
-		polyfil_cur = 0x60;	/* r25[6:5]:min */
+		filt_gain = 0x10;	 
+		img_r = 0x00;		 
+		filt_q = 0x10;		 
+		hp_cor = 0x0b;		 
+		ext_enable = 0x40;	 
+		loop_through = 0x00;	 
+		lt_att = 0x00;		 
+		flt_ext_widest = 0x00;	 
+		polyfil_cur = 0x60;	 
 	} else if (delsys == SYS_DVBC_ANNEX_C) {
 		if_khz = 4063;
 		filt_cal_lo = 55000;
-		filt_gain = 0x10;	/* +3db, 6mhz on */
-		img_r = 0x00;		/* image negative */
-		filt_q = 0x10;		/* r10[4]:low q(1'b1) */
-		hp_cor = 0x6a;		/* 1.7m disable, +0cap, 1.0mhz */
-		ext_enable = 0x40;	/* r30[6]=1 ext enable; r30[5]:1 ext at lna max-1 */
-		loop_through = 0x00;	/* r5[7], lt on */
-		lt_att = 0x00;		/* r31[7], lt att enable */
-		flt_ext_widest = 0x80;	/* r15[7]: flt_ext_wide on */
-		polyfil_cur = 0x60;	/* r25[6:5]:min */
+		filt_gain = 0x10;	 
+		img_r = 0x00;		 
+		filt_q = 0x10;		 
+		hp_cor = 0x6a;		 
+		ext_enable = 0x40;	 
+		loop_through = 0x00;	 
+		lt_att = 0x00;		 
+		flt_ext_widest = 0x80;	 
+		polyfil_cur = 0x60;	 
 	} else {
 		if (bw <= 6) {
 			if_khz = 3570;
-			filt_cal_lo = 56000;	/* 52000->56000 */
-			filt_gain = 0x10;	/* +3db, 6mhz on */
-			img_r = 0x00;		/* image negative */
-			filt_q = 0x10;		/* r10[4]:low q(1'b1) */
-			hp_cor = 0x6b;		/* 1.7m disable, +2cap, 1.0mhz */
-			ext_enable = 0x60;	/* r30[6]=1 ext enable; r30[5]:1 ext at lna max-1 */
-			loop_through = 0x00;	/* r5[7], lt on */
-			lt_att = 0x00;		/* r31[7], lt att enable */
-			flt_ext_widest = 0x00;	/* r15[7]: flt_ext_wide off */
-			polyfil_cur = 0x60;	/* r25[6:5]:min */
+			filt_cal_lo = 56000;	 
+			filt_gain = 0x10;	 
+			img_r = 0x00;		 
+			filt_q = 0x10;		 
+			hp_cor = 0x6b;		 
+			ext_enable = 0x60;	 
+			loop_through = 0x00;	 
+			lt_att = 0x00;		 
+			flt_ext_widest = 0x00;	 
+			polyfil_cur = 0x60;	 
 		} else if (bw == 7) {
 #if 0
-			/*
-			 * There are two 7 MHz tables defined on the original
-			 * driver, but just the second one seems to be visible
-			 * by rtl2832. Keep this one here commented, as it
-			 * might be needed in the future
-			 */
+			 
 
 			if_khz = 4070;
 			filt_cal_lo = 60000;
-			filt_gain = 0x10;	/* +3db, 6mhz on */
-			img_r = 0x00;		/* image negative */
-			filt_q = 0x10;		/* r10[4]:low q(1'b1) */
-			hp_cor = 0x2b;		/* 1.7m disable, +1cap, 1.0mhz */
-			ext_enable = 0x60;	/* r30[6]=1 ext enable; r30[5]:1 ext at lna max-1 */
-			loop_through = 0x00;	/* r5[7], lt on */
-			lt_att = 0x00;		/* r31[7], lt att enable */
-			flt_ext_widest = 0x00;	/* r15[7]: flt_ext_wide off */
-			polyfil_cur = 0x60;	/* r25[6:5]:min */
+			filt_gain = 0x10;	 
+			img_r = 0x00;		 
+			filt_q = 0x10;		 
+			hp_cor = 0x2b;		 
+			ext_enable = 0x60;	 
+			loop_through = 0x00;	 
+			lt_att = 0x00;		 
+			flt_ext_widest = 0x00;	 
+			polyfil_cur = 0x60;	 
 #endif
-			/* 7 MHz, second table */
+			 
 			if_khz = 4570;
 			filt_cal_lo = 63000;
-			filt_gain = 0x10;	/* +3db, 6mhz on */
-			img_r = 0x00;		/* image negative */
-			filt_q = 0x10;		/* r10[4]:low q(1'b1) */
-			hp_cor = 0x2a;		/* 1.7m disable, +1cap, 1.25mhz */
-			ext_enable = 0x60;	/* r30[6]=1 ext enable; r30[5]:1 ext at lna max-1 */
-			loop_through = 0x00;	/* r5[7], lt on */
-			lt_att = 0x00;		/* r31[7], lt att enable */
-			flt_ext_widest = 0x00;	/* r15[7]: flt_ext_wide off */
-			polyfil_cur = 0x60;	/* r25[6:5]:min */
+			filt_gain = 0x10;	 
+			img_r = 0x00;		 
+			filt_q = 0x10;		 
+			hp_cor = 0x2a;		 
+			ext_enable = 0x60;	 
+			loop_through = 0x00;	 
+			lt_att = 0x00;		 
+			flt_ext_widest = 0x00;	 
+			polyfil_cur = 0x60;	 
 		} else {
 			if_khz = 4570;
 			filt_cal_lo = 68500;
-			filt_gain = 0x10;	/* +3db, 6mhz on */
-			img_r = 0x00;		/* image negative */
-			filt_q = 0x10;		/* r10[4]:low q(1'b1) */
-			hp_cor = 0x0b;		/* 1.7m disable, +0cap, 1.0mhz */
-			ext_enable = 0x60;	/* r30[6]=1 ext enable; r30[5]:1 ext at lna max-1 */
-			loop_through = 0x00;	/* r5[7], lt on */
-			lt_att = 0x00;		/* r31[7], lt att enable */
-			flt_ext_widest = 0x00;	/* r15[7]: flt_ext_wide off */
-			polyfil_cur = 0x60;	/* r25[6:5]:min */
+			filt_gain = 0x10;	 
+			img_r = 0x00;		 
+			filt_q = 0x10;		 
+			hp_cor = 0x0b;		 
+			ext_enable = 0x60;	 
+			loop_through = 0x00;	 
+			lt_att = 0x00;		 
+			flt_ext_widest = 0x00;	 
+			polyfil_cur = 0x60;	 
 		}
 	}
 
-	/* Initialize the shadow registers */
+	 
 	memcpy(priv->regs, r820t_init_array, sizeof(r820t_init_array));
 
-	/* Init Flag & Xtal_check Result */
+	 
 	if (priv->imr_done)
 		val = 1 | priv->xtal_cap_sel << 1;
 	else
@@ -1068,12 +1035,12 @@ static int r820t_set_tv_standard(struct r820t_priv *priv,
 	if (rc < 0)
 		return rc;
 
-	/* version */
+	 
 	rc = r820t_write_reg_mask(priv, 0x13, VER_NUM, 0x3f);
 	if (rc < 0)
 		return rc;
 
-	/* for LT Gain test */
+	 
 	if (type != V4L2_TUNER_ANALOG_TV) {
 		rc = r820t_write_reg_mask(priv, 0x1d, 0x00, 0x38);
 		if (rc < 0)
@@ -1082,7 +1049,7 @@ static int r820t_set_tv_standard(struct r820t_priv *priv,
 	}
 	priv->int_freq = if_khz * 1000;
 
-	/* Check if standard changed. If so, filter calibration is needed */
+	 
 	if (type != priv->type)
 		need_calibration = true;
 	else if ((type == V4L2_TUNER_ANALOG_TV) && (std != priv->std))
@@ -1096,17 +1063,17 @@ static int r820t_set_tv_standard(struct r820t_priv *priv,
 	if (need_calibration) {
 		tuner_dbg("calibrating the tuner\n");
 		for (i = 0; i < 2; i++) {
-			/* Set filt_cap */
+			 
 			rc = r820t_write_reg_mask(priv, 0x0b, hp_cor, 0x60);
 			if (rc < 0)
 				return rc;
 
-			/* set cali clk =on */
+			 
 			rc = r820t_write_reg_mask(priv, 0x0f, 0x04, 0x04);
 			if (rc < 0)
 				return rc;
 
-			/* X'tal cap 0pF for PLL */
+			 
 			rc = r820t_write_reg_mask(priv, 0x10, 0x00, 0x03);
 			if (rc < 0)
 				return rc;
@@ -1115,24 +1082,24 @@ static int r820t_set_tv_standard(struct r820t_priv *priv,
 			if (rc < 0 || !priv->has_lock)
 				return rc;
 
-			/* Start Trigger */
+			 
 			rc = r820t_write_reg_mask(priv, 0x0b, 0x10, 0x10);
 			if (rc < 0)
 				return rc;
 
 			usleep_range(1000, 2000);
 
-			/* Stop Trigger */
+			 
 			rc = r820t_write_reg_mask(priv, 0x0b, 0x00, 0x10);
 			if (rc < 0)
 				return rc;
 
-			/* set cali clk =off */
+			 
 			rc = r820t_write_reg_mask(priv, 0x0f, 0x00, 0x04);
 			if (rc < 0)
 				return rc;
 
-			/* Check if calibration worked */
+			 
 			rc = r820t_read(priv, 0x00, data, sizeof(data));
 			if (rc < 0)
 				return rc;
@@ -1141,7 +1108,7 @@ static int r820t_set_tv_standard(struct r820t_priv *priv,
 			if (priv->fil_cal_code && priv->fil_cal_code != 0x0f)
 				break;
 		}
-		/* narrowest */
+		 
 		if (priv->fil_cal_code == 0x0f)
 			priv->fil_cal_code = 0;
 	}
@@ -1151,48 +1118,48 @@ static int r820t_set_tv_standard(struct r820t_priv *priv,
 	if (rc < 0)
 		return rc;
 
-	/* Set BW, Filter_gain, & HP corner */
+	 
 	rc = r820t_write_reg_mask(priv, 0x0b, hp_cor, 0xef);
 	if (rc < 0)
 		return rc;
 
 
-	/* Set Img_R */
+	 
 	rc = r820t_write_reg_mask(priv, 0x07, img_r, 0x80);
 	if (rc < 0)
 		return rc;
 
-	/* Set filt_3dB, V6MHz */
+	 
 	rc = r820t_write_reg_mask(priv, 0x06, filt_gain, 0x30);
 	if (rc < 0)
 		return rc;
 
-	/* channel filter extension */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1e, ext_enable, 0x60);
 	if (rc < 0)
 		return rc;
 
-	/* Loop through */
+	 
 	rc = r820t_write_reg_mask(priv, 0x05, loop_through, 0x80);
 	if (rc < 0)
 		return rc;
 
-	/* Loop through attenuation */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1f, lt_att, 0x80);
 	if (rc < 0)
 		return rc;
 
-	/* filter extension widest */
+	 
 	rc = r820t_write_reg_mask(priv, 0x0f, flt_ext_widest, 0x80);
 	if (rc < 0)
 		return rc;
 
-	/* RF poly filter current */
+	 
 	rc = r820t_write_reg_mask(priv, 0x19, polyfil_cur, 0x60);
 	if (rc < 0)
 		return rc;
 
-	/* Store current standard. If it changes, re-calibrate the tuner */
+	 
 	priv->delsys = delsys;
 	priv->type = type;
 	priv->std = std;
@@ -1214,13 +1181,9 @@ static int r820t_read_gain(struct r820t_priv *priv)
 }
 
 #if 0
-/* FIXME: This routine requires more testing */
+ 
 
-/*
- * measured with a Racal 6103E GSM test set at 928 MHz with -60 dBm
- * input power, for raw results see:
- *	http://steve-m.de/projects/rtl-sdr/gain_measurement/r820t/
- */
+ 
 
 static const int r820t_lna_gain_steps[]  = {
 	0, 9, 13, 40, 38, 13, 31, 22, 26, 31, 26, 14, 19, 5, 35, 13
@@ -1241,12 +1204,12 @@ static int r820t_set_gain_mode(struct r820t_priv *priv,
 		uint8_t mix_index = 0, lna_index = 0;
 		u8 data[4];
 
-		/* LNA auto off */
+		 
 		rc = r820t_write_reg_mask(priv, 0x05, 0x10, 0x10);
 		if (rc < 0)
 			return rc;
 
-		 /* Mixer auto off */
+		  
 		rc = r820t_write_reg_mask(priv, 0x07, 0, 0x10);
 		if (rc < 0)
 			return rc;
@@ -1255,7 +1218,7 @@ static int r820t_set_gain_mode(struct r820t_priv *priv,
 		if (rc < 0)
 			return rc;
 
-		/* set fixed VGA gain for now (16.3 dB) */
+		 
 		rc = r820t_write_reg_mask(priv, 0x0c, 0x08, 0x9f);
 		if (rc < 0)
 			return rc;
@@ -1272,27 +1235,27 @@ static int r820t_set_gain_mode(struct r820t_priv *priv,
 			total_gain += r820t_mixer_gain_steps[++mix_index];
 		}
 
-		/* set LNA gain */
+		 
 		rc = r820t_write_reg_mask(priv, 0x05, lna_index, 0x0f);
 		if (rc < 0)
 			return rc;
 
-		/* set Mixer gain */
+		 
 		rc = r820t_write_reg_mask(priv, 0x07, mix_index, 0x0f);
 		if (rc < 0)
 			return rc;
 	} else {
-		/* LNA */
+		 
 		rc = r820t_write_reg_mask(priv, 0x05, 0, 0x10);
 		if (rc < 0)
 			return rc;
 
-		/* Mixer */
+		 
 		rc = r820t_write_reg_mask(priv, 0x07, 0x10, 0x10);
 		if (rc < 0)
 			return rc;
 
-		/* set fixed VGA gain for now (26.5 dB) */
+		 
 		rc = r820t_write_reg_mask(priv, 0x0c, 0x0b, 0x9f);
 		if (rc < 0)
 			return rc;
@@ -1303,7 +1266,7 @@ static int r820t_set_gain_mode(struct r820t_priv *priv,
 #endif
 
 static int generic_set_freq(struct dvb_frontend *fe,
-			    u32 freq /* in HZ */,
+			    u32 freq  ,
 			    unsigned bw,
 			    enum v4l2_tuner_type type,
 			    v4l2_std_id std, u32 delsys)
@@ -1346,15 +1309,13 @@ err:
 	return rc;
 }
 
-/*
- * r820t standby logic
- */
+ 
 
 static int r820t_standby(struct r820t_priv *priv)
 {
 	int rc;
 
-	/* If device was not initialized yet, don't need to standby */
+	 
 	if (!priv->init_done)
 		return 0;
 
@@ -1390,45 +1351,43 @@ static int r820t_standby(struct r820t_priv *priv)
 		return rc;
 	rc = r820t_write_reg(priv, 0x19, 0x0c);
 
-	/* Force initial calibration */
+	 
 	priv->type = -1;
 
 	return rc;
 }
 
-/*
- * r820t device init logic
- */
+ 
 
 static int r820t_xtal_check(struct r820t_priv *priv)
 {
 	int rc, i;
 	u8 data[3], val;
 
-	/* Initialize the shadow registers */
+	 
 	memcpy(priv->regs, r820t_init_array, sizeof(r820t_init_array));
 
-	/* cap 30pF & Drive Low */
+	 
 	rc = r820t_write_reg_mask(priv, 0x10, 0x0b, 0x0b);
 	if (rc < 0)
 		return rc;
 
-	/* set pll autotune = 128kHz */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1a, 0x00, 0x0c);
 	if (rc < 0)
 		return rc;
 
-	/* set manual initial reg = 111111;  */
+	 
 	rc = r820t_write_reg_mask(priv, 0x13, 0x7f, 0x7f);
 	if (rc < 0)
 		return rc;
 
-	/* set auto */
+	 
 	rc = r820t_write_reg_mask(priv, 0x13, 0x00, 0x40);
 	if (rc < 0)
 		return rc;
 
-	/* Try several xtal capacitor alternatives */
+	 
 	for (i = 0; i < ARRAY_SIZE(r820t_xtal_capacitor); i++) {
 		rc = r820t_write_reg_mask(priv, 0x10,
 					  r820t_xtal_capacitor[i][0], 0x1b);
@@ -1462,55 +1421,55 @@ static int r820t_imr_prepare(struct r820t_priv *priv)
 {
 	int rc;
 
-	/* Initialize the shadow registers */
+	 
 	memcpy(priv->regs, r820t_init_array, sizeof(r820t_init_array));
 
-	/* lna off (air-in off) */
+	 
 	rc = r820t_write_reg_mask(priv, 0x05, 0x20, 0x20);
 	if (rc < 0)
 		return rc;
 
-	/* mixer gain mode = manual */
+	 
 	rc = r820t_write_reg_mask(priv, 0x07, 0, 0x10);
 	if (rc < 0)
 		return rc;
 
-	/* filter corner = lowest */
+	 
 	rc = r820t_write_reg_mask(priv, 0x0a, 0x0f, 0x0f);
 	if (rc < 0)
 		return rc;
 
-	/* filter bw=+2cap, hp=5M */
+	 
 	rc = r820t_write_reg_mask(priv, 0x0b, 0x60, 0x6f);
 	if (rc < 0)
 		return rc;
 
-	/* adc=on, vga code mode, gain = 26.5dB   */
+	 
 	rc = r820t_write_reg_mask(priv, 0x0c, 0x0b, 0x9f);
 	if (rc < 0)
 		return rc;
 
-	/* ring clk = on */
+	 
 	rc = r820t_write_reg_mask(priv, 0x0f, 0, 0x08);
 	if (rc < 0)
 		return rc;
 
-	/* ring power = on */
+	 
 	rc = r820t_write_reg_mask(priv, 0x18, 0x10, 0x10);
 	if (rc < 0)
 		return rc;
 
-	/* from ring = ring pll in */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1c, 0x02, 0x02);
 	if (rc < 0)
 		return rc;
 
-	/* sw_pdect = det3 */
+	 
 	rc = r820t_write_reg_mask(priv, 0x1e, 0x80, 0x80);
 	if (rc < 0)
 		return rc;
 
-	/* Set filt_3dB */
+	 
 	rc = r820t_write_reg_mask(priv, 0x06, 0x20, 0x20);
 
 	return rc;
@@ -1546,7 +1505,7 @@ static int r820t_imr_cross(struct r820t_priv *priv,
 			   struct r820t_sect_type iq_point[3],
 			   u8 *x_direct)
 {
-	struct r820t_sect_type cross[5]; /* (0,0)(0,Q-1)(0,I-1)(Q-1,0)(I-1,0) */
+	struct r820t_sect_type cross[5];  
 	struct r820t_sect_type tmp;
 	int i, rc;
 	u8 reg08, reg09;
@@ -1565,19 +1524,19 @@ static int r820t_imr_cross(struct r820t_priv *priv,
 			cross[i].phase_y = reg09;
 			break;
 		case 1:
-			cross[i].gain_x  = reg08;		/* 0 */
-			cross[i].phase_y = reg09 + 1;		/* Q-1 */
+			cross[i].gain_x  = reg08;		 
+			cross[i].phase_y = reg09 + 1;		 
 			break;
 		case 2:
-			cross[i].gain_x  = reg08;		/* 0 */
-			cross[i].phase_y = (reg09 | 0x20) + 1;	/* I-1 */
+			cross[i].gain_x  = reg08;		 
+			cross[i].phase_y = (reg09 | 0x20) + 1;	 
 			break;
 		case 3:
-			cross[i].gain_x  = reg08 + 1;		/* Q-1 */
+			cross[i].gain_x  = reg08 + 1;		 
 			cross[i].phase_y = reg09;
 			break;
 		default:
-			cross[i].gain_x  = (reg08 | 0x20) + 1;	/* I-1 */
+			cross[i].gain_x  = (reg08 | 0x20) + 1;	 
 			cross[i].phase_y = reg09;
 		}
 
@@ -1599,13 +1558,13 @@ static int r820t_imr_cross(struct r820t_priv *priv,
 			tmp = cross[i];
 	}
 
-	if ((tmp.phase_y & 0x1f) == 1) {	/* y-direction */
+	if ((tmp.phase_y & 0x1f) == 1) {	 
 		*x_direct = 0;
 
 		iq_point[0] = cross[0];
 		iq_point[1] = cross[1];
 		iq_point[2] = cross[2];
-	} else {				/* (0,0) or x-direction */
+	} else {				 
 		*x_direct = 1;
 
 		iq_point[0] = cross[0];
@@ -1631,14 +1590,9 @@ static int r820t_compre_step(struct r820t_priv *priv,
 	int rc;
 	struct r820t_sect_type tmp;
 
-	/*
-	 * Purpose: if (Gain<9 or Phase<9), Gain+1 or Phase+1 and compare
-	 * with min value:
-	 *  new < min => update to min and continue
-	 *  new > min => Exit
-	 */
+	 
 
-	/* min value already saved in iq[0] */
+	 
 	tmp.phase_y = iq[0].phase_y;
 	tmp.gain_x  = iq[0].gain_x;
 
@@ -1682,11 +1636,7 @@ static int r820t_iq_tree(struct r820t_priv *priv,
 	int rc, i;
 	u8 tmp, var_reg;
 
-	/*
-	 * record IMC results by input gain/phase location then adjust
-	 * gain or phase positive 1 step and negative 1 step,
-	 * both record results
-	 */
+	 
 
 	if (fix_reg == 0x08)
 		var_reg = 0x09;
@@ -1715,14 +1665,14 @@ static int r820t_iq_tree(struct r820t_priv *priv,
 			iq[i].gain_x  = var_val;
 		}
 
-		if (i == 0) {  /* try right-side point */
+		if (i == 0) {   
 			var_val++;
-		} else if (i == 1) { /* try left-side point */
-			 /* if absolute location is 1, change I/Q direction */
+		} else if (i == 1) {  
+			  
 			if ((var_val & 0x1f) < 0x02) {
 				tmp = 2 - (var_val & 0x1f);
 
-				/* b[5]:I/Q selection. 0:Q-path, 1:I-path */
+				 
 				if (var_val & 0x20) {
 					var_val &= 0xc0;
 					var_val |= tmp;
@@ -1744,14 +1694,14 @@ static int r820t_section(struct r820t_priv *priv,
 	int rc;
 	struct r820t_sect_type compare_iq[3], compare_bet[3];
 
-	/* Try X-1 column and save min result to compare_bet[0] */
+	 
 	if (!(iq_point->gain_x & 0x1f))
-		compare_iq[0].gain_x = ((iq_point->gain_x) & 0xdf) + 1;  /* Q-path, Gain=1 */
+		compare_iq[0].gain_x = ((iq_point->gain_x) & 0xdf) + 1;   
 	else
-		compare_iq[0].gain_x  = iq_point->gain_x - 1;  /* left point */
+		compare_iq[0].gain_x  = iq_point->gain_x - 1;   
 	compare_iq[0].phase_y = iq_point->phase_y;
 
-	/* y-direction */
+	 
 	rc = r820t_iq_tree(priv, compare_iq,  compare_iq[0].gain_x,
 			compare_iq[0].phase_y, 0x08);
 	if (rc < 0)
@@ -1761,7 +1711,7 @@ static int r820t_section(struct r820t_priv *priv,
 
 	compare_bet[0] = compare_iq[0];
 
-	/* Try X column and save min result to compare_bet[1] */
+	 
 	compare_iq[0].gain_x  = iq_point->gain_x;
 	compare_iq[0].phase_y = iq_point->phase_y;
 
@@ -1774,9 +1724,9 @@ static int r820t_section(struct r820t_priv *priv,
 
 	compare_bet[1] = compare_iq[0];
 
-	/* Try X+1 column and save min result to compare_bet[2] */
+	 
 	if ((iq_point->gain_x & 0x1f) == 0x00)
-		compare_iq[0].gain_x = ((iq_point->gain_x) | 0x20) + 1;  /* I-path, Gain=1 */
+		compare_iq[0].gain_x = ((iq_point->gain_x) | 0x20) + 1;   
 	else
 		compare_iq[0].gain_x = iq_point->gain_x + 1;
 	compare_iq[0].phase_y = iq_point->phase_y;
@@ -1802,7 +1752,7 @@ static int r820t_vga_adjust(struct r820t_priv *priv)
 	int rc;
 	u8 vga_count;
 
-	/* increase vga power to let image significant */
+	 
 	for (vga_count = 12; vga_count < 16; vga_count++) {
 		rc = r820t_write_reg_mask(priv, 0x0c, vga_count, 0x0f);
 		if (rc < 0)
@@ -1825,7 +1775,7 @@ static int r820t_iq(struct r820t_priv *priv, struct r820t_sect_type *iq_pont)
 {
 	struct r820t_sect_type compare_iq[3];
 	int rc;
-	u8 x_direction = 0;  /* 1:x, 0:y */
+	u8 x_direction = 0;   
 	u8 dir_reg, other_reg;
 
 	r820t_vga_adjust(priv);
@@ -1842,29 +1792,29 @@ static int r820t_iq(struct r820t_priv *priv, struct r820t_sect_type *iq_pont)
 		other_reg = 0x08;
 	}
 
-	/* compare and find min of 3 points. determine i/q direction */
+	 
 	r820t_compre_cor(compare_iq);
 
-	/* increase step to find min value of this direction */
+	 
 	rc = r820t_compre_step(priv, compare_iq, dir_reg);
 	if (rc < 0)
 		return rc;
 
-	/* the other direction */
+	 
 	rc = r820t_iq_tree(priv, compare_iq,  compare_iq[0].gain_x,
 				compare_iq[0].phase_y, dir_reg);
 	if (rc < 0)
 		return rc;
 
-	/* compare and find min of 3 points. determine i/q direction */
+	 
 	r820t_compre_cor(compare_iq);
 
-	/* increase step to find min value on this direction */
+	 
 	rc = r820t_compre_step(priv, compare_iq, other_reg);
 	if (rc < 0)
 		return rc;
 
-	/* check 3 points again */
+	 
 	rc = r820t_iq_tree(priv, compare_iq,  compare_iq[0].gain_x,
 				compare_iq[0].phase_y, other_reg);
 	if (rc < 0)
@@ -1872,12 +1822,12 @@ static int r820t_iq(struct r820t_priv *priv, struct r820t_sect_type *iq_pont)
 
 	r820t_compre_cor(compare_iq);
 
-	/* section-9 check */
+	 
 	rc = r820t_section(priv, compare_iq);
 
 	*iq_pont = compare_iq[0];
 
-	/* reset gain/phase control setting */
+	 
 	rc = r820t_write_reg_mask(priv, 0x08, 0, 0x3f);
 	if (rc < 0)
 		return rc;
@@ -1893,10 +1843,7 @@ static int r820t_f_imr(struct r820t_priv *priv, struct r820t_sect_type *iq_pont)
 
 	r820t_vga_adjust(priv);
 
-	/*
-	 * search surrounding points from previous point
-	 * try (x-1), (x), (x+1) columns, and find min IMR result point
-	 */
+	 
 	rc = r820t_section(priv, iq_pont);
 	if (rc < 0)
 		return rc;
@@ -1929,73 +1876,73 @@ static int r820t_imr(struct r820t_priv *priv, unsigned imr_mem, bool im_flag)
 	reg19 = r820t_read_cache_reg(priv, 0x19);
 	reg1f = r820t_read_cache_reg(priv, 0x1f);
 
-	reg18 &= 0xf0;      /* set ring[3:0] */
+	reg18 &= 0xf0;       
 	reg18 |= n_ring;
 
 	ring_vco = (16 + n_ring) * 8 * ring_ref;
 
-	reg18 &= 0xdf;   /* clear ring_se23 */
-	reg19 &= 0xfc;   /* clear ring_seldiv */
-	reg1f &= 0xfc;   /* clear ring_att */
+	reg18 &= 0xdf;    
+	reg19 &= 0xfc;    
+	reg1f &= 0xfc;    
 
 	switch (imr_mem) {
 	case 0:
 		ring_freq = ring_vco / 48;
-		reg18 |= 0x20;  /* ring_se23 = 1 */
-		reg19 |= 0x03;  /* ring_seldiv = 3 */
-		reg1f |= 0x02;  /* ring_att 10 */
+		reg18 |= 0x20;   
+		reg19 |= 0x03;   
+		reg1f |= 0x02;   
 		break;
 	case 1:
 		ring_freq = ring_vco / 16;
-		reg18 |= 0x00;  /* ring_se23 = 0 */
-		reg19 |= 0x02;  /* ring_seldiv = 2 */
-		reg1f |= 0x00;  /* pw_ring 00 */
+		reg18 |= 0x00;   
+		reg19 |= 0x02;   
+		reg1f |= 0x00;   
 		break;
 	case 2:
 		ring_freq = ring_vco / 8;
-		reg18 |= 0x00;  /* ring_se23 = 0 */
-		reg19 |= 0x01;  /* ring_seldiv = 1 */
-		reg1f |= 0x03;  /* pw_ring 11 */
+		reg18 |= 0x00;   
+		reg19 |= 0x01;   
+		reg1f |= 0x03;   
 		break;
 	case 3:
 		ring_freq = ring_vco / 6;
-		reg18 |= 0x20;  /* ring_se23 = 1 */
-		reg19 |= 0x00;  /* ring_seldiv = 0 */
-		reg1f |= 0x03;  /* pw_ring 11 */
+		reg18 |= 0x20;   
+		reg19 |= 0x00;   
+		reg1f |= 0x03;   
 		break;
 	case 4:
 		ring_freq = ring_vco / 4;
-		reg18 |= 0x00;  /* ring_se23 = 0 */
-		reg19 |= 0x00;  /* ring_seldiv = 0 */
-		reg1f |= 0x01;  /* pw_ring 01 */
+		reg18 |= 0x00;   
+		reg19 |= 0x00;   
+		reg1f |= 0x01;   
 		break;
 	default:
 		ring_freq = ring_vco / 4;
-		reg18 |= 0x00;  /* ring_se23 = 0 */
-		reg19 |= 0x00;  /* ring_seldiv = 0 */
-		reg1f |= 0x01;  /* pw_ring 01 */
+		reg18 |= 0x00;   
+		reg19 |= 0x00;   
+		reg1f |= 0x01;   
 		break;
 	}
 
 
-	/* write pw_ring, n_ring, ringdiv2 registers */
+	 
 
-	/* n_ring, ring_se23 */
+	 
 	rc = r820t_write_reg(priv, 0x18, reg18);
 	if (rc < 0)
 		return rc;
 
-	/* ring_sediv */
+	 
 	rc = r820t_write_reg(priv, 0x19, reg19);
 	if (rc < 0)
 		return rc;
 
-	/* pw_ring */
+	 
 	rc = r820t_write_reg(priv, 0x1f, reg1f);
 	if (rc < 0)
 		return rc;
 
-	/* mux input freq ~ rf_in freq */
+	 
 	rc = r820t_set_mux(priv, (ring_freq - 5300) * 1000);
 	if (rc < 0)
 		return rc;
@@ -2019,7 +1966,7 @@ static int r820t_imr(struct r820t_priv *priv, unsigned imr_mem, bool im_flag)
 	if (rc < 0)
 		return rc;
 
-	/* save IMR value */
+	 
 	switch (imr_mem) {
 	case 0:
 		priv->imr_data[0].gain_x  = imr_point.gain_x;
@@ -2064,13 +2011,13 @@ static int r820t_imr_callibrate(struct r820t_priv *priv)
 	if (priv->init_done)
 		return 0;
 
-	/* Detect Xtal capacitance */
+	 
 	if ((priv->cfg->rafael_chip == CHIP_R820T) ||
 	    (priv->cfg->rafael_chip == CHIP_R828S) ||
 	    (priv->cfg->rafael_chip == CHIP_R820C)) {
 		priv->xtal_cap_sel = XTAL_HIGH_CAP_0P;
 	} else {
-		/* Initialize registers */
+		 
 		rc = r820t_write(priv, 0x05,
 				r820t_init_array, sizeof(r820t_init_array));
 		if (rc < 0)
@@ -2085,17 +2032,14 @@ static int r820t_imr_callibrate(struct r820t_priv *priv)
 		priv->xtal_cap_sel = xtal_cap;
 	}
 
-	/*
-	 * Disables IMR calibration. That emulates the same behaviour
-	 * as what is done by rtl-sdr userspace library. Useful for testing
-	 */
+	 
 	if (no_imr_cal) {
 		priv->init_done = true;
 
 		return 0;
 	}
 
-	/* Initialize registers */
+	 
 	rc = r820t_write(priv, 0x05,
 			 r820t_init_array, sizeof(r820t_init_array));
 	if (rc < 0)
@@ -2128,18 +2072,14 @@ static int r820t_imr_callibrate(struct r820t_priv *priv)
 }
 
 #if 0
-/* Not used, for now */
+ 
 static int r820t_gpio(struct r820t_priv *priv, bool enable)
 {
 	return r820t_write_reg_mask(priv, 0x0f, enable ? 1 : 0, 0x01);
 }
 #endif
 
-/*
- *  r820t frontend operations and tuner attach code
- *
- * All driver locks and i2c control are only in this part of the code
- */
+ 
 
 static int r820t_init(struct dvb_frontend *fe)
 {
@@ -2156,7 +2096,7 @@ static int r820t_init(struct dvb_frontend *fe)
 	if (rc < 0)
 		goto err;
 
-	/* Initialize registers */
+	 
 	rc = r820t_write(priv, 0x05,
 			 r820t_init_array, sizeof(r820t_init_array));
 
@@ -2200,7 +2140,7 @@ static int r820t_set_analog_freq(struct dvb_frontend *fe,
 
 	tuner_dbg("%s called\n", __func__);
 
-	/* if std is not defined, choose one */
+	 
 	if (!p->std)
 		p->std = V4L2_STD_MN;
 
@@ -2267,7 +2207,7 @@ static int r820t_signal(struct dvb_frontend *fe, u16 *strength)
 		if (rc < 0)
 			goto err;
 
-		/* A higher gain at LNA means a lower signal strength */
+		 
 		*strength = (45 - rc) << 4 | 0xff;
 		if (*strength == 0xff)
 			*strength = 0;
@@ -2347,10 +2287,10 @@ struct dvb_frontend *r820t_attach(struct dvb_frontend *fe,
 					      "r820t");
 	switch (instance) {
 	case 0:
-		/* memory allocation failure */
+		 
 		goto err_no_gate;
 	case 1:
-		/* new tuner instance */
+		 
 		priv->cfg = cfg;
 
 		mutex_init(&priv->lock);
@@ -2358,7 +2298,7 @@ struct dvb_frontend *r820t_attach(struct dvb_frontend *fe,
 		fe->tuner_priv = priv;
 		break;
 	case 2:
-		/* existing tuner instance */
+		 
 		fe->tuner_priv = priv;
 		break;
 	}
@@ -2366,7 +2306,7 @@ struct dvb_frontend *r820t_attach(struct dvb_frontend *fe,
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 
-	/* check if the tuner is there */
+	 
 	rc = r820t_read(priv, 0x00, data, sizeof(data));
 	if (rc < 0)
 		goto err;

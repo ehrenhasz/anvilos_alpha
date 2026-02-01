@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023, Microsoft Corporation.
- *
- * Author:
- *   Saurabh Sengar <ssengar@microsoft.com>
- */
+
+ 
 
 #include <asm/apic.h>
 #include <asm/boot.h>
@@ -25,7 +20,7 @@ void __init hv_vtl_init_platform(void)
 	x86_init.irqs.pre_vector_init = x86_init_noop;
 	x86_init.timers.timer_init = x86_init_noop;
 
-	/* Avoid searching for BIOS MP tables */
+	 
 	x86_init.mpparse.find_smp_config = x86_init_noop;
 	x86_init.mpparse.get_smp_config = x86_init_uint_noop;
 
@@ -90,19 +85,7 @@ static int hv_vtl_bringup_vcpu(u32 target_vp_index, u64 eip_ignored)
 	input->vp_index = target_vp_index;
 	input->target_vtl.target_vtl = HV_VTL_MGMT;
 
-	/*
-	 * The x86_64 Linux kernel follows the 16-bit -> 32-bit -> 64-bit
-	 * mode transition sequence after waking up an AP with SIPI whose
-	 * vector points to the 16-bit AP startup trampoline code. Here in
-	 * VTL2, we can't perform that sequence as the AP has to start in
-	 * the 64-bit mode.
-	 *
-	 * To make this happen, we tell the hypervisor to load a valid 64-bit
-	 * context (most of which is just magic numbers from the CPU manual)
-	 * so that AP jumps right to the 64-bit entry of the kernel, and the
-	 * control registers are loaded with values that let the AP fetch the
-	 * code and data and carry on with work it gets assigned.
-	 */
+	 
 
 	input->vp_context.rip = rip;
 	input->vp_context.rsp = rsp;
@@ -117,24 +100,24 @@ static int hv_vtl_bringup_vcpu(u32 target_vp_index, u64 eip_ignored)
 	input->vp_context.gdtr.limit = gdt_ptr.size;
 	input->vp_context.gdtr.base = gdt_ptr.address;
 
-	/* Non-system desc (64bit), long, code, present */
+	 
 	input->vp_context.cs.selector = __KERNEL_CS;
 	input->vp_context.cs.base = 0;
 	input->vp_context.cs.limit = 0xffffffff;
 	input->vp_context.cs.attributes = 0xa09b;
-	/* Non-system desc (64bit), data, present, granularity, default */
+	 
 	input->vp_context.ss.selector = __KERNEL_DS;
 	input->vp_context.ss.base = 0;
 	input->vp_context.ss.limit = 0xffffffff;
 	input->vp_context.ss.attributes = 0xc093;
 
-	/* System desc (128bit), present, LDT */
+	 
 	input->vp_context.ldtr.selector = GDT_ENTRY_LDT * 8;
 	input->vp_context.ldtr.base = hv_vtl_system_desc_base(ldt);
 	input->vp_context.ldtr.limit = hv_vtl_system_desc_limit(ldt);
 	input->vp_context.ldtr.attributes = 0x82;
 
-	/* System desc (128bit), present, TSS, 0x8b - busy, 0x89 -- default */
+	 
 	input->vp_context.tr.selector = GDT_ENTRY_TSS * 8;
 	input->vp_context.tr.base = hv_vtl_system_desc_base(tss);
 	input->vp_context.tr.limit = hv_vtl_system_desc_limit(tss);
@@ -217,10 +200,7 @@ static int hv_vtl_wakeup_secondary_cpu(int apicid, unsigned long start_eip)
 
 int __init hv_vtl_early_init(void)
 {
-	/*
-	 * `boot_cpu_has` returns the runtime feature support,
-	 * and here is the earliest it can be used.
-	 */
+	 
 	if (cpu_feature_enabled(X86_FEATURE_XSAVE))
 		panic("XSAVE has to be disabled as it is not supported by this module.\n"
 			  "Please add 'noxsave' to the kernel command line.\n");

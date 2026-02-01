@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <inttypes.h>
 #include <limits.h>
 #include <stdio.h>
@@ -6,7 +6,7 @@
 #include <string.h>
 #include <linux/string.h>
 #include <linux/zalloc.h>
-#include <uapi/linux/mman.h> /* To get things like MAP_HUGETLB even on older libc headers */
+#include <uapi/linux/mman.h>  
 #include "debug.h"
 #include "dso.h"
 #include "map.h"
@@ -151,10 +151,7 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
 		}
 
 		if (vdso) {
-			/* The vdso maps are always on the host and not the
-			 * container.  Ensure that we don't use setns to look
-			 * them up.
-			 */
+			 
 			nnsi = nsinfo__copy(nsi);
 			if (nnsi) {
 				nsinfo__put(nsi);
@@ -174,11 +171,7 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
 		if (anon || no_dso) {
 			map->map_ip = map->unmap_ip = identity__map_ip;
 
-			/*
-			 * Set memory without DSO as loaded. All map__find_*
-			 * functions still return NULL, and we avoid the
-			 * unnecessary map__load warning.
-			 */
+			 
 			if (!(prot & PROT_EXEC))
 				dso__set_loaded(dso);
 		}
@@ -190,12 +183,7 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
 		if (build_id__is_defined(bid)) {
 			dso__set_build_id(dso, bid);
 		} else {
-			/*
-			 * If the mmap event had no build ID, search for an existing dso from the
-			 * build ID header by name. Otherwise only the dso loaded at the time of
-			 * reading the header will have the build ID set and all future mmaps will
-			 * have it missing.
-			 */
+			 
 			down_read(&machine->dsos.lock);
 			header_bid_dso = __dsos__find(&machine->dsos, filename, false);
 			up_read(&machine->dsos.lock);
@@ -213,11 +201,7 @@ out_delete:
 	return NULL;
 }
 
-/*
- * Constructor variant for modules (where we know from /proc/modules where
- * they are loaded) and for vmlinux, where only after we load all the
- * symbols we'll know where it starts and ends.
- */
+ 
 struct map *map__new2(u64 start, struct dso *dso)
 {
 	struct map *result;
@@ -225,9 +209,7 @@ struct map *map__new2(u64 start, struct dso *dso)
 
 	map = calloc(1, sizeof(*map) + (dso->kernel ? sizeof(struct kmap) : 0));
 	if (ADD_RC_CHK(result, map)) {
-		/*
-		 * ->end will be filled after we load all the symbols
-		 */
+		 
 		map__init(result, start, 0, 0, dso);
 	}
 
@@ -256,11 +238,7 @@ bool __map__is_bpf_prog(const struct map *map)
 	if (dso->binary_type == DSO_BINARY_TYPE__BPF_PROG_INFO)
 		return true;
 
-	/*
-	 * If PERF_RECORD_BPF_EVENT is not included, the dso will not have
-	 * type of DSO_BINARY_TYPE__BPF_PROG_INFO. In such cases, we can
-	 * guess the type based on name.
-	 */
+	 
 	name = dso->short_name;
 	return name && (strstr(name, "bpf_prog_") == name);
 }
@@ -273,11 +251,7 @@ bool __map__is_bpf_image(const struct map *map)
 	if (dso->binary_type == DSO_BINARY_TYPE__BPF_IMAGE)
 		return true;
 
-	/*
-	 * If PERF_RECORD_KSYMBOL is not included, the dso will not have
-	 * type of DSO_BINARY_TYPE__BPF_IMAGE. In such cases, we can
-	 * guess the type based on name.
-	 */
+	 
 	name = dso->short_name;
 	return name && is_bpf_image(name);
 }
@@ -515,27 +489,13 @@ void srccode_state_free(struct srccode_state *state)
 	state->line = 0;
 }
 
-/**
- * map__rip_2objdump - convert symbol start address to objdump address.
- * @map: memory map
- * @rip: symbol start address
- *
- * objdump wants/reports absolute IPs for ET_EXEC, and RIPs for ET_DYN.
- * map->dso->adjust_symbols==1 for ET_EXEC-like cases except ET_REL which is
- * relative to section start.
- *
- * Return: Address suitable for passing to "objdump --start-address="
- */
+ 
 u64 map__rip_2objdump(struct map *map, u64 rip)
 {
 	struct kmap *kmap = __map__kmap(map);
 	const struct dso *dso = map__dso(map);
 
-	/*
-	 * vmlinux does not have program headers for PTI entry trampolines and
-	 * kcore may not either. However the trampoline object code is on the
-	 * main kernel map, so just use that instead.
-	 */
+	 
 	if (kmap && is_entry_trampoline(kmap->name) && kmap->kmaps) {
 		struct machine *machine = maps__machine(kmap->kmaps);
 
@@ -553,28 +513,14 @@ u64 map__rip_2objdump(struct map *map, u64 rip)
 	if (dso->rel)
 		return rip - map__pgoff(map);
 
-	/*
-	 * kernel modules also have DSO_TYPE_USER in dso->kernel,
-	 * but all kernel modules are ET_REL, so won't get here.
-	 */
+	 
 	if (dso->kernel == DSO_SPACE__USER)
 		return rip + dso->text_offset;
 
 	return map__unmap_ip(map, rip) - map__reloc(map);
 }
 
-/**
- * map__objdump_2mem - convert objdump address to a memory address.
- * @map: memory map
- * @ip: objdump address
- *
- * Closely related to map__rip_2objdump(), this function takes an address from
- * objdump and converts it to a memory address.  Note this assumes that @map
- * contains the address.  To be sure the result is valid, check it forwards
- * e.g. map__rip_2objdump(map__map_ip(map, map__objdump_2mem(map, ip))) == ip
- *
- * Return: Memory address.
- */
+ 
 u64 map__objdump_2mem(struct map *map, u64 ip)
 {
 	const struct dso *dso = map__dso(map);
@@ -585,10 +531,7 @@ u64 map__objdump_2mem(struct map *map, u64 ip)
 	if (dso->rel)
 		return map__unmap_ip(map, ip + map__pgoff(map));
 
-	/*
-	 * kernel modules also have DSO_TYPE_USER in dso->kernel,
-	 * but all kernel modules are ET_REL, so won't get here.
-	 */
+	 
 	if (dso->kernel == DSO_SPACE__USER)
 		return map__unmap_ip(map, ip - dso->text_offset);
 

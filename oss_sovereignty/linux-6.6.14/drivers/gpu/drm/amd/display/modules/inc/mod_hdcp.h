@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef MOD_HDCP_H_
 #define MOD_HDCP_H_
@@ -29,14 +6,14 @@
 #include "os_types.h"
 #include "signal_types.h"
 
-/* Forward Declarations */
+ 
 struct mod_hdcp;
 
 #define MAX_NUM_OF_DISPLAYS 6
 #define MAX_NUM_OF_ATTEMPTS 4
 #define MAX_NUM_OF_ERROR_TRACE 10
 
-/* detailed return status */
+ 
 enum mod_hdcp_status {
 	MOD_HDCP_STATUS_SUCCESS = 0,
 	MOD_HDCP_STATUS_FAILURE,
@@ -69,7 +46,7 @@ enum mod_hdcp_status {
 	MOD_HDCP_STATUS_HDCP1_REAUTH_REQUEST_ISSUED,
 	MOD_HDCP_STATUS_HDCP1_LINK_MAINTENANCE_FAILURE,
 	MOD_HDCP_STATUS_HDCP1_INVALID_BKSV,
-	MOD_HDCP_STATUS_DDC_FAILURE, /* TODO: specific errors */
+	MOD_HDCP_STATUS_DDC_FAILURE,  
 	MOD_HDCP_STATUS_INVALID_OPERATION,
 	MOD_HDCP_STATUS_HDCP2_NOT_CAPABLE,
 	MOD_HDCP_STATUS_HDCP2_CREATE_SESSION_FAILURE,
@@ -212,14 +189,14 @@ enum mod_hdcp_encryption_status {
 	MOD_HDCP_ENCRYPTION_STATUS_HDCP2_ON
 };
 
-/* per link events dm has to notify to hdcp module */
+ 
 enum mod_hdcp_event {
 	MOD_HDCP_EVENT_CALLBACK = 0,
 	MOD_HDCP_EVENT_WATCHDOG_TIMEOUT,
 	MOD_HDCP_EVENT_CPIRQ
 };
 
-/* output flags from module requesting timer operations */
+ 
 struct mod_hdcp_output {
 	uint8_t callback_needed;
 	uint8_t callback_stop;
@@ -230,7 +207,7 @@ struct mod_hdcp_output {
 	uint8_t auth_complete;
 };
 
-/* used to represent per display info */
+ 
 struct mod_hdcp_display {
 	enum mod_hdcp_display_state state;
 	uint8_t index;
@@ -243,8 +220,8 @@ struct mod_hdcp_display {
 	struct mod_hdcp_display_adjustment adjust;
 };
 
-/* used to represent per link info */
-/* in case a link has multiple displays, they share the same link info */
+ 
+ 
 struct mod_hdcp_link {
 	enum mod_hdcp_operation_mode mode;
 	uint8_t dig_be;
@@ -260,7 +237,7 @@ struct mod_hdcp_link {
 	struct mod_hdcp_link_adjustment adjust;
 };
 
-/* a query structure for a display's hdcp information */
+ 
 struct mod_hdcp_display_query {
 	const struct mod_hdcp_display *display;
 	const struct mod_hdcp_link *link;
@@ -268,58 +245,58 @@ struct mod_hdcp_display_query {
 	enum mod_hdcp_encryption_status encryption_status;
 };
 
-/* contains values per on external display configuration change */
+ 
 struct mod_hdcp_config {
 	struct mod_hdcp_psp psp;
 	struct mod_hdcp_ddc ddc;
 	uint8_t index;
 };
 
-/* dm allocates memory of mod_hdcp per dc_link on dm init based on memory size*/
+ 
 size_t mod_hdcp_get_memory_size(void);
 
-/* called per link on link creation */
+ 
 enum mod_hdcp_status mod_hdcp_setup(struct mod_hdcp *hdcp,
 		struct mod_hdcp_config *config);
 
-/* called per link on link destroy */
+ 
 enum mod_hdcp_status mod_hdcp_teardown(struct mod_hdcp *hdcp);
 
-/* called per display after stream is enabled */
+ 
 enum mod_hdcp_status mod_hdcp_add_display(struct mod_hdcp *hdcp,
 		struct mod_hdcp_link *link, struct mod_hdcp_display *display,
 		struct mod_hdcp_output *output);
 
-/* called per display before stream is disabled */
+ 
 enum mod_hdcp_status mod_hdcp_remove_display(struct mod_hdcp *hdcp,
 		uint8_t index, struct mod_hdcp_output *output);
 
-/* called per display to apply new authentication adjustment */
+ 
 enum mod_hdcp_status mod_hdcp_update_display(struct mod_hdcp *hdcp,
 		uint8_t index,
 		struct mod_hdcp_link_adjustment *link_adjust,
 		struct mod_hdcp_display_adjustment *display_adjust,
 		struct mod_hdcp_output *output);
 
-/* called to query hdcp information on a specific index */
+ 
 enum mod_hdcp_status mod_hdcp_query_display(struct mod_hdcp *hdcp,
 		uint8_t index, struct mod_hdcp_display_query *query);
 
-/* called per link on connectivity change */
+ 
 enum mod_hdcp_status mod_hdcp_reset_connection(struct mod_hdcp *hdcp,
 		struct mod_hdcp_output *output);
 
-/* called per link on events (i.e. callback, watchdog, CP_IRQ) */
+ 
 enum mod_hdcp_status mod_hdcp_process_event(struct mod_hdcp *hdcp,
 		enum mod_hdcp_event event, struct mod_hdcp_output *output);
 
-/* called to convert enum mod_hdcp_status to c string */
+ 
 char *mod_hdcp_status_to_str(int32_t status);
 
-/* called to convert state id to c string */
+ 
 char *mod_hdcp_state_id_to_str(int32_t id);
 
-/* called to convert signal type to operation mode */
+ 
 enum mod_hdcp_operation_mode mod_hdcp_signal_type_to_operation_mode(
 		enum signal_type signal);
-#endif /* MOD_HDCP_H_ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012 Broadcom Corporation
- */
+
+ 
 
 
 #ifndef FWEH_H_
@@ -12,12 +10,12 @@
 #include <linux/if_ether.h>
 #include <linux/if.h>
 
-/* formward declarations */
+ 
 struct brcmf_pub;
 struct brcmf_if;
 struct brcmf_cfg80211_info;
 
-/* list of firmware events */
+ 
 #define BRCMF_FWEH_EVENT_ENUM_DEFLIST \
 	BRCMF_ENUM_DEF(SET_SSID, 0) \
 	BRCMF_ENUM_DEF(JOIN, 1) \
@@ -95,25 +93,22 @@ struct brcmf_cfg80211_info;
 #define BRCMF_ENUM_DEF(id, val) \
 	BRCMF_E_##id = (val),
 
-/* firmware event codes sent by the dongle */
+ 
 enum brcmf_fweh_event_code {
 	BRCMF_FWEH_EVENT_ENUM_DEFLIST
-	/* this determines event mask length which must match
-	 * minimum length check in device firmware so it is
-	 * hard-coded here.
-	 */
+	 
 	BRCMF_E_LAST = 139
 };
 #undef BRCMF_ENUM_DEF
 
 #define BRCMF_EVENTING_MASK_LEN		DIV_ROUND_UP(BRCMF_E_LAST, 8)
 
-/* flags field values in struct brcmf_event_msg */
+ 
 #define BRCMF_EVENT_MSG_LINK		0x01
 #define BRCMF_EVENT_MSG_FLUSHTXQ	0x02
 #define BRCMF_EVENT_MSG_GROUP		0x04
 
-/* status field values in struct brcmf_event_msg */
+ 
 #define BRCMF_E_STATUS_SUCCESS			0
 #define BRCMF_E_STATUS_FAIL			1
 #define BRCMF_E_STATUS_TIMEOUT			2
@@ -131,7 +126,7 @@ enum brcmf_fweh_event_code {
 #define BRCMF_E_STATUS_CS_ABORT			15
 #define BRCMF_E_STATUS_ERROR			16
 
-/* status field values for PSK_SUP event */
+ 
 #define BRCMF_E_STATUS_FWSUP_WAIT_M1		4
 #define BRCMF_E_STATUS_FWSUP_PREP_M2		5
 #define BRCMF_E_STATUS_FWSUP_COMPLETED		6
@@ -141,7 +136,7 @@ enum brcmf_fweh_event_code {
 #define BRCMF_E_STATUS_FWSUP_WAIT_G1		10
 #define BRCMF_E_STATUS_FWSUP_PREP_G2		11
 
-/* reason field values in struct brcmf_event_msg */
+ 
 #define BRCMF_E_REASON_INITIAL_ASSOC		0
 #define BRCMF_E_REASON_LOW_RSSI			1
 #define BRCMF_E_REASON_DEAUTH			2
@@ -160,7 +155,7 @@ enum brcmf_fweh_event_code {
 #define BRCMF_E_REASON_TDLS_PEER_CONNECTED	1
 #define BRCMF_E_REASON_TDLS_PEER_DISCONNECTED	2
 
-/* reason field values for PSK_SUP event */
+ 
 #define BRCMF_E_REASON_FWSUP_OTHER		0
 #define BRCMF_E_REASON_FWSUP_DECRYPT_KEY_DATA	1
 #define BRCMF_E_REASON_FWSUP_BAD_UCAST_WEP128	2
@@ -180,37 +175,27 @@ enum brcmf_fweh_event_code {
 #define BRCMF_E_REASON_FWSUP_WPA_PSK_M1_TMO	16
 #define BRCMF_E_REASON_FWSUP_WPA_PSK_M3_TMO	17
 
-/* action field values for brcmf_ifevent */
+ 
 #define BRCMF_E_IF_ADD				1
 #define BRCMF_E_IF_DEL				2
 #define BRCMF_E_IF_CHANGE			3
 
-/* flag field values for brcmf_ifevent */
+ 
 #define BRCMF_E_IF_FLAG_NOIF			1
 
-/* role field values for brcmf_ifevent */
+ 
 #define BRCMF_E_IF_ROLE_STA			0
 #define BRCMF_E_IF_ROLE_AP			1
 #define BRCMF_E_IF_ROLE_WDS			2
 #define BRCMF_E_IF_ROLE_P2P_GO			3
 #define BRCMF_E_IF_ROLE_P2P_CLIENT		4
 
-/**
- * definitions for event packet validation.
- */
+ 
 #define BRCM_OUI				"\x00\x10\x18"
 #define BCMILCP_BCM_SUBTYPE_EVENT		1
 #define BCMILCP_SUBTYPE_VENDOR_LONG		32769
 
-/**
- * struct brcm_ethhdr - broadcom specific ether header.
- *
- * @subtype: subtype for this packet.
- * @length: TODO: length of appended data.
- * @version: version indication.
- * @oui: OUI of this packet.
- * @usr_subtype: subtype for this OUI.
- */
+ 
 struct brcm_ethhdr {
 	__be16 subtype;
 	__be16 length;
@@ -233,34 +218,14 @@ struct brcmf_event_msg_be {
 	u8 bsscfgidx;
 } __packed;
 
-/**
- * struct brcmf_event - contents of broadcom event packet.
- *
- * @eth: standard ether header.
- * @hdr: broadcom specific ether header.
- * @msg: common part of the actual event message.
- */
+ 
 struct brcmf_event {
 	struct ethhdr eth;
 	struct brcm_ethhdr hdr;
 	struct brcmf_event_msg_be msg;
 } __packed;
 
-/**
- * struct brcmf_event_msg - firmware event message.
- *
- * @version: version information.
- * @flags: event flags.
- * @event_code: firmware event code.
- * @status: status information.
- * @reason: reason code.
- * @auth_type: authentication type.
- * @datalen: length of event data buffer.
- * @addr: ether address.
- * @ifname: interface name.
- * @ifidx: interface index.
- * @bsscfgidx: bsscfg index.
- */
+ 
 struct brcmf_event_msg {
 	u16 version;
 	u16 flags;
@@ -287,15 +252,7 @@ typedef int (*brcmf_fweh_handler_t)(struct brcmf_if *ifp,
 				    const struct brcmf_event_msg *evtmsg,
 				    void *data);
 
-/**
- * struct brcmf_fweh_info - firmware event handling information.
- *
- * @p2pdev_setup_ongoing: P2P device creation in progress.
- * @event_work: event worker.
- * @evt_q_lock: lock for event queue protection.
- * @event_q: event queue.
- * @evt_handler: registered event handlers.
- */
+ 
 struct brcmf_fweh_info {
 	bool p2pdev_setup_ongoing;
 	struct work_struct event_work;
@@ -329,7 +286,7 @@ static inline void brcmf_fweh_process_skb(struct brcmf_pub *drvr,
 	struct brcmf_event *event_packet;
 	u16 subtype, usr_stype;
 
-	/* only process events when protocol matches */
+	 
 	if (skb->protocol != cpu_to_be16(ETH_P_LINK_CTL))
 		return;
 
@@ -338,19 +295,19 @@ static inline void brcmf_fweh_process_skb(struct brcmf_pub *drvr,
 
 	event_packet = (struct brcmf_event *)skb_mac_header(skb);
 
-	/* check subtype if needed */
+	 
 	if (unlikely(stype)) {
 		subtype = get_unaligned_be16(&event_packet->hdr.subtype);
 		if (subtype != stype)
 			return;
 	}
 
-	/* check for BRCM oui match */
+	 
 	if (memcmp(BRCM_OUI, &event_packet->hdr.oui[0],
 		   sizeof(event_packet->hdr.oui)))
 		return;
 
-	/* final match on usr_subtype */
+	 
 	usr_stype = get_unaligned_be16(&event_packet->hdr.usr_subtype);
 	if (usr_stype != BCMILCP_BCM_SUBTYPE_EVENT)
 		return;
@@ -358,4 +315,4 @@ static inline void brcmf_fweh_process_skb(struct brcmf_pub *drvr,
 	brcmf_fweh_process_event(drvr, event_packet, skb->len + ETH_HLEN, gfp);
 }
 
-#endif /* FWEH_H_ */
+#endif  

@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2009 Francisco Jerez.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __DRM_I2C_CH7006_PRIV_H__
 #define __DRM_I2C_CH7006_PRIV_H__
@@ -126,7 +102,7 @@ void ch7006_state_load(struct i2c_client *client,
 void ch7006_state_save(struct i2c_client *client,
 		       struct ch7006_state *state);
 
-/* Some helper macros */
+ 
 
 #define ch7006_dbg(client, format, ...) do {				\
 		if (ch7006_debug)					\
@@ -167,13 +143,13 @@ static inline int32_t round_fixed(fixed x)
 #define ch7006_load_reg(client, state, reg) ch7006_write(client, reg, state->regs[reg])
 #define ch7006_save_reg(client, state, reg) state->regs[reg] = ch7006_read(client, reg)
 
-/* Fixed hardware specs */
+ 
 
 #define CH7006_FREQ0				14318
 #define CH7006_MAXN				650
 #define CH7006_MAXM				315
 
-/* Register definitions */
+ 
 
 #define CH7006_DISPMODE				0x00
 #define CH7006_DISPMODE_INPUT_RES		0, 7:5

@@ -1,49 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom BCM6345 style Level 1 interrupt controller driver
- *
- * Copyright (C) 2014 Broadcom Corporation
- * Copyright 2015 Simon Arlott
- *
- * This is based on the BCM7038 (which supports SMP) but with a single
- * enable register instead of separate mask/set/clear registers.
- *
- * The BCM3380 has a similar mask/status register layout, but each pair
- * of words is at separate locations (and SMP is not supported).
- *
- * ENABLE/STATUS words are packed next to each other for each CPU:
- *
- * BCM6368:
- *   0x1000_0020: CPU0_W0_ENABLE
- *   0x1000_0024: CPU0_W1_ENABLE
- *   0x1000_0028: CPU0_W0_STATUS		IRQs 31-63
- *   0x1000_002c: CPU0_W1_STATUS		IRQs 0-31
- *   0x1000_0030: CPU1_W0_ENABLE
- *   0x1000_0034: CPU1_W1_ENABLE
- *   0x1000_0038: CPU1_W0_STATUS		IRQs 31-63
- *   0x1000_003c: CPU1_W1_STATUS		IRQs 0-31
- *
- * BCM63168:
- *   0x1000_0020: CPU0_W0_ENABLE
- *   0x1000_0024: CPU0_W1_ENABLE
- *   0x1000_0028: CPU0_W2_ENABLE
- *   0x1000_002c: CPU0_W3_ENABLE
- *   0x1000_0030: CPU0_W0_STATUS	IRQs 96-127
- *   0x1000_0034: CPU0_W1_STATUS	IRQs 64-95
- *   0x1000_0038: CPU0_W2_STATUS	IRQs 32-63
- *   0x1000_003c: CPU0_W3_STATUS	IRQs 0-31
- *   0x1000_0040: CPU1_W0_ENABLE
- *   0x1000_0044: CPU1_W1_ENABLE
- *   0x1000_0048: CPU1_W2_ENABLE
- *   0x1000_004c: CPU1_W3_ENABLE
- *   0x1000_0050: CPU1_W0_STATUS	IRQs 96-127
- *   0x1000_0054: CPU1_W1_STATUS	IRQs 64-95
- *   0x1000_0058: CPU1_W2_STATUS	IRQs 32-63
- *   0x1000_005c: CPU1_W3_STATUS	IRQs 0-31
- *
- * IRQs are numbered in CPU native endian order
- * (which is big-endian in these examples)
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME	": " fmt
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * 8250 PCI library.
- *
- * Copyright (C) 2001 Russell King, All Rights Reserved.
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/ioport.h>
 #include <linux/pci.h>

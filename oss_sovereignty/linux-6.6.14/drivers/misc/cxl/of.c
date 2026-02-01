@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 IBM Corp.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -56,12 +54,12 @@ static int read_handle(struct device_node *np, u64 *handle)
 	const __be32 *prop;
 	u64 size;
 
-	/* Get address and size of the node */
+	 
 	prop = of_get_address(np, 0, &size, NULL);
 	if (size)
 		return -EINVAL;
 
-	/* Helper to read a big number; size is in cells (not bytes) */
+	 
 	*handle = of_read_number(prop, of_n_addr_cells(np));
 	return 0;
 }
@@ -84,14 +82,14 @@ static int read_phys_addr(struct device_node *np, char *prop_name,
 			addr = of_read_number(prop, naddr);
 			size = of_read_number(&prop[naddr], nsize);
 			switch (type) {
-			case 0: /* unit address */
+			case 0:  
 				afu->guest->handle = addr;
 				break;
-			case 1: /* p2 area */
+			case 1:  
 				afu->guest->p2n_phys += addr;
 				afu->guest->p2n_size = size;
 				break;
-			case 2: /* problem state area */
+			case 2:  
 				afu->psn_phys += addr;
 				afu->adapter->ps_size = size;
 				break;
@@ -145,7 +143,7 @@ int cxl_of_read_afu_properties(struct cxl_afu *afu, struct device_node *np)
 	u16 device_id, vendor_id;
 	u32 val = 0, class_code;
 
-	/* Properties are read in the same order as listed in PAPR */
+	 
 
 	if (cxl_verbose) {
 		pr_info("Dump of the 'ibm,coherent-platform-function' node properties:\n");
@@ -192,10 +190,7 @@ int cxl_of_read_afu_properties(struct cxl_afu *afu, struct device_node *np)
 
 	prop = read_prop_dword(np, "ibm,min-ints-per-process", &afu->pp_irqs);
 	if (prop) {
-		/* One extra interrupt for the PSL interrupt is already
-		 * included. Remove it now to keep only AFU interrupts and
-		 * match the native case.
-		 */
+		 
 		afu->pp_irqs--;
 	}
 
@@ -245,10 +240,7 @@ int cxl_of_read_afu_properties(struct cxl_afu *afu, struct device_node *np)
 		read_prop_dword(np, "subsystem-vendor-id", &val);
 		read_prop_dword(np, "subsystem-id", &val);
 	}
-	/*
-	 * if "ibm,process-mmio" doesn't exist then per-process mmio is
-	 * not supported
-	 */
+	 
 	val = 0;
 	prop = read_prop_dword(np, "ibm,process-mmio", &val);
 	if (prop && val == 1)
@@ -290,10 +282,7 @@ static int read_adapter_irq_config(struct cxl *adapter, struct device_node *np)
 	if (ranges == NULL || len < (2 * sizeof(int)))
 		return -EINVAL;
 
-	/*
-	 * encoded array of two cells per entry, each cell encoded as
-	 * with encode-int
-	 */
+	 
 	nranges = len / (2 * sizeof(int));
 	if (nranges == 0 || (nranges * 2 * sizeof(int)) != len)
 		return -EINVAL;
@@ -348,7 +337,7 @@ int cxl_of_read_adapter_properties(struct cxl *adapter, struct device_node *np)
 	const __be32 *prop;
 	u32 val = 0;
 
-	/* Properties are read in the same order as listed in PAPR */
+	 
 
 	naddr = of_n_addr_cells(np);
 
@@ -463,14 +452,14 @@ int cxl_of_probe(struct platform_device *pdev)
 	if (np == NULL)
 		return -ENODEV;
 
-	/* init adapter */
+	 
 	adapter = cxl_guest_init_adapter(np, pdev);
 	if (IS_ERR(adapter)) {
 		dev_err(&pdev->dev, "guest_init_adapter failed: %li\n", PTR_ERR(adapter));
 		return PTR_ERR(adapter);
 	}
 
-	/* init afu */
+	 
 	for_each_child_of_node(np, afu_np) {
 		if ((ret = cxl_guest_init_afu(adapter, slice, afu_np)))
 			dev_err(&pdev->dev, "AFU %i failed to initialise: %i\n",

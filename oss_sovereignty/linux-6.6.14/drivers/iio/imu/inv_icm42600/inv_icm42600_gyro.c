@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 Invensense, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -71,10 +69,7 @@ static const struct iio_chan_spec inv_icm42600_gyro_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM42600_GYRO_SCAN_TIMESTAMP),
 };
 
-/*
- * IIO buffer data: size must be a power of 2 and timestamp aligned
- * 16 bytes: 6 bytes angular velocity, 2 bytes temperature, 8 bytes timestamp
- */
+ 
 struct inv_icm42600_gyro_buffer {
 	struct inv_icm42600_fifo_sensor_data gyro;
 	int16_t temp;
@@ -89,12 +84,12 @@ struct inv_icm42600_gyro_buffer {
 #define INV_ICM42600_SCAN_MASK_TEMP	BIT(INV_ICM42600_GYRO_SCAN_TEMP)
 
 static const unsigned long inv_icm42600_gyro_scan_masks[] = {
-	/* 3-axis gyro + temperature */
+	 
 	INV_ICM42600_SCAN_MASK_GYRO_3AXIS | INV_ICM42600_SCAN_MASK_TEMP,
 	0,
 };
 
-/* enable gyroscope sensor and FIFO write */
+ 
 static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
 					      const unsigned long *scan_mask)
 {
@@ -110,7 +105,7 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
 	mutex_lock(&st->lock);
 
 	if (*scan_mask & INV_ICM42600_SCAN_MASK_TEMP) {
-		/* enable temp sensor */
+		 
 		ret = inv_icm42600_set_temp_conf(st, true, &sleep_temp);
 		if (ret)
 			goto out_unlock;
@@ -118,7 +113,7 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
 	}
 
 	if (*scan_mask & INV_ICM42600_SCAN_MASK_GYRO_3AXIS) {
-		/* enable gyro sensor */
+		 
 		conf.mode = INV_ICM42600_SENSOR_MODE_LOW_NOISE;
 		ret = inv_icm42600_set_gyro_conf(st, &conf, &sleep_gyro);
 		if (ret)
@@ -126,7 +121,7 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
 		fifo_en |= INV_ICM42600_SENSOR_GYRO;
 	}
 
-	/* update data FIFO write */
+	 
 	inv_sensors_timestamp_apply_odr(ts, 0, 0, 0);
 	ret = inv_icm42600_buffer_set_fifo_en(st, fifo_en | st->fifo.en);
 	if (ret)
@@ -136,7 +131,7 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
 
 out_unlock:
 	mutex_unlock(&st->lock);
-	/* sleep maximum required time */
+	 
 	if (sleep_gyro > sleep_temp)
 		sleep = sleep_gyro;
 	else
@@ -176,13 +171,13 @@ static int inv_icm42600_gyro_read_sensor(struct inv_icm42600_state *st,
 	pm_runtime_get_sync(dev);
 	mutex_lock(&st->lock);
 
-	/* enable gyro sensor */
+	 
 	conf.mode = INV_ICM42600_SENSOR_MODE_LOW_NOISE;
 	ret = inv_icm42600_set_gyro_conf(st, &conf, NULL);
 	if (ret)
 		goto exit;
 
-	/* read gyro register data */
+	 
 	data = (__be16 *)&st->buffer[0];
 	ret = regmap_bulk_read(st->map, reg, data, sizeof(*data));
 	if (ret)
@@ -198,30 +193,30 @@ exit:
 	return ret;
 }
 
-/* IIO format int + nano */
+ 
 static const int inv_icm42600_gyro_scale[] = {
-	/* +/- 2000dps => 0.001065264 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_2000DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_2000DPS + 1] = 1065264,
-	/* +/- 1000dps => 0.000532632 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_1000DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_1000DPS + 1] = 532632,
-	/* +/- 500dps => 0.000266316 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_500DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_500DPS + 1] = 266316,
-	/* +/- 250dps => 0.000133158 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_250DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_250DPS + 1] = 133158,
-	/* +/- 125dps => 0.000066579 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_125DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_125DPS + 1] = 66579,
-	/* +/- 62.5dps => 0.000033290 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_62_5DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_62_5DPS + 1] = 33290,
-	/* +/- 31.25dps => 0.000016645 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_31_25DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_31_25DPS + 1] = 16645,
-	/* +/- 15.625dps => 0.000008322 rad/s */
+	 
 	[2 * INV_ICM42600_GYRO_FS_15_625DPS] = 0,
 	[2 * INV_ICM42600_GYRO_FS_15_625DPS + 1] = 8322,
 };
@@ -268,23 +263,23 @@ static int inv_icm42600_gyro_write_scale(struct inv_icm42600_state *st,
 	return ret;
 }
 
-/* IIO format int + micro */
+ 
 static const int inv_icm42600_gyro_odr[] = {
-	/* 12.5Hz */
+	 
 	12, 500000,
-	/* 25Hz */
+	 
 	25, 0,
-	/* 50Hz */
+	 
 	50, 0,
-	/* 100Hz */
+	 
 	100, 0,
-	/* 200Hz */
+	 
 	200, 0,
-	/* 1kHz */
+	 
 	1000, 0,
-	/* 2kHz */
+	 
 	2000, 0,
-	/* 4kHz */
+	 
 	4000, 0,
 };
 
@@ -362,14 +357,11 @@ out_unlock:
 	return ret;
 }
 
-/*
- * Calibration bias values, IIO range format int + nano.
- * Value is limited to +/-64dps coded on 12 bits signed. Step is 1/32 dps.
- */
+ 
 static int inv_icm42600_gyro_calibbias[] = {
-	-1, 117010721,		/* min: -1.117010721 rad/s */
-	0, 545415,		/* step: 0.000545415 rad/s */
-	1, 116465306,		/* max: 1.116465306 rad/s */
+	-1, 117010721,		 
+	0, 545415,		 
+	1, 116465306,		 
 };
 
 static int inv_icm42600_gyro_read_offset(struct inv_icm42600_state *st,
@@ -413,7 +405,7 @@ static int inv_icm42600_gyro_read_offset(struct inv_icm42600_state *st,
 	if (ret)
 		return ret;
 
-	/* 12 bits signed value */
+	 
 	switch (chan->channel2) {
 	case IIO_MOD_X:
 		offset = sign_extend32(((data[1] & 0x0F) << 8) | data[0], 11);
@@ -428,15 +420,9 @@ static int inv_icm42600_gyro_read_offset(struct inv_icm42600_state *st,
 		return -EINVAL;
 	}
 
-	/*
-	 * convert raw offset to dps then to rad/s
-	 * 12 bits signed raw max 64 to dps: 64 / 2048
-	 * dps to rad: Pi / 180
-	 * result in nano (1000000000)
-	 * (offset * 64 * Pi * 1000000000) / (2048 * 180)
-	 */
+	 
 	val64 = (int64_t)offset * 64LL * 3141592653LL;
-	/* for rounding, add + or - divisor (2048 * 180) divided by 2 */
+	 
 	if (val64 >= 0)
 		val64 += 2048 * 180 / 2;
 	else
@@ -475,7 +461,7 @@ static int inv_icm42600_gyro_write_offset(struct inv_icm42600_state *st,
 		return -EINVAL;
 	}
 
-	/* inv_icm42600_gyro_calibbias: min - step - max in nano */
+	 
 	min = (int64_t)inv_icm42600_gyro_calibbias[0] * 1000000000LL +
 	      (int64_t)inv_icm42600_gyro_calibbias[1];
 	max = (int64_t)inv_icm42600_gyro_calibbias[4] * 1000000000LL +
@@ -484,22 +470,16 @@ static int inv_icm42600_gyro_write_offset(struct inv_icm42600_state *st,
 	if (val64 < min || val64 > max)
 		return -EINVAL;
 
-	/*
-	 * convert rad/s to dps then to raw value
-	 * rad to dps: 180 / Pi
-	 * dps to raw 12 bits signed, max 64: 2048 / 64
-	 * val in nano (1000000000)
-	 * val * 180 * 2048 / (Pi * 1000000000 * 64)
-	 */
+	 
 	val64 = val64 * 180LL * 2048LL;
-	/* for rounding, add + or - divisor (3141592653 * 64) divided by 2 */
+	 
 	if (val64 >= 0)
 		val64 += 3141592653LL * 64LL / 2LL;
 	else
 		val64 -= 3141592653LL * 64LL / 2LL;
 	offset = div64_s64(val64, 3141592653LL * 64LL);
 
-	/* clamp value limited to 12 bits signed */
+	 
 	if (offset < -2048)
 		offset = -2048;
 	else if (offset > 2047)
@@ -510,7 +490,7 @@ static int inv_icm42600_gyro_write_offset(struct inv_icm42600_state *st,
 
 	switch (chan->channel2) {
 	case IIO_MOD_X:
-		/* OFFSET_USER1 register is shared */
+		 
 		ret = regmap_read(st->map, INV_ICM42600_REG_OFFSET_USER1,
 				  &regval);
 		if (ret)
@@ -519,7 +499,7 @@ static int inv_icm42600_gyro_write_offset(struct inv_icm42600_state *st,
 		st->buffer[1] = (regval & 0xF0) | ((offset & 0xF00) >> 8);
 		break;
 	case IIO_MOD_Y:
-		/* OFFSET_USER1 register is shared */
+		 
 		ret = regmap_read(st->map, INV_ICM42600_REG_OFFSET_USER1,
 				  &regval);
 		if (ret)
@@ -528,7 +508,7 @@ static int inv_icm42600_gyro_write_offset(struct inv_icm42600_state *st,
 		st->buffer[1] = offset & 0xFF;
 		break;
 	case IIO_MOD_Z:
-		/* OFFSET_USER4 register is shared */
+		 
 		ret = regmap_read(st->map, INV_ICM42600_REG_OFFSET_USER4,
 				  &regval);
 		if (ret)
@@ -732,10 +712,7 @@ struct iio_dev *inv_icm42600_gyro_init(struct inv_icm42600_state *st)
 	if (!indio_dev)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * clock period is 32kHz (31250ns)
-	 * jitter is +/- 2% (20 per mille)
-	 */
+	 
 	ts_chip.clock_period = 31250;
 	ts_chip.jitter = 20;
 	ts_chip.init_period = inv_icm42600_odr_to_period(st->conf.accel.odr);
@@ -775,27 +752,27 @@ int inv_icm42600_gyro_parse_fifo(struct iio_dev *indio_dev)
 	int64_t ts_val;
 	struct inv_icm42600_gyro_buffer buffer;
 
-	/* parse all fifo packets */
+	 
 	for (i = 0, no = 0; i < st->fifo.count; i += size, ++no) {
 		size = inv_icm42600_fifo_decode_packet(&st->fifo.data[i],
 				&accel, &gyro, &temp, &timestamp, &odr);
-		/* quit if error or FIFO is empty */
+		 
 		if (size <= 0)
 			return size;
 
-		/* skip packet if no gyro data or data is invalid */
+		 
 		if (gyro == NULL || !inv_icm42600_fifo_is_data_valid(gyro))
 			continue;
 
-		/* update odr */
+		 
 		if (odr & INV_ICM42600_SENSOR_GYRO)
 			inv_sensors_timestamp_apply_odr(ts, st->fifo.period,
 							st->fifo.nb.total, no);
 
-		/* buffer is copied to userspace, zeroing it to avoid any data leak */
+		 
 		memset(&buffer, 0, sizeof(buffer));
 		memcpy(&buffer.gyro, gyro, sizeof(buffer.gyro));
-		/* convert 8 bits FIFO temperature in high resolution format */
+		 
 		buffer.temp = temp ? (*temp * 64) : 0;
 		ts_val = inv_sensors_timestamp_pop(ts);
 		iio_push_to_buffers_with_timestamp(indio_dev, &buffer, ts_val);

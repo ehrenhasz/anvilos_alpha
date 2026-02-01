@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM io_uring
 
@@ -12,18 +12,7 @@
 
 struct io_wq_work;
 
-/**
- * io_uring_create - called after a new io_uring context was prepared
- *
- * @fd:		corresponding file descriptor
- * @ctx:	pointer to a ring context structure
- * @sq_entries:	actual SQ size
- * @cq_entries:	actual CQ size
- * @flags:	SQ ring flags, provided to io_uring_setup(2)
- *
- * Allows to trace io_uring creation and provide pointer to a context, that can
- * be used later to find correlated events.
- */
+ 
 TRACE_EVENT(io_uring_create,
 
 	TP_PROTO(int fd, void *ctx, u32 sq_entries, u32 cq_entries, u32 flags),
@@ -51,21 +40,7 @@ TRACE_EVENT(io_uring_create,
 			  __entry->cq_entries, __entry->flags)
 );
 
-/**
- * io_uring_register - called after a buffer/file/eventfd was successfully
- * 					   registered for a ring
- *
- * @ctx:		pointer to a ring context structure
- * @opcode:		describes which operation to perform
- * @nr_user_files:	number of registered files
- * @nr_user_bufs:	number of registered buffers
- * @ret:		return code
- *
- * Allows to trace fixed files/buffers, that could be registered to
- * avoid an overhead of getting references to them for every operation. This
- * event, together with io_uring_file_get, can provide a full picture of how
- * much overhead one can reduce via fixing.
- */
+ 
 TRACE_EVENT(io_uring_register,
 
 	TP_PROTO(void *ctx, unsigned opcode, unsigned nr_files,
@@ -95,16 +70,7 @@ TRACE_EVENT(io_uring_register,
 			  __entry->nr_bufs, __entry->ret)
 );
 
-/**
- * io_uring_file_get - called before getting references to an SQE file
- *
- * @req:	pointer to a submitted request
- * @fd:		SQE file descriptor
- *
- * Allows to trace out how often an SQE file reference is obtained, which can
- * help figuring out if it makes sense to use fixed files, or check that fixed
- * files are used correctly.
- */
+ 
 TRACE_EVENT(io_uring_file_get,
 
 	TP_PROTO(struct io_kiocb *req, int fd),
@@ -129,14 +95,7 @@ TRACE_EVENT(io_uring_file_get,
 		__entry->ctx, __entry->req, __entry->user_data, __entry->fd)
 );
 
-/**
- * io_uring_queue_async_work - called before submitting a new async work
- *
- * @req:	pointer to a submitted request
- * @rw:		type of workqueue, hashed or normal
- *
- * Allows to trace asynchronous work submission.
- */
+ 
 TRACE_EVENT(io_uring_queue_async_work,
 
 	TP_PROTO(struct io_kiocb *req, int rw),
@@ -173,14 +132,7 @@ TRACE_EVENT(io_uring_queue_async_work,
 		__entry->flags, __entry->rw ? "hashed" : "normal", __entry->work)
 );
 
-/**
- * io_uring_defer - called when an io_uring request is deferred
- *
- * @req:	pointer to a deferred request
- *
- * Allows to track deferred requests, to get an insight about what requests are
- * not started immediately.
- */
+ 
 TRACE_EVENT(io_uring_defer,
 
 	TP_PROTO(struct io_kiocb *req),
@@ -210,16 +162,7 @@ TRACE_EVENT(io_uring_defer,
 		__get_str(op_str))
 );
 
-/**
- * io_uring_link - called before the io_uring request added into link_list of
- * 		   another request
- *
- * @req:		pointer to a linked request
- * @target_req:		pointer to a previous request, that would contain @req
- *
- * Allows to track linked requests, to understand dependencies between requests
- * and how does it influence their execution flow.
- */
+ 
 TRACE_EVENT(io_uring_link,
 
 	TP_PROTO(struct io_kiocb *req, struct io_kiocb *target_req),
@@ -242,16 +185,7 @@ TRACE_EVENT(io_uring_link,
 			  __entry->ctx, __entry->req, __entry->target_req)
 );
 
-/**
- * io_uring_cqring_wait - called before start waiting for an available CQE
- *
- * @ctx:		pointer to a ring context structure
- * @min_events:	minimal number of events to wait for
- *
- * Allows to track waiting for CQE, so that we can e.g. troubleshoot
- * situations, when an application wants to wait for an event, that never
- * comes.
- */
+ 
 TRACE_EVENT(io_uring_cqring_wait,
 
 	TP_PROTO(void *ctx, int min_events),
@@ -271,15 +205,7 @@ TRACE_EVENT(io_uring_cqring_wait,
 	TP_printk("ring %p, min_events %d", __entry->ctx, __entry->min_events)
 );
 
-/**
- * io_uring_fail_link - called before failing a linked request
- *
- * @req:	request, which links were cancelled
- * @link:	cancelled link
- *
- * Allows to track linked requests cancellation, to see not only that some work
- * was cancelled, but also which request was the reason.
- */
+ 
 TRACE_EVENT(io_uring_fail_link,
 
 	TP_PROTO(struct io_kiocb *req, struct io_kiocb *link),
@@ -311,18 +237,7 @@ TRACE_EVENT(io_uring_fail_link,
 		__get_str(op_str), __entry->link)
 );
 
-/**
- * io_uring_complete - called when completing an SQE
- *
- * @ctx:		pointer to a ring context structure
- * @req:		pointer to a submitted request
- * @user_data:		user data associated with the request
- * @res:		result of the request
- * @cflags:		completion flags
- * @extra1:		extra 64-bit data for CQE32
- * @extra2:		extra 64-bit data for CQE32
- *
- */
+ 
 TRACE_EVENT(io_uring_complete,
 
 	TP_PROTO(void *ctx, void *req, u64 user_data, int res, unsigned cflags,
@@ -359,14 +274,7 @@ TRACE_EVENT(io_uring_complete,
 		(unsigned long long) __entry->extra2)
 );
 
-/**
- * io_uring_submit_req - called before submitting a request
- *
- * @req:		pointer to a submitted request
- *
- * Allows to track SQE submitting, to understand what was the source of it, SQ
- * thread or io_uring_enter call.
- */
+ 
 TRACE_EVENT(io_uring_submit_req,
 
 	TP_PROTO(struct io_kiocb *req),
@@ -401,16 +309,7 @@ TRACE_EVENT(io_uring_submit_req,
 		  __entry->flags, __entry->sq_thread)
 );
 
-/*
- * io_uring_poll_arm - called after arming a poll wait if successful
- *
- * @req:		pointer to the armed request
- * @mask:		request poll events mask
- * @events:		registered events of interest
- *
- * Allows to track which fds are waiting for and what are the events of
- * interest.
- */
+ 
 TRACE_EVENT(io_uring_poll_arm,
 
 	TP_PROTO(struct io_kiocb *req, int mask, int events),
@@ -445,13 +344,7 @@ TRACE_EVENT(io_uring_poll_arm,
 		  __entry->mask, __entry->events)
 );
 
-/*
- * io_uring_task_add - called after adding a task
- *
- * @req:		pointer to request
- * @mask:		request poll events mask
- *
- */
+ 
 TRACE_EVENT(io_uring_task_add,
 
 	TP_PROTO(struct io_kiocb *req, int mask),
@@ -484,15 +377,7 @@ TRACE_EVENT(io_uring_task_add,
 		__entry->mask)
 );
 
-/*
- * io_uring_req_failed - called when an sqe is errored dring submission
- *
- * @sqe:		pointer to the io_uring_sqe that failed
- * @req:		pointer to request
- * @error:		error it failed with
- *
- * Allows easier diagnosing of malformed requests in production systems.
- */
+ 
 TRACE_EVENT(io_uring_req_failed,
 
 	TP_PROTO(const struct io_uring_sqe *sqe, struct io_kiocb *req, int error),
@@ -558,16 +443,7 @@ TRACE_EVENT(io_uring_req_failed,
 );
 
 
-/*
- * io_uring_cqe_overflow - a CQE overflowed
- *
- * @ctx:		pointer to a ring context structure
- * @user_data:		user data associated with the request
- * @res:		CQE result
- * @cflags:		CQE flags
- * @ocqe:		pointer to the overflow cqe (if available)
- *
- */
+ 
 TRACE_EVENT(io_uring_cqe_overflow,
 
 	TP_PROTO(void *ctx, unsigned long long user_data, s32 res, u32 cflags,
@@ -597,14 +473,7 @@ TRACE_EVENT(io_uring_cqe_overflow,
 		  __entry->cflags, __entry->ocqe)
 );
 
-/*
- * io_uring_task_work_run - ran task work
- *
- * @tctx:		pointer to a io_uring_task
- * @count:		how many functions it ran
- * @loops:		how many loops it ran
- *
- */
+ 
 TRACE_EVENT(io_uring_task_work_run,
 
 	TP_PROTO(void *tctx, unsigned int count, unsigned int loops),
@@ -652,14 +521,7 @@ TRACE_EVENT(io_uring_short_write,
 			  __entry->wanted, __entry->got)
 );
 
-/*
- * io_uring_local_work_run - ran ring local task work
- *
- * @tctx:		pointer to a io_uring_ctx
- * @count:		how many functions it ran
- * @loops:		how many loops it ran
- *
- */
+ 
 TRACE_EVENT(io_uring_local_work_run,
 
 	TP_PROTO(void *ctx, int count, unsigned int loops),
@@ -681,7 +543,7 @@ TRACE_EVENT(io_uring_local_work_run,
 	TP_printk("ring %p, count %d, loops %u", __entry->ctx, __entry->count, __entry->loops)
 );
 
-#endif /* _TRACE_IO_URING_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

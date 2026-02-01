@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/cpumask.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmapool.h>
@@ -17,9 +17,9 @@
 
 #define CRYPTO_CTX_SIZE	256
 
-/* packet inuput ring alignments */
+ 
 #define PKTIN_Q_ALIGN_BYTES 16
-/* AQM Queue input alignments */
+ 
 #define AQM_Q_ALIGN_BYTES 32
 
 static int nitrox_cmdq_init(struct nitrox_cmdq *cmdq, int align_bytes)
@@ -113,10 +113,10 @@ static int nitrox_alloc_aqm_queues(struct nitrox_device *ndev)
 		cmdq->qno = i;
 		cmdq->instr_size = sizeof(struct aqmq_command_s);
 
-		/* AQM Queue Doorbell Counter Register Address */
+		 
 		offset = AQMQ_DRBLX(i);
 		cmdq->dbell_csr_addr = NITROX_CSR_ADDR(ndev, offset);
-		/* AQM Queue Commands Completed Count Register Address */
+		 
 		offset = AQMQ_CMD_CNTX(i);
 		cmdq->compl_cnt_csr_addr = NITROX_CSR_ADDR(ndev, offset);
 
@@ -167,10 +167,10 @@ static int nitrox_alloc_pktin_queues(struct nitrox_device *ndev)
 		cmdq->qno = i;
 		cmdq->instr_size = sizeof(struct nps_pkt_instr);
 
-		/* packet input ring doorbell address */
+		 
 		offset = NPS_PKT_IN_INSTR_BAOFF_DBELLX(i);
 		cmdq->dbell_csr_addr = NITROX_CSR_ADDR(ndev, offset);
-		/* packet solicit port completion count address */
+		 
 		offset = NPS_PKT_SLC_CNTSX(i);
 		cmdq->compl_cnt_csr_addr = NITROX_CSR_ADDR(ndev, offset);
 
@@ -189,7 +189,7 @@ static int create_crypto_dma_pool(struct nitrox_device *ndev)
 {
 	size_t size;
 
-	/* Crypto context pool, 16 byte aligned */
+	 
 	size = CRYPTO_CTX_SIZE + sizeof(struct ctx_hdr);
 	ndev->ctx_pool = dma_pool_create("nitrox-context",
 					 DEV(ndev), size, 16, 0);
@@ -208,10 +208,7 @@ static void destroy_crypto_dma_pool(struct nitrox_device *ndev)
 	ndev->ctx_pool = NULL;
 }
 
-/*
- * crypto_alloc_context - Allocate crypto context from pool
- * @ndev: NITROX Device
- */
+ 
 void *crypto_alloc_context(struct nitrox_device *ndev)
 {
 	struct ctx_hdr *ctx;
@@ -229,7 +226,7 @@ void *crypto_alloc_context(struct nitrox_device *ndev)
 		return NULL;
 	}
 
-	/* fill meta data */
+	 
 	ctx = vaddr;
 	ctx->pool = ndev->ctx_pool;
 	ctx->dma = dma;
@@ -242,10 +239,7 @@ void *crypto_alloc_context(struct nitrox_device *ndev)
 	return chdr;
 }
 
-/**
- * crypto_free_context - Free crypto context to pool
- * @ctx: context to free
- */
+ 
 void crypto_free_context(void *ctx)
 {
 	struct crypto_ctx_hdr *ctxp;
@@ -258,19 +252,12 @@ void crypto_free_context(void *ctx)
 	kfree(ctxp);
 }
 
-/**
- * nitrox_common_sw_init - allocate software resources.
- * @ndev: NITROX device
- *
- * Allocates crypto context pools and command queues etc.
- *
- * Return: 0 on success, or a negative error code on error.
- */
+ 
 int nitrox_common_sw_init(struct nitrox_device *ndev)
 {
 	int err = 0;
 
-	/* per device crypto context pool */
+	 
 	err = create_crypto_dma_pool(ndev);
 	if (err)
 		return err;
@@ -288,10 +275,7 @@ int nitrox_common_sw_init(struct nitrox_device *ndev)
 	return err;
 }
 
-/**
- * nitrox_common_sw_cleanup - free software resources.
- * @ndev: NITROX device
- */
+ 
 void nitrox_common_sw_cleanup(struct nitrox_device *ndev)
 {
 	nitrox_free_aqm_queues(ndev);

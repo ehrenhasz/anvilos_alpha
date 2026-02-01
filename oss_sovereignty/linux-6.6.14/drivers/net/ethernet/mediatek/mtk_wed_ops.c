@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Felix Fietkau <nbd@nbd.name> */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/soc/mediatek/mtk_wed.h>

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Epson's RTC module RX-8025 SA/NB
- *
- * Copyright (C) 2009 Wolfgang Grandegger <wg@grandegger.com>
- *
- * Copyright (C) 2005 by Digi International Inc.
- * All rights reserved.
- *
- * Modified by fengjh at rising.com.cn
- * <lm-sensors@lm-sensors.org>
- * 2006.11
- *
- * Code cleanup by Sergei Poselenov, <sposelenov@emcraft.com>
- * Converted to new style by Wolfgang Grandegger <wg@grandegger.com>
- * Alarm and periodic interrupt added by Dmitry Rakhchev <rda@emcraft.com>
- */
+
+ 
 #include <linux/bcd.h>
 #include <linux/bitops.h>
 #include <linux/i2c.h>
@@ -23,7 +8,7 @@
 #include <linux/module.h>
 #include <linux/rtc.h>
 
-/* Register definitions */
+ 
 #define RX8025_REG_SEC		0x00
 #define RX8025_REG_MIN		0x01
 #define RX8025_REG_HOUR		0x02
@@ -37,12 +22,12 @@
 #define RX8025_REG_ALWWDAY	0x0a
 #define RX8025_REG_ALDMIN	0x0b
 #define RX8025_REG_ALDHOUR	0x0c
-/* 0x0d is reserved */
+ 
 #define RX8025_REG_CTRL1	0x0e
 #define RX8025_REG_CTRL2	0x0f
 
 #define RX8025_BIT_CTRL1_CT	(7 << 0)
-/* 1 Hz periodic level irq */
+ 
 #define RX8025_BIT_CTRL1_CT_1HZ	4
 #define RX8025_BIT_CTRL1_TEST	BIT(3)
 #define RX8025_BIT_CTRL1_1224	BIT(5)
@@ -58,8 +43,8 @@
 
 #define RX8035_BIT_HOUR_1224	BIT(7)
 
-/* Clock precision adjustment */
-#define RX8025_ADJ_RESOLUTION	3050 /* in ppb */
+ 
+#define RX8025_ADJ_RESOLUTION	3050  
 #define RX8025_ADJ_DATA_MAX	62
 #define RX8025_ADJ_DATA_MIN	-62
 
@@ -116,10 +101,7 @@ static s32 rx8025_write_regs(const struct i2c_client *client,
 static int rx8025_is_osc_stopped(enum rx_model model, int ctrl2)
 {
 	int xstp = ctrl2 & RX8025_BIT_CTRL2_XST;
-	/* XSTP bit has different polarity on RX-8025 vs RX-8035.
-	 * RX-8025: 0 == oscillator stopped
-	 * RX-8035: 1 == oscillator stopped
-	 */
+	 
 
 	if (model == model_rx_8025)
 		xstp = !xstp;
@@ -191,13 +173,13 @@ static irqreturn_t rx8025_handle_irq(int irq, void *dev_id)
 			 "you may have to readjust the clock\n");
 
 	if (status & RX8025_BIT_CTRL2_CTFG) {
-		/* periodic */
+		 
 		status &= ~RX8025_BIT_CTRL2_CTFG;
 		rtc_update_irq(rx8025->rtc, 1, RTC_PF | RTC_IRQF);
 	}
 
 	if (status & RX8025_BIT_CTRL2_DAFG) {
-		/* alarm */
+		 
 		status &= RX8025_BIT_CTRL2_DAFG;
 		if (rx8025_write_reg(client, RX8025_REG_CTRL1,
 				     rx8025->ctrl1 & ~RX8025_BIT_CTRL1_DALE))
@@ -252,10 +234,7 @@ static int rx8025_set_time(struct device *dev, struct rtc_time *dt)
 	u8 date[7];
 	int ret;
 
-	/*
-	 * Here the read-only bits are written as "0".  I'm not sure if that
-	 * is sound.
-	 */
+	 
 	date[RX8025_REG_SEC] = bin2bcd(dt->tm_sec);
 	date[RX8025_REG_MIN] = bin2bcd(dt->tm_min);
 	if (rx8025->is_24)
@@ -290,7 +269,7 @@ static int rx8025_init_client(struct i2c_client *client)
 	if (err)
 		goto out;
 
-	/* Keep test bit zero ! */
+	 
 	rx8025->ctrl1 = ctrl[0] & ~RX8025_BIT_CTRL1_TEST;
 
 	if (ctrl[1] & (RX8025_BIT_CTRL2_DAFG | RX8025_BIT_CTRL2_WAFG)) {
@@ -310,7 +289,7 @@ static int rx8025_init_client(struct i2c_client *client)
 	}
 
 	if (rx8025->model == model_rx_8035) {
-		/* In RX-8035, 12/24 flag is in the hour register */
+		 
 		hour_reg = rx8025_read_reg(client, RX8025_REG_HOUR);
 		if (hour_reg < 0)
 			return hour_reg;
@@ -322,7 +301,7 @@ out:
 	return err;
 }
 
-/* Alarm support */
+ 
 static int rx8025_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -341,7 +320,7 @@ static int rx8025_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 	dev_dbg(dev, "%s: read alarm 0x%02x 0x%02x ctrl2 %02x\n",
 		__func__, ald[0], ald[1], ctrl2);
 
-	/* Hardware alarms precision is 1 minute! */
+	 
 	t->time.tm_sec = 0;
 	t->time.tm_min = bcd2bin(ald[0] & 0x7f);
 	if (rx8025->is_24)
@@ -418,18 +397,7 @@ static int rx8025_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	return 0;
 }
 
-/*
- * According to the RX8025 SA/NB application manual the frequency and
- * temperature characteristics can be approximated using the following
- * equation:
- *
- *   df = a * (ut - t)**2
- *
- *   df: Frequency deviation in any temperature
- *   a : Coefficient = (-35 +-5) * 10**-9
- *   ut: Ultimate temperature in degree = +25 +-5 degree
- *   t : Any temperature in degree
- */
+ 
 static int rx8025_read_offset(struct device *dev, long *offset)
 {
 	struct i2c_client *client = to_i2c_client(dev);

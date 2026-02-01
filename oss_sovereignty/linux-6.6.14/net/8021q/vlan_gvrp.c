@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 	IEEE 802.1Q GARP VLAN Registration Protocol (GVRP)
- *
- * 	Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/if_vlan.h>
 #include <net/garp.h>

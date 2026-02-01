@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Save registers before calling assembly functions. This avoids
- * disturbance of register allocation in some inline assembly constructs.
- * Copyright 2001,2002 by Andi Kleen, SuSE Labs.
- */
+ 
+ 
 #include <linux/linkage.h>
 #include "calling.h"
 #include <asm/asm.h>
 #include <asm/export.h>
 
-	/* rdi:	arg1 ... normal C conventions. rax is saved/restored. */
+	 
 	.macro THUNK name, func
 SYM_FUNC_START(\name)
 	pushq %rbp

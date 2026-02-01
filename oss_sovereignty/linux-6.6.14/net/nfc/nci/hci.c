@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  The NFC Controller Interface is the communication protocol between an
- *  NFC Controller (NFCC) and a Device Host (DH).
- *  This is the HCI over NCI implementation, as specified in the 10.2
- *  section of the NCI 1.1 specification.
- *
- *  Copyright (C) 2014  STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <linux/skbuff.h>
 
@@ -47,12 +40,12 @@ struct nci_hci_all_pipe_cleared_noti {
 } __packed;
 
 struct nci_hcp_message {
-	u8 header;      /* type -cmd,evt,rsp- + instruction */
+	u8 header;       
 	u8 data[];
 } __packed;
 
 struct nci_hcp_packet {
-	u8 header;      /* cbit+pipe */
+	u8 header;       
 	struct nci_hcp_message message;
 } __packed;
 
@@ -71,12 +64,12 @@ struct nci_hcp_packet {
 #define NCI_HCI_ADM_CREATE_PIPE			0x10
 #define NCI_HCI_ADM_DELETE_PIPE			0x11
 
-/* HCP headers */
+ 
 #define NCI_HCI_HCP_PACKET_HEADER_LEN      1
 #define NCI_HCI_HCP_MESSAGE_HEADER_LEN     1
 #define NCI_HCI_HCP_HEADER_LEN             2
 
-/* HCP types */
+ 
 #define NCI_HCI_HCP_COMMAND        0x00
 #define NCI_HCI_HCP_EVENT          0x01
 #define NCI_HCI_HCP_RESPONSE       0x02
@@ -107,7 +100,7 @@ static int nci_hci_result_to_errno(u8 result)
 	}
 }
 
-/* HCI core */
+ 
 static void nci_hci_reset_pipes(struct nci_hci_dev *hdev)
 {
 	int i;
@@ -131,14 +124,7 @@ static void nci_hci_reset_pipes_per_host(struct nci_dev *ndev, u8 host)
 	}
 }
 
-/* Fragment HCI data over NCI packet.
- * NFC Forum NCI 10.2.2 Data Exchange:
- * The payload of the Data Packets sent on the Logical Connection SHALL be
- * valid HCP packets, as defined within [ETSI_102622]. Each Data Packet SHALL
- * contain a single HCP packet. NCI Segmentation and Reassembly SHALL NOT be
- * applied to Data Messages in either direction. The HCI fragmentation mechanism
- * is used if required.
- */
+ 
 static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
 			     const u8 data_type, const u8 *data,
 			     size_t data_len)
@@ -162,7 +148,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
 	*(u8 *)skb_push(skb, 1) = data_type;
 
 	do {
-		/* If last packet add NCI_HFP_NO_CHAINING */
+		 
 		if (i + conn_info->max_pkt_payload_len -
 		    (skb->len + 1) >= data_len) {
 			cb |= NCI_HFP_NO_CHAINING;
@@ -304,18 +290,14 @@ static void nci_hci_cmd_received(struct nci_dev *ndev, u8 pipe,
 			goto exit;
 		}
 
-		/* Save the new created pipe and bind with local gate,
-		 * the description for skb->data[3] is destination gate id
-		 * but since we received this cmd from host controller, we
-		 * are the destination and it is our local gate
-		 */
+		 
 		ndev->hci_dev->gate2pipe[dest_gate] = new_pipe;
 		ndev->hci_dev->pipes[new_pipe].gate = dest_gate;
 		ndev->hci_dev->pipes[new_pipe].host =
 						create_info->src_host;
 		break;
 	case NCI_HCI_ANY_OPEN_PIPE:
-		/* If the pipe is not created report an error */
+		 
 		if (gate == NCI_HCI_INVALID_GATE) {
 			status = NCI_HCI_ANY_E_NOK;
 			goto exit;
@@ -376,9 +358,7 @@ exit:
 	nci_req_complete(ndev, NCI_STATUS_OK);
 }
 
-/* Receive hcp message for pipe, with type and cmd.
- * skb contains optional message data only.
- */
+ 
 static void nci_hci_hcp_message_rx(struct nci_dev *ndev, u8 pipe,
 				   u8 type, u8 instruction, struct sk_buff *skb)
 {
@@ -445,7 +425,7 @@ void nci_hci_data_received_cb(void *context,
 		return;
 	}
 
-	/* it's the last fragment. Does it need re-aggregation? */
+	 
 	if (skb_queue_len(&ndev->hci_dev->rx_hcp_frags)) {
 		pipe = NCI_HCP_MSG_GET_PIPE(packet->header);
 		skb_queue_tail(&ndev->hci_dev->rx_hcp_frags, skb);
@@ -478,10 +458,7 @@ void nci_hci_data_received_cb(void *context,
 		hcp_skb = skb;
 	}
 
-	/* if this is a response, dispatch immediately to
-	 * unblock waiting cmd context. Otherwise, enqueue to dispatch
-	 * in separate context where handler can also execute command.
-	 */
+	 
 	packet = (struct nci_hcp_packet *)hcp_skb->data;
 	type = NCI_HCP_MSG_GET_TYPE(packet->message.header);
 	if (type == NCI_HCI_HCP_RESPONSE) {
@@ -675,9 +652,7 @@ open_pipe:
 	if (r < 0) {
 		if (pipe_created) {
 			if (nci_hci_delete_pipe(ndev, pipe) < 0) {
-				/* TODO: Cannot clean by deleting pipe...
-				 * -> inconsistent state
-				 */
+				 
 			}
 		}
 		return r;
@@ -745,7 +720,7 @@ int nci_hci_dev_session_init(struct nci_dev *ndev)
 	    skb->len == strlen(ndev->hci_dev->init_data.session_id) &&
 	    !memcmp(ndev->hci_dev->init_data.session_id, skb->data, skb->len) &&
 	    ndev->ops->hci_load_session) {
-		/* Restore gate<->pipe table from some proprietary location. */
+		 
 		r = ndev->ops->hci_load_session(ndev);
 	} else {
 		r = nci_hci_clear_all_pipes(ndev);

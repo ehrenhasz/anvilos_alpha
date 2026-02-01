@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for USB ethernet port of Conexant CX82310-based ADSL routers
- * Copyright (C) 2010 by Ondrej Zary
- * some parts inspired by the cxacru driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -15,12 +11,12 @@
 #include <linux/usb/usbnet.h>
 
 enum cx82310_cmd {
-	CMD_START		= 0x84,	/* no effect? */
-	CMD_STOP		= 0x85,	/* no effect? */
-	CMD_GET_STATUS		= 0x90,	/* returns nothing? */
-	CMD_GET_MAC_ADDR	= 0x91,	/* read MAC address */
-	CMD_GET_LINK_STATUS	= 0x92,	/* not useful, link is always up */
-	CMD_ETHERNET_MODE	= 0x99,	/* unknown, needed during init */
+	CMD_START		= 0x84,	 
+	CMD_STOP		= 0x85,	 
+	CMD_GET_STATUS		= 0x90,	 
+	CMD_GET_MAC_ADDR	= 0x91,	 
+	CMD_GET_LINK_STATUS	= 0x92,	 
+	CMD_ETHERNET_MODE	= 0x99,	 
 };
 
 enum cx82310_status {
@@ -45,12 +41,7 @@ struct cx82310_priv {
 	struct usbnet *dev;
 };
 
-/*
- * execute control command
- *  - optionally send some data (command parameters)
- *  - optionally wait for the reply
- *  - optionally read some data from the reply
- */
+ 
 static int cx82310_cmd(struct usbnet *dev, enum cx82310_cmd cmd, bool reply,
 		       u8 *wdata, int wlen, u8 *rdata, int rlen)
 {
@@ -61,12 +52,12 @@ static int cx82310_cmd(struct usbnet *dev, enum cx82310_cmd cmd, bool reply,
 	if (!buf)
 		return -ENOMEM;
 
-	/* create command packet */
+	 
 	buf[0] = cmd;
 	if (wdata)
 		memcpy(buf + 4, wdata, min_t(int, wlen, CMD_PACKET_SIZE - 4));
 
-	/* send command packet */
+	 
 	ret = usb_bulk_msg(udev, usb_sndbulkpipe(udev, CMD_EP), buf,
 			   CMD_PACKET_SIZE, &actual_len, CMD_TIMEOUT);
 	if (ret < 0) {
@@ -77,7 +68,7 @@ static int cx82310_cmd(struct usbnet *dev, enum cx82310_cmd cmd, bool reply,
 	}
 
 	if (reply) {
-		/* wait for reply, retry if it's empty */
+		 
 		for (retries = 0; retries < CMD_REPLY_RETRY; retries++) {
 			ret = usb_bulk_msg(udev, usb_rcvbulkpipe(udev, CMD_EP),
 					   buf, CMD_PACKET_SIZE, &actual_len,
@@ -134,9 +125,9 @@ static void cx82310_reenable_work(struct work_struct *work)
 	cx82310_enable_ethernet(priv->dev);
 }
 
-#define partial_len	data[0]		/* length of partial packet data */
-#define partial_rem	data[1]		/* remaining (missing) data length */
-#define partial_data	data[2]		/* partial packet data */
+#define partial_len	data[0]		 
+#define partial_rem	data[1]		 
+#define partial_data	data[2]		 
 
 static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 {
@@ -148,7 +139,7 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 	struct cx82310_priv *priv;
 	u8 addr[ETH_ALEN];
 
-	/* avoid ADSL modems - continue only if iProduct is "USB NET CARD" */
+	 
 	if (usb_string(udev, udev->descriptor.iProduct, buf, sizeof(buf)) > 0
 	    && strcmp(buf, "USB NET CARD")) {
 		dev_info(&udev->dev, "ignoring: probably an ADSL modem\n");
@@ -159,14 +150,11 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 	if (ret)
 		return ret;
 
-	/*
-	 * this must not include ethernet header as the device can send partial
-	 * packets with no header (and sometimes even empty URBs)
-	 */
+	 
 	dev->net->hard_header_len = 0;
-	/* we can send at most 1514 bytes of data (+ 2-byte header) per URB */
+	 
 	dev->hard_mtu = CX82310_MTU + 2;
-	/* we can receive URBs up to 4KB from the device */
+	 
 	dev->rx_urb_size = 4096;
 
 	dev->partial_data = (unsigned long) kmalloc(dev->hard_mtu, GFP_KERNEL);
@@ -182,11 +170,11 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 	INIT_WORK(&priv->reenable_work, cx82310_reenable_work);
 	priv->dev = dev;
 
-	/* wait for firmware to become ready (indicated by the link being up) */
+	 
 	while (--timeout) {
 		ret = cx82310_cmd(dev, CMD_GET_LINK_STATUS, true, NULL, 0,
 				  link, sizeof(link));
-		/* the command can time out during boot - it's not an error */
+		 
 		if (!ret && link[0] == 1 && link[2] == 1)
 			break;
 		msleep(500);
@@ -197,12 +185,12 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 		goto err;
 	}
 
-	/* enable ethernet mode (?) */
+	 
 	ret = cx82310_enable_ethernet(dev);
 	if (ret)
 		goto err;
 
-	/* get the MAC address */
+	 
 	ret = cx82310_cmd(dev, CMD_GET_MAC_ADDR, true, NULL, 0, addr, ETH_ALEN);
 	if (ret) {
 		netdev_err(dev->net, "unable to read MAC address: %d\n", ret);
@@ -210,7 +198,7 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 	}
 	eth_hw_addr_set(dev->net, addr);
 
-	/* start (does not seem to have any effect?) */
+	 
 	ret = cx82310_cmd(dev, CMD_START, false, NULL, 0, NULL, 0);
 	if (ret)
 		goto err;
@@ -232,24 +220,14 @@ static void cx82310_unbind(struct usbnet *dev, struct usb_interface *intf)
 	kfree(dev->driver_priv);
 }
 
-/*
- * RX is NOT easy - we can receive multiple packets per skb, each having 2-byte
- * packet length at the beginning.
- * The last packet might be incomplete (when it crosses the 4KB URB size),
- * continuing in the next skb (without any headers).
- * If a packet has odd length, there is one extra byte at the end (before next
- * packet or at the end of the URB).
- */
+ 
 static int cx82310_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 {
 	int len;
 	struct sk_buff *skb2;
 	struct cx82310_priv *priv = dev->driver_priv;
 
-	/*
-	 * If the last skb ended with an incomplete packet, this skb contains
-	 * end of that packet at the beginning.
-	 */
+	 
 	if (dev->partial_rem) {
 		len = dev->partial_len + dev->partial_rem;
 		skb2 = alloc_skb(len, GFP_ATOMIC);
@@ -267,13 +245,13 @@ static int cx82310_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			return 1;
 	}
 
-	/* a skb can contain multiple packets */
+	 
 	while (skb->len > 1) {
-		/* first two bytes are packet length */
+		 
 		len = skb->data[0] | (skb->data[1] << 8);
 		skb_pull(skb, 2);
 
-		/* if last packet in the skb, let usbnet to process it */
+		 
 		if (len == skb->len || len + 1 == skb->len) {
 			skb_trim(skb, len);
 			break;
@@ -287,7 +265,7 @@ static int cx82310_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			return 0;
 		}
 
-		/* incomplete packet, save it for the next skb */
+		 
 		if (len > skb->len) {
 			dev->partial_len = skb->len;
 			dev->partial_rem = len - skb->len;
@@ -302,17 +280,17 @@ static int cx82310_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			return 0;
 		skb_put(skb2, len);
 		memcpy(skb2->data, skb->data, len);
-		/* process the packet */
+		 
 		usbnet_skb_return(dev, skb2);
 
 		skb_pull(skb, (len + 1) & ~1);
 	}
 
-	/* let usbnet process the last packet */
+	 
 	return 1;
 }
 
-/* TX is easy, just add 2 bytes of length at the beginning */
+ 
 static struct sk_buff *cx82310_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 				       gfp_t flags)
 {

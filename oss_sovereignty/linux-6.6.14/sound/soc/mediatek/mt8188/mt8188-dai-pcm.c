@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek ALSA SoC Audio DAI PCM I/F Control
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- *         Chun-Chia Chiu <chun-chia.chiu@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/regmap.h>
@@ -143,7 +136,7 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 	bck_inv = pcmif_priv->bck_inv;
 	fmt = pcmif_priv->format;
 
-	/* sync freq mode */
+	 
 	fs = mt8188_afe_fs_timing(runtime->rate);
 	if (fs < 0)
 		return -EINVAL;
@@ -151,7 +144,7 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 	val |= FIELD_PREP(PCM_INTF_CON2_SYNC_FREQ_MODE_MASK, fs);
 	mask |= PCM_INTF_CON2_SYNC_FREQ_MODE_MASK;
 
-	/* clk domain sel */
+	 
 	if (runtime->rate % 8000)
 		val |= FIELD_PREP(PCM_INTF_CON2_CLK_DOMAIN_SEL_MASK,
 				  MTK_DAI_PCM_CLK_26M_441K);
@@ -165,7 +158,7 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 	val = 0;
 	mask = 0;
 
-	/* pcm mode */
+	 
 	mode = mtk_dai_pcm_mode(runtime->rate);
 	if (mode < 0)
 		return -EINVAL;
@@ -173,11 +166,11 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 	val |= FIELD_PREP(PCM_INTF_CON1_PCM_MODE_MASK, mode);
 	mask |= PCM_INTF_CON1_PCM_MODE_MASK;
 
-	/* pcm format */
+	 
 	val |= FIELD_PREP(PCM_INTF_CON1_PCM_FMT_MASK, fmt);
 	mask |= PCM_INTF_CON1_PCM_FMT_MASK;
 
-	/* pcm sync length */
+	 
 	if (fmt == MTK_DAI_PCM_FMT_MODEA ||
 	    fmt == MTK_DAI_PCM_FMT_MODEB)
 		val |= FIELD_PREP(PCM_INTF_CON1_SYNC_LENGTH_MASK, 1);
@@ -185,7 +178,7 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 		val |= FIELD_PREP(PCM_INTF_CON1_SYNC_LENGTH_MASK, bit_width);
 	mask |= PCM_INTF_CON1_SYNC_LENGTH_MASK;
 
-	/* pcm bits, word length */
+	 
 	if (bit_width > 16) {
 		val |= PCM_INTF_CON1_PCM_24BIT;
 		val |= PCM_INTF_CON1_PCM_WLEN_64BCK;
@@ -196,7 +189,7 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 	mask |= PCM_INTF_CON1_PCM_BIT_MASK;
 	mask |= PCM_INTF_CON1_PCM_WLEN_MASK;
 
-	/* master/slave */
+	 
 	if (!slave_mode) {
 		val |= PCM_INTF_CON1_PCM_MASTER;
 
@@ -214,7 +207,7 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 			val |= PCM_INTF_CON1_BCLK_IN_INV;
 		mask |= PCM_INTF_CON1_CLK_IN_INV_MASK;
 
-		// TODO: add asrc setting for slave mode
+		
 	}
 	mask |= PCM_INTF_CON1_PCM_M_S_MASK;
 
@@ -223,7 +216,7 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* dai ops */
+ 
 static int mtk_dai_pcm_prepare(struct snd_pcm_substream *substream,
 			       struct snd_soc_dai *dai)
 {
@@ -301,7 +294,7 @@ static const struct snd_soc_dai_ops mtk_dai_pcm_ops = {
 	.set_fmt	= mtk_dai_pcm_set_fmt,
 };
 
-/* dai driver */
+ 
 #define MTK_PCM_RATES (SNDRV_PCM_RATE_8000_48000)
 
 #define MTK_PCM_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\

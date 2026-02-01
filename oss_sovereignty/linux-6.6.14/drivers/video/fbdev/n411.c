@@ -1,27 +1,4 @@
-/*
- * linux/drivers/video/n411.c -- Platform device for N411 EPD kit
- *
- * Copyright (C) 2008, Jaya Kumar
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of this archive for
- * more details.
- *
- * Layout is based on skeletonfb.c by James Simmons and Geert Uytterhoeven.
- *
- * This driver is written to be used with the Hecuba display controller
- * board, and tested with the EInk 800x600 display in 1 bit mode.
- * The interface between Hecuba and the host is TTL based GPIO. The
- * GPIO requirements are 8 writable data lines and 6 lines for control.
- * Only 4 of the controls are actually used here but 6 for future use.
- * The driver requires the IO addresses for data and control GPIO at
- * load time. It is also possible to use this display with a standard
- * PC parallel port.
- *
- * General notes:
- * - User must set dio_addr=0xIOADDR cio_addr=0xIOADDR c2io_addr=0xIOADDR
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -95,19 +72,13 @@ static void n411_wait_for_ack(struct hecubafb_par *par, int clear)
 static int n411_init_control(struct hecubafb_par *par)
 {
 	unsigned char tmp;
-	/* for init, we want the following setup to be set:
-	WUP = lo
-	ACK = hi
-	DS = hi
-	RW = hi
-	CD = lo
-	*/
+	 
 
-	/* write WUP to lo, DS to hi, RW to hi, CD to lo */
+	 
 	ctl = HCB_WUP_BIT | HCB_RW_BIT | HCB_CD_BIT ;
 	n411_set_ctl(par, HCB_DS_BIT, 1);
 
-	/* check ACK is not lo */
+	 
 	tmp = n411_get_ctl(par);
 	if (tmp & HCB_ACK_BIT) {
 		printk(KERN_ERR "Fail because ACK is already low\n");
@@ -129,10 +100,10 @@ static int n411_init_board(struct hecubafb_par *par)
 	par->send_command(par, APOLLO_INIT_DISPLAY);
 	par->send_data(par, 0x81);
 
-	/* have to wait while display resets */
+	 
 	udelay(1000);
 
-	/* if we were told to splash the screen, we just clear it */
+	 
 	if (!nosplash) {
 		par->send_command(par, APOLLO_ERASE_DISPLAY);
 		par->send_data(par, splashval);
@@ -158,7 +129,7 @@ static int __init n411_init(void)
 		return -EINVAL;
 	}
 
-	/* request our platform independent driver */
+	 
 	request_module("hecubafb");
 
 	n411_device = platform_device_alloc("hecubafb", -1);
@@ -170,7 +141,7 @@ static int __init n411_init(void)
 	if (ret)
 		goto put_plat_device;
 
-	/* this _add binds hecubafb to n411. hecubafb refcounts n411 */
+	 
 	ret = platform_device_add(n411_device);
 
 	if (ret)

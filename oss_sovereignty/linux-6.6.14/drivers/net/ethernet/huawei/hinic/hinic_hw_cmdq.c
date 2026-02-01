@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -93,13 +90,13 @@ enum data_format {
 };
 
 enum bufdesc_len {
-	BUFDESC_LCMD_LEN = 2,   /* 16 bytes - 2(8 byte unit) */
-	BUFDESC_SCMD_LEN = 3,   /* 24 bytes - 3(8 byte unit) */
+	BUFDESC_LCMD_LEN = 2,    
+	BUFDESC_SCMD_LEN = 3,    
 };
 
 enum ctrl_sect_len {
-	CTRL_SECT_LEN        = 1, /* 4 bytes (ctrl) - 1(8 byte unit) */
-	CTRL_DIRECT_SECT_LEN = 2, /* 12 bytes (ctrl + rsvd) - 2(8 byte unit) */
+	CTRL_SECT_LEN        = 1,  
+	CTRL_DIRECT_SECT_LEN = 2,  
 };
 
 enum cmdq_scmd_type {
@@ -116,13 +113,7 @@ enum completion_request {
 	CEQ_SET = 1,
 };
 
-/**
- * hinic_alloc_cmdq_buf - alloc buffer for sending command
- * @cmdqs: the cmdqs
- * @cmdq_buf: the buffer returned in this struct
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_alloc_cmdq_buf(struct hinic_cmdqs *cmdqs,
 			 struct hinic_cmdq_buf *cmdq_buf)
 {
@@ -139,11 +130,7 @@ int hinic_alloc_cmdq_buf(struct hinic_cmdqs *cmdqs,
 	return 0;
 }
 
-/**
- * hinic_free_cmdq_buf - free buffer
- * @cmdqs: the cmdqs
- * @cmdq_buf: the buffer to free that is in this struct
- **/
+ 
 void hinic_free_cmdq_buf(struct hinic_cmdqs *cmdqs,
 			 struct hinic_cmdq_buf *cmdq_buf)
 {
@@ -303,7 +290,7 @@ static void cmdq_wqe_fill(void *dst, void *src)
 	memcpy(dst + FIRST_DATA_TO_WRITE_LAST, src + FIRST_DATA_TO_WRITE_LAST,
 	       CMDQ_WQE_SIZE - FIRST_DATA_TO_WRITE_LAST);
 
-	wmb();          /* The first 8 bytes should be written last */
+	wmb();           
 
 	*(u64 *)dst = *(u64 *)src;
 }
@@ -324,10 +311,10 @@ static void cmdq_set_db(struct hinic_cmdq *cmdq,
 
 	cmdq_fill_db(&db_info, cmdq_type, prod_idx);
 
-	/* The data that is written to HW should be in Big Endian Format */
+	 
 	db_info = cpu_to_be32(db_info);
 
-	wmb();  /* write all before the doorbell */
+	wmb();   
 
 	writel(db_info, CMDQ_DB_ADDR(cmdq->db_base, prod_idx));
 }
@@ -344,10 +331,10 @@ static int cmdq_sync_cmd_direct_resp(struct hinic_cmdq *cmdq,
 	struct hinic_hw_wqe *hw_wqe;
 	struct completion done;
 
-	/* Keep doorbell index correct. bh - for tasklet(ceq). */
+	 
 	spin_lock_bh(&cmdq->cmdq_lock);
 
-	/* WQE_SIZE = WQEBB_SIZE, we will get the wq element and not shadow*/
+	 
 	hw_wqe = hinic_get_wqe(wq, WQE_LCMD_SIZE, &curr_prod_idx);
 	if (IS_ERR(hw_wqe)) {
 		spin_unlock_bh(&cmdq->cmdq_lock);
@@ -374,10 +361,10 @@ static int cmdq_sync_cmd_direct_resp(struct hinic_cmdq *cmdq,
 			  wrapped, HINIC_CMD_ACK_TYPE_CMDQ, mod, cmd,
 			  curr_prod_idx);
 
-	/* The data that is written to HW should be in Big Endian Format */
+	 
 	hinic_cpu_to_be32(&cmdq_wqe, WQE_LCMD_SIZE);
 
-	/* CMDQ WQE is not shadow, therefore wqe will be written to wq */
+	 
 	cmdq_wqe_fill(curr_cmdq_wqe, &cmdq_wqe);
 
 	cmdq_set_db(cmdq, HINIC_CMDQ_SYNC, next_prod_idx);
@@ -400,7 +387,7 @@ static int cmdq_sync_cmd_direct_resp(struct hinic_cmdq *cmdq,
 		return -ETIMEDOUT;
 	}
 
-	smp_rmb();      /* read error code after completion */
+	smp_rmb();       
 
 	if (resp) {
 		struct hinic_cmdq_wqe_lcmd *wqe_lcmd = &curr_cmdq_wqe->wqe_lcmd;
@@ -423,10 +410,10 @@ static int cmdq_set_arm_bit(struct hinic_cmdq *cmdq, void *buf_in,
 	struct hinic_hw_wqe *hw_wqe;
 	int wrapped, num_wqebbs;
 
-	/* Keep doorbell index correct */
+	 
 	spin_lock(&cmdq->cmdq_lock);
 
-	/* WQE_SIZE = WQEBB_SIZE, we will get the wq element and not shadow*/
+	 
 	hw_wqe = hinic_get_wqe(wq, WQE_SCMD_SIZE, &curr_prod_idx);
 	if (IS_ERR(hw_wqe)) {
 		spin_unlock(&cmdq->cmdq_lock);
@@ -448,10 +435,10 @@ static int cmdq_set_arm_bit(struct hinic_cmdq *cmdq, void *buf_in,
 			    in_size, NULL, wrapped, HINIC_CMD_ACK_TYPE_CMDQ,
 			    HINIC_MOD_COMM, CMDQ_SET_ARM_CMD, curr_prod_idx);
 
-	/* The data that is written to HW should be in Big Endian Format */
+	 
 	hinic_cpu_to_be32(&cmdq_wqe, WQE_SCMD_SIZE);
 
-	/* cmdq wqe is not shadow, therefore wqe will be written to wq */
+	 
 	cmdq_wqe_fill(curr_cmdq_wqe, &cmdq_wqe);
 
 	cmdq_set_db(cmdq, HINIC_CMDQ_SYNC, next_prod_idx);
@@ -468,16 +455,7 @@ static int cmdq_params_valid(struct hinic_cmdq_buf *buf_in)
 	return 0;
 }
 
-/**
- * hinic_cmdq_direct_resp - send command with direct data as resp
- * @cmdqs: the cmdqs
- * @mod: module on the card that will handle the command
- * @cmd: the command
- * @buf_in: the buffer for the command
- * @resp: the response to return
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_cmdq_direct_resp(struct hinic_cmdqs *cmdqs,
 			   enum hinic_mod_type mod, u8 cmd,
 			   struct hinic_cmdq_buf *buf_in, u64 *resp)
@@ -496,14 +474,7 @@ int hinic_cmdq_direct_resp(struct hinic_cmdqs *cmdqs,
 					 mod, cmd, buf_in, resp);
 }
 
-/**
- * hinic_set_arm_bit - set arm bit for enable interrupt again
- * @cmdqs: the cmdqs
- * @q_type: type of queue to set the arm bit for
- * @q_id: the queue number
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int hinic_set_arm_bit(struct hinic_cmdqs *cmdqs,
 			     enum hinic_set_arm_qtype q_type, u32 q_id)
 {
@@ -546,19 +517,13 @@ static void clear_wqe_complete_bit(struct hinic_cmdq *cmdq,
 		ctrl = &wqe_scmd->ctrl;
 	}
 
-	/* clear HW busy bit */
+	 
 	ctrl->ctrl_info = 0;
 
-	wmb();  /* verify wqe is clear */
+	wmb();   
 }
 
-/**
- * cmdq_arm_ceq_handler - cmdq completion event handler for arm command
- * @cmdq: the cmdq of the arm command
- * @wqe: the wqe of the arm command
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int cmdq_arm_ceq_handler(struct hinic_cmdq *cmdq,
 				struct hinic_cmdq_wqe *wqe)
 {
@@ -571,7 +536,7 @@ static int cmdq_arm_ceq_handler(struct hinic_cmdq *cmdq,
 	ctrl = &wqe_scmd->ctrl;
 	ctrl_info = be32_to_cpu(ctrl->ctrl_info);
 
-	/* HW should toggle the HW BUSY BIT */
+	 
 	if (!CMDQ_WQE_COMPLETED(ctrl_info))
 		return -EBUSY;
 
@@ -588,12 +553,7 @@ static void cmdq_update_errcode(struct hinic_cmdq *cmdq, u16 prod_idx,
 		*cmdq->errcode[prod_idx] = errcode;
 }
 
-/**
- * cmdq_sync_cmd_handler - cmdq completion event handler for sync command
- * @cmdq: the cmdq of the command
- * @cons_idx: the consumer index to update the error code for
- * @errcode: the error code
- **/
+ 
 static void cmdq_sync_cmd_handler(struct hinic_cmdq *cmdq, u16 cons_idx,
 				  int errcode)
 {
@@ -602,7 +562,7 @@ static void cmdq_sync_cmd_handler(struct hinic_cmdq *cmdq, u16 cons_idx,
 	spin_lock(&cmdq->cmdq_lock);
 	cmdq_update_errcode(cmdq, prod_idx, errcode);
 
-	wmb();  /* write all before update for the command request */
+	wmb();   
 
 	if (cmdq->done[prod_idx])
 		complete(cmdq->done[prod_idx]);
@@ -631,11 +591,7 @@ static int cmdq_cmd_ceq_handler(struct hinic_cmdq *cmdq, u16 ci,
 	return 0;
 }
 
-/**
- * cmdq_ceq_handler - cmdq completion event handler
- * @handle: private data for the handler(cmdqs)
- * @ceqe_data: ceq element data
- **/
+ 
 static void cmdq_ceq_handler(void *handle, u32 ceqe_data)
 {
 	enum hinic_cmdq_type cmdq_type = CMDQ_CEQE_GET(ceqe_data, TYPE);
@@ -647,7 +603,7 @@ static void cmdq_ceq_handler(void *handle, u32 ceqe_data)
 	u32 saved_data;
 	u16 ci;
 
-	/* Read the smallest wqe size for getting wqe size */
+	 
 	while ((hw_wqe = hinic_read_wqe(cmdq->wq, WQE_SCMD_SIZE, &ci))) {
 		if (IS_ERR(hw_wqe))
 			break;
@@ -656,7 +612,7 @@ static void cmdq_ceq_handler(void *handle, u32 ceqe_data)
 		saved_data = be32_to_cpu(header->saved_data);
 
 		if (HINIC_SAVED_DATA_GET(saved_data, ARM)) {
-			/* arm_bit was set until here */
+			 
 			set_arm = 0;
 
 			if (cmdq_arm_ceq_handler(cmdq, &hw_wqe->cmdq_wqe))
@@ -683,12 +639,7 @@ static void cmdq_ceq_handler(void *handle, u32 ceqe_data)
 	}
 }
 
-/**
- * cmdq_init_queue_ctxt - init the queue ctxt of a cmdq
- * @cmdq_ctxt: cmdq ctxt to initialize
- * @cmdq: the cmdq
- * @cmdq_pages: the memory of the queue
- **/
+ 
 static void cmdq_init_queue_ctxt(struct hinic_cmdq_ctxt *cmdq_ctxt,
 				 struct hinic_cmdq *cmdq,
 				 struct hinic_cmdq_pages *cmdq_pages)
@@ -698,7 +649,7 @@ static void cmdq_init_queue_ctxt(struct hinic_cmdq_ctxt *cmdq_ctxt,
 	struct hinic_cmdqs *cmdqs = cmdq_to_cmdqs(cmdq);
 	struct hinic_wq *wq = cmdq->wq;
 
-	/* The data in the HW is in Big Endian Format */
+	 
 	wq_first_page_paddr = be64_to_cpu(*wq->block_vaddr);
 
 	pfn = CMDQ_PFN(wq_first_page_paddr, SZ_4K);
@@ -711,7 +662,7 @@ static void cmdq_init_queue_ctxt(struct hinic_cmdq_ctxt *cmdq_ctxt,
 		HINIC_CMDQ_CTXT_PAGE_INFO_SET(cmdq->wrapped, WRAPPED);
 
 	if (wq->num_q_pages != 1) {
-		/* block PFN - Read Modify Write */
+		 
 		cmdq_first_block_paddr = cmdq_pages->page_paddr;
 
 		pfn = CMDQ_PFN(cmdq_first_block_paddr, wq->wq_page_size);
@@ -726,15 +677,7 @@ static void cmdq_init_queue_ctxt(struct hinic_cmdq_ctxt *cmdq_ctxt,
 	cmdq_ctxt->cmdq_type  = cmdq->cmdq_type;
 }
 
-/**
- * init_cmdq - initialize cmdq
- * @cmdq: the cmdq
- * @wq: the wq attaced to the cmdq
- * @q_type: the cmdq type of the cmdq
- * @db_area: doorbell area for the cmdq
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int init_cmdq(struct hinic_cmdq *cmdq, struct hinic_wq *wq,
 		     enum hinic_cmdq_type q_type, void __iomem *db_area)
 {
@@ -765,24 +708,14 @@ err_errcode:
 	return err;
 }
 
-/**
- * free_cmdq - Free cmdq
- * @cmdq: the cmdq to free
- **/
+ 
 static void free_cmdq(struct hinic_cmdq *cmdq)
 {
 	vfree(cmdq->errcode);
 	vfree(cmdq->done);
 }
 
-/**
- * init_cmdqs_ctxt - write the cmdq ctxt to HW after init all cmdq
- * @hwdev: the NIC HW device
- * @cmdqs: cmdqs to write the ctxts for
- * @db_area: db_area for all the cmdqs
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int init_cmdqs_ctxt(struct hinic_hwdev *hwdev,
 			   struct hinic_cmdqs *cmdqs, void __iomem **db_area)
 {
@@ -816,7 +749,7 @@ static int init_cmdqs_ctxt(struct hinic_hwdev *hwdev,
 				     &cmdqs->cmdq_pages);
 	}
 
-	/* Write the CMDQ ctxts */
+	 
 	cmdq_type = HINIC_CMDQ_SYNC;
 	for (; cmdq_type < HINIC_MAX_CMDQ_TYPES; cmdq_type++) {
 		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
@@ -864,14 +797,7 @@ static int hinic_set_cmdq_depth(struct hinic_hwdev *hwdev, u16 cmdq_depth)
 				 NULL, HINIC_MGMT_MSG_SYNC);
 }
 
-/**
- * hinic_init_cmdqs - init all cmdqs
- * @cmdqs: cmdqs to init
- * @hwif: HW interface for accessing cmdqs
- * @db_area: doorbell areas for all the cmdqs
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_init_cmdqs(struct hinic_cmdqs *cmdqs, struct hinic_hwif *hwif,
 		     void __iomem **db_area)
 {
@@ -937,10 +863,7 @@ err_saved_wqs:
 	return err;
 }
 
-/**
- * hinic_free_cmdqs - free all cmdqs
- * @cmdqs: cmdqs to free
- **/
+ 
 void hinic_free_cmdqs(struct hinic_cmdqs *cmdqs)
 {
 	struct hinic_func_to_io *func_to_io = cmdqs_to_func_to_io(cmdqs);

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2017 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <crypto/internal/geniv.h>
 #include <crypto/aead.h>
@@ -105,7 +74,7 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
 		}
 		break;
 	case XFRM_DEV_OFFLOAD_CRYPTO:
-		/* Already parsed by XFRM core */
+		 
 		esn = x->replay_esn->seq;
 		break;
 	default:
@@ -124,10 +93,7 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
 	if (sa_entry->esn_state.esn_msb)
 		sa_entry->esn_state.esn = esn;
 	else
-		/* According to RFC4303, section "3.3.3. Sequence Number Generation",
-		 * the first packet sent using a given SA will contain a sequence
-		 * number of 1.
-		 */
+		 
 		sa_entry->esn_state.esn = max_t(u32, esn, 1);
 	sa_entry->esn_state.esn_msb = esn_msb;
 
@@ -154,79 +120,31 @@ static void mlx5e_ipsec_init_limits(struct mlx5e_ipsec_sa_entry *sa_entry,
 	if (x->lft.soft_packet_limit == XFRM_INF)
 		return;
 
-	/* Compute hard limit initial value and number of rounds.
-	 *
-	 * The counting pattern of hardware counter goes:
-	 *                value  -> 2^31-1
-	 *      2^31  | (2^31-1) -> 2^31-1
-	 *      2^31  | (2^31-1) -> 2^31-1
-	 *      [..]
-	 *      2^31  | (2^31-1) -> 0
-	 *
-	 * The pattern is created by using an ASO operation to atomically set
-	 * bit 31 after the down counter clears bit 31. This is effectively an
-	 * atomic addition of 2**31 to the counter.
-	 *
-	 * We wish to configure the counter, within the above pattern, so that
-	 * when it reaches 0, it has hit the hard limit. This is defined by this
-	 * system of equations:
-	 *
-	 *      hard_limit == start_value + n * 2^31
-	 *      n >= 0
-	 *      start_value < 2^32, start_value >= 0
-	 *
-	 * These equations are not single-solution, there are often two choices:
-	 *      hard_limit == start_value + n * 2^31
-	 *      hard_limit == (start_value+2^31) + (n-1) * 2^31
-	 *
-	 * The algorithm selects the solution that keeps the counter value
-	 * above 2^31 until the final iteration.
-	 */
+	 
 
-	/* Start by estimating n and compute start_value */
+	 
 	n = attrs->lft.hard_packet_limit / BIT_ULL(31);
 	start_value = attrs->lft.hard_packet_limit - n * BIT_ULL(31);
 
-	/* Choose the best of the two solutions: */
+	 
 	if (n >= 1)
 		n -= 1;
 
-	/* Computed values solve the system of equations: */
+	 
 	start_value = attrs->lft.hard_packet_limit - n * BIT_ULL(31);
 
-	/* The best solution means: when there are multiple iterations we must
-	 * start above 2^31 and count down to 2**31 to get the interrupt.
-	 */
+	 
 	attrs->lft.hard_packet_limit = lower_32_bits(start_value);
 	attrs->lft.numb_rounds_hard = (u64)n;
 
-	/* Compute soft limit initial value and number of rounds.
-	 *
-	 * The soft_limit is achieved by adjusting the counter's
-	 * interrupt_value. This is embedded in the counting pattern created by
-	 * hard packet calculations above.
-	 *
-	 * We wish to compute the interrupt_value for the soft_limit. This is
-	 * defined by this system of equations:
-	 *
-	 *      soft_limit == start_value - soft_value + n * 2^31
-	 *      n >= 0
-	 *      soft_value < 2^32, soft_value >= 0
-	 *      for n == 0 start_value > soft_value
-	 *
-	 * As with compute_hard_n_value() the equations are not single-solution.
-	 * The algorithm selects the solution that has:
-	 *      2^30 <= soft_limit < 2^31 + 2^30
-	 * for the interior iterations, which guarantees a large guard band
-	 * around the counter hard limit and next interrupt.
-	 */
+	 
 
-	/* Start by estimating n and compute soft_value */
+	 
 	n = (x->lft.soft_packet_limit - attrs->lft.hard_packet_limit) / BIT_ULL(31);
 	start_value = attrs->lft.hard_packet_limit + n * BIT_ULL(31) -
 		      x->lft.soft_packet_limit;
 
-	/* Compare against constraints and adjust n */
+	 
 	if (n < 0)
 		n = 0;
 	else if (start_value >= BIT_ULL(32))
@@ -234,24 +152,17 @@ static void mlx5e_ipsec_init_limits(struct mlx5e_ipsec_sa_entry *sa_entry,
 	else if (start_value < 0)
 		n += 1;
 
-	/* Choose the best of the two solutions: */
+	 
 	start_value = attrs->lft.hard_packet_limit + n * BIT_ULL(31) - start_value;
 	if (n != attrs->lft.numb_rounds_hard && start_value < BIT_ULL(30))
 		n += 1;
 
-	/* Note that the upper limit of soft_value happens naturally because we
-	 * always select the lowest soft_value.
-	 */
+	 
 
-	/* Computed values solve the system of equations: */
+	 
 	start_value = attrs->lft.hard_packet_limit + n * BIT_ULL(31) - start_value;
 
-	/* The best solution means: when there are multiple iterations we must
-	 * not fall below 2^30 as that would get too close to the false
-	 * hard_limit and when we reach an interior iteration for soft_limit it
-	 * has to be far away from 2**32-1 which is the counter reset point
-	 * after the +2^31 to accommodate latency.
-	 */
+	 
 	attrs->lft.soft_packet_limit = lower_32_bits(start_value);
 	attrs->lft.numb_rounds_soft = (u64)n;
 }
@@ -316,14 +227,14 @@ void mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
 
 	memset(attrs, 0, sizeof(*attrs));
 
-	/* key */
+	 
 	crypto_data_len = (x->aead->alg_key_len + 7) / 8;
-	key_len = crypto_data_len - 4; /* 4 bytes salt at end */
+	key_len = crypto_data_len - 4;  
 
 	memcpy(aes_gcm->aes_key, x->aead->alg_key, key_len);
 	aes_gcm->key_len = key_len * 8;
 
-	/* salt and seq_iv */
+	 
 	aead = x->data;
 	geniv_ctx = crypto_aead_ctx(aead);
 	ivsize = crypto_aead_ivsize(aead);
@@ -331,12 +242,12 @@ void mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
 	memcpy(&aes_gcm->salt, x->aead->alg_key + key_len,
 	       sizeof(aes_gcm->salt));
 
-	attrs->authsize = crypto_aead_authsize(aead) / 4; /* in dwords */
+	attrs->authsize = crypto_aead_authsize(aead) / 4;  
 
-	/* iv len */
+	 
 	aes_gcm->icv_len = x->aead->alg_icv_len;
 
-	/* esn */
+	 
 	if (x->props.flags & XFRM_STATE_ESN) {
 		attrs->replay_esn.trigger = true;
 		attrs->replay_esn.esn = sa_entry->esn_state.esn;
@@ -366,10 +277,10 @@ void mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
 	}
 
 	attrs->dir = x->xso.dir;
-	/* spi */
+	 
 	attrs->spi = be32_to_cpu(x->id.spi);
 
-	/* source , destination ips */
+	 
 	memcpy(&attrs->saddr, x->props.saddr.a6, sizeof(attrs->saddr));
 	memcpy(&attrs->daddr, x->id.daddr.a6, sizeof(attrs->daddr));
 	attrs->family = x->props.family;
@@ -522,7 +433,7 @@ static int mlx5e_xfrm_validate_state(struct mlx5_core_dev *mdev,
 
 		if (x->lft.soft_packet_limit >= x->lft.hard_packet_limit &&
 		    x->lft.hard_packet_limit != XFRM_INF) {
-			/* XFRM stack doesn't prevent such configuration :(. */
+			 
 			NL_SET_ERR_MSG_MOD(extack, "Hard packet limit must be greater than soft one");
 			return -EINVAL;
 		}
@@ -691,7 +602,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
 
 	sa_entry->x = x;
 	sa_entry->ipsec = ipsec;
-	/* Check if this SA is originated from acquire flow temporary SA */
+	 
 	if (x->xso.flags & XFRM_DEV_OFFLOAD_FLAG_ACQ)
 		goto out;
 
@@ -704,7 +615,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
 		goto err_xfrm;
 	}
 
-	/* check esn */
+	 
 	if (x->props.flags & XFRM_STATE_ESN)
 		mlx5e_ipsec_update_esn_state(sa_entry);
 
@@ -718,7 +629,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
 	if (err)
 		goto release_work;
 
-	/* create hw context */
+	 
 	err = mlx5_ipsec_create_sa_ctx(sa_entry);
 	if (err)
 		goto release_dwork;
@@ -735,10 +646,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
 		goto err_add_rule;
 	}
 
-	/* We use *_bh() variant because xfrm_timer_handler(), which runs
-	 * in softirq context, can reach our state delete logic and we need
-	 * xa_erase_bh() there.
-	 */
+	 
 	err = xa_insert_bh(&ipsec->sadb, sa_entry->ipsec_obj_id, sa_entry,
 			   GFP_KERNEL);
 	if (err)
@@ -792,7 +700,7 @@ static void mlx5e_xfrm_del_state(struct xfrm_state *x)
 
 	if (attrs->mode == XFRM_MODE_TUNNEL &&
 	    attrs->type == XFRM_DEV_OFFLOAD_PACKET)
-		/* Make sure that no ARP requests are running in parallel */
+		 
 		flush_workqueue(ipsec->wq);
 
 }
@@ -943,11 +851,11 @@ void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv)
 static bool mlx5e_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
 {
 	if (x->props.family == AF_INET) {
-		/* Offload with IPv4 options is not supported yet */
+		 
 		if (ip_hdr(skb)->ihl > 5)
 			return false;
 	} else {
-		/* Offload with IPv6 extension headers is not support yet */
+		 
 		if (ipv6_ext_hdr(ipv6_hdr(skb)->nexthdr))
 			return false;
 	}
@@ -1000,7 +908,7 @@ static int mlx5e_xfrm_validate_policy(struct mlx5_core_dev *mdev,
 		return -EINVAL;
 	}
 
-	/* Please pay attention that we support only one template */
+	 
 	if (x->xfrm_nr > 1) {
 		NL_SET_ERR_MSG_MOD(extack, "Cannot offload more than one template");
 		return -EINVAL;

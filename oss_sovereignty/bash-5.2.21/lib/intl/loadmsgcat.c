@@ -1,26 +1,8 @@
-/* loadmsgcat.c - Load needed message catalogs. */
+ 
 
-/* Copyright (C) 1995-1999, 2000-2003, 2005-2009 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Tell glibc's <string.h> to provide a prototype for mempcpy().
-   This must come before <config.h> because <config.h> may include
-   <features.h>, and once <features.h> has been included, it's too late.  */
+ 
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE    1
 #endif
@@ -95,9 +77,7 @@ char *alloca ();
 # include "../locale/localeinfo.h"
 #endif
 
-/* Provide fallback values for macros that ought to be defined in <inttypes.h>.
-   Note that our fallback values need not be literal strings, because we don't
-   use them with preprocessor string concatenation.  */
+ 
 #if !defined PRId8 || PRI_MACROS_BROKEN
 # undef PRId8
 # define PRId8 "d"
@@ -453,12 +433,10 @@ char *alloca ();
    "llX")
 #endif
 
-/* @@ end of prolog @@ */
+ 
 
 #ifdef _LIBC
-/* Rename the non ISO C functions.  This is required by the standard
-   because some ISO C functions will require linking with this object
-   file and the name space must not be polluted.  */
+ 
 # define open   __open
 # define close  __close
 # define read   __read
@@ -466,55 +444,46 @@ char *alloca ();
 # define munmap __munmap
 #endif
 
-/* For those losing systems which don't have `alloca' we have to add
-   some additional code emulating it.  */
+ 
 #ifdef HAVE_ALLOCA
-# define freea(p) /* nothing */
+# define freea(p)  
 #else
 # define alloca(n) malloc (n)
 # define freea(p) free (p)
 #endif
 
-/* For systems that distinguish between text and binary I/O.
-   O_BINARY is usually declared in <fcntl.h>. */
+ 
 #if !defined O_BINARY && defined _O_BINARY
-  /* For MSC-compatible compilers.  */
+   
 # define O_BINARY _O_BINARY
 # define O_TEXT _O_TEXT
 #endif
 #ifdef __BEOS__
-  /* BeOS 5 has O_BINARY and O_TEXT, but they have no effect.  */
+   
 # undef O_BINARY
 # undef O_TEXT
 #endif
-/* On reasonable systems, binary I/O is the default.  */
+ 
 #ifndef O_BINARY
 # define O_BINARY 0
 #endif
 
 
-/* Prototypes for local functions.  Needed to ensure compiler checking of
-   function argument counts despite of K&R C function definition syntax.  */
+ 
 static const char *get_sysdep_segment_value PARAMS ((const char *name));
 
 
-/* We need a sign, whether a new catalog was loaded, which can be associated
-   with all translations.  This is important if the translations are
-   cached by one of GCC's features.  */
+ 
 int _nl_msg_cat_cntr;
 
 
-/* Expand a system dependent string segment.  Return NULL if unsupported.  */
+ 
 static const char *
 get_sysdep_segment_value (name)
      const char *name;
 {
-  /* Test for an ISO C 99 section 7.8.1 format string directive.
-     Syntax:
-     P R I { d | i | o | u | x | X }
-     { { | LEAST | FAST } { 8 | 16 | 32 | 64 } | MAX | PTR }  */
-  /* We don't use a table of 14 times 6 'const char *' strings here, because
-     data relocations cost startup time.  */
+   
+   
   if (name[0] == 'P' && name[1] == 'R' && name[2] == 'I')
     {
       if (name[3] == 'd' || name[3] == 'i' || name[3] == 'o' || name[3] == 'u'
@@ -756,12 +725,11 @@ get_sysdep_segment_value (name)
 	    }
 	}
     }
-  /* Other system dependent strings are not valid.  */
+   
   return NULL;
 }
 
-/* Initialize the codeset dependent parts of an opened message catalog.
-   Return the header entry.  */
+ 
 const char *
 internal_function
 _nl_init_domain_conv (domain_file, domain, domainbinding)
@@ -769,15 +737,11 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
      struct loaded_domain *domain;
      struct binding *domainbinding;
 {
-  /* Find out about the character set the file is encoded with.
-     This can be found (in textual form) in the entry "".  If this
-     entry does not exist or if this does not contain the `charset='
-     information, we will assume the charset matches the one the
-     current locale and we don't have to perform any conversion.  */
+   
   char *nullentry;
   size_t nullentrylen;
 
-  /* Preinitialize fields, to avoid recursion during _nl_find_msg.  */
+   
   domain->codeset_cntr =
     (domainbinding != NULL ? domainbinding->codeset_cntr : 0);
 #ifdef _LIBC
@@ -789,7 +753,7 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 #endif
   domain->conv_tab = NULL;
 
-  /* Get the header entry.  */
+   
   nullentry = _nl_find_msg (domain_file, domainbinding, "", &nullentrylen);
 
   if (nullentry != NULL)
@@ -815,11 +779,7 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 	  charset[len] = '\0';
 # endif
 
-	  /* The output charset should normally be determined by the
-	     locale.  But sometimes the locale is not used or not correctly
-	     set up, so we provide a possibility for the user to override
-	     this.  Moreover, the value specified through
-	     bind_textdomain_codeset overrides both.  */
+	   
 	  if (domainbinding != NULL && domainbinding->codeset != NULL)
 	    outcharset = domainbinding->codeset;
 	  else
@@ -839,7 +799,7 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 	    }
 
 # ifdef _LIBC
-	  /* We always want to use transliteration.  */
+	   
 	  outcharset = norm_add_slashes (outcharset, "TRANSLIT");
 	  charset = norm_add_slashes (charset, NULL);
 	  if (__gconv_open (outcharset, charset, &domain->conv,
@@ -848,8 +808,7 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 	    domain->conv = (__gconv_t) -1;
 # else
 #  if HAVE_ICONV
-	  /* When using GNU libc >= 2.2 or GNU libiconv >= 1.5,
-	     we want to use transliteration.  */
+	   
 #   if (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2) || __GLIBC__ > 2 \
        || _LIBICONV_VERSION >= 0x0105
 	  if (strchr (outcharset, '/') == NULL)
@@ -874,13 +833,13 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 
 	  freea (charset);
 	}
-#endif /* _LIBC || HAVE_ICONV */
+#endif  
     }
 
   return nullentry;
 }
 
-/* Frees the codeset dependent parts of an opened message catalog.  */
+ 
 void
 internal_function
 _nl_free_domain_conv (domain)
@@ -900,8 +859,7 @@ _nl_free_domain_conv (domain)
 #endif
 }
 
-/* Load the message catalogs specified by FILENAME.  If it is no valid
-   message catalog do nothing.  */
+ 
 void
 internal_function
 _nl_load_domain (domain_file, domainbinding)
@@ -924,23 +882,18 @@ _nl_load_domain (domain_file, domainbinding)
   domain_file->decided = 1;
   domain_file->data = NULL;
 
-  /* Note that it would be useless to store domainbinding in domain_file
-     because domainbinding might be == NULL now but != NULL later (after
-     a call to bind_textdomain_codeset).  */
+   
 
-  /* If the record does not represent a valid locale the FILENAME
-     might be NULL.  This can happen when according to the given
-     specification the locale file name is different for XPG and CEN
-     syntax.  */
+   
   if (domain_file->filename == NULL)
     return;
 
-  /* Try to open the addressed file.  */
+   
   fd = open (domain_file->filename, O_RDONLY | O_BINARY);
   if (fd == -1)
     return;
 
-  /* We must know about the size of the file.  */
+   
   if (
 #ifdef _LIBC
       __builtin_expect (fstat64 (fd, &st) != 0, 0)
@@ -950,27 +903,25 @@ _nl_load_domain (domain_file, domainbinding)
       || __builtin_expect ((size = (size_t) st.st_size) != st.st_size, 0)
       || __builtin_expect (size < sizeof (struct mo_file_header), 0))
     {
-      /* Something went wrong.  */
+       
       close (fd);
       return;
     }
 
 #ifdef HAVE_MMAP
-  /* Now we are ready to load the file.  If mmap() is available we try
-     this first.  If not available or it failed we try to load it.  */
+   
   data = (struct mo_file_header *) mmap (NULL, size, PROT_READ,
 					 MAP_PRIVATE, fd, 0);
 
   if (__builtin_expect (data != (struct mo_file_header *) -1, 1))
     {
-      /* mmap() call was successful.  */
+       
       close (fd);
       use_mmap = 1;
     }
 #endif
 
-  /* If the data is not yet available (i.e. mmap'ed) we try to load
-     it manually.  */
+   
   if (data == (struct mo_file_header *) -1)
     {
       size_t to_read;
@@ -1006,12 +957,11 @@ _nl_load_domain (domain_file, domainbinding)
       close (fd);
     }
 
-  /* Using the magic number we can test whether it really is a message
-     catalog file.  */
+   
   if (__builtin_expect (data->magic != _MAGIC && data->magic != _MAGIC_SWAPPED,
 			0))
     {
-      /* The magic number is wrong: not a message catalog file.  */
+       
 #ifdef HAVE_MMAP
       if (use_mmap)
 	munmap ((caddr_t) data, size);
@@ -1040,9 +990,9 @@ _nl_load_domain (domain_file, domainbinding)
   domain->must_swap = data->magic != _MAGIC;
   domain->malloced = NULL;
 
-  /* Fill in the information about the available tables.  */
+   
   revision = W (domain->must_swap, data->revision);
-  /* We support only the major revision 0.  */
+   
   switch (revision >> 16)
     {
     case 0:
@@ -1059,7 +1009,7 @@ _nl_load_domain (domain_file, domainbinding)
 	 : NULL);
       domain->must_swap_hash_tab = domain->must_swap;
 
-      /* Now dispatch on the minor revision.  */
+       
       switch (revision & 0xffff)
 	{
 	case 0:
@@ -1073,7 +1023,7 @@ _nl_load_domain (domain_file, domainbinding)
 	    nls_uint32 n_sysdep_strings;
 
 	    if (domain->hash_tab == NULL)
-	      /* This is invalid.  These minor revisions need a hash table.  */
+	       
 	      goto invalid;
 
 	    n_sysdep_strings =
@@ -1092,7 +1042,7 @@ _nl_load_domain (domain_file, domainbinding)
 		nls_uint32 *inmem_hash_tab;
 		unsigned int i;
 
-		/* Get the values of the system dependent segments.  */
+		 
 		n_sysdep_segments =
 		  W (domain->must_swap, data->n_sysdep_segments);
 		sysdep_segments = (const struct sysdep_segment *)
@@ -1124,8 +1074,7 @@ _nl_load_domain (domain_file, domainbinding)
 		  ((char *) data
 		   + W (domain->must_swap, data->trans_sysdep_tab_offset));
 
-		/* Compute the amount of additional memory needed for the
-		   system dependent strings and the augmented hash table.  */
+		 
 		memneed = 2 * n_sysdep_strings
 			  * sizeof (struct sysdep_string_desc)
 			  + domain->hash_size * sizeof (nls_uint32);
@@ -1154,7 +1103,7 @@ _nl_load_domain (domain_file, domainbinding)
 
 			  if (sysdepref >= n_sysdep_segments)
 			    {
-			      /* Invalid.  */
+			       
 			      freea (sysdep_segment_values);
 			      goto invalid;
 			    }
@@ -1165,7 +1114,7 @@ _nl_load_domain (domain_file, domainbinding)
 		    memneed += need;
 		  }
 
-		/* Allocate additional memory.  */
+		 
 		mem = (char *) malloc (memneed);
 		if (mem == NULL)
 		  goto invalid;
@@ -1178,7 +1127,7 @@ _nl_load_domain (domain_file, domainbinding)
 		inmem_hash_tab = (nls_uint32 *) mem;
 		mem += domain->hash_size * sizeof (nls_uint32);
 
-		/* Compute the system dependent strings.  */
+		 
 		for (i = 0; i < 2 * n_sysdep_strings; i++)
 		  {
 		    const struct sysdep_string *sysdep_string =
@@ -1193,14 +1142,11 @@ _nl_load_domain (domain_file, domainbinding)
 		      + W (domain->must_swap, sysdep_string->offset);
 		    const struct segment_pair *p = sysdep_string->segments;
 
-		    /* Concatenate the segments, and fill
-		       inmem_orig_sysdep_tab[i] (for i < n_sysdep_strings) and
-		       inmem_trans_sysdep_tab[i-n_sysdep_strings] (for
-		       i >= n_sysdep_strings).  */
+		     
 
 		    if (W (domain->must_swap, p->sysdepref) == SEGMENTS_END)
 		      {
-			/* Only one static segment.  */
+			 
 			inmem_orig_sysdep_tab[i].length =
 			  W (domain->must_swap, p->segsize);
 			inmem_orig_sysdep_tab[i].pointer = static_segments;
@@ -1237,7 +1183,7 @@ _nl_load_domain (domain_file, domainbinding)
 		      }
 		  }
 
-		/* Compute the augmented hash table.  */
+		 
 		for (i = 0; i < domain->hash_size; i++)
 		  inmem_hash_tab[i] =
 		    W (domain->must_swap_hash_tab, domain->hash_tab[i]);
@@ -1252,7 +1198,7 @@ _nl_load_domain (domain_file, domainbinding)
 		      {
 			if (inmem_hash_tab[idx] == 0)
 			  {
-			    /* Hash table entry is empty.  Use it.  */
+			     
 			    inmem_hash_tab[idx] = 1 + domain->nstrings + i;
 			    break;
 			  }
@@ -1284,9 +1230,9 @@ _nl_load_domain (domain_file, domainbinding)
 	}
       break;
     default:
-      /* This is an invalid revision.  */
+       
     invalid:
-      /* This is an invalid .mo file.  */
+       
       if (domain->malloced)
 	free (domain->malloced);
 #ifdef HAVE_MMAP
@@ -1300,12 +1246,10 @@ _nl_load_domain (domain_file, domainbinding)
       return;
     }
 
-  /* Now initialize the character set converter from the character set
-     the file is encoded with (found in the header entry) to the domain's
-     specified character set or the locale's character set.  */
+   
   nullentry = _nl_init_domain_conv (domain_file, domain, domainbinding);
 
-  /* Also look for a plural specification.  */
+   
   EXTRACT_PLURAL_EXPRESSION (nullentry, &domain->plural, &domain->nplurals);
 }
 
@@ -1328,7 +1272,7 @@ _nl_unload_domain (domain)
   if (domain->use_mmap)
     munmap ((caddr_t) domain->data, domain->mmap_size);
   else
-# endif	/* _POSIX_MAPPED_FILES */
+# endif	 
     free ((void *) domain->data);
 
   free (domain);

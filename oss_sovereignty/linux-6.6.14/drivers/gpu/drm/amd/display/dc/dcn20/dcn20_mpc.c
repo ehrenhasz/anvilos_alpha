@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dcn20_mpc.h"
 
@@ -100,7 +77,7 @@ void mpc2_set_denorm(
 	case COLOR_DEPTH_141414:
 	case COLOR_DEPTH_161616:
 	default:
-		/* not valid used case! */
+		 
 		break;
 	}
 
@@ -148,10 +125,7 @@ void mpc2_set_output_csc(
 		return;
 	}
 
-	/* determine which CSC coefficients (A or B) we are using
-	 * currently.  select the alternate set to double buffer
-	 * the CSC update so CSC is updated on frame boundary
-	 */
+	 
 	IX_REG_GET(MPC_OCSC_TEST_DEBUG_INDEX, MPC_OCSC_TEST_DEBUG_DATA,
 						MPC_OCSC_TEST_DEBUG_DATA_STATUS_IDX,
 						MPC_OCSC_TEST_DEBUG_DATA_OCSC_MODE, &cur_mode);
@@ -206,10 +180,7 @@ void mpc2_set_ocsc_default(
 		return;
 	}
 
-	/* determine which CSC coefficients (A or B) we are using
-	 * currently.  select the alternate set to double buffer
-	 * the CSC update so CSC is updated on frame boundary
-	 */
+	 
 	IX_REG_GET(MPC_OCSC_TEST_DEBUG_INDEX, MPC_OCSC_TEST_DEBUG_DATA,
 						MPC_OCSC_TEST_DEBUG_DATA_STATUS_IDX,
 						MPC_OCSC_TEST_DEBUG_DATA_OCSC_MODE, &cur_mode);
@@ -412,14 +383,11 @@ static void apply_DEDCN20_305_wa(struct mpc *mpc, int mpcc_id,
 	}
 
 	if (mpc->ctx->dc->work_arounds.dedcn20_305_wa == false) {
-		/*hw fixed in new review*/
+		 
 		return;
 	}
 	if (current_mode == LUT_BYPASS)
-		/*this will only work if OTG is locked.
-		 *if we were to support OTG unlock case,
-		 *the workaround will be more complex
-		 */
+		 
 		REG_SET(MPCC_OGAM_MODE[mpcc_id], 0, MPCC_OGAM_MODE,
 			next_mode == LUT_RAM_A ? 1:2);
 }
@@ -532,7 +500,7 @@ static struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
 			return tmp_mpcc;
 
-		/* avoid circular linked list */
+		 
 		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
 		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
 			break;

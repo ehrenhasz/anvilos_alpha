@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Bluetooth supports for Qualcomm Atheros chips
- *
- *  Copyright (c) 2015 The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/firmware.h>
 #include <linux/vmalloc.h>
@@ -28,10 +24,7 @@ int qca_read_soc_version(struct hci_dev *hdev, struct qca_btsoc_version *ver,
 
 	bt_dev_dbg(hdev, "QCA Version Request");
 
-	/* Unlike other SoC's sending version command response as payload to
-	 * VSE event. WCN3991 sends version command response as a payload to
-	 * command complete event.
-	 */
+	 
 	if (soc_type >= QCA_WCN3991) {
 		event_type = 0;
 		rlen += 1;
@@ -257,12 +250,7 @@ static void qca_tlv_check_data(struct hci_dev *hdev,
 		type_len = le32_to_cpu(tlv->type_len);
 		tlv_patch = (struct tlv_type_patch *)tlv->data;
 
-		/* For Rome version 1.1 to 3.1, all segment commands
-		 * are acked by a vendor specific event (VSE).
-		 * For Rome >= 3.2, the download mode field indicates
-		 * if VSE is skipped by the controller.
-		 * In case VSE is skipped, only the last segment is acked.
-		 */
+		 
 		config->dnld_mode = tlv_patch->download_mode;
 		config->dnld_type = config->dnld_mode;
 
@@ -308,16 +296,13 @@ static void qca_tlv_check_data(struct hci_dev *hdev,
 			tag_id = le16_to_cpu(tlv_nvm->tag_id);
 			tag_len = le16_to_cpu(tlv_nvm->tag_len);
 
-			/* Update NVM tags as needed */
+			 
 			switch (tag_id) {
 			case EDL_TAG_ID_HCI:
-				/* HCI transport layer parameters
-				 * enabling software inband sleep
-				 * onto controller side.
-				 */
+				 
 				tlv_nvm->data[0] |= 0x80;
 
-				/* UART Baud Rate */
+				 
 				if (soc_type >= QCA_WCN3991)
 					tlv_nvm->data[1] = nvm_baud_rate;
 				else
@@ -326,9 +311,7 @@ static void qca_tlv_check_data(struct hci_dev *hdev,
 				break;
 
 			case EDL_TAG_ID_DEEP_SLEEP:
-				/* Sleep enable mask
-				 * enabling deep sleep feature on controller.
-				 */
+				 
 				tlv_nvm->data[0] |= 0x01;
 
 				break;
@@ -365,10 +348,7 @@ static int qca_tlv_send_segment(struct hci_dev *hdev, int seg_size,
 		return __hci_cmd_send(hdev, EDL_PATCH_CMD_OPCODE, seg_size + 2,
 				      cmd);
 
-	/* Unlike other SoC's sending version command response as payload to
-	 * VSE event. WCN3991 sends version command response as a payload to
-	 * command complete event.
-	 */
+	 
 	if (soc_type >= QCA_WCN3991) {
 		event_type = 0;
 		rlen = sizeof(*edl);
@@ -456,9 +436,7 @@ static int qca_download_firmware(struct hci_dev *hdev,
 
 	ret = request_firmware(&fw, config->fwname, &hdev->dev);
 	if (ret) {
-		/* For WCN6750, if mbn file is not present then check for
-		 * tlv file.
-		 */
+		 
 		if (soc_type == QCA_WCN6750 && config->type == ELF_TYPE_PATCH) {
 			bt_dev_dbg(hdev, "QCA Failed to request file: %s (%d)",
 				   config->fwname, ret);
@@ -501,7 +479,7 @@ static int qca_download_firmware(struct hci_dev *hdev,
 		bt_dev_dbg(hdev, "Send segment %d, size %d", i++, segsize);
 
 		remain -= segsize;
-		/* The last segment is always acked regardless download mode */
+		 
 		if (!remain || segsize < MAX_SIZE_PER_TLV_SEGMENT)
 			config->dnld_mode = QCA_SKIP_EVT_NONE;
 
@@ -513,12 +491,7 @@ static int qca_download_firmware(struct hci_dev *hdev,
 		segment += segsize;
 	}
 
-	/* Latest qualcomm chipsets are not sending a command complete event
-	 * for every fw packet sent. They only respond with a vendor specific
-	 * event for the last packet. This optimization in the chip will
-	 * decrease the BT in initialization time. Here we will inject a command
-	 * complete event to avoid a command timeout error message.
-	 */
+	 
 	if (config->dnld_type == QCA_SKIP_EVT_VSE_CC ||
 	    config->dnld_type == QCA_SKIP_EVT_VSE)
 		ret = qca_inject_cmd_complete_event(hdev);
@@ -557,8 +530,8 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
 	int err;
 
 	cmd[0] = EDL_NVM_ACCESS_SET_REQ_CMD;
-	cmd[1] = 0x02; 			/* TAG ID */
-	cmd[2] = sizeof(bdaddr_t);	/* size */
+	cmd[1] = 0x02; 			 
+	cmd[2] = sizeof(bdaddr_t);	 
 	memcpy(cmd + 3, bdaddr, sizeof(bdaddr_t));
 	skb = __hci_cmd_sync_ev(hdev, EDL_NVM_ACCESS_OPCODE, sizeof(cmd), cmd,
 				HCI_EV_VENDOR, HCI_INIT_TIMEOUT);
@@ -591,9 +564,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 
 	config.user_baud_rate = baudrate;
 
-	/* Firmware files to download are based on ROM version.
-	 * ROM version is derived from last two bytes of soc_ver.
-	 */
+	 
 	if (soc_type == QCA_WCN3988)
 		rom_ver = ((soc_ver & 0x00000f00) >> 0x05) | (soc_ver & 0x0000000f);
 	else
@@ -602,7 +573,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 	if (soc_type == QCA_WCN6750)
 		qca_send_patch_config_cmd(hdev);
 
-	/* Download rampatch file */
+	 
 	config.type = TLV_TYPE_PATCH;
 	switch (soc_type) {
 	case QCA_WCN3990:
@@ -620,9 +591,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 			 "qca/htbtfw%02x.tlv", rom_ver);
 		break;
 	case QCA_WCN6750:
-		/* Choose mbn file by default.If mbn file is not found
-		 * then choose tlv file
-		 */
+		 
 		config.type = ELF_TYPE_PATCH;
 		snprintf(config.fwname, sizeof(config.fwname),
 			 "qca/msbtfw%02x.mbn", rom_ver);
@@ -646,10 +615,10 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 		return err;
 	}
 
-	/* Give the controller some time to get ready to receive the NVM */
+	 
 	msleep(10);
 
-	/* Download NVM configuration */
+	 
 	config.type = TLV_TYPE_NVM;
 	if (firmware_name) {
 		snprintf(config.fwname, sizeof(config.fwname),
@@ -714,9 +683,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 		break;
 	}
 
-	/* WCN399x and WCN6750 supports the Microsoft vendor extension with 0xFD70 as the
-	 * VsMsftOpCode.
-	 */
+	 
 	switch (soc_type) {
 	case QCA_WCN3988:
 	case QCA_WCN3990:
@@ -729,7 +696,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 		break;
 	}
 
-	/* Perform HCI reset */
+	 
 	err = qca_send_reset(hdev);
 	if (err < 0) {
 		bt_dev_err(hdev, "QCA Failed to run HCI_RESET (%d)", err);
@@ -741,7 +708,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 	case QCA_WCN6750:
 	case QCA_WCN6855:
 	case QCA_WCN7850:
-		/* get fw build info */
+		 
 		err = qca_read_fw_build_info(hdev);
 		if (err < 0)
 			return err;

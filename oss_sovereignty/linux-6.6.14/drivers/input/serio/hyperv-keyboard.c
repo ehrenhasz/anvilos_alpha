@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (c) 2013, Microsoft Corporation.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -11,19 +9,14 @@
 #include <linux/serio.h>
 #include <linux/slab.h>
 
-/*
- * Current version 1.0
- *
- */
+ 
 #define SYNTH_KBD_VERSION_MAJOR 1
 #define SYNTH_KBD_VERSION_MINOR	0
 #define SYNTH_KBD_VERSION		(SYNTH_KBD_VERSION_MINOR | \
 					 (SYNTH_KBD_VERSION_MAJOR << 16))
 
 
-/*
- * Message types in the synthetic input protocol
- */
+ 
 enum synth_kbd_msg_type {
 	SYNTH_KBD_PROTOCOL_REQUEST = 1,
 	SYNTH_KBD_PROTOCOL_RESPONSE = 2,
@@ -31,25 +24,21 @@ enum synth_kbd_msg_type {
 	SYNTH_KBD_LED_INDICATORS = 4,
 };
 
-/*
- * Basic message structures.
- */
+ 
 struct synth_kbd_msg_hdr {
 	__le32 type;
 };
 
 struct synth_kbd_msg {
 	struct synth_kbd_msg_hdr header;
-	char data[]; /* Enclosed message */
+	char data[];  
 };
 
 union synth_kbd_version {
 	__le32 version;
 };
 
-/*
- * Protocol messages
- */
+ 
 struct synth_kbd_protocol_request {
 	struct synth_kbd_msg_hdr header;
 	union synth_kbd_version version_requested;
@@ -69,7 +58,7 @@ struct synth_kbd_keystroke {
 	struct synth_kbd_msg_hdr header;
 	__le16 make_code;
 	__le16 reserved0;
-	__le32 info; /* Additional information */
+	__le32 info;  
 };
 
 
@@ -83,17 +72,15 @@ struct synth_kbd_keystroke {
 #define XTKBD_RELEASE   0x80
 
 
-/*
- * Represents a keyboard device
- */
+ 
 struct hv_kbd_dev {
 	struct hv_device *hv_dev;
 	struct serio *hv_serio;
 	struct synth_kbd_protocol_request protocol_req;
 	struct synth_kbd_protocol_response protocol_resp;
-	/* Synchronize the request/response if needed */
+	 
 	struct completion wait_event;
-	spinlock_t lock; /* protects 'started' field */
+	spinlock_t lock;  
 	bool started;
 };
 
@@ -109,12 +96,7 @@ static void hv_kbd_on_receive(struct hv_device *hv_dev,
 
 	switch (msg_type) {
 	case SYNTH_KBD_PROTOCOL_RESPONSE:
-		/*
-		 * Validate the information provided by the host.
-		 * If the host is giving us a bogus packet,
-		 * drop the packet (hoping the problem
-		 * goes away).
-		 */
+		 
 		if (msg_length < sizeof(struct synth_kbd_protocol_response)) {
 			dev_err(&hv_dev->device,
 				"Illegal protocol response packet (len: %d)\n",
@@ -128,12 +110,7 @@ static void hv_kbd_on_receive(struct hv_device *hv_dev,
 		break;
 
 	case SYNTH_KBD_EVENT:
-		/*
-		 * Validate the information provided by the host.
-		 * If the host is giving us a bogus packet,
-		 * drop the packet (hoping the problem
-		 * goes away).
-		 */
+		 
 		if (msg_length < sizeof(struct  synth_kbd_keystroke)) {
 			dev_err(&hv_dev->device,
 				"Illegal keyboard event packet (len: %d)\n",
@@ -144,9 +121,7 @@ static void hv_kbd_on_receive(struct hv_device *hv_dev,
 		ks_msg = (struct synth_kbd_keystroke *)msg;
 		info = __le32_to_cpu(ks_msg->info);
 
-		/*
-		 * Inject the information through the serio interrupt.
-		 */
+		 
 		spin_lock_irqsave(&kbd_dev->lock, flags);
 		if (kbd_dev->started) {
 			if (info & IS_E0)
@@ -163,11 +138,7 @@ static void hv_kbd_on_receive(struct hv_device *hv_dev,
 		}
 		spin_unlock_irqrestore(&kbd_dev->lock, flags);
 
-		/*
-		 * Only trigger a wakeup on key down, otherwise
-		 * "echo freeze > /sys/power/state" can't really enter the
-		 * state because the Enter-UP can trigger a wakeup at once.
-		 */
+		 
 		if (!(info & IS_BREAK))
 			pm_wakeup_hard_event(&hv_dev->device);
 
@@ -192,31 +163,11 @@ static void hv_kbd_handle_received_packet(struct hv_device *hv_dev,
 		break;
 
 	case VM_PKT_DATA_INBAND:
-		/*
-		 * We have a packet that has "inband" data. The API used
-		 * for retrieving the packet guarantees that the complete
-		 * packet is read. So, minimally, we should be able to
-		 * parse the payload header safely (assuming that the host
-		 * can be trusted.  Trusting the host seems to be a
-		 * reasonable assumption because in a virtualized
-		 * environment there is not whole lot you can do if you
-		 * don't trust the host.
-		 *
-		 * Nonetheless, let us validate if the host can be trusted
-		 * (in a trivial way).  The interesting aspect of this
-		 * validation is how do you recover if we discover that the
-		 * host is not to be trusted? Simply dropping the packet, I
-		 * don't think is an appropriate recovery.  In the interest
-		 * of failing fast, it may be better to crash the guest.
-		 * For now, I will just drop the packet!
-		 */
+		 
 
 		msg_sz = bytes_recvd - (desc->offset8 << 3);
 		if (msg_sz <= sizeof(struct synth_kbd_msg_hdr)) {
-			/*
-			 * Drop the packet and hope
-			 * the problem magically goes away.
-			 */
+			 
 			dev_err(&hv_dev->device,
 				"Illegal packet (type: %d, tid: %llx, size: %d)\n",
 				desc->type, req_id, msg_sz);
@@ -404,7 +355,7 @@ static int hv_kbd_resume(struct hv_device *hv_dev)
 }
 
 static const struct hv_vmbus_device_id id_table[] = {
-	/* Keyboard guid */
+	 
 	{ HV_KBD_GUID, },
 	{ },
 };

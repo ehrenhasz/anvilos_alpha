@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Alauda-based card readers
- *
- * Current development and maintenance by:
- *   (c) 2005 Daniel Drake <dsd@gentoo.org>
- *
- * The 'Alauda' is a chip manufacturered by RATOC for OEM use.
- *
- * Alauda implements a vendor-specific command set to access two media reader
- * ports (XD, SmartMedia). This driver converts SCSI commands to the commands
- * which are accepted by these devices.
- *
- * The driver was developed through reverse-engineering, with the help of the
- * sddr09 driver which has many similarities, and with some help from the
- * (very old) vendor-supplied GPL sma03 driver.
- *
- * For protocol info, see http://alauda.sourceforge.net
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -38,15 +21,11 @@ MODULE_AUTHOR("Daniel Drake <dsd@gentoo.org>");
 MODULE_LICENSE("GPL");
 MODULE_IMPORT_NS(USB_STORAGE);
 
-/*
- * Status bytes
- */
+ 
 #define ALAUDA_STATUS_ERROR		0x01
 #define ALAUDA_STATUS_READY		0x40
 
-/*
- * Control opcodes (for request field)
- */
+ 
 #define ALAUDA_GET_XD_MEDIA_STATUS	0x08
 #define ALAUDA_GET_SM_MEDIA_STATUS	0x98
 #define ALAUDA_ACK_XD_MEDIA_CHANGE	0x0a
@@ -54,14 +33,10 @@ MODULE_IMPORT_NS(USB_STORAGE);
 #define ALAUDA_GET_XD_MEDIA_SIG		0x86
 #define ALAUDA_GET_SM_MEDIA_SIG		0x96
 
-/*
- * Bulk command identity (byte 0)
- */
+ 
 #define ALAUDA_BULK_CMD			0x40
 
-/*
- * Bulk opcodes (byte 1)
- */
+ 
 #define ALAUDA_BULK_GET_REDU_DATA	0x85
 #define ALAUDA_BULK_READ_BLOCK		0x94
 #define ALAUDA_BULK_ERASE_BLOCK		0xa3
@@ -69,42 +44,38 @@ MODULE_IMPORT_NS(USB_STORAGE);
 #define ALAUDA_BULK_GET_STATUS2		0xb7
 #define ALAUDA_BULK_RESET_MEDIA		0xe0
 
-/*
- * Port to operate on (byte 8)
- */
+ 
 #define ALAUDA_PORT_XD			0x00
 #define ALAUDA_PORT_SM			0x01
 
-/*
- * LBA and PBA are unsigned ints. Special values.
- */
+ 
 #define UNDEF    0xffff
 #define SPARE    0xfffe
 #define UNUSABLE 0xfffd
 
 struct alauda_media_info {
-	unsigned long capacity;		/* total media size in bytes */
-	unsigned int pagesize;		/* page size in bytes */
-	unsigned int blocksize;		/* number of pages per block */
-	unsigned int uzonesize;		/* number of usable blocks per zone */
-	unsigned int zonesize;		/* number of blocks per zone */
-	unsigned int blockmask;		/* mask to get page from address */
+	unsigned long capacity;		 
+	unsigned int pagesize;		 
+	unsigned int blocksize;		 
+	unsigned int uzonesize;		 
+	unsigned int zonesize;		 
+	unsigned int blockmask;		 
 
 	unsigned char pageshift;
 	unsigned char blockshift;
 	unsigned char zoneshift;
 
-	u16 **lba_to_pba;		/* logical to physical block map */
-	u16 **pba_to_lba;		/* physical to logical block map */
+	u16 **lba_to_pba;		 
+	u16 **pba_to_lba;		 
 };
 
 struct alauda_info {
 	struct alauda_media_info port[2];
-	int wr_ep;			/* endpoint to write data out of */
+	int wr_ep;			 
 
 	unsigned char sense_key;
-	unsigned long sense_asc;	/* additional sense code */
-	unsigned long sense_ascq;	/* additional sense code qualifier */
+	unsigned long sense_asc;	 
+	unsigned long sense_ascq;	 
 };
 
 #define short_pack(lsb,msb) ( ((u16)(lsb)) | ( ((u16)(msb))<<8 ) )
@@ -121,9 +92,7 @@ struct alauda_info {
 static int init_alauda(struct us_data *us);
 
 
-/*
- * The table of devices
- */
+ 
 #define UNUSUAL_DEV(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax, \
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
@@ -132,15 +101,13 @@ static int init_alauda(struct us_data *us);
 
 static struct usb_device_id alauda_usb_ids[] = {
 #	include "unusual_alauda.h"
-	{ }		/* Terminating entry */
+	{ }		 
 };
 MODULE_DEVICE_TABLE(usb, alauda_usb_ids);
 
 #undef UNUSUAL_DEV
 
-/*
- * The flags table
- */
+ 
 #define UNUSUAL_DEV(idVendor, idProduct, bcdDeviceMin, bcdDeviceMax, \
 		    vendor_name, product_name, use_protocol, use_transport, \
 		    init_function, Flags) \
@@ -154,47 +121,45 @@ MODULE_DEVICE_TABLE(usb, alauda_usb_ids);
 
 static struct us_unusual_dev alauda_unusual_dev_list[] = {
 #	include "unusual_alauda.h"
-	{ }		/* Terminating entry */
+	{ }		 
 };
 
 #undef UNUSUAL_DEV
 
 
-/*
- * Media handling
- */
+ 
 
 struct alauda_card_info {
-	unsigned char id;		/* id byte */
-	unsigned char chipshift;	/* 1<<cs bytes total capacity */
-	unsigned char pageshift;	/* 1<<ps bytes in a page */
-	unsigned char blockshift;	/* 1<<bs pages per block */
-	unsigned char zoneshift;	/* 1<<zs blocks per zone */
+	unsigned char id;		 
+	unsigned char chipshift;	 
+	unsigned char pageshift;	 
+	unsigned char blockshift;	 
+	unsigned char zoneshift;	 
 };
 
 static struct alauda_card_info alauda_card_ids[] = {
-	/* NAND flash */
-	{ 0x6e, 20, 8, 4, 8},	/* 1 MB */
-	{ 0xe8, 20, 8, 4, 8},	/* 1 MB */
-	{ 0xec, 20, 8, 4, 8},	/* 1 MB */
-	{ 0x64, 21, 8, 4, 9}, 	/* 2 MB */
-	{ 0xea, 21, 8, 4, 9},	/* 2 MB */
-	{ 0x6b, 22, 9, 4, 9},	/* 4 MB */
-	{ 0xe3, 22, 9, 4, 9},	/* 4 MB */
-	{ 0xe5, 22, 9, 4, 9},	/* 4 MB */
-	{ 0xe6, 23, 9, 4, 10},	/* 8 MB */
-	{ 0x73, 24, 9, 5, 10},	/* 16 MB */
-	{ 0x75, 25, 9, 5, 10},	/* 32 MB */
-	{ 0x76, 26, 9, 5, 10},	/* 64 MB */
-	{ 0x79, 27, 9, 5, 10},	/* 128 MB */
-	{ 0x71, 28, 9, 5, 10},	/* 256 MB */
+	 
+	{ 0x6e, 20, 8, 4, 8},	 
+	{ 0xe8, 20, 8, 4, 8},	 
+	{ 0xec, 20, 8, 4, 8},	 
+	{ 0x64, 21, 8, 4, 9}, 	 
+	{ 0xea, 21, 8, 4, 9},	 
+	{ 0x6b, 22, 9, 4, 9},	 
+	{ 0xe3, 22, 9, 4, 9},	 
+	{ 0xe5, 22, 9, 4, 9},	 
+	{ 0xe6, 23, 9, 4, 10},	 
+	{ 0x73, 24, 9, 5, 10},	 
+	{ 0x75, 25, 9, 5, 10},	 
+	{ 0x76, 26, 9, 5, 10},	 
+	{ 0x79, 27, 9, 5, 10},	 
+	{ 0x71, 28, 9, 5, 10},	 
 
-	/* MASK ROM */
-	{ 0x5d, 21, 9, 4, 8},	/* 2 MB */
-	{ 0xd5, 22, 9, 4, 9},	/* 4 MB */
-	{ 0xd6, 23, 9, 4, 10},	/* 8 MB */
-	{ 0x57, 24, 9, 4, 11},	/* 16 MB */
-	{ 0x58, 25, 9, 4, 12},	/* 32 MB */
+	 
+	{ 0x5d, 21, 9, 4, 8},	 
+	{ 0xd5, 22, 9, 4, 9},	 
+	{ 0xd6, 23, 9, 4, 10},	 
+	{ 0x57, 24, 9, 4, 11},	 
+	{ 0x58, 25, 9, 4, 12},	 
 	{ 0,}
 };
 
@@ -208,9 +173,7 @@ static struct alauda_card_info *alauda_card_find_id(unsigned char id)
 	return NULL;
 }
 
-/*
- * ECC computation.
- */
+ 
 
 static unsigned char parity[256];
 static unsigned char ecc2[256];
@@ -239,13 +202,13 @@ static void nand_init_ecc(void)
 	}
 }
 
-/* compute 3-byte ecc on 256 bytes */
+ 
 static void nand_compute_ecc(unsigned char *data, unsigned char *ecc)
 {
 	int i, j, a;
 	unsigned char par = 0, bit, bits[8] = {0};
 
-	/* collect 16 checksum bits */
+	 
 	for (i = 0; i < 256; i++) {
 		par ^= data[i];
 		bit = parity[data[i]];
@@ -254,7 +217,7 @@ static void nand_compute_ecc(unsigned char *data, unsigned char *ecc)
 				bits[j] ^= bit;
 	}
 
-	/* put 4+4+4 = 12 bits in the ecc */
+	 
 	a = (bits[3] << 6) + (bits[2] << 4) + (bits[1] << 2) + bits[0];
 	ecc[0] = ~(a ^ (a<<1) ^ (parity[par] ? 0xaa : 0));
 
@@ -274,13 +237,9 @@ static void nand_store_ecc(unsigned char *data, unsigned char *ecc)
 	memcpy(data, ecc, 3);
 }
 
-/*
- * Alauda driver
- */
+ 
 
-/*
- * Forget our PBA <---> LBA mappings for a particular port
- */
+ 
 static void alauda_free_maps (struct alauda_media_info *media_info)
 {
 	unsigned int shift = media_info->zoneshift
@@ -301,10 +260,7 @@ static void alauda_free_maps (struct alauda_media_info *media_info)
 		}
 }
 
-/*
- * Returns 2 bytes of status data
- * The first byte describes media status, and second byte describes door status
- */
+ 
 static int alauda_get_media_status(struct us_data *us, unsigned char *data)
 {
 	int rc;
@@ -324,10 +280,7 @@ static int alauda_get_media_status(struct us_data *us, unsigned char *data)
 	return rc;
 }
 
-/*
- * Clears the "media was changed" bit so that we know when it changes again
- * in the future.
- */
+ 
 static int alauda_ack_media(struct us_data *us)
 {
 	unsigned char command;
@@ -341,10 +294,7 @@ static int alauda_ack_media(struct us_data *us)
 		command, 0x40, 0, 1, NULL, 0);
 }
 
-/*
- * Retrieves a 4-byte media signature, which indicates manufacturer, capacity,
- * and some other details.
- */
+ 
 static int alauda_get_media_signature(struct us_data *us, unsigned char *data)
 {
 	unsigned char command;
@@ -358,9 +308,7 @@ static int alauda_get_media_signature(struct us_data *us, unsigned char *data)
 		command, 0xc0, 0, 0, data, 4);
 }
 
-/*
- * Resets the media status (but not the whole device?)
- */
+ 
 static int alauda_reset_media(struct us_data *us)
 {
 	unsigned char *command = us->iobuf;
@@ -374,9 +322,7 @@ static int alauda_reset_media(struct us_data *us)
 		command, 9, NULL);
 }
 
-/*
- * Examines the media and deduces capacity, etc.
- */
+ 
 static int alauda_init_media(struct us_data *us)
 {
 	unsigned char *data = us->iobuf;
@@ -448,10 +394,7 @@ static int alauda_init_media(struct us_data *us)
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
-/*
- * Examines the media status and does the right thing when the media has gone,
- * appeared, or changed.
- */
+ 
 static int alauda_check_media(struct us_data *us)
 {
 	struct alauda_info *info = (struct alauda_info *) us->extra;
@@ -460,11 +403,11 @@ static int alauda_check_media(struct us_data *us)
 
 	rc = alauda_get_media_status(us, status);
 	if (rc != USB_STOR_XFER_GOOD) {
-		status[0] = 0xF0;	/* Pretend there's no media */
+		status[0] = 0xF0;	 
 		status[1] = 0;
 	}
 
-	/* Check for no media or door open */
+	 
 	if ((status[0] & 0x80) || ((status[0] & 0x1F) == 0x10)
 		|| ((status[1] & 0x01) == 0)) {
 		usb_stor_dbg(us, "No media, or door open\n");
@@ -475,7 +418,7 @@ static int alauda_check_media(struct us_data *us)
 		return USB_STOR_TRANSPORT_FAILED;
 	}
 
-	/* Check for media change */
+	 
 	if (status[0] & 0x08) {
 		usb_stor_dbg(us, "Media change detected\n");
 		alauda_free_maps(&MEDIA_INFO(us));
@@ -490,10 +433,7 @@ static int alauda_check_media(struct us_data *us)
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
-/*
- * Checks the status from the 2nd status register
- * Returns 3 bytes of status data, only the first is known
- */
+ 
 static int alauda_check_status2(struct us_data *us)
 {
 	int rc;
@@ -520,10 +460,7 @@ static int alauda_check_status2(struct us_data *us)
 	return USB_STOR_XFER_GOOD;
 }
 
-/*
- * Gets the redundancy data for the first page of a PBA
- * Returns 16 bytes.
- */
+ 
 static int alauda_get_redu_data(struct us_data *us, u16 pba, unsigned char *data)
 {
 	int rc;
@@ -541,10 +478,7 @@ static int alauda_get_redu_data(struct us_data *us, u16 pba, unsigned char *data
 		data, 16, NULL);
 }
 
-/*
- * Finds the first unused PBA in a zone
- * Returns the absolute PBA of an unused PBA, or 0 if none found.
- */
+ 
 static u16 alauda_find_unused_pba(struct alauda_media_info *info,
 	unsigned int zone)
 {
@@ -558,10 +492,7 @@ static u16 alauda_find_unused_pba(struct alauda_media_info *info,
 	return 0;
 }
 
-/*
- * Reads the redundancy data for all PBA's in a zone
- * Produces lba <--> pba mappings
- */
+ 
 static int alauda_read_map(struct us_data *us, unsigned int zone)
 {
 	unsigned char *data = us->iobuf;
@@ -581,7 +512,7 @@ static int alauda_read_map(struct us_data *us, unsigned int zone)
 
 	usb_stor_dbg(us, "Mapping blocks for zone %d\n", zone);
 
-	/* 1024 PBA's per zone */
+	 
 	for (i = 0; i < zonesize; i++)
 		lba_to_pba[i] = pba_to_lba[i] = UNDEF;
 
@@ -594,7 +525,7 @@ static int alauda_read_map(struct us_data *us, unsigned int zone)
 			goto error;
 		}
 
-		/* special PBAs have control field 0^16 */
+		 
 		for (j = 0; j < 16; j++)
 			if (data[j] != 0)
 				goto nonz;
@@ -603,14 +534,14 @@ static int alauda_read_map(struct us_data *us, unsigned int zone)
 		continue;
 
 	nonz:
-		/* unwritten PBAs have control field FF^16 */
+		 
 		for (j = 0; j < 16; j++)
 			if (data[j] != 0xff)
 				goto nonff;
 		continue;
 
 	nonff:
-		/* normal PBAs start with six FFs */
+		 
 		if (j < 6) {
 			usb_stor_dbg(us, "PBA %d has no logical mapping: reserved area = %02X%02X%02X%02X data status %02X block status %02X\n",
 				     blocknum,
@@ -628,7 +559,7 @@ static int alauda_read_map(struct us_data *us, unsigned int zone)
 			continue;
 		}
 
-		/* check even parity */
+		 
 		if (parity[data[6] ^ data[7]]) {
 			printk(KERN_WARNING
 			       "alauda_read_map: Bad parity in LBA for block %d"
@@ -641,14 +572,7 @@ static int alauda_read_map(struct us_data *us, unsigned int zone)
 		lba_offset = (lba_offset & 0x07FF) >> 1;
 		lba_real = lba_offset + zone_base_lba;
 
-		/*
-		 * Every 1024 physical blocks ("zone"), the LBA numbers
-		 * go back to zero, but are within a higher block of LBA's.
-		 * Also, there is a maximum of 1000 LBA's per zone.
-		 * In other words, in PBA 1024-2047 you will find LBA 0-999
-		 * which are really LBA 1000-1999. This allows for 24 bad
-		 * or special physical blocks per zone.
-		 */
+		 
 
 		if (lba_offset >= uzonesize) {
 			printk(KERN_WARNING
@@ -682,10 +606,7 @@ out:
 	return result;
 }
 
-/*
- * Checks to see whether we have already mapped a certain zone
- * If we haven't, the map is generated
- */
+ 
 static void alauda_ensure_map_for_zone(struct us_data *us, unsigned int zone)
 {
 	if (MEDIA_INFO(us).lba_to_pba[zone] == NULL
@@ -693,9 +614,7 @@ static void alauda_ensure_map_for_zone(struct us_data *us, unsigned int zone)
 		alauda_read_map(us, zone);
 }
 
-/*
- * Erases an entire block
- */
+ 
 static int alauda_erase_block(struct us_data *us, u16 pba)
 {
 	int rc;
@@ -721,10 +640,7 @@ static int alauda_erase_block(struct us_data *us, u16 pba)
 	return rc;
 }
 
-/*
- * Reads data from a certain offset page inside a PBA, including interleaved
- * redundancy data. Returns (pagesize+64)*pages bytes in data.
- */
+ 
 static int alauda_read_block_raw(struct us_data *us, u16 pba,
 		unsigned int page, unsigned int pages, unsigned char *data)
 {
@@ -745,12 +661,7 @@ static int alauda_read_block_raw(struct us_data *us, u16 pba,
 		data, (MEDIA_INFO(us).pagesize + 64) * pages, NULL);
 }
 
-/*
- * Reads data from a certain offset page inside a PBA, excluding redundancy
- * data. Returns pagesize*pages bytes in data. Note that data must be big enough
- * to hold (pagesize+64)*pages bytes of data, but you can ignore those 'extra'
- * trailing bytes outside this function.
- */
+ 
 static int alauda_read_block(struct us_data *us, u16 pba,
 		unsigned int page, unsigned int pages, unsigned char *data)
 {
@@ -761,7 +672,7 @@ static int alauda_read_block(struct us_data *us, u16 pba,
 	if (rc != USB_STOR_XFER_GOOD)
 		return rc;
 
-	/* Cut out the redundancy data */
+	 
 	for (i = 0; i < pages; i++) {
 		int dest_offset = i * pagesize;
 		int src_offset = i * (pagesize + 64);
@@ -771,11 +682,7 @@ static int alauda_read_block(struct us_data *us, u16 pba,
 	return rc;
 }
 
-/*
- * Writes an entire block of data and checks status after write.
- * Redundancy data must be already included in data. Data should be
- * (pagesize+64)*blocksize bytes in length.
- */
+ 
 static int alauda_write_block(struct us_data *us, u16 pba, unsigned char *data)
 {
 	int rc;
@@ -801,9 +708,7 @@ static int alauda_write_block(struct us_data *us, u16 pba, unsigned char *data)
 	return alauda_check_status2(us);
 }
 
-/*
- * Write some data to a specific LBA.
- */
+ 
 static int alauda_write_lba(struct us_data *us, u16 lba,
 		 unsigned int page, unsigned int pages,
 		 unsigned char *ptr, unsigned char *blockbuffer)
@@ -824,10 +729,7 @@ static int alauda_write_lba(struct us_data *us, u16 lba,
 
 	pba = MEDIA_INFO(us).lba_to_pba[zone][lba_offset];
 	if (pba == 1) {
-		/*
-		 * Maybe it is impossible to write to PBA 1.
-		 * Fake success, but don't do anything.
-		 */
+		 
 		printk(KERN_WARNING
 		       "alauda_write_lba: avoid writing to pba 1\n");
 		return USB_STOR_TRANSPORT_GOOD;
@@ -840,7 +742,7 @@ static int alauda_write_lba(struct us_data *us, u16 lba,
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
-	/* read old contents */
+	 
 	if (pba != UNDEF) {
 		result = alauda_read_block_raw(us, pba, 0,
 			blocksize, blockbuffer);
@@ -854,7 +756,7 @@ static int alauda_write_lba(struct us_data *us, u16 lba,
 	if (parity[MSB_of(lbap) ^ LSB_of(lbap)])
 		lbap ^= 1;
 
-	/* check old contents and fill lba */
+	 
 	for (i = 0; i < blocksize; i++) {
 		bptr = blockbuffer + (i * (pagesize + 64));
 		cptr = bptr + pagesize;
@@ -874,7 +776,7 @@ static int alauda_write_lba(struct us_data *us, u16 lba,
 		cptr[7] = cptr[12] = LSB_of(lbap);
 	}
 
-	/* copy in new stuff and compute ECC */
+	 
 	xptr = ptr;
 	for (i = page; i < page+pages; i++) {
 		bptr = blockbuffer + (i * (pagesize + 64));
@@ -907,9 +809,7 @@ static int alauda_write_lba(struct us_data *us, u16 lba,
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
-/*
- * Read data from a specific sector address
- */
+ 
 static int alauda_read_data(struct us_data *us, unsigned long address,
 		unsigned int sectors)
 {
@@ -924,20 +824,14 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
 	struct scatterlist *sg;
 	int result;
 
-	/*
-	 * Since we only read in one block at a time, we have to create
-	 * a bounce buffer and move the data a piece at a time between the
-	 * bounce buffer and the actual transfer buffer.
-	 * We make this buffer big enough to hold temporary redundancy data,
-	 * which we use when reading the data blocks.
-	 */
+	 
 
 	len = min(sectors, blocksize) * (pagesize + 64);
 	buffer = kmalloc(len, GFP_NOIO);
 	if (!buffer)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	/* Figure out the initial LBA and page */
+	 
 	lba = address >> blockshift;
 	page = (address & MEDIA_INFO(us).blockmask);
 	max_lba = MEDIA_INFO(us).capacity >> (blockshift + pageshift);
@@ -947,13 +841,13 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
 	sg = NULL;
 
 	while (sectors > 0) {
-		unsigned int zone = lba / uzonesize; /* integer division */
+		unsigned int zone = lba / uzonesize;  
 		unsigned int lba_offset = lba - (zone * uzonesize);
 		unsigned int pages;
 		u16 pba;
 		alauda_ensure_map_for_zone(us, zone);
 
-		/* Not overflowing capacity? */
+		 
 		if (lba >= max_lba) {
 			usb_stor_dbg(us, "Error: Requested lba %u exceeds maximum %u\n",
 				     lba, max_lba);
@@ -961,23 +855,18 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
 			break;
 		}
 
-		/* Find number of pages we can read in this block */
+		 
 		pages = min(sectors, blocksize - page);
 		len = pages << pageshift;
 
-		/* Find where this lba lives on disk */
+		 
 		pba = MEDIA_INFO(us).lba_to_pba[zone][lba_offset];
 
-		if (pba == UNDEF) {	/* this lba was never written */
+		if (pba == UNDEF) {	 
 			usb_stor_dbg(us, "Read %d zero pages (LBA %d) page %d\n",
 				     pages, lba, page);
 
-			/*
-			 * This is not really an error. It just means
-			 * that the block has never been written.
-			 * Instead of returning USB_STOR_TRANSPORT_ERROR
-			 * it is better to return all zero data.
-			 */
+			 
 
 			memset(buffer, 0, len);
 		} else {
@@ -989,7 +878,7 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
 				break;
 		}
 
-		/* Store the data in the transfer buffer */
+		 
 		usb_stor_access_xfer_buf(buffer, len, us->srb,
 				&sg, &offset, TO_XFER_BUF);
 
@@ -1002,9 +891,7 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
 	return result;
 }
 
-/*
- * Write data to a specific sector address
- */
+ 
 static int alauda_write_data(struct us_data *us, unsigned long address,
 		unsigned int sectors)
 {
@@ -1018,28 +905,21 @@ static int alauda_write_data(struct us_data *us, unsigned long address,
 	u16 lba, max_lba;
 	int result;
 
-	/*
-	 * Since we don't write the user data directly to the device,
-	 * we have to create a bounce buffer and move the data a piece
-	 * at a time between the bounce buffer and the actual transfer buffer.
-	 */
+	 
 
 	len = min(sectors, blocksize) * pagesize;
 	buffer = kmalloc(len, GFP_NOIO);
 	if (!buffer)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	/*
-	 * We also need a temporary block buffer, where we read in the old data,
-	 * overwrite parts with the new data, and manipulate the redundancy data
-	 */
+	 
 	blockbuffer = kmalloc_array(pagesize + 64, blocksize, GFP_NOIO);
 	if (!blockbuffer) {
 		kfree(buffer);
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
-	/* Figure out the initial LBA and page */
+	 
 	lba = address >> blockshift;
 	page = (address & MEDIA_INFO(us).blockmask);
 	max_lba = MEDIA_INFO(us).capacity >> (pageshift + blockshift);
@@ -1049,11 +929,11 @@ static int alauda_write_data(struct us_data *us, unsigned long address,
 	sg = NULL;
 
 	while (sectors > 0) {
-		/* Write as many sectors as possible in this block */
+		 
 		unsigned int pages = min(sectors, blocksize - page);
 		len = pages << pageshift;
 
-		/* Not overflowing capacity? */
+		 
 		if (lba >= max_lba) {
 			usb_stor_dbg(us, "Requested lba %u exceeds maximum %u\n",
 				     lba, max_lba);
@@ -1061,7 +941,7 @@ static int alauda_write_data(struct us_data *us, unsigned long address,
 			break;
 		}
 
-		/* Get the data from the transfer buffer */
+		 
 		usb_stor_access_xfer_buf(buffer, len, us->srb,
 				&sg, &offset, FROM_XFER_BUF);
 
@@ -1080,9 +960,7 @@ static int alauda_write_data(struct us_data *us, unsigned long address,
 	return result;
 }
 
-/*
- * Our interface with the rest of the world
- */
+ 
 
 static void alauda_info_destructor(void *extra)
 {
@@ -1101,9 +979,7 @@ static void alauda_info_destructor(void *extra)
 	}
 }
 
-/*
- * Initialize alauda_info struct and find the data-write endpoint
- */
+ 
 static int init_alauda(struct us_data *us)
 {
 	struct alauda_info *info;
@@ -1159,7 +1035,7 @@ static int alauda_transport(struct scsi_cmnd *srb, struct us_data *us)
 		capacity = num_zones * MEDIA_INFO(us).uzonesize
 			* MEDIA_INFO(us).blocksize;
 
-		/* Report capacity and page size */
+		 
 		((__be32 *) ptr)[0] = cpu_to_be32(capacity - 1);
 		((__be32 *) ptr)[1] = cpu_to_be32(512);
 
@@ -1216,10 +1092,7 @@ static int alauda_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == ALLOW_MEDIUM_REMOVAL) {
-		/*
-		 * sure.  whatever.  not like we can stop the user from popping
-		 * the media out of the device (no locking doors, etc)
-		 */
+		 
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 

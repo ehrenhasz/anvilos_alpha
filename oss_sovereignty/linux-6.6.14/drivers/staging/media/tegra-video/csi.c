@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk/tegra.h>
@@ -31,11 +29,7 @@ static inline struct tegra_csi_channel *to_csi_chan(struct v4l2_subdev *subdev)
 	return container_of(subdev, struct tegra_csi_channel, subdev);
 }
 
-/*
- * CSI is a separate subdevice which has 6 source pads to generate
- * test pattern. CSI subdevice pad ops are used only for TPG and
- * allows below TPG formats.
- */
+ 
 static const struct v4l2_mbus_framefmt tegra_csi_tpg_fmts[] = {
 	{
 		TEGRA_DEF_WIDTH,
@@ -59,9 +53,7 @@ static const struct v4l2_frmsize_discrete tegra_csi_tpg_sizes[] = {
 	{ 3840, 2160 },
 };
 
-/*
- * V4L2 Subdevice Pad Operations
- */
+ 
 static int csi_enum_bus_code(struct v4l2_subdev *subdev,
 			     struct v4l2_subdev_state *sd_state,
 			     struct v4l2_subdev_mbus_code_enum *code)
@@ -164,7 +156,7 @@ static int csi_enum_frameintervals(struct v4l2_subdev *subdev,
 	if (!IS_ENABLED(CONFIG_VIDEO_TEGRA_TPG))
 		return -ENOIOCTLCMD;
 
-	/* one framerate per format and resolution */
+	 
 	if (fie->index > 0)
 		return -EINVAL;
 
@@ -211,7 +203,7 @@ static int csi_set_format(struct v4l2_subdev *subdev,
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY)
 		return 0;
 
-	/* update blanking intervals from frame rate table and format */
+	 
 	csi_chan_update_blank_intervals(csi_chan, format->code,
 					format->width, format->height);
 	csi_chan->format = *format;
@@ -219,9 +211,7 @@ static int csi_set_format(struct v4l2_subdev *subdev,
 	return 0;
 }
 
-/*
- * V4L2 Subdevice Video Operations
- */
+ 
 static int tegra_csi_g_frame_interval(struct v4l2_subdev *subdev,
 				      struct v4l2_subdev_frame_interval *vfi)
 {
@@ -264,27 +254,10 @@ void tegra_csi_calc_settle_time(struct tegra_csi_channel *csi_chan,
 	cil_clk_mhz = clk_get_rate(csi->clks[clk_idx].clk) / MHZ;
 	pix_clk_mhz = csi_get_pixel_rate(csi_chan) / MHZ;
 
-	/*
-	 * CLK Settle time is the interval during which HS receiver should
-	 * ignore any clock lane HS transitions, starting from the beginning
-	 * of T-CLK-PREPARE.
-	 * Per DPHY specification, T-CLK-SETTLE should be between 95ns ~ 300ns
-	 *
-	 * 95ns < (clk-settle-programmed + 7) * lp clk period < 300ns
-	 * midpoint = 197.5 ns
-	 */
+	 
 	*clk_settle_time = ((95 + 300) * cil_clk_mhz - 14000) / 2000;
 
-	/*
-	 * THS Settle time is the interval during which HS receiver should
-	 * ignore any data lane HS transitions, starting from the beginning
-	 * of THS-PREPARE.
-	 *
-	 * Per DPHY specification, T-HS-SETTLE should be between 85ns + 6UI
-	 * and 145ns+10UI.
-	 * 85ns + 6UI < (Ths-settle-prog + 5) * lp_clk_period < 145ns + 10UI
-	 * midpoint = 115ns + 8UI
-	 */
+	 
 	if (pix_clk_mhz)
 		*ths_settle_time = (115 * cil_clk_mhz + 8000 * cil_clk_mhz
 				   / (2 * pix_clk_mhz) - 5000) / 1000;
@@ -311,13 +284,7 @@ static int tegra_csi_enable_stream(struct v4l2_subdev *subdev)
 			goto rpm_put;
 		}
 
-		/*
-		 * CSI MIPI pads PULLUP, PULLDN and TERM impedances need to
-		 * be calibrated after power on.
-		 * So, trigger the calibration start here and results will
-		 * be latched and applied to the pads when link is in LP11
-		 * state during start of sensor streaming.
-		 */
+		 
 		ret = tegra_mipi_start_calibration(csi_chan->mipi);
 		if (ret < 0) {
 			dev_err(csi->dev,
@@ -328,26 +295,14 @@ static int tegra_csi_enable_stream(struct v4l2_subdev *subdev)
 
 	csi_chan->pg_mode = chan->pg_mode;
 
-	/*
-	 * Tegra CSI receiver can detect the first LP to HS transition.
-	 * So, start the CSI stream-on prior to sensor stream-on and
-	 * vice-versa for stream-off.
-	 */
+	 
 	ret = csi->ops->csi_start_streaming(csi_chan);
 	if (ret < 0)
 		goto finish_calibration;
 
 	if (csi_chan->mipi) {
 		struct v4l2_subdev *src_subdev;
-		/*
-		 * TRM has incorrectly documented to wait for done status from
-		 * calibration logic after CSI interface power on.
-		 * As per the design, calibration results are latched and applied
-		 * to the pads only when the link is in LP11 state which will happen
-		 * during the sensor stream-on.
-		 * CSI subdev stream-on triggers start of MIPI pads calibration.
-		 * Wait for calibration to finish here after sensor subdev stream-on.
-		 */
+		 
 		src_subdev = tegra_channel_get_remote_source_subdev(chan);
 		ret = v4l2_subdev_call(src_subdev, video, s_stream, true);
 
@@ -386,10 +341,7 @@ static int tegra_csi_disable_stream(struct v4l2_subdev *subdev)
 	struct tegra_csi *csi = csi_chan->csi;
 	int err;
 
-	/*
-	 * Stream-off subdevices in reverse order to stream-on.
-	 * Remote source subdev in TPG mode is same as CSI subdev.
-	 */
+	 
 	if (csi_chan->mipi) {
 		struct v4l2_subdev *src_subdev;
 
@@ -425,9 +377,7 @@ static int tegra_csi_s_stream(struct v4l2_subdev *subdev, int enable)
 	return ret;
 }
 
-/*
- * V4L2 Subdevice Operations
- */
+ 
 static const struct v4l2_subdev_video_ops tegra_csi_video_ops = {
 	.s_stream = tegra_csi_s_stream,
 	.g_frame_interval = tegra_csi_g_frame_interval,
@@ -461,10 +411,7 @@ static int tegra_csi_channel_alloc(struct tegra_csi *csi,
 
 	list_add_tail(&chan->list, &csi->csi_chans);
 	chan->csi = csi;
-	/*
-	 * Each CSI brick has maximum of 4 lanes.
-	 * For lanes more than 4, use multiple of immediate CSI bricks as gang.
-	 */
+	 
 	if (lanes <= CSI_LANES_PER_BRICK) {
 		chan->numlanes = lanes;
 		chan->numgangports = 1;
@@ -505,7 +452,7 @@ static int tegra_csi_tpg_channels_alloc(struct tegra_csi *csi)
 	unsigned int tpg_channels = csi->soc->csi_max_channels;
 	int ret;
 
-	/* allocate CSI channel for each CSI x2 ports */
+	 
 	for (port_num = 0; port_num < tpg_channels; port_num++) {
 		ret = tegra_csi_channel_alloc(csi, node, port_num, 2, 1);
 		if (ret < 0)
@@ -557,12 +504,7 @@ static int tegra_csi_channels_alloc(struct tegra_csi *csi)
 		}
 
 		lanes = v4l2_ep.bus.mipi_csi2.num_data_lanes;
-		/*
-		 * Each CSI brick has maximum 4 data lanes.
-		 * For lanes more than 4, validate lanes to be multiple of 4
-		 * so multiple of consecutive CSI bricks can be ganged up for
-		 * streaming.
-		 */
+		 
 		if (!lanes || ((lanes & (lanes - 1)) != 0) ||
 		    (lanes > CSI_LANES_PER_BRICK && ((portno & 1) != 0))) {
 			dev_err(csi->dev, "invalid data-lanes %d for %pOF\n",
@@ -593,7 +535,7 @@ static int tegra_csi_channel_init(struct tegra_csi_channel *chan)
 	struct v4l2_subdev *subdev;
 	int ret;
 
-	/* initialize the default format */
+	 
 	chan->format.code = MEDIA_BUS_FMT_SRGGB10_1X10;
 	chan->format.field = V4L2_FIELD_NONE;
 	chan->format.colorspace = V4L2_COLORSPACE_SRGB;
@@ -602,7 +544,7 @@ static int tegra_csi_channel_init(struct tegra_csi_channel *chan)
 	csi_chan_update_blank_intervals(chan, chan->format.code,
 					chan->format.width,
 					chan->format.height);
-	/* initialize V4L2 subdevice and media entity */
+	 
 	subdev = &chan->subdev;
 	v4l2_subdev_init(subdev, &tegra_csi_ops);
 	subdev->dev = csi->dev;
@@ -617,7 +559,7 @@ static int tegra_csi_channel_init(struct tegra_csi_channel *chan)
 	subdev->fwnode = of_fwnode_handle(chan->of_node);
 	subdev->entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
 
-	/* initialize media entity pads */
+	 
 	ret = media_entity_pads_init(&subdev->entity, chan->numpads,
 				     chan->pads);
 	if (ret < 0) {
@@ -644,7 +586,7 @@ void tegra_csi_error_recover(struct v4l2_subdev *sd)
 	struct tegra_csi_channel *csi_chan = to_csi_chan(sd);
 	struct tegra_csi *csi = csi_chan->csi;
 
-	/* stop streaming during error recovery */
+	 
 	csi->ops->csi_stop_streaming(csi_chan);
 	csi->ops->csi_err_recover(csi_chan);
 	csi->ops->csi_start_streaming(csi_chan);
@@ -799,7 +741,7 @@ static int tegra_csi_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, csi);
 	pm_runtime_enable(&pdev->dev);
 
-	/* initialize host1x interface */
+	 
 	INIT_LIST_HEAD(&csi->client.list);
 	csi->client.ops = &csi_client_ops;
 	csi->client.dev = &pdev->dev;

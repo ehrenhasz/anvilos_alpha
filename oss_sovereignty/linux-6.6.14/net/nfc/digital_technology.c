@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NFC Digital Protocol stack
- * Copyright (c) 2013, Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) "digital: %s: " fmt, __func__
 
@@ -176,7 +173,7 @@ int digital_in_iso_dep_pull_sod(struct nfc_digital_dev *ddev,
 	pcb = *skb->data;
 	block_type = DIGITAL_ISO_DEP_PCB_TYPE(pcb);
 
-	/* No support fo R-block nor S-block */
+	 
 	if (block_type != DIGITAL_ISO_DEP_I_BLOCK) {
 		pr_err("ISO_DEP R-block and S-block not supported\n");
 		return -EIO;
@@ -195,10 +192,7 @@ int digital_in_iso_dep_pull_sod(struct nfc_digital_dev *ddev,
 int digital_in_iso_dep_push_sod(struct nfc_digital_dev *ddev,
 				struct sk_buff *skb)
 {
-	/*
-	 * Chaining not supported so skb->len + 1 PCB byte + 2 CRC bytes must
-	 * not be greater than remote FSC
-	 */
+	 
 	if (skb->len + 3 > ddev->target_fsc)
 		return -EIO;
 
@@ -316,10 +310,7 @@ static void digital_in_recv_sel_res(struct nfc_digital_dev *ddev, void *arg,
 		rc = digital_in_send_rats(ddev, target);
 		if (rc)
 			goto exit;
-		/*
-		 * Skip target_found and don't free it for now. This will be
-		 * done when receiving the ATS
-		 */
+		 
 		goto exit_free_skb;
 	} else {
 		rc = -EOPNOTSUPP;
@@ -548,11 +539,7 @@ int digital_in_send_sens_req(struct nfc_digital_dev *ddev, u8 rf_tech)
 
 int digital_in_recv_mifare_res(struct sk_buff *resp)
 {
-	/* Successful READ command response is 16 data bytes + 2 CRC bytes long.
-	 * Since the driver can't differentiate a ACK/NACK response from a valid
-	 * READ response, the CRC calculation must be handled at digital level
-	 * even if the driver supports it for this technology.
-	 */
+	 
 	if (resp->len == DIGITAL_MIFARE_READ_RES_LEN + DIGITAL_CRC_LEN) {
 		if (digital_skb_check_crc_a(resp)) {
 			PROTOCOL_ERR("9.4.1.2");
@@ -562,13 +549,13 @@ int digital_in_recv_mifare_res(struct sk_buff *resp)
 		return 0;
 	}
 
-	/* ACK response (i.e. successful WRITE). */
+	 
 	if (resp->len == 1 && resp->data[0] == DIGITAL_MIFARE_ACK_RES) {
 		resp->data[0] = 0;
 		return 0;
 	}
 
-	/* NACK and any other responses are treated as error. */
+	 
 	return -EIO;
 }
 
@@ -728,7 +715,7 @@ int digital_in_send_sensb_req(struct nfc_digital_dev *ddev, u8 rf_tech)
 	sensb_req = skb_put(skb, sizeof(*sensb_req));
 
 	sensb_req->cmd = DIGITAL_CMD_SENSB_REQ;
-	sensb_req->afi = 0x00; /* All families and sub-families */
+	sensb_req->afi = 0x00;  
 	sensb_req->param = DIGITAL_SENSB_N(0);
 
 	rc = digital_in_send_cmd(ddev, skb, 30, digital_in_recv_sensb_res,
@@ -904,12 +891,10 @@ int digital_in_send_iso15693_inv_req(struct nfc_digital_dev *ddev, u8 rf_tech)
 	if (!skb)
 		return -ENOMEM;
 
-	skb_put(skb, sizeof(*req) - sizeof(req->mask)); /* No mask */
+	skb_put(skb, sizeof(*req) - sizeof(req->mask));  
 	req = (struct digital_iso15693_inv_req *)skb->data;
 
-	/* Single sub-carrier, high data rate, no AFI, single slot
-	 * Inventory command
-	 */
+	 
 	req->flags = DIGITAL_ISO15693_REQ_FLAG_DATA_RATE |
 		     DIGITAL_ISO15693_REQ_FLAG_INVENTORY |
 		     DIGITAL_ISO15693_REQ_FLAG_NB_SLOTS;
@@ -972,7 +957,7 @@ static void digital_tg_recv_sel_req(struct nfc_digital_dev *ddev, void *arg,
 		}
 	}
 
-	/* Silently ignore SEL_REQ content and send a SEL_RES for NFC-DEP */
+	 
 
 	rc = digital_tg_send_sel_res(ddev);
 

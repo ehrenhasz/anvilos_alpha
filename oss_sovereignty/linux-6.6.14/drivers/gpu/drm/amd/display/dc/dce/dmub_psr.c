@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dmub_psr.h"
 #include "dc.h"
@@ -29,16 +6,14 @@
 #include "dmub/dmub_srv.h"
 #include "core_types.h"
 
-#define DC_TRACE_LEVEL_MESSAGE(...)	do {} while (0) /* do nothing */
+#define DC_TRACE_LEVEL_MESSAGE(...)	do {} while (0)  
 
 #define MAX_PIPES 6
 
 static const uint8_t DP_SINK_DEVICE_STR_ID_1[] = {7, 1, 8, 7, 3};
 static const uint8_t DP_SINK_DEVICE_STR_ID_2[] = {7, 1, 8, 7, 5};
 
-/*
- * Convert dmcub psr state to dmcu psr state.
- */
+ 
 static enum dc_psr_state convert_psr_state(uint32_t raw_state)
 {
 	enum dc_psr_state state = PSR_STATE0;
@@ -99,9 +74,7 @@ static enum dc_psr_state convert_psr_state(uint32_t raw_state)
 	return state;
 }
 
-/*
- * Get PSR state from firmware.
- */
+ 
 static void dmub_psr_get_state(struct dmub_psr *dmub, enum dc_psr_state *state, uint8_t panel_inst)
 {
 	struct dmub_srv *srv = dmub->ctx->dmub_srv->dmub;
@@ -110,20 +83,20 @@ static void dmub_psr_get_state(struct dmub_psr *dmub, enum dc_psr_state *state, 
 	enum dmub_status status;
 
 	do {
-		// Send gpint command and wait for ack
+		
 		status = dmub_srv_send_gpint_command(srv, DMUB_GPINT__GET_PSR_STATE, panel_inst, 30);
 
 		if (status == DMUB_STATUS_OK) {
-			// GPINT was executed, get response
+			
 			dmub_srv_get_gpint_response(srv, &raw_state);
 			*state = convert_psr_state(raw_state);
 		} else
-			// Return invalid state when GPINT times out
+			
 			*state = PSR_STATE_INVALID;
 
 	} while (++retry_count <= 1000 && *state == PSR_STATE_INVALID);
 
-	// Assert if max retry hit
+	
 	if (retry_count >= 1000 && *state == PSR_STATE_INVALID) {
 		ASSERT(0);
 		DC_TRACE_LEVEL_MESSAGE(DAL_TRACE_LEVEL_ERROR,
@@ -136,9 +109,7 @@ static void dmub_psr_get_state(struct dmub_psr *dmub, enum dc_psr_state *state, 
 				*state, retry_count);
 }
 
-/*
- * Set PSR version.
- */
+ 
 static bool dmub_psr_set_version(struct dmub_psr *dmub, struct dc_stream_state *stream, uint8_t panel_inst)
 {
 	union dmub_rb_cmd cmd;
@@ -175,9 +146,7 @@ static bool dmub_psr_set_version(struct dmub_psr *dmub, struct dc_stream_state *
 	return true;
 }
 
-/*
- * Enable/Disable PSR.
- */
+ 
 static void dmub_psr_enable(struct dmub_psr *dmub, bool enable, bool wait, uint8_t panel_inst)
 {
 	union dmub_rb_cmd cmd;
@@ -196,14 +165,11 @@ static void dmub_psr_enable(struct dmub_psr *dmub, bool enable, bool wait, uint8
 	else
 		cmd.psr_enable.header.sub_type = DMUB_CMD__PSR_DISABLE;
 
-	cmd.psr_enable.header.payload_bytes = 0; // Send header only
+	cmd.psr_enable.header.payload_bytes = 0; 
 
 	dm_execute_dmub_cmd(dc->dmub_srv->ctx, &cmd, DM_DMUB_WAIT_TYPE_WAIT);
 
-	/* Below loops 1000 x 500us = 500 ms.
-	 *  Exit PSR may need to wait 1-2 frames to power up. Timeout after at
-	 *  least a few frames. Should never hit the max retry assert below.
-	 */
+	 
 	if (wait) {
 		for (retry_count = 0; retry_count <= 1000; retry_count++) {
 			dmub_psr_get_state(dmub, &state, panel_inst);
@@ -216,19 +182,17 @@ static void dmub_psr_enable(struct dmub_psr *dmub, bool enable, bool wait, uint8
 					break;
 			}
 
-			/* must *not* be fsleep - this can be called from high irq levels */
+			 
 			udelay(500);
 		}
 
-		/* assert if max retry hit */
+		 
 		if (retry_count >= 1000)
 			ASSERT(0);
 	}
 }
 
-/*
- * Set PSR level.
- */
+ 
 static void dmub_psr_set_level(struct dmub_psr *dmub, uint16_t psr_level, uint8_t panel_inst)
 {
 	union dmub_rb_cmd cmd;
@@ -250,9 +214,7 @@ static void dmub_psr_set_level(struct dmub_psr *dmub, uint16_t psr_level, uint8_
 	dm_execute_dmub_cmd(dc, &cmd, DM_DMUB_WAIT_TYPE_WAIT);
 }
 
-/*
- * Set PSR vtotal requirement for FreeSync PSR.
- */
+ 
 static void dmub_psr_set_sink_vtotal_in_psr_active(struct dmub_psr *dmub,
 		uint16_t psr_vtotal_idle, uint16_t psr_vtotal_su)
 {
@@ -269,9 +231,7 @@ static void dmub_psr_set_sink_vtotal_in_psr_active(struct dmub_psr *dmub,
 	dm_execute_dmub_cmd(dc, &cmd, DM_DMUB_WAIT_TYPE_WAIT);
 }
 
-/*
- * Set PSR power optimization flags.
- */
+ 
 static void dmub_psr_set_power_opt(struct dmub_psr *dmub, unsigned int power_opt, uint8_t panel_inst)
 {
 	union dmub_rb_cmd cmd;
@@ -288,9 +248,7 @@ static void dmub_psr_set_power_opt(struct dmub_psr *dmub, unsigned int power_opt
 	dm_execute_dmub_cmd(dc, &cmd, DM_DMUB_WAIT_TYPE_WAIT);
 }
 
-/*
- * Setup PSR by programming phy registers and sending psr hw context values to firmware.
- */
+ 
 static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 		struct dc_link *link,
 		struct psr_context *psr_context,
@@ -309,7 +267,7 @@ static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 		    res_ctx->pipe_ctx[i].stream->link == link &&
 		    res_ctx->pipe_ctx[i].stream->link->connector_signal == SIGNAL_TYPE_EDP) {
 			pipe_ctx = &res_ctx->pipe_ctx[i];
-			//TODO: refactor for multi edp support
+			
 			break;
 		}
 	}
@@ -317,15 +275,15 @@ static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 	if (!pipe_ctx)
 		return false;
 
-	// First, set the psr version
+	
 	if (!dmub_psr_set_version(dmub, pipe_ctx->stream, panel_inst))
 		return false;
 
-	// Program DP DPHY fast training registers
+	
 	link->link_enc->funcs->psr_program_dp_dphy_fast_training(link->link_enc,
 			psr_context->psrExitLinkTrainingRequired);
 
-	// Program DP_SEC_CNTL1 register to set transmission GPS0 line num and priority to high
+	
 	link->link_enc->funcs->psr_program_secondary_packet(link->link_enc,
 			psr_context->sdpTransmitLineNumDeadline);
 
@@ -334,7 +292,7 @@ static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 	cmd.psr_copy_settings.header.sub_type = DMUB_CMD__PSR_COPY_SETTINGS;
 	cmd.psr_copy_settings.header.payload_bytes = sizeof(struct dmub_cmd_psr_copy_settings_data);
 
-	// Hw insts
+	
 	copy_settings_data->dpphy_inst				= psr_context->transmitterId;
 	copy_settings_data->aux_inst				= psr_context->channel;
 	copy_settings_data->digfe_inst				= psr_context->engineId;
@@ -355,7 +313,7 @@ static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 	else
 		copy_settings_data->otg_inst			= 0;
 
-	// Misc
+	
 	copy_settings_data->use_phy_fsm             = link->ctx->dc->debug.psr_power_use_phy_fsm;
 	copy_settings_data->psr_level				= psr_context->psr_level.u32all;
 	copy_settings_data->smu_optimizations_en		= psr_context->allow_smu_optimizations;
@@ -382,10 +340,7 @@ static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 	copy_settings_data->panel_inst = panel_inst;
 	copy_settings_data->dsc_enable_status = (pipe_ctx->stream->timing.flags.DSC == 1);
 
-	/**
-	 * WA for PSRSU+DSC on specific TCON, if DSC is enabled, force PSRSU as ffu mode(full frame update)
-	 * Note that PSRSU+DSC is still under development.
-	 */
+	 
 	if (copy_settings_data->dsc_enable_status &&
 		link->dpcd_caps.sink_dev_id == DP_DEVICE_ID_38EC11 &&
 		!memcmp(link->dpcd_caps.sink_dev_id_str, DP_SINK_DEVICE_STR_ID_1,
@@ -409,7 +364,7 @@ static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 	else
 		copy_settings_data->debug.bitfields.force_wakeup_by_tps3 = 0;
 
-	//WA for PSR1 on specific TCON, require frame delay for frame re-lock
+	
 	copy_settings_data->relock_delay_frame_cnt = 0;
 	if (link->dpcd_caps.sink_dev_id == DP_BRANCH_DEVICE_ID_001CF8)
 		copy_settings_data->relock_delay_frame_cnt = 2;
@@ -420,9 +375,7 @@ static bool dmub_psr_copy_settings(struct dmub_psr *dmub,
 	return true;
 }
 
-/*
- * Send command to PSR to force static ENTER and ignore all state changes until exit
- */
+ 
 static void dmub_psr_force_static(struct dmub_psr *dmub, uint8_t panel_inst)
 {
 	union dmub_rb_cmd cmd;
@@ -439,15 +392,13 @@ static void dmub_psr_force_static(struct dmub_psr *dmub, uint8_t panel_inst)
 	dm_execute_dmub_cmd(dc, &cmd, DM_DMUB_WAIT_TYPE_WAIT);
 }
 
-/*
- * Get PSR residency from firmware.
- */
+ 
 static void dmub_psr_get_residency(struct dmub_psr *dmub, uint32_t *residency, uint8_t panel_inst)
 {
 	struct dmub_srv *srv = dmub->ctx->dmub_srv->dmub;
 	uint16_t param = (uint16_t)(panel_inst << 8);
 
-	/* Send gpint command and wait for ack */
+	 
 	dmub_srv_send_gpint_command(srv, DMUB_GPINT__PSR_RESIDENCY, param, 30);
 
 	dmub_srv_get_gpint_response(srv, residency);
@@ -464,18 +415,14 @@ static const struct dmub_psr_funcs psr_funcs = {
 	.psr_set_power_opt		= dmub_psr_set_power_opt,
 };
 
-/*
- * Construct PSR object.
- */
+ 
 static void dmub_psr_construct(struct dmub_psr *psr, struct dc_context *ctx)
 {
 	psr->ctx = ctx;
 	psr->funcs = &psr_funcs;
 }
 
-/*
- * Allocate and initialize PSR object.
- */
+ 
 struct dmub_psr *dmub_psr_create(struct dc_context *ctx)
 {
 	struct dmub_psr *psr = kzalloc(sizeof(struct dmub_psr), GFP_KERNEL);
@@ -490,9 +437,7 @@ struct dmub_psr *dmub_psr_create(struct dc_context *ctx)
 	return psr;
 }
 
-/*
- * Deallocate PSR object.
- */
+ 
 void dmub_psr_destroy(struct dmub_psr **dmub)
 {
 	kfree(*dmub);

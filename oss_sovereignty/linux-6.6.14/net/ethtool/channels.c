@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <net/xdp_sock_drv.h>
 
@@ -44,14 +44,14 @@ static int channels_prepare_data(const struct ethnl_req_info *req_base,
 static int channels_reply_size(const struct ethnl_req_info *req_base,
 			       const struct ethnl_reply_data *reply_base)
 {
-	return nla_total_size(sizeof(u32)) +	/* _CHANNELS_RX_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _CHANNELS_TX_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _CHANNELS_OTHER_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _CHANNELS_COMBINED_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _CHANNELS_RX_COUNT */
-	       nla_total_size(sizeof(u32)) +	/* _CHANNELS_TX_COUNT */
-	       nla_total_size(sizeof(u32)) +	/* _CHANNELS_OTHER_COUNT */
-	       nla_total_size(sizeof(u32));	/* _CHANNELS_COMBINED_COUNT */
+	return nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32));	 
 }
 
 static int channels_fill_reply(struct sk_buff *skb,
@@ -86,7 +86,7 @@ static int channels_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* CHANNELS_SET */
+ 
 
 const struct nla_policy ethnl_channels_set_policy[] = {
 	[ETHTOOL_A_CHANNELS_HEADER]		=
@@ -134,7 +134,7 @@ ethnl_set_channels(struct ethnl_req_info *req_info, struct genl_info *info)
 	if (!mod)
 		return 0;
 
-	/* ensure new channel counts are within limits */
+	 
 	if (channels.rx_count > channels.max_rx)
 		err_attr = ETHTOOL_A_CHANNELS_RX_COUNT;
 	else if (channels.tx_count > channels.max_tx)
@@ -151,7 +151,7 @@ ethnl_set_channels(struct ethnl_req_info *req_info, struct genl_info *info)
 		return -EINVAL;
 	}
 
-	/* ensure there is at least one RX and one TX channel */
+	 
 	if (!channels.combined_count && !channels.rx_count)
 		err_attr = ETHTOOL_A_CHANNELS_RX_COUNT;
 	else if (!channels.combined_count && !channels.tx_count)
@@ -166,9 +166,7 @@ ethnl_set_channels(struct ethnl_req_info *req_info, struct genl_info *info)
 		return -EINVAL;
 	}
 
-	/* ensure the new Rx count fits within the configured Rx flow
-	 * indirection table/rxnfc settings
-	 */
+	 
 	if (ethtool_get_max_rxnfc_channel(dev, &max_rxnfc_in_use))
 		max_rxnfc_in_use = 0;
 	if (!netif_is_rxfh_configured(dev) ||
@@ -183,7 +181,7 @@ ethnl_set_channels(struct ethnl_req_info *req_info, struct genl_info *info)
 		return -EINVAL;
 	}
 
-	/* Disabling channels, query zero-copy AF_XDP sockets */
+	 
 	from_channel = channels.combined_count +
 		       min(channels.rx_count, channels.tx_count);
 	for (i = from_channel; i < old_total; i++)

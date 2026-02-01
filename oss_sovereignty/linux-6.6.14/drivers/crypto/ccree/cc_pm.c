@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
@@ -32,13 +32,13 @@ static int cc_pm_resume(struct device *dev)
 	struct cc_drvdata *drvdata = dev_get_drvdata(dev);
 
 	dev_dbg(dev, "unset HOST_POWER_DOWN_EN\n");
-	/* Enables the device source clk */
+	 
 	rc = clk_prepare_enable(drvdata->clk);
 	if (rc) {
 		dev_err(dev, "failed getting clock back on. We're toast.\n");
 		return rc;
 	}
-	/* wait for Cryptocell reset completion */
+	 
 	if (!cc_wait_for_reset_completion(drvdata)) {
 		dev_err(dev, "Cryptocell reset not completed");
 		clk_disable_unprepare(drvdata->clk);
@@ -52,7 +52,7 @@ static int cc_pm_resume(struct device *dev)
 		clk_disable_unprepare(drvdata->clk);
 		return rc;
 	}
-	/* check if tee fips error occurred during power down */
+	 
 	cc_tee_handle_fips_error(drvdata);
 
 	cc_init_hash_sram(drvdata);

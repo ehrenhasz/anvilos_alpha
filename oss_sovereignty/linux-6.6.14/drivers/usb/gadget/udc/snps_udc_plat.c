@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * snps_udc_plat.c - Synopsys UDC Platform Driver
- *
- * Copyright (C) 2016 Broadcom
- */
+
+ 
 
 #include <linux/extcon.h>
 #include <linux/of_address.h>
@@ -17,7 +13,7 @@
 #include <linux/moduleparam.h>
 #include "amd5536udc.h"
 
-/* description */
+ 
 #define UDC_MOD_DESCRIPTION     "Synopsys UDC platform driver"
 
 static void start_udc(struct udc *udc)
@@ -37,7 +33,7 @@ static void stop_udc(struct udc *udc)
 
 	spin_lock(&udc->lock);
 
-	/* Flush the receieve fifo */
+	 
 	reg = readl(&udc->regs->ctl);
 	reg |= AMD_BIT(UDC_DEVCTL_SRX_FLUSH);
 	writel(reg, &udc->regs->ctl);
@@ -47,18 +43,16 @@ static void stop_udc(struct udc *udc)
 	writel(reg, &udc->regs->ctl);
 	dev_dbg(udc->dev, "ep rx queue flushed\n");
 
-	/* Mask interrupts. Required more so when the
-	 * UDC is connected to a DRD phy.
-	 */
+	 
 	udc_mask_unused_interrupts(udc);
 
-	/* Disconnect gadget driver */
+	 
 	if (udc->driver) {
 		spin_unlock(&udc->lock);
 		udc->driver->disconnect(&udc->gadget);
 		spin_lock(&udc->lock);
 
-		/* empty queues */
+		 
 		for (tmp = 0; tmp < UDC_EP_NUM; tmp++)
 			empty_req_queue(&udc->ep[tmp]);
 	}
@@ -116,16 +110,16 @@ static int udc_plat_probe(struct platform_device *pdev)
 	if (IS_ERR(udc->virt_addr))
 		return PTR_ERR(udc->virt_addr);
 
-	/* udc csr registers base */
+	 
 	udc->csr = udc->virt_addr + UDC_CSR_ADDR;
 
-	/* dev registers base */
+	 
 	udc->regs = udc->virt_addr + UDC_DEVCFG_ADDR;
 
-	/* ep registers base */
+	 
 	udc->ep_regs = udc->virt_addr + UDC_EPREGS_ADDR;
 
-	/* fifo's base */
+	 
 	udc->rxfifo = (u32 __iomem *)(udc->virt_addr + UDC_RXFIFO_ADDR);
 	udc->txfifo = (u32 __iomem *)(udc->virt_addr + UDC_TXFIFO_ADDR);
 
@@ -156,7 +150,7 @@ static int udc_plat_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Register for extcon if supported */
+	 
 	if (of_property_present(dev->of_node, "extcon")) {
 		udc->edev = extcon_get_edev_by_phandle(dev, 0);
 		if (IS_ERR(udc->edev)) {
@@ -185,7 +179,7 @@ static int udc_plat_probe(struct platform_device *pdev)
 		INIT_DELAYED_WORK(&udc->drd_work, udc_drd_work);
 	}
 
-	/* init dma pools */
+	 
 	if (use_dma) {
 		ret = init_dma_pools(udc);
 		if (ret != 0)
@@ -231,11 +225,11 @@ static void udc_plat_remove(struct platform_device *pdev)
 	dev = platform_get_drvdata(pdev);
 
 	usb_del_gadget_udc(&dev->gadget);
-	/* gadget driver must not be registered */
+	 
 	if (WARN_ON(dev->driver))
 		return;
 
-	/* dma pool cleanup */
+	 
 	free_dma_pools(dev);
 
 	udc_remove(dev);

@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- *
- * Parts came from builtin-annotate.c, see those files for further
- * copyright notes.
- */
+
+ 
 
 #include <errno.h>
 #include <inttypes.h>
 #include <libgen.h>
 #include <stdlib.h>
-#include "util.h" // hex_width()
+#include "util.h" 
 #include "ui/ui.h"
 #include "sort.h"
 #include "build-id.h"
@@ -43,13 +38,10 @@
 #include <subcmd/parse-options.h>
 #include <subcmd/run-command.h>
 
-/* FIXME: For the HE_COLORSET */
+ 
 #include "ui/browser.h"
 
-/*
- * FIXME: Using the same values as slang.h,
- * but that header may not be available everywhere
- */
+ 
 #define LARROW_CHAR	((unsigned char)',')
 #define RARROW_CHAR	((unsigned char)'+')
 #define DARROW_CHAR	((unsigned char)'.')
@@ -298,8 +290,7 @@ indirect_call:
 	if (tok != NULL) {
 		endptr++;
 
-		/* Indirect call can use a non-rip register and offset: callq  *0x8(%rbx).
-		 * Do not parse such instruction.  */
+		 
 		if (strstr(endptr, "(%r") == NULL)
 			ops->target.addr = strtoull(endptr, NULL, 16);
 	}
@@ -331,13 +322,7 @@ bool ins__is_call(const struct ins *ins)
 	return ins->ops == &call_ops || ins->ops == &s390_call_ops || ins->ops == &loongarch_call_ops;
 }
 
-/*
- * Prevents from matching commas in the comment section, e.g.:
- * ffff200008446e70:       b.cs    ffff2000084470f4 <generic_exec_single+0x314>  // b.hs, b.nlast
- *
- * and skip comma as part of function arguments, e.g.:
- * 1d8b4ac <linemap_lookup(line_maps const*, unsigned int)+0xcc>
- */
+ 
 static inline const char *validate_comma(const char *c, struct ins_operands *ops)
 {
 	if (ops->raw_comment && c > ops->raw_comment)
@@ -364,21 +349,8 @@ static int jump__parse(struct arch *arch, struct ins_operands *ops, struct map_s
 
 	c = validate_comma(c, ops);
 
-	/*
-	 * Examples of lines to parse for the _cpp_lex_token@@Base
-	 * function:
-	 *
-	 * 1159e6c: jne    115aa32 <_cpp_lex_token@@Base+0xf92>
-	 * 1159e8b: jne    c469be <cpp_named_operator2name@@Base+0xa72>
-	 *
-	 * The first is a jump to an offset inside the same function,
-	 * the second is to another function, i.e. that 0xa72 is an
-	 * offset in the cpp_named_operator2name@@base function.
-	 */
-	/*
-	 * skip over possible up to 2 operands to get to address, e.g.:
-	 * tbnz	 w0, #26, ffff0000083cd190 <security_file_permission+0xd0>
-	 */
+	 
+	 
 	if (c++ != NULL) {
 		ops->target.addr = strtoull(c, NULL, 16);
 		if (!ops->target.addr) {
@@ -397,24 +369,7 @@ static int jump__parse(struct arch *arch, struct ins_operands *ops, struct map_s
 
 	ops->target.outside = target.addr < start || target.addr > end;
 
-	/*
-	 * FIXME: things like this in _cpp_lex_token (gcc's cc1 program):
-
-		cpp_named_operator2name@@Base+0xa72
-
-	 * Point to a place that is after the cpp_named_operator2name
-	 * boundaries, i.e.  in the ELF symbol table for cc1
-	 * cpp_named_operator2name is marked as being 32-bytes long, but it in
-	 * fact is much larger than that, so we seem to need a symbols__find()
-	 * routine that looks for >= current->start and  < next_symbol->start,
-	 * possibly just for C++ objects?
-	 *
-	 * For now lets just make some progress by marking jumps to outside the
-	 * current function as call like.
-	 *
-	 * Actual navigation will come next, with further understanding of how
-	 * the symbol searching and disassembly should be done.
-	 */
+	 
 	if (maps__find_ams(ms->maps, &target) == 0 &&
 	    map__rip_2objdump(target.ms.map, map__map_ip(target.ms.map, target.addr)) == ops->target.addr)
 		ops->target.sym = target.ms.sym;
@@ -447,12 +402,12 @@ static int jump__scnprintf(struct ins *ins, char *bf, size_t size,
 		const char *c2 = strchr(c + 1, ',');
 
 		c2 = validate_comma(c2, ops);
-		/* check for 3-op insn */
+		 
 		if (c2 != NULL)
 			c = c2;
 		c++;
 
-		/* mirror arch objdump's space-after-comma style */
+		 
 		if (*c == ' ')
 			c++;
 	}
@@ -566,10 +521,7 @@ static int mov__parse(struct arch *arch, struct ins_operands *ops, struct map_sy
 
 	*s = '\0';
 
-	/*
-	 * x86 SIB addressing has something like 0x8(%rax, %rcx, 1)
-	 * then it needs to have the closing parenthesis.
-	 */
+	 
 	if (strchr(ops->raw, '(')) {
 		*s = ',';
 		s = strchr(ops->raw, ')');
@@ -743,7 +695,7 @@ static struct ins_ops *__ins__find(struct arch *arch, const char *name)
 			return NULL;
 
 		strcpy(tmp, name);
-		tmp[len - 1] = '\0'; /* remove the suffix and check again */
+		tmp[len - 1] = '\0';  
 
 		ins = bsearch(tmp, arch->instructions, nmemb, sizeof(struct ins), ins__key_cmp);
 	}
@@ -819,23 +771,17 @@ static int annotated_source__alloc_histograms(struct annotated_source *src,
 {
 	size_t sizeof_sym_hist;
 
-	/*
-	 * Add buffer of one element for zero length symbol.
-	 * When sample is taken from first instruction of
-	 * zero length symbol, perf still resolves it and
-	 * shows symbol name in perf report and allows to
-	 * annotate it.
-	 */
+	 
 	if (size == 0)
 		size = 1;
 
-	/* Check for overflow when calculating sizeof_sym_hist */
+	 
 	if (size > (SIZE_MAX - sizeof(struct sym_hist)) / sizeof(struct sym_hist_entry))
 		return -1;
 
 	sizeof_sym_hist = (sizeof(struct sym_hist) + size * sizeof(struct sym_hist_entry));
 
-	/* Check for overflow in zalloc argument */
+	 
 	if (sizeof_sym_hist > SIZE_MAX / nr_hists)
 		return -1;
 
@@ -845,7 +791,7 @@ static int annotated_source__alloc_histograms(struct annotated_source *src,
 	return src->histograms ? 0 : -1;
 }
 
-/* The cycles histogram is lazily allocated. */
+ 
 static int symbol__alloc_hist_cycles(struct symbol *sym)
 {
 	struct annotation *notes = symbol__annotation(sym);
@@ -877,14 +823,7 @@ static int __symbol__account_cycles(struct cyc_hist *ch,
 				    unsigned offset, unsigned cycles,
 				    unsigned have_start)
 {
-	/*
-	 * For now we can only account one basic block per
-	 * final jump. But multiple could be overlapping.
-	 * Always account the longest one. So when
-	 * a shorter one has been already seen throw it away.
-	 *
-	 * We separately always account the full cycles.
-	 */
+	 
 	ch[offset].num_aggr++;
 	ch[offset].cycles_aggr += cycles;
 
@@ -1047,13 +986,7 @@ int addr_map_symbol__account_cycles(struct addr_map_symbol *ams,
 	if (!cycles)
 		return 0;
 
-	/*
-	 * Only set start when IPC can be computed. We can only
-	 * compute it when the basic block is completely in a single
-	 * function.
-	 * Special case the case when the jump is elsewhere, but
-	 * it starts on the function start.
-	 */
+	 
 	if (start &&
 		(start->ms.sym == ams->ms.sym ||
 		 (ams->ms.sym &&
@@ -1093,7 +1026,7 @@ static void annotation__count_and_fill(struct annotation *notes, u64 start, u64 
 	if (n_insn && ch->num && ch->cycles) {
 		float ipc = n_insn / ((double)ch->cycles / (double)ch->num);
 
-		/* Hide data when there are too many overlaps. */
+		 
 		if (ch->reset >= 0x7fff)
 			return;
 
@@ -1234,17 +1167,7 @@ static size_t disasm_line_size(int nr)
 	return (sizeof(struct disasm_line) + (sizeof(al->data[0]) * nr));
 }
 
-/*
- * Allocating the disasm annotation line data with
- * following structure:
- *
- *    -------------------------------------------
- *    struct disasm_line | struct annotation_line
- *    -------------------------------------------
- *
- * We have 'struct annotation_line' member as last member
- * of 'struct disasm_line' to have an easy access.
- */
+ 
 static struct disasm_line *disasm_line__new(struct annotate_args *args)
 {
 	struct disasm_line *dl = NULL;
@@ -1305,7 +1228,7 @@ static struct sharded_mutex *sharded_mutex;
 
 static void annotation__init_sharded_mutex(void)
 {
-	/* As many mutexes as there are CPUs. */
+	 
 	sharded_mutex = sharded_mutex__new(cpu__max_present_cpu().cpu);
 }
 
@@ -1374,11 +1297,11 @@ static const char *annotate__address_color(struct block_range *br)
 	double cov = block_range__coverage(br);
 
 	if (cov >= 0) {
-		/* mark red for >75% coverage */
+		 
 		if (cov > 0.75)
 			return PERF_COLOR_RED;
 
-		/* mark dull for <1% coverage */
+		 
 		if (cov < 0.01)
 			return PERF_COLOR_NORMAL;
 	}
@@ -1391,7 +1314,7 @@ static const char *annotate__asm_color(struct block_range *br)
 	double cov = block_range__coverage(br);
 
 	if (cov >= 0) {
-		/* mark dull for <1% coverage */
+		 
 		if (cov < 0.01)
 			return PERF_COLOR_NORMAL;
 	}
@@ -1411,9 +1334,7 @@ static void annotate__branch_printf(struct block_range *br, u64 addr)
 		struct block_range *branch = br;
 		double p;
 
-		/*
-		 * Find matching branch to our target.
-		 */
+		 
 		while (!branch->is_branch)
 			branch = block_range__next(branch);
 
@@ -1425,10 +1346,7 @@ static void annotate__branch_printf(struct block_range *br, u64 addr)
 				printf("\t#");
 			}
 
-			/*
-			 * The percentage of coverage joined at this target in relation
-			 * to the next branch.
-			 */
+			 
 			printf(" +%.2f%%", p);
 		}
 	}
@@ -1442,10 +1360,7 @@ static void annotate__branch_printf(struct block_range *br, u64 addr)
 				printf("\t#");
 			}
 
-			/*
-			 * The percentage of coverage leaving at this branch, and
-			 * its prediction ratio.
-			 */
+			 
 			printf(" -%.2f%% (p:%.2f%%)", p, 100*(double)br->pred  / br->taken);
 		}
 	}
@@ -1531,11 +1446,7 @@ annotation_line__print(struct annotation_line *al, struct symbol *sym, u64 start
 
 		disasm_line__print(dl, start, addr_fmt_width);
 
-		/*
-		 * Also color the filename and line if needed, with
-		 * the same color than the percentage. Don't print it
-		 * twice for close colored addr with the same filename:line
-		 */
+		 
 		if (al->path) {
 			if (!prev_line || strcmp(prev_line, al->path)) {
 				color_fprintf(stdout, color, " // %s", al->path);
@@ -1564,26 +1475,7 @@ annotation_line__print(struct annotation_line *al, struct symbol *sym, u64 start
 	return 0;
 }
 
-/*
- * symbol__parse_objdump_line() parses objdump output (with -d --no-show-raw)
- * which looks like following
- *
- *  0000000000415500 <_init>:
- *    415500:       sub    $0x8,%rsp
- *    415504:       mov    0x2f5ad5(%rip),%rax        # 70afe0 <_DYNAMIC+0x2f8>
- *    41550b:       test   %rax,%rax
- *    41550e:       je     415515 <_init+0x15>
- *    415510:       callq  416e70 <__gmon_start__@plt>
- *    415515:       add    $0x8,%rsp
- *    415519:       retq
- *
- * it will be parsed and saved into struct disasm_line as
- *  <offset>       <name>  <ops.raw>
- *
- * The offset will be a relative offset from the start of the symbol and -1
- * means that it's not a disassembly line so should be treated differently.
- * The ops.raw part will be parsed further according to type of the instruction.
- */
+ 
 static int symbol__parse_objdump_line(struct symbol *sym,
 				      struct annotate_args *args,
 				      char *parsed_line, int *line_nr, char **fileloc)
@@ -1595,7 +1487,7 @@ static int symbol__parse_objdump_line(struct symbol *sym,
 	s64 line_ip, offset = -1;
 	regmatch_t match[2];
 
-	/* /filename:linenr ? Save line number and ignore. */
+	 
 	if (regexec(&file_lineno, parsed_line, 2, match, 0) == 0) {
 		*line_nr = atoi(parsed_line + match[1].rm_so);
 		free(*fileloc);
@@ -1603,7 +1495,7 @@ static int symbol__parse_objdump_line(struct symbol *sym,
 		return 0;
 	}
 
-	/* Process hex address followed by ':'. */
+	 
 	line_ip = strtoull(parsed_line, &tmp, 16);
 	if (parsed_line != tmp && tmp[0] == ':' && tmp[1] != '\0') {
 		u64 start = map__rip_2objdump(map, sym->start),
@@ -1634,7 +1526,7 @@ static int symbol__parse_objdump_line(struct symbol *sym,
 		dl->ops.target.offset_avail = true;
 	}
 
-	/* kcore has no symbols, so add the call target symbol */
+	 
 	if (dl->ins.ops && ins__is_call(&dl->ins) && !dl->ops.target.sym) {
 		struct addr_map_symbol target = {
 			.addr = dl->ops.target.addr,
@@ -1758,11 +1650,7 @@ static int dso__disassemble_filename(struct dso *dso, char *filename, size_t fil
 	if (!build_id_path)
 		return ENOMEM;
 
-	/*
-	 * old style build-id cache has name of XX/XXXXXXX.. while
-	 * new style has XX/XXXXXXX../{elf,kallsyms,vdso}.
-	 * extract the build-id part of dirname in the new style only.
-	 */
+	 
 	pos = strrchr(build_id_path, '/');
 	if (pos && strlen(pos) < SBUILD_ID_SIZE - 2)
 		dirname(build_id_path);
@@ -1778,11 +1666,7 @@ static int dso__disassemble_filename(struct dso *dso, char *filename, size_t fil
 	if (strstr(linkname, DSO__NAME_KALLSYMS) ||
 		access(filename, R_OK)) {
 fallback:
-		/*
-		 * If we don't have build-ids or the build-id file isn't in the
-		 * cache, or is just a kallsyms file, well, lets hope that this
-		 * DSO is the same as when 'perf record' ran.
-		 */
+		 
 		if (dso->kernel && dso->long_name[0] == '/')
 			snprintf(filename, filename_size, "%s", dso->long_name);
 		else
@@ -1960,13 +1844,13 @@ out:
 	bfd_close(bfdf);
 	return ret;
 }
-#else // defined(HAVE_LIBBFD_SUPPORT) && defined(HAVE_LIBBPF_SUPPORT)
+#else 
 static int symbol__disassemble_bpf(struct symbol *sym __maybe_unused,
 				   struct annotate_args *args __maybe_unused)
 {
 	return SYMBOL_ANNOTATE_ERRNO__NO_LIBOPCODES_FOR_BPF;
 }
-#endif // defined(HAVE_LIBBFD_SUPPORT) && defined(HAVE_LIBBPF_SUPPORT)
+#endif 
 
 static int
 symbol__disassemble_bpf_image(struct symbol *sym,
@@ -1987,11 +1871,7 @@ symbol__disassemble_bpf_image(struct symbol *sym,
 	return 0;
 }
 
-/*
- * Possibly create a new version of line with tabs expanded. Returns the
- * existing or new line, storage is updated if a new line is allocated. If
- * allocation fails then NULL is returned.
- */
+ 
 static char *expand_tabs(char *line, char **storage, size_t *storage_len)
 {
 	size_t i, src, dst, len, new_storage_len, num_tabs;
@@ -2005,10 +1885,7 @@ static char *expand_tabs(char *line, char **storage, size_t *storage_len)
 	if (num_tabs == 0)
 		return line;
 
-	/*
-	 * Space for the line and '\0', less the leading and trailing
-	 * spaces. Each tab may introduce 7 additional spaces.
-	 */
+	 
 	new_storage_len = line_len + 1 + (num_tabs * 7);
 
 	new_line = malloc(new_storage_len);
@@ -2017,11 +1894,7 @@ static char *expand_tabs(char *line, char **storage, size_t *storage_len)
 		return NULL;
 	}
 
-	/*
-	 * Copy regions starting at src and expand tabs. If there are two
-	 * adjacent tabs then 'src == i', the memcpy is of size 0 and the spaces
-	 * are inserted.
-	 */
+	 
 	for (i = 0, src = 0, dst = 0; i < line_len && num_tabs; i++) {
 		if (line[i] == '\t') {
 			len = i - src;
@@ -2035,7 +1908,7 @@ static char *expand_tabs(char *line, char **storage, size_t *storage_len)
 		}
 	}
 
-	/* Expand the last region. */
+	 
 	len = line_len - src;
 	memcpy(&new_line[dst], &line[src], len);
 	dst += len;
@@ -2067,9 +1940,9 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
 	const char *objdump_argv[] = {
 		"/bin/sh",
 		"-c",
-		NULL, /* Will be the objdump command to run. */
+		NULL,  
 		"--",
-		NULL, /* Will be the symfs path. */
+		NULL,  
 		NULL,
 	};
 	struct child_process objdump_process;
@@ -2138,7 +2011,7 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
 	objdump_argv[2] = command;
 	objdump_argv[4] = symfs_filename;
 
-	/* Create a pipe to read from for stdout */
+	 
 	memset(&objdump_process, 0, sizeof(objdump_process));
 	objdump_process.argv = objdump_argv;
 	objdump_process.out = -1;
@@ -2153,15 +2026,12 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
 	file = fdopen(objdump_process.out, "r");
 	if (!file) {
 		pr_err("Failure creating FILE stream for %s\n", command);
-		/*
-		 * If we were using debug info should retry with
-		 * original binary.
-		 */
+		 
 		err = -1;
 		goto out_close_stdout;
 	}
 
-	/* Storage for getline. */
+	 
 	line = NULL;
 	line_len = 0;
 
@@ -2173,7 +2043,7 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
 		if (getline(&line, &line_len, file) < 0 || !line)
 			break;
 
-		/* Skip lines containing "filename:" */
+		 
 		match = strstr(line, symfs_filename);
 		if (match && match[strlen(symfs_filename)] == ':')
 			continue;
@@ -2183,12 +2053,7 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
 		if (!expanded_line)
 			break;
 
-		/*
-		 * The source code line number (lineno) needs to be kept in
-		 * across calls to symbol__parse_objdump_line(), so that it
-		 * can associate it with the instructions till the next one.
-		 * See disasm_line__new() and struct disasm_line::line_nr.
-		 */
+		 
 		if (symbol__parse_objdump_line(sym, args, expanded_line,
 					       &lineno, &fileloc) < 0)
 			break;
@@ -2206,10 +2071,7 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
 		pr_err("No output from %s\n", command);
 	}
 
-	/*
-	 * kallsyms does not have symbol sizes so there may a nop at the end.
-	 * Remove it.
-	 */
+	 
 	if (dso__is_kcore(dso))
 		delete_last_nop(sym);
 
@@ -2568,15 +2430,12 @@ int symbol__annotate_printf(struct map_symbol *ms, struct evsel *evsel,
 			}
 			break;
 		case 1:
-			/* filtered by max_lines */
+			 
 			++more;
 			break;
 		case -1:
 		default:
-			/*
-			 * Filtered by min_pcnt or non IP lines when
-			 * context != 0
-			 */
+			 
 			if (!context)
 				break;
 			if (queue_len == context)
@@ -2764,7 +2623,7 @@ void annotation__mark_jump_targets(struct annotation *notes, struct symbol *sym)
 {
 	u64 offset, size = symbol__size(sym);
 
-	/* PLT symbols contain external offsets */
+	 
 	if (strstr(sym->name, "@plt"))
 		return;
 
@@ -2779,10 +2638,7 @@ void annotation__mark_jump_targets(struct annotation *notes, struct symbol *sym)
 
 		al = notes->offsets[dl->ops.target.offset];
 
-		/*
-		 * FIXME: Oops, no jump target? Buggy disassembler? Or do we
-		 * have to adjust to the previous offset?
-		 */
+		 
 		if (al == NULL)
 			continue;
 
@@ -2807,13 +2663,7 @@ void annotation__set_offsets(struct annotation *notes, s64 size)
 		al->idx = notes->nr_entries++;
 		if (al->offset != -1) {
 			al->idx_asm = notes->nr_asm_entries++;
-			/*
-			 * FIXME: short term bandaid to cope with assembly
-			 * routines that comes with labels in the same column
-			 * as the address in objdump, sigh.
-			 *
-			 * E.g. copy_user_generic_unrolled
- 			 */
+			 
 			if (al->offset < size)
 				notes->offsets[al->offset] = al;
 		} else
@@ -3341,7 +3191,7 @@ void annotation_options__init(struct annotation_options *opt)
 {
 	memset(opt, 0, sizeof(*opt));
 
-	/* Default values. */
+	 
 	opt->use_offset = true;
 	opt->jump_arrows = true;
 	opt->annotate_src = true;

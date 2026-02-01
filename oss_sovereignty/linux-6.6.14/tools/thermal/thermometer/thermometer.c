@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2022, Linaro Ltd - Daniel Lezcano <daniel.lezcano@linaro.org>
+
+
 #define _GNU_SOURCE
 #include <dirent.h>
 #include <fcntl.h>
@@ -245,7 +245,7 @@ static int options_init(int argc, char *argv[], struct options *options)
 		case 'w':
 			options->overwrite = 1;
 			break;
-		default: /* '?' */
+		default:  
 			ERROR("Usage: %s --help\n", argv[0]);
 			return -1;
 		}
@@ -389,9 +389,7 @@ static int thermometer_start(struct thermometer *thermometer,
 
 		DEBUG("Created '%s' file for thermal zone '%s'\n", path, thermometer->tz[i].name);
 
-		/*
-		 * Create polling timer
-		 */
+		 
 		thermometer->tz[i].fd_timer = timerfd_create(CLOCK_MONOTONIC, 0);
 		if (thermometer->tz[i].fd_timer < 0) {
 			ERROR("Failed to create timer for '%s': %m\n",
@@ -462,11 +460,7 @@ static int thermometer_wait(struct options *options, pid_t pid)
 	int fd;
 	sigset_t mask;
 
-	/*
-	 * If there is a duration specified, we will exit the mainloop
-	 * and gracefully close all the files which will flush the
-	 * file system cache
-	 */
+	 
 	if (options->duration) {
 		struct itimerspec timer_it = { 0 };
 
@@ -489,10 +483,7 @@ static int thermometer_wait(struct options *options, pid_t pid)
 		}
 	}
 
-	/*
-	 * We want to catch any keyboard interrupt, as well as child
-	 * signals if any in order to exit properly
-	 */
+	 
 	sigemptyset(&mask);
 	sigaddset(&mask, SIGINT);
 	sigaddset(&mask, SIGQUIT);

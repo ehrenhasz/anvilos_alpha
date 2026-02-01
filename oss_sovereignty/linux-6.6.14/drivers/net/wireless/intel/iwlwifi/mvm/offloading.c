@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2021-2022 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- * Copyright (C) 2015 Intel Deutschland GmbH
- */
+
+ 
 #include <net/ipv6.h>
 #include <net/addrconf.h>
 #include <linux/bitops.h>
@@ -14,11 +10,7 @@ void iwl_mvm_set_wowlan_qos_seq(struct iwl_mvm_sta *mvm_ap_sta,
 {
 	int i;
 
-	/*
-	 * For QoS counters, we store the one to use next, so subtract 0x10
-	 * since the uCode will add 0x10 *before* using the value while we
-	 * increment after using the value (i.e. store the next value to use).
-	 */
+	 
 	for (i = 0; i < IWL_MAX_TID_COUNT; i++) {
 		u16 seq = mvm_ap_sta->tid_data[i].seq_number;
 		seq -= 0x10;
@@ -52,12 +44,7 @@ int iwl_mvm_send_proto_offload(struct iwl_mvm *mvm,
 #if IS_ENABLED(CONFIG_IPV6)
 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 	int i;
-	/*
-	 * Skip tentative address when ns offload is enabled to avoid
-	 * violating RFC4862.
-	 * Keep tentative address when ns offload is disabled so the NS packets
-	 * will not be filtered out and will wake up the host.
-	 */
+	 
 	bool skip_tentative = offload_ns;
 
 	if (capa_flags & IWL_UCODE_TLV_FLAGS_NEW_NSOFFL_SMALL ||
@@ -80,11 +67,7 @@ int iwl_mvm_send_proto_offload(struct iwl_mvm *mvm,
 			n_addrs = IWL_PROTO_OFFLOAD_NUM_IPV6_ADDRS_V3L;
 		}
 
-		/*
-		 * For each address we have (and that will fit) fill a target
-		 * address struct and combine for NS offload structs with the
-		 * solicited node addresses.
-		 */
+		 
 		for (i = 0, c = 0;
 		     i < mvmvif->num_target_ipv6_addrs &&
 		     i < n_addrs && c < n_nsc; i++) {
@@ -176,11 +159,7 @@ int iwl_mvm_send_proto_offload(struct iwl_mvm *mvm,
 		common = &cmd.v4.common;
 		size = sizeof(cmd.v4);
 		if (ver < 4) {
-			/*
-			 * This basically uses iwl_proto_offload_cmd_v3_large
-			 * which doesn't have the sta_id parameter before the
-			 * common part.
-			 */
+			 
 			size -= sizeof(cmd.v4.sta_id);
 			hcmd.data[0] = common;
 		}

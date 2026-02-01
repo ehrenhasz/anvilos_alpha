@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -75,12 +73,12 @@ static unsigned long __bestmult(struct clk_hw *hw, unsigned long rate,
 	if (!(clk_hw_get_flags(hw) & CLK_SET_RATE_PARENT)) {
 		bestmult = rate / orig_parent_rate;
 
-		/* Make sure we don't end up with a 0 multiplier */
+		 
 		if ((bestmult == 0) &&
 		    !(mult->flags & CLK_MULTIPLIER_ZERO_BYPASS))
 			bestmult = 1;
 
-		/* Make sure we don't overflow the multiplier */
+		 
 		if (bestmult > maxmult)
 			bestmult = maxmult;
 
@@ -89,11 +87,7 @@ static unsigned long __bestmult(struct clk_hw *hw, unsigned long rate,
 
 	for (i = 1; i < maxmult; i++) {
 		if (rate == orig_parent_rate * i) {
-			/*
-			 * This is the best case for us if we have a
-			 * perfect match without changing the parent
-			 * rate.
-			 */
+			 
 			*best_parent_rate = orig_parent_rate;
 			return i;
 		}

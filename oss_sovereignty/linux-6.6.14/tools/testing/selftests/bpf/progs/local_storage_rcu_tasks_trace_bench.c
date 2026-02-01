@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -50,9 +50,7 @@ SEC("fentry/rcu_tasks_trace_postgp")
 int postgp(struct pt_regs *ctx)
 {
 	if (!current_gp_start && postgp_seen) {
-		/* Will only happen if prog tracing rcu_tasks_trace_pregp_step doesn't
-		 * execute before this prog
-		 */
+		 
 		__sync_add_and_fetch(&unexpected, 1);
 		return 0;
 	}

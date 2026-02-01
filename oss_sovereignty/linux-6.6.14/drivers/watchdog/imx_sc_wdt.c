@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2018-2019 NXP.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/firmware/imx/sci.h>
@@ -14,11 +12,7 @@
 #include <linux/watchdog.h>
 
 #define DEFAULT_TIMEOUT 60
-/*
- * Software timer tick implemented in scfw side, support 10ms to 0xffffffff ms
- * in theory, but for normal case, 1s~128s is enough, you can change this max
- * value in case it's not enough.
- */
+ 
 #define MAX_TIMEOUT 128
 
 #define IMX_SIP_TIMER			0xC2000002
@@ -97,11 +91,7 @@ static int imx_sc_wdt_set_pretimeout(struct watchdog_device *wdog,
 {
 	struct arm_smccc_res res;
 
-	/*
-	 * SCU firmware calculates pretimeout based on current time
-	 * stamp instead of watchdog timeout stamp, need to convert
-	 * the pretimeout to SCU firmware's timeout value.
-	 */
+	 
 	arm_smccc_smc(IMX_SIP_TIMER, IMX_SIP_TIMER_SET_PRETIME_WDOG,
 		      (wdog->timeout - pretimeout) * 1000, 0, 0, 0,
 		      0, 0, &res);
@@ -238,7 +228,7 @@ static SIMPLE_DEV_PM_OPS(imx_sc_wdt_pm_ops,
 
 static const struct of_device_id imx_sc_wdt_dt_ids[] = {
 	{ .compatible = "fsl,imx-sc-wdt", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_sc_wdt_dt_ids);
 

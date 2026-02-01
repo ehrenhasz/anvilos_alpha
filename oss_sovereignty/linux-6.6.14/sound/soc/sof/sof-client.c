@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
-//
-// Authors: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//	    Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/errno.h>
@@ -19,13 +19,7 @@
 #include "ipc3-priv.h"
 #include "ipc4-priv.h"
 
-/**
- * struct sof_ipc_event_entry - IPC client event description
- * @ipc_msg_type:	IPC msg type of the event the client is interested
- * @cdev:		sof_client_dev of the requesting client
- * @callback:		Callback function of the client
- * @list:		item in SOF core client event list
- */
+ 
 struct sof_ipc_event_entry {
 	u32 ipc_msg_type;
 	struct sof_client_dev *cdev;
@@ -33,12 +27,7 @@ struct sof_ipc_event_entry {
 	struct list_head list;
 };
 
-/**
- * struct sof_state_event_entry - DSP panic event subscription entry
- * @cdev:		sof_client_dev of the requesting client
- * @callback:		Callback function of the client
- * @list:		item in SOF core client event list
- */
+ 
 struct sof_state_event_entry {
 	struct sof_client_dev *cdev;
 	sof_client_fw_state_callback callback;
@@ -106,7 +95,7 @@ static inline int sof_register_ipc_flood_test(struct snd_sof_dev *sdev)
 }
 
 static inline void sof_unregister_ipc_flood_test(struct snd_sof_dev *sdev) {}
-#endif /* CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST */
+#endif  
 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_MSG_INJECTOR)
 static int sof_register_ipc_msg_injector(struct snd_sof_dev *sdev)
@@ -125,12 +114,12 @@ static inline int sof_register_ipc_msg_injector(struct snd_sof_dev *sdev)
 }
 
 static inline void sof_unregister_ipc_msg_injector(struct snd_sof_dev *sdev) {}
-#endif /* CONFIG_SND_SOC_SOF_DEBUG_IPC_MSG_INJECTOR */
+#endif  
 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_KERNEL_INJECTOR)
 static int sof_register_ipc_kernel_injector(struct snd_sof_dev *sdev)
 {
-	/* Only IPC3 supported right now */
+	 
 	if (sdev->pdata->ipc_type != SOF_IPC)
 		return 0;
 
@@ -148,7 +137,7 @@ static inline int sof_register_ipc_kernel_injector(struct snd_sof_dev *sdev)
 }
 
 static inline void sof_unregister_ipc_kernel_injector(struct snd_sof_dev *sdev) {}
-#endif /* CONFIG_SND_SOC_SOF_DEBUG_IPC_KERNEL_INJECTOR */
+#endif  
 
 int sof_register_clients(struct snd_sof_dev *sdev)
 {
@@ -157,7 +146,7 @@ int sof_register_clients(struct snd_sof_dev *sdev)
 	if (sdev->dspless_mode_selected)
 		return 0;
 
-	/* Register platform independent client devices */
+	 
 	ret = sof_register_ipc_flood_test(sdev);
 	if (ret) {
 		dev_err(sdev->dev, "IPC flood test client registration failed\n");
@@ -176,7 +165,7 @@ int sof_register_clients(struct snd_sof_dev *sdev)
 		goto err_kernel_injector;
 	}
 
-	/* Platform depndent client device registration */
+	 
 
 	if (sof_ops(sdev) && sof_ops(sdev)->register_ipc_clients)
 		ret = sof_ops(sdev)->register_ipc_clients(sdev);
@@ -236,15 +225,12 @@ int sof_client_dev_register(struct snd_sof_dev *sdev, const char *name, u32 id,
 	ret = auxiliary_device_add(&cdev->auxdev);
 	if (ret < 0) {
 		dev_err(sdev->dev, "failed to add client dev %s.%d\n", name, id);
-		/*
-		 * sof_client_auxdev_release() will be invoked to free up memory
-		 * allocations through put_device()
-		 */
+		 
 		auxiliary_device_uninit(&cdev->auxdev);
 		return ret;
 	}
 
-	/* add to list of SOF client devices */
+	 
 	mutex_lock(&sdev->ipc_client_mutex);
 	list_add(&cdev->list, &sdev->ipc_client_list);
 	mutex_unlock(&sdev->ipc_client_mutex);
@@ -267,10 +253,7 @@ void sof_client_dev_unregister(struct snd_sof_dev *sdev, const char *name, u32 i
 
 	mutex_lock(&sdev->ipc_client_mutex);
 
-	/*
-	 * sof_client_auxdev_release() will be invoked to free up memory
-	 * allocations through put_device()
-	 */
+	 
 	list_for_each_entry(cdev, &sdev->ipc_client_list, list) {
 		if (!strcmp(cdev->auxdev.name, name) && cdev->auxdev.id == id) {
 			list_del(&cdev->list);
@@ -362,7 +345,7 @@ int sof_suspend_clients(struct snd_sof_dev *sdev, pm_message_t state)
 	mutex_lock(&sdev->ipc_client_mutex);
 
 	list_for_each_entry(cdev, &sdev->ipc_client_list, list) {
-		/* Skip devices without loaded driver */
+		 
 		if (!cdev->auxdev.dev.driver)
 			continue;
 
@@ -385,7 +368,7 @@ int sof_resume_clients(struct snd_sof_dev *sdev)
 	mutex_lock(&sdev->ipc_client_mutex);
 
 	list_for_each_entry(cdev, &sdev->ipc_client_list, list) {
-		/* Skip devices without loaded driver */
+		 
 		if (!cdev->auxdev.dev.driver)
 			continue;
 
@@ -406,7 +389,7 @@ struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev)
 }
 EXPORT_SYMBOL_NS_GPL(sof_client_get_debugfs_root, SND_SOC_SOF_CLIENT);
 
-/* DMA buffer allocation in client drivers must use the core SOF device */
+ 
 struct device *sof_client_get_dma_dev(struct sof_client_dev *cdev)
 {
 	return cdev->sdev->dev;
@@ -437,7 +420,7 @@ enum sof_ipc_type sof_client_get_ipc_type(struct sof_client_dev *cdev)
 }
 EXPORT_SYMBOL_NS_GPL(sof_client_get_ipc_type, SND_SOC_SOF_CLIENT);
 
-/* module refcount management of SOF core */
+ 
 int sof_client_core_module_get(struct sof_client_dev *cdev)
 {
 	struct snd_sof_dev *sdev = sof_client_dev_to_sof_dev(cdev);
@@ -457,7 +440,7 @@ void sof_client_core_module_put(struct sof_client_dev *cdev)
 }
 EXPORT_SYMBOL_NS_GPL(sof_client_core_module_put, SND_SOC_SOF_CLIENT);
 
-/* IPC event handling */
+ 
 void sof_client_ipc_rx_dispatcher(struct snd_sof_dev *sdev, void *msg_buf)
 {
 	struct sof_ipc_event_entry *event;
@@ -517,7 +500,7 @@ int sof_client_register_ipc_rx_handler(struct sof_client_dev *cdev,
 	event->cdev = cdev;
 	event->callback = callback;
 
-	/* add to list of SOF client devices */
+	 
 	mutex_lock(&sdev->client_event_handler_mutex);
 	list_add(&event->list, &sdev->ipc_rx_handler_list);
 	mutex_unlock(&sdev->client_event_handler_mutex);
@@ -546,7 +529,7 @@ void sof_client_unregister_ipc_rx_handler(struct sof_client_dev *cdev,
 }
 EXPORT_SYMBOL_NS_GPL(sof_client_unregister_ipc_rx_handler, SND_SOC_SOF_CLIENT);
 
-/*DSP state notification and query */
+ 
 void sof_client_fw_state_dispatcher(struct snd_sof_dev *sdev)
 {
 	struct sof_state_event_entry *event;
@@ -575,7 +558,7 @@ int sof_client_register_fw_state_handler(struct sof_client_dev *cdev,
 	event->cdev = cdev;
 	event->callback = callback;
 
-	/* add to list of SOF client devices */
+	 
 	mutex_lock(&sdev->client_event_handler_mutex);
 	list_add(&event->list, &sdev->fw_state_handler_list);
 	mutex_unlock(&sdev->client_event_handler_mutex);

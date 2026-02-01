@@ -16,16 +16,16 @@
 
 #define MB (1UL << 20)
 
-/* Just the flags we need, copied from mm.h: */
-#define FOLL_WRITE	0x01	/* check pte is writable */
-#define FOLL_TOUCH	0x02	/* mark page accessed */
+ 
+#define FOLL_WRITE	0x01	 
+#define FOLL_TOUCH	0x02	 
 
 #define GUP_TEST_FILE "/sys/kernel/debug/gup_test"
 
 static unsigned long cmd = GUP_FAST_BENCHMARK;
 static int gup_fd, repeats = 1;
 static unsigned long size = 128 * MB;
-/* Serialize prints */
+ 
 static pthread_mutex_t print_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static char *cmd_to_str(unsigned long cmd)
@@ -52,7 +52,7 @@ void *gup_thread(void *data)
 	struct gup_test gup = *(struct gup_test *)data;
 	int i;
 
-	/* Only report timing information on the *_BENCHMARK commands: */
+	 
 	if ((cmd == PIN_FAST_BENCHMARK) || (cmd == GUP_FAST_BENCHMARK) ||
 	     (cmd == PIN_LONGTERM_BENCHMARK)) {
 		for (i = 0; i < repeats; i++) {
@@ -108,21 +108,15 @@ int main(int argc, char **argv)
 			break;
 		case 'c':
 			cmd = DUMP_USER_PAGES_TEST;
-			/*
-			 * Dump page 0 (index 1). May be overridden later, by
-			 * user's non-option arguments.
-			 *
-			 * .which_pages is zero-based, so that zero can mean "do
-			 * nothing".
-			 */
+			 
 			gup.which_pages[0] = 1;
 			break;
 		case 'p':
-			/* works only with DUMP_USER_PAGES_TEST */
+			 
 			gup.test_flags |= GUP_TEST_FLAG_DUMP_PAGES_USE_PIN;
 			break;
 		case 'F':
-			/* strtol, so you can pass flags in hex form */
+			 
 			gup.gup_flags = strtol(optarg, 0, 0);
 			break;
 		case 'j':
@@ -166,7 +160,7 @@ int main(int argc, char **argv)
 			flags |= (MAP_HUGETLB | MAP_ANONYMOUS);
 			break;
 		case 'z':
-			/* fault pages in gup, do not fault in userland */
+			 
 			touch = 1;
 			break;
 		default:
@@ -176,20 +170,11 @@ int main(int argc, char **argv)
 
 	if (optind < argc) {
 		int extra_arg_count = 0;
-		/*
-		 * For example:
-		 *
-		 *   ./gup_test -c 0 1 0x1001
-		 *
-		 * ...to dump pages 0, 1, and 4097
-		 */
+		 
 
 		while ((optind < argc) &&
 		       (extra_arg_count < GUP_TEST_MAX_PAGES_TO_DUMP)) {
-			/*
-			 * Do the 1-based indexing here, so that the user can
-			 * use normal 0-based indexing on the command line.
-			 */
+			 
 			long page_index = strtol(argv[optind], 0, 0) + 1;
 
 			gup.which_pages[extra_arg_count] = page_index;
@@ -241,12 +226,7 @@ int main(int argc, char **argv)
 	else if (thp == 0)
 		madvise(p, size, MADV_NOHUGEPAGE);
 
-	/*
-	 * FOLL_TOUCH, in gup_test, is used as an either/or case: either
-	 * fault pages in from the kernel via FOLL_TOUCH, or fault them
-	 * in here, from user space. This allows comparison of performance
-	 * between those two cases.
-	 */
+	 
 	if (touch) {
 		gup.gup_flags |= FOLL_TOUCH;
 	} else {

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/ptrace.h>
 #include <stddef.h>
@@ -9,17 +9,15 @@
 
 char _license[] SEC("license") = "GPL";
 
-/* typically virtio scsi has max SGs of 6 */
+ 
 #define VIRTIO_MAX_SGS	6
 
-/* Verifier will fail with SG_MAX = 128. The failure can be
- * workarounded with a smaller SG_MAX, e.g. 10.
- */
+ 
 #define WORKAROUND
 #ifdef WORKAROUND
 #define SG_MAX		10
 #else
-/* typically virtio blk has max SEG of 128 */
+ 
 #define SG_MAX		128
 #endif
 

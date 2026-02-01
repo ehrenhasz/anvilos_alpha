@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include "util/kvm-stat.h"
 #include "util/parse-events.h"
@@ -20,7 +20,7 @@ const char *kvm_exit_trace = "kvm_hv:kvm_guest_exit";
 define_exit_reasons_table(hv_exit_reasons, kvm_trace_symbol_exit);
 define_exit_reasons_table(hcall_reasons, kvm_trace_symbol_hcall);
 
-/* Tracepoints specific to ppc_book3s_hv */
+ 
 const char *ppc_book3s_hv_kvm_tp[] = {
 	"kvm_hv:kvm_guest_enter",
 	"kvm_hv:kvm_guest_exit",
@@ -29,7 +29,7 @@ const char *ppc_book3s_hv_kvm_tp[] = {
 	NULL,
 };
 
-/* 1 extra placeholder for NULL */
+ 
 const char *kvm_events_tp[NR_TPS + 1];
 const char *kvm_exit_reason;
 
@@ -126,7 +126,7 @@ static int ppc__setup_book3s_hv(struct perf_kvm_stat *kvm,
 	const char **events_ptr;
 	int i, nr_tp = 0, err = -1;
 
-	/* Check for book3s_hv tracepoints */
+	 
 	for (events_ptr = ppc_book3s_hv_kvm_tp; *events_ptr; events_ptr++) {
 		err = is_tracepoint_available(*events_ptr, evlist);
 		if (err)
@@ -145,7 +145,7 @@ static int ppc__setup_book3s_hv(struct perf_kvm_stat *kvm,
 	return 0;
 }
 
-/* Wrapper to setup kvm tracepoints */
+ 
 static int ppc__setup_kvm_tp(struct perf_kvm_stat *kvm)
 {
 	struct evlist *evlist = evlist__new();
@@ -153,7 +153,7 @@ static int ppc__setup_kvm_tp(struct perf_kvm_stat *kvm)
 	if (evlist == NULL)
 		return -ENOMEM;
 
-	/* Right now, only supported on book3s_hv */
+	 
 	return ppc__setup_book3s_hv(kvm, evlist);
 }
 
@@ -175,15 +175,7 @@ int cpu_isa_init(struct perf_kvm_stat *kvm, const char *cpuid __maybe_unused)
 	return ret;
 }
 
-/*
- * In case of powerpc architecture, pmu registers are programmable
- * by guest kernel. So monitoring guest via host may not provide
- * valid samples with default 'cycles' event. It is better to use
- * 'trace_imc/trace_cycles' event for guest profiling, since it
- * can track the guest instruction pointer in the trace-record.
- *
- * Function to parse the arguments and return appropriate values.
- */
+ 
 int kvm_add_default_arch_event(int *argc, const char **argv)
 {
 	const char **tmp;

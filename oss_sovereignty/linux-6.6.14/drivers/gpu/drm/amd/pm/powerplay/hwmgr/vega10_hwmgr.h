@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _VEGA10_HWMGR_H_
 #define _VEGA10_HWMGR_H_
@@ -89,7 +68,7 @@ struct vega10_performance_level {
 
 struct vega10_bacos {
 	uint32_t                       baco_flags;
-	/* struct vega10_performance_level  performance_level; */
+	 
 };
 
 struct vega10_uvd_clocks {
@@ -330,7 +309,7 @@ struct vega10_hwmgr {
 	struct vega10_odn_dpm_table       odn_dpm_table;
 	struct vega10_odn_fan_table       odn_fan_table;
 
-	/* ---- General data ---- */
+	 
 	uint8_t                           need_update_dpm_table;
 
 	bool                           cac_enabled;
@@ -343,7 +322,7 @@ struct vega10_hwmgr {
 
 	struct vega10_display_timing display_timing;
 
-	/* ---- Vega10 Dyn Register Settings ---- */
+	 
 
 	uint32_t                       debug_settings;
 	uint32_t                       lowest_uclk_reserved_for_ulv;
@@ -365,18 +344,18 @@ struct vega10_hwmgr {
 	uint32_t                       phy_clk_quad_eqn_b;
 	uint32_t                       phy_clk_quad_eqn_c;
 
-	/* ---- Thermal Temperature Setting ---- */
+	 
 	struct vega10_dpmlevel_enable_mask     dpm_level_enable_mask;
 
-	/* ---- Power Gating States ---- */
+	 
 	bool                           uvd_power_gated;
 	bool                           vce_power_gated;
 	bool                           need_long_memory_training;
 
-	/* Internal settings to apply the application power optimization parameters */
+	 
 	uint32_t                       disable_dpm_mask;
 
-	/* ---- SMU9 ---- */
+	 
 	struct smu_features            smu_features[GNLD_FEATURES_MAX];
 	struct vega10_smc_state_table  smc_state_table;
 
@@ -411,7 +390,7 @@ struct vega10_hwmgr {
 #define VEGA10_VOLTAGE_CONTROL_BY_GPIO                0x1
 #define VEGA10_VOLTAGE_CONTROL_BY_SVID2               0x2
 #define VEGA10_VOLTAGE_CONTROL_MERGED                 0x3
-/* To convert to Q8.8 format for firmware */
+ 
 #define VEGA10_Q88_FORMAT_CONVERSION_UNIT             256
 
 #define VEGA10_UNUSED_GPIO_PIN       0x7F
@@ -423,10 +402,10 @@ struct vega10_hwmgr {
 #define PPVEGA10_VEGA10DISPLAYVOLTAGEMODE_DFLT   0xffffffff
 #define PPREGKEY_VEGA10QUADRATICEQUATION_DFLT    0xffffffff
 
-#define PPVEGA10_VEGA10GFXCLKAVERAGEALPHA_DFLT       25 /* 10% * 255 = 25 */
-#define PPVEGA10_VEGA10SOCCLKAVERAGEALPHA_DFLT       25 /* 10% * 255 = 25 */
-#define PPVEGA10_VEGA10UCLKCLKAVERAGEALPHA_DFLT      25 /* 10% * 255 = 25 */
-#define PPVEGA10_VEGA10GFXACTIVITYAVERAGEALPHA_DFLT  25 /* 10% * 255 = 25 */
+#define PPVEGA10_VEGA10GFXCLKAVERAGEALPHA_DFLT       25  
+#define PPVEGA10_VEGA10SOCCLKAVERAGEALPHA_DFLT       25  
+#define PPVEGA10_VEGA10UCLKCLKAVERAGEALPHA_DFLT      25  
+#define PPVEGA10_VEGA10GFXACTIVITYAVERAGEALPHA_DFLT  25  
 
 #define VEGA10_UMD_PSTATE_GFXCLK_LEVEL         0x3
 #define VEGA10_UMD_PSTATE_SOCCLK_LEVEL         0x3
@@ -444,4 +423,4 @@ int vega10_update_acp_dpm(struct pp_hwmgr *hwmgr, bool bgate);
 int vega10_enable_disable_vce_dpm(struct pp_hwmgr *hwmgr, bool enable);
 int vega10_hwmgr_init(struct pp_hwmgr *hwmgr);
 
-#endif /* _VEGA10_HWMGR_H_ */
+#endif  

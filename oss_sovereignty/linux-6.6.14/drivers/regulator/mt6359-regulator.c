@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2021 MediaTek Inc.
+
+
+
 
 #include <linux/platform_device.h>
 #include <linux/mfd/mt6359/registers.h>
@@ -19,15 +19,7 @@
 #define MT6359_BUCK_MODE_NORMAL		0
 #define MT6359_BUCK_MODE_LP		2
 
-/*
- * MT6359 regulators' information
- *
- * @desc: standard fields of regulator description.
- * @status_reg: for query status of regulators.
- * @qi: Mask for query enable signal status of regulators.
- * @modeset_reg: for operating AUTO/PWM mode register.
- * @modeset_mask: MASK for operating modeset register.
- */
+ 
 struct mt6359_regulator_info {
 	struct regulator_desc desc;
 	u32 status_reg;
@@ -369,13 +361,13 @@ static int mt6359p_vemc_set_voltage_sel(struct regulator_dev *rdev,
 
 	switch (val) {
 	case 0:
-		/* If HW trapping is 0, use VEMC_VOSEL_0 */
+		 
 		ret = regmap_update_bits(rdev->regmap,
 					 info->desc.vsel_reg,
 					 info->desc.vsel_mask, sel);
 		break;
 	case 1:
-		/* If HW trapping is 1, use VEMC_VOSEL_1 */
+		 
 		ret = regmap_update_bits(rdev->regmap,
 					 info->desc.vsel_reg + 0x2,
 					 info->desc.vsel_mask, sel);
@@ -402,12 +394,12 @@ static int mt6359p_vemc_get_voltage_sel(struct regulator_dev *rdev)
 		return ret;
 	switch (val) {
 	case 0:
-		/* If HW trapping is 0, use VEMC_VOSEL_0 */
+		 
 		ret = regmap_read(rdev->regmap,
 				  info->desc.vsel_reg, &val);
 		break;
 	case 1:
-		/* If HW trapping is 1, use VEMC_VOSEL_1 */
+		 
 		ret = regmap_read(rdev->regmap,
 				  info->desc.vsel_reg + 0x2, &val);
 		break;
@@ -468,7 +460,7 @@ static const struct regulator_ops mt6359p_vemc_ops = {
 	.get_status = mt6359_get_status,
 };
 
-/* The array is indexed by id(MT6359_ID_XXX) */
+ 
 static struct mt6359_regulator_info mt6359_regulators[] = {
 	MT6359_BUCK("buck_vs1", VS1, 800000, 2200000, 12500,
 		    MT6359_RG_BUCK_VS1_EN_ADDR,
@@ -978,7 +970,7 @@ static int mt6359_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id mt6359_platform_ids[] = {
 	{"mt6359-regulator", 0},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mt6359_platform_ids);
 

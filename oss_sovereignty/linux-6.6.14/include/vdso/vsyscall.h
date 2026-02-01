@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __VDSO_VSYSCALL_H
 #define __VDSO_VSYSCALL_H
 
@@ -9,6 +9,6 @@
 unsigned long vdso_update_begin(void);
 void vdso_update_end(unsigned long flags);
 
-#endif /* !__ASSEMBLY__ */
+#endif  
 
-#endif /* __VDSO_VSYSCALL_H */
+#endif  

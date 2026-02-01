@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * I2C access driver for TI TPS6594/TPS6593/LP8764 PMICs
- *
- * Copyright (C) 2023 BayLibre Incorporated - https://www.baylibre.com/
- */
+
+ 
 
 #include <linux/crc8.h>
 #include <linux/i2c.h>
@@ -36,27 +32,19 @@ static int tps6594_i2c_reg_read_with_crc(struct i2c_client *client, u8 page, u8 
 {
 	struct i2c_msg msgs[2];
 	u8 buf_rx[] = { 0, 0 };
-	/* I2C address = I2C base address + Page index */
+	 
 	const u8 addr = client->addr + page;
-	/*
-	 * CRC is calculated from every bit included in the protocol
-	 * except the ACK bits from the target. Byte stream is:
-	 * - B0: (I2C_addr_7bits << 1) | WR_bit, with WR_bit = 0
-	 * - B1: reg
-	 * - B2: (I2C_addr_7bits << 1) | RD_bit, with RD_bit = 1
-	 * - B3: val
-	 * - B4: CRC from B0-B1-B2-B3
-	 */
+	 
 	u8 crc_data[] = { addr << 1, reg, addr << 1 | 1, 0 };
 	int ret;
 
-	/* Write register */
+	 
 	msgs[0].addr = addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 1;
 	msgs[0].buf = &reg;
 
-	/* Read data and CRC */
+	 
 	msgs[1].addr = msgs[0].addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = 2;
@@ -77,19 +65,12 @@ static int tps6594_i2c_reg_write_with_crc(struct i2c_client *client, u8 page, u8
 {
 	struct i2c_msg msg;
 	u8 buf[] = { reg, val, 0 };
-	/* I2C address = I2C base address + Page index */
+	 
 	const u8 addr = client->addr + page;
-	/*
-	 * CRC is calculated from every bit included in the protocol
-	 * except the ACK bits from the target. Byte stream is:
-	 * - B0: (I2C_addr_7bits << 1) | WR_bit, with WR_bit = 0
-	 * - B1: reg
-	 * - B2: val
-	 * - B3: CRC from B0-B1-B2
-	 */
+	 
 	const u8 crc_data[] = { addr << 1, reg, val };
 
-	/* Write register, data and CRC */
+	 
 	msg.addr = addr;
 	msg.flags = client->flags & I2C_M_TEN;
 	msg.len = sizeof(buf);
@@ -114,23 +95,20 @@ static int tps6594_i2c_read(void *context, const void *reg_buf, size_t reg_size,
 	int i;
 
 	if (tps->use_crc) {
-		/*
-		 * Auto-increment feature does not support CRC protocol.
-		 * Converts the bulk read operation into a series of single read operations.
-		 */
+		 
 		for (i = 0 ; ret == 0 && i < val_size ; i++)
 			ret = tps6594_i2c_reg_read_with_crc(client, page, reg + i, val_bytes + i);
 
 		return ret;
 	}
 
-	/* Write register: I2C address = I2C base address + Page index */
+	 
 	msgs[0].addr = client->addr + page;
 	msgs[0].flags = 0;
 	msgs[0].len = 1;
 	msgs[0].buf = &reg;
 
-	/* Read data */
+	 
 	msgs[1].addr = msgs[0].addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = val_size;
@@ -152,17 +130,14 @@ static int tps6594_i2c_write(void *context, const void *data, size_t count)
 	int i;
 
 	if (tps->use_crc) {
-		/*
-		 * Auto-increment feature does not support CRC protocol.
-		 * Converts the bulk write operation into a series of single write operations.
-		 */
+		 
 		for (i = 0 ; ret == 0 && i < count - 2 ; i++)
 			ret = tps6594_i2c_reg_write_with_crc(client, page, reg + i, bytes[i + 2]);
 
 		return ret;
 	}
 
-	/* Setup buffer: page byte is not sent */
+	 
 	buf = kzalloc(--count, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
@@ -171,7 +146,7 @@ static int tps6594_i2c_write(void *context, const void *data, size_t count)
 	for (i = 0 ; i < count - 1 ; i++)
 		buf[i + 1] = bytes[i + 2];
 
-	/* Write register and data: I2C address = I2C base address + Page index */
+	 
 	msg.addr = client->addr + page;
 	msg.flags = client->flags & I2C_M_TEN;
 	msg.len = count;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * arch/x86/kernel/nmi-selftest.c
- *
- * Testsuite for NMI: IPIs
- *
- * Started by Don Zickus:
- * (using lib/locking-selftest.c as a guide)
- *
- *   Copyright (C) 2011 Red Hat, Inc., Don Zickus <dzickus@redhat.com>
- */
+
+ 
 
 #include <linux/smp.h>
 #include <linux/cpumask.h>
@@ -25,7 +16,7 @@
 
 static int __initdata nmi_fail;
 
-/* check to see if NMI IPIs work on this machine */
+ 
 static DECLARE_BITMAP(nmi_ipi_mask, NR_CPUS) __initdata;
 
 static int __initdata testcase_total;
@@ -42,7 +33,7 @@ static int __init nmi_unk_cb(unsigned int val, struct pt_regs *regs)
 
 static void __init init_nmi_testsuite(void)
 {
-	/* trap all the unknown NMIs we may generate */
+	 
 	register_nmi_handler(NMI_UNKNOWN, nmi_unk_cb, 0, "nmi_selftest_unk",
 			__initdata);
 }
@@ -72,17 +63,17 @@ static void __init test_nmi_ipi(struct cpumask *mask)
 		return;
 	}
 
-	/* sync above data before sending NMI */
+	 
 	wmb();
 
 	__apic_send_IPI_mask(mask, NMI_VECTOR);
 
-	/* Don't wait longer than a second */
+	 
 	timeout = USEC_PER_SEC;
 	while (!cpumask_empty(mask) && --timeout)
 	        udelay(1);
 
-	/* What happens if we timeout, do we still unregister?? */
+	 
 	unregister_nmi_handler(NMI_LOCAL, "nmi_selftest");
 
 	if (!timeout)
@@ -113,9 +104,7 @@ static void __init reset_nmi(void)
 static void __init dotest(void (*testcase_fn)(void), int expected)
 {
 	testcase_fn();
-	/*
-	 * Filter out expected failures:
-	 */
+	 
 	if (nmi_fail != expected) {
 		unexpected_testcase_failures++;
 
@@ -144,9 +133,7 @@ void __init nmi_selftest(void)
 {
 	init_nmi_testsuite();
 
-        /*
-	 * Run the testsuite:
-	 */
+         
 	printk("----------------\n");
 	printk("| NMI testsuite:\n");
 	printk("--------------------\n");

@@ -1,47 +1,4 @@
-/*
- * Copyright (c) 2012-2016 VMware, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of EITHER the GNU General Public License
- * version 2 as published by the Free Software Foundation or the BSD
- * 2-Clause License. This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED
- * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License version 2 for more details at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program available in the file COPYING in the main
- * directory of this source tree.
- *
- * The BSD 2-Clause License
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <asm/page.h>
 #include <linux/io.h>
@@ -53,13 +10,7 @@
 
 #include "pvrdma.h"
 
-/**
- * pvrdma_req_notify_cq - request notification for a completion queue
- * @ibcq: the completion queue
- * @notify_flags: notification flags
- *
- * @return: 0 for success.
- */
+ 
 int pvrdma_req_notify_cq(struct ib_cq *ibcq,
 			 enum ib_cq_notify_flags notify_flags)
 {
@@ -90,14 +41,7 @@ int pvrdma_req_notify_cq(struct ib_cq *ibcq,
 	return has_data;
 }
 
-/**
- * pvrdma_create_cq - create completion queue
- * @ibcq: Allocated CQ
- * @attr: completion queue attributes
- * @udata: user data
- *
- * @return: 0 on success
- */
+ 
 int pvrdma_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		     struct ib_udata *udata)
 {
@@ -147,11 +91,11 @@ int pvrdma_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 
 		npages = ib_umem_num_dma_blocks(cq->umem, PAGE_SIZE);
 	} else {
-		/* One extra page for shared ring state */
+		 
 		npages = 1 + (entries * sizeof(struct pvrdma_cqe) +
 			      PAGE_SIZE - 1) / PAGE_SIZE;
 
-		/* Skip header page. */
+		 
 		cq->offset = PAGE_SIZE;
 	}
 
@@ -169,7 +113,7 @@ int pvrdma_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		goto err_umem;
 	}
 
-	/* Ring state is always the first page. Set in library for user cq. */
+	 
 	if (cq->is_kernel)
 		cq->ring_state = cq->pdir.pages[0];
 	else
@@ -202,7 +146,7 @@ int pvrdma_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 	if (!cq->is_kernel) {
 		cq->uar = &context->uar;
 
-		/* Copy udata back. */
+		 
 		if (ib_copy_to_udata(udata, &cq_resp, sizeof(cq_resp))) {
 			dev_warn(&dev->pdev->dev,
 				 "failed to copy back udata\n");
@@ -233,11 +177,7 @@ static void pvrdma_free_cq(struct pvrdma_dev *dev, struct pvrdma_cq *cq)
 	pvrdma_page_dir_cleanup(dev, &cq->pdir);
 }
 
-/**
- * pvrdma_destroy_cq - destroy completion queue
- * @cq: the completion queue to destroy.
- * @udata: user data or null for kernel object
- */
+ 
 int pvrdma_destroy_cq(struct ib_cq *cq, struct ib_udata *udata)
 {
 	struct pvrdma_cq *vcq = to_vcq(cq);
@@ -257,7 +197,7 @@ int pvrdma_destroy_cq(struct ib_cq *cq, struct ib_udata *udata)
 			 "could not destroy completion queue, error: %d\n",
 			 ret);
 
-	/* free cq's resources */
+	 
 	spin_lock_irqsave(&dev->cq_tbl_lock, flags);
 	dev->cq_tbl[vcq->cq_handle] = NULL;
 	spin_unlock_irqrestore(&dev->cq_tbl_lock, flags);
@@ -283,7 +223,7 @@ void _pvrdma_flush_cqe(struct pvrdma_qp *qp, struct pvrdma_cq *cq)
 	if (!cq->is_kernel)
 		return;
 
-	/* Lock held */
+	 
 	has_data = pvrdma_idx_ring_has_data(&cq->ring_state->rx,
 					    cq->ibcq.cqe, &head);
 	if (unlikely(has_data > 0)) {
@@ -346,7 +286,7 @@ retry:
 
 	cqe = get_cqe(cq, head);
 
-	/* Ensure cqe is valid. */
+	 
 	rmb();
 	if (dev->qp_tbl[cqe->qp & 0xffff])
 		*cur_qp = (struct pvrdma_qp *)dev->qp_tbl[cqe->qp & 0xffff];
@@ -369,20 +309,13 @@ retry:
 	wc->vendor_err = cqe->vendor_err;
 	wc->network_hdr_type = pvrdma_network_type_to_ib(cqe->network_hdr_type);
 
-	/* Update shared ring state */
+	 
 	pvrdma_idx_ring_inc(&cq->ring_state->rx.cons_head, cq->ibcq.cqe);
 
 	return 0;
 }
 
-/**
- * pvrdma_poll_cq - poll for work completion queue entries
- * @ibcq: completion queue
- * @num_entries: the maximum number of entries
- * @wc: pointer to work completion array
- *
- * @return: number of polled completion entries
- */
+ 
 int pvrdma_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 {
 	struct pvrdma_cq *cq = to_vcq(ibcq);
@@ -401,6 +334,6 @@ int pvrdma_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 
 	spin_unlock_irqrestore(&cq->cq_lock, flags);
 
-	/* Ensure we do not return errors from poll_cq */
+	 
 	return npolled;
 }

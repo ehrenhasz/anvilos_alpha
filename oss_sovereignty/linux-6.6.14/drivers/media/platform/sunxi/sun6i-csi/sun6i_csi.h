@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2011-2018 Magewell Electronics Co., Ltd. (Nanjing)
- * Author: Yong Deng <yong.deng@magewell.com>
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _SUN6I_CSI_H_
 #define _SUN6I_CSI_H_
@@ -55,7 +50,7 @@ struct sun6i_csi_variant {
 	unsigned long	clock_mod_rate;
 };
 
-/* ISP */
+ 
 
 int sun6i_csi_isp_complete(struct sun6i_csi_device *csi_dev,
 			   struct v4l2_device *v4l2_dev);

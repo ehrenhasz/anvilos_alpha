@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* 32-bit compatibility syscall for 64-bit systems for DH operations
- *
- * Copyright (C) 2016 Stephan Mueller <smueller@chronox.de>
- */
+
+ 
 
 #include <linux/uaccess.h>
 
 #include "internal.h"
 
-/*
- * Perform the DH computation or DH based key derivation.
- *
- * If successful, 0 will be returned.
- */
+ 
 long compat_keyctl_dh_compute(struct keyctl_dh_params __user *params,
 			      char __user *buffer, size_t buflen,
 			      struct compat_keyctl_kdf_params __user *kdf)

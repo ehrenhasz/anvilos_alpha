@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* handling of writes to regular files and writing back to the server
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/backing-dev.h>
 #include <linux/slab.h>
@@ -23,10 +19,7 @@ static void afs_write_to_cache(struct afs_vnode *vnode, loff_t start, size_t len
 			       loff_t i_size, bool caching);
 
 #ifdef CONFIG_AFS_FSCACHE
-/*
- * Mark a page as having been made dirty and thus needing writeback.  We also
- * need to pin the cache object to write back to.
- */
+ 
 bool afs_dirty_folio(struct address_space *mapping, struct folio *folio)
 {
 	return fscache_dirty_folio(mapping, folio,
@@ -43,10 +36,7 @@ static void afs_folio_start_fscache(bool caching, struct folio *folio)
 }
 #endif
 
-/*
- * Flush out a conflicting write.  This may extend the write to the surrounding
- * pages if also dirty and contiguous to the conflicting region..
- */
+ 
 static int afs_flush_conflicting_write(struct address_space *mapping,
 				       struct folio *folio)
 {
@@ -62,9 +52,7 @@ static int afs_flush_conflicting_write(struct address_space *mapping,
 				     &next, true);
 }
 
-/*
- * prepare to perform part of a write to a page
- */
+ 
 int afs_write_begin(struct file *file, struct address_space *mapping,
 		    loff_t pos, unsigned len,
 		    struct page **_page, void **fsdata)
@@ -80,10 +68,7 @@ int afs_write_begin(struct file *file, struct address_space *mapping,
 	_enter("{%llx:%llu},%llx,%x",
 	       vnode->fid.vid, vnode->fid.vnode, pos, len);
 
-	/* Prefetch area to be written into the cache if we're caching this
-	 * file.  We need to do this before we get a lock on the page in case
-	 * there's more than one writer competing for the same cache block.
-	 */
+	 
 	ret = netfs_write_begin(&vnode->netfs, file, mapping, pos, len, &folio, fsdata);
 	if (ret < 0)
 		return ret;
@@ -93,9 +78,7 @@ int afs_write_begin(struct file *file, struct address_space *mapping,
 	to = from + len;
 
 try_again:
-	/* See if this page is already partially written in a way that we can
-	 * merge the new write with.
-	 */
+	 
 	if (folio_test_private(folio)) {
 		priv = (unsigned long)folio_get_private(folio);
 		f = afs_folio_dirty_from(folio, priv);
@@ -107,10 +90,7 @@ try_again:
 			folio_unlock(folio);
 			goto wait_for_writeback;
 		}
-		/* If the file is being filled locally, allow inter-write
-		 * spaces to be merged into writes.  If it's not, only write
-		 * back what the user gives us.
-		 */
+		 
 		if (!test_bit(AFS_VNODE_NEW_CONTENT, &vnode->flags) &&
 		    (to < f || from > t))
 			goto flush_conflicting_write;
@@ -120,9 +100,7 @@ try_again:
 	_leave(" = 0");
 	return 0;
 
-	/* The previous write and this write aren't adjacent or overlapping, so
-	 * flush the page out.
-	 */
+	 
 flush_conflicting_write:
 	trace_afs_folio_dirty(vnode, tracepoint_string("confl"), folio);
 	folio_unlock(folio);
@@ -147,9 +125,7 @@ error:
 	return ret;
 }
 
-/*
- * finalise part of a write to a page
- */
+ 
 int afs_write_end(struct file *file, struct address_space *mapping,
 		  loff_t pos, unsigned len, unsigned copied,
 		  struct page *subpage, void *fsdata)
@@ -214,9 +190,7 @@ out:
 	return copied;
 }
 
-/*
- * kill all the pages in the given range
- */
+ 
 static void afs_kill_pages(struct address_space *mapping,
 			   loff_t start, loff_t len)
 {
@@ -251,9 +225,7 @@ static void afs_kill_pages(struct address_space *mapping,
 	_leave("");
 }
 
-/*
- * Redirty all the pages in a given range.
- */
+ 
 static void afs_redirty_pages(struct writeback_control *wbc,
 			      struct address_space *mapping,
 			      loff_t start, loff_t len)
@@ -284,9 +256,7 @@ static void afs_redirty_pages(struct writeback_control *wbc,
 	_leave("");
 }
 
-/*
- * completion of write to server
- */
+ 
 static void afs_pages_written_back(struct afs_vnode *vnode, loff_t start, unsigned int len)
 {
 	struct address_space *mapping = vnode->netfs.inode.i_mapping;
@@ -319,11 +289,7 @@ static void afs_pages_written_back(struct afs_vnode *vnode, loff_t start, unsign
 	_leave("");
 }
 
-/*
- * Find a key to use for the writeback.  We cached the keys used to author the
- * writes on the vnode.  *_wbk will contain the last writeback key used or NULL
- * and we need to start from there if it's set.
- */
+ 
 static int afs_get_writeback_key(struct afs_vnode *vnode,
 				 struct afs_wb_key **_wbk)
 {
@@ -380,9 +346,7 @@ static const struct afs_operation_ops afs_store_data_operation = {
 	.success	= afs_store_data_success,
 };
 
-/*
- * write to a file
- */
+ 
 static int afs_store_data(struct afs_vnode *vnode, struct iov_iter *iter, loff_t pos,
 			  bool laundering)
 {
@@ -451,13 +415,7 @@ try_next_key:
 	return afs_put_operation(op);
 }
 
-/*
- * Extend the region to be written back to include subsequent contiguously
- * dirty pages if possible, but don't sleep while doing so.
- *
- * If this page holds new content, then we can include filler zeros in the
- * writeback.
- */
+ 
 static void afs_extend_writeback(struct address_space *mapping,
 				 struct afs_vnode *vnode,
 				 long *_count,
@@ -481,10 +439,7 @@ static void afs_extend_writeback(struct address_space *mapping,
 	folio_batch_init(&fbatch);
 
 	do {
-		/* Firstly, we gather up a batch of contiguous dirty pages
-		 * under the RCU read lock - but we can't clear the dirty flags
-		 * there if any of those pages are mapped.
-		 */
+		 
 		rcu_read_lock();
 
 		xas_for_each(&xas, folio, ULONG_MAX) {
@@ -501,7 +456,7 @@ static void afs_extend_writeback(struct address_space *mapping,
 				continue;
 			}
 
-			/* Has the page moved or been split? */
+			 
 			if (unlikely(folio != xas_reload(&xas))) {
 				folio_put(folio);
 				break;
@@ -547,9 +502,7 @@ static void afs_extend_writeback(struct address_space *mapping,
 			xas_pause(&xas);
 		rcu_read_unlock();
 
-		/* Now, if we obtained any folios, we can shift them to being
-		 * writable and mark them for caching.
-		 */
+		 
 		if (!folio_batch_count(&fbatch))
 			break;
 
@@ -574,10 +527,7 @@ static void afs_extend_writeback(struct address_space *mapping,
 	*_len = len;
 }
 
-/*
- * Synchronously write back the locked page and any subsequent non-locked dirty
- * pages.
- */
+ 
 static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
 						struct writeback_control *wbc,
 						struct folio *folio,
@@ -601,11 +551,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
 
 	count -= folio_nr_pages(folio);
 
-	/* Find all consecutive lockable dirty pages that have contiguous
-	 * written regions, stopping when we find a page that is not
-	 * immediately lockable, is not dirty or is missing, or we reach the
-	 * end of the range.
-	 */
+	 
 	priv = (unsigned long)folio_get_private(folio);
 	offset = afs_folio_dirty_from(folio, priv);
 	to = afs_folio_dirty_to(folio, priv);
@@ -614,9 +560,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
 	len = to - offset;
 	start += offset;
 	if (start < i_size) {
-		/* Trim the write to the EOF; the extra data is ignored.  Also
-		 * put an upper limit on the size of a single storedata op.
-		 */
+		 
 		max_len = 65536 * 4096;
 		max_len = min_t(unsigned long long, max_len, end - start + 1);
 		max_len = min_t(unsigned long long, max_len, i_size - start);
@@ -629,18 +573,13 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
 		len = min_t(loff_t, len, max_len);
 	}
 
-	/* We now have a contiguous set of dirty pages, each with writeback
-	 * set; the first page is still locked at this point, but all the rest
-	 * have been unlocked.
-	 */
+	 
 	folio_unlock(folio);
 
 	if (start < i_size) {
 		_debug("write back %x @%llx [%llx]", len, start, i_size);
 
-		/* Speculatively write to the cache.  We have to fix this up
-		 * later if the store fails.
-		 */
+		 
 		afs_write_to_cache(vnode, start, len, i_size, caching);
 
 		iov_iter_xarray(&iter, ITER_SOURCE, &mapping->i_pages, start, len);
@@ -648,7 +587,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
 	} else {
 		_debug("write discard %x @%llx [%llx]", len, start, i_size);
 
-		/* The dirty region was entirely beyond the EOF. */
+		 
 		fscache_clear_page_bits(mapping, start, len, caching);
 		afs_pages_written_back(vnode, start, len);
 		ret = 0;
@@ -697,9 +636,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
 	return ret;
 }
 
-/*
- * write a region of pages back to the server
- */
+ 
 static int afs_writepages_region(struct address_space *mapping,
 				 struct writeback_control *wbc,
 				 loff_t start, loff_t end, loff_t *_next,
@@ -724,15 +661,11 @@ static int afs_writepages_region(struct address_space *mapping,
 			break;
 		for (i = 0; i < n; i++) {
 			folio = fbatch.folios[i];
-			start = folio_pos(folio); /* May regress with THPs */
+			start = folio_pos(folio);  
 
 			_debug("wback %lx", folio_index(folio));
 
-			/* At this point we hold neither the i_pages lock nor the
-			 * page lock: the page may be truncated or invalidated
-			 * (changing page->mapping to NULL), or even swizzled
-			 * back from swapper_space to tmpfs file mapping
-			 */
+			 
 try_again:
 			if (wbc->sync_mode != WB_SYNC_NONE) {
 				ret = folio_lock_killable(folio);
@@ -798,9 +731,7 @@ try_again:
 	return 0;
 }
 
-/*
- * write some of the pending data back to the server
- */
+ 
 int afs_writepages(struct address_space *mapping,
 		   struct writeback_control *wbc)
 {
@@ -810,10 +741,7 @@ int afs_writepages(struct address_space *mapping,
 
 	_enter("");
 
-	/* We have to be careful as we can end up racing with setattr()
-	 * truncating the pagecache since the caller doesn't take a lock here
-	 * to prevent it.
-	 */
+	 
 	if (wbc->sync_mode == WB_SYNC_ALL)
 		down_read(&vnode->validate_lock);
 	else if (!down_read_trylock(&vnode->validate_lock))
@@ -849,9 +777,7 @@ int afs_writepages(struct address_space *mapping,
 	return ret;
 }
 
-/*
- * write to an AFS file
- */
+ 
 ssize_t afs_file_write(struct kiocb *iocb, struct iov_iter *from)
 {
 	struct afs_vnode *vnode = AFS_FS_I(file_inode(iocb->ki_filp));
@@ -881,11 +807,7 @@ ssize_t afs_file_write(struct kiocb *iocb, struct iov_iter *from)
 	return result;
 }
 
-/*
- * flush any dirty pages for this process, and check for write errors.
- * - the return status from this call provides a reliable indication of
- *   whether any write errors occurred for this process.
- */
+ 
 int afs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 {
 	struct afs_vnode *vnode = AFS_FS_I(file_inode(file));
@@ -903,10 +825,7 @@ int afs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	return file_write_and_wait_range(file, start, end);
 }
 
-/*
- * notification that a previously read-only page is about to become writable
- * - if it returns an error, the caller will deliver a bus error signal
- */
+ 
 vm_fault_t afs_page_mkwrite(struct vm_fault *vmf)
 {
 	struct folio *folio = page_folio(vmf->page);
@@ -923,9 +842,7 @@ vm_fault_t afs_page_mkwrite(struct vm_fault *vmf)
 
 	sb_start_pagefault(inode->i_sb);
 
-	/* Wait for the page to be written to the cache before we allow it to
-	 * be modified.  We then assume the entire page will need writing back.
-	 */
+	 
 #ifdef CONFIG_AFS_FSCACHE
 	if (folio_test_fscache(folio) &&
 	    folio_wait_fscache_killable(folio) < 0)
@@ -938,10 +855,7 @@ vm_fault_t afs_page_mkwrite(struct vm_fault *vmf)
 	if (folio_lock_killable(folio) < 0)
 		goto out;
 
-	/* We mustn't change folio->private until writeback is complete as that
-	 * details the portion of the page we need to write back and we might
-	 * need to redirty the page if there's a problem.
-	 */
+	 
 	if (folio_wait_writeback_killable(folio) < 0) {
 		folio_unlock(folio);
 		goto out;
@@ -964,15 +878,13 @@ out:
 	return ret;
 }
 
-/*
- * Prune the keys cached for writeback.  The caller must hold vnode->wb_lock.
- */
+ 
 void afs_prune_wb_keys(struct afs_vnode *vnode)
 {
 	LIST_HEAD(graveyard);
 	struct afs_wb_key *wbk, *tmp;
 
-	/* Discard unused keys */
+	 
 	spin_lock(&vnode->wb_lock);
 
 	if (!mapping_tagged(&vnode->netfs.inode.i_data, PAGECACHE_TAG_WRITEBACK) &&
@@ -992,9 +904,7 @@ void afs_prune_wb_keys(struct afs_vnode *vnode)
 	}
 }
 
-/*
- * Clean up a page during invalidation.
- */
+ 
 int afs_launder_folio(struct folio *folio)
 {
 	struct afs_vnode *vnode = AFS_FS_I(folio_inode(folio));
@@ -1028,9 +938,7 @@ int afs_launder_folio(struct folio *folio)
 	return ret;
 }
 
-/*
- * Deal with the completion of writing the data to the cache.
- */
+ 
 static void afs_write_to_cache_done(void *priv, ssize_t transferred_or_error,
 				    bool was_async)
 {
@@ -1041,9 +949,7 @@ static void afs_write_to_cache_done(void *priv, ssize_t transferred_or_error,
 		afs_invalidate_cache(vnode, 0);
 }
 
-/*
- * Save the write to the cache also.
- */
+ 
 static void afs_write_to_cache(struct afs_vnode *vnode,
 			       loff_t start, size_t len, loff_t i_size,
 			       bool caching)

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2015 Linaro Ltd.
- * Copyright (c) 2015 Hisilicon Limited.
- */
+ 
+ 
 
 #ifndef _HISI_SAS_H_
 #define _HISI_SAS_H_
@@ -177,7 +174,7 @@ struct hisi_sas_phy {
 	struct completion *reset_completion;
 	struct timer_list timer;
 	spinlock_t lock;
-	u64		port_id; /* from hw */
+	u64		port_id;  
 	u64		frame_rcvd_size;
 	u8		frame_rcvd[32];
 	u8		phy_attached;
@@ -191,14 +188,14 @@ struct hisi_sas_phy {
 	int wait_phyup_cnt;
 	atomic_t down_cnt;
 
-	/* Trace FIFO */
+	 
 	struct hisi_sas_debugfs_fifo fifo;
 };
 
 struct hisi_sas_port {
 	struct asd_sas_port	sas_port;
 	u8	port_attached;
-	u8	id; /* from hw */
+	u8	id;  
 };
 
 struct hisi_sas_cq {
@@ -228,7 +225,7 @@ struct hisi_sas_device {
 	enum dev_status dev_status;
 	int device_id;
 	int sata_idx;
-	spinlock_t lock; /* For protecting slots */
+	spinlock_t lock;  
 };
 
 struct hisi_sas_slot {
@@ -250,7 +247,7 @@ struct hisi_sas_slot {
 	struct timer_list internal_abort_timer;
 	bool is_internal;
 	struct sas_tmf_task *tmf;
-	/* Do not reorder/change members after here */
+	 
 	void	*buf;
 	dma_addr_t buf_dma;
 	u16	idx;
@@ -387,7 +384,7 @@ struct hisi_sas_debugfs_itct_cache {
 };
 
 struct hisi_hba {
-	/* This must be the first element, used by SHOST_TO_SAS_HA */
+	 
 	struct sas_ha_struct *p;
 
 	struct platform_device *platform_dev;
@@ -405,7 +402,7 @@ struct hisi_hba {
 	u32 refclk_frequency_mhz;
 	u8 sas_addr[SAS_ADDR_SIZE];
 
-	int *irq_map; /* v2 hw */
+	int *irq_map;  
 
 	int n_phy;
 	spinlock_t lock;
@@ -420,7 +417,7 @@ struct hisi_hba {
 	unsigned long *slot_index_tags;
 	unsigned long reject_stp_links_msk;
 
-	/* SCSI/SAS glue */
+	 
 	struct sas_ha_struct sha;
 	struct Scsi_Host *shost;
 
@@ -448,17 +445,17 @@ struct hisi_hba {
 	dma_addr_t sata_breakpoint_dma;
 	struct hisi_sas_slot	*slot_info;
 	unsigned long flags;
-	const struct hisi_sas_hw *hw;	/* Low level hw interface */
+	const struct hisi_sas_hw *hw;	 
 	unsigned long sata_dev_bitmap[BITS_TO_LONGS(HISI_SAS_MAX_DEVICES)];
 	struct work_struct rst_work;
 	struct work_struct debugfs_work;
 	u32 phy_state;
-	u32 intr_coal_ticks;	/* Time of interrupt coalesce in us */
-	u32 intr_coal_count;	/* Interrupt count to coalesce */
+	u32 intr_coal_ticks;	 
+	u32 intr_coal_count;	 
 
 	int cq_nvecs;
 
-	/* bist */
+	 
 	enum sas_linkrate debugfs_bist_linkrate;
 	int debugfs_bist_code_mode;
 	int debugfs_bist_phy_no;
@@ -468,8 +465,8 @@ struct hisi_hba {
 	u32 debugfs_bist_ffe[HISI_SAS_MAX_PHYS][FFE_CFG_MAX];
 	u32 debugfs_bist_fixed_code[FIXED_CODE_MAX];
 
-	/* debugfs memories */
-	/* Put Global AXI and RAS Register into register array */
+	 
+	 
 	struct hisi_sas_debugfs_regs debugfs_regs[HISI_SAS_MAX_DEBUGFS_DUMP][DEBUGFS_REGS_NUM];
 	struct hisi_sas_debugfs_port debugfs_port_reg[HISI_SAS_MAX_DEBUGFS_DUMP][HISI_SAS_MAX_PHYS];
 	struct hisi_sas_debugfs_cq debugfs_cq[HISI_SAS_MAX_DEBUGFS_DUMP][HISI_SAS_MAX_QUEUES];
@@ -489,43 +486,43 @@ struct hisi_hba {
 	int iopoll_q_cnt;
 };
 
-/* Generic HW DMA host memory structures */
-/* Delivery queue header */
+ 
+ 
 struct hisi_sas_cmd_hdr {
-	/* dw0 */
+	 
 	__le32 dw0;
 
-	/* dw1 */
+	 
 	__le32 dw1;
 
-	/* dw2 */
+	 
 	__le32 dw2;
 
-	/* dw3 */
+	 
 	__le32 transfer_tags;
 
-	/* dw4 */
+	 
 	__le32 data_transfer_len;
 
-	/* dw5 */
+	 
 	__le32 first_burst_num;
 
-	/* dw6 */
+	 
 	__le32 sg_len;
 
-	/* dw7 */
+	 
 	__le32 dw7;
 
-	/* dw8-9 */
+	 
 	__le64 cmd_table_addr;
 
-	/* dw10-11 */
+	 
 	__le64 sts_buffer_addr;
 
-	/* dw12-13 */
+	 
 	__le64 prd_table_addr;
 
-	/* dw14-15 */
+	 
 	__le64 dif_prd_table_addr;
 };
 

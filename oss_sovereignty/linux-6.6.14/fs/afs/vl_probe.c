@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS vlserver probing
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -12,9 +8,7 @@
 #include "protocol_yfs.h"
 
 
-/*
- * Handle the completion of a set of probes.
- */
+ 
 static void afs_finished_vl_probe(struct afs_vlserver *server)
 {
 	if (!(server->probe.flags & AFS_VLSERVER_PROBE_RESPONDED)) {
@@ -26,9 +20,7 @@ static void afs_finished_vl_probe(struct afs_vlserver *server)
 	wake_up_bit(&server->flags, AFS_VLSERVER_FL_PROBING);
 }
 
-/*
- * Handle the completion of a probe RPC call.
- */
+ 
 static void afs_done_one_vl_probe(struct afs_vlserver *server, bool wake_up)
 {
 	if (atomic_dec_and_test(&server->probe_outstanding)) {
@@ -40,10 +32,7 @@ static void afs_done_one_vl_probe(struct afs_vlserver *server, bool wake_up)
 		wake_up_all(&server->probe_wq);
 }
 
-/*
- * Process the result of probing a vlserver.  This is called after successful
- * or failed delivery of an VL.GetCapabilities operation.
- */
+ 
 void afs_vlserver_probe_result(struct afs_call *call)
 {
 	struct afs_addr_list *alist = call->alist;
@@ -78,7 +67,7 @@ void afs_vlserver_probe_result(struct afs_call *call)
 			server->probe.error = ret;
 		trace_afs_io_error(call->debug_id, ret, afs_io_error_vl_probe_fail);
 		goto out;
-	case -ECONNRESET: /* Responded, but call expired. */
+	case -ECONNRESET:  
 	case -ERFKILL:
 	case -EADDRNOTAVAIL:
 	case -ENETUNREACH:
@@ -122,7 +111,7 @@ responded:
 		alist->preferred = index;
 	}
 
-	smp_wmb(); /* Set rtt before responded. */
+	smp_wmb();  
 	server->probe.flags |= AFS_VLSERVER_PROBE_RESPONDED;
 	set_bit(AFS_VLSERVER_FL_PROBED, &server->flags);
 	set_bit(AFS_VLSERVER_FL_RESPONDING, &server->flags);
@@ -136,10 +125,7 @@ out:
 	afs_done_one_vl_probe(server, have_result);
 }
 
-/*
- * Probe all of a vlserver's addresses to find out the best route and to
- * query its capabilities.
- */
+ 
 static bool afs_do_probe_vlserver(struct afs_net *net,
 				  struct afs_vlserver *server,
 				  struct key *key,
@@ -178,9 +164,7 @@ static bool afs_do_probe_vlserver(struct afs_net *net,
 	return in_progress;
 }
 
-/*
- * Send off probes to all unprobed servers.
- */
+ 
 int afs_send_vl_probes(struct afs_net *net, struct key *key,
 		       struct afs_vlserver_list *vllist)
 {
@@ -204,9 +188,7 @@ int afs_send_vl_probes(struct afs_net *net, struct key *key,
 	return in_progress ? 0 : e.error;
 }
 
-/*
- * Wait for the first as-yet untried server to respond.
- */
+ 
 int afs_wait_for_vl_probes(struct afs_vlserver_list *vllist,
 			   unsigned long untried)
 {
@@ -218,7 +200,7 @@ int afs_wait_for_vl_probes(struct afs_vlserver_list *vllist,
 
 	_enter("%u,%lx", vllist->nr_servers, untried);
 
-	/* Only wait for servers that have a probe outstanding. */
+	 
 	for (i = 0; i < vllist->nr_servers; i++) {
 		if (test_bit(i, &untried)) {
 			server = vllist->servers[i].server;

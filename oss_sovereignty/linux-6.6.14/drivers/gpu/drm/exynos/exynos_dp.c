@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Samsung SoC DP (Display Port) interface driver.
- *
- * Copyright (C) 2012 Samsung Electronics Co., Ltd.
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -106,7 +101,7 @@ static int exynos_dp_bridge_attach(struct analogix_dp_plat_data *plat_data,
 
 	dp->connector = connector;
 
-	/* Pre-empt DP connector creation if there's a bridge */
+	 
 	if (dp->ptn_bridge) {
 		ret = drm_bridge_attach(&dp->encoder, dp->ptn_bridge, bridge,
 					0);
@@ -125,7 +120,7 @@ static void exynos_dp_mode_set(struct drm_encoder *encoder,
 
 static void exynos_dp_nop(struct drm_encoder *encoder)
 {
-	/* do nothing */
+	 
 }
 
 static const struct drm_encoder_helper_funcs exynos_dp_encoder_helper_funcs = {
@@ -208,14 +203,10 @@ static int exynos_dp_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	dp->dev = dev;
-	/*
-	 * We just use the drvdata until driver run into component
-	 * add function, and then we would set drvdata to null, so
-	 * that analogix dp driver would take charge of the drvdata.
-	 */
+	 
 	platform_set_drvdata(pdev, dp);
 
-	/* This is for the backward compatibility. */
+	 
 	np = of_parse_phandle(dev->of_node, "panel", 0);
 	if (np) {
 		dp->plat_data.panel = of_drm_find_panel(np);
@@ -231,7 +222,7 @@ static int exynos_dp_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* The remote port can be either a panel or a bridge */
+	 
 	dp->plat_data.panel = panel;
 	dp->plat_data.dev_type = EXYNOS_DP;
 	dp->plat_data.power_on_start = exynos_dp_poweron;

@@ -1,24 +1,4 @@
-/*
- * Copyright (c) 2016 Intel Corporation
- *
- * Permission to use, copy, modify, distribute, and sell this software and its
- * documentation for any purpose is hereby granted without fee, provided that
- * the above copyright notice appear in all copies and that both that copyright
- * notice and this permission notice appear in supporting documentation, and
- * that the name of the copyright holders not be used in advertising or
- * publicity pertaining to distribution of the software without specific,
- * written prior permission.  The copyright holders make no representations
- * about the suitability of this software for any purpose.  It is provided "as
- * is" without express or implied warranty.
- *
- * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
- * EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
- * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
- * OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/export.h>
 #include <linux/uaccess.h>
@@ -38,40 +18,7 @@
 #include "drm_crtc_internal.h"
 #include "drm_internal.h"
 
-/**
- * DOC: overview
- *
- * Frame buffers are abstract memory objects that provide a source of pixels to
- * scanout to a CRTC. Applications explicitly request the creation of frame
- * buffers through the DRM_IOCTL_MODE_ADDFB(2) ioctls and receive an opaque
- * handle that can be passed to the KMS CRTC control, plane configuration and
- * page flip functions.
- *
- * Frame buffers rely on the underlying memory manager for allocating backing
- * storage. When creating a frame buffer applications pass a memory handle
- * (or a list of memory handles for multi-planar formats) through the
- * &struct drm_mode_fb_cmd2 argument. For drivers using GEM as their userspace
- * buffer management interface this would be a GEM handle.  Drivers are however
- * free to use their own backing storage object handles, e.g. vmwgfx directly
- * exposes special TTM handles to userspace and so expects TTM handles in the
- * create ioctl and not GEM handles.
- *
- * Framebuffers are tracked with &struct drm_framebuffer. They are published
- * using drm_framebuffer_init() - after calling that function userspace can use
- * and access the framebuffer object. The helper function
- * drm_helper_mode_fill_fb_struct() can be used to pre-fill the required
- * metadata fields.
- *
- * The lifetime of a drm framebuffer is controlled with a reference count,
- * drivers can grab additional references with drm_framebuffer_get() and drop
- * them again with drm_framebuffer_put(). For driver-private framebuffers for
- * which the last reference is never dropped (e.g. for the fbdev framebuffer
- * when the struct &struct drm_framebuffer is embedded into the fbdev helper
- * struct) drivers can manually clean up a framebuffer at module unload time
- * with drm_framebuffer_unregister_private(). But doing this is not
- * recommended, and it's better to have a normal free-standing &struct
- * drm_framebuffer.
- */
+ 
 
 int drm_framebuffer_check_src_coords(uint32_t src_x, uint32_t src_y,
 				     uint32_t src_w, uint32_t src_h,
@@ -82,7 +29,7 @@ int drm_framebuffer_check_src_coords(uint32_t src_x, uint32_t src_y,
 	fb_width = fb->width << 16;
 	fb_height = fb->height << 16;
 
-	/* Make sure source coordinates are inside the fb. */
+	 
 	if (src_w > fb_width ||
 	    src_x > fb_width - src_w ||
 	    src_h > fb_height ||
@@ -100,20 +47,7 @@ int drm_framebuffer_check_src_coords(uint32_t src_x, uint32_t src_y,
 	return 0;
 }
 
-/**
- * drm_mode_addfb - add an FB to the graphics configuration
- * @dev: drm device for the ioctl
- * @or: pointer to request structure
- * @file_priv: drm file
- *
- * Add a new FB to the specified CRTC, given a user request. This is the
- * original addfb ioctl which only supported RGB formats.
- *
- * Called by the user via ioctl, or by an in-kernel client.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_mode_addfb(struct drm_device *dev, struct drm_mode_fb_cmd *or,
 		   struct drm_file *file_priv)
 {
@@ -129,7 +63,7 @@ int drm_mode_addfb(struct drm_device *dev, struct drm_mode_fb_cmd *or,
 		return -EINVAL;
 	}
 
-	/* convert to new format and call new ioctl */
+	 
 	r.fb_id = or->fb_id;
 	r.width = or->width;
 	r.height = or->height;
@@ -175,7 +109,7 @@ static int framebuffer_check(struct drm_device *dev,
 	const struct drm_format_info *info;
 	int i;
 
-	/* check if the format is supported at all */
+	 
 	if (!__drm_format_info(r->pixel_format)) {
 		drm_dbg_kms(dev, "bad framebuffer format %p4cc\n",
 			    &r->pixel_format);
@@ -192,7 +126,7 @@ static int framebuffer_check(struct drm_device *dev,
 		return -EINVAL;
 	}
 
-	/* now let the driver pick its own format info */
+	 
 	info = drm_get_format_info(dev, r);
 
 	for (i = 0; i < info->num_planes; i++) {
@@ -235,12 +169,10 @@ static int framebuffer_check(struct drm_device *dev,
 			return -EINVAL;
 		}
 
-		/* modifier specific checks: */
+		 
 		switch (r->modifier[i]) {
 		case DRM_FORMAT_MOD_SAMSUNG_64_32_TILE:
-			/* NOTE: the pitch restriction may be lifted later if it turns
-			 * out that no hw has this restriction:
-			 */
+			 
 			if (r->pixel_format != DRM_FORMAT_NV12 ||
 					width % 128 || height % 32 ||
 					r->pitches[i] % 128) {
@@ -260,7 +192,7 @@ static int framebuffer_check(struct drm_device *dev,
 			return -EINVAL;
 		}
 
-		/* Pre-FB_MODIFIERS userspace didn't clear the structs properly. */
+		 
 		if (!(r->flags & DRM_MODE_FB_MODIFIERS))
 			continue;
 
@@ -328,21 +260,7 @@ drm_internal_framebuffer_create(struct drm_device *dev,
 }
 EXPORT_SYMBOL_FOR_TESTS_ONLY(drm_internal_framebuffer_create);
 
-/**
- * drm_mode_addfb2 - add an FB to the graphics configuration
- * @dev: drm device for the ioctl
- * @data: data pointer for the ioctl
- * @file_priv: drm file for the ioctl call
- *
- * Add a new FB to the specified CRTC, given a user request with format. This is
- * the 2nd version of the addfb ioctl, which supports multi-planar framebuffers
- * and uses fourcc codes as pixel format specifiers.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_mode_addfb2(struct drm_device *dev,
 		    void *data, struct drm_file *file_priv)
 {
@@ -359,7 +277,7 @@ int drm_mode_addfb2(struct drm_device *dev,
 	drm_dbg_kms(dev, "[FB:%d]\n", fb->base.id);
 	r->fb_id = fb->base.id;
 
-	/* Transfer ownership to the filp for reaping on close */
+	 
 	mutex_lock(&file_priv->fbs_lock);
 	list_add(&fb->filp_head, &file_priv->fbs);
 	mutex_unlock(&file_priv->fbs_lock);
@@ -372,18 +290,7 @@ int drm_mode_addfb2_ioctl(struct drm_device *dev,
 {
 #ifdef __BIG_ENDIAN
 	if (!dev->mode_config.quirk_addfb_prefer_host_byte_order) {
-		/*
-		 * Drivers must set the
-		 * quirk_addfb_prefer_host_byte_order quirk to make
-		 * the drm_mode_addfb() compat code work correctly on
-		 * bigendian machines.
-		 *
-		 * If they don't they interpret pixel_format values
-		 * incorrectly for bug compatibility, which in turn
-		 * implies the ADDFB2 ioctl does not work correctly
-		 * then.  So block it to make userspace fallback to
-		 * ADDFB.
-		 */
+		 
 		drm_dbg_kms(dev, "addfb2 broken on bigendian");
 		return -EOPNOTSUPP;
 	}
@@ -412,19 +319,7 @@ static void drm_mode_rmfb_work_fn(struct work_struct *w)
 	}
 }
 
-/**
- * drm_mode_rmfb - remove an FB from the configuration
- * @dev: drm device
- * @fb_id: id of framebuffer to remove
- * @file_priv: drm file
- *
- * Remove the specified FB.
- *
- * Called by the user via ioctl, or by an in-kernel client.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_mode_rmfb(struct drm_device *dev, u32 fb_id,
 		  struct drm_file *file_priv)
 {
@@ -451,16 +346,10 @@ int drm_mode_rmfb(struct drm_device *dev, u32 fb_id,
 	list_del_init(&fb->filp_head);
 	mutex_unlock(&file_priv->fbs_lock);
 
-	/* drop the reference we picked up in framebuffer lookup */
+	 
 	drm_framebuffer_put(fb);
 
-	/*
-	 * we now own the reference that was stored in the fbs list
-	 *
-	 * drm_framebuffer_remove may fail with -EINTR on pending signals,
-	 * so run this in a separate stack as there's no way to correctly
-	 * handle this after the fb is already removed from the lookup table.
-	 */
+	 
 	if (drm_framebuffer_read_refcount(fb) > 1) {
 		struct drm_mode_rmfb_work arg;
 
@@ -489,19 +378,7 @@ int drm_mode_rmfb_ioctl(struct drm_device *dev,
 	return drm_mode_rmfb(dev, *fb_id, file_priv);
 }
 
-/**
- * drm_mode_getfb - get FB info
- * @dev: drm device for the ioctl
- * @data: data pointer for the ioctl
- * @file_priv: drm file for the ioctl call
- *
- * Lookup the FB given its ID and return info about it.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_mode_getfb(struct drm_device *dev,
 		   void *data, struct drm_file *file_priv)
 {
@@ -516,7 +393,7 @@ int drm_mode_getfb(struct drm_device *dev,
 	if (!fb)
 		return -ENOENT;
 
-	/* Multi-planar framebuffers need getfb2. */
+	 
 	if (fb->format->num_planes > 1) {
 		ret = -EINVAL;
 		goto out;
@@ -533,11 +410,7 @@ int drm_mode_getfb(struct drm_device *dev,
 	r->bpp = drm_format_info_bpp(fb->format, 0);
 	r->pitch = fb->pitches[0];
 
-	/* GET_FB() is an unprivileged ioctl so we must not return a
-	 * buffer-handle to non-master processes! For
-	 * backwards-compatibility reasons, we cannot make GET_FB() privileged,
-	 * so just return an invalid handle for non-masters.
-	 */
+	 
 	if (!drm_is_current_master(file_priv) && !capable(CAP_SYS_ADMIN)) {
 		r->handle = 0;
 		ret = 0;
@@ -551,19 +424,7 @@ out:
 	return ret;
 }
 
-/**
- * drm_mode_getfb2_ioctl - get extended FB info
- * @dev: drm device for the ioctl
- * @data: data pointer for the ioctl
- * @file_priv: drm file for the ioctl call
- *
- * Lookup the FB given its ID and return info about it.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_mode_getfb2_ioctl(struct drm_device *dev,
 			  void *data, struct drm_file *file_priv)
 {
@@ -579,10 +440,7 @@ int drm_mode_getfb2_ioctl(struct drm_device *dev,
 	if (!fb)
 		return -ENOENT;
 
-	/* For multi-plane framebuffers, we require the driver to place the
-	 * GEM objects directly in the drm_framebuffer. For single-plane
-	 * framebuffers, we can fall back to create_handle.
-	 */
+	 
 	if (!fb->obj[0] &&
 	    (fb->format->num_planes > 1 || !fb->funcs->create_handle)) {
 		ret = -ENODEV;
@@ -611,11 +469,7 @@ int drm_mode_getfb2_ioctl(struct drm_device *dev,
 			r->modifier[i] = fb->modifier;
 	}
 
-	/* GET_FB2() is an unprivileged ioctl so we must not return a
-	 * buffer-handle to non master/root processes! To match GET_FB()
-	 * just return invalid handles (0) for non masters/root
-	 * rather than making GET_FB2() privileged.
-	 */
+	 
 	if (!drm_is_current_master(file_priv) && !capable(CAP_SYS_ADMIN)) {
 		ret = 0;
 		goto out;
@@ -624,9 +478,7 @@ int drm_mode_getfb2_ioctl(struct drm_device *dev,
 	for (i = 0; i < fb->format->num_planes; i++) {
 		int j;
 
-		/* If we reuse the same object for multiple planes, also
-		 * return the same handle.
-		 */
+		 
 		for (j = 0; j < i; j++) {
 			if (fb->obj[i] == fb->obj[j]) {
 				r->handles[i] = r->handles[j];
@@ -652,16 +504,14 @@ int drm_mode_getfb2_ioctl(struct drm_device *dev,
 
 out:
 	if (ret != 0) {
-		/* Delete any previously-created handles on failure. */
+		 
 		for (i = 0; i < ARRAY_SIZE(r->handles); i++) {
 			int j;
 
 			if (r->handles[i])
 				drm_gem_handle_delete(file_priv, r->handles[i]);
 
-			/* Zero out any handles identical to the one we just
-			 * deleted.
-			 */
+			 
 			for (j = i + 1; j < ARRAY_SIZE(r->handles); j++) {
 				if (r->handles[j] == r->handles[i])
 					r->handles[j] = 0;
@@ -673,25 +523,7 @@ out:
 	return ret;
 }
 
-/**
- * drm_mode_dirtyfb_ioctl - flush frontbuffer rendering on an FB
- * @dev: drm device for the ioctl
- * @data: data pointer for the ioctl
- * @file_priv: drm file for the ioctl call
- *
- * Lookup the FB and flush out the damaged area supplied by userspace as a clip
- * rectangle list. Generic userspace which does frontbuffer rendering must call
- * this ioctl to flush out the changes on manual-update display outputs, e.g.
- * usb display-link, mipi manual update panels or edp panel self refresh modes.
- *
- * Modesetting drivers which always update the frontbuffer do not need to
- * implement the corresponding &drm_framebuffer_funcs.dirty callback.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_mode_dirtyfb_ioctl(struct drm_device *dev,
 			   void *data, struct drm_file *file_priv)
 {
@@ -720,7 +552,7 @@ int drm_mode_dirtyfb_ioctl(struct drm_device *dev,
 
 	flags = DRM_MODE_FB_DIRTY_FLAGS & r->flags;
 
-	/* If userspace annotates copy, clips must come in pairs */
+	 
 	if (flags & DRM_MODE_FB_DIRTY_ANNOTATE_COPY && (num_clips % 2)) {
 		ret = -EINVAL;
 		goto out_err1;
@@ -760,17 +592,7 @@ out_err1:
 	return ret;
 }
 
-/**
- * drm_fb_release - remove and free the FBs on this file
- * @priv: drm file for the ioctl
- *
- * Destroy all the FBs associated with @filp.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 void drm_fb_release(struct drm_file *priv)
 {
 	struct drm_framebuffer *fb, *tfb;
@@ -778,23 +600,14 @@ void drm_fb_release(struct drm_file *priv)
 
 	INIT_LIST_HEAD(&arg.fbs);
 
-	/*
-	 * When the file gets released that means no one else can access the fb
-	 * list any more, so no need to grab fpriv->fbs_lock. And we need to
-	 * avoid upsetting lockdep since the universal cursor code adds a
-	 * framebuffer while holding mutex locks.
-	 *
-	 * Note that a real deadlock between fpriv->fbs_lock and the modeset
-	 * locks is impossible here since no one else but this function can get
-	 * at it any more.
-	 */
+	 
 	list_for_each_entry_safe(fb, tfb, &priv->fbs, filp_head) {
 		if (drm_framebuffer_read_refcount(fb) > 1) {
 			list_move_tail(&fb->filp_head, &arg.fbs);
 		} else {
 			list_del_init(&fb->filp_head);
 
-			/* This drops the fpriv->fbs reference. */
+			 
 			drm_framebuffer_put(fb);
 		}
 	}
@@ -814,33 +627,13 @@ void drm_framebuffer_free(struct kref *kref)
 			container_of(kref, struct drm_framebuffer, base.refcount);
 	struct drm_device *dev = fb->dev;
 
-	/*
-	 * The lookup idr holds a weak reference, which has not necessarily been
-	 * removed at this point. Check for that.
-	 */
+	 
 	drm_mode_object_unregister(dev, &fb->base);
 
 	fb->funcs->destroy(fb);
 }
 
-/**
- * drm_framebuffer_init - initialize a framebuffer
- * @dev: DRM device
- * @fb: framebuffer to be initialized
- * @funcs: ... with these functions
- *
- * Allocates an ID for the framebuffer's parent mode object, sets its mode
- * functions & device file and adds it to the master fd list.
- *
- * IMPORTANT:
- * This functions publishes the fb and makes it available for concurrent access
- * by other users. Which means by this point the fb _must_ be fully set up -
- * since all the fb attributes are invariant over its lifetime, no further
- * locking but only correct reference counting is required.
- *
- * Returns:
- * Zero on success, error code on failure.
- */
+ 
 int drm_framebuffer_init(struct drm_device *dev, struct drm_framebuffer *fb,
 			 const struct drm_framebuffer_funcs *funcs)
 {
@@ -870,16 +663,7 @@ out:
 }
 EXPORT_SYMBOL(drm_framebuffer_init);
 
-/**
- * drm_framebuffer_lookup - look up a drm framebuffer and grab a reference
- * @dev: drm device
- * @file_priv: drm file to check for lease against.
- * @id: id of the fb object
- *
- * If successful, this grabs an additional reference to the framebuffer -
- * callers need to make sure to eventually unreference the returned framebuffer
- * again, using drm_framebuffer_put().
- */
+ 
 struct drm_framebuffer *drm_framebuffer_lookup(struct drm_device *dev,
 					       struct drm_file *file_priv,
 					       uint32_t id)
@@ -894,20 +678,7 @@ struct drm_framebuffer *drm_framebuffer_lookup(struct drm_device *dev,
 }
 EXPORT_SYMBOL(drm_framebuffer_lookup);
 
-/**
- * drm_framebuffer_unregister_private - unregister a private fb from the lookup idr
- * @fb: fb to unregister
- *
- * Drivers need to call this when cleaning up driver-private framebuffers, e.g.
- * those used for fbdev. Note that the caller must hold a reference of its own,
- * i.e. the object may not be destroyed through this call (since it'll lead to a
- * locking inversion).
- *
- * NOTE: This function is deprecated. For driver-private framebuffers it is not
- * recommended to embed a framebuffer struct info fbdev struct, instead, a
- * framebuffer pointer is preferred and drm_framebuffer_put() should be called
- * when the framebuffer is to be cleaned up.
- */
+ 
 void drm_framebuffer_unregister_private(struct drm_framebuffer *fb)
 {
 	struct drm_device *dev;
@@ -917,28 +688,12 @@ void drm_framebuffer_unregister_private(struct drm_framebuffer *fb)
 
 	dev = fb->dev;
 
-	/* Mark fb as reaped and drop idr ref. */
+	 
 	drm_mode_object_unregister(dev, &fb->base);
 }
 EXPORT_SYMBOL(drm_framebuffer_unregister_private);
 
-/**
- * drm_framebuffer_cleanup - remove a framebuffer object
- * @fb: framebuffer to remove
- *
- * Cleanup framebuffer. This function is intended to be used from the drivers
- * &drm_framebuffer_funcs.destroy callback. It can also be used to clean up
- * driver private framebuffers embedded into a larger structure.
- *
- * Note that this function does not remove the fb from active usage - if it is
- * still used anywhere, hilarity can ensue since userspace could call getfb on
- * the id and get back -EINVAL. Obviously no concern at driver unload time.
- *
- * Also, the framebuffer will not be removed from the lookup idr - for
- * user-created framebuffers this will happen in the rmfb ioctl. For
- * driver-private objects (e.g. for fbdev) drivers need to explicitly call
- * drm_framebuffer_unregister_private.
- */
+ 
 void drm_framebuffer_cleanup(struct drm_framebuffer *fb)
 {
 	struct drm_device *dev = fb->dev;
@@ -1022,7 +777,7 @@ retry:
 		plane_mask |= drm_plane_mask(plane);
 	}
 
-	/* This list is only filled when disable_crtcs is set. */
+	 
 	for_each_new_connector_in_state(state, conn, conn_state, i) {
 		ret = drm_atomic_set_crtc_for_connector(conn_state, NULL);
 
@@ -1061,14 +816,14 @@ static void legacy_remove_fb(struct drm_framebuffer *fb)
 	struct drm_plane *plane;
 
 	drm_modeset_lock_all(dev);
-	/* remove from any CRTC */
+	 
 	drm_for_each_crtc(crtc, dev) {
 		if (crtc->primary->fb == fb) {
 			drm_dbg_kms(dev,
 				    "Disabling [CRTC:%d:%s] because [FB:%d] is removed\n",
 				    crtc->base.id, crtc->name, fb->base.id);
 
-			/* should turn off the crtc */
+			 
 			if (drm_crtc_force_disable(crtc))
 				DRM_ERROR("failed to reset crtc %p when fb was deleted\n", crtc);
 		}
@@ -1085,18 +840,7 @@ static void legacy_remove_fb(struct drm_framebuffer *fb)
 	drm_modeset_unlock_all(dev);
 }
 
-/**
- * drm_framebuffer_remove - remove and unreference a framebuffer object
- * @fb: framebuffer to remove
- *
- * Scans all the CRTCs and planes in @dev's mode_config.  If they're
- * using @fb, removes it, setting it to NULL. Then drops the reference to the
- * passed-in framebuffer. Might take the modeset locks.
- *
- * Note that this function optimizes the cleanup away if the caller holds the
- * last reference to the framebuffer. It is also guaranteed to not take the
- * modeset locks in this case.
- */
+ 
 void drm_framebuffer_remove(struct drm_framebuffer *fb)
 {
 	struct drm_device *dev;
@@ -1108,21 +852,7 @@ void drm_framebuffer_remove(struct drm_framebuffer *fb)
 
 	WARN_ON(!list_empty(&fb->filp_head));
 
-	/*
-	 * drm ABI mandates that we remove any deleted framebuffers from active
-	 * usage. But since most sane clients only remove framebuffers they no
-	 * longer need, try to optimize this away.
-	 *
-	 * Since we're holding a reference ourselves, observing a refcount of 1
-	 * means that we're the last holder and can skip it. Also, the refcount
-	 * can never increase from 1 again, so we don't need any barriers or
-	 * locks.
-	 *
-	 * Note that userspace could try to race with use and instate a new
-	 * usage _after_ we've cleared all current ones. End result will be an
-	 * in-use fb with fb-id == 0. Userspace is allowed to shoot its own foot
-	 * in this manner.
-	 */
+	 
 	if (drm_framebuffer_read_refcount(fb) > 1) {
 		if (drm_drv_uses_atomic_modeset(dev)) {
 			int ret = atomic_remove_fb(fb);
@@ -1136,15 +866,7 @@ void drm_framebuffer_remove(struct drm_framebuffer *fb)
 }
 EXPORT_SYMBOL(drm_framebuffer_remove);
 
-/**
- * drm_framebuffer_plane_width - width of the plane given the first plane
- * @width: width of the first plane
- * @fb: the framebuffer
- * @plane: plane index
- *
- * Returns:
- * The width of @plane, given that the width of the first plane is @width.
- */
+ 
 int drm_framebuffer_plane_width(int width,
 				const struct drm_framebuffer *fb, int plane)
 {
@@ -1155,15 +877,7 @@ int drm_framebuffer_plane_width(int width,
 }
 EXPORT_SYMBOL(drm_framebuffer_plane_width);
 
-/**
- * drm_framebuffer_plane_height - height of the plane given the first plane
- * @height: height of the first plane
- * @fb: the framebuffer
- * @plane: plane index
- *
- * Returns:
- * The height of @plane, given that the height of the first plane is @height.
- */
+ 
 int drm_framebuffer_plane_height(int height,
 				 const struct drm_framebuffer *fb, int plane)
 {

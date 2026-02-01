@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * unlikely profiler
- *
- * Copyright (C) 2008 Steven Rostedt <srostedt@redhat.com>
- */
+
+ 
 #include <linux/kallsyms.h>
 #include <linux/seq_file.h>
 #include <linux/spinlock.h>
@@ -43,12 +39,7 @@ probe_likely_condition(struct ftrace_likely_data *f, int val, int expect)
 	if (current->trace_recursion & TRACE_BRANCH_BIT)
 		return;
 
-	/*
-	 * I would love to save just the ftrace_likely_data pointer, but
-	 * this code can also be used by modules. Ugly things can happen
-	 * if the module is unloaded, and then we go and read the
-	 * pointer.  This is slower, but much safer.
-	 */
+	 
 
 	if (unlikely(!tr))
 		return;
@@ -68,7 +59,7 @@ probe_likely_condition(struct ftrace_likely_data *f, int val, int expect)
 
 	entry	= ring_buffer_event_data(event);
 
-	/* Strip off the path, only save the file */
+	 
 	p = f->data.file + strlen(f->data.file);
 	while (p >= f->data.file && *p != '/')
 		p--;
@@ -103,10 +94,7 @@ int enable_branch_tracing(struct trace_array *tr)
 {
 	mutex_lock(&branch_tracing_mutex);
 	branch_tracer = tr;
-	/*
-	 * Must be seen before enabling. The reader is a condition
-	 * where we do not need a matching rmb()
-	 */
+	 
 	smp_wmb();
 	branch_tracing_enabled++;
 	mutex_unlock(&branch_tracing_mutex);
@@ -177,7 +165,7 @@ static struct tracer branch_trace __read_mostly =
 	.reset		= branch_trace_reset,
 #ifdef CONFIG_FTRACE_SELFTEST
 	.selftest	= trace_selftest_startup_branch,
-#endif /* CONFIG_FTRACE_SELFTEST */
+#endif  
 	.print_header	= branch_print_header,
 };
 
@@ -200,27 +188,22 @@ static inline
 void trace_likely_condition(struct ftrace_likely_data *f, int val, int expect)
 {
 }
-#endif /* CONFIG_BRANCH_TRACER */
+#endif  
 
 void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 			  int expect, int is_constant)
 {
 	unsigned long flags = user_access_save();
 
-	/* A constant is always correct */
+	 
 	if (is_constant) {
 		f->constant++;
 		val = expect;
 	}
-	/*
-	 * I would love to have a trace point here instead, but the
-	 * trace point code is so inundated with unlikely and likely
-	 * conditions that the recursive nightmare that exists is too
-	 * much to try to get working. At least for now.
-	 */
+	 
 	trace_likely_condition(f, val, expect);
 
-	/* FIXME: Make this atomic! */
+	 
 	if (val == expect)
 		f->data.correct++;
 	else
@@ -261,7 +244,7 @@ static const char *branch_stat_process_file(struct ftrace_branch_data *p)
 {
 	const char *f;
 
-	/* Only print the file, not the path */
+	 
 	f = p->file + strlen(p->file);
 	while (f >= p->file && *f != '/')
 		f--;
@@ -273,9 +256,7 @@ static void branch_stat_show(struct seq_file *m,
 {
 	long percent;
 
-	/*
-	 * The miss is overlayed on correct, and hit on incorrect.
-	 */
+	 
 	percent = get_incorrect_percent(p);
 
 	if (percent < 0)
@@ -352,11 +333,7 @@ static int annotated_branch_stat_cmp(const void *p1, const void *p2)
 	if (a->incorrect > b->incorrect)
 		return 1;
 
-	/*
-	 * Since the above shows worse (incorrect) cases
-	 * first, we continue that by showing best (correct)
-	 * cases last.
-	 */
+	 
 	if (a->correct > b->correct)
 		return -1;
 	if (a->correct < b->correct)
@@ -452,4 +429,4 @@ __init static int all_annotated_branch_stats(void)
 	return 0;
 }
 fs_initcall(all_annotated_branch_stats);
-#endif /* CONFIG_PROFILE_ALL_BRANCHES */
+#endif  

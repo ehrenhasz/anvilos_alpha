@@ -1,68 +1,11 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/**
- * DOC: Programming Atheros 802.11n analog front end radios
- *
- * AR5416 MAC based PCI devices and AR518 MAC based PCI-Express
- * devices have either an external AR2133 analog front end radio for single
- * band 2.4 GHz communication or an AR5133 analog front end radio for dual
- * band 2.4 GHz / 5 GHz communication.
- *
- * All devices after the AR5416 and AR5418 family starting with the AR9280
- * have their analog front radios, MAC/BB and host PCIe/USB interface embedded
- * into a single-chip and require less programming.
- *
- * The following single-chips exist with a respective embedded radio:
- *
- * AR9280 - 11n dual-band 2x2 MIMO for PCIe
- * AR9281 - 11n single-band 1x2 MIMO for PCIe
- * AR9285 - 11n single-band 1x1 for PCIe
- * AR9287 - 11n single-band 2x2 MIMO for PCIe
- *
- * AR9220 - 11n dual-band 2x2 MIMO for PCI
- * AR9223 - 11n single-band 2x2 MIMO for PCI
- *
- * AR9287 - 11n single-band 1x1 MIMO for USB
- */
+ 
 
 #include "hw.h"
 #include "ar9002_phy.h"
 
-/**
- * ar9002_hw_set_channel - set channel on single-chip device
- * @ah: atheros hardware structure
- * @chan:
- *
- * This is the function to change channel on single-chip devices, that is
- * all devices after ar9280.
- *
- * This function takes the channel value in MHz and sets
- * hardware channel value. Assumes writes have been enabled to analog bus.
- *
- * Actual Expression,
- *
- * For 2GHz channel,
- * Channel Frequency = (3/4) * freq_ref * (chansel[8:0] + chanfrac[16:0]/2^17)
- * (freq_ref = 40MHz)
- *
- * For 5GHz channel,
- * Channel Frequency = (3/2) * freq_ref * (chansel[8:0] + chanfrac[16:0]/2^10)
- * (freq_ref = 40MHz/(24>>amodeRefSel))
- */
+ 
 static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 {
 	u16 bMode, fracMode, aModeRefSel = 0;
@@ -76,7 +19,7 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	reg32 = REG_READ(ah, AR_PHY_SYNTH_CONTROL);
 	reg32 &= 0xc0000000;
 
-	if (freq < 4800) { /* 2 GHz, fractional mode */
+	if (freq < 4800) {  
 		u32 txctl;
 		int regWrites = 0;
 
@@ -87,7 +30,7 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 
 		if (AR_SREV_9287_11_OR_LATER(ah)) {
 			if (freq == 2484) {
-				/* Enable channel spreading for channel 14 */
+				 
 				REG_WRITE_ARRAY(&ah->iniCckfirJapan2484,
 						1, regWrites);
 			} else {
@@ -97,7 +40,7 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 		} else {
 			txctl = REG_READ(ah, AR_PHY_CCK_TX_CTRL);
 			if (freq == 2484) {
-				/* Enable channel spreading for channel 14 */
+				 
 				REG_WRITE(ah, AR_PHY_CCK_TX_CTRL,
 					  txctl | AR_PHY_CCK_TX_CTRL_JAPAN);
 			} else {
@@ -123,15 +66,12 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 		case 1:
 		default:
 			aModeRefSel = 0;
-			/*
-			 * Enable 2G (fractional) mode for channels
-			 * which are 5MHz spaced.
-			 */
+			 
 			fracMode = 1;
 			refDivA = 1;
 			channelSel = CHANSEL_5G(freq);
 
-			/* RefDivA setting */
+			 
 			ath9k_hw_analog_shift_rmw(ah, AR_AN_SYNTH9,
 				      AR_AN_SYNTH9_REFDIVA,
 				      AR_AN_SYNTH9_REFDIVA_S, refDivA);
@@ -157,14 +97,7 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	return 0;
 }
 
-/**
- * ar9002_hw_spur_mitigate - convert baseband spur frequency
- * @ah: atheros hardware structure
- * @chan:
- *
- * For single-chip solutions. Converts to baseband spur frequency given the
- * input channel frequency and compute register settings below.
- */
+ 
 static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 				    struct ath9k_channel *chan)
 {
@@ -423,41 +356,29 @@ static void ar9002_hw_set_bt_ant_diversity(struct ath_hw *ah, bool enable)
 		antdiv_ctrl1 = ATH_BT_COEX_ANTDIV_CONTROL1_ENABLE;
 		antdiv_ctrl2 = ATH_BT_COEX_ANTDIV_CONTROL2_ENABLE;
 
-		/*
-		 * Don't disable BT ant to allow BB to control SWCOM.
-		 */
+		 
 		btcoex->bt_coex_mode2 &= (~(AR_BT_DISABLE_BT_ANT));
 		REG_WRITE(ah, AR_BT_COEX_MODE2, btcoex->bt_coex_mode2);
 
 		REG_WRITE(ah, AR_PHY_SWITCH_COM, ATH_BT_COEX_ANT_DIV_SWITCH_COM);
 		REG_RMW(ah, AR_PHY_SWITCH_CHAIN_0, 0, 0xf0000000);
 	} else {
-		/*
-		 * Disable antenna diversity, use LNA1 only.
-		 */
+		 
 		antdiv_ctrl1 = ATH_BT_COEX_ANTDIV_CONTROL1_FIXED_A;
 		antdiv_ctrl2 = ATH_BT_COEX_ANTDIV_CONTROL2_FIXED_A;
 
-		/*
-		 * Disable BT Ant. to allow concurrent BT and WLAN receive.
-		 */
+		 
 		btcoex->bt_coex_mode2 |= AR_BT_DISABLE_BT_ANT;
 		REG_WRITE(ah, AR_BT_COEX_MODE2, btcoex->bt_coex_mode2);
 
-		/*
-		 * Program SWCOM table to make sure RF switch always parks
-		 * at BT side.
-		 */
+		 
 		REG_WRITE(ah, AR_PHY_SWITCH_COM, 0);
 		REG_RMW(ah, AR_PHY_SWITCH_CHAIN_0, 0, 0xf0000000);
 	}
 
 	regval = REG_READ(ah, AR_PHY_MULTICHAIN_GAIN_CTL);
 	regval &= (~(AR_PHY_9285_ANT_DIV_CTL_ALL));
-        /*
-	 * Clear ant_fast_div_bias [14:9] since for WB195,
-	 * the main LNA is always LNA1.
-	 */
+         
 	regval &= (~(AR_PHY_9285_FAST_DIV_BIAS));
 	regval |= SM(antdiv_ctrl1, AR_PHY_9285_ANT_DIV_CTL);
 	regval |= SM(antdiv_ctrl2, AR_PHY_9285_ANT_DIV_ALT_LNACONF);
@@ -498,10 +419,7 @@ static void ar9002_hw_spectral_scan_config(struct ath_hw *ah,
 	else
 		REG_CLR_BIT(ah, AR_PHY_SPECTRAL_SCAN, repeat_bit);
 
-	/* on AR92xx, the highest bit of count will make the chip send
-	 * spectral samples endlessly. Check if this really was intended,
-	 * and fix otherwise.
-	 */
+	 
 	count = param->count;
 	if (param->endless) {
 		if (AR_SREV_9280(ah))
@@ -534,7 +452,7 @@ static void ar9002_hw_spectral_scan_config(struct ath_hw *ah,
 static void ar9002_hw_spectral_scan_trigger(struct ath_hw *ah)
 {
 	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN, AR_PHY_SPECTRAL_SCAN_ENABLE);
-	/* Activate spectral scan */
+	 
 	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN,
 		    AR_PHY_SPECTRAL_SCAN_ACTIVE);
 }
@@ -543,7 +461,7 @@ static void ar9002_hw_spectral_scan_wait(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 
-	/* Poll for spectral scan complete */
+	 
 	if (!ath9k_hw_wait(ah, AR_PHY_SPECTRAL_SCAN,
 			   AR_PHY_SPECTRAL_SCAN_ACTIVE,
 			   0, AH_WAIT_TIMEOUT)) {

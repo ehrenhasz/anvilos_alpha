@@ -1,28 +1,5 @@
-/* $OpenBSD: auth2-chall.c,v 1.54 2020/10/18 11:32:01 djm Exp $ */
-/*
- * Copyright (c) 2001 Markus Friedl.  All rights reserved.
- * Copyright (c) 2001 Per Allansson.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -46,7 +23,7 @@
 #include "misc.h"
 #include "servconf.h"
 
-/* import */
+ 
 extern ServerOptions options;
 
 static int auth2_challenge_start(struct ssh *);
@@ -148,7 +125,7 @@ kbdint_free(KbdintAuthctxt *kbdintctxt)
 	free(kbdintctxt->devices);
 	freezero(kbdintctxt, sizeof(*kbdintctxt));
 }
-/* get next device */
+ 
 static int
 kbdint_next_device(Authctxt *authctxt, KbdintAuthctxt *kbdintctxt)
 {
@@ -185,10 +162,7 @@ kbdint_next_device(Authctxt *authctxt, KbdintAuthctxt *kbdintctxt)
 	return kbdintctxt->device ? 1 : 0;
 }
 
-/*
- * try challenge-response, set authctxt->postponed if we have to
- * wait for the response.
- */
+ 
 int
 auth2_challenge(struct ssh *ssh, char *devs)
 {
@@ -204,12 +178,12 @@ auth2_challenge(struct ssh *ssh, char *devs)
 	return auth2_challenge_start(ssh);
 }
 
-/* unregister kbd-int callbacks and context */
+ 
 void
 auth2_challenge_stop(struct ssh *ssh)
 {
 	Authctxt *authctxt = ssh->authctxt;
-	/* unregister callback */
+	 
 	ssh_dispatch_set(ssh, SSH2_MSG_USERAUTH_INFO_RESPONSE, NULL);
 	if (authctxt->kbdintctxt != NULL) {
 		kbdint_free(authctxt->kbdintctxt);
@@ -217,7 +191,7 @@ auth2_challenge_stop(struct ssh *ssh)
 	}
 }
 
-/* side effect: sets authctxt->postponed if a reply was sent*/
+ 
 static int
 auth2_challenge_start(struct ssh *ssh)
 {
@@ -265,7 +239,7 @@ send_userauth_info_request(struct ssh *ssh)
 	if ((r = sshpkt_start(ssh, SSH2_MSG_USERAUTH_INFO_REQUEST)) != 0 ||
 	    (r = sshpkt_put_cstring(ssh, name)) != 0 ||
 	    (r = sshpkt_put_cstring(ssh, instr)) != 0 ||
-	    (r = sshpkt_put_cstring(ssh, "")) != 0 ||	/* language not used */
+	    (r = sshpkt_put_cstring(ssh, "")) != 0 ||	 
 	    (r = sshpkt_put_u32(ssh, kbdintctxt->nreq)) != 0)
 		fatal_fr(r, "start packet");
 	for (i = 0; i < kbdintctxt->nreq; i++) {
@@ -305,7 +279,7 @@ input_userauth_info_response(int type, u_int32_t seq, struct ssh *ssh)
 	if (kbdintctxt->device == NULL)
 		fatal_f("no device");
 
-	authctxt->postponed = 0;	/* reset */
+	authctxt->postponed = 0;	 
 	if ((r = sshpkt_get_u32(ssh, &nresp)) != 0)
 		fatal_fr(r, "parse packet");
 	if (nresp != kbdintctxt->nreq)
@@ -332,16 +306,16 @@ input_userauth_info_response(int type, u_int32_t seq, struct ssh *ssh)
 
 	switch (res) {
 	case 0:
-		/* Success! */
+		 
 		authenticated = authctxt->valid ? 1 : 0;
 		break;
 	case 1:
-		/* Authentication needs further interaction */
+		 
 		if (send_userauth_info_request(ssh) == 1)
 			authctxt->postponed = 1;
 		break;
 	default:
-		/* Failure! */
+		 
 		break;
 	}
 	devicename = kbdintctxt->device->name;
@@ -349,8 +323,8 @@ input_userauth_info_response(int type, u_int32_t seq, struct ssh *ssh)
 		if (authenticated) {
 			auth2_challenge_stop(ssh);
 		} else {
-			/* start next device */
-			/* may set authctxt->postponed */
+			 
+			 
 			auth2_challenge_start(ssh);
 		}
 	}

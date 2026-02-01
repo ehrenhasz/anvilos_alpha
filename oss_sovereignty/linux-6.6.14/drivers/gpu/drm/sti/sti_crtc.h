@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _STI_CRTC_H_
 #define _STI_CRTC_H_

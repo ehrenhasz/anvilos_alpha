@@ -1,39 +1,4 @@
-/*
- * net/tipc/name_table.c: TIPC name table code
- *
- * Copyright (c) 2000-2006, 2014-2018, Ericsson AB
- * Copyright (c) 2004-2008, 2010-2014, Wind River Systems
- * Copyright (c) 2020-2021, Red Hat Inc
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <net/sock.h>
 #include <linux/list_sort.h>
@@ -48,17 +13,7 @@
 #include "node.h"
 #include "group.h"
 
-/**
- * struct service_range - container for all bindings of a service range
- * @lower: service range lower bound
- * @upper: service range upper bound
- * @tree_node: member of service range RB tree
- * @max: largest 'upper' in this node subtree
- * @local_publ: list of identical publications made from this node
- *   Used by closest_first lookup and multicast lookup algorithm
- * @all_publ: all publications identical to this one, whatever node and scope
- *   Used by round-robin lookup algorithm
- */
+ 
 struct service_range {
 	u32 lower;
 	u32 upper;
@@ -68,23 +23,14 @@ struct service_range {
 	struct list_head all_publ;
 };
 
-/**
- * struct tipc_service - container for all published instances of a service type
- * @type: 32 bit 'type' value for service
- * @publ_cnt: increasing counter for publications in this service
- * @ranges: rb tree containing all service ranges for this service
- * @service_list: links to adjacent name ranges in hash chain
- * @subscriptions: list of subscriptions for this service type
- * @lock: spinlock controlling access to pertaining service ranges/publications
- * @rcu: RCU callback head used for deferred freeing
- */
+ 
 struct tipc_service {
 	u32 type;
 	u32 publ_cnt;
 	struct rb_root ranges;
 	struct hlist_node service_list;
 	struct list_head subscriptions;
-	spinlock_t lock; /* Covers service range list */
+	spinlock_t lock;  
 	struct rcu_head rcu;
 };
 
@@ -99,14 +45,7 @@ RB_DECLARE_CALLBACKS_MAX(static, sr_callbacks,
 #define service_range_overlap(sr, start, end)				\
 	((sr)->lower <= (end) && (sr)->upper >= (start))
 
-/**
- * service_range_foreach_match - iterate over tipc service rbtree for each
- *                               range match
- * @sr: the service range pointer as a loop cursor
- * @sc: the pointer to tipc service which holds the service range rbtree
- * @start: beginning of the search range (end >= start) for matching
- * @end: end of the search range (end >= start) for matching
- */
+ 
 #define service_range_foreach_match(sr, sc, start, end)			\
 	for (sr = service_range_match_first((sc)->ranges.rb_node,	\
 					    start,			\
@@ -116,44 +55,31 @@ RB_DECLARE_CALLBACKS_MAX(static, sr_callbacks,
 					   start,			\
 					   end))
 
-/**
- * service_range_match_first - find first service range matching a range
- * @n: the root node of service range rbtree for searching
- * @start: beginning of the search range (end >= start) for matching
- * @end: end of the search range (end >= start) for matching
- *
- * Return: the leftmost service range node in the rbtree that overlaps the
- * specific range if any. Otherwise, returns NULL.
- */
+ 
 static struct service_range *service_range_match_first(struct rb_node *n,
 						       u32 start, u32 end)
 {
 	struct service_range *sr;
 	struct rb_node *l, *r;
 
-	/* Non overlaps in tree at all? */
+	 
 	if (!n || service_range_entry(n)->max < start)
 		return NULL;
 
 	while (n) {
 		l = n->rb_left;
 		if (l && service_range_entry(l)->max >= start) {
-			/* A leftmost overlap range node must be one in the left
-			 * subtree. If not, it has lower > end, then nodes on
-			 * the right side cannot satisfy the condition either.
-			 */
+			 
 			n = l;
 			continue;
 		}
 
-		/* No one in the left subtree can match, return if this node is
-		 * an overlap i.e. leftmost.
-		 */
+		 
 		sr = service_range_entry(n);
 		if (service_range_overlap(sr, start, end))
 			return sr;
 
-		/* Ok, try to lookup on the right side */
+		 
 		r = n->rb_right;
 		if (sr->lower <= end &&
 		    r && service_range_entry(r)->max >= start) {
@@ -166,15 +92,7 @@ static struct service_range *service_range_match_first(struct rb_node *n,
 	return NULL;
 }
 
-/**
- * service_range_match_next - find next service range matching a range
- * @n: a node in service range rbtree from which the searching starts
- * @start: beginning of the search range (end >= start) for matching
- * @end: end of the search range (end >= start) for matching
- *
- * Return: the next service range node to the given node in the rbtree that
- * overlaps the specific range if any. Otherwise, returns NULL.
- */
+ 
 static struct service_range *service_range_match_next(struct rb_node *n,
 						      u32 start, u32 end)
 {
@@ -184,27 +102,21 @@ static struct service_range *service_range_match_next(struct rb_node *n,
 	while (n) {
 		r = n->rb_right;
 		if (r && service_range_entry(r)->max >= start)
-			/* A next overlap range node must be one in the right
-			 * subtree. If not, it has lower > end, then any next
-			 * successor (- an ancestor) of this node cannot
-			 * satisfy the condition either.
-			 */
+			 
 			return service_range_match_first(r, start, end);
 
-		/* No one in the right subtree can match, go up to find an
-		 * ancestor of this node which is parent of a left-hand child.
-		 */
+		 
 		while ((p = rb_parent(n)) && n == p->rb_right)
 			n = p;
 		if (!p)
 			break;
 
-		/* Return if this ancestor is an overlap */
+		 
 		sr = service_range_entry(p);
 		if (service_range_overlap(sr, start, end))
 			return sr;
 
-		/* Ok, try to lookup more from this ancestor */
+		 
 		if (sr->lower <= end) {
 			n = p;
 			continue;
@@ -220,12 +132,7 @@ static int hash(int x)
 	return x & (TIPC_NAMETBL_SIZE - 1);
 }
 
-/**
- * tipc_publ_create - create a publication structure
- * @ua: the service range the user is binding to
- * @sk: the address of the socket that is bound
- * @key: publication key
- */
+ 
 static struct publication *tipc_publ_create(struct tipc_uaddr *ua,
 					    struct tipc_socket_addr *sk,
 					    u32 key)
@@ -247,13 +154,7 @@ static struct publication *tipc_publ_create(struct tipc_uaddr *ua,
 	return p;
 }
 
-/**
- * tipc_service_create - create a service structure for the specified 'type'
- * @net: network namespace
- * @ua: address representing the service to be bound
- *
- * Allocates a single range structure and sets it to all 0's.
- */
+ 
 static struct tipc_service *tipc_service_create(struct net *net,
 						struct tipc_uaddr *ua)
 {
@@ -277,15 +178,14 @@ static struct tipc_service *tipc_service_create(struct net *net,
 	return service;
 }
 
-/*  tipc_service_find_range - find service range matching publication parameters
- */
+ 
 static struct service_range *tipc_service_find_range(struct tipc_service *sc,
 						     struct tipc_uaddr *ua)
 {
 	struct service_range *sr;
 
 	service_range_foreach_match(sr, sc, ua->sr.lower, ua->sr.upper) {
-		/* Look for exact match */
+		 
 		if (sr->lower == ua->sr.lower && sr->upper == ua->sr.upper)
 			return sr;
 	}
@@ -346,7 +246,7 @@ static bool tipc_service_insert_publ(struct net *net,
 
 	first = list_empty(&sr->all_publ);
 
-	/* Return if the publication already exists */
+	 
 	list_for_each_entry(_p, &sr->all_publ, all_publ) {
 		if (_p->key == key && (!_p->sk.node || _p->sk.node == node)) {
 			pr_debug("Failed to bind duplicate %u,%u,%u/%u:%u/%u\n",
@@ -361,7 +261,7 @@ static bool tipc_service_insert_publ(struct net *net,
 	list_add(&p->all_publ, &sr->all_publ);
 	p->id = sc->publ_cnt++;
 
-	/* Any subscriptions waiting for notification?  */
+	 
 	list_for_each_entry_safe(sub, tmp, &sc->subscriptions, service_list) {
 		tipc_sub_report_overlap(sub, p, TIPC_PUBLISHED, first);
 	}
@@ -374,12 +274,7 @@ exit:
 	return res;
 }
 
-/**
- * tipc_service_remove_publ - remove a publication from a service
- * @r: service_range to remove publication from
- * @sk: address publishing socket
- * @key: target publication key
- */
+ 
 static struct publication *tipc_service_remove_publ(struct service_range *r,
 						    struct tipc_socket_addr *sk,
 						    u32 key)
@@ -397,9 +292,7 @@ static struct publication *tipc_service_remove_publ(struct service_range *r,
 	return NULL;
 }
 
-/*
- * Code reused: time_after32() for the same purpose
- */
+ 
 #define publication_after(pa, pb) time_after32((pa)->id, (pb)->id)
 static int tipc_publ_sort(void *priv, const struct list_head *a,
 			  const struct list_head *b)
@@ -411,13 +304,7 @@ static int tipc_publ_sort(void *priv, const struct list_head *a,
 	return publication_after(pa, pb);
 }
 
-/**
- * tipc_service_subscribe - attach a subscription, and optionally
- * issue the prescribed number of events if there is any service
- * range overlapping with the requested range
- * @service: the tipc_service to attach the @sub to
- * @sub: the subscription to attach
- */
+ 
 static void tipc_service_subscribe(struct tipc_service *service,
 				   struct tipc_subscription *sub)
 {
@@ -443,14 +330,14 @@ static void tipc_service_subscribe(struct tipc_service *service,
 			if (filter & TIPC_SUB_PORTS)
 				list_add_tail(&p->list, &publ_list);
 			else if (!first || publication_after(first, p))
-				/* Pick this range's *first* publication */
+				 
 				first = p;
 		}
 		if (first)
 			list_add_tail(&first->list, &publ_list);
 	}
 
-	/* Sort the publications before reporting */
+	 
 	list_sort(NULL, &publ_list, tipc_publ_sort);
 	list_for_each_entry_safe(p, tmp, &publ_list, list) {
 		tipc_sub_report_overlap(sub, p, TIPC_PUBLISHED, true);
@@ -517,19 +404,19 @@ struct publication *tipc_nametbl_remove_publ(struct net *net,
 	if (!p)
 		goto unlock;
 
-	/* Notify any waiting subscriptions */
+	 
 	last = list_empty(&sr->all_publ);
 	list_for_each_entry_safe(sub, tmp, &sc->subscriptions, service_list) {
 		tipc_sub_report_overlap(sub, p, TIPC_WITHDRAWN, last);
 	}
 
-	/* Remove service range item if this was its last publication */
+	 
 	if (list_empty(&sr->all_publ)) {
 		rb_erase_augmented(&sr->tree_node, &sc->ranges, &sr_callbacks);
 		kfree(sr);
 	}
 
-	/* Delete service item if no more publications and subscriptions */
+	 
 	if (RB_EMPTY_ROOT(&sc->ranges) && list_empty(&sc->subscriptions)) {
 		hlist_del_init_rcu(&sc->service_list);
 		kfree_rcu(sc, rcu);
@@ -545,27 +432,7 @@ exit:
 	return p;
 }
 
-/**
- * tipc_nametbl_lookup_anycast - perform service instance to socket translation
- * @net: network namespace
- * @ua: service address to look up
- * @sk: address to socket we want to find
- *
- * On entry, a non-zero 'sk->node' indicates the node where we want lookup to be
- * performed, which may not be this one.
- *
- * On exit:
- *
- * - If lookup is deferred to another node, leave 'sk->node' unchanged and
- *   return 'true'.
- * - If lookup is successful, set the 'sk->node' and 'sk->ref' (== portid) which
- *   represent the bound socket and return 'true'.
- * - If lookup fails, return 'false'
- *
- * Note that for legacy users (node configured with Z.C.N address format) the
- * 'closest-first' lookup algorithm must be maintained, i.e., if sk.node is 0
- * we must look in the local binding list first
- */
+ 
 bool tipc_nametbl_lookup_anycast(struct net *net,
 				 struct tipc_uaddr *ua,
 				 struct tipc_socket_addr *sk)
@@ -590,7 +457,7 @@ bool tipc_nametbl_lookup_anycast(struct net *net,
 
 	spin_lock_bh(&sc->lock);
 	service_range_foreach_match(r, sc, inst, inst) {
-		/* Select lookup algo: local, closest-first or round-robin */
+		 
 		if (sk->node == self) {
 			l = &r->local_publ;
 			if (list_empty(l))
@@ -608,9 +475,7 @@ bool tipc_nametbl_lookup_anycast(struct net *net,
 		}
 		*sk = p->sk;
 		res = true;
-		/* Todo: as for legacy, pick the first matching range only, a
-		 * "true" round-robin will be performed as needed.
-		 */
+		 
 		break;
 	}
 	spin_unlock_bh(&sc->lock);
@@ -620,11 +485,7 @@ exit:
 	return res;
 }
 
-/* tipc_nametbl_lookup_group(): lookup destinaton(s) in a communication group
- * Returns a list of one (== group anycast) or more (== group multicast)
- * destination socket/node pairs matching the given address.
- * The requester may or may not want to exclude himself from the list.
- */
+ 
 bool tipc_nametbl_lookup_group(struct net *net, struct tipc_uaddr *ua,
 			       struct list_head *dsts, int *dstcnt,
 			       u32 exclude, bool mcast)
@@ -643,7 +504,7 @@ bool tipc_nametbl_lookup_group(struct net *net, struct tipc_uaddr *ua,
 
 	spin_lock_bh(&sc->lock);
 
-	/* Todo: a full search i.e. service_range_foreach_match() instead? */
+	 
 	sr = service_range_match_first(sc->ranges.rb_node, inst, inst);
 	if (!sr)
 		goto no_match;
@@ -667,11 +528,7 @@ exit:
 	return !list_empty(dsts);
 }
 
-/* tipc_nametbl_lookup_mcast_sockets(): look up node local destinaton sockets
- *                                      matching the given address
- * Used on nodes which have received a multicast/broadcast message
- * Returns a list of local sockets
- */
+ 
 void tipc_nametbl_lookup_mcast_sockets(struct net *net, struct tipc_uaddr *ua,
 				       struct list_head *dports)
 {
@@ -697,11 +554,7 @@ exit:
 	rcu_read_unlock();
 }
 
-/* tipc_nametbl_lookup_mcast_nodes(): look up all destination nodes matching
- *                                    the given address. Used in sending node.
- * Used on nodes which are sending out a multicast/broadcast message
- * Returns a list of nodes, including own node if applicable
- */
+ 
 void tipc_nametbl_lookup_mcast_nodes(struct net *net, struct tipc_uaddr *ua,
 				     struct tipc_nlist *nodes)
 {
@@ -725,8 +578,7 @@ exit:
 	rcu_read_unlock();
 }
 
-/* tipc_nametbl_build_group - build list of communication group members
- */
+ 
 void tipc_nametbl_build_group(struct net *net, struct tipc_group *grp,
 			      struct tipc_uaddr *ua)
 {
@@ -755,8 +607,7 @@ exit:
 	rcu_read_unlock();
 }
 
-/* tipc_nametbl_publish - add service binding to name table
- */
+ 
 struct publication *tipc_nametbl_publish(struct net *net, struct tipc_uaddr *ua,
 					 struct tipc_socket_addr *sk, u32 key)
 {
@@ -788,13 +639,7 @@ exit:
 
 }
 
-/**
- * tipc_nametbl_withdraw - withdraw a service binding
- * @net: network namespace
- * @ua: service address/range being unbound
- * @sk: address of the socket being unbound from
- * @key: target publication key
- */
+ 
 void tipc_nametbl_withdraw(struct net *net, struct tipc_uaddr *ua,
 			   struct tipc_socket_addr *sk, u32 key)
 {
@@ -820,10 +665,7 @@ void tipc_nametbl_withdraw(struct net *net, struct tipc_uaddr *ua,
 		tipc_node_broadcast(net, skb, rc_dests);
 }
 
-/**
- * tipc_nametbl_subscribe - add a subscription object to the name table
- * @sub: subscription to add
- */
+ 
 bool tipc_nametbl_subscribe(struct tipc_subscription *sub)
 {
 	struct tipc_net *tn = tipc_net(sub->net);
@@ -851,10 +693,7 @@ bool tipc_nametbl_subscribe(struct tipc_subscription *sub)
 	return res;
 }
 
-/**
- * tipc_nametbl_unsubscribe - remove a subscription object from name table
- * @sub: subscription to remove
- */
+ 
 void tipc_nametbl_unsubscribe(struct tipc_subscription *sub)
 {
 	struct tipc_net *tn = tipc_net(sub->net);
@@ -872,7 +711,7 @@ void tipc_nametbl_unsubscribe(struct tipc_subscription *sub)
 	list_del_init(&sub->service_list);
 	tipc_sub_put(sub);
 
-	/* Delete service item if no more publications and subscriptions */
+	 
 	if (RB_EMPTY_ROOT(&sc->ranges) && list_empty(&sc->subscriptions)) {
 		hlist_del_init_rcu(&sc->service_list);
 		kfree_rcu(sc, rcu);
@@ -903,11 +742,7 @@ int tipc_nametbl_init(struct net *net)
 	return 0;
 }
 
-/**
- * tipc_service_delete - purge all publications for a service and delete it
- * @net: the associated network namespace
- * @sc: tipc_service to delete
- */
+ 
 static void tipc_service_delete(struct net *net, struct tipc_service *sc)
 {
 	struct service_range *sr, *tmpr;
@@ -935,9 +770,7 @@ void tipc_nametbl_stop(struct net *net)
 	struct tipc_service *service;
 	u32 i;
 
-	/* Verify name table is empty and purge any lingering
-	 * publications, then release the name table
-	 */
+	 
 	spin_lock_bh(&tn->nametbl_lock);
 	for (i = 0; i < TIPC_NAMETBL_SIZE; i++) {
 		if (hlist_empty(&nt->services[i]))
@@ -1120,12 +953,7 @@ int tipc_nl_name_table_dump(struct sk_buff *skb, struct netlink_callback *cb)
 	if (!err) {
 		done = 1;
 	} else if (err != -EMSGSIZE) {
-		/* We never set seq or call nl_dump_check_consistent() this
-		 * means that setting prev_seq here will cause the consistence
-		 * check to fail in the netlink callback handler. Resulting in
-		 * the NLMSG_DONE message having the NLM_F_DUMP_INTR flag set if
-		 * we got an error.
-		 */
+		 
 		cb->prev_seq = 1;
 	}
 	rcu_read_unlock();

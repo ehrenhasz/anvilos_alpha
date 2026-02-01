@@ -1,47 +1,4 @@
-/*
- * Copyright (c) 2016-2017 VMware, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of EITHER the GNU General Public License
- * version 2 as published by the Free Software Foundation or the BSD
- * 2-Clause License. This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED
- * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License version 2 for more details at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program available in the file COPYING in the main
- * directory of this source tree.
- *
- * The BSD 2-Clause License
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <asm/page.h>
 #include <linux/io.h>
@@ -52,13 +9,7 @@
 
 #include "pvrdma.h"
 
-/**
- * pvrdma_query_srq - query shared receive queue
- * @ibsrq: the shared receive queue to query
- * @srq_attr: attributes to query and return to client
- *
- * @return: 0 for success, otherwise returns an errno.
- */
+ 
 int pvrdma_query_srq(struct ib_srq *ibsrq, struct ib_srq_attr *srq_attr)
 {
 	struct pvrdma_dev *dev = to_vdev(ibsrq->device);
@@ -88,14 +39,7 @@ int pvrdma_query_srq(struct ib_srq *ibsrq, struct ib_srq_attr *srq_attr)
 	return 0;
 }
 
-/**
- * pvrdma_create_srq - create shared receive queue
- * @ibsrq: the IB shared receive queue
- * @init_attr: shared receive queue attributes
- * @udata: user data
- *
- * @return: 0 on success, otherwise returns an errno.
- */
+ 
 int pvrdma_create_srq(struct ib_srq *ibsrq, struct ib_srq_init_attr *init_attr,
 		      struct ib_udata *udata)
 {
@@ -111,7 +55,7 @@ int pvrdma_create_srq(struct ib_srq *ibsrq, struct ib_srq_init_attr *init_attr,
 	int ret;
 
 	if (!udata) {
-		/* No support for kernel clients. */
+		 
 		dev_warn(&dev->pdev->dev,
 			 "no shared receive queue support for kernel client\n");
 		return -EOPNOTSUPP;
@@ -194,7 +138,7 @@ int pvrdma_create_srq(struct ib_srq *ibsrq, struct ib_srq_init_attr *init_attr,
 	dev->srq_tbl[srq->srq_handle % dev->dsr->caps.max_srq] = srq;
 	spin_unlock_irqrestore(&dev->srq_tbl_lock, flags);
 
-	/* Copy udata back. */
+	 
 	if (ib_copy_to_udata(udata, &srq_resp, sizeof(srq_resp))) {
 		dev_warn(&dev->pdev->dev, "failed to copy back udata\n");
 		pvrdma_destroy_srq(&srq->ibsrq, udata);
@@ -225,7 +169,7 @@ static void pvrdma_free_srq(struct pvrdma_dev *dev, struct pvrdma_srq *srq)
 		complete(&srq->free);
 	wait_for_completion(&srq->free);
 
-	/* There is no support for kernel clients, so this is safe. */
+	 
 	ib_umem_release(srq->umem);
 
 	pvrdma_page_dir_cleanup(dev, &srq->pdir);
@@ -233,13 +177,7 @@ static void pvrdma_free_srq(struct pvrdma_dev *dev, struct pvrdma_srq *srq)
 	atomic_dec(&dev->num_srqs);
 }
 
-/**
- * pvrdma_destroy_srq - destroy shared receive queue
- * @srq: the shared receive queue to destroy
- * @udata: user data or null for kernel object
- *
- * @return: 0 for success.
- */
+ 
 int pvrdma_destroy_srq(struct ib_srq *srq, struct ib_udata *udata)
 {
 	struct pvrdma_srq *vsrq = to_vsrq(srq);
@@ -262,15 +200,7 @@ int pvrdma_destroy_srq(struct ib_srq *srq, struct ib_udata *udata)
 	return 0;
 }
 
-/**
- * pvrdma_modify_srq - modify shared receive queue attributes
- * @ibsrq: the shared receive queue to modify
- * @attr: the shared receive queue's new attributes
- * @attr_mask: attributes mask
- * @udata: user data
- *
- * @returns 0 on success, otherwise returns an errno.
- */
+ 
 int pvrdma_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
 		      enum ib_srq_attr_mask attr_mask, struct ib_udata *udata)
 {
@@ -280,7 +210,7 @@ int pvrdma_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
 	struct pvrdma_dev *dev = to_vdev(ibsrq->device);
 	int ret;
 
-	/* Only support SRQ limit. */
+	 
 	if (!(attr_mask & IB_SRQ_LIMIT))
 		return -EINVAL;
 

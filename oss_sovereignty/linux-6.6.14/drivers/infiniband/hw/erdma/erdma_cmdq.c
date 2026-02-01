@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+
+ 
+ 
+ 
 
 #include "erdma.h"
 
@@ -227,7 +227,7 @@ err_destroy_sq:
 
 void erdma_finish_cmdq_init(struct erdma_dev *dev)
 {
-	/* after device init successfully, change cmdq to event mode. */
+	 
 	dev->cmdq.use_event = true;
 	arm_cmdq_cq(&dev->cmdq);
 }
@@ -314,7 +314,7 @@ static int erdma_poll_single_cmd_completion(struct erdma_cmdq *cmdq)
 	comp_wait->cmd_status = ERDMA_CMD_STATUS_FINISHED;
 	comp_wait->comp_status = FIELD_GET(ERDMA_CQE_HDR_SYNDROME_MASK, hdr0);
 	cmdq->sq.ci += cmdq->sq.wqebb_cnt;
-	/* Copy 16B comp data after cqe hdr to outer */
+	 
 	be32_to_cpu_array(comp_wait->comp_data, cqe + 2, 4);
 
 	if (cmdq->use_event)
@@ -330,9 +330,7 @@ static void erdma_polling_cmd_completions(struct erdma_cmdq *cmdq)
 
 	spin_lock_irqsave(&cmdq->cq.lock, flags);
 
-	/* We must have less than # of max_outstandings
-	 * completions at one time.
-	 */
+	 
 	for (comp_num = 0; comp_num < cmdq->max_outstandings; comp_num++)
 		if (erdma_poll_single_cmd_completion(cmdq))
 			break;

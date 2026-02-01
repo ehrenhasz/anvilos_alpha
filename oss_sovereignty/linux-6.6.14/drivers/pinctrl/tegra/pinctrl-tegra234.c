@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Pinctrl data for the NVIDIA Tegra234 pinmux
- *
- * Copyright (c) 2021-2023, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -15,7 +11,7 @@
 
 #include "pinctrl-tegra.h"
 
-/* Define unique ID for each pins */
+ 
 enum {
 	TEGRA_PIN_DAP6_SCLK_PA0,
 	TEGRA_PIN_DAP6_DOUT_PA1,
@@ -221,7 +217,7 @@ enum {
 	TEGRA_PIN_HDMI_CEC_PGG0,
 };
 
-/* Table for pin descriptor */
+ 
 static const struct pinctrl_pin_desc tegra234_pins[] = {
 	PINCTRL_PIN(TEGRA_PIN_DAP6_SCLK_PA0, "DAP6_SCLK_PA0"),
 	PINCTRL_PIN(TEGRA_PIN_DAP6_DOUT_PA1, "DAP6_DOUT_PA1"),
@@ -1188,7 +1184,7 @@ static const unsigned int sdmmc1_comp_pins[] = {
 	TEGRA_PIN_SDMMC1_COMP,
 };
 
-/* Define unique ID for each function */
+ 
 enum tegra_mux_dt {
 	TEGRA_MUX_GP,
 	TEGRA_MUX_UARTC,
@@ -1282,7 +1278,7 @@ enum tegra_mux_dt {
 	TEGRA_MUX_IGPU,
 };
 
-/* Make list of each function name */
+ 
 #define TEGRA_PIN_FUNCTION(lid) #lid
 
 static const char * const tegra234_functions[] = {
@@ -1443,7 +1439,7 @@ static const char * const tegra234_functions[] = {
 		.drvtype_bit = 13,				\
 		.lpdr_bit = e_lpdr,				\
 
-/* main drive pin groups */
+ 
 #define	drive_soc_gpio08_pb0			DRV_PINGROUP_ENTRY_Y(0x500c,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define	drive_soc_gpio36_pm5			DRV_PINGROUP_ENTRY_Y(0x10004,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define	drive_soc_gpio53_pm6			DRV_PINGROUP_ENTRY_Y(0x1000c,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
@@ -1849,7 +1845,7 @@ static const struct pinctrl_pin_desc tegra234_aon_pins[] = {
 	PINCTRL_PIN(TEGRA_PIN_HDMI_CEC_PGG0, "HDMI_CEC_PGG0"),
 };
 
-/* AON drive pin groups */
+ 
 #define	drive_touch_clk_pcc4			DRV_PINGROUP_ENTRY_Y(0x2004,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define	drive_uart3_rx_pcc6			DRV_PINGROUP_ENTRY_Y(0x200c,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define	drive_uart3_tx_pcc5			DRV_PINGROUP_ENTRY_Y(0x2014,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)

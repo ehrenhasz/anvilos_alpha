@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt7986-wm8960.c  --  MT7986-WM8960 ALSA SoC machine driver
- *
- * Copyright (c) 2023 MediaTek Inc.
- * Authors: Vic Wu <vic.wu@mediatek.com>
- *          Maso Huang <maso.huang@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -43,7 +37,7 @@ SND_SOC_DAILINK_DEFS(codec,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
 static struct snd_soc_dai_link mt7986_wm8960_dai_links[] = {
-	/* FE */
+	 
 	{
 		.name = "wm8960-playback",
 		.stream_name = "wm8960-playback",
@@ -62,7 +56,7 @@ static struct snd_soc_dai_link mt7986_wm8960_dai_links[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(capture),
 	},
-	/* BE */
+	 
 	{
 		.name = "wm8960-codec",
 		.no_pcm = 1,
@@ -174,7 +168,7 @@ static void mt7986_wm8960_machine_remove(struct platform_device *pdev)
 
 static const struct of_device_id mt7986_wm8960_machine_dt_match[] = {
 	{.compatible = "mediatek,mt7986-wm8960-sound"},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mt7986_wm8960_machine_dt_match);
 
@@ -189,7 +183,7 @@ static struct platform_driver mt7986_wm8960_machine = {
 
 module_platform_driver(mt7986_wm8960_machine);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT7986 WM8960 ALSA SoC machine driver");
 MODULE_AUTHOR("Vic Wu <vic.wu@mediatek.com>");
 MODULE_LICENSE("GPL");

@@ -1,46 +1,10 @@
-/* Factoring of uintmax_t numbers. Generation of needed tables.
-
-   Contributed to the GNU project by Torbjörn Granlund and Niels Möller
-   Contains code from GNU MP.
-
-Copyright 2012-2023 Free Software Foundation, Inc.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation; either version 3 of the License, or (at your option) any later
-version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see https://www.gnu.org/licenses/.  */
-
-#include <config.h>
-
-#include <attribute.h>
-#include <inttypes.h>
-
-#include <limits.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-
-/* Deactivate "rpl_"-prefixed definitions of these symbols.  */
+ 
 #undef fclose
 #undef free
 #undef malloc
 #undef strerror
 
-/* An unsigned type that is no narrower than 32 bits and no narrower
-   than unsigned int.  It's best to make it as wide as possible.
-   For GCC 4.6 and later, use a heuristic to guess whether unsigned
-   __int128 works on your platform.  If this heuristic does not work
-   for you, please report a bug; in the meantime compile with, e.g.,
-   -Dwide_uint='unsigned __int128' to override the heuristic.  */
+ 
 #ifndef wide_uint
 # if 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
 typedef unsigned __int128 wide_uint;
@@ -52,8 +16,8 @@ typedef uintmax_t wide_uint;
 struct prime
 {
   unsigned p;
-  wide_uint pinv; /* Inverse mod b = 2^{bitsize of wide_uint} */
-  wide_uint lim; /* floor ((wide_uint) -1 / p) */
+  wide_uint pinv;  
+  wide_uint lim;  
 };
 
 ATTRIBUTE_CONST
@@ -82,9 +46,7 @@ process_prime (struct prime *info, unsigned p)
 static void
 print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
 {
-  /* Number of bits per integer literal.  8 is too many, because
-     uintmax_t is 32 bits on some machines so we cannot shift by 32 bits.
-     So use 7.  */
+   
   int hex_digits_per_literal = 7;
   int bits_per_literal = hex_digits_per_literal * 4;
 
@@ -110,21 +72,7 @@ print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
   printf ("0x%0*xU", hex_digits_per_literal, remainder);
 }
 
-/* Work around <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=109635>.  */
-#if 13 <= __GNUC__
-# pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
-
-static void
-output_primes (const struct prime *primes, unsigned nprimes)
-{
-  unsigned i;
-  unsigned p;
-  int is_prime;
-
-  /* Compute wide_uint_bits by repeated shifting, rather than by
-     multiplying sizeof by CHAR_BIT, as this works even if the
-     wide_uint representation has holes.  */
+ 
   unsigned wide_uint_bits = 0;
   wide_uint mask = -1;
   for (wide_uint_bits = 0; mask; wide_uint_bits++)
@@ -136,7 +84,7 @@ output_primes (const struct prime *primes, unsigned nprimes)
   for (i = 0, p = 2; i < nprimes; i++)
     {
       unsigned int d8 = i + 8 < nprimes ? primes[i + 8].p - primes[i].p : 0xff;
-      if (255 < d8) /* this happens at 668221 */
+      if (255 < d8)  
         abort ();
       printf ("P (%u, %u,\n   (", primes[i].p - p, d8);
       print_wide_uint (primes[i].pinv, 0, wide_uint_bits);
@@ -146,7 +94,7 @@ output_primes (const struct prime *primes, unsigned nprimes)
 
   printf ("\n#undef FIRST_OMITTED_PRIME\n");
 
-  /* Find next prime */
+   
   do
     {
       p += 2;
@@ -199,12 +147,12 @@ main (int argc, char **argv)
   if (limit < 3)
     return EXIT_SUCCESS;
 
-  /* Make limit odd */
+   
   if ( !(limit & 1))
     limit--;
 
   size = (limit - 1) / 2;
-  /* sieve[i] represents 3+2*i */
+   
   sieve = xalloc (size);
   memset (sieve, 1, size);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_atomic_state_helper.h>
 
@@ -17,13 +15,13 @@
 #include "intel_mchbar_regs.h"
 #include "intel_pcode.h"
 
-/* Parameters for Qclk Geyserville (QGV) */
+ 
 struct intel_qgv_point {
 	u16 dclk, t_rp, t_rdpre, t_rc, t_ras, t_rcd;
 };
 
 struct intel_psf_gv_point {
-	u8 clk; /* clock in multiples of 16.6666 MHz */
+	u8 clk;  
 };
 
 struct intel_qgv_info {
@@ -47,9 +45,9 @@ static int dg1_mchbar_read_qgv_point_info(struct drm_i915_private *dev_priv,
 	val = intel_uncore_read(&dev_priv->uncore, SA_PERF_STATUS_0_0_0_MCHBAR_PC);
 	dclk_ratio = REG_FIELD_GET(DG1_QCLK_RATIO_MASK, val);
 	if (val & DG1_QCLK_REFERENCE)
-		dclk_reference = 6; /* 6 * 16.666 MHz = 100 MHz */
+		dclk_reference = 6;  
 	else
-		dclk_reference = 8; /* 8 * 16.666 MHz = 133 MHz */
+		dclk_reference = 8;  
 	sp->dclk = DIV_ROUND_UP((16667 * dclk_ratio * dclk_reference) + 500, 1000);
 
 	val = intel_uncore_read(&dev_priv->uncore, SKL_MC_BIOS_DATA_0_0_0_MCHBAR_PCU);
@@ -125,11 +123,7 @@ static u16 icl_qgv_points_mask(struct drm_i915_private *i915)
 	unsigned int num_qgv_points = i915->display.bw.max[0].num_qgv_points;
 	u16 qgv_points = 0, psf_points = 0;
 
-	/*
-	 * We can _not_ use the whole ADLS_QGV_PT_MASK here, as PCode rejects
-	 * it with failure if we try masking any unadvertised points.
-	 * So need to operate only with those returned from PCode.
-	 */
+	 
 	if (num_qgv_points > 0)
 		qgv_points = GENMASK(num_qgv_points - 1, 0);
 
@@ -153,7 +147,7 @@ int icl_pcode_restrict_qgv_points(struct drm_i915_private *dev_priv,
 	if (DISPLAY_VER(dev_priv) >= 14)
 		return 0;
 
-	/* bspec says to keep retrying for at least 1 ms */
+	 
 	ret = skl_pcode_request(&dev_priv->uncore, ICL_PCODE_SAGV_DE_MEM_SS_CONFIG,
 				points_mask,
 				ICL_PCODE_REP_QGV_MASK | ADLS_PCODE_REP_PSF_MASK,
@@ -316,11 +310,7 @@ static int icl_get_qgv_points(struct drm_i915_private *dev_priv,
 
 static int adl_calc_psf_bw(int clk)
 {
-	/*
-	 * clk is multiples of 16.666MHz (100/6)
-	 * According to BSpec PSF GV bandwidth is
-	 * calculated as BW = 64 * clk * 16.666Mhz
-	 */
+	 
 	return DIV_ROUND_CLOSEST(64 * clk * 100, 6);
 }
 
@@ -342,42 +332,42 @@ struct intel_sa_info {
 
 static const struct intel_sa_info icl_sa_info = {
 	.deburst = 8,
-	.deprogbwlimit = 25, /* GB/s */
+	.deprogbwlimit = 25,  
 	.displayrtids = 128,
 	.derating = 10,
 };
 
 static const struct intel_sa_info tgl_sa_info = {
 	.deburst = 16,
-	.deprogbwlimit = 34, /* GB/s */
+	.deprogbwlimit = 34,  
 	.displayrtids = 256,
 	.derating = 10,
 };
 
 static const struct intel_sa_info rkl_sa_info = {
 	.deburst = 8,
-	.deprogbwlimit = 20, /* GB/s */
+	.deprogbwlimit = 20,  
 	.displayrtids = 128,
 	.derating = 10,
 };
 
 static const struct intel_sa_info adls_sa_info = {
 	.deburst = 16,
-	.deprogbwlimit = 38, /* GB/s */
+	.deprogbwlimit = 38,  
 	.displayrtids = 256,
 	.derating = 10,
 };
 
 static const struct intel_sa_info adlp_sa_info = {
 	.deburst = 16,
-	.deprogbwlimit = 38, /* GB/s */
+	.deprogbwlimit = 38,  
 	.displayrtids = 256,
 	.derating = 20,
 };
 
 static const struct intel_sa_info mtl_sa_info = {
 	.deburst = 32,
-	.deprogbwlimit = 38, /* GB/s */
+	.deprogbwlimit = 38,  
 	.displayrtids = 256,
 	.derating = 10,
 };
@@ -385,7 +375,7 @@ static const struct intel_sa_info mtl_sa_info = {
 static int icl_get_bw_info(struct drm_i915_private *dev_priv, const struct intel_sa_info *sa)
 {
 	struct intel_qgv_info qi = {};
-	bool is_y_tile = true; /* assume y tile may be used */
+	bool is_y_tile = true;  
 	int num_channels = max_t(u8, 1, dev_priv->dram_info.num_channels);
 	int ipqdepth, ipqdepthpch = 16;
 	int dclk_max;
@@ -420,12 +410,7 @@ static int icl_get_bw_info(struct drm_i915_private *dev_priv, const struct intel
 			const struct intel_qgv_point *sp = &qi.points[j];
 			int ct, bw;
 
-			/*
-			 * Max row cycle time
-			 *
-			 * FIXME what is the logic behind the
-			 * assumed burst length?
-			 */
+			 
 			ct = max_t(int, sp->t_rc, sp->t_rp + sp->t_rcd +
 				   (clpchgroup - 1) * qi.t_bl + sp->t_rdpre);
 			bw = DIV_ROUND_UP(sp->dclk * clpchgroup * 32 * num_channels, ct);
@@ -438,11 +423,7 @@ static int icl_get_bw_info(struct drm_i915_private *dev_priv, const struct intel
 				    i, j, bi->num_planes, bi->deratedbw[j]);
 		}
 	}
-	/*
-	 * In case if SAGV is disabled in BIOS, we always get 1
-	 * SAGV point, but we can't send PCode commands to restrict it
-	 * as it will fail and pointless anyway.
-	 */
+	 
 	if (qi.num_points == 1)
 		dev_priv->display.sagv.status = I915_SAGV_NOT_CONTROLLED;
 	else
@@ -455,7 +436,7 @@ static int tgl_get_bw_info(struct drm_i915_private *dev_priv, const struct intel
 {
 	struct intel_qgv_info qi = {};
 	const struct dram_info *dram_info = &dev_priv->dram_info;
-	bool is_y_tile = true; /* assume y tile may be used */
+	bool is_y_tile = true;  
 	int num_channels = max_t(u8, 1, dev_priv->dram_info.num_channels);
 	int ipqdepth, ipqdepthpch = 16;
 	int dclk_max;
@@ -488,13 +469,10 @@ static int tgl_get_bw_info(struct drm_i915_private *dev_priv, const struct intel
 	dclk_max = icl_sagv_max_dclk(&qi);
 
 	peakbw = num_channels * DIV_ROUND_UP(qi.channel_width, 8) * dclk_max;
-	maxdebw = min(sa->deprogbwlimit * 1000, peakbw * 6 / 10); /* 60% */
+	maxdebw = min(sa->deprogbwlimit * 1000, peakbw * 6 / 10);  
 
 	ipqdepth = min(ipqdepthpch, sa->displayrtids / num_channels);
-	/*
-	 * clperchgroup = 4kpagespermempage * clperchperblock,
-	 * clperchperblock = 8 / num_channels * interleave
-	 */
+	 
 	clperchgroup = 4 * DIV_ROUND_UP(8, num_channels) * qi.deinterleave;
 
 	for (i = 0; i < num_groups; i++) {
@@ -522,12 +500,7 @@ static int tgl_get_bw_info(struct drm_i915_private *dev_priv, const struct intel
 			const struct intel_qgv_point *sp = &qi.points[j];
 			int ct, bw;
 
-			/*
-			 * Max row cycle time
-			 *
-			 * FIXME what is the logic behind the
-			 * assumed burst length?
-			 */
+			 
 			ct = max_t(int, sp->t_rc, sp->t_rp + sp->t_rcd +
 				   (clpchgroup - 1) * qi.t_bl + sp->t_rdpre);
 			bw = DIV_ROUND_UP(sp->dclk * clpchgroup * 32 * num_channels, ct);
@@ -555,11 +528,7 @@ static int tgl_get_bw_info(struct drm_i915_private *dev_priv, const struct intel
 		}
 	}
 
-	/*
-	 * In case if SAGV is disabled in BIOS, we always get 1
-	 * SAGV point, but we can't send PCode commands to restrict it
-	 * as it will fail and pointless anyway.
-	 */
+	 
 	if (qi.num_points == 1)
 		dev_priv->display.sagv.status = I915_SAGV_NOT_CONTROLLED;
 	else
@@ -574,18 +543,12 @@ static void dg2_get_bw_info(struct drm_i915_private *i915)
 	int num_groups = ARRAY_SIZE(i915->display.bw.max);
 	int i;
 
-	/*
-	 * DG2 doesn't have SAGV or QGV points, just a constant max bandwidth
-	 * that doesn't depend on the number of planes enabled. So fill all the
-	 * plane group with constant bw information for uniformity with other
-	 * platforms. DG2-G10 platforms have a constant 50 GB/s bandwidth,
-	 * whereas DG2-G11 platforms have 38 GB/s.
-	 */
+	 
 	for (i = 0; i < num_groups; i++) {
 		struct intel_bw_info *bi = &i915->display.bw.max[i];
 
 		bi->num_planes = 1;
-		/* Need only one dummy QGV point per group */
+		 
 		bi->num_qgv_points = 1;
 		bi->deratedbw[0] = deratedbw;
 	}
@@ -598,19 +561,14 @@ static unsigned int icl_max_bw_index(struct drm_i915_private *dev_priv,
 {
 	int i;
 
-	/*
-	 * Let's return max bw for 0 planes
-	 */
+	 
 	num_planes = max(1, num_planes);
 
 	for (i = 0; i < ARRAY_SIZE(dev_priv->display.bw.max); i++) {
 		const struct intel_bw_info *bi =
 			&dev_priv->display.bw.max[i];
 
-		/*
-		 * Pcode will not expose all QGV points when
-		 * SAGV is forced to off/min/med/max.
-		 */
+		 
 		if (qgv_point >= bi->num_qgv_points)
 			return UINT_MAX;
 
@@ -626,19 +584,14 @@ static unsigned int tgl_max_bw_index(struct drm_i915_private *dev_priv,
 {
 	int i;
 
-	/*
-	 * Let's return max bw for 0 planes
-	 */
+	 
 	num_planes = max(1, num_planes);
 
 	for (i = ARRAY_SIZE(dev_priv->display.bw.max) - 1; i >= 0; i--) {
 		const struct intel_bw_info *bi =
 			&dev_priv->display.bw.max[i];
 
-		/*
-		 * Pcode will not expose all QGV points when
-		 * SAGV is forced to off/min/med/max.
-		 */
+		 
 		if (qgv_point >= bi->num_qgv_points)
 			return UINT_MAX;
 
@@ -681,10 +634,7 @@ void intel_bw_init_hw(struct drm_i915_private *dev_priv)
 
 static unsigned int intel_bw_crtc_num_active_planes(const struct intel_crtc_state *crtc_state)
 {
-	/*
-	 * We assume cursors are small enough
-	 * to not not cause bandwidth problems.
-	 */
+	 
 	return hweight8(crtc_state->active_planes & ~BIT(PLANE_CURSOR));
 }
 
@@ -696,10 +646,7 @@ static unsigned int intel_bw_crtc_data_rate(const struct intel_crtc_state *crtc_
 	enum plane_id plane_id;
 
 	for_each_plane_id_on_crtc(crtc, plane_id) {
-		/*
-		 * We assume cursors are small enough
-		 * to not not cause bandwidth problems.
-		 */
+		 
 		if (plane_id == PLANE_CURSOR)
 			continue;
 
@@ -712,7 +659,7 @@ static unsigned int intel_bw_crtc_data_rate(const struct intel_crtc_state *crtc_
 	return data_rate;
 }
 
-/* "Maximum Pipe Read Bandwidth" */
+ 
 static int intel_bw_crtc_min_cdclk(const struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
@@ -818,21 +765,14 @@ static int mtl_find_qgv_points(struct drm_i915_private *i915,
 	if (ret)
 		return ret;
 
-	/*
-	 * If SAGV cannot be enabled, disable the pcode SAGV by passing all 1's
-	 * for qgv peak bw in PM Demand request. So assign UINT_MAX if SAGV is
-	 * not enabled. PM Demand code will clamp the value for the register
-	 */
+	 
 	if (!intel_can_enable_sagv(i915, new_bw_state)) {
 		new_bw_state->qgv_point_peakbw = U16_MAX;
 		drm_dbg_kms(&i915->drm, "No SAGV, use UINT_MAX as peak bw.");
 		return 0;
 	}
 
-	/*
-	 * Find the best QGV point by comparing the data_rate with max data rate
-	 * offered per plane group
-	 */
+	 
 	for (i = 0; i < num_qgv_points; i++) {
 		unsigned int bw_index =
 			tgl_max_bw_index(i915, num_active_planes, i);
@@ -858,17 +798,14 @@ static int mtl_find_qgv_points(struct drm_i915_private *i915,
 	drm_dbg_kms(&i915->drm, "Matching peaks QGV bw: %d for required data rate: %d\n",
 		    qgv_peak_bw, data_rate);
 
-	/*
-	 * The display configuration cannot be supported if no QGV point
-	 * satisfying the required data rate is found
-	 */
+	 
 	if (qgv_peak_bw == 0) {
 		drm_dbg_kms(&i915->drm, "No QGV points for bw %d for display configuration(%d active planes).\n",
 			    data_rate, num_active_planes);
 		return -EINVAL;
 	}
 
-	/* MTL PM DEMAND expects QGV BW parameter in multiples of 100 mbps */
+	 
 	new_bw_state->qgv_point_peakbw = DIV_ROUND_CLOSEST(qgv_peak_bw, 100);
 
 	return 0;
@@ -907,14 +844,7 @@ static int icl_find_qgv_points(struct drm_i915_private *i915,
 
 		max_data_rate = i915->display.bw.max[idx].deratedbw[i];
 
-		/*
-		 * We need to know which qgv point gives us
-		 * maximum bandwidth in order to disable SAGV
-		 * if we find that we exceed SAGV block time
-		 * with watermarks. By that moment we already
-		 * have those, as it is calculated earlier in
-		 * intel_atomic_check,
-		 */
+		 
 		if (max_data_rate > max_bw) {
 			max_bw_point = i;
 			max_bw = max_data_rate;
@@ -937,11 +867,7 @@ static int icl_find_qgv_points(struct drm_i915_private *i915,
 			    i, max_data_rate, data_rate);
 	}
 
-	/*
-	 * BSpec states that we always should have at least one allowed point
-	 * left, so if we couldn't - simply reject the configuration for obvious
-	 * reasons.
-	 */
+	 
 	if (qgv_points == 0) {
 		drm_dbg_kms(&i915->drm, "No QGV points provide sufficient memory"
 			    " bandwidth %d for display configuration(%d active planes).\n",
@@ -956,30 +882,20 @@ static int icl_find_qgv_points(struct drm_i915_private *i915,
 		return -EINVAL;
 	}
 
-	/*
-	 * Leave only single point with highest bandwidth, if
-	 * we can't enable SAGV due to the increased memory latency it may
-	 * cause.
-	 */
+	 
 	if (!intel_can_enable_sagv(i915, new_bw_state)) {
 		qgv_points = BIT(max_bw_point);
 		drm_dbg_kms(&i915->drm, "No SAGV, using single QGV point %d\n",
 			    max_bw_point);
 	}
 
-	/*
-	 * We store the ones which need to be masked as that is what PCode
-	 * actually accepts as a parameter.
-	 */
+	 
 	new_bw_state->qgv_points_mask =
 		~(ICL_PCODE_REQ_QGV_PT(qgv_points) |
 		  ADLS_PCODE_REQ_PSF_PT(psf_points)) &
 		icl_qgv_points_mask(i915);
 
-	/*
-	 * If the actual mask had changed we need to make sure that
-	 * the commits are serialized(in case this is a nomodeset, nonblocking)
-	 */
+	 
 	if (new_bw_state->qgv_points_mask != old_bw_state->qgv_points_mask) {
 		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
 		if (ret)
@@ -1044,10 +960,7 @@ static void skl_plane_calc_dbuf_bw(struct intel_bw_state *bw_state,
 	unsigned int dbuf_mask = skl_ddb_dbuf_slice_mask(i915, ddb);
 	enum dbuf_slice slice;
 
-	/*
-	 * The arbiter can only really guarantee an
-	 * equal share of the total bw to each plane.
-	 */
+	 
 	for_each_dbuf_slice_in_mask(i915, slice, dbuf_mask) {
 		crtc_bw->max_bw[slice] = max(crtc_bw->max_bw[slice], data_rate);
 		crtc_bw->active_planes[slice] |= BIT(plane_id);
@@ -1068,10 +981,7 @@ static void skl_crtc_calc_dbuf_bw(struct intel_bw_state *bw_state,
 		return;
 
 	for_each_plane_id_on_crtc(crtc, plane_id) {
-		/*
-		 * We assume cursors are small enough
-		 * to not cause bandwidth problems.
-		 */
+		 
 		if (plane_id == PLANE_CURSOR)
 			continue;
 
@@ -1086,7 +996,7 @@ static void skl_crtc_calc_dbuf_bw(struct intel_bw_state *bw_state,
 	}
 }
 
-/* "Maximum Data Buffer Bandwidth" */
+ 
 static int
 intel_bw_dbuf_min_cdclk(struct drm_i915_private *i915,
 			const struct intel_bw_state *bw_state)
@@ -1099,10 +1009,7 @@ intel_bw_dbuf_min_cdclk(struct drm_i915_private *i915,
 		unsigned int max_bw = 0;
 		enum pipe pipe;
 
-		/*
-		 * The arbiter can only really guarantee an
-		 * equal share of the total bw to each plane.
-		 */
+		 
 		for_each_pipe(i915, pipe) {
 			const struct intel_dbuf_bw *crtc_bw = &bw_state->dbuf_bw[pipe];
 
@@ -1171,14 +1078,7 @@ int intel_bw_calc_min_cdclk(struct intel_atomic_state *state,
 	old_min_cdclk = intel_bw_min_cdclk(dev_priv, old_bw_state);
 	new_min_cdclk = intel_bw_min_cdclk(dev_priv, new_bw_state);
 
-	/*
-	 * No need to check against the cdclk state if
-	 * the min cdclk doesn't increase.
-	 *
-	 * Ie. we only ever increase the cdclk due to bandwidth
-	 * requirements. This can reduce back and forth
-	 * display blinking due to constant cdclk changes.
-	 */
+	 
 	if (new_min_cdclk <= old_min_cdclk)
 		return 0;
 
@@ -1186,14 +1086,7 @@ int intel_bw_calc_min_cdclk(struct intel_atomic_state *state,
 	if (IS_ERR(cdclk_state))
 		return PTR_ERR(cdclk_state);
 
-	/*
-	 * No need to recalculate the cdclk state if
-	 * the min cdclk doesn't increase.
-	 *
-	 * Ie. we only ever increase the cdclk due to bandwidth
-	 * requirements. This can reduce back and forth
-	 * display blinking due to constant cdclk changes.
-	 */
+	 
 	if (new_min_cdclk <= cdclk_state->bw_min_cdclk)
 		return 0;
 
@@ -1224,10 +1117,7 @@ static int intel_bw_check_data_rate(struct intel_atomic_state *state, bool *chan
 			intel_bw_crtc_num_active_planes(new_crtc_state);
 		struct intel_bw_state *new_bw_state;
 
-		/*
-		 * Avoid locking the bw state when
-		 * nothing significant has changed.
-		 */
+		 
 		if (old_data_rate == new_data_rate &&
 		    old_active_planes == new_active_planes)
 			continue;
@@ -1259,7 +1149,7 @@ int intel_bw_atomic_check(struct intel_atomic_state *state)
 	const struct intel_bw_state *old_bw_state;
 	int ret;
 
-	/* FIXME earlier gens need some checks too */
+	 
 	if (DISPLAY_VER(i915) < 11)
 		return 0;
 
@@ -1275,10 +1165,7 @@ int intel_bw_atomic_check(struct intel_atomic_state *state)
 	    intel_can_enable_sagv(i915, new_bw_state))
 		changed = true;
 
-	/*
-	 * If none of our inputs (data rates, number of active
-	 * planes, SAGV yes/no) changed then nothing to do here.
-	 */
+	 
 	if (!changed)
 		return 0;
 

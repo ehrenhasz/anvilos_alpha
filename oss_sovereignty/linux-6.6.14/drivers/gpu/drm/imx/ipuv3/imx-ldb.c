@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX drm driver - LVDS display bridge
- *
- * Copyright (C) 2012 Sascha Hauer, Pengutronix
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -63,7 +59,7 @@ struct imx_ldb;
 struct imx_ldb_channel {
 	struct imx_ldb *ldb;
 
-	/* Defines what is connected to the ldb, only one at a time */
+	 
 	struct drm_panel *panel;
 	struct drm_bridge *bridge;
 
@@ -97,10 +93,10 @@ struct imx_ldb {
 	struct regmap *regmap;
 	struct device *dev;
 	struct imx_ldb_channel channel[2];
-	struct clk *clk[2]; /* our own clock */
-	struct clk *clk_sel[4]; /* parent of display clock */
-	struct clk *clk_parent[4]; /* original parent of clk_sel */
-	struct clk *clk_pll[2]; /* upstream clock we can adjust */
+	struct clk *clk[2];  
+	struct clk *clk_sel[4];  
+	struct clk *clk_parent[4];  
+	struct clk *clk_pll[2];  
 	u32 ldb_ctrl;
 	const struct bus_mux *lvds_mux;
 };
@@ -183,7 +179,7 @@ static void imx_ldb_set_clock(struct imx_ldb *ldb, int mux, int chno,
 	dev_dbg(ldb->dev, "%s after: %ld\n", __func__,
 			clk_get_rate(ldb->clk[chno]));
 
-	/* set display clock mux to LDB input clock */
+	 
 	ret = clk_set_parent(ldb->clk_sel[mux], ldb->clk[chno]);
 	if (ret)
 		dev_err(ldb->dev,
@@ -290,7 +286,7 @@ imx_ldb_encoder_atomic_mode_set(struct drm_encoder *encoder,
 				  di_clk);
 	}
 
-	/* FIXME - assumes straight connections DI0 --> CH0, DI1 --> CH1 */
+	 
 	if (imx_ldb_ch == &ldb->channel[0] || dual) {
 		if (mode->flags & DRM_MODE_FLAG_NVSYNC)
 			ldb->ldb_ctrl |= LDB_DI0_VS_POL_ACT_LOW;
@@ -350,7 +346,7 @@ static void imx_ldb_encoder_disable(struct drm_encoder *encoder)
 		mux = (imx_ldb_ch == &ldb->channel[0]) ? 0 : 1;
 	}
 
-	/* set display clock mux back to original input clock */
+	 
 	ret = clk_set_parent(ldb->clk_sel[mux], ldb->clk_parent[mux]);
 	if (ret)
 		dev_err(ldb->dev,
@@ -369,7 +365,7 @@ static int imx_ldb_encoder_atomic_check(struct drm_encoder *encoder,
 	struct drm_display_info *di = &conn_state->connector->display_info;
 	u32 bus_format = imx_ldb_ch->bus_format;
 
-	/* Bus format description in DT overrides connector display info. */
+	 
 	if (!bus_format && di->num_bus_formats) {
 		bus_format = di->bus_formats[0];
 		imx_crtc_state->bus_flags = di->bus_flags;
@@ -469,12 +465,7 @@ static int imx_ldb_register(struct drm_device *drm,
 		if (ret)
 			return ret;
 	} else {
-		/*
-		 * We want to add the connector whenever there is no bridge
-		 * that brings its own, not only when there is a panel. For
-		 * historical reasons, the ldb driver can also work without
-		 * a panel.
-		 */
+		 
 		drm_connector_helper_add(connector,
 					 &imx_ldb_connector_helper_funcs);
 		drm_connector_init_with_ddc(drm, connector,
@@ -534,12 +525,7 @@ static struct bus_mux imx6q_lvds_mux[2] = {
 	}
 };
 
-/*
- * For a device declaring compatible = "fsl,imx6q-ldb", "fsl,imx53-ldb",
- * of_match_device will walk through this list and take the first entry
- * matching any of its compatible values. Therefore, the more generic
- * entries (in this case fsl,imx53-ldb) need to be ordered last.
- */
+ 
 static const struct of_device_id imx_ldb_dt_ids[] = {
 	{ .compatible = "fsl,imx6q-ldb", .data = imx6q_lvds_mux, },
 	{ .compatible = "fsl,imx53-ldb", .data = NULL, },
@@ -567,7 +553,7 @@ static int imx_ldb_panel_ddc(struct device *dev,
 	if (!channel->ddc) {
 		int edid_len;
 
-		/* if no DDC available, fallback to hardcoded EDID */
+		 
 		dev_dbg(dev, "no ddc available\n");
 
 		edidp = of_get_property(child, "edid", &edid_len);
@@ -576,7 +562,7 @@ static int imx_ldb_panel_ddc(struct device *dev,
 			if (!channel->edid)
 				return -ENOMEM;
 		} else if (!channel->panel) {
-			/* fallback to display-timings node */
+			 
 			ret = of_get_drm_display_mode(child,
 						      &channel->mode,
 						      &channel->bus_flags,
@@ -634,7 +620,7 @@ static int imx_ldb_probe(struct platform_device *pdev)
 		return PTR_ERR(imx_ldb->regmap);
 	}
 
-	/* disable LDB by resetting the control register to POR default */
+	 
 	regmap_write(imx_ldb->regmap, IOMUXC_GPR2, 0);
 
 	imx_ldb->dev = dev;
@@ -646,13 +632,7 @@ static int imx_ldb_probe(struct platform_device *pdev)
 	if (dual)
 		imx_ldb->ldb_ctrl |= LDB_SPLIT_MODE_EN;
 
-	/*
-	 * There are three different possible clock mux configurations:
-	 * i.MX53:  ipu1_di0_sel, ipu1_di1_sel
-	 * i.MX6q:  ipu1_di0_sel, ipu1_di1_sel, ipu2_di0_sel, ipu2_di1_sel
-	 * i.MX6dl: ipu1_di0_sel, ipu1_di1_sel, lcdif_sel
-	 * Map them all to di0_sel...di3_sel.
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		char clkname[16];
 
@@ -691,17 +671,14 @@ static int imx_ldb_probe(struct platform_device *pdev)
 		channel->ldb = imx_ldb;
 		channel->chno = i;
 
-		/*
-		 * The output port is port@4 with an external 4-port mux or
-		 * port@2 with the internal 2-port mux.
-		 */
+		 
 		ret = drm_of_find_panel_or_bridge(child,
 						  imx_ldb->lvds_mux ? 4 : 2, 0,
 						  &channel->panel, &channel->bridge);
 		if (ret && ret != -ENODEV)
 			goto free_child;
 
-		/* panel ddc only if there is no bridge */
+		 
 		if (!channel->bridge) {
 			ret = imx_ldb_panel_ddc(dev, channel, child);
 			if (ret)
@@ -710,10 +687,7 @@ static int imx_ldb_probe(struct platform_device *pdev)
 
 		bus_format = of_get_bus_format(dev, child);
 		if (bus_format == -EINVAL) {
-			/*
-			 * If no bus format was specified in the device tree,
-			 * we can still get it from the connected panel later.
-			 */
+			 
 			if (channel->panel && channel->panel->funcs &&
 			    channel->panel->funcs->get_modes)
 				bus_format = 0;

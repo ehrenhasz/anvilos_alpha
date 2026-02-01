@@ -1,31 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * file.c
- *
- * PURPOSE
- *  File handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1998-1999 Dave Boynton
- *  (C) 1998-2004 Ben Fennema
- *  (C) 1999-2000 Stelias Computing Inc
- *
- * HISTORY
- *
- *  10/02/98 dgb  Attempt to integrate into udf.o
- *  10/07/98      Switched to using generic_readpage, etc., like isofs
- *                And it works!
- *  12/06/98 blf  Added udf_file_read. uses generic_file_read for all cases but
- *                ICBTAG_FLAG_AD_IN_ICB.
- *  04/06/99      64 bit file handling on 32 bit systems taken from ext2 file.c
- *  05/12/99      Preliminary file write support
- */
+
+ 
 
 #include "udfdecl.h"
 #include <linux/fs.h>
 #include <linux/uaccess.h>
 #include <linux/kernel.h>
-#include <linux/string.h> /* memset */
+#include <linux/string.h>  
 #include <linux/capability.h>
 #include <linux/errno.h>
 #include <linux/pagemap.h>
@@ -55,7 +35,7 @@ static vm_fault_t udf_page_mkwrite(struct vm_fault *vmf)
 		ret = VM_FAULT_NOPAGE;
 		goto out_unlock;
 	}
-	/* Space is already allocated for in-ICB file */
+	 
 	if (UDF_I(inode)->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB)
 		goto out_dirty;
 	if (page->index == size >> PAGE_SHIFT)
@@ -175,10 +155,7 @@ static int udf_release_file(struct inode *inode, struct file *filp)
 {
 	if (filp->f_mode & FMODE_WRITE &&
 	    atomic_read(&inode->i_writecount) == 1) {
-		/*
-		 * Grab i_mutex to avoid races with writes changing i_size
-		 * while we are running.
-		 */
+		 
 		inode_lock(inode);
 		down_write(&UDF_I(inode)->i_data_sem);
 		udf_discard_prealloc(inode);

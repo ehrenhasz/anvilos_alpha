@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include <linux/etherdevice.h>
 #include <linux/kernel.h>
@@ -103,7 +103,7 @@ static int hclge_mdio_read(struct mii_bus *bus, int phyid, int regnum)
 	hnae3_set_field(mdio_cmd->ctrl_bit, HCLGE_MDIO_CTRL_OP_M,
 			HCLGE_MDIO_CTRL_OP_S, HCLGE_MDIO_C22_READ);
 
-	/* Read out phy data */
+	 
 	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
 	if (ret) {
 		dev_err(&hdev->pdev->dev,
@@ -180,7 +180,7 @@ static void hclge_mac_adjust_link(struct net_device *netdev)
 	int duplex, speed;
 	int ret;
 
-	/* When phy link down, do nothing */
+	 
 	if (netdev->phydev->link == 0)
 		return;
 
@@ -224,10 +224,7 @@ int hclge_mac_connect_phy(struct hnae3_handle *handle)
 	linkmode_and(phydev->supported, phydev->supported, mask);
 	linkmode_copy(phydev->advertising, phydev->supported);
 
-	/* supported flag is Pause and Asym Pause, but default advertising
-	 * should be rx on, tx on, so need clear Asym Pause in advertising
-	 * flag
-	 */
+	 
 	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
 			   phydev->advertising);
 

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2019 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -352,26 +352,26 @@ static const int usb0_muxvals[] = {0, 0};
 static const unsigned int usb1_pins[] = {80, 81};
 static const int usb1_muxvals[] = {0, 0};
 static const unsigned int gpio_range0_pins[] = {
-	64, 65, 66, 67, 68, 69, 70, 71,			/* PORT0x */
-	72, 73, 74, 75, 76, 77, 0, 1,			/* PORT1x */
-	2, 3, 4, 5, 6, 7, 8, 9,				/* PORT2x */
-	10, 78, 79, 80, 81,				/* PORT30-34 */
+	64, 65, 66, 67, 68, 69, 70, 71,			 
+	72, 73, 74, 75, 76, 77, 0, 1,			 
+	2, 3, 4, 5, 6, 7, 8, 9,				 
+	10, 78, 79, 80, 81,				 
 };
 static const unsigned int gpio_range1_pins[] = {
-	11, 12, 13,					/* PORT61-63 */
+	11, 12, 13,					 
 };
 static const unsigned int gpio_range2_pins[] = {
-	15, 16, 17,					/* PORT65-67 */
-	18, 19, 20, 21, 22, 23, 24, 25,			/* PORT7x */
-	26, 27, 28, 29, 30, 31, 32, 33,			/* PORT8x */
-	34, 35, 36, 37, 38, 39, 40, 41,			/* PORT9x */
-	42, 43, 44, 45, 46, 47, 48, 49,			/* PORT10x */
+	15, 16, 17,					 
+	18, 19, 20, 21, 22, 23, 24, 25,			 
+	26, 27, 28, 29, 30, 31, 32, 33,			 
+	34, 35, 36, 37, 38, 39, 40, 41,			 
+	42, 43, 44, 45, 46, 47, 48, 49,			 
 };
 static const unsigned int gpio_range3_pins[] = {
-	58, 59, 60, 61, 62, 63,				/* PORT12x */
+	58, 59, 60, 61, 62, 63,				 
 };
 static const unsigned int gpio_range4_pins[] = {
-	58, 59, 60, 61, 62, 63,				/* XIRQ0-5 */
+	58, 59, 60, 61, 62, 63,				 
 };
 
 static const struct uniphier_pinctrl_group uniphier_nx1_groups[] = {
@@ -451,7 +451,7 @@ static const struct uniphier_pinmux_function uniphier_nx1_functions[] = {
 static int uniphier_nx1_get_gpio_muxval(unsigned int pin,
 					unsigned int gpio_offset)
 {
-	if (gpio_offset >= 120)	/* XIRQx */
+	if (gpio_offset >= 120)	 
 		return 14;
 
 	return 15;
@@ -475,7 +475,7 @@ static int uniphier_nx1_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_nx1_pinctrl_match[] = {
 	{ .compatible = "socionext,uniphier-nx1-pinctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver uniphier_nx1_pinctrl_driver = {

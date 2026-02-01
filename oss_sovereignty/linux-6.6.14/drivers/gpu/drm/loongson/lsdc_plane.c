@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -89,11 +87,7 @@ static void lsdc_primary_atomic_update(struct drm_plane *plane,
 static void lsdc_primary_atomic_disable(struct drm_plane *plane,
 					struct drm_atomic_state *state)
 {
-	/*
-	 * Do nothing, just prevent call into atomic_update().
-	 * Writing the format as LSDC_PF_NONE can disable the primary,
-	 * But it seems not necessary...
-	 */
+	 
 	drm_dbg(plane->dev, "%s disabled\n", plane->name);
 }
 
@@ -264,7 +258,7 @@ static void lsdc_cursor_plane_atomic_async_update(struct drm_plane *plane,
 	}
 }
 
-/* ls7a1000 cursor plane helpers */
+ 
 
 static int ls7a1000_cursor_plane_atomic_check(struct drm_plane *plane,
 					      struct drm_atomic_state *state)
@@ -337,7 +331,7 @@ static const struct drm_plane_helper_funcs ls7a1000_cursor_plane_helper_funcs = 
 	.atomic_async_update = lsdc_cursor_plane_atomic_async_update,
 };
 
-/* ls7a2000 cursor plane helpers */
+ 
 
 static int ls7a2000_cursor_plane_atomic_check(struct drm_plane *plane,
 					      struct drm_atomic_state *state)
@@ -375,7 +369,7 @@ static int ls7a2000_cursor_plane_atomic_check(struct drm_plane *plane,
 						   true, true);
 }
 
-/* Update the format, size and location of the cursor */
+ 
 
 static void ls7a2000_cursor_plane_atomic_update(struct drm_plane *plane,
 						struct drm_atomic_state *state)
@@ -457,7 +451,7 @@ static const struct drm_plane_funcs lsdc_plane_funcs = {
 	.atomic_print_state = lsdc_plane_atomic_print_state,
 };
 
-/* Primary plane 0 hardware related ops  */
+ 
 
 static void lsdc_primary0_update_fb_addr(struct lsdc_primary *primary, u64 addr)
 {
@@ -465,7 +459,7 @@ static void lsdc_primary0_update_fb_addr(struct lsdc_primary *primary, u64 addr)
 	u32 status;
 	u32 lo, hi;
 
-	/* 40-bit width physical address bus */
+	 
 	lo = addr & 0xFFFFFFFF;
 	hi = (addr >> 32) & 0xFF;
 
@@ -494,16 +488,14 @@ static void lsdc_primary0_update_fb_format(struct lsdc_primary *primary,
 
 	status = lsdc_rreg32(ldev, LSDC_CRTC0_CFG_REG);
 
-	/*
-	 * TODO: add RGB565 support, only support XRBG8888 at present
-	 */
+	 
 	status &= ~CFG_PIX_FMT_MASK;
 	status |= LSDC_PF_XRGB8888;
 
 	lsdc_wreg32(ldev, LSDC_CRTC0_CFG_REG, status);
 }
 
-/* Primary plane 1 hardware related ops */
+ 
 
 static void lsdc_primary1_update_fb_addr(struct lsdc_primary *primary, u64 addr)
 {
@@ -511,7 +503,7 @@ static void lsdc_primary1_update_fb_addr(struct lsdc_primary *primary, u64 addr)
 	u32 status;
 	u32 lo, hi;
 
-	/* 40-bit width physical address bus */
+	 
 	lo = addr & 0xFFFFFFFF;
 	hi = (addr >> 32) & 0xFF;
 
@@ -540,9 +532,7 @@ static void lsdc_primary1_update_fb_format(struct lsdc_primary *primary,
 
 	status = lsdc_rreg32(ldev, LSDC_CRTC1_CFG_REG);
 
-	/*
-	 * TODO: add RGB565 support, only support XRBG8888 at present
-	 */
+	 
 	status &= ~CFG_PIX_FMT_MASK;
 	status |= LSDC_PF_XRGB8888;
 
@@ -562,23 +552,15 @@ static const struct lsdc_primary_plane_ops lsdc_primary_plane_hw_ops[2] = {
 	},
 };
 
-/*
- * Update location, format, enable and disable state of the cursor,
- * For those who have two hardware cursor, let cursor 0 is attach to CRTC-0,
- * cursor 1 is attach to CRTC-1. Compositing the primary plane and cursor
- * plane is automatically done by hardware, the cursor is alway on the top of
- * the primary plane. In other word, z-order is fixed in hardware and cannot
- * be changed. For those old DC who has only one hardware cursor, we made it
- * shared by the two screen, this works on extend screen mode.
- */
+ 
 
-/* cursor plane 0 (for pipe 0) related hardware ops */
+ 
 
 static void lsdc_cursor0_update_bo_addr(struct lsdc_cursor *cursor, u64 addr)
 {
 	struct lsdc_device *ldev = cursor->ldev;
 
-	/* 40-bit width physical address bus */
+	 
 	lsdc_wreg32(ldev, LSDC_CURSOR0_ADDR_HI_REG, (addr >> 32) & 0xFF);
 	lsdc_wreg32(ldev, LSDC_CURSOR0_ADDR_LO_REG, addr);
 }
@@ -610,13 +592,13 @@ static void lsdc_cursor0_update_cfg(struct lsdc_cursor *cursor,
 	lsdc_wreg32(ldev, LSDC_CURSOR0_CFG_REG, cfg);
 }
 
-/* cursor plane 1 (for pipe 1) related hardware ops */
+ 
 
 static void lsdc_cursor1_update_bo_addr(struct lsdc_cursor *cursor, u64 addr)
 {
 	struct lsdc_device *ldev = cursor->ldev;
 
-	/* 40-bit width physical address bus */
+	 
 	lsdc_wreg32(ldev, LSDC_CURSOR1_ADDR_HI_REG, (addr >> 32) & 0xFF);
 	lsdc_wreg32(ldev, LSDC_CURSOR1_ADDR_LO_REG, addr);
 }
@@ -648,7 +630,7 @@ static void lsdc_cursor1_update_cfg(struct lsdc_cursor *cursor,
 	lsdc_wreg32(ldev, LSDC_CURSOR1_CFG_REG, cfg);
 }
 
-/* The hardware cursors become normal since ls7a2000/ls2k2000 */
+ 
 
 static const struct lsdc_cursor_plane_ops ls7a2000_cursor_hw_ops[2] = {
 	{
@@ -663,13 +645,13 @@ static const struct lsdc_cursor_plane_ops ls7a2000_cursor_hw_ops[2] = {
 	},
 };
 
-/* Quirks for cursor 1, only for old loongson display controller */
+ 
 
 static void lsdc_cursor1_update_bo_addr_quirk(struct lsdc_cursor *cursor, u64 addr)
 {
 	struct lsdc_device *ldev = cursor->ldev;
 
-	/* 40-bit width physical address bus */
+	 
 	lsdc_wreg32(ldev, LSDC_CURSOR0_ADDR_HI_REG, (addr >> 32) & 0xFF);
 	lsdc_wreg32(ldev, LSDC_CURSOR0_ADDR_LO_REG, addr);
 }
@@ -701,9 +683,7 @@ static void lsdc_cursor1_update_cfg_quirk(struct lsdc_cursor *cursor,
 	lsdc_wreg32(ldev, LSDC_CURSOR0_CFG_REG, cfg);
 }
 
-/*
- * The unforgiving LS7A1000/LS2K1000 has only one hardware cursors plane
- */
+ 
 static const struct lsdc_cursor_plane_ops ls7a1000_cursor_hw_ops[2] = {
 	{
 		.update_bo_addr = lsdc_cursor0_update_bo_addr,

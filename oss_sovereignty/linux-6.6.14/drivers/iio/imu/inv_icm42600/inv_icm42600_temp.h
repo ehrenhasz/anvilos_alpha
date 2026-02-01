@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2020 Invensense, Inc.
- */
+ 
+ 
 
 #ifndef INV_ICM42600_TEMP_H_
 #define INV_ICM42600_TEMP_H_

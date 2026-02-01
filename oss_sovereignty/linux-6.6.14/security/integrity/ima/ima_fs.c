@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005,2006,2007,2008 IBM Corporation
- *
- * Authors:
- * Kylene Hall <kjhall@us.ibm.com>
- * Reiner Sailer <sailer@us.ibm.com>
- * Mimi Zohar <zohar@us.ibm.com>
- *
- * File: ima_fs.c
- *	implemenents security file system for reporting
- *	current measurement list and IMA statistics
- */
+
+ 
 
 #include <linux/fcntl.h>
 #include <linux/kernel_read_file.h>
@@ -41,7 +30,7 @@ static int valid_policy = 1;
 static ssize_t ima_show_htable_value(char __user *buf, size_t count,
 				     loff_t *ppos, atomic_long_t *val)
 {
-	char tmpbuf[32];	/* greater than largest 'long' string value */
+	char tmpbuf[32];	 
 	ssize_t len;
 
 	len = scnprintf(tmpbuf, sizeof(tmpbuf), "%li\n", atomic_long_read(val));
@@ -73,13 +62,13 @@ static const struct file_operations ima_measurements_count_ops = {
 	.llseek = generic_file_llseek,
 };
 
-/* returns pointer to hlist_node */
+ 
 static void *ima_measurements_start(struct seq_file *m, loff_t *pos)
 {
 	loff_t l = *pos;
 	struct ima_queue_entry *qe;
 
-	/* we need a lock since pos could point beyond last element */
+	 
 	rcu_read_lock();
 	list_for_each_entry_rcu(qe, &ima_measurements, later) {
 		if (!l--) {
@@ -95,9 +84,7 @@ static void *ima_measurements_next(struct seq_file *m, void *v, loff_t *pos)
 {
 	struct ima_queue_entry *qe = v;
 
-	/* lock protects when reading beyond last element
-	 * against concurrent list-extension
-	 */
+	 
 	rcu_read_lock();
 	qe = list_entry_rcu(qe->later.next, struct ima_queue_entry, later);
 	rcu_read_unlock();
@@ -116,25 +103,18 @@ void ima_putc(struct seq_file *m, void *data, int datalen)
 		seq_putc(m, *(char *)data++);
 }
 
-/* print format:
- *       32bit-le=pcr#
- *       char[20]=template digest
- *       32bit-le=template name size
- *       char[n]=template name
- *       [eventdata length]
- *       eventdata[n]=template specific data
- */
+ 
 int ima_measurements_show(struct seq_file *m, void *v)
 {
-	/* the list never shrinks, so we don't need a lock here */
+	 
 	struct ima_queue_entry *qe = v;
 	struct ima_template_entry *e;
 	char *template_name;
-	u32 pcr, namelen, template_data_len; /* temporary fields */
+	u32 pcr, namelen, template_data_len;  
 	bool is_ima_template = false;
 	int i;
 
-	/* get entry */
+	 
 	e = qe->entry;
 	if (e == NULL)
 		return -1;
@@ -142,26 +122,22 @@ int ima_measurements_show(struct seq_file *m, void *v)
 	template_name = (e->template_desc->name[0] != '\0') ?
 	    e->template_desc->name : e->template_desc->fmt;
 
-	/*
-	 * 1st: PCRIndex
-	 * PCR used defaults to the same (config option) in
-	 * little-endian format, unless set in policy
-	 */
+	 
 	pcr = !ima_canonical_fmt ? e->pcr : (__force u32)cpu_to_le32(e->pcr);
 	ima_putc(m, &pcr, sizeof(e->pcr));
 
-	/* 2nd: template digest */
+	 
 	ima_putc(m, e->digests[ima_sha1_idx].digest, TPM_DIGEST_SIZE);
 
-	/* 3rd: template name size */
+	 
 	namelen = !ima_canonical_fmt ? strlen(template_name) :
 		(__force u32)cpu_to_le32(strlen(template_name));
 	ima_putc(m, &namelen, sizeof(namelen));
 
-	/* 4th:  template name */
+	 
 	ima_putc(m, template_name, strlen(template_name));
 
-	/* 5th:  template length (except for 'ima' template) */
+	 
 	if (strcmp(template_name, IMA_TEMPLATE_IMA_NAME) == 0)
 		is_ima_template = true;
 
@@ -171,7 +147,7 @@ int ima_measurements_show(struct seq_file *m, void *v)
 		ima_putc(m, &template_data_len, sizeof(e->template_data_len));
 	}
 
-	/* 6th:  template specific data */
+	 
 	for (i = 0; i < e->template_desc->num_fields; i++) {
 		enum ima_show_type show = IMA_SHOW_BINARY;
 		const struct ima_template_field *field =
@@ -213,16 +189,16 @@ void ima_print_digest(struct seq_file *m, u8 *digest, u32 size)
 		seq_printf(m, "%02x", *(digest + i));
 }
 
-/* print in ascii */
+ 
 static int ima_ascii_measurements_show(struct seq_file *m, void *v)
 {
-	/* the list never shrinks, so we don't need a lock here */
+	 
 	struct ima_queue_entry *qe = v;
 	struct ima_template_entry *e;
 	char *template_name;
 	int i;
 
-	/* get entry */
+	 
 	e = qe->entry;
 	if (e == NULL)
 		return -1;
@@ -230,16 +206,16 @@ static int ima_ascii_measurements_show(struct seq_file *m, void *v)
 	template_name = (e->template_desc->name[0] != '\0') ?
 	    e->template_desc->name : e->template_desc->fmt;
 
-	/* 1st: PCR used (config option) */
+	 
 	seq_printf(m, "%2d ", e->pcr);
 
-	/* 2nd: SHA1 template hash */
+	 
 	ima_print_digest(m, e->digests[ima_sha1_idx].digest, TPM_DIGEST_SIZE);
 
-	/* 3th:  template name */
+	 
 	seq_printf(m, " %s", template_name);
 
-	/* 4th:  template specific data */
+	 
 	for (i = 0; i < e->template_desc->num_fields; i++) {
 		seq_puts(m, " ");
 		if (e->template_data[i].len == 0)
@@ -280,7 +256,7 @@ static ssize_t ima_read_policy(char *path)
 
 	char *p;
 
-	/* remove \n */
+	 
 	datap = path;
 	strsep(&datap, "\n");
 
@@ -320,7 +296,7 @@ static ssize_t ima_write_policy(struct file *file, const char __user *buf,
 	if (datalen >= PAGE_SIZE)
 		datalen = PAGE_SIZE - 1;
 
-	/* No partial writes. */
+	 
 	result = -EINVAL;
 	if (*ppos != 0)
 		goto out;
@@ -379,9 +355,7 @@ static const struct seq_operations ima_policy_seqops = {
 };
 #endif
 
-/*
- * ima_open_policy: sequentialize access to the policy file
- */
+ 
 static int ima_open_policy(struct inode *inode, struct file *filp)
 {
 	if (!(filp->f_flags & O_WRONLY)) {
@@ -400,13 +374,7 @@ static int ima_open_policy(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * ima_release_policy - start using the new measure policy rules.
- *
- * Initially, ima_measure points to the default policy rules, now
- * point to the new policy rules, and remove the securityfs policy file,
- * assuming a valid policy.
- */
+ 
 static int ima_release_policy(struct inode *inode, struct file *file)
 {
 	const char *cause = valid_policy ? "completed" : "failed";

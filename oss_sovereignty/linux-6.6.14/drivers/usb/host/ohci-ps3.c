@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  PS3 OHCI Host Controller driver
- *
- *  Copyright (C) 2006 Sony Computer Entertainment Inc.
- *  Copyright 2006 Sony Corp.
- */
+
+ 
 
 #include <asm/firmware.h>
 #include <asm/ps3.h>
@@ -23,8 +18,8 @@ static int ps3_ohci_hc_start(struct usb_hcd *hcd)
 	int result;
 	struct ohci_hcd *ohci = hcd_to_ohci(hcd);
 
-	/* Handle root hub init quirk in spider south bridge. */
-	/* Also set PwrOn2PwrGood to 0x7f (254ms). */
+	 
+	 
 
 	ohci_writel(ohci, 0x7f000000 | RH_A_PSM | RH_A_OCPM,
 		&ohci->regs->roothub.a);

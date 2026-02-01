@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -286,7 +282,7 @@ static int otx2_ptp_verify_pin(struct ptp_clock_info *ptp, unsigned int pin,
 
 static u64 otx2_ptp_hw_tstamp2time(const struct timecounter *time_counter, u64 tstamp)
 {
-	/* On HW which supports atomic updates, timecounter is not initialized */
+	 
 	return tstamp;
 }
 
@@ -378,7 +374,7 @@ int otx2_ptp_init(struct otx2_nic *pfvf)
 	}
 
 	mutex_lock(&pfvf->mbox.lock);
-	/* check if PTP block is available */
+	 
 	req = otx2_mbox_alloc_msg_ptp_op(&pfvf->mbox);
 	if (!req) {
 		mutex_unlock(&pfvf->mbox.lock);
@@ -419,7 +415,7 @@ int otx2_ptp_init(struct otx2_nic *pfvf)
 		.verify         = otx2_ptp_verify_pin,
 	};
 
-	/* Check whether hardware supports atomic updates to timestamp */
+	 
 	if (is_tstmp_atomic_update_supported(ptp_ptr)) {
 		ptp_ptr->ptp_info.adjtime = otx2_ptp_hw_adjtime;
 		ptp_ptr->ptp_info.gettime64 = otx2_ptp_hw_gettime;

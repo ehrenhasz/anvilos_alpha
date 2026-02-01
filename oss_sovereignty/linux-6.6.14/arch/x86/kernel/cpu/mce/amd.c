@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (c) 2005-2016 Advanced Micro Devices, Inc.
- *
- *  Written by Jacob Shin - AMD, Inc.
- *  Maintained by: Borislav Petkov <bp@alien8.de>
- *
- *  All MC4_MISCi registers are shared between cores on a node.
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
 #include <linux/kobject.h>
@@ -43,16 +36,16 @@
 #define MASK_BLKPTR_LO    0xFF000000
 #define MCG_XBLK_ADDR     0xC0000400
 
-/* Deferred error settings */
+ 
 #define MSR_CU_DEF_ERR		0xC0000410
 #define MASK_DEF_LVTOFF		0x000000F0
 #define MASK_DEF_INT_TYPE	0x00000006
 #define DEF_LVT_OFF		0x2
 #define DEF_INT_TYPE_APIC	0x2
 
-/* Scalable MCA: */
+ 
 
-/* Threshold LVT offset is at MSR0xC0000410[15:12] */
+ 
 #define SMCA_THR_LVT_OFF	0xF000
 
 static bool thresholding_irq_en;
@@ -74,22 +67,22 @@ static const char * const smca_umc_block_names[] = {
 #define HWID_MCATYPE(hwid, mcatype) (((hwid) << 16) | (mcatype))
 
 struct smca_hwid {
-	unsigned int bank_type;	/* Use with smca_bank_types for easy indexing. */
-	u32 hwid_mcatype;	/* (hwid,mcatype) tuple */
+	unsigned int bank_type;	 
+	u32 hwid_mcatype;	 
 };
 
 struct smca_bank {
 	const struct smca_hwid *hwid;
-	u32 id;			/* Value of MCA_IPID[InstanceId]. */
-	u8 sysfs_id;		/* Value used for sysfs name. */
+	u32 id;			 
+	u8 sysfs_id;		 
 };
 
 static DEFINE_PER_CPU_READ_MOSTLY(struct smca_bank[MAX_NR_BANKS], smca_banks);
 static DEFINE_PER_CPU_READ_MOSTLY(u8[N_SMCA_BANK_TYPES], smca_bank_counts);
 
 struct smca_bank_name {
-	const char *name;	/* Short name for sysfs */
-	const char *long_name;	/* Long name for pretty-printing */
+	const char *name;	 
+	const char *long_name;	 
 };
 
 static struct smca_bank_name smca_names[] = {
@@ -104,7 +97,7 @@ static struct smca_bank_name smca_names[] = {
 	[SMCA_CS ... SMCA_CS_V2]	= { "coherent_slave",	"Coherent Slave" },
 	[SMCA_PIE]			= { "pie",		"Power, Interrupts, etc." },
 
-	/* UMC v2 is separate because both of them can exist in a single system. */
+	 
 	[SMCA_UMC]			= { "umc",		"Unified Memory Controller" },
 	[SMCA_UMC_V2]			= { "umc_v2",		"Unified Memory Controller v2" },
 	[SMCA_PB]			= { "param_block",	"Parameter Block" },
@@ -158,52 +151,52 @@ enum smca_bank_types smca_get_bank_type(unsigned int cpu, unsigned int bank)
 EXPORT_SYMBOL_GPL(smca_get_bank_type);
 
 static const struct smca_hwid smca_hwid_mcatypes[] = {
-	/* { bank_type, hwid_mcatype } */
+	 
 
-	/* Reserved type */
+	 
 	{ SMCA_RESERVED, HWID_MCATYPE(0x00, 0x0)	},
 
-	/* ZN Core (HWID=0xB0) MCA types */
+	 
 	{ SMCA_LS,	 HWID_MCATYPE(0xB0, 0x0)	},
 	{ SMCA_LS_V2,	 HWID_MCATYPE(0xB0, 0x10)	},
 	{ SMCA_IF,	 HWID_MCATYPE(0xB0, 0x1)	},
 	{ SMCA_L2_CACHE, HWID_MCATYPE(0xB0, 0x2)	},
 	{ SMCA_DE,	 HWID_MCATYPE(0xB0, 0x3)	},
-	/* HWID 0xB0 MCATYPE 0x4 is Reserved */
+	 
 	{ SMCA_EX,	 HWID_MCATYPE(0xB0, 0x5)	},
 	{ SMCA_FP,	 HWID_MCATYPE(0xB0, 0x6)	},
 	{ SMCA_L3_CACHE, HWID_MCATYPE(0xB0, 0x7)	},
 
-	/* Data Fabric MCA types */
+	 
 	{ SMCA_CS,	 HWID_MCATYPE(0x2E, 0x0)	},
 	{ SMCA_PIE,	 HWID_MCATYPE(0x2E, 0x1)	},
 	{ SMCA_CS_V2,	 HWID_MCATYPE(0x2E, 0x2)	},
 
-	/* Unified Memory Controller MCA type */
+	 
 	{ SMCA_UMC,	 HWID_MCATYPE(0x96, 0x0)	},
 	{ SMCA_UMC_V2,	 HWID_MCATYPE(0x96, 0x1)	},
 
-	/* Parameter Block MCA type */
+	 
 	{ SMCA_PB,	 HWID_MCATYPE(0x05, 0x0)	},
 
-	/* Platform Security Processor MCA type */
+	 
 	{ SMCA_PSP,	 HWID_MCATYPE(0xFF, 0x0)	},
 	{ SMCA_PSP_V2,	 HWID_MCATYPE(0xFF, 0x1)	},
 
-	/* System Management Unit MCA type */
+	 
 	{ SMCA_SMU,	 HWID_MCATYPE(0x01, 0x0)	},
 	{ SMCA_SMU_V2,	 HWID_MCATYPE(0x01, 0x1)	},
 
-	/* Microprocessor 5 Unit MCA type */
+	 
 	{ SMCA_MP5,	 HWID_MCATYPE(0x01, 0x2)	},
 
-	/* MPDMA MCA type */
+	 
 	{ SMCA_MPDMA,	 HWID_MCATYPE(0x01, 0x3)	},
 
-	/* Northbridge IO Unit MCA type */
+	 
 	{ SMCA_NBIO,	 HWID_MCATYPE(0x18, 0x0)	},
 
-	/* PCI Express Unit MCA type */
+	 
 	{ SMCA_PCIE,	 HWID_MCATYPE(0x46, 0x0)	},
 	{ SMCA_PCIE_V2,	 HWID_MCATYPE(0x46, 0x1)	},
 
@@ -218,26 +211,16 @@ static const struct smca_hwid smca_hwid_mcatypes[] = {
 	{ SMCA_GMI_PHY,	 HWID_MCATYPE(0x269, 0x0)	},
 };
 
-/*
- * In SMCA enabled processors, we can have multiple banks for a given IP type.
- * So to define a unique name for each bank, we use a temp c-string to append
- * the MCA_IPID[InstanceId] to type's name in get_name().
- *
- * InstanceId is 32 bits which is 8 characters. Make sure MAX_MCATYPE_NAME_LEN
- * is greater than 8 plus 1 (for underscore) plus length of longest type name.
- */
+ 
 #define MAX_MCATYPE_NAME_LEN	30
 static char buf_mcatype[MAX_MCATYPE_NAME_LEN];
 
 static DEFINE_PER_CPU(struct threshold_bank **, threshold_banks);
 
-/*
- * A list of the banks enabled on each logical CPU. Controls which respective
- * descriptors to initialize later in mce_threshold_create_device().
- */
+ 
 static DEFINE_PER_CPU(u64, bank_map);
 
-/* Map of banks that have more than MCA_MISC0 available. */
+ 
 static DEFINE_PER_CPU(u64, smca_misc_banks_map);
 
 static void amd_threshold_interrupt(void);
@@ -253,10 +236,7 @@ static void smca_set_misc_banks_map(unsigned int bank, unsigned int cpu)
 {
 	u32 low, high;
 
-	/*
-	 * For SMCA enabled processors, BLKPTR field of the first MISC register
-	 * (MCx_MISC0) indicates presence of additional MISC regs set (MISC1-4).
-	 */
+	 
 	if (rdmsr_safe(MSR_AMD64_SMCA_MCx_CONFIG(bank), &low, &high))
 		return;
 
@@ -279,30 +259,12 @@ static void smca_configure(unsigned int bank, unsigned int cpu)
 	u32 high, low;
 	u32 smca_config = MSR_AMD64_SMCA_MCx_CONFIG(bank);
 
-	/* Set appropriate bits in MCA_CONFIG */
+	 
 	if (!rdmsr_safe(smca_config, &low, &high)) {
-		/*
-		 * OS is required to set the MCAX bit to acknowledge that it is
-		 * now using the new MSR ranges and new registers under each
-		 * bank. It also means that the OS will configure deferred
-		 * errors in the new MCx_CONFIG register. If the bit is not set,
-		 * uncorrectable errors will cause a system panic.
-		 *
-		 * MCA_CONFIG[MCAX] is bit 32 (0 in the high portion of the MSR.)
-		 */
+		 
 		high |= BIT(0);
 
-		/*
-		 * SMCA sets the Deferred Error Interrupt type per bank.
-		 *
-		 * MCA_CONFIG[DeferredIntTypeSupported] is bit 5, and tells us
-		 * if the DeferredIntType bit field is available.
-		 *
-		 * MCA_CONFIG[DeferredIntType] is bits [38:37] ([6:5] in the
-		 * high portion of the MSR). OS should set this to 0x1 to enable
-		 * APIC based interrupt. First, check that no interrupt has been
-		 * set.
-		 */
+		 
 		if ((low & BIT(5)) && !((high >> 5) & 0x3))
 			high |= BIT(5);
 
@@ -343,21 +305,18 @@ struct thresh_restart {
 
 static inline bool is_shared_bank(int bank)
 {
-	/*
-	 * Scalable MCA provides for only one core to have access to the MSRs of
-	 * a shared bank.
-	 */
+	 
 	if (mce_flags.smca)
 		return false;
 
-	/* Bank 4 is for northbridge reporting and is thus shared */
+	 
 	return (bank == 4);
 }
 
 static const char *bank4_names(const struct threshold_block *b)
 {
 	switch (b->address) {
-	/* MSR4_MISC0 */
+	 
 	case 0x00000413:
 		return "dram";
 
@@ -376,16 +335,11 @@ static const char *bank4_names(const struct threshold_block *b)
 
 static bool lvt_interrupt_supported(unsigned int bank, u32 msr_high_bits)
 {
-	/*
-	 * bank 4 supports APIC LVT interrupts implicitly since forever.
-	 */
+	 
 	if (bank == 4)
 		return true;
 
-	/*
-	 * IntP: interrupt present; if this bit is set, the thresholding
-	 * bank can generate APIC LVT interrupts
-	 */
+	 
 	return msr_high_bits & BIT(28);
 }
 
@@ -401,11 +355,7 @@ static int lvt_off_valid(struct threshold_block *b, int apic, u32 lo, u32 hi)
 	}
 
 	if (apic != msr) {
-		/*
-		 * On SMCA CPUs, LVT offset is programmed at a different MSR, and
-		 * the BIOS provides the value. The original field where LVT offset
-		 * was set is reserved. Return early here:
-		 */
+		 
 		if (mce_flags.smca)
 			return 0;
 
@@ -418,26 +368,26 @@ static int lvt_off_valid(struct threshold_block *b, int apic, u32 lo, u32 hi)
 	return 1;
 };
 
-/* Reprogram MCx_MISC MSR behind this threshold bank. */
+ 
 static void threshold_restart_bank(void *_tr)
 {
 	struct thresh_restart *tr = _tr;
 	u32 hi, lo;
 
-	/* sysfs write might race against an offline operation */
+	 
 	if (!this_cpu_read(threshold_banks) && !tr->set_lvt_off)
 		return;
 
 	rdmsr(tr->b->address, lo, hi);
 
 	if (tr->b->threshold_limit < (hi & THRESHOLD_MAX))
-		tr->reset = 1;	/* limit cannot be lower than err count */
+		tr->reset = 1;	 
 
-	if (tr->reset) {		/* reset err count and overflow bit */
+	if (tr->reset) {		 
 		hi =
 		    (hi & ~(MASK_ERR_COUNT_HI | MASK_OVERFLOW_HI)) |
 		    (THRESHOLD_MAX - tr->b->threshold_limit);
-	} else if (tr->old_limit) {	/* change limit w/o reset */
+	} else if (tr->old_limit) {	 
 		int new_count = (hi & THRESHOLD_MAX) +
 		    (tr->old_limit - tr->b->threshold_limit);
 
@@ -445,7 +395,7 @@ static void threshold_restart_bank(void *_tr)
 		    (new_count & THRESHOLD_MAX);
 	}
 
-	/* clear IntType */
+	 
 	hi &= ~MASK_INT_TYPE_HI;
 
 	if (!tr->b->interrupt_capable)
@@ -453,7 +403,7 @@ static void threshold_restart_bank(void *_tr)
 
 	if (tr->set_lvt_off) {
 		if (lvt_off_valid(tr->b, tr->lvt_off, lo, hi)) {
-			/* set new lvt offset */
+			 
 			hi &= ~MASK_LVTOFF_HI;
 			hi |= tr->lvt_off << 20;
 		}
@@ -548,7 +498,7 @@ static u32 get_block_address(u32 current_addr, u32 low, u32 high,
 	if (mce_flags.smca)
 		return smca_get_block_address(bank, block, cpu);
 
-	/* Fall back to method we used for older processors: */
+	 
 	switch (block) {
 	case 0:
 		addr = mca_msr_reg(bank, MCA_MISC);
@@ -593,7 +543,7 @@ prepare_threshold_block(unsigned int bank, unsigned int block, u32 addr,
 		goto set_offset;
 	}
 
-	/* Gather LVT offset for thresholding: */
+	 
 	if (rdmsr_safe(MSR_CU_DEF_ERR, &smca_low, &smca_high))
 		goto out;
 
@@ -616,13 +566,13 @@ bool amd_filter_mce(struct mce *m)
 	enum smca_bank_types bank_type = smca_get_bank_type(m->extcpu, m->bank);
 	struct cpuinfo_x86 *c = &boot_cpu_data;
 
-	/* See Family 17h Models 10h-2Fh Erratum #1114. */
+	 
 	if (c->x86 == 0x17 &&
 	    c->x86_model >= 0x10 && c->x86_model <= 0x2F &&
 	    bank_type == SMCA_IF && XEC(m->status, 0x3f) == 10)
 		return true;
 
-	/* NB GART TLB error reporting is disabled by default. */
+	 
 	if (c->x86 < 0x17) {
 		if (m->bank == 4 && XEC(m->status, 0x1f) == 0x5)
 			return true;
@@ -631,12 +581,7 @@ bool amd_filter_mce(struct mce *m)
 	return false;
 }
 
-/*
- * Turn off thresholding banks for the following conditions:
- * - MC4_MISC thresholding is not supported on Family 0x15.
- * - Prevent possible spurious interrupts from the IF bank on Family 0x17
- *   Models 0x10-0x2F due to Erratum #1114.
- */
+ 
 static void disable_err_thresholding(struct cpuinfo_x86 *c, unsigned int bank)
 {
 	int i, num_msrs;
@@ -645,8 +590,8 @@ static void disable_err_thresholding(struct cpuinfo_x86 *c, unsigned int bank)
 	u32 msrs[NR_BLOCKS];
 
 	if (c->x86 == 0x15 && bank == 4) {
-		msrs[0] = 0x00000413; /* MC4_MISC0 */
-		msrs[1] = 0xc0000408; /* MC4_MISC1 */
+		msrs[0] = 0x00000413;  
+		msrs[1] = 0xc0000408;  
 		num_msrs = 2;
 	} else if (c->x86 == 0x17 &&
 		   (c->x86_model >= 0x10 && c->x86_model <= 0x2F)) {
@@ -662,21 +607,21 @@ static void disable_err_thresholding(struct cpuinfo_x86 *c, unsigned int bank)
 
 	rdmsrl(MSR_K7_HWCR, hwcr);
 
-	/* McStatusWrEn has to be set */
+	 
 	need_toggle = !(hwcr & BIT(18));
 	if (need_toggle)
 		wrmsrl(MSR_K7_HWCR, hwcr | BIT(18));
 
-	/* Clear CntP bit safely */
+	 
 	for (i = 0; i < num_msrs; i++)
 		msr_clear_bit(msrs[i], 62);
 
-	/* restore old settings */
+	 
 	if (need_toggle)
 		wrmsrl(MSR_K7_HWCR, hwcr);
 }
 
-/* cpu init entry point, called from mce.c with preempt off */
+ 
 void mce_amd_feature_init(struct cpuinfo_x86 *c)
 {
 	unsigned int bank, block, cpu = smp_processor_id();
@@ -716,7 +661,7 @@ void mce_amd_feature_init(struct cpuinfo_x86 *c)
 bool amd_mce_is_memory_error(struct mce *m)
 {
 	enum smca_bank_types bank_type;
-	/* ErrCodeExt[20:16] */
+	 
 	u8 xec = (m->status >> 16) & 0x1f;
 
 	bank_type = smca_get_bank_type(m->extcpu, m->bank);
@@ -762,9 +707,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_deferred_error)
 	apic_eoi();
 }
 
-/*
- * Returns true if the logged error is deferred. False, otherwise.
- */
+ 
 static inline bool
 _log_error_bank(unsigned int bank, u32 msr_stat, u32 msr_addr, u64 misc)
 {
@@ -790,41 +733,27 @@ static bool _log_error_deferred(unsigned int bank, u32 misc)
 			     mca_msr_reg(bank, MCA_ADDR), misc))
 		return false;
 
-	/*
-	 * Non-SMCA systems don't have MCA_DESTAT/MCA_DEADDR registers.
-	 * Return true here to avoid accessing these registers.
-	 */
+	 
 	if (!mce_flags.smca)
 		return true;
 
-	/* Clear MCA_DESTAT if the deferred error was logged from MCA_STATUS. */
+	 
 	wrmsrl(MSR_AMD64_SMCA_MCx_DESTAT(bank), 0);
 	return true;
 }
 
-/*
- * We have three scenarios for checking for Deferred errors:
- *
- * 1) Non-SMCA systems check MCA_STATUS and log error if found.
- * 2) SMCA systems check MCA_STATUS. If error is found then log it and also
- *    clear MCA_DESTAT.
- * 3) SMCA systems check MCA_DESTAT, if error was not found in MCA_STATUS, and
- *    log it.
- */
+ 
 static void log_error_deferred(unsigned int bank)
 {
 	if (_log_error_deferred(bank, 0))
 		return;
 
-	/*
-	 * Only deferred errors are logged in MCA_DE{STAT,ADDR} so just check
-	 * for a valid error.
-	 */
+	 
 	_log_error_bank(bank, MSR_AMD64_SMCA_MCx_DESTAT(bank),
 			      MSR_AMD64_SMCA_MCx_DEADDR(bank), 0);
 }
 
-/* APIC interrupt handler for deferred errors */
+ 
 static void amd_deferred_error_interrupt(void)
 {
 	unsigned int bank;
@@ -852,30 +781,23 @@ static void log_and_reset_block(struct threshold_block *block)
 	if (!(high & MASK_OVERFLOW_HI))
 		return;
 
-	/* Log the MCE which caused the threshold event. */
+	 
 	log_error_thresholding(block->bank, ((u64)high << 32) | low);
 
-	/* Reset threshold block after logging error. */
+	 
 	memset(&tr, 0, sizeof(tr));
 	tr.b = block;
 	threshold_restart_bank(&tr);
 }
 
-/*
- * Threshold interrupt handler will service THRESHOLD_APIC_VECTOR. The interrupt
- * goes off when error_count reaches threshold_limit.
- */
+ 
 static void amd_threshold_interrupt(void)
 {
 	struct threshold_block *first_block = NULL, *block = NULL, *tmp = NULL;
 	struct threshold_bank **bp = this_cpu_read(threshold_banks);
 	unsigned int bank, cpu = smp_processor_id();
 
-	/*
-	 * Validate that the threshold bank has been initialized already. The
-	 * handler is installed at boot time, but on a hotplug event the
-	 * interrupt might fire before the data has been initialized.
-	 */
+	 
 	if (!bp)
 		return;
 
@@ -887,19 +809,14 @@ static void amd_threshold_interrupt(void)
 		if (!first_block)
 			continue;
 
-		/*
-		 * The first block is also the head of the list. Check it first
-		 * before iterating over the rest.
-		 */
+		 
 		log_and_reset_block(first_block);
 		list_for_each_entry_safe(block, tmp, &first_block->miscj, miscj)
 			log_and_reset_block(block);
 	}
 }
 
-/*
- * Sysfs Interface
- */
+ 
 
 struct threshold_attr {
 	struct attribute attr;
@@ -967,7 +884,7 @@ static ssize_t show_error_count(struct threshold_block *b, char *buf)
 {
 	u32 lo, hi;
 
-	/* CPU might be offline by now */
+	 
 	if (rdmsr_on_cpu(b->cpu, b->address, &lo, &hi))
 		return -ENODEV;
 
@@ -993,7 +910,7 @@ RW_ATTR(threshold_limit);
 static struct attribute *default_attrs[] = {
 	&threshold_limit.attr,
 	&error_count.attr,
-	NULL,	/* possibly interrupt_enable if supported, see below */
+	NULL,	 
 	NULL,
 };
 ATTRIBUTE_GROUPS(default);
@@ -1113,7 +1030,7 @@ static int allocate_threshold_blocks(unsigned int cpu, struct threshold_bank *tb
 
 	INIT_LIST_HEAD(&b->miscj);
 
-	/* This is safe as @tb is not visible yet */
+	 
 	if (tb->blocks)
 		list_add(&b->miscj, &tb->blocks->miscj);
 	else
@@ -1183,9 +1100,9 @@ static int threshold_create_bank(struct threshold_bank **bp, unsigned int cpu,
 	if (is_shared_bank(bank)) {
 		nb = node_to_amd_nb(topology_die_id(cpu));
 
-		/* threshold descriptor already initialized on this node? */
+		 
 		if (nb && nb->bank4) {
-			/* yes, use it */
+			 
 			b = nb->bank4;
 			err = kobject_add(b->kobj, &dev->kobj, name);
 			if (err)
@@ -1206,7 +1123,7 @@ static int threshold_create_bank(struct threshold_bank **bp, unsigned int cpu,
 		goto out;
 	}
 
-	/* Associate the bank with the per-CPU MCE device */
+	 
 	b->kobj = kobject_create_and_add(name, &dev->kobj);
 	if (!b->kobj) {
 		err = -EINVAL;
@@ -1217,7 +1134,7 @@ static int threshold_create_bank(struct threshold_bank **bp, unsigned int cpu,
 		b->shared = 1;
 		refcount_set(&b->cpus, 1);
 
-		/* nb is already initialized, see above */
+		 
 		if (nb) {
 			WARN_ON(nb->bank4);
 			nb->bank4 = b;
@@ -1281,10 +1198,7 @@ static void threshold_remove_bank(struct threshold_bank *bank)
 		__threshold_remove_blocks(bank);
 		return;
 	} else {
-		/*
-		 * The last CPU on this node using the shared bank is going
-		 * away, remove that bank now.
-		 */
+		 
 		nb = node_to_amd_nb(topology_die_id(smp_processor_id()));
 		nb->bank4 = NULL;
 	}
@@ -1318,27 +1232,14 @@ int mce_threshold_remove_device(unsigned int cpu)
 	if (!bp)
 		return 0;
 
-	/*
-	 * Clear the pointer before cleaning up, so that the interrupt won't
-	 * touch anything of this.
-	 */
+	 
 	this_cpu_write(threshold_banks, NULL);
 
 	__threshold_remove_device(bp);
 	return 0;
 }
 
-/**
- * mce_threshold_create_device - Create the per-CPU MCE threshold device
- * @cpu:	The plugged in CPU
- *
- * Create directories and files for all valid threshold banks.
- *
- * This is invoked from the CPU hotplug callback which was installed in
- * mcheck_init_device(). The invocation happens in context of the hotplug
- * thread running on @cpu.  The callback is invoked on all CPUs which are
- * online when the callback is installed or during a real hotplug event.
- */
+ 
 int mce_threshold_create_device(unsigned int cpu)
 {
 	unsigned int numbanks, bank;

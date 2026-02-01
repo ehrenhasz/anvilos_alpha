@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014-2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -102,12 +100,7 @@ static void mx25_tsadc_setup_clk(struct platform_device *pdev,
 {
 	unsigned clk_div;
 
-	/*
-	 * According to the datasheet the ADC clock should never
-	 * exceed 1,75 MHz. Base clock is the IPG and the ADC unit uses
-	 * a funny clock divider. To keep the ADC conversion time constant
-	 * adapt the ADC internal clock divider to the IPG clock rate.
-	 */
+	 
 
 	dev_dbg(&pdev->dev, "Found master clock at %lu Hz\n",
 		clk_get_rate(tsadc->clk));
@@ -115,14 +108,11 @@ static void mx25_tsadc_setup_clk(struct platform_device *pdev,
 	clk_div = DIV_ROUND_UP(clk_get_rate(tsadc->clk), 1750000);
 	dev_dbg(&pdev->dev, "Setting up ADC clock divider to %u\n", clk_div);
 
-	/* adc clock = IPG clock / (2 * div + 2) */
+	 
 	clk_div -= 2;
 	clk_div /= 2;
 
-	/*
-	 * the ADC clock divider changes its behaviour when values below 4
-	 * are used: it is fixed to "/ 10" in this case
-	 */
+	 
 	clk_div = max_t(unsigned, 4, clk_div);
 
 	dev_dbg(&pdev->dev, "Resulting ADC conversion clock at %lu Hz\n",
@@ -161,16 +151,16 @@ static int mx25_tsadc_probe(struct platform_device *pdev)
 		return PTR_ERR(tsadc->clk);
 	}
 
-	/* setup clock according to the datasheet */
+	 
 	mx25_tsadc_setup_clk(pdev, tsadc);
 
-	/* Enable clock and reset the component */
+	 
 	regmap_update_bits(tsadc->regs, MX25_TSC_TGCR, MX25_TGCR_CLK_EN,
 			   MX25_TGCR_CLK_EN);
 	regmap_update_bits(tsadc->regs, MX25_TSC_TGCR, MX25_TGCR_TSC_RST,
 			   MX25_TGCR_TSC_RST);
 
-	/* Setup powersaving mode, but enable internal reference voltage */
+	 
 	regmap_update_bits(tsadc->regs, MX25_TSC_TGCR, MX25_TGCR_POWERMODE_MASK,
 			   MX25_TGCR_POWERMODE_SAVE);
 	regmap_update_bits(tsadc->regs, MX25_TSC_TGCR, MX25_TGCR_INTREFEN,
@@ -203,7 +193,7 @@ static int mx25_tsadc_remove(struct platform_device *pdev)
 
 static const struct of_device_id mx25_tsadc_ids[] = {
 	{ .compatible = "fsl,imx25-tsadc" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mx25_tsadc_ids);
 

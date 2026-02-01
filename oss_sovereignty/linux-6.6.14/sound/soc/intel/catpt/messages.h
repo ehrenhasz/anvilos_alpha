@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2020 Intel Corporation. All rights reserved.
- *
- * Author: Cezary Rojewski <cezary.rojewski@intel.com>
- */
+ 
+ 
 
 #ifndef __SND_SOC_INTEL_CATPT_MSG_H
 #define __SND_SOC_INTEL_CATPT_MSG_H
 
 struct catpt_dev;
 
-/* IPC messages base types  */
+ 
 
 enum catpt_reply_status {
 	CATPT_REPLY_SUCCESS = 0,
@@ -26,7 +22,7 @@ enum catpt_reply_status {
 	CATPT_REPLY_SOURCE_NOT_STARTED = 10,
 };
 
-/* GLOBAL messages */
+ 
 
 enum catpt_global_msg_type {
 	CATPT_GLB_GET_FW_VERSION = 0,
@@ -43,7 +39,7 @@ union catpt_global_msg {
 	u32 val;
 	struct {
 		u32 status:5;
-		u32 context:19; /* stream or module specific */
+		u32 context:19;  
 		u32 global_msg_type:5;
 		u32 fw_ready:1;
 		u32 done:1;
@@ -86,12 +82,12 @@ enum catpt_path_id {
 	CATPT_PATH_SSP0_IN = 1,
 	CATPT_PATH_SSP1_OUT = 2,
 	CATPT_PATH_SSP1_IN = 3,
-	/* duplicated audio in capture path */
+	 
 	CATPT_PATH_SSP0_IN_DUP = 4,
 };
 
 enum catpt_stream_type {
-	CATPT_STRM_TYPE_RENDER = 0, /* offload */
+	CATPT_STRM_TYPE_RENDER = 0,  
 	CATPT_STRM_TYPE_SYSTEM = 1,
 	CATPT_STRM_TYPE_CAPTURE = 2,
 	CATPT_STRM_TYPE_LOOPBACK = 3,
@@ -118,16 +114,16 @@ enum catpt_channel_index {
 };
 
 enum catpt_channel_config {
-	CATPT_CHANNEL_CONFIG_MONO	= 0, /* One channel only */
-	CATPT_CHANNEL_CONFIG_STEREO	= 1, /* L & R */
-	CATPT_CHANNEL_CONFIG_2_POINT_1	= 2, /* L, R & LFE; PCM only */
-	CATPT_CHANNEL_CONFIG_3_POINT_0	= 3, /* L, C & R; MP3 & AAC only */
-	CATPT_CHANNEL_CONFIG_3_POINT_1	= 4, /* L, C, R & LFE; PCM only */
-	CATPT_CHANNEL_CONFIG_QUATRO	= 5, /* L, R, Ls & Rs; PCM only */
-	CATPT_CHANNEL_CONFIG_4_POINT_0	= 6, /* L, C, R & Cs; MP3 & AAC only */
-	CATPT_CHANNEL_CONFIG_5_POINT_0	= 7, /* L, C, R, Ls & Rs */
-	CATPT_CHANNEL_CONFIG_5_POINT_1	= 8, /* L, C, R, Ls, Rs & LFE */
-	CATPT_CHANNEL_CONFIG_DUAL_MONO	= 9, /* One channel replicated in two */
+	CATPT_CHANNEL_CONFIG_MONO	= 0,  
+	CATPT_CHANNEL_CONFIG_STEREO	= 1,  
+	CATPT_CHANNEL_CONFIG_2_POINT_1	= 2,  
+	CATPT_CHANNEL_CONFIG_3_POINT_0	= 3,  
+	CATPT_CHANNEL_CONFIG_3_POINT_1	= 4,  
+	CATPT_CHANNEL_CONFIG_QUATRO	= 5,  
+	CATPT_CHANNEL_CONFIG_4_POINT_0	= 6,  
+	CATPT_CHANNEL_CONFIG_5_POINT_0	= 7,  
+	CATPT_CHANNEL_CONFIG_5_POINT_1	= 8,  
+	CATPT_CHANNEL_CONFIG_DUAL_MONO	= 9,  
 	CATPT_CHANNEL_CONFIG_INVALID	= 10,
 };
 
@@ -171,7 +167,7 @@ enum catpt_module_id {
 	CATPT_MODID_PCM_CAPTURE		= 0xA,
 	CATPT_MODID_PCM_SYSTEM		= 0xB,
 	CATPT_MODID_PCM_REFERENCE	= 0xC,
-	CATPT_MODID_PCM			= 0xD, /* offload */
+	CATPT_MODID_PCM			= 0xD,  
 	CATPT_MODID_BLUETOOTH_RENDER	= 0xE,
 	CATPT_MODID_BLUETOOTH_CAPTURE	= 0xF,
 	CATPT_MODID_LAST		= CATPT_MODID_BLUETOOTH_CAPTURE,
@@ -280,7 +276,7 @@ struct catpt_mixer_stream_info {
 int catpt_ipc_get_mixer_stream_info(struct catpt_dev *cdev,
 				    struct catpt_mixer_stream_info *info);
 
-/* STREAM messages */
+ 
 
 enum catpt_stream_msg_type {
 	CATPT_STRM_RESET_STREAM = 0,
@@ -325,7 +321,7 @@ int catpt_ipc_reset_stream(struct catpt_dev *cdev, u8 stream_hw_id);
 int catpt_ipc_pause_stream(struct catpt_dev *cdev, u8 stream_hw_id);
 int catpt_ipc_resume_stream(struct catpt_dev *cdev, u8 stream_hw_id);
 
-/* STREAM messages - STAGE subtype */
+ 
 
 enum catpt_audio_curve_type {
 	CATPT_AUDIO_CURVE_NONE = 0,
@@ -342,7 +338,7 @@ int catpt_ipc_set_write_pos(struct catpt_dev *cdev, u8 stream_hw_id,
 
 int catpt_ipc_mute_loopback(struct catpt_dev *cdev, u8 stream_hw_id, bool mute);
 
-/* NOTIFICATION messages */
+ 
 
 enum catpt_notify_reason {
 	CATPT_NOTIFY_POSITION_CHANGED = 0,
@@ -364,7 +360,7 @@ union catpt_notify_msg {
 		u32 stream_hw_id:4;
 		u32 stream_msg_type:4;
 		u32 global_msg_type:5;
-		u32 hdr:3; /* fw_ready, done, busy */
+		u32 hdr:3;  
 	};
 } __packed;
 

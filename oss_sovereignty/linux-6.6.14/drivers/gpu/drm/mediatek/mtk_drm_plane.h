@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: CK Hu <ck.hu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTK_DRM_PLANE_H_
 #define _MTK_DRM_PLANE_H_

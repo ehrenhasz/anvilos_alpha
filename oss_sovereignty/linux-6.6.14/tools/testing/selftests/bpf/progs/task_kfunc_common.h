@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+ 
+ 
 
 #ifndef _TASK_KFUNC_COMMON_H
 #define _TASK_KFUNC_COMMON_H
@@ -73,4 +73,4 @@ static inline int tasks_kfunc_map_insert(struct task_struct *p)
 	return 0;
 }
 
-#endif /* _TASK_KFUNC_COMMON_H */
+#endif  

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sam9x5_wm8731   --	SoC audio for AT91SAM9X5-based boards
- *			that are using WM8731 as codec.
- *
- *  Copyright (C) 2011 Atmel,
- *		  Nicolas Ferre <nicolas.ferre@atmel.com>
- *
- *  Copyright (C) 2013 Paratronic,
- *		  Richard Genoud <richard.genoud@gmail.com>
- *
- * Based on sam9g20_wm8731.c by:
- * Sedji Gaouaou <sedji.gaouaou@atmel.com>
- */
+
+ 
 #include <linux/of.h>
 #include <linux/export.h>
 #include <linux/module.h>
@@ -35,9 +23,7 @@ struct sam9x5_drvdata {
 	int ssc_id;
 };
 
-/*
- * Logic for a wm8731 as connected on a at91sam9x5ek based board.
- */
+ 
 static int sam9x5_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
@@ -46,7 +32,7 @@ static int sam9x5_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 
 	dev_dbg(dev, "%s called\n", __func__);
 
-	/* set the codec system clock for DAC and ADC */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_XTAL,
 				     MCLK_RATE, SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -57,14 +43,7 @@ static int sam9x5_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
-/*
- * Audio paths on at91sam9x5ek board:
- *
- *  |A| ------------> |      | ---R----> Headphone Jack
- *  |T| <----\        |  WM  | ---L--/
- *  |9| ---> CLK <--> | 8731 | <--R----- Line In Jack
- *  |1| <------------ |      | <--L--/
- */
+ 
 static const struct snd_soc_dapm_widget sam9x5_dapm_widgets[] = {
 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
 	SND_SOC_DAPM_LINE("Line In Jack", NULL),
@@ -200,7 +179,7 @@ static struct platform_driver sam9x5_wm8731_driver = {
 };
 module_platform_driver(sam9x5_wm8731_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Nicolas Ferre <nicolas.ferre@atmel.com>");
 MODULE_AUTHOR("Richard Genoud <richard.genoud@gmail.com>");
 MODULE_DESCRIPTION("ALSA SoC machine driver for AT91SAM9x5 - WM8731");

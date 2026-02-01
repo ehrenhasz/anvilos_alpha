@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __QUEUE_ACCESS_H
 #define __QUEUE_ACCESS_H
@@ -52,14 +40,14 @@
 	} while (0)
 
 struct ia_css_queue {
-	u8 type;        /* Specify remote/local type of access */
-	u8 location;    /* Cell location for queue */
-	u8 proc_id;     /* Processor id for queue access */
+	u8 type;         
+	u8 location;     
+	u8 proc_id;      
 	union {
 		ia_css_circbuf_t cb_local;
 		struct {
-			u32 cb_desc_addr; /*Circbuf desc address for remote queues*/
-			u32 cb_elems_addr; /*Circbuf elements addr for remote queue*/
+			u32 cb_desc_addr;  
+			u32 cb_elems_addr;  
 		}	remote;
 	} desc;
 };
@@ -84,4 +72,4 @@ int ia_css_queue_item_store(
     u8 position,
     ia_css_circbuf_elem_t *item);
 
-#endif /* __QUEUE_ACCESS_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C multiplexer using GPIO API
- *
- * Peter Korsgaard <peter.korsgaard@barco.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/i2c-mux.h>
@@ -14,7 +10,7 @@
 #include <linux/slab.h>
 #include <linux/bits.h>
 #include <linux/gpio/consumer.h>
-/* FIXME: stop poking around inside gpiolib */
+ 
 #include "../../gpio/gpiolib.h"
 
 struct gpiomux {
@@ -75,10 +71,7 @@ static int i2c_mux_gpio_probe_fw(struct gpiomux *mux,
 		of_node_put(adapter_np);
 
 	} else if (is_acpi_node(fwnode)) {
-		/*
-		 * In ACPI land the mux should be a direct child of the i2c
-		 * bus it muxes.
-		 */
+		 
 		acpi_handle dev_handle = ACPI_HANDLE(dev->parent);
 
 		adapter = i2c_acpi_find_adapter_by_handle(dev_handle);
@@ -197,7 +190,7 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
 		if (!muxc->mux_locked)
 			continue;
 
-		/* FIXME: find a proper way to access the GPIO device */
+		 
 		gpio_dev = &gpiod->gdev->dev;
 		muxc->mux_locked = i2c_root_adapter(gpio_dev) == root;
 	}

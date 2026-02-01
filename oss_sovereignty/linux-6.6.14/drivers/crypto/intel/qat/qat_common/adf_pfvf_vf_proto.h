@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2021 Intel Corporation */
+ 
+ 
 #ifndef ADF_PFVF_VF_PROTO_H
 #define ADF_PFVF_VF_PROTO_H
 
@@ -14,4 +14,4 @@ int adf_send_vf2pf_blkmsg_req(struct adf_accel_dev *accel_dev, u8 type,
 
 int adf_enable_vf2pf_comms(struct adf_accel_dev *accel_dev);
 
-#endif /* ADF_PFVF_VF_PROTO_H */
+#endif  

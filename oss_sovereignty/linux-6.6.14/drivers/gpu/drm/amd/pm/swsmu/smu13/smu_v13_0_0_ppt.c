@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -47,11 +26,7 @@
 #include "smu_cmn.h"
 #include "amdgpu_ras.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -90,10 +65,7 @@
 
 #define DEBUGSMC_MSG_Mode1Reset	2
 
-/*
- * SMU_v13_0_10 supports ECCTABLE since version 80.34.0,
- * use this to check ECCTABLE feature whether support
- */
+ 
 #define SUPPORT_ECCTABLE_SMU_13_0_10_VERSION 0x00502200
 
 #define PP_OD_FEATURE_GFXCLK_FMIN			0
@@ -308,7 +280,7 @@ smu_v13_0_0_get_allowed_feature_mask(struct smu_context *smu,
 	if (!(adev->pm.pp_feature & PP_SOCCLK_DPM_MASK))
 		*(uint64_t *)feature_mask &= ~FEATURE_MASK(FEATURE_DPM_SOCCLK_BIT);
 
-	/* PMFW 78.58 contains a critical fix for gfxoff feature */
+	 
 	smu_cmn_get_smc_version(smu, NULL, &smu_version);
 	if ((smu_version < 0x004e3a00) ||
 	     !(adev->pm.pp_feature & PP_GFXOFF_MASK))
@@ -359,20 +331,13 @@ static int smu_v13_0_0_check_powerplay_table(struct smu_context *smu)
 			smu_baco->maco_support = true;
 	}
 
-	/*
-	 * We are in the transition to a new OD mechanism.
-	 * Disable the OD feature support for SMU13 temporarily.
-	 * TODO: get this reverted when new OD mechanism online
-	 */
+	 
 #if 0
 	if (!overdrive_lowerlimits->FeatureCtrlMask ||
 	    !overdrive_upperlimits->FeatureCtrlMask)
 		smu->od_enabled = false;
 
-	/*
-	 * Instead of having its own buffer space and get overdrive_table copied,
-	 * smu->od_settings just points to the actual overdrive_table
-	 */
+	 
 	smu->od_settings = &powerplay_table->overdrive_table;
 #else
 	smu->od_enabled = false;
@@ -464,10 +429,7 @@ static int smu_v13_0_0_setup_pptable(struct smu_context *smu)
 	if (ret)
 		return ret;
 
-	/*
-	 * With SCPM enabled, the operation below will be handled
-	 * by PSP. Driver involvment is unnecessary and useless.
-	 */
+	 
 	if (!adev->scpm_enabled) {
 		ret = smu_v13_0_0_append_powerplay_table(smu);
 		if (ret)
@@ -576,7 +538,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 	uint32_t link_level;
 	int ret = 0;
 
-	/* socclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.soc_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_SOCCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -592,7 +554,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* gfxclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.gfx_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -601,15 +563,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 		if (ret)
 			return ret;
 
-		/*
-		 * Update the reported maximum shader clock to the value
-		 * which can be guarded to be achieved on all cards. This
-		 * is aligned with Window setting. And considering that value
-		 * might be not the peak frequency the card can achieve, it
-		 * is normal some real-time clock frequency can overtake this
-		 * labelled maximum clock frequency(for example in pp_dpm_sclk
-		 * sysfs output).
-		 */
+		 
 		if (skutable->DriverReportedClocks.GameClockAc &&
 		    (dpm_table->dpm_levels[dpm_table->count - 1].value >
 		    skutable->DriverReportedClocks.GameClockAc)) {
@@ -625,7 +579,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* uclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.uclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_UCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -641,7 +595,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* fclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.fclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_FCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -657,7 +611,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* vclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.vclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_VCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -673,7 +627,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* dclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.dclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_DCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -689,7 +643,7 @@ static int smu_v13_0_0_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* lclk dpm table setup */
+	 
 	pcie_table = &dpm_context->dpm_tables.pcie_table;
 	pcie_table->num_of_link_levels = 0;
 	for (link_level = 0; link_level < NUM_LINK_LEVELS; link_level++) {
@@ -891,30 +845,30 @@ static int smu_v13_0_0_get_dpm_ultimate_freq(struct smu_context *smu,
 	switch (clk_type) {
 	case SMU_MCLK:
 	case SMU_UCLK:
-		/* uclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.uclk_table;
 		break;
 	case SMU_GFXCLK:
 	case SMU_SCLK:
-		/* gfxclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.gfx_table;
 		break;
 	case SMU_SOCCLK:
-		/* socclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.soc_table;
 		break;
 	case SMU_FCLK:
-		/* fclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.fclk_table;
 		break;
 	case SMU_VCLK:
 	case SMU_VCLK1:
-		/* vclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.vclk_table;
 		break;
 	case SMU_DCLK:
 	case SMU_DCLK1:
-		/* dclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.dclk_table;
 		break;
 	default:
@@ -1216,17 +1170,7 @@ static int smu_v13_0_0_print_clk_levels(struct smu_context *smu,
 		}
 
 		if (single_dpm_table->is_fine_grained) {
-			/*
-			 * For fine grained dpms, there are only two dpm levels:
-			 *   - level 0 -> min clock freq
-			 *   - level 1 -> max clock freq
-			 * And the current clock frequency can be any value between them.
-			 * So, if the current clock frequency is not at level 0 or level 1,
-			 * we will fake it as three dpm levels:
-			 *   - level 0 -> min clock freq
-			 *   - level 1 -> current actual clock freq
-			 *   - level 2 -> max clock freq
-			 */
+			 
 			if ((single_dpm_table->dpm_levels[0].value != curr_freq) &&
 			     (single_dpm_table->dpm_levels[1].value != curr_freq)) {
 				size += sysfs_emit_at(buf, size, "0: %uMhz\n",
@@ -1538,13 +1482,7 @@ static int smu_v13_0_0_od_edit_dpm_table(struct smu_context *smu,
 		fallthrough;
 
 	case PP_OD_COMMIT_DPM_TABLE:
-		/*
-		 * The member below instructs PMFW the settings focused in
-		 * this single operation.
-		 * `uint32_t FeatureCtrlMask;`
-		 * It does not contain actual informations about user's custom
-		 * settings. Thus we do not cache it.
-		 */
+		 
 		offset_of_voltageoffset = offsetof(OverDriveTable_t, VoltageOffsetPerZoneBoundary);
 		if (memcmp((u8 *)od_table + offset_of_voltageoffset,
 			   table_context->user_overdrive_table + offset_of_voltageoffset,
@@ -1631,7 +1569,7 @@ static int smu_v13_0_0_force_clk_levels(struct smu_context *smu,
 	case SMU_DCLK:
 	case SMU_DCLK1:
 		if (single_dpm_table->is_fine_grained) {
-			/* There is only 2 levels for fine grained DPM */
+			 
 			soft_max_level = (soft_max_level >= 1 ? 1 : 0);
 			soft_min_level = (soft_min_level >= 1 ? 1 : 0);
 		} else {
@@ -1801,10 +1739,7 @@ static int smu_v13_0_0_set_default_od_settings(struct smu_context *smu)
 	       boot_od_table,
 	       sizeof(OverDriveTableExternal_t));
 
-	/*
-	 * For S3/S4/Runpm resume, we need to setup those overdrive tables again,
-	 * but we have to preserve user defined values in "user_od_table".
-	 */
+	 
 	if (!smu->adev->in_suspend) {
 		memcpy(user_od_table,
 		       boot_od_table,
@@ -1948,7 +1883,7 @@ static int smu_v13_0_0_get_fan_speed_pwm(struct smu_context *smu,
 		return ret;
 	}
 
-	/* Convert the PMFW output which is in percent to pwm(255) based */
+	 
 	*speed = MIN(*speed * 255 / 100, 255);
 
 	return 0;
@@ -1971,10 +1906,7 @@ static int smu_v13_0_0_enable_mgpu_fan_boost(struct smu_context *smu)
 	PPTable_t *pptable = table_context->driver_pptable;
 	SkuTable_t *skutable = &pptable->SkuTable;
 
-	/*
-	 * Skip the MGpuFanBoost setting for those ASICs
-	 * which do not support it
-	 */
+	 
 	if (skutable->MGpuAcousticLimitRpmThreshold == 0)
 		return 0;
 
@@ -2050,7 +1982,7 @@ static int smu_v13_0_0_get_power_profile_mode(struct smu_context *smu,
 			title[6], title[7], title[8], title[9]);
 
 	for (i = 0; i < PP_SMC_POWER_PROFILE_COUNT; i++) {
-		/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+		 
 		workload_type = smu_cmn_to_asic_specific_index(smu,
 							       CMN2ASIC_MAPPING_WORKLOAD,
 							       i);
@@ -2130,7 +2062,7 @@ static int smu_v13_0_0_set_power_profile_mode(struct smu_context *smu,
 		}
 
 		switch (input[0]) {
-		case 0: /* Gfxclk */
+		case 0:  
 			activity_monitor->Gfx_FPS = input[1];
 			activity_monitor->Gfx_MinActiveFreqType = input[2];
 			activity_monitor->Gfx_MinActiveFreq = input[3];
@@ -2140,7 +2072,7 @@ static int smu_v13_0_0_set_power_profile_mode(struct smu_context *smu,
 			activity_monitor->Gfx_PD_Data_error_coeff = input[7];
 			activity_monitor->Gfx_PD_Data_error_rate_coeff = input[8];
 			break;
-		case 1: /* Fclk */
+		case 1:  
 			activity_monitor->Fclk_FPS = input[1];
 			activity_monitor->Fclk_MinActiveFreqType = input[2];
 			activity_monitor->Fclk_MinActiveFreq = input[3];
@@ -2163,7 +2095,7 @@ static int smu_v13_0_0_set_power_profile_mode(struct smu_context *smu,
 		}
 	}
 
-	/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+	 
 	workload_type = smu_cmn_to_asic_specific_index(smu,
 						       CMN2ASIC_MAPPING_WORKLOAD,
 						       smu->power_profile_mode);
@@ -2195,7 +2127,7 @@ static int smu_v13_0_0_baco_exit(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 
 	if (adev->in_runpm && smu_cmn_is_audio_func_enabled(adev)) {
-		/* Wait for PMFW handling for the Dstate change */
+		 
 		usleep_range(10000, 11000);
 		return smu_v13_0_baco_set_armd3_sequence(smu, BACO_SEQ_ULPS);
 	} else {
@@ -2208,11 +2140,11 @@ static bool smu_v13_0_0_is_mode1_reset_supported(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 	u32 smu_version;
 
-	/* SRIOV does not support SMU mode1 reset */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return false;
 
-	/* PMFW support is available since 78.41 */
+	 
 	smu_cmn_get_smc_version(smu, NULL, &smu_version);
 	if (smu_version < 0x004e2900)
 		return false;
@@ -2241,7 +2173,7 @@ static int smu_v13_0_0_i2c_xfer(struct i2c_adapter *i2c_adap,
 
 	req->I2CcontrollerPort = smu_i2c->port;
 	req->I2CSpeed = I2C_SPEED_FAST_400K;
-	req->SlaveAddress = msg[0].addr << 1; /* wants an 8-bit address */
+	req->SlaveAddress = msg[0].addr << 1;  
 	dir = msg[0].flags & I2C_M_RD;
 
 	for (c = i = 0; i < num_msgs; i++) {
@@ -2249,25 +2181,20 @@ static int smu_v13_0_0_i2c_xfer(struct i2c_adapter *i2c_adap,
 			SwI2cCmd_t *cmd = &req->SwI2cCmds[c];
 
 			if (!(msg[i].flags & I2C_M_RD)) {
-				/* write */
+				 
 				cmd->CmdConfig |= CMDCONFIG_READWRITE_MASK;
 				cmd->ReadWriteData = msg[i].buf[j];
 			}
 
 			if ((dir ^ msg[i].flags) & I2C_M_RD) {
-				/* The direction changes.
-				 */
+				 
 				dir = msg[i].flags & I2C_M_RD;
 				cmd->CmdConfig |= CMDCONFIG_RESTART_MASK;
 			}
 
 			req->NumCmds++;
 
-			/*
-			 * Insert STOP if we are at the last byte of either last
-			 * message for the transaction or the client explicitly
-			 * requires a STOP at this particular message.
-			 */
+			 
 			if ((j == msg[i].len - 1) &&
 			    ((i == num_msgs - 1) || (msg[i].flags & I2C_M_STOP))) {
 				cmd->CmdConfig &= ~CMDCONFIG_RESTART_MASK;
@@ -2343,8 +2270,8 @@ static int smu_v13_0_0_i2c_control_init(struct smu_context *smu)
 		}
 	}
 
-	/* assign the buses used for the FRU EEPROM and RAS EEPROM */
-	/* XXX ideally this would be something in a vbios data table */
+	 
+	 
 	adev->pm.ras_eeprom_i2c_bus = &adev->pm.smu_i2c[1].adapter;
 	adev->pm.fru_eeprom_i2c_bus = &adev->pm.smu_i2c[0].adapter;
 
@@ -2384,7 +2311,7 @@ static int smu_v13_0_0_set_mp1_state(struct smu_context *smu,
 		ret = smu_cmn_set_mp1_state(smu, mp1_state);
 		break;
 	default:
-		/* Ignore others */
+		 
 		ret = 0;
 	}
 
@@ -2412,7 +2339,7 @@ static void smu_v13_0_0_set_mode1_reset_param(struct smu_context *smu,
 
 	if ((smu_version >= supported_version) &&
 			ras && atomic_read(&ras->in_recovery))
-		/* Set RAS fatal error reset flag */
+		 
 		*param = 1 << 16;
 	else
 		*param = 0;
@@ -2426,7 +2353,7 @@ static int smu_v13_0_0_mode1_reset(struct smu_context *smu)
 
 	switch (adev->ip_versions[MP1_HWIP][0]) {
 	case IP_VERSION(13, 0, 0):
-		/* SMU 13_0_0 PMFW supports RAS fatal error reset from 78.77 */
+		 
 		smu_v13_0_0_set_mode1_reset_param(smu, 0x004e4d00, &param);
 
 		ret = smu_cmn_send_smc_msg_with_param(smu,
@@ -2434,7 +2361,7 @@ static int smu_v13_0_0_mode1_reset(struct smu_context *smu)
 		break;
 
 	case IP_VERSION(13, 0, 10):
-		/* SMU 13_0_10 PMFW supports RAS fatal error reset from 80.28 */
+		 
 		smu_v13_0_0_set_mode1_reset_param(smu, 0x00501c00, &param);
 
 		ret = smu_cmn_send_debug_smc_msg_with_param(smu,
@@ -2494,7 +2421,7 @@ static int smu_v13_0_0_smu_send_bad_mem_page_num(struct smu_context *smu,
 {
 	int ret = 0;
 
-	/* message SMU to update the bad page number on SMUBUS */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(smu,
 					  SMU_MSG_SetNumBadMemoryPagesRetired,
 					  size, NULL);
@@ -2511,7 +2438,7 @@ static int smu_v13_0_0_send_bad_mem_channel_flag(struct smu_context *smu,
 {
 	int ret = 0;
 
-	/* message SMU to update the bad channel info on SMUBUS */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(smu,
 				  SMU_MSG_SetBadMemoryPagesRetiredFlagsPerChannel,
 				  size, NULL);

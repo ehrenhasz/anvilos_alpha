@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2021 Facebook */
-/* Copyright (c) 2021 Google */
+
+ 
+ 
 
 #include <assert.h>
 #include <limits.h>
@@ -63,14 +63,14 @@ static int bperf_load_program(struct evlist *evlist)
 
 	BUG_ON(evlist->core.nr_entries % nr_cgroups != 0);
 
-	/* we need one copy of events per cpu for reading */
+	 
 	map_size = total_cpus * evlist->core.nr_entries / nr_cgroups;
 	bpf_map__set_max_entries(skel->maps.events, map_size);
 	bpf_map__set_max_entries(skel->maps.cgrp_idx, nr_cgroups);
-	/* previous result is saved in a per-cpu array */
+	 
 	map_size = evlist->core.nr_entries / nr_cgroups;
 	bpf_map__set_max_entries(skel->maps.prev_readings, map_size);
-	/* cgroup result needs all events (per-cpu) */
+	 
 	map_size = evlist->core.nr_entries;
 	bpf_map__set_max_entries(skel->maps.cgrp_readings, map_size);
 
@@ -103,9 +103,7 @@ static int bperf_load_program(struct evlist *evlist)
 		}
 	}
 
-	/*
-	 * Update cgrp_idx map from cgroup-id to event index.
-	 */
+	 
 	cgrp = NULL;
 	i = 0;
 
@@ -114,7 +112,7 @@ static int bperf_load_program(struct evlist *evlist)
 			leader_cgrp = evsel->cgrp;
 			evsel->cgrp = NULL;
 
-			/* open single copy of the events w/o cgroup */
+			 
 			err = evsel__open_per_cpu(evsel, evsel->core.cpus, -1);
 			if (err == 0)
 				evsel->supported = true;
@@ -151,10 +149,7 @@ static int bperf_load_program(struct evlist *evlist)
 		i++;
 	}
 
-	/*
-	 * bperf uses BPF_PROG_TEST_RUN to get accurate reading. Check
-	 * whether the kernel support it
-	 */
+	 
 	prog_fd = bpf_program__fd(skel->progs.trigger_read);
 	err = bperf_trigger_reading(prog_fd, 0);
 	if (err) {
@@ -179,7 +174,7 @@ static int bperf_cgrp__load(struct evsel *evsel,
 		return -1;
 
 	bperf_loaded = true;
-	/* just to bypass bpf_counter_skip() */
+	 
 	evsel->follower_skel = (struct bperf_follower_bpf *)skel;
 
 	return 0;
@@ -188,14 +183,11 @@ static int bperf_cgrp__load(struct evsel *evsel,
 static int bperf_cgrp__install_pe(struct evsel *evsel __maybe_unused,
 				  int cpu __maybe_unused, int fd __maybe_unused)
 {
-	/* nothing to do */
+	 
 	return 0;
 }
 
-/*
- * trigger the leader prog on each cpu, so the cgrp_reading map could get
- * the latest results.
- */
+ 
 static int bperf_cgrp__sync_counters(struct evlist *evlist)
 {
 	struct perf_cpu cpu;
@@ -280,7 +272,7 @@ static int bperf_cgrp__destroy(struct evsel *evsel)
 		return 0;
 
 	bperf_cgroup_bpf__destroy(skel);
-	evsel__delete(cgrp_switch);  // it'll destroy on_switch progs too
+	evsel__delete(cgrp_switch);  
 
 	return 0;
 }

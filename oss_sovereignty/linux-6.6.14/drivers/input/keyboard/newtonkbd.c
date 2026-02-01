@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2000 Justin Cormack
- */
 
-/*
- * Newton keyboard driver for Linux
- */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -49,13 +45,13 @@ static irqreturn_t nkbd_interrupt(struct serio *serio,
 {
 	struct nkbd *nkbd = serio_get_drvdata(serio);
 
-	/* invalid scan codes are probably the init sequence, so we ignore them */
+	 
 	if (nkbd->keycode[data & NKBD_KEY]) {
 		input_report_key(nkbd->dev, nkbd->keycode[data & NKBD_KEY], data & NKBD_PRESS);
 		input_sync(nkbd->dev);
 	}
 
-	else if (data == 0xe7) /* end of init sequence */
+	else if (data == 0xe7)  
 		printk(KERN_INFO "input: %s on %s\n", nkbd->dev->name, serio->phys);
 	return IRQ_HANDLED;
 

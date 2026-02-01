@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Platform Security Processor (PSP) interface
- *
- * Copyright (C) 2016,2019 Advanced Micro Devices, Inc.
- *
- * Author: Brijesh Singh <brijesh.singh@amd.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/irqreturn.h>
@@ -41,13 +35,13 @@ static irqreturn_t psp_irq_handler(int irq, void *data)
 	struct psp_device *psp = data;
 	unsigned int status;
 
-	/* Read the interrupt status: */
+	 
 	status = ioread32(psp->io_regs + psp->vdata->intsts_reg);
 
-	/* Clear the interrupt status by writing the same value we read. */
+	 
 	iowrite32(status, psp->io_regs + psp->vdata->intsts_reg);
 
-	/* invoke subdevice interrupt handlers */
+	 
 	if (status) {
 		if (psp->sev_irq_handler)
 			psp->sev_irq_handler(irq, psp->sev_irq_data, status);
@@ -60,20 +54,14 @@ static unsigned int psp_get_capability(struct psp_device *psp)
 {
 	unsigned int val = ioread32(psp->io_regs + psp->vdata->feature_reg);
 
-	/*
-	 * Check for a access to the registers.  If this read returns
-	 * 0xffffffff, it's likely that the system is running a broken
-	 * BIOS which disallows access to the device. Stop here and
-	 * fail the PSP initialization (but not the load, as the CCP
-	 * could get properly initialized).
-	 */
+	 
 	if (val == 0xffffffff) {
 		dev_notice(psp->dev, "psp: unable to access the device: you might be running a broken BIOS.\n");
 		return -ENODEV;
 	}
 	psp->capability = val;
 
-	/* Detect if TSME and SME are both enabled */
+	 
 	if (psp->capability & PSP_CAPABILITY_PSP_SECURITY_REPORTING &&
 	    psp->capability & (PSP_SECURITY_TSME_STATUS << PSP_CAPABILITY_PSP_SECURITY_OFFSET) &&
 	    cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
@@ -84,7 +72,7 @@ static unsigned int psp_get_capability(struct psp_device *psp)
 
 static int psp_check_sev_support(struct psp_device *psp)
 {
-	/* Check if device supports SEV feature */
+	 
 	if (!(psp->capability & PSP_CAPABILITY_SEV)) {
 		dev_dbg(psp->dev, "psp does not support SEV\n");
 		return -ENODEV;
@@ -95,7 +83,7 @@ static int psp_check_sev_support(struct psp_device *psp)
 
 static int psp_check_tee_support(struct psp_device *psp)
 {
-	/* Check if device supports TEE feature */
+	 
 	if (!(psp->capability & PSP_CAPABILITY_TEE)) {
 		dev_dbg(psp->dev, "psp does not support TEE\n");
 		return -ENODEV;
@@ -114,7 +102,7 @@ static void psp_init_platform_access(struct psp_device *psp)
 		return;
 	}
 
-	/* dbc must come after platform access as it tests the feature */
+	 
 	ret = dbc_dev_init(psp);
 	if (ret)
 		dev_warn(psp->dev, "failed to init dynamic boost control: %d\n",
@@ -169,18 +157,18 @@ int psp_dev_init(struct sp_device *sp)
 	if (ret)
 		goto e_disable;
 
-	/* Disable and clear interrupts until ready */
+	 
 	iowrite32(0, psp->io_regs + psp->vdata->inten_reg);
 	iowrite32(-1, psp->io_regs + psp->vdata->intsts_reg);
 
-	/* Request an irq */
+	 
 	ret = sp_request_psp_irq(psp->sp, psp_irq_handler, psp->name, psp);
 	if (ret) {
 		dev_err(dev, "psp: unable to allocate an IRQ\n");
 		goto e_err;
 	}
 
-	/* master device must be set for platform access */
+	 
 	if (psp->sp->set_psp_master_device)
 		psp->sp->set_psp_master_device(psp->sp);
 
@@ -188,7 +176,7 @@ int psp_dev_init(struct sp_device *sp)
 	if (ret)
 		goto e_irq;
 
-	/* Enable interrupt */
+	 
 	iowrite32(-1, psp->io_regs + psp->vdata->inten_reg);
 
 	dev_notice(dev, "psp enabled\n");

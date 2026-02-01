@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- *
- * Copyright (c) 2018 Icenowy Zheng <icenowy@aosc.xyz>
- *
- */
+ 
 
 #ifndef _DT_BINDINGS_CLK_SUNIV_F1C100S_H_
 #define _DT_BINDINGS_CLK_SUNIV_F1C100S_H_

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 Collabora Ltd.
- */
+ 
+ 
 #ifndef _SYSCALL_USER_DISPATCH_H
 #define _SYSCALL_USER_DISPATCH_H
 
@@ -53,6 +51,6 @@ static inline int syscall_user_dispatch_set_config(struct task_struct *task,
 	return -EINVAL;
 }
 
-#endif /* CONFIG_GENERIC_ENTRY */
+#endif  
 
-#endif /* _SYSCALL_USER_DISPATCH_H */
+#endif  

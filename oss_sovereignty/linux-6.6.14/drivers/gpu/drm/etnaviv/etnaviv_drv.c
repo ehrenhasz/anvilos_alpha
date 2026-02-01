@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/dma-mapping.h>
@@ -25,9 +23,7 @@
 #include "etnaviv_mmu.h"
 #include "etnaviv_perfmon.h"
 
-/*
- * DRM operations:
- */
+ 
 
 
 static void load_gpu(struct drm_device *dev)
@@ -111,9 +107,7 @@ static void etnaviv_postclose(struct drm_device *dev, struct drm_file *file)
 	kfree(ctx);
 }
 
-/*
- * DRM debugfs:
- */
+ 
 
 #ifdef CONFIG_DEBUG_FS
 static int etnaviv_gem_show(struct drm_device *dev, struct seq_file *m)
@@ -143,11 +137,7 @@ static int etnaviv_mmu_show(struct etnaviv_gpu *gpu, struct seq_file *m)
 
 	seq_printf(m, "Active Objects (%s):\n", dev_name(gpu->dev));
 
-	/*
-	 * Lock the GPU to avoid a MMU context switch just now and elevate
-	 * the refcount of the current context to avoid it disappearing from
-	 * under our feet.
-	 */
+	 
 	mutex_lock(&gpu->lock);
 	mmu_context = gpu->mmu_context;
 	if (mmu_context)
@@ -248,9 +238,7 @@ static void etnaviv_debugfs_init(struct drm_minor *minor)
 }
 #endif
 
-/*
- * DRM ioctls:
- */
+ 
 
 static int etnaviv_ioctl_get_param(struct drm_device *dev, void *data,
 		struct drm_file *file)
@@ -497,9 +485,7 @@ static const struct drm_driver etnaviv_drm_driver = {
 	.minor              = 3,
 };
 
-/*
- * Platform driver:
- */
+ 
 static int etnaviv_bind(struct device *dev)
 {
 	struct etnaviv_drm_private *priv;
@@ -611,29 +597,14 @@ static int etnaviv_pdev_probe(struct platform_device *pdev)
 			component_match_add(dev, &match, component_compare_dev_name, names[i]);
 	}
 
-	/*
-	 * PTA and MTLB can have 40 bit base addresses, but
-	 * unfortunately, an entry in the MTLB can only point to a
-	 * 32 bit base address of a STLB. Moreover, to initialize the
-	 * MMU we need a command buffer with a 32 bit address because
-	 * without an MMU there is only an indentity mapping between
-	 * the internal 32 bit addresses and the bus addresses.
-	 *
-	 * To make things easy, we set the dma_coherent_mask to 32
-	 * bit to make sure we are allocating the command buffers and
-	 * TLBs in the lower 4 GiB address space.
-	 */
+	 
 	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(40)) ||
 	    dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32))) {
 		dev_dbg(&pdev->dev, "No suitable DMA available\n");
 		return -ENODEV;
 	}
 
-	/*
-	 * Apply the same DMA configuration to the virtual etnaviv
-	 * device as the GPU we found. This assumes that all Vivante
-	 * GPUs in the system share the same DMA constraints.
-	 */
+	 
 	if (first_node)
 		of_dma_configure(&pdev->dev, first_node, true);
 
@@ -673,10 +644,7 @@ static int __init etnaviv_init(void)
 	if (ret != 0)
 		goto unregister_gpu_driver;
 
-	/*
-	 * If the DT contains at least one available GPU device, instantiate
-	 * the DRM platform device.
-	 */
+	 
 	for_each_compatible_node(np, NULL, "vivante,gc") {
 		if (!of_device_is_available(np))
 			continue;

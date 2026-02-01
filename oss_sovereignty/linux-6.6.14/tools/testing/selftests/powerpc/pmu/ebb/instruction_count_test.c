@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -13,10 +11,7 @@
 #include "ebb.h"
 
 
-/*
- * Run a calibrated instruction loop and count instructions executed using
- * EBBs. Make sure the counts look right.
- */
+ 
 
 extern void thirty_two_instruction_loop(uint64_t loops);
 
@@ -58,7 +53,7 @@ static int do_count_loop(struct event *event, uint64_t instructions,
 	if (difference < 0)
 		difference = -difference;
 
-	/* Tolerate a difference of up to 0.0001 % */
+	 
 	difference *= 10000 * 100;
 	if (difference / event->result.value)
 		return -1;
@@ -66,7 +61,7 @@ static int do_count_loop(struct event *event, uint64_t instructions,
 	return 0;
 }
 
-/* Count how many instructions it takes to do a null loop */
+ 
 static uint64_t determine_overhead(struct event *event)
 {
 	uint64_t current, overhead;
@@ -131,25 +126,25 @@ int instruction_count(void)
 	overhead = determine_overhead(&event);
 	printf("Overhead of null loop: %lu instructions\n", overhead);
 
-	/* Run for 1M instructions */
+	 
 	FAIL_IF(do_count_loop(&event, 0x100000, overhead, true));
 
-	/* Run for 10M instructions */
+	 
 	FAIL_IF(do_count_loop(&event, 0xa00000, overhead, true));
 
-	/* Run for 100M instructions */
+	 
 	FAIL_IF(do_count_loop(&event, 0x6400000, overhead, true));
 
-	/* Run for 1G instructions */
+	 
 	FAIL_IF(do_count_loop(&event, 0x40000000, overhead, true));
 
-	/* Run for 16G instructions */
+	 
 	FAIL_IF(do_count_loop(&event, 0x400000000, overhead, true));
 
-	/* Run for 64G instructions */
+	 
 	FAIL_IF(do_count_loop(&event, 0x1000000000, overhead, true));
 
-	/* Run for 128G instructions */
+	 
 	FAIL_IF(do_count_loop(&event, 0x2000000000, overhead, true));
 
 	ebb_global_disable();

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
@@ -56,9 +56,7 @@ void simple_checks(void)
 	printv(2, "after item_kill_tree: %d allocated\n", nr_allocated);
 }
 
-/*
- * Check that tags propagate correctly when extending a tree.
- */
+ 
 static void extend_checks(void)
 {
 	RADIX_TREE(tree, GFP_KERNEL);
@@ -75,7 +73,7 @@ static void extend_checks(void)
 	item_delete(&tree, 1000000);
 	assert(item_tag_get(&tree, 43, 0) != 0);
 	item_delete(&tree, 43);
-	assert(item_tag_get(&tree, 43, 0) == 0);	/* crash */
+	assert(item_tag_get(&tree, 43, 0) == 0);	 
 	assert(item_tag_get(&tree, 0, 0) == 1);
 
 	verify_tag_consistency(&tree, 0);
@@ -83,9 +81,7 @@ static void extend_checks(void)
 	item_kill_tree(&tree);
 }
 
-/*
- * Check that tags propagate correctly when contracting a tree.
- */
+ 
 static void contract_checks(void)
 {
 	struct item *item;
@@ -111,12 +107,7 @@ static void contract_checks(void)
 	item_kill_tree(&tree);
 }
 
-/*
- * Stupid tag thrasher
- *
- * Create a large linear array corresponding to the tree.   Each element in
- * the array is coherent with each node in the tree
- */
+ 
 
 enum {
 	NODE_ABSENT = 0,

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DA9150 Core MFD Driver
- *
- * Copyright (c) 2014 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,19 +13,16 @@
 #include <linux/mfd/da9150/core.h>
 #include <linux/mfd/da9150/registers.h>
 
-/* Raw device access, used for QIF */
+ 
 static int da9150_i2c_read_device(struct i2c_client *client, u8 addr, int count,
 				  u8 *buf)
 {
 	struct i2c_msg xfer;
 	int ret;
 
-	/*
-	 * Read is split into two transfers as device expects STOP/START rather
-	 * than repeated start to carry out this kind of access.
-	 */
+	 
 
-	/* Write address */
+	 
 	xfer.addr = client->addr;
 	xfer.flags = 0;
 	xfer.len = 1;
@@ -45,7 +36,7 @@ static int da9150_i2c_read_device(struct i2c_client *client, u8 addr, int count,
 			return -EIO;
 	}
 
-	/* Read data */
+	 
 	xfer.addr = client->addr;
 	xfer.flags = I2C_M_RD;
 	xfer.len = count;
@@ -74,7 +65,7 @@ static int da9150_i2c_write_device(struct i2c_client *client, u8 addr,
 	reg_data[0] = addr;
 	memcpy(&reg_data[1], buf, count);
 
-	/* Write address & data */
+	 
 	xfer.addr = client->addr;
 	xfer.flags = 0;
 	xfer.len = 1 + count;
@@ -415,7 +406,7 @@ static int da9150_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Setup secondary I2C interface for QIF access */
+	 
 	qif_addr = da9150_reg_read(da9150, DA9150_CORE2WIRE_CTRL_A);
 	qif_addr = (qif_addr & DA9150_CORE_BASE_ADDR_MASK) >> 1;
 	qif_addr |= DA9150_QIF_I2C_ADDR_LSB;
@@ -483,12 +474,12 @@ static void da9150_shutdown(struct i2c_client *client)
 {
 	struct da9150 *da9150 = i2c_get_clientdata(client);
 
-	/* Make sure we have a wakup source for the device */
+	 
 	da9150_set_bits(da9150, DA9150_CONFIG_D,
 			DA9150_WKUP_PM_EN_MASK,
 			DA9150_WKUP_PM_EN_MASK);
 
-	/* Set device to DISABLED mode */
+	 
 	da9150_set_bits(da9150, DA9150_CONTROL_C,
 			DA9150_DISABLE_MASK, DA9150_DISABLE_MASK);
 }

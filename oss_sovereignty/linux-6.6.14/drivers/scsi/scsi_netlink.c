@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  scsi_netlink.c  - SCSI Transport Netlink Interface
- *
- *  Copyright (C) 2006   James Smart, Emulex Corporation
- */
+
+ 
 #include <linux/time.h>
 #include <linux/jiffies.h>
 #include <linux/security.h>
@@ -19,15 +15,7 @@
 struct sock *scsi_nl_sock = NULL;
 EXPORT_SYMBOL_GPL(scsi_nl_sock);
 
-/**
- * scsi_nl_rcv_msg - Receive message handler.
- * @skb:		socket receive buffer
- *
- * Description: Extracts message from a receive buffer.
- *    Validates message header and calls appropriate transport message handler
- *
- *
- **/
+ 
 static void
 scsi_nl_rcv_msg(struct sk_buff *skb)
 {
@@ -74,14 +62,12 @@ scsi_nl_rcv_msg(struct sk_buff *skb)
 			goto next_msg;
 		}
 
-		/*
-		 * Deliver message to the appropriate transport
-		 */
+		 
 		tport = hdr->transport;
 		if (tport == SCSI_NL_TRANSPORT) {
 			switch (hdr->msgtype) {
 			case SCSI_NL_SHOST_VENDOR:
-				/* Locate the driver that corresponds to the message */
+				 
 				err = -ESRCH;
 				break;
 			default:
@@ -103,11 +89,7 @@ next_msg:
 	}
 }
 
-/**
- * scsi_netlink_init - Called by SCSI subsystem to initialize
- * 	the SCSI transport netlink interface
- *
- **/
+ 
 void
 scsi_netlink_init(void)
 {
@@ -128,10 +110,7 @@ scsi_netlink_init(void)
 }
 
 
-/**
- * scsi_netlink_exit - Called by SCSI subsystem to disable the SCSI transport netlink interface
- *
- **/
+ 
 void
 scsi_netlink_exit(void)
 {

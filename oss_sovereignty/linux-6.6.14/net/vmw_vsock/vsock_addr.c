@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware vSockets Driver
- *
- * Copyright (C) 2007-2012 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/socket.h>

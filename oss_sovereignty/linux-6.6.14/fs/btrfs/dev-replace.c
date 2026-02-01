@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STRATO AG 2012.  All rights reserved.
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/bio.h>
@@ -26,45 +24,7 @@
 #include "accessors.h"
 #include "scrub.h"
 
-/*
- * Device replace overview
- *
- * [Objective]
- * To copy all extents (both new and on-disk) from source device to target
- * device, while still keeping the filesystem read-write.
- *
- * [Method]
- * There are two main methods involved:
- *
- * - Write duplication
- *
- *   All new writes will be written to both target and source devices, so even
- *   if replace gets canceled, sources device still contains up-to-date data.
- *
- *   Location:		handle_ops_on_dev_replace() from btrfs_map_block()
- *   Start:		btrfs_dev_replace_start()
- *   End:		btrfs_dev_replace_finishing()
- *   Content:		Latest data/metadata
- *
- * - Copy existing extents
- *
- *   This happens by re-using scrub facility, as scrub also iterates through
- *   existing extents from commit root.
- *
- *   Location:		scrub_write_block_to_dev_replace() from
- *   			scrub_block_complete()
- *   Content:		Data/meta from commit root.
- *
- * Due to the content difference, we need to avoid nocow write when dev-replace
- * is happening.  This is done by marking the block group read-only and waiting
- * for NOCOW writes.
- *
- * After replace is done, the finishing part is done by swapping the target and
- * source devices.
- *
- *   Location:		btrfs_dev_replace_update_device_in_mapping_tree() from
- *   			btrfs_dev_replace_finishing()
- */
+ 
 
 static int btrfs_dev_replace_finishing(struct btrfs_fs_info *fs_info,
 				       int scrub_ret);
@@ -99,10 +59,7 @@ int btrfs_init_dev_replace(struct btrfs_fs_info *fs_info)
 	ret = btrfs_search_slot(NULL, dev_root, &key, path, 0, 0);
 	if (ret) {
 no_valid_dev_replace_entry_found:
-		/*
-		 * We don't have a replace item or it's corrupted.  If there is
-		 * a replace target, fail the mount.
-		 */
+		 
 		if (btrfs_find_device(fs_info->fs_devices, &args)) {
 			btrfs_err(fs_info,
 			"found replace target device without a valid replace item");
@@ -161,10 +118,7 @@ no_valid_dev_replace_entry_found:
 	case BTRFS_IOCTL_DEV_REPLACE_STATE_NEVER_STARTED:
 	case BTRFS_IOCTL_DEV_REPLACE_STATE_FINISHED:
 	case BTRFS_IOCTL_DEV_REPLACE_STATE_CANCELED:
-		/*
-		 * We don't have an active replace item but if there is a
-		 * replace target, fail the mount.
-		 */
+		 
 		if (btrfs_find_device(fs_info->fs_devices, &args)) {
 			btrfs_err(fs_info,
 "replace without active item, run 'device scan --forget' on the target device");
@@ -180,10 +134,7 @@ no_valid_dev_replace_entry_found:
 		args.devid = src_devid;
 		dev_replace->srcdev = btrfs_find_device(fs_info->fs_devices, &args);
 
-		/*
-		 * allow 'btrfs dev replace_cancel' if src/tgt device is
-		 * missing
-		 */
+		 
 		if (!dev_replace->srcdev &&
 		    !btrfs_test_opt(fs_info, DEGRADED)) {
 			ret = -EIO;
@@ -234,12 +185,7 @@ out:
 	return ret;
 }
 
-/*
- * Initialize a new device for device replace target from a given source dev
- * and path.
- *
- * Return 0 and new device in @device_out, otherwise return < 0
- */
+ 
 static int btrfs_init_dev_replace_tgtdev(struct btrfs_fs_info *fs_info,
 				  const char *device_path,
 				  struct btrfs_device *srcdev,
@@ -338,10 +284,7 @@ error:
 	return ret;
 }
 
-/*
- * called from commit_transaction. Writes changed device replace state to
- * disk.
- */
+ 
 int btrfs_run_dev_replace(struct btrfs_trans_handle *trans)
 {
 	struct btrfs_fs_info *fs_info = trans->fs_info;
@@ -380,17 +323,7 @@ int btrfs_run_dev_replace(struct btrfs_trans_handle *trans)
 
 	if (ret == 0 &&
 	    btrfs_item_size(path->nodes[0], path->slots[0]) < sizeof(*ptr)) {
-		/*
-		 * need to delete old one and insert a new one.
-		 * Since no attempt is made to recover any old state, if the
-		 * dev_replace state is 'running', the data on the target
-		 * drive is lost.
-		 * It would be possible to recover the state: just make sure
-		 * that the beginning of the item is never changed and always
-		 * contains all the essential information. Then read this
-		 * minimal set of information and use it as a base for the
-		 * new state.
-		 */
+		 
 		ret = btrfs_del_item(trans, dev_root, path);
 		if (ret != 0) {
 			btrfs_warn(fs_info,
@@ -402,7 +335,7 @@ int btrfs_run_dev_replace(struct btrfs_trans_handle *trans)
 	}
 
 	if (ret == 1) {
-		/* need to insert a new item */
+		 
 		btrfs_release_path(path);
 		ret = btrfs_insert_empty_item(trans, dev_root, path,
 					      &key, sizeof(*ptr));
@@ -464,13 +397,13 @@ static int mark_block_group_to_copy(struct btrfs_fs_info *fs_info,
 	int ret = 0;
 	u64 chunk_offset;
 
-	/* Do not use "to_copy" on non zoned filesystem for now */
+	 
 	if (!btrfs_is_zoned(fs_info))
 		return 0;
 
 	mutex_lock(&fs_info->chunk_mutex);
 
-	/* Ensure we don't have pending new block group */
+	 
 	spin_lock(&fs_info->trans_lock);
 	while (fs_info->running_transaction &&
 	       !list_empty(&fs_info->running_transaction->dev_update_list)) {
@@ -555,7 +488,7 @@ bool btrfs_finish_block_group_to_copy(struct btrfs_device *srcdev,
 	int num_extents, cur_extent;
 	int i;
 
-	/* Do not use "to_copy" on non zoned filesystem for now */
+	 
 	if (!btrfs_is_zoned(fs_info))
 		return true;
 
@@ -573,7 +506,7 @@ bool btrfs_finish_block_group_to_copy(struct btrfs_device *srcdev,
 	num_extents = 0;
 	cur_extent = 0;
 	for (i = 0; i < map->num_stripes; i++) {
-		/* We have more device extent to copy */
+		 
 		if (srcdev != map->stripes[i].dev)
 			continue;
 
@@ -585,14 +518,11 @@ bool btrfs_finish_block_group_to_copy(struct btrfs_device *srcdev,
 	free_extent_map(em);
 
 	if (num_extents > 1 && cur_extent < num_extents - 1) {
-		/*
-		 * Has more stripes on this device. Keep this block group
-		 * readonly until we finish all the stripes.
-		 */
+		 
 		return false;
 	}
 
-	/* Last stripe on this device */
+	 
 	clear_bit(BLOCK_GROUP_FLAG_TO_COPY, &cache->runtime_flags);
 
 	return true;
@@ -621,10 +551,7 @@ static int btrfs_dev_replace_start(struct btrfs_fs_info *fs_info,
 		return -ETXTBSY;
 	}
 
-	/*
-	 * Here we commit the transaction to make sure commit_total_bytes
-	 * of all the devices are updated.
-	 */
+	 
 	trans = btrfs_attach_transaction(root);
 	if (!IS_ERR(trans)) {
 		ret = btrfs_commit_transaction(trans);
@@ -667,10 +594,7 @@ static int btrfs_dev_replace_start(struct btrfs_fs_info *fs_info,
 		      src_device->devid,
 		      btrfs_dev_name(tgt_device));
 
-	/*
-	 * from now on, the writes to the srcdev are all duplicated to
-	 * go to the tgtdev as well (refer to btrfs_map_block()).
-	 */
+	 
 	dev_replace->replace_state = BTRFS_IOCTL_DEV_REPLACE_STATE_STARTED;
 	dev_replace->time_started = ktime_get_real_seconds();
 	dev_replace->cursor_left = 0;
@@ -689,12 +613,7 @@ static int btrfs_dev_replace_start(struct btrfs_fs_info *fs_info,
 
 	btrfs_wait_ordered_roots(fs_info, U64_MAX, 0, (u64)-1);
 
-	/*
-	 * Commit dev_replace state and reserve 1 item for it.
-	 * This is crucial to ensure we won't miss copying extents for new block
-	 * groups that are allocated after we started the device replace, and
-	 * must be done after setting up the device replace state.
-	 */
+	 
 	trans = btrfs_start_transaction(root, 1);
 	if (IS_ERR(trans)) {
 		ret = PTR_ERR(trans);
@@ -710,7 +629,7 @@ static int btrfs_dev_replace_start(struct btrfs_fs_info *fs_info,
 	ret = btrfs_commit_transaction(trans);
 	WARN_ON(ret);
 
-	/* the disk copy procedure reuses the scrub code */
+	 
 	ret = btrfs_scrub_dev(fs_info, src_device->devid, 0,
 			      btrfs_device_get_total_bytes(src_device),
 			      &dev_replace->scrub_progress, 0, 1);
@@ -748,7 +667,7 @@ int btrfs_dev_replace_by_ioctl(struct btrfs_fs_info *fs_info,
 					args->start.srcdev_name,
 					args->start.cont_reading_from_srcdev_mode);
 	args->result = ret;
-	/* don't warn if EINPROGRESS, someone else might be running scrub */
+	 
 	if (ret == BTRFS_IOCTL_DEV_REPLACE_RESULT_SCRUB_INPROGRESS ||
 	    ret == BTRFS_IOCTL_DEV_REPLACE_RESULT_NO_ERROR)
 		return 0;
@@ -756,9 +675,7 @@ int btrfs_dev_replace_by_ioctl(struct btrfs_fs_info *fs_info,
 	return ret;
 }
 
-/*
- * blocked until all in-flight bios operations are finished.
- */
+ 
 static void btrfs_rm_dev_replace_blocked(struct btrfs_fs_info *fs_info)
 {
 	set_bit(BTRFS_FS_STATE_DEV_REPLACING, &fs_info->fs_state);
@@ -766,21 +683,14 @@ static void btrfs_rm_dev_replace_blocked(struct btrfs_fs_info *fs_info)
 		   &fs_info->dev_replace.bio_counter));
 }
 
-/*
- * we have removed target device, it is safe to allow new bios request.
- */
+ 
 static void btrfs_rm_dev_replace_unblocked(struct btrfs_fs_info *fs_info)
 {
 	clear_bit(BTRFS_FS_STATE_DEV_REPLACING, &fs_info->fs_state);
 	wake_up(&fs_info->dev_replace.replace_wait);
 }
 
-/*
- * When finishing the device replace, before swapping the source device with the
- * target device we must update the chunk allocation state in the target device,
- * as it is empty because replace works by directly copying the chunks and not
- * through the normal chunk allocation path.
- */
+ 
 static int btrfs_set_target_alloc_state(struct btrfs_device *srcdev,
 					struct btrfs_device *tgtdev)
 {
@@ -844,11 +754,11 @@ static int btrfs_dev_replace_finishing(struct btrfs_fs_info *fs_info,
 	struct btrfs_trans_handle *trans;
 	int ret = 0;
 
-	/* don't allow cancel or unmount to disturb the finishing procedure */
+	 
 	mutex_lock(&dev_replace->lock_finishing_cancel_unmount);
 
 	down_read(&dev_replace->rwsem);
-	/* was the operation canceled, or is it finished? */
+	 
 	if (dev_replace->replace_state !=
 	    BTRFS_IOCTL_DEV_REPLACE_STATE_STARTED) {
 		up_read(&dev_replace->rwsem);
@@ -860,10 +770,7 @@ static int btrfs_dev_replace_finishing(struct btrfs_fs_info *fs_info,
 	src_device = dev_replace->srcdev;
 	up_read(&dev_replace->rwsem);
 
-	/*
-	 * flush all outstanding I/O and inode extent mappings before the
-	 * copy operation is declared as being finished
-	 */
+	 
 	ret = btrfs_start_delalloc_roots(fs_info, LONG_MAX, false);
 	if (ret) {
 		mutex_unlock(&dev_replace->lock_finishing_cancel_unmount);
@@ -871,11 +778,7 @@ static int btrfs_dev_replace_finishing(struct btrfs_fs_info *fs_info,
 	}
 	btrfs_wait_ordered_roots(fs_info, U64_MAX, 0, (u64)-1);
 
-	/*
-	 * We have to use this loop approach because at this point src_device
-	 * has to be available for transaction commit to complete, yet new
-	 * chunks shouldn't be allocated on the device.
-	 */
+	 
 	while (1) {
 		trans = btrfs_start_transaction(root, 0);
 		if (IS_ERR(trans)) {
@@ -885,9 +788,9 @@ static int btrfs_dev_replace_finishing(struct btrfs_fs_info *fs_info,
 		ret = btrfs_commit_transaction(trans);
 		WARN_ON(ret);
 
-		/* Prevent write_all_supers() during the finishing procedure */
+		 
 		mutex_lock(&fs_devices->device_list_mutex);
-		/* Prevent new chunks being allocated on the source device */
+		 
 		mutex_lock(&fs_info->chunk_mutex);
 
 		if (!list_empty(&src_device->post_commit_list)) {
@@ -907,10 +810,7 @@ static int btrfs_dev_replace_finishing(struct btrfs_fs_info *fs_info,
 	dev_replace->time_stopped = ktime_get_real_seconds();
 	dev_replace->item_needs_writeback = 1;
 
-	/*
-	 * Update allocation state in the new device and replace the old device
-	 * with the new one in the mapping tree.
-	 */
+	 
 	if (!scrub_ret) {
 		scrub_ret = btrfs_set_target_alloc_state(src_device, tgt_device);
 		if (scrub_ret)
@@ -967,30 +867,21 @@ error:
 
 	btrfs_rm_dev_replace_unblocked(fs_info);
 
-	/*
-	 * Increment dev_stats_ccnt so that btrfs_run_dev_stats() will
-	 * update on-disk dev stats value during commit transaction
-	 */
+	 
 	atomic_inc(&tgt_device->dev_stats_ccnt);
 
-	/*
-	 * this is again a consistent state where no dev_replace procedure
-	 * is running, the target device is part of the filesystem, the
-	 * source device is not part of the filesystem anymore and its 1st
-	 * superblock is scratched out so that it is no longer marked to
-	 * belong to this filesystem.
-	 */
+	 
 	mutex_unlock(&fs_info->chunk_mutex);
 	mutex_unlock(&fs_devices->device_list_mutex);
 
-	/* replace the sysfs entry */
+	 
 	btrfs_sysfs_remove_device(src_device);
 	btrfs_sysfs_update_devid(tgt_device);
 	if (test_bit(BTRFS_DEV_STATE_WRITEABLE, &src_device->dev_state))
 		btrfs_scratch_superblocks(fs_info, src_device->bdev,
 					  src_device->name->str);
 
-	/* write back the superblocks */
+	 
 	trans = btrfs_start_transaction(root, 0);
 	if (!IS_ERR(trans))
 		btrfs_commit_transaction(trans);
@@ -1002,11 +893,7 @@ error:
 	return 0;
 }
 
-/*
- * Read progress of device replace status according to the state and last
- * stored position. The value format is the same as for
- * btrfs_dev_replace::progress_1000
- */
+ 
 static u64 btrfs_dev_replace_progress(struct btrfs_fs_info *fs_info)
 {
 	struct btrfs_dev_replace *dev_replace = &fs_info->dev_replace;
@@ -1037,8 +924,7 @@ void btrfs_dev_replace_status(struct btrfs_fs_info *fs_info,
 	struct btrfs_dev_replace *dev_replace = &fs_info->dev_replace;
 
 	down_read(&dev_replace->rwsem);
-	/* even if !dev_replace_is_valid, the values are good enough for
-	 * the replace_status ioctl */
+	 
 	args->result = BTRFS_IOCTL_DEV_REPLACE_RESULT_NO_ERROR;
 	args->status.replace_state = dev_replace->replace_state;
 	args->status.time_started = dev_replace->time_started;
@@ -1082,10 +968,7 @@ int btrfs_dev_replace_cancel(struct btrfs_fs_info *fs_info)
 			result = BTRFS_IOCTL_DEV_REPLACE_RESULT_NOT_STARTED;
 		} else {
 			result = BTRFS_IOCTL_DEV_REPLACE_RESULT_NO_ERROR;
-			/*
-			 * btrfs_dev_replace_finishing() will handle the
-			 * cleanup part
-			 */
+			 
 			btrfs_info_in_rcu(fs_info,
 				"dev_replace from %s (devid %llu) to %s canceled",
 				btrfs_dev_name(src_device), src_device->devid,
@@ -1093,10 +976,7 @@ int btrfs_dev_replace_cancel(struct btrfs_fs_info *fs_info)
 		}
 		break;
 	case BTRFS_IOCTL_DEV_REPLACE_STATE_SUSPENDED:
-		/*
-		 * Scrub doing the replace isn't running so we need to do the
-		 * cleanup step of btrfs_dev_replace_finishing() here
-		 */
+		 
 		result = BTRFS_IOCTL_DEV_REPLACE_RESULT_NO_ERROR;
 		tgt_device = dev_replace->tgtdev;
 		src_device = dev_replace->srcdev;
@@ -1109,7 +989,7 @@ int btrfs_dev_replace_cancel(struct btrfs_fs_info *fs_info)
 
 		up_write(&dev_replace->rwsem);
 
-		/* Scrub for replace must not be running in suspended state */
+		 
 		btrfs_scrub_cancel(fs_info);
 
 		trans = btrfs_start_transaction(root, 0);
@@ -1163,7 +1043,7 @@ void btrfs_dev_replace_suspend_for_unmount(struct btrfs_fs_info *fs_info)
 	mutex_unlock(&dev_replace->lock_finishing_cancel_unmount);
 }
 
-/* resume dev_replace procedure that was interrupted by unmount */
+ 
 int btrfs_resume_dev_replace_async(struct btrfs_fs_info *fs_info)
 {
 	struct task_struct *task;
@@ -1196,11 +1076,7 @@ int btrfs_resume_dev_replace_async(struct btrfs_fs_info *fs_info)
 	}
 	up_write(&dev_replace->rwsem);
 
-	/*
-	 * This could collide with a paused balance, but the exclusive op logic
-	 * should never allow both to start and pause. We don't want to allow
-	 * dev-replace to start anyway.
-	 */
+	 
 	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_DEV_REPLACE)) {
 		down_write(&dev_replace->rwsem);
 		dev_replace->replace_state =
@@ -1254,16 +1130,7 @@ int __pure btrfs_dev_replace_is_ongoing(struct btrfs_dev_replace *dev_replace)
 		return 0;
 	case BTRFS_IOCTL_DEV_REPLACE_STATE_STARTED:
 	case BTRFS_IOCTL_DEV_REPLACE_STATE_SUSPENDED:
-		/*
-		 * return true even if tgtdev is missing (this is
-		 * something that can happen if the dev_replace
-		 * procedure is suspended by an umount and then
-		 * the tgtdev is missing (or "btrfs dev scan") was
-		 * not called and the filesystem is remounted
-		 * in degraded state. This does not stop the
-		 * dev_replace procedure. It needs to be canceled
-		 * manually if the cancellation is wanted.
-		 */
+		 
 		break;
 	}
 	return 1;

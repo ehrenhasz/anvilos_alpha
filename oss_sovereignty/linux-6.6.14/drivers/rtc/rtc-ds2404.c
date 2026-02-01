@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2012 Sven Schnelle <svens@stackframe.org>
+
+
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -38,7 +38,7 @@ static int ds2404_gpio_map(struct ds2404 *chip, struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
-	/* This will de-assert RESET, declare this GPIO as GPIOD_ACTIVE_LOW */
+	 
 	chip->rst_gpiod = devm_gpiod_get(dev, "rst", GPIOD_OUT_LOW);
 	if (IS_ERR(chip->rst_gpiod))
 		return PTR_ERR(chip->rst_gpiod);
@@ -148,7 +148,7 @@ static void ds2404_write_memory(struct ds2404 *chip, u16 offset,
 
 static void ds2404_enable_osc(struct ds2404 *chip)
 {
-	u8 in[1] = { 0x10 }; /* enable oscillator */
+	u8 in[1] = { 0x10 };  
 
 	ds2404_write_memory(chip, 0x201, 1, in);
 }

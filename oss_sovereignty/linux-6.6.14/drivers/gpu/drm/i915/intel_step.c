@@ -1,28 +1,12 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020,2021 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "intel_step.h"
 
-/*
- * Some platforms have unusual ways of mapping PCI revision ID to GT/display
- * steppings.  E.g., in some cases a higher PCI revision may translate to a
- * lower stepping of the GT and/or display IP.  This file provides lookup
- * tables to map the PCI revision into a standard set of stepping values that
- * can be compared numerically.
- *
- * Also note that some revisions/steppings may have been set aside as
- * placeholders but never materialized in real hardware; in those cases there
- * may be jumps in the revision IDs or stepping values in the tables below.
- */
+ 
 
-/*
- * Some platforms always have the same stepping value for GT and display;
- * use a macro to define these to make it easier to identify the platforms
- * where the two steppings can deviate.
- */
+ 
 #define COMMON_STEP(x)  .graphics_step = STEP_##x, .display_step = STEP_##x, .media_step = STEP_##x
 #define COMMON_GT_MEDIA_STEP(x)  .graphics_step = STEP_##x, .media_step = STEP_##x
 
@@ -70,7 +54,7 @@ static const struct intel_step_info tgl_uy_revids[] = {
 	[3] = { COMMON_GT_MEDIA_STEP(C0), .display_step = STEP_D0 },
 };
 
-/* Same GT stepping between tgl_uy_revids and tgl_revids don't mean the same HW */
+ 
 static const struct intel_step_info tgl_revids[] = {
 	[0] = { COMMON_GT_MEDIA_STEP(A0), .display_step = STEP_B0 },
 	[1] = { COMMON_GT_MEDIA_STEP(B0), .display_step = STEP_D0 },
@@ -239,7 +223,7 @@ void intel_step_init(struct drm_i915_private *i915)
 		size = ARRAY_SIZE(skl_revids);
 	}
 
-	/* Not using the stepping scheme for the platform yet. */
+	 
 	if (!revids)
 		return;
 
@@ -248,14 +232,7 @@ void intel_step_init(struct drm_i915_private *i915)
 	} else {
 		drm_warn(&i915->drm, "Unknown revid 0x%02x\n", revid);
 
-		/*
-		 * If we hit a gap in the revid array, use the information for
-		 * the next revid.
-		 *
-		 * This may be wrong in all sorts of ways, especially if the
-		 * steppings in the array are not monotonically increasing, but
-		 * it's better than defaulting to 0.
-		 */
+		 
 		while (revid < size && revids[revid].graphics_step == STEP_NONE)
 			revid++;
 
@@ -302,10 +279,7 @@ pvc_step_lookup(struct drm_i915_private *i915, const char *type,
 
 	drm_warn(&i915->drm, "Unknown %s id 0x%02x\n", type, subid);
 
-	/*
-	 * As on other platforms, try to use the next higher ID if we land on a
-	 * gap in the table.
-	 */
+	 
 	while (subid < size && table[subid] == STEP_NONE)
 		subid++;
 
@@ -319,11 +293,7 @@ pvc_step_lookup(struct drm_i915_private *i915, const char *type,
 	return STEP_FUTURE;
 }
 
-/*
- * PVC needs special handling since we don't lookup the
- * revid in a table, but rather specific bitfields within
- * the revid for various components.
- */
+ 
 static void pvc_step_init(struct drm_i915_private *i915, int pci_revid)
 {
 	int ct_subid, bd_subid;

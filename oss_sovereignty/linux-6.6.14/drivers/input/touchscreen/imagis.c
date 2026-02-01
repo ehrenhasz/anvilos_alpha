@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -59,7 +59,7 @@ static int imagis_i2c_read_reg(struct imagis_ts *ts,
 	int ret, error;
 	int retry = IST3038C_I2C_RETRY_COUNT;
 
-	/* Retry in case the controller fails to respond */
+	 
 	do {
 		ret = i2c_transfer(ts->client->adapter, msg, ARRAY_SIZE(msg));
 		if (ret == ARRAY_SIZE(msg)) {

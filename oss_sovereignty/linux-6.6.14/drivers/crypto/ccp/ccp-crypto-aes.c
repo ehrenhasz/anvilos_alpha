@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) AES crypto API support
- *
- * Copyright (C) 2013-2019 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -135,7 +129,7 @@ static int ccp_aes_rfc3686_complete(struct crypto_async_request *async_req,
 	struct skcipher_request *req = skcipher_request_cast(async_req);
 	struct ccp_aes_req_ctx *rctx = skcipher_request_ctx_dma(req);
 
-	/* Restore the original pointer */
+	 
 	req->iv = rctx->rfc3686_info;
 
 	return ccp_aes_complete(async_req, ret);
@@ -162,7 +156,7 @@ static int ccp_aes_rfc3686_crypt(struct skcipher_request *req, bool encrypt)
 	struct ccp_aes_req_ctx *rctx = skcipher_request_ctx_dma(req);
 	u8 *iv;
 
-	/* Initialize the CTR block */
+	 
 	iv = rctx->rfc3686_iv;
 	memcpy(iv, ctx->u.aes.nonce, CTR_RFC3686_NONCE_SIZE);
 
@@ -172,7 +166,7 @@ static int ccp_aes_rfc3686_crypt(struct skcipher_request *req, bool encrypt)
 	iv += CTR_RFC3686_IV_SIZE;
 	*(__be32 *)iv = cpu_to_be32(1);
 
-	/* Point to the new IV */
+	 
 	rctx->rfc3686_info = req->iv;
 	req->iv = rctx->rfc3686_iv;
 
@@ -319,7 +313,7 @@ static int ccp_register_aes_alg(struct list_head *head,
 
 	ccp_alg->mode = def->mode;
 
-	/* Copy the defaults and override as necessary */
+	 
 	alg = &ccp_alg->alg;
 	*alg = *def->alg_defaults;
 	snprintf(alg->base.cra_name, CRYPTO_MAX_ALG_NAME, "%s", def->name);

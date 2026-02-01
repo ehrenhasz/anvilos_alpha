@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  boot.c - Architecture-Specific Low-Level ACPI Boot Support
- *
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2001 Jun Nakajima <jun.nakajima@intel.com>
- */
+
+ 
 #define pr_fmt(fmt) "ACPI: " fmt
 
 #include <linux/init.h>
@@ -34,18 +29,18 @@
 #include <asm/i8259.h>
 #include <asm/setup.h>
 
-#include "sleep.h" /* To include x86_acpi_suspend_lowlevel */
+#include "sleep.h"  
 static int __initdata acpi_force = 0;
 int acpi_disabled;
 EXPORT_SYMBOL(acpi_disabled);
 
 #ifdef	CONFIG_X86_64
 # include <asm/proto.h>
-#endif				/* X86 */
+#endif				 
 
-int acpi_noirq;				/* skip ACPI IRQ initialization */
-static int acpi_nobgrt;			/* skip ACPI BGRT */
-int acpi_pci_disabled;		/* skip ACPI PCI scan and IRQ initialization */
+int acpi_noirq;				 
+static int acpi_nobgrt;			 
+int acpi_pci_disabled;		 
 EXPORT_SYMBOL(acpi_pci_disabled);
 
 int acpi_lapic;
@@ -54,7 +49,7 @@ int acpi_strict;
 int acpi_disable_cmcff;
 bool acpi_int_src_ovr[NR_IRQS_LEGACY];
 
-/* ACPI SCI override configuration */
+ 
 u8 acpi_sci_flags __initdata;
 u32 acpi_sci_override_gsi __initdata = INVALID_ACPI_IRQ;
 int acpi_skip_timer_override __initdata;
@@ -67,50 +62,29 @@ static bool acpi_support_online_capable;
 #endif
 
 #ifdef CONFIG_X86_64
-/* Physical address of the Multiprocessor Wakeup Structure mailbox */
+ 
 static u64 acpi_mp_wake_mailbox_paddr;
-/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
+ 
 static struct acpi_madt_multiproc_wakeup_mailbox *acpi_mp_wake_mailbox;
 #endif
 
 #ifdef CONFIG_X86_IO_APIC
-/*
- * Locks related to IOAPIC hotplug
- * Hotplug side:
- *	->device_hotplug_lock
- *		->acpi_ioapic_lock
- *			->ioapic_lock
- * Interrupt mapping side:
- *	->acpi_ioapic_lock
- *		->ioapic_mutex
- *			->ioapic_lock
- */
+ 
 static DEFINE_MUTEX(acpi_ioapic_lock);
 #endif
 
-/* --------------------------------------------------------------------------
-                              Boot-time Configuration
-   -------------------------------------------------------------------------- */
+ 
 
-/*
- * The default interrupt routing model is PIC (8259).  This gets
- * overridden if IOAPICs are enumerated (below).
- */
+ 
 enum acpi_irq_model_id acpi_irq_model = ACPI_IRQ_MODEL_PIC;
 
 
-/*
- * ISA irqs by default are the first 16 gsis but can be
- * any gsi as specified by an interrupt source override.
- */
+ 
 static u32 isa_irq_to_gsi[NR_IRQS_LEGACY] __read_mostly = {
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
-/*
- * This is just a simple wrapper around early_memremap(),
- * with sanity checks for phys == 0 and size == 0.
- */
+ 
 void __init __iomem *__acpi_map_table(unsigned long phys, unsigned long size)
 {
 
@@ -151,7 +125,7 @@ static int __init acpi_parse_madt(struct acpi_table_header *table)
 	if (madt->flags & ACPI_MADT_PCAT_COMPAT)
 		legacy_pic_pcat_compat();
 
-	/* ACPI 6.3 and newer support the online capable bit. */
+	 
 	if (acpi_gbl_FADT.header.revision > 6 ||
 	    (acpi_gbl_FADT.header.revision == 6 &&
 	     acpi_gbl_FADT.minor_revision >= 3))
@@ -163,14 +137,7 @@ static int __init acpi_parse_madt(struct acpi_table_header *table)
 	return 0;
 }
 
-/**
- * acpi_register_lapic - register a local apic and generates a logic cpu number
- * @id: local apic id to register
- * @acpiid: ACPI id to register
- * @enabled: this cpu is enabled or not
- *
- * Returns the logic cpu number which maps to the local apic
- */
+ 
 static int acpi_register_lapic(int id, u32 acpiid, u8 enabled)
 {
 	int cpu;
@@ -224,21 +191,15 @@ acpi_parse_x2apic(union acpi_subtable_headers *header, const unsigned long end)
 	apic_id = processor->local_apic_id;
 	enabled = processor->lapic_flags & ACPI_MADT_ENABLED;
 
-	/* Ignore invalid ID */
+	 
 	if (apic_id == 0xffffffff)
 		return 0;
 
-	/* don't register processors that cannot be onlined */
+	 
 	if (!acpi_is_processor_usable(processor->lapic_flags))
 		return 0;
 
-	/*
-	 * We need to register disabled CPU as well to permit
-	 * counting disabled CPUs. This allows us to size
-	 * cpus_possible_map more accurately, to permit
-	 * to not preallocating memory for all NR_CPUS
-	 * when we use CPU hotplug.
-	 */
+	 
 	if (!apic_id_valid(apic_id)) {
 		if (enabled)
 			pr_warn("x2apic entry ignored\n");
@@ -265,23 +226,17 @@ acpi_parse_lapic(union acpi_subtable_headers * header, const unsigned long end)
 
 	acpi_table_print_madt_entry(&header->common);
 
-	/* Ignore invalid ID */
+	 
 	if (processor->id == 0xff)
 		return 0;
 
-	/* don't register processors that can not be onlined */
+	 
 	if (!acpi_is_processor_usable(processor->lapic_flags))
 		return 0;
 
-	/*
-	 * We need to register disabled CPU as well to permit
-	 * counting disabled CPUs. This allows us to size
-	 * cpus_possible_map more accurately, to permit
-	 * to not preallocating memory for all NR_CPUS
-	 * when we use CPU hotplug.
-	 */
-	acpi_register_lapic(processor->id,	/* APIC ID */
-			    processor->processor_id, /* ACPI ID */
+	 
+	acpi_register_lapic(processor->id,	 
+			    processor->processor_id,  
 			    processor->lapic_flags & ACPI_MADT_ENABLED);
 
 	return 0;
@@ -299,8 +254,8 @@ acpi_parse_sapic(union acpi_subtable_headers *header, const unsigned long end)
 
 	acpi_table_print_madt_entry(&header->common);
 
-	acpi_register_lapic((processor->id << 8) | processor->eid,/* APIC ID */
-			    processor->processor_id, /* ACPI ID */
+	acpi_register_lapic((processor->id << 8) | processor->eid, 
+			    processor->processor_id,  
 			    processor->lapic_flags & ACPI_MADT_ENABLED);
 
 	return 0;
@@ -364,57 +319,27 @@ acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long e
 #ifdef CONFIG_X86_64
 static int acpi_wakeup_cpu(int apicid, unsigned long start_ip)
 {
-	/*
-	 * Remap mailbox memory only for the first call to acpi_wakeup_cpu().
-	 *
-	 * Wakeup of secondary CPUs is fully serialized in the core code.
-	 * No need to protect acpi_mp_wake_mailbox from concurrent accesses.
-	 */
+	 
 	if (!acpi_mp_wake_mailbox) {
 		acpi_mp_wake_mailbox = memremap(acpi_mp_wake_mailbox_paddr,
 						sizeof(*acpi_mp_wake_mailbox),
 						MEMREMAP_WB);
 	}
 
-	/*
-	 * Mailbox memory is shared between the firmware and OS. Firmware will
-	 * listen on mailbox command address, and once it receives the wakeup
-	 * command, the CPU associated with the given apicid will be booted.
-	 *
-	 * The value of 'apic_id' and 'wakeup_vector' must be visible to the
-	 * firmware before the wakeup command is visible.  smp_store_release()
-	 * ensures ordering and visibility.
-	 */
+	 
 	acpi_mp_wake_mailbox->apic_id	    = apicid;
 	acpi_mp_wake_mailbox->wakeup_vector = start_ip;
 	smp_store_release(&acpi_mp_wake_mailbox->command,
 			  ACPI_MP_WAKE_COMMAND_WAKEUP);
 
-	/*
-	 * Wait for the CPU to wake up.
-	 *
-	 * The CPU being woken up is essentially in a spin loop waiting to be
-	 * woken up. It should not take long for it wake up and acknowledge by
-	 * zeroing out ->command.
-	 *
-	 * ACPI specification doesn't provide any guidance on how long kernel
-	 * has to wait for a wake up acknowledgement. It also doesn't provide
-	 * a way to cancel a wake up request if it takes too long.
-	 *
-	 * In TDX environment, the VMM has control over how long it takes to
-	 * wake up secondary. It can postpone scheduling secondary vCPU
-	 * indefinitely. Giving up on wake up request and reporting error opens
-	 * possible attack vector for VMM: it can wake up a secondary CPU when
-	 * kernel doesn't expect it. Wait until positive result of the wake up
-	 * request.
-	 */
+	 
 	while (READ_ONCE(acpi_mp_wake_mailbox->command))
 		cpu_relax();
 
 	return 0;
 }
-#endif /* CONFIG_X86_64 */
-#endif /* CONFIG_X86_LOCAL_APIC */
+#endif  
+#endif  
 
 #ifdef CONFIG_X86_IO_APIC
 #define MP_ISA_BUS		0
@@ -425,29 +350,19 @@ static int __init mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
 static void __init mp_override_legacy_irq(u8 bus_irq, u8 polarity, u8 trigger,
 					  u32 gsi)
 {
-	/*
-	 * Check bus_irq boundary.
-	 */
+	 
 	if (bus_irq >= NR_IRQS_LEGACY) {
 		pr_warn("Invalid bus_irq %u for legacy override\n", bus_irq);
 		return;
 	}
 
-	/*
-	 * TBD: This check is for faulty timer entries, where the override
-	 *      erroneously sets the trigger to level, resulting in a HUGE
-	 *      increase of timer interrupts!
-	 */
+	 
 	if ((bus_irq == 0) && (trigger == 3))
 		trigger = 1;
 
 	if (mp_register_ioapic_irq(bus_irq, polarity, trigger, gsi) < 0)
 		return;
-	/*
-	 * Reset default identity mapping if gsi is also an legacy IRQ,
-	 * otherwise there will be more than one entry with the same GSI
-	 * and acpi_isa_irq_to_gsi() may give wrong result.
-	 */
+	 
 	if (gsi < nr_legacy_irqs() && isa_irq_to_gsi[gsi] == gsi)
 		isa_irq_to_gsi[gsi] = INVALID_ACPI_IRQ;
 	isa_irq_to_gsi[bus_irq] = gsi;
@@ -473,7 +388,7 @@ static void mp_config_acpi_gsi(struct device *dev, u32 gsi, int trigger,
 	number = pdev->bus->number;
 	devfn = pdev->devfn;
 	pin = pdev->pin;
-	/* print the entry should happen on mptable identically */
+	 
 	mp_irq.type = MP_INTSRC;
 	mp_irq.irqtype = mp_INT;
 	mp_irq.irqflag = (trigger == ACPI_EDGE_SENSITIVE ? 4 : 0x0c) |
@@ -494,7 +409,7 @@ static int __init mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
 	struct mpc_intsrc mp_irq;
 	int ioapic, pin;
 
-	/* Convert 'gsi' to 'ioapic.pin'(INTIN#) */
+	 
 	ioapic = mp_find_ioapic(gsi);
 	if (ioapic < 0) {
 		pr_warn("Failed to find ioapic for gsi : %u\n", gsi);
@@ -532,7 +447,7 @@ acpi_parse_ioapic(union acpi_subtable_headers * header, const unsigned long end)
 
 	acpi_table_print_madt_entry(&header->common);
 
-	/* Statically assign IRQ numbers for IOAPICs hosting legacy IRQs */
+	 
 	if (ioapic->global_irq_base < nr_legacy_irqs())
 		cfg.type = IOAPIC_DOMAIN_LEGACY;
 
@@ -542,18 +457,16 @@ acpi_parse_ioapic(union acpi_subtable_headers * header, const unsigned long end)
 	return 0;
 }
 
-/*
- * Parse Interrupt Source Override for the ACPI SCI
- */
+ 
 static void __init acpi_sci_ioapic_setup(u8 bus_irq, u16 polarity, u16 trigger, u32 gsi)
 {
-	if (trigger == 0)	/* compatible SCI trigger is level */
+	if (trigger == 0)	 
 		trigger = 3;
 
-	if (polarity == 0)	/* compatible SCI polarity is low */
+	if (polarity == 0)	 
 		polarity = 3;
 
-	/* Command-line over-ride via acpi_sci= */
+	 
 	if (acpi_sci_flags & ACPI_MADT_TRIGGER_MASK)
 		trigger = (acpi_sci_flags & ACPI_MADT_TRIGGER_MASK) >> 2;
 
@@ -567,10 +480,7 @@ static void __init acpi_sci_ioapic_setup(u8 bus_irq, u16 polarity, u16 trigger, 
 
 	acpi_penalize_sci_irq(bus_irq, trigger, polarity);
 
-	/*
-	 * stash over-ride to indicate we've been here
-	 * and for later update of acpi_gbl_FADT
-	 */
+	 
 	acpi_sci_override_gsi = gsi;
 	return;
 }
@@ -632,51 +542,32 @@ acpi_parse_nmi_src(union acpi_subtable_headers * header, const unsigned long end
 
 	acpi_table_print_madt_entry(&header->common);
 
-	/* TBD: Support nimsrc entries? */
+	 
 
 	return 0;
 }
 
-#endif				/* CONFIG_X86_IO_APIC */
+#endif				 
 
-/*
- * acpi_pic_sci_set_trigger()
- *
- * use ELCR to set PIC-mode trigger type for SCI
- *
- * If a PIC-mode SCI is not recognized or gives spurious IRQ7's
- * it may require Edge Trigger -- use "acpi_sci=edge"
- *
- * Port 0x4d0-4d1 are ELCR1 and ELCR2, the Edge/Level Control Registers
- * for the 8259 PIC.  bit[n] = 1 means irq[n] is Level, otherwise Edge.
- * ELCR1 is IRQs 0-7 (IRQ 0, 1, 2 must be 0)
- * ELCR2 is IRQs 8-15 (IRQ 8, 13 must be 0)
- */
+ 
 
 void __init acpi_pic_sci_set_trigger(unsigned int irq, u16 trigger)
 {
 	unsigned int mask = 1 << irq;
 	unsigned int old, new;
 
-	/* Real old ELCR mask */
+	 
 	old = inb(PIC_ELCR1) | (inb(PIC_ELCR2) << 8);
 
-	/*
-	 * If we use ACPI to set PCI IRQs, then we should clear ELCR
-	 * since we will set it correctly as we enable the PCI irq
-	 * routing.
-	 */
+	 
 	new = acpi_noirq ? old : 0;
 
-	/*
-	 * Update SCI information in the ELCR, it isn't in the PCI
-	 * routing tables..
-	 */
+	 
 	switch (trigger) {
-	case 1:		/* Edge - clear */
+	case 1:		 
 		new &= ~mask;
 		break;
-	case 3:		/* Level - set */
+	case 3:		 
 		new |= mask;
 		break;
 	}
@@ -728,9 +619,7 @@ static int acpi_register_gsi_pic(struct device *dev, u32 gsi,
 				 int trigger, int polarity)
 {
 #ifdef CONFIG_PCI
-	/*
-	 * Make sure all (legacy) PCI IRQs are set as level-triggered.
-	 */
+	 
 	if (trigger == ACPI_LEVEL_SENSITIVE)
 		elcr_set_level_irq(gsi);
 #endif
@@ -754,7 +643,7 @@ static int acpi_register_gsi_ioapic(struct device *dev, u32 gsi,
 
 	mutex_lock(&acpi_ioapic_lock);
 	irq = mp_map_gsi_to_irq(gsi, IOAPIC_MAP_ALLOC, &info);
-	/* Don't set up the ACPI SCI because it's already set up */
+	 
 	if (irq >= 0 && enable_update_mptable && gsi != acpi_gbl_FADT.sci_interrupt)
 		mp_config_acpi_gsi(dev, gsi, trigger, polarity);
 	mutex_unlock(&acpi_ioapic_lock);
@@ -787,10 +676,7 @@ int (*acpi_suspend_lowlevel)(void) = x86_acpi_suspend_lowlevel;
 int (*acpi_suspend_lowlevel)(void);
 #endif
 
-/*
- * success: return IRQ number (>=0)
- * failure: return < 0
- */
+ 
 int acpi_register_gsi(struct device *dev, u32 gsi, int trigger, int polarity)
 {
 	return __acpi_register_gsi(dev, gsi, trigger, polarity);
@@ -814,9 +700,7 @@ static void __init acpi_set_irq_model_ioapic(void)
 }
 #endif
 
-/*
- *  ACPI based hotplug support for CPU
- */
+ 
 #ifdef CONFIG_ACPI_HOTPLUG_CPU
 #include <acpi/processor.h>
 
@@ -866,7 +750,7 @@ int acpi_unmap_cpu(int cpu)
 	return (0);
 }
 EXPORT_SYMBOL(acpi_unmap_cpu);
-#endif				/* CONFIG_ACPI_HOTPLUG_CPU */
+#endif				 
 
 int acpi_register_ioapic(acpi_handle handle, u64 phys_addr, u32 gsi_base)
 {
@@ -916,15 +800,7 @@ int acpi_unregister_ioapic(acpi_handle handle, u32 gsi_base)
 }
 EXPORT_SYMBOL(acpi_unregister_ioapic);
 
-/**
- * acpi_ioapic_registered - Check whether IOAPIC associated with @gsi_base
- *			    has been registered
- * @handle:	ACPI handle of the IOAPIC device
- * @gsi_base:	GSI base associated with the IOAPIC
- *
- * Assume caller holds some type of lock to serialize acpi_ioapic_registered()
- * with acpi_register_ioapic()/acpi_unregister_ioapic().
- */
+ 
 int acpi_ioapic_registered(acpi_handle handle, u32 gsi_base)
 {
 	int ret = 0;
@@ -942,7 +818,7 @@ static int __init acpi_parse_sbf(struct acpi_table_header *table)
 {
 	struct acpi_table_boot *sb = (struct acpi_table_boot *)table;
 
-	sbf_port = sb->cmos_index;	/* Save CMOS port */
+	sbf_port = sb->cmos_index;	 
 
 	return 0;
 }
@@ -964,20 +840,13 @@ static int __init acpi_parse_hpet(struct acpi_table_header *table)
 	hpet_address = hpet_tbl->address.address;
 	hpet_blockid = hpet_tbl->sequence;
 
-	/*
-	 * Some broken BIOSes advertise HPET at 0x0. We really do not
-	 * want to allocate a resource there.
-	 */
+	 
 	if (!hpet_address) {
 		pr_warn("HPET id: %#x base: %#lx is invalid\n", hpet_tbl->id, hpet_address);
 		return 0;
 	}
 #ifdef CONFIG_X86_64
-	/*
-	 * Some even more broken BIOSes advertise HPET at
-	 * 0xfed0000000000000 instead of 0xfed00000. Fix it up and add
-	 * some noise:
-	 */
+	 
 	if (hpet_address == 0xfed0000000000000UL) {
 		if (!hpet_force_user) {
 			pr_warn("HPET id: %#x base: 0xfed0000000000000 is bogus, try hpet=force on the kernel command line to fix it up to 0xfed00000.\n",
@@ -992,10 +861,7 @@ static int __init acpi_parse_hpet(struct acpi_table_header *table)
 #endif
 	pr_info("HPET id: %#x base: %#lx\n", hpet_tbl->id, hpet_address);
 
-	/*
-	 * Allocate and initialize the HPET firmware resource for adding into
-	 * the resource tree during the lateinit timeframe.
-	 */
+	 
 #define HPET_RESOURCE_NAME_SIZE 9
 	hpet_res = memblock_alloc(sizeof(*hpet_res) + HPET_RESOURCE_NAME_SIZE,
 				  SMP_CACHE_BYTES);
@@ -1014,10 +880,7 @@ static int __init acpi_parse_hpet(struct acpi_table_header *table)
 	return 0;
 }
 
-/*
- * hpet_insert_resource inserts the HPET resources used into the resource
- * tree.
- */
+ 
 static __init int hpet_insert_resource(void)
 {
 	if (!hpet_res)
@@ -1057,23 +920,19 @@ static int __init acpi_parse_fadt(struct acpi_table_header *table)
 	}
 
 #ifdef CONFIG_X86_PM_TIMER
-	/* detect the location of the ACPI PM Timer */
+	 
 	if (acpi_gbl_FADT.header.revision >= FADT2_REVISION_ID) {
-		/* FADT rev. 2 */
+		 
 		if (acpi_gbl_FADT.xpm_timer_block.space_id !=
 		    ACPI_ADR_SPACE_SYSTEM_IO)
 			return 0;
 
 		pmtmr_ioport = acpi_gbl_FADT.xpm_timer_block.address;
-		/*
-		 * "X" fields are optional extensions to the original V1.0
-		 * fields, so we must selectively expand V1.0 fields if the
-		 * corresponding X field is zero.
-	 	 */
+		 
 		if (!pmtmr_ioport)
 			pmtmr_ioport = acpi_gbl_FADT.pm_timer_block;
 	} else {
-		/* FADT rev. 1 */
+		 
 		pmtmr_ioport = acpi_gbl_FADT.pm_timer_block;
 	}
 	if (pmtmr_ioport)
@@ -1083,10 +942,7 @@ static int __init acpi_parse_fadt(struct acpi_table_header *table)
 }
 
 #ifdef	CONFIG_X86_LOCAL_APIC
-/*
- * Parse LAPIC entries in MADT
- * returns 0 on success, < 0 on error
- */
+ 
 
 static int __init early_acpi_parse_madt_lapic_addr_ovr(void)
 {
@@ -1095,10 +951,7 @@ static int __init early_acpi_parse_madt_lapic_addr_ovr(void)
 	if (!boot_cpu_has(X86_FEATURE_APIC))
 		return -ENODEV;
 
-	/*
-	 * Note that the LAPIC address is obtained from the MADT (32-bit value)
-	 * and (optionally) overridden by a LAPIC_ADDR_OVR entry (64-bit value).
-	 */
+	 
 
 	count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE,
 				      acpi_parse_lapic_addr_ovr, 0);
@@ -1144,11 +997,11 @@ static int __init acpi_parse_madt_lapic_entries(void)
 	}
 	if (!count && !x2count) {
 		pr_err("No LAPIC entries present\n");
-		/* TBD: Cleanup to allow fallback to MPS */
+		 
 		return -ENODEV;
 	} else if (count < 0 || x2count < 0) {
 		pr_err("Error parsing LAPIC entry\n");
-		/* TBD: Cleanup to allow fallback to MPS */
+		 
 		return count;
 	}
 
@@ -1158,7 +1011,7 @@ static int __init acpi_parse_madt_lapic_entries(void)
 				      acpi_parse_lapic_nmi, 0);
 	if (count < 0 || x2count < 0) {
 		pr_err("Error parsing LAPIC NMI entry\n");
-		/* TBD: Cleanup to allow fallback to MPS */
+		 
 		return count;
 	}
 	return 0;
@@ -1185,8 +1038,8 @@ static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
 
 	return 0;
 }
-#endif				/* CONFIG_X86_64 */
-#endif				/* CONFIG_X86_LOCAL_APIC */
+#endif				 
+#endif				 
 
 #ifdef	CONFIG_X86_IO_APIC
 static void __init mp_config_acpi_legacy_irqs(void)
@@ -1195,31 +1048,24 @@ static void __init mp_config_acpi_legacy_irqs(void)
 	struct mpc_intsrc mp_irq;
 
 #ifdef CONFIG_EISA
-	/*
-	 * Fabricate the legacy ISA bus (bus #31).
-	 */
+	 
 	mp_bus_id_to_type[MP_ISA_BUS] = MP_BUS_ISA;
 #endif
 	set_bit(MP_ISA_BUS, mp_bus_not_pci);
 	pr_debug("Bus #%d is ISA (nIRQs: %d)\n", MP_ISA_BUS, nr_legacy_irqs());
 
-	/*
-	 * Use the default configuration for the IRQs 0-15.  Unless
-	 * overridden by (MADT) interrupt source override entries.
-	 */
+	 
 	for (i = 0; i < nr_legacy_irqs(); i++) {
 		int ioapic, pin;
 		unsigned int dstapic;
 		int idx;
 		u32 gsi;
 
-		/* Locate the gsi that irq i maps to. */
+		 
 		if (acpi_isa_irq_to_gsi(i, &gsi))
 			continue;
 
-		/*
-		 * Locate the IOAPIC that manages the ISA IRQ.
-		 */
+		 
 		ioapic = mp_find_ioapic(gsi);
 		if (ioapic < 0)
 			continue;
@@ -1229,55 +1075,45 @@ static void __init mp_config_acpi_legacy_irqs(void)
 		for (idx = 0; idx < mp_irq_entries; idx++) {
 			struct mpc_intsrc *irq = mp_irqs + idx;
 
-			/* Do we already have a mapping for this ISA IRQ? */
+			 
 			if (irq->srcbus == MP_ISA_BUS && irq->srcbusirq == i)
 				break;
 
-			/* Do we already have a mapping for this IOAPIC pin */
+			 
 			if (irq->dstapic == dstapic && irq->dstirq == pin)
 				break;
 		}
 
 		if (idx != mp_irq_entries) {
 			pr_debug("ACPI: IRQ%d used by override.\n", i);
-			continue;	/* IRQ already used */
+			continue;	 
 		}
 
 		mp_irq.type = MP_INTSRC;
-		mp_irq.irqflag = 0;	/* Conforming */
+		mp_irq.irqflag = 0;	 
 		mp_irq.srcbus = MP_ISA_BUS;
 		mp_irq.dstapic = dstapic;
 		mp_irq.irqtype = mp_INT;
-		mp_irq.srcbusirq = i; /* Identity mapped */
+		mp_irq.srcbusirq = i;  
 		mp_irq.dstirq = pin;
 
 		mp_save_irq(&mp_irq);
 	}
 }
 
-/*
- * Parse IOAPIC related entries in MADT
- * returns 0 on success, < 0 on error
- */
+ 
 static int __init acpi_parse_madt_ioapic_entries(void)
 {
 	int count;
 
-	/*
-	 * ACPI interpreter is required to complete interrupt setup,
-	 * so if it is off, don't enumerate the io-apics with ACPI.
-	 * If MPS is present, it will handle them,
-	 * otherwise the system will stay in PIC mode
-	 */
+	 
 	if (acpi_disabled || acpi_noirq)
 		return -ENODEV;
 
 	if (!boot_cpu_has(X86_FEATURE_APIC))
 		return -ENODEV;
 
-	/*
-	 * if "noapic" boot option, don't look for IO-APICs
-	 */
+	 
 	if (ioapic_is_disabled) {
 		pr_info("Skipping IOAPIC probe due to 'noapic' option.\n");
 		return -ENODEV;
@@ -1297,27 +1133,23 @@ static int __init acpi_parse_madt_ioapic_entries(void)
 				      acpi_parse_int_src_ovr, nr_irqs);
 	if (count < 0) {
 		pr_err("Error parsing interrupt source overrides entry\n");
-		/* TBD: Cleanup to allow fallback to MPS */
+		 
 		return count;
 	}
 
-	/*
-	 * If BIOS did not supply an INT_SRC_OVR for the SCI
-	 * pretend we got one so we can set the SCI flags.
-	 * But ignore setting up SCI on hardware reduced platforms.
-	 */
+	 
 	if (acpi_sci_override_gsi == INVALID_ACPI_IRQ && !acpi_gbl_reduced_hardware)
 		acpi_sci_ioapic_setup(acpi_gbl_FADT.sci_interrupt, 0, 0,
 				      acpi_gbl_FADT.sci_interrupt);
 
-	/* Fill in identity legacy mappings where no override */
+	 
 	mp_config_acpi_legacy_irqs();
 
 	count = acpi_table_parse_madt(ACPI_MADT_TYPE_NMI_SOURCE,
 				      acpi_parse_nmi_src, nr_irqs);
 	if (count < 0) {
 		pr_err("Error parsing NMI SRC entry\n");
-		/* TBD: Cleanup to allow fallback to MPS */
+		 
 		return count;
 	}
 
@@ -1328,7 +1160,7 @@ static inline int acpi_parse_madt_ioapic_entries(void)
 {
 	return -1;
 }
-#endif	/* !CONFIG_X86_IO_APIC */
+#endif	 
 
 static void __init early_acpi_process_madt(void)
 {
@@ -1337,18 +1169,14 @@ static void __init early_acpi_process_madt(void)
 
 	if (!acpi_table_parse(ACPI_SIG_MADT, acpi_parse_madt)) {
 
-		/*
-		 * Parse MADT LAPIC entries
-		 */
+		 
 		error = early_acpi_parse_madt_lapic_addr_ovr();
 		if (!error) {
 			acpi_lapic = 1;
 			smp_found_config = 1;
 		}
 		if (error == -EINVAL) {
-			/*
-			 * Dell Precision Workstation 410, 610 come here.
-			 */
+			 
 			pr_err("Invalid BIOS MADT, disabling ACPI\n");
 			disable_acpi();
 		}
@@ -1363,16 +1191,12 @@ static void __init acpi_process_madt(void)
 
 	if (!acpi_table_parse(ACPI_SIG_MADT, acpi_parse_madt)) {
 
-		/*
-		 * Parse MADT LAPIC entries
-		 */
+		 
 		error = acpi_parse_madt_lapic_entries();
 		if (!error) {
 			acpi_lapic = 1;
 
-			/*
-			 * Parse MADT IO-APIC entries
-			 */
+			 
 			mutex_lock(&acpi_ioapic_lock);
 			error = acpi_parse_madt_ioapic_entries();
 			mutex_unlock(&acpi_ioapic_lock);
@@ -1383,36 +1207,25 @@ static void __init acpi_process_madt(void)
 			}
 
 #ifdef CONFIG_X86_64
-			/*
-			 * Parse MADT MP Wake entry.
-			 */
+			 
 			acpi_table_parse_madt(ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
 					      acpi_parse_mp_wake, 1);
 #endif
 		}
 		if (error == -EINVAL) {
-			/*
-			 * Dell Precision Workstation 410, 610 come here.
-			 */
+			 
 			pr_err("Invalid BIOS MADT, disabling ACPI\n");
 			disable_acpi();
 		}
 	} else {
-		/*
- 		 * ACPI found no MADT, and so ACPI wants UP PIC mode.
- 		 * In the event an MPS table was found, forget it.
- 		 * Boot with "acpi=off" to use MPS on such a system.
- 		 */
+		 
 		if (smp_found_config) {
 			pr_warn("No APIC-table, disabling MPS\n");
 			smp_found_config = 0;
 		}
 	}
 
-	/*
-	 * ACPI supports both logical (e.g. Hyper-Threading) and physical
-	 * processors, where MPS only supports physical.
-	 */
+	 
 	if (acpi_lapic && acpi_ioapic)
 		pr_info("Using ACPI (MADT) for SMP configuration information\n");
 	else if (acpi_lapic)
@@ -1461,9 +1274,7 @@ static int __init dmi_disable_acpi(const struct dmi_system_id *d)
 	return 0;
 }
 
-/*
- * Force ignoring BIOS IRQ0 override
- */
+ 
 static int __init dmi_ignore_irq0_timer_override(const struct dmi_system_id *d)
 {
 	if (!acpi_skip_timer_override) {
@@ -1474,19 +1285,10 @@ static int __init dmi_ignore_irq0_timer_override(const struct dmi_system_id *d)
 	return 0;
 }
 
-/*
- * ACPI offers an alternative platform interface model that removes
- * ACPI hardware requirements for platforms that do not implement
- * the PC Architecture.
- *
- * We initialize the Hardware-reduced ACPI model here:
- */
+ 
 void __init acpi_generic_reduced_hw_init(void)
 {
-	/*
-	 * Override x86_init functions and bypass legacy PIC in
-	 * hardware reduced ACPI mode.
-	 */
+	 
 	x86_init.timers.timer_init	= x86_init_noop;
 	x86_init.irqs.pre_vector_init	= x86_init_noop;
 	legacy_pic			= &null_legacy_pic;
@@ -1498,14 +1300,9 @@ static void __init acpi_reduced_hw_init(void)
 		x86_init.acpi.reduced_hw_early_init();
 }
 
-/*
- * If your system is blacklisted here, but you find that acpi=force
- * works for you, please contact linux-acpi@vger.kernel.org
- */
+ 
 static const struct dmi_system_id acpi_dmi_table[] __initconst = {
-	/*
-	 * Boxes that need ACPI disabled
-	 */
+	 
 	{
 	 .callback = dmi_disable_acpi,
 	 .ident = "IBM Thinkpad",
@@ -1515,27 +1312,20 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
 		     },
 	 },
 
-	/*
-	 * Boxes that need ACPI PCI IRQ routing disabled
-	 */
+	 
 	{
 	 .callback = disable_acpi_irq,
 	 .ident = "ASUS A7V",
 	 .matches = {
 		     DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC"),
 		     DMI_MATCH(DMI_BOARD_NAME, "<A7V>"),
-		     /* newer BIOS, Revision 1011, does work */
+		      
 		     DMI_MATCH(DMI_BIOS_VERSION,
 			       "ASUS A7V ACPI BIOS Revision 1007"),
 		     },
 	 },
 	{
-		/*
-		 * Latest BIOS for IBM 600E (1.16) has bad pcinum
-		 * for LPC bridge, which is needed for the PCI
-		 * interrupt links to work. DSDT fix is in bug 5966.
-		 * 2645, 2646 model numbers are shared with 600/600E/600X
-		 */
+		 
 	 .callback = disable_acpi_irq,
 	 .ident = "IBM Thinkpad 600 Series 2645",
 	 .matches = {
@@ -1551,10 +1341,8 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
 		     DMI_MATCH(DMI_BOARD_NAME, "2646"),
 		     },
 	 },
-	/*
-	 * Boxes that need ACPI PCI IRQ routing and PCI scan disabled
-	 */
-	{			/* _BBN 0 bug */
+	 
+	{			 
 	 .callback = disable_acpi_pci,
 	 .ident = "ASUS PR-DLS",
 	 .matches = {
@@ -1573,9 +1361,7 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
 		     DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 360"),
 		     },
 	 },
-	/*
-	 * Boxes that need ACPI XSDT use disabled due to corrupted tables
-	 */
+	 
 	{
 	 .callback = disable_acpi_xsdt,
 	 .ident = "Advantech DAC-BJ01",
@@ -1589,18 +1375,9 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
 	{}
 };
 
-/* second table for DMI checks that should run after early-quirks */
+ 
 static const struct dmi_system_id acpi_dmi_table_late[] __initconst = {
-	/*
-	 * HP laptops which use a DSDT reporting as HP/SB400/10000,
-	 * which includes some code which overrides all temperature
-	 * trip points to 16C if the INTIN2 input of the I/O APIC
-	 * is enabled.  This input is incorrectly designated the
-	 * ISA IRQ 0 via an interrupt source override even though
-	 * it is wired to the output of the master 8259A and INTIN0
-	 * is not connected at all.  Force ignoring BIOS IRQ0
-	 * override in that cases.
-	 */
+	 
 	{
 	 .callback = dmi_ignore_irq0_timer_override,
 	 .ident = "HP nx6115 laptop",
@@ -1644,38 +1421,17 @@ static const struct dmi_system_id acpi_dmi_table_late[] __initconst = {
 	{}
 };
 
-/*
- * acpi_boot_table_init() and acpi_boot_init()
- *  called from setup_arch(), always.
- *	1. checksums all tables
- *	2. enumerates lapics
- *	3. enumerates io-apics
- *
- * acpi_table_init() is separate to allow reading SRAT without
- * other side effects.
- *
- * side effects of acpi_boot_init:
- *	acpi_lapic = 1 if LAPIC found
- *	acpi_ioapic = 1 if IOAPIC found
- *	if (acpi_lapic && acpi_ioapic) smp_found_config = 1;
- *	if acpi_blacklisted() acpi_disabled = 1;
- *	acpi_irq_model=...
- *	...
- */
+ 
 
 void __init acpi_boot_table_init(void)
 {
 	dmi_check_system(acpi_dmi_table);
 
-	/*
-	 * If acpi_disabled, bail out
-	 */
+	 
 	if (acpi_disabled)
 		return;
 
-	/*
-	 * Initialize the ACPI boot-time table parser.
-	 */
+	 
 	if (acpi_locate_initial_tables())
 		disable_acpi();
 	else
@@ -1691,9 +1447,7 @@ int __init early_acpi_boot_init(void)
 
 	acpi_table_parse(ACPI_SIG_BOOT, acpi_parse_sbf);
 
-	/*
-	 * blacklist may disable ACPI entirely
-	 */
+	 
 	if (acpi_blacklisted()) {
 		if (acpi_force) {
 			pr_warn("acpi=force override\n");
@@ -1704,14 +1458,10 @@ int __init early_acpi_boot_init(void)
 		}
 	}
 
-	/*
-	 * Process the Multiple APIC Description Table (MADT), if present
-	 */
+	 
 	early_acpi_process_madt();
 
-	/*
-	 * Hardware-reduced ACPI mode initialization:
-	 */
+	 
 	acpi_reduced_hw_init();
 
 	return 0;
@@ -1719,25 +1469,19 @@ int __init early_acpi_boot_init(void)
 
 int __init acpi_boot_init(void)
 {
-	/* those are executed after early-quirks are executed */
+	 
 	dmi_check_system(acpi_dmi_table_late);
 
-	/*
-	 * If acpi_disabled, bail out
-	 */
+	 
 	if (acpi_disabled)
 		return 1;
 
 	acpi_table_parse(ACPI_SIG_BOOT, acpi_parse_sbf);
 
-	/*
-	 * set sci_int and PM timer address
-	 */
+	 
 	acpi_table_parse(ACPI_SIG_FADT, acpi_parse_fadt);
 
-	/*
-	 * Process the Multiple APIC Description Table (MADT), if present
-	 */
+	 
 	acpi_process_madt();
 
 	acpi_table_parse(ACPI_SIG_HPET, acpi_parse_hpet);
@@ -1747,7 +1491,7 @@ int __init acpi_boot_init(void)
 	if (!acpi_noirq)
 		x86_init.pci.init = pci_acpi_init;
 
-	/* Do not enable ACPI SPCR console by default */
+	 
 	acpi_parse_spcr(earlycon_acpi_spcr_enable, false);
 	return 0;
 }
@@ -1757,36 +1501,36 @@ static int __init parse_acpi(char *arg)
 	if (!arg)
 		return -EINVAL;
 
-	/* "acpi=off" disables both ACPI table parsing and interpreter */
+	 
 	if (strcmp(arg, "off") == 0) {
 		disable_acpi();
 	}
-	/* acpi=force to over-ride black-list */
+	 
 	else if (strcmp(arg, "force") == 0) {
 		acpi_force = 1;
 		acpi_disabled = 0;
 	}
-	/* acpi=strict disables out-of-spec workarounds */
+	 
 	else if (strcmp(arg, "strict") == 0) {
 		acpi_strict = 1;
 	}
-	/* acpi=rsdt use RSDT instead of XSDT */
+	 
 	else if (strcmp(arg, "rsdt") == 0) {
 		acpi_gbl_do_not_use_xsdt = TRUE;
 	}
-	/* "acpi=noirq" disables ACPI interrupt routing */
+	 
 	else if (strcmp(arg, "noirq") == 0) {
 		acpi_noirq_set();
 	}
-	/* "acpi=copy_dsdt" copies DSDT */
+	 
 	else if (strcmp(arg, "copy_dsdt") == 0) {
 		acpi_gbl_copy_dsdt_locally = 1;
 	}
-	/* "acpi=nocmcff" disables FF mode for corrected errors */
+	 
 	else if (strcmp(arg, "nocmcff") == 0) {
 		acpi_disable_cmcff = 1;
 	} else {
-		/* Core will printk when we return error. */
+		 
 		return -EINVAL;
 	}
 	return 0;
@@ -1800,7 +1544,7 @@ static int __init parse_acpi_bgrt(char *arg)
 }
 early_param("bgrt_disable", parse_acpi_bgrt);
 
-/* FIXME: Using pci= for an ACPI parameter is a travesty. */
+ 
 static int __init parse_pci(char *arg)
 {
 	if (arg && strcmp(arg, "noacpi") == 0)
@@ -1812,7 +1556,7 @@ early_param("pci", parse_pci);
 int __init acpi_mps_check(void)
 {
 #if defined(CONFIG_X86_LOCAL_APIC) && !defined(CONFIG_X86_MPPARSE)
-/* mptable code is not built-in*/
+ 
 	if (acpi_disabled || acpi_noirq) {
 		pr_warn("MPS support code is not built-in, using acpi=off or acpi=noirq or pci=noacpi may have problem\n");
 		return 1;
@@ -1835,7 +1579,7 @@ static int __init parse_acpi_use_timer_override(char *arg)
 	return 0;
 }
 early_param("acpi_use_timer_override", parse_acpi_use_timer_override);
-#endif /* CONFIG_X86_IO_APIC */
+#endif  
 
 static int __init setup_acpi_sci(char *s)
 {

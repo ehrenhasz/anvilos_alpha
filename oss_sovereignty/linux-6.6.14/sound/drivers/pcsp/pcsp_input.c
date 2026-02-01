@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  PC Speaker beeper driver for Linux
- *
- *  Copyright (c) 2002 Vojtech Pavlik
- *  Copyright (c) 1992 Orest Zborowski
- */
+
+ 
 
 
 #include <linux/init.h>
@@ -20,15 +15,15 @@ static void pcspkr_do_sound(unsigned int count)
 	raw_spin_lock_irqsave(&i8253_lock, flags);
 
 	if (count) {
-		/* set command for counter 2, 2 byte write */
+		 
 		outb_p(0xB6, 0x43);
-		/* select desired HZ */
+		 
 		outb_p(count & 0xff, 0x42);
 		outb((count >> 8) & 0xff, 0x42);
-		/* enable counter 2 */
+		 
 		outb_p(inb_p(0x61) | 3, 0x61);
 	} else {
-		/* disable counter 2 */
+		 
 		outb(inb_p(0x61) & 0xFC, 0x61);
 	}
 

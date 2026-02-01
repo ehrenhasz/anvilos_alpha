@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Audio driver for PCM1789 I2C
-// Copyright (C) 2018 Bootlin
-// Mylène Josserand <mylene.josserand@bootlin.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>

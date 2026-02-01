@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * WMI embedded Binary MOF driver
- *
- * Copyright (c) 2015 Andrew Lutomirski
- * Copyright (C) 2017 VMware, Inc. All Rights Reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

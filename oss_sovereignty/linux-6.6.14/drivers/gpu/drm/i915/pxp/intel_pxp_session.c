@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright(c) 2020, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include "i915_drv.h"
 
@@ -13,7 +11,7 @@
 #include "intel_pxp_types.h"
 #include "intel_pxp_regs.h"
 
-#define ARB_SESSION I915_PROTECTED_CONTENT_DEFAULT_SESSION /* shorter define */
+#define ARB_SESSION I915_PROTECTED_CONTENT_DEFAULT_SESSION  
 
 static bool intel_pxp_session_is_in_play(struct intel_pxp *pxp, u32 id)
 {
@@ -21,7 +19,7 @@ static bool intel_pxp_session_is_in_play(struct intel_pxp *pxp, u32 id)
 	intel_wakeref_t wakeref;
 	u32 sip = 0;
 
-	/* if we're suspended the session is considered off */
+	 
 	with_intel_runtime_pm_if_in_use(uncore->rpm, wakeref)
 		sip = intel_uncore_read(uncore, KCR_SIP(pxp->kcr_base));
 
@@ -35,7 +33,7 @@ static int pxp_wait_for_session_state(struct intel_pxp *pxp, u32 id, bool in_pla
 	u32 mask = BIT(id);
 	int ret;
 
-	/* if we're suspended the session is considered off */
+	 
 	wakeref = intel_runtime_pm_get_if_in_use(uncore->rpm);
 	if (!wakeref)
 		return in_play ? -ENODEV : 0;
@@ -92,10 +90,10 @@ static int pxp_terminate_arb_session_and_global(struct intel_pxp *pxp)
 	int ret;
 	struct intel_gt *gt = pxp->ctrl_gt;
 
-	/* must mark termination in progress calling this function */
+	 
 	GEM_WARN_ON(pxp->arb_is_valid);
 
-	/* terminate the hw sessions */
+	 
 	ret = intel_pxp_terminate_session(pxp, ARB_SESSION);
 	if (ret) {
 		drm_err(&gt->i915->drm, "Failed to submit session termination\n");
@@ -124,11 +122,7 @@ void intel_pxp_terminate(struct intel_pxp *pxp, bool post_invalidation_needs_res
 
 	pxp->hw_state_invalidated = post_invalidation_needs_restart;
 
-	/*
-	 * if we fail to submit the termination there is no point in waiting for
-	 * it to complete. PXP will be marked as non-active until the next
-	 * termination is issued.
-	 */
+	 
 	ret = pxp_terminate_arb_session_and_global(pxp);
 	if (ret)
 		complete_all(&pxp->termination);
@@ -136,7 +130,7 @@ void intel_pxp_terminate(struct intel_pxp *pxp, bool post_invalidation_needs_res
 
 static void pxp_terminate_complete(struct intel_pxp *pxp)
 {
-	/* Re-create the arb session after teardown handle complete */
+	 
 	if (fetch_and_zero(&pxp->hw_state_invalidated))
 		pxp_create_arb_session(pxp);
 
@@ -160,10 +154,7 @@ static void pxp_session_work(struct work_struct *work)
 	if (events & PXP_INVAL_REQUIRED)
 		intel_pxp_invalidate(pxp);
 
-	/*
-	 * If we're processing an event while suspending then don't bother,
-	 * we're going to re-init everything on resume anyway.
-	 */
+	 
 	wakeref = intel_runtime_pm_get_if_in_use(gt->uncore->rpm);
 	if (!wakeref)
 		return;

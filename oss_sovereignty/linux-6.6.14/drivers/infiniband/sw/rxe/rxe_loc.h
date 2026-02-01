@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef RXE_LOC_H
 #define RXE_LOC_H
 
-/* rxe_av.c */
+ 
 void rxe_init_av(struct rdma_ah_attr *attr, struct rxe_av *av);
 int rxe_av_chk_attr(struct rxe_qp *qp, struct rdma_ah_attr *attr);
 int rxe_ah_chk_attr(struct rxe_ah *ah, struct rdma_ah_attr *attr);
@@ -17,7 +14,7 @@ void rxe_av_to_attr(struct rxe_av *av, struct rdma_ah_attr *attr);
 void rxe_av_fill_ip_info(struct rxe_av *av, struct rdma_ah_attr *attr);
 struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt, struct rxe_ah **ahp);
 
-/* rxe_cq.c */
+ 
 int rxe_cq_chk_attr(struct rxe_dev *rxe, struct rxe_cq *cq,
 		    int cqe, int comp_vector);
 
@@ -33,13 +30,13 @@ int rxe_cq_post(struct rxe_cq *cq, struct rxe_cqe *cqe, int solicited);
 
 void rxe_cq_cleanup(struct rxe_pool_elem *elem);
 
-/* rxe_mcast.c */
+ 
 struct rxe_mcg *rxe_lookup_mcg(struct rxe_dev *rxe, union ib_gid *mgid);
 int rxe_attach_mcast(struct ib_qp *ibqp, union ib_gid *mgid, u16 mlid);
 int rxe_detach_mcast(struct ib_qp *ibqp, union ib_gid *mgid, u16 mlid);
 void rxe_cleanup_mcg(struct kref *kref);
 
-/* rxe_mmap.c */
+ 
 struct rxe_mmap_info {
 	struct list_head	pending_mmaps;
 	struct ib_ucontext	*context;
@@ -56,7 +53,7 @@ struct rxe_mmap_info *rxe_create_mmap_info(struct rxe_dev *dev, u32 size,
 
 int rxe_mmap(struct ib_ucontext *context, struct vm_area_struct *vma);
 
-/* rxe_mr.c */
+ 
 u8 rxe_get_next_key(u32 last_key);
 void rxe_mr_init_dma(int access, struct rxe_mr *mr);
 int rxe_mr_init_user(struct rxe_dev *rxe, u64 start, u64 length, u64 iova,
@@ -80,7 +77,7 @@ int rxe_invalidate_mr(struct rxe_qp *qp, u32 key);
 int rxe_reg_fast_mr(struct rxe_qp *qp, struct rxe_send_wqe *wqe);
 void rxe_mr_cleanup(struct rxe_pool_elem *elem);
 
-/* rxe_mw.c */
+ 
 int rxe_alloc_mw(struct ib_mw *ibmw, struct ib_udata *udata);
 int rxe_dealloc_mw(struct ib_mw *ibmw);
 int rxe_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe);
@@ -88,7 +85,7 @@ int rxe_invalidate_mw(struct rxe_qp *qp, u32 rkey);
 struct rxe_mw *rxe_lookup_mw(struct rxe_qp *qp, int access, u32 rkey);
 void rxe_mw_cleanup(struct rxe_pool_elem *elem);
 
-/* rxe_net.c */
+ 
 struct sk_buff *rxe_init_packet(struct rxe_dev *rxe, struct rxe_av *av,
 				int paylen, struct rxe_pkt_info *pkt);
 int rxe_prepare(struct rxe_av *av, struct rxe_pkt_info *pkt,
@@ -97,7 +94,7 @@ int rxe_xmit_packet(struct rxe_qp *qp, struct rxe_pkt_info *pkt,
 		    struct sk_buff *skb);
 const char *rxe_parent_name(struct rxe_dev *rxe, unsigned int port_num);
 
-/* rxe_qp.c */
+ 
 int rxe_qp_chk_init(struct rxe_dev *rxe, struct ib_qp_init_attr *init);
 int rxe_qp_from_init(struct rxe_dev *rxe, struct rxe_qp *qp, struct rxe_pd *pd,
 		     struct ib_qp_init_attr *init,
@@ -148,7 +145,7 @@ static inline void rxe_advance_resp_resource(struct rxe_qp *qp)
 void retransmit_timer(struct timer_list *t);
 void rnr_nak_timer(struct timer_list *t);
 
-/* rxe_srq.c */
+ 
 int rxe_srq_chk_init(struct rxe_dev *rxe, struct ib_srq_init_attr *init);
 int rxe_srq_from_init(struct rxe_dev *rxe, struct rxe_srq *srq,
 		      struct ib_srq_init_attr *init, struct ib_udata *udata,
@@ -166,7 +163,7 @@ int rxe_completer(struct rxe_qp *qp);
 int rxe_requester(struct rxe_qp *qp);
 int rxe_responder(struct rxe_qp *qp);
 
-/* rxe_icrc.c */
+ 
 int rxe_icrc_init(struct rxe_dev *rxe);
 int rxe_icrc_check(struct sk_buff *skb, struct rxe_pkt_info *pkt);
 void rxe_icrc_generate(struct sk_buff *skb, struct rxe_pkt_info *pkt);
@@ -180,4 +177,4 @@ static inline unsigned int wr_opcode_mask(int opcode, struct rxe_qp *qp)
 	return rxe_wr_opcode_info[opcode].mask[qp->ibqp.qp_type];
 }
 
-#endif /* RXE_LOC_H */
+#endif  

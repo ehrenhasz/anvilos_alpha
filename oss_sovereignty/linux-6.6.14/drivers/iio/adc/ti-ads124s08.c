@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* TI ADS124S0X chip family driver
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/delay.h>
@@ -23,7 +21,7 @@
 
 #include <asm/unaligned.h>
 
-/* Commands */
+ 
 #define ADS124S08_CMD_NOP	0x00
 #define ADS124S08_CMD_WAKEUP	0x02
 #define ADS124S08_CMD_PWRDWN	0x04
@@ -37,7 +35,7 @@
 #define ADS124S08_CMD_RREG	0x20
 #define ADS124S08_CMD_WREG	0x40
 
-/* Registers */
+ 
 #define ADS124S08_ID_REG	0x00
 #define ADS124S08_STATUS	0x01
 #define ADS124S08_INPUT_MUX	0x02
@@ -57,7 +55,7 @@
 #define ADS124S08_GPIODAT	0x10
 #define ADS124S08_GPIOCON	0x11
 
-/* ADS124S0x common channels */
+ 
 #define ADS124S08_AIN0		0x00
 #define ADS124S08_AIN1		0x01
 #define ADS124S08_AIN2		0x02
@@ -65,7 +63,7 @@
 #define ADS124S08_AIN4		0x04
 #define ADS124S08_AIN5		0x05
 #define ADS124S08_AINCOM	0x0c
-/* ADS124S08 only channels */
+ 
 #define ADS124S08_AIN6		0x06
 #define ADS124S08_AIN7		0x07
 #define ADS124S08_AIN8		0x08
@@ -98,13 +96,7 @@ struct ads124s_private {
 	struct gpio_desc *reset_gpio;
 	struct spi_device *spi;
 	struct mutex lock;
-	/*
-	 * Used to correctly align data.
-	 * Ensure timestamp is naturally aligned.
-	 * Note that the full buffer length may not be needed if not
-	 * all channels are enabled, as long as the alignment of the
-	 * timestamp is maintained.
-	 */
+	 
 	u32 buffer[ADS124S08_MAX_CHANNELS + sizeof(s64)/sizeof(u32)] __aligned(8);
 	u8 data[5] __aligned(IIO_DMA_MINALIGN);
 };

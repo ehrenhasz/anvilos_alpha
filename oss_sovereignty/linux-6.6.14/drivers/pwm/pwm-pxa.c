@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/pwm/pwm-pxa.c
- *
- * simple driver for PWM (Pulse Width Modulator) controller
- *
- * 2008-02-13	initial version
- *		eric miao <eric.miao@marvell.com>
- *
- * Links to reference manuals for some of the supported PWM chips can be found
- * in Documentation/arch/arm/marvell.rst.
- *
- * Limitations:
- * - When PWM is stopped, the current PWM period stops abruptly at the next
- *   input clock (PWMCR_SD is set) and the output is driven to inactive.
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -31,7 +17,7 @@
 #define HAS_SECONDARY_PWM	0x10
 
 static const struct platform_device_id pwm_id_table[] = {
-	/*   PWM    has_secondary_pwm? */
+	 
 	{ "pxa25x-pwm", 0 },
 	{ "pxa27x-pwm", HAS_SECONDARY_PWM },
 	{ "pxa168-pwm", 0 },
@@ -40,7 +26,7 @@ static const struct platform_device_id pwm_id_table[] = {
 };
 MODULE_DEVICE_TABLE(platform, pwm_id_table);
 
-/* PWM registers and bits definitions */
+ 
 #define PWMCR		(0x00)
 #define PWMDCR		(0x04)
 #define PWMPCR		(0x08)
@@ -61,10 +47,7 @@ static inline struct pxa_pwm_chip *to_pxa_pwm_chip(struct pwm_chip *chip)
 	return container_of(chip, struct pxa_pwm_chip, chip);
 }
 
-/*
- * period_ns = 10^9 * (PRESCALE + 1) * (PV + 1) / PWM_CLK_RATE
- * duty_ns   = 10^9 * (PRESCALE + 1) * DC / PWM_CLK_RATE
- */
+ 
 static int pxa_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			  u64 duty_ns, u64 period_ns)
 {
@@ -139,12 +122,7 @@ static const struct pwm_ops pxa_pwm_ops = {
 };
 
 #ifdef CONFIG_OF
-/*
- * Device tree users must create one device instance for each PWM channel.
- * Hence we dispense with the HAS_SECONDARY_PWM and "tell" the original driver
- * code that this is a single channel pxa25x-pwm.  Currently all devices are
- * supported identically.
- */
+ 
 static const struct of_device_id pwm_of_match[] = {
 	{ .compatible = "marvell,pxa250-pwm", .data = &pwm_id_table[0]},
 	{ .compatible = "marvell,pxa270-pwm", .data = &pwm_id_table[0]},

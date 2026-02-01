@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Pengutronix, Juergen Borleis <kernel@pengutronix.de>
- *
- * Partially based on a patch from
- * Copyright (c) 2014 Stefan Roese <sr@denx.de>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mdio.h>
@@ -13,7 +8,7 @@
 
 #include "lan9303.h"
 
-/* Generate phy-addr and -reg from the input address */
+ 
 #define PHY_ADDR(x) ((((x) >> 6) + 0x10) & 0x1f)
 #define PHY_REG(x) (((x) >> 1) & 0x1f)
 
@@ -31,7 +26,7 @@ static int lan9303_mdio_write(void *ctx, uint32_t reg, uint32_t val)
 {
 	struct lan9303_mdio *sw_dev = (struct lan9303_mdio *)ctx;
 
-	reg <<= 2; /* reg num to offset */
+	reg <<= 2;  
 	mutex_lock_nested(&sw_dev->device->bus->mdio_lock, MDIO_MUTEX_NESTED);
 	lan9303_mdio_real_write(sw_dev->device, reg, val & 0xffff);
 	lan9303_mdio_real_write(sw_dev->device, reg + 2, (val >> 16) & 0xffff);
@@ -49,7 +44,7 @@ static int lan9303_mdio_read(void *ctx, uint32_t reg, uint32_t *val)
 {
 	struct lan9303_mdio *sw_dev = (struct lan9303_mdio *)ctx;
 
-	reg <<= 2; /* reg num to offset */
+	reg <<= 2;  
 	mutex_lock_nested(&sw_dev->device->bus->mdio_lock, MDIO_MUTEX_NESTED);
 	*val = lan9303_mdio_real_read(sw_dev->device, reg);
 	*val |= (lan9303_mdio_real_read(sw_dev->device, reg + 2) << 16);
@@ -83,7 +78,7 @@ static const struct regmap_config lan9303_mdio_regmap_config = {
 	.val_bits = 32,
 	.reg_stride = 1,
 	.can_multi_write = true,
-	.max_register = 0x0ff, /* address bits 0..1 are not used */
+	.max_register = 0x0ff,  
 	.reg_format_endian = REGMAP_ENDIAN_LITTLE,
 
 	.volatile_table = &lan9303_register_set,
@@ -114,7 +109,7 @@ static int lan9303_mdio_probe(struct mdio_device *mdiodev)
 		return ret;
 	}
 
-	/* link forward and backward */
+	 
 	sw_dev->device = mdiodev;
 	dev_set_drvdata(&mdiodev->dev, sw_dev);
 	sw_dev->chip.dev = &mdiodev->dev;
@@ -152,12 +147,12 @@ static void lan9303_mdio_shutdown(struct mdio_device *mdiodev)
 	dev_set_drvdata(&mdiodev->dev, NULL);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static const struct of_device_id lan9303_mdio_of_match[] = {
 	{ .compatible = "smsc,lan9303-mdio" },
 	{ .compatible = "microchip,lan9354-mdio" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, lan9303_mdio_of_match);
 

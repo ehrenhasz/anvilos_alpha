@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* r8169_firmware.c: RealTek 8169/8168/8101 ethernet driver.
- *
- * Copyright (c) 2002 ShuChen <shuchen@realtek.com.tw>
- * Copyright (c) 2003 - 2007 Francois Romieu <romieu@fr.zoreil.com>
- * Copyright (c) a lot of people too. Please respect their work.
- *
- * See MAINTAINERS file for support contact information.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>

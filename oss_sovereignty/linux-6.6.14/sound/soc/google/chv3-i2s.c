@@ -1,34 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
 #include <sound/soc.h>
 
-/*
- * The I2S interface consists of two ring buffers - one for RX and one for
- * TX.  A ring buffer has a producer index and a consumer index. Depending
- * on which way the data is flowing, either the software or the hardware
- * writes data and updates the producer index, and the other end reads data
- * and updates the consumer index.
- *
- * The pointer managed by software is updated using the .ack callback
- * (see chv3_dma_ack). This seems to be the only way to reliably obtain
- * the appl_ptr from within the driver and pass it to hardware.
- *
- * Because of the two pointer design, the ring buffer can never be full. With
- * capture this isn't a problem, because the hardware being the producer
- * will wait for the consumer index to move out of the way.  With playback,
- * however, this is problematic, because ALSA wants to fill up the buffer
- * completely when waiting for hardware. In the .ack callback, the driver
- * would have to wait for the consumer index to move out of the way by
- * busy-waiting, which would keep stalling the kernel for quite a long time.
- *
- * The workaround to this problem is to "lie" to ALSA that the hw_pointer
- * is one frame behind what it actually is (see chv3_dma_pointer). This
- * way, ALSA will not try to fill up the entire buffer, and all callbacks
- * are wait-free.
- */
+ 
 
 #define I2S_TX_ENABLE		0x00
 #define I2S_TX_BASE_ADDR	0x04
@@ -241,7 +218,7 @@ static snd_pcm_uframes_t chv3_dma_pointer(struct snd_soc_component *component,
 		idx_bytes = chv3_i2s_rd(i2s, I2S_RX_PRODUCER_IDX);
 	} else {
 		idx_bytes = chv3_i2s_rd(i2s, I2S_TX_CONSUMER_IDX);
-		/* lag the pointer by one frame */
+		 
 		idx_bytes = (idx_bytes - frame_bytes) & (buffer_bytes - 1);
 	}
 

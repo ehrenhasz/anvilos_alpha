@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dev_printk.h - printk messages helpers for devices
- *
- * Copyright (c) 2001-2003 Patrick Mochel <mochel@osdl.org>
- * Copyright (c) 2004-2009 Greg Kroah-Hartman <gregkh@suse.de>
- * Copyright (c) 2008-2009 Novell Inc.
- *
- */
+
+ 
 
 #ifndef _DEVICE_PRINTK_H_
 #define _DEVICE_PRINTK_H_
@@ -97,10 +90,7 @@ void _dev_info(const struct device *dev, const char *fmt, ...)
 
 #endif
 
-/*
- * Need to take variadic arguments even though we don't use them, as dev_fmt()
- * may only just have been expanded and may result in multiple arguments.
- */
+ 
 #define dev_printk_index_emit(level, fmt, ...) \
 	printk_index_subsys_emit("%s %s: ", level, fmt)
 
@@ -110,29 +100,14 @@ void _dev_info(const struct device *dev, const char *fmt, ...)
 		_p_func(dev, fmt, ##__VA_ARGS__);			\
 	})
 
-/*
- * Some callsites directly call dev_printk rather than going through the
- * dev_<level> infrastructure, so we need to emit here as well as inside those
- * level-specific macros. Only one index entry will be produced, either way,
- * since dev_printk's `fmt` isn't known at compile time if going through the
- * dev_<level> macros.
- *
- * dev_fmt() isn't called for dev_printk when used directly, as it's used by
- * the dev_<level> macros internally which already have dev_fmt() processed.
- *
- * We also can't use dev_printk_index_wrap directly, because we have a separate
- * level to process.
- */
+ 
 #define dev_printk(level, dev, fmt, ...)				\
 	({								\
 		dev_printk_index_emit(level, fmt);			\
 		_dev_printk(level, dev, fmt, ##__VA_ARGS__);		\
 	})
 
-/*
- * #defines for all the dev_<level> macros to prefix with whatever
- * possible use of #define dev_fmt(fmt) ...
- */
+ 
 
 #define dev_emerg(dev, fmt, ...) \
 	dev_printk_index_wrap(_dev_emerg, KERN_EMERG, dev, dev_fmt(fmt), ##__VA_ARGS__)
@@ -224,7 +199,7 @@ do {									\
 	dev_level_ratelimited(dev_info, dev, fmt, ##__VA_ARGS__)
 #if defined(CONFIG_DYNAMIC_DEBUG) || \
 	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-/* descriptor check is first to prevent flooding with "callbacks suppressed" */
+ 
 #define dev_dbg_ratelimited(dev, fmt, ...)				\
 do {									\
 	static DEFINE_RATELIMIT_STATE(_rs,				\
@@ -263,10 +238,7 @@ do {									\
 })
 #endif
 
-/*
- * dev_WARN*() acts like dev_printk(), but with the key difference of
- * using WARN/WARN_ONCE to include file/line information and a backtrace.
- */
+ 
 #define dev_WARN(dev, format, arg...) \
 	WARN(1, "%s %s: " format, dev_driver_string(dev), dev_name(dev), ## arg)
 
@@ -276,4 +248,4 @@ do {									\
 
 __printf(3, 4) int dev_err_probe(const struct device *dev, int err, const char *fmt, ...);
 
-#endif /* _DEVICE_PRINTK_H_ */
+#endif  

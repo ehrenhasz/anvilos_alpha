@@ -1,21 +1,7 @@
-/* $OpenBSD: mux.c,v 1.101 2023/11/23 03:37:05 dtucker Exp $ */
-/*
- * Copyright (c) 2002-2008 Damien Miller <djm@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
-/* ssh session multiplexing support */
+ 
 
 #include "includes.h"
 
@@ -70,14 +56,14 @@
 #include "ssherr.h"
 #include "misc.h"
 
-/* from ssh.c */
+ 
 extern int tty_flag;
 extern Options options;
 extern char *host;
 extern struct sshbuf *command;
 extern volatile sig_atomic_t quit_pending;
 
-/* Context for session open confirmation callback */
+ 
 struct mux_session_confirm_ctx {
 	u_int want_tty;
 	u_int want_subsys;
@@ -90,31 +76,31 @@ struct mux_session_confirm_ctx {
 	u_int rid;
 };
 
-/* Context for stdio fwd open confirmation callback */
+ 
 struct mux_stdio_confirm_ctx {
 	u_int rid;
 };
 
-/* Context for global channel callback */
+ 
 struct mux_channel_confirm_ctx {
-	u_int cid;	/* channel id */
-	u_int rid;	/* request id */
-	int fid;	/* forward id */
+	u_int cid;	 
+	u_int rid;	 
+	int fid;	 
 };
 
-/* fd to control socket */
+ 
 int muxserver_sock = -1;
 
-/* client request id */
+ 
 u_int muxclient_request_id = 0;
 
-/* Multiplexing control command */
+ 
 u_int muxclient_command = 0;
 
-/* Set when signalled. */
+ 
 static volatile sig_atomic_t muxclient_terminate = 0;
 
-/* PID of multiplex server */
+ 
 static u_int muxserver_pid = 0;
 
 static Channel *mux_listener_channel = NULL;
@@ -123,7 +109,7 @@ struct mux_master_state {
 	int hello_rcvd;
 };
 
-/* mux protocol messages */
+ 
 #define MUX_MSG_HELLO		0x00000001
 #define MUX_C_NEW_SESSION	0x10000002
 #define MUX_C_ALIVE_CHECK	0x10000004
@@ -143,7 +129,7 @@ struct mux_master_state {
 #define MUX_S_TTY_ALLOC_FAIL	0x80000008
 #define MUX_S_PROXY		0x8000000f
 
-/* type codes for MUX_C_OPEN_FWD and MUX_C_CLOSE_FWD */
+ 
 #define MUX_FWD_LOCAL   1
 #define MUX_FWD_REMOTE  2
 #define MUX_FWD_DYNAMIC 3
@@ -187,7 +173,7 @@ static const struct {
 	{ 0, NULL }
 };
 
-/* Cleanup callback fired on closure of mux client _session_ channel */
+ 
 static void
 mux_master_session_cleanup_cb(struct ssh *ssh, int cid, int force, void *unused)
 {
@@ -208,7 +194,7 @@ mux_master_session_cleanup_cb(struct ssh *ssh, int cid, int force, void *unused)
 	channel_cancel_cleanup(ssh, c->self);
 }
 
-/* Cleanup callback fired on closure of mux client _control_ channel */
+ 
 static void
 mux_master_control_cleanup_cb(struct ssh *ssh, int cid, int force, void *unused)
 {
@@ -238,7 +224,7 @@ mux_master_control_cleanup_cb(struct ssh *ssh, int cid, int force, void *unused)
 	channel_cancel_cleanup(ssh, c->self);
 }
 
-/* Check mux client environment variables before passing them to mux master. */
+ 
 static int
 env_permitted(const char *env)
 {
@@ -261,7 +247,7 @@ env_permitted(const char *env)
 	return 0;
 }
 
-/* Mux master protocol message handlers */
+ 
 
 static int
 mux_master_process_hello(struct ssh *ssh, u_int rid,
@@ -288,7 +274,7 @@ mux_master_process_hello(struct ssh *ssh, u_int rid,
 	}
 	debug2_f("channel %d client version %u", c->self, ver);
 
-	/* No extensions are presently defined */
+	 
 	while (sshbuf_len(m) > 0) {
 		char *name = NULL;
 		size_t value_len = 0;
@@ -306,7 +292,7 @@ mux_master_process_hello(struct ssh *ssh, u_int rid,
 	return 0;
 }
 
-/* Enqueue a "ok" response to the reply buffer */
+ 
 static void
 reply_ok(struct sshbuf *reply, u_int rid)
 {
@@ -317,7 +303,7 @@ reply_ok(struct sshbuf *reply, u_int rid)
 		fatal_fr(r, "reply");
 }
 
-/* Enqueue an error response to the reply buffer */
+ 
 static void
 reply_error(struct sshbuf *reply, u_int type, u_int rid, const char *msg)
 {
@@ -339,14 +325,14 @@ mux_master_process_new_session(struct ssh *ssh, u_int rid,
 	u_int i, j, env_len, escape_char, window, packetmax;
 	int r, new_fd[3];
 
-	/* Reply for SSHMUX_COMMAND_OPEN */
+	 
 	cctx = xcalloc(1, sizeof(*cctx));
 	cctx->term = NULL;
 	cctx->rid = rid;
 	cmd = NULL;
 	cctx->env = NULL;
 	env_len = 0;
-	if ((r = sshbuf_skip_string(m)) != 0 || /* reserved */
+	if ((r = sshbuf_skip_string(m)) != 0 ||  
 	    (r = sshbuf_get_u32(m, &cctx->want_tty)) != 0 ||
 	    (r = sshbuf_get_u32(m, &cctx->want_x_fwd)) != 0 ||
 	    (r = sshbuf_get_u32(m, &cctx->want_agent_fwd)) != 0 ||
@@ -396,7 +382,7 @@ mux_master_process_new_session(struct ssh *ssh, u_int rid,
 	free(cmd);
 	cmd = NULL;
 
-	/* Gather fds from client */
+	 
 	for(i = 0; i < 3; i++) {
 		if ((new_fd[i] = mm_receive_fd(c->sock)) == -1) {
 			error_f("failed to receive fd %d from client", i);
@@ -417,7 +403,7 @@ mux_master_process_new_session(struct ssh *ssh, u_int rid,
 	debug3_f("got fds stdin %d, stdout %d, stderr %d",
 	    new_fd[0], new_fd[1], new_fd[2]);
 
-	/* XXX support multiple child sessions in future */
+	 
 	if (c->have_remote_id) {
 		debug2_f("session already open");
 		reply_error(reply, MUX_S_FAILURE, rid,
@@ -447,7 +433,7 @@ mux_master_process_new_session(struct ssh *ssh, u_int rid,
 		}
 	}
 
-	/* Try to pick up ttymodes from client before it goes raw */
+	 
 	if (cctx->want_tty && tcgetattr(new_fd[0], &cctx->tio) == -1)
 		error_f("tcgetattr: %s", strerror(errno));
 
@@ -462,8 +448,8 @@ mux_master_process_new_session(struct ssh *ssh, u_int rid,
 	    new_fd[0], new_fd[1], new_fd[2], window, packetmax,
 	    CHAN_EXTENDED_WRITE, "client-session", CHANNEL_NONBLOCK_STDIO);
 
-	nc->ctl_chan = c->self;		/* link session -> control channel */
-	c->remote_id = nc->self;	/* link control -> session channel */
+	nc->ctl_chan = c->self;		 
+	c->remote_id = nc->self;	 
 	c->have_remote_id = 1;
 
 	if (cctx->want_tty && escape_char != 0xffffffff) {
@@ -478,11 +464,11 @@ mux_master_process_new_session(struct ssh *ssh, u_int rid,
 
 	channel_send_open(ssh, nc->self);
 	channel_register_open_confirm(ssh, nc->self, mux_session_confirm, cctx);
-	c->mux_pause = 1; /* stop handling messages until open_confirm done */
+	c->mux_pause = 1;  
 	channel_register_cleanup(ssh, nc->self,
 	    mux_master_session_cleanup_cb, 1);
 
-	/* reply is deferred, sent by mux_session_confirm */
+	 
 	return 0;
 }
 
@@ -494,7 +480,7 @@ mux_master_process_alive_check(struct ssh *ssh, u_int rid,
 
 	debug2_f("channel %d: alive check", c->self);
 
-	/* prepare reply */
+	 
 	if ((r = sshbuf_put_u32(reply, MUX_S_ALIVE)) != 0 ||
 	    (r = sshbuf_put_u32(reply, rid)) != 0 ||
 	    (r = sshbuf_put_u32(reply, (u_int)getpid())) != 0)
@@ -522,7 +508,7 @@ mux_master_process_terminate(struct ssh *ssh, u_int rid,
 
 	quit_pending = 1;
 	reply_ok(reply, rid);
-	/* XXX exit happens too soon - message never makes it to client */
+	 
 	return 0;
 }
 
@@ -603,7 +589,7 @@ mux_confirm_remote_forward(struct ssh *ssh, int type, u_int32_t seq, void *ctxt)
 	int r;
 
 	if ((c = channel_by_id(ssh, fctx->cid)) == NULL) {
-		/* no channel for reply */
+		 
 		error_f("unknown channel");
 		return;
 	}
@@ -676,7 +662,7 @@ mux_confirm_remote_forward(struct ssh *ssh, int type, u_int32_t seq, void *ctxt)
 	sshbuf_free(out);
 	if (c->mux_pause <= 0)
 		fatal_f("mux_pause %d", c->mux_pause);
-	c->mux_pause = 0; /* start processing messages again */
+	c->mux_pause = 0;  
 }
 
 static int
@@ -692,7 +678,7 @@ mux_master_process_open_fwd(struct ssh *ssh, u_int rid,
 
 	memset(&fwd, 0, sizeof(fwd));
 
-	/* XXX - lport/cport check redundant */
+	 
 	if ((r = sshbuf_get_u32(m, &ftype)) != 0 ||
 	    (r = sshbuf_get_cstring(m, &listen_addr, NULL)) != 0 ||
 	    (r = sshbuf_get_u32(m, &lport)) != 0 ||
@@ -761,7 +747,7 @@ mux_master_process_open_fwd(struct ssh *ssh, u_int rid,
 		goto invalid;
 	}
 
-	/* Skip forwards that have already been requested */
+	 
 	switch (ftype) {
 	case MUX_FWD_LOCAL:
 	case MUX_FWD_DYNAMIC:
@@ -828,8 +814,8 @@ mux_master_process_open_fwd(struct ssh *ssh, u_int rid,
 		client_register_global_confirm(mux_confirm_remote_forward,
 		    fctx);
 		freefwd = 0;
-		c->mux_pause = 1; /* wait for mux_confirm_remote_forward */
-		/* delayed reply in mux_confirm_remote_forward */
+		c->mux_pause = 1;  
+		 
 		goto out;
 	}
 	reply_ok(reply, rid);
@@ -894,7 +880,7 @@ mux_master_process_close_fwd(struct ssh *ssh, u_int rid,
 	debug2_f("channel %d: request cancel %s", c->self,
 	    (fwd_desc = format_forward(ftype, &fwd)));
 
-	/* make sure this has been requested */
+	 
 	found_fwd = NULL;
 	switch (ftype) {
 	case MUX_FWD_LOCAL:
@@ -921,16 +907,11 @@ mux_master_process_close_fwd(struct ssh *ssh, u_int rid,
 	if (found_fwd == NULL)
 		error_reason = "port not forwarded";
 	else if (ftype == MUX_FWD_REMOTE) {
-		/*
-		 * This shouldn't fail unless we confused the host/port
-		 * between options.remote_forwards and permitted_opens.
-		 * However, for dynamic allocated listen ports we need
-		 * to use the actual listen port.
-		 */
+		 
 		if (channel_request_rforward_cancel(ssh, found_fwd) == -1)
 			error_reason = "port not in permitted opens";
-	} else {	/* local and dynamic forwards */
-		/* Ditto */
+	} else {	 
+		 
 		if (channel_cancel_lport_listener(ssh, &fwd, fwd.connect_port,
 		    &options.fwd_opts) == -1)
 			error_reason = "port not found";
@@ -966,7 +947,7 @@ mux_master_process_stdio_fwd(struct ssh *ssh, u_int rid,
 	int ok = 0, cport, r, new_fd[2];
 	struct mux_stdio_confirm_ctx *cctx;
 
-	if ((r = sshbuf_skip_string(m)) != 0 || /* reserved */
+	if ((r = sshbuf_skip_string(m)) != 0 ||  
 	    (r = sshbuf_get_cstring(m, &chost, NULL)) != 0 ||
 	    (r = sshbuf_get_u32(m, &_cport)) != 0) {
 		free(chost);
@@ -985,7 +966,7 @@ mux_master_process_stdio_fwd(struct ssh *ssh, u_int rid,
 
 	debug2_f("channel %d: stdio fwd to %s:%d", c->self, chost, cport);
 
-	/* Gather fds from client */
+	 
 	for(i = 0; i < 2; i++) {
 		if ((new_fd[i] = mm_receive_fd(c->sock)) == -1) {
 			error_f("failed to receive fd %d from client", i);
@@ -993,7 +974,7 @@ mux_master_process_stdio_fwd(struct ssh *ssh, u_int rid,
 				close(new_fd[j]);
 			free(chost);
 
-			/* prepare reply */
+			 
 			reply_error(reply, MUX_S_FAILURE, rid,
 			    "did not receive file descriptors");
 			return -1;
@@ -1002,7 +983,7 @@ mux_master_process_stdio_fwd(struct ssh *ssh, u_int rid,
 
 	debug3_f("got fds stdin %d, stdout %d", new_fd[0], new_fd[1]);
 
-	/* XXX support multiple child sessions in future */
+	 
 	if (c->have_remote_id) {
 		debug2_f("session already open");
 		reply_error(reply, MUX_S_FAILURE, rid,
@@ -1034,8 +1015,8 @@ mux_master_process_stdio_fwd(struct ssh *ssh, u_int rid,
 	    CHANNEL_NONBLOCK_STDIO);
 	free(chost);
 
-	nc->ctl_chan = c->self;		/* link session -> control channel */
-	c->remote_id = nc->self;	/* link control -> session channel */
+	nc->ctl_chan = c->self;		 
+	c->remote_id = nc->self;	 
 	c->have_remote_id = 1;
 
 	debug2_f("channel_new: %d control %d", nc->self, nc->ctl_chan);
@@ -1046,13 +1027,13 @@ mux_master_process_stdio_fwd(struct ssh *ssh, u_int rid,
 	cctx = xcalloc(1, sizeof(*cctx));
 	cctx->rid = rid;
 	channel_register_open_confirm(ssh, nc->self, mux_stdio_confirm, cctx);
-	c->mux_pause = 1; /* stop handling messages until open_confirm done */
+	c->mux_pause = 1;  
 
-	/* reply is deferred, sent by mux_session_confirm */
+	 
 	return 0;
 }
 
-/* Callback on open confirmation in mux master for a mux stdio fwd session. */
+ 
 static void
 mux_stdio_confirm(struct ssh *ssh, int id, int success, void *arg)
 {
@@ -1075,26 +1056,26 @@ mux_stdio_confirm(struct ssh *ssh, int id, int success, void *arg)
 		debug3_f("sending failure reply");
 		reply_error(reply, MUX_S_FAILURE, cctx->rid,
 		    "Session open refused by peer");
-		/* prepare reply */
+		 
 		goto done;
 	}
 
 	debug3_f("sending success reply");
-	/* prepare reply */
+	 
 	if ((r = sshbuf_put_u32(reply, MUX_S_SESSION_OPENED)) != 0 ||
 	    (r = sshbuf_put_u32(reply, cctx->rid)) != 0 ||
 	    (r = sshbuf_put_u32(reply, c->self)) != 0)
 		fatal_fr(r, "reply");
 
  done:
-	/* Send reply */
+	 
 	if ((r = sshbuf_put_stringb(cc->output, reply)) != 0)
 		fatal_fr(r, "enqueue");
 	sshbuf_free(reply);
 
 	if (cc->mux_pause <= 0)
 		fatal_f("mux_pause %d", cc->mux_pause);
-	cc->mux_pause = 0; /* start processing messages again */
+	cc->mux_pause = 0;  
 	c->open_confirm_ctx = NULL;
 	free(cctx);
 }
@@ -1145,7 +1126,7 @@ mux_master_process_proxy(struct ssh *ssh, u_int rid,
 	return 0;
 }
 
-/* Channel callbacks fired on read/write from mux client fd */
+ 
 static int
 mux_master_read_cb(struct ssh *ssh, Channel *c)
 {
@@ -1157,18 +1138,18 @@ mux_master_read_cb(struct ssh *ssh, Channel *c)
 	if ((out = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new");
 
-	/* Setup ctx and  */
+	 
 	if (c->mux_ctx == NULL) {
 		state = xcalloc(1, sizeof(*state));
 		c->mux_ctx = state;
 		channel_register_cleanup(ssh, c->self,
 		    mux_master_control_cleanup_cb, 0);
 
-		/* Send hello */
+		 
 		if ((r = sshbuf_put_u32(out, MUX_MSG_HELLO)) != 0 ||
 		    (r = sshbuf_put_u32(out, SSHMUX_VER)) != 0)
 			fatal_fr(r, "reply");
-		/* no extensions */
+		 
 		if ((r = sshbuf_put_stringb(c->output, out)) != 0)
 			fatal_fr(r, "enqueue");
 		debug3_f("channel %d: hello sent", c->self);
@@ -1176,7 +1157,7 @@ mux_master_read_cb(struct ssh *ssh, Channel *c)
 		goto out;
 	}
 
-	/* Channel code ensures that we receive whole packets */
+	 
 	if ((r = sshbuf_froms(c->input, &in)) != 0) {
  malf:
 		error_f("malformed message");
@@ -1212,7 +1193,7 @@ mux_master_read_cb(struct ssh *ssh, Channel *c)
 		reply_error(out, MUX_S_FAILURE, rid, "unsupported request");
 		ret = 0;
 	}
-	/* Enqueue reply packet */
+	 
 	if (sshbuf_len(out) != 0 &&
 	    (r = sshbuf_put_stringb(c->output, out)) != 0)
 		fatal_fr(r, "enqueue");
@@ -1234,7 +1215,7 @@ mux_exit_message(struct ssh *ssh, Channel *c, int exitval)
 	if ((mux_chan = channel_by_id(ssh, c->ctl_chan)) == NULL)
 		fatal_f("channel %d missing mux %d", c->self, c->ctl_chan);
 
-	/* Append exit message packet to control socket output queue */
+	 
 	if ((m = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new");
 	if ((r = sshbuf_put_u32(m, MUX_S_EXIT_MESSAGE)) != 0 ||
@@ -1257,7 +1238,7 @@ mux_tty_alloc_failed(struct ssh *ssh, Channel *c)
 	if ((mux_chan = channel_by_id(ssh, c->ctl_chan)) == NULL)
 		fatal_f("channel %d missing mux %d", c->self, c->ctl_chan);
 
-	/* Append exit message packet to control socket output queue */
+	 
 	if ((m = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new");
 	if ((r = sshbuf_put_u32(m, MUX_S_TTY_ALLOC_FAIL)) != 0 ||
@@ -1267,7 +1248,7 @@ mux_tty_alloc_failed(struct ssh *ssh, Channel *c)
 	sshbuf_free(m);
 }
 
-/* Prepare a mux master to listen on a Unix domain socket. */
+ 
 void
 muxserver_listen(struct ssh *ssh)
 {
@@ -1283,12 +1264,7 @@ muxserver_listen(struct ssh *ssh)
 
 	debug("setting up multiplex master socket");
 
-	/*
-	 * Use a temporary path before listen so we can pseudo-atomically
-	 * establish the listening socket in its final location to avoid
-	 * other processes racing in between bind() and listen() and hitting
-	 * an unready socket.
-	 */
+	 
 	for (i = 0; i < sizeof(rbuf) - 1; i++) {
 		r = arc4random_uniform(26+26+10);
 		rbuf[i] = (r < 26) ? 'a' + r :
@@ -1319,12 +1295,12 @@ muxserver_listen(struct ssh *ssh)
 			options.control_master = SSHCTL_MASTER_NO;
 			return;
 		} else {
-			/* unix_listener() logs the error */
+			 
 			cleanup_exit(255);
 		}
 	}
 
-	/* Now atomically "move" the mux socket into position */
+	 
 	if (link(options.control_path, orig_control_path) != 0) {
 		if (errno != EEXIST) {
 			fatal_f("link mux listener %s => %s: %s",
@@ -1351,7 +1327,7 @@ muxserver_listen(struct ssh *ssh)
 	    mux_listener_channel->self, mux_listener_channel->sock);
 }
 
-/* Callback on open confirmation in mux master for a mux client session. */
+ 
 static void
 mux_session_confirm(struct ssh *ssh, int id, int success, void *arg)
 {
@@ -1382,16 +1358,16 @@ mux_session_confirm(struct ssh *ssh, int id, int success, void *arg)
 	if (cctx->want_x_fwd && options.forward_x11 && display != NULL) {
 		char *proto, *data;
 
-		/* Get reasonable local authentication information. */
+		 
 		if (client_x11_get_proto(ssh, display, options.xauth_location,
 		    options.forward_x11_trusted, options.forward_x11_timeout,
 		    &proto, &data) == 0) {
-			/* Request forwarding with authentication spoofing. */
+			 
 			debug("Requesting X11 forwarding with authentication "
 			    "spoofing.");
 			x11_request_forwarding_with_spoofing(ssh, id,
 			    display, proto, data, 1);
-			/* XXX exit_on_forward_failure */
+			 
 			client_expect_confirm(ssh, id, "X11 forwarding",
 			    CONFIRM_WARN);
 		}
@@ -1408,21 +1384,21 @@ mux_session_confirm(struct ssh *ssh, int id, int success, void *arg)
 	    cctx->term, &cctx->tio, c->rfd, cctx->cmd, cctx->env);
 
 	debug3_f("sending success reply");
-	/* prepare reply */
+	 
 	if ((r = sshbuf_put_u32(reply, MUX_S_SESSION_OPENED)) != 0 ||
 	    (r = sshbuf_put_u32(reply, cctx->rid)) != 0 ||
 	    (r = sshbuf_put_u32(reply, c->self)) != 0)
 		fatal_fr(r, "reply");
 
  done:
-	/* Send reply */
+	 
 	if ((r = sshbuf_put_stringb(cc->output, reply)) != 0)
 		fatal_fr(r, "enqueue");
 	sshbuf_free(reply);
 
 	if (cc->mux_pause <= 0)
 		fatal_f("mux_pause %d", cc->mux_pause);
-	cc->mux_pause = 0; /* start processing messages again */
+	cc->mux_pause = 0;  
 	c->open_confirm_ctx = NULL;
 	sshbuf_free(cctx->cmd);
 	free(cctx->term);
@@ -1434,19 +1410,16 @@ mux_session_confirm(struct ssh *ssh, int id, int success, void *arg)
 	free(cctx);
 }
 
-/* ** Multiplexing client support */
+ 
 
-/* Exit signal handler */
+ 
 static void
 control_client_sighandler(int signo)
 {
 	muxclient_terminate = signo;
 }
 
-/*
- * Relay signal handler - used to pass some signals from mux client to
- * mux master.
- */
+ 
 static void
 control_client_sigrelay(int signo)
 {
@@ -1483,8 +1456,8 @@ mux_client_read(int fd, struct sshbuf *b, size_t need, int timeout_ms)
 				if (waitrfd(fd, &timeout_ms,
 				    &muxclient_terminate) == -1 &&
 				    errno != EINTR)
-					return -1;	/* timeout */
-				/* FALLTHROUGH */
+					return -1;	 
+				 
 			case EINTR:
 				continue;
 			default:
@@ -1533,7 +1506,7 @@ mux_client_write_packet(int fd, struct sshbuf *m)
 #endif
 			case EAGAIN:
 				(void)poll(&pfd, 1, -1);
-				/* FALLTHROUGH */
+				 
 			case EINTR:
 				continue;
 			default:
@@ -1605,7 +1578,7 @@ mux_client_hello_exchange(int fd, int timeout_ms)
 	if ((r = sshbuf_put_u32(m, MUX_MSG_HELLO)) != 0 ||
 	    (r = sshbuf_put_u32(m, SSHMUX_VER)) != 0)
 		fatal_fr(r, "assemble hello");
-	/* no extensions */
+	 
 
 	if (mux_client_write_packet(fd, m) != 0) {
 		debug_f("write packet: %s", strerror(errno));
@@ -1614,7 +1587,7 @@ mux_client_hello_exchange(int fd, int timeout_ms)
 
 	sshbuf_reset(m);
 
-	/* Read their HELLO */
+	 
 	if (mux_client_read_packet_timeout(fd, m, timeout_ms) != 0) {
 		debug_f("read packet failed");
 		goto out;
@@ -1634,19 +1607,19 @@ mux_client_hello_exchange(int fd, int timeout_ms)
 		goto out;
 	}
 	debug2_f("master version %u", ver);
-	/* No extensions are presently defined */
+	 
 	while (sshbuf_len(m) > 0) {
 		char *name = NULL;
 
 		if ((r = sshbuf_get_cstring(m, &name, NULL)) != 0 ||
-		    (r = sshbuf_skip_string(m)) != 0) { /* value */
+		    (r = sshbuf_skip_string(m)) != 0) {  
 			error_fr(r, "parse extension");
 			goto out;
 		}
 		debug2("Unrecognised master extension \"%s\"", name);
 		free(name);
 	}
-	/* success */
+	 
 	ret = 0;
  out:
 	sshbuf_free(m);
@@ -1674,7 +1647,7 @@ mux_client_request_alive(int fd)
 
 	sshbuf_reset(m);
 
-	/* Read their reply */
+	 
 	if (mux_client_read_packet(fd, m) != 0) {
 		sshbuf_free(m);
 		return 0;
@@ -1725,9 +1698,9 @@ mux_client_request_terminate(int fd)
 
 	sshbuf_reset(m);
 
-	/* Read their reply */
+	 
 	if (mux_client_read_packet(fd, m) != 0) {
-		/* Remote end exited already */
+		 
 		if (errno == EPIPE) {
 			sshbuf_free(m);
 			return;
@@ -1806,7 +1779,7 @@ mux_client_forward(int fd, int cancel_flag, u_int ftype, struct Forward *fwd)
 
 	sshbuf_reset(m);
 
-	/* Read their reply */
+	 
 	if (mux_client_read_packet(fd, m) != 0) {
 		sshbuf_free(m);
 		return -1;
@@ -1864,7 +1837,7 @@ mux_client_forwards(int fd, int cancel_flag)
 	    cancel_flag ? "cancel" : "request",
 	    options.num_local_forwards, options.num_remote_forwards);
 
-	/* XXX ExitOnForwardingFailure */
+	 
 	for (i = 0; i < options.num_local_forwards; i++) {
 		if (mux_client_forward(fd, cancel_flag,
 		    options.local_forwards[i].connect_port == 0 ?
@@ -1914,7 +1887,7 @@ mux_client_request_session(int fd)
 		fatal_f("sshbuf_new");
 	if ((r = sshbuf_put_u32(m, MUX_C_NEW_SESSION)) != 0 ||
 	    (r = sshbuf_put_u32(m, muxclient_request_id)) != 0 ||
-	    (r = sshbuf_put_string(m, NULL, 0)) != 0 || /* reserved */
+	    (r = sshbuf_put_string(m, NULL, 0)) != 0 ||  
 	    (r = sshbuf_put_u32(m, tty_flag)) != 0 ||
 	    (r = sshbuf_put_u32(m, options.forward_x11)) != 0 ||
 	    (r = sshbuf_put_u32(m, options.forward_agent)) != 0 ||
@@ -1924,7 +1897,7 @@ mux_client_request_session(int fd)
 	    (r = sshbuf_put_stringb(m, command)) != 0)
 		fatal_fr(r, "request");
 
-	/* Pass environment */
+	 
 	if (options.num_send_env > 0 && environ != NULL) {
 		for (i = 0; environ[i] != NULL; i++) {
 			if (!env_permitted(environ[i]))
@@ -1941,7 +1914,7 @@ mux_client_request_session(int fd)
 	if (mux_client_write_packet(fd, m) != 0)
 		fatal_f("write packet: %s", strerror(errno));
 
-	/* Send the stdio file descriptors */
+	 
 	if (mm_send_fd(fd, STDIN_FILENO) == -1 ||
 	    mm_send_fd(fd, STDOUT_FILENO) == -1 ||
 	    mm_send_fd(fd, STDERR_FILENO) == -1)
@@ -1949,7 +1922,7 @@ mux_client_request_session(int fd)
 
 	debug3_f("session request sent");
 
-	/* Read their reply */
+	 
 	sshbuf_reset(m);
 	if (mux_client_read_packet(fd, m) != 0) {
 		error_f("read from master failed: %s", strerror(errno));
@@ -2008,13 +1981,7 @@ mux_client_request_session(int fd)
 		}
 	}
 
-	/*
-	 * Stick around until the controlee closes the client_fd.
-	 * Before it does, it is expected to write an exit message.
-	 * This process must read the value and wait for the closure of
-	 * the client_fd; if this one closes early, the multiplex master will
-	 * terminate early too (possibly losing data).
-	 */
+	 
 	for (exitval = 255, exitval_seen = 0;;) {
 		sshbuf_reset(m);
 		if (mux_client_read_packet(fd, m) != 0)
@@ -2088,7 +2055,7 @@ mux_client_proxy(int fd)
 
 	sshbuf_reset(m);
 
-	/* Read their reply */
+	 
 	if (mux_client_read_packet(fd, m) != 0) {
 		sshbuf_free(m);
 		return 0;
@@ -2135,7 +2102,7 @@ mux_client_request_stdio_fwd(int fd)
 		fatal_f("sshbuf_new");
 	if ((r = sshbuf_put_u32(m, MUX_C_NEW_STDIO_FWD)) != 0 ||
 	    (r = sshbuf_put_u32(m, muxclient_request_id)) != 0 ||
-	    (r = sshbuf_put_string(m, NULL, 0)) != 0 || /* reserved */
+	    (r = sshbuf_put_string(m, NULL, 0)) != 0 ||  
 	    (r = sshbuf_put_cstring(m, options.stdio_forward_host)) != 0 ||
 	    (r = sshbuf_put_u32(m, options.stdio_forward_port)) != 0)
 		fatal_fr(r, "request");
@@ -2143,7 +2110,7 @@ mux_client_request_stdio_fwd(int fd)
 	if (mux_client_write_packet(fd, m) != 0)
 		fatal_f("write packet: %s", strerror(errno));
 
-	/* Send the stdio file descriptors */
+	 
 	if (mm_send_fd(fd, STDIN_FILENO) == -1 ||
 	    mm_send_fd(fd, STDOUT_FILENO) == -1)
 		fatal_f("send fds failed");
@@ -2154,7 +2121,7 @@ mux_client_request_stdio_fwd(int fd)
 
 	debug3_f("stdio forward request sent");
 
-	/* Read their reply */
+	 
 	sshbuf_reset(m);
 
 	if (mux_client_read_packet(fd, m) != 0) {
@@ -2197,9 +2164,7 @@ mux_client_request_stdio_fwd(int fd)
 	ssh_signal(SIGTERM, control_client_sighandler);
 	ssh_signal(SIGWINCH, control_client_sigrelay);
 
-	/*
-	 * Stick around until the controlee closes the client_fd.
-	 */
+	 
 	sshbuf_reset(m);
 	if (mux_client_read_packet(fd, m) != 0) {
 		if (errno == EPIPE ||
@@ -2231,7 +2196,7 @@ mux_client_request_stop_listening(int fd)
 
 	sshbuf_reset(m);
 
-	/* Read their reply */
+	 
 	if (mux_client_read_packet(fd, m) != 0)
 		fatal_f("read from master failed: %s", strerror(errno));
 
@@ -2260,7 +2225,7 @@ mux_client_request_stop_listening(int fd)
 	muxclient_request_id++;
 }
 
-/* Multiplex client main loop. */
+ 
 int
 muxclient(const char *path)
 {
@@ -2279,7 +2244,7 @@ muxclient(const char *path)
 	case SSHCTL_MASTER_AUTO:
 	case SSHCTL_MASTER_AUTO_ASK:
 		debug("auto-mux: Trying existing master at '%s'", path);
-		/* FALLTHROUGH */
+		 
 	case SSHCTL_MASTER_NO:
 		break;
 	default:
@@ -2321,7 +2286,7 @@ muxclient(const char *path)
 	}
 	set_nonblock(sock);
 
-	/* Timeout on initial connection only. */
+	 
 	if (timeout > 0 && timeout < INT_MAX / 1000)
 		timeout_ms = timeout * 1000;
 

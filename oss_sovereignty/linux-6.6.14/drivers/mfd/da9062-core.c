@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Core, IRQ and I2C device driver for DA9061 and DA9062 PMICs
- * Copyright (C) 2015-2017  Dialog Semiconductor
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,7 +23,7 @@
 #define	DA9062_IRQ_HIGH	1
 
 static struct regmap_irq da9061_irqs[] = {
-	/* EVENT A */
+	 
 	[DA9061_IRQ_ONKEY] = {
 		.reg_offset = DA9062_REG_EVENT_A_OFFSET,
 		.mask = DA9062AA_M_NONKEY_MASK,
@@ -39,7 +36,7 @@ static struct regmap_irq da9061_irqs[] = {
 		.reg_offset = DA9062_REG_EVENT_A_OFFSET,
 		.mask = DA9062AA_M_SEQ_RDY_MASK,
 	},
-	/* EVENT B */
+	 
 	[DA9061_IRQ_TEMP] = {
 		.reg_offset = DA9062_REG_EVENT_B_OFFSET,
 		.mask = DA9062AA_M_TEMP_MASK,
@@ -56,7 +53,7 @@ static struct regmap_irq da9061_irqs[] = {
 		.reg_offset = DA9062_REG_EVENT_B_OFFSET,
 		.mask = DA9062AA_M_VDD_WARN_MASK,
 	},
-	/* EVENT C */
+	 
 	[DA9061_IRQ_GPI0] = {
 		.reg_offset = DA9062_REG_EVENT_C_OFFSET,
 		.mask = DA9062AA_M_GPI0_MASK,
@@ -90,7 +87,7 @@ static struct regmap_irq_chip da9061_irq_chip = {
 };
 
 static struct regmap_irq da9062_irqs[] = {
-	/* EVENT A */
+	 
 	[DA9062_IRQ_ONKEY] = {
 		.reg_offset = DA9062_REG_EVENT_A_OFFSET,
 		.mask = DA9062AA_M_NONKEY_MASK,
@@ -111,7 +108,7 @@ static struct regmap_irq da9062_irqs[] = {
 		.reg_offset = DA9062_REG_EVENT_A_OFFSET,
 		.mask = DA9062AA_M_SEQ_RDY_MASK,
 	},
-	/* EVENT B */
+	 
 	[DA9062_IRQ_TEMP] = {
 		.reg_offset = DA9062_REG_EVENT_B_OFFSET,
 		.mask = DA9062AA_M_TEMP_MASK,
@@ -128,7 +125,7 @@ static struct regmap_irq da9062_irqs[] = {
 		.reg_offset = DA9062_REG_EVENT_B_OFFSET,
 		.mask = DA9062AA_M_VDD_WARN_MASK,
 	},
-	/* EVENT C */
+	 
 	[DA9062_IRQ_GPI0] = {
 		.reg_offset = DA9062_REG_EVENT_C_OFFSET,
 		.mask = DA9062AA_M_GPI0_MASK,
@@ -619,7 +616,7 @@ static int da9062_i2c_probe(struct i2c_client *i2c)
 	i2c_set_clientdata(i2c, chip);
 	chip->dev = &i2c->dev;
 
-	/* Start with a base configuration without IRQ */
+	 
 	switch (chip->chip_type) {
 	case COMPAT_TYPE_DA9061:
 		cell = da9061_devs_noirq;
@@ -644,7 +641,7 @@ static int da9062_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* If SMBus is not available and only I2C is possible, enter I2C mode */
+	 
 	if (i2c_check_functionality(i2c->adapter, I2C_FUNC_I2C)) {
 		dev_info(chip->dev, "Entering I2C mode!\n");
 		ret = regmap_clear_bits(chip->regmap, DA9062AA_CONFIG_J,
@@ -663,7 +660,7 @@ static int da9062_i2c_probe(struct i2c_client *i2c)
 	if (ret)
 		return ret;
 
-	/* If IRQ is available, reconfigure it accordingly */
+	 
 	if (i2c->irq) {
 		if (chip->chip_type == COMPAT_TYPE_DA9061) {
 			cell = da9061_devs_irq;

@@ -1,41 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*****************************************************************************
- *                                                                           *
- * File: elmer0.h                                                            *
- * $Revision: 1.6 $                                                          *
- * $Date: 2005/06/21 22:49:43 $                                              *
- * Description:                                                              *
- *  part of the Chelsio 10Gb Ethernet Driver.                                *
- *                                                                           *
- *                                                                           *
- * http://www.chelsio.com                                                    *
- *                                                                           *
- * Copyright (c) 2003 - 2005 Chelsio Communications, Inc.                    *
- * All rights reserved.                                                      *
- *                                                                           *
- * Maintainers: maintainers@chelsio.com                                      *
- *                                                                           *
- * Authors: Dimitrios Michailidis   <dm@chelsio.com>                         *
- *          Tina Yang               <tainay@chelsio.com>                     *
- *          Felix Marti             <felix@chelsio.com>                      *
- *          Scott Bardone           <sbardone@chelsio.com>                   *
- *          Kurt Ottaway            <kottaway@chelsio.com>                   *
- *          Frank DiMambro          <frank@chelsio.com>                      *
- *                                                                           *
- * History:                                                                  *
- *                                                                           *
- ****************************************************************************/
+ 
+ 
 
 #ifndef _CXGB_ELMER0_H_
 #define _CXGB_ELMER0_H_
 
-/* ELMER0 flavors */
+ 
 enum {
 	ELMER0_XC2S300E_6FT256_C,
 	ELMER0_XC2S100E_6TQ144_C
 };
 
-/* ELMER0 registers */
+ 
 #define A_ELMER0_VERSION	0x100000
 #define A_ELMER0_PHY_CFG	0x100004
 #define A_ELMER0_INT_ENABLE	0x100008
@@ -114,7 +89,7 @@ enum {
 #define A_ELMER0_PORT3_MI1_DATA	0x700008
 #define A_ELMER0_PORT3_MI1_OP	0x70000c
 
-/* Simple bit definition for GPI and GP0 registers. */
+ 
 #define     ELMER0_GP_BIT0              0x0001
 #define     ELMER0_GP_BIT1              0x0002
 #define     ELMER0_GP_BIT2              0x0004
@@ -144,4 +119,4 @@ enum {
 #define MI1_OP_INDIRECT_READ_INC 2
 #define MI1_OP_INDIRECT_READ     3
 
-#endif /* _CXGB_ELMER0_H_ */
+#endif  

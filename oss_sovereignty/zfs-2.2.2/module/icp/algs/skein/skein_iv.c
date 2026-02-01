@@ -1,26 +1,13 @@
-/*
- * Pre-computed Skein IVs
- *
- * NOTE: these values are not "magic" constants, but
- * are generated using the Threefish block function.
- * They are pre-computed here only for speed; i.e., to
- * avoid the need for a Threefish call during Init().
- *
- * The IV for any fixed hash length may be pre-computed.
- * Only the most common values are included here.
- */
-/* Copyright 2013 Doug Whiting. This code is released to the public domain. */
-/*
- * Illumos implementation note: these constants are for Skein v1.3 as per:
- * http://www.skein-hash.info/sites/default/files/skein1.3.pdf
- */
+ 
+ 
+ 
 
-#include <sys/skein.h>		/* get Skein macros and types */
-#include "skein_impl.h"		/* get internal definitions */
+#include <sys/skein.h>		 
+#include "skein_impl.h"		 
 
 #define	MK_64 SKEIN_MK_64
 
-/* blkSize =  256 bits. hashSize =  128 bits */
+ 
 const uint64_t SKEIN_256_IV_128[] = {
 	MK_64(0xE1111906, 0x964D7260),
 	MK_64(0x883DAAA7, 0x7C8D811C),
@@ -28,7 +15,7 @@ const uint64_t SKEIN_256_IV_128[] = {
 	MK_64(0xCCF7DDE5, 0xB45BC1C2)
 };
 
-/* blkSize =  256 bits. hashSize =  160 bits */
+ 
 const uint64_t SKEIN_256_IV_160[] = {
 	MK_64(0x14202314, 0x72825E98),
 	MK_64(0x2AC4E9A2, 0x5A77E590),
@@ -36,7 +23,7 @@ const uint64_t SKEIN_256_IV_160[] = {
 	MK_64(0x2DD2E496, 0x8586AB7D)
 };
 
-/* blkSize =  256 bits. hashSize =  224 bits */
+ 
 const uint64_t SKEIN_256_IV_224[] = {
 	MK_64(0xC6098A8C, 0x9AE5EA0B),
 	MK_64(0x876D5686, 0x08C5191C),
@@ -44,7 +31,7 @@ const uint64_t SKEIN_256_IV_224[] = {
 	MK_64(0x384BDDB1, 0xAEDDB5DE)
 };
 
-/* blkSize =  256 bits. hashSize =  256 bits */
+ 
 const uint64_t SKEIN_256_IV_256[] = {
 	MK_64(0xFC9DA860, 0xD048B449),
 	MK_64(0x2FCA6647, 0x9FA7D833),
@@ -52,7 +39,7 @@ const uint64_t SKEIN_256_IV_256[] = {
 	MK_64(0x6A54E920, 0xFDE8DA69)
 };
 
-/* blkSize =  512 bits. hashSize =  224 bits */
+ 
 const uint64_t SKEIN_512_IV_224[] = {
 	MK_64(0xCCD06162, 0x48677224),
 	MK_64(0xCBA65CF3, 0xA92339EF),
@@ -64,7 +51,7 @@ const uint64_t SKEIN_512_IV_224[] = {
 	MK_64(0x9E2CFCCF, 0xE1C41EF7)
 };
 
-/* blkSize =  512 bits. hashSize =  256 bits */
+ 
 const uint64_t SKEIN_512_IV_256[] = {
 	MK_64(0xCCD044A1, 0x2FDB3E13),
 	MK_64(0xE8359030, 0x1A79A9EB),
@@ -76,7 +63,7 @@ const uint64_t SKEIN_512_IV_256[] = {
 	MK_64(0x3EEDBA18, 0x33EDFC13)
 };
 
-/* blkSize =  512 bits. hashSize =  384 bits */
+ 
 const uint64_t SKEIN_512_IV_384[] = {
 	MK_64(0xA3F6C6BF, 0x3A75EF5F),
 	MK_64(0xB0FEF9CC, 0xFD84FAA4),
@@ -88,7 +75,7 @@ const uint64_t SKEIN_512_IV_384[] = {
 	MK_64(0x266E1754, 0x6AA18FF8)
 };
 
-/* blkSize =  512 bits. hashSize =  512 bits */
+ 
 const uint64_t SKEIN_512_IV_512[] = {
 	MK_64(0x4903ADFF, 0x749C51CE),
 	MK_64(0x0D95DE39, 0x9746DF03),
@@ -100,7 +87,7 @@ const uint64_t SKEIN_512_IV_512[] = {
 	MK_64(0xAE18A40B, 0x660FCC33)
 };
 
-/* blkSize = 1024 bits. hashSize =  384 bits */
+ 
 const uint64_t SKEIN1024_IV_384[] = {
 	MK_64(0x5102B6B8, 0xC1894A35),
 	MK_64(0xFEEBC9E3, 0xFE8AF11A),
@@ -120,7 +107,7 @@ const uint64_t SKEIN1024_IV_384[] = {
 	MK_64(0x2D136947, 0xD4CBAFEA)
 };
 
-/* blkSize = 1024 bits. hashSize =  512 bits */
+ 
 const uint64_t SKEIN1024_IV_512[] = {
 	MK_64(0xCAEC0E5D, 0x7C1B1B18),
 	MK_64(0xA01B0E04, 0x5F03E802),
@@ -140,7 +127,7 @@ const uint64_t SKEIN1024_IV_512[] = {
 	MK_64(0x0E2940B8, 0x15804974)
 };
 
-/* blkSize = 1024 bits. hashSize = 1024 bits */
+ 
 const uint64_t SKEIN1024_IV_1024[] = {
 	MK_64(0xD593DA07, 0x41E72355),
 	MK_64(0x15B5E511, 0xAC73E00C),

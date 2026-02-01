@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88261.c  --  AW88261 ALSA SoC Audio driver
-//
-// Copyright (c) 2023 awinic Technology CO., LTD
-//
-// Author: Jimmy Zhang <zhangjianming@awinic.com>
-// Author: Weidong Wang <wangweidong.a@awinic.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/firmware.h>
@@ -134,9 +134,9 @@ static void aw88261_dev_clear_int_status(struct aw_device *aw_dev)
 {
 	unsigned int int_status;
 
-	/* read int status and clear */
+	 
 	regmap_read(aw_dev->regmap, AW88261_SYSINT_REG, &int_status);
-	/* make sure int status is clear */
+	 
 	regmap_read(aw_dev->regmap, AW88261_SYSINT_REG, &int_status);
 
 	dev_dbg(aw_dev->dev, "read interrupt reg = 0x%04x", int_status);
@@ -190,7 +190,7 @@ static int aw88261_dev_check_mode2_pll(struct aw_device *aw_dev)
 		return -EPERM;
 	}
 
-	/* change mode2 */
+	 
 	ret = regmap_update_bits(aw_dev->regmap, AW88261_PLLCTRL1_REG,
 			~AW88261_CCO_MUX_MASK, AW88261_CCO_MUX_DIVIDED_VALUE);
 	if (ret)
@@ -206,7 +206,7 @@ static int aw88261_dev_check_mode2_pll(struct aw_device *aw_dev)
 		}
 	}
 
-	/* change mode1 */
+	 
 	ret = regmap_update_bits(aw_dev->regmap, AW88261_PLLCTRL1_REG,
 			~AW88261_CCO_MUX_MASK, AW88261_CCO_MUX_BYPASS_VALUE);
 	if (ret == 0) {
@@ -282,22 +282,22 @@ static void aw88261_dev_uls_hmute(struct aw_device *aw_dev, bool uls_hmute)
 static void aw88261_reg_force_set(struct aw88261 *aw88261)
 {
 	if (aw88261->frcset_en == AW88261_FRCSET_ENABLE) {
-		/* set FORCE_PWM */
+		 
 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL3_REG,
 				AW88261_FORCE_PWM_MASK, AW88261_FORCE_PWM_FORCEMINUS_PWM_VALUE);
-		/* set BOOST_OS_WIDTH */
+		 
 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL5_REG,
 				AW88261_BST_OS_WIDTH_MASK, AW88261_BST_OS_WIDTH_50NS_VALUE);
-		/* set BURST_LOOPR */
+		 
 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL6_REG,
 				AW88261_BST_LOOPR_MASK, AW88261_BST_LOOPR_340K_VALUE);
-		/* set RSQN_DLY */
+		 
 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL7_REG,
 				AW88261_RSQN_DLY_MASK, AW88261_RSQN_DLY_35NS_VALUE);
-		/* set BURST_SSMODE */
+		 
 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL8_REG,
 				AW88261_BURST_SSMODE_MASK, AW88261_BURST_SSMODE_FAST_VALUE);
-		/* set BST_BURST */
+		 
 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL9_REG,
 				AW88261_BST_BURST_MASK, AW88261_BST_BURST_30MA_VALUE);
 	} else {
@@ -429,7 +429,7 @@ static int aw88261_dev_reg_update(struct aw88261 *aw88261,
 			reg_val &= (AW88261_AMPPD_MASK | AW88261_PWDN_MASK | AW88261_HMUTE_MASK);
 			reg_val |= read_val;
 
-			/* enable uls hmute */
+			 
 			reg_val &= AW88261_ULS_HMUTE_MASK;
 			reg_val |= AW88261_ULS_HMUTE_ENABLE_VALUE;
 		}
@@ -442,9 +442,9 @@ static int aw88261_dev_reg_update(struct aw88261 *aw88261,
 				aw88261->efuse_check = AW88261_EF_AND_CHECK;
 		}
 
-		/* i2stxen */
+		 
 		if (reg_addr == AW88261_I2SCTRL3_REG) {
-			/* close tx */
+			 
 			reg_val &= AW88261_I2STXEN_MASK;
 			reg_val |= AW88261_I2STXEN_DISABLE_VALUE;
 		}
@@ -471,7 +471,7 @@ static int aw88261_dev_reg_update(struct aw88261 *aw88261,
 	if (aw_dev->prof_cur != aw_dev->prof_index)
 		vol_desc->ctl_volume = 0;
 
-	/* keep min volume */
+	 
 	aw88261_dev_set_volume(aw_dev, vol_desc->mute_volume);
 
 	return ret;
@@ -527,7 +527,7 @@ static int aw88261_dev_fw_update(struct aw88261 *aw88261)
 	if (ret)
 		return ret;
 
-	/* update reg */
+	 
 	sec_desc = prof_index_desc->sec_desc;
 	ret = aw88261_dev_reg_update(aw88261, sec_desc[AW88395_DATA_TYPE_REG].data,
 					sec_desc[AW88395_DATA_TYPE_REG].len);
@@ -551,7 +551,7 @@ static int aw88261_dev_start(struct aw88261 *aw88261)
 		return 0;
 	}
 
-	/* power on */
+	 
 	aw88261_dev_pwd(aw_dev, false);
 	usleep_range(AW88261_2000_US, AW88261_2000_US + 10);
 
@@ -561,18 +561,18 @@ static int aw88261_dev_start(struct aw88261 *aw88261)
 		goto pll_check_fail;
 	}
 
-	/* amppd on */
+	 
 	aw88261_dev_amppd(aw_dev, false);
 	usleep_range(AW88261_1000_US, AW88261_1000_US + 50);
 
-	/* check i2s status */
+	 
 	ret = aw88261_dev_check_sysst(aw_dev);
 	if (ret) {
 		dev_err(aw_dev->dev, "sysst check failed");
 		goto sysst_check_fail;
 	}
 
-	/* enable tx feedback */
+	 
 	aw88261_dev_i2s_tx_enable(aw_dev, true);
 
 	if (aw88261->amppd_st)
@@ -580,14 +580,14 @@ static int aw88261_dev_start(struct aw88261 *aw88261)
 
 	aw88261_reg_force_set(aw88261);
 
-	/* close uls mute */
+	 
 	aw88261_dev_uls_hmute(aw_dev, false);
 
-	/* close mute */
+	 
 	if (!aw88261->mute_st)
 		aw88261_dev_mute(aw_dev, false);
 
-	/* clear inturrupt */
+	 
 	aw88261_dev_clear_int_status(aw_dev);
 	aw_dev->status = AW88261_DEV_PW_ON;
 
@@ -613,21 +613,21 @@ static int aw88261_dev_stop(struct aw_device *aw_dev)
 
 	aw_dev->status = AW88261_DEV_PW_OFF;
 
-	/* clear inturrupt */
+	 
 	aw88261_dev_clear_int_status(aw_dev);
 
 	aw88261_dev_uls_hmute(aw_dev, true);
-	/* set mute */
+	 
 	aw88261_dev_mute(aw_dev, true);
 
-	/* close tx feedback */
+	 
 	aw88261_dev_i2s_tx_enable(aw_dev, false);
 	usleep_range(AW88261_1000_US, AW88261_1000_US + 100);
 
-	/* enable amppd */
+	 
 	aw88261_dev_amppd(aw_dev, true);
 
-	/* set power down */
+	 
 	aw88261_dev_pwd(aw_dev, true);
 
 	return 0;
@@ -801,10 +801,10 @@ static int aw88261_set_fade_out_time(struct snd_kcontrol *kcontrol,
 
 static int aw88261_dev_set_profile_index(struct aw_device *aw_dev, int index)
 {
-	/* check the index whether is valid */
+	 
 	if ((index >= aw_dev->prof_info.count) || (index < 0))
 		return -EINVAL;
-	/* check the index whether change */
+	 
 	if (aw_dev->prof_index == index)
 		return -EPERM;
 
@@ -869,7 +869,7 @@ static int aw88261_profile_set(struct snd_kcontrol *kcontrol,
 	struct aw88261 *aw88261 = snd_soc_component_get_drvdata(codec);
 	int ret;
 
-	/* pa stop or stopping just set profile */
+	 
 	mutex_lock(&aw88261->lock);
 	ret = aw88261_dev_set_profile_index(aw88261->aw_pa, ucontrol->value.integer.value[0]);
 	if (ret) {
@@ -994,13 +994,13 @@ static int aw88261_playback_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget aw88261_dapm_widgets[] = {
-	 /* playback */
+	  
 	SND_SOC_DAPM_AIF_IN_E("AIF_RX", "Speaker_Playback", 0, 0, 0, 0,
 					aw88261_playback_event,
 					SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 	SND_SOC_DAPM_OUTPUT("DAC Output"),
 
-	/* capture */
+	 
 	SND_SOC_DAPM_AIF_OUT("AIF_TX", "Speaker_Capture", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_INPUT("ADC Input"),
 };
@@ -1122,7 +1122,7 @@ static int aw88261_request_firmware_file(struct aw88261 *aw88261)
 	}
 
 	mutex_lock(&aw88261->lock);
-	/* aw device init */
+	 
 	ret = aw88261_dev_init(aw88261, aw88261->aw_cfg);
 	if (ret)
 		dev_err(aw88261->aw_pa->dev, "dev init failed");
@@ -1144,13 +1144,13 @@ static int aw88261_codec_probe(struct snd_soc_component *component)
 		return dev_err_probe(aw88261->aw_pa->dev, ret,
 				"aw88261_request_firmware_file failed\n");
 
-	/* add widgets */
+	 
 	ret = snd_soc_dapm_new_controls(dapm, aw88261_dapm_widgets,
 							ARRAY_SIZE(aw88261_dapm_widgets));
 	if (ret)
 		return ret;
 
-	/* add route */
+	 
 	ret = snd_soc_dapm_add_routes(dapm, aw88261_audio_map,
 							ARRAY_SIZE(aw88261_audio_map));
 	if (ret)
@@ -1202,7 +1202,7 @@ static int aw88261_init(struct aw88261 **aw88261, struct i2c_client *i2c, struct
 	unsigned int chip_id;
 	int ret;
 
-	/* read chip id */
+	 
 	ret = regmap_read(regmap, AW88261_ID_REG, &chip_id);
 	if (ret) {
 		dev_err(&i2c->dev, "%s read chipid error. ret = %d", __func__, ret);
@@ -1267,7 +1267,7 @@ static int aw88261_i2c_probe(struct i2c_client *i2c)
 		return dev_err_probe(&i2c->dev, ret, "failed to init regmap: %d\n", ret);
 	}
 
-	/* aw pa init */
+	 
 	ret = aw88261_init(&aw88261, i2c, aw88261->regmap);
 	if (ret)
 		return ret;

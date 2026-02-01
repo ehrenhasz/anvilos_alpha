@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IOCTL interface for SCLP
- *
- * Copyright IBM Corp. 2012
- *
- * Author: Michael Holzheu <holzheu@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/uaccess.h>
@@ -19,17 +13,13 @@
 
 #include "sclp.h"
 
-/*
- * Supported command words
- */
+ 
 static unsigned int sclp_ctl_sccb_wlist[] = {
 	0x00400002,
 	0x00410002,
 };
 
-/*
- * Check if command word is supported
- */
+ 
 static int sclp_ctl_cmdw_supported(unsigned int cmdw)
 {
 	int i;
@@ -49,9 +39,7 @@ static void __user *u64_to_uptr(u64 value)
 		return (void __user *)(unsigned long)value;
 }
 
-/*
- * Start SCLP request
- */
+ 
 static int sclp_ctl_ioctl_sccb(void __user *user_area)
 {
 	struct sclp_ctl_sccb ctl_sccb;
@@ -87,9 +75,7 @@ out_free:
 	return rc;
 }
 
-/*
- * SCLP SCCB ioctl function
- */
+ 
 static long sclp_ctl_ioctl(struct file *filp, unsigned int cmd,
 			   unsigned long arg)
 {
@@ -102,14 +88,12 @@ static long sclp_ctl_ioctl(struct file *filp, unsigned int cmd,
 	switch (cmd) {
 	case SCLP_CTL_SCCB:
 		return sclp_ctl_ioctl_sccb(argp);
-	default: /* unknown ioctl number */
+	default:  
 		return -ENOTTY;
 	}
 }
 
-/*
- * File operations
- */
+ 
 static const struct file_operations sclp_ctl_fops = {
 	.owner = THIS_MODULE,
 	.open = nonseekable_open,
@@ -118,9 +102,7 @@ static const struct file_operations sclp_ctl_fops = {
 	.llseek = no_llseek,
 };
 
-/*
- * Misc device definition
- */
+ 
 static struct miscdevice sclp_ctl_device = {
 	.minor = MISC_DYNAMIC_MINOR,
 	.name = "sclp",

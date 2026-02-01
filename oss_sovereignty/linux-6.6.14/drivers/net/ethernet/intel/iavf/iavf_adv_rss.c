@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021, Intel Corporation. */
 
-/* advanced RSS configuration ethtool support for iavf */
+ 
+
+ 
 
 #include "iavf.h"
 
-/**
- * iavf_fill_adv_rss_ip4_hdr - fill the IPv4 RSS protocol header
- * @hdr: the virtchnl message protocol header data structure
- * @hash_flds: the RSS configuration protocol hash fields
- */
+ 
 static void
 iavf_fill_adv_rss_ip4_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 {
@@ -22,11 +18,7 @@ iavf_fill_adv_rss_ip4_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 		VIRTCHNL_ADD_PROTO_HDR_FIELD_BIT(hdr, IPV4, DST);
 }
 
-/**
- * iavf_fill_adv_rss_ip6_hdr - fill the IPv6 RSS protocol header
- * @hdr: the virtchnl message protocol header data structure
- * @hash_flds: the RSS configuration protocol hash fields
- */
+ 
 static void
 iavf_fill_adv_rss_ip6_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 {
@@ -39,11 +31,7 @@ iavf_fill_adv_rss_ip6_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 		VIRTCHNL_ADD_PROTO_HDR_FIELD_BIT(hdr, IPV6, DST);
 }
 
-/**
- * iavf_fill_adv_rss_tcp_hdr - fill the TCP RSS protocol header
- * @hdr: the virtchnl message protocol header data structure
- * @hash_flds: the RSS configuration protocol hash fields
- */
+ 
 static void
 iavf_fill_adv_rss_tcp_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 {
@@ -56,11 +44,7 @@ iavf_fill_adv_rss_tcp_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 		VIRTCHNL_ADD_PROTO_HDR_FIELD_BIT(hdr, TCP, DST_PORT);
 }
 
-/**
- * iavf_fill_adv_rss_udp_hdr - fill the UDP RSS protocol header
- * @hdr: the virtchnl message protocol header data structure
- * @hash_flds: the RSS configuration protocol hash fields
- */
+ 
 static void
 iavf_fill_adv_rss_udp_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 {
@@ -73,11 +57,7 @@ iavf_fill_adv_rss_udp_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 		VIRTCHNL_ADD_PROTO_HDR_FIELD_BIT(hdr, UDP, DST_PORT);
 }
 
-/**
- * iavf_fill_adv_rss_sctp_hdr - fill the SCTP RSS protocol header
- * @hdr: the virtchnl message protocol header data structure
- * @hash_flds: the RSS configuration protocol hash fields
- */
+ 
 static void
 iavf_fill_adv_rss_sctp_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 {
@@ -90,14 +70,7 @@ iavf_fill_adv_rss_sctp_hdr(struct virtchnl_proto_hdr *hdr, u64 hash_flds)
 		VIRTCHNL_ADD_PROTO_HDR_FIELD_BIT(hdr, SCTP, DST_PORT);
 }
 
-/**
- * iavf_fill_adv_rss_cfg_msg - fill the RSS configuration into virtchnl message
- * @rss_cfg: the virtchnl message to be filled with RSS configuration setting
- * @packet_hdrs: the RSS configuration protocol header types
- * @hash_flds: the RSS configuration protocol hash fields
- *
- * Returns 0 if the RSS configuration virtchnl message is filled successfully
- */
+ 
 int
 iavf_fill_adv_rss_cfg_msg(struct virtchnl_rss_cfg *rss_cfg,
 			  u32 packet_hdrs, u64 hash_flds)
@@ -107,7 +80,7 @@ iavf_fill_adv_rss_cfg_msg(struct virtchnl_rss_cfg *rss_cfg,
 
 	rss_cfg->rss_algorithm = VIRTCHNL_RSS_ALG_TOEPLITZ_ASYMMETRIC;
 
-	proto_hdrs->tunnel_level = 0;	/* always outer layer */
+	proto_hdrs->tunnel_level = 0;	 
 
 	hdr = &proto_hdrs->proto_hdr[proto_hdrs->count++];
 	switch (packet_hdrs & IAVF_ADV_RSS_FLOW_SEG_HDR_L3) {
@@ -139,13 +112,7 @@ iavf_fill_adv_rss_cfg_msg(struct virtchnl_rss_cfg *rss_cfg,
 	return 0;
 }
 
-/**
- * iavf_find_adv_rss_cfg_by_hdrs - find RSS configuration with header type
- * @adapter: pointer to the VF adapter structure
- * @packet_hdrs: protocol header type to find.
- *
- * Returns pointer to advance RSS configuration if found or null
- */
+ 
 struct iavf_adv_rss *
 iavf_find_adv_rss_cfg_by_hdrs(struct iavf_adapter *adapter, u32 packet_hdrs)
 {
@@ -158,15 +125,7 @@ iavf_find_adv_rss_cfg_by_hdrs(struct iavf_adapter *adapter, u32 packet_hdrs)
 	return NULL;
 }
 
-/**
- * iavf_print_adv_rss_cfg
- * @adapter: pointer to the VF adapter structure
- * @rss: pointer to the advance RSS configuration to print
- * @action: the string description about how to handle the RSS
- * @result: the string description about the virtchnl result
- *
- * Print the advance RSS configuration
- **/
+ 
 void
 iavf_print_adv_rss_cfg(struct iavf_adapter *adapter, struct iavf_adv_rss *rss,
 		       const char *action, const char *result)

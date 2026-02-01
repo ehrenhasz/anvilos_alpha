@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * veml6070.c - Support for Vishay VEML6070 UV A light sensor
- *
- * Copyright 2016 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
- *
- * IIO driver for VEML6070 (7-bit I2C slave addresses 0x38 and 0x39)
- *
- * TODO: integration time, ACK signal
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,15 +12,15 @@
 
 #define VEML6070_DRV_NAME "veml6070"
 
-#define VEML6070_ADDR_CONFIG_DATA_MSB 0x38 /* read: MSB data, write: config */
-#define VEML6070_ADDR_DATA_LSB	0x39 /* LSB data */
+#define VEML6070_ADDR_CONFIG_DATA_MSB 0x38  
+#define VEML6070_ADDR_DATA_LSB	0x39  
 
-#define VEML6070_COMMAND_ACK	BIT(5) /* raise interrupt when over threshold */
-#define VEML6070_COMMAND_IT	GENMASK(3, 2) /* bit mask integration time */
-#define VEML6070_COMMAND_RSRVD	BIT(1) /* reserved, set to 1 */
-#define VEML6070_COMMAND_SD	BIT(0) /* shutdown mode when set */
+#define VEML6070_COMMAND_ACK	BIT(5)  
+#define VEML6070_COMMAND_IT	GENMASK(3, 2)  
+#define VEML6070_COMMAND_RSRVD	BIT(1)  
+#define VEML6070_COMMAND_SD	BIT(0)  
 
-#define VEML6070_IT_10	0x04 /* integration time 1x */
+#define VEML6070_IT_10	0x04  
 
 struct veml6070_data {
 	struct i2c_client *client1;
@@ -44,25 +36,25 @@ static int veml6070_read(struct veml6070_data *data)
 
 	mutex_lock(&data->lock);
 
-	/* disable shutdown */
+	 
 	ret = i2c_smbus_write_byte(data->client1,
 	    data->config & ~VEML6070_COMMAND_SD);
 	if (ret < 0)
 		goto out;
 
-	msleep(125 + 10); /* measurement takes up to 125 ms for IT 1x */
+	msleep(125 + 10);  
 
-	ret = i2c_smbus_read_byte(data->client2); /* read MSB, address 0x39 */
+	ret = i2c_smbus_read_byte(data->client2);  
 	if (ret < 0)
 		goto out;
 	msb = ret;
 
-	ret = i2c_smbus_read_byte(data->client1); /* read LSB, address 0x38 */
+	ret = i2c_smbus_read_byte(data->client1);  
 	if (ret < 0)
 		goto out;
 	lsb = ret;
 
-	/* shutdown again */
+	 
 	ret = i2c_smbus_write_byte(data->client1, data->config);
 	if (ret < 0)
 		goto out;
@@ -89,23 +81,19 @@ static const struct iio_chan_spec veml6070_channels[] = {
 
 static int veml6070_to_uv_index(unsigned val)
 {
-	/*
-	 * conversion of raw UV intensity values to UV index depends on
-	 * integration time (IT) and value of the resistor connected to
-	 * the RSET pin (default: 270 KOhm)
-	 */
+	 
 	unsigned uvi[11] = {
-		187, 373, 560, /* low */
-		746, 933, 1120, /* moderate */
-		1308, 1494, /* high */
-		1681, 1868, 2054}; /* very high */
+		187, 373, 560,  
+		746, 933, 1120,  
+		1308, 1494,  
+		1681, 1868, 2054};  
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(uvi); i++)
 		if (val <= uvi[i])
 			return i;
 
-	return 11; /* extreme */
+	return 11;  
 }
 
 static int veml6070_read_raw(struct iio_dev *indio_dev,

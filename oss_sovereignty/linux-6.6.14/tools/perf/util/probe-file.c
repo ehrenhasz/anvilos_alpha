@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * probe-file.c : operate ftrace k/uprobe events files
- *
- * Written by Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>
- */
+
+ 
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -29,7 +25,7 @@
 #include "perf_regs.h"
 #include "string2.h"
 
-/* 4096 - 2 ('\n' + '\0') */
+ 
 #define MAX_CMDLEN 4094
 
 static bool print_common_warning(int err, bool readwrite)
@@ -164,7 +160,7 @@ int probe_file__open_both(int *kfd, int *ufd, int flag)
 	return 0;
 }
 
-/* Get raw string list of current kprobe_events  or uprobe_events */
+ 
 struct strlist *probe_file__get_rawlist(int fd)
 {
 	int ret, idx, fddup;
@@ -241,7 +237,7 @@ static struct strlist *__probe_file__get_namelist(int fd, bool include_group)
 		} else
 			ret = strlist__add(sl, tev.event);
 		clear_probe_trace_event(&tev);
-		/* Skip if there is same name multi-probe event in the list */
+		 
 		if (ret == -EEXIST)
 			ret = 0;
 		if (ret < 0)
@@ -256,7 +252,7 @@ static struct strlist *__probe_file__get_namelist(int fd, bool include_group)
 	return sl;
 }
 
-/* Get current perf-probe event names */
+ 
 struct strlist *probe_file__get_namelist(int fd)
 {
 	return __probe_file__get_namelist(fd, false);
@@ -292,7 +288,7 @@ static int __del_trace_probe_event(int fd, struct str_node *ent)
 	char buf[128];
 	int ret;
 
-	/* Convert from perf-probe event to trace-probe event */
+	 
 	ret = e_snprintf(buf, 128, "-:%s", ent->s);
 	if (ret < 0)
 		goto error;
@@ -385,7 +381,7 @@ out:
 	return ret;
 }
 
-/* Caller must ensure to remove this entry from list */
+ 
 static void probe_cache_entry__delete(struct probe_cache_entry *entry)
 {
 	if (entry) {
@@ -446,7 +442,7 @@ int probe_cache_entry__get_event(struct probe_cache_entry *entry,
 	return i;
 }
 
-/* For the kernel probe caches, pass target = NULL or DSO__NAME_KALLSYMS */
+ 
 static int probe_cache__open(struct probe_cache *pcache, const char *target,
 			     struct nsinfo *nsi)
 {
@@ -458,7 +454,7 @@ static int probe_cache__open(struct probe_cache *pcache, const char *target,
 	struct nscookie nsc;
 
 	if (target && build_id_cache__cached(target)) {
-		/* This is a cached buildid */
+		 
 		strlcpy(sbuildid, target, SBUILD_ID_SIZE);
 		dir_name = build_id_cache__linkname(sbuildid, NULL, 0);
 		goto found;
@@ -479,7 +475,7 @@ static int probe_cache__open(struct probe_cache *pcache, const char *target,
 		return ret;
 	}
 
-	/* If we have no buildid cache, make it */
+	 
 	if (!build_id_cache__cached(sbuildid)) {
 		ret = build_id_cache__add_s(sbuildid, target, nsi,
 					    is_kallsyms, NULL);
@@ -529,7 +525,7 @@ static int probe_cache__load(struct probe_cache *pcache)
 		p = strchr(buf, '\n');
 		if (p)
 			*p = '\0';
-		/* #perf_probe_event or %sdt_event */
+		 
 		if (buf[0] == '#' || buf[0] == '%') {
 			entry = probe_cache_entry__new(NULL);
 			if (!entry) {
@@ -549,7 +545,7 @@ static int probe_cache__load(struct probe_cache *pcache)
 				goto out;
 			}
 			list_add_tail(&entry->node, &pcache->entries);
-		} else {	/* trace_probe_event */
+		} else {	 
 			if (!entry) {
 				ret = -EINVAL;
 				goto out;
@@ -655,7 +651,7 @@ probe_cache__find(struct probe_cache *pcache, struct perf_probe_event *pev)
 
 			continue;
 		}
-		/* Hit if same event name or same command-string */
+		 
 		if ((pev->event &&
 		     (streql(entry->pev.group, pev->group) &&
 		      streql(entry->pev.event, pev->event))) ||
@@ -676,7 +672,7 @@ probe_cache__find_by_name(struct probe_cache *pcache,
 	struct probe_cache_entry *entry = NULL;
 
 	for_each_probe_cache_entry(entry, pcache) {
-		/* Hit if same event name or same command-string */
+		 
 		if (streql(entry->pev.group, group) &&
 		    streql(entry->pev.event, event))
 			goto found;
@@ -700,7 +696,7 @@ int probe_cache__add_entry(struct probe_cache *pcache,
 		goto out_err;
 	}
 
-	/* Remove old cache entry */
+	 
 	entry = probe_cache__find(pcache, pev);
 	if (entry) {
 		list_del_init(&entry->node);
@@ -757,11 +753,7 @@ static const char * const type_to_suffix[] = {
 	"", ":u8", ":u16", "", ":u32", "", "", "", ":u64"
 };
 
-/*
- * Isolate the string number and convert it into a decimal value;
- * this will be an index to get suffix of the uprobe name (defining
- * the type)
- */
+ 
 static int sdt_arg_parse_size(char *n_ptr, const char **suffix)
 {
 	long type_idx;
@@ -787,11 +779,7 @@ static int synthesize_sdt_probe_arg(struct strbuf *buf, int i, const char *arg)
 		return ret;
 	}
 
-	/*
-	 * Argument is in N@OP format. N is size of the argument and OP is
-	 * the actual assembly operand. N can be omitted; in that case
-	 * argument is just OP(without @).
-	 */
+	 
 	op = strchr(desc, '@');
 	if (op) {
 		op[0] = '\0';
@@ -856,20 +844,7 @@ static char *synthesize_sdt_probe_command(struct sdt_note *note,
 			goto error;
 
 		for (i = 0; i < args_count; ) {
-			/*
-			 * FIXUP: Arm64 ELF section '.note.stapsdt' uses string
-			 * format "-4@[sp, NUM]" if a probe is to access data in
-			 * the stack, e.g. below is an example for the SDT
-			 * Arguments:
-			 *
-			 *   Arguments: -4@[sp, 12] -4@[sp, 8] -4@[sp, 4]
-			 *
-			 * Since the string introduces an extra space character
-			 * in the middle of square brackets, the argument is
-			 * divided into two items.  Fixup for this case, if an
-			 * item contains sub string "[sp,", need to concatenate
-			 * the two items.
-			 */
+			 
 			if (strstr(args[i], "[sp,") && (i+1) < args_count) {
 				err = asprintf(&arg, "%s %s", args[i], args[i+1]);
 				i += 2;
@@ -878,7 +853,7 @@ static char *synthesize_sdt_probe_command(struct sdt_note *note,
 				i += 1;
 			}
 
-			/* Failed to allocate memory */
+			 
 			if (err < 0) {
 				argv_free(args);
 				goto error;
@@ -923,7 +898,7 @@ int probe_cache__scan_sdt(struct probe_cache *pcache, const char *pathname)
 		ret = snprintf(sdtgrp, 64, "sdt_%s", note->provider);
 		if (ret < 0)
 			break;
-		/* Try to find same-name entry */
+		 
 		entry = probe_cache__find_by_name(pcache, sdtgrp, note->name);
 		if (!entry) {
 			entry = probe_cache_entry__new(NULL);
@@ -972,7 +947,7 @@ static int probe_cache_entry__write(struct probe_cache_entry *entry, int fd)
 	struct iovec iov[3];
 	const char *prefix = entry->sdt ? "%" : "#";
 	int ret;
-	/* Save stat for rollback */
+	 
 	ret = fstat(fd, &st);
 	if (ret < 0)
 		return ret;
@@ -996,7 +971,7 @@ static int probe_cache_entry__write(struct probe_cache_entry *entry, int fd)
 	return 0;
 
 rollback:
-	/* Rollback to avoid cache file corruption */
+	 
 	if (ret > 0)
 		ret = -1;
 	if (ftruncate(fd, st.st_size) < 0)
@@ -1010,7 +985,7 @@ int probe_cache__commit(struct probe_cache *pcache)
 	struct probe_cache_entry *entry;
 	int ret = 0;
 
-	/* TBD: if we do not update existing entries, skip it */
+	 
 	ret = lseek(pcache->fd, 0, SEEK_SET);
 	if (ret < 0)
 		goto out;
@@ -1068,7 +1043,7 @@ static int probe_cache__show_entries(struct probe_cache *pcache,
 	return 0;
 }
 
-/* Show all cached probes */
+ 
 int probe_cache__show_all_caches(struct strfilter *filter)
 {
 	struct probe_cache *pcache;

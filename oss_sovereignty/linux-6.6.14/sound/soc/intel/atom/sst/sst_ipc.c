@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_ipc.c - Intel SST Driver for audio engine
- *
- *  Copyright (C) 2008-14 Intel Corporation
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com>
- *		KP Jeeja <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/pci.h>
 #include <linux/firmware.h>
 #include <linux/sched.h>
@@ -44,21 +33,7 @@ struct sst_block *sst_create_block(struct intel_sst_drv *ctx,
 	return msg;
 }
 
-/*
- * while handling the interrupts, we need to check for message status and
- * then if we are blocking for a message
- *
- * here we are unblocking the blocked ones, this is based on id we have
- * passed and search that for block threads.
- * We will not find block in two cases
- *  a) when its small message and block in not there, so silently ignore
- *  them
- *  b) when we are actually not able to find the block (bug perhaps)
- *
- *  Since we have bit of small messages we can spam kernel log with err
- *  print on above so need to keep as debug prints which should be enabled
- *  via dynamic debug while debugging IPC issues
- */
+ 
 int sst_wake_up_block(struct intel_sst_drv *ctx, int result,
 		u32 drv_id, u32 ipc, void *data, u32 size)
 {
@@ -97,7 +72,7 @@ int sst_free_block(struct intel_sst_drv *ctx, struct sst_block *freed)
 	list_for_each_entry_safe(block, __block, &ctx->block_list, node) {
 		if (block == freed) {
 			pr_debug("pvt_id freed --> %d\n", freed->drv_id);
-			/* toggle the index position of pvt_id */
+			 
 			list_del(&freed->node);
 			spin_unlock_bh(&ctx->block_lock);
 			kfree(freed->data);
@@ -137,7 +112,7 @@ int sst_post_message_mrfld(struct intel_sst_drv *sst_drv_ctx,
 		}
 	} else {
 		if (list_empty(&sst_drv_ctx->ipc_dispatch_list)) {
-			/* queue is empty, nothing to send */
+			 
 			spin_unlock_irqrestore(&sst_drv_ctx->ipc_spin_lock, irq_flags);
 			dev_dbg(sst_drv_ctx->dev,
 					"Empty msg queue... NO Action\n");
@@ -150,7 +125,7 @@ int sst_post_message_mrfld(struct intel_sst_drv *sst_drv_ctx,
 			return 0;
 		}
 
-		/* copy msg from list */
+		 
 		msg = list_entry(sst_drv_ctx->ipc_dispatch_list.next,
 				struct ipc_post, node);
 		list_del(&msg->node);
@@ -185,32 +160,25 @@ void intel_sst_clear_intr_mrfld(struct intel_sst_drv *sst_drv_ctx)
 	imr.full = sst_shim_read64(sst_drv_ctx->shim, SST_IMRX);
 	isr.full = sst_shim_read64(sst_drv_ctx->shim, SST_ISRX);
 
-	/* write 1 to clear*/
+	 
 	isr.part.busy_interrupt = 1;
 	sst_shim_write64(sst_drv_ctx->shim, SST_ISRX, isr.full);
 
-	/* Set IA done bit */
+	 
 	clear_ipc.full = sst_shim_read64(sst_drv_ctx->shim, SST_IPCD);
 
 	clear_ipc.p.header_high.part.busy = 0;
 	clear_ipc.p.header_high.part.done = 1;
 	clear_ipc.p.header_low_payload = IPC_ACK_SUCCESS;
 	sst_shim_write64(sst_drv_ctx->shim, SST_IPCD, clear_ipc.full);
-	/* un mask busy interrupt */
+	 
 	imr.part.busy_interrupt = 0;
 	sst_shim_write64(sst_drv_ctx->shim, SST_IMRX, imr.full);
 	spin_unlock_irqrestore(&sst_drv_ctx->ipc_spin_lock, irq_flags);
 }
 
 
-/*
- * process_fw_init - process the FW init msg
- *
- * @msg: IPC message mailbox data from FW
- *
- * This function processes the FW init msg from FW
- * marks FW state and prints debug info of loaded FW
- */
+ 
 static void process_fw_init(struct intel_sst_drv *sst_drv_ctx,
 			void *msg)
 {
@@ -234,7 +202,7 @@ static void process_fw_init(struct intel_sst_drv *sst_drv_ctx,
 	dev_dbg(sst_drv_ctx->dev, "Build date %s Time %s\n",
 			init->build_info.date, init->build_info.time);
 
-	/* Save FW version */
+	 
 	sst_drv_ctx->fw_version.type = init->fw_version.type;
 	sst_drv_ctx->fw_version.major = init->fw_version.major;
 	sst_drv_ctx->fw_version.minor = init->fw_version.minor;
@@ -268,7 +236,7 @@ static void process_fw_async_msg(struct intel_sst_drv *sst_drv_ctx,
 				"Period elapsed rcvd for pipe id 0x%x\n",
 				pipe_id);
 			stream = &sst_drv_ctx->streams[str_id];
-			/* If stream is dropped, skip processing this message*/
+			 
 			if (stream->status == STREAM_INIT)
 				break;
 			if (stream->period_elapsed)
@@ -332,16 +300,16 @@ void sst_process_reply_mrfld(struct intel_sst_drv *sst_drv_ctx,
 
 	drv_id = msg_high.part.drv_id;
 
-	/* Check for async messages first */
+	 
 	if (drv_id == SST_ASYNC_DRV_ID) {
-		/*FW sent async large message*/
+		 
 		process_fw_async_msg(sst_drv_ctx, msg);
 		return;
 	}
 
-	/* FW sent short error response for an IPC */
+	 
 	if (msg_high.part.result && !msg_high.part.large) {
-		/* 32-bit FW error code in msg_low */
+		 
 		dev_err(sst_drv_ctx->dev, "FW sent error response 0x%x", msg_low);
 		sst_wake_up_block(sst_drv_ctx, msg_high.part.result,
 			msg_high.part.drv_id,
@@ -349,16 +317,12 @@ void sst_process_reply_mrfld(struct intel_sst_drv *sst_drv_ctx,
 		return;
 	}
 
-	/*
-	 * Process all valid responses
-	 * if it is a large message, the payload contains the size to
-	 * copy from mailbox
-	 **/
+	 
 	if (msg_high.part.large) {
 		data = kmemdup((void *)msg->mailbox_data, msg_low, GFP_KERNEL);
 		if (!data)
 			return;
-		/* Copy command id so that we can use to put sst to reset */
+		 
 		dsp_hdr = (struct ipc_dsp_hdr *)data;
 		dev_dbg(sst_drv_ctx->dev, "cmd_id %d\n", dsp_hdr->cmd_id);
 		if (sst_wake_up_block(sst_drv_ctx, msg_high.part.result,

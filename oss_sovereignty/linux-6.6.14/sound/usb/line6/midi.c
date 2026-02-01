@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/usb.h>
@@ -20,9 +16,7 @@
 static int send_midi_async(struct usb_line6 *line6, unsigned char *data,
 			   int length);
 
-/*
-	Pass data received via USB to MIDI.
-*/
+ 
 void line6_midi_receive(struct usb_line6 *line6, unsigned char *data,
 			int length)
 {
@@ -31,9 +25,7 @@ void line6_midi_receive(struct usb_line6 *line6, unsigned char *data,
 				    data, length);
 }
 
-/*
-	Read data from MIDI buffer and transmit them via USB.
-*/
+ 
 static void line6_midi_transmit(struct snd_rawmidi_substream *substream)
 {
 	struct usb_line6 *line6 =
@@ -67,9 +59,7 @@ static void line6_midi_transmit(struct snd_rawmidi_substream *substream)
 	}
 }
 
-/*
-	Notification of completion of MIDI transmission.
-*/
+ 
 static void midi_sent(struct urb *urb)
 {
 	unsigned long flags;
@@ -98,11 +88,7 @@ static void midi_sent(struct urb *urb)
 	spin_unlock_irqrestore(&line6->line6midi->lock, flags);
 }
 
-/*
-	Send an asynchronous MIDI message.
-	Assumes that line6->line6midi->lock is held
-	(i.e., this function is serialized).
-*/
+ 
 static int send_midi_async(struct usb_line6 *line6, unsigned char *data,
 			   int length)
 {
@@ -216,7 +202,7 @@ static const struct snd_rawmidi_ops line6_midi_input_ops = {
 	.trigger = line6_midi_input_trigger,
 };
 
-/* Create a MIDI device */
+ 
 static int snd_line6_new_midi(struct usb_line6 *line6,
 			      struct snd_rawmidi **rmidi_ret)
 {
@@ -242,7 +228,7 @@ static int snd_line6_new_midi(struct usb_line6 *line6,
 	return 0;
 }
 
-/* MIDI device destructor */
+ 
 static void snd_line6_midi_free(struct snd_rawmidi *rmidi)
 {
 	struct snd_line6_midi *line6midi = rmidi->private_data;
@@ -252,9 +238,7 @@ static void snd_line6_midi_free(struct snd_rawmidi *rmidi)
 	kfree(line6midi);
 }
 
-/*
-	Initialize the Line 6 MIDI subsystem.
-*/
+ 
 int line6_init_midi(struct usb_line6 *line6)
 {
 	int err;
@@ -262,7 +246,7 @@ int line6_init_midi(struct usb_line6 *line6)
 	struct snd_line6_midi *line6midi;
 
 	if (!(line6->properties->capabilities & LINE6_CAP_CONTROL_MIDI)) {
-		/* skip MIDI initialization and report success */
+		 
 		return 0;
 	}
 

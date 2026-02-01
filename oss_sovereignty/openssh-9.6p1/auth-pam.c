@@ -1,51 +1,7 @@
-/*-
- * Copyright (c) 2002 Networks Associates Technology, Inc.
- * All rights reserved.
- *
- * This software was developed for the FreeBSD Project by ThinkSec AS and
- * NAI Labs, the Security Research Division of Network Associates, Inc.
- * under DARPA/SPAWAR contract N66001-01-C-8035 ("CBOSS"), as part of the
- * DARPA CHATS research program.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
-/*
- * Copyright (c) 2003,2004 Damien Miller <djm@mindrot.org>
- * Copyright (c) 2003,2004 Darren Tucker <dtucker@zip.com.au>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
-/* Based on FreeBSD: src/crypto/openssh/auth2-pam-freebsd.c,v 1.11 2003/03/31 13:48:18 des */
+ 
 
 #include "includes.h"
 
@@ -72,14 +28,14 @@ extern char *__progname;
 # define SSHD_PAM_SERVICE		__progname
 #endif
 
-/* OpenGroup RFC86.0 and XSSO specify no "const" on arguments */
+ 
 #ifdef PAM_SUN_CODEBASE
-# define sshpam_const		/* Solaris, HP-UX, SunOS */
+# define sshpam_const		 
 #else
-# define sshpam_const	const	/* LinuxPAM, OpenPAM, AIX */
+# define sshpam_const	const	 
 #endif
 
-/* Ambiguity in spec: is it an array of pointers or a pointer to an array? */
+ 
 #ifdef PAM_SUN_CODEBASE
 # define PAM_MSG_MEMBER(msg, n, member) ((*(msg))[(n)].member)
 #else
@@ -110,23 +66,15 @@ extern ServerOptions options;
 extern struct sshbuf *loginmsg;
 extern u_int utmp_len;
 
-/* so we don't silently change behaviour */
+ 
 #ifdef USE_POSIX_THREADS
 # error "USE_POSIX_THREADS replaced by UNSUPPORTED_POSIX_THREADS_HACK"
 #endif
 
-/*
- * Formerly known as USE_POSIX_THREADS, using this is completely unsupported
- * and generally a bad idea.  Use at own risk and do not expect support if
- * this breaks.
- */
+ 
 #ifdef UNSUPPORTED_POSIX_THREADS_HACK
 #include <pthread.h>
-/*
- * Avoid namespace clash when *not* using pthreads for systems *with*
- * pthreads, which unconditionally define pthread_t via sys/types.h
- * (e.g. Linux)
- */
+ 
 typedef pthread_t sp_pthread_t;
 #else
 typedef pid_t sp_pthread_t;
@@ -147,9 +95,7 @@ static void sshpam_free_ctx(void *);
 static struct pam_ctxt *cleanup_ctxt;
 
 #ifndef UNSUPPORTED_POSIX_THREADS_HACK
-/*
- * Simulate threads with processes.
- */
+ 
 
 static int sshpam_thread_status = -1;
 static sshsig_t sshpam_oldsig;
@@ -159,10 +105,10 @@ sshpam_sigchld_handler(int sig)
 {
 	ssh_signal(SIGCHLD, SIG_DFL);
 	if (cleanup_ctxt == NULL)
-		return;	/* handler called after PAM cleanup, shouldn't happen */
+		return;	 
 	if (waitpid(cleanup_ctxt->pam_thread, &sshpam_thread_status, WNOHANG)
 	    <= 0) {
-		/* PAM thread has not exitted, privsep slave must have */
+		 
 		kill(cleanup_ctxt->pam_thread, SIGTERM);
 		while (waitpid(cleanup_ctxt->pam_thread,
 		    &sshpam_thread_status, 0) == -1) {
@@ -173,21 +119,21 @@ sshpam_sigchld_handler(int sig)
 	}
 	if (WIFSIGNALED(sshpam_thread_status) &&
 	    WTERMSIG(sshpam_thread_status) == SIGTERM)
-		return;	/* terminated by pthread_cancel */
+		return;	 
 	if (!WIFEXITED(sshpam_thread_status))
 		sigdie("PAM: authentication thread exited unexpectedly");
 	if (WEXITSTATUS(sshpam_thread_status) != 0)
 		sigdie("PAM: authentication thread exited uncleanly");
 }
 
-/* ARGSUSED */
+ 
 static void
 pthread_exit(void *value)
 {
 	_exit(0);
 }
 
-/* ARGSUSED */
+ 
 static int
 pthread_create(sp_pthread_t *thread, const void *attr,
     void *(*thread_start)(void *), void *arg)
@@ -221,7 +167,7 @@ pthread_cancel(sp_pthread_t thread)
 	return (kill(thread, SIGTERM));
 }
 
-/* ARGSUSED */
+ 
 static int
 pthread_join(sp_pthread_t thread, void **value)
 {
@@ -253,16 +199,12 @@ static const char *sshpam_password = NULL;
 static char *sshpam_rhost = NULL;
 static char *sshpam_laddr = NULL;
 
-/* Some PAM implementations don't implement this */
+ 
 #ifndef HAVE_PAM_GETENVLIST
 static char **
 pam_getenvlist(pam_handle_t *pamh)
 {
-	/*
-	 * XXX - If necessary, we can still support environment passing
-	 * for platforms without pam_getenvlist by searching for known
-	 * env vars (e.g. KRB5CCNAME) from the PAM environment.
-	 */
+	 
 	 return NULL;
 }
 #endif
@@ -273,15 +215,9 @@ pam_putenv(pam_handle_t *pamh, const char *name_value)
 {
 	return PAM_SUCCESS;
 }
-#endif /* HAVE_PAM_PUTENV */
+#endif  
 
-/*
- * Some platforms, notably Solaris, do not enforce password complexity
- * rules during pam_chauthtok() if the real uid of the calling process
- * is 0, on the assumption that it's being called by "passwd" run by root.
- * This wraps pam_chauthtok and sets/restore the real uid so PAM will do
- * the right thing.
- */
+ 
 #ifdef SSHPAM_CHAUTHTOK_NEEDS_RUID
 static int
 sshpam_chauthtok_ruid(pam_handle_t *pamh, int flags)
@@ -327,7 +263,7 @@ sshpam_password_change_required(int reqd)
 	}
 }
 
-/* Import regular and PAM environment from subprocess */
+ 
 static void
 import_environments(struct sshbuf *b)
 {
@@ -338,7 +274,7 @@ import_environments(struct sshbuf *b)
 	debug3("PAM: %s entering", __func__);
 
 #ifndef UNSUPPORTED_POSIX_THREADS_HACK
-	/* Import variables set by do_pam_account */
+	 
 	if ((r = sshbuf_get_u32(b, &n)) != 0)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
 	if (n > INT_MAX)
@@ -348,7 +284,7 @@ import_environments(struct sshbuf *b)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
 	sshpam_password_change_required(n != 0);
 
-	/* Import environment from subprocess */
+	 
 	if ((r = sshbuf_get_u32(b, &num_env)) != 0)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
 	if (num_env > 1024) {
@@ -363,7 +299,7 @@ import_environments(struct sshbuf *b)
 	}
 	sshpam_env[num_env] = NULL;
 
-	/* Import PAM environment from subprocess */
+	 
 	if ((r = sshbuf_get_u32(b, &num_env)) != 0)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
 	if (num_env > 1024) {
@@ -374,23 +310,17 @@ import_environments(struct sshbuf *b)
 	for (i = 0; i < num_env; i++) {
 		if ((r = sshbuf_get_cstring(b, &env, NULL)) != 0)
 			fatal("%s: buffer error: %s", __func__, ssh_err(r));
-		/* Errors are not fatal here */
+		 
 		if ((r = pam_putenv(sshpam_handle, env)) != PAM_SUCCESS) {
 			error("PAM: pam_putenv: %s",
 			    pam_strerror(sshpam_handle, r));
 		}
-		/*
-		 * XXX this possibly leaks env because it is not documented
-		 * what pam_putenv() does with it. Does it copy it? Does it
-		 * take ownweship? We don't know, so it's safest just to leak.
-		 */
+		 
 	}
 #endif
 }
 
-/*
- * Conversation function for authentication thread.
- */
+ 
 static int
 sshpam_thread_conv(int n, sshpam_const struct pam_message **msg,
     struct pam_response **resp, void *data)
@@ -471,9 +401,7 @@ sshpam_thread_conv(int n, sshpam_const struct pam_message **msg,
 	return (PAM_CONV_ERR);
 }
 
-/*
- * Authentication thread.
- */
+ 
 static void *
 sshpam_thread(void *ctxtp)
 {
@@ -542,14 +470,14 @@ sshpam_thread(void *ctxtp)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
 
 #ifndef UNSUPPORTED_POSIX_THREADS_HACK
-	/* Export variables set by do_pam_account */
+	 
 	if ((r = sshbuf_put_u32(buffer, sshpam_account_status)) != 0 ||
 	    (r = sshbuf_put_u32(buffer, sshpam_authctxt->force_pwchange)) != 0)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
 
-	/* Export any environment strings set in child */
+	 
 	for (i = 0; environ[i] != NULL; i++) {
-		/* Count */
+		 
 		if (i > INT_MAX)
 			fatal("%s: too many environment strings", __func__);
 	}
@@ -559,10 +487,10 @@ sshpam_thread(void *ctxtp)
 		if ((r = sshbuf_put_cstring(buffer, environ[i])) != 0)
 			fatal("%s: buffer error: %s", __func__, ssh_err(r));
 	}
-	/* Export any environment strings set by PAM in child */
+	 
 	env_from_pam = pam_getenvlist(sshpam_handle);
 	for (i = 0; env_from_pam != NULL && env_from_pam[i] != NULL; i++) {
-		/* Count */
+		 
 		if (i > INT_MAX)
 			fatal("%s: too many PAM environment strings", __func__);
 	}
@@ -572,9 +500,9 @@ sshpam_thread(void *ctxtp)
 		if ((r = sshbuf_put_cstring(buffer, env_from_pam[i])) != 0)
 			fatal("%s: buffer error: %s", __func__, ssh_err(r));
 	}
-#endif /* UNSUPPORTED_POSIX_THREADS_HACK */
+#endif  
 
-	/* XXX - can't do much about an error here */
+	 
 	ssh_msg_send(ctxt->pam_csock, sshpam_err, buffer);
 	sshbuf_free(buffer);
 	pthread_exit(NULL);
@@ -583,7 +511,7 @@ sshpam_thread(void *ctxtp)
 	if ((r = sshbuf_put_cstring(buffer,
 	    pam_strerror(sshpam_handle, sshpam_err))) != 0)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
-	/* XXX - can't do much about an error here */
+	 
 	if (sshpam_err == PAM_ACCT_EXPIRED)
 		ssh_msg_send(ctxt->pam_csock, PAM_ACCT_EXPIRED, buffer);
 	else if (sshpam_maxtries_reached)
@@ -593,7 +521,7 @@ sshpam_thread(void *ctxtp)
 	sshbuf_free(buffer);
 	pthread_exit(NULL);
 
-	return (NULL); /* Avoid warning for non-pthread case */
+	return (NULL);  
 }
 
 void
@@ -695,7 +623,7 @@ sshpam_init(struct ssh *ssh, Authctxt *authctxt)
 	int r;
 
 #if defined(PAM_SUN_CODEBASE) && defined(PAM_MAX_RESP_SIZE)
-	/* Protect buggy PAM implementations from excessively long usernames */
+	 
 	if (strlen(user) >= PAM_MAX_RESP_SIZE)
 		fatal("Username too long from %s port %d",
 		    ssh_remote_ipaddr(ssh), ssh_remote_port(ssh));
@@ -706,7 +634,7 @@ sshpam_init(struct ssh *ssh, Authctxt *authctxt)
 			    "packet context", __func__);
 		}
 	} if (sshpam_handle != NULL) {
-		/* We already have a PAM context; check if the user matches */
+		 
 		sshpam_err = pam_get_item(sshpam_handle,
 		    PAM_USER, (sshpam_const void **)ptr_pam_user);
 		if (sshpam_err == PAM_SUCCESS && strcmp(user, pam_user) == 0)
@@ -726,10 +654,7 @@ sshpam_init(struct ssh *ssh, Authctxt *authctxt)
 	}
 
 	if (ssh != NULL && sshpam_rhost == NULL) {
-		/*
-		 * We need to cache these as we don't have packet context
-		 * during the kbdint flow.
-		 */
+		 
 		sshpam_rhost = xstrdup(auth_get_canonical_hostname(ssh,
 		    options.use_dns));
 		sshpam_laddr = get_local_ipaddr(
@@ -748,7 +673,7 @@ sshpam_init(struct ssh *ssh, Authctxt *authctxt)
 	if (ssh != NULL && sshpam_laddr != NULL) {
 		char *conninfo;
 
-		/* Put SSH_CONNECTION in the PAM environment too */
+		 
 		xasprintf(&conninfo, "SSH_CONNECTION=%.50s %d %.50s %d",
 		    ssh_remote_ipaddr(ssh), ssh_remote_port(ssh),
 		    sshpam_laddr, ssh_local_port(ssh));
@@ -758,11 +683,7 @@ sshpam_init(struct ssh *ssh, Authctxt *authctxt)
 	}
 
 #ifdef PAM_TTY_KLUDGE
-	/*
-	 * Some silly PAM modules (e.g. pam_time) require a TTY to operate.
-	 * sshd doesn't set the tty until too late in the auth process and
-	 * may not even set one (for tty-less connections)
-	 */
+	 
 	debug("PAM: setting PAM_TTY to \"ssh\"");
 	sshpam_err = pam_set_item(sshpam_handle, PAM_TTY, "ssh");
 	if (sshpam_err != PAM_SUCCESS) {
@@ -779,11 +700,7 @@ expose_authinfo(const char *caller)
 {
 	char *auth_info;
 
-	/*
-	 * Expose authentication information to PAM.
-	 * The environment variable is versioned. Please increment the
-	 * version suffix if the format of session_info changes.
-	 */
+	 
 	if (sshpam_authctxt->session_info == NULL)
 		auth_info = xstrdup("");
 	else if ((auth_info = sshbuf_dup_string(
@@ -802,14 +719,11 @@ sshpam_init_ctx(Authctxt *authctxt)
 	int result, socks[2];
 
 	debug3("PAM: %s entering", __func__);
-	/*
-	 * Refuse to start if we don't have PAM enabled or do_pam_account
-	 * has previously failed.
-	 */
+	 
 	if (!options.use_pam || sshpam_account_status == 0)
 		return NULL;
 
-	/* Initialize PAM */
+	 
 	if (sshpam_init(NULL, authctxt) == -1) {
 		error("PAM: initialization failed");
 		return (NULL);
@@ -818,7 +732,7 @@ sshpam_init_ctx(Authctxt *authctxt)
 	expose_authinfo(__func__);
 	ctxt = xcalloc(1, sizeof *ctxt);
 
-	/* Start the authentication thread */
+	 
 	if (socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, socks) == -1) {
 		error("PAM: failed create sockets: %s", strerror(errno));
 		free(ctxt);
@@ -880,7 +794,7 @@ sshpam_query(void *ctx, char **name, char **info,
 			return (0);
 		case PAM_ERROR_MSG:
 		case PAM_TEXT_INFO:
-			/* accumulate messages */
+			 
 			len = plen + mlen + 2;
 			**prompts = xreallocarray(**prompts, 1, len);
 			strlcpy(**prompts + plen, msg, len - plen);
@@ -895,7 +809,7 @@ sshpam_query(void *ctx, char **name, char **info,
 				sshpam_account_status = 0;
 			if (type == PAM_MAXTRIES)
 				sshpam_set_maxtries_reached(1);
-			/* FALLTHROUGH */
+			 
 		case PAM_AUTH_ERR:
 			debug3("PAM: %s", pam_strerror(sshpam_handle, type));
 			if (**prompts != NULL && strlen(**prompts) != 0) {
@@ -909,10 +823,10 @@ sshpam_query(void *ctx, char **name, char **info,
 				sshbuf_free(buffer);
 				return 0;
 			}
-			/* FALLTHROUGH */
+			 
 		case PAM_SUCCESS:
 			if (**prompts != NULL) {
-				/* drain any accumulated messages */
+				 
 				debug("PAM: %s", **prompts);
 				if ((r = sshbuf_put(loginmsg, **prompts,
 				    strlen(**prompts))) != 0)
@@ -939,7 +853,7 @@ sshpam_query(void *ctx, char **name, char **info,
 			error("PAM: %s for %s%.100s from %.100s", msg,
 			    sshpam_authctxt->valid ? "" : "illegal user ",
 			    sshpam_authctxt->user, sshpam_rhost);
-			/* FALLTHROUGH */
+			 
 		default:
 			*num = 0;
 			**echo_on = 0;
@@ -953,11 +867,7 @@ sshpam_query(void *ctx, char **name, char **info,
 	return (-1);
 }
 
-/*
- * Returns a junk password of identical length to that the user supplied.
- * Used to mitigate timing attacks against crypt(3)/PAM stacks that
- * vary processing time in proportion to password length.
- */
+ 
 static char *
 fake_password(const char *wire_password)
 {
@@ -977,7 +887,7 @@ fake_password(const char *wire_password)
 	return ret;
 }
 
-/* XXX - see also comment in auth-chall.c:verify_response */
+ 
 static int
 sshpam_respond(void *ctx, u_int num, char **resp)
 {
@@ -1029,12 +939,7 @@ sshpam_free_ctx(void *ctxtp)
 	debug3("PAM: %s entering", __func__);
 	sshpam_thread_cleanup();
 	free(ctxt);
-	/*
-	 * We don't call sshpam_cleanup() here because we may need the PAM
-	 * handle at a later stage, e.g. when setting up a session.  It's
-	 * still on the cleanup list, so pam_end() *will* be called before
-	 * the server process terminates.
-	 */
+	 
 }
 
 KbdintDevice sshpam_device = {
@@ -1053,9 +958,7 @@ KbdintDevice mm_sshpam_device = {
 	mm_sshpam_free_ctx
 };
 
-/*
- * This replaces auth-pam.c
- */
+ 
 void
 start_pam(struct ssh *ssh)
 {
@@ -1183,10 +1086,7 @@ sshpam_tty_conv(int n, sshpam_const struct pam_message **msg,
 
 static struct pam_conv tty_conv = { sshpam_tty_conv, NULL };
 
-/*
- * XXX this should be done in the authentication phase, but ssh1 doesn't
- * support that
- */
+ 
 void
 do_pam_chauthtok(void)
 {
@@ -1234,11 +1134,7 @@ is_pam_session_open(void)
 	return sshpam_session_open;
 }
 
-/*
- * Set a PAM environment string. We need to do this so that the session
- * modules can handle things like Kerberos/GSI credentials that appear
- * during the ssh authentication process.
- */
+ 
 int
 do_pam_putenv(char *name, char *value)
 {
@@ -1281,11 +1177,7 @@ free_pam_environment(char **env)
 	free(env);
 }
 
-/*
- * "Blind" conversation function for password authentication.  Assumes that
- * echo-off prompts are for the password and stores messages for later
- * display.
- */
+ 
 static int
 sshpam_passwd_conv(int n, sshpam_const struct pam_message **msg,
     struct pam_response **resp, void *data)
@@ -1343,9 +1235,7 @@ sshpam_passwd_conv(int n, sshpam_const struct pam_message **msg,
 
 static struct pam_conv passwd_conv = { sshpam_passwd_conv, NULL };
 
-/*
- * Attempt password authentication via PAM
- */
+ 
 int
 sshpam_auth_passwd(Authctxt *authctxt, const char *password)
 {
@@ -1360,11 +1250,7 @@ sshpam_auth_passwd(Authctxt *authctxt, const char *password)
 	sshpam_password = password;
 	sshpam_authctxt = authctxt;
 
-	/*
-	 * If the user logging in is invalid, or is root but is not permitted
-	 * by PermitRootLogin, use an invalid password to prevent leaking
-	 * information via timing (eg if the PAM config has a delay on fail).
-	 */
+	 
 	if (!authctxt->valid || (authctxt->pw->pw_uid == 0 &&
 	    options.permit_root_login != PERMIT_YES))
 		sshpam_password = fake = fake_password(password);
@@ -1407,4 +1293,4 @@ sshpam_set_maxtries_reached(int reached)
 	options.password_authentication = 0;
 	options.kbd_interactive_authentication = 0;
 }
-#endif /* USE_PAM */
+#endif  

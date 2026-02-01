@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright(c) 2020 Intel Corporation.
- *
- */
+
+ 
 
 #include "netdev.h"
 #include "ipoib.h"
@@ -50,10 +47,7 @@ struct sk_buff *hfi1_ipoib_prepare_skb(struct hfi1_netdev_rxq *rxq,
 	int skb_size = size + HFI1_IPOIB_ENCAP_LEN;
 	struct sk_buff *skb;
 
-	/*
-	 * For smaller(4k + skb overhead) allocations we will go using
-	 * napi cache. Otherwise we will try to use napi frag cache.
-	 */
+	 
 	if (size <= SKB_WITH_OVERHEAD(PAGE_SIZE))
 		skb = napi_alloc_skb(napi, skb_size);
 	else

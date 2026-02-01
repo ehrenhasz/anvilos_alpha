@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2012, Code Aurora Forum. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -32,16 +31,7 @@ static irqreturn_t gpio_ir_recv_irq(int irq, void *dev_id)
 	struct gpio_rc_dev *gpio_dev = dev_id;
 	struct device *pmdev = gpio_dev->pmdev;
 
-	/*
-	 * For some cpuidle systems, not all:
-	 * Respond to interrupt taking more latency when cpu in idle.
-	 * Invoke asynchronous pm runtime get from interrupt context,
-	 * this may introduce a millisecond delay to call resume callback,
-	 * where to disable cpuilde.
-	 *
-	 * Two issues lead to fail to decode first frame, one is latency to
-	 * respond to interrupt, another is delay introduced by async api.
-	 */
+	 
 	if (pmdev)
 		pm_runtime_get(pmdev);
 

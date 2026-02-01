@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/module.h>
@@ -80,10 +80,10 @@ static int __maybe_unused tegra_mgbe_resume(struct device *dev)
 	if (err < 0)
 		return err;
 
-	/* Enable common interrupt at wrapper level */
+	 
 	writel(MAC_SBD_INTR, mgbe->regs + MGBE_WRAP_COMMON_INTR_ENABLE);
 
-	/* Program SID */
+	 
 	writel(MGBE_SID, mgbe->hv + MGBE_WRAP_AXI_ASID0_CTRL);
 
 	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_STATUS);
@@ -167,7 +167,7 @@ static int mgbe_uphy_lane_bringup_serdes_up(struct net_device *ndev, void *mgbe_
 		return err;
 	}
 
-	/* clear status */
+	 
 	writel(value, mgbe->xpcs + XPCS_WRAP_IRQ_STATUS);
 
 	return 0;
@@ -250,7 +250,7 @@ static int tegra_mgbe_probe(struct platform_device *pdev)
 	if (err < 0)
 		return err;
 
-	/* Perform MAC reset */
+	 
 	mgbe->rst_mac = devm_reset_control_get(&pdev->dev, "mac");
 	if (IS_ERR(mgbe->rst_mac)) {
 		err = PTR_ERR(mgbe->rst_mac);
@@ -267,7 +267,7 @@ static int tegra_mgbe_probe(struct platform_device *pdev)
 	if (err < 0)
 		goto disable_clks;
 
-	/* Perform PCS reset */
+	 
 	mgbe->rst_pcs = devm_reset_control_get(&pdev->dev, "pcs");
 	if (IS_ERR(mgbe->rst_pcs)) {
 		err = PTR_ERR(mgbe->rst_pcs);
@@ -327,15 +327,15 @@ static int tegra_mgbe_probe(struct platform_device *pdev)
 	plat->serdes_powerup = mgbe_uphy_lane_bringup_serdes_up;
 	plat->serdes_powerdown = mgbe_uphy_lane_bringup_serdes_down;
 
-	/* Tx FIFO Size - 128KB */
+	 
 	plat->tx_fifo_size = 131072;
-	/* Rx FIFO Size - 192KB */
+	 
 	plat->rx_fifo_size = 196608;
 
-	/* Enable common interrupt at wrapper level */
+	 
 	writel(MAC_SBD_INTR, mgbe->regs + MGBE_WRAP_COMMON_INTR_ENABLE);
 
-	/* Program SID */
+	 
 	writel(MGBE_SID, mgbe->hv + MGBE_WRAP_AXI_ASID0_CTRL);
 
 	plat->flags |= STMMAC_FLAG_SERDES_UP_AFTER_PHY_LINKUP;

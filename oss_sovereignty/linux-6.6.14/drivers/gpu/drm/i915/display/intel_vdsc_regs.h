@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_VDSC_REGS_H__
 #define __INTEL_VDSC_REGS_H__
 
 #include "intel_display_reg_defs.h"
 
-/* Display Stream Splitter Control */
+ 
 #define DSS_CTL1				_MMIO(0x67400)
 #define  SPLITTER_ENABLE			(1 << 31)
 #define  JOINER_ENABLE				(1 << 30)
@@ -46,7 +44,7 @@
 							   _ICL_PIPE_DSS_CTL2_PB, \
 							   _ICL_PIPE_DSS_CTL2_PC)
 
-/* MTL Display Stream Compression registers */
+ 
 #define _MTL_DSC0_PICTURE_PARAMETER_SET_17_PB	0x782B4
 #define _MTL_DSC1_PICTURE_PARAMETER_SET_17_PB	0x783B4
 #define _MTL_DSC0_PICTURE_PARAMETER_SET_17_PC	0x784B4
@@ -72,7 +70,7 @@
 #define DSC_NSL_BPG_OFFSET(offset)		((offset) << 16)
 #define DSC_SL_OFFSET_ADJ(offset)		((offset) << 0)
 
-/* Icelake Display Stream Compression Registers */
+ 
 #define DSCA_PICTURE_PARAMETER_SET_0		_MMIO(0x6B200)
 #define DSCC_PICTURE_PARAMETER_SET_0		_MMIO(0x6BA00)
 #define _ICL_DSC0_PICTURE_PARAMETER_SET_0_PB	0x78270
@@ -331,7 +329,7 @@
 #define  DSC_SLICE_PER_LINE(slice_per_line)		((slice_per_line) << 16)
 #define  DSC_SLICE_CHUNK_SIZE(slice_chunk_size)		((slice_chunk_size) << 0)
 
-/* Icelake Rate Control Buffer Threshold Registers */
+ 
 #define DSCA_RC_BUF_THRESH_0			_MMIO(0x6B230)
 #define DSCA_RC_BUF_THRESH_0_UDW		_MMIO(0x6B230 + 4)
 #define DSCC_RC_BUF_THRESH_0			_MMIO(0x6BA30)
@@ -382,7 +380,7 @@
 						_ICL_DSC1_RC_BUF_THRESH_1_UDW_PB, \
 						_ICL_DSC1_RC_BUF_THRESH_1_UDW_PC)
 
-/* Icelake DSC Rate Control Range Parameter Registers */
+ 
 #define DSCA_RC_RANGE_PARAMETERS_0		_MMIO(0x6B240)
 #define DSCA_RC_RANGE_PARAMETERS_0_UDW		_MMIO(0x6B240 + 4)
 #define DSCC_RC_RANGE_PARAMETERS_0		_MMIO(0x6BA40)
@@ -486,4 +484,4 @@
 							_ICL_DSC1_RC_RANGE_PARAMETERS_3_UDW_PB, \
 							_ICL_DSC1_RC_RANGE_PARAMETERS_3_UDW_PC)
 
-#endif /* __INTEL_VDSC_REGS_H__ */
+#endif  

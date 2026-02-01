@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device driver for the HMC5843 multi-chip module designed
- * for low field magnetic sensing.
- *
- * Copyright (C) 2010 Texas Instruments
- *
- * Author: Shubhrajyoti Datta <shubhrajyoti@ti.com>
- * Acknowledgment: Jonathan Cameron <jic23@kernel.org> for valuable inputs.
- * Support for HMC5883 and HMC5883L by Peter Meerwald <pmeerw@pmeerw.net>.
- * Split to multiple files by Josef Gajdusek <atx@atx.name> - 2014
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -22,60 +12,34 @@
 
 #include "hmc5843.h"
 
-/*
- * Range gain settings in (+-)Ga
- * Beware: HMC5843 and HMC5883 have different recommended sensor field
- * ranges; default corresponds to +-1.0 Ga and +-1.3 Ga, respectively
- */
+ 
 #define HMC5843_RANGE_GAIN_OFFSET		0x05
 #define HMC5843_RANGE_GAIN_DEFAULT		0x01
 #define HMC5843_RANGE_GAIN_MASK		0xe0
 
-/* Device status */
+ 
 #define HMC5843_DATA_READY			0x01
 #define HMC5843_DATA_OUTPUT_LOCK		0x02
 
-/* Mode register configuration */
+ 
 #define HMC5843_MODE_CONVERSION_CONTINUOUS	0x00
 #define HMC5843_MODE_CONVERSION_SINGLE		0x01
 #define HMC5843_MODE_IDLE			0x02
 #define HMC5843_MODE_SLEEP			0x03
 #define HMC5843_MODE_MASK			0x03
 
-/*
- * HMC5843: Minimum data output rate
- * HMC5883: Typical data output rate
- */
+ 
 #define HMC5843_RATE_OFFSET			0x02
 #define HMC5843_RATE_DEFAULT			0x04
 #define HMC5843_RATE_MASK		0x1c
 
-/* Device measurement configuration */
+ 
 #define HMC5843_MEAS_CONF_NORMAL		0x00
 #define HMC5843_MEAS_CONF_POSITIVE_BIAS		0x01
 #define HMC5843_MEAS_CONF_NEGATIVE_BIAS		0x02
 #define HMC5843_MEAS_CONF_MASK			0x03
 
-/*
- * API for setting the measurement configuration to
- * Normal, Positive bias and Negative bias
- *
- * From the datasheet:
- * 0 - Normal measurement configuration (default): In normal measurement
- *     configuration the device follows normal measurement flow. Pins BP
- *     and BN are left floating and high impedance.
- *
- * 1 - Positive bias configuration: In positive bias configuration, a
- *     positive current is forced across the resistive load on pins BP
- *     and BN.
- *
- * 2 - Negative bias configuration. In negative bias configuration, a
- *     negative current is forced across the resistive load on pins BP
- *     and BN.
- *
- * 3 - Only available on HMC5983. Magnetic sensor is disabled.
- *     Temperature sensor is enabled.
- */
+ 
 
 static const char *const hmc5843_meas_conf_modes[] = {"normal", "positivebias",
 						      "negativebias"};
@@ -83,7 +47,7 @@ static const char *const hmc5843_meas_conf_modes[] = {"normal", "positivebias",
 static const char *const hmc5983_meas_conf_modes[] = {"normal", "positivebias",
 						      "negativebias",
 						      "disabled"};
-/* Scaling factors: 10000000/Gain */
+ 
 static const int hmc5843_regval_to_nanoscale[] = {
 	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
 };
@@ -96,19 +60,7 @@ static const int hmc5883l_regval_to_nanoscale[] = {
 	7299, 9174, 12195, 15152, 22727, 25641, 30303, 43478
 };
 
-/*
- * From the datasheet:
- * Value	| HMC5843		| HMC5883/HMC5883L
- *		| Data output rate (Hz)	| Data output rate (Hz)
- * 0		| 0.5			| 0.75
- * 1		| 1			| 1.5
- * 2		| 2			| 3
- * 3		| 5			| 7.5
- * 4		| 10 (default)		| 15
- * 5		| 20			| 30
- * 6		| 50			| 75
- * 7		| Not used		| Not used
- */
+ 
 static const int hmc5843_regval_to_samp_freq[][2] = {
 	{0, 500000}, {1, 0}, {2, 0}, {5, 0}, {10, 0}, {20, 0}, {50, 0}
 };
@@ -123,7 +75,7 @@ static const int hmc5983_regval_to_samp_freq[][2] = {
 	{75, 0}, {220, 0}
 };
 
-/* Describe chip variants */
+ 
 struct hmc5843_chip_info {
 	const struct iio_chan_spec *channels;
 	const int (*regval_to_samp_freq)[2];
@@ -132,7 +84,7 @@ struct hmc5843_chip_info {
 	const int n_regval_to_nanoscale;
 };
 
-/* The lower two bits contain the current conversion mode */
+ 
 static s32 hmc5843_set_mode(struct hmc5843_data *data, u8 operating_mode)
 {
 	int ret;
@@ -168,7 +120,7 @@ static int hmc5843_wait_measurement(struct hmc5843_data *data)
 	return 0;
 }
 
-/* Return the measurement value from the specified channel */
+ 
 static int hmc5843_read_measurement(struct hmc5843_data *data,
 				    int idx, int *val)
 {
@@ -278,7 +230,7 @@ ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
 			"%d.%d ", data->variant->regval_to_samp_freq[i][0],
 			data->variant->regval_to_samp_freq[i][1]);
 
-	/* replace trailing space by newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -338,7 +290,7 @@ static ssize_t hmc5843_show_scale_avail(struct device *dev,
 		len += scnprintf(buf + len, PAGE_SIZE - len,
 			"0.%09d ", data->variant->regval_to_nanoscale[i]);
 
-	/* replace trailing space by newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -504,7 +456,7 @@ static const struct iio_chan_spec hmc5843_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(3),
 };
 
-/* Beware: Y and Z are exchanged on HMC5883 and 5983 */
+ 
 static const struct iio_chan_spec hmc5883_channels[] = {
 	HMC5843_CHANNEL(X, 0),
 	HMC5843_CHANNEL(Z, 1),
@@ -630,7 +582,7 @@ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
 
 	dev_set_drvdata(dev, indio_dev);
 
-	/* default settings at probe */
+	 
 	data = iio_priv(indio_dev);
 	data->dev = dev;
 	data->regmap = regmap;
@@ -678,7 +630,7 @@ void hmc5843_common_remove(struct device *dev)
 	iio_device_unregister(indio_dev);
 	iio_triggered_buffer_cleanup(indio_dev);
 
-	/*  sleep mode to save power */
+	 
 	hmc5843_set_mode(iio_priv(indio_dev), HMC5843_MODE_SLEEP);
 }
 EXPORT_SYMBOL_NS(hmc5843_common_remove, IIO_HMC5843);

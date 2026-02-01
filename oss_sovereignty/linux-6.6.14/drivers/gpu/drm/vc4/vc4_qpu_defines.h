@@ -1,25 +1,4 @@
-/*
- * Copyright © 2014 Broadcom
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #ifndef VC4_QPU_DEFINES_H
 #define VC4_QPU_DEFINES_H
@@ -63,8 +42,8 @@ enum qpu_op_mul {
 };
 
 enum qpu_raddr {
-	QPU_R_FRAG_PAYLOAD_ZW = 15, /* W for A file, Z for B file */
-	/* 0-31 are the plain regfile a or b fields */
+	QPU_R_FRAG_PAYLOAD_ZW = 15,  
+	 
 	QPU_R_UNIF = 32,
 	QPU_R_VARY = 35,
 	QPU_R_ELEM_QPU = 38,
@@ -78,8 +57,8 @@ enum qpu_raddr {
 };
 
 enum qpu_waddr {
-	/* 0-31 are the plain regfile a or b fields */
-	QPU_W_ACC0 = 32, /* aka r0 */
+	 
+	QPU_W_ACC0 = 32,  
 	QPU_W_ACC1,
 	QPU_W_ACC2,
 	QPU_W_ACC3,
@@ -88,7 +67,7 @@ enum qpu_waddr {
 	QPU_W_HOST_INT,
 	QPU_W_NOP,
 	QPU_W_UNIFORMS_ADDRESS,
-	QPU_W_QUAD_XY, /* X for regfile a, Y for regfile b */
+	QPU_W_QUAD_XY,  
 	QPU_W_MS_FLAGS = 42,
 	QPU_W_REV_FLAG = 42,
 	QPU_W_TLB_STENCIL_SETUP = 43,
@@ -97,8 +76,8 @@ enum qpu_waddr {
 	QPU_W_TLB_COLOR_ALL,
 	QPU_W_TLB_ALPHA_MASK,
 	QPU_W_VPM,
-	QPU_W_VPMVCD_SETUP, /* LD for regfile a, ST for regfile b */
-	QPU_W_VPM_ADDR, /* LD for regfile a, ST for regfile b */
+	QPU_W_VPMVCD_SETUP,  
+	QPU_W_VPM_ADDR,  
 	QPU_W_MUTEX_RELEASE,
 	QPU_W_SFU_RECIP,
 	QPU_W_SFU_RECIPSQRT,
@@ -134,7 +113,7 @@ enum qpu_sig_bits {
 };
 
 enum qpu_mux {
-	/* hardware mux values */
+	 
 	QPU_MUX_R0,
 	QPU_MUX_R1,
 	QPU_MUX_R2,
@@ -144,7 +123,7 @@ enum qpu_mux {
 	QPU_MUX_A,
 	QPU_MUX_B,
 
-	/* non-hardware mux values */
+	 
 	QPU_MUX_IMM,
 };
 
@@ -161,7 +140,7 @@ enum qpu_cond {
 
 enum qpu_pack_mul {
 	QPU_PACK_MUL_NOP,
-	/* replicated to each 8 bits of the 32-bit dst. */
+	 
 	QPU_PACK_MUL_8888 = 3,
 	QPU_PACK_MUL_8A,
 	QPU_PACK_MUL_8B,
@@ -171,20 +150,20 @@ enum qpu_pack_mul {
 
 enum qpu_pack_a {
 	QPU_PACK_A_NOP,
-	/* convert to 16 bit float if float input, or to int16. */
+	 
 	QPU_PACK_A_16A,
 	QPU_PACK_A_16B,
-	/* replicated to each 8 bits of the 32-bit dst. */
+	 
 	QPU_PACK_A_8888,
-	/* Convert to 8-bit unsigned int. */
+	 
 	QPU_PACK_A_8A,
 	QPU_PACK_A_8B,
 	QPU_PACK_A_8C,
 	QPU_PACK_A_8D,
 
-	/* Saturating variants of the previous instructions. */
-	QPU_PACK_A_32_SAT, /* int-only */
-	QPU_PACK_A_16A_SAT, /* int or float */
+	 
+	QPU_PACK_A_32_SAT,  
+	QPU_PACK_A_16A_SAT,  
 	QPU_PACK_A_16B_SAT,
 	QPU_PACK_A_8888_SAT,
 	QPU_PACK_A_8A_SAT,
@@ -216,10 +195,7 @@ enum qpu_unpack_r4 {
 #define QPU_UNPACK_SHIFT                57
 #define QPU_UNPACK_MASK                 QPU_MASK(59, 57)
 
-/**
- * If set, the pack field means PACK_MUL or R4 packing, instead of normal
- * regfile a packing.
- */
+ 
 #define QPU_PM                          ((uint64_t)1 << 56)
 
 #define QPU_PACK_SHIFT                  52
@@ -276,4 +252,4 @@ enum qpu_unpack_r4 {
 #define QPU_BRANCH_TARGET_SHIFT         0
 #define QPU_BRANCH_TARGET_MASK          QPU_MASK(31, 0)
 
-#endif /* VC4_QPU_DEFINES_H */
+#endif  

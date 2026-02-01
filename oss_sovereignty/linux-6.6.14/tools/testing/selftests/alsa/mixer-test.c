@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// kselftest for the ALSA mixer API
-//
-// Original author: Mark Brown <broonie@kernel.org>
-// Copyright (c) 2021-2 Arm Limited
 
-// This test will iterate over all cards detected in the system, exercising
-// every mixer control it can find.  This may conflict with other system
-// software if there is audio activity so is best run on a system with a
-// minimal active userspace.
+
+
+
+
+
+
+
+
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -94,12 +94,12 @@ static void find_controls(void)
 		ksft_print_msg("Card %d - %s (%s)\n", card,
 			       card_name, card_longname);
 
-		/* Count controls */
+		 
 		snd_ctl_elem_list_malloc(&card_data->ctls);
 		snd_ctl_elem_list(card_data->handle, card_data->ctls);
 		card_data->num_ctls = snd_ctl_elem_list_get_count(card_data->ctls);
 
-		/* Enumerate control information */
+		 
 		snd_ctl_elem_list_alloc_space(card_data->ctls, card_data->num_ctls);
 		snd_ctl_elem_list(card_data->handle, card_data->ctls);
 
@@ -150,7 +150,7 @@ static void find_controls(void)
 			ctl_list = ctl_data;
 		}
 
-		/* Set up for events */
+		 
 		err = snd_ctl_subscribe_events(card_data->handle, true);
 		if (err < 0) {
 			ksft_exit_fail_msg("snd_ctl_subscribe_events() failed for card %d: %d\n",
@@ -180,10 +180,7 @@ static void find_controls(void)
 	snd_config_delete(config);
 }
 
-/*
- * Block for up to timeout ms for an event, returns a negative value
- * on error, 0 for no event and 1 for an event.
- */
+ 
 static int wait_for_event(struct ctl_data *ctl, int timeout)
 {
 	unsigned short revents;
@@ -201,7 +198,7 @@ static int wait_for_event(struct ctl_data *ctl, int timeout)
 				       ctl->name, strerror(errno), errno);
 			return -1;
 		}
-		/* Timeout */
+		 
 		if (err == 0)
 			return 0;
 
@@ -218,7 +215,7 @@ static int wait_for_event(struct ctl_data *ctl, int timeout)
 				       ctl->name);
 			return -1;
 		}
-		/* No read events */
+		 
 		if (!(revents & POLLIN)) {
 			ksft_print_msg("No POLLIN\n");
 			continue;
@@ -234,7 +231,7 @@ static int wait_for_event(struct ctl_data *ctl, int timeout)
 		if (snd_ctl_event_get_type(event) != SND_CTL_EVENT_ELEM)
 			continue;
 
-		/* The ID returned from the event is 1 less than numid */
+		 
 		mask = snd_ctl_event_elem_get_mask(event);
 		ev_id = snd_ctl_event_elem_get_numid(event);
 		if (ev_id != snd_ctl_elem_info_get_numid(ctl->info)) {
@@ -296,7 +293,7 @@ static bool ctl_value_index_valid(struct ctl_data *ctl,
 			return false;
 		}
 
-		/* Only check step size if there is one and we're in bounds */
+		 
 		if (snd_ctl_elem_info_get_step(ctl->info) &&
 		    (int_val - snd_ctl_elem_info_get_min(ctl->info) %
 		     snd_ctl_elem_info_get_step(ctl->info))) {
@@ -325,7 +322,7 @@ static bool ctl_value_index_valid(struct ctl_data *ctl,
 			return false;
 		}
 
-		/* Only check step size if there is one and we're in bounds */
+		 
 		if (snd_ctl_elem_info_get_step64(ctl->info) &&
 		    (int64_val - snd_ctl_elem_info_get_min64(ctl->info)) %
 		    snd_ctl_elem_info_get_step64(ctl->info)) {
@@ -355,17 +352,14 @@ static bool ctl_value_index_valid(struct ctl_data *ctl,
 		break;
 
 	default:
-		/* No tests for other types */
+		 
 		break;
 	}
 
 	return true;
 }
 
-/*
- * Check that the provided value meets the constraints for the
- * provided control.
- */
+ 
 static bool ctl_value_valid(struct ctl_data *ctl, snd_ctl_elem_value_t *val)
 {
 	int i;
@@ -378,15 +372,12 @@ static bool ctl_value_valid(struct ctl_data *ctl, snd_ctl_elem_value_t *val)
 	return valid;
 }
 
-/*
- * Check that we can read the default value and it is valid. Write
- * tests use the read value to restore the default.
- */
+ 
 static void test_ctl_get_value(struct ctl_data *ctl)
 {
 	int err;
 
-	/* If the control is turned off let's be polite */
+	 
 	if (snd_ctl_elem_info_is_inactive(ctl->info)) {
 		ksft_print_msg("%s is inactive\n", ctl->name);
 		ksft_test_result_skip("get_value.%d.%d\n",
@@ -394,7 +385,7 @@ static void test_ctl_get_value(struct ctl_data *ctl)
 		return;
 	}
 
-	/* Can't test reading on an unreadable control */
+	 
 	if (!snd_ctl_elem_info_is_readable(ctl->info)) {
 		ksft_print_msg("%s is not readable\n", ctl->name);
 		ksft_test_result_skip("get_value.%d.%d\n",
@@ -434,7 +425,7 @@ static void test_ctl_name(struct ctl_data *ctl)
 	ksft_print_msg("%d.%d %s\n", ctl->card->card, ctl->elem,
 		       ctl->name);
 
-	/* Only boolean controls should end in Switch */
+	 
 	if (strend(ctl->name, " Switch")) {
 		if (snd_ctl_elem_info_get_type(ctl->info) != SND_CTL_ELEM_TYPE_BOOLEAN) {
 			ksft_print_msg("%d.%d %s ends in Switch but is not boolean\n",
@@ -443,7 +434,7 @@ static void test_ctl_name(struct ctl_data *ctl)
 		}
 	}
 
-	/* Writeable boolean controls should end in Switch */
+	 
 	if (snd_ctl_elem_info_get_type(ctl->info) == SND_CTL_ELEM_TYPE_BOOLEAN &&
 	    snd_ctl_elem_info_is_writable(ctl->info)) {
 		if (!strend(ctl->name, " Switch")) {
@@ -505,10 +496,7 @@ static bool show_mismatch(struct ctl_data *ctl, int index,
 {
 	long long expected_int, read_int;
 
-	/*
-	 * We factor out the code to compare values representable as
-	 * integers, ensure that check doesn't log otherwise.
-	 */
+	 
 	expected_int = 0;
 	read_int = 0;
 
@@ -544,11 +532,7 @@ static bool show_mismatch(struct ctl_data *ctl, int index,
 	}
 
 	if (expected_int != read_int) {
-		/*
-		 * NOTE: The volatile attribute means that the hardware
-		 * can voluntarily change the state of control element
-		 * independent of any operation by software.  
-		 */
+		 
 		bool is_volatile = snd_ctl_elem_info_is_volatile(ctl->info);
 		ksft_print_msg("%s.%d expected %lld but read %lld, is_volatile %d\n",
 			       ctl->name, index, expected_int, read_int, is_volatile);
@@ -558,12 +542,7 @@ static bool show_mismatch(struct ctl_data *ctl, int index,
 	}
 }
 
-/*
- * Write a value then if possible verify that we get the expected
- * result.  An optional expected value can be provided if we expect
- * the write to fail, for verifying that invalid writes don't corrupt
- * anything.
- */
+ 
 static int write_and_verify(struct ctl_data *ctl,
 			    snd_ctl_elem_value_t *write_val,
 			    snd_ctl_elem_value_t *expected_val)
@@ -575,11 +554,7 @@ static int write_and_verify(struct ctl_data *ctl,
 	snd_ctl_elem_value_alloca(&read_val);
 	snd_ctl_elem_value_alloca(&w_val);
 
-	/*
-	 * We need to copy the write value since writing can modify
-	 * the value which causes surprises, and allocate an expected
-	 * value if we expect to read back what we wrote.
-	 */
+	 
 	snd_ctl_elem_value_copy(w_val, write_val);
 	if (expected_val) {
 		error_expected = true;
@@ -589,7 +564,7 @@ static int write_and_verify(struct ctl_data *ctl,
 		snd_ctl_elem_value_copy(expected_val, write_val);
 	}
 
-	/* Store the value before we write */
+	 
 	if (snd_ctl_elem_info_is_readable(ctl->info)) {
 		snd_ctl_elem_value_set_id(initial_val, ctl->id);
 
@@ -601,10 +576,7 @@ static int write_and_verify(struct ctl_data *ctl,
 		}
 	}
 
-	/*
-	 * Do the write, if we have an expected value ignore the error
-	 * and carry on to validate the expected value.
-	 */
+	 
 	err = snd_ctl_elem_write(ctl->card->handle, w_val);
 	if (err < 0 && !error_expected) {
 		ksft_print_msg("snd_ctl_elem_write() failed: %s\n",
@@ -612,7 +584,7 @@ static int write_and_verify(struct ctl_data *ctl,
 		return err;
 	}
 
-	/* Can we do the verification part? */
+	 
 	if (!snd_ctl_elem_info_is_readable(ctl->info))
 		return err;
 
@@ -625,13 +597,7 @@ static int write_and_verify(struct ctl_data *ctl,
 		return err;
 	}
 
-	/*
-	 * Check for an event if the value changed, or confirm that
-	 * there was none if it didn't.  We rely on the kernel
-	 * generating the notification before it returns from the
-	 * write, this is currently true, should that ever change this
-	 * will most likely break and need updating.
-	 */
+	 
 	if (!snd_ctl_elem_info_is_volatile(ctl->info)) {
 		err = wait_for_event(ctl, 0);
 		if (snd_ctl_elem_value_compare(initial_val, read_val)) {
@@ -651,11 +617,7 @@ static int write_and_verify(struct ctl_data *ctl,
 		}
 	}
 
-	/*
-	 * Use the libray to compare values, if there's a mismatch
-	 * carry on and try to provide a more useful diagnostic than
-	 * just "mismatch".
-	 */
+	 
 	if (!snd_ctl_elem_value_compare(expected_val, read_val))
 		return 0;
 
@@ -671,15 +633,12 @@ static int write_and_verify(struct ctl_data *ctl,
 	return -1;
 }
 
-/*
- * Make sure we can write the default value back to the control, this
- * should validate that at least some write works.
- */
+ 
 static void test_ctl_write_default(struct ctl_data *ctl)
 {
 	int err;
 
-	/* If the control is turned off let's be polite */
+	 
 	if (snd_ctl_elem_info_is_inactive(ctl->info)) {
 		ksft_print_msg("%s is inactive\n", ctl->name);
 		ksft_test_result_skip("write_default.%d.%d\n",
@@ -694,7 +653,7 @@ static void test_ctl_write_default(struct ctl_data *ctl)
 		return;
 	}
 
-	/* No idea what the default was for unreadable controls */
+	 
 	if (!snd_ctl_elem_info_is_readable(ctl->info)) {
 		ksft_print_msg("%s couldn't read default\n", ctl->name);
 		ksft_test_result_skip("write_default.%d.%d\n",
@@ -812,7 +771,7 @@ static void test_ctl_write_valid(struct ctl_data *ctl)
 {
 	bool pass;
 
-	/* If the control is turned off let's be polite */
+	 
 	if (snd_ctl_elem_info_is_inactive(ctl->info)) {
 		ksft_print_msg("%s is inactive\n", ctl->name);
 		ksft_test_result_skip("write_valid.%d.%d\n",
@@ -845,13 +804,13 @@ static void test_ctl_write_valid(struct ctl_data *ctl)
 		break;
 
 	default:
-		/* No tests for this yet */
+		 
 		ksft_test_result_skip("write_valid.%d.%d\n",
 				      ctl->card->card, ctl->elem);
 		return;
 	}
 
-	/* Restore the default value to minimise disruption */
+	 
 	write_and_verify(ctl, ctl->def_val, NULL);
 
 	ksft_test_result(pass, "write_valid.%d.%d\n",
@@ -863,12 +822,12 @@ static bool test_ctl_write_invalid_value(struct ctl_data *ctl,
 {
 	int err;
 
-	/* Ideally this will fail... */
+	 
 	err = snd_ctl_elem_write(ctl->card->handle, val);
 	if (err < 0)
 		return false;
 
-	/* ...but some devices will clamp to an in range value */
+	 
 	err = snd_ctl_elem_read(ctl->card->handle, val);
 	if (err < 0) {
 		ksft_print_msg("%s failed to read: %s\n",
@@ -906,7 +865,7 @@ static bool test_ctl_write_invalid_integer(struct ctl_data *ctl)
 
 	for (i = 0; i < snd_ctl_elem_info_get_count(ctl->info); i++) {
 		if (snd_ctl_elem_info_get_min(ctl->info) != LONG_MIN) {
-			/* Just under range */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer(val, i,
 			       snd_ctl_elem_info_get_min(ctl->info) - 1);
@@ -914,7 +873,7 @@ static bool test_ctl_write_invalid_integer(struct ctl_data *ctl)
 			if (test_ctl_write_invalid_value(ctl, val))
 				fail = true;
 
-			/* Minimum representable value */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer(val, i, LONG_MIN);
 
@@ -923,7 +882,7 @@ static bool test_ctl_write_invalid_integer(struct ctl_data *ctl)
 		}
 
 		if (snd_ctl_elem_info_get_max(ctl->info) != LONG_MAX) {
-			/* Just over range */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer(val, i,
 			       snd_ctl_elem_info_get_max(ctl->info) + 1);
@@ -931,7 +890,7 @@ static bool test_ctl_write_invalid_integer(struct ctl_data *ctl)
 			if (test_ctl_write_invalid_value(ctl, val))
 				fail = true;
 
-			/* Maximum representable value */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer(val, i, LONG_MAX);
 
@@ -952,7 +911,7 @@ static bool test_ctl_write_invalid_integer64(struct ctl_data *ctl)
 
 	for (i = 0; i < snd_ctl_elem_info_get_count(ctl->info); i++) {
 		if (snd_ctl_elem_info_get_min64(ctl->info) != LLONG_MIN) {
-			/* Just under range */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer64(val, i,
 				snd_ctl_elem_info_get_min64(ctl->info) - 1);
@@ -960,7 +919,7 @@ static bool test_ctl_write_invalid_integer64(struct ctl_data *ctl)
 			if (test_ctl_write_invalid_value(ctl, val))
 				fail = true;
 
-			/* Minimum representable value */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer64(val, i, LLONG_MIN);
 
@@ -969,7 +928,7 @@ static bool test_ctl_write_invalid_integer64(struct ctl_data *ctl)
 		}
 
 		if (snd_ctl_elem_info_get_max64(ctl->info) != LLONG_MAX) {
-			/* Just over range */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer64(val, i,
 				snd_ctl_elem_info_get_max64(ctl->info) + 1);
@@ -977,7 +936,7 @@ static bool test_ctl_write_invalid_integer64(struct ctl_data *ctl)
 			if (test_ctl_write_invalid_value(ctl, val))
 				fail = true;
 
-			/* Maximum representable value */
+			 
 			snd_ctl_elem_value_copy(val, ctl->def_val);
 			snd_ctl_elem_value_set_integer64(val, i, LLONG_MAX);
 
@@ -999,7 +958,7 @@ static bool test_ctl_write_invalid_enumerated(struct ctl_data *ctl)
 	snd_ctl_elem_value_set_id(val, ctl->id);
 
 	for (i = 0; i < snd_ctl_elem_info_get_count(ctl->info); i++) {
-		/* One beyond maximum */
+		 
 		snd_ctl_elem_value_copy(val, ctl->def_val);
 		snd_ctl_elem_value_set_enumerated(val, i,
 				  snd_ctl_elem_info_get_items(ctl->info));
@@ -1007,7 +966,7 @@ static bool test_ctl_write_invalid_enumerated(struct ctl_data *ctl)
 		if (test_ctl_write_invalid_value(ctl, val))
 			fail = true;
 
-		/* Maximum representable value */
+		 
 		snd_ctl_elem_value_copy(val, ctl->def_val);
 		snd_ctl_elem_value_set_enumerated(val, i, UINT_MAX);
 
@@ -1024,7 +983,7 @@ static void test_ctl_write_invalid(struct ctl_data *ctl)
 {
 	bool pass;
 
-	/* If the control is turned off let's be polite */
+	 
 	if (snd_ctl_elem_info_is_inactive(ctl->info)) {
 		ksft_print_msg("%s is inactive\n", ctl->name);
 		ksft_test_result_skip("write_invalid.%d.%d\n",
@@ -1057,13 +1016,13 @@ static void test_ctl_write_invalid(struct ctl_data *ctl)
 		break;
 
 	default:
-		/* No tests for this yet */
+		 
 		ksft_test_result_skip("write_invalid.%d.%d\n",
 				      ctl->card->card, ctl->elem);
 		return;
 	}
 
-	/* Restore the default value to minimise disruption */
+	 
 	write_and_verify(ctl, ctl->def_val, NULL);
 
 	ksft_test_result(pass, "write_invalid.%d.%d\n",
@@ -1093,10 +1052,7 @@ int main(void)
 	ksft_set_plan(num_controls * TESTS_PER_CONTROL);
 
 	for (ctl = ctl_list; ctl != NULL; ctl = ctl->next) {
-		/*
-		 * Must test get_value() before we write anything, the
-		 * test stores the default value for later cleanup.
-		 */
+		 
 		test_ctl_get_value(ctl);
 		test_ctl_name(ctl);
 		test_ctl_write_default(ctl);

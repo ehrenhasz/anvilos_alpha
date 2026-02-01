@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Handles the management command interface functions
- *
- * Author: Lyndon Chen
- *
- * Date: May 8, 2003
- *
- * Functions:
- *	vnt_cmd_complete - Command Complete function
- *	vnt_schedule_command - Push Command and wait Command Scheduler to do
- *	vnt_cmd_timer_wait- Call back timer
- *
- * Revision History:
- *
- */
+
+ 
 
 #include "device.h"
 #include "mac.h"
@@ -44,7 +27,7 @@ static int vnt_cmd_complete(struct vnt_private *priv)
 {
 	priv->command_state = WLAN_CMD_IDLE;
 	if (priv->free_cmd_queue == CMD_Q_SIZE) {
-		/* Command Queue Empty */
+		 
 		priv->cmd_running = false;
 		return true;
 	}
@@ -104,7 +87,7 @@ void vnt_run_command(struct work_struct *work)
 		dev_info(&priv->usb->dev, "Starting mac80211\n");
 
 		if (vnt_init(priv)) {
-			/* If fail all ends TODO retry */
+			 
 			dev_err(&priv->usb->dev, "failed to start\n");
 			usb_set_intfdata(priv->intf, NULL);
 			ieee80211_free_hw(priv->hw);

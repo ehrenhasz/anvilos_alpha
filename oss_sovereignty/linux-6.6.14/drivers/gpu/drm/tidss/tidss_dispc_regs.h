@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2016-2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+ 
+ 
 
 #ifndef __TIDSS_DISPC_REGS_H
 #define __TIDSS_DISPC_REGS_H
@@ -46,11 +43,7 @@ enum dispc_common_regs {
 	DISPC_COMMON_REG_TABLE_LEN,
 };
 
-/*
- * dispc_common_regmap should be defined as const u16 * and pointing
- * to a valid dss common register map for the platform, before the
- * macros bellow can be used.
- */
+ 
 
 #define REG(r) (dispc_common_regmap[r ## _OFF])
 
@@ -91,7 +84,7 @@ enum dispc_common_regs {
 #define DISPC_MSS_VP1			REG(DISPC_MSS_VP1)
 #define DISPC_MSS_VP3			REG(DISPC_MSS_VP3)
 
-/* VID */
+ 
 
 #define DISPC_VID_ACCUH_0		0x0
 #define DISPC_VID_ACCUH_1		0x4
@@ -137,12 +130,12 @@ enum dispc_common_regs {
 #define DISPC_VID_FIR_COEF_V12_C(phase)	(0x1bc + (phase) * 4)
 
 #define DISPC_VID_GLOBAL_ALPHA		0x1fc
-#define DISPC_VID_K2G_IRQENABLE		0x200 /* K2G */
-#define DISPC_VID_K2G_IRQSTATUS		0x204 /* K2G */
+#define DISPC_VID_K2G_IRQENABLE		0x200  
+#define DISPC_VID_K2G_IRQSTATUS		0x204  
 #define DISPC_VID_MFLAG_THRESHOLD	0x208
 #define DISPC_VID_PICTURE_SIZE		0x20c
 #define DISPC_VID_PIXEL_INC		0x210
-#define DISPC_VID_K2G_POSITION		0x214 /* K2G */
+#define DISPC_VID_K2G_POSITION		0x214  
 #define DISPC_VID_PRELOAD		0x218
 #define DISPC_VID_ROW_INC		0x21c
 #define DISPC_VID_SIZE			0x220
@@ -160,12 +153,12 @@ enum dispc_common_regs {
 #define DISPC_VID_SAFETY_SIZE		0x2b0
 #define DISPC_VID_SAFETY_LFSR_SEED	0x2b4
 #define DISPC_VID_LUMAKEY		0x2b8
-#define DISPC_VID_DMA_BUFSIZE		0x2bc /* J721E */
+#define DISPC_VID_DMA_BUFSIZE		0x2bc  
 
-/* OVR */
+ 
 
 #define DISPC_OVR_CONFIG		0x0
-#define DISPC_OVR_VIRTVP		0x4 /* J721E */
+#define DISPC_OVR_VIRTVP		0x4  
 #define DISPC_OVR_DEFAULT_COLOR		0x8
 #define DISPC_OVR_DEFAULT_COLOR2	0xc
 #define DISPC_OVR_TRANS_COLOR_MAX	0x10
@@ -173,8 +166,8 @@ enum dispc_common_regs {
 #define DISPC_OVR_TRANS_COLOR_MIN	0x18
 #define DISPC_OVR_TRANS_COLOR_MIN2	0x1c
 #define DISPC_OVR_ATTRIBUTES(n)		(0x20 + (n) * 4)
-#define DISPC_OVR_ATTRIBUTES2(n)	(0x34 + (n) * 4) /* J721E */
-/* VP */
+#define DISPC_OVR_ATTRIBUTES2(n)	(0x34 + (n) * 4)  
+ 
 
 #define DISPC_VP_CONFIG				0x0
 #define DISPC_VP_CONTROL			0x4
@@ -183,9 +176,9 @@ enum dispc_common_regs {
 #define DISPC_VP_CSC_COEF2			0x10
 #define DISPC_VP_DATA_CYCLE_0			0x14
 #define DISPC_VP_DATA_CYCLE_1			0x18
-#define DISPC_VP_K2G_GAMMA_TABLE		0x20 /* K2G */
-#define DISPC_VP_K2G_IRQENABLE			0x3c /* K2G */
-#define DISPC_VP_K2G_IRQSTATUS			0x40 /* K2G */
+#define DISPC_VP_K2G_GAMMA_TABLE		0x20  
+#define DISPC_VP_K2G_IRQENABLE			0x3c  
+#define DISPC_VP_K2G_IRQSTATUS			0x40  
 #define DISPC_VP_DATA_CYCLE_2			0x1c
 #define DISPC_VP_LINE_NUMBER			0x44
 #define DISPC_VP_POL_FREQ			0x4c
@@ -222,16 +215,11 @@ enum dispc_common_regs {
 #define DISPC_VP_DSS_OLDI_CFG			0x160
 #define DISPC_VP_DSS_OLDI_STATUS		0x164
 #define DISPC_VP_DSS_OLDI_LB			0x168
-#define DISPC_VP_DSS_MERGE_SPLIT		0x16c /* J721E */
-#define DISPC_VP_DSS_DMA_THREADSIZE		0x170 /* J721E */
-#define DISPC_VP_DSS_DMA_THREADSIZE_STATUS	0x174 /* J721E */
+#define DISPC_VP_DSS_MERGE_SPLIT		0x16c  
+#define DISPC_VP_DSS_DMA_THREADSIZE		0x170  
+#define DISPC_VP_DSS_DMA_THREADSIZE_STATUS	0x174  
 
-/*
- * OLDI IO_CTRL register offsets. On AM654 the registers are found
- * from CTRL_MMR0, there the syscon regmap should map 0x14 bytes from
- * CTRLMMR0P1_OLDI_DAT0_IO_CTRL to CTRLMMR0P1_OLDI_CLK_IO_CTRL
- * register range.
- */
+ 
 #define OLDI_DAT0_IO_CTRL			0x00
 #define OLDI_DAT1_IO_CTRL			0x04
 #define OLDI_DAT2_IO_CTRL			0x08
@@ -240,4 +228,4 @@ enum dispc_common_regs {
 
 #define OLDI_PWRDN_TX				BIT(8)
 
-#endif /* __TIDSS_DISPC_REGS_H */
+#endif  

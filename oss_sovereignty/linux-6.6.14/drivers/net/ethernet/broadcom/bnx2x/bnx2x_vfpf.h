@@ -1,49 +1,25 @@
-/* bnx2x_vfpf.h: Qlogic Everest network driver.
- *
- * Copyright (c) 2011-2013 Broadcom Corporation
- * Copyright (c) 2014 QLogic Corporation
- * All rights reserved
- *
- * Unless you and Qlogic execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2 (the “GPL”),
- * available at http://www.gnu.org/licenses/gpl-2.0.html, with the following
- * added to such license:
- *
- * As a special exception, the copyright holders of this software give you
- * permission to link this software with independent modules, and to copy and
- * distribute the resulting executable under terms of your choice, provided that
- * you also meet, for each linked independent module, the terms and conditions
- * of the license of that module.  An independent module is a module which is
- * not derived from this software.  The special exception does not apply to any
- * modifications of the software.
- *
- * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
- * Written by: Ariel Elior <ariel.elior@qlogic.com>
- */
+ 
 #ifndef VF_PF_IF_H
 #define VF_PF_IF_H
 
 #ifdef CONFIG_BNX2X_SRIOV
 
-/* Common definitions for all HVs */
+ 
 struct vf_pf_resc_request {
 	u8  num_rxqs;
 	u8  num_txqs;
 	u8  num_sbs;
 	u8  num_mac_filters;
 	u8  num_vlan_filters;
-	u8  num_mc_filters; /* No limit  so superfluous */
+	u8  num_mc_filters;  
 };
 
 struct hw_sb_info {
-	u8 hw_sb_id;	/* aka absolute igu id, used to ack the sb */
-	u8 sb_qid;	/* used to update DHC for sb */
+	u8 hw_sb_id;	 
+	u8 sb_qid;	 
 };
 
-/* HW VF-PF channel definitions
- * A.K.A VF-PF mailbox
- */
+ 
 #define TLV_BUFFER_SIZE			1024
 #define PF_VF_BULLETIN_SIZE		512
 
@@ -74,7 +50,7 @@ struct hw_sb_info {
 
 #define BULLETIN_CONTENT_SIZE		(sizeof(struct pf_vf_bulletin_content))
 #define BULLETIN_CONTENT_LEGACY_SIZE	(32)
-#define BULLETIN_ATTEMPTS	5 /* crc failures before throwing towel */
+#define BULLETIN_ATTEMPTS	5  
 #define BULLETIN_CRC_SEED	0
 
 enum {
@@ -85,47 +61,45 @@ enum {
 	PFVF_STATUS_NO_RESOURCE
 };
 
-/* vf pf channel tlvs */
-/* general tlv header (used for both vf->pf request and pf->vf response) */
+ 
+ 
 struct channel_tlv {
 	u16 type;
 	u16 length;
 };
 
-/* header of first vf->pf tlv carries the offset used to calculate response
- * buffer address
- */
+ 
 struct vfpf_first_tlv {
 	struct channel_tlv tl;
 	u32 resp_msg_offset;
 };
 
-/* header of pf->vf tlvs, carries the status of handling the request */
+ 
 struct pfvf_tlv {
 	struct channel_tlv tl;
 	u8 status;
 	u8 padding[3];
 };
 
-/* response tlv used for most tlvs */
+ 
 struct pfvf_general_resp_tlv {
 	struct pfvf_tlv hdr;
 };
 
-/* used to terminate and pad a tlv list */
+ 
 struct channel_list_end_tlv {
 	struct channel_tlv tl;
 	u8 padding[4];
 };
 
-/* Acquire */
+ 
 struct vfpf_acquire_tlv {
 	struct vfpf_first_tlv first_tlv;
 
 	struct vf_pf_vfdev_info {
-		/* the following fields are for debug purposes */
-		u8  vf_id;		/* ME register value */
-		u8  vf_os;		/* e.g. Linux, W2K8 */
+		 
+		u8  vf_id;		 
+		u8  vf_os;		 
 #define VF_OS_SUBVERSION_MASK	(0x1f)
 #define VF_OS_MASK		(0xe0)
 #define VF_OS_SHIFT		(5)
@@ -143,14 +117,14 @@ struct vfpf_acquire_tlv {
 	aligned_u64 bulletin_addr;
 };
 
-/* simple operation request on queue */
+ 
 struct vfpf_q_op_tlv {
 	struct vfpf_first_tlv	first_tlv;
 	u8 vf_qid;
 	u8 padding[3];
 };
 
-/* receive side scaling tlv */
+ 
 struct vfpf_rss_tlv {
 	struct vfpf_first_tlv	first_tlv;
 	u32			rss_flags;
@@ -168,10 +142,10 @@ struct vfpf_rss_tlv {
 	u8			rss_key_size;
 	u8			padding;
 	u8			ind_table[T_ETH_INDIRECTION_TABLE_SIZE];
-	u32			rss_key[T_ETH_RSS_KEY];	/* hash values */
+	u32			rss_key[T_ETH_RSS_KEY];	 
 };
 
-/* acquire response tlv - carries the allocated resources */
+ 
 struct pfvf_acquire_resp_tlv {
 	struct pfvf_tlv hdr;
 	struct pf_vf_pfdev_info {
@@ -189,10 +163,7 @@ struct pfvf_acquire_resp_tlv {
 		u8  padding;
 	} pfdev_info;
 	struct pf_vf_resc {
-		/* in case of status NO_RESOURCE in message hdr, pf will fill
-		 * this struct with suggested amount of resources for next
-		 * acquire request
-		 */
+		 
 #define PFVF_MAX_QUEUES_PER_VF         16
 #define PFVF_MAX_SBS_PER_VF            16
 		struct hw_sb_info hw_sbs[PFVF_MAX_SBS_PER_VF];
@@ -221,15 +192,12 @@ struct vfpf_fp_hsi_resp_tlv {
 	u8 padding[3];
 };
 
-#define VFPF_INIT_FLG_STATS_COALESCE	(1 << 0) /* when set the VFs queues
-						  * stats will be coalesced on
-						  * the leading RSS queue
-						  */
+#define VFPF_INIT_FLG_STATS_COALESCE	(1 << 0)  
 
-/* Init VF */
+ 
 struct vfpf_init_tlv {
 	struct vfpf_first_tlv first_tlv;
-	aligned_u64 sb_addr[PFVF_MAX_SBS_PER_VF]; /* vf_sb based */
+	aligned_u64 sb_addr[PFVF_MAX_SBS_PER_VF];  
 	aligned_u64 spq_addr;
 	aligned_u64 stats_addr;
 	u16 stats_stride;
@@ -237,74 +205,72 @@ struct vfpf_init_tlv {
 	u32 padding[2];
 };
 
-/* Setup Queue */
+ 
 struct vfpf_setup_q_tlv {
 	struct vfpf_first_tlv first_tlv;
 
 	struct vf_pf_rxq_params {
-		/* physical addresses */
+		 
 		aligned_u64 rcq_addr;
 		aligned_u64 rcq_np_addr;
 		aligned_u64 rxq_addr;
 		aligned_u64 sge_addr;
 
-		/* sb + hc info */
-		u8  vf_sb;		/* index in hw_sbs[] */
-		u8  sb_index;		/* Index in the SB */
-		u16 hc_rate;		/* desired interrupts per sec. */
-					/* valid iff VFPF_QUEUE_FLG_HC */
-		/* rx buffer info */
+		 
+		u8  vf_sb;		 
+		u8  sb_index;		 
+		u16 hc_rate;		 
+					 
+		 
 		u16 mtu;
 		u16 buf_sz;
-		u16 flags;		/* VFPF_QUEUE_FLG_X flags */
-		u16 stat_id;		/* valid iff VFPF_QUEUE_FLG_STATS */
+		u16 flags;		 
+		u16 stat_id;		 
 
-		/* valid iff VFPF_QUEUE_FLG_TPA */
+		 
 		u16 sge_buf_sz;
 		u16 tpa_agg_sz;
 		u8 max_sge_pkt;
 
-		u8 drop_flags;		/* VFPF_QUEUE_DROP_X, for Linux VMs
-					 * all the flags are turned off
-					 */
+		u8 drop_flags;		 
 
-		u8 cache_line_log;	/* VFPF_QUEUE_FLG_CACHE_ALIGN */
+		u8 cache_line_log;	 
 		u8 padding;
 	} rxq;
 
 	struct vf_pf_txq_params {
-		/* physical addresses */
+		 
 		aligned_u64 txq_addr;
 
-		/* sb + hc info */
-		u8  vf_sb;		/* index in hw_sbs[] */
-		u8  sb_index;		/* Index in the SB */
-		u16 hc_rate;		/* desired interrupts per sec. */
-					/* valid iff VFPF_QUEUE_FLG_HC */
-		u32 flags;		/* VFPF_QUEUE_FLG_X flags */
-		u16 stat_id;		/* valid iff VFPF_QUEUE_FLG_STATS */
-		u8  traffic_type;	/* see in setup_context() */
+		 
+		u8  vf_sb;		 
+		u8  sb_index;		 
+		u16 hc_rate;		 
+					 
+		u32 flags;		 
+		u16 stat_id;		 
+		u8  traffic_type;	 
 		u8  padding;
 	} txq;
 
-	u8 vf_qid;			/* index in hw_qid[] */
+	u8 vf_qid;			 
 	u8 param_valid;
 #define VFPF_RXQ_VALID		0x01
 #define VFPF_TXQ_VALID		0x02
 	u8 padding[2];
 };
 
-/* Set Queue Filters */
+ 
 struct vfpf_q_mac_vlan_filter {
 	u32 flags;
 #define VFPF_Q_FILTER_DEST_MAC_VALID	0x01
 #define VFPF_Q_FILTER_VLAN_TAG_VALID	0x02
-#define VFPF_Q_FILTER_SET		0x100	/* set/clear */
+#define VFPF_Q_FILTER_SET		0x100	 
 	u8  mac[ETH_ALEN];
 	u16 vlan_tag;
 };
 
-/* configure queue filters */
+ 
 struct vfpf_set_q_filters_tlv {
 	struct vfpf_first_tlv first_tlv;
 
@@ -313,7 +279,7 @@ struct vfpf_set_q_filters_tlv {
 #define VFPF_SET_Q_FILTERS_MULTICAST_CHANGED	0x02
 #define VFPF_SET_Q_FILTERS_RX_MASK_CHANGED	0x04
 
-	u8 vf_qid;			/* index in hw_qid[] */
+	u8 vf_qid;			 
 	u8 n_mac_vlan_filters;
 	u8 n_multicast;
 	u8 padding;
@@ -327,7 +293,7 @@ struct vfpf_set_q_filters_tlv {
 #define PFVF_MAX_MULTICAST_PER_VF              32
 	u8  multicast[PFVF_MAX_MULTICAST_PER_VF][ETH_ALEN];
 
-	u32 rx_mask;	/* see mask constants at the top of the file */
+	u32 rx_mask;	 
 };
 
 struct vfpf_tpa_tlv {
@@ -349,14 +315,14 @@ struct vfpf_tpa_tlv {
 	} tpa_client_info;
 };
 
-/* close VF (disable VF) */
+ 
 struct vfpf_close_tlv {
 	struct vfpf_first_tlv   first_tlv;
-	u16			vf_id;  /* for debug */
+	u16			vf_id;   
 	u8 padding[2];
 };
 
-/* release the VF's acquired resources */
+ 
 struct vfpf_release_tlv {
 	struct vfpf_first_tlv	first_tlv;
 	u16			vf_id;
@@ -389,48 +355,31 @@ union pfvf_tlvs {
 	struct tlv_buffer_size		tlv_buf_size;
 };
 
-/* This is a structure which is allocated in the VF, which the PF may update
- * when it deems it necessary to do so. The bulletin board is sampled
- * periodically by the VF. A copy per VF is maintained in the PF (to prevent
- * loss of data upon multiple updates (or the need for read modify write)).
- */
+ 
 struct pf_vf_bulletin_size {
 	u8 size[PF_VF_BULLETIN_SIZE];
 };
 
 struct pf_vf_bulletin_content {
-	u32 crc;			/* crc of structure to ensure is not in
-					 * mid-update
-					 */
+	u32 crc;			 
 	u16 version;
 	u16 length;
 
-	aligned_u64 valid_bitmap;	/* bitmap indicating which fields
-					 * hold valid values
-					 */
+	aligned_u64 valid_bitmap;	 
 
-#define MAC_ADDR_VALID		0	/* alert the vf that a new mac address
-					 * is available for it
-					 */
-#define VLAN_VALID		1	/* when set, the vf should not access
-					 * the vfpf channel
-					 */
-#define CHANNEL_DOWN		2	/* vfpf channel is disabled. VFs are not
-					 * to attempt to send messages on the
-					 * channel after this bit is set
-					 */
-#define LINK_VALID		3	/* alert the VF thet a new link status
-					 * update is available for it
-					 */
+#define MAC_ADDR_VALID		0	 
+#define VLAN_VALID		1	 
+#define CHANNEL_DOWN		2	 
+#define LINK_VALID		3	 
 	u8 mac[ETH_ALEN];
 	u8 mac_padding[2];
 
 	u16 vlan;
 	u8 vlan_padding[6];
 
-	u16 link_speed;			 /* Effective line speed */
+	u16 link_speed;			  
 	u8 link_speed_padding[6];
-	u32 link_flags;			 /* VFPF_LINK_REPORT_XXX flags */
+	u32 link_flags;			  
 #define VFPF_LINK_REPORT_LINK_DOWN	 (1 << 0)
 #define VFPF_LINK_REPORT_FULL_DUPLEX	 (1 << 1)
 #define VFPF_LINK_REPORT_RX_FC_ON	 (1 << 2)
@@ -469,5 +418,5 @@ enum channel_tlvs {
 	CHANNEL_TLV_MAX
 };
 
-#endif /* CONFIG_BNX2X_SRIOV */
-#endif /* VF_PF_IF_H */
+#endif  
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_drv.c  --  R-Car VSP1 Driver
- *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -38,9 +32,7 @@
 #include "vsp1_uif.h"
 #include "vsp1_video.h"
 
-/* -----------------------------------------------------------------------------
- * Interrupt Handling
- */
+ 
 
 static irqreturn_t vsp1_irq_handler(int irq, void *data)
 {
@@ -77,24 +69,9 @@ static irqreturn_t vsp1_irq_handler(int irq, void *data)
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Entities
- */
+ 
 
-/*
- * vsp1_create_sink_links - Create links from all sources to the given sink
- *
- * This function creates media links from all valid sources to the given sink
- * pad. Links that would be invalid according to the VSP1 hardware capabilities
- * are skipped. Those include all links
- *
- * - from a UDS to a UDS (UDS entities can't be chained)
- * - from an entity to itself (no loops are allowed)
- *
- * Furthermore, the BRS can't be connected to histogram generators, but no
- * special check is currently needed as all VSP instances that include a BRS
- * have no histogram generator.
- */
+ 
 static int vsp1_create_sink_links(struct vsp1_device *vsp1,
 				  struct vsp1_entity *sink)
 {
@@ -199,10 +176,7 @@ static int vsp1_uapi_create_links(struct vsp1_device *vsp1)
 	}
 
 	for (i = 0; i < vsp1->info->wpf_count; ++i) {
-		/*
-		 * Connect the video device to the WPF. All connections are
-		 * immutable.
-		 */
+		 
 		struct vsp1_rwpf *wpf = vsp1->wpf[i];
 
 		ret = media_create_pad_link(&wpf->entity.subdev.entity,
@@ -255,11 +229,7 @@ static int vsp1_create_entities(struct vsp1_device *vsp1)
 	media_device_init(mdev);
 
 	vsp1->media_ops.link_setup = vsp1_entity_link_setup;
-	/*
-	 * Don't perform link validation when the userspace API is disabled as
-	 * the pipeline is configured internally by the driver in that case, and
-	 * its configuration can thus be trusted.
-	 */
+	 
 	if (vsp1->info->uapi)
 		vsp1->media_ops.link_validate = v4l2_subdev_link_validate;
 
@@ -271,7 +241,7 @@ static int vsp1_create_entities(struct vsp1_device *vsp1)
 		goto done;
 	}
 
-	/* Instantiate all the entities. */
+	 
 	if (vsp1_feature(vsp1, VSP1_HAS_BRS)) {
 		vsp1->brs = vsp1_brx_create(vsp1, VSP1_ENTITY_BRS);
 		if (IS_ERR(vsp1->brs)) {
@@ -340,11 +310,7 @@ static int vsp1_create_entities(struct vsp1_device *vsp1)
 			      &vsp1->entities);
 	}
 
-	/*
-	 * The LIFs are only supported when used in conjunction with the DU, in
-	 * which case the userspace API is disabled. If the userspace API is
-	 * enabled skip the LIFs, even when present.
-	 */
+	 
 	if (!vsp1->info->uapi) {
 		for (i = 0; i < vsp1->info->lif_count; ++i) {
 			struct vsp1_lif *lif;
@@ -454,7 +420,7 @@ static int vsp1_create_entities(struct vsp1_device *vsp1)
 		}
 	}
 
-	/* Register all subdevs. */
+	 
 	list_for_each_entry(entity, &vsp1->entities, list_dev) {
 		ret = v4l2_device_register_subdev(&vsp1->v4l2_dev,
 						  &entity->subdev);
@@ -462,10 +428,7 @@ static int vsp1_create_entities(struct vsp1_device *vsp1)
 			goto done;
 	}
 
-	/*
-	 * Create links and register subdev nodes if the userspace API is
-	 * enabled or initialize the DRM pipeline otherwise.
-	 */
+	 
 	if (vsp1->info->uapi) {
 		ret = vsp1_uapi_create_links(vsp1);
 		if (ret < 0)
@@ -518,7 +481,7 @@ static int vsp1_device_init(struct vsp1_device *vsp1)
 	unsigned int i;
 	int ret;
 
-	/* Reset any channel that might be running. */
+	 
 	for (i = 0; i < vsp1->info->wpf_count; ++i) {
 		ret = vsp1_reset_wpf(vsp1, i);
 		if (ret < 0)
@@ -567,41 +530,25 @@ static void vsp1_mask_all_interrupts(struct vsp1_device *vsp1)
 		vsp1_write(vsp1, VI6_WPF_IRQ_ENB(i), 0);
 }
 
-/*
- * vsp1_device_get - Acquire the VSP1 device
- *
- * Make sure the device is not suspended and initialize it if needed.
- *
- * Return 0 on success or a negative error code otherwise.
- */
+ 
 int vsp1_device_get(struct vsp1_device *vsp1)
 {
 	return pm_runtime_resume_and_get(vsp1->dev);
 }
 
-/*
- * vsp1_device_put - Release the VSP1 device
- *
- * Decrement the VSP1 reference count and cleanup the device if the last
- * reference is released.
- */
+ 
 void vsp1_device_put(struct vsp1_device *vsp1)
 {
 	pm_runtime_put_sync(vsp1->dev);
 }
 
-/* -----------------------------------------------------------------------------
- * Power Management
- */
+ 
 
 static int __maybe_unused vsp1_pm_suspend(struct device *dev)
 {
 	struct vsp1_device *vsp1 = dev_get_drvdata(dev);
 
-	/*
-	 * When used as part of a display pipeline, the VSP is stopped and
-	 * restarted explicitly by the DU.
-	 */
+	 
 	if (!vsp1->drm)
 		vsp1_video_suspend(vsp1);
 
@@ -616,10 +563,7 @@ static int __maybe_unused vsp1_pm_resume(struct device *dev)
 
 	pm_runtime_force_resume(vsp1->dev);
 
-	/*
-	 * When used as part of a display pipeline, the VSP is stopped and
-	 * restarted explicitly by the DU.
-	 */
+	 
 	if (!vsp1->drm)
 		vsp1_video_resume(vsp1);
 
@@ -646,11 +590,7 @@ static int __maybe_unused vsp1_pm_runtime_resume(struct device *dev)
 		return ret;
 
 	if (vsp1->info) {
-		/*
-		 * On R-Car Gen2 and RZ/G1, vsp1 register access after deassert
-		 * can cause lock-up. It is a special case and needs some delay
-		 * to avoid this lock-up.
-		 */
+		 
 		if (vsp1->info->gen == 2)
 			udelay(1);
 
@@ -673,9 +613,7 @@ static const struct dev_pm_ops vsp1_pm_ops = {
 	SET_RUNTIME_PM_OPS(vsp1_pm_runtime_suspend, vsp1_pm_runtime_resume, NULL)
 };
 
-/* -----------------------------------------------------------------------------
- * Platform Driver
- */
+ 
 
 static const struct vsp1_device_info vsp1_device_infos[] = {
 	{
@@ -857,10 +795,7 @@ static const struct vsp1_device_info *vsp1_lookup_info(struct vsp1_device *vsp1)
 	u32 model;
 	u32 soc;
 
-	/*
-	 * Try the info stored in match data first for devices that don't have
-	 * a version register.
-	 */
+	 
 	info = of_device_get_match_data(vsp1->dev);
 	if (info) {
 		vsp1->version = VI6_IP_VERSION_VSP_SW | info->version | info->soc;
@@ -900,7 +835,7 @@ static int vsp1_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, vsp1);
 
-	/* I/O and IRQ resources (clock managed by the clock PM domain). */
+	 
 	vsp1->mmio = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(vsp1->mmio))
 		return PTR_ERR(vsp1->mmio);
@@ -914,7 +849,7 @@ static int vsp1_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(vsp1->rstc),
 				     "failed to get reset control\n");
 
-	/* FCP (optional). */
+	 
 	fcp_node = of_parse_phandle(pdev->dev.of_node, "renesas,fcp", 0);
 	if (fcp_node) {
 		vsp1->fcp = rcar_fcp_get(fcp_node);
@@ -925,17 +860,13 @@ static int vsp1_probe(struct platform_device *pdev)
 			return PTR_ERR(vsp1->fcp);
 		}
 
-		/*
-		 * When the FCP is present, it handles all bus master accesses
-		 * for the VSP and must thus be used in place of the VSP device
-		 * to map DMA buffers.
-		 */
+		 
 		vsp1->bus_master = rcar_fcp_get_device(vsp1->fcp);
 	} else {
 		vsp1->bus_master = vsp1->dev;
 	}
 
-	/* Configure device parameters based on the version register. */
+	 
 	pm_runtime_enable(&pdev->dev);
 
 	ret = vsp1_device_get(vsp1);
@@ -951,13 +882,7 @@ static int vsp1_probe(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "IP version 0x%08x\n", vsp1->version);
 
-	/*
-	 * Previous use of the hardware (e.g. by the bootloader) could leave
-	 * some interrupts enabled and pending.
-	 *
-	 * TODO: Investigate if this shouldn't be better handled by using the
-	 * device reset provided by the CPG.
-	 */
+	 
 	vsp1_mask_all_interrupts(vsp1);
 
 	vsp1_device_put(vsp1);
@@ -969,7 +894,7 @@ static int vsp1_probe(struct platform_device *pdev)
 		goto done;
 	}
 
-	/* Instantiate entities. */
+	 
 	ret = vsp1_create_entities(vsp1);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to create entities\n");

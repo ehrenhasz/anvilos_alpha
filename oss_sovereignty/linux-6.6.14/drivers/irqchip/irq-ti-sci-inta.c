@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments' K3 Interrupt Aggregator irqchip driver
- *
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - https://www.ti.com/
- *	Lokesh Vutla <lokeshvutla@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -40,31 +35,14 @@
 #define VINT_STATUS_OFFSET	0x18
 #define VINT_STATUS_MASKED_OFFSET	0x20
 
-/**
- * struct ti_sci_inta_event_desc - Description of an event coming to
- *				   Interrupt Aggregator. This serves
- *				   as a mapping table for global event,
- *				   hwirq and vint bit.
- * @global_event:	Global event number corresponding to this event
- * @hwirq:		Hwirq of the incoming interrupt
- * @vint_bit:		Corresponding vint bit to which this event is attached.
- */
+ 
 struct ti_sci_inta_event_desc {
 	u16 global_event;
 	u32 hwirq;
 	u8 vint_bit;
 };
 
-/**
- * struct ti_sci_inta_vint_desc - Description of a virtual interrupt coming out
- *				  of Interrupt Aggregator.
- * @domain:		Pointer to IRQ domain to which this vint belongs.
- * @list:		List entry for the vint list
- * @event_map:		Bitmap to manage the allocation of events to vint.
- * @events:		Array of event descriptors assigned to this vint.
- * @parent_virq:	Linux IRQ number that gets attached to parent
- * @vint_id:		TISCI vint ID
- */
+ 
 struct ti_sci_inta_vint_desc {
 	struct irq_domain *domain;
 	struct list_head list;
@@ -74,35 +52,13 @@ struct ti_sci_inta_vint_desc {
 	u16 vint_id;
 };
 
-/**
- * struct ti_sci_inta_irq_domain - Structure representing a TISCI based
- *				   Interrupt Aggregator IRQ domain.
- * @sci:		Pointer to TISCI handle
- * @vint:		TISCI resource pointer representing IA interrupts.
- * @global_event:	TISCI resource pointer representing global events.
- * @vint_list:		List of the vints active in the system
- * @vint_mutex:		Mutex to protect vint_list
- * @base:		Base address of the memory mapped IO registers
- * @pdev:		Pointer to platform device.
- * @ti_sci_id:		TI-SCI device identifier
- * @unmapped_cnt:	Number of @unmapped_dev_ids entries
- * @unmapped_dev_ids:	Pointer to an array of TI-SCI device identifiers of
- *			unmapped event sources.
- *			Unmapped Events are not part of the Global Event Map and
- *			they are converted to Global event within INTA to be
- *			received by the same INTA to generate an interrupt.
- *			In case an interrupt request comes for a device which is
- *			generating Unmapped Event, we must use the INTA's TI-SCI
- *			device identifier in place of the source device
- *			identifier to let sysfw know where it has to program the
- *			Global Event number.
- */
+ 
 struct ti_sci_inta_irq_domain {
 	const struct ti_sci_handle *sci;
 	struct ti_sci_resource *vint;
 	struct ti_sci_resource *global_event;
 	struct list_head vint_list;
-	/* Mutex to protect vint list */
+	 
 	struct mutex vint_mutex;
 	void __iomem *base;
 	struct platform_device *pdev;
@@ -123,11 +79,7 @@ static u16 ti_sci_inta_get_dev_id(struct ti_sci_inta_irq_domain *inta, u32 hwirq
 	if (inta->unmapped_cnt == 0)
 		return dev_id;
 
-	/*
-	 * For devices sending Unmapped Events we must use the INTA's TI-SCI
-	 * device identifier number to be able to convert it to a Global Event
-	 * and map it to an interrupt.
-	 */
+	 
 	for (i = 0; i < inta->unmapped_cnt; i++) {
 		if (dev_id == inta->unmapped_dev_ids[i]) {
 			dev_id = inta->ti_sci_id;
@@ -138,10 +90,7 @@ static u16 ti_sci_inta_get_dev_id(struct ti_sci_inta_irq_domain *inta, u32 hwirq
 	return dev_id;
 }
 
-/**
- * ti_sci_inta_irq_handler() - Chained IRQ handler for the vint irqs
- * @desc:	Pointer to irq_desc corresponding to the irq
- */
+ 
 static void ti_sci_inta_irq_handler(struct irq_desc *desc)
 {
 	struct ti_sci_inta_vint_desc *vint_desc;
@@ -165,13 +114,7 @@ static void ti_sci_inta_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(irq_desc_get_chip(desc), desc);
 }
 
-/**
- * ti_sci_inta_xlate_irq() - Translate hwirq to parent's hwirq.
- * @inta:	IRQ domain corresponding to Interrupt Aggregator
- * @vint_id:	Hardware irq corresponding to the above irq domain
- *
- * Return parent irq number if translation is available else -ENOENT.
- */
+ 
 static int ti_sci_inta_xlate_irq(struct ti_sci_inta_irq_domain *inta,
 				 u16 vint_id)
 {
@@ -196,12 +139,7 @@ static int ti_sci_inta_xlate_irq(struct ti_sci_inta_irq_domain *inta,
 	return -ENOENT;
 }
 
-/**
- * ti_sci_inta_alloc_parent_irq() - Allocate parent irq to Interrupt aggregator
- * @domain:	IRQ domain corresponding to Interrupt Aggregator
- *
- * Return 0 if all went well else corresponding error value.
- */
+ 
 static struct ti_sci_inta_vint_desc *ti_sci_inta_alloc_parent_irq(struct irq_domain *domain)
 {
 	struct ti_sci_inta_irq_domain *inta = domain->host_data;
@@ -236,13 +174,13 @@ static struct ti_sci_inta_vint_desc *ti_sci_inta_alloc_parent_irq(struct irq_dom
 	parent_fwspec.fwnode = of_node_to_fwnode(parent_node);
 
 	if (of_device_is_compatible(parent_node, "arm,gic-v3")) {
-		/* Parent is GIC */
+		 
 		parent_fwspec.param_count = 3;
 		parent_fwspec.param[0] = 0;
 		parent_fwspec.param[1] = p_hwirq - 32;
 		parent_fwspec.param[2] = IRQ_TYPE_LEVEL_HIGH;
 	} else {
-		/* Parent is Interrupt Router */
+		 
 		parent_fwspec.param_count = 1;
 		parent_fwspec.param[0] = p_hwirq;
 	}
@@ -268,14 +206,7 @@ free_vint:
 	return ERR_PTR(ret);
 }
 
-/**
- * ti_sci_inta_alloc_event() - Attach an event to a IA vint.
- * @vint_desc:	Pointer to vint_desc to which the event gets attached
- * @free_bit:	Bit inside vint to which event gets attached
- * @hwirq:	hwirq of the input event
- *
- * Return event_desc pointer if all went ok else appropriate error value.
- */
+ 
 static struct ti_sci_inta_event_desc *ti_sci_inta_alloc_event(struct ti_sci_inta_vint_desc *vint_desc,
 							      u16 free_bit,
 							      u32 hwirq)
@@ -310,17 +241,7 @@ free_global_event:
 	return ERR_PTR(err);
 }
 
-/**
- * ti_sci_inta_alloc_irq() -  Allocate an irq within INTA domain
- * @domain:	irq_domain pointer corresponding to INTA
- * @hwirq:	hwirq of the input event
- *
- * Note: Allocation happens in the following manner:
- *	- Find a free bit available in any of the vints available in the list.
- *	- If not found, allocate a vint from the vint pool
- *	- Attach the free bit to input hwirq.
- * Return event_desc if all went ok else appropriate error value.
- */
+ 
 static struct ti_sci_inta_event_desc *ti_sci_inta_alloc_irq(struct irq_domain *domain,
 							    u32 hwirq)
 {
@@ -339,7 +260,7 @@ static struct ti_sci_inta_event_desc *ti_sci_inta_alloc_irq(struct irq_domain *d
 		}
 	}
 
-	/* No free bits available. Allocate a new vint */
+	 
 	vint_desc = ti_sci_inta_alloc_parent_irq(domain);
 	if (IS_ERR(vint_desc)) {
 		event_desc = ERR_CAST(vint_desc);
@@ -360,11 +281,7 @@ unlock:
 	return event_desc;
 }
 
-/**
- * ti_sci_inta_free_parent_irq() - Free a parent irq to INTA
- * @inta:	Pointer to inta domain.
- * @vint_desc:	Pointer to vint_desc that needs to be freed.
- */
+ 
 static void ti_sci_inta_free_parent_irq(struct ti_sci_inta_irq_domain *inta,
 					struct ti_sci_inta_vint_desc *vint_desc)
 {
@@ -376,11 +293,7 @@ static void ti_sci_inta_free_parent_irq(struct ti_sci_inta_irq_domain *inta,
 	}
 }
 
-/**
- * ti_sci_inta_free_irq() - Free an IRQ within INTA domain
- * @event_desc:	Pointer to event_desc that needs to be freed.
- * @hwirq:	Hwirq number within INTA domain that needs to be freed
- */
+ 
 static void ti_sci_inta_free_irq(struct ti_sci_inta_event_desc *event_desc,
 				 u32 hwirq)
 {
@@ -391,7 +304,7 @@ static void ti_sci_inta_free_irq(struct ti_sci_inta_event_desc *event_desc,
 	vint_desc = to_vint_desc(event_desc, event_desc->vint_bit);
 	inta = vint_desc->domain->host_data;
 	dev_id = ti_sci_inta_get_dev_id(inta, hwirq);
-	/* free event irq */
+	 
 	mutex_lock(&inta->vint_mutex);
 	inta->sci->ops.rm_irq_ops.free_event_map(inta->sci,
 						 dev_id, HWIRQ_TO_IRQID(hwirq),
@@ -409,17 +322,7 @@ static void ti_sci_inta_free_irq(struct ti_sci_inta_event_desc *event_desc,
 	mutex_unlock(&inta->vint_mutex);
 }
 
-/**
- * ti_sci_inta_request_resources() - Allocate resources for input irq
- * @data: Pointer to corresponding irq_data
- *
- * Note: This is the core api where the actual allocation happens for input
- *	 hwirq. This allocation involves creating a parent irq for vint.
- *	 If this is done in irq_domain_ops.alloc() then a deadlock is reached
- *	 for allocation. So this allocation is being done in request_resources()
- *
- * Return: 0 if all went well else corresponding error.
- */
+ 
 static int ti_sci_inta_request_resources(struct irq_data *data)
 {
 	struct ti_sci_inta_event_desc *event_desc;
@@ -433,13 +336,7 @@ static int ti_sci_inta_request_resources(struct irq_data *data)
 	return 0;
 }
 
-/**
- * ti_sci_inta_release_resources - Release resources for input irq
- * @data: Pointer to corresponding irq_data
- *
- * Note: Corresponding to request_resources(), all the unmapping and deletion
- *	 of parent vint irqs happens in this api.
- */
+ 
 static void ti_sci_inta_release_resources(struct irq_data *data)
 {
 	struct ti_sci_inta_event_desc *event_desc;
@@ -448,11 +345,7 @@ static void ti_sci_inta_release_resources(struct irq_data *data)
 	ti_sci_inta_free_irq(event_desc, data->hwirq);
 }
 
-/**
- * ti_sci_inta_manage_event() - Control the event based on the offset
- * @data:	Pointer to corresponding irq_data
- * @offset:	register offset using which event is controlled.
- */
+ 
 static void ti_sci_inta_manage_event(struct irq_data *data, u32 offset)
 {
 	struct ti_sci_inta_event_desc *event_desc;
@@ -467,34 +360,22 @@ static void ti_sci_inta_manage_event(struct irq_data *data, u32 offset)
 		       inta->base + vint_desc->vint_id * 0x1000 + offset);
 }
 
-/**
- * ti_sci_inta_mask_irq() - Mask an event
- * @data:	Pointer to corresponding irq_data
- */
+ 
 static void ti_sci_inta_mask_irq(struct irq_data *data)
 {
 	ti_sci_inta_manage_event(data, VINT_ENABLE_CLR_OFFSET);
 }
 
-/**
- * ti_sci_inta_unmask_irq() - Unmask an event
- * @data:	Pointer to corresponding irq_data
- */
+ 
 static void ti_sci_inta_unmask_irq(struct irq_data *data)
 {
 	ti_sci_inta_manage_event(data, VINT_ENABLE_SET_OFFSET);
 }
 
-/**
- * ti_sci_inta_ack_irq() - Ack an event
- * @data:	Pointer to corresponding irq_data
- */
+ 
 static void ti_sci_inta_ack_irq(struct irq_data *data)
 {
-	/*
-	 * Do not clear the event if hardware is capable of sending
-	 * a down event.
-	 */
+	 
 	if (irqd_get_trigger_type(data) != IRQF_TRIGGER_HIGH)
 		ti_sci_inta_manage_event(data, VINT_STATUS_OFFSET);
 }
@@ -505,21 +386,10 @@ static int ti_sci_inta_set_affinity(struct irq_data *d,
 	return -EINVAL;
 }
 
-/**
- * ti_sci_inta_set_type() - Update the trigger type of the irq.
- * @data:	Pointer to corresponding irq_data
- * @type:	Trigger type as specified by user
- *
- * Note: This updates the handle_irq callback for level msi.
- *
- * Return 0 if all went well else appropriate error.
- */
+ 
 static int ti_sci_inta_set_type(struct irq_data *data, unsigned int type)
 {
-	/*
-	 * .alloc default sets handle_edge_irq. But if the user specifies
-	 * that IRQ is level MSI, then update the handle to handle_level_irq
-	 */
+	 
 	switch (type & IRQ_TYPE_SENSE_MASK) {
 	case IRQF_TRIGGER_HIGH:
 		irq_set_handler_locked(data, handle_level_irq);
@@ -542,12 +412,7 @@ static struct irq_chip ti_sci_inta_irq_chip = {
 	.irq_release_resources	= ti_sci_inta_release_resources,
 };
 
-/**
- * ti_sci_inta_irq_domain_free() - Free an IRQ from the IRQ domain
- * @domain:	Domain to which the irqs belong
- * @virq:	base linux virtual IRQ to be freed.
- * @nr_irqs:	Number of continuous irqs to be freed
- */
+ 
 static void ti_sci_inta_irq_domain_free(struct irq_domain *domain,
 					unsigned int virq, unsigned int nr_irqs)
 {
@@ -556,17 +421,7 @@ static void ti_sci_inta_irq_domain_free(struct irq_domain *domain,
 	irq_domain_reset_irq_data(data);
 }
 
-/**
- * ti_sci_inta_irq_domain_alloc() - Allocate Interrupt aggregator IRQs
- * @domain:	Point to the interrupt aggregator IRQ domain
- * @virq:	Corresponding Linux virtual IRQ number
- * @nr_irqs:	Continuous irqs to be allocated
- * @data:	Pointer to firmware specifier
- *
- * No actual allocation happens here.
- *
- * Return 0 if all went well else appropriate error value.
- */
+ 
 static int ti_sci_inta_irq_domain_alloc(struct irq_domain *domain,
 					unsigned int virq, unsigned int nr_irqs,
 					void *data)
@@ -728,7 +583,7 @@ static int ti_sci_inta_irq_domain_probe(struct platform_device *pdev)
 
 static const struct of_device_id ti_sci_inta_irq_domain_of_match[] = {
 	{ .compatible = "ti,sci-inta", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ti_sci_inta_irq_domain_of_match);
 

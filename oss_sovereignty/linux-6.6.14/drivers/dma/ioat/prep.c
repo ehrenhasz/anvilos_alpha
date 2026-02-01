@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel I/OAT DMA Linux driver
- * Copyright(c) 2004 - 2015 Intel Corporation.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/gfp.h>
@@ -16,9 +13,7 @@
 
 #define MAX_SCF	256
 
-/* provide a lookup table for setting the source address in the base or
- * extended descriptor of an xor or pq descriptor
- */
+ 
 static const u8 xor_idx_to_desc = 0xe0;
 static const u8 xor_idx_to_field[] = { 1, 4, 5, 6, 7, 0, 1, 2 };
 static const u8 pq_idx_to_desc = 0xf8;
@@ -142,7 +137,7 @@ ioat_dma_prep_memcpy_lock(struct dma_chan *c, dma_addr_t dma_dest,
 	hw->ctl_f.fence = !!(flags & DMA_PREP_FENCE);
 	hw->ctl_f.compl_write = 1;
 	dump_desc_dbg(ioat_chan, desc);
-	/* we leave the channel locked to ensure in order submission */
+	 
 
 	return &desc->txd;
 }
@@ -168,20 +163,14 @@ __ioat_prep_xor_lock(struct dma_chan *c, enum sum_check_flags *result,
 	BUG_ON(src_cnt < 2);
 
 	num_descs = ioat_xferlen_to_descs(ioat_chan, len);
-	/* we need 2x the number of descriptors to cover greater than 5
-	 * sources
-	 */
+	 
 	if (src_cnt > 5) {
 		with_ext = 1;
 		num_descs *= 2;
 	} else
 		with_ext = 0;
 
-	/* completion writes from the raid engine may pass completion
-	 * writes from the legacy engine, so we need one extra null
-	 * (legacy) descriptor to ensure all completion writes arrive in
-	 * order.
-	 */
+	 
 	if (likely(num_descs) &&
 	    ioat_check_space_lock(ioat_chan, num_descs+1) == 0)
 		idx = ioat_chan->head;
@@ -197,10 +186,7 @@ __ioat_prep_xor_lock(struct dma_chan *c, enum sum_check_flags *result,
 		desc = ioat_get_ring_ent(ioat_chan, idx + i);
 		xor = desc->xor;
 
-		/* save a branch by unconditionally retrieving the
-		 * extended descriptor xor_set_src() knows to not write
-		 * to it in the single descriptor case
-		 */
+		 
 		ext = ioat_get_ring_ent(ioat_chan, idx + i + 1);
 		xor_ex = ext->xor_ex;
 
@@ -219,14 +205,14 @@ __ioat_prep_xor_lock(struct dma_chan *c, enum sum_check_flags *result,
 		dump_desc_dbg(ioat_chan, desc);
 	} while ((i += 1 + with_ext) < num_descs);
 
-	/* last xor descriptor carries the unmap parameters and fence bit */
+	 
 	desc->txd.flags = flags;
 	desc->len = total_len;
 	if (result)
 		desc->result = result;
 	xor->ctl_f.fence = !!(flags & DMA_PREP_FENCE);
 
-	/* completion descriptor carries interrupt bit */
+	 
 	compl_desc = ioat_get_ring_ent(ioat_chan, idx + i);
 	compl_desc->txd.flags = flags & DMA_PREP_INTERRUPT;
 	hw = compl_desc->hw;
@@ -237,7 +223,7 @@ __ioat_prep_xor_lock(struct dma_chan *c, enum sum_check_flags *result,
 	hw->size = NULL_DESC_BUFFER_SIZE;
 	dump_desc_dbg(ioat_chan, compl_desc);
 
-	/* we leave the channel locked to ensure in order submission */
+	 
 	return &compl_desc->txd;
 }
 
@@ -263,9 +249,7 @@ ioat_prep_xor_val(struct dma_chan *chan, dma_addr_t *src,
 	if (test_bit(IOAT_CHAN_DOWN, &ioat_chan->state))
 		return NULL;
 
-	/* the cleanup routine only sets bits on validate failure, it
-	 * does not clear bits on validate success... so clear it here
-	 */
+	 
 	*result = 0;
 
 	return __ioat_prep_xor_lock(chan, result, src[0], &src[1],
@@ -356,16 +340,11 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 	int cb32 = (ioat_dma->version < IOAT_VER_3_3) ? 1 : 0;
 
 	dev_dbg(to_dev(ioat_chan), "%s\n", __func__);
-	/* the engine requires at least two sources (we provide
-	 * at least 1 implied source in the DMA_PREP_CONTINUE case)
-	 */
+	 
 	BUG_ON(src_cnt + dmaf_continue(flags) < 2);
 
 	num_descs = ioat_xferlen_to_descs(ioat_chan, len);
-	/* we need 2x the number of descriptors to cover greater than 3
-	 * sources (we need 1 extra source in the q-only continuation
-	 * case and 3 extra sources in the p+q continuation case.
-	 */
+	 
 	if (src_cnt + dmaf_p_disabled_continue(flags) > 3 ||
 	    (dmaf_continue(flags) && !dmaf_p_disabled_continue(flags))) {
 		with_ext = 1;
@@ -373,11 +352,7 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 	} else
 		with_ext = 0;
 
-	/* completion writes from the raid engine may pass completion
-	 * writes from the legacy engine, so we need one extra null
-	 * (legacy) descriptor to ensure all completion writes arrive in
-	 * order.
-	 */
+	 
 	if (likely(num_descs) &&
 	    ioat_check_space_lock(ioat_chan, num_descs + cb32) == 0)
 		idx = ioat_chan->head;
@@ -392,10 +367,7 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 		desc = ioat_get_ring_ent(ioat_chan, idx + i);
 		pq = desc->pq;
 
-		/* save a branch by unconditionally retrieving the
-		 * extended descriptor pq_set_src() knows to not write
-		 * to it in the single descriptor case
-		 */
+		 
 		ext = ioat_get_ring_ent(ioat_chan, idx + i + with_ext);
 		pq_ex = ext->pq_ex;
 
@@ -405,7 +377,7 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 		for (s = 0; s < src_cnt; s++)
 			pq_set_src(descs, src[s], offset, scf[s], s);
 
-		/* see the comment for dma_maxpq in include/linux/dmaengine.h */
+		 
 		if (dmaf_p_disabled_continue(flags))
 			pq_set_src(descs, dst[1], offset, 1, s++);
 		else if (dmaf_continue(flags)) {
@@ -418,7 +390,7 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 		pq->q_addr = dst[1] + offset;
 		pq->ctl = 0;
 		pq->ctl_f.op = op;
-		/* we turn on descriptor write back error status */
+		 
 		if (ioat_dma->cap & IOAT_CAP_DWBES)
 			pq->ctl_f.wb_en = result ? 1 : 0;
 		pq->ctl_f.src_cnt = src_cnt_to_hw(s);
@@ -429,7 +401,7 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 		offset += xfer_size;
 	} while ((i += 1 + with_ext) < num_descs);
 
-	/* last pq descriptor carries the unmap parameters and fence bit */
+	 
 	desc->txd.flags = flags;
 	desc->len = total_len;
 	if (result)
@@ -442,7 +414,7 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 		pq->ctl_f.compl_write = 1;
 		compl_desc = desc;
 	} else {
-		/* completion descriptor carries interrupt bit */
+		 
 		compl_desc = ioat_get_ring_ent(ioat_chan, idx + i);
 		compl_desc->txd.flags = flags & DMA_PREP_INTERRUPT;
 		hw = compl_desc->hw;
@@ -455,7 +427,7 @@ __ioat_prep_pq_lock(struct dma_chan *c, enum sum_check_flags *result,
 	}
 
 
-	/* we leave the channel locked to ensure in order submission */
+	 
 	return &compl_desc->txd;
 }
 
@@ -474,17 +446,14 @@ __ioat_prep_pq16_lock(struct dma_chan *c, enum sum_check_flags *result,
 	u8 op;
 	int i, s, idx, num_descs;
 
-	/* this function is only called with 9-16 sources */
+	 
 	op = result ? IOAT_OP_PQ_VAL_16S : IOAT_OP_PQ_16S;
 
 	dev_dbg(to_dev(ioat_chan), "%s\n", __func__);
 
 	num_descs = ioat_xferlen_to_descs(ioat_chan, len);
 
-	/*
-	 * 16 source pq is only available on cb3.3 and has no completion
-	 * write hw bug.
-	 */
+	 
 	if (num_descs && ioat_check_space_lock(ioat_chan, num_descs) == 0)
 		idx = ioat_chan->head;
 	else
@@ -518,7 +487,7 @@ __ioat_prep_pq16_lock(struct dma_chan *c, enum sum_check_flags *result,
 		for (s = 0; s < src_cnt; s++)
 			pq16_set_src(descs, src[s], offset, scf[s], s);
 
-		/* see the comment for dma_maxpq in include/linux/dmaengine.h */
+		 
 		if (dmaf_p_disabled_continue(flags))
 			pq16_set_src(descs, dst[1], offset, 1, s++);
 		else if (dmaf_continue(flags)) {
@@ -533,7 +502,7 @@ __ioat_prep_pq16_lock(struct dma_chan *c, enum sum_check_flags *result,
 		pq->ctl = 0;
 		pq->ctl_f.op = op;
 		pq->ctl_f.src_cnt = src16_cnt_to_hw(s);
-		/* we turn on descriptor write back error status */
+		 
 		if (ioat_dma->cap & IOAT_CAP_DWBES)
 			pq->ctl_f.wb_en = result ? 1 : 0;
 		pq->ctl_f.p_disable = !!(flags & DMA_PREP_PQ_DISABLE_P);
@@ -543,20 +512,20 @@ __ioat_prep_pq16_lock(struct dma_chan *c, enum sum_check_flags *result,
 		offset += xfer_size;
 	} while (++i < num_descs);
 
-	/* last pq descriptor carries the unmap parameters and fence bit */
+	 
 	desc->txd.flags = flags;
 	desc->len = total_len;
 	if (result)
 		desc->result = result;
 	pq->ctl_f.fence = !!(flags & DMA_PREP_FENCE);
 
-	/* with cb3.3 we should be able to do completion w/o a null desc */
+	 
 	pq->ctl_f.int_en = !!(flags & DMA_PREP_INTERRUPT);
 	pq->ctl_f.compl_write = 1;
 
 	dump_pq16_desc_dbg(ioat_chan, desc);
 
-	/* we leave the channel locked to ensure in order submission */
+	 
 	return &desc->txd;
 }
 
@@ -580,15 +549,13 @@ ioat_prep_pq(struct dma_chan *chan, dma_addr_t *dst, dma_addr_t *src,
 	if (test_bit(IOAT_CHAN_DOWN, &ioat_chan->state))
 		return NULL;
 
-	/* specify valid address for disabled result */
+	 
 	if (flags & DMA_PREP_PQ_DISABLE_P)
 		dst[0] = dst[1];
 	if (flags & DMA_PREP_PQ_DISABLE_Q)
 		dst[1] = dst[0];
 
-	/* handle the single source multiply case from the raid6
-	 * recovery path
-	 */
+	 
 	if ((flags & DMA_PREP_PQ_DISABLE_P) && src_cnt == 1) {
 		dma_addr_t single_source[2];
 		unsigned char single_source_coef[2];
@@ -625,15 +592,13 @@ ioat_prep_pq_val(struct dma_chan *chan, dma_addr_t *pq, dma_addr_t *src,
 	if (test_bit(IOAT_CHAN_DOWN, &ioat_chan->state))
 		return NULL;
 
-	/* specify valid address for disabled result */
+	 
 	if (flags & DMA_PREP_PQ_DISABLE_P)
 		pq[0] = pq[1];
 	if (flags & DMA_PREP_PQ_DISABLE_Q)
 		pq[1] = pq[0];
 
-	/* the cleanup routine only sets bits on validate failure, it
-	 * does not clear bits on validate success... so clear it here
-	 */
+	 
 	*pqres = 0;
 
 	return src_cnt_flags(src_cnt, flags) > 8 ?
@@ -660,7 +625,7 @@ ioat_prep_pqxor(struct dma_chan *chan, dma_addr_t dst, dma_addr_t *src,
 	memset(scf, 0, src_cnt);
 	pq[0] = dst;
 	flags |= DMA_PREP_PQ_DISABLE_Q;
-	pq[1] = dst; /* specify valid address for disabled result */
+	pq[1] = dst;  
 
 	return src_cnt_flags(src_cnt, flags) > 8 ?
 		__ioat_prep_pq16_lock(chan, NULL, pq, src, src_cnt, scf, len,
@@ -684,15 +649,13 @@ ioat_prep_pqxor_val(struct dma_chan *chan, dma_addr_t *src,
 	if (src_cnt > MAX_SCF)
 		return NULL;
 
-	/* the cleanup routine only sets bits on validate failure, it
-	 * does not clear bits on validate success... so clear it here
-	 */
+	 
 	*result = 0;
 
 	memset(scf, 0, src_cnt);
 	pq[0] = src[0];
 	flags |= DMA_PREP_PQ_DISABLE_Q;
-	pq[1] = pq[0]; /* specify valid address for disabled result */
+	pq[1] = pq[0];  
 
 	return src_cnt_flags(src_cnt, flags) > 8 ?
 		__ioat_prep_pq16_lock(chan, result, pq, &src[1], src_cnt - 1,
@@ -731,7 +694,7 @@ ioat_prep_interrupt_lock(struct dma_chan *c, unsigned long flags)
 
 	dump_desc_dbg(ioat_chan, desc);
 
-	/* we leave the channel locked to ensure in order submission */
+	 
 	return &desc->txd;
 }
 

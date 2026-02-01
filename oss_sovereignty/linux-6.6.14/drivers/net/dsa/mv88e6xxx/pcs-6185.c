@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6185 family SERDES PCS support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 #include <linux/phylink.h>
 
 #include "global2.h"
@@ -120,10 +114,7 @@ static int mv88e6185_pcs_init(struct mv88e6xxx_chip *chip, int port)
 	unsigned int irq;
 	int err;
 
-	/* There are no configurable serdes lanes on this switch chip, so
-	 * we use the static cmode configuration to determine whether we
-	 * have a PCS or not.
-	 */
+	 
 	if (chip->ports[port].cmode != MV88E6185_PORT_STS_CMODE_SERDES &&
 	    chip->ports[port].cmode != MV88E6185_PORT_STS_CMODE_1000BASE_X)
 		return 0;

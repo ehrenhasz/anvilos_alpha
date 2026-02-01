@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2009 Francisco Jerez.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_modeset_helper_vtables.h>
@@ -62,7 +38,7 @@ static uint32_t nv42_tv_sample_load(struct drm_encoder *encoder)
 	dacclk = NVReadRAMDAC(dev, 0, NV_PRAMDAC_DACCLK + regoffset);
 	head = (dacclk & 0x100) >> 8;
 
-	/* Save the previous state. */
+	 
 	gpio1 = nvkm_gpio_get(gpio, 0, DCB_GPIO_TVDAC1, 0xff);
 	gpio0 = nvkm_gpio_get(gpio, 0, DCB_GPIO_TVDAC0, 0xff);
 	fp_htotal = NVReadRAMDAC(dev, head, NV_PRAMDAC_FP_HTOTAL);
@@ -74,7 +50,7 @@ static uint32_t nv42_tv_sample_load(struct drm_encoder *encoder)
 	ctv_14 = NVReadRAMDAC(dev, head, 0x680c14);
 	ctv_6c = NVReadRAMDAC(dev, head, 0x680c6c);
 
-	/* Prepare the DAC for load detection.  */
+	 
 	nvkm_gpio_set(gpio, 0, DCB_GPIO_TVDAC1, 0xff, true);
 	nvkm_gpio_set(gpio, 0, DCB_GPIO_TVDAC0, 0xff, true);
 
@@ -99,19 +75,19 @@ static uint32_t nv42_tv_sample_load(struct drm_encoder *encoder)
 	NVWriteRAMDAC(dev, head, 0x680c1c, 1 << 20);
 	NVWriteRAMDAC(dev, head, 0x680c14, 4 << 16);
 
-	/* Sample pin 0x4 (usually S-video luma). */
+	 
 	NVWriteRAMDAC(dev, head, 0x680c6c, testval >> 10 & 0x3ff);
 	msleep(20);
 	sample |= NVReadRAMDAC(dev, 0, NV_PRAMDAC_TEST_CONTROL + regoffset)
 		& 0x4 << 28;
 
-	/* Sample the remaining pins. */
+	 
 	NVWriteRAMDAC(dev, head, 0x680c6c, testval & 0x3ff);
 	msleep(20);
 	sample |= NVReadRAMDAC(dev, 0, NV_PRAMDAC_TEST_CONTROL + regoffset)
 		& 0xa << 28;
 
-	/* Restore the previous state. */
+	 
 	NVWriteRAMDAC(dev, head, 0x680c1c, ctv_1c);
 	NVWriteRAMDAC(dev, head, 0x680c14, ctv_14);
 	NVWriteRAMDAC(dev, head, 0x680c6c, ctv_6c);
@@ -267,7 +243,7 @@ static int nv17_tv_get_hd_modes(struct drm_encoder *encoder,
 					     DRM_MODE_FLAG_INTERLACE), false);
 		}
 
-		/* CVT modes are sometimes unsuitable... */
+		 
 		if (output_mode->hdisplay <= 720
 		    || output_mode->hdisplay >= 1920) {
 			mode->htotal = output_mode->htotal;
@@ -334,7 +310,7 @@ static int nv17_tv_mode_valid(struct drm_encoder *encoder,
 			tv_norm->tv_enc_mode.vrefresh) > vsync_tolerance)
 			return MODE_VSYNC;
 
-		/* The encoder takes care of the actual interlacing */
+		 
 		if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 			return MODE_NO_INTERLACE;
 	}
@@ -411,8 +387,7 @@ static void nv17_tv_prepare(struct drm_encoder *encoder)
 
 	nv04_dfp_disable(dev, head);
 
-	/* Unbind any FP encoders from this head if we need the FP
-	 * stuff enabled. */
+	 
 	if (tv_norm->kind == CTV_ENC_MODE) {
 		struct drm_encoder *enc;
 
@@ -433,7 +408,7 @@ static void nv17_tv_prepare(struct drm_encoder *encoder)
 	if (tv_norm->kind == CTV_ENC_MODE)
 		*cr_lcd |= 0x1 | (head ? 0x0 : 0x8);
 
-	/* Set the DACCLK register */
+	 
 	dacclk = (NVReadRAMDAC(dev, 0, dacclk_off) & ~0x30) | 0x1;
 
 	if (drm->client.device.info.family == NV_DEVICE_INFO_V0_CURIE)
@@ -467,9 +442,9 @@ static void nv17_tv_mode_set(struct drm_encoder *encoder,
 	struct nv17_tv_norm_params *tv_norm = get_tv_norm(encoder);
 	int i;
 
-	regs->CRTC[NV_CIO_CRE_53] = 0x40; /* FP_HTIMING */
-	regs->CRTC[NV_CIO_CRE_54] = 0; /* FP_VTIMING */
-	regs->ramdac_630 = 0x2; /* turn off green mode (tv test pattern?) */
+	regs->CRTC[NV_CIO_CRE_53] = 0x40;  
+	regs->CRTC[NV_CIO_CRE_54] = 0;  
+	regs->ramdac_630 = 0x2;  
 	regs->tv_setup = 1;
 	regs->ramdac_8c0 = 0x0;
 
@@ -520,14 +495,7 @@ static void nv17_tv_mode_set(struct drm_encoder *encoder,
 		struct drm_display_mode *output_mode =
 						&tv_norm->ctv_enc_mode.mode;
 
-		/* The registers in PRAMDAC+0xc00 control some timings and CSC
-		 * parameters for the CTV encoder (It's only used for "HD" TV
-		 * modes, I don't think I have enough working to guess what
-		 * they exactly mean...), it's probably connected at the
-		 * output of the FP encoder, but it also needs the analog
-		 * encoder in its OR enabled and routed to the head it's
-		 * using. It's enabled with the DACCLK register, bits [5:4].
-		 */
+		 
 		for (i = 0; i < 38; i++)
 			regs->ctv_regs[i] = tv_norm->ctv_enc_mode.ctv_regs[i];
 
@@ -587,7 +555,7 @@ static void nv17_tv_commit(struct drm_encoder *encoder)
 
 	nv17_tv_state_load(dev, &to_tv_enc(encoder)->state);
 
-	/* This could use refinement for flatpanels, but it should work */
+	 
 	if (drm->client.device.info.chipset < 0x44)
 		NVWriteRAMDAC(dev, 0, NV_PRAMDAC_TEST_CONTROL +
 					nv04_dac_output_offset(encoder),
@@ -745,8 +713,7 @@ static int nv17_tv_set_property(struct drm_encoder *encoder,
 	if (modes_changed) {
 		drm_helper_probe_single_connector_modes(connector, 0, 0);
 
-		/* Disable the crtc to ensure a full modeset is
-		 * performed whenever it's turned on again. */
+		 
 		if (crtc)
 			drm_crtc_helper_set_mode(crtc, &crtc->mode,
 						 crtc->x, crtc->y,

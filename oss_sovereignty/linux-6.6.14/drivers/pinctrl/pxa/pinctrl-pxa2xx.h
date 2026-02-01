@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Marvell PXA2xx family pin control
- *
- * Copyright (C) 2015 Robert Jarzmik
- */
+ 
+ 
 
 #ifndef __PINCTRL_PXA_H
 #define __PINCTRL_PXA_H
@@ -85,4 +81,4 @@ int pxa2xx_pinctrl_init(struct platform_device *pdev,
 			void __iomem *base_gafr[], void __iomem *base_gpdr[],
 			void __iomem *base_gpsr[]);
 
-#endif /* __PINCTRL_PXA_H */
+#endif  

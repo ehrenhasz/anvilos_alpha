@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Cache data I/O routines
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 #define FSCACHE_DEBUG_LEVEL OPERATION
 #include <linux/fscache-cache.h>
 #include <linux/uio.h>
@@ -12,14 +8,7 @@
 #include <linux/uio.h>
 #include "internal.h"
 
-/**
- * fscache_wait_for_operation - Wait for an object become accessible
- * @cres: The cache resources for the operation being performed
- * @want_state: The minimum state the object must be at
- *
- * See if the target cache object is at the specified minimum state of
- * accessibility yet, and if not, wait for it.
- */
+ 
 bool fscache_wait_for_operation(struct netfs_cache_resources *cres,
 				enum fscache_want_state want_state)
 {
@@ -39,7 +28,7 @@ again:
 	case FSCACHE_COOKIE_STATE_CREATING:
 	case FSCACHE_COOKIE_STATE_INVALIDATING:
 		if (want_state == FSCACHE_WANT_PARAMS)
-			goto ready; /* There can be no content */
+			goto ready;  
 		fallthrough;
 	case FSCACHE_COOKIE_STATE_LOOKING_UP:
 	case FSCACHE_COOKIE_STATE_LRU_DISCARDING:
@@ -63,11 +52,7 @@ ready:
 }
 EXPORT_SYMBOL(fscache_wait_for_operation);
 
-/*
- * Begin an I/O operation on the cache, waiting till we reach the right state.
- *
- * Attaches the resources required to the operation resources record.
- */
+ 
 static int fscache_begin_operation(struct netfs_cache_resources *cres,
 				   struct fscache_cookie *cookie,
 				   enum fscache_want_state want_state,
@@ -99,7 +84,7 @@ again:
 		goto wait_for_file_wrangling;
 	case FSCACHE_COOKIE_STATE_CREATING:
 		if (want_state == FSCACHE_WANT_PARAMS)
-			goto ready; /* There can be no content */
+			goto ready;  
 		goto wait_for_file_wrangling;
 	case FSCACHE_COOKIE_STATE_ACTIVE:
 		goto ready;
@@ -158,18 +143,7 @@ int __fscache_begin_write_operation(struct netfs_cache_resources *cres,
 }
 EXPORT_SYMBOL(__fscache_begin_write_operation);
 
-/**
- * fscache_dirty_folio - Mark folio dirty and pin a cache object for writeback
- * @mapping: The mapping the folio belongs to.
- * @folio: The folio being dirtied.
- * @cookie: The cookie referring to the cache object
- *
- * Set the dirty flag on a folio and pin an in-use cache object in memory
- * so that writeback can later write to it.  This is intended
- * to be called from the filesystem's ->dirty_folio() method.
- *
- * Return: true if the dirty flag was set on the folio, false otherwise.
- */
+ 
 bool fscache_dirty_folio(struct address_space *mapping, struct folio *folio,
 				struct fscache_cookie *cookie)
 {
@@ -227,9 +201,7 @@ void __fscache_clear_page_bits(struct address_space *mapping,
 }
 EXPORT_SYMBOL(__fscache_clear_page_bits);
 
-/*
- * Deal with the completion of writing the data to the cache.
- */
+ 
 static void fscache_wreq_done(void *priv, ssize_t transferred_or_error,
 			      bool was_async)
 {
@@ -281,10 +253,7 @@ void __fscache_write_to_cache(struct fscache_cookie *cookie,
 	if (ret < 0)
 		goto abandon_end;
 
-	/* TODO: Consider clearing page bits now for space the write isn't
-	 * covering.  This is more complicated than it appears when THPs are
-	 * taken into account.
-	 */
+	 
 
 	iov_iter_xarray(&iter, ITER_SOURCE, &mapping->i_pages, start, len);
 	fscache_write(cres, start, &iter, fscache_wreq_done, wreq);
@@ -301,9 +270,7 @@ abandon:
 }
 EXPORT_SYMBOL(__fscache_write_to_cache);
 
-/*
- * Change the size of a backing object.
- */
+ 
 void __fscache_resize_cookie(struct fscache_cookie *cookie, loff_t new_size)
 {
 	struct netfs_cache_resources cres;
@@ -314,10 +281,7 @@ void __fscache_resize_cookie(struct fscache_cookie *cookie, loff_t new_size)
 		fscache_stat(&fscache_n_resizes);
 		set_bit(FSCACHE_COOKIE_NEEDS_UPDATE, &cookie->flags);
 
-		/* We cannot defer a resize as we need to do it inside the
-		 * netfs's inode lock so that we're serialised with respect to
-		 * writes.
-		 */
+		 
 		cookie->volume->cache->ops->resize_cookie(&cres, new_size);
 		fscache_end_operation(&cres);
 	} else {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 FUJITSU LIMITED
- * Copyright (C) 2010 Tomohiro Kusumi <kusumi.tomohiro@jp.fujitsu.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/trace_seq.h>
 #include <asm/unaligned.h>
@@ -21,10 +18,7 @@ scsi_trace_rw6(struct trace_seq *p, unsigned char *cdb, int len)
 	u32 lba, txlen;
 
 	lba = get_unaligned_be24(&cdb[1]) & 0x1fffff;
-	/*
-	 * From SBC-2: a TRANSFER LENGTH field set to zero specifies that 256
-	 * logical blocks shall be read (READ(6)) or written (WRITE(6)).
-	 */
+	 
 	txlen = cdb[4] ? cdb[4] : 256;
 
 	trace_seq_printf(p, "lba=%u txlen=%u", lba, txlen);

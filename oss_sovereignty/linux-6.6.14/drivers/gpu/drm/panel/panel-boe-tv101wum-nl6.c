@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Jitao Shi <jitao.shi@mediatek.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -21,10 +18,7 @@ struct panel_desc {
 	const struct drm_display_mode *modes;
 	unsigned int bpc;
 
-	/**
-	 * @width_mm: width of the panel's active display area
-	 * @height_mm: height of the panel's active display area
-	 */
+	 
 	struct {
 		unsigned int width_mm;
 		unsigned int height_mm;
@@ -2184,10 +2178,7 @@ static int boe_panel_get_modes(struct drm_panel *panel,
 	connector->display_info.width_mm = boe->desc->size.width_mm;
 	connector->display_info.height_mm = boe->desc->size.height_mm;
 	connector->display_info.bpc = boe->desc->bpc;
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, boe->orientation);
 
 	return 1;
@@ -2342,7 +2333,7 @@ static const struct of_device_id boe_of_match[] = {
 	{ .compatible = "starry,ili9882t",
 	  .data = &starry_ili9882t_desc
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, boe_of_match);
 

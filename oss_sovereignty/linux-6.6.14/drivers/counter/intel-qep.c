@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Quadrature Encoder Peripheral driver
- *
- * Copyright (C) 2019-2021 Intel Corporation
- *
- * Author: Felipe Balbi (Intel)
- * Author: Jarkko Nikula <jarkko.nikula@linux.intel.com>
- * Author: Raymond Tan <raymond.tan@intel.com>
- */
+
+ 
 #include <linux/counter.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,7 +18,7 @@
 #define INTEL_QEPINT_STAT		0x20
 #define INTEL_QEPINT_MASK		0x24
 
-/* QEPCON */
+ 
 #define INTEL_QEPCON_EN			BIT(0)
 #define INTEL_QEPCON_FLT_EN		BIT(1)
 #define INTEL_QEPCON_EDGE_A		BIT(2)
@@ -47,10 +39,10 @@
 #define INTEL_QEPCON_FIFO_THRE(n)	((((n) - 1) & 7) << 12)
 #define INTEL_QEPCON_FIFO_EMPTY		BIT(15)
 
-/* QEPFLT */
+ 
 #define INTEL_QEPFLT_MAX_COUNT(n)	((n) & 0x1fffff)
 
-/* QEPINT */
+ 
 #define INTEL_QEPINT_FIFOCRIT		BIT(5)
 #define INTEL_QEPINT_FIFOENTRY		BIT(4)
 #define INTEL_QEPINT_QEPDIR		BIT(3)
@@ -67,7 +59,7 @@ struct intel_qep {
 	struct device *dev;
 	void __iomem *regs;
 	bool enabled;
-	/* Context save registers */
+	 
 	u32 qepcon;
 	u32 qepflt;
 	u32 qepmax;
@@ -92,10 +84,7 @@ static void intel_qep_init(struct intel_qep *qep)
 	reg &= ~INTEL_QEPCON_EN;
 	intel_qep_writel(qep, INTEL_QEPCON, reg);
 	qep->enabled = false;
-	/*
-	 * Make sure peripheral is disabled by flushing the write with
-	 * a dummy read
-	 */
+	 
 	reg = intel_qep_readl(qep, INTEL_QEPCON);
 
 	reg &= ~(INTEL_QEPCON_OP_MODE | INTEL_QEPCON_FLT_EN);
@@ -190,7 +179,7 @@ static int intel_qep_ceiling_write(struct counter_device *counter,
 	struct intel_qep *qep = counter_priv(counter);
 	int ret = 0;
 
-	/* Intel QEP ceiling configuration only supports 32-bit values */
+	 
 	if (max != (u32)max)
 		return -ERANGE;
 
@@ -234,11 +223,11 @@ static int intel_qep_enable_write(struct counter_device *counter,
 	pm_runtime_get_sync(qep->dev);
 	reg = intel_qep_readl(qep, INTEL_QEPCON);
 	if (val) {
-		/* Enable peripheral and keep runtime PM always on */
+		 
 		reg |= INTEL_QEPCON_EN;
 		pm_runtime_get_noresume(qep->dev);
 	} else {
-		/* Let runtime PM be idle and disable peripheral */
+		 
 		pm_runtime_put_noidle(qep->dev);
 		reg &= ~INTEL_QEPCON_EN;
 	}
@@ -281,11 +270,7 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
 	bool enable;
 	int ret = 0;
 
-	/*
-	 * Spike filter length is (MAX_COUNT + 2) clock periods.
-	 * Disable filter when userspace writes 0, enable for valid
-	 * nanoseconds values and error out otherwise.
-	 */
+	 
 	do_div(length, INTEL_QEP_CLK_PERIOD_NS);
 	if (length == 0) {
 		enable = false;
@@ -471,11 +456,7 @@ static int __maybe_unused intel_qep_resume(struct device *dev)
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct intel_qep *qep = pci_get_drvdata(pdev);
 
-	/*
-	 * Make sure peripheral is disabled when restoring registers and
-	 * control register bits that are writable only when the peripheral
-	 * is disabled
-	 */
+	 
 	intel_qep_writel(qep, INTEL_QEPCON, 0);
 	intel_qep_readl(qep, INTEL_QEPCON);
 
@@ -483,11 +464,11 @@ static int __maybe_unused intel_qep_resume(struct device *dev)
 	intel_qep_writel(qep, INTEL_QEPMAX, qep->qepmax);
 	intel_qep_writel(qep, INTEL_QEPINT_MASK, INTEL_QEPINT_MASK_ALL);
 
-	/* Restore all other control register bits except enable status */
+	 
 	intel_qep_writel(qep, INTEL_QEPCON, qep->qepcon & ~INTEL_QEPCON_EN);
 	intel_qep_readl(qep, INTEL_QEPCON);
 
-	/* Restore enable status */
+	 
 	intel_qep_writel(qep, INTEL_QEPCON, qep->qepcon);
 
 	return 0;
@@ -497,12 +478,12 @@ static UNIVERSAL_DEV_PM_OPS(intel_qep_pm_ops,
 			    intel_qep_suspend, intel_qep_resume, NULL);
 
 static const struct pci_device_id intel_qep_id_table[] = {
-	/* EHL */
+	 
 	{ PCI_VDEVICE(INTEL, 0x4bc3), },
 	{ PCI_VDEVICE(INTEL, 0x4b81), },
 	{ PCI_VDEVICE(INTEL, 0x4b82), },
 	{ PCI_VDEVICE(INTEL, 0x4b83), },
-	{  } /* Terminating Entry */
+	{  }  
 };
 MODULE_DEVICE_TABLE(pci, intel_qep_id_table);
 

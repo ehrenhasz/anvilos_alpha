@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/hwmon/nsa320-hwmon.c
- *
- * ZyXEL NSA320 Media Servers
- * hardware monitoring
- *
- * Copyright (C) 2016 Adam Baker <linux@baker-net.org.uk>
- * based on a board file driver
- * Copyright (C) 2012 Peter Schildmann <linux@schildmann.info>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -22,22 +13,14 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/* Tests for error return values rely upon this value being < 0x80 */
+ 
 #define MAGIC_NUMBER 0x55
 
-/*
- * The Zyxel hwmon MCU is a Holtek HT46R065 that is factory programmed
- * to perform temperature and fan speed monitoring. It is read by taking
- * the active pin low. The 32 bit output word is then clocked onto the
- * data line. The MSB of the data word is a magic nuber to indicate it
- * has been read correctly, the next byte is the fan speed (in hundreds
- * of RPM) and the last two bytes are the temperature (in tenths of a
- * degree)
- */
+ 
 
 struct nsa320_hwmon {
-	struct mutex		update_lock;	/* lock GPIO operations */
-	unsigned long		last_updated;	/* jiffies */
+	struct mutex		update_lock;	 
+	unsigned long		last_updated;	 
 	unsigned long		mcu_data;
 	struct gpio_desc	*act;
 	struct gpio_desc	*clk;
@@ -54,15 +37,7 @@ static const char * const nsa320_input_names[] = {
 	[NSA320_FAN] = "Chassis Fan",
 };
 
-/*
- * Although this protocol looks similar to SPI the long delay
- * between the active (aka chip select) signal and the shorter
- * delay between clock pulses are needed for reliable operation.
- * The delays provided are taken from the manufacturer kernel,
- * testing suggest they probably incorporate a reasonable safety
- * margin. (The single device tested became unreliable if the
- * delay was reduced to 1/10th of this value.)
- */
+ 
 static s32 nsa320_hwmon_update(struct device *dev)
 {
 	u32 mcu_data;
@@ -163,7 +138,7 @@ static int nsa320_hwmon_probe(struct platform_device *pdev)
 	if (!hwmon)
 		return -ENOMEM;
 
-	/* Look up the GPIO pins to use */
+	 
 	hwmon->act = devm_gpiod_get(&pdev->dev, "act", GPIOD_OUT_LOW);
 	if (IS_ERR(hwmon->act))
 		return PTR_ERR(hwmon->act);
@@ -185,7 +160,7 @@ static int nsa320_hwmon_probe(struct platform_device *pdev)
 
 }
 
-/* All allocations use devres so remove() is not needed. */
+ 
 
 static struct platform_driver nsa320_hwmon_driver = {
 	.probe = nsa320_hwmon_probe,

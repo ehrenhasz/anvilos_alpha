@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 #ifndef BRCMFMAC_FLOWRING_H
 #define BRCMFMAC_FLOWRING_H
 
 
-#define BRCMF_FLOWRING_HASHSIZE		512		/* has to be 2^x */
+#define BRCMF_FLOWRING_HASHSIZE		512		 
 #define BRCMF_FLOWRING_INVALID_ID	0xFFFFFFFF
 
 
@@ -71,4 +69,4 @@ void brcmf_flowring_add_tdls_peer(struct brcmf_flowring *flow, int ifidx,
 				  u8 peer[ETH_ALEN]);
 
 
-#endif /* BRCMFMAC_FLOWRING_H */
+#endif  

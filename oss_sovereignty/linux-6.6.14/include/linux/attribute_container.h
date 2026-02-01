@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * attribute_container.h - a generic container for all classes
- *
- * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
- */
+ 
+ 
 
 #ifndef _ATTRIBUTE_CONTAINER_H_
 #define _ATTRIBUTE_CONTAINER_H_

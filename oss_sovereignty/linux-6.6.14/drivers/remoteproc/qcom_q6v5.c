@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm Peripheral Image Loader for Q6V5
- *
- * Copyright (C) 2016-2018 Linaro Ltd.
- * Copyright (C) 2014 Sony Mobile Communications AB
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/interconnect.h>
@@ -36,12 +30,7 @@ static int q6v5_load_state_toggle(struct qcom_q6v5 *q6v5, bool enable)
 	return ret;
 }
 
-/**
- * qcom_q6v5_prepare() - reinitialize the qcom_q6v5 context before start
- * @q6v5:	reference to qcom_q6v5 context to be reinitialized
- *
- * Return: 0 on success, negative errno on failure
- */
+ 
 int qcom_q6v5_prepare(struct qcom_q6v5 *q6v5)
 {
 	int ret;
@@ -70,18 +59,13 @@ int qcom_q6v5_prepare(struct qcom_q6v5 *q6v5)
 }
 EXPORT_SYMBOL_GPL(qcom_q6v5_prepare);
 
-/**
- * qcom_q6v5_unprepare() - unprepare the qcom_q6v5 context after stop
- * @q6v5:	reference to qcom_q6v5 context to be unprepared
- *
- * Return: 0 on success, 1 if handover hasn't yet been called
- */
+ 
 int qcom_q6v5_unprepare(struct qcom_q6v5 *q6v5)
 {
 	disable_irq(q6v5->handover_irq);
 	q6v5_load_state_toggle(q6v5, false);
 
-	/* Disable interconnect vote, in case handover never happened */
+	 
 	icc_set_bw(q6v5->path, 0, 0);
 
 	return !q6v5->handover_issued;
@@ -94,7 +78,7 @@ static irqreturn_t q6v5_wdog_interrupt(int irq, void *data)
 	size_t len;
 	char *msg;
 
-	/* Sometimes the stop triggers a watchdog rather than a stop-ack */
+	 
 	if (!q6v5->running) {
 		complete(&q6v5->stop_done);
 		return IRQ_HANDLED;
@@ -142,15 +126,7 @@ static irqreturn_t q6v5_ready_interrupt(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * qcom_q6v5_wait_for_start() - wait for remote processor start signal
- * @q6v5:	reference to qcom_q6v5 context
- * @timeout:	timeout to wait for the event, in jiffies
- *
- * qcom_q6v5_unprepare() should not be called when this function fails.
- *
- * Return: 0 on success, -ETIMEDOUT on timeout
- */
+ 
 int qcom_q6v5_wait_for_start(struct qcom_q6v5 *q6v5, int timeout)
 {
 	int ret;
@@ -186,20 +162,14 @@ static irqreturn_t q6v5_stop_interrupt(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * qcom_q6v5_request_stop() - request the remote processor to stop
- * @q6v5:	reference to qcom_q6v5 context
- * @sysmon:	reference to the remote's sysmon instance, or NULL
- *
- * Return: 0 on success, negative errno on failure
- */
+ 
 int qcom_q6v5_request_stop(struct qcom_q6v5 *q6v5, struct qcom_sysmon *sysmon)
 {
 	int ret;
 
 	q6v5->running = false;
 
-	/* Don't perform SMP2P dance if remote isn't running */
+	 
 	if (q6v5->rproc->state != RPROC_RUNNING || qcom_sysmon_shutdown_acked(sysmon))
 		return 0;
 
@@ -214,15 +184,7 @@ int qcom_q6v5_request_stop(struct qcom_q6v5 *q6v5, struct qcom_sysmon *sysmon)
 }
 EXPORT_SYMBOL_GPL(qcom_q6v5_request_stop);
 
-/**
- * qcom_q6v5_panic() - panic handler to invoke a stop on the remote
- * @q6v5:	reference to qcom_q6v5 context
- *
- * Set the stop bit and sleep in order to allow the remote processor to flush
- * its caches etc for post mortem debugging.
- *
- * Return: 200ms
- */
+ 
 unsigned long qcom_q6v5_panic(struct qcom_q6v5 *q6v5)
 {
 	qcom_smem_state_update_bits(q6v5->state,
@@ -232,17 +194,7 @@ unsigned long qcom_q6v5_panic(struct qcom_q6v5 *q6v5)
 }
 EXPORT_SYMBOL_GPL(qcom_q6v5_panic);
 
-/**
- * qcom_q6v5_init() - initializer of the q6v5 common struct
- * @q6v5:	handle to be initialized
- * @pdev:	platform_device reference for acquiring resources
- * @rproc:	associated remoteproc instance
- * @crash_reason: SMEM id for crash reason string, or 0 if none
- * @load_state: load state resource string
- * @handover:	function to be called when proxy resources should be released
- *
- * Return: 0 on success, negative errno on failure
- */
+ 
 int qcom_q6v5_init(struct qcom_q6v5 *q6v5, struct platform_device *pdev,
 		   struct rproc *rproc, int crash_reason, const char *load_state,
 		   void (*handover)(struct qcom_q6v5 *q6v5))
@@ -353,10 +305,7 @@ int qcom_q6v5_init(struct qcom_q6v5 *q6v5, struct platform_device *pdev,
 }
 EXPORT_SYMBOL_GPL(qcom_q6v5_init);
 
-/**
- * qcom_q6v5_deinit() - deinitialize the q6v5 common struct
- * @q6v5:	reference to qcom_q6v5 context to be deinitialized
- */
+ 
 void qcom_q6v5_deinit(struct qcom_q6v5 *q6v5)
 {
 	qmp_put(q6v5->qmp);

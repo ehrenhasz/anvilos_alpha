@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PolarFire SoC MSS/core complex clock control
- *
- * Copyright (C) 2020-2022 Microchip Technology Inc. All rights reserved.
- */
+
+ 
 #include <linux/auxiliary_bus.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -13,7 +9,7 @@
 #include <dt-bindings/clock/microchip,mpfs-clock.h>
 #include <soc/microchip/mpfs.h>
 
-/* address offset of control registers */
+ 
 #define REG_MSSPLL_REF_CR	0x08u
 #define REG_MSSPLL_POSTDIV_CR	0x10u
 #define REG_MSSPLL_SSCG_2_CR	0x2Cu
@@ -62,10 +58,7 @@ struct mpfs_periph_hw_clock {
 	unsigned int id;
 };
 
-/*
- * mpfs_clk_lock prevents anything else from writing to the
- * mpfs clk block while a software locked register is being written.
- */
+ 
 static DEFINE_SPINLOCK(mpfs_clk_lock);
 
 static const struct clk_parent_data mpfs_ext_ref[] = {
@@ -82,12 +75,7 @@ static const struct clk_div_table mpfs_div_ahb_table[] = {
 	{ 0, 0 }
 };
 
-/*
- * The only two supported reference clock frequencies for the PolarFire SoC are
- * 100 and 125 MHz, as the rtc reference is required to be 1 MHz.
- * It therefore only needs to have divider table entries corresponding to
- * divide by 100 and 125.
- */
+ 
 static const struct clk_div_table mpfs_div_rtcref_table[] = {
 	{ 100, 100 }, { 125, 125 },
 	{ 0, 0 }
@@ -204,9 +192,7 @@ static int mpfs_clk_register_mssplls(struct device *dev, struct mpfs_msspll_hw_c
 	return 0;
 }
 
-/*
- * "CFG" clocks
- */
+ 
 
 #define CLK_CFG(_id, _name, _parent, _shift, _width, _table, _flags, _offset) {		\
 	.id = _id,									\
@@ -265,9 +251,7 @@ static int mpfs_clk_register_cfgs(struct device *dev, struct mpfs_cfg_hw_clock *
 	return 0;
 }
 
-/*
- * peripheral clocks - devices connected to axi or ahb buses.
- */
+ 
 
 #define CLK_PERIPH(_id, _name, _parent, _shift, _flags) {			\
 	.id = _id,								\
@@ -279,19 +263,7 @@ static int mpfs_clk_register_cfgs(struct device *dev, struct mpfs_cfg_hw_clock *
 
 #define PARENT_CLK(PARENT) (&mpfs_cfg_clks[CLK_##PARENT##_OFFSET].cfg.hw)
 
-/*
- * Critical clocks:
- * - CLK_ENVM: reserved by hart software services (hss) superloop monitor/m mode interrupt
- *   trap handler
- * - CLK_MMUART0: reserved by the hss
- * - CLK_DDRC: provides clock to the ddr subsystem
- * - CLK_RTC: the onboard RTC's AHB bus clock must be kept running as the rtc will stop
- *   if the AHB interface clock is disabled
- * - CLK_FICx: these provide the processor side clocks to the "FIC" (Fabric InterConnect)
- *   clock domain crossers which provide the interface to the FPGA fabric. Disabling them
- *   causes the FPGA fabric to go into reset.
- * - CLK_ATHENA: The athena clock is FIC4, which is reserved for the Athena TeraFire.
- */
+ 
 
 static struct mpfs_periph_hw_clock mpfs_periph_clks[] = {
 	CLK_PERIPH(CLK_ENVM, "clk_periph_envm", PARENT_CLK(AHB), 0, CLK_IS_CRITICAL),
@@ -347,9 +319,7 @@ static int mpfs_clk_register_periphs(struct device *dev, struct mpfs_periph_hw_c
 	return 0;
 }
 
-/*
- * Peripheral clock resets
- */
+ 
 
 #if IS_ENABLED(CONFIG_RESET_CONTROLLER)
 
@@ -425,14 +395,14 @@ static int mpfs_reset_controller_register(struct mpfs_clock_data *clk_data)
 	return devm_add_action_or_reset(clk_data->dev, mpfs_reset_unregister_adev, adev);
 }
 
-#else /* !CONFIG_RESET_CONTROLLER */
+#else  
 
 static int mpfs_reset_controller_register(struct mpfs_clock_data *clk_data)
 {
 	return 0;
 }
 
-#endif /* !CONFIG_RESET_CONTROLLER */
+#endif  
 
 static int mpfs_clk_probe(struct platform_device *pdev)
 {
@@ -441,7 +411,7 @@ static int mpfs_clk_probe(struct platform_device *pdev)
 	unsigned int num_clks;
 	int ret;
 
-	/* CLK_RESERVED is not part of clock arrays, so add 1 */
+	 
 	num_clks = ARRAY_SIZE(mpfs_msspll_clks) + ARRAY_SIZE(mpfs_cfg_clks)
 		   + ARRAY_SIZE(mpfs_periph_clks) + 1;
 

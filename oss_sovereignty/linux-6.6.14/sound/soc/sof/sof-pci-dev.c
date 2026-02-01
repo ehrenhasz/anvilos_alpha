@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/firmware.h>
 #include <linux/dmi.h>
@@ -112,17 +112,14 @@ static const struct dmi_system_id sof_tplg_table[] = {
 	{}
 };
 
-/* all Up boards use the community key */
+ 
 static int up_use_community_key(const struct dmi_system_id *id)
 {
 	sof_dmi_use_community_key = true;
 	return 1;
 }
 
-/*
- * For ApolloLake Chromebooks we want to force the use of the Intel production key.
- * All newer platforms use the community key
- */
+ 
 static int chromebook_use_community_key(const struct dmi_system_id *id)
 {
 	if (!soc_intel_is_apl())
@@ -171,20 +168,17 @@ static void sof_pci_probe_complete(struct device *dev)
 	if (sof_pci_debug & SOF_PCI_DISABLE_PM_RUNTIME)
 		return;
 
-	/* allow runtime_pm */
+	 
 	pm_runtime_set_autosuspend_delay(dev, SND_SOF_SUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 
-	/*
-	 * runtime pm for pci device is "forbidden" by default.
-	 * so call pm_runtime_allow() to enable it.
-	 */
+	 
 	pm_runtime_allow(dev);
 
-	/* mark last_busy for pm_runtime to make sure not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
-	/* follow recommendation in pci-driver.c to decrement usage counter */
+	 
 	pm_runtime_put_noidle(dev);
 }
 
@@ -222,7 +216,7 @@ int sof_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 
 	sof_pdata->name = pci_name(pci);
 
-	/* PCI defines a vendor ID of 0xFFFF as invalid. */
+	 
 	if (pci->subsystem_vendor != 0xFFFF) {
 		sof_pdata->subsystem_vendor = pci->subsystem_vendor;
 		sof_pdata->subsystem_device = pci->subsystem_device;
@@ -262,14 +256,9 @@ int sof_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		sof_pdata->fw_filename = desc->default_fw_filename[sof_pdata->ipc_type];
 	}
 
-	/*
-	 * for platforms using the SOF community key, change the
-	 * default path automatically to pick the right files from the
-	 * linux-firmware tree. This can be overridden with the
-	 * fw_path kernel parameter, e.g. for developers.
-	 */
+	 
 
-	/* alternate fw and tplg filenames ? */
+	 
 	if (fw_path) {
 		sof_pdata->fw_filename_prefix = fw_path;
 
@@ -319,10 +308,7 @@ int sof_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		sof_pdata->tplg_filename_prefix =
 			sof_pdata->desc->default_tplg_path[sof_pdata->ipc_type];
 
-	/*
-	 * the topology filename will be provided in the machine descriptor, unless
-	 * it is overridden by a module parameter or DMI quirk.
-	 */
+	 
 	if (tplg_filename) {
 		sof_pdata->tplg_filename = tplg_filename;
 
@@ -334,10 +320,10 @@ int sof_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 			sof_pdata->tplg_filename = sof_dmi_override_tplg_name;
 	}
 
-	/* set callback to be called on successful device probe to enable runtime_pm */
+	 
 	sof_pdata->sof_probe_complete = sof_pci_probe_complete;
 
-	/* call sof helper for DSP hardware probe */
+	 
 	ret = snd_sof_device_probe(dev, sof_pdata);
 
 out:
@@ -350,15 +336,15 @@ EXPORT_SYMBOL_NS(sof_pci_probe, SND_SOC_SOF_PCI_DEV);
 
 void sof_pci_remove(struct pci_dev *pci)
 {
-	/* call sof helper for DSP hardware remove */
+	 
 	snd_sof_device_remove(&pci->dev);
 
-	/* follow recommendation in pci-driver.c to increment usage counter */
+	 
 	if (snd_sof_device_probe_completed(&pci->dev) &&
 	    !(sof_pci_debug & SOF_PCI_DISABLE_PM_RUNTIME))
 		pm_runtime_get_noresume(&pci->dev);
 
-	/* release pci regions and disable device */
+	 
 	pci_release_regions(pci);
 }
 EXPORT_SYMBOL_NS(sof_pci_remove, SND_SOC_SOF_PCI_DEV);

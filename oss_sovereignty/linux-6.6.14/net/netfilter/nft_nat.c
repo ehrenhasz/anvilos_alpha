@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- * Copyright (c) 2012 Pablo Neira Ayuso <pablo@netfilter.org>
- * Copyright (c) 2012 Intel Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>

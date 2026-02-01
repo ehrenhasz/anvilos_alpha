@@ -1,49 +1,11 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*
- * Terminal setup routines common to termcap and terminfo:
- *
- *		use_env(bool)
- *		use_tioctl(bool)
- *		setupterm(char *, int, int *)
- */
+ 
 
 #include <curses.priv.h>
-#include <tic.h>		/* for MAX_NAME_SIZE */
+#include <tic.h>		 
 
 #if HAVE_LOCALE_H
 #include <locale.h>
@@ -51,11 +13,7 @@
 
 MODULE_ID("$Id: lib_setup.c,v 1.218 2022/08/13 18:12:22 tom Exp $")
 
-/****************************************************************************
- *
- * Terminal size computation
- *
- ****************************************************************************/
+ 
 
 #if HAVE_SIZECHANGE
 # if !defined(sun) || !TERMIOS
@@ -66,9 +24,7 @@ MODULE_ID("$Id: lib_setup.c,v 1.218 2022/08/13 18:12:22 tom Exp $")
 #endif
 
 #if NEED_PTEM_H
- /* On SCO, they neglected to define struct winsize in termios.h -- it is only
-  * in termio.h and ptem.h (the former conflicts with other definitions).
-  */
+  
 # include <sys/stream.h>
 # include <sys/ptem.h>
 #endif
@@ -77,10 +33,7 @@ MODULE_ID("$Id: lib_setup.c,v 1.218 2022/08/13 18:12:22 tom Exp $")
 #include <langinfo.h>
 #endif
 
-/*
- * SCO defines TIOCGSIZE and the corresponding struct.  Other systems (SunOS,
- * Solaris, IRIX) define TIOCGWINSZ and struct winsize.
- */
+ 
 #ifdef TIOCGSIZE
 # define IOCTL_WINSIZE TIOCGSIZE
 # define STRUCT_WINSIZE struct ttysize
@@ -95,15 +48,11 @@ MODULE_ID("$Id: lib_setup.c,v 1.218 2022/08/13 18:12:22 tom Exp $")
 # endif
 #endif
 
-/*
- * Reduce explicit use of "cur_term" global variable.
- */
+ 
 #undef CUR
 #define CUR TerminalType(termp).
 
-/*
- * Wrap global variables in this module.
- */
+ 
 #if USE_REENTRANT
 
 NCURSES_EXPORT(char *)
@@ -198,12 +147,10 @@ set_tabsize(int value)
     return NCURSES_SP_NAME(set_tabsize) (CURRENT_SCREEN, value);
 }
 #endif
-#endif /* NCURSES_EXT_FUNCS */
+#endif  
 
 #if USE_SIGWINCH
-/*
- * If we have a pending SIGWINCH, set the flag in each screen.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_handle_sigwinch(SCREEN *sp)
 {
@@ -278,7 +225,7 @@ _nc_get_screensize(SCREEN *sp,
 		   TERMINAL *termp,
 #endif
 		   int *linep, int *colp)
-/* Obtain lines/columns values from the environment and/or terminfo entry */
+ 
 {
 #ifdef USE_TERM_DRIVER
     TERMINAL_CONTROL_BLOCK *TCB;
@@ -299,20 +246,18 @@ _nc_get_screensize(SCREEN *sp,
     TABSIZE = my_tabsize;
 #endif
     T(("TABSIZE = %d", my_tabsize));
-#else /* !USE_TERM_DRIVER */
+#else  
     TERMINAL *termp = cur_term;
     int my_tabsize;
     bool useEnv = _nc_prescreen.use_env;
     bool useTioctl = _nc_prescreen.use_tioctl;
 
 #ifdef EXP_WIN32_DRIVER
-    /* If we are here, then Windows console is used in terminfo mode.
-       We need to figure out the size using the console API
-     */
+     
     _nc_console_size(linep, colp);
     T(("screen size: winconsole lines = %d columns = %d", *linep, *colp));
 #else
-    /* figure out the size of the screen */
+     
     T(("screen size: terminfo lines = %d columns = %d", lines, columns));
 
     *linep = (int) lines;
@@ -340,7 +285,7 @@ _nc_get_screensize(SCREEN *sp,
 	}
 #endif
 #if HAVE_SIZECHANGE
-	/* try asking the OS */
+	 
 	if (NC_ISATTY(cur_term->Filedes)) {
 	    STRUCT_WINSIZE size;
 
@@ -358,15 +303,13 @@ _nc_get_screensize(SCREEN *sp,
 	    } while
 		(errno == EINTR);
 	}
-#endif /* HAVE_SIZECHANGE */
+#endif  
 
 	if (useEnv) {
 	    int value;
 
 	    if (useTioctl) {
-		/*
-		 * If environment variables are used, update them.
-		 */
+		 
 		if ((sp == 0 || !sp->_filtered) && _nc_getenv_num("LINES") > 0) {
 		    _nc_setenv_num("LINES", *linep);
 		}
@@ -375,12 +318,7 @@ _nc_get_screensize(SCREEN *sp,
 		}
 	    }
 
-	    /*
-	     * Finally, look for environment variables.
-	     *
-	     * Solaris lets users override either dimension with an environment
-	     * variable.
-	     */
+	     
 	    if ((value = _nc_getenv_num("LINES")) > 0) {
 		*linep = value;
 		T(("screen size: environment LINES = %d", *linep));
@@ -391,7 +329,7 @@ _nc_get_screensize(SCREEN *sp,
 	    }
 	}
 
-	/* if we can't get dynamic info about the size, use static */
+	 
 	if (*linep <= 0) {
 	    *linep = (int) lines;
 	}
@@ -399,7 +337,7 @@ _nc_get_screensize(SCREEN *sp,
 	    *colp = (int) columns;
 	}
 
-	/* the ultimate fallback, assume fixed 24x80 size */
+	 
 	if (*linep <= 0) {
 	    *linep = 24;
 	}
@@ -407,10 +345,7 @@ _nc_get_screensize(SCREEN *sp,
 	    *colp = 80;
 	}
 
-	/*
-	 * Put the derived values back in the screen-size caps, so
-	 * tigetnum() and tgetnum() will do the right thing.
-	 */
+	 
 	lines = (NCURSES_INT2) (*linep);
 	columns = (NCURSES_INT2) (*colp);
 #if NCURSES_EXT_NUMBERS
@@ -435,7 +370,7 @@ _nc_get_screensize(SCREEN *sp,
     TABSIZE = my_tabsize;
 #endif
     T(("TABSIZE = %d", TABSIZE));
-#endif /* USE_TERM_DRIVER */
+#endif  
 }
 
 #if USE_SIZECHANGE
@@ -461,46 +396,30 @@ _nc_update_screensize(SCREEN *sp)
 
     if (sp != 0) {
 	TINFO_GET_SIZE(sp, sp->_term, &new_lines, &new_cols);
-	/*
-	 * See is_term_resized() and resizeterm().
-	 * We're doing it this way because those functions belong to the upper
-	 * ncurses library, while this resides in the lower terminfo library.
-	 */
+	 
 	if (sp->_resize != 0) {
 	    if ((new_lines != old_lines) || (new_cols != old_cols)) {
 		sp->_resize(NCURSES_SP_ARGx new_lines, new_cols);
 	    } else if (sp->_sig_winch && (sp->_ungetch != 0)) {
-		sp->_ungetch(SP_PARM, KEY_RESIZE);	/* so application can know this */
+		sp->_ungetch(SP_PARM, KEY_RESIZE);	 
 	    }
 	    sp->_sig_winch = FALSE;
 	}
     }
 }
-#endif /* USE_SIZECHANGE */
+#endif  
 
-/****************************************************************************
- *
- * Terminal setup
- *
- ****************************************************************************/
+ 
 
 #if NCURSES_USE_DATABASE || NCURSES_USE_TERMCAP
-/*
- * Return 1 if entry found, 0 if not found, -1 if database not accessible,
- * just like tgetent().
- */
+ 
 int
 _nc_setup_tinfo(const char *const tn, TERMTYPE2 *const tp)
 {
     char filename[PATH_MAX];
     int status = _nc_read_entry2(tn, filename, tp);
 
-    /*
-     * If we have an entry, force all of the cancelled strings to null
-     * pointers so we don't have to test them in the rest of the library.
-     * (The terminfo compiler bypasses this logic, since it must know if
-     * a string is cancelled, for merging entries).
-     */
+     
     if (status == TGETENT_YES) {
 	unsigned n;
 	for_each_boolean(n, tp) {
@@ -516,20 +435,13 @@ _nc_setup_tinfo(const char *const tn, TERMTYPE2 *const tp)
 }
 #endif
 
-/*
-**	Take the real command character out of the CC environment variable
-**	and substitute it in for the prototype given in 'command_character'.
-*/
+ 
 void
 _nc_tinfo_cmdch(TERMINAL *termp, int proto)
 {
     char *tmp;
 
-    /*
-     * Only use the character if the string is a single character,
-     * since it is fairly common for developers to set the C compiler
-     * name as an environment variable - using the same symbol.
-     */
+     
     if ((tmp = getenv("CC")) != 0 && strlen(tmp) == 1) {
 	unsigned i;
 	char CC = *tmp;
@@ -543,18 +455,13 @@ _nc_tinfo_cmdch(TERMINAL *termp, int proto)
     }
 }
 
-/*
- * Find the locale which is in effect.
- */
+ 
 NCURSES_EXPORT(char *)
 _nc_get_locale(void)
 {
     char *env;
 #if HAVE_LOCALE_H
-    /*
-     * This is preferable to using getenv() since it ensures that we are using
-     * the locale which was actually initialized by the application.
-     */
+     
     env = setlocale(LC_CTYPE, 0);
 #else
     if (((env = getenv("LANG")) != 0 && *env != '\0')
@@ -567,9 +474,7 @@ _nc_get_locale(void)
     return env;
 }
 
-/*
- * Check if we are running in a UTF-8 locale.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_unicode_locale(void)
 {
@@ -595,10 +500,7 @@ _nc_unicode_locale(void)
 #define CONTROL_N(s) ((s) != 0 && strstr(s, "\016") != 0)
 #define CONTROL_O(s) ((s) != 0 && strstr(s, "\017") != 0)
 
-/*
- * Check for known broken cases where a UTF-8 locale breaks the alternate
- * character set.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_locale_breaks_acs(TERMINAL *termp)
 {
@@ -611,10 +513,10 @@ _nc_locale_breaks_acs(TERMINAL *termp)
     if (getenv(env_name) != 0) {
 	result = _nc_getenv_num(env_name);
     } else if ((value = tigetnum("U8")) >= 0) {
-	result = value;		/* use extension feature */
+	result = value;		 
     } else if ((env = getenv("TERM")) != 0) {
 	if (strstr(env, "linux")) {
-	    result = 1;		/* always broken */
+	    result = 1;		 
 	} else if (strstr(env, "screen") != 0
 		   && ((env = getenv("TERMCAP")) != 0
 		       && strstr(env, "screen") != 0)
@@ -689,10 +591,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
 
     T(("your terminal name is %s", myname));
 
-    /*
-     * Allow output redirection.  This is what SVr3 does.  If stdout is
-     * directed to a file, screen updates go to standard error.
-     */
+     
     if (Filedes == STDOUT_FILENO && !NC_ISATTY(Filedes))
 	Filedes = STDERR_FILENO;
 #if defined(EXP_WIN32_DRIVER)
@@ -700,22 +599,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
 	_setmode(Filedes, _O_BINARY);
 #endif
 
-    /*
-     * Check if we have already initialized to use this terminal.  If so, we
-     * do not need to re-read the terminfo entry, or obtain TTY settings.
-     *
-     * This is an improvement on SVr4 curses.  If an application mixes curses
-     * and termcap calls, it may call both initscr and tgetent.  This is not
-     * really a good thing to do, but can happen if someone tries using ncurses
-     * with the readline library.  The problem we are fixing is that when
-     * tgetent calls setupterm, the resulting Ottyb struct in cur_term is
-     * zeroed.  A subsequent call to endwin uses the zeroed terminal settings
-     * rather than the ones saved in initscr.  So we check if cur_term appears
-     * to contain terminal settings for the same output file as our current
-     * call - and copy those terminal settings.  (SVr4 curses does not do this,
-     * however applications that are working around the problem will still work
-     * properly with this feature).
-     */
+     
     if (reuse
 	&& (termp != 0)
 	&& termp->Filedes == Filedes
@@ -759,7 +643,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
 	    if (_nc_globals.getstr_limit < (int) limit)
 		_nc_globals.getstr_limit = (int) limit;
 	}
-#endif /* HAVE_SYSCONF */
+#endif  
 	T(("using %d for getstr limit", _nc_globals.getstr_limit));
 
 #ifdef USE_TERM_DRIVER
@@ -783,7 +667,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
 	status = TGETENT_NO;
 #endif
 
-	/* try fallback list if entry on disk */
+	 
 	if (status != TGETENT_YES) {
 	    const TERMTYPE2 *fallback = _nc_fallback2(myname);
 
@@ -822,12 +706,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
 	if (command_character)
 	    _nc_tinfo_cmdch(termp, UChar(*command_character));
 
-	/*
-	 * If an application calls setupterm() rather than initscr() or
-	 * newterm(), we will not have the def_prog_mode() call in
-	 * _nc_setupscreen().  Do it now anyway, so we can initialize the
-	 * baudrate.  Also get the shell-mode so that erasechar() works.
-	 */
+	 
 	if (NC_ISATTY(Filedes)) {
 	    NCURSES_SP_NAME(def_shell_mode) (NCURSES_SP_ARG);
 	    NCURSES_SP_NAME(def_prog_mode) (NCURSES_SP_ARG);
@@ -845,9 +724,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
     sp = SP;
 #endif
 
-    /*
-     * We should always check the screensize, just in case.
-     */
+     
     TINFO_GET_SIZE(sp, termp, ptrLines(sp), ptrCols(sp));
 
     if (errret)
@@ -855,10 +732,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
 
 #ifndef USE_TERM_DRIVER
     if (generic_type) {
-	/*
-	 * BSD 4.3's termcap contains mis-typed "gn" for wy99.  Do a sanity
-	 * check before giving up.
-	 */
+	 
 	if ((VALID_STRING(cursor_address)
 	     || (VALID_STRING(cursor_down) && VALID_STRING(cursor_home)))
 	    && VALID_STRING(clear_screen)) {
@@ -879,10 +753,7 @@ TINFO_SETUP_TERM(TERMINAL **tp,
 }
 
 #ifdef USE_PTHREADS
-/*
- * Returns a non-null pointer unless a new screen should be allocated because
- * no match was found in the pre-screen cache.
- */
+ 
 NCURSES_EXPORT(SCREEN *)
 _nc_find_prescr(void)
 {
@@ -898,11 +769,7 @@ _nc_find_prescr(void)
     return result;
 }
 
-/*
- * Tells ncurses to forget that this thread was associated with the pre-screen
- * cache.  It does not modify the pre-screen cache itself, since that is used
- * for creating new screens.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_forget_prescr(void)
 {
@@ -922,15 +789,10 @@ _nc_forget_prescr(void)
     }
     _nc_unlock_global(screen);
 }
-#endif /* USE_PTHREADS */
+#endif  
 
 #if NCURSES_SP_FUNCS
-/*
- * In case of handling multiple screens, we need to have a screen before
- * initialization in _nc_setupscreen takes place.  This is to extend the
- * substitute for some of the stuff in _nc_prescreen, especially for slk and
- * ripoff handling which should be done per screen.
- */
+ 
 NCURSES_EXPORT(SCREEN *)
 new_prescr(void)
 {
@@ -979,10 +841,7 @@ new_prescr(void)
 #endif
 
 #ifdef USE_TERM_DRIVER
-/*
- * This entrypoint is called from tgetent() to allow a special case of reusing
- * the same TERMINAL data (see comment).
- */
+ 
 NCURSES_EXPORT(int)
 _nc_setupterm(const char *tname,
 	      int Filedes,
@@ -1007,12 +866,7 @@ _nc_setupterm(const char *tname,
 }
 #endif
 
-/*
- *	setupterm(termname, Filedes, errret)
- *
- *	Find and read the appropriate object file for the terminal
- *	Make cur_term point to the structure.
- */
+ 
 NCURSES_EXPORT(int)
 setupterm(const char *tname, int Filedes, int *errret)
 {

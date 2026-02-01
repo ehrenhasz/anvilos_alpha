@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+ 
 #ifndef __BPF_TRACING_NET_H__
 #define __BPF_TRACING_NET_H__
 

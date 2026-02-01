@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DISPLAY_POWER_MAP_H__
 #define __INTEL_DISPLAY_POWER_MAP_H__

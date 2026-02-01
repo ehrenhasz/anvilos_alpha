@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VHT handling
- *
- * Portions of this file
- * Copyright(c) 2015 - 2016 Intel Deutschland GmbH
- * Copyright (C) 2018 - 2023 Intel Corporation
- */
+
+ 
 
 #include <linux/ieee80211.h>
 #include <linux/export.h>
@@ -54,7 +48,7 @@ void ieee80211_apply_vhtcap_overrides(struct ieee80211_sub_if_data *sdata,
 	__check_vhtcap_disable(sdata, vht_cap,
 			       IEEE80211_VHT_CAP_TX_ANTENNA_PATTERN);
 
-	/* Allow user to decrease AMPDU length exponent */
+	 
 	if (sdata->u.mgd.vht_capa_mask.vht_cap_info &
 	    cpu_to_le32(IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK)) {
 		u32 cap, n;
@@ -73,7 +67,7 @@ void ieee80211_apply_vhtcap_overrides(struct ieee80211_sub_if_data *sdata,
 		}
 	}
 
-	/* Allow the user to decrease MCSes */
+	 
 	rxmcs_mask =
 		le16_to_cpu(sdata->u.mgd.vht_capa_mask.supp_mcs.rx_mcs_map);
 	rxmcs_n = le16_to_cpu(sdata->u.mgd.vht_capa.supp_mcs.rx_mcs_map);
@@ -133,7 +127,7 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 	if (!vht_cap_ie || !sband->vht_cap.vht_supported)
 		return;
 
-	/* Allow VHT if at least one channel on the sband supports 80 MHz */
+	 
 	have_80mhz = false;
 	for (i = 0; i < sband->n_channels; i++) {
 		if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |
@@ -147,27 +141,17 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 	if (!have_80mhz)
 		return;
 
-	/*
-	 * A VHT STA must support 40 MHz, but if we verify that here
-	 * then we break a few things - some APs (e.g. Netgear R6300v2
-	 * and others based on the BCM4360 chipset) will unset this
-	 * capability bit when operating in 20 MHz.
-	 */
+	 
 
 	vht_cap->vht_supported = true;
 
 	own_cap = sband->vht_cap;
-	/*
-	 * If user has specified capability overrides, take care
-	 * of that if the station we're setting up is the AP that
-	 * we advertised a restricted capability set to. Override
-	 * our own capabilities and then use those below.
-	 */
+	 
 	if (sdata->vif.type == NL80211_IFTYPE_STATION &&
 	    !test_sta_flag(link_sta->sta, WLAN_STA_TDLS_PEER))
 		ieee80211_apply_vhtcap_overrides(sdata, &own_cap);
 
-	/* take some capabilities as-is */
+	 
 	cap_info = le32_to_cpu(vht_cap_ie->vht_cap_info);
 	vht_cap->cap = cap_info;
 	vht_cap->cap &= IEEE80211_VHT_CAP_RXLDPC |
@@ -182,7 +166,7 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 	vht_cap->cap |= min_t(u32, cap_info & IEEE80211_VHT_CAP_MAX_MPDU_MASK,
 			      own_cap.cap & IEEE80211_VHT_CAP_MAX_MPDU_MASK);
 
-	/* and some based on our own capabilities */
+	 
 	switch (own_cap.cap & IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK) {
 	case IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160MHZ:
 		vht_cap->cap |= cap_info &
@@ -193,16 +177,16 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 				IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK;
 		break;
 	default:
-		/* nothing */
+		 
 		break;
 	}
 
-	/* symmetric capabilities */
+	 
 	vht_cap->cap |= cap_info & own_cap.cap &
 			(IEEE80211_VHT_CAP_SHORT_GI_80 |
 			 IEEE80211_VHT_CAP_SHORT_GI_160);
 
-	/* remaining ones */
+	 
 	if (own_cap.cap & IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE)
 		vht_cap->cap |= cap_info &
 				(IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE |
@@ -227,18 +211,18 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 	if (own_cap.cap & IEEE80211_VHT_CAP_RXSTBC_MASK)
 		vht_cap->cap |= cap_info & IEEE80211_VHT_CAP_TXSTBC;
 
-	/* Copy peer MCS info, the driver might need them. */
+	 
 	memcpy(&vht_cap->vht_mcs, &vht_cap_ie->supp_mcs,
 	       sizeof(struct ieee80211_vht_mcs_info));
 
-	/* copy EXT_NSS_BW Support value or remove the capability */
+	 
 	if (ieee80211_hw_check(&sdata->local->hw, SUPPORTS_VHT_EXT_NSS_BW))
 		vht_cap->cap |= (cap_info & IEEE80211_VHT_CAP_EXT_NSS_BW_MASK);
 	else
 		vht_cap->vht_mcs.tx_highest &=
 			~cpu_to_le16(IEEE80211_VHT_EXT_NSS_BW_CAPABLE);
 
-	/* but also restrict MCSes */
+	 
 	for (i = 0; i < 8; i++) {
 		u16 own_rx, own_tx, peer_rx, peer_tx;
 
@@ -277,15 +261,7 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 		vht_cap->vht_mcs.tx_mcs_map |= cpu_to_le16(peer_tx << i * 2);
 	}
 
-	/*
-	 * This is a workaround for VHT-enabled STAs which break the spec
-	 * and have the VHT-MCS Rx map filled in with value 3 for all eight
-	 * spacial streams, an example is AR9462.
-	 *
-	 * As per spec, in section 22.1.1 Introduction to the VHT PHY
-	 * A VHT STA shall support at least single spactial stream VHT-MCSs
-	 * 0 to 7 (transmit and receive) in all supported channel widths.
-	 */
+	 
 	if (vht_cap->vht_mcs.rx_mcs_map == cpu_to_le16(0xFFFF)) {
 		vht_cap->vht_supported = false;
 		sdata_info(sdata,
@@ -294,7 +270,7 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 		return;
 	}
 
-	/* finally set up the bandwidth */
+	 
 	switch (vht_cap->cap & IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK) {
 	case IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160MHZ:
 	case IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ:
@@ -307,11 +283,7 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 				cpu_to_le16(IEEE80211_VHT_EXT_NSS_BW_CAPABLE)))
 			break;
 
-		/*
-		 * If this is non-zero, then it does support 160 MHz after all,
-		 * in one form or the other. We don't distinguish here (or even
-		 * above) between 160 and 80+80 yet.
-		 */
+		 
 		if (cap_info & IEEE80211_VHT_CAP_EXT_NSS_BW_MASK)
 			link_sta->cur_max_bandwidth =
 				IEEE80211_STA_RX_BW_160;
@@ -319,20 +291,14 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 
 	link_sta->pub->bandwidth = ieee80211_sta_cur_vht_bw(link_sta);
 
-	/*
-	 * Work around the Cisco 9115 FW 17.3 bug by taking the min of
-	 * both reported MPDU lengths.
-	 */
+	 
 	mpdu_len = vht_cap->cap & IEEE80211_VHT_CAP_MAX_MPDU_MASK;
 	if (vht_cap_ie2)
 		mpdu_len = min_t(u32, mpdu_len,
 				 le32_get_bits(vht_cap_ie2->vht_cap_info,
 					       IEEE80211_VHT_CAP_MAX_MPDU_MASK));
 
-	/*
-	 * FIXME - should the amsdu len be per link? store per link
-	 * and maintain a minimum?
-	 */
+	 
 	switch (mpdu_len) {
 	case IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454:
 		link_sta->pub->agg.max_amsdu_len = IEEE80211_MAX_MPDU_LEN_VHT_11454;
@@ -349,7 +315,7 @@ ieee80211_vht_cap_ie_to_sta_vht_cap(struct ieee80211_sub_if_data *sdata,
 	ieee80211_sta_recalc_aggregates(&link_sta->sta->sta);
 }
 
-/* FIXME: move this to some better location - parses HE/EHT now */
+ 
 enum ieee80211_sta_rx_bandwidth
 ieee80211_sta_cap_rx_bw(struct link_sta_info *link_sta)
 {
@@ -412,11 +378,7 @@ out:
 	    cap_width == IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ)
 		return IEEE80211_STA_RX_BW_160;
 
-	/*
-	 * If this is non-zero, then it does support 160 MHz after all,
-	 * in one form or the other. We don't distinguish here (or even
-	 * above) between 160 and 80+80 yet.
-	 */
+	 
 	if (vht_cap->cap & IEEE80211_VHT_CAP_EXT_NSS_BW_MASK)
 		return IEEE80211_STA_RX_BW_160;
 
@@ -501,7 +463,7 @@ ieee80211_chan_width_to_rx_bw(enum nl80211_chan_width width)
 	}
 }
 
-/* FIXME: rename/move - this deals with everything not just VHT */
+ 
 enum ieee80211_sta_rx_bandwidth
 ieee80211_sta_cur_vht_bw(struct link_sta_info *link_sta)
 {
@@ -521,15 +483,7 @@ ieee80211_sta_cur_vht_bw(struct link_sta_info *link_sta)
 	bw = ieee80211_sta_cap_rx_bw(link_sta);
 	bw = min(bw, link_sta->cur_max_bandwidth);
 
-	/* Don't consider AP's bandwidth for TDLS peers, section 11.23.1 of
-	 * IEEE80211-2016 specification makes higher bandwidth operation
-	 * possible on the TDLS link if the peers have wider bandwidth
-	 * capability.
-	 *
-	 * However, in this case, and only if the TDLS peer is authorized,
-	 * limit to the tdls_chandef so that the configuration here isn't
-	 * wider than what's actually requested on the channel context.
-	 */
+	 
 	if (test_sta_flag(sta, WLAN_STA_TDLS_PEER) &&
 	    test_sta_flag(sta, WLAN_STA_TDLS_WIDER_BW) &&
 	    test_sta_flag(sta, WLAN_STA_AUTHORIZED) &&
@@ -546,7 +500,7 @@ void ieee80211_sta_set_rx_nss(struct link_sta_info *link_sta)
 	u8 ht_rx_nss = 0, vht_rx_nss = 0, he_rx_nss = 0, eht_rx_nss = 0, rx_nss;
 	bool support_160;
 
-	/* if we received a notification already don't overwrite it */
+	 
 	if (link_sta->pub->rx_nss)
 		return;
 
@@ -554,7 +508,7 @@ void ieee80211_sta_set_rx_nss(struct link_sta_info *link_sta)
 		int i;
 		const u8 *rx_nss_mcs = (void *)&link_sta->pub->eht_cap.eht_mcs_nss_supp;
 
-		/* get the max nss for EHT over all possible bandwidths and mcs */
+		 
 		for (i = 0; i < sizeof(struct ieee80211_eht_mcs_nss_supp); i++)
 			eht_rx_nss = max_t(u8, eht_rx_nss,
 					   u8_get_bits(rx_nss_mcs[i],
@@ -604,7 +558,7 @@ void ieee80211_sta_set_rx_nss(struct link_sta_info *link_sta)
 			ht_rx_nss++;
 		if (link_sta->pub->ht_cap.mcs.rx_mask[3])
 			ht_rx_nss++;
-		/* FIXME: consider rx_highest? */
+		 
 	}
 
 	if (link_sta->pub->vht_cap.vht_supported) {
@@ -621,7 +575,7 @@ void ieee80211_sta_set_rx_nss(struct link_sta_info *link_sta)
 				break;
 			}
 		}
-		/* FIXME: consider rx_highest? */
+		 
 	}
 
 	rx_nss = max(vht_rx_nss, ht_rx_nss);
@@ -639,7 +593,7 @@ u32 __ieee80211_vht_handle_opmode(struct ieee80211_sub_if_data *sdata,
 	u32 changed = 0;
 	u8 nss, cur_nss;
 
-	/* ignore - no support for BF yet */
+	 
 	if (opmode & IEEE80211_OPMODE_NOTIF_RX_NSS_TYPE_BF)
 		return 0;
 
@@ -649,14 +603,10 @@ u32 __ieee80211_vht_handle_opmode(struct ieee80211_sub_if_data *sdata,
 
 	if (link_sta->pub->rx_nss != nss) {
 		cur_nss = link_sta->pub->rx_nss;
-		/* Reset rx_nss and call ieee80211_sta_set_rx_nss() which
-		 * will set the same to max nss value calculated based on capability.
-		 */
+		 
 		link_sta->pub->rx_nss = 0;
 		ieee80211_sta_set_rx_nss(link_sta);
-		/* Do not allow an nss change to rx_nss greater than max_nss
-		 * negotiated and capped to APs capability during association.
-		 */
+		 
 		if (nss <= link_sta->pub->rx_nss) {
 			link_sta->pub->rx_nss = nss;
 			sta_opmode.rx_nss = nss;
@@ -671,11 +621,11 @@ u32 __ieee80211_vht_handle_opmode(struct ieee80211_sub_if_data *sdata,
 
 	switch (opmode & IEEE80211_OPMODE_NOTIF_CHANWIDTH_MASK) {
 	case IEEE80211_OPMODE_NOTIF_CHANWIDTH_20MHZ:
-		/* ignore IEEE80211_OPMODE_NOTIF_BW_160_80P80 must not be set */
+		 
 		link_sta->cur_max_bandwidth = IEEE80211_STA_RX_BW_20;
 		break;
 	case IEEE80211_OPMODE_NOTIF_CHANWIDTH_40MHZ:
-		/* ignore IEEE80211_OPMODE_NOTIF_BW_160_80P80 must not be set */
+		 
 		link_sta->cur_max_bandwidth = IEEE80211_STA_RX_BW_40;
 		break;
 	case IEEE80211_OPMODE_NOTIF_CHANWIDTH_80MHZ:
@@ -685,7 +635,7 @@ u32 __ieee80211_vht_handle_opmode(struct ieee80211_sub_if_data *sdata,
 			link_sta->cur_max_bandwidth = IEEE80211_STA_RX_BW_80;
 		break;
 	case IEEE80211_OPMODE_NOTIF_CHANWIDTH_160MHZ:
-		/* legacy only, no longer used by newer spec */
+		 
 		link_sta->cur_max_bandwidth = IEEE80211_STA_RX_BW_160;
 		break;
 	}

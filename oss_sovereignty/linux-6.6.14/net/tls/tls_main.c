@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 
@@ -186,7 +155,7 @@ int tls_push_sg(struct sock *sk,
 
 	ctx->splicing_pages = true;
 	while (1) {
-		/* is sending application-limited? */
+		 
 		tcp_rate_check_app_limited(sk);
 		p = sg_page(sg);
 retry:
@@ -297,10 +266,7 @@ static void tls_write_space(struct sock *sk)
 {
 	struct tls_context *ctx = tls_get_ctx(sk);
 
-	/* If splicing_pages call lower protocol write space handler
-	 * to ensure we wake up any waiting operations there. For example
-	 * if splicing pages where to call sk_wait_event.
-	 */
+	 
 	if (ctx->splicing_pages) {
 		ctx->sk_write_space(sk);
 		return;
@@ -316,14 +282,7 @@ static void tls_write_space(struct sock *sk)
 	ctx->sk_write_space(sk);
 }
 
-/**
- * tls_ctx_free() - free TLS ULP context
- * @sk:  socket to with @ctx is attached
- * @ctx: TLS context structure
- *
- * Free TLS context. If @sk is %NULL caller guarantees that the socket
- * to which @ctx was attached has no outstanding references.
- */
+ 
 void tls_ctx_free(struct sock *sk, struct tls_context *ctx)
 {
 	if (!ctx)
@@ -346,7 +305,7 @@ static void tls_sk_proto_cleanup(struct sock *sk,
 	    !wait_on_pending_writer(sk, &timeo))
 		tls_handle_open_record(sk, 0);
 
-	/* We need these for tls_sw_fallback handling of other packets */
+	 
 	if (ctx->tx_conf == TLS_SW) {
 		kfree(ctx->tx.rec_seq);
 		kfree(ctx->tx.iv);
@@ -458,7 +417,7 @@ static int do_tls_getsockopt_conf(struct sock *sk, char __user *optval,
 		goto out;
 	}
 
-	/* get user crypto info */
+	 
 	if (tx) {
 		crypto_info = &ctx->crypto_send.info;
 		cctx = &ctx->tx;
@@ -606,7 +565,7 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
 		alt_crypto_info = &ctx->crypto_send.info;
 	}
 
-	/* Currently we don't support set crypto info more than one time */
+	 
 	if (TLS_CRYPTO_INFO_READY(crypto_info))
 		return -EBUSY;
 
@@ -616,14 +575,14 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
 		goto err_crypto_info;
 	}
 
-	/* check version */
+	 
 	if (crypto_info->version != TLS_1_2_VERSION &&
 	    crypto_info->version != TLS_1_3_VERSION) {
 		rc = -EINVAL;
 		goto err_crypto_info;
 	}
 
-	/* Ensure that TLS version and ciphers are same in both directions */
+	 
 	if (TLS_CRYPTO_INFO_READY(alt_crypto_info)) {
 		if (alt_crypto_info->version != crypto_info->version ||
 		    alt_crypto_info->cipher_type != crypto_info->cipher_type) {
@@ -859,7 +818,7 @@ static void tls_build_proto(struct sock *sk)
 	int ip_ver = sk->sk_family == AF_INET6 ? TLSV6 : TLSV4;
 	struct proto *prot = READ_ONCE(sk->sk_prot);
 
-	/* Build IPv6 TLS whenever the address of tcpv6 _prot changes */
+	 
 	if (ip_ver == TLSV6 &&
 	    unlikely(prot != smp_load_acquire(&saved_tcpv6_prot))) {
 		mutex_lock(&tcpv6_prot_mutex);
@@ -941,16 +900,11 @@ static int tls_init(struct sock *sk)
 		return 0;
 #endif
 
-	/* The TLS ulp is currently supported only for TCP sockets
-	 * in ESTABLISHED state.
-	 * Supporting sockets in LISTEN state will require us
-	 * to modify the accept implementation to clone rather then
-	 * share the ulp context.
-	 */
+	 
 	if (sk->sk_state != TCP_ESTABLISHED)
 		return -ENOTCONN;
 
-	/* allocate tls context */
+	 
 	write_lock_bh(&sk->sk_callback_lock);
 	ctx = tls_ctx_create(sk);
 	if (!ctx) {
@@ -978,7 +932,7 @@ static void tls_update(struct sock *sk, struct proto *p,
 		ctx->sk_write_space = write_space;
 		ctx->sk_proto = p;
 	} else {
-		/* Pairs with lockless read in sk_clone_lock(). */
+		 
 		WRITE_ONCE(sk->sk_prot, p);
 		sk->sk_write_space = write_space;
 	}
@@ -1063,13 +1017,13 @@ static size_t tls_get_info_size(const struct sock *sk)
 {
 	size_t size = 0;
 
-	size += nla_total_size(0) +		/* INET_ULP_INFO_TLS */
-		nla_total_size(sizeof(u16)) +	/* TLS_INFO_VERSION */
-		nla_total_size(sizeof(u16)) +	/* TLS_INFO_CIPHER */
-		nla_total_size(sizeof(u16)) +	/* TLS_INFO_RXCONF */
-		nla_total_size(sizeof(u16)) +	/* TLS_INFO_TXCONF */
-		nla_total_size(0) +		/* TLS_INFO_ZC_RO_TX */
-		nla_total_size(0) +		/* TLS_INFO_RX_NO_PAD */
+	size += nla_total_size(0) +		 
+		nla_total_size(sizeof(u16)) +	 
+		nla_total_size(sizeof(u16)) +	 
+		nla_total_size(sizeof(u16)) +	 
+		nla_total_size(sizeof(u16)) +	 
+		nla_total_size(0) +		 
+		nla_total_size(0) +		 
 		0;
 
 	return size;

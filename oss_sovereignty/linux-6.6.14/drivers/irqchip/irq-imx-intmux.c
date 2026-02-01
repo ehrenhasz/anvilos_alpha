@@ -1,48 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2017 NXP
 
-/*                     INTMUX Block Diagram
- *
- *                               ________________
- * interrupt source #  0  +---->|                |
- *                        |     |                |
- * interrupt source #  1  +++-->|                |
- *            ...         | |   |   channel # 0  |--------->interrupt out # 0
- *            ...         | |   |                |
- *            ...         | |   |                |
- * interrupt source # X-1 +++-->|________________|
- *                        | | |
- *                        | | |
- *                        | | |  ________________
- *                        +---->|                |
- *                        | | | |                |
- *                        | +-->|                |
- *                        | | | |   channel # 1  |--------->interrupt out # 1
- *                        | | +>|                |
- *                        | | | |                |
- *                        | | | |________________|
- *                        | | |
- *                        | | |
- *                        | | |       ...
- *                        | | |       ...
- *                        | | |
- *                        | | |  ________________
- *                        +---->|                |
- *                          | | |                |
- *                          +-->|                |
- *                            | |   channel # N  |--------->interrupt out # N
- *                            +>|                |
- *                              |                |
- *                              |________________|
- *
- *
- * N: Interrupt Channel Instance Number (N=7)
- * X: Interrupt Source Number for each channel (X=32)
- *
- * The INTMUX interrupt multiplexer has 8 channels, each channel receives 32
- * interrupt sources and generates 1 interrupt output.
- *
- */
+
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -89,7 +48,7 @@ static void imx_intmux_irq_mask(struct irq_data *d)
 	raw_spin_lock_irqsave(&data->lock, flags);
 	reg = data->regs + CHANIER(idx);
 	val = readl_relaxed(reg);
-	/* disable the interrupt source of this channel */
+	 
 	val &= ~BIT(d->hwirq);
 	writel_relaxed(val, reg);
 	raw_spin_unlock_irqrestore(&data->lock, flags);
@@ -108,7 +67,7 @@ static void imx_intmux_irq_unmask(struct irq_data *d)
 	raw_spin_lock_irqsave(&data->lock, flags);
 	reg = data->regs + CHANIER(idx);
 	val = readl_relaxed(reg);
-	/* enable the interrupt source of this channel */
+	 
 	val |= BIT(d->hwirq);
 	writel_relaxed(val, reg);
 	raw_spin_unlock_irqrestore(&data->lock, flags);
@@ -140,11 +99,7 @@ static int imx_intmux_irq_xlate(struct irq_domain *d, struct device_node *node,
 	struct intmux_data *data = container_of(irqchip_data, struct intmux_data,
 						irqchip_data[idx]);
 
-	/*
-	 * two cells needed in interrupt specifier:
-	 * the 1st cell: hw interrupt number
-	 * the 2nd cell: channel index
-	 */
+	 
 	if (WARN_ON(intsize != 2))
 		return -EINVAL;
 
@@ -162,7 +117,7 @@ static int imx_intmux_irq_select(struct irq_domain *d, struct irq_fwspec *fwspec
 {
 	struct intmux_irqchip_data *irqchip_data = d->host_data;
 
-	/* Not for us */
+	 
 	if (fwspec->fwnode != d->fwnode)
 		return false;
 
@@ -186,7 +141,7 @@ static void imx_intmux_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(irq_desc_get_chip(desc), desc);
 
-	/* read the interrupt source pending status of this channel */
+	 
 	irqstat = readl_relaxed(data->regs + CHANIPR(idx));
 
 	for_each_set_bit(pos, &irqstat, 32)
@@ -260,7 +215,7 @@ static int imx_intmux_probe(struct platform_device *pdev)
 		data->irqchip_data[i].domain = domain;
 		irq_domain_set_pm_device(domain, &pdev->dev);
 
-		/* disable all interrupt sources of this channel firstly */
+		 
 		writel_relaxed(0, data->regs + CHANIER(i));
 
 		irq_set_chained_handler_and_data(data->irqchip_data[i].irq,
@@ -270,10 +225,7 @@ static int imx_intmux_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, data);
 
-	/*
-	 * Let pm_runtime_put() disable clock.
-	 * If CONFIG_PM is not enabled, the clock will stay powered.
-	 */
+	 
 	pm_runtime_put(&pdev->dev);
 
 	return 0;
@@ -288,7 +240,7 @@ static int imx_intmux_remove(struct platform_device *pdev)
 	int i;
 
 	for (i = 0; i < data->channum; i++) {
-		/* disable all interrupt sources of this channel */
+		 
 		writel_relaxed(0, data->regs + CHANIER(i));
 
 		irq_set_chained_handler_and_data(data->irqchip_data[i].irq,
@@ -349,7 +301,7 @@ static const struct dev_pm_ops imx_intmux_pm_ops = {
 
 static const struct of_device_id imx_intmux_id[] = {
 	{ .compatible = "fsl,imx-intmux", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver imx_intmux_driver = {

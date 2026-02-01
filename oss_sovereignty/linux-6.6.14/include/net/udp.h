@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for the UDP module.
- *
- * Version:	@(#)udp.h	1.0.2	05/07/93
- *
- * Authors:	Ross Biro
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- *
- * Fixes:
- *		Alan Cox	: Turned on udp checksums. I don't want to
- *				  chase 'memory corruption' bugs that aren't!
- */
+ 
+ 
 #ifndef _UDP_H
 #define _UDP_H
 
@@ -30,13 +15,7 @@
 #include <linux/poll.h>
 #include <linux/indirect_call_wrapper.h>
 
-/**
- *	struct udp_skb_cb  -  UDP(-Lite) private variables
- *
- *	@header:      private variables used by IPv4/IPv6
- *	@cscov:       checksum coverage length (UDP-Lite only)
- *	@partial_cov: if set indicates partial csum coverage
- */
+ 
 struct udp_skb_cb {
 	union {
 		struct inet_skb_parm	h4;
@@ -49,27 +28,14 @@ struct udp_skb_cb {
 };
 #define UDP_SKB_CB(__skb)	((struct udp_skb_cb *)((__skb)->cb))
 
-/**
- *	struct udp_hslot - UDP hash slot
- *
- *	@head:	head of list of sockets
- *	@count:	number of sockets in 'head' list
- *	@lock:	spinlock protecting changes to head/count
- */
+ 
 struct udp_hslot {
 	struct hlist_head	head;
 	int			count;
 	spinlock_t		lock;
 } __attribute__((aligned(2 * sizeof(long))));
 
-/**
- *	struct udp_table - UDP table
- *
- *	@hash:	hash table, sockets are hashed on (local port)
- *	@hash2:	hash table, sockets are hashed on (local port, local address)
- *	@mask:	number of slots in hash tables, minus 1
- *	@log:	log2(number of slots in hash table)
- */
+ 
 struct udp_table {
 	struct udp_hslot	*hash;
 	struct udp_hslot	*hash2;
@@ -83,10 +49,7 @@ static inline struct udp_hslot *udp_hashslot(struct udp_table *table,
 {
 	return &table->hash[udp_hashfn(net, num, table->mask)];
 }
-/*
- * For secondary hash, net_hash_mix() is performed before calling
- * udp_hashslot2(), this explains difference with udp_hashslot()
- */
+ 
 static inline struct udp_hslot *udp_hashslot2(struct udp_table *table,
 					      unsigned int hash)
 {
@@ -98,16 +61,14 @@ extern struct proto udp_prot;
 extern atomic_long_t udp_memory_allocated;
 DECLARE_PER_CPU(int, udp_memory_per_cpu_fw_alloc);
 
-/* sysctl variables for udp */
+ 
 extern long sysctl_udp_mem[3];
 extern int sysctl_udp_rmem_min;
 extern int sysctl_udp_wmem_min;
 
 struct sk_buff;
 
-/*
- *	Generic checksumming routines for UDP(-Lite) v4 and v6
- */
+ 
 static inline __sum16 __udp_lib_checksum_complete(struct sk_buff *skb)
 {
 	return (UDP_SKB_CB(skb)->cscov == skb->len ?
@@ -121,12 +82,7 @@ static inline int udp_lib_checksum_complete(struct sk_buff *skb)
 		__udp_lib_checksum_complete(skb);
 }
 
-/**
- * 	udp_csum_outgoing  -  compute UDPv4/v6 checksum over fragments
- * 	@sk: 	socket we are writing to
- * 	@skb: 	sk_buff containing the filled-in UDP header
- * 	        (checksum field must be zeroed out)
- */
+ 
 static inline __wsum udp_csum_outgoing(struct sock *sk, struct sk_buff *skb)
 {
 	__wsum csum = csum_partial(skb_transport_header(skb),
@@ -184,7 +140,7 @@ static inline void udp_lib_init_sock(struct sock *sk)
 	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
 }
 
-/* hash routines shared between UDPv4/6 and UDP-Litev4/6 */
+ 
 static inline int udp_lib_hash(struct sock *sk)
 {
 	BUG();
@@ -210,31 +166,23 @@ static inline __be16 udp_flow_src_port(struct net *net, struct sk_buff *skb,
 	u32 hash;
 
 	if (min >= max) {
-		/* Use default range */
+		 
 		inet_get_local_port_range(net, &min, &max);
 	}
 
 	hash = skb_get_hash(skb);
 	if (unlikely(!hash)) {
 		if (use_eth) {
-			/* Can't find a normal hash, caller has indicated an
-			 * Ethernet packet so use that to compute a hash.
-			 */
+			 
 			hash = jhash(skb->data, 2 * ETH_ALEN,
 				     (__force u32) skb->protocol);
 		} else {
-			/* Can't derive any sort of hash for the packet, set
-			 * to some consistent random value.
-			 */
+			 
 			hash = udp_flow_hashrnd();
 		}
 	}
 
-	/* Since this is being sent on the wire obfuscate hash a bit
-	 * to minimize possbility that any useful information to an
-	 * attacker is leaked. Only upper 16 bits are relevant in the
-	 * computation for 16 bit port value.
-	 */
+	 
 	hash ^= hash << 16;
 
 	return htons((((u64) hash * (max - min)) >> 32) + min);
@@ -256,7 +204,7 @@ static inline bool udp_sk_bound_dev_eq(struct net *net, int bound_dev_if,
 #endif
 }
 
-/* net/ipv4/udp.c */
+ 
 void udp_destruct_common(struct sock *sk);
 void skb_consume_udp(struct sock *sk, struct sk_buff *skb, int len);
 int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb);
@@ -316,22 +264,13 @@ struct sock *udp6_lib_lookup_skb(const struct sk_buff *skb,
 				 __be16 sport, __be16 dport);
 int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor);
 
-/* UDP uses skb->dev_scratch to cache as much information as possible and avoid
- * possibly multiple cache miss on dequeue()
- */
+ 
 struct udp_dev_scratch {
-	/* skb->truesize and the stateless bit are embedded in a single field;
-	 * do not use a bitfield since the compiler emits better/smaller code
-	 * this way
-	 */
+	 
 	u32 _tsize_state;
 
 #if BITS_PER_LONG == 64
-	/* len and the bit needed to compute skb_csum_unnecessary
-	 * will be on cold cache lines at recvmsg time.
-	 * skb->len can be stored on 16 bits since the udp header has been
-	 * already validated and pulled.
-	 */
+	 
 	u16 len;
 	bool is_linear;
 	bool csum_unnecessary;
@@ -389,9 +328,7 @@ static inline int copy_linear_skb(struct sk_buff *skb, int len, int off,
 	return -EFAULT;
 }
 
-/*
- * 	SNMP statistics for UDP and UDP-Lite
- */
+ 
 #define UDP_INC_STATS(net, field, is_udplite)		      do { \
 	if (is_udplite) SNMP_INC_STATS((net)->mib.udplite_statistics, field);       \
 	else		SNMP_INC_STATS((net)->mib.udp_statistics, field);  }  while(0)
@@ -447,7 +384,7 @@ extern const struct seq_operations udp6_seq_ops;
 
 int udp4_proc_init(void);
 void udp4_proc_exit(void);
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 int udpv4_offload_init(void);
 
@@ -467,26 +404,15 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
 	netdev_features_t features = NETIF_F_SG;
 	struct sk_buff *segs;
 
-	/* Avoid csum recalculation by skb_segment unless userspace explicitly
-	 * asks for the final checksum values
-	 */
+	 
 	if (!inet_get_convert_csum(sk))
 		features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
 
-	/* UDP segmentation expects packets of type CHECKSUM_PARTIAL or
-	 * CHECKSUM_NONE in __udp_gso_segment. UDP GRO indeed builds partial
-	 * packets in udp_gro_complete_segment. As does UDP GSO, verified by
-	 * udp_send_skb. But when those packets are looped in dev_loopback_xmit
-	 * their ip_summed CHECKSUM_NONE is changed to CHECKSUM_UNNECESSARY.
-	 * Reset in this specific case, where PARTIAL is both correct and
-	 * required.
-	 */
+	 
 	if (skb->pkt_type == PACKET_LOOPBACK)
 		skb->ip_summed = CHECKSUM_PARTIAL;
 
-	/* the GSO CB lays after the UDP one, no need to save and restore any
-	 * CB fragment
-	 */
+	 
 	segs = __skb_gso_segment(skb, features, false);
 	if (IS_ERR_OR_NULL(segs)) {
 		int segs_nr = skb_shinfo(skb)->gso_segs;
@@ -503,22 +429,10 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
 
 static inline void udp_post_segment_fix_csum(struct sk_buff *skb)
 {
-	/* UDP-lite can't land here - no GRO */
+	 
 	WARN_ON_ONCE(UDP_SKB_CB(skb)->partial_cov);
 
-	/* UDP packets generated with UDP_SEGMENT and traversing:
-	 *
-	 * UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) -> UDP tunnel (rx)
-	 *
-	 * can reach an UDP socket with CHECKSUM_NONE, because
-	 * __iptunnel_pull_header() converts CHECKSUM_PARTIAL into NONE.
-	 * SKB_GSO_UDP_L4 or SKB_GSO_FRAGLIST packets with no UDP tunnel will
-	 * have a valid checksum, as the GRO engine validates the UDP csum
-	 * before the aggregation and nobody strips such info in between.
-	 * Instead of adding another check in the tunnel fastpath, we can force
-	 * a valid csum after the segmentation.
-	 * Additionally fixup the UDP CB.
-	 */
+	 
 	UDP_SKB_CB(skb)->cscov = skb->len;
 	if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
 		skb->csum_valid = 1;
@@ -529,4 +443,4 @@ struct sk_psock;
 int udp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore);
 #endif
 
-#endif	/* _UDP_H */
+#endif	 

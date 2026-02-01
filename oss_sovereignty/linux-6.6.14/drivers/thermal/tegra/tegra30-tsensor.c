@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Tegra30 SoC Thermal Sensor driver
- *
- * Based on downstream HWMON driver from NVIDIA.
- * Copyright (C) 2011 NVIDIA Corporation
- *
- * Author: Dmitry Osipenko <digetx@gmail.com>
- * Copyright (C) 2021 GRATE-DRIVER project
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -112,19 +104,11 @@ static int tegra_tsensor_hw_enable(const struct tegra_tsensor *ts)
 		goto disable_clk;
 	}
 
-	/*
-	 * Sensors are enabled after reset by default, but not gauging
-	 * until clock counter is programmed.
-	 *
-	 * M: number of reference clock pulses after which every
-	 *    temperature / voltage measurement is made
-	 *
-	 * N: number of reference clock counts for which the counter runs
-	 */
+	 
 	val  = FIELD_PREP(TSENSOR_SENSOR0_CONFIG0_M, 12500);
 	val |= FIELD_PREP(TSENSOR_SENSOR0_CONFIG0_N, 255);
 
-	/* apply the same configuration to both channels */
+	 
 	writel_relaxed(val, ts->regs + 0x40 + TSENSOR_SENSOR0_CONFIG0);
 	writel_relaxed(val, ts->regs + 0x80 + TSENSOR_SENSOR0_CONFIG0);
 
@@ -165,10 +149,7 @@ static int tegra_tsensor_get_temp(struct thermal_zone_device *tz, int *temp)
 	int err, c1, c2, c3, c4, counter;
 	u32 val;
 
-	/*
-	 * Counter will be invalid if hardware is misprogrammed or not enough
-	 * time passed since the time when sensor was enabled.
-	 */
+	 
 	err = readl_relaxed_poll_timeout(tsc->regs + TSENSOR_SENSOR0_STATUS0, val,
 					 val & TSENSOR_SENSOR0_STATUS0_CURRENT_VALID,
 					 21 * USEC_PER_MSEC,
@@ -181,20 +162,13 @@ static int tegra_tsensor_get_temp(struct thermal_zone_device *tz, int *temp)
 	val = readl_relaxed(tsc->regs + TSENSOR_SENSOR0_TS_STATUS1);
 	counter = FIELD_GET(TSENSOR_SENSOR0_TS_STATUS1_CURRENT_COUNT, val);
 
-	/*
-	 * This shouldn't happen with a valid counter status, nevertheless
-	 * lets verify the value since it's in a separate (from status)
-	 * register.
-	 */
+	 
 	if (counter == 0xffff) {
 		dev_err_once(ts->dev, "ch%u: counter overflow\n", tsc->id);
 		return -EINVAL;
 	}
 
-	/*
-	 * temperature = a * counter + b
-	 * temperature = m * (temperature ^ 2) + n * temperature + p
-	 */
+	 
 	c1 = DIV_ROUND_CLOSEST(ts->calib.a * counter + ts->calib.b, 1000000);
 	c1 = c1 ?: 1;
 	c2 = DIV_ROUND_CLOSEST(ts->calib.p, c1);
@@ -222,10 +196,7 @@ static int tegra_tsensor_set_trips(struct thermal_zone_device *tz, int low, int 
 	const struct tegra_tsensor *ts = tsc->ts;
 	u32 val;
 
-	/*
-	 * TSENSOR doesn't trigger interrupt on the "low" temperature breach,
-	 * hence bail out if high temperature is unspecified.
-	 */
+	 
 	if (high == INT_MAX)
 		return 0;
 
@@ -295,7 +266,7 @@ static int tegra_tsensor_disable_hw_channel(const struct tegra_tsensor *ts,
 	}
 
 stop_channel:
-	/* stop channel gracefully */
+	 
 	val = readl_relaxed(tsc->regs + TSENSOR_SENSOR0_CONFIG0);
 	val |= FIELD_PREP(TSENSOR_SENSOR0_CONFIG0_SENSOR_STOP, 1);
 	writel_relaxed(val, tsc->regs + TSENSOR_SENSOR0_CONFIG0);
@@ -308,10 +279,7 @@ static void tegra_tsensor_get_hw_channel_trips(struct thermal_zone_device *tzd,
 {
 	unsigned int i;
 
-	/*
-	 * 90C is the maximal critical temperature of all Tegra30 SoC variants,
-	 * use it for the default trip if unspecified in a device-tree.
-	 */
+	 
 	*hot_trip  = 85000;
 	*crit_trip = 90000;
 
@@ -328,16 +296,10 @@ static void tegra_tsensor_get_hw_channel_trips(struct thermal_zone_device *tzd,
 			*crit_trip = trip.temperature;
 	}
 
-	/* clamp hardware trips to the calibration limits */
+	 
 	*hot_trip = clamp(*hot_trip, 25000, 90000);
 
-	/*
-	 * Kernel will perform a normal system shut down if it will
-	 * see that critical temperature is breached, hence set the
-	 * hardware limit by 5C higher in order to allow system to
-	 * shut down gracefully before sending signal to the Power
-	 * Management controller.
-	 */
+	 
 	*crit_trip = clamp(*crit_trip + 5000, 25000, 90000);
 }
 
@@ -365,32 +327,19 @@ static int tegra_tsensor_enable_hw_channel(const struct tegra_tsensor *ts,
 	hot_trip  = tegra_tsensor_temp_to_counter(ts, hot_trip);
 	crit_trip = tegra_tsensor_temp_to_counter(ts, crit_trip);
 
-	/* program LEVEL2 counter threshold */
+	 
 	val = readl_relaxed(tsc->regs + TSENSOR_SENSOR0_CONFIG1);
 	val &= ~TSENSOR_SENSOR0_CONFIG1_TH2;
 	val |= FIELD_PREP(TSENSOR_SENSOR0_CONFIG1_TH2, hot_trip);
 	writel_relaxed(val, tsc->regs + TSENSOR_SENSOR0_CONFIG1);
 
-	/* program LEVEL3 counter threshold */
+	 
 	val = readl_relaxed(tsc->regs + TSENSOR_SENSOR0_CONFIG2);
 	val &= ~TSENSOR_SENSOR0_CONFIG2_TH3;
 	val |= FIELD_PREP(TSENSOR_SENSOR0_CONFIG2_TH3, crit_trip);
 	writel_relaxed(val, tsc->regs + TSENSOR_SENSOR0_CONFIG2);
 
-	/*
-	 * Enable sensor, emergency shutdown, interrupts for level 1/2/3
-	 * breaches and counter overflow condition.
-	 *
-	 * Disable DIV2 throttle for now since we need to figure out how
-	 * to integrate it properly with the thermal framework.
-	 *
-	 * Thermal levels supported by hardware:
-	 *
-	 *     Level 0 = cold
-	 *     Level 1 = passive cooling (cpufreq DVFS)
-	 *     Level 2 = passive cooling assisted by hardware (DIV2)
-	 *     Level 3 = emergency shutdown assisted by hardware (PMC)
-	 */
+	 
 	val = readl_relaxed(tsc->regs + TSENSOR_SENSOR0_CONFIG0);
 	val &= ~TSENSOR_SENSOR0_CONFIG0_SENSOR_STOP;
 	val |= FIELD_PREP(TSENSOR_SENSOR0_CONFIG0_DVFS_EN, 1);
@@ -435,11 +384,7 @@ static int tegra_tsensor_nvmem_setup(struct tegra_tsensor *ts)
 		return -ENODEV;
 	}
 
-	/*
-	 * We have two TSENSOR channels in a two different spots on SoC.
-	 * Second channel provides more accurate data on older SoC versions,
-	 * use it as a primary channel.
-	 */
+	 
 	if (ate_ver <= 21) {
 		dev_info_once(ts->dev,
 			      "older ATE version detected, channels remapped\n");
@@ -452,11 +397,11 @@ static int tegra_tsensor_nvmem_setup(struct tegra_tsensor *ts)
 		return err;
 	}
 
-	/* get calibrated counter values for 25C/90C thresholds */
+	 
 	c1_25C = FIELD_GET(TEGRA30_FUSE_TSENSOR_CALIB_LOW, cal);
 	c2_90C = FIELD_GET(TEGRA30_FUSE_TSENSOR_CALIB_HIGH, cal);
 
-	/* and calibrated temperatures corresponding to the counter values */
+	 
 	for (i = 0; i < 7; i++) {
 		t1_25C |= tegra_tsensor_fuse_read_spare(14 + i) << i;
 		t1_25C |= tegra_tsensor_fuse_read_spare(21 + i) << i;
@@ -471,7 +416,7 @@ static int tegra_tsensor_nvmem_setup(struct tegra_tsensor *ts)
 		return -EINVAL;
 	}
 
-	/* all calibration coefficients are premultiplied by 1000000 */
+	 
 
 	ts->calib.a = DIV_ROUND_CLOSEST((t2_90C - t1_25C) * 1000000,
 					(c2_90C - c1_25C));
@@ -488,7 +433,7 @@ static int tegra_tsensor_nvmem_setup(struct tegra_tsensor *ts)
 		ts->calib.p = -11100000;
 	}
 
-	/* except the coefficient of a reduced quadratic equation */
+	 
 	ts->calib.r = DIV_ROUND_CLOSEST(ts->calib.n, ts->calib.m * 2);
 
 	dev_info_once(ts->dev,
@@ -515,10 +460,7 @@ static int tegra_tsensor_register_channel(struct tegra_tsensor *ts,
 			return dev_err_probe(ts->dev, PTR_ERR(tsc->tzd),
 					     "failed to register thermal zone\n");
 
-		/*
-		 * It's okay if sensor isn't assigned to any thermal zone
-		 * in a device-tree.
-		 */
+		 
 		tsc->tzd = NULL;
 		return 0;
 	}
@@ -579,14 +521,7 @@ static int tegra_tsensor_probe(struct platform_device *pdev)
 			return err;
 	}
 
-	/*
-	 * Enable the channels before setting the interrupt so
-	 * set_trips() can not be called while we are setting up the
-	 * register TSENSOR_SENSOR0_CONFIG1. With this we close a
-	 * potential race window where we are setting up the TH2 and
-	 * the temperature hits TH1 resulting to an update of the
-	 * TSENSOR_SENSOR0_CONFIG1 register in the ISR.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(ts->ch); i++) {
 		err = tegra_tsensor_enable_hw_channel(ts, i);
 		if (err)

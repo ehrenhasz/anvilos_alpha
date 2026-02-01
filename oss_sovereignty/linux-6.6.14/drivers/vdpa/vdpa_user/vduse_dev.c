@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VDUSE: vDPA Device in Userspace
- *
- * Copyright (C) 2020-2021 Bytedance Inc. and/or its affiliates. All rights reserved.
- *
- * Author: Xie Yongji <xieyongji@bytedance.com>
- *
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -40,7 +33,7 @@
 #define VDUSE_MAX_BOUNCE_SIZE (1024 * 1024 * 1024)
 #define VDUSE_MIN_BOUNCE_SIZE (1024 * 1024)
 #define VDUSE_BOUNCE_SIZE (64 * 1024 * 1024)
-/* 128 MB reserved for virtqueue creation */
+ 
 #define VDUSE_IOVA_SIZE (VDUSE_MAX_BOUNCE_SIZE + 128 * 1024 * 1024)
 #define VDUSE_MSG_DEFAULT_TIMEOUT 30
 
@@ -237,7 +230,7 @@ static int vduse_dev_msg_sync(struct vduse_dev *dev,
 	if (!msg->completed) {
 		list_del(&msg->list);
 		msg->resp.result = VDUSE_REQ_RESULT_FAILED;
-		/* Mark the device as malfunction when there is a timeout */
+		 
 		if (!ret)
 			vduse_dev_broken(dev);
 	}
@@ -429,7 +422,7 @@ static void vduse_dev_reset(struct vduse_dev *dev)
 	int i;
 	struct vduse_iova_domain *domain = dev->domain;
 
-	/* The coherent mappings are handled in vduse_dev_free_coherent() */
+	 
 	if (domain && domain->bounce_map)
 		vduse_domain_reset_bounce_map(domain);
 
@@ -686,7 +679,7 @@ static void vduse_vdpa_get_config(struct vdpa_device *vdpa, unsigned int offset,
 {
 	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
 
-	/* Initialize the buffer in case of partial copy. */
+	 
 	memset(buf, 0, len);
 
 	if (offset > dev->config_size)
@@ -701,7 +694,7 @@ static void vduse_vdpa_get_config(struct vdpa_device *vdpa, unsigned int offset,
 static void vduse_vdpa_set_config(struct vdpa_device *vdpa, unsigned int offset,
 			const void *buf, unsigned int len)
 {
-	/* Now we only support read-only configuration space */
+	 
 }
 
 static int vduse_vdpa_reset(struct vdpa_device *vdpa)
@@ -1163,10 +1156,7 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
 		break;
 	}
 	case VDUSE_DEV_GET_FEATURES:
-		/*
-		 * Just mirror what driver wrote here.
-		 * The driver is expected to check FEATURE_OK later.
-		 */
+		 
 		ret = put_user(dev->driver_features, (u64 __user *)argp);
 		break;
 	case VDUSE_DEV_SET_CONFIG: {
@@ -1385,7 +1375,7 @@ static int vduse_dev_release(struct inode *inode, struct file *file)
 		vduse_dev_dereg_umem(dev, 0, dev->domain->bounce_size);
 	mutex_unlock(&dev->domain_lock);
 	spin_lock(&dev->msg_lock);
-	/* Make sure the inflight messages can processed after reconncection */
+	 
 	list_splice_init(&dev->recv_list, &dev->send_list);
 	spin_unlock(&dev->msg_lock);
 	dev->connected = false;
@@ -1667,7 +1657,7 @@ static bool features_is_valid(u64 features)
 	if (!(features & (1ULL << VIRTIO_F_ACCESS_PLATFORM)))
 		return false;
 
-	/* Now we only support read-only configuration space */
+	 
 	if (features & (1ULL << VIRTIO_BLK_F_CONFIG_WCE))
 		return false;
 
@@ -2092,7 +2082,7 @@ static int vduse_init(void)
 	if (ret)
 		goto err_chardev_region;
 
-	/* /dev/vduse/control */
+	 
 	cdev_init(&vduse_ctrl_cdev, &vduse_ctrl_fops);
 	vduse_ctrl_cdev.owner = THIS_MODULE;
 	ret = cdev_add(&vduse_ctrl_cdev, vduse_major, 1);
@@ -2105,7 +2095,7 @@ static int vduse_init(void)
 		goto err_device;
 	}
 
-	/* /dev/vduse/$DEVICE */
+	 
 	cdev_init(&vduse_cdev, &vduse_dev_fops);
 	vduse_cdev.owner = THIS_MODULE;
 	ret = cdev_add(&vduse_cdev, MKDEV(MAJOR(vduse_major), 1),

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/module.h>
 #include <linux/netfilter/nf_tables.h>
 #include <net/netfilter/nf_tables.h>
@@ -42,10 +42,7 @@ static void nft_tproxy_eval_v4(const struct nft_expr *expr,
 		return;
 	}
 
-	/* check if there's an ongoing connection on the packet addresses, this
-	 * happens if the redirect already happened and the current packet
-	 * belongs to an already established connection
-	 */
+	 
 	sk = nf_tproxy_get_sock_v4(nft_net(pkt), skb, iph->protocol,
 				   iph->saddr, iph->daddr,
 				   hp->source, hp->dest,
@@ -60,14 +57,12 @@ static void nft_tproxy_eval_v4(const struct nft_expr *expr,
 	if (!tport)
 		tport = hp->dest;
 
-	/* UDP has no TCP_TIME_WAIT state, so we never enter here */
+	 
 	if (sk && sk->sk_state == TCP_TIME_WAIT) {
-		/* reopening a TIME_WAIT connection needs special handling */
+		 
 		sk = nf_tproxy_handle_time_wait4(nft_net(pkt), skb, taddr, tport, sk);
 	} else if (!sk) {
-		/* no, there's no established connection, check if
-		 * there's a listener on the redirected addr/port
-		 */
+		 
 		sk = nf_tproxy_get_sock_v4(nft_net(pkt), skb, iph->protocol,
 					   iph->saddr, taddr,
 					   hp->source, tport,
@@ -110,10 +105,7 @@ static void nft_tproxy_eval_v6(const struct nft_expr *expr,
 		return;
 	}
 
-	/* check if there's an ongoing connection on the packet addresses, this
-	 * happens if the redirect already happened and the current packet
-	 * belongs to an already established connection
-	 */
+	 
 	sk = nf_tproxy_get_sock_v6(nft_net(pkt), skb, thoff, l4proto,
 				   &iph->saddr, &iph->daddr,
 				   hp->source, hp->dest,
@@ -128,25 +120,23 @@ static void nft_tproxy_eval_v6(const struct nft_expr *expr,
 	if (!tport)
 		tport = hp->dest;
 
-	/* UDP has no TCP_TIME_WAIT state, so we never enter here */
+	 
 	if (sk && sk->sk_state == TCP_TIME_WAIT) {
-		/* reopening a TIME_WAIT connection needs special handling */
+		 
 		sk = nf_tproxy_handle_time_wait6(skb, l4proto, thoff,
 						 nft_net(pkt),
 						 &taddr,
 						 tport,
 						 sk);
 	} else if (!sk) {
-		/* no there's no established connection, check if
-		 * there's a listener on the redirected addr/port
-		 */
+		 
 		sk = nf_tproxy_get_sock_v6(nft_net(pkt), skb, thoff,
 					   l4proto, &iph->saddr, &taddr,
 					   hp->source, tport,
 					   nft_in(pkt), NF_TPROXY_LOOKUP_LISTENER);
 	}
 
-	/* NOTE: assign_sock consumes our sk reference */
+	 
 	if (sk && nf_tproxy_sk_is_transparent(sk))
 		nf_tproxy_assign_sock(skb, sk);
 	else
@@ -219,7 +209,7 @@ static int nft_tproxy_init(const struct nft_ctx *ctx,
 		return -EOPNOTSUPP;
 	}
 
-	/* Address is specified but the rule family is not set accordingly */
+	 
 	if (priv->family == NFPROTO_UNSPEC && tb[NFTA_TPROXY_REG_ADDR])
 		return -EINVAL;
 
@@ -239,7 +229,7 @@ static int nft_tproxy_init(const struct nft_ctx *ctx,
 		break;
 #endif
 	case NFPROTO_UNSPEC:
-		/* No address is specified here */
+		 
 		err = nf_defrag_ipv4_enable(ctx->net);
 		if (err)
 			return err;

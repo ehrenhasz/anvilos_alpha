@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <api/fs/fs.h>
 #include "cpumap.h"
 #include "debug.h"
@@ -17,10 +17,7 @@
 static struct perf_cpu max_cpu_num;
 static struct perf_cpu max_present_cpu_num;
 static int max_node_num;
-/**
- * The numa node X as read from /sys/devices/system/node/nodeX indexed by the
- * CPU number.
- */
+ 
 static int *cpunode_map;
 
 bool perf_record_cpu_map_data__test_bit(int i,
@@ -38,7 +35,7 @@ bool perf_record_cpu_map_data__test_bit(int i,
 		(data->mask64_data.mask[bit_word64] & bit_mask64) != 0;
 }
 
-/* Read ith mask value from data into the given 64-bit sized bitmap */
+ 
 static void perf_record_cpu_map_data__read_one_mask(const struct perf_record_cpu_map_data *data,
 						    int i, unsigned long *bitmap)
 {
@@ -71,11 +68,7 @@ static struct perf_cpu_map *cpu_map__from_entries(const struct perf_record_cpu_m
 		unsigned i;
 
 		for (i = 0; i < data->cpus_data.nr; i++) {
-			/*
-			 * Special treatment for -1, which is not real cpu number,
-			 * and we need to use (int) -1 to initialize map[i],
-			 * otherwise it would become 65535.
-			 */
+			 
 			if (data->cpus_data.cpu[i] == (u16) -1)
 				RC_CHK_ACCESS(map)->map[i].cpu = -1;
 			else
@@ -243,7 +236,7 @@ struct cpu_aggr_map *cpu_aggr_map__new(const struct perf_cpu_map *cpus,
 	if (!c)
 		return NULL;
 
-	/* Reset size as it may only be partially filled */
+	 
 	c->nr = 0;
 
 	perf_cpu_map__for_each_cpu(cpu, idx, cpus) {
@@ -261,7 +254,7 @@ struct cpu_aggr_map *cpu_aggr_map__new(const struct perf_cpu_map *cpus,
 			c->nr++;
 		}
 	}
-	/* Trim. */
+	 
 	if (c->nr != perf_cpu_map__nr(cpus)) {
 		struct cpu_aggr_map *trimmed_c =
 			realloc(c,
@@ -271,7 +264,7 @@ struct cpu_aggr_map *cpu_aggr_map__new(const struct perf_cpu_map *cpus,
 			c = trimmed_c;
 	}
 
-	/* ensure we process id in increasing order */
+	 
 	if (needs_sort)
 		qsort(c->map, c->nr, sizeof(struct aggr_cpu_id), aggr_cpu_id__cmp);
 
@@ -292,15 +285,11 @@ struct aggr_cpu_id aggr_cpu_id__die(struct perf_cpu cpu, void *data)
 	int die;
 
 	die = cpu__get_die_id(cpu);
-	/* There is no die_id on legacy system. */
+	 
 	if (die == -1)
 		die = 0;
 
-	/*
-	 * die_id is relative to socket, so start
-	 * with the socket ID and then add die to
-	 * make a unique ID.
-	 */
+	 
 	id = aggr_cpu_id__socket(cpu, data);
 	if (aggr_cpu_id__is_empty(&id))
 		return id;
@@ -320,15 +309,12 @@ struct aggr_cpu_id aggr_cpu_id__core(struct perf_cpu cpu, void *data)
 	struct aggr_cpu_id id;
 	int core = cpu__get_core_id(cpu);
 
-	/* aggr_cpu_id__die returns a struct with socket and die set. */
+	 
 	id = aggr_cpu_id__die(cpu, data);
 	if (aggr_cpu_id__is_empty(&id))
 		return id;
 
-	/*
-	 * core_id is relative to socket and die, we need a global id.
-	 * So we combine the result from cpu_map__get_die with the core id
-	 */
+	 
 	id.core = core;
 	return id;
 
@@ -338,7 +324,7 @@ struct aggr_cpu_id aggr_cpu_id__cpu(struct perf_cpu cpu, void *data)
 {
 	struct aggr_cpu_id id;
 
-	/* aggr_cpu_id__core returns a struct with socket, die and core set. */
+	 
 	id = aggr_cpu_id__core(cpu, data);
 	if (aggr_cpu_id__is_empty(&id))
 		return id;
@@ -360,13 +346,13 @@ struct aggr_cpu_id aggr_cpu_id__global(struct perf_cpu cpu, void *data __maybe_u
 {
 	struct aggr_cpu_id id = aggr_cpu_id__empty();
 
-	/* it always aggregates to the cpu 0 */
+	 
 	cpu.cpu = 0;
 	id.cpu = cpu;
 	return id;
 }
 
-/* setup simple routines to easily access node numbers given a cpu number */
+ 
 static int get_max_num(char *path, int *max)
 {
 	size_t num;
@@ -378,7 +364,7 @@ static int get_max_num(char *path, int *max)
 
 	buf[num] = '\0';
 
-	/* start on the right, to find highest node num */
+	 
 	while (--num) {
 		if ((buf[num] == ',') || (buf[num] == '-')) {
 			num++;
@@ -390,7 +376,7 @@ static int get_max_num(char *path, int *max)
 		goto out;
 	}
 
-	/* convert from 0-based to 1-based */
+	 
 	(*max)++;
 
 out:
@@ -398,14 +384,14 @@ out:
 	return err;
 }
 
-/* Determine highest possible cpu in the system for sparse allocation */
+ 
 static void set_max_cpu_num(void)
 {
 	const char *mnt;
 	char path[PATH_MAX];
 	int ret = -1;
 
-	/* set up default */
+	 
 	max_cpu_num.cpu = 4096;
 	max_present_cpu_num.cpu = 4096;
 
@@ -413,7 +399,7 @@ static void set_max_cpu_num(void)
 	if (!mnt)
 		goto out;
 
-	/* get the highest possible cpu number for a sparse allocation */
+	 
 	ret = snprintf(path, PATH_MAX, "%s/devices/system/cpu/possible", mnt);
 	if (ret >= PATH_MAX) {
 		pr_err("sysfs path crossed PATH_MAX(%d) size\n", PATH_MAX);
@@ -424,7 +410,7 @@ static void set_max_cpu_num(void)
 	if (ret)
 		goto out;
 
-	/* get the highest present cpu number for a sparse allocation */
+	 
 	ret = snprintf(path, PATH_MAX, "%s/devices/system/cpu/present", mnt);
 	if (ret >= PATH_MAX) {
 		pr_err("sysfs path crossed PATH_MAX(%d) size\n", PATH_MAX);
@@ -438,21 +424,21 @@ out:
 		pr_err("Failed to read max cpus, using default of %d\n", max_cpu_num.cpu);
 }
 
-/* Determine highest possible node in the system for sparse allocation */
+ 
 static void set_max_node_num(void)
 {
 	const char *mnt;
 	char path[PATH_MAX];
 	int ret = -1;
 
-	/* set up default */
+	 
 	max_node_num = 8;
 
 	mnt = sysfs__mountpoint();
 	if (!mnt)
 		goto out;
 
-	/* get the highest possible cpu number for a sparse allocation */
+	 
 	ret = snprintf(path, PATH_MAX, "%s/devices/system/node/possible", mnt);
 	if (ret >= PATH_MAX) {
 		pr_err("sysfs path crossed PATH_MAX(%d) size\n", PATH_MAX);
@@ -530,7 +516,7 @@ int cpu__setup_cpunode_map(void)
 	const char *mnt;
 	int n;
 
-	/* initialize globals */
+	 
 	if (init_cpunode_map())
 		return -1;
 
@@ -548,7 +534,7 @@ int cpu__setup_cpunode_map(void)
 	if (!dir1)
 		return 0;
 
-	/* walk tree and setup map */
+	 
 	while ((dent1 = readdir(dir1)) != NULL) {
 		if (dent1->d_type != DT_DIR || sscanf(dent1->d_name, "node%u", &mem) < 1)
 			continue;
@@ -667,12 +653,12 @@ size_t cpu_map__snprint_mask(struct perf_cpu_map *map, char *buf, size_t size)
 	return ptr - buf;
 }
 
-struct perf_cpu_map *cpu_map__online(void) /* thread unsafe */
+struct perf_cpu_map *cpu_map__online(void)  
 {
 	static struct perf_cpu_map *online;
 
 	if (!online)
-		online = perf_cpu_map__new(NULL); /* from /sys/devices/system/cpu/online */
+		online = perf_cpu_map__new(NULL);  
 
 	return online;
 }

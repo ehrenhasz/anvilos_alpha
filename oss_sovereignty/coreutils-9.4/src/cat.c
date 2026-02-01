@@ -1,25 +1,4 @@
-/* cat -- concatenate files and print on the standard output.
-   Copyright (C) 1988-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Differences from the Unix cat:
-   * Always unbuffered, -u is ignored.
-   * Usually much faster than other versions of cat, the difference
-   is especially apparent when using the -v option.
-
-   By tege@sics.se, Torbjörn Granlund, advised by rms, Richard Stallman.  */
+ 
 
 #include <config.h>
 
@@ -41,22 +20,20 @@
 #include "safe-read.h"
 #include "xbinary-io.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "cat"
 
 #define AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("Richard M. Stallman")
 
-/* Name of input file.  May be "-".  */
+ 
 static char const *infile;
 
-/* Descriptor on which input file is open.  */
+ 
 static int input_desc;
 
-/* Buffer for line numbers.
-   An 11 digit counter may overflow within an hour on a P2/466,
-   an 18 digit counter needs about 1000y */
+ 
 #define LINE_COUNTER_BUF_LEN 20
 static char line_buf[LINE_COUNTER_BUF_LEN] =
   {
@@ -65,20 +42,19 @@ static char line_buf[LINE_COUNTER_BUF_LEN] =
     '\t', '\0'
   };
 
-/* Position in 'line_buf' where printing starts.  This will not change
-   unless the number of lines is larger than 999999.  */
+ 
 static char *line_num_print = line_buf + LINE_COUNTER_BUF_LEN - 8;
 
-/* Position of the first digit in 'line_buf'.  */
+ 
 static char *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
 
-/* Position of the last digit in 'line_buf'.  */
+ 
 static char *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
 
-/* Preserves the 'cat' function's local 'newlines' between invocations.  */
+ 
 static int newlines2 = 0;
 
-/* Whether there is a pending CR to process.  */
+ 
 static bool pending_cr = false;
 
 void

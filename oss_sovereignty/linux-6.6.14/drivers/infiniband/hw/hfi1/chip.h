@@ -1,19 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015 - 2020 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _CHIP_H
 #define _CHIP_H
-/*
- * This file contains all of the defines that is specific to the HFI chip
- */
+ 
 
-/* sizes */
+ 
 #define BITS_PER_REGISTER (BITS_PER_BYTE * sizeof(u64))
 #define NUM_INTERRUPT_SOURCES 768
 #define RXE_NUM_CONTEXTS 160
-#define RXE_PER_CONTEXT_SIZE 0x1000	/* 4k */
+#define RXE_PER_CONTEXT_SIZE 0x1000	 
 #define RXE_NUM_TID_FLOWS 32
 #define RXE_NUM_DATA_VL 8
 #define TXE_NUM_CONTEXTS 160
@@ -25,21 +21,18 @@
 #define TXE_NUM_32_BIT_COUNTER 7
 #define TXE_NUM_64_BIT_COUNTER 30
 #define TXE_NUM_DATA_VL 8
-#define TXE_PIO_SIZE (32 * 0x100000)	/* 32 MB */
-#define PIO_BLOCK_SIZE 64			/* bytes */
-#define SDMA_BLOCK_SIZE 64			/* bytes */
-#define RCV_BUF_BLOCK_SIZE 64               /* bytes */
-#define PIO_CMASK 0x7ff	/* counter mask for free and fill counters */
-#define MAX_EAGER_ENTRIES    2048	/* max receive eager entries */
-#define MAX_TID_PAIR_ENTRIES 1024	/* max receive expected pairs */
-/*
- * Virtual? Allocation Unit, defined as AU = 8*2^vAU, 64 bytes, AU is fixed
- * at 64 bytes for all generation one devices
- */
+#define TXE_PIO_SIZE (32 * 0x100000)	 
+#define PIO_BLOCK_SIZE 64			 
+#define SDMA_BLOCK_SIZE 64			 
+#define RCV_BUF_BLOCK_SIZE 64                
+#define PIO_CMASK 0x7ff	 
+#define MAX_EAGER_ENTRIES    2048	 
+#define MAX_TID_PAIR_ENTRIES 1024	 
+ 
 #define CM_VAU 3
-/* HFI link credit count, AKA receive buffer depth (RBUF_DEPTH) */
+ 
 #define CM_GLOBAL_CREDITS 0x880
-/* Number of PKey entries in the HW */
+ 
 #define MAX_PKEY_VALUES 16
 
 #include "chip_registers.h"
@@ -47,7 +40,7 @@
 #define RXE_PER_CONTEXT_USER   (RXE + RXE_PER_CONTEXT_OFFSET)
 #define TXE_PIO_SEND (TXE + TXE_PIO_SEND_OFFSET)
 
-/* PBC flags */
+ 
 #define PBC_INTR		BIT_ULL(31)
 #define PBC_DC_INFO_SHIFT	(30)
 #define PBC_DC_INFO		BIT_ULL(PBC_DC_INFO_SHIFT)
@@ -58,12 +51,12 @@
 #define PBC_TEST_BAD_ICRC	BIT_ULL(23)
 #define PBC_FECN		BIT_ULL(22)
 
-/* PbcInsertHcrc field settings */
-#define PBC_IHCRC_LKDETH 0x0	/* insert @ local KDETH offset */
-#define PBC_IHCRC_GKDETH 0x1	/* insert @ global KDETH offset */
-#define PBC_IHCRC_NONE   0x2	/* no HCRC inserted */
+ 
+#define PBC_IHCRC_LKDETH 0x0	 
+#define PBC_IHCRC_GKDETH 0x1	 
+#define PBC_IHCRC_NONE   0x2	 
 
-/* PBC fields */
+ 
 #define PBC_STATIC_RATE_CONTROL_COUNT_SHIFT 32
 #define PBC_STATIC_RATE_CONTROL_COUNT_MASK 0xffffull
 #define PBC_STATIC_RATE_CONTROL_COUNT_SMASK \
@@ -84,7 +77,7 @@
 #define PBC_LENGTH_DWS_SMASK \
 	(PBC_LENGTH_DWS_MASK << PBC_LENGTH_DWS_SHIFT)
 
-/* Credit Return Fields */
+ 
 #define CR_COUNTER_SHIFT 0
 #define CR_COUNTER_MASK 0x7ffull
 #define CR_COUNTER_SMASK (CR_COUNTER_MASK << CR_COUNTER_SHIFT)
@@ -117,7 +110,7 @@
 	(CR_CREDIT_RETURN_DUE_TO_FORCE_MASK << \
 	CR_CREDIT_RETURN_DUE_TO_FORCE_SHIFT)
 
-/* Specific IRQ sources */
+ 
 #define CCE_ERR_INT		  0
 #define RXE_ERR_INT		  1
 #define MISC_ERR_INT		  2
@@ -131,7 +124,7 @@
 #define QSFP2_INT		243
 #define TCRIT_INT		244
 
-/* interrupt source ranges */
+ 
 #define IS_FIRST_SOURCE		CCE_ERR_INT
 #define IS_GENERAL_ERR_START		  0
 #define IS_SDMAENG_ERR_START		 16
@@ -147,7 +140,7 @@
 #define IS_RESERVED_START		736
 #define IS_LAST_SOURCE			767
 
-/* derived interrupt source values */
+ 
 #define IS_GENERAL_ERR_END		7
 #define IS_SDMAENG_ERR_END		31
 #define IS_SENDCTXT_ERR_END		191
@@ -161,22 +154,22 @@
 #define IS_SENDCREDIT_END		735
 #define IS_RESERVED_END			IS_LAST_SOURCE
 
-/* DCC_CFG_PORT_CONFIG logical link states */
+ 
 #define LSTATE_DOWN    0x1
 #define LSTATE_INIT    0x2
 #define LSTATE_ARMED   0x3
 #define LSTATE_ACTIVE  0x4
 
-/* DCC_CFG_RESET reset states */
+ 
 #define LCB_RX_FPE_TX_FPE_INTO_RESET   (DCC_CFG_RESET_RESET_LCB    | \
 					DCC_CFG_RESET_RESET_TX_FPE | \
 					DCC_CFG_RESET_RESET_RX_FPE | \
 					DCC_CFG_RESET_ENABLE_CCLK_BCC)
-					/* 0x17 */
+					 
 
-#define LCB_RX_FPE_TX_FPE_OUT_OF_RESET  DCC_CFG_RESET_ENABLE_CCLK_BCC /* 0x10 */
+#define LCB_RX_FPE_TX_FPE_OUT_OF_RESET  DCC_CFG_RESET_ENABLE_CCLK_BCC  
 
-/* DC8051_STS_CUR_STATE port values (physical link states) */
+ 
 #define PLS_DISABLED			   0x30
 #define PLS_OFFLINE				   0x90
 #define PLS_OFFLINE_QUIET			   0x90
@@ -207,7 +200,7 @@
 #define PLS_INTERNAL_SERDES_LOOPBACK	   0xe1
 #define PLS_QUICK_LINKUP			   0xe2
 
-/* DC_DC8051_CFG_HOST_CMD_0.REQ_TYPE - 8051 host commands */
+ 
 #define HCMD_LOAD_CONFIG_DATA  0x01
 #define HCMD_READ_CONFIG_DATA  0x02
 #define HCMD_CHANGE_PHY_STATE  0x03
@@ -218,10 +211,10 @@
 #define HCMD_WRITE_LCB_CSR     0x08
 #define HCMD_INTERFACE_TEST	   0xff
 
-/* DC_DC8051_CFG_HOST_CMD_1.RETURN_CODE - 8051 host command return */
+ 
 #define HCMD_SUCCESS 2
 
-/* DC_DC8051_DBG_ERR_INFO_SET_BY_8051.ERROR - error flags */
+ 
 #define SPICO_ROM_FAILED		BIT(0)
 #define UNKNOWN_FRAME			BIT(1)
 #define TARGET_BER_NOT_MET		BIT(2)
@@ -244,7 +237,7 @@
 			| FAILED_LNI_CONFIGLT | HOST_HANDSHAKE_TIMEOUT \
 			| EXTERNAL_DEVICE_REQ_TIMEOUT)
 
-/* DC_DC8051_DBG_ERR_INFO_SET_BY_8051.HOST_MSG - host message flags */
+ 
 #define HOST_REQ_DONE		BIT(0)
 #define BC_PWR_MGM_MSG		BIT(1)
 #define BC_SMA_MSG		BIT(2)
@@ -256,7 +249,7 @@
 #define LINK_GOING_DOWN		BIT(8)
 #define LINK_WIDTH_DOWNGRADED	BIT(9)
 
-/* DC_DC8051_CFG_EXT_DEV_1.REQ_TYPE - 8051 host requests */
+ 
 #define HREQ_LOAD_CONFIG	0x01
 #define HREQ_SAVE_CONFIG	0x02
 #define HREQ_READ_CONFIG	0x03
@@ -267,99 +260,79 @@
 #define HREQ_CONFIG_DONE	0xfe
 #define HREQ_INTERFACE_TEST	0xff
 
-/* DC_DC8051_CFG_EXT_DEV_0.RETURN_CODE - 8051 host request return codes */
+ 
 #define HREQ_INVALID		0x01
 #define HREQ_SUCCESS		0x02
 #define HREQ_NOT_SUPPORTED		0x03
-#define HREQ_FEATURE_NOT_SUPPORTED	0x04 /* request specific feature */
+#define HREQ_FEATURE_NOT_SUPPORTED	0x04  
 #define HREQ_REQUEST_REJECTED	0xfe
 #define HREQ_EXECUTION_ONGOING	0xff
 
-/* MISC host command functions */
+ 
 #define HCMD_MISC_REQUEST_LCB_ACCESS 0x1
 #define HCMD_MISC_GRANT_LCB_ACCESS   0x2
 
-/* idle flit message types */
+ 
 #define IDLE_PHYSICAL_LINK_MGMT 0x1
 #define IDLE_CRU		    0x2
 #define IDLE_SMA		    0x3
 #define IDLE_POWER_MGMT	    0x4
 
-/* idle flit message send fields (both send and read) */
-#define IDLE_PAYLOAD_MASK 0xffffffffffull /* 40 bits */
+ 
+#define IDLE_PAYLOAD_MASK 0xffffffffffull  
 #define IDLE_PAYLOAD_SHIFT 8
 #define IDLE_MSG_TYPE_MASK 0xf
 #define IDLE_MSG_TYPE_SHIFT 0
 
-/* idle flit message read fields */
+ 
 #define READ_IDLE_MSG_TYPE_MASK 0xf
 #define READ_IDLE_MSG_TYPE_SHIFT 0
 
-/* SMA idle flit payload commands */
+ 
 #define SMA_IDLE_ARM	1
 #define SMA_IDLE_ACTIVE 2
 
-/* DC_DC8051_CFG_MODE.GENERAL bits */
+ 
 #define DISABLE_SELF_GUID_CHECK 0x2
 
-/* Bad L2 frame error code */
+ 
 #define BAD_L2_ERR      0x6
 
-/*
- * Eager buffer minimum and maximum sizes supported by the hardware.
- * All power-of-two sizes in between are supported as well.
- * MAX_EAGER_BUFFER_TOTAL is the maximum size of memory
- * allocatable for Eager buffer to a single context. All others
- * are limits for the RcvArray entries.
- */
+ 
 #define MIN_EAGER_BUFFER       (4 * 1024)
 #define MAX_EAGER_BUFFER       (256 * 1024)
-#define MAX_EAGER_BUFFER_TOTAL (64 * (1 << 20)) /* max per ctxt 64MB */
+#define MAX_EAGER_BUFFER_TOTAL (64 * (1 << 20))  
 #define MAX_EXPECTED_BUFFER    (2048 * 1024)
 #define HFI1_MIN_HDRQ_EGRBUF_CNT 32
 #define HFI1_MAX_HDRQ_EGRBUF_CNT 16352
 
-/*
- * Receive expected base and count and eager base and count increment -
- * the CSR fields hold multiples of this value.
- */
+ 
 #define RCV_SHIFT 3
 #define RCV_INCREMENT BIT(RCV_SHIFT)
 
-/*
- * Receive header queue entry increment - the CSR holds multiples of
- * this value.
- */
+ 
 #define HDRQ_SIZE_SHIFT 5
 #define HDRQ_INCREMENT BIT(HDRQ_SIZE_SHIFT)
 
-/*
- * Freeze handling flags
- */
-#define FREEZE_ABORT     0x01	/* do not do recovery */
-#define FREEZE_SELF	     0x02	/* initiate the freeze */
-#define FREEZE_LINK_DOWN 0x04	/* link is down */
+ 
+#define FREEZE_ABORT     0x01	 
+#define FREEZE_SELF	     0x02	 
+#define FREEZE_LINK_DOWN 0x04	 
 
-/*
- * Chip implementation codes.
- */
+ 
 #define ICODE_RTL_SILICON		0x00
 #define ICODE_RTL_VCS_SIMULATION	0x01
 #define ICODE_FPGA_EMULATION	0x02
 #define ICODE_FUNCTIONAL_SIMULATOR	0x03
 
-/*
- * 8051 data memory size.
- */
+ 
 #define DC8051_DATA_MEM_SIZE 0x1000
 
-/*
- * 8051 firmware registers
- */
+ 
 #define NUM_GENERAL_FIELDS 0x17
 #define NUM_LANE_FIELDS    0x8
 
-/* 8051 general register Field IDs */
+ 
 #define LINK_OPTIMIZATION_SETTINGS   0x00
 #define LINK_TUNING_PARAMETERS	     0x02
 #define DC_HOST_COMM_SETTINGS	     0x03
@@ -379,23 +352,23 @@
 #define LAST_REMOTE_STATE_COMPLETE   0x13
 #define LINK_QUALITY_INFO            0x14
 #define REMOTE_DEVICE_ID	     0x15
-#define LINK_DOWN_REASON	     0x16 /* first byte of offset 0x16 */
-#define VERSION_PATCH		     0x16 /* last byte of offset 0x16 */
+#define LINK_DOWN_REASON	     0x16  
+#define VERSION_PATCH		     0x16  
 
-/* 8051 lane specific register field IDs */
+ 
 #define TX_EQ_SETTINGS		0x00
 #define CHANNEL_LOSS_SETTINGS	0x05
 
-/* Lane ID for general configuration registers */
+ 
 #define GENERAL_CONFIG 4
 
-/* LINK_TUNING_PARAMETERS fields */
+ 
 #define TUNING_METHOD_SHIFT 24
 
-/* LINK_OPTIMIZATION_SETTINGS fields */
+ 
 #define ENABLE_EXT_DEV_CONFIG_SHIFT 24
 
-/* LOAD_DATA 8051 command shifts and fields */
+ 
 #define LOAD_DATA_FIELD_ID_SHIFT 40
 #define LOAD_DATA_FIELD_ID_MASK 0xfull
 #define LOAD_DATA_LANE_ID_SHIFT 32
@@ -403,7 +376,7 @@
 #define LOAD_DATA_DATA_SHIFT   0x0
 #define LOAD_DATA_DATA_MASK   0xffffffffull
 
-/* READ_DATA 8051 command shifts and fields */
+ 
 #define READ_DATA_FIELD_ID_SHIFT 40
 #define READ_DATA_FIELD_ID_MASK 0xffull
 #define READ_DATA_LANE_ID_SHIFT 32
@@ -411,7 +384,7 @@
 #define READ_DATA_DATA_SHIFT   0x0
 #define READ_DATA_DATA_MASK   0xffffffffull
 
-/* TX settings fields */
+ 
 #define ENABLE_LANE_TX_SHIFT		0
 #define ENABLE_LANE_TX_MASK		0xff
 #define TX_POLARITY_INVERSION_SHIFT	8
@@ -421,22 +394,22 @@
 #define MAX_RATE_SHIFT			24
 #define MAX_RATE_MASK			0xff
 
-/* verify capability PHY fields */
+ 
 #define CONTINIOUS_REMOTE_UPDATE_SUPPORT_SHIFT	0x4
 #define CONTINIOUS_REMOTE_UPDATE_SUPPORT_MASK	0x1
 #define POWER_MANAGEMENT_SHIFT			0x0
 #define POWER_MANAGEMENT_MASK			0xf
 
-/* 8051 lane register Field IDs */
-#define SPICO_FW_VERSION 0x7	/* SPICO firmware version */
+ 
+#define SPICO_FW_VERSION 0x7	 
 
-/* SPICO firmware version fields */
+ 
 #define SPICO_ROM_VERSION_SHIFT 0
 #define SPICO_ROM_VERSION_MASK 0xffff
 #define SPICO_ROM_PROD_ID_SHIFT 16
 #define SPICO_ROM_PROD_ID_MASK 0xffff
 
-/* verify capability fabric fields */
+ 
 #define VAU_SHIFT	0
 #define VAU_MASK	0x0007
 #define Z_SHIFT		3
@@ -448,46 +421,43 @@
 #define CRC_SIZES_SHIFT 20
 #define CRC_SIZES_MASK	0x7
 
-/* verify capability local link width fields */
-#define LINK_WIDTH_SHIFT 0		/* also for remote link width */
-#define LINK_WIDTH_MASK 0xffff		/* also for remote link width */
+ 
+#define LINK_WIDTH_SHIFT 0		 
+#define LINK_WIDTH_MASK 0xffff		 
 #define LOCAL_FLAG_BITS_SHIFT 16
 #define LOCAL_FLAG_BITS_MASK 0xff
 #define MISC_CONFIG_BITS_SHIFT 24
 #define MISC_CONFIG_BITS_MASK 0xff
 
-/* verify capability remote link width fields */
+ 
 #define REMOTE_TX_RATE_SHIFT 16
 #define REMOTE_TX_RATE_MASK 0xff
 
-/* LOCAL_DEVICE_ID fields */
+ 
 #define LOCAL_DEVICE_REV_SHIFT 0
 #define LOCAL_DEVICE_REV_MASK 0xff
 #define LOCAL_DEVICE_ID_SHIFT 8
 #define LOCAL_DEVICE_ID_MASK 0xffff
 
-/* REMOTE_DEVICE_ID fields */
+ 
 #define REMOTE_DEVICE_REV_SHIFT 0
 #define REMOTE_DEVICE_REV_MASK 0xff
 #define REMOTE_DEVICE_ID_SHIFT 8
 #define REMOTE_DEVICE_ID_MASK 0xffff
 
-/* local LNI link width fields */
+ 
 #define ENABLE_LANE_RX_SHIFT 16
 #define ENABLE_LANE_RX_MASK  0xff
 
-/* mask, shift for reading 'mgmt_enabled' value from REMOTE_LNI_INFO field */
+ 
 #define MGMT_ALLOWED_SHIFT 23
 #define MGMT_ALLOWED_MASK 0x1
 
-/* mask, shift for 'link_quality' within LINK_QUALITY_INFO field */
+ 
 #define LINK_QUALITY_SHIFT 24
 #define LINK_QUALITY_MASK  0x7
 
-/*
- * mask, shift for reading 'planned_down_remote_reason_code'
- * from LINK_QUALITY_INFO field
- */
+ 
 #define DOWN_REMOTE_REASON_SHIFT 16
 #define DOWN_REMOTE_REASON_MASK  0xff
 
@@ -495,25 +465,25 @@
 #define HOST_INTERFACE_VERSION_SHIFT 16
 #define HOST_INTERFACE_VERSION_MASK  0xff
 
-/* verify capability PHY power management bits */
+ 
 #define PWRM_BER_CONTROL	0x1
 #define PWRM_BANDWIDTH_CONTROL	0x2
 
-/* 8051 link down reasons */
+ 
 #define LDR_LINK_TRANSFER_ACTIVE_LOW   0xa
 #define LDR_RECEIVED_LINKDOWN_IDLE_MSG 0xb
 #define LDR_RECEIVED_HOST_OFFLINE_REQ  0xc
 
-/* verify capability fabric CRC size bits */
+ 
 enum {
-	CAP_CRC_14B = (1 << 0), /* 14b CRC */
-	CAP_CRC_48B = (1 << 1), /* 48b CRC */
-	CAP_CRC_12B_16B_PER_LANE = (1 << 2) /* 12b-16b per lane CRC */
+	CAP_CRC_14B = (1 << 0),  
+	CAP_CRC_48B = (1 << 1),  
+	CAP_CRC_12B_16B_PER_LANE = (1 << 2)  
 };
 
 #define SUPPORTED_CRCS (CAP_CRC_14B | CAP_CRC_48B)
 
-/* misc status version fields */
+ 
 #define STS_FM_VERSION_MINOR_SHIFT 16
 #define STS_FM_VERSION_MINOR_MASK  0xff
 #define STS_FM_VERSION_MAJOR_SHIFT 24
@@ -521,76 +491,66 @@ enum {
 #define STS_FM_VERSION_PATCH_SHIFT 24
 #define STS_FM_VERSION_PATCH_MASK  0xff
 
-/* LCB_CFG_CRC_MODE TX_VAL and RX_VAL CRC mode values */
-#define LCB_CRC_16B			0x0	/* 16b CRC */
-#define LCB_CRC_14B			0x1	/* 14b CRC */
-#define LCB_CRC_48B			0x2	/* 48b CRC */
-#define LCB_CRC_12B_16B_PER_LANE	0x3	/* 12b-16b per lane CRC */
+ 
+#define LCB_CRC_16B			0x0	 
+#define LCB_CRC_14B			0x1	 
+#define LCB_CRC_48B			0x2	 
+#define LCB_CRC_12B_16B_PER_LANE	0x3	 
 
-/*
- * the following enum is (almost) a copy/paste of the definition
- * in the OPA spec, section 20.2.2.6.8 (PortInfo)
- */
+ 
 enum {
 	PORT_LTP_CRC_MODE_NONE = 0,
-	PORT_LTP_CRC_MODE_14 = 1, /* 14-bit LTP CRC mode (optional) */
-	PORT_LTP_CRC_MODE_16 = 2, /* 16-bit LTP CRC mode */
+	PORT_LTP_CRC_MODE_14 = 1,  
+	PORT_LTP_CRC_MODE_16 = 2,  
 	PORT_LTP_CRC_MODE_48 = 4,
-		/* 48-bit overlapping LTP CRC mode (optional) */
+		 
 	PORT_LTP_CRC_MODE_PER_LANE = 8
-		/* 12 to 16 bit per lane LTP CRC mode (optional) */
+		 
 };
 
-/* timeouts */
-#define LINK_RESTART_DELAY 1000		/* link restart delay, in ms */
-#define TIMEOUT_8051_START 5000         /* 8051 start timeout, in ms */
-#define DC8051_COMMAND_TIMEOUT 1000	/* DC8051 command timeout, in ms */
-#define FREEZE_STATUS_TIMEOUT 20	/* wait for freeze indicators, in ms */
-#define VL_STATUS_CLEAR_TIMEOUT 5000	/* per-VL status clear, in ms */
-#define CCE_STATUS_TIMEOUT 10		/* time to clear CCE Status, in ms */
+ 
+#define LINK_RESTART_DELAY 1000		 
+#define TIMEOUT_8051_START 5000          
+#define DC8051_COMMAND_TIMEOUT 1000	 
+#define FREEZE_STATUS_TIMEOUT 20	 
+#define VL_STATUS_CLEAR_TIMEOUT 5000	 
+#define CCE_STATUS_TIMEOUT 10		 
 
-/* cclock tick time, in picoseconds per tick: 1/speed * 10^12  */
-#define ASIC_CCLOCK_PS  1242	/* 805 MHz */
-#define FPGA_CCLOCK_PS 30300	/*  33 MHz */
+ 
+#define ASIC_CCLOCK_PS  1242	 
+#define FPGA_CCLOCK_PS 30300	 
 
-/*
- * Mask of enabled MISC errors.  Do not enable the two RSA engine errors -
- * see firmware.c:run_rsa() for details.
- */
+ 
 #define DRIVER_MISC_MASK \
 	(~(MISC_ERR_STATUS_MISC_FW_AUTH_FAILED_ERR_SMASK \
 		| MISC_ERR_STATUS_MISC_KEY_MISMATCH_ERR_SMASK))
 
-/* valid values for the loopback module parameter */
-#define LOOPBACK_NONE	0	/* no loopback - default */
+ 
+#define LOOPBACK_NONE	0	 
 #define LOOPBACK_SERDES 1
 #define LOOPBACK_LCB	2
-#define LOOPBACK_CABLE	3	/* external cable */
+#define LOOPBACK_CABLE	3	 
 
-/* set up bits in MISC_CONFIG_BITS */
+ 
 #define LOOPBACK_SERDES_CONFIG_BIT_MASK_SHIFT 0
 #define EXT_CFG_LCB_RESET_SUPPORTED_SHIFT     3
 
-/* read and write hardware registers */
+ 
 u64 read_csr(const struct hfi1_devdata *dd, u32 offset);
 void write_csr(const struct hfi1_devdata *dd, u32 offset, u64 value);
 
-/*
- * The *_kctxt_* flavor of the CSR read/write functions are for
- * per-context or per-SDMA CSRs that are not mappable to user-space.
- * Their spacing is not a PAGE_SIZE multiple.
- */
+ 
 static inline u64 read_kctxt_csr(const struct hfi1_devdata *dd, int ctxt,
 				 u32 offset0)
 {
-	/* kernel per-context CSRs are separated by 0x100 */
+	 
 	return read_csr(dd, offset0 + (0x100 * ctxt));
 }
 
 static inline void write_kctxt_csr(struct hfi1_devdata *dd, int ctxt,
 				   u32 offset0, u64 value)
 {
-	/* kernel per-context CSRs are separated by 0x100 */
+	 
 	write_csr(dd, offset0 + (0x100 * ctxt), value);
 }
 
@@ -609,23 +569,18 @@ static inline void __iomem *get_kctxt_csr_addr(
 	return get_csr_addr(dd, offset0 + (0x100 * ctxt));
 }
 
-/*
- * The *_uctxt_* flavor of the CSR read/write functions are for
- * per-context CSRs that are mappable to user space. All these CSRs
- * are spaced by a PAGE_SIZE multiple in order to be mappable to
- * different processes without exposing other contexts' CSRs
- */
+ 
 static inline u64 read_uctxt_csr(const struct hfi1_devdata *dd, int ctxt,
 				 u32 offset0)
 {
-	/* user per-context CSRs are separated by 0x1000 */
+	 
 	return read_csr(dd, offset0 + (0x1000 * ctxt));
 }
 
 static inline void write_uctxt_csr(struct hfi1_devdata *dd, int ctxt,
 				   u32 offset0, u64 value)
 {
-	/* user per-context CSRs are separated by 0x1000 */
+	 
 	write_csr(dd, offset0 + (0x1000 * ctxt), value);
 }
 
@@ -666,13 +621,13 @@ void set_hdrq_regs(struct hfi1_devdata *dd, u8 ctxt, u8 entsize, u16 hdrcnt);
 u64 create_pbc(struct hfi1_pportdata *ppd, u64 flags, int srate_mbs, u32 vl,
 	       u32 dw_len);
 
-/* firmware.c */
+ 
 #define SBUS_MASTER_BROADCAST 0xfd
-#define NUM_PCIE_SERDES 16	/* number of PCIe serdes on the SBus */
+#define NUM_PCIE_SERDES 16	 
 extern const u8 pcie_serdes_broadcast[];
 extern const u8 pcie_pcs_addrs[2][NUM_PCIE_SERDES];
 
-/* SBus commands */
+ 
 #define RESET_SBUS_RECEIVER 0x20
 #define WRITE_SBUS_RECEIVER 0x21
 #define READ_SBUS_RECEIVER  0x22
@@ -689,26 +644,15 @@ void dispose_firmware(void);
 int acquire_hw_mutex(struct hfi1_devdata *dd);
 void release_hw_mutex(struct hfi1_devdata *dd);
 
-/*
- * Bitmask of dynamic access for ASIC block chip resources.  Each HFI has its
- * own range of bits for the resource so it can clear its own bits on
- * starting and exiting.  If either HFI has the resource bit set, the
- * resource is in use.  The separate bit ranges are:
- *	HFI0 bits  7:0
- *	HFI1 bits 15:8
- */
-#define CR_SBUS  0x01	/* SBUS, THERM, and PCIE registers */
-#define CR_EPROM 0x02	/* EEP, GPIO registers */
-#define CR_I2C1  0x04	/* QSFP1_OE register */
-#define CR_I2C2  0x08	/* QSFP2_OE register */
-#define CR_DYN_SHIFT 8	/* dynamic flag shift */
+ 
+#define CR_SBUS  0x01	 
+#define CR_EPROM 0x02	 
+#define CR_I2C1  0x04	 
+#define CR_I2C2  0x08	 
+#define CR_DYN_SHIFT 8	 
 #define CR_DYN_MASK  ((1ull << CR_DYN_SHIFT) - 1)
 
-/*
- * Bitmask of static ASIC states these are outside of the dynamic ASIC
- * block chip resources above.  These are to be set once and never cleared.
- * Must be holding the SBus dynamic flag when setting.
- */
+ 
 #define CR_THERM_INIT	0x010000
 
 int acquire_chip_resource(struct hfi1_devdata *dd, u32 resource, u32 mswait);
@@ -718,16 +662,16 @@ bool check_chip_resource(struct hfi1_devdata *dd, u32 resource,
 void init_chip_resources(struct hfi1_devdata *dd);
 void finish_chip_resources(struct hfi1_devdata *dd);
 
-/* ms wait time for access to an SBus resoure */
-#define SBUS_TIMEOUT 4000 /* long enough for a FW download and SBR */
+ 
+#define SBUS_TIMEOUT 4000  
 
-/* ms wait time for a qsfp (i2c) chain to become available */
-#define QSFP_WAIT 20000 /* long enough for FW update to the F4 uc */
+ 
+#define QSFP_WAIT 20000  
 
 void fabric_serdes_reset(struct hfi1_devdata *dd);
 int read_8051_data(struct hfi1_devdata *dd, u32 addr, u32 len, u64 *result);
 
-/* chip.c */
+ 
 void read_misc_status(struct hfi1_devdata *dd, u8 *ver_major, u8 *ver_minor,
 		      u8 *ver_patch);
 int write_host_interface_version(struct hfi1_devdata *dd, u8 version);
@@ -779,7 +723,7 @@ u32 driver_lstate(struct hfi1_pportdata *ppd);
 int acquire_lcb_access(struct hfi1_devdata *dd, int sleep_ok);
 int release_lcb_access(struct hfi1_devdata *dd, int sleep_ok);
 #define LCB_START DC_LCB_CSRS
-#define LCB_END   DC_8051_CSRS /* next block is 8051 */
+#define LCB_END   DC_8051_CSRS  
 extern uint num_vls;
 
 extern uint disable_integrity;
@@ -790,7 +734,7 @@ u64 write_port_cntr(struct hfi1_pportdata *ppd, int index, int vl, u64 data);
 u32 read_logical_state(struct hfi1_devdata *dd);
 void force_recv_intr(struct hfi1_ctxtdata *rcd);
 
-/* Per VL indexes */
+ 
 enum {
 	C_VL_0 = 0,
 	C_VL_1,
@@ -814,7 +758,7 @@ static inline int idx_from_vl(int vl)
 	return (vl == 15 ? C_VL_15 : vl);
 }
 
-/* Per device counter indexes */
+ 
 enum {
 	C_RCV_OVF = 0,
 	C_RX_LEN_ERR,
@@ -898,7 +842,7 @@ enum {
 	C_SDMA_ERR_CNT,
 	C_SDMA_IDLE_INT_CNT,
 	C_SDMA_PROGRESS_INT_CNT,
-/* MISC_ERR_STATUS */
+ 
 	C_MISC_PLL_LOCK_FAIL_ERR,
 	C_MISC_MBIST_FAIL_ERR,
 	C_MISC_INVALID_EEP_CMD_ERR,
@@ -912,12 +856,8 @@ enum {
 	C_MISC_CSR_WRITE_BAD_ADDR_ERR,
 	C_MISC_CSR_READ_BAD_ADDR_ERR,
 	C_MISC_CSR_PARITY_ERR,
-/* CceErrStatus */
-	/*
-	* A special counter that is the aggregate count
-	* of all the cce_err_status errors.  The remainder
-	* are actual bits in the CceErrStatus register.
-	*/
+ 
+	 
 	C_CCE_ERR_STATUS_AGGREGATED_CNT,
 	C_CCE_MSIX_CSR_PARITY_ERR,
 	C_CCE_INT_MAP_UNC_ERR,
@@ -960,7 +900,7 @@ enum {
 	C_CCE_CSR_WRITE_BAD_ADDR_ERR,
 	C_CCE_CSR_READ_BAD_ADDR_ERR,
 	C_CCE_CSR_PARITY_ERR,
-/* RcvErrStatus */
+ 
 	C_RX_CSR_PARITY_ERR,
 	C_RX_CSR_WRITE_BAD_ADDR_ERR,
 	C_RX_CSR_READ_BAD_ADDR_ERR,
@@ -1025,7 +965,7 @@ enum {
 	C_RX_RCV_HDR_UNC_ERR,
 	C_RX_DC_INTF_PARITY_ERR,
 	C_RX_DMA_CSR_COR_ERR,
-/* SendPioErrStatus */
+ 
 	C_PIO_PEC_SOP_HEAD_PARITY_ERR,
 	C_PIO_PCC_SOP_HEAD_PARITY_ERR,
 	C_PIO_LAST_RETURNED_CNT_PARITY_ERR,
@@ -1062,12 +1002,12 @@ enum {
 	C_PIO_CSR_PARITY_ERR,
 	C_PIO_WRITE_ADDR_PARITY_ERR,
 	C_PIO_WRITE_BAD_CTXT_ERR,
-/* SendDmaErrStatus */
+ 
 	C_SDMA_PCIE_REQ_TRACKING_COR_ERR,
 	C_SDMA_PCIE_REQ_TRACKING_UNC_ERR,
 	C_SDMA_CSR_PARITY_ERR,
 	C_SDMA_RPY_TAG_ERR,
-/* SendEgressErrStatus */
+ 
 	C_TX_READ_PIO_MEMORY_CSR_UNC_ERR,
 	C_TX_READ_SDMA_MEMORY_CSR_UNC_ERR,
 	C_TX_EGRESS_FIFO_COR_ERR,
@@ -1132,17 +1072,17 @@ enum {
 	C_TX_RESERVED_2,
 	C_TX_PKT_INTEGRITY_MEM_UNC_ERR,
 	C_TX_PKT_INTEGRITY_MEM_COR_ERR,
-/* SendErrStatus */
+ 
 	C_SEND_CSR_WRITE_BAD_ADDR_ERR,
 	C_SEND_CSR_READ_BAD_ADD_ERR,
 	C_SEND_CSR_PARITY_ERR,
-/* SendCtxtErrStatus */
+ 
 	C_PIO_WRITE_OUT_OF_BOUNDS_ERR,
 	C_PIO_WRITE_OVERFLOW_ERR,
 	C_PIO_WRITE_CROSSES_BOUNDARY_ERR,
 	C_PIO_DISALLOWED_PACKET_ERR,
 	C_PIO_INCONSISTENT_SOP_ERR,
-/*SendDmaEngErrStatus */
+ 
 	C_SDMA_HEADER_REQUEST_FIFO_COR_ERR,
 	C_SDMA_HEADER_STORAGE_COR_ERR,
 	C_SDMA_PACKET_TRACKING_COR_ERR,
@@ -1167,10 +1107,10 @@ enum {
 	C_SDMA_TOO_LONG_ERR,
 	C_SDMA_GEN_MISMATCH_ERR,
 	C_SDMA_WRONG_DW_ERR,
-	DEV_CNTR_LAST  /* Must be kept last */
+	DEV_CNTR_LAST   
 };
 
-/* Per port counter indexes */
+ 
 enum {
 	C_TX_UNSUP_VL = 0,
 	C_TX_INVAL_LEN,
@@ -1370,7 +1310,7 @@ enum {
 	C_RCV_HDR_OVF_157,
 	C_RCV_HDR_OVF_158,
 	C_RCV_HDR_OVF_159,
-	PORT_CNTR_LAST /* Must be kept last */
+	PORT_CNTR_LAST  
 };
 
 u64 get_all_cpu_total(u64 __percpu *cntr);
@@ -1412,19 +1352,14 @@ u8 hfi1_get_qp_map(struct hfi1_devdata *dd, u8 idx);
 void hfi1_init_aip_rsm(struct hfi1_devdata *dd);
 void hfi1_deinit_aip_rsm(struct hfi1_devdata *dd);
 
-/*
- * Interrupt source table.
- *
- * Each entry is an interrupt source "type".  It is ordered by increasing
- * number.
- */
+ 
 struct is_table {
-	int start;	 /* interrupt source type start */
-	int end;	 /* interrupt source type end */
-	/* routine that returns the name of the interrupt source */
+	int start;	  
+	int end;	  
+	 
 	char *(*is_name)(char *name, size_t size, unsigned int source);
-	/* routine to call when receiving an interrupt */
+	 
 	void (*is_int)(struct hfi1_devdata *dd, unsigned int source);
 };
 
-#endif /* _CHIP_H */
+#endif  

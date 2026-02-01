@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * virtio_pmem.c: Virtio pmem Driver
- *
- * Discovers persistent memory range information
- * from host and registers the virtual pmem device
- * with libnvdimm core.
- */
+
+ 
 #include "virtio_pmem.h"
 #include "nd.h"
 
@@ -14,10 +8,10 @@ static struct virtio_device_id id_table[] = {
 	{ 0 },
 };
 
- /* Initialize virt queue */
+  
 static int init_vq(struct virtio_pmem *vpmem)
 {
-	/* single vq */
+	 
 	vpmem->req_vq = virtio_find_single_vq(vpmem->vdev,
 					virtio_pmem_host_ack, "flush_queue");
 	if (IS_ERR(vpmem->req_vq))
@@ -91,11 +85,7 @@ static int virtio_pmem_probe(struct virtio_device *vdev)
 	ndr_desc.provider_data = vdev;
 	set_bit(ND_REGION_PAGEMAP, &ndr_desc.flags);
 	set_bit(ND_REGION_ASYNC, &ndr_desc.flags);
-	/*
-	 * The NVDIMM region could be available before the
-	 * virtio_device_ready() that is called by
-	 * virtio_dev_probe(), so we set device ready here.
-	 */
+	 
 	virtio_device_ready(vdev);
 	nd_region = nvdimm_pmem_region_create(vpmem->nvdimm_bus, &ndr_desc);
 	if (!nd_region) {

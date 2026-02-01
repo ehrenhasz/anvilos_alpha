@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_hpdelim.c,v 1.2 2022/02/06 22:58:33 dtucker Exp $ */
-/*
- * Regress test for misc hpdelim() and co
- *
- * Placed in the public domain.
- */
+ 
+ 
 
 #include "includes.h"
 

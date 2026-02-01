@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Texas Instruments Incorporated -  http://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- *
- * Based on pwm_bl.c
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/leds.h>
@@ -100,7 +95,7 @@ static int led_bl_get_leds(struct device *dev,
 			return PTR_ERR(leds[i]);
 	}
 
-	/* check that the LEDs all have the same brightness range */
+	 
 	max_brightness = leds[0]->max_brightness;
 	for (i = 1; i < nb_leds; i++) {
 		if (max_brightness != leds[i]->max_brightness) {
@@ -109,7 +104,7 @@ static int led_bl_get_leds(struct device *dev,
 		}
 	}
 
-	/* get the default brightness from the first LED from the list */
+	 
 	default_brightness = leds[0]->brightness;
 
 	priv->nb_leds = nb_leds;
@@ -148,10 +143,7 @@ static int led_bl_parse_levels(struct device *dev,
 		if (ret < 0)
 			return ret;
 
-		/*
-		 * Try to map actual LED brightness to backlight brightness
-		 * level
-		 */
+		 
 		db = priv->default_brightness;
 		for (i = 0 ; i < num_levels; i++) {
 			if ((i && db > levels[i-1]) && db <= levels[i])

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max1111.c - +2.7V, Low-Power, Multichannel, Serial 8-bit ADCs
- *
- * Based on arch/arm/mach-pxa/corgi_ssp.c
- *
- * Copyright (C) 2004-2005 Richard Purdie
- *
- * Copyright (C) 2008 Marvell International Ltd.
- *	Eric Miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,13 +15,13 @@ enum chips { max1110, max1111, max1112, max1113 };
 #define MAX1111_TX_BUF_SIZE	1
 #define MAX1111_RX_BUF_SIZE	2
 
-/* MAX1111 Commands */
+ 
 #define MAX1111_CTRL_PD0      (1u << 0)
 #define MAX1111_CTRL_PD1      (1u << 1)
 #define MAX1111_CTRL_SGL      (1u << 2)
 #define MAX1111_CTRL_UNI      (1u << 3)
 #define MAX1110_CTRL_SEL_SH   (4)
-#define MAX1111_CTRL_SEL_SH   (5)	/* NOTE: bit 4 is ignored */
+#define MAX1111_CTRL_SEL_SH   (5)	 
 #define MAX1111_CTRL_STR      (1u << 7)
 
 struct max1111_data {
@@ -41,7 +32,7 @@ struct max1111_data {
 	uint8_t tx_buf[MAX1111_TX_BUF_SIZE];
 	uint8_t rx_buf[MAX1111_RX_BUF_SIZE];
 	struct mutex		drvdata_lock;
-	/* protect msg, xfer and buffers from multiple access */
+	 
 	int			sel_sh;
 	int			lsb;
 };
@@ -52,7 +43,7 @@ static int max1111_read(struct device *dev, int channel)
 	uint8_t v1, v2;
 	int err;
 
-	/* writing to drvdata struct is not thread safe, wait on mutex */
+	 
 	mutex_lock(&data->drvdata_lock);
 
 	data->tx_buf[0] = (channel << data->sel_sh) |
@@ -91,11 +82,7 @@ int max1111_read_channel(int channel)
 EXPORT_SYMBOL(max1111_read_channel);
 #endif
 
-/*
- * NOTE: SPI devices do not have a default 'name' attribute, which is
- * likely to be used by hwmon applications to distinguish between
- * different devices, explicitly add a name attribute here.
- */
+ 
 static ssize_t name_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
 {
@@ -113,10 +100,7 @@ static ssize_t show_adc(struct device *dev,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Assume the reference voltage to be 2.048V or 4.096V, with an 8-bit
-	 * sample. The LSB weight is 8mV or 16mV depending on the chip type.
-	 */
+	 
 	return sprintf(buf, "%d\n", ret * data->lsb);
 }
 

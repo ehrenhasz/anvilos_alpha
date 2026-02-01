@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include "main.h"
 #include <stdlib.h>
@@ -114,17 +114,17 @@ static void spin_unlock_irqrestore(spinlock_t *lock, unsigned long f)
 static unsigned long long headcnt, tailcnt;
 static struct ptr_ring array ____cacheline_aligned_in_smp;
 
-/* implemented by ring */
+ 
 void alloc_ring(void)
 {
 	int ret = ptr_ring_init(&array, ring_size, 0);
 	assert(!ret);
-	/* Hacky way to poke at ring internals. Useful for testing though. */
+	 
 	if (param)
 		array.batch = param;
 }
 
-/* guest side */
+ 
 int add_inbuf(unsigned len, void *buf, void *datap)
 {
 	int ret;
@@ -138,12 +138,7 @@ int add_inbuf(unsigned len, void *buf, void *datap)
 	return ret;
 }
 
-/*
- * ptr_ring API provides no way for producer to find out whether a given
- * buffer was consumed.  Our tests merely require that a successful get_buf
- * implies that add_inbuf succeed in the past, and that add_inbuf will succeed,
- * fake it accordingly.
- */
+ 
 void *get_buf(unsigned *lenp, void **bufp)
 {
 	void *datap;
@@ -178,7 +173,7 @@ void kick_available(void)
 	assert(0);
 }
 
-/* host side */
+ 
 void disable_kick()
 {
 	assert(0);

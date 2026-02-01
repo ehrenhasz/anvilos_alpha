@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for Vishay VCNL3020 proximity sensor on i2c bus.
- * Based on Vishay VCNL4000 driver code.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -16,40 +13,38 @@
 
 #define VCNL3020_PROD_ID	0x21
 
-#define VCNL_COMMAND		0x80 /* Command register */
-#define VCNL_PROD_REV		0x81 /* Product ID and Revision ID */
-#define VCNL_PROXIMITY_RATE	0x82 /* Rate of Proximity Measurement */
-#define VCNL_LED_CURRENT	0x83 /* IR LED current for proximity mode */
-#define VCNL_PS_RESULT_HI	0x87 /* Proximity result register, MSB */
-#define VCNL_PS_RESULT_LO	0x88 /* Proximity result register, LSB */
-#define VCNL_PS_ICR		0x89 /* Interrupt Control Register */
-#define VCNL_PS_LO_THR_HI	0x8a /* High byte of low threshold value */
-#define VCNL_PS_LO_THR_LO	0x8b /* Low byte of low threshold value */
-#define VCNL_PS_HI_THR_HI	0x8c /* High byte of high threshold value */
-#define VCNL_PS_HI_THR_LO	0x8d /* Low byte of high threshold value */
-#define VCNL_ISR		0x8e /* Interrupt Status Register */
-#define VCNL_PS_MOD_ADJ		0x8f /* Proximity Modulator Timing Adjustment */
+#define VCNL_COMMAND		0x80  
+#define VCNL_PROD_REV		0x81  
+#define VCNL_PROXIMITY_RATE	0x82  
+#define VCNL_LED_CURRENT	0x83  
+#define VCNL_PS_RESULT_HI	0x87  
+#define VCNL_PS_RESULT_LO	0x88  
+#define VCNL_PS_ICR		0x89  
+#define VCNL_PS_LO_THR_HI	0x8a  
+#define VCNL_PS_LO_THR_LO	0x8b  
+#define VCNL_PS_HI_THR_HI	0x8c  
+#define VCNL_PS_HI_THR_LO	0x8d  
+#define VCNL_ISR		0x8e  
+#define VCNL_PS_MOD_ADJ		0x8f  
 
-/* Bit masks for COMMAND register */
-#define VCNL_PS_RDY		BIT(5) /* proximity data ready? */
-#define VCNL_PS_OD		BIT(3) /* start on-demand proximity
-					* measurement
-					*/
+ 
+#define VCNL_PS_RDY		BIT(5)  
+#define VCNL_PS_OD		BIT(3)  
 
-/* Enables periodic proximity measurement */
+ 
 #define VCNL_PS_EN		BIT(1)
 
-/* Enables state machine and LP oscillator for self timed  measurements */
+ 
 #define VCNL_PS_SELFTIMED_EN	BIT(0)
 
-/* Bit masks for ICR */
+ 
 
-/* Enable interrupts on low or high thresholds */
+ 
 #define  VCNL_ICR_THRES_EN	BIT(1)
 
-/* Bit masks for ISR */
-#define VCNL_INT_TH_HI		BIT(0)	/* High threshold hit */
-#define VCNL_INT_TH_LOW		BIT(1)	/* Low threshold hit */
+ 
+#define VCNL_INT_TH_HI		BIT(0)	 
+#define VCNL_INT_TH_LOW		BIT(1)	 
 
 #define VCNL_ON_DEMAND_TIMEOUT_US	100000
 #define VCNL_POLL_US			20000
@@ -65,14 +60,7 @@ static const int vcnl3020_prox_sampling_frequency[][2] = {
 	{250, 0},
 };
 
-/**
- * struct vcnl3020_data - vcnl3020 specific data.
- * @regmap:	device register map.
- * @dev:	vcnl3020 device.
- * @rev:	revision id.
- * @lock:	lock for protecting access to device hardware registers.
- * @buf:	__be16 buffer.
- */
+ 
 struct vcnl3020_data {
 	struct regmap *regmap;
 	struct device *dev;
@@ -81,12 +69,7 @@ struct vcnl3020_data {
 	__be16 buf;
 };
 
-/**
- * struct vcnl3020_property - vcnl3020 property.
- * @name:	property name.
- * @reg:	i2c register offset.
- * @conversion_func:	conversion function.
- */
+ 
 struct vcnl3020_property {
 	const char *name;
 	u32 reg;
@@ -95,10 +78,7 @@ struct vcnl3020_property {
 
 static u32 microamp_to_reg(u32 *val)
 {
-	/*
-	 * An example of conversion from uA to reg val:
-	 * 200000 uA == 200 mA == 20
-	 */
+	 
 	return *val /= 10000;
 };
 
@@ -178,7 +158,7 @@ static int vcnl3020_measure_proximity(struct vcnl3020_data *data, int *val)
 
 	mutex_lock(&data->lock);
 
-	/* Protect against event capture. */
+	 
 	if (vcnl3020_is_in_periodic_mode(data)) {
 		rc = -EBUSY;
 		goto err_unlock;
@@ -188,7 +168,7 @@ static int vcnl3020_measure_proximity(struct vcnl3020_data *data, int *val)
 	if (rc)
 		goto err_unlock;
 
-	/* wait for data to become ready */
+	 
 	rc = regmap_read_poll_timeout(data->regmap, VCNL_COMMAND, reg,
 				      reg & VCNL_PS_RDY, VCNL_POLL_US,
 				      VCNL_ON_DEMAND_TIMEOUT_US);
@@ -198,7 +178,7 @@ static int vcnl3020_measure_proximity(struct vcnl3020_data *data, int *val)
 		goto err_unlock;
 	}
 
-	/* high & low result bytes read */
+	 
 	rc = regmap_bulk_read(data->regmap, VCNL_PS_RESULT_HI, &data->buf,
 			      sizeof(data->buf));
 	if (rc)
@@ -240,7 +220,7 @@ static int vcnl3020_write_proxy_samp_freq(struct vcnl3020_data *data, int val,
 
 	mutex_lock(&data->lock);
 
-	/* Protect against event capture. */
+	 
 	if (vcnl3020_is_in_periodic_mode(data)) {
 		rc = -EBUSY;
 		goto err_unlock;
@@ -336,7 +316,7 @@ static int vcnl3020_write_event(struct iio_dev *indio_dev,
 	case IIO_EV_INFO_VALUE:
 		switch (dir) {
 		case IIO_EV_DIR_RISING:
-			/* 16 bit word/ low * high */
+			 
 			data->buf = cpu_to_be16(val);
 			rc = regmap_bulk_write(data->regmap, VCNL_PS_HI_THR_HI,
 					       &data->buf, sizeof(data->buf));
@@ -374,7 +354,7 @@ static int vcnl3020_enable_periodic(struct iio_dev *indio_dev,
 
 	mutex_lock(&data->lock);
 
-	/* Enable periodic measurement of proximity data. */
+	 
 	cmd = VCNL_PS_EN | VCNL_PS_SELFTIMED_EN;
 
 	rc = regmap_write(data->regmap, VCNL_COMMAND, cmd);
@@ -384,10 +364,7 @@ static int vcnl3020_enable_periodic(struct iio_dev *indio_dev,
 		goto err_unlock;
 	}
 
-	/*
-	 * Enable interrupts on threshold, for proximity data by
-	 * default.
-	 */
+	 
 	rc = regmap_write(data->regmap, VCNL_PS_ICR, VCNL_ICR_THRES_EN);
 	if (rc)
 		dev_err(data->dev,
@@ -420,7 +397,7 @@ static int vcnl3020_disable_periodic(struct iio_dev *indio_dev,
 		goto err_unlock;
 	}
 
-	/* Clear interrupt flag bit */
+	 
 	rc = regmap_write(data->regmap, VCNL_ISR, 0);
 	if (rc)
 		dev_err(data->dev,

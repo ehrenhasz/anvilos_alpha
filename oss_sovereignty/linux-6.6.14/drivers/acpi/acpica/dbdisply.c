@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbdisply - debug display commands
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -18,7 +14,7 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
 ACPI_MODULE_NAME("dbdisply")
 
-/* Local prototypes */
+ 
 static void acpi_db_dump_parser_descriptor(union acpi_parse_object *op);
 
 static void *acpi_db_get_pointer(void *target);
@@ -28,17 +24,14 @@ acpi_db_display_non_root_handlers(acpi_handle obj_handle,
 				  u32 nesting_level,
 				  void *context, void **return_value);
 
-/*
- * System handler information.
- * Used for Handlers command, in acpi_db_display_handlers.
- */
+ 
 #define ACPI_PREDEFINED_PREFIX          "%25s (%.2X) : "
 #define ACPI_HANDLER_NAME_STRING               "%30s : "
 #define ACPI_HANDLER_PRESENT_STRING                    "%-9s (%p)\n"
 #define ACPI_HANDLER_PRESENT_STRING2                   "%-9s (%p)"
 #define ACPI_HANDLER_NOT_PRESENT_STRING                "%-9s\n"
 
-/* All predefined Address Space IDs */
+ 
 
 static acpi_adr_space_type acpi_gbl_space_id_list[] = {
 	ACPI_ADR_SPACE_SYSTEM_MEMORY,
@@ -57,7 +50,7 @@ static acpi_adr_space_type acpi_gbl_space_id_list[] = {
 	ACPI_ADR_SPACE_FIXED_HARDWARE
 };
 
-/* Global handler information */
+ 
 
 typedef struct acpi_handler_info {
 	void *handler;
@@ -73,17 +66,7 @@ static struct acpi_handler_info acpi_gbl_handler_list[] = {
 	{&acpi_gbl_interface_handler, "OSI Invocations"}
 };
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_get_pointer
- *
- * PARAMETERS:  target          - Pointer to string to be converted
- *
- * RETURN:      Converted pointer
- *
- * DESCRIPTION: Convert an ascii pointer value to a real value
- *
- ******************************************************************************/
+ 
 
 static void *acpi_db_get_pointer(void *target)
 {
@@ -95,17 +78,7 @@ static void *acpi_db_get_pointer(void *target)
 	return (obj_ptr);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_dump_parser_descriptor
- *
- * PARAMETERS:  op              - A parser Op descriptor
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display a formatted parser object
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_dump_parser_descriptor(union acpi_parse_object *op)
 {
@@ -124,19 +97,7 @@ static void acpi_db_dump_parser_descriptor(union acpi_parse_object *op)
 	acpi_os_printf("%20.20s : %p\n", "NextOp", op->common.next);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_decode_and_display_object
- *
- * PARAMETERS:  target          - String with object to be displayed. Names
- *                                and hex pointers are supported.
- *              output_type     - Byte, Word, Dword, or Qword (B|W|D|Q)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display a formatted ACPI object
- *
- ******************************************************************************/
+ 
 
 void acpi_db_decode_and_display_object(char *target, char *output_type)
 {
@@ -153,7 +114,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 		return;
 	}
 
-	/* Decode the output type */
+	 
 
 	if (output_type) {
 		acpi_ut_strupr(output_type);
@@ -169,7 +130,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 	ret_buf.length = sizeof(buffer);
 	ret_buf.pointer = buffer;
 
-	/* Differentiate between a number and a name */
+	 
 
 	if ((target[0] >= 0x30) && (target[0] <= 0x39)) {
 		obj_ptr = acpi_db_get_pointer(target);
@@ -180,12 +141,12 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 			return;
 		}
 
-		/* Decode the object type */
+		 
 
 		switch (ACPI_GET_DESCRIPTOR_TYPE(obj_ptr)) {
 		case ACPI_DESC_TYPE_NAMED:
 
-			/* This is a namespace Node */
+			 
 
 			if (!acpi_os_readable
 			    (obj_ptr, sizeof(struct acpi_namespace_node))) {
@@ -200,7 +161,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 
 		case ACPI_DESC_TYPE_OPERAND:
 
-			/* This is a ACPI OPERAND OBJECT */
+			 
 
 			if (!acpi_os_readable
 			    (obj_ptr, sizeof(union acpi_operand_object))) {
@@ -219,7 +180,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 
 		case ACPI_DESC_TYPE_PARSER:
 
-			/* This is a Parser Op object */
+			 
 
 			if (!acpi_os_readable
 			    (obj_ptr, sizeof(union acpi_parse_object))) {
@@ -239,7 +200,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 
 		default:
 
-			/* Is not a recognizable object */
+			 
 
 			acpi_os_printf
 			    ("Not a known ACPI internal object, descriptor type %2.2X\n",
@@ -250,7 +211,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 				size = 64;
 			}
 
-			/* Just dump some memory */
+			 
 
 			acpi_ut_debug_dump_buffer(obj_ptr, size, display,
 						  ACPI_UINT32_MAX);
@@ -260,7 +221,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 		return;
 	}
 
-	/* The parameter is a name string that must be resolved to a Named obj */
+	 
 
 	node = acpi_db_local_ns_lookup(target);
 	if (!node) {
@@ -268,7 +229,7 @@ void acpi_db_decode_and_display_object(char *target, char *output_type)
 	}
 
 dump_node:
-	/* Now dump the NS node */
+	 
 
 	status = acpi_get_name(node, ACPI_FULL_PATHNAME_NO_TRAILING, &ret_buf);
 	if (ACPI_FAILURE(status)) {
@@ -335,17 +296,7 @@ dump_node:
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_method_info
- *
- * PARAMETERS:  start_op        - Root of the control method parse tree
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display information about the current method
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_method_info(union acpi_parse_object *start_op)
 {
@@ -395,7 +346,7 @@ void acpi_db_display_method_info(union acpi_parse_object *start_op)
 			num_remaining_ops++;
 		}
 
-		/* Decode the opcode */
+		 
 
 		op_info = acpi_ps_get_opcode_info(op->common.aml_opcode);
 		switch (op_info->class) {
@@ -410,7 +361,7 @@ void acpi_db_display_method_info(union acpi_parse_object *start_op)
 
 		case AML_CLASS_UNKNOWN:
 
-			/* Bad opcode or ASCII character */
+			 
 
 			continue;
 
@@ -437,17 +388,7 @@ void acpi_db_display_method_info(union acpi_parse_object *start_op)
 	     num_remaining_operands);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_locals
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display all locals for the currently running control method
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_locals(void)
 {
@@ -462,17 +403,7 @@ void acpi_db_display_locals(void)
 	acpi_db_decode_locals(walk_state);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_arguments
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display all arguments for the currently running control method
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_arguments(void)
 {
@@ -487,17 +418,7 @@ void acpi_db_display_arguments(void)
 	acpi_db_decode_arguments(walk_state);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_results
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display current contents of a method result stack
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_results(void)
 {
@@ -507,7 +428,7 @@ void acpi_db_display_results(void)
 	u32 result_count = 0;
 	struct acpi_namespace_node *node;
 	union acpi_generic_state *frame;
-	u32 index;		/* Index onto current frame */
+	u32 index;		 
 
 	walk_state = acpi_ds_get_current_walk_state(acpi_gbl_current_walk_list);
 	if (!walk_state) {
@@ -524,7 +445,7 @@ void acpi_db_display_results(void)
 	acpi_os_printf("Method [%4.4s] has %X stacked result objects\n",
 		       acpi_ut_get_node_name(node), result_count);
 
-	/* From the top element of result stack */
+	 
 
 	frame = walk_state->results;
 	index = (result_count - 1) % ACPI_RESULTS_FRAME_OBJ_NUM;
@@ -543,17 +464,7 @@ void acpi_db_display_results(void)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_calling_tree
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display current calling tree of nested control methods
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_calling_tree(void)
 {
@@ -576,17 +487,7 @@ void acpi_db_display_calling_tree(void)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_object_type
- *
- * PARAMETERS:  object_arg      - User entered NS node handle
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display type of an arbitrary NS node
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_object_type(char *object_arg)
 {
@@ -636,22 +537,7 @@ void acpi_db_display_object_type(char *object_arg)
 	ACPI_FREE(info);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_result_object
- *
- * PARAMETERS:  obj_desc        - Object to be displayed
- *              walk_state      - Current walk state
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the result of an AML opcode
- *
- * Note: Currently only displays the result object if we are single stepping.
- * However, this output may be useful in other contexts and could be enabled
- * to do so if needed.
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_display_result_object(union acpi_operand_object *obj_desc,
@@ -664,7 +550,7 @@ acpi_db_display_result_object(union acpi_operand_object *obj_desc,
 	}
 #endif
 
-	/* Only display if single stepping */
+	 
 
 	if (!acpi_gbl_cm_single_step) {
 		return;
@@ -675,18 +561,7 @@ acpi_db_display_result_object(union acpi_operand_object *obj_desc,
 	acpi_os_printf("\n");
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_argument_object
- *
- * PARAMETERS:  obj_desc        - Object to be displayed
- *              walk_state      - Current walk state
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the result of an AML opcode
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_display_argument_object(union acpi_operand_object *obj_desc,
@@ -708,17 +583,7 @@ acpi_db_display_argument_object(union acpi_operand_object *obj_desc,
 }
 
 #if (!ACPI_REDUCED_HARDWARE)
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_gpes
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the current GPE structures
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_gpes(void)
 {
@@ -742,7 +607,7 @@ void acpi_db_display_gpes(void)
 
 	block = 0;
 
-	/* Walk the GPE lists */
+	 
 
 	gpe_xrupt_info = acpi_gbl_gpe_xrupt_list_head;
 	while (gpe_xrupt_info) {
@@ -789,7 +654,7 @@ void acpi_db_display_gpes(void)
 			acpi_os_printf("  EventInfo:    %p\n",
 				       gpe_block->event_info);
 
-			/* Examine each GPE Register within the block */
+			 
 
 			for (i = 0; i < gpe_block->register_count; i++) {
 				gpe_register_info =
@@ -815,7 +680,7 @@ void acpi_db_display_gpes(void)
 					       (gpe_register_info->
 						enable_address.address));
 
-				/* Now look at the individual GPEs in this byte register */
+				 
 
 				for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++) {
 					gpe_index =
@@ -827,7 +692,7 @@ void acpi_db_display_gpes(void)
 					    (gpe_event_info->flags) ==
 					    ACPI_GPE_DISPATCH_NONE) {
 
-						/* This GPE is not used (no method or handler), ignore it */
+						 
 
 						continue;
 					}
@@ -839,7 +704,7 @@ void acpi_db_display_gpes(void)
 					     gpe_event_info->runtime_count,
 					     gpe_event_info->flags);
 
-					/* Decode the flags byte */
+					 
 
 					if (gpe_event_info->
 					    flags & ACPI_GPE_LEVEL_TRIGGERED) {
@@ -913,19 +778,9 @@ void acpi_db_display_gpes(void)
 		gpe_xrupt_info = gpe_xrupt_info->next;
 	}
 }
-#endif				/* !ACPI_REDUCED_HARDWARE */
+#endif				 
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_handlers
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the currently installed global handlers
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_handlers(void)
 {
@@ -934,7 +789,7 @@ void acpi_db_display_handlers(void)
 	acpi_adr_space_type space_id;
 	u32 i;
 
-	/* Operation region handlers */
+	 
 
 	acpi_os_printf("\nOperation Region Handlers at the namespace root:\n");
 
@@ -963,14 +818,14 @@ void acpi_db_display_handlers(void)
 				goto found_handler;
 			}
 
-			/* There is no handler for this space_id */
+			 
 
 			acpi_os_printf("None\n");
 
 found_handler:		;
 		}
 
-		/* Find all handlers for user-defined space_IDs */
+		 
 
 		handler_obj = obj_desc->common_notify.handler;
 		while (handler_obj) {
@@ -994,7 +849,7 @@ found_handler:		;
 	}
 #if (!ACPI_REDUCED_HARDWARE)
 
-	/* Fixed event handlers */
+	 
 
 	acpi_os_printf("\nFixed Event Handlers:\n");
 
@@ -1010,9 +865,9 @@ found_handler:		;
 		}
 	}
 
-#endif				/* !ACPI_REDUCED_HARDWARE */
+#endif				 
 
-	/* Miscellaneous global handlers */
+	 
 
 	acpi_os_printf("\nMiscellaneous Global Handlers:\n");
 
@@ -1028,7 +883,7 @@ found_handler:		;
 		}
 	}
 
-	/* Other handlers that are installed throughout the namespace */
+	 
 
 	acpi_os_printf("\nOperation Region Handlers for specific devices:\n");
 
@@ -1038,18 +893,7 @@ found_handler:		;
 				  NULL);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_non_root_handlers
- *
- * PARAMETERS:  acpi_walk_callback
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Display information about all handlers installed for a
- *              device object.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_display_non_root_handlers(acpi_handle obj_handle,
@@ -1072,7 +916,7 @@ acpi_db_display_non_root_handlers(acpi_handle obj_handle,
 		return (AE_OK);
 	}
 
-	/* Display all handlers associated with this device */
+	 
 
 	handler_obj = obj_desc->common_notify.handler;
 	while (handler_obj) {

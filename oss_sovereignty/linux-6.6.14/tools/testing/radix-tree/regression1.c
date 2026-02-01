@@ -1,36 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Regression1
- * Description:
- * Salman Qazi describes the following radix-tree bug:
- *
- * In the following case, we get can get a deadlock:
- *
- * 0.  The radix tree contains two items, one has the index 0.
- * 1.  The reader (in this case find_get_pages) takes the rcu_read_lock.
- * 2.  The reader acquires slot(s) for item(s) including the index 0 item.
- * 3.  The non-zero index item is deleted, and as a consequence the other item
- *     is moved to the root of the tree. The place where it used to be is queued
- *     for deletion after the readers finish.
- * 3b. The zero item is deleted, removing it from the direct slot, it remains in
- *     the rcu-delayed indirect node.
- * 4.  The reader looks at the index 0 slot, and finds that the page has 0 ref
- *     count
- * 5.  The reader looks at it again, hoping that the item will either be freed
- *     or the ref count will increase. This never happens, as the slot it is
- *     looking at will never be updated. Also, this slot can never be reclaimed
- *     because the reader is holding rcu_read_lock and is in an infinite loop.
- *
- * The fix is to re-use the same "indirect" pointer case that requires a slot
- * lookup retry into a general "retry the lookup" bit.
- *
- * Running:
- * This test should run to completion in a few seconds. The above bug would
- * cause it to hang indefinitely.
- *
- * Upstream commit:
- * Not yet
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/gfp.h>
 #include <linux/slab.h>
@@ -92,10 +61,10 @@ static unsigned find_get_pages(unsigned long start,
 		if (!page->count)
 			goto unlock;
 
-		/* don't actually update page refcount */
+		 
 		pthread_mutex_unlock(&page->lock);
 
-		/* Has the page moved? */
+		 
 		if (unlikely(page != xas_reload(&xas)))
 			goto put_page;
 
@@ -172,7 +141,7 @@ void regression1_test(void)
 	int i;
 	long arg;
 
-	/* Regression #1 */
+	 
 	printv(1, "running regression test 1, should finish in under a minute\n");
 	nr_threads = 2;
 	pthread_barrier_init(&worker_barrier, NULL, nr_threads);

@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linux network driver for QLogic BR-series Converged Network Adapter.
- */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014-2015 QLogic Corporation
- * All rights reserved
- * www.qlogic.com
- */
+
+ 
+ 
 #include <linux/firmware.h>
 #include "bnad.h"
 #include "bfi.h"
@@ -33,9 +26,7 @@ cna_read_firmware(struct pci_dev *pdev, u32 **bfi_image,
 	*bfi_image_size = fw->size/sizeof(u32);
 	bfi_fw = fw;
 
-	/* Convert loaded firmware to host order as it is stored in file
-	 * as sequence of LE32 integers.
-	 */
+	 
 	for (n = 0; n < *bfi_image_size; n++)
 		le32_to_cpus(*bfi_image + n);
 

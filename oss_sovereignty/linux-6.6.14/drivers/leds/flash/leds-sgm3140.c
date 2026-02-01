@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 Luca Weiss <luca@z3ntu.xyz>
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/led-class-flash.h>
@@ -9,8 +9,8 @@
 
 #include <media/v4l2-flash-led-class.h>
 
-#define FLASH_TIMEOUT_DEFAULT		250000U /* 250ms */
-#define FLASH_MAX_TIMEOUT_DEFAULT	300000U /* 300ms */
+#define FLASH_TIMEOUT_DEFAULT		250000U  
+#define FLASH_MAX_TIMEOUT_DEFAULT	300000U  
 
 struct sgm3140 {
 	struct led_classdev_flash fled_cdev;
@@ -24,9 +24,9 @@ struct sgm3140 {
 
 	bool enabled;
 
-	/* current timeout in us */
+	 
 	u32 timeout;
-	/* maximum timeout in us */
+	 
 	u32 max_timeout;
 };
 
@@ -146,7 +146,7 @@ static void sgm3140_init_flash_timeout(struct sgm3140 *priv)
 	struct led_classdev_flash *fled_cdev = &priv->fled_cdev;
 	struct led_flash_setting *s;
 
-	/* Init flash timeout setting */
+	 
 	s = &fled_cdev->timeout;
 	s->min = 1;
 	s->max = priv->max_timeout;
@@ -164,7 +164,7 @@ static void sgm3140_init_v4l2_flash_config(struct sgm3140 *priv,
 	strscpy(v4l2_sd_cfg->dev_name, led_cdev->dev->kobj.name,
 		sizeof(v4l2_sd_cfg->dev_name));
 
-	/* Init flash intensity setting */
+	 
 	s = &v4l2_sd_cfg->intensity;
 	s->min = 0;
 	s->max = 1;
@@ -227,10 +227,7 @@ static int sgm3140_probe(struct platform_device *pdev)
 			 "flash-max-timeout-us property missing\n");
 	}
 
-	/*
-	 * Set default timeout to FLASH_DEFAULT_TIMEOUT except if max_timeout
-	 * from DT is lower.
-	 */
+	 
 	priv->timeout = min(priv->max_timeout, FLASH_TIMEOUT_DEFAULT);
 
 	timer_setup(&priv->powerdown_timer, sgm3140_powerdown_timer, 0);
@@ -250,7 +247,7 @@ static int sgm3140_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
-	/* Register in the LED subsystem */
+	 
 	ret = devm_led_classdev_flash_register_ext(&pdev->dev,
 						   fled_cdev, &init_data);
 	if (ret) {
@@ -261,7 +258,7 @@ static int sgm3140_probe(struct platform_device *pdev)
 
 	sgm3140_init_v4l2_flash_config(priv, &v4l2_sd_cfg);
 
-	/* Create V4L2 Flash subdev */
+	 
 	priv->v4l2_flash = v4l2_flash_init(&pdev->dev,
 					   child_node,
 					   fled_cdev, NULL,
@@ -293,7 +290,7 @@ static const struct of_device_id sgm3140_dt_match[] = {
 	{ .compatible = "ocs,ocp8110" },
 	{ .compatible = "richtek,rt5033-led" },
 	{ .compatible = "sgmicro,sgm3140" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sgm3140_dt_match);
 

@@ -1,23 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Checksumming functions for IPv6
- *
- * Authors:	Jorge Cwik, <jorge@laser.satlink.net>
- *		Arnt Gulbrandsen, <agulbra@nvg.unit.no>
- *		Borrows very liberally from tcp.c and ip.c, see those
- *		files for more names.
- */
+ 
+ 
 
-/*
- *	Fixes:
- *
- *	Ralf Baechle			:	generic ipv6 checksum
- *	<ralf@waldorf-gmbh.de>
- */
+ 
 
 #ifndef _CHECKSUM_IPV6_H
 #define _CHECKSUM_IPV6_H

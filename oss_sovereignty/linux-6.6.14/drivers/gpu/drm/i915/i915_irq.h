@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_IRQ_H__
 #define __I915_IRQ_H__
@@ -75,4 +73,4 @@ void gen3_irq_init(struct intel_uncore *uncore,
 		      type##IER, ier_val, \
 		      type##IIR)
 
-#endif /* __I915_IRQ_H__ */
+#endif  

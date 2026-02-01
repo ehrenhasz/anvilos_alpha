@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/char_dev.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/fs.h>
@@ -37,10 +33,10 @@ static struct char_device_struct {
 	unsigned int baseminor;
 	int minorct;
 	char name[64];
-	struct cdev *cdev;		/* will die */
+	struct cdev *cdev;		 
 } *chrdevs[CHRDEV_MAJOR_HASH_SIZE];
 
-/* index in the above */
+ 
 static inline int major_to_index(unsigned major)
 {
 	return major % CHRDEV_MAJOR_HASH_SIZE;
@@ -60,7 +56,7 @@ void chrdev_show(struct seq_file *f, off_t offset)
 	mutex_unlock(&chrdevs_lock);
 }
 
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 static int find_dynamic_major(void)
 {
@@ -85,14 +81,7 @@ static int find_dynamic_major(void)
 	return -EBUSY;
 }
 
-/*
- * Register a single major with a specified minor range.
- *
- * If major == 0 this function will dynamically allocate an unused major.
- * If major > 0 this function will attempt to reserve the range of minors
- * with given major.
- *
- */
+ 
 static struct char_device_struct *
 __register_chrdev_region(unsigned int major, unsigned int baseminor,
 			   int minorct, const char *name)
@@ -188,15 +177,7 @@ __unregister_chrdev_region(unsigned major, unsigned baseminor, int minorct)
 	return cd;
 }
 
-/**
- * register_chrdev_region() - register a range of device numbers
- * @from: the first in the desired range of device numbers; must include
- *        the major number.
- * @count: the number of consecutive device numbers required
- * @name: the name of the device or driver.
- *
- * Return value is zero on success, a negative error code on failure.
- */
+ 
 int register_chrdev_region(dev_t from, unsigned count, const char *name)
 {
 	struct char_device_struct *cd;
@@ -222,17 +203,7 @@ fail:
 	return PTR_ERR(cd);
 }
 
-/**
- * alloc_chrdev_region() - register a range of char device numbers
- * @dev: output parameter for first assigned number
- * @baseminor: first of the requested range of minor numbers
- * @count: the number of minor numbers required
- * @name: the name of the associated device or driver
- *
- * Allocates a range of char device numbers.  The major number will be
- * chosen dynamically, and returned (along with the first minor number)
- * in @dev.  Returns zero or a negative error code.
- */
+ 
 int alloc_chrdev_region(dev_t *dev, unsigned baseminor, unsigned count,
 			const char *name)
 {
@@ -244,27 +215,7 @@ int alloc_chrdev_region(dev_t *dev, unsigned baseminor, unsigned count,
 	return 0;
 }
 
-/**
- * __register_chrdev() - create and register a cdev occupying a range of minors
- * @major: major device number or 0 for dynamic allocation
- * @baseminor: first of the requested range of minor numbers
- * @count: the number of minor numbers required
- * @name: name of this range of devices
- * @fops: file operations associated with this devices
- *
- * If @major == 0 this functions will dynamically allocate a major and return
- * its number.
- *
- * If @major > 0 this function will attempt to reserve a device with the given
- * major number and will return zero on success.
- *
- * Returns a -ve errno on failure.
- *
- * The name of this device has nothing to do with the name of the device in
- * /dev. It only helps to keep track of the different owners of devices. If
- * your module name has only one type of devices it's ok to use e.g. the name
- * of the module here.
- */
+ 
 int __register_chrdev(unsigned int major, unsigned int baseminor,
 		      unsigned int count, const char *name,
 		      const struct file_operations *fops)
@@ -299,15 +250,7 @@ out2:
 	return err;
 }
 
-/**
- * unregister_chrdev_region() - unregister a range of device numbers
- * @from: the first in the range of numbers to unregister
- * @count: the number of device numbers to unregister
- *
- * This function will unregister a range of @count device numbers,
- * starting with @from.  The caller should normally be the one who
- * allocated those numbers in the first place...
- */
+ 
 void unregister_chrdev_region(dev_t from, unsigned count)
 {
 	dev_t to = from + count;
@@ -321,17 +264,7 @@ void unregister_chrdev_region(dev_t from, unsigned count)
 	}
 }
 
-/**
- * __unregister_chrdev - unregister and destroy a cdev
- * @major: major device number
- * @baseminor: first of the range of minor numbers
- * @count: the number of minor numbers this cdev is occupying
- * @name: name of this range of devices
- *
- * Unregister and destroy the cdev occupying the region described by
- * @major, @baseminor and @count.  This function undoes what
- * __register_chrdev() did.
- */
+ 
 void __unregister_chrdev(unsigned int major, unsigned int baseminor,
 			 unsigned int count, const char *name)
 {
@@ -367,9 +300,7 @@ void cdev_put(struct cdev *p)
 	}
 }
 
-/*
- * Called every time a character special file is opened
- */
+ 
 static int chrdev_open(struct inode *inode, struct file *filp)
 {
 	const struct file_operations *fops;
@@ -388,8 +319,7 @@ static int chrdev_open(struct inode *inode, struct file *filp)
 			return -ENXIO;
 		new = container_of(kobj, struct cdev, kobj);
 		spin_lock(&cdev_lock);
-		/* Check i_cdev again in case somebody beat us to it while
-		   we dropped the lock. */
+		 
 		p = inode->i_cdev;
 		if (!p) {
 			inode->i_cdev = p = new;
@@ -444,11 +374,7 @@ static void cdev_purge(struct cdev *cdev)
 	spin_unlock(&cdev_lock);
 }
 
-/*
- * Dummy default file-operations: the only thing this does
- * is contain the open that then fills in the correct operations
- * depending on the special file...
- */
+ 
 const struct file_operations def_chr_fops = {
 	.open = chrdev_open,
 	.llseek = noop_llseek,
@@ -466,16 +392,7 @@ static int exact_lock(dev_t dev, void *data)
 	return cdev_get(p) ? 0 : -1;
 }
 
-/**
- * cdev_add() - add a char device to the system
- * @p: the cdev structure for the device
- * @dev: the first device number for which this device is responsible
- * @count: the number of consecutive minor numbers corresponding to this
- *         device
- *
- * cdev_add() adds the device represented by @p to the system, making it
- * live immediately.  A negative error code is returned on failure.
- */
+ 
 int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 {
 	int error;
@@ -503,44 +420,14 @@ err:
 	return error;
 }
 
-/**
- * cdev_set_parent() - set the parent kobject for a char device
- * @p: the cdev structure
- * @kobj: the kobject to take a reference to
- *
- * cdev_set_parent() sets a parent kobject which will be referenced
- * appropriately so the parent is not freed before the cdev. This
- * should be called before cdev_add.
- */
+ 
 void cdev_set_parent(struct cdev *p, struct kobject *kobj)
 {
 	WARN_ON(!kobj->state_initialized);
 	p->kobj.parent = kobj;
 }
 
-/**
- * cdev_device_add() - add a char device and it's corresponding
- *	struct device, linkink
- * @dev: the device structure
- * @cdev: the cdev structure
- *
- * cdev_device_add() adds the char device represented by @cdev to the system,
- * just as cdev_add does. It then adds @dev to the system using device_add
- * The dev_t for the char device will be taken from the struct device which
- * needs to be initialized first. This helper function correctly takes a
- * reference to the parent device so the parent will not get released until
- * all references to the cdev are released.
- *
- * This helper uses dev->devt for the device number. If it is not set
- * it will not add the cdev and it will be equivalent to device_add.
- *
- * This function should be used whenever the struct cdev and the
- * struct device are members of the same structure whose lifetime is
- * managed by the struct device.
- *
- * NOTE: Callers must assume that userspace was able to open the cdev and
- * can call cdev fops callbacks at any time, even if this function fails.
- */
+ 
 int cdev_device_add(struct cdev *cdev, struct device *dev)
 {
 	int rc = 0;
@@ -560,21 +447,7 @@ int cdev_device_add(struct cdev *cdev, struct device *dev)
 	return rc;
 }
 
-/**
- * cdev_device_del() - inverse of cdev_device_add
- * @dev: the device structure
- * @cdev: the cdev structure
- *
- * cdev_device_del() is a helper function to call cdev_del and device_del.
- * It should be used whenever cdev_device_add is used.
- *
- * If dev->devt is not set it will not remove the cdev and will be equivalent
- * to device_del.
- *
- * NOTE: This guarantees that associated sysfs callbacks are not running
- * or runnable, however any cdevs already open will remain and their fops
- * will still be callable even after this function returns.
- */
+ 
 void cdev_device_del(struct cdev *cdev, struct device *dev)
 {
 	device_del(dev);
@@ -587,17 +460,7 @@ static void cdev_unmap(dev_t dev, unsigned count)
 	kobj_unmap(cdev_map, dev, count);
 }
 
-/**
- * cdev_del() - remove a cdev from the system
- * @p: the cdev structure to be removed
- *
- * cdev_del() removes @p from the system, possibly freeing the structure
- * itself.
- *
- * NOTE: This guarantees that cdev device will no longer be able to be
- * opened, however any cdevs already open will remain and their fops will
- * still be callable even after cdev_del returns.
- */
+ 
 void cdev_del(struct cdev *p)
 {
 	cdev_unmap(p->dev, p->count);
@@ -632,11 +495,7 @@ static struct kobj_type ktype_cdev_dynamic = {
 	.release	= cdev_dynamic_release,
 };
 
-/**
- * cdev_alloc() - allocate a cdev structure
- *
- * Allocates and returns a cdev structure, or NULL on failure.
- */
+ 
 struct cdev *cdev_alloc(void)
 {
 	struct cdev *p = kzalloc(sizeof(struct cdev), GFP_KERNEL);
@@ -647,14 +506,7 @@ struct cdev *cdev_alloc(void)
 	return p;
 }
 
-/**
- * cdev_init() - initialize a cdev structure
- * @cdev: the structure to initialize
- * @fops: the file_operations for this device
- *
- * Initializes @cdev, remembering @fops, making it ready to add to the
- * system with cdev_add().
- */
+ 
 void cdev_init(struct cdev *cdev, const struct file_operations *fops)
 {
 	memset(cdev, 0, sizeof *cdev);
@@ -666,7 +518,7 @@ void cdev_init(struct cdev *cdev, const struct file_operations *fops)
 static struct kobject *base_probe(dev_t dev, int *part, void *data)
 {
 	if (request_module("char-major-%d-%d", MAJOR(dev), MINOR(dev)) > 0)
-		/* Make old-style 2.4 aliases work */
+		 
 		request_module("char-major-%d", MAJOR(dev));
 	return NULL;
 }
@@ -677,7 +529,7 @@ void __init chrdev_init(void)
 }
 
 
-/* Let modules do char dev stuff */
+ 
 EXPORT_SYMBOL(register_chrdev_region);
 EXPORT_SYMBOL(unregister_chrdev_region);
 EXPORT_SYMBOL(alloc_chrdev_region);

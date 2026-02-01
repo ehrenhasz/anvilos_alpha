@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * Media Controller ancillary functions
- *
- * Copyright (c) 2016 Mauro Carvalho Chehab <mchehab@kernel.org>
- * Copyright (C) 2016 Shuah Khan <shuahkh@osg.samsung.com>
- * Copyright (C) 2006-2010 Nokia Corporation
- * Copyright (c) 2016 Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -62,19 +55,13 @@ int v4l2_mc_create_media_graph(struct media_device *mdev)
 		}
 	}
 
-	/* It should have at least one I/O entity */
+	 
 	if (!io_v4l && !io_vbi && !io_swradio) {
 		dev_warn(mdev->dev, "Didn't find any I/O entity\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * Here, webcams are modelled on a very simple way: the sensor is
-	 * connected directly to the I/O entity. All dirty details, like
-	 * scaler and crop HW are hidden. While such mapping is not enough
-	 * for mc-centric hardware, it is enough for v4l2 interface centric
-	 * PC-consumer's hardware.
-	 */
+	 
 	if (is_webcam) {
 		if (!io_v4l) {
 			dev_warn(mdev->dev, "Didn't find a MEDIA_ENT_F_IO_V4L\n");
@@ -96,13 +83,13 @@ int v4l2_mc_create_media_graph(struct media_device *mdev)
 			return 0;
 	}
 
-	/* The device isn't a webcam. So, it should have a decoder */
+	 
 	if (!decoder) {
 		dev_warn(mdev->dev, "Decoder not found\n");
 		return -EINVAL;
 	}
 
-	/* Link the tuner and IF video output pads */
+	 
 	if (tuner) {
 		if (if_vid) {
 			pad_source = media_get_pad_index(tuner,
@@ -186,7 +173,7 @@ int v4l2_mc_create_media_graph(struct media_device *mdev)
 
 	}
 
-	/* Create demod to V4L, VBI and SDR radio links */
+	 
 	if (io_v4l) {
 		pad_source = media_get_pad_index(decoder, MEDIA_PAD_FL_SOURCE,
 						 PAD_SIGNAL_DV);
@@ -235,7 +222,7 @@ int v4l2_mc_create_media_graph(struct media_device *mdev)
 		}
 	}
 
-	/* Create links for the media connectors */
+	 
 	flags = MEDIA_LNK_FL_ENABLED;
 	media_device_for_each_entity(entity, mdev) {
 		switch (entity->function) {
@@ -344,10 +331,7 @@ int v4l2_create_fwnode_links_to_pad(struct v4l2_subdev *src_sd,
 		if (!remote_ep)
 			continue;
 
-		/*
-		 * ask the sink to verify it owns the remote endpoint,
-		 * and translate to a sink pad.
-		 */
+		 
 		sink_idx = media_entity_get_fwnode_pad(sink->entity,
 						       remote_ep,
 						       MEDIA_PAD_FL_SINK);
@@ -356,17 +340,11 @@ int v4l2_create_fwnode_links_to_pad(struct v4l2_subdev *src_sd,
 		if (sink_idx < 0 || sink_idx != sink->index)
 			continue;
 
-		/*
-		 * the source endpoint corresponds to one of its source pads,
-		 * the source endpoint connects to an endpoint at the sink
-		 * entity, and the sink endpoint corresponds to the sink
-		 * pad requested, so we have found an endpoint connection
-		 * that works, create the media link for it.
-		 */
+		 
 
 		src = &src_sd->entity.pads[src_idx];
 
-		/* skip if link already exists */
+		 
 		if (media_entity_find_link(src, sink))
 			continue;
 
@@ -412,33 +390,9 @@ int v4l2_create_fwnode_links(struct v4l2_subdev *src_sd,
 }
 EXPORT_SYMBOL_GPL(v4l2_create_fwnode_links);
 
-/* -----------------------------------------------------------------------------
- * Pipeline power management
- *
- * Entities must be powered up when part of a pipeline that contains at least
- * one open video device node.
- *
- * To achieve this use the entity use_count field to track the number of users.
- * For entities corresponding to video device nodes the use_count field stores
- * the users count of the node. For entities corresponding to subdevs the
- * use_count field stores the total number of users of all video device nodes
- * in the pipeline.
- *
- * The v4l2_pipeline_pm_{get, put}() functions must be called in the open() and
- * close() handlers of video device nodes. It increments or decrements the use
- * count of all subdev entities in the pipeline.
- *
- * To react to link management on powered pipelines, the link setup notification
- * callback updates the use count of all entities in the source and sink sides
- * of the link.
- */
+ 
 
-/*
- * pipeline_pm_use_count - Count the number of users of a pipeline
- * @entity: The entity
- *
- * Return the total number of users of all video device nodes in the pipeline.
- */
+ 
 static int pipeline_pm_use_count(struct media_entity *entity,
 	struct media_graph *graph)
 {
@@ -454,17 +408,7 @@ static int pipeline_pm_use_count(struct media_entity *entity,
 	return use;
 }
 
-/*
- * pipeline_pm_power_one - Apply power change to an entity
- * @entity: The entity
- * @change: Use count change
- *
- * Change the entity use count by @change. If the entity is a subdev update its
- * power state by calling the core::s_power operation when the use count goes
- * from 0 to != 0 or from != 0 to 0.
- *
- * Return 0 on success or a negative error code on failure.
- */
+ 
 static int pipeline_pm_power_one(struct media_entity *entity, int change)
 {
 	struct v4l2_subdev *subdev;
@@ -488,16 +432,7 @@ static int pipeline_pm_power_one(struct media_entity *entity, int change)
 	return 0;
 }
 
-/*
- * pipeline_pm_power - Apply power change to all entities in a pipeline
- * @entity: The entity
- * @change: Use count change
- *
- * Walk the pipeline to update the use count and the power state of all non-node
- * entities.
- *
- * Return 0 on success or a negative error code on failure.
- */
+ 
 static int pipeline_pm_power(struct media_entity *entity, int change,
 	struct media_graph *graph)
 {
@@ -534,11 +469,11 @@ static int v4l2_pipeline_pm_use(struct media_entity *entity, unsigned int use)
 
 	mutex_lock(&mdev->graph_mutex);
 
-	/* Apply use count to node. */
+	 
 	entity->use_count += change;
 	WARN_ON(entity->use_count < 0);
 
-	/* Apply power change to connected non-nodes. */
+	 
 	ret = pipeline_pm_power(entity, change, &mdev->pm_count_walk);
 	if (ret < 0)
 		entity->use_count -= change;
@@ -556,7 +491,7 @@ EXPORT_SYMBOL_GPL(v4l2_pipeline_pm_get);
 
 void v4l2_pipeline_pm_put(struct media_entity *entity)
 {
-	/* Powering off entities shouldn't fail. */
+	 
 	WARN_ON(v4l2_pipeline_pm_use(entity, 0));
 }
 EXPORT_SYMBOL_GPL(v4l2_pipeline_pm_put);
@@ -576,7 +511,7 @@ int v4l2_pipeline_link_notify(struct media_link *link, u32 flags,
 
 	if (notification == MEDIA_DEV_NOTIFY_POST_LINK_CH &&
 	    !(flags & MEDIA_LNK_FL_ENABLED)) {
-		/* Powering off entities is assumed to never fail. */
+		 
 		pipeline_pm_power(source, -sink_use, graph);
 		pipeline_pm_power(sink, -source_use, graph);
 		return 0;

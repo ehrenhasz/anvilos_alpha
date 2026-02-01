@@ -1,23 +1,6 @@
-/* pcomplete.h - structure definitions and other stuff for programmable
-		 completion. */
+ 
 
-/* Copyright (C) 1999-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if !defined (_PCOMPLETE_H_)
 #  define _PCOMPLETE_H_
@@ -39,8 +22,7 @@ typedef struct compspec {
   char *filterpat;
 } COMPSPEC;
 
-/* Values for COMPSPEC actions.  These are things the shell knows how to
-   build internally. */
+ 
 #define CA_ALIAS	(1<<0)
 #define CA_ARRAYVAR	(1<<1)
 #define CA_BINDING	(1<<2)
@@ -66,8 +48,8 @@ typedef struct compspec {
 #define CA_USER		(1<<22)
 #define CA_VARIABLE	(1<<23)
 
-/* Values for COMPSPEC options field. */
-#define COPT_RESERVED	(1<<0)		/* reserved for other use */
+ 
+#define COPT_RESERVED	(1<<0)		 
 #define COPT_DEFAULT	(1<<1)
 #define COPT_FILENAMES	(1<<2)
 #define COPT_DIRNAMES	(1<<3)
@@ -83,21 +65,20 @@ typedef struct compspec {
 #define PCOMP_NOTFOUND	(COPT_LASTUSER << 2)
 
 
-/* List of items is used by the code that implements the programmable
-   completions. */
+ 
 typedef struct _list_of_items {
   int flags;
-  int (*list_getter) PARAMS((struct _list_of_items *));	/* function to call to get the list */
+  int (*list_getter) PARAMS((struct _list_of_items *));	 
 
   STRINGLIST *slist;
 
-  /* These may or may not be used. */
-  STRINGLIST *genlist;	/* for handing to the completion code one item at a time */
-  int genindex;		/* index of item last handed to completion code */
+   
+  STRINGLIST *genlist;	 
+  int genindex;		 
 
 } ITEMLIST;
 
-/* Values for ITEMLIST -> flags */
+ 
 #define LIST_DYNAMIC		0x001
 #define LIST_DIRTY		0x002
 #define LIST_INITIALIZED	0x004
@@ -117,7 +98,7 @@ extern int pcomp_ind;
 extern int prog_completion_enabled;
 extern int progcomp_alias;
 
-/* Not all of these are used yet. */
+ 
 extern ITEMLIST it_aliases;
 extern ITEMLIST it_arrayvars;
 extern ITEMLIST it_bindings;
@@ -146,7 +127,7 @@ extern ITEMLIST it_variables;
 extern COMPSPEC *pcomp_curcs;
 extern const char *pcomp_curcmd;
 
-/* Functions from pcomplib.c */
+ 
 extern COMPSPEC *compspec_create PARAMS((void));
 extern void compspec_dispose PARAMS((COMPSPEC *));
 extern COMPSPEC *compspec_copy PARAMS((COMPSPEC *));
@@ -164,7 +145,7 @@ extern COMPSPEC *progcomp_search PARAMS((const char *));
 
 extern void progcomp_walk PARAMS((hash_wfunc *));
 
-/* Functions from pcomplete.c */
+ 
 extern void set_itemlist_dirty PARAMS((ITEMLIST *));
 
 extern STRINGLIST *completions_to_stringlist PARAMS((char **));
@@ -174,4 +155,4 @@ extern char **programmable_completions PARAMS((const char *, const char *, int, 
 
 extern void pcomp_set_readline_variables PARAMS((int, int));
 extern void pcomp_set_compspec_options PARAMS((COMPSPEC *, int, int));
-#endif /* _PCOMPLETE_H_ */
+#endif  

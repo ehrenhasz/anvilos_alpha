@@ -1,11 +1,9 @@
-// SPDX-License-Identifier: LGPL-2.1+
+
 
 #include <kunit/test.h>
 #include <linux/rtc.h>
 
-/*
- * Advance a date by one day.
- */
+ 
 static void advance_date(int *year, int *month, int *mday, int *yday)
 {
 	if (*mday != rtc_month_days(*month - 1, *year)) {
@@ -26,17 +24,10 @@ static void advance_date(int *year, int *month, int *mday, int *yday)
 	++*year;
 }
 
-/*
- * Checks every day in a 160000 years interval starting on 1970-01-01
- * against the expected result.
- */
+ 
 static void rtc_time64_to_tm_test_date_range(struct kunit *test)
 {
-	/*
-	 * 160000 years	= (160000 / 400) * 400 years
-	 *		= (160000 / 400) * 146097 days
-	 *		= (160000 / 400) * 146097 * 86400 seconds
-	 */
+	 
 	time64_t total_secs = ((time64_t) 160000) / 400 * 146097 * 86400;
 
 	int year	= 1970;

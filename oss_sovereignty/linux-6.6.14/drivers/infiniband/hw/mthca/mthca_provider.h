@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef MTHCA_PROVIDER_H
 #define MTHCA_PROVIDER_H
@@ -114,55 +82,7 @@ struct mthca_ah {
 	dma_addr_t         avdma;
 };
 
-/*
- * Quick description of our CQ/QP locking scheme:
- *
- * We have one global lock that protects dev->cq/qp_table.  Each
- * struct mthca_cq/qp also has its own lock.  An individual qp lock
- * may be taken inside of an individual cq lock.  Both cqs attached to
- * a qp may be locked, with the cq with the lower cqn locked first.
- * No other nesting should be done.
- *
- * Each struct mthca_cq/qp also has an ref count, protected by the
- * corresponding table lock.  The pointer from the cq/qp_table to the
- * struct counts as one reference.  This reference also is good for
- * access through the consumer API, so modifying the CQ/QP etc doesn't
- * need to take another reference.  Access to a QP because of a
- * completion being polled does not need a reference either.
- *
- * Finally, each struct mthca_cq/qp has a wait_queue_head_t for the
- * destroy function to sleep on.
- *
- * This means that access from the consumer API requires nothing but
- * taking the struct's lock.
- *
- * Access because of a completion event should go as follows:
- * - lock cq/qp_table and look up struct
- * - increment ref count in struct
- * - drop cq/qp_table lock
- * - lock struct, do your thing, and unlock struct
- * - decrement ref count; if zero, wake up waiters
- *
- * To destroy a CQ/QP, we can do the following:
- * - lock cq/qp_table
- * - remove pointer and decrement ref count
- * - unlock cq/qp_table lock
- * - wait_event until ref count is zero
- *
- * It is the consumer's responsibilty to make sure that no QP
- * operations (WQE posting or state modification) are pending when a
- * QP is destroyed.  Also, the consumer must make sure that calls to
- * qp_modify are serialized.  Similarly, the consumer is responsible
- * for ensuring that no CQ resize operations are pending when a CQ
- * is destroyed.
- *
- * Possible optimizations (wait for profile data to see if/where we
- * have locks bouncing between CPUs):
- * - split cq/qp table lock into n separate (cache-aligned) locks,
- *   indexed (say) by the page in the table
- * - split QP struct lock into three (one for common info, one for the
- *   send queue and one for the receive queue)
- */
+ 
 
 struct mthca_cq_buf {
 	union mthca_buf		queue;
@@ -190,7 +110,7 @@ struct mthca_cq {
 	struct mthca_cq_resize *resize_buf;
 	int			is_kernel;
 
-	/* Next fields are Arbel only */
+	 
 	int			set_ci_db_index;
 	__be32		       *set_ci_db;
 	int			arm_db_index;
@@ -211,9 +131,9 @@ struct mthca_srq {
 	int			wqe_shift;
 	int			first_free;
 	int			last_free;
-	u16			counter;  /* Arbel only */
-	int			db_index; /* Arbel only */
-	__be32		       *db;       /* Arbel only */
+	u16			counter;   
+	int			db_index;  
+	__be32		       *db;        
 	void		       *last;
 
 	int			is_direct;
@@ -236,7 +156,7 @@ struct mthca_wq {
 	int        max_gs;
 	int        wqe_shift;
 
-	int        db_index;	/* Arbel only */
+	int        db_index;	 
 	__be32    *db;
 };
 
@@ -255,8 +175,8 @@ struct mthca_qp {
 	int                    refcount;
 	u32                    qpn;
 	int                    is_direct;
-	u8                     port; /* for SQP and memfree use only */
-	u8                     alt_port; /* for memfree use only */
+	u8                     port;  
+	u8                     alt_port;  
 	u8                     transport;
 	u8                     state;
 	u8                     atomic_rd_en;
@@ -313,4 +233,4 @@ static inline struct mthca_qp *to_mqp(struct ib_qp *ibqp)
 	return container_of(ibqp, struct mthca_qp, ibqp);
 }
 
-#endif /* MTHCA_PROVIDER_H */
+#endif  

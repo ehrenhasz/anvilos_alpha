@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-*/
+ 
+ 
 
 #ifndef __TEA5767_H__
 #define __TEA5767_H__
@@ -51,4 +50,4 @@ static inline struct dvb_frontend *tea5767_attach(struct dvb_frontend *fe,
 }
 #endif
 
-#endif /* __TEA5767_H__ */
+#endif  

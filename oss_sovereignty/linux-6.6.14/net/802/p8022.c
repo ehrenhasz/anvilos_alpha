@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	NET3:	Support for 802.2 demultiplexing off Ethernet
- *
- *		Demultiplex 802.2 encoded protocols. We match the entry by the
- *		SSAP/DSAP pair and then deliver to the registered datalink that
- *		matches. The control byte is ignored and handling of such items
- *		is up to the routine passed the frame.
- *
- *		Unlike the 802.3 datalink we have a list of 802.2 entries as
- *		there are multiple protocols to demux. The list is currently
- *		short (3 or 4 entries at most). The current demux assumes this.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tsys02d.c - Support for Measurement-Specialties tsys02d temperature sensor
- *
- * Copyright (c) 2015 Measurement-Specialties
- *
- * (7-bit I2C slave address 0x40)
- *
- * Datasheet:
- *  http://www.meas-spec.com/downloads/Digital_Sensor_TSYS02D.pdf
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/device.h>
@@ -23,7 +14,7 @@
 #define TSYS02D_RESET				0xFE
 
 static const int tsys02d_samp_freq[4] = { 20, 40, 70, 140 };
-/* String copy of the above const for readability purpose */
+ 
 static const char tsys02d_show_samp_freq[] = "20 40 70 140";
 
 static int tsys02d_read_raw(struct iio_dev *indio_dev,
@@ -37,7 +28,7 @@ static int tsys02d_read_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_PROCESSED:
 		switch (channel->type) {
-		case IIO_TEMP:	/* in milli °C */
+		case IIO_TEMP:	 
 			ret = ms_sensors_ht_read_temperature(dev_data,
 							     &temperature);
 			if (ret)

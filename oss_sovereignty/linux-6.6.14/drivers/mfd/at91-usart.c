@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for AT91 USART
- *
- * Copyright (C) 2018 Microchip Technology
- *
- * Author: Radu Pirea <radu.pirea@microchip.com>
- *
- */
+
+ 
 
 #include <dt-bindings/mfd/at91-usart.h>
 
@@ -48,7 +41,7 @@ static int at91_usart_mode_probe(struct platform_device *pdev)
 static const struct of_device_id at91_usart_mode_of_match[] = {
 	{ .compatible = "atmel,at91rm9200-usart" },
 	{ .compatible = "atmel,at91sam9260-usart" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, at91_usart_mode_of_match);

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Support for Intel AES-NI instructions. This file contains glue
- * code, the real AES implementation is in intel-aes_asm.S.
- *
- * Copyright (C) 2008, Intel Corp.
- *    Author: Huang Ying <ying.huang@intel.com>
- *
- * Added RFC4106 AES-GCM support for 128-bit keys under the AEAD
- * interface for 64-bit kernels.
- *    Authors: Adrian Hoban <adrian.hoban@intel.com>
- *             Gabriele Paoloni <gabriele.paoloni@intel.com>
- *             Tadeusz Struk (tadeusz.struk@intel.com)
- *             Aidan O'Mahony (aidan.o.mahony@intel.com)
- *    Copyright (c) 2010, Intel Corporation.
- */
+
+ 
 
 #include <linux/hardirq.h>
 #include <linux/types.h>
@@ -45,10 +31,7 @@
 #define CRYPTO_AES_CTX_SIZE (sizeof(struct crypto_aes_ctx) + AESNI_ALIGN_EXTRA)
 #define XTS_AES_CTX_SIZE (sizeof(struct aesni_xts_ctx) + AESNI_ALIGN_EXTRA)
 
-/* This data is stored at the end of the crypto_tfm struct.
- * It's a type of per "session" data storage location.
- * This needs to be 16 byte aligned.
- */
+ 
 struct aesni_rfc4106_gcm_ctx {
 	u8 hash_subkey[16] AESNI_ALIGN_ATTR;
 	struct crypto_aes_ctx aes_key_expanded AESNI_ALIGN_ATTR;
@@ -68,7 +51,7 @@ struct aesni_xts_ctx {
 #define GCM_BLOCK_LEN 16
 
 struct gcm_context_data {
-	/* init, update and finalize context data */
+	 
 	u8 aad_hash[GCM_BLOCK_LEN];
 	u64 aad_length;
 	u64 in_length;
@@ -112,7 +95,7 @@ asmlinkage void aesni_ctr_enc(struct crypto_aes_ctx *ctx, u8 *out,
 			      const u8 *in, unsigned int len, u8 *iv);
 DEFINE_STATIC_CALL(aesni_ctr_enc_tfm, aesni_ctr_enc);
 
-/* Scatter / Gather routines, with args similar to above */
+ 
 asmlinkage void aesni_gcm_init(void *ctx,
 			       struct gcm_context_data *gdata,
 			       u8 *iv,
@@ -149,11 +132,7 @@ asmlinkage void aes_xctr_enc_256_avx_by8(const u8 *in, const u8 *iv,
 	const void *keys, u8 *out, unsigned int num_bytes,
 	unsigned int byte_ctr);
 
-/*
- * asmlinkage void aesni_gcm_init_avx_gen2()
- * gcm_data *my_ctx_data, context data
- * u8 *hash_subkey,  the Hash sub key input. Data starts on a 16-byte boundary.
- */
+ 
 asmlinkage void aesni_gcm_init_avx_gen2(void *my_ctx_data,
 					struct gcm_context_data *gdata,
 					u8 *iv,
@@ -172,11 +151,7 @@ asmlinkage void aesni_gcm_finalize_avx_gen2(void *ctx,
 				   struct gcm_context_data *gdata,
 				   u8 *auth_tag, unsigned long auth_tag_len);
 
-/*
- * asmlinkage void aesni_gcm_init_avx_gen4()
- * gcm_data *my_ctx_data, context data
- * u8 *hash_subkey,  the Hash sub key input. Data starts on a 16-byte boundary.
- */
+ 
 asmlinkage void aesni_gcm_init_avx_gen4(void *my_ctx_data,
 					struct gcm_context_data *gdata,
 					u8 *iv,
@@ -415,7 +390,7 @@ static int cts_cbc_encrypt(struct skcipher_request *req)
 					       subreq.cryptlen);
 	}
 
-	/* handle ciphertext stealing */
+	 
 	skcipher_request_set_crypt(&subreq, src, dst,
 				   req->cryptlen - cbc_blocks * AES_BLOCK_SIZE,
 				   req->iv);
@@ -471,7 +446,7 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
 					       subreq.cryptlen);
 	}
 
-	/* handle ciphertext stealing */
+	 
 	skcipher_request_set_crypt(&subreq, src, dst,
 				   req->cryptlen - cbc_blocks * AES_BLOCK_SIZE,
 				   req->iv);
@@ -492,12 +467,7 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
 static void aesni_ctr_enc_avx_tfm(struct crypto_aes_ctx *ctx, u8 *out,
 			      const u8 *in, unsigned int len, u8 *iv)
 {
-	/*
-	 * based on key length, override with the by8 version
-	 * of ctr mode encryption/decryption for improved performance
-	 * aes_set_key_common() ensures that key length is one of
-	 * {128,192,256}
-	 */
+	 
 	if (ctx->key_length == AES_KEYSIZE_128)
 		aes_ctr_enc_128_avx_by8(in, iv, (void *)ctx, out, len);
 	else if (ctx->key_length == AES_KEYSIZE_192)
@@ -603,8 +573,8 @@ rfc4106_set_hash_subkey(u8 *hash_subkey, const u8 *key, unsigned int key_len)
 	if (ret)
 		return ret;
 
-	/* Clear the data in the hash sub key container to zero.*/
-	/* We want to cipher all zeros to create the hash sub key. */
+	 
+	 
 	memset(hash_subkey, 0, RFC4106_HASH_SUBKEY_SIZE);
 
 	aes_encrypt(&ctx, hash_subkey, hash_subkey);
@@ -621,7 +591,7 @@ static int common_rfc4106_set_key(struct crypto_aead *aead, const u8 *key,
 	if (key_len < 4)
 		return -EINVAL;
 
-	/*Account for 4 byte nonce at the end.*/
+	 
 	key_len -= 4;
 
 	memcpy(ctx->nonce, key + key_len, sizeof(ctx->nonce));
@@ -630,8 +600,7 @@ static int common_rfc4106_set_key(struct crypto_aead *aead, const u8 *key,
 	       rfc4106_set_hash_subkey(ctx->hash_subkey, key, key_len);
 }
 
-/* This is the Integrity Check Value (aka the authentication tag) length and can
- * be 8, 12 or 16 bytes long. */
+ 
 static int common_rfc4106_set_authsize(struct crypto_aead *aead,
 				       unsigned int authsize)
 {
@@ -687,7 +656,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
 	do_avx = (left >= AVX_GEN2_OPTSIZE);
 	do_avx2 = (left >= AVX_GEN4_OPTSIZE);
 
-	/* Linearize assoc, if not already linear */
+	 
 	if (req->src->length >= assoclen && req->src->length) {
 		scatterwalk_start(&assoc_sg_walk, req->src);
 		assoc = scatterwalk_map(&assoc_sg_walk);
@@ -695,7 +664,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
 		gfp_t flags = (req->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP) ?
 			      GFP_KERNEL : GFP_ATOMIC;
 
-		/* assoc can be any length, so must be on heap */
+		 
 		assocmem = kmalloc(assoclen, flags);
 		if (unlikely(!assocmem))
 			return -ENOMEM;
@@ -809,12 +778,12 @@ static int gcmaes_decrypt(struct aead_request *req, unsigned int assoclen,
 	if (err)
 		return err;
 
-	/* Copy out original auth_tag */
+	 
 	scatterwalk_map_and_copy(auth_tag_msg, req->src,
 				 req->assoclen + req->cryptlen - auth_tag_len,
 				 auth_tag_len, 0);
 
-	/* Compare generated tag with passed in tag. */
+	 
 	if (crypto_memneq(auth_tag_msg, auth_tag, auth_tag_len)) {
 		memzero_explicit(auth_tag, sizeof(auth_tag));
 		return -EBADMSG;
@@ -832,13 +801,13 @@ static int helper_rfc4106_encrypt(struct aead_request *req)
 	unsigned int i;
 	__be32 counter = cpu_to_be32(1);
 
-	/* Assuming we are supporting rfc4106 64-bit extended */
-	/* sequence numbers We need to have the AAD length equal */
-	/* to 16 or 20 bytes */
+	 
+	 
+	 
 	if (unlikely(req->assoclen != 16 && req->assoclen != 20))
 		return -EINVAL;
 
-	/* IV below built */
+	 
 	for (i = 0; i < 4; i++)
 		*(iv+i) = ctx->nonce[i];
 	for (i = 0; i < 8; i++)
@@ -862,11 +831,11 @@ static int helper_rfc4106_decrypt(struct aead_request *req)
 	if (unlikely(req->assoclen != 16 && req->assoclen != 20))
 		return -EINVAL;
 
-	/* Assuming we are supporting rfc4106 64-bit extended */
-	/* sequence numbers We need to have the AAD length */
-	/* equal to 16 or 20 bytes */
+	 
+	 
+	 
 
-	/* IV below built */
+	 
 	for (i = 0; i < 4; i++)
 		*(iv+i) = ctx->nonce[i];
 	for (i = 0; i < 8; i++)
@@ -890,12 +859,12 @@ static int xts_aesni_setkey(struct crypto_skcipher *tfm, const u8 *key,
 
 	keylen /= 2;
 
-	/* first half of xts-key is for crypt */
+	 
 	err = aes_set_key_common(aes_ctx(ctx->raw_crypt_ctx), key, keylen);
 	if (err)
 		return err;
 
-	/* second half of xts-key is for tweak */
+	 
 	return aes_set_key_common(aes_ctx(ctx->raw_tweak_ctx), key + keylen,
 				  keylen);
 }
@@ -938,7 +907,7 @@ static int xts_crypt(struct skcipher_request *req, bool encrypt)
 
 	kernel_fpu_begin();
 
-	/* calculate first value of T */
+	 
 	aesni_enc(aes_ctx(ctx->raw_tweak_ctx), walk.iv, walk.iv);
 
 	while (walk.nbytes > 0) {
@@ -1115,10 +1084,7 @@ static
 struct simd_skcipher_alg *aesni_simd_skciphers[ARRAY_SIZE(aesni_skciphers)];
 
 #ifdef CONFIG_X86_64
-/*
- * XCTR does not have a non-AVX implementation, so it must be enabled
- * conditionally.
- */
+ 
 static struct skcipher_alg aesni_xctr = {
 	.base = {
 		.cra_name		= "__xctr(aes)",
@@ -1139,7 +1105,7 @@ static struct skcipher_alg aesni_xctr = {
 };
 
 static struct simd_skcipher_alg *aesni_simd_xctr;
-#endif /* CONFIG_X86_64 */
+#endif  
 
 #ifdef CONFIG_X86_64
 static int generic_gcmaes_set_key(struct crypto_aead *aead, const u8 *key,
@@ -1249,11 +1215,11 @@ static int __init aesni_init(void)
 		pr_info("SSE version of gcm_enc/dec engaged.\n");
 	}
 	if (boot_cpu_has(X86_FEATURE_AVX)) {
-		/* optimize performance of ctr mode encryption transform */
+		 
 		static_call_update(aesni_ctr_enc_tfm, aesni_ctr_enc_avx_tfm);
 		pr_info("AES CTR mode by8 optimization enabled\n");
 	}
-#endif /* CONFIG_X86_64 */
+#endif  
 
 	err = crypto_register_alg(&aesni_cipher_alg);
 	if (err)
@@ -1276,7 +1242,7 @@ static int __init aesni_init(void)
 						     &aesni_simd_xctr);
 	if (err)
 		goto unregister_aeads;
-#endif /* CONFIG_X86_64 */
+#endif  
 
 	return 0;
 
@@ -1284,7 +1250,7 @@ static int __init aesni_init(void)
 unregister_aeads:
 	simd_unregister_aeads(aesni_aeads, ARRAY_SIZE(aesni_aeads),
 				aesni_simd_aeads);
-#endif /* CONFIG_X86_64 */
+#endif  
 
 unregister_skciphers:
 	simd_unregister_skciphers(aesni_skciphers, ARRAY_SIZE(aesni_skciphers),
@@ -1304,7 +1270,7 @@ static void __exit aesni_exit(void)
 #ifdef CONFIG_X86_64
 	if (boot_cpu_has(X86_FEATURE_AVX))
 		simd_unregister_skciphers(&aesni_xctr, 1, &aesni_simd_xctr);
-#endif /* CONFIG_X86_64 */
+#endif  
 }
 
 late_initcall(aesni_init);

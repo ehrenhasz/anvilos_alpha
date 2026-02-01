@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- */
+
+ 
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -76,10 +74,7 @@ void menu_end_menu(void)
 	current_menu = current_menu->parent;
 }
 
-/*
- * Rewrites 'm' to 'm' && MODULES, so that it evaluates to 'n' when running
- * without modules
- */
+ 
 static struct expr *rewrite_m(struct expr *e)
 {
 	if (!e)
@@ -95,7 +90,7 @@ static struct expr *rewrite_m(struct expr *e)
 		e->right.expr = rewrite_m(e->right.expr);
 		break;
 	case E_SYMBOL:
-		/* change 'm' into 'm' && MODULES */
+		 
 		if (e->left.sym == &symbol_mod)
 			return expr_alloc_and(e, expr_alloc_symbol(modules_sym));
 		break;
@@ -140,7 +135,7 @@ static struct property *menu_add_prop(enum prop_type type, struct expr *expr,
 	prop->expr = expr;
 	prop->visible.expr = dep;
 
-	/* append property to the prop list of symbol */
+	 
 	if (current_entry->sym) {
 		struct property **propp;
 
@@ -167,7 +162,7 @@ struct property *menu_add_prompt(enum prop_type type, char *prompt,
 	if (current_entry->prompt)
 		prop_warn(prop, "prompt redefined");
 
-	/* Apply all upper menus' visibilities to actual prompts. */
+	 
 	if (type == P_PROMPT) {
 		struct menu *menu = current_entry;
 
@@ -176,13 +171,7 @@ struct property *menu_add_prompt(enum prop_type type, char *prompt,
 
 			if (!menu->visibility)
 				continue;
-			/*
-			 * Do not add a reference to the menu's visibility
-			 * expression but use a copy of it. Otherwise the
-			 * expression reduction functions will modify
-			 * expressions that have multiple references which
-			 * can cause unwanted side effects.
-			 */
+			 
 			dup_expr = expr_copy(menu->visibility);
 
 			prop->visible.expr = expr_alloc_and(prop->visible.expr,
@@ -291,14 +280,11 @@ void menu_finalize(struct menu *parent)
 
 	sym = parent->sym;
 	if (parent->list) {
-		/*
-		 * This menu node has children. We (recursively) process them
-		 * and propagate parent dependencies before moving on.
-		 */
+		 
 
 		if (sym && sym_is_choice(sym)) {
 			if (sym->type == S_UNKNOWN) {
-				/* find the first choice value to find out choice type */
+				 
 				current_entry = parent;
 				for (menu = parent->list; menu; menu = menu->next) {
 					if (menu->sym && menu->sym->type != S_UNKNOWN) {
@@ -307,31 +293,23 @@ void menu_finalize(struct menu *parent)
 					}
 				}
 			}
-			/* set the type of the remaining choice values */
+			 
 			for (menu = parent->list; menu; menu = menu->next) {
 				current_entry = menu;
 				if (menu->sym && menu->sym->type == S_UNKNOWN)
 					menu_set_type(sym->type);
 			}
 
-			/*
-			 * Use the choice itself as the parent dependency of
-			 * the contained items. This turns the mode of the
-			 * choice into an upper bound on the visibility of the
-			 * choice value symbols.
-			 */
+			 
 			parentdep = expr_alloc_symbol(sym);
 		} else {
-			/* Menu node for 'menu', 'if' */
+			 
 			parentdep = parent->dep;
 		}
 
-		/* For each child menu node... */
+		 
 		for (menu = parent->list; menu; menu = menu->next) {
-			/*
-			 * Propagate parent dependencies to the child menu
-			 * node, also rewriting and simplifying expressions
-			 */
+			 
 			basedep = rewrite_m(menu->dep);
 			basedep = expr_transform(basedep);
 			basedep = expr_alloc_and(expr_copy(parentdep), basedep);
@@ -339,43 +317,19 @@ void menu_finalize(struct menu *parent)
 			menu->dep = basedep;
 
 			if (menu->sym)
-				/*
-				 * Note: For symbols, all prompts are included
-				 * too in the symbol's own property list
-				 */
+				 
 				prop = menu->sym->prop;
 			else
-				/*
-				 * For non-symbol menu nodes, we just need to
-				 * handle the prompt
-				 */
+				 
 				prop = menu->prompt;
 
-			/* For each property... */
+			 
 			for (; prop; prop = prop->next) {
 				if (prop->menu != menu)
-					/*
-					 * Two possibilities:
-					 *
-					 * 1. The property lacks dependencies
-					 *    and so isn't location-specific,
-					 *    e.g. an 'option'
-					 *
-					 * 2. The property belongs to a symbol
-					 *    defined in multiple locations and
-					 *    is from some other location. It
-					 *    will be handled there in that
-					 *    case.
-					 *
-					 * Skip the property.
-					 */
+					 
 					continue;
 
-				/*
-				 * Propagate parent dependencies to the
-				 * property's condition, rewriting and
-				 * simplifying expressions at the same time
-				 */
+				 
 				dep = rewrite_m(prop->visible.expr);
 				dep = expr_transform(dep);
 				dep = expr_alloc_and(expr_copy(basedep), dep);
@@ -384,10 +338,7 @@ void menu_finalize(struct menu *parent)
 					dep = expr_trans_bool(dep);
 				prop->visible.expr = dep;
 
-				/*
-				 * Handle selects and implies, which modify the
-				 * dependencies of the selected/implied symbol
-				 */
+				 
 				if (prop->type == P_SELECT) {
 					struct symbol *es = prop_get_symbol(prop);
 					es->rev_dep.expr = expr_alloc_or(es->rev_dep.expr,
@@ -403,70 +354,39 @@ void menu_finalize(struct menu *parent)
 		if (sym && sym_is_choice(sym))
 			expr_free(parentdep);
 
-		/*
-		 * Recursively process children in the same fashion before
-		 * moving on
-		 */
+		 
 		for (menu = parent->list; menu; menu = menu->next)
 			menu_finalize(menu);
 	} else if (sym) {
-		/*
-		 * Automatic submenu creation. If sym is a symbol and A, B, C,
-		 * ... are consecutive items (symbols, menus, ifs, etc.) that
-		 * all depend on sym, then the following menu structure is
-		 * created:
-		 *
-		 *	sym
-		 *	 +-A
-		 *	 +-B
-		 *	 +-C
-		 *	 ...
-		 *
-		 * This also works recursively, giving the following structure
-		 * if A is a symbol and B depends on A:
-		 *
-		 *	sym
-		 *	 +-A
-		 *	 | +-B
-		 *	 +-C
-		 *	 ...
-		 */
+		 
 
 		basedep = parent->prompt ? parent->prompt->visible.expr : NULL;
 		basedep = expr_trans_compare(basedep, E_UNEQUAL, &symbol_no);
 		basedep = expr_eliminate_dups(expr_transform(basedep));
 
-		/* Examine consecutive elements after sym */
+		 
 		last_menu = NULL;
 		for (menu = parent->next; menu; menu = menu->next) {
 			dep = menu->prompt ? menu->prompt->visible.expr : menu->dep;
 			if (!expr_contains_symbol(dep, sym))
-				/* No dependency, quit */
+				 
 				break;
 			if (expr_depends_symbol(dep, sym))
-				/* Absolute dependency, put in submenu */
+				 
 				goto next;
 
-			/*
-			 * Also consider it a dependency on sym if our
-			 * dependencies contain sym and are a "superset" of
-			 * sym's dependencies, e.g. '(sym || Q) && R' when sym
-			 * depends on R.
-			 *
-			 * Note that 'R' might be from an enclosing menu or if,
-			 * making this a more common case than it might seem.
-			 */
+			 
 			dep = expr_trans_compare(dep, E_UNEQUAL, &symbol_no);
 			dep = expr_eliminate_dups(expr_transform(dep));
 			dep2 = expr_copy(basedep);
 			expr_eliminate_eq(&dep, &dep2);
 			expr_free(dep);
 			if (!expr_is_yes(dep2)) {
-				/* Not superset, quit */
+				 
 				expr_free(dep2);
 				break;
 			}
-			/* Superset, put in submenu */
+			 
 			expr_free(dep2);
 		next:
 			menu_finalize(menu);
@@ -499,12 +419,7 @@ void menu_finalize(struct menu *parent)
 				    prop->menu->parent->sym != sym)
 					prop_warn(prop, "choice value used outside its choice group");
 			}
-			/* Non-tristate choice values of tristate choices must
-			 * depend on the choice being set to Y. The choice
-			 * values' dependencies were propagated to their
-			 * properties above, so the change here must be re-
-			 * propagated.
-			 */
+			 
 			if (sym->type == S_TRISTATE && menu->sym->type != S_TRISTATE) {
 				basedep = expr_alloc_comp(E_EQUAL, sym, &symbol_yes);
 				menu->dep = expr_alloc_and(basedep, menu->dep);
@@ -523,34 +438,7 @@ void menu_finalize(struct menu *parent)
 			(*ep)->right.sym = menu->sym;
 		}
 
-		/*
-		 * This code serves two purposes:
-		 *
-		 * (1) Flattening 'if' blocks, which do not specify a submenu
-		 *     and only add dependencies.
-		 *
-		 *     (Automatic submenu creation might still create a submenu
-		 *     from an 'if' before this code runs.)
-		 *
-		 * (2) "Undoing" any automatic submenus created earlier below
-		 *     promptless symbols.
-		 *
-		 * Before:
-		 *
-		 *	A
-		 *	if ... (or promptless symbol)
-		 *	 +-B
-		 *	 +-C
-		 *	D
-		 *
-		 * After:
-		 *
-		 *	A
-		 *	if ... (or promptless symbol)
-		 *	B
-		 *	C
-		 *	D
-		 */
+		 
 		if (menu->list && (!menu->prompt || !menu->prompt->text)) {
 			for (last_menu = menu->list; ; last_menu = last_menu->next) {
 				last_menu->parent = parent;
@@ -570,20 +458,12 @@ void menu_finalize(struct menu *parent)
 		if (sym_is_choice(sym) && !parent->prompt)
 			menu_warn(parent, "choice must have a prompt");
 
-		/* Check properties connected to this symbol */
+		 
 		sym_check_prop(sym);
 		sym->flags |= SYMBOL_WARNED;
 	}
 
-	/*
-	 * For non-optional choices, add a reverse dependency (corresponding to
-	 * a select) of '<visibility> && m'. This prevents the user from
-	 * setting the choice mode to 'n' when the choice is visible.
-	 *
-	 * This would also work for non-choice symbols, but only non-optional
-	 * choices clear SYMBOL_OPTIONAL as of writing. Choices are implemented
-	 * as a type of symbol.
-	 */
+	 
 	if (sym && !sym_is_optional(sym) && parent->prompt) {
 		sym->rev_dep.expr = expr_alloc_or(sym->rev_dep.expr,
 				expr_alloc_and(parent->prompt->visible.expr,
@@ -598,11 +478,7 @@ bool menu_has_prompt(struct menu *menu)
 	return true;
 }
 
-/*
- * Determine if a menu is empty.
- * A menu is considered empty if it contains no or only
- * invisible entries.
- */
+ 
 bool menu_is_empty(struct menu *menu)
 {
 	struct menu *child;
@@ -716,14 +592,7 @@ static void get_prompt_str(struct gstr *r, struct property *prop,
 	str_printf(r, "  Prompt: %s\n", prop->text);
 
 	get_dep_str(r, prop->menu->dep, "  Depends on: ");
-	/*
-	 * Most prompts in Linux have visibility that exactly matches their
-	 * dependencies. For these, we print only the dependencies to improve
-	 * readability. However, prompts with inline "if" expressions and
-	 * prompts with a parent that has a "visible if" expression have
-	 * differing dependencies and visibility. In these rare cases, we
-	 * print both.
-	 */
+	 
 	if (!expr_eq(prop->menu->dep, prop->visible.expr))
 		get_dep_str(r, prop->visible.expr, "  Visible if: ");
 
@@ -783,9 +652,7 @@ static void get_symbol_props_str(struct gstr *r, struct symbol *sym,
 		str_append(r, "\n");
 }
 
-/*
- * head is optional and may be NULL
- */
+ 
 static void get_symbol_str(struct gstr *r, struct symbol *sym,
 		    struct list_head *head)
 {
@@ -805,7 +672,7 @@ static void get_symbol_str(struct gstr *r, struct symbol *sym,
 		}
 	}
 
-	/* Print the definitions with prompts before the ones without */
+	 
 	for_all_properties(sym, prop, P_SYMBOL) {
 		if (prop->menu->prompt) {
 			get_def_str(r, prop->menu);

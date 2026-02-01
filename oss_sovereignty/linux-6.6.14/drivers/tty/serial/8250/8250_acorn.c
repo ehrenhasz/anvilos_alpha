@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/drivers/serial/acorn.c
- *
- *  Copyright (C) 1996-2003 Russell King.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/tty.h>

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * rmobile power management support
- *
- * Copyright (C) 2012  Renesas Solutions Corp.
- * Copyright (C) 2012  Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- * Copyright (C) 2014  Glider bvba
- *
- * based on pm-sh7372.c
- *  Copyright (C) 2011 Magnus Damm
- */
+
+ 
 #include <linux/clk/renesas.h>
 #include <linux/console.h>
 #include <linux/delay.h>
@@ -21,10 +12,10 @@
 #include <linux/pm_domain.h>
 #include <linux/slab.h>
 
-/* SYSC */
-#define SPDCR		0x08	/* SYS Power Down Control Register */
-#define SWUCR		0x14	/* SYS Wakeup Control Register */
-#define PSTR		0x80	/* Power Status Register */
+ 
+#define SPDCR		0x08	 
+#define SWUCR		0x14	 
+#define PSTR		0x80	 
 
 #define PSTR_RETRIES	100
 #define PSTR_DELAY_US	10
@@ -115,10 +106,7 @@ static void rmobile_init_pm_domain(struct rmobile_pm_domain *rmobile_pd)
 
 static int rmobile_pd_suspend_console(void)
 {
-	/*
-	 * Serial consoles make use of SCIF hardware located in this domain,
-	 * hence keep the power domain on if "no_console_suspend" is set.
-	 */
+	 
 	return console_suspend_enabled ? 0 : -EBUSY;
 }
 
@@ -144,7 +132,7 @@ static const struct of_device_id special_ids[] __initconst = {
 	{ .compatible = "renesas,dbsc-r8a73a4", .data = (void *)PD_MEMCTL, },
 	{ .compatible = "renesas,dbsc3-r8a7740", .data = (void *)PD_MEMCTL, },
 	{ .compatible = "renesas,sbsc-sh73a0", .data = (void *)PD_MEMCTL, },
-	{ /* sentinel */ },
+	{   },
 };
 
 static void __init add_special_pd(struct device_node *np, enum pd_types type)
@@ -180,15 +168,15 @@ static void __init get_special_pds(void)
 	struct device_node *np;
 	const struct of_device_id *id;
 
-	/* PM domains containing CPUs */
+	 
 	for_each_of_cpu_node(np)
 		add_special_pd(np, PD_CPU);
 
-	/* PM domain containing console */
+	 
 	if (of_stdout)
 		add_special_pd(of_stdout, PD_CONSOLE);
 
-	/* PM domains containing other special devices */
+	 
 	for_each_matching_node_and_match(np, special_ids, &id)
 		add_special_pd(np, (enum pd_types)id->data);
 }
@@ -219,10 +207,7 @@ static void __init rmobile_setup_pm_domain(struct device_node *np,
 
 	switch (pd_type(np)) {
 	case PD_CPU:
-		/*
-		 * This domain contains the CPU core and therefore it should
-		 * only be turned off if the CPU is not in use.
-		 */
+		 
 		pr_debug("PM domain %s contains CPU\n", name);
 		pd->genpd.flags |= GENPD_FLAG_ALWAYS_ON;
 		break;
@@ -234,27 +219,20 @@ static void __init rmobile_setup_pm_domain(struct device_node *np,
 		break;
 
 	case PD_DEBUG:
-		/*
-		 * This domain contains the Coresight-ETM hardware block and
-		 * therefore it should only be turned off if the debug module
-		 * is not in use.
-		 */
+		 
 		pr_debug("PM domain %s contains Coresight-ETM\n", name);
 		pd->genpd.flags |= GENPD_FLAG_ALWAYS_ON;
 		break;
 
 	case PD_MEMCTL:
-		/*
-		 * This domain contains a memory-controller and therefore it
-		 * should only be turned off if memory is not in use.
-		 */
+		 
 		pr_debug("PM domain %s contains MEMCTL\n", name);
 		pd->genpd.flags |= GENPD_FLAG_ALWAYS_ON;
 		break;
 
 	case PD_NORMAL:
 		if (pd->bit_shift == ~0) {
-			/* Top-level always-on domain */
+			 
 			pr_debug("PM domain %s is always-on domain\n", name);
 			pd->genpd.flags |= GENPD_FLAG_ALWAYS_ON;
 		}
@@ -275,7 +253,7 @@ static int __init rmobile_add_pm_domains(void __iomem *base,
 		u32 idx = ~0;
 
 		if (of_property_read_u32(np, "reg", &idx)) {
-			/* always-on domain */
+			 
 		}
 
 		pd = kzalloc(sizeof(*pd), GFP_KERNEL);
@@ -320,7 +298,7 @@ static int __init rmobile_init_pm_domains(void)
 		}
 
 		if (!scanned) {
-			/* Find PM domains containing special blocks */
+			 
 			get_special_pds();
 			scanned = true;
 		}

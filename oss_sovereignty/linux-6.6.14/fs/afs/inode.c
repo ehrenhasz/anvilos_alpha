@@ -1,17 +1,4 @@
-/*
- * Copyright (c) 2002 Red Hat, Inc. All rights reserved.
- *
- * This software may be freely redistributed under the terms of the
- * GNU General Public License.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * Authors: David Woodhouse <dwmw2@infradead.org>
- *          David Howells <dhowells@redhat.com>
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -53,17 +40,13 @@ static noinline void dump_vnode(struct afs_vnode *vnode, struct afs_vnode *paren
 		dump_stack();
 }
 
-/*
- * Set parameters for the netfs library
- */
+ 
 static void afs_set_netfs_context(struct afs_vnode *vnode)
 {
 	netfs_inode_init(&vnode->netfs, &afs_req_ops);
 }
 
-/*
- * Initialise an inode from the vnode status.
- */
+ 
 static int afs_inode_init_from_status(struct afs_operation *op,
 				      struct afs_vnode_param *vp,
 				      struct afs_vnode *vnode)
@@ -114,7 +97,7 @@ static int afs_inode_init_from_status(struct afs_operation *op,
 		mapping_set_large_folios(inode->i_mapping);
 		break;
 	case AFS_FTYPE_SYMLINK:
-		/* Symlinks with a mode of 0644 are actually mountpoints. */
+		 
 		if ((status->mode & 0777) == 0644) {
 			inode->i_flags |= S_AUTOMOUNT;
 
@@ -144,8 +127,7 @@ static int afs_inode_init_from_status(struct afs_operation *op,
 	inode_set_iversion_raw(&vnode->netfs.inode, status->data_version);
 
 	if (!vp->scb.have_cb) {
-		/* it's a symlink we just created (the fileserver
-		 * didn't give us a callback) */
+		 
 		vnode->cb_expires_at = ktime_get_real_seconds();
 	} else {
 		vnode->cb_expires_at = vp->scb.callback.expires_at;
@@ -157,9 +139,7 @@ static int afs_inode_init_from_status(struct afs_operation *op,
 	return 0;
 }
 
-/*
- * Update the core inode struct from a returned status record.
- */
+ 
 static void afs_apply_status(struct afs_operation *op,
 			     struct afs_vnode_param *vp)
 {
@@ -232,10 +212,7 @@ static void afs_apply_status(struct afs_operation *op,
 		change_size = true;
 		data_changed = true;
 	} else if (vnode->status.type == AFS_FTYPE_DIR) {
-		/* Expected directory change is handled elsewhere so
-		 * that we can locally edit the directory and save on a
-		 * download.
-		 */
+		 
 		if (test_bit(AFS_VNODE_DIR_VALID, &vnode->flags))
 			data_changed = false;
 		change_size = true;
@@ -244,11 +221,7 @@ static void afs_apply_status(struct afs_operation *op,
 	if (data_changed) {
 		inode_set_iversion_raw(inode, status->data_version);
 
-		/* Only update the size if the data version jumped.  If the
-		 * file is being modified locally, then we might have our own
-		 * idea of what the size should be that's not the same as
-		 * what's on the server.
-		 */
+		 
 		vnode->netfs.remote_i_size = status->size;
 		if (change_size) {
 			afs_set_i_size(vnode, status->size);
@@ -258,9 +231,7 @@ static void afs_apply_status(struct afs_operation *op,
 	}
 }
 
-/*
- * Apply a callback to a vnode.
- */
+ 
 static void afs_apply_callback(struct afs_operation *op,
 			       struct afs_vnode_param *vp)
 {
@@ -274,10 +245,7 @@ static void afs_apply_callback(struct afs_operation *op,
 	}
 }
 
-/*
- * Apply the received status and callback to an inode all in the same critical
- * section to avoid races with afs_validate().
- */
+ 
 void afs_vnode_commit_status(struct afs_operation *op, struct afs_vnode_param *vp)
 {
 	struct afs_vnode *vnode = vp->vnode;
@@ -287,9 +255,7 @@ void afs_vnode_commit_status(struct afs_operation *op, struct afs_vnode_param *v
 	write_seqlock(&vnode->cb_lock);
 
 	if (vp->scb.have_error) {
-		/* A YFS server will return this from RemoveFile2 and AFS and
-		 * YFS will return this from InlineBulkStatus.
-		 */
+		 
 		if (vp->scb.status.abort_code == VNOVNODE) {
 			set_bit(AFS_VNODE_DELETED, &vnode->flags);
 			clear_nlink(&vnode->netfs.inode);
@@ -300,10 +266,7 @@ void afs_vnode_commit_status(struct afs_operation *op, struct afs_vnode_param *v
 		if (vp->speculative &&
 		    (test_bit(AFS_VNODE_MODIFYING, &vnode->flags) ||
 		     vp->dv_before != vnode->status.data_version))
-			/* Ignore the result of a speculative bulk status fetch
-			 * if it splits around a modification op, thereby
-			 * appearing to regress the data version.
-			 */
+			 
 			goto out;
 		afs_apply_status(op, vp);
 		if (vp->scb.have_cb)
@@ -346,9 +309,7 @@ const struct afs_operation_ops afs_fetch_status_operation = {
 	.aborted	= afs_check_for_remote_deletion,
 };
 
-/*
- * Fetch file status from the volume.
- */
+ 
 int afs_fetch_status(struct afs_vnode *vnode, struct key *key, bool is_new,
 		     afs_access_t *_caller_access)
 {
@@ -375,9 +336,7 @@ int afs_fetch_status(struct afs_vnode *vnode, struct key *key, bool is_new,
 	return afs_put_operation(op);
 }
 
-/*
- * ilookup() comparator
- */
+ 
 int afs_ilookup5_test_by_fid(struct inode *inode, void *opaque)
 {
 	struct afs_vnode *vnode = AFS_FS_I(inode);
@@ -388,20 +347,16 @@ int afs_ilookup5_test_by_fid(struct inode *inode, void *opaque)
 		fid->unique == vnode->fid.unique);
 }
 
-/*
- * iget5() comparator
- */
+ 
 static int afs_iget5_test(struct inode *inode, void *opaque)
 {
 	struct afs_vnode_param *vp = opaque;
-	//struct afs_vnode *vnode = AFS_FS_I(inode);
+	
 
 	return afs_ilookup5_test_by_fid(inode, &vp->fid);
 }
 
-/*
- * iget5() inode initialiser
- */
+ 
 static int afs_iget5_set(struct inode *inode, void *opaque)
 {
 	struct afs_vnode_param *vp = opaque;
@@ -411,24 +366,20 @@ static int afs_iget5_set(struct inode *inode, void *opaque)
 	vnode->volume		= as->volume;
 	vnode->fid		= vp->fid;
 
-	/* YFS supports 96-bit vnode IDs, but Linux only supports
-	 * 64-bit inode numbers.
-	 */
+	 
 	inode->i_ino		= vnode->fid.vnode;
 	inode->i_generation	= vnode->fid.unique;
 	return 0;
 }
 
-/*
- * Get a cache cookie for an inode.
- */
+ 
 static void afs_get_inode_cache(struct afs_vnode *vnode)
 {
 #ifdef CONFIG_AFS_FSCACHE
 	struct {
 		__be32 vnode_id;
 		__be32 unique;
-		__be32 vnode_id_ext[2];	/* Allow for a 96-bit key */
+		__be32 vnode_id_ext[2];	 
 	} __packed key;
 	struct afs_vnode_cache_aux aux;
 
@@ -454,9 +405,7 @@ static void afs_get_inode_cache(struct afs_vnode *vnode)
 #endif
 }
 
-/*
- * inode retrieval
- */
+ 
 struct inode *afs_iget(struct afs_operation *op, struct afs_vnode_param *vp)
 {
 	struct afs_vnode_param *dvp = &op->file[0];
@@ -478,7 +427,7 @@ struct inode *afs_iget(struct afs_operation *op, struct afs_vnode_param *vp)
 	_debug("GOT INODE %p { vl=%llx vn=%llx, u=%x }",
 	       inode, vnode->fid.vid, vnode->fid.vnode, vnode->fid.unique);
 
-	/* deal with an existing inode */
+	 
 	if (!(inode->i_state & I_NEW)) {
 		_leave(" = %p", inode);
 		return inode;
@@ -490,13 +439,13 @@ struct inode *afs_iget(struct afs_operation *op, struct afs_vnode_param *vp)
 
 	afs_get_inode_cache(vnode);
 
-	/* success */
+	 
 	clear_bit(AFS_VNODE_UNSET, &vnode->flags);
 	unlock_new_inode(inode);
 	_leave(" = %p", inode);
 	return inode;
 
-	/* failure */
+	 
 bad_inode:
 	iget_failed(inode);
 	_leave(" = %d [bad]", ret);
@@ -517,10 +466,7 @@ static int afs_iget5_set_root(struct inode *inode, void *opaque)
 	return 0;
 }
 
-/*
- * Set up the root inode for a volume.  This is always vnode 1, unique 1 within
- * the volume.
- */
+ 
 struct inode *afs_root_iget(struct super_block *sb, struct key *key)
 {
 	struct afs_super_info *as = AFS_FS_S(sb);
@@ -572,29 +518,21 @@ error:
 	return ERR_PTR(ret);
 }
 
-/*
- * mark the data attached to an inode as obsolete due to a write on the server
- * - might also want to ditch all the outstanding writes and dirty pages
- */
+ 
 static void afs_zap_data(struct afs_vnode *vnode)
 {
 	_enter("{%llx:%llu}", vnode->fid.vid, vnode->fid.vnode);
 
 	afs_invalidate_cache(vnode, 0);
 
-	/* nuke all the non-dirty pages that aren't locked, mapped or being
-	 * written back in a regular file and completely discard the pages in a
-	 * directory or symlink */
+	 
 	if (S_ISREG(vnode->netfs.inode.i_mode))
 		invalidate_remote_inode(&vnode->netfs.inode);
 	else
 		invalidate_inode_pages2(vnode->netfs.inode.i_mapping);
 }
 
-/*
- * Check to see if we have a server currently serving this volume and that it
- * hasn't been reinitialised or dropped from the list.
- */
+ 
 static bool afs_check_server_good(struct afs_vnode *vnode)
 {
 	struct afs_server_list *slist;
@@ -621,9 +559,7 @@ static bool afs_check_server_good(struct afs_vnode *vnode)
 	return false;
 }
 
-/*
- * Check the validity of a vnode/inode.
- */
+ 
 bool afs_check_validity(struct afs_vnode *vnode)
 {
 	enum afs_cb_break_reason need_clear = afs_cb_break_no_break;
@@ -668,9 +604,7 @@ bool afs_check_validity(struct afs_vnode *vnode)
 	return false;
 }
 
-/*
- * Returns true if the pagecache is still valid.  Does not sleep.
- */
+ 
 bool afs_pagecache_valid(struct afs_vnode *vnode)
 {
 	if (unlikely(test_bit(AFS_VNODE_DELETED, &vnode->flags))) {
@@ -686,15 +620,7 @@ bool afs_pagecache_valid(struct afs_vnode *vnode)
 	return false;
 }
 
-/*
- * validate a vnode/inode
- * - there are several things we need to check
- *   - parent dir data changes (rm, rmdir, rename, mkdir, create, link,
- *     symlink)
- *   - parent dir metadata changed (security changes)
- *   - dentry data changed (write, truncate)
- *   - dentry metadata changed (security changes)
- */
+ 
 int afs_validate(struct afs_vnode *vnode, struct key *key)
 {
 	int ret;
@@ -708,10 +634,7 @@ int afs_validate(struct afs_vnode *vnode, struct key *key)
 
 	down_write(&vnode->validate_lock);
 
-	/* if the promise has expired, we need to check the server again to get
-	 * a new promise - note that if the (parent) directory's metadata was
-	 * changed then the security may be different and we may no longer have
-	 * access */
+	 
 	if (!test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
 		_debug("not promised");
 		ret = afs_fetch_status(vnode, key, false, NULL);
@@ -731,8 +654,7 @@ int afs_validate(struct afs_vnode *vnode, struct key *key)
 		goto error_unlock;
 	}
 
-	/* if the vnode's data version number changed then its contents are
-	 * different */
+	 
 	if (test_and_clear_bit(AFS_VNODE_ZAP_DATA, &vnode->flags))
 		afs_zap_data(vnode);
 	up_write(&vnode->validate_lock);
@@ -746,9 +668,7 @@ error_unlock:
 	return ret;
 }
 
-/*
- * read the attributes of an inode
- */
+ 
 int afs_getattr(struct mnt_idmap *idmap, const struct path *path,
 		struct kstat *stat, u32 request_mask, unsigned int query_flags)
 {
@@ -778,10 +698,7 @@ int afs_getattr(struct mnt_idmap *idmap, const struct path *path,
 		    stat->nlink > 0)
 			stat->nlink -= 1;
 
-		/* Lie about the size of directories.  We maintain a locally
-		 * edited copy and may make different allocation decisions on
-		 * it, but we need to give userspace the server's size.
-		 */
+		 
 		if (S_ISDIR(inode->i_mode))
 			stat->size = vnode->netfs.remote_i_size;
 	} while (need_seqretry(&vnode->cb_lock, seq));
@@ -790,9 +707,7 @@ int afs_getattr(struct mnt_idmap *idmap, const struct path *path,
 	return 0;
 }
 
-/*
- * discard an AFS inode
- */
+ 
 int afs_drop_inode(struct inode *inode)
 {
 	_enter("");
@@ -803,9 +718,7 @@ int afs_drop_inode(struct inode *inode)
 		return generic_drop_inode(inode);
 }
 
-/*
- * clear an AFS inode
- */
+ 
 void afs_evict_inode(struct inode *inode)
 {
 	struct afs_vnode_cache_aux aux;
@@ -853,7 +766,7 @@ static void afs_setattr_success(struct afs_operation *op)
 
 	op->setattr.old_i_size = old_i_size;
 	afs_vnode_commit_status(op, vp);
-	/* inode->i_size has now been changed. */
+	 
 
 	if (op->setattr.attr->ia_valid & ATTR_SIZE) {
 		loff_t size = op->setattr.attr->ia_size;
@@ -886,9 +799,7 @@ static const struct afs_operation_ops afs_setattr_operation = {
 	.edit_dir	= afs_setattr_edit_file,
 };
 
-/*
- * set the attributes of an inode
- */
+ 
 int afs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		struct iattr *attr)
 {
@@ -925,22 +836,20 @@ int afs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 
 	fscache_use_cookie(afs_vnode_cache(vnode), true);
 
-	/* Prevent any new writebacks from starting whilst we do this. */
+	 
 	down_write(&vnode->validate_lock);
 
 	if ((attr->ia_valid & ATTR_SIZE) && S_ISREG(inode->i_mode)) {
 		loff_t size = attr->ia_size;
 
-		/* Wait for any outstanding writes to the server to complete */
+		 
 		loff_t from = min(size, i_size);
 		loff_t to = max(size, i_size);
 		ret = filemap_fdatawait_range(inode->i_mapping, from, to);
 		if (ret < 0)
 			goto out_unlock;
 
-		/* Don't talk to the server if we're just shortening in-memory
-		 * writes that haven't gone to the server yet.
-		 */
+		 
 		if (!(attr->ia_valid & (supported & ~ATTR_SIZE & ~ATTR_MTIME)) &&
 		    attr->ia_size < i_size &&
 		    attr->ia_size > vnode->status.size) {

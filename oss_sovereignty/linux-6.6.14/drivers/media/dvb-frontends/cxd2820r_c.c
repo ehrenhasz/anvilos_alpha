@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Sony CXD2820R demodulator driver
- *
- * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 
 #include "cxd2820r_priv.h"
@@ -40,7 +36,7 @@ int cxd2820r_set_frontend_c(struct dvb_frontend *fe)
 		c->delivery_system, c->modulation, c->frequency,
 		c->symbol_rate, c->inversion);
 
-	/* program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params)
 		fe->ops.tuner_ops.set_params(fe);
 
@@ -51,9 +47,9 @@ int cxd2820r_set_frontend_c(struct dvb_frontend *fe)
 	}
 
 	priv->delivery_system = SYS_DVBC_ANNEX_A;
-	priv->ber_running = false; /* tune stops BER counter */
+	priv->ber_running = false;  
 
-	/* program IF frequency */
+	 
 	if (fe->ops.tuner_ops.get_if_frequency) {
 		ret = fe->ops.tuner_ops.get_if_frequency(fe, &if_frequency);
 		if (ret)
@@ -148,7 +144,7 @@ int cxd2820r_read_status_c(struct dvb_frontend *fe, enum fe_status *status)
 	unsigned int utmp, utmp1, utmp2;
 	u8 buf[3];
 
-	/* Lock detection */
+	 
 	ret = regmap_bulk_read(priv->regmap[1], 0x0088, &buf[0], 1);
 	if (ret)
 		goto error;
@@ -172,7 +168,7 @@ int cxd2820r_read_status_c(struct dvb_frontend *fe, enum fe_status *status)
 	dev_dbg(&client->dev, "status=%02x raw=%*ph sync=%u ts=%u\n",
 		*status, 2, buf, utmp1, utmp2);
 
-	/* Signal strength */
+	 
 	if (*status & FE_HAS_SIGNAL) {
 		unsigned int strength;
 
@@ -182,7 +178,7 @@ int cxd2820r_read_status_c(struct dvb_frontend *fe, enum fe_status *status)
 
 		utmp = buf[0] << 8 | buf[1] << 0;
 		utmp = 511 - sign_extend32(utmp, 9);
-		/* Scale value to 0x0000-0xffff */
+		 
 		strength = utmp << 6 | utmp >> 4;
 
 		c->strength.len = 1;
@@ -193,7 +189,7 @@ int cxd2820r_read_status_c(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (*status & FE_HAS_VITERBI) {
 		unsigned int cnr, const_a, const_b;
 
@@ -213,7 +209,7 @@ int cxd2820r_read_status_c(struct dvb_frontend *fe, enum fe_status *status)
 		if (ret)
 			goto error;
 
-		#define CXD2820R_LOG2_E_24 24204406 /* log2(e) << 24 */
+		#define CXD2820R_LOG2_E_24 24204406  
 		if (utmp)
 			cnr = div_u64((u64)(intlog2(const_b) - intlog2(utmp))
 				      * const_a, CXD2820R_LOG2_E_24);
@@ -228,7 +224,7 @@ int cxd2820r_read_status_c(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* BER */
+	 
 	if (*status & FE_HAS_SYNC) {
 		unsigned int post_bit_error;
 		bool start_ber;
@@ -324,7 +320,7 @@ int cxd2820r_get_tune_settings_c(struct dvb_frontend *fe,
 	struct dvb_frontend_tune_settings *s)
 {
 	s->min_delay_ms = 500;
-	s->step_size = 0; /* no zigzag */
+	s->step_size = 0;  
 	s->max_drift = 0;
 
 	return 0;

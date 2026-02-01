@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (c) 2012-2015 Qualcomm Atheros, Inc. */
+ 
+ 
 
 #include <linux/types.h>
 

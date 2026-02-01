@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/proc/root.c
- *
- *  Copyright (C) 1991, 1992 Linus Torvalds
- *
- *  proc root directory handling functions
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/time.h>
 #include <linux/proc_fs.h>
@@ -170,7 +164,7 @@ static int proc_fill_super(struct super_block *s, struct fs_context *fc)
 	fs_info->pid_ns = get_pid_ns(ctx->pid_ns);
 	proc_apply_options(fs_info, fc, current_user_ns());
 
-	/* User space would break if executables or devices appear on proc */
+	 
 	s->s_iflags |= SB_I_USERNS_VISIBLE | SB_I_NOEXEC | SB_I_NODEV;
 	s->s_flags |= SB_NODIRATIME | SB_NOSUID | SB_NOEXEC;
 	s->s_blocksize = 1024;
@@ -180,14 +174,10 @@ static int proc_fill_super(struct super_block *s, struct fs_context *fc)
 	s->s_time_gran = 1;
 	s->s_fs_info = fs_info;
 
-	/*
-	 * procfs isn't actually a stacking filesystem; however, there is
-	 * too much magic going on inside it to permit stacking things on
-	 * top of it
-	 */
+	 
 	s->s_stack_depth = FILESYSTEM_MAX_STACK_DEPTH;
 
-	/* procfs dentries and inodes don't require IO to create */
+	 
 	s->s_shrink.seeks = 0;
 
 	pde_get(&proc_root);
@@ -293,20 +283,16 @@ void __init proc_root_init(void)
 	proc_net_init();
 	proc_mkdir("fs", NULL);
 	proc_mkdir("driver", NULL);
-	proc_create_mount_point("fs/nfsd"); /* somewhere for the nfsd filesystem to be mounted */
+	proc_create_mount_point("fs/nfsd");  
 #if defined(CONFIG_SUN_OPENPROMFS) || defined(CONFIG_SUN_OPENPROMFS_MODULE)
-	/* just give it a mountpoint */
+	 
 	proc_create_mount_point("openprom");
 #endif
 	proc_tty_init();
 	proc_mkdir("bus", NULL);
 	proc_sys_init();
 
-	/*
-	 * Last things last. It is not like userspace processes eager
-	 * to open /proc files exist at this point but register last
-	 * anyway.
-	 */
+	 
 	register_filesystem(&proc_fs_type);
 }
 
@@ -340,28 +326,20 @@ static int proc_root_readdir(struct file *file, struct dir_context *ctx)
 	return proc_pid_readdir(file, ctx);
 }
 
-/*
- * The root /proc directory is special, as it has the
- * <pid> directories. Thus we don't use the generic
- * directory handling functions for that..
- */
+ 
 static const struct file_operations proc_root_operations = {
 	.read		 = generic_read_dir,
 	.iterate_shared	 = proc_root_readdir,
 	.llseek		= generic_file_llseek,
 };
 
-/*
- * proc root can do almost nothing..
- */
+ 
 static const struct inode_operations proc_root_inode_operations = {
 	.lookup		= proc_root_lookup,
 	.getattr	= proc_root_getattr,
 };
 
-/*
- * This is the root "inode" in the /proc tree..
- */
+ 
 struct proc_dir_entry proc_root = {
 	.low_ino	= PROC_ROOT_INO, 
 	.namelen	= 5, 

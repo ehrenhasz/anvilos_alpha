@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * isar.h   ISAR (Siemens PSB 7110) specific defines
- *
- * Author Karsten Keil (keil@isdn4linux.de)
- *
- * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
- */
+ 
+ 
 
 #include "iohelper.h"
 
@@ -31,7 +24,7 @@ struct isar_ch {
 struct isar_hw {
 	struct	isar_ch	ch[2];
 	void		*hw;
-	spinlock_t	*hwlock;	/* lock HW access */
+	spinlock_t	*hwlock;	 
 	char		*name;
 	struct module	*owner;
 	read_reg_func	*read_reg;
@@ -127,7 +120,7 @@ struct isar_hw {
 #define PV32P2_V21	0x02
 #define PV32P2_BEL	0x01
 
-/* LSB MSB in ISAR doc wrong !!! Arghhh */
+ 
 #define PV32P3_AMOD	0x80
 #define PV32P3_V32B	0x02
 #define PV32P3_V23B	0x01
@@ -243,7 +236,7 @@ struct isar_hw {
 #define BSTEV_TBO	0x1f
 #define BSTEV_RBO	0x2f
 
-/* FAX State Machine */
+ 
 #define STFAX_NULL	0
 #define STFAX_READY	1
 #define STFAX_LINE	2

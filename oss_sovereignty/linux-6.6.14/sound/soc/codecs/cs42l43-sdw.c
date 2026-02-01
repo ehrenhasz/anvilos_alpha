@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS42L43 CODEC driver SoundWire handling
-//
-// Copyright (C) 2022-2023 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/errno.h>
 #include <linux/mfd/cs42l43.h>

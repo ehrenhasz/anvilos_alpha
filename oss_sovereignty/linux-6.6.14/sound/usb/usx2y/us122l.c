@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2007, 2008 Karsten Wiese <fzu@wemgehoertderstaat.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/usb.h>
@@ -21,9 +19,9 @@ MODULE_AUTHOR("Karsten Wiese <fzu@wemgehoertderstaat.de>");
 MODULE_DESCRIPTION("TASCAM "NAME_ALLCAPS" Version 0.5");
 MODULE_LICENSE("GPL");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-max */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* Id for this card */
-							/* Enable this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+							 
 static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;
 
 module_param_array(index, int, NULL, 0444);
@@ -33,7 +31,7 @@ MODULE_PARM_DESC(id, "ID string for "NAME_ALLCAPS".");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable "NAME_ALLCAPS".");
 
-/* driver_info flags */
+ 
 #define US122L_FLAG_US144	BIT(0)
 
 static int snd_us122l_card_used[SNDRV_CARDS];
@@ -215,7 +213,7 @@ static int usb_stream_hwdep_mmap(struct snd_hwdep *hw,
 	}
 	snd_printdd(KERN_DEBUG "%lu %u\n", size,
 		    read ? s->read_size : s->write_size);
-	/* if userspace tries to mmap beyond end of our buffer, fail */
+	 
 	if (size > PAGE_ALIGN(read ? s->read_size : s->write_size)) {
 		snd_printk(KERN_WARNING "%lu > %u\n", size,
 			   read ? s->read_size : s->write_size);
@@ -303,10 +301,7 @@ static bool us122l_start(struct us122l *us122l,
 	bool success = false;
 
 	if (us122l->dev->speed == USB_SPEED_HIGH) {
-		/* The us-122l's descriptor defaults to iso max_packsize 78,
-		   which isn't needed for samplerates <= 48000.
-		   Lets save some memory:
-		*/
+		 
 		switch (rate) {
 		case 44100:
 			use_packsize = 36;
@@ -471,7 +466,7 @@ static bool us122l_create_card(struct snd_card *card)
 	}
 	err = usb_stream_hwdep_new(card);
 	if (err < 0) {
-		/* release the midi resources */
+		 
 		struct list_head *p;
 
 		list_for_each(p, &us122l->midi_list)
@@ -608,7 +603,7 @@ static void snd_us122l_disconnect(struct usb_interface *intf)
 	us122l_stop(us122l);
 	mutex_unlock(&us122l->mutex);
 
-	/* release the midi resources */
+	 
 	list_for_each(p, &us122l->midi_list) {
 		snd_usbmidi_disconnect(p);
 	}
@@ -664,7 +659,7 @@ static int snd_us122l_resume(struct usb_interface *intf)
 		return 0;
 
 	mutex_lock(&us122l->mutex);
-	/* needed, doesn't restart without: */
+	 
 	if (us122l->is_us144) {
 		err = usb_set_interface(us122l->dev, 0, 1);
 		if (err) {
@@ -705,7 +700,7 @@ static const struct usb_device_id snd_us122l_usb_id_table[] = {
 		.idVendor =	0x0644,
 		.idProduct =	USB_ID_US122L
 	},
-	{	/* US-144 only works at USB1.1! Disable module ehci-hcd. */
+	{	 
 		.match_flags =	USB_DEVICE_ID_MATCH_DEVICE,
 		.idVendor =	0x0644,
 		.idProduct =	USB_ID_US144,
@@ -722,7 +717,7 @@ static const struct usb_device_id snd_us122l_usb_id_table[] = {
 		.idProduct =	USB_ID_US144MKII,
 		.driver_info =	US122L_FLAG_US144
 	},
-	{ /* terminator */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(usb, snd_us122l_usb_id_table);
 

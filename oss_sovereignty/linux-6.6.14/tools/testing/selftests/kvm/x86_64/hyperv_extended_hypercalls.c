@@ -1,18 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test Hyper-V extended hypercall, HV_EXT_CALL_QUERY_CAPABILITIES (0x8001),
- * exit to userspace and receive result in guest.
- *
- * Negative tests are present in hyperv_features.c
- *
- * Copyright 2022 Google LLC
- * Author: Vipin Sharma <vipinsh@google.com>
- */
+
+ 
 #include "kvm_util.h"
 #include "processor.h"
 #include "hyperv.h"
 
-/* Any value is fine */
+ 
 #define EXT_CAPABILITIES 0xbull
 
 static void guest_code(vm_paddr_t in_pg_gpa, vm_paddr_t out_pg_gpa,
@@ -27,7 +19,7 @@ static void guest_code(vm_paddr_t in_pg_gpa, vm_paddr_t out_pg_gpa,
 
 	hyperv_hypercall(HV_EXT_CALL_QUERY_CAPABILITIES, in_pg_gpa, out_pg_gpa);
 
-	/* TLFS states output will be a uint64_t value */
+	 
 	GUEST_ASSERT_EQ(*output_gva, EXT_CAPABILITIES);
 
 	GUEST_DONE();
@@ -43,7 +35,7 @@ int main(void)
 	uint64_t *outval;
 	struct ucall uc;
 
-	/* Verify if extended hypercalls are supported */
+	 
 	if (!kvm_cpuid_has(kvm_get_supported_hv_cpuid(),
 			   HV_ENABLE_EXTENDED_HYPERCALLS)) {
 		print_skip("Extended calls not supported by the kernel");
@@ -54,11 +46,11 @@ int main(void)
 	run = vcpu->run;
 	vcpu_set_hv_cpuid(vcpu);
 
-	/* Hypercall input */
+	 
 	hcall_in_page = vm_vaddr_alloc_pages(vm, 1);
 	memset(addr_gva2hva(vm, hcall_in_page), 0x0, vm->page_size);
 
-	/* Hypercall output */
+	 
 	hcall_out_page = vm_vaddr_alloc_pages(vm, 1);
 	memset(addr_gva2hva(vm, hcall_out_page), 0x0, vm->page_size);
 

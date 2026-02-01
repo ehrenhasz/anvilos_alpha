@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Authors: Karl MacMillan <kmacmillan@tresys.com>
- *	    Frank Mayer <mayerf@tresys.com>
- *
- * Copyright (C) 2003 - 2004 Tresys Technology, LLC
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -15,12 +11,7 @@
 #include "conditional.h"
 #include "services.h"
 
-/*
- * cond_evaluate_expr evaluates a conditional expr
- * in reverse polish notation. It returns true (1), false (0),
- * or undefined (-1). Undefined occurs when the expression
- * exceeds the stack depth of COND_EXPR_MAXDEPTH.
- */
+ 
 static int cond_evaluate_expr(struct policydb *p, struct cond_expr *expr)
 {
 	u32 i;
@@ -82,13 +73,7 @@ static int cond_evaluate_expr(struct policydb *p, struct cond_expr *expr)
 	return s[0];
 }
 
-/*
- * evaluate_cond_node evaluates the conditional stored in
- * a struct cond_node and if the result is different than the
- * current state of the node it sets the rules in the true/false
- * list appropriately. If the result of the expression is undefined
- * all of the rules are disabled for safety.
- */
+ 
 static void evaluate_cond_node(struct policydb *p, struct cond_node *node)
 {
 	struct avtab_node *avnode;
@@ -100,7 +85,7 @@ static void evaluate_cond_node(struct policydb *p, struct cond_node *node)
 		node->cur_state = new_state;
 		if (new_state == -1)
 			pr_err("SELinux: expression result was undefined - disabling all rules.\n");
-		/* turn the rules on or off */
+		 
 		for (i = 0; i < node->true_list.len; i++) {
 			avnode = node->true_list.nodes[i];
 			if (new_state <= 0)
@@ -111,7 +96,7 @@ static void evaluate_cond_node(struct policydb *p, struct cond_node *node)
 
 		for (i = 0; i < node->false_list.len; i++) {
 			avnode = node->false_list.nodes[i];
-			/* -1 or 1 */
+			 
 			if (new_state)
 				avnode->key.specified &= ~AVTAB_ENABLED;
 			else
@@ -140,7 +125,7 @@ void cond_policydb_init(struct policydb *p)
 static void cond_node_destroy(struct cond_node *node)
 {
 	kfree(node->expr.nodes);
-	/* the avtab_ptr_t nodes are destroyed by the avtab */
+	 
 	kfree(node->true_list.nodes);
 	kfree(node->false_list.nodes);
 }
@@ -266,24 +251,13 @@ static int cond_insertf(struct avtab *a, const struct avtab_key *k,
 	u32 i;
 	bool found;
 
-	/*
-	 * For type rules we have to make certain there aren't any
-	 * conflicting rules by searching the te_avtab and the
-	 * cond_te_avtab.
-	 */
+	 
 	if (k->specified & AVTAB_TYPE) {
 		if (avtab_search_node(&p->te_avtab, k)) {
 			pr_err("SELinux: type rule already exists outside of a conditional.\n");
 			return -EINVAL;
 		}
-		/*
-		 * If we are reading the false list other will be a pointer to
-		 * the true list. We can have duplicate entries if there is only
-		 * 1 other entry and it is in our true list.
-		 *
-		 * If we are reading the true list (other == NULL) there shouldn't
-		 * be any other entries.
-		 */
+		 
 		if (other) {
 			node_ptr = avtab_search_node(&p->te_cond_avtab, k);
 			if (node_ptr) {
@@ -385,7 +359,7 @@ static int cond_read_node(struct policydb *p, struct cond_node *node, void *fp)
 
 	node->cur_state = le32_to_cpu(buf[0]);
 
-	/* expr */
+	 
 	len = le32_to_cpu(buf[1]);
 	node->expr.nodes = kcalloc(len, sizeof(*node->expr.nodes), GFP_KERNEL);
 	if (!node->expr.nodes)
@@ -469,15 +443,7 @@ int cond_write_bool(void *vkey, void *datum, void *ptr)
 	return 0;
 }
 
-/*
- * cond_write_cond_av_list doesn't write out the av_list nodes.
- * Instead it writes out the key/value pairs from the avtab. This
- * is necessary because there is no way to uniquely identifying rules
- * in the avtab so it is not possible to associate individual rules
- * in the avtab with a conditional without saving them as part of
- * the conditional. This means that the avtab with the conditional
- * rules will not be saved but will be rebuilt on policy load.
- */
+ 
 static int cond_write_av_list(struct policydb *p,
 			      struct cond_av_list *list, struct policy_file *fp)
 {
@@ -568,9 +534,7 @@ void cond_compute_xperms(struct avtab *ctab, struct avtab_key *key,
 			services_compute_xperms_decision(xpermd, node);
 	}
 }
-/* Determine whether additional permissions are granted by the conditional
- * av table, and if so, add them to the result
- */
+ 
 void cond_compute_av(struct avtab *ctab, struct avtab_key *key,
 		struct av_decision *avd, struct extended_perms *xperms)
 {
@@ -586,11 +550,7 @@ void cond_compute_av(struct avtab *ctab, struct avtab_key *key,
 			avd->allowed |= node->datum.u.data;
 		if ((u16)(AVTAB_AUDITDENY|AVTAB_ENABLED) ==
 		    (node->key.specified & (AVTAB_AUDITDENY|AVTAB_ENABLED)))
-			/* Since a '0' in an auditdeny mask represents a
-			 * permission we do NOT want to audit (dontaudit), we use
-			 * the '&' operand to ensure that all '0's in the mask
-			 * are retained (much unlike the allow and auditallow cases).
-			 */
+			 
 			avd->auditdeny &= node->datum.u.data;
 		if ((u16)(AVTAB_AUDITALLOW|AVTAB_ENABLED) ==
 		    (node->key.specified & (AVTAB_AUDITALLOW|AVTAB_ENABLED)))
@@ -678,7 +638,7 @@ error:
 
 static int cond_bools_destroy(void *key, void *datum, void *args)
 {
-	/* key was not copied so no need to free here */
+	 
 	kfree(datum);
 	return 0;
 }
@@ -692,7 +652,7 @@ static int cond_bools_copy(struct hashtab_node *new, struct hashtab_node *orig, 
 	if (!datum)
 		return -ENOMEM;
 
-	new->key = orig->key; /* No need to copy, never modified */
+	new->key = orig->key;  
 	new->datum = datum;
 	return 0;
 }

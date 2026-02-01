@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_kex.c,v 1.6 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test KEX
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -140,7 +136,7 @@ do_kex_with_key(char *kex, int keytype, int bits)
 	ASSERT_INT_EQ(sshbuf_len(state), 0);
 	sshbuf_free(state);
 	ASSERT_PTR_NE(server2->kex, NULL);
-	/* XXX we need to set the callbacks */
+	 
 #ifdef WITH_OPENSSL
 	server2->kex->kex[KEX_DH_GRP1_SHA1] = kex_gen_server;
 	server2->kex->kex[KEX_DH_GRP14_SHA1] = kex_gen_server;
@@ -148,8 +144,8 @@ do_kex_with_key(char *kex, int keytype, int bits)
 	server2->kex->kex[KEX_DH_GEX_SHA256] = kexgex_server;
 #ifdef OPENSSL_HAS_ECC
 	server2->kex->kex[KEX_ECDH_SHA2] = kex_gen_server;
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	server2->kex->kex[KEX_C25519_SHA256] = kex_gen_server;
 	server2->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_server;
 	server2->kex->load_host_public_key = server->kex->load_host_public_key;
@@ -182,8 +178,8 @@ do_kex(char *kex)
 	do_kex_with_key(kex, KEY_DSA, 1024);
 #ifdef OPENSSL_HAS_ECC
 	do_kex_with_key(kex, KEY_ECDSA, 256);
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	do_kex_with_key(kex, KEY_ED25519, 256);
 }
 
@@ -196,13 +192,13 @@ kex_tests(void)
 	do_kex("ecdh-sha2-nistp256");
 	do_kex("ecdh-sha2-nistp384");
 	do_kex("ecdh-sha2-nistp521");
-#endif /* OPENSSL_HAS_ECC */
+#endif  
 	do_kex("diffie-hellman-group-exchange-sha256");
 	do_kex("diffie-hellman-group-exchange-sha1");
 	do_kex("diffie-hellman-group14-sha1");
 	do_kex("diffie-hellman-group1-sha1");
 # ifdef USE_SNTRUP761X25519
 	do_kex("sntrup761x25519-sha512@openssh.com");
-# endif /* USE_SNTRUP761X25519 */
-#endif /* WITH_OPENSSL */
+# endif  
+#endif  
 }

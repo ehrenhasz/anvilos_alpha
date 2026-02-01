@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * cros_ec_dev - expose the Chrome OS Embedded Controller to user-space
- *
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/kconfig.h>
@@ -23,24 +19,14 @@ static struct class cros_class = {
 	.name           = "chromeos",
 };
 
-/**
- * struct cros_feature_to_name - CrOS feature id to name/short description.
- * @id: The feature identifier.
- * @name: Device name associated with the feature id.
- * @desc: Short name that will be displayed.
- */
+ 
 struct cros_feature_to_name {
 	unsigned int id;
 	const char *name;
 	const char *desc;
 };
 
-/**
- * struct cros_feature_to_cells - CrOS feature id to mfd cells association.
- * @id: The feature identifier.
- * @mfd_cells: Pointer to the array of mfd cells that needs to be added.
- * @num_cells: Number of mfd cells into the array.
- */
+ 
 struct cros_feature_to_cells {
 	unsigned int id;
 	const struct mfd_cell *mfd_cells;
@@ -149,30 +135,22 @@ static int ec_device_probe(struct platform_device *pdev)
 	ec->ec_dev = dev_get_drvdata(dev->parent);
 	ec->dev = dev;
 	ec->cmd_offset = ec_platform->cmd_offset;
-	ec->features.flags[0] = -1U; /* Not cached yet */
-	ec->features.flags[1] = -1U; /* Not cached yet */
+	ec->features.flags[0] = -1U;  
+	ec->features.flags[1] = -1U;  
 	device_initialize(&ec->class_dev);
 
 	for (i = 0; i < ARRAY_SIZE(cros_mcu_devices); i++) {
-		/*
-		 * Check whether this is actually a dedicated MCU rather
-		 * than an standard EC.
-		 */
+		 
 		if (cros_ec_check_features(ec, cros_mcu_devices[i].id)) {
 			dev_info(dev, "CrOS %s MCU detected\n",
 				 cros_mcu_devices[i].desc);
-			/*
-			 * Help userspace differentiating ECs from other MCU,
-			 * regardless of the probing order.
-			 */
+			 
 			ec_platform->ec_name = cros_mcu_devices[i].name;
 			break;
 		}
 	}
 
-	/*
-	 * Add the class device
-	 */
+	 
 	ec->class_dev.class = &cros_class;
 	ec->class_dev.parent = dev;
 	ec->class_dev.release = cros_ec_class_release;
@@ -187,7 +165,7 @@ static int ec_device_probe(struct platform_device *pdev)
 	if (retval)
 		goto failed;
 
-	/* check whether this EC is a sensor hub. */
+	 
 	if (cros_ec_get_sensor_count(ec) > 0) {
 		retval = mfd_add_hotplug_devices(ec->dev,
 				cros_ec_sensorhub_cells,
@@ -197,10 +175,7 @@ static int ec_device_probe(struct platform_device *pdev)
 				cros_ec_sensorhub_cells->name, retval);
 	}
 
-	/*
-	 * The following subdevices can be detected by sending the
-	 * EC_FEATURE_GET_CMD Embedded Controller device.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(cros_subdevices); i++) {
 		if (cros_ec_check_features(ec, cros_subdevices[i].id)) {
 			retval = mfd_add_hotplug_devices(ec->dev,
@@ -214,10 +189,7 @@ static int ec_device_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Lightbar is a special case. Newer devices support autodetection,
-	 * but older ones do not.
-	 */
+	 
 	if (cros_ec_check_features(ec, EC_FEATURE_LIGHTBAR) ||
 	    dmi_match(DMI_PRODUCT_NAME, "Link")) {
 		retval = mfd_add_hotplug_devices(ec->dev,
@@ -228,11 +200,7 @@ static int ec_device_probe(struct platform_device *pdev)
 				 retval);
 	}
 
-	/*
-	 * The PD notifier driver cell is separate since it only needs to be
-	 * explicitly added on platforms that don't have the PD notifier ACPI
-	 * device entry defined.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_OF) && ec->ec_dev->dev->of_node) {
 		if (cros_ec_check_features(ec, EC_FEATURE_USB_PD)) {
 			retval = mfd_add_hotplug_devices(ec->dev,
@@ -245,10 +213,7 @@ static int ec_device_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * The PCHG device cannot be detected by sending EC_FEATURE_GET_CMD, but
-	 * it can be detected by querying the number of peripheral chargers.
-	 */
+	 
 	retval = cros_ec_cmd(ec->ec_dev, 0, EC_CMD_PCHG_COUNT, NULL, 0,
 			     &pchg_count, sizeof(pchg_count));
 	if (retval >= 0 && pchg_count.port_count) {
@@ -260,10 +225,7 @@ static int ec_device_probe(struct platform_device *pdev)
 				 retval);
 	}
 
-	/*
-	 * The following subdevices cannot be detected by sending the
-	 * EC_FEATURE_GET_CMD to the Embedded Controller device.
-	 */
+	 
 	retval = mfd_add_hotplug_devices(ec->dev, cros_ec_platform_cells,
 					 ARRAY_SIZE(cros_ec_platform_cells));
 	if (retval)
@@ -271,7 +233,7 @@ static int ec_device_probe(struct platform_device *pdev)
 			 "failed to add cros-ec platform devices: %d\n",
 			 retval);
 
-	/* Check whether this EC instance has a VBC NVRAM */
+	 
 	node = ec->ec_dev->dev->of_node;
 	if (of_property_read_bool(node, "google,has-vbc-nvram")) {
 		retval = mfd_add_hotplug_devices(ec->dev, cros_ec_vbc_cells,
@@ -299,7 +261,7 @@ static int ec_device_remove(struct platform_device *pdev)
 
 static const struct platform_device_id cros_ec_id[] = {
 	{ DRV_NAME, 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, cros_ec_id);
 
@@ -322,7 +284,7 @@ static int __init cros_ec_dev_init(void)
 		return ret;
 	}
 
-	/* Register the driver */
+	 
 	ret = platform_driver_register(&cros_ec_dev_driver);
 	if (ret < 0) {
 		pr_warn(CROS_EC_DEV_NAME ": can't register driver: %d\n", ret);

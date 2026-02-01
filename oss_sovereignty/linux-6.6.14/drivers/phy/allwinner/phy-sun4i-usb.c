@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Allwinner sun4i USB phy driver
- *
- * Copyright (C) 2014-2015 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on code from
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- *
- * Modelled after: Samsung S5P/Exynos SoC series MIPI CSIS/DSIM DPHY driver
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -52,10 +41,10 @@
 #define SUNXI_AHB_INCRX_ALIGN_EN	BIT(8)
 #define SUNXI_ULPI_BYPASS_EN		BIT(0)
 
-/* ISCR, Interface Status and Control bits */
+ 
 #define ISCR_ID_PULLUP_EN		(1 << 17)
 #define ISCR_DPDM_PULLUP_EN	(1 << 16)
-/* sunxi has the phy id/vbus pins not connected, so we use the force bits */
+ 
 #define ISCR_FORCE_ID_MASK	(3 << 14)
 #define ISCR_FORCE_ID_LOW		(2 << 14)
 #define ISCR_FORCE_ID_HIGH	(3 << 14)
@@ -63,11 +52,11 @@
 #define ISCR_FORCE_VBUS_LOW	(2 << 12)
 #define ISCR_FORCE_VBUS_HIGH	(3 << 12)
 
-/* Common Control Bits for Both PHYs */
+ 
 #define PHY_PLL_BW			0x03
 #define PHY_RES45_CAL_EN		0x0c
 
-/* Private Control Bits for Each PHY */
+ 
 #define PHY_TX_AMPLITUDE_TUNE		0x20
 #define PHY_TX_SLEWRATE_TUNE		0x22
 #define PHY_VBUSVALID_TH_SEL		0x25
@@ -77,12 +66,12 @@
 #define PHY_DISCON_TH_SEL		0x2a
 #define PHY_SQUELCH_DETECT		0x3c
 
-/* A83T specific control bits for PHY0 */
+ 
 #define PHY_CTL_VBUSVLDEXT		BIT(5)
 #define PHY_CTL_SIDDQ			BIT(3)
 #define PHY_CTL_H3_SIDDQ		BIT(1)
 
-/* A83T specific control bits for PHY2 HSIC */
+ 
 #define SUNXI_EHCI_HS_FORCE		BIT(20)
 #define SUNXI_HSIC_CONNECT_DET		BIT(17)
 #define SUNXI_HSIC_CONNECT_INT		BIT(16)
@@ -90,10 +79,7 @@
 
 #define MAX_PHYS			4
 
-/*
- * Note do not raise the debounce time, we must report Vusb high within 100ms
- * otherwise we get Vbus errors
- */
+ 
 #define DEBOUNCE_TIME			msecs_to_jiffies(50)
 #define POLL_TIME			msecs_to_jiffies(250)
 
@@ -115,7 +101,7 @@ struct sun4i_usb_phy_data {
 	void __iomem *base;
 	const struct sun4i_usb_phy_cfg *cfg;
 	enum usb_dr_mode dr_mode;
-	spinlock_t reg_lock; /* guard access to phyctl reg */
+	spinlock_t reg_lock;  
 	struct sun4i_usb_phy {
 		struct phy *phy;
 		void __iomem *pmu;
@@ -126,7 +112,7 @@ struct sun4i_usb_phy_data {
 		bool regulator_on;
 		int index;
 	} phys[MAX_PHYS];
-	/* phy0 / otg related variables */
+	 
 	struct extcon_dev *extcon;
 	bool phy0_init;
 	struct gpio_desc *id_det_gpio;
@@ -189,21 +175,21 @@ static void sun4i_usb_phy_write(struct sun4i_usb_phy *phy, u32 addr, u32 data,
 	spin_lock_irqsave(&phy_data->reg_lock, flags);
 
 	if (phy_data->cfg->phyctl_offset == REG_PHYCTL_A33) {
-		/* SoCs newer than A33 need us to set phyctl to 0 explicitly */
+		 
 		writel(0, phyctl);
 	}
 
 	for (i = 0; i < len; i++) {
 		temp = readl(phyctl);
 
-		/* clear the address portion */
+		 
 		temp &= ~(0xff << 8);
 
-		/* set the address */
+		 
 		temp |= ((addr + i) << 8);
 		writel(temp, phyctl);
 
-		/* set the data bit and clear usbc bit*/
+		 
 		temp = readb(phyctl);
 		if (data & 0x1)
 			temp |= PHYCTL_DATA;
@@ -212,7 +198,7 @@ static void sun4i_usb_phy_write(struct sun4i_usb_phy *phy, u32 addr, u32 data,
 		temp &= ~usbc_bit;
 		writeb(temp, phyctl);
 
-		/* pulse usbc_bit */
+		 
 		temp = readb(phyctl);
 		temp |= usbc_bit;
 		writeb(temp, phyctl);
@@ -238,7 +224,7 @@ static void sun4i_usb_phy_passby(struct sun4i_usb_phy *phy, int enable)
 	bits = SUNXI_AHB_ICHR8_EN | SUNXI_AHB_INCR4_BURST_EN |
 		SUNXI_AHB_INCRX_ALIGN_EN | SUNXI_ULPI_BYPASS_EN;
 
-	/* A83T USB2 is HSIC */
+	 
 	if (phy_data->cfg->hsic_index &&
 	    phy->index == phy_data->cfg->hsic_index)
 		bits |= SUNXI_EHCI_HS_FORCE | SUNXI_HSIC_CONNECT_INT |
@@ -278,7 +264,7 @@ static int sun4i_usb_phy_init(struct phy *_phy)
 		return ret;
 	}
 
-	/* Some PHYs on some SoCs need the help of PHY2 to work. */
+	 
 	if (data->cfg->needs_phy2_siddq && phy->index != 2) {
 		struct sun4i_usb_phy *phy2 = &data->phys[2];
 
@@ -299,10 +285,7 @@ static int sun4i_usb_phy_init(struct phy *_phy)
 			return ret;
 		}
 
-		/*
-		 * This extra clock is just needed to access the
-		 * REG_HCI_PHY_CTL PMU register for PHY2.
-		 */
+		 
 		ret = clk_prepare_enable(phy2->clk2);
 		if (ret) {
 			reset_control_assert(phy2->reset);
@@ -336,14 +319,14 @@ static int sun4i_usb_phy_init(struct phy *_phy)
 			writel(val, data->base + data->cfg->phyctl_offset);
 		}
 	} else {
-		/* Enable USB 45 Ohm resistor calibration */
+		 
 		if (phy->index == 0)
 			sun4i_usb_phy_write(phy, PHY_RES45_CAL_EN, 0x01, 1);
 
-		/* Adjust PHY's magnitude and rate */
+		 
 		sun4i_usb_phy_write(phy, PHY_TX_AMPLITUDE_TUNE, 0x14, 5);
 
-		/* Disconnect threshold adjustment */
+		 
 		sun4i_usb_phy_write(phy, PHY_DISCON_TH_SEL,
 				    data->cfg->disc_thresh, 2);
 	}
@@ -353,11 +336,11 @@ static int sun4i_usb_phy_init(struct phy *_phy)
 	if (phy->index == 0) {
 		data->phy0_init = true;
 
-		/* Enable pull-ups */
+		 
 		sun4i_usb_phy0_update_iscr(_phy, 0, ISCR_DPDM_PULLUP_EN);
 		sun4i_usb_phy0_update_iscr(_phy, 0, ISCR_ID_PULLUP_EN);
 
-		/* Force ISCR and cable state updates */
+		 
 		data->id_det = -1;
 		data->vbus_det = -1;
 		queue_delayed_work(system_wq, &data->detect, 0);
@@ -379,7 +362,7 @@ static int sun4i_usb_phy_exit(struct phy *_phy)
 			writel(readl(phyctl) | PHY_CTL_SIDDQ, phyctl);
 		}
 
-		/* Disable pull-ups */
+		 
 		sun4i_usb_phy0_update_iscr(_phy, ISCR_DPDM_PULLUP_EN, 0);
 		sun4i_usb_phy0_update_iscr(_phy, ISCR_ID_PULLUP_EN, 0);
 		data->phy0_init = false;
@@ -407,7 +390,7 @@ static int sun4i_usb_phy0_get_id_det(struct sun4i_usb_phy_data *data)
 		if (data->id_det_gpio)
 			return gpiod_get_value_cansleep(data->id_det_gpio);
 		else
-			return 1; /* Fallback to peripheral mode */
+			return 1;  
 	case USB_DR_MODE_HOST:
 		return 0;
 	case USB_DR_MODE_PERIPHERAL:
@@ -431,7 +414,7 @@ static int sun4i_usb_phy0_get_vbus_det(struct sun4i_usb_phy_data *data)
 			return val.intval;
 	}
 
-	/* Fallback: report vbus as high */
+	 
 	return 1;
 }
 
@@ -446,12 +429,7 @@ static bool sun4i_usb_phy0_poll(struct sun4i_usb_phy_data *data)
 	    (data->vbus_det_gpio && data->vbus_det_irq <= 0))
 		return true;
 
-	/*
-	 * The A31/A23/A33 companion pmics (AXP221/AXP223) do not
-	 * generate vbus change interrupts when the board is driving
-	 * vbus using the N_VBUSEN pin on the pmic, so we must poll
-	 * when using the pmic for vbus-det _and_ we're driving vbus.
-	 */
+	 
 	if (data->cfg->poll_vbusen && data->vbus_power_supply &&
 	    data->phys[0].regulator_on)
 		return true;
@@ -468,7 +446,7 @@ static int sun4i_usb_phy_power_on(struct phy *_phy)
 	if (!phy->vbus || phy->regulator_on)
 		return 0;
 
-	/* For phy0 only turn on Vbus if we don't have an ext. Vbus */
+	 
 	if (phy->index == 0 && sun4i_usb_phy0_have_vbus_det(data) &&
 				data->vbus_det) {
 		dev_warn(&_phy->dev, "External vbus detected, not enabling our own vbus\n");
@@ -481,7 +459,7 @@ static int sun4i_usb_phy_power_on(struct phy *_phy)
 
 	phy->regulator_on = true;
 
-	/* We must report Vbus high within OTG_TIME_A_WAIT_VRISE msec. */
+	 
 	if (phy->index == 0 && sun4i_usb_phy0_poll(data))
 		mod_delayed_work(system_wq, &data->detect, DEBOUNCE_TIME);
 
@@ -499,10 +477,7 @@ static int sun4i_usb_phy_power_off(struct phy *_phy)
 	regulator_disable(phy->vbus);
 	phy->regulator_on = false;
 
-	/*
-	 * phy0 vbus typically slowly discharges, sometimes this causes the
-	 * Vbus gpio to not trigger an edge irq on Vbus off, so force a rescan.
-	 */
+	 
 	if (phy->index == 0 && !sun4i_usb_phy0_poll(data))
 		mod_delayed_work(system_wq, &data->detect, POLL_TIME);
 
@@ -541,7 +516,7 @@ static int sun4i_usb_phy_set_mode(struct phy *_phy,
 		data->dr_mode = new_mode;
 	}
 
-	data->id_det = -1; /* Force reprocessing of id */
+	data->id_det = -1;  
 	data->force_session_end = true;
 	queue_delayed_work(system_wq, &data->detect, 0);
 
@@ -571,10 +546,10 @@ static void sun4i_usb_phy0_reroute(struct sun4i_usb_phy_data *data, int id_det)
 
 	regval = readl(data->base + REG_PHY_OTGCTL);
 	if (id_det == 0) {
-		/* Host mode. Route phy0 to EHCI/OHCI */
+		 
 		regval &= ~OTGCTL_ROUTE_MUSB;
 	} else {
-		/* Peripheral mode. Route phy0 to MUSB */
+		 
 		regval |= OTGCTL_ROUTE_MUSB;
 	}
 	writel(regval, data->base + REG_PHY_OTGCTL);
@@ -607,12 +582,12 @@ static void sun4i_usb_phy0_id_vbus_det_scan(struct work_struct *work)
 	data->force_session_end = false;
 
 	if (id_det != data->id_det) {
-		/* id-change, force session end if we've no vbus detection */
+		 
 		if (data->dr_mode == USB_DR_MODE_OTG &&
 		    !sun4i_usb_phy0_have_vbus_det(data))
 			force_session_end = true;
 
-		/* When entering host mode (id = 0) force end the session now */
+		 
 		if (force_session_end && id_det == 0) {
 			sun4i_usb_phy0_set_vbus_detect(phy0, 0);
 			msleep(200);
@@ -634,7 +609,7 @@ static void sun4i_usb_phy0_id_vbus_det_scan(struct work_struct *work)
 	if (id_notify) {
 		extcon_set_state_sync(data->extcon, EXTCON_USB_HOST,
 					!id_det);
-		/* When leaving host mode force end the session here */
+		 
 		if (force_session_end && id_det == 1) {
 			mutex_lock(&phy0->mutex);
 			sun4i_usb_phy0_set_vbus_detect(phy0, 0);
@@ -643,10 +618,10 @@ static void sun4i_usb_phy0_id_vbus_det_scan(struct work_struct *work)
 			mutex_unlock(&phy0->mutex);
 		}
 
-		/* Enable PHY0 passby for host mode only. */
+		 
 		sun4i_usb_phy_passby(phy, !id_det);
 
-		/* Re-route PHY0 if necessary */
+		 
 		if (data->cfg->phy0_dual_route)
 			sun4i_usb_phy0_reroute(data, id_det);
 	}
@@ -662,7 +637,7 @@ static irqreturn_t sun4i_usb_phy0_id_vbus_det_irq(int irq, void *dev_id)
 {
 	struct sun4i_usb_phy_data *data = dev_id;
 
-	/* vbus or id changed, let the pins settle and then scan them */
+	 
 	mod_delayed_work(system_wq, &data->detect, DEBOUNCE_TIME);
 
 	return IRQ_HANDLED;
@@ -675,7 +650,7 @@ static int sun4i_usb_phy0_vbus_notify(struct notifier_block *nb,
 		container_of(nb, struct sun4i_usb_phy_data, vbus_power_nb);
 	struct power_supply *psy = v;
 
-	/* Properties on the vbus_power_supply changed, scan vbus_det */
+	 
 	if (val == PSY_EVENT_PROP_CHANGED && psy == data->vbus_power_supply)
 		mod_delayed_work(system_wq, &data->detect, DEBOUNCE_TIME);
 
@@ -811,9 +786,9 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
 			return PTR_ERR(phy->clk);
 		}
 
-		/* The first PHY is always tied to OTG, and never HSIC */
+		 
 		if (data->cfg->hsic_index && i == data->cfg->hsic_index) {
-			/* HSIC needs secondary clock */
+			 
 			snprintf(name, sizeof(name), "usb%d_hsic_12M", i);
 			phy->clk2 = devm_clk_get(dev, name);
 			if (IS_ERR(phy->clk2)) {
@@ -836,7 +811,7 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
 			return PTR_ERR(phy->reset);
 		}
 
-		if (i || data->cfg->phy0_dual_route) { /* No pmu for musb */
+		if (i || data->cfg->phy0_dual_route) {  
 			snprintf(name, sizeof(name), "pmu%d", i);
 			phy->pmu = devm_platform_ioremap_resource_byname(pdev, name);
 			if (IS_ERR(phy->pmu))
@@ -874,7 +849,7 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
 		if (ret) {
 			dev_err(dev, "Err requesting vbus-det-irq: %d\n", ret);
 			data->vbus_det_irq = -1;
-			sun4i_usb_phy_remove(pdev); /* Stop detect work */
+			sun4i_usb_phy_remove(pdev);  
 			return ret;
 		}
 	}
@@ -884,7 +859,7 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
 		data->vbus_power_nb.priority = 0;
 		ret = power_supply_reg_notifier(&data->vbus_power_nb);
 		if (ret) {
-			sun4i_usb_phy_remove(pdev); /* Stop detect work */
+			sun4i_usb_phy_remove(pdev);  
 			return ret;
 		}
 		data->vbus_power_nb_registered = true;
@@ -892,7 +867,7 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
 
 	phy_provider = devm_of_phy_provider_register(dev, sun4i_usb_phy_xlate);
 	if (IS_ERR(phy_provider)) {
-		sun4i_usb_phy_remove(pdev); /* Stop detect work */
+		sun4i_usb_phy_remove(pdev);  
 		return PTR_ERR(phy_provider);
 	}
 

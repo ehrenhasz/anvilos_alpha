@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Cedar Fork PCH pinctrl/GPIO driver
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -30,9 +25,9 @@
 #define CDF_COMMUNITY(b, s, e, g)			\
 	INTEL_COMMUNITY_GPPS(b, s, e, g, CDF)
 
-/* Cedar Fork PCH */
+ 
 static const struct pinctrl_pin_desc cdf_pins[] = {
-	/* WEST2 */
+	 
 	PINCTRL_PIN(0, "GBE_SDP_TIMESYNC0_S2N"),
 	PINCTRL_PIN(1, "GBE_SDP_TIMESYNC1_S2N"),
 	PINCTRL_PIN(2, "GBE_SDP_TIMESYNC2_S2N"),
@@ -57,7 +52,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(21, "GBE3_LED0"),
 	PINCTRL_PIN(22, "GBE3_LED1"),
 	PINCTRL_PIN(23, "GBE3_LED2"),
-	/* WEST3 */
+	 
 	PINCTRL_PIN(24, "NCSI_RXD0"),
 	PINCTRL_PIN(25, "NCSI_CLK_IN"),
 	PINCTRL_PIN(26, "NCSI_RXD1"),
@@ -82,7 +77,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(45, "UART0_TXD"),
 	PINCTRL_PIN(46, "GBE_UART_RXD"),
 	PINCTRL_PIN(47, "GBE_UART_TXD"),
-	/* WEST01 */
+	 
 	PINCTRL_PIN(48, "GBE_GPIO13"),
 	PINCTRL_PIN(49, "AUX_PWR"),
 	PINCTRL_PIN(50, "UART0_RTS"),
@@ -106,7 +101,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(68, "ME_SMB2_ALRT_N"),
 	PINCTRL_PIN(69, "GBE_MNG_I2C_CLK"),
 	PINCTRL_PIN(70, "GBE_MNG_I2C_DATA"),
-	/* WEST5 */
+	 
 	PINCTRL_PIN(71, "IE_UART_RXD"),
 	PINCTRL_PIN(72, "IE_UART_TXD"),
 	PINCTRL_PIN(73, "VPP_SMB_CLK"),
@@ -127,20 +122,20 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(88, "FLEX_CLK1_50"),
 	PINCTRL_PIN(89, "FLEX_CLK2_50"),
 	PINCTRL_PIN(90, "FLEX_CLK_125"),
-	/* WESTC */
+	 
 	PINCTRL_PIN(91, "TCK_PCH"),
 	PINCTRL_PIN(92, "JTAGX_PCH"),
 	PINCTRL_PIN(93, "TRST_N_PCH"),
 	PINCTRL_PIN(94, "TMS_PCH"),
 	PINCTRL_PIN(95, "TDI_PCH"),
 	PINCTRL_PIN(96, "TDO_PCH"),
-	/* WESTC_DFX */
+	 
 	PINCTRL_PIN(97, "CX_PRDY_N"),
 	PINCTRL_PIN(98, "CX_PREQ_N"),
 	PINCTRL_PIN(99, "CPU_FBREAK_OUT_N"),
 	PINCTRL_PIN(100, "TRIGGER0_N"),
 	PINCTRL_PIN(101, "TRIGGER1_N"),
-	/* WESTA */
+	 
 	PINCTRL_PIN(102, "DBG_PTI_CLK0"),
 	PINCTRL_PIN(103, "DBG_PTI_CLK3"),
 	PINCTRL_PIN(104, "DBG_PTI_DATA0"),
@@ -151,7 +146,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(109, "DBG_PTI_DATA5"),
 	PINCTRL_PIN(110, "DBG_PTI_DATA6"),
 	PINCTRL_PIN(111, "DBG_PTI_DATA7"),
-	/* WESTB */
+	 
 	PINCTRL_PIN(112, "DBG_PTI_DATA8"),
 	PINCTRL_PIN(113, "DBG_PTI_DATA9"),
 	PINCTRL_PIN(114, "DBG_PTI_DATA10"),
@@ -164,7 +159,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(121, "DBG_SPARE1"),
 	PINCTRL_PIN(122, "DBG_SPARE2"),
 	PINCTRL_PIN(123, "DBG_SPARE3"),
-	/* WESTD */
+	 
 	PINCTRL_PIN(124, "CPU_PWR_GOOD"),
 	PINCTRL_PIN(125, "PLTRST_CPU_N"),
 	PINCTRL_PIN(126, "NAC_RESET_NAC_N"),
@@ -185,9 +180,9 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(141, "NAC_SBLINK_N2S"),
 	PINCTRL_PIN(142, "NAC_SBLINK_S2N"),
 	PINCTRL_PIN(143, "NAC_SBLINK_CLK_N2S"),
-	/* WESTD_PECI */
+	 
 	PINCTRL_PIN(144, "ME_PECI"),
-	/* WESTF */
+	 
 	PINCTRL_PIN(145, "NAC_RMII_CLK"),
 	PINCTRL_PIN(146, "NAC_RGMII_CLK"),
 	PINCTRL_PIN(147, "NAC_GBE_SMB_CLK_TX_N2S"),
@@ -211,7 +206,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(165, "NAC_GBE_SMB_CLK_RX_S2N"),
 	PINCTRL_PIN(166, "NAC_GBE_SMB_DATA_RX_S2N"),
 	PINCTRL_PIN(167, "NAC_GBE_SMB_ALRT_N"),
-	/* EAST2 */
+	 
 	PINCTRL_PIN(168, "USB_OC0_N"),
 	PINCTRL_PIN(169, "GBE_GPIO0"),
 	PINCTRL_PIN(170, "GBE_GPIO1"),
@@ -236,7 +231,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(189, "SATA2_LED_N"),
 	PINCTRL_PIN(190, "SATA_PDETECT2"),
 	PINCTRL_PIN(191, "SATA2_SDOUT"),
-	/* EAST3 */
+	 
 	PINCTRL_PIN(192, "ESPI_IO0"),
 	PINCTRL_PIN(193, "ESPI_IO1"),
 	PINCTRL_PIN(194, "ESPI_IO2"),
@@ -248,7 +243,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(200, "ESPI_CS1_N"),
 	PINCTRL_PIN(201, "ESPI_ALRT1_N"),
 	PINCTRL_PIN(202, "ESPI_CLK_LOOPBK"),
-	/* EAST0 */
+	 
 	PINCTRL_PIN(203, "SPI_CS0_N"),
 	PINCTRL_PIN(204, "SPI_CS1_N"),
 	PINCTRL_PIN(205, "SPI_MOSI_IO0"),
@@ -272,7 +267,7 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 	PINCTRL_PIN(223, "PMU_I2C_DATA"),
 	PINCTRL_PIN(224, "PECI_SMB_CLK"),
 	PINCTRL_PIN(225, "PECI_SMB_ALRT_N"),
-	/* EMMC */
+	 
 	PINCTRL_PIN(226, "EMMC_CMD"),
 	PINCTRL_PIN(227, "EMMC_STROBE"),
 	PINCTRL_PIN(228, "EMMC_CLK"),
@@ -287,29 +282,29 @@ static const struct pinctrl_pin_desc cdf_pins[] = {
 };
 
 static const struct intel_padgroup cdf_community0_gpps[] = {
-	CDF_GPP(0, 0, 23),	/* WEST2 */
-	CDF_GPP(1, 24, 47),	/* WEST3 */
-	CDF_GPP(2, 48, 70),	/* WEST01 */
-	CDF_GPP(3, 71, 90),	/* WEST5 */
-	CDF_GPP(4, 91, 96),	/* WESTC */
-	CDF_GPP(5, 97, 101),	/* WESTC_DFX */
-	CDF_GPP(6, 102, 111),	/* WESTA */
-	CDF_GPP(7, 112, 123),	/* WESTB */
-	CDF_GPP(8, 124, 143),	/* WESTD */
-	CDF_GPP(9, 144, 144),	/* WESTD_PECI */
-	CDF_GPP(10, 145, 167),	/* WESTF */
+	CDF_GPP(0, 0, 23),	 
+	CDF_GPP(1, 24, 47),	 
+	CDF_GPP(2, 48, 70),	 
+	CDF_GPP(3, 71, 90),	 
+	CDF_GPP(4, 91, 96),	 
+	CDF_GPP(5, 97, 101),	 
+	CDF_GPP(6, 102, 111),	 
+	CDF_GPP(7, 112, 123),	 
+	CDF_GPP(8, 124, 143),	 
+	CDF_GPP(9, 144, 144),	 
+	CDF_GPP(10, 145, 167),	 
 };
 
 static const struct intel_padgroup cdf_community1_gpps[] = {
-	CDF_GPP(0, 168, 191),	/* EAST2 */
-	CDF_GPP(1, 192, 202),	/* EAST3 */
-	CDF_GPP(2, 203, 225),	/* EAST0 */
-	CDF_GPP(3, 226, 236),	/* EMMC */
+	CDF_GPP(0, 168, 191),	 
+	CDF_GPP(1, 192, 202),	 
+	CDF_GPP(2, 203, 225),	 
+	CDF_GPP(3, 226, 236),	 
 };
 
 static const struct intel_community cdf_communities[] = {
-	CDF_COMMUNITY(0, 0, 167, cdf_community0_gpps),		/* West */
-	CDF_COMMUNITY(1, 168, 236, cdf_community1_gpps),	/* East */
+	CDF_COMMUNITY(0, 0, 167, cdf_community0_gpps),		 
+	CDF_COMMUNITY(1, 168, 236, cdf_community1_gpps),	 
 };
 
 static const struct intel_pinctrl_soc_data cdf_soc_data = {

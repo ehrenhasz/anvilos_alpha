@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
@@ -112,7 +112,7 @@ static void test_global_data_rdonly(struct bpf_object *obj, __u32 duration)
 	if (!ASSERT_TRUE(bpf_map__is_internal(map), "is_internal"))
 		return;
 
-	/* ensure we can lookup internal maps by their ELF names */
+	 
 	map2 = bpf_object__find_map_by_name(obj, ".rodata");
 	if (!ASSERT_EQ(map, map2, "same_maps"))
 		return;

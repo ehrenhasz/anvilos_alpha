@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _SCREEN_INFO_H
 #define _SCREEN_INFO_H
 
@@ -6,4 +6,4 @@
 
 extern struct screen_info screen_info;
 
-#endif /* _SCREEN_INFO_H */
+#endif  

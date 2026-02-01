@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- *
- * Authors:
- *	Inki Dae <inki.dae@samsung.com>
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *	Seung-Woo Kim <sw0312.kim@samsung.com>
- */
+ 
+ 
 
 #ifndef _EXYNOS_DRM_FBDEV_H_
 #define _EXYNOS_DRM_FBDEV_H_

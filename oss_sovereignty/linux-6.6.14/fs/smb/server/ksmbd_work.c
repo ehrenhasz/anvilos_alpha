@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2019 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/mm.h>
@@ -134,7 +132,7 @@ static int __ksmbd_iov_pin_rsp(struct ksmbd_work *work, void *ib, int len,
 		work->iov = new;
 	}
 
-	/* Plus rfc_length size on first iov */
+	 
 	if (!work->iov_idx) {
 		work->iov[work->iov_idx].iov_base = work->response_buf;
 		*(__be32 *)work->iov[0].iov_base = 0;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "builtin.h"
 #include "perf.h"
 
@@ -106,7 +106,7 @@ static int64_t ev_name_cmp(struct perf_hpp_fmt *fmt __maybe_unused,
 			   struct hist_entry *left,
 			   struct hist_entry *right)
 {
-	/* Return opposite number for sorting in alphabetical order */
+	 
 	return -strcmp(left->kvm_info->name, right->kvm_info->name);
 }
 
@@ -457,7 +457,7 @@ static int kvm_hpp_list__init(char *list,
 		if (!ret)
 			continue;
 
-		/* Handle errors */
+		 
 		if (ret == -EINVAL)
 			pr_err("Invalid field key: '%s'", tok);
 		else if (ret == -ESRCH)
@@ -486,10 +486,10 @@ static int kvm_hpp_list__parse(struct perf_hpp_list *hpp_list,
 	if (ret)
 		goto out;
 
-	/* Copy sort keys to output fields */
+	 
 	perf_hpp__setup_output_field(hpp_list);
 
-	/* and then copy output fields to sort keys */
+	 
 	perf_hpp__append_sort_keys(hpp_list);
 out:
 	free(output);
@@ -557,7 +557,7 @@ static int kvm__hists_browse(struct hists *hists)
 	if (browser == NULL)
 		return -1;
 
-	/* reset abort key so that it can get Ctrl-C as a key */
+	 
 	SLang_reset_tty();
 	SLang_init_tty(0, 0, 0);
 
@@ -595,9 +595,9 @@ static void kvm_display(struct perf_kvm_stat *kvm)
 	print_result(kvm);
 }
 
-#endif /* HAVE_SLANG_SUPPORT */
+#endif  
 
-#endif // defined(HAVE_KVM_STAT_SUPPORT) && defined(HAVE_LIBTRACEEVENT)
+#endif 
 
 static const char *get_filename_for_perf_kvm(void)
 {
@@ -715,7 +715,7 @@ static void clear_events_cache_stats(void)
 		he = rb_entry(nd, struct hist_entry, rb_node_in);
 		event = container_of(he, struct kvm_event, he);
 
-		/* reset stats for event */
+		 
 		event->total.time = 0;
 		init_stats(&event->total.stats);
 
@@ -849,7 +849,7 @@ static bool update_kvm_event(struct perf_kvm_stat *kvm,
 			     struct kvm_event *event, int vcpu_id,
 			     u64 time_diff)
 {
-	/* Update overall statistics */
+	 
 	kvm->total_count++;
 	kvm->total_time += time_diff;
 
@@ -930,16 +930,13 @@ static bool handle_end_event(struct perf_kvm_stat *kvm,
 	event = vcpu_record->last_event;
 	time_begin = vcpu_record->start_time;
 
-	/* The begin event is not caught. */
+	 
 	if (!time_begin)
 		return true;
 
-	/*
-	 * In some case, the 'begin event' only records the start timestamp,
-	 * the actual event is recognized in the 'end event' (e.g. mmio-event).
-	 */
+	 
 
-	/* Both begin and end events did not get the key. */
+	 
 	if (!event && key->key == INVALID_KEY)
 		return true;
 
@@ -952,7 +949,7 @@ static bool handle_end_event(struct perf_kvm_stat *kvm,
 	vcpu_record->last_event = NULL;
 	vcpu_record->start_time = 0;
 
-	/* seems to happen once in a while during live mode */
+	 
 	if (sample->time < time_begin) {
 		pr_debug("End time before begin time; skipping event.\n");
 		return true;
@@ -979,7 +976,7 @@ struct vcpu_event_record *per_vcpu_record(struct thread *thread,
 					  struct evsel *evsel,
 					  struct perf_sample *sample)
 {
-	/* Only kvm_entry records vcpu id. */
+	 
 	if (!thread__priv(thread) && kvm_entry_event(evsel)) {
 		struct vcpu_event_record *vcpu_record;
 
@@ -1009,7 +1006,7 @@ static bool handle_kvm_event(struct perf_kvm_stat *kvm,
 	if (!vcpu_record)
 		return true;
 
-	/* only process events for vcpus user cares about */
+	 
 	if ((kvm->trace_vcpu != -1) &&
 	    (kvm->trace_vcpu != vcpu_record->vcpu_id))
 		return true;
@@ -1259,9 +1256,7 @@ static bool verify_vcpu(int vcpu)
 }
 
 #if defined(HAVE_TIMERFD_SUPPORT) && defined(HAVE_LIBTRACEEVENT)
-/* keeping the max events to a modest level to keep
- * the processing of samples per mmap smooth.
- */
+ 
 #define PERF_KVM__MAX_EVENTS_PER_MMAP  25
 
 static s64 perf_kvm__mmap_read_idx(struct perf_kvm_stat *kvm, int idx,
@@ -1289,10 +1284,7 @@ static s64 perf_kvm__mmap_read_idx(struct perf_kvm_stat *kvm, int idx,
 		}
 
 		err = perf_session__queue_event(kvm->session, event, timestamp, 0, NULL);
-		/*
-		 * FIXME: Here we can't consume the event, as perf_session__queue_event will
-		 *        point to it, and it'll get possibly overwritten by the kernel.
-		 */
+		 
 		perf_mmap__consume(&md->core);
 
 		if (err) {
@@ -1300,11 +1292,11 @@ static s64 perf_kvm__mmap_read_idx(struct perf_kvm_stat *kvm, int idx,
 			return -1;
 		}
 
-		/* save time stamp of our first sample for this mmap */
+		 
 		if (n == 0)
 			*mmap_time = timestamp;
 
-		/* limit events per mmap handled all at once */
+		 
 		n++;
 		if (n == PERF_KVM__MAX_EVENTS_PER_MMAP)
 			break;
@@ -1325,13 +1317,7 @@ static int perf_kvm__mmap_read(struct perf_kvm_stat *kvm)
 		if (n < 0)
 			return -1;
 
-		/* flush time is going to be the minimum of all the individual
-		 * mmap times. Essentially, we flush all the samples queued up
-		 * from the last pass under our minimal start time -- that leaves
-		 * a very small race for samples to come in with a lower timestamp.
-		 * The ioctl to return the perf_clock timestamp should close the
-		 * race entirely.
-		 */
+		 
 		if (mmap_time < flush_time)
 			flush_time = mmap_time;
 
@@ -1340,7 +1326,7 @@ static int perf_kvm__mmap_read(struct perf_kvm_stat *kvm)
 			throttled = 1;
 	}
 
-	/* flush queue after each round in which we processed events */
+	 
 	if (ntotal) {
 		struct ordered_events *oe = &kvm->session->ordered_events;
 
@@ -1413,14 +1399,14 @@ static int perf_kvm__handle_timerfd(struct perf_kvm_stat *kvm)
 	if (c != 1)
 		pr_debug("Missed timer beats: %" PRIu64 "\n", c-1);
 
-	/* update display */
+	 
 	sort_result(kvm);
 	print_result(kvm);
 
-	/* Reset sort list to "ev_name" */
+	 
 	kvm_hists__reinit(NULL, "ev_name");
 
-	/* reset counts */
+	 
 	clear_events_cache_stats();
 	kvm->total_count = 0;
 	kvm->total_time = 0;
@@ -1463,7 +1449,7 @@ static int kvm_events_live_report(struct perf_kvm_stat *kvm)
 	int nr_stdin, ret, err = -EINVAL;
 	struct termios save;
 
-	/* live flag must be set first */
+	 
 	kvm->live = true;
 
 	ret = cpu_isa_config(kvm);
@@ -1483,7 +1469,7 @@ static int kvm_events_live_report(struct perf_kvm_stat *kvm)
 	signal(SIGINT, sig_handler);
 	signal(SIGTERM, sig_handler);
 
-	/* add timer fd */
+	 
 	if (perf_kvm__timerfd_create(kvm) < 0) {
 		err = -1;
 		goto out;
@@ -1499,7 +1485,7 @@ static int kvm_events_live_report(struct perf_kvm_stat *kvm)
 	if (fd_set_nonblock(fileno(stdin)) != 0)
 		goto out;
 
-	/* everything is good - enable the events and process */
+	 
 	evlist__enable(kvm->evlist);
 
 	while (!done) {
@@ -1547,19 +1533,16 @@ static int kvm_live_open_events(struct perf_kvm_stat *kvm)
 
 	evlist__config(evlist, &kvm->opts, NULL);
 
-	/*
-	 * Note: exclude_{guest,host} do not apply here.
-	 *       This command processes KVM tracepoints from host only
-	 */
+	 
 	evlist__for_each_entry(evlist, pos) {
 		struct perf_event_attr *attr = &pos->core.attr;
 
-		/* make sure these *are* set */
+		 
 		evsel__set_sample_bit(pos, TID);
 		evsel__set_sample_bit(pos, TIME);
 		evsel__set_sample_bit(pos, CPU);
 		evsel__set_sample_bit(pos, RAW);
-		/* make sure these are *not*; want as small a sample as possible */
+		 
 		evsel__reset_sample_bit(pos, PERIOD);
 		evsel__reset_sample_bit(pos, IP);
 		evsel__reset_sample_bit(pos, CALLCHAIN);
@@ -1574,7 +1557,7 @@ static int kvm_live_open_events(struct perf_kvm_stat *kvm)
 		attr->watermark = 0;
 		attr->wakeup_events = 1000;
 
-		/* will enable all once we are ready */
+		 
 		attr->disabled = 1;
 	}
 
@@ -1629,10 +1612,7 @@ static int read_events(struct perf_kvm_stat *kvm)
 		goto out_delete;
 	}
 
-	/*
-	 * Do not use 'isa' recorded in kvm_exit tracepoint since it is not
-	 * traced in the old kernel.
-	 */
+	 
 	ret = cpu_isa_config(kvm);
 	if (ret < 0)
 		goto out_delete;
@@ -1844,7 +1824,7 @@ static struct evlist *kvm_live_event_list(void)
 		if (tp == NULL)
 			goto out;
 
-		/* split tracepoint into subsystem and name */
+		 
 		sys = tp;
 		name = strchr(tp, ':');
 		if (name == NULL) {
@@ -1918,7 +1898,7 @@ static int kvm_events_live(struct perf_kvm_stat *kvm,
 	};
 
 
-	/* event handling */
+	 
 	kvm->tool.sample = process_sample_event;
 	kvm->tool.comm   = perf_event__process_comm;
 	kvm->tool.exit   = perf_event__process_exit;
@@ -1928,7 +1908,7 @@ static int kvm_events_live(struct perf_kvm_stat *kvm,
 	kvm->tool.ordered_events = true;
 	perf_tool__fill_defaults(&kvm->tool);
 
-	/* set defaults */
+	 
 	kvm->display_time = 1;
 	kvm->opts.user_interval = 1;
 	kvm->opts.mmap_pages = 512;
@@ -1948,11 +1928,9 @@ static int kvm_events_live(struct perf_kvm_stat *kvm,
 			usage_with_options(live_usage, live_options);
 	}
 
-	kvm->duration *= NSEC_PER_USEC;   /* convert usec to nsec */
+	kvm->duration *= NSEC_PER_USEC;    
 
-	/*
-	 * target related setups
-	 */
+	 
 	err = target__validate(&kvm->opts.target);
 	if (err) {
 		target__strerror(&kvm->opts.target, err, errbuf, BUFSIZ);
@@ -1963,9 +1941,7 @@ static int kvm_events_live(struct perf_kvm_stat *kvm,
 		kvm->opts.target.system_wide = true;
 
 
-	/*
-	 * generate the event list
-	 */
+	 
 	err = setup_kvm_events_tp(kvm);
 	if (err < 0) {
 		pr_err("Unable to setup the kvm tracepoints\n");
@@ -1981,9 +1957,7 @@ static int kvm_events_live(struct perf_kvm_stat *kvm,
 	if (evlist__create_maps(kvm->evlist, &kvm->opts.target) < 0)
 		usage_with_options(live_usage, live_options);
 
-	/*
-	 * perf session
-	 */
+	 
 	kvm->session = perf_session__new(&data, &kvm->tool);
 	if (IS_ERR(kvm->session)) {
 		err = PTR_ERR(kvm->session);
@@ -2051,7 +2025,7 @@ static int kvm_cmd_stat(const char *file_name, int argc, const char **argv)
 perf_stat:
 	return cmd_stat(argc, argv);
 }
-#endif /* HAVE_KVM_STAT_SUPPORT */
+#endif  
 
 int __weak kvm_add_default_arch_event(int *argc __maybe_unused,
 					const char **argv __maybe_unused)

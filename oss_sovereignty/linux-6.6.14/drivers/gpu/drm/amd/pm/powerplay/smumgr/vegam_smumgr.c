@@ -1,25 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include "smumgr.h"
 #include "smu_ucode_xfer_vi.h"
@@ -62,8 +41,7 @@
 
 static const struct vegam_pt_defaults
 vegam_power_tune_data_set_array[POWERTUNE_DEFAULT_SET_MAX] = {
-	/* sviLoadLIneEn, SviLoadLineVddC, TDC_VDDC_ThrottleReleaseLimitPerc, TDC_MAWt,
-	 * TdcWaterfallCtl, DTEAmbientTempBase, DisplayCac, BAPM_TEMP_GRADIENT */
+	 
 	{ 1, 0xF, 0xFD, 0x19, 5, 45, 0, 0xB0000,
 	{ 0x79, 0x253, 0x25D, 0xAE, 0x72, 0x80, 0x83, 0x86, 0x6F, 0xC8, 0xC9, 0xC9, 0x2F, 0x4D, 0x61},
 	{ 0x17C, 0x172, 0x180, 0x1BC, 0x1B3, 0x1BD, 0x206, 0x200, 0x203, 0x25D, 0x25A, 0x255, 0x2C3, 0x2C5, 0x2B4 } },
@@ -101,10 +79,10 @@ static int vegam_start_smu_in_protection_mode(struct pp_hwmgr *hwmgr)
 {
 	int result = 0;
 
-	/* Wait for smc boot up */
-	/* PHM_WAIT_VFPF_INDIRECT_FIELD_UNEQUAL(smumgr, SMC_IND, RCU_UC_EVENTS, boot_seq_done, 0) */
+	 
+	 
 
-	/* Assert reset */
+	 
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 					SMC_SYSCON_RESET_CNTL, rst_reg, 1);
 
@@ -112,13 +90,13 @@ static int vegam_start_smu_in_protection_mode(struct pp_hwmgr *hwmgr)
 	if (result != 0)
 		return result;
 
-	/* Clear status */
+	 
 	cgs_write_ind_register(hwmgr->device, CGS_IND_REG__SMC, ixSMU_STATUS, 0);
 
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 					SMC_SYSCON_CLOCK_CNTL_0, ck_disable, 0);
 
-	/* De-assert reset */
+	 
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 					SMC_SYSCON_RESET_CNTL, rst_reg, 0);
 
@@ -126,11 +104,11 @@ static int vegam_start_smu_in_protection_mode(struct pp_hwmgr *hwmgr)
 	PHM_WAIT_VFPF_INDIRECT_FIELD(hwmgr, SMC_IND, RCU_UC_EVENTS, INTERRUPTS_ENABLED, 1);
 
 
-	/* Call Test SMU message with 0x20000 offset to trigger SMU start */
+	 
 	smu7_send_msg_to_smc_offset(hwmgr);
 
-	/* Wait done bit to be set */
-	/* Check pass/failed indicator */
+	 
+	 
 
 	PHM_WAIT_VFPF_INDIRECT_FIELD_UNEQUAL(hwmgr, SMC_IND, SMU_STATUS, SMU_DONE, 0);
 
@@ -146,7 +124,7 @@ static int vegam_start_smu_in_protection_mode(struct pp_hwmgr *hwmgr)
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 					SMC_SYSCON_RESET_CNTL, rst_reg, 0);
 
-	/* Wait for firmware to initialize */
+	 
 	PHM_WAIT_VFPF_INDIRECT_FIELD(hwmgr, SMC_IND, FIRMWARE_FLAGS, INTERRUPTS_ENABLED, 1);
 
 	return result;
@@ -156,11 +134,11 @@ static int vegam_start_smu_in_non_protection_mode(struct pp_hwmgr *hwmgr)
 {
 	int result = 0;
 
-	/* wait for smc boot up */
+	 
 	PHM_WAIT_VFPF_INDIRECT_FIELD_UNEQUAL(hwmgr, SMC_IND, RCU_UC_EVENTS, boot_seq_done, 0);
 
-	/* Clear firmware interrupt enable flag */
-	/* PHM_WRITE_VFPF_INDIRECT_FIELD(pSmuMgr, SMC_IND, SMC_SYSCON_MISC_CNTL, pre_fetcher_en, 1); */
+	 
+	 
 	cgs_write_ind_register(hwmgr->device, CGS_IND_REG__SMC,
 				ixFIRMWARE_FLAGS, 0);
 
@@ -172,7 +150,7 @@ static int vegam_start_smu_in_non_protection_mode(struct pp_hwmgr *hwmgr)
 	if (result != 0)
 		return result;
 
-	/* Set smc instruct start point at 0x0 */
+	 
 	smu7_program_jump_on_start(hwmgr);
 
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
@@ -181,7 +159,7 @@ static int vegam_start_smu_in_non_protection_mode(struct pp_hwmgr *hwmgr)
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 					SMC_SYSCON_RESET_CNTL, rst_reg, 0);
 
-	/* Wait for firmware to initialize */
+	 
 
 	PHM_WAIT_VFPF_INDIRECT_FIELD(hwmgr, SMC_IND,
 					FIRMWARE_FLAGS, INTERRUPTS_ENABLED, 1);
@@ -194,14 +172,14 @@ static int vegam_start_smu(struct pp_hwmgr *hwmgr)
 	int result = 0;
 	struct vegam_smumgr *smu_data = (struct vegam_smumgr *)(hwmgr->smu_backend);
 
-	/* Only start SMC if SMC RAM is not running */
+	 
 	if (!smu7_is_smc_ram_running(hwmgr) && hwmgr->not_vf) {
 		smu_data->protected_mode = (uint8_t)(PHM_READ_VFPF_INDIRECT_FIELD(hwmgr->device,
 				CGS_IND_REG__SMC, SMU_FIRMWARE, SMU_MODE));
 		smu_data->smu7_data.security_hard_key = (uint8_t)(PHM_READ_VFPF_INDIRECT_FIELD(
 				hwmgr->device, CGS_IND_REG__SMC, SMU_FIRMWARE, SMU_SEL));
 
-		/* Check if SMU is running in protected mode */
+		 
 		if (smu_data->protected_mode == 0)
 			result = vegam_start_smu_in_non_protection_mode(hwmgr);
 		else
@@ -211,7 +189,7 @@ static int vegam_start_smu(struct pp_hwmgr *hwmgr)
 			PP_ASSERT_WITH_CODE(0, "Failed to load SMU ucode.", return result);
 	}
 
-	/* Setup SoftRegsStart here for register lookup in case DummyBackEnd is used and ProcessFirmwareHeader is not executed */
+	 
 	smu7_read_smc_sram_dword(hwmgr,
 			SMU7_FIRMWARE_HEADER_LOCATION + offsetof(SMU75_Firmware_Header, SoftRegisters),
 			&(smu_data->smu7_data.soft_regs_start),
@@ -404,7 +382,7 @@ static int vegam_update_bif_smc_table(struct pp_hwmgr *hwmgr)
 	max_entry = (SMU75_MAX_LEVELS_LINK < pcie_table->count) ?
 						SMU75_MAX_LEVELS_LINK :
 						pcie_table->count;
-	/* Setup BIF_SCLK levels */
+	 
 	for (i = 0; i < max_entry; i++)
 		smu_data->bif_sclk_table[i] = pcie_table->entries[i].pcie_sclk;
 	return 0;
@@ -458,7 +436,7 @@ static int vegam_populate_smc_mvdd_table(struct pp_hwmgr *hwmgr,
 		for (level = 0; level < count; level++) {
 			table->SmioTable2.Pattern[level].Voltage = PP_HOST_TO_SMC_US(
 					data->mvdd_voltage_table.entries[level].value * VOLTAGE_SCALE);
-			/* Index into DpmTable.Smio. Drive bits from Smio entry to get this voltage level.*/
+			 
 			table->SmioTable2.Pattern[level].Smio =
 				(uint8_t) level;
 			table->Smio[level] |=
@@ -507,11 +485,7 @@ static int vegam_populate_cac_table(struct pp_hwmgr *hwmgr,
 			(struct phm_ppt_v1_information *)(hwmgr->pptable);
 	struct phm_ppt_v1_voltage_lookup_table *lookup_table =
 			table_info->vddc_lookup_table;
-	/* tables is already swapped, so in order to use the value from it,
-	 * we need to swap it back.
-	 * We are populating vddc CAC data to BapmVddc table
-	 * in split and merged mode
-	 */
+	 
 	for (count = 0; count < lookup_table->count; count++) {
 		index = phm_get_voltage_index(lookup_table,
 				data->vddc_voltage_table.entries[count].value);
@@ -574,8 +548,7 @@ static int vegam_populate_smc_link_level(struct pp_hwmgr *hwmgr,
 	struct smu7_dpm_table *dpm_table = &data->dpm_table;
 	int i;
 
-	/* Index (dpm_table->pcie_speed_table.count)
-	 * is reserved for PCIE boot level. */
+	 
 	for (i = 0; i <= dpm_table->pcie_speed_table.count; i++) {
 		table->LinkLevel[i].PcieGenSpeed  =
 				(uint8_t)dpm_table->pcie_speed_table.dpm_levels[i].value;
@@ -590,7 +563,7 @@ static int vegam_populate_smc_link_level(struct pp_hwmgr *hwmgr,
 	smu_data->smc_state_table.LinkLevelCount =
 			(uint8_t)dpm_table->pcie_speed_table.count;
 
-/* To Do move to hwmgr */
+ 
 	data->dpm_level_enable_mask.pcie_dpm_enable_mask =
 			phm_get_dpm_level_enable_mask_value(&dpm_table->pcie_speed_table);
 
@@ -607,12 +580,12 @@ static int vegam_get_dependency_volt_by_clk(struct pp_hwmgr *hwmgr,
 
 	*voltage = *mvdd = 0;
 
-	/* clock - voltage dependency table is empty table */
+	 
 	if (dep_table->count == 0)
 		return -EINVAL;
 
 	for (i = 0; i < dep_table->count; i++) {
-		/* find first sclk bigger than request */
+		 
 		if (dep_table->entries[i].clk >= clock) {
 			*voltage |= (dep_table->entries[i].vddc *
 					VOLTAGE_SCALE) << VDDC_SHIFT;
@@ -641,7 +614,7 @@ static int vegam_get_dependency_volt_by_clk(struct pp_hwmgr *hwmgr,
 		}
 	}
 
-	/* sclk is bigger than max sclk in the dependence table */
+	 
 	*voltage |= (dep_table->entries[i - 1].vddc * VOLTAGE_SCALE) << VDDC_SHIFT;
 
 	if (SMU7_VOLTAGE_CONTROL_NONE == data->vddci_control)
@@ -729,7 +702,7 @@ static int vegam_calculate_sclk_params(struct pp_hwmgr *hwmgr,
 	uint64_t temp;
 
 	sclk_setting->SclkFrequency = clock;
-	/* get the engine clock dividers for this clock value */
+	 
 	result = atomctrl_get_engine_pll_dividers_ai(hwmgr, clock,  &dividers);
 	if (result == 0) {
 		sclk_setting->Fcw_int = dividers.usSclk_fcw_int;
@@ -764,13 +737,13 @@ static int vegam_calculate_sclk_params(struct pp_hwmgr *hwmgr,
 	do_div(temp, ref_clock);
 	sclk_setting->Fcw_frac = temp & 0xffff;
 
-	pcc_target_percent = 10; /*  Hardcode 10% for now. */
+	pcc_target_percent = 10;  
 	pcc_target_freq = clock - (clock * pcc_target_percent / 100);
 	sclk_setting->Pcc_fcw_int = (uint16_t)
 			((pcc_target_freq << table->SclkFcwRangeTable[sclk_setting->PllRange].postdiv) /
 					ref_clock);
 
-	ss_target_percent = 2; /*  Hardcode 2% for now. */
+	ss_target_percent = 2;  
 	sclk_setting->SSc_En = 0;
 	if (ss_target_percent) {
 		sclk_setting->SSc_En = 1;
@@ -810,7 +783,7 @@ static int vegam_populate_single_graphic_level(struct pp_hwmgr *hwmgr,
 		uint32_t clock, struct SMU75_Discrete_GraphicsLevel *level)
 {
 	int result;
-	/* PP_Clocks minClocks; */
+	 
 	uint32_t mvdd;
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 	struct phm_ppt_v1_information *table_info =
@@ -819,7 +792,7 @@ static int vegam_populate_single_graphic_level(struct pp_hwmgr *hwmgr,
 
 	result = vegam_calculate_sclk_params(hwmgr, clock, &curr_sclk_setting);
 
-	/* populate graphics levels */
+	 
 	result = vegam_get_dependency_volt_by_clk(hwmgr,
 			table_info->vdd_dep_on_sclk, clock,
 			&level->MinVoltage, &mvdd);
@@ -897,7 +870,7 @@ static int vegam_populate_all_graphic_levels(struct pp_hwmgr *hwmgr)
 				(SclkDPMTuning_VEGAM >> DPMTuning_Uphyst_Shift);
 		levels[i].DownHyst = (uint8_t)
 				(SclkDPMTuning_VEGAM >> DPMTuning_Downhyst_Shift);
-		/* Making sure only DPM level 0-1 have Deep Sleep Div ID populated. */
+		 
 		if (i > 1)
 			levels[i].DeepSleepDivId = 0;
 	}
@@ -943,17 +916,17 @@ static int vegam_populate_all_graphic_levels(struct pp_hwmgr *hwmgr)
 						(lowest_pcie_level_enabled + 1 + count) :
 						hightest_pcie_level_enabled;
 
-		/* set pcieDpmLevel to hightest_pcie_level_enabled */
+		 
 		for (i = 2; i < dpm_table->sclk_table.count; i++)
 			levels[i].pcieDpmLevel = hightest_pcie_level_enabled;
 
-		/* set pcieDpmLevel to lowest_pcie_level_enabled */
+		 
 		levels[0].pcieDpmLevel = lowest_pcie_level_enabled;
 
-		/* set pcieDpmLevel to mid_pcie_level_enabled */
+		 
 		levels[1].pcieDpmLevel = mid_pcie_level_enabled;
 	}
-	/* level count will send to smc once at init smc table and never change */
+	 
 	result = smu7_copy_bytes_to_smc(hwmgr, array, (uint8_t *)levels,
 			(uint32_t)array_size, SMC_RAM_END);
 
@@ -1037,7 +1010,7 @@ static int vegam_populate_all_memory_levels(struct pp_hwmgr *hwmgr)
 	struct vegam_smumgr *smu_data = (struct vegam_smumgr *)(hwmgr->smu_backend);
 	struct smu7_dpm_table *dpm_table = &hw_data->dpm_table;
 	int result;
-	/* populate MCLK dpm table to SMU7 */
+	 
 	uint32_t array = smu_data->smu7_data.dpm_table_start +
 			offsetof(SMU75_Discrete_DpmTable, MemoryLevel);
 	uint32_t array_size = sizeof(SMU75_Discrete_MemoryLevel) *
@@ -1075,7 +1048,7 @@ static int vegam_populate_all_memory_levels(struct pp_hwmgr *hwmgr)
 	levels[dpm_table->mclk_table.count - 1].DisplayWatermark =
 			PPSMC_DISPLAY_WATERMARK_HIGH;
 
-	/* level count will send to smc once at init smc table and never change */
+	 
 	result = smu7_copy_bytes_to_smc(hwmgr, array, (uint8_t *)levels,
 			(uint32_t)array_size, SMC_RAM_END);
 
@@ -1091,7 +1064,7 @@ static int vegam_populate_mvdd_value(struct pp_hwmgr *hwmgr,
 	uint32_t i = 0;
 
 	if (SMU7_VOLTAGE_CONTROL_NONE != data->mvdd_control) {
-		/* find mvdd value which clock is more than request */
+		 
 		for (i = 0; i < table_info->vdd_dep_on_mclk->count; i++) {
 			if (mclk <= table_info->vdd_dep_on_mclk->entries[i].clk) {
 				smio_pat->Voltage = data->mvdd_voltage_table.entries[i].value;
@@ -1120,8 +1093,7 @@ static int vegam_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 
 	table->ACPILevel.Flags &= ~PPSMC_SWSTATE_FLAG_DC;
 
-	/* Get MinVoltage and Frequency from DPM0,
-	 * already converted to SMC_UL */
+	 
 	sclk_frequency = data->vbios_boot_state.sclk_bootup_value;
 	result = vegam_get_dependency_volt_by_clk(hwmgr,
 			table_info->vdd_dep_on_sclk,
@@ -1159,7 +1131,7 @@ static int vegam_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 	CONVERT_FROM_HOST_TO_SMC_US(table->ACPILevel.SclkSetting.Sclk_ss_slew_rate);
 
 
-	/* Get MinVoltage and Frequency from DPM0, already converted to SMC_UL */
+	 
 	table->MemoryACPILevel.MclkFrequency = data->vbios_boot_state.mclk_bootup_value;
 	result = vegam_get_dependency_volt_by_clk(hwmgr,
 			table_info->vdd_dep_on_mclk,
@@ -1226,7 +1198,7 @@ static int vegam_populate_smc_vce_level(struct pp_hwmgr *hwmgr,
 				(vddci * VOLTAGE_SCALE) << VDDCI_SHIFT;
 		table->VceLevel[count].MinVoltage |= 1 << PHASES_SHIFT;
 
-		/*retrieve divider value for VBIOS */
+		 
 		result = atomctrl_get_dfs_pll_dividers_vi(hwmgr,
 				table->VceLevel[count].Frequency, &dividers);
 		PP_ASSERT_WITH_CODE((0 == result),
@@ -1338,7 +1310,7 @@ static int vegam_populate_smc_uvd_level(struct pp_hwmgr *hwmgr,
 		table->UvdLevel[count].MinVoltage |= (vddci * VOLTAGE_SCALE) << VDDCI_SHIFT;
 		table->UvdLevel[count].MinVoltage |= 1 << PHASES_SHIFT;
 
-		/* retrieve divider value for VBIOS */
+		 
 		result = atomctrl_get_dfs_pll_dividers_vi(hwmgr,
 				table->UvdLevel[count].VclkFrequency, &dividers);
 		PP_ASSERT_WITH_CODE((0 == result),
@@ -1370,7 +1342,7 @@ static int vegam_populate_smc_boot_level(struct pp_hwmgr *hwmgr,
 	table->GraphicsBootLevel = 0;
 	table->MemoryBootLevel = 0;
 
-	/* find boot level from dpm table */
+	 
 	result = phm_find_boot_level(&(data->dpm_table.sclk_table),
 			data->vbios_boot_state.sclk_bootup_value,
 			(uint32_t *)&(table->GraphicsBootLevel));
@@ -1505,7 +1477,7 @@ static int vegam_populate_clock_stretcher_data_table(struct pp_hwmgr *hwmgr)
 
 	ro = efuse * (max - min) / 255 + min;
 
-	/* Populate Sclk_CKS_masterEn0_7 and Sclk_voltageOffset */
+	 
 	for (i = 0; i < sclk_table->count; i++) {
 		smu_data->smc_state_table.Sclk_CKS_masterEn0_7 |=
 				sclk_table->entries[i].cks_enable << i;
@@ -1526,7 +1498,7 @@ static int vegam_populate_clock_stretcher_data_table(struct pp_hwmgr *hwmgr)
 	smu_data->smc_state_table.LdoRefSel =
 			(table_info->cac_dtp_table->ucCKS_LDO_REFSEL != 0) ?
 			table_info->cac_dtp_table->ucCKS_LDO_REFSEL : 5;
-	/* Populate CKS Lookup Table */
+	 
 	if (!(stretch_amount == 1 || stretch_amount == 2 ||
 	      stretch_amount == 5 || stretch_amount == 3 ||
 	      stretch_amount == 4)) {
@@ -1675,7 +1647,7 @@ static int vegam_populate_vr_config(struct pp_hwmgr *hwmgr,
 	config = VR_MERGED_WITH_VDDC;
 	table->VRConfig |= (config << VRCONF_VDDGFX_SHIFT);
 
-	/* Set Vddc Voltage Controller */
+	 
 	if (SMU7_VOLTAGE_CONTROL_BY_SVID2 == data->voltage_control) {
 		config = VR_SVI2_PLANE_1;
 		table->VRConfig |= config;
@@ -1684,9 +1656,9 @@ static int vegam_populate_vr_config(struct pp_hwmgr *hwmgr,
 				"VDDC should be on SVI2 control in merged mode!",
 				);
 	}
-	/* Set Vddci Voltage Controller */
+	 
 	if (SMU7_VOLTAGE_CONTROL_BY_SVID2 == data->vddci_control) {
-		config = VR_SVI2_PLANE_2;  /* only in merged mode */
+		config = VR_SVI2_PLANE_2;   
 		table->VRConfig |= (config << VRCONF_VDDCI_SHIFT);
 	} else if (SMU7_VOLTAGE_CONTROL_BY_GPIO == data->vddci_control) {
 		config = VR_SMIO_PATTERN_1;
@@ -1695,7 +1667,7 @@ static int vegam_populate_vr_config(struct pp_hwmgr *hwmgr,
 		config = VR_STATIC_VOLTAGE;
 		table->VRConfig |= (config << VRCONF_VDDCI_SHIFT);
 	}
-	/* Set Mvdd Voltage Controller */
+	 
 	if (SMU7_VOLTAGE_CONTROL_BY_SVID2 == data->mvdd_control) {
 		if (config != VR_SVI2_PLANE_2) {
 			config = VR_SVI2_PLANE_2;
@@ -1787,7 +1759,7 @@ static int vegam_populate_temperature_scaler(struct pp_hwmgr *hwmgr)
 	int i;
 	struct vegam_smumgr *smu_data = (struct vegam_smumgr *)(hwmgr->smu_backend);
 
-	/* Currently not used. Set all to zero. */
+	 
 	for (i = 0; i < 16; i++)
 		smu_data->power_tune_table.LPMLTemperatureScaler[i] = 0;
 
@@ -1798,7 +1770,7 @@ static int vegam_populate_fuzzy_fan(struct pp_hwmgr *hwmgr)
 {
 	struct vegam_smumgr *smu_data = (struct vegam_smumgr *)(hwmgr->smu_backend);
 
-/* TO DO move to hwmgr */
+ 
 	if ((hwmgr->thermal_controller.advanceFanControlParameters.usFanOutputSensitivity & (1 << 15))
 		|| 0 == hwmgr->thermal_controller.advanceFanControlParameters.usFanOutputSensitivity)
 		hwmgr->thermal_controller.advanceFanControlParameters.usFanOutputSensitivity =
@@ -1814,7 +1786,7 @@ static int vegam_populate_gnb_lpml(struct pp_hwmgr *hwmgr)
 	int i;
 	struct vegam_smumgr *smu_data = (struct vegam_smumgr *)(hwmgr->smu_backend);
 
-	/* Currently not used. Set all to zero. */
+	 
 	for (i = 0; i < 16; i++)
 		smu_data->power_tune_table.GnbLPML[i] = 0;
 
@@ -1977,10 +1949,7 @@ static int vegam_init_smc_table(struct pp_hwmgr *hwmgr)
 	PP_ASSERT_WITH_CODE(!result,
 			"Failed to initialize VCE Level!", return result);
 
-	/* Since only the initial state is completely set up at this point
-	 * (the other states are just copies of the boot state) we only
-	 * need to populate the  ARB settings for the initial state.
-	 */
+	 
 	result = vegam_program_memory_timing_parameters(hwmgr);
 	PP_ASSERT_WITH_CODE(!result,
 			"Failed to Write ARB settings for the initial state.", return result);
@@ -2072,22 +2041,18 @@ static int vegam_init_smc_table(struct pp_hwmgr *hwmgr)
 				PHM_PlatformCaps_AutomaticDCTransition);
 	}
 
-	/* Thermal Output GPIO */
+	 
 	if (atomctrl_get_pp_assign_pin(hwmgr,
 			THERMAL_INT_OUTPUT_GPIO_PINID, &gpio_pin)) {
 		table->ThermOutGpio = gpio_pin.uc_gpio_pin_bit_shift;
 
-		/* For porlarity read GPIOPAD_A with assigned Gpio pin
-		 * since VBIOS will program this register to set 'inactive state',
-		 * driver can then determine 'active state' from this and
-		 * program SMU with correct polarity
-		 */
+		 
 		table->ThermOutPolarity =
 				(0 == (cgs_read_register(hwmgr->device, mmGPIOPAD_A) &
 				(1 << gpio_pin.uc_gpio_pin_bit_shift))) ? 1:0;
 		table->ThermOutMode = SMU7_THERM_OUT_MODE_THERM_ONLY;
 
-		/* if required, combine VRHot/PCC with thermal out GPIO */
+		 
 		if (phm_cap_enabled(hwmgr->platform_descriptor.platformCaps,
 				PHM_PlatformCaps_RegulatorHot) &&
 			phm_cap_enabled(hwmgr->platform_descriptor.platformCaps,
@@ -2099,7 +2064,7 @@ static int vegam_init_smc_table(struct pp_hwmgr *hwmgr)
 		table->ThermOutMode = SMU7_THERM_OUT_MODE_DISABLE;
 	}
 
-	/* Populate BIF_SCLK levels into SMC DPM table */
+	 
 	for (i = 0; i <= hw_data->dpm_table.pcie_speed_table.count; i++) {
 		result = atomctrl_get_dfs_pll_dividers_vi(hwmgr,
 				smu_data->bif_sclk_table[i], &dividers);
@@ -2129,7 +2094,7 @@ static int vegam_init_smc_table(struct pp_hwmgr *hwmgr)
 	CONVERT_FROM_HOST_TO_SMC_US(table->VoltageResponseTime);
 	CONVERT_FROM_HOST_TO_SMC_US(table->PhaseResponseTime);
 
-	/* Upload all dpm data to SMC memory.(dpm level, dpm level count etc) */
+	 
 	result = smu7_copy_bytes_to_smc(hwmgr,
 			smu_data->smu7_data.dpm_table_start +
 			offsetof(SMU75_Discrete_DpmTable, SystemFlags),

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, Sensor-Technik Wiedemann GmbH
- * Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
- */
+ 
+ 
 #ifndef _SJA1105_H
 #define _SJA1105_H
 
@@ -14,16 +12,11 @@
 #include "sja1105_static_config.h"
 
 #define SJA1105ET_FDB_BIN_SIZE		4
-/* The hardware value is in multiples of 10 ms.
- * The passed parameter is in multiples of 1 ms.
- */
+ 
 #define SJA1105_AGEING_TIME_MS(ms)	((ms) / 10)
 #define SJA1105_NUM_L2_POLICERS		SJA1110_MAX_L2_POLICING_COUNT
 
-/* Calculated assuming 1Gbps, where the clock has 125 MHz (8 ns period)
- * To avoid floating point operations, we'll multiply the degrees by 10
- * to get a "phase" and get 1 decimal point precision.
- */
+ 
 #define SJA1105_RGMII_DELAY_PS_TO_PHASE(ps) \
 	(((ps) * 360) / 800)
 #define SJA1105_RGMII_DELAY_PHASE_TO_PS(phase) \
@@ -33,9 +26,7 @@
 #define SJA1105_RGMII_DELAY_PS_TO_HW(ps) \
 	SJA1105_RGMII_DELAY_PHASE_TO_HW(SJA1105_RGMII_DELAY_PS_TO_PHASE(ps))
 
-/* Valid range in degrees is a value between 73.8 and 101.7
- * in 0.9 degree increments
- */
+ 
 #define SJA1105_RGMII_DELAY_MIN_PS \
 	SJA1105_RGMII_DELAY_PHASE_TO_PS(738)
 #define SJA1105_RGMII_DELAY_MAX_PS \
@@ -57,7 +48,7 @@ enum sja1105_stats_area {
 	__MAX_SJA1105_STATS_AREA,
 };
 
-/* Keeps the different addresses between E/T and P/Q/R/S */
+ 
 struct sja1105_regs {
 	u64 device_id;
 	u64 prod_id;
@@ -114,25 +105,17 @@ enum sja1105_internal_phy_t {
 
 struct sja1105_info {
 	u64 device_id;
-	/* Needed for distinction between P and R, and between Q and S
-	 * (since the parts with/without SGMII share the same
-	 * switch core and device_id)
-	 */
+	 
 	u64 part_no;
-	/* E/T and P/Q/R/S have partial timestamps of different sizes.
-	 * They must be reconstructed on both families anyway to get the full
-	 * 64-bit values back.
-	 */
+	 
 	int ptp_ts_bits;
-	/* Also SPI commands are of different sizes to retrieve
-	 * the egress timestamps.
-	 */
+	 
 	int ptpegr_ts_bytes;
 	int num_cbs_shapers;
 	int max_frame_mem;
 	int num_ports;
 	bool multiple_cascade_ports;
-	/* Every {port, TXQ} has its own CBS shaper */
+	 
 	bool fixed_cbs_mapping;
 	enum dsa_tag_protocol tag_proto;
 	const struct sja1105_dynamic_table_ops *dyn_ops;
@@ -141,7 +124,7 @@ struct sja1105_info {
 	bool can_limit_mcast_flood;
 	int (*reset_cmd)(struct dsa_switch *ds);
 	int (*setup_rgmii_delay)(const void *ctx, int port);
-	/* Prototypes from include/net/dsa.h */
+	 
 	int (*fdb_add_cmd)(struct dsa_switch *ds, int port,
 			   const unsigned char *addr, u16 vid);
 	int (*fdb_del_cmd)(struct dsa_switch *ds, int port,
@@ -177,13 +160,13 @@ struct sja1105_key {
 	enum sja1105_key_type type;
 
 	union {
-		/* SJA1105_KEY_TC */
+		 
 		struct {
 			int pcp;
 		} tc;
 
-		/* SJA1105_KEY_VLAN_UNAWARE_VL */
-		/* SJA1105_KEY_VLAN_AWARE_VL */
+		 
+		 
 		struct {
 			u64 dmac;
 			u16 vid;
@@ -211,19 +194,19 @@ struct sja1105_rule {
 	struct sja1105_key key;
 	enum sja1105_rule_type type;
 
-	/* Action */
+	 
 	union {
-		/* SJA1105_RULE_BCAST_POLICER */
+		 
 		struct {
 			int sharindx;
 		} bcast_pol;
 
-		/* SJA1105_RULE_TC_POLICER */
+		 
 		struct {
 			int sharindx;
 		} tc_pol;
 
-		/* SJA1105_RULE_VL */
+		 
 		struct {
 			enum sja1105_vl_type type;
 			unsigned long destports;
@@ -262,16 +245,14 @@ struct sja1105_private {
 	u16 bridge_pvid[SJA1105_MAX_NUM_PORTS];
 	u16 tag_8021q_pvid[SJA1105_MAX_NUM_PORTS];
 	struct sja1105_flow_block flow_block;
-	/* Serializes transmission of management frames so that
-	 * the switch doesn't confuse them with one another.
-	 */
+	 
 	struct mutex mgmt_lock;
-	/* Serializes accesses to the FDB */
+	 
 	struct mutex fdb_lock;
-	/* PTP two-step TX timestamp ID, and its serialization lock */
+	 
 	spinlock_t ts_id_lock;
 	u8 ts_id;
-	/* Serializes access to the dynamic config interface */
+	 
 	struct mutex dynamic_config_lock;
 	struct devlink_region **regions;
 	struct sja1105_cbs_entry *cbs;
@@ -291,7 +272,7 @@ struct sja1105_spi_message {
 	u64 address;
 };
 
-/* From sja1105_main.c */
+ 
 enum sja1105_reset_reason {
 	SJA1105_VLAN_FILTERING = 0,
 	SJA1105_AGEING_TIME,
@@ -306,7 +287,7 @@ int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled,
 			   struct netlink_ext_ack *extack);
 void sja1105_frame_memory_partitioning(struct sja1105_private *priv);
 
-/* From sja1105_mdio.c */
+ 
 int sja1105_mdiobus_register(struct dsa_switch *ds);
 void sja1105_mdiobus_unregister(struct dsa_switch *ds);
 int sja1105_pcs_mdio_read_c45(struct mii_bus *bus, int phy, int mmd, int reg);
@@ -316,14 +297,14 @@ int sja1110_pcs_mdio_read_c45(struct mii_bus *bus, int phy, int mmd, int reg);
 int sja1110_pcs_mdio_write_c45(struct mii_bus *bus, int phy, int mmd, int reg,
 			       u16 val);
 
-/* From sja1105_devlink.c */
+ 
 int sja1105_devlink_setup(struct dsa_switch *ds);
 void sja1105_devlink_teardown(struct dsa_switch *ds);
 int sja1105_devlink_info_get(struct dsa_switch *ds,
 			     struct devlink_info_req *req,
 			     struct netlink_ext_ack *extack);
 
-/* From sja1105_spi.c */
+ 
 int sja1105_xfer_buf(const struct sja1105_private *priv,
 		     sja1105_spi_rw_mode_t rw, u64 reg_addr,
 		     u8 *buf, size_t len);
@@ -350,7 +331,7 @@ extern const struct sja1105_info sja1110b_info;
 extern const struct sja1105_info sja1110c_info;
 extern const struct sja1105_info sja1110d_info;
 
-/* From sja1105_clocking.c */
+ 
 
 typedef enum {
 	XMII_MAC = 0,
@@ -370,13 +351,13 @@ int sja1105_clocking_setup_port(struct sja1105_private *priv, int port);
 int sja1105_clocking_setup(struct sja1105_private *priv);
 int sja1110_disable_microcontroller(struct sja1105_private *priv);
 
-/* From sja1105_ethtool.c */
+ 
 void sja1105_get_ethtool_stats(struct dsa_switch *ds, int port, u64 *data);
 void sja1105_get_strings(struct dsa_switch *ds, int port,
 			 u32 stringset, u8 *data);
 int sja1105_get_sset_count(struct dsa_switch *ds, int port, int sset);
 
-/* From sja1105_dynamic_config.c */
+ 
 int sja1105_dynamic_config_read(struct sja1105_private *priv,
 				enum sja1105_blk_idx blk_idx,
 				int index, void *entry);
@@ -385,15 +366,15 @@ int sja1105_dynamic_config_write(struct sja1105_private *priv,
 				 int index, void *entry, bool keep);
 
 enum sja1105_iotag {
-	SJA1105_C_TAG = 0, /* Inner VLAN header */
-	SJA1105_S_TAG = 1, /* Outer VLAN header */
+	SJA1105_C_TAG = 0,  
+	SJA1105_S_TAG = 1,  
 };
 
 enum sja1110_vlan_type {
 	SJA1110_VLAN_INVALID = 0,
-	SJA1110_VLAN_C_TAG = 1, /* Single inner VLAN tag */
-	SJA1110_VLAN_S_TAG = 2, /* Single outer VLAN tag */
-	SJA1110_VLAN_D_TAG = 3, /* Double tagged, use outer tag for lookup */
+	SJA1110_VLAN_C_TAG = 1,  
+	SJA1110_VLAN_S_TAG = 2,  
+	SJA1110_VLAN_D_TAG = 3,  
 };
 
 enum sja1110_shaper_type {
@@ -411,7 +392,7 @@ int sja1105pqrs_fdb_add(struct dsa_switch *ds, int port,
 int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
 			const unsigned char *addr, u16 vid);
 
-/* From sja1105_flower.c */
+ 
 int sja1105_cls_flower_del(struct dsa_switch *ds, int port,
 			   struct flow_cls_offload *cls, bool ingress);
 int sja1105_cls_flower_add(struct dsa_switch *ds, int port,

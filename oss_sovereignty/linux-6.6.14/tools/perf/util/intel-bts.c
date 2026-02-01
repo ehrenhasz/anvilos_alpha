@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel-bts.c: Intel Processor Trace support
- * Copyright (c) 2013-2015, Intel Corporation.
- */
+
+ 
 
 #include <endian.h>
 #include <errno.h>
@@ -388,7 +385,7 @@ static int intel_bts_get_branch_type(struct intel_bts_queue *btsq,
 			return err;
 		}
 		btsq->sample_flags = intel_pt_insn_type(btsq->intel_pt_insn.op);
-		/* Check for an async branch into the kernel */
+		 
 		if (!machine__kernel_ip(btsq->bts->machine, branch->from) &&
 		    machine__kernel_ip(btsq->bts->machine, branch->to) &&
 		    btsq->sample_flags != (PERF_IP_FLAG_BRANCH |
@@ -474,7 +471,7 @@ static int intel_bts_process_queue(struct intel_bts_queue *btsq, u64 *timestamp)
 		goto out_put;
 	}
 
-	/* Currently there is no support for split buffers */
+	 
 	if (buffer->consecutive) {
 		err = -EINVAL;
 		goto out_put;
@@ -661,7 +658,7 @@ static int intel_bts_process_auxtrace_event(struct perf_session *session,
 		if (err)
 			return err;
 
-		/* Dump here now we have copied a piped trace out of the pipe */
+		 
 		if (dump_trace) {
 			if (auxtrace_buffer__get_data(buffer, fd)) {
 				intel_bts_dump_event(bts, buffer->data,
@@ -823,10 +820,7 @@ static int intel_bts_synth_events(struct intel_bts *bts,
 		bts->sample_branches = true;
 		bts->branches_sample_type = attr.sample_type;
 		bts->branches_id = id;
-		/*
-		 * We only use sample types from PERF_SAMPLE_MASK so we can use
-		 * __evsel__sample_size() here.
-		 */
+		 
 		bts->branches_event_size = sizeof(struct perf_record_sample) +
 					   __evsel__sample_size(attr.sample_type);
 	}
@@ -875,7 +869,7 @@ int intel_bts_process_auxtrace_info(union perf_event *event,
 		goto err_free;
 
 	bts->session = session;
-	bts->machine = &session->machines.host; /* No kvm support */
+	bts->machine = &session->machines.host;  
 	bts->auxtrace_type = auxtrace_info->type;
 	bts->pmu_type = auxtrace_info->priv[INTEL_BTS_PMU_TYPE];
 	bts->tc.time_shift = auxtrace_info->priv[INTEL_BTS_TIME_SHIFT];

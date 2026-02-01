@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef CURVE25519_H
 #define CURVE25519_H
 
-#include <crypto/algapi.h> // For crypto_memneq.
+#include <crypto/algapi.h> 
 #include <linux/types.h>
 #include <linux/random.h>
 
@@ -70,4 +68,4 @@ static inline void curve25519_generate_secret(u8 secret[CURVE25519_KEY_SIZE])
 	curve25519_clamp_secret(secret);
 }
 
-#endif /* CURVE25519_H */
+#endif  

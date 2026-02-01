@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_BW_H__
 #define __INTEL_BW_H__
@@ -25,26 +23,16 @@ struct intel_bw_state {
 	struct intel_global_state base;
 	struct intel_dbuf_bw dbuf_bw[I915_MAX_PIPES];
 
-	/*
-	 * Contains a bit mask, used to determine, whether correspondent
-	 * pipe allows SAGV or not.
-	 */
+	 
 	u8 pipe_sagv_reject;
 
-	/* bitmask of active pipes */
+	 
 	u8 active_pipes;
 
-	/*
-	 * From MTL onwards, to lock a QGV point, punit expects the peak BW of
-	 * the selected QGV point as the parameter in multiples of 100MB/s
-	 */
+	 
 	u16 qgv_point_peakbw;
 
-	/*
-	 * Current QGV points mask, which restricts
-	 * some particular SAGV states, not to confuse
-	 * with pipe_sagv_mask.
-	 */
+	 
 	u16 qgv_points_mask;
 
 	int min_cdclk[I915_MAX_PIPES];
@@ -75,4 +63,4 @@ int intel_bw_calc_min_cdclk(struct intel_atomic_state *state,
 int intel_bw_min_cdclk(struct drm_i915_private *i915,
 		       const struct intel_bw_state *bw_state);
 
-#endif /* __INTEL_BW_H__ */
+#endif  

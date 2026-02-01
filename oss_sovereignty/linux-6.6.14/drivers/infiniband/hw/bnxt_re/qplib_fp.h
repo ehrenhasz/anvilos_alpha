@@ -1,50 +1,11 @@
-/*
- * Broadcom NetXtreme-E RoCE driver.
- *
- * Copyright (c) 2016 - 2017, Broadcom. All rights reserved.  The term
- * Broadcom refers to Broadcom Limited and/or its subsidiaries.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Description: Fast Path Operators (header)
- */
+ 
 
 #ifndef __BNXT_QPLIB_FP_H__
 #define __BNXT_QPLIB_FP_H__
 
 #include <rdma/bnxt_re-abi.h>
 
-/* Few helper structures temporarily defined here
- * should get rid of these when roce_hsi.h is updated
- * in original code base
- */
+ 
 struct sq_ud_ext_hdr {
 	__le32 dst_qp;
 	__le32 avid;
@@ -84,7 +45,7 @@ struct rq_ext_hdr {
 	__le64 rsvd2;
 };
 
-/* Helper structures end */
+ 
 
 struct bnxt_qplib_srq {
 	struct bnxt_qplib_pd		*pd;
@@ -104,7 +65,7 @@ struct bnxt_qplib_srq {
 	int				last_idx;
 	struct bnxt_qplib_sg_info	sg_info;
 	u16				eventq_hw_ring_id;
-	spinlock_t			lock; /* protect SRQE link list */
+	spinlock_t			lock;  
 };
 
 struct bnxt_qplib_sge {
@@ -128,8 +89,8 @@ struct bnxt_qplib_swq {
 };
 
 struct bnxt_qplib_swqe {
-	/* General */
-#define	BNXT_QPLIB_FENCE_WRID	0x46454E43	/* "FENC" */
+	 
+#define	BNXT_QPLIB_FENCE_WRID	0x46454E43	 
 	u64				wr_id;
 	u8				reqs_type;
 	u8				type;
@@ -155,13 +116,13 @@ struct bnxt_qplib_swqe {
 #define BNXT_QPLIB_SWQE_FLAGS_INLINE			BIT(4)
 	struct bnxt_qplib_sge		sg_list[BNXT_QPLIB_QP_MAX_SGL];
 	int				num_sge;
-	/* Max inline data is 96 bytes */
+	 
 	u32				inline_len;
 #define BNXT_QPLIB_SWQE_MAX_INLINE_LENGTH		96
 	u8		inline_data[BNXT_QPLIB_SWQE_MAX_INLINE_LENGTH];
 
 	union {
-		/* Send, with imm, inval key */
+		 
 		struct {
 			union {
 				__be32	imm_data;
@@ -172,14 +133,14 @@ struct bnxt_qplib_swqe {
 			u16		avid;
 		} send;
 
-		/* Send Raw Ethernet and QP1 */
+		 
 		struct {
 			u16		lflags;
 			u16		cfa_action;
 			u32		cfa_meta;
 		} rawqp1;
 
-		/* RDMA write, with imm, read */
+		 
 		struct {
 			union {
 				__be32	imm_data;
@@ -189,7 +150,7 @@ struct bnxt_qplib_swqe {
 			u32		r_key;
 		} rdma;
 
-		/* Atomic cmp/swap, fetch/add */
+		 
 		struct {
 			u64		remote_va;
 			u32		r_key;
@@ -197,12 +158,12 @@ struct bnxt_qplib_swqe {
 			u64		cmp_data;
 		} atomic;
 
-		/* Local Invalidate */
+		 
 		struct {
 			u32		inv_l_key;
 		} local_inv;
 
-		/* FR-PMR */
+		 
 		struct {
 			u8		access_cntl;
 			u8		pg_sz_log;
@@ -227,7 +188,7 @@ struct bnxt_qplib_swqe {
 			u64		va;
 		} frmr;
 
-		/* Bind */
+		 
 		struct {
 			u8		access_cntl;
 #define BNXT_QPLIB_BIND_SWQE_ACCESS_LOCAL_WRITE		BIT(0)
@@ -301,32 +262,28 @@ struct bnxt_qplib_qp {
 	struct bnxt_qplib_ah		ah;
 
 #define BTH_PSN_MASK			((1 << 24) - 1)
-	/* SQ */
+	 
 	struct bnxt_qplib_q		sq;
-	/* RQ */
+	 
 	struct bnxt_qplib_q		rq;
-	/* SRQ */
+	 
 	struct bnxt_qplib_srq		*srq;
-	/* CQ */
+	 
 	struct bnxt_qplib_cq		*scq;
 	struct bnxt_qplib_cq		*rcq;
-	/* IRRQ and ORRQ */
+	 
 	struct bnxt_qplib_hwq		irrq;
 	struct bnxt_qplib_hwq		orrq;
-	/* Header buffer for QP1 */
+	 
 	int				sq_hdr_buf_size;
 	int				rq_hdr_buf_size;
-/*
- * Buffer space for ETH(14), IP or GRH(40), UDP header(8)
- * and ib_bth + ib_deth (20).
- * Max required is 82 when RoCE V2 is enabled
- */
+ 
 #define BNXT_QPLIB_MAX_QP1_SQ_HDR_SIZE_V2	86
-	/* Ethernet header	=  14 */
-	/* ib_grh		=  40 (provided by MAD) */
-	/* ib_bth + ib_deth	=  20 */
-	/* MAD			= 256 (provided by MAD) */
-	/* iCRC			=   4 */
+	 
+	 
+	 
+	 
+	 
 #define BNXT_QPLIB_MAX_QP1_RQ_ETH_HDR_SIZE	14
 #define BNXT_QPLIB_MAX_QP1_RQ_HDR_SIZE_V2	512
 #define BNXT_QPLIB_MAX_GRH_HDR_SIZE_IPV4	20
@@ -359,7 +316,7 @@ static inline bool bnxt_qplib_queue_full(struct bnxt_qplib_q *que,
 	int avail;
 
 	hwq = &que->hwq;
-	/* False full is possible, retrying post-send makes sense */
+	 
 	avail = hwq->cons - hwq->prod;
 	if (hwq->cons <= hwq->prod)
 		avail += hwq->depth;
@@ -413,19 +370,9 @@ struct bnxt_qplib_cq {
 	wait_queue_head_t		waitq;
 	struct list_head		sqf_head, rqf_head;
 	atomic_t			arm_state;
-	spinlock_t			compl_lock; /* synch CQ handlers */
-/* Locking Notes:
- * QP can move to error state from modify_qp, async error event or error
- * CQE as part of poll_cq. When QP is moved to error state, it gets added
- * to two flush lists, one each for SQ and RQ.
- * Each flush list is protected by qplib_cq->flush_lock. Both scq and rcq
- * flush_locks should be acquired when QP is moved to error. The control path
- * operations(modify_qp and async error events) are synchronized with poll_cq
- * using upper level CQ locks (bnxt_re_cq->cq_lock) of both SCQ and RCQ.
- * The qplib_cq->flush_lock is required to synchronize two instances of poll_cq
- * of the same QP while manipulating the flush list.
- */
-	spinlock_t			flush_lock; /* QP flush management */
+	spinlock_t			compl_lock;  
+ 
+	spinlock_t			flush_lock;  
 	u16				cnq_events;
 };
 
@@ -594,11 +541,7 @@ static inline u32 bnxt_qplib_set_rq_max_slot(u32 wqe_size)
 
 static inline u16 __xlate_qfd(u16 delta, u16 wqe_bytes)
 {
-	/* For Cu/Wh delta = 128, stride = 16, wqe_bytes = 128
-	 * For Gen-p5 B/C mode delta = 0, stride = 16, wqe_bytes = 128.
-	 * For Gen-p5 delta = 0, stride = 16, 32 <= wqe_bytes <= 512.
-	 * when 8916 is disabled.
-	 */
+	 
 	return (delta * wqe_bytes) / sizeof(struct sq_sge);
 }
 
@@ -614,4 +557,4 @@ static inline u16 bnxt_qplib_calc_ilsize(struct bnxt_qplib_swqe *wqe, u16 max)
 
 	return size;
 }
-#endif /* __BNXT_QPLIB_FP_H__ */
+#endif  

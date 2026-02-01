@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RZ/G2UL CPG driver
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -15,13 +11,13 @@
 #include "rzg2l-cpg.h"
 
 enum clk_ids {
-	/* Core Clock Outputs exported to DT */
+	 
 	LAST_DT_CORE_CLK = R9A07G043_CLK_P0_DIV2,
 
-	/* External Input Clocks */
+	 
 	CLK_EXTAL,
 
-	/* Internal Core Clocks */
+	 
 	CLK_OSC_DIV1000,
 	CLK_PLL1,
 	CLK_PLL2,
@@ -51,11 +47,11 @@ enum clk_ids {
 	CLK_SD0_DIV4,
 	CLK_SD1_DIV4,
 
-	/* Module Clocks */
+	 
 	MOD_CLK_BASE,
 };
 
-/* Divider tables */
+ 
 static const struct clk_div_table dtable_1_8[] = {
 	{0, 1},
 	{1, 2},
@@ -73,16 +69,16 @@ static const struct clk_div_table dtable_1_32[] = {
 	{0, 0},
 };
 
-/* Mux clock tables */
+ 
 static const char * const sel_pll3_3[] = { ".pll3_533", ".pll3_400" };
 static const char * const sel_pll6_2[]	= { ".pll6_250", ".pll5_250" };
 static const char * const sel_shdi[] = { ".clk_533", ".clk_400", ".clk_266" };
 
 static const struct cpg_core_clk r9a07g043_core_clks[] __initconst = {
-	/* External Clock Inputs */
+	 
 	DEF_INPUT("extal", CLK_EXTAL),
 
-	/* Internal Core Clocks */
+	 
 	DEF_FIXED(".osc", R9A07G043_OSCCLK, CLK_EXTAL, 1, 1),
 	DEF_FIXED(".osc_div1000", CLK_OSC_DIV1000, CLK_EXTAL, 1, 1000),
 	DEF_SAMPLL(".pll1", CLK_PLL1, CLK_EXTAL, PLL146_CONF(0)),
@@ -110,7 +106,7 @@ static const struct cpg_core_clk r9a07g043_core_clks[] __initconst = {
 	DEF_FIXED(".pll6", CLK_PLL6, CLK_EXTAL, 125, 6),
 	DEF_FIXED(".pll6_250", CLK_PLL6_250, CLK_PLL6, 1, 2),
 
-	/* Core output clk */
+	 
 	DEF_DIV("I", R9A07G043_CLK_I, CLK_PLL1, DIVPL1A, dtable_1_8),
 	DEF_DIV("P0", R9A07G043_CLK_P0, CLK_PLL2_DIV2_8, DIVPL2A, dtable_1_32),
 	DEF_FIXED("P0_DIV2", R9A07G043_CLK_P0_DIV2, R9A07G043_CLK_P0, 1, 2),
@@ -317,17 +313,17 @@ static const unsigned int r9a07g043_crit_mod_clks[] __initconst = {
 };
 
 const struct rzg2l_cpg_info r9a07g043_cpg_info = {
-	/* Core Clocks */
+	 
 	.core_clks = r9a07g043_core_clks,
 	.num_core_clks = ARRAY_SIZE(r9a07g043_core_clks),
 	.last_dt_core_clk = LAST_DT_CORE_CLK,
 	.num_total_core_clks = MOD_CLK_BASE,
 
-	/* Critical Module Clocks */
+	 
 	.crit_mod_clks = r9a07g043_crit_mod_clks,
 	.num_crit_mod_clks = ARRAY_SIZE(r9a07g043_crit_mod_clks),
 
-	/* Module Clocks */
+	 
 	.mod_clks = r9a07g043_mod_clks,
 	.num_mod_clks = ARRAY_SIZE(r9a07g043_mod_clks),
 #ifdef CONFIG_ARM64
@@ -337,13 +333,13 @@ const struct rzg2l_cpg_info r9a07g043_cpg_info = {
 	.num_hw_mod_clks = R9A07G043_IAX45_PCLK + 1,
 #endif
 
-	/* Resets */
+	 
 	.resets = r9a07g043_resets,
 #ifdef CONFIG_ARM64
-	.num_resets = R9A07G043_TSU_PRESETN + 1, /* Last reset ID + 1 */
+	.num_resets = R9A07G043_TSU_PRESETN + 1,  
 #endif
 #ifdef CONFIG_RISCV
-	.num_resets = R9A07G043_IAX45_RESETN + 1, /* Last reset ID + 1 */
+	.num_resets = R9A07G043_IAX45_RESETN + 1,  
 #endif
 
 	.has_clk_mon_regs = true,

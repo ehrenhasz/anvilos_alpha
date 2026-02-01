@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Samsung keypad driver
- *
- * Copyright (C) 2010 Samsung Electronics Co.Ltd
- * Author: Joonyoung Shim <jy0922.shim@samsung.com>
- * Author: Donghwa Lee <dh09.lee@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -28,14 +22,14 @@
 #define SAMSUNG_KEYIFROW			0x0c
 #define SAMSUNG_KEYIFFC				0x10
 
-/* SAMSUNG_KEYIFCON */
+ 
 #define SAMSUNG_KEYIFCON_INT_F_EN		(1 << 0)
 #define SAMSUNG_KEYIFCON_INT_R_EN		(1 << 1)
 #define SAMSUNG_KEYIFCON_DF_EN			(1 << 2)
 #define SAMSUNG_KEYIFCON_FC_EN			(1 << 3)
 #define SAMSUNG_KEYIFCON_WAKEUPEN		(1 << 4)
 
-/* SAMSUNG_KEYIFSTSCLR */
+ 
 #define SAMSUNG_KEYIFSTSCLR_P_INT_MASK		(0xff << 0)
 #define SAMSUNG_KEYIFSTSCLR_R_INT_MASK		(0xff << 8)
 #define SAMSUNG_KEYIFSTSCLR_R_INT_OFFSET	8
@@ -43,15 +37,15 @@
 #define S5PV210_KEYIFSTSCLR_R_INT_MASK		(0x3fff << 16)
 #define S5PV210_KEYIFSTSCLR_R_INT_OFFSET	16
 
-/* SAMSUNG_KEYIFCOL */
+ 
 #define SAMSUNG_KEYIFCOL_MASK			(0xff << 0)
 #define S5PV210_KEYIFCOLEN_MASK			(0xff << 8)
 
-/* SAMSUNG_KEYIFROW */
+ 
 #define SAMSUNG_KEYIFROW_MASK			(0xff << 0)
 #define S5PV210_KEYIFROW_MASK			(0x3fff << 0)
 
-/* SAMSUNG_KEYIFFC */
+ 
 #define SAMSUNG_KEYIFFC_MASK			(0x3ff << 0)
 
 enum samsung_keypad_type {
@@ -98,7 +92,7 @@ static void samsung_keypad_scan(struct samsung_keypad *keypad,
 		row_state[col] = ~val & ((1 << keypad->rows) - 1);
 	}
 
-	/* KEYIFCOL reg clear */
+	 
 	writel(0, keypad->base + SAMSUNG_KEYIFCOL);
 }
 
@@ -152,7 +146,7 @@ static irqreturn_t samsung_keypad_irq(int irq, void *dev_id)
 
 	do {
 		readl(keypad->base + SAMSUNG_KEYIFSTSCLR);
-		/* Clear interrupt. */
+		 
 		writel(~0x0, keypad->base + SAMSUNG_KEYIFSTSCLR);
 
 		samsung_keypad_scan(keypad, row_state);
@@ -175,17 +169,17 @@ static void samsung_keypad_start(struct samsung_keypad *keypad)
 
 	pm_runtime_get_sync(&keypad->pdev->dev);
 
-	/* Tell IRQ thread that it may poll the device. */
+	 
 	keypad->stopped = false;
 
 	clk_enable(keypad->clk);
 
-	/* Enable interrupt bits. */
+	 
 	val = readl(keypad->base + SAMSUNG_KEYIFCON);
 	val |= SAMSUNG_KEYIFCON_INT_F_EN | SAMSUNG_KEYIFCON_INT_R_EN;
 	writel(val, keypad->base + SAMSUNG_KEYIFCON);
 
-	/* KEYIFCOL reg clear. */
+	 
 	writel(0, keypad->base + SAMSUNG_KEYIFCOL);
 
 	pm_runtime_put(&keypad->pdev->dev);
@@ -197,25 +191,22 @@ static void samsung_keypad_stop(struct samsung_keypad *keypad)
 
 	pm_runtime_get_sync(&keypad->pdev->dev);
 
-	/* Signal IRQ thread to stop polling and disable the handler. */
+	 
 	keypad->stopped = true;
 	wake_up(&keypad->wait);
 	disable_irq(keypad->irq);
 
-	/* Clear interrupt. */
+	 
 	writel(~0x0, keypad->base + SAMSUNG_KEYIFSTSCLR);
 
-	/* Disable interrupt bits. */
+	 
 	val = readl(keypad->base + SAMSUNG_KEYIFCON);
 	val &= ~(SAMSUNG_KEYIFCON_INT_F_EN | SAMSUNG_KEYIFCON_INT_R_EN);
 	writel(val, keypad->base + SAMSUNG_KEYIFCON);
 
 	clk_disable(keypad->clk);
 
-	/*
-	 * Now that chip should not generate interrupts we can safely
-	 * re-enable the handler.
-	 */
+	 
 	enable_irq(keypad->irq);
 
 	pm_runtime_put(&keypad->pdev->dev);
@@ -294,7 +285,7 @@ samsung_keypad_parse_dt(struct device *dev)
 	pdata->no_autorepeat = of_property_read_bool(np, "linux,input-no-autorepeat");
 
 	pdata->wakeup = of_property_read_bool(np, "wakeup-source") ||
-			/* legacy name */
+			 
 			of_property_read_bool(np, "linux,input-wakeup");
 
 
@@ -340,7 +331,7 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 	if (!pdata->cols || pdata->cols > SAMSUNG_MAX_COLS)
 		return -EINVAL;
 
-	/* initialize the gpio */
+	 
 	if (pdata->cfg_gpio)
 		pdata->cfg_gpio(pdata->rows, pdata->cols);
 
@@ -467,7 +458,7 @@ static int samsung_keypad_runtime_suspend(struct device *dev)
 	if (keypad->stopped)
 		return 0;
 
-	/* This may fail on some SoCs due to lack of controller support */
+	 
 	error = enable_irq_wake(keypad->irq);
 	if (!error)
 		keypad->wake_enabled = true;

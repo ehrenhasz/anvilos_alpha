@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MS5611 pressure and temperature sensor driver
- *
- * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- *
- * Data sheet:
- *  http://www.meas-spec.com/downloads/MS5611-01BA03.pdf
- *  http://www.meas-spec.com/downloads/MS5607-02BA03.pdf
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/iio/iio.h>
@@ -210,7 +201,7 @@ static irqreturn_t ms5611_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct ms5611_state *st = iio_priv(indio_dev);
-	/* Ensure buffer elements are naturally aligned */
+	 
 	struct {
 		s32 channels[2];
 		s64 ts __aligned(8);
@@ -381,7 +372,7 @@ static int ms5611_init(struct iio_dev *indio_dev)
 {
 	int ret;
 
-	/* Enable attached regulator if any. */
+	 
 	ret = devm_regulator_get_enable(indio_dev->dev.parent, "vdd");
 	if (ret)
 		return ret;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- * Copyright (C) 2014 Endless Mobile
- *
- * Written by:
- *     Jasper St. Pierre <jstpierre@mecheye.net>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/of_graph.h>
@@ -24,11 +16,11 @@
 #include "meson_vclk.h"
 #include "meson_encoder_cvbs.h"
 
-/* HHI VDAC Registers */
-#define HHI_VDAC_CNTL0		0x2F4 /* 0xbd offset in data sheet */
-#define HHI_VDAC_CNTL0_G12A	0x2EC /* 0xbd offset in data sheet */
-#define HHI_VDAC_CNTL1		0x2F8 /* 0xbe offset in data sheet */
-#define HHI_VDAC_CNTL1_G12A	0x2F0 /* 0xbe offset in data sheet */
+ 
+#define HHI_VDAC_CNTL0		0x2F4  
+#define HHI_VDAC_CNTL0_G12A	0x2EC  
+#define HHI_VDAC_CNTL1		0x2F8  
+#define HHI_VDAC_CNTL1_G12A	0x2F0  
 
 struct meson_encoder_cvbs {
 	struct drm_encoder	encoder;
@@ -40,10 +32,10 @@ struct meson_encoder_cvbs {
 #define bridge_to_meson_encoder_cvbs(x) \
 	container_of(x, struct meson_encoder_cvbs, bridge)
 
-/* Supported Modes */
+ 
 
 struct meson_cvbs_mode meson_cvbs_modes[MESON_CVBS_MODES_COUNT] = {
-	{ /* PAL */
+	{  
 		.enci = &meson_cvbs_enci_pal,
 		.mode = {
 			DRM_MODE("720x576i", DRM_MODE_TYPE_DRIVER, 13500,
@@ -52,7 +44,7 @@ struct meson_cvbs_mode meson_cvbs_modes[MESON_CVBS_MODES_COUNT] = {
 			.picture_aspect_ratio = HDMI_PICTURE_ASPECT_4_3,
 		},
 	},
-	{ /* NTSC */
+	{  
 		.enci = &meson_cvbs_enci_ntsc,
 		.mode = {
 			DRM_MODE("720x480i", DRM_MODE_TYPE_DRIVER, 13500,
@@ -167,13 +159,13 @@ static void meson_encoder_cvbs_atomic_enable(struct drm_bridge *bridge,
 
 	meson_venci_cvbs_mode_set(priv, meson_mode->enci);
 
-	/* Setup 27MHz vclk2 for ENCI and VDAC */
+	 
 	meson_vclk_setup(priv, MESON_VCLK_TARGET_CVBS,
 			 MESON_VCLK_CVBS, MESON_VCLK_CVBS,
 			 MESON_VCLK_CVBS, MESON_VCLK_CVBS,
 			 true);
 
-	/* VDAC0 source is not from ATV */
+	 
 	writel_bits_relaxed(VENC_VDAC_SEL_ATV_DMD, 0,
 			    priv->io_base + _REG(VENC_VDAC_DACSEL0));
 
@@ -197,7 +189,7 @@ static void meson_encoder_cvbs_atomic_disable(struct drm_bridge *bridge,
 					bridge_to_meson_encoder_cvbs(bridge);
 	struct meson_drm *priv = meson_encoder_cvbs->priv;
 
-	/* Disable CVBS VDAC */
+	 
 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
 		regmap_write(priv->hhi, HHI_VDAC_CNTL0_G12A, 0);
 		regmap_write(priv->hhi, HHI_VDAC_CNTL1_G12A, 0);
@@ -231,7 +223,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
 	if (!meson_encoder_cvbs)
 		return -ENOMEM;
 
-	/* CVBS Connector Bridge */
+	 
 	remote = of_graph_get_remote_node(priv->dev->of_node, 0, 0);
 	if (!remote) {
 		dev_info(drm->dev, "CVBS Output connector not available\n");
@@ -245,7 +237,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
 		return -EPROBE_DEFER;
 	}
 
-	/* CVBS Encoder Bridge */
+	 
 	meson_encoder_cvbs->bridge.funcs = &meson_encoder_cvbs_bridge_funcs;
 	meson_encoder_cvbs->bridge.of_node = priv->dev->of_node;
 	meson_encoder_cvbs->bridge.type = DRM_MODE_CONNECTOR_Composite;
@@ -256,7 +248,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
 
 	meson_encoder_cvbs->priv = priv;
 
-	/* Encoder */
+	 
 	ret = drm_simple_encoder_init(priv->drm, &meson_encoder_cvbs->encoder,
 				      DRM_MODE_ENCODER_TVDAC);
 	if (ret) {
@@ -266,7 +258,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
 
 	meson_encoder_cvbs->encoder.possible_crtcs = BIT(0);
 
-	/* Attach CVBS Encoder Bridge to Encoder */
+	 
 	ret = drm_bridge_attach(&meson_encoder_cvbs->encoder, &meson_encoder_cvbs->bridge, NULL,
 				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret) {
@@ -274,7 +266,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
 		return ret;
 	}
 
-	/* Initialize & attach Bridge Connector */
+	 
 	connector = drm_bridge_connector_init(priv->drm, &meson_encoder_cvbs->encoder);
 	if (IS_ERR(connector)) {
 		dev_err(priv->dev, "Unable to create CVBS bridge connector\n");

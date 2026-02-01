@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell MVEBU CPU clock handling.
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/clk.h>
@@ -59,7 +52,7 @@ static unsigned long clk_cpu_recalc_rate(struct clk_hw *hwclk,
 static long clk_cpu_round_rate(struct clk_hw *hwclk, unsigned long rate,
 			       unsigned long *parent_rate)
 {
-	/* Valid ratio are 1:1, 1:2 and 1:3 */
+	 
 	u32 div;
 
 	div = *parent_rate / rate;
@@ -84,19 +77,19 @@ static int clk_cpu_off_set_rate(struct clk_hw *hwclk, unsigned long rate,
 		& (~(SYS_CTRL_CLK_DIVIDER_MASK << (cpuclk->cpu * 8))))
 		| (div << (cpuclk->cpu * 8));
 	writel(reg, cpuclk->reg_base + SYS_CTRL_CLK_DIVIDER_VALUE_OFFSET);
-	/* Set clock divider reload smooth bit mask */
+	 
 	reload_mask = 1 << (20 + cpuclk->cpu);
 
 	reg = readl(cpuclk->reg_base + SYS_CTRL_CLK_DIVIDER_CTRL_OFFSET)
 	    | reload_mask;
 	writel(reg, cpuclk->reg_base + SYS_CTRL_CLK_DIVIDER_CTRL_OFFSET);
 
-	/* Now trigger the clock update */
+	 
 	reg = readl(cpuclk->reg_base + SYS_CTRL_CLK_DIVIDER_CTRL_OFFSET)
 	    | 1 << 24;
 	writel(reg, cpuclk->reg_base + SYS_CTRL_CLK_DIVIDER_CTRL_OFFSET);
 
-	/* Wait for clocks to settle down then clear reload request */
+	 
 	udelay(1000);
 	reg &= ~(reload_mask | 1 << 24);
 	writel(reg, cpuclk->reg_base + SYS_CTRL_CLK_DIVIDER_CTRL_OFFSET);
@@ -112,10 +105,7 @@ static int clk_cpu_on_set_rate(struct clk_hw *hwclk, unsigned long rate,
 	unsigned long fabric_div, target_div, cur_rate;
 	struct cpu_clk *cpuclk = to_cpu_clk(hwclk);
 
-	/*
-	 * PMU DFS registers are not mapped, Device Tree does not
-	 * describes them. We cannot change the frequency dynamically.
-	 */
+	 
 	if (!cpuclk->pmu_dfs)
 		return -ENODEV;
 
@@ -125,10 +115,10 @@ static int clk_cpu_on_set_rate(struct clk_hw *hwclk, unsigned long rate,
 	fabric_div = (reg >> SYS_CTRL_CLK_DIVIDER_CTRL2_NBCLK_RATIO_SHIFT) &
 		SYS_CTRL_CLK_DIVIDER_MASK;
 
-	/* Frequency is going up */
+	 
 	if (rate == 2 * cur_rate)
 		target_div = fabric_div / 2;
-	/* Frequency is going down */
+	 
 	else
 		target_div = fabric_div;
 

@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/firmware.h>
@@ -36,18 +15,18 @@
 #define FW_ATTESTATION_MAX_SIZE		4096
 
 struct FW_ATT_DB_HEADER {
-	uint32_t AttDbVersion;           /* version of the fwar feature */
-	uint32_t AttDbCookie;            /* cookie as an extra check for corrupt data */
+	uint32_t AttDbVersion;            
+	uint32_t AttDbCookie;             
 };
 
 struct FW_ATT_RECORD {
-	uint16_t AttFwIdV1;              /* Legacy FW Type field */
-	uint16_t AttFwIdV2;              /* V2 FW ID field */
-	uint32_t AttFWVersion;           /* FW Version */
-	uint16_t AttFWActiveFunctionID;  /* The VF ID (only in VF Attestation Table) */
-	uint8_t  AttSource;              /* FW source indicator */
-	uint8_t  RecordValid;            /* Indicates whether the record is a valid entry */
-	uint32_t AttFwTaId;              /* Ta ID (only in TA Attestation Table) */
+	uint16_t AttFwIdV1;               
+	uint16_t AttFwIdV2;               
+	uint32_t AttFWVersion;            
+	uint16_t AttFWActiveFunctionID;   
+	uint8_t  AttSource;               
+	uint8_t  RecordValid;             
+	uint32_t AttFwTaId;               
 };
 
 static ssize_t amdgpu_fw_attestation_debugfs_read(struct file *f,

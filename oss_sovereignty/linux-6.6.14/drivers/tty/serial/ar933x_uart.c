@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Atheros AR933X SoC built-in UART driver
- *
- *  Copyright (C) 2011 Gabor Juhos <juhosg@openwrt.org>
- *
- *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -46,7 +40,7 @@ static struct uart_driver ar933x_uart_driver;
 
 struct ar933x_uart_port {
 	struct uart_port	port;
-	unsigned int		ier;	/* shadow Interrupt Enable Register */
+	unsigned int		ier;	 
 	unsigned int		min_baud;
 	unsigned int		max_baud;
 	struct clk		*clk;
@@ -172,7 +166,7 @@ static void ar933x_uart_wait_tx_complete(struct ar933x_uart_port *up)
 	unsigned int status;
 	unsigned int timeout = 60000;
 
-	/* Wait up to 60ms for the character(s) to be sent. */
+	 
 	do {
 		status = ar933x_uart_read(up, AR933X_UART_CS_REG);
 		if (--timeout == 0)
@@ -188,10 +182,10 @@ static void ar933x_uart_rx_flush(struct ar933x_uart_port *up)
 {
 	unsigned int status;
 
-	/* clear RX_VALID interrupt */
+	 
 	ar933x_uart_write(up, AR933X_UART_INT_REG, AR933X_UART_INT_RX_VALID);
 
-	/* remove characters from the RX FIFO */
+	 
 	do {
 		ar933x_uart_write(up, AR933X_UART_DATA_REG, AR933X_UART_DATA_RX_CSR);
 		status = ar933x_uart_read(up, AR933X_UART_DATA_REG);
@@ -230,9 +224,7 @@ static void ar933x_uart_break_ctl(struct uart_port *port, int break_state)
 	spin_unlock_irqrestore(&up->port.lock, flags);
 }
 
-/*
- * baudrate = (clk / (scale + 1)) * (step * (1 / 2^17))
- */
+ 
 static unsigned long ar933x_uart_get_baud(unsigned int clk,
 					  unsigned int scale,
 					  unsigned int step)
@@ -291,11 +283,11 @@ static void ar933x_uart_set_termios(struct uart_port *port,
 	unsigned long flags;
 	unsigned int baud, scale, step;
 
-	/* Only CS8 is supported */
+	 
 	new->c_cflag &= ~CSIZE;
 	new->c_cflag |= CS8;
 
-	/* Only one stop bit is supported */
+	 
 	new->c_cflag &= ~CSTOPB;
 
 	cs = 0;
@@ -308,46 +300,43 @@ static void ar933x_uart_set_termios(struct uart_port *port,
 		cs |= AR933X_UART_CS_PARITY_NONE;
 	}
 
-	/* Mark/space parity is not supported */
+	 
 	new->c_cflag &= ~CMSPAR;
 
 	baud = uart_get_baud_rate(port, new, old, up->min_baud, up->max_baud);
 	ar933x_uart_get_scale_step(port->uartclk, baud, &scale, &step);
 
-	/*
-	 * Ok, we're now changing the port state. Do it with
-	 * interrupts disabled.
-	 */
+	 
 	spin_lock_irqsave(&up->port.lock, flags);
 
-	/* disable the UART */
+	 
 	ar933x_uart_rmw_clear(up, AR933X_UART_CS_REG,
 		      AR933X_UART_CS_IF_MODE_M << AR933X_UART_CS_IF_MODE_S);
 
-	/* Update the per-port timeout. */
+	 
 	uart_update_timeout(port, new->c_cflag, baud);
 
 	up->port.ignore_status_mask = 0;
 
-	/* ignore all characters if CREAD is not set */
+	 
 	if ((new->c_cflag & CREAD) == 0)
 		up->port.ignore_status_mask |= AR933X_DUMMY_STATUS_RD;
 
 	ar933x_uart_write(up, AR933X_UART_CLOCK_REG,
 			  scale << AR933X_UART_CLOCK_SCALE_S | step);
 
-	/* setup configuration register */
+	 
 	ar933x_uart_rmw(up, AR933X_UART_CS_REG, AR933X_UART_CS_PARITY_M, cs);
 
-	/* enable host interrupt */
+	 
 	ar933x_uart_rmw_set(up, AR933X_UART_CS_REG,
 			    AR933X_UART_CS_HOST_INT_EN);
 
-	/* enable RX and TX ready overide */
+	 
 	ar933x_uart_rmw_set(up, AR933X_UART_CS_REG,
 		AR933X_UART_CS_TX_READY_ORIDE | AR933X_UART_CS_RX_READY_ORIDE);
 
-	/* reenable the UART */
+	 
 	ar933x_uart_rmw(up, AR933X_UART_CS_REG,
 			AR933X_UART_CS_IF_MODE_M << AR933X_UART_CS_IF_MODE_S,
 			AR933X_UART_CS_IF_MODE_DCE << AR933X_UART_CS_IF_MODE_S);
@@ -371,7 +360,7 @@ static void ar933x_uart_rx_chars(struct ar933x_uart_port *up)
 		if ((rdata & AR933X_UART_DATA_RX_CSR) == 0)
 			break;
 
-		/* remove the character from the FIFO */
+		 
 		ar933x_uart_write(up, AR933X_UART_DATA_REG,
 				  AR933X_UART_DATA_RX_CSR);
 
@@ -487,15 +476,15 @@ static int ar933x_uart_startup(struct uart_port *port)
 
 	spin_lock_irqsave(&up->port.lock, flags);
 
-	/* Enable HOST interrupts */
+	 
 	ar933x_uart_rmw_set(up, AR933X_UART_CS_REG,
 			    AR933X_UART_CS_HOST_INT_EN);
 
-	/* enable RX and TX ready overide */
+	 
 	ar933x_uart_rmw_set(up, AR933X_UART_CS_REG,
 		AR933X_UART_CS_TX_READY_ORIDE | AR933X_UART_CS_RX_READY_ORIDE);
 
-	/* Enable RX interrupts */
+	 
 	ar933x_uart_start_rx_interrupt(up);
 
 	spin_unlock_irqrestore(&up->port.lock, flags);
@@ -508,11 +497,11 @@ static void ar933x_uart_shutdown(struct uart_port *port)
 	struct ar933x_uart_port *up =
 		container_of(port, struct ar933x_uart_port, port);
 
-	/* Disable all interrupts */
+	 
 	up->ier = 0;
 	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
 
-	/* Disable break condition */
+	 
 	ar933x_uart_rmw_clear(up, AR933X_UART_CS_REG,
 			      AR933X_UART_CS_TX_BREAK);
 
@@ -526,12 +515,12 @@ static const char *ar933x_uart_type(struct uart_port *port)
 
 static void ar933x_uart_release_port(struct uart_port *port)
 {
-	/* Nothing to release ... */
+	 
 }
 
 static int ar933x_uart_request_port(struct uart_port *port)
 {
-	/* UARTs always present */
+	 
 	return 0;
 }
 
@@ -601,7 +590,7 @@ static void ar933x_uart_wait_xmitr(struct ar933x_uart_port *up)
 	unsigned int status;
 	unsigned int timeout = 60000;
 
-	/* Wait up to 60ms for the character(s) to be sent. */
+	 
 	do {
 		status = ar933x_uart_read(up, AR933X_UART_DATA_REG);
 		if (--timeout == 0)
@@ -636,18 +625,13 @@ static void ar933x_uart_console_write(struct console *co, const char *s,
 	else
 		spin_lock(&up->port.lock);
 
-	/*
-	 * First save the IER then disable the interrupts
-	 */
+	 
 	int_en = ar933x_uart_read(up, AR933X_UART_INT_EN_REG);
 	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, 0);
 
 	uart_console_write(&up->port, s, count, ar933x_uart_console_putchar);
 
-	/*
-	 * Finally, wait for transmitter to become empty
-	 * and restore the IER
-	 */
+	 
 	ar933x_uart_wait_xmitr(up);
 	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, int_en);
 
@@ -689,14 +673,14 @@ static struct console ar933x_uart_console = {
 	.index		= -1,
 	.data		= &ar933x_uart_driver,
 };
-#endif /* CONFIG_SERIAL_AR933X_CONSOLE */
+#endif  
 
 static struct uart_driver ar933x_uart_driver = {
 	.owner		= THIS_MODULE,
 	.driver_name	= DRIVER_NAME,
 	.dev_name	= "ttyATH",
 	.nr		= CONFIG_SERIAL_AR933X_NR_UARTS,
-	.cons		= NULL, /* filled in runtime */
+	.cons		= NULL,  
 };
 
 static const struct serial_rs485 ar933x_no_rs485 = {};

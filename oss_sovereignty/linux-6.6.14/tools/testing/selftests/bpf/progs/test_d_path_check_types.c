@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -21,9 +21,7 @@ int BPF_PROG(d_path_check_rdonly_mem, struct path *path, struct kstat *stat,
 	cpu = bpf_get_smp_processor_id();
 	active = (void *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);
 	if (active) {
-		/* FAIL here! 'active' points to 'regular' memory. It
-		 * cannot be submitted to ring buffer.
-		 */
+		 
 		bpf_ringbuf_submit(active, 0);
 	}
 	return 0;

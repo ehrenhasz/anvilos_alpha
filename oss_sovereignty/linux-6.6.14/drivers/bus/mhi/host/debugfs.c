@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- *
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -16,7 +13,7 @@ static int mhi_debugfs_states_show(struct seq_file *m, void *d)
 {
 	struct mhi_controller *mhi_cntrl = m->private;
 
-	/* states */
+	 
 	seq_printf(m, "PM state: %s Device: %s MHI state: %s EE: %s wake: %s\n",
 		   to_mhi_pm_state_str(mhi_cntrl->pm_state),
 		   mhi_is_active(mhi_cntrl) ? "Active" : "Inactive",
@@ -24,7 +21,7 @@ static int mhi_debugfs_states_show(struct seq_file *m, void *d)
 		   TO_MHI_EXEC_STR(mhi_cntrl->ee),
 		   mhi_cntrl->wake_set ? "true" : "false");
 
-	/* counters */
+	 
 	seq_printf(m, "M0: %u M2: %u M3: %u", mhi_cntrl->M0, mhi_cntrl->M2,
 		   mhi_cntrl->M3);
 
@@ -140,7 +137,7 @@ static int mhi_device_info_show(struct device *dev, void *data)
 		   mhi_dev->name, mhi_dev->dev_type ? "Controller" : "Transfer",
 		   mhi_dev->dev_wake);
 
-	/* for transfer device types only */
+	 
 	if (mhi_dev->dev_type == MHI_DEVICE_XFER)
 		seq_printf((struct seq_file *)data, " channels: %u(UL)/%u(DL)",
 			   mhi_dev->ul_chan_id, mhi_dev->dl_chan_id);
@@ -159,7 +156,7 @@ static int mhi_debugfs_devices_show(struct seq_file *m, void *d)
 		return -ENODEV;
 	}
 
-	/* Show controller and client(s) info */
+	 
 	mhi_device_info_show(&mhi_cntrl->mhi_dev->dev, m);
 	device_for_each_child(&mhi_cntrl->mhi_dev->dev, m, mhi_device_info_show);
 

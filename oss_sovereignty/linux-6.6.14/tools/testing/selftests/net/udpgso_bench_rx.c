@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -114,7 +114,7 @@ static void do_poll(int fd, int timeout_ms)
 				break;
 			}
 
-			/* no events and more time to wait, do poll again */
+			 
 			continue;
 		}
 		if (pfd.revents != POLLIN)
@@ -161,20 +161,20 @@ static int do_socket(bool do_tcp)
 	return fd;
 }
 
-/* Flush all outstanding bytes for the tcp receive queue */
+ 
 static void do_flush_tcp(int fd)
 {
 	int ret;
 
 	while (true) {
-		/* MSG_TRUNC flushes up to len bytes */
+		 
 		ret = recv(fd, NULL, 1 << 21, MSG_TRUNC | MSG_DONTWAIT);
 		if (ret == -1 && errno == EAGAIN)
 			return;
 		if (ret == -1)
 			error(1, errno, "flush");
 		if (ret == 0) {
-			/* client detached */
+			 
 			exit(0);
 		}
 
@@ -194,7 +194,7 @@ static void do_verify_udp(const char *data, int len)
 	char cur = data[0];
 	int i;
 
-	/* verify contents */
+	 
 	if (cur < 'a' || cur > 'z')
 		error(1, 0, "data initial byte out of range");
 
@@ -244,7 +244,7 @@ static int recv_msg(int fd, char *buf, int len, int *gso_size)
 	return ret;
 }
 
-/* Flush all outstanding datagrams. Verify first few bytes of each. */
+ 
 static void do_flush_udp(int fd)
 {
 	static char rbuf[ETH_MAX_MTU];
@@ -252,7 +252,7 @@ static void do_flush_udp(int fd)
 
 	len = cfg_read_all ? sizeof(rbuf) : 0;
 	while (budget--) {
-		/* MSG_TRUNC will make return value full datagram length */
+		 
 		if (!cfg_expected_gso_size)
 			ret = recv(fd, rbuf, len, MSG_TRUNC | MSG_DONTWAIT);
 		else

@@ -1,21 +1,7 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 static const u32 ar5416Modes_9100[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x00001030, 0x00000230, 0x00000460, 0x000002c0, 0x00000160},
 	{0x00001070, 0x00000168, 0x000002d0, 0x00000318, 0x0000018c},
 	{0x000010b0, 0x00000e60, 0x00001cc0, 0x00007c70, 0x00003e38},
@@ -85,7 +71,7 @@ static const u32 ar5416Modes_9100[][5] = {
 };
 
 static const u32 ar5416Common_9100[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x0000000c, 0x00000000},
 	{0x00000030, 0x00020015},
 	{0x00000034, 0x00000005},
@@ -460,7 +446,7 @@ static const u32 ar5416Common_9100[][2] = {
 };
 
 static const u32 ar5416Bank6TPC_9100[][3] = {
-	/* Addr      5G          2G        */
+	 
 	{0x0000989c, 0x00000000, 0x00000000},
 	{0x0000989c, 0x00000000, 0x00000000},
 	{0x0000989c, 0x00000000, 0x00000000},
@@ -497,7 +483,7 @@ static const u32 ar5416Bank6TPC_9100[][3] = {
 };
 
 static const u32 ar5416Addac_9100[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x0000989c, 0x00000000},
 	{0x0000989c, 0x00000000},
 	{0x0000989c, 0x00000000},
@@ -533,7 +519,7 @@ static const u32 ar5416Addac_9100[][2] = {
 };
 
 static const u32 ar5416Modes_9160[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x00001030, 0x00000230, 0x00000460, 0x000002c0, 0x00000160},
 	{0x00001070, 0x00000168, 0x000002d0, 0x00000318, 0x0000018c},
 	{0x000010b0, 0x00000e60, 0x00001cc0, 0x00007c70, 0x00003e38},
@@ -601,7 +587,7 @@ static const u32 ar5416Modes_9160[][5] = {
 };
 
 static const u32 ar5416Common_9160[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x0000000c, 0x00000000},
 	{0x00000030, 0x00020015},
 	{0x00000034, 0x00000005},
@@ -979,7 +965,7 @@ static const u32 ar5416Common_9160[][2] = {
 };
 
 static const u32 ar5416Addac_9160[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x0000989c, 0x00000000},
 	{0x0000989c, 0x00000000},
 	{0x0000989c, 0x00000000},
@@ -1015,7 +1001,7 @@ static const u32 ar5416Addac_9160[][2] = {
 };
 
 static const u32 ar5416Addac_9160_1_1[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x0000989c, 0x00000000},
 	{0x0000989c, 0x00000000},
 	{0x0000989c, 0x00000000},

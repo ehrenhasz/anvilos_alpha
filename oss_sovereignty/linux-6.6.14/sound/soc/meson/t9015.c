@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -114,13 +114,13 @@ static const char * const mono_txt[] = { "Stereo", "Mono"};
 static SOC_ENUM_SINGLE_DECL(mono_enum, VOL_CTRL1, DAC_MONO, mono_txt);
 
 static const struct snd_kcontrol_new t9015_snd_controls[] = {
-	/* Volume Controls */
+	 
 	SOC_ENUM("Playback Channel Mode", mono_enum),
 	SOC_SINGLE("Playback Switch", VOL_CTRL1, DAC_SOFT_MUTE, 1, 1),
 	SOC_DOUBLE_TLV("Playback Volume", VOL_CTRL1, DACL_VC, DACR_VC,
 		       0xff, 0, dac_vol_tlv),
 
-	/* Ramp Controls */
+	 
 	SOC_ENUM("Ramp Rate", ramp_rate_enum),
 	SOC_SINGLE("Volume Ramp Switch", VOL_CTRL1, VC_RAMP_MODE, 1, 0),
 	SOC_SINGLE("Mute Ramp Switch", VOL_CTRL1, MUTE_MODE, 1, 0),
@@ -294,11 +294,7 @@ static int t9015_probe(struct platform_device *pdev)
 		return PTR_ERR(regmap);
 	}
 
-	/*
-	 * Initialize output polarity:
-	 * ATM the output polarity is fixed but in the future it might useful
-	 * to add DT property to set this depending on the platform needs
-	 */
+	 
 	regmap_write(regmap, LINEOUT_CFG, 0x1111);
 
 	return devm_snd_soc_register_component(dev, &t9015_codec_driver,

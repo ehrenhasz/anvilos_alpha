@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/platform/samsung/mfc5/s5p_mfc_intr.c
- *
- * C file for Samsung MFC (Multi Function Codec - FIMV) driver
- * This file contains functions used to wait for command completion.
- *
- * Kamil Debski, Copyright (C) 2011 Samsung Electronics Co., Ltd.
- * http://www.samsung.com/
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>

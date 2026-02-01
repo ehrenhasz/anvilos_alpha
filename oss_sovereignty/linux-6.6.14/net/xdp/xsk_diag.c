@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* XDP sockets monitoring support
- *
- * Copyright(c) 2019 Intel Corporation.
- *
- * Author: Björn Töpel <bjorn.topel@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/xdp_sock.h>

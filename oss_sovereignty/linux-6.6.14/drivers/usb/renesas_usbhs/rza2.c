@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas USB driver RZ/A2 initialization and power control
- *
- * Copyright (C) 2019 Chris Brandt
- * Copyright (C) 2019 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -46,7 +41,7 @@ static int usbhs_rza2_power_ctrl(struct platform_device *pdev,
 	if (enable) {
 		retval = phy_init(priv->phy);
 		usbhs_bset(priv, SUSPMODE, SUSPM, SUSPM);
-		udelay(100);	/* Wait for PLL to become stable */
+		udelay(100);	 
 		if (!retval)
 			retval = phy_power_on(priv->phy);
 	} else {

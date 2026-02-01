@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2019 Mellanox Technologies.
+
+
 
 #include <net/inet6_hashtables.h>
 #include "en_accel/en_accel.h"
@@ -54,8 +54,8 @@ struct mlx5e_ktls_offload_context_rx {
 	u32 rxq;
 	DECLARE_BITMAP(flags, MLX5E_NUM_PRIV_RX_FLAGS);
 
-	/* resync */
-	spinlock_t lock; /* protects resync fields */
+	 
+	spinlock_t lock;  
 	struct mlx5e_ktls_rx_resync_ctx resync;
 	struct list_head list;
 };
@@ -75,7 +75,7 @@ static void mlx5e_ktls_priv_rx_get(struct mlx5e_ktls_offload_context_rx *priv_rx
 }
 
 struct mlx5e_ktls_resync_resp {
-	/* protects list changes */
+	 
 	spinlock_t lock;
 	struct list_head list;
 };
@@ -246,8 +246,8 @@ mlx5e_get_ktls_rx_priv_ctx(struct tls_context *tls_ctx)
 	return *ctx;
 }
 
-/* Re-sync */
-/* Runs in work context */
+ 
+ 
 static int
 resync_post_get_progress_params(struct mlx5e_icosq *sq,
 				struct mlx5e_ktls_offload_context_rx *priv_rx)
@@ -324,9 +324,7 @@ err_out:
 	return err;
 }
 
-/* Function is called with elevated refcount.
- * It decreases it only if no WQE is posted.
- */
+ 
 static void resync_handle_work(struct work_struct *work)
 {
 	struct mlx5e_ktls_offload_context_rx *priv_rx;
@@ -357,9 +355,7 @@ static void resync_init(struct mlx5e_ktls_rx_resync_ctx *resync,
 	refcount_set(&resync->refcnt, 1);
 }
 
-/* Function can be called with the refcount being either elevated or not.
- * It does not affect the refcount.
- */
+ 
 static void resync_handle_seq_match(struct mlx5e_ktls_offload_context_rx *priv_rx,
 				    struct mlx5e_channel *c)
 {
@@ -415,11 +411,7 @@ static void resync_handle_seq_match(struct mlx5e_ktls_offload_context_rx *priv_r
 	}
 }
 
-/* Function can be called with the refcount being either elevated or not.
- * It decreases the refcount and may free the kTLS priv context.
- * Refcount is not elevated only if tls_dev_del has been called, but GET_PSV was
- * already in flight.
- */
+ 
 void mlx5e_ktls_handle_get_psv_completion(struct mlx5e_icosq_wqe_info *wi,
 					  struct mlx5e_icosq *sq)
 {
@@ -457,9 +449,7 @@ out:
 	kfree(buf);
 }
 
-/* Runs in NAPI.
- * Function elevates the refcount, unless no work is queued.
- */
+ 
 static bool resync_queue_get_psv(struct sock *sk)
 {
 	struct mlx5e_ktls_offload_context_rx *priv_rx;
@@ -480,7 +470,7 @@ static bool resync_queue_get_psv(struct sock *sk)
 	return true;
 }
 
-/* Runs in NAPI */
+ 
 static void resync_update_sn(struct mlx5e_rq *rq, struct sk_buff *skb)
 {
 	struct ethhdr *eth = (struct ethhdr *)(skb->data);
@@ -559,7 +549,7 @@ void mlx5e_ktls_rx_resync(struct net_device *netdev, struct sock *sk,
 	resync_handle_seq_match(priv_rx, c);
 }
 
-/* End of resync section */
+ 
 
 void mlx5e_ktls_handle_rx_skb(struct mlx5e_rq *rq, struct sk_buff *skb,
 			      struct mlx5_cqe64 *cqe, u32 *cqe_bcnt)
@@ -576,7 +566,7 @@ void mlx5e_ktls_handle_rx_skb(struct mlx5e_rq *rq, struct sk_buff *skb,
 		stats->tls_resync_req_pkt++;
 		resync_update_sn(rq, skb);
 		break;
-	default: /* CQE_TLS_OFFLOAD_ERROR: */
+	default:  
 		stats->tls_err++;
 		break;
 	}
@@ -695,11 +685,9 @@ void mlx5e_ktls_del_rx(struct net_device *netdev, struct tls_context *tls_ctx)
 	priv_rx = mlx5e_get_ktls_rx_priv_ctx(tls_ctx);
 	set_bit(MLX5E_PRIV_RX_FLAG_DELETING, priv_rx->flags);
 	mlx5e_set_ktls_rx_priv_ctx(tls_ctx, NULL);
-	synchronize_net(); /* Sync with NAPI */
+	synchronize_net();  
 	if (!cancel_work_sync(&priv_rx->rule.work))
-		/* completion is needed, as the priv_rx in the add flow
-		 * is maintained on the wqe info (wi), not on the socket.
-		 */
+		 
 		wait_for_completion(&priv_rx->add_ctx);
 	resync = &priv_rx->resync;
 	if (cancel_work_sync(&resync->work))
@@ -711,10 +699,7 @@ void mlx5e_ktls_del_rx(struct net_device *netdev, struct tls_context *tls_ctx)
 
 	mlx5e_tir_destroy(&priv_rx->tir);
 	mlx5_ktls_destroy_key(priv->tls->dek_pool, priv_rx->dek);
-	/* priv_rx should normally be freed here, but if there is an outstanding
-	 * GET_PSV, deallocation will be delayed until the CQE for GET_PSV is
-	 * processed.
-	 */
+	 
 	mlx5e_ktls_priv_rx_put(priv_rx);
 }
 
@@ -770,10 +755,7 @@ bool mlx5e_ktls_rx_handle_resync_list(struct mlx5e_channel *c, int budget)
 	priv_rx->rq_stats->tls_resync_res_ok += j;
 
 	if (!list_empty(&local_list)) {
-		/* This happens only if ICOSQ is full.
-		 * There is no need to mark busy or explicitly ask for a NAPI cycle,
-		 * it will be triggered by the outstanding ICOSQ completions.
-		 */
+		 
 		spin_lock(&ktls_resync->lock);
 		list_splice(&local_list, &ktls_resync->list);
 		set_bit(MLX5E_SQ_STATE_PENDING_TLS_RX_RESYNC, &sq->state);

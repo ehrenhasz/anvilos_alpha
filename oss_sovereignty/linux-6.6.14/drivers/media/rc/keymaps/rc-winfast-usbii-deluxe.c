@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-// winfast-usbii-deluxe.h - Keytable for winfast_usbii_deluxe Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/* Leadtek Winfast TV USB II Deluxe remote
-   Magnus Alm <magnus.alm@gmail.com>
- */
+ 
 
 static struct rc_map_table winfast_usbii_deluxe[] = {
 	{ 0x62, KEY_NUMERIC_0},
@@ -24,31 +22,31 @@ static struct rc_map_table winfast_usbii_deluxe[] = {
 	{ 0x7e, KEY_NUMERIC_8},
 	{ 0x7f, KEY_NUMERIC_9},
 
-	{ 0x38, KEY_CAMERA},		/* SNAPSHOT */
-	{ 0x37, KEY_RECORD},		/* RECORD */
-	{ 0x35, KEY_TIME},		/* TIMESHIFT */
+	{ 0x38, KEY_CAMERA},		 
+	{ 0x37, KEY_RECORD},		 
+	{ 0x35, KEY_TIME},		 
 
-	{ 0x74, KEY_VOLUMEUP},		/* VOLUMEUP */
-	{ 0x78, KEY_VOLUMEDOWN},	/* VOLUMEDOWN */
-	{ 0x64, KEY_MUTE},		/* MUTE */
+	{ 0x74, KEY_VOLUMEUP},		 
+	{ 0x78, KEY_VOLUMEDOWN},	 
+	{ 0x64, KEY_MUTE},		 
 
-	{ 0x21, KEY_CHANNEL},		/* SURF */
-	{ 0x7c, KEY_CHANNELUP},		/* CHANNELUP */
-	{ 0x60, KEY_CHANNELDOWN},	/* CHANNELDOWN */
-	{ 0x61, KEY_LAST},		/* LAST CHANNEL (RECALL) */
+	{ 0x21, KEY_CHANNEL},		 
+	{ 0x7c, KEY_CHANNELUP},		 
+	{ 0x60, KEY_CHANNELDOWN},	 
+	{ 0x61, KEY_LAST},		 
 
-	{ 0x72, KEY_VIDEO},		/* INPUT MODES (TV/FM) */
+	{ 0x72, KEY_VIDEO},		 
 
-	{ 0x70, KEY_POWER2},		/* TV ON/OFF */
+	{ 0x70, KEY_POWER2},		 
 
-	{ 0x39, KEY_CYCLEWINDOWS},	/* MINIMIZE (BOSS) */
-	{ 0x3a, KEY_NEW},		/* PIP */
-	{ 0x73, KEY_ZOOM},		/* FULLSECREEN */
+	{ 0x39, KEY_CYCLEWINDOWS},	 
+	{ 0x3a, KEY_NEW},		 
+	{ 0x73, KEY_ZOOM},		 
 
-	{ 0x66, KEY_INFO},		/* OSD (DISPLAY) */
+	{ 0x66, KEY_INFO},		 
 
-	{ 0x31, KEY_DOT},		/* '.' */
-	{ 0x63, KEY_ENTER},		/* ENTER */
+	{ 0x31, KEY_DOT},		 
+	{ 0x63, KEY_ENTER},		 
 
 };
 
@@ -56,7 +54,7 @@ static struct rc_map_list winfast_usbii_deluxe_map = {
 	.map = {
 		.scan     = winfast_usbii_deluxe,
 		.size     = ARRAY_SIZE(winfast_usbii_deluxe),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_WINFAST_USBII_DELUXE,
 	}
 };

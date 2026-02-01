@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-// Copyright (c) 2020 Cloudflare
+
+
 
 #define _GNU_SOURCE
 
@@ -109,9 +109,7 @@ static bool set_up_conn(const struct sockaddr *addr, socklen_t len, int type,
 	if (*conn < 0)
 		goto close_server;
 
-	/* We want to simulate packets arriving at conn, so we have to
-	 * swap src and dst.
-	 */
+	 
 	slen = sizeof(ss);
 	if (CHECK_FAIL(getsockname(*conn, sa, &slen)))
 		goto close_conn;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pinctrl driver for the Wondermedia SoC's
- *
- * Copyright (c) 2013 Tony Prisk <linux@prisktech.co.nz>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -74,7 +70,7 @@ static int wmt_pmx_get_function_groups(struct pinctrl_dev *pctldev,
 {
 	struct wmt_pinctrl_data *data = pinctrl_dev_get_drvdata(pctldev);
 
-	/* every pin does every function */
+	 
 	*groups = data->groups;
 	*num_groups = data->ngroups;
 
@@ -95,10 +91,7 @@ static int wmt_set_pinmux(struct wmt_pinctrl_data *data, unsigned func,
 		return -EINVAL;
 	}
 
-	/*
-	 * If reg_en == NO_REG, we assume it is a dedicated GPIO and cannot be
-	 * disabled (as on VT8500) and that no alternate function is available.
-	 */
+	 
 	switch (func) {
 	case WMT_FSEL_GPIO_IN:
 		if (reg_en != NO_REG)
@@ -138,7 +131,7 @@ static void wmt_pmx_gpio_disable_free(struct pinctrl_dev *pctldev,
 {
 	struct wmt_pinctrl_data *data = pinctrl_dev_get_drvdata(pctldev);
 
-	/* disable by setting GPIO_IN */
+	 
 	wmt_set_pinmux(data, WMT_FSEL_GPIO_IN, offset);
 }
 
@@ -318,10 +311,7 @@ static int wmt_pctl_dt_node_to_map(struct pinctrl_dev *pctldev,
 		return -EINVAL;
 	}
 
-	/*
-	 * The following lines calculate how many values are defined for each
-	 * of the properties.
-	 */
+	 
 	num_pins = pins->length / sizeof(u32);
 	num_funcs = funcs ? (funcs->length / sizeof(u32)) : 0;
 	num_pulls = pulls ? (pulls->length / sizeof(u32)) : 0;
@@ -388,14 +378,7 @@ static int wmt_pctl_dt_node_to_map(struct pinctrl_dev *pctldev,
 	*num_maps = num_pins * maps_per_pin;
 	return 0;
 
-/*
- * The fail path removes any maps that have been allocated. The fail path is
- * only called from code after maps has been kzalloc'd. It is also safe to
- * pass 'num_pins * maps_per_pin' as the map count even though we probably
- * failed before all the mappings were read as all maps are allocated at once,
- * and configs are only allocated for .type = PIN_MAP_TYPE_CONFIGS_PIN - there
- * is no failpath where a config can be allocated without .type being set.
- */
+ 
 fail:
 	wmt_pctl_dt_free_map(pctldev, maps, num_pins * maps_per_pin);
 	return err;
@@ -459,7 +442,7 @@ static int wmt_pinconf_set(struct pinctrl_dev *pctldev, unsigned pin,
 			dev_err(data->dev, "unknown pinconf param\n");
 			return -EINVAL;
 		}
-	} /* for each config */
+	}  
 
 	return 0;
 }

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/core/gen_stats.c
- *
- * Authors:  Thomas Graf <tgraf@suug.ch>
- *           Jamal Hadi Salim
- *           Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *
- * See Documentation/networking/gen_stats.rst
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -36,25 +28,7 @@ nla_put_failure:
 	return -1;
 }
 
-/**
- * gnet_stats_start_copy_compat - start dumping procedure in compatibility mode
- * @skb: socket buffer to put statistics TLVs into
- * @type: TLV type for top level statistic TLV
- * @tc_stats_type: TLV type for backward compatibility struct tc_stats TLV
- * @xstats_type: TLV type for backward compatibility xstats TLV
- * @lock: statistics lock
- * @d: dumping handle
- * @padattr: padding attribute
- *
- * Initializes the dumping handle, grabs the statistic lock and appends
- * an empty TLV header to the socket buffer for use a container for all
- * other statistic TLVS.
- *
- * The dumping handle is marked to be in backward compatibility mode telling
- * all gnet_stats_copy_XXX() functions to fill a local copy of struct tc_stats.
- *
- * Returns 0 on success or -1 if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_start_copy_compat(struct sk_buff *skb, int type, int tc_stats_type,
 			     int xstats_type, spinlock_t *lock,
@@ -76,12 +50,7 @@ gnet_stats_start_copy_compat(struct sk_buff *skb, int type, int tc_stats_type,
 	if (d->tail) {
 		int ret = gnet_stats_copy(d, type, NULL, 0, padattr);
 
-		/* The initial attribute added in gnet_stats_copy() may be
-		 * preceded by a padding attribute, in which case d->tail will
-		 * end up pointing at the padding instead of the real attribute.
-		 * Fix this so gnet_stats_finish_copy() adjusts the length of
-		 * the right attribute.
-		 */
+		 
 		if (ret == 0 && d->tail->nla_type == padattr)
 			d->tail = (struct nlattr *)((char *)d->tail +
 						    NLA_ALIGN(d->tail->nla_len));
@@ -92,20 +61,7 @@ gnet_stats_start_copy_compat(struct sk_buff *skb, int type, int tc_stats_type,
 }
 EXPORT_SYMBOL(gnet_stats_start_copy_compat);
 
-/**
- * gnet_stats_start_copy - start dumping procedure in compatibility mode
- * @skb: socket buffer to put statistics TLVs into
- * @type: TLV type for top level statistic TLV
- * @lock: statistics lock
- * @d: dumping handle
- * @padattr: padding attribute
- *
- * Initializes the dumping handle, grabs the statistic lock and appends
- * an empty TLV header to the socket buffer for use a container for all
- * other statistic TLVS.
- *
- * Returns 0 on success or -1 if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_start_copy(struct sk_buff *skb, int type, spinlock_t *lock,
 		      struct gnet_dump *d, int padattr)
@@ -114,7 +70,7 @@ gnet_stats_start_copy(struct sk_buff *skb, int type, spinlock_t *lock,
 }
 EXPORT_SYMBOL(gnet_stats_start_copy);
 
-/* Must not be inlined, due to u64_stats seqcount_t lockdep key */
+ 
 void gnet_stats_basic_sync_init(struct gnet_stats_basic_sync *b)
 {
 	u64_stats_set(&b->bytes, 0);
@@ -232,30 +188,14 @@ ___gnet_stats_copy_basic(struct gnet_dump *d,
 		res = gnet_stats_copy(d, type, &sb, sizeof(sb), TCA_STATS_PAD);
 		if (res < 0 || sb.packets == bstats_packets)
 			return res;
-		/* emit 64bit stats only if needed */
+		 
 		return gnet_stats_copy(d, TCA_STATS_PKT64, &bstats_packets,
 				       sizeof(bstats_packets), TCA_STATS_PAD);
 	}
 	return 0;
 }
 
-/**
- * gnet_stats_copy_basic - copy basic statistics into statistic TLV
- * @d: dumping handle
- * @cpu: copy statistic per cpu
- * @b: basic statistics
- * @running: true if @b represents a running qdisc, thus @b's
- *           internal values might change during basic reads.
- *           Only used if @cpu is NULL
- *
- * Context: task; must not be run from IRQ or BH contexts
- *
- * Appends the basic statistics to the top level TLV created by
- * gnet_stats_start_copy().
- *
- * Returns 0 on success or -1 with the statistic lock released
- * if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_copy_basic(struct gnet_dump *d,
 		      struct gnet_stats_basic_sync __percpu *cpu,
@@ -266,23 +206,7 @@ gnet_stats_copy_basic(struct gnet_dump *d,
 }
 EXPORT_SYMBOL(gnet_stats_copy_basic);
 
-/**
- * gnet_stats_copy_basic_hw - copy basic hw statistics into statistic TLV
- * @d: dumping handle
- * @cpu: copy statistic per cpu
- * @b: basic statistics
- * @running: true if @b represents a running qdisc, thus @b's
- *           internal values might change during basic reads.
- *           Only used if @cpu is NULL
- *
- * Context: task; must not be run from IRQ or BH contexts
- *
- * Appends the basic statistics to the top level TLV created by
- * gnet_stats_start_copy().
- *
- * Returns 0 on success or -1 with the statistic lock released
- * if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_copy_basic_hw(struct gnet_dump *d,
 			 struct gnet_stats_basic_sync __percpu *cpu,
@@ -293,17 +217,7 @@ gnet_stats_copy_basic_hw(struct gnet_dump *d,
 }
 EXPORT_SYMBOL(gnet_stats_copy_basic_hw);
 
-/**
- * gnet_stats_copy_rate_est - copy rate estimator statistics into statistics TLV
- * @d: dumping handle
- * @rate_est: rate estimator
- *
- * Appends the rate estimator statistics to the top level TLV created by
- * gnet_stats_start_copy().
- *
- * Returns 0 on success or -1 with the statistic lock released
- * if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_copy_rate_est(struct gnet_dump *d,
 			 struct net_rate_estimator __rcu **rate_est)
@@ -315,7 +229,7 @@ gnet_stats_copy_rate_est(struct gnet_dump *d,
 	if (!gen_estimator_read(rate_est, &sample))
 		return 0;
 	est.bps = min_t(u64, UINT_MAX, sample.bps);
-	/* we have some time before reaching 2^32 packets per second */
+	 
 	est.pps = sample.pps;
 
 	if (d->compat_tc_stats) {
@@ -328,7 +242,7 @@ gnet_stats_copy_rate_est(struct gnet_dump *d,
 				      TCA_STATS_PAD);
 		if (res < 0 || est.bps == sample.bps)
 			return res;
-		/* emit 64bit stats only if needed */
+		 
 		return gnet_stats_copy(d, TCA_STATS_RATE_EST64, &sample,
 				       sizeof(sample), TCA_STATS_PAD);
 	}
@@ -369,20 +283,7 @@ void gnet_stats_add_queue(struct gnet_stats_queue *qstats,
 }
 EXPORT_SYMBOL(gnet_stats_add_queue);
 
-/**
- * gnet_stats_copy_queue - copy queue statistics into statistics TLV
- * @d: dumping handle
- * @cpu_q: per cpu queue statistics
- * @q: queue statistics
- * @qlen: queue length statistics
- *
- * Appends the queue statistics to the top level TLV created by
- * gnet_stats_start_copy(). Using per cpu queue statistics if
- * they are available.
- *
- * Returns 0 on success or -1 with the statistic lock released
- * if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_copy_queue(struct gnet_dump *d,
 		      struct gnet_stats_queue __percpu *cpu_q,
@@ -409,19 +310,7 @@ gnet_stats_copy_queue(struct gnet_dump *d,
 }
 EXPORT_SYMBOL(gnet_stats_copy_queue);
 
-/**
- * gnet_stats_copy_app - copy application specific statistics into statistics TLV
- * @d: dumping handle
- * @st: application specific statistics data
- * @len: length of data
- *
- * Appends the application specific statistics to the top level TLV created by
- * gnet_stats_start_copy() and remembers the data for XSTATS if the dumping
- * handle is in backward compatibility mode.
- *
- * Returns 0 on success or -1 with the statistic lock released
- * if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_copy_app(struct gnet_dump *d, void *st, int len)
 {
@@ -446,18 +335,7 @@ err_out:
 }
 EXPORT_SYMBOL(gnet_stats_copy_app);
 
-/**
- * gnet_stats_finish_copy - finish dumping procedure
- * @d: dumping handle
- *
- * Corrects the length of the top level TLV to include all TLVs added
- * by gnet_stats_copy_XXX() calls. Adds the backward compatibility TLVs
- * if gnet_stats_start_copy_compat() was used and releases the statistics
- * lock.
- *
- * Returns 0 on success or -1 with the statistic lock released
- * if the room in the socket buffer was not sufficient.
- */
+ 
 int
 gnet_stats_finish_copy(struct gnet_dump *d)
 {

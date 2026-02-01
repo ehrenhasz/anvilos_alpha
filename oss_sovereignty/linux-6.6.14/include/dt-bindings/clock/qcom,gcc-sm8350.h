@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020-2021, Linaro Limited
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM8350_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM8350_H
 
-/* GCC HW clocks */
+ 
 #define PCIE_0_PIPE_CLK						1
 #define PCIE_1_PIPE_CLK						2
 #define UFS_CARD_RX_SYMBOL_0_CLK				3
@@ -19,7 +16,7 @@
 #define USB3_PHY_WRAPPER_GCC_USB30_PIPE_CLK			9
 #define USB3_UNI_PHY_SEC_GCC_USB30_PIPE_CLK			10
 
-/* GCC clocks */
+ 
 #define GCC_AGGRE_NOC_PCIE_0_AXI_CLK				11
 #define GCC_AGGRE_NOC_PCIE_1_AXI_CLK				12
 #define GCC_AGGRE_NOC_PCIE_TBU_CLK				13
@@ -210,7 +207,7 @@
 #define GCC_VIDEO_AXI0_CLK					198
 #define GCC_VIDEO_AXI1_CLK					199
 
-/* GCC resets */
+ 
 #define GCC_CAMERA_BCR						0
 #define GCC_DISPLAY_BCR						1
 #define GCC_GPU_BCR						2
@@ -250,7 +247,7 @@
 #define GCC_VIDEO_AXI1_CLK_ARES					36
 #define GCC_VIDEO_BCR						37
 
-/* GCC power domains */
+ 
 #define PCIE_0_GDSC						0
 #define PCIE_1_GDSC						1
 #define UFS_CARD_GDSC						2

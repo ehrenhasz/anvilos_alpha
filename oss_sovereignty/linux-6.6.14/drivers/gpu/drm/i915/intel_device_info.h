@@ -1,26 +1,4 @@
-/*
- * Copyright © 2014-2017 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _INTEL_DEVICE_INFO_H_
 #define _INTEL_DEVICE_INFO_H_
@@ -39,49 +17,49 @@ struct drm_printer;
 struct drm_i915_private;
 struct intel_gt_definition;
 
-/* Keep in gen based order, and chronological order within a gen */
+ 
 enum intel_platform {
 	INTEL_PLATFORM_UNINITIALIZED = 0,
-	/* gen2 */
+	 
 	INTEL_I830,
 	INTEL_I845G,
 	INTEL_I85X,
 	INTEL_I865G,
-	/* gen3 */
+	 
 	INTEL_I915G,
 	INTEL_I915GM,
 	INTEL_I945G,
 	INTEL_I945GM,
 	INTEL_G33,
 	INTEL_PINEVIEW,
-	/* gen4 */
+	 
 	INTEL_I965G,
 	INTEL_I965GM,
 	INTEL_G45,
 	INTEL_GM45,
-	/* gen5 */
+	 
 	INTEL_IRONLAKE,
-	/* gen6 */
+	 
 	INTEL_SANDYBRIDGE,
-	/* gen7 */
+	 
 	INTEL_IVYBRIDGE,
 	INTEL_VALLEYVIEW,
 	INTEL_HASWELL,
-	/* gen8 */
+	 
 	INTEL_BROADWELL,
 	INTEL_CHERRYVIEW,
-	/* gen9 */
+	 
 	INTEL_SKYLAKE,
 	INTEL_BROXTON,
 	INTEL_KABYLAKE,
 	INTEL_GEMINILAKE,
 	INTEL_COFFEELAKE,
 	INTEL_COMETLAKE,
-	/* gen11 */
+	 
 	INTEL_ICELAKE,
 	INTEL_ELKHARTLAKE,
 	INTEL_JASPERLAKE,
-	/* gen12 */
+	 
 	INTEL_TIGERLAKE,
 	INTEL_ROCKETLAKE,
 	INTEL_DG1,
@@ -94,42 +72,35 @@ enum intel_platform {
 	INTEL_MAX_PLATFORMS
 };
 
-/*
- * Subplatform bits share the same namespace per parent platform. In other words
- * it is fine for the same bit to be used on multiple parent platforms.
- */
+ 
 
 #define INTEL_SUBPLATFORM_BITS (3)
 #define INTEL_SUBPLATFORM_MASK (BIT(INTEL_SUBPLATFORM_BITS) - 1)
 
-/* HSW/BDW/SKL/KBL/CFL */
+ 
 #define INTEL_SUBPLATFORM_ULT	(0)
 #define INTEL_SUBPLATFORM_ULX	(1)
 
-/* ICL */
+ 
 #define INTEL_SUBPLATFORM_PORTF	(0)
 
-/* TGL */
+ 
 #define INTEL_SUBPLATFORM_UY	(0)
 
-/* DG2 */
+ 
 #define INTEL_SUBPLATFORM_G10	0
 #define INTEL_SUBPLATFORM_G11	1
 #define INTEL_SUBPLATFORM_G12	2
 
-/* ADL */
+ 
 #define INTEL_SUBPLATFORM_RPL	0
 
-/* ADL-P */
-/*
- * As #define INTEL_SUBPLATFORM_RPL 0 will apply
- * here too, SUBPLATFORM_N will have different
- * bit set
- */
+ 
+ 
 #define INTEL_SUBPLATFORM_N    1
 #define INTEL_SUBPLATFORM_RPLU  2
 
-/* MTL */
+ 
 #define INTEL_SUBPLATFORM_M	0
 #define INTEL_SUBPLATFORM_P	1
 
@@ -144,7 +115,7 @@ enum intel_ppgtt_type {
 	func(is_lp); \
 	func(require_force_probe); \
 	func(is_dgfx); \
-	/* Keep has_* in alphabetical order */ \
+	  \
 	func(has_64bit_reloc); \
 	func(has_64k_pages); \
 	func(gpu_reset_clobbers_display); \
@@ -187,10 +158,7 @@ struct intel_ip_version {
 };
 
 struct intel_runtime_info {
-	/*
-	 * Single "graphics" IP version that represents
-	 * render, compute and copy behavior.
-	 */
+	 
 	struct {
 		struct intel_ip_version ip;
 	} graphics;
@@ -198,14 +166,7 @@ struct intel_runtime_info {
 		struct intel_ip_version ip;
 	} media;
 
-	/*
-	 * Platform mask is used for optimizing or-ed IS_PLATFORM calls into
-	 * single runtime conditionals, and also to provide groundwork for
-	 * future per platform, or per SKU build optimizations.
-	 *
-	 * Array can be extended when necessary if the corresponding
-	 * BUILD_BUG_ON is hit.
-	 */
+	 
 	u32 platform_mask[2];
 
 	u16 device_id;
@@ -214,10 +175,10 @@ struct intel_runtime_info {
 
 	struct intel_step_info step;
 
-	unsigned int page_sizes; /* page sizes supported by the HW */
+	unsigned int page_sizes;  
 
 	enum intel_ppgtt_type ppgtt_type;
-	unsigned int ppgtt_size; /* log2, e.g. 31/32/48 bits */
+	unsigned int ppgtt_size;  
 
 	bool has_pooled_eu;
 };
@@ -225,22 +186,20 @@ struct intel_runtime_info {
 struct intel_device_info {
 	enum intel_platform platform;
 
-	unsigned int dma_mask_size; /* available DMA address bits */
+	unsigned int dma_mask_size;  
 
 	const struct intel_gt_definition *extra_gt_list;
 
-	u8 gt; /* GT number, 0 if undefined */
+	u8 gt;  
 
-	intel_engine_mask_t platform_engine_mask; /* Engines supported by the HW */
-	u32 memory_regions; /* regions supported by the HW */
+	intel_engine_mask_t platform_engine_mask;  
+	u32 memory_regions;  
 
 #define DEFINE_FLAG(name) u8 name:1
 	DEV_INFO_FOR_EACH_FLAG(DEFINE_FLAG);
 #undef DEFINE_FLAG
 
-	/*
-	 * Initial runtime info. Do not access outside of i915_driver_create().
-	 */
+	 
 	const struct intel_runtime_info __runtime;
 
 	u32 cachelevel_to_pat[I915_MAX_CACHE_LEVEL];

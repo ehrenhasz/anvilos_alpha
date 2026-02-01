@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung Exynos4 SoC series FIMC-IS slave interface driver
- *
- * Error log interface functions
- *
- * Copyright (C) 2011 - 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Younghwan Joo <yhwan.joo@samsung.com>
- *          Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include "fimc-is-errno.h"
 
@@ -76,7 +67,7 @@ const char *fimc_is_param_strerr(unsigned int error)
 	case ERROR_DMA_OUTPUT_ORDER:
 		return "ERROR_DMA_OUTPUT_ORDER";
 
-	/* Sensor Error(100~199) */
+	 
 	case ERROR_SENSOR_I2C_FAIL:
 		return "ERROR_SENSOR_I2C_FAIL";
 	case ERROR_SENSOR_INVALID_FRAMERATE:
@@ -98,7 +89,7 @@ const char *fimc_is_param_strerr(unsigned int error)
 	case ERROR_SENSOR_UNSUPPORT_AF:
 		return "ERROR_SENSOR_UNSUPPORT_AF";
 
-	/* ISP Error (200~299) */
+	 
 	case ERROR_ISP_AF_BUSY:
 		return "ERROR_ISP_AF_BUSY";
 	case ERROR_ISP_AF_INVALID_COMMAND:
@@ -106,8 +97,8 @@ const char *fimc_is_param_strerr(unsigned int error)
 	case ERROR_ISP_AF_INVALID_MODE:
 		return "ERROR_ISP_AF_INVALID_MODE";
 
-	/* DRC Error (300~399) */
-	/* FD Error  (400~499) */
+	 
+	 
 	case ERROR_FD_CONFIG_MAX_NUMBER_STATE:
 		return "ERROR_FD_CONFIG_MAX_NUMBER_STATE";
 	case ERROR_FD_CONFIG_MAX_NUMBER_INVALID:
@@ -148,7 +139,7 @@ const char *fimc_is_strerr(unsigned int error)
 	error &= ~IS_ERROR_TIME_OUT_FLAG;
 
 	switch (error) {
-	/* General */
+	 
 	case IS_ERROR_INVALID_COMMAND:
 		return "IS_ERROR_INVALID_COMMAND";
 	case IS_ERROR_REQUEST_FAIL:
@@ -202,11 +193,11 @@ const char *fimc_is_strerr(unsigned int error)
 	case IS_ERROR_UNKNOWN:
 		return "IS_ERROR_UNKNOWN";
 
-	/* Sensor */
+	 
 	case IS_ERROR_SENSOR_PWRDN_FAIL:
 		return "IS_ERROR_SENSOR_PWRDN_FAIL";
 
-	/* ISP */
+	 
 	case IS_ERROR_ISP_PWRDN_FAIL:
 		return "IS_ERROR_ISP_PWRDN_FAIL";
 	case IS_ERROR_ISP_MULTIPLE_INPUT:
@@ -228,7 +219,7 @@ const char *fimc_is_strerr(unsigned int error)
 	case IS_ERROR_ISP_FRAME_END_TIME_OUT:
 		return "IS_ERROR_ISP_FRAME_END_TIME_OUT";
 
-	/* DRC */
+	 
 	case IS_ERROR_DRC_PWRDN_FAIL:
 		return "IS_ERROR_DRC_PWRDN_FAIL";
 	case IS_ERROR_DRC_MULTIPLE_INPUT:
@@ -252,7 +243,7 @@ const char *fimc_is_strerr(unsigned int error)
 	case IS_ERROR_DRC_FRAME_END_TIME_OUT:
 		return "IS_ERROR_DRC_FRAME_END_TIME_OUT";
 
-	/* FD */
+	 
 	case IS_ERROR_FD_PWRDN_FAIL:
 		return "IS_ERROR_FD_PWRDN_FAIL";
 	case IS_ERROR_FD_MULTIPLE_INPUT:

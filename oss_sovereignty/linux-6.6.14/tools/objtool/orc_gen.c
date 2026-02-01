@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -21,11 +19,7 @@ static int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
 	memset(orc, 0, sizeof(*orc));
 
 	if (!cfi) {
-		/*
-		 * This is usually either unreachable nops/traps (which don't
-		 * trigger unreachable instruction warnings), or
-		 * STACK_FRAME_NON_STANDARD functions.
-		 */
+		 
 		orc->type = ORC_TYPE_UNDEFINED;
 		return 0;
 	}
@@ -111,13 +105,13 @@ static int write_orc_entry(struct elf *elf, struct section *orc_sec,
 {
 	struct orc_entry *orc;
 
-	/* populate ORC data */
+	 
 	orc = (struct orc_entry *)orc_sec->data->d_buf + idx;
 	memcpy(orc, o, sizeof(*orc));
 	orc->sp_offset = bswap_if_needed(elf, orc->sp_offset);
 	orc->bp_offset = bswap_if_needed(elf, orc->bp_offset);
 
-	/* populate reloc for ip */
+	 
 	if (!elf_init_reloc_text_sym(elf, ip_sec, idx * sizeof(int), idx,
 				     insn_sec, insn_off))
 		return -1;
@@ -166,7 +160,7 @@ int orc_create(struct objtool_file *file)
 
 	struct orc_entry null = { .type = ORC_TYPE_UNDEFINED };
 
-	/* Build a deduplicated list of ORC entries: */
+	 
 	INIT_LIST_HEAD(&orc_list);
 	for_each_sec(file, sec) {
 		struct orc_entry orc, prev_orc = {0};
@@ -194,18 +188,12 @@ int orc_create(struct objtool_file *file)
 				continue;
 			}
 
-			/*
-			 * Alternatives can have different stack layout
-			 * possibilities (but they shouldn't conflict).
-			 * Instead of traversing the instructions, use the
-			 * alt_group's flattened byte-offset-addressed CFI
-			 * array.
-			 */
+			 
 			for (i = 0; i < alt_group_len(alt_group); i++) {
 				struct cfi_state *cfi = alt_group->cfi[i];
 				if (!cfi)
 					continue;
-				/* errors are reported on the original insn */
+				 
 				if (init_orc_entry(&orc, cfi, insn))
 					return -1;
 				if (!memcmp(&prev_orc, &orc, sizeof(orc)))
@@ -218,11 +206,11 @@ int orc_create(struct objtool_file *file)
 				empty = false;
 			}
 
-			/* Skip to the end of the alt_group */
+			 
 			insn = alt_group->last_insn;
 		}
 
-		/* Add a section terminator */
+		 
 		if (!empty) {
 			orc_list_add(&orc_list, &null, sec, sec->sh.sh_size);
 			nr++;
@@ -231,7 +219,7 @@ int orc_create(struct objtool_file *file)
 	if (!nr)
 		return 0;
 
-	/* Create .orc_unwind, .orc_unwind_ip and .rela.orc_unwind_ip sections: */
+	 
 	sec = find_section_by_name(file->elf, ".orc_unwind");
 	if (sec) {
 		WARN("file already has .orc_unwind section, skipping");
@@ -246,7 +234,7 @@ int orc_create(struct objtool_file *file)
 	if (!sec)
 		return -1;
 
-	/* Write ORC entries to sections: */
+	 
 	list_for_each_entry(entry, &orc_list, list) {
 		if (write_orc_entry(file->elf, orc_sec, sec, idx++,
 				    entry->insn_sec, entry->insn_off,

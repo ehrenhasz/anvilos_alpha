@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ASIX AX8817X based USB 2.0 Ethernet Devices
- * Copyright (C) 2003-2006 David Hollis <dhollis@davehollis.com>
- * Copyright (C) 2005 Phil Chang <pchang23@sbcglobal.net>
- * Copyright (C) 2006 James Painter <jamie.painter@iname.com>
- * Copyright (c) 2002-2003 TiVo Inc.
- */
+
+ 
 
 #include "asix.h"
 
@@ -114,20 +108,15 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
 
 static void reset_asix_rx_fixup_info(struct asix_rx_fixup_info *rx)
 {
-	/* Reset the variables that have a lifetime outside of
-	 * asix_rx_fixup_internal() so that future processing starts from a
-	 * known set of initial conditions.
-	 */
+	 
 
 	if (rx->ax_skb) {
-		/* Discard any incomplete Ethernet frame in the netdev buffer */
+		 
 		kfree_skb(rx->ax_skb);
 		rx->ax_skb = NULL;
 	}
 
-	/* Assume the Data header 32-bit word is at the start of the current
-	 * or next URB socket buffer so reset all the state variables.
-	 */
+	 
 	rx->remaining = 0;
 	rx->split_head = false;
 	rx->header = 0;
@@ -139,15 +128,7 @@ int asix_rx_fixup_internal(struct usbnet *dev, struct sk_buff *skb,
 	int offset = 0;
 	u16 size;
 
-	/* When an Ethernet frame spans multiple URB socket buffers,
-	 * do a sanity test for the Data header synchronisation.
-	 * Attempt to detect the situation of the previous socket buffer having
-	 * been truncated or a socket buffer was missing. These situations
-	 * cause a discontinuity in the data stream and therefore need to avoid
-	 * appending bad data to the end of the current netdev socket buffer.
-	 * Also avoid unnecessarily discarding a good current netdev socket
-	 * buffer.
-	 */
+	 
 	if (rx->remaining && (rx->remaining + sizeof(u32) <= skb->len)) {
 		offset = ((rx->remaining + 1) & 0xfffe);
 		rx->header = get_unaligned_le32(skb->data + offset);
@@ -184,7 +165,7 @@ int asix_rx_fixup_internal(struct usbnet *dev, struct sk_buff *skb,
 				offset += sizeof(u32);
 			}
 
-			/* take frame length from Data header 32-bit word */
+			 
 			size = (u16)(rx->header & 0x7ff);
 			if (size != ((~rx->header >> 16) & 0x7ff)) {
 				netdev_err(dev->net, "asix_rx_fixup() Bad Header Length 0x%x, offset %d\n",
@@ -199,11 +180,7 @@ int asix_rx_fixup_internal(struct usbnet *dev, struct sk_buff *skb,
 				return 0;
 			}
 
-			/* Sometimes may fail to get a netdev socket buffer but
-			 * continue to process the URB socket buffer so that
-			 * synchronisation of the Ethernet frame Data header
-			 * word is maintained.
-			 */
+			 
 			rx->ax_skb = netdev_alloc_skb_ip_align(dev->net, size);
 
 			rx->remaining = size;
@@ -274,22 +251,11 @@ struct sk_buff *asix_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 
 	padlen = ((skb->len + 4) & (dev->maxpacket - 1)) ? 0 : 4;
 
-	/* We need to push 4 bytes in front of frame (packet_len)
-	 * and maybe add 4 bytes after the end (if padlen is 4)
-	 *
-	 * Avoid skb_copy_expand() expensive call, using following rules :
-	 * - We are allowed to push 4 bytes in headroom if skb_header_cloned()
-	 *   is false (and if we have 4 bytes of headroom)
-	 * - We are allowed to put 4 bytes at tail if skb_cloned()
-	 *   is false (and if we have 4 bytes of tailroom)
-	 *
-	 * TCP packets for example are cloned, but __skb_header_release()
-	 * was called in tcp stack, allowing us to use headroom for our needs.
-	 */
+	 
 	if (!skb_header_cloned(skb) &&
 	    !(padlen && skb_cloned(skb)) &&
 	    headroom + tailroom >= 4 + padlen) {
-		/* following should not happen, but better be safe */
+		 
 		if (headroom < 4 ||
 		    tailroom < padlen) {
 			skb->data = memmove(skb->head + 4, skb->data, skb->len);
@@ -393,7 +359,7 @@ u16 asix_read_medium_status(struct usbnet *dev, int in_pm)
 	if (ret < 0) {
 		netdev_err(dev->net, "Error reading Medium Status register: %02x\n",
 			   ret);
-		return ret;	/* TODO: callers not checking for error ret */
+		return ret;	 
 	}
 
 	return le16_to_cpu(v);
@@ -414,7 +380,7 @@ int asix_write_medium_mode(struct usbnet *dev, u16 mode, int in_pm)
 	return ret;
 }
 
-/* set MAC link settings according to information from phylib */
+ 
 void asix_adjust_link(struct net_device *netdev)
 {
 	struct phy_device *phydev = netdev->phydev;
@@ -452,9 +418,7 @@ int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm)
 	return ret;
 }
 
-/*
- * AX88772 & AX88178 have a 16-bit RX_CTL value
- */
+ 
 void asix_set_multicast(struct net_device *net)
 {
 	struct usbnet *dev = netdev_priv(net);
@@ -467,18 +431,15 @@ void asix_set_multicast(struct net_device *net)
 		   netdev_mc_count(net) > AX_MAX_MCAST) {
 		rx_ctl |= AX_RX_CTL_AMALL;
 	} else if (netdev_mc_empty(net)) {
-		/* just broadcast and directed */
+		 
 	} else {
-		/* We use the 20 byte dev->data
-		 * for our 8 byte filter buffer
-		 * to avoid allocating memory that
-		 * is tricky to free later */
+		 
 		struct netdev_hw_addr *ha;
 		u32 crc_bits;
 
 		memset(data->multi_filter, 0, AX_MCAST_FILTER_SIZE);
 
-		/* Build the multicast hash filter. */
+		 
 		netdev_for_each_mc_addr(ha, net) {
 			crc_bits = ether_crc(ETH_ALEN, ha->addr) >> 26;
 			data->multi_filter[crc_bits >> 3] |=
@@ -562,7 +523,7 @@ void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
 	__asix_mdio_write(netdev, phy_id, loc, val, false);
 }
 
-/* MDIO read and write wrappers for phylib */
+ 
 int asix_mdio_bus_read(struct mii_bus *bus, int phy_id, int regnum)
 {
 	struct usbnet *priv = bus->priv;
@@ -653,7 +614,7 @@ int asix_get_eeprom(struct net_device *net, struct ethtool_eeprom *eeprom,
 	if (!eeprom_buff)
 		return -ENOMEM;
 
-	/* ax8817x returns 2 bytes from eeprom on read */
+	 
 	for (i = first_word; i <= last_word; i++) {
 		if (asix_read_cmd(dev, AX_CMD_READ_EEPROM, i, 0, 2,
 				  &eeprom_buff[i - first_word], 0) < 0) {
@@ -693,8 +654,7 @@ int asix_set_eeprom(struct net_device *net, struct ethtool_eeprom *eeprom,
 	if (!eeprom_buff)
 		return -ENOMEM;
 
-	/* align data to 16 bit boundaries, read the missing data from
-	   the EEPROM */
+	 
 	if (eeprom->offset & 1) {
 		ret = asix_read_cmd(dev, AX_CMD_READ_EEPROM, first_word, 0, 2,
 				    &eeprom_buff[0], 0);
@@ -715,7 +675,7 @@ int asix_set_eeprom(struct net_device *net, struct ethtool_eeprom *eeprom,
 
 	memcpy((u8 *)eeprom_buff + (eeprom->offset & 1), data, eeprom->len);
 
-	/* write data to EEPROM */
+	 
 	ret = asix_write_cmd(dev, AX_CMD_WRITE_ENABLE, 0x0000, 0, 0, NULL, 0);
 	if (ret < 0) {
 		netdev_err(net, "Failed to enable EEPROM write\n");
@@ -750,7 +710,7 @@ free:
 
 void asix_get_drvinfo(struct net_device *net, struct ethtool_drvinfo *info)
 {
-	/* Inherit standard device info */
+	 
 	usbnet_get_drvinfo(net, info);
 	strscpy(info->driver, DRIVER_NAME, sizeof(info->driver));
 	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
@@ -769,10 +729,7 @@ int asix_set_mac_address(struct net_device *net, void *p)
 
 	eth_hw_addr_set(net, addr->sa_data);
 
-	/* We use the 20 byte dev->data
-	 * for our 6 byte mac buffer
-	 * to avoid allocating memory that
-	 * is tricky to free later */
+	 
 	memcpy(data->mac_addr, addr->sa_data, ETH_ALEN);
 	asix_write_cmd_async(dev, AX_CMD_WRITE_NODE_ID, 0, 0, ETH_ALEN,
 							data->mac_addr);

@@ -1,32 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ufs/namei.c
- *
- * Migration to usage of "page cache" on May 2006 by
- * Evgeniy Dushistov <dushistov@mail.ru> based on ext2 code base.
- *
- * Copyright (C) 1998
- * Daniel Pirkl <daniel.pirkl@email.cz>
- * Charles University, Faculty of Mathematics and Physics
- *
- *  from
- *
- *  linux/fs/ext2/namei.c
- *
- * Copyright (C) 1992, 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- *
- *  from
- *
- *  linux/fs/minix/namei.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  Big-endian to little-endian byte-swapping/bitmaps by
- *        David S. Miller (davem@caip.rutgers.edu), 1995
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/fs.h>
@@ -61,14 +34,7 @@ static struct dentry *ufs_lookup(struct inode * dir, struct dentry *dentry, unsi
 	return d_splice_alias(inode, dentry);
 }
 
-/*
- * By the time this is called, we already have created
- * the directory cache entry for the new file, but it
- * is so far negative - it has no inode.
- *
- * If the create succeeds, we fill in the inode information
- * with d_instantiate(). 
- */
+ 
 static int ufs_create (struct mnt_idmap * idmap,
 		struct inode * dir, struct dentry * dentry, umode_t mode,
 		bool excl)
@@ -123,7 +89,7 @@ static int ufs_symlink (struct mnt_idmap * idmap, struct inode * dir,
 		return err;
 
 	if (l > UFS_SB(sb)->s_uspi->s_maxsymlinklen) {
-		/* slow symlink */
+		 
 		inode->i_op = &page_symlink_inode_operations;
 		inode_nohighmem(inode);
 		inode->i_mapping->a_ops = &ufs_aops;
@@ -131,7 +97,7 @@ static int ufs_symlink (struct mnt_idmap * idmap, struct inode * dir,
 		if (err)
 			goto out_fail;
 	} else {
-		/* fast symlink */
+		 
 		inode->i_op = &simple_symlink_inode_operations;
 		inode->i_link = (char *)UFS_I(inode)->i_u1.i_symlink;
 		memcpy(inode->i_link, symname, l);
@@ -294,10 +260,7 @@ static int ufs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 			inode_inc_link_count(new_dir);
 	}
 
-	/*
-	 * Like most other Unix systems, set the ctime for inodes on a
- 	 * rename.
-	 */
+	 
 	inode_set_ctime_current(old_inode);
 
 	ufs_delete_entry(old_dir, old_de, old_page);

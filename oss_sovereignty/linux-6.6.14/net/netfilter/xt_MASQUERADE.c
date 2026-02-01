@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Masquerade.  Simple mapping which alters range to a local IP address
-   (depending on route). */
 
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
- */
+ 
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/netfilter/x_tables.h>
@@ -15,7 +12,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
 MODULE_DESCRIPTION("Xtables: automatic-address SNAT");
 
-/* FIXME: Multiple targets. --RR */
+ 
 static int masquerade_tg_check(const struct xt_tgchk_param *par)
 {
 	const struct nf_nat_ipv4_multi_range_compat *mr = par->targinfo;

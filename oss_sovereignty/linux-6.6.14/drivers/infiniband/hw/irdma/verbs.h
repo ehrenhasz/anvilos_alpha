@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_VERBS_H
 #define IRDMA_VERBS_H
 
@@ -14,9 +14,9 @@ struct irdma_ucontext {
 	struct irdma_device *iwdev;
 	struct rdma_user_mmap_entry *db_mmap_entry;
 	struct list_head cq_reg_mem_list;
-	spinlock_t cq_reg_mem_list_lock; /* protect CQ memory list */
+	spinlock_t cq_reg_mem_list_lock;  
 	struct list_head qp_reg_mem_list;
-	spinlock_t qp_reg_mem_list_lock; /* protect QP memory list */
+	spinlock_t qp_reg_mem_list_lock;  
 	int abi_ver;
 	u8 legacy_mode : 1;
 	u8 use_raw_attrs : 1;
@@ -49,7 +49,7 @@ struct irdma_ah {
 	union ib_gid dgid;
 	struct hlist_node list;
 	refcount_t refcnt;
-	struct irdma_ah *parent_ah; /* AH from cached list */
+	struct irdma_ah *parent_ah;  
 };
 
 struct irdma_hmc_pble {
@@ -125,7 +125,7 @@ struct irdma_cq {
 	struct irdma_dma_mem kmem_shadow;
 	struct completion free_cq;
 	refcount_t refcnt;
-	spinlock_t lock; /* for poll cq */
+	spinlock_t lock;  
 	struct irdma_pbl *iwpbl;
 	struct irdma_pbl *iwpbl_shadow;
 	struct list_head resize_list;
@@ -185,7 +185,7 @@ struct irdma_qp {
 	int max_send_wr;
 	int max_recv_wr;
 	atomic_t close_timer_started;
-	spinlock_t lock; /* serialize posting WRs to SQ/RQ */
+	spinlock_t lock;  
 	struct irdma_qp_context *iwqp_context;
 	void *pbl_vbase;
 	dma_addr_t pbl_pbase;
@@ -268,10 +268,7 @@ static inline void set_ib_wc_op_sq(struct irdma_cq_poll_info *cq_poll_info,
 static inline void set_ib_wc_op_rq(struct irdma_cq_poll_info *cq_poll_info,
 				   struct ib_wc *entry, bool send_imm_support)
 {
-	/**
-	 * iWARP does not support sendImm, so the presence of Imm data
-	 * must be WriteImm.
-	 */
+	 
 	if (!send_imm_support) {
 		entry->opcode = cq_poll_info->imm_valid ?
 					IB_WC_RECV_RDMA_WITH_IMM :
@@ -297,4 +294,4 @@ void irdma_ib_qp_event(struct irdma_qp *iwqp, enum irdma_qp_event_type event);
 void irdma_generate_flush_completions(struct irdma_qp *iwqp);
 void irdma_remove_cmpls_list(struct irdma_cq *iwcq);
 int irdma_generated_cmpls(struct irdma_cq *iwcq, struct irdma_cq_poll_info *cq_poll_info);
-#endif /* IRDMA_VERBS_H */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	Vxlan vni filter for collect metadata mode
- *
- *	Authors: Roopa Prabhu <roopa@nvidia.com>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -204,10 +199,10 @@ static u32 vnirange(struct vxlan_vni_node *vbegin,
 static size_t vxlan_vnifilter_entry_nlmsg_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct tunnel_msg))
-		+ nla_total_size(0) /* VXLAN_VNIFILTER_ENTRY */
-		+ nla_total_size(sizeof(u32)) /* VXLAN_VNIFILTER_ENTRY_START */
-		+ nla_total_size(sizeof(u32)) /* VXLAN_VNIFILTER_ENTRY_END */
-		+ nla_total_size(sizeof(struct in6_addr));/* VXLAN_VNIFILTER_ENTRY_GROUP{6} */
+		+ nla_total_size(0)  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(struct in6_addr)); 
 }
 
 static int __vnifilter_entry_fill_stats(struct sk_buff *skb,
@@ -349,7 +344,7 @@ static int vxlan_vnifilter_dump_dev(const struct net_device *dev,
 	if (!(vxlan->cfg.flags & VXLAN_F_VNIFILTER))
 		return -EINVAL;
 
-	/* RCU needed because of the vni locking rules (rcu || rtnl) */
+	 
 	vg = rcu_dereference(vxlan->vnigrp);
 	if (!vg || !vg->num_vnis)
 		return 0;
@@ -432,7 +427,7 @@ static int vxlan_vnifilter_dump(struct sk_buff *skb, struct netlink_callback *cb
 			goto out_err;
 		}
 		err = vxlan_vnifilter_dump_dev(dev, skb, cb);
-		/* if the dump completed without an error we return 0 here */
+		 
 		if (err != -EMSGSIZE)
 			goto out_err;
 	} else {
@@ -526,9 +521,7 @@ static int vxlan_vni_update_group(struct vxlan_dev *vxlan,
 
 	memcpy(&old_remote_ip, &vninode->remote_ip, sizeof(old_remote_ip));
 
-	/* if per vni remote ip is not present use vxlan dev
-	 * default dst remote ip for fdb entry
-	 */
+	 
 	if (group && !vxlan_addr_any(group)) {
 		newrip = group;
 	} else {
@@ -536,9 +529,7 @@ static int vxlan_vni_update_group(struct vxlan_dev *vxlan,
 			newrip = &dst->remote_ip;
 	}
 
-	/* if old rip exists, and no newrip,
-	 * explicitly delete old rip
-	 */
+	 
 	if (!newrip && !vxlan_addr_any(&old_remote_ip))
 		oldrip = &old_remote_ip;
 
@@ -618,9 +609,7 @@ static void vxlan_vni_delete_group(struct vxlan_dev *vxlan,
 	struct vxlan_net *vn = net_generic(vxlan->net, vxlan_net_id);
 	struct vxlan_rdst *dst = &vxlan->default_dst;
 
-	/* if per vni remote_ip not present, delete the
-	 * default dst remote_ip previously added for this vni
-	 */
+	 
 	if (!vxlan_addr_any(&vninode->remote_ip) ||
 	    !vxlan_addr_any(&dst->remote_ip))
 		__vxlan_fdb_delete(vxlan, all_zeros_mac,
@@ -949,7 +938,7 @@ static int vxlan_vnifilter_process(struct sk_buff *skb, struct nlmsghdr *nlh,
 	int err, vnis = 0;
 	int rem;
 
-	/* this should validate the header and check for remaining bytes */
+	 
 	err = nlmsg_parse(nlh, sizeof(*tmsg), NULL, VXLAN_VNIFILTER_MAX,
 			  vni_filter_policy, extack);
 	if (err < 0)

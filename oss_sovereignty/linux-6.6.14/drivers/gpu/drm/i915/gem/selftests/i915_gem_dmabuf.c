@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include "i915_drv.h"
 #include "i915_selftest.h"
@@ -119,10 +115,7 @@ static int igt_dmabuf_import_same_driver_lmem(void *arg)
 		goto out;
 	}
 
-	/*
-	 * We expect an import of an LMEM-only object to fail with
-	 * -EOPNOTSUPP because it can't be migrated to SMEM.
-	 */
+	 
 	import = i915_gem_prime_import(&i915->drm, dmabuf);
 	if (!IS_ERR(import)) {
 		drm_gem_object_put(import);
@@ -267,11 +260,7 @@ static int igt_dmabuf_import_same_driver(struct drm_i915_private *i915,
 		goto out_import;
 	}
 
-	/*
-	 * If the exported object is not in system memory, something
-	 * weird is going on. TODO: When p2p is supported, this is no
-	 * longer considered weird.
-	 */
+	 
 	if (obj->mm.region != i915->mm.regions[INTEL_REGION_SMEM]) {
 		pr_err("Exported dma-buf is not in system memory\n");
 		err = -EINVAL;
@@ -283,7 +272,7 @@ static int igt_dmabuf_import_same_driver(struct drm_i915_private *i915,
 	if (err)
 		goto out_import;
 
-	/* Now try a fake an importer */
+	 
 	import_attach = dma_buf_attach(dmabuf, obj->base.dev->dev);
 	if (IS_ERR(import_attach)) {
 		err = PTR_ERR(import_attach);
@@ -381,7 +370,7 @@ static int igt_dmabuf_import(void *arg)
 		goto out_obj;
 	}
 
-	if (0) { /* Can not yet map dmabuf */
+	if (0) {  
 		obj_map = i915_gem_object_pin_map(obj, I915_MAP_WB);
 		if (IS_ERR(obj_map)) {
 			err = PTR_ERR(obj_map);

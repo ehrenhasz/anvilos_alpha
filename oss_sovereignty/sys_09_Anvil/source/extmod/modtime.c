@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2023 Damien P. George
- * Copyright (c) 2016 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mphal.h"
 #include "py/runtime.h"
@@ -40,24 +15,24 @@
 
 #include "shared/timeutils/timeutils.h"
 
-// localtime([secs])
-// Convert a time expressed in seconds since the Epoch into an 8-tuple which
-// contains: (year, month, mday, hour, minute, second, weekday, yearday)
-// If secs is not provided or None, then the current time is used.
-// - year    is the full year, eg 2000
-// - month   is 1-12
-// - mday    is 1-31
-// - hour    is 0-23
-// - minute  is 0-59
-// - second  is 0-59
-// - weekday is 0-6 for Mon-Sun
-// - yearday is 1-366
+
+
+
+
+
+
+
+
+
+
+
+
 static mp_obj_t time_localtime(size_t n_args, const mp_obj_t *args) {
     if (n_args == 0 || args[0] == mp_const_none) {
-        // Get current date and time.
+        
         return mp_time_localtime_get();
     } else {
-        // Convert given seconds to tuple.
+        
         mp_int_t seconds = mp_obj_get_int(args[0]);
         timeutils_struct_time_t tm;
         timeutils_seconds_since_epoch_to_struct_time(seconds, &tm);
@@ -76,16 +51,16 @@ static mp_obj_t time_localtime(size_t n_args, const mp_obj_t *args) {
 }
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_time_localtime_obj, 0, 1, time_localtime);
 
-// mktime()
-// This is the inverse function of localtime. Its argument is a full 8-tuple
-// which expresses a time as per localtime. It returns an integer which is
-// the number of seconds since the Epoch (eg 1st Jan 1970, or 1st Jan 2000).
+
+
+
+
 static mp_obj_t time_mktime(mp_obj_t tuple) {
     size_t len;
     mp_obj_t *elem;
     mp_obj_get_array(tuple, &len, &elem);
 
-    // localtime generates a tuple of len 8. CPython uses 9, so we accept both.
+    
     if (len < 8 || len > 9) {
         mp_raise_TypeError(MP_ERROR_TEXT("mktime needs a tuple of length 8 or 9"));
     }
@@ -96,25 +71,25 @@ static mp_obj_t time_mktime(mp_obj_t tuple) {
 }
 MP_DEFINE_CONST_FUN_OBJ_1(mp_time_mktime_obj, time_mktime);
 
-#endif // MICROPY_PY_TIME_GMTIME_LOCALTIME_MKTIME
+#endif 
 
 #if MICROPY_PY_TIME_TIME_TIME_NS
 
-// time()
-// Return the number of seconds since the Epoch.
+
+
 static mp_obj_t time_time(void) {
     return mp_time_time_get();
 }
 static MP_DEFINE_CONST_FUN_OBJ_0(mp_time_time_obj, time_time);
 
-// time_ns()
-// Returns the number of nanoseconds since the Epoch, as an integer.
+
+
 static mp_obj_t time_time_ns(void) {
     return mp_obj_new_int_from_ull(mp_hal_time_ns());
 }
 MP_DEFINE_CONST_FUN_OBJ_0(mp_time_time_ns_obj, time_time_ns);
 
-#endif // MICROPY_PY_TIME_TIME_TIME_NS
+#endif 
 
 static mp_obj_t time_sleep(mp_obj_t seconds_o) {
     #ifdef MICROPY_PY_TIME_CUSTOM_SLEEP
@@ -164,11 +139,11 @@ static mp_obj_t time_ticks_cpu(void) {
 MP_DEFINE_CONST_FUN_OBJ_0(mp_time_ticks_cpu_obj, time_ticks_cpu);
 
 static mp_obj_t time_ticks_diff(mp_obj_t end_in, mp_obj_t start_in) {
-    // we assume that the arguments come from ticks_xx so are small ints
+    
     mp_uint_t start = MP_OBJ_SMALL_INT_VALUE(start_in);
     mp_uint_t end = MP_OBJ_SMALL_INT_VALUE(end_in);
-    // Optimized formula avoiding if conditions. We adjust difference "forward",
-    // wrap it around and adjust back.
+    
+    
     mp_int_t diff = ((end - start + MICROPY_PY_TIME_TICKS_PERIOD / 2) & (MICROPY_PY_TIME_TICKS_PERIOD - 1))
         - MICROPY_PY_TIME_TICKS_PERIOD / 2;
     return MP_OBJ_NEW_SMALL_INT(diff);
@@ -176,18 +151,18 @@ static mp_obj_t time_ticks_diff(mp_obj_t end_in, mp_obj_t start_in) {
 MP_DEFINE_CONST_FUN_OBJ_2(mp_time_ticks_diff_obj, time_ticks_diff);
 
 static mp_obj_t time_ticks_add(mp_obj_t ticks_in, mp_obj_t delta_in) {
-    // we assume that first argument come from ticks_xx so is small int
+    
     mp_uint_t ticks = MP_OBJ_SMALL_INT_VALUE(ticks_in);
     mp_uint_t delta = mp_obj_get_int(delta_in);
 
-    // Check that delta does not overflow the range that ticks_diff can handle.
-    // This ensures the following:
-    //  - ticks_diff(ticks_add(T, delta), T) == delta
-    //  - ticks_diff(T, ticks_add(T, delta)) == -delta
-    // The latter requires excluding delta=-TICKS_PERIOD/2.
-    //
-    // This unsigned comparison is equivalent to a signed comparison of:
-    //   delta <= -TICKS_PERIOD/2 || delta >= TICKS_PERIOD/2
+    
+    
+    
+    
+    
+    
+    
+    
     if (delta + MICROPY_PY_TIME_TICKS_PERIOD / 2 - 1 >= MICROPY_PY_TIME_TICKS_PERIOD - 1) {
         mp_raise_msg(&mp_type_OverflowError, MP_ERROR_TEXT("ticks interval overflow"));
     }
@@ -233,4 +208,4 @@ const mp_obj_module_t mp_module_time = {
 
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_time, mp_module_time);
 
-#endif // MICROPY_PY_TIME
+#endif 

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * The Virtual DVB test driver serves as a reference DVB driver and helps
- * validate the existing APIs in the media subsystem. It can also aid
- * developers working on userspace applications.
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- */
+ 
+ 
 
 #ifndef VIDTV_COMMON_H
 #define VIDTV_COMMON_H
@@ -29,4 +23,4 @@ u32 vidtv_memset(void *to,
 		 int c,
 		 size_t len);
 
-#endif // VIDTV_COMMON_H
+#endif 

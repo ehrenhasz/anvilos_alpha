@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef __LINUX_KBUILD_H
 # error "Please do not build this file directly, build asm-offsets.c instead"
 #endif
@@ -7,7 +7,7 @@
 
 #include <asm/ucontext.h>
 
-/* workaround for a warning with -Wmissing-prototypes */
+ 
 void foo(void);
 
 void foo(void)
@@ -43,12 +43,7 @@ void foo(void)
 	OFFSET(saved_context_gdt_desc, saved_context, gdt_desc);
 	BLANK();
 
-	/*
-	 * Offset from the entry stack to task stack stored in TSS. Kernel entry
-	 * happens on the per-cpu entry-stack, and the asm code switches to the
-	 * task-stack pointer stored in x86_tss.sp1, which is a copy of
-	 * task->thread.sp0 where entry code can find it.
-	 */
+	 
 	DEFINE(TSS_entry2task_stack,
 	       offsetof(struct cpu_entry_area, tss.x86_tss.sp1) -
 	       offsetofend(struct cpu_entry_area, entry_stack_page.stack));

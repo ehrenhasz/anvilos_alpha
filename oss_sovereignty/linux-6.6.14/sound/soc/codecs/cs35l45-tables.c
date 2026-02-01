@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// cs35l45-tables.c -- CS35L45 ALSA SoC audio driver
-//
-// Copyright 2019-2022 Cirrus Logic, Inc.
-//
-// Author: James Schulman <james.schulman@cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -214,7 +214,7 @@ static bool cs35l45_volatile_reg(struct device *dev, unsigned int reg)
 	case CS35L45_SFT_RESET:
 	case CS35L45_GLOBAL_ENABLES:
 	case CS35L45_ERROR_RELEASE:
-	case CS35L45_AMP_PCM_HPF_TST:	/* not cachable */
+	case CS35L45_AMP_PCM_HPF_TST:	 
 	case CS35L45_PWRMGT_STS:
 	case CS35L45_IRQ1_STATUS:
 	case CS35L45_IRQ1_EINT_1 ... CS35L45_IRQ1_EINT_18:

@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __IPUV3_PLANE_H__
 #define __IPUV3_PLANE_H__
 
-#include <drm/drm_crtc.h> /* drm_plane */
+#include <drm/drm_crtc.h>  
 
 struct drm_plane;
 struct drm_device;
@@ -33,7 +33,7 @@ struct ipu_plane *ipu_plane_init(struct drm_device *dev, struct ipu_soc *ipu,
 				 int dma, int dp, unsigned int possible_crtcs,
 				 enum drm_plane_type type);
 
-/* Init IDMAC, DMFC, DP */
+ 
 int ipu_plane_mode_set(struct ipu_plane *plane, struct drm_crtc *crtc,
 		       struct drm_display_mode *mode,
 		       struct drm_framebuffer *fb, int crtc_x, int crtc_y,

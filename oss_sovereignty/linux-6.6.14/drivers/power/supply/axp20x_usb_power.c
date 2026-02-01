@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AXP20x PMIC USB power supply status driver
- *
- * Copyright (C) 2015 Hans de Goede <hdegoede@redhat.com>
- * Copyright (C) 2014 Bruno Prémont <bonbons@linux-vserver.org>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -39,10 +34,7 @@
 #define AXP20X_ADC_EN1_VBUS_CURR	BIT(2)
 #define AXP20X_ADC_EN1_VBUS_VOLT	BIT(3)
 
-/*
- * Note do not raise the debounce time, we must report Vusb high within
- * 100ms otherwise we get Vbus errors in musb.
- */
+ 
 #define DEBOUNCE_TIME			msecs_to_jiffies(50)
 
 struct axp_data {
@@ -78,11 +70,7 @@ struct axp20x_usb_power {
 
 static bool axp20x_usb_vbus_needs_polling(struct axp20x_usb_power *power)
 {
-	/*
-	 * Polling is only necessary while VBUS is offline. While online, a
-	 * present->absent transition implies an online->offline transition
-	 * and will trigger the VBUS_REMOVAL IRQ.
-	 */
+	 
 	if (power->axp_data->vbus_needs_polling && !power->online)
 		return true;
 
@@ -145,10 +133,7 @@ static int axp20x_usb_power_get_property(struct power_supply *psy,
 			if (ret)
 				return ret;
 
-			/*
-			 * IIO framework gives mV but Power Supply framework
-			 * gives uV.
-			 */
+			 
 			val->intval *= 1000;
 			return 0;
 		}
@@ -158,7 +143,7 @@ static int axp20x_usb_power_get_property(struct power_supply *psy,
 		if (ret < 0)
 			return ret;
 
-		val->intval = ret * 1700; /* 1 step = 1.7 mV */
+		val->intval = ret * 1700;  
 		return 0;
 	case POWER_SUPPLY_PROP_CURRENT_MAX:
 		ret = regmap_field_read(power->curr_lim_fld, &v);
@@ -174,10 +159,7 @@ static int axp20x_usb_power_get_property(struct power_supply *psy,
 			if (ret)
 				return ret;
 
-			/*
-			 * IIO framework gives mA but Power Supply framework
-			 * gives uA.
-			 */
+			 
 			val->intval *= 1000;
 			return 0;
 		}
@@ -187,13 +169,13 @@ static int axp20x_usb_power_get_property(struct power_supply *psy,
 		if (ret < 0)
 			return ret;
 
-		val->intval = ret * 375; /* 1 step = 0.375 mA */
+		val->intval = ret * 375;  
 		return 0;
 	default:
 		break;
 	}
 
-	/* All the properties below need the input-status reg value */
+	 
 	ret = regmap_read(power->regmap, AXP20X_PWR_INPUT_STATUS, &input);
 	if (ret)
 		return ret;
@@ -302,13 +284,7 @@ static int axp20x_usb_power_prop_writeable(struct power_supply *psy,
 {
 	struct axp20x_usb_power *power = power_supply_get_drvdata(psy);
 
-	/*
-	 * The VBUS path select flag works differently on AXP288 and newer:
-	 *  - On AXP20x and AXP22x, the flag enables VBUS (ignoring N_VBUSEN).
-	 *  - On AXP288 and AXP8xx, the flag disables VBUS (ignoring N_VBUSEN).
-	 * We only expose the control on variants where it can be used to force
-	 * the VBUS input offline.
-	 */
+	 
 	if (psp == POWER_SUPPLY_PROP_ONLINE)
 		return power->vbus_disable_bit != NULL;
 
@@ -449,12 +425,7 @@ static int axp20x_usb_power_suspend(struct device *dev)
 	struct axp20x_usb_power *power = dev_get_drvdata(dev);
 	int i = 0;
 
-	/*
-	 * Allow wake via VBUS_PLUGIN only.
-	 *
-	 * As nested threaded IRQs are not automatically disabled during
-	 * suspend, we must explicitly disable the remainder of the IRQs.
-	 */
+	 
 	if (device_may_wakeup(&power->supply->dev))
 		enable_irq_wake(power->irqs[i++]);
 	while (i < power->num_irqs)
@@ -504,7 +475,7 @@ static int configure_iio_channels(struct platform_device *pdev,
 
 static int configure_adc_registers(struct axp20x_usb_power *power)
 {
-	/* Enable vbus voltage and current measurement */
+	 
 	return regmap_update_bits(power->regmap, AXP20X_ADC_EN1,
 				  AXP20X_ADC_EN1_VBUS_CURR |
 				  AXP20X_ADC_EN1_VBUS_VOLT,
@@ -597,7 +568,7 @@ static int axp20x_usb_power_probe(struct platform_device *pdev)
 		return ret;
 
 	if (power->vbus_mon_bit) {
-		/* Enable vbus valid checking */
+		 
 		ret = regmap_field_write(power->vbus_mon_bit, 1);
 		if (ret)
 			return ret;
@@ -612,7 +583,7 @@ static int axp20x_usb_power_probe(struct platform_device *pdev)
 	}
 
 	if (power->usb_bc_en_bit) {
-		/* Enable USB Battery Charging specification detection */
+		 
 		ret = regmap_field_write(power->usb_bc_en_bit, 1);
 		if (ret)
 			return ret;
@@ -627,7 +598,7 @@ static int axp20x_usb_power_probe(struct platform_device *pdev)
 	if (IS_ERR(power->supply))
 		return PTR_ERR(power->supply);
 
-	/* Request irqs after registering, as irqs may trigger immediately */
+	 
 	for (i = 0; i < axp_data->num_irq_names; i++) {
 		irq = platform_get_irq_byname(pdev, axp_data->irq_names[i]);
 		if (irq < 0)
@@ -666,7 +637,7 @@ static const struct of_device_id axp20x_usb_power_match[] = {
 	}, {
 		.compatible = "x-powers,axp813-usb-power-supply",
 		.data = &axp813_data,
-	}, { /* sentinel */ }
+	}, {   }
 };
 MODULE_DEVICE_TABLE(of, axp20x_usb_power_match);
 

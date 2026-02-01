@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Altera Corporation. All rights reserved
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>

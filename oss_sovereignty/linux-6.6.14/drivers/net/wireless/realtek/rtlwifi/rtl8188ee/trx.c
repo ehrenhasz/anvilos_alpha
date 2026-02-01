@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -43,7 +43,7 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 	bool is_cck = pstatus->is_cck;
 	u8 lan_idx, vga_idx;
 
-	/* Record it for next packet processing */
+	 
 	pstatus->packet_matchbssid = bpacket_match_bssid;
 	pstatus->packet_toself = bpacket_toself;
 	pstatus->packet_beacon = packet_beacon;
@@ -53,14 +53,11 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 	if (is_cck) {
 		u8 cck_highpwr;
 		u8 cck_agc_rpt;
-		/* CCK Driver info Structure is not the same as OFDM packet. */
+		 
 		cck_buf = (struct phy_sts_cck_8192s_t *)p_drvinfo;
 		cck_agc_rpt = cck_buf->cck_agc_rpt;
 
-		/* (1)Hardware does not provide RSSI for CCK
-		 * (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
 		if (ppsc->rfpwr_state == ERFON)
 			cck_highpwr =
 				(u8)rtl_get_bbreg(hw, RFPGA0_XA_HSSIPARAMETER2,
@@ -73,30 +70,30 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 		switch (lan_idx) {
 		case 7:
 			if (vga_idx <= 27)
-				/*VGA_idx = 27~2*/
+				 
 				rx_pwr_all = -100 + 2*(27-vga_idx);
 			else
 				rx_pwr_all = -100;
 			break;
 		case 6:
-			/*VGA_idx = 2~0*/
+			 
 			rx_pwr_all = -48 + 2*(2-vga_idx);
 			break;
 		case 5:
-			/*VGA_idx = 7~5*/
+			 
 			rx_pwr_all = -42 + 2*(7-vga_idx);
 			break;
 		case 4:
-			/*VGA_idx = 7~4*/
+			 
 			rx_pwr_all = -36 + 2*(7-vga_idx);
 			break;
 		case 3:
-			/*VGA_idx = 7~0*/
+			 
 			rx_pwr_all = -24 + 2*(7-vga_idx);
 			break;
 		case 2:
 			if (cck_highpwr)
-				/*VGA_idx = 5~0*/
+				 
 				rx_pwr_all = -12 + 2*(5-vga_idx);
 			else
 				rx_pwr_all = -6 + 2*(5-vga_idx);
@@ -112,14 +109,12 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 		rx_pwr_all += 6;
 		pwdb_all = rtl_query_rxpwrpercentage(rx_pwr_all);
-		/* CCK gain is smaller than OFDM/MCS gain,  */
-		/* so we add gain diff by experiences, the val is 6 */
+		 
+		 
 		pwdb_all += 6;
 		if (pwdb_all > 100)
 			pwdb_all = 100;
-		/* modify the offset to make the same
-		 * gain index with OFDM.
-		 */
+		 
 		if (pwdb_all > 34 && pwdb_all <= 42)
 			pwdb_all -= 2;
 		else if (pwdb_all > 26 && pwdb_all <= 34)
@@ -141,7 +136,7 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->rx_pwdb_all = pwdb_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3) Get Signal Quality (EVM) */
+		 
 		if (bpacket_match_bssid) {
 			u8 sq;
 
@@ -165,31 +160,29 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 		rtlpriv->dm.rfpath_rxenable[0] =
 		    rtlpriv->dm.rfpath_rxenable[1] = true;
 
-		/* (1)Get RSSI for HT rate */
+		 
 		for (i = RF90_PATH_A; i < RF6052_MAX_PATH; i++) {
-			/* we will judge RF RX path now. */
+			 
 			if (rtlpriv->dm.rfpath_rxenable[i])
 				rf_rx_num++;
 
 			rx_pwr[i] = ((p_drvinfo->gain_trsw[i] &
 				      0x3f) * 2) - 110;
 
-			/* Translate DBM to percentage. */
+			 
 			rssi = rtl_query_rxpwrpercentage(rx_pwr[i]);
 			total_rssi += rssi;
 
-			/* Get Rx snr value in DB */
+			 
 			rtlpriv->stats.rx_snr_db[i] =
 				(long)(p_drvinfo->rxsnr[i] / 2);
 
-			/* Record Signal Strength for next packet */
+			 
 			if (bpacket_match_bssid)
 				pstatus->rx_mimo_signalstrength[i] = (u8)rssi;
 		}
 
-		/* (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
 		rx_pwr_all = ((p_drvinfo->pwdb_all >> 1) & 0x7f) - 110;
 
 		pwdb_all = rtl_query_rxpwrpercentage(rx_pwr_all);
@@ -197,7 +190,7 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->rxpower = rx_pwr_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3)EVM of HT rate */
+		 
 		if (pstatus->is_ht && pstatus->rate >= DESC92C_RATEMCS8 &&
 		    pstatus->rate <= DESC92C_RATEMCS15)
 			max_spatial_stream = 2;
@@ -208,9 +201,7 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 			evm = rtl_evm_db_to_percentage(p_drvinfo->rxevm[i]);
 
 			if (bpacket_match_bssid) {
-				/* Fill value in RFD, Get the first
-				 * spatial stream onlyi
-				 */
+				 
 				if (i == 0)
 					pstatus->signalquality =
 						(u8)(evm & 0xff);
@@ -220,16 +211,14 @@ static void _rtl88ee_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* UI BSS List signal strength(in percentage),
-	 * make it good looking, from 0~100.
-	 */
+	 
 	if (is_cck)
 		pstatus->signalstrength = (u8)(rtl_signal_scale_mapping(hw,
 			pwdb_all));
 	else if (rf_rx_num != 0)
 		pstatus->signalstrength = (u8)(rtl_signal_scale_mapping(hw,
 			total_rssi /= rf_rx_num));
-	/*HW antenna diversity*/
+	 
 	rtldm->fat_table.antsel_rx_keep_0 = phystrpt->ant_sel;
 	rtldm->fat_table.antsel_rx_keep_1 = phystrpt->ant_sel_b;
 	rtldm->fat_table.antsel_rx_keep_2 = phystrpt->antsel_rx_keep_2;
@@ -430,14 +419,7 @@ bool rtl88ee_rx_query_desc(struct ieee80211_hw *hw,
 
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 
-	/* hw will set status->decrypted true, if it finds the
-	 * frame is open data frame or mgmt frame.
-	 * So hw will not decryption robust managment frame
-	 * for IEEE80211w but still set status->decrypted
-	 * true, so here we should set it back to undecrypted
-	 * for IEEE80211w frame, and mac80211 sw will help
-	 * to decrypt it
-	 */
+	 
 	if (status->decrypted) {
 		if ((!_ieee80211_is_robust_mgmt_frame(hdr)) &&
 		    (ieee80211_has_protected(hdr->frame_control)))
@@ -446,11 +428,7 @@ bool rtl88ee_rx_query_desc(struct ieee80211_hw *hw,
 			rx_status->flag &= ~RX_FLAG_DECRYPTED;
 	}
 
-	/* rate_idx: index of data rate into band's
-	 * supported rates or MCS index if HT rates
-	 * are use (RX_FLAG_HT)
-	 * Notice: this is diff with windows define
-	 */
+	 
 	rx_status->rate_idx = rtlwifi_rate_mapping(hw, status->is_ht,
 						   false, status->rate);
 
@@ -509,7 +487,7 @@ void rtl88ee_tx_fill_desc(struct ieee80211_hw *hw,
 	}
 	seq_number = (le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_SEQ) >> 4;
 	rtl_get_tcb_desc(hw, info, sta, skb, ptcb_desc);
-	/* reserve 8 byte for AMPDU early mode */
+	 
 	if (rtlhal->earlymode_enable) {
 		skb_push(skb, EM_HDR_LEN);
 		memset(skb->data, 0, EM_HDR_LEN);
@@ -621,13 +599,13 @@ void rtl88ee_tx_fill_desc(struct ieee80211_hw *hw,
 				       1 : 0);
 		set_tx_desc_use_rate(pdesc, ptcb_desc->use_driver_rate ? 1 : 0);
 
-		/*set_tx_desc_pwr_status(pdesc, pwr_status);*/
-		/* Set TxRate and RTSRate in TxDesc  */
-		/* This prevent Tx initial rate of new-coming packets */
-		/* from being overwritten by retried  packet rate.*/
+		 
+		 
+		 
+		 
 		if (!ptcb_desc->use_driver_rate) {
-			/*set_tx_desc_rts_rate(pdesc, 0x08); */
-			/* set_tx_desc_tx_rate(pdesc, 0x0b); */
+			 
+			 
 		}
 		if (ieee80211_is_data_qos(fc)) {
 			if (mac->rdg_en) {
@@ -813,10 +791,7 @@ bool rtl88ee_is_tx_desc_closed(struct ieee80211_hw *hw, u8 hw_queue, u16 index)
 	u8 *entry = (u8 *)(&ring->desc[ring->idx]);
 	u8 own = (u8)rtl88ee_get_desc(hw, entry, true, HW_DESC_OWN);
 
-	/*beacon packet will only use the first
-	 *descriptor defautly,and the own may not
-	 *be cleared by the hardware
-	 */
+	 
 	if (own)
 		return false;
 	return true;

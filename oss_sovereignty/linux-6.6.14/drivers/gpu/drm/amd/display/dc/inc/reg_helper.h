@@ -1,41 +1,11 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- */
+ 
 
 #ifndef DRIVERS_GPU_DRM_AMD_DC_DEV_DC_INC_REG_HELPER_H_
 #define DRIVERS_GPU_DRM_AMD_DC_DEV_DC_INC_REG_HELPER_H_
 
 #include "dm_services.h"
 
-/* macro for register read/write
- * user of macro need to define
- *
- * CTX ==> macro to ptr to dc_context
- *    eg. aud110->base.ctx
- *
- * REG ==> macro to location of register offset
- *    eg. aud110->regs->reg
- */
+ 
 #define REG_READ(reg_name) \
 		dm_read_reg(CTX, REG(reg_name))
 
@@ -50,7 +20,7 @@
 #undef REG_GET
 #endif
 
-/* macro to set register fields. */
+ 
 #define REG_SET_N(reg_name, n, initial_val, ...)	\
 		generic_reg_set_ex(CTX, \
 				REG(reg_name), \
@@ -151,8 +121,7 @@
 				FN(reg, f9), v9, \
 				FN(reg, f10), v10)
 
-/* macro to get register fields
- * read given register and fill in field value in output parameter */
+ 
 #define REG_GET(reg_name, field, val)	\
 		generic_reg_get(CTX, REG(reg_name), \
 				FN(reg_name, field), val)
@@ -213,15 +182,14 @@
 				FN(reg_name, f7), v7, \
 				FN(reg_name, f8), v8)
 
-/* macro to poll and wait for a register field to read back given value */
+ 
 
 #define REG_WAIT(reg_name, field, val, delay_between_poll_us, max_try)	\
 		generic_reg_wait(CTX, \
 				REG(reg_name), FN(reg_name, field), val,\
 				delay_between_poll_us, max_try, __func__, __LINE__)
 
-/* macro to update (read, modify, write) register fields
- */
+ 
 #define REG_UPDATE_N(reg_name, n, ...)	\
 		generic_reg_update_ex(CTX, \
 				REG(reg_name), \
@@ -376,9 +344,7 @@
 				FN(reg, f18), v18, \
 				FN(reg, f19), v19, \
 				FN(reg, f20), v20)
-/* macro to update a register field to specified values in given sequences.
- * useful when toggling bits
- */
+ 
 #define REG_UPDATE_SEQ_2(reg, f1, v1, f2, v2) \
 {	uint32_t val = REG_UPDATE(reg, f1, v1); \
 	REG_SET(reg, val, f2, v2); }
@@ -441,7 +407,7 @@ uint32_t generic_reg_get8(const struct dc_context *ctx, uint32_t addr,
 		uint8_t shift8, uint32_t mask8, uint32_t *field_value8);
 
 
-/* indirect register access */
+ 
 
 #define IX_REG_SET_N(index_reg_name, data_reg_name, index, n, initial_val, ...)	\
 		generic_indirect_reg_update_ex(CTX, \
@@ -498,10 +464,7 @@ uint32_t generic_indirect_reg_update_ex(const struct dc_context *ctx,
 		uint8_t shift1, uint32_t mask1, uint32_t field_value1,
 		...);
 
-/* indirect register access
- * underlying implementation determines which index/data pair to be used
- * in a synchronous way
- */
+ 
 #define IX_REG_SET_N_SYNC(index, n, initial_val, ...)	\
 		generic_indirect_reg_update_ex_sync(CTX, \
 				IND_REG(index), \
@@ -532,23 +495,18 @@ uint32_t generic_indirect_reg_update_ex_sync(const struct dc_context *ctx,
 		uint8_t shift1, uint32_t mask1, uint32_t field_value1,
 		...);
 
-/* register offload macros
- *
- * instead of MMIO to register directly, in some cases we want
- * to gather register sequence and execute the register sequence
- * from another thread so we optimize time required for lengthy ops
- */
+ 
 
-/* start gathering register sequence */
+ 
 #define REG_SEQ_START() \
 	reg_sequence_start_gather(CTX)
 
-/* start execution of register sequence gathered since REG_SEQ_START */
+ 
 #define REG_SEQ_SUBMIT() \
 	reg_sequence_start_execute(CTX)
 
-/* wait for the last REG_SEQ_SUBMIT to finish */
+ 
 #define REG_SEQ_WAIT_DONE() \
 	reg_sequence_wait_done(CTX)
 
-#endif /* DRIVERS_GPU_DRM_AMD_DC_DEV_DC_INC_REG_HELPER_H_ */
+#endif  

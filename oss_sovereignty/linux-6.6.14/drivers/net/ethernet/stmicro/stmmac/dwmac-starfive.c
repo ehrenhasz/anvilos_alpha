@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * StarFive DWMAC platform driver
- *
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- *
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/platform_device.h>
@@ -82,7 +76,7 @@ static int starfive_dwmac_set_mode(struct plat_stmmacenet_data *plat_dat)
 	if (IS_ERR(regmap))
 		return dev_err_probe(dwmac->dev, PTR_ERR(regmap), "getting the regmap failed\n");
 
-	/* args[0]:offset  args[1]: shift */
+	 
 	err = regmap_update_bits(regmap, args[0],
 				 STARFIVE_DWMAC_PHY_INFT_FIELD << args[1],
 				 mode << args[1]);
@@ -124,12 +118,7 @@ static int starfive_dwmac_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(clk_gtx),
 				     "error getting gtx clock\n");
 
-	/* Generally, the rgmii_tx clock is provided by the internal clock,
-	 * which needs to match the corresponding clock frequency according
-	 * to different speeds. If the rgmii_tx clock is provided by the
-	 * external rgmii_rxin, there is no need to configure the clock
-	 * internally, because rgmii_rxin will be adaptively adjusted.
-	 */
+	 
 	if (!device_property_read_bool(&pdev->dev, "starfive,tx-use-rgmii-clk"))
 		plat_dat->fix_mac_speed = starfive_dwmac_fix_mac_speed;
 
@@ -152,7 +141,7 @@ static int starfive_dwmac_probe(struct platform_device *pdev)
 
 static const struct of_device_id starfive_dwmac_match[] = {
 	{ .compatible = "starfive,jh7110-dwmac"	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, starfive_dwmac_match);
 

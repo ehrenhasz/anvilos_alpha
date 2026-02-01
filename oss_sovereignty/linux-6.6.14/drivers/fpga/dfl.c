@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Device Feature List (DFL) Support
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Kang Luwei <luwei.kang@intel.com>
- *   Zhang Yi <yi.z.zhang@intel.com>
- *   Wu Hao <hao.wu@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- */
+
+ 
 #include <linux/dfl.h>
 #include <linux/fpga-dfl.h>
 #include <linux/module.h>
@@ -20,18 +10,7 @@
 
 static DEFINE_MUTEX(dfl_id_mutex);
 
-/*
- * when adding a new feature dev support in DFL framework, it's required to
- * add a new item in enum dfl_id_type and provide related information in below
- * dfl_devs table which is indexed by dfl_id_type, e.g. name string used for
- * platform device creation (define name strings in dfl.h, as they could be
- * reused by platform device drivers).
- *
- * if the new feature dev needs chardev support, then it's required to add
- * a new item in dfl_chardevs table and configure dfl_devs[i].devt_type as
- * index to dfl_chardevs table. If no chardev support just set devt_type
- * as one invalid index (DFL_FPGA_DEVT_MAX).
- */
+ 
 enum dfl_fpga_devt_type {
 	DFL_FPGA_DEVT_FME,
 	DFL_FPGA_DEVT_PORT,
@@ -45,13 +24,7 @@ static const char *dfl_pdata_key_strings[DFL_ID_MAX] = {
 	"dfl-port-pdata",
 };
 
-/**
- * struct dfl_dev_info - dfl feature device information.
- * @name: name string of the feature platform device.
- * @dfh_id: id value in Device Feature Header (DFH) register by DFL spec.
- * @id: idr id of the feature dev.
- * @devt_type: index to dfl_chrdevs[].
- */
+ 
 struct dfl_dev_info {
 	const char *name;
 	u16 dfh_id;
@@ -59,7 +32,7 @@ struct dfl_dev_info {
 	enum dfl_fpga_devt_type devt_type;
 };
 
-/* it is indexed by dfl_id_type */
+ 
 static struct dfl_dev_info dfl_devs[] = {
 	{.name = DFL_FPGA_FEATURE_DEV_FME, .dfh_id = DFH_ID_FIU_FME,
 	 .devt_type = DFL_FPGA_DEVT_FME},
@@ -67,17 +40,13 @@ static struct dfl_dev_info dfl_devs[] = {
 	 .devt_type = DFL_FPGA_DEVT_PORT},
 };
 
-/**
- * struct dfl_chardev_info - chardev information of dfl feature device
- * @name: nmae string of the char device.
- * @devt: devt of the char device.
- */
+ 
 struct dfl_chardev_info {
 	const char *name;
 	dev_t devt;
 };
 
-/* indexed by enum dfl_fpga_devt_type */
+ 
 static struct dfl_chardev_info dfl_chrdevs[] = {
 	{.name = DFL_FPGA_FEATURE_DEV_FME},
 	{.name = DFL_FPGA_FEATURE_DEV_PORT},
@@ -141,26 +110,12 @@ static enum dfl_id_type dfh_id_to_type(u16 id)
 	return DFL_ID_MAX;
 }
 
-/*
- * introduce a global port_ops list, it allows port drivers to register ops
- * in such list, then other feature devices (e.g. FME), could use the port
- * functions even related port platform device is hidden. Below is one example,
- * in virtualization case of PCIe-based FPGA DFL device, when SRIOV is
- * enabled, port (and it's AFU) is turned into VF and port platform device
- * is hidden from system but it's still required to access port to finish FPGA
- * reconfiguration function in FME.
- */
+ 
 
 static DEFINE_MUTEX(dfl_port_ops_mutex);
 static LIST_HEAD(dfl_port_ops_list);
 
-/**
- * dfl_fpga_port_ops_get - get matched port ops from the global list
- * @pdev: platform device to match with associated port ops.
- * Return: matched port ops on success, NULL otherwise.
- *
- * Please note that must dfl_fpga_port_ops_put after use the port_ops.
- */
+ 
 struct dfl_fpga_port_ops *dfl_fpga_port_ops_get(struct platform_device *pdev)
 {
 	struct dfl_fpga_port_ops *ops = NULL;
@@ -170,7 +125,7 @@ struct dfl_fpga_port_ops *dfl_fpga_port_ops_get(struct platform_device *pdev)
 		goto done;
 
 	list_for_each_entry(ops, &dfl_port_ops_list, node) {
-		/* match port_ops using the name of platform device */
+		 
 		if (!strcmp(pdev->name, ops->name)) {
 			if (!try_module_get(ops->owner))
 				ops = NULL;
@@ -185,10 +140,7 @@ done:
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_port_ops_get);
 
-/**
- * dfl_fpga_port_ops_put - put port ops
- * @ops: port ops.
- */
+ 
 void dfl_fpga_port_ops_put(struct dfl_fpga_port_ops *ops)
 {
 	if (ops && ops->owner)
@@ -196,10 +148,7 @@ void dfl_fpga_port_ops_put(struct dfl_fpga_port_ops *ops)
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_port_ops_put);
 
-/**
- * dfl_fpga_port_ops_add - add port_ops to global list
- * @ops: port ops to add.
- */
+ 
 void dfl_fpga_port_ops_add(struct dfl_fpga_port_ops *ops)
 {
 	mutex_lock(&dfl_port_ops_mutex);
@@ -208,10 +157,7 @@ void dfl_fpga_port_ops_add(struct dfl_fpga_port_ops *ops)
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_port_ops_add);
 
-/**
- * dfl_fpga_port_ops_del - remove port_ops from global list
- * @ops: port ops to del.
- */
+ 
 void dfl_fpga_port_ops_del(struct dfl_fpga_port_ops *ops)
 {
 	mutex_lock(&dfl_port_ops_mutex);
@@ -220,13 +166,7 @@ void dfl_fpga_port_ops_del(struct dfl_fpga_port_ops *ops)
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_port_ops_del);
 
-/**
- * dfl_fpga_check_port_id - check the port id
- * @pdev: port platform device.
- * @pport_id: port id to compare.
- *
- * Return: 1 if port device matches with given port id, otherwise 0.
- */
+ 
 int dfl_fpga_check_port_id(struct platform_device *pdev, void *pport_id)
 {
 	struct dfl_feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
@@ -370,7 +310,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
 		return ERR_PTR(id);
 	}
 
-	/* freeing resources by put_device() after device_initialize() */
+	 
 	device_initialize(&ddev->dev);
 	ddev->dev.parent = &pdev->dev;
 	ddev->dev.bus = &dfl_bus_type;
@@ -394,7 +334,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
 		ddev->param_size = feature->param_size;
 	}
 
-	/* add mmio resource */
+	 
 	parent_res = &pdev->resource[feature->resource_index];
 	ddev->mmio_res.flags = IORESOURCE_MEM;
 	ddev->mmio_res.start = parent_res->start;
@@ -407,7 +347,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
 		goto put_dev;
 	}
 
-	/* then add irq resource */
+	 
 	if (feature->nr_irqs) {
 		ddev->irqs = kcalloc(feature->nr_irqs,
 				     sizeof(*ddev->irqs), GFP_KERNEL);
@@ -430,7 +370,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
 	return ddev;
 
 put_dev:
-	/* calls release_dfl_dev() which does the clean up  */
+	 
 	put_device(&ddev->dev);
 	return ERR_PTR(ret);
 }
@@ -498,10 +438,7 @@ EXPORT_SYMBOL(dfl_driver_unregister);
 
 #define is_header_feature(feature) ((feature)->id == FEATURE_ID_FIU_HEADER)
 
-/**
- * dfl_fpga_dev_feature_uinit - uinit for sub features of dfl feature device
- * @pdev: feature device.
- */
+ 
 void dfl_fpga_dev_feature_uinit(struct platform_device *pdev)
 {
 	struct dfl_feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
@@ -566,16 +503,7 @@ static bool dfl_feature_drv_match(struct dfl_feature *feature,
 	return false;
 }
 
-/**
- * dfl_fpga_dev_feature_init - init for sub features of dfl feature device
- * @pdev: feature device.
- * @feature_drvs: drvs for sub features.
- *
- * This function will match sub features with given feature drvs list and
- * use matched drv to init related sub feature.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_dev_feature_init(struct platform_device *pdev,
 			      struct dfl_feature_driver *feature_drvs)
 {
@@ -645,15 +573,7 @@ static dev_t dfl_get_devt(enum dfl_fpga_devt_type type, int id)
 	return MKDEV(MAJOR(dfl_chrdevs[type].devt), id);
 }
 
-/**
- * dfl_fpga_dev_ops_register - register cdev ops for feature dev
- *
- * @pdev: feature dev.
- * @fops: file operations for feature dev's cdev.
- * @owner: owning module/driver.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_dev_ops_register(struct platform_device *pdev,
 			      const struct file_operations *fops,
 			      struct module *owner)
@@ -663,22 +583,14 @@ int dfl_fpga_dev_ops_register(struct platform_device *pdev,
 	cdev_init(&pdata->cdev, fops);
 	pdata->cdev.owner = owner;
 
-	/*
-	 * set parent to the feature device so that its refcount is
-	 * decreased after the last refcount of cdev is gone, that
-	 * makes sure the feature device is valid during device
-	 * file's life-cycle.
-	 */
+	 
 	pdata->cdev.kobj.parent = &pdev->dev.kobj;
 
 	return cdev_add(&pdata->cdev, pdev->dev.devt, 1);
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_dev_ops_register);
 
-/**
- * dfl_fpga_dev_ops_unregister - unregister cdev ops for feature dev
- * @pdev: feature dev.
- */
+ 
 void dfl_fpga_dev_ops_unregister(struct platform_device *pdev)
 {
 	struct dfl_feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
@@ -687,21 +599,7 @@ void dfl_fpga_dev_ops_unregister(struct platform_device *pdev)
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_dev_ops_unregister);
 
-/**
- * struct build_feature_devs_info - info collected during feature dev build.
- *
- * @dev: device to enumerate.
- * @cdev: the container device for all feature devices.
- * @nr_irqs: number of irqs for all feature devices.
- * @irq_table: Linux IRQ numbers for all irqs, indexed by local irq index of
- *	       this device.
- * @feature_dev: current feature device.
- * @ioaddr: header register region address of current FIU in enumeration.
- * @start: register resource start of current FIU.
- * @len: max register resource length of current FIU.
- * @sub_features: a sub features linked list for feature device in enumeration.
- * @feature_num: number of sub features for feature device in enumeration.
- */
+ 
 struct build_feature_devs_info {
 	struct device *dev;
 	struct dfl_fpga_cdev *cdev;
@@ -716,20 +614,7 @@ struct build_feature_devs_info {
 	int feature_num;
 };
 
-/**
- * struct dfl_feature_info - sub feature info collected during feature dev build
- *
- * @fid: id of this sub feature.
- * @revision: revision of this sub feature
- * @dfh_version: version of Device Feature Header (DFH)
- * @mmio_res: mmio resource of this sub feature.
- * @ioaddr: mapped base address of mmio resource.
- * @node: node in sub_features linked list.
- * @irq_base: start of irq index in this sub feature.
- * @nr_irqs: number of irqs of this sub feature.
- * @param_size: size DFH parameters.
- * @params: DFH parameter data.
- */
+ 
 struct dfl_feature_info {
 	u16 fid;
 	u8 revision;
@@ -754,11 +639,7 @@ static void dfl_fpga_cdev_add_port_dev(struct dfl_fpga_cdev *cdev,
 	mutex_unlock(&cdev->lock);
 }
 
-/*
- * register current feature device, it is called when we need to switch to
- * another feature parsing or we have parsed all features on given device
- * feature list.
- */
+ 
 static int build_info_commit_dev(struct build_feature_devs_info *binfo)
 {
 	struct platform_device *fdev = binfo->feature_dev;
@@ -771,12 +652,7 @@ static int build_info_commit_dev(struct build_feature_devs_info *binfo)
 	if (WARN_ON_ONCE(type >= DFL_ID_MAX))
 		return -EINVAL;
 
-	/*
-	 * we do not need to care for the memory which is associated with
-	 * the platform device. After calling platform_device_unregister(),
-	 * it will be automatically freed by device's release() callback,
-	 * platform_device_release().
-	 */
+	 
 	pdata = kzalloc(struct_size(pdata, features, binfo->feature_num), GFP_KERNEL);
 	if (!pdata)
 		return -ENOMEM;
@@ -789,30 +665,25 @@ static int build_info_commit_dev(struct build_feature_devs_info *binfo)
 	lockdep_set_class_and_name(&pdata->lock, &dfl_pdata_keys[type],
 				   dfl_pdata_key_strings[type]);
 
-	/*
-	 * the count should be initialized to 0 to make sure
-	 *__fpga_port_enable() following __fpga_port_disable()
-	 * works properly for port device.
-	 * and it should always be 0 for fme device.
-	 */
+	 
 	WARN_ON(pdata->disable_count);
 
 	fdev->dev.platform_data = pdata;
 
-	/* each sub feature has one MMIO resource */
+	 
 	fdev->num_resources = binfo->feature_num;
 	fdev->resource = kcalloc(binfo->feature_num, sizeof(*fdev->resource),
 				 GFP_KERNEL);
 	if (!fdev->resource)
 		return -ENOMEM;
 
-	/* fill features and resource information for feature dev */
+	 
 	list_for_each_entry_safe(finfo, p, &binfo->sub_features, node) {
 		struct dfl_feature *feature = &pdata->features[index++];
 		struct dfl_feature_irq_ctx *ctx;
 		unsigned int i;
 
-		/* save resource information for each feature */
+		 
 		feature->dev = fdev;
 		feature->id = finfo->fid;
 		feature->revision = finfo->revision;
@@ -827,13 +698,7 @@ static int build_info_commit_dev(struct build_feature_devs_info *binfo)
 
 			feature->param_size = finfo->param_size;
 		}
-		/*
-		 * the FIU header feature has some fundamental functions (sriov
-		 * set, port enable/disable) needed for the dfl bus device and
-		 * other sub features. So its mmio resource should be mapped by
-		 * DFL bus device. And we should not assign it to feature
-		 * devices (dfl-fme/afu) again.
-		 */
+		 
 		if (is_header_feature(feature)) {
 			feature->resource_index = -1;
 			feature->ioaddr =
@@ -872,13 +737,7 @@ static int build_info_commit_dev(struct build_feature_devs_info *binfo)
 		else
 			binfo->cdev->fme_dev =
 					get_device(&binfo->feature_dev->dev);
-		/*
-		 * reset it to avoid build_info_free() freeing their resource.
-		 *
-		 * The resource of successfully registered feature devices
-		 * will be freed by platform_device_unregister(). See the
-		 * comments in build_info_create_dev().
-		 */
+		 
 		binfo->feature_dev = NULL;
 	}
 
@@ -894,10 +753,7 @@ build_info_create_dev(struct build_feature_devs_info *binfo,
 	if (type >= DFL_ID_MAX)
 		return -EINVAL;
 
-	/*
-	 * we use -ENODEV as the initialization indicator which indicates
-	 * whether the id need to be reclaimed
-	 */
+	 
 	fdev = platform_device_alloc(dfl_devs[type].name, -ENODEV);
 	if (!fdev)
 		return -ENOMEM;
@@ -921,10 +777,7 @@ static void build_info_free(struct build_feature_devs_info *binfo)
 {
 	struct dfl_feature_info *finfo, *p;
 
-	/*
-	 * it is a valid id, free it. See comments in
-	 * build_info_create_dev()
-	 */
+	 
 	if (binfo->feature_dev && binfo->feature_dev->id >= 0) {
 		dfl_id_free(feature_dev_id_type(binfo->feature_dev),
 			    binfo->feature_dev->id);
@@ -943,7 +796,7 @@ static void build_info_free(struct build_feature_devs_info *binfo)
 static inline u32 feature_size(u64 value)
 {
 	u32 ofst = FIELD_GET(DFH_NEXT_HDR_OFST, value);
-	/* workaround for private features with invalid size, use 4K instead */
+	 
 	return ofst ? ofst : 4096;
 }
 
@@ -983,14 +836,7 @@ static u64 *find_param(u64 *params, resource_size_t max, int param_id)
 	return NULL;
 }
 
-/**
- * dfh_find_param() - find parameter block for the given parameter id
- * @dfl_dev: dfl device
- * @param_id: id of dfl parameter
- * @psize: destination to store size of parameter data in bytes
- *
- * Return: pointer to start of parameter data, PTR_ERR otherwise.
- */
+ 
 void *dfh_find_param(struct dfl_device *dfl_dev, int param_id, size_t *psize)
 {
 	u64 *phdr = find_param(dfl_dev->params, dfl_dev->param_size, param_id);
@@ -1019,12 +865,7 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
 
 	switch (finfo->dfh_version) {
 	case 0:
-		/*
-		 * DFHv0 only provides MMIO resource information for each feature
-		 * in the DFL header.  There is no generic interrupt information.
-		 * Instead, features with interrupt functionality provide
-		 * the information in feature specific registers.
-		 */
+		 
 		type = feature_dev_id_type(binfo->feature_dev);
 		if (type == PORT_ID) {
 			switch (fid) {
@@ -1051,10 +892,7 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
 		break;
 
 	case 1:
-		/*
-		 * DFHv1 provides interrupt resource information in DFHv1
-		 * parameter blocks.
-		 */
+		 
 		p = find_param(params, finfo->param_size, DFHv1_PARAM_ID_MSI_X);
 		if (!p)
 			break;
@@ -1125,13 +963,7 @@ static int dfh_get_param_size(void __iomem *dfh_base, resource_size_t max)
 	return -ENOENT;
 }
 
-/*
- * when create sub feature instances, for private features, it doesn't need
- * to provide resource size and feature id as they could be read from DFH
- * register. For afu sub feature, its register region only contains user
- * defined registers, so never trust any information from it, just use the
- * resource size information provided by its parent FIU.
- */
+ 
 static int
 create_feature_instance(struct build_feature_devs_info *binfo,
 			resource_size_t ofst, resource_size_t size, u16 fid)
@@ -1148,7 +980,7 @@ create_feature_instance(struct build_feature_devs_info *binfo,
 		v = readq(binfo->ioaddr + ofst);
 		revision = FIELD_GET(DFH_REVISION, v);
 		dfh_ver = FIELD_GET(DFH_VERSION, v);
-		/* read feature size and id if inputs are invalid */
+		 
 		size = size ? size : feature_size(v);
 		fid = fid ? fid : feature_id(v);
 		if (dfh_ver == 1) {
@@ -1294,7 +1126,7 @@ static int parse_feature_fiu(struct build_feature_devs_info *binfo,
 	v = readq(binfo->ioaddr + DFH);
 	id = FIELD_GET(DFH_ID, v);
 
-	/* create platform device for dfl feature dev */
+	 
 	ret = build_info_create_dev(binfo, dfh_id_to_type(id));
 	if (ret)
 		return ret;
@@ -1302,10 +1134,7 @@ static int parse_feature_fiu(struct build_feature_devs_info *binfo,
 	ret = create_feature_instance(binfo, 0, 0, 0);
 	if (ret)
 		return ret;
-	/*
-	 * find and parse FIU's child AFU via its NEXT_AFU register.
-	 * please note that only Port has valid NEXT_AFU pointer per spec.
-	 */
+	 
 	v = readq(binfo->ioaddr + NEXT_AFU);
 
 	offset = FIELD_GET(NEXT_AFU_NEXT_DFH_OFST, v);
@@ -1329,12 +1158,7 @@ static int parse_feature_private(struct build_feature_devs_info *binfo,
 	return create_feature_instance(binfo, ofst, 0, 0);
 }
 
-/**
- * parse_feature - parse a feature on given device feature list
- *
- * @binfo: build feature devices information.
- * @ofst: offset to current FIU header
- */
+ 
 static int parse_feature(struct build_feature_devs_info *binfo,
 			 resource_size_t ofst)
 {
@@ -1371,7 +1195,7 @@ static int parse_feature_list(struct build_feature_devs_info *binfo,
 	if (ret)
 		return ret;
 
-	/* walk through the device feature list via DFH's next DFH pointer. */
+	 
 	for (; start < end; start += ofst) {
 		if (end - start < DFH_SIZE) {
 			dev_err(binfo->dev, "The region is too small to contain a feature.\n");
@@ -1385,12 +1209,12 @@ static int parse_feature_list(struct build_feature_devs_info *binfo,
 		v = readq(binfo->ioaddr + start - binfo->start + DFH);
 		ofst = FIELD_GET(DFH_NEXT_HDR_OFST, v);
 
-		/* stop parsing if EOL(End of List) is set or offset is 0 */
+		 
 		if ((v & DFH_EOL) || !ofst)
 			break;
 	}
 
-	/* commit current feature device when reach the end of list */
+	 
 	build_info_complete(binfo);
 
 	if (is_feature_dev_detected(binfo))
@@ -1428,13 +1252,13 @@ void dfl_fpga_enum_info_free(struct dfl_fpga_enum_info *info)
 
 	dev = info->dev;
 
-	/* remove all device feature lists in the list. */
+	 
 	list_for_each_entry_safe(dfl, tmp, &info->dfls, node) {
 		list_del(&dfl->node);
 		devm_kfree(dev, dfl);
 	}
 
-	/* remove irq table */
+	 
 	if (info->irq_table)
 		devm_kfree(dev, info->irq_table);
 
@@ -1443,19 +1267,7 @@ void dfl_fpga_enum_info_free(struct dfl_fpga_enum_info *info)
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_enum_info_free);
 
-/**
- * dfl_fpga_enum_info_add_dfl - add info of a device feature list to enum info
- *
- * @info: ptr to dfl_fpga_enum_info
- * @start: mmio resource address of the device feature list.
- * @len: mmio resource length of the device feature list.
- *
- * One FPGA device may have one or more Device Feature Lists (DFLs), use this
- * function to add information of each DFL to common data structure for next
- * step enumeration.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_enum_info_add_dfl(struct dfl_fpga_enum_info *info,
 			       resource_size_t start, resource_size_t len)
 {
@@ -1474,25 +1286,7 @@ int dfl_fpga_enum_info_add_dfl(struct dfl_fpga_enum_info *info,
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_enum_info_add_dfl);
 
-/**
- * dfl_fpga_enum_info_add_irq - add irq table to enum info
- *
- * @info: ptr to dfl_fpga_enum_info
- * @nr_irqs: number of irqs of the DFL fpga device to be enumerated.
- * @irq_table: Linux IRQ numbers for all irqs, indexed by local irq index of
- *	       this device.
- *
- * One FPGA device may have several interrupts. This function adds irq
- * information of the DFL fpga device to enum info for next step enumeration.
- * This function should be called before dfl_fpga_feature_devs_enumerate().
- * As we only support one irq domain for all DFLs in the same enum info, adding
- * irq table a second time for the same enum info will return error.
- *
- * If we need to enumerate DFLs which belong to different irq domains, we
- * should fill more enum info and enumerate them one by one.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_enum_info_add_irq(struct dfl_fpga_enum_info *info,
 			       unsigned int nr_irqs, int *irq_table)
 {
@@ -1531,16 +1325,7 @@ static void remove_feature_devs(struct dfl_fpga_cdev *cdev)
 	device_for_each_child(&cdev->region->dev, NULL, remove_feature_dev);
 }
 
-/**
- * dfl_fpga_feature_devs_enumerate - enumerate feature devices
- * @info: information for enumeration.
- *
- * This function creates a container device (base FPGA region), enumerates
- * feature devices based on the enumeration info and creates platform devices
- * under the container device.
- *
- * Return: dfl_fpga_cdev struct on success, -errno on failure
- */
+ 
 struct dfl_fpga_cdev *
 dfl_fpga_feature_devs_enumerate(struct dfl_fpga_enum_info *info)
 {
@@ -1566,7 +1351,7 @@ dfl_fpga_feature_devs_enumerate(struct dfl_fpga_enum_info *info)
 		goto free_cdev_exit;
 	}
 
-	/* create and init build info for enumeration */
+	 
 	binfo = devm_kzalloc(info->dev, sizeof(*binfo), GFP_KERNEL);
 	if (!binfo) {
 		ret = -ENOMEM;
@@ -1580,10 +1365,7 @@ dfl_fpga_feature_devs_enumerate(struct dfl_fpga_enum_info *info)
 	if (info->nr_irqs)
 		binfo->irq_table = info->irq_table;
 
-	/*
-	 * start enumeration for all feature devices based on Device Feature
-	 * Lists.
-	 */
+	 
 	list_for_each_entry(dfl, &info->dfls, node) {
 		ret = parse_feature_list(binfo, dfl->start, dfl->len);
 		if (ret) {
@@ -1605,13 +1387,7 @@ free_cdev_exit:
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_feature_devs_enumerate);
 
-/**
- * dfl_fpga_feature_devs_remove - remove all feature devices
- * @cdev: fpga container device.
- *
- * Remove the container device and all feature devices under given container
- * devices.
- */
+ 
 void dfl_fpga_feature_devs_remove(struct dfl_fpga_cdev *cdev)
 {
 	struct dfl_feature_platform_data *pdata, *ptmp;
@@ -1623,7 +1399,7 @@ void dfl_fpga_feature_devs_remove(struct dfl_fpga_cdev *cdev)
 	list_for_each_entry_safe(pdata, ptmp, &cdev->port_dev_list, node) {
 		struct platform_device *port_dev = pdata->dev;
 
-		/* remove released ports */
+		 
 		if (!device_is_registered(&port_dev->dev)) {
 			dfl_id_free(feature_dev_id_type(port_dev),
 				    port_dev->id);
@@ -1642,20 +1418,7 @@ void dfl_fpga_feature_devs_remove(struct dfl_fpga_cdev *cdev)
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_feature_devs_remove);
 
-/**
- * __dfl_fpga_cdev_find_port - find a port under given container device
- *
- * @cdev: container device
- * @data: data passed to match function
- * @match: match function used to find specific port from the port device list
- *
- * Find a port device under container device. This function needs to be
- * invoked with lock held.
- *
- * Return: pointer to port's platform device if successful, NULL otherwise.
- *
- * NOTE: you will need to drop the device reference with put_device() after use.
- */
+ 
 struct platform_device *
 __dfl_fpga_cdev_find_port(struct dfl_fpga_cdev *cdev, void *data,
 			  int (*match)(struct platform_device *, void *))
@@ -1693,17 +1456,7 @@ static int __init dfl_fpga_init(void)
 	return ret;
 }
 
-/**
- * dfl_fpga_cdev_release_port - release a port platform device
- *
- * @cdev: parent container device.
- * @port_id: id of the port platform device.
- *
- * This function allows user to release a port platform device. This is a
- * mandatory step before turn a port from PF into VF for SRIOV support.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_cdev_release_port(struct dfl_fpga_cdev *cdev, int port_id)
 {
 	struct dfl_feature_platform_data *pdata;
@@ -1739,17 +1492,7 @@ unlock_exit:
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_cdev_release_port);
 
-/**
- * dfl_fpga_cdev_assign_port - assign a port platform device back
- *
- * @cdev: parent container device.
- * @port_id: id of the port platform device.
- *
- * This function allows user to assign a port platform device back. This is
- * a mandatory step after disable SRIOV support.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_cdev_assign_port(struct dfl_fpga_cdev *cdev, int port_id)
 {
 	struct dfl_feature_platform_data *pdata;
@@ -1806,14 +1549,7 @@ static void config_port_access_mode(struct device *fme_dev, int port_id,
 #define config_port_vf_mode(dev, id) config_port_access_mode(dev, id, true)
 #define config_port_pf_mode(dev, id) config_port_access_mode(dev, id, false)
 
-/**
- * dfl_fpga_cdev_config_ports_pf - configure ports to PF access mode
- *
- * @cdev: parent container device.
- *
- * This function is needed in sriov configuration routine. It could be used to
- * configure the all released ports from VF access mode to PF.
- */
+ 
 void dfl_fpga_cdev_config_ports_pf(struct dfl_fpga_cdev *cdev)
 {
 	struct dfl_feature_platform_data *pdata;
@@ -1829,28 +1565,14 @@ void dfl_fpga_cdev_config_ports_pf(struct dfl_fpga_cdev *cdev)
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_ports_pf);
 
-/**
- * dfl_fpga_cdev_config_ports_vf - configure ports to VF access mode
- *
- * @cdev: parent container device.
- * @num_vfs: VF device number.
- *
- * This function is needed in sriov configuration routine. It could be used to
- * configure the released ports from PF access mode to VF.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vfs)
 {
 	struct dfl_feature_platform_data *pdata;
 	int ret = 0;
 
 	mutex_lock(&cdev->lock);
-	/*
-	 * can't turn multiple ports into 1 VF device, only 1 port for 1 VF
-	 * device, so if released port number doesn't match VF device number,
-	 * then reject the request with -EINVAL error code.
-	 */
+	 
 	if (cdev->released_port_num != num_vfs) {
 		ret = -EINVAL;
 		goto done;
@@ -1921,32 +1643,18 @@ free_name:
 	return ret;
 }
 
-/**
- * dfl_fpga_set_irq_triggers - set eventfd triggers for dfl feature interrupts
- *
- * @feature: dfl sub feature.
- * @start: start of irq index in this dfl sub feature.
- * @count: number of irqs.
- * @fds: eventfds to bind with irqs. unbind related irq if fds[n] is negative.
- *	 unbind "count" specified number of irqs if fds ptr is NULL.
- *
- * Bind given eventfds with irqs in this dfl sub feature. Unbind related irq if
- * fds[n] is negative. Unbind "count" specified number of irqs if fds ptr is
- * NULL.
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 int dfl_fpga_set_irq_triggers(struct dfl_feature *feature, unsigned int start,
 			      unsigned int count, int32_t *fds)
 {
 	unsigned int i;
 	int ret = 0;
 
-	/* overflow */
+	 
 	if (unlikely(start + count < start))
 		return -EINVAL;
 
-	/* exceeds nr_irqs */
+	 
 	if (start + count > feature->nr_irqs)
 		return -EINVAL;
 
@@ -1965,14 +1673,7 @@ int dfl_fpga_set_irq_triggers(struct dfl_feature *feature, unsigned int start,
 }
 EXPORT_SYMBOL_GPL(dfl_fpga_set_irq_triggers);
 
-/**
- * dfl_feature_ioctl_get_num_irqs - dfl feature _GET_IRQ_NUM ioctl interface.
- * @pdev: the feature device which has the sub feature
- * @feature: the dfl sub feature
- * @arg: ioctl argument
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 long dfl_feature_ioctl_get_num_irqs(struct platform_device *pdev,
 				    struct dfl_feature *feature,
 				    unsigned long arg)
@@ -1981,14 +1682,7 @@ long dfl_feature_ioctl_get_num_irqs(struct platform_device *pdev,
 }
 EXPORT_SYMBOL_GPL(dfl_feature_ioctl_get_num_irqs);
 
-/**
- * dfl_feature_ioctl_set_irq - dfl feature _SET_IRQ ioctl interface.
- * @pdev: the feature device which has the sub feature
- * @feature: the dfl sub feature
- * @arg: ioctl argument
- *
- * Return: 0 on success, negative error code otherwise.
- */
+ 
 long dfl_feature_ioctl_set_irq(struct platform_device *pdev,
 			       struct dfl_feature *feature,
 			       unsigned long arg)

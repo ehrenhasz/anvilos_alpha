@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * count the number of connections matching an arbitrary key.
- *
- * (C) 2017 Red Hat GmbH
- * Author: Florian Westphal <fw@strlen.de>
- *
- * split from xt_connlimit.c:
- *   (c) 2000 Gerd Knorr <kraxel@bytesex.org>
- *   Nov 2002: Martin Bene <martin.bene@icomedias.com>:
- *		only ignore TIME_WAIT or gone connections
- *   (C) CC Computer Consultants GmbH, 2007
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/in.h>
 #include <linux/in6.h>
@@ -37,7 +26,7 @@
 #define CONNCOUNT_GC_MAX_NODES	8
 #define MAX_KEYLEN		5
 
-/* we will save the tuples of all connections we care about */
+ 
 struct nf_conncount_tuple {
 	struct list_head		node;
 	struct nf_conntrack_tuple	tuple;
@@ -108,11 +97,7 @@ find_or_evict(struct net *net, struct nf_conncount_list *list,
 	b = conn->jiffies32;
 	a = (u32)jiffies;
 
-	/* conn might have been added just before by another cpu and
-	 * might still be unconfirmed.  In this case, nf_conntrack_find()
-	 * returns no result.  Thus only evict if this cpu added the
-	 * stale entry or if the entry is older than two jiffies.
-	 */
+	 
 	age = a - b;
 	if (conn->cpu == cpu || age >= 2) {
 		conn_free(list, conn);
@@ -135,19 +120,19 @@ static int __nf_conncount_add(struct net *net,
 	if (time_is_after_eq_jiffies((unsigned long)list->last_gc))
 		goto add_new_node;
 
-	/* check the saved connections */
+	 
 	list_for_each_entry_safe(conn, conn_n, &list->head, node) {
 		if (collect > CONNCOUNT_GC_MAX_NODES)
 			break;
 
 		found = find_or_evict(net, list, conn);
 		if (IS_ERR(found)) {
-			/* Not found, but might be about to be confirmed */
+			 
 			if (PTR_ERR(found) == -EAGAIN) {
 				if (nf_ct_tuple_equal(&conn->tuple, tuple) &&
 				    nf_ct_zone_id(&conn->zone, conn->zone.dir) ==
 				    nf_ct_zone_id(zone, zone->dir))
-					return 0; /* already exists */
+					return 0;  
 			} else {
 				collect++;
 			}
@@ -158,19 +143,11 @@ static int __nf_conncount_add(struct net *net,
 
 		if (nf_ct_tuple_equal(&conn->tuple, tuple) &&
 		    nf_ct_zone_equal(found_ct, zone, zone->dir)) {
-			/*
-			 * We should not see tuples twice unless someone hooks
-			 * this into a table without "-p tcp --syn".
-			 *
-			 * Attempt to avoid a re-add in this case.
-			 */
+			 
 			nf_ct_put(found_ct);
 			return 0;
 		} else if (already_closed(found_ct)) {
-			/*
-			 * we do not care about connections which are
-			 * closed already -> ditch it
-			 */
+			 
 			nf_ct_put(found_ct);
 			conn_free(list, conn);
 			collect++;
@@ -205,7 +182,7 @@ int nf_conncount_add(struct net *net,
 {
 	int ret;
 
-	/* check the saved connections */
+	 
 	spin_lock_bh(&list->list_lock);
 	ret = __nf_conncount_add(net, list, tuple, zone);
 	spin_unlock_bh(&list->list_lock);
@@ -223,7 +200,7 @@ void nf_conncount_list_init(struct nf_conncount_list *list)
 }
 EXPORT_SYMBOL_GPL(nf_conncount_list_init);
 
-/* Return true if the list is empty. Must be called with BH disabled. */
+ 
 bool nf_conncount_gc_list(struct net *net,
 			  struct nf_conncount_list *list)
 {
@@ -233,11 +210,11 @@ bool nf_conncount_gc_list(struct net *net,
 	unsigned int collected = 0;
 	bool ret = false;
 
-	/* don't bother if we just did GC */
+	 
 	if (time_is_after_eq_jiffies((unsigned long)READ_ONCE(list->last_gc)))
 		return false;
 
-	/* don't bother if other cpu is already doing GC */
+	 
 	if (!spin_trylock(&list->list_lock))
 		return false;
 
@@ -251,10 +228,7 @@ bool nf_conncount_gc_list(struct net *net,
 
 		found_ct = nf_ct_tuplehash_to_ctrack(found);
 		if (already_closed(found_ct)) {
-			/*
-			 * we do not care about connections which are
-			 * closed already -> ditch it
-			 */
+			 
 			nf_ct_put(found_ct);
 			conn_free(list, conn);
 			collected++;
@@ -283,7 +257,7 @@ static void __tree_nodes_free(struct rcu_head *h)
 	kmem_cache_free(conncount_rb_cachep, rbconn);
 }
 
-/* caller must hold tree nf_conncount_locks[] lock */
+ 
 static void tree_nodes_free(struct rb_root *root,
 			    struct nf_conncount_rb *gc_nodes[],
 			    unsigned int gc_count)
@@ -343,7 +317,7 @@ restart:
 
 			ret = nf_conncount_add(net, &rbconn->list, tuple, zone);
 			if (ret)
-				count = 0; /* hotdrop */
+				count = 0;  
 			else
 				count = rbconn->list.count;
 			tree_nodes_free(root, gc_nodes, gc_count);
@@ -365,7 +339,7 @@ restart:
 		goto restart;
 	}
 
-	/* expected case: match, insert new node */
+	 
 	rbconn = kmem_cache_alloc(conncount_rb_cachep, GFP_ATOMIC);
 	if (rbconn == NULL)
 		goto out_unlock;
@@ -428,19 +402,17 @@ count_tree(struct net *net,
 			}
 
 			spin_lock_bh(&rbconn->list.list_lock);
-			/* Node might be about to be free'd.
-			 * We need to defer to insert_tree() in this case.
-			 */
+			 
 			if (rbconn->list.count == 0) {
 				spin_unlock_bh(&rbconn->list.list_lock);
 				break;
 			}
 
-			/* same source network -> be counted! */
+			 
 			ret = __nf_conncount_add(net, &rbconn->list, tuple, zone);
 			spin_unlock_bh(&rbconn->list.list_lock);
 			if (ret)
-				return 0; /* hotdrop */
+				return 0;  
 			else
 				return rbconn->list.count;
 		}
@@ -477,7 +449,7 @@ static void tree_gc_worker(struct work_struct *work)
 
 	spin_lock_bh(&nf_conncount_locks[tree]);
 	if (gc_count < ARRAY_SIZE(gc_nodes))
-		goto next; /* do not bother */
+		goto next;  
 
 	gc_count = 0;
 	node = rb_first(root);
@@ -510,10 +482,7 @@ next:
 	spin_unlock_bh(&nf_conncount_locks[tree]);
 }
 
-/* Count and return number of conntrack entries in 'net' with particular 'key'.
- * If 'tuple' is not null, insert it into the accounting data structure.
- * Call with RCU read lock.
- */
+ 
 unsigned int nf_conncount_count(struct net *net,
 				struct nf_conncount_data *data,
 				const u32 *key,

@@ -1,21 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2019 Clément Péron
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * Keymap for the Beelink GS1 remote control
- */
+ 
 
 static struct rc_map_table beelink_gs1_table[] = {
-	/*
-	 * TV Keys (Power, Learn and Volume)
-	 * { 0x40400d, KEY_TV },
-	 * { 0x80f1, KEY_TV },
-	 * { 0x80f3, KEY_TV },
-	 * { 0x80f4, KEY_TV },
-	 */
+	 
 
 	{ 0x8051, KEY_POWER },
 	{ 0x804d, KEY_MUTE },
@@ -35,8 +27,8 @@ static struct rc_map_table beelink_gs1_table[] = {
 	{ 0x804e, KEY_VOLUMEUP },
 	{ 0x8056, KEY_VOLUMEDOWN },
 
-	{ 0x8054, KEY_SUBTITLE }, /* Web */
-	{ 0x8052, KEY_EPG }, /* Media */
+	{ 0x8054, KEY_SUBTITLE },  
+	{ 0x8052, KEY_EPG },  
 
 	{ 0x8041, KEY_CHANNELUP },
 	{ 0x8042, KEY_CHANNELDOWN },
@@ -55,7 +47,7 @@ static struct rc_map_table beelink_gs1_table[] = {
 
 	{ 0x8044, KEY_DELETE },
 	{ 0x8030, KEY_0 },
-	{ 0x8058, KEY_MODE }, /* # Input Method */
+	{ 0x8058, KEY_MODE },  
 };
 
 static struct rc_map_list beelink_gs1_map = {

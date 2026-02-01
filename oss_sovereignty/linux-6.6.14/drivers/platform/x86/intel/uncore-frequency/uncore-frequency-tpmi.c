@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * uncore-frquency-tpmi: Uncore frequency scaling using TPMI
- *
- * Copyright (c) 2023, Intel Corporation.
- * All Rights Reserved.
- *
- * The hardware interface to read/write is basically substitution of
- * MSR 0x620 and 0x621.
- * There are specific MMIO offset and bits to get/set minimum and
- * maximum uncore ratio, similar to MSRs.
- * The scope of the uncore MSRs was package scope. But TPMI allows
- * new gen CPUs to have multiple uncore controls at uncore-cluster
- * level. Each package can have multiple power domains which further
- * can have multiple clusters.
- * Here number of power domains = number of resources in this aux
- * device. There are offsets and bits to discover number of clusters
- * and offset for each cluster level controls.
- *
- */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 #include <linux/bitfield.h>
@@ -32,7 +14,7 @@
 #define UNCORE_HEADER_INDEX		0
 #define UNCORE_FABRIC_CLUSTER_OFFSET	8
 
-/* status + control + adv_ctl1 + adv_ctl2 */
+ 
 #define UNCORE_FABRIC_CLUSTER_SIZE	(4 * 8)
 
 #define UNCORE_STATUS_INDEX		0
@@ -42,7 +24,7 @@
 
 struct tpmi_uncore_struct;
 
-/* Information for each cluster */
+ 
 struct tpmi_uncore_cluster_info {
 	bool root_domain;
 	u8 __iomem *cluster_base;
@@ -50,7 +32,7 @@ struct tpmi_uncore_cluster_info {
 	struct tpmi_uncore_struct *uncore_root;
 };
 
-/* Information for each power domain */
+ 
 struct tpmi_uncore_power_domain_info {
 	u8 __iomem *uncore_base;
 	int ufs_header_ver;
@@ -58,7 +40,7 @@ struct tpmi_uncore_power_domain_info {
 	struct tpmi_uncore_cluster_info *cluster_infos;
 };
 
-/* Information for all power domains in a package */
+ 
 struct tpmi_uncore_struct {
 	int power_domain_count;
 	int max_ratio;
@@ -71,7 +53,7 @@ struct tpmi_uncore_struct {
 #define UNCORE_GENMASK_MAX_RATIO	GENMASK_ULL(14, 8)
 #define UNCORE_GENMASK_CURRENT_RATIO	GENMASK_ULL(6, 0)
 
-/* Helper function to read MMIO offset for max/min control frequency */
+ 
 static void read_control_freq(struct tpmi_uncore_cluster_info *cluster_info,
 			     unsigned int *min, unsigned int *max)
 {
@@ -84,7 +66,7 @@ static void read_control_freq(struct tpmi_uncore_cluster_info *cluster_info,
 
 #define UNCORE_MAX_RATIO	FIELD_MAX(UNCORE_GENMASK_MAX_RATIO)
 
-/* Callback for sysfs read for max/min frequencies. Called under mutex locks */
+ 
 static int uncore_read_control_freq(struct uncore_data *data, unsigned int *min,
 				    unsigned int *max)
 {
@@ -99,10 +81,7 @@ static int uncore_read_control_freq(struct uncore_data *data, unsigned int *min,
 		*min = UNCORE_MAX_RATIO * UNCORE_FREQ_KHZ_MULTIPLIER;
 		*max = 0;
 
-		/*
-		 * Get the max/min by looking at each cluster. Get the lowest
-		 * min and highest max.
-		 */
+		 
 		for (i = 0; i < uncore_root->power_domain_count; ++i) {
 			int j;
 
@@ -123,7 +102,7 @@ static int uncore_read_control_freq(struct uncore_data *data, unsigned int *min,
 	return 0;
 }
 
-/* Helper function to write MMIO offset for max/min control frequency */
+ 
 static void write_control_freq(struct tpmi_uncore_cluster_info *cluster_info, unsigned int input,
 			      unsigned int min_max)
 {
@@ -142,7 +121,7 @@ static void write_control_freq(struct tpmi_uncore_cluster_info *cluster_info, un
 	writeq(control, (cluster_info->cluster_base + UNCORE_CONTROL_INDEX));
 }
 
-/* Callback for sysfs write for max/min frequencies. Called under mutex locks */
+ 
 static int uncore_write_control_freq(struct uncore_data *data, unsigned int input,
 				     unsigned int min_max)
 {
@@ -156,7 +135,7 @@ static int uncore_write_control_freq(struct uncore_data *data, unsigned int inpu
 	cluster_info = container_of(data, struct tpmi_uncore_cluster_info, uncore_data);
 	uncore_root = cluster_info->uncore_root;
 
-	/* Update each cluster in a package */
+	 
 	if (cluster_info->root_domain) {
 		struct tpmi_uncore_struct *uncore_root = cluster_info->uncore_root;
 		int i;
@@ -188,7 +167,7 @@ static int uncore_write_control_freq(struct uncore_data *data, unsigned int inpu
 	return 0;
 }
 
-/* Callback for sysfs read for the current uncore frequency. Called under mutex locks */
+ 
 static int uncore_read_freq(struct uncore_data *data, unsigned int *freq)
 {
 	struct tpmi_uncore_cluster_info *cluster_info;
@@ -237,25 +216,25 @@ static int uncore_probe(struct auxiliary_device *auxdev, const struct auxiliary_
 	int ret, i, pkg = 0;
 	int num_resources;
 
-	/* Get number of power domains, which is equal to number of resources */
+	 
 	num_resources = tpmi_get_resource_count(auxdev);
 	if (!num_resources)
 		return -EINVAL;
 
-	/* Register callbacks to uncore core */
+	 
 	ret = uncore_freq_common_init(uncore_read_control_freq, uncore_write_control_freq,
 				      uncore_read_freq);
 	if (ret)
 		return ret;
 
-	/* Allocate uncore instance per package */
+	 
 	tpmi_uncore = devm_kzalloc(&auxdev->dev, sizeof(*tpmi_uncore), GFP_KERNEL);
 	if (!tpmi_uncore) {
 		ret = -ENOMEM;
 		goto err_rem_common;
 	}
 
-	/* Allocate memory for all power domains in a package */
+	 
 	tpmi_uncore->pd_info = devm_kcalloc(&auxdev->dev, num_resources,
 					    sizeof(*tpmi_uncore->pd_info),
 					    GFP_KERNEL);
@@ -266,7 +245,7 @@ static int uncore_probe(struct auxiliary_device *auxdev, const struct auxiliary_
 
 	tpmi_uncore->power_domain_count = num_resources;
 
-	/* Get the package ID from the TPMI core */
+	 
 	plat_info = tpmi_get_platform_data(auxdev);
 	if (plat_info)
 		pkg = plat_info->package_id;
@@ -290,16 +269,12 @@ static int uncore_probe(struct auxiliary_device *auxdev, const struct auxiliary_
 		pd_info->uncore_base = devm_ioremap_resource(&auxdev->dev, res);
 		if (IS_ERR(pd_info->uncore_base)) {
 			ret = PTR_ERR(pd_info->uncore_base);
-			/*
-			 * Set to NULL so that clean up can still remove other
-			 * entries already created if any by
-			 * remove_cluster_entries()
-			 */
+			 
 			pd_info->uncore_base = NULL;
 			goto remove_clusters;
 		}
 
-		/* Check for version and skip this resource if there is mismatch */
+		 
 		header = readq(pd_info->uncore_base);
 		pd_info->ufs_header_ver = header & UNCORE_VERSION_MASK;
 		if (pd_info->ufs_header_ver != UNCORE_HEADER_VERSION) {
@@ -308,14 +283,14 @@ static int uncore_probe(struct auxiliary_device *auxdev, const struct auxiliary_
 			continue;
 		}
 
-		/* Get Cluster ID Mask */
+		 
 		cluster_mask = FIELD_GET(UNCORE_LOCAL_FABRIC_CLUSTER_ID_MASK, header);
 		if (!cluster_mask) {
 			dev_info(&auxdev->dev, "Uncore: Invalid cluster mask:%x\n", cluster_mask);
 			continue;
 		}
 
-		/* Find out number of clusters in this resource */
+		 
 		pd_info->cluster_count = hweight8(cluster_mask);
 
 		pd_info->cluster_infos = devm_kcalloc(&auxdev->dev, pd_info->cluster_count,
@@ -325,19 +300,16 @@ static int uncore_probe(struct auxiliary_device *auxdev, const struct auxiliary_
 			ret = -ENOMEM;
 			goto remove_clusters;
 		}
-		/*
-		 * Each byte in the register point to status and control
-		 * registers belonging to cluster id 0-8.
-		 */
+		 
 		cluster_offset = readq(pd_info->uncore_base +
 					UNCORE_FABRIC_CLUSTER_OFFSET);
 
 		for (j = 0; j < pd_info->cluster_count; ++j) {
 			struct tpmi_uncore_cluster_info *cluster_info;
 
-			/* Get the offset for this cluster */
+			 
 			mask = (cluster_offset & UNCORE_CLUSTER_OFF_MASK);
-			/* Offset in QWORD, so change to bytes */
+			 
 			mask <<= 3;
 
 			cluster_info = &pd_info->cluster_infos[j];
@@ -345,7 +317,7 @@ static int uncore_probe(struct auxiliary_device *auxdev, const struct auxiliary_
 			cluster_info->cluster_base = pd_info->uncore_base + mask;
 
 			cluster_info->uncore_data.package_id = pkg;
-			/* There are no dies like Cascade Lake */
+			 
 			cluster_info->uncore_data.die_id = 0;
 			cluster_info->uncore_data.domain_id = i;
 			cluster_info->uncore_data.cluster_id = j;
@@ -357,7 +329,7 @@ static int uncore_probe(struct auxiliary_device *auxdev, const struct auxiliary_
 				cluster_info->cluster_base = NULL;
 				goto remove_clusters;
 			}
-			/* Point to next cluster offset */
+			 
 			cluster_offset >>= UNCORE_MAX_CLUSTER_PER_DOMAIN;
 		}
 	}

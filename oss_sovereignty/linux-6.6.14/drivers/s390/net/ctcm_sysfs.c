@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2007, 2007
- * Authors:	Peter Tiedemann (ptiedem@de.ibm.com)
- *
- */
+
+ 
 
 #undef DEBUG
 #undef DEBUGDATA
@@ -17,9 +13,7 @@
 #include <linux/slab.h>
 #include "ctcm_main.h"
 
-/*
- * sysfs attributes
- */
+ 
 
 static ssize_t ctcm_buffer_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -53,7 +47,7 @@ static ssize_t ctcm_buffer_write(struct device *dev,
 					goto einval;
 	if (bs1 < (576 + LL_HEADER_LENGTH + 2))
 					goto einval;
-	priv->buffer_size = bs1;	/* just to overwrite the default */
+	priv->buffer_size = bs1;	 
 
 	if ((ndev->flags & IFF_RUNNING) &&
 	    (bs1 < (ndev->mtu + LL_HEADER_LENGTH + 2)))
@@ -129,7 +123,7 @@ static ssize_t stats_write(struct device *dev, struct device_attribute *attr,
 	struct ctcm_priv *priv = dev_get_drvdata(dev);
 	if (!priv)
 		return -ENODEV;
-	/* Reset statistics */
+	 
 	memset(&priv->channel[WRITE]->prof, 0,
 				sizeof(priv->channel[CTCM_WRITE]->prof));
 	return count;

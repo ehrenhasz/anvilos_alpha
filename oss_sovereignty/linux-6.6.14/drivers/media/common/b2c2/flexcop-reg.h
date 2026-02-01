@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Linux driver for digital TV devices equipped with B2C2 FlexcopII(b)/III
- * flexcop-reg.h - register abstraction for FlexCopII, FlexCopIIb and FlexCopIII
- * see flexcop.c for copyright information
- */
+ 
+ 
 #ifndef __FLEXCOP_REG_H__
 #define __FLEXCOP_REG_H__
 
@@ -33,7 +29,7 @@ typedef enum {
 	FC_PCI,
 } flexcop_bus_t;
 
-/* FlexCop IBI Registers */
+ 
 #if defined(__LITTLE_ENDIAN)
 #include "flexcop_ibi_value_le.h"
 #else
@@ -80,10 +76,10 @@ typedef enum {
 } flexcop_sram_dest_target_t;
 
 typedef enum {
-	FC_SRAM_2_32KB  = 0, /*  64KB */
-	FC_SRAM_1_32KB  = 1, /*  32KB - default fow FCII */
-	FC_SRAM_1_128KB = 2, /* 128KB */
-	FC_SRAM_1_48KB  = 3, /*  48KB - default for FCIII */
+	FC_SRAM_2_32KB  = 0,  
+	FC_SRAM_1_32KB  = 1,  
+	FC_SRAM_1_128KB = 2,  
+	FC_SRAM_1_48KB  = 3,  
 } flexcop_sram_type_t;
 
 typedef enum {
@@ -103,7 +99,7 @@ typedef enum {
 	FC_DMA_SUBADDR_1 = 2,
 } flexcop_dma_addr_index_t;
 
-/* names of the particular registers */
+ 
 typedef enum {
 	dma1_000            = 0x000,
 	dma1_004            = 0x004,

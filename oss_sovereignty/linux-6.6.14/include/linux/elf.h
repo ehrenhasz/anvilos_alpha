@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_ELF_H
 #define _LINUX_ELF_H
 
@@ -7,9 +7,7 @@
 #include <uapi/linux/elf.h>
 
 #ifndef elf_read_implies_exec
-  /* Executables for which elf_read_implies_exec() returns TRUE will
-     have the READ_IMPLIES_EXEC personality flag set automatically.
-     Override in asm/elf.h as needed.  */
+   
 # define elf_read_implies_exec(ex, have_pt_gnu_stack)	0
 #endif
 #ifndef SET_PERSONALITY
@@ -61,7 +59,7 @@ extern Elf64_Dyn _DYNAMIC [];
 
 #endif
 
-/* Optional callbacks to write extra ELF notes. */
+ 
 struct file;
 struct coredump_params;
 
@@ -73,11 +71,7 @@ extern int elf_coredump_extra_notes_size(void);
 extern int elf_coredump_extra_notes_write(struct coredump_params *cprm);
 #endif
 
-/*
- * NT_GNU_PROPERTY_TYPE_0 header:
- * Keep this internal until/unless there is an agreed UAPI definition.
- * pr_type values (GNU_PROPERTY_*) are public and defined in the UAPI header.
- */
+ 
 struct gnu_property {
 	u32 pr_type;
 	u32 pr_datasz;
@@ -109,4 +103,4 @@ static inline int arch_elf_adjust_prot(int prot,
 }
 #endif
 
-#endif /* _LINUX_ELF_H */
+#endif  

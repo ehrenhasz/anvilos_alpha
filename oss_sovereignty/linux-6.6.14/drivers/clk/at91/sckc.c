@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/clk/at91/sckc.c
- *
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -389,7 +385,7 @@ static void __init at91sam9x5_sckc_register(struct device_node *np,
 
 	xtal_name = of_clk_get_parent_name(np, 0);
 	if (!xtal_name) {
-		/* DT backward compatibility */
+		 
 		child = of_get_compatible_child(np, "atmel,at91sam9x5-clk-slow-osc");
 		if (!child)
 			goto unregister_slow_rc;
@@ -419,7 +415,7 @@ static void __init at91sam9x5_sckc_register(struct device_node *np,
 	if (IS_ERR(slowck))
 		goto unregister_slow_osc;
 
-	/* DT backward compatibility */
+	 
 	if (child)
 		ret = of_clk_add_hw_provider(child, of_clk_hw_simple_get,
 					     slowck);
@@ -504,7 +500,7 @@ static void __init of_sam9x60_sckc_setup(struct device_node *np)
 	if (!clk_data)
 		goto unregister_slow_osc;
 
-	/* MD_SLCK and TD_SLCK. */
+	 
 	clk_data->num = 2;
 	clk_data->hws[0] = clk_hw_register_fixed_rate_parent_hw(NULL, "md_slck",
 								slow_rc,
@@ -547,10 +543,7 @@ static int clk_sama5d4_slow_osc_prepare(struct clk_hw *hw)
 	if (osc->prepared)
 		return 0;
 
-	/*
-	 * Assume that if it has already been selected (for example by the
-	 * bootloader), enough time has already passed.
-	 */
+	 
 	if ((readl(osc->sckcr) & osc->bits->cr_oscsel)) {
 		osc->prepared = true;
 		return 0;

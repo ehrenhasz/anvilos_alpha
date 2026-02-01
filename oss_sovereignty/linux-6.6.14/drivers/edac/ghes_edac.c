@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GHES/EDAC Linux driver
- *
- * Copyright (c) 2013 by Mauro Carvalho Chehab
- *
- * Red Hat Inc. https://www.redhat.com
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,44 +15,33 @@
 struct ghes_pvt {
 	struct mem_ctl_info *mci;
 
-	/* Buffers for the error handling routine */
+	 
 	char other_detail[OTHER_DETAIL_LEN];
 	char msg[80];
 };
 
 static refcount_t ghes_refcount = REFCOUNT_INIT(0);
 
-/*
- * Access to ghes_pvt must be protected by ghes_lock. The spinlock
- * also provides the necessary (implicit) memory barrier for the SMP
- * case to make the pointer visible on another CPU.
- */
+ 
 static struct ghes_pvt *ghes_pvt;
 
-/*
- * This driver's representation of the system hardware, as collected
- * from DMI.
- */
+ 
 static struct ghes_hw_desc {
 	int num_dimms;
 	struct dimm_info *dimms;
 } ghes_hw;
 
-/* GHES registration mutex */
+ 
 static DEFINE_MUTEX(ghes_reg_mutex);
 
-/*
- * Sync with other, potentially concurrent callers of
- * ghes_edac_report_mem_error(). We don't know what the
- * "inventive" firmware would do.
- */
+ 
 static DEFINE_SPINLOCK(ghes_lock);
 
 static bool system_scanned;
 
 static struct list_head *ghes_devs;
 
-/* Memory Device - Type 17 of SMBIOS spec */
+ 
 struct memdev_dmi_entry {
 	u8 type;
 	u8 length;
@@ -102,10 +85,7 @@ static void dimm_setup_label(struct dimm_info *dimm, u16 handle)
 
 	dmi_memdev_name(handle, &bank, &device);
 
-	/*
-	 * Set to a NULL string when both bank and device are zero. In this case,
-	 * the label assigned by default will be preserved.
-	 */
+	 
 	snprintf(dimm->label, sizeof(dimm->label), "%s%s%s",
 		 (bank && *bank) ? bank : "",
 		 (bank && *bank && device && *device) ? " " : "",
@@ -118,7 +98,7 @@ static void assign_dmi_dimm_info(struct dimm_info *dimm, struct memdev_dmi_entry
 
 	if (entry->size == 0xffff) {
 		pr_info("Can't get DIMM%i size\n", dimm->idx);
-		dimm->nr_pages = MiB_TO_PAGES(32);/* Unknown */
+		dimm->nr_pages = MiB_TO_PAGES(32); 
 	} else if (entry->size == 0x7fff) {
 		dimm->nr_pages = MiB_TO_PAGES(entry->extended_size);
 	} else {
@@ -173,17 +153,14 @@ static void assign_dmi_dimm_info(struct dimm_info *dimm, struct memdev_dmi_entry
 			dimm->mtype = MEM_UNKNOWN;
 	}
 
-	/*
-	 * Actually, we can only detect if the memory has bits for
-	 * checksum or not
-	 */
+	 
 	if (entry->total_width == entry->data_width)
 		dimm->edac_mode = EDAC_NONE;
 	else
 		dimm->edac_mode = EDAC_SECDED;
 
 	dimm->dtype = DEV_UNKNOWN;
-	dimm->grain = 128;		/* Likely, worse case */
+	dimm->grain = 128;		 
 
 	dimm_setup_label(dimm, entry->handle);
 
@@ -209,7 +186,7 @@ static void enumerate_dimms(const struct dmi_header *dh, void *arg)
 	if (dh->type != DMI_ENTRY_MEM_DEVICE)
 		return;
 
-	/* Enlarge the array with additional 16 */
+	 
 	if (!hw->num_dimms || !(hw->num_dimms % 16)) {
 		struct dimm_info *new;
 
@@ -278,11 +255,7 @@ static int ghes_edac_report_mem_error(struct notifier_block *nb,
 	unsigned long flags;
 	char *p;
 
-	/*
-	 * We can do the locking below because GHES defers error processing
-	 * from NMI to IRQ context. Whenever that changes, we'd at least
-	 * know.
-	 */
+	 
 	if (WARN_ON_ONCE(in_nmi()))
 		return NOTIFY_OK;
 
@@ -295,7 +268,7 @@ static int ghes_edac_report_mem_error(struct notifier_block *nb,
 	mci = pvt->mci;
 	e = &mci->error_desc;
 
-	/* Cleans the error report buffer */
+	 
 	memset(e, 0, sizeof (*e));
 	e->error_count = 1;
 	e->grain = 1;
@@ -325,7 +298,7 @@ static int ghes_edac_report_mem_error(struct notifier_block *nb,
 	edac_dbg(1, "error validation_bits: 0x%08llx\n",
 		 (long long)mem_err->validation_bits);
 
-	/* Error type, mapped on e->msg */
+	 
 	if (mem_err->validation_bits & CPER_MEM_VALID_ERROR_TYPE) {
 		u8 etype = mem_err->error_type;
 
@@ -335,17 +308,17 @@ static int ghes_edac_report_mem_error(struct notifier_block *nb,
 		strcpy(pvt->msg, "unknown error");
 	}
 
-	/* Error address */
+	 
 	if (mem_err->validation_bits & CPER_MEM_VALID_PA) {
 		e->page_frame_number = PHYS_PFN(mem_err->physical_addr);
 		e->offset_in_page = offset_in_page(mem_err->physical_addr);
 	}
 
-	/* Error grain */
+	 
 	if (mem_err->validation_bits & CPER_MEM_VALID_PA_MASK)
 		e->grain = ~mem_err->physical_addr_mask + 1;
 
-	/* Memory error location, mapped on e->location */
+	 
 	p = e->location;
 	cper_mem_err_pack(mem_err, &cmem);
 	p += cper_mem_err_location(&cmem, p);
@@ -366,7 +339,7 @@ static int ghes_edac_report_mem_error(struct notifier_block *nb,
 	if (!*e->label)
 		strcpy(e->label, "unknown memory");
 
-	/* All other fields are mapped on e->other_detail */
+	 
 	p = pvt->other_detail;
 	p += print_mem_error_other_detail(mem_err, p, e->location, OTHER_DETAIL_LEN);
 	if (p > pvt->other_detail)
@@ -394,18 +367,16 @@ static int ghes_edac_register(struct device *dev)
 	unsigned long flags;
 	int rc = 0;
 
-	/* finish another registration/unregistration instance first */
+	 
 	mutex_lock(&ghes_reg_mutex);
 
-	/*
-	 * We have only one logical memory controller to which all DIMMs belong.
-	 */
+	 
 	if (refcount_inc_not_zero(&ghes_refcount))
 		goto unlock;
 
 	ghes_scan_system();
 
-	/* Check if we've got a bogus BIOS */
+	 
 	if (!ghes_hw.num_dimms) {
 		fake = true;
 		ghes_hw.num_dimms = 1;
@@ -456,10 +427,7 @@ static int ghes_edac_register(struct device *dev)
 			dst->dtype	   = src->dtype;
 			dst->grain	   = src->grain;
 
-			/*
-			 * If no src->label, preserve default label assigned
-			 * from EDAC core.
-			 */
+			 
 			if (strlen(src->label))
 				memcpy(dst->label, src->label, sizeof(src->label));
 
@@ -490,12 +458,12 @@ static int ghes_edac_register(struct device *dev)
 
 	ghes_register_report_chain(&ghes_edac_mem_err_nb);
 
-	/* only set on success */
+	 
 	refcount_set(&ghes_refcount, 1);
 
 unlock:
 
-	/* Not needed anymore */
+	 
 	kfree(ghes_hw.dimms);
 	ghes_hw.dimms = NULL;
 
@@ -517,9 +485,7 @@ static void ghes_edac_unregister(struct ghes *ghes)
 	if (!refcount_dec_and_test(&ghes_refcount))
 		goto unlock;
 
-	/*
-	 * Wait for the irq handler being finished.
-	 */
+	 
 	spin_lock_irqsave(&ghes_lock, flags);
 	mci = ghes_pvt ? ghes_pvt->mci : NULL;
 	ghes_pvt = NULL;

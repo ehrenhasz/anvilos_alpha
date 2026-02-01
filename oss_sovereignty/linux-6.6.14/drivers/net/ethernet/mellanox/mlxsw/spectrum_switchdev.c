@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -30,7 +30,7 @@ struct mlxsw_sp_bridge {
 	struct {
 		struct delayed_work dw;
 #define MLXSW_SP_DEFAULT_LEARNING_INTERVAL 100
-		unsigned int interval; /* ms */
+		unsigned int interval;  
 	} fdb_notify;
 #define MLXSW_SP_MIN_AGEING_TIME 10
 #define MLXSW_SP_MAX_AGEING_TIME 1000000
@@ -118,7 +118,7 @@ struct mlxsw_sp_mdb_entry {
 };
 
 struct mlxsw_sp_mdb_entry_port {
-	struct list_head list; /* Member of 'ports_list'. */
+	struct list_head list;  
 	u16 local_port;
 	refcount_t refcount;
 	bool mrouter;
@@ -293,10 +293,7 @@ mlxsw_sp_bridge_device_create(struct mlxsw_sp_bridge *bridge,
 		mlxsw_sp_fdb_notify_work_schedule(bridge->mlxsw_sp, false);
 	list_add(&bridge_device->list, &bridge->bridges_list);
 
-	/* It is possible we already have VXLAN devices enslaved to the bridge.
-	 * In which case, we need to replay their configuration as if they were
-	 * just now enslaved to the bridge.
-	 */
+	 
 	err = mlxsw_sp_bridge_device_vxlan_init(bridge, br_dev, extack);
 	if (err)
 		goto err_vxlan_init;
@@ -412,18 +409,7 @@ mlxsw_sp_bridge_port_replay_switchdev_objs(struct notifier_block *nb,
 	    dev != rso->brport_dev)
 		goto out;
 
-	/* When a port is joining the bridge through a LAG, there likely are
-	 * VLANs configured on that LAG already. The replay will thus attempt to
-	 * have the given port-vlans join the corresponding FIDs. But the LAG
-	 * netdevice has already called the ndo_vlan_rx_add_vid NDO for its VLAN
-	 * memberships, back before CHANGEUPPER was distributed and netdevice
-	 * master set. So now before propagating the VLAN events further, we
-	 * first need to kill the corresponding VID at the mlxsw_sp_port.
-	 *
-	 * Note that this doesn't need to be rolled back on failure -- if the
-	 * replay fails, the enslavement is off, and the VIDs would be killed by
-	 * LAG anyway as part of its rollback.
-	 */
+	 
 	if (port_obj_info->obj->id == SWITCHDEV_OBJ_ID_PORT_VLAN) {
 		u16 vid = SWITCHDEV_OBJ_PORT_VLAN(port_obj_info->obj)->vid;
 
@@ -688,9 +674,7 @@ static int mlxsw_sp_port_attr_stp_state_set(struct mlxsw_sp_port *mlxsw_sp_port,
 	struct mlxsw_sp_bridge_vlan *bridge_vlan;
 	int err;
 
-	/* It's possible we failed to enslave the port, yet this
-	 * operation is executed due to it being deferred.
-	 */
+	 
 	bridge_port = mlxsw_sp_bridge_port_find(mlxsw_sp_port->mlxsw_sp->bridge,
 						orig_dev);
 	if (!bridge_port)
@@ -1051,9 +1035,7 @@ static int mlxsw_sp_port_mc_disabled_set(struct mlxsw_sp_port *mlxsw_sp_port,
 	struct mlxsw_sp_bridge_port *bridge_port;
 	int err;
 
-	/* It's possible we failed to enslave the port, yet this
-	 * operation is executed due to it being deferred.
-	 */
+	 
 	bridge_device = mlxsw_sp_bridge_device_find(mlxsw_sp->bridge, orig_dev);
 	if (!bridge_device)
 		return 0;
@@ -1264,9 +1246,7 @@ mlxsw_sp_port_attr_br_mrouter_set(struct mlxsw_sp_port *mlxsw_sp_port,
 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
 	struct mlxsw_sp_bridge_device *bridge_device;
 
-	/* It's possible we failed to enslave the port, yet this
-	 * operation is executed due to it being deferred.
-	 */
+	 
 	bridge_device = mlxsw_sp_bridge_device_find(mlxsw_sp->bridge, orig_dev);
 	if (!bridge_device)
 		return 0;
@@ -1415,7 +1395,7 @@ mlxsw_sp_port_pvid_determine(const struct mlxsw_sp_port *mlxsw_sp_port,
 	if (is_pvid)
 		return vid;
 	else if (mlxsw_sp_port->pvid == vid)
-		return 0;	/* Dis-allow untagged packets */
+		return 0;	 
 	else
 		return mlxsw_sp_port->pvid;
 }
@@ -1430,7 +1410,7 @@ mlxsw_sp_port_vlan_bridge_join(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan,
 	u16 vid = mlxsw_sp_port_vlan->vid;
 	int err;
 
-	/* No need to continue if only VLAN flags were changed */
+	 
 	if (mlxsw_sp_port_vlan->bridge_port)
 		return 0;
 
@@ -1521,10 +1501,7 @@ mlxsw_sp_bridge_port_vlan_add(struct mlxsw_sp_port *mlxsw_sp_port,
 	u16 proto;
 	int err;
 
-	/* The only valid scenario in which a port-vlan already exists, is if
-	 * the VLAN flags were changed and the port-vlan is associated with the
-	 * correct bridge port
-	 */
+	 
 	mlxsw_sp_port_vlan = mlxsw_sp_port_vlan_find_by_vid(mlxsw_sp_port, vid);
 	if (mlxsw_sp_port_vlan &&
 	    mlxsw_sp_port_vlan->bridge_port != bridge_port)
@@ -1720,9 +1697,7 @@ static int mlxsw_sp_port_fdb_tun_uc_op6_add(struct mlxsw_sp *mlxsw_sp,
 
 	err = mlxsw_sp_nve_ipv6_addr_map_replace(mlxsw_sp, mac, fid, addr);
 	if (err)
-		/* Replace can fail only for creating new mapping, so removing
-		 * the FDB entry in the error path is OK.
-		 */
+		 
 		goto err_addr_replace;
 
 	return 0;
@@ -2161,12 +2136,7 @@ mlxsw_sp_mc_mdb_entry_put(struct mlxsw_sp *mlxsw_sp,
 	if (!mdb_entry_port)
 		return;
 
-	/* Avoid a temporary situation in which the MDB entry points to an empty
-	 * PGT entry, as otherwise packets will be temporarily dropped instead
-	 * of being flooded. Instead, in this situation, call
-	 * mlxsw_sp_mc_mdb_entry_fini(), which first deletes the MDB entry and
-	 * then releases the PGT entry.
-	 */
+	 
 	if (mlxsw_sp_mc_mdb_entry_remove(mdb_entry, mdb_entry_port, force))
 		mlxsw_sp_mc_mdb_entry_fini(mlxsw_sp, mdb_entry, bridge_device,
 					   local_port, force);
@@ -2266,11 +2236,7 @@ static int mlxsw_sp_port_obj_add(struct net_device *dev, const void *ctx,
 
 		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, extack);
 
-		/* The event is emitted before the changes are actually
-		 * applied to the bridge. Therefore schedule the respin
-		 * call for later, so that the respin logic sees the
-		 * updated bridge state.
-		 */
+		 
 		mlxsw_sp_span_respin(mlxsw_sp_port->mlxsw_sp);
 		break;
 	case SWITCHDEV_OBJ_ID_PORT_MDB:
@@ -2472,7 +2438,7 @@ mlxsw_sp_bridge_vlan_aware_port_join(struct mlxsw_sp_bridge_port *bridge_port,
 		return -EINVAL;
 	}
 
-	/* Port is no longer usable as a router interface */
+	 
 	if (mlxsw_sp_port->default_vlan->fid)
 		mlxsw_sp_port_vlan_router_leave(mlxsw_sp_port->default_vlan);
 
@@ -2492,7 +2458,7 @@ mlxsw_sp_bridge_8021q_port_join(struct mlxsw_sp_bridge_device *bridge_device,
 static void
 mlxsw_sp_bridge_vlan_aware_port_leave(struct mlxsw_sp_port *mlxsw_sp_port)
 {
-	/* Make sure untagged frames are allowed to ingress */
+	 
 	mlxsw_sp_port_pvid_set(mlxsw_sp_port, MLXSW_SP_DEFAULT_VID,
 			       ETH_P_8021Q);
 }
@@ -2522,10 +2488,7 @@ mlxsw_sp_bridge_vlan_aware_vxlan_join(struct mlxsw_sp_bridge_device *bridge_devi
 	struct mlxsw_sp_fid *fid;
 	int err;
 
-	/* If the VLAN is 0, we need to find the VLAN that is configured as
-	 * PVID and egress untagged on the bridge port of the VxLAN device.
-	 * It is possible no such VLAN exists
-	 */
+	 
 	if (!vid) {
 		err = mlxsw_sp_vxlan_mapped_vid(vxlan_dev, &vid);
 		if (err || !vid)
@@ -2660,7 +2623,7 @@ mlxsw_sp_bridge_8021d_port_join(struct mlxsw_sp_bridge_device *bridge_device,
 		return -EINVAL;
 	}
 
-	/* Port is no longer usable as a router interface */
+	 
 	if (mlxsw_sp_port_vlan->fid)
 		mlxsw_sp_port_vlan_router_leave(mlxsw_sp_port_vlan);
 
@@ -2752,7 +2715,7 @@ mlxsw_sp_bridge_8021d_fid_lookup(struct mlxsw_sp_bridge_device *bridge_device,
 {
 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_lower_get(bridge_device->dev);
 
-	/* The only valid VLAN for a VLAN-unaware bridge is 0 */
+	 
 	if (vid)
 		return NULL;
 
@@ -2834,10 +2797,7 @@ mlxsw_sp2_bridge_8021ad_port_join(struct mlxsw_sp_bridge_device *bridge_device,
 {
 	int err;
 
-	/* The EtherType of decapsulated packets is determined at the egress
-	 * port to allow 802.1d and 802.1ad bridges with VXLAN devices to
-	 * co-exist.
-	 */
+	 
 	err = mlxsw_sp_port_egress_ethtype_set(mlxsw_sp_port, ETH_P_8021AD);
 	if (err)
 		return err;
@@ -2950,15 +2910,13 @@ void mlxsw_sp_bridge_vxlan_leave(struct mlxsw_sp *mlxsw_sp,
 	struct vxlan_dev *vxlan = netdev_priv(vxlan_dev);
 	struct mlxsw_sp_fid *fid;
 
-	/* If the VxLAN device is down, then the FID does not have a VNI */
+	 
 	fid = mlxsw_sp_fid_lookup_by_vni(mlxsw_sp, vxlan->cfg.vni);
 	if (!fid)
 		return;
 
 	mlxsw_sp_nve_fid_disable(mlxsw_sp, fid);
-	/* Drop both the reference we just took during lookup and the reference
-	 * the VXLAN device took.
-	 */
+	 
 	mlxsw_sp_fid_put(fid);
 	mlxsw_sp_fid_put(fid);
 }
@@ -3285,9 +3243,7 @@ err_fdb_process:
 err_ip_resolve:
 	mlxsw_sp_fid_put(fid);
 err_fid_lookup:
-	/* Remove an FDB entry in case we cannot process it. Otherwise the
-	 * device will keep sending the same notification over and over again.
-	 */
+	 
 	mlxsw_sp_port_fdb_tunnel_uc_op(mlxsw_sp, mac, fid_index,
 				       (enum mlxsw_sp_l3proto) sfn_proto, &addr,
 				       false, true);
@@ -3520,9 +3476,7 @@ static void mlxsw_sp_switchdev_bridge_fdb_event_work(struct work_struct *work)
 		break;
 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
 	case SWITCHDEV_FDB_DEL_TO_BRIDGE:
-		/* These events are only used to potentially update an existing
-		 * SPAN mirror.
-		 */
+		 
 		break;
 	}
 
@@ -3577,11 +3531,7 @@ mlxsw_sp_switchdev_vxlan_fdb_add(struct mlxsw_sp *mlxsw_sp,
 		return;
 	}
 
-	/* The device has a single FDB table, whereas Linux has two - one
-	 * in the bridge driver and another in the VxLAN driver. We only
-	 * program an entry to the device if the MAC points to the VxLAN
-	 * device in the bridge's FDB table
-	 */
+	 
 	vid = bridge_device->ops->fid_vid(bridge_device, fid);
 	if (br_fdb_find_port(br_dev, vxlan_fdb_info->eth_addr, vid) != dev)
 		goto err_br_fdb_find;
@@ -3731,7 +3681,7 @@ mlxsw_sp_switchdev_vxlan_work_prepare(struct mlxsw_sp_switchdev_event_work *
 	return 0;
 }
 
-/* Called under rcu_read_lock() */
+ 
 static int mlxsw_sp_switchdev_event(struct notifier_block *unused,
 				    unsigned long event, void *ptr)
 {
@@ -3749,7 +3699,7 @@ static int mlxsw_sp_switchdev_event(struct notifier_block *unused,
 		return notifier_from_errno(err);
 	}
 
-	/* Tunnel devices are not our uppers, so check their master instead */
+	 
 	br_dev = netdev_master_upper_dev_get_rcu(dev);
 	if (!br_dev)
 		return NOTIFY_DONE;
@@ -3782,10 +3732,7 @@ static int mlxsw_sp_switchdev_event(struct notifier_block *unused,
 			goto err_addr_alloc;
 		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
 				fdb_info->addr);
-		/* Take a reference on the device. This can be either
-		 * upper device containig mlxsw_sp_port or just a
-		 * mlxsw_sp_port
-		 */
+		 
 		netdev_hold(dev, &switchdev_work->dev_tracker, GFP_ATOMIC);
 		break;
 	case SWITCHDEV_VXLAN_FDB_ADD_TO_DEVICE:
@@ -3830,11 +3777,7 @@ mlxsw_sp_switchdev_vxlan_vlan_add(struct mlxsw_sp *mlxsw_sp,
 	u16 old_vid;
 	int err;
 
-	/* We cannot have the same VLAN as PVID and egress untagged on multiple
-	 * VxLAN devices. Note that we get this notification before the VLAN is
-	 * actually added to the bridge's database, so it is not possible for
-	 * the lookup function to return 'vxlan_dev'
-	 */
+	 
 	if (flag_untagged && flag_pvid &&
 	    mlxsw_sp_bridge_8021q_vxlan_dev_find(bridge_device->dev, vid)) {
 		NL_SET_ERR_MSG_MOD(extack, "VLAN already mapped to a different VNI");
@@ -3844,10 +3787,7 @@ mlxsw_sp_switchdev_vxlan_vlan_add(struct mlxsw_sp *mlxsw_sp,
 	if (!netif_running(vxlan_dev))
 		return 0;
 
-	/* First case: FID is not associated with this VNI, but the new VLAN
-	 * is both PVID and egress untagged. Need to enable NVE on the FID, if
-	 * it exists
-	 */
+	 
 	fid = mlxsw_sp_fid_lookup_by_vni(mlxsw_sp, vni);
 	if (!fid) {
 		if (!flag_untagged || !flag_pvid)
@@ -3856,11 +3796,7 @@ mlxsw_sp_switchdev_vxlan_vlan_add(struct mlxsw_sp *mlxsw_sp,
 						      vid, extack);
 	}
 
-	/* Second case: FID is associated with the VNI and the VLAN associated
-	 * with the FID is the same as the notified VLAN. This means the flags
-	 * (PVID / egress untagged) were toggled and that NVE should be
-	 * disabled on the FID
-	 */
+	 
 	old_vid = mlxsw_sp_fid_8021q_vid(fid);
 	if (vid == old_vid) {
 		if (WARN_ON(flag_untagged && flag_pvid)) {
@@ -3872,23 +3808,17 @@ mlxsw_sp_switchdev_vxlan_vlan_add(struct mlxsw_sp *mlxsw_sp,
 		return 0;
 	}
 
-	/* Third case: A new VLAN was configured on the VxLAN device, but this
-	 * VLAN is not PVID, so there is nothing to do.
-	 */
+	 
 	if (!flag_pvid) {
 		mlxsw_sp_fid_put(fid);
 		return 0;
 	}
 
-	/* Fourth case: Thew new VLAN is PVID, which means the VLAN currently
-	 * mapped to the VNI should be unmapped
-	 */
+	 
 	mlxsw_sp_bridge_vxlan_leave(mlxsw_sp, vxlan_dev);
 	mlxsw_sp_fid_put(fid);
 
-	/* Fifth case: The new VLAN is also egress untagged, which means the
-	 * VLAN needs to be mapped to the VNI
-	 */
+	 
 	if (!flag_untagged)
 		return 0;
 
@@ -3919,7 +3849,7 @@ mlxsw_sp_switchdev_vxlan_vlan_del(struct mlxsw_sp *mlxsw_sp,
 	if (!fid)
 		return;
 
-	/* A different VLAN than the one mapped to the VNI is deleted */
+	 
 	if (mlxsw_sp_fid_8021q_vid(fid) != vid)
 		goto out;
 

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_histo.h  --  R-Car VSP1 Histogram API
- *
- * Copyright (C) 2016 Renesas Electronics Corporation
- * Copyright (C) 2016 Laurent Pinchart
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_HISTO_H__
 #define __VSP1_HISTO_H__
 
@@ -74,4 +67,4 @@ void vsp1_histogram_buffer_complete(struct vsp1_histogram *histo,
 				    struct vsp1_histogram_buffer *buf,
 				    size_t size);
 
-#endif /* __VSP1_HISTO_H__ */
+#endif  

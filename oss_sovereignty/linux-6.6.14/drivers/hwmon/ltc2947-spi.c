@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Analog Devices LTC2947 high precision power and energy monitor over SPI
- *
- * Copyright 2019 Analog Devices Inc.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/regmap.h>

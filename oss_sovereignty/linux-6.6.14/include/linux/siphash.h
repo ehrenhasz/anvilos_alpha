@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* Copyright (C) 2016-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * SipHash: a fast short-input PRF
- * https://131002.net/siphash/
- *
- * This implementation is specifically for SipHash2-4 for a secure PRF
- * and HalfSipHash1-3/SipHash1-3 for an insecure PRF only suitable for
- * hashtables.
- */
+ 
+ 
 
 #ifndef _LINUX_SIPHASH_H
 #define _LINUX_SIPHASH_H
@@ -72,12 +64,7 @@ static inline u64 ___siphash_aligned(const __le64 *data, size_t len,
 	return __siphash_aligned(data, len, key);
 }
 
-/**
- * siphash - compute 64-bit siphash PRF value
- * @data: buffer to hash
- * @size: size of @data
- * @key: the siphash key
- */
+ 
 static inline u64 siphash(const void *data, size_t len,
 			  const siphash_key_t *key)
 {
@@ -122,12 +109,7 @@ static inline u32 ___hsiphash_aligned(const __le32 *data, size_t len,
 	return __hsiphash_aligned(data, len, key);
 }
 
-/**
- * hsiphash - compute 32-bit hsiphash PRF value
- * @data: buffer to hash
- * @size: size of @data
- * @key: the hsiphash key
- */
+ 
 static inline u32 hsiphash(const void *data, size_t len,
 			   const hsiphash_key_t *key)
 {
@@ -137,11 +119,7 @@ static inline u32 hsiphash(const void *data, size_t len,
 	return ___hsiphash_aligned(data, len, key);
 }
 
-/*
- * These macros expose the raw SipHash and HalfSipHash permutations.
- * Do not use them directly! If you think you have a use for them,
- * be sure to CC the maintainer of this file explaining why.
- */
+ 
 
 #define SIPHASH_PERMUTATION(a, b, c, d) ( \
 	(a) += (b), (b) = rol64((b), 13), (b) ^= (a), (a) = rol64((a), 32), \
@@ -165,4 +143,4 @@ static inline u32 hsiphash(const void *data, size_t len,
 #define HSIPHASH_CONST_2 0x6c796765U
 #define HSIPHASH_CONST_3 0x74656462U
 
-#endif /* _LINUX_SIPHASH_H */
+#endif  

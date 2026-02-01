@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -41,7 +39,7 @@ struct iproc_mdio_priv {
 static inline int iproc_mdio_wait_for_idle(void __iomem *base)
 {
 	u32 val;
-	unsigned int timeout = 1000; /* loop for 1s */
+	unsigned int timeout = 1000;  
 
 	do {
 		val = readl(base + MII_CTRL_OFFSET);
@@ -73,7 +71,7 @@ static int iproc_mdio_read(struct mii_bus *bus, int phy_id, int reg)
 	if (rc)
 		return rc;
 
-	/* Prepare the read operation */
+	 
 	cmd = (MII_DATA_TA_VAL << MII_DATA_TA_SHIFT) |
 		(reg << MII_DATA_RA_SHIFT) |
 		(phy_id << MII_DATA_PA_SHIFT) |
@@ -102,7 +100,7 @@ static int iproc_mdio_write(struct mii_bus *bus, int phy_id,
 	if (rc)
 		return rc;
 
-	/* Prepare the write operation */
+	 
 	cmd = (MII_DATA_TA_VAL << MII_DATA_TA_SHIFT) |
 		(reg << MII_DATA_RA_SHIFT) |
 		(phy_id << MII_DATA_PA_SHIFT) |
@@ -184,7 +182,7 @@ static int iproc_mdio_resume(struct device *dev)
 	struct platform_device *pdev = to_platform_device(dev);
 	struct iproc_mdio_priv *priv = platform_get_drvdata(pdev);
 
-	/* restore the mii clock configuration */
+	 
 	iproc_mdio_config_clk(priv->base);
 
 	return 0;
@@ -193,11 +191,11 @@ static int iproc_mdio_resume(struct device *dev)
 static const struct dev_pm_ops iproc_mdio_pm_ops = {
 	.resume = iproc_mdio_resume
 };
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct of_device_id iproc_mdio_of_match[] = {
 	{ .compatible = "brcm,iproc-mdio", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, iproc_mdio_of_match);
 

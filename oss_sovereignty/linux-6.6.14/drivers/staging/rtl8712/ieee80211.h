@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __IEEE80211_H
 #define __IEEE80211_H
 
@@ -89,7 +78,7 @@ struct ieee_param {
 			u8 set_tx;
 			u32 err;
 			u8 idx;
-			u8 seq[8]; /* sequence counter (set: RX, get: TX) */
+			u8 seq[8];  
 			u16 key_len;
 			u8 key[];
 		} crypt;
@@ -99,18 +88,18 @@ struct ieee_param {
 #define MIN_FRAG_THRESHOLD     256U
 #define	MAX_FRAG_THRESHOLD     2346U
 
-/* QoS,QOS */
+ 
 #define NORMAL_ACK			0
 
-/* IEEE 802.11 defines */
+ 
 
 #define P80211_OUI_LEN 3
 
 struct ieee80211_snap_hdr {
-	u8    dsap;   /* always 0xAA */
-	u8    ssap;   /* always 0xAA */
-	u8    ctrl;   /* always 0x03 */
-	u8    oui[P80211_OUI_LEN];    /* organizational universal id */
+	u8    dsap;    
+	u8    ssap;    
+	u8    ctrl;    
+	u8    oui[P80211_OUI_LEN];     
 } __packed;
 
 #define SNAP_SIZE sizeof(struct ieee80211_snap_hdr)
@@ -134,11 +123,7 @@ struct ieee80211_snap_hdr {
 
 #define WEP_KEYS 4
 
-/* MAX_RATES_LENGTH needs to be 12.  The spec says 8, and many APs
- * only use 8, and then use extended rates for the remaining supported
- * rates.  Other APs, however, stick all of their supported rates on the
- * main rates information element...
- */
+ 
 #define MAX_RATES_LENGTH                  ((u8)12)
 #define MAX_WPA_IE_LEN 128
 
@@ -161,5 +146,5 @@ int r8712_generate_ie(struct registry_priv *pregistrypriv);
 uint r8712_is_cckrates_included(u8 *rate);
 uint r8712_is_cckratesonly_included(u8 *rate);
 
-#endif /* IEEE80211_H */
+#endif  
 

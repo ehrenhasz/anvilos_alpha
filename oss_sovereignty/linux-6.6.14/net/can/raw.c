@@ -1,43 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/* raw.c - Raw sockets for protocol family CAN
- *
- * Copyright (c) 2002-2007 Volkswagen Group Electronic Research
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of Volkswagen nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * Alternatively, provided that this notice is retained in full, this
- * software may be distributed under the terms of the GNU General
- * Public License ("GPL") version 2, in which case the provisions of the
- * GPL apply INSTEAD OF those given above.
- *
- * The provided data structures and external interfaces from this code
- * are not restricted to be used by modules with a GPL compatible license.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
- * DAMAGE.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -50,7 +12,7 @@
 #include <linux/skbuff.h>
 #include <linux/can.h>
 #include <linux/can/core.h>
-#include <linux/can/dev.h> /* for can_is_canxl_dev_mtu() */
+#include <linux/can/dev.h>  
 #include <linux/can/skb.h>
 #include <linux/can/raw.h>
 #include <net/sock.h>
@@ -65,14 +27,7 @@ MODULE_ALIAS("can-proto-1");
 
 #define MASK_ALL 0
 
-/* A raw socket has a list of can_filters attached to it, each receiving
- * the CAN frames matching that filter.  If the filter list is empty,
- * no CAN frames will be received by the socket.  The default after
- * opening the socket, is to have one filter which receives all frames.
- * The filter list is allocated dynamically with the exception of the
- * list containing only one item.  This common case is optimized by
- * storing the single filter in dfilter, to avoid using dynamic memory.
- */
+ 
 
 struct uniqframe {
 	int skbcnt;
@@ -92,9 +47,9 @@ struct raw_sock {
 	int fd_frames;
 	int xl_frames;
 	int join_filters;
-	int count;                 /* number of active filters */
-	struct can_filter dfilter; /* default/single filter */
-	struct can_filter *filter; /* pointer to filter(s) */
+	int count;                  
+	struct can_filter dfilter;  
+	struct can_filter *filter;  
 	can_err_mask_t err_mask;
 	struct uniqframe __percpu *uniq;
 };
@@ -103,16 +58,13 @@ static LIST_HEAD(raw_notifier_list);
 static DEFINE_SPINLOCK(raw_notifier_lock);
 static struct raw_sock *raw_busy_notifier;
 
-/* Return pointer to store the extra msg flags for raw_recvmsg().
- * We use the space of one unsigned int beyond the 'struct sockaddr_can'
- * in skb->cb.
- */
+ 
 static inline unsigned int *raw_flags(struct sk_buff *skb)
 {
 	sock_skb_cb_check_size(sizeof(struct sockaddr_can) +
 			       sizeof(unsigned int));
 
-	/* return pointer after struct sockaddr_can */
+	 
 	return (unsigned int *)(&((struct sockaddr_can *)skb->cb)[1]);
 }
 
@@ -129,44 +81,40 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
 	struct sk_buff *skb;
 	unsigned int *pflags;
 
-	/* check the received tx sock reference */
+	 
 	if (!ro->recv_own_msgs && oskb->sk == sk)
 		return;
 
-	/* make sure to not pass oversized frames to the socket */
+	 
 	if ((!ro->fd_frames && can_is_canfd_skb(oskb)) ||
 	    (!ro->xl_frames && can_is_canxl_skb(oskb)))
 		return;
 
-	/* eliminate multiple filter matches for the same skb */
+	 
 	if (this_cpu_ptr(ro->uniq)->skb == oskb &&
 	    this_cpu_ptr(ro->uniq)->skbcnt == can_skb_prv(oskb)->skbcnt) {
 		if (!ro->join_filters)
 			return;
 
 		this_cpu_inc(ro->uniq->join_rx_count);
-		/* drop frame until all enabled filters matched */
+		 
 		if (this_cpu_ptr(ro->uniq)->join_rx_count < ro->count)
 			return;
 	} else {
 		this_cpu_ptr(ro->uniq)->skb = oskb;
 		this_cpu_ptr(ro->uniq)->skbcnt = can_skb_prv(oskb)->skbcnt;
 		this_cpu_ptr(ro->uniq)->join_rx_count = 1;
-		/* drop first frame to check all enabled filters? */
+		 
 		if (ro->join_filters && ro->count > 1)
 			return;
 	}
 
-	/* clone the given skb to be able to enqueue it into the rcv queue */
+	 
 	skb = skb_clone(oskb, GFP_ATOMIC);
 	if (!skb)
 		return;
 
-	/* Put the datagram to the queue so that raw_recvmsg() can get
-	 * it from there. We need to pass the interface index to
-	 * raw_recvmsg(). We pass a whole struct sockaddr_can in
-	 * skb->cb containing the interface index.
-	 */
+	 
 
 	sock_skb_cb_check_size(sizeof(struct sockaddr_can));
 	addr = (struct sockaddr_can *)skb->cb;
@@ -174,7 +122,7 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
 	addr->can_family = AF_CAN;
 	addr->can_ifindex = skb->dev->ifindex;
 
-	/* add CAN specific message flags for raw_recvmsg() */
+	 
 	pflags = raw_flags(skb);
 	*pflags = 0;
 	if (oskb->sk)
@@ -198,7 +146,7 @@ static int raw_enable_filters(struct net *net, struct net_device *dev,
 				      filter[i].can_mask,
 				      raw_rcv, sk, "raw", sk);
 		if (err) {
-			/* clean up successfully registered filters */
+			 
 			while (--i >= 0)
 				can_rx_unregister(net, dev, filter[i].can_id,
 						  filter[i].can_mask,
@@ -285,7 +233,7 @@ static void raw_notify(struct raw_sock *ro, unsigned long msg,
 	switch (msg) {
 	case NETDEV_UNREGISTER:
 		lock_sock(sk);
-		/* remove current filters & unregister */
+		 
 		if (ro->bound) {
 			raw_disable_allfilters(dev_net(dev), dev, sk);
 			netdev_put(dev, &ro->dev_tracker);
@@ -322,7 +270,7 @@ static int raw_notifier(struct notifier_block *nb, unsigned long msg,
 		return NOTIFY_DONE;
 	if (msg != NETDEV_UNREGISTER && msg != NETDEV_DOWN)
 		return NOTIFY_DONE;
-	if (unlikely(raw_busy_notifier)) /* Check for reentrant bug. */
+	if (unlikely(raw_busy_notifier))  
 		return NOTIFY_DONE;
 
 	spin_lock(&raw_notifier_lock);
@@ -344,25 +292,25 @@ static int raw_init(struct sock *sk)
 	ro->ifindex          = 0;
 	ro->dev              = NULL;
 
-	/* set default filter to single entry dfilter */
+	 
 	ro->dfilter.can_id   = 0;
 	ro->dfilter.can_mask = MASK_ALL;
 	ro->filter           = &ro->dfilter;
 	ro->count            = 1;
 
-	/* set default loopback behaviour */
+	 
 	ro->loopback         = 1;
 	ro->recv_own_msgs    = 0;
 	ro->fd_frames        = 0;
 	ro->xl_frames        = 0;
 	ro->join_filters     = 0;
 
-	/* alloc_percpu provides zero'ed memory */
+	 
 	ro->uniq = alloc_percpu(struct uniqframe);
 	if (unlikely(!ro->uniq))
 		return -ENOMEM;
 
-	/* set notifier */
+	 
 	spin_lock(&raw_notifier_lock);
 	list_add_tail(&ro->notifier, &raw_notifier_list);
 	spin_unlock(&raw_notifier_lock);
@@ -392,7 +340,7 @@ static int raw_release(struct socket *sock)
 	rtnl_lock();
 	lock_sock(sk);
 
-	/* remove current filters & unregister */
+	 
 	if (ro->bound) {
 		if (ro->dev) {
 			raw_disable_allfilters(dev_net(ro->dev), ro->dev, sk);
@@ -459,7 +407,7 @@ static int raw_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 
 		ifindex = dev->ifindex;
 
-		/* filters set by default/setsockopt */
+		 
 		err = raw_enable_allfilters(sock_net(sk), dev, sk);
 		if (err)
 			goto out_put_dev;
@@ -467,17 +415,17 @@ static int raw_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 	} else {
 		ifindex = 0;
 
-		/* filters set by default/setsockopt */
+		 
 		err = raw_enable_allfilters(sock_net(sk), NULL, sk);
 	}
 
 	if (!err) {
 		if (ro->bound) {
-			/* unregister old filters */
+			 
 			if (ro->dev) {
 				raw_disable_allfilters(dev_net(ro->dev),
 						       ro->dev, sk);
-				/* drop reference to old ro->dev */
+				 
 				netdev_put(ro->dev, &ro->dev_tracker);
 			} else {
 				raw_disable_allfilters(sock_net(sk), NULL, sk);
@@ -485,14 +433,14 @@ static int raw_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 		}
 		ro->ifindex = ifindex;
 		ro->bound = 1;
-		/* bind() ok -> hold a reference for new ro->dev */
+		 
 		ro->dev = dev;
 		if (ro->dev)
 			netdev_hold(ro->dev, &ro->dev_tracker, GFP_KERNEL);
 	}
 
 out_put_dev:
-	/* remove potential reference from dev_get_by_index() */
+	 
 	if (dev)
 		dev_put(dev);
 out:
@@ -530,8 +478,8 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 {
 	struct sock *sk = sock->sk;
 	struct raw_sock *ro = raw_sk(sk);
-	struct can_filter *filter = NULL;  /* dyn. alloc'ed filters */
-	struct can_filter sfilter;         /* single filter */
+	struct can_filter *filter = NULL;   
+	struct can_filter sfilter;          
 	struct net_device *dev = NULL;
 	can_err_mask_t err_mask = 0;
 	int fd_frames;
@@ -552,7 +500,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		count = optlen / sizeof(struct can_filter);
 
 		if (count > 1) {
-			/* filter does not fit into dfilter => alloc space */
+			 
 			filter = memdup_sockptr(optval, optlen);
 			if (IS_ERR(filter))
 				return PTR_ERR(filter);
@@ -575,7 +523,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		}
 
 		if (ro->bound) {
-			/* (try to) register the new filters */
+			 
 			if (count == 1)
 				err = raw_enable_filters(sock_net(sk), dev, sk,
 							 &sfilter, 1);
@@ -588,18 +536,18 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 				goto out_fil;
 			}
 
-			/* remove old filter registrations */
+			 
 			raw_disable_filters(sock_net(sk), dev, sk, ro->filter,
 					    ro->count);
 		}
 
-		/* remove old filter space */
+		 
 		if (ro->count > 1)
 			kfree(ro->filter);
 
-		/* link new filters to the socket */
+		 
 		if (count == 1) {
-			/* copy filter data for single filter */
+			 
 			ro->dfilter = sfilter;
 			filter = &ro->dfilter;
 		}
@@ -632,21 +580,21 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 			}
 		}
 
-		/* remove current error mask */
+		 
 		if (ro->bound) {
-			/* (try to) register the new err_mask */
+			 
 			err = raw_enable_errfilter(sock_net(sk), dev, sk,
 						   err_mask);
 
 			if (err)
 				goto out_err;
 
-			/* remove old err_mask registration */
+			 
 			raw_disable_errfilter(sock_net(sk), dev, sk,
 					      ro->err_mask);
 		}
 
-		/* link new err_mask to the socket */
+		 
 		ro->err_mask = err_mask;
 
  out_err:
@@ -680,7 +628,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		if (copy_from_sockptr(&fd_frames, optval, optlen))
 			return -EFAULT;
 
-		/* Enabling CAN XL includes CAN FD */
+		 
 		if (ro->xl_frames && !fd_frames)
 			return -EINVAL;
 
@@ -694,7 +642,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
 		if (copy_from_sockptr(&ro->xl_frames, optval, optlen))
 			return -EFAULT;
 
-		/* Enabling CAN XL includes CAN FD */
+		 
 		if (ro->xl_frames)
 			ro->fd_frames = ro->xl_frames;
 		break;
@@ -736,9 +684,9 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 		if (ro->count > 0) {
 			int fsize = ro->count * sizeof(struct can_filter);
 
-			/* user space buffer to small for filter list? */
+			 
 			if (len < fsize) {
-				/* return -ERANGE and needed space in optlen */
+				 
 				err = -ERANGE;
 				if (put_user(fsize, optlen))
 					err = -EFAULT;
@@ -806,16 +754,16 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
 
 static bool raw_bad_txframe(struct raw_sock *ro, struct sk_buff *skb, int mtu)
 {
-	/* Classical CAN -> no checks for flags and device capabilities */
+	 
 	if (can_is_can_skb(skb))
 		return false;
 
-	/* CAN FD -> needs to be enabled and a CAN FD or CAN XL device */
+	 
 	if (ro->fd_frames && can_is_canfd_skb(skb) &&
 	    (mtu == CANFD_MTU || can_is_canxl_dev_mtu(mtu)))
 		return false;
 
-	/* CAN XL -> needs to be enabled and a CAN XL device */
+	 
 	if (ro->xl_frames && can_is_canxl_skb(skb) &&
 	    can_is_canxl_dev_mtu(mtu))
 		return false;
@@ -833,7 +781,7 @@ static int raw_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	int ifindex;
 	int err = -EINVAL;
 
-	/* check for valid CAN frame sizes */
+	 
 	if (size < CANXL_HDR_SIZE + CANXL_MIN_DLEN || size > CANXL_MTU)
 		return -EINVAL;
 
@@ -864,7 +812,7 @@ static int raw_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	can_skb_prv(skb)->ifindex = dev->ifindex;
 	can_skb_prv(skb)->skbcnt = 0;
 
-	/* fill the skb before testing for valid CAN frames */
+	 
 	err = memcpy_from_msg(skb_put(skb, size), msg, size);
 	if (err < 0)
 		goto free_skb;
@@ -938,7 +886,7 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
 	}
 
-	/* assign the flags that have been recorded in raw_rcv() */
+	 
 	msg->msg_flags |= *(raw_flags(skb));
 
 	skb_free_datagram(sk, skb);
@@ -949,7 +897,7 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 static int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
 				unsigned long arg)
 {
-	/* no ioctls for socket layer -> hand it down to NIC layer */
+	 
 	return -ENOIOCTLCMD;
 }
 

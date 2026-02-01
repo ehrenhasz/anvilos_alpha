@@ -1,29 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Authors:
- *    Dave Airlie
- *    Alon Levy
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/file.h>
 #include <linux/sync_file.h>
@@ -38,7 +13,7 @@
 				    VIRTGPU_BLOB_FLAG_USE_SHAREABLE | \
 				    VIRTGPU_BLOB_FLAG_USE_CROSS_DEVICE)
 
-/* Must be called with &virtio_gpu_fpriv.struct_mutex held. */
+ 
 static void virtio_gpu_create_context_locked(struct virtio_gpu_device *vgdev,
 					     struct virtio_gpu_fpriv *vfpriv)
 {
@@ -155,7 +130,7 @@ static int virtio_gpu_resource_create_ioctl(struct drm_device *dev, void *data,
 	params.width = rc->width;
 	params.height = rc->height;
 	params.size = rc->size;
-	/* allocate a single page size object */
+	 
 	if (params.size == 0)
 		params.size = PAGE_SIZE;
 
@@ -174,15 +149,10 @@ static int virtio_gpu_resource_create_ioctl(struct drm_device *dev, void *data,
 		return ret;
 	}
 
-	rc->res_handle = qobj->hw_res_handle; /* similiar to a VM address */
+	rc->res_handle = qobj->hw_res_handle;  
 	rc->bo_handle = handle;
 
-	/*
-	 * The handle owns the reference now.  But we must drop our
-	 * remaining reference *after* we no longer need to dereference
-	 * the obj.  Otherwise userspace could guess the handle and
-	 * race closing it from another thread.
-	 */
+	 
 	drm_gem_object_put(obj);
 
 	return 0;
@@ -370,7 +340,7 @@ static int virtio_gpu_get_caps_ioctl(struct drm_device *dev,
 	if (vgdev->num_capsets == 0)
 		return -ENOSYS;
 
-	/* don't allow userspace to pass 0 */
+	 
 	if (args->size == 0)
 		return -EINVAL;
 
@@ -390,7 +360,7 @@ static int virtio_gpu_get_caps_ioctl(struct drm_device *dev,
 	}
 
 	host_caps_size = vgdev->capsets[found_valid].max_size;
-	/* only copy to user the minimum of the host caps size or the guest caps size */
+	 
 	size = min(args->size, host_caps_size);
 
 	list_for_each_entry(cache_ent, &vgdev->cap_cache, head) {
@@ -402,7 +372,7 @@ static int virtio_gpu_get_caps_ioctl(struct drm_device *dev,
 	}
 	spin_unlock(&vgdev->display_info_lock);
 
-	/* not in cache - need to talk to hw */
+	 
 	ret = virtio_gpu_cmd_get_capset(vgdev, found_valid, args->cap_set_ver,
 					&cache_ent);
 	if (ret)
@@ -415,7 +385,7 @@ copy_exit:
 	if (!ret)
 		return -EBUSY;
 
-	/* is_valid check must proceed before copy of the cache entry. */
+	 
 	smp_rmb();
 
 	ptr = cache_ent->caps_cache;
@@ -461,7 +431,7 @@ static int verify_blob(struct virtio_gpu_device *vgdev,
 		if (!vgdev->has_virgl_3d)
 			return -EINVAL;
 
-		/* Must be dword aligned. */
+		 
 		if (rc_blob->cmd_size % 4 != 0)
 			return -EINVAL;
 
@@ -550,12 +520,7 @@ static int virtio_gpu_resource_create_blob_ioctl(struct drm_device *dev,
 	rc_blob->res_handle = bo->hw_res_handle;
 	rc_blob->bo_handle = handle;
 
-	/*
-	 * The handle owns the reference now.  But we must drop our
-	 * remaining reference *after* we no longer need to dereference
-	 * the obj.  Otherwise userspace could guess the handle and
-	 * race closing it from another thread.
-	 */
+	 
 	drm_gem_object_put(obj);
 
 	return 0;
@@ -579,7 +544,7 @@ static int virtio_gpu_context_init_ioctl(struct drm_device *dev,
 	if (!vgdev->has_context_init || !vgdev->has_virgl_3d)
 		return -EINVAL;
 
-	/* Number of unique parameters supported at this time. */
+	 
 	if (num_params > 3)
 		return -EINVAL;
 
@@ -611,7 +576,7 @@ static int virtio_gpu_context_init_ioctl(struct drm_device *dev,
 				goto out_unlock;
 			}
 
-			/* Context capset ID already set */
+			 
 			if (vfpriv->context_init &
 			    VIRTIO_GPU_CONTEXT_INIT_CAPSET_ID_MASK) {
 				ret = -EINVAL;
@@ -685,9 +650,7 @@ struct drm_ioctl_desc virtio_gpu_ioctls[DRM_VIRTIO_NUM_IOCTLS] = {
 	DRM_IOCTL_DEF_DRV(VIRTGPU_RESOURCE_INFO, virtio_gpu_resource_info_ioctl,
 			  DRM_RENDER_ALLOW),
 
-	/* make transfer async to the main ring? - no sure, can we
-	 * thread these in the underlying GL
-	 */
+	 
 	DRM_IOCTL_DEF_DRV(VIRTGPU_TRANSFER_FROM_HOST,
 			  virtio_gpu_transfer_from_host_ioctl,
 			  DRM_RENDER_ALLOW),

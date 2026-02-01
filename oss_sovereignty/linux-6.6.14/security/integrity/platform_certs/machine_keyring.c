@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Machine keyring routines.
- *
- * Copyright (c) 2021, Oracle and/or its affiliates.
- */
+
+ 
 
 #include <linux/efi.h>
 #include "../integrity.h"
@@ -29,11 +25,7 @@ void __init add_to_machine_keyring(const char *source, const void *data, size_t 
 	perm = (KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW;
 	rc = integrity_load_cert(INTEGRITY_KEYRING_MACHINE, source, data, len, perm);
 
-	/*
-	 * Some MOKList keys may not pass the machine keyring restrictions.
-	 * If the restriction check does not pass and the platform keyring
-	 * is configured, try to add it into that keyring instead.
-	 */
+	 
 	if (rc && efi_enabled(EFI_BOOT) &&
 	    IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING))
 		rc = integrity_load_cert(INTEGRITY_KEYRING_PLATFORM, source,
@@ -43,12 +35,7 @@ void __init add_to_machine_keyring(const char *source, const void *data, size_t 
 		pr_info("Error adding keys to machine keyring %s\n", source);
 }
 
-/*
- * Try to load the MokListTrustedRT MOK variable to see if we should trust
- * the MOK keys within the kernel. It is not an error if this variable
- * does not exist.  If it does not exist, MOK keys should not be trusted
- * within the machine keyring.
- */
+ 
 static __init bool uefi_check_trust_mok_keys(void)
 {
 	struct efi_mokvar_table_entry *mokvar_entry;
@@ -77,11 +64,7 @@ static bool __init trust_moklist(void)
 	return trust_mok;
 }
 
-/*
- * Provides platform specific check for trusting imputed keys before loading
- * on .machine keyring. UEFI systems enable this trust based on a variable,
- * and for other platforms, it is always enabled.
- */
+ 
 bool __init imputed_trust_enabled(void)
 {
 	if (efi_enabled(EFI_BOOT))

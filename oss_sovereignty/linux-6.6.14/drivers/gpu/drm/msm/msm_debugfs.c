@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013-2016 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #ifdef CONFIG_DEBUG_FS
 
@@ -20,9 +17,7 @@
 #include "msm_debugfs.h"
 #include "disp/msm_disp_snapshot.h"
 
-/*
- * GPU Snapshot:
- */
+ 
 
 struct msm_gpu_show_priv {
 	struct msm_gpu_state *state;
@@ -117,9 +112,7 @@ static const struct file_operations msm_gpu_fops = {
 	.release = msm_gpu_release,
 };
 
-/*
- * Display Snapshot:
- */
+ 
 
 static int msm_kms_show(struct seq_file *m, void *arg)
 {
@@ -180,9 +173,7 @@ static const struct file_operations msm_kms_fops = {
 	.release = msm_kms_release,
 };
 
-/*
- * Other debugfs:
- */
+ 
 
 static unsigned long last_shrink_freed;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2021 Advanced Micro Devices, Inc.
- *
- * Authors: AMD
- */
+
+ 
 
 #ifndef __DC_HWSS_DCN303_H__
 #define __DC_HWSS_DCN303_H__
@@ -15,4 +11,4 @@ void dcn303_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool 
 void dcn303_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool power_on);
 void dcn303_enable_power_gating_plane(struct dce_hwseq *hws, bool enable);
 
-#endif /* __DC_HWSS_DCN303_H__ */
+#endif  

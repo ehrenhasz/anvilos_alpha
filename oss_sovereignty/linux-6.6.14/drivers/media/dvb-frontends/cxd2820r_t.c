@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Sony CXD2820R demodulator driver
- *
- * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 
 #include "cxd2820r_priv.h"
@@ -18,14 +14,14 @@ int cxd2820r_set_frontend_t(struct dvb_frontend *fe)
 	u32 if_frequency;
 	u8 buf[3], bw_param;
 	u8 bw_params1[][5] = {
-		{ 0x17, 0xea, 0xaa, 0xaa, 0xaa }, /* 6 MHz */
-		{ 0x14, 0x80, 0x00, 0x00, 0x00 }, /* 7 MHz */
-		{ 0x11, 0xf0, 0x00, 0x00, 0x00 }, /* 8 MHz */
+		{ 0x17, 0xea, 0xaa, 0xaa, 0xaa },  
+		{ 0x14, 0x80, 0x00, 0x00, 0x00 },  
+		{ 0x11, 0xf0, 0x00, 0x00, 0x00 },  
 	};
 	u8 bw_params2[][2] = {
-		{ 0x1f, 0xdc }, /* 6 MHz */
-		{ 0x12, 0xf8 }, /* 7 MHz */
-		{ 0x01, 0xe0 }, /* 8 MHz */
+		{ 0x1f, 0xdc },  
+		{ 0x12, 0xf8 },  
+		{ 0x01, 0xe0 },  
 	};
 	struct reg_val_mask tab[] = {
 		{ 0x00080, 0x00, 0xff },
@@ -65,7 +61,7 @@ int cxd2820r_set_frontend_t(struct dvb_frontend *fe)
 		return -EINVAL;
 	}
 
-	/* program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params)
 		fe->ops.tuner_ops.set_params(fe);
 
@@ -76,9 +72,9 @@ int cxd2820r_set_frontend_t(struct dvb_frontend *fe)
 	}
 
 	priv->delivery_system = SYS_DVBT;
-	priv->ber_running = false; /* tune stops BER counter */
+	priv->ber_running = false;  
 
-	/* program IF frequency */
+	 
 	if (fe->ops.tuner_ops.get_if_frequency) {
 		ret = fe->ops.tuner_ops.get_if_frequency(fe, &if_frequency);
 		if (ret)
@@ -253,7 +249,7 @@ int cxd2820r_read_status_t(struct dvb_frontend *fe, enum fe_status *status)
 	unsigned int utmp, utmp1, utmp2;
 	u8 buf[3];
 
-	/* Lock detection */
+	 
 	ret = regmap_bulk_read(priv->regmap[0], 0x0010, &buf[0], 1);
 	if (ret)
 		goto error;
@@ -277,7 +273,7 @@ int cxd2820r_read_status_t(struct dvb_frontend *fe, enum fe_status *status)
 	dev_dbg(&client->dev, "status=%02x raw=%*ph sync=%u ts=%u\n",
 		*status, 2, buf, utmp1, utmp2);
 
-	/* Signal strength */
+	 
 	if (*status & FE_HAS_SIGNAL) {
 		unsigned int strength;
 
@@ -287,7 +283,7 @@ int cxd2820r_read_status_t(struct dvb_frontend *fe, enum fe_status *status)
 
 		utmp = buf[0] << 8 | buf[1] << 0;
 		utmp = ~utmp & 0x0fff;
-		/* Scale value to 0x0000-0xffff */
+		 
 		strength = utmp << 4 | utmp >> 8;
 
 		c->strength.len = 1;
@@ -298,7 +294,7 @@ int cxd2820r_read_status_t(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (*status & FE_HAS_VITERBI) {
 		unsigned int cnr;
 
@@ -322,7 +318,7 @@ int cxd2820r_read_status_t(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* BER */
+	 
 	if (*status & FE_HAS_SYNC) {
 		unsigned int post_bit_error;
 		bool start_ber;

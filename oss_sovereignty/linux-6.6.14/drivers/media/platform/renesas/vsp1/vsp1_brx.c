@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_brx.c  --  R-Car VSP1 Blend ROP Unit (BRU and BRS)
- *
- * Copyright (C) 2013 Renesas Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -22,9 +16,7 @@
 #define BRX_MIN_SIZE				1U
 #define BRX_MAX_SIZE				8190U
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_brx_write(struct vsp1_brx *brx,
 				  struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -32,9 +24,7 @@ static inline void vsp1_brx_write(struct vsp1_brx *brx,
 	vsp1_dl_body_write(dlb, brx->base + reg, data);
 }
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 static int brx_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -54,15 +44,9 @@ static const struct v4l2_ctrl_ops brx_ctrl_ops = {
 	.s_ctrl = brx_s_ctrl,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
-/*
- * The BRx can't perform format conversion, all sink and source formats must be
- * identical. We pick the format on the first sink pad (pad 0) and propagate it
- * to all other pads.
- */
+ 
 
 static int brx_enum_mbus_code(struct v4l2_subdev *subdev,
 			      struct v4l2_subdev_state *sd_state,
@@ -111,14 +95,14 @@ static void brx_try_format(struct vsp1_brx *brx,
 
 	switch (pad) {
 	case BRX_PAD_SINK(0):
-		/* Default to YUV if the requested format is not supported. */
+		 
 		if (fmt->code != MEDIA_BUS_FMT_ARGB8888_1X32 &&
 		    fmt->code != MEDIA_BUS_FMT_AYUV8_1X32)
 			fmt->code = MEDIA_BUS_FMT_AYUV8_1X32;
 		break;
 
 	default:
-		/* The BRx can't perform format conversion. */
+		 
 		format = vsp1_entity_get_pad_format(&brx->entity, sd_state,
 						    BRX_PAD_SINK(0));
 		fmt->code = format->code;
@@ -154,7 +138,7 @@ static int brx_set_format(struct v4l2_subdev *subdev,
 	format = vsp1_entity_get_pad_format(&brx->entity, config, fmt->pad);
 	*format = fmt->format;
 
-	/* Reset the compose rectangle. */
+	 
 	if (fmt->pad != brx->entity.source_pad) {
 		struct v4l2_rect *compose;
 
@@ -165,7 +149,7 @@ static int brx_set_format(struct v4l2_subdev *subdev,
 		compose->height = format->height;
 	}
 
-	/* Propagate the format code to all pads. */
+	 
 	if (fmt->pad == BRX_PAD_SINK(0)) {
 		unsigned int i;
 
@@ -240,19 +224,13 @@ static int brx_set_selection(struct v4l2_subdev *subdev,
 		goto done;
 	}
 
-	/*
-	 * The compose rectangle top left corner must be inside the output
-	 * frame.
-	 */
+	 
 	format = vsp1_entity_get_pad_format(&brx->entity, config,
 					    brx->entity.source_pad);
 	sel->r.left = clamp_t(unsigned int, sel->r.left, 0, format->width - 1);
 	sel->r.top = clamp_t(unsigned int, sel->r.top, 0, format->height - 1);
 
-	/*
-	 * Scaling isn't supported, the compose rectangle size must be identical
-	 * to the sink format size.
-	 */
+	 
 	format = vsp1_entity_get_pad_format(&brx->entity, config, sel->pad);
 	sel->r.width = format->width;
 	sel->r.height = format->height;
@@ -279,9 +257,7 @@ static const struct v4l2_subdev_ops brx_ops = {
 	.pad    = &brx_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void brx_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -296,26 +272,15 @@ static void brx_configure_stream(struct vsp1_entity *entity,
 	format = vsp1_entity_get_pad_format(&brx->entity, brx->entity.config,
 					    brx->entity.source_pad);
 
-	/*
-	 * The hardware is extremely flexible but we have no userspace API to
-	 * expose all the parameters, nor is it clear whether we would have use
-	 * cases for all the supported modes. Let's just hardcode the parameters
-	 * to sane default values for now.
-	 */
+	 
 
-	/*
-	 * Disable dithering and enable color data normalization unless the
-	 * format at the pipeline output is premultiplied.
-	 */
+	 
 	flags = pipe->output ? pipe->output->format.flags : 0;
 	vsp1_brx_write(brx, dlb, VI6_BRU_INCTRL,
 		       flags & V4L2_PIX_FMT_FLAG_PREMUL_ALPHA ?
 		       0 : VI6_BRU_INCTRL_NRM);
 
-	/*
-	 * Set the background position to cover the whole output image and
-	 * configure its color.
-	 */
+	 
 	vsp1_brx_write(brx, dlb, VI6_BRU_VIRRPF_SIZE,
 		       (format->width << VI6_BRU_VIRRPF_SIZE_HSIZE_SHIFT) |
 		       (format->height << VI6_BRU_VIRRPF_SIZE_VSIZE_SHIFT));
@@ -324,12 +289,7 @@ static void brx_configure_stream(struct vsp1_entity *entity,
 	vsp1_brx_write(brx, dlb, VI6_BRU_VIRRPF_COL, brx->bgcolor |
 		       (0xff << VI6_BRU_VIRRPF_COL_A_SHIFT));
 
-	/*
-	 * Route BRU input 1 as SRC input to the ROP unit and configure the ROP
-	 * unit with a NOP operation to make BRU input 1 available as the
-	 * Blend/ROP unit B SRC input. Only needed for BRU, the BRS has no ROP
-	 * unit.
-	 */
+	 
 	if (entity->type == VSP1_ENTITY_BRU)
 		vsp1_brx_write(brx, dlb, VI6_BRU_ROP,
 			       VI6_BRU_ROP_DSTSEL_BRUIN(1) |
@@ -340,12 +300,7 @@ static void brx_configure_stream(struct vsp1_entity *entity,
 		bool premultiplied = false;
 		u32 ctrl = 0;
 
-		/*
-		 * Configure all Blend/ROP units corresponding to an enabled BRx
-		 * input for alpha blending. Blend/ROP units corresponding to
-		 * disabled BRx inputs are used in ROP NOP mode to ignore the
-		 * SRC input.
-		 */
+		 
 		if (brx->inputs[i].rpf) {
 			ctrl |= VI6_BRU_CTRL_RBC;
 
@@ -356,38 +311,17 @@ static void brx_configure_stream(struct vsp1_entity *entity,
 			     |  VI6_BRU_CTRL_AROP(VI6_ROP_NOP);
 		}
 
-		/*
-		 * Select the virtual RPF as the Blend/ROP unit A DST input to
-		 * serve as a background color.
-		 */
+		 
 		if (i == 0)
 			ctrl |= VI6_BRU_CTRL_DSTSEL_VRPF;
 
-		/*
-		 * Route inputs 0 to 3 as SRC inputs to Blend/ROP units A to D
-		 * in that order. In the BRU the Blend/ROP unit B SRC is
-		 * hardwired to the ROP unit output, the corresponding register
-		 * bits must be set to 0. The BRS has no ROP unit and doesn't
-		 * need any special processing.
-		 */
+		 
 		if (!(entity->type == VSP1_ENTITY_BRU && i == 1))
 			ctrl |= VI6_BRU_CTRL_SRCSEL_BRUIN(i);
 
 		vsp1_brx_write(brx, dlb, VI6_BRU_CTRL(i), ctrl);
 
-		/*
-		 * Hardcode the blending formula to
-		 *
-		 *	DSTc = DSTc * (1 - SRCa) + SRCc * SRCa
-		 *	DSTa = DSTa * (1 - SRCa) + SRCa
-		 *
-		 * when the SRC input isn't premultiplied, and to
-		 *
-		 *	DSTc = DSTc * (1 - SRCa) + SRCc
-		 *	DSTa = DSTa * (1 - SRCa) + SRCa
-		 *
-		 * otherwise.
-		 */
+		 
 		vsp1_brx_write(brx, dlb, VI6_BRU_BLD(i),
 			       VI6_BRU_BLD_CCMDX_255_SRC_A |
 			       (premultiplied ? VI6_BRU_BLD_CCMDY_COEFY :
@@ -402,9 +336,7 @@ static const struct vsp1_entity_operations brx_entity_ops = {
 	.configure_stream = brx_configure_stream,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_brx *vsp1_brx_create(struct vsp1_device *vsp1,
 				 enum vsp1_entity_type type)
@@ -435,7 +367,7 @@ struct vsp1_brx *vsp1_brx_create(struct vsp1_device *vsp1,
 	if (ret < 0)
 		return ERR_PTR(ret);
 
-	/* Initialize the control handler. */
+	 
 	v4l2_ctrl_handler_init(&brx->ctrls, 1);
 	v4l2_ctrl_new_std(&brx->ctrls, &brx_ctrl_ops, V4L2_CID_BG_COLOR,
 			  0, 0xffffff, 1, 0);

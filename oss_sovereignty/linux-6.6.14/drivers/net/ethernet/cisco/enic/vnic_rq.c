@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -146,14 +143,11 @@ int vnic_rq_disable(struct vnic_rq *rq)
 	struct vnic_dev *vdev = rq->vdev;
 	int i;
 
-	/* Due to a race condition with clearing RQ "mini-cache" in hw, we need
-	 * to disable the RQ twice to guarantee that stale descriptors are not
-	 * used when this RQ is re-enabled.
-	 */
+	 
 	for (i = 0; i < 2; i++) {
 		iowrite32(0, &rq->ctrl->enable);
 
-		/* Wait for HW to ACK disable request */
+		 
 		for (wait = 20000; wait > 0; wait--)
 			if (!ioread32(&rq->ctrl->running))
 				break;
@@ -184,11 +178,11 @@ void vnic_rq_clean(struct vnic_rq *rq,
 	}
 	rq->ring.desc_avail = rq->ring.desc_count - 1;
 
-	/* Use current fetch_index as the ring starting point */
+	 
 	fetch_index = ioread32(&rq->ctrl->fetch_index);
 
-	if (fetch_index == 0xFFFFFFFF) { /* check for hardware gone  */
-		/* Hardware surprise removal: reset fetch_index */
+	if (fetch_index == 0xFFFFFFFF) {  
+		 
 		fetch_index = 0;
 	}
 	rq->to_use = rq->to_clean =
@@ -196,9 +190,7 @@ void vnic_rq_clean(struct vnic_rq *rq,
 			[fetch_index % VNIC_RQ_BUF_BLK_ENTRIES(count)];
 	iowrite32(fetch_index, &rq->ctrl->posted_index);
 
-	/* Anytime we write fetch_index, we need to re-write 0 to rq->enable
-	 * to re-sync internal VIC state.
-	 */
+	 
 	iowrite32(0, &rq->ctrl->enable);
 
 	vnic_dev_clear_desc_ring(&rq->ring);

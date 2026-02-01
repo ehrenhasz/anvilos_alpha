@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* rtc-generic: RTC driver using the generic RTC abstraction
- *
- * Copyright (C) 2008 Kyle McMartin <kyle@mcmartin.ca>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

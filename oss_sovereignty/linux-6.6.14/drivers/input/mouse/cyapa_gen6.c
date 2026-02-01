@@ -1,14 +1,4 @@
-/*
- * Cypress APA trackpad with I2C interface
- *
- * Author: Dudley Du <dudl@cypress.com>
- *
- * Copyright (C) 2015 Cypress Semiconductor, Inc.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive for
- * more details.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -44,20 +34,16 @@ struct pip_app_cmd_head {
 	__le16 addr;
 	__le16 length;
 	u8 report_id;
-	u8 resv;  /* Reserved, must be 0 */
-	u8 cmd_code;  /* bit7: resv, set to 0; bit6~0: command code.*/
+	u8 resv;   
+	u8 cmd_code;   
 } __packed;
 
 struct pip_app_resp_head {
 	__le16 length;
 	u8 report_id;
-	u8 resv;  /* Reserved, must be 0 */
-	u8 cmd_code;  /* bit7: TGL; bit6~0: command code.*/
-	/*
-	 * The value of data_status can be the first byte of data or
-	 * the command status or the unsupported command code depending on the
-	 * requested command code.
-	 */
+	u8 resv;   
+	u8 cmd_code;   
+	 
 	u8 data_status;
 } __packed;
 
@@ -94,7 +80,7 @@ static int cyapa_get_pip_fixed_info(struct cyapa *cyapa,
 	int error;
 
 	if (is_bootloader) {
-		/* Read Bootloader Information to determine Gen5 or Gen6. */
+		 
 		resp_len = sizeof(resp_data);
 		error = cyapa_i2c_pip_cmd_irq_sync(cyapa,
 				pip_get_bl_info, sizeof(pip_get_bl_info),
@@ -111,7 +97,7 @@ static int cyapa_get_pip_fixed_info(struct cyapa *cyapa,
 		return 0;
 	}
 
-	/* Get App System Information to determine Gen5 or Gen6. */
+	 
 	resp_len = sizeof(resp_data);
 	error = cyapa_i2c_pip_cmd_irq_sync(cyapa,
 			pip_read_sys_info, PIP_READ_SYS_INFO_CMD_LENGTH,
@@ -144,16 +130,13 @@ int cyapa_pip_state_parse(struct cyapa *cyapa, u8 *reg_data, int len)
 
 	cyapa->state = CYAPA_STATE_NO_DEVICE;
 
-	/* Try to wake from it deep sleep state if it is. */
+	 
 	cyapa_pip_deep_sleep(cyapa, PIP_DEEP_SLEEP_STATE_ON);
 
-	/* Empty the buffer queue to get fresh data with later commands. */
+	 
 	cyapa_empty_pip_output_data(cyapa, NULL, NULL, NULL);
 
-	/*
-	 * Read description info from trackpad device to determine running in
-	 * APP mode or Bootloader mode.
-	 */
+	 
 	resp_len = PIP_HID_DESCRIPTOR_SIZE;
 	error = cyapa_i2c_pip_cmd_irq_sync(cyapa,
 			cmd, sizeof(cmd),
@@ -171,7 +154,7 @@ int cyapa_pip_state_parse(struct cyapa *cyapa, u8 *reg_data, int len)
 	else
 		return -EAGAIN;
 
-	/* Get PIP fixed information to determine Gen5 or Gen6. */
+	 
 	memset(&pip_info, 0, sizeof(struct pip_fixed_info));
 	error = cyapa_get_pip_fixed_info(cyapa, &pip_info, is_bootloader);
 	if (error)
@@ -199,7 +182,7 @@ static int cyapa_gen6_read_sys_info(struct cyapa *cyapa)
 	u8 rotat_align;
 	int error;
 
-	/* Get App System Information to determine Gen5 or Gen6. */
+	 
 	resp_len = sizeof(resp_data);
 	error = cyapa_i2c_pip_cmd_irq_sync(cyapa,
 			pip_read_sys_info, PIP_READ_SYS_INFO_CMD_LENGTH,
@@ -241,7 +224,7 @@ static int cyapa_gen6_read_sys_info(struct cyapa *cyapa)
 	memcpy(&cyapa->product_id[13], &resp_data[62], 2);
 	cyapa->product_id[15] = '\0';
 
-	/* Get the number of Rx electrodes. */
+	 
 	rotat_align = resp_data[68];
 	cyapa->electrodes_rx =
 		rotat_align ? cyapa->electrodes_y : cyapa->electrodes_x;
@@ -331,7 +314,7 @@ static int cyapa_gen6_change_power_state(struct cyapa *cyapa, u8 power_mode)
 	if (error || !VALID_CMD_RESP_HEADER(resp_data, 0x46))
 		return error < 0 ? error : -EINVAL;
 
-	/* New power state applied in device not match the set power state. */
+	 
 	if (resp_data[5] != power_mode)
 		return -EAGAIN;
 
@@ -345,7 +328,7 @@ static int cyapa_gen6_set_interval_setting(struct cyapa *cyapa,
 		__le16 addr;
 		__le16 length;
 		u8 report_id;
-		u8 rsvd;  /* Reserved, must be 0 */
+		u8 rsvd;   
 		u8 cmd_code;
 		__le16 active_interval;
 		__le16 lp1_interval;
@@ -377,7 +360,7 @@ static int cyapa_gen6_set_interval_setting(struct cyapa *cyapa,
 		!VALID_CMD_RESP_HEADER(resp_data, GEN6_SET_POWER_MODE_INTERVAL))
 		return error < 0 ? error : -EINVAL;
 
-	/* Get the real set intervals from response. */
+	 
 	interval_setting->active_interval = get_unaligned_le16(&resp_data[5]);
 	interval_setting->lp1_interval = get_unaligned_le16(&resp_data[7]);
 	interval_setting->lp2_interval = get_unaligned_le16(&resp_data[9]);
@@ -414,11 +397,7 @@ static int cyapa_gen6_deep_sleep(struct cyapa *cyapa, u8 state)
 	u8 ping[] = { 0x04, 0x00, 0x05, 0x00, 0x2f, 0x00, 0x00 };
 
 	if (state == PIP_DEEP_SLEEP_STATE_ON)
-		/*
-		 * Send ping command to notify device prepare for wake up
-		 * when it's in deep sleep mode. At this time, device will
-		 * response nothing except an I2C NAK.
-		 */
+		 
 		cyapa_i2c_pip_write(cyapa, ping, sizeof(ping));
 
 	return cyapa_pip_deep_sleep(cyapa, state);
@@ -437,11 +416,7 @@ static int cyapa_gen6_set_power_mode(struct cyapa *cyapa,
 		return 0;
 
 	if (PIP_DEV_GET_PWR_STATE(cyapa) == UNINIT_PWR_MODE) {
-		/*
-		 * Assume TP in deep sleep mode when driver is loaded,
-		 * avoid driver unload and reload command IO issue caused by TP
-		 * has been set into deep sleep mode when unloading.
-		 */
+		 
 		PIP_DEV_SET_PWR_STATE(cyapa, PWR_MODE_OFF);
 	}
 
@@ -454,7 +429,7 @@ static int cyapa_gen6_set_power_mode(struct cyapa *cyapa,
 			power_mode == PWR_MODE_FULL_ACTIVE ||
 			power_mode == PWR_MODE_BTN_ONLY ||
 			PIP_DEV_GET_SLEEP_TIME(cyapa) == sleep_time) {
-			/* Has in correct power mode state, early return. */
+			 
 			return 0;
 		}
 	}
@@ -472,11 +447,7 @@ static int cyapa_gen6_set_power_mode(struct cyapa *cyapa,
 		return 0;
 	}
 
-	/*
-	 * When trackpad in power off mode, it cannot change to other power
-	 * state directly, must be wake up from sleep firstly, then
-	 * continue to do next power sate change.
-	 */
+	 
 	if (PIP_DEV_GET_PWR_STATE(cyapa) == PWR_MODE_OFF) {
 		error = cyapa_gen6_deep_sleep(cyapa, PIP_DEEP_SLEEP_STATE_ON);
 		if (error) {
@@ -485,10 +456,7 @@ static int cyapa_gen6_set_power_mode(struct cyapa *cyapa,
 		}
 	}
 
-	/*
-	 * Disable device assert interrupts for command response to avoid
-	 * disturbing system suspending or hibernating process.
-	 */
+	 
 	cyapa_gen6_config_dev_irq(cyapa, GEN6_DISABLE_CMD_IRQ);
 
 	if (power_mode == PWR_MODE_FULL_ACTIVE) {
@@ -501,7 +469,7 @@ static int cyapa_gen6_set_power_mode(struct cyapa *cyapa,
 
 		PIP_DEV_SET_PWR_STATE(cyapa, PWR_MODE_FULL_ACTIVE);
 
-		/* Sync the interval setting from device. */
+		 
 		cyapa_gen6_get_interval_setting(cyapa, interval_setting);
 
 	} else if (power_mode == PWR_MODE_BTN_ONLY) {
@@ -514,11 +482,7 @@ static int cyapa_gen6_set_power_mode(struct cyapa *cyapa,
 
 		PIP_DEV_SET_PWR_STATE(cyapa, PWR_MODE_BTN_ONLY);
 	} else {
-		/*
-		 * Gen6 internally supports to 2 low power scan interval time,
-		 * so can help to switch power mode quickly.
-		 * such as runtime suspend and system suspend.
-		 */
+		 
 		if (interval_setting->lp1_interval == sleep_time) {
 			lp_mode = GEN6_POWER_MODE_LP_MODE1;
 		} else if (interval_setting->lp2_interval == sleep_time) {
@@ -616,12 +580,12 @@ static ssize_t cyapa_gen6_show_baseline(struct device *dev,
 	if (!cyapa_is_pip_app_mode(cyapa))
 		return -EBUSY;
 
-	/* 1. Suspend Scanning*/
+	 
 	error = cyapa_pip_suspend_scanning(cyapa);
 	if (error)
 		return error;
 
-	/* 2. IDAC and RX Attenuator Calibration Data (Center Frequency). */
+	 
 	data_len = sizeof(data);
 	error = cyapa_pip_retrieve_data_structure(cyapa, 0, data_len,
 			GEN6_RETRIEVE_DATA_ID_RX_ATTENURATOR_IDAC,
@@ -630,15 +594,15 @@ static ssize_t cyapa_gen6_show_baseline(struct device *dev,
 		goto resume_scanning;
 
 	size = scnprintf(buf, PAGE_SIZE, "%d %d %d %d %d %d ",
-			data[0],  /* RX Attenuator Mutual */
-			data[1],  /* IDAC Mutual */
-			data[2],  /* RX Attenuator Self RX */
-			data[3],  /* IDAC Self RX */
-			data[4],  /* RX Attenuator Self TX */
-			data[5]	  /* IDAC Self TX */
+			data[0],   
+			data[1],   
+			data[2],   
+			data[3],   
+			data[4],   
+			data[5]	   
 			);
 
-	/* 3. Read Attenuator Trim. */
+	 
 	data_len = sizeof(data);
 	error = cyapa_pip_retrieve_data_structure(cyapa, 0, data_len,
 			GEN6_RETRIEVE_DATA_ID_ATTENURATOR_TRIM,
@@ -646,13 +610,13 @@ static ssize_t cyapa_gen6_show_baseline(struct device *dev,
 	if (error)
 		goto resume_scanning;
 
-	/* set attenuator trim values. */
+	 
 	for (i = 0; i < data_len; i++)
 		size += scnprintf(buf + size, PAGE_SIZE - size,	"%d ", data[i]);
 	size += scnprintf(buf + size, PAGE_SIZE - size, "\n");
 
 resume_scanning:
-	/* 4. Resume Scanning*/
+	 
 	resume_error = cyapa_pip_resume_scanning(cyapa);
 	if (resume_error || error) {
 		memset(buf, 0, PAGE_SIZE);
@@ -674,7 +638,7 @@ static int cyapa_gen6_operational_check(struct cyapa *cyapa)
 	case CYAPA_STATE_GEN6_BL:
 		error = cyapa_pip_bl_exit(cyapa);
 		if (error) {
-			/* Try to update trackpad product information. */
+			 
 			cyapa_gen6_bl_read_app_info(cyapa);
 			goto out;
 		}
@@ -683,29 +647,24 @@ static int cyapa_gen6_operational_check(struct cyapa *cyapa)
 		fallthrough;
 
 	case CYAPA_STATE_GEN6_APP:
-		/*
-		 * If trackpad device in deep sleep mode,
-		 * the app command will fail.
-		 * So always try to reset trackpad device to full active when
-		 * the device state is required.
-		 */
+		 
 		error = cyapa_gen6_set_power_mode(cyapa,
 				PWR_MODE_FULL_ACTIVE, 0, CYAPA_PM_ACTIVE);
 		if (error)
 			dev_warn(dev, "%s: failed to set power active mode.\n",
 				__func__);
 
-		/* By default, the trackpad proximity function is enabled. */
+		 
 		error = cyapa_pip_set_proximity(cyapa, true);
 		if (error)
 			dev_warn(dev, "%s: failed to enable proximity.\n",
 				__func__);
 
-		/* Get trackpad product information. */
+		 
 		error = cyapa_gen6_read_sys_info(cyapa);
 		if (error)
 			goto out;
-		/* Only support product ID starting with CYTRA */
+		 
 		if (memcmp(cyapa->product_id, product_id,
 				strlen(product_id)) != 0) {
 			dev_err(dev, "%s: unknown product ID (%s)\n",

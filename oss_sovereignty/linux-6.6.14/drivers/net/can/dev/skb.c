@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2005 Marc Kleine-Budde, Pengutronix
- * Copyright (C) 2006 Andrey Volkov, Varma Electronics
- * Copyright (C) 2008-2009 Wolfgang Grandegger <wg@grandegger.com>
- */
+
+ 
 
 #include <linux/can/dev.h>
 #include <linux/module.h>
@@ -13,15 +10,7 @@ MODULE_DESCRIPTION(MOD_DESC);
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
 
-/* Local echo of CAN messages
- *
- * CAN network devices *should* support a local echo functionality
- * (see Documentation/networking/can.rst). To test the handling of CAN
- * interfaces that do not support the local echo both driver types are
- * implemented. In the case that the driver does not support the echo
- * the IFF_ECHO remains clear in dev->flags. This causes the PF_CAN core
- * to perform the echo as a fallback solution.
- */
+ 
 void can_flush_echo_skb(struct net_device *dev)
 {
 	struct can_priv *priv = netdev_priv(dev);
@@ -38,12 +27,7 @@ void can_flush_echo_skb(struct net_device *dev)
 	}
 }
 
-/* Put the skb on the stack to be looped backed locally lateron
- *
- * The function is typically called in the start_xmit function
- * of the device driver. The driver must protect access to
- * priv->echo_skb, if necessary.
- */
+ 
 int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
 		     unsigned int idx, unsigned int frame_len)
 {
@@ -55,7 +39,7 @@ int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
 		return -EINVAL;
 	}
 
-	/* check flag whether this packet has to be looped back */
+	 
 	if (!(dev->flags & IFF_ECHO) ||
 	    (skb->protocol != htons(ETH_P_CAN) &&
 	     skb->protocol != htons(ETH_P_CANFD) &&
@@ -69,11 +53,11 @@ int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
 		if (!skb)
 			return -ENOMEM;
 
-		/* make settings for echo to reduce code in irq context */
+		 
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
 		skb->dev = dev;
 
-		/* save frame_len to reuse it when transmission is completed */
+		 
 		can_skb_prv(skb)->frame_len = frame_len;
 
 		if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
@@ -81,10 +65,10 @@ int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
 
 		skb_tx_timestamp(skb);
 
-		/* save this skb for tx interrupt echo handling */
+		 
 		priv->echo_skb[idx] = skb;
 	} else {
-		/* locking problem with netif_stop_queue() ?? */
+		 
 		netdev_err(dev, "%s: BUG! echo_skb %d is occupied!\n", __func__, idx);
 		kfree_skb(skb);
 		return -EBUSY;
@@ -107,16 +91,14 @@ __can_get_echo_skb(struct net_device *dev, unsigned int idx,
 	}
 
 	if (priv->echo_skb[idx]) {
-		/* Using "struct canfd_frame::len" for the frame
-		 * length is supported on both CAN and CANFD frames.
-		 */
+		 
 		struct sk_buff *skb = priv->echo_skb[idx];
 		struct can_skb_priv *can_skb_priv = can_skb_prv(skb);
 
 		if (skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)
 			skb_tstamp_tx(skb, skb_hwtstamps(skb));
 
-		/* get the real payload length for netdev statistics */
+		 
 		*len_ptr = can_skb_get_data_len(skb);
 
 		if (frame_len_ptr)
@@ -137,12 +119,7 @@ __can_get_echo_skb(struct net_device *dev, unsigned int idx,
 	return NULL;
 }
 
-/* Get the skb from the stack and loop it back locally
- *
- * The function is typically called when the TX done interrupt
- * is handled in the device driver. The driver must protect
- * access to priv->echo_skb, if necessary.
- */
+ 
 unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx,
 			      unsigned int *frame_len_ptr)
 {
@@ -163,10 +140,7 @@ unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx,
 }
 EXPORT_SYMBOL_GPL(can_get_echo_skb);
 
-/* Remove the skb from the stack and free it.
- *
- * The function is typically called when TX failed.
- */
+ 
 void can_free_echo_skb(struct net_device *dev, unsigned int idx,
 		       unsigned int *frame_len_ptr)
 {
@@ -191,7 +165,7 @@ void can_free_echo_skb(struct net_device *dev, unsigned int idx,
 }
 EXPORT_SYMBOL_GPL(can_free_echo_skb);
 
-/* fill common values for CAN sk_buffs */
+ 
 static void init_can_skb_reserve(struct sk_buff *skb)
 {
 	skb->pkt_type = PACKET_BROADCAST;
@@ -246,7 +220,7 @@ struct sk_buff *alloc_canfd_skb(struct net_device *dev,
 
 	*cfd = skb_put_zero(skb, sizeof(struct canfd_frame));
 
-	/* set CAN FD flag by default */
+	 
 	(*cfd)->flags = CANFD_FDF;
 
 	return skb;
@@ -273,7 +247,7 @@ struct sk_buff *alloc_canxl_skb(struct net_device *dev,
 
 	*cxl = skb_put_zero(skb, CANXL_HDR_SIZE + data_len);
 
-	/* set CAN XL flag and length information by default */
+	 
 	(*cxl)->flags = CANXL_XLF;
 	(*cxl)->len = data_len;
 
@@ -301,22 +275,22 @@ struct sk_buff *alloc_can_err_skb(struct net_device *dev, struct can_frame **cf)
 }
 EXPORT_SYMBOL_GPL(alloc_can_err_skb);
 
-/* Check for outgoing skbs that have not been created by the CAN subsystem */
+ 
 static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
 {
-	/* af_packet creates a headroom of HH_DATA_MOD bytes which is fine */
+	 
 	if (WARN_ON_ONCE(skb_headroom(skb) < sizeof(struct can_skb_priv)))
 		return false;
 
-	/* af_packet does not apply CAN skb specific settings */
+	 
 	if (skb->ip_summed == CHECKSUM_NONE) {
-		/* init headroom */
+		 
 		can_skb_prv(skb)->ifindex = dev->ifindex;
 		can_skb_prv(skb)->skbcnt = 0;
 
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
 
-		/* perform proper loopback on capable devices */
+		 
 		if (dev->flags & IFF_ECHO)
 			skb->pkt_type = PACKET_LOOPBACK;
 		else
@@ -326,7 +300,7 @@ static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
 		skb_reset_network_header(skb);
 		skb_reset_transport_header(skb);
 
-		/* set CANFD_FDF flag for CAN FD frames */
+		 
 		if (can_is_canfd_skb(skb)) {
 			struct canfd_frame *cfd;
 
@@ -338,7 +312,7 @@ static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
 	return true;
 }
 
-/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
+ 
 bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
 {
 	switch (ntohs(skb->protocol)) {

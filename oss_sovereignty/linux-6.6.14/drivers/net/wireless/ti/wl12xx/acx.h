@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 1998-2009, 2011 Texas Instruments. All rights reserved.
- * Copyright (C) 2008-2010 Nokia Corporation
- */
+ 
+ 
 
 #ifndef __WL12XX_ACX_H__
 #define __WL12XX_ACX_H__
@@ -55,143 +50,129 @@ struct wl12xx_acx_dma_statistics {
 }  __packed;
 
 struct wl12xx_acx_isr_statistics {
-	/* host command complete */
+	 
 	__le32 cmd_cmplt;
 
-	/* fiqisr() */
+	 
 	__le32 fiqs;
 
-	/* (INT_STS_ND & INT_TRIG_RX_HEADER) */
+	 
 	__le32 rx_headers;
 
-	/* (INT_STS_ND & INT_TRIG_RX_CMPLT) */
+	 
 	__le32 rx_completes;
 
-	/* (INT_STS_ND & INT_TRIG_NO_RX_BUF) */
+	 
 	__le32 rx_mem_overflow;
 
-	/* (INT_STS_ND & INT_TRIG_S_RX_RDY) */
+	 
 	__le32 rx_rdys;
 
-	/* irqisr() */
+	 
 	__le32 irqs;
 
-	/* (INT_STS_ND & INT_TRIG_TX_PROC) */
+	 
 	__le32 tx_procs;
 
-	/* (INT_STS_ND & INT_TRIG_DECRYPT_DONE) */
+	 
 	__le32 decrypt_done;
 
-	/* (INT_STS_ND & INT_TRIG_DMA0) */
+	 
 	__le32 dma0_done;
 
-	/* (INT_STS_ND & INT_TRIG_DMA1) */
+	 
 	__le32 dma1_done;
 
-	/* (INT_STS_ND & INT_TRIG_TX_EXC_CMPLT) */
+	 
 	__le32 tx_exch_complete;
 
-	/* (INT_STS_ND & INT_TRIG_COMMAND) */
+	 
 	__le32 commands;
 
-	/* (INT_STS_ND & INT_TRIG_RX_PROC) */
+	 
 	__le32 rx_procs;
 
-	/* (INT_STS_ND & INT_TRIG_PM_802) */
+	 
 	__le32 hw_pm_mode_changes;
 
-	/* (INT_STS_ND & INT_TRIG_ACKNOWLEDGE) */
+	 
 	__le32 host_acknowledges;
 
-	/* (INT_STS_ND & INT_TRIG_PM_PCI) */
+	 
 	__le32 pci_pm;
 
-	/* (INT_STS_ND & INT_TRIG_ACM_WAKEUP) */
+	 
 	__le32 wakeups;
 
-	/* (INT_STS_ND & INT_TRIG_LOW_RSSI) */
+	 
 	__le32 low_rssi;
 } __packed;
 
 struct wl12xx_acx_wep_statistics {
-	/* WEP address keys configured */
+	 
 	__le32 addr_key_count;
 
-	/* default keys configured */
+	 
 	__le32 default_key_count;
 
 	__le32 reserved;
 
-	/* number of times that WEP key not found on lookup */
+	 
 	__le32 key_not_found;
 
-	/* number of times that WEP key decryption failed */
+	 
 	__le32 decrypt_fail;
 
-	/* WEP packets decrypted */
+	 
 	__le32 packets;
 
-	/* WEP decrypt interrupts */
+	 
 	__le32 interrupt;
 } __packed;
 
 #define ACX_MISSED_BEACONS_SPREAD 10
 
 struct wl12xx_acx_pwr_statistics {
-	/* the amount of enters into power save mode (both PD & ELP) */
+	 
 	__le32 ps_enter;
 
-	/* the amount of enters into ELP mode */
+	 
 	__le32 elp_enter;
 
-	/* the amount of missing beacon interrupts to the host */
+	 
 	__le32 missing_bcns;
 
-	/* the amount of wake on host-access times */
+	 
 	__le32 wake_on_host;
 
-	/* the amount of wake on timer-expire */
+	 
 	__le32 wake_on_timer_exp;
 
-	/* the number of packets that were transmitted with PS bit set */
+	 
 	__le32 tx_with_ps;
 
-	/* the number of packets that were transmitted with PS bit clear */
+	 
 	__le32 tx_without_ps;
 
-	/* the number of received beacons */
+	 
 	__le32 rcvd_beacons;
 
-	/* the number of entering into PowerOn (power save off) */
+	 
 	__le32 power_save_off;
 
-	/* the number of entries into power save mode */
+	 
 	__le16 enable_ps;
 
-	/*
-	 * the number of exits from power save, not including failed PS
-	 * transitions
-	 */
+	 
 	__le16 disable_ps;
 
-	/*
-	 * the number of times the TSF counter was adjusted because
-	 * of drift
-	 */
+	 
 	__le32 fix_tsf_ps;
 
-	/* Gives statistics about the spread continuous missed beacons.
-	 * The 16 LSB are dedicated for the PS mode.
-	 * The 16 MSB are dedicated for the PS mode.
-	 * cont_miss_bcns_spread[0] - single missed beacon.
-	 * cont_miss_bcns_spread[1] - two continuous missed beacons.
-	 * cont_miss_bcns_spread[2] - three continuous missed beacons.
-	 * ...
-	 * cont_miss_bcns_spread[9] - ten and more continuous missed beacons.
-	*/
+	 
 	__le32 cont_miss_bcns_spread[ACX_MISSED_BEACONS_SPREAD];
 
-	/* the number of beacons in awake mode */
+	 
 	__le32 rcvd_awake_beacons;
 } __packed;
 
@@ -256,4 +237,4 @@ struct wl12xx_acx_statistics {
 
 int wl1271_acx_host_if_cfg_bitmap(struct wl1271 *wl, u32 host_cfg_bitmap);
 
-#endif /* __WL12XX_ACX_H__ */
+#endif  

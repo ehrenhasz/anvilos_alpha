@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright Altera Corporation (C) 2013-2015. All rights reserved
- *
- * Author: Ley Foon Tan <lftan@altera.com>
- * Description: Altera PCIe host controller driver
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -46,11 +41,11 @@
 #define S10_RP_SECONDARY(pcie)		\
 	readb(S10_RP_CFG_ADDR(pcie, PCI_SECONDARY_BUS))
 
-/* TLP configuration type 0 and 1 */
-#define TLP_FMTTYPE_CFGRD0		0x04	/* Configuration Read Type 0 */
-#define TLP_FMTTYPE_CFGWR0		0x44	/* Configuration Write Type 0 */
-#define TLP_FMTTYPE_CFGRD1		0x05	/* Configuration Read Type 1 */
-#define TLP_FMTTYPE_CFGWR1		0x45	/* Configuration Write Type 1 */
+ 
+#define TLP_FMTTYPE_CFGRD0		0x04	 
+#define TLP_FMTTYPE_CFGWR0		0x44	 
+#define TLP_FMTTYPE_CFGRD1		0x05	 
+#define TLP_FMTTYPE_CFGWR1		0x45	 
 #define TLP_PAYLOAD_SIZE		0x01
 #define TLP_READ_TAG			0x1d
 #define TLP_WRITE_TAG			0x10
@@ -108,7 +103,7 @@ struct altera_pcie_ops {
 struct altera_pcie_data {
 	const struct altera_pcie_ops *ops;
 	enum altera_pcie_version version;
-	u32 cap_offset;		/* PCIe capability structure register offset */
+	u32 cap_offset;		 
 	u32 cfgrd0;
 	u32 cfgrd1;
 	u32 cfgwr0;
@@ -146,15 +141,7 @@ static bool s10_altera_pcie_link_up(struct altera_pcie *pcie)
 	return !!(readw(addr) & PCI_EXP_LNKSTA_DLLLA);
 }
 
-/*
- * Altera PCIe port uses BAR0 of RC's configuration space as the translation
- * from PCI bus to native BUS.  Entire DDR region is mapped into PCIe space
- * using these registers, so it can be reached by DMA from EP devices.
- * This BAR0 will also access to MSI vector when receiving MSI/MSIX interrupt
- * from EP devices, eventually trigger interrupt to GIC.  The BAR0 of bridge
- * should be hidden during enumeration to avoid the sizing and resource
- * allocation by PCIe core.
- */
+ 
 static bool altera_pcie_hide_rc_bar(struct pci_bus *bus, unsigned int  devfn,
 				    int offset)
 {
@@ -182,13 +169,13 @@ static void s10_tlp_write_tx(struct altera_pcie *pcie, u32 reg0, u32 ctrl)
 static bool altera_pcie_valid_device(struct altera_pcie *pcie,
 				     struct pci_bus *bus, int dev)
 {
-	/* If there is no link, then there is no device */
+	 
 	if (bus->number != pcie->root_bus_nr) {
 		if (!pcie->pcie_data->ops->get_link_status(pcie))
 			return false;
 	}
 
-	/* access only one slot on each root port */
+	 
 	if (bus->number == pcie->root_bus_nr && dev > 0)
 		return false;
 
@@ -203,10 +190,7 @@ static int tlp_read_packet(struct altera_pcie *pcie, u32 *value)
 	u32 reg0, reg1;
 	u32 comp_status = 1;
 
-	/*
-	 * Minimum 2 loops to read TLP headers and 1 loop to read data
-	 * payload.
-	 */
+	 
 	for (i = 0; i < TLP_LOOP; i++) {
 		ctrl = cra_readl(pcie, RP_RXCPL_STATUS);
 		if ((ctrl & RP_RXCPL_SOP) || (ctrl & RP_RXCPL_EOP) || sop) {
@@ -245,7 +229,7 @@ static int s10_tlp_read_packet(struct altera_pcie *pcie, u32 *value)
 	for (count = 0; count < TLP_LOOP; count++) {
 		ctrl = cra_readl(pcie, S10_RP_RXCPL_STATUS);
 		if (ctrl & RP_RXCPL_SOP) {
-			/* Read first DW */
+			 
 			dw[0] = cra_readl(pcie, S10_RP_RXCPL_REG);
 			break;
 		}
@@ -253,13 +237,13 @@ static int s10_tlp_read_packet(struct altera_pcie *pcie, u32 *value)
 		udelay(5);
 	}
 
-	/* SOP detection failed, return error */
+	 
 	if (count == TLP_LOOP)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
 	count = 1;
 
-	/* Poll for EOP */
+	 
 	while (count < ARRAY_SIZE(dw)) {
 		ctrl = cra_readl(pcie, S10_RP_RXCPL_STATUS);
 		dw[count++] = cra_readl(pcie, S10_RP_RXCPL_REG);
@@ -357,7 +341,7 @@ static int tlp_cfg_dword_write(struct altera_pcie *pcie, u8 bus, u32 devfn,
 	get_tlp_header(pcie, bus, devfn, where, byte_en, false,
 		       headers);
 
-	/* check alignment to Qword */
+	 
 	if ((where & 0x7) == 0)
 		pcie->pcie_data->ops->tlp_write_pkt(pcie, headers,
 						    value, true);
@@ -369,10 +353,7 @@ static int tlp_cfg_dword_write(struct altera_pcie *pcie, u8 bus, u32 devfn,
 	if (ret != PCIBIOS_SUCCESSFUL)
 		return ret;
 
-	/*
-	 * Monitor changes to PCI_PRIMARY_BUS register on root port
-	 * and update local copy of root bus number accordingly.
-	 */
+	 
 	if ((bus == pcie->root_bus_nr) && (where == PCI_PRIMARY_BUS))
 		pcie->root_bus_nr = (u8)(value);
 
@@ -416,10 +397,7 @@ static int s10_rp_write_cfg(struct altera_pcie *pcie, u8 busno,
 		break;
 	}
 
-	/*
-	 * Monitor changes to PCI_PRIMARY_BUS register on root port
-	 * and update local copy of root bus number accordingly.
-	 */
+	 
 	if (busno == pcie->root_bus_nr && where == PCI_PRIMARY_BUS)
 		pcie->root_bus_nr = value & 0xff;
 
@@ -565,7 +543,7 @@ static void altera_wait_link_retrain(struct altera_pcie *pcie)
 	u16 reg16;
 	unsigned long start_jiffies;
 
-	/* Wait for link training end. */
+	 
 	start_jiffies = jiffies;
 	for (;;) {
 		altera_read_cap_word(pcie, pcie->root_bus_nr, RP_DEVFN,
@@ -580,7 +558,7 @@ static void altera_wait_link_retrain(struct altera_pcie *pcie)
 		udelay(100);
 	}
 
-	/* Wait for link is up */
+	 
 	start_jiffies = jiffies;
 	for (;;) {
 		if (pcie->pcie_data->ops->get_link_status(pcie))
@@ -601,10 +579,7 @@ static void altera_pcie_retrain(struct altera_pcie *pcie)
 	if (!pcie->pcie_data->ops->get_link_status(pcie))
 		return;
 
-	/*
-	 * Set the retrain bit if the PCIe rootport support > 2.5GB/s, but
-	 * current speed is 2.5 GB/s.
-	 */
+	 
 	altera_read_cap_word(pcie, pcie->root_bus_nr, RP_DEVFN, PCI_EXP_LNKCAP,
 			     &linkcap);
 	if ((linkcap & PCI_EXP_LNKCAP_SLS) <= PCI_EXP_LNKCAP_SLS_2_5GB)
@@ -652,7 +627,7 @@ static void altera_pcie_isr(struct irq_desc *desc)
 	while ((status = cra_readl(pcie, P2A_INT_STATUS)
 		& P2A_INT_STS_ALL) != 0) {
 		for_each_set_bit(bit, &status, PCI_NUM_INTX) {
-			/* clear interrupts */
+			 
 			cra_writel(pcie, 1 << bit, P2A_INT_STATUS);
 
 			ret = generic_handle_domain_irq(pcie->irq_domain, bit);
@@ -669,7 +644,7 @@ static int altera_pcie_init_irq_domain(struct altera_pcie *pcie)
 	struct device *dev = &pcie->pdev->dev;
 	struct device_node *node = dev->of_node;
 
-	/* Setup INTx */
+	 
 	pcie->irq_domain = irq_domain_add_linear(node, PCI_NUM_INTX,
 					&intx_domain_ops, pcie);
 	if (!pcie->irq_domain) {
@@ -702,7 +677,7 @@ static int altera_pcie_parse_dt(struct altera_pcie *pcie)
 			return PTR_ERR(pcie->hip_base);
 	}
 
-	/* setup IRQ */
+	 
 	pcie->irq = platform_get_irq(pdev, 0);
 	if (pcie->irq < 0)
 		return pcie->irq;
@@ -792,9 +767,9 @@ static int altera_pcie_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* clear all interrupts */
+	 
 	cra_writel(pcie, P2A_INT_STS_ALL, P2A_INT_STATUS);
-	/* enable all interrupts */
+	 
 	cra_writel(pcie, P2A_INT_ENA_ALL, P2A_INT_ENABLE);
 	altera_pcie_host_init(pcie);
 

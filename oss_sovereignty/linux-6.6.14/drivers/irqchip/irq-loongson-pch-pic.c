@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020, Jiaxun Yang <jiaxun.yang@flygoat.com>
- *  Loongson PCH PIC support
- */
+
+ 
 
 #define pr_fmt(fmt) "pch-pic: " fmt
 
@@ -17,7 +14,7 @@
 #include <linux/of_irq.h>
 #include <linux/syscore_ops.h>
 
-/* Registers */
+ 
 #define PCH_PIC_MASK		0x20
 #define PCH_PIC_HTMSI_EN	0x40
 #define PCH_PIC_EDGE		0x60
@@ -221,20 +218,20 @@ static void pch_pic_reset(struct pch_pic *priv)
 	int i;
 
 	for (i = 0; i < PIC_COUNT; i++) {
-		/* Write vector ID */
+		 
 		writeb(priv->ht_vec_base + i, priv->base + PCH_INT_HTVEC(i));
-		/* Hardcode route to HT0 Lo */
+		 
 		writeb(1, priv->base + PCH_INT_ROUTE(i));
 	}
 
 	for (i = 0; i < PIC_REG_COUNT; i++) {
-		/* Clear IRQ cause registers, mask all interrupts */
+		 
 		writel_relaxed(0xFFFFFFFF, priv->base + PCH_PIC_MASK + 4 * i);
 		writel_relaxed(0xFFFFFFFF, priv->base + PCH_PIC_CLR + 4 * i);
-		/* Clear auto bounce, we don't need that */
+		 
 		writel_relaxed(0, priv->base + PCH_PIC_AUTO0 + 4 * i);
 		writel_relaxed(0, priv->base + PCH_PIC_AUTO1 + 4 * i);
-		/* Enable HTMSI transformer */
+		 
 		writel_relaxed(0xFFFFFFFF, priv->base + PCH_PIC_HTMSI_EN + 4 * i);
 	}
 }
@@ -364,7 +361,7 @@ int find_pch_pic(u32 gsi)
 {
 	int i;
 
-	/* Find the PCH_PIC that manages this GSI. */
+	 
 	for (i = 0; i < MAX_IO_PICS; i++) {
 		struct pch_pic *priv = pch_pic_priv[i];
 

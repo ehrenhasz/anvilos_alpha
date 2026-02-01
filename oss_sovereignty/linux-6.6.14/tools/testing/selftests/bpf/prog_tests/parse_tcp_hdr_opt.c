@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 #include <network_helpers.h>
@@ -16,7 +16,7 @@ struct test_pkt pkt = {
 	.pk6_v6.iph.nexthdr = IPPROTO_TCP,
 	.pk6_v6.iph.payload_len = __bpf_constant_htons(MAGIC_BYTES),
 	.pk6_v6.tcp.urg_ptr = 123,
-	.pk6_v6.tcp.doff = 9, /* 16 bytes of options */
+	.pk6_v6.tcp.doff = 9,  
 
 	.options = {
 		TCPOPT_MSS, 4, 0x05, 0xB4, TCPOPT_NOP, TCPOPT_NOP,

@@ -1,35 +1,4 @@
-/*
- *  controlfb.c -- frame buffer device for the PowerMac 'control' display
- *
- *  Created 12 July 1998 by Dan Jacobowitz <dan@debian.org>
- *  Copyright (C) 1998 Dan Jacobowitz
- *  Copyright (C) 2001 Takashi Oe
- *
- *  Mmap code by Michel Lanners <mlan@cpu.lu>
- *
- *  Frame buffer structure from:
- *    drivers/video/chipsfb.c -- frame buffer device for
- *    Chips & Technologies 65550 chip.
- *
- *    Copyright (C) 1998 Paul Mackerras
- *
- *    This file is derived from the Powermac "chips" driver:
- *    Copyright (C) 1997 Fabio Riccardi.
- *    And from the frame buffer device for Open Firmware-initialized devices:
- *    Copyright (C) 1997 Geert Uytterhoeven.
- *
- *  Hardware information from:
- *    control.c: Console support for PowerMac "control" display adaptor.
- *    Copyright (C) 1996 Paul Mackerras
- *
- *  Updated to 2.5 framebuffer API by Ben Herrenschmidt
- *  <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>,
- *  and James Simmons <jsimmons@infradead.org>.
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License. See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -131,11 +100,11 @@ struct fb_info_control {
 	unsigned char		vram_attr;
 };
 
-/* control register access macro */
+ 
 #define CNTRL_REG(INFO,REG) (&(((INFO)->control_regs->REG).r))
 
 
-/************************** Internal variables *******************************/
+ 
 
 static struct fb_info_control *control_fb;
 
@@ -157,9 +126,9 @@ static int controlfb_setcolreg(u_int regno, u_int red, u_int green, u_int blue,
 	g = green >> 8;
 	b = blue >> 8;
 
-	out_8(&p->cmap_regs->addr, regno);	/* tell clut what addr to fill	*/
-	out_8(&p->cmap_regs->lut, r);		/* send one color channel at	*/
-	out_8(&p->cmap_regs->lut, g);		/* a time...			*/
+	out_8(&p->cmap_regs->addr, regno);	 
+	out_8(&p->cmap_regs->lut, r);		 
+	out_8(&p->cmap_regs->lut, g);		 
 	out_8(&p->cmap_regs->lut, b);
 
 	if (regno < 16) {
@@ -180,7 +149,7 @@ static int controlfb_setcolreg(u_int regno, u_int red, u_int green, u_int blue,
 }
 
 
-/********************  End of controlfb_ops implementation  ******************/
+ 
 
 
 
@@ -199,9 +168,7 @@ static void set_control_clock(unsigned char *params)
 #endif
 }
 
-/*
- * Set screen start address according to var offset values
- */
+ 
 static inline void set_screen_start(int xoffset, int yoffset,
 	struct fb_info_control *p)
 {
@@ -217,8 +184,8 @@ static inline void set_screen_start(int xoffset, int yoffset,
 	out_8(&p->cmap_regs->addr, (a)); \
 	out_8(&p->cmap_regs->dat,   (d))
 
-/* Now how about actually saying, Make it so! */
-/* Some things in here probably don't need to be done each time. */
+ 
+ 
 static void control_set_hardware(struct fb_info_control *p, struct fb_par_control *par)
 {
 	struct control_regvals	*r;
@@ -226,10 +193,7 @@ static void control_set_hardware(struct fb_info_control *p, struct fb_par_contro
 	int			i, cmode;
 
 	if (PAR_EQUAL(&p->par, par)) {
-		/*
-		 * check if only xoffset or yoffset differs.
-		 * this prevents flickers in typical VT switch case.
-		 */
+		 
 		if (p->par.xoffset != par->xoffset ||
 		    p->par.yoffset != par->yoffset)
 			set_screen_start(par->xoffset, par->yoffset, p);
@@ -241,7 +205,7 @@ static void control_set_hardware(struct fb_info_control *p, struct fb_par_contro
 	cmode = p->par.cmode;
 	r = &par->regvals;
 
-	/* Turn off display */
+	 
 	out_le32(CNTRL_REG(p,ctrl), 0x400 | par->ctrl);
 
 	set_control_clock(r->clock_params);
@@ -263,7 +227,7 @@ static void control_set_hardware(struct fb_info_control *p, struct fb_par_contro
 	out_le32(CNTRL_REG(p,rfrcnt), 0x1e5);
 	out_le32(CNTRL_REG(p,intr_ena), 0);
 
-	/* Turn on display */
+	 
 	out_le32(CNTRL_REG(p,ctrl), par->ctrl);
 
 #ifdef CONFIG_BOOTX_TEXT
@@ -271,21 +235,17 @@ static void control_set_hardware(struct fb_info_control *p, struct fb_par_contro
 			     p->par.xres, p->par.yres,
 			     (cmode == CMODE_32? 32: cmode == CMODE_16? 16: 8),
 			     p->par.pitch);
-#endif /* CONFIG_BOOTX_TEXT */
+#endif  
 }
 
-/* Work out which banks of VRAM we have installed. */
-/* danj: I guess the card just ignores writes to nonexistant VRAM... */
+ 
+ 
 
 static void __init find_vram_size(struct fb_info_control *p)
 {
 	int bank1, bank2;
 
-	/*
-	 * Set VRAM in 2MB (bank 1) mode
-	 * VRAM Bank 2 will be accessible through offset 0x600000 if present
-	 * and VRAM Bank 1 will not respond at that offset even if present
-	 */
+	 
 	out_le32(CNTRL_REG(p,vram_attr), 0x31);
 
 	out_8(&p->frame_buffer[0x600000], 0xb3);
@@ -295,11 +255,7 @@ static void __init find_vram_size(struct fb_info_control *p)
 	bank2 = (in_8(&p->frame_buffer[0x600000]) == 0xb3)
 		&& (in_8(&p->frame_buffer[0x600001]) == 0x71);
 
-	/*
-	 * Set VRAM in 2MB (bank 2) mode
-	 * VRAM Bank 1 will be accessible through offset 0x000000 if present
-	 * and VRAM Bank 2 will not respond at that offset even if present
-	 */
+	 
 	out_le32(CNTRL_REG(p,vram_attr), 0x39);
 
 	out_8(&p->frame_buffer[0], 0x5a);
@@ -311,23 +267,17 @@ static void __init find_vram_size(struct fb_info_control *p)
 
 	if (bank2) {
 		if (!bank1) {
-			/*
-			 * vram bank 2 only
-			 */
+			 
 			p->control_use_bank2 = 1;
 			p->vram_attr = 0x39;
 			p->frame_buffer += 0x600000;
 			p->frame_buffer_phys += 0x600000;
 		} else {
-			/*
-			 * 4 MB vram
-			 */
+			 
 			p->vram_attr = 0x51;
 		}
 	} else {
-		/*
-		 * vram bank 1 only
-		 */
+		 
 		p->vram_attr = 0x31;
 	}
 
@@ -338,47 +288,40 @@ static void __init find_vram_size(struct fb_info_control *p)
 			(bank1 + bank2) << 1, bank1 << 1, bank2 << 1);
 }
 
-/*
- * Get the monitor sense value.
- * Note that this can be called before calibrate_delay,
- * so we can't use udelay.
- */
+ 
 static int read_control_sense(struct fb_info_control *p)
 {
 	int sense;
 
-	out_le32(CNTRL_REG(p,mon_sense), 7);	/* drive all lines high */
+	out_le32(CNTRL_REG(p,mon_sense), 7);	 
 	__delay(200);
-	out_le32(CNTRL_REG(p,mon_sense), 077);	/* turn off drivers */
+	out_le32(CNTRL_REG(p,mon_sense), 077);	 
 	__delay(2000);
 	sense = (in_le32(CNTRL_REG(p,mon_sense)) & 0x1c0) << 2;
 
-	/* drive each sense line low in turn and collect the other 2 */
-	out_le32(CNTRL_REG(p,mon_sense), 033);	/* drive A low */
+	 
+	out_le32(CNTRL_REG(p,mon_sense), 033);	 
 	__delay(2000);
 	sense |= (in_le32(CNTRL_REG(p,mon_sense)) & 0xc0) >> 2;
-	out_le32(CNTRL_REG(p,mon_sense), 055);	/* drive B low */
+	out_le32(CNTRL_REG(p,mon_sense), 055);	 
 	__delay(2000);
 	sense |= ((in_le32(CNTRL_REG(p,mon_sense)) & 0x100) >> 5)
 		| ((in_le32(CNTRL_REG(p,mon_sense)) & 0x40) >> 4);
-	out_le32(CNTRL_REG(p,mon_sense), 066);	/* drive C low */
+	out_le32(CNTRL_REG(p,mon_sense), 066);	 
 	__delay(2000);
 	sense |= (in_le32(CNTRL_REG(p,mon_sense)) & 0x180) >> 7;
 
-	out_le32(CNTRL_REG(p,mon_sense), 077);	/* turn off drivers */
+	out_le32(CNTRL_REG(p,mon_sense), 077);	 
 
 	return sense;
 }
 
-/**********************  Various translation functions  **********************/
+ 
 
 #define CONTROL_PIXCLOCK_BASE	256016
-#define CONTROL_PIXCLOCK_MIN	5000	/* ~ 200 MHz dot clock */
+#define CONTROL_PIXCLOCK_MIN	5000	 
 
-/*
- * calculate the clock parameters to be sent to CUDA according to given
- * pixclock in pico second.
- */
+ 
 static int calc_clock_params(unsigned long clk, unsigned char *param)
 {
 	unsigned long p0, p1, p2, k, l, m, n, min;
@@ -413,10 +356,7 @@ static int calc_clock_params(unsigned long clk, unsigned char *param)
 }
 
 
-/*
- * This routine takes a user-supplied var, and picks the best vmode/cmode
- * from it.
- */
+ 
 
 static int control_var_to_par(struct fb_var_screeninfo *var,
 	struct fb_par_control *par, const struct fb_info *fb_info)
@@ -470,10 +410,7 @@ static int control_var_to_par(struct fb_var_screeninfo *var,
 		return -EINVAL;
 	}
 
-	/*
-	 * adjust xres and vxres so that the corresponding memory widths are
-	 * 32-byte aligned
-	 */
+	 
 	hstep = 31 >> par->cmode;
 	par->xres = (var->xres + hstep) & ~hstep;
 	par->vxres = (var->xres_virtual + hstep) & ~hstep;
@@ -551,9 +488,7 @@ static int control_var_to_par(struct fb_var_screeninfo *var,
 }
 
 
-/*
- * Convert hardware data in par to an fb_var_screeninfo
- */
+ 
 
 static void control_par_to_var(struct fb_par_control *par, struct fb_var_screeninfo *var)
 {
@@ -577,7 +512,7 @@ static void control_par_to_var(struct fb_par_control *par, struct fb_var_screeni
 		var->green.length = 8;
 		var->blue.length = 8;
 		break;
-	case CMODE_16:	/* RGB 555 */
+	case CMODE_16:	 
 		var->bits_per_pixel = 16;
 		var->red.offset = 10;
 		var->red.length = 5;
@@ -585,7 +520,7 @@ static void control_par_to_var(struct fb_par_control *par, struct fb_var_screeni
 		var->green.length = 5;
 		var->blue.length = 5;
 		break;
-	case CMODE_32:	/* RGB 888 */
+	case CMODE_32:	 
 		var->bits_per_pixel = 32;
 		var->red.offset = 16;
 		var->red.length = 8;
@@ -610,23 +545,16 @@ static void control_par_to_var(struct fb_par_control *par, struct fb_var_screeni
 
 	var->sync = par->sync;
 
-	/*
-	 * 10^12 * clock_params[0] / (3906400 * clock_params[1]
-	 *			      * 2^clock_params[2])
-	 * (10^12 * clock_params[0] / (3906400 * clock_params[1]))
-	 * >> clock_params[2]
-	 */
-	/* (255990.17 * clock_params[0] / clock_params[1]) >> clock_params[2] */
+	 
+	 
 	var->pixclock = CONTROL_PIXCLOCK_BASE * par->regvals.clock_params[0];
 	var->pixclock /= par->regvals.clock_params[1];
 	var->pixclock >>= par->regvals.clock_params[2];
 }
 
-/********************  The functions for controlfb_ops ********************/
+ 
 
-/*
- * Checks a var structure
- */
+ 
 static int controlfb_check_var (struct fb_var_screeninfo *var, struct fb_info *info)
 {
 	struct fb_par_control par;
@@ -640,9 +568,7 @@ static int controlfb_check_var (struct fb_var_screeninfo *var, struct fb_info *i
 	return 0;
 }
 
-/*
- * Applies current var to display
- */
+ 
 static int controlfb_set_par (struct fb_info *info)
 {
 	struct fb_info_control *p =
@@ -675,9 +601,7 @@ static int controlfb_pan_display(struct fb_var_screeninfo *var,
 		container_of(info, struct fb_info_control, info);
 	struct fb_par_control *par = &p->par;
 
-	/*
-	 * make sure start addr will be 32-byte aligned
-	 */
+	 
 	hstep = 0x1f >> par->cmode;
 	xoffset = (var->xoffset + hstep) & ~hstep;
 
@@ -723,11 +647,7 @@ static int controlfb_blank(int blank_mode, struct fb_info *info)
 	return 0;
 }
 
-/*
- * Private mmap since we want to have a different caching on the framebuffer
- * for controlfb.
- * Note there's no locking in here; it's done in fb_mmap() in fbmem.c.
- */
+ 
 static int controlfb_mmap(struct fb_info *info,
                        struct vm_area_struct *vma)
 {
@@ -746,7 +666,7 @@ static int controlfb_mmap(struct fb_info *info,
 		len = info->fix.mmio_len;
 		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 	} else {
-		/* framebuffer */
+		 
 		vma->vm_page_prot = pgprot_cached_wthru(vma->vm_page_prot);
 	}
 
@@ -766,12 +686,10 @@ static const struct fb_ops controlfb_ops = {
 	.fb_imageblit	= cfb_imageblit,
 };
 
-/*
- * Set misc info vars for this driver
- */
+ 
 static void __init control_init_info(struct fb_info *info, struct fb_info_control *p)
 {
-	/* Fill fb_info */
+	 
 	info->par = &p->par;
 	info->fbops = &controlfb_ops;
 	info->pseudo_palette = p->pseudo_palette;
@@ -780,7 +698,7 @@ static void __init control_init_info(struct fb_info *info, struct fb_info_contro
 
 	fb_alloc_cmap(&info->cmap, 256, 0);
 
-	/* Fill fix common fields */
+	 
 	strcpy(info->fix.id, "control");
 	info->fix.mmio_start = p->control_regs_phys;
 	info->fix.mmio_len = sizeof(struct control_regs);
@@ -792,9 +710,7 @@ static void __init control_init_info(struct fb_info *info, struct fb_info_contro
         info->fix.accel = FB_ACCEL_NONE;
 }
 
-/*
- * Parse user specified options (`video=controlfb:')
- */
+ 
 static void __init control_setup(char *options)
 {
 	char *this_opt;
@@ -832,9 +748,7 @@ static void __init control_setup(char *options)
 	}
 }
 
-/*
- * finish off the driver initialization and register
- */
+ 
 static int __init init_control(struct fb_info_control *p)
 {
 	int full, sense, vmode, cmode, vyres;
@@ -845,7 +759,7 @@ static int __init init_control(struct fb_info_control *p)
 
 	full = p->total_vram == 0x400000;
 
-	/* Try to pick a video mode out of NVRAM if we have one. */
+	 
 	cmode = default_cmode;
 	if (IS_REACHABLE(CONFIG_NVRAM) && cmode == CMODE_NVRAM)
 		cmode = nvram_read_byte(NV_CMODE);
@@ -865,12 +779,12 @@ static int __init init_control(struct fb_info_control *p)
 		cmode = min(cmode, control_mac_modes[vmode - 1].m[full]);
 	}
 
-	/* Initialize info structure */
+	 
 	control_init_info(&p->info, p);
 
-	/* Setup default var */
+	 
 	if (mac_vmode_to_var(vmode, cmode, &var) < 0) {
-		/* This shouldn't happen! */
+		 
 		printk("mac_vmode_to_var(%d, %d,) failed\n", vmode, cmode);
 try_again:
 		vmode = VMODE_640_480_60;
@@ -887,13 +801,13 @@ try_again:
 	if (vyres > var.yres)
 		var.yres_virtual = vyres;
 
-	/* Apply default var */
+	 
 	var.activate = FB_ACTIVATE_NOW;
 	rc = fb_set_var(&p->info, &var);
 	if (rc && (vmode != VMODE_640_480_60 || cmode != CMODE_8))
 		goto try_again;
 
-	/* Register with fbdev layer */
+	 
 	if (register_framebuffer(&p->info) < 0)
 		return -ENXIO;
 
@@ -927,9 +841,7 @@ static void control_cleanup(void)
 	kfree(p);
 }
 
-/*
- * find "control" and initialize
- */
+ 
 static int __init control_of_init(struct device_node *dp)
 {
 	struct fb_info_control	*p;
@@ -948,12 +860,12 @@ static int __init control_of_init(struct device_node *dp)
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
 	if (!p)
 		return -ENOMEM;
-	control_fb = p;	/* save it for cleanups */
+	control_fb = p;	 
 
-	/* Map in frame buffer and registers */
+	 
 	p->fb_orig_base = fb_res.start;
 	p->fb_orig_size = resource_size(&fb_res);
-	/* use the big-endian aperture (??) */
+	 
 	p->frame_buffer_phys = fb_res.start + 0x800000;
 	p->control_regs_phys = reg_res.start;
 	p->control_regs_size = resource_size(&reg_res);
@@ -963,7 +875,7 @@ static int __init control_of_init(struct device_node *dp)
 		p->fb_orig_base = 0;
 		goto error_out;
 	}
-	/* map at most 8MB for the frame buffer */
+	 
 	p->frame_buffer = ioremap_wt(p->frame_buffer_phys, 0x800000);
 
 	if (!p->control_regs_phys ||
@@ -974,7 +886,7 @@ static int __init control_of_init(struct device_node *dp)
 	}
 	p->control_regs = ioremap(p->control_regs_phys, p->control_regs_size);
 
-	p->cmap_regs_phys = 0xf301b000;	 /* XXX not in prom? */
+	p->cmap_regs_phys = 0xf301b000;	  
 	if (!request_mem_region(p->cmap_regs_phys, 0x1000, "controlfb cmap")) {
 		p->cmap_regs_phys = 0;
 		goto error_out;

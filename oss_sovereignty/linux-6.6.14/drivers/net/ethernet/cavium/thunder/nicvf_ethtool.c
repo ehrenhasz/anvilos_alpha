@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Cavium, Inc.
- */
 
-/* ETHTOOL Support for VNIC_VF Device*/
+ 
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/pci.h>
@@ -327,7 +325,7 @@ static void nicvf_get_ethtool_stats(struct net_device *netdev,
 
 	nicvf_update_stats(nic);
 
-	/* Update LMAC stats */
+	 
 	nicvf_update_lmac_stats(nic);
 
 	for (stat = 0; stat < nicvf_n_hw_stats; stat++)
@@ -373,7 +371,7 @@ static void nicvf_get_regs(struct net_device *dev,
 	memset(p, 0, NIC_VF_REG_COUNT);
 
 	p[i++] = nicvf_reg_read(nic, NIC_VNIC_CFG);
-	/* Mailbox registers */
+	 
 	for (mbox = 0; mbox < NIC_PF_VF_MAILBOX_SIZE; mbox++)
 		p[i++] = nicvf_reg_read(nic,
 					NIC_VF_PF_MAILBOX_0_1 | (mbox << 3));
@@ -387,7 +385,7 @@ static void nicvf_get_regs(struct net_device *dev,
 	for (key = 0; key < RSS_HASH_KEY_SIZE; key++)
 		p[i++] = nicvf_reg_read(nic, NIC_VNIC_RSS_KEY_0_4 | (key << 3));
 
-	/* Tx/Rx statistics */
+	 
 	for (stat = 0; stat < TX_STATS_ENUM_LAST; stat++)
 		p[i++] = nicvf_reg_read(nic,
 					NIC_VNIC_TX_STAT_0_4 | (stat << 3));
@@ -398,7 +396,7 @@ static void nicvf_get_regs(struct net_device *dev,
 
 	p[i++] = nicvf_reg_read(nic, NIC_QSET_RQ_GEN_CFG);
 
-	/* All completion queue's registers */
+	 
 	for (q = 0; q < MAX_CMP_QUEUES_PER_QS; q++) {
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_CQ_0_7_CFG, q);
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_CQ_0_7_CFG2, q);
@@ -412,7 +410,7 @@ static void nicvf_get_regs(struct net_device *dev,
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_CQ_0_7_DEBUG, q);
 	}
 
-	/* All receive queue's registers */
+	 
 	for (q = 0; q < MAX_RCV_QUEUES_PER_QS; q++) {
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_RQ_0_7_CFG, q);
 		p[i++] = nicvf_queue_reg_read(nic,
@@ -430,9 +428,7 @@ static void nicvf_get_regs(struct net_device *dev,
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_DOOR, q);
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_STATUS, q);
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_DEBUG, q);
-		/* Padding, was NIC_QSET_SQ_0_7_CNM_CHG, which
-		 * produces bus errors when read
-		 */
+		 
 		p[i++] = 0;
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_STAT_0_1, q);
 		reg_offset = NIC_QSET_SQ_0_7_STAT_0_1 | (1 << 3);
@@ -489,7 +485,7 @@ static int nicvf_set_ringparam(struct net_device *netdev,
 	struct queue_set *qs = nic->qs;
 	u32 rx_count, tx_count;
 
-	/* Due to HW errata this is not supported on T88 pass 1.x silicon */
+	 
 	if (pass1_silicon(nic->pdev))
 		return -EINVAL;
 
@@ -504,7 +500,7 @@ static int nicvf_set_ringparam(struct net_device *netdev,
 	if ((tx_count == qs->sq_len) && (rx_count == qs->cq_len))
 		return 0;
 
-	/* Permitted lengths are 1K, 2K, 4K, 8K, 16K, 32K, 64K */
+	 
 	qs->sq_len = rounddown_pow_of_two(tx_count);
 	qs->cq_len = rounddown_pow_of_two(rx_count);
 
@@ -704,7 +700,7 @@ static int nicvf_set_rxfh(struct net_device *dev, const u32 *indir,
 	return 0;
 }
 
-/* Get no of queues device supports and current queue count */
+ 
 static void nicvf_get_channels(struct net_device *dev,
 			       struct ethtool_channels *channel)
 {
@@ -719,7 +715,7 @@ static void nicvf_get_channels(struct net_device *dev,
 	channel->tx_count = nic->tx_queues;
 }
 
-/* Set no of Tx, Rx queues to be used */
+ 
 static int nicvf_set_channels(struct net_device *dev,
 			      struct ethtool_channels *channel)
 {
@@ -791,7 +787,7 @@ static void nicvf_get_pauseparam(struct net_device *dev,
 	struct nicvf *nic = netdev_priv(dev);
 	union nic_mbx mbx = {};
 
-	/* Supported only for 10G/40G interfaces */
+	 
 	if ((nic->mac_type == BGX_MODE_SGMII) ||
 	    (nic->mac_type == BGX_MODE_QSGMII) ||
 	    (nic->mac_type == BGX_MODE_RGMII))
@@ -812,7 +808,7 @@ static int nicvf_set_pauseparam(struct net_device *dev,
 	struct nicvf *nic = netdev_priv(dev);
 	union nic_mbx mbx = {};
 
-	/* Supported only for 10G/40G interfaces */
+	 
 	if ((nic->mac_type == BGX_MODE_SGMII) ||
 	    (nic->mac_type == BGX_MODE_QSGMII) ||
 	    (nic->mac_type == BGX_MODE_RGMII))

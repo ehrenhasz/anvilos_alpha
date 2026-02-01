@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tps65217.c
- *
- * TPS65217 chip family multi-function driver
- *
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -153,7 +147,7 @@ static int tps65217_irq_init(struct tps65217 *tps, int irq)
 	mutex_init(&tps->irq_lock);
 	tps->irq = irq;
 
-	/* Mask all interrupt sources */
+	 
 	tps->irq_mask = TPS65217_INT_MASK;
 	tps65217_set_bits(tps, TPS65217_REG_INT, TPS65217_INT_MASK,
 			  TPS65217_INT_MASK, TPS65217_PROTECT_NONE);
@@ -179,13 +173,7 @@ static int tps65217_irq_init(struct tps65217 *tps, int irq)
 	return 0;
 }
 
-/**
- * tps65217_reg_read: Read a single tps65217 register.
- *
- * @tps: Device to read from.
- * @reg: Register to read.
- * @val: Contians the value
- */
+ 
 int tps65217_reg_read(struct tps65217 *tps, unsigned int reg,
 			unsigned int *val)
 {
@@ -193,14 +181,7 @@ int tps65217_reg_read(struct tps65217 *tps, unsigned int reg,
 }
 EXPORT_SYMBOL_GPL(tps65217_reg_read);
 
-/**
- * tps65217_reg_write: Write a single tps65217 register.
- *
- * @tps: Device to write to.
- * @reg: Register to write to.
- * @val: Value to write.
- * @level: Password protected level
- */
+ 
 int tps65217_reg_write(struct tps65217 *tps, unsigned int reg,
 			unsigned int val, unsigned int level)
 {
@@ -238,15 +219,7 @@ int tps65217_reg_write(struct tps65217 *tps, unsigned int reg,
 }
 EXPORT_SYMBOL_GPL(tps65217_reg_write);
 
-/**
- * tps65217_update_bits: Modify bits w.r.t mask, val and level.
- *
- * @tps: Device to write to.
- * @reg: Register to read-write to.
- * @mask: Mask.
- * @val: Value to write.
- * @level: Password protected level
- */
+ 
 static int tps65217_update_bits(struct tps65217 *tps, unsigned int reg,
 		unsigned int mask, unsigned int val, unsigned int level)
 {
@@ -303,7 +276,7 @@ static const struct regmap_config tps65217_regmap_config = {
 
 static const struct of_device_id tps65217_of_match[] = {
 	{ .compatible = "ti,tps65217"},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, tps65217_of_match);
 
@@ -337,7 +310,7 @@ static int tps65217_probe(struct i2c_client *client)
 	} else {
 		int i;
 
-		/* Don't tell children about IRQ resources which won't fire */
+		 
 		for (i = 0; i < ARRAY_SIZE(tps65217s); i++)
 			tps65217s[i].num_resources = 0;
 	}
@@ -357,7 +330,7 @@ static int tps65217_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Set the PMIC to shutdown on PWR_EN toggle */
+	 
 	if (status_off) {
 		ret = tps65217_set_bits(tps, TPS65217_REG_STATUS,
 				TPS65217_STATUS_OFF, TPS65217_STATUS_OFF,
@@ -391,7 +364,7 @@ static void tps65217_remove(struct i2c_client *client)
 
 static const struct i2c_device_id tps65217_id_table[] = {
 	{"tps65217", TPS65217},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, tps65217_id_table);
 

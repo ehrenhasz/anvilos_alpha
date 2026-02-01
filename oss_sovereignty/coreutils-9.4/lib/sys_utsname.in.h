@@ -1,31 +1,7 @@
-/* Substitute for <sys/utsname.h>.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifndef _@GUARD_PREFIX@_SYS_UTSNAME_H
-
-#if __GNUC__ >= 3
-@PRAGMA_SYSTEM_HEADER@
-#endif
-@PRAGMA_COLUMNS@
-
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #if @HAVE_SYS_UTSNAME_H@
 
-/* Minix 3.1.8 has a bug: <stddef.h> must be included before <sys/utsname.h>.
-   But avoid namespace pollution on glibc systems.  */
+ 
 # if defined __minix && !defined __GLIBC__
 #  include <stddef.h>
 # endif
@@ -37,14 +13,14 @@
 #ifndef _@GUARD_PREFIX@_SYS_UTSNAME_H
 #define _@GUARD_PREFIX@_SYS_UTSNAME_H
 
-/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 
 #ifdef __cplusplus
@@ -52,7 +28,7 @@ extern "C" {
 #endif
 
 #if !@HAVE_STRUCT_UTSNAME@
-/* Length of the entries in 'struct utsname' is 256.  */
+ 
 # define _UTSNAME_LENGTH 256
 
 # ifndef _UTSNAME_NODENAME_LENGTH
@@ -72,26 +48,26 @@ extern "C" {
 # endif
 
 # if !GNULIB_defined_struct_utsname
-/* Structure describing the system and machine.  */
+ 
 struct utsname
   {
-    /* Name of this node on the network.  */
+     
     char nodename[_UTSNAME_NODENAME_LENGTH];
 
-    /* Name of the implementation of the operating system.  */
+     
     char sysname[_UTSNAME_SYSNAME_LENGTH];
-    /* Current release level of this implementation.  */
+     
     char release[_UTSNAME_RELEASE_LENGTH];
-    /* Current version level of this release.  */
+     
     char version[_UTSNAME_VERSION_LENGTH];
 
-    /* Name of the hardware type the system is running on.  */
+     
     char machine[_UTSNAME_MACHINE_LENGTH];
   };
 #  define GNULIB_defined_struct_utsname 1
 # endif
 
-#endif /* !@HAVE_STRUCT_UTSNAME@ */
+#endif  
 
 
 #if @GNULIB_UNAME@
@@ -112,5 +88,5 @@ _GL_WARN_ON_USE (uname, "uname is unportable - "
 #endif
 
 
-#endif /* _@GUARD_PREFIX@_SYS_UTSNAME_H */
-#endif /* _@GUARD_PREFIX@_SYS_UTSNAME_H */
+#endif  
+#endif  

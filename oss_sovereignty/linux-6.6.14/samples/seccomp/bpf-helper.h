@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Example wrapper around BPF macros.
- *
- * Copyright (c) 2012 The Chromium OS Authors <chromium-os-dev@chromium.org>
- * Author: Will Drewry <wad@chromium.org>
- *
- * The code may be used by anyone for any purpose,
- * and can serve as a starting point for developing
- * applications using prctl(PR_SET_SECCOMP, 2, ...).
- *
- * No guarantees are provided with respect to the correctness
- * or functionality of this code.
- */
+ 
+ 
 #ifndef __BPF_HELPER_H__
 #define __BPF_HELPER_H__
 
-#include <asm/bitsperlong.h>	/* for __BITS_PER_LONG */
+#include <asm/bitsperlong.h>	 
 #include <endian.h>
 #include <linux/filter.h>
-#include <linux/seccomp.h>	/* for seccomp_data */
+#include <linux/seccomp.h>	 
 #include <linux/types.h>
 #include <linux/unistd.h>
 #include <stddef.h>
@@ -56,12 +44,12 @@ void seccomp_bpf_print(struct sock_filter *filter, size_t count);
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (nr), 0, 1), \
 	jt
 
-/* Lame, but just an example */
+ 
 #define FIND_LABEL(labels, label) seccomp_bpf_label((labels), #label)
 
 #define EXPAND(...) __VA_ARGS__
 
-/* Ensure that we load the logically correct offset. */
+ 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define LO_ARG(idx) offsetof(struct seccomp_data, args[(idx)])
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
@@ -70,7 +58,7 @@ void seccomp_bpf_print(struct sock_filter *filter, size_t count);
 #error "Unknown endianness"
 #endif
 
-/* Map all width-sensitive operations */
+ 
 #if __BITS_PER_LONG == 32
 
 #define JEQ(x, jt) JEQ32(x, EXPAND(jt))
@@ -84,7 +72,7 @@ void seccomp_bpf_print(struct sock_filter *filter, size_t count);
 
 #elif __BITS_PER_LONG == 64
 
-/* Ensure that we load the logically correct offset. */
+ 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define ENDIAN(_lo, _hi) _lo, _hi
 #define HI_ARG(idx) offsetof(struct seccomp_data, args[(idx)]) + sizeof(__u32)
@@ -135,16 +123,16 @@ union arg64 {
 #error __BITS_PER_LONG value unusable.
 #endif
 
-/* Loads the arg into A */
+ 
 #define ARG_32(idx) \
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, LO_ARG(idx))
 
-/* Loads lo into M[0] and hi into M[1] and A */
+ 
 #define ARG_64(idx) \
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, LO_ARG(idx)), \
-	BPF_STMT(BPF_ST, 0), /* lo -> M[0] */ \
+	BPF_STMT(BPF_ST, 0),   \
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, HI_ARG(idx)), \
-	BPF_STMT(BPF_ST, 1) /* hi -> M[1] */
+	BPF_STMT(BPF_ST, 1)  
 
 #define JEQ32(value, jt) \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (value), 0, 1), \
@@ -174,83 +162,80 @@ union arg64 {
 	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (value), 1, 0), \
 	jt
 
-/*
- * All the JXX64 checks assume lo is saved in M[0] and hi is saved in both
- * A and M[1]. This invariant is kept by restoring A if necessary.
- */
+ 
 #define JEQ64(lo, hi, jt) \
-	/* if (hi != arg.hi) goto NOMATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	/* if (lo != arg.lo) goto NOMATCH; */ \
+	BPF_STMT(BPF_LD+BPF_MEM, 0),   \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (lo), 0, 2), \
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
 	BPF_STMT(BPF_LD+BPF_MEM, 1)
 
 #define JNE64(lo, hi, jt) \
-	/* if (hi != arg.hi) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 3), \
 	BPF_STMT(BPF_LD+BPF_MEM, 0), \
-	/* if (lo != arg.lo) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (lo), 2, 0), \
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
 	BPF_STMT(BPF_LD+BPF_MEM, 1)
 
 #define JA64(lo, hi, jt) \
-	/* if (hi & arg.hi) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JSET+BPF_K, (hi), 3, 0), \
 	BPF_STMT(BPF_LD+BPF_MEM, 0), \
-	/* if (lo & arg.lo) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JSET+BPF_K, (lo), 0, 2), \
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
 	BPF_STMT(BPF_LD+BPF_MEM, 1)
 
 #define JGE64(lo, hi, jt) \
-	/* if (hi > arg.hi) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (hi), 4, 0), \
-	/* if (hi != arg.hi) goto NOMATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
 	BPF_STMT(BPF_LD+BPF_MEM, 0), \
-	/* if (lo >= arg.lo) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (lo), 0, 2), \
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
 	BPF_STMT(BPF_LD+BPF_MEM, 1)
 
 #define JGT64(lo, hi, jt) \
-	/* if (hi > arg.hi) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (hi), 4, 0), \
-	/* if (hi != arg.hi) goto NOMATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
 	BPF_STMT(BPF_LD+BPF_MEM, 0), \
-	/* if (lo > arg.lo) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (lo), 0, 2), \
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
 	BPF_STMT(BPF_LD+BPF_MEM, 1)
 
 #define JLE64(lo, hi, jt) \
-	/* if (hi < arg.hi) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (hi), 0, 4), \
-	/* if (hi != arg.hi) goto NOMATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
 	BPF_STMT(BPF_LD+BPF_MEM, 0), \
-	/* if (lo <= arg.lo) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (lo), 2, 0), \
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
 	BPF_STMT(BPF_LD+BPF_MEM, 1)
 
 #define JLT64(lo, hi, jt) \
-	/* if (hi < arg.hi) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (hi), 0, 4), \
-	/* if (hi != arg.hi) goto NOMATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
 	BPF_STMT(BPF_LD+BPF_MEM, 0), \
-	/* if (lo < arg.lo) goto MATCH; */ \
+	  \
 	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (lo), 2, 0), \
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
@@ -260,4 +245,4 @@ union arg64 {
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
 		 offsetof(struct seccomp_data, nr))
 
-#endif  /* __BPF_HELPER_H__ */
+#endif   

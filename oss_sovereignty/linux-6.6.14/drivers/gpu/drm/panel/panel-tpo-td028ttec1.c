@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Toppoly TD028TTEC1 Panel Driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated
- *
- * Based on the omapdrm-specific panel-tpo-td028ttec1 driver
- *
- * Copyright (C) 2008 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- *
- * Neo 1973 code (jbt6k74.c):
- * Copyright (C) 2006-2007 OpenMoko, Inc.
- * Author: Harald Welte <laforge@openmoko.org>
- *
- * Ported and adapted from Neo 1973 U-Boot by:
- * H. Nikolaus Schaller <hns@goldelico.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -86,10 +70,7 @@ struct td028ttec1_panel {
 
 #define to_td028ttec1_device(p) container_of(p, struct td028ttec1_panel, panel)
 
-/*
- * noinline_for_stack so we don't get multiple copies of tx_buf
- * on the stack in case of gcc-plugin-structleak
- */
+ 
 static int noinline_for_stack
 jbt_ret_write_0(struct td028ttec1_panel *lcd, u8 reg, int *err)
 {
@@ -165,33 +146,33 @@ static int td028ttec1_prepare(struct drm_panel *panel)
 	unsigned int i;
 	int ret = 0;
 
-	/* Three times command zero */
+	 
 	for (i = 0; i < 3; ++i) {
 		jbt_ret_write_0(lcd, 0x00, &ret);
 		usleep_range(1000, 2000);
 	}
 
-	/* deep standby out */
+	 
 	jbt_reg_write_1(lcd, JBT_REG_POWER_ON_OFF, 0x17, &ret);
 
-	/* RGB I/F on, RAM write off, QVGA through, SIGCON enable */
+	 
 	jbt_reg_write_1(lcd, JBT_REG_DISPLAY_MODE, 0x80, &ret);
 
-	/* Quad mode off */
+	 
 	jbt_reg_write_1(lcd, JBT_REG_QUAD_RATE, 0x00, &ret);
 
-	/* AVDD on, XVDD on */
+	 
 	jbt_reg_write_1(lcd, JBT_REG_POWER_ON_OFF, 0x16, &ret);
 
-	/* Output control */
+	 
 	jbt_reg_write_2(lcd, JBT_REG_OUTPUT_CONTROL, 0xfff9, &ret);
 
-	/* Sleep mode off */
+	 
 	jbt_ret_write_0(lcd, JBT_REG_SLEEP_OUT, &ret);
 
-	/* at this point we have like 50% grey */
+	 
 
-	/* initialize register set */
+	 
 	jbt_reg_write_1(lcd, JBT_REG_DISPLAY_MODE1, 0x01, &ret);
 	jbt_reg_write_1(lcd, JBT_REG_DISPLAY_MODE2, 0x00, &ret);
 	jbt_reg_write_1(lcd, JBT_REG_RGB_FORMAT, 0x60, &ret);
@@ -205,10 +186,7 @@ static int td028ttec1_prepare(struct drm_panel *panel)
 	jbt_reg_write_1(lcd, JBT_REG_VCOM_VOLTAGE, 0x40, &ret);
 	jbt_reg_write_1(lcd, JBT_REG_EXT_DISPL, 0x03, &ret);
 	jbt_reg_write_1(lcd, JBT_REG_DCCLK_DCEV, 0x04, &ret);
-	/*
-	 * default of 0x02 in JBT_REG_ASW_SLEW responsible for 72Hz requirement
-	 * to avoid red / blue flicker
-	 */
+	 
 	jbt_reg_write_1(lcd, JBT_REG_ASW_SLEW, 0x04, &ret);
 	jbt_reg_write_1(lcd, JBT_REG_DUMMY_DISPLAY, 0x00, &ret);
 
@@ -296,12 +274,7 @@ static int td028ttec1_get_modes(struct drm_panel *panel,
 
 	connector->display_info.width_mm = td028ttec1_mode.width_mm;
 	connector->display_info.height_mm = td028ttec1_mode.height_mm;
-	/*
-	 * FIXME: According to the datasheet sync signals are sampled on the
-	 * rising edge of the clock, but the code running on the OpenMoko Neo
-	 * FreeRunner and Neo 1973 indicates sampling on the falling edge. This
-	 * should be tested on a real device.
-	 */
+	 
 	connector->display_info.bus_flags = DRM_BUS_FLAG_DE_HIGH
 					  | DRM_BUS_FLAG_SYNC_SAMPLE_NEGEDGE
 					  | DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE;
@@ -361,16 +334,16 @@ static void td028ttec1_remove(struct spi_device *spi)
 
 static const struct of_device_id td028ttec1_of_match[] = {
 	{ .compatible = "tpo,td028ttec1", },
-	/* DT backward compatibility. */
+	 
 	{ .compatible = "toppoly,td028ttec1", },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, td028ttec1_of_match);
 
 static const struct spi_device_id td028ttec1_ids[] = {
 	{ "td028ttec1", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(spi, td028ttec1_ids);

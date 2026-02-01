@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C client/driver for the Linear Technology LTC2941, LTC2942, LTC2943
- * and LTC2944 Battery Gas Gauge IC
- *
- * Copyright (C) 2014 Topic Embedded Systems
- *
- * Author: Auryn Verwegen
- * Author: Mike Looijmans
- */
+
+ 
 #include <linux/devm-helpers.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,7 +15,7 @@
 #define I16_MSB(x)			((x >> 8) & 0xFF)
 #define I16_LSB(x)			(x & 0xFF)
 
-#define LTC294X_WORK_DELAY		10	/* Update delay in seconds */
+#define LTC294X_WORK_DELAY		10	 
 
 #define LTC294X_MAX_VALUE		0xFFFF
 #define LTC294X_MID_SUPPLY		0x7FFF
@@ -69,14 +61,14 @@ enum ltc294x_id {
 #define LTC294X_REG_CONTROL_ADC_DISABLE(x)	((x) & ~(BIT(7) | BIT(6)))
 
 struct ltc294x_info {
-	struct i2c_client *client;	/* I2C Client pointer */
-	struct power_supply *supply;	/* Supply pointer */
-	struct power_supply_desc supply_desc;	/* Supply description */
-	struct delayed_work work;	/* Work scheduler */
-	enum ltc294x_id id;		/* Chip type */
-	int charge;	/* Last charge register content */
-	int r_sense;	/* mOhm */
-	int Qlsb;	/* nAh */
+	struct i2c_client *client;	 
+	struct power_supply *supply;	 
+	struct power_supply_desc supply_desc;	 
+	struct delayed_work work;	 
+	enum ltc294x_id id;		 
+	int charge;	 
+	int r_sense;	 
+	int Qlsb;	 
 };
 
 static inline int convert_bin_to_uAh(
@@ -148,20 +140,20 @@ static int ltc294x_reset(const struct ltc294x_info *info, int prescaler_exp)
 	u8 value;
 	u8 control;
 
-	/* Read status and control registers */
+	 
 	ret = ltc294x_read_regs(info->client, LTC294X_REG_CONTROL, &value, 1);
 	if (ret < 0)
 		return ret;
 
 	control = LTC294X_REG_CONTROL_PRESCALER_SET(prescaler_exp) |
 				LTC294X_REG_CONTROL_ALCC_CONFIG_DISABLED;
-	/* Put device into "monitor" mode */
+	 
 	switch (info->id) {
-	case LTC2942_ID:	/* 2942 measures every 2 sec */
+	case LTC2942_ID:	 
 		control |= LTC2942_REG_CONTROL_MODE_SCAN;
 		break;
 	case LTC2943_ID:
-	case LTC2944_ID:	/* 2943 and 2944 measure every 10 sec */
+	case LTC2944_ID:	 
 		control |= LTC2943_REG_CONTROL_MODE_SCAN;
 		break;
 	default:
@@ -197,7 +189,7 @@ static int ltc294x_get_charge(const struct ltc294x_info *info,
 
 	if (value < 0)
 		return value;
-	/* When r_sense < 0, this counts up when the battery discharges */
+	 
 	if (info->Qlsb < 0)
 		value -= 0xFFFF;
 	*val = convert_bin_to_uAh(info, value);
@@ -212,31 +204,31 @@ static int ltc294x_set_charge_now(const struct ltc294x_info *info, int val)
 	s32 value;
 
 	value = convert_uAh_to_bin(info, val);
-	/* Direction depends on how sense+/- were connected */
+	 
 	if (info->Qlsb < 0)
 		value += 0xFFFF;
-	if ((value < 0) || (value > 0xFFFF)) /* input validation */
+	if ((value < 0) || (value > 0xFFFF))  
 		return -EINVAL;
 
-	/* Read control register */
+	 
 	ret = ltc294x_read_regs(info->client,
 		LTC294X_REG_CONTROL, &ctrl_reg, 1);
 	if (ret < 0)
 		return ret;
-	/* Disable analog section */
+	 
 	ctrl_reg |= LTC294X_REG_CONTROL_SHUTDOWN_MASK;
 	ret = ltc294x_write_regs(info->client,
 		LTC294X_REG_CONTROL, &ctrl_reg, 1);
 	if (ret < 0)
 		return ret;
-	/* Set new charge value */
+	 
 	dataw[0] = I16_MSB(value);
 	dataw[1] = I16_LSB(value);
 	ret = ltc294x_write_regs(info->client,
 		LTC294X_REG_ACC_CHARGE_MSB, &dataw[0], 2);
 	if (ret < 0)
 		goto error_exit;
-	/* Enable analog section */
+	 
 error_exit:
 	ctrl_reg &= ~LTC294X_REG_CONTROL_SHUTDOWN_MASK;
 	ret = ltc294x_write_regs(info->client,
@@ -252,13 +244,13 @@ static int ltc294x_set_charge_thr(const struct ltc294x_info *info,
 	s32 value;
 
 	value = convert_uAh_to_bin(info, val);
-	/* Direction depends on how sense+/- were connected */
+	 
 	if (info->Qlsb < 0)
 		value += 0xFFFF;
-	if ((value < 0) || (value > 0xFFFF)) /* input validation */
+	if ((value < 0) || (value > 0xFFFF))  
 		return -EINVAL;
 
-	/* Set new charge value */
+	 
 	dataw[0] = I16_MSB(value);
 	dataw[1] = I16_LSB(value);
 	return ltc294x_write_regs(info->client, reg, &dataw[0], 2);
@@ -320,10 +312,8 @@ static int ltc294x_get_current(const struct ltc294x_info *info, int *val)
 		value *= 64000;
 	else
 		value *= 60000;
-	/* Value is in range -32k..+32k, r_sense is usually 10..50 mOhm,
-	 * the formula below keeps everything in s32 range while preserving
-	 * enough digits */
-	*val = 1000 * (value / (info->r_sense * 0x7FFF)); /* in uA */
+	 
+	*val = 1000 * (value / (info->r_sense * 0x7FFF));  
 	return ret;
 }
 
@@ -336,14 +326,14 @@ static int ltc294x_get_temperature(const struct ltc294x_info *info, int *val)
 
 	if (info->id == LTC2942_ID) {
 		reg = LTC2942_REG_TEMPERATURE_MSB;
-		value = 6000;	/* Full-scale is 600 Kelvin */
+		value = 6000;	 
 	} else {
 		reg = LTC2943_REG_TEMPERATURE_MSB;
-		value = 5100;	/* Full-scale is 510 Kelvin */
+		value = 5100;	 
 	}
 	ret = ltc294x_read_regs(info->client, reg, &datar[0], 2);
 	value *= (datar[0] << 8) | datar[1];
-	/* Convert to tenths of degree Celsius */
+	 
 	*val = value / 0xFFFF - 2722;
 	return ret;
 }
@@ -461,8 +451,7 @@ static int ltc294x_i2c_probe(struct i2c_client *client)
 							&client->dev);
 	info->supply_desc.name = np->name;
 
-	/* r_sense can be negative, when sense+ is connected to the battery
-	 * instead of the sense-. This results in reversed measurements. */
+	 
 	ret = of_property_read_u32(np, "lltc,resistor-sense", &r_sense);
 	if (ret < 0)
 		return dev_err_probe(&client->dev, ret,
@@ -489,7 +478,7 @@ static int ltc294x_i2c_probe(struct i2c_client *client)
 			     (7 - prescaler_exp);
 	}
 
-	/* Read status register to check for LTC2942 */
+	 
 	if (info->id == LTC2941_ID || info->id == LTC2942_ID) {
 		ret = ltc294x_read_regs(client, LTC294X_REG_STATUS, &status, 1);
 		if (ret < 0)
@@ -555,16 +544,16 @@ static void ltc294x_i2c_shutdown(struct i2c_client *client)
 	u8 value;
 	u8 control;
 
-	/* The LTC2941 does not need any special handling */
+	 
 	if (info->id == LTC2941_ID)
 		return;
 
-	/* Read control register */
+	 
 	ret = ltc294x_read_regs(info->client, LTC294X_REG_CONTROL, &value, 1);
 	if (ret < 0)
 		return;
 
-	/* Disable continuous ADC conversion as this drains the battery */
+	 
 	control = LTC294X_REG_CONTROL_ADC_DISABLE(value);
 	if (control != value)
 		ltc294x_write_regs(info->client, LTC294X_REG_CONTROL,
@@ -596,7 +585,7 @@ static SIMPLE_DEV_PM_OPS(ltc294x_pm_ops, ltc294x_suspend, ltc294x_resume);
 
 #else
 #define LTC294X_PM_OPS NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 
 static const struct i2c_device_id ltc294x_i2c_id[] = {

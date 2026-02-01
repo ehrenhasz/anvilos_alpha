@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2007 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #ifndef _MLX4_EN_H_
 #define _MLX4_EN_H_
@@ -66,9 +35,7 @@
 
 #define MLX4_EN_MSG_LEVEL	(NETIF_MSG_LINK | NETIF_MSG_IFDOWN)
 
-/*
- * Device constants
- */
+ 
 
 
 #define MLX4_EN_PAGE_SHIFT	12
@@ -93,36 +60,29 @@
 #define CTRL_SIZE	sizeof(struct mlx4_wqe_ctrl_seg)
 #define DS_SIZE		sizeof(struct mlx4_wqe_data_seg)
 
-/* Maximal size of the bounce buffer:
- * 256 bytes for LSO headers.
- * CTRL_SIZE for control desc.
- * DS_SIZE if skb->head contains some payload.
- * MAX_SKB_FRAGS frags.
- */
+ 
 #define MLX4_TX_BOUNCE_BUFFER_SIZE \
 	ALIGN(256 + CTRL_SIZE + DS_SIZE + MAX_SKB_FRAGS * DS_SIZE, TXBB_SIZE)
 
 #define MLX4_MAX_DESC_TXBBS	   (MLX4_TX_BOUNCE_BUFFER_SIZE / TXBB_SIZE)
 
-/*
- * OS related constants and tunables
- */
+ 
 
 #define MLX4_EN_PRIV_FLAGS_BLUEFLAME 1
 #define MLX4_EN_PRIV_FLAGS_PHV	     2
 
 #define MLX4_EN_WATCHDOG_TIMEOUT	(15 * HZ)
 
-/* Use the maximum between 16384 and a single page */
+ 
 #define MLX4_EN_ALLOC_SIZE	PAGE_ALIGN(16384)
 
 #define MLX4_EN_MAX_RX_FRAGS	4
 
-/* Maximum ring sizes */
+ 
 #define MLX4_EN_MAX_TX_SIZE	8192
 #define MLX4_EN_MAX_RX_SIZE	8192
 
-/* Minimum ring size for our page-allocation scheme to work */
+ 
 #define MLX4_EN_MIN_RX_SIZE	(MLX4_EN_ALLOC_SIZE / SMP_CACHE_BYTES)
 #define MLX4_EN_MIN_TX_SIZE	(4096 / TXBB_SIZE)
 
@@ -138,7 +98,7 @@
 
 #define MLX4_EN_DEFAULT_TX_WORK		256
 
-/* Target number of packets to coalesce with interrupt moderation */
+ 
 #define MLX4_EN_RX_COAL_TARGET	44
 #define MLX4_EN_RX_COAL_TIME	0x10
 
@@ -162,8 +122,7 @@
 #define MLX4_EN_DEF_RX_PAUSE	1
 #define MLX4_EN_DEF_TX_PAUSE	1
 
-/* Interval between successive polls in the Tx routine when polling is used
-   instead of interrupts (in per-core Tx rings) - should be power of 2 */
+ 
 #define MLX4_EN_TX_POLL_MODER	16
 #define MLX4_EN_TX_POLL_TIMEOUT	(HZ / 4)
 
@@ -174,28 +133,24 @@
 #define MLX4_SELFTEST_LB_MIN_MTU (MLX4_LOOPBACK_TEST_PAYLOAD + NET_IP_ALIGN + \
 				  ETH_HLEN + PREAMBLE_LEN)
 
-/* VLAN_HLEN is added twice,to support skb vlan tagged with multiple
- * headers. (For example: ETH_P_8021Q and ETH_P_8021AD).
- */
+ 
 #define MLX4_EN_EFF_MTU(mtu)	((mtu) + ETH_HLEN + (2 * VLAN_HLEN))
 #define ETH_BCAST		0xffffffffffffULL
 
 #define MLX4_EN_LOOPBACK_RETRIES	5
 #define MLX4_EN_LOOPBACK_TIMEOUT	100
 
-/* Constants for TX flow */
+ 
 enum {
-	MAX_INLINE = 104, /* 128 - 16 - 4 - 4 */
+	MAX_INLINE = 104,  
 	MAX_BF = 256,
 	MIN_PKT_LEN = 17,
 };
 
-/*
- * Configurables
- */
+ 
 
 enum cq_type {
-	/* keep tx types first */
+	 
 	TX,
 	TX_XDP,
 #define MLX4_EN_NUM_TX_TYPES (TX_XDP + 1)
@@ -203,9 +158,7 @@ enum cq_type {
 };
 
 
-/*
- * Useful macros
- */
+ 
 #define ROUNDUP_LOG2(x)		ilog2(roundup_pow_of_two(x))
 #define XNOR(x, y)		(!(x) == !(y))
 
@@ -234,7 +187,7 @@ struct mlx4_en_tx_info {
 struct mlx4_en_tx_desc {
 	struct mlx4_wqe_ctrl_seg ctrl;
 	union {
-		struct mlx4_wqe_data_seg data; /* at least one data segment */
+		struct mlx4_wqe_data_seg data;  
 		struct mlx4_wqe_lso_seg lso;
 		struct mlx4_wqe_inline_seg inl;
 	};
@@ -268,9 +221,7 @@ enum {
 struct mlx4_en_priv;
 
 struct mlx4_en_tx_ring {
-	/* cache line used and dirtied in tx completion
-	 * (mlx4_en_free_tx_buf())
-	 */
+	 
 	u32			last_nr_txbb;
 	u32			cons;
 	unsigned long		wake_queue;
@@ -281,7 +232,7 @@ struct mlx4_en_tx_ring {
 						u64 timestamp, int napi_mode);
 	struct mlx4_en_rx_ring	*recycle_ring;
 
-	/* cache line used and dirtied in mlx4_en_xmit() */
+	 
 	u32			prod ____cacheline_aligned_in_smp;
 	unsigned int		tx_dropped;
 	unsigned long		bytes;
@@ -291,11 +242,11 @@ struct mlx4_en_tx_ring {
 	unsigned long		xmit_more;
 	struct mlx4_bf		bf;
 
-	/* Following part should be mostly read */
+	 
 	void __iomem		*doorbell_address;
 	__be32			doorbell_qpn;
 	__be32			mr_key;
-	u32			size; /* number of TXBBs */
+	u32			size;  
 	u32			size_mask;
 	u32			full_size;
 	u32			buf_size;
@@ -308,9 +259,7 @@ struct mlx4_en_tx_ring {
 	u8			hwtstamp_tx_type;
 	u8			*bounce_buf;
 
-	/* Not used in fast path
-	 * Only queue_stopped might be used if BQL is not properly working.
-	 */
+	 
 	unsigned long		queue_stopped;
 	unsigned long		state;
 	struct mlx4_hwq_resources sp_wqres;
@@ -319,22 +268,22 @@ struct mlx4_en_tx_ring {
 	cpumask_t		sp_affinity_mask;
 	enum mlx4_qp_state	sp_qp_state;
 	u16			sp_stride;
-	u16			sp_cqn;	/* index of port CQ associated with this ring */
+	u16			sp_cqn;	 
 } ____cacheline_aligned_in_smp;
 
 struct mlx4_en_rx_desc {
-	/* actual number of entries depends on rx ring stride */
+	 
 	DECLARE_FLEX_ARRAY(struct mlx4_wqe_data_seg, data);
 };
 
 struct mlx4_en_rx_ring {
 	struct mlx4_hwq_resources wqres;
-	u32 size ;	/* number of Rx descs*/
+	u32 size ;	 
 	u32 actual_size;
 	u32 size_mask;
 	u16 stride;
 	u16 log_stride;
-	u16 cqn;	/* index of port CQ associated with this ring */
+	u16 cqn;	 
 	u32 prod;
 	u32 cons;
 	u32 buf_size;
@@ -447,8 +396,8 @@ struct mlx4_en_rss_map {
 };
 
 enum mlx4_en_port_flag {
-	MLX4_EN_PORT_ANC = 1<<0, /* Auto-negotiation complete */
-	MLX4_EN_PORT_ANE = 1<<1, /* Auto-negotiation enabled */
+	MLX4_EN_PORT_ANC = 1<<0,  
+	MLX4_EN_PORT_ANE = 1<<1,  
 };
 
 struct mlx4_en_port_state {
@@ -478,9 +427,9 @@ struct mlx4_en_frag_info {
 };
 
 #ifdef CONFIG_MLX4_EN_DCB
-/* Minimal TC BW - setting to 0 will block traffic */
+ 
 #define MLX4_EN_BW_MIN 1
-#define MLX4_EN_BW_MAX 100 /* Utilize 100% of the line */
+#define MLX4_EN_BW_MAX 100  
 
 #define MLX4_EN_TC_VENDOR 0
 #define MLX4_EN_TC_ETS 7
@@ -507,11 +456,9 @@ struct ethtool_flow_id {
 enum {
 	MLX4_EN_FLAG_PROMISC		= (1 << 0),
 	MLX4_EN_FLAG_MC_PROMISC		= (1 << 1),
-	/* whether we need to enable hardware loopback by putting dmac
-	 * in Tx WQE
-	 */
+	 
 	MLX4_EN_FLAG_ENABLE_HW_LOOPBACK	= (1 << 2),
-	/* whether we need to drop packets that hardware loopback-ed */
+	 
 	MLX4_EN_FLAG_RX_FILTER_NEEDED	= (1 << 3),
 	MLX4_EN_FLAG_FORCE_PROMISC	= (1 << 4),
 	MLX4_EN_FLAG_RX_CSUM_NON_TCP_UDP	= (1 << 5),
@@ -526,7 +473,7 @@ enum {
 
 struct mlx4_en_stats_bitmap {
 	DECLARE_BITMAP(bitmap, NUM_ALL_STATS);
-	struct mutex mutex; /* for mutual access to stats bitmap */
+	struct mutex mutex;  
 };
 
 enum {
@@ -541,7 +488,7 @@ struct mlx4_en_priv {
 	struct mlx4_en_port_state port_state;
 	spinlock_t stats_lock;
 	struct ethtool_flow_id ethtool_rules[MAX_NUM_OF_FS_RULES];
-	/* To allow rules removal while port is going down */
+	 
 	struct list_head ethtool_list;
 
 	unsigned long last_moder_packets[MAX_RX_RINGS];
@@ -803,9 +750,7 @@ int mlx4_en_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp);
 int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash,
 			enum xdp_rss_hash_type *rss_type);
 
-/*
- * Functions for time stamping
- */
+ 
 u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe);
 u64 mlx4_en_get_hwtstamp(struct mlx4_en_dev *mdev, u64 timestamp);
 void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
@@ -814,15 +759,12 @@ void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
 void mlx4_en_init_timestamp(struct mlx4_en_dev *mdev);
 void mlx4_en_remove_timestamp(struct mlx4_en_dev *mdev);
 
-/* Globals
- */
+ 
 extern const struct ethtool_ops mlx4_en_ethtool_ops;
 
 
 
-/*
- * printk / logging functions
- */
+ 
 
 __printf(3, 4)
 void en_print(const char *level, const struct mlx4_en_priv *priv,

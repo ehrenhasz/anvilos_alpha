@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ALSA SoC WL1273 codec driver
- *
- * Author:      Matti Aaltonen, <matti.j.aaltonen@nokia.com>
- *
- * Copyright:   (C) 2010, 2011 Nokia Corporation
- */
+
+ 
 
 #include <linux/mfd/wl1273-core.h>
 #include <linux/slab.h>
@@ -19,7 +13,7 @@
 
 enum wl1273_mode { WL1273_MODE_BT, WL1273_MODE_FM_RX, WL1273_MODE_FM_TX };
 
-/* codec private data */
+ 
 struct wl1273_priv {
 	enum wl1273_mode mode;
 	struct wl1273_core *core;
@@ -166,11 +160,7 @@ static int snd_wl1273_get_audio_route(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/*
- * TODO: Implement the audio routing in the driver. Now this control
- * only indicates the setting that has been done elsewhere (in the user
- * space).
- */
+ 
 static const char * const wl1273_audio_route[] = { "Bt", "FmRx", "FmTx" };
 
 static int snd_wl1273_set_audio_route(struct snd_kcontrol *kcontrol,
@@ -182,7 +172,7 @@ static int snd_wl1273_set_audio_route(struct snd_kcontrol *kcontrol,
 	if (wl1273->mode == ucontrol->value.enumerated.item[0])
 		return 0;
 
-	/* Do not allow changes while stream is running */
+	 
 	if (snd_soc_component_active(component))
 		return -EPERM;
 
@@ -399,7 +389,7 @@ static struct snd_soc_dai_driver wl1273_dai = {
 	.ops = &wl1273_dai_ops,
 };
 
-/* Audio interface format for the soc_card driver */
+ 
 int wl1273_get_format(struct snd_soc_component *component, unsigned int *fmt)
 {
 	struct wl1273_priv *wl1273;

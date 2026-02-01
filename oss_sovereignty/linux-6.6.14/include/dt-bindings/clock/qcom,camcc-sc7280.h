@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_CAM_CC_SC7280_H
 #define _DT_BINDINGS_CLK_QCOM_CAM_CC_SC7280_H
 
-/* CAM_CC clocks */
+ 
 #define CAM_CC_PLL0				0
 #define CAM_CC_PLL0_OUT_EVEN			1
 #define CAM_CC_PLL0_OUT_ODD			2
@@ -116,7 +114,7 @@
 #define CAM_CC_SLOW_AHB_CLK_SRC			106
 #define CAM_CC_XO_CLK_SRC			107
 
-/* CAM_CC power domains */
+ 
 #define CAM_CC_BPS_GDSC				0
 #define CAM_CC_IFE_0_GDSC			1
 #define CAM_CC_IFE_1_GDSC			2

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics Key Scanning driver
- *
- * Copyright (c) 2014 STMicroelectonics Ltd.
- * Author: Stuart Menefy <stuart.menefy@st.com>
- *
- * Based on sh_keysc.c, copyright 2008 Magnus Damm
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/input.h>

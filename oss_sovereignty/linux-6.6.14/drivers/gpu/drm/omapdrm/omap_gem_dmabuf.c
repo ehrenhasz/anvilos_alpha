@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob.clark@linaro.org>
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/highmem.h>
@@ -13,9 +10,7 @@
 
 MODULE_IMPORT_NS(DMA_BUF);
 
-/* -----------------------------------------------------------------------------
- * DMABUF Export
- */
+ 
 
 static struct sg_table *omap_gem_map_dma_buf(
 		struct dma_buf_attachment *attachment,
@@ -43,12 +38,10 @@ static int omap_gem_dmabuf_begin_cpu_access(struct dma_buf *buffer,
 	struct drm_gem_object *obj = buffer->priv;
 	struct page **pages;
 	if (omap_gem_flags(obj) & OMAP_BO_TILED_MASK) {
-		/* TODO we would need to pin at least part of the buffer to
-		 * get de-tiled view.  For now just reject it.
-		 */
+		 
 		return -ENOMEM;
 	}
-	/* make sure we have the pages: */
+	 
 	return omap_gem_get_pages(obj, &pages, true);
 }
 
@@ -90,9 +83,7 @@ struct dma_buf *omap_gem_prime_export(struct drm_gem_object *obj, int flags)
 	return drm_gem_dmabuf_export(obj->dev, &exp_info);
 }
 
-/* -----------------------------------------------------------------------------
- * DMABUF Import
- */
+ 
 
 struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
 					     struct dma_buf *dma_buf)
@@ -105,10 +96,7 @@ struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
 	if (dma_buf->ops == &omap_dmabuf_ops) {
 		obj = dma_buf->priv;
 		if (obj->dev == dev) {
-			/*
-			 * Importing dmabuf exported from out own gem increases
-			 * refcount on gem itself instead of f_count of dmabuf.
-			 */
+			 
 			drm_gem_object_get(obj);
 			return obj;
 		}

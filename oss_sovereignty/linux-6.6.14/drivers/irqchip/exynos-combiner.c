@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Combiner irqchip for EXYNOS
- */
+
+ 
 #include <linux/err.h>
 #include <linux/export.h>
 #include <linux/init.h>
@@ -129,7 +124,7 @@ static void __init combiner_init_one(struct combiner_chip_data *combiner_data,
 	combiner_data->irq_mask = 0xff << ((combiner_nr % 4) << 3);
 	combiner_data->parent_irq = irq;
 
-	/* Disable all interrupts */
+	 
 	writel_relaxed(combiner_data->irq_mask, base + COMBINER_ENABLE_CLEAR);
 }
 
@@ -198,13 +193,7 @@ static void __init combiner_init(void __iomem *combiner_base,
 
 #ifdef CONFIG_PM
 
-/**
- * combiner_suspend - save interrupt combiner state before suspend
- *
- * Save the interrupt enable set register for all combiner groups since
- * the state is lost when the system enters into a sleep state.
- *
- */
+ 
 static int combiner_suspend(void)
 {
 	int i;
@@ -216,13 +205,7 @@ static int combiner_suspend(void)
 	return 0;
 }
 
-/**
- * combiner_resume - restore interrupt combiner state after resume
- *
- * Restore the interrupt enable set register for all combiner groups since
- * the state is lost when the system enters into a sleep state on suspend.
- *
- */
+ 
 static void combiner_resume(void)
 {
 	int i;

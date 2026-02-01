@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * mpq7932.c - hwmon with optional regulator driver for mps mpq7932
- * Copyright 2022 Monolithic Power Systems, Inc
- *
- * Author: Saravanan Sekar <saravanan@linumiz.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>
@@ -54,10 +49,7 @@ static int mpq7932_write_word_data(struct i2c_client *client, int page, int reg,
 				   u16 word)
 {
 	switch (reg) {
-	/*
-	 * chip supports only byte access for VOUT_COMMAND otherwise
-	 * access results -EREMOTEIO
-	 */
+	 
 	case PMBUS_VOUT_COMMAND:
 		return pmbus_write_byte_data(client, page, reg, word & 0xFF);
 
@@ -70,21 +62,14 @@ static int mpq7932_read_word_data(struct i2c_client *client, int page,
 				  int phase, int reg)
 {
 	switch (reg) {
-	/*
-	 * chip supports neither (PMBUS_VOUT_MARGIN_HIGH, PMBUS_VOUT_MARGIN_LOW)
-	 * nor (PMBUS_MFR_VOUT_MIN, PMBUS_MFR_VOUT_MAX). As a result set voltage
-	 * fails due to error in pmbus_regulator_get_low_margin, so faked.
-	 */
+	 
 	case PMBUS_MFR_VOUT_MIN:
 		return 0;
 
 	case PMBUS_MFR_VOUT_MAX:
 		return MPQ7932_VOUT_MAX;
 
-	/*
-	 * chip supports only byte access for VOUT_COMMAND otherwise
-	 * access results in -EREMOTEIO
-	 */
+	 
 	case PMBUS_READ_VOUT:
 		return pmbus_read_byte_data(client, page, PMBUS_VOUT_COMMAND);
 

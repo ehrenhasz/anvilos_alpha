@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+
+ 
 
 #include "table.h"
 u32 RTL8188EEPHY_REG_1TARRAY[] = {

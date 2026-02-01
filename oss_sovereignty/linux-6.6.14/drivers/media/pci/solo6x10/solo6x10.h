@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+ 
+ 
 
 #ifndef __SOLO6X10_H
 #define __SOLO6X10_H
@@ -39,21 +31,21 @@
 
 #ifndef PCI_VENDOR_ID_BLUECHERRY
 #define PCI_VENDOR_ID_BLUECHERRY	0x1BB3
-/* Neugent Softlogic 6010 based cards */
+ 
 #define PCI_DEVICE_ID_NEUSOLO_4		0x4304
 #define PCI_DEVICE_ID_NEUSOLO_9		0x4309
 #define PCI_DEVICE_ID_NEUSOLO_16	0x4310
-/* Bluecherry Softlogic 6010 based cards */
+ 
 #define PCI_DEVICE_ID_BC_SOLO_4		0x4E04
 #define PCI_DEVICE_ID_BC_SOLO_9		0x4E09
 #define PCI_DEVICE_ID_BC_SOLO_16	0x4E10
-/* Bluecherry Softlogic 6110 based cards */
+ 
 #define PCI_DEVICE_ID_BC_6110_4		0x5304
 #define PCI_DEVICE_ID_BC_6110_8		0x5308
 #define PCI_DEVICE_ID_BC_6110_16	0x5310
-#endif /* Bluecherry */
+#endif  
 
-/* Used in pci_device_id, and solo_dev->type */
+ 
 #define SOLO_DEV_6010			0
 #define SOLO_DEV_6110			1
 
@@ -63,21 +55,17 @@
 
 #define SOLO6X10_VERSION		"3.0.0"
 
-/*
- * The SOLO6x10 actually has 8 i2c channels, but we only use 2.
- * 0 - Techwell chip(s)
- * 1 - SAA7128
- */
+ 
 #define SOLO_I2C_ADAPTERS		2
 #define SOLO_I2C_TW			0
 #define SOLO_I2C_SAA			1
 
-/* DMA Engine setup */
+ 
 #define SOLO_NR_P2M			4
 #define SOLO_NR_P2M_DESC		256
 #define SOLO_P2M_DESC_SIZE		(SOLO_NR_P2M_DESC * 16)
 
-/* Encoder standard modes */
+ 
 #define SOLO_ENC_MODE_CIF		2
 #define SOLO_ENC_MODE_HD1		1
 #define SOLO_ENC_MODE_D1		9
@@ -88,15 +76,7 @@
 #define V4L2_CID_MOTION_TRACE		(SOLO_CID_CUSTOM_BASE+2)
 #define V4L2_CID_OSD_TEXT		(SOLO_CID_CUSTOM_BASE+3)
 
-/*
- * Motion thresholds are in a table of 64x64 samples, with
- * each sample representing 16x16 pixels of the source. In
- * effect, 44x30 samples are used for NTSC, and 44x36 for PAL.
- * The 5th sample on the 10th row is (10*64)+5 = 645.
- *
- * Internally it is stored as a 45x45 array (45*16 = 720, which is the
- * maximum PAL/NTSC width).
- */
+ 
 #define SOLO_MOTION_SZ (45)
 
 enum SOLO_I2C_STATE {
@@ -107,7 +87,7 @@ enum SOLO_I2C_STATE {
 	IIC_STATE_STOP
 };
 
-/* Defined in Table 4-16, Page 68-69 of the 6010 Datasheet */
+ 
 struct solo_p2m_desc {
 	u32	ctrl;
 	u32	cfg;
@@ -138,11 +118,11 @@ enum solo_enc_types {
 
 struct solo_enc_dev {
 	struct solo_dev	*solo_dev;
-	/* V4L2 Items */
+	 
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *md_thresholds;
 	struct video_device	*vfd;
-	/* General accounting */
+	 
 	struct mutex		lock;
 	spinlock_t		motion_lock;
 	u8			ch;
@@ -154,12 +134,12 @@ struct solo_enc_dev {
 	u16			width;
 	u16			height;
 
-	/* OSD buffers */
+	 
 	char			osd_text[OSD_TEXT_MAX + 1];
 	u8			osd_buf[SOLO_EOSD_EXT_SIZE_MAX]
 					__aligned(4);
 
-	/* VOP stuff */
+	 
 	u8			vop[64];
 	int			vop_len;
 	u8			jpeg_header[1024];
@@ -177,9 +157,9 @@ struct solo_enc_dev {
 	spinlock_t		av_lock;
 };
 
-/* The SOLO6x10 PCI Device */
+ 
 struct solo_dev {
-	/* General stuff */
+	 
 	struct pci_dev		*pdev;
 	int			type;
 	unsigned int		time_sync;
@@ -192,15 +172,15 @@ struct solo_dev {
 	u32			motion_mask;
 	struct v4l2_device	v4l2_dev;
 #ifdef CONFIG_GPIOLIB
-	/* GPIO */
+	 
 	struct gpio_chip	gpio_dev;
 #endif
 
-	/* tw28xx accounting */
+	 
 	u8			tw2865, tw2864, tw2815;
 	u8			tw28_cnt;
 
-	/* i2c related items */
+	 
 	struct i2c_adapter	i2c_adap[SOLO_I2C_ADAPTERS];
 	enum SOLO_I2C_STATE	i2c_state;
 	struct mutex		i2c_mutex;
@@ -210,13 +190,13 @@ struct solo_dev {
 	unsigned int		i2c_msg_num;
 	unsigned int		i2c_msg_ptr;
 
-	/* P2M DMA Engine */
+	 
 	struct solo_p2m_dev	p2m_dev[SOLO_NR_P2M];
 	atomic_t		p2m_count;
 	int			p2m_jiffies;
 	unsigned int		p2m_timeouts;
 
-	/* V4L2 Display items */
+	 
 	struct video_device	*vfd;
 	unsigned int		erasing;
 	unsigned int		frame_blank;
@@ -224,45 +204,45 @@ struct solo_dev {
 	wait_queue_head_t	disp_thread_wait;
 	struct v4l2_ctrl_handler disp_hdl;
 
-	/* V4L2 Encoder items */
+	 
 	struct solo_enc_dev	*v4l2_enc[SOLO_MAX_CHANNELS];
 	u16			enc_bw_remain;
-	/* IDX into hw mp4 encoder */
+	 
 	u8			enc_idx;
 
-	/* Current video settings */
+	 
 	u32			video_type;
 	u16			video_hsize, video_vsize;
 	u16			vout_hstart, vout_vstart;
 	u16			vin_hstart, vin_vstart;
 	u8			fps;
 
-	/* JPEG Qp setting */
+	 
 	spinlock_t      jpeg_qp_lock;
 	u32		jpeg_qp[2];
 
-	/* Audio components */
+	 
 	struct snd_card		*snd_card;
 	struct snd_pcm		*snd_pcm;
 	atomic_t		snd_users;
 	int			g723_hw_idx;
 
-	/* sysfs stuffs */
+	 
 	struct device		dev;
 	int			sdram_size;
 	struct bin_attribute	sdram_attr;
 	unsigned int		sys_config;
 
-	/* Ring thread */
+	 
 	struct task_struct	*ring_thread;
 	wait_queue_head_t	ring_thread_wait;
 
-	/* VOP_HEADER handling */
+	 
 	void                    *vh_buf;
 	dma_addr_t		vh_dma;
 	int			vh_size;
 
-	/* Buffer handling */
+	 
 	struct vb2_queue	vidq;
 	u32			sequence;
 	struct task_struct      *kthread;
@@ -298,7 +278,7 @@ static inline void solo_irq_off(struct solo_dev *dev, u32 mask)
 	solo_reg_write(dev, SOLO_IRQ_MASK, dev->irq_mask);
 }
 
-/* Init/exit routines for subsystems */
+ 
 int solo_disp_init(struct solo_dev *solo_dev);
 void solo_disp_exit(struct solo_dev *solo_dev);
 
@@ -323,7 +303,7 @@ void solo_enc_v4l2_exit(struct solo_dev *solo_dev);
 int solo_g723_init(struct solo_dev *solo_dev);
 void solo_g723_exit(struct solo_dev *solo_dev);
 
-/* ISR's */
+ 
 int solo_i2c_isr(struct solo_dev *solo_dev);
 void solo_p2m_isr(struct solo_dev *solo_dev, int id);
 void solo_p2m_error_isr(struct solo_dev *solo_dev);
@@ -332,12 +312,12 @@ void solo_g723_isr(struct solo_dev *solo_dev);
 void solo_motion_isr(struct solo_dev *solo_dev);
 void solo_video_in_isr(struct solo_dev *solo_dev);
 
-/* i2c read/write */
+ 
 u8 solo_i2c_readbyte(struct solo_dev *solo_dev, int id, u8 addr, u8 off);
 void solo_i2c_writebyte(struct solo_dev *solo_dev, int id, u8 addr, u8 off,
 			u8 data);
 
-/* P2M DMA */
+ 
 int solo_p2m_dma_t(struct solo_dev *solo_dev, int wr,
 		   dma_addr_t dma_addr, u32 ext_addr, u32 size,
 		   int repeat, u32 ext_size);
@@ -351,30 +331,30 @@ int solo_p2m_dma_desc(struct solo_dev *solo_dev,
 		      struct solo_p2m_desc *desc, dma_addr_t desc_dma,
 		      int desc_cnt);
 
-/* Global s_std ioctl */
+ 
 int solo_set_video_type(struct solo_dev *solo_dev, bool is_50hz);
 void solo_update_mode(struct solo_enc_dev *solo_enc);
 
-/* Set the threshold for motion detection */
+ 
 int solo_set_motion_threshold(struct solo_dev *solo_dev, u8 ch, u16 val);
 int solo_set_motion_block(struct solo_dev *solo_dev, u8 ch,
 		const u16 *thresholds);
 #define SOLO_DEF_MOT_THRESH		0x0300
 
-/* Write text on OSD */
+ 
 int solo_osd_print(struct solo_enc_dev *solo_enc);
 
-/* EEPROM commands */
+ 
 unsigned int solo_eeprom_ewen(struct solo_dev *solo_dev, int w_en);
 __be16 solo_eeprom_read(struct solo_dev *solo_dev, int loc);
 int solo_eeprom_write(struct solo_dev *solo_dev, int loc,
 		      __be16 data);
 
-/* JPEG Qp functions */
+ 
 void solo_s_jpeg_qp(struct solo_dev *solo_dev, unsigned int ch,
 		    unsigned int qp);
 int solo_g_jpeg_qp(struct solo_dev *solo_dev, unsigned int ch);
 
 #define CHK_FLAGS(v, flags) (((v) & (flags)) == (flags))
 
-#endif /* __SOLO6X10_H */
+#endif  

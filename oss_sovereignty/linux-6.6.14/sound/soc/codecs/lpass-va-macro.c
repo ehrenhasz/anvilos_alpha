@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -18,7 +18,7 @@
 
 #include "lpass-macro-common.h"
 
-/* VA macro registers */
+ 
 #define CDC_VA_CLK_RST_CTRL_MCLK_CONTROL	(0x0000)
 #define CDC_VA_MCLK_CONTROL_EN			BIT(0)
 #define CDC_VA_CLK_RST_CTRL_FS_CNT_CONTROL	(0x0004)
@@ -252,7 +252,7 @@ static bool va_is_volatile_register(struct device *dev, unsigned int reg)
 }
 
 static const struct reg_default va_defaults[] = {
-	/* VA macro */
+	 
 	{ CDC_VA_CLK_RST_CTRL_MCLK_CONTROL, 0x00},
 	{ CDC_VA_CLK_RST_CTRL_FS_CNT_CONTROL, 0x00},
 	{ CDC_VA_CLK_RST_CTRL_SWR_CONTROL, 0x00},
@@ -276,7 +276,7 @@ static const struct reg_default va_defaults[] = {
 	{ CDC_VA_TOP_CSR_SWR_MIC_CTL2, 0xEE},
 	{ CDC_VA_TOP_CSR_SWR_CTRL, 0x06},
 
-	/* VA core */
+	 
 	{ CDC_VA_INP_MUX_ADC_MUX0_CFG0, 0x00},
 	{ CDC_VA_INP_MUX_ADC_MUX0_CFG1, 0x00},
 	{ CDC_VA_INP_MUX_ADC_MUX1_CFG0, 0x00},
@@ -446,7 +446,7 @@ static int va_clk_rsc_fs_gen_request(struct va_macro *va, bool enable)
 		regmap_update_bits(regmap, CDC_VA_CLK_RST_CTRL_MCLK_CONTROL,
 				   CDC_VA_MCLK_CONTROL_EN,
 				   CDC_VA_MCLK_CONTROL_EN);
-		/* clear the fs counter */
+		 
 		regmap_update_bits(regmap, CDC_VA_CLK_RST_CTRL_FS_CNT_CONTROL,
 				   CDC_VA_FS_CONTROL_EN | CDC_VA_FS_COUNTER_CLR,
 				   CDC_VA_FS_CONTROL_EN | CDC_VA_FS_COUNTER_CLR);
@@ -747,10 +747,10 @@ static int va_macro_enable_dec(struct snd_soc_dapm_widget *w,
 		snd_soc_component_update_bits(comp,
 			dec_cfg_reg, CDC_VA_ADC_MODE_MASK,
 			va->dec_mode[decimator] << CDC_VA_ADC_MODE_SHIFT);
-		/* Enable TX PGA Mute */
+		 
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* Enable TX CLK */
+		 
 		snd_soc_component_update_bits(comp, tx_vol_ctl_reg,
 					      CDC_VA_TX_PATH_CLK_EN_MASK,
 					      CDC_VA_TX_PATH_CLK_EN);
@@ -771,9 +771,7 @@ static int va_macro_enable_dec(struct snd_soc_dapm_widget *w,
 				      CDC_VA_TX_HPF_CUTOFF_FREQ_CHANGE_MASK,
 				      CDC_VA_TX_HPF_CUTOFF_FREQ_CHANGE_REQ);
 
-			/*
-			 * Minimum 1 clk cycle delay is required as per HW spec
-			 */
+			 
 			usleep_range(1000, 1010);
 
 			snd_soc_component_update_bits(comp,
@@ -787,16 +785,14 @@ static int va_macro_enable_dec(struct snd_soc_dapm_widget *w,
 		snd_soc_component_update_bits(comp, hpf_gate_reg,
 					      CDC_VA_TX_HPF_ZERO_GATE_MASK,
 					      CDC_VA_TX_HPF_ZERO_NO_GATE);
-		/*
-		 * 6ms delay is required as per HW spec
-		 */
+		 
 		usleep_range(6000, 6010);
-		/* apply gain after decimator is enabled */
+		 
 		snd_soc_component_write(comp, tx_gain_ctl_reg,
 			snd_soc_component_read(comp, tx_gain_ctl_reg));
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* Disable TX CLK */
+		 
 		snd_soc_component_update_bits(comp, tx_vol_ctl_reg,
 						CDC_VA_TX_PATH_CLK_EN_MASK,
 						CDC_VA_TX_PATH_CLK_DISABLE);
@@ -1426,7 +1422,7 @@ static int va_macro_validate_dmic_sample_rate(u32 dmic_sample_rate,
 		va->dmic_clk_div = VA_MACRO_CLK_DIV_16;
 		break;
 	default:
-		/* Any other DIV factor is invalid */
+		 
 		goto undefined_rate;
 	}
 
@@ -1501,7 +1497,7 @@ static int va_macro_probe(struct platform_device *pdev)
 	data = of_device_get_match_data(dev);
 	va->has_swr_master = data->has_swr_master;
 
-	/* mclk rate */
+	 
 	clk_set_rate(va->mclk, 2 * VA_MACRO_MCLK_FREQ);
 
 	ret = clk_prepare_enable(va->macro);
@@ -1517,7 +1513,7 @@ static int va_macro_probe(struct platform_device *pdev)
 		goto err_mclk;
 
 	if (va->has_swr_master) {
-		/* Set default CLK div to 1 */
+		 
 		regmap_update_bits(va->regmap, CDC_VA_TOP_CSR_SWR_MIC_CTL0,
 				  CDC_VA_SWR_MIC_CLK_SEL_0_1_MASK,
 				  CDC_VA_SWR_MIC_CLK_SEL_0_1_DIV1);

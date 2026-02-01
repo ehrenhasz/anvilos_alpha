@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 
 #ifndef _AMDGPU_VKMS_H_
 #define _AMDGPU_VKMS_H_
@@ -22,4 +22,4 @@ struct amdgpu_vkms_output {
 	struct drm_pending_vblank_event *event;
 };
 
-#endif /* _AMDGPU_VKMS_H_ */
+#endif  

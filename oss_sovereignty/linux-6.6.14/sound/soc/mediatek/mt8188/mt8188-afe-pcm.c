@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek ALSA SoC AFE platform driver for 8188
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- *         Chun-Chia Chiu <chun-chia.chiu@mediatek.com>
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/delay.h>
@@ -30,7 +23,7 @@
 #define MT8188_MEMIF_BUFFER_BYTES_ALIGN  (0x40)
 #define MT8188_MEMIF_DL7_MAX_PERIOD_SIZE (0x3fff)
 
-#define MEMIF_AXI_MINLEN 9 /* register default value */
+#define MEMIF_AXI_MINLEN 9  
 
 struct mtk_dai_memif_priv {
 	unsigned int asys_timing_sel;
@@ -380,12 +373,12 @@ static int mt8188_afe_fe_trigger(struct snd_pcm_substream *substream, int cmd,
 			return ret;
 		}
 
-		/* set irq counter */
+		 
 		regmap_update_bits(afe->regmap, irq_data->irq_cnt_reg,
 				   irq_data->irq_cnt_maskbit << irq_data->irq_cnt_shift,
 				   counter << irq_data->irq_cnt_shift);
 
-		/* set irq fs */
+		 
 		fs = afe->irq_fs(substream, runtime->rate);
 
 		if (fs < 0)
@@ -396,7 +389,7 @@ static int mt8188_afe_fe_trigger(struct snd_pcm_substream *substream, int cmd,
 					   irq_data->irq_fs_maskbit << irq_data->irq_fs_shift,
 					   fs << irq_data->irq_fs_shift);
 
-		/* delay for uplink */
+		 
 		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
 			u32 sample_delay;
 
@@ -407,7 +400,7 @@ static int mt8188_afe_fe_trigger(struct snd_pcm_substream *substream, int cmd,
 			udelay(sample_delay * 1000000 / runtime->rate);
 		}
 
-		/* enable interrupt */
+		 
 		regmap_set_bits(afe->regmap, irq_data->irq_en_reg,
 				BIT(irq_data->irq_en_shift));
 		return 0;
@@ -420,11 +413,11 @@ static int mt8188_afe_fe_trigger(struct snd_pcm_substream *substream, int cmd,
 			dev_err(afe->dev, "%s(), error, id %d, memif enable, ret %d\n",
 				__func__, id, ret);
 
-		/* disable interrupt */
+		 
 
 		regmap_clear_bits(afe->regmap, irq_data->irq_en_reg,
 				  BIT(irq_data->irq_en_shift));
-		/* and clear pending IRQ */
+		 
 		regmap_write(afe->regmap, irq_data->irq_clr_reg,
 			     BIT(irq_data->irq_clr_shift));
 		return ret;
@@ -455,7 +448,7 @@ static const struct snd_soc_dai_ops mt8188_afe_fe_dai_ops = {
 			 SNDRV_PCM_FMTBIT_S32_LE)
 
 static struct snd_soc_dai_driver mt8188_memif_dai_driver[] = {
-	/* FE DAIs: memory intefaces to CPU */
+	 
 	{
 		.name = "DL2",
 		.id = MT8188_AFE_MEMIF_DL2,
@@ -961,15 +954,15 @@ static const struct snd_kcontrol_new dl8_dl11_data_sel_mux =
 		      dl8_dl11_data_sel_mux_enum);
 
 static const struct snd_soc_dapm_widget mt8188_memif_widgets[] = {
-	/* DL6 */
+	 
 	SND_SOC_DAPM_MIXER("I000", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I001", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* DL3 */
+	 
 	SND_SOC_DAPM_MIXER("I020", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I021", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* DL11 */
+	 
 	SND_SOC_DAPM_MIXER("I022", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I023", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I024", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -987,7 +980,7 @@ static const struct snd_soc_dapm_widget mt8188_memif_widgets[] = {
 	SND_SOC_DAPM_MIXER("I036", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I037", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* DL11/DL8 */
+	 
 	SND_SOC_DAPM_MIXER("I046", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I047", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I048", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -1005,14 +998,14 @@ static const struct snd_soc_dapm_widget mt8188_memif_widgets[] = {
 	SND_SOC_DAPM_MIXER("I060", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I061", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* DL2 */
+	 
 	SND_SOC_DAPM_MIXER("I070", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I071", SND_SOC_NOPM, 0, 0, NULL, 0),
 
 	SND_SOC_DAPM_MUX("DL8_DL11 Mux",
 			 SND_SOC_NOPM, 0, 0, &dl8_dl11_data_sel_mux),
 
-	/* UL9 */
+	 
 	SND_SOC_DAPM_MIXER("O002", SND_SOC_NOPM, 0, 0,
 			   o002_mix, ARRAY_SIZE(o002_mix)),
 	SND_SOC_DAPM_MIXER("O003", SND_SOC_NOPM, 0, 0,
@@ -1078,19 +1071,19 @@ static const struct snd_soc_dapm_widget mt8188_memif_widgets[] = {
 	SND_SOC_DAPM_MIXER("O033", SND_SOC_NOPM, 0, 0,
 			   o033_mix, ARRAY_SIZE(o033_mix)),
 
-	/* UL4 */
+	 
 	SND_SOC_DAPM_MIXER("O034", SND_SOC_NOPM, 0, 0,
 			   o034_mix, ARRAY_SIZE(o034_mix)),
 	SND_SOC_DAPM_MIXER("O035", SND_SOC_NOPM, 0, 0,
 			   o035_mix, ARRAY_SIZE(o035_mix)),
 
-	/* UL5 */
+	 
 	SND_SOC_DAPM_MIXER("O036", SND_SOC_NOPM, 0, 0,
 			   o036_mix, ARRAY_SIZE(o036_mix)),
 	SND_SOC_DAPM_MIXER("O037", SND_SOC_NOPM, 0, 0,
 			   o037_mix, ARRAY_SIZE(o037_mix)),
 
-	/* UL10 */
+	 
 	SND_SOC_DAPM_MIXER("O038", SND_SOC_NOPM, 0, 0,
 			   o038_mix, ARRAY_SIZE(o038_mix)),
 	SND_SOC_DAPM_MIXER("O039", SND_SOC_NOPM, 0, 0,
@@ -1100,7 +1093,7 @@ static const struct snd_soc_dapm_widget mt8188_memif_widgets[] = {
 	SND_SOC_DAPM_MIXER("O183", SND_SOC_NOPM, 0, 0,
 			   o183_mix, ARRAY_SIZE(o183_mix)),
 
-	/* UL2 */
+	 
 	SND_SOC_DAPM_MIXER("O040", SND_SOC_NOPM, 0, 0,
 			   o040_mix, ARRAY_SIZE(o040_mix)),
 	SND_SOC_DAPM_MIXER("O041", SND_SOC_NOPM, 0, 0,
@@ -2667,8 +2660,8 @@ static const int mt8188_afe_memif_const_irqs[MT8188_AFE_MEMIF_NUM] = {
 
 static bool mt8188_is_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* these auto-gen reg has read-only bit, so put it as volatile */
-	/* volatile reg cannot be cached, so cannot be set when power off */
+	 
+	 
 	switch (reg) {
 	case AUDIO_TOP_CON0:
 	case AUDIO_TOP_CON1:
@@ -2952,7 +2945,7 @@ static irqreturn_t mt8188_afe_irq_handler(int irq_id, void *dev_id)
 		goto err_irq;
 	}
 
-	/* only clr cpu irq */
+	 
 	val &= mcu_irq_mask;
 
 	for (i = 0; i < MT8188_AFE_MEMIF_NUM; i++) {
@@ -2979,7 +2972,7 @@ static irqreturn_t mt8188_afe_irq_handler(int irq_id, void *dev_id)
 	}
 
 err_irq:
-	/* clear irq */
+	 
 	if (asys_irq_clr_bits)
 		regmap_write(afe->regmap, ASYS_IRQ_CLR, asys_irq_clr_bits);
 	if (afe_irq_clr_bits)
@@ -3231,7 +3224,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 				     "%s() Cannot find infra_ao controller\n",
 				     __func__);
 
-	/* reset controller to reset audio regs before regmap cache */
+	 
 	rstc = devm_reset_control_get_exclusive(dev, "audiosys");
 	if (IS_ERR(rstc))
 		return dev_err_probe(dev, PTR_ERR(rstc),
@@ -3255,7 +3248,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* initial audio related clock */
+	 
 	ret = mt8188_afe_init_clock(afe);
 	if (ret)
 		return dev_err_probe(dev, ret, "init clock error");
@@ -3264,7 +3257,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 
 	mutex_init(&afe->irq_alloc_lock);
 
-	/* irq initialize */
+	 
 	afe->irqs_size = MT8188_AFE_IRQ_NUM;
 	afe->irqs = devm_kcalloc(dev, afe->irqs_size, sizeof(*afe->irqs),
 				 GFP_KERNEL);
@@ -3274,7 +3267,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 	for (i = 0; i < afe->irqs_size; i++)
 		afe->irqs[i].irq_data = &irq_data[i];
 
-	/* init memif */
+	 
 	afe->memif_size = MT8188_AFE_MEMIF_NUM;
 	afe->memif = devm_kcalloc(dev, afe->memif_size, sizeof(*afe->memif),
 				  GFP_KERNEL);
@@ -3288,7 +3281,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 		afe->irqs[afe->memif[i].irq_usage].irq_occupyed = true;
 	}
 
-	/* request irq */
+	 
 	irq_id = platform_get_irq(pdev, 0);
 	if (irq_id < 0)
 		return dev_err_probe(dev, irq_id, "no irq found");
@@ -3298,7 +3291,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "could not request_irq for asys-isr\n");
 
-	/* init sub_dais */
+	 
 	INIT_LIST_HEAD(&afe->sub_dais);
 
 	for (i = 0; i < ARRAY_SIZE(dai_register_cbs); i++) {
@@ -3307,7 +3300,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 			return dev_err_probe(dev, ret, "dai register i %d fail\n", i);
 	}
 
-	/* init dai_driver and component_driver */
+	 
 	ret = mtk_afe_combine_sub_dai(afe);
 	if (ret)
 		return dev_err_probe(dev, ret, "mtk_afe_combine_sub_dai fail\n");
@@ -3329,7 +3322,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* enable clock for regcache get default value from hw */
+	 
 	afe_priv->pm_runtime_bypass_reg_ctl = true;
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret)
@@ -3349,7 +3342,7 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 		goto err_pm_put;
 	}
 
-	/* register component */
+	 
 	ret = devm_snd_soc_register_component(dev, &mt8188_afe_component,
 					      afe->dai_drivers, afe->num_dai_drivers);
 	if (ret) {

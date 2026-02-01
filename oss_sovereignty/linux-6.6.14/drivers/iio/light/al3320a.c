@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AL3320A - Dyna Image Ambient Light Sensor
- *
- * Copyright (c) 2014, Intel Corporation.
- *
- * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
- *
- * TODO: interrupt support, thresholds
- * When the driver will get support for interrupt handling, then interrupt
- * will need to be disabled before turning sensor OFF in order to avoid
- * potential races with the interrupt handling.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
@@ -43,17 +32,17 @@
 
 #define AL3320A_GAIN_MASK		GENMASK(2, 1)
 
-/* chip params default values */
+ 
 #define AL3320A_DEFAULT_MEAN_TIME	4
-#define AL3320A_DEFAULT_WAIT_TIME	0 /* no waiting */
+#define AL3320A_DEFAULT_WAIT_TIME	0  
 
 #define AL3320A_SCALE_AVAILABLE "0.512 0.128 0.032 0.01"
 
 enum al3320a_range {
-	AL3320A_RANGE_1, /* 33.28 Klx */
-	AL3320A_RANGE_2, /* 8.32 Klx  */
-	AL3320A_RANGE_3, /* 2.08 Klx  */
-	AL3320A_RANGE_4  /* 0.65 Klx  */
+	AL3320A_RANGE_1,  
+	AL3320A_RANGE_2,  
+	AL3320A_RANGE_3,  
+	AL3320A_RANGE_4   
 };
 
 static const int al3320a_scales[][2] = {
@@ -133,11 +122,7 @@ static int al3320a_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * ALS ADC value is stored in two adjacent registers:
-		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
-		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
-		 */
+		 
 		ret = i2c_smbus_read_word_data(data->client,
 					       AL3320A_REG_DATA_LOW);
 		if (ret < 0)

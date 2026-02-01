@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Switch hardware timestamping support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 National Instruments
- *      Erik Hons <erik.hons@ni.com>
- *      Brandon Streiff <brandon.streiff@ni.com>
- *      Dane Wagner <dane.wagner@ni.com>
- */
+
+ 
 
 #include "chip.h"
 #include "global2.h"
@@ -56,11 +47,7 @@ static int mv88e6xxx_ptp_read(struct mv88e6xxx_chip *chip, int addr,
 	return chip->info->ops->avb_ops->ptp_read(chip, addr, data, 1);
 }
 
-/* TX_TSTAMP_TIMEOUT: This limits the time spent polling for a TX
- * timestamp. When working properly, hardware will produce a timestamp
- * within 1ms. Software may enounter delays due to MDIO contention, so
- * the timeout is set accordingly.
- */
+ 
 #define TX_TSTAMP_TIMEOUT	msecs_to_jiffies(40)
 
 int mv88e6xxx_get_ts_info(struct dsa_switch *ds, int port,
@@ -95,9 +82,7 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
 	struct mv88e6xxx_port_hwtstamp *ps = &chip->port_hwtstamp[port];
 	bool tstamp_enable = false;
 
-	/* Prevent the TX/RX paths from trying to interact with the
-	 * timestamp hardware while we reconfigure it.
-	 */
+	 
 	clear_bit_unlock(MV88E6XXX_HWTSTAMP_ENABLED, &ps->state);
 
 	switch (config->tx_type) {
@@ -111,9 +96,7 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
 		return -ERANGE;
 	}
 
-	/* The switch supports timestamping both L2 and L4; one cannot be
-	 * disabled independently of the other.
-	 */
+	 
 
 	if (!(BIT(config->rx_filter) & ptp_ops->rx_filters)) {
 		config->rx_filter = HWTSTAMP_FILTER_NONE;
@@ -159,9 +142,7 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
 	}
 	mv88e6xxx_reg_unlock(chip);
 
-	/* Once hardware has been configured, enable timestamp checks
-	 * in the RX/TX paths.
-	 */
+	 
 	if (tstamp_enable)
 		set_bit(MV88E6XXX_HWTSTAMP_ENABLED, &ps->state);
 
@@ -186,7 +167,7 @@ int mv88e6xxx_port_hwtstamp_set(struct dsa_switch *ds, int port,
 	if (err)
 		return err;
 
-	/* Save the chosen configuration to be returned later. */
+	 
 	memcpy(&ps->tstamp_config, &config, sizeof(config));
 
 	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
@@ -207,9 +188,7 @@ int mv88e6xxx_port_hwtstamp_get(struct dsa_switch *ds, int port,
 		-EFAULT : 0;
 }
 
-/* Returns a pointer to the PTP header if the caller should time stamp,
- * or NULL if the caller should not.
- */
+ 
 static struct ptp_header *mv88e6xxx_should_tstamp(struct mv88e6xxx_chip *chip,
 						  int port, struct sk_buff *skb,
 						  unsigned int type)
@@ -261,7 +240,7 @@ static void mv88e6xxx_get_rxts(struct mv88e6xxx_chip *chip,
 	unsigned long flags;
 	int err;
 
-	/* The latched timestamp belongs to one of the received frames. */
+	 
 	__skb_queue_head_init(&received);
 	spin_lock_irqsave(&rxq->lock, flags);
 	skb_queue_splice_tail_init(rxq, &received);
@@ -286,9 +265,7 @@ static void mv88e6xxx_get_rxts(struct mv88e6xxx_chip *chip,
 		if (err)
 			pr_err("failed to clear the receive status\n");
 	}
-	/* Since the device can only handle one time stamp at a time,
-	 * we purge any extra frames from the queue.
-	 */
+	 
 	for ( ; skb; skb = __skb_dequeue(&received)) {
 		if (mv88e6xxx_ts_valid(status) && seq_match(skb, seq_id)) {
 			ns = timehi << 16 | timelo;
@@ -388,14 +365,11 @@ static int mv88e6xxx_txtstamp_work(struct mv88e6xxx_chip *chip,
 				 ps->port_id);
 			goto free_and_clear_skb;
 		}
-		/* The timestamp should be available quickly, while getting it
-		 * is high priority and time bounded to only 10ms. A poll is
-		 * warranted so restart the work.
-		 */
+		 
 		return 1;
 	}
 
-	/* We have the timestamp; go ahead and clear valid now */
+	 
 	mv88e6xxx_reg_lock(chip);
 	mv88e6xxx_port_ptp_write(chip, ps->port_id, ptp_ops->dep_sts_reg, 0);
 	mv88e6xxx_reg_unlock(chip);
@@ -423,10 +397,7 @@ static int mv88e6xxx_txtstamp_work(struct mv88e6xxx_chip *chip,
 		ps->port_id, ktime_to_ns(shhwtstamps.hwtstamp),
 		departure_block[0], ps->tx_seq_id, departure_block[3]);
 
-	/* skb_complete_tx_timestamp() will free up the client to make
-	 * another timestamp-able transmit. We have to be ready for it
-	 * -- by clearing the ps->tx_skb "flag" -- beforehand.
-	 */
+	 
 
 	tmp_skb = ps->tx_skb;
 	ps->tx_skb = NULL;
@@ -559,45 +530,38 @@ int mv88e6xxx_hwtstamp_setup(struct mv88e6xxx_chip *chip)
 	int err;
 	int i;
 
-	/* Disable timestamping on all ports. */
+	 
 	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
 		err = mv88e6xxx_hwtstamp_port_setup(chip, i);
 		if (err)
 			return err;
 	}
 
-	/* Disable PTP globally */
+	 
 	if (ptp_ops->global_disable) {
 		err = ptp_ops->global_disable(chip);
 		if (err)
 			return err;
 	}
 
-	/* Set the ethertype of L2 PTP messages */
+	 
 	err = mv88e6xxx_ptp_write(chip, MV88E6XXX_PTP_GC_ETYPE, ETH_P_1588);
 	if (err)
 		return err;
 
-	/* MV88E6XXX_PTP_MSG_TYPE is a mask of PTP message types to
-	 * timestamp. This affects all ports that have timestamping enabled,
-	 * but the timestamp config is per-port; thus we configure all events
-	 * here and only support the HWTSTAMP_FILTER_*_EVENT filter types.
-	 */
+	 
 	err = mv88e6xxx_ptp_write(chip, MV88E6XXX_PTP_MSGTYPE,
 				  MV88E6XXX_PTP_MSGTYPE_ALL_EVENT);
 	if (err)
 		return err;
 
-	/* Use ARRIVAL1 for peer delay response messages. */
+	 
 	err = mv88e6xxx_ptp_write(chip, MV88E6XXX_PTP_TS_ARRIVAL_PTR,
 				  MV88E6XXX_PTP_MSGTYPE_PDLAY_RES);
 	if (err)
 		return err;
 
-	/* 88E6341 devices default to timestamping at the PHY, but this has
-	 * a hardware issue that results in unreliable timestamps. Force
-	 * these devices to timestamp at the MAC.
-	 */
+	 
 	if (chip->info->family == MV88E6XXX_FAMILY_6341) {
 		u16 val = MV88E6341_PTP_CFG_UPDATE |
 			  MV88E6341_PTP_CFG_MODE_IDX |

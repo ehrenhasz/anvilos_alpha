@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2015-17 Intel Corporation
 
-/*
- *  skl-ssp-clk.c - ASoC skylake ssp clock driver
- */
+
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -85,7 +83,7 @@ static void skl_fill_clk_ipc(struct skl_clk_rate_cfg_table *rcfg, u8 clk_type)
 		fmt_cfg = (struct nhlt_fmt_cfg *)rcfg->config;
 		wfmt = &fmt_cfg->fmt_ext.fmt;
 
-		/* Remove TLV Header size */
+		 
 		ipc->sclk_fs.hdr.size = sizeof(struct skl_dmactrl_sclkfs_cfg) -
 						sizeof(struct skl_tlv_hdr);
 		ipc->sclk_fs.sampling_frequency = wfmt->samples_per_sec;
@@ -95,13 +93,13 @@ static void skl_fill_clk_ipc(struct skl_clk_rate_cfg_table *rcfg, u8 clk_type)
 		ipc->sclk_fs.number_of_channels = wfmt->channels;
 	} else {
 		ipc->mclk.hdr.type = DMA_CLK_CONTROLS;
-		/* Remove TLV Header size */
+		 
 		ipc->mclk.hdr.size = sizeof(struct skl_dmactrl_mclk_cfg) -
 						sizeof(struct skl_tlv_hdr);
 	}
 }
 
-/* Sends dma control IPC to turn the clock ON/OFF */
+ 
 static int skl_send_clk_dma_control(struct skl_dev *skl,
 				struct skl_clk_rate_cfg_table *rcfg,
 				u32 vbus_id, u8 clk_type,
@@ -128,7 +126,7 @@ static int skl_send_clk_dma_control(struct skl_dev *skl,
 		data = (u8 *)&ipc->sclk_fs;
 		size = sizeof(struct skl_dmactrl_sclkfs_cfg);
 	} else {
-		/* 1 to enable mclk, 0 to enable sclk */
+		 
 		if (clk_type == SKL_SCLK)
 			ipc->mclk.mclk = 0;
 		else
@@ -146,10 +144,10 @@ static int skl_send_clk_dma_control(struct skl_dev *skl,
 	if (!i2s_config)
 		return -ENOMEM;
 
-	/* copy blob */
+	 
 	memcpy(i2s_config, sp_cfg->caps, sp_cfg->size);
 
-	/* copy additional dma controls information */
+	 
 	memcpy(i2s_config + sp_cfg->size, data, size);
 
 	node_id = ((SKL_DMA_I2S_LINK_INPUT_CLASS << 8) | (vbus_id << 4));
@@ -247,17 +245,14 @@ static unsigned long skl_clk_recalc_rate(struct clk_hw *hw,
 	return 0;
 }
 
-/* Not supported by clk driver. Implemented to satisfy clk fw */
+ 
 static long skl_clk_round_rate(struct clk_hw *hw, unsigned long rate,
 			       unsigned long *parent_rate)
 {
 	return rate;
 }
 
-/*
- * prepare/unprepare are used instead of enable/disable as IPC will be sent
- * in non-atomic context.
- */
+ 
 static const struct clk_ops skl_clk_ops = {
 	.prepare = skl_clk_prepare,
 	.unprepare = skl_clk_unprepare,
@@ -289,7 +284,7 @@ static int skl_register_parent_clks(struct device *dev,
 
 	for (i = 0; i < SKL_MAX_CLK_SRC; i++) {
 
-		/* Register Parent clock */
+		 
 		parent[i].hw = clk_hw_register_fixed_rate(dev, pclk[i].name,
 				pclk[i].parent_name, 0, pclk[i].rate);
 		if (IS_ERR(parent[i].hw)) {
@@ -312,7 +307,7 @@ err:
 	return ret;
 }
 
-/* Assign fmt_config to clk_data */
+ 
 static struct skl_clk *register_skl_clk(struct device *dev,
 			struct skl_ssp_clk *clk,
 			struct skl_clk_pdata *clk_pdata, int id)
@@ -367,16 +362,13 @@ static int skl_clk_dev_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENOMEM;
 
-	/* Register Parent clock */
+	 
 	ret = skl_register_parent_clks(parent_dev, data->parent, parent_clks);
 	if (ret < 0)
 		return ret;
 
 	for (i = 0; i < clk_pdata->num_clks; i++) {
-		/*
-		 * Only register valid clocks
-		 * i.e. for which nhlt entry is present.
-		 */
+		 
 		if (clks[i].rate_cfg[0].rate == 0)
 			continue;
 

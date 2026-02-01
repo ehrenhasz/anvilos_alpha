@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Amlogic Meson6 and Meson8 DWMAC glue layer
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/ethtool.h>

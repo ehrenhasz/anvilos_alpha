@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
+ 
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+ 
+ 
 
 #ifndef _SIW_VERBS_H
 #define _SIW_VERBS_H
@@ -15,12 +15,7 @@
 #include "siw.h"
 #include "siw_cm.h"
 
-/*
- * siw_copy_sgl()
- *
- * Copy SGL from RDMA core representation to local
- * representation.
- */
+ 
 static inline void siw_copy_sgl(struct ib_sge *sge, struct siw_sge *siw_sge,
 				int num_sge)
 {

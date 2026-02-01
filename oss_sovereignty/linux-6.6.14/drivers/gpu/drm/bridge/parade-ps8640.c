@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -66,17 +64,7 @@
 	.val_bits = 8, \
 	.cache_type = REGCACHE_NONE
 
-/*
- * PS8640 uses multiple addresses:
- * page[0]: for DP control
- * page[1]: for VIDEO Bridge
- * page[2]: for control top
- * page[3]: for DSI Link Control1
- * page[4]: for MIPI Phy
- * page[5]: for VPLL
- * page[6]: for DSI Link Control2
- * page[7]: for SPI ROM mapping
- */
+ 
 enum page_addr_offset {
 	PAGE0_DP_CNTL = 0,
 	PAGE1_VDO_BDG,
@@ -160,23 +148,11 @@ static int _ps8640_wait_hpd_asserted(struct ps8640 *ps_bridge, unsigned long wai
 	int status;
 	int ret;
 
-	/*
-	 * Apparently something about the firmware in the chip signals that
-	 * HPD goes high by reporting GPIO9 as high (even though HPD isn't
-	 * actually connected to GPIO9).
-	 */
+	 
 	ret = regmap_read_poll_timeout(map, PAGE2_GPIO_H, status,
 				       status & PS_GPIO9, 20000, wait_us);
 
-	/*
-	 * The first time we see HPD go high after a reset we delay an extra
-	 * 50 ms. The best guess is that the MCU is doing "stuff" during this
-	 * time (maybe talking to the panel) and we don't want to interrupt it.
-	 *
-	 * No locking is done around "need_post_hpd_delay". If we're here we
-	 * know we're holding a PM Runtime reference and the only other place
-	 * that touches this is PM Runtime resume.
-	 */
+	 
 	if (!ret && ps_bridge->need_post_hpd_delay) {
 		ps_bridge->need_post_hpd_delay = false;
 		msleep(50);
@@ -191,11 +167,7 @@ static int ps8640_wait_hpd_asserted(struct drm_dp_aux *aux, unsigned long wait_u
 	struct device *dev = &ps_bridge->page[PAGE0_DP_CNTL]->dev;
 	int ret;
 
-	/*
-	 * Note that this function is called by code that has already powered
-	 * the panel. We have to power ourselves up but we don't need to worry
-	 * about powering the panel.
-	 */
+	 
 	pm_runtime_get_sync(dev);
 	ret = _ps8640_wait_hpd_asserted(ps_bridge, wait_us);
 	pm_runtime_mark_last_busy(dev);
@@ -246,7 +218,7 @@ static ssize_t ps8640_aux_transfer_msg(struct drm_dp_aux *aux,
 		return ret;
 	}
 
-	/* Assume it's good */
+	 
 	msg->reply = 0;
 
 	base = PAGE0_SWAUX_ADDR_7_0;
@@ -262,7 +234,7 @@ static ssize_t ps8640_aux_transfer_msg(struct drm_dp_aux *aux,
 
 	if (len && (request == DP_AUX_NATIVE_WRITE ||
 		    request == DP_AUX_I2C_WRITE)) {
-		/* Write to the internal FIFO buffer */
+		 
 		for (i = 0; i < len; i++) {
 			ret = regmap_write(map, PAGE0_SWAUX_WDATA, buf[i]);
 			if (ret) {
@@ -276,7 +248,7 @@ static ssize_t ps8640_aux_transfer_msg(struct drm_dp_aux *aux,
 
 	regmap_write(map, PAGE0_SWAUX_CTRL, SWAUX_SEND);
 
-	/* Zero delay loop because i2c transactions are slow already */
+	 
 	regmap_read_poll_timeout(map, PAGE0_SWAUX_CTRL, data,
 				 !(data & SWAUX_SEND), 0, 50 * 1000);
 
@@ -290,11 +262,7 @@ static ssize_t ps8640_aux_transfer_msg(struct drm_dp_aux *aux,
 	switch (data & SWAUX_STATUS_MASK) {
 	case SWAUX_STATUS_NACK:
 	case SWAUX_STATUS_I2C_NACK:
-		/*
-		 * The programming guide is not clear about whether a I2C NACK
-		 * would trigger SWAUX_STATUS_NACK or SWAUX_STATUS_I2C_NACK. So
-		 * we handle both cases together.
-		 */
+		 
 		if (is_native_aux)
 			msg->reply |= DP_AUX_NATIVE_REPLY_NACK;
 		else
@@ -320,7 +288,7 @@ static ssize_t ps8640_aux_transfer_msg(struct drm_dp_aux *aux,
 
 	if (len && (request == DP_AUX_NATIVE_READ ||
 		    request == DP_AUX_I2C_READ)) {
-		/* Read from the internal FIFO buffer */
+		 
 		for (i = 0; i < len; i++) {
 			ret = regmap_read(map, PAGE0_SWAUX_RDATA, &data);
 			if (ret) {
@@ -385,22 +353,16 @@ static int __maybe_unused ps8640_resume(struct device *dev)
 	gpiod_set_value(ps_bridge->gpio_reset, 1);
 	usleep_range(2000, 2500);
 	gpiod_set_value(ps_bridge->gpio_reset, 0);
-	/* Double reset for T4 and T5 */
+	 
 	msleep(50);
 	gpiod_set_value(ps_bridge->gpio_reset, 1);
 	msleep(50);
 	gpiod_set_value(ps_bridge->gpio_reset, 0);
 
-	/* We just reset things, so we need a delay after the first HPD */
+	 
 	ps_bridge->need_post_hpd_delay = true;
 
-	/*
-	 * Mystery 200 ms delay for the "MCU to be ready". It's unclear if
-	 * this is truly necessary since the MCU will already signal that
-	 * things are "good to go" by signaling HPD on "gpio 9". See
-	 * _ps8640_wait_hpd_asserted(). For now we'll keep this mystery delay
-	 * just in case.
-	 */
+	 
 	msleep(200);
 
 	return 0;
@@ -440,19 +402,13 @@ static void ps8640_atomic_pre_enable(struct drm_bridge *bridge,
 	if (ret < 0)
 		dev_warn(dev, "HPD didn't go high: %d\n", ret);
 
-	/*
-	 * The Manufacturer Command Set (MCS) is a device dependent interface
-	 * intended for factory programming of the display module default
-	 * parameters. Once the display module is configured, the MCS shall be
-	 * disabled by the manufacturer. Once disabled, all MCS commands are
-	 * ignored by the display interface.
-	 */
+	 
 
 	ret = regmap_update_bits(map, PAGE2_MCS_EN, MCS_EN, 0);
 	if (ret < 0)
 		dev_warn(dev, "failed write PAGE2_MCS_EN: %d\n", ret);
 
-	/* Switch access edp panel's edid through i2c */
+	 
 	ret = regmap_write(map, PAGE2_I2C_BYPASS, I2C_BYPASS_EN);
 	if (ret < 0)
 		dev_warn(dev, "failed write PAGE2_MCS_EN: %d\n", ret);
@@ -497,7 +453,7 @@ static int ps8640_bridge_attach(struct drm_bridge *bridge,
 		goto err_devlink;
 	}
 
-	/* Attach the panel-bridge to the dsi bridge */
+	 
 	ret = drm_bridge_attach(bridge->encoder, ps_bridge->panel_bridge,
 				&ps_bridge->bridge, flags);
 	if (ret)
@@ -548,7 +504,7 @@ static int ps8640_bridge_get_dsi_resources(struct device *dev, struct ps8640 *ps
 						   .node = NULL,
 						 };
 
-	/* port@0 is ps8640 dsi input port */
+	 
 	in_ep = of_graph_get_endpoint_by_regs(dev->of_node, 0, -1);
 	if (!in_ep)
 		return -ENODEV;
@@ -587,16 +543,9 @@ static int ps8640_bridge_link_panel(struct drm_dp_aux *aux)
 	struct device_node *np = dev->of_node;
 	int ret;
 
-	/*
-	 * NOTE about returning -EPROBE_DEFER from this function: if we
-	 * return an error (most relevant to -EPROBE_DEFER) it will only
-	 * be passed out to ps8640_probe() if it called this directly (AKA the
-	 * panel isn't under the "aux-bus" node). That should be fine because
-	 * if the panel is under "aux-bus" it's guaranteed to have probed by
-	 * the time this function has been called.
-	 */
+	 
 
-	/* port@1 is ps8640 output port */
+	 
 	ps_bridge->panel_bridge = devm_drm_of_get_bridge(dev, np, 1, 0);
 	if (IS_ERR(ps_bridge->panel_bridge))
 		return PTR_ERR(ps_bridge->panel_bridge);
@@ -631,9 +580,7 @@ static int ps8640_probe(struct i2c_client *client)
 	if (IS_ERR(ps_bridge->gpio_powerdown))
 		return PTR_ERR(ps_bridge->gpio_powerdown);
 
-	/*
-	 * Assert the reset to avoid the bridge being initialized prematurely
-	 */
+	 
 	ps_bridge->gpio_reset = devm_gpiod_get(&client->dev, "reset",
 					       GPIOD_OUT_HIGH);
 	if (IS_ERR(ps_bridge->gpio_reset))
@@ -643,10 +590,7 @@ static int ps8640_probe(struct i2c_client *client)
 	ps_bridge->bridge.of_node = dev->of_node;
 	ps_bridge->bridge.type = DRM_MODE_CONNECTOR_eDP;
 
-	/*
-	 * Get MIPI DSI resources early. These can return -EPROBE_DEFER so
-	 * we want to get them out of the way sooner.
-	 */
+	 
 	ret = ps8640_bridge_get_dsi_resources(&client->dev, ps_bridge);
 	if (ret)
 		return ret;
@@ -679,14 +623,7 @@ static int ps8640_probe(struct i2c_client *client)
 	drm_dp_aux_init(&ps_bridge->aux);
 
 	pm_runtime_enable(dev);
-	/*
-	 * Powering on ps8640 takes ~300ms. To avoid wasting time on power
-	 * cycling ps8640 too often, set autosuspend_delay to 2000ms to ensure
-	 * the bridge wouldn't suspend in between each _aux_transfer_msg() call
-	 * during EDID read (~20ms in my experiment) and in between the last
-	 * _aux_transfer_msg() call during EDID read and the _pre_enable() call
-	 * (~100ms in my experiment).
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 2000);
 	pm_runtime_use_autosuspend(dev);
 	pm_suspend_ignore_children(dev, true);
@@ -696,11 +633,7 @@ static int ps8640_probe(struct i2c_client *client)
 
 	ret = devm_of_dp_aux_populate_bus(&ps_bridge->aux, ps8640_bridge_link_panel);
 
-	/*
-	 * If devm_of_dp_aux_populate_bus() returns -ENODEV then it's up to
-	 * usa to call ps8640_bridge_link_panel() directly. NOTE: in this case
-	 * the function is allowed to -EPROBE_DEFER.
-	 */
+	 
 	if (ret == -ENODEV)
 		return ps8640_bridge_link_panel(&ps_bridge->aux);
 

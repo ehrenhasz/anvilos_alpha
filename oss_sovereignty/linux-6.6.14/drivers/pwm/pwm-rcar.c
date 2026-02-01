@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car PWM Timer driver
- *
- * Copyright (C) 2015 Renesas Electronics Corporation
- *
- * Limitations:
- * - The hardware cannot generate a 0% duty cycle.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -106,7 +99,7 @@ static void rcar_pwm_set_clock_control(struct rcar_pwm_chip *rp,
 static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
 				int period_ns)
 {
-	unsigned long long one_cycle, tmp;	/* 0.01 nanoseconds */
+	unsigned long long one_cycle, tmp;	 
 	unsigned long clk_rate = clk_get_rate(rp->clk);
 	u32 cyc, ph;
 
@@ -121,7 +114,7 @@ static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
 	do_div(tmp, one_cycle);
 	ph = tmp & RCAR_PWMCNT_PH0_MASK;
 
-	/* Avoid prohibited setting */
+	 
 	if (cyc == 0 || ph == 0)
 		return -EINVAL;
 
@@ -144,7 +137,7 @@ static int rcar_pwm_enable(struct rcar_pwm_chip *rp)
 {
 	u32 value;
 
-	/* Don't enable the PWM device if CYC0 or PH0 is 0 */
+	 
 	value = rcar_pwm_read(rp, RCAR_PWMCNT);
 	if ((value & RCAR_PWMCNT_CYC0_MASK) == 0 ||
 	    (value & RCAR_PWMCNT_PH0_MASK) == 0)
@@ -166,7 +159,7 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
 	int div, ret;
 
-	/* This HW/driver only supports normal polarity */
+	 
 	if (state->polarity != PWM_POLARITY_NORMAL)
 		return -EINVAL;
 
@@ -185,7 +178,7 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (!ret)
 		rcar_pwm_set_clock_control(rp, div);
 
-	/* The SYNC should be set to 0 even if rcar_pwm_set_counter failed */
+	 
 	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
 
 	if (!ret)

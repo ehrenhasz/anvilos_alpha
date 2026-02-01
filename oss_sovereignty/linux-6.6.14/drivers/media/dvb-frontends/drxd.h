@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * drxd.h: DRXD DVB-T demodulator driver
- *
- * Copyright (C) 2005-2007 Micronas
- */
+ 
+ 
 
 #ifndef _DRXD_H_
 #define _DRXD_H_
@@ -27,8 +23,7 @@ struct drxd_config {
 	u8 demoda_address;
 	u8 demod_revision;
 
-	/* If the tuner is not behind an i2c gate, be sure to flip this bit
-	   or else the i2c bus could get wedged */
+	 
 	u8 disable_i2c_gate_ctrl;
 
 	u32 IF;

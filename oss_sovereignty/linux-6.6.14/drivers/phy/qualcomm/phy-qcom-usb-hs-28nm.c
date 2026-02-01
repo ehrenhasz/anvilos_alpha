@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2009-2018, Linux Foundation. All rights reserved.
- * Copyright (c) 2018-2020, Linaro Limited
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -17,7 +14,7 @@
 #include <linux/reset.h>
 #include <linux/slab.h>
 
-/* PHY register and bit definitions */
+ 
 #define PHY_CTRL_COMMON0		0x078
 #define SIDDQ				BIT(2)
 #define PHY_IRQ_CMD			0x0d0
@@ -82,7 +79,7 @@ static void qcom_snps_hsphy_enable_hv_interrupts(struct hsphy_priv *priv)
 {
 	u32 val;
 
-	/* Clear any existing interrupts before enabling the interrupts */
+	 
 	val = readb(priv->base + PHY_INTR_CLEAR0);
 	val |= DPDM_MASK;
 	writeb(val, priv->base + PHY_INTR_CLEAR0);
@@ -91,7 +88,7 @@ static void qcom_snps_hsphy_enable_hv_interrupts(struct hsphy_priv *priv)
 	usleep_range(200, 220);
 	writeb(0x1, priv->base + PHY_IRQ_CMD);
 
-	/* Make sure the interrupts are cleared */
+	 
 	usleep_range(200, 220);
 
 	val = readb(priv->base + PHY_INTR_MASK0);
@@ -107,7 +104,7 @@ static void qcom_snps_hsphy_enable_hv_interrupts(struct hsphy_priv *priv)
 		val |= DP_0_1 | DM_1_0;
 		break;
 	default:
-		/* No device connected */
+		 
 		val |= DP_0_1 | DM_0_1;
 		break;
 	}
@@ -122,7 +119,7 @@ static void qcom_snps_hsphy_disable_hv_interrupts(struct hsphy_priv *priv)
 	val &= ~DPDM_MASK;
 	writeb(val, priv->base + PHY_INTR_MASK0);
 
-	/* Clear any pending interrupts */
+	 
 	val = readb(priv->base + PHY_INTR_CLEAR0);
 	val |= DPDM_MASK;
 	writeb(val, priv->base + PHY_INTR_CLEAR0);
@@ -203,7 +200,7 @@ static void qcom_snps_hsphy_init_sequence(struct hsphy_priv *priv)
 	const struct hsphy_init_seq *seq;
 	int i;
 
-	/* Device match data is optional. */
+	 
 	if (!data)
 		return;
 
@@ -224,30 +221,16 @@ static int qcom_snps_hsphy_por_reset(struct hsphy_priv *priv)
 	if (ret)
 		return ret;
 
-	/*
-	 * The Femto PHY is POR reset in the following scenarios.
-	 *
-	 * 1. After overriding the parameter registers.
-	 * 2. Low power mode exit from PHY retention.
-	 *
-	 * Ensure that SIDDQ is cleared before bringing the PHY
-	 * out of reset.
-	 */
+	 
 	qcom_snps_hsphy_exit_retention(priv);
 
-	/*
-	 * As per databook, 10 usec delay is required between
-	 * PHY POR assert and de-assert.
-	 */
+	 
 	usleep_range(10, 20);
 	ret = reset_control_deassert(priv->por_reset);
 	if (ret)
 		return ret;
 
-	/*
-	 * As per databook, it takes 75 usec for PHY to stabilize
-	 * after the reset.
-	 */
+	 
 	usleep_range(80, 100);
 
 	return 0;
@@ -349,7 +332,7 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Get device match data */
+	 
 	priv->data = device_get_match_data(dev);
 
 	phy = devm_phy_create(dev, dev->of_node, &qcom_snps_hsphy_ops);
@@ -378,11 +361,7 @@ unset_1p8_load:
 	return ret;
 }
 
-/*
- * The macro is used to define an initialization sequence.  Each tuple
- * is meant to program 'value' into phy register at 'offset' with 'delay'
- * in us followed.
- */
+ 
 #define HSPHY_INIT_CFG(o, v, d)	{ .offset = o, .val = v, .delay = d, }
 
 static const struct hsphy_init_seq init_seq_femtophy[] = {

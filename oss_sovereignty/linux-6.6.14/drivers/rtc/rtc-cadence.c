@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2019 Cadence
- *
- * Authors:
- *  Jan Kotas <jank@cadence.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -18,7 +13,7 @@
 #include <linux/interrupt.h>
 #include <linux/pm_wakeirq.h>
 
-/* Registers */
+ 
 #define CDNS_RTC_CTLR		0x00
 #define CDNS_RTC_HMR		0x04
 #define CDNS_RTC_TIMR		0x08
@@ -33,12 +28,12 @@
 #define CDNS_RTC_STSR		0x2C
 #define CDNS_RTC_KRTCR		0x30
 
-/* Control */
+ 
 #define CDNS_RTC_CTLR_TIME	BIT(0)
 #define CDNS_RTC_CTLR_CAL	BIT(1)
 #define CDNS_RTC_CTLR_TIME_CAL	(CDNS_RTC_CTLR_TIME | CDNS_RTC_CTLR_CAL)
 
-/* Status */
+ 
 #define CDNS_RTC_STSR_VT	BIT(0)
 #define CDNS_RTC_STSR_VC	BIT(1)
 #define CDNS_RTC_STSR_VTA	BIT(2)
@@ -46,10 +41,10 @@
 #define CDNS_RTC_STSR_VT_VC	(CDNS_RTC_STSR_VT | CDNS_RTC_STSR_VC)
 #define CDNS_RTC_STSR_VTA_VCA	(CDNS_RTC_STSR_VTA | CDNS_RTC_STSR_VCA)
 
-/* Keep RTC */
+ 
 #define CDNS_RTC_KRTCR_KRTC	BIT(0)
 
-/* Alarm, Event, Interrupt */
+ 
 #define CDNS_RTC_AEI_HOS	BIT(0)
 #define CDNS_RTC_AEI_SEC	BIT(1)
 #define CDNS_RTC_AEI_MIN	BIT(2)
@@ -58,7 +53,7 @@
 #define CDNS_RTC_AEI_MNTH	BIT(5)
 #define CDNS_RTC_AEI_ALRM	BIT(6)
 
-/* Time */
+ 
 #define CDNS_RTC_TIME_H		GENMASK(7, 0)
 #define CDNS_RTC_TIME_S		GENMASK(14, 8)
 #define CDNS_RTC_TIME_M		GENMASK(22, 16)
@@ -66,7 +61,7 @@
 #define CDNS_RTC_TIME_PM	BIT(30)
 #define CDNS_RTC_TIME_CH	BIT(31)
 
-/* Calendar */
+ 
 #define CDNS_RTC_CAL_DAY	GENMASK(2, 0)
 #define CDNS_RTC_CAL_M		GENMASK(7, 3)
 #define CDNS_RTC_CAL_D		GENMASK(13, 8)
@@ -101,7 +96,7 @@ static irqreturn_t cdns_rtc_irq_handler(int irq, void *id)
 	struct device *dev = id;
 	struct cdns_rtc *crtc = dev_get_drvdata(dev);
 
-	/* Reading the register clears it */
+	 
 	if (!(readl(crtc->regs + CDNS_RTC_EFLR) & CDNS_RTC_AEI_ALRM))
 		return IRQ_NONE;
 
@@ -128,7 +123,7 @@ static int cdns_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	struct cdns_rtc *crtc = dev_get_drvdata(dev);
 	u32 reg;
 
-	/* If the RTC is disabled, assume the values are invalid */
+	 
 	if (!cdns_rtc_get_enabled(crtc))
 		return -EINVAL;
 
@@ -166,7 +161,7 @@ static int cdns_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	     | FIELD_PREP(CDNS_RTC_CAL_C, bin2bcd(year / 100))
 	     | FIELD_PREP(CDNS_RTC_CAL_DAY, tm->tm_wday + 1);
 
-	/* Update registers, check valid flags */
+	 
 	for (tries = 0; tries < CDNS_RTC_MAX_REGS_TRIES; tries++) {
 		writel(timr, crtc->regs + CDNS_RTC_TIMR);
 		writel(calr, crtc->regs + CDNS_RTC_CALR);
@@ -227,7 +222,7 @@ static int cdns_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	calar = FIELD_PREP(CDNS_RTC_CAL_D, bin2bcd(alarm->time.tm_mday))
 	      | FIELD_PREP(CDNS_RTC_CAL_M, bin2bcd(alarm->time.tm_mon + 1));
 
-	/* Update registers, check valid alarm flags */
+	 
 	for (tries = 0; tries < CDNS_RTC_MAX_REGS_TRIES; tries++) {
 		writel(timar, crtc->regs + CDNS_RTC_TIMAR);
 		writel(calar, crtc->regs + CDNS_RTC_CALAR);
@@ -325,14 +320,14 @@ static int cdns_rtc_probe(struct platform_device *pdev)
 		goto err_disable_ref_clk;
 	}
 
-	/* The RTC supports 01.01.1900 - 31.12.2999 */
+	 
 	crtc->rtc_dev->range_min = mktime64(1900,  1,  1,  0,  0,  0);
 	crtc->rtc_dev->range_max = mktime64(2999, 12, 31, 23, 59, 59);
 
 	crtc->rtc_dev->ops = &cdns_rtc_ops;
 	device_init_wakeup(&pdev->dev, true);
 
-	/* Always use 24-hour mode and keep the RTC values */
+	 
 	writel(0, crtc->regs + CDNS_RTC_HMR);
 	writel(CDNS_RTC_KRTCR_KRTC, crtc->regs + CDNS_RTC_KRTCR);
 

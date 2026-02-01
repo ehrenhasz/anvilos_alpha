@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2010-2011 EIA Electronics,
-//                         Kurt Van Dijck <kurt.van.dijck@eia.be>
-// Copyright (c) 2018 Protonic,
-//                         Robin van der Gracht <robin@protonic.nl>
-// Copyright (c) 2017-2019 Pengutronix,
-//                         Marc Kleine-Budde <kernel@pengutronix.de>
-// Copyright (c) 2017-2019 Pengutronix,
-//                         Oleksij Rempel <kernel@pengutronix.de>
+
+
+
+
+
+
+
+
+
 
 #include <linux/can/skb.h>
 
@@ -34,99 +34,59 @@
 enum j1939_xtp_abort {
 	J1939_XTP_NO_ABORT = 0,
 	J1939_XTP_ABORT_BUSY = 1,
-	/* Already in one or more connection managed sessions and
-	 * cannot support another.
-	 *
-	 * EALREADY:
-	 * Operation already in progress
-	 */
+	 
 
 	J1939_XTP_ABORT_RESOURCE = 2,
-	/* System resources were needed for another task so this
-	 * connection managed session was terminated.
-	 *
-	 * EMSGSIZE:
-	 * The socket type requires that message be sent atomically,
-	 * and the size of the message to be sent made this
-	 * impossible.
-	 */
+	 
 
 	J1939_XTP_ABORT_TIMEOUT = 3,
-	/* A timeout occurred and this is the connection abort to
-	 * close the session.
-	 *
-	 * EHOSTUNREACH:
-	 * The destination host cannot be reached (probably because
-	 * the host is down or a remote router cannot reach it).
-	 */
+	 
 
 	J1939_XTP_ABORT_GENERIC = 4,
-	/* CTS messages received when data transfer is in progress
-	 *
-	 * EBADMSG:
-	 * Not a data message
-	 */
+	 
 
 	J1939_XTP_ABORT_FAULT = 5,
-	/* Maximal retransmit request limit reached
-	 *
-	 * ENOTRECOVERABLE:
-	 * State not recoverable
-	 */
+	 
 
 	J1939_XTP_ABORT_UNEXPECTED_DATA = 6,
-	/* Unexpected data transfer packet
-	 *
-	 * ENOTCONN:
-	 * Transport endpoint is not connected
-	 */
+	 
 
 	J1939_XTP_ABORT_BAD_SEQ = 7,
-	/* Bad sequence number (and software is not able to recover)
-	 *
-	 * EILSEQ:
-	 * Illegal byte sequence
-	 */
+	 
 
 	J1939_XTP_ABORT_DUP_SEQ = 8,
-	/* Duplicate sequence number (and software is not able to
-	 * recover)
-	 */
+	 
 
 	J1939_XTP_ABORT_EDPO_UNEXPECTED = 9,
-	/* Unexpected EDPO packet (ETP) or Message size > 1785 bytes
-	 * (TP)
-	 */
+	 
 
 	J1939_XTP_ABORT_BAD_EDPO_PGN = 10,
-	/* Unexpected EDPO PGN (PGN in EDPO is bad) */
+	 
 
 	J1939_XTP_ABORT_EDPO_OUTOF_CTS = 11,
-	/* EDPO number of packets is greater than CTS */
+	 
 
 	J1939_XTP_ABORT_BAD_EDPO_OFFSET = 12,
-	/* Bad EDPO offset */
+	 
 
 	J1939_XTP_ABORT_OTHER_DEPRECATED = 13,
-	/* Deprecated. Use 250 instead (Any other reason)  */
+	 
 
 	J1939_XTP_ABORT_ECTS_UNXPECTED_PGN = 14,
-	/* Unexpected ECTS PGN (PGN in ECTS is bad) */
+	 
 
 	J1939_XTP_ABORT_ECTS_TOO_BIG = 15,
-	/* ECTS requested packets exceeds message size */
+	 
 
 	J1939_XTP_ABORT_OTHER = 250,
-	/* Any other reason (if a Connection Abort reason is
-	 * identified that is not listed in the table use code 250)
-	 */
+	 
 };
 
 static unsigned int j1939_tp_block = 255;
 static unsigned int j1939_tp_packet_delay;
 static unsigned int j1939_tp_padding = 1;
 
-/* helpers */
+ 
 static const char *j1939_xtp_abort_to_str(enum j1939_xtp_abort abort)
 {
 	switch (abort) {
@@ -248,7 +208,7 @@ void j1939_session_get(struct j1939_session *session)
 	kref_get(&session->kref);
 }
 
-/* session completion functions */
+ 
 static void __j1939_session_drop(struct j1939_session *session)
 {
 	if (!session->transmission)
@@ -277,7 +237,7 @@ static void j1939_session_destroy(struct j1939_session *session)
 	WARN_ON_ONCE(!list_empty(&session->active_session_list_entry));
 
 	while ((skb = skb_dequeue(&session->skb_queue)) != NULL) {
-		/* drop ref taken in j1939_session_skb_queue() */
+		 
 		skb_unref(skb);
 		kfree_skb(skb);
 	}
@@ -340,7 +300,7 @@ static void j1939_session_skb_drop_old(struct j1939_session *session)
 
 	if ((do_skcb->offset + do_skb->len) < offset_start) {
 		__skb_unlink(do_skb, &session->skb_queue);
-		/* drop ref taken in j1939_session_skb_queue() */
+		 
 		skb_unref(do_skb);
 		spin_unlock_irqrestore(&session->skb_queue.lock, flags);
 
@@ -409,21 +369,19 @@ static struct sk_buff *j1939_session_skb_get(struct j1939_session *session)
 	return j1939_session_skb_get_by_offset(session, offset_start);
 }
 
-/* see if we are receiver
- * returns 0 for broadcasts, although we will receive them
- */
+ 
 static inline int j1939_tp_im_receiver(const struct j1939_sk_buff_cb *skcb)
 {
 	return skcb->flags & J1939_ECU_LOCAL_DST;
 }
 
-/* see if we are sender */
+ 
 static inline int j1939_tp_im_transmitter(const struct j1939_sk_buff_cb *skcb)
 {
 	return skcb->flags & J1939_ECU_LOCAL_SRC;
 }
 
-/* see if we are involved as either receiver or transmitter */
+ 
 static int j1939_tp_im_involved(const struct j1939_sk_buff_cb *skcb, bool swap)
 {
 	if (swap)
@@ -437,7 +395,7 @@ static int j1939_tp_im_involved_anydir(struct j1939_sk_buff_cb *skcb)
 	return skcb->flags & (J1939_ECU_LOCAL_SRC | J1939_ECU_LOCAL_DST);
 }
 
-/* extract pgn from flow-ctl message */
+ 
 static inline pgn_t j1939_xtp_ctl_to_pgn(const u8 *dat)
 {
 	pgn_t pgn;
@@ -464,12 +422,7 @@ static inline unsigned int j1939_etp_ctl_to_size(const u8 *dat)
 		(dat[2] << 8) | (dat[1] << 0);
 }
 
-/* find existing session:
- * reverse: swap cb's src & dst
- * there is no problem with matching broadcasts, since
- * broadcasts (no dst, no da) would never call this
- * with reverse == true
- */
+ 
 static bool j1939_session_match(struct j1939_addr *se_addr,
 				struct j1939_addr *sk_addr, bool reverse)
 {
@@ -574,7 +527,7 @@ static void j1939_skbcb_swap(struct j1939_sk_buff_cb *skcb)
 	swap(skcb->addr.dst_name, skcb->addr.src_name);
 	swap(skcb->addr.da, skcb->addr.sa);
 
-	/* swap SRC and DST flags, leave other untouched */
+	 
 	if (skcb->flags & J1939_ECU_LOCAL_SRC)
 		tmp |= J1939_ECU_LOCAL_DST;
 	if (skcb->flags & J1939_ECU_LOCAL_DST)
@@ -601,10 +554,10 @@ sk_buff *j1939_tp_tx_dat_new(struct j1939_priv *priv,
 	can_skb_reserve(skb);
 	can_skb_prv(skb)->ifindex = priv->ndev->ifindex;
 	can_skb_prv(skb)->skbcnt = 0;
-	/* reserve CAN header */
+	 
 	skb_reserve(skb, offsetof(struct can_frame, data));
 
-	/* skb->cb must be large enough to hold a j1939_sk_buff_cb structure */
+	 
 	BUILD_BUG_ON(sizeof(skb->cb) < sizeof(*re_skcb));
 
 	memcpy(skb->cb, re_skcb, sizeof(*re_skcb));
@@ -627,7 +580,7 @@ sk_buff *j1939_tp_tx_dat_new(struct j1939_priv *priv,
 	return skb;
 }
 
-/* TP transmit packet functions */
+ 
 static int j1939_tp_tx_dat(struct j1939_session *session,
 			   const u8 *dat, int len)
 {
@@ -731,7 +684,7 @@ static int j1939_session_tx_rts(struct j1939_session *session)
 		dat[4] = (session->total_message_size >> 24);
 	} else if (j1939_cb_is_broadcast(&session->skcb)) {
 		dat[0] = J1939_TP_CMD_BAM;
-		/* fake cts for broadcast */
+		 
 		session->pkt.tx = 0;
 	} else {
 		dat[0] = J1939_TP_CMD_RTS;
@@ -739,7 +692,7 @@ static int j1939_session_tx_rts(struct j1939_session *session)
 	}
 
 	if (dat[0] == session->last_txcmd)
-		/* done already */
+		 
 		return 0;
 
 	ret = j1939_tp_tx_ctl(session, false, dat);
@@ -837,7 +790,7 @@ static int j1939_session_tx_dat(struct j1939_session *session)
 		memcpy(&dat[1], &tpdat[offset], len);
 		ret = j1939_tp_tx_dat(session, dat, len + 1);
 		if (ret < 0) {
-			/* ENOBUFS == CAN interface TX queue is full */
+			 
 			if (ret != -ENOBUFS)
 				netdev_alert(priv->ndev,
 					     "%s: 0x%p: queue data error: %i\n",
@@ -894,7 +847,7 @@ static int j1939_xtp_txnext_transmiter(struct j1939_session *session)
 
 		fallthrough;
 	case J1939_TP_CMD_CTS:
-	case 0xff: /* did some data */
+	case 0xff:  
 	case J1939_ETP_CMD_DPO:
 	case J1939_TP_CMD_BAM:
 		ret = j1939_session_tx_dat(session);
@@ -936,7 +889,7 @@ static int j1939_session_tx_cts(struct j1939_session *session)
 	}
 
 	if (dat[0] == session->last_txcmd)
-		/* done already */
+		 
 		return 0;
 
 	ret = j1939_tp_tx_ctl(session, true, dat);
@@ -944,7 +897,7 @@ static int j1939_session_tx_cts(struct j1939_session *session)
 		return ret;
 
 	if (len)
-		/* only mark cts done when len is set */
+		 
 		session->last_txcmd = dat[0];
 	j1939_tp_set_rxtimeout(session, 1250);
 
@@ -978,7 +931,7 @@ static int j1939_session_tx_eoma(struct j1939_session *session)
 	}
 
 	if (dat[0] == session->last_txcmd)
-		/* done already */
+		 
 		return 0;
 
 	ret = j1939_tp_tx_ctl(session, true, dat);
@@ -987,7 +940,7 @@ static int j1939_session_tx_eoma(struct j1939_session *session)
 
 	session->last_txcmd = dat[0];
 
-	/* wait for the EOMA packet to come in */
+	 
 	j1939_tp_set_rxtimeout(session, 1250);
 
 	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
@@ -1014,7 +967,7 @@ static int j1939_xtp_txnext_receiver(struct j1939_session *session)
 
 	case J1939_ETP_CMD_CTS:
 	case J1939_TP_CMD_CTS:
-	case 0xff: /* did some data */
+	case 0xff:  
 	case J1939_ETP_CMD_DPO:
 		if ((session->skcb.addr.type == J1939_TP &&
 		     j1939_cb_is_broadcast(&session->skcb)))
@@ -1118,7 +1071,7 @@ static void __j1939_session_cancel(struct j1939_session *session,
 
 	session->err = j1939_xtp_abort_to_errno(priv, err);
 	session->state = J1939_SESSION_WAITING_ABORT;
-	/* do not send aborts on incoming broadcasts */
+	 
 	if (!j1939_cb_is_broadcast(&session->skcb)) {
 		j1939_xtp_tx_abort(priv, &session->skcb,
 				   !session->transmission,
@@ -1164,7 +1117,7 @@ static enum hrtimer_restart j1939_tp_txtimer(struct hrtimer *hrtimer)
 
 	switch (ret) {
 	case -ENOBUFS:
-		/* Retry limit is currently arbitrary chosen */
+		 
 		if (session->tx_retry < J1939_XTP_TX_RETRY_LIMIT) {
 			session->tx_retry++;
 			j1939_tp_schedule_txtimer(session,
@@ -1178,12 +1131,7 @@ static enum hrtimer_restart j1939_tp_txtimer(struct hrtimer *hrtimer)
 		}
 		break;
 	case -ENETDOWN:
-		/* In this case we should get a netdev_event(), all active
-		 * sessions will be cleared by
-		 * j1939_cancel_all_active_sessions(). So handle this as an
-		 * error, but let j1939_cancel_all_active_sessions() do the
-		 * cleanup including propagation of the error to user space.
-		 */
+		 
 		break;
 	case -EOVERFLOW:
 		j1939_session_cancel(session, J1939_XTP_ABORT_ECTS_TOO_BIG);
@@ -1214,7 +1162,7 @@ static void j1939_session_completed(struct j1939_session *session)
 
 	if (!session->transmission) {
 		se_skb = j1939_session_skb_get(session);
-		/* distribute among j1939 receivers */
+		 
 		j1939_sk_recv(session->priv, se_skb);
 		consume_skb(se_skb);
 	}
@@ -1239,9 +1187,7 @@ static enum hrtimer_restart j1939_tp_rxtimer(struct hrtimer *hrtimer)
 		netdev_alert(priv->ndev, "%s: 0x%p: Timeout. Failed to send simple message.\n",
 			     __func__, session);
 
-		/* The message is probably stuck in the CAN controller and can
-		 * be send as soon as CAN bus is in working state again.
-		 */
+		 
 		session->err = -ETIME;
 		j1939_session_deactivate(session);
 	} else {
@@ -1306,7 +1252,7 @@ static bool j1939_xtp_rx_cmd_bad_pgn(struct j1939_session *session,
 		abort = J1939_XTP_ABORT_OTHER;
 		break;
 
-	case J1939_ETP_CMD_ABORT: /* && J1939_TP_CMD_ABORT */
+	case J1939_ETP_CMD_ABORT:  
 		abort = J1939_XTP_NO_ABORT;
 		break;
 
@@ -1354,7 +1300,7 @@ abort_put:
 	j1939_session_put(session);
 }
 
-/* abort packets may come in 2 directions */
+ 
 static void
 j1939_xtp_rx_abort(struct j1939_priv *priv, struct sk_buff *skb,
 		   bool transmitter)
@@ -1391,7 +1337,7 @@ j1939_xtp_rx_eoma_one(struct j1939_session *session, struct sk_buff *skb)
 
 	session->pkt.tx_acked = session->pkt.total;
 	j1939_session_timers_cancel(session);
-	/* transmitted without problems */
+	 
 	j1939_session_completed(session);
 }
 
@@ -1437,17 +1383,17 @@ j1939_xtp_rx_cts_one(struct j1939_session *session, struct sk_buff *skb)
 
 	if (!pkt)
 		goto out_session_cancel;
-	else if (dat[1] > session->pkt.block /* 0xff for etp */)
+	else if (dat[1] > session->pkt.block  )
 		goto out_session_cancel;
 
-	/* set packet counters only when not CTS(0) */
+	 
 	session->pkt.tx_acked = pkt - 1;
 	j1939_session_skb_drop_old(session);
 	session->pkt.last = session->pkt.tx_acked + dat[1];
 	if (session->pkt.last > session->pkt.total)
-		/* safety measure */
+		 
 		session->pkt.last = session->pkt.total;
-	/* TODO: do not set tx here, do it in txtimer */
+	 
 	session->pkt.tx = session->pkt.tx_acked;
 
 	session->last_cmd = dat[0];
@@ -1461,7 +1407,7 @@ j1939_xtp_rx_cts_one(struct j1939_session *session, struct sk_buff *skb)
 			j1939_tp_schedule_txtimer(session, 0);
 		}
 	} else {
-		/* CTS(0) */
+		 
 		j1939_tp_set_rxtimeout(session, 550);
 	}
 	return;
@@ -1549,9 +1495,9 @@ j1939_session *j1939_session_fresh_new(struct j1939_priv *priv,
 		return NULL;
 	}
 
-	/* alloc data area */
+	 
 	skb_put(skb, size);
-	/* skb is recounted in j1939_session_new() */
+	 
 	return session;
 }
 
@@ -1635,7 +1581,7 @@ j1939_session *j1939_xtp_rx_rts_session_new(struct j1939_priv *priv,
 		return NULL;
 	}
 
-	/* initialize the control buffer: plain copy */
+	 
 	session->pkt.total = (len + 6) / 7;
 	session->pkt.block = 0xff;
 	if (skcb.addr.type != J1939_ETP) {
@@ -1668,13 +1614,13 @@ static int j1939_xtp_rx_rts_session_active(struct j1939_session *session,
 		if (j1939_xtp_rx_cmd_bad_pgn(session, skb))
 			return -EBUSY;
 
-		/* RTS on active session */
+		 
 		j1939_session_timers_cancel(session);
 		j1939_session_cancel(session, J1939_XTP_ABORT_BUSY);
 	}
 
 	if (session->last_cmd != 0) {
-		/* we received a second rts on the same connection */
+		 
 		netdev_alert(priv->ndev, "%s: 0x%p: connection exists (%02x %02x). last cmd: %x\n",
 			     __func__, session, skcb->addr.sa, skcb->addr.da,
 			     session->last_cmd);
@@ -1691,10 +1637,7 @@ static int j1939_xtp_rx_rts_session_active(struct j1939_session *session,
 			    __func__, session,
 			    session->skcb.addr.sa, skcb->addr.sa,
 			    session->skcb.addr.da, skcb->addr.da);
-	/* make sure 'sa' & 'da' are correct !
-	 * They may be 'not filled in yet' for sending
-	 * skb's, since they did not pass the Address Claim ever.
-	 */
+	 
 	session->skcb.addr.sa = skcb->addr.sa;
 	session->skcb.addr.da = skcb->addr.da;
 
@@ -1715,21 +1658,7 @@ static void j1939_xtp_rx_rts(struct j1939_priv *priv, struct sk_buff *skb,
 
 	if (!session) {
 		if (transmitter) {
-			/* If we're the transmitter and this function is called,
-			 * we received our own RTS. A session has already been
-			 * created.
-			 *
-			 * For some reasons however it might have been destroyed
-			 * already. So don't create a new one here (using
-			 * "j1939_xtp_rx_rts_session_new()") as this will be a
-			 * receiver session.
-			 *
-			 * The reasons the session is already destroyed might
-			 * be:
-			 * - user space closed socket was and the session was
-			 *   aborted
-			 * - session was aborted due to external abort message
-			 */
+			 
 			return;
 		}
 		session = j1939_xtp_rx_rts_session_new(priv, skb);
@@ -1771,7 +1700,7 @@ static void j1939_xtp_rx_dpo_one(struct j1939_session *session,
 
 	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
 
-	/* transmitted without problems */
+	 
 	session->pkt.dpo = j1939_etp_ctl_to_packet(skb->data);
 	session->last_cmd = dat[0];
 	j1939_tp_set_rxtimeout(session, 750);
@@ -1817,7 +1746,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
 	skcb = j1939_skb_to_cb(skb);
 	dat = skb->data;
 	if (skb->len != 8) {
-		/* makes no sense */
+		 
 		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
 		goto out_session_cancel;
 	}
@@ -1892,7 +1821,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
 		else
 			remain = true;
 	} else {
-		/* never final, an EOMA must follow */
+		 
 		if (session->pkt.rx >= session->pkt.last)
 			do_cts_eoma = true;
 	}
@@ -1958,7 +1887,7 @@ static void j1939_xtp_rx_dat(struct j1939_priv *priv, struct sk_buff *skb)
 	}
 }
 
-/* j1939 main intf */
+ 
 struct j1939_session *j1939_tp_send(struct j1939_priv *priv,
 				    struct sk_buff *skb, size_t size)
 {
@@ -1970,7 +1899,7 @@ struct j1939_session *j1939_tp_send(struct j1939_priv *priv,
 	    skcb->addr.pgn == J1939_TP_PGN_CTL ||
 	    skcb->addr.pgn == J1939_ETP_PGN_DAT ||
 	    skcb->addr.pgn == J1939_ETP_PGN_CTL)
-		/* avoid conflict */
+		 
 		return ERR_PTR(-EDOM);
 
 	if (size > priv->tp_max_packet_size)
@@ -1987,25 +1916,25 @@ struct j1939_session *j1939_tp_send(struct j1939_priv *priv,
 	    j1939_cb_is_broadcast(skcb))
 		return ERR_PTR(-EDESTADDRREQ);
 
-	/* fill in addresses from names */
+	 
 	ret = j1939_ac_fixup(priv, skb);
 	if (unlikely(ret))
 		return ERR_PTR(ret);
 
-	/* fix DST flags, it may be used there soon */
+	 
 	if (j1939_address_is_unicast(skcb->addr.da) &&
 	    priv->ents[skcb->addr.da].nusers)
 		skcb->flags |= J1939_ECU_LOCAL_DST;
 
-	/* src is always local, I'm sending ... */
+	 
 	skcb->flags |= J1939_ECU_LOCAL_SRC;
 
-	/* prepare new session */
+	 
 	session = j1939_session_new(priv, skb, size);
 	if (!session)
 		return ERR_PTR(-ENOMEM);
 
-	/* skb is recounted in j1939_session_new() */
+	 
 	sock_hold(skb->sk);
 	session->sk = skb->sk;
 	session->transmission = true;
@@ -2014,7 +1943,7 @@ struct j1939_session *j1939_tp_send(struct j1939_priv *priv,
 		min(j1939_tp_block ?: 255, session->pkt.total);
 
 	if (j1939_cb_is_broadcast(&session->skcb))
-		/* set the end-packet for broadcast */
+		 
 		session->pkt.last = session->pkt.total;
 
 	skcb->tskey = atomic_inc_return(&session->sk->sk_tskey) - 1;
@@ -2100,7 +2029,7 @@ static void j1939_tp_cmd_recv(struct j1939_priv *priv, struct sk_buff *skb)
 
 		break;
 
-	case J1939_ETP_CMD_ABORT: /* && J1939_TP_CMD_ABORT */
+	case J1939_ETP_CMD_ABORT:  
 		if (j1939_cb_is_broadcast(skcb)) {
 			netdev_err_once(priv->ndev, "%s: abort to broadcast (%02x), ignoring!\n",
 					__func__, skcb->addr.sa);
@@ -2139,14 +2068,14 @@ int j1939_tp_recv(struct j1939_priv *priv, struct sk_buff *skb)
 		fallthrough;
 	case J1939_TP_PGN_CTL:
 		if (skb->len < 8)
-			return 0; /* Don't care. Nothing to extract here */
+			return 0;  
 
 		j1939_tp_cmd_recv(priv, skb);
 		break;
 	default:
-		return 0; /* no problem */
+		return 0;  
 	}
-	return 1; /* "I processed the message" */
+	return 1;  
 }
 
 void j1939_simple_recv(struct j1939_priv *priv, struct sk_buff *skb)

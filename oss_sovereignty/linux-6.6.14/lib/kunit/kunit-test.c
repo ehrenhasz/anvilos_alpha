@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KUnit test for core test infrastructure.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+
+ 
 #include <kunit/test.h>
 #include <kunit/test-bug.h>
 
@@ -104,10 +99,7 @@ static struct kunit_suite kunit_try_catch_test_suite = {
 	.test_cases = kunit_try_catch_test_cases,
 };
 
-/*
- * Context for testing test managed resources
- * is_resource_initialized is used to test arbitrary resources
- */
+ 
 struct kunit_test_resource_context {
 	struct kunit test;
 	bool is_resource_initialized;
@@ -169,14 +161,7 @@ static inline bool kunit_resource_instance_match(struct kunit *test,
 	return res->data == match_data;
 }
 
-/*
- * Note: tests below use kunit_alloc_and_get_resource(), so as a consequence
- * they have a reference to the associated resource that they must release
- * via kunit_put_resource().  In normal operation, users will only
- * have to do this for cases where they use kunit_find_resource(), and the
- * kunit_alloc_resource() function will be used (which does not take a
- * resource reference).
- */
+ 
 static void kunit_resource_test_destroy_resource(struct kunit *test)
 {
 	struct kunit_test_resource_context *ctx = test->priv;
@@ -208,26 +193,22 @@ static void kunit_resource_test_remove_resource(struct kunit *test)
 			GFP_KERNEL,
 			ctx);
 
-	/* The resource is in the list */
+	 
 	KUNIT_EXPECT_FALSE(test, list_empty(&ctx->test.resources));
 
-	/* Remove the resource. The pointer is still valid, but it can't be
-	 * found.
-	 */
+	 
 	kunit_remove_resource(test, res);
 	KUNIT_EXPECT_TRUE(test, list_empty(&ctx->test.resources));
-	/* We haven't been freed yet. */
+	 
 	KUNIT_EXPECT_TRUE(test, ctx->is_resource_initialized);
 
-	/* Removing the resource multiple times is valid. */
+	 
 	kunit_remove_resource(test, res);
 	KUNIT_EXPECT_TRUE(test, list_empty(&ctx->test.resources));
-	/* Despite having been removed twice (from only one reference), the
-	 * resource still has not been freed.
-	 */
+	 
 	KUNIT_EXPECT_TRUE(test, ctx->is_resource_initialized);
 
-	/* Free the resource. */
+	 
 	kunit_put_resource(res);
 	KUNIT_EXPECT_FALSE(test, ctx->is_resource_initialized);
 }
@@ -314,28 +295,20 @@ static void fake_resource_1_free(struct kunit_resource *res)
 	KUNIT_RESOURCE_TEST_MARK_ORDER(ctx, free_order, 1);
 }
 
-/*
- * TODO(brendanhiggins@google.com): replace the arrays that keep track of the
- * order of allocation and freeing with strict mocks using the IN_SEQUENCE macro
- * to assert allocation and freeing order when the feature becomes available.
- */
+ 
 static void kunit_resource_test_proper_free_ordering(struct kunit *test)
 {
 	struct kunit_test_resource_context *ctx = test->priv;
 	struct kunit_resource *res;
 
-	/* fake_resource_1 allocates a fake_resource_2 in its init. */
+	 
 	res = kunit_alloc_and_get_resource(&ctx->test,
 					   fake_resource_1_init,
 					   fake_resource_1_free,
 					   GFP_KERNEL,
 					   ctx);
 
-	/*
-	 * Since fake_resource_2_init calls KUNIT_RESOURCE_TEST_MARK_ORDER
-	 * before returning to fake_resource_1_init, it should be the first to
-	 * put its key in the allocate_order array.
-	 */
+	 
 	KUNIT_EXPECT_EQ(test, ctx->allocate_order[0], 2);
 	KUNIT_EXPECT_EQ(test, ctx->allocate_order[1], 1);
 
@@ -343,11 +316,7 @@ static void kunit_resource_test_proper_free_ordering(struct kunit *test)
 
 	kunit_cleanup(&ctx->test);
 
-	/*
-	 * Because fake_resource_2 finishes allocation before fake_resource_1,
-	 * fake_resource_1 should be freed first since it could depend on
-	 * fake_resource_2.
-	 */
+	 
 	KUNIT_EXPECT_EQ(test, ctx->free_order[0], 1);
 	KUNIT_EXPECT_EQ(test, ctx->free_order[1], 2);
 }
@@ -418,11 +387,11 @@ static void kunit_resource_test_action(struct kunit *test)
 	kunit_cleanup(test);
 	KUNIT_EXPECT_EQ(test, num_actions, 1);
 
-	/* Once we've cleaned up, the action queue is empty. */
+	 
 	kunit_cleanup(test);
 	KUNIT_EXPECT_EQ(test, num_actions, 1);
 
-	/* Check the same function can be deferred multiple times. */
+	 
 	kunit_add_action(test, increment_int, &num_actions);
 	kunit_add_action(test, increment_int, &num_actions);
 	kunit_cleanup(test);
@@ -445,11 +414,11 @@ static void kunit_resource_test_release_action(struct kunit *test)
 
 	kunit_add_action(test, increment_int, &num_actions);
 	KUNIT_EXPECT_EQ(test, num_actions, 0);
-	/* Runs immediately on trigger. */
+	 
 	kunit_release_action(test, increment_int, &num_actions);
 	KUNIT_EXPECT_EQ(test, num_actions, 1);
 
-	/* Doesn't run again on test exit. */
+	 
 	kunit_cleanup(test);
 	KUNIT_EXPECT_EQ(test, num_actions, 1);
 }
@@ -479,7 +448,7 @@ static void kunit_resource_test_action_ordering(struct kunit *test)
 	kunit_release_action(test, action_order_2, ctx);
 	kunit_cleanup(test);
 
-	/* [2 is triggered] [2], [(1 is cancelled)] [1] */
+	 
 	KUNIT_EXPECT_EQ(test, ctx->free_order[0], 2);
 	KUNIT_EXPECT_EQ(test, ctx->free_order[1], 2);
 	KUNIT_EXPECT_EQ(test, ctx->free_order[2], 1);
@@ -596,14 +565,14 @@ static void kunit_status_mark_skipped_test(struct kunit *test)
 
 	kunit_init_test(&fake, "fake test", NULL);
 
-	/* Before: Should be SUCCESS with no comment. */
+	 
 	KUNIT_EXPECT_EQ(test, fake.status, KUNIT_SUCCESS);
 	KUNIT_EXPECT_STREQ(test, fake.status_comment, "");
 
-	/* Mark the test as skipped. */
+	 
 	kunit_mark_skipped(&fake, "Accepts format string: %s", "YES");
 
-	/* After: Should be SKIPPED with our comment. */
+	 
 	KUNIT_EXPECT_EQ(test, fake.status, (enum kunit_status)KUNIT_SKIPPED);
 	KUNIT_EXPECT_STREQ(test, fake.status_comment, "Accepts format string: YES");
 }
@@ -621,9 +590,7 @@ static struct kunit_suite kunit_status_test_suite = {
 
 static void kunit_current_test(struct kunit *test)
 {
-	/* Check results of both current->kunit_test and
-	 * kunit_get_current_test() are equivalent to current test.
-	 */
+	 
 	KUNIT_EXPECT_PTR_EQ(test, test, current->kunit_test);
 	KUNIT_EXPECT_PTR_EQ(test, test, kunit_get_current_test());
 }
@@ -635,14 +602,14 @@ static void kunit_current_fail_test(struct kunit *test)
 	kunit_init_test(&fake, "fake test", NULL);
 	KUNIT_EXPECT_EQ(test, fake.status, KUNIT_SUCCESS);
 
-	/* Set current->kunit_test to fake test. */
+	 
 	current->kunit_test = &fake;
 
 	kunit_fail_current_test("This should make `fake` test fail.");
 	KUNIT_EXPECT_EQ(test, fake.status, (enum kunit_status)KUNIT_FAILURE);
 	kunit_cleanup(&fake);
 
-	/* Reset current->kunit_test to current test. */
+	 
 	current->kunit_test = test;
 }
 

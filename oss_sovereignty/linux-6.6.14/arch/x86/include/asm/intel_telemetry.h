@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Intel SOC Telemetry Driver Header File
- * Copyright (C) 2015, Intel Corporation.
- * All Rights Reserved.
- */
+ 
+ 
 #ifndef INTEL_TELEMETRY_H
 #define INTEL_TELEMETRY_H
 
@@ -24,13 +20,13 @@ struct telemetry_evtlog {
 };
 
 struct telemetry_evtconfig {
-	/* Array of Event-IDs to Enable */
+	 
 	u32 *evtmap;
 
-	/* Number of Events (<29) in evtmap */
+	 
 	u8 num_evts;
 
-	/* Sampling period */
+	 
 	u8 period;
 };
 
@@ -136,4 +132,4 @@ int telemetry_set_trace_verbosity(enum telemetry_unit telem_unit,
 int telemetry_get_trace_verbosity(enum telemetry_unit telem_unit,
 				  u32 *verbosity);
 
-#endif /* INTEL_TELEMETRY_H */
+#endif  

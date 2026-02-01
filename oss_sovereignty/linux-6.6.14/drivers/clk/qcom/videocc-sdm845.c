@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -21,8 +19,8 @@
 enum {
 	P_BI_TCXO,
 	P_VIDEO_PLL0_OUT_MAIN,
-	/* P_VIDEO_PLL0_OUT_EVEN, */
-	/* P_VIDEO_PLL0_OUT_ODD, */
+	 
+	 
 };
 
 static const struct alpha_pll_config video_pll0_config = {
@@ -48,15 +46,15 @@ static struct clk_alpha_pll video_pll0 = {
 static const struct parent_map video_cc_parent_map_0[] = {
 	{ P_BI_TCXO, 0 },
 	{ P_VIDEO_PLL0_OUT_MAIN, 1 },
-	/* { P_VIDEO_PLL0_OUT_EVEN, 2 }, */
-	/* { P_VIDEO_PLL0_OUT_ODD, 3 }, */
+	 
+	 
 };
 
 static const struct clk_parent_data video_cc_parent_data_0[] = {
 	{ .fw_name = "bi_tcxo", .name = "bi_tcxo" },
 	{ .hw = &video_pll0.clkr.hw },
-	/* { .name = "video_pll0_out_even" }, */
-	/* { .name = "video_pll0_out_odd" }, */
+	 
+	 
 };
 
 static const struct freq_tbl ftbl_video_cc_venus_clk_src[] = {

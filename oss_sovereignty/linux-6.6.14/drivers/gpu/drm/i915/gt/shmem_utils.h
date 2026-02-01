@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef SHMEM_UTILS_H
 #define SHMEM_UTILS_H
@@ -23,4 +21,4 @@ int shmem_read_to_iosys_map(struct file *file, loff_t off,
 int shmem_read(struct file *file, loff_t off, void *dst, size_t len);
 int shmem_write(struct file *file, loff_t off, void *src, size_t len);
 
-#endif /* SHMEM_UTILS_H */
+#endif  

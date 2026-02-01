@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SLIM core rproc driver
- *
- * Copyright (C) 2016 STMicroelectronics
- *
- * Author: Peter Griffin <peter.griffin@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -17,7 +11,7 @@
 #include <linux/remoteproc/st_slim_rproc.h>
 #include "remoteproc_internal.h"
 
-/* SLIM core registers */
+ 
 #define SLIM_ID_OFST		0x0
 #define SLIM_VER_OFST		0x4
 
@@ -30,7 +24,7 @@
 
 #define SLIM_SLIM_PC_OFST	0x20
 
-/* DMEM registers */
+ 
 #define SLIM_REV_ID_OFST	0x0
 #define SLIM_REV_ID_MIN_MASK		GENMASK(15, 8)
 #define SLIM_REV_ID_MIN(id)		((id & SLIM_REV_ID_MIN_MASK) >> 8)
@@ -38,7 +32,7 @@
 #define SLIM_REV_ID_MAJ(id)		((id & SLIM_REV_ID_MAJ_MASK) >> 16)
 
 
-/* peripherals registers */
+ 
 #define SLIM_STBUS_SYNC_OFST	0xF88
 #define SLIM_STBUS_SYNC_DIS		BIT(0)
 
@@ -105,9 +99,7 @@ err_disable_clks:
 	return ret;
 }
 
-/*
- * Remoteproc slim specific device handlers
- */
+ 
 static int slim_rproc_start(struct rproc *rproc)
 {
 	struct device *dev = &rproc->dev;
@@ -115,26 +107,26 @@ static int slim_rproc_start(struct rproc *rproc)
 	unsigned long hw_id, hw_ver, fw_rev;
 	u32 val;
 
-	/* disable CPU pipeline clock & reset CPU pipeline */
+	 
 	val = SLIM_CLK_GATE_DIS | SLIM_CLK_GATE_RESET;
 	writel(val, slim_rproc->slimcore + SLIM_CLK_GATE_OFST);
 
-	/* disable SLIM core STBus sync */
+	 
 	writel(SLIM_STBUS_SYNC_DIS, slim_rproc->peri + SLIM_STBUS_SYNC_OFST);
 
-	/* enable cpu pipeline clock */
+	 
 	writel(!SLIM_CLK_GATE_DIS,
 		slim_rproc->slimcore + SLIM_CLK_GATE_OFST);
 
-	/* clear int & cmd mailbox */
+	 
 	writel(~0U, slim_rproc->peri + SLIM_INT_CLR_OFST);
 	writel(~0U, slim_rproc->peri + SLIM_CMD_CLR_OFST);
 
-	/* enable all channels cmd & int */
+	 
 	writel(~0U, slim_rproc->peri + SLIM_INT_MASK_OFST);
 	writel(~0U, slim_rproc->peri + SLIM_CMD_MASK_OFST);
 
-	/* enable cpu */
+	 
 	writel(SLIM_EN_RUN, slim_rproc->slimcore + SLIM_EN_OFST);
 
 	hw_id = readl_relaxed(slim_rproc->slimcore + SLIM_ID_OFST);
@@ -155,11 +147,11 @@ static int slim_rproc_stop(struct rproc *rproc)
 	struct st_slim_rproc *slim_rproc = rproc->priv;
 	u32 val;
 
-	/* mask all (cmd & int) channels */
+	 
 	writel(0UL, slim_rproc->peri + SLIM_INT_MASK_OFST);
 	writel(0UL, slim_rproc->peri + SLIM_CMD_MASK_OFST);
 
-	/* disable cpu pipeline clock */
+	 
 	writel(SLIM_CLK_GATE_DIS, slim_rproc->slimcore + SLIM_CLK_GATE_OFST);
 
 	writel(!SLIM_EN_RUN, slim_rproc->slimcore + SLIM_EN_OFST);
@@ -184,7 +176,7 @@ static void *slim_rproc_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *
 			continue;
 
 		if (len <= slim_rproc->mem[i].size) {
-			/* __force to make sparse happy with type conversion */
+			 
 			va = (__force void *)slim_rproc->mem[i].cpu_addr;
 			break;
 		}
@@ -205,18 +197,7 @@ static const struct rproc_ops slim_rproc_ops = {
 	.sanity_check	= rproc_elf_sanity_check,
 };
 
-/**
- * st_slim_rproc_alloc() - allocate and initialise slim rproc
- * @pdev: Pointer to the platform_device struct
- * @fw_name: Name of firmware for rproc to use
- *
- * Function for allocating and initialising a slim rproc for use by
- * device drivers whose IP is based around the SLIM core. It
- * obtains and enables any clocks required by the SLIM core and also
- * ioremaps the various IO.
- *
- * Return: st_slim_rproc pointer or PTR_ERR() on error.
- */
+ 
 
 struct st_slim_rproc *st_slim_rproc_alloc(struct platform_device *pdev,
 				char *fw_name)
@@ -244,7 +225,7 @@ struct st_slim_rproc *st_slim_rproc_alloc(struct platform_device *pdev,
 	slim_rproc = rproc->priv;
 	slim_rproc->rproc = rproc;
 
-	/* get imem and dmem */
+	 
 	for (i = 0; i < ARRAY_SIZE(mem_names); i++) {
 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 						mem_names[i]);
@@ -285,7 +266,7 @@ struct st_slim_rproc *st_slim_rproc_alloc(struct platform_device *pdev,
 		goto err_clk_put;
 	}
 
-	/* Register as a remoteproc device */
+	 
 	err = rproc_add(rproc);
 	if (err) {
 		dev_err(dev, "registration of slim remoteproc failed\n");
@@ -305,13 +286,7 @@ err:
 }
 EXPORT_SYMBOL(st_slim_rproc_alloc);
 
-/**
-  * st_slim_rproc_put() - put slim rproc resources
-  * @slim_rproc: Pointer to the st_slim_rproc struct
-  *
-  * Function for calling respective _put() functions on slim_rproc resources.
-  *
-  */
+ 
 void st_slim_rproc_put(struct st_slim_rproc *slim_rproc)
 {
 	int clk;

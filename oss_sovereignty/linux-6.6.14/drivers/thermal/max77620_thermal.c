@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Junction temperature thermal driver for Maxim Max77620.
- *
- * Copyright (c) 2016, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- *	   Mallikarjun Kasoju <mkasoju@nvidia.com>
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/interrupt.h>
@@ -30,19 +23,7 @@ struct max77620_therm_info {
 	int				irq_tjalarm2;
 };
 
-/**
- * max77620_thermal_read_temp: Read PMIC die temperatue.
- * @data:	Device specific data.
- * @temp:	Temperature in millidegrees Celsius
- *
- * The actual temperature of PMIC die is not available from PMIC.
- * PMIC only tells the status if it has crossed or not the threshold level
- * of 120degC or 140degC.
- * If threshold has not been crossed then assume die temperature as 100degC
- * else 120degC or 140deG based on the PMIC die temp threshold status.
- *
- * Return 0 on success otherwise error number to show reason of failure.
- */
+ 
 
 static int max77620_thermal_read_temp(struct thermal_zone_device *tz, int *temp)
 {
@@ -106,10 +87,7 @@ static int max77620_thermal_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/*
-	 * The reference taken to the parent's node which will be balanced on
-	 * reprobe or on platform-device release.
-	 */
+	 
 	device_set_of_node_from_dev(&pdev->dev, pdev->dev.parent);
 
 	mtherm->tz_device = devm_thermal_of_zone_register(&pdev->dev, 0,

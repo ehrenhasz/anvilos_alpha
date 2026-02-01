@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CTR: Counter mode
- *
- * (C) Copyright IBM Corp. 2007 - Joy Latten <latten@us.ibm.com>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/ctr.h>
@@ -55,11 +51,11 @@ static int crypto_ctr_crypt_segment(struct skcipher_walk *walk,
 	unsigned int nbytes = walk->nbytes;
 
 	do {
-		/* create keystream */
+		 
 		fn(crypto_cipher_tfm(tfm), dst, ctrblk);
 		crypto_xor(dst, src, bsize);
 
-		/* increment counter in counterblock */
+		 
 		crypto_inc(ctrblk, bsize);
 
 		src += bsize;
@@ -83,11 +79,11 @@ static int crypto_ctr_crypt_inplace(struct skcipher_walk *walk,
 	u8 *keystream = PTR_ALIGN(tmp + 0, alignmask + 1);
 
 	do {
-		/* create keystream */
+		 
 		fn(crypto_cipher_tfm(tfm), keystream, ctrblk);
 		crypto_xor(src, keystream, bsize);
 
-		/* increment counter in counterblock */
+		 
 		crypto_inc(ctrblk, bsize);
 
 		src += bsize;
@@ -136,22 +132,19 @@ static int crypto_ctr_create(struct crypto_template *tmpl, struct rtattr **tb)
 
 	alg = skcipher_ialg_simple(inst);
 
-	/* Block size must be >= 4 bytes. */
+	 
 	err = -EINVAL;
 	if (alg->cra_blocksize < 4)
 		goto out_free_inst;
 
-	/* If this is false we'd fail the alignment of crypto_inc. */
+	 
 	if (alg->cra_blocksize % 4)
 		goto out_free_inst;
 
-	/* CTR mode is a stream cipher. */
+	 
 	inst->alg.base.cra_blocksize = 1;
 
-	/*
-	 * To simplify the implementation, configure the skcipher walk to only
-	 * give a partial block at the very end, never earlier.
-	 */
+	 
 	inst->alg.chunksize = alg->cra_blocksize;
 
 	inst->alg.encrypt = crypto_ctr_crypt;
@@ -172,7 +165,7 @@ static int crypto_rfc3686_setkey(struct crypto_skcipher *parent,
 	struct crypto_rfc3686_ctx *ctx = crypto_skcipher_ctx(parent);
 	struct crypto_skcipher *child = ctx->child;
 
-	/* the nonce is stored in bytes at end of key */
+	 
 	if (keylen < CTR_RFC3686_NONCE_SIZE)
 		return -EINVAL;
 
@@ -198,11 +191,11 @@ static int crypto_rfc3686_crypt(struct skcipher_request *req)
 	struct skcipher_request *subreq = &rctx->subreq;
 	u8 *iv = rctx->iv;
 
-	/* set up counter block */
+	 
 	memcpy(iv, ctx->nonce, CTR_RFC3686_NONCE_SIZE);
 	memcpy(iv + CTR_RFC3686_NONCE_SIZE, req->iv, CTR_RFC3686_IV_SIZE);
 
-	/* initialize counter portion of counter block */
+	 
 	*(__be32 *)(iv + CTR_RFC3686_NONCE_SIZE + CTR_RFC3686_IV_SIZE) =
 		cpu_to_be32(1);
 
@@ -280,12 +273,12 @@ static int crypto_rfc3686_create(struct crypto_template *tmpl,
 
 	alg = crypto_spawn_skcipher_alg(spawn);
 
-	/* We only support 16-byte blocks. */
+	 
 	err = -EINVAL;
 	if (crypto_skcipher_alg_ivsize(alg) != CTR_RFC3686_BLOCK_SIZE)
 		goto err_free_inst;
 
-	/* Not a stream cipher? */
+	 
 	if (alg->base.cra_blocksize != 1)
 		goto err_free_inst;
 

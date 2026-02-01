@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helper functions used by the EFI stub on multiple
- * architectures. This should be #included by the EFI stub
- * implementation files.
- *
- * Copyright 2011 Intel Corporation; author Matt Fleming
- */
+
+ 
 
 #include <linux/efi.h>
 #include <asm/efi.h>
@@ -14,19 +8,7 @@
 
 #define MAX_FILENAME_SIZE	256
 
-/*
- * Some firmware implementations have problems reading files in one go.
- * A read chunk size of 1MB seems to work for most platforms.
- *
- * Unfortunately, reading files in chunks triggers *other* bugs on some
- * platforms, so we provide a way to disable this workaround, which can
- * be done by passing "efi=nochunk" on the EFI boot stub command line.
- *
- * If you experience issues with initrd images being corrupt it's worth
- * trying efi=nochunk, but chunking is enabled by default on x86 because
- * there are far more machines that require the workaround than those that
- * break with it enabled.
- */
+ 
 #define EFI_READ_CHUNK_SIZE	SZ_1M
 
 struct finfo {
@@ -45,7 +27,7 @@ static efi_status_t efi_open_file(efi_file_protocol_t *volume,
 	efi_status_t status;
 	efi_char16_t *c;
 
-	/* Replace UNIX dir separators with EFI standard ones */
+	 
 	for (c = fi->filename; *c != L'\0'; c++) {
 		if (*c == L'/')
 			*c = L'\\';
@@ -110,7 +92,7 @@ static int find_file_option(const efi_char16_t *cmdline, int cmdline_len,
 	if (!found)
 		return 0;
 
-	/* Skip any leading slashes */
+	 
 	while (i < cmdline_len && (cmdline[i] == L'/' || cmdline[i] == L'\\'))
 		i++;
 
@@ -137,24 +119,24 @@ static efi_status_t efi_open_device_path(efi_file_protocol_t **volume,
 	efi_handle_t handle;
 	efi_status_t status;
 
-	/* See if the text to device path protocol exists */
+	 
 	if (!text_to_dp &&
 	    efi_bs_call(locate_protocol, &text_to_dp_guid, NULL,
 			(void **)&text_to_dp) != EFI_SUCCESS)
 		return EFI_UNSUPPORTED;
 
 
-	/* Convert the filename wide string into a device path */
+	 
 	initrd_dp = efi_fn_call(text_to_dp, convert_text_to_device_path,
 				fi->filename);
 
-	/* Check whether the device path in question implements simple FS */
+	 
 	if ((efi_bs_call(locate_device_path, &fs_proto, &initrd_dp, &handle) ?:
 	     efi_bs_call(handle_protocol, handle, &fs_proto, (void **)&io))
 	    != EFI_SUCCESS)
 		return EFI_NOT_FOUND;
 
-	/* Check whether the remaining device path is a file device path */
+	 
 	if (initrd_dp->type != EFI_DEV_MEDIA ||
 	    initrd_dp->sub_type != EFI_DEV_MEDIA_FILE) {
 		efi_warn("Unexpected device path node type: (%x, %x)\n",
@@ -162,7 +144,7 @@ static efi_status_t efi_open_device_path(efi_file_protocol_t **volume,
 		return EFI_LOAD_ERROR;
 	}
 
-	/* Copy the remaining file path into the fi structure */
+	 
 	fpath = (struct efi_file_path_dev_path *)initrd_dp;
 	memcpy(fi->filename, fpath->filename,
 	       min(sizeof(fi->filename),
@@ -175,12 +157,7 @@ static efi_status_t efi_open_device_path(efi_file_protocol_t **volume,
 	return status;
 }
 
-/*
- * Check the cmdline for a LILO-style file= arguments.
- *
- * We only support loading a file from the same filesystem as
- * the kernel image.
- */
+ 
 efi_status_t handle_cmdline_files(efi_loaded_image_t *image,
 				  const efi_char16_t *optstr,
 				  int optstr_size,
@@ -226,7 +203,7 @@ efi_status_t handle_cmdline_files(efi_loaded_image_t *image,
 
 		status = efi_open_device_path(&volume, &fi);
 		if (status == EFI_UNSUPPORTED || status == EFI_NOT_FOUND)
-			/* try the volume that holds the kernel itself */
+			 
 			status = efi_open_volume(image, &volume);
 
 		if (status != EFI_SUCCESS)
@@ -236,12 +213,7 @@ efi_status_t handle_cmdline_files(efi_loaded_image_t *image,
 		if (status != EFI_SUCCESS)
 			goto err_close_volume;
 
-		/*
-		 * Check whether the existing allocation can contain the next
-		 * file. This condition will also trigger naturally during the
-		 * first (and typically only) iteration of the loop, given that
-		 * alloc_size == 0 in that case.
-		 */
+		 
 		if (round_up(alloc_size + size, EFI_ALLOC_ALIGN) >
 		    round_up(alloc_size, EFI_ALLOC_ALIGN)) {
 			unsigned long old_addr = alloc_addr;
@@ -261,12 +233,7 @@ efi_status_t handle_cmdline_files(efi_loaded_image_t *image,
 			}
 
 			if (old_addr != 0) {
-				/*
-				 * This is not the first time we've gone
-				 * around this loop, and so we are loading
-				 * multiple files that need to be concatenated
-				 * and returned in a single buffer.
-				 */
+				 
 				memcpy((void *)alloc_addr, (void *)old_addr, alloc_size);
 				efi_free(alloc_size, old_addr);
 			}

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 #include "vcap_api.h"
@@ -105,7 +105,7 @@ lan966x_tc_flower_handler_basic_usage(struct vcap_tc_flower_parse_usage *st)
 				goto out;
 		} else if (st->l3_proto == ETH_P_IPV6 &&
 			   st->admin->vtype == VCAP_TYPE_IS1) {
-			/* Don't set any keys in this case */
+			 
 		} else if (st->l3_proto == ETH_P_SNAP &&
 			   st->admin->vtype == VCAP_TYPE_IS1) {
 			err = vcap_rule_add_key_bit(st->vrule,
@@ -276,14 +276,12 @@ static int lan966x_tc_flower_action_check(struct vcap_control *vctrl,
 			return -EINVAL;
 		}
 		action_mask |= BIT(actent->id);
-		last_actent = actent; /* Save last action for later check */
+		last_actent = actent;  
 	}
 
-	/* Check that last action is a goto
-	 * The last chain/lookup does not need to have goto action
-	 */
+	 
 	if (last_actent->id == FLOW_ACTION_GOTO) {
-		/* Check if the destination chain is in one of the VCAPs */
+		 
 		if (!vcap_is_next_lookup(vctrl, fco->common.chain_index,
 					 last_actent->chain_index)) {
 			NL_SET_ERR_MSG_MOD(fco->common.extack,
@@ -297,7 +295,7 @@ static int lan966x_tc_flower_action_check(struct vcap_control *vctrl,
 		return -EINVAL;
 	}
 
-	/* Catch unsupported combinations of actions */
+	 
 	if (action_mask & BIT(FLOW_ACTION_TRAP) &&
 	    action_mask & BIT(FLOW_ACTION_ACCEPT)) {
 		NL_SET_ERR_MSG_MOD(fco->common.extack,
@@ -308,7 +306,7 @@ static int lan966x_tc_flower_action_check(struct vcap_control *vctrl,
 	return 0;
 }
 
-/* Add the actionset that is the default for the VCAP type */
+ 
 static int lan966x_tc_set_actionset(struct vcap_admin *admin,
 				    struct vcap_rule *vrule)
 {
@@ -329,7 +327,7 @@ static int lan966x_tc_set_actionset(struct vcap_admin *admin,
 		return -EINVAL;
 	}
 
-	/* Do not overwrite any current actionset */
+	 
 	if (vrule->actionset == VCAP_AFS_NO_VALUE)
 		err = vcap_set_rule_set_actionset(vrule, aset);
 
@@ -348,7 +346,7 @@ static int lan966x_tc_add_rule_link_target(struct vcap_admin *admin,
 
 	switch (admin->vtype) {
 	case VCAP_TYPE_IS1:
-		/* Choose IS1 specific NXT_IDX key (for chaining rules from IS1) */
+		 
 		err = vcap_rule_add_key_u32(vrule, VCAP_KF_LOOKUP_GEN_IDX_SEL,
 					    1, ~0);
 		if (err)
@@ -357,11 +355,11 @@ static int lan966x_tc_add_rule_link_target(struct vcap_admin *admin,
 		return vcap_rule_add_key_u32(vrule, VCAP_KF_LOOKUP_GEN_IDX,
 					     link_val, ~0);
 	case VCAP_TYPE_IS2:
-		/* Add IS2 specific PAG key (for chaining rules from IS1) */
+		 
 		return vcap_rule_add_key_u32(vrule, VCAP_KF_LOOKUP_PAG,
 					     link_val, ~0);
 	case VCAP_TYPE_ES0:
-		/* Add ES0 specific ISDX key (for chaining rules from IS1) */
+		 
 		return vcap_rule_add_key_u32(vrule, VCAP_KF_ISDX_CLS,
 					     link_val, ~0);
 	default:
@@ -389,9 +387,9 @@ static int lan966x_tc_add_rule_link(struct vcap_control *vctrl,
 	if (!diff)
 		return 0;
 
-	/* Between IS1 and IS2 the PAG value is used */
+	 
 	if (admin->vtype == VCAP_TYPE_IS1 && to_admin->vtype == VCAP_TYPE_IS2) {
-		/* This works for IS1->IS2 */
+		 
 		err = vcap_rule_add_action_u32(vrule, VCAP_AF_PAG_VAL, diff);
 		if (err)
 			return err;
@@ -402,7 +400,7 @@ static int lan966x_tc_add_rule_link(struct vcap_control *vctrl,
 			return err;
 	} else if (admin->vtype == VCAP_TYPE_IS1 &&
 		   to_admin->vtype == VCAP_TYPE_ES0) {
-		/* This works for IS1->ES0 */
+		 
 		err = vcap_rule_add_action_u32(vrule, VCAP_AF_ISDX_ADD_VAL,
 					       diff);
 		if (err)
@@ -514,7 +512,7 @@ static int lan966x_tc_flower_add(struct lan966x_port *port,
 				goto out;
 			}
 
-			/* Force untag */
+			 
 			err = vcap_rule_add_action_u32(vrule, VCAP_AF_PUSH_OUTER_TAG,
 						       LAN966X_FORCE_UNTAGED);
 			if (err)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8173-clk.h>
 #include <linux/module.h>
@@ -12,11 +8,7 @@
 #include "clk-mtk.h"
 #include "clk-mux.h"
 
-/*
- * For some clocks, we don't care what their actual rates are. And these
- * clocks may change their rate on different products or different scenarios.
- * So we model these clocks' rate as 0, to denote it's not an actual rate.
- */
+ 
 #define DUMMY_RATE	0
 
 #define TOP_MUX_GATE_NOSR(_id, _name, _parents, _reg, _shift, _width, _gate, _flags) \
@@ -527,7 +519,7 @@ static const struct mtk_fixed_factor top_divs[] = {
 };
 
 static const struct mtk_composite top_muxes[] = {
-	/* CLK_CFG_0 */
+	 
 	MUX(CLK_TOP_AXI_SEL, "axi_sel", axi_parents, 0x0040, 0, 3),
 	MUX_FLAGS(CLK_TOP_MEM_SEL, "mem_sel", mem_parents, 0x0040, 8, 1,
 		  CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
@@ -535,17 +527,17 @@ static const struct mtk_composite top_muxes[] = {
 		       ddrphycfg_parents, 0x0040, 16, 1, 23,
 		       CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
 	MUX_GATE(CLK_TOP_MM_SEL, "mm_sel", mm_parents, 0x0040, 24, 4, 31),
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE(CLK_TOP_PWM_SEL, "pwm_sel", pwm_parents, 0x0050, 0, 2, 7),
 	MUX_GATE(CLK_TOP_VDEC_SEL, "vdec_sel", vdec_parents, 0x0050, 8, 4, 15),
 	MUX_GATE(CLK_TOP_VENC_SEL, "venc_sel", venc_parents, 0x0050, 16, 4, 23),
 	MUX_GATE(CLK_TOP_MFG_SEL, "mfg_sel", mfg_parents, 0x0050, 24, 4, 31),
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE(CLK_TOP_CAMTG_SEL, "camtg_sel", camtg_parents, 0x0060, 0, 3, 7),
 	MUX_GATE(CLK_TOP_UART_SEL, "uart_sel", uart_parents, 0x0060, 8, 1, 15),
 	MUX_GATE(CLK_TOP_SPI_SEL, "spi_sel", spi_parents, 0x0060, 16, 3, 23),
 	MUX_GATE(CLK_TOP_USB20_SEL, "usb20_sel", usb20_parents, 0x0060, 24, 2, 31),
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE(CLK_TOP_USB30_SEL, "usb30_sel", usb30_parents, 0x0070, 0, 2, 7),
 	MUX_GATE_FLAGS(CLK_TOP_MSDC50_0_H_SEL, "msdc50_0_h_sel", msdc50_0_h_parents,
 		 0x0070, 8, 3, 15, 0),
@@ -553,7 +545,7 @@ static const struct mtk_composite top_muxes[] = {
 		 0x0070, 16, 4, 23, 0),
 	MUX_GATE_FLAGS(CLK_TOP_MSDC30_1_SEL, "msdc30_1_sel", msdc30_1_parents,
 		 0x0070, 24, 3, 31, 0),
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE_FLAGS(CLK_TOP_MSDC30_2_SEL, "msdc30_2_sel", msdc30_2_parents,
 		 0x0080, 0, 3, 7, 0),
 	MUX_GATE_FLAGS(CLK_TOP_MSDC30_3_SEL, "msdc30_3_sel", msdc30_3_parents,
@@ -562,18 +554,15 @@ static const struct mtk_composite top_muxes[] = {
 		 0x0080, 16, 2, 23),
 	MUX_GATE(CLK_TOP_AUD_INTBUS_SEL, "aud_intbus_sel", aud_intbus_parents,
 		 0x0080, 24, 3, 31),
-	/* CLK_CFG_5 */
+	 
 	MUX_GATE(CLK_TOP_PMICSPI_SEL, "pmicspi_sel", pmicspi_parents,
-		 0x0090, 0, 3, 7 /* 7:5 */),
+		 0x0090, 0, 3, 7  ),
 	MUX_GATE(CLK_TOP_SCP_SEL, "scp_sel", scp_parents, 0x0090, 8, 3, 15),
 	MUX_GATE(CLK_TOP_ATB_SEL, "atb_sel", atb_parents, 0x0090, 16, 2, 23),
 	MUX_GATE(CLK_TOP_VENC_LT_SEL, "venclt_sel", venc_lt_parents,
 		 0x0090, 24, 4, 31),
-	/* CLK_CFG_6 */
-	/*
-	 * The dpi0_sel clock should not propagate rate changes to its parent
-	 * clock so the dpi driver can have full control over PLL and divider.
-	 */
+	 
+	 
 	MUX_GATE_FLAGS(CLK_TOP_DPI0_SEL, "dpi0_sel", dpi0_parents,
 		       0x00a0, 0, 3, 7, 0),
 	MUX_GATE(CLK_TOP_IRDA_SEL, "irda_sel", irda_parents, 0x00a0, 8, 2, 15),
@@ -581,20 +570,20 @@ static const struct mtk_composite top_muxes[] = {
 		       cci400_parents, 0x00a0, 16, 3, 23,
 		       CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
 	MUX_GATE(CLK_TOP_AUD_1_SEL, "aud_1_sel", aud_1_parents, 0x00a0, 24, 2, 31),
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE(CLK_TOP_AUD_2_SEL, "aud_2_sel", aud_2_parents, 0x00b0, 0, 2, 7),
 	MUX_GATE(CLK_TOP_MEM_MFG_IN_SEL, "mem_mfg_in_sel", mem_mfg_in_parents,
 		 0x00b0, 8, 2, 15),
 	MUX_GATE(CLK_TOP_AXI_MFG_IN_SEL, "axi_mfg_in_sel", axi_mfg_in_parents,
 		 0x00b0, 16, 2, 23),
 	MUX_GATE(CLK_TOP_SCAM_SEL, "scam_sel", scam_parents, 0x00b0, 24, 2, 31),
-	/* CLK_CFG_12 */
+	 
 	MUX_GATE(CLK_TOP_SPINFI_IFR_SEL, "spinfi_ifr_sel", spinfi_ifr_parents,
 		 0x00c0, 0, 3, 7),
 	MUX_GATE(CLK_TOP_HDMI_SEL, "hdmi_sel", hdmi_parents, 0x00c0, 8, 2, 15),
 	MUX_GATE(CLK_TOP_DPILVDS_SEL, "dpilvds_sel", dpilvds_parents,
 		 0x00c0, 24, 3, 31),
-	/* CLK_CFG_13 */
+	 
 	MUX_GATE_FLAGS(CLK_TOP_MSDC50_2_H_SEL, "msdc50_2_h_sel", msdc50_2_h_parents,
 		 0x00d0, 0, 3, 7, 0),
 	MUX_GATE(CLK_TOP_HDCP_SEL, "hdcp_sel", hdcp_parents, 0x00d0, 8, 2, 15),
@@ -636,7 +625,7 @@ static const struct mtk_clk_desc topck_desc = {
 
 static const struct of_device_id of_match_clk_mt8173_topckgen[] = {
 	{ .compatible = "mediatek,mt8173-topckgen", .data = &topck_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8173_topckgen);
 

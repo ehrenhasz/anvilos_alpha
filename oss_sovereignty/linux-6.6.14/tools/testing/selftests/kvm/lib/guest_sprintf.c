@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "test_util.h"
 #include "kvm_util.h"
 #include "ucall_common.h"
@@ -23,13 +23,13 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
-#define ZEROPAD	1		/* pad with zero */
-#define SIGN	2		/* unsigned/signed long */
-#define PLUS	4		/* show plus */
-#define SPACE	8		/* space if plus */
-#define LEFT	16		/* left justified */
-#define SMALL	32		/* Must be 32 == 0x20 */
-#define SPECIAL	64		/* 0x */
+#define ZEROPAD	1		 
+#define SIGN	2		 
+#define PLUS	4		 
+#define SPACE	8		 
+#define LEFT	16		 
+#define SMALL	32		 
+#define SPECIAL	64		 
 
 #define __do_div(n, base)				\
 ({							\
@@ -43,17 +43,14 @@ static int skip_atoi(const char **s)
 static char *number(char *str, const char *end, long num, int base, int size,
 		    int precision, int type)
 {
-	/* we are called with base 8, 10 or 16, only, thus don't need "G..."  */
-	static const char digits[16] = "0123456789ABCDEF"; /* "GHIJKLMNOPQRSTUVWXYZ"; */
+	 
+	static const char digits[16] = "0123456789ABCDEF";  
 
 	char tmp[66];
 	char c, sign, locase;
 	int i;
 
-	/*
-	 * locase = 0 or 0x20. ORing digits or letters with 'locase'
-	 * produces same digits or (maybe lowercased) letters
-	 */
+	 
 	locase = (type & SMALL);
 	if (type & LEFT)
 		type &= ~ZEROPAD;
@@ -123,14 +120,11 @@ int guest_vsnprintf(char *buf, int n, const char *fmt, va_list args)
 	int i, base;
 	int len;
 
-	int flags;		/* flags to number() */
+	int flags;		 
 
-	int field_width;	/* width of output field */
-	int precision;		/*
-				 * min. # of digits for integers; max
-				 * number of chars for from string
-				 */
-	int qualifier;		/* 'h', 'l', or 'L' for integer fields */
+	int field_width;	 
+	int precision;		 
+	int qualifier;		 
 
 	end = buf + n;
 	GUEST_ASSERT(buf < end);
@@ -142,10 +136,10 @@ int guest_vsnprintf(char *buf, int n, const char *fmt, va_list args)
 			continue;
 		}
 
-		/* process flags */
+		 
 		flags = 0;
 repeat:
-		++fmt;		/* this also skips first '%' */
+		++fmt;		 
 		switch (*fmt) {
 		case '-':
 			flags |= LEFT;
@@ -164,13 +158,13 @@ repeat:
 			goto repeat;
 		}
 
-		/* get field width */
+		 
 		field_width = -1;
 		if (isdigit(*fmt))
 			field_width = skip_atoi(&fmt);
 		else if (*fmt == '*') {
 			++fmt;
-			/* it's the next argument */
+			 
 			field_width = va_arg(args, int);
 			if (field_width < 0) {
 				field_width = -field_width;
@@ -178,7 +172,7 @@ repeat:
 			}
 		}
 
-		/* get the precision */
+		 
 		precision = -1;
 		if (*fmt == '.') {
 			++fmt;
@@ -186,28 +180,25 @@ repeat:
 				precision = skip_atoi(&fmt);
 			else if (*fmt == '*') {
 				++fmt;
-				/* it's the next argument */
+				 
 				precision = va_arg(args, int);
 			}
 			if (precision < 0)
 				precision = 0;
 		}
 
-		/* get the conversion qualifier */
+		 
 		qualifier = -1;
 		if (*fmt == 'h' || *fmt == 'l' || *fmt == 'L') {
 			qualifier = *fmt;
 			++fmt;
 		}
 
-		/*
-		 * Play nice with %llu, %llx, etc.  KVM selftests only support
-		 * 64-bit builds, so just treat %ll* the same as %l*.
-		 */
+		 
 		if (qualifier == 'l' && *fmt == 'l')
 			++fmt;
 
-		/* default base */
+		 
 		base = 10;
 
 		switch (*fmt) {
@@ -258,7 +249,7 @@ repeat:
 			APPEND_BUFFER_SAFE(str, end, '%');
 			continue;
 
-		/* integer number formats - set up the flags and "break" */
+		 
 		case 'o':
 			base = 8;
 			break;

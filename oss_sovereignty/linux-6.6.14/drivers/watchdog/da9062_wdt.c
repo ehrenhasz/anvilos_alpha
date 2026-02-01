@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog device driver for DA9062 and DA9061 PMICs
- * Copyright (C) 2015  Dialog Semiconductor Ltd.
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -117,10 +113,7 @@ static int da9062_wdt_ping(struct watchdog_device *wdd)
 	struct da9062_watchdog *wdt = watchdog_get_drvdata(wdd);
 	int ret;
 
-	/*
-	 * Prevent pings from occurring late in system poweroff/reboot sequence
-	 * and possibly locking out restart handler from accessing i2c bus.
-	 */
+	 
 	if (system_state > SYSTEM_RUNNING)
 		return 0;
 
@@ -158,12 +151,7 @@ static int da9062_wdt_restart(struct watchdog_device *wdd, unsigned long action,
 	union i2c_smbus_data msg;
 	int ret;
 
-	/*
-	 * Don't use regmap because it is not atomic safe. Additionally, use
-	 * unlocked flavor of i2c_smbus_xfer to avoid scenario where i2c bus
-	 * might be previously locked by some process unable to release the
-	 * lock due to interrupts already being disabled at this late stage.
-	 */
+	 
 	msg.byte = DA9062AA_SHUTDOWN_MASK;
 	ret = __i2c_smbus_xfer(client->adapter, client->addr, client->flags,
 			       I2C_SMBUS_WRITE, DA9062AA_CONTROL_F,
@@ -173,7 +161,7 @@ static int da9062_wdt_restart(struct watchdog_device *wdd, unsigned long action,
 		dev_alert(wdt->hw->dev, "Failed to shutdown (err = %d)\n",
 			  ret);
 
-	/* wait for reset to assert... */
+	 
 	mdelay(500);
 
 	return ret;
@@ -237,7 +225,7 @@ static int da9062_wdt_probe(struct platform_device *pdev)
 	if (timeout)
 		wdt->wdtdev.timeout = timeout;
 
-	/* Set timeout from DT value if available */
+	 
 	watchdog_init_timeout(&wdt->wdtdev, 0, dev);
 
 	if (timeout) {

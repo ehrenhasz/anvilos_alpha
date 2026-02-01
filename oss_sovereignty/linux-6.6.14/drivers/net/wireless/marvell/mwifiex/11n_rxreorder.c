@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: 802.11n RX Re-ordering
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -14,9 +10,7 @@
 #include "11n.h"
 #include "11n_rxreorder.h"
 
-/* This function will dispatch amsdu packet and forward it to kernel/upper
- * layer.
- */
+ 
 static int mwifiex_11n_dispatch_amsdu_pkt(struct mwifiex_private *priv,
 					  struct sk_buff *skb)
 {
@@ -61,9 +55,7 @@ static int mwifiex_11n_dispatch_amsdu_pkt(struct mwifiex_private *priv,
 	return -1;
 }
 
-/* This function will process the rx packet and forward it to kernel/upper
- * layer.
- */
+ 
 static int mwifiex_11n_dispatch_pkt(struct mwifiex_private *priv,
 				    struct sk_buff *payload)
 {
@@ -85,14 +77,7 @@ static int mwifiex_11n_dispatch_pkt(struct mwifiex_private *priv,
 	return mwifiex_process_rx_packet(priv, payload);
 }
 
-/*
- * This function dispatches all packets in the Rx reorder table until the
- * start window.
- *
- * There could be holes in the buffer, which are skipped by the function.
- * Since the buffer is linear, the function uses rotation to simulate
- * circular buffer.
- */
+ 
 static void
 mwifiex_11n_dispatch_pkt_until_start_win(struct mwifiex_private *priv,
 					 struct mwifiex_rx_reorder_tbl *tbl,
@@ -117,10 +102,7 @@ mwifiex_11n_dispatch_pkt_until_start_win(struct mwifiex_private *priv,
 		}
 	}
 
-	/*
-	 * We don't have a circular buffer, hence use rotation to simulate
-	 * circular buffer
-	 */
+	 
 	for (i = 0; i < tbl->win_size - pkt_to_send; ++i) {
 		tbl->rx_reorder_ptr[i] = tbl->rx_reorder_ptr[pkt_to_send + i];
 		tbl->rx_reorder_ptr[pkt_to_send + i] = NULL;
@@ -133,14 +115,7 @@ mwifiex_11n_dispatch_pkt_until_start_win(struct mwifiex_private *priv,
 		mwifiex_11n_dispatch_pkt(priv, skb);
 }
 
-/*
- * This function dispatches all packets in the Rx reorder table until
- * a hole is found.
- *
- * The start window is adjusted automatically when a hole is located.
- * Since the buffer is linear, the function uses rotation to simulate
- * circular buffer.
- */
+ 
 static void
 mwifiex_11n_scan_and_dispatch(struct mwifiex_private *priv,
 			      struct mwifiex_rx_reorder_tbl *tbl)
@@ -160,10 +135,7 @@ mwifiex_11n_scan_and_dispatch(struct mwifiex_private *priv,
 		tbl->rx_reorder_ptr[i] = NULL;
 	}
 
-	/*
-	 * We don't have a circular buffer, hence use rotation to simulate
-	 * circular buffer
-	 */
+	 
 	if (i > 0) {
 		xchg = tbl->win_size - i;
 		for (j = 0; j < xchg; ++j) {
@@ -179,12 +151,7 @@ mwifiex_11n_scan_and_dispatch(struct mwifiex_private *priv,
 		mwifiex_11n_dispatch_pkt(priv, skb);
 }
 
-/*
- * This function deletes the Rx reorder table and frees the memory.
- *
- * The function stops the associated timer and dispatches all the
- * pending packets in the Rx reorder table before deletion.
- */
+ 
 static void
 mwifiex_del_rx_reorder_entry(struct mwifiex_private *priv,
 			     struct mwifiex_rx_reorder_tbl *tbl)
@@ -222,10 +189,7 @@ mwifiex_del_rx_reorder_entry(struct mwifiex_private *priv,
 
 }
 
-/*
- * This function returns the pointer to an entry in Rx reordering
- * table which matches the given TA/TID pair.
- */
+ 
 struct mwifiex_rx_reorder_tbl *
 mwifiex_11n_get_rx_reorder_tbl(struct mwifiex_private *priv, int tid, u8 *ta)
 {
@@ -243,9 +207,7 @@ mwifiex_11n_get_rx_reorder_tbl(struct mwifiex_private *priv, int tid, u8 *ta)
 	return NULL;
 }
 
-/* This function retrieves the pointer to an entry in Rx reordering
- * table which matches the given TA and deletes it.
- */
+ 
 void mwifiex_11n_del_rx_reorder_tbl_by_ta(struct mwifiex_private *priv, u8 *ta)
 {
 	struct mwifiex_rx_reorder_tbl *tbl, *tmp;
@@ -266,10 +228,7 @@ void mwifiex_11n_del_rx_reorder_tbl_by_ta(struct mwifiex_private *priv, u8 *ta)
 	return;
 }
 
-/*
- * This function finds the last sequence number used in the packets
- * buffered in Rx reordering table.
- */
+ 
 static int
 mwifiex_11n_find_last_seq_num(struct reorder_tmr_cnxt *ctx)
 {
@@ -289,13 +248,7 @@ mwifiex_11n_find_last_seq_num(struct reorder_tmr_cnxt *ctx)
 	return -1;
 }
 
-/*
- * This function flushes all the packets in Rx reordering table.
- *
- * The function checks if any packets are currently buffered in the
- * table or not. In case there are packets available, it dispatches
- * them and then dumps the Rx reordering table.
- */
+ 
 static void
 mwifiex_flush_data(struct timer_list *t)
 {
@@ -315,16 +268,7 @@ mwifiex_flush_data(struct timer_list *t)
 						 start_win);
 }
 
-/*
- * This function creates an entry in Rx reordering table for the
- * given TA/TID.
- *
- * The function also initializes the entry with sequence number, window
- * size as well as initializes the timer.
- *
- * If the received TA/TID pair is already present, all the packets are
- * dispatched and the window size is moved until the SSN.
- */
+ 
 static void
 mwifiex_11n_create_rx_reorder_tbl(struct mwifiex_private *priv, u8 *ta,
 				  int tid, int win_size, int seq_num)
@@ -334,16 +278,13 @@ mwifiex_11n_create_rx_reorder_tbl(struct mwifiex_private *priv, u8 *ta,
 	u16 last_seq = 0;
 	struct mwifiex_sta_node *node;
 
-	/*
-	 * If we get a TID, ta pair which is already present dispatch all
-	 * the packets and move the window size until the ssn
-	 */
+	 
 	tbl = mwifiex_11n_get_rx_reorder_tbl(priv, tid, ta);
 	if (tbl) {
 		mwifiex_11n_dispatch_pkt_until_start_win(priv, tbl, seq_num);
 		return;
 	}
-	/* if !tbl then create one */
+	 
 	new_node = kzalloc(sizeof(struct mwifiex_rx_reorder_tbl), GFP_KERNEL);
 	if (!new_node)
 		return;
@@ -422,14 +363,7 @@ mwifiex_11n_rxreorder_timer_restart(struct mwifiex_rx_reorder_tbl *tbl)
 	tbl->timer_context.timer_is_set = true;
 }
 
-/*
- * This function prepares command for adding a BA request.
- *
- * Preparation includes -
- *      - Setting command ID and proper size
- *      - Setting add BA request buffer
- *      - Ensuring correct endian-ness
- */
+ 
 int mwifiex_cmd_11n_addba_req(struct host_cmd_ds_command *cmd, void *data_buf)
 {
 	struct host_cmd_ds_11n_addba_req *add_ba_req = &cmd->params.add_ba_req;
@@ -441,14 +375,7 @@ int mwifiex_cmd_11n_addba_req(struct host_cmd_ds_command *cmd, void *data_buf)
 	return 0;
 }
 
-/*
- * This function prepares command for adding a BA response.
- *
- * Preparation includes -
- *      - Setting command ID and proper size
- *      - Setting add BA response buffer
- *      - Ensuring correct endian-ness
- */
+ 
 int mwifiex_cmd_11n_addba_rsp_gen(struct mwifiex_private *priv,
 				  struct host_cmd_ds_command *cmd,
 				  struct host_cmd_ds_11n_addba_req
@@ -495,7 +422,7 @@ int mwifiex_cmd_11n_addba_rsp_gen(struct mwifiex_private *priv,
 	add_ba_rsp->status_code = cpu_to_le16(ADDBA_RSP_STATUS_ACCEPT);
 	block_ack_param_set &= ~IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
 
-	/* If we don't support AMSDU inside AMPDU, reset the bit */
+	 
 	if (!priv->add_ba_param.rx_amsdu ||
 	    (priv->aggr_prio_tbl[tid].amsdu == BA_STREAM_NOT_ALLOWED))
 		block_ack_param_set &= ~BLOCKACKPARAM_AMSDU_SUPP_MASK;
@@ -512,14 +439,7 @@ int mwifiex_cmd_11n_addba_rsp_gen(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command for deleting a BA request.
- *
- * Preparation includes -
- *      - Setting command ID and proper size
- *      - Setting del BA request buffer
- *      - Ensuring correct endian-ness
- */
+ 
 int mwifiex_cmd_11n_delba(struct host_cmd_ds_command *cmd, void *data_buf)
 {
 	struct host_cmd_ds_11n_delba *del_ba = &cmd->params.del_ba;
@@ -531,19 +451,7 @@ int mwifiex_cmd_11n_delba(struct host_cmd_ds_command *cmd, void *data_buf)
 	return 0;
 }
 
-/*
- * This function identifies if Rx reordering is needed for a received packet.
- *
- * In case reordering is required, the function will do the reordering
- * before sending it to kernel.
- *
- * The Rx reorder table is checked first with the received TID/TA pair. If
- * not found, the received packet is dispatched immediately. But if found,
- * the packet is reordered and all the packets in the updated Rx reordering
- * table is dispatched until a hole is found.
- *
- * For sequence number less than the starting window, the packet is dropped.
- */
+ 
 int mwifiex_11n_rx_reorder_pkt(struct mwifiex_private *priv,
 				u16 seq_num, u16 tid,
 				u8 *ta, u8 pkt_type, void *payload)
@@ -587,10 +495,7 @@ int mwifiex_11n_rx_reorder_pkt(struct mwifiex_private *priv,
 		tbl->start_win = start_win = seq_num;
 		end_win = ((start_win + win_size) - 1) & (MAX_TID_VALUE - 1);
 	} else {
-		/*
-		 * If seq_num is less then starting win then ignore and drop
-		 * the packet
-		 */
+		 
 		if ((start_win + TWOPOW11) > (MAX_TID_VALUE - 1)) {
 			if (seq_num >= ((start_win + TWOPOW11) &
 					(MAX_TID_VALUE - 1)) &&
@@ -605,10 +510,7 @@ int mwifiex_11n_rx_reorder_pkt(struct mwifiex_private *priv,
 		}
 	}
 
-	/*
-	 * If this packet is a BAR we adjust seq_num as
-	 * WinStart = seq_num
-	 */
+	 
 	if (pkt_type == PKT_TYPE_BAR)
 		seq_num = ((seq_num + win_size) - 1) & (MAX_TID_VALUE - 1);
 
@@ -638,10 +540,7 @@ int mwifiex_11n_rx_reorder_pkt(struct mwifiex_private *priv,
 		tbl->rx_reorder_ptr[pkt_index] = payload;
 	}
 
-	/*
-	 * Dispatch all packets sequentially from start_win until a
-	 * hole is found and adjust the start_win appropriately
-	 */
+	 
 	mwifiex_11n_scan_and_dispatch(priv, tbl);
 
 done:
@@ -651,11 +550,7 @@ done:
 	return ret;
 }
 
-/*
- * This function deletes an entry for a given TID/TA pair.
- *
- * The TID/TA are taken from del BA event body.
- */
+ 
 void
 mwifiex_del_ba_tbl(struct mwifiex_private *priv, int tid, u8 *peer_mac,
 		   u8 type, int initiator)
@@ -703,12 +598,7 @@ mwifiex_del_ba_tbl(struct mwifiex_private *priv, int tid, u8 *peer_mac,
 	}
 }
 
-/*
- * This function handles the command response of an add BA response.
- *
- * Handling includes changing the header fields into CPU format and
- * creating the stream, provided the add BA is accepted.
- */
+ 
 int mwifiex_ret_11n_addba_resp(struct mwifiex_private *priv,
 			       struct host_cmd_ds_command *resp)
 {
@@ -721,10 +611,7 @@ int mwifiex_ret_11n_addba_resp(struct mwifiex_private *priv,
 
 	tid = (block_ack_param_set & IEEE80211_ADDBA_PARAM_TID_MASK)
 		>> BLOCKACKPARAM_TID_POS;
-	/*
-	 * Check if we had rejected the ADDBA, if yes then do not create
-	 * the stream
-	 */
+	 
 	if (le16_to_cpu(add_ba_rsp->status_code) != BA_RESULT_SUCCESS) {
 		mwifiex_dbg(priv->adapter, ERROR, "ADDBA RSP: failed %pM tid=%d)\n",
 			    add_ba_rsp->peer_mac_addr, tid);
@@ -758,10 +645,7 @@ int mwifiex_ret_11n_addba_resp(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles BA stream timeout event by preparing and sending
- * a command to the firmware.
- */
+ 
 void mwifiex_11n_ba_stream_timeout(struct mwifiex_private *priv,
 				   struct host_cmd_ds_11n_batimeout *event)
 {
@@ -778,10 +662,7 @@ void mwifiex_11n_ba_stream_timeout(struct mwifiex_private *priv,
 	mwifiex_send_cmd(priv, HostCmd_CMD_11N_DELBA, 0, 0, &delba, false);
 }
 
-/*
- * This function cleans up the Rx reorder table by deleting all the entries
- * and re-initializing.
- */
+ 
 void mwifiex_11n_cleanup_reorder_tbl(struct mwifiex_private *priv)
 {
 	struct mwifiex_rx_reorder_tbl *del_tbl_ptr, *tmp_node;
@@ -799,9 +680,7 @@ void mwifiex_11n_cleanup_reorder_tbl(struct mwifiex_private *priv)
 	mwifiex_reset_11n_rx_seq_num(priv);
 }
 
-/*
- * This function updates all rx_reorder_tbl's flags.
- */
+ 
 void mwifiex_update_rxreor_flags(struct mwifiex_adapter *adapter, u8 flags)
 {
 	struct mwifiex_private *priv;
@@ -822,8 +701,7 @@ void mwifiex_update_rxreor_flags(struct mwifiex_adapter *adapter, u8 flags)
 	return;
 }
 
-/* This function update all the rx_win_size based on coex flag
- */
+ 
 static void mwifiex_update_ampdu_rxwinsize(struct mwifiex_adapter *adapter,
 					   bool coex_flag)
 {
@@ -873,8 +751,7 @@ static void mwifiex_update_ampdu_rxwinsize(struct mwifiex_adapter *adapter,
 	}
 }
 
-/* This function check coex for RX BA
- */
+ 
 void mwifiex_coex_ampdu_rxwinsize(struct mwifiex_adapter *adapter)
 {
 	u8 i;
@@ -902,8 +779,7 @@ void mwifiex_coex_ampdu_rxwinsize(struct mwifiex_adapter *adapter)
 		mwifiex_update_ampdu_rxwinsize(adapter, false);
 }
 
-/* This function handles rxba_sync event
- */
+ 
 void mwifiex_11n_rxba_sync_event(struct mwifiex_private *priv,
 				 u8 *event_buf, u16 len)
 {

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2004 - 2009 Ivo van Doorn <IvDoorn@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76_UTIL_H
 #define __MT76_UTIL_H

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sony IMX290 CMOS Image Sensor Driver
- *
- * Copyright (C) 2019 FRAMOS GmbH.
- *
- * Copyright (C) 2019 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -106,47 +99,12 @@
 #define IMX290_PGCTRL_THRU				BIT(1)
 #define IMX290_PGCTRL_MODE(n)				((n) << 4)
 
-/* Number of lines by which exposure must be less than VMAX */
+ 
 #define IMX290_EXPOSURE_OFFSET				2
 
 #define IMX290_PIXEL_RATE				148500000
 
-/*
- * The IMX290 pixel array is organized as follows:
- *
- *     +------------------------------------+
- *     |           Optical Black            |     }  Vertical effective optical black (10)
- * +---+------------------------------------+---+
- * |   |                                    |   | }  Effective top margin (8)
- * |   |   +----------------------------+   |   | \
- * |   |   |                            |   |   |  |
- * |   |   |                            |   |   |  |
- * |   |   |                            |   |   |  |
- * |   |   |    Recording Pixel Area    |   |   |  | Recommended height (1080)
- * |   |   |                            |   |   |  |
- * |   |   |                            |   |   |  |
- * |   |   |                            |   |   |  |
- * |   |   +----------------------------+   |   | /
- * |   |                                    |   | }  Effective bottom margin (9)
- * +---+------------------------------------+---+
- *  <-> <-> <--------------------------> <-> <->
- *                                            \----  Ignored right margin (4)
- *                                        \--------  Effective right margin (9)
- *                       \-------------------------  Recommended width (1920)
- *       \-----------------------------------------  Effective left margin (8)
- *   \---------------------------------------------  Ignored left margin (4)
- *
- * The optical black lines are output over CSI-2 with a separate data type.
- *
- * The pixel array is meant to have 1920x1080 usable pixels after image
- * processing in an ISP. It has 8 (9) extra active pixels usable for color
- * processing in the ISP on the top and left (bottom and right) sides of the
- * image. In addition, 4 additional pixels are present on the left and right
- * sides of the image, documented as "ignored area".
- *
- * As far as is understood, all pixels of the pixel array (ignored area, color
- * processing margins and recording area) can be output by the sensor.
- */
+ 
 
 #define IMX290_PIXEL_ARRAY_WIDTH			1945
 #define IMX290_PIXEL_ARRAY_HEIGHT			1097
@@ -157,7 +115,7 @@
 #define IMX290_PIXEL_ARRAY_RECORDING_WIDTH		1920
 #define IMX290_PIXEL_ARRAY_RECORDING_HEIGHT		1080
 
-/* Equivalent value for 16bpp */
+ 
 #define IMX290_BLACK_LEVEL_DEFAULT			3840
 
 #define IMX290_NUM_SUPPLIES				3
@@ -187,9 +145,7 @@ enum imx290_clk_freq {
 	IMX290_NUM_CLK
 };
 
-/*
- * Clock configuration for registers INCKSEL1 to INCKSEL6.
- */
+ 
 struct imx290_clk_cfg {
 	u8 incksel1;
 	u8 incksel2;
@@ -257,9 +213,7 @@ static inline struct imx290 *to_imx290(struct v4l2_subdev *_sd)
 	return container_of(_sd, struct imx290, sd);
 }
 
-/* -----------------------------------------------------------------------------
- * Modes and formats
- */
+ 
 
 static const struct cci_reg_sequence imx290_global_init_settings[] = {
 	{ IMX290_WINWV_OB, 12 },
@@ -336,7 +290,7 @@ static const struct cci_reg_sequence imx290_global_init_settings_327[] = {
 };
 
 static const struct cci_reg_sequence imx290_1080p_settings[] = {
-	/* mode settings */
+	 
 	{ IMX290_WINWV_OB, 12 },
 	{ IMX290_OPB_SIZE_V, 10 },
 	{ IMX290_X_OUT_SIZE, 1920 },
@@ -344,7 +298,7 @@ static const struct cci_reg_sequence imx290_1080p_settings[] = {
 };
 
 static const struct cci_reg_sequence imx290_720p_settings[] = {
-	/* mode settings */
+	 
 	{ IMX290_WINWV_OB, 6 },
 	{ IMX290_OPB_SIZE_V, 4 },
 	{ IMX290_X_OUT_SIZE, 1280 },
@@ -370,7 +324,7 @@ static const struct cci_reg_sequence imx290_12bit_settings[] = {
 };
 
 static const struct imx290_csi_cfg imx290_csi_222_75mhz = {
-	/* 222.75MHz or 445.5Mbit/s per lane */
+	 
 	.repetition = 0x10,
 	.tclkpost = 87,
 	.thszero = 55,
@@ -383,7 +337,7 @@ static const struct imx290_csi_cfg imx290_csi_222_75mhz = {
 };
 
 static const struct imx290_csi_cfg imx290_csi_445_5mhz = {
-	/* 445.5MHz or 891Mbit/s per lane */
+	 
 	.repetition = 0x00,
 	.tclkpost = 119,
 	.thszero = 103,
@@ -396,7 +350,7 @@ static const struct imx290_csi_cfg imx290_csi_445_5mhz = {
 };
 
 static const struct imx290_csi_cfg imx290_csi_148_5mhz = {
-	/* 148.5MHz or 297Mbit/s per lane */
+	 
 	.repetition = 0x10,
 	.tclkpost = 79,
 	.thszero = 47,
@@ -409,7 +363,7 @@ static const struct imx290_csi_cfg imx290_csi_148_5mhz = {
 };
 
 static const struct imx290_csi_cfg imx290_csi_297mhz = {
-	/* 297MHz or 594Mbit/s per lane */
+	 
 	.repetition = 0x00,
 	.tclkpost = 103,
 	.thszero = 87,
@@ -421,7 +375,7 @@ static const struct imx290_csi_cfg imx290_csi_297mhz = {
 	.tlpx = 39,
 };
 
-/* supported link frequencies */
+ 
 #define FREQ_INDEX_1080P	0
 #define FREQ_INDEX_720P		1
 static const s64 imx290_link_freq_2lanes[] = {
@@ -434,10 +388,7 @@ static const s64 imx290_link_freq_4lanes[] = {
 	[FREQ_INDEX_720P] = 148500000,
 };
 
-/*
- * In this function and in the similar ones below We rely on imx290_probe()
- * to ensure that nlanes is either 2 or 4.
- */
+ 
 static inline const s64 *imx290_link_freqs_ptr(const struct imx290 *imx290)
 {
 	if (imx290->nlanes == 2)
@@ -456,7 +407,7 @@ static inline int imx290_link_freqs_num(const struct imx290 *imx290)
 
 static const struct imx290_clk_cfg imx290_1080p_clock_config[] = {
 	[IMX290_CLK_37_125] = {
-		/* 37.125MHz clock config */
+		 
 		.incksel1 = 0x18,
 		.incksel2 = 0x03,
 		.incksel3 = 0x20,
@@ -465,7 +416,7 @@ static const struct imx290_clk_cfg imx290_1080p_clock_config[] = {
 		.incksel6 = 0x1a,
 	},
 	[IMX290_CLK_74_25] = {
-		/* 74.25MHz clock config */
+		 
 		.incksel1 = 0x0c,
 		.incksel2 = 0x03,
 		.incksel3 = 0x10,
@@ -477,7 +428,7 @@ static const struct imx290_clk_cfg imx290_1080p_clock_config[] = {
 
 static const struct imx290_clk_cfg imx290_720p_clock_config[] = {
 	[IMX290_CLK_37_125] = {
-		/* 37.125MHz clock config */
+		 
 		.incksel1 = 0x20,
 		.incksel2 = 0x00,
 		.incksel3 = 0x20,
@@ -486,7 +437,7 @@ static const struct imx290_clk_cfg imx290_720p_clock_config[] = {
 		.incksel6 = 0x1a,
 	},
 	[IMX290_CLK_74_25] = {
-		/* 74.25MHz clock config */
+		 
 		.incksel1 = 0x10,
 		.incksel2 = 0x00,
 		.incksel3 = 0x10,
@@ -496,7 +447,7 @@ static const struct imx290_clk_cfg imx290_720p_clock_config[] = {
 	},
 };
 
-/* Mode configs */
+ 
 static const struct imx290_mode imx290_modes_2lanes[] = {
 	{
 		.width = 1920,
@@ -615,7 +566,7 @@ static int imx290_set_register_array(struct imx290 *imx290,
 	if (ret < 0)
 		return ret;
 
-	/* Provide 10ms settle time */
+	 
 	usleep_range(10000, 11000);
 
 	return 0;
@@ -719,9 +670,7 @@ static int imx290_setup_format(struct imx290 *imx290,
 				      IMX290_BLACK_LEVEL_DEFAULT, &ret);
 }
 
-/* ----------------------------------------------------------------------------
- * Controls
- */
+ 
 static void imx290_exposure_update(struct imx290 *imx290,
 				   const struct imx290_mode *mode)
 {
@@ -741,19 +690,16 @@ static int imx290_set_ctrl(struct v4l2_ctrl *ctrl)
 	struct v4l2_subdev_state *state;
 	int ret = 0, vmax;
 
-	/*
-	 * Return immediately for controls that don't need to be applied to the
-	 * device.
-	 */
+	 
 	if (ctrl->flags & V4L2_CTRL_FLAG_READ_ONLY)
 		return 0;
 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Changing vblank changes the allowed range for exposure. */
+		 
 		imx290_exposure_update(imx290, imx290->current_mode);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(imx290->dev))
 		return 0;
 
@@ -768,13 +714,7 @@ static int imx290_set_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_VBLANK:
 		ret = cci_write(imx290->regmap, IMX290_VMAX,
 				ctrl->val + imx290->current_mode->height, NULL);
-		/*
-		 * Due to the way that exposure is programmed in this sensor in
-		 * relation to VMAX, we have to reprogramme it whenever VMAX is
-		 * changed.
-		 * Update ctrl so that the V4L2_CID_EXPOSURE case can refer to
-		 * it.
-		 */
+		 
 		ctrl = imx290->exposure;
 		fallthrough;
 	case V4L2_CID_EXPOSURE:
@@ -871,35 +811,16 @@ static int imx290_ctrl_init(struct imx290 *imx290)
 
 	v4l2_ctrl_handler_init(&imx290->ctrls, 11);
 
-	/*
-	 * The sensor has an analog gain and a digital gain, both controlled
-	 * through a single gain value, expressed in 0.3dB increments. Values
-	 * from 0.0dB (0) to 30.0dB (100) apply analog gain only, higher values
-	 * up to 72.0dB (240) add further digital gain. Limit the range to
-	 * analog gain only, support for digital gain can be added separately
-	 * if needed.
-	 *
-	 * The IMX327 and IMX462 are largely compatible with the IMX290, but
-	 * have an analog gain range of 0.0dB to 29.4dB and 42dB of digital
-	 * gain. When support for those sensors gets added to the driver, the
-	 * gain control should be adjusted accordingly.
-	 */
+	 
 	v4l2_ctrl_new_std(&imx290->ctrls, &imx290_ctrl_ops,
 			  V4L2_CID_ANALOGUE_GAIN, 0, 100, 1, 0);
 
-	/*
-	 * Correct range will be determined through imx290_ctrl_update setting
-	 * V4L2_CID_VBLANK.
-	 */
+	 
 	imx290->exposure = v4l2_ctrl_new_std(&imx290->ctrls, &imx290_ctrl_ops,
 					     V4L2_CID_EXPOSURE, 1, 65535, 1,
 					     65535);
 
-	/*
-	 * Set the link frequency, pixel rate, horizontal blanking and vertical
-	 * blanking to hardcoded values, they will be updated by
-	 * imx290_ctrl_update().
-	 */
+	 
 	imx290->link_freq =
 		v4l2_ctrl_new_int_menu(&imx290->ctrls, &imx290_ctrl_ops,
 				       V4L2_CID_LINK_FREQ,
@@ -917,9 +838,7 @@ static int imx290_ctrl_init(struct imx290 *imx290)
 				     ARRAY_SIZE(imx290_test_pattern_menu) - 1,
 				     0, 0, imx290_test_pattern_menu);
 
-	/*
-	 * Actual range will be set from imx290_ctrl_update later in the probe.
-	 */
+	 
 	imx290->hblank = v4l2_ctrl_new_std(&imx290->ctrls, &imx290_ctrl_ops,
 					   V4L2_CID_HBLANK, 1, 1, 1, 1);
 
@@ -946,18 +865,16 @@ static int imx290_ctrl_init(struct imx290 *imx290)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------------
- * Subdev operations
- */
+ 
 
-/* Start streaming */
+ 
 static int imx290_start_streaming(struct imx290 *imx290,
 				  struct v4l2_subdev_state *state)
 {
 	const struct v4l2_mbus_framefmt *format;
 	int ret;
 
-	/* Set init register settings */
+	 
 	ret = imx290_set_register_array(imx290, imx290_global_init_settings,
 					ARRAY_SIZE(imx290_global_init_settings));
 	if (ret < 0) {
@@ -965,7 +882,7 @@ static int imx290_start_streaming(struct imx290 *imx290,
 		return ret;
 	}
 
-	/* Set mdel specific init register settings */
+	 
 	ret = imx290_set_register_array(imx290, imx290->model->init_regs,
 					imx290->model->init_regs_num);
 	if (ret < 0) {
@@ -973,14 +890,14 @@ static int imx290_start_streaming(struct imx290 *imx290,
 		return ret;
 	}
 
-	/* Set clock parameters based on mode and xclk */
+	 
 	ret = imx290_set_clock(imx290);
 	if (ret < 0) {
 		dev_err(imx290->dev, "Could not set clocks - %d\n", ret);
 		return ret;
 	}
 
-	/* Set data lane count */
+	 
 	ret = imx290_set_data_lanes(imx290);
 	if (ret < 0) {
 		dev_err(imx290->dev, "Could not set data lanes - %d\n", ret);
@@ -993,7 +910,7 @@ static int imx290_start_streaming(struct imx290 *imx290,
 		return ret;
 	}
 
-	/* Apply the register values related to current frame format */
+	 
 	format = v4l2_subdev_get_pad_format(&imx290->sd, state, 0);
 	ret = imx290_setup_format(imx290, format);
 	if (ret < 0) {
@@ -1001,7 +918,7 @@ static int imx290_start_streaming(struct imx290 *imx290,
 		return ret;
 	}
 
-	/* Apply default values of current mode */
+	 
 	ret = imx290_set_register_array(imx290, imx290->current_mode->data,
 					imx290->current_mode->data_size);
 	if (ret < 0) {
@@ -1009,7 +926,7 @@ static int imx290_start_streaming(struct imx290 *imx290,
 		return ret;
 	}
 
-	/* Apply customized values from user */
+	 
 	ret = __v4l2_ctrl_handler_setup(imx290->sd.ctrl_handler);
 	if (ret) {
 		dev_err(imx290->dev, "Could not sync v4l2 controls - %d\n", ret);
@@ -1020,11 +937,11 @@ static int imx290_start_streaming(struct imx290 *imx290,
 
 	msleep(30);
 
-	/* Start streaming */
+	 
 	return cci_write(imx290->regmap, IMX290_XMSTA, 0x00, &ret);
 }
 
-/* Stop streaming */
+ 
 static int imx290_stop_streaming(struct imx290 *imx290)
 {
 	int ret = 0;
@@ -1061,10 +978,7 @@ static int imx290_set_stream(struct v4l2_subdev *sd, int enable)
 		pm_runtime_put_autosuspend(imx290->dev);
 	}
 
-	/*
-	 * vflip and hflip should not be changed during streaming as the sensor
-	 * will produce an invalid frame.
-	 */
+	 
 	__v4l2_ctrl_grab(imx290->vflip, enable);
 	__v4l2_ctrl_grab(imx290->hflip, enable);
 
@@ -1157,10 +1071,7 @@ static int imx290_get_selection(struct v4l2_subdev *sd,
 	case V4L2_SEL_TGT_CROP: {
 		format = v4l2_subdev_get_pad_format(sd, sd_state, 0);
 
-		/*
-		 * The sensor moves the readout by 1 pixel based on flips to
-		 * keep the Bayer order the same.
-		 */
+		 
 		sel->r.top = IMX920_PIXEL_ARRAY_MARGIN_TOP
 			   + (IMX290_PIXEL_ARRAY_RECORDING_HEIGHT - format->height) / 2
 			   + imx290->vflip->val;
@@ -1295,9 +1206,7 @@ static void imx290_subdev_cleanup(struct imx290 *imx290)
 	v4l2_ctrl_handler_free(&imx290->ctrls);
 }
 
-/* ----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 static int imx290_power_on(struct imx290 *imx290)
 {
@@ -1353,9 +1262,7 @@ static const struct dev_pm_ops imx290_pm_ops = {
 	RUNTIME_PM_OPS(imx290_runtime_suspend, imx290_runtime_resume, NULL)
 };
 
-/* ----------------------------------------------------------------------------
- * Probe & remove
- */
+ 
 
 static const char * const imx290_supply_name[IMX290_NUM_SUPPLIES] = {
 	"vdda",
@@ -1386,7 +1293,7 @@ static int imx290_init_clk(struct imx290 *imx290)
 		return ret;
 	}
 
-	/* external clock must be 37.125 MHz or 74.25MHz */
+	 
 	switch (xclk_freq) {
 	case 37125000:
 		imx290->xclk_idx = IMX290_CLK_37_125;
@@ -1409,11 +1316,7 @@ static int imx290_init_clk(struct imx290 *imx290)
 	return 0;
 }
 
-/*
- * Returns 0 if all link frequencies used by the driver for the given number
- * of MIPI data lanes are mentioned in the device tree, or the value of the
- * first missing frequency otherwise.
- */
+ 
 static s64 imx290_check_link_freqs(const struct imx290 *imx290,
 				   const struct v4l2_fwnode_endpoint *ep)
 {
@@ -1454,7 +1357,7 @@ static const struct imx290_model_info imx290_models[] = {
 
 static int imx290_parse_dt(struct imx290 *imx290)
 {
-	/* Only CSI2 is supported for now: */
+	 
 	struct v4l2_fwnode_endpoint ep = {
 		.bus_type = V4L2_MBUS_CSI2_DPHY
 	};
@@ -1480,7 +1383,7 @@ static int imx290_parse_dt(struct imx290 *imx290)
 		goto done;
 	}
 
-	/* Get number of data lanes */
+	 
 	imx290->nlanes = ep.bus.mipi_csi2.num_data_lanes;
 	if (imx290->nlanes != 2 && imx290->nlanes != 4) {
 		dev_err(imx290->dev, "Invalid data lanes: %d\n", imx290->nlanes);
@@ -1496,7 +1399,7 @@ static int imx290_parse_dt(struct imx290 *imx290)
 		goto done;
 	}
 
-	/* Check that link frequences for all the modes are in device tree */
+	 
 	fq = imx290_check_link_freqs(imx290, &ep);
 	if (fq) {
 		dev_err(imx290->dev, "Link frequency of %lld is not supported\n",
@@ -1533,7 +1436,7 @@ static int imx290_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* Acquire resources. */
+	 
 	imx290->xclk = devm_clk_get(dev, "xclk");
 	if (IS_ERR(imx290->xclk))
 		return dev_err_probe(dev, PTR_ERR(imx290->xclk),
@@ -1549,34 +1452,26 @@ static int imx290_probe(struct i2c_client *client)
 		return dev_err_probe(dev, PTR_ERR(imx290->rst_gpio),
 				     "Cannot get reset gpio\n");
 
-	/* Initialize external clock frequency. */
+	 
 	ret = imx290_init_clk(imx290);
 	if (ret)
 		return ret;
 
-	/*
-	 * Enable power management. The driver supports runtime PM, but needs to
-	 * work when runtime PM is disabled in the kernel. To that end, power
-	 * the sensor on manually here.
-	 */
+	 
 	ret = imx290_power_on(imx290);
 	if (ret < 0) {
 		dev_err(dev, "Could not power on the device\n");
 		return ret;
 	}
 
-	/*
-	 * Enable runtime PM with autosuspend. As the device has been powered
-	 * manually, mark it as active, and increase the usage count without
-	 * resuming the device.
-	 */
+	 
 	pm_runtime_set_active(dev);
 	pm_runtime_get_noresume(dev);
 	pm_runtime_enable(dev);
 	pm_runtime_set_autosuspend_delay(dev, 1000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* Initialize the V4L2 subdev. */
+	 
 	ret = imx290_subdev_init(imx290);
 	if (ret)
 		goto err_pm;
@@ -1584,21 +1479,14 @@ static int imx290_probe(struct i2c_client *client)
 	v4l2_i2c_subdev_set_name(&imx290->sd, client,
 				 imx290->model->name, NULL);
 
-	/*
-	 * Finally, register the V4L2 subdev. This must be done after
-	 * initializing everything as the subdev can be used immediately after
-	 * being registered.
-	 */
+	 
 	ret = v4l2_async_register_subdev(&imx290->sd);
 	if (ret < 0) {
 		dev_err(dev, "Could not register v4l2 device\n");
 		goto err_subdev;
 	}
 
-	/*
-	 * Decrease the PM usage count. The device will get suspended after the
-	 * autosuspend delay, turning the power off.
-	 */
+	 
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_put_autosuspend(dev);
 
@@ -1621,10 +1509,7 @@ static void imx290_remove(struct i2c_client *client)
 	v4l2_async_unregister_subdev(sd);
 	imx290_subdev_cleanup(imx290);
 
-	/*
-	 * Disable runtime PM. In case runtime PM is disabled in the kernel,
-	 * make sure to turn power off manually.
-	 */
+	 
 	pm_runtime_disable(imx290->dev);
 	if (!pm_runtime_status_suspended(imx290->dev))
 		imx290_power_off(imx290);
@@ -1633,7 +1518,7 @@ static void imx290_remove(struct i2c_client *client)
 
 static const struct of_device_id imx290_of_match[] = {
 	{
-		/* Deprecated - synonym for "sony,imx290lqr" */
+		 
 		.compatible = "sony,imx290",
 		.data = &imx290_models[IMX290_MODEL_IMX290LQR],
 	}, {
@@ -1646,7 +1531,7 @@ static const struct of_device_id imx290_of_match[] = {
 		.compatible = "sony,imx327lqr",
 		.data = &imx290_models[IMX290_MODEL_IMX327LQR],
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx290_of_match);
 

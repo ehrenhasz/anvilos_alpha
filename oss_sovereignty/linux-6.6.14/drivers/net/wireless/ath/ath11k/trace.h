@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #if !defined(_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 
@@ -10,7 +8,7 @@
 
 #define _TRACE_H_
 
-/* create empty functions when tracing is disabled */
+ 
 #if !defined(CONFIG_ATH11K_TRACING)
 #undef TRACE_EVENT
 #define TRACE_EVENT(name, proto, ...) \
@@ -25,7 +23,7 @@ static inline bool trace_##name##_enabled(void) \
 #undef DEFINE_EVENT
 #define DEFINE_EVENT(evt_class, name, proto, ...) \
 static inline void trace_ ## name(proto) {}
-#endif /* !CONFIG_ATH11K_TRACING || __CHECKER__ */
+#endif  
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ath11k
@@ -333,13 +331,13 @@ TRACE_EVENT(ath11k_ps_timekeeper,
 	)
 );
 
-#endif /* _TRACE_H_ || TRACE_HEADER_MULTI_READ*/
+#endif  
 
-/* we don't want to use include/trace/events */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

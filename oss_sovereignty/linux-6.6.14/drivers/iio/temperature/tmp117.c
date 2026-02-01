@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Digital temperature sensor with integrated Non-volatile memory
- * Copyright (c) 2021 Puranjay Mohan <puranjay12@gmail.com>
- *
- * Driver for the Texas Instruments TMP117 Temperature Sensor
- * (7-bit I2C slave address (0x48 - 0x4B), changeable via ADD pins)
- *
- * Note: This driver assumes that the sensor has been calibrated beforehand.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -67,10 +59,7 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
 		return IIO_VAL_INT;
 
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * Conversion from 10s of uC to mC
-		 * as IIO reports temperature in mC
-		 */
+		 
 		*val = TMP117_RESOLUTION_10UC / MICRODEGREE_PER_10MILLIDEGREE;
 		*val2 = (TMP117_RESOLUTION_10UC %
 					MICRODEGREE_PER_10MILLIDEGREE) * 100;

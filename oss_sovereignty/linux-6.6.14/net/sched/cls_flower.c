@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/cls_flower.c		Flower classifier
- *
- * Copyright (c) 2015 Jiri Pirko <jiri@resnulli.us>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -74,7 +70,7 @@ struct fl_flow_key {
 	struct flow_dissector_key_l2tpv3 l2tpv3;
 	struct flow_dissector_key_ipsec ipsec;
 	struct flow_dissector_key_cfm cfm;
-} __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+} __aligned(BITS_PER_LONG / 8);  
 
 struct fl_flow_mask_range {
 	unsigned short int start;
@@ -104,7 +100,7 @@ struct fl_flow_tmplt {
 
 struct cls_fl_head {
 	struct rhashtable ht;
-	spinlock_t masks_lock; /* Protect masks list */
+	spinlock_t masks_lock;  
 	struct list_head masks;
 	struct list_head hw_filters;
 	struct rcu_work rwork;
@@ -126,10 +122,7 @@ struct cls_fl_filter {
 	u8 needs_tc_skb_ext:1;
 	struct rcu_work rwork;
 	struct net_device *hw_dev;
-	/* Flower classifier is unlocked, which means that its reference counter
-	 * can be changed concurrently without any kind of external
-	 * synchronization. Use atomic reference counter to be concurrency-safe.
-	 */
+	 
 	refcount_t refcnt;
 	bool deleted;
 };
@@ -226,7 +219,7 @@ static bool fl_range_port_dst_cmp(struct cls_fl_filter *filter,
 		    ntohs(key->tp_range.tp.dst) > max_val)
 			return false;
 
-		/* skb does not have min and max values */
+		 
 		mkey->tp_range.tp_min.dst = filter->mkey.tp_range.tp_min.dst;
 		mkey->tp_range.tp_max.dst = filter->mkey.tp_range.tp_max.dst;
 	}
@@ -249,7 +242,7 @@ static bool fl_range_port_src_cmp(struct cls_fl_filter *filter,
 		    ntohs(key->tp_range.tp.src) > max_val)
 			return false;
 
-		/* skb does not have min and max values */
+		 
 		mkey->tp_range.tp_min.src = filter->mkey.tp_range.tp_min.src;
 		mkey->tp_range.tp_max.src = filter->mkey.tp_range.tp_max.src;
 	}
@@ -326,9 +319,7 @@ TC_INDIRECT_SCOPE int fl_classify(struct sk_buff *skb,
 		fl_clear_masked_range(&skb_key, mask);
 
 		skb_flow_dissect_meta(skb, &mask->dissector, &skb_key);
-		/* skb_flow_dissect() does not set n_proto in case an unknown
-		 * protocol, so do it rather here.
-		 */
+		 
 		skb_key.basic.n_proto = skb_protocol(skb, false);
 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
@@ -367,7 +358,7 @@ static int fl_init(struct tcf_proto *tp)
 
 static void fl_mask_free(struct fl_flow_mask *mask, bool mask_init_done)
 {
-	/* temporary masks don't have their filters list and ht initialized */
+	 
 	if (mask_init_done) {
 		WARN_ON(!list_empty(&mask->filters));
 		rhashtable_destroy(&mask->ht);
@@ -409,11 +400,7 @@ static bool fl_mask_put(struct cls_fl_head *head, struct fl_flow_mask *mask)
 
 static struct cls_fl_head *fl_head_dereference(struct tcf_proto *tp)
 {
-	/* Flower classifier only changes root pointer during init and destroy.
-	 * Users must obtain reference to tcf_proto instance before calling its
-	 * API, so tp->root pointer is protected from concurrent call to
-	 * fl_destroy() by reference counting.
-	 */
+	 
 	return rcu_dereference_raw(tp->root);
 }
 
@@ -888,9 +875,7 @@ static int fl_set_key_mpls_lse(const struct nlattr *nla_lse,
 
 	depth = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH]);
 
-	/* LSE depth starts at 1, for consistency with terminology used by
-	 * RFC 3031 (section 3.9), where depth 0 refers to unlabeled packets.
-	 */
+	 
 	if (depth < 1 || depth > FLOW_DIS_MPLS_MAX) {
 		NL_SET_ERR_MSG_ATTR(extack,
 				    tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH],
@@ -1098,12 +1083,7 @@ static void fl_set_key_pppoe(struct nlattr **tb,
 			     struct fl_flow_key *key,
 			     struct fl_flow_key *mask)
 {
-	/* key_val::type must be set to ETH_P_PPP_SES
-	 * because ETH_P_PPP_SES was stored in basic.n_proto
-	 * which might get overwritten by ppp_proto
-	 * or might be set to 0, the role of key_val::type
-	 * is similar to vlan_key::tpid
-	 */
+	 
 	key_val->type = htons(ETH_P_PPP_SES);
 	key_mask->type = cpu_to_be16(~0);
 
@@ -1152,7 +1132,7 @@ static int fl_set_key_flags(struct nlattr **tb, u32 *flags_key,
 {
 	u32 key, mask;
 
-	/* mask is mandatory for flags */
+	 
 	if (!tb[TCA_FLOWER_KEY_FLAGS_MASK]) {
 		NL_SET_ERR_MSG(extack, "Missing flags mask");
 		return -EINVAL;
@@ -1208,7 +1188,7 @@ static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key *key,
 	opt->r2 = 0;
 	opt->r3 = 0;
 
-	/* If no mask has been prodived we assume an exact match. */
+	 
 	if (!depth)
 		return sizeof(struct geneve_opt) + data_len;
 
@@ -1223,9 +1203,7 @@ static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key *key,
 	if (err < 0)
 		return err;
 
-	/* We are not allowed to omit any of CLASS, TYPE or DATA
-	 * fields from the key.
-	 */
+	 
 	if (!option_len &&
 	    (!tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS] ||
 	     !tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE] ||
@@ -1234,9 +1212,7 @@ static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key *key,
 		return -EINVAL;
 	}
 
-	/* Omitting any of CLASS, TYPE or DATA fields is allowed
-	 * for the mask.
-	 */
+	 
 	if (tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA]) {
 		int new_len = key->enc_opts.len;
 
@@ -1467,9 +1443,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
 				return option_len;
 
 			key->enc_opts.len += option_len;
-			/* At the same time we need to parse through the mask
-			 * in order to verify exact and mask attribute lengths.
-			 */
+			 
 			mask->enc_opts.dst_opt_type = TUNNEL_GENEVE_OPT;
 			option_len = fl_set_geneve_opt(nla_opt_msk, mask,
 						       msk_depth, option_len,
@@ -1497,9 +1471,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
 				return option_len;
 
 			key->enc_opts.len += option_len;
-			/* At the same time we need to parse through the mask
-			 * in order to verify exact and mask attribute lengths.
-			 */
+			 
 			mask->enc_opts.dst_opt_type = TUNNEL_VXLAN_OPT;
 			option_len = fl_set_vxlan_opt(nla_opt_msk, mask,
 						      msk_depth, option_len,
@@ -1527,9 +1499,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
 				return option_len;
 
 			key->enc_opts.len += option_len;
-			/* At the same time we need to parse through the mask
-			 * in order to verify exact and mask attribute lengths.
-			 */
+			 
 			mask->enc_opts.dst_opt_type = TUNNEL_ERSPAN_OPT;
 			option_len = fl_set_erspan_opt(nla_opt_msk, mask,
 						       msk_depth, option_len,
@@ -1558,9 +1528,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
 				return option_len;
 
 			key->enc_opts.len += option_len;
-			/* At the same time we need to parse through the mask
-			 * in order to verify exact and mask attribute lengths.
-			 */
+			 
 			mask->enc_opts.dst_opt_type = TUNNEL_GTP_OPT;
 			option_len = fl_set_gtp_opt(nla_opt_msk, mask,
 						    msk_depth, option_len,
@@ -2000,7 +1968,7 @@ static void fl_mask_copy(struct fl_flow_mask *dst,
 }
 
 static const struct rhashtable_params fl_ht_params = {
-	.key_offset = offsetof(struct cls_fl_filter, mkey), /* base offset */
+	.key_offset = offsetof(struct cls_fl_filter, mkey),  
 	.head_offset = offsetof(struct cls_fl_filter, ht_node),
 	.automatic_shrinking = true,
 };
@@ -2158,10 +2126,7 @@ static int fl_check_assign_mask(struct cls_fl_head *head,
 
 	rcu_read_lock();
 
-	/* Insert mask as temporary node to prevent concurrent creation of mask
-	 * with same key. Any concurrent lookups with same key will return
-	 * -EAGAIN because mask's refcnt is zero.
-	 */
+	 
 	fnew->mask = rhashtable_lookup_get_insert_fast(&head->ht,
 						       &mask->ht_node,
 						       mask_ht_params);
@@ -2186,7 +2151,7 @@ static int fl_check_assign_mask(struct cls_fl_head *head,
 	} else if (fold && fold->mask != fnew->mask) {
 		ret = -EINVAL;
 	} else if (!refcount_inc_not_zero(&fnew->mask->refcnt)) {
-		/* Mask was deleted concurrently, try again */
+		 
 		ret = -EAGAIN;
 	}
 	rcu_read_unlock();
@@ -2215,9 +2180,7 @@ static int fl_ht_insert_unique(struct cls_fl_filter *fnew,
 					    mask->filter_ht_params);
 	if (err) {
 		*in_ht = false;
-		/* It is okay if filter with same key exists when
-		 * overwriting.
-		 */
+		 
 		return fold && err == -EEXIST ? 0 : err;
 	}
 
@@ -2296,12 +2259,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
 			err = idr_alloc_u32(&head->handle_idr, NULL, &handle,
 					    handle, GFP_ATOMIC);
 
-			/* Filter with specified handle was concurrently
-			 * inserted after initial check in cls_api. This is not
-			 * necessarily an error if NLM_F_EXCL is not set in
-			 * message flags. Returning EAGAIN will cause cls_api to
-			 * try to update concurrently inserted rule.
-			 */
+			 
 			if (err == -ENOSPC)
 				err = -EAGAIN;
 		}
@@ -2348,9 +2306,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
 		goto unbind_filter;
 	}
 
-	/* Enable tc skb extension if filter matches on data extracted from
-	 * this extension.
-	 */
+	 
 	if (fl_needs_tc_skb_ext(&mask->key)) {
 		fnew->needs_tc_skb_ext = 1;
 		tc_skb_ext_tc_enable();
@@ -2375,16 +2331,14 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
 
 	spin_lock(&tp->lock);
 
-	/* tp was deleted concurrently. -EAGAIN will cause caller to lookup
-	 * proto again or create new one, if necessary.
-	 */
+	 
 	if (tp->deleting) {
 		err = -EAGAIN;
 		goto errout_hw;
 	}
 
 	if (fold) {
-		/* Fold filter was deleted concurrently. Retry lookup. */
+		 
 		if (fold->deleted) {
 			err = -EAGAIN;
 			goto errout_hw;
@@ -2418,9 +2372,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
 		if (!tc_skip_hw(fold->flags))
 			fl_hw_destroy_filter(tp, fold, rtnl_held, NULL);
 		tcf_unbind_filter(tp, &fold->res);
-		/* Caller holds reference to fold, so refcnt is always > 0
-		 * after this.
-		 */
+		 
 		refcount_dec(&fold->refcnt);
 		__fl_put(fold);
 	} else {
@@ -2499,7 +2451,7 @@ static void fl_walk(struct tcf_proto *tp, struct tcf_walker *arg,
 
 	rcu_read_lock();
 	idr_for_each_entry_continue_ul(&head->handle_idr, f, tmp, id) {
-		/* don't return filters that are being deleted */
+		 
 		if (!f || !refcount_inc_not_zero(&f->refcnt))
 			continue;
 		rcu_read_unlock();
@@ -2551,10 +2503,7 @@ static int fl_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
 	struct cls_fl_filter *f = NULL;
 	int err;
 
-	/* hw_filters list can only be changed by hw offload functions after
-	 * obtaining rtnl lock. Make sure it is not changed while reoffload is
-	 * iterating it.
-	 */
+	 
 	ASSERT_RTNL();
 
 	while ((f = fl_get_next_hw_filter(tp, f, add))) {
@@ -2646,9 +2595,7 @@ static int fl_hw_create_tmplt(struct tcf_chain *chain,
 	cls_flower.rule->match.mask = &tmplt->mask;
 	cls_flower.rule->match.key = &tmplt->dummy_key;
 
-	/* We don't care if driver (any of them) fails to handle this
-	 * call. It serves just as a hint for it.
-	 */
+	 
 	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false, true);
 	kfree(cls_flower.rule);
 
@@ -2861,9 +2808,7 @@ static int fl_dump_key_mpls(struct sk_buff *skb,
 	lse_mask = &mpls_mask->ls[0];
 	lse_key = &mpls_key->ls[0];
 
-	/* For backward compatibility, don't use the MPLS nested attributes if
-	 * the rule can be expressed using the old attributes.
-	 */
+	 
 	if (mpls_mask->used_lses & ~1 ||
 	    (!lse_mask->mpls_ttl && !lse_mask->mpls_bos &&
 	     !lse_mask->mpls_tc && !lse_mask->mpls_label))

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Isovalent, Inc.
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 

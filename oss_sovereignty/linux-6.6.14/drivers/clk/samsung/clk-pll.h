@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Copyright (c) 2013 Linaro Ltd.
- *
- * Common Clock Framework support for all PLL's in Samsung platforms
-*/
+ 
+ 
 
 #ifndef __SAMSUNG_CLK_PLL_H
 #define __SAMSUNG_CLK_PLL_H
@@ -98,7 +93,7 @@ enum samsung_pll_type {
 		.vsel	=	(_vsel),			\
 	}
 
-/* NOTE: Rate table should be kept sorted in descending order. */
+ 
 
 struct samsung_pll_rate_table {
 	unsigned int rate;
@@ -112,4 +107,4 @@ struct samsung_pll_rate_table {
 	unsigned int vsel;
 };
 
-#endif /* __SAMSUNG_CLK_PLL_H */
+#endif  

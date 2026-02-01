@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -9,17 +7,7 @@
 #include <linux/slab.h>
 #include "clk.h"
 
-/**
- * struct clk_ref - mxs reference clock
- * @hw: clk_hw for the reference clock
- * @reg: register address
- * @idx: the index of the reference clock within the same register
- *
- * The mxs reference clock sources from pll.  Every 4 reference clocks share
- * one register space, and @idx is used to identify them.  Each reference
- * clock has a gate control and a fractional * divider.  The rate is calculated
- * as pll rate  * (18 / FRAC), where FRAC = 18 ~ 35.
- */
+ 
 struct clk_ref {
 	struct clk_hw hw;
 	void __iomem *reg;

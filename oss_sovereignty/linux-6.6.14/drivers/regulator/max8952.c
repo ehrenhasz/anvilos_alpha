@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max8952.c - Voltage and current regulation for the Maxim 8952
- *
- * Copyright (C) 2010 Samsung Electronics
- * MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -19,7 +14,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* Registers */
+ 
 enum {
 	MAX8952_REG_MODE0,
 	MAX8952_REG_MODE1,
@@ -87,7 +82,7 @@ static int max8952_set_voltage_sel(struct regulator_dev *rdev,
 	struct max8952_data *max8952 = rdev_get_drvdata(rdev);
 
 	if (!max8952->vid0_gpiod || !max8952->vid1_gpiod) {
-		/* DVS not supported */
+		 
 		return -EPERM;
 	}
 
@@ -212,10 +207,7 @@ static int max8952_pmic_probe(struct i2c_client *client)
 	else
 		gflags = GPIOD_OUT_LOW;
 	gflags |= GPIOD_FLAGS_BIT_NONEXCLUSIVE;
-	/*
-	 * Do not use devm* here: the regulator core takes over the
-	 * lifecycle management of the GPIO descriptor.
-	 */
+	 
 	gpiod = gpiod_get_optional(&client->dev,
 				   "max8952,en",
 				   gflags);
@@ -234,7 +226,7 @@ static int max8952_pmic_probe(struct i2c_client *client)
 	max8952->vid0 = pdata->default_mode & 0x1;
 	max8952->vid1 = (pdata->default_mode >> 1) & 0x1;
 
-	/* Fetch vid0 and vid1 GPIOs if available */
+	 
 	gflags = max8952->vid0 ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
 	max8952->vid0_gpiod = devm_gpiod_get_index_optional(&client->dev,
 							    "max8952,vid",
@@ -248,32 +240,25 @@ static int max8952_pmic_probe(struct i2c_client *client)
 	if (IS_ERR(max8952->vid1_gpiod))
 		return PTR_ERR(max8952->vid1_gpiod);
 
-	/* If either VID GPIO is missing just disable this */
+	 
 	if (!max8952->vid0_gpiod || !max8952->vid1_gpiod) {
 		dev_warn(&client->dev, "VID0/1 gpio invalid: "
 			 "DVS not available.\n");
 		max8952->vid0 = 0;
 		max8952->vid1 = 0;
-		/* Make sure if we have any descriptors they get set to low */
+		 
 		if (max8952->vid0_gpiod)
 			gpiod_set_value(max8952->vid0_gpiod, 0);
 		if (max8952->vid1_gpiod)
 			gpiod_set_value(max8952->vid1_gpiod, 0);
 
-		/* Disable Pulldown of EN only */
+		 
 		max8952_write_reg(max8952, MAX8952_REG_CONTROL, 0x60);
 
 		dev_err(&client->dev, "DVS modes disabled because VID0 and VID1"
 				" do not have proper controls.\n");
 	} else {
-		/*
-		 * Disable Pulldown on EN, VID0, VID1 to reduce
-		 * leakage current of MAX8952 assuming that MAX8952
-		 * is turned on (EN==1). Note that without having VID0/1
-		 * properly connected, turning pulldown off can be
-		 * problematic. Thus, turn this off only when they are
-		 * controllable by GPIO.
-		 */
+		 
 		max8952_write_reg(max8952, MAX8952_REG_CONTROL, 0x0);
 	}
 

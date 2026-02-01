@@ -1,50 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
- *
- * The iopt_pages is the center of the storage and motion of PFNs. Each
- * iopt_pages represents a logical linear array of full PFNs. The array is 0
- * based and has npages in it. Accessors use 'index' to refer to the entry in
- * this logical array, regardless of its storage location.
- *
- * PFNs are stored in a tiered scheme:
- *  1) iopt_pages::pinned_pfns xarray
- *  2) An iommu_domain
- *  3) The origin of the PFNs, i.e. the userspace pointer
- *
- * PFN have to be copied between all combinations of tiers, depending on the
- * configuration.
- *
- * When a PFN is taken out of the userspace pointer it is pinned exactly once.
- * The storage locations of the PFN's index are tracked in the two interval
- * trees. If no interval includes the index then it is not pinned.
- *
- * If access_itree includes the PFN's index then an in-kernel access has
- * requested the page. The PFN is stored in the xarray so other requestors can
- * continue to find it.
- *
- * If the domains_itree includes the PFN's index then an iommu_domain is storing
- * the PFN and it can be read back using iommu_iova_to_phys(). To avoid
- * duplicating storage the xarray is not used if only iommu_domains are using
- * the PFN's index.
- *
- * As a general principle this is designed so that destroy never fails. This
- * means removing an iommu_domain or releasing a in-kernel access will not fail
- * due to insufficient memory. In practice this means some cases have to hold
- * PFNs in the xarray even though they are also being stored in an iommu_domain.
- *
- * While the iopt_pages can use an iommu_domain as storage, it does not have an
- * IOVA itself. Instead the iopt_area represents a range of IOVA and uses the
- * iopt_pages as the PFN provider. Multiple iopt_areas can share the iopt_pages
- * and reference their own slice of the PFN array, with sub page granularity.
- *
- * In this file the term 'last' indicates an inclusive and closed interval, eg
- * [0,0] refers to a single PFN. 'end' means an open range, eg [0,0) refers to
- * no PFNs.
- *
- * Be cautious of overflow. An IOVA can go all the way up to U64_MAX, so
- * last_iova + 1 can overflow. An iopt_pages index will always be much less than
- * ULONG_MAX so last_index + 1 cannot overflow.
- */
+
+ 
 #include <linux/overflow.h>
 #include <linux/slab.h>
 #include <linux/iommu.h>
@@ -63,14 +18,7 @@
 #endif
 #define BATCH_BACKUP_SIZE 32
 
-/*
- * More memory makes pin_user_pages() and the batching more efficient, but as
- * this is only a performance optimization don't try too hard to get it. A 64k
- * allocation can hold about 26M of 4k pages and 13G of 2M pages in an
- * pfn_batch. Various destroy paths cannot fail and provide a small amount of
- * stack memory as a backup contingency. If backup_len is given this cannot
- * fail.
- */
+ 
 static void *temp_kmalloc(size_t *size, void *backup, size_t backup_len)
 {
 	void *res;
@@ -189,11 +137,7 @@ static void iopt_pages_err_unpin(struct iopt_pages *pages,
 	iopt_pages_sub_npinned(pages, npages);
 }
 
-/*
- * index is the number of PAGE_SIZE units from the start of the area's
- * iopt_pages. If the iova is sub page-size then the area has an iova that
- * covers a portion of the first and last pages in the range.
- */
+ 
 static unsigned long iopt_area_index_to_iova(struct iopt_area *area,
 					     unsigned long index)
 {
@@ -224,13 +168,7 @@ static void iommu_unmap_nofail(struct iommu_domain *domain, unsigned long iova,
 	size_t ret;
 
 	ret = iommu_unmap(domain, iova, size);
-	/*
-	 * It is a logic error in this code or a driver bug if the IOMMU unmaps
-	 * something other than exactly as requested. This implies that the
-	 * iommu driver may not fail unmap for reasons beyond bad agruments.
-	 * Particularly, the iommu driver may not do a memory allocation on the
-	 * unmap path.
-	 */
+	 
 	WARN_ON(ret != size);
 }
 
@@ -257,13 +195,7 @@ static struct iopt_area *iopt_pages_find_domain_area(struct iopt_pages *pages,
 	return container_of(node, struct iopt_area, pages_node);
 }
 
-/*
- * A simple datastructure to hold a vector of PFNs, optimized for contiguous
- * PFNs. This is used as a temporary holding memory for shuttling pfns from one
- * place to another. Generally everything is made more efficient if operations
- * work on the largest possible grouping of pfns. eg fewer lock/unlock cycles,
- * better cache locality, etc
- */
+ 
 struct pfn_batch {
 	unsigned long *pfns;
 	u32 *npfns;
@@ -280,10 +212,7 @@ static void batch_clear(struct pfn_batch *batch)
 	batch->npfns[0] = 0;
 }
 
-/*
- * Carry means we carry a portion of the final hugepage over to the front of the
- * batch
- */
+ 
 static void batch_clear_carry(struct pfn_batch *batch, unsigned int keep_pfns)
 {
 	if (!keep_pfns)
@@ -346,7 +275,7 @@ static void batch_destroy(struct pfn_batch *batch, void *backup)
 		kfree(batch->pfns);
 }
 
-/* true if the pfn was added, false otherwise */
+ 
 static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
 {
 	const unsigned int MAX_NPFNS = type_max(typeof(*batch->npfns));
@@ -367,11 +296,7 @@ static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
 	return true;
 }
 
-/*
- * Fill the batch with pfns from the domain. When the batch is full, or it
- * reaches last_index, the function will return. The caller should use
- * batch->total_pfns to determine the starting point for the next iteration.
- */
+ 
 static void batch_from_domain(struct pfn_batch *batch,
 			      struct iommu_domain *domain,
 			      struct iopt_area *area, unsigned long start_index,
@@ -385,11 +310,7 @@ static void batch_from_domain(struct pfn_batch *batch,
 	if (start_index == iopt_area_index(area))
 		page_offset = area->page_offset;
 	while (start_index <= last_index) {
-		/*
-		 * This is pretty slow, it would be nice to get the page size
-		 * back from the driver, or have the driver directly fill the
-		 * batch.
-		 */
+		 
 		phys = iommu_iova_to_phys(domain, iova) - page_offset;
 		if (!batch_add_pfn(batch, PHYS_PFN(phys)))
 			return;
@@ -422,7 +343,7 @@ static struct page **raw_pages_from_domain(struct iommu_domain *domain,
 	return out_pages;
 }
 
-/* Continues reading a domain until we reach a discontinuity in the pfns. */
+ 
 static void batch_from_domain_continue(struct pfn_batch *batch,
 				       struct iommu_domain *domain,
 				       struct iopt_area *area,
@@ -436,14 +357,7 @@ static void batch_from_domain_continue(struct pfn_batch *batch,
 	batch->array_size = array_size;
 }
 
-/*
- * This is part of the VFIO compatibility support for VFIO_TYPE1_IOMMU. That
- * mode permits splitting a mapped area up, and then one of the splits is
- * unmapped. Doing this normally would cause us to violate our invariant of
- * pairing map/unmap. Thus, to support old VFIO compatibility disable support
- * for batching consecutive PFNs. All PFNs mapped into the iommu are done in
- * PAGE_SIZE units, not larger or smaller.
- */
+ 
 static int batch_iommu_map_small(struct iommu_domain *domain,
 				 unsigned long iova, phys_addr_t paddr,
 				 size_t size, int prot)
@@ -484,7 +398,7 @@ static int batch_to_domain(struct pfn_batch *batch, struct iommu_domain *domain,
 	unsigned long iova;
 	int rc;
 
-	/* The first index might be a partial page */
+	 
 	if (start_index == iopt_area_index(area))
 		page_offset = area->page_offset;
 	next_iova = iova = start_iova =
@@ -584,11 +498,11 @@ static int pages_to_xarray(struct xarray *xa, unsigned long start_index,
 
 		xas_lock(&xas);
 		while (pages != end_pages) {
-			/* xarray does not participate in fault injection */
+			 
 			if (pages == half_pages && iommufd_should_fail()) {
 				xas_set_err(&xas, -EINVAL);
 				xas_unlock(&xas);
-				/* aka xas_destroy() */
+				 
 				xas_nomem(&xas, GFP_KERNEL);
 				goto err_clear;
 			}
@@ -691,17 +605,14 @@ static unsigned long batch_rw(struct pfn_batch *batch, void *data,
 	return copied;
 }
 
-/* pfn_reader_user is just the pin_user_pages() path */
+ 
 struct pfn_reader_user {
 	struct page **upages;
 	size_t upages_len;
 	unsigned long upages_start;
 	unsigned long upages_end;
 	unsigned int gup_flags;
-	/*
-	 * 1 means mmget() and mmap_read_lock(), 0 means only mmget(), -1 is
-	 * neither
-	 */
+	 
 	int locked;
 };
 
@@ -748,7 +659,7 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
 		return -EINVAL;
 
 	if (!user->upages) {
-		/* All undone in pfn_reader_destroy() */
+		 
 		user->upages_len =
 			(last_index - start_index + 1) * sizeof(*user->upages);
 		user->upages = temp_kmalloc(&user->upages_len, NULL, 0);
@@ -757,11 +668,7 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
 	}
 
 	if (user->locked == -1) {
-		/*
-		 * The majority of usages will run the map task within the mm
-		 * providing the pages, so we can optimize into
-		 * get_user_pages_fast()
-		 */
+		 
 		if (remote_mm) {
 			if (!mmget_not_zero(pages->source_mm))
 				return -EFAULT;
@@ -800,7 +707,7 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
 	return 0;
 }
 
-/* This is the "modern" and faster accounting method used by io_uring */
+ 
 static int incr_user_locked_vm(struct iopt_pages *pages, unsigned long npages)
 {
 	unsigned long lock_limit;
@@ -826,7 +733,7 @@ static void decr_user_locked_vm(struct iopt_pages *pages, unsigned long npages)
 	atomic_long_sub(npages, &pages->source_user->locked_vm);
 }
 
-/* This is the accounting method used for compatibility with VFIO */
+ 
 static int update_mm_locked_vm(struct iopt_pages *pages, unsigned long npages,
 			       bool inc, struct pfn_reader_user *user)
 {
@@ -836,7 +743,7 @@ static int update_mm_locked_vm(struct iopt_pages *pages, unsigned long npages,
 	if (user && user->locked) {
 		mmap_read_unlock(pages->source_mm);
 		user->locked = 0;
-		/* If we had the lock then we also have a get */
+		 
 	} else if ((!user || !user->upages) &&
 		   pages->source_mm != current->mm) {
 		if (!mmget_not_zero(pages->source_mm))
@@ -893,13 +800,7 @@ static void update_unpinned(struct iopt_pages *pages)
 			 NULL);
 }
 
-/*
- * Changes in the number of pages pinned is done after the pages have been read
- * and processed. If the user lacked the limit then the error unwind will unpin
- * everything that was just pinned. This is because it is expensive to calculate
- * how many pages we have already pinned within a range to generate an accurate
- * prediction in advance of doing the work to actually pin them.
- */
+ 
 static int pfn_reader_user_update_pinned(struct pfn_reader_user *user,
 					 struct iopt_pages *pages)
 {
@@ -923,16 +824,7 @@ static int pfn_reader_user_update_pinned(struct pfn_reader_user *user,
 	return do_update_pinned(pages, npages, inc, user);
 }
 
-/*
- * PFNs are stored in three places, in order of preference:
- * - The iopt_pages xarray. This is only populated if there is a
- *   iopt_pages_access
- * - The iommu_domain under an area
- * - The original PFN source, ie pages->source_mm
- *
- * This iterator reads the pfns optimizing to load according to the
- * above order.
- */
+ 
 struct pfn_reader {
 	struct iopt_pages *pages;
 	struct interval_tree_double_span_iter span;
@@ -949,10 +841,7 @@ static int pfn_reader_update_pinned(struct pfn_reader *pfns)
 	return pfn_reader_user_update_pinned(&pfns->user, pfns->pages);
 }
 
-/*
- * The batch can contain a mixture of pages that are still in use and pages that
- * need to be unpinned. Unpin only pages that are not held anywhere else.
- */
+ 
 static void pfn_reader_unpin(struct pfn_reader *pfns)
 {
 	unsigned long last = pfns->batch_end_index - 1;
@@ -972,7 +861,7 @@ static void pfn_reader_unpin(struct pfn_reader *pfns)
 	}
 }
 
-/* Process a single span to load it from the proper storage */
+ 
 static int pfn_reader_fill_span(struct pfn_reader *pfns)
 {
 	struct interval_tree_double_span_iter *span = &pfns->span;
@@ -991,16 +880,12 @@ static int pfn_reader_fill_span(struct pfn_reader *pfns)
 	}
 
 	if (span->is_used == 2) {
-		/*
-		 * Pull as many pages from the first domain we find in the
-		 * target span. If it is too small then we will be called again
-		 * and we'll find another area.
-		 */
+		 
 		area = iopt_pages_find_domain_area(pfns->pages, start_index);
 		if (WARN_ON(!area))
 			return -EINVAL;
 
-		/* The storage_domain cannot change without the pages mutex */
+		 
 		batch_from_domain(
 			&pfns->batch, area->storage_domain, area, start_index,
 			min(iopt_area_last_index(area), span->last_used));
@@ -1052,7 +937,7 @@ static int pfn_reader_next(struct pfn_reader *pfns)
 		if (pfns->batch_end_index == pfns->span.last_used + 1)
 			interval_tree_double_span_iter_next(&pfns->span);
 
-		/* Batch is full */
+		 
 		if (npfns == pfns->batch.total_pfns)
 			return 0;
 	}
@@ -1080,14 +965,7 @@ static int pfn_reader_init(struct pfn_reader *pfns, struct iopt_pages *pages,
 	return 0;
 }
 
-/*
- * There are many assertions regarding the state of pages->npinned vs
- * pages->last_pinned, for instance something like unmapping a domain must only
- * decrement the npinned, and pfn_reader_destroy() must be called only after all
- * the pins are updated. This is fine for success flows, but error flows
- * sometimes need to release the pins held inside the pfn_reader before going on
- * to complete unmapping and releasing pins held in domains.
- */
+ 
 static void pfn_reader_release_pins(struct pfn_reader *pfns)
 {
 	struct iopt_pages *pages = pfns->pages;
@@ -1095,7 +973,7 @@ static void pfn_reader_release_pins(struct pfn_reader *pfns)
 	if (pfns->user.upages_end > pfns->batch_end_index) {
 		size_t npages = pfns->user.upages_end - pfns->batch_end_index;
 
-		/* Any pages not transferred to the batch are just unpinned */
+		 
 		unpin_user_pages(pfns->user.upages + (pfns->batch_end_index -
 						      pfns->user.upages_start),
 				 npages);
@@ -1144,10 +1022,7 @@ struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
 	struct iopt_pages *pages;
 	unsigned long end;
 
-	/*
-	 * The iommu API uses size_t as the length, and protect the DIV_ROUND_UP
-	 * below from overflow
-	 */
+	 
 	if (length > SIZE_MAX - PAGE_SIZE || length == 0)
 		return ERR_PTR(-EINVAL);
 
@@ -1222,15 +1097,7 @@ iopt_area_unpin_domain(struct pfn_batch *batch, struct iopt_area *area,
 		if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
 			WARN_ON(batch_last_index > real_last_index);
 
-		/*
-		 * unmaps must always 'cut' at a place where the pfns are not
-		 * contiguous to pair with the maps that always install
-		 * contiguous pages. Thus, if we have to stop unpinning in the
-		 * middle of the domains we need to keep reading pfns until we
-		 * find a cut point to do the unmap. The pfns we read are
-		 * carried over and either skipped or integrated into the next
-		 * batch.
-		 */
+		 
 		if (batch_last_index == last_index &&
 		    last_index != real_last_index)
 			batch_from_domain_continue(batch, domain, area,
@@ -1244,7 +1111,7 @@ iopt_area_unpin_domain(struct pfn_batch *batch, struct iopt_area *area,
 			*unmapped_end_index = start_index + batch->total_pfns;
 		}
 
-		/* unpin must follow unmap */
+		 
 		batch_unpin(batch, pages, 0,
 			    batch_last_index - start_index + 1);
 		start_index = batch_last_index + 1;
@@ -1267,20 +1134,7 @@ static void __iopt_area_unfill_domain(struct iopt_area *area,
 
 	lockdep_assert_held(&pages->mutex);
 
-	/*
-	 * For security we must not unpin something that is still DMA mapped,
-	 * so this must unmap any IOVA before we go ahead and unpin the pages.
-	 * This creates a complexity where we need to skip over unpinning pages
-	 * held in the xarray, but continue to unmap from the domain.
-	 *
-	 * The domain unmap cannot stop in the middle of a contiguous range of
-	 * PFNs. To solve this problem the unpinning step will read ahead to the
-	 * end of any contiguous span, unmap that whole span, and then only
-	 * unpin the leading part that does not have any accesses. The residual
-	 * PFNs that were unmapped but not unpinned are called a "carry" in the
-	 * batch as they are moved to the front of the PFN list and continue on
-	 * to the next iteration(s).
-	 */
+	 
 	batch_init_backup(&batch, last_index + 1, backup, sizeof(backup));
 	interval_tree_for_each_double_span(&span, &pages->domains_itree,
 					   &pages->access_itree, start_index,
@@ -1294,10 +1148,7 @@ static void __iopt_area_unfill_domain(struct iopt_area *area,
 				       span.start_hole, span.last_hole,
 				       &unmapped_end_index, last_index);
 	}
-	/*
-	 * If the range ends in a access then we do the residual unmap without
-	 * any unpins.
-	 */
+	 
 	if (unmapped_end_index != last_index + 1)
 		iopt_area_unmap_domain_range(area, domain, unmapped_end_index,
 					     last_index);
@@ -1315,30 +1166,14 @@ static void iopt_area_unfill_partial_domain(struct iopt_area *area,
 		__iopt_area_unfill_domain(area, pages, domain, end_index - 1);
 }
 
-/**
- * iopt_area_unmap_domain() - Unmap without unpinning PFNs in a domain
- * @area: The IOVA range to unmap
- * @domain: The domain to unmap
- *
- * The caller must know that unpinning is not required, usually because there
- * are other domains in the iopt.
- */
+ 
 void iopt_area_unmap_domain(struct iopt_area *area, struct iommu_domain *domain)
 {
 	iommu_unmap_nofail(domain, iopt_area_iova(area),
 			   iopt_area_length(area));
 }
 
-/**
- * iopt_area_unfill_domain() - Unmap and unpin PFNs in a domain
- * @area: IOVA area to use
- * @pages: page supplier for the area (area->pages is NULL)
- * @domain: Domain to unmap from
- *
- * The domain should be removed from the domains_itree before calling. The
- * domain will always be unmapped, but the PFNs may not be unpinned if there are
- * still accesses.
- */
+ 
 void iopt_area_unfill_domain(struct iopt_area *area, struct iopt_pages *pages,
 			     struct iommu_domain *domain)
 {
@@ -1346,14 +1181,7 @@ void iopt_area_unfill_domain(struct iopt_area *area, struct iopt_pages *pages,
 				  iopt_area_last_index(area));
 }
 
-/**
- * iopt_area_fill_domain() - Map PFNs from the area into a domain
- * @area: IOVA area to use
- * @domain: Domain to load PFNs into
- *
- * Read the pfns from the area's underlying iopt_pages and map them into the
- * given domain. Called when attaching a new domain to an io_pagetable.
- */
+ 
 int iopt_area_fill_domain(struct iopt_area *area, struct iommu_domain *domain)
 {
 	unsigned long done_end_index;
@@ -1394,17 +1222,7 @@ out_destroy:
 	return rc;
 }
 
-/**
- * iopt_area_fill_domains() - Install PFNs into the area's domains
- * @area: The area to act on
- * @pages: The pages associated with the area (area->pages is NULL)
- *
- * Called during area creation. The area is freshly created and not inserted in
- * the domains_itree yet. PFNs are read and loaded into every domain held in the
- * area's io_pagetable and the area is installed in the domains_itree.
- *
- * On failure all domains are left unchanged.
- */
+ 
 int iopt_area_fill_domains(struct iopt_area *area, struct iopt_pages *pages)
 {
 	unsigned long done_first_end_index;
@@ -1459,11 +1277,7 @@ out_unmap:
 		else
 			end_index = done_all_end_index;
 
-		/*
-		 * The area is not yet part of the domains_itree so we have to
-		 * manage the unpinning specially. The last domain does the
-		 * unpin, every other domain is just unmapped.
-		 */
+		 
 		if (unmap_index != area->iopt->next_domain_id - 1) {
 			if (end_index != iopt_area_index(area))
 				iopt_area_unmap_domain_range(
@@ -1481,14 +1295,7 @@ out_unlock:
 	return rc;
 }
 
-/**
- * iopt_area_unfill_domains() - unmap PFNs from the area's domains
- * @area: The area to act on
- * @pages: The pages associated with the area (area->pages is NULL)
- *
- * Called during area destruction. This unmaps the iova's covered by all the
- * area's domains and releases the PFNs.
- */
+ 
 void iopt_area_unfill_domains(struct iopt_area *area, struct iopt_pages *pages)
 {
 	struct io_pagetable *iopt = area->iopt;
@@ -1530,15 +1337,7 @@ static void iopt_pages_unpin_xarray(struct pfn_batch *batch,
 	}
 }
 
-/**
- * iopt_pages_unfill_xarray() - Update the xarry after removing an access
- * @pages: The pages to act on
- * @start_index: Starting PFN index
- * @last_index: Last PFN index
- *
- * Called when an iopt_pages_access is removed, removes pages from the itree.
- * The access should already be removed from the access_itree.
- */
+ 
 void iopt_pages_unfill_xarray(struct iopt_pages *pages,
 			      unsigned long start_index,
 			      unsigned long last_index)
@@ -1563,30 +1362,18 @@ void iopt_pages_unfill_xarray(struct iopt_pages *pages,
 			iopt_pages_unpin_xarray(&batch, pages, span.start_hole,
 						span.last_hole);
 		} else if (span.is_used == 2) {
-			/* Covered by a domain */
+			 
 			clear_xarray(&pages->pinned_pfns, span.start_used,
 				     span.last_used);
 		}
-		/* Otherwise covered by an existing access */
+		 
 	}
 	if (batch_inited)
 		batch_destroy(&batch, backup);
 	update_unpinned(pages);
 }
 
-/**
- * iopt_pages_fill_from_xarray() - Fast path for reading PFNs
- * @pages: The pages to act on
- * @start_index: The first page index in the range
- * @last_index: The last page index in the range
- * @out_pages: The output array to return the pages
- *
- * This can be called if the caller is holding a refcount on an
- * iopt_pages_access that is known to have already been filled. It quickly reads
- * the pages directly from the xarray.
- *
- * This is part of the SW iommu interface to read pages for in-kernel use.
- */
+ 
 void iopt_pages_fill_from_xarray(struct iopt_pages *pages,
 				 unsigned long start_index,
 				 unsigned long last_index,
@@ -1654,20 +1441,7 @@ out_unpin:
 	return rc;
 }
 
-/**
- * iopt_pages_fill_xarray() - Read PFNs
- * @pages: The pages to act on
- * @start_index: The first page index in the range
- * @last_index: The last page index in the range
- * @out_pages: The output array to return the pages, may be NULL
- *
- * This populates the xarray and returns the pages in out_pages. As the slow
- * path this is able to copy pages from other storage tiers into the xarray.
- *
- * On failure the xarray is left unchanged.
- *
- * This is part of the SW iommu interface to read pages for in-kernel use.
- */
+ 
 int iopt_pages_fill_xarray(struct iopt_pages *pages, unsigned long start_index,
 			   unsigned long last_index, struct page **out_pages)
 {
@@ -1705,7 +1479,7 @@ int iopt_pages_fill_xarray(struct iopt_pages *pages, unsigned long start_index,
 			continue;
 		}
 
-		/* hole */
+		 
 		cur_pages = out_pages + (span.start_hole - start_index);
 		rc = iopt_pages_fill_from_mm(pages, &user, span.start_hole,
 					     span.last_hole, cur_pages);
@@ -1735,11 +1509,7 @@ out_clean_xa:
 	return rc;
 }
 
-/*
- * This uses the pfn_reader instead of taking a shortcut by using the mm. It can
- * do every scenario and is fully consistent with what an iommu_domain would
- * see.
- */
+ 
 static int iopt_pages_rw_slow(struct iopt_pages *pages,
 			      unsigned long start_index,
 			      unsigned long last_index, unsigned long offset,
@@ -1777,10 +1547,7 @@ out_unlock:
 	return rc;
 }
 
-/*
- * A medium speed path that still allows DMA inconsistencies, but doesn't do any
- * memory allocations or interval tree searches.
- */
+ 
 static int iopt_pages_rw_page(struct iopt_pages *pages, unsigned long index,
 			      unsigned long offset, void *data,
 			      unsigned long length, unsigned int flags)
@@ -1817,17 +1584,7 @@ out_mmput:
 	return rc;
 }
 
-/**
- * iopt_pages_rw_access - Copy to/from a linear slice of the pages
- * @pages: pages to act on
- * @start_byte: First byte of pages to copy to/from
- * @data: Kernel buffer to get/put the data
- * @length: Number of bytes to copy
- * @flags: IOMMUFD_ACCESS_RW_* flags
- *
- * This will find each page in the range, kmap it and then memcpy to/from
- * the given kernel buffer.
- */
+ 
 int iopt_pages_rw_access(struct iopt_pages *pages, unsigned long start_byte,
 			 void *data, unsigned long length, unsigned int flags)
 {
@@ -1853,10 +1610,7 @@ int iopt_pages_rw_access(struct iopt_pages *pages, unsigned long start_byte,
 					  flags);
 	}
 
-	/*
-	 * Try to copy using copy_to_user(). We do this as a fast path and
-	 * ignore any pinning inconsistencies, unlike a real DMA path.
-	 */
+	 
 	if (change_mm) {
 		if (!mmget_not_zero(pages->source_mm))
 			return iopt_pages_rw_slow(pages, start_index,
@@ -1890,7 +1644,7 @@ iopt_pages_get_exact_access(struct iopt_pages *pages, unsigned long index,
 
 	lockdep_assert_held(&pages->mutex);
 
-	/* There can be overlapping ranges in this interval tree */
+	 
 	for (node = interval_tree_iter_first(&pages->access_itree, index, last);
 	     node; node = interval_tree_iter_next(node, index, last))
 		if (node->start == index && node->last == last)
@@ -1899,19 +1653,7 @@ iopt_pages_get_exact_access(struct iopt_pages *pages, unsigned long index,
 	return NULL;
 }
 
-/**
- * iopt_area_add_access() - Record an in-knerel access for PFNs
- * @area: The source of PFNs
- * @start_index: First page index
- * @last_index: Inclusive last page index
- * @out_pages: Output list of struct page's representing the PFNs
- * @flags: IOMMUFD_ACCESS_RW_* flags
- *
- * Record that an in-kernel access will be accessing the pages, ensure they are
- * pinned, and return the PFNs as a simple list of 'struct page *'.
- *
- * This should be undone through a matching call to iopt_area_remove_access()
- */
+ 
 int iopt_area_add_access(struct iopt_area *area, unsigned long start_index,
 			  unsigned long last_index, struct page **out_pages,
 			  unsigned int flags)
@@ -1959,15 +1701,7 @@ err_unlock:
 	return rc;
 }
 
-/**
- * iopt_area_remove_access() - Release an in-kernel access for PFNs
- * @area: The source of PFNs
- * @start_index: First page index
- * @last_index: Inclusive last page index
- *
- * Undo iopt_area_add_access() and unpin the pages if necessary. The caller
- * must stop using the PFNs before calling this.
- */
+ 
 void iopt_area_remove_access(struct iopt_area *area, unsigned long start_index,
 			     unsigned long last_index)
 {

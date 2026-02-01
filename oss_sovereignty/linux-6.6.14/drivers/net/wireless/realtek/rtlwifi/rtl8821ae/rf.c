@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "reg.h"
@@ -434,7 +434,7 @@ static bool _rtl8821ae_phy_rf6052_config_parafile(struct ieee80211_hw *hw)
 		}
 	}
 
-	/*put arrays in dm.c*/
+	 
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_TRACE, "\n");
 	return rtstatus;
 }

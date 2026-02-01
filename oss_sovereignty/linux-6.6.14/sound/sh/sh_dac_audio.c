@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sh_dac_audio.c - SuperH DAC audio driver for ALSA
- *
- * Copyright (c) 2009 by Rafael Ignacio Zurita <rizurita@yahoo.com>
- *
- * Based on sh_dac_audio.c (Copyright (C) 2004, 2005 by Andriy Skulysh)
- */
+
+ 
 
 #include <linux/hrtimer.h>
 #include <linux/interrupt.h>
@@ -26,7 +20,7 @@ MODULE_AUTHOR("Rafael Ignacio Zurita <rizurita@yahoo.com>");
 MODULE_DESCRIPTION("SuperH DAC audio driver");
 MODULE_LICENSE("GPL");
 
-/* Module Parameters */
+ 
 static int index = SNDRV_DEFAULT_IDX1;
 static char *id = SNDRV_DEFAULT_STR1;
 module_param(index, int, 0444);
@@ -34,7 +28,7 @@ MODULE_PARM_DESC(index, "Index value for SuperH DAC audio.");
 module_param(id, charp, 0444);
 MODULE_PARM_DESC(id, "ID string for SuperH DAC audio.");
 
-/* main struct */
+ 
 struct snd_sh_dac {
 	struct snd_card *card;
 	struct snd_pcm_substream *substream;
@@ -44,7 +38,7 @@ struct snd_sh_dac {
 	int rate;
 	int empty;
 	char *data_buffer, *buffer_begin, *buffer_end;
-	int processed; /* bytes proccesed, to compare with period_size */
+	int processed;  
 	int buffer_size;
 	struct dac_audio_pdata *pdata;
 };
@@ -75,7 +69,7 @@ static void dac_audio_set_rate(struct snd_sh_dac *chip)
 }
 
 
-/* PCM INTERFACE */
+ 
 
 static const struct snd_pcm_hardware snd_sh_dac_pcm_hw = {
 	.info			= (SNDRV_PCM_INFO_MMAP |
@@ -160,7 +154,7 @@ static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream,
 			       int channel, unsigned long pos,
 			       struct iov_iter *src, unsigned long count)
 {
-	/* channel is not used (interleaved data) */
+	 
 	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
 
 	if (copy_from_iter_toio(chip->data_buffer + pos, src, count))
@@ -179,7 +173,7 @@ static int snd_sh_dac_pcm_silence(struct snd_pcm_substream *substream,
 				  int channel, unsigned long pos,
 				  unsigned long count)
 {
-	/* channel is not used (interleaved data) */
+	 
 	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
 
 	memset_io(chip->data_buffer + pos, 0, count);
@@ -202,7 +196,7 @@ snd_pcm_uframes_t snd_sh_dac_pcm_pointer(struct snd_pcm_substream *substream)
 	return pointer;
 }
 
-/* pcm ops */
+ 
 static const struct snd_pcm_ops snd_sh_dac_pcm_ops = {
 	.open		= snd_sh_dac_pcm_open,
 	.close		= snd_sh_dac_pcm_close,
@@ -219,7 +213,7 @@ static int snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
 	int err;
 	struct snd_pcm *pcm;
 
-	/* device should be always 0 for us */
+	 
 	err = snd_pcm_new(chip->card, "SH_DAC PCM", device, 1, 0, &pcm);
 	if (err < 0)
 		return err;
@@ -228,25 +222,25 @@ static int snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
 	strcpy(pcm->name, "SH_DAC PCM");
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_sh_dac_pcm_ops);
 
-	/* buffer size=48K */
+	 
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
 				       NULL, 48 * 1024, 48 * 1024);
 
 	return 0;
 }
-/* END OF PCM INTERFACE */
+ 
 
 
-/* driver .remove  --  destructor */
+ 
 static void snd_sh_dac_remove(struct platform_device *devptr)
 {
 	snd_card_free(platform_get_drvdata(devptr));
 }
 
-/* free -- it has been defined by create */
+ 
 static int snd_sh_dac_free(struct snd_sh_dac *chip)
 {
-	/* release the data */
+	 
 	kfree(chip->data_buffer);
 	kfree(chip);
 
@@ -293,7 +287,7 @@ static enum hrtimer_restart sh_dac_audio_timer(struct hrtimer *handle)
 	return HRTIMER_NORESTART;
 }
 
-/* create  --  chip-specific constructor for the cards components */
+ 
 static int snd_sh_dac_create(struct snd_card *card,
 			     struct platform_device *devptr,
 			     struct snd_sh_dac **rchip)
@@ -339,7 +333,7 @@ static int snd_sh_dac_create(struct snd_card *card,
 	return 0;
 }
 
-/* driver .probe  --  constructor */
+ 
 static int snd_sh_dac_probe(struct platform_device *devptr)
 {
 	struct snd_sh_dac *chip;
@@ -378,9 +372,7 @@ probe_error:
 	return err;
 }
 
-/*
- * "driver" definition
- */
+ 
 static struct platform_driver sh_dac_driver = {
 	.probe	= snd_sh_dac_probe,
 	.remove_new = snd_sh_dac_remove,

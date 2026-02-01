@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Traphandler
- * Copyright (C) 2014 Free Electrons
- * Copyright (C) 2014 Atmel
- *
- * Author: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/irq.h>
@@ -487,7 +480,7 @@ static const struct of_device_id atmel_hlcdc_of_match[] = {
 		.compatible = "microchip,sam9x60-hlcdc",
 		.data = &atmel_hlcdc_dc_sam9x60,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, atmel_hlcdc_of_match);
 
@@ -563,7 +556,7 @@ static void atmel_hlcdc_dc_irq_postinstall(struct drm_device *dev)
 	unsigned int cfg = 0;
 	int i;
 
-	/* Enable interrupts on activated layers */
+	 
 	for (i = 0; i < ATMEL_HLCDC_MAX_LAYERS; i++) {
 		if (dc->layers[i])
 			cfg |= ATMEL_HLCDC_LAYER_STATUS(i);

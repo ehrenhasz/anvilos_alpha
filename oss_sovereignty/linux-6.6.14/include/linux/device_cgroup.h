@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/fs.h>
 
 #define DEVCG_ACC_MKNOD 1
@@ -8,7 +8,7 @@
 
 #define DEVCG_DEV_BLOCK 1
 #define DEVCG_DEV_CHAR  2
-#define DEVCG_DEV_ALL   4  /* this represents all devices */
+#define DEVCG_DEV_ALL   4   
 
 
 #if defined(CONFIG_CGROUP_DEVICE) || defined(CONFIG_CGROUP_BPF)

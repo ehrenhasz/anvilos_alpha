@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 void test_reference_tracking(void)
@@ -35,13 +35,11 @@ void test_reference_tracking(void)
 		if (!ASSERT_OK_PTR(obj, "obj_open_file"))
 			goto cleanup;
 
-		/* all programs are not loaded by default, so just set
-		 * autoload to true for the single prog under test
-		 */
+		 
 		p = bpf_object__find_program_by_name(obj, name);
 		bpf_program__set_autoload(p, true);
 
-		/* Expect verifier failure if test name has 'err' */
+		 
 		if (strncmp(name, "err_", sizeof("err_") - 1) == 0) {
 			libbpf_print_fn_t old_print_fn;
 

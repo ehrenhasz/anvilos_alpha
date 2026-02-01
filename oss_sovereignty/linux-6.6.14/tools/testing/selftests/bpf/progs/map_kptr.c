@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -122,15 +122,15 @@ static void test_kptr_unref(struct map_value *v)
 	struct prog_test_ref_kfunc *p;
 
 	p = v->unref_ptr;
-	/* store untrusted_ptr_or_null_ */
+	 
 	WRITE_ONCE(v->unref_ptr, p);
 	if (!p)
 		return;
 	if (p->a + p->b > 100)
 		return;
-	/* store untrusted_ptr_ */
+	 
 	WRITE_ONCE(v->unref_ptr, p);
-	/* store NULL */
+	 
 	WRITE_ONCE(v->unref_ptr, NULL);
 }
 
@@ -139,39 +139,32 @@ static void test_kptr_ref(struct map_value *v)
 	struct prog_test_ref_kfunc *p;
 
 	p = v->ref_ptr;
-	/* store ptr_or_null_ */
+	 
 	WRITE_ONCE(v->unref_ptr, p);
 	if (!p)
 		return;
-	/*
-	 * p is rcu_ptr_prog_test_ref_kfunc,
-	 * because bpf prog is non-sleepable and runs in RCU CS.
-	 * p can be passed to kfunc that requires KF_RCU.
-	 */
+	 
 	bpf_kfunc_call_test_ref(p);
 	if (p->a + p->b > 100)
 		return;
-	/* store NULL */
+	 
 	p = bpf_kptr_xchg(&v->ref_ptr, NULL);
 	if (!p)
 		return;
-	/*
-	 * p is trusted_ptr_prog_test_ref_kfunc.
-	 * p can be passed to kfunc that requires KF_RCU.
-	 */
+	 
 	bpf_kfunc_call_test_ref(p);
 	if (p->a + p->b > 100) {
 		bpf_kfunc_call_test_release(p);
 		return;
 	}
-	/* store ptr_ */
+	 
 	WRITE_ONCE(v->unref_ptr, p);
 	bpf_kfunc_call_test_release(p);
 
 	p = bpf_kfunc_call_test_acquire(&(unsigned long){0});
 	if (!p)
 		return;
-	/* store ptr_ */
+	 
 	p = bpf_kptr_xchg(&v->ref_ptr, p);
 	if (!p)
 		return;
@@ -337,7 +330,7 @@ int test_map_kptr_ref_pre(struct map_value *v)
 	}
 	if (p_st->cnt.refs.counter != ref)
 		return 9;
-	/* Leave in map */
+	 
 
 	return 0;
 end:

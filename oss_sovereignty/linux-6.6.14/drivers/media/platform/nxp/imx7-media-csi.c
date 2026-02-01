@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * V4L2 Capture CSI Subdev for Freescale i.MX6UL/L / i.MX7 SOC
- *
- * Copyright (c) 2019 Linaro Ltd
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -33,7 +28,7 @@
 #define IMX7_CSI_PAD_SRC		1
 #define IMX7_CSI_PADS_NUM		2
 
-/* csi control reg 1 */
+ 
 #define BIT_SWAP16_EN			BIT(31)
 #define BIT_EXT_VSYNC			BIT(30)
 #define BIT_EOF_INT_EN			BIT(29)
@@ -64,13 +59,13 @@
 #define BIT_REDGE			BIT(1)
 #define BIT_PIXEL_BIT			BIT(0)
 
-/* control reg 2 */
+ 
 #define BIT_DMA_BURST_TYPE_RFF_INCR4	(1 << 30)
 #define BIT_DMA_BURST_TYPE_RFF_INCR8	(2 << 30)
 #define BIT_DMA_BURST_TYPE_RFF_INCR16	(3 << 30)
 #define BIT_DMA_BURST_TYPE_RFF_MASK	(3 << 30)
 
-/* control reg 3 */
+ 
 #define BIT_FRMCNT(n)			((n) << 16)
 #define BIT_FRMCNT_MASK			(0xffff << 16)
 #define BIT_FRMCNT_RST			BIT(15)
@@ -88,7 +83,7 @@
 #define BIT_ECC_INT_EN			BIT(1)
 #define BIT_ECC_AUTO_EN			BIT(0)
 
-/* csi status reg */
+ 
 #define BIT_ADDR_CH_ERR_INT		BIT(28)
 #define BIT_FIELD0_INT			BIT(27)
 #define BIT_FIELD1_INT			BIT(26)
@@ -108,11 +103,11 @@
 #define BIT_ECC_INT			BIT(1)
 #define BIT_DRDY			BIT(0)
 
-/* csi image parameter reg */
+ 
 #define BIT_IMAGE_WIDTH(n)		((n) << 16)
 #define BIT_IMAGE_HEIGHT(n)		(n)
 
-/* csi control reg 18 */
+ 
 #define BIT_CSI_HW_ENABLE		BIT(31)
 #define BIT_MIPI_DATA_FORMAT_RAW8	(0x2a << 25)
 #define BIT_MIPI_DATA_FORMAT_RAW10	(0x2b << 25)
@@ -160,7 +155,7 @@
 #define CSI_CSICR19			0x4c
 
 #define IMX7_CSI_VIDEO_NAME		"imx-capture"
-/* In bytes, per queue */
+ 
 #define IMX7_CSI_VIDEO_MEM_LIMIT	SZ_512M
 #define IMX7_CSI_VIDEO_EOF_TIMEOUT	2000
 
@@ -175,14 +170,11 @@ enum imx_csi_model {
 };
 
 struct imx7_csi_pixfmt {
-	/* the in-memory FourCC pixel format */
+	 
 	u32     fourcc;
-	/*
-	 * the set of equivalent media bus codes for the fourcc.
-	 * NOTE! codes pointer is NULL for in-memory-only formats.
-	 */
+	 
 	const u32 *codes;
-	int     bpp;     /* total bpp */
+	int     bpp;      
 	bool	yuv;
 };
 
@@ -208,14 +200,14 @@ struct imx7_csi_dma_buf {
 struct imx7_csi {
 	struct device *dev;
 
-	/* Resources and locks */
+	 
 	void __iomem *regbase;
 	int irq;
 	struct clk *mclk;
 
-	spinlock_t irqlock; /* Protects last_eof */
+	spinlock_t irqlock;  
 
-	/* Media and V4L2 device */
+	 
 	struct media_device mdev;
 	struct v4l2_device v4l2_dev;
 	struct v4l2_async_notifier notifier;
@@ -224,25 +216,25 @@ struct imx7_csi {
 	struct v4l2_subdev *src_sd;
 	bool is_csi2;
 
-	/* V4L2 subdev */
+	 
 	struct v4l2_subdev sd;
 	struct media_pad pad[IMX7_CSI_PADS_NUM];
 
-	/* Video device */
-	struct video_device *vdev;		/* Video device */
-	struct media_pad vdev_pad;		/* Video device pad */
+	 
+	struct video_device *vdev;		 
+	struct media_pad vdev_pad;		 
 
-	struct v4l2_pix_format vdev_fmt;	/* The user format */
+	struct v4l2_pix_format vdev_fmt;	 
 	const struct imx7_csi_pixfmt *vdev_cc;
-	struct v4l2_rect vdev_compose;		/* The compose rectangle */
+	struct v4l2_rect vdev_compose;		 
 
-	struct mutex vdev_mutex;		/* Protect vdev operations */
+	struct mutex vdev_mutex;		 
 
-	struct vb2_queue q;			/* The videobuf2 queue */
-	struct list_head ready_q;		/* List of queued buffers */
-	spinlock_t q_lock;			/* Protect ready_q */
+	struct vb2_queue q;			 
+	struct list_head ready_q;		 
+	spinlock_t q_lock;			 
 
-	/* Buffers and streaming state */
+	 
 	struct imx7_csi_vb2_buffer *active_vb2_buf[2];
 	struct imx7_csi_dma_buf underrun_buf;
 
@@ -262,9 +254,7 @@ imx7_csi_notifier_to_dev(struct v4l2_async_notifier *n)
 	return container_of(n, struct imx7_csi, notifier);
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware Configuration
- */
+ 
 
 static u32 imx7_csi_reg_read(struct imx7_csi *csi, unsigned int offset)
 {
@@ -421,7 +411,7 @@ static void imx7_csi_dma_unsetup_vb2_buf(struct imx7_csi *csi,
 	struct imx7_csi_vb2_buffer *buf;
 	int i;
 
-	/* return any remaining active frames with return_status */
+	 
 	for (i = 0; i < 2; i++) {
 		buf = csi->active_vb2_buf[i];
 		if (buf) {
@@ -491,14 +481,12 @@ static void imx7_csi_dma_stop(struct imx7_csi *csi)
 	unsigned long flags;
 	int ret;
 
-	/* mark next EOF interrupt as the last before stream off */
+	 
 	spin_lock_irqsave(&csi->irqlock, flags);
 	csi->last_eof = true;
 	spin_unlock_irqrestore(&csi->irqlock, flags);
 
-	/*
-	 * and then wait for interrupt handler to mark completion.
-	 */
+	 
 	timeout_jiffies = msecs_to_jiffies(IMX7_CSI_VIDEO_EOF_TIMEOUT);
 	ret = wait_for_completion_timeout(&csi->last_eof_completion,
 					  timeout_jiffies);
@@ -583,29 +571,7 @@ static void imx7_csi_configure(struct imx7_csi *csi,
 			cr18 |= BIT_MIPI_DATA_FORMAT_RAW14;
 			break;
 
-		/*
-		 * The CSI bridge has a 16-bit input bus. Depending on the
-		 * connected source, data may be transmitted with 8 or 10 bits
-		 * per clock sample (in bits [9:2] or [9:0] respectively) or
-		 * with 16 bits per clock sample (in bits [15:0]). The data is
-		 * then packed into a 32-bit FIFO (as shown in figure 13-11 of
-		 * the i.MX8MM reference manual rev. 3).
-		 *
-		 * The data packing in a 32-bit FIFO input word is controlled by
-		 * the CR3 TWO_8BIT_SENSOR field (also known as SENSOR_16BITS in
-		 * the i.MX8MM reference manual). When set to 0, data packing
-		 * groups four 8-bit input samples (bits [9:2]). When set to 1,
-		 * data packing groups two 16-bit input samples (bits [15:0]).
-		 *
-		 * The register field CR18 MIPI_DOUBLE_CMPNT also needs to be
-		 * configured according to the input format for YUV 4:2:2 data.
-		 * The field controls the gasket between the CSI-2 receiver and
-		 * the CSI bridge. On i.MX7 and i.MX8MM, the field must be set
-		 * to 1 when the CSIS outputs 16-bit samples. On i.MX8MQ, the
-		 * gasket ignores the MIPI_DOUBLE_CMPNT bit and YUV 4:2:2 always
-		 * uses 16-bit samples. Setting MIPI_DOUBLE_CMPNT in that case
-		 * has no effect, but doesn't cause any issue.
-		 */
+		 
 		case MEDIA_BUS_FMT_UYVY8_2X8:
 		case MEDIA_BUS_FMT_YUYV8_2X8:
 			cr18 |= BIT_MIPI_DATA_FORMAT_YUV422_8B;
@@ -672,17 +638,17 @@ static void imx7_csi_baseaddr_switch_on_second_frame(struct imx7_csi *csi)
 
 static void imx7_csi_enable(struct imx7_csi *csi)
 {
-	/* Clear the Rx FIFO and reflash the DMA controller. */
+	 
 	imx7_csi_rx_fifo_clear(csi);
 	imx7_csi_dma_reflash(csi);
 
 	usleep_range(2000, 3000);
 
-	/* Clear and enable the interrupts. */
+	 
 	imx7_csi_irq_clear(csi);
 	imx7_csi_hw_enable_irq(csi);
 
-	/* Enable the RxFIFO DMA and the CSI. */
+	 
 	imx7_csi_dmareq_rff_enable(csi);
 	imx7_csi_hw_enable(csi);
 
@@ -701,9 +667,7 @@ static void imx7_csi_disable(struct imx7_csi *csi)
 	imx7_csi_hw_disable(csi);
 }
 
-/* -----------------------------------------------------------------------------
- * Interrupt Handling
- */
+ 
 
 static void imx7_csi_error_recovery(struct imx7_csi *csi)
 {
@@ -732,7 +696,7 @@ static void imx7_csi_vb2_buf_done(struct imx7_csi *csi)
 	}
 	csi->frame_sequence++;
 
-	/* get next queued buffer */
+	 
 	next = imx7_csi_video_next_buf(csi);
 	if (next) {
 		dma_addr = vb2_dma_contig_plane_dma_addr(&next->vbuf.vb2_buf, 0);
@@ -774,14 +738,7 @@ static irqreturn_t imx7_csi_irq_handler(int irq, void *data)
 
 	if ((status & BIT_DMA_TSF_DONE_FB1) &&
 	    (status & BIT_DMA_TSF_DONE_FB2)) {
-		/*
-		 * For both FB1 and FB2 interrupter bits set case,
-		 * CSI DMA is work in one of FB1 and FB2 buffer,
-		 * but software can not know the state.
-		 * Skip it to avoid base address updated
-		 * when csi work in field0 and field1 will write to
-		 * new base address.
-		 */
+		 
 	} else if (status & BIT_DMA_TSF_DONE_FB1) {
 		csi->buf_num = 0;
 	} else if (status & BIT_DMA_TSF_DONE_FB2) {
@@ -803,43 +760,13 @@ static irqreturn_t imx7_csi_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* -----------------------------------------------------------------------------
- * Format Helpers
- */
+ 
 
 #define IMX_BUS_FMTS(fmt...) (const u32[]) {fmt, 0}
 
-/*
- * List of supported pixel formats for the subdevs. Keep V4L2_PIX_FMT_UYVY and
- * MEDIA_BUS_FMT_UYVY8_2X8 first to match IMX7_CSI_DEF_PIX_FORMAT and
- * IMX7_CSI_DEF_MBUS_CODE.
- *
- * TODO: Restrict the supported formats list based on the SoC integration.
- *
- * The CSI bridge can be configured to sample pixel components from the Rx queue
- * in single (8bpp) or double (16bpp) component modes. Image format variants
- * with different sample sizes (ie YUYV_2X8 vs YUYV_1X16) determine the pixel
- * components sampling size per each clock cycle and their packing mode (see
- * imx7_csi_configure() for details).
- *
- * As the CSI bridge can be interfaced with different IP blocks depending on the
- * SoC model it is integrated on, the Rx queue sampling size should match the
- * size of the samples transferred by the transmitting IP block. To avoid
- * misconfigurations of the capture pipeline, the enumeration of the supported
- * formats should be restricted to match the pixel source transmitting mode.
- *
- * Example: i.MX8MM SoC integrates the CSI bridge with the Samsung CSIS CSI-2
- * receiver which operates in dual pixel sampling mode. The CSI bridge should
- * only expose the 1X16 formats variant which instructs it to operate in dual
- * pixel sampling mode. When the CSI bridge is instead integrated on an i.MX7,
- * which supports both serial and parallel input, it should expose both
- * variants.
- *
- * This currently only applies to YUYV formats, but other formats might need to
- * be handled in the same way.
- */
+ 
 static const struct imx7_csi_pixfmt pixel_formats[] = {
-	/*** YUV formats start here ***/
+	 
 	{
 		.fourcc	= V4L2_PIX_FMT_UYVY,
 		.codes  = IMX_BUS_FMTS(
@@ -857,7 +784,7 @@ static const struct imx7_csi_pixfmt pixel_formats[] = {
 		.yuv	= true,
 		.bpp    = 16,
 	},
-	/*** raw bayer and grayscale formats start here ***/
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_SBGGR8,
 		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR8_1X8),
@@ -941,10 +868,7 @@ static const struct imx7_csi_pixfmt pixel_formats[] = {
 	},
 };
 
-/*
- * Search in the pixel_formats[] array for an entry with the given fourcc
- * return it.
- */
+ 
 static const struct imx7_csi_pixfmt *imx7_csi_find_pixel_format(u32 fourcc)
 {
 	unsigned int i;
@@ -959,10 +883,7 @@ static const struct imx7_csi_pixfmt *imx7_csi_find_pixel_format(u32 fourcc)
 	return NULL;
 }
 
-/*
- * Search in the pixel_formats[] array for an entry with the given media
- * bus code and return it.
- */
+ 
 static const struct imx7_csi_pixfmt *imx7_csi_find_mbus_format(u32 code)
 {
 	unsigned int i;
@@ -983,15 +904,7 @@ static const struct imx7_csi_pixfmt *imx7_csi_find_mbus_format(u32 code)
 	return NULL;
 }
 
-/*
- * Enumerate entries in the pixel_formats[] array that match the
- * requested search criteria. Return the media-bus code that matches
- * the search criteria at the requested match index.
- *
- * @code: The returned media-bus code that matches the search criteria at
- *        the requested match index.
- * @index: The requested match index.
- */
+ 
 static int imx7_csi_enum_mbus_formats(u32 *code, u32 index)
 {
 	unsigned int i;
@@ -1016,9 +929,7 @@ static int imx7_csi_enum_mbus_formats(u32 *code, u32 index)
 	return -EINVAL;
 }
 
-/* -----------------------------------------------------------------------------
- * Video Capture Device - IOCTLs
- */
+ 
 
 static int imx7_csi_video_querycap(struct file *file, void *fh,
 				   struct v4l2_capability *cap)
@@ -1042,10 +953,7 @@ static int imx7_csi_video_enum_fmt_vid_cap(struct file *file, void *fh,
 	for (i = 0; i < ARRAY_SIZE(pixel_formats); i++) {
 		const struct imx7_csi_pixfmt *fmt = &pixel_formats[i];
 
-		/*
-		 * If a media bus code is specified, only consider formats that
-		 * match it.
-		 */
+		 
 		if (f->mbus_code) {
 			unsigned int j;
 
@@ -1085,10 +993,7 @@ static int imx7_csi_video_enum_framesizes(struct file *file, void *fh,
 	if (!cc)
 		return -EINVAL;
 
-	/*
-	 * The width alignment is 8 bytes as indicated by the
-	 * CSI_IMAG_PARA.IMAGE_WIDTH documentation. Convert it to pixels.
-	 */
+	 
 	walign = 8 * 8 / cc->bpp;
 
 	fsize->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
@@ -1124,22 +1029,14 @@ __imx7_csi_video_try_fmt(struct v4l2_pix_format *pixfmt,
 		compose->height = pixfmt->height;
 	}
 
-	/*
-	 * Find the pixel format, default to the first supported format if not
-	 * found.
-	 */
+	 
 	cc = imx7_csi_find_pixel_format(pixfmt->pixelformat);
 	if (!cc) {
 		pixfmt->pixelformat = IMX7_CSI_DEF_PIX_FORMAT;
 		cc = imx7_csi_find_pixel_format(pixfmt->pixelformat);
 	}
 
-	/*
-	 * The width alignment is 8 bytes as indicated by the
-	 * CSI_IMAG_PARA.IMAGE_WIDTH documentation. Convert it to pixels.
-	 *
-	 * TODO: Implement configurable stride support.
-	 */
+	 
 	walign = 8 * 8 / cc->bpp;
 	pixfmt->width = clamp(round_up(pixfmt->width, walign), walign,
 			      round_down(65535U, walign));
@@ -1190,15 +1087,11 @@ static int imx7_csi_video_g_selection(struct file *file, void *fh,
 	case V4L2_SEL_TGT_COMPOSE:
 	case V4L2_SEL_TGT_COMPOSE_DEFAULT:
 	case V4L2_SEL_TGT_COMPOSE_BOUNDS:
-		/* The compose rectangle is fixed to the source format. */
+		 
 		s->r = csi->vdev_compose;
 		break;
 	case V4L2_SEL_TGT_COMPOSE_PADDED:
-		/*
-		 * The hardware writes with a configurable but fixed DMA burst
-		 * size. If the source format width is not burst size aligned,
-		 * the written frame contains padding to the right.
-		 */
+		 
 		s->r.left = 0;
 		s->r.top = 0;
 		s->r.width = csi->vdev_fmt.width;
@@ -1234,9 +1127,7 @@ static const struct v4l2_ioctl_ops imx7_csi_video_ioctl_ops = {
 	.vidioc_streamoff		= vb2_ioctl_streamoff,
 };
 
-/* -----------------------------------------------------------------------------
- * Video Capture Device - Queue Operations
- */
+ 
 
 static int imx7_csi_video_queue_setup(struct vb2_queue *vq,
 				      unsigned int *nbuffers,
@@ -1310,34 +1201,7 @@ static bool imx7_csi_fast_track_buffer(struct imx7_csi *csi,
 
 	dma_addr = vb2_dma_contig_plane_dma_addr(&buf->vbuf.vb2_buf, 0);
 
-	/*
-	 * buf_num holds the framebuffer ID of the most recently (*not* the
-	 * next anticipated) triggered interrupt. Without loss of generality,
-	 * if buf_num is 0, the hardware is capturing to FB2. If FB1 has been
-	 * programmed with a dummy buffer (as indicated by active_vb2_buf[0]
-	 * being NULL), then we can fast-track the new buffer by programming
-	 * its address in FB1 before the hardware completes FB2, instead of
-	 * adding it to the buffer queue and incurring a delay of one
-	 * additional frame.
-	 *
-	 * The irqlock prevents races with the interrupt handler that updates
-	 * buf_num when it programs the next buffer, but we can still race with
-	 * the hardware if we program the buffer in FB1 just after the hardware
-	 * completes FB2 and switches to FB1 and before buf_num can be updated
-	 * by the interrupt handler for FB2.  The fast-tracked buffer would
-	 * then be ignored by the hardware while the driver would think it has
-	 * successfully been processed.
-	 *
-	 * To avoid this problem, if we can't avoid the race, we can detect
-	 * that we have lost it by checking, after programming the buffer in
-	 * FB1, if the interrupt flag indicating completion of FB2 has been
-	 * raised. If that is not the case, fast-tracking succeeded, and we can
-	 * update active_vb2_buf[0]. Otherwise, we may or may not have lost the
-	 * race (as the interrupt flag may have been raised just after
-	 * programming FB1 and before we read the interrupt status register),
-	 * and we need to assume the worst case of a race loss and queue the
-	 * buffer through the slow path.
-	 */
+	 
 
 	spin_lock_irqsave(&csi->irqlock, flags);
 
@@ -1351,15 +1215,7 @@ static bool imx7_csi_fast_track_buffer(struct imx7_csi *csi,
 
 	isr = imx7_csi_reg_read(csi, CSI_CSISR);
 	if (isr & (buf_num ? BIT_DMA_TSF_DONE_FB1 : BIT_DMA_TSF_DONE_FB2)) {
-		/*
-		 * The interrupt for the /other/ FB just came (the isr hasn't
-		 * run yet though, because we have the lock here); we can't be
-		 * sure we've programmed buf_num FB in time, so queue the buffer
-		 * to the buffer queue normally. No need to undo writing the FB
-		 * register, since we won't return it as active_vb2_buf is NULL,
-		 * so it's okay to potentially write it to both FB1 and FB2;
-		 * only the one where it was queued normally will be returned.
-		 */
+		 
 		spin_unlock_irqrestore(&csi->irqlock, flags);
 		return false;
 	}
@@ -1395,26 +1251,17 @@ static int imx7_csi_video_validate_fmt(struct imx7_csi *csi)
 	const struct imx7_csi_pixfmt *cc;
 	int ret;
 
-	/* Retrieve the media bus format on the source subdev. */
+	 
 	ret = v4l2_subdev_call_state_active(&csi->sd, pad, get_fmt, &fmt_src);
 	if (ret)
 		return ret;
 
-	/*
-	 * Verify that the media bus size matches the size set on the video
-	 * node. It is sufficient to check the compose rectangle size without
-	 * checking the rounded size from pix_fmt, as the rounded size is
-	 * derived directly from the compose rectangle size, and will thus
-	 * always match if the compose rectangle matches.
-	 */
+	 
 	if (csi->vdev_compose.width != fmt_src.format.width ||
 	    csi->vdev_compose.height != fmt_src.format.height)
 		return -EPIPE;
 
-	/*
-	 * Verify that the media bus code is compatible with the pixel format
-	 * set on the video node.
-	 */
+	 
 	cc = imx7_csi_find_mbus_format(fmt_src.format.code);
 	if (!cc || csi->vdev_cc->yuv != cc->yuv)
 		return -EPIPE;
@@ -1477,7 +1324,7 @@ static void imx7_csi_video_stop_streaming(struct vb2_queue *vq)
 	__video_device_pipeline_stop(csi->vdev);
 	mutex_unlock(&csi->mdev.graph_mutex);
 
-	/* release all active buffers */
+	 
 	spin_lock_irqsave(&csi->q_lock, flags);
 	list_for_each_entry_safe(frame, tmp, &csi->ready_q, list) {
 		list_del(&frame->list);
@@ -1497,9 +1344,7 @@ static const struct vb2_ops imx7_csi_video_qops = {
 	.stop_streaming  = imx7_csi_video_stop_streaming,
 };
 
-/* -----------------------------------------------------------------------------
- * Video Capture Device - File Operations
- */
+ 
 
 static int imx7_csi_video_open(struct file *file)
 {
@@ -1552,9 +1397,7 @@ static const struct v4l2_file_operations imx7_csi_video_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/* -----------------------------------------------------------------------------
- * Video Capture Device - Init & Cleanup
- */
+ 
 
 static struct imx7_csi_vb2_buffer *imx7_csi_video_next_buf(struct imx7_csi *csi)
 {
@@ -1563,7 +1406,7 @@ static struct imx7_csi_vb2_buffer *imx7_csi_video_next_buf(struct imx7_csi *csi)
 
 	spin_lock_irqsave(&csi->q_lock, flags);
 
-	/* get next queued buffer */
+	 
 	if (!list_empty(&csi->ready_q)) {
 		buf = list_entry(csi->ready_q.next, struct imx7_csi_vb2_buffer,
 				 list);
@@ -1594,10 +1437,10 @@ static int imx7_csi_video_register(struct imx7_csi *csi)
 
 	vdev->v4l2_dev = v4l2_dev;
 
-	/* Initialize the default format and compose rectangle. */
+	 
 	imx7_csi_video_init_format(csi);
 
-	/* Register the video device. */
+	 
 	ret = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
 	if (ret) {
 		dev_err(csi->dev, "Failed to register video device\n");
@@ -1607,7 +1450,7 @@ static int imx7_csi_video_register(struct imx7_csi *csi)
 	dev_info(csi->dev, "Registered %s as /dev/%s\n", vdev->name,
 		 video_device_node_name(vdev));
 
-	/* Create the link from the CSI subdev to the video device. */
+	 
 	ret = media_create_pad_link(&sd->entity, IMX7_CSI_PAD_SRC,
 				    &vdev->entity, 0, MEDIA_LNK_FL_IMMUTABLE |
 				    MEDIA_LNK_FL_ENABLED);
@@ -1636,7 +1479,7 @@ static int imx7_csi_video_init(struct imx7_csi *csi)
 	INIT_LIST_HEAD(&csi->ready_q);
 	spin_lock_init(&csi->q_lock);
 
-	/* Allocate and initialize the video device. */
+	 
 	vdev = video_device_alloc();
 	if (!vdev)
 		return -ENOMEM;
@@ -1657,7 +1500,7 @@ static int imx7_csi_video_init(struct imx7_csi *csi)
 	video_set_drvdata(vdev, csi);
 	csi->vdev = vdev;
 
-	/* Initialize the video device pad. */
+	 
 	csi->vdev_pad.flags = MEDIA_PAD_FL_SINK;
 	ret = media_entity_pads_init(&vdev->entity, 1, &csi->vdev_pad);
 	if (ret) {
@@ -1665,7 +1508,7 @@ static int imx7_csi_video_init(struct imx7_csi *csi)
 		return ret;
 	}
 
-	/* Initialize the vb2 queue. */
+	 
 	vq = &csi->q;
 	vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	vq->io_modes = VB2_MMAP | VB2_DMABUF;
@@ -1688,9 +1531,7 @@ static int imx7_csi_video_init(struct imx7_csi *csi)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdev Operations
- */
+ 
 
 static int imx7_csi_s_stream(struct v4l2_subdev *sd, int enable)
 {
@@ -1786,13 +1627,7 @@ static int imx7_csi_enum_mbus_code(struct v4l2_subdev *sd,
 	return ret;
 }
 
-/*
- * Default the colorspace in tryfmt to SRGB if set to an unsupported
- * colorspace or not initialized. Then set the remaining colorimetry
- * parameters based on the colorspace if they are uninitialized.
- *
- * tryfmt->code must be set on entry.
- */
+ 
 static void imx7_csi_try_colorimetry(struct v4l2_mbus_framefmt *tryfmt)
 {
 	const struct imx7_csi_pixfmt *cc;
@@ -1896,7 +1731,7 @@ static int imx7_csi_set_fmt(struct v4l2_subdev *sd,
 	*fmt = sdformat->format;
 
 	if (sdformat->pad == IMX7_CSI_PAD_SINK) {
-		/* propagate format to source pads */
+		 
 		format.pad = IMX7_CSI_PAD_SRC;
 		format.which = sdformat->which;
 		format.format = sdformat->format;
@@ -1920,22 +1755,19 @@ static int imx7_csi_pad_link_validate(struct v4l2_subdev *sd,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * Validate the source link, and record whether the source uses the
-	 * parallel input or the CSI-2 receiver.
-	 */
+	 
 	ret = v4l2_subdev_link_validate_default(sd, link, source_fmt, sink_fmt);
 	if (ret)
 		return ret;
 
 	switch (csi->src_sd->entity.function) {
 	case MEDIA_ENT_F_VID_IF_BRIDGE:
-		/* The input is the CSI-2 receiver. */
+		 
 		csi->is_csi2 = true;
 		break;
 
 	case MEDIA_ENT_F_VID_MUX:
-		/* The input is the mux, check its input. */
+		 
 		for (i = 0; i < csi->src_sd->entity.num_pads; i++) {
 			struct media_pad *spad = &csi->src_sd->entity.pads[i];
 
@@ -1954,10 +1786,7 @@ static int imx7_csi_pad_link_validate(struct v4l2_subdev *sd,
 		break;
 
 	default:
-		/*
-		 * The input is an external entity, it must use the parallel
-		 * bus.
-		 */
+		 
 		csi->is_csi2 = false;
 		break;
 	}
@@ -2022,18 +1851,14 @@ static const struct v4l2_subdev_internal_ops imx7_csi_internal_ops = {
 	.unregistered	= imx7_csi_unregistered,
 };
 
-/* -----------------------------------------------------------------------------
- * Media Entity Operations
- */
+ 
 
 static const struct media_entity_operations imx7_csi_entity_ops = {
 	.link_validate	= v4l2_subdev_link_validate,
 	.get_fwnode_pad = v4l2_subdev_get_fwnode_pad_1_to_1,
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove
- */
+ 
 
 static int imx7_csi_notify_bound(struct v4l2_async_notifier *notifier,
 				 struct v4l2_subdev *sd,
@@ -2148,7 +1973,7 @@ static int imx7_csi_media_init(struct imx7_csi *csi)
 	unsigned int i;
 	int ret;
 
-	/* add media device */
+	 
 	ret = imx7_csi_media_dev_init(csi);
 	if (ret)
 		return ret;
@@ -2202,7 +2027,7 @@ static int imx7_csi_probe(struct platform_device *pdev)
 
 	spin_lock_init(&csi->irqlock);
 
-	/* Acquire resources and install interrupt handler. */
+	 
 	csi->mclk = devm_clk_get(&pdev->dev, "mclk");
 	if (IS_ERR(csi->mclk)) {
 		ret = PTR_ERR(csi->mclk);
@@ -2227,7 +2052,7 @@ static int imx7_csi_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Initialize all the media device infrastructure. */
+	 
 	ret = imx7_csi_media_init(csi);
 	if (ret)
 		return ret;

@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2017 Paul Sokolovsky
- * Copyright (c) 2014-2023 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <unistd.h>
 #include <errno.h>
@@ -45,7 +20,7 @@ static inline int msec_sleep_tv(struct timeval *tv) {
 #define sleep_select select
 #endif
 
-// mingw32 defines CLOCKS_PER_SEC as ((clock_t)<somevalue>) but preprocessor does not handle casts
+
 #if defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
 #define MP_REMOVE_BRACKETSA(x)
 #define MP_REMOVE_BRACKETSB(x) MP_REMOVE_BRACKETSA x
@@ -72,12 +47,12 @@ static mp_obj_t mp_time_time_get(void) {
     #endif
 }
 
-// Note: this is deprecated since CPy3.3, but pystone still uses it.
+
 static mp_obj_t mod_time_clock(void) {
     #if MICROPY_PY_BUILTINS_FLOAT
-    // float cannot represent full range of int32 precisely, so we pre-divide
-    // int to reduce resolution, and then actually do float division hoping
-    // to preserve integer part resolution.
+    
+    
+    
     return mp_obj_new_float((clock() / 1000) / CLOCK_DIV);
     #else
     return mp_obj_new_int((mp_int_t)clock());
@@ -98,13 +73,13 @@ static mp_obj_t mp_time_sleep(mp_obj_t arg) {
         res = sleep_select(0, NULL, NULL, NULL, &tv);
         MP_THREAD_GIL_ENTER();
         #if MICROPY_SELECT_REMAINING_TIME
-        // TODO: This assumes Linux behavior of modifying tv to the remaining
-        // time.
+        
+        
         if (res != -1 || errno != EINTR) {
             break;
         }
         mp_handle_pending(true);
-        // printf("select: EINTR: %ld:%ld\n", tv.tv_sec, tv.tv_usec);
+        
         #else
         break;
         #endif
@@ -174,7 +149,7 @@ static mp_obj_t mod_time_mktime(mp_obj_t tuple) {
     mp_obj_t *elem;
     mp_obj_get_array(tuple, &len, &elem);
 
-    // localtime generates a tuple of len 8. CPython uses 9, so we accept both.
+    
     if (len < 8 || len > 9) {
         mp_raise_TypeError(MP_ERROR_TEXT("mktime needs a tuple of length 8 or 9"));
     }
@@ -190,7 +165,7 @@ static mp_obj_t mod_time_mktime(mp_obj_t tuple) {
     if (len == 9) {
         time.tm_isdst = mp_obj_get_int(elem[8]);
     } else {
-        time.tm_isdst = -1; // auto-detect
+        time.tm_isdst = -1; 
     }
     time_t ret = mktime(&time);
     if (ret == -1) {

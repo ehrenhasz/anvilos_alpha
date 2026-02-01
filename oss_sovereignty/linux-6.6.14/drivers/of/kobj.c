@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/of.h>
 #include <linux/slab.h>
 
 #include "of_private.h"
 
-/* true when node is initialized */
+ 
 static int of_node_is_initialized(const struct device_node *node)
 {
 	return node && node->kobj.state_initialized;
 }
 
-/* true when node is attached (i.e. present on sysfs) */
+ 
 int of_node_is_attached(const struct device_node *node)
 {
 	return node && node->kobj.state_in_sysfs;
@@ -20,9 +20,9 @@ int of_node_is_attached(const struct device_node *node)
 #ifndef CONFIG_OF_DYNAMIC
 static void of_node_release(struct kobject *kobj)
 {
-	/* Without CONFIG_OF_DYNAMIC, no nodes gets freed */
+	 
 }
-#endif /* CONFIG_OF_DYNAMIC */
+#endif  
 
 const struct kobj_type of_node_ktype = {
 	.release = of_node_release,
@@ -36,14 +36,14 @@ static ssize_t of_node_property_read(struct file *filp, struct kobject *kobj,
 	return memory_read_from_buffer(buf, count, &offset, pp->value, pp->length);
 }
 
-/* always return newly allocated name, caller must free after use */
+ 
 static const char *safe_name(struct kobject *kobj, const char *orig_name)
 {
 	const char *name = orig_name;
 	struct kernfs_node *kn;
 	int i = 0;
 
-	/* don't be a hero. After 16 tries give up */
+	 
 	while (i < 16 && (kn = sysfs_get_dirent(kobj->sd, name))) {
 		sysfs_put(kn);
 		if (name != orig_name)
@@ -64,7 +64,7 @@ int __of_add_property_sysfs(struct device_node *np, struct property *pp)
 {
 	int rc;
 
-	/* Important: Don't leak passwords */
+	 
 	bool secure = strncmp(pp->name, "security-", 9) == 0;
 
 	if (!IS_ENABLED(CONFIG_SYSFS))
@@ -95,7 +95,7 @@ void __of_sysfs_remove_bin_file(struct device_node *np, struct property *prop)
 
 void __of_remove_property_sysfs(struct device_node *np, struct property *prop)
 {
-	/* at early boot, bail here and defer setup to of_init() */
+	 
 	if (of_kset && of_node_is_attached(np))
 		__of_sysfs_remove_bin_file(np, prop);
 }
@@ -103,7 +103,7 @@ void __of_remove_property_sysfs(struct device_node *np, struct property *prop)
 void __of_update_property_sysfs(struct device_node *np, struct property *newprop,
 		struct property *oldprop)
 {
-	/* At early boot, bail out and defer setup to of_init() */
+	 
 	if (!of_kset)
 		return;
 
@@ -124,7 +124,7 @@ int __of_attach_node_sysfs(struct device_node *np)
 
 	np->kobj.kset = of_kset;
 	if (!np->parent) {
-		/* Nodes without parents are new top level trees */
+		 
 		name = safe_name(&of_kset->kobj, "base");
 		parent = NULL;
 	} else {
@@ -154,7 +154,7 @@ void __of_detach_node_sysfs(struct device_node *np)
 	if (!of_kset)
 		return;
 
-	/* only remove properties if on sysfs */
+	 
 	if (of_node_is_attached(np)) {
 		for_each_property_of_node(np, pp)
 			__of_sysfs_remove_bin_file(np, pp);

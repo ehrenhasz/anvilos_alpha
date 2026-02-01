@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_connmark.c  netfilter connmark retriever action
- * skb mark is over-written
- *
- * Copyright (c) 2011 Felix Fietkau <nbd@openwrt.org>
-*/
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -85,7 +80,7 @@ TC_INDIRECT_SCOPE int tcf_connmark_act(struct sk_buff *skb,
 	nf_ct_put(c);
 
 count:
-	/* using overlimits stats to count how many packets marked */
+	 
 	tcf_action_inc_overlimit_qstats(&ca->common);
 out:
 	return READ_ONCE(ca->tcf_action);

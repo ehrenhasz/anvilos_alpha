@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu-protocol-v3.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include <linux/delay.h>
 #include "motu.h"
@@ -285,7 +281,7 @@ const struct snd_motu_spec snd_motu_spec_828mk3_hybrid = {
 		 SND_MOTU_SPEC_TX_MIDI_3RD_Q |
 		 SND_MOTU_SPEC_COMMAND_DSP,
 	.tx_fixed_pcm_chunks = {18, 18, 14},
-	.rx_fixed_pcm_chunks = {14, 14, 14},	// Additional 4 dummy chunks at higher rate.
+	.rx_fixed_pcm_chunks = {14, 14, 14},	
 };
 
 const struct snd_motu_spec snd_motu_spec_traveler_mk3 = {

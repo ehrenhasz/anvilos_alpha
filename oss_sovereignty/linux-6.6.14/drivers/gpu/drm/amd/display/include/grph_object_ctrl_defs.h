@@ -1,43 +1,11 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_GRPH_OBJECT_CTRL_DEFS_H__
 #define __DAL_GRPH_OBJECT_CTRL_DEFS_H__
 
 #include "grph_object_defs.h"
 
-/*
- * #####################################################
- * #####################################################
- *
- * These defines shared between asic_control/bios_parser and other
- * DAL components
- *
- * #####################################################
- * #####################################################
- */
+ 
 
 enum display_output_bit_depth {
 	PANEL_UNDEFINE = 0,
@@ -49,7 +17,7 @@ enum display_output_bit_depth {
 };
 
 
-/* Device type as abstracted by ATOM BIOS */
+ 
 enum dal_device_type {
 	DEVICE_TYPE_UNKNOWN = 0,
 	DEVICE_TYPE_LCD,
@@ -61,10 +29,10 @@ enum dal_device_type {
 	DEVICE_TYPE_WIRELESS
 };
 
-/* Device ID as abstracted by ATOM BIOS */
+ 
 struct device_id {
 	enum dal_device_type device_type:16;
-	uint32_t enum_id:16;	/* 1 based enum */
+	uint32_t enum_id:16;	 
 	uint16_t raw_device_tag;
 };
 
@@ -108,9 +76,9 @@ struct connector_device_tag_info {
 struct device_timing {
 	struct misc_info {
 		uint32_t HORIZONTAL_CUT_OFF:1;
-		/* 0=Active High, 1=Active Low */
+		 
 		uint32_t H_SYNC_POLARITY:1;
-		/* 0=Active High, 1=Active Low */
+		 
 		uint32_t V_SYNC_POLARITY:1;
 		uint32_t VERTICAL_CUT_OFF:1;
 		uint32_t H_REPLICATION_BY2:1;
@@ -125,7 +93,7 @@ struct device_timing {
 		uint32_t API_ENABLED:1;
 	} misc_info;
 
-	uint32_t pixel_clk; /* in KHz */
+	uint32_t pixel_clk;  
 	uint32_t horizontal_addressable;
 	uint32_t horizontal_blanking_time;
 	uint32_t vertical_addressable;
@@ -157,11 +125,11 @@ struct embedded_panel_info {
 
 struct dc_firmware_info {
 	struct pll_info {
-		uint32_t crystal_frequency; /* in KHz */
-		uint32_t min_input_pxl_clk_pll_frequency; /* in KHz */
-		uint32_t max_input_pxl_clk_pll_frequency; /* in KHz */
-		uint32_t min_output_pxl_clk_pll_frequency; /* in KHz */
-		uint32_t max_output_pxl_clk_pll_frequency; /* in KHz */
+		uint32_t crystal_frequency;  
+		uint32_t min_input_pxl_clk_pll_frequency;  
+		uint32_t max_input_pxl_clk_pll_frequency;  
+		uint32_t min_output_pxl_clk_pll_frequency;  
+		uint32_t max_output_pxl_clk_pll_frequency;  
 	} pll_info;
 
 	struct firmware_feature {
@@ -169,15 +137,15 @@ struct dc_firmware_info {
 		uint32_t engine_clk_ss_percentage;
 	} feature;
 
-	uint32_t default_display_engine_pll_frequency; /* in KHz */
-	uint32_t external_clock_source_frequency_for_dp; /* in KHz */
-	uint32_t smu_gpu_pll_output_freq; /* in KHz */
+	uint32_t default_display_engine_pll_frequency;  
+	uint32_t external_clock_source_frequency_for_dp;  
+	uint32_t smu_gpu_pll_output_freq;  
 	uint8_t min_allowed_bl_level;
 	uint8_t remote_display_config;
-	uint32_t default_memory_clk; /* in KHz */
-	uint32_t default_engine_clk; /* in KHz */
-	uint32_t dp_phy_ref_clk; /* in KHz - DCE12 only */
-	uint32_t i2c_engine_ref_clk; /* in KHz - DCE12 only */
+	uint32_t default_memory_clk;  
+	uint32_t default_engine_clk;  
+	uint32_t dp_phy_ref_clk;  
+	uint32_t i2c_engine_ref_clk;  
 	bool oem_i2c_present;
 	uint8_t oem_i2c_obj_id;
 
@@ -201,18 +169,15 @@ struct spread_spectrum_info {
 		bool STEP_AND_DELAY_INFO:1;
 	} type;
 
-	/* in unit of 0.01% (spreadPercentageDivider = 100),
-	otherwise in 0.001% units (spreadPercentageDivider = 1000); */
+	 
 	uint32_t spread_spectrum_percentage;
-	uint32_t spread_percentage_divider; /* 100 or 1000 */
-	uint32_t spread_spectrum_range; /* modulation freq (HZ)*/
+	uint32_t spread_percentage_divider;  
+	uint32_t spread_spectrum_range;  
 
 	union {
 		struct step_and_delay_info step_and_delay_info;
-		/* For mem/engine/uvd, Clock Out frequence (VCO ),
-		in unit of kHz. For TMDS/HDMI/LVDS, it is pixel clock,
-		for DP, it is link clock ( 270000 or 162000 ) */
-		uint32_t target_clock_range; /* in KHz */
+		 
+		uint32_t target_clock_range;  
 	};
 
 };
@@ -220,9 +185,7 @@ struct spread_spectrum_info {
 struct graphics_object_encoder_cap_info {
 	uint32_t dp_hbr2_cap:1;
 	uint32_t dp_hbr2_validated:1;
-	/*
-	 * TODO: added MST and HDMI 6G capable flags
-	 */
+	 
 	uint32_t reserved:15;
 };
 
@@ -231,40 +194,36 @@ struct din_connector_info {
 	bool gpio_tv_active_state;
 };
 
-/* Invalid channel mapping */
+ 
 enum { INVALID_DDI_CHANNEL_MAPPING = 0x0 };
 
-/**
- * DDI PHY channel mapping reflecting XBAR setting
- */
+ 
 union ddi_channel_mapping {
 	struct mapping {
-		uint8_t lane0:2;	/* Mapping for lane 0 */
-		uint8_t lane1:2;	/* Mapping for lane 1 */
-		uint8_t lane2:2;	/* Mapping for lane 2 */
-		uint8_t lane3:2;	/* Mapping for lane 3 */
+		uint8_t lane0:2;	 
+		uint8_t lane1:2;	 
+		uint8_t lane2:2;	 
+		uint8_t lane3:2;	 
 	} mapping;
 	uint8_t raw;
 };
 
-/**
-* Transmitter output configuration description
-*/
+ 
 struct transmitter_configuration_info {
-	/* DDI PHY ID for the transmitter */
+	 
 	enum transmitter transmitter_phy_id;
-	/* DDI PHY channel mapping reflecting crossbar setting */
+	 
 	union ddi_channel_mapping output_channel_mapping;
 };
 
 struct transmitter_configuration {
-	/* Configuration for the primary transmitter */
+	 
 	struct transmitter_configuration_info primary_transmitter_config;
-	/* Secondary transmitter configuration for Dual-link DVI */
+	 
 	struct transmitter_configuration_info secondary_transmitter_config;
 };
 
-/* These size should be sufficient to store info coming from BIOS */
+ 
 #define NUMBER_OF_UCHAR_FOR_GUID 16
 #define MAX_NUMBER_OF_EXT_DISPLAY_PATH 7
 #define NUMBER_OF_CSR_M3_ARB 10
@@ -295,32 +254,30 @@ struct edp_info {
 	uint8_t  edp_bootup_bl_level;
 };
 
-/* V6 */
+ 
 struct integrated_info {
 	struct clock_voltage_caps {
-		/* The Voltage Index indicated by FUSE, same voltage index
-		shared with SCLK DPM fuse table */
+		 
 		uint32_t voltage_index;
-		/* Maximum clock supported with specified voltage index */
-		uint32_t max_supported_clk; /* in KHz */
+		 
+		uint32_t max_supported_clk;  
 	} disp_clk_voltage[NUMBER_OF_DISP_CLK_VOLTAGE];
 
 	struct display_connection_info {
 		struct external_display_path {
-			/* A bit vector to show what devices are supported */
+			 
 			uint32_t device_tag;
-			/* 16bit device ACPI id. */
+			 
 			uint32_t device_acpi_enum;
-			/* A physical connector for displays to plug in,
-			using object connector definitions */
+			 
 			struct graphics_object_id device_connector_id;
-			/* An index into external AUX/DDC channel LUT */
+			 
 			uint8_t ext_aux_ddc_lut_index;
-			/* An index into external HPD pin LUT */
+			 
 			uint8_t ext_hpd_pin_lut_index;
-			/* external encoder object id */
+			 
 			struct graphics_object_id ext_encoder_obj_id;
-			/* XBAR mapping of the PHY channels */
+			 
 			union ddi_channel_mapping channel_mapping;
 
 			unsigned short caps;
@@ -329,22 +286,22 @@ struct integrated_info {
 		uint8_t gu_id[NUMBER_OF_UCHAR_FOR_GUID];
 		uint8_t checksum;
 		uint8_t fixdpvoltageswing;
-	} ext_disp_conn_info; /* exiting long long time */
+	} ext_disp_conn_info;  
 
 	struct available_s_clk_list {
-		/* Maximum clock supported with specified voltage index */
-		uint32_t supported_s_clk; /* in KHz */
-		/* The Voltage Index indicated by FUSE for specified SCLK */
+		 
+		uint32_t supported_s_clk;  
+		 
 		uint32_t voltage_index;
-		/* The Voltage ID indicated by FUSE for specified SCLK */
+		 
 		uint32_t voltage_id;
 	} avail_s_clk[NUMBER_OF_AVAILABLE_SCLK];
 
 	uint8_t memory_type;
 	uint8_t ma_channel_number;
-	uint32_t boot_up_engine_clock; /* in KHz */
-	uint32_t dentist_vco_freq; /* in KHz */
-	uint32_t boot_up_uma_clock; /* in KHz */
+	uint32_t boot_up_engine_clock;  
+	uint32_t dentist_vco_freq;  
+	uint32_t boot_up_uma_clock;  
 	uint32_t boot_up_req_display_vector;
 	uint32_t other_display_misc;
 	uint32_t gpu_cap_info;
@@ -363,7 +320,7 @@ struct integrated_info {
 	uint32_t idle_n_clk;
 	uint32_t ddr_dll_power_up_time;
 	uint32_t ddr_pll_power_up_time;
-	/* start for V6 */
+	 
 	uint32_t pcie_clk_ss_type;
 	uint32_t lvds_ss_percentage;
 	uint32_t lvds_sspread_rate_in_10hz;
@@ -379,7 +336,7 @@ struct integrated_info {
 	uint32_t boost_vid_2bit;
 	uint32_t enable_boost;
 	uint32_t gnb_tdp_limit;
-	/* Start from V7 */
+	 
 	uint32_t max_lvds_pclk_freq_in_single_link;
 	uint32_t lvds_misc;
 	uint32_t lvds_pwr_on_seq_dig_on_to_de_in_4ms;
@@ -391,7 +348,7 @@ struct integrated_info {
 	uint32_t lvds_pwr_off_seq_blon_to_vary_bl_in_4ms;
 	uint32_t lvds_reserved1;
 	uint32_t lvds_bit_depth_control_val;
-	//Start from V9
+	
 	unsigned char dp0_ext_hdmi_slv_addr;
 	unsigned char dp0_ext_hdmi_reg_num;
 	struct i2c_reg_info dp0_ext_hdmi_reg_settings[9];
@@ -412,19 +369,17 @@ struct integrated_info {
 	struct i2c_reg_info dp3_ext_hdmi_reg_settings[9];
 	unsigned char dp3_ext_hdmi_6g_reg_num;
 	struct i2c_reg_info dp3_ext_hdmi_6g_reg_settings[3];
-	/* V11 */
+	 
 	uint32_t dp_ss_control;
-	/* V2.1 */
+	 
 	struct edp_info edp1_info;
 	struct edp_info edp2_info;
 	uint32_t gpuclk_ss_percentage;
 	uint32_t gpuclk_ss_type;
 };
 
-/*
- * DFS-bypass flag
- */
-/* Copy of SYS_INFO_GPUCAPS__ENABEL_DFS_BYPASS from atombios.h */
+ 
+ 
 enum {
 	DFS_BYPASS_ENABLE = 0x10
 };

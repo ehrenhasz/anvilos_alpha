@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright IBM Corp 2019
+
+
 
 #include <linux/device.h>
 #include <linux/export.h>
@@ -18,10 +18,10 @@
 
 #define EXTN_FLAG_SENSOR_ID		BIT(7)
 
-#define OCC_ERROR_COUNT_THRESHOLD	2	/* required by OCC spec */
+#define OCC_ERROR_COUNT_THRESHOLD	2	 
 
 #define OCC_STATE_SAFE			4
-#define OCC_SAFE_TIMEOUT		msecs_to_jiffies(60000) /* 1 min */
+#define OCC_SAFE_TIMEOUT		msecs_to_jiffies(60000)  
 
 #define OCC_UPDATE_FREQUENCY		msecs_to_jiffies(1000)
 
@@ -29,7 +29,7 @@
 
 #define OCC_FRU_TYPE_VRM		3
 
-/* OCC sensor type and version definitions */
+ 
 
 struct temp_sensor_1 {
 	u16 sensor_id;
@@ -136,16 +136,16 @@ static int occ_poll(struct occ *occ)
 	u8 cmd[7];
 	struct occ_poll_response_header *header;
 
-	/* big endian */
-	cmd[0] = 0;			/* sequence number */
-	cmd[1] = 0;			/* cmd type */
-	cmd[2] = 0;			/* data length msb */
-	cmd[3] = 1;			/* data length lsb */
-	cmd[4] = occ->poll_cmd_data;	/* data */
-	cmd[5] = 0;			/* checksum msb */
-	cmd[6] = 0;			/* checksum lsb */
+	 
+	cmd[0] = 0;			 
+	cmd[1] = 0;			 
+	cmd[2] = 0;			 
+	cmd[3] = 1;			 
+	cmd[4] = occ->poll_cmd_data;	 
+	cmd[5] = 0;			 
+	cmd[6] = 0;			 
 
-	/* mutex should already be locked if necessary */
+	 
 	rc = occ->send_cmd(occ, cmd, sizeof(cmd), &occ->resp, sizeof(occ->resp));
 	if (rc) {
 		occ->last_error = rc;
@@ -155,12 +155,12 @@ static int occ_poll(struct occ *occ)
 		goto done;
 	}
 
-	/* clear error since communication was successful */
+	 
 	occ->error_count = 0;
 	occ->last_error = 0;
 	occ->error = 0;
 
-	/* check for safe state */
+	 
 	header = (struct occ_poll_response_header *)occ->resp.data;
 	if (header->occ_state == OCC_STATE_SAFE) {
 		if (occ->last_safe) {
@@ -186,15 +186,15 @@ static int occ_set_user_power_cap(struct occ *occ, u16 user_power_cap)
 	u8 resp[8];
 	__be16 user_power_cap_be = cpu_to_be16(user_power_cap);
 
-	cmd[0] = 0;	/* sequence number */
-	cmd[1] = 0x22;	/* cmd type */
-	cmd[2] = 0;	/* data length msb */
-	cmd[3] = 2;	/* data length lsb */
+	cmd[0] = 0;	 
+	cmd[1] = 0x22;	 
+	cmd[2] = 0;	 
+	cmd[3] = 2;	 
 
 	memcpy(&cmd[4], &user_power_cap_be, 2);
 
-	cmd[6] = 0;	/* checksum msb */
-	cmd[7] = 0;	/* checksum lsb */
+	cmd[6] = 0;	 
+	cmd[7] = 0;	 
 
 	rc = mutex_lock_interruptible(&occ->lock);
 	if (rc)
@@ -214,7 +214,7 @@ int occ_update_response(struct occ *occ)
 	if (rc)
 		return rc;
 
-	/* limit the maximum rate of polling the OCC */
+	 
 	if (time_after(jiffies, occ->next_update)) {
 		rc = occ_poll(occ);
 		occ->next_update = jiffies + OCC_UPDATE_FREQUENCY;
@@ -247,10 +247,7 @@ static ssize_t occ_show_temp_1(struct device *dev,
 		val = get_unaligned_be16(&temp->sensor_id);
 		break;
 	case 1:
-		/*
-		 * If a sensor reading has expired and couldn't be refreshed,
-		 * OCC returns 0xFFFF for that sensor.
-		 */
+		 
 		if (temp->value == 0xFFFF)
 			return -EREMOTEIO;
 		val = get_unaligned_be16(&temp->value) * 1000;
@@ -287,13 +284,9 @@ static ssize_t occ_show_temp_2(struct device *dev,
 		if (val == OCC_TEMP_SENSOR_FAULT)
 			return -EREMOTEIO;
 
-		/*
-		 * VRM doesn't return temperature, only alarm bit. This
-		 * attribute maps to tempX_alarm instead of tempX_input for
-		 * VRM
-		 */
+		 
 		if (temp->fru_type != OCC_FRU_TYPE_VRM) {
-			/* sensor not ready */
+			 
 			if (val == 0)
 				return -EAGAIN;
 
@@ -338,7 +331,7 @@ static ssize_t occ_show_temp_10(struct device *dev,
 		if (val == OCC_TEMP_SENSOR_FAULT)
 			return -EREMOTEIO;
 
-		/* sensor not ready */
+		 
 		if (val == 0)
 			return -EAGAIN;
 
@@ -699,7 +692,7 @@ static ssize_t occ_store_caps_user(struct device *dev,
 	if (rc)
 		return rc;
 
-	user_power_cap = div64_u64(value, 1000000ULL); /* microwatt to watt */
+	user_power_cap = div64_u64(value, 1000000ULL);  
 
 	rc = occ_set_user_power_cap(occ, user_power_cap);
 	if (rc)
@@ -746,11 +739,7 @@ static ssize_t occ_show_extended(struct device *dev,
 	return rc;
 }
 
-/*
- * Some helper macros to make it easier to define an occ_attribute. Since these
- * are dynamically allocated, we shouldn't use the existing kernel macros which
- * stringify the name argument.
- */
+ 
 #define ATTR_OCC(_name, _mode, _show, _store) {				\
 	.attr	= {							\
 		.name = _name,						\
@@ -770,10 +759,7 @@ static ssize_t occ_show_extended(struct device *dev,
 	((struct sensor_device_attribute_2)				\
 		SENSOR_ATTR_OCC(_name, _mode, _show, _store, _nr, _index))
 
-/*
- * Allocate and instatiate sensor_device_attribute_2s. It's most efficient to
- * use our own instead of the built-in hwmon attribute types.
- */
+ 
 static int occ_setup_sensor_attrs(struct occ *occ)
 {
 	unsigned int i, s, num_attrs = 0;
@@ -860,7 +846,7 @@ static int occ_setup_sensor_attrs(struct occ *occ)
 	if (!occ->attrs)
 		return -ENOMEM;
 
-	/* null-terminated list */
+	 
 	occ->group.attrs = devm_kzalloc(dev, sizeof(*occ->group.attrs) *
 					num_attrs + 1, GFP_KERNEL);
 	if (!occ->group.attrs)
@@ -929,10 +915,7 @@ static int occ_setup_sensor_attrs(struct occ *occ)
 	}
 
 	if (sensors->power.version == 0xA0) {
-		/*
-		 * Special case for many-attribute power sensor. Split it into
-		 * a sensor number per power type, emulating several sensors.
-		 */
+		 
 		for (i = 0; i < sensors->power.num_sensors; ++i) {
 			unsigned int j;
 			unsigned int nr = 0;
@@ -1080,7 +1063,7 @@ static int occ_setup_sensor_attrs(struct occ *occ)
 		attr++;
 	}
 
-	/* put the sensors in the group */
+	 
 	for (i = 0; i < num_attrs; ++i) {
 		sysfs_attr_init(&occ->attrs[i].sensor.dev_attr.attr);
 		occ->group.attrs[i] = &occ->attrs[i].sensor.dev_attr.attr;
@@ -1089,7 +1072,7 @@ static int occ_setup_sensor_attrs(struct occ *occ)
 	return 0;
 }
 
-/* only need to do this once at startup, as OCC won't change sensors on us */
+ 
 static void occ_parse_poll_response(struct occ *occ)
 {
 	unsigned int i, old_offset, offset = 0, size = 0;
@@ -1111,7 +1094,7 @@ static void occ_parse_poll_response(struct occ *occ)
 			  block->header.sensor_length) + sizeof(block->header);
 		size += offset;
 
-		/* validate all the length/size fields */
+		 
 		if ((size + sizeof(*header)) >= OCC_RESP_DATA_BYTES) {
 			dev_warn(occ->bus_dev, "exceeded response buffer\n");
 			return;
@@ -1121,7 +1104,7 @@ static void occ_parse_poll_response(struct occ *occ)
 			old_offset, offset - 1, block->header.eye_catcher,
 			block->header.num_sensors);
 
-		/* match sensor block type */
+		 
 		if (strncmp(block->header.eye_catcher, "TEMP", 4) == 0)
 			sensor = &sensors->temp;
 		else if (strncmp(block->header.eye_catcher, "FREQ", 4) == 0)

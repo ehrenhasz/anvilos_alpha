@@ -1,5 +1,5 @@
-//SPDX-License-Identifier: GPL-2.0-only
-//Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+
+
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -306,7 +306,7 @@ static int visionox_r66451_probe(struct mipi_dsi_device *dsi)
 	if (!dsc)
 		return -ENOMEM;
 
-	/* Set DSC params */
+	 
 	dsc->dsc_version_major = 0x1;
 	dsc->dsc_version_minor = 0x2;
 
@@ -370,7 +370,7 @@ static void visionox_r66451_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id visionox_r66451_of_match[] = {
 	{.compatible = "visionox,r66451"},
-	{ /*sentinel*/ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, visionox_r66451_of_match);
 

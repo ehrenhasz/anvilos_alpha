@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * host.c - ChipIdea USB host controller driver
- *
- * Copyright (c) 2012 Intel Corporation
- *
- * Author: Alexander Shishkin
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -70,10 +64,7 @@ static int ehci_ci_portpower(struct usb_hcd *hcd, int portnum, bool enable)
 	}
 
 	if (enable && (ci->platdata->phy_mode == USBPHY_INTERFACE_MODE_HSIC)) {
-		/*
-		 * Marvell 28nm HSIC PHY requires forcing the port to HS mode.
-		 * As HSIC is always HS, this should be safe for others.
-		 */
+		 
 		hw_port_test_set(ci, 5);
 		hw_port_test_set(ci, 0);
 	}
@@ -236,7 +227,7 @@ void ci_hdrc_host_destroy(struct ci_hdrc *ci)
 		host_stop(ci);
 }
 
-/* The below code is based on tegra ehci driver */
+ 
 static int ci_ehci_hub_control(
 	struct usb_hcd	*hcd,
 	u16		typeReq,
@@ -285,10 +276,7 @@ static int ci_ehci_hub_control(
 		temp |= PORT_WKDISC_E | PORT_WKOC_E;
 		ehci_writel(ehci, temp | PORT_SUSPEND, status_reg);
 
-		/*
-		 * If a transaction is in progress, there may be a delay in
-		 * suspending the port. Poll until the port is suspended.
-		 */
+		 
 		if (ehci_handshake(ehci, status_reg, PORT_SUSPEND,
 			PORT_SUSPEND, 5000))
 			ehci_err(ehci, "timeout waiting for SUSPEND\n");
@@ -307,20 +295,17 @@ static int ci_ehci_hub_control(
 		goto done;
 	}
 
-	/*
-	 * After resume has finished, it needs do some post resume
-	 * operation for some SoCs.
-	 */
+	 
 	else if (typeReq == ClearPortFeature &&
 		wValue == USB_PORT_FEAT_C_SUSPEND) {
-		/* Make sure the resume has finished, it should be finished */
+		 
 		if (ehci_handshake(ehci, status_reg, PORT_RESUME, 0, 25000))
 			ehci_err(ehci, "timeout waiting for resume\n");
 	}
 
 	spin_unlock_irqrestore(&ehci->lock, flags);
 
-	/* Handle the hub control events here */
+	 
 	return ehci_hub_control(hcd, typeReq, wValue, wIndex, buf, wLength);
 done:
 	spin_unlock_irqrestore(&ehci->lock, flags);
@@ -345,27 +330,14 @@ static int ci_ehci_bus_suspend(struct usb_hcd *hcd)
 		u32 portsc = ehci_readl(ehci, reg);
 
 		if (portsc & PORT_CONNECT) {
-			/*
-			 * For chipidea, the resume signal will be ended
-			 * automatically, so for remote wakeup case, the
-			 * usbcmd.rs may not be set before the resume has
-			 * ended if other resume paths consumes too much
-			 * time (~24ms), in that case, the SOF will not
-			 * send out within 3ms after resume ends, then the
-			 * high speed device will enter full speed mode.
-			 */
+			 
 
 			tmp = ehci_readl(ehci, &ehci->regs->command);
 			tmp |= CMD_RUN;
 			ehci_writel(ehci, tmp, &ehci->regs->command);
-			/*
-			 * It needs a short delay between set RS bit and PHCD.
-			 */
+			 
 			usleep_range(150, 200);
-			/*
-			 * Need to clear WKCN and WKOC for imx HSIC,
-			 * otherwise, there will be wakeup event.
-			 */
+			 
 			if (ci->platdata->flags & CI_HDRC_IMX_IS_HSIC) {
 				tmp = ehci_readl(ehci, reg);
 				tmp &= ~(PORT_WKDISC_E | PORT_WKCONN_E);

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/*
- * Copyright(c) 2018 Intel Corporation.
- *
- */
+ 
+ 
 #if !defined(__HFI1_TRACE_TID_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_TID_H
 
@@ -83,12 +80,12 @@ u16 hfi1_trace_get_tid_idx(u32 ent);
 #define KDETH_EFLAGS_ERR_PRN "[%s] qpn 0x%x  TID ERR: RcvType 0x%x " \
 			     "RcvTypeError 0x%x PSN 0x%x"
 
-DECLARE_EVENT_CLASS(/* class */
+DECLARE_EVENT_CLASS( 
 	hfi1_exp_tid_reg_unreg,
 	TP_PROTO(unsigned int ctxt, u16 subctxt, u32 rarr, u32 npages,
 		 unsigned long va, unsigned long pa, dma_addr_t dma),
 	TP_ARGS(ctxt, subctxt, rarr, npages, va, pa, dma),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		__field(unsigned int, ctxt)
 		__field(u16, subctxt)
 		__field(u32, rarr)
@@ -97,7 +94,7 @@ DECLARE_EVENT_CLASS(/* class */
 		__field(unsigned long, pa)
 		__field(dma_addr_t, dma)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		__entry->ctxt = ctxt;
 		__entry->subctxt = subctxt;
 		__entry->rarr = rarr;
@@ -117,33 +114,33 @@ DECLARE_EVENT_CLASS(/* class */
 	)
 );
 
-DEFINE_EVENT(/* exp_tid_unreg */
+DEFINE_EVENT( 
 	hfi1_exp_tid_reg_unreg, hfi1_exp_tid_unreg,
 	TP_PROTO(unsigned int ctxt, u16 subctxt, u32 rarr, u32 npages,
 		 unsigned long va, unsigned long pa, dma_addr_t dma),
 	TP_ARGS(ctxt, subctxt, rarr, npages, va, pa, dma)
 );
 
-DEFINE_EVENT(/* exp_tid_reg */
+DEFINE_EVENT( 
 	hfi1_exp_tid_reg_unreg, hfi1_exp_tid_reg,
 	TP_PROTO(unsigned int ctxt, u16 subctxt, u32 rarr, u32 npages,
 		 unsigned long va, unsigned long pa, dma_addr_t dma),
 	TP_ARGS(ctxt, subctxt, rarr, npages, va, pa, dma)
 );
 
-TRACE_EVENT(/* put_tid */
+TRACE_EVENT( 
 	hfi1_put_tid,
 	TP_PROTO(struct hfi1_devdata *dd,
 		 u32 index, u32 type, unsigned long pa, u16 order),
 	TP_ARGS(dd, index, type, pa, order),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd)
 		__field(unsigned long, pa)
 		__field(u32, index)
 		__field(u32, type)
 		__field(u16, order)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd);
 		__entry->pa = pa;
 		__entry->index = index;
@@ -159,12 +156,12 @@ TRACE_EVENT(/* put_tid */
 	)
 );
 
-TRACE_EVENT(/* exp_tid_inval */
+TRACE_EVENT( 
 	hfi1_exp_tid_inval,
 	TP_PROTO(unsigned int ctxt, u16 subctxt, unsigned long va, u32 rarr,
 		 u32 npages, dma_addr_t dma),
 	TP_ARGS(ctxt, subctxt, va, rarr, npages, dma),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		__field(unsigned int, ctxt)
 		__field(u16, subctxt)
 		__field(unsigned long, va)
@@ -172,7 +169,7 @@ TRACE_EVENT(/* exp_tid_inval */
 		__field(u32, npages)
 		__field(dma_addr_t, dma)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		__entry->ctxt = ctxt;
 		__entry->subctxt = subctxt;
 		__entry->va = va;
@@ -190,18 +187,18 @@ TRACE_EVENT(/* exp_tid_inval */
 	)
 );
 
-DECLARE_EVENT_CLASS(/* opfn_state */
+DECLARE_EVENT_CLASS( 
 	hfi1_opfn_state_template,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u16, requested)
 		__field(u16, completed)
 		__field(u8, curr)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		struct hfi1_qp_priv *priv = qp->priv;
 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
@@ -210,7 +207,7 @@ DECLARE_EVENT_CLASS(/* opfn_state */
 		__entry->completed = priv->opfn.completed;
 		__entry->curr = priv->opfn.curr;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		"[%s] qpn 0x%x requested 0x%x completed 0x%x curr 0x%x",
 		__get_str(dev),
 		__entry->qpn,
@@ -220,55 +217,55 @@ DECLARE_EVENT_CLASS(/* opfn_state */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_state_template, hfi1_opfn_state_conn_request,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_state_template, hfi1_opfn_state_sched_conn_request,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_state_template, hfi1_opfn_state_conn_response,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_state_template, hfi1_opfn_state_conn_reply,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_state_template, hfi1_opfn_state_conn_error,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DECLARE_EVENT_CLASS(/* opfn_data */
+DECLARE_EVENT_CLASS( 
 	hfi1_opfn_data_template,
 	TP_PROTO(struct rvt_qp *qp, u8 capcode, u64 data),
 	TP_ARGS(qp, capcode, data),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u32, state)
 		__field(u8, capcode)
 		__field(u64, data)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->state = qp->state;
 		__entry->capcode = capcode;
 		__entry->data = data;
 	),
-	TP_printk(/* printk */
+	TP_printk( 
 		"[%s] qpn 0x%x (state 0x%x) Capcode %u data 0x%llx",
 		__get_str(dev),
 		__entry->qpn,
@@ -278,30 +275,30 @@ DECLARE_EVENT_CLASS(/* opfn_data */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_data_template, hfi1_opfn_data_conn_request,
 	TP_PROTO(struct rvt_qp *qp, u8 capcode, u64 data),
 	TP_ARGS(qp, capcode, data)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_data_template, hfi1_opfn_data_conn_response,
 	TP_PROTO(struct rvt_qp *qp, u8 capcode, u64 data),
 	TP_ARGS(qp, capcode, data)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_data_template, hfi1_opfn_data_conn_reply,
 	TP_PROTO(struct rvt_qp *qp, u8 capcode, u64 data),
 	TP_ARGS(qp, capcode, data)
 );
 
-DECLARE_EVENT_CLASS(/* opfn_param */
+DECLARE_EVENT_CLASS( 
 	hfi1_opfn_param_template,
 	TP_PROTO(struct rvt_qp *qp, char remote,
 		 struct tid_rdma_params *param),
 	TP_ARGS(qp, remote, param),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(char, remote)
@@ -313,7 +310,7 @@ DECLARE_EVENT_CLASS(/* opfn_param */
 		__field(u8, timeout)
 		__field(u8, urg)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->remote = remote;
@@ -325,7 +322,7 @@ DECLARE_EVENT_CLASS(/* opfn_param */
 		__entry->timeout = param->timeout;
 		__entry->urg = param->urg;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		OPFN_PARAM_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -340,28 +337,28 @@ DECLARE_EVENT_CLASS(/* opfn_param */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_opfn_param_template, hfi1_opfn_param,
 	TP_PROTO(struct rvt_qp *qp, char remote,
 		 struct tid_rdma_params *param),
 	TP_ARGS(qp, remote, param)
 );
 
-DECLARE_EVENT_CLASS(/* msg */
+DECLARE_EVENT_CLASS( 
 	hfi1_msg_template,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		__field(u32, qpn)
 		__string(msg, msg)
 		__field(u64, more)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		__entry->qpn = qp ? qp->ibqp.qp_num : 0;
 		__assign_str(msg, msg);
 		__entry->more = more;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		"qpn 0x%x %s 0x%llx",
 		__entry->qpn,
 		__get_str(msg),
@@ -369,54 +366,54 @@ DECLARE_EVENT_CLASS(/* msg */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_msg_template, hfi1_msg_opfn_conn_request,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_msg_template, hfi1_msg_opfn_conn_error,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_msg_template, hfi1_msg_alloc_tids,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_msg_template, hfi1_msg_tid_restart_req,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_msg_template, hfi1_msg_handle_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_msg_template, hfi1_msg_tid_timeout,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_msg_template, hfi1_msg_tid_retry_timeout,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u64 more),
 	TP_ARGS(qp, msg, more)
 );
 
-DECLARE_EVENT_CLASS(/* tid_flow_page */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_flow_page_template,
 	TP_PROTO(struct rvt_qp *qp, struct tid_rdma_flow *flow, u32 index,
 		 char mtu8k, char v1, void *vaddr),
 	TP_ARGS(qp, flow, index, mtu8k, v1, vaddr),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(char, mtu8k)
@@ -425,7 +422,7 @@ DECLARE_EVENT_CLASS(/* tid_flow_page */
 		__field(u64, page)
 		__field(u64, vaddr)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->mtu8k = mtu8k;
@@ -434,7 +431,7 @@ DECLARE_EVENT_CLASS(/* tid_flow_page */
 		__entry->page = vaddr ? (u64)virt_to_page(vaddr) : 0ULL;
 		__entry->vaddr = (u64)vaddr;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		"[%s] qpn 0x%x page[%u]: page 0x%llx %s 0x%llx",
 		__get_str(dev),
 		__entry->qpn,
@@ -445,32 +442,32 @@ DECLARE_EVENT_CLASS(/* tid_flow_page */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_page_template, hfi1_tid_flow_page,
 	TP_PROTO(struct rvt_qp *qp, struct tid_rdma_flow *flow, u32 index,
 		 char mtu8k, char v1, void *vaddr),
 	TP_ARGS(qp, flow, index, mtu8k, v1, vaddr)
 );
 
-DECLARE_EVENT_CLASS(/* tid_pageset */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_pageset_template,
 	TP_PROTO(struct rvt_qp *qp, u32 index, u16 idx, u16 count),
 	TP_ARGS(qp, index, idx, count),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u32, index)
 		__field(u16, idx)
 		__field(u16, count)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->index = index;
 		__entry->idx = idx;
 		__entry->count = count;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		"[%s] qpn 0x%x list[%u]: idx %u count %u",
 		__get_str(dev),
 		__entry->qpn,
@@ -480,17 +477,17 @@ DECLARE_EVENT_CLASS(/* tid_pageset */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_pageset_template, hfi1_tid_pageset,
 	TP_PROTO(struct rvt_qp *qp, u32 index, u16 idx, u16 count),
 	TP_ARGS(qp, index, idx, count)
 );
 
-DECLARE_EVENT_CLASS(/* tid_fow */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_flow_template,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(int, index)
@@ -510,7 +507,7 @@ DECLARE_EVENT_CLASS(/* tid_fow */
 		__field(u32, length)
 		__field(u32, sent)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->index = index;
@@ -532,7 +529,7 @@ DECLARE_EVENT_CLASS(/* tid_fow */
 		__entry->length = flow->length;
 		__entry->sent = flow->sent;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		TID_FLOW_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -555,90 +552,90 @@ DECLARE_EVENT_CLASS(/* tid_fow */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_alloc,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_build_read_pkt,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_build_read_resp,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_rcv_read_req,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_rcv_read_resp,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_restart_req,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_build_write_resp,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_rcv_write_resp,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_build_write_data,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_rcv_tid_ack,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_rcv_resync,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_handle_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_flow_template, hfi1_tid_flow_read_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, int index, struct tid_rdma_flow *flow),
 	TP_ARGS(qp, index, flow)
 );
 
-DECLARE_EVENT_CLASS(/* tid_node */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_node_template,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u32 index, u32 base,
 		 u8 map, u8 used, u8 cnt),
 	TP_ARGS(qp, msg, index, base, map, used, cnt),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__string(msg, msg)
@@ -648,7 +645,7 @@ DECLARE_EVENT_CLASS(/* tid_node */
 		__field(u8, used)
 		__field(u8, cnt)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__assign_str(msg, msg);
@@ -658,7 +655,7 @@ DECLARE_EVENT_CLASS(/* tid_node */
 		__entry->used = used;
 		__entry->cnt = cnt;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		TID_NODE_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -671,18 +668,18 @@ DECLARE_EVENT_CLASS(/* tid_node */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_node_template, hfi1_tid_node_add,
 	TP_PROTO(struct rvt_qp *qp, const char *msg, u32 index, u32 base,
 		 u8 map, u8 used, u8 cnt),
 	TP_ARGS(qp, msg, index, base, map, used, cnt)
 );
 
-DECLARE_EVENT_CLASS(/* tid_entry */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_entry_template,
 	TP_PROTO(struct rvt_qp *qp, int index, u32 ent),
 	TP_ARGS(qp, index, ent),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(int, index)
@@ -690,7 +687,7 @@ DECLARE_EVENT_CLASS(/* tid_entry */
 		__field(u16, idx)
 		__field(u16, len)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->index = index;
@@ -698,7 +695,7 @@ DECLARE_EVENT_CLASS(/* tid_entry */
 		__entry->idx = hfi1_trace_get_tid_idx(ent);
 		__entry->len = hfi1_trace_get_tid_len(ent);
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		"[%s] qpn 0x%x TID entry %d: idx %u len %u ctrl 0x%x",
 		__get_str(dev),
 		__entry->qpn,
@@ -709,41 +706,41 @@ DECLARE_EVENT_CLASS(/* tid_entry */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_entry_template, hfi1_tid_entry_alloc,
 	TP_PROTO(struct rvt_qp *qp, int index, u32 entry),
 	TP_ARGS(qp, index, entry)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_entry_template, hfi1_tid_entry_build_read_resp,
 	TP_PROTO(struct rvt_qp *qp, int index, u32 ent),
 	TP_ARGS(qp, index, ent)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_entry_template, hfi1_tid_entry_rcv_read_req,
 	TP_PROTO(struct rvt_qp *qp, int index, u32 ent),
 	TP_ARGS(qp, index, ent)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_entry_template, hfi1_tid_entry_rcv_write_resp,
 	TP_PROTO(struct rvt_qp *qp, int index, u32 entry),
 	TP_ARGS(qp, index, entry)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_entry_template, hfi1_tid_entry_build_write_data,
 	TP_PROTO(struct rvt_qp *qp, int index, u32 entry),
 	TP_ARGS(qp, index, entry)
 );
 
-DECLARE_EVENT_CLASS(/* rsp_info */
+DECLARE_EVENT_CLASS( 
 	hfi1_responder_info_template,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u8, state)
@@ -762,7 +759,7 @@ DECLARE_EVENT_CLASS(/* rsp_info */
 		__field(u32, ps_flags)
 		__field(unsigned long, iow_flags)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		struct hfi1_qp_priv *priv = qp->priv;
 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
@@ -782,7 +779,7 @@ DECLARE_EVENT_CLASS(/* rsp_info */
 		__entry->ps_flags = priv->s_flags;
 		__entry->iow_flags = priv->s_iowait.flags;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		RSP_INFO_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -803,71 +800,71 @@ DECLARE_EVENT_CLASS(/* rsp_info */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_make_rc_ack,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_rcv_tid_read_req,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_tid_rcv_error,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_tid_write_alloc_res,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_rcv_tid_write_req,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_build_tid_write_resp,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_rcv_tid_write_data,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_make_tid_ack,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_handle_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_responder_info_template, hfi1_rsp_read_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, u32 psn),
 	TP_ARGS(qp, psn)
 );
 
-DECLARE_EVENT_CLASS(/* sender_info */
+DECLARE_EVENT_CLASS( 
 	hfi1_sender_info_template,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u8, state)
@@ -885,7 +882,7 @@ DECLARE_EVENT_CLASS(/* sender_info */
 		__field(u8, s_num_rd)
 		__field(u8, s_retry)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->state = qp->state;
@@ -904,7 +901,7 @@ DECLARE_EVENT_CLASS(/* sender_info */
 		__entry->s_num_rd = qp->s_num_rd_atomic;
 		__entry->s_retry = qp->s_retry;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		SENDER_INFO_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -925,59 +922,59 @@ DECLARE_EVENT_CLASS(/* sender_info */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_make_rc_req,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_reset_psn,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_restart_rc,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_do_rc_ack,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_rcv_tid_read_resp,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_rcv_tid_ack,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_make_tid_pkt,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sender_info_template, hfi1_sender_read_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DECLARE_EVENT_CLASS(/* tid_read_sender */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_read_sender_template,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(char, newreq)
@@ -992,7 +989,7 @@ DECLARE_EVENT_CLASS(/* tid_read_sender */
 		__field(u32, generation)
 		__field(u32, fpsn)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		struct hfi1_qp_priv *priv = qp->priv;
 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
@@ -1009,7 +1006,7 @@ DECLARE_EVENT_CLASS(/* tid_read_sender */
 		__entry->generation = priv->flow_state.generation;
 		__entry->fpsn = priv->flow_state.psn;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		TID_READ_SENDER_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -1027,24 +1024,24 @@ DECLARE_EVENT_CLASS(/* tid_read_sender */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_read_sender_template, hfi1_tid_read_sender_make_req,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_read_sender_template, hfi1_tid_read_sender_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DECLARE_EVENT_CLASS(/* tid_rdma_request */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_rdma_request_template,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(char, newreq)
@@ -1066,7 +1063,7 @@ DECLARE_EVENT_CLASS(/* tid_rdma_request */
 		__field(u32, r_last_acked)
 		__field(u32, s_next_psn)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->newreq = newreq;
@@ -1088,7 +1085,7 @@ DECLARE_EVENT_CLASS(/* tid_rdma_request */
 		__entry->r_last_acked = req->r_last_acked;
 		__entry->s_next_psn = req->s_next_psn;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		TID_REQ_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -1113,165 +1110,165 @@ DECLARE_EVENT_CLASS(/* tid_rdma_request */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_make_req_read,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_build_read_req,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_read_req,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_read_resp,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_err,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_restart_req,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_setup_tid_wqe,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_write_alloc_res,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_write_req,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_build_write_resp,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_write_resp,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_write_data,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_tid_ack,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_tid_retry_timeout,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_rcv_resync,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_make_tid_pkt,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_make_tid_ack,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_handle_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_read_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_make_rc_ack_write,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_make_req_write,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_rdma_request_template, hfi1_tid_req_update_num_rd_atomic,
 	TP_PROTO(struct rvt_qp *qp, char newreq, u8 opcode, u32 psn, u32 lpsn,
 		 struct tid_rdma_request *req),
 	TP_ARGS(qp, newreq, opcode, psn, lpsn, req)
 );
 
-DECLARE_EVENT_CLASS(/* rc_rcv_err */
+DECLARE_EVENT_CLASS( 
 	hfi1_rc_rcv_err_template,
 	TP_PROTO(struct rvt_qp *qp, u32 opcode, u32 psn, int diff),
 	TP_ARGS(qp, opcode, psn, diff),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u32, s_flags)
@@ -1284,7 +1281,7 @@ DECLARE_EVENT_CLASS(/* rc_rcv_err */
 		__field(u32, r_psn)
 		__field(int, diff)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->s_flags = qp->s_flags;
@@ -1297,7 +1294,7 @@ DECLARE_EVENT_CLASS(/* rc_rcv_err */
 		__entry->r_psn = qp->r_psn;
 		__entry->diff = diff;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		RCV_ERR_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -1313,31 +1310,31 @@ DECLARE_EVENT_CLASS(/* rc_rcv_err */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_rc_rcv_err_template, hfi1_tid_rdma_rcv_err,
 	TP_PROTO(struct rvt_qp *qp, u32 opcode, u32 psn, int diff),
 	TP_ARGS(qp, opcode, psn, diff)
 );
 
-DECLARE_EVENT_CLASS(/* sge  */
+DECLARE_EVENT_CLASS( 
 	hfi1_sge_template,
 	TP_PROTO(struct rvt_qp *qp, int index, struct rvt_sge *sge),
 	TP_ARGS(qp, index, sge),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(int, index)
 		__field(u64, vaddr)
 		__field(u32, sge_length)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->index = index;
 		__entry->vaddr = (u64)sge->vaddr;
 		__entry->sge_length = sge->sge_length;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		"[%s] qpn 0x%x sge %d: vaddr 0x%llx sge_length %u",
 		__get_str(dev),
 		__entry->qpn,
@@ -1347,17 +1344,17 @@ DECLARE_EVENT_CLASS(/* sge  */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_sge_template, hfi1_sge_check_align,
 	TP_PROTO(struct rvt_qp *qp, int index, struct rvt_sge *sge),
 	TP_ARGS(qp, index, sge)
 );
 
-DECLARE_EVENT_CLASS(/* tid_write_sp */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_write_rsp_template,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u32, r_tid_head)
@@ -1376,7 +1373,7 @@ DECLARE_EVENT_CLASS(/* tid_write_sp */
 		__field(bool, resync)
 		__field(u32, r_next_psn_kdeth)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		struct hfi1_qp_priv *priv = qp->priv;
 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
@@ -1397,7 +1394,7 @@ DECLARE_EVENT_CLASS(/* tid_write_sp */
 		__entry->resync = priv->resync;
 		__entry->r_next_psn_kdeth = priv->r_next_psn_kdeth;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		TID_WRITE_RSPDR_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -1419,59 +1416,59 @@ DECLARE_EVENT_CLASS(/* tid_write_sp */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_alloc_res,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_rcv_req,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_build_resp,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_rcv_data,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_rcv_resync,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_make_tid_ack,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_handle_kdeth_eflags,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_rsp_template, hfi1_tid_write_rsp_make_rc_ack,
 	TP_PROTO(struct rvt_qp *qp),
 	TP_ARGS(qp)
 );
 
-DECLARE_EVENT_CLASS(/* tid_write_sender */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_write_sender_template,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(char, newreq)
@@ -1487,7 +1484,7 @@ DECLARE_EVENT_CLASS(/* tid_write_sender */
 		__field(u8, s_state)
 		__field(u8, s_retry)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		struct hfi1_qp_priv *priv = qp->priv;
 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
@@ -1505,7 +1502,7 @@ DECLARE_EVENT_CLASS(/* tid_write_sender */
 		__entry->s_state = priv->s_state;
 		__entry->s_retry = priv->s_retry;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		TID_WRITE_SENDER_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -1524,48 +1521,48 @@ DECLARE_EVENT_CLASS(/* tid_write_sender */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_sender_template, hfi1_tid_write_sender_rcv_resp,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_sender_template, hfi1_tid_write_sender_rcv_tid_ack,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_sender_template, hfi1_tid_write_sender_retry_timeout,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_sender_template, hfi1_tid_write_sender_make_tid_pkt,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_sender_template, hfi1_tid_write_sender_make_req,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_tid_write_sender_template, hfi1_tid_write_sender_restart_rc,
 	TP_PROTO(struct rvt_qp *qp, char newreq),
 	TP_ARGS(qp, newreq)
 );
 
-DECLARE_EVENT_CLASS(/* tid_ack */
+DECLARE_EVENT_CLASS( 
 	hfi1_tid_ack_template,
 	TP_PROTO(struct rvt_qp *qp, u32 aeth, u32 psn,
 		 u32 req_psn, u32 resync_psn),
 	TP_ARGS(qp, aeth, psn, req_psn, resync_psn),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u32, aeth)
@@ -1573,7 +1570,7 @@ DECLARE_EVENT_CLASS(/* tid_ack */
 		__field(u32, req_psn)
 		__field(u32, resync_psn)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->aeth = aeth;
@@ -1581,7 +1578,7 @@ DECLARE_EVENT_CLASS(/* tid_ack */
 		__entry->req_psn = req_psn;
 		__entry->resync_psn = resync_psn;
 		),
-	TP_printk(/* print */
+	TP_printk( 
 		"[%s] qpn 0x%x aeth 0x%x psn 0x%x req_psn 0x%x resync_psn 0x%x",
 		__get_str(dev),
 		__entry->qpn,
@@ -1592,32 +1589,32 @@ DECLARE_EVENT_CLASS(/* tid_ack */
 	)
 );
 
-DEFINE_EVENT(/* rcv_tid_ack */
+DEFINE_EVENT( 
 	hfi1_tid_ack_template, hfi1_rcv_tid_ack,
 	TP_PROTO(struct rvt_qp *qp, u32 aeth, u32 psn,
 		 u32 req_psn, u32 resync_psn),
 	TP_ARGS(qp, aeth, psn, req_psn, resync_psn)
 );
 
-DECLARE_EVENT_CLASS(/* kdeth_eflags_error */
+DECLARE_EVENT_CLASS( 
 	hfi1_kdeth_eflags_error_template,
 	TP_PROTO(struct rvt_qp *qp, u8 rcv_type, u8 rte, u32 psn),
 	TP_ARGS(qp, rcv_type, rte, psn),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(dd_from_ibdev(qp->ibqp.device))
 		__field(u32, qpn)
 		__field(u8, rcv_type)
 		__field(u8, rte)
 		__field(u32, psn)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
 		__entry->qpn = qp->ibqp.qp_num;
 		__entry->rcv_type = rcv_type;
 		__entry->rte = rte;
 		__entry->psn = psn;
 	),
-	TP_printk(/* print */
+	TP_printk( 
 		KDETH_EFLAGS_ERR_PRN,
 		__get_str(dev),
 		__entry->qpn,
@@ -1627,13 +1624,13 @@ DECLARE_EVENT_CLASS(/* kdeth_eflags_error */
 	)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_kdeth_eflags_error_template, hfi1_eflags_err_write,
 	TP_PROTO(struct rvt_qp *qp, u8 rcv_type, u8 rte, u32 psn),
 	TP_ARGS(qp, rcv_type, rte, psn)
 );
 
-#endif /* __HFI1_TRACE_TID_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

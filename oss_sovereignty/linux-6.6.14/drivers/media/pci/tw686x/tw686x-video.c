@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 VanguardiaSur - www.vanguardiasur.com.ar
- *
- * Based on original driver by Krzysztof Ha?asa:
- * Copyright (C) 2015 Industrial Research Institute for Automation
- * and Measurements PIAP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -27,7 +21,7 @@
 #define TW686X_MAX_FPS(id)		((id & V4L2_STD_525_60) ? 30 : 25)
 
 #define TW686X_MAX_SG_ENTRY_SIZE	4096
-#define TW686X_MAX_SG_DESC_COUNT	256 /* PAL 720x576 needs 203 4-KB pages */
+#define TW686X_MAX_SG_DESC_COUNT	256  
 #define TW686X_SG_TABLE_SIZE		(TW686X_MAX_SG_DESC_COUNT * sizeof(struct tw686x_sg_desc))
 
 static const struct tw686x_format formats[] = {
@@ -71,9 +65,7 @@ static void tw686x_buf_done(struct tw686x_video_channel *vc,
 	vc->pb = !pb;
 }
 
-/*
- * We can call this even when alloc_dma failed for the given channel
- */
+ 
 static void tw686x_memcpy_dma_free(struct tw686x_video_channel *vc,
 				   unsigned int pb)
 {
@@ -82,7 +74,7 @@ static void tw686x_memcpy_dma_free(struct tw686x_video_channel *vc,
 	struct pci_dev *pci_dev;
 	unsigned long flags;
 
-	/* Check device presence. Shouldn't really happen! */
+	 
 	spin_lock_irqsave(&dev->lock, flags);
 	pci_dev = dev->pci_dev;
 	spin_unlock_irqrestore(&dev->lock, flags);
@@ -190,7 +182,7 @@ static int tw686x_sg_desc_fill(struct tw686x_sg_desc *descs,
 	struct scatterlist *sg;
 	int i, count;
 
-	/* Clear the scatter-gather table */
+	 
 	memset(descs, 0, TW686X_SG_TABLE_SIZE);
 
 	count = 0;
@@ -300,18 +292,11 @@ static int tw686x_sg_setup(struct tw686x_dev *dev)
 	unsigned int sg_table_size, pb, ch, channels;
 
 	if (is_second_gen(dev)) {
-		/*
-		 * TW6865/TW6869: each channel needs a pair of
-		 * P-B descriptor tables.
-		 */
+		 
 		channels = max_channels(dev);
 		sg_table_size = TW686X_SG_TABLE_SIZE;
 	} else {
-		/*
-		 * TW6864/TW6868: we need to allocate a pair of
-		 * P-B descriptor tables, common for all channels.
-		 * Each table will be bigger than 4 KB.
-		 */
+		 
 		channels = 1;
 		sg_table_size = max_channels(dev) * TW686X_SG_TABLE_SIZE;
 	}
@@ -337,27 +322,22 @@ static const struct tw686x_dma_ops sg_dma_ops = {
 };
 
 static const unsigned int fps_map[15] = {
-	/*
-	 * bit 31 enables selecting the field control register
-	 * bits 0-29 are a bitmask with fields that will be output.
-	 * For NTSC (and PAL-M, PAL-60), all 30 bits are used.
-	 * For other PAL standards, only the first 25 bits are used.
-	 */
-	0x00000000, /* output all fields */
-	0x80000006, /* 2 fps (60Hz), 2 fps (50Hz) */
-	0x80018006, /* 4 fps (60Hz), 4 fps (50Hz) */
-	0x80618006, /* 6 fps (60Hz), 6 fps (50Hz) */
-	0x81818186, /* 8 fps (60Hz), 8 fps (50Hz) */
-	0x86186186, /* 10 fps (60Hz), 8 fps (50Hz) */
-	0x86619866, /* 12 fps (60Hz), 10 fps (50Hz) */
-	0x86666666, /* 14 fps (60Hz), 12 fps (50Hz) */
-	0x9999999e, /* 16 fps (60Hz), 14 fps (50Hz) */
-	0x99e6799e, /* 18 fps (60Hz), 16 fps (50Hz) */
-	0x9e79e79e, /* 20 fps (60Hz), 16 fps (50Hz) */
-	0x9e7e7e7e, /* 22 fps (60Hz), 18 fps (50Hz) */
-	0x9fe7f9fe, /* 24 fps (60Hz), 20 fps (50Hz) */
-	0x9ffe7ffe, /* 26 fps (60Hz), 22 fps (50Hz) */
-	0x9ffffffe, /* 28 fps (60Hz), 24 fps (50Hz) */
+	 
+	0x00000000,  
+	0x80000006,  
+	0x80018006,  
+	0x80618006,  
+	0x81818186,  
+	0x86186186,  
+	0x86619866,  
+	0x86666666,  
+	0x9999999e,  
+	0x99e6799e,  
+	0x9e79e79e,  
+	0x9e7e7e7e,  
+	0x9fe7f9fe,  
+	0x9ffe7ffe,  
+	0x9ffffffe,  
 };
 
 static unsigned int tw686x_real_fps(unsigned int index, unsigned int max_fps)
@@ -376,14 +356,14 @@ static unsigned int tw686x_fps_idx(unsigned int fps, unsigned int max_fps)
 	unsigned int idx, real_fps;
 	int delta;
 
-	/* First guess */
+	 
 	idx = (12 + 15 * fps) / max_fps;
 
-	/* Minimal possible framerate is 2 frames per second */
+	 
 	if (!idx)
 		return 1;
 
-	/* Check if the difference is bigger than abs(1) and adjust */
+	 
 	real_fps = tw686x_real_fps(idx, max_fps);
 	delta = real_fps - fps;
 	if (delta < -1)
@@ -391,7 +371,7 @@ static unsigned int tw686x_fps_idx(unsigned int fps, unsigned int max_fps)
 	else if (delta > 1)
 		idx--;
 
-	/* Max framerate */
+	 
 	if (idx >= 15)
 		return 0;
 
@@ -426,10 +406,7 @@ static int tw686x_queue_setup(struct vb2_queue *vq,
 	unsigned int szimage =
 		(vc->width * vc->height * vc->format->depth) >> 3;
 
-	/*
-	 * Let's request at least three buffers: two for the
-	 * DMA engine and one for userspace.
-	 */
+	 
 	if (vq->num_buffers + *nbuffers < 3)
 		*nbuffers = 3 - vq->num_buffers;
 
@@ -454,7 +431,7 @@ static void tw686x_buf_queue(struct vb2_buffer *vb)
 	struct tw686x_v4l2_buf *buf =
 		container_of(vbuf, struct tw686x_v4l2_buf, vb);
 
-	/* Check device presence */
+	 
 	spin_lock_irqsave(&dev->lock, flags);
 	pci_dev = dev->pci_dev;
 	spin_unlock_irqrestore(&dev->lock, flags);
@@ -497,7 +474,7 @@ static int tw686x_start_streaming(struct vb2_queue *vq, unsigned int count)
 	unsigned long flags;
 	int pb, err;
 
-	/* Check device presence */
+	 
 	spin_lock_irqsave(&dev->lock, flags);
 	pci_dev = dev->pci_dev;
 	spin_unlock_irqrestore(&dev->lock, flags);
@@ -508,7 +485,7 @@ static int tw686x_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 	spin_lock_irqsave(&vc->qlock, flags);
 
-	/* Sanity check */
+	 
 	if (dev->dma_mode == TW686X_DMA_MODE_MEMCPY &&
 	    (!vc->dma_descs[0].virt || !vc->dma_descs[1].virt)) {
 		spin_unlock_irqrestore(&vc->qlock, flags);
@@ -548,7 +525,7 @@ static void tw686x_stop_streaming(struct vb2_queue *vq)
 	struct pci_dev *pci_dev;
 	unsigned long flags;
 
-	/* Check device presence */
+	 
 	spin_lock_irqsave(&dev->lock, flags);
 	pci_dev = dev->pci_dev;
 	spin_unlock_irqrestore(&dev->lock, flags);
@@ -679,7 +656,7 @@ static int tw686x_set_format(struct tw686x_video_channel *vc,
 	vc->width = width;
 	vc->height = height;
 
-	/* We need new DMA buffers if the framesize has changed */
+	 
 	if (dev->dma_ops->alloc && realloc) {
 		for (pb = 0; pb < 2; pb++)
 			dev->dma_ops->free(vc, pb);
@@ -708,7 +685,7 @@ static int tw686x_set_format(struct tw686x_video_channel *vc,
 
 	val &= ~0x7ffff;
 
-	/* Program the DMA scatter-gather */
+	 
 	if (dev->dma_mode == TW686X_DMA_MODE_SG) {
 		u32 start_idx, end_idx;
 
@@ -723,7 +700,7 @@ static int tw686x_set_format(struct tw686x_video_channel *vc,
 	val |= vc->format->mode << 20;
 	reg_write(vc->dev, VDMA_CHANNEL_CONFIG[vc->ch], val);
 
-	/* Program the DMA frame size */
+	 
 	dma_width = (vc->width * 2) & 0x7ff;
 	dma_height = vc->height / 2;
 	dma_line_width = (vc->width * 2) & 0x7ff;
@@ -814,18 +791,11 @@ static int tw686x_s_std(struct file *file, void *priv, v4l2_std_id id)
 	ret = tw686x_set_standard(vc, id);
 	if (ret)
 		return ret;
-	/*
-	 * Adjust format after V4L2_STD_525_60/V4L2_STD_625_50 change,
-	 * calling g_fmt and s_fmt will sanitize the height
-	 * according to the standard.
-	 */
+	 
 	tw686x_g_fmt_vid_cap(file, priv, &f);
 	tw686x_s_fmt_vid_cap(file, priv, &f);
 
-	/*
-	 * Frame decimation depends on the chosen standard,
-	 * so reset it to the current value.
-	 */
+	 
 	tw686x_set_framerate(vc, vc->fps);
 	return 0;
 }
@@ -840,7 +810,7 @@ static int tw686x_querystd(struct file *file, void *priv, v4l2_std_id *std)
 	if (vb2_is_streaming(&vc->vidq))
 		return -EBUSY;
 
-	/* Enable and start standard detection */
+	 
 	old_std = reg_read(dev, SDT[vc->ch]);
 	reg_write(dev, SDT[vc->ch], 0x7);
 	reg_write(dev, SDT_EN[vc->ch], 0xff);
@@ -855,7 +825,7 @@ static int tw686x_querystd(struct file *file, void *priv, v4l2_std_id *std)
 	}
 	reg_write(dev, SDT[vc->ch], old_std);
 
-	/* Exit if still busy */
+	 
 	if (detected_std & BIT(7))
 		return 0;
 
@@ -995,9 +965,7 @@ static int tw686x_s_input(struct file *file, void *priv, unsigned int i)
 		return -EINVAL;
 	if (i == vc->input)
 		return 0;
-	/*
-	 * Not sure we are able to support on the fly input change
-	 */
+	 
 	if (vb2_is_busy(&vc->vidq))
 		return -EBUSY;
 
@@ -1092,11 +1060,7 @@ void tw686x_video_irq(struct tw686x_dev *dev, unsigned long requests,
 	for_each_set_bit(ch, &requests, max_channels(dev)) {
 		vc = &dev->video_channels[ch];
 
-		/*
-		 * This can either be a blue frame (with signal-lost bit set)
-		 * or a good frame (with signal-lost bit clear). If we have just
-		 * got signal, then this channel needs resetting.
-		 */
+		 
 		if (vc->no_signal && !(fifo_status & BIT(ch))) {
 			v4l2_printk(KERN_DEBUG, &dev->v4l2_dev,
 				    "video%d: signal recovered\n", vc->num);
@@ -1107,14 +1071,14 @@ void tw686x_video_irq(struct tw686x_dev *dev, unsigned long requests,
 		}
 		vc->no_signal = !!(fifo_status & BIT(ch));
 
-		/* Check FIFO errors only if there's signal */
+		 
 		if (!vc->no_signal) {
 			u32 fifo_ov, fifo_bad;
 
 			fifo_ov = (fifo_status >> 24) & BIT(ch);
 			fifo_bad = (fifo_status >> 16) & BIT(ch);
 			if (fifo_ov || fifo_bad) {
-				/* Mark this channel for reset */
+				 
 				v4l2_printk(KERN_DEBUG, &dev->v4l2_dev,
 					    "video%d: FIFO error\n", vc->num);
 				*reset_ch |= BIT(ch);
@@ -1125,7 +1089,7 @@ void tw686x_video_irq(struct tw686x_dev *dev, unsigned long requests,
 
 		pb = !!(pb_status & BIT(ch));
 		if (vc->pb != pb) {
-			/* Mark this channel for reset */
+			 
 			v4l2_printk(KERN_DEBUG, &dev->v4l2_dev,
 				    "video%d: unexpected p-b buffer!\n",
 				    vc->num);
@@ -1180,7 +1144,7 @@ int tw686x_video_init(struct tw686x_dev *dev)
 			return err;
 	}
 
-	/* Initialize vc->dev and vc->ch for the error path */
+	 
 	for (ch = 0; ch < max_channels(dev); ch++) {
 		struct tw686x_video_channel *vc = &dev->video_channels[ch];
 
@@ -1196,7 +1160,7 @@ int tw686x_video_init(struct tw686x_dev *dev)
 		spin_lock_init(&vc->qlock);
 		INIT_LIST_HEAD(&vc->vidq_queued);
 
-		/* default settings */
+		 
 		err = tw686x_set_standard(vc, V4L2_STD_NTSC);
 		if (err)
 			goto error;

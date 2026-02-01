@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "perf_regs.h"
 #include "../../util/perf_regs.h"
 

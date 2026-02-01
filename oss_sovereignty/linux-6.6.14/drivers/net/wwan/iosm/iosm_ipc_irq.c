@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-21 Intel Corporation.
- */
+
+ 
 
 #include "iosm_ipc_pcie.h"
 #include "iosm_ipc_protocol.h"
@@ -10,16 +8,12 @@ static void ipc_write_dbell_reg(struct iosm_pcie *ipc_pcie, int irq_n, u32 data)
 {
 	void __iomem *write_reg;
 
-	/* Select the first doorbell register, which is only currently needed
-	 * by CP.
-	 */
+	 
 	write_reg = (void __iomem *)((u8 __iomem *)ipc_pcie->ipc_regs +
 				     ipc_pcie->doorbell_write +
 				     (irq_n * ipc_pcie->doorbell_reg_offset));
 
-	/* Fire the doorbell irq by writing data on the doorbell write pointer
-	 * register.
-	 */
+	 
 	iowrite32(data, write_reg);
 }
 
@@ -28,15 +22,13 @@ void ipc_doorbell_fire(struct iosm_pcie *ipc_pcie, int irq_n, u32 data)
 	ipc_write_dbell_reg(ipc_pcie, irq_n, data);
 }
 
-/* Threaded Interrupt handler for MSI interrupts */
+ 
 static irqreturn_t ipc_msi_interrupt(int irq, void *dev_id)
 {
 	struct iosm_pcie *ipc_pcie = dev_id;
 	int instance = irq - ipc_pcie->pci->irq;
 
-	/* Shift the MSI irq actions to the IPC tasklet. IRQ_NONE means the
-	 * irq was not from the IPC device or could not be served.
-	 */
+	 
 	if (instance >= ipc_pcie->nvec)
 		return IRQ_NONE;
 

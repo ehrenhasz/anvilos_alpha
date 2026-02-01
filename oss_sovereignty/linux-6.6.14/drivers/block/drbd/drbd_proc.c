@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-   drbd_proc.c
 
-   This file is part of DRBD by Philipp Reisner and Lars Ellenberg.
-
-   Copyright (C) 2001-2008, LINBIT Information Technologies GmbH.
-   Copyright (C) 1999-2008, Philipp Reisner <philipp.reisner@linbit.com>.
-   Copyright (C) 2002-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
-
-
- */
+ 
 
 #include <linux/module.h>
 
@@ -25,9 +15,9 @@ struct proc_dir_entry *drbd_proc;
 
 static void seq_printf_with_thousands_grouping(struct seq_file *seq, long v)
 {
-	/* v is in kB/sec. We don't expect TiByte/sec yet. */
+	 
 	if (unlikely(v >= 1000000)) {
-		/* cool: > GiByte/s */
+		 
 		seq_printf(seq, "%ld,", v / 1000000);
 		v %= 1000000;
 		seq_printf(seq, "%03ld,%03ld", v/1000, v % 1000);
@@ -41,37 +31,23 @@ static void drbd_get_syncer_progress(struct drbd_device *device,
 		union drbd_dev_state state, unsigned long *rs_total,
 		unsigned long *bits_left, unsigned int *per_mil_done)
 {
-	/* this is to break it at compile time when we change that, in case we
-	 * want to support more than (1<<32) bits on a 32bit arch. */
+	 
 	typecheck(unsigned long, device->rs_total);
 	*rs_total = device->rs_total;
 
-	/* note: both rs_total and rs_left are in bits, i.e. in
-	 * units of BM_BLOCK_SIZE.
-	 * for the percentage, we don't care. */
+	 
 
 	if (state.conn == C_VERIFY_S || state.conn == C_VERIFY_T)
 		*bits_left = device->ov_left;
 	else
 		*bits_left = drbd_bm_total_weight(device) - device->rs_failed;
-	/* >> 10 to prevent overflow,
-	 * +1 to prevent division by zero */
+	 
 	if (*bits_left > *rs_total) {
-		/* D'oh. Maybe a logic bug somewhere.  More likely just a race
-		 * between state change and reset of rs_total.
-		 */
+		 
 		*bits_left = *rs_total;
 		*per_mil_done = *rs_total ? 0 : 1000;
 	} else {
-		/* Make sure the division happens in long context.
-		 * We allow up to one petabyte storage right now,
-		 * at a granularity of 4k per bit that is 2**38 bits.
-		 * After shift right and multiplication by 1000,
-		 * this should still fit easily into a 32bit long,
-		 * so we don't need a 64bit division on 32bit arch.
-		 * Note: currently we don't support such large bitmaps on 32bit
-		 * arch anyways, but no harm done to be prepared for it here.
-		 */
+		 
 		unsigned int shift = *rs_total > UINT_MAX ? 16 : 10;
 		unsigned long left = *bits_left >> shift;
 		unsigned long total = 1UL + (*rs_total >> shift);
@@ -81,12 +57,7 @@ static void drbd_get_syncer_progress(struct drbd_device *device,
 }
 
 
-/*lge
- * progress bars shamelessly adapted from driver/md/md.c
- * output looks like
- *	[=====>..............] 33.5% (23456/123456)
- *	finish: 2:20:20 speed: 6,345 (6,456) K/sec
- */
+ 
 static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *seq,
 		union drbd_dev_state state)
 {
@@ -113,7 +84,7 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 		seq_puts(seq, "sync'ed:");
 	seq_printf(seq, "%3u.%u%% ", res / 10, res % 10);
 
-	/* if more than a few GB, display in MB */
+	 
 	if (rs_total > (4UL << (30 - BM_BLOCK_SHIFT)))
 		seq_printf(seq, "(%lu/%lu)M",
 			    (unsigned long) Bit2KB(rs_left >> 10),
@@ -125,19 +96,9 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 
 	seq_puts(seq, "\n\t");
 
-	/* see drivers/md/md.c
-	 * We do not want to overflow, so the order of operands and
-	 * the * 100 / 100 trick are important. We do a +1 to be
-	 * safe against division by zero. We only estimate anyway.
-	 *
-	 * dt: time from mark until now
-	 * db: blocks written from mark until now
-	 * rt: remaining time
-	 */
-	/* Rolling marks. last_mark+1 may just now be modified.  last_mark+2 is
-	 * at least (DRBD_SYNC_MARKS-2)*DRBD_SYNC_MARK_STEP old, and has at
-	 * least DRBD_SYNC_MARK_STEP time before it will be modified. */
-	/* ------------------------ ~18s average ------------------------ */
+	 
+	 
+	 
 	i = (device->rs_last_mark + 2) % DRBD_SYNC_MARKS;
 	dt = (jiffies - device->rs_mark_time[i]) / HZ;
 	if (dt > 180)
@@ -146,7 +107,7 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 	if (!dt)
 		dt++;
 	db = device->rs_mark_left[i] - rs_left;
-	rt = (dt * (rs_left / (db/100+1)))/100; /* seconds */
+	rt = (dt * (rs_left / (db/100+1)))/100;  
 
 	seq_printf(seq, "finish: %lu:%02lu:%02lu",
 		rt / 3600, (rt % 3600) / 60, rt % 60);
@@ -155,9 +116,9 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 	seq_puts(seq, " speed: ");
 	seq_printf_with_thousands_grouping(seq, dbdt);
 	seq_puts(seq, " (");
-	/* ------------------------- ~3s average ------------------------ */
+	 
 	if (drbd_proc_details >= 1) {
-		/* this is what drbd_rs_should_slow_down() uses */
+		 
 		i = (device->rs_last_mark + DRBD_SYNC_MARKS-1) % DRBD_SYNC_MARKS;
 		dt = (jiffies - device->rs_mark_time[i]) / HZ;
 		if (!dt)
@@ -168,9 +129,8 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 		seq_puts(seq, " -- ");
 	}
 
-	/* --------------------- long term average ---------------------- */
-	/* mean speed since syncer started
-	 * we do account for PausedSync periods */
+	 
+	 
 	dt = (jiffies - device->rs_start - device->rs_paused) / HZ;
 	if (dt == 0)
 		dt = 1;
@@ -187,8 +147,7 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 	seq_printf(seq, " K/sec%s\n", stalled ? " (stalled)" : "");
 
 	if (drbd_proc_details >= 1) {
-		/* 64 bit:
-		 * we convert to sectors in the display below. */
+		 
 		unsigned long bm_bits = drbd_bm_bits(device);
 		unsigned long bit_pos;
 		unsigned long long stop_sector = 0;
@@ -199,8 +158,7 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 				stop_sector = device->ov_stop_sector;
 		} else
 			bit_pos = device->bm_resync_fo;
-		/* Total sectors may be slightly off for oddly
-		 * sized devices. So what. */
+		 
 		seq_printf(seq,
 			"\t%3d%% sector pos: %llu/%llu",
 			(int)(bit_pos / (bm_bits/100+1)),
@@ -230,25 +188,7 @@ int drbd_seq_show(struct seq_file *seq, void *v)
 	seq_printf(seq, "version: " REL_VERSION " (api:%d/proto:%d-%d)\n%s\n",
 		   GENL_MAGIC_VERSION, PRO_VERSION_MIN, PRO_VERSION_MAX, drbd_buildtag());
 
-	/*
-	  cs .. connection state
-	  ro .. node role (local/remote)
-	  ds .. disk state (local/remote)
-	     protocol
-	     various flags
-	  ns .. network send
-	  nr .. network receive
-	  dw .. disk write
-	  dr .. disk read
-	  al .. activity log write count
-	  bm .. bitmap update write count
-	  pe .. pending (waiting for ack or data reply)
-	  ua .. unack'd (still need to send ack or data reply)
-	  ap .. application requests accepted, but not yet completed
-	  ep .. number of epochs currently "on the fly", P_BARRIER_ACK pending
-	  wo .. write ordering mode currently in use
-	 oos .. known out-of-sync kB
-	*/
+	 
 
 	rcu_read_lock();
 	idr_for_each_entry(&drbd_devices, device, i) {
@@ -264,7 +204,7 @@ int drbd_seq_show(struct seq_file *seq, void *v)
 		    state.role == R_SECONDARY) {
 			seq_printf(seq, "%2d: cs:Unconfigured\n", i);
 		} else {
-			/* reset device->congestion_reason */
+			 
 
 			nc = rcu_dereference(first_peer_device(device)->connection->net_conf);
 			wp = nc ? nc->wire_protocol - DRBD_PROT_A + 'A' : ' ';

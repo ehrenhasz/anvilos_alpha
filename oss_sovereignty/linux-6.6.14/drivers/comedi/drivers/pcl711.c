@@ -1,30 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * pcl711.c
- * Comedi driver for PC-LabCard PCL-711 and AdSys ACL-8112 and compatibles
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- *		      Janne Jalkanen <jalkanen@cs.hut.fi>
- *		      Eric Bunn <ebu@cs.hut.fi>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: pcl711
- * Description: Advantech PCL-711 and 711b, ADLink ACL-8112
- * Devices: [Advantech] PCL-711 (pcl711), PCL-711B (pcl711b),
- *   [ADLink] ACL-8112HG (acl8112hg), ACL-8112DG (acl8112dg)
- * Author: David A. Schleef <ds@schleef.org>
- *	   Janne Jalkanen <jalkanen@cs.hut.fi>
- *	   Eric Bunn <ebu@cs.hut.fi>
- * Updated:
- * Status: mostly complete
- *
- * Configuration Options:
- *   [0] - I/O port base
- *   [1] - IRQ, optional
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -32,9 +9,7 @@
 #include <linux/comedi/comedidev.h>
 #include <linux/comedi/comedi_8254.h>
 
-/*
- * I/O port register map
- */
+ 
 #define PCL711_TIMER_BASE	0x00
 #define PCL711_AI_LSB_REG	0x04
 #define PCL711_AI_MSB_REG	0x05
@@ -44,7 +19,7 @@
 #define PCL711_DI_LSB_REG	0x06
 #define PCL711_DI_MSB_REG	0x07
 #define PCL711_INT_STAT_REG	0x08
-#define PCL711_INT_STAT_CLR	(0 << 0)  /* any value will work */
+#define PCL711_INT_STAT_CLR	(0 << 0)   
 #define PCL711_AI_GAIN_REG	0x09
 #define PCL711_AI_GAIN(x)	(((x) & 0xf) << 0)
 #define PCL711_MUX_REG		0x0a
@@ -62,7 +37,7 @@
 #define PCL711_MODE_PACER_IRQ	PCL711_MODE(6)
 #define PCL711_MODE_IRQ(x)	(((x) & 0x7) << 4)
 #define PCL711_SOFTTRIG_REG	0x0c
-#define PCL711_SOFTTRIG		(0 << 0)  /* any value will work */
+#define PCL711_SOFTTRIG		(0 << 0)   
 #define PCL711_DO_LSB_REG	0x0d
 #define PCL711_DO_MSB_REG	0x0e
 
@@ -144,14 +119,7 @@ static const struct pcl711_board boardtypes[] = {
 
 static void pcl711_ai_set_mode(struct comedi_device *dev, unsigned int mode)
 {
-	/*
-	 * The pcl711b board uses bits in the mode register to select the
-	 * interrupt. The other boards supported by this driver all use
-	 * jumpers on the board.
-	 *
-	 * Enables the interrupt when needed on the pcl711b board. These
-	 * bits do nothing on the other boards.
-	 */
+	 
 	if (mode == PCL711_MODE_EXT_IRQ || mode == PCL711_MODE_PACER_IRQ)
 		mode |= PCL711_MODE_IRQ(dev->irq);
 
@@ -216,7 +184,7 @@ static void pcl711_set_changain(struct comedi_device *dev,
 	outb(PCL711_AI_GAIN(range), dev->iobase + PCL711_AI_GAIN_REG);
 
 	if (s->n_chan > 8) {
-		/* Select the correct MPC508A chip */
+		 
 		if (aref == AREF_DIFF) {
 			chan &= 0x7;
 			mux |= PCL711_MUX_DIFF;
@@ -273,7 +241,7 @@ static int pcl711_ai_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src,
@@ -285,17 +253,17 @@ static int pcl711_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->scan_begin_src);
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 
@@ -313,13 +281,13 @@ static int pcl711_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4 */
+	 
 
 	if (cmd->scan_begin_src == TRIG_TIMER) {
 		unsigned int arg = cmd->scan_begin_arg;
@@ -438,7 +406,7 @@ static int pcl711_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND;
@@ -457,7 +425,7 @@ static int pcl711_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->cancel	= pcl711_ai_cancel;
 	}
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -470,7 +438,7 @@ static int pcl711_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -479,7 +447,7 @@ static int pcl711_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_digital;
 	s->insn_bits	= pcl711_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -488,7 +456,7 @@ static int pcl711_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_digital;
 	s->insn_bits	= pcl711_do_insn_bits;
 
-	/* clear DAC */
+	 
 	pcl711_ao_write(dev, 0, 0x0);
 	pcl711_ao_write(dev, 1, 0x0);
 

@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2014-2016 Intel Corporation
- */
+ 
 
 #include <drm/drm_cache.h>
 
@@ -28,7 +24,7 @@ void __i915_gem_object_set_pages(struct drm_i915_gem_object *obj,
 	if (i915_gem_object_is_volatile(obj))
 		obj->mm.madv = I915_MADV_DONTNEED;
 
-	/* Make the pages coherent with the GPU (flushing any swapin). */
+	 
 	if (obj->cache_dirty) {
 		WARN_ON_ONCE(IS_DGFX(i915));
 		obj->write_domain = 0;
@@ -47,14 +43,7 @@ void __i915_gem_object_set_pages(struct drm_i915_gem_object *obj,
 	obj->mm.page_sizes.phys = i915_sg_dma_sizes(pages->sgl);
 	GEM_BUG_ON(!obj->mm.page_sizes.phys);
 
-	/*
-	 * Calculate the supported page-sizes which fit into the given
-	 * sg_page_sizes. This will give us the page-sizes which we may be able
-	 * to use opportunistically when later inserting into the GTT. For
-	 * example if phys=2G, then in theory we should be able to use 1G, 2M,
-	 * 64K or 4K pages, although in practice this will depend on a number of
-	 * other factors.
-	 */
+	 
 	obj->mm.page_sizes.sg = 0;
 	for_each_set_bit(i, &supported, ilog2(I915_GTT_MAX_PAGE_SIZE) + 1) {
 		if (obj->mm.page_sizes.phys & ~0u << i)
@@ -113,13 +102,7 @@ int ____i915_gem_object_get_pages(struct drm_i915_gem_object *obj)
 	return err;
 }
 
-/* Ensure that the associated pages are gathered from the backing storage
- * and pinned into our object. i915_gem_object_pin_pages() may be called
- * multiple times before they are released by a single call to
- * i915_gem_object_unpin_pages() - once the pages are no longer referenced
- * either as a result of memory pressure (reaping pages under the shrinker)
- * or as the object is itself released.
- */
+ 
 int __i915_gem_object_get_pages(struct drm_i915_gem_object *obj)
 {
 	int err;
@@ -162,7 +145,7 @@ retry:
 	return err;
 }
 
-/* Immediately discard the backing storage */
+ 
 int i915_gem_object_truncate(struct drm_i915_gem_object *obj)
 {
 	if (obj->ops->truncate)
@@ -242,31 +225,22 @@ int __i915_gem_object_put_pages(struct drm_i915_gem_object *obj)
 	if (i915_gem_object_has_pinned_pages(obj))
 		return -EBUSY;
 
-	/* May be called by shrinker from within get_pages() (on another bo) */
+	 
 	assert_object_held_shared(obj);
 
 	i915_gem_object_release_mmap_offset(obj);
 
-	/*
-	 * ->put_pages might need to allocate memory for the bit17 swizzle
-	 * array, hence protect them from being reaped by removing them from gtt
-	 * lists early.
-	 */
+	 
 	pages = __i915_gem_object_unset_pages(obj);
 
-	/*
-	 * XXX Temporary hijinx to avoid updating all backends to handle
-	 * NULL pages. In the future, when we have more asynchronous
-	 * get_pages backends we should be better able to handle the
-	 * cancellation of the async task in a more uniform manner.
-	 */
+	 
 	if (!IS_ERR_OR_NULL(pages))
 		obj->ops->put_pages(obj, pages);
 
 	return 0;
 }
 
-/* The 'mapping' part of i915_gem_object_pin_map() below */
+ 
 static void *i915_gem_object_map_page(struct drm_i915_gem_object *obj,
 				      enum i915_map_type type)
 {
@@ -279,25 +253,9 @@ static void *i915_gem_object_map_page(struct drm_i915_gem_object *obj,
 	switch (type) {
 	default:
 		MISSING_CASE(type);
-		fallthrough;	/* to use PAGE_KERNEL anyway */
+		fallthrough;	 
 	case I915_MAP_WB:
-		/*
-		 * On 32b, highmem using a finite set of indirect PTE (i.e.
-		 * vmap) to provide virtual mappings of the high pages.
-		 * As these are finite, map_new_virtual() must wait for some
-		 * other kmap() to finish when it runs out. If we map a large
-		 * number of objects, there is no method for it to tell us
-		 * to release the mappings, and we deadlock.
-		 *
-		 * However, if we make an explicit vmap of the page, that
-		 * uses a larger vmalloc arena, and also has the ability
-		 * to tell us to release unwanted mappings. Most importantly,
-		 * it will fail and propagate an error instead of waiting
-		 * forever.
-		 *
-		 * So if the page is beyond the 32b boundary, make an explicit
-		 * vmap.
-		 */
+		 
 		if (n_pages == 1 && !PageHighMem(sg_page(obj->mm.pages->sgl)))
 			return page_address(sg_page(obj->mm.pages->sgl));
 		pgprot = PAGE_KERNEL;
@@ -308,7 +266,7 @@ static void *i915_gem_object_map_page(struct drm_i915_gem_object *obj,
 	}
 
 	if (n_pages > ARRAY_SIZE(stack)) {
-		/* Too big for stack -- allocate temporary array instead */
+		 
 		pages = kvmalloc_array(n_pages, sizeof(*pages), GFP_KERNEL);
 		if (!pages)
 			return ERR_PTR(-ENOMEM);
@@ -338,7 +296,7 @@ static void *i915_gem_object_map_pfn(struct drm_i915_gem_object *obj,
 	GEM_BUG_ON(type != I915_MAP_WC);
 
 	if (n_pfn > ARRAY_SIZE(stack)) {
-		/* Too big for stack -- allocate temporary array instead */
+		 
 		pfns = kvmalloc_array(n_pfn, sizeof(*pfns), GFP_KERNEL);
 		if (!pfns)
 			return ERR_PTR(-ENOMEM);
@@ -354,7 +312,7 @@ static void *i915_gem_object_map_pfn(struct drm_i915_gem_object *obj,
 	return vaddr ?: ERR_PTR(-ENOMEM);
 }
 
-/* get, pin, and map the pages of the object into kernel space */
+ 
 void *i915_gem_object_pin_map(struct drm_i915_gem_object *obj,
 			      enum i915_map_type type)
 {
@@ -390,23 +348,7 @@ void *i915_gem_object_pin_map(struct drm_i915_gem_object *obj,
 	}
 	GEM_BUG_ON(!i915_gem_object_has_pages(obj));
 
-	/*
-	 * For discrete our CPU mappings needs to be consistent in order to
-	 * function correctly on !x86. When mapping things through TTM, we use
-	 * the same rules to determine the caching type.
-	 *
-	 * The caching rules, starting from DG1:
-	 *
-	 *	- If the object can be placed in device local-memory, then the
-	 *	  pages should be allocated and mapped as write-combined only.
-	 *
-	 *	- Everything else is always allocated and mapped as write-back,
-	 *	  with the guarantee that everything is also coherent with the
-	 *	  GPU.
-	 *
-	 * Internal users of lmem are already expected to get this right, so no
-	 * fudging needed there.
-	 */
+	 
 	if (i915_gem_object_placement_possible(obj, INTEL_MEMORY_LOCAL)) {
 		if (type != I915_MAP_WC && !obj->mm.n_placements) {
 			ptr = ERR_PTR(-ENODEV);
@@ -479,7 +421,7 @@ void __i915_gem_object_flush_map(struct drm_i915_gem_object *obj,
 	GEM_BUG_ON(range_overflows_t(typeof(obj->base.size),
 				     offset, size, obj->base.size));
 
-	wmb(); /* let all previous writes be visible to coherent partners */
+	wmb();  
 	obj->mm.dirty = true;
 
 	if (obj->cache_coherent & I915_BO_CACHE_COHERENT_FOR_WRITE)
@@ -500,12 +442,7 @@ void __i915_gem_object_release_map(struct drm_i915_gem_object *obj)
 {
 	GEM_BUG_ON(!obj->mm.mapping);
 
-	/*
-	 * We allow removing the mapping from underneath pinned pages!
-	 *
-	 * Furthermore, since this is an unsafe operation reserved only
-	 * for construction time manipulation, we ignore locking prudence.
-	 */
+	 
 	unmap_object(obj, page_mask_bits(fetch_and_zero(&obj->mm.mapping)));
 
 	i915_gem_object_unpin_map(obj);
@@ -528,24 +465,13 @@ __i915_gem_object_page_iter_get_sg(struct drm_i915_gem_object *obj,
 	if (!i915_gem_object_has_pinned_pages(obj))
 		assert_object_held(obj);
 
-	/* As we iterate forward through the sg, we record each entry in a
-	 * radixtree for quick repeated (backwards) lookups. If we have seen
-	 * this index previously, we will have an entry for it.
-	 *
-	 * Initial lookup is O(N), but this is amortized to O(1) for
-	 * sequential page access (where each new request is consecutive
-	 * to the previous one). Repeated lookups are O(lg(obj->base.size)),
-	 * i.e. O(1) with a large constant!
-	 */
+	 
 	if (n < READ_ONCE(iter->sg_idx))
 		goto lookup;
 
 	mutex_lock(&iter->lock);
 
-	/* We prefer to reuse the last sg so that repeated lookup of this
-	 * (or the subsequent) sg are fast - comparing against the last
-	 * sg is faster than going through the radixtree.
-	 */
+	 
 
 	sg = iter->sg_pos;
 	idx = iter->sg_idx;
@@ -556,14 +482,7 @@ __i915_gem_object_page_iter_get_sg(struct drm_i915_gem_object *obj,
 		unsigned long i;
 		int ret;
 
-		/* If we cannot allocate and insert this entry, or the
-		 * individual pages from this range, cancel updating the
-		 * sg_idx so that on this lookup we are forced to linearly
-		 * scan onwards, but on future lookups we will try the
-		 * insertion again (in which case we need to be careful of
-		 * the error return reporting that we have already inserted
-		 * this index).
-		 */
+		 
 		ret = radix_tree_insert(&iter->radix, idx, sg);
 		if (ret && ret != -EEXIST)
 			goto scan;
@@ -586,12 +505,10 @@ scan:
 
 	mutex_unlock(&iter->lock);
 
-	if (unlikely(n < idx)) /* insertion completed by another thread */
+	if (unlikely(n < idx))  
 		goto lookup;
 
-	/* In case we failed to insert the entry into the radixtree, we need
-	 * to look beyond the current sg.
-	 */
+	 
 	while (idx + count <= n) {
 		idx += count;
 		sg = ____sg_next(sg);
@@ -607,12 +524,7 @@ lookup:
 	sg = radix_tree_lookup(&iter->radix, n);
 	GEM_BUG_ON(!sg);
 
-	/* If this index is in the middle of multi-page sg entry,
-	 * the radix tree will contain a value entry that points
-	 * to the start of that range. We will return the pointer to
-	 * the base page and the offset of this page within the
-	 * sg entry's range.
-	 */
+	 
 	*offset = 0;
 	if (unlikely(xa_is_value(sg))) {
 		unsigned long base = xa_to_value(sg);
@@ -640,7 +552,7 @@ __i915_gem_object_get_page(struct drm_i915_gem_object *obj, pgoff_t n)
 	return nth_page(sg_page(sg), offset);
 }
 
-/* Like i915_gem_object_get_page(), but mark the returned page dirty */
+ 
 struct page *
 __i915_gem_object_get_dirty_page(struct drm_i915_gem_object *obj, pgoff_t n)
 {

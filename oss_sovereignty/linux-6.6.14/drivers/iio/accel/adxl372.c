@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ADXL372 3-Axis Digital Accelerometer core driver
- *
- * Copyright 2018 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -23,7 +19,7 @@
 
 #include "adxl372.h"
 
-/* ADXL372 registers definition */
+ 
 #define ADXL372_DEVID			0x00
 #define ADXL372_DEVID_MST		0x01
 #define ADXL372_PARTID			0x02
@@ -83,21 +79,21 @@
 #define ADXL372_PARTID_VAL		0xFA
 #define ADXL372_RESET_CODE		0x52
 
-/* ADXL372_POWER_CTL */
+ 
 #define ADXL372_POWER_CTL_MODE_MSK		GENMASK_ULL(1, 0)
 #define ADXL372_POWER_CTL_MODE(x)		(((x) & 0x3) << 0)
 
-/* ADXL372_MEASURE */
+ 
 #define ADXL372_MEASURE_LINKLOOP_MSK		GENMASK_ULL(5, 4)
 #define ADXL372_MEASURE_LINKLOOP_MODE(x)	(((x) & 0x3) << 4)
 #define ADXL372_MEASURE_BANDWIDTH_MSK		GENMASK_ULL(2, 0)
 #define ADXL372_MEASURE_BANDWIDTH_MODE(x)	(((x) & 0x7) << 0)
 
-/* ADXL372_TIMING */
+ 
 #define ADXL372_TIMING_ODR_MSK			GENMASK_ULL(7, 5)
 #define ADXL372_TIMING_ODR_MODE(x)		(((x) & 0x7) << 5)
 
-/* ADXL372_FIFO_CTL */
+ 
 #define ADXL372_FIFO_CTL_FORMAT_MSK		GENMASK(5, 3)
 #define ADXL372_FIFO_CTL_FORMAT_MODE(x)		(((x) & 0x7) << 3)
 #define ADXL372_FIFO_CTL_MODE_MSK		GENMASK(2, 1)
@@ -105,7 +101,7 @@
 #define ADXL372_FIFO_CTL_SAMPLES_MSK		BIT(1)
 #define ADXL372_FIFO_CTL_SAMPLES_MODE(x)	(((x) > 0xFF) ? 1 : 0)
 
-/* ADXL372_STATUS_1 */
+ 
 #define ADXL372_STATUS_1_DATA_RDY(x)		(((x) >> 0) & 0x1)
 #define ADXL372_STATUS_1_FIFO_RDY(x)		(((x) >> 1) & 0x1)
 #define ADXL372_STATUS_1_FIFO_FULL(x)		(((x) >> 2) & 0x1)
@@ -114,12 +110,12 @@
 #define ADXL372_STATUS_1_AWAKE(x)		(((x) >> 6) & 0x1)
 #define ADXL372_STATUS_1_ERR_USR_REGS(x)	(((x) >> 7) & 0x1)
 
-/* ADXL372_STATUS_2 */
+ 
 #define ADXL372_STATUS_2_INACT(x)		(((x) >> 4) & 0x1)
 #define ADXL372_STATUS_2_ACT(x)			(((x) >> 5) & 0x1)
 #define ADXL372_STATUS_2_AC2(x)			(((x) >> 6) & 0x1)
 
-/* ADXL372_INT1_MAP */
+ 
 #define ADXL372_INT1_MAP_DATA_RDY_MSK		BIT(0)
 #define ADXL372_INT1_MAP_DATA_RDY_MODE(x)	(((x) & 0x1) << 0)
 #define ADXL372_INT1_MAP_FIFO_RDY_MSK		BIT(1)
@@ -137,22 +133,19 @@
 #define ADXL372_INT1_MAP_LOW_MSK		BIT(7)
 #define ADXL372_INT1_MAP_LOW_MODE(x)		(((x) & 0x1) << 7)
 
-/* ADX372_THRESH */
+ 
 #define ADXL372_THRESH_VAL_H_MSK	GENMASK(10, 3)
 #define ADXL372_THRESH_VAL_H_SEL(x)	FIELD_GET(ADXL372_THRESH_VAL_H_MSK, x)
 #define ADXL372_THRESH_VAL_L_MSK	GENMASK(2, 0)
 #define ADXL372_THRESH_VAL_L_SEL(x)	FIELD_GET(ADXL372_THRESH_VAL_L_MSK, x)
 
-/* The ADXL372 includes a deep, 512 sample FIFO buffer */
+ 
 #define ADXL372_FIFO_SIZE			512
 #define ADXL372_X_AXIS_EN(x)			((x) & BIT(0))
 #define ADXL372_Y_AXIS_EN(x)			((x) & BIT(1))
 #define ADXL372_Z_AXIS_EN(x)			((x) & BIT(2))
 
-/*
- * At +/- 200g with 12-bit resolution, scale is computed as:
- * (200 + 200) * 9.81 / (2^12 - 1) = 0.958241
- */
+ 
 #define ADXL372_USCALE	958241
 
 enum adxl372_op_mode {
@@ -299,7 +292,7 @@ struct adxl372_state {
 	u16				watermark;
 	__be16				fifo_buf[ADXL372_FIFO_SIZE];
 	bool				peak_fifo_mode_en;
-	struct mutex			threshold_m; /* lock for threshold */
+	struct mutex			threshold_m;  
 };
 
 static const unsigned long adxl372_channel_masks[] = {
@@ -449,7 +442,7 @@ static int adxl372_set_activity_threshold(struct adxl372_state *st,
 	unsigned char buf[6];
 	unsigned char th_reg_high_val, th_reg_low_val, th_reg_high_addr;
 
-	/* scale factor is 100 mg/code */
+	 
 	th_reg_high_val = (threshold / 100) >> 3;
 	th_reg_low_val = ((threshold / 100) << 5) | (ref_en << 1) | enable;
 	th_reg_high_addr = adxl372_th_reg_high_addr[act];
@@ -471,10 +464,7 @@ static int adxl372_set_activity_time_ms(struct adxl372_state *st,
 	unsigned int reg_val, scale_factor;
 	int ret;
 
-	/*
-	 * 3.3 ms per code is the scale factor of the TIME_ACT register for
-	 * ODR = 6400 Hz. It is 6.6 ms per code for ODR = 3200 Hz and below.
-	 */
+	 
 	if (st->odr == ADXL372_ODR_6400HZ)
 		scale_factor = 3300;
 	else
@@ -482,7 +472,7 @@ static int adxl372_set_activity_time_ms(struct adxl372_state *st,
 
 	reg_val = DIV_ROUND_CLOSEST(act_time_ms * 1000, scale_factor);
 
-	/* TIME_ACT register is 8 bits wide */
+	 
 	if (reg_val > 0xFF)
 		reg_val = 0xFF;
 
@@ -501,10 +491,7 @@ static int adxl372_set_inactivity_time_ms(struct adxl372_state *st,
 	unsigned int reg_val_h, reg_val_l, res, scale_factor;
 	int ret;
 
-	/*
-	 * 13 ms per code is the scale factor of the TIME_INACT register for
-	 * ODR = 6400 Hz. It is 26 ms per code for ODR = 3200 Hz and below.
-	 */
+	 
 	if (st->odr == ADXL372_ODR_6400HZ)
 		scale_factor = 13;
 	else
@@ -545,15 +532,12 @@ static int adxl372_configure_fifo(struct adxl372_state *st)
 	unsigned int fifo_samples, fifo_ctl;
 	int ret;
 
-	/* FIFO must be configured while in standby mode */
+	 
 	ret = adxl372_set_op_mode(st, ADXL372_STANDBY);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * watermark stores the number of sets; we need to write the FIFO
-	 * registers with the number of samples
-	 */
+	 
 	fifo_samples = (st->watermark * st->fifo_set_size);
 	fifo_ctl = ADXL372_FIFO_CTL_FORMAT_MODE(st->fifo_format) |
 		   ADXL372_FIFO_CTL_MODE_MODE(st->fifo_mode) |
@@ -579,7 +563,7 @@ static int adxl372_get_status(struct adxl372_state *st,
 	u32 val;
 	int ret;
 
-	/* STATUS1, STATUS2, FIFO_ENTRIES2 and FIFO_ENTRIES are adjacent regs */
+	 
 	ret = regmap_bulk_read(st->regmap, ADXL372_STATUS_1,
 			       &buf, sizeof(buf));
 	if (ret < 0)
@@ -589,10 +573,7 @@ static int adxl372_get_status(struct adxl372_state *st,
 
 	*status1 = (val >> 24) & 0x0F;
 	*status2 = (val >> 16) & 0x0F;
-	/*
-	 * FIFO_ENTRIES contains the least significant byte, and FIFO_ENTRIES2
-	 * contains the two most significant bits
-	 */
+	 
 	*fifo_entries = val & 0x3FF;
 
 	return ret;
@@ -648,24 +629,19 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
 
 	if (st->fifo_mode != ADXL372_FIFO_BYPASSED &&
 	    ADXL372_STATUS_1_FIFO_FULL(status1)) {
-		/*
-		 * When reading data from multiple axes from the FIFO,
-		 * to ensure that data is not overwritten and stored out
-		 * of order at least one sample set must be left in the
-		 * FIFO after every read.
-		 */
+		 
 		fifo_entries -= st->fifo_set_size;
 
-		/* Read data from the FIFO */
+		 
 		ret = regmap_noinc_read(st->regmap, ADXL372_FIFO_DATA,
 					st->fifo_buf,
 					fifo_entries * sizeof(u16));
 		if (ret < 0)
 			goto err;
 
-		/* Each sample is 2 bytes */
+		 
 		for (i = 0; i < fifo_entries; i += st->fifo_set_size) {
-			/* filter peak detection data */
+			 
 			if (st->peak_fifo_mode_en)
 				adxl372_arrange_axis_data(st, &st->fifo_buf[i]);
 			iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
@@ -690,10 +666,7 @@ static int adxl372_setup(struct adxl372_state *st)
 		return -ENODEV;
 	}
 
-	/*
-	 * Perform a software reset to make sure the device is in a consistent
-	 * state after start up.
-	 */
+	 
 	ret = regmap_write(st->regmap, ADXL372_RESET, ADXL372_RESET_CODE);
 	if (ret < 0)
 		return ret;
@@ -702,19 +675,19 @@ static int adxl372_setup(struct adxl372_state *st)
 	if (ret < 0)
 		return ret;
 
-	/* Set threshold for activity detection to 1g */
+	 
 	ret = adxl372_set_activity_threshold(st, ADXL372_ACTIVITY,
 					     true, true, 1000);
 	if (ret < 0)
 		return ret;
 
-	/* Set threshold for inactivity detection to 100mg */
+	 
 	ret = adxl372_set_activity_threshold(st, ADXL372_INACTIVITY,
 					     true, true, 100);
 	if (ret < 0)
 		return ret;
 
-	/* Set activity processing in Looped mode */
+	 
 	ret = adxl372_set_act_proc_mode(st, ADXL372_LOOPED);
 	if (ret < 0)
 		return ret;
@@ -727,17 +700,17 @@ static int adxl372_setup(struct adxl372_state *st)
 	if (ret < 0)
 		return ret;
 
-	/* Set activity timer to 1ms */
+	 
 	ret = adxl372_set_activity_time_ms(st, 1);
 	if (ret < 0)
 		return ret;
 
-	/* Set inactivity timer to 10s */
+	 
 	ret = adxl372_set_inactivity_time_ms(st, 10000);
 	if (ret < 0)
 		return ret;
 
-	/* Set the mode of operation to full bandwidth measurement mode */
+	 
 	return adxl372_set_op_mode(st, ADXL372_FULL_BW_MEASUREMENT);
 }
 
@@ -805,24 +778,15 @@ static int adxl372_write_raw(struct iio_dev *indio_dev,
 		ret = adxl372_set_odr(st, odr_index);
 		if (ret < 0)
 			return ret;
-		/*
-		 * The timer period depends on the ODR selected.
-		 * At 3200 Hz and below, it is 6.6 ms; at 6400 Hz, it is 3.3 ms
-		 */
+		 
 		ret = adxl372_set_activity_time_ms(st, st->act_time_ms);
 		if (ret < 0)
 			return ret;
-		/*
-		 * The timer period depends on the ODR selected.
-		 * At 3200 Hz and below, it is 26 ms; at 6400 Hz, it is 13 ms
-		 */
+		 
 		ret = adxl372_set_inactivity_time_ms(st, st->inact_time_ms);
 		if (ret < 0)
 			return ret;
-		/*
-		 * The maximum bandwidth is constrained to at most half of
-		 * the ODR to ensure that the Nyquist criteria is not violated
-		 */
+		 
 		if (st->bw > odr_index)
 			ret = adxl372_set_bandwidth(st, odr_index);
 
@@ -1052,19 +1016,13 @@ static int adxl372_buffer_postenable(struct iio_dev *indio_dev)
 	st->fifo_set_size = bitmap_weight(indio_dev->active_scan_mask,
 					  indio_dev->masklength);
 
-	/* Configure the FIFO to store sets of impact event peak. */
+	 
 	if (st->peak_fifo_mode_en) {
 		st->fifo_set_size = 3;
 		st->fifo_format = ADXL372_XYZ_PEAK_FIFO;
 	}
 
-	/*
-	 * The 512 FIFO samples can be allotted in several ways, such as:
-	 * 170 sample sets of concurrent 3-axis data
-	 * 256 sample sets of concurrent 2-axis data (user selectable)
-	 * 512 sample sets of single-axis data
-	 * 170 sets of impact event peak (x, y, z)
-	 */
+	 
 	if ((st->watermark * st->fifo_set_size) > ADXL372_FIFO_SIZE)
 		st->watermark = (ADXL372_FIFO_SIZE  / st->fifo_set_size);
 

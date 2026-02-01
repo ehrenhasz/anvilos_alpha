@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * V4L2 Capture ISI subdev driver for i.MX8QXP/QM platform
- *
- * ISI is a Image Sensor Interface of i.MX8QXP/QM platform, which
- * used to process image from camera sensor to memory or DC
- *
- * Copyright (c) 2019 NXP Semiconductor
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -33,9 +26,9 @@
 #include "imx8-isi-core.h"
 #include "imx8-isi-regs.h"
 
-/* Keep the first entry matching MXC_ISI_DEF_PIXEL_FORMAT */
+ 
 static const struct mxc_isi_format_info mxc_isi_formats[] = {
-	/* YUV formats */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_YUV8_1X24,
 		.fourcc		= V4L2_PIX_FMT_YUYV,
@@ -112,7 +105,7 @@ static const struct mxc_isi_format_info mxc_isi_formats[] = {
 		.vsub		= 1,
 		.encoding	= MXC_ISI_ENC_YUV,
 	},
-	/* RGB formats */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_RGB888_1X24,
 		.fourcc		= V4L2_PIX_FMT_RGB565,
@@ -167,15 +160,7 @@ static const struct mxc_isi_format_info mxc_isi_formats[] = {
 		.depth		= { 32 },
 		.encoding	= MXC_ISI_ENC_RGB,
 	},
-	/*
-	 * RAW formats
-	 *
-	 * The ISI shifts the 10-bit and 12-bit formats left by 6 and 4 bits
-	 * when using CHNL_IMG_CTRL_FORMAT_RAW10 or MXC_ISI_OUT_FMT_RAW12
-	 * respectively, to align the bits to the left and pad with zeros in
-	 * the LSBs. The corresponding V4L2 formats are however right-aligned,
-	 * we have to use CHNL_IMG_CTRL_FORMAT_RAW16 to avoid the left shift.
-	 */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_Y8_1X8,
 		.fourcc		= V4L2_PIX_FMT_GREY,
@@ -357,7 +342,7 @@ static const struct mxc_isi_format_info mxc_isi_formats[] = {
 		.depth		= { 16 },
 		.encoding	= MXC_ISI_ENC_RAW,
 	},
-	/* JPEG */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_JPEG_1X8,
 		.fourcc		= V4L2_PIX_FMT_MJPEG,
@@ -451,7 +436,7 @@ mxc_isi_format_try(struct mxc_isi_pipe *pipe, struct v4l2_pix_format_mplane *pix
 		struct v4l2_plane_pix_format *plane = &pix->plane_fmt[i];
 		unsigned int bpl;
 
-		/* The pitch must be identical for all planes. */
+		 
 		if (i == 0)
 			bpl = clamp(plane->bytesperline,
 				    pix->width * fmt->depth[0] / 8,
@@ -466,11 +451,7 @@ mxc_isi_format_try(struct mxc_isi_pipe *pipe, struct v4l2_pix_format_mplane *pix
 			plane->sizeimage /= fmt->vsub;
 	}
 
-	/*
-	 * For single-planar pixel formats with multiple color planes,
-	 * concatenate the size of all planes and clear all planes but the
-	 * first one.
-	 */
+	 
 	if (fmt->color_planes != fmt->mem_planes) {
 		for (i = 1; i < fmt->color_planes; ++i) {
 			struct v4l2_plane_pix_format *plane = &pix->plane_fmt[i];
@@ -484,9 +465,7 @@ mxc_isi_format_try(struct mxc_isi_pipe *pipe, struct v4l2_pix_format_mplane *pix
 	return fmt;
 }
 
-/* -----------------------------------------------------------------------------
- * videobuf2 queue operations
- */
+ 
 
 static void mxc_isi_video_frame_write_done(struct mxc_isi_pipe *pipe,
 					   u32 status)
@@ -499,60 +478,9 @@ static void mxc_isi_video_frame_write_done(struct mxc_isi_pipe *pipe,
 
 	spin_lock(&video->buf_lock);
 
-	/*
-	 * The ISI hardware handles buffers using a ping-pong mechanism with
-	 * two sets of destination addresses (with shadow registers to allow
-	 * programming addresses for all planes atomically) named BUF1 and
-	 * BUF2. Addresses can be loaded and copied to shadow registers at any
-	 * at any time.
-	 *
-	 * The hardware keeps track of which buffer is being written to and
-	 * automatically switches to the other buffer at frame end, copying the
-	 * corresponding address to another set of shadow registers that track
-	 * the address being written to. The active buffer tracking bits are
-	 * accessible through the CHNL_STS register.
-	 *
-	 *  BUF1        BUF2  |   Event   | Action
-	 *                    |           |
-	 *                    |           | Program initial buffers
-	 *                    |           | B0 in BUF1, B1 in BUF2
-	 *                    | Start ISI |
-	 * +----+             |           |
-	 * | B0 |             |           |
-	 * +----+             |           |
-	 *             +----+ | FRM IRQ 0 | B0 complete, BUF2 now active
-	 *             | B1 | |           | Program B2 in BUF1
-	 *             +----+ |           |
-	 * +----+             | FRM IRQ 1 | B1 complete, BUF1 now active
-	 * | B2 |             |           | Program B3 in BUF2
-	 * +----+             |           |
-	 *             +----+ | FRM IRQ 2 | B2 complete, BUF2 now active
-	 *             | B3 | |           | Program B4 in BUF1
-	 *             +----+ |           |
-	 * +----+             | FRM IRQ 3 | B3 complete, BUF1 now active
-	 * | B4 |             |           | Program B5 in BUF2
-	 * +----+             |           |
-	 *        ...         |           |
-	 *
-	 * Races between address programming and buffer switching can be
-	 * detected by checking if a frame end interrupt occurred after
-	 * programming the addresses.
-	 *
-	 * As none of the shadow registers are accessible, races can occur
-	 * between address programming and buffer switching. It is possible to
-	 * detect the race condition by checking if a frame end interrupt
-	 * occurred after programming the addresses, but impossible to
-	 * determine if the race has been won or lost.
-	 *
-	 * In addition to this, we need to use discard buffers if no pending
-	 * buffers are available. To simplify handling of discard buffer, we
-	 * need to allocate three of them, as two can be active concurrently
-	 * and we need to still be able to get hold of a next buffer. The logic
-	 * could be improved to use two buffers only, but as all discard
-	 * buffers share the same memory, an additional buffer is cheap.
-	 */
+	 
 
-	/* Check which buffer has just completed. */
+	 
 	buf_id = pipe->isi->pdata->buf_active_reverse
 	       ? (status & CHNL_STS_BUF1_ACTIVE ? MXC_ISI_BUF2 : MXC_ISI_BUF1)
 	       : (status & CHNL_STS_BUF1_ACTIVE ? MXC_ISI_BUF1 : MXC_ISI_BUF2);
@@ -560,46 +488,30 @@ static void mxc_isi_video_frame_write_done(struct mxc_isi_pipe *pipe,
 	buf = list_first_entry_or_null(&video->out_active,
 				       struct mxc_isi_buffer, list);
 
-	/* Safety check, this should really never happen. */
+	 
 	if (!buf) {
 		dev_warn(dev, "trying to access empty active list\n");
 		goto done;
 	}
 
-	/*
-	 * If the buffer that has completed doesn't match the buffer on the
-	 * front of the active list, it means we have lost one frame end
-	 * interrupt (or possibly a large odd number of interrupts, although
-	 * quite unlikely).
-	 *
-	 * For instance, if IRQ1 is lost and we handle IRQ2, both B1 and B2
-	 * have been completed, but B3 hasn't been programmed, BUF2 still
-	 * addresses B1 and the ISI is now writing in B1 instead of B3. We
-	 * can't complete B2 as that would result in out-of-order completion.
-	 *
-	 * The only option is to ignore this interrupt and try again. When IRQ3
-	 * will be handled, we will complete B1 and be in sync again.
-	 */
+	 
 	if (buf->id != buf_id) {
 		dev_dbg(dev, "buffer ID mismatch (expected %u, got %u), skipping\n",
 			buf->id, buf_id);
 
-		/*
-		 * Increment the frame count by two to account for the missed
-		 * and the ignored interrupts.
-		 */
+		 
 		video->frame_count += 2;
 		goto done;
 	}
 
-	/* Pick the next buffer and queue it to the hardware. */
+	 
 	next_buf = list_first_entry_or_null(&video->out_pending,
 					    struct mxc_isi_buffer, list);
 	if (!next_buf) {
 		next_buf = list_first_entry_or_null(&video->out_discard,
 						    struct mxc_isi_buffer, list);
 
-		/* Safety check, this should never happen. */
+		 
 		if (!next_buf) {
 			dev_warn(dev, "trying to access empty discard list\n");
 			goto done;
@@ -609,20 +521,7 @@ static void mxc_isi_video_frame_write_done(struct mxc_isi_pipe *pipe,
 	mxc_isi_channel_set_outbuf(pipe, next_buf->dma_addrs, buf_id);
 	next_buf->id = buf_id;
 
-	/*
-	 * Check if we have raced with the end of frame interrupt. If so, we
-	 * can't tell if the ISI has recorded the new address, or is still
-	 * using the previous buffer. We must assume the latter as that is the
-	 * worst case.
-	 *
-	 * For instance, if we are handling IRQ1 and now detect the FRM
-	 * interrupt, assume B2 has completed and the ISI has switched to BUF2
-	 * using B1 just before we programmed B3. Unlike in the previous race
-	 * condition, B3 has been programmed and will be written to the next
-	 * time the ISI switches to BUF2. We can however handle this exactly as
-	 * the first race condition, as we'll program B3 (still at the head of
-	 * the pending list) when handling IRQ3.
-	 */
+	 
 	status = mxc_isi_channel_irq_status(pipe, false);
 	if (status & CHNL_STS_FRM_STRD) {
 		dev_dbg(dev, "raced with frame end interrupt\n");
@@ -630,10 +529,7 @@ static void mxc_isi_video_frame_write_done(struct mxc_isi_pipe *pipe,
 		goto done;
 	}
 
-	/*
-	 * The next buffer has been queued successfully, move it to the active
-	 * list, and complete the current buffer.
-	 */
+	 
 	list_move_tail(&next_buf->list, &video->out_active);
 
 	if (!buf->discard) {
@@ -671,7 +567,7 @@ static int mxc_isi_video_alloc_discard_buffers(struct mxc_isi_video *video)
 {
 	unsigned int i, j;
 
-	/* Allocate memory for each plane. */
+	 
 	for (i = 0; i < video->pix.num_planes; i++) {
 		struct mxc_isi_dma_buffer *buf = &video->discard_buffer[i];
 
@@ -688,7 +584,7 @@ static int mxc_isi_video_alloc_discard_buffers(struct mxc_isi_video *video)
 			i, buf->size, &buf->dma, buf->addr);
 	}
 
-	/* Fill the DMA addresses in the discard buffers. */
+	 
 	for (i = 0; i < ARRAY_SIZE(video->buf_discard); ++i) {
 		struct mxc_isi_buffer *buf = &video->buf_discard[i];
 
@@ -774,14 +670,9 @@ static void mxc_isi_video_queue_first_buffers(struct mxc_isi_video *video)
 
 	lockdep_assert_held(&video->buf_lock);
 
-	/*
-	 * Queue two ISI channel output buffers. We are not guaranteed to have
-	 * any buffer in the pending list when this function is called from the
-	 * system resume handler. Use pending buffers as much as possible, and
-	 * use discard buffers to fill the remaining slots.
-	 */
+	 
 
-	/* How many discard buffers do we need to queue first ? */
+	 
 	discard = list_empty(&video->out_pending) ? 2
 		: list_is_singular(&video->out_pending) ? 1
 		: 0;
@@ -842,10 +733,7 @@ void mxc_isi_video_buffer_init(struct vb2_buffer *vb2, dma_addr_t dma_addrs[3],
 	for (i = 0; i < info->mem_planes; ++i)
 		dma_addrs[i] = vb2_dma_contig_plane_dma_addr(vb2, i);
 
-	/*
-	 * For single-planar pixel formats with multiple color planes, split
-	 * the buffer into color planes.
-	 */
+	 
 	if (info->color_planes != info->mem_planes) {
 		unsigned int size = pix->plane_fmt[0].bytesperline * pix->height;
 
@@ -940,22 +828,22 @@ static int mxc_isi_vb2_start_streaming(struct vb2_queue *q, unsigned int count)
 	unsigned int i;
 	int ret;
 
-	/* Initialize the ISI channel. */
+	 
 	mxc_isi_video_init_channel(video);
 
 	spin_lock_irq(&video->buf_lock);
 
-	/* Add the discard buffers to the out_discard list. */
+	 
 	for (i = 0; i < ARRAY_SIZE(video->buf_discard); ++i) {
 		struct mxc_isi_buffer *buf = &video->buf_discard[i];
 
 		list_add_tail(&buf->list, &video->out_discard);
 	}
 
-	/* Queue the first buffers. */
+	 
 	mxc_isi_video_queue_first_buffers(video);
 
-	/* Clear frame count */
+	 
 	video->frame_count = 0;
 
 	spin_unlock_irq(&video->buf_lock);
@@ -993,9 +881,7 @@ static const struct vb2_ops mxc_isi_vb2_qops = {
 	.stop_streaming		= mxc_isi_vb2_stop_streaming,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 controls
- */
+ 
 
 static inline struct mxc_isi_video *ctrl_to_isi_video(struct v4l2_ctrl *ctrl)
 {
@@ -1057,9 +943,7 @@ static void mxc_isi_video_ctrls_delete(struct mxc_isi_video *video)
 	v4l2_ctrl_handler_free(&video->ctrls.handler);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int mxc_isi_video_querycap(struct file *file, void *priv,
 				  struct v4l2_capability *cap)
@@ -1078,10 +962,7 @@ static int mxc_isi_video_enum_fmt(struct file *file, void *priv,
 	unsigned int i;
 
 	if (f->mbus_code) {
-		/*
-		 * If a media bus code is specified, only enumerate formats
-		 * compatible with it.
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(mxc_isi_formats); i++) {
 			fmt = &mxc_isi_formats[i];
 			if (fmt->mbus_code != f->mbus_code)
@@ -1096,7 +977,7 @@ static int mxc_isi_video_enum_fmt(struct file *file, void *priv,
 		if (i == ARRAY_SIZE(mxc_isi_formats))
 			return -EINVAL;
 	} else {
-		/* Otherwise, enumerate all formatS. */
+		 
 		if (f->index >= ARRAY_SIZE(mxc_isi_formats))
 			return -EINVAL;
 
@@ -1155,12 +1036,7 @@ static int mxc_isi_video_streamon(struct file *file, void *priv,
 	if (vb2_queue_is_busy(&video->vb2_q, file))
 		return -EBUSY;
 
-	/*
-	 * Get a pipeline for the video node and start it. This must be done
-	 * here and not in the queue .start_streaming() handler, so that
-	 * pipeline start errors can be reported from VIDIOC_STREAMON and not
-	 * delayed until subsequent VIDIOC_QBUF calls.
-	 */
+	 
 	mutex_lock(&mdev->graph_mutex);
 
 	ret = mxc_isi_pipe_acquire(video->pipe, &mxc_isi_video_frame_write_done);
@@ -1179,12 +1055,12 @@ static int mxc_isi_video_streamon(struct file *file, void *priv,
 
 	mutex_unlock(&mdev->graph_mutex);
 
-	/* Verify that the video format matches the output of the subdev. */
+	 
 	ret = mxc_isi_video_validate_format(video);
 	if (ret)
 		goto err_stop;
 
-	/* Allocate buffers for discard operation. */
+	 
 	ret = mxc_isi_video_alloc_discard_buffers(video);
 	if (ret)
 		goto err_stop;
@@ -1266,11 +1142,7 @@ static int mxc_isi_video_enum_framesizes(struct file *file, void *priv,
 	fsize->stepwise.step_width = h_align;
 	fsize->stepwise.step_height = v_align;
 
-	/*
-	 * The width can be further restricted due to line buffer sharing
-	 * between pipelines when scaling, but we have no way to know here if
-	 * the scaler will be used.
-	 */
+	 
 
 	return 0;
 }
@@ -1300,9 +1172,7 @@ static const struct v4l2_ioctl_ops mxc_isi_video_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/* -----------------------------------------------------------------------------
- * Video device file operations
- */
+ 
 
 static int mxc_isi_video_open(struct file *file)
 {
@@ -1348,9 +1218,7 @@ static const struct v4l2_file_operations mxc_isi_video_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/* -----------------------------------------------------------------------------
- * Suspend & resume
- */
+ 
 
 void mxc_isi_video_suspend(struct mxc_isi_pipe *pipe)
 {
@@ -1364,11 +1232,7 @@ void mxc_isi_video_suspend(struct mxc_isi_pipe *pipe)
 
 	spin_lock_irq(&video->buf_lock);
 
-	/*
-	 * Move the active buffers back to the pending or discard list. We must
-	 * iterate the active list backward and move the buffers to the head of
-	 * the pending list to preserve the buffer queueing order.
-	 */
+	 
 	while (!list_empty(&video->out_active)) {
 		struct mxc_isi_buffer *buf =
 			list_last_entry(&video->out_active,
@@ -1399,9 +1263,7 @@ int mxc_isi_video_resume(struct mxc_isi_pipe *pipe)
 	return mxc_isi_pipe_enable(pipe);
 }
 
-/* -----------------------------------------------------------------------------
- * Registration
- */
+ 
 
 int mxc_isi_video_register(struct mxc_isi_pipe *pipe,
 			   struct v4l2_device *v4l2_dev)

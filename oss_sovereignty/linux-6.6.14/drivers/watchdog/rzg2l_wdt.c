@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L WDT Watchdog Driver
- *
- * Copyright (C) 2021 Renesas Electronics Corporation
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -30,7 +26,7 @@
 
 #define WDT_DEFAULT_TIMEOUT		60U
 
-/* Setting period time register only 12 bit set in WDTSET[31:20] */
+ 
 #define WDTSET_COUNTER_MASK		(0xFFF00000)
 #define WDTSET_COUNTER_VAL(f)		((f) << 20)
 
@@ -65,7 +61,7 @@ static int rzg2l_wdt_reset(struct rzg2l_wdt_priv *priv)
 	int err, status;
 
 	if (priv->devtype == WDT_RZV2M) {
-		/* WDT needs TYPE-B reset control */
+		 
 		err = reset_control_assert(priv->rstc);
 		if (err)
 			return err;
@@ -85,7 +81,7 @@ static int rzg2l_wdt_reset(struct rzg2l_wdt_priv *priv)
 
 static void rzg2l_wdt_wait_delay(struct rzg2l_wdt_priv *priv)
 {
-	/* delay timer when change the setting register */
+	 
 	ndelay(priv->delay);
 }
 
@@ -102,7 +98,7 @@ static void rzg2l_wdt_write(struct rzg2l_wdt_priv *priv, u32 val, unsigned int r
 		val &= WDTSET_COUNTER_MASK;
 
 	writel_relaxed(val, priv->base + reg);
-	/* Registers other than the WDTINT is always synchronized with WDT_CLK */
+	 
 	if (reg != WDTINT)
 		rzg2l_wdt_wait_delay(priv);
 }
@@ -112,9 +108,9 @@ static void rzg2l_wdt_init_timeout(struct watchdog_device *wdev)
 	struct rzg2l_wdt_priv *priv = watchdog_get_drvdata(wdev);
 	u32 time_out;
 
-	/* Clear Lapsed Time Register and clear Interrupt */
+	 
 	rzg2l_wdt_write(priv, WDTINT_INTDISP, WDTINT);
-	/* 2 consecutive overflow cycle needed to trigger reset */
+	 
 	time_out = (wdev->timeout * (MICRO / 2)) /
 		   rzg2l_wdt_get_cycle_usec(priv->osc_clk_rate, 0);
 	rzg2l_wdt_write(priv, WDTSET_COUNTER_VAL(time_out), WDTSET);
@@ -126,13 +122,13 @@ static int rzg2l_wdt_start(struct watchdog_device *wdev)
 
 	pm_runtime_get_sync(wdev->parent);
 
-	/* Initialize time out */
+	 
 	rzg2l_wdt_init_timeout(wdev);
 
-	/* Initialize watchdog counter register */
+	 
 	rzg2l_wdt_write(priv, 0, WDTTIM);
 
-	/* Enable watchdog timer*/
+	 
 	rzg2l_wdt_write(priv, WDTCNT_WDTEN, WDTCNT);
 
 	return 0;
@@ -152,11 +148,7 @@ static int rzg2l_wdt_set_timeout(struct watchdog_device *wdev, unsigned int time
 {
 	wdev->timeout = timeout;
 
-	/*
-	 * If the watchdog is active, reset the module for updating the WDTSET
-	 * register by calling rzg2l_wdt_stop() (which internally calls reset_control_reset()
-	 * to reset the module) so that it is updated with new timeout values.
-	 */
+	 
 	if (watchdog_active(wdev)) {
 		rzg2l_wdt_stop(wdev);
 		rzg2l_wdt_start(wdev);
@@ -174,27 +166,27 @@ static int rzg2l_wdt_restart(struct watchdog_device *wdev,
 	clk_prepare_enable(priv->osc_clk);
 
 	if (priv->devtype == WDT_RZG2L) {
-		/* Generate Reset (WDTRSTB) Signal on parity error */
+		 
 		rzg2l_wdt_write(priv, 0, PECR);
 
-		/* Force parity error */
+		 
 		rzg2l_wdt_write(priv, PEEN_FORCE, PEEN);
 	} else {
-		/* RZ/V2M doesn't have parity error registers */
+		 
 		rzg2l_wdt_reset(priv);
 
 		wdev->timeout = 0;
 
-		/* Initialize time out */
+		 
 		rzg2l_wdt_init_timeout(wdev);
 
-		/* Initialize watchdog counter register */
+		 
 		rzg2l_wdt_write(priv, 0, WDTTIM);
 
-		/* Enable watchdog timer*/
+		 
 		rzg2l_wdt_write(priv, WDTCNT_WDTEN, WDTCNT);
 
-		/* Wait 2 consecutive overflow cycles for reset */
+		 
 		mdelay(DIV_ROUND_UP(2 * 0xFFFFF * 1000, priv->osc_clk_rate));
 	}
 
@@ -248,7 +240,7 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(priv->base))
 		return PTR_ERR(priv->base);
 
-	/* Get watchdog main clock */
+	 
 	priv->osc_clk = devm_clk_get(&pdev->dev, "oscclk");
 	if (IS_ERR(priv->osc_clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(priv->osc_clk), "no oscclk");
@@ -257,7 +249,7 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
 	if (!priv->osc_clk_rate)
 		return dev_err_probe(&pdev->dev, -EINVAL, "oscclk rate is 0");
 
-	/* Get Peripheral clock */
+	 
 	priv->pclk = devm_clk_get(&pdev->dev, "pclk");
 	if (IS_ERR(priv->pclk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(priv->pclk), "no pclk");
@@ -316,7 +308,7 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
 static const struct of_device_id rzg2l_wdt_ids[] = {
 	{ .compatible = "renesas,rzg2l-wdt", .data = (void *)WDT_RZG2L },
 	{ .compatible = "renesas,rzv2m-wdt", .data = (void *)WDT_RZV2M },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzg2l_wdt_ids);
 

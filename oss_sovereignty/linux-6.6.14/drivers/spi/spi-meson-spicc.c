@@ -1,11 +1,4 @@
-/*
- * Driver for Amlogic Meson SPI communication controller (SPICC)
- *
- * Copyright (C) BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * SPDX-License-Identifier: GPL-2.0+
- */
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -22,22 +15,11 @@
 #include <linux/reset.h>
 #include <linux/pinctrl/consumer.h>
 
-/*
- * The Meson SPICC controller could support DMA based transfers, but is not
- * implemented by the vendor code, and while having the registers documentation
- * it has never worked on the GXL Hardware.
- * The PIO mode is the only mode implemented, and due to badly designed HW :
- * - all transfers are cutted in 16 words burst because the FIFO hangs on
- *   TX underflow, and there is no TX "Half-Empty" interrupt, so we go by
- *   FIFO max size chunk only
- * - CS management is dumb, and goes UP between every burst, so is really a
- *   "Data Valid" signal than a Chip Select, GPIO link should be used instead
- *   to have a CS go down over the full transfer
- */
+ 
 
 #define SPICC_MAX_BURST	128
 
-/* Register Map */
+ 
 #define SPICC_RXDATA	0x00
 
 #define SPICC_TXDATA	0x04
@@ -65,14 +47,14 @@
 #define SPICC_BURSTLENGTH_MASK	GENMASK(31, 25)
 
 #define SPICC_INTREG	0x0c
-#define SPICC_TE_EN	BIT(0) /* TX FIFO Empty Interrupt */
-#define SPICC_TH_EN	BIT(1) /* TX FIFO Half-Full Interrupt */
-#define SPICC_TF_EN	BIT(2) /* TX FIFO Full Interrupt */
-#define SPICC_RR_EN	BIT(3) /* RX FIFO Ready Interrupt */
-#define SPICC_RH_EN	BIT(4) /* RX FIFO Half-Full Interrupt */
-#define SPICC_RF_EN	BIT(5) /* RX FIFO Full Interrupt */
-#define SPICC_RO_EN	BIT(6) /* RX FIFO Overflow Interrupt */
-#define SPICC_TC_EN	BIT(7) /* Transfert Complete Interrupt */
+#define SPICC_TE_EN	BIT(0)  
+#define SPICC_TH_EN	BIT(1)  
+#define SPICC_TF_EN	BIT(2)  
+#define SPICC_RR_EN	BIT(3)  
+#define SPICC_RH_EN	BIT(4)  
+#define SPICC_RF_EN	BIT(5)  
+#define SPICC_RO_EN	BIT(6)  
+#define SPICC_TC_EN	BIT(7)  
 
 #define SPICC_DMAREG	0x10
 #define SPICC_DMA_ENABLE		BIT(0)
@@ -85,50 +67,50 @@
 #define SPICC_DMA_BURSTNUM_MASK		GENMASK(31, 26)
 
 #define SPICC_STATREG	0x14
-#define SPICC_TE	BIT(0) /* TX FIFO Empty Interrupt */
-#define SPICC_TH	BIT(1) /* TX FIFO Half-Full Interrupt */
-#define SPICC_TF	BIT(2) /* TX FIFO Full Interrupt */
-#define SPICC_RR	BIT(3) /* RX FIFO Ready Interrupt */
-#define SPICC_RH	BIT(4) /* RX FIFO Half-Full Interrupt */
-#define SPICC_RF	BIT(5) /* RX FIFO Full Interrupt */
-#define SPICC_RO	BIT(6) /* RX FIFO Overflow Interrupt */
-#define SPICC_TC	BIT(7) /* Transfert Complete Interrupt */
+#define SPICC_TE	BIT(0)  
+#define SPICC_TH	BIT(1)  
+#define SPICC_TF	BIT(2)  
+#define SPICC_RR	BIT(3)  
+#define SPICC_RH	BIT(4)  
+#define SPICC_RF	BIT(5)  
+#define SPICC_RO	BIT(6)  
+#define SPICC_TC	BIT(7)  
 
 #define SPICC_PERIODREG	0x18
-#define SPICC_PERIOD	GENMASK(14, 0)	/* Wait cycles */
+#define SPICC_PERIOD	GENMASK(14, 0)	 
 
 #define SPICC_TESTREG	0x1c
-#define SPICC_TXCNT_MASK	GENMASK(4, 0)	/* TX FIFO Counter */
-#define SPICC_RXCNT_MASK	GENMASK(9, 5)	/* RX FIFO Counter */
-#define SPICC_SMSTATUS_MASK	GENMASK(12, 10)	/* State Machine Status */
-#define SPICC_LBC_RO		BIT(13)	/* Loop Back Control Read-Only */
-#define SPICC_LBC_W1		BIT(14) /* Loop Back Control Write-Only */
-#define SPICC_SWAP_RO		BIT(14) /* RX FIFO Data Swap Read-Only */
-#define SPICC_SWAP_W1		BIT(15) /* RX FIFO Data Swap Write-Only */
-#define SPICC_DLYCTL_RO_MASK	GENMASK(20, 15) /* Delay Control Read-Only */
-#define SPICC_MO_DELAY_MASK	GENMASK(17, 16) /* Master Output Delay */
+#define SPICC_TXCNT_MASK	GENMASK(4, 0)	 
+#define SPICC_RXCNT_MASK	GENMASK(9, 5)	 
+#define SPICC_SMSTATUS_MASK	GENMASK(12, 10)	 
+#define SPICC_LBC_RO		BIT(13)	 
+#define SPICC_LBC_W1		BIT(14)  
+#define SPICC_SWAP_RO		BIT(14)  
+#define SPICC_SWAP_W1		BIT(15)  
+#define SPICC_DLYCTL_RO_MASK	GENMASK(20, 15)  
+#define SPICC_MO_DELAY_MASK	GENMASK(17, 16)  
 #define SPICC_MO_NO_DELAY	0
 #define SPICC_MO_DELAY_1_CYCLE	1
 #define SPICC_MO_DELAY_2_CYCLE	2
 #define SPICC_MO_DELAY_3_CYCLE	3
-#define SPICC_MI_DELAY_MASK	GENMASK(19, 18) /* Master Input Delay */
+#define SPICC_MI_DELAY_MASK	GENMASK(19, 18)  
 #define SPICC_MI_NO_DELAY	0
 #define SPICC_MI_DELAY_1_CYCLE	1
 #define SPICC_MI_DELAY_2_CYCLE	2
 #define SPICC_MI_DELAY_3_CYCLE	3
-#define SPICC_MI_CAP_DELAY_MASK	GENMASK(21, 20) /* Master Capture Delay */
+#define SPICC_MI_CAP_DELAY_MASK	GENMASK(21, 20)  
 #define SPICC_CAP_AHEAD_2_CYCLE	0
 #define SPICC_CAP_AHEAD_1_CYCLE	1
 #define SPICC_CAP_NO_DELAY	2
 #define SPICC_CAP_DELAY_1_CYCLE	3
-#define SPICC_FIFORST_RO_MASK	GENMASK(22, 21) /* FIFO Softreset Read-Only */
-#define SPICC_FIFORST_W1_MASK	GENMASK(23, 22) /* FIFO Softreset Write-Only */
+#define SPICC_FIFORST_RO_MASK	GENMASK(22, 21)  
+#define SPICC_FIFORST_W1_MASK	GENMASK(23, 22)  
 
-#define SPICC_DRADDR	0x20	/* Read Address of DMA */
+#define SPICC_DRADDR	0x20	 
 
-#define SPICC_DWADDR	0x24	/* Write Address of DMA */
+#define SPICC_DWADDR	0x24	 
 
-#define SPICC_ENH_CTL0	0x38	/* Enhanced Feature */
+#define SPICC_ENH_CTL0	0x38	 
 #define SPICC_ENH_CLK_CS_DELAY_MASK	GENMASK(15, 0)
 #define SPICC_ENH_DATARATE_MASK		GENMASK(23, 16)
 #define SPICC_ENH_DATARATE_EN		BIT(24)
@@ -180,7 +162,7 @@ static void meson_spicc_oen_enable(struct meson_spicc_device *spicc)
 	u32 conf;
 
 	if (!spicc->data->has_oen) {
-		/* Try to get pinctrl states for idle high/low */
+		 
 		spicc->pins_idle_high = pinctrl_lookup_state(spicc->pinctrl,
 							     "idle-high");
 		if (IS_ERR(spicc->pins_idle_high)) {
@@ -249,7 +231,7 @@ static inline void meson_spicc_push_data(struct meson_spicc_device *spicc,
 
 static inline void meson_spicc_rx(struct meson_spicc_device *spicc)
 {
-	/* Empty RX FIFO */
+	 
 	while (spicc->rx_remain &&
 	       meson_spicc_rxready(spicc))
 		meson_spicc_push_data(spicc,
@@ -258,7 +240,7 @@ static inline void meson_spicc_rx(struct meson_spicc_device *spicc)
 
 static inline void meson_spicc_tx(struct meson_spicc_device *spicc)
 {
-	/* Fill Up TX FIFO */
+	 
 	while (spicc->tx_remain &&
 	       !meson_spicc_txfull(spicc))
 		writel_relaxed(meson_spicc_pull_data(spicc),
@@ -272,18 +254,18 @@ static inline void meson_spicc_setup_burst(struct meson_spicc_device *spicc)
 				       spicc->xfer_remain /
 				       spicc->bytes_per_word,
 				       spicc->data->fifo_size);
-	/* Setup Xfer variables */
+	 
 	spicc->tx_remain = burst_len;
 	spicc->rx_remain = burst_len;
 	spicc->xfer_remain -= burst_len * spicc->bytes_per_word;
 
-	/* Setup burst length */
+	 
 	writel_bits_relaxed(SPICC_BURSTLENGTH_MASK,
 			FIELD_PREP(SPICC_BURSTLENGTH_MASK,
 				burst_len - 1),
 			spicc->base + SPICC_CONREG);
 
-	/* Fill TX FIFO */
+	 
 	meson_spicc_tx(spicc);
 }
 
@@ -293,11 +275,11 @@ static irqreturn_t meson_spicc_irq(int irq, void *data)
 
 	writel_bits_relaxed(SPICC_TC, SPICC_TC, spicc->base + SPICC_STATREG);
 
-	/* Empty RX FIFO */
+	 
 	meson_spicc_rx(spicc);
 
 	if (!spicc->xfer_remain) {
-		/* Disable all IRQs */
+		 
 		writel(0, spicc->base + SPICC_INTREG);
 
 		complete(&spicc->done);
@@ -305,10 +287,10 @@ static irqreturn_t meson_spicc_irq(int irq, void *data)
 		return IRQ_HANDLED;
 	}
 
-	/* Setup burst */
+	 
 	meson_spicc_setup_burst(spicc);
 
-	/* Start burst */
+	 
 	writel_bits_relaxed(SPICC_XCH, SPICC_XCH, spicc->base + SPICC_CONREG);
 
 	return IRQ_HANDLED;
@@ -362,15 +344,15 @@ static void meson_spicc_setup_xfer(struct meson_spicc_device *spicc,
 {
 	u32 conf, conf_orig;
 
-	/* Read original configuration */
+	 
 	conf = conf_orig = readl_relaxed(spicc->base + SPICC_CONREG);
 
-	/* Setup word width */
+	 
 	conf &= ~SPICC_BITLENGTH_MASK;
 	conf |= FIELD_PREP(SPICC_BITLENGTH_MASK,
 			   (spicc->bytes_per_word << 3) - 1);
 
-	/* Ignore if unchanged */
+	 
 	if (conf != conf_orig)
 		writel_relaxed(conf, spicc->base + SPICC_CONREG);
 
@@ -406,46 +388,46 @@ static int meson_spicc_transfer_one(struct spi_master *master,
 	struct meson_spicc_device *spicc = spi_master_get_devdata(master);
 	uint64_t timeout;
 
-	/* Store current transfer */
+	 
 	spicc->xfer = xfer;
 
-	/* Setup transfer parameters */
+	 
 	spicc->tx_buf = (u8 *)xfer->tx_buf;
 	spicc->rx_buf = (u8 *)xfer->rx_buf;
 	spicc->xfer_remain = xfer->len;
 
-	/* Pre-calculate word size */
+	 
 	spicc->bytes_per_word =
 	   DIV_ROUND_UP(spicc->xfer->bits_per_word, 8);
 
 	if (xfer->len % spicc->bytes_per_word)
 		return -EINVAL;
 
-	/* Setup transfer parameters */
+	 
 	meson_spicc_setup_xfer(spicc, xfer);
 
 	meson_spicc_reset_fifo(spicc);
 
-	/* Setup burst */
+	 
 	meson_spicc_setup_burst(spicc);
 
-	/* Setup wait for completion */
+	 
 	reinit_completion(&spicc->done);
 
-	/* For each byte we wait for 8 cycles of the SPI clock */
+	 
 	timeout = 8LL * MSEC_PER_SEC * xfer->len;
 	do_div(timeout, xfer->speed_hz);
 
-	/* Add 10us delay between each fifo bursts */
+	 
 	timeout += ((xfer->len >> 4) * 10) / MSEC_PER_SEC;
 
-	/* Increase it twice and add 200 ms tolerance */
+	 
 	timeout += timeout + 200;
 
-	/* Start burst */
+	 
 	writel_bits_relaxed(SPICC_XCH, SPICC_XCH, spicc->base + SPICC_CONREG);
 
-	/* Enable interrupts */
+	 
 	writel_relaxed(SPICC_TC_EN, spicc->base + SPICC_INTREG);
 
 	if (!wait_for_completion_timeout(&spicc->done, msecs_to_jiffies(timeout)))
@@ -461,16 +443,16 @@ static int meson_spicc_prepare_message(struct spi_master *master,
 	struct spi_device *spi = message->spi;
 	u32 conf = readl_relaxed(spicc->base + SPICC_CONREG) & SPICC_DATARATE_MASK;
 
-	/* Store current message */
+	 
 	spicc->message = message;
 
-	/* Enable Master */
+	 
 	conf |= SPICC_ENABLE;
 	conf |= SPICC_MODE_MASTER;
 
-	/* SMC = 0 */
+	 
 
-	/* Setup transfer mode */
+	 
 	if (spi->mode & SPI_CPOL)
 		conf |= SPICC_POL;
 	else
@@ -491,7 +473,7 @@ static int meson_spicc_prepare_message(struct spi_master *master,
 	else
 		conf &= ~SPICC_PHA;
 
-	/* SSCTL = 0 */
+	 
 
 	if (spi->mode & SPI_CS_HIGH)
 		conf |= SPICC_SSPOL;
@@ -503,15 +485,15 @@ static int meson_spicc_prepare_message(struct spi_master *master,
 	else
 		conf |= FIELD_PREP(SPICC_DRCTL_MASK, SPICC_DRCTL_IGNORE);
 
-	/* Select CS */
+	 
 	conf |= FIELD_PREP(SPICC_CS_MASK, spi_get_chipselect(spi, 0));
 
-	/* Default 8bit word */
+	 
 	conf |= FIELD_PREP(SPICC_BITLENGTH_MASK, 8 - 1);
 
 	writel_relaxed(conf, spicc->base + SPICC_CONREG);
 
-	/* Setup no wait cycles by default */
+	 
 	writel_relaxed(0, spicc->base + SPICC_PERIODREG);
 
 	writel_bits_relaxed(SPICC_LBC_W1, 0, spicc->base + SPICC_TESTREG);
@@ -524,12 +506,12 @@ static int meson_spicc_unprepare_transfer(struct spi_master *master)
 	struct meson_spicc_device *spicc = spi_master_get_devdata(master);
 	u32 conf = readl_relaxed(spicc->base + SPICC_CONREG) & SPICC_DATARATE_MASK;
 
-	/* Disable all IRQs */
+	 
 	writel(0, spicc->base + SPICC_INTREG);
 
 	device_reset_optional(&spicc->pdev->dev);
 
-	/* Set default configuration, keeping datarate field */
+	 
 	writel_relaxed(conf, spicc->base + SPICC_CONREG);
 
 	if (!spicc->data->has_oen)
@@ -551,33 +533,7 @@ static void meson_spicc_cleanup(struct spi_device *spi)
 	spi->controller_state = NULL;
 }
 
-/*
- * The Clock Mux
- *            x-----------------x   x------------x    x------\
- *        |---| pow2 fixed div  |---| pow2 div   |----|      |
- *        |   x-----------------x   x------------x    |      |
- * src ---|                                           | mux  |-- out
- *        |   x-----------------x   x------------x    |      |
- *        |---| enh fixed div   |---| enh div    |0---|      |
- *            x-----------------x   x------------x    x------/
- *
- * Clk path for GX series:
- *    src -> pow2 fixed div -> pow2 div -> out
- *
- * Clk path for AXG series:
- *    src -> pow2 fixed div -> pow2 div -> mux -> out
- *    src -> enh fixed div -> enh div -> mux -> out
- *
- * Clk path for G12A series:
- *    pclk -> pow2 fixed div -> pow2 div -> mux -> out
- *    pclk -> enh fixed div -> enh div -> mux -> out
- *
- * The pow2 divider is tied to the controller HW state, and the
- * divider is only valid when the controller is initialized.
- *
- * A set of clock ops is added to make sure we don't read/set this
- * clock rate while the controller is in an unknown state.
- */
+ 
 
 static unsigned long meson_spicc_pow2_recalc_rate(struct clk_hw *hw,
 						  unsigned long parent_rate)
@@ -635,7 +591,7 @@ static int meson_spicc_pow2_clk_init(struct meson_spicc_device *spicc)
 
 	init.parent_data = parent_data;
 
-	/* algorithm for pow2 div: rate = freq / 4 / (2 ^ N) */
+	 
 
 	pow2_fixed_div = devm_kzalloc(dev, sizeof(*pow2_fixed_div), GFP_KERNEL);
 	if (!pow2_fixed_div)
@@ -662,10 +618,7 @@ static int meson_spicc_pow2_clk_init(struct meson_spicc_device *spicc)
 	snprintf(name, sizeof(name), "%s#pow2_div", dev_name(dev));
 	init.name = name;
 	init.ops = &meson_spicc_pow2_clk_ops;
-	/*
-	 * Set NOCACHE here to make sure we read the actual HW value
-	 * since we reset the HW after each transfer.
-	 */
+	 
 	init.flags = CLK_SET_RATE_PARENT | CLK_GET_RATE_NOCACHE;
 	parent_data[0].hw = &pow2_fixed_div->hw;
 	init.num_parents = 1;
@@ -699,7 +652,7 @@ static int meson_spicc_enh_clk_init(struct meson_spicc_device *spicc)
 
 	init.parent_data = parent_data;
 
-	/* algorithm for enh div: rate = freq / 2 / (N + 1) */
+	 
 
 	enh_fixed_div = devm_kzalloc(dev, sizeof(*enh_fixed_div), GFP_KERNEL);
 	if (!enh_fixed_div)
@@ -800,11 +753,11 @@ static int meson_spicc_probe(struct platform_device *pdev)
 		goto out_master;
 	}
 
-	/* Set master mode and enable controller */
+	 
 	writel_relaxed(SPICC_ENABLE | SPICC_MODE_MASTER,
 		       spicc->base + SPICC_CONREG);
 
-	/* Disable all IRQs */
+	 
 	writel_relaxed(0, spicc->base + SPICC_INTREG);
 
 	irq = platform_get_irq(pdev, 0);
@@ -913,7 +866,7 @@ static void meson_spicc_remove(struct platform_device *pdev)
 {
 	struct meson_spicc_device *spicc = platform_get_drvdata(pdev);
 
-	/* Disable SPI */
+	 
 	writel(0, spicc->base + SPICC_CONREG);
 
 	clk_disable_unprepare(spicc->core);
@@ -958,7 +911,7 @@ static const struct of_device_id meson_spicc_of_match[] = {
 		.compatible = "amlogic,meson-g12a-spicc",
 		.data		= &meson_spicc_g12a_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_spicc_of_match);
 

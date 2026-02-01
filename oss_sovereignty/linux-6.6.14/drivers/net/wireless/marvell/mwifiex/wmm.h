@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: WMM
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_WMM_H_
 #define _MWIFIEX_WMM_H_
@@ -22,9 +18,7 @@ enum ieee_types_wmm_ecw_bitmasks {
 extern const u16 mwifiex_1d_to_wmm_queue[];
 extern const u8 tos_to_tid_inv[];
 
-/*
- * This function retrieves the TID of the given RA list.
- */
+ 
 static inline int
 mwifiex_get_tid(struct mwifiex_ra_list_tbl *ptr)
 {
@@ -38,9 +32,7 @@ mwifiex_get_tid(struct mwifiex_ra_list_tbl *ptr)
 	return skb->priority;
 }
 
-/*
- * This function checks if a RA list is empty or not.
- */
+ 
 static inline u8
 mwifiex_wmm_is_ra_list_empty(struct list_head *ra_list_hhead)
 {
@@ -96,4 +88,4 @@ void mwifiex_update_ralist_tx_pause_in_tdls_cs(struct mwifiex_private *priv,
 
 struct mwifiex_ra_list_tbl *mwifiex_wmm_get_ralist_node(struct mwifiex_private
 					*priv, u8 tid, const u8 *ra_addr);
-#endif /* !_MWIFIEX_WMM_H_ */
+#endif  

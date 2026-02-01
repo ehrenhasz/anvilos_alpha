@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Unisoc UMS512 SoC DTS file
- *
- * Copyright (C) 2022, Unisoc Inc.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_UMS512_H_
 #define _DT_BINDINGS_CLK_UMS512_H_
@@ -394,4 +390,4 @@
 #define CLK_DEBUG_APB			13
 #define CLK_APCPU_SEC_NUM		(CLK_DEBUG_APB + 1)
 
-#endif /* _DT_BINDINGS_CLK_UMS512_H_ */
+#endif  

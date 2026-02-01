@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Emilio López
- * Emilio López <emilio@elopez.com.ar>
- *
- * Copyright 2013 Chen-Yu Tsai
- * Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -15,38 +9,15 @@
 
 static DEFINE_SPINLOCK(gmac_lock);
 
-/**
- * sun7i_a20_gmac_clk_setup - Setup function for A20/A31 GMAC clock module
- *
- * This clock looks something like this
- *                               ________________________
- *  MII TX clock from PHY >-----|___________    _________|----> to GMAC core
- *  GMAC Int. RGMII TX clk >----|___________\__/__gate---|----> to PHY
- *  Ext. 125MHz RGMII TX clk >--|__divider__/            |
- *                              |________________________|
- *
- * The external 125 MHz reference is optional, i.e. GMAC can use its
- * internal TX clock just fine. The A31 GMAC clock module does not have
- * the divider controls for the external reference.
- *
- * To keep it simple, let the GMAC use either the MII TX clock for MII mode,
- * and its internal TX clock for GMII and RGMII modes. The GMAC driver should
- * select the appropriate source and gate/ungate the output to the PHY.
- *
- * Only the GMAC should use this clock. Altering the clock so that it doesn't
- * match the GMAC's operation parameters will result in the GMAC not being
- * able to send traffic out. The GMAC driver should set the clock rate and
- * enable/disable this clock to configure the required state. The clock
- * driver then responds by auto-reparenting the clock.
- */
+ 
 
 #define SUN7I_A20_GMAC_GPIT	2
 #define SUN7I_A20_GMAC_MASK	0x3
 #define SUN7I_A20_GMAC_PARENTS	2
 
 static u32 sun7i_a20_gmac_mux_table[SUN7I_A20_GMAC_PARENTS] = {
-	0x00, /* Select mii_phy_tx_clk */
-	0x02, /* Select gmac_int_tx_clk */
+	0x00,  
+	0x02,  
 };
 
 static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
@@ -61,7 +32,7 @@ static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
 	if (of_property_read_string(node, "clock-output-names", &clk_name))
 		return;
 
-	/* allocate mux and gate clock structs */
+	 
 	mux = kzalloc(sizeof(struct clk_mux), GFP_KERNEL);
 	if (!mux)
 		return;
@@ -70,7 +41,7 @@ static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
 	if (!gate)
 		goto free_mux;
 
-	/* gmac clock requires exactly 2 parents */
+	 
 	if (of_clk_parent_fill(node, parents, 2) != 2)
 		goto free_gate;
 
@@ -78,7 +49,7 @@ static void __init sun7i_a20_gmac_clk_setup(struct device_node *node)
 	if (!reg)
 		goto free_gate;
 
-	/* set up gate and fixed rate properties */
+	 
 	gate->reg = reg;
 	gate->bit_idx = SUN7I_A20_GMAC_GPIT;
 	gate->lock = &gmac_lock;

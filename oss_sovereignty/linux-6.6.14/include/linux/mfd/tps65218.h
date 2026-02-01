@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/mfd/tps65218.h
- *
- * Functions to access TPS65218 power management chip.
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com/
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_TPS65218_H
 #define __LINUX_MFD_TPS65218_H
@@ -15,13 +9,13 @@
 #include <linux/regulator/machine.h>
 #include <linux/bitops.h>
 
-/* TPS chip id list */
+ 
 #define TPS65218			0xF0
 
-/* I2C ID for TPS65218 part */
+ 
 #define TPS65218_I2C_ID			0x24
 
-/* All register addresses */
+ 
 #define TPS65218_REG_CHIPID		0x00
 #define TPS65218_REG_INT1		0x01
 #define TPS65218_REG_INT2		0x02
@@ -51,7 +45,7 @@
 #define TPS65218_REG_SEQ6		0x25
 #define TPS65218_REG_SEQ7		0x26
 
-/* Register field definitions */
+ 
 #define TPS65218_CHIPID_CHIP_MASK	0xF8
 #define TPS65218_CHIPID_REV_MASK	0x07
 
@@ -194,35 +188,35 @@
 #define TPS65218_PROTECT_L1		1
 
 enum tps65218_regulator_id {
-	/* DCDC's */
+	 
 	TPS65218_DCDC_1,
 	TPS65218_DCDC_2,
 	TPS65218_DCDC_3,
 	TPS65218_DCDC_4,
 	TPS65218_DCDC_5,
 	TPS65218_DCDC_6,
-	/* LDOs */
+	 
 	TPS65218_LDO_1,
-	/* LS's */
+	 
 	TPS65218_LS_2,
 	TPS65218_LS_3,
 };
 
 #define TPS65218_MAX_REG_ID		TPS65218_LDO_1
 
-/* Number of step-down converters available */
+ 
 #define TPS65218_NUM_DCDC		6
-/* Number of LDO voltage regulators available */
+ 
 #define TPS65218_NUM_LDO		1
-/* Number of total LS current regulators available */
+ 
 #define TPS65218_NUM_LS			2
-/* Number of total regulators available */
+ 
 #define TPS65218_NUM_REGULATOR		(TPS65218_NUM_DCDC + TPS65218_NUM_LDO \
 					 + TPS65218_NUM_LS)
 
-/* Define the TPS65218 IRQ numbers */
+ 
 enum tps65218_irqs {
-	/* INT1 registers */
+	 
 	TPS65218_PRGC_IRQ,
 	TPS65218_CC_AQC_IRQ,
 	TPS65218_HOT_IRQ,
@@ -231,7 +225,7 @@ enum tps65218_irqs {
 	TPS65218_VPRG_IRQ,
 	TPS65218_INVALID1_IRQ,
 	TPS65218_INVALID2_IRQ,
-	/* INT2 registers */
+	 
 	TPS65218_LS1_I_IRQ,
 	TPS65218_LS2_I_IRQ,
 	TPS65218_LS3_I_IRQ,
@@ -242,19 +236,15 @@ enum tps65218_irqs {
 	TPS65218_INVALID4_IRQ,
 };
 
-/**
- * struct tps65218 - tps65218 sub-driver chip access routines
- *
- * Device data may be used to access the TPS65218 chip
- */
+ 
 
 struct tps65218 {
 	struct device *dev;
 	unsigned int id;
 	u8 rev;
 
-	struct mutex tps_lock;		/* lock guarding the data structure */
-	/* IRQ Data */
+	struct mutex tps_lock;		 
+	 
 	int irq;
 	u32 irq_mask;
 	struct regmap_irq_chip_data *irq_data;
@@ -270,4 +260,4 @@ int tps65218_set_bits(struct tps65218 *tps, unsigned int reg,
 int tps65218_clear_bits(struct tps65218 *tps, unsigned int reg,
 		unsigned int mask, unsigned int level);
 
-#endif /*  __LINUX_MFD_TPS65218_H */
+#endif  

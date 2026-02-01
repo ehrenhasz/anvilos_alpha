@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv50.h"
 #include "ram.h"
 
@@ -155,7 +133,7 @@ nv50_fb_intr(struct nvkm_fb *base)
 	}
 	nvkm_wr32(device, 0x100c90, idx | 0x80000000);
 
-	/* decode status bits into something more useful */
+	 
 	if (device->chipset  < 0xa3 ||
 	    device->chipset == 0xaa || device->chipset == 0xac) {
 		st0 = (trap[0] & 0x0000000f) >> 0;
@@ -197,8 +175,7 @@ nv50_fb_init(struct nvkm_fb *base)
 	struct nv50_fb *fb = nv50_fb(base);
 	struct nvkm_device *device = fb->base.subdev.device;
 
-	/* This is needed to get meaningful information from 100c90
-	 * on traps. No idea what these values mean exactly. */
+	 
 	nvkm_wr32(device, 0x100c90, fb->func->trap);
 }
 

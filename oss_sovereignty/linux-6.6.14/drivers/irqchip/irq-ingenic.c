@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
- *  Ingenic XBurst platform IRQ support
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -120,7 +117,7 @@ static int __init ingenic_intc_of_init(struct device_node *node,
 		ct->chip.irq_set_wake = irq_gc_set_wake;
 		ct->chip.flags = IRQCHIP_MASK_ON_SUSPEND;
 
-		/* Mask all irqs */
+		 
 		irq_reg_writel(gc, IRQ_MSK(32), JZ_REG_INTC_SET_MASK);
 	}
 

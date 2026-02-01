@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2015 Rockchip Electronics Co. Ltd.
- * Author: Xing Zheng <zhengxing@rock-chips.com>
- *         Jeffy Chen <jeffy.chen@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -20,7 +16,7 @@ enum rk3228_plls {
 };
 
 static struct rockchip_pll_rate_table rk3228_pll_rates[] = {
-	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac */
+	 
 	RK3036_PLL_RATE(1608000000, 1, 67, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1584000000, 1, 66, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1560000000, 1, 65, 1, 1, 1, 0),
@@ -63,7 +59,7 @@ static struct rockchip_pll_rate_table rk3228_pll_rates[] = {
 	RK3036_PLL_RATE( 312000000, 1, 52, 2, 2, 1, 0),
 	RK3036_PLL_RATE( 216000000, 1, 72, 4, 2, 1, 0),
 	RK3036_PLL_RATE(  96000000, 1, 64, 4, 4, 1, 0),
-	{ /* sentinel */ },
+	{   },
 };
 
 #define RK3228_DIV_CPU_MASK		0x1f
@@ -209,14 +205,12 @@ static struct rockchip_clk_branch rk3228_uart2_fracmux __initdata =
 			RK2928_CLKSEL_CON(15), 8, 2, MFLAGS);
 
 static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
-	/*
-	 * Clock-Architecture Diagram 1
-	 */
+	 
 
 	DIV(0, "clk_24m", "xin24m", CLK_IGNORE_UNUSED,
 			RK2928_CLKSEL_CON(4), 8, 5, DFLAGS),
 
-	/* PD_DDR */
+	 
 	GATE(0, "apll_ddr", "apll", CLK_IGNORE_UNUSED,
 			RK2928_CLKGATE_CON(0), 2, GFLAGS),
 	GATE(0, "dpll_ddr", "dpll", CLK_IGNORE_UNUSED,
@@ -231,7 +225,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 	FACTOR_GATE(0, "ddrphy", "ddrphy4x", CLK_IGNORE_UNUSED, 1, 4,
 			RK2928_CLKGATE_CON(7), 0, GFLAGS),
 
-	/* PD_CORE */
+	 
 	GATE(0, "dpll_core", "dpll", CLK_IGNORE_UNUSED,
 			RK2928_CLKGATE_CON(0), 6, GFLAGS),
 	GATE(0, "apll_core", "apll", CLK_IGNORE_UNUSED,
@@ -245,7 +239,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(1), 4, 3, DFLAGS | CLK_DIVIDER_READ_ONLY,
 			RK2928_CLKGATE_CON(4), 0, GFLAGS),
 
-	/* PD_MISC */
+	 
 	MUX(SCLK_HDMI_PHY, "hdmiphy", mux_hdmiphy_p, CLK_SET_RATE_PARENT,
 			RK2928_MISC_CON, 13, 1, MFLAGS),
 	MUX(0, "usb480m_phy", mux_usb480m_phy_p, CLK_SET_RATE_PARENT,
@@ -253,7 +247,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 	MUX(0, "usb480m", mux_usb480m_p, CLK_SET_RATE_PARENT,
 			RK2928_MISC_CON, 15, 1, MFLAGS),
 
-	/* PD_BUS */
+	 
 	GATE(0, "hdmiphy_aclk_cpu", "hdmiphy", CLK_IGNORE_UNUSED,
 			RK2928_CLKGATE_CON(0), 1, GFLAGS),
 	GATE(0, "gpll_aclk_cpu", "gpll", CLK_IGNORE_UNUSED,
@@ -277,7 +271,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 	GATE(0, "pclk_ddr_pre", "pclk_bus_src", 0,
 			RK2928_CLKGATE_CON(6), 13, GFLAGS),
 
-	/* PD_VIDEO */
+	 
 	COMPOSITE(ACLK_VPU_PRE, "aclk_vpu_pre", mux_pll_src_4plls_p, 0,
 			RK2928_CLKSEL_CON(32), 5, 2, MFLAGS, 0, 5, DFLAGS,
 			RK2928_CLKGATE_CON(3), 11, GFLAGS),
@@ -298,7 +292,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(34), 13, 2, MFLAGS, 8, 5, DFLAGS,
 			RK2928_CLKGATE_CON(3), 4, GFLAGS),
 
-	/* PD_VIO */
+	 
 	COMPOSITE(ACLK_IEP_PRE, "aclk_iep_pre", mux_pll_src_4plls_p, 0,
 			RK2928_CLKSEL_CON(31), 5, 2, MFLAGS, 0, 5, DFLAGS,
 			RK2928_CLKGATE_CON(3), 0, GFLAGS),
@@ -333,7 +327,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(21), 14, 2, MFLAGS, 0, 14, DFLAGS,
 			RK2928_CLKGATE_CON(3), 8, GFLAGS),
 
-	/* PD_PERI */
+	 
 	GATE(0, "cpll_peri", "cpll", CLK_IGNORE_UNUSED,
 			RK2928_CLKGATE_CON(2), 0, GFLAGS),
 	GATE(0, "gpll_peri", "gpll", CLK_IGNORE_UNUSED,
@@ -395,9 +389,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 	DIV(SCLK_EMMC, "sclk_emmc", "sclk_emmc_src", 0,
 			RK2928_CLKSEL_CON(12), 8, 8, DFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 2
-	 */
+	 
 
 	GATE(0, "gpll_vop", "gpll", 0,
 			RK2928_CLKGATE_CON(3), 1, GFLAGS),
@@ -475,7 +467,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(25), 8, 1, MFLAGS, 0, 7, DFLAGS,
 			RK2928_CLKGATE_CON(2), 9, GFLAGS),
 
-	/* PD_UART */
+	 
 	COMPOSITE(0, "uart0_src", mux_pll_src_cpll_gpll_usb480m_p, 0,
 			RK2928_CLKSEL_CON(13), 12, 2, MFLAGS, 0, 7, DFLAGS,
 			RK2928_CLKGATE_CON(1), 8, GFLAGS),
@@ -524,11 +516,9 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(5), 15, 1, MFLAGS, 8, 5, DFLAGS,
 			RK2928_CLKGATE_CON(2), 2, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 3
-	 */
+	 
 
-	/* PD_VOP */
+	 
 	GATE(ACLK_RGA, "aclk_rga", "aclk_rga_pre", 0, RK2928_CLKGATE_CON(13), 0, GFLAGS),
 	GATE(0, "aclk_rga_noc", "aclk_rga_pre", 0, RK2928_CLKGATE_CON(13), 11, GFLAGS),
 	GATE(ACLK_IEP, "aclk_iep", "aclk_iep_pre", 0, RK2928_CLKGATE_CON(13), 2, GFLAGS),
@@ -552,7 +542,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 	GATE(PCLK_VIO_H2P, "pclk_vio_h2p", "hclk_vio_pre", 0, RK2928_CLKGATE_CON(14), 8, GFLAGS),
 	GATE(PCLK_HDCP, "pclk_hdcp", "hclk_vio_pre", 0, RK2928_CLKGATE_CON(14), 11, GFLAGS),
 
-	/* PD_PERI */
+	 
 	GATE(0, "aclk_peri_noc", "aclk_peri", CLK_IGNORE_UNUSED, RK2928_CLKGATE_CON(12), 0, GFLAGS),
 	GATE(ACLK_GMAC, "aclk_gmac", "aclk_peri", 0, RK2928_CLKGATE_CON(11), 4, GFLAGS),
 
@@ -573,11 +563,11 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 	GATE(PCLK_GMAC, "pclk_gmac", "pclk_peri", 0, RK2928_CLKGATE_CON(11), 5, GFLAGS),
 	GATE(0, "pclk_peri_noc", "pclk_peri", CLK_IGNORE_UNUSED, RK2928_CLKGATE_CON(12), 2, GFLAGS),
 
-	/* PD_GPU */
+	 
 	GATE(ACLK_GPU, "aclk_gpu", "aclk_gpu_pre", 0, RK2928_CLKGATE_CON(7), 14, GFLAGS),
 	GATE(0, "aclk_gpu_noc", "aclk_gpu_pre", 0, RK2928_CLKGATE_CON(7), 15, GFLAGS),
 
-	/* PD_BUS */
+	 
 	GATE(0, "sclk_initmem_mbist", "aclk_cpu", 0, RK2928_CLKGATE_CON(8), 1, GFLAGS),
 	GATE(0, "aclk_initmem", "aclk_cpu", 0, RK2928_CLKGATE_CON(8), 0, GFLAGS),
 	GATE(ACLK_DMAC, "aclk_dmac_bus", "aclk_cpu", 0, RK2928_CLKGATE_CON(8), 2, GFLAGS),
@@ -634,7 +624,7 @@ static struct rockchip_clk_branch rk3228_clk_branches[] __initdata = {
 	GATE(HCLK_RKVDEC, "hclk_rkvdec", "hclk_rkvdec_pre", 0, RK2928_CLKGATE_CON(15), 3, GFLAGS),
 	GATE(0, "hclk_rkvdec_noc", "hclk_rkvdec_pre", 0, RK2928_CLKGATE_CON(15), 7, GFLAGS),
 
-	/* PD_MMC */
+	 
 	MMC(SCLK_SDMMC_DRV,    "sdmmc_drv",    "sclk_sdmmc", RK3228_SDMMC_CON0, 1),
 	MMC(SCLK_SDMMC_SAMPLE, "sdmmc_sample", "sclk_sdmmc", RK3228_SDMMC_CON1, 0),
 

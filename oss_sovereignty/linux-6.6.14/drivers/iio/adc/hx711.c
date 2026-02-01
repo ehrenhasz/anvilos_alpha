@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HX711: analog to digital converter for weight sensor module
- *
- * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
- */
+
+ 
 #include <linux/err.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,7 +17,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/regulator/consumer.h>
 
-/* gain to pulse and scale conversion */
+ 
 #define HX711_GAIN_MAX		3
 #define HX711_RESET_GAIN	128
 
@@ -32,14 +28,7 @@ struct hx711_gain_to_scale {
 	int			channel;
 };
 
-/*
- * .scale depends on AVDD which in turn is known as soon as the regulator
- * is available
- * therefore we set .scale in hx711_probe()
- *
- * channel A in documentation is channel 0 in source code
- * channel B in documentation is channel 1 in source code
- */
+ 
 static struct hx711_gain_to_scale hx711_gain_to_scale[HX711_GAIN_MAX] = {
 	{ 128, 1, 0, 0 },
 	{  32, 2, 0, 1 },
@@ -81,20 +70,12 @@ struct hx711_data {
 	struct gpio_desc	*gpiod_pd_sck;
 	struct gpio_desc	*gpiod_dout;
 	struct regulator	*reg_avdd;
-	int			gain_set;	/* gain set on device */
-	int			gain_chan_a;	/* gain for channel A */
+	int			gain_set;	 
+	int			gain_chan_a;	 
 	struct mutex		lock;
-	/*
-	 * triggered buffer
-	 * 2x32-bit channel + 64-bit naturally aligned timestamp
-	 */
+	 
 	u32			buffer[4] __aligned(8);
-	/*
-	 * delay after a rising edge on SCK until the data is ready DOUT
-	 * this is dependent on the hx711 where the datasheet tells a
-	 * maximum value of 100 ns
-	 * but also on potential parasitic capacities on the wiring
-	 */
+	 
 	u32			data_ready_delay_ns;
 	u32			clock_frequency;
 };
@@ -103,37 +84,21 @@ static int hx711_cycle(struct hx711_data *hx711_data)
 {
 	unsigned long flags;
 
-	/*
-	 * if preempted for more then 60us while PD_SCK is high:
-	 * hx711 is going in reset
-	 * ==> measuring is false
-	 */
+	 
 	local_irq_save(flags);
 	gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
 
-	/*
-	 * wait until DOUT is ready
-	 * it turned out that parasitic capacities are extending the time
-	 * until DOUT has reached it's value
-	 */
+	 
 	ndelay(hx711_data->data_ready_delay_ns);
 
-	/*
-	 * here we are not waiting for 0.2 us as suggested by the datasheet,
-	 * because the oscilloscope showed in a test scenario
-	 * at least 1.15 us for PD_SCK high (T3 in datasheet)
-	 * and 0.56 us for PD_SCK low on TI Sitara with 800 MHz
-	 */
+	 
 	gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
 	local_irq_restore(flags);
 
-	/*
-	 * make it a square wave for addressing cases with capacitance on
-	 * PC_SCK
-	 */
+	 
 	ndelay(hx711_data->data_ready_delay_ns);
 
-	/* sample as late as possible */
+	 
 	return gpiod_get_value(hx711_data->gpiod_dout);
 }
 
@@ -143,7 +108,7 @@ static int hx711_read(struct hx711_data *hx711_data)
 	int value = 0;
 	int val = gpiod_get_value(hx711_data->gpiod_dout);
 
-	/* we double check if it's really down */
+	 
 	if (val)
 		return -EIO;
 
@@ -166,16 +131,12 @@ static int hx711_wait_for_ready(struct hx711_data *hx711_data)
 {
 	int i, val;
 
-	/*
-	 * in some rare cases the reset takes quite a long time
-	 * especially when the channel is changed.
-	 * Allow up to one second for it
-	 */
+	 
 	for (i = 0; i < 100; i++) {
 		val = gpiod_get_value(hx711_data->gpiod_dout);
 		if (!val)
 			break;
-		/* sleep at least 10 ms */
+		 
 		msleep(10);
 	}
 	if (val)
@@ -189,22 +150,14 @@ static int hx711_reset(struct hx711_data *hx711_data)
 	int val = hx711_wait_for_ready(hx711_data);
 
 	if (val) {
-		/*
-		 * an examination with the oszilloscope indicated
-		 * that the first value read after the reset is not stable
-		 * if we reset too short;
-		 * the shorter the reset cycle
-		 * the less reliable the first value after reset is;
-		 * there were no problems encountered with a value
-		 * of 10 ms or higher
-		 */
+		 
 		gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
 		msleep(10);
 		gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
 
 		val = hx711_wait_for_ready(hx711_data);
 
-		/* after a reset the gain is 128 */
+		 
 		hx711_data->gain_set = HX711_RESET_GAIN;
 	}
 
@@ -249,10 +202,7 @@ static int hx711_reset_read(struct hx711_data *hx711_data, int chan)
 	int ret;
 	int val;
 
-	/*
-	 * hx711_reset() must be called from here
-	 * because it could be calling hx711_read() by itself
-	 */
+	 
 	if (hx711_reset(hx711_data)) {
 		dev_err(hx711_data->dev, "reset failed!");
 		return -EIO;
@@ -310,10 +260,7 @@ static int hx711_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * a scale greater than 1 mV per LSB is not possible
-		 * with the HX711, therefore val must be 0
-		 */
+		 
 		if (val != 0)
 			return -EINVAL;
 
@@ -476,10 +423,7 @@ static int hx711_probe(struct platform_device *pdev)
 
 	mutex_init(&hx711_data->lock);
 
-	/*
-	 * PD_SCK stands for power down and serial clock input of HX711
-	 * in the driver it is an output
-	 */
+	 
 	hx711_data->gpiod_pd_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_LOW);
 	if (IS_ERR(hx711_data->gpiod_pd_sck)) {
 		dev_err(dev, "failed to get sck-gpiod: err=%ld\n",
@@ -487,10 +431,7 @@ static int hx711_probe(struct platform_device *pdev)
 		return PTR_ERR(hx711_data->gpiod_pd_sck);
 	}
 
-	/*
-	 * DOUT stands for serial data output of HX711
-	 * for the driver it is an input
-	 */
+	 
 	hx711_data->gpiod_dout = devm_gpiod_get(dev, "dout", GPIOD_IN);
 	if (IS_ERR(hx711_data->gpiod_dout)) {
 		dev_err(dev, "failed to get dout-gpiod: err=%ld\n",
@@ -506,23 +447,12 @@ static int hx711_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * with
-	 * full scale differential input range: AVDD / GAIN
-	 * full scale output data: 2^24
-	 * we can say:
-	 *     AVDD / GAIN = 2^24
-	 * therefore:
-	 *     1 LSB = AVDD / GAIN / 2^24
-	 * AVDD is in uV, but we need 10^-9 mV
-	 * approximately to fit into a 32 bit number:
-	 * 1 LSB = (AVDD * 100) / GAIN / 1678 [10^-9 mV]
-	 */
+	 
 	ret = regulator_get_voltage(hx711_data->reg_avdd);
 	if (ret < 0)
 		goto error_regulator;
 
-	/* we need 10^-9 mV */
+	 
 	ret *= 100;
 
 	for (i = 0; i < HX711_GAIN_MAX; i++)
@@ -536,10 +466,7 @@ static int hx711_probe(struct platform_device *pdev)
 	ret = of_property_read_u32(np, "clock-frequency",
 					&hx711_data->clock_frequency);
 
-	/*
-	 * datasheet says the high level of PD_SCK has a maximum duration
-	 * of 50 microseconds
-	 */
+	 
 	if (hx711_data->clock_frequency < 20000) {
 		dev_warn(dev, "clock-frequency too low - assuming 400 kHz\n");
 		hx711_data->clock_frequency = 400000;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,7 +68,7 @@ int perf_mem_events__parse(const char *str)
 	char *buf;
 	int j;
 
-	/* We need buffer that we know we can write to. */
+	 
 	buf = malloc(strlen(str) + 1);
 	if (!buf)
 		return -ENOMEM;
@@ -125,18 +125,11 @@ int perf_mem_events__init(void)
 		struct perf_mem_event *e = perf_mem_events__ptr(j);
 		struct perf_pmu *pmu = NULL;
 
-		/*
-		 * If the event entry isn't valid, skip initialization
-		 * and "e->supported" will keep false.
-		 */
+		 
 		if (!e->tag)
 			continue;
 
-		/*
-		 * Scan all PMUs not just core ones, since perf mem/c2c on
-		 * platforms like AMD uses IBS OP PMU which is independent
-		 * of core PMU.
-		 */
+		 
 		while ((pmu = perf_pmus__scan(pmu)) != NULL) {
 			e->supported |= perf_mem_event__supported(mnt, pmu, e);
 			if (e->supported) {
@@ -248,7 +241,7 @@ int perf_mem__tlb_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
 	u64 m = PERF_MEM_TLB_NA;
 	u64 hit, miss;
 
-	sz -= 1; /* -1 for null termination */
+	sz -= 1;  
 	out[0] = '\0';
 
 	if (mem_info)
@@ -257,7 +250,7 @@ int perf_mem__tlb_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
 	hit = m & PERF_MEM_TLB_HIT;
 	miss = m & PERF_MEM_TLB_MISS;
 
-	/* already taken care of */
+	 
 	m &= ~(PERF_MEM_TLB_HIT|PERF_MEM_TLB_MISS);
 
 	for (i = 0; m && i < ARRAY_SIZE(tlb_access); i++, m >>= 1) {
@@ -309,11 +302,7 @@ static const char * const mem_lvlnum[] = {
 
 static const char * const mem_hops[] = {
 	"N/A",
-	/*
-	 * While printing, 'Remote' will be added to represent
-	 * 'Remote core, same node' accesses as remote field need
-	 * to be set with mem_hops field.
-	 */
+	 
 	"core, same node",
 	"node, same socket",
 	"socket, same board",
@@ -353,7 +342,7 @@ int perf_mem__lvl_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
 	int lvl;
 	char hit_miss[5] = {0};
 
-	sz -= 1; /* -1 for null termination */
+	sz -= 1;  
 	out[0] = '\0';
 
 	if (!mem_info)
@@ -431,7 +420,7 @@ int perf_mem__snp_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
 	size_t i, l = 0;
 	u64 m = PERF_MEM_SNOOP_NA;
 
-	sz -= 1; /* -1 for null termination */
+	sz -= 1;  
 	out[0] = '\0';
 
 	if (mem_info)
@@ -491,7 +480,7 @@ int perf_mem__blk_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
 	size_t l = 0;
 	u64 mask = PERF_MEM_BLK_NA;
 
-	sz -= 1; /* -1 for null termination */
+	sz -= 1;  
 	out[0] = '\0';
 
 	if (mem_info)
@@ -539,14 +528,7 @@ int c2c_decode_stats(struct c2c_stats *stats, struct mem_info *mi)
 	u64 snoopx = data_src->mem_snoopx;
 	u64 lock   = data_src->mem_lock;
 	u64 blk    = data_src->mem_blk;
-	/*
-	 * Skylake might report unknown remote level via this
-	 * bit, consider it when evaluating remote HITMs.
-	 *
-	 * Incase of power, remote field can also be used to denote cache
-	 * accesses from the another core of same node. Hence, setting
-	 * mrem only when HOPS is zero along with set remote field.
-	 */
+	 
 	bool mrem  = (data_src->mem_remote && !data_src->mem_hops);
 	int err = 0;
 
@@ -572,7 +554,7 @@ do {				\
 	if (blk & P(BLK, ADDR)) stats->blk_addr++;
 
 	if (op & P(OP, LOAD)) {
-		/* load */
+		 
 		stats->load++;
 
 		if (!daddr) {
@@ -637,7 +619,7 @@ do {				\
 			stats->ld_miss++;
 
 	} else if (op & P(OP, STORE)) {
-		/* store */
+		 
 		stats->store++;
 
 		if (!daddr) {
@@ -654,7 +636,7 @@ do {				\
 		if (lvl & P(LVL, NA))
 			stats->st_na++;
 	} else {
-		/* unparsable data_src? */
+		 
 		stats->noparse++;
 		return -1;
 	}

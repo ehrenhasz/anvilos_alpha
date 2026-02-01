@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ss-prng.c - hardware cryptographic offloader for
- * Allwinner A80/A83T SoC
- *
- * Copyright (C) 2015-2020 Corentin Labbe <clabbe@baylibre.com>
- *
- * This file handle the PRNG found in the SS
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 #include "sun8i-ss.h"
 #include <linux/dma-mapping.h>
 #include <linux/kernel.h>
@@ -77,10 +68,7 @@ int sun8i_ss_prng_generate(struct crypto_rng *tfm, const u8 *src,
 		return -EINVAL;
 	}
 
-	/* The SS does not give an updated seed, so we need to get a new one.
-	 * So we will ask for an extra PRNG_SEED_SIZE data.
-	 * We want dlen + seedsize rounded up to a multiple of PRNG_DATA_SIZE
-	 */
+	 
 	todo = dlen + PRNG_SEED_SIZE + PRNG_DATA_SIZE;
 	todo -= todo % PRNG_DATA_SIZE;
 
@@ -126,14 +114,14 @@ int sun8i_ss_prng_generate(struct crypto_rng *tfm, const u8 *src,
 
 	mutex_lock(&ss->mlock);
 	writel(dma_iv, ss->base + SS_IV_ADR_REG);
-	/* the PRNG act badly (failing rngtest) without SS_KEY_ADR_REG set */
+	 
 	writel(dma_iv, ss->base + SS_KEY_ADR_REG);
 	writel(dma_dst, ss->base + SS_DST_ADR_REG);
 	writel(todo / 4, ss->base + SS_LEN_ADR_REG);
 
 	reinit_completion(&ss->flows[flow].complete);
 	ss->flows[flow].status = 0;
-	/* Be sure all data is written before enabling the task */
+	 
 	wmb();
 
 	writel(v, ss->base + SS_CTL_REG);
@@ -144,18 +132,7 @@ int sun8i_ss_prng_generate(struct crypto_rng *tfm, const u8 *src,
 		dev_err(ss->dev, "DMA timeout for PRNG (size=%u)\n", todo);
 		err = -EFAULT;
 	}
-	/* Since cipher and hash use the linux/cryptoengine and that we have
-	 * a cryptoengine per flow, we are sure that they will issue only one
-	 * request per flow.
-	 * Since the cryptoengine wait for completion before submitting a new
-	 * one, the mlock could be left just after the final writel.
-	 * But cryptoengine cannot handle crypto_rng, so we need to be sure
-	 * nothing will use our flow.
-	 * The easiest way is to grab mlock until the hardware end our requests.
-	 * We could have used a per flow lock, but this would increase
-	 * complexity.
-	 * The drawback is that no request could be handled for the other flow.
-	 */
+	 
 	mutex_unlock(&ss->mlock);
 
 	pm_runtime_put(ss->dev);
@@ -167,7 +144,7 @@ err_iv:
 
 	if (!err) {
 		memcpy(dst, d, dlen);
-		/* Update seed */
+		 
 		memcpy(ctx->seed, d + dlen, ctx->slen);
 	}
 err_free:

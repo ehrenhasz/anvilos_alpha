@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2017 The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
 #include <linux/bug.h>
@@ -83,9 +82,7 @@
 
 #define reg_idx(reg, i)         (((i) * IA_L2_REG_OFFSET) + reg##_BASE)
 
-/*
- * Events
- */
+ 
 #define L2_EVENT_CYCLES                    0xfe
 #define L2_EVENT_DCACHE_OPS                0x400
 #define L2_EVENT_ICACHE_OPS                0x401
@@ -102,10 +99,7 @@
 
 struct cluster_pmu;
 
-/*
- * Aggregate PMU. Implements the core pmu functions and manages
- * the hardware PMUs.
- */
+ 
 struct l2cache_pmu {
 	struct hlist_node node;
 	u32 num_pmus;
@@ -117,21 +111,7 @@ struct l2cache_pmu {
 	struct list_head clusters;
 };
 
-/*
- * The cache is made up of one or more clusters, each cluster has its own PMU.
- * Each cluster is associated with one or more CPUs.
- * This structure represents one of the hardware PMUs.
- *
- * Events can be envisioned as a 2-dimensional array. Each column represents
- * a group of events. There are 8 groups. Only one entry from each
- * group can be in use at a time.
- *
- * Events are specified as 0xCCG, where CC is 2 hex digits specifying
- * the code (array row) and G specifies the group (column).
- *
- * In addition there is a cycle counter event specified by L2CYCLE_CTR_RAW_CODE
- * which is outside the above scheme.
- */
+ 
 struct cluster_pmu {
 	struct list_head next;
 	struct perf_event *events[MAX_L2_CTRS];
@@ -140,9 +120,9 @@ struct cluster_pmu {
 	DECLARE_BITMAP(used_groups, L2_EVT_GROUP_MAX + 1);
 	int irq;
 	int cluster_id;
-	/* The CPU that is used for collecting events on this cluster */
+	 
 	int on_cpu;
-	/* All the CPUs associated with this cluster */
+	 
 	cpumask_t cluster_cpus;
 	spinlock_t pmu_lock;
 };
@@ -168,7 +148,7 @@ static inline struct cluster_pmu *get_cluster_pmu(
 
 static void cluster_pmu_reset(void)
 {
-	/* Reset all counters */
+	 
 	kryo_l2_set_indirect_reg(L2PMCR, L2PMCR_RESET_ALL);
 	kryo_l2_set_indirect_reg(L2PMCNTENCLR, l2_counter_present_mask);
 	kryo_l2_set_indirect_reg(L2PMINTENCLR, l2_counter_present_mask);
@@ -262,11 +242,7 @@ static void cluster_pmu_set_resr(struct cluster_pmu *cluster,
 	spin_unlock_irqrestore(&cluster->pmu_lock, flags);
 }
 
-/*
- * Hardware allows filtering of events based on the originating
- * CPU. Turn this off by setting filter bits to allow events from
- * all CPUS, subunits and ID independent events in this cluster.
- */
+ 
 static inline void cluster_pmu_set_evfilter_sys_mode(u32 ctr)
 {
 	u32 val =  L2PMXEVFILTER_SUFILTER_ALL |
@@ -305,10 +281,7 @@ static void l2_cache_event_update(struct perf_event *event)
 		now = cluster_pmu_counter_get_value(idx);
 	} while (local64_cmpxchg(&hwc->prev_count, prev, now) != prev);
 
-	/*
-	 * The cycle counter is 64-bit, but all other counters are
-	 * 32-bit, and we must handle 32-bit overflow explicitly.
-	 */
+	 
 	delta = now - prev;
 	if (idx != l2_cycle_ctr_idx)
 		delta &= 0xffffffff;
@@ -322,11 +295,7 @@ static void l2_cache_cluster_set_period(struct cluster_pmu *cluster,
 	u32 idx = hwc->idx;
 	u64 new;
 
-	/*
-	 * We limit the max period to half the max counter value so
-	 * that even in the case of extreme interrupt latency the
-	 * counter will (hopefully) not wrap past its initial value.
-	 */
+	 
 	if (idx == l2_cycle_ctr_idx)
 		new = L2_CYCLE_COUNTER_RELOAD;
 	else
@@ -353,14 +322,10 @@ static int l2_cache_get_event_idx(struct cluster_pmu *cluster,
 
 	idx = find_first_zero_bit(cluster->used_counters, num_ctrs);
 	if (idx == num_ctrs)
-		/* The counters are all in use. */
+		 
 		return -EAGAIN;
 
-	/*
-	 * Check for column exclusion: event column already in use by another
-	 * event. This is for events which are not in the same group.
-	 * Conflicting events in the same group are detected in event_init.
-	 */
+	 
 	group = L2_EVT_GROUP(hwc->config_base);
 	if (test_bit(group, cluster->used_groups))
 		return -EAGAIN;
@@ -412,20 +377,11 @@ static irqreturn_t l2_cache_handle_irq(int irq_num, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * Implementation of abstract pmu functionality required by
- * the core perf events code.
- */
+ 
 
 static void l2_cache_pmu_enable(struct pmu *pmu)
 {
-	/*
-	 * Although there is only one PMU (per socket) controlling multiple
-	 * physical PMUs (per cluster), because we do not support per-task mode
-	 * each event is associated with a CPU. Each event has pmu_enable
-	 * called on its CPU, so here it is only necessary to enable the
-	 * counters for the current CPU.
-	 */
+	 
 
 	cluster_pmu_enable();
 }
@@ -468,7 +424,7 @@ static int l2_cache_event_init(struct perf_event *event)
 		return -EINVAL;
 	}
 
-	/* Don't allow groups with mixed PMUs, except for s/w events */
+	 
 	if (event->group_leader->pmu != event->pmu &&
 	    !is_software_event(event->group_leader)) {
 		dev_dbg_ratelimited(&l2cache_pmu->pdev->dev,
@@ -487,13 +443,13 @@ static int l2_cache_event_init(struct perf_event *event)
 
 	cluster = get_cluster_pmu(l2cache_pmu, event->cpu);
 	if (!cluster) {
-		/* CPU has not been initialised */
+		 
 		dev_dbg_ratelimited(&l2cache_pmu->pdev->dev,
 			"CPU%d not associated with L2 cluster\n", event->cpu);
 		return -EINVAL;
 	}
 
-	/* Ensure all events in a group are on the same cpu */
+	 
 	if ((event->group_leader != event) &&
 	    (cluster->on_cpu != event->group_leader->cpu)) {
 		dev_dbg_ratelimited(&l2cache_pmu->pdev->dev,
@@ -529,10 +485,7 @@ static int l2_cache_event_init(struct perf_event *event)
 	hwc->idx = -1;
 	hwc->config_base = event->attr.config;
 
-	/*
-	 * Ensure all events are on the same cpu so all events are in the
-	 * same cpu context, to avoid races on pmu_enable etc.
-	 */
+	 
 	event->cpu = cluster->on_cpu;
 
 	return 0;
@@ -606,7 +559,7 @@ static int l2_cache_event_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		l2_cache_event_start(event, flags);
 
-	/* Propagate changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 
 	return err;
@@ -653,7 +606,7 @@ static const struct attribute_group l2_cache_pmu_cpumask_group = {
 	.attrs = l2_cache_pmu_cpumask_attrs,
 };
 
-/* CCG format for perf RAW codes. */
+ 
 PMU_FORMAT_ATTR(l2_code,   "config:4-11");
 PMU_FORMAT_ATTR(l2_group,  "config:0-3");
 PMU_FORMAT_ATTR(event,     "config:0-11");
@@ -709,9 +662,7 @@ static const struct attribute_group *l2_cache_pmu_attr_grps[] = {
 	NULL,
 };
 
-/*
- * Generic device handlers
- */
+ 
 
 static const struct acpi_device_id l2_cache_pmu_acpi_match[] = {
 	{ "QCOM8130", },
@@ -724,10 +675,7 @@ static int get_num_counters(void)
 
 	val = kryo_l2_get_indirect_reg(L2PMCR);
 
-	/*
-	 * Read number of counters from L2PMCR and add 1
-	 * for the cycle counter.
-	 */
+	 
 	return ((val >> L2PMCR_NUM_EV_SHIFT) & L2PMCR_NUM_EV_MASK) + 1;
 }
 
@@ -738,11 +686,7 @@ static struct cluster_pmu *l2_cache_associate_cpu_with_cluster(
 	int cpu_cluster_id;
 	struct cluster_pmu *cluster;
 
-	/*
-	 * This assumes that the cluster_id is in MPIDR[aff1] for
-	 * single-threaded cores, and MPIDR[aff2] for multi-threaded
-	 * cores. This logic will have to be updated if this changes.
-	 */
+	 
 	mpidr = read_cpuid_mpidr();
 	if (mpidr & MPIDR_MT_BITMASK)
 		cpu_cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 2);
@@ -772,23 +716,20 @@ static int l2cache_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 	l2cache_pmu = hlist_entry_safe(node, struct l2cache_pmu, node);
 	cluster = get_cluster_pmu(l2cache_pmu, cpu);
 	if (!cluster) {
-		/* First time this CPU has come online */
+		 
 		cluster = l2_cache_associate_cpu_with_cluster(l2cache_pmu, cpu);
 		if (!cluster) {
-			/* Only if broken firmware doesn't list every cluster */
+			 
 			WARN_ONCE(1, "No L2 cache cluster for CPU%d\n", cpu);
 			return 0;
 		}
 	}
 
-	/* If another CPU is managing this cluster, we're done */
+	 
 	if (cluster->on_cpu != -1)
 		return 0;
 
-	/*
-	 * All CPUs on this cluster were down, use this one.
-	 * Reset to put it into sane state.
-	 */
+	 
 	cluster->on_cpu = cpu;
 	cpumask_set_cpu(cpu, &l2cache_pmu->cpumask);
 	cluster_pmu_reset();
@@ -811,15 +752,15 @@ static int l2cache_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	if (!cluster)
 		return 0;
 
-	/* If this CPU is not managing the cluster, we're done */
+	 
 	if (cluster->on_cpu != cpu)
 		return 0;
 
-	/* Give up ownership of cluster */
+	 
 	cpumask_clear_cpu(cpu, &l2cache_pmu->cpumask);
 	cluster->on_cpu = -1;
 
-	/* Any other CPU for this cluster which is still online */
+	 
 	cpumask_and(&cluster_online_cpus, &cluster->cluster_cpus,
 		    cpu_online_mask);
 	target = cpumask_any_but(&cluster_online_cpus, cpu);
@@ -902,7 +843,7 @@ static int l2_cache_pmu_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, l2cache_pmu);
 	l2cache_pmu->pmu = (struct pmu) {
-		/* suffix is instance id for future use with multiple sockets */
+		 
 		.name		= "l2cache_0",
 		.task_ctx_nr    = perf_invalid_context,
 		.pmu_enable	= l2_cache_pmu_enable,
@@ -930,7 +871,7 @@ static int l2_cache_pmu_probe(struct platform_device *pdev)
 
 	cpumask_clear(&l2cache_pmu->cpumask);
 
-	/* Read cluster info and initialize each cluster */
+	 
 	err = device_for_each_child(&pdev->dev, l2cache_pmu,
 				    l2_cache_pmu_probe_cluster);
 	if (err)

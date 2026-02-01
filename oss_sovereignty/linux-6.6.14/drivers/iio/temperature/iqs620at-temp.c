@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Azoteq IQS620AT Temperature Sensor
- *
- * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iio/iio.h>

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Turris Mox module configuration bus driver
- *
- * Copyright (C) 2019 Marek Behún <kabel@kernel.org>
- */
+ 
+ 
 
 #ifndef __LINUX_MOXTET_H
 #define __LINUX_MOXTET_H
@@ -106,4 +102,4 @@ to_moxtet_device(struct device *dev)
 	return container_of(dev, struct moxtet_device, dev);
 }
 
-#endif /* __LINUX_MOXTET_H */
+#endif  

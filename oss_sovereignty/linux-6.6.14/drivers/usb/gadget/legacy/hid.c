@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * hid.c -- HID Composite driver
- *
- * Based on multi.c
- *
- * Copyright (C) 2010 Fabien Chouteau <fabien.chouteau@barco.com>
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -20,12 +14,12 @@
 
 #include "u_hid.h"
 
-/*-------------------------------------------------------------------------*/
+ 
 
-#define HIDG_VENDOR_NUM		0x0525	/* XXX NetChip */
-#define HIDG_PRODUCT_NUM	0xa4ac	/* Linux-USB HID gadget */
+#define HIDG_VENDOR_NUM		0x0525	 
+#define HIDG_PRODUCT_NUM	0xa4ac	 
 
-/*-------------------------------------------------------------------------*/
+ 
 
 struct hidg_func_node {
 	struct usb_function_instance *fi;
@@ -36,45 +30,45 @@ struct hidg_func_node {
 
 static LIST_HEAD(hidg_func_list);
 
-/*-------------------------------------------------------------------------*/
+ 
 USB_GADGET_COMPOSITE_OPTIONS();
 
 static struct usb_device_descriptor device_desc = {
 	.bLength =		sizeof device_desc,
 	.bDescriptorType =	USB_DT_DEVICE,
 
-	/* .bcdUSB = DYNAMIC */
+	 
 
-	/* .bDeviceClass =		USB_CLASS_COMM, */
-	/* .bDeviceSubClass =	0, */
-	/* .bDeviceProtocol =	0, */
+	 
+	 
+	 
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
-	/* .bMaxPacketSize0 = f(hardware) */
+	 
 
-	/* Vendor and product id can be overridden by module parameters.  */
+	 
 	.idVendor =		cpu_to_le16(HIDG_VENDOR_NUM),
 	.idProduct =		cpu_to_le16(HIDG_PRODUCT_NUM),
-	/* .bcdDevice = f(hardware) */
-	/* .iManufacturer = DYNAMIC */
-	/* .iProduct = DYNAMIC */
-	/* NO SERIAL NUMBER */
+	 
+	 
+	 
+	 
 	.bNumConfigurations =	1,
 };
 
 static const struct usb_descriptor_header *otg_desc[2];
 
-/* string IDs are assigned dynamically */
+ 
 static struct usb_string strings_dev[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = DRIVER_DESC,
 	[USB_GADGET_SERIAL_IDX].s = "",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_dev,
 };
 
@@ -85,7 +79,7 @@ static struct usb_gadget_strings *dev_strings[] = {
 
 
 
-/****************************** Configurations ******************************/
+ 
 
 static int do_config(struct usb_configuration *c)
 {
@@ -124,11 +118,11 @@ put:
 static struct usb_configuration config_driver = {
 	.label			= "HID Gadget",
 	.bConfigurationValue	= 1,
-	/* .iConfiguration = DYNAMIC */
+	 
 	.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
 };
 
-/****************************** Gadget Bind ******************************/
+ 
 
 static int hid_bind(struct usb_composite_dev *cdev)
 {
@@ -157,9 +151,7 @@ static int hid_bind(struct usb_composite_dev *cdev)
 	}
 
 
-	/* Allocate string descriptor numbers ... note that string
-	 * contents can be overridden by the composite_dev glue.
-	 */
+	 
 
 	status = usb_string_ids_tab(cdev, strings_dev);
 	if (status < 0)
@@ -180,7 +172,7 @@ static int hid_bind(struct usb_composite_dev *cdev)
 		otg_desc[1] = NULL;
 	}
 
-	/* register our configuration */
+	 
 	status = usb_add_config(cdev, &config_driver, do_config);
 	if (status < 0)
 		goto free_otg_desc;
@@ -248,7 +240,7 @@ static void hidg_plat_driver_remove(struct platform_device *pdev)
 }
 
 
-/****************************** Some noise ******************************/
+ 
 
 
 static struct usb_composite_driver hidg_driver = {

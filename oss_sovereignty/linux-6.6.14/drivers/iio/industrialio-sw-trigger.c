@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * The Industrial I/O core, software trigger functions
- *
- * Copyright (c) 2015 Intel Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>

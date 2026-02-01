@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2005 Cisco Systems.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef IB_SRP_H
 #define IB_SRP_H
@@ -68,9 +38,7 @@ enum {
 
 	SRP_MAX_IMM_SGE		= 2,
 	SRP_MAX_SGE		= SRP_MAX_IMM_SGE + 1,
-	/*
-	 * Choose the immediate data offset such that a 32 byte CDB still fits.
-	 */
+	 
 	SRP_IMM_DATA_OFFSET	= sizeof(struct srp_cmd) +
 				  SRP_MAX_ADD_CDB_LEN +
 				  sizeof(struct srp_imm_buf),
@@ -93,14 +61,7 @@ enum srp_iu_type {
 	SRP_IU_RSP,
 };
 
-/*
- * RDMA adapter in the initiator system.
- *
- * @dev_list: List of RDMA ports associated with this RDMA adapter (srp_host).
- * @mr_page_mask: HCA memory registration page mask.
- * @mr_page_size: HCA memory registration page size.
- * @mr_max_size: Maximum size in bytes of a single FR registration request.
- */
+ 
 struct srp_device {
 	struct list_head	dev_list;
 	struct ib_device       *dev;
@@ -114,12 +75,7 @@ struct srp_device {
 	bool			use_fast_reg;
 };
 
-/*
- * One port of an RDMA adapter in the initiator system.
- *
- * @target_list: List of connected target ports (struct srp_target_port).
- * @target_lock: Protects @target_list.
- */
+ 
 struct srp_host {
 	struct srp_device      *srp_dev;
 	u32			port;
@@ -140,19 +96,14 @@ struct srp_request {
 	struct ib_cqe		reg_cqe;
 };
 
-/**
- * struct srp_rdma_ch
- * @comp_vector: Completion vector used by this RDMA channel.
- * @max_it_iu_len: Maximum initiator-to-target information unit length.
- * @max_ti_iu_len: Maximum target-to-initiator information unit length.
- */
+ 
 struct srp_rdma_ch {
-	/* These are RW in the hot path, and commonly used together */
+	 
 	struct list_head	free_tx;
 	spinlock_t		lock;
 	s32			req_lim;
 
-	/* These are read-only in the hot path */
+	 
 	struct srp_target_port *target ____cacheline_aligned_in_smp;
 	struct ib_cq	       *send_cq;
 	struct ib_cq	       *recv_cq;
@@ -163,9 +114,7 @@ struct srp_rdma_ch {
 	u8			max_imm_sge;
 	bool			use_imm_data;
 
-	/* Everything above this point is used in the hot path of
-	 * command processing. Try to keep them packed into cachelines.
-	 */
+	 
 
 	struct completion	done;
 	int			status;
@@ -192,16 +141,12 @@ struct srp_rdma_ch {
 	bool			connected;
 };
 
-/**
- * struct srp_target_port - RDMA port in the SRP target system
- * @comp_vector: Completion vector used by the first RDMA channel created for
- *   this target port.
- */
+ 
 struct srp_target_port {
-	/* read and written in the hot path */
+	 
 	spinlock_t		lock;
 
-	/* read only in the hot path */
+	 
 	u32			global_rkey;
 	struct srp_rdma_ch	*ch;
 	struct net		*net;
@@ -213,7 +158,7 @@ struct srp_target_port {
 	unsigned int		indirect_size;
 	bool			allow_ext_sg;
 
-	/* other member variables */
+	 
 	union ib_gid		sgid;
 	__be64			id_ext;
 	__be64			ioc_guid;
@@ -279,28 +224,13 @@ struct srp_iu {
 	struct ib_cqe		cqe;
 };
 
-/**
- * struct srp_fr_desc - fast registration work request arguments
- * @entry: Entry in srp_fr_pool.free_list.
- * @mr:    Memory region.
- * @frpl:  Fast registration page list.
- */
+ 
 struct srp_fr_desc {
 	struct list_head		entry;
 	struct ib_mr			*mr;
 };
 
-/**
- * struct srp_fr_pool - pool of fast registration descriptors
- *
- * An entry is available for allocation if and only if it occurs in @free_list.
- *
- * @size:      Number of descriptors in this pool.
- * @max_page_list_len: Maximum fast registration work request page list length.
- * @lock:      Protects free_list.
- * @free_list: List of free descriptors.
- * @desc:      Fast registration descriptor pool.
- */
+ 
 struct srp_fr_pool {
 	int			size;
 	int			max_page_list_len;
@@ -309,20 +239,7 @@ struct srp_fr_pool {
 	struct srp_fr_desc	desc[];
 };
 
-/**
- * struct srp_map_state - per-request DMA memory mapping state
- * @desc:	    Pointer to the element of the SRP buffer descriptor array
- *		    that is being filled in.
- * @pages:	    Array with DMA addresses of pages being considered for
- *		    memory registration.
- * @base_dma_addr:  DMA address of the first page that has not yet been mapped.
- * @dma_len:	    Number of bytes that will be registered with the next FR
- *                  memory registration call.
- * @total_len:	    Total number of bytes in the sg-list being mapped.
- * @npages:	    Number of page addresses in the pages[] array.
- * @nmdesc:	    Number of FR memory descriptors used for mapping.
- * @ndesc:	    Number of SRP buffer descriptors that have been filled in.
- */
+ 
 struct srp_map_state {
 	union {
 		struct {
@@ -347,4 +264,4 @@ struct srp_map_state {
 	unsigned int		ndesc;
 };
 
-#endif /* IB_SRP_H */
+#endif  

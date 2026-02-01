@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_MTIO_COMPAT_H
 #define _LINUX_MTIO_COMPAT_H
 
@@ -6,11 +6,7 @@
 #include <uapi/linux/mtio.h>
 #include <linux/uaccess.h>
 
-/*
- * helper functions for implementing compat ioctls on the four tape
- * drivers: we define the 32-bit layout of each incompatible structure,
- * plus a wrapper function to copy it to user space in either format.
- */
+ 
 
 struct	mtget32 {
 	s32	mt_type;

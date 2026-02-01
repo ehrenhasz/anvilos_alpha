@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- *  IPv6 IOAM implementation
- *
- *  Author:
- *  Justin Iurman <justin.iurman@uliege.be>
- */
+ 
+ 
 
 #ifndef _UAPI_LINUX_IOAM6_H
 #define _UAPI_LINUX_IOAM6_H
@@ -21,32 +16,28 @@
 #define IOAM6_DEFAULT_IF_ID IOAM6_U16_UNAVAILABLE
 #define IOAM6_DEFAULT_IF_ID_WIDE IOAM6_U32_UNAVAILABLE
 
-/*
- * IPv6 IOAM Option Header
- */
+ 
 struct ioam6_hdr {
 	__u8 opt_type;
 	__u8 opt_len;
-	__u8 :8;				/* reserved */
+	__u8 :8;				 
 #define IOAM6_TYPE_PREALLOC 0
 	__u8 type;
 } __attribute__((packed));
 
-/*
- * IOAM Trace Header
- */
+ 
 struct ioam6_trace_hdr {
 	__be16	namespace_id;
 
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 
-	__u8	:1,				/* unused */
-		:1,				/* unused */
+	__u8	:1,				 
+		:1,				 
 		overflow:1,
 		nodelen:5;
 
 	__u8	remlen:7,
-		:1;				/* unused */
+		:1;				 
 
 	union {
 		__be32 type_be32;
@@ -60,23 +51,23 @@ struct ioam6_trace_hdr {
 				bit2:1,
 				bit1:1,
 				bit0:1,
-				bit15:1,	/* unused */
-				bit14:1,	/* unused */
-				bit13:1,	/* unused */
-				bit12:1,	/* unused */
+				bit15:1,	 
+				bit14:1,	 
+				bit13:1,	 
+				bit12:1,	 
 				bit11:1,
 				bit10:1,
 				bit9:1,
 				bit8:1,
-				bit23:1,	/* reserved */
+				bit23:1,	 
 				bit22:1,
-				bit21:1,	/* unused */
-				bit20:1,	/* unused */
-				bit19:1,	/* unused */
-				bit18:1,	/* unused */
-				bit17:1,	/* unused */
-				bit16:1,	/* unused */
-				:8;		/* reserved */
+				bit21:1,	 
+				bit20:1,	 
+				bit19:1,	 
+				bit18:1,	 
+				bit17:1,	 
+				bit16:1,	 
+				:8;		 
 		} type;
 	};
 
@@ -84,10 +75,10 @@ struct ioam6_trace_hdr {
 
 	__u8	nodelen:5,
 		overflow:1,
-		:1,				/* unused */
-		:1;				/* unused */
+		:1,				 
+		:1;				 
 
-	__u8	:1,				/* unused */
+	__u8	:1,				 
 		remlen:7;
 
 	union {
@@ -106,19 +97,19 @@ struct ioam6_trace_hdr {
 				bit9:1,
 				bit10:1,
 				bit11:1,
-				bit12:1,	/* unused */
-				bit13:1,	/* unused */
-				bit14:1,	/* unused */
-				bit15:1,	/* unused */
-				bit16:1,	/* unused */
-				bit17:1,	/* unused */
-				bit18:1,	/* unused */
-				bit19:1,	/* unused */
-				bit20:1,	/* unused */
-				bit21:1,	/* unused */
+				bit12:1,	 
+				bit13:1,	 
+				bit14:1,	 
+				bit15:1,	 
+				bit16:1,	 
+				bit17:1,	 
+				bit18:1,	 
+				bit19:1,	 
+				bit20:1,	 
+				bit21:1,	 
 				bit22:1,
-				bit23:1,	/* reserved */
-				:8;		/* reserved */
+				bit23:1,	 
+				:8;		 
 		} type;
 	};
 
@@ -130,4 +121,4 @@ struct ioam6_trace_hdr {
 	__u8	data[];
 } __attribute__((packed));
 
-#endif /* _UAPI_LINUX_IOAM6_H */
+#endif  

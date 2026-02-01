@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GUP long-term page pinning tests.
- *
- * Copyright 2023, Red Hat, Inc.
- *
- * Author(s): David Hildenbrand <david@redhat.com>
- */
+
+ 
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +18,7 @@
 #include "local_config.h"
 #ifdef LOCAL_CONFIG_HAVE_LIBURING
 #include <liburing.h>
-#endif /* LOCAL_CONFIG_HAVE_LIBURING */
+#endif  
 
 #include "../../../../mm/gup_test.h"
 #include "../kselftest.h"
@@ -49,11 +43,7 @@ static __fsword_t get_fs_type(int fd)
 
 static bool fs_is_unknown(__fsword_t fs_type)
 {
-	/*
-	 * We only support some filesystems in our tests when dealing with
-	 * R/W long-term pinning. For these filesystems, we can be fairly sure
-	 * whether they support it or not.
-	 */
+	 
 	switch (fs_type) {
 	case TMPFS_MAGIC:
 	case HUGETLBFS_MAGIC:
@@ -85,7 +75,7 @@ enum test_type {
 	TEST_TYPE_RW_FAST,
 #ifdef LOCAL_CONFIG_HAVE_LIBURING
 	TEST_TYPE_IOURING,
-#endif /* LOCAL_CONFIG_HAVE_LIBURING */
+#endif  
 };
 
 static void do_test(int fd, size_t size, enum test_type type, bool shared)
@@ -118,10 +108,7 @@ static void do_test(int fd, size_t size, enum test_type type, bool shared)
 		return;
 	}
 
-	/*
-	 * Fault in the page writable such that GUP-fast can eventually pin
-	 * it immediately.
-	 */
+	 
 	memset(mem, 0, size);
 
 	switch (type) {
@@ -144,11 +131,7 @@ static void do_test(int fd, size_t size, enum test_type type, bool shared)
 			ksft_test_result_skip("Unknown filesystem\n");
 			return;
 		}
-		/*
-		 * R/O pinning or pinning in a private mapping is always
-		 * expected to work. Otherwise, we expect long-term R/W pinning
-		 * to only succeed for special fielesystems.
-		 */
+		 
 		should_work = !shared || !rw ||
 			      fs_supports_writable_longterm_pinning(fs_type);
 
@@ -171,11 +154,7 @@ static void do_test(int fd, size_t size, enum test_type type, bool shared)
 		if (ioctl(gup_fd, PIN_LONGTERM_TEST_STOP))
 			ksft_print_msg("[INFO] PIN_LONGTERM_TEST_STOP failed\n");
 
-		/*
-		 * TODO: if the kernel ever supports long-term R/W pinning on
-		 * some previously unsupported filesystems, we might want to
-		 * perform some additional tests for possible data corruptions.
-		 */
+		 
 		ksft_test_result(should_work, "Should have worked\n");
 		break;
 	}
@@ -184,7 +163,7 @@ static void do_test(int fd, size_t size, enum test_type type, bool shared)
 		struct io_uring ring;
 		struct iovec iov;
 
-		/* io_uring always pins pages writable. */
+		 
 		if (shared && fs_is_unknown(fs_type)) {
 			ksft_test_result_skip("Unknown filesystem\n");
 			return;
@@ -192,28 +171,22 @@ static void do_test(int fd, size_t size, enum test_type type, bool shared)
 		should_work = !shared ||
 			      fs_supports_writable_longterm_pinning(fs_type);
 
-		/* Skip on errors, as we might just lack kernel support. */
+		 
 		ret = io_uring_queue_init(1, &ring, 0);
 		if (ret < 0) {
 			ksft_test_result_skip("io_uring_queue_init() failed\n");
 			break;
 		}
-		/*
-		 * Register the range as a fixed buffer. This will FOLL_WRITE |
-		 * FOLL_PIN | FOLL_LONGTERM the range.
-		 */
+		 
 		iov.iov_base = mem;
 		iov.iov_len = size;
 		ret = io_uring_register_buffers(&ring, &iov, 1);
-		/* Only new kernels return EFAULT. */
+		 
 		if (ret && (errno == ENOSPC || errno == EOPNOTSUPP ||
 			    errno == EFAULT)) {
 			ksft_test_result(!should_work, "Should have failed\n");
 		} else if (ret) {
-			/*
-			 * We might just lack support or have insufficient
-			 * MEMLOCK limits.
-			 */
+			 
 			ksft_test_result_skip("io_uring_register_buffers() failed\n");
 		} else {
 			ksft_test_result(should_work, "Should have worked\n");
@@ -223,7 +196,7 @@ static void do_test(int fd, size_t size, enum test_type type, bool shared)
 		io_uring_queue_exit(&ring);
 		break;
 	}
-#endif /* LOCAL_CONFIG_HAVE_LIBURING */
+#endif  
 	default:
 		assert(false);
 	}
@@ -371,7 +344,7 @@ static void test_private_iouring(int fd, size_t size)
 {
 	do_test(fd, size, TEST_TYPE_IOURING, false);
 }
-#endif /* LOCAL_CONFIG_HAVE_LIBURING */
+#endif  
 
 static const struct test_case test_cases[] = {
 	{
@@ -415,7 +388,7 @@ static const struct test_case test_cases[] = {
 		"io_uring fixed buffer with MAP_PRIVATE file mapping",
 		test_private_iouring,
 	},
-#endif /* LOCAL_CONFIG_HAVE_LIBURING */
+#endif  
 };
 
 static void run_test_case(struct test_case const *test_case)

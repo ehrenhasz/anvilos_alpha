@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/fs.h>
 #include <drm/drm_print.h>
@@ -19,10 +17,10 @@ static u32 obj_to_guc_log_dump_size(struct drm_i915_gem_object *obj)
 	if (!obj)
 		return PAGE_SIZE;
 
-	/* "0x%08x 0x%08x 0x%08x 0x%08x\n" => 16 bytes -> 44 chars => x2.75 */
+	 
 	size = ((obj->base.size * 11) + 3) / 4;
 
-	/* Add padding for final blank line, any extra header info, etc. */
+	 
 	size = PAGE_ALIGN(size + PAGE_SIZE);
 
 	return size;
@@ -131,10 +129,7 @@ guc_log_relay_write(struct file *filp,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Enable and start the guc log relay on value of 1.
-	 * Flush log relay for any other value.
-	 */
+	 
 	if (val == 1)
 		ret = intel_guc_log_relay_start(log);
 	else

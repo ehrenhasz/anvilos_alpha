@@ -1,37 +1,12 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <modes/modes.h>
 #include <sys/crypto/common.h>
 #include <sys/crypto/impl.h>
 
-/*
- * Initialize by setting iov_or_mp to point to the current iovec or mp,
- * and by setting current_offset to an offset within the current iovec or mp.
- */
+ 
 void
 crypto_init_ptrs(crypto_data_t *out, void **iov_or_mp, offset_t *current_offset)
 {
@@ -53,14 +28,10 @@ crypto_init_ptrs(crypto_data_t *out, void **iov_or_mp, offset_t *current_offset)
 		*iov_or_mp = (void *)(uintptr_t)vec_idx;
 		break;
 	}
-	} /* end switch */
+	}  
 }
 
-/*
- * Get pointers for where in the output to copy a block of encrypted or
- * decrypted data.  The iov_or_mp argument stores a pointer to the current
- * iovec or mp, and offset stores an offset into the current iovec or mp.
- */
+ 
 void
 crypto_get_ptrs(crypto_data_t *out, void **iov_or_mp, offset_t *current_offset,
     uint8_t **out_data_1, size_t *out_data_1_len, uint8_t **out_data_2,
@@ -75,7 +46,7 @@ crypto_get_ptrs(crypto_data_t *out, void **iov_or_mp, offset_t *current_offset,
 		offset = *current_offset;
 		iov = &out->cd_raw;
 		if ((offset + amt) <= iov->iov_len) {
-			/* one block fits */
+			 
 			*out_data_1 = (uint8_t *)iov->iov_base + offset;
 			*out_data_1_len = amt;
 			*out_data_2 = NULL;
@@ -99,12 +70,12 @@ crypto_get_ptrs(crypto_data_t *out, void **iov_or_mp, offset_t *current_offset,
 		*out_data_1 = p;
 
 		if (offset + amt <= iov_len) {
-			/* can fit one block into this iov */
+			 
 			*out_data_1_len = amt;
 			*out_data_2 = NULL;
 			*current_offset = offset + amt;
 		} else {
-			/* one block spans two iovecs */
+			 
 			*out_data_1_len = iov_len - offset;
 			if (vec_idx == zfs_uio_iovcnt(uio)) {
 				*out_data_2 = NULL;
@@ -118,7 +89,7 @@ crypto_get_ptrs(crypto_data_t *out, void **iov_or_mp, offset_t *current_offset,
 		*iov_or_mp = (void *)(uintptr_t)vec_idx;
 		break;
 	}
-	} /* end switch */
+	}  
 }
 
 void
@@ -163,17 +134,7 @@ explicit_memset(void *s, int c, size_t n)
 	return (s);
 }
 
-/*
- * Clear sensitive data in the context and free allocated memory.
- *
- * ctx->gcm_remainder may contain a plaintext remainder. ctx->gcm_H and
- * ctx->gcm_Htable contain the hash sub key which protects authentication.
- * ctx->gcm_pt_buf contains the plaintext result of decryption.
- *
- * Although extremely unlikely, ctx->gcm_J0 and ctx->gcm_tmp could be used for
- * a known plaintext attack, they consist of the IV and the first and last
- * counter respectively. If they should be cleared is debatable.
- */
+ 
 void
 gcm_clear_ctx(gcm_ctx_t *ctx)
 {
@@ -190,7 +151,7 @@ gcm_clear_ctx(gcm_ctx_t *ctx)
 		memset(ctx->gcm_pt_buf, 0, ctx->gcm_pt_buf_len);
 		vmem_free(ctx->gcm_pt_buf, ctx->gcm_pt_buf_len);
 	}
-	/* Optional */
+	 
 	explicit_memset(ctx->gcm_J0, 0, sizeof (ctx->gcm_J0));
 	explicit_memset(ctx->gcm_tmp, 0, sizeof (ctx->gcm_tmp));
 }

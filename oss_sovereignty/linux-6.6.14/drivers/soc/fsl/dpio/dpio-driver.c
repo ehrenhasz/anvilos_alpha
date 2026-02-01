@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright 2014-2016 Freescale Semiconductor Inc.
- * Copyright NXP 2016
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/init.h>
@@ -34,22 +30,22 @@ static cpumask_var_t cpus_unused_mask;
 
 static const struct soc_device_attribute ls1088a_soc[] = {
 	{.family = "QorIQ LS1088A"},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct soc_device_attribute ls2080a_soc[] = {
 	{.family = "QorIQ LS2080A"},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct soc_device_attribute ls2088a_soc[] = {
 	{.family = "QorIQ LS2088A"},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct soc_device_attribute lx2160a_soc[] = {
 	{.family = "QorIQ LX2160A"},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int dpaa2_dpio_get_cluster_sdest(struct fsl_mc_device *dpio_dev, int cpu)
@@ -86,7 +82,7 @@ static void unregister_dpio_irq_handlers(struct fsl_mc_device *dpio_dev)
 
 	irq = dpio_dev->irqs[0];
 
-	/* clear the affinity hint */
+	 
 	irq_set_affinity_hint(irq->virq, NULL);
 }
 
@@ -109,7 +105,7 @@ static int register_dpio_irq_handlers(struct fsl_mc_device *dpio_dev, int cpu)
 		return error;
 	}
 
-	/* set the affinity hint */
+	 
 	if (irq_set_affinity_hint(irq->virq, cpumask_of(cpu)))
 		dev_err(&dpio_dev->dev,
 			"irq_set_affinity failed irq %d cpu %d\n",
@@ -169,12 +165,12 @@ static int dpaa2_dpio_probe(struct fsl_mc_device *dpio_dev)
 		goto err_get_attr;
 	}
 
-	/* initialize DPIO descriptor */
+	 
 	desc.receives_notifications = dpio_attrs.num_priorities ? 1 : 0;
 	desc.has_8prio = dpio_attrs.num_priorities == 8 ? 1 : 0;
 	desc.dpio_id = dpio_dev->obj_desc.id;
 
-	/* get the cpu to use for the affinity hint */
+	 
 	possible_next_cpu = cpumask_first(cpus_unused_mask);
 	if (possible_next_cpu >= nr_cpu_ids) {
 		dev_err(dev, "probe failed. Number of DPIOs exceeds NR_CPUS.\n");
@@ -195,12 +191,8 @@ static int dpaa2_dpio_probe(struct fsl_mc_device *dpio_dev)
 	}
 
 	if (dpio_dev->obj_desc.region_count < 3) {
-		/* No support for DDR backed portals, use classic mapping */
-		/*
-		 * Set the CENA regs to be the cache inhibited area of the
-		 * portal to avoid coherency issues if a user migrates to
-		 * another core.
-		 */
+		 
+		 
 		desc.regs_cena = devm_memremap(dev, dpio_dev->regions[1].start,
 					resource_size(&dpio_dev->regions[1]),
 					MEMREMAP_WC);
@@ -263,7 +255,7 @@ err_priv_alloc:
 	return err;
 }
 
-/* Tear down interrupts for a given DPIO object */
+ 
 static void dpio_teardown_irqs(struct fsl_mc_device *dpio_dev)
 {
 	unregister_dpio_irq_handlers(dpio_dev);

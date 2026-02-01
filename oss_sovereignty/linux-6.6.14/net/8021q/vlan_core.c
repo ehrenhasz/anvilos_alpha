@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 #include <linux/if_vlan.h>
@@ -31,9 +31,7 @@ bool vlan_do_receive(struct sk_buff **skbp)
 
 	skb->dev = vlan_dev;
 	if (unlikely(skb->pkt_type == PACKET_OTHERHOST)) {
-		/* Our lower layer thinks this is not local, let's make sure.
-		 * This allows the VLAN to have a different MAC than the
-		 * underlying device, and still route correctly. */
+		 
 		if (ether_addr_equal_64bits(eth_hdr(skb)->h_dest, vlan_dev->dev_addr))
 			skb->pkt_type = PACKET_HOST;
 	}
@@ -43,11 +41,7 @@ bool vlan_do_receive(struct sk_buff **skbp)
 	    !netif_is_bridge_port(vlan_dev)) {
 		unsigned int offset = skb->data - skb_mac_header(skb);
 
-		/*
-		 * vlan_insert_tag expect skb->data pointing to mac header.
-		 * So change skb->data before calling it and change back to
-		 * original position later
-		 */
+		 
 		skb_push(skb, offset);
 		skb = *skbp = vlan_insert_inner_tag(skb, skb->vlan_proto,
 						    skb->vlan_tci, skb->mac_len);
@@ -72,7 +66,7 @@ bool vlan_do_receive(struct sk_buff **skbp)
 	return true;
 }
 
-/* Must be invoked with rcu_read_lock. */
+ 
 struct net_device *__vlan_find_dev_deep_rcu(struct net_device *dev,
 					__be16 vlan_proto, u16 vlan_id)
 {
@@ -82,11 +76,7 @@ struct net_device *__vlan_find_dev_deep_rcu(struct net_device *dev,
 		return vlan_group_get_device(&vlan_info->grp,
 					     vlan_proto, vlan_id);
 	} else {
-		/*
-		 * Lower devices of master uppers (bonding, team) do not have
-		 * grp assigned to themselves. Grp is assigned to upper device
-		 * instead.
-		 */
+		 
 		struct net_device *upper_dev;
 
 		upper_dev = netdev_master_upper_dev_get_rcu(dev);
@@ -122,9 +112,7 @@ __be16 vlan_dev_vlan_proto(const struct net_device *dev)
 }
 EXPORT_SYMBOL(vlan_dev_vlan_proto);
 
-/*
- * vlan info and vid list
- */
+ 
 
 static void vlan_group_free(struct vlan_group *grp)
 {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2004 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- *
- * S3C2410 Watchdog Timer Support
- *
- * Based on, softdog.c by Alan Cox,
- *     (c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -67,47 +59,14 @@
 #define EXYNOSAUTOV9_CLUSTER0_WDTRESET_BIT	25
 #define EXYNOSAUTOV9_CLUSTER1_WDTRESET_BIT	24
 
-/**
- * DOC: Quirk flags for different Samsung watchdog IP-cores
- *
- * This driver supports multiple Samsung SoCs, each of which might have
- * different set of registers and features supported. As watchdog block
- * sometimes requires modifying PMU registers for proper functioning, register
- * differences in both watchdog and PMU IP-cores should be accounted for. Quirk
- * flags described below serve the purpose of telling the driver about mentioned
- * SoC traits, and can be specified in driver data for each particular supported
- * device.
- *
- * %QUIRK_HAS_WTCLRINT_REG: Watchdog block has WTCLRINT register. It's used to
- * clear the interrupt once the interrupt service routine is complete. It's
- * write-only, writing any values to this register clears the interrupt, but
- * reading is not permitted.
- *
- * %QUIRK_HAS_PMU_MASK_RESET: PMU block has the register for disabling/enabling
- * WDT reset request. On old SoCs it's usually called MASK_WDT_RESET_REQUEST,
- * new SoCs have CLUSTERx_NONCPU_INT_EN register, which 'mask_bit' value is
- * inverted compared to the former one.
- *
- * %QUIRK_HAS_PMU_RST_STAT: PMU block has RST_STAT (reset status) register,
- * which contains bits indicating the reason for most recent CPU reset. If
- * present, driver will use this register to check if previous reboot was due to
- * watchdog timer reset.
- *
- * %QUIRK_HAS_PMU_AUTO_DISABLE: PMU block has AUTOMATIC_WDT_RESET_DISABLE
- * register. If 'mask_bit' bit is set, PMU will disable WDT reset when
- * corresponding processor is in reset state.
- *
- * %QUIRK_HAS_PMU_CNT_EN: PMU block has some register (e.g. CLUSTERx_NONCPU_OUT)
- * with "watchdog counter enable" bit. That bit should be set to make watchdog
- * counter running.
- */
+ 
 #define QUIRK_HAS_WTCLRINT_REG			(1 << 0)
 #define QUIRK_HAS_PMU_MASK_RESET		(1 << 1)
 #define QUIRK_HAS_PMU_RST_STAT			(1 << 2)
 #define QUIRK_HAS_PMU_AUTO_DISABLE		(1 << 3)
 #define QUIRK_HAS_PMU_CNT_EN			(1 << 4)
 
-/* These quirks require that we have a PMU register map */
+ 
 #define QUIRKS_HAVE_PMUREG \
 	(QUIRK_HAS_PMU_MASK_RESET | QUIRK_HAS_PMU_RST_STAT | \
 	 QUIRK_HAS_PMU_AUTO_DISABLE | QUIRK_HAS_PMU_CNT_EN)
@@ -131,23 +90,7 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 			__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 MODULE_PARM_DESC(soft_noboot, "Watchdog action, set to 1 to ignore reboots, 0 to reboot (default 0)");
 
-/**
- * struct s3c2410_wdt_variant - Per-variant config data
- *
- * @disable_reg: Offset in pmureg for the register that disables the watchdog
- * timer reset functionality.
- * @mask_reset_reg: Offset in pmureg for the register that masks the watchdog
- * timer reset functionality.
- * @mask_reset_inv: If set, mask_reset_reg value will have inverted meaning.
- * @mask_bit: Bit number for the watchdog timer in the disable register and the
- * mask reset register.
- * @rst_stat_reg: Offset in pmureg for the register that has the reset status.
- * @rst_stat_bit: Bit number in the rst_stat register indicating a watchdog
- * reset.
- * @cnt_en_reg: Offset in pmureg for the register that enables WDT counter.
- * @cnt_en_bit: Bit number for "watchdog counter enable" in cnt_en register.
- * @quirks: A bitfield of quirks.
- */
+ 
 
 struct s3c2410_wdt_variant {
 	int disable_reg;
@@ -163,8 +106,8 @@ struct s3c2410_wdt_variant {
 
 struct s3c2410_wdt {
 	struct device		*dev;
-	struct clk		*bus_clk; /* for register interface (PCLK) */
-	struct clk		*src_clk; /* for WDT counter */
+	struct clk		*bus_clk;  
+	struct clk		*src_clk;  
 	void __iomem		*reg_base;
 	unsigned int		count;
 	spinlock_t		lock;
@@ -210,7 +153,7 @@ static const struct s3c2410_wdt_variant drv_data_exynos7 = {
 	.mask_reset_reg = EXYNOS5_WDT_MASK_RESET_REG_OFFSET,
 	.mask_bit = 23,
 	.rst_stat_reg = EXYNOS5_RST_STAT_REG_OFFSET,
-	.rst_stat_bit = 23,	/* A57 WDTRESET */
+	.rst_stat_bit = 23,	 
 	.quirks = QUIRK_HAS_WTCLRINT_REG | QUIRK_HAS_PMU_MASK_RESET | \
 		  QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_AUTO_DISABLE,
 };
@@ -292,7 +235,7 @@ static const struct platform_device_id s3c2410_wdt_ids[] = {
 };
 MODULE_DEVICE_TABLE(platform, s3c2410_wdt_ids);
 
-/* functions */
+ 
 
 static inline unsigned long s3c2410wdt_get_freq(struct s3c2410_wdt *wdt)
 {
@@ -458,10 +401,7 @@ static int s3c2410wdt_set_heartbeat(struct watchdog_device *wdd,
 	dev_dbg(wdt->dev, "Heartbeat: count=%d, timeout=%d, freq=%lu\n",
 		count, timeout, freq);
 
-	/* if the count is bigger than the watchdog register,
-	   then work out what we need to do (and if) we can
-	   actually make this value
-	*/
+	 
 
 	if (count >= 0x10000) {
 		divisor = DIV_ROUND_UP(count, 0xffff);
@@ -478,7 +418,7 @@ static int s3c2410wdt_set_heartbeat(struct watchdog_device *wdd,
 	count = DIV_ROUND_UP(count, divisor);
 	wdt->count = count;
 
-	/* update the pre-scaler */
+	 
 	wtcon = readl(wdt->reg_base + S3C2410_WTCON);
 	wtcon &= ~S3C2410_WTCON_PRESCALE_MASK;
 	wtcon |= S3C2410_WTCON_PRESCALE(divisor-1);
@@ -497,19 +437,19 @@ static int s3c2410wdt_restart(struct watchdog_device *wdd, unsigned long action,
 	struct s3c2410_wdt *wdt = watchdog_get_drvdata(wdd);
 	void __iomem *wdt_base = wdt->reg_base;
 
-	/* disable watchdog, to be safe  */
+	 
 	writel(0, wdt_base + S3C2410_WTCON);
 
-	/* put initial values into count and data */
+	 
 	writel(0x80, wdt_base + S3C2410_WTCNT);
 	writel(0x80, wdt_base + S3C2410_WTDAT);
 
-	/* set the watchdog to go and reset... */
+	 
 	writel(S3C2410_WTCON_ENABLE | S3C2410_WTCON_DIV16 |
 		S3C2410_WTCON_RSTEN | S3C2410_WTCON_PRESCALE(0x20),
 		wdt_base + S3C2410_WTCON);
 
-	/* wait for reset to assert... */
+	 
 	mdelay(500);
 
 	return 0;
@@ -538,7 +478,7 @@ static const struct watchdog_device s3c2410_wdd = {
 	.timeout = S3C2410_WATCHDOG_DEFAULT_TIME,
 };
 
-/* interrupt handler code */
+ 
 
 static irqreturn_t s3c2410wdt_irq(int irqno, void *param)
 {
@@ -579,13 +519,13 @@ s3c2410_get_wdt_drv_data(struct platform_device *pdev, struct s3c2410_wdt *wdt)
 
 	variant = of_device_get_match_data(dev);
 	if (!variant) {
-		/* Device matched by platform_device_id */
+		 
 		variant = (struct s3c2410_wdt_variant *)
 			   platform_get_device_id(pdev)->driver_data;
 	}
 
 #ifdef CONFIG_OF
-	/* Choose Exynos850/ExynosAutov9 driver data w.r.t. cluster index */
+	 
 	if (variant == &drv_data_exynos850_cl0 ||
 	    variant == &drv_data_exynosautov9_cl0) {
 		u32 index;
@@ -651,7 +591,7 @@ static int s3c2410wdt_probe(struct platform_device *pdev)
 	if (wdt_irq < 0)
 		return wdt_irq;
 
-	/* get the memory region for the watchdog timer */
+	 
 	wdt->reg_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(wdt->reg_base))
 		return PTR_ERR(wdt->reg_base);
@@ -660,10 +600,7 @@ static int s3c2410wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(wdt->bus_clk))
 		return dev_err_probe(dev, PTR_ERR(wdt->bus_clk), "failed to get bus clock\n");
 
-	/*
-	 * "watchdog_src" clock is optional; if it's not present -- just skip it
-	 * and use "watchdog" clock as both bus and source clock.
-	 */
+	 
 	wdt->src_clk = devm_clk_get_optional_enabled(dev, "watchdog_src");
 	if (IS_ERR(wdt->src_clk))
 		return dev_err_probe(dev, PTR_ERR(wdt->src_clk), "failed to get source clock\n");
@@ -673,8 +610,7 @@ static int s3c2410wdt_probe(struct platform_device *pdev)
 
 	watchdog_set_drvdata(&wdt->wdt_device, wdt);
 
-	/* see if we can actually set the requested timer margin, and if
-	 * not, try the default value */
+	 
 
 	watchdog_init_timeout(&wdt->wdt_device, tmr_margin, dev);
 	ret = s3c2410wdt_set_heartbeat(&wdt->wdt_device,
@@ -700,13 +636,7 @@ static int s3c2410wdt_probe(struct platform_device *pdev)
 	wdt->wdt_device.bootstatus = s3c2410wdt_get_bootstatus(wdt);
 	wdt->wdt_device.parent = dev;
 
-	/*
-	 * If "tmr_atboot" param is non-zero, start the watchdog right now. Also
-	 * set WDOG_HW_RUNNING bit, so that watchdog core can kick the watchdog.
-	 *
-	 * If we're not enabling the watchdog, then ensure it is disabled if it
-	 * has been left running from the bootloader or other source.
-	 */
+	 
 	if (tmr_atboot) {
 		dev_info(dev, "starting watchdog timer\n");
 		s3c2410wdt_start(&wdt->wdt_device);
@@ -729,7 +659,7 @@ static int s3c2410wdt_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, wdt);
 
-	/* print out a statement of readiness */
+	 
 
 	wtcon = readl(wdt->reg_base + S3C2410_WTCON);
 
@@ -754,7 +684,7 @@ static int s3c2410wdt_suspend(struct device *dev)
 	int ret;
 	struct s3c2410_wdt *wdt = dev_get_drvdata(dev);
 
-	/* Save watchdog state, and turn it off. */
+	 
 	wdt->wtcon_save = readl(wdt->reg_base + S3C2410_WTCON);
 	wdt->wtdat_save = readl(wdt->reg_base + S3C2410_WTDAT);
 
@@ -762,7 +692,7 @@ static int s3c2410wdt_suspend(struct device *dev)
 	if (ret < 0)
 		return ret;
 
-	/* Note that WTCNT doesn't need to be saved. */
+	 
 	s3c2410wdt_stop(&wdt->wdt_device);
 
 	return 0;
@@ -773,9 +703,9 @@ static int s3c2410wdt_resume(struct device *dev)
 	int ret;
 	struct s3c2410_wdt *wdt = dev_get_drvdata(dev);
 
-	/* Restore watchdog state. */
+	 
 	writel(wdt->wtdat_save, wdt->reg_base + S3C2410_WTDAT);
-	writel(wdt->wtdat_save, wdt->reg_base + S3C2410_WTCNT);/* Reset count */
+	writel(wdt->wtdat_save, wdt->reg_base + S3C2410_WTCNT); 
 	writel(wdt->wtcon_save, wdt->reg_base + S3C2410_WTCON);
 
 	ret = s3c2410wdt_enable(wdt, true);

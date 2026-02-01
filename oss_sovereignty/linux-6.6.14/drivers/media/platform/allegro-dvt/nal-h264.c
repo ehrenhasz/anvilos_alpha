@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Convert NAL units between raw byte sequence payloads (RBSP) and C structs
- *
- * The conversion is defined in "ITU-T Rec. H.264 (04/2017) Advanced video
- * coding for generic audiovisual services". Decoder drivers may use the
- * parser to parse RBSP from encoded streams and configure the hardware, if
- * the hardware is not able to parse RBSP itself.  Encoder drivers may use the
- * generator to generate the RBSP for SPS/PPS nal units and add them to the
- * encoded stream if the hardware does not generate the units.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -24,10 +13,7 @@
 #include "nal-h264.h"
 #include "nal-rbsp.h"
 
-/*
- * See Rec. ITU-T H.264 (04/2017) Table 7-1 - NAL unit type codes, syntax
- * element categories, and NAL unit type classes
- */
+ 
 enum nal_unit_type {
 	SEQUENCE_PARAMETER_SET = 7,
 	PICTURE_PARAMETER_SET = 8,
@@ -75,7 +61,7 @@ static void nal_h264_write_filler_data(struct rbsp *rbsp)
 	u8 *p = rbsp->data + DIV_ROUND_UP(rbsp->pos, 8);
 	int i;
 
-	/* Keep 1 byte extra for terminating the NAL unit */
+	 
 	i = rbsp->size - DIV_ROUND_UP(rbsp->pos, 8) - 1;
 	memset(p, 0xff, i);
 	rbsp->pos += i * 8;
@@ -327,7 +313,7 @@ static void nal_h264_rbsp_pps(struct rbsp *rbsp, struct nal_h264_pps *pps)
 	rbsp_bit(rbsp, &pps->deblocking_filter_control_present_flag);
 	rbsp_bit(rbsp, &pps->constrained_intra_pred_flag);
 	rbsp_bit(rbsp, &pps->redundant_pic_cnt_present_flag);
-	if (/* more_rbsp_data() */ false) {
+	if (  false) {
 		rbsp_bit(rbsp, &pps->transform_8x8_mode_flag);
 		rbsp_bit(rbsp, &pps->pic_scaling_matrix_present_flag);
 		if (pps->pic_scaling_matrix_present_flag)
@@ -336,20 +322,7 @@ static void nal_h264_rbsp_pps(struct rbsp *rbsp, struct nal_h264_pps *pps)
 	}
 }
 
-/**
- * nal_h264_write_sps() - Write SPS NAL unit into RBSP format
- * @dev: device pointer
- * @dest: the buffer that is filled with RBSP data
- * @n: maximum size of @dest in bytes
- * @sps: &struct nal_h264_sps to convert to RBSP
- *
- * Convert @sps to RBSP data and write it into @dest.
- *
- * The size of the SPS NAL unit is not known in advance and this function will
- * fail, if @dest does not hold sufficient space for the SPS NAL unit.
- *
- * Return: number of bytes written to @dest or negative error code
- */
+ 
 ssize_t nal_h264_write_sps(const struct device *dev,
 			   void *dest, size_t n, struct nal_h264_sps *sps)
 {
@@ -380,17 +353,7 @@ ssize_t nal_h264_write_sps(const struct device *dev,
 }
 EXPORT_SYMBOL_GPL(nal_h264_write_sps);
 
-/**
- * nal_h264_read_sps() - Read SPS NAL unit from RBSP format
- * @dev: device pointer
- * @sps: the &struct nal_h264_sps to fill from the RBSP data
- * @src: the buffer that contains the RBSP data
- * @n: size of @src in bytes
- *
- * Read RBSP data from @src and use it to fill @sps.
- *
- * Return: number of bytes read from @src or negative error code
- */
+ 
 ssize_t nal_h264_read_sps(const struct device *dev,
 			  struct nal_h264_sps *sps, void *src, size_t n)
 {
@@ -427,20 +390,7 @@ ssize_t nal_h264_read_sps(const struct device *dev,
 }
 EXPORT_SYMBOL_GPL(nal_h264_read_sps);
 
-/**
- * nal_h264_write_pps() - Write PPS NAL unit into RBSP format
- * @dev: device pointer
- * @dest: the buffer that is filled with RBSP data
- * @n: maximum size of @dest in bytes
- * @pps: &struct nal_h264_pps to convert to RBSP
- *
- * Convert @pps to RBSP data and write it into @dest.
- *
- * The size of the PPS NAL unit is not known in advance and this function will
- * fail, if @dest does not hold sufficient space for the PPS NAL unit.
- *
- * Return: number of bytes written to @dest or negative error code
- */
+ 
 ssize_t nal_h264_write_pps(const struct device *dev,
 			   void *dest, size_t n, struct nal_h264_pps *pps)
 {
@@ -456,7 +406,7 @@ ssize_t nal_h264_write_pps(const struct device *dev,
 
 	nal_h264_write_start_code_prefix(&rbsp);
 
-	/* NAL unit header */
+	 
 	rbsp_bit(&rbsp, &forbidden_zero_bit);
 	rbsp_bits(&rbsp, 2, &nal_ref_idc);
 	rbsp_bits(&rbsp, 5, &nal_unit_type);
@@ -472,17 +422,7 @@ ssize_t nal_h264_write_pps(const struct device *dev,
 }
 EXPORT_SYMBOL_GPL(nal_h264_write_pps);
 
-/**
- * nal_h264_read_pps() - Read PPS NAL unit from RBSP format
- * @dev: device pointer
- * @pps: the &struct nal_h264_pps to fill from the RBSP data
- * @src: the buffer that contains the RBSP data
- * @n: size of @src in bytes
- *
- * Read RBSP data from @src and use it to fill @pps.
- *
- * Return: number of bytes read from @src or negative error code
- */
+ 
 ssize_t nal_h264_read_pps(const struct device *dev,
 			  struct nal_h264_pps *pps, void *src, size_t n)
 {
@@ -495,7 +435,7 @@ ssize_t nal_h264_read_pps(const struct device *dev,
 
 	nal_h264_read_start_code_prefix(&rbsp);
 
-	/* NAL unit header */
+	 
 	rbsp.pos += 8;
 
 	nal_h264_rbsp_pps(&rbsp, pps);
@@ -509,23 +449,7 @@ ssize_t nal_h264_read_pps(const struct device *dev,
 }
 EXPORT_SYMBOL_GPL(nal_h264_read_pps);
 
-/**
- * nal_h264_write_filler() - Write filler data RBSP
- * @dev: device pointer
- * @dest: buffer to fill with filler data
- * @n: size of the buffer to fill with filler data
- *
- * Write a filler data RBSP to @dest with a size of @n bytes and return the
- * number of written filler data bytes.
- *
- * Use this function to generate dummy data in an RBSP data stream that can be
- * safely ignored by h264 decoders.
- *
- * The RBSP format of the filler data is specified in Rec. ITU-T H.264
- * (04/2017) 7.3.2.7 Filler data RBSP syntax.
- *
- * Return: number of filler data bytes (including marker) or negative error
- */
+ 
 ssize_t nal_h264_write_filler(const struct device *dev, void *dest, size_t n)
 {
 	struct rbsp rbsp;
@@ -552,23 +476,7 @@ ssize_t nal_h264_write_filler(const struct device *dev, void *dest, size_t n)
 }
 EXPORT_SYMBOL_GPL(nal_h264_write_filler);
 
-/**
- * nal_h264_read_filler() - Read filler data RBSP
- * @dev: device pointer
- * @src: buffer with RBSP data that is read
- * @n: maximum size of src that shall be read
- *
- * Read a filler data RBSP from @src up to a maximum size of @n bytes and
- * return the size of the filler data in bytes including the marker.
- *
- * This function is used to parse filler data and skip the respective bytes in
- * the RBSP data.
- *
- * The RBSP format of the filler data is specified in Rec. ITU-T H.264
- * (04/2017) 7.3.2.7 Filler data RBSP syntax.
- *
- * Return: number of filler data bytes (including marker) or negative error
- */
+ 
 ssize_t nal_h264_read_filler(const struct device *dev, void *src, size_t n)
 {
 	struct rbsp rbsp;

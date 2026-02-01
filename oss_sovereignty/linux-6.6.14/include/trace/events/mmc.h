@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mmc
 
@@ -187,7 +187,7 @@ TRACE_EVENT(mmc_request_done,
 		  __entry->hold_retune, __entry->retune_period)
 );
 
-#endif /* _TRACE_MMC_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,40 +1,16 @@
-/* Use the internal lock used by mbrtowc and mbrtoc32.
-   Copyright (C) 2019-2023 Free Software Foundation, Inc.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2019-2020.  */
-
-/* Use a lock, so that no two threads can invoke mbtowc at the same time.  */
+ 
 
 static inline int
 mbtowc_unlocked (wchar_t *pwc, const char *p, size_t m)
 {
-  /* Put the hidden internal state of mbtowc into an initial state.
-     This is needed at least with glibc, uClibc, and MSVC CRT.
-     See <https://sourceware.org/bugzilla/show_bug.cgi?id=9674>.  */
-  mbtowc (NULL, NULL, 0);
-
-  return mbtowc (pwc, p, m);
-}
-
-/* Prohibit renaming this symbol.  */
+   
 #undef gl_get_mbtowc_lock
 
 #if GNULIB_MBRTOWC_SINGLE_THREAD
 
-/* All uses of this function are in a single thread.  No locking needed.  */
+ 
 
 static int
 mbtowc_with_lock (wchar_t *pwc, const char *p, size_t m)
@@ -59,7 +35,7 @@ mbtowc_with_lock (wchar_t *pwc, const char *p, size_t m)
   return ret;
 }
 
-#elif HAVE_PTHREAD_API /* AIX, IRIX, Cygwin */
+#elif HAVE_PTHREAD_API  
 
 extern
 # if defined _WIN32 || defined __CYGWIN__
@@ -67,15 +43,15 @@ extern
 # endif
   pthread_mutex_t *gl_get_mbtowc_lock (void);
 
-# if HAVE_WEAK_SYMBOLS /* IRIX */
+# if HAVE_WEAK_SYMBOLS  
 
-   /* Avoid the need to link with '-lpthread'.  */
+    
 #  pragma weak pthread_mutex_lock
 #  pragma weak pthread_mutex_unlock
 
-   /* Determine whether libpthread is in use.  */
+    
 #  pragma weak pthread_mutexattr_gettype
-   /* See the comments in lock.h.  */
+    
 #  define pthread_in_use() \
      (pthread_mutexattr_gettype != NULL || c11_threads_in_use ())
 

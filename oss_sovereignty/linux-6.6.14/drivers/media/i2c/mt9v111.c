@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * V4L2 sensor driver for Aptina MT9V111 image sensor
- * Copyright (C) 2018 Jacopo Mondi <jacopo@jmondi.org>
- *
- * Based on mt9v032 driver
- * Copyright (C) 2010, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- * Copyright (C) 2008, Guennadi Liakhovetski <kernel@pengutronix.de>
- *
- * Based on mt9v011 driver
- * Copyright (c) 2009 Mauro Carvalho Chehab <mchehab@kernel.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -27,27 +17,7 @@
 #include <media/v4l2-image-sizes.h>
 #include <media/v4l2-subdev.h>
 
-/*
- * MT9V111 is a 1/4-Inch CMOS digital image sensor with an integrated
- * Image Flow Processing (IFP) engine and a sensor core loosely based on
- * MT9V011.
- *
- * The IFP can produce several output image formats from the sensor core
- * output. This driver currently supports only YUYV format permutations.
- *
- * The driver allows manual frame rate control through s_frame_interval subdev
- * operation or V4L2_CID_V/HBLANK controls, but it is known that the
- * auto-exposure algorithm might modify the programmed frame rate. While the
- * driver initially programs the sensor with auto-exposure and
- * auto-white-balancing enabled, it is possible to disable them and more
- * precisely control the frame rate.
- *
- * While it seems possible to instruct the auto-exposure control algorithm to
- * respect a programmed frame rate when adjusting the pixel integration time,
- * registers controlling this feature are not documented in the public
- * available sensor manual used to develop this driver (09005aef80e90084,
- * MT9V111_1.fm - Rev. G 1/05 EN).
- */
+ 
 
 #define MT9V111_CHIP_ID_HIGH				0x82
 #define MT9V111_CHIP_ID_LOW				0x3a
@@ -102,7 +72,7 @@
 
 #define MT9V111_MAX_CLKIN				27000000
 
-/* The default sensor configuration at startup time. */
+ 
 static const struct v4l2_mbus_framefmt mt9v111_def_fmt = {
 	.width		= 640,
 	.height		= 480,
@@ -131,22 +101,22 @@ struct mt9v111_dev {
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl_handler ctrls;
 
-	/* Output image format and sizes. */
+	 
 	struct v4l2_mbus_framefmt fmt;
 	unsigned int fps;
 
-	/* Protects power up/down sequences. */
+	 
 	struct mutex pwr_mutex;
 	int pwr_count;
 
-	/* Protects stream on/off sequences. */
+	 
 	struct mutex stream_mutex;
 	bool streaming;
 
-	/* Flags to mark HW settings as not yet applied. */
+	 
 	bool pending;
 
-	/* Clock provider and system clock frequency. */
+	 
 	struct clk *clk;
 	u32 sysclk;
 
@@ -157,16 +127,7 @@ struct mt9v111_dev {
 
 #define sd_to_mt9v111(__sd) container_of((__sd), struct mt9v111_dev, sd)
 
-/*
- * mt9v111_mbus_fmt - List all media bus formats supported by the driver.
- *
- * Only list the media bus code here. The image sizes are freely configurable
- * in the pixel array sizes range.
- *
- * The desired frame interval, in the supported frame interval range, is
- * obtained by configuring blanking as the sensor does not have a PLL but
- * only a fixed clock divider that generates the output pixel clock.
- */
+ 
 static struct mt9v111_mbus_fmt {
 	u32	code;
 } mt9v111_formats[] = {
@@ -186,12 +147,7 @@ static struct mt9v111_mbus_fmt {
 
 static u32 mt9v111_frame_intervals[] = {5, 10, 15, 20, 30};
 
-/*
- * mt9v111_frame_sizes - List sensor's supported resolutions.
- *
- * Resolution generated through decimation in the IFP block from the
- * full VGA pixel array.
- */
+ 
 static struct v4l2_rect mt9v111_frame_sizes[] = {
 	{
 		.width	= 640,
@@ -215,7 +171,7 @@ static struct v4l2_rect mt9v111_frame_sizes[] = {
 	},
 };
 
-/* --- Device I/O access --- */
+ 
 
 static int __mt9v111_read(struct i2c_client *c, u8 reg, u16 *val)
 {
@@ -286,7 +242,7 @@ static int __mt9v111_addr_space_select(struct i2c_client *c, u16 addr_space)
 	if (ret)
 		return ret;
 
-	/* Verify address space has been updated */
+	 
 	ret = __mt9v111_read(c, MT9V111_R01_ADDR_SPACE, &val);
 	if (ret)
 		return ret;
@@ -303,7 +259,7 @@ static int mt9v111_read(struct i2c_client *c, u8 addr_space, u8 reg, u16 *val)
 {
 	int ret;
 
-	/* Select register address space first. */
+	 
 	ret = __mt9v111_addr_space_select(c, addr_space);
 	if (ret)
 		return ret;
@@ -319,7 +275,7 @@ static int mt9v111_write(struct i2c_client *c, u8 addr_space, u8 reg, u16 val)
 {
 	int ret;
 
-	/* Select register address space first. */
+	 
 	ret = __mt9v111_addr_space_select(c, addr_space);
 	if (ret)
 		return ret;
@@ -337,12 +293,12 @@ static int mt9v111_update(struct i2c_client *c, u8 addr_space, u8 reg,
 	u16 current_val;
 	int ret;
 
-	/* Select register address space first. */
+	 
 	ret = __mt9v111_addr_space_select(c, addr_space);
 	if (ret)
 		return ret;
 
-	/* Read the current register value, then update it. */
+	 
 	ret = __mt9v111_read(c, reg, &current_val);
 	if (ret)
 		return ret;
@@ -356,7 +312,7 @@ static int mt9v111_update(struct i2c_client *c, u8 addr_space, u8 reg,
 	return 0;
 }
 
-/* --- Sensor HW operations --- */
+ 
 
 static int __mt9v111_power_on(struct v4l2_subdev *sd)
 {
@@ -412,7 +368,7 @@ static int __mt9v111_sw_reset(struct mt9v111_dev *mt9v111)
 	struct i2c_client *c = mt9v111->client;
 	int ret;
 
-	/* Software reset core and IFP blocks. */
+	 
 
 	ret = mt9v111_update(c, MT9V111_R01_CORE,
 			     MT9V111_CORE_R0D_CORE_RESET,
@@ -463,7 +419,7 @@ static int mt9v111_calc_frame_rate(struct mt9v111_dev *mt9v111,
 	unsigned int i;
 	int ret;
 
-	/* Approximate to the closest supported frame interval. */
+	 
 	best_diff = ~0L;
 	for (i = 0, idx = 0; i < ARRAY_SIZE(mt9v111_frame_intervals); i++) {
 		diff = abs(fps - mt9v111_frame_intervals[i]);
@@ -474,21 +430,7 @@ static int mt9v111_calc_frame_rate(struct mt9v111_dev *mt9v111,
 	}
 	fps = mt9v111_frame_intervals[idx];
 
-	/*
-	 * The sensor does not provide a PLL circuitry and pixel clock is
-	 * generated dividing the master clock source by two.
-	 *
-	 * Trow = (W + Hblank + 114) * 2 * (1 / SYSCLK)
-	 * TFrame = Trow * (H + Vblank + 2)
-	 *
-	 * FPS = (SYSCLK / 2) / (Trow * (H + Vblank + 2))
-	 *
-	 * This boils down to tune H and V blanks to best approximate the
-	 * above equation.
-	 *
-	 * Test all available H/V blank values, until we reach the
-	 * desired frame rate.
-	 */
+	 
 	best_fps = vb = hb = 0;
 	pclk = DIV_ROUND_CLOSEST(mt9v111->sysclk, 2);
 	row_pclk = MT9V111_PIXEL_ARRAY_WIDTH + 7 + MT9V111_CORE_R04_WIN_H_OFFS;
@@ -537,14 +479,14 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
 	unsigned int ret;
 	u16 outfmtctrl2;
 
-	/* Force device reset. */
+	 
 	ret = __mt9v111_hw_reset(mt9v111);
 	if (ret == -EINVAL)
 		ret = __mt9v111_sw_reset(mt9v111);
 	if (ret)
 		return ret;
 
-	/* Configure internal clock sample rate. */
+	 
 	ret = mt9v111->sysclk < DIV_ROUND_CLOSEST(MT9V111_MAX_CLKIN, 2) ?
 				mt9v111_update(c, MT9V111_R01_CORE,
 					MT9V111_CORE_R07_OUT_CTRL,
@@ -555,12 +497,7 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
 	if (ret)
 		return ret;
 
-	/*
-	 * Configure output image format components ordering.
-	 *
-	 * TODO: IFP block can also output several RGB permutations, we only
-	 *	 support YUYV permutations at the moment.
-	 */
+	 
 	switch (mt9v111->fmt.code) {
 	case MEDIA_BUS_FMT_YUYV8_2X8:
 			outfmtctrl2 = MT9V111_IFP_R3A_OUTFMT_CTRL2_SWAP_YC;
@@ -584,15 +521,7 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
 	if (ret)
 		return ret;
 
-	/*
-	 * Do not change default sensor's core configuration:
-	 * output the whole 640x480 pixel array, skip 18 columns and 6 rows.
-	 *
-	 * Instead, control the output image size through IFP block.
-	 *
-	 * TODO: No zoom&pan support. Currently we control the output image
-	 *	 size only through decimation, with no zoom support.
-	 */
+	 
 	ret = mt9v111_write(c, MT9V111_R01_IFP, MT9V111_IFP_RA5_HPAN,
 			    MT9V111_IFP_DECIMATION_FREEZE);
 	if (ret)
@@ -626,22 +555,17 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
 	if (ret)
 		return ret;
 
-	/* Apply controls to set auto exp, auto awb and timings */
+	 
 	ret = v4l2_ctrl_handler_setup(&mt9v111->ctrls);
 	if (ret)
 		return ret;
 
-	/*
-	 * Set pixel integration time to the whole frame time.
-	 * This value controls the shutter delay when running with AE
-	 * disabled. If longer than frame time, it affects the output
-	 * frame rate.
-	 */
+	 
 	return mt9v111_write(c, MT9V111_R01_CORE, MT9V111_CORE_R09_PIXEL_INT,
 			     MT9V111_PIXEL_ARRAY_HEIGHT);
 }
 
-/* ---  V4L2 subdev operations --- */
+ 
 
 static int mt9v111_s_power(struct v4l2_subdev *sd, int on)
 {
@@ -651,17 +575,14 @@ static int mt9v111_s_power(struct v4l2_subdev *sd, int on)
 
 	mutex_lock(&mt9v111->pwr_mutex);
 
-	/*
-	 * Make sure we're transitioning from 0 to 1, or viceversa,
-	 * before actually changing the power state.
-	 */
+	 
 	pwr_count = mt9v111->pwr_count;
 	pwr_count += on ? 1 : -1;
 	if (pwr_count == !!on) {
 		ret = on ? __mt9v111_power_on(sd) :
 			   __mt9v111_power_off(sd);
 		if (!ret)
-			/* All went well, updated power counter. */
+			 
 			mt9v111->pwr_count = pwr_count;
 
 		mutex_unlock(&mt9v111->pwr_mutex);
@@ -669,10 +590,7 @@ static int mt9v111_s_power(struct v4l2_subdev *sd, int on)
 		return ret;
 	}
 
-	/*
-	 * Update power counter to keep track of how many nested calls we
-	 * received.
-	 */
+	 
 	WARN_ON(pwr_count < 0 || pwr_count > 1);
 	mt9v111->pwr_count = pwr_count;
 
@@ -702,10 +620,7 @@ static int mt9v111_s_stream(struct v4l2_subdev *subdev, int enable)
 		if (ret)
 			goto error_unlock;
 
-		/*
-		 * No need to update control here as far as only H/VBLANK are
-		 * supported and immediately programmed to registers in .s_ctrl
-		 */
+		 
 
 		mt9v111->pending = false;
 	}
@@ -746,7 +661,7 @@ static int mt9v111_s_frame_interval(struct v4l2_subdev *sd,
 		return 0;
 	}
 
-	/* Make sure frame rate/image sizes constraints are respected. */
+	 
 	if (mt9v111->fmt.width < QVGA_WIDTH &&
 	    mt9v111->fmt.height < QVGA_HEIGHT)
 		max_fps = 90;
@@ -899,7 +814,7 @@ static int mt9v111_set_format(struct v4l2_subdev *subdev,
 		return -EINVAL;
 	}
 
-	/* Update mbus format code and sizes. */
+	 
 	for (i = 0; i < ARRAY_SIZE(mt9v111_formats); i++) {
 		if (format->format.code == mt9v111_formats[i].code) {
 			new_fmt.code = mt9v111_formats[i].code;
@@ -925,17 +840,17 @@ static int mt9v111_set_format(struct v4l2_subdev *subdev,
 	new_fmt.width = mt9v111_frame_sizes[idx].width;
 	new_fmt.height = mt9v111_frame_sizes[idx].height;
 
-	/* Update the device (or pad) format if it has changed. */
+	 
 	__fmt = __mt9v111_get_pad_format(mt9v111, sd_state, format->pad,
 					 format->which);
 
-	/* Format hasn't changed, stop here. */
+	 
 	if (__fmt->code == new_fmt.code &&
 	    __fmt->width == new_fmt.width &&
 	    __fmt->height == new_fmt.height)
 		goto done;
 
-	/* Update the format and sizes, then  mark changes as pending. */
+	 
 	__fmt->code = new_fmt.code;
 	__fmt->width = new_fmt.width;
 	__fmt->height = new_fmt.height;
@@ -993,7 +908,7 @@ static const struct media_entity_operations mt9v111_subdev_entity_ops = {
 };
 #endif
 
-/* --- V4L2 ctrl --- */
+ 
 static int mt9v111_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct mt9v111_dev *mt9v111 = container_of(ctrl->handler,
@@ -1002,10 +917,7 @@ static int mt9v111_s_ctrl(struct v4l2_ctrl *ctrl)
 	int ret;
 
 	mutex_lock(&mt9v111->pwr_mutex);
-	/*
-	 * If sensor is powered down, just cache new control values,
-	 * no actual register access.
-	 */
+	 
 	if (!mt9v111->pwr_count) {
 		mt9v111->pending = true;
 		mutex_unlock(&mt9v111->pwr_mutex);
@@ -1013,13 +925,7 @@ static int mt9v111_s_ctrl(struct v4l2_ctrl *ctrl)
 	}
 	mutex_unlock(&mt9v111->pwr_mutex);
 
-	/*
-	 * Flickering control gets disabled if both auto exp and auto awb
-	 * are disabled too. If any of the two is enabled, enable it.
-	 *
-	 * Disabling flickering when ae and awb are off allows a more precise
-	 * control of the programmed frame rate.
-	 */
+	 
 	if (mt9v111->auto_exp->is_new || mt9v111->auto_awb->is_new) {
 		if (mt9v111->auto_exp->val == V4L2_EXPOSURE_MANUAL &&
 		    mt9v111->auto_awb->val == V4L2_WHITE_BALANCE_MANUAL)
@@ -1176,7 +1082,7 @@ static int mt9v111_probe(struct i2c_client *client)
 					    MT9V111_CORE_R06_MAX_VBLANK, 1,
 					    MT9V111_CORE_R06_DEF_VBLANK);
 
-	/* PIXEL_RATE is fixed: just expose it to user space. */
+	 
 	v4l2_ctrl_new_std(&mt9v111->ctrls, &mt9v111_ctrl_ops,
 			  V4L2_CID_PIXEL_RATE, 0,
 			  DIV_ROUND_CLOSEST(mt9v111->sysclk, 2), 1,
@@ -1188,10 +1094,10 @@ static int mt9v111_probe(struct i2c_client *client)
 	}
 	mt9v111->sd.ctrl_handler = &mt9v111->ctrls;
 
-	/* Start with default configuration: 640x480 UYVY. */
+	 
 	mt9v111->fmt	= mt9v111_def_fmt;
 
-	/* Re-calculate blankings for 640x480@15fps. */
+	 
 	mt9v111->fps		= 15;
 	tpf.numerator		= 1;
 	tpf.denominator		= mt9v111->fps;
@@ -1257,7 +1163,7 @@ static void mt9v111_remove(struct i2c_client *client)
 
 static const struct of_device_id mt9v111_of_match[] = {
 	{ .compatible = "aptina,mt9v111", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct i2c_driver mt9v111_driver = {

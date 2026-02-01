@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-//
-// Copyright (c) 2018 Mellanox Technologies. All rights reserved.
-// Copyright (c) 2018 Vadim Pasternak <vadimp@mellanox.com>
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -16,34 +16,14 @@
 #define MLXREG_FAN_MAX_PWM		4
 #define MLXREG_FAN_PWM_NOT_CONNECTED	0xff
 #define MLXREG_FAN_MAX_STATE		10
-#define MLXREG_FAN_MIN_DUTY		51	/* 20% */
-#define MLXREG_FAN_MAX_DUTY		255	/* 100% */
-#define MLXREG_FAN_SPEED_MIN_LEVEL		2	/* 20 percent */
+#define MLXREG_FAN_MIN_DUTY		51	 
+#define MLXREG_FAN_MAX_DUTY		255	 
+#define MLXREG_FAN_SPEED_MIN_LEVEL		2	 
 #define MLXREG_FAN_TACHO_SAMPLES_PER_PULSE_DEF	44
 #define MLXREG_FAN_TACHO_DIV_MIN		283
 #define MLXREG_FAN_TACHO_DIV_DEF		(MLXREG_FAN_TACHO_DIV_MIN * 4)
 #define MLXREG_FAN_TACHO_DIV_SCALE_MAX	64
-/*
- * FAN datasheet defines the formula for RPM calculations as RPM = 15/t-high.
- * The logic in a programmable device measures the time t-high by sampling the
- * tachometer every t-sample (with the default value 11.32 uS) and increment
- * a counter (N) as long as the pulse has not change:
- * RPM = 15 / (t-sample * (K + Regval)), where:
- * Regval: is the value read from the programmable device register;
- *  - 0xff - represents tachometer fault;
- *  - 0xfe - represents tachometer minimum value , which is 4444 RPM;
- *  - 0x00 - represents tachometer maximum value , which is 300000 RPM;
- * K: is 44 and it represents the minimum allowed samples per pulse;
- * N: is equal K + Regval;
- * In order to calculate RPM from the register value the following formula is
- * used: RPM = 15 / ((Regval + K) * 11.32) * 10^(-6)), which in  the
- * default case is modified to:
- * RPM = 15000000 * 100 / ((Regval + 44) * 1132);
- * - for Regval 0x00, RPM will be 15000000 * 100 / (44 * 1132) = 30115;
- * - for Regval 0xfe, RPM will be 15000000 * 100 / ((254 + 44) * 1132) = 4446;
- * In common case the formula is modified to:
- * RPM = 15000000 * 100 / ((Regval + samples) * divider).
- */
+ 
 #define MLXREG_FAN_GET_RPM(rval, d, s)	(DIV_ROUND_CLOSEST(15000000 * 100, \
 					 ((rval) + (s)) * (d)))
 #define MLXREG_FAN_GET_FAULT(val, mask) ((val) == (mask))
@@ -56,14 +36,7 @@
 
 struct mlxreg_fan;
 
-/*
- * struct mlxreg_fan_tacho - tachometer data (internal use):
- *
- * @connected: indicates if tachometer is connected;
- * @reg: register offset;
- * @mask: fault mask;
- * @prsnt: present register offset;
- */
+ 
 struct mlxreg_fan_tacho {
 	bool connected;
 	u32 reg;
@@ -71,17 +44,7 @@ struct mlxreg_fan_tacho {
 	u32 prsnt;
 };
 
-/*
- * struct mlxreg_fan_pwm - PWM data (internal use):
- *
- * @fan: private data;
- * @connected: indicates if PWM is connected;
- * @reg: register offset;
- * @cooling: cooling device levels;
- * @last_hwmon_state: last cooling state set by hwmon subsystem;
- * @last_thermal_state: last cooling state set by thermal subsystem;
- * @cdev: cooling device;
- */
+ 
 struct mlxreg_fan_pwm {
 	struct mlxreg_fan *fan;
 	bool connected;
@@ -91,17 +54,7 @@ struct mlxreg_fan_pwm {
 	struct thermal_cooling_device *cdev;
 };
 
-/*
- * struct mlxreg_fan - private data (internal use):
- *
- * @dev: basic device;
- * @regmap: register map of parent device;
- * @tacho: tachometer data;
- * @pwm: PWM data;
- * @tachos_per_drwr - number of tachometers per drawer;
- * @samples: minimum allowed samples per pulse;
- * @divider: divider value for tachometer RPM calculation;
- */
+ 
 struct mlxreg_fan {
 	struct device *dev;
 	void *regmap;
@@ -131,21 +84,15 @@ mlxreg_fan_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 		tacho = &fan->tacho[channel];
 		switch (attr) {
 		case hwmon_fan_input:
-			/*
-			 * Check FAN presence: FAN related bit in presence register is one,
-			 * if FAN is physically connected, zero - otherwise.
-			 */
+			 
 			if (tacho->prsnt && fan->tachos_per_drwr) {
 				err = regmap_read(fan->regmap, tacho->prsnt, &regval);
 				if (err)
 					return err;
 
-				/*
-				 * Map channel to presence bit - drawer can be equipped with
-				 * one or few FANs, while presence is indicated per drawer.
-				 */
+				 
 				if (BIT(channel / fan->tachos_per_drwr) & regval) {
-					/* FAN is not connected - return zero for FAN speed. */
+					 
 					*val = 0;
 					return 0;
 				}
@@ -156,7 +103,7 @@ mlxreg_fan_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 				return err;
 
 			if (MLXREG_FAN_GET_FAULT(regval, tacho->mask)) {
-				/* FAN is broken - return zero for FAN speed. */
+				 
 				*val = 0;
 				return 0;
 			}
@@ -216,13 +163,10 @@ mlxreg_fan_write(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 			    val > MLXREG_FAN_MAX_DUTY)
 				return -EINVAL;
 			pwm = &fan->pwm[channel];
-			/* If thermal is configured - handle PWM limit setting. */
+			 
 			if (IS_REACHABLE(CONFIG_THERMAL)) {
 				pwm->last_hwmon_state = MLXREG_FAN_PWM_DUTY2STATE(val);
-				/*
-				 * Update PWM only in case requested state is not less than the
-				 * last thermal state.
-				 */
+				 
 				if (pwm->last_hwmon_state >= pwm->last_thermal_state)
 					return mlxreg_fan_set_cur_state(pwm->cdev,
 									pwm->last_hwmon_state);
@@ -368,7 +312,7 @@ static int mlxreg_fan_set_cur_state(struct thermal_cooling_device *cdev,
 	if (state > MLXREG_FAN_MAX_STATE)
 		return -EINVAL;
 
-	/* Save thermal state. */
+	 
 	pwm->last_thermal_state = state;
 
 	state = max_t(unsigned long, state, pwm->last_hwmon_state);
@@ -432,12 +376,7 @@ static int mlxreg_fan_speed_divider_get(struct mlxreg_fan *fan,
 		return err;
 	}
 
-	/*
-	 * Set divider value according to the capability register, in case it
-	 * contains valid value. Otherwise use default value. The purpose of
-	 * this validation is to protect against the old hardware, in which
-	 * this register can return zero.
-	 */
+	 
 	if (regval > 0 && regval <= MLXREG_FAN_TACHO_DIV_SCALE_MAX)
 		fan->divider = regval * MLXREG_FAN_TACHO_DIV_MIN;
 
@@ -484,7 +423,7 @@ static int mlxreg_fan_config(struct mlxreg_fan *fan,
 				return -EINVAL;
 			}
 
-			/* Validate if more then one PWM is connected. */
+			 
 			if (pwm_num) {
 				err = mlxreg_pwm_connect_verify(fan, data);
 				if (err < 0)
@@ -502,7 +441,7 @@ static int mlxreg_fan_config(struct mlxreg_fan *fan,
 					data->label);
 				return -EINVAL;
 			}
-			/* Validate that conf parameters are not zeros. */
+			 
 			if (!data->mask && !data->bit && !data->capability) {
 				dev_err(fan->dev, "invalid conf entry params: %s\n",
 					data->label);
@@ -529,7 +468,7 @@ static int mlxreg_fan_config(struct mlxreg_fan *fan,
 		int drwr_avail;
 		u32 regval;
 
-		/* Obtain the number of FAN drawers, supported by system. */
+		 
 		err = regmap_read(fan->regmap, pdata->capability, &regval);
 		if (err) {
 			dev_err(fan->dev, "Failed to query capability register 0x%08x\n",
@@ -544,7 +483,7 @@ static int mlxreg_fan_config(struct mlxreg_fan *fan,
 			return -EINVAL;
 		}
 
-		/* Set the number of tachometers per one drawer. */
+		 
 		fan->tachos_per_drwr = tacho_avail / drwr_avail;
 	}
 
@@ -568,7 +507,7 @@ static int mlxreg_fan_cooling_config(struct device *dev, struct mlxreg_fan *fan)
 			return PTR_ERR(pwm->cdev);
 		}
 
-		/* Set minimal PWM speed. */
+		 
 		pwm->last_hwmon_state = MLXREG_FAN_PWM_DUTY2STATE(MLXREG_FAN_MIN_DUTY);
 	}
 

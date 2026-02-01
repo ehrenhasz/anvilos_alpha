@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2016 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -68,7 +44,7 @@ static void mp_help_add_from_map(mp_obj_t list, const mp_map_t *map) {
 static void mp_help_add_from_names(mp_obj_t list, const char *name) {
     while (*name) {
         size_t len = strlen(name);
-        // name should end in '.py' and we strip it off
+        
         mp_obj_list_append(list, mp_obj_new_str(name, len - 3));
         name += len + 1;
     }
@@ -86,10 +62,10 @@ static void mp_help_print_modules(void) {
     mp_help_add_from_names(list, mp_frozen_names);
     #endif
 
-    // sort the list so it's printed in alphabetical order
+    
     mp_obj_list_sort(1, &list, (mp_map_t *)&mp_const_empty_map);
 
-    // print the list of modules in a column-first order
+    
     #define NUM_COLUMNS (4)
     #define COLUMN_WIDTH (18)
     size_t len;
@@ -116,7 +92,7 @@ static void mp_help_print_modules(void) {
     }
 
     #if MICROPY_ENABLE_EXTERNAL_IMPORT
-    // let the user know there may be other modules available from the filesystem
+    
     mp_print_str(MP_PYTHON_PRINTER, "Plus any modules on the filesystem\n");
     #endif
 }
@@ -132,7 +108,7 @@ static void mp_help_print_obj(const mp_obj_t obj) {
 
     const mp_obj_type_t *type = mp_obj_get_type(obj);
 
-    // try to print something sensible about the given object
+    
     mp_print_str(MP_PYTHON_PRINTER, "object ");
     mp_obj_print(obj, PRINT_STR);
     mp_printf(MP_PYTHON_PRINTER, " is of type %q\n", type->name);
@@ -160,10 +136,10 @@ static void mp_help_print_obj(const mp_obj_t obj) {
 
 static mp_obj_t mp_builtin_help(size_t n_args, const mp_obj_t *args) {
     if (n_args == 0) {
-        // print a general help message
+        
         mp_print_str(MP_PYTHON_PRINTER, MICROPY_PY_BUILTINS_HELP_TEXT);
     } else {
-        // try to print something sensible about the given object
+        
         mp_help_print_obj(args[0]);
     }
 
@@ -171,4 +147,4 @@ static mp_obj_t mp_builtin_help(size_t n_args, const mp_obj_t *args) {
 }
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_builtin_help_obj, 0, 1, mp_builtin_help);
 
-#endif // MICROPY_PY_BUILTINS_HELP
+#endif 

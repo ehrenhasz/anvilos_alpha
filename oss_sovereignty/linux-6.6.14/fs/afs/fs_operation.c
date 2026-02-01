@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Fileserver-directed operation handling.
- *
- * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -12,9 +8,7 @@
 
 static atomic_t afs_operation_debug_counter;
 
-/*
- * Create an operation against a volume.
- */
+ 
 struct afs_operation *afs_alloc_operation(struct key *key, struct afs_volume *volume)
 {
 	struct afs_operation *op;
@@ -47,9 +41,7 @@ struct afs_operation *afs_alloc_operation(struct key *key, struct afs_volume *vo
 	return op;
 }
 
-/*
- * Lock the vnode(s) being operated upon.
- */
+ 
 static bool afs_get_io_locks(struct afs_operation *op)
 {
 	struct afs_vnode *vnode = op->file[0].vnode;
@@ -127,12 +119,7 @@ static void afs_prepare_vnode(struct afs_operation *op, struct afs_vnode_param *
 		       index, vp->fid.vid, vp->fid.vnode, vp->fid.unique);
 }
 
-/*
- * Begin an operation on the fileserver.
- *
- * Fileserver operations are serialised on the server by vnode, so we serialise
- * them here also using the io_lock.
- */
+ 
 bool afs_begin_vnode_operation(struct afs_operation *op)
 {
 	struct afs_vnode *vnode = op->file[0].vnode;
@@ -152,9 +139,7 @@ bool afs_begin_vnode_operation(struct afs_operation *op)
 	return true;
 }
 
-/*
- * Tidy up a filesystem cursor and unlock the vnode.
- */
+ 
 static void afs_end_vnode_operation(struct afs_operation *op)
 {
 	_enter("");
@@ -171,9 +156,7 @@ static void afs_end_vnode_operation(struct afs_operation *op)
 		op->error = afs_abort_to_error(op->ac.abort_code);
 }
 
-/*
- * Wait for an in-progress operation to complete.
- */
+ 
 void afs_wait_for_operation(struct afs_operation *op)
 {
 	_enter("");
@@ -216,9 +199,7 @@ void afs_wait_for_operation(struct afs_operation *op)
 	_leave("");
 }
 
-/*
- * Dispose of an operation.
- */
+ 
 int afs_put_operation(struct afs_operation *op)
 {
 	int i, ret = op->error;

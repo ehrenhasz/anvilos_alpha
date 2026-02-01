@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xsens MT USB driver
- *
- * Copyright (C) 2013 Xsens <info@xsens.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/tty.h>

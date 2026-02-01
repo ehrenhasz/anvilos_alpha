@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2005-2006, Devicescape Software, Inc.
- * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
- * Copyright 2007-2008	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright 2015-2017	Intel Deutschland GmbH
- * Copyright 2018-2020, 2022-2023  Intel Corporation
- */
+
+ 
 
 #include <crypto/utils.h>
 #include <linux/if_ether.h>
@@ -28,28 +20,7 @@
 #include "aes_gcm.h"
 
 
-/**
- * DOC: Key handling basics
- *
- * Key handling in mac80211 is done based on per-interface (sub_if_data)
- * keys and per-station keys. Since each station belongs to an interface,
- * each station key also belongs to that interface.
- *
- * Hardware acceleration is done on a best-effort basis for algorithms
- * that are implemented in software,  for each key the hardware is asked
- * to enable that key for offloading but if it cannot do that the key is
- * simply kept for software encryption (unless it is for an algorithm
- * that isn't implemented in software).
- * There is currently no way of knowing whether a key is handled in SW
- * or HW except by looking into debugfs.
- *
- * All key management is internally protected by a mutex. Within all
- * other parts of mac80211, key references are, just as STA structure
- * references, protected by RCU. Note, however, that some things are
- * unprotected, namely the key->sta dereferences within the hardware
- * acceleration functions. This means that sta_info_destroy() must
- * remove the key which waits for an RCU grace period.
- */
+ 
 
 static const u8 bcast_addr[ETH_ALEN] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
@@ -66,7 +37,7 @@ update_vlan_tailroom_need_count(struct ieee80211_sub_if_data *sdata, int delta)
 	if (sdata->vif.type != NL80211_IFTYPE_AP)
 		return;
 
-	/* crypto_tx_tailroom_needed_cnt is protected by this */
+	 
 	assert_key_lock(sdata->local);
 
 	rcu_read_lock();
@@ -79,34 +50,14 @@ update_vlan_tailroom_need_count(struct ieee80211_sub_if_data *sdata, int delta)
 
 static void increment_tailroom_need_count(struct ieee80211_sub_if_data *sdata)
 {
-	/*
-	 * When this count is zero, SKB resizing for allocating tailroom
-	 * for IV or MMIC is skipped. But, this check has created two race
-	 * cases in xmit path while transiting from zero count to one:
-	 *
-	 * 1. SKB resize was skipped because no key was added but just before
-	 * the xmit key is added and SW encryption kicks off.
-	 *
-	 * 2. SKB resize was skipped because all the keys were hw planted but
-	 * just before xmit one of the key is deleted and SW encryption kicks
-	 * off.
-	 *
-	 * In both the above case SW encryption will find not enough space for
-	 * tailroom and exits with WARN_ON. (See WARN_ONs at wpa.c)
-	 *
-	 * Solution has been explained at
-	 * http://mid.gmane.org/1308590980.4322.19.camel@jlt3.sipsolutions.net
-	 */
+	 
 
 	assert_key_lock(sdata->local);
 
 	update_vlan_tailroom_need_count(sdata, 1);
 
 	if (!sdata->crypto_tx_tailroom_needed_cnt++) {
-		/*
-		 * Flush all XMIT packets currently using HW encryption or no
-		 * encryption at all if the count transition is from 0 -> 1.
-		 */
+		 
 		synchronize_net();
 	}
 }
@@ -131,13 +82,7 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 	might_sleep();
 
 	if (key->flags & KEY_FLAG_TAINTED) {
-		/* If we get here, it's during resume and the key is
-		 * tainted so shouldn't be used/programmed any more.
-		 * However, its flags may still indicate that it was
-		 * programmed into the device (since we're in resume)
-		 * so clear that flag now to avoid trying to remove
-		 * it again later.
-		 */
+		 
 		if (key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE &&
 		    !(key->conf.flags & (IEEE80211_KEY_FLAG_GENERATE_MMIC |
 					 IEEE80211_KEY_FLAG_PUT_MIC_SPACE |
@@ -155,10 +100,7 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 
 	sta = key->sta;
 
-	/*
-	 * If this is a per-STA GTK, check if it
-	 * is supported; if not, return.
-	 */
+	 
 	if (sta && !(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE) &&
 	    !ieee80211_hw_check(&key->local->hw, SUPPORTS_PER_STA_GTK))
 		goto out_unsupported;
@@ -167,10 +109,7 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 		goto out_unsupported;
 
 	if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN) {
-		/*
-		 * The driver doesn't know anything about VLAN interfaces.
-		 * Hence, don't send GTKs for VLAN interfaces to the driver.
-		 */
+		 
 		if (!(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
 			ret = 1;
 			goto out_unsupported;
@@ -220,7 +159,7 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 	case WLAN_CIPHER_SUITE_BIP_CMAC_256:
 	case WLAN_CIPHER_SUITE_BIP_GMAC_128:
 	case WLAN_CIPHER_SUITE_BIP_GMAC_256:
-		/* all of these we can do in software - if driver can */
+		 
 		if (ret == 1)
 			return 0;
 		if (ieee80211_hw_check(&key->local->hw, SW_CRYPTO_CONTROL))
@@ -303,19 +242,11 @@ static void ieee80211_pairwise_rekey(struct ieee80211_key *old,
 	assert_key_lock(local);
 
 	if (new->conf.flags & IEEE80211_KEY_FLAG_NO_AUTO_TX) {
-		/* Extended Key ID key install, initial one or rekey */
+		 
 
 		if (sta->ptk_idx != INVALID_PTK_KEYIDX &&
 		    !ieee80211_hw_check(&local->hw, AMPDU_KEYBORDER_SUPPORT)) {
-			/* Aggregation Sessions with Extended Key ID must not
-			 * mix MPDUs with different keyIDs within one A-MPDU.
-			 * Tear down running Tx aggregation sessions and block
-			 * new Rx/Tx aggregation requests during rekey to
-			 * ensure there are no A-MPDUs when the driver is not
-			 * supporting A-MPDU key borders. (Blocking Tx only
-			 * would be sufficient but WLAN_STA_BLOCK_BA gets the
-			 * job done for the few ms we need it.)
-			 */
+			 
 			set_sta_flag(sta, WLAN_STA_BLOCK_BA);
 			mutex_lock(&sta->ampdu_mlme.mtx);
 			for (i = 0; i <  IEEE80211_NUM_TIDS; i++)
@@ -324,15 +255,11 @@ static void ieee80211_pairwise_rekey(struct ieee80211_key *old,
 			mutex_unlock(&sta->ampdu_mlme.mtx);
 		}
 	} else if (old) {
-		/* Rekey without Extended Key ID.
-		 * Aggregation sessions are OK when running on SW crypto.
-		 * A broken remote STA may cause issues not observed with HW
-		 * crypto, though.
-		 */
+		 
 		if (!(old->flags & KEY_FLAG_UPLOADED_TO_HARDWARE))
 			return;
 
-		/* Stop Tx till we are on the new key */
+		 
 		old->flags |= KEY_FLAG_TAINTED;
 		ieee80211_clear_fast_xmit(sta);
 		if (ieee80211_hw_check(&local->hw, AMPDU_AGGREGATION)) {
@@ -344,9 +271,7 @@ static void ieee80211_pairwise_rekey(struct ieee80211_key *old,
 					     NL80211_EXT_FEATURE_CAN_REPLACE_PTK0)) {
 			pr_warn_ratelimited("Rekeying PTK for STA %pM but driver can't safely do that.",
 					    sta->sta.addr);
-			/* Flushing the driver queues *may* help prevent
-			 * the clear text leaks and freezes.
-			 */
+			 
 			ieee80211_flush_queues(local, old->sdata, false);
 		}
 	}
@@ -452,7 +377,7 @@ static int ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
 	bool defunikey, defmultikey, defmgmtkey, defbeaconkey;
 	bool is_wep;
 
-	/* caller must provide at least one old/new */
+	 
 	if (WARN_ON(!new && !old))
 		return 0;
 
@@ -496,9 +421,7 @@ static int ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
 	WARN_ON(new && old && new->conf.keyidx != old->conf.keyidx);
 
 	if (new && sta && pairwise) {
-		/* Unicast rekey needs special handling. With Extended Key ID
-		 * old is still NULL for the first rekey.
-		 */
+		 
 		ieee80211_pairwise_rekey(old, new);
 	}
 
@@ -533,10 +456,7 @@ static int ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
 		} else {
 			rcu_assign_pointer(link_sta->gtk[idx], new);
 		}
-		/* Only needed for transition from no key -> key.
-		 * Still triggers unnecessary when using Extended Key ID
-		 * and installing the second key ID the first time.
-		 */
+		 
 		if (new && !old)
 			ieee80211_check_fast_rx(sta);
 	} else {
@@ -604,10 +524,7 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 	if (!key)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Default to software encryption; we'll later upload the
-	 * key to the hardware if possible.
-	 */
+	 
 	key->conf.flags = 0;
 	key->flags = 0;
 
@@ -643,10 +560,7 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 					key->u.ccmp.rx_pn[i][j] =
 						seq[IEEE80211_CCMP_PN_LEN - j - 1];
 		}
-		/*
-		 * Initialize AES key state here as an optimization so that
-		 * it does not need to be initialized for every packet.
-		 */
+		 
 		key->u.ccmp.tfm = ieee80211_aes_key_setup_encrypt(
 			key_data, key_len, IEEE80211_CCMP_MIC_LEN);
 		if (IS_ERR(key->u.ccmp.tfm)) {
@@ -662,9 +576,7 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 			for (j = 0; j < IEEE80211_CCMP_256_PN_LEN; j++)
 				key->u.ccmp.rx_pn[i][j] =
 					seq[IEEE80211_CCMP_256_PN_LEN - j - 1];
-		/* Initialize AES key state here as an optimization so that
-		 * it does not need to be initialized for every packet.
-		 */
+		 
 		key->u.ccmp.tfm = ieee80211_aes_key_setup_encrypt(
 			key_data, key_len, IEEE80211_CCMP_256_MIC_LEN);
 		if (IS_ERR(key->u.ccmp.tfm)) {
@@ -684,10 +596,7 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 			for (j = 0; j < IEEE80211_CMAC_PN_LEN; j++)
 				key->u.aes_cmac.rx_pn[j] =
 					seq[IEEE80211_CMAC_PN_LEN - j - 1];
-		/*
-		 * Initialize AES key state here as an optimization so that
-		 * it does not need to be initialized for every packet.
-		 */
+		 
 		key->u.aes_cmac.tfm =
 			ieee80211_aes_cmac_key_setup(key_data, key_len);
 		if (IS_ERR(key->u.aes_cmac.tfm)) {
@@ -704,9 +613,7 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 			for (j = 0; j < IEEE80211_GMAC_PN_LEN; j++)
 				key->u.aes_gmac.rx_pn[j] =
 					seq[IEEE80211_GMAC_PN_LEN - j - 1];
-		/* Initialize AES key state here as an optimization so that
-		 * it does not need to be initialized for every packet.
-		 */
+		 
 		key->u.aes_gmac.tfm =
 			ieee80211_aes_gmac_key_setup(key_data, key_len);
 		if (IS_ERR(key->u.aes_gmac.tfm)) {
@@ -723,9 +630,7 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 			for (j = 0; j < IEEE80211_GCMP_PN_LEN; j++)
 				key->u.gcmp.rx_pn[i][j] =
 					seq[IEEE80211_GCMP_PN_LEN - j - 1];
-		/* Initialize AES key state here as an optimization so that
-		 * it does not need to be initialized for every packet.
-		 */
+		 
 		key->u.gcmp.tfm = ieee80211_aes_gcm_key_setup_encrypt(key_data,
 								      key_len);
 		if (IS_ERR(key->u.gcmp.tfm)) {
@@ -773,7 +678,7 @@ static void __ieee80211_key_destroy(struct ieee80211_key *key,
 		ieee80211_debugfs_key_remove(key);
 
 		if (delay_tailroom) {
-			/* see ieee80211_delayed_tailroom_dec */
+			 
 			sdata->crypto_tx_tailroom_pending_dec++;
 			schedule_delayed_work(&sdata->dec_tailroom_needed_wk,
 					      HZ/2);
@@ -791,10 +696,7 @@ static void ieee80211_key_destroy(struct ieee80211_key *key,
 	if (!key)
 		return;
 
-	/*
-	 * Synchronize so the TX path and rcu key iterators
-	 * can no longer be using this key before we free/remove it.
-	 */
+	 
 	synchronize_net();
 
 	__ieee80211_key_destroy(key, delay_tailroom);
@@ -822,11 +724,7 @@ static bool ieee80211_key_identical(struct ieee80211_sub_if_data *sdata,
 	tk_old = old->conf.key;
 	tk_new = new->conf.key;
 
-	/*
-	 * In station mode, don't compare the TX MIC key, as it's never used
-	 * and offloaded rekeying may not care to send it to the host. This
-	 * is the case in iwlwifi, for example.
-	 */
+	 
 	if (sdata->vif.type == NL80211_IFTYPE_STATION &&
 	    new->conf.cipher == WLAN_CIPHER_SUITE_TKIP &&
 	    new->conf.keylen == WLAN_KEY_LEN_TKIP &&
@@ -851,11 +749,7 @@ int ieee80211_key_link(struct ieee80211_key *key,
 	struct ieee80211_key *old_key = NULL;
 	int idx = key->conf.keyidx;
 	bool pairwise = key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE;
-	/*
-	 * We want to delay tailroom updates only for station - in that
-	 * case it helps roaming speed, but in other cases it hurts and
-	 * can cause warnings to appear.
-	 */
+	 
 	bool delay_tailroom = sdata->vif.type == NL80211_IFTYPE_STATION;
 	int ret;
 
@@ -867,9 +761,7 @@ int ieee80211_key_link(struct ieee80211_key *key,
 		old_key = key_mtx_dereference(sdata->local, sta->ptk[idx]);
 		alt_key = key_mtx_dereference(sdata->local, sta->ptk[idx ^ 1]);
 
-		/* The rekey code assumes that the old and new key are using
-		 * the same cipher. Enforce the assumption for pairwise keys.
-		 */
+		 
 		if ((alt_key && alt_key->conf.cipher != key->conf.cipher) ||
 		    (old_key && old_key->conf.cipher != key->conf.cipher)) {
 			ret = -EOPNOTSUPP;
@@ -898,7 +790,7 @@ int ieee80211_key_link(struct ieee80211_key *key,
 						      link->gtk[idx]);
 	}
 
-	/* Non-pairwise keys must also not switch the cipher on rekey */
+	 
 	if (!pairwise) {
 		if (old_key && old_key->conf.cipher != key->conf.cipher) {
 			ret = -EOPNOTSUPP;
@@ -906,10 +798,7 @@ int ieee80211_key_link(struct ieee80211_key *key,
 		}
 	}
 
-	/*
-	 * Silently accept key re-installation without really installing the
-	 * new version of the key to avoid nonce reuse or replay issues.
-	 */
+	 
 	if (ieee80211_key_identical(sdata, old_key, key)) {
 		ret = -EALREADY;
 		goto out;
@@ -919,10 +808,7 @@ int ieee80211_key_link(struct ieee80211_key *key,
 	key->sdata = sdata;
 	key->sta = sta;
 
-	/*
-	 * Assign a unique ID to every key so we can easily prevent mixed
-	 * key and fragment cache attacks.
-	 */
+	 
 	key->color = atomic_inc_return(&key_color);
 
 	increment_tailroom_need_count(sdata);
@@ -950,9 +836,7 @@ void ieee80211_key_free(struct ieee80211_key *key, bool delay_tailroom)
 	if (!key)
 		return;
 
-	/*
-	 * Replace key with nothingness if it was ever used.
-	 */
+	 
 	if (key->sdata)
 		ieee80211_key_replace(key->sdata, NULL, key->sta,
 				      key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE,
@@ -1036,7 +920,7 @@ _ieee80211_iter_keys_rcu(struct ieee80211_hw *hw,
 	struct ieee80211_key *key;
 
 	list_for_each_entry_rcu(key, &sdata->key_list, list) {
-		/* skip keys of station in removal process */
+		 
 		if (key->sta && key->sta->removed)
 			continue;
 		if (!(key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE))
@@ -1209,21 +1093,7 @@ void ieee80211_delayed_tailroom_dec(struct work_struct *wk)
 	sdata = container_of(wk, struct ieee80211_sub_if_data,
 			     dec_tailroom_needed_wk.work);
 
-	/*
-	 * The reason for the delayed tailroom needed decrementing is to
-	 * make roaming faster: during roaming, all keys are first deleted
-	 * and then new keys are installed. The first new key causes the
-	 * crypto_tx_tailroom_needed_cnt to go from 0 to 1, which invokes
-	 * the cost of synchronize_net() (which can be slow). Avoid this
-	 * by deferring the crypto_tx_tailroom_needed_cnt decrementing on
-	 * key removal for a while, so if we roam the value is larger than
-	 * zero and no 0->1 transition happens.
-	 *
-	 * The cost is that if the AP switching was from an AP with keys
-	 * to one without, we still allocate tailroom while it would no
-	 * longer be needed. However, in the typical (fast) roaming case
-	 * within an ESS this usually won't happen.
-	 */
+	 
 
 	mutex_lock(&sdata->local->key_mtx);
 	decrease_tailroom_need_count(sdata,
@@ -1360,10 +1230,7 @@ void ieee80211_remove_key(struct ieee80211_key_conf *keyconf)
 
 	assert_key_lock(key->local);
 
-	/*
-	 * if key was uploaded, we assume the driver will/has remove(d)
-	 * it, so adjust bookkeeping accordingly
-	 */
+	 
 	if (key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE) {
 		key->flags &= ~KEY_FLAG_UPLOADED_TO_HARDWARE;
 
@@ -1401,7 +1268,7 @@ ieee80211_gtk_rekey_add(struct ieee80211_vif *vif,
 	if (sdata->u.mgd.mfp != IEEE80211_MFP_DISABLED)
 		key->conf.flags |= IEEE80211_KEY_FLAG_RX_MGMT;
 
-	/* FIXME: this function needs to get a link ID */
+	 
 	err = ieee80211_key_link(key, &sdata->deflink, NULL);
 	if (err)
 		return ERR_PTR(err);
@@ -1426,7 +1293,7 @@ void ieee80211_key_mic_failure(struct ieee80211_key_conf *keyconf)
 		key->u.aes_gmac.icverrors++;
 		break;
 	default:
-		/* ignore the others for now, we don't keep counters now */
+		 
 		break;
 	}
 }
@@ -1471,7 +1338,7 @@ int ieee80211_key_switch_links(struct ieee80211_sub_if_data *sdata,
 		    !(del_links_mask & BIT(key->conf.link_id)))
 			continue;
 
-		/* shouldn't happen for per-link keys */
+		 
 		WARN_ON(key->sta);
 
 		ieee80211_key_disable_hw_accel(key);
@@ -1482,7 +1349,7 @@ int ieee80211_key_switch_links(struct ieee80211_sub_if_data *sdata,
 		    !(add_links_mask & BIT(key->conf.link_id)))
 			continue;
 
-		/* shouldn't happen for per-link keys */
+		 
 		WARN_ON(key->sta);
 
 		ret = ieee80211_key_enable_hw_accel(key);

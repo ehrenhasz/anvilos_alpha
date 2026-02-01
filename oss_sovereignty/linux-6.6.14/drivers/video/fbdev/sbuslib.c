@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* sbuslib.c: Helper library for SBUS framebuffer drivers.
- *
- * Copyright (C) 2003 David S. Miller (davem@redhat.com)
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/kernel.h>
@@ -58,11 +55,11 @@ int sbusfb_mmap_helper(struct sbus_mmap_map *map,
 
 	off = vma->vm_pgoff << PAGE_SHIFT;
 
-	/* VM_IO | VM_DONTEXPAND | VM_DONTDUMP are set by remap_pfn_range() */
+	 
 
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
-	/* Each page, see which map applies */
+	 
 	for (page = 0; page < size; ){
 		map_size = 0;
 		for (i = 0; map[i].size; i++)
@@ -201,8 +198,7 @@ int sbusfb_compat_ioctl(struct fb_info *info, unsigned int cmd, unsigned long ar
 	case FBIOSVIDEO:
 	case FBIOGVIDEO:
 	case FBIOSCURSOR32:
-	case FBIOGCURSOR32:	/* This is not implemented yet.
-				   Later it should be converted... */
+	case FBIOGCURSOR32:	 
 	case FBIOSCURPOS:
 	case FBIOGCURPOS:
 	case FBIOGCURMAX:

@@ -1,34 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mix.c
-//
-// Copyright (c) 2015 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-/*
- *		    CTUn	MIXn
- *		    +------+	+------+
- * [SRC3 / SRC6] -> |CTU n0| ->	[MIX n0| ->
- * [SRC4 / SRC9] -> |CTU n1| ->	[MIX n1| ->
- * [SRC0 / SRC1] -> |CTU n2| ->	[MIX n2| ->
- * [SRC2 / SRC5] -> |CTU n3| ->	[MIX n3| ->
- *		    +------+	+------+
- *
- * ex)
- *	DAI0 : playback = <&src0 &ctu02 &mix0 &dvc0 &ssi0>;
- *	DAI1 : playback = <&src2 &ctu03 &mix0 &dvc0 &ssi0>;
- *
- * MIX Volume
- *	amixer set "MIX",0  100%  // DAI0 Volume
- *	amixer set "MIX",1  100%  // DAI1 Volume
- *
- * Volume Ramp
- *	amixer set "MIX Ramp Up Rate"   "0.125 dB/1 step"
- *	amixer set "MIX Ramp Down Rate" "4 dB/1 step"
- *	amixer set "MIX Ramp" on
- *	aplay xxx.wav &
- *	amixer set "MIX",0  80%  // DAI0 Volume Down
- *	amixer set "MIX",1 100%  // DAI1 Volume Up
- */
+
+
+
+
+
+ 
 
 #include "rsnd.h"
 
@@ -37,13 +13,13 @@
 
 struct rsnd_mix {
 	struct rsnd_mod mod;
-	struct rsnd_kctrl_cfg_s volumeA; /* MDBAR */
-	struct rsnd_kctrl_cfg_s volumeB; /* MDBBR */
-	struct rsnd_kctrl_cfg_s volumeC; /* MDBCR */
-	struct rsnd_kctrl_cfg_s volumeD; /* MDBDR */
-	struct rsnd_kctrl_cfg_s ren;	/* Ramp Enable */
-	struct rsnd_kctrl_cfg_s rup;	/* Ramp Rate Up */
-	struct rsnd_kctrl_cfg_s rdw;	/* Ramp Rate Down */
+	struct rsnd_kctrl_cfg_s volumeA;  
+	struct rsnd_kctrl_cfg_s volumeB;  
+	struct rsnd_kctrl_cfg_s volumeC;  
+	struct rsnd_kctrl_cfg_s volumeD;  
+	struct rsnd_kctrl_cfg_s ren;	 
+	struct rsnd_kctrl_cfg_s rup;	 
+	struct rsnd_kctrl_cfg_s rdw;	 
 	u32 flags;
 };
 
@@ -108,15 +84,15 @@ static void rsnd_mix_volume_init(struct rsnd_dai_stream *io,
 
 	rsnd_mod_write(mod, MIX_MIXIR, 1);
 
-	/* General Information */
+	 
 	rsnd_mod_write(mod, MIX_ADINR, rsnd_runtime_channel_after_ctu(io));
 
-	/* volume step */
+	 
 	rsnd_mod_write(mod, MIX_MIXMR, rsnd_kctrl_vals(mix->ren));
 	rsnd_mod_write(mod, MIX_MVPDR, rsnd_kctrl_vals(mix->rup) << 8 |
 				       rsnd_kctrl_vals(mix->rdw));
 
-	/* common volume parameter */
+	 
 	rsnd_mix_volume_parameter(io, mod);
 
 	rsnd_mod_write(mod, MIX_MIXIR, 0);
@@ -125,13 +101,13 @@ static void rsnd_mix_volume_init(struct rsnd_dai_stream *io,
 static void rsnd_mix_volume_update(struct rsnd_dai_stream *io,
 				  struct rsnd_mod *mod)
 {
-	/* Disable MIX dB setting */
+	 
 	rsnd_mod_write(mod, MIX_MDBER, 0);
 
-	/* common volume parameter */
+	 
 	rsnd_mix_volume_parameter(io, mod);
 
-	/* Enable MIX dB setting */
+	 
 	rsnd_mod_write(mod, MIX_MDBER, 1);
 }
 
@@ -185,22 +161,22 @@ static int rsnd_mix_pcm_new(struct rsnd_mod *mod,
 
 	switch (rsnd_mod_id(src_mod)) {
 	case 3:
-	case 6:	/* MDBAR */
+	case 6:	 
 		volume = &mix->volumeA;
 		rsnd_flags_set(mix, HAS_VOLA);
 		break;
 	case 4:
-	case 9:	/* MDBBR */
+	case 9:	 
 		volume = &mix->volumeB;
 		rsnd_flags_set(mix, HAS_VOLB);
 		break;
 	case 0:
-	case 1:	/* MDBCR */
+	case 1:	 
 		volume = &mix->volumeC;
 		rsnd_flags_set(mix, HAS_VOLC);
 		break;
 	case 2:
-	case 5:	/* MDBDR */
+	case 5:	 
 		volume = &mix->volumeD;
 		rsnd_flags_set(mix, HAS_VOLD);
 		break;
@@ -209,7 +185,7 @@ static int rsnd_mix_pcm_new(struct rsnd_mod *mod,
 		return -EINVAL;
 	}
 
-	/* Volume */
+	 
 	ret = rsnd_kctrl_new_s(mod, io, rtd,
 			       "MIX Playback Volume",
 			       rsnd_kctrl_accept_anytime,
@@ -222,7 +198,7 @@ static int rsnd_mix_pcm_new(struct rsnd_mod *mod,
 	if (rsnd_flags_has(mix, ONCE_KCTRL_INITIALIZED))
 		return ret;
 
-	/* Ramp */
+	 
 	ret = rsnd_kctrl_new_s(mod, io, rtd,
 			       "MIX Ramp Switch",
 			       rsnd_kctrl_accept_anytime,
@@ -295,13 +271,13 @@ int rsnd_mix_probe(struct rsnd_priv *priv)
 	char name[MIX_NAME_SIZE];
 	int i, nr, ret;
 
-	/* This driver doesn't support Gen1 at this point */
+	 
 	if (rsnd_is_gen1(priv))
 		return 0;
 
 	node = rsnd_mix_of_node(priv);
 	if (!node)
-		return 0; /* not used is not error */
+		return 0;  
 
 	nr = of_get_child_count(node);
 	if (!nr) {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -23,7 +20,7 @@
 #include "sun6i_isp_proc.h"
 #include "sun6i_isp_reg.h"
 
-/* Helpers */
+ 
 
 u32 sun6i_isp_load_read(struct sun6i_isp_device *isp_dev, u32 offset)
 {
@@ -40,16 +37,9 @@ void sun6i_isp_load_write(struct sun6i_isp_device *isp_dev, u32 offset,
 	*data = value;
 }
 
-/* State */
+ 
 
-/*
- * The ISP works with a load buffer, which gets copied to the actual registers
- * by the hardware before processing a frame when a specific flag is set.
- * This is represented by tracking the ISP state in the different parts of
- * the code with explicit sync points:
- * - state update: to update the load buffer for the next frame if necessary;
- * - state complete: to indicate that the state update was applied.
- */
+ 
 
 static void sun6i_isp_state_ready(struct sun6i_isp_device *isp_dev)
 {
@@ -89,7 +79,7 @@ void sun6i_isp_state_update(struct sun6i_isp_device *isp_dev, bool ready_hold)
 	spin_unlock_irqrestore(&isp_dev->state_lock, flags);
 }
 
-/* Tables */
+ 
 
 static int sun6i_isp_table_setup(struct sun6i_isp_device *isp_dev,
 				 struct sun6i_isp_table *table)
@@ -174,13 +164,13 @@ static void sun6i_isp_tables_cleanup(struct sun6i_isp_device *isp_dev)
 	sun6i_isp_table_cleanup(isp_dev, &tables->load);
 }
 
-/* Media */
+ 
 
 static const struct media_device_ops sun6i_isp_media_ops = {
 	.link_notify = v4l2_pipeline_link_notify,
 };
 
-/* V4L2 */
+ 
 
 static int sun6i_isp_v4l2_setup(struct sun6i_isp_device *isp_dev)
 {
@@ -190,7 +180,7 @@ static int sun6i_isp_v4l2_setup(struct sun6i_isp_device *isp_dev)
 	struct device *dev = isp_dev->dev;
 	int ret;
 
-	/* Media Device */
+	 
 
 	strscpy(media_dev->model, SUN6I_ISP_DESCRIPTION,
 		sizeof(media_dev->model));
@@ -206,7 +196,7 @@ static int sun6i_isp_v4l2_setup(struct sun6i_isp_device *isp_dev)
 		return ret;
 	}
 
-	/* V4L2 Device */
+	 
 
 	v4l2_dev->mdev = media_dev;
 
@@ -234,7 +224,7 @@ static void sun6i_isp_v4l2_cleanup(struct sun6i_isp_device *isp_dev)
 	media_device_cleanup(&v4l2->media_dev);
 }
 
-/* Platform */
+ 
 
 static irqreturn_t sun6i_isp_interrupt(int irq, void *private)
 {
@@ -250,16 +240,7 @@ static irqreturn_t sun6i_isp_interrupt(int irq, void *private)
 	else if (!(status & enable))
 		goto complete;
 
-	/*
-	 * The ISP working cycle starts with a params-load, which makes the
-	 * state from the load buffer active. Then it starts processing the
-	 * frame and gives a finish interrupt. Soon after that, the next state
-	 * coming from the load buffer will be applied for the next frame,
-	 * giving a params-load as well.
-	 *
-	 * Because both frame finish and params-load are received almost
-	 * at the same time (one ISR call), handle them in chronology order.
-	 */
+	 
 
 	if (status & SUN6I_ISP_FE_INT_STA_FINISH)
 		sun6i_isp_capture_finish(isp_dev);
@@ -340,7 +321,7 @@ static int sun6i_isp_resources_setup(struct sun6i_isp_device *isp_dev,
 	int irq;
 	int ret;
 
-	/* Registers */
+	 
 
 	io_base = devm_platform_ioremap_resource(platform_dev, 0);
 	if (IS_ERR(io_base))
@@ -353,7 +334,7 @@ static int sun6i_isp_resources_setup(struct sun6i_isp_device *isp_dev,
 		return PTR_ERR(isp_dev->regmap);
 	}
 
-	/* Clocks */
+	 
 
 	isp_dev->clock_mod = devm_clk_get(dev, "mod");
 	if (IS_ERR(isp_dev->clock_mod)) {
@@ -373,7 +354,7 @@ static int sun6i_isp_resources_setup(struct sun6i_isp_device *isp_dev,
 		return ret;
 	}
 
-	/* Reset */
+	 
 
 	isp_dev->reset = devm_reset_control_get_shared(dev, NULL);
 	if (IS_ERR(isp_dev->reset)) {
@@ -382,7 +363,7 @@ static int sun6i_isp_resources_setup(struct sun6i_isp_device *isp_dev,
 		goto error_clock_rate_exclusive;
 	}
 
-	/* Interrupt */
+	 
 
 	irq = platform_get_irq(platform_dev, 0);
 	if (irq < 0) {
@@ -398,7 +379,7 @@ static int sun6i_isp_resources_setup(struct sun6i_isp_device *isp_dev,
 		goto error_clock_rate_exclusive;
 	}
 
-	/* Runtime PM */
+	 
 
 	pm_runtime_enable(dev);
 
@@ -504,19 +485,7 @@ static void sun6i_isp_remove(struct platform_device *platform_dev)
 	sun6i_isp_resources_cleanup(isp_dev);
 }
 
-/*
- * History of sun6i-isp:
- * - sun4i-a10-isp: initial ISP tied to the CSI0 controller,
- *   apparently unused in software implementations;
- * - sun6i-a31-isp: separate ISP loosely based on sun4i-a10-isp,
- *   adding extra modules and features;
- * - sun9i-a80-isp: based on sun6i-a31-isp with some register offset changes
- *   and new modules like saturation and cnr;
- * - sun8i-a23-isp/sun8i-h3-isp: based on sun9i-a80-isp with most modules
- *   related to raw removed;
- * - sun8i-a83t-isp: based on sun9i-a80-isp with some register offset changes
- * - sun8i-v3s-isp: based on sun8i-a83t-isp with a new disc module;
- */
+ 
 
 static const struct sun6i_isp_variant sun8i_v3s_isp_variant = {
 	.table_load_save_size	= 0x1000,

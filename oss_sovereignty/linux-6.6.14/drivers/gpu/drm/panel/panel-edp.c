@@ -1,25 +1,4 @@
-/*
- * Copyright (C) 2013, NVIDIA Corporation.  All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sub license,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -42,166 +21,66 @@
 #include <drm/drm_edid.h>
 #include <drm/drm_panel.h>
 
-/**
- * struct panel_delay - Describes delays for a simple panel.
- */
+ 
 struct panel_delay {
-	/**
-	 * @hpd_reliable: Time for HPD to be reliable
-	 *
-	 * The time (in milliseconds) that it takes after powering the panel
-	 * before the HPD signal is reliable. Ideally this is 0 but some panels,
-	 * board designs, or bad pulldown configs can cause a glitch here.
-	 *
-	 * NOTE: on some old panel data this number appears to be much too big.
-	 * Presumably some old panels simply didn't have HPD hooked up and put
-	 * the hpd_absent here because this field predates the
-	 * hpd_absent. While that works, it's non-ideal.
-	 */
+	 
 	unsigned int hpd_reliable;
 
-	/**
-	 * @hpd_absent: Time to wait if HPD isn't hooked up.
-	 *
-	 * Add this to the prepare delay if we know Hot Plug Detect isn't used.
-	 *
-	 * This is T3-max on eDP timing diagrams or the delay from power on
-	 * until HPD is guaranteed to be asserted.
-	 */
+	 
 	unsigned int hpd_absent;
 
-	/**
-	 * @prepare_to_enable: Time between prepare and enable.
-	 *
-	 * The minimum time, in milliseconds, that needs to have passed
-	 * between when prepare finished and enable may begin. If at
-	 * enable time less time has passed since prepare finished,
-	 * the driver waits for the remaining time.
-	 *
-	 * If a fixed enable delay is also specified, we'll start
-	 * counting before delaying for the fixed delay.
-	 *
-	 * If a fixed prepare delay is also specified, we won't start
-	 * counting until after the fixed delay. We can't overlap this
-	 * fixed delay with the min time because the fixed delay
-	 * doesn't happen at the end of the function if a HPD GPIO was
-	 * specified.
-	 *
-	 * In other words:
-	 *   prepare()
-	 *     ...
-	 *     // do fixed prepare delay
-	 *     // wait for HPD GPIO if applicable
-	 *     // start counting for prepare_to_enable
-	 *
-	 *   enable()
-	 *     // do fixed enable delay
-	 *     // enforce prepare_to_enable min time
-	 *
-	 * This is not specified in a standard way on eDP timing diagrams.
-	 * It is effectively the time from HPD going high till you can
-	 * turn on the backlight.
-	 */
+	 
 	unsigned int prepare_to_enable;
 
-	/**
-	 * @enable: Time for the panel to display a valid frame.
-	 *
-	 * The time (in milliseconds) that it takes for the panel to
-	 * display the first valid frame after starting to receive
-	 * video data.
-	 *
-	 * This is (T6-min + max(T7-max, T8-min)) on eDP timing diagrams or
-	 * the delay after link training finishes until we can turn the
-	 * backlight on and see valid data.
-	 */
+	 
 	unsigned int enable;
 
-	/**
-	 * @disable: Time for the panel to turn the display off.
-	 *
-	 * The time (in milliseconds) that it takes for the panel to
-	 * turn the display off (no content is visible).
-	 *
-	 * This is T9-min (delay from backlight off to end of valid video
-	 * data) on eDP timing diagrams. It is not common to set.
-	 */
+	 
 	unsigned int disable;
 
-	/**
-	 * @unprepare: Time to power down completely.
-	 *
-	 * The time (in milliseconds) that it takes for the panel
-	 * to power itself down completely.
-	 *
-	 * This time is used to prevent a future "prepare" from
-	 * starting until at least this many milliseconds has passed.
-	 * If at prepare time less time has passed since unprepare
-	 * finished, the driver waits for the remaining time.
-	 *
-	 * This is T12-min on eDP timing diagrams.
-	 */
+	 
 	unsigned int unprepare;
 };
 
-/**
- * struct panel_desc - Describes a simple panel.
- */
+ 
 struct panel_desc {
-	/**
-	 * @modes: Pointer to array of fixed modes appropriate for this panel.
-	 *
-	 * If only one mode then this can just be the address of the mode.
-	 * NOTE: cannot be used with "timings" and also if this is specified
-	 * then you cannot override the mode in the device tree.
-	 */
+	 
 	const struct drm_display_mode *modes;
 
-	/** @num_modes: Number of elements in modes array. */
+	 
 	unsigned int num_modes;
 
-	/**
-	 * @timings: Pointer to array of display timings
-	 *
-	 * NOTE: cannot be used with "modes" and also these will be used to
-	 * validate a device tree override if one is present.
-	 */
+	 
 	const struct display_timing *timings;
 
-	/** @num_timings: Number of elements in timings array. */
+	 
 	unsigned int num_timings;
 
-	/** @bpc: Bits per color. */
+	 
 	unsigned int bpc;
 
-	/** @size: Structure containing the physical size of this panel. */
+	 
 	struct {
-		/**
-		 * @size.width: Width (in mm) of the active display area.
-		 */
+		 
 		unsigned int width;
 
-		/**
-		 * @size.height: Height (in mm) of the active display area.
-		 */
+		 
 		unsigned int height;
 	} size;
 
-	/** @delay: Structure containing various delay values for this panel. */
+	 
 	struct panel_delay delay;
 };
 
-/**
- * struct edp_panel_entry - Maps panel ID to delay / panel name.
- */
+ 
 struct edp_panel_entry {
-	/** @panel_id: 32-bit ID for panel, encoded with drm_edid_encode_panel_id(). */
+	 
 	u32 panel_id;
 
-	/** @delay: The power sequencing delays needed for this panel. */
+	 
 	const struct panel_delay *delay;
 
-	/** @name: Name of this panel (for printing to logs). */
+	 
 	const char *name;
 };
 
@@ -322,16 +201,11 @@ static int panel_edp_get_non_edid_modes(struct panel_edp *panel,
 		}
 	}
 
-	/* Only add timings if override was not there or failed to validate */
+	 
 	if (num == 0 && panel->desc->num_timings)
 		num = panel_edp_get_timings_modes(panel, connector);
 
-	/*
-	 * Only add fixed modes if timings/override added no mode.
-	 *
-	 * We should only ever have either the display timings specified
-	 * or a fixed mode. Anything else is rather bogus.
-	 */
+	 
 	WARN_ON(panel->desc->num_timings && panel->desc->num_modes);
 	if (num == 0)
 		num = panel_edp_get_display_modes(panel, connector);
@@ -388,7 +262,7 @@ static int panel_edp_unprepare(struct drm_panel *panel)
 	struct panel_edp *p = to_panel_edp(panel);
 	int ret;
 
-	/* Unpreparing when already unprepared is a no-op */
+	 
 	if (!p->prepared)
 		return 0;
 
@@ -476,10 +350,7 @@ error:
 	return err;
 }
 
-/*
- * Some panels simply don't always come up and need to be power cycled to
- * work properly.  We'll allow for a handful of retries.
- */
+ 
 #define MAX_PANEL_PREPARE_TRIES		5
 
 static int panel_edp_resume(struct device *dev)
@@ -507,7 +378,7 @@ static int panel_edp_prepare(struct drm_panel *panel)
 	struct panel_edp *p = to_panel_edp(panel);
 	int ret;
 
-	/* Preparing when already prepared is a no-op */
+	 
 	if (p->prepared)
 		return 0;
 
@@ -532,23 +403,7 @@ static int panel_edp_enable(struct drm_panel *panel)
 
 	delay = p->desc->delay.enable;
 
-	/*
-	 * If there is a "prepare_to_enable" delay then that's supposed to be
-	 * the delay from HPD going high until we can turn the backlight on.
-	 * However, we can only count this if HPD is readable by the panel
-	 * driver.
-	 *
-	 * If we aren't handling the HPD pin ourselves then the best we
-	 * can do is assume that HPD went high immediately before we were
-	 * called (and link training took zero time). Note that "no-hpd"
-	 * actually counts as handling HPD ourselves since we're doing the
-	 * worst case delay (in prepare) ourselves.
-	 *
-	 * NOTE: if we ever end up in this "if" statement then we're
-	 * guaranteed that the panel_edp_wait() call below will do no delay.
-	 * It already handles that case, though, so we don't need any special
-	 * code for it.
-	 */
+	 
 	if (p->desc->delay.prepare_to_enable &&
 	    !panel_edp_can_read_hpd(p) && !p->no_hpd)
 		delay = max(delay, p->desc->delay.prepare_to_enable);
@@ -569,7 +424,7 @@ static int panel_edp_get_modes(struct drm_panel *panel,
 	struct panel_edp *p = to_panel_edp(panel);
 	int num = 0;
 
-	/* probe EDID if a DDC bus is available */
+	 
 	if (p->ddc) {
 		pm_runtime_get_sync(panel->dev);
 
@@ -583,20 +438,13 @@ static int panel_edp_get_modes(struct drm_panel *panel,
 		pm_runtime_put_autosuspend(panel->dev);
 	}
 
-	/*
-	 * Add hard-coded panel modes. Don't call this if there are no timings
-	 * and no modes (the generic edp-panel case) because it will clobber
-	 * the display_info that was already set by drm_add_edid_modes().
-	 */
+	 
 	if (p->desc->num_timings || p->desc->num_modes)
 		num += panel_edp_get_non_edid_modes(p, connector);
 	else if (!num)
 		dev_warn(p->base.dev, "No display modes\n");
 
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, p->orientation);
 
 	return num;
@@ -723,17 +571,13 @@ static int generic_edp_panel_probe(struct device *dev, struct panel_edp *panel)
 		return -ENOMEM;
 	panel->desc = desc;
 
-	/*
-	 * Read the dts properties for the initial probe. These are used by
-	 * the runtime resume code which will get called by the
-	 * pm_runtime_get_sync() call below.
-	 */
+	 
 	of_property_read_u32(dev->of_node, "hpd-reliable-delay-ms", &reliable_ms);
 	desc->delay.hpd_reliable = reliable_ms;
 	of_property_read_u32(dev->of_node, "hpd-absent-delay-ms", &absent_ms);
 	desc->delay.hpd_absent = absent_ms;
 
-	/* Power the panel on so we can read the EDID */
+	 
 	ret = pm_runtime_get_sync(dev);
 	if (ret < 0) {
 		dev_err(dev, "Couldn't power on panel to read EDID: %d\n", ret);
@@ -750,31 +594,13 @@ static int generic_edp_panel_probe(struct device *dev, struct panel_edp *panel)
 
 	panel->detected_panel = find_edp_panel(panel_id);
 
-	/*
-	 * We're using non-optimized timings and want it really obvious that
-	 * someone needs to add an entry to the table, so we'll do a WARN_ON
-	 * splat.
-	 */
+	 
 	if (WARN_ON(!panel->detected_panel)) {
 		dev_warn(dev,
 			 "Unknown panel %s %#06x, using conservative timings\n",
 			 vend, product_id);
 
-		/*
-		 * It's highly likely that the panel will work if we use very
-		 * conservative timings, so let's do that. We already know that
-		 * the HPD-related delays must have worked since we got this
-		 * far, so we really just need the "unprepare" / "enable"
-		 * delays. We don't need "prepare_to_enable" since that
-		 * overlaps the "enable" delay anyway.
-		 *
-		 * Nearly all panels have a "unprepare" delay of 500 ms though
-		 * there are a few with 1000. Let's stick 2000 in just to be
-		 * super conservative.
-		 *
-		 * An "enable" delay of 80 ms seems the most common, but we'll
-		 * throw in 200 ms to be safe.
-		 */
+		 
 		desc->delay.unprepare = 2000;
 		desc->delay.enable = 200;
 
@@ -783,7 +609,7 @@ static int generic_edp_panel_probe(struct device *dev, struct panel_edp *panel)
 		dev_info(dev, "Detected %s %s (%#06x)\n",
 			 vend, panel->detected_panel->name, product_id);
 
-		/* Update the delay; everything else comes from EDID */
+		 
 		desc->delay = *panel->detected_panel->delay;
 	}
 
@@ -857,12 +683,7 @@ static int panel_edp_probe(struct device *dev, const struct panel_desc *desc,
 	if (err)
 		goto err_finished_ddc_init;
 
-	/*
-	 * We use runtime PM for prepare / unprepare since those power the panel
-	 * on and off and those can be very slow operations. This is important
-	 * to optimize powering the panel on briefly to read the EDID before
-	 * fully enabling the panel.
-	 */
+	 
 	pm_runtime_enable(dev);
 	pm_runtime_set_autosuspend_delay(dev, 1000);
 	pm_runtime_use_autosuspend(dev);
@@ -874,7 +695,7 @@ static int panel_edp_probe(struct device *dev, const struct panel_desc *desc,
 				      "Couldn't detect panel nor find a fallback\n");
 			goto err_finished_pm_runtime;
 		}
-		/* generic_edp_panel_probe() replaces desc in the panel */
+		 
 		desc = panel->desc;
 	} else if (desc->bpc != 6 && desc->bpc != 8 && desc->bpc != 10) {
 		dev_warn(dev, "Expected bpc in {6,8,10} but got: %u\n", desc->bpc);
@@ -1113,7 +934,7 @@ static const struct panel_desc boe_nv101wxmn51 = {
 		.height = 136,
 	},
 	.delay = {
-		/* TODO: should be hpd-absent and no-hpd should be set? */
+		 
 		.hpd_reliable = 210,
 		.enable = 50,
 		.unprepare = 160,
@@ -1163,7 +984,7 @@ static const struct panel_desc boe_nv110wtm_n61 = {
 	},
 };
 
-/* Also used for boe_nv133fhm_n62 */
+ 
 static const struct drm_display_mode boe_nv133fhm_n61_modes = {
 	.clock = 147840,
 	.hdisplay = 1920,
@@ -1177,7 +998,7 @@ static const struct drm_display_mode boe_nv133fhm_n61_modes = {
 	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_NVSYNC,
 };
 
-/* Also used for boe_nv133fhm_n62 */
+ 
 static const struct panel_desc boe_nv133fhm_n61 = {
 	.modes = &boe_nv133fhm_n61_modes,
 	.num_modes = 1,
@@ -1187,16 +1008,7 @@ static const struct panel_desc boe_nv133fhm_n61 = {
 		.height = 165,
 	},
 	.delay = {
-		/*
-		 * When power is first given to the panel there's a short
-		 * spike on the HPD line.  It was explained that this spike
-		 * was until the TCON data download was complete.  On
-		 * one system this was measured at 8 ms.  We'll put 15 ms
-		 * in the prepare delay just to be safe.  That means:
-		 * - If HPD isn't hooked up you still have 200 ms delay.
-		 * - If HPD is hooked up we won't try to look at it for the
-		 *   first 15 ms.
-		 */
+		 
 		.hpd_reliable = 15,
 		.hpd_absent = 200,
 
@@ -1227,7 +1039,7 @@ static const struct panel_desc boe_nv140fhmn49 = {
 		.height = 174,
 	},
 	.delay = {
-		/* TODO: should be hpd-absent and no-hpd should be set? */
+		 
 		.hpd_reliable = 210,
 		.enable = 50,
 		.unprepare = 160,
@@ -1263,16 +1075,7 @@ static const struct panel_desc innolux_n116bca_ea1 = {
 	},
 };
 
-/*
- * Datasheet specifies that at 60 Hz refresh rate:
- * - total horizontal time: { 1506, 1592, 1716 }
- * - total vertical time: { 788, 800, 868 }
- *
- * ...but doesn't go into exactly how that should be split into a front
- * porch, back porch, or sync length.  For now we'll leave a single setting
- * here which allows a bit of tweaking of the pixel clock at the expense of
- * refresh rate.
- */
+ 
 static const struct display_timing innolux_n116bge_timing = {
 	.pixelclock = { 72600000, 76420000, 80240000 },
 	.hactive = { 1366, 1366, 1366 },
@@ -1682,7 +1485,7 @@ static const struct panel_desc starry_kr122ea0sra = {
 		.height = 164,
 	},
 	.delay = {
-		/* TODO: should be hpd-absent and no-hpd should be set? */
+		 
 		.hpd_reliable = 10 + 200,
 		.enable = 50,
 		.unprepare = 10 + 500,
@@ -1691,7 +1494,7 @@ static const struct panel_desc starry_kr122ea0sra = {
 
 static const struct of_device_id platform_of_match[] = {
 	{
-		/* Must be first */
+		 
 		.compatible = "edp-panel",
 	}, {
 		.compatible = "auo,b101ean01",
@@ -1778,7 +1581,7 @@ static const struct of_device_id platform_of_match[] = {
 		.compatible = "starry,kr122ea0sra",
 		.data = &starry_kr122ea0sra,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, platform_of_match);
@@ -1828,13 +1631,7 @@ static const struct panel_delay delay_200_500_e200 = {
 	.delay = _delay \
 }
 
-/*
- * This table is used to figure out power sequencing delays for panels that
- * are detected by EDID. Entries here may point to entries in the
- * platform_of_match table (if a panel is listed in both places).
- *
- * Sort first by vendor, then by product ID.
- */
+ 
 static const struct edp_panel_entry edp_panels[] = {
 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x1062, &delay_200_500_e50, "B120XAN01.0"),
 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x145c, &delay_200_500_e50, "B116XAB01.4"),
@@ -1876,7 +1673,7 @@ static const struct edp_panel_entry edp_panels[] = {
 
 	EDP_PANEL_ENTRY('S', 'T', 'A', 0x0100, &delay_100_500_e200, "2081116HHD028001-51D"),
 
-	{ /* sentinal */ }
+	{   }
 };
 
 static const struct edp_panel_entry *find_edp_panel(u32 panel_id)
@@ -1897,7 +1694,7 @@ static int panel_edp_platform_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *id;
 
-	/* Skip one since "edp-panel" is only supported on DP AUX bus */
+	 
 	id = of_match_node(platform_of_match + 1, pdev->dev.of_node);
 	if (!id)
 		return -ENODEV;
@@ -1956,7 +1753,7 @@ static void panel_edp_dp_aux_ep_shutdown(struct dp_aux_ep_device *aux_ep)
 static struct dp_aux_ep_driver panel_edp_dp_aux_ep_driver = {
 	.driver = {
 		.name = "panel-simple-dp-aux",
-		.of_match_table = platform_of_match,	/* Same as platform one! */
+		.of_match_table = platform_of_match,	 
 		.pm = &panel_edp_pm_ops,
 	},
 	.probe = panel_edp_dp_aux_ep_probe,

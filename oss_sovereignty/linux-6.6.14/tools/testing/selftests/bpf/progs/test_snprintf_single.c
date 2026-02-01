@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Google LLC. */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
-/* The format string is filled from the userspace such that loading fails */
+ 
 const char fmt[10];
 
 SEC("raw_tp/sys_enter")

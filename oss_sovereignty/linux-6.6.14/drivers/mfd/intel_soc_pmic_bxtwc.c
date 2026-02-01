@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MFD core driver for Intel Broxton Whiskey Cove PMIC
- *
- * Copyright (C) 2015-2017, 2022 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -18,12 +14,12 @@
 
 #include <asm/intel_scu_ipc.h>
 
-/* PMIC device registers */
+ 
 #define REG_ADDR_MASK		GENMASK(15, 8)
 #define REG_ADDR_SHIFT		8
 #define REG_OFFSET_MASK		GENMASK(7, 0)
 
-/* Interrupt Status Registers */
+ 
 #define BXTWC_IRQLVL1		0x4E02
 
 #define BXTWC_PWRBTNIRQ		0x4E03
@@ -39,7 +35,7 @@
 #define BXTWC_CRITIRQ		0x4E0D
 #define BXTWC_TMUIRQ		0x4FB6
 
-/* Interrupt MASK Registers */
+ 
 #define BXTWC_MIRQLVL1		0x4E0E
 #define BXTWC_MIRQLVL1_MCHGR	BIT(5)
 
@@ -56,7 +52,7 @@
 #define BXTWC_MCRITIRQ		0x4E1B
 #define BXTWC_MTMUIRQ		0x4FB7
 
-/* Whiskey Cove PMIC share same ACPI ID between different platforms */
+ 
 #define BROXTON_PMIC_WC_HRV	4
 
 #define PMC_PMIC_ACCESS		0xFF
@@ -329,7 +325,7 @@ static int regmap_ipc_byte_reg_write(void *context, unsigned int reg,
 					 NULL, 0);
 }
 
-/* sysfs interfaces to r/w PMIC registers, required by initial script */
+ 
 static unsigned long bxtwc_reg_addr;
 static ssize_t addr_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
@@ -483,7 +479,7 @@ static int bxtwc_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to add TMU IRQ chip\n");
 
-	/* Add chained IRQ handler for BCU IRQs */
+	 
 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
 					 BXTWC_BCU_LVL1_IRQ,
 					 IRQF_ONESHOT,
@@ -492,7 +488,7 @@ static int bxtwc_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to add BUC IRQ chip\n");
 
-	/* Add chained IRQ handler for ADC IRQs */
+	 
 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
 					 BXTWC_ADC_LVL1_IRQ,
 					 IRQF_ONESHOT,
@@ -501,7 +497,7 @@ static int bxtwc_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to add ADC IRQ chip\n");
 
-	/* Add chained IRQ handler for CHGR IRQs */
+	 
 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
 					 BXTWC_CHGR_LVL1_IRQ,
 					 IRQF_ONESHOT,
@@ -510,7 +506,7 @@ static int bxtwc_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to add CHGR IRQ chip\n");
 
-	/* Add chained IRQ handler for CRIT IRQs */
+	 
 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
 					 BXTWC_CRIT_LVL1_IRQ,
 					 IRQF_ONESHOT,
@@ -524,13 +520,7 @@ static int bxtwc_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to add devices\n");
 
-	/*
-	 * There is a known H/W bug. Upon reset, BIT 5 of register
-	 * BXTWC_CHGR_LVL1_IRQ is 0 which is the expected value. However,
-	 * later it's set to 1(masked) automatically by hardware. So we
-	 * place the software workaround here to unmask it again in order
-	 * to re-enable the charger interrupt.
-	 */
+	 
 	regmap_update_bits(pmic->regmap, BXTWC_MIRQLVL1, BXTWC_MIRQLVL1_MCHGR, 0);
 
 	return 0;

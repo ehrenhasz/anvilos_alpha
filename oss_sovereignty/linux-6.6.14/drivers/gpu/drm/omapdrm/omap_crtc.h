@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * omap_crtc.h -- OMAP DRM CRTC
- *
- * Copyright (C) 2011 Texas Instruments
- * Author: Rob Clark <rob@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAPDRM_CRTC_H__
 #define __OMAPDRM_CRTC_H__
@@ -31,4 +26,4 @@ void omap_crtc_vblank_irq(struct drm_crtc *crtc);
 void omap_crtc_framedone_irq(struct drm_crtc *crtc, uint32_t irqstatus);
 void omap_crtc_flush(struct drm_crtc *crtc);
 
-#endif /* __OMAPDRM_CRTC_H__ */
+#endif  

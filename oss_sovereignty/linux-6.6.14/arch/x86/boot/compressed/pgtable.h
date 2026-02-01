@@ -14,5 +14,5 @@ extern void trampoline_32bit_src(void *trampoline, bool enable_5lvl);
 
 extern const u16 trampoline_ljmp_imm_offset;
 
-#endif /* __ASSEMBLER__ */
-#endif /* BOOT_COMPRESSED_PAGETABLE_H */
+#endif  
+#endif  

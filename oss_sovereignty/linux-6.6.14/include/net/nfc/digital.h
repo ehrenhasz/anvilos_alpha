@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NFC Digital Protocol stack
- * Copyright (c) 2013, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __NFC_DIGITAL_H
 #define __NFC_DIGITAL_H
@@ -10,18 +7,13 @@
 #include <linux/skbuff.h>
 #include <net/nfc/nfc.h>
 
-/**
- * Configuration types for in_configure_hw and tg_configure_hw.
- */
+ 
 enum {
 	NFC_DIGITAL_CONFIG_RF_TECH = 0,
 	NFC_DIGITAL_CONFIG_FRAMING,
 };
 
-/**
- * RF technology values passed as param argument to in_configure_hw and
- * tg_configure_hw for NFC_DIGITAL_CONFIG_RF_TECH configuration type.
- */
+ 
 enum {
 	NFC_DIGITAL_RF_TECH_106A = 0,
 	NFC_DIGITAL_RF_TECH_212F,
@@ -32,10 +24,7 @@ enum {
 	NFC_DIGITAL_RF_TECH_LAST,
 };
 
-/**
- * Framing configuration passed as param argument to in_configure_hw and
- * tg_configure_hw for NFC_DIGITAL_CONFIG_FRAMING configuration type.
- */
+ 
 enum {
 	NFC_DIGITAL_FRAMING_NFCA_SHORT = 0,
 	NFC_DIGITAL_FRAMING_NFCA_STANDARD,
@@ -74,75 +63,11 @@ struct digital_tg_mdaa_params {
 
 struct nfc_digital_dev;
 
-/**
- * nfc_digital_cmd_complete_t - Definition of command result callback
- *
- * @ddev: nfc_digital_device ref
- * @arg: user data
- * @resp: response data
- *
- * resp pointer can be an error code and will be checked with IS_ERR() macro.
- * The callback is responsible for freeing resp sk_buff.
- */
+ 
 typedef void (*nfc_digital_cmd_complete_t)(struct nfc_digital_dev *ddev,
 					   void *arg, struct sk_buff *resp);
 
-/**
- * Device side NFC Digital operations
- *
- * Initiator mode:
- * @in_configure_hw: Hardware configuration for RF technology and communication
- *	framing in initiator mode. This is a synchronous function.
- * @in_send_cmd: Initiator mode data exchange using RF technology and framing
- *	previously set with in_configure_hw. The peer response is returned
- *	through callback cb. If an io error occurs or the peer didn't reply
- *	within the specified timeout (ms), the error code is passed back through
- *	the resp pointer. This is an asynchronous function.
- *
- * Target mode: Only NFC-DEP protocol is supported in target mode.
- * @tg_configure_hw: Hardware configuration for RF technology and communication
- *	framing in target mode. This is a synchronous function.
- * @tg_send_cmd: Target mode data exchange using RF technology and framing
- *	previously set with tg_configure_hw. The peer next command is returned
- *	through callback cb. If an io error occurs or the peer didn't reply
- *	within the specified timeout (ms), the error code is passed back through
- *	the resp pointer. This is an asynchronous function.
- * @tg_listen: Put the device in listen mode waiting for data from the peer
- *	device. This is an asynchronous function.
- * @tg_listen_mdaa: If supported, put the device in automatic listen mode with
- *	mode detection and automatic anti-collision. In this mode, the device
- *	automatically detects the RF technology and executes the anti-collision
- *	detection using the command responses specified in mdaa_params. The
- *	mdaa_params structure contains SENS_RES, NFCID1, and SEL_RES for 106A RF
- *	tech. NFCID2 and system code (sc) for 212F and 424F. The driver returns
- *	the NFC-DEP ATR_REQ command through cb. The digital stack deducts the RF
- *	tech by analyzing the SoD of the frame containing the ATR_REQ command.
- *	This is an asynchronous function.
- * @tg_listen_md: If supported, put the device in automatic listen mode with
- *	mode detection but without automatic anti-collision. In this mode, the
- *	device automatically detects the RF technology.  What the actual
- *	RF technology is can be retrieved by calling @tg_get_rf_tech.
- *	The digital stack will then perform the appropriate anti-collision
- *	sequence.  This is an asynchronous function.
- * @tg_get_rf_tech: Required when @tg_listen_md is supported, unused otherwise.
- *	Return the RF Technology that was detected by the @tg_listen_md call.
- *	This is a synchronous function.
- *
- * @switch_rf: Turns device radio on or off. The stack does not call explicitly
- *	switch_rf to turn the radio on. A call to in|tg_configure_hw must turn
- *	the device radio on.
- * @abort_cmd: Discard the last sent command.
- *
- * Notes: Asynchronous functions have a timeout parameter. It is the driver
- *	responsibility to call the digital stack back through the
- *	nfc_digital_cmd_complete_t callback when no RF respsonse has been
- *	received within the specified time (in milliseconds). In that case the
- *	driver must set the resp sk_buff to ERR_PTR(-ETIMEDOUT).
- *	Since the digital stack serializes commands to be sent, it's mandatory
- *	for the driver to handle the timeout correctly. Otherwise the stack
- *	would not be able to send new commands, waiting for the reply of the
- *	current one.
- */
+ 
 struct nfc_digital_ops {
 	int (*in_configure_hw)(struct nfc_digital_dev *ddev, int type,
 			       int param);
@@ -169,7 +94,7 @@ struct nfc_digital_ops {
 	void (*abort_cmd)(struct nfc_digital_dev *ddev);
 };
 
-#define NFC_DIGITAL_POLL_MODE_COUNT_MAX	6 /* 106A, 212F, and 424F in & tg */
+#define NFC_DIGITAL_POLL_MODE_COUNT_MAX	6  
 
 typedef int (*digital_poll_t)(struct nfc_digital_dev *ddev, u8 rf_tech);
 
@@ -178,14 +103,7 @@ struct digital_poll_tech {
 	digital_poll_t poll_func;
 };
 
-/**
- * Driver capabilities - bit mask made of the following values
- *
- * @NFC_DIGITAL_DRV_CAPS_IN_CRC: The driver handles CRC calculation in initiator
- *	mode.
- * @NFC_DIGITAL_DRV_CAPS_TG_CRC: The driver handles CRC calculation in target
- *	mode.
- */
+ 
 #define NFC_DIGITAL_DRV_CAPS_IN_CRC	0x0001
 #define NFC_DIGITAL_DRV_CAPS_TG_CRC	0x0002
 
@@ -262,4 +180,4 @@ static inline void *nfc_digital_get_drvdata(struct nfc_digital_dev *dev)
 	return dev->driver_data;
 }
 
-#endif /* __NFC_DIGITAL_H */
+#endif  

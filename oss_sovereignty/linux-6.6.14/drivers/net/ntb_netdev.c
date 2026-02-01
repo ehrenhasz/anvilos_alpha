@@ -1,52 +1,4 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- *   redistributing this file, you may do so under either license.
- *
- *   GPL LICENSE SUMMARY
- *
- *   Copyright(c) 2012 Intel Corporation. All rights reserved.
- *   Copyright (C) 2015 EMC Corporation. All Rights Reserved.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of version 2 of the GNU General Public License as
- *   published by the Free Software Foundation.
- *
- *   BSD LICENSE
- *
- *   Copyright(c) 2012 Intel Corporation. All rights reserved.
- *   Copyright (C) 2015 EMC Corporation. All Rights Reserved.
- *
- *   Redistribution and use in source and binary forms, with or without
- *   modification, are permitted provided that the following conditions
- *   are met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copy
- *       notice, this list of conditions and the following disclaimer in
- *       the documentation and/or other materials provided with the
- *       distribution.
- *     * Neither the name of Intel Corporation nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * PCIe NTB Network Linux driver
- *
- * Contact Information:
- * Jon Mason <jon.mason@intel.com>
- */
+ 
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
 #include <linux/module.h>
@@ -61,13 +13,13 @@ MODULE_VERSION(NTB_NETDEV_VER);
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Intel Corporation");
 
-/* Time in usecs for tx resource reaper */
+ 
 static unsigned int tx_time = 1;
 
-/* Number of descriptors to free before resuming tx */
+ 
 static unsigned int tx_start = 10;
 
-/* Number of descriptors still available before stop upper layer tx */
+ 
 static unsigned int tx_stop = 5;
 
 struct ntb_netdev {
@@ -149,9 +101,7 @@ static int __ntb_netdev_maybe_stop_tx(struct net_device *netdev,
 	struct ntb_netdev *dev = netdev_priv(netdev);
 
 	netif_stop_queue(netdev);
-	/* Make sure to see the latest value of ntb_transport_tx_free_entry()
-	 * since the queue was last started.
-	 */
+	 
 	smp_mb();
 
 	if (likely(ntb_transport_tx_free_entry(qp) < size)) {
@@ -195,9 +145,7 @@ static void ntb_netdev_tx_handler(struct ntb_transport_qp *qp, void *qp_data,
 	dev_kfree_skb_any(skb);
 
 	if (ntb_transport_tx_free_entry(dev->qp) >= tx_start) {
-		/* Make sure anybody stopping the queue after this sees the new
-		 * value of ntb_transport_tx_free_entry()
-		 */
+		 
 		smp_mb();
 		if (netif_queue_stopped(ndev))
 			netif_wake_queue(ndev);
@@ -216,7 +164,7 @@ static netdev_tx_t ntb_netdev_start_xmit(struct sk_buff *skb,
 	if (rc)
 		goto err;
 
-	/* check for next submit */
+	 
 	ntb_netdev_maybe_stop_tx(ndev, dev->qp, tx_stop);
 
 	return NETDEV_TX_OK;
@@ -235,9 +183,7 @@ static void ntb_netdev_tx_timer(struct timer_list *t)
 	if (ntb_transport_tx_free_entry(dev->qp) < tx_stop) {
 		mod_timer(&dev->tx_timer, jiffies + usecs_to_jiffies(tx_time));
 	} else {
-		/* Make sure anybody stopping the queue after this sees the new
-		 * value of ntb_transport_tx_free_entry()
-		 */
+		 
 		smp_mb();
 		if (netif_queue_stopped(ndev))
 			netif_wake_queue(ndev);
@@ -250,7 +196,7 @@ static int ntb_netdev_open(struct net_device *ndev)
 	struct sk_buff *skb;
 	int rc, i, len;
 
-	/* Add some empty rx bufs */
+	 
 	for (i = 0; i < NTB_RXQ_SIZE; i++) {
 		skb = netdev_alloc_skb(ndev, ndev->mtu + ETH_HLEN);
 		if (!skb) {
@@ -310,7 +256,7 @@ static int ntb_netdev_change_mtu(struct net_device *ndev, int new_mtu)
 		return 0;
 	}
 
-	/* Bring down the link and dispose of posted rx entries */
+	 
 	ntb_transport_link_down(dev->qp);
 
 	if (ndev->mtu < new_mtu) {

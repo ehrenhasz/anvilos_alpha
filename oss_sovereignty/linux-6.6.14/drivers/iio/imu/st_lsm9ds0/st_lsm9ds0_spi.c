@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics LSM9DS0 IMU driver
- *
- * Copyright (C) 2021, Intel Corporation
- *
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

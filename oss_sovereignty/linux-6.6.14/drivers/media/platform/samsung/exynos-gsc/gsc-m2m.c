@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2011 - 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Samsung EXYNOS5 SoC series G-Scaler driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -157,7 +152,7 @@ static void gsc_m2m_device_run(void *priv)
 
 	set_bit(ST_M2M_PEND, &gsc->state);
 
-	/* Reconfigure hardware if the context has changed. */
+	 
 	if (gsc->m2m.ctx != ctx) {
 		pr_debug("gsc->m2m.ctx = 0x%p, current_ctx = 0x%p",
 				gsc->m2m.ctx, ctx);
@@ -208,7 +203,7 @@ static void gsc_m2m_device_run(void *priv)
 		gsc_hw_set_global_alpha(ctx);
 	}
 
-	/* update shadow registers */
+	 
 	gsc_hw_set_sfr_update(ctx);
 
 	ctx->state &= ~GSC_PARAMS;
@@ -406,7 +401,7 @@ static int gsc_m2m_streamon(struct file *file, void *fh,
 {
 	struct gsc_ctx *ctx = fh_to_ctx(fh);
 
-	/* The source and target color format need to be set */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(type)) {
 		if (!gsc_ctx_state_is_set(GSC_SRC_FMT, ctx))
 			return -EINVAL;
@@ -424,7 +419,7 @@ static int gsc_m2m_streamoff(struct file *file, void *fh,
 	return v4l2_m2m_streamoff(file, ctx->m2m_ctx, type);
 }
 
-/* Return 1 if rectangle a is enclosed in rectangle b, or 0 otherwise. */
+ 
 static int is_rectangle_enclosed(struct v4l2_rect *a, struct v4l2_rect *b)
 {
 	if (a->left < b->left || a->top < b->top)
@@ -520,7 +515,7 @@ static int gsc_m2m_s_selection(struct file *file, void *fh,
 		return -EINVAL;
 	}
 
-	/* Check to see if scaling ratio is within supported range */
+	 
 	if (gsc_ctx_state_is_set(GSC_DST_FMT | GSC_SRC_FMT, ctx)) {
 		if (s->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
 			ret = gsc_check_scaler_ratio(variant, sel.r.width,
@@ -625,16 +620,16 @@ static int gsc_m2m_open(struct file *file)
 	if (ret)
 		goto error_fh;
 
-	/* Use separate control handler per file handle */
+	 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
 	file->private_data = &ctx->fh;
 	v4l2_fh_add(&ctx->fh);
 
 	ctx->gsc_dev = gsc;
-	/* Default color format */
+	 
 	ctx->s_frame.fmt = get_format(0);
 	ctx->d_frame.fmt = get_format(0);
-	/* Setup the device context for mem2mem mode. */
+	 
 	ctx->state = GSC_CTX_M2M;
 	ctx->flags = 0;
 	ctx->in_path = GSC_DMA;

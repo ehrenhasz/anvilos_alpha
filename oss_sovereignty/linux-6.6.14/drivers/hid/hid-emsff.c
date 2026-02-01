@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Force feedback support for EMS Trio Linker Plus II
- *
- *  Copyright (c) 2010 Ignaz Forster <ignaz.forster@gmx.de>
- */
 
-/*
- */
+ 
+
+ 
 
 
 #include <linux/hid.h>

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright 2011-2012 Calxeda, Inc.
- *  Copyright (C) 2012-2013 Altera Corporation <www.altera.com>
- *
- * Based from clk-highbank.c
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/devcoredump.h>
 
@@ -25,13 +24,7 @@ EXPORT_SYMBOL(rtw_disable_lps_deep_mode);
 bool rtw_bf_support = true;
 unsigned int rtw_debug_mask;
 EXPORT_SYMBOL(rtw_debug_mask);
-/* EDCCA is enabled during normal behavior. For debugging purpose in
- * a noisy environment, it can be disabled via edcca debugfs. Because
- * all rtw88 devices will probably be affected if environment is noisy,
- * rtw_edcca_enabled is just declared by driver instead of by device.
- * So, turning it off will take effect for all rtw88 devices before
- * there is a tough reason to maintain rtw_edcca_enabled by device.
- */
+ 
 bool rtw_edcca_enabled = true;
 
 module_param_named(disable_lps_deep, rtw_disable_lps_deep_mode, bool, 0644);
@@ -154,7 +147,7 @@ static struct ieee80211_supported_band rtw_band_5ghz = {
 	.channels = rtw_channeltable_5g,
 	.n_channels = ARRAY_SIZE(rtw_channeltable_5g),
 
-	/* 5G has no CCK rates */
+	 
 	.bitrates = rtw_ratetable + 4,
 	.n_bitrates = ARRAY_SIZE(rtw_ratetable) - 4,
 
@@ -202,9 +195,7 @@ static void rtw_vif_watch_dog_iter(void *data, struct ieee80211_vif *vif)
 	rtwvif->stats.rx_cnt = 0;
 }
 
-/* process TX/RX statistics periodically for hardware,
- * the information helps hardware to enhance performance
- */
+ 
 static void rtw_watch_dog_work(struct work_struct *work)
 {
 	struct rtw_dev *rtwdev = container_of(work, struct rtw_dev,
@@ -246,7 +237,7 @@ static void rtw_watch_dog_work(struct work_struct *work)
 	stats->tx_throughput = ewma_tp_read(&stats->tx_ewma_tp);
 	stats->rx_throughput = ewma_tp_read(&stats->rx_ewma_tp);
 
-	/* reset tx/rx statictics */
+	 
 	stats->tx_unicast = 0;
 	stats->rx_unicast = 0;
 	stats->tx_cnt = 0;
@@ -255,26 +246,16 @@ static void rtw_watch_dog_work(struct work_struct *work)
 	if (test_bit(RTW_FLAG_SCANNING, rtwdev->flags))
 		goto unlock;
 
-	/* make sure BB/RF is working for dynamic mech */
+	 
 	rtw_leave_lps(rtwdev);
 
 	rtw_phy_dynamic_mechanism(rtwdev);
 
 	data.rtwdev = rtwdev;
-	/* rtw_iterate_vifs internally uses an atomic iterator which is needed
-	 * to avoid taking local->iflist_mtx mutex
-	 */
+	 
 	rtw_iterate_vifs(rtwdev, rtw_vif_watch_dog_iter, &data);
 
-	/* fw supports only one station associated to enter lps, if there are
-	 * more than two stations associated to the AP, then we can not enter
-	 * lps, because fw does not handle the overlapped beacon interval
-	 *
-	 * rtw_recalc_lps() iterate vifs and determine if driver can enter
-	 * ps by vif->type and vif->cfg.ps, all we need to do here is to
-	 * get that vif and check if device is having traffic more than the
-	 * threshold.
-	 */
+	 
 	if (rtwdev->ps_enabled && data.rtwvif && !ps_active &&
 	    !rtwdev->beacon_loss && !rtwdev->ap_active)
 		rtw_enter_lps(rtwdev, data.rtwvif->port);
@@ -449,11 +430,7 @@ static void rtw_fwcd_dump(struct rtw_dev *rtwdev)
 
 	rtw_dbg(rtwdev, RTW_DBG_FW, "dump fwcd\n");
 
-	/* Data will be freed after lifetime of device coredump. After calling
-	 * dev_coredump, data is supposed to be handled by the device coredump
-	 * framework. Note that a new dump will be discarded if a previous one
-	 * hasn't been released yet.
-	 */
+	 
 	dev_coredumpv(rtwdev->dev, desc->data, desc->size, GFP_KERNEL);
 }
 
@@ -730,10 +707,10 @@ void rtw_update_channel(struct rtw_dev *rtwdev, u8 center_channel,
 	center_freq = ieee80211_channel_to_frequency(center_channel, nl_band);
 	primary_freq = ieee80211_channel_to_frequency(primary_channel, nl_band);
 
-	/* assign the center channel used while 20M bw is selected */
+	 
 	cch_by_bw[RTW_CHANNEL_WIDTH_20] = primary_channel;
 
-	/* assign the center channel used while current bw is selected */
+	 
 	cch_by_bw[bandwidth] = center_channel;
 
 	switch (bandwidth) {
@@ -754,9 +731,7 @@ void rtw_update_channel(struct rtw_dev *rtwdev, u8 center_channel,
 			else
 				primary_channel_idx = RTW_SC_20_UPMOST;
 
-			/* assign the center channel used
-			 * while 40M bw is selected
-			 */
+			 
 			cch_by_bw[RTW_CHANNEL_WIDTH_40] = center_channel + 4;
 		} else {
 			if (center_freq - primary_freq == 10)
@@ -764,9 +739,7 @@ void rtw_update_channel(struct rtw_dev *rtwdev, u8 center_channel,
 			else
 				primary_channel_idx = RTW_SC_20_LOWEST;
 
-			/* assign the center channel used
-			 * while 40M bw is selected
-			 */
+			 
 			cch_by_bw[RTW_CHANNEL_WIDTH_40] = center_channel - 4;
 		}
 		break;
@@ -884,10 +857,7 @@ void rtw_set_channel(struct rtw_dev *rtwdev)
 
 	rtw_phy_set_tx_power_level(rtwdev, center_chan);
 
-	/* if the channel isn't set for scanning, we will do RF calibration
-	 * in ieee80211_ops::mgd_prepare_tx(). Performing the calibration
-	 * during scanning on each channel takes too long.
-	 */
+	 
 	if (!test_bit(RTW_FLAG_SCANNING, rtwdev->flags))
 		rtwdev->need_rfk = true;
 }
@@ -992,17 +962,17 @@ static u64 get_vht_ra_mask(struct ieee80211_sta *sta)
 	u8 vht_mcs_cap;
 	int i, nss;
 
-	/* 4SS, every two bits for MCS7/8/9 */
+	 
 	for (i = 0, nss = 12; i < 4; i++, mcs_map >>= 2, nss += 10) {
 		vht_mcs_cap = mcs_map & 0x3;
 		switch (vht_mcs_cap) {
-		case 2: /* MCS9 */
+		case 2:  
 			ra_mask |= 0x3ffULL << nss;
 			break;
-		case 1: /* MCS8 */
+		case 1:  
 			ra_mask |= 0x1ffULL << nss;
 			break;
-		case 0: /* MCS7 */
+		case 0:  
 			ra_mask |= 0x0ffULL << nss;
 			break;
 		default:
@@ -1363,7 +1333,7 @@ static int rtw_power_on(struct rtw_dev *rtwdev)
 		goto err;
 	}
 
-	/* power on MAC before firmware downloaded */
+	 
 	ret = rtw_mac_power_on(rtwdev);
 	if (ret) {
 		rtw_err(rtwdev, "failed to power on mac\n");
@@ -1382,7 +1352,7 @@ static int rtw_power_on(struct rtw_dev *rtwdev)
 		goto err_off;
 	}
 
-	/* config mac after firmware downloaded */
+	 
 	ret = rtw_mac_init(rtwdev);
 	if (ret) {
 		rtw_err(rtwdev, "failed to configure mac\n");
@@ -1397,7 +1367,7 @@ static int rtw_power_on(struct rtw_dev *rtwdev)
 		goto err_off;
 	}
 
-	/* send H2C after HCI has started */
+	 
 	rtw_fw_send_general_info(rtwdev);
 	rtw_fw_send_phydm_info(rtwdev);
 
@@ -1494,7 +1464,7 @@ int rtw_core_start(struct rtw_dev *rtwdev)
 	rtwdev->lps_conf.deep_mode = rtw_update_lps_deep_mode(rtwdev, &rtwdev->fw);
 	rtwdev->lps_conf.wow_deep_mode = rtw_update_lps_deep_mode(rtwdev, &rtwdev->wow_fw);
 
-	/* rcr reset after powered on */
+	 
 	rtw_write32(rtwdev, REG_RCR, rtwdev->hal.rcr);
 
 	ieee80211_queue_delayed_work(rtwdev->hw, &rtwdev->watch_dog_work,
@@ -1860,7 +1830,7 @@ static int rtw_chip_parameter_setup(struct rtw_dev *rtwdev)
 	efuse->logical_size = chip->log_efuse_size;
 	efuse->protect_size = chip->ptct_efuse_size;
 
-	/* default use ack */
+	 
 	rtwdev->hal.rcr |= BIT_VHT_DACK;
 
 	hal->bfee_sts_cap = 3;
@@ -1962,7 +1932,7 @@ static int rtw_chip_efuse_info_setup(struct rtw_dev *rtwdev)
 
 	mutex_lock(&rtwdev->mutex);
 
-	/* power on mac to read efuse */
+	 
 	ret = rtw_chip_efuse_enable(rtwdev);
 	if (ret)
 		goto out_unlock;
@@ -2135,7 +2105,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
 
 	rtw_stats_init(rtwdev);
 
-	/* default rx filter setting */
+	 
 	rtwdev->hal.rcr = BIT_APP_FCS | BIT_APP_MIC | BIT_APP_ICV |
 			  BIT_PKTCTL_DLEN | BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
 			  BIT_AB | BIT_AM | BIT_APM;
@@ -2343,7 +2313,7 @@ static void rtw_port_switch_iter(void *data, struct ieee80211_vif *vif)
 	rtw_dbg(rtwdev, RTW_DBG_STATE, "AP port switch from %d -> %d\n",
 		rtwvif_ap->port, rtwvif_target->port);
 
-	/* Leave LPS so the value swapped are not in PS mode */
+	 
 	rtw_leave_lps(rtwdev);
 
 	reg1 = &rtwvif_ap->conf->net_type;

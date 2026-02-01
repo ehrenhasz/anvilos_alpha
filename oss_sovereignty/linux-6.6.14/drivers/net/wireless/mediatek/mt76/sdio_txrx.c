@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc.
- *
- * Author: Felix Fietkau <nbd@nbd.name>
- *	   Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/iopoll.h>
@@ -21,16 +16,16 @@
 static int mt76s_refill_sched_quota(struct mt76_dev *dev, u32 *data)
 {
 	u32 ple_ac_data_quota[] = {
-		FIELD_GET(TXQ_CNT_L, data[4]), /* VO */
-		FIELD_GET(TXQ_CNT_H, data[3]), /* VI */
-		FIELD_GET(TXQ_CNT_L, data[3]), /* BE */
-		FIELD_GET(TXQ_CNT_H, data[2]), /* BK */
+		FIELD_GET(TXQ_CNT_L, data[4]),  
+		FIELD_GET(TXQ_CNT_H, data[3]),  
+		FIELD_GET(TXQ_CNT_L, data[3]),  
+		FIELD_GET(TXQ_CNT_H, data[2]),  
 	};
 	u32 pse_ac_data_quota[] = {
-		FIELD_GET(TXQ_CNT_H, data[1]), /* VO */
-		FIELD_GET(TXQ_CNT_L, data[1]), /* VI */
-		FIELD_GET(TXQ_CNT_H, data[0]), /* BE */
-		FIELD_GET(TXQ_CNT_L, data[0]), /* BK */
+		FIELD_GET(TXQ_CNT_H, data[1]),  
+		FIELD_GET(TXQ_CNT_L, data[1]),  
+		FIELD_GET(TXQ_CNT_H, data[0]),  
+		FIELD_GET(TXQ_CNT_L, data[0]),  
 	};
 	u32 pse_mcu_quota = FIELD_GET(TXQ_CNT_L, data[2]);
 	u32 pse_data_quota = 0, ple_data_quota = 0;
@@ -120,10 +115,10 @@ mt76s_rx_run_queue(struct mt76_dev *dev, enum mt76_rxq_id qid,
 		struct mt76_queue_entry *e = &q->entry[index];
 		__le32 *rxd = (__le32 *)buf;
 
-		/* parse rxd to get the actual packet length */
+		 
 		len = le32_get_bits(rxd[0], GENMASK(15, 0));
 
-		/* Optimized path for TXS */
+		 
 		if (!dev->drv->rx_check || dev->drv->rx_check(dev, buf, len)) {
 			e->skb = mt76s_build_rx_skb(buf, len,
 						    round_up(len + 4, 4));
@@ -311,7 +306,7 @@ void mt76s_txrx_worker(struct mt76_sdio *sdio)
 	struct mt76_dev *dev = container_of(sdio, struct mt76_dev, sdio);
 	int i, nframes, ret;
 
-	/* disable interrupt */
+	 
 	sdio_claim_host(sdio->func);
 	sdio_writel(sdio->func, WHLPCR_INT_EN_CLR, MCR_WHLPCR, NULL);
 	sdio_release_host(sdio->func);
@@ -319,7 +314,7 @@ void mt76s_txrx_worker(struct mt76_sdio *sdio)
 	do {
 		nframes = 0;
 
-		/* tx */
+		 
 		for (i = 0; i <= MT_TXQ_PSD; i++) {
 			ret = mt76s_tx_run_queue(dev, dev->phy.q_tx[i]);
 			if (ret > 0)
@@ -329,7 +324,7 @@ void mt76s_txrx_worker(struct mt76_sdio *sdio)
 		if (ret > 0)
 			nframes += ret;
 
-		/* rx */
+		 
 		ret = mt76s_rx_handler(dev);
 		if (ret > 0)
 			nframes += ret;
@@ -343,7 +338,7 @@ void mt76s_txrx_worker(struct mt76_sdio *sdio)
 		}
 	} while (nframes > 0);
 
-	/* enable interrupt */
+	 
 	sdio_claim_host(sdio->func);
 	sdio_writel(sdio->func, WHLPCR_INT_EN_SET, MCR_WHLPCR, NULL);
 	sdio_release_host(sdio->func);

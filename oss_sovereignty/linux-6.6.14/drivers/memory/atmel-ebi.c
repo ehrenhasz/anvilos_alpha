@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * EBI driver for Atmel chips
- * inspired by the fsl weim bus driver
- *
- * Copyright (C) 2013 Jean-Jacques Hiblot <jjhiblot@traphandler.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -353,10 +348,7 @@ static int atmel_ebi_dev_setup(struct atmel_ebi *ebi, struct device_node *np,
 
 		caps->get_config(ebid, &ebid->configs[i]);
 
-		/*
-		 * Attach the EBI device to the generic SMC logic if at least
-		 * one "atmel,smc-" property is present.
-		 */
+		 
 		if (ebi->caps->ebi_csa_offs && apply)
 			regmap_update_bits(ebi->regmap,
 					   ebi->caps->ebi_csa_offs,
@@ -486,7 +478,7 @@ static const struct of_device_id atmel_ebi_id_table[] = {
 		.compatible = "microchip,sam9x60-ebi",
 		.data = &sam9x60_ebi_caps,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int atmel_ebi_dev_disable(struct atmel_ebi *ebi, struct device_node *np)
@@ -569,10 +561,7 @@ static int atmel_ebi_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * The sama5d3 does not provide an EBICSA register and thus does need
-	 * to access it.
-	 */
+	 
 	if (ebi->caps->ebi_csa_offs) {
 		ebi->regmap =
 			syscon_regmap_lookup_by_phandle(np,

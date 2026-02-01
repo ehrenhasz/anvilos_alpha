@@ -1,18 +1,4 @@
-/*
- * bnx2fc_els.c: QLogic Linux FCoE offload driver.
- * This file contains helper routines that handle ELS requests
- * and responses.
- *
- * Copyright (c) 2008-2013 Broadcom Corporation
- * Copyright (c) 2014-2016 QLogic Corporation
- * Copyright (c) 2016-2017 Cavium Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Bhanu Prakash Gollapudi (bprakash@broadcom.com)
- */
+ 
 
 #include "bnx2fc.h"
 
@@ -41,10 +27,7 @@ static void bnx2fc_rrq_compl(struct bnx2fc_els_cb_arg *cb_arg)
 	kref_put(&orig_io_req->refcount, bnx2fc_cmd_release);
 
 	if (test_and_clear_bit(BNX2FC_FLAG_ELS_TIMEOUT, &rrq_req->req_flags)) {
-		/*
-		 * els req is timed out. cleanup the IO with FW and
-		 * drop the completion. Remove from active_cmd_queue.
-		 */
+		 
 		BNX2FC_ELS_DBG("rrq xid - 0x%x timed out, clean it up\n",
 			   rrq_req->xid);
 
@@ -137,10 +120,7 @@ static void bnx2fc_l2_els_compl(struct bnx2fc_els_cb_arg *cb_arg)
 
 	els_req = cb_arg->io_req;
 	if (test_and_clear_bit(BNX2FC_FLAG_ELS_TIMEOUT, &els_req->req_flags)) {
-		/*
-		 * els req is timed out. cleanup the IO with FW and
-		 * drop the completion. libfc will handle the els timeout
-		 */
+		 
 		if (els_req->on_active_queue) {
 			list_del_init(&els_req->link);
 			els_req->on_active_queue = 0;
@@ -199,7 +179,7 @@ int bnx2fc_send_adisc(struct bnx2fc_rport *tgt, struct fc_frame *fp)
 
 	BNX2FC_ELS_DBG("send ADISC: l2_oxid = 0x%x\n", cb_arg->l2_oxid);
 	adisc = fc_frame_payload_get(fp, sizeof(*adisc));
-	/* adisc is initialized by libfc */
+	 
 	rc = bnx2fc_initiate_els(tgt, ELS_ADISC, adisc, sizeof(*adisc),
 				 bnx2fc_l2_els_compl, cb_arg, 2 * r_a_tov);
 	if (rc)
@@ -227,7 +207,7 @@ int bnx2fc_send_logo(struct bnx2fc_rport *tgt, struct fc_frame *fp)
 
 	BNX2FC_ELS_DBG("Send LOGO: l2_oxid = 0x%x\n", cb_arg->l2_oxid);
 	logo = fc_frame_payload_get(fp, sizeof(*logo));
-	/* logo is initialized by libfc */
+	 
 	rc = bnx2fc_initiate_els(tgt, ELS_LOGO, logo, sizeof(*logo),
 				 bnx2fc_l2_els_compl, cb_arg, 2 * r_a_tov);
 	if (rc)
@@ -254,7 +234,7 @@ int bnx2fc_send_rls(struct bnx2fc_rport *tgt, struct fc_frame *fp)
 	cb_arg->l2_oxid = ntohs(fh->fh_ox_id);
 
 	rls = fc_frame_payload_get(fp, sizeof(*rls));
-	/* rls is initialized by libfc */
+	 
 	rc = bnx2fc_initiate_els(tgt, ELS_RLS, rls, sizeof(*rls),
 				  bnx2fc_l2_els_compl, cb_arg, 2 * r_a_tov);
 	if (rc)
@@ -278,7 +258,7 @@ static void bnx2fc_srr_compl(struct bnx2fc_els_cb_arg *cb_arg)
 	orig_io_req = cb_arg->aborted_io_req;
 	srr_req = cb_arg->io_req;
 	if (test_and_clear_bit(BNX2FC_FLAG_ELS_TIMEOUT, &srr_req->req_flags)) {
-		/* SRR timedout */
+		 
 		BNX2FC_IO_DBG(srr_req, "srr timed out, abort "
 		       "orig_io - 0x%x\n",
 			orig_io_req->xid);
@@ -342,7 +322,7 @@ static void bnx2fc_srr_compl(struct bnx2fc_els_cb_arg *cb_arg)
 	}
 
 	fh = (struct fc_frame_header *) fc_frame_header_get(fp);
-	/* Copy FC Frame header and payload into the frame */
+	 
 	memcpy(fh, buf, hdr_len + resp_len);
 
 	opcode = fc_frame_payload_op(fp);
@@ -401,12 +381,12 @@ static void bnx2fc_rec_compl(struct bnx2fc_els_cb_arg *cb_arg)
 	BNX2FC_IO_DBG(rec_req, "rec_compl: orig xid = 0x%x", orig_io_req->xid);
 	tgt = orig_io_req->tgt;
 
-	/* Handle REC timeout case */
+	 
 	if (test_and_clear_bit(BNX2FC_FLAG_ELS_TIMEOUT, &rec_req->req_flags)) {
 		BNX2FC_IO_DBG(rec_req, "timed out, abort "
 		       "orig_io - 0x%x\n",
 			orig_io_req->xid);
-		/* els req is timed out. send abts for els */
+		 
 		rc = bnx2fc_initiate_abts(rec_req);
 		if (rc != SUCCESS) {
 			BNX2FC_IO_DBG(rec_req, "rec_compl: initiate_abts "
@@ -414,7 +394,7 @@ static void bnx2fc_rec_compl(struct bnx2fc_els_cb_arg *cb_arg)
 			bnx2fc_initiate_cleanup(rec_req);
 		}
 		orig_io_req->rec_retry++;
-		/* REC timedout. send ABTS to the orig IO req */
+		 
 		if (orig_io_req->rec_retry <= REC_RETRY_COUNT) {
 			spin_unlock_bh(&tgt->tgt_lock);
 			rc = bnx2fc_send_rec(orig_io_req);
@@ -467,7 +447,7 @@ static void bnx2fc_rec_compl(struct bnx2fc_els_cb_arg *cb_arg)
 	}
 
 	fh = (struct fc_frame_header *) fc_frame_header_get(fp);
-	/* Copy FC Frame header and payload into the frame */
+	 
 	memcpy(fh, buf, hdr_len + resp_len);
 
 	opcode = fc_frame_payload_op(fp);
@@ -482,11 +462,11 @@ static void bnx2fc_rec_compl(struct bnx2fc_els_cb_arg *cb_arg)
 			if (!new_io_req)
 				goto abort_io;
 			new_io_req->sc_cmd = orig_io_req->sc_cmd;
-			/* cleanup orig_io_req that is with the FW */
+			 
 			set_bit(BNX2FC_FLAG_CMD_LOST,
 				&orig_io_req->req_flags);
 			bnx2fc_initiate_cleanup(orig_io_req);
-			/* Post a new IO req with the same sc_cmd */
+			 
 			BNX2FC_IO_DBG(rec_req, "Post IO request again\n");
 			rc = bnx2fc_post_io_req(tgt, new_io_req);
 			if (!rc)
@@ -501,7 +481,7 @@ abort_io:
 			bnx2fc_initiate_cleanup(orig_io_req);
 		}
 	} else if (opcode == ELS_LS_ACC) {
-		/* REVISIT: Check if the exchange is already aborted */
+		 
 		offset = ntohl(acc->reca_fc4value);
 		e_stat = ntohl(acc->reca_e_stat);
 		if (e_stat & ESB_ST_SEQ_INIT)  {
@@ -510,41 +490,41 @@ abort_io:
 		}
 		BNX2FC_IO_DBG(rec_req, "e_stat = 0x%x, offset = 0x%x\n",
 			e_stat, offset);
-		/* Seq initiative is with us */
+		 
 		err_entry = (struct fcoe_err_report_entry *)
 			     &orig_io_req->err_entry;
 		sc_cmd = orig_io_req->sc_cmd;
 		if (sc_cmd->sc_data_direction == DMA_TO_DEVICE) {
-			/* SCSI WRITE command */
+			 
 			if (offset == orig_io_req->data_xfer_len) {
 				BNX2FC_IO_DBG(rec_req, "WRITE - resp lost\n");
-				/* FCP_RSP lost */
+				 
 				r_ctl = FC_RCTL_DD_CMD_STATUS;
 				offset = 0;
 			} else  {
-				/* start transmitting from offset */
+				 
 				BNX2FC_IO_DBG(rec_req, "XFER_RDY/DATA lost\n");
 				send_seq_clnp = true;
 				r_ctl = FC_RCTL_DD_DATA_DESC;
 				if (bnx2fc_initiate_seq_cleanup(orig_io_req,
 								offset, r_ctl))
 					abort_io = true;
-				/* XFER_RDY */
+				 
 			}
 		} else {
-			/* SCSI READ command */
+			 
 			if (err_entry->data.rx_buf_off ==
 					orig_io_req->data_xfer_len) {
-				/* FCP_RSP lost */
+				 
 				BNX2FC_IO_DBG(rec_req, "READ - resp lost\n");
 				r_ctl = FC_RCTL_DD_CMD_STATUS;
 				offset = 0;
 			} else  {
-				/* request retransmission from this offset */
+				 
 				send_seq_clnp = true;
 				offset = err_entry->data.rx_buf_off;
 				BNX2FC_IO_DBG(rec_req, "RD DATA lost\n");
-				/* FCP_DATA lost */
+				 
 				r_ctl = FC_RCTL_DD_SOL_DATA;
 				if (bnx2fc_initiate_seq_cleanup(orig_io_req,
 								offset, r_ctl))
@@ -726,15 +706,15 @@ static int bnx2fc_initiate_els(struct bnx2fc_rport *tgt, unsigned int op,
 		rc = -ENOMEM;
 		goto els_err;
 	} else {
-		/* rc SUCCESS */
+		 
 		rc = 0;
 	}
 
-	/* Set the data_xfer_len to the size of ELS payload */
+	 
 	mp_req->req_len = data_len;
 	els_req->data_xfer_len = mp_req->req_len;
 
-	/* Fill ELS Payload */
+	 
 	if ((op >= ELS_LS_RJT) && (op <= ELS_AUTH_ELS)) {
 		memcpy(mp_req->req_buf, data, data_len);
 	} else {
@@ -750,7 +730,7 @@ static int bnx2fc_initiate_els(struct bnx2fc_rport *tgt, unsigned int op,
 	if (rc)
 		goto els_err;
 
-	/* Fill FC header */
+	 
 	fc_hdr = &(mp_req->req_fc_hdr);
 
 	did = tgt->rport->port_id;
@@ -765,12 +745,12 @@ static int bnx2fc_initiate_els(struct bnx2fc_rport *tgt, unsigned int op,
 				   FC_TYPE_ELS, FC_FC_FIRST_SEQ |
 				   FC_FC_END_SEQ | FC_FC_SEQ_INIT, 0);
 
-	/* Obtain exchange id */
+	 
 	xid = els_req->xid;
 	task_idx = xid/BNX2FC_TASKS_PER_PAGE;
 	index = xid % BNX2FC_TASKS_PER_PAGE;
 
-	/* Initialize task context for this IO request */
+	 
 	task_page = (struct fcoe_task_ctx_entry *)
 			interface->hba->task_ctx[task_idx];
 	task = &(task_page[index]);
@@ -794,7 +774,7 @@ static int bnx2fc_initiate_els(struct bnx2fc_rport *tgt, unsigned int op,
 	els_req->on_active_queue = 1;
 	list_add_tail(&els_req->link, &tgt->els_queue);
 
-	/* Ring doorbell */
+	 
 	bnx2fc_ring_doorbell(tgt);
 	spin_unlock_bh(&tgt->tgt_lock);
 
@@ -817,15 +797,15 @@ void bnx2fc_process_els_compl(struct bnx2fc_cmd *els_req,
 			     &els_req->req_flags)) {
 		BNX2FC_ELS_DBG("Timer context finished processing this "
 			   "els - 0x%x\n", els_req->xid);
-		/* This IO doesn't receive cleanup completion */
+		 
 		kref_put(&els_req->refcount, bnx2fc_cmd_release);
 		return;
 	}
 
-	/* Cancel the timeout_work, as we received the response */
+	 
 	if (cancel_delayed_work(&els_req->timeout_work))
 		kref_put(&els_req->refcount,
-			 bnx2fc_cmd_release); /* drop timer hold */
+			 bnx2fc_cmd_release);  
 
 	if (els_req->on_active_queue) {
 		list_del_init(&els_req->link);
@@ -845,7 +825,7 @@ void bnx2fc_process_els_compl(struct bnx2fc_cmd *els_req,
 	mp_req->resp_len =
 		task->rxwr_only.union_ctx.comp_info.mp_rsp.mp_payload_len;
 
-	/* Parse ELS response */
+	 
 	if ((els_req->cb_func) && (els_req->cb_arg)) {
 		els_req->cb_func(els_req->cb_arg);
 		els_req->cb_arg = NULL;
@@ -876,16 +856,7 @@ static void bnx2fc_flogi_resp(struct fc_seq *seq, struct fc_frame *fp,
 	fh = fc_frame_header_get(fp);
 	granted_mac = fr_cb(fp)->granted_mac;
 
-	/*
-	 * We set the source MAC for FCoE traffic based on the Granted MAC
-	 * address from the switch.
-	 *
-	 * If granted_mac is non-zero, we use that.
-	 * If the granted_mac is zeroed out, create the FCoE MAC based on
-	 * the sel_fcf->fc_map and the d_id fo the FLOGI frame.
-	 * If sel_fcf->fc_map is 0, then we use the default FCF-MAC plus the
-	 * d_id of the FLOGI frame.
-	 */
+	 
 	if (!is_zero_ether_addr(granted_mac)) {
 		ether_addr_copy(fcoe_mac, granted_mac);
 		method = BNX2FC_FCOE_MAC_METHOD_GRANGED_MAC;
@@ -940,7 +911,7 @@ struct fc_seq *bnx2fc_elsct_send(struct fc_lport *lport, u32 did,
 		return fc_elsct_send(lport, did, fp, op, bnx2fc_flogi_resp,
 				     fip, timeout);
 	case ELS_LOGO:
-		/* only hook onto fabric logouts, not port logouts */
+		 
 		if (ntoh24(fh->fh_d_id) != FC_FID_FLOGI)
 			break;
 		return fc_elsct_send(lport, did, fp, op, bnx2fc_logo_resp,

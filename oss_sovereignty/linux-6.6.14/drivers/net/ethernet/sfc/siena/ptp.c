@@ -1,35 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2011-2013 Solarflare Communications Inc.
- */
 
-/* Theory of operation:
- *
- * PTP support is assisted by firmware running on the MC, which provides
- * the hardware timestamping capabilities.  Both transmitted and received
- * PTP event packets are queued onto internal queues for subsequent processing;
- * this is because the MC operations are relatively long and would block
- * block NAPI/interrupt operation.
- *
- * Receive event processing:
- *	The event contains the packet's UUID and sequence number, together
- *	with the hardware timestamp.  The PTP receive packet queue is searched
- *	for this UUID/sequence number and, if found, put on a pending queue.
- *	Packets not matching are delivered without timestamps (MCDI events will
- *	always arrive after the actual packet).
- *	It is important for the operation of the PTP protocol that the ordering
- *	of packets between the event and general port is maintained.
- *
- * Work queue processing:
- *	If work waiting, synchronise host/hardware time
- *
- *	Transmit: send packet through MC, which returns the transmission time
- *	that is converted to an appropriate timestamp.
- *
- *	Receive: the packet's reception time is converted to an appropriate
- *	timestamp.
- */
+ 
+
+ 
 #include <linux/ip.h>
 #include <linux/udp.h>
 #include <linux/time.h>
@@ -44,39 +16,36 @@
 #include "io.h"
 #include "farch_regs.h"
 #include "tx.h"
-#include "nic.h" /* indirectly includes ptp.h */
+#include "nic.h"  
 
-/* Maximum number of events expected to make up a PTP event */
+ 
 #define	MAX_EVENT_FRAGS			3
 
-/* Maximum delay, ms, to begin synchronisation */
+ 
 #define	MAX_SYNCHRONISE_WAIT_MS		2
 
-/* How long, at most, to spend synchronising */
+ 
 #define	SYNCHRONISE_PERIOD_NS		250000
 
-/* How often to update the shared memory time */
+ 
 #define	SYNCHRONISATION_GRANULARITY_NS	200
 
-/* Minimum permitted length of a (corrected) synchronisation time */
+ 
 #define	DEFAULT_MIN_SYNCHRONISATION_NS	120
 
-/* Maximum permitted length of a (corrected) synchronisation time */
+ 
 #define	MAX_SYNCHRONISATION_NS		1000
 
-/* How many (MC) receive events that can be queued */
+ 
 #define	MAX_RECEIVE_EVENTS		8
 
-/* Length of (modified) moving average. */
+ 
 #define	AVERAGE_LENGTH			16
 
-/* How long an unmatched event or packet can be held */
+ 
 #define PKT_EVENT_LIFETIME_MS		10
 
-/* Offsets into PTP packet for identification.  These offsets are from the
- * start of the IP header, not the MAC header.  Note that neither PTP V1 nor
- * PTP V2 permit the use of IPV4 options.
- */
+ 
 #define PTP_DPORT_OFFSET	22
 
 #define PTP_V1_VERSION_LENGTH	2
@@ -88,9 +57,7 @@
 #define PTP_V1_SEQUENCE_LENGTH	2
 #define PTP_V1_SEQUENCE_OFFSET	58
 
-/* The minimum length of a PTP V1 packet for offsets, etc. to be valid:
- * includes IP header.
- */
+ 
 #define	PTP_V1_MIN_LENGTH	64
 
 #define PTP_V2_VERSION_LENGTH	1
@@ -99,31 +66,23 @@
 #define PTP_V2_UUID_LENGTH	8
 #define PTP_V2_UUID_OFFSET	48
 
-/* Although PTP V2 UUIDs are comprised a ClockIdentity (8) and PortNumber (2),
- * the MC only captures the last six bytes of the clock identity. These values
- * reflect those, not the ones used in the standard.  The standard permits
- * mapping of V1 UUIDs to V2 UUIDs with these same values.
- */
+ 
 #define PTP_V2_MC_UUID_LENGTH	6
 #define PTP_V2_MC_UUID_OFFSET	50
 
 #define PTP_V2_SEQUENCE_LENGTH	2
 #define PTP_V2_SEQUENCE_OFFSET	58
 
-/* The minimum length of a PTP V2 packet for offsets, etc. to be valid:
- * includes IP header.
- */
+ 
 #define	PTP_V2_MIN_LENGTH	63
 
 #define	PTP_MIN_LENGTH		63
 
-#define PTP_ADDRESS		0xe0000181	/* 224.0.1.129 */
+#define PTP_ADDRESS		0xe0000181	 
 #define PTP_EVENT_PORT		319
 #define PTP_GENERAL_PORT	320
 
-/* Annoyingly the format of the version numbers are different between
- * versions 1 and 2 so it isn't possible to simply look for 1 or 2.
- */
+ 
 #define	PTP_VERSION_V1		1
 
 #define	PTP_VERSION_V2		2
@@ -136,49 +95,33 @@ enum ptp_packet_state {
 	PTP_PACKET_STATE_MATCH_UNWANTED
 };
 
-/* NIC synchronised with single word of time only comprising
- * partial seconds and full nanoseconds: 10^9 ~ 2^30 so 2 bits for seconds.
- */
+ 
 #define	MC_NANOSECOND_BITS	30
 #define	MC_NANOSECOND_MASK	((1 << MC_NANOSECOND_BITS) - 1)
 #define	MC_SECOND_MASK		((1 << (32 - MC_NANOSECOND_BITS)) - 1)
 
-/* Maximum parts-per-billion adjustment that is acceptable */
+ 
 #define MAX_PPB			1000000
 
-/* Precalculate scale word to avoid long long division at runtime */
-/* This is equivalent to 2^66 / 10^9. */
+ 
+ 
 #define PPB_SCALE_WORD  ((1LL << (57)) / 1953125LL)
 
-/* How much to shift down after scaling to convert to FP40 */
+ 
 #define PPB_SHIFT_FP40		26
-/* ... and FP44. */
+ 
 #define PPB_SHIFT_FP44		22
 
 #define PTP_SYNC_ATTEMPTS	4
 
-/**
- * struct efx_ptp_match - Matching structure, stored in sk_buff's cb area.
- * @words: UUID and (partial) sequence number
- * @expiry: Time after which the packet should be delivered irrespective of
- *            event arrival.
- * @state: The state of the packet - whether it is ready for processing or
- *         whether that is of no interest.
- */
+ 
 struct efx_ptp_match {
 	u32 words[DIV_ROUND_UP(PTP_V1_UUID_LENGTH, 4)];
 	unsigned long expiry;
 	enum ptp_packet_state state;
 };
 
-/**
- * struct efx_ptp_event_rx - A PTP receive event (from MC)
- * @link: list of events
- * @seq0: First part of (PTP) UUID
- * @seq1: Second part of (PTP) UUID and sequence number
- * @hwtimestamp: Event timestamp
- * @expiry: Time which the packet arrived
- */
+ 
 struct efx_ptp_event_rx {
 	struct list_head link;
 	u32 seq0;
@@ -187,100 +130,17 @@ struct efx_ptp_event_rx {
 	unsigned long expiry;
 };
 
-/**
- * struct efx_ptp_timeset - Synchronisation between host and MC
- * @host_start: Host time immediately before hardware timestamp taken
- * @major: Hardware timestamp, major
- * @minor: Hardware timestamp, minor
- * @host_end: Host time immediately after hardware timestamp taken
- * @wait: Number of NIC clock ticks between hardware timestamp being read and
- *          host end time being seen
- * @window: Difference of host_end and host_start
- * @valid: Whether this timeset is valid
- */
+ 
 struct efx_ptp_timeset {
 	u32 host_start;
 	u32 major;
 	u32 minor;
 	u32 host_end;
 	u32 wait;
-	u32 window;	/* Derived: end - start, allowing for wrap */
+	u32 window;	 
 };
 
-/**
- * struct efx_ptp_data - Precision Time Protocol (PTP) state
- * @efx: The NIC context
- * @channel: The PTP channel (Siena only)
- * @rx_ts_inline: Flag for whether RX timestamps are inline (else they are
- *	separate events)
- * @rxq: Receive SKB queue (awaiting timestamps)
- * @txq: Transmit SKB queue
- * @evt_list: List of MC receive events awaiting packets
- * @evt_free_list: List of free events
- * @evt_lock: Lock for manipulating evt_list and evt_free_list
- * @rx_evts: Instantiated events (on evt_list and evt_free_list)
- * @workwq: Work queue for processing pending PTP operations
- * @work: Work task
- * @reset_required: A serious error has occurred and the PTP task needs to be
- *                  reset (disable, enable).
- * @rxfilter_event: Receive filter when operating
- * @rxfilter_general: Receive filter when operating
- * @rxfilter_installed: Receive filter installed
- * @config: Current timestamp configuration
- * @enabled: PTP operation enabled
- * @mode: Mode in which PTP operating (PTP version)
- * @ns_to_nic_time: Function to convert from scalar nanoseconds to NIC time
- * @nic_to_kernel_time: Function to convert from NIC to kernel time
- * @nic_time: contains time details
- * @nic_time.minor_max: Wrap point for NIC minor times
- * @nic_time.sync_event_diff_min: Minimum acceptable difference between time
- * in packet prefix and last MCDI time sync event i.e. how much earlier than
- * the last sync event time a packet timestamp can be.
- * @nic_time.sync_event_diff_max: Maximum acceptable difference between time
- * in packet prefix and last MCDI time sync event i.e. how much later than
- * the last sync event time a packet timestamp can be.
- * @nic_time.sync_event_minor_shift: Shift required to make minor time from
- * field in MCDI time sync event.
- * @min_synchronisation_ns: Minimum acceptable corrected sync window
- * @capabilities: Capabilities flags from the NIC
- * @ts_corrections: contains corrections details
- * @ts_corrections.ptp_tx: Required driver correction of PTP packet transmit
- *                         timestamps
- * @ts_corrections.ptp_rx: Required driver correction of PTP packet receive
- *                         timestamps
- * @ts_corrections.pps_out: PPS output error (information only)
- * @ts_corrections.pps_in: Required driver correction of PPS input timestamps
- * @ts_corrections.general_tx: Required driver correction of general packet
- *                             transmit timestamps
- * @ts_corrections.general_rx: Required driver correction of general packet
- *                             receive timestamps
- * @evt_frags: Partly assembled PTP events
- * @evt_frag_idx: Current fragment number
- * @evt_code: Last event code
- * @start: Address at which MC indicates ready for synchronisation
- * @host_time_pps: Host time at last PPS
- * @adjfreq_ppb_shift: Shift required to convert scaled parts-per-billion
- * frequency adjustment into a fixed point fractional nanosecond format.
- * @current_adjfreq: Current ppb adjustment.
- * @phc_clock: Pointer to registered phc device (if primary function)
- * @phc_clock_info: Registration structure for phc device
- * @pps_work: pps work task for handling pps events
- * @pps_workwq: pps work queue
- * @nic_ts_enabled: Flag indicating if NIC generated TS events are handled
- * @txbuf: Buffer for use when transmitting (PTP) packets to MC (avoids
- *         allocations in main data path).
- * @good_syncs: Number of successful synchronisations.
- * @fast_syncs: Number of synchronisations requiring short delay
- * @bad_syncs: Number of failed synchronisations.
- * @sync_timeouts: Number of synchronisation timeouts
- * @no_time_syncs: Number of synchronisations with no good times.
- * @invalid_sync_windows: Number of sync windows with bad durations.
- * @undersize_sync_windows: Number of corrected sync windows that are too small
- * @oversize_sync_windows: Number of corrected sync windows that are too large
- * @rx_no_timestamp: Number of packets received without a timestamp.
- * @timeset: Last set of synchronisation statistics.
- * @xmit_skb: Transmit SKB function.
- */
+ 
 struct efx_ptp_data {
 	struct efx_nic *efx;
 	struct efx_channel *channel;
@@ -360,9 +220,7 @@ bool efx_siena_ptp_use_mac_tx_timestamps(struct efx_nic *efx)
 	return efx_has_cap(efx, TX_MAC_TIMESTAMPING);
 }
 
-/* PTP 'extra' channel is still a traffic channel, but we only create TX queues
- * if PTP uses MAC TX timestamps, not if PTP uses the MC directly to transmit.
- */
+ 
 static bool efx_ptp_want_txqs(struct efx_channel *channel)
 {
 	return efx_siena_ptp_use_mac_tx_timestamps(channel->efx);
@@ -412,7 +270,7 @@ size_t efx_siena_ptp_update_stats(struct efx_nic *efx, u64 *stats)
 	if (!efx->ptp_data)
 		return 0;
 
-	/* Copy software statistics */
+	 
 	for (i = 0; i < PTP_STAT_COUNT; i++) {
 		if (efx_ptp_stat_desc[i].dma_width)
 			continue;
@@ -420,10 +278,7 @@ size_t efx_siena_ptp_update_stats(struct efx_nic *efx, u64 *stats)
 					     efx_ptp_stat_desc[i].offset);
 	}
 
-	/* Fetch MC statistics.  We *must* fill in all statistics or
-	 * risk leaking kernel memory to userland, so if the MCDI
-	 * request fails we pretend we got zeroes.
-	 */
+	 
 	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_STATUS);
 	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
 	rc = efx_siena_mcdi_rpc(efx, MC_CMD_PTP, inbuf, sizeof(inbuf),
@@ -437,7 +292,7 @@ size_t efx_siena_ptp_update_stats(struct efx_nic *efx, u64 *stats)
 	return PTP_STAT_COUNT;
 }
 
-/* For Siena platforms NIC time is s and ns */
+ 
 static void efx_ptp_ns_to_s_ns(s64 ns, u32 *nic_major, u32 *nic_minor)
 {
 	struct timespec64 ts = ns_to_timespec64(ns);
@@ -456,18 +311,13 @@ static ktime_t efx_ptp_s_ns_to_ktime_correction(u32 nic_major, u32 nic_minor,
 	return kt;
 }
 
-/* To convert from s27 format to ns we multiply then divide by a power of 2.
- * For the conversion from ns to s27, the operation is also converted to a
- * multiply and shift.
- */
+ 
 #define S27_TO_NS_SHIFT	(27)
 #define NS_TO_S27_MULT	(((1ULL << 63) + NSEC_PER_SEC / 2) / NSEC_PER_SEC)
 #define NS_TO_S27_SHIFT	(63 - S27_TO_NS_SHIFT)
 #define S27_MINOR_MAX	(1 << S27_TO_NS_SHIFT)
 
-/* For Huntington platforms NIC time is in seconds and fractions of a second
- * where the minor register only uses 27 bits in units of 2^-27s.
- */
+ 
 static void efx_ptp_ns_to_s27(s64 ns, u32 *nic_major, u32 *nic_minor)
 {
 	struct timespec64 ts = ns_to_timespec64(ns);
@@ -475,9 +325,7 @@ static void efx_ptp_ns_to_s27(s64 ns, u32 *nic_major, u32 *nic_minor)
 	u32 min = (u32)(((u64)ts.tv_nsec * NS_TO_S27_MULT +
 			 (1ULL << (NS_TO_S27_SHIFT - 1))) >> NS_TO_S27_SHIFT);
 
-	/* The conversion can result in the minor value exceeding the maximum.
-	 * In this case, round up to the next second.
-	 */
+	 
 	if (min >= S27_MINOR_MAX) {
 		min -= S27_MINOR_MAX;
 		maj++;
@@ -497,7 +345,7 @@ static inline ktime_t efx_ptp_s27_to_ktime(u32 nic_major, u32 nic_minor)
 static ktime_t efx_ptp_s27_to_ktime_correction(u32 nic_major, u32 nic_minor,
 					       s32 correction)
 {
-	/* Apply the correction and deal with carry */
+	 
 	nic_minor += correction;
 	if ((s32)nic_minor < 0) {
 		nic_minor += S27_MINOR_MAX;
@@ -510,7 +358,7 @@ static ktime_t efx_ptp_s27_to_ktime_correction(u32 nic_major, u32 nic_minor,
 	return efx_ptp_s27_to_ktime(nic_major, nic_minor);
 }
 
-/* For Medford2 platforms the time is in seconds and quarter nanoseconds. */
+ 
 static void efx_ptp_ns_to_s_qns(s64 ns, u32 *nic_major, u32 *nic_minor)
 {
 	struct timespec64 ts = ns_to_timespec64(ns);
@@ -551,9 +399,7 @@ static u32 last_sync_timestamp_major(struct efx_nic *efx)
 	return major;
 }
 
-/* The 8000 series and later can provide the time from the MAC, which is only
- * 48 bits long and provides meta-information in the top 2 bits.
- */
+ 
 static ktime_t
 efx_ptp_mac_nic_to_ktime_correction(struct efx_nic *efx,
 				    struct efx_ptp_data *ptp,
@@ -567,37 +413,13 @@ efx_ptp_mac_nic_to_ktime_correction(struct efx_nic *efx,
 	if (!(nic_major & 0x80000000)) {
 		WARN_ON_ONCE(nic_major >> 16);
 
-		/* Medford provides 48 bits of timestamp, so we must get the top
-		 * 16 bits from the timesync event state.
-		 *
-		 * We only have the lower 16 bits of the time now, but we do
-		 * have a full resolution timestamp at some point in past. As
-		 * long as the difference between the (real) now and the sync
-		 * is less than 2^15, then we can reconstruct the difference
-		 * between those two numbers using only the lower 16 bits of
-		 * each.
-		 *
-		 * Put another way
-		 *
-		 * a - b = ((a mod k) - b) mod k
-		 *
-		 * when -k/2 < (a-b) < k/2. In our case k is 2^16. We know
-		 * (a mod k) and b, so can calculate the delta, a - b.
-		 *
-		 */
+		 
 		sync_timestamp = last_sync_timestamp_major(efx);
 
-		/* Because delta is s16 this does an implicit mask down to
-		 * 16 bits which is what we need, assuming
-		 * MEDFORD_TX_SECS_EVENT_BITS is 16. delta is signed so that
-		 * we can deal with the (unlikely) case of sync timestamps
-		 * arriving from the future.
-		 */
+		 
 		delta = nic_major - sync_timestamp;
 
-		/* Recover the fully specified time now, by applying the offset
-		 * to the (fully specified) sync time.
-		 */
+		 
 		nic_major = sync_timestamp + delta;
 
 		kt = ptp->nic_to_kernel_time(nic_major, nic_minor,
@@ -625,7 +447,7 @@ ktime_t efx_siena_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue)
 	return kt;
 }
 
-/* Get PTP attributes and set up time conversions */
+ 
 static int efx_ptp_get_attributes(struct efx_nic *efx)
 {
 	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_GET_ATTRIBUTES_LEN);
@@ -635,10 +457,7 @@ static int efx_ptp_get_attributes(struct efx_nic *efx)
 	u32 fmt;
 	size_t out_len;
 
-	/* Get the PTP attributes. If the NIC doesn't support the operation we
-	 * use the default format for compatibility with older NICs i.e.
-	 * seconds and nanoseconds.
-	 */
+	 
 	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_GET_ATTRIBUTES);
 	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
 	rc = efx_siena_mcdi_rpc_quiet(efx, MC_CMD_PTP, inbuf, sizeof(inbuf),
@@ -679,24 +498,13 @@ static int efx_ptp_get_attributes(struct efx_nic *efx)
 		return -ERANGE;
 	}
 
-	/* Precalculate acceptable difference between the minor time in the
-	 * packet prefix and the last MCDI time sync event. We expect the
-	 * packet prefix timestamp to be after of sync event by up to one
-	 * sync event interval (0.25s) but we allow it to exceed this by a
-	 * fuzz factor of (0.1s)
-	 */
+	 
 	ptp->nic_time.sync_event_diff_min = ptp->nic_time.minor_max
 		- (ptp->nic_time.minor_max / 10);
 	ptp->nic_time.sync_event_diff_max = (ptp->nic_time.minor_max / 4)
 		+ (ptp->nic_time.minor_max / 10);
 
-	/* MC_CMD_PTP_OP_GET_ATTRIBUTES has been extended twice from an older
-	 * operation MC_CMD_PTP_OP_GET_TIME_FORMAT. The function now may return
-	 * a value to use for the minimum acceptable corrected synchronization
-	 * window and may return further capabilities.
-	 * If we have the extra information store it. For older firmware that
-	 * does not implement the extended command use the default value.
-	 */
+	 
 	if (rc == 0 &&
 	    out_len >= MC_CMD_PTP_OUT_GET_ATTRIBUTES_CAPABILITIES_OFST)
 		ptp->min_synchronisation_ns =
@@ -712,10 +520,7 @@ static int efx_ptp_get_attributes(struct efx_nic *efx)
 	else
 		ptp->capabilities = 0;
 
-	/* Set up the shift for conversion between frequency
-	 * adjustments in parts-per-billion and the fixed-point
-	 * fractional ns format that the adapter uses.
-	 */
+	 
 	if (ptp->capabilities & (1 << MC_CMD_PTP_OUT_GET_ATTRIBUTES_FP44_FREQ_ADJ_LBN))
 		ptp->adjfreq_ppb_shift = PPB_SHIFT_FP44;
 	else
@@ -724,7 +529,7 @@ static int efx_ptp_get_attributes(struct efx_nic *efx)
 	return 0;
 }
 
-/* Get PTP timestamp corrections */
+ 
 static int efx_ptp_get_timestamp_corrections(struct efx_nic *efx)
 {
 	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_GET_TIMESTAMP_CORRECTIONS_LEN);
@@ -732,9 +537,7 @@ static int efx_ptp_get_timestamp_corrections(struct efx_nic *efx)
 	int rc;
 	size_t out_len;
 
-	/* Get the timestamp corrections from the NIC. If this operation is
-	 * not supported (older NICs) then no correction is required.
-	 */
+	 
 	MCDI_SET_DWORD(inbuf, PTP_IN_OP,
 		       MC_CMD_PTP_OP_GET_TIMESTAMP_CORRECTIONS);
 	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
@@ -780,7 +583,7 @@ static int efx_ptp_get_timestamp_corrections(struct efx_nic *efx)
 	return 0;
 }
 
-/* Enable MCDI PTP support. */
+ 
 static int efx_ptp_enable(struct efx_nic *efx)
 {
 	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_ENABLE_LEN);
@@ -804,11 +607,7 @@ static int efx_ptp_enable(struct efx_nic *efx)
 	return rc;
 }
 
-/* Disable MCDI PTP support.
- *
- * Note that this function should never rely on the presence of ptp_data -
- * may be called before that exists.
- */
+ 
 static int efx_ptp_disable(struct efx_nic *efx)
 {
 	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_DISABLE_LEN);
@@ -820,9 +619,7 @@ static int efx_ptp_disable(struct efx_nic *efx)
 	rc = efx_siena_mcdi_rpc_quiet(efx, MC_CMD_PTP, inbuf, sizeof(inbuf),
 				      outbuf, sizeof(outbuf), NULL);
 	rc = (rc == -EALREADY) ? 0 : rc;
-	/* If we get ENOSYS, the NIC doesn't support PTP, and thus this function
-	 * should only have been called during probe.
-	 */
+	 
 	if (rc == -ENOSYS || rc == -EPERM)
 		pci_info(efx->pci_dev, "no PTP support\n");
 	else if (rc)
@@ -850,9 +647,7 @@ static void efx_ptp_handle_no_channel(struct efx_nic *efx)
 		  "vector. PTP disabled\n");
 }
 
-/* Repeatedly send the host time to the MC which will capture the hardware
- * time.
- */
+ 
 static void efx_ptp_send_times(struct efx_nic *efx,
 			       struct pps_event_time *last_time)
 {
@@ -865,13 +660,13 @@ static void efx_ptp_send_times(struct efx_nic *efx,
 	limit = now.ts_real;
 	timespec64_add_ns(&limit, SYNCHRONISE_PERIOD_NS);
 
-	/* Write host time for specified period or until MC is done */
+	 
 	while ((timespec64_compare(&now.ts_real, &limit) < 0) &&
 	       READ_ONCE(*mc_running)) {
 		struct timespec64 update_time;
 		unsigned int host_time;
 
-		/* Don't update continuously to avoid saturating the PCIe bus */
+		 
 		update_time = now.ts_real;
 		timespec64_add_ns(&update_time, SYNCHRONISATION_GRANULARITY_NS);
 		do {
@@ -879,16 +674,16 @@ static void efx_ptp_send_times(struct efx_nic *efx,
 		} while ((timespec64_compare(&now.ts_real, &update_time) < 0) &&
 			 READ_ONCE(*mc_running));
 
-		/* Synchronise NIC with single word of time only */
+		 
 		host_time = (now.ts_real.tv_sec << MC_NANOSECOND_BITS |
 			     now.ts_real.tv_nsec);
-		/* Update host time in NIC memory */
+		 
 		efx->type->ptp_write_host_time(efx, host_time);
 	}
 	*last_time = now;
 }
 
-/* Read a timeset from the MC's results and partial process. */
+ 
 static void efx_ptp_read_timeset(MCDI_DECLARE_STRUCT_PTR(data),
 				 struct efx_ptp_timeset *timeset)
 {
@@ -900,24 +695,17 @@ static void efx_ptp_read_timeset(MCDI_DECLARE_STRUCT_PTR(data),
 	timeset->host_end = MCDI_DWORD(data, PTP_OUT_SYNCHRONIZE_HOSTEND),
 	timeset->wait = MCDI_DWORD(data, PTP_OUT_SYNCHRONIZE_WAITNS);
 
-	/* Ignore seconds */
+	 
 	start_ns = timeset->host_start & MC_NANOSECOND_MASK;
 	end_ns = timeset->host_end & MC_NANOSECOND_MASK;
-	/* Allow for rollover */
+	 
 	if (end_ns < start_ns)
 		end_ns += NSEC_PER_SEC;
-	/* Determine duration of operation */
+	 
 	timeset->window = end_ns - start_ns;
 }
 
-/* Process times received from MC.
- *
- * Extract times from returned results, and establish the minimum value
- * seen.  The minimum value represents the "best" possible time and events
- * too much greater than this are rejected - the machine is, perhaps, too
- * busy. A number of readings are taken so that, hopefully, at least one good
- * synchronisation will be seen in the results.
- */
+ 
 static int
 efx_ptp_process_times(struct efx_nic *efx, MCDI_DECLARE_STRUCT_PTR(synch_buf),
 		      size_t response_length,
@@ -938,12 +726,7 @@ efx_ptp_process_times(struct efx_nic *efx, MCDI_DECLARE_STRUCT_PTR(synch_buf),
 	if (number_readings == 0)
 		return -EAGAIN;
 
-	/* Read the set of results and find the last good host-MC
-	 * synchronization result. The MC times when it finishes reading the
-	 * host time so the corrected window time should be fairly constant
-	 * for a given platform. Increment stats for any results that appear
-	 * to be erroneous.
-	 */
+	 
 	for (i = 0; i < number_readings; i++) {
 		s32 window, corrected;
 		struct timespec64 wait;
@@ -958,15 +741,7 @@ efx_ptp_process_times(struct efx_nic *efx, MCDI_DECLARE_STRUCT_PTR(synch_buf),
 		window = ptp->timeset[i].window;
 		corrected = window - wait.tv_nsec;
 
-		/* We expect the uncorrected synchronization window to be at
-		 * least as large as the interval between host start and end
-		 * times. If it is smaller than this then this is mostly likely
-		 * to be a consequence of the host's time being adjusted.
-		 * Check that the corrected sync window is in a reasonable
-		 * range. If it is out of range it is likely to be because an
-		 * interrupt or other delay occurred between reading the system
-		 * time and writing it to MC memory.
-		 */
+		 
 		if (window < SYNCHRONISATION_GRANULARITY_NS) {
 			++ptp->invalid_sync_windows;
 		} else if (corrected >= MAX_SYNCHRONISATION_NS) {
@@ -985,12 +760,7 @@ efx_ptp_process_times(struct efx_nic *efx, MCDI_DECLARE_STRUCT_PTR(synch_buf),
 		return -EAGAIN;
 	}
 
-	/* Calculate delay from last good sync (host time) to last_time.
-	 * It is possible that the seconds rolled over between taking
-	 * the start reading and the last value written by the host.  The
-	 * timescales are such that a gap of more than one second is never
-	 * expected.  delta is *not* normalised.
-	 */
+	 
 	start_sec = ptp->timeset[last_good].host_start >> MC_NANOSECOND_BITS;
 	last_sec = last_time->ts_real.tv_sec & MC_SECOND_MASK;
 	if (start_sec != last_sec &&
@@ -1004,24 +774,21 @@ efx_ptp_process_times(struct efx_nic *efx, MCDI_DECLARE_STRUCT_PTR(synch_buf),
 		last_time->ts_real.tv_nsec -
 		(ptp->timeset[last_good].host_start & MC_NANOSECOND_MASK);
 
-	/* Convert the NIC time at last good sync into kernel time.
-	 * No correction is required - this time is the output of a
-	 * firmware process.
-	 */
+	 
 	mc_time = ptp->nic_to_kernel_time(ptp->timeset[last_good].major,
 					  ptp->timeset[last_good].minor, 0);
 
-	/* Calculate delay from NIC top of second to last_time */
+	 
 	delta.tv_nsec += ktime_to_timespec64(mc_time).tv_nsec;
 
-	/* Set PPS timestamp to match NIC top of second */
+	 
 	ptp->host_time_pps = *last_time;
 	pps_sub_ts(&ptp->host_time_pps, delta);
 
 	return 0;
 }
 
-/* Synchronize times between the host and the MC */
+ 
 static int efx_ptp_synchronize(struct efx_nic *efx, unsigned int num_readings)
 {
 	struct efx_ptp_data *ptp = efx->ptp_data;
@@ -1040,16 +807,16 @@ static int efx_ptp_synchronize(struct efx_nic *efx, unsigned int num_readings)
 	MCDI_SET_QWORD(synch_buf, PTP_IN_SYNCHRONIZE_START_ADDR,
 		       ptp->start.dma_addr);
 
-	/* Clear flag that signals MC ready */
+	 
 	WRITE_ONCE(*start, 0);
 	rc = efx_siena_mcdi_rpc_start(efx, MC_CMD_PTP, synch_buf,
 				      MC_CMD_PTP_IN_SYNCHRONIZE_LEN);
 	EFX_WARN_ON_ONCE_PARANOID(rc);
 
-	/* Wait for start from MCDI (or timeout) */
+	 
 	timeout = jiffies + msecs_to_jiffies(MAX_SYNCHRONISE_WAIT_MS);
 	while (!READ_ONCE(*start) && (time_before(jiffies, timeout))) {
-		udelay(20);	/* Usually start MCDI execution quickly */
+		udelay(20);	 
 		loops++;
 	}
 
@@ -1061,7 +828,7 @@ static int efx_ptp_synchronize(struct efx_nic *efx, unsigned int num_readings)
 	if (READ_ONCE(*start))
 		efx_ptp_send_times(efx, &last_time);
 
-	/* Collect results */
+	 
 	rc = efx_siena_mcdi_rpc_finish(efx, MC_CMD_PTP,
 				       MC_CMD_PTP_IN_SYNCHRONIZE_LEN,
 				       synch_buf, sizeof(synch_buf),
@@ -1075,16 +842,14 @@ static int efx_ptp_synchronize(struct efx_nic *efx, unsigned int num_readings)
 			++ptp->no_time_syncs;
 	}
 
-	/* Increment the bad syncs counter if the synchronize fails, whatever
-	 * the reason.
-	 */
+	 
 	if (rc != 0)
 		++ptp->bad_syncs;
 
 	return rc;
 }
 
-/* Transmit a PTP packet via the dedicated hardware timestamped queue. */
+ 
 static void efx_ptp_xmit_skb_queue(struct efx_nic *efx, struct sk_buff *skb)
 {
 	struct efx_ptp_data *ptp_data = efx->ptp_data;
@@ -1100,7 +865,7 @@ static void efx_ptp_xmit_skb_queue(struct efx_nic *efx, struct sk_buff *skb)
 	}
 }
 
-/* Transmit a PTP packet, via the MCDI interface, to the wire. */
+ 
 static void efx_ptp_xmit_skb_mc(struct efx_nic *efx, struct sk_buff *skb)
 {
 	struct efx_ptp_data *ptp_data = efx->ptp_data;
@@ -1158,7 +923,7 @@ static void efx_ptp_drop_time_expired_events(struct efx_nic *efx)
 	if (ptp->rx_ts_inline)
 		return;
 
-	/* Drop time-expired events */
+	 
 	spin_lock_bh(&ptp->evt_lock);
 	list_for_each_safe(cursor, next, &ptp->evt_list) {
 		struct efx_ptp_event_rx *evt;
@@ -1194,7 +959,7 @@ static enum ptp_packet_state efx_ptp_match_rx(struct efx_nic *efx,
 		return PTP_PACKET_STATE_UNMATCHED;
 
 	match = (struct efx_ptp_match *)skb->cb;
-	/* Look for a matching timestamp in the event queue */
+	 
 	spin_lock_bh(&ptp->evt_lock);
 	list_for_each_safe(cursor, next, &ptp->evt_list) {
 		struct efx_ptp_event_rx *evt;
@@ -1204,7 +969,7 @@ static enum ptp_packet_state efx_ptp_match_rx(struct efx_nic *efx,
 		    (evt->seq1 == match->words[1])) {
 			struct skb_shared_hwtstamps *timestamps;
 
-			/* Match - add in hardware timestamp */
+			 
 			timestamps = skb_hwtstamps(skb);
 			timestamps->hwtstamp = evt->hwtimestamp;
 
@@ -1219,10 +984,7 @@ static enum ptp_packet_state efx_ptp_match_rx(struct efx_nic *efx,
 	return rc;
 }
 
-/* Process any queued receive events and corresponding packets
- *
- * q is returned with all the packets that are ready for delivery.
- */
+ 
 static void efx_ptp_process_events(struct efx_nic *efx, struct sk_buff_head *q)
 {
 	struct efx_ptp_data *ptp = efx->ptp_data;
@@ -1242,14 +1004,14 @@ static void efx_ptp_process_events(struct efx_nic *efx, struct sk_buff_head *q)
 			++ptp->rx_no_timestamp;
 			__skb_queue_tail(q, skb);
 		} else {
-			/* Replace unprocessed entry and stop */
+			 
 			skb_queue_head(&ptp->rxq, skb);
 			break;
 		}
 	}
 }
 
-/* Complete processing of a received packet */
+ 
 static inline void efx_ptp_process_rx(struct efx_nic *efx, struct sk_buff *skb)
 {
 	local_bh_disable();
@@ -1279,9 +1041,7 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
 	if (!ptp->channel || ptp->rxfilter_installed)
 		return 0;
 
-	/* Must filter on both event and general ports to ensure
-	 * that there is no packet re-ordering.
-	 */
+	 
 	efx_filter_init_rx(&rxfilter, EFX_FILTER_PRI_REQUIRED, 0,
 			   efx_rx_queue_index(
 				   efx_channel_get_rx_queue(ptp->channel)));
@@ -1358,11 +1118,11 @@ static int efx_ptp_stop(struct efx_nic *efx)
 
 	efx_ptp_remove_multicast_filters(efx);
 
-	/* Make sure RX packets are really delivered */
+	 
 	efx_ptp_deliver_rx_queue(&efx->ptp_data->rxq);
 	skb_queue_purge(&efx->ptp_data->txq);
 
-	/* Drop any pending receive events */
+	 
 	spin_lock_bh(&efx->ptp_data->evt_lock);
 	list_for_each_safe(cursor, next, &efx->ptp_data->evt_list) {
 		list_move(cursor, &efx->ptp_data->evt_free_list);
@@ -1436,7 +1196,7 @@ static const struct ptp_clock_info efx_phc_clock_info = {
 	.enable		= efx_phc_enable,
 };
 
-/* Initialise PTP state. */
+ 
 static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
 {
 	struct efx_ptp_data *ptp;
@@ -1466,7 +1226,7 @@ static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
 
 	if (efx_siena_ptp_use_mac_tx_timestamps(efx)) {
 		ptp->xmit_skb = efx_ptp_xmit_skb_queue;
-		/* Request sync events on this channel. */
+		 
 		channel->sync_events_state = SYNC_EVENTS_QUIESCENT;
 	} else {
 		ptp->xmit_skb = efx_ptp_xmit_skb_mc;
@@ -1482,12 +1242,12 @@ static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
 	for (pos = 0; pos < MAX_RECEIVE_EVENTS; pos++)
 		list_add(&ptp->rx_evts[pos].link, &ptp->evt_free_list);
 
-	/* Get the NIC PTP attributes and set up time conversions */
+	 
 	rc = efx_ptp_get_attributes(efx);
 	if (rc < 0)
 		goto fail3;
 
-	/* Get the timestamp corrections */
+	 
 	rc = efx_ptp_get_timestamp_corrections(efx);
 	if (rc < 0)
 		goto fail3;
@@ -1529,11 +1289,7 @@ fail1:
 	return rc;
 }
 
-/* Initialise PTP channel.
- *
- * Setting core_index to zero causes the queue to be initialised and doesn't
- * overlap with 'rxq0' because ptp.c doesn't use skb_record_rx_queue.
- */
+ 
 static int efx_ptp_probe_channel(struct efx_channel *channel)
 {
 	struct efx_nic *efx = channel->efx;
@@ -1543,11 +1299,7 @@ static int efx_ptp_probe_channel(struct efx_channel *channel)
 	channel->rx_queue.core_index = 0;
 
 	rc = efx_ptp_probe(efx, channel);
-	/* Failure to probe PTP is not fatal; this channel will just not be
-	 * used for anything.
-	 * In the case of EPERM, efx_ptp_probe will print its own message (in
-	 * efx_ptp_get_attributes()), so we don't need to.
-	 */
+	 
 	if (rc && rc != -EPERM)
 		netif_warn(efx, drv, efx->net_dev,
 			   "Failed to probe PTP, rc=%d\n", rc);
@@ -1591,9 +1343,7 @@ static void efx_ptp_get_channel_name(struct efx_channel *channel,
 	snprintf(buf, len, "%s-ptp", channel->efx->name);
 }
 
-/* Determine whether this packet should be processed by the PTP module
- * or transmitted conventionally.
- */
+ 
 bool efx_siena_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
 {
 	return efx->ptp_data &&
@@ -1609,10 +1359,7 @@ bool efx_siena_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
 		udp_hdr(skb)->dest == htons(PTP_EVENT_PORT);
 }
 
-/* Receive a PTP packet.  Packets are queued until the arrival of
- * the receive timestamp from the MC - this will probably occur after the
- * packet arrival because of the processing in the MC.
- */
+ 
 static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
 {
 	struct efx_nic *efx = channel->efx;
@@ -1624,7 +1371,7 @@ static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
 
 	match->expiry = jiffies + msecs_to_jiffies(PKT_EVENT_LIFETIME_MS);
 
-	/* Correct version? */
+	 
 	if (ptp->mode == MC_CMD_PTP_MODE_V1) {
 		if (!pskb_may_pull(skb, PTP_V1_MIN_LENGTH)) {
 			return false;
@@ -1635,9 +1382,7 @@ static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
 			return false;
 		}
 
-		/* PTP V1 uses all six bytes of the UUID to match the packet
-		 * to the timestamp
-		 */
+		 
 		match_data_012 = data + PTP_V1_UUID_OFFSET;
 		match_data_345 = data + PTP_V1_UUID_OFFSET + 3;
 	} else {
@@ -1650,13 +1395,7 @@ static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
 			return false;
 		}
 
-		/* The original V2 implementation uses bytes 2-7 of
-		 * the UUID to match the packet to the timestamp. This
-		 * discards two of the bytes of the MAC address used
-		 * to create the UUID (SF bug 33070).  The PTP V2
-		 * enhanced mode fixes this issue and uses bytes 0-2
-		 * and byte 5-7 of the UUID.
-		 */
+		 
 		match_data_345 = data + PTP_V2_UUID_OFFSET + 5;
 		if (ptp->mode == MC_CMD_PTP_MODE_V2) {
 			match_data_012 = data + PTP_V2_UUID_OFFSET + 2;
@@ -1666,17 +1405,15 @@ static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
 		}
 	}
 
-	/* Does this packet require timestamping? */
+	 
 	if (ntohs(*(__be16 *)&data[PTP_DPORT_OFFSET]) == PTP_EVENT_PORT) {
 		match->state = PTP_PACKET_STATE_UNMATCHED;
 
-		/* We expect the sequence number to be in the same position in
-		 * the packet for PTP V1 and V2
-		 */
+		 
 		BUILD_BUG_ON(PTP_V1_SEQUENCE_OFFSET != PTP_V2_SEQUENCE_OFFSET);
 		BUILD_BUG_ON(PTP_V1_SEQUENCE_LENGTH != PTP_V2_SEQUENCE_LENGTH);
 
-		/* Extract UUID/Sequence information */
+		 
 		match->words[0] = (match_data_012[0]         |
 				   (match_data_012[1] << 8)  |
 				   (match_data_012[2] << 16) |
@@ -1696,10 +1433,7 @@ static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
 	return true;
 }
 
-/* Transmit a PTP packet.  This has to be transmitted by the MC
- * itself, through an MCDI call.  MCDI calls aren't permitted
- * in the transmit path so defer the actual transmission to a suitable worker.
- */
+ 
 int efx_siena_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
 {
 	struct efx_ptp_data *ptp = efx->ptp_data;
@@ -1727,7 +1461,7 @@ int efx_siena_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
 		int rc = 0;
 
 		if (enable_wanted) {
-			/* Change of mode requires disable */
+			 
 			if (efx->ptp_data->enabled &&
 			    (efx->ptp_data->mode != new_mode)) {
 				efx->ptp_data->enabled = false;
@@ -1736,10 +1470,7 @@ int efx_siena_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
 					return rc;
 			}
 
-			/* Set new operating mode and establish
-			 * baseline synchronisation, which must
-			 * succeed.
-			 */
+			 
 			efx->ptp_data->mode = new_mode;
 			if (netif_running(efx->net_dev))
 				rc = efx_ptp_start(efx);
@@ -1804,7 +1535,7 @@ int efx_siena_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr)
 	struct hwtstamp_config config;
 	int rc;
 
-	/* Not a PTP enabled port */
+	 
 	if (!efx->ptp_data)
 		return -EOPNOTSUPP;
 
@@ -1839,10 +1570,7 @@ static void ptp_event_failure(struct efx_nic *efx, int expected_frag_len)
 	queue_work(ptp->workwq, &ptp->work);
 }
 
-/* Process a completed receive event.  Put it on the event queue and
- * start worker thread.  This is required because event and their
- * correspoding packets may come in either order.
- */
+ 
 static void ptp_event_rx(struct efx_nic *efx, struct efx_ptp_data *ptp)
 {
 	struct efx_ptp_event_rx *evt = NULL;
@@ -1877,7 +1605,7 @@ static void ptp_event_rx(struct efx_nic *efx, struct efx_ptp_data *ptp)
 
 		queue_work(ptp->workwq, &ptp->work);
 	} else if (net_ratelimit()) {
-		/* Log a rate-limited warning message. */
+		 
 		netif_err(efx, rx_err, efx->net_dev, "PTP event queue overflow\n");
 	}
 	spin_unlock_bh(&ptp->evt_lock);
@@ -1927,7 +1655,7 @@ void efx_siena_ptp_event(struct efx_nic *efx, efx_qword_t *ev)
 
 	ptp->evt_frags[ptp->evt_frag_idx++] = *ev;
 	if (!MCDI_EVENT_FIELD(*ev, CONT)) {
-		/* Process resulting event */
+		 
 		switch (code) {
 		case MCDI_EVENT_CODE_PTP_RX:
 			ptp_event_rx(efx, ptp);
@@ -1956,20 +1684,13 @@ void efx_siena_time_sync_event(struct efx_channel *channel, efx_qword_t *ev)
 	struct efx_nic *efx = channel->efx;
 	struct efx_ptp_data *ptp = efx->ptp_data;
 
-	/* When extracting the sync timestamp minor value, we should discard
-	 * the least significant two bits. These are not required in order
-	 * to reconstruct full-range timestamps and they are optionally used
-	 * to report status depending on the options supplied when subscribing
-	 * for sync events.
-	 */
+	 
 	channel->sync_timestamp_major = MCDI_EVENT_FIELD(*ev, PTP_TIME_MAJOR);
 	channel->sync_timestamp_minor =
 		(MCDI_EVENT_FIELD(*ev, PTP_TIME_MINOR_MS_8BITS) & 0xFC)
 			<< ptp->nic_time.sync_event_minor_shift;
 
-	/* if sync events have been disabled then we want to silently ignore
-	 * this event, so throw away result.
-	 */
+	 
 	(void) cmpxchg(&channel->sync_events_state, SYNC_EVENTS_REQUESTED,
 		       SYNC_EVENTS_VALID);
 }
@@ -2001,34 +1722,23 @@ void __efx_siena_rx_skb_attach_timestamp(struct efx_channel *channel,
 
 	pkt_timestamp_minor = efx_rx_buf_timestamp_minor(efx, skb_mac_header(skb));
 
-	/* get the difference between the packet and sync timestamps,
-	 * modulo one second
-	 */
+	 
 	diff = pkt_timestamp_minor - channel->sync_timestamp_minor;
 	if (pkt_timestamp_minor < channel->sync_timestamp_minor)
 		diff += ptp->nic_time.minor_max;
 
-	/* do we roll over a second boundary and need to carry the one? */
+	 
 	carry = (channel->sync_timestamp_minor >= ptp->nic_time.minor_max - diff) ?
 		1 : 0;
 
 	if (diff <= ptp->nic_time.sync_event_diff_max) {
-		/* packet is ahead of the sync event by a quarter of a second or
-		 * less (allowing for fuzz)
-		 */
+		 
 		pkt_timestamp_major = channel->sync_timestamp_major + carry;
 	} else if (diff >= ptp->nic_time.sync_event_diff_min) {
-		/* packet is behind the sync event but within the fuzz factor.
-		 * This means the RX packet and sync event crossed as they were
-		 * placed on the event queue, which can sometimes happen.
-		 */
+		 
 		pkt_timestamp_major = channel->sync_timestamp_major - 1 + carry;
 	} else {
-		/* it's outside tolerance in both directions. this might be
-		 * indicative of us missing sync events for some reason, so
-		 * we'll call it an error rather than risk giving a bogus
-		 * timestamp.
-		 */
+		 
 		netif_vdbg(efx, drv, efx->net_dev,
 			  "packet timestamp %x too far from sync event %x:%x\n",
 			  pkt_timestamp_minor, channel->sync_timestamp_major,
@@ -2036,7 +1746,7 @@ void __efx_siena_rx_skb_attach_timestamp(struct efx_channel *channel,
 		return;
 	}
 
-	/* attach the timestamps to the skb */
+	 
 	timestamps = skb_hwtstamps(skb);
 	timestamps->hwtstamp =
 		ptp->nic_to_kernel_time(pkt_timestamp_major,
@@ -2060,7 +1770,7 @@ static int efx_phc_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	else if (delta < -MAX_PPB)
 		delta = -MAX_PPB;
 
-	/* Convert ppb to fixed point ns taking care to round correctly. */
+	 
 	adjustment_ns = ((s64)delta * PPB_SCALE_WORD +
 			 (1 << (ptp_data->adjfreq_ppb_shift - 1))) >>
 			ptp_data->adjfreq_ppb_shift;
@@ -2128,10 +1838,7 @@ static int efx_phc_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 static int efx_phc_settime(struct ptp_clock_info *ptp,
 			   const struct timespec64 *e_ts)
 {
-	/* Get the current NIC time, efx_phc_gettime.
-	 * Subtract from the desired time to get the offset
-	 * call efx_phc_adjtime with the offset
-	 */
+	 
 	int rc;
 	struct timespec64 time_now;
 	struct timespec64 delta;
@@ -2168,7 +1875,7 @@ static const struct efx_channel_type efx_ptp_channel_type = {
 	.pre_probe		= efx_ptp_probe_channel,
 	.post_remove		= efx_ptp_remove_channel,
 	.get_name		= efx_ptp_get_channel_name,
-	/* no copy operation; there is no need to reallocate this channel */
+	 
 	.receive_skb		= efx_ptp_rx,
 	.want_txqs		= efx_ptp_want_txqs,
 	.keep_eventq		= false,
@@ -2176,9 +1883,7 @@ static const struct efx_channel_type efx_ptp_channel_type = {
 
 void efx_siena_ptp_defer_probe_with_channel(struct efx_nic *efx)
 {
-	/* Check whether PTP is implemented on this NIC.  The DISABLE
-	 * operation will succeed if and only if it is implemented.
-	 */
+	 
 	if (efx_ptp_disable(efx) == 0)
 		efx->extra_channel_type[EFX_EXTRA_CHANNEL_PTP] =
 			&efx_ptp_channel_type;
@@ -2188,14 +1893,14 @@ void efx_siena_ptp_start_datapath(struct efx_nic *efx)
 {
 	if (efx_ptp_restart(efx))
 		netif_err(efx, drv, efx->net_dev, "Failed to restart PTP.\n");
-	/* re-enable timestamping if it was previously enabled */
+	 
 	if (efx->type->ptp_set_ts_sync_events)
 		efx->type->ptp_set_ts_sync_events(efx, true, true);
 }
 
 void efx_siena_ptp_stop_datapath(struct efx_nic *efx)
 {
-	/* temporarily disable timestamping */
+	 
 	if (efx->type->ptp_set_ts_sync_events)
 		efx->type->ptp_set_ts_sync_events(efx, false, true);
 	efx_ptp_stop(efx);

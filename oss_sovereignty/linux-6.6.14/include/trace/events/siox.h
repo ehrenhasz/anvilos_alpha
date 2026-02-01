@@ -60,7 +60,7 @@ TRACE_EVENT(siox_get_data,
 		     )
 );
 
-#endif /* if !defined(_TRACE_SIOX_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Freescale imx7d pinctrl driver
-//
-// Author: Anson Huang <Anson.Huang@freescale.com>
-// Copyright (C) 2014-2015 Freescale Semiconductor, Inc.
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -183,7 +183,7 @@ enum imx7d_lpsr_pads {
 	MX7D_PAD_GPIO1_IO07 = 7,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx7d_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX7D_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(MX7D_PAD_RESERVE1),
@@ -342,7 +342,7 @@ static const struct pinctrl_pin_desc imx7d_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX7D_PAD_ENET1_COL),
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx7d_lpsr_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX7D_PAD_GPIO1_IO00),
 	IMX_PINCTRL_PIN(MX7D_PAD_GPIO1_IO01),
@@ -369,7 +369,7 @@ static const struct imx_pinctrl_soc_info imx7d_lpsr_pinctrl_info = {
 static const struct of_device_id imx7d_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx7d-iomuxc", .data = &imx7d_pinctrl_info, },
 	{ .compatible = "fsl,imx7d-iomuxc-lpsr", .data = &imx7d_lpsr_pinctrl_info },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx7d_pinctrl_probe(struct platform_device *pdev)

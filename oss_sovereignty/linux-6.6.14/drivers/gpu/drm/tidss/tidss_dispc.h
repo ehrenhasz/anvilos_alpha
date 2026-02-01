@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+ 
+ 
 
 #ifndef __TIDSS_DISPC_H__
 #define __TIDSS_DISPC_H__
@@ -47,13 +44,13 @@ struct dispc_features_scaling {
 };
 
 struct dispc_errata {
-	bool i2000; /* DSS Does Not Support YUV Pixel Data Formats */
+	bool i2000;  
 };
 
 enum dispc_vp_bus_type {
-	DISPC_VP_DPI,		/* DPI output */
-	DISPC_VP_OLDI,		/* OLDI (LVDS) output */
-	DISPC_VP_INTERNAL,	/* SoC internal routing */
+	DISPC_VP_DPI,		 
+	DISPC_VP_OLDI,		 
+	DISPC_VP_INTERNAL,	 
 	DISPC_VP_MAX_BUS_TYPE,
 };
 
@@ -75,13 +72,13 @@ struct dispc_features {
 	const char *common;
 	const u16 *common_regs;
 	u32 num_vps;
-	const char *vp_name[TIDSS_MAX_PORTS]; /* Should match dt reg names */
-	const char *ovr_name[TIDSS_MAX_PORTS]; /* Should match dt reg names */
-	const char *vpclk_name[TIDSS_MAX_PORTS]; /* Should match dt clk names */
+	const char *vp_name[TIDSS_MAX_PORTS];  
+	const char *ovr_name[TIDSS_MAX_PORTS];  
+	const char *vpclk_name[TIDSS_MAX_PORTS];  
 	const enum dispc_vp_bus_type vp_bus_type[TIDSS_MAX_PORTS];
 	struct tidss_vp_feat vp_feat;
 	u32 num_planes;
-	const char *vid_name[TIDSS_MAX_PLANES]; /* Should match dt reg names */
+	const char *vid_name[TIDSS_MAX_PLANES];  
 	bool vid_lite[TIDSS_MAX_PLANES];
 	u32 vid_order[TIDSS_MAX_PLANES];
 };

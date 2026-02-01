@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/***************************************************************************
- *   Copyright (C) 2006-2010 by Marin Mitov                                *
- *   mitov@issp.bas.bg                                                     *
- *                                                                         *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #include <linux/module.h>
 #include <linux/stringify.h>
@@ -20,75 +15,43 @@
 
 #define DT3155_DEVICE_ID 0x1223
 
-/**
- * read_i2c_reg - reads an internal i2c register
- *
- * @addr:	dt3155 mmio base address
- * @index:	index (internal address) of register to read
- * @data:	pointer to byte the read data will be placed in
- *
- * returns:	zero on success or error code
- *
- * This function starts reading the specified (by index) register
- * and busy waits for the process to finish. The result is placed
- * in a byte pointed by data.
- */
+ 
 static int read_i2c_reg(void __iomem *addr, u8 index, u8 *data)
 {
 	u32 tmp = index;
 
 	iowrite32((tmp << 17) | IIC_READ, addr + IIC_CSR2);
-	udelay(45); /* wait at least 43 usec for NEW_CYCLE to clear */
+	udelay(45);  
 	if (ioread32(addr + IIC_CSR2) & NEW_CYCLE)
-		return -EIO; /* error: NEW_CYCLE not cleared */
+		return -EIO;  
 	tmp = ioread32(addr + IIC_CSR1);
 	if (tmp & DIRECT_ABORT) {
-		/* reset DIRECT_ABORT bit */
+		 
 		iowrite32(DIRECT_ABORT, addr + IIC_CSR1);
-		return -EIO; /* error: DIRECT_ABORT set */
+		return -EIO;  
 	}
 	*data = tmp >> 24;
 	return 0;
 }
 
-/**
- * write_i2c_reg - writes to an internal i2c register
- *
- * @addr:	dt3155 mmio base address
- * @index:	index (internal address) of register to read
- * @data:	data to be written
- *
- * returns:	zero on success or error code
- *
- * This function starts writing the specified (by index) register
- * and busy waits for the process to finish.
- */
+ 
 static int write_i2c_reg(void __iomem *addr, u8 index, u8 data)
 {
 	u32 tmp = index;
 
 	iowrite32((tmp << 17) | IIC_WRITE | data, addr + IIC_CSR2);
-	udelay(65); /* wait at least 63 usec for NEW_CYCLE to clear */
+	udelay(65);  
 	if (ioread32(addr + IIC_CSR2) & NEW_CYCLE)
-		return -EIO; /* error: NEW_CYCLE not cleared */
+		return -EIO;  
 	if (ioread32(addr + IIC_CSR1) & DIRECT_ABORT) {
-		/* reset DIRECT_ABORT bit */
+		 
 		iowrite32(DIRECT_ABORT, addr + IIC_CSR1);
-		return -EIO; /* error: DIRECT_ABORT set */
+		return -EIO;  
 	}
 	return 0;
 }
 
-/**
- * write_i2c_reg_nowait - writes to an internal i2c register
- *
- * @addr:	dt3155 mmio base address
- * @index:	index (internal address) of register to read
- * @data:	data to be written
- *
- * This function starts writing the specified (by index) register
- * and then returns.
- */
+ 
 static void write_i2c_reg_nowait(void __iomem *addr, u8 index, u8 data)
 {
 	u32 tmp = index;
@@ -96,25 +59,17 @@ static void write_i2c_reg_nowait(void __iomem *addr, u8 index, u8 data)
 	iowrite32((tmp << 17) | IIC_WRITE | data, addr + IIC_CSR2);
 }
 
-/**
- * wait_i2c_reg - waits the read/write to finish
- *
- * @addr:	dt3155 mmio base address
- *
- * returns:	zero on success or error code
- *
- * This function waits reading/writing to finish.
- */
+ 
 static int wait_i2c_reg(void __iomem *addr)
 {
 	if (ioread32(addr + IIC_CSR2) & NEW_CYCLE)
-		udelay(65); /* wait at least 63 usec for NEW_CYCLE to clear */
+		udelay(65);  
 	if (ioread32(addr + IIC_CSR2) & NEW_CYCLE)
-		return -EIO; /* error: NEW_CYCLE not cleared */
+		return -EIO;  
 	if (ioread32(addr + IIC_CSR1) & DIRECT_ABORT) {
-		/* reset DIRECT_ABORT bit */
+		 
 		iowrite32(DIRECT_ABORT, addr + IIC_CSR1);
-		return -EIO; /* error: DIRECT_ABORT set */
+		return -EIO;  
 	}
 	return 0;
 }
@@ -157,7 +112,7 @@ static int dt3155_start_streaming(struct vb2_queue *q, unsigned count)
 	iowrite32(dma_addr + pd->width, pd->regs + ODD_DMA_START);
 	iowrite32(pd->width, pd->regs + EVEN_DMA_STRIDE);
 	iowrite32(pd->width, pd->regs + ODD_DMA_STRIDE);
-	/* enable interrupts, clear all irq flags */
+	 
 	iowrite32(FLD_START_EN | FLD_END_ODD_EN | FLD_START |
 			FLD_END_EVEN | FLD_END_ODD, pd->regs + INT_CSR);
 	iowrite32(FIFO_EN | SRST | FLD_CRPT_ODD | FLD_CRPT_EVEN |
@@ -168,7 +123,7 @@ static int dt3155_start_streaming(struct vb2_queue *q, unsigned count)
 	write_i2c_reg(pd->regs, EVEN_CSR, CSR_ERROR | CSR_DONE);
 	write_i2c_reg(pd->regs, ODD_CSR, CSR_ERROR | CSR_DONE);
 
-	/*  start the board  */
+	 
 	write_i2c_reg(pd->regs, CSR2, pd->csr2 | BUSY_EVEN | BUSY_ODD);
 	return 0;
 }
@@ -179,19 +134,15 @@ static void dt3155_stop_streaming(struct vb2_queue *q)
 	struct vb2_buffer *vb;
 
 	spin_lock_irq(&pd->lock);
-	/* stop the board */
+	 
 	write_i2c_reg_nowait(pd->regs, CSR2, pd->csr2);
 	iowrite32(FIFO_EN | SRST | FLD_CRPT_ODD | FLD_CRPT_EVEN |
 		  FLD_DN_ODD | FLD_DN_EVEN, pd->regs + CSR1);
-	/* disable interrupts, clear all irq flags */
+	 
 	iowrite32(FLD_START | FLD_END_EVEN | FLD_END_ODD, pd->regs + INT_CSR);
 	spin_unlock_irq(&pd->lock);
 
-	/*
-	 * It is not clear whether the DMA stops at once or whether it
-	 * will finish the current frame or field first. To be on the
-	 * safe side we wait a bit.
-	 */
+	 
 	msleep(45);
 
 	spin_lock_irq(&pd->lock);
@@ -213,7 +164,7 @@ static void dt3155_buf_queue(struct vb2_buffer *vb)
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
 	struct dt3155_priv *pd = vb2_get_drv_priv(vb->vb2_queue);
 
-	/*  pd->vidq.streaming = 1 when dt3155_buf_queue() is invoked  */
+	 
 	spin_lock_irq(&pd->lock);
 	if (pd->curr_buf)
 		list_add_tail(&vb->done_entry, &pd->dmaq);
@@ -241,11 +192,11 @@ static irqreturn_t dt3155_irq_handler_even(int irq, void *dev_id)
 
 	tmp = ioread32(ipd->regs + INT_CSR) & (FLD_START | FLD_END_ODD);
 	if (!tmp)
-		return IRQ_NONE;  /* not our irq */
+		return IRQ_NONE;   
 	if ((tmp & FLD_START) && !(tmp & FLD_END_ODD)) {
 		iowrite32(FLD_START_EN | FLD_END_ODD_EN | FLD_START,
 							ipd->regs + INT_CSR);
-		return IRQ_HANDLED; /* start of field irq */
+		return IRQ_HANDLED;  
 	}
 	tmp = ioread32(ipd->regs + CSR1) & (FLD_CRPT_EVEN | FLD_CRPT_ODD);
 	if (tmp) {
@@ -272,7 +223,7 @@ static irqreturn_t dt3155_irq_handler_even(int irq, void *dev_id)
 		iowrite32(ipd->width, ipd->regs + ODD_DMA_STRIDE);
 	}
 
-	/* enable interrupts, clear all irq flags */
+	 
 	iowrite32(FLD_START_EN | FLD_END_ODD_EN | FLD_START |
 			FLD_END_EVEN | FLD_END_ODD, ipd->regs + INT_CSR);
 	spin_unlock(&ipd->lock);
@@ -412,14 +363,14 @@ static int dt3155_init_board(struct dt3155_priv *pd)
 	int i;
 	u8 tmp = 0;
 
-	pci_set_master(pdev); /* dt3155 needs it */
+	pci_set_master(pdev);  
 
-	/*  resetting the adapter  */
+	 
 	iowrite32(ADDR_ERR_ODD | ADDR_ERR_EVEN | FLD_CRPT_ODD | FLD_CRPT_EVEN |
 			FLD_DN_ODD | FLD_DN_EVEN, pd->regs + CSR1);
 	msleep(20);
 
-	/*  initializing adapter registers  */
+	 
 	iowrite32(FIFO_EN | SRST, pd->regs + CSR1);
 	iowrite32(0xEEEEEE01, pd->regs + EVEN_PIXEL_FMT);
 	iowrite32(0xEEEEEE01, pd->regs + ODD_PIXEL_FMT);
@@ -433,18 +384,18 @@ static int dt3155_init_board(struct dt3155_priv *pd)
 	iowrite32(0x0005007C, pd->regs + FIFO_FLAG_CNT);
 	iowrite32(0x01010101, pd->regs + IIC_CLK_DUR);
 
-	/* verifying that we have a DT3155 board (not just a SAA7116 chip) */
+	 
 	read_i2c_reg(pd->regs, DT_ID, &tmp);
 	if (tmp != DT3155_ID)
 		return -ENODEV;
 
-	/* initialize AD LUT */
+	 
 	write_i2c_reg(pd->regs, AD_ADDR, 0);
 	for (i = 0; i < 256; i++)
 		write_i2c_reg(pd->regs, AD_LUT, i);
 
-	/* initialize ADC references */
-	/* FIXME: pos_ref & neg_ref depend on VT_50HZ */
+	 
+	 
 	write_i2c_reg(pd->regs, AD_ADDR, AD_CMD_REG);
 	write_i2c_reg(pd->regs, AD_CMD, VIDEO_CNL_1 | SYNC_CNL_1 | SYNC_LVL_3);
 	write_i2c_reg(pd->regs, AD_ADDR, AD_POS_REF);
@@ -452,7 +403,7 @@ static int dt3155_init_board(struct dt3155_priv *pd)
 	write_i2c_reg(pd->regs, AD_ADDR, AD_NEG_REF);
 	write_i2c_reg(pd->regs, AD_CMD, 0);
 
-	/* initialize PM LUT */
+	 
 	write_i2c_reg(pd->regs, CONFIG, pd->config | PM_LUT_PGM);
 	for (i = 0; i < 256; i++) {
 		write_i2c_reg(pd->regs, PM_LUT_ADDR, i);
@@ -463,13 +414,13 @@ static int dt3155_init_board(struct dt3155_priv *pd)
 		write_i2c_reg(pd->regs, PM_LUT_ADDR, i);
 		write_i2c_reg(pd->regs, PM_LUT_DATA, i);
 	}
-	write_i2c_reg(pd->regs, CONFIG, pd->config); /*  ACQ_MODE_EVEN  */
+	write_i2c_reg(pd->regs, CONFIG, pd->config);  
 
-	/* select channel 1 for input and set sync level */
+	 
 	write_i2c_reg(pd->regs, AD_ADDR, AD_CMD_REG);
 	write_i2c_reg(pd->regs, AD_CMD, VIDEO_CNL_1 | SYNC_CNL_1 | SYNC_LVL_3);
 
-	/* disable all irqs, clear all irq flags */
+	 
 	iowrite32(FLD_START | FLD_END_EVEN | FLD_END_ODD,
 			pd->regs + INT_CSR);
 
@@ -504,7 +455,7 @@ static int dt3155_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		return err;
 	pd->vdev = dt3155_vdev;
 	pd->vdev.v4l2_dev = &pd->v4l2_dev;
-	video_set_drvdata(&pd->vdev, pd);  /* for use in video_fops */
+	video_set_drvdata(&pd->vdev, pd);   
 	pd->pdev = pdev;
 	pd->std = V4L2_STD_625_50;
 	pd->csr2 = VT_50HZ;
@@ -512,7 +463,7 @@ static int dt3155_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	pd->height = 576;
 	INIT_LIST_HEAD(&pd->dmaq);
 	mutex_init(&pd->mux);
-	pd->vdev.lock = &pd->mux; /* for locking v4l2_file_operations */
+	pd->vdev.lock = &pd->mux;  
 	pd->vidq.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	pd->vidq.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 	pd->vidq.io_modes = VB2_MMAP | VB2_DMABUF | VB2_READ;
@@ -521,7 +472,7 @@ static int dt3155_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	pd->vidq.drv_priv = pd;
 	pd->vidq.min_buffers_needed = 2;
 	pd->vidq.gfp_flags = GFP_DMA32;
-	pd->vidq.lock = &pd->mux; /* for locking v4l2_file_operations */
+	pd->vidq.lock = &pd->mux;  
 	pd->vidq.dev = &pdev->dev;
 	pd->vdev.queue = &pd->vidq;
 	err = vb2_queue_init(&pd->vidq);
@@ -551,7 +502,7 @@ static int dt3155_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (err)
 		goto err_free_irq;
 	dev_info(&pdev->dev, "/dev/video%i is ready\n", pd->vdev.minor);
-	return 0;  /*   success   */
+	return 0;   
 
 err_free_irq:
 	free_irq(pd->pdev->irq, pd);
@@ -582,7 +533,7 @@ static void dt3155_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id pci_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, DT3155_DEVICE_ID) },
-	{ 0, /* zero marks the end */ },
+	{ 0,   },
 };
 MODULE_DEVICE_TABLE(pci, pci_ids);
 

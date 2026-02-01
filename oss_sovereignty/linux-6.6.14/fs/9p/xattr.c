@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * Copyright IBM Corporation, 2010
- * Author Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -39,7 +36,7 @@ ssize_t v9fs_fid_xattr_get(struct p9_fid *fid, const char *name,
 			retval = -ERANGE;
 		else if (attr_size > SSIZE_MAX)
 			retval = -EOVERFLOW;
-		else /* request to get the attr_size */
+		else  
 			retval = attr_size;
 	} else {
 		iov_iter_truncate(&to, attr_size);
@@ -52,16 +49,7 @@ ssize_t v9fs_fid_xattr_get(struct p9_fid *fid, const char *name,
 }
 
 
-/*
- * v9fs_xattr_get()
- *
- * Copy an extended attribute into the buffer
- * provided, or compute the buffer size required.
- * Buffer is NULL to compute the size of the buffer required.
- *
- * Returns a negative error number on failure, or the number of bytes
- * used / required on success.
- */
+ 
 ssize_t v9fs_xattr_get(struct dentry *dentry, const char *name,
 		       void *buffer, size_t buffer_size)
 {
@@ -79,18 +67,7 @@ ssize_t v9fs_xattr_get(struct dentry *dentry, const char *name,
 	return ret;
 }
 
-/*
- * v9fs_xattr_set()
- *
- * Create, replace or remove an extended attribute for this inode. Buffer
- * is NULL to remove an existing extended attribute, and non-NULL to
- * either replace an existing extended attribute, or create a new extended
- * attribute. The flags XATTR_REPLACE and XATTR_CREATE
- * specify that an extended attribute must exist and must not exist
- * previous to the call, respectively.
- *
- * Returns 0, or a negative error number on failure.
- */
+ 
 int v9fs_xattr_set(struct dentry *dentry, const char *name,
 		   const void *value, size_t value_len, int flags)
 {
@@ -117,14 +94,12 @@ int v9fs_fid_xattr_set(struct p9_fid *fid, const char *name,
 	p9_debug(P9_DEBUG_VFS, "name = %s value_len = %zu flags = %d\n",
 		 name, value_len, flags);
 
-	/* Clone it */
+	 
 	fid = clone_fid(fid);
 	if (IS_ERR(fid))
 		return PTR_ERR(fid);
 
-	/*
-	 * On success fid points to xattr
-	 */
+	 
 	retval = p9_client_xattrcreate(fid, name, value_len, flags);
 	if (retval < 0)
 		p9_debug(P9_DEBUG_VFS, "p9_client_xattrcreate failed %d\n",
@@ -139,7 +114,7 @@ int v9fs_fid_xattr_set(struct p9_fid *fid, const char *name,
 
 ssize_t v9fs_listxattr(struct dentry *dentry, char *buffer, size_t buffer_size)
 {
-	/* Txattrwalk with an empty string lists xattrs instead */
+	 
 	return v9fs_xattr_get(dentry, "", buffer, buffer_size);
 }
 

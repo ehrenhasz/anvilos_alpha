@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm8994-core.c  --  Device access for Wolfson WM8994
- *
- * Copyright 2009 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -71,11 +65,7 @@ static const struct mfd_cell wm8994_devs[] = {
 	},
 };
 
-/*
- * Supplies for the main bulk of CODEC; the LDO supplies are ignored
- * and should be handled via the standard regulator API supply
- * management.
- */
+ 
 static const char *wm1811_main_supplies[] = {
 	"DBVDD1",
 	"DBVDD2",
@@ -115,8 +105,7 @@ static int wm8994_suspend(struct device *dev)
 	struct wm8994 *wm8994 = dev_get_drvdata(dev);
 	int ret;
 
-	/* Don't actually go through with the suspend if the CODEC is
-	 * still active for accessory detect. */
+	 
 	switch (wm8994->type) {
 	case WM8958:
 	case WM1811:
@@ -132,30 +121,25 @@ static int wm8994_suspend(struct device *dev)
 		break;
 	}
 
-	/* Disable LDO pulldowns while the device is suspended if we
-	 * don't know that something will be driving them. */
+	 
 	if (!wm8994->ldo_ena_always_driven)
 		wm8994_set_bits(wm8994, WM8994_PULL_CONTROL_2,
 				WM8994_LDO1ENA_PD | WM8994_LDO2ENA_PD,
 				WM8994_LDO1ENA_PD | WM8994_LDO2ENA_PD);
 
-	/* Explicitly put the device into reset in case regulators
-	 * don't get disabled in order to ensure consistent restart.
-	 */
+	 
 	wm8994_reg_write(wm8994, WM8994_SOFTWARE_RESET,
 			 wm8994_reg_read(wm8994, WM8994_SOFTWARE_RESET));
 
 	regcache_mark_dirty(wm8994->regmap);
 
-	/* Restore GPIO registers to prevent problems with mismatched
-	 * pin configurations.
-	 */
+	 
 	ret = regcache_sync_region(wm8994->regmap, WM8994_GPIO_1,
 				   WM8994_GPIO_11);
 	if (ret != 0)
 		dev_err(dev, "Failed to restore GPIO registers: %d\n", ret);
 
-	/* In case one of the GPIOs is used as a wake input. */
+	 
 	ret = regcache_sync_region(wm8994->regmap,
 				   WM8994_INTERRUPT_STATUS_1_MASK,
 				   WM8994_INTERRUPT_STATUS_1_MASK);
@@ -180,7 +164,7 @@ static int wm8994_resume(struct device *dev)
 	struct wm8994 *wm8994 = dev_get_drvdata(dev);
 	int ret;
 
-	/* We may have lied to the PM core about suspending */
+	 
 	if (!wm8994->suspended)
 		return 0;
 
@@ -198,7 +182,7 @@ static int wm8994_resume(struct device *dev)
 		goto err_enable;
 	}
 
-	/* Disable LDO pulldowns while the device is active */
+	 
 	wm8994_set_bits(wm8994, WM8994_PULL_CONTROL_2,
 			WM8994_LDO1ENA_PD | WM8994_LDO2ENA_PD,
 			0);
@@ -298,9 +282,7 @@ static int wm8994_set_pdata_from_of(struct wm8994 *wm8994)
 }
 #endif
 
-/*
- * Instantiate the generic non-control parts of the device.
- */
+ 
 static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 {
 	struct wm8994_pdata *pdata;
@@ -320,7 +302,7 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 	if (ret != 0)
 		return ret;
 
-	/* Add the on-chip regulators first for bootstrapping */
+	 
 	ret = mfd_add_devices(wm8994->dev, 0,
 			      wm8994_regulator_devs,
 			      ARRAY_SIZE(wm8994_regulator_devs),
@@ -372,11 +354,7 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		goto err;
 	}
 
-	/*
-	 * Can't use devres helper here as some of the supplies are provided by
-	 * wm8994->dev's children (regulators) and those regulators are
-	 * unregistered by the devres core before the supplies are freed.
-	 */
+	 
 	ret = regulator_bulk_get(wm8994->dev, wm8994->num_supplies,
 				 wm8994->supplies);
 	if (ret != 0) {
@@ -465,7 +443,7 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		break;
 
 	case WM1811:
-		/* Revision C did not change the relevant layer */
+		 
 		if (wm8994->revision > 1)
 			wm8994->revision++;
 
@@ -503,10 +481,7 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		goto err_enable;
 	}
 
-	/* Explicitly put the device into reset in case regulators
-	 * don't get disabled in order to ensure we know the device
-	 * state.
-	 */
+	 
 	ret = wm8994_reg_write(wm8994, WM8994_SOFTWARE_RESET,
 			       wm8994_reg_read(wm8994, WM8994_SOFTWARE_RESET));
 	if (ret != 0) {
@@ -527,7 +502,7 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 	wm8994->irq_base = pdata->irq_base;
 	wm8994->gpio_base = pdata->gpio_base;
 
-	/* GPIO configuration is only applied if it's non-zero */
+	 
 	for (i = 0; i < ARRAY_SIZE(pdata->gpio_defaults); i++) {
 		if (pdata->gpio_defaults[i]) {
 			wm8994_set_bits(wm8994, WM8994_GPIO_1 + i,
@@ -542,18 +517,13 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 	if (pdata->csnaddr_pd)
 		pulls |= WM8994_CSNADDR_PD;
 
-	/* Disable unneeded pulls */
+	 
 	wm8994_set_bits(wm8994, WM8994_PULL_CONTROL_2,
 			WM8994_LDO1ENA_PD | WM8994_LDO2ENA_PD |
 			WM8994_SPKMODE_PU | WM8994_CSNADDR_PD,
 			pulls);
 
-	/* In some system designs where the regulators are not in use,
-	 * we can achieve a small reduction in leakage currents by
-	 * floating LDO outputs.  This bit makes no difference if the
-	 * LDOs are enabled, it only affects cases where the LDOs were
-	 * in operation and are then disabled.
-	 */
+	 
 	for (i = 0; i < WM8994_NUM_LDO_REGS; i++) {
 		if (wm8994_ldo_in_use(pdata, i))
 			wm8994_set_bits(wm8994, WM8994_LDO_1 + i,

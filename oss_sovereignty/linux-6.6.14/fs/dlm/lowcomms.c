@@ -1,46 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2009 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
 
-/*
- * lowcomms.c
- *
- * This is the "low-level" comms layer.
- *
- * It is responsible for sending/receiving messages
- * from other nodes in the cluster.
- *
- * Cluster nodes are referred to by their nodeids. nodeids are
- * simply 32 bit numbers to the locking module - if they need to
- * be expanded for the cluster infrastructure then that is its
- * responsibility. It is this layer's
- * responsibility to resolve these into IP address or
- * whatever it needs for inter-node communication.
- *
- * The comms level is two kernel threads that deal mainly with
- * the receiving of messages from other nodes and passing them
- * up to the mid-level comms layer (which understands the
- * message format) for execution by the locking core, and
- * a send thread which does all the setting up of connections
- * to remote nodes and the sending of data. Threads are not allowed
- * to send their own data because it may cause them to wait in times
- * of high load. Also, this way, the sending thread can collect together
- * messages bound for one node and send them in one block.
- *
- * lowcomms will choose to use either TCP or SCTP as its transport layer
- * depending on the configuration variable 'protocol'. This should be set
- * to 0 (default) for TCP or 1 for SCTP. It should be configured using a
- * cluster-wide mechanism as it must be the same on all nodes of the cluster
- * for the DLM to function.
- *
- */
+ 
+
+ 
 
 #include <asm/ioctls.h>
 #include <net/sock.h>
@@ -66,15 +27,9 @@
 #define NEEDED_RMEM (4*1024*1024)
 
 struct connection {
-	struct socket *sock;	/* NULL if not connected */
-	uint32_t nodeid;	/* So we know who we are in the list */
-	/* this semaphore is used to allow parallel recv/send in read
-	 * lock mode. When we release a sock we need to held the write lock.
-	 *
-	 * However this is locking code and not nice. When we remove the
-	 * othercon handling we can look into other mechanism to synchronize
-	 * io handling to call sock_release() at the right time.
-	 */
+	struct socket *sock;	 
+	uint32_t nodeid;	 
+	 
 	struct rw_semaphore sock_lock;
 	unsigned long flags;
 #define CF_APP_LIMITED 0
@@ -83,24 +38,14 @@ struct connection {
 #define CF_RECV_INTR 3
 #define CF_IO_STOP 4
 #define CF_IS_OTHERCON 5
-	struct list_head writequeue;  /* List of outgoing writequeue_entries */
+	struct list_head writequeue;   
 	spinlock_t writequeue_lock;
 	int retries;
 	struct hlist_node list;
-	/* due some connect()/accept() races we currently have this cross over
-	 * connection attempt second connection for one node.
-	 *
-	 * There is a solution to avoid the race by introducing a connect
-	 * rule as e.g. our_nodeid > nodeid_to_connect who is allowed to
-	 * connect. Otherside can connect but will only be considered that
-	 * the other side wants to have a reconnect.
-	 *
-	 * However changing to this behaviour will break backwards compatible.
-	 * In a DLM protocol major version upgrade we should remove this!
-	 */
+	 
 	struct connection *othercon;
-	struct work_struct rwork; /* receive worker */
-	struct work_struct swork; /* send worker */
+	struct work_struct rwork;  
+	struct work_struct swork;  
 	wait_queue_head_t shutdown_wait;
 	unsigned char rx_leftover_buf[DLM_MAX_SOCKET_BUFSIZE];
 	int rx_leftover;
@@ -121,7 +66,7 @@ struct listen_connection {
 #define DLM_WQ_REMAIN_BYTES(e) (PAGE_SIZE - e->end)
 #define DLM_WQ_LENGTH_BYTES(e) (e->end - e->offset)
 
-/* An entry waiting to be sent */
+ 
 struct writequeue_entry {
 	struct list_head list;
 	struct page *page;
@@ -141,7 +86,7 @@ struct dlm_msg {
 	bool retransmit;
 	void *ppc;
 	int len;
-	int idx; /* new()/commit() idx exchange */
+	int idx;  
 
 	struct list_head list;
 	struct kref ref;
@@ -180,7 +125,7 @@ static struct listen_connection listen_con;
 static struct sockaddr_storage dlm_local_addr[DLM_MAX_ADDR_COUNT];
 static int dlm_local_count;
 
-/* Work queues */
+ 
 static struct workqueue_struct *io_workqueue;
 static struct workqueue_struct *process_workqueue;
 
@@ -248,16 +193,14 @@ struct kmem_cache *dlm_lowcomms_msg_cache_create(void)
 	return kmem_cache_create("dlm_msg", sizeof(struct dlm_msg), 0, 0, NULL);
 }
 
-/* need to held writequeue_lock */
+ 
 static struct writequeue_entry *con_next_wq(struct connection *con)
 {
 	struct writequeue_entry *e;
 
 	e = list_first_entry_or_null(&con->writequeue, struct writequeue_entry,
 				     list);
-	/* if len is zero nothing is to send, if there are users filling
-	 * buffers we wait until the users are done so we can send more.
-	 */
+	 
 	if (!e || e->users || e->len == 0)
 		return NULL;
 
@@ -288,10 +231,7 @@ static void dlm_con_init(struct connection *con, int nodeid)
 	init_waitqueue_head(&con->shutdown_wait);
 }
 
-/*
- * If 'allocation' is zero then we don't attempt to create a new
- * connection structure for this node.
- */
+ 
 static struct connection *nodeid2con(int nodeid, gfp_t alloc)
 {
 	struct connection *con, *tmp;
@@ -309,12 +249,7 @@ static struct connection *nodeid2con(int nodeid, gfp_t alloc)
 	dlm_con_init(con, nodeid);
 
 	spin_lock(&connections_lock);
-	/* Because multiple workqueues/threads calls this function it can
-	 * race on multiple cpu's. Instead of locking hot path __find_con()
-	 * we just check in rare cases of recently added nodes again
-	 * under protection of connections_lock. If this is the case we
-	 * abort our connection creation and return the existing connection.
-	 */
+	 
 	tmp = __find_con(nodeid, r);
 	if (tmp) {
 		spin_unlock(&connections_lock);
@@ -498,7 +433,7 @@ int dlm_lowcomms_addr(int nodeid, struct sockaddr_storage *addr, int len)
 	return 0;
 }
 
-/* Data available on socket or listen socket received a connect */
+ 
 static void lowcomms_data_ready(struct sock *sk)
 {
 	struct connection *con = sock2con(sk);
@@ -527,9 +462,7 @@ static void lowcomms_write_space(struct sock *sk)
 
 static void lowcomms_state_change(struct sock *sk)
 {
-	/* SCTP layer is not calling sk_data_ready when the connection
-	 * is done, so we catch the signal through here.
-	 */
+	 
 	if (sk->sk_shutdown == RCV_SHUTDOWN)
 		lowcomms_data_ready(sk);
 }
@@ -637,7 +570,7 @@ static void restore_callbacks(struct sock *sk)
 	sk->sk_error_report = listen_sock.sk_error_report;
 }
 
-/* Make a socket active */
+ 
 static void add_sock(struct socket *sock, struct connection *con)
 {
 	struct sock *sk = sock->sk;
@@ -656,8 +589,7 @@ static void add_sock(struct socket *sock, struct connection *con)
 	release_sock(sk);
 }
 
-/* Add the port number to an IPv6 or 4 sockaddr and return the address
-   length */
+ 
 static void make_sockaddr(struct sockaddr_storage *saddr, uint16_t port,
 			  int *addr_len)
 {
@@ -748,7 +680,7 @@ static void stop_connection_io(struct connection *con)
 	cancel_work_sync(&con->rwork);
 }
 
-/* Close a remote connection and tidy up */
+ 
 static void close_connection(struct connection *con, bool and_other)
 {
 	struct writequeue_entry *e;
@@ -764,17 +696,7 @@ static void close_connection(struct connection *con, bool and_other)
 
 	dlm_close_sock(&con->sock);
 
-	/* if we send a writequeue entry only a half way, we drop the
-	 * whole entry because reconnection and that we not start of the
-	 * middle of a msg which will confuse the other end.
-	 *
-	 * we can always drop messages because retransmits, but what we
-	 * cannot allow is to transmit half messages which may be processed
-	 * at the other side.
-	 *
-	 * our policy is to start on a clean state when disconnects, we don't
-	 * know what's send/received on transport layer in this case.
-	 */
+	 
 	spin_lock_bh(&con->writequeue_lock);
 	if (!list_empty(&con->writequeue)) {
 		e = list_first_entry(&con->writequeue, struct writequeue_entry,
@@ -801,7 +723,7 @@ static void shutdown_connection(struct connection *con, bool and_other)
 
 	flush_workqueue(io_workqueue);
 	down_read(&con->sock_lock);
-	/* nothing to shutdown */
+	 
 	if (!con->sock) {
 		up_read(&con->sock_lock);
 		return;
@@ -895,7 +817,7 @@ static void process_dlm_messages(struct work_struct *work)
 	}
 }
 
-/* Data received from remote end */
+ 
 static int receive_from_sock(struct connection *con, int buflen)
 {
 	struct processqueue_entry *pentry;
@@ -909,9 +831,7 @@ static int receive_from_sock(struct connection *con, int buflen)
 
 	memcpy(pentry->buf, con->rx_leftover_buf, con->rx_leftover);
 
-	/* calculate new buffer parameter regarding last receive and
-	 * possible leftover bytes
-	 */
+	 
 	iov.iov_base = pentry->buf + con->rx_leftover;
 	iov.iov_len = buflen - con->rx_leftover;
 
@@ -934,7 +854,7 @@ again:
 		free_processqueue_entry(pentry);
 		return DLM_IO_END;
 	} else if (ret == 0) {
-		/* close will clear CF_RECV_PENDING */
+		 
 		free_processqueue_entry(pentry);
 		return DLM_IO_EOF;
 	} else if (ret < 0) {
@@ -942,7 +862,7 @@ again:
 		return ret;
 	}
 
-	/* new buflen according readed bytes and leftover from last receive */
+	 
 	buflen_real = ret + con->rx_leftover;
 	ret = dlm_validate_incoming_buffer(con->nodeid, pentry->buf,
 					   buflen_real);
@@ -953,10 +873,7 @@ again:
 
 	pentry->buflen = ret;
 
-	/* calculate leftover bytes from process and put it into begin of
-	 * the receive buffer, so next receive we have the full message
-	 * at the start address of the receive buffer.
-	 */
+	 
 	con->rx_leftover = buflen_real - ret;
 	memmove(con->rx_leftover_buf, pentry->buf + ret,
 		con->rx_leftover);
@@ -972,7 +889,7 @@ again:
 	return DLM_IO_SUCCESS;
 }
 
-/* Listening socket is busy, accept a connection */
+ 
 static int accept_from_sock(void)
 {
 	struct sockaddr_storage peeraddr;
@@ -987,7 +904,7 @@ static int accept_from_sock(void)
 	else if (result < 0)
 		goto accept_err;
 
-	/* Get the connected socket's peer */
+	 
 	memset(&peeraddr, 0, sizeof(peeraddr));
 	len = newsock->ops->getname(newsock, (struct sockaddr *)&peeraddr, 2);
 	if (len < 0) {
@@ -995,7 +912,7 @@ static int accept_from_sock(void)
 		goto accept_err;
 	}
 
-	/* Get the new node's NODEID */
+	 
 	make_sockaddr(&peeraddr, 0, &len);
 	if (addr_to_nodeid(&peeraddr, &nodeid, &mark)) {
 		switch (peeraddr.ss_family) {
@@ -1026,11 +943,7 @@ static int accept_from_sock(void)
 
 	log_print("got connection from %d", nodeid);
 
-	/*  Check to see if we already have a connection to this node. This
-	 *  could happen if the two nodes initiate a connection at roughly
-	 *  the same time and the connections cross on the wire.
-	 *  In this case we store the incoming one in "othercon"
-	 */
+	 
 	idx = srcu_read_lock(&connections_srcu);
 	newcon = nodeid2con(nodeid, 0);
 	if (WARN_ON_ONCE(!newcon)) {
@@ -1060,26 +973,24 @@ static int accept_from_sock(void)
 			newcon->othercon = othercon;
 			set_bit(CF_IS_OTHERCON, &othercon->flags);
 		} else {
-			/* close other sock con if we have something new */
+			 
 			close_connection(othercon, false);
 		}
 
 		down_write(&othercon->sock_lock);
 		add_sock(newsock, othercon);
 
-		/* check if we receved something while adding */
+		 
 		lock_sock(othercon->sock->sk);
 		lowcomms_queue_rwork(othercon);
 		release_sock(othercon->sock->sk);
 		up_write(&othercon->sock_lock);
 	}
 	else {
-		/* accept copies the sk after we've saved the callbacks, so we
-		   don't want to save them a second time or comm errors will
-		   result in calling sk_error_report recursively. */
+		 
 		add_sock(newsock, newcon);
 
-		/* check if we receved something while adding */
+		 
 		lock_sock(newcon->sock->sk);
 		lowcomms_queue_rwork(newcon);
 		release_sock(newcon->sock->sk);
@@ -1096,27 +1007,19 @@ accept_err:
 	return result;
 }
 
-/*
- * writequeue_entry_complete - try to delete and free write queue entry
- * @e: write queue entry to try to delete
- * @completed: bytes completed
- *
- * writequeue_lock must be held.
- */
+ 
 static void writequeue_entry_complete(struct writequeue_entry *e, int completed)
 {
 	e->offset += completed;
 	e->len -= completed;
-	/* signal that page was half way transmitted */
+	 
 	e->dirty = true;
 
 	if (e->len == 0 && e->users == 0)
 		free_entry(e);
 }
 
-/*
- * sctp_bind_addrs - bind a SCTP socket to all our addresses
- */
+ 
 static int sctp_bind_addrs(struct socket *sock, uint16_t port)
 {
 	struct sockaddr_storage localaddr;
@@ -1141,7 +1044,7 @@ static int sctp_bind_addrs(struct socket *sock, uint16_t port)
 	return result;
 }
 
-/* Get local addresses */
+ 
 static void init_local(void)
 {
 	struct sockaddr_storage sas;
@@ -1248,9 +1151,7 @@ static struct dlm_msg *dlm_lowcomms_new_msg_con(struct connection *con, int len,
 	return msg;
 }
 
-/* avoid false positive for nodes_srcu, unlock happens in
- * dlm_lowcomms_commit_msg which is a must call if success
- */
+ 
 #ifndef __CHECKER__
 struct dlm_msg *dlm_lowcomms_new_msg(int nodeid, int len, gfp_t allocation,
 				     char **ppc, void (*cb)(void *data),
@@ -1281,9 +1182,9 @@ struct dlm_msg *dlm_lowcomms_new_msg(int nodeid, int len, gfp_t allocation,
 		return NULL;
 	}
 
-	/* for dlm_lowcomms_commit_msg() */
+	 
 	kref_get(&msg->ref);
-	/* we assume if successful commit must called */
+	 
 	msg->idx = idx;
 	return msg;
 }
@@ -1312,15 +1213,13 @@ out:
 	return;
 }
 
-/* avoid false positive for nodes_srcu, lock was happen in
- * dlm_lowcomms_new_msg
- */
+ 
 #ifndef __CHECKER__
 void dlm_lowcomms_commit_msg(struct dlm_msg *msg)
 {
 	_dlm_lowcomms_commit_msg(msg);
 	srcu_read_unlock(&connections_srcu, msg->idx);
-	/* because dlm_lowcomms_new_msg() */
+	 
 	kref_put(&msg->ref, dlm_msg_release);
 }
 #endif
@@ -1330,7 +1229,7 @@ void dlm_lowcomms_put_msg(struct dlm_msg *msg)
 	kref_put(&msg->ref, dlm_msg_release);
 }
 
-/* does not held connections_srcu, usage lowcomms_error_report only */
+ 
 int dlm_lowcomms_resend_msg(struct dlm_msg *msg)
 {
 	struct dlm_msg *msg_resend;
@@ -1355,7 +1254,7 @@ int dlm_lowcomms_resend_msg(struct dlm_msg *msg)
 	return 0;
 }
 
-/* Send a message */
+ 
 static int send_to_sock(struct connection *con)
 {
 	struct writequeue_entry *e;
@@ -1387,9 +1286,7 @@ static int send_to_sock(struct connection *con)
 		spin_lock_bh(&con->writequeue_lock);
 		if (test_bit(SOCKWQ_ASYNC_NOSPACE, &con->sock->flags) &&
 		    !test_and_set_bit(CF_APP_LIMITED, &con->flags)) {
-			/* Notify TCP that we're limited by the
-			 * application window size.
-			 */
+			 
 			set_bit(SOCK_NOSPACE, &con->sock->sk->sk_socket->flags);
 			con->sock->sk->sk_write_pending++;
 
@@ -1397,7 +1294,7 @@ static int send_to_sock(struct connection *con)
 			spin_unlock_bh(&con->writequeue_lock);
 			release_sock(con->sock->sk);
 
-			/* wait for write_space() event */
+			 
 			return DLM_IO_END;
 		}
 		spin_unlock_bh(&con->writequeue_lock);
@@ -1435,8 +1332,7 @@ static void connection_release(struct rcu_head *rcu)
 	kfree(con);
 }
 
-/* Called from recovery when it knows that a node has
-   left the cluster */
+ 
 int dlm_lowcomms_close(int nodeid)
 {
 	struct connection *con;
@@ -1467,16 +1363,13 @@ int dlm_lowcomms_close(int nodeid)
 	}
 	srcu_read_unlock(&connections_srcu, idx);
 
-	/* for debugging we print when we are done to compare with other
-	 * messages in between. This function need to be correctly synchronized
-	 * with io handling
-	 */
+	 
 	log_print("closing connection to node %d done", nodeid);
 
 	return 0;
 }
 
-/* Receive worker function */
+ 
 static void process_recv_sockets(struct work_struct *work)
 {
 	struct connection *con = container_of(work, struct connection, rwork);
@@ -1496,17 +1389,17 @@ static void process_recv_sockets(struct work_struct *work)
 
 	switch (ret) {
 	case DLM_IO_END:
-		/* CF_RECV_PENDING cleared */
+		 
 		break;
 	case DLM_IO_EOF:
 		close_connection(con, false);
 		wake_up(&con->shutdown_wait);
-		/* CF_RECV_PENDING cleared */
+		 
 		break;
 	case DLM_IO_RESCHED:
 		cond_resched();
 		queue_work(io_workqueue, &con->rwork);
-		/* CF_RECV_PENDING not cleared */
+		 
 		break;
 	default:
 		if (ret < 0) {
@@ -1518,10 +1411,7 @@ static void process_recv_sockets(struct work_struct *work)
 				spin_unlock_bh(&con->writequeue_lock);
 			}
 
-			/* CF_RECV_PENDING cleared for othercon
-			 * we trigger send queue if not already done
-			 * and process_send_sockets will handle it
-			 */
+			 
 			break;
 		}
 
@@ -1560,7 +1450,7 @@ static int dlm_connect(struct connection *con)
 		return result;
 	}
 
-	/* Create a socket to communicate with */
+	 
 	result = sock_create_kern(&init_net, dlm_local_addr[0].ss_family,
 				  SOCK_STREAM, dlm_proto_ops->proto, &sock);
 	if (result < 0)
@@ -1583,7 +1473,7 @@ static int dlm_connect(struct connection *con)
 					addr_len);
 	switch (result) {
 	case -EINPROGRESS:
-		/* not an error */
+		 
 		fallthrough;
 	case 0:
 		break;
@@ -1597,7 +1487,7 @@ static int dlm_connect(struct connection *con)
 	return result;
 }
 
-/* Send worker function */
+ 
 static void process_send_sockets(struct work_struct *work)
 {
 	struct connection *con = container_of(work, struct connection, swork);
@@ -1615,23 +1505,16 @@ static void process_send_sockets(struct work_struct *work)
 			case 0:
 				break;
 			case -EINPROGRESS:
-				/* avoid spamming resched on connection
-				 * we might can switch to a state_change
-				 * event based mechanism if established
-				 */
+				 
 				msleep(100);
 				break;
 			default:
-				/* CF_SEND_PENDING not cleared */
+				 
 				up_write(&con->sock_lock);
 				log_print("connect to node %d try %d error %d",
 					  con->nodeid, con->retries++, ret);
 				msleep(1000);
-				/* For now we try forever to reconnect. In
-				 * future we should send a event to cluster
-				 * manager to fence itself after certain amount
-				 * of retries.
-				 */
+				 
 				queue_work(io_workqueue, &con->swork);
 				return;
 			}
@@ -1646,10 +1529,10 @@ static void process_send_sockets(struct work_struct *work)
 
 	switch (ret) {
 	case DLM_IO_END:
-		/* CF_SEND_PENDING cleared */
+		 
 		break;
 	case DLM_IO_RESCHED:
-		/* CF_SEND_PENDING not cleared */
+		 
 		cond_resched();
 		queue_work(io_workqueue, &con->swork);
 		break;
@@ -1657,7 +1540,7 @@ static void process_send_sockets(struct work_struct *work)
 		if (ret < 0) {
 			close_connection(con, false);
 
-			/* CF_SEND_PENDING cleared */
+			 
 			spin_lock_bh(&con->writequeue_lock);
 			lowcomms_queue_swork(con);
 			spin_unlock_bh(&con->writequeue_lock);
@@ -1691,9 +1574,7 @@ static int work_start(void)
 		return -ENOMEM;
 	}
 
-	/* ordered dlm message process queue,
-	 * should be converted to a tasklet
-	 */
+	 
 	process_workqueue = alloc_ordered_workqueue("dlm_process",
 						    WQ_HIGHPRI | WQ_MEM_RECLAIM);
 	if (!process_workqueue) {
@@ -1711,7 +1592,7 @@ void dlm_lowcomms_shutdown(void)
 	struct connection *con;
 	int i, idx;
 
-	/* stop lowcomms_listen_data_ready calls */
+	 
 	lock_sock(listen_con.sock->sk);
 	listen_con.sock->sk->sk_data_ready = listen_sock.sk_data_ready;
 	release_sock(listen_con.sock->sk);
@@ -1799,16 +1680,14 @@ static int dlm_tcp_bind(struct socket *sock)
 	struct sockaddr_storage src_addr;
 	int result, addr_len;
 
-	/* Bind to our cluster-known address connecting to avoid
-	 * routing problems.
-	 */
+	 
 	memcpy(&src_addr, &dlm_local_addr[0], sizeof(src_addr));
 	make_sockaddr(&src_addr, 0, &addr_len);
 
 	result = sock->ops->bind(sock, (struct sockaddr *)&src_addr,
 				 addr_len);
 	if (result < 0) {
-		/* This *may* not indicate a critical error */
+		 
 		log_print("could not bind for connect: %d", result);
 	}
 
@@ -1823,7 +1702,7 @@ static int dlm_tcp_connect(struct connection *con, struct socket *sock,
 
 static int dlm_tcp_listen_validate(void)
 {
-	/* We don't support multi-homed hosts */
+	 
 	if (dlm_local_count > 1) {
 		log_print("TCP protocol can't handle multi-homed hosts, try SCTP");
 		return -EINVAL;
@@ -1834,7 +1713,7 @@ static int dlm_tcp_listen_validate(void)
 
 static void dlm_tcp_sockopts(struct socket *sock)
 {
-	/* Turn off Nagle's algorithm */
+	 
 	tcp_sock_set_nodelay(sock->sk);
 }
 
@@ -1848,7 +1727,7 @@ static int dlm_tcp_listen_bind(struct socket *sock)
 {
 	int addr_len;
 
-	/* Bind to our port */
+	 
 	make_sockaddr(&dlm_local_addr[0], dlm_config.ci_tcp_port, &addr_len);
 	return sock->ops->bind(sock, (struct sockaddr *)&dlm_local_addr[0],
 			       addr_len);
@@ -1875,11 +1754,7 @@ static int dlm_sctp_connect(struct connection *con, struct socket *sock,
 {
 	int ret;
 
-	/*
-	 * Make sock->ops->connect() function return in specified time,
-	 * since O_NONBLOCK argument in connect() function does not work here,
-	 * then, we should restore the default value of this attribute.
-	 */
+	 
 	sock_set_sndtimeo(sock->sk, 5);
 	ret = sock->ops->connect(sock, addr, addr_len, 0);
 	sock_set_sndtimeo(sock->sk, 0);
@@ -1904,7 +1779,7 @@ static int dlm_sctp_bind_listen(struct socket *sock)
 
 static void dlm_sctp_sockopts(struct socket *sock)
 {
-	/* Turn off Nagle's algorithm */
+	 
 	sctp_sock_set_nodelay(sock->sk);
 	sock_set_rcvbuf(sock->sk, NEEDED_RMEM);
 }
@@ -1936,7 +1811,7 @@ int dlm_lowcomms_start(void)
 	if (error)
 		goto fail;
 
-	/* Start listening */
+	 
 	switch (dlm_config.ci_protocol) {
 	case DLM_PROTO_TCP:
 		dlm_proto_ops = &dlm_tcp_ops;

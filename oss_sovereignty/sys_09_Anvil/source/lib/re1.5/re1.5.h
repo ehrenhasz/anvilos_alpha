@@ -1,7 +1,7 @@
-// Copyright 2007-2009 Russ Cox.  All Rights Reserved.
-// Copyright 2014 Paul Sokolovsky.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
+
 
 #ifndef _RE1_5_REGEXP__H
 #define _RE1_5_REGEXP__H
@@ -30,7 +30,7 @@ struct Regexp
 	Regexp *right;
 };
 
-enum	/* Regexp.type */
+enum	 
 {
 	Alt = 1,
 	Cat,
@@ -74,12 +74,12 @@ struct Inst
 	int n;
 	Inst *x;
 	Inst *y;
-	int gen;	// global state, oooh!
+	int gen;	
 };
 
-enum	/* Inst.opcode */
+enum	 
 {
-	// Instructions which consume input bytes (and thus fail if none left)
+	
 	CONSUMERS = 1,
 	Char = CONSUMERS,
 	Any,
@@ -91,13 +91,13 @@ enum	/* Inst.opcode */
 	Bol = ASSERTS,
 	Eol,
 
-	// Instructions which take relative offset as arg
+	
 	JUMPS = 0x60,
 	Jmp = JUMPS,
 	Split,
 	RSplit,
 
-	// Other (special) instructions
+	
 	Save = 0x7e,
 	Match = 0x7f,
 };
@@ -153,4 +153,4 @@ void cleanmarks(ByteProg *prog);
 int _re1_5_classmatch(const char *pc, const char *sp);
 int _re1_5_namedclassmatch(const char *pc, const char *sp);
 
-#endif /*_RE1_5_REGEXP__H*/
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 #ifndef BRCMFMAC_COMMONRING_H
 #define BRCMFMAC_COMMONRING_H
 
@@ -59,4 +57,4 @@ int brcmf_commonring_read_complete(struct brcmf_commonring *commonring,
 #define brcmf_commonring_len_item(commonring) (commonring->item_len)
 
 
-#endif /* BRCMFMAC_COMMONRING_H */
+#endif  

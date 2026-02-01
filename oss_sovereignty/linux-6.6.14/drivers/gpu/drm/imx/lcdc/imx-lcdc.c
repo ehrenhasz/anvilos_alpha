@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: 2020 Marian Cichy <M.Cichy@pengutronix.de>
+
+
 
 #include <drm/drm_bridge.h>
 #include <drm/drm_bridge_connector.h>
@@ -23,51 +23,51 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 
-#define IMX21LCDC_LSSAR         0x0000 /* LCDC Screen Start Address Register */
-#define IMX21LCDC_LSR           0x0004 /* LCDC Size Register */
-#define IMX21LCDC_LVPWR         0x0008 /* LCDC Virtual Page Width Register */
-#define IMX21LCDC_LCPR          0x000C /* LCDC Cursor Position Register */
-#define IMX21LCDC_LCWHB         0x0010 /* LCDC Cursor Width Height and Blink Register*/
-#define IMX21LCDC_LCCMR         0x0014 /* LCDC Color Cursor Mapping Register */
-#define IMX21LCDC_LPCR          0x0018 /* LCDC Panel Configuration Register */
-#define IMX21LCDC_LHCR          0x001C /* LCDC Horizontal Configuration Register */
-#define IMX21LCDC_LVCR          0x0020 /* LCDC Vertical Configuration Register */
-#define IMX21LCDC_LPOR          0x0024 /* LCDC Panning Offset Register */
-#define IMX21LCDC_LSCR          0x0028 /* LCDC Sharp Configuration Register */
-#define IMX21LCDC_LPCCR         0x002C /* LCDC PWM Contrast Control Register */
-#define IMX21LCDC_LDCR          0x0030 /* LCDC DMA Control Register */
-#define IMX21LCDC_LRMCR         0x0034 /* LCDC Refresh Mode Control Register */
-#define IMX21LCDC_LICR          0x0038 /* LCDC Interrupt Configuration Register */
-#define IMX21LCDC_LIER          0x003C /* LCDC Interrupt Enable Register */
-#define IMX21LCDC_LISR          0x0040 /* LCDC Interrupt Status Register */
-#define IMX21LCDC_LGWSAR        0x0050 /* LCDC Graphic Window Start Address Register */
-#define IMX21LCDC_LGWSR         0x0054 /* LCDC Graph Window Size Register */
-#define IMX21LCDC_LGWVPWR       0x0058 /* LCDC Graphic Window Virtual Page Width Register */
-#define IMX21LCDC_LGWPOR        0x005C /* LCDC Graphic Window Panning Offset Register */
-#define IMX21LCDC_LGWPR         0x0060 /* LCDC Graphic Window Position Register */
-#define IMX21LCDC_LGWCR         0x0064 /* LCDC Graphic Window Control Register */
-#define IMX21LCDC_LGWDCR        0x0068 /* LCDC Graphic Window DMA Control Register */
-#define IMX21LCDC_LAUSCR        0x0080 /* LCDC AUS Mode Control Register */
-#define IMX21LCDC_LAUSCCR       0x0084 /* LCDC AUS Mode Cursor Control Register */
-#define IMX21LCDC_BGLUT         0x0800 /* Background Lookup Table */
-#define IMX21LCDC_GWLUT         0x0C00 /* Graphic Window Lookup Table */
+#define IMX21LCDC_LSSAR         0x0000  
+#define IMX21LCDC_LSR           0x0004  
+#define IMX21LCDC_LVPWR         0x0008  
+#define IMX21LCDC_LCPR          0x000C  
+#define IMX21LCDC_LCWHB         0x0010  
+#define IMX21LCDC_LCCMR         0x0014  
+#define IMX21LCDC_LPCR          0x0018  
+#define IMX21LCDC_LHCR          0x001C  
+#define IMX21LCDC_LVCR          0x0020  
+#define IMX21LCDC_LPOR          0x0024  
+#define IMX21LCDC_LSCR          0x0028  
+#define IMX21LCDC_LPCCR         0x002C  
+#define IMX21LCDC_LDCR          0x0030  
+#define IMX21LCDC_LRMCR         0x0034  
+#define IMX21LCDC_LICR          0x0038  
+#define IMX21LCDC_LIER          0x003C  
+#define IMX21LCDC_LISR          0x0040  
+#define IMX21LCDC_LGWSAR        0x0050  
+#define IMX21LCDC_LGWSR         0x0054  
+#define IMX21LCDC_LGWVPWR       0x0058  
+#define IMX21LCDC_LGWPOR        0x005C  
+#define IMX21LCDC_LGWPR         0x0060  
+#define IMX21LCDC_LGWCR         0x0064  
+#define IMX21LCDC_LGWDCR        0x0068  
+#define IMX21LCDC_LAUSCR        0x0080  
+#define IMX21LCDC_LAUSCCR       0x0084  
+#define IMX21LCDC_BGLUT         0x0800  
+#define IMX21LCDC_GWLUT         0x0C00  
 
-#define IMX21LCDC_LCPR_CC0 BIT(30) /* Cursor Control Bit 0 */
-#define IMX21LCDC_LCPR_CC1 BIT(31) /* Cursor Control Bit 1 */
+#define IMX21LCDC_LCPR_CC0 BIT(30)  
+#define IMX21LCDC_LCPR_CC1 BIT(31)  
 
-/* Values HSYNC, VSYNC and Framesize Register */
+ 
 #define IMX21LCDC_LHCR_HWIDTH		GENMASK(31, 26)
-#define IMX21LCDC_LHCR_HFPORCH		GENMASK(15, 8)		/* H_WAIT_1 in the i.MX25 Reference manual */
-#define IMX21LCDC_LHCR_HBPORCH		GENMASK(7, 0)		/* H_WAIT_2 in the i.MX25 Reference manual */
+#define IMX21LCDC_LHCR_HFPORCH		GENMASK(15, 8)		 
+#define IMX21LCDC_LHCR_HBPORCH		GENMASK(7, 0)		 
 
 #define IMX21LCDC_LVCR_VWIDTH		GENMASK(31, 26)
-#define IMX21LCDC_LVCR_VFPORCH		GENMASK(15, 8)		/* V_WAIT_1 in the i.MX25 Reference manual */
-#define IMX21LCDC_LVCR_VBPORCH		GENMASK(7, 0)		/* V_WAIT_2 in the i.MX25 Reference manual */
+#define IMX21LCDC_LVCR_VFPORCH		GENMASK(15, 8)		 
+#define IMX21LCDC_LVCR_VBPORCH		GENMASK(7, 0)		 
 
 #define IMX21LCDC_LSR_XMAX		GENMASK(25, 20)
 #define IMX21LCDC_LSR_YMAX		GENMASK(9, 0)
 
-/* Values for LPCR Register */
+ 
 #define IMX21LCDC_LPCR_PCD		GENMASK(5, 0)
 #define IMX21LCDC_LPCR_SHARP		BIT(6)
 #define IMX21LCDC_LPCR_SCLKSEL		BIT(7)
@@ -87,7 +87,7 @@
 #define IMX21LCDC_LPCR_COLOR		BIT(30)
 #define IMX21LCDC_LPCR_TFT		BIT(31)
 
-#define INTR_EOF BIT(1) /* VBLANK Interrupt Bit */
+#define INTR_EOF BIT(1)  
 
 #define BPP_RGB565	0x05
 #define BPP_XRGB8888	0x07
@@ -146,28 +146,28 @@ static void imx_lcdc_update_hw_registers(struct drm_simple_display_pipe *pipe,
 	dma_addr_t addr;
 
 	addr = drm_fb_dma_get_gem_addr(fb, new_state, 0);
-	/* The LSSAR register specifies the LCD screen start address (SSA). */
+	 
 	writel(addr, lcdc->base + IMX21LCDC_LSSAR);
 
 	if (!mode_set)
 		return;
 
-	/* Disable PER clock to make register write possible */
+	 
 	if (old_state && old_state->crtc && old_state->crtc->enabled)
 		clk_disable_unprepare(lcdc->clk_per);
 
-	/* Framesize */
+	 
 	framesize = FIELD_PREP(IMX21LCDC_LSR_XMAX, crtc->mode.hdisplay >> 4) |
 		FIELD_PREP(IMX21LCDC_LSR_YMAX, crtc->mode.vdisplay);
 	writel(framesize, lcdc->base + IMX21LCDC_LSR);
 
-	/* HSYNC */
+	 
 	lhcr = FIELD_PREP(IMX21LCDC_LHCR_HFPORCH, crtc->mode.hsync_start - crtc->mode.hdisplay - 1) |
 		FIELD_PREP(IMX21LCDC_LHCR_HWIDTH, crtc->mode.hsync_end - crtc->mode.hsync_start - 1) |
 		FIELD_PREP(IMX21LCDC_LHCR_HBPORCH, crtc->mode.htotal - crtc->mode.hsync_end - 3);
 	writel(lhcr, lcdc->base + IMX21LCDC_LHCR);
 
-	/* VSYNC */
+	 
 	lvcr = FIELD_PREP(IMX21LCDC_LVCR_VFPORCH, crtc->mode.vsync_start - crtc->mode.vdisplay) |
 		FIELD_PREP(IMX21LCDC_LVCR_VWIDTH, crtc->mode.vsync_end - crtc->mode.vsync_start) |
 		FIELD_PREP(IMX21LCDC_LVCR_VBPORCH, crtc->mode.vtotal - crtc->mode.vsync_end);
@@ -178,10 +178,10 @@ static void imx_lcdc_update_hw_registers(struct drm_simple_display_pipe *pipe,
 	lpcr |= FIELD_PREP(IMX21LCDC_LPCR_BPIX, imx_lcdc_get_format(fb->format->format));
 	writel(lpcr, lcdc->base + IMX21LCDC_LPCR);
 
-	/* Virtual Page Width */
+	 
 	writel(new_state->fb->pitches[0] / 4, lcdc->base + IMX21LCDC_LVPWR);
 
-	/* Enable PER clock */
+	 
 	if (new_state->crtc->enabled)
 		clk_prepare_enable(lcdc->clk_per);
 }
@@ -220,10 +220,10 @@ static void imx_lcdc_pipe_enable(struct drm_simple_display_pipe *pipe,
 	       FIELD_PREP(IMX21LCDC_LPCR_CLKPOL, clk_pol),
 	       lcdc->base + IMX21LCDC_LPCR);
 
-	/* 0px panning offset */
+	 
 	writel(0x00000000, lcdc->base + IMX21LCDC_LPOR);
 
-	/* disable hardware cursor */
+	 
 	writel(readl(lcdc->base + IMX21LCDC_LCPR) & ~(IMX21LCDC_LCPR_CC0 | IMX21LCDC_LCPR_CC1),
 	       lcdc->base + IMX21LCDC_LCPR);
 
@@ -243,7 +243,7 @@ static void imx_lcdc_pipe_enable(struct drm_simple_display_pipe *pipe,
 
 	imx_lcdc_update_hw_registers(pipe, NULL, true);
 
-	/* Enable VBLANK Interrupt */
+	 
 	writel(INTR_EOF, lcdc->base + IMX21LCDC_LIER);
 }
 
@@ -267,7 +267,7 @@ static void imx_lcdc_pipe_disable(struct drm_simple_display_pipe *pipe)
 	}
 	spin_unlock_irq(&lcdc->drm.event_lock);
 
-	/* Disable VBLANK Interrupt */
+	 
 	writel(0, lcdc->base + IMX21LCDC_LIER);
 }
 
@@ -280,7 +280,7 @@ static int imx_lcdc_pipe_check(struct drm_simple_display_pipe *pipe,
 
 	if (mode->hdisplay < LCDC_MIN_XRES || mode->hdisplay > LCDC_MAX_XRES ||
 	    mode->vdisplay < LCDC_MIN_YRES || mode->vdisplay > LCDC_MAX_YRES ||
-	    mode->hdisplay % 0x10) { /* must be multiple of 16 */
+	    mode->hdisplay % 0x10) {  
 		drm_err(pipe->crtc.dev, "unsupported display mode (%u x %u)\n",
 			mode->hdisplay, mode->vdisplay);
 		return -EINVAL;
@@ -360,7 +360,7 @@ static const struct of_device_id imx_lcdc_of_dev_id[] = {
 	{
 		.compatible = "fsl,imx25-lcdc",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_lcdc_of_dev_id);
 
@@ -404,7 +404,7 @@ static int imx_lcdc_probe(struct platform_device *pdev)
 	if (IS_ERR(bridge))
 		return dev_err_probe(dev, PTR_ERR(bridge), "Failed to find bridge\n");
 
-	/* Get Clocks */
+	 
 	lcdc->clk_ipg = devm_clk_get(dev, "ipg");
 	if (IS_ERR(lcdc->clk_ipg))
 		return dev_err_probe(dev, PTR_ERR(lcdc->clk_ipg), "Failed to get %s clk\n", "ipg");
@@ -421,12 +421,12 @@ static int imx_lcdc_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Cannot set DMA Mask\n");
 
-	/* Modeset init */
+	 
 	ret = drmm_mode_config_init(drm);
 	if (ret)
 		return dev_err_probe(dev, ret, "Cannot initialize mode configuration structure\n");
 
-	/* CRTC, Plane, Encoder */
+	 
 	ret = drm_simple_display_pipe_init(drm, &lcdc->pipe,
 					   &imx_lcdc_pipe_funcs,
 					   imx_lcdc_formats,
@@ -448,17 +448,7 @@ static int imx_lcdc_probe(struct platform_device *pdev)
 
 	drm_connector_attach_encoder(lcdc->connector, &lcdc->pipe.encoder);
 
-	/*
-	 * The LCDC controller does not have an enable bit. The
-	 * controller starts directly when the clocks are enabled.
-	 * If the clocks are enabled when the controller is not yet
-	 * programmed with proper register values (enabled at the
-	 * bootloader, for example) then it just goes into some undefined
-	 * state.
-	 * To avoid this issue, let's enable and disable LCDC IPG,
-	 * PER and AHB clock so that we force some kind of 'reset'
-	 * to the LCDC block.
-	 */
+	 
 
 	ret = clk_prepare_enable(lcdc->clk_ipg);
 	if (ret)

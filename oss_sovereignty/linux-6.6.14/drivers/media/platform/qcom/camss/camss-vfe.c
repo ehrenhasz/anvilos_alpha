@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-vfe.c
- *
- * Qualcomm MSM Camera Subsystem - VFE (Video Front End) Module
- *
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/completion.h>
 #include <linux/interrupt.h>
@@ -26,7 +19,7 @@
 
 #define MSM_VFE_NAME "msm_vfe"
 
-/* VFE reset timeout */
+ 
 #define VFE_RESET_TIMEOUT_MS 50
 
 #define SCALER_RATIO_MAX 16
@@ -123,14 +116,7 @@ static const struct vfe_format formats_rdi_845[] = {
 	{ MEDIA_BUS_FMT_Y10_2X8_PADHI_LE, 16 },
 };
 
-/*
- * vfe_get_bpp - map media bus format to bits per pixel
- * @formats: supported media bus formats array
- * @nformats: size of @formats array
- * @code: media bus format code
- *
- * Return number of bits per pixel
- */
+ 
 static u8 vfe_get_bpp(const struct vfe_format *formats,
 		      unsigned int nformats, u32 code)
 {
@@ -372,11 +358,7 @@ void vfe_buf_add_pending(struct vfe_output *output,
 	list_add_tail(&buffer->queue, &output->pending_bufs);
 }
 
-/*
- * vfe_buf_flush_pending - Flush all pending buffers.
- * @output: VFE output
- * @state: vb2 buffer state
- */
+ 
 static void vfe_buf_flush_pending(struct vfe_output *output,
 				  enum vb2_buffer_state state)
 {
@@ -407,11 +389,7 @@ int vfe_put_output(struct vfe_line *line)
 	return 0;
 }
 
-/**
- * vfe_isr_comp_done() - Process composite image done interrupt
- * @vfe: VFE Device
- * @comp: Composite image id
- */
+ 
 void vfe_isr_comp_done(struct vfe_device *vfe, u8 comp)
 {
 	unsigned int i;
@@ -428,12 +406,7 @@ void vfe_isr_reset_ack(struct vfe_device *vfe)
 	complete(&vfe->reset_complete);
 }
 
-/*
- * vfe_set_clock_rates - Calculate and set clock rates on VFE module
- * @vfe: VFE device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_set_clock_rates(struct vfe_device *vfe)
 {
 	struct device *dev = vfe->camss->dev;
@@ -488,8 +461,8 @@ static int vfe_set_clock_rates(struct vfe_device *vfe)
 				return -EINVAL;
 			}
 
-			/* if sensor pixel clock is not available */
-			/* set highest possible VFE clock rate */
+			 
+			 
 			if (min_rate == 0)
 				j = clock->nfreqs - 1;
 
@@ -511,13 +484,7 @@ static int vfe_set_clock_rates(struct vfe_device *vfe)
 	return 0;
 }
 
-/*
- * vfe_check_clock_rates - Check current clock rates on VFE module
- * @vfe: VFE device
- *
- * Return 0 if current clock rates are suitable for a new pipeline
- * or a negative error code otherwise
- */
+ 
 static int vfe_check_clock_rates(struct vfe_device *vfe)
 {
 	u64 pixel_clock[VFE_LINE_NUM_MAX];
@@ -570,12 +537,7 @@ static int vfe_check_clock_rates(struct vfe_device *vfe)
 	return 0;
 }
 
-/*
- * vfe_get - Power up and reset VFE module
- * @vfe: VFE Device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int vfe_get(struct vfe_device *vfe)
 {
 	int ret;
@@ -634,10 +596,7 @@ error_pm_domain:
 	return ret;
 }
 
-/*
- * vfe_put - Power down VFE module
- * @vfe: VFE Device
- */
+ 
 void vfe_put(struct vfe_device *vfe)
 {
 	mutex_lock(&vfe->power_lock);
@@ -661,16 +620,7 @@ exit:
 	mutex_unlock(&vfe->power_lock);
 }
 
-/*
- * vfe_flush_buffers - Return all vb2 buffers
- * @vid: Video device structure
- * @state: vb2 buffer state of the returned buffers
- *
- * Return all buffers to vb2. This includes queued pending buffers (still
- * unused) and any buffers given to the hardware but again still not used.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int vfe_flush_buffers(struct camss_video *vid,
 		      enum vb2_buffer_state state)
 {
@@ -701,13 +651,7 @@ int vfe_flush_buffers(struct camss_video *vid,
 	return 0;
 }
 
-/*
- * vfe_set_power - Power on/off VFE module
- * @sd: VFE V4L2 subdevice
- * @on: Requested power state
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_set_power(struct v4l2_subdev *sd, int on)
 {
 	struct vfe_line *line = v4l2_get_subdevdata(sd);
@@ -725,15 +669,7 @@ static int vfe_set_power(struct v4l2_subdev *sd, int on)
 	return 0;
 }
 
-/*
- * vfe_set_stream - Enable/disable streaming on VFE module
- * @sd: VFE V4L2 subdevice
- * @enable: Requested streaming state
- *
- * Main configuration of VFE module is triggered here.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct vfe_line *line = v4l2_get_subdevdata(sd);
@@ -756,15 +692,7 @@ static int vfe_set_stream(struct v4l2_subdev *sd, int enable)
 	return ret;
 }
 
-/*
- * __vfe_get_format - Get pointer to format structure
- * @line: VFE line
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad from which format is requested
- * @which: TRY or ACTIVE format
- *
- * Return pointer to TRY or ACTIVE format structure
- */
+ 
 static struct v4l2_mbus_framefmt *
 __vfe_get_format(struct vfe_line *line,
 		 struct v4l2_subdev_state *sd_state,
@@ -778,14 +706,7 @@ __vfe_get_format(struct vfe_line *line,
 	return &line->fmt[pad];
 }
 
-/*
- * __vfe_get_compose - Get pointer to compose selection structure
- * @line: VFE line
- * @cfg: V4L2 subdev pad configuration
- * @which: TRY or ACTIVE format
- *
- * Return pointer to TRY or ACTIVE compose rectangle structure
- */
+ 
 static struct v4l2_rect *
 __vfe_get_compose(struct vfe_line *line,
 		  struct v4l2_subdev_state *sd_state,
@@ -798,14 +719,7 @@ __vfe_get_compose(struct vfe_line *line,
 	return &line->compose;
 }
 
-/*
- * __vfe_get_crop - Get pointer to crop selection structure
- * @line: VFE line
- * @cfg: V4L2 subdev pad configuration
- * @which: TRY or ACTIVE format
- *
- * Return pointer to TRY or ACTIVE crop rectangle structure
- */
+ 
 static struct v4l2_rect *
 __vfe_get_crop(struct vfe_line *line,
 	       struct v4l2_subdev_state *sd_state,
@@ -818,14 +732,7 @@ __vfe_get_crop(struct vfe_line *line,
 	return &line->crop;
 }
 
-/*
- * vfe_try_format - Handle try format by pad subdev method
- * @line: VFE line
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad on which format is requested
- * @fmt: pointer to v4l2 format structure
- * @which: wanted subdev format
- */
+ 
 static void vfe_try_format(struct vfe_line *line,
 			   struct v4l2_subdev_state *sd_state,
 			   unsigned int pad,
@@ -837,13 +744,13 @@ static void vfe_try_format(struct vfe_line *line,
 
 	switch (pad) {
 	case MSM_VFE_PAD_SINK:
-		/* Set format on sink pad */
+		 
 
 		for (i = 0; i < line->nformats; i++)
 			if (fmt->code == line->formats[i].code)
 				break;
 
-		/* If not found, use UYVY as default */
+		 
 		if (i >= line->nformats)
 			fmt->code = MEDIA_BUS_FMT_UYVY8_2X8;
 
@@ -856,7 +763,7 @@ static void vfe_try_format(struct vfe_line *line,
 		break;
 
 	case MSM_VFE_PAD_SRC:
-		/* Set and return a format same as sink pad */
+		 
 		code = fmt->code;
 
 		*fmt = *__vfe_get_format(line, sd_state, MSM_VFE_PAD_SINK,
@@ -879,13 +786,7 @@ static void vfe_try_format(struct vfe_line *line,
 	fmt->colorspace = V4L2_COLORSPACE_SRGB;
 }
 
-/*
- * vfe_try_compose - Handle try compose selection by pad subdev method
- * @line: VFE line
- * @cfg: V4L2 subdev pad configuration
- * @rect: pointer to v4l2 rect structure
- * @which: wanted subdev format
- */
+ 
 static void vfe_try_compose(struct vfe_line *line,
 			    struct v4l2_subdev_state *sd_state,
 			    struct v4l2_rect *rect,
@@ -918,13 +819,7 @@ static void vfe_try_compose(struct vfe_line *line,
 		rect->height = 4;
 }
 
-/*
- * vfe_try_crop - Handle try crop selection by pad subdev method
- * @line: VFE line
- * @cfg: V4L2 subdev pad configuration
- * @rect: pointer to v4l2 rect structure
- * @which: wanted subdev format
- */
+ 
 static void vfe_try_crop(struct vfe_line *line,
 			 struct v4l2_subdev_state *sd_state,
 			 struct v4l2_rect *rect,
@@ -946,7 +841,7 @@ static void vfe_try_crop(struct vfe_line *line,
 	if (rect->height + rect->top > compose->height)
 		rect->top = compose->height - rect->height;
 
-	/* wm in line based mode writes multiple of 16 horizontally */
+	 
 	rect->left += (rect->width & 0xf) >> 1;
 	rect->width &= ~0xf;
 
@@ -961,14 +856,7 @@ static void vfe_try_crop(struct vfe_line *line,
 	}
 }
 
-/*
- * vfe_enum_mbus_code - Handle pixel format enumeration
- * @sd: VFE V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @code: pointer to v4l2_subdev_mbus_code_enum structure
- *
- * return -EINVAL or zero on success
- */
+ 
 static int vfe_enum_mbus_code(struct v4l2_subdev *sd,
 			      struct v4l2_subdev_state *sd_state,
 			      struct v4l2_subdev_mbus_code_enum *code)
@@ -995,14 +883,7 @@ static int vfe_enum_mbus_code(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * vfe_enum_frame_size - Handle frame size enumeration
- * @sd: VFE V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fse: pointer to v4l2_subdev_frame_size_enum structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int vfe_enum_frame_size(struct v4l2_subdev *sd,
 			       struct v4l2_subdev_state *sd_state,
 			       struct v4l2_subdev_frame_size_enum *fse)
@@ -1033,14 +914,7 @@ static int vfe_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * vfe_get_format - Handle get format by pads subdev method
- * @sd: VFE V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int vfe_get_format(struct v4l2_subdev *sd,
 			  struct v4l2_subdev_state *sd_state,
 			  struct v4l2_subdev_format *fmt)
@@ -1061,14 +935,7 @@ static int vfe_set_selection(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_state *sd_state,
 			     struct v4l2_subdev_selection *sel);
 
-/*
- * vfe_set_format - Handle set format by pads subdev method
- * @sd: VFE V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int vfe_set_format(struct v4l2_subdev *sd,
 			  struct v4l2_subdev_state *sd_state,
 			  struct v4l2_subdev_format *fmt)
@@ -1087,7 +954,7 @@ static int vfe_set_format(struct v4l2_subdev *sd,
 		struct v4l2_subdev_selection sel = { 0 };
 		int ret;
 
-		/* Propagate the format from sink to source */
+		 
 		format = __vfe_get_format(line, sd_state, MSM_VFE_PAD_SRC,
 					  fmt->which);
 
@@ -1098,7 +965,7 @@ static int vfe_set_format(struct v4l2_subdev *sd,
 		if (line->id != VFE_LINE_PIX)
 			return 0;
 
-		/* Reset sink pad compose selection */
+		 
 		sel.which = fmt->which;
 		sel.pad = MSM_VFE_PAD_SINK;
 		sel.target = V4L2_SEL_TGT_COMPOSE;
@@ -1112,14 +979,7 @@ static int vfe_set_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * vfe_get_selection - Handle get selection by pads subdev method
- * @sd: VFE V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @sel: pointer to v4l2 subdev selection structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int vfe_get_selection(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_state *sd_state,
 			     struct v4l2_subdev_selection *sel)
@@ -1182,14 +1042,7 @@ static int vfe_get_selection(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * vfe_set_selection - Handle set selection by pads subdev method
- * @sd: VFE V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @sel: pointer to v4l2 subdev selection structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int vfe_set_selection(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_state *sd_state,
 			     struct v4l2_subdev_selection *sel)
@@ -1212,7 +1065,7 @@ static int vfe_set_selection(struct v4l2_subdev *sd,
 		vfe_try_compose(line, sd_state, &sel->r, sel->which);
 		*rect = sel->r;
 
-		/* Reset source crop selection */
+		 
 		crop.which = sel->which;
 		crop.pad = MSM_VFE_PAD_SRC;
 		crop.target = V4L2_SEL_TGT_CROP;
@@ -1229,7 +1082,7 @@ static int vfe_set_selection(struct v4l2_subdev *sd,
 		vfe_try_crop(line, sd_state, &sel->r, sel->which);
 		*rect = sel->r;
 
-		/* Reset source pad format width and height */
+		 
 		fmt.which = sel->which;
 		fmt.pad = MSM_VFE_PAD_SRC;
 		ret = vfe_get_format(sd, sd_state, &fmt);
@@ -1246,15 +1099,7 @@ static int vfe_set_selection(struct v4l2_subdev *sd,
 	return ret;
 }
 
-/*
- * vfe_init_formats - Initialize formats on all pads
- * @sd: VFE V4L2 subdevice
- * @fh: V4L2 subdev file handle
- *
- * Initialize all pad formats with default values.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_subdev_format format = {
@@ -1271,13 +1116,7 @@ static int vfe_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	return vfe_set_format(sd, fh ? fh->state : NULL, &format);
 }
 
-/*
- * msm_vfe_subdev_init - Initialize VFE device structure and resources
- * @vfe: VFE device
- * @res: VFE module resources table
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_vfe_subdev_init(struct camss *camss, struct vfe_device *vfe,
 			const struct resources *res, u8 id)
 {
@@ -1307,7 +1146,7 @@ int msm_vfe_subdev_init(struct camss *camss, struct vfe_device *vfe,
 	}
 	vfe->ops->subdev_init(dev, vfe);
 
-	/* Memory */
+	 
 
 	vfe->base = devm_platform_ioremap_resource_byname(pdev, res->reg[0]);
 	if (IS_ERR(vfe->base)) {
@@ -1315,7 +1154,7 @@ int msm_vfe_subdev_init(struct camss *camss, struct vfe_device *vfe,
 		return PTR_ERR(vfe->base);
 	}
 
-	/* Interrupt */
+	 
 
 	ret = platform_get_irq_byname(pdev, res->interrupt[0]);
 	if (ret < 0)
@@ -1331,7 +1170,7 @@ int msm_vfe_subdev_init(struct camss *camss, struct vfe_device *vfe,
 		return ret;
 	}
 
-	/* Clocks */
+	 
 
 	vfe->nclocks = 0;
 	while (res->clock[vfe->nclocks])
@@ -1424,15 +1263,7 @@ int msm_vfe_subdev_init(struct camss *camss, struct vfe_device *vfe,
 	return 0;
 }
 
-/*
- * vfe_link_setup - Setup VFE connections
- * @entity: Pointer to media entity structure
- * @local: Pointer to local pad
- * @remote: Pointer to remote pad
- * @flags: Link flags
- *
- * Return 0 on success
- */
+ 
 static int vfe_link_setup(struct media_entity *entity,
 			  const struct media_pad *local,
 			  const struct media_pad *remote, u32 flags)
@@ -1476,18 +1307,7 @@ static const struct media_entity_operations vfe_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/*
- * msm_vfe_register_entities - Register subdev node for VFE module
- * @vfe: VFE device
- * @v4l2_dev: V4L2 device
- *
- * Initialize and register a subdev node for the VFE module. Then
- * call msm_video_register() to register the video device node which
- * will be connected to this subdev node. Then actually create the
- * media link between them.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_vfe_register_entities(struct vfe_device *vfe,
 			      struct v4l2_device *v4l2_dev)
 {
@@ -1598,10 +1418,7 @@ error_init:
 	return ret;
 }
 
-/*
- * msm_vfe_unregister_entities - Unregister VFE module subdev node
- * @vfe: VFE device
- */
+ 
 void msm_vfe_unregister_entities(struct vfe_device *vfe)
 {
 	int i;

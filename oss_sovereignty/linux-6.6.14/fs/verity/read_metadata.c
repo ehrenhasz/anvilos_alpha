@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ioctl to read verity metadata
- *
- * Copyright 2021 Google LLC
- */
+
+ 
 
 #include "fsverity_private.h"
 
@@ -29,12 +25,7 @@ static int fsverity_read_merkle_tree(struct inode *inode,
 	offs_in_page = offset_in_page(offset);
 	last_index = (end_offset - 1) >> PAGE_SHIFT;
 
-	/*
-	 * Iterate through each Merkle tree page in the requested range and copy
-	 * the requested portion to userspace.  Note that the Merkle tree block
-	 * size isn't important here, as we are returning a byte stream; i.e.,
-	 * we can just work with pages even if the tree block size != PAGE_SIZE.
-	 */
+	 
 	for (index = offset >> PAGE_SHIFT; index <= last_index; index++) {
 		unsigned long num_ra_pages =
 			min_t(unsigned long, last_index - index + 1,
@@ -77,7 +68,7 @@ static int fsverity_read_merkle_tree(struct inode *inode,
 	return retval ? retval : err;
 }
 
-/* Copy the requested portion of the buffer to userspace. */
+ 
 static int fsverity_read_buffer(void __user *dst, u64 offset, int length,
 				const void *src, size_t src_length)
 {
@@ -105,7 +96,7 @@ static int fsverity_read_descriptor(struct inode *inode,
 	if (res)
 		return res;
 
-	/* don't include the builtin signature */
+	 
 	desc_size = offsetof(struct fsverity_descriptor, signature);
 	desc->sig_size = 0;
 
@@ -130,10 +121,7 @@ static int fsverity_read_signature(struct inode *inode,
 		goto out;
 	}
 
-	/*
-	 * Include only the builtin signature.  fsverity_get_descriptor()
-	 * already verified that sig_size is in-bounds.
-	 */
+	 
 	res = fsverity_read_buffer(buf, offset, length, desc->signature,
 				   le32_to_cpu(desc->sig_size));
 out:
@@ -141,13 +129,7 @@ out:
 	return res;
 }
 
-/**
- * fsverity_ioctl_read_metadata() - read verity metadata from a file
- * @filp: file to read the metadata from
- * @uarg: user pointer to fsverity_read_metadata_arg
- *
- * Return: length read on success, 0 on EOF, -errno on failure
- */
+ 
 int fsverity_ioctl_read_metadata(struct file *filp, const void __user *uarg)
 {
 	struct inode *inode = file_inode(filp);
@@ -158,11 +140,8 @@ int fsverity_ioctl_read_metadata(struct file *filp, const void __user *uarg)
 
 	vi = fsverity_get_info(inode);
 	if (!vi)
-		return -ENODATA; /* not a verity file */
-	/*
-	 * Note that we don't have to explicitly check that the file is open for
-	 * reading, since verity files can only be opened for reading.
-	 */
+		return -ENODATA;  
+	 
 
 	if (copy_from_user(&arg, uarg, sizeof(arg)))
 		return -EFAULT;
@@ -170,11 +149,11 @@ int fsverity_ioctl_read_metadata(struct file *filp, const void __user *uarg)
 	if (arg.__reserved)
 		return -EINVAL;
 
-	/* offset + length must not overflow. */
+	 
 	if (arg.offset + arg.length < arg.offset)
 		return -EINVAL;
 
-	/* Ensure that the return value will fit in INT_MAX. */
+	 
 	length = min_t(u64, arg.length, INT_MAX);
 
 	buf = u64_to_user_ptr(arg.buf_ptr);

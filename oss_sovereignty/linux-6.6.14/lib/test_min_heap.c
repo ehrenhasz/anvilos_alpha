@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) "min_heap_test: " fmt
 
-/*
- * Test cases for the min max heap.
- */
+ 
 
 #include <linux/log2.h>
 #include <linux/min_heap.h>
@@ -75,12 +73,12 @@ static __init int test_heapify_all(bool min_heap)
 	};
 	int i, err;
 
-	/* Test with known set of values. */
+	 
 	min_heapify_all(&heap, &funcs);
 	err = pop_verify_heap(min_heap, &heap, &funcs);
 
 
-	/* Test with randomly generated values. */
+	 
 	heap.nr = ARRAY_SIZE(values);
 	for (i = 0; i < heap.nr; i++)
 		values[i] = get_random_u32();
@@ -108,13 +106,13 @@ static __init int test_heap_push(bool min_heap)
 	};
 	int i, temp, err;
 
-	/* Test with known set of values copied from data. */
+	 
 	for (i = 0; i < ARRAY_SIZE(data); i++)
 		min_heap_push(&heap, &data[i], &funcs);
 
 	err = pop_verify_heap(min_heap, &heap, &funcs);
 
-	/* Test with randomly generated values. */
+	 
 	while (heap.nr < heap.size) {
 		temp = get_random_u32();
 		min_heap_push(&heap, &temp, &funcs);
@@ -141,12 +139,12 @@ static __init int test_heap_pop_push(bool min_heap)
 	};
 	int i, temp, err;
 
-	/* Fill values with data to pop and replace. */
+	 
 	temp = min_heap ? 0x80000000 : 0x7FFFFFFF;
 	for (i = 0; i < ARRAY_SIZE(data); i++)
 		min_heap_push(&heap, &temp, &funcs);
 
-	/* Test with known set of values copied from data. */
+	 
 	for (i = 0; i < ARRAY_SIZE(data); i++)
 		min_heap_pop_push(&heap, &data[i], &funcs);
 
@@ -156,7 +154,7 @@ static __init int test_heap_pop_push(bool min_heap)
 	for (i = 0; i < ARRAY_SIZE(data); i++)
 		min_heap_push(&heap, &temp, &funcs);
 
-	/* Test with randomly generated values. */
+	 
 	for (i = 0; i < ARRAY_SIZE(data); i++) {
 		temp = get_random_u32();
 		min_heap_pop_push(&heap, &temp, &funcs);
@@ -187,7 +185,7 @@ module_init(test_min_heap_init);
 
 static void __exit test_min_heap_exit(void)
 {
-	/* do nothing */
+	 
 }
 module_exit(test_min_heap_exit);
 

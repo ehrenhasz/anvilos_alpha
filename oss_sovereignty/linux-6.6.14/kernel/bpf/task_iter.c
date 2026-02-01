@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <linux/init.h>
 #include <linux/namei.h>
@@ -24,9 +24,7 @@ struct bpf_iter_seq_task_common {
 };
 
 struct bpf_iter_seq_task_info {
-	/* The first field must be struct bpf_iter_seq_task_common.
-	 * this is assumed by {init, fini}_seq_pidns() callback functions.
-	 */
+	 
 	struct bpf_iter_seq_task_common common;
 	u32 tid;
 };
@@ -40,7 +38,7 @@ static struct task_struct *task_group_seq_get_next(struct bpf_iter_seq_task_comm
 	u32 saved_tid;
 
 	if (!*tid) {
-		/* The first time, the iterator calls this function. */
+		 
 		pid = find_pid_ns(common->pid, common->ns);
 		if (!pid)
 			return NULL;
@@ -55,10 +53,7 @@ static struct task_struct *task_group_seq_get_next(struct bpf_iter_seq_task_comm
 		return task;
 	}
 
-	/* If the control returns to user space and comes back to the
-	 * kernel again, *tid and common->pid_visiting should be the
-	 * same for task_seq_start() to pick up the correct task.
-	 */
+	 
 	if (*tid == common->pid_visiting) {
 		pid = find_pid_ns(common->pid_visiting, common->ns);
 		task = get_pid_task(pid, PIDTYPE_PID);
@@ -88,9 +83,7 @@ retry:
 	saved_tid = *tid;
 	*tid = __task_pid_nr_ns(next_task, PIDTYPE_PID, common->ns);
 	if (!*tid || *tid == common->pid) {
-		/* Run out of tasks of a process.  The tasks of a
-		 * thread_group are linked as circular linked list.
-		 */
+		 
 		*tid = saved_tid;
 		return NULL;
 	}
@@ -266,9 +259,7 @@ static const struct seq_operations task_seq_ops = {
 };
 
 struct bpf_iter_seq_task_file_info {
-	/* The first field must be struct bpf_iter_seq_task_common.
-	 * this is assumed by {init, fini}_seq_pidns() callback functions.
-	 */
+	 
 	struct bpf_iter_seq_task_common common;
 	struct task_struct *task;
 	u32 tid;
@@ -282,10 +273,7 @@ task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info)
 	struct task_struct *curr_task;
 	unsigned int curr_fd = info->fd;
 
-	/* If this function returns a non-NULL file object,
-	 * it held a reference to the task/file.
-	 * Otherwise, it does not hold any reference.
-	 */
+	 
 again:
 	if (info->task) {
 		curr_task = info->task;
@@ -297,7 +285,7 @@ again:
                         return NULL;
                 }
 
-		/* set info->task */
+		 
 		info->task = curr_task;
 		if (saved_tid == info->tid)
 			curr_fd = info->fd;
@@ -314,13 +302,13 @@ again:
 		if (!get_file_rcu(f))
 			continue;
 
-		/* set info->fd */
+		 
 		info->fd = curr_fd;
 		rcu_read_unlock();
 		return f;
 	}
 
-	/* the current task is done, go to the next task */
+	 
 	rcu_read_unlock();
 	put_task_struct(curr_task);
 
@@ -433,9 +421,7 @@ static const struct seq_operations task_file_seq_ops = {
 };
 
 struct bpf_iter_seq_task_vma_info {
-	/* The first field must be struct bpf_iter_seq_task_common.
-	 * this is assumed by {init, fini}_seq_pidns() callback functions.
-	 */
+	 
 	struct bpf_iter_seq_task_common common;
 	struct task_struct *task;
 	struct mm_struct *mm;
@@ -446,9 +432,9 @@ struct bpf_iter_seq_task_vma_info {
 };
 
 enum bpf_task_vma_iter_find_op {
-	task_vma_iter_first_vma,   /* use find_vma() with addr 0 */
-	task_vma_iter_next_vma,    /* use vma_next() with curr_vma */
-	task_vma_iter_find_vma,    /* use find_vma() to find next vma */
+	task_vma_iter_first_vma,    
+	task_vma_iter_next_vma,     
+	task_vma_iter_find_vma,     
 };
 
 static struct vm_area_struct *
@@ -460,54 +446,12 @@ task_vma_seq_get_next(struct bpf_iter_seq_task_vma_info *info)
 	struct mm_struct *curr_mm;
 	u32 saved_tid = info->tid;
 
-	/* If this function returns a non-NULL vma, it holds a reference to
-	 * the task_struct, holds a refcount on mm->mm_users, and holds
-	 * read lock on vma->mm->mmap_lock.
-	 * If this function returns NULL, it does not hold any reference or
-	 * lock.
-	 */
+	 
 	if (info->task) {
 		curr_task = info->task;
 		curr_vma = info->vma;
 		curr_mm = info->mm;
-		/* In case of lock contention, drop mmap_lock to unblock
-		 * the writer.
-		 *
-		 * After relock, call find(mm, prev_vm_end - 1) to find
-		 * new vma to process.
-		 *
-		 *   +------+------+-----------+
-		 *   | VMA1 | VMA2 | VMA3      |
-		 *   +------+------+-----------+
-		 *   |      |      |           |
-		 *  4k     8k     16k         400k
-		 *
-		 * For example, curr_vma == VMA2. Before unlock, we set
-		 *
-		 *    prev_vm_start = 8k
-		 *    prev_vm_end   = 16k
-		 *
-		 * There are a few cases:
-		 *
-		 * 1) VMA2 is freed, but VMA3 exists.
-		 *
-		 *    find_vma() will return VMA3, just process VMA3.
-		 *
-		 * 2) VMA2 still exists.
-		 *
-		 *    find_vma() will return VMA2, process VMA2->next.
-		 *
-		 * 3) no more vma in this mm.
-		 *
-		 *    Process the next task.
-		 *
-		 * 4) find_vma() returns a different vma, VMA2'.
-		 *
-		 *    4.1) If VMA2 covers same range as VMA2', skip VMA2',
-		 *         because we already covered the range;
-		 *    4.2) VMA2 and VMA2' covers different ranges, process
-		 *         VMA2'.
-		 */
+		 
 		if (mmap_lock_is_contended(curr_mm)) {
 			info->prev_vm_start = curr_vma->vm_start;
 			info->prev_vm_end = curr_vma->vm_end;
@@ -529,15 +473,10 @@ again:
 		}
 
 		if (saved_tid != info->tid) {
-			/* new task, process the first vma */
+			 
 			op = task_vma_iter_first_vma;
 		} else {
-			/* Found the same tid, which means the user space
-			 * finished data in previous buffer and read more.
-			 * We dropped mmap_lock before returning to user
-			 * space, so it is necessary to use find_vma() to
-			 * find the next vma to process.
-			 */
+			 
 			op = task_vma_iter_find_vma;
 		}
 
@@ -559,14 +498,11 @@ again:
 		curr_vma = find_vma(curr_mm, curr_vma->vm_end);
 		break;
 	case task_vma_iter_find_vma:
-		/* We dropped mmap_lock so it is necessary to use find_vma
-		 * to find the next vma. This is similar to the  mechanism
-		 * in show_smaps_rollup().
-		 */
+		 
 		curr_vma = find_vma(curr_mm, info->prev_vm_end - 1);
-		/* case 1) and 4.2) above just use curr_vma */
+		 
 
-		/* check for case 2) or case 4.1) above */
+		 
 		if (curr_vma &&
 		    curr_vma->vm_start == info->prev_vm_start &&
 		    curr_vma->vm_end == info->prev_vm_end)
@@ -574,7 +510,7 @@ again:
 		break;
 	}
 	if (!curr_vma) {
-		/* case 3) above, or case 2) 4.1) with vma->next == NULL */
+		 
 		mmap_read_unlock(curr_mm);
 		mmput(curr_mm);
 		goto next_task;
@@ -662,13 +598,7 @@ static void task_vma_seq_stop(struct seq_file *seq, void *v)
 	if (!v) {
 		(void)__task_vma_seq_show(seq, true);
 	} else {
-		/* info->vma has not been seen by the BPF program. If the
-		 * user space reads more, task_vma_seq_get_next should
-		 * return this vma again. Set prev_vm_start to ~0UL,
-		 * so that we don't skip the vma returned by the next
-		 * find_vma() (case task_vma_iter_find_vma in
-		 * task_vma_seq_get_next()).
-		 */
+		 
 		info->prev_vm_start = ~0UL;
 		info->prev_vm_end = info->vma->vm_end;
 		mmap_read_unlock(info->mm);

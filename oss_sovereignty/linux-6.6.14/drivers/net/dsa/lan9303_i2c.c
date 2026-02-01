@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Pengutronix, Juergen Borleis <kernel@pengutronix.de>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -19,7 +17,7 @@ static const struct regmap_config lan9303_i2c_regmap_config = {
 	.val_bits = 32,
 	.reg_stride = 1,
 	.can_multi_write = true,
-	.max_register = 0x0ff, /* address bits 0..1 are not used */
+	.max_register = 0x0ff,  
 	.reg_format_endian = REGMAP_ENDIAN_LITTLE,
 
 	.volatile_table = &lan9303_register_set,
@@ -48,7 +46,7 @@ static int lan9303_i2c_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* link forward and backward */
+	 
 	sw_dev->device = client;
 	i2c_set_clientdata(client, sw_dev);
 	sw_dev->chip.dev = &client->dev;
@@ -86,17 +84,17 @@ static void lan9303_i2c_shutdown(struct i2c_client *client)
 	i2c_set_clientdata(client, NULL);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static const struct i2c_device_id lan9303_i2c_id[] = {
 	{ "lan9303", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, lan9303_i2c_id);
 
 static const struct of_device_id lan9303_i2c_of_match[] = {
 	{ .compatible = "smsc,lan9303-i2c", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, lan9303_i2c_of_match);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sched/sch_mq.c		Classful multiqueue dummy scheduler
- *
- * Copyright (c) 2009 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/slab.h>
@@ -79,7 +75,7 @@ static int mq_init(struct Qdisc *sch, struct nlattr *opt,
 	if (!netif_is_multiqueue(dev))
 		return -EOPNOTSUPP;
 
-	/* pre-allocate qdiscs, attachment can't fail */
+	 
 	priv->qdiscs = kcalloc(dev->num_tx_queues, sizeof(priv->qdiscs[0]),
 			       GFP_KERNEL);
 	if (!priv->qdiscs)
@@ -135,11 +131,7 @@ static int mq_dump(struct Qdisc *sch, struct sk_buff *skb)
 	gnet_stats_basic_sync_init(&sch->bstats);
 	memset(&sch->qstats, 0, sizeof(sch->qstats));
 
-	/* MQ supports lockless qdiscs. However, statistics accounting needs
-	 * to account for all, none, or a mix of locked and unlocked child
-	 * qdiscs. Percpu stats are added to counters in-band and locking
-	 * qdisc totals are added at end.
-	 */
+	 
 	for (ntx = 0; ntx < dev->num_tx_queues; ntx++) {
 		qdisc = rtnl_dereference(netdev_get_tx_queue(dev, ntx)->qdisc_sleeping);
 		spin_lock_bh(qdisc_lock(qdisc));

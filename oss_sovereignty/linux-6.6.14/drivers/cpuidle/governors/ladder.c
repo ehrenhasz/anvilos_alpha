@@ -1,16 +1,4 @@
-/*
- * ladder.c - the residency ladder algorithm
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2004, 2005 Dominik Brodowski <linux@brodo.de>
- *
- * (C) 2006-2007 Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
- *               Shaohua Li <shaohua.li@intel.com>
- *               Adam Belay <abelay@novell.com>
- *
- * This code is licenced under the GPL.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/cpuidle.h>
@@ -42,12 +30,7 @@ struct ladder_device {
 
 static DEFINE_PER_CPU(struct ladder_device, ladder_devices);
 
-/**
- * ladder_do_selection - prepares private data for a state change
- * @ldev: the ladder device
- * @old_idx: the current state index
- * @new_idx: the new target state index
- */
+ 
 static inline void ladder_do_selection(struct cpuidle_device *dev,
 				       struct ladder_device *ldev,
 				       int old_idx, int new_idx)
@@ -57,12 +40,7 @@ static inline void ladder_do_selection(struct cpuidle_device *dev,
 	dev->last_state_idx = new_idx;
 }
 
-/**
- * ladder_select_state - selects the next state to enter
- * @drv: cpuidle driver
- * @dev: the CPU
- * @dummy: not used
- */
+ 
 static int ladder_select_state(struct cpuidle_driver *drv,
 			       struct cpuidle_device *dev, bool *dummy)
 {
@@ -73,7 +51,7 @@ static int ladder_select_state(struct cpuidle_driver *drv,
 	s64 latency_req = cpuidle_governor_latency_req(dev->cpu);
 	s64 last_residency;
 
-	/* Special case when user has set very strict latency requirement */
+	 
 	if (unlikely(latency_req == 0)) {
 		ladder_do_selection(dev, ldev, last_idx, 0);
 		return 0;
@@ -83,7 +61,7 @@ static int ladder_select_state(struct cpuidle_driver *drv,
 
 	last_residency = dev->last_residency_ns - drv->states[last_idx].exit_latency_ns;
 
-	/* consider promotion */
+	 
 	if (last_idx < drv->state_count - 1 &&
 	    !dev->states_usage[last_idx + 1].disable &&
 	    last_residency > last_state->threshold.promotion_time_ns &&
@@ -96,7 +74,7 @@ static int ladder_select_state(struct cpuidle_driver *drv,
 		}
 	}
 
-	/* consider demotion */
+	 
 	if (last_idx > first_idx &&
 	    (dev->states_usage[last_idx].disable ||
 	    drv->states[last_idx].exit_latency_ns > latency_req)) {
@@ -120,15 +98,11 @@ static int ladder_select_state(struct cpuidle_driver *drv,
 		}
 	}
 
-	/* otherwise remain at the current state */
+	 
 	return last_idx;
 }
 
-/**
- * ladder_enable_device - setup for the governor
- * @drv: cpuidle driver
- * @dev: the CPU
- */
+ 
 static int ladder_enable_device(struct cpuidle_driver *drv,
 				struct cpuidle_device *dev)
 {
@@ -159,11 +133,7 @@ static int ladder_enable_device(struct cpuidle_driver *drv,
 	return 0;
 }
 
-/**
- * ladder_reflect - update the correct last_state_idx
- * @dev: the CPU
- * @index: the index of actual state entered
- */
+ 
 static void ladder_reflect(struct cpuidle_device *dev, int index)
 {
 	if (index > 0)
@@ -178,16 +148,10 @@ static struct cpuidle_governor ladder_governor = {
 	.reflect =	ladder_reflect,
 };
 
-/**
- * init_ladder - initializes the governor
- */
+ 
 static int __init init_ladder(void)
 {
-	/*
-	 * When NO_HZ is disabled, or when booting with nohz=off, the ladder
-	 * governor is better so give it a higher rating than the menu
-	 * governor.
-	 */
+	 
 	if (!tick_nohz_enabled)
 		ladder_governor.rating = 25;
 

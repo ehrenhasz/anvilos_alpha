@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pin controller and GPIO driver for Amlogic Meson8 and Meson8m2.
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
+
+ 
 
 #include <dt-bindings/gpio/meson8-gpio.h>
 #include "pinctrl-meson.h"
@@ -151,7 +147,7 @@ static const struct pinctrl_pin_desc meson8_aobus_pins[] = {
 	MESON_PIN(GPIO_TEST_N),
 };
 
-/* bank X */
+ 
 static const unsigned int sd_d0_a_pins[]	= { GPIOX_0 };
 static const unsigned int sd_d1_a_pins[]	= { GPIOX_1 };
 static const unsigned int sd_d2_a_pins[]	= { GPIOX_2 };
@@ -200,7 +196,7 @@ static const unsigned int xtal_24m_out_pins[]	= { GPIOX_11 };
 static const unsigned int pwm_e_pins[]		= { GPIOX_10 };
 static const unsigned int pwm_b_x_pins[]	= { GPIOX_11 };
 
-/* bank Y */
+ 
 static const unsigned int uart_tx_c_pins[]	= { GPIOY_0 };
 static const unsigned int uart_rx_c_pins[]	= { GPIOY_1 };
 static const unsigned int uart_cts_c_pins[]	= { GPIOY_2 };
@@ -228,7 +224,7 @@ static const unsigned int i2s_out_ch78_pins[]	= { GPIOY_9 };
 static const unsigned int spdif_in_pins[]	= { GPIOY_2 };
 static const unsigned int spdif_out_pins[]	= { GPIOY_3 };
 
-/* bank DV */
+ 
 static const unsigned int dvin_rgb_pins[] = {
 	GPIODV_0, GPIODV_1, GPIODV_2, GPIODV_3, GPIODV_4, GPIODV_5,
 	GPIODV_6, GPIODV_7, GPIODV_8, GPIODV_9, GPIODV_10, GPIODV_11,
@@ -271,7 +267,7 @@ static const unsigned int pwm_c_dv9_pins[]	= { GPIODV_9 };
 static const unsigned int pwm_c_dv29_pins[]	= { GPIODV_29 };
 static const unsigned int pwm_d_pins[]		= { GPIODV_28 };
 
-/* bank H */
+ 
 static const unsigned int hdmi_hpd_pins[]	= { GPIOH_0 };
 static const unsigned int hdmi_sda_pins[]	= { GPIOH_1 };
 static const unsigned int hdmi_scl_pins[]	= { GPIOH_2 };
@@ -285,7 +281,7 @@ static const unsigned int spi_sclk_0_pins[]	= { GPIOH_6 };
 static const unsigned int i2c_sda_d1_pins[]	= { GPIOH_7 };
 static const unsigned int i2c_sck_d1_pins[]	= { GPIOH_8 };
 
-/* bank Z */
+ 
 static const unsigned int spi_ss0_1_pins[]	= { GPIOZ_9 };
 static const unsigned int spi_ss1_1_pins[]	= { GPIOZ_10 };
 static const unsigned int spi_sclk_1_pins[]	= { GPIOZ_11 };
@@ -328,7 +324,7 @@ static const unsigned int pwm_a_z7_pins[]	= { GPIOZ_7 };
 static const unsigned int pwm_b_z_pins[]	= { GPIOZ_1 };
 static const unsigned int pwm_c_z_pins[]	= { GPIOZ_8 };
 
-/* bank BOOT */
+ 
 static const unsigned int sd_d0_c_pins[]	= { BOOT_0 };
 static const unsigned int sd_d1_c_pins[]	= { BOOT_1 };
 static const unsigned int sd_d2_c_pins[]	= { BOOT_2 };
@@ -362,7 +358,7 @@ static const unsigned int nor_q_pins[]		= { BOOT_12 };
 static const unsigned int nor_c_pins[]		= { BOOT_13 };
 static const unsigned int nor_cs_pins[]		= { BOOT_18 };
 
-/* bank CARD */
+ 
 static const unsigned int sd_d1_b_pins[]	= { CARD_0 };
 static const unsigned int sd_d0_b_pins[]	= { CARD_1 };
 static const unsigned int sd_clk_b_pins[]	= { CARD_2 };
@@ -375,7 +371,7 @@ static const unsigned int sdxc_d0_b_pins[]	= { CARD_1 };
 static const unsigned int sdxc_clk_b_pins[]	= { CARD_2 };
 static const unsigned int sdxc_cmd_b_pins[]	= { CARD_3 };
 
-/* bank AO */
+ 
 static const unsigned int uart_tx_ao_a_pins[]	= { GPIOAO_0 };
 static const unsigned int uart_rx_ao_a_pins[]	= { GPIOAO_1 };
 static const unsigned int uart_cts_ao_a_pins[]	= { GPIOAO_2 };
@@ -527,7 +523,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GPIO_GROUP(BOOT_17),
 	GPIO_GROUP(BOOT_18),
 
-	/* bank X */
+	 
 	GROUP(sd_d0_a,		8,	5),
 	GROUP(sd_d1_a,		8,	4),
 	GROUP(sd_d2_a,		8,	3),
@@ -575,7 +571,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GROUP(pwm_e,		9,	19),
 	GROUP(pwm_b_x,		2,	3),
 
-	/* bank Y */
+	 
 	GROUP(uart_tx_c,	1,	19),
 	GROUP(uart_rx_c,	1,	18),
 	GROUP(uart_cts_c,	1,	17),
@@ -603,7 +599,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GROUP(spdif_in,		1,	8),
 	GROUP(spdif_out,	1,	7),
 
-	/* bank DV */
+	 
 	GROUP(dvin_rgb,		0,	6),
 	GROUP(dvin_vs,		0,	9),
 	GROUP(dvin_hs,		0,	8),
@@ -641,7 +637,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GROUP(pwm_c_dv29,	3,	25),
 	GROUP(pwm_d,		3,	26),
 
-	/* bank H */
+	 
 	GROUP(hdmi_hpd,		1,	26),
 	GROUP(hdmi_sda,		1,	25),
 	GROUP(hdmi_scl,		1,	24),
@@ -655,7 +651,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GROUP(i2c_sda_d1,	4,	3),
 	GROUP(i2c_sck_d1,	4,	2),
 
-	/* bank Z */
+	 
 	GROUP(spi_ss0_1,	8,	16),
 	GROUP(spi_ss1_1,	8,	12),
 	GROUP(spi_sclk_1,	8,	15),
@@ -674,7 +670,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GROUP(eth_mdio,		6,	6),
 	GROUP(eth_mdc,		6,	5),
 
-	/* NOTE: the following four groups are only available on Meson8m2: */
+	 
 	GROUP(eth_rxd2,		6,	3),
 	GROUP(eth_rxd3,		6,	2),
 	GROUP(eth_txd2,		6,	1),
@@ -700,7 +696,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GROUP(pwm_b_z,		9,	15),
 	GROUP(pwm_c_z,		2,	1),
 
-	/* bank BOOT */
+	 
 	GROUP(sd_d0_c,		6,	29),
 	GROUP(sd_d1_c,		6,	28),
 	GROUP(sd_d2_c,		6,	27),
@@ -731,7 +727,7 @@ static struct meson_pmx_group meson8_cbus_groups[] = {
 	GROUP(nor_c,		5,	2),
 	GROUP(nor_cs,		5,	0),
 
-	/* bank CARD */
+	 
 	GROUP(sd_d1_b,		2,	14),
 	GROUP(sd_d0_b,		2,	15),
 	GROUP(sd_clk_b,		2,	11),
@@ -763,7 +759,7 @@ static struct meson_pmx_group meson8_aobus_groups[] = {
 	GPIO_GROUP(GPIO_BSD_EN),
 	GPIO_GROUP(GPIO_TEST_N),
 
-	/* bank AO */
+	 
 	GROUP(uart_tx_ao_a,		0,	12),
 	GROUP(uart_rx_ao_a,		0,	11),
 	GROUP(uart_cts_ao_a,		0,	10),
@@ -1064,7 +1060,7 @@ static struct meson_pmx_func meson8_aobus_functions[] = {
 };
 
 static struct meson_bank meson8_cbus_banks[] = {
-	/*   name    first     last         irq       pullen  pull    dir     out     in  */
+	 
 	BANK("X",    GPIOX_0,  GPIOX_21,    112, 133, 4,  0,  4,  0,  0,  0,  1,  0,  2,  0),
 	BANK("Y",    GPIOY_0,  GPIOY_16,    95,  111, 3,  0,  3,  0,  3,  0,  4,  0,  5,  0),
 	BANK("DV",   GPIODV_0, GPIODV_29,   65,   94, 0,  0,  0,  0,  7,  0,  8,  0,  9,  0),
@@ -1075,7 +1071,7 @@ static struct meson_bank meson8_cbus_banks[] = {
 };
 
 static struct meson_bank meson8_aobus_banks[] = {
-	/*   name    first     last         irq    pullen  pull    dir     out     in  */
+	 
 	BANK("AO",   GPIOAO_0, GPIO_TEST_N, 0, 13, 0, 16,  0,  0,  0,  0,  0, 16,  1,  0),
 };
 

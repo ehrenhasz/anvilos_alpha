@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * geniv: IV generation
- *
- * Copyright (c) 2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+ 
+ 
 
 #ifndef _CRYPTO_INTERNAL_GENIV_H
 #define _CRYPTO_INTERNAL_GENIV_H
@@ -24,4 +20,4 @@ struct aead_instance *aead_geniv_alloc(struct crypto_template *tmpl,
 int aead_init_geniv(struct crypto_aead *tfm);
 void aead_exit_geniv(struct crypto_aead *tfm);
 
-#endif	/* _CRYPTO_INTERNAL_GENIV_H */
+#endif	 

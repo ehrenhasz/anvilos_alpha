@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -47,9 +44,7 @@ static void ksmbd_vfs_inherit_owner(struct ksmbd_work *work,
 	i_uid_write(inode, i_uid_read(parent_inode));
 }
 
-/**
- * ksmbd_vfs_lock_parent() - lock parent dentry if it is stable
- */
+ 
 int ksmbd_vfs_lock_parent(struct dentry *parent, struct dentry *child)
 {
 	inode_lock_nested(d_inode(parent), I_MUTEX_PARENT);
@@ -157,14 +152,7 @@ void ksmbd_vfs_query_maximal_access(struct mnt_idmap *idmap,
 		*daccess |= FILE_DELETE_LE;
 }
 
-/**
- * ksmbd_vfs_create() - vfs helper for smb create file
- * @work:	work
- * @name:	file name that is relative to share
- * @mode:	file create mode
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_create(struct ksmbd_work *work, const char *name, umode_t mode)
 {
 	struct path path;
@@ -195,14 +183,7 @@ int ksmbd_vfs_create(struct ksmbd_work *work, const char *name, umode_t mode)
 	return err;
 }
 
-/**
- * ksmbd_vfs_mkdir() - vfs helper for smb create directory
- * @work:	work
- * @name:	directory name that is relative to share
- * @mode:	directory create mode
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_mkdir(struct ksmbd_work *work, const char *name, umode_t mode)
 {
 	struct mnt_idmap *idmap;
@@ -313,15 +294,7 @@ free_buf:
 	return count;
 }
 
-/**
- * check_lock_range() - vfs helper for smb byte range file locking
- * @filp:	the file to apply the lock to
- * @start:	lock start byte offset
- * @end:	lock end byte offset
- * @type:	byte range type read/write
- *
- * Return:	0 on success, otherwise error
- */
+ 
 static int check_lock_range(struct file *filp, loff_t start, loff_t end,
 			    unsigned char type)
 {
@@ -334,7 +307,7 @@ static int check_lock_range(struct file *filp, loff_t start, loff_t end,
 
 	spin_lock(&ctx->flc_lock);
 	list_for_each_entry(flock, &ctx->flc_posix, fl_list) {
-		/* check conflict locks */
+		 
 		if (flock->fl_end >= start && end >= flock->fl_start) {
 			if (flock->fl_type == F_RDLCK) {
 				if (type == WRITE) {
@@ -343,7 +316,7 @@ static int check_lock_range(struct file *filp, loff_t start, loff_t end,
 					goto out;
 				}
 			} else if (flock->fl_type == F_WRLCK) {
-				/* check owner in lock */
+				 
 				if (flock->fl_file != filp) {
 					error = 1;
 					pr_err("not allow rw access by exclusive lock from other opens\n");
@@ -357,16 +330,7 @@ out:
 	return error;
 }
 
-/**
- * ksmbd_vfs_read() - vfs helper for smb file read
- * @work:	smb work
- * @fid:	file id of open file
- * @count:	read byte count
- * @pos:	file pos
- * @rbuf:	read data buffer
- *
- * Return:	number of read bytes on success, otherwise error
- */
+ 
 int ksmbd_vfs_read(struct ksmbd_work *work, struct ksmbd_file *fp, size_t count,
 		   loff_t *pos, char *rbuf)
 {
@@ -471,18 +435,7 @@ out:
 	return err;
 }
 
-/**
- * ksmbd_vfs_write() - vfs helper for smb file write
- * @work:	work
- * @fid:	file id of open file
- * @buf:	buf containing data for writing
- * @count:	read byte count
- * @pos:	file pos
- * @sync:	fsync after write
- * @written:	number of bytes written
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_write(struct ksmbd_work *work, struct ksmbd_file *fp,
 		    char *buf, size_t count, loff_t *pos, bool sync,
 		    ssize_t *written)
@@ -517,10 +470,10 @@ int ksmbd_vfs_write(struct ksmbd_work *work, struct ksmbd_file *fp,
 		}
 	}
 
-	/* Reserve lease break for parent dir at closing time */
+	 
 	fp->reserve_lease_break = true;
 
-	/* Do we need to break any of a levelII oplock? */
+	 
 	smb_break_all_levII_oplock(work, fp, 1);
 
 	err = kernel_write(filp, buf, count, pos);
@@ -543,14 +496,7 @@ out:
 	return err;
 }
 
-/**
- * ksmbd_vfs_getattr() - vfs helper for smb getattr
- * @work:	work
- * @fid:	file id of open file
- * @attrs:	inode attributes
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_getattr(const struct path *path, struct kstat *stat)
 {
 	int err;
@@ -561,13 +507,7 @@ int ksmbd_vfs_getattr(const struct path *path, struct kstat *stat)
 	return err;
 }
 
-/**
- * ksmbd_vfs_fsync() - vfs helper for smb fsync
- * @work:	work
- * @fid:	file id of open file
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_fsync(struct ksmbd_work *work, u64 fid, u64 p_id)
 {
 	struct ksmbd_file *fp;
@@ -585,12 +525,7 @@ int ksmbd_vfs_fsync(struct ksmbd_work *work, u64 fid, u64 p_id)
 	return err;
 }
 
-/**
- * ksmbd_vfs_remove_file() - vfs helper for smb rmdir or unlink
- * @name:	directory or file name that is relative to share
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_remove_file(struct ksmbd_work *work, const struct path *path)
 {
 	struct mnt_idmap *idmap;
@@ -621,13 +556,7 @@ out_err:
 	return err;
 }
 
-/**
- * ksmbd_vfs_link() - vfs helper for creating smb hardlink
- * @oldname:	source file name
- * @newname:	hardlink name that is relative to share
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_link(struct ksmbd_work *work, const char *oldname,
 		   const char *newname)
 {
@@ -792,14 +721,7 @@ revert_fsids:
 	return err;
 }
 
-/**
- * ksmbd_vfs_truncate() - vfs helper for smb file truncate
- * @work:	work
- * @fid:	file id of old file
- * @size:	truncate to given size
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_truncate(struct ksmbd_work *work,
 		       struct ksmbd_file *fp, loff_t size)
 {
@@ -808,7 +730,7 @@ int ksmbd_vfs_truncate(struct ksmbd_work *work,
 
 	filp = fp->filp;
 
-	/* Do we need to break any of a levelII oplock? */
+	 
 	smb_break_all_levII_oplock(work, fp, 1);
 
 	if (!work->tcon->posix_extensions) {
@@ -834,14 +756,7 @@ int ksmbd_vfs_truncate(struct ksmbd_work *work,
 	return err;
 }
 
-/**
- * ksmbd_vfs_listxattr() - vfs helper for smb list extended attributes
- * @dentry:	dentry of file for listing xattrs
- * @list:	destination buffer
- * @size:	destination buffer length
- *
- * Return:	xattr list length on success, otherwise error
- */
+ 
 ssize_t ksmbd_vfs_listxattr(struct dentry *dentry, char **list)
 {
 	ssize_t size;
@@ -872,15 +787,7 @@ static ssize_t ksmbd_vfs_xattr_len(struct mnt_idmap *idmap,
 	return vfs_getxattr(idmap, dentry, xattr_name, NULL, 0);
 }
 
-/**
- * ksmbd_vfs_getxattr() - vfs helper for smb get extended attributes value
- * @idmap:	idmap
- * @dentry:	dentry of file for getting xattrs
- * @xattr_name:	name of xattr name to query
- * @xattr_buf:	destination buffer xattr value
- *
- * Return:	read xattr value length on success, otherwise error
- */
+ 
 ssize_t ksmbd_vfs_getxattr(struct mnt_idmap *idmap,
 			   struct dentry *dentry,
 			   char *xattr_name, char **xattr_buf)
@@ -906,18 +813,7 @@ ssize_t ksmbd_vfs_getxattr(struct mnt_idmap *idmap,
 	return xattr_len;
 }
 
-/**
- * ksmbd_vfs_setxattr() - vfs helper for smb set extended attributes value
- * @idmap:	idmap of the relevant mount
- * @path:	path of dentry to set XATTR at
- * @attr_name:	xattr name for setxattr
- * @attr_value:	xattr value to set
- * @attr_size:	size of xattr value
- * @flags:	destination buffer length
- * @get_write:	get write access to a mount
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_setxattr(struct mnt_idmap *idmap,
 		       const struct path *path, const char *attr_name,
 		       void *attr_value, size_t attr_size, int flags,
@@ -944,11 +840,7 @@ int ksmbd_vfs_setxattr(struct mnt_idmap *idmap,
 	return err;
 }
 
-/**
- * ksmbd_vfs_set_fadvise() - convert smb IO caching options to linux options
- * @filp:	file pointer for IO
- * @options:	smb IO options
- */
+ 
 void ksmbd_vfs_set_fadvise(struct file *filp, __le32 option)
 {
 	struct address_space *mapping;
@@ -1002,9 +894,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
 	if (!in_count)
 		return 0;
 
-	/*
-	 * Shrink request scope to what the fs can actually handle.
-	 */
+	 
 	if (length > maxbytes || (maxbytes - length) < start)
 		length = maxbytes - start;
 
@@ -1101,12 +991,7 @@ static bool __dir_empty(struct dir_context *ctx, const char *name, int namlen,
 	return buf->dirent_count <= 2;
 }
 
-/**
- * ksmbd_vfs_empty_dir() - check for empty directory
- * @fp:	ksmbd file pointer
- *
- * Return:	true if directory empty, otherwise false
- */
+ 
 int ksmbd_vfs_empty_dir(struct ksmbd_file *fp)
 {
 	int err;
@@ -1154,14 +1039,7 @@ static bool __caseless_lookup(struct dir_context *ctx, const char *name,
 	return true;
 }
 
-/**
- * ksmbd_vfs_lookup_in_dir() - lookup a file in a directory
- * @dir:	path info
- * @name:	filename to lookup
- * @namelen:	filename length
- *
- * Return:	0 on success, otherwise error
- */
+ 
 static int ksmbd_vfs_lookup_in_dir(const struct path *dir, char *name,
 				   size_t namelen, struct unicode_map *um)
 {
@@ -1187,16 +1065,7 @@ static int ksmbd_vfs_lookup_in_dir(const struct path *dir, char *name,
 	return ret;
 }
 
-/**
- * ksmbd_vfs_kern_path_locked() - lookup a file and get path info
- * @name:		file path that is relative to share
- * @flags:		lookup flags
- * @parent_path:	if lookup succeed, return parent_path info
- * @path:		if lookup succeed, return path info
- * @caseless:	caseless filename lookup
- *
- * Return:	0 on success, otherwise error
- */
+ 
 int ksmbd_vfs_kern_path_locked(struct ksmbd_work *work, char *name,
 			       unsigned int flags, struct path *parent_path,
 			       struct path *path, bool caseless)
@@ -1632,11 +1501,7 @@ int ksmbd_vfs_get_dos_attrib_xattr(struct mnt_idmap *idmap,
 	return err;
 }
 
-/**
- * ksmbd_vfs_init_kstat() - convert unix stat information to smb stat format
- * @p:          destination buffer
- * @ksmbd_kstat:      ksmbd kstat wrapper
- */
+ 
 void *ksmbd_vfs_init_kstat(char **p, struct ksmbd_kstat *ksmbd_kstat)
 {
 	struct file_directory_info *info = (struct file_directory_info *)(*p);
@@ -1678,10 +1543,7 @@ int ksmbd_vfs_fill_dentry_attrs(struct ksmbd_work *work,
 	time = ksmbd_UnixTimeToNT(ksmbd_kstat->kstat->ctime);
 	ksmbd_kstat->create_time = time;
 
-	/*
-	 * set default value for the case that store dos attributes is not yes
-	 * or that acl is disable in server's filesystem and the config is yes.
-	 */
+	 
 	if (S_ISDIR(ksmbd_kstat->kstat->mode))
 		ksmbd_kstat->file_attributes = FILE_ATTRIBUTE_DIRECTORY_LE;
 	else
@@ -1856,7 +1718,7 @@ int ksmbd_vfs_set_init_posix_acl(struct mnt_idmap *idmap,
 	if (rc)
 		return rc;
 
-	/* Set default owner group */
+	 
 	acl_state.owner.allow = (inode->i_mode & 0700) >> 6;
 	acl_state.group.allow = (inode->i_mode & 0070) >> 3;
 	acl_state.other.allow = inode->i_mode & 0007;

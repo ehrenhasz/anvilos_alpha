@@ -1,18 +1,4 @@
-/*
- * Allwinner A1X SoCs IRQ chip driver.
- *
- * Copyright (C) 2012 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- *
- * Based on code from
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- * Benn Huang <benn@allwinnertech.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -51,7 +37,7 @@ static void sun4i_irq_ack(struct irq_data *irqd)
 	unsigned int irq = irqd_to_hwirq(irqd);
 
 	if (irq != 0)
-		return; /* Only IRQ 0 / the ENMI needs to be acked */
+		return;  
 
 	writel(BIT(0), irq_ic_data->irq_base + SUN4I_IRQ_PENDING_REG(0));
 }
@@ -112,25 +98,25 @@ static int __init sun4i_of_init(struct device_node *node,
 		panic("%pOF: unable to map IC registers\n",
 			node);
 
-	/* Disable all interrupts */
+	 
 	writel(0, irq_ic_data->irq_base + SUN4I_IRQ_ENABLE_REG(irq_ic_data, 0));
 	writel(0, irq_ic_data->irq_base + SUN4I_IRQ_ENABLE_REG(irq_ic_data, 1));
 	writel(0, irq_ic_data->irq_base + SUN4I_IRQ_ENABLE_REG(irq_ic_data, 2));
 
-	/* Unmask all the interrupts, ENABLE_REG(x) is used for masking */
+	 
 	writel(0, irq_ic_data->irq_base + SUN4I_IRQ_MASK_REG(irq_ic_data, 0));
 	writel(0, irq_ic_data->irq_base + SUN4I_IRQ_MASK_REG(irq_ic_data, 1));
 	writel(0, irq_ic_data->irq_base + SUN4I_IRQ_MASK_REG(irq_ic_data, 2));
 
-	/* Clear all the pending interrupts */
+	 
 	writel(0xffffffff, irq_ic_data->irq_base + SUN4I_IRQ_PENDING_REG(0));
 	writel(0xffffffff, irq_ic_data->irq_base + SUN4I_IRQ_PENDING_REG(1));
 	writel(0xffffffff, irq_ic_data->irq_base + SUN4I_IRQ_PENDING_REG(2));
 
-	/* Enable protection mode */
+	 
 	writel(0x01, irq_ic_data->irq_base + SUN4I_IRQ_PROTECTION_REG);
 
-	/* Configure the external interrupt source type */
+	 
 	writel(0x00, irq_ic_data->irq_base + SUN4I_IRQ_NMI_CTRL_REG);
 
 	irq_ic_data->irq_domain = irq_domain_add_linear(node, 3 * 32,
@@ -178,16 +164,7 @@ static void __exception_irq_entry sun4i_handle_irq(struct pt_regs *regs)
 {
 	u32 hwirq;
 
-	/*
-	 * hwirq == 0 can mean one of 3 things:
-	 * 1) no more irqs pending
-	 * 2) irq 0 pending
-	 * 3) spurious irq
-	 * So if we immediately get a reading of 0, check the irq-pending reg
-	 * to differentiate between 2 and 3. We only do this once to avoid
-	 * the extra check in the common case of 1 happening after having
-	 * read the vector-reg once.
-	 */
+	 
 	hwirq = readl(irq_ic_data->irq_base + SUN4I_IRQ_VECTOR_REG) >> 2;
 	if (hwirq == 0 &&
 		  !(readl(irq_ic_data->irq_base + SUN4I_IRQ_PENDING_REG(0)) &

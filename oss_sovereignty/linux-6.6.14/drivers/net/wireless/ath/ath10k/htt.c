@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/if_ether.h>
@@ -299,7 +296,7 @@ int ath10k_htt_connect(struct ath10k_htt *htt)
 	conn_req.ep_ops.ep_rx_complete = ath10k_htt_htc_t2h_msg_handler;
 	conn_req.ep_ops.ep_tx_credits = ath10k_htt_op_ep_tx_credits;
 
-	/* connect to control service */
+	 
 	conn_req.service_id = ATH10K_HTC_SVC_ID_HTT_DATA_MSG;
 
 	status = ath10k_htc_connect_service(&htt->ar->htc, &conn_req,
@@ -328,17 +325,12 @@ int ath10k_htt_init(struct ath10k *ar)
 
 	htt->ar = ar;
 
-	/*
-	 * Prefetch enough data to satisfy target
-	 * classification engine.
-	 * This is for LL chips. HL chips will probably
-	 * transfer all frame in the tx fragment.
-	 */
+	 
 	htt->prefetch_len =
-		36 + /* 802.11 + qos + ht */
-		4 + /* 802.1q */
-		8 + /* llc snap */
-		2; /* ip4 dscp or ip6 priority */
+		36 +  
+		4 +  
+		8 +  
+		2;  
 
 	switch (ar->running_fw->fw_file.htt_op_version) {
 	case ATH10K_FW_HTT_OP_VERSION_10_4:

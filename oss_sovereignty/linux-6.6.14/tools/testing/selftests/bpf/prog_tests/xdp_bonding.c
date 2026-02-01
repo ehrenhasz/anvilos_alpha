@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/**
- * Test XDP bonding support
- *
- * Sets up two bonded veth pairs between two fresh namespaces
- * and verifies that XDP_TX program loaded on a bond device
- * are correctly loaded onto the slave devices and XDP_TX'd
- * packets are balanced using bonding.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -66,17 +59,17 @@ static int get_rx_packets(const char *iface)
 		char *p = line;
 
 		while (*p == ' ')
-			p++; /* skip whitespace */
+			p++;  
 		if (!strncmp(p, iface, iface_len)) {
 			p += iface_len;
 			if (*p++ != ':')
 				continue;
 			while (*p == ' ')
-				p++; /* skip whitespace */
+				p++;  
 			while (*p && *p != ' ')
-				p++; /* skip rx bytes */
+				p++;  
 			while (*p == ' ')
-				p++; /* skip whitespace */
+				p++;  
 			fclose(f);
 			return atoi(p);
 		}
@@ -170,9 +163,7 @@ static int bonding_setup(struct skeletons *skeletons, int mode, int xmit_policy,
 	else
 		SYS(fail, "ip -netns ns_dst link set veth2_2 up addrgenmode none");
 
-	/* Load a dummy program on sending side as with veth peer needs to have a
-	 * XDP program loaded as well.
-	 */
+	 
 	if (xdp_attach(skeletons, skeletons->xdp_dummy->progs.xdp_dummy_prog, "bond1"))
 		return -1;
 
@@ -244,13 +235,13 @@ static int send_udp_packets(int vary_dst_ip)
 			.sll_addr = BOND2_MAC,
 		};
 
-		/* vary the UDP destination port for even distribution with roundrobin/xor modes */
+		 
 		uh.dest++;
 
 		if (vary_dst_ip)
 			iph.daddr++;
 
-		/* construct a packet */
+		 
 		memcpy(buf, &eh, sizeof(eh));
 		memcpy(buf + sizeof(eh), &iph, sizeof(iph));
 		memcpy(buf + sizeof(eh) + sizeof(iph), &uh, sizeof(uh));
@@ -324,10 +315,7 @@ out:
 	bonding_cleanup(skeletons);
 }
 
-/* Test the broadcast redirection using xdp_redirect_map_multi_prog and adding
- * all the interfaces to it and checking that broadcasting won't send the packet
- * to neither the ingress bond device (bond2) or its slave (veth2_1).
- */
+ 
 static void test_xdp_bonding_redirect_multi(struct skeletons *skeletons)
 {
 	static const char * const ifaces[] = {"bond2", "veth2_1", "veth2_2"};
@@ -342,7 +330,7 @@ static void test_xdp_bonding_redirect_multi(struct skeletons *skeletons)
 	if (!ASSERT_OK(setns_by_name("ns_dst"), "could not set netns to ns_dst"))
 		goto out;
 
-	/* populate the devmap with the relevant interfaces */
+	 
 	for (int i = 0; i < ARRAY_SIZE(ifaces); i++) {
 		int ifindex = if_nametoindex(ifaces[i]);
 		int map_fd = bpf_map__fd(skeletons->xdp_redirect_multi_kern->maps.map_all);
@@ -376,7 +364,7 @@ out:
 	bonding_cleanup(skeletons);
 }
 
-/* Test that XDP programs cannot be attached to both the bond master and slaves simultaneously */
+ 
 static void test_xdp_bonding_attach(struct skeletons *skeletons)
 {
 	struct bpf_link *link = NULL;
@@ -395,7 +383,7 @@ static void test_xdp_bonding_attach(struct skeletons *skeletons)
 	if (!ASSERT_GE(bond, 0, "if_nametoindex bond"))
 		goto out;
 
-	/* enslaving with a XDP program loaded is allowed */
+	 
 	link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, veth);
 	if (!ASSERT_OK_PTR(link, "attach program to veth"))
 		goto out;
@@ -407,12 +395,12 @@ static void test_xdp_bonding_attach(struct skeletons *skeletons)
 	bpf_link__destroy(link);
 	link = NULL;
 
-	/* attaching to slave when master has no program is allowed */
+	 
 	link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, veth);
 	if (!ASSERT_OK_PTR(link, "attach program to slave when enslaved"))
 		goto out;
 
-	/* attaching to master not allowed when slave has program loaded */
+	 
 	link2 = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, bond);
 	if (!ASSERT_ERR_PTR(link2, "attach program to master when slave has program"))
 		goto out;
@@ -420,12 +408,12 @@ static void test_xdp_bonding_attach(struct skeletons *skeletons)
 	bpf_link__destroy(link);
 	link = NULL;
 
-	/* attaching XDP program to master allowed when slave has no program */
+	 
 	link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, bond);
 	if (!ASSERT_OK_PTR(link, "attach program to master"))
 		goto out;
 
-	/* attaching to slave not allowed when master has program loaded */
+	 
 	link2 = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, veth);
 	if (!ASSERT_ERR_PTR(link2, "attach program to slave when master has program"))
 		goto out;
@@ -433,7 +421,7 @@ static void test_xdp_bonding_attach(struct skeletons *skeletons)
 	bpf_link__destroy(link);
 	link = NULL;
 
-	/* test program unwinding with a non-XDP slave */
+	 
 	if (!ASSERT_OK(system("ip link add vxlan type vxlan id 1 remote 1.2.3.4 dstport 0 dev lo"),
 		       "add vxlan"))
 		goto out;
@@ -442,7 +430,7 @@ static void test_xdp_bonding_attach(struct skeletons *skeletons)
 	if (!ASSERT_OK(err, "set vxlan master"))
 		goto out;
 
-	/* attaching not allowed when one slave does not support XDP */
+	 
 	link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, bond);
 	if (!ASSERT_ERR_PTR(link, "attach program to master when slave does not support XDP"))
 		goto out;
@@ -456,7 +444,7 @@ out:
 	system("ip link del vxlan");
 }
 
-/* Test with nested bonding devices to catch issue with negative jump label count */
+ 
 static void test_xdp_bonding_nested(struct skeletons *skeletons)
 {
 	struct bpf_link *link = NULL;
@@ -506,7 +494,7 @@ static void test_xdp_bonding_features(struct skeletons *skeletons)
 	if (!ASSERT_GE(bond_idx, 0, "if_nametoindex bond"))
 		goto out;
 
-	/* query default xdp-feature for bond device */
+	 
 	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
 	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
 		goto out;
@@ -527,9 +515,7 @@ static void test_xdp_bonding_features(struct skeletons *skeletons)
 		       "add veth0 to master bond"))
 		goto out;
 
-	/* xdp-feature for bond device should be obtained from the single slave
-	 * device (veth0)
-	 */
+	 
 	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
 	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
 		goto out;
@@ -549,7 +535,7 @@ static void test_xdp_bonding_features(struct skeletons *skeletons)
 	if (!ASSERT_OK_PTR(link, "attach program to veth1"))
 		goto out;
 
-	/* xdp-feature for veth0 are changed */
+	 
 	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
 	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
 		goto out;
@@ -569,9 +555,7 @@ static void test_xdp_bonding_features(struct skeletons *skeletons)
 	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
 		goto out;
 
-	/* xdp-feature for bond device should be set to the most restrict
-	 * value obtained from attached slave devices (veth0 and veth2)
-	 */
+	 
 	if (!ASSERT_EQ(query_opts.feature_flags,
 		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
 		       NETDEV_XDP_ACT_RX_SG,

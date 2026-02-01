@@ -1,17 +1,4 @@
-/*
- * Battery driver for LEGO MINDSTORMS EV3
- *
- * Copyright (C) 2017 David Lechner <david@lechnology.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -46,7 +33,7 @@ static int lego_ev3_battery_get_property(struct power_supply *psy,
 		val->intval = batt->technology;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-		/* battery voltage is iio channel * 2 + Vce of transistor */
+		 
 		ret = iio_read_channel_processed(batt->iio_v, &val->intval);
 		if (ret)
 			return ret;
@@ -54,7 +41,7 @@ static int lego_ev3_battery_get_property(struct power_supply *psy,
 		val->intval *= 2000;
 		val->intval += 50000;
 
-		/* plus adjust for shunt resistor drop */
+		 
 		ret = iio_read_channel_processed(batt->iio_i, &val2);
 		if (ret)
 			return ret;
@@ -70,7 +57,7 @@ static int lego_ev3_battery_get_property(struct power_supply *psy,
 		val->intval = batt->v_min;
 		break;
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
-		/* battery current is iio channel / 15 / 0.05 ohms */
+		 
 		ret = iio_read_channel_processed(batt->iio_i, &val->intval);
 		if (ret)
 			return ret;
@@ -96,14 +83,7 @@ static int lego_ev3_battery_set_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_TECHNOLOGY:
-		/*
-		 * Only allow changing technology from Unknown to NiMH. Li-ion
-		 * batteries are automatically detected and should not be
-		 * overridden. Rechargeable AA batteries, on the other hand,
-		 * cannot be automatically detected, and so must be manually
-		 * specified. This should only be set once during system init,
-		 * so there is no mechanism to go back to Unknown.
-		 */
+		 
 		if (batt->technology != POWER_SUPPLY_TECHNOLOGY_UNKNOWN)
 			return -EINVAL;
 		switch (val->intval) {
@@ -182,17 +162,14 @@ static int lego_ev3_battery_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, err,
 				     "Failed to get rechargeable gpio\n");
 
-	/*
-	 * The rechargeable battery indication switch cannot be changed without
-	 * removing the battery, so we only need to read it once.
-	 */
+	 
 	if (gpiod_get_value(batt->rechargeable_gpio)) {
-		/* 2-cell Li-ion, 7.4V nominal */
+		 
 		batt->technology = POWER_SUPPLY_TECHNOLOGY_LION;
 		batt->v_max = 84000000;
 		batt->v_min = 60000000;
 	} else {
-		/* 6x AA Alkaline, 9V nominal */
+		 
 		batt->technology = POWER_SUPPLY_TECHNOLOGY_UNKNOWN;
 		batt->v_max = 90000000;
 		batt->v_min = 48000000;

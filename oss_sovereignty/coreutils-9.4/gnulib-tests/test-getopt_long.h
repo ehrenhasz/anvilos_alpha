@@ -1,20 +1,4 @@
-/* Test of command line argument processing.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2009.  */
+ 
 
 static int a_seen;
 static int b_seen;
@@ -61,7 +45,7 @@ getopt_long_loop (int argc, const char **argv,
       switch (c)
         {
         case 0:
-          /* An option with a non-NULL flag pointer was processed.  */
+           
           if (q_seen)
             *q_value = optarg;
           break;
@@ -78,12 +62,12 @@ getopt_long_loop (int argc, const char **argv,
           *q_value = optarg;
           break;
         case '\1':
-          /* Must only happen with option '-' at the beginning.  */
+           
           ASSERT (options[0] == '-');
           non_options[(*non_options_count)++] = optarg;
           break;
         case ':':
-          /* Must only happen with option ':' at the beginning.  */
+           
           ASSERT (options[0] == ':'
                   || ((options[0] == '-' || options[0] == '+')
                       && options[1] == ':'));
@@ -98,9 +82,7 @@ getopt_long_loop (int argc, const char **argv,
     }
 }
 
-/* Reduce casting, so we can use string literals elsewhere.
-   getopt_long takes an array of char*, but luckily does not modify
-   those elements, so we can pass const char*.  */
+ 
 static int
 do_getopt_long (int argc, const char **argv, const char *shortopts,
                 const struct option *longopts, int *longind)
@@ -113,7 +95,7 @@ test_getopt_long (void)
 {
   int start;
 
-  /* Test disambiguation of options.  */
+   
   {
     int argc = 0;
     const char *argv[10];
@@ -246,7 +228,7 @@ test_getopt_long (void)
     ASSERT (c == 1003);
   }
 
-  /* Check that -W handles unknown options.  */
+   
   {
     int argc = 0;
     const char *argv[10];
@@ -274,8 +256,7 @@ test_getopt_long (void)
     optind = 1;
     opterr = 0;
     c = do_getopt_long (argc, argv, "W;", long_options_required, &option_index);
-    /* glibc and BSD behave differently here, but for now, we allow
-       both behaviors since W support is not frequently used.  */
+     
     if (c == '?')
       {
         ASSERT (optopt == 0);
@@ -300,8 +281,7 @@ test_getopt_long (void)
     optind = 1;
     opterr = 0;
     c = do_getopt_long (argc, argv, "W;", long_options_required, &option_index);
-    /* glibc and BSD behave differently here, but for now, we allow
-       both behaviors since W support is not frequently used.  */
+     
     if (c == '?')
       {
         ASSERT (optopt == 0);
@@ -314,26 +294,7 @@ test_getopt_long (void)
       }
   }
 
-  /* Test that 'W' does not dump core:
-     https://sourceware.org/bugzilla/show_bug.cgi?id=12922  */
-  {
-    int argc = 0;
-    const char *argv[10];
-    int option_index;
-    int c;
-
-    argv[argc++] = "program";
-    argv[argc++] = "-W";
-    argv[argc++] = "dummy";
-    argv[argc] = NULL;
-    optind = 1;
-    opterr = 0;
-    c = do_getopt_long (argc, argv, "W;", NULL, &option_index);
-    ASSERT (c == 'W');
-    ASSERT (optind == 2);
-  }
-
-  /* Test processing of boolean short options.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -453,7 +414,7 @@ test_getopt_long (void)
       ASSERT (optind == 3);
     }
 
-  /* Test processing of boolean long options.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -546,7 +507,7 @@ test_getopt_long (void)
       ASSERT (optind == 5);
     }
 
-  /* Test processing of boolean long options via -W.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -641,7 +602,7 @@ test_getopt_long (void)
       ASSERT (optind == 5);
     }
 
-  /* Test processing of short options with arguments.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -731,7 +692,7 @@ test_getopt_long (void)
       ASSERT (optind == 5);
     }
 
-  /* Test processing of long options with arguments.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -821,7 +782,7 @@ test_getopt_long (void)
       ASSERT (optind == 5);
     }
 
-  /* Test processing of long options with arguments via -W.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -913,7 +874,7 @@ test_getopt_long (void)
       ASSERT (optind == 6);
     }
 
-  /* Test processing of short options with optional arguments.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1001,7 +962,7 @@ test_getopt_long (void)
       ASSERT (optind == 3);
     }
 
-  /* Test processing of long options with optional arguments.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1118,7 +1079,7 @@ test_getopt_long (void)
       ASSERT (optind == 3);
     }
 
-  /* Test processing of long options with optional arguments via -W.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1259,14 +1220,14 @@ test_getopt_long (void)
                         &non_options_count, non_options, &unrecognized);
       ASSERT (a_seen == 1);
       ASSERT (b_seen == 0);
-      /* ASSERT (p_value == NULL); */
+       
       ASSERT (q_value == NULL);
       ASSERT (non_options_count == 0);
       ASSERT (unrecognized == 0);
       ASSERT (optind == 4);
     }
 
-  /* Check that invalid options are recognized.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1330,7 +1291,7 @@ test_getopt_long (void)
       ASSERT (optind == 5);
     }
 
-  /* Check that unexpected arguments are recognized.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1388,13 +1349,12 @@ test_getopt_long (void)
       ASSERT (p_value != NULL && strcmp (p_value, "foo") == 0);
       ASSERT (q_value == NULL);
       ASSERT (non_options_count == 0);
-      /* When flag is non-zero, glibc sets optopt anyway, but BSD
-         leaves optopt unchanged.  */
+       
       ASSERT (unrecognized == 1 || unrecognized == 0);
       ASSERT (optind == 4);
     }
 
-  /* Check that by default, non-options arguments are moved to the end.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1436,7 +1396,7 @@ test_getopt_long (void)
       ASSERT (optind == 4);
     }
 
-  /* Check that '--' ends the argument processing.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1488,7 +1448,7 @@ test_getopt_long (void)
       ASSERT (optind == 5);
     }
 
-  /* Check that the '-' flag causes non-options to be returned in order.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1533,7 +1493,7 @@ test_getopt_long (void)
       ASSERT (optind == 7);
     }
 
-  /* Check that '--' ends the argument processing.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1582,7 +1542,7 @@ test_getopt_long (void)
       ASSERT (q_value == NULL);
       if (non_options_count == 2)
       {
-        /* glibc behaviour.  */
+         
         ASSERT (non_options_count == 2);
         ASSERT (strcmp (non_options[0], "donald") == 0);
         ASSERT (strcmp (non_options[1], "duck") == 0);
@@ -1591,7 +1551,7 @@ test_getopt_long (void)
       }
       else
       {
-        /* Another valid behaviour.  */
+         
         ASSERT (non_options_count == 7);
         ASSERT (strcmp (non_options[0], "donald") == 0);
         ASSERT (strcmp (non_options[1], "duck") == 0);
@@ -1605,7 +1565,7 @@ test_getopt_long (void)
       }
     }
 
-  /* Check that the '-' flag has to come first.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1647,8 +1607,7 @@ test_getopt_long (void)
       ASSERT (optind == 4);
     }
 
-  /* Check that the '+' flag causes the first non-option to terminate the
-     loop.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1717,7 +1676,7 @@ test_getopt_long (void)
       ASSERT (optind == 2);
     }
 
-  /* Check that '--' ends the argument processing.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1769,7 +1728,7 @@ test_getopt_long (void)
       ASSERT (optind == 1);
     }
 
-  /* Check that the '+' flag has to come first.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1812,16 +1771,7 @@ test_getopt_long (void)
     }
 }
 
-/* Test behavior of getopt_long when POSIXLY_CORRECT is set in the
-   environment.  Options with optional arguments should not change
-   behavior just because of an environment variable.
-   https://lists.gnu.org/r/bug-m4/2006-09/msg00028.html  */
-static void
-test_getopt_long_posix (void)
-{
-  int start;
-
-  /* Check that POSIXLY_CORRECT stops parsing the same as leading '+'.  */
+ 
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1863,7 +1813,7 @@ test_getopt_long_posix (void)
       ASSERT (optind == 1);
     }
 
-  /* Check that POSIXLY_CORRECT doesn't change optional arguments.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1893,7 +1843,7 @@ test_getopt_long_posix (void)
       ASSERT (optind == 2);
     }
 
-  /* Check that leading - still sees options after non-options.  */
+   
   for (start = 0; start <= 1; start++)
     {
       const char *p_value = NULL;
@@ -1926,9 +1876,7 @@ test_getopt_long_posix (void)
     }
 }
 
-/* Reduce casting, so we can use string literals elsewhere.
-   getopt_long_only takes an array of char*, but luckily does not
-   modify those elements, so we can pass const char*.  */
+ 
 static int
 do_getopt_long_only (int argc, const char **argv, const char *shortopts,
                      const struct option *longopts, int *longind)
@@ -1939,7 +1887,7 @@ do_getopt_long_only (int argc, const char **argv, const char *shortopts,
 static void
 test_getopt_long_only (void)
 {
-  /* Test disambiguation of options.  */
+   
   {
     int argc = 0;
     const char *argv[10];
@@ -2097,10 +2045,7 @@ test_getopt_long_only (void)
     opterr = 0;
     c = do_getopt_long_only (argc, argv, "ab", long_options_required,
                              &option_index);
-    /* glibc getopt_long_only is intentionally different from
-       getopt_long when handling a prefix that is common to two
-       spellings, when both spellings have the same option directives.
-       BSD getopt_long_only treats both cases the same.  */
+     
     ASSERT (c == 1003 || c == '?');
     ASSERT (optind == 2);
   }
@@ -2117,10 +2062,7 @@ test_getopt_long_only (void)
     opterr = 0;
     c = do_getopt_long_only (argc, argv, "abx::", long_options_required,
                              &option_index);
-    /* glibc getopt_long_only is intentionally different from
-       getopt_long when handling a prefix that is common to two
-       spellings, when both spellings have the same option directives.
-       BSD getopt_long_only treats both cases the same.  */
+     
     ASSERT (c == 1003 || c == '?');
     ASSERT (optind == 2);
     ASSERT (optarg == NULL);

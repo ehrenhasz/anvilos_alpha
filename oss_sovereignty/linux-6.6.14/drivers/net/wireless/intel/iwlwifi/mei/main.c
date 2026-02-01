@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/netdevice.h>
@@ -31,19 +29,10 @@ MODULE_LICENSE("GPL");
 #define MEI_WLAN_UUID UUID_LE(0x13280904, 0x7792, 0x4fcb, \
 			      0xa1, 0xaa, 0x5e, 0x70, 0xcb, 0xb1, 0xe8, 0x65)
 
-/* After CSME takes ownership, it won't release it for 60 seconds to avoid
- * frequent ownership transitions.
- */
+ 
 #define MEI_OWNERSHIP_RETAKE_TIMEOUT_MS	msecs_to_jiffies(60000)
 
-/*
- * Since iwlwifi calls iwlmei without any context, hold a pointer to the
- * mei_cl_device structure here.
- * Define a mutex that will synchronize all the flows between iwlwifi and
- * iwlmei.
- * Note that iwlmei can't have several instances, so it ok to have static
- * variables here.
- */
+ 
 static struct mei_cl_device *iwl_mei_global_cldev;
 static DEFINE_MUTEX(iwl_mei_mutex);
 static unsigned long iwl_mei_status;
@@ -59,7 +48,7 @@ bool iwl_mei_is_connected(void)
 EXPORT_SYMBOL_GPL(iwl_mei_is_connected);
 
 #define SAP_VERSION	3
-#define SAP_CONTROL_BLOCK_ID 0x21504153 /* SAP! in ASCII */
+#define SAP_CONTROL_BLOCK_ID 0x21504153  
 
 struct iwl_sap_q_ctrl_blk {
 	__le32 wr_ptr;
@@ -90,23 +79,7 @@ struct iwl_sap_shared_mem_ctrl_blk {
 	struct iwl_sap_dir dir[SAP_DIRECTION_MAX];
 };
 
-/*
- * The shared area has the following layout:
- *
- * +-----------------------------------+
- * |struct iwl_sap_shared_mem_ctrl_blk |
- * +-----------------------------------+
- * |Host -> ME data queue              |
- * +-----------------------------------+
- * |Host -> ME notif queue             |
- * +-----------------------------------+
- * |ME -> Host data queue              |
- * +-----------------------------------+
- * |ME -> host notif queue             |
- * +-----------------------------------+
- * |SAP control block id (SAP!)        |
- * +-----------------------------------+
- */
+ 
 
 #define SAP_H2M_DATA_Q_SZ	48256
 #define SAP_M2H_DATA_Q_SZ	24128
@@ -132,41 +105,7 @@ struct iwl_mei_filters {
 	struct iwl_sap_oob_filters filters;
 };
 
-/**
- * struct iwl_mei - holds the private date for iwl_mei
- *
- * @get_nvm_wq: the wait queue for the get_nvm flow
- * @send_csa_msg_wk: used to defer the transmission of the CHECK_SHARED_AREA
- *	message. Used so that we can send CHECK_SHARED_AREA from atomic
- *	contexts.
- * @get_ownership_wq: the wait queue for the get_ownership_flow
- * @shared_mem: the memory that is shared between CSME and the host
- * @cldev: the pointer to the MEI client device
- * @nvm: the data returned by the CSME for the NVM
- * @filters: the filters sent by CSME
- * @got_ownership: true if we own the device
- * @amt_enabled: true if CSME has wireless enabled
- * @csa_throttled: when true, we can't send CHECK_SHARED_AREA over the MEI
- *	bus, but rather need to wait until send_csa_msg_wk runs
- * @csme_taking_ownership: true when CSME is taking ownership. Used to remember
- *	to send CSME_OWNERSHIP_CONFIRMED when the driver completes its down
- *	flow.
- * @link_prot_state: true when we are in link protection PASSIVE
- * @device_down: true if the device is down. Used to remember to send
- *	CSME_OWNERSHIP_CONFIRMED when the driver is already down.
- * @csa_throttle_end_wk: used when &csa_throttled is true
- * @pldr_wq: the wait queue for PLDR flow
- * @pldr_active: PLDR flow is in progress
- * @data_q_lock: protects the access to the data queues which are
- *	accessed without the mutex.
- * @netdev_work: used to defer registering and unregistering of the netdev to
- *	avoid taking the rtnl lock in the SAP messages handlers.
- * @ownership_dwork: used to re-ask for NIC ownership after ownership was taken
- *	by CSME or when a previous ownership request failed.
- * @sap_seq_no: the sequence number for the SAP messages
- * @seq_no: the sequence number for the SAP messages
- * @dbgfs_dir: the debugfs dir entry
- */
+ 
 struct iwl_mei {
 	wait_queue_head_t get_nvm_wq;
 	struct work_struct send_csa_msg_wk;
@@ -194,23 +133,7 @@ struct iwl_mei {
 	struct dentry *dbgfs_dir;
 };
 
-/**
- * struct iwl_mei_cache - cache for the parameters from iwlwifi
- * @ops: Callbacks to iwlwifi.
- * @netdev: The netdev that will be used to transmit / receive packets.
- * @conn_info: The connection info message triggered by iwlwifi's association.
- * @power_limit: pointer to an array of 10 elements (le16) represents the power
- *	restrictions per chain.
- * @rf_kill: rf kill state.
- * @mcc: MCC info
- * @mac_address: interface MAC address.
- * @nvm_address: NVM MAC address.
- * @priv: A pointer to iwlwifi.
- *
- * This used to cache the configurations coming from iwlwifi's way. The data
- * is cached here so that we can buffer the configuration even if we don't have
- * a bind from the mei bus and hence, on iwl_mei structure.
- */
+ 
 struct iwl_mei_cache {
 	const struct iwl_mei_ops *ops;
 	struct net_device __rcu *netdev;
@@ -283,10 +206,10 @@ static void iwl_mei_init_shared_mem(struct iwl_mei *mei)
 	m2h->q_ctrl_blk[SAP_QUEUE_IDX_NOTIF].size =
 		cpu_to_le32(SAP_M2H_NOTIF_Q_SZ);
 
-	/* q_head points to the start of the first queue */
+	 
 	q_head = (void *)(mem->ctrl + 1);
 
-	/* Initialize the queue heads */
+	 
 	for (dir = 0; dir < SAP_DIRECTION_MAX; dir++) {
 		for (queue = 0; queue < SAP_QUEUE_IDX_MAX; queue++) {
 			mem->q_head[dir][queue] = q_head;
@@ -319,7 +242,7 @@ static ssize_t iwl_mei_write_cyclic_buf(struct mei_cl_device *cldev,
 
 	room_in_buf = wr >= rd ? q_sz - wr + rd : rd - wr;
 
-	/* we don't have enough room for the data to write */
+	 
 	if (room_in_buf < tx_sz) {
 		dev_err(&cldev->dev,
 			"Not enough room in the buffer\n");
@@ -457,13 +380,7 @@ void iwl_mei_add_data_to_ring(struct sk_buff *skb, bool cb_tx)
 
 	mei = mei_cldev_get_drvdata(iwl_mei_global_cldev);
 
-	/*
-	 * We access this path for Rx packets (the more common case)
-	 * and from Tx path when we send DHCP packets, the latter is
-	 * very unlikely.
-	 * Take the lock already here to make sure we see that remove()
-	 * might have cleared the IWL_MEI_STATUS_SAP_CONNECTED bit.
-	 */
+	 
 	spin_lock_bh(&mei->data_q_lock);
 
 	if (!iwl_mei_is_connected()) {
@@ -471,11 +388,7 @@ void iwl_mei_add_data_to_ring(struct sk_buff *skb, bool cb_tx)
 		return;
 	}
 
-	/*
-	 * We are in a RCU critical section and the remove from the CSME bus
-	 * which would free this memory waits for the readers to complete (this
-	 * is done in netdev_rx_handler_unregister).
-	 */
+	 
 	dir = &mei->shared_mem.ctrl->dir[SAP_DIRECTION_HOST_TO_ME];
 	notif_q = &dir->q_ctrl_blk[SAP_QUEUE_IDX_DATA];
 	q_head = mei->shared_mem.q_head[SAP_DIRECTION_HOST_TO_ME][SAP_QUEUE_IDX_DATA];
@@ -495,7 +408,7 @@ void iwl_mei_add_data_to_ring(struct sk_buff *skb, bool cb_tx)
 
 	room_in_buf = wr >= rd ? q_sz - wr + rd : rd - wr;
 
-	/* we don't have enough room for the data to write */
+	 
 	if (room_in_buf < tx_sz) {
 		dev_err(&mei->cldev->dev,
 			"Not enough room in the buffer for this data\n");
@@ -565,7 +478,7 @@ static void iwl_mei_send_csa_msg_wk(struct work_struct *wk)
 	mutex_unlock(&iwl_mei_mutex);
 }
 
-/* Called in a RCU read critical section from netif_receive_skb */
+ 
 static rx_handler_result_t iwl_mei_rx_handler(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
@@ -575,10 +488,7 @@ static rx_handler_result_t iwl_mei_rx_handler(struct sk_buff **pskb)
 	bool rx_for_csme = false;
 	rx_handler_result_t res;
 
-	/*
-	 * remove() unregisters this handler and synchronize_net, so this
-	 * should never happen.
-	 */
+	 
 	if (!iwl_mei_is_connected()) {
 		dev_err(&mei->cldev->dev,
 			"Got an Rx packet, but we're not connected to SAP?\n");
@@ -590,11 +500,7 @@ static rx_handler_result_t iwl_mei_rx_handler(struct sk_buff **pskb)
 	else
 		res = RX_HANDLER_PASS;
 
-	/*
-	 * The data is already on the ring of the shared area, all we
-	 * need to do is to tell the CSME firmware to check what we have
-	 * there.
-	 */
+	 
 	if (rx_for_csme)
 		schedule_work(&mei->send_csa_msg_wk);
 
@@ -612,10 +518,7 @@ static void iwl_mei_netdev_work(struct work_struct *wk)
 		container_of(wk, struct iwl_mei, netdev_work);
 	struct net_device *netdev;
 
-	/*
-	 * First take rtnl and only then the mutex to avoid an ABBA
-	 * with iwl_mei_set_netdev()
-	 */
+	 
 	rtnl_lock();
 	mutex_lock(&iwl_mei_mutex);
 
@@ -656,10 +559,7 @@ iwl_mei_handle_rx_start_ok(struct mei_cl_device *cldev,
 
 	mutex_lock(&iwl_mei_mutex);
 	set_bit(IWL_MEI_STATUS_SAP_CONNECTED, &iwl_mei_status);
-	/*
-	 * We'll receive AMT_STATE SAP message in a bit and
-	 * that will continue the flow
-	 */
+	 
 	mutex_unlock(&iwl_mei_mutex);
 }
 
@@ -678,7 +578,7 @@ static void iwl_mei_handle_csme_filters(struct mei_cl_device *cldev,
 	if (!new_filters)
 		return;
 
-	/* Copy the OOB filters */
+	 
 	new_filters->filters = filters->filters;
 
 	rcu_assign_pointer(mei->filters, new_filters);
@@ -712,13 +612,7 @@ iwl_mei_handle_conn_status(struct mei_cl_device *cldev,
 
 	mei->link_prot_state = status->link_prot_state;
 
-	/*
-	 * Update the Rfkill state in case the host does not own the device:
-	 * if we are in Link Protection, ask to not touch the device, else,
-	 * unblock rfkill.
-	 * If the host owns the device, inform the user space whether it can
-	 * roam.
-	 */
+	 
 	if (mei->got_ownership)
 		iwl_mei_cache.ops->roaming_forbidden(iwl_mei_cache.priv,
 						     status->link_prot_state);
@@ -752,7 +646,7 @@ static void iwl_mei_set_init_conf(struct iwl_mei *mei)
 		.val = cpu_to_le32(iwl_mei_cache.rf_kill),
 	};
 
-	/* wifi driver has registered already */
+	 
 	if (iwl_mei_cache.ops) {
 		iwl_mei_send_sap_msg(mei->cldev,
 				     SAP_MSG_NOTIF_WIFIDR_UP);
@@ -819,7 +713,7 @@ static void iwl_mei_handle_nic_owner(struct mei_cl_device *cldev,
 static void iwl_mei_handle_can_release_ownership(struct mei_cl_device *cldev,
 						 const void *payload)
 {
-	/* We can get ownership and driver is registered, go ahead */
+	 
 	if (iwl_mei_cache.ops)
 		iwl_mei_send_sap_msg(cldev,
 				     SAP_MSG_NOTIF_HOST_ASKS_FOR_NIC_OWNERSHIP);
@@ -835,10 +729,7 @@ static void iwl_mei_handle_csme_taking_ownership(struct mei_cl_device *cldev,
 	mei->got_ownership = false;
 
 	if (iwl_mei_cache.ops && !mei->device_down) {
-		/*
-		 * Remember to send CSME_OWNERSHIP_CONFIRMED when the wifi
-		 * driver is finished taking the device down.
-		 */
+		 
 		mei->csme_taking_ownership = true;
 
 		iwl_mei_cache.ops->rfkill(iwl_mei_cache.priv, true, true);
@@ -879,10 +770,7 @@ static void iwl_mei_handle_rx_host_own_req(struct mei_cl_device *cldev,
 {
 	struct iwl_mei *mei = mei_cldev_get_drvdata(cldev);
 
-	/*
-	 * This means that we can't use the wifi device right now, CSME is not
-	 * ready to let us use it.
-	 */
+	 
 	if (!dw->val) {
 		dev_info(&cldev->dev, "Ownership req denied\n");
 		return;
@@ -894,7 +782,7 @@ static void iwl_mei_handle_rx_host_own_req(struct mei_cl_device *cldev,
 	iwl_mei_send_sap_msg(cldev,
 			     SAP_MSG_NOTIF_HOST_OWNERSHIP_CONFIRMED);
 
-	/* We can now start the connection, unblock rfkill */
+	 
 	if (iwl_mei_cache.ops)
 		iwl_mei_cache.ops->rfkill(iwl_mei_cache.priv, false, false);
 }
@@ -991,11 +879,7 @@ static void iwl_mei_handle_sap_msg(struct mei_cl_device *cldev,
 	SAP_MSG_HANDLER(PLDR_ACK, iwl_mei_handle_pldr_ack,
 			sizeof(struct iwl_sap_pldr_ack_data));
 	default:
-	/*
-	 * This is not really an error, there are message that we decided
-	 * to ignore, yet, it is useful to be able to leave a note if debug
-	 * is enabled.
-	 */
+	 
 	dev_dbg(&cldev->dev, "Unsupported message: type %d, len %d\n",
 		le16_to_cpu(hdr->type), len);
 	}
@@ -1071,7 +955,7 @@ static void iwl_mei_handle_sap_data(struct mei_cl_device *cldev,
 			continue;
 		}
 
-		/* We need enough room for the WiFi header + SNAP + IV */
+		 
 		skb = netdev_alloc_skb(netdev, len + QOS_HDR_IV_SNAP_LEN);
 		if (!skb)
 			continue;
@@ -1090,13 +974,7 @@ static void iwl_mei_handle_sap_data(struct mei_cl_device *cldev,
 		data = skb_put(skb, len);
 		iwl_mei_read_from_q(q_head, q_sz, &rd, wr, data, len);
 
-		/*
-		 * Enqueue the skb here so that it can be sent later when we
-		 * do not hold the mutex. TX'ing a packet with a mutex held is
-		 * possible, but it wouldn't be nice to forbid the TX path to
-		 * call any of iwlmei's functions, since every API from iwlmei
-		 * needs the mutex.
-		 */
+		 
 		__skb_queue_tail(tx_skbs, skb);
 	}
 }
@@ -1130,7 +1008,7 @@ static void iwl_mei_handle_sap_rx_cmd(struct mei_cl_device *cldev,
 		valid_rx_sz -= len;
 	}
 
-	/* valid_rx_sz must be 0 now... */
+	 
 	if (valid_rx_sz)
 		dev_err(&cldev->dev,
 			"More data in the buffer although we read it all\n");
@@ -1166,7 +1044,7 @@ static void iwl_mei_handle_sap_rx(struct mei_cl_device *cldev,
 		iwl_mei_handle_sap_rx_cmd(cldev, q_head, q_sz, rd, wr,
 					  valid_rx_sz);
 
-	/* Increment the read pointer to point to the write pointer */
+	 
 	WRITE_ONCE(notif_q->rd_ptr, cpu_to_le32(wr));
 }
 
@@ -1187,11 +1065,7 @@ static void iwl_mei_handle_check_shared_area(struct mei_cl_device *cldev)
 	q_head = mei->shared_mem.q_head[SAP_DIRECTION_ME_TO_HOST][SAP_QUEUE_IDX_NOTIF];
 	q_sz = mei->shared_mem.q_size[SAP_DIRECTION_ME_TO_HOST][SAP_QUEUE_IDX_NOTIF];
 
-	/*
-	 * Do not hold the mutex here, but rather each and every message
-	 * handler takes it.
-	 * This allows message handlers to take it at a certain time.
-	 */
+	 
 	iwl_mei_handle_sap_rx(cldev, notif_q, q_head, NULL, q_sz);
 
 	mutex_lock(&iwl_mei_mutex);
@@ -1209,13 +1083,7 @@ static void iwl_mei_handle_check_shared_area(struct mei_cl_device *cldev)
 		return;
 	}
 
-	/*
-	 * Take the RCU read lock before we unlock the mutex to make sure that
-	 * even if the netdev is replaced by another non-NULL netdev right after
-	 * we unlock the mutex, the old netdev will still be valid when we
-	 * transmit the frames. We can't allow to replace the netdev here because
-	 * the skbs hold a pointer to the netdev.
-	 */
+	 
 	rcu_read_lock();
 
 	mutex_unlock(&iwl_mei_mutex);
@@ -1380,7 +1248,7 @@ int iwl_mei_pldr_req(void)
 
 	mutex_lock(&iwl_mei_mutex);
 
-	/* In case we didn't have a bind */
+	 
 	if (!iwl_mei_is_connected()) {
 		ret = 0;
 		goto out;
@@ -1408,7 +1276,7 @@ int iwl_mei_pldr_req(void)
 		if (ret)
 			break;
 
-		/* Take the mutex for the next iteration */
+		 
 		mutex_lock(&iwl_mei_mutex);
 	}
 
@@ -1429,7 +1297,7 @@ int iwl_mei_get_ownership(void)
 
 	mutex_lock(&iwl_mei_mutex);
 
-	/* In case we didn't have a bind */
+	 
 	if (!iwl_mei_is_connected()) {
 		ret = 0;
 		goto out;
@@ -1769,16 +1637,13 @@ int iwl_mei_register(void *priv, const struct iwl_mei_ops *ops)
 {
 	int ret;
 
-	/*
-	 * We must have a non-NULL priv pointer to not crash when there are
-	 * multiple WiFi devices.
-	 */
+	 
 	if (!priv)
 		return -EINVAL;
 
 	mutex_lock(&iwl_mei_mutex);
 
-	/* do not allow registration if someone else already registered */
+	 
 	if (iwl_mei_cache.priv || iwl_mei_cache.ops) {
 		ret = -EBUSY;
 		goto out;
@@ -1791,7 +1656,7 @@ int iwl_mei_register(void *priv, const struct iwl_mei_ops *ops)
 		struct iwl_mei *mei =
 			mei_cldev_get_drvdata(iwl_mei_global_cldev);
 
-		/* we have already a SAP connection */
+		 
 		if (iwl_mei_is_connected()) {
 			if (mei->amt_enabled)
 				iwl_mei_send_sap_msg(mei->cldev,
@@ -1811,7 +1676,7 @@ void iwl_mei_start_unregister(void)
 {
 	mutex_lock(&iwl_mei_mutex);
 
-	/* At this point, the wifi driver should have removed the netdev */
+	 
 	if (rcu_access_pointer(iwl_mei_cache.netdev))
 		pr_err("Still had a netdev pointer set upon unregister\n");
 
@@ -1820,7 +1685,7 @@ void iwl_mei_start_unregister(void)
 	kfree(iwl_mei_cache.power_limit);
 	iwl_mei_cache.power_limit = NULL;
 	iwl_mei_cache.ops = NULL;
-	/* leave iwl_mei_cache.priv non-NULL to prevent any new registration */
+	 
 
 	mutex_unlock(&iwl_mei_mutex);
 }
@@ -1916,7 +1781,7 @@ static void iwl_mei_dbgfs_unregister(struct iwl_mei *mei)
 static void iwl_mei_dbgfs_register(struct iwl_mei *mei) {}
 static void iwl_mei_dbgfs_unregister(struct iwl_mei *mei) {}
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static void iwl_mei_ownership_dwork(struct work_struct *wk)
 {
@@ -1925,14 +1790,7 @@ static void iwl_mei_ownership_dwork(struct work_struct *wk)
 
 #define ALLOC_SHARED_MEM_RETRY_MAX_NUM	3
 
-/*
- * iwl_mei_probe - the probe function called by the mei bus enumeration
- *
- * This allocates the data needed by iwlmei and sets a pointer to this data
- * into the mei_cl_device's drvdata.
- * It starts the SAP protocol by sending the SAP_ME_MSG_START without
- * waiting for the answer. The answer will be caught later by the Rx callback.
- */
+ 
 static int iwl_mei_probe(struct mei_cl_device *cldev,
 			 const struct mei_cl_device_id *id)
 {
@@ -1962,14 +1820,7 @@ static int iwl_mei_probe(struct mei_cl_device *cldev,
 		ret = iwl_mei_alloc_shared_mem(cldev);
 		if (!ret)
 			break;
-		/*
-		 * The CSME firmware needs to boot the internal WLAN client.
-		 * This can take time in certain configurations (usually
-		 * upon resume and when the whole CSME firmware is shut down
-		 * during suspend).
-		 *
-		 * Wait a bit before retrying and hope we'll succeed next time.
-		 */
+		 
 
 		dev_dbg(&cldev->dev,
 			"Couldn't allocate the shared memory: %d, attempt %d / %d\n",
@@ -1992,17 +1843,14 @@ static int iwl_mei_probe(struct mei_cl_device *cldev,
 
 	iwl_mei_dbgfs_register(mei);
 
-	/*
-	 * We now have a Rx function in place, start the SAP protocol
-	 * we expect to get the SAP_ME_MSG_START_OK response later on.
-	 */
+	 
 	mutex_lock(&iwl_mei_mutex);
 	ret = iwl_mei_send_start(cldev);
 	mutex_unlock(&iwl_mei_mutex);
 	if (ret)
 		goto debugfs_unregister;
 
-	/* must be last */
+	 
 	iwl_mei_global_cldev = cldev;
 
 	return 0;
@@ -2027,19 +1875,12 @@ static void iwl_mei_remove(struct mei_cl_device *cldev)
 	struct iwl_mei *mei = mei_cldev_get_drvdata(cldev);
 	int i;
 
-	/*
-	 * We are being removed while the bus is active, it means we are
-	 * going to suspend/ shutdown, so the NIC will disappear.
-	 */
+	 
 	if (mei_cldev_enabled(cldev) && iwl_mei_cache.ops) {
 		unsigned int iter = IWLMEI_DEVICE_DOWN_WAIT_ITERATION;
 		bool down = false;
 
-		/*
-		 * In case of suspend, wait for the mac to stop and don't remove
-		 * the interface. This will allow the interface to come back
-		 * on resume.
-		 */
+		 
 		while (!down && iter--) {
 			mdelay(1);
 
@@ -2055,17 +1896,11 @@ static void iwl_mei_remove(struct mei_cl_device *cldev)
 	if (rcu_access_pointer(iwl_mei_cache.netdev)) {
 		struct net_device *dev;
 
-		/*
-		 * First take rtnl and only then the mutex to avoid an ABBA
-		 * with iwl_mei_set_netdev()
-		 */
+		 
 		rtnl_lock();
 		mutex_lock(&iwl_mei_mutex);
 
-		/*
-		 * If we are suspending and the wifi driver hasn't removed it's netdev
-		 * yet, do it now. In any case, don't change the cache.netdev pointer.
-		 */
+		 
 		dev = rcu_dereference_protected(iwl_mei_cache.netdev,
 						lockdep_is_held(&iwl_mei_mutex));
 
@@ -2076,9 +1911,7 @@ static void iwl_mei_remove(struct mei_cl_device *cldev)
 
 	mutex_lock(&iwl_mei_mutex);
 
-	/* Tell CSME that we are going down so that it won't access the
-	 * memory anymore, make sure this message goes through immediately.
-	 */
+	 
 	mei->csa_throttled = false;
 	iwl_mei_send_sap_msg(mei->cldev,
 			     SAP_MSG_NOTIF_HOST_GOES_DOWN);
@@ -2090,24 +1923,14 @@ static void iwl_mei_remove(struct mei_cl_device *cldev)
 		msleep(20);
 	}
 
-	/* If we couldn't make sure that CSME saw the HOST_GOES_DOWN
-	 * message, it means that it will probably keep reading memory
-	 * that we are going to unmap and free, expect IOMMU error
-	 * messages.
-	 */
+	 
 	if (i == SEND_SAP_MAX_WAIT_ITERATION)
 		dev_err(&mei->cldev->dev,
 			"Couldn't get ACK from CSME on HOST_GOES_DOWN message\n");
 
 	mutex_unlock(&iwl_mei_mutex);
 
-	/*
-	 * This looks strange, but this lock is taken here to make sure that
-	 * iwl_mei_add_data_to_ring called from the Tx path sees that we
-	 * clear the IWL_MEI_STATUS_SAP_CONNECTED bit.
-	 * Rx isn't a problem because the rx_handler can't be called after
-	 * having been unregistered.
-	 */
+	 
 	spin_lock_bh(&mei->data_q_lock);
 	clear_bit(IWL_MEI_STATUS_SAP_CONNECTED, &iwl_mei_status);
 	spin_unlock_bh(&mei->data_q_lock);
@@ -2115,29 +1938,16 @@ static void iwl_mei_remove(struct mei_cl_device *cldev)
 	if (iwl_mei_cache.ops)
 		iwl_mei_cache.ops->rfkill(iwl_mei_cache.priv, false, false);
 
-	/*
-	 * mei_cldev_disable will return only after all the MEI Rx is done.
-	 * It must be called when iwl_mei_mutex is *not* held, since it waits
-	 * for our Rx handler to complete.
-	 * After it returns, no new Rx will start.
-	 */
+	 
 	mei_cldev_disable(cldev);
 
-	/*
-	 * Since the netdev was already removed and the netdev's removal
-	 * includes a call to synchronize_net() so that we know there won't be
-	 * any new Rx that will trigger the following workers.
-	 */
+	 
 	cancel_work_sync(&mei->send_csa_msg_wk);
 	cancel_delayed_work_sync(&mei->csa_throttle_end_wk);
 	cancel_work_sync(&mei->netdev_work);
 	cancel_delayed_work_sync(&mei->ownership_dwork);
 
-	/*
-	 * If someone waits for the ownership, let him know that we are going
-	 * down and that we are not connected anymore. He'll be able to take
-	 * the device.
-	 */
+	 
 	wake_up_all(&mei->get_ownership_wq);
 	wake_up_all(&mei->pldr_wq);
 
@@ -2169,14 +1979,11 @@ static const struct mei_cl_device_id iwl_mei_tbl[] = {
 		.version = MEI_CL_VERSION_ANY,
 	},
 
-	/* required last entry */
+	 
 	{ }
 };
 
-/*
- * Do not export the device table because this module is loaded by
- * iwlwifi's dependency.
- */
+ 
 
 static struct mei_cl_driver iwl_mei_cl_driver = {
 	.id_table = iwl_mei_tbl,

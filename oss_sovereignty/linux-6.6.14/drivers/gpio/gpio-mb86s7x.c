@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/gpio/gpio-mb86s7x.c
- *
- *  Copyright (C) 2015 Fujitsu Semiconductor Limited
- *  Copyright (C) 2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/io.h>
@@ -23,10 +18,7 @@
 #include "gpiolib.h"
 #include "gpiolib-acpi.h"
 
-/*
- * Only first 8bits of a register correspond to each pin,
- * so there are 4 registers for 32 pins.
- */
+ 
 #define PDR(x)	(0x0 + x / 8 * 4)
 #define DDR(x)	(0x10 + x / 8 * 4)
 #define PFR(x)	(0x20 + x / 8 * 4)
@@ -218,14 +210,14 @@ static int mb86s70_gpio_remove(struct platform_device *pdev)
 
 static const struct of_device_id mb86s70_gpio_dt_ids[] = {
 	{ .compatible = "fujitsu,mb86s70-gpio" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mb86s70_gpio_dt_ids);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id mb86s70_gpio_acpi_ids[] = {
 	{ "SCX0007" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, mb86s70_gpio_acpi_ids);
 #endif

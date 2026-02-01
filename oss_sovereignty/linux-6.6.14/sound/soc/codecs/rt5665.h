@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt5665.h  --  RT5665/RT5658 ALSA SoC audio driver
- *
- * Copyright 2016 Realtek Microelectronics
- * Author: Bard Liao <bardliao@realtek.com>
- */
+ 
+ 
 
 #ifndef __RT5665_H__
 #define __RT5665_H__
@@ -13,12 +8,12 @@
 
 #define DEVICE_ID 0x6451
 
-/* Info */
+ 
 #define RT5665_RESET				0x0000
 #define RT5665_VENDOR_ID			0x00fd
 #define RT5665_VENDOR_ID_1			0x00fe
 #define RT5665_DEVICE_ID			0x00ff
-/*  I/O - Output */
+ 
 #define RT5665_LOUT				0x0001
 #define RT5665_HP_CTRL_1			0x0002
 #define RT5665_HP_CTRL_2			0x0003
@@ -27,13 +22,13 @@
 #define RT5665_HPR_GAIN				0x0006
 #define RT5665_MONO_GAIN			0x0007
 
-/* I/O - Input */
+ 
 #define RT5665_CAL_BST_CTRL			0x000a
 #define RT5665_CBJ_BST_CTRL			0x000b
 #define RT5665_IN1_IN2				0x000c
 #define RT5665_IN3_IN4				0x000d
 #define RT5665_INL1_INR1_VOL			0x000f
-/* I/O - Speaker */
+ 
 #define RT5665_EJD_CTRL_1			0x0010
 #define RT5665_EJD_CTRL_2			0x0011
 #define RT5665_EJD_CTRL_3			0x0012
@@ -41,7 +36,7 @@
 #define RT5665_EJD_CTRL_5			0x0014
 #define RT5665_EJD_CTRL_6			0x0015
 #define RT5665_EJD_CTRL_7			0x0016
-/* I/O - ADC/DAC/DMIC */
+ 
 #define RT5665_DAC2_CTRL			0x0017
 #define RT5665_DAC2_DIG_VOL			0x0018
 #define RT5665_DAC1_DIG_VOL			0x0019
@@ -55,7 +50,7 @@
 #define RT5665_STO2_ADC_BOOST			0x0021
 #define RT5665_HP_IMP_GAIN_1			0x0022
 #define RT5665_HP_IMP_GAIN_2			0x0023
-/* Mixer - D-D */
+ 
 #define RT5665_STO1_ADC_MIXER			0x0026
 #define RT5665_MONO_ADC_MIXER			0x0027
 #define RT5665_STO2_ADC_MIXER			0x0028
@@ -67,13 +62,13 @@
 #define RT5665_A_DAC2_MUX			0x002e
 #define RT5665_DIG_INF2_DATA			0x002f
 #define RT5665_DIG_INF3_DATA			0x0030
-/* Mixer - PDM */
+ 
 #define RT5665_PDM_OUT_CTRL			0x0031
 #define RT5665_PDM_DATA_CTRL_1			0x0032
 #define RT5665_PDM_DATA_CTRL_2			0x0033
 #define RT5665_PDM_DATA_CTRL_3			0x0034
 #define RT5665_PDM_DATA_CTRL_4			0x0035
-/* Mixer - ADC */
+ 
 #define RT5665_REC1_GAIN			0x003a
 #define RT5665_REC1_L1_MIXER			0x003b
 #define RT5665_REC1_L2_MIXER			0x003c
@@ -85,7 +80,7 @@
 #define RT5665_REC2_R1_MIXER			0x0042
 #define RT5665_REC2_R2_MIXER			0x0043
 #define RT5665_CAL_REC				0x0044
-/* Mixer - DAC */
+ 
 #define RT5665_ALC_BACK_GAIN			0x0049
 #define RT5665_MONOMIX_GAIN			0x004a
 #define RT5665_MONOMIX_IN_GAIN			0x004b
@@ -94,7 +89,7 @@
 #define RT5665_OUT_R_GAIN			0x004f
 #define RT5665_OUT_R_MIXER			0x0050
 #define RT5665_LOUT_MIXER			0x0052
-/* Power */
+ 
 #define RT5665_PWR_DIG_1			0x0061
 #define RT5665_PWR_DIG_2			0x0062
 #define RT5665_PWR_ANLG_1			0x0063
@@ -102,14 +97,14 @@
 #define RT5665_PWR_ANLG_3			0x0065
 #define RT5665_PWR_MIXER			0x0066
 #define RT5665_PWR_VOL				0x0067
-/* Clock Detect */
+ 
 #define RT5665_CLK_DET				0x006b
-/* Filter */
+ 
 #define RT5665_HPF_CTRL1			0x006d
-/* DMIC */
+ 
 #define RT5665_DMIC_CTRL_1			0x006e
 #define RT5665_DMIC_CTRL_2			0x006f
-/* Format - ADC/DAC */
+ 
 #define RT5665_I2S1_SDP				0x0070
 #define RT5665_I2S2_SDP				0x0071
 #define RT5665_I2S3_SDP				0x0072
@@ -117,7 +112,7 @@
 #define RT5665_ADDA_CLK_2			0x0074
 #define RT5665_I2S1_F_DIV_CTRL_1		0x0075
 #define RT5665_I2S1_F_DIV_CTRL_2		0x0076
-/* Format - TDM Control */
+ 
 #define RT5665_TDM_CTRL_1			0x0078
 #define RT5665_TDM_CTRL_2			0x0079
 #define RT5665_TDM_CTRL_3			0x007a
@@ -126,7 +121,7 @@
 #define RT5665_TDM_CTRL_6			0x007d
 #define RT5665_TDM_CTRL_7			0x007e
 #define RT5665_TDM_CTRL_8			0x007f
-/* Function - Analog */
+ 
 #define RT5665_GLB_CLK				0x0080
 #define RT5665_PLL_CTRL_1			0x0081
 #define RT5665_PLL_CTRL_2			0x0082
@@ -155,7 +150,7 @@
 #define RT5665_I2S2_F_DIV_CTRL_2		0x00a2
 #define RT5665_I2S3_F_DIV_CTRL_1		0x00a3
 #define RT5665_I2S3_F_DIV_CTRL_2		0x00a4
-/* Function - Digital */
+ 
 #define RT5665_EQ_CTRL_1			0x00ae
 #define RT5665_EQ_CTRL_2			0x00af
 #define RT5665_IRQ_CTRL_1			0x00b6
@@ -197,7 +192,7 @@
 #define RT5665_JD_CTRL_1			0x00f6
 #define RT5665_JD_CTRL_2			0x00f7
 #define RT5665_JD_CTRL_3			0x00f8
-/* General Control */
+ 
 #define RT5665_DIG_MISC				0x00fa
 #define RT5665_DUMMY_2				0x00fb
 #define RT5665_DUMMY_3				0x00fc
@@ -427,7 +422,7 @@
 
 
 
-/* global definition */
+ 
 #define RT5665_L_MUTE				(0x1 << 15)
 #define RT5665_L_MUTE_SFT			15
 #define RT5665_VOL_L_MUTE			(0x1 << 14)
@@ -441,17 +436,17 @@
 #define RT5665_R_VOL_MASK			(0x3f)
 #define RT5665_R_VOL_SFT			0
 
-/*Headphone Amp L/R Analog Gain and Digital NG2 Gain Control (0x0005 0x0006)*/
+ 
 #define RT5665_G_HP				(0xf << 8)
 #define RT5665_G_HP_SFT				8
 #define RT5665_G_STO_DA_DMIX			(0xf)
 #define RT5665_G_STO_DA_SFT			0
 
-/* CBJ Control (0x000b) */
+ 
 #define RT5665_BST_CBJ_MASK			(0xf << 8)
 #define RT5665_BST_CBJ_SFT			8
 
-/* IN1/IN2 Control (0x000c) */
+ 
 #define RT5665_IN1_DF_MASK			(0x1 << 15)
 #define RT5665_IN1_DF				15
 #define RT5665_BST1_MASK			(0x7f << 8)
@@ -461,7 +456,7 @@
 #define RT5665_BST2_MASK			(0x7f)
 #define RT5665_BST2_SFT				0
 
-/* IN3/IN4 Control (0x000d) */
+ 
 #define RT5665_IN3_DF_MASK			(0x1 << 15)
 #define RT5665_IN3_DF				15
 #define RT5665_BST3_MASK			(0x7f << 8)
@@ -471,13 +466,13 @@
 #define RT5665_BST4_MASK			(0x7f)
 #define RT5665_BST4_SFT				0
 
-/* INL and INR Volume Control (0x000f) */
+ 
 #define RT5665_INL_VOL_MASK			(0x1f << 8)
 #define RT5665_INL_VOL_SFT			8
 #define RT5665_INR_VOL_MASK			(0x1f)
 #define RT5665_INR_VOL_SFT			0
 
-/* Embeeded Jack and Type Detection Control 1 (0x0010) */
+ 
 #define RT5665_EMB_JD_EN			(0x1 << 15)
 #define RT5665_EMB_JD_EN_SFT			15
 #define RT5665_JD_MODE				(0x1 << 13)
@@ -502,7 +497,7 @@
 #define RT5665_TRIG_JD_HIGH			(0x1 << 3)
 #define RT5665_TRIG_JD_LOW			(0x0 << 3)
 
-/* Embeeded Jack and Type Detection Control 2 (0x0011) */
+ 
 #define RT5665_EXT_JD_SRC			(0x7 << 4)
 #define RT5665_EXT_JD_SRC_SFT			4
 #define RT5665_EXT_JD_SRC_GPIO_JD1		(0x0 << 4)
@@ -513,7 +508,7 @@
 #define RT5665_EXT_JD_SRC_JD3			(0x5 << 4)
 #define RT5665_EXT_JD_SRC_MANUAL		(0x6 << 4)
 
-/* Combo Jack and Type Detection Control 4 (0x0013) */
+ 
 #define RT5665_SEL_SHT_MID_TON_MASK		(0x3 << 12)
 #define RT5665_SEL_SHT_MID_TON_2		(0x0 << 12)
 #define RT5665_SEL_SHT_MID_TON_3		(0x1 << 12)
@@ -521,12 +516,12 @@
 #define RT5665_CBJ_JD_TEST_NORM			(0x0 << 6)
 #define RT5665_CBJ_JD_TEST_MODE			(0x1 << 6)
 
-/* Slience Detection Control (0x0015) */
+ 
 #define RT5665_SIL_DET_MASK			(0x1 << 15)
 #define RT5665_SIL_DET_DIS			(0x0 << 15)
 #define RT5665_SIL_DET_EN			(0x1 << 15)
 
-/* DAC2 Control (0x0017) */
+ 
 #define RT5665_M_DAC2_L_VOL			(0x1 << 13)
 #define RT5665_M_DAC2_L_VOL_SFT			13
 #define RT5665_M_DAC2_R_VOL			(0x1 << 12)
@@ -536,25 +531,25 @@
 #define RT5665_DAC_R2_SEL_MASK			(0x7 << 0)
 #define RT5665_DAC_R2_SEL_SFT			0
 
-/* Sidetone Control (0x0018) */
+ 
 #define RT5665_ST_SEL_MASK			(0x7 << 9)
 #define RT5665_ST_SEL_SFT			9
 #define RT5665_ST_EN				(0x1 << 6)
 #define RT5665_ST_EN_SFT			6
 
-/* DAC1 Digital Volume (0x0019) */
+ 
 #define RT5665_DAC_L1_VOL_MASK			(0xff << 8)
 #define RT5665_DAC_L1_VOL_SFT			8
 #define RT5665_DAC_R1_VOL_MASK			(0xff)
 #define RT5665_DAC_R1_VOL_SFT			0
 
-/* DAC2 Digital Volume (0x001a) */
+ 
 #define RT5665_DAC_L2_VOL_MASK			(0xff << 8)
 #define RT5665_DAC_L2_VOL_SFT			8
 #define RT5665_DAC_R2_VOL_MASK			(0xff)
 #define RT5665_DAC_R2_VOL_SFT			0
 
-/* DAC3 Control (0x001b) */
+ 
 #define RT5665_M_DAC3_L_VOL			(0x1 << 13)
 #define RT5665_M_DAC3_L_VOL_SFT			13
 #define RT5665_M_DAC3_R_VOL			(0x1 << 12)
@@ -564,37 +559,37 @@
 #define RT5665_DAC_R3_SEL_MASK			(0x7 << 0)
 #define RT5665_DAC_R3_SEL_SFT			0
 
-/* ADC Digital Volume Control (0x001c) */
+ 
 #define RT5665_ADC_L_VOL_MASK			(0x7f << 8)
 #define RT5665_ADC_L_VOL_SFT			8
 #define RT5665_ADC_R_VOL_MASK			(0x7f)
 #define RT5665_ADC_R_VOL_SFT			0
 
-/* Mono ADC Digital Volume Control (0x001d) */
+ 
 #define RT5665_MONO_ADC_L_VOL_MASK		(0x7f << 8)
 #define RT5665_MONO_ADC_L_VOL_SFT		8
 #define RT5665_MONO_ADC_R_VOL_MASK		(0x7f)
 #define RT5665_MONO_ADC_R_VOL_SFT		0
 
-/* Stereo1 ADC Boost Gain Control (0x001f) */
+ 
 #define RT5665_STO1_ADC_L_BST_MASK		(0x3 << 14)
 #define RT5665_STO1_ADC_L_BST_SFT		14
 #define RT5665_STO1_ADC_R_BST_MASK		(0x3 << 12)
 #define RT5665_STO1_ADC_R_BST_SFT		12
 
-/* Mono ADC Boost Gain Control (0x0020) */
+ 
 #define RT5665_MONO_ADC_L_BST_MASK		(0x3 << 14)
 #define RT5665_MONO_ADC_L_BST_SFT		14
 #define RT5665_MONO_ADC_R_BST_MASK		(0x3 << 12)
 #define RT5665_MONO_ADC_R_BST_SFT		12
 
-/* Stereo1 ADC Boost Gain Control (0x001f) */
+ 
 #define RT5665_STO2_ADC_L_BST_MASK		(0x3 << 14)
 #define RT5665_STO2_ADC_L_BST_SFT		14
 #define RT5665_STO2_ADC_R_BST_MASK		(0x3 << 12)
 #define RT5665_STO2_ADC_R_BST_SFT		12
 
-/* Stereo1 ADC Mixer Control (0x0026) */
+ 
 #define RT5665_M_STO1_ADC_L1			(0x1 << 15)
 #define RT5665_M_STO1_ADC_L1_SFT		15
 #define RT5665_M_STO1_ADC_L2			(0x1 << 14)
@@ -627,7 +622,7 @@
 #define RT5665_STO1_DD_R_SRC_SFT		0
 
 
-/* Mono1 ADC Mixer control (0x0027) */
+ 
 #define RT5665_M_MONO_ADC_L1			(0x1 << 15)
 #define RT5665_M_MONO_ADC_L1_SFT		15
 #define RT5665_M_MONO_ADC_L2			(0x1 << 14)
@@ -657,7 +652,7 @@
 #define RT5665_MONO_DMIC_R_SRC_MASK		0x1
 #define RT5665_MONO_DMIC_R_SRC_SFT		0
 
-/* Stereo2 ADC Mixer Control (0x0028) */
+ 
 #define RT5665_M_STO2_ADC_L1			(0x1 << 15)
 #define RT5665_M_STO2_ADC_L1_UN			(0x0 << 15)
 #define RT5665_M_STO2_ADC_L1_SFT		15
@@ -691,7 +686,7 @@
 #define RT5665_STO2_DD_R_SRC_MASK		(0x1 << 1)
 #define RT5665_STO2_DD_R_SRC_SFT		1
 
-/* ADC Mixer to DAC Mixer Control (0x0029) */
+ 
 #define RT5665_M_ADCMIX_L			(0x1 << 15)
 #define RT5665_M_ADCMIX_L_SFT			15
 #define RT5665_M_DAC1_L				(0x1 << 14)
@@ -705,7 +700,7 @@
 #define RT5665_M_DAC1_R				(0x1 << 6)
 #define RT5665_M_DAC1_R_SFT			6
 
-/* Stereo1 DAC Mixer Control (0x002a) */
+ 
 #define RT5665_M_DAC_L1_STO_L			(0x1 << 15)
 #define RT5665_M_DAC_L1_STO_L_SFT		15
 #define RT5665_G_DAC_L1_STO_L_MASK		(0x1 << 14)
@@ -739,7 +734,7 @@
 #define RT5665_G_DAC_R2_STO_R_MASK		(0x1)
 #define RT5665_G_DAC_R2_STO_R_SFT		0
 
-/* Mono DAC Mixer Control (0x002b) */
+ 
 #define RT5665_M_DAC_L1_MONO_L			(0x1 << 15)
 #define RT5665_M_DAC_L1_MONO_L_SFT		15
 #define RT5665_G_DAC_L1_MONO_L_MASK		(0x1 << 14)
@@ -773,7 +768,7 @@
 #define RT5665_G_DAC_R2_MONO_R_MASK		(0x1)
 #define RT5665_G_DAC_R2_MONO_R_SFT		0
 
-/* Stereo2 DAC Mixer Control (0x002c) */
+ 
 #define RT5665_M_DAC_L1_STO2_L			(0x1 << 15)
 #define RT5665_M_DAC_L1_STO2_L_SFT		15
 #define RT5665_G_DAC_L1_STO2_L_MASK		(0x1 << 14)
@@ -803,7 +798,7 @@
 #define RT5665_G_DAC_R3_STO2_R_MASK		(0x1 << 2)
 #define RT5665_G_DAC_R3_STO2_R_SFT		2
 
-/* Analog DAC1 Input Source Control (0x002d) */
+ 
 #define RT5665_DAC_MIX_L_MASK			(0x3 << 12)
 #define RT5665_DAC_MIX_L_SFT			12
 #define RT5665_DAC_MIX_R_MASK			(0x3 << 8)
@@ -813,13 +808,13 @@
 #define RT5665_DAC_R1_SRC_MASK			(0x3)
 #define RT5665_A_DACR1_SFT			0
 
-/* Analog DAC Input Source Control (0x002e) */
+ 
 #define RT5665_A_DACL2_SEL			(0x1 << 4)
 #define RT5665_A_DACL2_SFT			4
 #define RT5665_A_DACR2_SEL			(0x1 << 0)
 #define RT5665_A_DACR2_SFT			0
 
-/* Digital Interface Data Control (0x002f) */
+ 
 #define RT5665_IF2_1_ADC_IN_MASK		(0x7 << 12)
 #define RT5665_IF2_1_ADC_IN_SFT			12
 #define RT5665_IF2_1_DAC_SEL_MASK		(0x3 << 10)
@@ -833,7 +828,7 @@
 #define RT5665_IF2_2_ADC_SEL_MASK		(0x3 << 0)
 #define RT5665_IF2_2_ADC_SEL_SFT		0
 
-/* Digital Interface Data Control (0x0030) */
+ 
 #define RT5665_IF3_ADC_IN_MASK			(0x7 << 4)
 #define RT5665_IF3_ADC_IN_SFT			4
 #define RT5665_IF3_DAC_SEL_MASK			(0x3 << 2)
@@ -841,7 +836,7 @@
 #define RT5665_IF3_ADC_SEL_MASK			(0x3 << 0)
 #define RT5665_IF3_ADC_SEL_SFT			0
 
-/* PDM Output Control (0x0031) */
+ 
 #define RT5665_M_PDM1_L				(0x1 << 14)
 #define RT5665_M_PDM1_L_SFT			14
 #define RT5665_M_PDM1_R				(0x1 << 12)
@@ -856,11 +851,11 @@
 #define RT5665_LRCK_PDM_PI2C			(0x1 << 3)
 #define RT5665_PDM_DIV_MASK			(0x3)
 
-/*S/PDIF Output Control (0x0036) */
+ 
 #define RT5665_SPDIF_SEL_MASK			(0x3 << 0)
 #define RT5665_SPDIF_SEL_SFT			0
 
-/* REC Left Mixer Control 2 (0x003c) */
+ 
 #define RT5665_M_CBJ_RM1_L			(0x1 << 7)
 #define RT5665_M_CBJ_RM1_L_SFT			7
 #define RT5665_M_BST1_RM1_L			(0x1 << 5)
@@ -876,7 +871,7 @@
 #define RT5665_M_INR_RM1_L			(0x1)
 #define RT5665_M_INR_RM1_L_SFT			0
 
-/* REC Right Mixer Control 2 (0x003e) */
+ 
 #define RT5665_M_AEC_REF_RM1_R			(0x1 << 7)
 #define RT5665_M_AEC_REF_RM1_R_SFT		7
 #define RT5665_M_BST1_RM1_R			(0x1 << 5)
@@ -892,7 +887,7 @@
 #define RT5665_M_MONOVOL_RM1_R			(0x1)
 #define RT5665_M_MONOVOL_RM1_R_SFT		0
 
-/* REC Mixer 2 Left Control 2 (0x0041) */
+ 
 #define RT5665_M_CBJ_RM2_L			(0x1 << 7)
 #define RT5665_M_CBJ_RM2_L_SFT			7
 #define RT5665_M_BST1_RM2_L			(0x1 << 5)
@@ -908,7 +903,7 @@
 #define RT5665_M_INR_RM2_L			(0x1)
 #define RT5665_M_INR_RM2_L_SFT			0
 
-/* REC Mixer 2 Right Control 2 (0x0043) */
+ 
 #define RT5665_M_MONOVOL_RM2_R			(0x1 << 7)
 #define RT5665_M_MONOVOL_RM2_R_SFT		7
 #define RT5665_M_BST1_RM2_R			(0x1 << 5)
@@ -924,7 +919,7 @@
 #define RT5665_M_INR_RM2_R			(0x1)
 #define RT5665_M_INR_RM2_R_SFT			0
 
-/* SPK Left Mixer Control (0x0046) */
+ 
 #define RT5665_M_BST3_SM_L			(0x1 << 4)
 #define RT5665_M_BST3_SM_L_SFT			4
 #define RT5665_M_IN_R_SM_L			(0x1 << 3)
@@ -936,7 +931,7 @@
 #define RT5665_M_DAC_L2_SM_L			(0x1)
 #define RT5665_M_DAC_L2_SM_L_SFT		0
 
-/* SPK Right Mixer Control (0x0047) */
+ 
 #define RT5665_M_BST3_SM_R			(0x1 << 4)
 #define RT5665_M_BST3_SM_R_SFT			4
 #define RT5665_M_IN_R_SM_R			(0x1 << 3)
@@ -948,7 +943,7 @@
 #define RT5665_M_DAC_R2_SM_R			(0x1)
 #define RT5665_M_DAC_R2_SM_R_SFT		0
 
-/* SPO Amp Input and Gain Control (0x0048) */
+ 
 #define RT5665_M_DAC_L2_SPKOMIX			(0x1 << 13)
 #define RT5665_M_DAC_L2_SPKOMIX_SFT		13
 #define RT5665_M_SPKVOLL_SPKOMIX		(0x1 << 12)
@@ -958,7 +953,7 @@
 #define RT5665_M_SPKVOLR_SPKOMIX		(0x1 << 8)
 #define RT5665_M_SPKVOLR_SPKOMIX_SFT		8
 
-/* MONOMIX Input and Gain Control (0x004b) */
+ 
 #define RT5665_G_MONOVOL_MA			(0x1 << 10)
 #define RT5665_G_MONOVOL_MA_SFT			10
 #define RT5665_M_MONOVOL_MA			(0x1 << 9)
@@ -976,7 +971,7 @@
 #define RT5665_M_DAC_L2_MM			(0x1)
 #define RT5665_M_DAC_L2_MM_SFT			0
 
-/* Output Left Mixer Control 1 (0x004d) */
+ 
 #define RT5665_G_BST3_OM_L_MASK			(0x7 << 12)
 #define RT5665_G_BST3_OM_L_SFT			12
 #define RT5665_G_BST2_OM_L_MASK			(0x7 << 9)
@@ -988,7 +983,7 @@
 #define RT5665_G_DAC_L2_OM_L_MASK		(0x7 << 0)
 #define RT5665_G_DAC_L2_OM_L_SFT		0
 
-/* Output Left Mixer Input Control (0x004e) */
+ 
 #define RT5665_M_BST3_OM_L			(0x1 << 4)
 #define RT5665_M_BST3_OM_L_SFT			4
 #define RT5665_M_BST2_OM_L			(0x1 << 3)
@@ -1000,7 +995,7 @@
 #define RT5665_M_DAC_L2_OM_L			(0x1)
 #define RT5665_M_DAC_L2_OM_L_SFT		0
 
-/* Output Right Mixer Input Control (0x0050) */
+ 
 #define RT5665_M_BST4_OM_R			(0x1 << 4)
 #define RT5665_M_BST4_OM_R_SFT			4
 #define RT5665_M_BST3_OM_R			(0x1 << 3)
@@ -1012,7 +1007,7 @@
 #define RT5665_M_DAC_R2_OM_R			(0x1)
 #define RT5665_M_DAC_R2_OM_R_SFT		0
 
-/* LOUT Mixer Control (0x0052) */
+ 
 #define RT5665_M_DAC_L2_LM			(0x1 << 15)
 #define RT5665_M_DAC_L2_LM_SFT			15
 #define RT5665_M_DAC_R2_LM			(0x1 << 14)
@@ -1025,7 +1020,7 @@
 #define RT5665_LOUT_DF				(0x1 << 11)
 #define RT5665_LOUT_DF_SFT			11
 
-/* Power Management for Digital 1 (0x0061) */
+ 
 #define RT5665_PWR_I2S1_1			(0x1 << 15)
 #define RT5665_PWR_I2S1_1_BIT			15
 #define RT5665_PWR_I2S1_2			(0x1 << 14)
@@ -1055,7 +1050,7 @@
 #define RT5665_PWR_ADC_R2			(0x1 << 1)
 #define RT5665_PWR_ADC_R2_BIT			1
 
-/* Power Management for Digital 2 (0x0062) */
+ 
 #define RT5665_PWR_ADC_S1F			(0x1 << 15)
 #define RT5665_PWR_ADC_S1F_BIT			15
 #define RT5665_PWR_ADC_S2F			(0x1 << 14)
@@ -1075,7 +1070,7 @@
 #define RT5665_PWR_PDM1				(0x1 << 7)
 #define RT5665_PWR_PDM1_BIT			7
 
-/* Power Management for Analog 1 (0x0063) */
+ 
 #define RT5665_PWR_VREF1			(0x1 << 15)
 #define RT5665_PWR_VREF1_BIT			15
 #define RT5665_PWR_FV1				(0x1 << 14)
@@ -1110,7 +1105,7 @@
 #define RT5665_LDO1_DVO_12			(0x2)
 #define RT5665_LDO1_DVO_14			(0x3)
 
-/* Power Management for Analog 2 (0x0064) */
+ 
 #define RT5665_PWR_BST1				(0x1 << 15)
 #define RT5665_PWR_BST1_BIT			15
 #define RT5665_PWR_BST2				(0x1 << 14)
@@ -1144,7 +1139,7 @@
 #define RT5665_PWR_RM1_R			(0x1)
 #define RT5665_PWR_RM1_R_BIT			0
 
-/* Power Management for Analog 3 (0x0065) */
+ 
 #define RT5665_PWR_CBJ				(0x1 << 9)
 #define RT5665_PWR_CBJ_BIT			9
 #define RT5665_PWR_BST_L			(0x1 << 8)
@@ -1158,7 +1153,7 @@
 #define RT5665_PWR_SVD				(0x1 << 1)
 #define RT5665_PWR_SVD_BIT			1
 
-/* Power Management for Mixer (0x0066) */
+ 
 #define RT5665_PWR_RM2_L			(0x1 << 15)
 #define RT5665_PWR_RM2_L_BIT			15
 #define RT5665_PWR_RM2_R			(0x1 << 14)
@@ -1184,7 +1179,7 @@
 #define RT5665_PWR_STO2_DAC_R			(0x1)
 #define RT5665_PWR_STO2_DAC_R_BIT		0
 
-/* Power Management for Volume (0x0067) */
+ 
 #define RT5665_PWR_OV_L				(0x1 << 13)
 #define RT5665_PWR_OV_L_BIT			13
 #define RT5665_PWR_OV_R				(0x1 << 12)
@@ -1198,14 +1193,14 @@
 #define RT5665_PWR_MIC_DET			(0x1 << 5)
 #define RT5665_PWR_MIC_DET_BIT			5
 
-/* (0x006b) */
+ 
 #define RT5665_SYS_CLK_DET			15
 #define RT5665_HP_CLK_DET			14
 #define RT5665_MONO_CLK_DET			13
 #define RT5665_LOUT_CLK_DET			12
 #define RT5665_POW_CLK_DET			0
 
-/* Digital Microphone Control 1 (0x006e) */
+ 
 #define RT5665_DMIC_1_EN_MASK			(0x1 << 15)
 #define RT5665_DMIC_1_EN_SFT			15
 #define RT5665_DMIC_1_DIS			(0x0 << 15)
@@ -1226,7 +1221,7 @@
 #define RT5665_DMIC_1_DP_IN2N			(0x1 << 1)
 
 
-/* Digital Microphone Control 1 (0x006f) */
+ 
 #define RT5665_DMIC_2L_LH_MASK			(0x1 << 3)
 #define RT5665_DMIC_2L_LH_SFT			3
 #define RT5665_DMIC_2L_LH_RISING		(0x0 << 3)
@@ -1244,7 +1239,7 @@
 #define RT5665_DMIC_1R_LH_RISING		(0x0)
 #define RT5665_DMIC_1R_LH_FALLING		(0x1)
 
-/* I2S1/2/3 Audio Serial Data Port Control (0x0070 0x0071 0x0072) */
+ 
 #define RT5665_I2S_MS_MASK			(0x1 << 15)
 #define RT5665_I2S_MS_SFT			15
 #define RT5665_I2S_MS_M				(0x0 << 15)
@@ -1272,7 +1267,7 @@
 #define RT5665_I2S_DF_PCM_A_N			(0x6)
 #define RT5665_I2S_DF_PCM_B_N			(0x7)
 
-/* ADC/DAC Clock Control 1 (0x0073) */
+ 
 #define RT5665_I2S_PD1_MASK			(0x7 << 12)
 #define RT5665_I2S_PD1_SFT			12
 #define RT5665_I2S_PD1_1			(0x0 << 12)
@@ -1309,7 +1304,7 @@
 #define RT5665_ADC_OSR_64			(0x1)
 #define RT5665_ADC_OSR_32			(0x2)
 
-/* ADC/DAC Clock Control 2 (0x0074) */
+ 
 #define RT5665_I2S_BCLK_MS2_MASK		(0x1 << 15)
 #define RT5665_I2S_BCLK_MS2_SFT			15
 #define RT5665_I2S_BCLK_MS2_32			(0x0 << 15)
@@ -1349,7 +1344,7 @@
 #define RT5665_I2S_PD4_12			(0x6 << 4)
 #define RT5665_I2S_PD4_16			(0x7 << 4)
 
-/* TDM control 1 (0x0078) */
+ 
 #define RT5665_I2S1_MODE_MASK			(0x1 << 15)
 #define RT5665_I2S1_MODE_I2S			(0x0 << 15)
 #define RT5665_I2S1_MODE_TDM			(0x1 << 15)
@@ -1375,7 +1370,7 @@
 #define RT5665_TDM_OUT_LEN_32			(0x3 << 4)
 
 
-/* TDM control 2 (0x0079) */
+ 
 #define RT5665_I2S1_1_DS_ADC_SLOT01_SFT		14
 #define RT5665_I2S1_1_DS_ADC_SLOT23_SFT		12
 #define RT5665_I2S1_1_DS_ADC_SLOT45_SFT		10
@@ -1385,7 +1380,7 @@
 #define RT5665_I2S1_2_DS_ADC_SLOT45_SFT		2
 #define RT5665_I2S1_2_DS_ADC_SLOT67_SFT		0
 
-/* TDM control 3/4 (0x007a) (0x007b) */
+ 
 #define RT5665_IF1_ADC1_SEL_SFT			10
 #define RT5665_IF1_ADC2_SEL_SFT			9
 #define RT5665_IF1_ADC3_SEL_SFT			8
@@ -1394,7 +1389,7 @@
 #define RT5665_TDM_ADC_CTRL_MASK		(0x1f << 0)
 #define RT5665_TDM_ADC_DATA_06			(0x6 << 0)
 
-/* Global Clock Control (0x0080) */
+ 
 #define RT5665_SCLK_SRC_MASK			(0x3 << 14)
 #define RT5665_SCLK_SRC_SFT			14
 #define RT5665_SCLK_SRC_MCLK			(0x0 << 14)
@@ -1412,7 +1407,7 @@
 
 #define RT5665_PLL_INP_MAX			40000000
 #define RT5665_PLL_INP_MIN			256000
-/* PLL M/N/K Code Control 1 (0x0081) */
+ 
 #define RT5665_PLL_N_MAX			0x001ff
 #define RT5665_PLL_N_MASK			(RT5665_PLL_N_MAX << 7)
 #define RT5665_PLL_N_SFT			7
@@ -1420,7 +1415,7 @@
 #define RT5665_PLL_K_MASK			(RT5665_PLL_K_MAX)
 #define RT5665_PLL_K_SFT			0
 
-/* PLL M/N/K Code Control 2 (0x0082) */
+ 
 #define RT5665_PLL_M_MAX			0x00f
 #define RT5665_PLL_M_MASK			(RT5665_PLL_M_MAX << 12)
 #define RT5665_PLL_M_SFT			12
@@ -1429,7 +1424,7 @@
 #define RT5665_PLL_K_BP				(0x1 << 10)
 #define RT5665_PLL_K_BP_SFT			10
 
-/* PLL tracking mode 1 (0x0083) */
+ 
 #define RT5665_I2S3_ASRC_MASK			(0x1 << 15)
 #define RT5665_I2S3_ASRC_SFT			15
 #define RT5665_I2S2_ASRC_MASK			(0x1 << 14)
@@ -1461,7 +1456,7 @@
 #define RT5665_ADC_MONO_R_ASRC_MASK		(0x1 << 1)
 #define RT5665_ADC_MONO_R_ASRC_SFT		1
 
-/* PLL tracking mode 2 (0x0084)*/
+ 
 #define RT5665_DA_STO1_CLK_SEL_MASK		(0x7 << 12)
 #define RT5665_DA_STO1_CLK_SEL_SFT		12
 #define RT5665_DA_STO2_CLK_SEL_MASK		(0x7 << 8)
@@ -1471,7 +1466,7 @@
 #define RT5665_DA_MONOR_CLK_SEL_MASK		(0x7)
 #define RT5665_DA_MONOR_CLK_SEL_SFT		0
 
-/* PLL tracking mode 3 (0x0085)*/
+ 
 #define RT5665_AD_STO1_CLK_SEL_MASK		(0x7 << 12)
 #define RT5665_AD_STO1_CLK_SEL_SFT		12
 #define RT5665_AD_STO2_CLK_SEL_MASK		(0x7 << 8)
@@ -1481,7 +1476,7 @@
 #define RT5665_AD_MONOR_CLK_SEL_MASK		(0x7)
 #define RT5665_AD_MONOR_CLK_SEL_SFT		0
 
-/* ASRC Control 4 (0x0086) */
+ 
 #define RT5665_I2S1_RATE_MASK			(0xf << 12)
 #define RT5665_I2S1_RATE_SFT			12
 #define RT5665_I2S2_RATE_MASK			(0xf << 8)
@@ -1489,10 +1484,10 @@
 #define RT5665_I2S3_RATE_MASK			(0xf << 4)
 #define RT5665_I2S3_RATE_SFT			4
 
-/* Depop Mode Control 1 (0x008e) */
+ 
 #define RT5665_PUMP_EN				(0x1 << 3)
 
-/* Depop Mode Control 2 (0x8f) */
+ 
 #define RT5665_DEPOP_MASK			(0x1 << 13)
 #define RT5665_DEPOP_SFT			13
 #define RT5665_DEPOP_AUTO			(0x0 << 13)
@@ -1526,7 +1521,7 @@
 #define RT5665_DP_TH_MASK			(0x3 << 4)
 #define RT5665_DP_TH_SFT			4
 
-/* Depop Mode Control 3 (0x90) */
+ 
 #define RT5665_CP_SYS_MASK			(0x7 << 12)
 #define RT5665_CP_SYS_SFT			12
 #define RT5665_CP_FQ1_MASK			(0x7 << 8)
@@ -1544,7 +1539,7 @@
 #define RT5665_CP_FQ_96_KHZ			6
 #define RT5665_CP_FQ_192_KHZ			7
 
-/* HPOUT charge pump 1 (0x0091) */
+ 
 #define RT5665_OSW_L_MASK			(0x1 << 11)
 #define RT5665_OSW_L_SFT			11
 #define RT5665_OSW_L_DIS			(0x0 << 11)
@@ -1565,7 +1560,7 @@
 #define RT5665_IB_HP_5IL			(0x2 << 6)
 #define RT5665_IB_HP_1IL			(0x3 << 6)
 
-/* PV detection and SPK gain control (0x92) */
+ 
 #define RT5665_PVDD_DET_MASK			(0x1 << 15)
 #define RT5665_PVDD_DET_SFT			15
 #define RT5665_PVDD_DET_DIS			(0x0 << 15)
@@ -1575,7 +1570,7 @@
 #define RT5665_SPK_AG_DIS			(0x0 << 14)
 #define RT5665_SPK_AG_EN			(0x1 << 14)
 
-/* Micbias Control1 (0x93) */
+ 
 #define RT5665_MIC1_BS_MASK			(0x1 << 15)
 #define RT5665_MIC1_BS_SFT			15
 #define RT5665_MIC1_BS_9AV			(0x0 << 15)
@@ -1615,7 +1610,7 @@
 #define RT5665_PWR_MB_PD			(0x0 << 5)
 #define RT5665_PWR_MB_PU			(0x1 << 5)
 
-/* Micbias Control2 (0x94) */
+ 
 #define RT5665_PWR_CLK25M_MASK			(0x1 << 9)
 #define RT5665_PWR_CLK25M_SFT			9
 #define RT5665_PWR_CLK25M_PD			(0x0 << 9)
@@ -1625,7 +1620,7 @@
 #define RT5665_PWR_CLK1M_PD			(0x0 << 8)
 #define RT5665_PWR_CLK1M_PU			(0x1 << 8)
 
-/* I2S Master Mode Clock Control 1 (0x00a0) */
+ 
 #define RT5665_CLK_SRC_MCLK			(0x0)
 #define RT5665_CLK_SRC_PLL1			(0x1)
 #define RT5665_CLK_SRC_RCCLK			(0x2)
@@ -1647,7 +1642,7 @@
 #define RT5665_I2S3_M_PD_SFT			0
 
 
-/* EQ Control 1 (0x00b0) */
+ 
 #define RT5665_EQ_SRC_DAC			(0x0 << 15)
 #define RT5665_EQ_SRC_ADC			(0x1 << 15)
 #define RT5665_EQ_UPD				(0x1 << 14)
@@ -1663,7 +1658,7 @@
 #define RT5665_EQ_DITH_LSB_1			(0x2 << 8)
 #define RT5665_EQ_DITH_LSB_2			(0x3 << 8)
 
-/* IRQ Control 1 (0x00b7) */
+ 
 #define RT5665_JD1_1_EN_MASK			(0x1 << 15)
 #define RT5665_JD1_1_EN_SFT			15
 #define RT5665_JD1_1_DIS			(0x0 << 15)
@@ -1673,16 +1668,16 @@
 #define RT5665_JD1_2_DIS			(0x0 << 12)
 #define RT5665_JD1_2_EN				(0x1 << 12)
 
-/* IRQ Control 2 (0x00b8) */
+ 
 #define RT5665_IL_IRQ_MASK			(0x1 << 6)
 #define RT5665_IL_IRQ_DIS			(0x0 << 6)
 #define RT5665_IL_IRQ_EN			(0x1 << 6)
 
-/* IRQ Control 5 (0x00ba) */
+ 
 #define RT5665_IRQ_JD_EN			(0x1 << 3)
 #define RT5665_IRQ_JD_EN_SFT			3
 
-/* GPIO Control 1 (0x00c0) */
+ 
 #define RT5665_GP1_PIN_MASK			(0x1 << 15)
 #define RT5665_GP1_PIN_SFT			15
 #define RT5665_GP1_PIN_GPIO1			(0x0 << 15)
@@ -1725,7 +1720,7 @@
 #define RT5665_GP8_PIN_DACDAT2_2		(0x3 << 1)
 
 
-/* GPIO Control 2 (0x00c1)*/
+ 
 #define RT5665_GP9_PIN_MASK			(0x3 << 14)
 #define RT5665_GP9_PIN_SFT			14
 #define RT5665_GP9_PIN_GPIO9			(0x0 << 14)
@@ -1775,7 +1770,7 @@
 #define RT5665_GP6_OUT_L			(0x1)
 
 
-/* GPIO Control 3 (0x00c2) */
+ 
 #define RT5665_GP7_PF_MASK			(0x1 << 15)
 #define RT5665_GP7_PF_IN			(0x0 << 15)
 #define RT5665_GP7_PF_OUT			(0x1 << 15)
@@ -1807,7 +1802,7 @@
 #define RT5665_GP11_OUT_H			(0x0 << 6)
 #define RT5665_GP11_OUT_L			(0x1 << 6)
 
-/* Soft volume and zero cross control 1 (0x00d9) */
+ 
 #define RT5665_SV_MASK				(0x1 << 15)
 #define RT5665_SV_SFT				15
 #define RT5665_SV_DIS				(0x0 << 15)
@@ -1831,13 +1826,13 @@
 #define RT5665_SV_DLY_MASK			(0xf)
 #define RT5665_SV_DLY_SFT			0
 
-/* Soft volume and zero cross control 2 (0x00da) */
+ 
 #define RT5665_ZCD_HP_MASK			(0x1 << 15)
 #define RT5665_ZCD_HP_SFT			15
 #define RT5665_ZCD_HP_DIS			(0x0 << 15)
 #define RT5665_ZCD_HP_EN			(0x1 << 15)
 
-/* 4 Button Inline Command Control 2 (0x00e0) */
+ 
 #define RT5665_4BTN_IL_MASK			(0x1 << 15)
 #define RT5665_4BTN_IL_EN			(0x1 << 15)
 #define RT5665_4BTN_IL_DIS			(0x0 << 15)
@@ -1845,13 +1840,13 @@
 #define RT5665_4BTN_IL_NOR			(0x1 << 14)
 #define RT5665_4BTN_IL_RST			(0x0 << 14)
 
-/* Analog JD Control 1 (0x00f0) */
+ 
 #define RT5665_JD1_MODE_MASK			(0x3 << 0)
 #define RT5665_JD1_MODE_0			(0x0 << 0)
 #define RT5665_JD1_MODE_1			(0x1 << 0)
 #define RT5665_JD1_MODE_2			(0x2 << 0)
 
-/* Jack Detect Control 3 (0x00f8) */
+ 
 #define RT5665_JD_TRI_HPO_SEL_MASK		(0x7)
 #define RT5665_JD_TRI_HPO_SEL_SFT		(0)
 #define RT5665_JD_HPO_GPIO_JD1			(0x0)
@@ -1862,19 +1857,19 @@
 #define RT5665_JD_HPO_JD3			(0x5)
 #define RT5665_JD_HPO_JD_D			(0x6)
 
-/* Digital Misc Control (0x00fa) */
+ 
 #define RT5665_AM_MASK				(0x1 << 7)
 #define RT5665_AM_EN				(0x1 << 7)
 #define RT5665_AM_DIS				(0x1 << 7)
 #define RT5665_DIG_GATE_CTRL			0x1
 #define RT5665_DIG_GATE_CTRL_SFT		(0)
 
-/* Chopper and Clock control for ADC (0x011c)*/
+ 
 #define RT5665_M_RF_DIG_MASK			(0x1 << 12)
 #define RT5665_M_RF_DIG_SFT			12
 #define RT5665_M_RI_DIG				(0x1 << 11)
 
-/* Chopper and Clock control for DAC (0x013a)*/
+ 
 #define RT5665_CKXEN_DAC1_MASK			(0x1 << 13)
 #define RT5665_CKXEN_DAC1_SFT			13
 #define RT5665_CKGEN_DAC1_MASK			(0x1 << 12)
@@ -1884,7 +1879,7 @@
 #define RT5665_CKGEN_DAC2_MASK			(0x1 << 4)
 #define RT5665_CKGEN_DAC2_SFT			4
 
-/* Chopper and Clock control for ADC (0x013b)*/
+ 
 #define RT5665_CKXEN_ADC1_MASK			(0x1 << 13)
 #define RT5665_CKXEN_ADC1_SFT			13
 #define RT5665_CKGEN_ADC1_MASK			(0x1 << 12)
@@ -1894,25 +1889,25 @@
 #define RT5665_CKGEN_ADC2_MASK			(0x1 << 4)
 #define RT5665_CKGEN_ADC2_SFT			4
 
-/* Volume test (0x013f)*/
+ 
 #define RT5665_SEL_CLK_VOL_MASK			(0x1 << 15)
 #define RT5665_SEL_CLK_VOL_EN			(0x1 << 15)
 #define RT5665_SEL_CLK_VOL_DIS			(0x0 << 15)
 
-/* Test Mode Control 1 (0x0145) */
+ 
 #define RT5665_AD2DA_LB_MASK			(0x1 << 9)
 #define RT5665_AD2DA_LB_SFT			9
 
-/* Stereo Noise Gate Control 1 (0x0160) */
+ 
 #define RT5665_NG2_EN_MASK			(0x1 << 15)
 #define RT5665_NG2_EN				(0x1 << 15)
 #define RT5665_NG2_DIS				(0x0 << 15)
 
-/* Stereo1 DAC Silence Detection Control (0x0190) */
+ 
 #define RT5665_DEB_STO_DAC_MASK			(0x7 << 4)
 #define RT5665_DEB_80_MS			(0x0 << 4)
 
-/* SAR ADC Inline Command Control 1 (0x0210) */
+ 
 #define RT5665_SAR_BUTT_DET_MASK		(0x1 << 15)
 #define RT5665_SAR_BUTT_DET_EN			(0x1 << 15)
 #define RT5665_SAR_BUTT_DET_DIS			(0x0 << 15)
@@ -1947,14 +1942,14 @@
 #define RT5665_SAR_SEL_SIGNAL_AUTO		(0x1 << 4)
 #define RT5665_SAR_SEL_SIGNAL_MANU		(0x0 << 4)
 
-/* System Clock Source */
+ 
 enum {
 	RT5665_SCLK_S_MCLK,
 	RT5665_SCLK_S_PLL1,
 	RT5665_SCLK_S_RCCLK,
 };
 
-/* PLL1 Source */
+ 
 enum {
 	RT5665_PLL1_S_MCLK,
 	RT5665_PLL1_S_BCLK1,
@@ -1977,7 +1972,7 @@ enum {
 	CODEC_5666,
 };
 
-/* filter mask */
+ 
 enum {
 	RT5665_DA_STEREO1_FILTER = 0x1,
 	RT5665_DA_STEREO2_FILTER = (0x1 << 1),
@@ -2002,4 +1997,4 @@ enum {
 int rt5665_sel_asrc_clk_src(struct snd_soc_component *component,
 		unsigned int filter_mask, unsigned int clk_src);
 
-#endif /* __RT5665_H__ */
+#endif  

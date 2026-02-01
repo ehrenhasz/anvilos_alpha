@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Renesas R-Car Gen4 gPTP device driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/etherdevice.h>
@@ -43,7 +40,7 @@ static int rcar_gen4_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	return 0;
 }
 
-/* Caller must hold the lock */
+ 
 static void _rcar_gen4_ptp_gettime(struct ptp_clock_info *ptp,
 				   struct timespec64 *ts)
 {
@@ -67,7 +64,7 @@ static int rcar_gen4_ptp_gettime(struct ptp_clock_info *ptp,
 	return 0;
 }
 
-/* Caller must hold the lock */
+ 
 static void _rcar_gen4_ptp_settime(struct ptp_clock_info *ptp,
 				   const struct timespec64 *ts)
 {

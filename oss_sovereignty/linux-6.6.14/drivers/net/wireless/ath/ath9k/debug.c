@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -786,7 +772,7 @@ static ssize_t write_file_reset(struct file *file,
 	if (val != 1)
 		return -EINVAL;
 
-	/* avoid rearming hw_reset_work on shutdown */
+	 
 	mutex_lock(&sc->mutex);
 	if (test_bit(ATH_OP_INVALID, &common->op_flags)) {
 		mutex_unlock(&sc->mutex);
@@ -977,7 +963,7 @@ static const struct file_operations fops_regdump = {
 	.read = ath9k_debugfs_read_buf,
 	.release = ath9k_debugfs_release_buf,
 	.owner = THIS_MODULE,
-	.llseek = default_llseek,/* read accesses f_pos */
+	.llseek = default_llseek, 
 };
 
 static int read_file_dump_nfcal(struct seq_file *file, void *data)
@@ -1249,7 +1235,7 @@ static const struct file_operations fops_nf_override = {
 	.llseek = default_llseek,
 };
 
-/* Ethtool support for get-stats */
+ 
 
 #define AMKSTR(nm) #nm "_BE", #nm "_BK", #nm "_VI", #nm "_VO"
 static const char ath9k_gstrings_stats[][ETH_GSTRING_LEN] = {

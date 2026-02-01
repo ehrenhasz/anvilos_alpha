@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -126,7 +123,7 @@ int __get_log_header(struct gfs2_sbd *sdp, const struct gfs2_log_header *lh,
 		return 1;
 
 	hash = crc32(~0, lh, LH_V1_SIZE - 4);
-	hash = ~crc32_le_shift(hash, 4); /* assume lh_hash is zero */
+	hash = ~crc32_le_shift(hash, 4);  
 
 	if (be32_to_cpu(lh->lh_hash) != hash)
 		return 1;
@@ -148,19 +145,7 @@ int __get_log_header(struct gfs2_sbd *sdp, const struct gfs2_log_header *lh,
 
 	return 0;
 }
-/**
- * get_log_header - read the log header for a given segment
- * @jd: the journal
- * @blk: the block to look at
- * @head: the log header to return
- *
- * Read the log header for a given segement in a given journal.  Do a few
- * sanity checks on it.
- *
- * Returns: 0 on success,
- *          1 if the header was invalid or incomplete,
- *          errno on error
- */
+ 
 
 static int get_log_header(struct gfs2_jdesc *jd, unsigned int blk,
 			  struct gfs2_log_header_host *head)
@@ -180,18 +165,7 @@ static int get_log_header(struct gfs2_jdesc *jd, unsigned int blk,
 	return error;
 }
 
-/**
- * foreach_descriptor - go through the active part of the log
- * @jd: the journal
- * @start: the first log header in the active region
- * @end: the last log header (don't process the contents of this entry))
- * @pass: iteration number (foreach_descriptor() is called in a for() loop)
- *
- * Call a given function once for every log descriptor in the active
- * portion of the log.
- *
- * Returns: errno
- */
+ 
 
 static int foreach_descriptor(struct gfs2_jdesc *jd, u32 start,
 			      unsigned int end, int pass)
@@ -251,13 +225,7 @@ static int foreach_descriptor(struct gfs2_jdesc *jd, u32 start,
 	return 0;
 }
 
-/**
- * clean_journal - mark a dirty journal as being clean
- * @jd: the journal
- * @head: the head journal to start from
- *
- * Returns: errno
- */
+ 
 
 static void clean_journal(struct gfs2_jdesc *jd,
 			  struct gfs2_log_header_host *head)
@@ -295,15 +263,7 @@ static void gfs2_recovery_done(struct gfs2_sbd *sdp, unsigned int jid,
 		sdp->sd_lockstruct.ls_ops->lm_recovery_result(sdp, jid, message);
 }
 
-/**
- * update_statfs_inode - Update the master statfs inode or zero out the local
- *			 statfs inode for a given journal.
- * @jd: The journal
- * @head: If NULL, @inode is the local statfs inode and we need to zero it out.
- *	  Otherwise, it @head contains the statfs change info that needs to be
- *	  synced to the master statfs inode (pointed to by @inode).
- * @inode: statfs inode to update.
- */
+ 
 static int update_statfs_inode(struct gfs2_jdesc *jd,
 			       struct gfs2_log_header_host *head,
 			       struct inode *inode)
@@ -323,7 +283,7 @@ static int update_statfs_inode(struct gfs2_jdesc *jd,
 
 	spin_lock(&sdp->sd_statfs_spin);
 
-	if (head) { /* Update the master statfs inode */
+	if (head) {  
 		gfs2_statfs_change_in(&sc, bh->b_data + sizeof(struct gfs2_dinode));
 		sc.sc_total += head->lh_local_total;
 		sc.sc_free += head->lh_local_free;
@@ -335,10 +295,10 @@ static int update_statfs_inode(struct gfs2_jdesc *jd,
 			"[%+lld,%+lld,%+lld]\n", jd->jd_jid, sc.sc_total,
 			sc.sc_free, sc.sc_dinodes, head->lh_local_total,
 			head->lh_local_free, head->lh_local_dinodes);
-	} else { /* Zero out the local statfs inode */
+	} else {  
 		memset(bh->b_data + sizeof(struct gfs2_dinode), 0,
 		       sizeof(struct gfs2_statfs_change));
-		/* If it's our own journal, reset any in-memory changes too */
+		 
 		if (jd->jd_jid == sdp->sd_lockstruct.ls_jid) {
 			memset(&sdp->sd_statfs_local, 0,
 			       sizeof(struct gfs2_statfs_change_host));
@@ -354,25 +314,7 @@ out:
 	return error;
 }
 
-/**
- * recover_local_statfs - Update the master and local statfs changes for this
- *			  journal.
- *
- * Previously, statfs updates would be read in from the local statfs inode and
- * synced to the master statfs inode during recovery.
- *
- * We now use the statfs updates in the journal head to update the master statfs
- * inode instead of reading in from the local statfs inode. To preserve backward
- * compatibility with kernels that can't do this, we still need to keep the
- * local statfs inode up to date by writing changes to it. At some point in the
- * future, we can do away with the local statfs inodes altogether and keep the
- * statfs changes solely in the journal.
- *
- * @jd: the journal
- * @head: the journal head
- *
- * Returns: errno
- */
+ 
 static void recover_local_statfs(struct gfs2_jdesc *jd,
 				 struct gfs2_log_header_host *head)
 {
@@ -380,18 +322,16 @@ static void recover_local_statfs(struct gfs2_jdesc *jd,
 	struct gfs2_sbd *sdp = GFS2_SB(jd->jd_inode);
 
 	if (!head->lh_local_total && !head->lh_local_free
-	    && !head->lh_local_dinodes) /* No change */
+	    && !head->lh_local_dinodes)  
 		goto zero_local;
 
-	 /* First update the master statfs inode with the changes we
-	  * found in the journal. */
+	  
 	error = update_statfs_inode(jd, head, sdp->sd_statfs_inode);
 	if (error)
 		goto out;
 
 zero_local:
-	/* Zero out the local statfs inode so any changes in there
-	 * are not re-recovered. */
+	 
 	error = update_statfs_inode(jd, NULL,
 				    find_local_statfs_inode(sdp, jd->jd_jid));
 out:
@@ -423,7 +363,7 @@ void gfs2_recover_func(struct work_struct *work)
 		fs_info(sdp, "jid=%u: Trying to acquire journal glock...\n",
 			jd->jd_jid);
 		jlocked = 1;
-		/* Acquire the journal glock so we can do recovery */
+		 
 
 		error = gfs2_glock_nq_num(sdp, jd->jd_jid, &gfs2_journal_glops,
 					  LM_ST_EXCLUSIVE,
@@ -481,7 +421,7 @@ void gfs2_recover_func(struct work_struct *work)
 				ro = 1;
 		} else {
 			if (sb_rdonly(sdp->sd_vfs)) {
-				/* check if device itself is read-only */
+				 
 				ro = bdev_read_only(sdp->sd_vfs->s_bdev);
 				if (!ro) {
 					fs_info(sdp, "recovery required on "
@@ -503,9 +443,7 @@ void gfs2_recover_func(struct work_struct *work)
 		fs_info(sdp, "jid=%u: Replaying journal...0x%x to 0x%x\n",
 			jd->jd_jid, head.lh_tail, head.lh_blkno);
 
-		/* We take the sd_log_flush_lock here primarily to prevent log
-		 * flushes and simultaneous journal replays from stomping on
-		 * each other wrt jd_log_bio. */
+		 
 		down_read(&sdp->sd_log_flush_lock);
 		for (pass = 0; pass < 2; pass++) {
 			lops_before_scan(jd, &head, pass);
@@ -569,7 +507,7 @@ int gfs2_recover_journal(struct gfs2_jdesc *jd, bool wait)
 	if (test_and_set_bit(JDF_RECOVERY, &jd->jd_flags))
 		return -EBUSY;
 
-	/* we have JDF_RECOVERY, queue should always succeed */
+	 
 	rv = queue_work(gfs2_recovery_wq, &jd->jd_work);
 	BUG_ON(!rv);
 

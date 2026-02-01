@@ -1,31 +1,5 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-/*
- * dc_helper.c
- *
- *  Created on: Aug 30, 2016
- *      Author: agrodzov
- */
+ 
+ 
 
 #include <linux/delay.h>
 #include <linux/stdarg.h>
@@ -113,7 +87,7 @@ static void set_reg_field_values(struct dc_reg_value_masks *field_value_mask,
 	uint32_t shift, mask, field_value;
 	int i = 1;
 
-	/* gather all bits value/mask getting updated in this register */
+	 
 	set_reg_field_value_masks(field_value_mask,
 			field_value1, mask1, shift1);
 
@@ -148,7 +122,7 @@ static bool dmub_reg_value_burst_set_pack(const struct dc_context *ctx, uint32_t
 	struct dc_reg_helper_state *offload = &ctx->dmub_srv->reg_helper_offload;
 	struct dmub_rb_cmd_burst_write *cmd_buf = &offload->cmd_data.burst_write;
 
-	/* flush command if buffer is full */
+	 
 	if (offload->reg_seq_count == DMUB_BURST_WRITE_VALUES__MAX)
 		dmub_flush_burst_write_buffer_execute(offload, ctx);
 
@@ -174,7 +148,7 @@ static uint32_t dmub_reg_value_pack(const struct dc_context *ctx, uint32_t addr,
 	struct dmub_rb_cmd_read_modify_write *cmd_buf = &offload->cmd_data.read_modify_write;
 	struct dmub_cmd_read_modify_write_sequence *seq;
 
-	/* flush command if buffer is full */
+	 
 	if (offload->cmd_data.cmd_common.header.type != DMUB_CMD__REG_SEQ_BURST_WRITE &&
 			offload->reg_seq_count == DMUB_READ_MODIFY_WRITE_SEQ__MAX)
 		dmub_flush_buffer_execute(offload, ctx);
@@ -186,7 +160,7 @@ static uint32_t dmub_reg_value_pack(const struct dc_context *ctx, uint32_t addr,
 			offload->should_burst_write = false;
 	}
 
-	/* pack commands */
+	 
 	cmd_buf->header.type = DMUB_CMD__REG_SEQ_READ_MODIFY_WRITE;
 	cmd_buf->header.sub_type = 0;
 	seq = &cmd_buf->seq[offload->reg_seq_count];
@@ -239,9 +213,9 @@ uint32_t generic_reg_update_ex(const struct dc_context *ctx,
 	if (ctx->dmub_srv &&
 	    ctx->dmub_srv->reg_helper_offload.gather_in_progress)
 		return dmub_reg_value_pack(ctx, addr, &field_value_mask);
-		/* todo: return void so we can decouple code running in driver from register states */
+		 
 
-	/* mmio write directly */
+	 
 	reg_val = dm_read_reg(ctx, addr);
 	reg_val = (reg_val & ~field_value_mask.mask) | field_value_mask.value;
 	dm_write_reg(ctx, addr, reg_val);
@@ -264,13 +238,13 @@ uint32_t generic_reg_set_ex(const struct dc_context *ctx,
 	va_end(ap);
 
 
-	/* mmio write directly */
+	 
 	reg_val = (reg_val & ~field_value_mask.mask) | field_value_mask.value;
 
 	if (ctx->dmub_srv &&
 	    ctx->dmub_srv->reg_helper_offload.gather_in_progress) {
 		return dmub_reg_value_burst_set_pack(ctx, addr, reg_val);
-		/* todo: return void so we can decouple code running in driver from register states */
+		 
 	}
 
 	dm_write_reg(ctx, addr, reg_val);
@@ -396,36 +370,7 @@ uint32_t generic_reg_get8(const struct dc_context *ctx, uint32_t addr,
 	*field_value8 = get_reg_field_value_ex(reg_val, mask8, shift8);
 	return reg_val;
 }
-/* note:  va version of this is pretty bad idea, since there is a output parameter pass by pointer
- * compiler won't be able to check for size match and is prone to stack corruption type of bugs
-
-uint32_t generic_reg_get(const struct dc_context *ctx,
-		uint32_t addr, int n, ...)
-{
-	uint32_t shift, mask;
-	uint32_t *field_value;
-	uint32_t reg_val;
-	int i = 0;
-
-	reg_val = dm_read_reg(ctx, addr);
-
-	va_list ap;
-	va_start(ap, n);
-
-	while (i < n) {
-		shift = va_arg(ap, uint32_t);
-		mask = va_arg(ap, uint32_t);
-		field_value = va_arg(ap, uint32_t *);
-
-		*field_value = get_reg_field_value_ex(reg_val, mask, shift);
-		i++;
-	}
-
-	va_end(ap);
-
-	return reg_val;
-}
-*/
+ 
 
 void generic_reg_wait(const struct dc_context *ctx,
 	uint32_t addr, uint32_t shift, uint32_t mask, uint32_t condition_value,
@@ -443,12 +388,7 @@ void generic_reg_wait(const struct dc_context *ctx,
 		return;
 	}
 
-	/*
-	 * Something is terribly wrong if time out is > 3000ms.
-	 * 3000ms is the maximum time needed for SMU to pass values back.
-	 * This value comes from experiments.
-	 *
-	 */
+	 
 	ASSERT(delay_between_poll_us * time_out_num_tries <= 3000000);
 
 	for (i = 0; i <= time_out_num_tries; i++) {
@@ -493,7 +433,7 @@ uint32_t generic_read_indirect_reg(const struct dc_context *ctx,
 {
 	uint32_t value = 0;
 
-	// when reg read, there should not be any offload.
+	
 	if (ctx->dmub_srv &&
 	    ctx->dmub_srv->reg_helper_offload.gather_in_progress) {
 		ASSERT(false);
@@ -628,16 +568,13 @@ uint32_t generic_indirect_reg_get_sync(const struct dc_context *ctx,
 
 void reg_sequence_start_gather(const struct dc_context *ctx)
 {
-	/* if reg sequence is supported and enabled, set flag to
-	 * indicate we want to have REG_SET, REG_UPDATE macro build
-	 * reg sequence command buffer rather than MMIO directly.
-	 */
+	 
 
 	if (ctx->dmub_srv && ctx->dc->debug.dmub_offload_enabled) {
 		struct dc_reg_helper_state *offload =
 			&ctx->dmub_srv->reg_helper_offload;
 
-		/* caller sequence mismatch.  need to debug caller.  offload will not work!!! */
+		 
 		ASSERT(!offload->gather_in_progress);
 
 		offload->gather_in_progress = true;
@@ -674,7 +611,7 @@ void reg_sequence_start_execute(const struct dc_context *ctx)
 
 void reg_sequence_wait_done(const struct dc_context *ctx)
 {
-	/* callback to DM to poll for last submission done*/
+	 
 	struct dc_reg_helper_state *offload;
 
 	if (!ctx->dmub_srv)

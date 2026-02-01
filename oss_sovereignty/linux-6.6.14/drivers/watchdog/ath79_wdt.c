@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Atheros AR71XX/AR724X/AR913X built-in hardware watchdog timer.
- *
- * Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
- * Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
- *
- * This driver was based on: drivers/watchdog/ixp4xx_wdt.c
- *	Author: Deepak Saxena <dsaxena@plexity.net>
- *	Copyright 2004 (c) MontaVista, Software, Inc.
- *
- * which again was based on sa1100 driver,
- *	Copyright (C) 2000 Oleg Drokin <green@crimea.edu>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -35,17 +23,17 @@
 
 #define DRIVER_NAME	"ath79-wdt"
 
-#define WDT_TIMEOUT	15	/* seconds */
+#define WDT_TIMEOUT	15	 
 
 #define WDOG_REG_CTRL		0x00
 #define WDOG_REG_TIMER		0x04
 
 #define WDOG_CTRL_LAST_RESET	BIT(31)
 #define WDOG_CTRL_ACTION_MASK	3
-#define WDOG_CTRL_ACTION_NONE	0	/* no action */
-#define WDOG_CTRL_ACTION_GPI	1	/* general purpose interrupt */
-#define WDOG_CTRL_ACTION_NMI	2	/* NMI */
-#define WDOG_CTRL_ACTION_FCR	3	/* full chip reset */
+#define WDOG_CTRL_ACTION_NONE	0	 
+#define WDOG_CTRL_ACTION_GPI	1	 
+#define WDOG_CTRL_ACTION_NMI	2	 
+#define WDOG_CTRL_ACTION_FCR	3	 
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
@@ -81,7 +69,7 @@ static inline u32 ath79_wdt_rr(unsigned reg)
 static inline void ath79_wdt_keepalive(void)
 {
 	ath79_wdt_wr(WDOG_REG_TIMER, wdt_freq * timeout);
-	/* flush write */
+	 
 	ath79_wdt_rr(WDOG_REG_TIMER);
 }
 
@@ -89,23 +77,18 @@ static inline void ath79_wdt_enable(void)
 {
 	ath79_wdt_keepalive();
 
-	/*
-	 * Updating the TIMER register requires a few microseconds
-	 * on the AR934x SoCs at least. Use a small delay to ensure
-	 * that the TIMER register is updated within the hardware
-	 * before enabling the watchdog.
-	 */
+	 
 	udelay(2);
 
 	ath79_wdt_wr(WDOG_REG_CTRL, WDOG_CTRL_ACTION_FCR);
-	/* flush write */
+	 
 	ath79_wdt_rr(WDOG_REG_CTRL);
 }
 
 static inline void ath79_wdt_disable(void)
 {
 	ath79_wdt_wr(WDOG_REG_CTRL, WDOG_CTRL_ACTION_NONE);
-	/* flush write */
+	 
 	ath79_wdt_rr(WDOG_REG_CTRL);
 }
 

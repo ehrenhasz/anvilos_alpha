@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #define _GNU_SOURCE
 
@@ -23,7 +23,7 @@
 static size_t page_size;
 static int sizes[] = {
 	1, 537, 989, 1269, MT_GRANULE_SIZE - 1, MT_GRANULE_SIZE,
-	/* page size - 1*/ 0, /* page_size */ 0, /* page size + 1 */ 0
+	  0,   0,   0
 };
 
 static int check_child_tag_inheritance(char *ptr, int size, int mode)
@@ -40,7 +40,7 @@ static int check_child_tag_inheritance(char *ptr, int size, int mode)
 		return KSFT_FAIL;
 	} else if (child == 0) {
 		mte_initialize_current_context(mode, (uintptr_t)ptr, size);
-		/* Do copy on write */
+		 
 		memset(ptr, '1', size);
 		mte_wait_after_trig();
 		if (cur_mte_cxt.fault_valid == true) {
@@ -72,7 +72,7 @@ static int check_child_tag_inheritance(char *ptr, int size, int mode)
 check_child_tag_inheritance_err:
 		_exit(fault);
 	}
-	/* Wait for child process to terminate */
+	 
 	wait(&child_status);
 	if (WIFEXITED(child_status))
 		fault = WEXITSTATUS(child_status);
@@ -123,7 +123,7 @@ static int check_child_file_mapping(int mem_type, int mode, int mapping)
 		}
 		ptr = map_ptr + UNDERFLOW;
 		mte_initialize_current_context(mode, (uintptr_t)ptr, sizes[run]);
-		/* Only mte enabled memory will allow tag insertion */
+		 
 		ptr = mte_insert_tags((void *)ptr, sizes[run]);
 		if (!ptr || cur_mte_cxt.fault_valid == true) {
 			ksft_print_msg("FAIL: Insert tags on file based memory\n");
@@ -159,11 +159,11 @@ int main(int argc, char *argv[])
 	if (err)
 		return err;
 
-	/* Register SIGSEGV handler */
+	 
 	mte_register_signal(SIGSEGV, mte_default_handler);
 	mte_register_signal(SIGBUS, mte_default_handler);
 
-	/* Set test plan */
+	 
 	ksft_set_plan(12);
 
 	evaluate_test(check_child_memory_mapping(USE_MMAP, MTE_SYNC_ERR, MAP_PRIVATE),

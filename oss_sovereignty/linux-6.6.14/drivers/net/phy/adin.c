@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Driver for Analog Devices Industrial Ethernet PHYs
- *
- * Copyright 2019 Analog Devices Inc.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -61,10 +57,7 @@
 #define ADIN1300_PHY_STATUS1			0x001a
 #define   ADIN1300_PAIR_01_SWAP			BIT(11)
 
-/* EEE register addresses, accessible via Clause 22 access using
- * ADIN1300_MII_EXT_REG_PTR & ADIN1300_MII_EXT_REG_DATA.
- * The bit-fields are the same as specified by IEEE for EEE.
- */
+ 
 #define ADIN1300_EEE_CAP_REG			0x8000
 #define ADIN1300_EEE_ADV_REG			0x8001
 #define ADIN1300_EEE_LPABLE_REG			0x8002
@@ -74,13 +67,7 @@
 #define ADIN1300_CDIAG_RUN			0xba1b
 #define   ADIN1300_CDIAG_RUN_EN			BIT(0)
 
-/*
- * The XSIM3/2/1 and XSHRT3/2/1 are actually relative.
- * For CDIAG_DTLD_RSLTS(0) it's ADIN1300_CDIAG_RSLT_XSIM3/2/1
- * For CDIAG_DTLD_RSLTS(1) it's ADIN1300_CDIAG_RSLT_XSIM3/2/0
- * For CDIAG_DTLD_RSLTS(2) it's ADIN1300_CDIAG_RSLT_XSIM3/1/0
- * For CDIAG_DTLD_RSLTS(3) it's ADIN1300_CDIAG_RSLT_XSIM2/1/0
- */
+ 
 #define ADIN1300_CDIAG_DTLD_RSLTS(x)		(0xba1d + (x))
 #define   ADIN1300_CDIAG_RSLT_BUSY		BIT(10)
 #define   ADIN1300_CDIAG_RSLT_XSIM3		BIT(9)
@@ -119,7 +106,7 @@
 #define   ADIN1300_GE_RGMII_TXID_EN		BIT(1)
 #define   ADIN1300_GE_RGMII_EN			BIT(0)
 
-/* RGMII internal delay settings for rx and tx for ADIN1300 */
+ 
 #define ADIN1300_RGMII_1_60_NS			0x0001
 #define ADIN1300_RGMII_1_80_NS			0x0002
 #define	ADIN1300_RGMII_2_00_NS			0x0000
@@ -132,7 +119,7 @@
 		FIELD_PREP(ADIN1300_GE_RMII_FIFO_DEPTH_MSK, x)
 #define   ADIN1300_GE_RMII_EN			BIT(0)
 
-/* RMII fifo depth values */
+ 
 #define ADIN1300_RMII_4_BITS			0x0000
 #define ADIN1300_RMII_8_BITS			0x0001
 #define ADIN1300_RMII_12_BITS			0x0002
@@ -140,11 +127,7 @@
 #define ADIN1300_RMII_20_BITS			0x0004
 #define ADIN1300_RMII_24_BITS			0x0005
 
-/**
- * struct adin_cfg_reg_map - map a config value to aregister value
- * @cfg:	value in device configuration
- * @reg:	value in the register
- */
+ 
 struct adin_cfg_reg_map {
 	int cfg;
 	int reg;
@@ -169,12 +152,7 @@ static const struct adin_cfg_reg_map adin_rmii_fifo_depths[] = {
 	{ },
 };
 
-/**
- * struct adin_clause45_mmd_map - map to convert Clause 45 regs to Clause 22
- * @devad:		device address used in Clause 45 access
- * @cl45_regnum:	register address defined by Clause 45
- * @adin_regnum:	equivalent register address accessible via Clause 22
- */
+ 
 struct adin_clause45_mmd_map {
 	int devad;
 	u16 cl45_regnum;
@@ -196,7 +174,7 @@ struct adin_hw_stat {
 };
 
 static const struct adin_hw_stat adin_hw_stats[] = {
-	{ "total_frames_checked_count",		0x940A, 0x940B }, /* hi + lo */
+	{ "total_frames_checked_count",		0x940A, 0x940B },  
 	{ "length_error_frames_count",		0x940C },
 	{ "alignment_error_frames_count",	0x940D },
 	{ "symbol_error_count",			0x940E },
@@ -208,10 +186,7 @@ static const struct adin_hw_stat adin_hw_stats[] = {
 	{ "false_carrier_events_count",		0x9414 },
 };
 
-/**
- * struct adin_priv - ADIN PHY driver private data
- * @stats:		statistic counters for the PHY
- */
+ 
 struct adin_priv {
 	u64			stats[ARRAY_SIZE(adin_hw_stats)];
 };
@@ -378,7 +353,7 @@ static int adin_get_edpd(struct phy_device *phydev, u16 *tx_interval)
 
 	if (ADIN1300_NRG_PD_EN & val) {
 		if (val & ADIN1300_NRG_PD_TX_EN)
-			/* default is 1 second */
+			 
 			*tx_interval = ETHTOOL_PHY_EDPD_DFLT_TX_MSECS;
 		else
 			*tx_interval = ETHTOOL_PHY_EDPD_NO_TX;
@@ -400,7 +375,7 @@ static int adin_set_edpd(struct phy_device *phydev, u16 tx_interval)
 	val = ADIN1300_NRG_PD_EN;
 
 	switch (tx_interval) {
-	case 1000: /* 1 second */
+	case 1000:  
 		fallthrough;
 	case ETHTOOL_PHY_EDPD_DFLT_TX_MSECS:
 		val |= ADIN1300_NRG_PD_TX_EN;
@@ -450,7 +425,7 @@ static int adin_config_clk_out(struct phy_device *phydev)
 
 	device_property_read_string(dev, "adi,phy-output-clock", &val);
 	if (!val) {
-		/* property not present, do not enable GP_CLK pin */
+		 
 	} else if (strcmp(val, "25mhz-reference") == 0) {
 		sel |= ADIN1300_GE_CLK_CFG_25;
 	} else if (strcmp(val, "125mhz-free-running") == 0) {
@@ -503,7 +478,7 @@ static int adin_config_init(struct phy_device *phydev)
 
 static int adin_phy_ack_intr(struct phy_device *phydev)
 {
-	/* Clear pending interrupts */
+	 
 	int rc = phy_read(phydev, ADIN1300_INT_STATUS_REG);
 
 	return rc < 0 ? rc : 0;
@@ -680,7 +655,7 @@ static int adin_mdix_update(struct phy_device *phydev)
 	auto_en = !!(reg & ADIN1300_AUTO_MDI_EN);
 	mdix_en = !!(reg & ADIN1300_MAN_MDIX_EN);
 
-	/* If MDI/MDIX is forced, just read it from the control reg */
+	 
 	if (!auto_en) {
 		if (mdix_en)
 			phydev->mdix = ETH_TP_MDI_X;
@@ -689,11 +664,7 @@ static int adin_mdix_update(struct phy_device *phydev)
 		return 0;
 	}
 
-	/**
-	 * Otherwise, we need to deduce it from the PHY status2 reg.
-	 * When Auto-MDI is enabled, the ADIN1300_MAN_MDIX_EN bit implies
-	 * a preference for MDIX when it is set.
-	 */
+	 
 	reg = phy_read(phydev, ADIN1300_PHY_STATUS1);
 	if (reg < 0)
 		return reg;
@@ -723,7 +694,7 @@ static int adin_soft_reset(struct phy_device *phydev)
 {
 	int rc;
 
-	/* The reset bit is self-clearing, set it and wait */
+	 
 	rc = phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
 			      ADIN1300_GE_SOFT_RESET_REG,
 			      ADIN1300_GE_SOFT_RESET);
@@ -732,7 +703,7 @@ static int adin_soft_reset(struct phy_device *phydev)
 
 	msleep(20);
 
-	/* If we get a read error something may be wrong */
+	 
 	rc = phy_read_mmd(phydev, MDIO_MMD_VEND1,
 			  ADIN1300_GE_SOFT_RESET_REG);
 
@@ -807,7 +778,7 @@ static void adin_get_stats(struct phy_device *phydev,
 {
 	int i, rc;
 
-	/* latch copies of all the frame-checker counters */
+	 
 	rc = phy_read(phydev, ADIN1300_RX_ERR_CNT);
 	if (rc < 0)
 		return;
@@ -842,7 +813,7 @@ static int adin_cable_test_start(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* wait a bit for the clock to stabilize */
+	 
 	msleep(50);
 
 	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, ADIN1300_CDIAG_RUN,
@@ -858,7 +829,7 @@ static int adin_cable_test_report_trans(int result)
 	if (result & ADIN1300_CDIAG_RSLT_OPEN)
 		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
 
-	/* short with other pairs */
+	 
 	mask = ADIN1300_CDIAG_RSLT_XSHRT3 |
 	       ADIN1300_CDIAG_RSLT_XSHRT2 |
 	       ADIN1300_CDIAG_RSLT_XSHRT1;

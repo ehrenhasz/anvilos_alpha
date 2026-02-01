@@ -1,20 +1,4 @@
-/* Rename a file relative to open directories.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Eric Blake and Paul Eggert */
+ 
 
 #include <config.h>
 
@@ -50,7 +34,7 @@ errno_fail (int e)
 static int
 rename_noreplace (char const *src, char const *dst)
 {
-  /* This has a race between the call to lstat and the call to rename.  */
+   
   struct stat st;
   return (lstat (dst, &st) == 0 || errno == EOVERFLOW ? errno_fail (EEXIST)
           : errno == ENOENT ? rename (src, dst)
@@ -62,10 +46,7 @@ rename_noreplace (char const *src, char const *dst)
 
 #if HAVE_RENAMEAT
 
-/* Act like renameat (FD1, SRC, FD2, DST), except fail with EEXIST if
-   FLAGS is nonzero and it is easy to fail atomically if DST already exists.
-   This lets renameatu be atomic when it can be implemented in terms
-   of renameatx_np.  */
+ 
 static int
 renameat2ish (int fd1, char const *src, int fd2, char const *dst,
               unsigned int flags)
@@ -83,17 +64,7 @@ renameat2ish (int fd1, char const *src, int fd2, char const *dst,
 }
 #endif
 
-/* Rename FILE1, in the directory open on descriptor FD1, to FILE2, in
-   the directory open on descriptor FD2.  If possible, do it without
-   changing the working directory.  Otherwise, resort to using
-   save_cwd/fchdir, then rename/restore_cwd.  If either the save_cwd or
-   the restore_cwd fails, then give a diagnostic and exit nonzero.
-
-   Obey FLAGS when doing the renaming.  If FLAGS is zero, this
-   function is equivalent to renameat (FD1, SRC, FD2, DST).
-   Otherwise, attempt to implement FLAGS even if the implementation is
-   not atomic; this differs from the GNU/Linux native renameat2,
-   which fails if it cannot guarantee atomicity.  */
+ 
 
 int
 renameatu (int fd1, char const *src, int fd2, char const *dst,
@@ -132,11 +103,7 @@ renameatu (int fd1, char const *src, int fd2, char const *dst,
       break;
 
     case RENAME_NOREPLACE:
-      /* This has a race between the call to fstatat and the calls to
-         renameat below.  This fstatat is needed even if RENAME_EXCL
-         is defined, because RENAME_EXCL is buggy on macOS 11.2:
-         renameatx_np (fd, "X", fd, "X", RENAME_EXCL) incorrectly
-         succeeds when X exists.  */
+       
       if (fstatat (fd2, dst, &dst_st, AT_SYMLINK_NOFOLLOW) == 0
           || errno == EOVERFLOW)
         return errno_fail (EEXIST);
@@ -149,7 +116,7 @@ renameatu (int fd1, char const *src, int fd2, char const *dst,
       return errno_fail (ENOTSUP);
     }
 
-  /* Let strace see any ENOENT failure.  */
+   
   src_len = strlen (src);
   dst_len = strlen (dst);
   if (!src_len || !dst_len)
@@ -160,10 +127,7 @@ renameatu (int fd1, char const *src, int fd2, char const *dst,
   if (!src_slash && !dst_slash)
     return renameat2ish (fd1, src, fd2, dst, flags);
 
-  /* Presence of a trailing slash requires directory semantics.  If
-     the source does not exist, or if the destination cannot be turned
-     into a directory, give up now.  Otherwise, strip trailing slashes
-     before calling rename.  */
+   
   if (fstatat (fd1, src, &src_st, AT_SYMLINK_NOFOLLOW))
     return -1;
   if (dst_found_nonexistent)
@@ -182,16 +146,14 @@ renameatu (int fd1, char const *src, int fd2, char const *dst,
     return errno_fail (EISDIR);
 
 # if RENAME_TRAILING_SLASH_SOURCE_BUG
-  /* See the lengthy comment in rename.c why Solaris 9 is forced to
-     GNU behavior, while Solaris 10 is left with POSIX behavior,
-     regarding symlinks with trailing slash.  */
+   
   ret_val = -1;
   if (src_slash)
     {
       src_temp = strdup (src);
       if (!src_temp)
         {
-          /* Rather than rely on strdup-posix, we set errno ourselves.  */
+           
           rename_errno = ENOMEM;
           goto out;
         }
@@ -225,12 +187,9 @@ renameatu (int fd1, char const *src, int fd2, char const *dst,
       else
         goto out;
     }
-# endif /* RENAME_TRAILING_SLASH_SOURCE_BUG */
+# endif  
 
-  /* renameat does not honor trailing / on Solaris 10.  Solve it in a
-     similar manner to rename.  No need to worry about bugs not present
-     on Solaris, since all other systems either lack renameat or honor
-     trailing slash correctly.  */
+   
 
   ret_val = renameat2ish (fd1, src_temp, fd2, dst_temp, flags);
   rename_errno = errno;
@@ -243,12 +202,12 @@ renameatu (int fd1, char const *src, int fd2, char const *dst,
   errno = rename_errno;
   return ret_val;
   }
-#else /* !HAVE_RENAMEAT */
+#else  
 
-  /* RENAME_NOREPLACE is the only flag currently supported.  */
+   
   if (flags & ~RENAME_NOREPLACE)
     return errno_fail (ENOTSUP);
   return at_func2 (fd1, src, fd2, dst, flags ? rename_noreplace : rename);
 
-#endif /* !HAVE_RENAMEAT */
+#endif  
 }

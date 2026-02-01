@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *    Support for Legend Silicon GB20600 (a.k.a DMB-TH) demodulator
- *    LGS8913, LGS8GL5, LGS8G75
- *    experimental support LGS8G42, LGS8G52
- *
- *    Copyright (C) 2007-2009 David T.L. Wong <davidtlwong@gmail.com>
- *    Copyright (C) 2008 Sirius International (Hong Kong) Limited
- *    Timothy Lee <timothy.lee@siriushk.com> (for initial work on LGS8GL5)
- */
+
+ 
 
 #include <asm/div64.h>
 #include <linux/firmware.h>
@@ -35,7 +27,7 @@ module_param(fake_signal_str, int, 0644);
 MODULE_PARM_DESC(fake_signal_str, "fake signal strength for LGS8913."
 "Signal strength calculation is slow.(default:on).");
 
-/* LGS8GXX internal helper functions */
+ 
 
 static int lgs8gxx_write_reg(struct lgs8gxx_state *priv, u8 reg, u8 data)
 {
@@ -120,12 +112,12 @@ static int lgs8gxx_set_ad_mode(struct lgs8gxx_state *priv)
 	const struct lgs8gxx_config *config = priv->config;
 	u8 if_conf;
 
-	if_conf = 0x10; /* AGC output on, RF_AGC output off; */
+	if_conf = 0x10;  
 
 	if_conf |=
 		((config->ext_adc) ? 0x80 : 0x00) |
 		((config->if_neg_center) ? 0x04 : 0x00) |
-		((config->if_freq == 0) ? 0x08 : 0x00) | /* Baseband */
+		((config->if_freq == 0) ? 0x08 : 0x00) |  
 		((config->adc_signed) ? 0x02 : 0x00) |
 		((config->if_neg_edge) ? 0x01 : 0x00);
 
@@ -139,7 +131,7 @@ static int lgs8gxx_set_ad_mode(struct lgs8gxx_state *priv)
 	return 0;
 }
 
-static int lgs8gxx_set_if_freq(struct lgs8gxx_state *priv, u32 freq /*in kHz*/)
+static int lgs8gxx_set_if_freq(struct lgs8gxx_state *priv, u32 freq  )
 {
 	u64 val;
 	u32 v32;
@@ -223,20 +215,20 @@ static int lgs8gxx_set_mode_auto(struct lgs8gxx_state *priv)
 		lgs8gxx_read_reg(priv, 0x7E, &t);
 		lgs8gxx_write_reg(priv, 0x7E, t | 0x01);
 
-		/* clear FEC self reset */
+		 
 		lgs8gxx_read_reg(priv, 0xC5, &t);
 		lgs8gxx_write_reg(priv, 0xC5, t & 0xE0);
 	}
 
 	if (prod == LGS8GXX_PROD_LGS8913) {
-		/* FEC auto detect */
+		 
 		lgs8gxx_write_reg(priv, 0xC1, 0x03);
 
 		lgs8gxx_read_reg(priv, 0x7C, &t);
 		t = (t & 0x8C) | 0x03;
 		lgs8gxx_write_reg(priv, 0x7C, t);
 
-		/* BER test mode */
+		 
 		lgs8gxx_read_reg(priv, 0xC3, &t);
 		t = (t & 0xEF) |  0x10;
 		lgs8gxx_write_reg(priv, 0xC3, t);
@@ -278,7 +270,7 @@ static int lgs8gxx_set_mode_manual(struct lgs8gxx_state *priv)
 		return 0;
 	}
 
-	/* turn off auto-detect; manual settings */
+	 
 	lgs8gxx_write_reg(priv, 0x7E, 0);
 	if (priv->config->prod == LGS8GXX_PROD_LGS8913)
 		lgs8gxx_write_reg(priv, 0xC1, 0);
@@ -311,7 +303,7 @@ static int lgs8gxx_is_locked(struct lgs8gxx_state *priv, u8 *locked)
 	return 0;
 }
 
-/* Wait for Code Acquisition Lock */
+ 
 static int lgs8gxx_wait_ca_lock(struct lgs8gxx_state *priv, u8 *locked)
 {
 	int ret = 0;
@@ -409,7 +401,7 @@ static int lgs8gxx_auto_detect(struct lgs8gxx_state *priv,
 		lgs8gxx_write_reg(priv, 0x67, 0xAA);
 		lgs8gxx_write_reg(priv, 0x6E, 0x3F);
 	} else {
-		/* Guard Interval */
+		 
 		lgs8gxx_write_reg(priv, 0x03, 00);
 	}
 
@@ -478,10 +470,10 @@ static void lgs8gxx_auto_lock(struct lgs8gxx_state *priv)
 	} else
 		dprintk("detected param = 0x%02X\n", detected_param);
 
-	/* Apply detected parameters */
+	 
 	if (priv->config->prod == LGS8GXX_PROD_LGS8913) {
 		u8 inter_leave_len = detected_param & TIM_MASK ;
-		/* Fix 8913 time interleaver detection bug */
+		 
 		inter_leave_len = (inter_leave_len == TIM_MIDDLE) ? 0x60 : 0x40;
 		detected_param &= CF_MASK | SC_MASK  | LGS_FEC_MASK;
 		detected_param |= inter_leave_len;
@@ -497,9 +489,9 @@ static void lgs8gxx_auto_lock(struct lgs8gxx_state *priv)
 		if (priv->config->prod == LGS8GXX_PROD_LGS8913)
 			lgs8gxx_write_reg(priv, 0xC0, detected_param);
 	}
-	/* lgs8gxx_soft_reset(priv); */
+	 
 
-	/* Enter manual mode */
+	 
 	lgs8gxx_set_mode_manual(priv);
 
 	switch (gi) {
@@ -537,7 +529,7 @@ static int lgs8gxx_set_mpeg_mode(struct lgs8gxx_state *priv,
 	return 0;
 }
 
-/* A/D input peak-to-peak voltage range */
+ 
 static int lgs8g75_set_adc_vpp(struct lgs8gxx_state *priv,
 	u8 sel)
 {
@@ -554,19 +546,19 @@ static int lgs8g75_set_adc_vpp(struct lgs8gxx_state *priv,
 	return 0;
 }
 
-/* LGS8913 demod frontend functions */
+ 
 
 static int lgs8913_init(struct lgs8gxx_state *priv)
 {
 	u8 t;
 
-	/* LGS8913 specific */
+	 
 	lgs8gxx_write_reg(priv, 0xc1, 0x3);
 
 	lgs8gxx_read_reg(priv, 0x7c, &t);
 	lgs8gxx_write_reg(priv, 0x7c, (t&0x8c) | 0x3);
 
-	/* LGS8913 specific */
+	 
 	lgs8gxx_read_reg(priv, 0xc3, &t);
 	lgs8gxx_write_reg(priv, 0xc3, t&0x10);
 
@@ -622,7 +614,7 @@ static int lgs8gxx_init(struct dvb_frontend *fe)
 	if (config->prod == LGS8GXX_PROD_LGS8G75)
 		lgs8g75_set_adc_vpp(priv, config->adc_vpp);
 
-	/* Setup MPEG output format */
+	 
 	err = lgs8gxx_set_mpeg_mode(priv, config->serial_ts,
 				    config->ts_clk_pol,
 				    config->ts_clk_gated);
@@ -663,21 +655,21 @@ static int lgs8gxx_set_fe(struct dvb_frontend *fe)
 
 	dprintk("%s\n", __func__);
 
-	/* set frequency */
+	 
 	if (fe->ops.tuner_ops.set_params) {
 		fe->ops.tuner_ops.set_params(fe);
 		if (fe->ops.i2c_gate_ctrl)
 			fe->ops.i2c_gate_ctrl(fe, 0);
 	}
 
-	/* start auto lock */
+	 
 	lgs8gxx_auto_lock(priv);
 
 	msleep(10);
 
-	/* TODO: get real readings from device */
+	 
 
-	/* bandwidth */
+	 
 	fe_params->bandwidth_hz = 8000000;
 
 	fe_params->code_rate_HP = FEC_AUTO;
@@ -685,13 +677,13 @@ static int lgs8gxx_set_fe(struct dvb_frontend *fe)
 
 	fe_params->modulation = QAM_AUTO;
 
-	/* transmission mode */
+	 
 	fe_params->transmission_mode = TRANSMISSION_MODE_AUTO;
 
-	/* guard interval */
+	 
 	fe_params->guard_interval = GUARD_INTERVAL_AUTO;
 
-	/* hierarchy */
+	 
 	fe_params->hierarchy = HIERARCHY_NONE;
 
 	return 0;
@@ -701,7 +693,7 @@ static
 int lgs8gxx_get_tune_settings(struct dvb_frontend *fe,
 			      struct dvb_frontend_tune_settings *fesettings)
 {
-	/* FIXME: copy from tda1004x.c */
+	 
 	fesettings->min_delay_ms = 800;
 	fesettings->step_size = 0;
 	fesettings->max_drift = 0;
@@ -746,7 +738,7 @@ static int lgs8gxx_read_status(struct dvb_frontend *fe,
 				FE_HAS_VITERBI | FE_HAS_SYNC | FE_HAS_LOCK;
 	}
 
-	/* success */
+	 
 	dprintk("%s: fe_status=0x%x\n", __func__, *fe_status);
 	return 0;
 }
@@ -1019,7 +1011,7 @@ struct dvb_frontend *lgs8gxx_attach(const struct lgs8gxx_config *config,
 	priv->config = config;
 	priv->i2c = i2c;
 
-	/* check if the demod is there */
+	 
 	if (lgs8gxx_read_reg(priv, 0, &data) != 0) {
 		dprintk("%s lgs8gxx not found at i2c addr 0x%02X\n",
 			__func__, priv->config->demod_address);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- *  Rewritten from the dovefb driver, and Armada510 manuals.
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -245,7 +242,7 @@ static void armada_drm_primary_plane_atomic_disable(struct drm_plane *plane,
 	dcrtc = drm_to_armada_crtc(old_state->crtc);
 	regs = dcrtc->regs + dcrtc->regs_idx;
 
-	/* Disable plane and power down most RAMs and FIFOs */
+	 
 	armada_reg_queue_mod(regs, idx, 0, CFG_GRA_ENA, LCD_SPU_DMA_CTRL0);
 	armada_reg_queue_mod(regs, idx, CFG_PDWN256x32 | CFG_PDWN256x24 |
 			     CFG_PDWN32x32 | CFG_PDWN64x66,

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc. */
+
+ 
 
 #include <linux/devcoredump.h>
 #include <linux/kernel.h>
@@ -73,9 +73,9 @@ static int mt7996_coredump_get_mem_size(struct mt7996_dev *dev)
 		mem_region++;
 	}
 
-	/* reserve space for the headers */
+	 
 	size += num * sizeof(struct mt7996_mem_hdr);
-	/* make sure it is aligned 4 bytes for debug message print out */
+	 
 	size = ALIGN(size, 4);
 
 	return size;
@@ -105,7 +105,7 @@ mt7996_coredump_fw_state(struct mt7996_dev *dev, struct mt7996_coredump *dump,
 
 	count = mt76_rr(dev, MT_FW_ASSERT_CNT);
 
-	/* normal mode: driver can manually trigger assert for detail info */
+	 
 	if (!count)
 		strscpy(dump->fw_state, "normal", sizeof(dump->fw_state));
 	else
@@ -122,15 +122,15 @@ mt7996_coredump_fw_stack(struct mt7996_dev *dev, struct mt7996_coredump *dump,
 
 	strscpy(dump->pc_current, "program counter", sizeof(dump->pc_current));
 
-	/* 0: WM PC log output */
+	 
 	mt76_wr(dev, MT_CONN_DBG_CTL_OUT_SEL, 0);
-	/* choose 33th PC log buffer to read current PC index */
+	 
 	mt76_wr(dev, MT_CONN_DBG_CTL_PC_LOG_SEL, 0x3f);
 
-	/* read current PC */
+	 
 	dump->pc_stack[0] = mt76_rr(dev, MT_CONN_DBG_CTL_PC_LOG);
 
-	/* stop call stack record */
+	 
 	if (!exception) {
 		mt76_clear(dev, MT_MCU_WM_EXCP_PC_CTRL, BIT(0));
 		mt76_clear(dev, MT_MCU_WM_EXCP_LR_CTRL, BIT(0));
@@ -152,7 +152,7 @@ mt7996_coredump_fw_stack(struct mt7996_dev *dev, struct mt7996_coredump *dump,
 			mt76_rr(dev, MT_MCU_WM_EXCP_LR_LOG + idx * 4);
 	}
 
-	/* start call stack record */
+	 
 	if (!exception) {
 		mt76_set(dev, MT_MCU_WM_EXCP_PC_CTRL, BIT(0));
 		mt76_set(dev, MT_MCU_WM_EXCP_LR_CTRL, BIT(0));
@@ -175,9 +175,7 @@ static struct mt7996_coredump *mt7996_coredump_build(struct mt7996_dev *dev)
 
 	sofar += hdr_len;
 
-	/* this is going to get big when we start dumping memory and such,
-	 * so go ahead and use vmalloc.
-	 */
+	 
 	buf = vzalloc(len);
 	if (!buf)
 		return NULL;
@@ -187,7 +185,7 @@ static struct mt7996_coredump *mt7996_coredump_build(struct mt7996_dev *dev)
 	dump = (struct mt7996_coredump *)(buf);
 	dump->len = len;
 
-	/* plain text */
+	 
 	strscpy(dump->magic, "mt76-crash-dump", sizeof(dump->magic));
 	strscpy(dump->kernel, init_utsname()->release, sizeof(dump->kernel));
 	strscpy(dump->fw_ver, dev->mt76.hw->wiphy->fw_version,
@@ -201,7 +199,7 @@ static struct mt7996_coredump *mt7996_coredump_build(struct mt7996_dev *dev)
 	mt7996_coredump_fw_state(dev, dump, &exception);
 	mt7996_coredump_fw_stack(dev, dump, exception);
 
-	/* gather memory content */
+	 
 	dump_mem = (struct mt7996_coredump_mem *)(buf + sofar);
 	dump_mem->len = crash_data->memdump_buf_len;
 	if (coredump_memdump && crash_data->memdump_buf_len)
@@ -241,7 +239,7 @@ int mt7996_coredump_register(struct mt7996_dev *dev)
 	if (coredump_memdump) {
 		crash_data->memdump_buf_len = mt7996_coredump_get_mem_size(dev);
 		if (!crash_data->memdump_buf_len)
-			/* no memory content */
+			 
 			return 0;
 
 		crash_data->memdump_buf = vzalloc(crash_data->memdump_buf_len);

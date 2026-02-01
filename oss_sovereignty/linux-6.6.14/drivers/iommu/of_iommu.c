@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OF helpers for IOMMU
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/iommu.h>
@@ -34,11 +30,7 @@ static int of_iommu_xlate(struct device *dev,
 	ret = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
 	if (ret)
 		return ret;
-	/*
-	 * The otherwise-empty fwspec handily serves to indicate the specific
-	 * IOMMU device we're waiting for, which will be useful if we ever get
-	 * a proper probe-ordering dependency mechanism in future.
-	 */
+	 
 	if (!ops)
 		return driver_deferred_probe_check_state(dev);
 
@@ -118,7 +110,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
 	if (!master_np)
 		return NULL;
 
-	/* Serialise to make dev->iommu stable under our potential fwspec */
+	 
 	mutex_lock(&iommu_probe_device_lock);
 	fwspec = dev_iommu_fwspec_get(dev);
 	if (fwspec) {
@@ -126,15 +118,11 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
 			mutex_unlock(&iommu_probe_device_lock);
 			return fwspec->ops;
 		}
-		/* In the deferred case, start again from scratch */
+		 
 		iommu_fwspec_free(dev);
 	}
 
-	/*
-	 * We don't currently walk up the tree looking for a parent IOMMU.
-	 * See the `Notes:' section of
-	 * Documentation/devicetree/bindings/iommu/iommu.txt
-	 */
+	 
 	if (dev_is_pci(dev)) {
 		struct of_pci_iommu_alias_info info = {
 			.dev = dev,
@@ -148,27 +136,19 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
 		err = of_iommu_configure_device(master_np, dev, id);
 	}
 
-	/*
-	 * Two success conditions can be represented by non-negative err here:
-	 * >0 : there is no IOMMU, or one was unavailable for non-fatal reasons
-	 *  0 : we found an IOMMU, and dev->fwspec is initialised appropriately
-	 * <0 : any actual error
-	 */
+	 
 	if (!err) {
-		/* The fwspec pointer changed, read it again */
+		 
 		fwspec = dev_iommu_fwspec_get(dev);
 		ops    = fwspec->ops;
 	}
 	mutex_unlock(&iommu_probe_device_lock);
 
-	/*
-	 * If we have reason to believe the IOMMU driver missed the initial
-	 * probe for dev, replay it to get things in order.
-	 */
+	 
 	if (!err && dev->bus)
 		err = iommu_probe_device(dev);
 
-	/* Ignore all other errors apart from EPROBE_DEFER */
+	 
 	if (err == -EPROBE_DEFER) {
 		ops = ERR_PTR(err);
 	} else if (err < 0) {
@@ -186,14 +166,11 @@ iommu_resv_region_get_type(struct device *dev,
 {
 	phys_addr_t end = start + length - 1;
 
-	/*
-	 * IOMMU regions without an associated physical region cannot be
-	 * mapped and are simply reservations.
-	 */
+	 
 	if (phys->start >= phys->end)
 		return IOMMU_RESV_RESERVED;
 
-	/* may be IOMMU_RESV_DIRECT_RELAXABLE for certain cases */
+	 
 	if (start == phys->start && end == phys->end)
 		return IOMMU_RESV_DIRECT;
 
@@ -202,17 +179,7 @@ iommu_resv_region_get_type(struct device *dev,
 	return IOMMU_RESV_RESERVED;
 }
 
-/**
- * of_iommu_get_resv_regions - reserved region driver helper for device tree
- * @dev: device for which to get reserved regions
- * @list: reserved region list
- *
- * IOMMU drivers can use this to implement their .get_resv_regions() callback
- * for memory regions attached to a device tree node. See the reserved-memory
- * device tree bindings on how to use these:
- *
- *   Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
- */
+ 
 void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
 {
 #if IS_ENABLED(CONFIG_OF_ADDRESS)
@@ -226,11 +193,7 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
 
 		memset(&phys, 0, sizeof(phys));
 
-		/*
-		 * The "reg" property is optional and can be omitted by reserved-memory regions
-		 * that represent reservations in the IOVA space, which are regions that should
-		 * not be mapped.
-		 */
+		 
 		if (of_find_property(it.node, "reg", NULL)) {
 			err = of_address_to_resource(it.node, 0, &phys);
 			if (err < 0) {

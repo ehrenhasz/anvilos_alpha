@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/pm_runtime.h>
 #include <sound/soc.h>
@@ -80,7 +80,7 @@ catpt_get_stream_template(struct snd_pcm_substream *substream)
 
 	type = cpu_dai->driver->id;
 
-	/* account for capture in bidirectional dais */
+	 
 	switch (type) {
 	case CATPT_STRM_TYPE_SYSTEM:
 		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
@@ -164,7 +164,7 @@ static void catpt_arrange_page_table(struct snd_pcm_substream *substream,
 		u32 *page_table;
 
 		pfn = PFN_DOWN(snd_sgbuf_get_addr(databuf, i * PAGE_SIZE));
-		/* incrementing by 2 on even and 3 on odd */
+		 
 		offset = ((i << 2) + i) >> 1;
 		page_table = (u32 *)(pgtbl->area + offset);
 
@@ -336,7 +336,7 @@ static int catpt_dai_apply_usettings(struct snd_soc_dai *dai,
 	int ret;
 	u32 id = stream->info.stream_hw_id;
 
-	/* only selected streams have individual controls */
+	 
 	switch (id) {
 	case CATPT_PIN_ID_OFFLOAD1:
 		name = "Media0 Playback Volume";
@@ -477,15 +477,12 @@ static int catpt_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* only offload is set_write_pos driven */
+		 
 		if (stream->template->type != CATPT_STRM_TYPE_RENDER)
 			goto resume_stream;
 
 		pos = frames_to_bytes(runtime, runtime->start_threshold);
-		/*
-		 * Dsp operates on buffer halves, thus max 2x set_write_pos
-		 * (entire buffer filled) prior to stream start.
-		 */
+		 
 		ret = catpt_ipc_set_write_pos(cdev, stream->info.stream_hw_id,
 					      pos, false, false);
 		if (ret)
@@ -531,7 +528,7 @@ void catpt_stream_update_position(struct catpt_dev *cdev,
 
 	if (!stream->prepared)
 		goto exit;
-	/* only offload is set_write_pos driven */
+	 
 	if (stream->template->type != CATPT_STRM_TYPE_RENDER)
 		goto exit;
 
@@ -539,10 +536,7 @@ void catpt_stream_update_position(struct catpt_dev *cdev,
 		newpos = r->buffer_size / 2;
 	else
 		newpos = 0;
-	/*
-	 * Dsp operates on buffer halves, thus on every notify position
-	 * (buffer half consumed) update wp to allow stream progression.
-	 */
+	 
 	ret = catpt_ipc_set_write_pos(cdev, stream->info.stream_hw_id,
 				      frames_to_bytes(r, newpos),
 				      false, false);
@@ -555,7 +549,7 @@ exit:
 	snd_pcm_period_elapsed(substream);
 }
 
-/* 200 ms for 2 32-bit channels at 48kHz (native format) */
+ 
 #define CATPT_BUFFER_MAX_SIZE	76800
 #define CATPT_PCM_PERIODS_MAX	4
 #define CATPT_PCM_PERIODS_MIN	2
@@ -663,7 +657,7 @@ static int catpt_dai_pcm_new(struct snd_soc_pcm_runtime *rtm,
 		break;
 	}
 
-	/* see if this is a new configuration */
+	 
 	if (!memcmp(&cdev->devfmt[devfmt.iface], &devfmt, sizeof(devfmt)))
 		return 0;
 
@@ -679,7 +673,7 @@ static int catpt_dai_pcm_new(struct snd_soc_pcm_runtime *rtm,
 	if (ret)
 		return CATPT_IPC_ERROR(ret);
 
-	/* store device format set for given SSP */
+	 
 	memcpy(&cdev->devfmt[devfmt.iface], &devfmt, sizeof(devfmt));
 	return 0;
 }
@@ -689,7 +683,7 @@ static const struct snd_soc_dai_ops catpt_dai_ops = {
 };
 
 static struct snd_soc_dai_driver dai_drivers[] = {
-/* FE DAIs */
+ 
 {
 	.name  = "System Pin",
 	.id = CATPT_STRM_TYPE_SYSTEM,
@@ -764,7 +758,7 @@ static struct snd_soc_dai_driver dai_drivers[] = {
 		.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	},
 },
-/* BE DAIs */
+ 
 {
 	.name = "ssp0-port",
 	.id = CATPT_SSP_IFACE_0,
@@ -793,7 +787,7 @@ static struct snd_soc_dai_driver dai_drivers[] = {
 },
 };
 
-#define DSP_VOLUME_MAX		S32_MAX /* 0db */
+#define DSP_VOLUME_MAX		S32_MAX  
 #define DSP_VOLUME_STEP_MAX	30
 
 static u32 ctlvol_to_dspvol(u32 value)
@@ -1086,18 +1080,18 @@ static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(catpt_volume_tlv, -9000, 300, 1);
 		&(long[CATPT_CHANNELS_MAX]) {0} }
 
 static const struct snd_kcontrol_new component_kcontrols[] = {
-/* Master volume (mixer stream) */
+ 
 CATPT_VOLUME_CTL("Master Playback Volume", mixer),
-/* Individual volume controls for offload and capture */
+ 
 CATPT_VOLUME_CTL("Media0 Playback Volume", offload1),
 CATPT_VOLUME_CTL("Media1 Playback Volume", offload2),
 CATPT_VOLUME_CTL("Mic Capture Volume", capture),
 SOC_SINGLE_BOOL_EXT("Loopback Mute", (unsigned long)&(bool[1]) {0},
 		    catpt_loopback_switch_get, catpt_loopback_switch_put),
-/* Enable or disable WAVES module */
+ 
 SOC_SINGLE_BOOL_EXT("Waves Switch", 0,
 		    catpt_waves_switch_get, catpt_waves_switch_put),
-/* WAVES module parameter control */
+ 
 SND_SOC_BYTES_TLV("Waves Set Param", 128,
 		  catpt_waves_param_get, catpt_waves_param_put),
 };
@@ -1169,7 +1163,7 @@ int catpt_arm_stream_templates(struct catpt_dev *cdev)
 	}
 
 	if (scratch_size) {
-		/* allocate single scratch area for all modules */
+		 
 		res = catpt_request_region(&cdev->dram, scratch_size);
 		if (!res)
 			return -EBUSY;

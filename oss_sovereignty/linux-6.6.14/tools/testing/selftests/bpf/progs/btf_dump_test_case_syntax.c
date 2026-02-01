@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * BTF-to-C dumper test for majority of C syntax quirks.
- *
- * Copyright (c) 2019 Facebook
- */
-/* ----- START-EXPECTED-OUTPUT ----- */
+
+ 
+ 
 enum e1 {
 	A = 0,
 	B = 1,
@@ -25,35 +21,23 @@ typedef enum {
 	H = 2,
 } e3_t;
 
-/* ----- START-EXPECTED-OUTPUT ----- */
-/*
- *enum e_byte {
- *	EBYTE_1 = 0,
- *	EBYTE_2 = 1,
- *} __attribute__((mode(byte)));
- *
- */
-/* ----- END-EXPECTED-OUTPUT ----- */
+ 
+ 
+ 
 enum e_byte {
 	EBYTE_1,
 	EBYTE_2,
 } __attribute__((mode(byte)));
 
-/* ----- START-EXPECTED-OUTPUT ----- */
-/*
- *enum e_word {
- *	EWORD_1 = 0LL,
- *	EWORD_2 = 1LL,
- *} __attribute__((mode(word)));
- *
- */
-/* ----- END-EXPECTED-OUTPUT ----- */
+ 
+ 
+ 
 enum e_word {
 	EWORD_1,
 	EWORD_2,
-} __attribute__((mode(word))); /* force to use 8-byte backing for this enum */
+} __attribute__((mode(word)));  
 
-/* ----- START-EXPECTED-OUTPUT ----- */
+ 
 enum e_big {
 	EBIG_1 = 1000000000000ULL,
 };
@@ -72,38 +56,9 @@ typedef void (*fn_ptr1_t)(int);
 
 typedef void (*printf_fn_t)(const char *, ...);
 
-/* ------ END-EXPECTED-OUTPUT ------ */
-/*
- * While previous function pointers are pretty trivial (C-syntax-level
- * trivial), the following are deciphered here for future generations:
- *
- * - `fn_ptr2_t`: function, taking anonymous struct as a first arg and pointer
- *   to a function, that takes int and returns int, as a second arg; returning
- *   a pointer to a const pointer to a char. Equivalent to:
- *	typedef struct { int a; } s_t;
- *	typedef int (*fn_t)(int);
- *	typedef char * const * (*fn_ptr2_t)(s_t, fn_t);
- *
- * - `fn_complex_t`: pointer to a function returning struct and accepting
- *   union and struct. All structs and enum are anonymous and defined inline.
- *
- * - `signal_t: pointer to a function accepting a pointer to a function as an
- *   argument and returning pointer to a function as a result. Sane equivalent:
- *	typedef void (*signal_handler_t)(int);
- *	typedef signal_handler_t (*signal_ptr_t)(int, signal_handler_t);
- *
- * - fn_ptr_arr1_t: array of pointers to a function accepting pointer to
- *   a pointer to an int and returning pointer to a char. Easy.
- *
- * - fn_ptr_arr2_t: array of const pointers to a function taking no arguments
- *   and returning a const pointer to a function, that takes pointer to a
- *   `int -> char *` function and returns pointer to a char. Equivalent:
- *   typedef char * (*fn_input_t)(int);
- *   typedef char * (*fn_output_outer_t)(fn_input_t);
- *   typedef const fn_output_outer_t (* fn_output_inner_t)();
- *   typedef const fn_output_inner_t fn_ptr_arr2_t[5];
- */
-/* ----- START-EXPECTED-OUTPUT ----- */
+ 
+ 
+ 
 typedef char * const * (*fn_ptr2_t)(struct {
 	int a;
 }, int (*)(int));
@@ -272,7 +227,7 @@ struct root_struct {
 	struct float_struct _15;
 };
 
-/* ------ END-EXPECTED-OUTPUT ------ */
+ 
 
 int f(struct root_struct *s)
 {

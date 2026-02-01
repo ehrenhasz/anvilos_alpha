@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2021 Amazon.com, Inc. or its affiliates.
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -75,7 +73,7 @@ enum {
 
 #define MIN_STEAL_TIME		50000
 
-#define SHINFO_RACE_TIMEOUT	2	/* seconds */
+#define SHINFO_RACE_TIMEOUT	2	 
 
 #define __HYPERVISOR_set_timer_op	15
 #define __HYPERVISOR_sched_op		29
@@ -106,7 +104,7 @@ struct pvclock_vcpu_time_info {
 	s8    tsc_shift;
 	u8    flags;
 	u8    pad[2];
-} __attribute__((__packed__)); /* 32 bytes */
+} __attribute__((__packed__));  
 
 struct pvclock_wall_clock {
 	u32   version;
@@ -117,7 +115,7 @@ struct pvclock_wall_clock {
 struct vcpu_runstate_info {
 	uint32_t state;
 	uint64_t state_entry_time;
-	uint64_t time[5]; /* Extra field for overrun check */
+	uint64_t time[5];  
 };
 
 struct compat_vcpu_runstate_info {
@@ -128,7 +126,7 @@ struct compat_vcpu_runstate_info {
 
 struct arch_vcpu_info {
 	unsigned long cr2;
-	unsigned long pad; /* sizeof(vcpu_info_t) == 64 */
+	unsigned long pad;  
 };
 
 struct vcpu_info {
@@ -137,7 +135,7 @@ struct vcpu_info {
 	unsigned long evtchn_pending_sel;
 	struct arch_vcpu_info arch;
 	struct pvclock_vcpu_time_info time;
-}; /* 64 bytes (x86) */
+};  
 
 struct shared_info {
 	struct vcpu_info vcpu_info[32];
@@ -145,7 +143,7 @@ struct shared_info {
 	unsigned long evtchn_mask[64];
 	struct pvclock_wall_clock wc;
 	uint32_t wc_sec_hi;
-	/* arch_shared_info here */
+	 
 };
 
 #define RUNSTATE_running  0
@@ -194,12 +192,12 @@ static void guest_code(void)
 		"nop\n"
 	);
 
-	/* Trigger an interrupt injection */
+	 
 	GUEST_SYNC(TEST_INJECT_VECTOR);
 
 	guest_wait_for_irq();
 
-	/* Test having the host set runstates manually */
+	 
 	GUEST_SYNC(TEST_RUNSTATE_runnable);
 	GUEST_ASSERT(rs->time[RUNSTATE_runnable] != 0);
 	GUEST_ASSERT(rs->state == 0);
@@ -212,49 +210,48 @@ static void guest_code(void)
 	GUEST_ASSERT(rs->time[RUNSTATE_offline] != 0);
 	GUEST_ASSERT(rs->state == 0);
 
-	/* Test runstate time adjust */
+	 
 	GUEST_SYNC(TEST_RUNSTATE_ADJUST);
 	GUEST_ASSERT(rs->time[RUNSTATE_blocked] == 0x5a);
 	GUEST_ASSERT(rs->time[RUNSTATE_offline] == 0x6b6b);
 
-	/* Test runstate time set */
+	 
 	GUEST_SYNC(TEST_RUNSTATE_DATA);
 	GUEST_ASSERT(rs->state_entry_time >= 0x8000);
 	GUEST_ASSERT(rs->time[RUNSTATE_runnable] == 0);
 	GUEST_ASSERT(rs->time[RUNSTATE_blocked] == 0x6b6b);
 	GUEST_ASSERT(rs->time[RUNSTATE_offline] == 0x5a);
 
-	/* sched_yield() should result in some 'runnable' time */
+	 
 	GUEST_SYNC(TEST_STEAL_TIME);
 	GUEST_ASSERT(rs->time[RUNSTATE_runnable] >= MIN_STEAL_TIME);
 
-	/* Attempt to deliver a *masked* interrupt */
+	 
 	GUEST_SYNC(TEST_EVTCHN_MASKED);
 
-	/* Wait until we see the bit set */
+	 
 	struct shared_info *si = (void *)SHINFO_VADDR;
 	while (!si->evtchn_pending[0])
 		__asm__ __volatile__ ("rep nop" : : : "memory");
 
-	/* Now deliver an *unmasked* interrupt */
+	 
 	GUEST_SYNC(TEST_EVTCHN_UNMASKED);
 
 	guest_wait_for_irq();
 
-	/* Change memslots and deliver an interrupt */
+	 
 	GUEST_SYNC(TEST_EVTCHN_SLOWPATH);
 
 	guest_wait_for_irq();
 
-	/* Deliver event channel with KVM_XEN_HVM_EVTCHN_SEND */
+	 
 	GUEST_SYNC(TEST_EVTCHN_SEND_IOCTL);
 
 	guest_wait_for_irq();
 
 	GUEST_SYNC(TEST_EVTCHN_HCALL);
 
-	/* Our turn. Deliver event channel (to ourselves) with
-	 * EVTCHNOP_send hypercall. */
+	 
 	struct evtchn_send s = { .port = 127 };
 	xen_hypercall(__HYPERVISOR_event_channel_op, EVTCHNOP_send, &s);
 
@@ -262,18 +259,14 @@ static void guest_code(void)
 
 	GUEST_SYNC(TEST_EVTCHN_HCALL_SLOWPATH);
 
-	/*
-	 * Same again, but this time the host has messed with memslots so it
-	 * should take the slow path in kvm_xen_set_evtchn().
-	 */
+	 
 	xen_hypercall(__HYPERVISOR_event_channel_op, EVTCHNOP_send, &s);
 
 	guest_wait_for_irq();
 
 	GUEST_SYNC(TEST_EVTCHN_HCALL_EVENTFD);
 
-	/* Deliver "outbound" event channel to an eventfd which
-	 * happens to be one of our own irqfds. */
+	 
 	s.port = 197;
 	xen_hypercall(__HYPERVISOR_event_channel_op, EVTCHNOP_send, &s);
 
@@ -281,23 +274,23 @@ static void guest_code(void)
 
 	GUEST_SYNC(TEST_TIMER_SETUP);
 
-	/* Set a timer 100ms in the future. */
+	 
 	xen_hypercall(__HYPERVISOR_set_timer_op,
 		      rs->state_entry_time + 100000000, NULL);
 
 	GUEST_SYNC(TEST_TIMER_WAIT);
 
-	/* Now wait for the timer */
+	 
 	guest_wait_for_irq();
 
 	GUEST_SYNC(TEST_TIMER_RESTORE);
 
-	/* The host has 'restored' the timer. Just wait for it. */
+	 
 	guest_wait_for_irq();
 
 	GUEST_SYNC(TEST_POLL_READY);
 
-	/* Poll for an event channel port which is already set */
+	 
 	u32 ports[1] = { EVTCHN_TIMER };
 	struct sched_poll p = {
 		.ports = ports,
@@ -309,20 +302,19 @@ static void guest_code(void)
 
 	GUEST_SYNC(TEST_POLL_TIMEOUT);
 
-	/* Poll for an unset port and wait for the timeout. */
+	 
 	p.timeout = 100000000;
 	xen_hypercall(__HYPERVISOR_sched_op, SCHEDOP_poll, &p);
 
 	GUEST_SYNC(TEST_POLL_MASKED);
 
-	/* A timer will wake the masked port we're waiting on, while we poll */
+	 
 	p.timeout = 0;
 	xen_hypercall(__HYPERVISOR_sched_op, SCHEDOP_poll, &p);
 
 	GUEST_SYNC(TEST_POLL_WAKE);
 
-	/* A timer wake an *unmasked* port which should wake us with an
-	 * actual interrupt, while we're polling on a different port. */
+	 
 	ports[0]++;
 	p.timeout = 0;
 	xen_hypercall(__HYPERVISOR_sched_op, SCHEDOP_poll, &p);
@@ -331,16 +323,16 @@ static void guest_code(void)
 
 	GUEST_SYNC(TEST_TIMER_PAST);
 
-	/* Timer should have fired already */
+	 
 	guest_wait_for_irq();
 
 	GUEST_SYNC(TEST_LOCKING_SEND_RACE);
-	/* Racing host ioctls */
+	 
 
 	guest_wait_for_irq();
 
 	GUEST_SYNC(TEST_LOCKING_POLL_RACE);
-	/* Racing vmcall against host ioctl */
+	 
 
 	ports[0] = 0;
 
@@ -351,21 +343,11 @@ static void guest_code(void)
 	};
 
 wait_for_timer:
-	/*
-	 * Poll for a timer wake event while the worker thread is mucking with
-	 * the shared info.  KVM XEN drops timer IRQs if the shared info is
-	 * invalid when the timer expires.  Arbitrarily poll 100 times before
-	 * giving up and asking the VMM to re-arm the timer.  100 polls should
-	 * consume enough time to beat on KVM without taking too long if the
-	 * timer IRQ is dropped due to an invalid event channel.
-	 */
+	 
 	for (i = 0; i < 100 && !guest_saw_irq; i++)
 		__xen_hypercall(__HYPERVISOR_sched_op, SCHEDOP_poll, &p);
 
-	/*
-	 * Re-send the timer IRQ if it was (likely) dropped due to the timer
-	 * expiring while the event channel was invalid.
-	 */
+	 
 	if (!guest_saw_irq) {
 		GUEST_SYNC(TEST_LOCKING_POLL_TIMEOUT);
 		goto wait_for_timer;
@@ -447,7 +429,7 @@ int main(int argc, char *argv[])
 
 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 
-	/* Map a region for the shared_info page */
+	 
 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS,
 				    SHINFO_REGION_GPA, SHINFO_REGION_SLOT, 3, 0);
 	virt_map(vm, SHINFO_REGION_GVA, SHINFO_REGION_GPA, 3);
@@ -462,8 +444,7 @@ int main(int argc, char *argv[])
 		.msr = XEN_HYPERCALL_MSR,
 	};
 
-	/* Let the kernel know that we *will* use it for sending all
-	 * event channels, which lets it intercept SCHEDOP_poll */
+	 
 	if (do_evtchn_tests)
 		hvmc.flags |= KVM_XEN_HVM_CONFIG_EVTCHN_SEND;
 
@@ -494,11 +475,7 @@ int main(int argc, char *argv[])
 	};
 	vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &ha);
 
-	/*
-	 * Test what happens when the HVA of the shinfo page is remapped after
-	 * the kernel has a reference to it. But make sure we copy the clock
-	 * info over since that's only set at setup time, and we test it later.
-	 */
+	 
 	struct pvclock_wall_clock wc_copy = shinfo->wc;
 	void *m = mmap(shinfo, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE, zero_fd, 0);
 	TEST_ASSERT(m == shinfo, "Failed to map /dev/zero over shared info");
@@ -540,7 +517,7 @@ int main(int argc, char *argv[])
 		irq_fd[0] = eventfd(0, 0);
 		irq_fd[1] = eventfd(0, 0);
 
-		/* Unexpected, but not a KVM failure */
+		 
 		if (irq_fd[0] == -1 || irq_fd[1] == -1)
 			do_evtchn_tests = do_eventfd_tests = false;
 	}
@@ -596,7 +573,7 @@ int main(int argc, char *argv[])
 		};
 		vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &inj);
 
-		/* Test migration to a different vCPU */
+		 
 		inj.u.evtchn.flags = KVM_XEN_EVTCHN_UPDATE;
 		inj.u.evtchn.deliver.port.vcpu = vcpu->id;
 		vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &inj);
@@ -626,7 +603,7 @@ int main(int argc, char *argv[])
 		switch (get_ucall(vcpu, &uc)) {
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		case UCALL_SYNC: {
 			struct kvm_xen_vcpu_attr rst;
 			long rundelay;
@@ -686,7 +663,7 @@ int main(int argc, char *argv[])
 			case TEST_STEAL_TIME:
 				if (verbose)
 					printf("Testing steal time\n");
-				/* Yield until scheduler delay exceeds target */
+				 
 				rundelay = get_run_delay() + MIN_STEAL_TIME;
 				do {
 					sched_yield();
@@ -706,7 +683,7 @@ int main(int argc, char *argv[])
 			case TEST_EVTCHN_UNMASKED:
 				if (verbose)
 					printf("Testing unmasked event channel\n");
-				/* Unmask that, but deliver the other one */
+				 
 				shinfo->evtchn_pending[0] = 0;
 				shinfo->evtchn_mask[0] = 0;
 				eventfd_write(irq_fd[1], 1UL);
@@ -854,7 +831,7 @@ int main(int argc, char *argv[])
 				tmr.u.timer.expires_ns = rs->state_entry_time + 100000000;
 				vcpu_ioctl(vcpu, KVM_XEN_VCPU_SET_ATTR, &tmr);
 
-				/* Read it back and check the pending time is reported correctly */
+				 
 				tmr.u.timer.expires_ns = 0;
 				vcpu_ioctl(vcpu, KVM_XEN_VCPU_GET_ATTR, &tmr);
 				TEST_ASSERT(tmr.u.timer.expires_ns == rs->state_entry_time + 100000000,
@@ -865,7 +842,7 @@ int main(int argc, char *argv[])
 			case TEST_TIMER_PAST:
 				TEST_ASSERT(!evtchn_irq_expected,
 					    "Expected event channel IRQ but it didn't happen");
-				/* Read timer and check it is no longer pending */
+				 
 				vcpu_ioctl(vcpu, KVM_XEN_VCPU_GET_ATTR, &tmr);
 				TEST_ASSERT(!tmr.u.timer.expires_ns, "Timer still reported pending");
 
@@ -917,20 +894,14 @@ int main(int argc, char *argv[])
 				break;
 
 			case TEST_LOCKING_POLL_TIMEOUT:
-				/*
-				 * Optional and possibly repeated sync point.
-				 * Injecting the timer IRQ may fail if the
-				 * shinfo is invalid when the timer expires.
-				 * If the timer has expired but the IRQ hasn't
-				 * been delivered, rearm the timer and retry.
-				 */
+				 
 				vcpu_ioctl(vcpu, KVM_XEN_VCPU_GET_ATTR, &tmr);
 
-				/* Resume the guest if the timer is still pending. */
+				 
 				if (tmr.u.timer.expires_ns)
 					break;
 
-				/* All done if the IRQ was delivered. */
+				 
 				if (!evtchn_irq_expected)
 					break;
 
@@ -971,11 +942,7 @@ int main(int argc, char *argv[])
 	alarm(0);
 	clock_gettime(CLOCK_REALTIME, &max_ts);
 
-	/*
-	 * Just a *really* basic check that things are being put in the
-	 * right place. The actual calculations are much the same for
-	 * Xen as they are for the KVM variants, so no need to check.
-	 */
+	 
 	struct pvclock_wall_clock *wc;
 	struct pvclock_vcpu_time_info *ti, *ti2;
 
@@ -1006,11 +973,7 @@ int main(int argc, char *argv[])
 		    "Bad time_info version %x", ti->version);
 
 	if (do_runstate_tests) {
-		/*
-		 * Fetch runstate and check sanity. Strictly speaking in the
-		 * general case we might not expect the numbers to be identical
-		 * but in this case we know we aren't running the vCPU any more.
-		 */
+		 
 		struct kvm_xen_vcpu_attr rst = {
 			.type = KVM_XEN_VCPU_ATTR_TYPE_RUNSTATE_DATA,
 		};
@@ -1026,12 +989,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		/*
-		 * Exercise runstate info at all points across the page boundary, in
-		 * 32-bit and 64-bit mode. In particular, test the case where it is
-		 * configured in 32-bit mode and then switched to 64-bit mode while
-		 * active, which takes it onto the second page.
-		 */
+		 
 		unsigned long runstate_addr;
 		struct compat_vcpu_runstate_info *crs;
 		for (runstate_addr = SHINFO_REGION_GPA + PAGE_SIZE + PAGE_SIZE - sizeof(*rs) - 4;
@@ -1042,11 +1000,11 @@ int main(int argc, char *argv[])
 
 			memset(rs, 0xa5, sizeof(*rs));
 
-			/* Set to compatibility mode */
+			 
 			lm.u.long_mode = 0;
 			vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &lm);
 
-			/* Set runstate to new address (kernel will write it) */
+			 
 			struct kvm_xen_vcpu_attr st = {
 				.type = KVM_XEN_VCPU_ATTR_TYPE_RUNSTATE_ADDR,
 				.u.gpa = runstate_addr,
@@ -1074,13 +1032,13 @@ int main(int argc, char *argv[])
 				    "runstate times don't add up");
 
 
-			/* Now switch to 64-bit mode */
+			 
 			lm.u.long_mode = 1;
 			vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &lm);
 
 			memset(rs, 0xa5, sizeof(*rs));
 
-			/* Don't change the address, just trigger a write */
+			 
 			struct kvm_xen_vcpu_attr adj = {
 				.type = KVM_XEN_VCPU_ATTR_TYPE_RUNSTATE_ADJUST,
 				.u.runstate.state = (uint64_t)-1

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Freescale MPL115A1 pressure/temperature sensor
- *
- * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
- *
- * Datasheet: http://www.nxp.com/files/sensors/doc/data_sheet/MPL115A1.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>

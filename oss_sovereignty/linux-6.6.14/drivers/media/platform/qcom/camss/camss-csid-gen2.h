@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * camss-csid-gen1.h
- *
- * Qualcomm MSM Camera Subsystem - CSID (CSI Decoder) Module Generation 1
- *
- * Copyright (C) 2021 Linaro Ltd.
- */
+ 
+ 
 #ifndef QC_MSM_CAMSS_CSID_GEN2_H
 #define QC_MSM_CAMSS_CSID_GEN2_H
 
@@ -32,8 +26,8 @@
 #define ENCODE_FORMAT_RAW_14_BIT	0x4
 #define ENCODE_FORMAT_RAW_16_BIT	0x5
 
-#define PLAIN_FORMAT_PLAIN8	0x0 /* supports DPCM, UNCOMPRESSED_6/8_BIT */
-#define PLAIN_FORMAT_PLAIN16	0x1 /* supports DPCM, UNCOMPRESSED_10/16_BIT */
-#define PLAIN_FORMAT_PLAIN32	0x2 /* supports UNCOMPRESSED_20_BIT */
+#define PLAIN_FORMAT_PLAIN8	0x0  
+#define PLAIN_FORMAT_PLAIN16	0x1  
+#define PLAIN_FORMAT_PLAIN32	0x2  
 
-#endif /* QC_MSM_CAMSS_CSID_GEN2_H */
+#endif  

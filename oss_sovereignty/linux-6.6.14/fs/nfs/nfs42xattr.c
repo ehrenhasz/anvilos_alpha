@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2019, 2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- *
- * User extended attribute client side cache functions.
- *
- * Author: Frank van der Linden <fllinden@amazon.com>
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/nfs_fs.h>
 #include <linux/hashtable.h>
@@ -16,41 +10,9 @@
 #include "nfs4_fs.h"
 #include "internal.h"
 
-/*
- * User extended attributes client side caching is implemented by having
- * a cache structure attached to NFS inodes. This structure is allocated
- * when needed, and freed when the cache is zapped.
- *
- * The cache structure contains as hash table of entries, and a pointer
- * to a special-cased entry for the listxattr cache.
- *
- * Accessing and allocating / freeing the caches is done via reference
- * counting. The cache entries use a similar refcounting scheme.
- *
- * This makes freeing a cache, both from the shrinker and from the
- * zap cache path, easy. It also means that, in current use cases,
- * the large majority of inodes will not waste any memory, as they
- * will never have any user extended attributes assigned to them.
- *
- * Attribute entries are hashed in to a simple hash table. They are
- * also part of an LRU.
- *
- * There are three shrinkers.
- *
- * Two shrinkers deal with the cache entries themselves: one for
- * large entries (> PAGE_SIZE), and one for smaller entries. The
- * shrinker for the larger entries works more aggressively than
- * those for the smaller entries.
- *
- * The other shrinker frees the cache structures themselves.
- */
+ 
 
-/*
- * 64 buckets is a good default. There is likely no reasonable
- * workload that uses more than even 64 user extended attributes.
- * You can certainly add a lot more - but you get what you ask for
- * in those circumstances.
- */
+ 
 #define NFS4_XATTR_HASH_SIZE	64
 
 #define NFSDBG_FACILITY	NFSDBG_XATTRCACHE
@@ -90,18 +52,14 @@ struct nfs4_xattr_entry {
 
 #define	NFS4_XATTR_ENTRY_EXTVAL	0x0001
 
-/*
- * LRU list of NFS inodes that have xattr caches.
- */
+ 
 static struct list_lru nfs4_xattr_cache_lru;
 static struct list_lru nfs4_xattr_entry_lru;
 static struct list_lru nfs4_xattr_large_entry_lru;
 
 static struct kmem_cache *nfs4_xattr_cache_cachep;
 
-/*
- * Hashing helper functions.
- */
+ 
 static void
 nfs4_xattr_hash_init(struct nfs4_xattr_cache *cache)
 {
@@ -115,15 +73,9 @@ nfs4_xattr_hash_init(struct nfs4_xattr_cache *cache)
 	}
 }
 
-/*
- * Locking order:
- * 1. inode i_lock or bucket lock
- * 2. list_lru lock (taken by list_lru_* functions)
- */
+ 
 
-/*
- * Wrapper functions to add a cache entry to the right LRU.
- */
+ 
 static bool
 nfs4_xattr_entry_lru_add(struct nfs4_xattr_entry *entry)
 {
@@ -146,31 +98,7 @@ nfs4_xattr_entry_lru_del(struct nfs4_xattr_entry *entry)
 	return list_lru_del(lru, &entry->lru);
 }
 
-/*
- * This function allocates cache entries. They are the normal
- * extended attribute name/value pairs, but may also be a listxattr
- * cache. Those allocations use the same entry so that they can be
- * treated as one by the memory shrinker.
- *
- * xattr cache entries are allocated together with names. If the
- * value fits in to one page with the entry structure and the name,
- * it will also be part of the same allocation (kmalloc). This is
- * expected to be the vast majority of cases. Larger allocations
- * have a value pointer that is allocated separately by kvmalloc.
- *
- * Parameters:
- *
- * @name:  Name of the extended attribute. NULL for listxattr cache
- *         entry.
- * @value: Value of attribute, or listxattr cache. NULL if the
- *         value is to be copied from pages instead.
- * @pages: Pages to copy the value from, if not NULL. Passed in to
- *	   make it easier to copy the value after an RPC, even if
- *	   the value will not be passed up to application (e.g.
- *	   for a 'query' getxattr with NULL buffer).
- * @len:   Length of the value. Can be 0 for zero-length attributes.
- *         @value and @pages will be NULL if @len is 0.
- */
+ 
 static struct nfs4_xattr_entry *
 nfs4_xattr_alloc_entry(const char *name, const void *value,
 		       struct page **pages, size_t len)
@@ -299,12 +227,7 @@ nfs4_xattr_alloc_cache(void)
 	return cache;
 }
 
-/*
- * Set the listxattr cache, which is a special-cased cache entry.
- * The special value ERR_PTR(-ESTALE) is used to indicate that
- * the cache is being drained - this prevents a new listxattr
- * cache from being added to what is now a stale cache.
- */
+ 
 static int
 nfs4_xattr_set_listcache(struct nfs4_xattr_cache *cache,
 			 struct nfs4_xattr_entry *new)
@@ -335,10 +258,7 @@ out:
 	return ret;
 }
 
-/*
- * Unlink a cache from its parent inode, clearing out an invalid
- * cache. Must be called with i_lock held.
- */
+ 
 static struct nfs4_xattr_cache *
 nfs4_xattr_cache_unlink(struct inode *inode)
 {
@@ -359,27 +279,7 @@ nfs4_xattr_cache_unlink(struct inode *inode)
 
 }
 
-/*
- * Discard a cache. Called by get_cache() if there was an old,
- * invalid cache. Can also be called from a shrinker callback.
- *
- * The cache is dead, it has already been unlinked from its inode,
- * and no longer appears on the cache LRU list.
- *
- * Mark all buckets as draining, so that no new entries are added. This
- * could still happen in the unlikely, but possible case that another
- * thread had grabbed a reference before it was unlinked from the inode,
- * and is still holding it for an add operation.
- *
- * Remove all entries from the LRU lists, so that there is no longer
- * any way to 'find' this cache. Then, remove the entries from the hash
- * table.
- *
- * At that point, the cache will remain empty and can be freed when the final
- * reference drops, which is very likely the kref_put at the end of
- * this function, or the one called immediately afterwards in the
- * shrinker callback.
- */
+ 
 static void
 nfs4_xattr_discard_cache(struct nfs4_xattr_cache *cache)
 {
@@ -408,19 +308,7 @@ nfs4_xattr_discard_cache(struct nfs4_xattr_cache *cache)
 	kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
 }
 
-/*
- * Get a referenced copy of the cache structure. Avoid doing allocs
- * while holding i_lock. Which means that we do some optimistic allocation,
- * and might have to free the result in rare cases.
- *
- * This function only checks the NFS_INO_INVALID_XATTR cache validity bit
- * and acts accordingly, replacing the cache when needed. For the read case
- * (!add), this means that the caller must make sure that the cache
- * is valid before caling this function. getxattr and listxattr call
- * revalidate_inode to do this. The attribute cache timeout (for the
- * non-delegated case) is expected to be dealt with in the revalidate
- * call.
- */
+ 
 
 static struct nfs4_xattr_cache *
 nfs4_xattr_get_cache(struct inode *inode, int add)
@@ -453,20 +341,14 @@ nfs4_xattr_get_cache(struct inode *inode, int add)
 
 		spin_lock(&inode->i_lock);
 		if (nfsi->cache_validity & NFS_INO_INVALID_XATTR) {
-			/*
-			 * The cache was invalidated again. Give up,
-			 * since what we want to enter is now likely
-			 * outdated anyway.
-			 */
+			 
 			spin_unlock(&inode->i_lock);
 			kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
 			cache = NULL;
 			goto out;
 		}
 
-		/*
-		 * Check if someone beat us to it.
-		 */
+		 
 		if (nfsi->xattr_cache != NULL) {
 			newcache = nfsi->xattr_cache;
 			kref_get(&newcache->ref);
@@ -479,11 +361,7 @@ nfs4_xattr_get_cache(struct inode *inode, int add)
 
 		spin_unlock(&inode->i_lock);
 
-		/*
-		 * If there was a race, throw away the cache we just
-		 * allocated, and use the new one allocated by someone
-		 * else.
-		 */
+		 
 		if (newcache != NULL) {
 			kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
 			cache = newcache;
@@ -491,9 +369,7 @@ nfs4_xattr_get_cache(struct inode *inode, int add)
 	}
 
 out:
-	/*
-	 * Discard the now orphaned old cache.
-	 */
+	 
 	if (oldcache != NULL)
 		nfs4_xattr_discard_cache(oldcache);
 
@@ -602,9 +478,7 @@ nfs4_xattr_hash_find(struct nfs4_xattr_cache *cache, const char *name)
 	return entry;
 }
 
-/*
- * Entry point to retrieve an entry from the cache.
- */
+ 
 ssize_t nfs4_xattr_cache_get(struct inode *inode, const char *name, char *buf,
 			 ssize_t buflen)
 {
@@ -623,7 +497,7 @@ ssize_t nfs4_xattr_cache_get(struct inode *inode, const char *name, char *buf,
 		dprintk("%s: cache hit '%s', len %lu\n", __func__,
 		    entry->xattr_name, (unsigned long)entry->xattr_size);
 		if (buflen == 0) {
-			/* Length probe only */
+			 
 			ret = entry->xattr_size;
 		} else if (buflen < entry->xattr_size)
 			ret = -ERANGE;
@@ -642,9 +516,7 @@ ssize_t nfs4_xattr_cache_get(struct inode *inode, const char *name, char *buf,
 	return ret;
 }
 
-/*
- * Retrieve a cached list of xattrs from the cache.
- */
+ 
 ssize_t nfs4_xattr_cache_list(struct inode *inode, char *buf, ssize_t buflen)
 {
 	struct nfs4_xattr_cache *cache;
@@ -661,7 +533,7 @@ ssize_t nfs4_xattr_cache_list(struct inode *inode, char *buf, ssize_t buflen)
 
 	if (entry != NULL && entry != ERR_PTR(-ESTALE)) {
 		if (buflen == 0) {
-			/* Length probe only */
+			 
 			ret = entry->xattr_size;
 		} else if (entry->xattr_size > buflen)
 			ret = -ERANGE;
@@ -680,11 +552,7 @@ ssize_t nfs4_xattr_cache_list(struct inode *inode, char *buf, ssize_t buflen)
 	return ret;
 }
 
-/*
- * Add an xattr to the cache.
- *
- * This also invalidates the xattr list cache.
- */
+ 
 void nfs4_xattr_cache_add(struct inode *inode, const char *name,
 			  const char *buf, struct page **pages, ssize_t buflen)
 {
@@ -712,11 +580,7 @@ out:
 }
 
 
-/*
- * Remove an xattr from the cache.
- *
- * This also invalidates the xattr list cache.
- */
+ 
 void nfs4_xattr_cache_remove(struct inode *inode, const char *name)
 {
 	struct nfs4_xattr_cache *cache;
@@ -733,9 +597,7 @@ void nfs4_xattr_cache_remove(struct inode *inode, const char *name)
 	kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
 }
 
-/*
- * Cache listxattr output, replacing any possible old one.
- */
+ 
 void nfs4_xattr_cache_set_list(struct inode *inode, const char *buf,
 			       ssize_t buflen)
 {
@@ -750,11 +612,7 @@ void nfs4_xattr_cache_set_list(struct inode *inode, const char *buf,
 	if (entry == NULL)
 		goto out;
 
-	/*
-	 * This is just there to be able to get to bucket->cache,
-	 * which is obviously the same for all buckets, so just
-	 * use bucket 0.
-	 */
+	 
 	entry->bucket = &cache->buckets[0];
 
 	if (!nfs4_xattr_set_listcache(cache, entry))
@@ -764,9 +622,7 @@ out:
 	kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
 }
 
-/*
- * Zap the entire cache. Called when an inode is evicted.
- */
+ 
 void nfs4_xattr_cache_zap(struct inode *inode)
 {
 	struct nfs4_xattr_cache *oldcache;
@@ -779,13 +635,7 @@ void nfs4_xattr_cache_zap(struct inode *inode)
 		nfs4_xattr_discard_cache(oldcache);
 }
 
-/*
- * The entry LRU is shrunk more aggressively than the cache LRU,
- * by settings @seeks to 1.
- *
- * Cache structures are freed only when they've become empty, after
- * pruning all but one entry.
- */
+ 
 
 static unsigned long nfs4_xattr_cache_count(struct shrinker *shrink,
 					    struct shrink_control *sc);
@@ -831,11 +681,7 @@ cache_lru_isolate(struct list_head *item,
 	if (atomic_long_read(&cache->nent) > 1)
 		return LRU_SKIP;
 
-	/*
-	 * If a cache structure is on the LRU list, we know that
-	 * its inode is valid. Try to lock it to break the link.
-	 * Since we're inverting the lock order here, only try.
-	 */
+	 
 	inode = cache->inode;
 
 	if (!spin_trylock(&inode->i_lock))
@@ -897,17 +743,9 @@ entry_lru_isolate(struct list_head *item,
 	bucket = entry->bucket;
 	cache = bucket->cache;
 
-	/*
-	 * Unhook the entry from its parent (either a cache bucket
-	 * or a cache structure if it's a listxattr buf), so that
-	 * it's no longer found. Then add it to the isolate list,
-	 * to be freed later.
-	 *
-	 * In both cases, we're reverting lock order, so use
-	 * trylock and skip the entry if we can't get the lock.
-	 */
+	 
 	if (entry->xattr_name != NULL) {
-		/* Regular cache entry */
+		 
 		if (!spin_trylock(&bucket->lock))
 			return LRU_SKIP;
 
@@ -919,7 +757,7 @@ entry_lru_isolate(struct list_head *item,
 
 		spin_unlock(&bucket->lock);
 	} else {
-		/* Listxattr cache entry */
+		 
 		if (!spin_trylock(&cache->listxattr_lock))
 			return LRU_SKIP;
 
@@ -953,11 +791,7 @@ nfs4_xattr_entry_scan(struct shrinker *shrink, struct shrink_control *sc)
 		    dispose);
 		list_del_init(&entry->dispose);
 
-		/*
-		 * Drop two references: the one that we just grabbed
-		 * in entry_lru_isolate, and the one that was set
-		 * when the entry was first allocated.
-		 */
+		 
 		kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
 		kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
 	}

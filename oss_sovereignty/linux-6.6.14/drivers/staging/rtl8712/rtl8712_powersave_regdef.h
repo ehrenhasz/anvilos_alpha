@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __RTL8712_POWERSAVE_REGDEF_H__
 #define __RTL8712_POWERSAVE_REGDEF_H__
 
@@ -22,5 +18,5 @@
 #define RPWM				(RTL8712_POWERSAVE_ + 0x7C)
 #define CPWM				(RTL8712_POWERSAVE_ + 0x7D)
 
-#endif /* __RTL8712_POWERSAVE_REGDEF_H__ */
+#endif  
 

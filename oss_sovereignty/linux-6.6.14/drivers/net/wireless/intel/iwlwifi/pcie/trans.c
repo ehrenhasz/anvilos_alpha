@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2007-2015, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 #include <linux/debugfs.h>
@@ -29,7 +25,7 @@
 #include "iwl-fh.h"
 #include "iwl-context-info-gen3.h"
 
-/* extended range in FW SRAM */
+ 
 #define IWL_FW_MEM_EXTENDED_START	0x40000
 #define IWL_FW_MEM_EXTENDED_END		0x57FFF
 
@@ -47,12 +43,12 @@ void iwl_trans_pcie_dump_regs(struct iwl_trans *trans)
 	if (trans_pcie->pcie_dbg_dumped_once)
 		return;
 
-	/* Should be a multiple of 4 */
+	 
 	BUILD_BUG_ON(PCI_DUMP_SIZE > 4096 || PCI_DUMP_SIZE & 0x3);
 	BUILD_BUG_ON(PCI_MEM_DUMP_SIZE > 4096 || PCI_MEM_DUMP_SIZE & 0x3);
 	BUILD_BUG_ON(PCI_PARENT_DUMP_SIZE > 4096 || PCI_PARENT_DUMP_SIZE & 0x3);
 
-	/* Alloc a max size buffer */
+	 
 	alloc_size = PCI_ERR_ROOT_ERR_SRC +  4 + PREFIX_LEN;
 	alloc_size = max_t(u32, alloc_size, PCI_DUMP_SIZE + PREFIX_LEN);
 	alloc_size = max_t(u32, alloc_size, PCI_MEM_DUMP_SIZE + PREFIX_LEN);
@@ -65,7 +61,7 @@ void iwl_trans_pcie_dump_regs(struct iwl_trans *trans)
 
 	IWL_ERR(trans, "iwlwifi transaction failed, dumping registers\n");
 
-	/* Print wifi device registers */
+	 
 	sprintf(prefix, "iwlwifi %s: ", pci_name(pdev));
 	IWL_ERR(trans, "iwlwifi device config registers:\n");
 	for (i = 0, ptr = buf; i < PCI_DUMP_SIZE; i += 4, ptr++)
@@ -88,7 +84,7 @@ void iwl_trans_pcie_dump_regs(struct iwl_trans *trans)
 			       32, 4, buf, i, 0);
 	}
 
-	/* Print parent device registers next */
+	 
 	if (!pdev->bus->self)
 		goto out;
 
@@ -102,7 +98,7 @@ void iwl_trans_pcie_dump_regs(struct iwl_trans *trans)
 			goto err_read;
 	print_hex_dump(KERN_ERR, prefix, DUMP_PREFIX_OFFSET, 32, 4, buf, i, 0);
 
-	/* Print root port AER registers */
+	 
 	pos = 0;
 	pdev = pcie_find_root_port(pdev);
 	if (pdev)
@@ -130,7 +126,7 @@ out:
 static int iwl_trans_pcie_sw_reset(struct iwl_trans *trans,
 				   bool retake_ownership)
 {
-	/* Reset entire device - do controller reset (results in SHRD_HW_RST) */
+	 
 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_BZ) {
 		iwl_set_bit(trans, CSR_GP_CNTRL,
 			    CSR_GP_CNTRL_REG_FLAG_SW_RESET);
@@ -176,7 +172,7 @@ static void iwl_pcie_alloc_fw_monitor_block(struct iwl_trans *trans,
 		return;
 	}
 
-	/* need at least 2 KiB, so stop at 11 */
+	 
 	for (power = max_power; power >= 11; power--) {
 		size = BIT(power);
 		block = dma_alloc_coherent(trans->dev, size, &physical,
@@ -207,7 +203,7 @@ static void iwl_pcie_alloc_fw_monitor_block(struct iwl_trans *trans,
 void iwl_pcie_alloc_fw_monitor(struct iwl_trans *trans, u8 max_power)
 {
 	if (!max_power) {
-		/* default max_power is maximum */
+		 
 		max_power = 26;
 	} else {
 		max_power += 11;
@@ -250,7 +246,7 @@ static void iwl_pcie_set_pwr(struct iwl_trans *trans, bool vaux)
 				       ~APMG_PS_CTRL_MSK_PWR_SRC);
 }
 
-/* PCI registers */
+ 
 #define PCI_CFG_RETRY_TIMEOUT	0x041
 
 void iwl_pcie_apm_config(struct iwl_trans *trans)
@@ -259,11 +255,7 @@ void iwl_pcie_apm_config(struct iwl_trans *trans)
 	u16 lctl;
 	u16 cap;
 
-	/*
-	 * L0S states have been found to be unstable with our devices
-	 * and in newer hardware they are not officially supported at
-	 * all, so we must always set the L0S_DISABLED bit.
-	 */
+	 
 	iwl_set_bit(trans, CSR_GIO_REG, CSR_GIO_REG_VAL_L0S_DISABLED);
 
 	pcie_capability_read_word(trans_pcie->pci_dev, PCI_EXP_LNKCTL, &lctl);
@@ -276,47 +268,34 @@ void iwl_pcie_apm_config(struct iwl_trans *trans)
 			trans->ltr_enabled ? "En" : "Dis");
 }
 
-/*
- * Start up NIC's basic functionality after it has been reset
- * (e.g. after platform boot, or shutdown via iwl_pcie_apm_stop())
- * NOTE:  This does not load uCode nor start the embedded processor
- */
+ 
 static int iwl_pcie_apm_init(struct iwl_trans *trans)
 {
 	int ret;
 
 	IWL_DEBUG_INFO(trans, "Init card's basic functions\n");
 
-	/*
-	 * Use "set_bit" below rather than "write", to preserve any hardware
-	 * bits already set by default after reset.
-	 */
+	 
 
-	/* Disable L0S exit timer (platform NMI Work/Around) */
+	 
 	if (trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_8000)
 		iwl_set_bit(trans, CSR_GIO_CHICKEN_BITS,
 			    CSR_GIO_CHICKEN_BITS_REG_BIT_DIS_L0S_EXIT_TIMER);
 
-	/*
-	 * Disable L0s without affecting L1;
-	 *  don't wait for ICH L0s (ICH bug W/A)
-	 */
+	 
 	iwl_set_bit(trans, CSR_GIO_CHICKEN_BITS,
 		    CSR_GIO_CHICKEN_BITS_REG_BIT_L1A_NO_L0S_RX);
 
-	/* Set FH wait threshold to maximum (HW error during stress W/A) */
+	 
 	iwl_set_bit(trans, CSR_DBG_HPET_MEM_REG, CSR_DBG_HPET_MEM_REG_VAL);
 
-	/*
-	 * Enable HAP INTA (interrupt from management bus) to
-	 * wake device's PCI Express link L1a -> L0s
-	 */
+	 
 	iwl_set_bit(trans, CSR_HW_IF_CONFIG_REG,
 		    CSR_HW_IF_CONFIG_REG_BIT_HAP_WAKE_L1A);
 
 	iwl_pcie_apm_config(trans);
 
-	/* Configure analog phase-lock-loop before activating to D0A */
+	 
 	if (trans->trans_cfg->base_params->pll_cfg)
 		iwl_set_bit(trans, CSR_ANA_PLL_CFG, CSR50_ANA_PLL_CFG_VAL);
 
@@ -325,20 +304,7 @@ static int iwl_pcie_apm_init(struct iwl_trans *trans)
 		return ret;
 
 	if (trans->cfg->host_interrupt_operation_mode) {
-		/*
-		 * This is a bit of an abuse - This is needed for 7260 / 3160
-		 * only check host_interrupt_operation_mode even if this is
-		 * not related to host_interrupt_operation_mode.
-		 *
-		 * Enable the oscillator to count wake up time for L1 exit. This
-		 * consumes slightly more power (100uA) - but allows to be sure
-		 * that we wake up from L1 on time.
-		 *
-		 * This looks weird: read twice the same register, discard the
-		 * value, set a bit, and yet again, read that same register
-		 * just to discard the value. But that's the way the hardware
-		 * seems to like it.
-		 */
+		 
 		iwl_read_prph(trans, OSC_CLK);
 		iwl_read_prph(trans, OSC_CLK);
 		iwl_set_bits_prph(trans, OSC_CLK, OSC_CLK_FORCE_CONTROL);
@@ -346,23 +312,17 @@ static int iwl_pcie_apm_init(struct iwl_trans *trans)
 		iwl_read_prph(trans, OSC_CLK);
 	}
 
-	/*
-	 * Enable DMA clock and wait for it to stabilize.
-	 *
-	 * Write to "CLK_EN_REG"; "1" bits enable clocks, while "0"
-	 * bits do not disable clocks.  This preserves any hardware
-	 * bits already set by default in "CLK_CTRL_REG" after reset.
-	 */
+	 
 	if (!trans->cfg->apmg_not_supported) {
 		iwl_write_prph(trans, APMG_CLK_EN_REG,
 			       APMG_CLK_VAL_DMA_CLK_RQT);
 		udelay(20);
 
-		/* Disable L1-Active */
+		 
 		iwl_set_bits_prph(trans, APMG_PCIDEV_STT_REG,
 				  APMG_PCIDEV_STT_VAL_L1_ACT_DIS);
 
-		/* Clear the interrupt in APMG if the NIC is in RFKILL */
+		 
 		iwl_write_prph(trans, APMG_RTC_INT_STT_REG,
 			       APMG_RTC_INT_STT_RFKILL);
 	}
@@ -372,13 +332,7 @@ static int iwl_pcie_apm_init(struct iwl_trans *trans)
 	return 0;
 }
 
-/*
- * Enable LP XTAL to avoid HW bug where device may consume much power if
- * FW is not loaded after device reset. LP XTAL is disabled by default
- * after device HW reset. Do it only if XTAL is fed by internal source.
- * Configure device's "persistence" mode to avoid resetting XTAL again when
- * SHRD_HW_RST occurs in S3.
- */
+ 
 static void iwl_pcie_apm_lp_xtal_enable(struct iwl_trans *trans)
 {
 	int ret;
@@ -386,7 +340,7 @@ static void iwl_pcie_apm_lp_xtal_enable(struct iwl_trans *trans)
 	u32 apmg_xtal_cfg_reg;
 	u32 dl_cfg_reg;
 
-	/* Force XTAL ON */
+	 
 	__iwl_trans_pcie_set_bit(trans, CSR_GP_CNTRL,
 				 CSR_GP_CNTRL_REG_FLAG_XTAL_ON);
 
@@ -396,23 +350,17 @@ static void iwl_pcie_apm_lp_xtal_enable(struct iwl_trans *trans)
 		ret = iwl_finish_nic_init(trans);
 
 	if (WARN_ON(ret)) {
-		/* Release XTAL ON request */
+		 
 		__iwl_trans_pcie_clear_bit(trans, CSR_GP_CNTRL,
 					   CSR_GP_CNTRL_REG_FLAG_XTAL_ON);
 		return;
 	}
 
-	/*
-	 * Clear "disable persistence" to avoid LP XTAL resetting when
-	 * SHRD_HW_RST is applied in S3.
-	 */
+	 
 	iwl_clear_bits_prph(trans, APMG_PCIDEV_STT_REG,
 				    APMG_PCIDEV_STT_VAL_PERSIST_DIS);
 
-	/*
-	 * Force APMG XTAL to be active to prevent its disabling by HW
-	 * caused by APMG idle state.
-	 */
+	 
 	apmg_xtal_cfg_reg = iwl_trans_pcie_read_shr(trans,
 						    SHR_APMG_XTAL_CFG_REG);
 	iwl_trans_pcie_write_shr(trans, SHR_APMG_XTAL_CFG_REG,
@@ -424,40 +372,34 @@ static void iwl_pcie_apm_lp_xtal_enable(struct iwl_trans *trans)
 		IWL_ERR(trans,
 			"iwl_pcie_apm_lp_xtal_enable: failed to retake NIC ownership\n");
 
-	/* Enable LP XTAL by indirect access through CSR */
+	 
 	apmg_gp1_reg = iwl_trans_pcie_read_shr(trans, SHR_APMG_GP1_REG);
 	iwl_trans_pcie_write_shr(trans, SHR_APMG_GP1_REG, apmg_gp1_reg |
 				 SHR_APMG_GP1_WF_XTAL_LP_EN |
 				 SHR_APMG_GP1_CHICKEN_BIT_SELECT);
 
-	/* Clear delay line clock power up */
+	 
 	dl_cfg_reg = iwl_trans_pcie_read_shr(trans, SHR_APMG_DL_CFG_REG);
 	iwl_trans_pcie_write_shr(trans, SHR_APMG_DL_CFG_REG, dl_cfg_reg &
 				 ~SHR_APMG_DL_CFG_DL_CLOCK_POWER_UP);
 
-	/*
-	 * Enable persistence mode to avoid LP XTAL resetting when
-	 * SHRD_HW_RST is applied in S3.
-	 */
+	 
 	iwl_set_bit(trans, CSR_HW_IF_CONFIG_REG,
 		    CSR_HW_IF_CONFIG_REG_PERSIST_MODE);
 
-	/*
-	 * Clear "initialization complete" bit to move adapter from
-	 * D0A* (powered-up Active) --> D0U* (Uninitialized) state.
-	 */
+	 
 	iwl_clear_bit(trans, CSR_GP_CNTRL, CSR_GP_CNTRL_REG_FLAG_INIT_DONE);
 
-	/* Activates XTAL resources monitor */
+	 
 	__iwl_trans_pcie_set_bit(trans, CSR_MONITOR_CFG_REG,
 				 CSR_MONITOR_XTAL_RESOURCES);
 
-	/* Release XTAL ON request */
+	 
 	__iwl_trans_pcie_clear_bit(trans, CSR_GP_CNTRL,
 				   CSR_GP_CNTRL_REG_FLAG_XTAL_ON);
 	udelay(10);
 
-	/* Release APMG XTAL */
+	 
 	iwl_trans_pcie_write_shr(trans, SHR_APMG_XTAL_CFG_REG,
 				 apmg_xtal_cfg_reg &
 				 ~SHR_APMG_XTAL_CFG_XTAL_ON_REQ);
@@ -467,7 +409,7 @@ void iwl_pcie_apm_stop_master(struct iwl_trans *trans)
 {
 	int ret;
 
-	/* stop device's busmaster DMA activity */
+	 
 
 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_BZ) {
 		iwl_set_bit(trans, CSR_GP_CNTRL,
@@ -500,7 +442,7 @@ static void iwl_pcie_apm_stop(struct iwl_trans *trans, bool op_mode_leave)
 		if (!test_bit(STATUS_DEVICE_ENABLED, &trans->status))
 			iwl_pcie_apm_init(trans);
 
-		/* inform ME that we are leaving */
+		 
 		if (trans->trans_cfg->device_family == IWL_DEVICE_FAMILY_7000)
 			iwl_set_bits_prph(trans, APMG_PCIDEV_STT_REG,
 					  APMG_PCIDEV_STT_VAL_WAKE_ME);
@@ -520,7 +462,7 @@ static void iwl_pcie_apm_stop(struct iwl_trans *trans, bool op_mode_leave)
 
 	clear_bit(STATUS_DEVICE_ENABLED, &trans->status);
 
-	/* Stop device's DMA activity */
+	 
 	iwl_pcie_apm_stop_master(trans);
 
 	if (trans->cfg->lp_xtal_workaround) {
@@ -530,10 +472,7 @@ static void iwl_pcie_apm_stop(struct iwl_trans *trans, bool op_mode_leave)
 
 	iwl_trans_pcie_sw_reset(trans, false);
 
-	/*
-	 * Clear "initialization complete" bit to move adapter from
-	 * D0A* (powered-up Active) --> D0U* (Uninitialized) state.
-	 */
+	 
 	iwl_clear_bit(trans, CSR_GP_CNTRL, CSR_GP_CNTRL_REG_FLAG_INIT_DONE);
 }
 
@@ -542,7 +481,7 @@ static int iwl_pcie_nic_init(struct iwl_trans *trans)
 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
 	int ret;
 
-	/* nic_init */
+	 
 	spin_lock_bh(&trans_pcie->irq_lock);
 	ret = iwl_pcie_apm_init(trans);
 	spin_unlock_bh(&trans_pcie->irq_lock);
@@ -554,19 +493,19 @@ static int iwl_pcie_nic_init(struct iwl_trans *trans)
 
 	iwl_op_mode_nic_config(trans->op_mode);
 
-	/* Allocate the RX queue, or reset if it is already allocated */
+	 
 	ret = iwl_pcie_rx_init(trans);
 	if (ret)
 		return ret;
 
-	/* Allocate or reset and init all Tx and Command queues */
+	 
 	if (iwl_pcie_tx_init(trans)) {
 		iwl_pcie_rx_free(trans);
 		return -ENOMEM;
 	}
 
 	if (trans->trans_cfg->base_params->shadow_reg_enable) {
-		/* enable shadow regs in HW */
+		 
 		iwl_set_bit(trans, CSR_MAC_SHADOW_REG_CTRL, 0x800FFFFF);
 		IWL_DEBUG_INFO(trans, "Enabling shadow registers in device\n");
 	}
@@ -576,7 +515,7 @@ static int iwl_pcie_nic_init(struct iwl_trans *trans)
 
 #define HW_READY_TIMEOUT (50)
 
-/* Note: returns poll_bit return value, which is >= 0 if success */
+ 
 static int iwl_pcie_set_hw_ready(struct iwl_trans *trans)
 {
 	int ret;
@@ -584,7 +523,7 @@ static int iwl_pcie_set_hw_ready(struct iwl_trans *trans)
 	iwl_set_bit(trans, CSR_HW_IF_CONFIG_REG,
 		    CSR_HW_IF_CONFIG_REG_BIT_NIC_READY);
 
-	/* See if we got it */
+	 
 	ret = iwl_poll_bit(trans, CSR_HW_IF_CONFIG_REG,
 			   CSR_HW_IF_CONFIG_REG_BIT_NIC_READY,
 			   CSR_HW_IF_CONFIG_REG_BIT_NIC_READY,
@@ -597,7 +536,7 @@ static int iwl_pcie_set_hw_ready(struct iwl_trans *trans)
 	return ret;
 }
 
-/* Note: returns standard 0/-ERROR code */
+ 
 int iwl_pcie_prepare_card_hw(struct iwl_trans *trans)
 {
 	int ret;
@@ -606,7 +545,7 @@ int iwl_pcie_prepare_card_hw(struct iwl_trans *trans)
 	IWL_DEBUG_INFO(trans, "iwl_trans_prepare_card_hw enter\n");
 
 	ret = iwl_pcie_set_hw_ready(trans);
-	/* If the card is ready, exit 0 */
+	 
 	if (ret >= 0) {
 		trans->csme_own = false;
 		return 0;
@@ -619,7 +558,7 @@ int iwl_pcie_prepare_card_hw(struct iwl_trans *trans)
 	for (iter = 0; iter < 10; iter++) {
 		int t = 0;
 
-		/* If HW is not ready, prepare the conditions to check again */
+		 
 		iwl_set_bit(trans, CSR_HW_IF_CONFIG_REG,
 			    CSR_HW_IF_CONFIG_REG_PREPARE);
 
@@ -653,9 +592,7 @@ int iwl_pcie_prepare_card_hw(struct iwl_trans *trans)
 	return ret;
 }
 
-/*
- * ucode
- */
+ 
 static void iwl_pcie_load_firmware_chunk_fh(struct iwl_trans *trans,
 					    u32 dst_addr, dma_addr_t phy_addr,
 					    u32 byte_cnt)
@@ -788,12 +725,7 @@ static int iwl_pcie_load_cpu_sections_8000(struct iwl_trans *trans,
 	for (i = *first_ucode_section; i < image->num_sec; i++) {
 		last_read_idx = i;
 
-		/*
-		 * CPU1_CPU2_SEPARATOR_SECTION delimiter - separate between
-		 * CPU1 to CPU2.
-		 * PAGING_SEPARATOR_SECTION delimiter - separate between
-		 * CPU2 non paged to CPU2 paging sec.
-		 */
+		 
 		if (!image->sec[i].data ||
 		    image->sec[i].offset == CPU1_CPU2_SEPARATOR_SECTION ||
 		    image->sec[i].offset == PAGING_SEPARATOR_SECTION) {
@@ -807,7 +739,7 @@ static int iwl_pcie_load_cpu_sections_8000(struct iwl_trans *trans,
 		if (ret)
 			return ret;
 
-		/* Notify ucode of loaded section number and status */
+		 
 		val = iwl_read_direct32(trans, FH_UCODE_LOAD_STATUS);
 		val = val | (sec_num << shift_param);
 		iwl_write_direct32(trans, FH_UCODE_LOAD_STATUS, val);
@@ -854,12 +786,7 @@ static int iwl_pcie_load_cpu_sections(struct iwl_trans *trans,
 	for (i = *first_ucode_section; i < image->num_sec; i++) {
 		last_read_idx = i;
 
-		/*
-		 * CPU1_CPU2_SEPARATOR_SECTION delimiter - separate between
-		 * CPU1 to CPU2.
-		 * PAGING_SEPARATOR_SECTION delimiter - separate between
-		 * CPU2 non paged to CPU2 paging sec.
-		 */
+		 
 		if (!image->sec[i].data ||
 		    image->sec[i].offset == CPU1_CPU2_SEPARATOR_SECTION ||
 		    image->sec[i].offset == PAGING_SEPARATOR_SECTION) {
@@ -892,7 +819,7 @@ static void iwl_pcie_apply_destination_ini(struct iwl_trans *trans)
 	if (le32_to_cpu(fw_mon_cfg->buf_location) ==
 	    IWL_FW_INI_LOCATION_SRAM_PATH) {
 		IWL_DEBUG_FW(trans, "WRT: Applying SMEM buffer destination\n");
-		/* set sram monitor by enabling bit 7 */
+		 
 		iwl_set_bit(trans, CSR_HW_IF_CONFIG_REG,
 			    CSR_HW_IF_CONFIG_REG_BIT_MONITOR_SRAM);
 
@@ -997,18 +924,18 @@ static int iwl_pcie_load_given_ucode(struct iwl_trans *trans,
 	IWL_DEBUG_FW(trans, "working with %s CPU\n",
 		     image->is_dual_cpus ? "Dual" : "Single");
 
-	/* load to FW the binary non secured sections of CPU1 */
+	 
 	ret = iwl_pcie_load_cpu_sections(trans, image, 1, &first_ucode_section);
 	if (ret)
 		return ret;
 
 	if (image->is_dual_cpus) {
-		/* set CPU2 header address */
+		 
 		iwl_write_prph(trans,
 			       LMPM_SECURE_UCODE_LOAD_CPU2_HDR_ADDR,
 			       LMPM_SECURE_CPU2_HDR_MEM_SPACE);
 
-		/* load to FW the binary sections of CPU2 */
+		 
 		ret = iwl_pcie_load_cpu_sections(trans, image, 2,
 						 &first_ucode_section);
 		if (ret)
@@ -1020,7 +947,7 @@ static int iwl_pcie_load_given_ucode(struct iwl_trans *trans,
 
 	iwl_enable_interrupts(trans);
 
-	/* release CPU reset */
+	 
 	iwl_write32(trans, CSR_RESET, 0);
 
 	return 0;
@@ -1041,24 +968,20 @@ static int iwl_pcie_load_given_ucode_8000(struct iwl_trans *trans,
 	IWL_DEBUG_POWER(trans, "Original WFPM value = 0x%08X\n",
 			iwl_read_prph(trans, WFPM_GP2));
 
-	/*
-	 * Set default value. On resume reading the values that were
-	 * zeored can provide debug data on the resume flow.
-	 * This is for debugging only and has no functional impact.
-	 */
+	 
 	iwl_write_prph(trans, WFPM_GP2, 0x01010101);
 
-	/* configure the ucode to be ready to get the secured image */
-	/* release CPU reset */
+	 
+	 
 	iwl_write_prph(trans, RELEASE_CPU_RESET, RELEASE_CPU_RESET_BIT);
 
-	/* load to FW the binary Secured sections of CPU1 */
+	 
 	ret = iwl_pcie_load_cpu_sections_8000(trans, image, 1,
 					      &first_ucode_section);
 	if (ret)
 		return ret;
 
-	/* load to FW the binary sections of CPU2 */
+	 
 	return iwl_pcie_load_cpu_sections_8000(trans, image, 2,
 					       &first_ucode_section);
 }
@@ -1100,7 +1023,7 @@ struct iwl_causes_list {
 		.addr = ilog2(mask) +					\
 			((reg) == CSR_MSIX_FH_INT_MASK_AD ? -16 :	\
 			 (reg) == CSR_MSIX_HW_INT_MASK_AD ? 16 :	\
-			 0xffff),	/* causes overflow warning */	\
+			 0xffff),	 	\
 	}
 
 static const struct iwl_causes_list causes_list_common[] = {
@@ -1145,11 +1068,7 @@ static void iwl_pcie_map_non_rx_causes(struct iwl_trans *trans)
 {
 	struct iwl_trans_pcie *trans_pcie =  IWL_TRANS_GET_PCIE_TRANS(trans);
 	int val = trans_pcie->def_irq | MSIX_NON_AUTO_CLEAR_CAUSE;
-	/*
-	 * Access all non RX causes and map them to the default irq.
-	 * In case we are missing at least one interrupt vector,
-	 * the first interrupt vector will serve non-RX and FBQ causes.
-	 */
+	 
 	iwl_pcie_map_list(trans, causes_list_common,
 			  ARRAY_SIZE(causes_list_common), val);
 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_BZ)
@@ -1167,12 +1086,7 @@ static void iwl_pcie_map_rx_causes(struct iwl_trans *trans)
 		trans_pcie->shared_vec_mask & IWL_SHARED_IRQ_FIRST_RSS ? 1 : 0;
 	u32 val, idx;
 
-	/*
-	 * The first RX queue - fallback queue, which is designated for
-	 * management frame, command responses etc, is always mapped to the
-	 * first interrupt vector. The other RX queues are mapped to
-	 * the other (N - 2) interrupt vectors.
-	 */
+	 
 	val = BIT(MSIX_FH_INT_CAUSES_Q(0));
 	for (idx = 1; idx < trans->num_rx_queues; idx++) {
 		iwl_write8(trans, CSR_MSIX_RX_IVAR(idx),
@@ -1201,21 +1115,11 @@ void iwl_pcie_conf_msix_hw(struct iwl_trans_pcie *trans_pcie)
 					    UREG_CHICK_MSI_ENABLE);
 		return;
 	}
-	/*
-	 * The IVAR table needs to be configured again after reset,
-	 * but if the device is disabled, we can't write to
-	 * prph.
-	 */
+	 
 	if (test_bit(STATUS_DEVICE_ENABLED, &trans->status))
 		iwl_write_umac_prph(trans, UREG_CHICK, UREG_CHICK_MSIX_ENABLE);
 
-	/*
-	 * Each cause from the causes list above and the RX causes is
-	 * represented as a byte in the IVAR table. The first nibble
-	 * represents the bound interrupt vector of the cause, the second
-	 * represents no auto clear for this cause. This will be set if its
-	 * interrupt vector is bound to serve other causes.
-	 */
+	 
 	iwl_pcie_map_rx_causes(trans);
 
 	iwl_pcie_map_non_rx_causes(trans);
@@ -1247,19 +1151,13 @@ static void _iwl_trans_pcie_stop_device(struct iwl_trans *trans, bool from_irq)
 
 	trans_pcie->is_down = true;
 
-	/* tell the device to stop sending interrupts */
+	 
 	iwl_disable_interrupts(trans);
 
-	/* device going down, Stop using ICT table */
+	 
 	iwl_pcie_disable_ict(trans);
 
-	/*
-	 * If a HW restart happens during firmware loading,
-	 * then the firmware loading might call this function
-	 * and later it might be called again due to the
-	 * restart. So don't process again if the device is
-	 * already dead.
-	 */
+	 
 	if (test_and_clear_bit(STATUS_DEVICE_ENABLED, &trans->status)) {
 		IWL_DEBUG_INFO(trans,
 			       "DEVICE_ENABLED bit was set and is now cleared\n");
@@ -1269,7 +1167,7 @@ static void _iwl_trans_pcie_stop_device(struct iwl_trans *trans, bool from_irq)
 		iwl_pcie_tx_stop(trans);
 		iwl_pcie_rx_stop(trans);
 
-		/* Power-down device's busmaster DMA clocks */
+		 
 		if (!trans->cfg->apmg_not_supported) {
 			iwl_write_prph(trans, APMG_CLK_DIS_REG,
 				       APMG_CLK_VAL_DMA_CLK_RQT);
@@ -1277,7 +1175,7 @@ static void _iwl_trans_pcie_stop_device(struct iwl_trans *trans, bool from_irq)
 		}
 	}
 
-	/* Make sure (redundant) we've released our request to stay awake */
+	 
 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_BZ)
 		iwl_clear_bit(trans, CSR_GP_CNTRL,
 			      CSR_GP_CNTRL_REG_FLAG_BZ_MAC_ACCESS_REQ);
@@ -1285,39 +1183,24 @@ static void _iwl_trans_pcie_stop_device(struct iwl_trans *trans, bool from_irq)
 		iwl_clear_bit(trans, CSR_GP_CNTRL,
 			      CSR_GP_CNTRL_REG_FLAG_MAC_ACCESS_REQ);
 
-	/* Stop the device, and put it in low power state */
+	 
 	iwl_pcie_apm_stop(trans, false);
 
-	/* re-take ownership to prevent other users from stealing the device */
+	 
 	iwl_trans_pcie_sw_reset(trans, true);
 
-	/*
-	 * Upon stop, the IVAR table gets erased, so msi-x won't
-	 * work. This causes a bug in RF-KILL flows, since the interrupt
-	 * that enables radio won't fire on the correct irq, and the
-	 * driver won't be able to handle the interrupt.
-	 * Configure the IVAR table again after reset.
-	 */
+	 
 	iwl_pcie_conf_msix_hw(trans_pcie);
 
-	/*
-	 * Upon stop, the APM issues an interrupt if HW RF kill is set.
-	 * This is a bug in certain verions of the hardware.
-	 * Certain devices also keep sending HW RF kill interrupt all
-	 * the time, unless the interrupt is ACKed even if the interrupt
-	 * should be masked. Re-ACK all the interrupts here.
-	 */
+	 
 	iwl_disable_interrupts(trans);
 
-	/* clear all status bits */
+	 
 	clear_bit(STATUS_SYNC_HCMD_ACTIVE, &trans->status);
 	clear_bit(STATUS_INT_ENABLED, &trans->status);
 	clear_bit(STATUS_TPOWER_PMI, &trans->status);
 
-	/*
-	 * Even if we stop the HW, we still want the RF kill
-	 * interrupt
-	 */
+	 
 	iwl_enable_rfkill_int(trans);
 }
 
@@ -1342,7 +1225,7 @@ static int iwl_trans_pcie_start_fw(struct iwl_trans *trans,
 	bool hw_rfkill;
 	int ret;
 
-	/* This may fail if AMT took ownership of the device */
+	 
 	if (iwl_pcie_prepare_card_hw(trans)) {
 		IWL_WARN(trans, "Exit HW not ready\n");
 		return -EIO;
@@ -1352,26 +1235,22 @@ static int iwl_trans_pcie_start_fw(struct iwl_trans *trans,
 
 	iwl_write32(trans, CSR_INT, 0xFFFFFFFF);
 
-	/*
-	 * We enabled the RF-Kill interrupt and the handler may very
-	 * well be running. Disable the interrupts to make sure no other
-	 * interrupt can be fired.
-	 */
+	 
 	iwl_disable_interrupts(trans);
 
-	/* Make sure it finished running */
+	 
 	iwl_pcie_synchronize_irqs(trans);
 
 	mutex_lock(&trans_pcie->mutex);
 
-	/* If platform's RF_KILL switch is NOT set to KILL */
+	 
 	hw_rfkill = iwl_pcie_check_hw_rf_kill(trans);
 	if (hw_rfkill && !run_in_rfkill) {
 		ret = -ERFKILL;
 		goto out;
 	}
 
-	/* Someone called stop_device, don't try to start_fw */
+	 
 	if (trans_pcie->is_down) {
 		IWL_WARN(trans,
 			 "Can't start_fw since the HW hasn't been started\n");
@@ -1379,12 +1258,12 @@ static int iwl_trans_pcie_start_fw(struct iwl_trans *trans,
 		goto out;
 	}
 
-	/* make sure rfkill handshake bits are cleared */
+	 
 	iwl_write32(trans, CSR_UCODE_DRV_GP1_CLR, CSR_UCODE_SW_BIT_RFKILL);
 	iwl_write32(trans, CSR_UCODE_DRV_GP1_CLR,
 		    CSR_UCODE_DRV_GP1_BIT_CMD_BLOCKED);
 
-	/* clear (again), then enable host interrupts */
+	 
 	iwl_write32(trans, CSR_INT, 0xFFFFFFFF);
 
 	ret = iwl_pcie_nic_init(trans);
@@ -1393,26 +1272,20 @@ static int iwl_trans_pcie_start_fw(struct iwl_trans *trans,
 		goto out;
 	}
 
-	/*
-	 * Now, we load the firmware and don't want to be interrupted, even
-	 * by the RF-Kill interrupt (hence mask all the interrupt besides the
-	 * FH_TX interrupt which is needed to load the firmware). If the
-	 * RF-Kill switch is toggled, we will find out after having loaded
-	 * the firmware and return the proper value to the caller.
-	 */
+	 
 	iwl_enable_fw_load_int(trans);
 
-	/* really make sure rfkill handshake bits are cleared */
+	 
 	iwl_write32(trans, CSR_UCODE_DRV_GP1_CLR, CSR_UCODE_SW_BIT_RFKILL);
 	iwl_write32(trans, CSR_UCODE_DRV_GP1_CLR, CSR_UCODE_SW_BIT_RFKILL);
 
-	/* Load the given image to the HW */
+	 
 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_8000)
 		ret = iwl_pcie_load_given_ucode_8000(trans, fw);
 	else
 		ret = iwl_pcie_load_given_ucode(trans, fw);
 
-	/* re-check RF-Kill state since we may have missed the interrupt */
+	 
 	hw_rfkill = iwl_pcie_check_hw_rf_kill(trans);
 	if (hw_rfkill && !run_in_rfkill)
 		ret = -ERFKILL;
@@ -1433,18 +1306,7 @@ void iwl_trans_pcie_handle_stop_rfkill(struct iwl_trans *trans,
 {
 	bool hw_rfkill;
 
-	/*
-	 * Check again since the RF kill state may have changed while
-	 * all the interrupts were disabled, in this case we couldn't
-	 * receive the RF kill interrupt and update the state in the
-	 * op_mode.
-	 * Don't call the op_mode if the rkfill state hasn't changed.
-	 * This allows the op_mode to call stop_device from the rfkill
-	 * notification without endless recursion. Under very rare
-	 * circumstances, we might have a small recursion if the rfkill
-	 * state changed exactly now while we were called from stop_device.
-	 * This is very unlikely but can happen and is supported.
-	 */
+	 
 	hw_rfkill = iwl_is_rfkill_set(trans);
 	if (hw_rfkill) {
 		set_bit(STATUS_RFKILL_HW, &trans->status);
@@ -1496,10 +1358,7 @@ void iwl_pcie_d3_complete_suspend(struct iwl_trans *trans,
 {
 	iwl_disable_interrupts(trans);
 
-	/*
-	 * in testing mode, the host stays awake and the
-	 * hardware won't be reset (not even partially)
-	 */
+	 
 	if (test)
 		return;
 
@@ -1512,11 +1371,7 @@ void iwl_pcie_d3_complete_suspend(struct iwl_trans *trans,
 	iwl_clear_bit(trans, CSR_GP_CNTRL, CSR_GP_CNTRL_REG_FLAG_INIT_DONE);
 
 	if (reset) {
-		/*
-		 * reset TX queues -- some of their registers reset during S3
-		 * so if we don't reset everything here the D3 image would try
-		 * to execute some invalid memory upon resume
-		 */
+		 
 		iwl_trans_pcie_tx_reset(trans);
 	}
 
@@ -1542,7 +1397,7 @@ static int iwl_pcie_d3_handshake(struct iwl_trans *trans, bool suspend)
 	ret = wait_event_timeout(trans_pcie->sx_waitq,
 				 trans_pcie->sx_complete, 2 * HZ);
 
-	/* Invalidate it toward next suspend or resume */
+	 
 	trans_pcie->sx_complete = false;
 
 	if (!ret) {
@@ -1560,7 +1415,7 @@ static int iwl_trans_pcie_d3_suspend(struct iwl_trans *trans, bool test,
 	int ret;
 
 	if (!reset)
-		/* Enable persistence mode to avoid reset */
+		 
 		iwl_set_bit(trans, CSR_HW_IF_CONFIG_REG,
 			    CSR_HW_IF_CONFIG_REG_PERSIST_MODE);
 
@@ -1595,13 +1450,7 @@ static int iwl_trans_pcie_d3_resume(struct iwl_trans *trans,
 	if (ret)
 		return ret;
 
-	/*
-	 * Reconfigure IVAR table in case of MSIX or reset ict table in
-	 * MSI mode since HW reset erased it.
-	 * Also enables interrupts - none will happen as
-	 * the device doesn't know we're waking it up, only when
-	 * the opmode actually tells it after this call.
-	 */
+	 
 	iwl_pcie_conf_msix_hw(trans_pcie);
 	if (!trans_pcie->msix_enabled)
 		iwl_pcie_reset_ict(trans);
@@ -1674,13 +1523,7 @@ iwl_pcie_set_interrupt_capa(struct pci_dev *pdev,
 		       "MSI-X enabled. %d interrupt vectors were allocated\n",
 		       num_irqs);
 
-	/*
-	 * In case the OS provides fewer interrupts than requested, different
-	 * causes will share the same interrupt vector as follows:
-	 * One interrupt less: non rx causes shared with FBQ.
-	 * Two interrupts less: non rx causes shared with FBQ and RSS.
-	 * More than two interrupts: we will use fewer RSS queues.
-	 */
+	 
 	if (num_irqs <= max_irqs - 2) {
 		trans_pcie->trans->num_rx_queues = num_irqs + 1;
 		trans_pcie->shared_vec_mask = IWL_SHARED_IRQ_NON_RX |
@@ -1706,7 +1549,7 @@ enable_msi:
 	ret = pci_enable_msi(pdev);
 	if (ret) {
 		dev_err(&pdev->dev, "pci_enable_msi failed - %d\n", ret);
-		/* enable rfkill interrupt: hw bug w/a */
+		 
 		pci_read_config_word(pdev, PCI_COMMAND, &pci_cmd);
 		if (pci_cmd & PCI_COMMAND_INTX_DISABLE) {
 			pci_cmd &= ~PCI_COMMAND_INTX_DISABLE;
@@ -1724,10 +1567,7 @@ static void iwl_pcie_irq_set_affinity(struct iwl_trans *trans)
 	iter_rx_q = trans_pcie->trans->num_rx_queues - 1 + i;
 	offset = 1 + i;
 	for (; i < iter_rx_q ; i++) {
-		/*
-		 * Get the cpu prior to the place to search
-		 * (i.e. return will be > i - 1).
-		 */
+		 
 		cpu = cpumask_next(i - offset, cpu_online_mask);
 		cpumask_set_cpu(cpu, &trans_pcie->affinity_mask[i]);
 		ret = irq_set_affinity_hint(trans_pcie->msix_entries[i].vector,
@@ -1860,15 +1700,15 @@ static int _iwl_trans_pcie_start_hw(struct iwl_trans *trans)
 
 	iwl_pcie_init_msix(trans_pcie);
 
-	/* From now on, the op_mode will be kept updated about RF kill state */
+	 
 	iwl_enable_rfkill_int(trans);
 
 	trans_pcie->opmode_down = false;
 
-	/* Set is_down to false here so that...*/
+	 
 	trans_pcie->is_down = false;
 
-	/* ...rfkill can call stop_device and set it false if needed */
+	 
 	iwl_pcie_check_hw_rf_kill(trans);
 
 	return 0;
@@ -1892,7 +1732,7 @@ static void iwl_trans_pcie_op_mode_leave(struct iwl_trans *trans)
 
 	mutex_lock(&trans_pcie->mutex);
 
-	/* disable interrupts - don't enable HW RF kill interrupt */
+	 
 	iwl_disable_interrupts(trans);
 
 	iwl_pcie_apm_stop(trans, true);
@@ -1953,7 +1793,7 @@ static void iwl_trans_pcie_configure(struct iwl_trans *trans,
 {
 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
 
-	/* free all first - we might be reconfigured for a different size */
+	 
 	iwl_pcie_free_rbs_pool(trans);
 
 	trans->txqs.cmd.q_id = trans_cfg->cmd_queue;
@@ -1986,11 +1826,7 @@ static void iwl_trans_pcie_configure(struct iwl_trans *trans,
 	trans->command_groups = trans_cfg->command_groups;
 	trans->command_groups_size = trans_cfg->command_groups_size;
 
-	/* Initialize NAPI here - it should be before registering to mac80211
-	 * in the opmode but after the HW struct is allocated.
-	 * As this function may be called again in some corner cases don't
-	 * do anything if NAPI was already initialized.
-	 */
+	 
 	if (trans_pcie->napi_dev.reg_state != NETREG_DUMMY)
 		init_dummy_netdev(&trans_pcie->napi_dev);
 
@@ -2003,7 +1839,7 @@ void iwl_trans_pcie_free_pnvm_dram_regions(struct iwl_dram_regions *dram_regions
 	u8 i;
 	struct iwl_dram_data *desc_dram = &dram_regions->prph_scratch_mem_desc;
 
-	/* free DRAM payloads */
+	 
 	for (i = 0; i < dram_regions->n_regions; i++) {
 		dma_free_coherent(dev, dram_regions->drams[i].size,
 				  dram_regions->drams[i].block,
@@ -2011,7 +1847,7 @@ void iwl_trans_pcie_free_pnvm_dram_regions(struct iwl_dram_regions *dram_regions
 	}
 	dram_regions->n_regions = 0;
 
-	/* free DRAM addresses array */
+	 
 	if (desc_dram->block) {
 		dma_free_coherent(dev, desc_dram->size,
 				  desc_dram->block,
@@ -2131,12 +1967,7 @@ void iwl_trans_pcie_remove(struct iwl_trans *trans, bool rescan)
 
 	IWL_ERR(trans, "Device gone - scheduling removal!\n");
 
-	/*
-	 * get a module reference to avoid doing this
-	 * while unloading anyway and to avoid
-	 * scheduling a work with code that's being
-	 * removed.
-	 */
+	 
 	if (!try_module_get(THIS_MODULE)) {
 		IWL_ERR(trans,
 			"Module is being unloaded - abort\n");
@@ -2148,10 +1979,7 @@ void iwl_trans_pcie_remove(struct iwl_trans *trans, bool rescan)
 		module_put(THIS_MODULE);
 		return;
 	}
-	/*
-	 * we don't need to clear this flag, because
-	 * the trans will be freed and reallocated.
-	 */
+	 
 	set_bit(STATUS_TRANS_DEAD, &trans->status);
 
 	removal->pdev = to_pci_dev(trans->dev);
@@ -2162,10 +1990,7 @@ void iwl_trans_pcie_remove(struct iwl_trans *trans, bool rescan)
 }
 EXPORT_SYMBOL(iwl_trans_pcie_remove);
 
-/*
- * This version doesn't disable BHs but rather assumes they're
- * already disabled.
- */
+ 
 bool __iwl_trans_pcie_grab_nic_access(struct iwl_trans *trans)
 {
 	int ret;
@@ -2186,31 +2011,12 @@ bool __iwl_trans_pcie_grab_nic_access(struct iwl_trans *trans)
 		poll = CSR_GP_CNTRL_REG_FLAG_MAC_STATUS;
 	}
 
-	/* this bit wakes up the NIC */
+	 
 	__iwl_trans_pcie_set_bit(trans, CSR_GP_CNTRL, write);
 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_8000)
 		udelay(2);
 
-	/*
-	 * These bits say the device is running, and should keep running for
-	 * at least a short while (at least as long as MAC_ACCESS_REQ stays 1),
-	 * but they do not indicate that embedded SRAM is restored yet;
-	 * HW with volatile SRAM must save/restore contents to/from
-	 * host DRAM when sleeping/waking for power-saving.
-	 * Each direction takes approximately 1/4 millisecond; with this
-	 * overhead, it's a good idea to grab and hold MAC_ACCESS_REQUEST if a
-	 * series of register accesses are expected (e.g. reading Event Log),
-	 * to keep device from sleeping.
-	 *
-	 * CSR_UCODE_DRV_GP1 register bit MAC_SLEEP == 0 indicates that
-	 * SRAM is okay/restored.  We don't check that here because this call
-	 * is just for hardware register access; but GP1 MAC_SLEEP
-	 * check is a good idea before accessing the SRAM of HW with
-	 * volatile SRAM (e.g. reading Event Log).
-	 *
-	 * 5000 series and later (including 1000 series) have non-volatile SRAM,
-	 * and do not save/restore SRAM when power cycling.
-	 */
+	 
 	ret = iwl_poll_bit(trans, CSR_GP_CNTRL, poll, mask, 15000);
 	if (unlikely(ret < 0)) {
 		u32 cntrl = iwl_read32(trans, CSR_GP_CNTRL);
@@ -2232,10 +2038,7 @@ bool __iwl_trans_pcie_grab_nic_access(struct iwl_trans *trans)
 	}
 
 out:
-	/*
-	 * Fool sparse by faking we release the lock - sparse will
-	 * track nic_access anyway.
-	 */
+	 
 	__release(&trans_pcie->reg_lock);
 	return true;
 }
@@ -2247,7 +2050,7 @@ static bool iwl_trans_pcie_grab_nic_access(struct iwl_trans *trans)
 	local_bh_disable();
 	ret = __iwl_trans_pcie_grab_nic_access(trans);
 	if (ret) {
-		/* keep BHs disabled until iwl_trans_pcie_release_nic_access */
+		 
 		return ret;
 	}
 	local_bh_enable();
@@ -2260,10 +2063,7 @@ static void iwl_trans_pcie_release_nic_access(struct iwl_trans *trans)
 
 	lockdep_assert_held(&trans_pcie->reg_lock);
 
-	/*
-	 * Fool sparse by faking we acquiring the lock - sparse will
-	 * track nic_access anyway.
-	 */
+	 
 	__acquire(&trans_pcie->reg_lock);
 
 	if (trans_pcie->cmd_hold_nic_awake)
@@ -2274,12 +2074,7 @@ static void iwl_trans_pcie_release_nic_access(struct iwl_trans *trans)
 	else
 		__iwl_trans_pcie_clear_bit(trans, CSR_GP_CNTRL,
 					   CSR_GP_CNTRL_REG_FLAG_MAC_ACCESS_REQ);
-	/*
-	 * Above we read the CSR_GP_CNTRL register, which will flush
-	 * any previous writes, but we need the write that clears the
-	 * MAC_ACCESS_REQ bit to be performed before any other writes
-	 * scheduled on different CPUs (after we drop reg_lock).
-	 */
+	 
 out:
 	spin_unlock_bh(&trans_pcie->reg_lock);
 }
@@ -2291,7 +2086,7 @@ static int iwl_trans_pcie_read_mem(struct iwl_trans *trans, u32 addr,
 	u32 *vals = buf;
 
 	while (offs < dwords) {
-		/* limit the time we spin here under lock to 1/2s */
+		 
 		unsigned long end = jiffies + HZ / 2;
 		bool resched = false;
 
@@ -2397,7 +2192,7 @@ static int iwl_trans_pcie_wait_txq_empty(struct iwl_trans *trans, int txq_idx)
 	bool overflow_tx;
 	u8 wr_ptr;
 
-	/* Make sure the NIC is still alive in the bus */
+	 
 	if (test_bit(STATUS_TRANS_DEAD, &trans->status))
 		return -ENODEV;
 
@@ -2420,11 +2215,7 @@ static int iwl_trans_pcie_wait_txq_empty(struct iwl_trans *trans, int txq_idx)
 			   now + msecs_to_jiffies(IWL_FLUSH_WAIT_MS))) {
 		u8 write_ptr = READ_ONCE(txq->write_ptr);
 
-		/*
-		 * If write pointer moved during the wait, warn only
-		 * if the TX came from op mode. In case TX came from
-		 * trans layer (overflow TX) don't warn.
-		 */
+		 
 		if (WARN_ONCE(wr_ptr != write_ptr && !overflow_tx,
 			      "WR pointer moved while flushing %d -> %d\n",
 			      wr_ptr, write_ptr))
@@ -2456,7 +2247,7 @@ static int iwl_trans_pcie_wait_txqs_empty(struct iwl_trans *trans, u32 txq_bm)
 	int cnt;
 	int ret = 0;
 
-	/* waiting for all the tx frames complete might take a while */
+	 
 	for (cnt = 0;
 	     cnt < trans->trans_cfg->base_params->num_of_queues;
 	     cnt++) {
@@ -2560,13 +2351,13 @@ void iwl_pcie_dump_csr(struct iwl_trans *trans)
 }
 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-/* create and remove of files */
+ 
 #define DEBUGFS_ADD_FILE(name, parent, mode) do {			\
 	debugfs_create_file(#name, mode, parent, trans,			\
 			    &iwl_dbgfs_##name##_ops);			\
 } while (0)
 
-/* file operation */
+ 
 #define DEBUGFS_READ_FILE_OPS(name)					\
 static const struct file_operations iwl_dbgfs_##name##_ops = {		\
 	.read = iwl_dbgfs_##name##_read,				\
@@ -2740,7 +2531,7 @@ static ssize_t iwl_dbgfs_interrupt_read(struct file *file,
 
 	int pos = 0;
 	char *buf;
-	int bufsz = 24 * 64; /* 24 items * 64 char per item */
+	int bufsz = 24 * 64;  
 	ssize_t ret;
 
 	buf = kzalloc(bufsz, GFP_KERNEL);
@@ -2954,7 +2745,7 @@ static ssize_t iwl_dbgfs_monitor_data_read(struct file *file,
 		return 0;
 	}
 
-	/* write_ptr position in bytes rather then DW */
+	 
 	write_ptr = iwl_read_prph(trans, write_ptr_addr) * sizeof(u32);
 	wrap_cnt = iwl_read_prph(trans, wrap_cnt_addr);
 
@@ -3042,7 +2833,7 @@ static const struct file_operations iwl_dbgfs_monitor_data_ops = {
 	.release = iwl_dbgfs_monitor_data_release,
 };
 
-/* Create the debugfs files and directories */
+ 
 void iwl_trans_pcie_dbgfs_register(struct iwl_trans *trans)
 {
 	struct dentry *dir = trans->dbgfs_dir;
@@ -3066,7 +2857,7 @@ static void iwl_trans_pcie_debugfs_cleanup(struct iwl_trans *trans)
 	data->state = IWL_FW_MON_DBGFS_STATE_DISABLED;
 	mutex_unlock(&data->mutex);
 }
-#endif /*CONFIG_IWLWIFI_DEBUGFS */
+#endif  
 
 static u32 iwl_trans_pcie_get_cmdlen(struct iwl_trans *trans, void *tfd)
 {
@@ -3085,7 +2876,7 @@ static u32 iwl_trans_pcie_dump_rbs(struct iwl_trans *trans,
 {
 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
 	int max_len = trans_pcie->rx_buf_bytes;
-	/* Dump RBs is supported only for pre-9000 devices (1 queue) */
+	 
 	struct iwl_rxq *rxq = &trans_pcie->rxq[0];
 	u32 i, r, j, rb_len = 0;
 
@@ -3223,7 +3014,7 @@ iwl_trans_pcie_dump_pointers(struct iwl_trans *trans,
 		fw_mon_data->fw_mon_base_high_ptr =
 			cpu_to_le32(iwl_read_prph(trans, base_high));
 		write_ptr_val &= DBGC_CUR_DBGBUF_STATUS_OFFSET_MSK;
-		/* convert wrtPtr to DWs, to align with all HWs */
+		 
 		write_ptr_val >>= 2;
 	}
 	fw_mon_data->fw_mon_wr_ptr = cpu_to_le32(write_ptr_val);
@@ -3254,10 +3045,7 @@ iwl_trans_pcie_dump_monitor(struct iwl_trans *trans,
 			monitor_len = fw_mon->size;
 		} else if (trans->dbg.dest_tlv->monitor_mode == SMEM_MODE) {
 			u32 base = le32_to_cpu(fw_mon_data->fw_mon_base_ptr);
-			/*
-			 * Update pointers to reflect actual values after
-			 * shifting
-			 */
+			 
 			if (trans->dbg.dest_tlv->version) {
 				base = (iwl_read_prph(trans, base) &
 					IWL_LDBG_M2S_BUF_BA_MSK) <<
@@ -3277,7 +3065,7 @@ iwl_trans_pcie_dump_monitor(struct iwl_trans *trans,
 								 fw_mon_data,
 								 monitor_len);
 		} else {
-			/* Didn't match anything - output no monitor data */
+			 
 			monitor_len = 0;
 		}
 
@@ -3319,7 +3107,7 @@ static int iwl_trans_get_fw_monitor_len(struct iwl_trans *trans, u32 *len)
 			end = iwl_read_prph(trans, end) <<
 			      trans->dbg.dest_tlv->end_shift;
 
-			/* Make "end" point to the actual end */
+			 
 			if (trans->trans_cfg->device_family >=
 			    IWL_DEVICE_FAMILY_8000 ||
 			    trans->dbg.dest_tlv->monitor_mode == MARBH_MODE)
@@ -3354,24 +3142,24 @@ iwl_trans_pcie_dump_data(struct iwl_trans *trans,
 	if (!dump_mask)
 		return NULL;
 
-	/* transport dump header */
+	 
 	len = sizeof(*dump_data);
 
-	/* host commands */
+	 
 	if (dump_mask & BIT(IWL_FW_ERROR_DUMP_TXCMD) && cmdq)
 		len += sizeof(*data) +
 			cmdq->n_window * (sizeof(*txcmd) +
 					  TFD_MAX_PAYLOAD_SIZE);
 
-	/* FW monitor */
+	 
 	if (dump_mask & BIT(IWL_FW_ERROR_DUMP_FW_MONITOR))
 		monitor_len = iwl_trans_get_fw_monitor_len(trans, &len);
 
-	/* CSR registers */
+	 
 	if (dump_mask & BIT(IWL_FW_ERROR_DUMP_CSR))
 		len += sizeof(*data) + IWL_CSR_TO_DUMP;
 
-	/* FH registers */
+	 
 	if (dump_mask & BIT(IWL_FW_ERROR_DUMP_FH_REGS)) {
 		if (trans->trans_cfg->gen2)
 			len += sizeof(*data) +
@@ -3384,9 +3172,9 @@ iwl_trans_pcie_dump_data(struct iwl_trans *trans,
 	}
 
 	if (dump_rbs) {
-		/* Dump RBs is supported only for pre-9000 devices (1 queue) */
+		 
 		struct iwl_rxq *rxq = &trans_pcie->rxq[0];
-		/* RBs */
+		 
 		num_rbs =
 			le16_to_cpu(iwl_get_closed_rb_stts(trans, rxq))
 			& 0x0FFF;
@@ -3396,7 +3184,7 @@ iwl_trans_pcie_dump_data(struct iwl_trans *trans,
 				  (PAGE_SIZE << trans_pcie->rx_page_order));
 	}
 
-	/* Paged memory for gen2 HW */
+	 
 	if (trans->trans_cfg->gen2 && dump_mask & BIT(IWL_FW_ERROR_DUMP_PAGING))
 		for (i = 0; i < trans->init_dram.paging_cnt; i++)
 			len += sizeof(*data) +
@@ -3461,7 +3249,7 @@ iwl_trans_pcie_dump_data(struct iwl_trans *trans,
 	if (dump_rbs)
 		len += iwl_trans_pcie_dump_rbs(trans, &data, num_rbs);
 
-	/* Paged memory for gen2 HW */
+	 
 	if (trans->trans_cfg->gen2 &&
 	    dump_mask & BIT(IWL_FW_ERROR_DUMP_PAGING)) {
 		for (i = 0; i < trans->init_dram.paging_cnt; i++) {
@@ -3635,11 +3423,7 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
 	trans_pcie->debug_rfkill = -1;
 
 	if (!cfg_trans->base_params->pcie_l1_allowed) {
-		/*
-		 * W/A - seems to solve weird behavior. We need to remove this
-		 * if we don't want to stay in L1 all the time. This wastes a
-		 * lot of power.
-		 */
+		 
 		pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
 				       PCIE_LINK_STATE_L1 |
 				       PCIE_LINK_STATE_CLKPM);
@@ -3651,7 +3435,7 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(addr_size));
 	if (ret) {
 		ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-		/* both attempts failed: */
+		 
 		if (ret) {
 			dev_err(&pdev->dev, "No suitable DMA available\n");
 			goto out_no_pci;
@@ -3678,8 +3462,7 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
 		goto out_no_pci;
 	}
 
-	/* We disable the RETRY_TIMEOUT register (0x41) to keep
-	 * PCI Tx retries from interfering with C3 CPU state */
+	 
 	pci_write_config_byte(pdev, PCI_CFG_RETRY_TIMEOUT, 0x00);
 
 	trans_pcie->pci_dev = pdev;
@@ -3692,12 +3475,7 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
 		goto out_no_pci;
 	}
 
-	/*
-	 * In the 8000 HW family the format of the 4 bytes of CSR_HW_REV have
-	 * changed, and now the revision step also includes bit 0-1 (no more
-	 * "dash" value). To keep hw_rev backwards compatible - we'll store it
-	 * in the old format.
-	 */
+	 
 	if (cfg_trans->device_family >= IWL_DEVICE_FAMILY_8000)
 		trans->hw_rev_step = trans->hw_rev & 0xF;
 	else

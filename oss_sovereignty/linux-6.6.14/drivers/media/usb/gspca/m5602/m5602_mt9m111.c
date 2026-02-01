@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the mt9m111 sensor
- *
- * Copyright (C) 2008 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -135,17 +124,17 @@ static const unsigned char init_mt9m111[][4] = {
 	{SENSOR, 0x63, 0x00, 0x00},
 	{SENSOR, 0x64, 0x00, 0x00},
 
-	{SENSOR, MT9M111_SC_ROWSTART, 0x00, 0x0d}, /* 13 */
-	{SENSOR, MT9M111_SC_COLSTART, 0x00, 0x12}, /* 18 */
-	{SENSOR, MT9M111_SC_WINDOW_HEIGHT, 0x04, 0x00}, /* 1024 */
-	{SENSOR, MT9M111_SC_WINDOW_WIDTH, 0x05, 0x10}, /* 1296 */
-	{SENSOR, MT9M111_SC_HBLANK_CONTEXT_B, 0x01, 0x60}, /* 352 */
-	{SENSOR, MT9M111_SC_VBLANK_CONTEXT_B, 0x00, 0x11}, /* 17 */
-	{SENSOR, MT9M111_SC_HBLANK_CONTEXT_A, 0x01, 0x60}, /* 352 */
-	{SENSOR, MT9M111_SC_VBLANK_CONTEXT_A, 0x00, 0x11}, /* 17 */
-	{SENSOR, MT9M111_SC_R_MODE_CONTEXT_A, 0x01, 0x0f}, /* 271 */
+	{SENSOR, MT9M111_SC_ROWSTART, 0x00, 0x0d},  
+	{SENSOR, MT9M111_SC_COLSTART, 0x00, 0x12},  
+	{SENSOR, MT9M111_SC_WINDOW_HEIGHT, 0x04, 0x00},  
+	{SENSOR, MT9M111_SC_WINDOW_WIDTH, 0x05, 0x10},  
+	{SENSOR, MT9M111_SC_HBLANK_CONTEXT_B, 0x01, 0x60},  
+	{SENSOR, MT9M111_SC_VBLANK_CONTEXT_B, 0x00, 0x11},  
+	{SENSOR, MT9M111_SC_HBLANK_CONTEXT_A, 0x01, 0x60},  
+	{SENSOR, MT9M111_SC_VBLANK_CONTEXT_A, 0x00, 0x11},  
+	{SENSOR, MT9M111_SC_R_MODE_CONTEXT_A, 0x01, 0x0f},  
 	{SENSOR, 0x30, 0x04, 0x00},
-	/* Set number of blank rows chosen to 400 */
+	 
 	{SENSOR, MT9M111_SC_SHUTTER_WIDTH, 0x01, 0x90},
 };
 
@@ -203,14 +192,13 @@ int mt9m111_probe(struct sd *sd)
 			pr_info("Forcing a %s sensor\n", mt9m111.name);
 			goto sensor_found;
 		}
-		/* If we want to force another sensor, don't try to probe this
-		 * one */
+		 
 		return -ENODEV;
 	}
 
 	gspca_dbg(gspca_dev, D_PROBE, "Probing for a mt9m111 sensor\n");
 
-	/* Do the preinit */
+	 
 	for (i = 0; i < ARRAY_SIZE(preinit_mt9m111); i++) {
 		if (preinit_mt9m111[i][0] == BRIDGE) {
 			err = m5602_write_bridge(sd,
@@ -247,7 +235,7 @@ int mt9m111_init(struct sd *sd)
 {
 	int i, err = 0;
 
-	/* Init the sensor */
+	 
 	for (i = 0; i < ARRAY_SIZE(init_mt9m111) && !err; i++) {
 		u8 data[2];
 
@@ -399,11 +387,11 @@ static int mt9m111_set_hvflip(struct gspca_dev *gspca_dev)
 	gspca_dbg(gspca_dev, D_CONF, "Set hvflip to %d %d\n",
 		  sd->hflip->val, sd->vflip->val);
 
-	/* The mt9m111 is flipped by default */
+	 
 	hflip = !sd->hflip->val;
 	vflip = !sd->vflip->val;
 
-	/* Set the correct page map */
+	 
 	err = m5602_write_sensor(sd, MT9M111_PAGE_MAP, data, 2);
 	if (err < 0)
 		return err;
@@ -448,7 +436,7 @@ static int mt9m111_set_gain(struct gspca_dev *gspca_dev, __s32 val)
 	u8 data[2] = {0x00, 0x00};
 	struct sd *sd = (struct sd *) gspca_dev;
 
-	/* Set the correct page map */
+	 
 	err = m5602_write_sensor(sd, MT9M111_PAGE_MAP, data, 2);
 	if (err < 0)
 		return err;

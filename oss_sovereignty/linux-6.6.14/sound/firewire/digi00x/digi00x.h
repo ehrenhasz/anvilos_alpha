@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * digi00x.h - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
+ 
+ 
 
 #ifndef SOUND_DIGI00X_H_INCLUDED
 #define SOUND_DIGI00X_H_INCLUDED
@@ -45,16 +41,16 @@ struct snd_dg00x {
 
 	unsigned int substreams_counter;
 
-	/* for uapi */
+	 
 	int dev_lock_count;
 	bool dev_lock_changed;
 	wait_queue_head_t hwdep_wait;
 
-	/* For asynchronous messages. */
+	 
 	struct fw_address_handler async_handler;
 	u32 msg;
 
-	/* Console models have additional MIDI ports for control surface. */
+	 
 	bool is_console;
 
 	struct amdtp_domain domain;
@@ -64,27 +60,27 @@ struct snd_dg00x {
 
 #define DG00X_OFFSET_STREAMING_STATE	0x0000
 #define DG00X_OFFSET_STREAMING_SET	0x0004
-/* unknown but address in host space	0x0008 */
-/* For LSB of the address		0x000c */
-/* unknown				0x0010 */
+ 
+ 
+ 
 #define DG00X_OFFSET_MESSAGE_ADDR	0x0014
-/* For LSB of the address		0x0018 */
-/* unknown				0x001c */
-/* unknown				0x0020 */
-/* not used			0x0024--0x00ff */
+ 
+ 
+ 
+ 
 #define DG00X_OFFSET_ISOC_CHANNELS	0x0100
-/* unknown				0x0104 */
-/* unknown				0x0108 */
-/* unknown				0x010c */
+ 
+ 
+ 
 #define DG00X_OFFSET_LOCAL_RATE		0x0110
 #define DG00X_OFFSET_EXTERNAL_RATE	0x0114
 #define DG00X_OFFSET_CLOCK_SOURCE	0x0118
 #define DG00X_OFFSET_OPT_IFACE_MODE	0x011c
-/* unknown				0x0120 */
-/* Mixer control on/off			0x0124 */
-/* unknown				0x0128 */
+ 
+ 
+ 
 #define DG00X_OFFSET_DETECT_EXTERNAL	0x012c
-/* unknown				0x0138 */
+ 
 #define DG00X_OFFSET_MMC		0x0400
 
 enum snd_dg00x_rate {

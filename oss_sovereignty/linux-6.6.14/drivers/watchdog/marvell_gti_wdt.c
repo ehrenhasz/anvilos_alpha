@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell GTI Watchdog driver
- *
- * Copyright (C) 2023 Marvell.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -12,29 +9,9 @@
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
 
-/*
- * Hardware supports following mode of operation:
- * 1) Interrupt Only:
- *    This will generate the interrupt to arm core whenever timeout happens.
- *
- * 2) Interrupt + del3t (Interrupt to firmware (SCP processor)).
- *    This will generate interrupt to arm core on 1st timeout happens
- *    This will generate interrupt to SCP processor on 2nd timeout happens
- *
- * 3) Interrupt + Interrupt to SCP processor (called delt3t) + reboot.
- *    This will generate interrupt to arm core on 1st timeout happens
- *    Will generate interrupt to SCP processor on 2nd timeout happens,
- *    if interrupt is configured.
- *    Reboot on 3rd timeout.
- *
- * Driver will use hardware in mode-3 above so that system can reboot in case
- * a hardware hang. Also h/w is configured not to generate SCP interrupt, so
- * effectively 2nd timeout is ignored within hardware.
- *
- * First timeout is effectively watchdog pretimeout.
- */
+ 
 
-/* GTI CWD Watchdog (GTI_CWD_WDOG) Register */
+ 
 #define GTI_CWD_WDOG(reg_offset)	(0x8 * (reg_offset))
 #define GTI_CWD_WDOG_MODE_INT_DEL3T_RST	0x3
 #define GTI_CWD_WDOG_MODE_MASK		GENMASK_ULL(1, 0)
@@ -43,19 +20,19 @@
 #define GTI_CWD_WDOG_CNT_SHIFT		20
 #define GTI_CWD_WDOG_CNT_MASK		GENMASK_ULL(43, 20)
 
-/* GTI CWD Watchdog Interrupt (GTI_CWD_INT) Register */
+ 
 #define GTI_CWD_INT			0x200
 #define GTI_CWD_INT_PENDING_STATUS(bit)	BIT_ULL(bit)
 
-/* GTI CWD Watchdog Interrupt Enable Clear (GTI_CWD_INT_ENA_CLR) Register */
+ 
 #define GTI_CWD_INT_ENA_CLR		0x210
 #define GTI_CWD_INT_ENA_CLR_VAL(bit)	BIT_ULL(bit)
 
-/* GTI CWD Watchdog Interrupt Enable Set (GTI_CWD_INT_ENA_SET) Register */
+ 
 #define GTI_CWD_INT_ENA_SET		0x218
 #define GTI_CWD_INT_ENA_SET_VAL(bit)	BIT_ULL(bit)
 
-/* GTI CWD Watchdog Poke (GTI_CWD_POKE) Registers */
+ 
 #define GTI_CWD_POKE(reg_offset)	(0x10000 + 0x8 * (reg_offset))
 #define GTI_CWD_POKE_VAL		1
 
@@ -76,7 +53,7 @@ struct gti_wdt_priv {
 	void __iomem *base;
 	u32 clock_freq;
 	struct clk *sclk;
-	/* wdt_timer_idx used for timer to be used for system watchdog */
+	 
 	u32 wdt_timer_idx;
 	const struct gti_match_data *data;
 };
@@ -86,7 +63,7 @@ static irqreturn_t gti_wdt_interrupt(int irq, void *data)
 	struct watchdog_device *wdev = data;
 	struct gti_wdt_priv *priv = watchdog_get_drvdata(wdev);
 
-	/* Clear Interrupt Pending Status */
+	 
 	writeq(GTI_CWD_INT_PENDING_STATUS(priv->wdt_timer_idx),
 	       priv->base + GTI_CWD_INT);
 
@@ -115,15 +92,15 @@ static int gti_wdt_start(struct watchdog_device *wdev)
 
 	set_bit(WDOG_HW_RUNNING, &wdev->status);
 
-	/* Clear any pending interrupt */
+	 
 	writeq(GTI_CWD_INT_PENDING_STATUS(priv->wdt_timer_idx),
 	       priv->base + GTI_CWD_INT);
 
-	/* Enable Interrupt */
+	 
 	writeq(GTI_CWD_INT_ENA_SET_VAL(priv->wdt_timer_idx),
 	       priv->base + GTI_CWD_INT_ENA_SET);
 
-	/* Set (Interrupt + SCP interrupt (DEL3T) + core domain reset) Mode */
+	 
 	regval = readq(priv->base + GTI_CWD_WDOG(priv->wdt_timer_idx));
 	regval |= GTI_CWD_WDOG_MODE_INT_DEL3T_RST;
 	writeq(regval, priv->base + GTI_CWD_WDOG(priv->wdt_timer_idx));
@@ -136,11 +113,11 @@ static int gti_wdt_stop(struct watchdog_device *wdev)
 	struct gti_wdt_priv *priv = watchdog_get_drvdata(wdev);
 	u64 regval;
 
-	/* Disable Interrupt */
+	 
 	writeq(GTI_CWD_INT_ENA_CLR_VAL(priv->wdt_timer_idx),
 	       priv->base + GTI_CWD_INT_ENA_CLR);
 
-	/* Set GTI_CWD_WDOG.Mode = 0 to stop the timer */
+	 
 	regval = readq(priv->base + GTI_CWD_WDOG(priv->wdt_timer_idx));
 	regval &= ~GTI_CWD_WDOG_MODE_MASK;
 	writeq(regval, priv->base + GTI_CWD_WDOG(priv->wdt_timer_idx));
@@ -154,27 +131,24 @@ static int gti_wdt_settimeout(struct watchdog_device *wdev,
 	struct gti_wdt_priv *priv = watchdog_get_drvdata(wdev);
 	u64 timeout_wdog, regval;
 
-	/* Update new timeout */
+	 
 	wdev->timeout = timeout;
 
-	/* Pretimeout is 1/3 of timeout */
+	 
 	wdev->pretimeout = timeout / 3;
 
-	/* Get clock cycles from pretimeout */
+	 
 	timeout_wdog = (u64)priv->clock_freq * wdev->pretimeout;
 
-	/* Watchdog counts in 1024 cycle steps */
+	 
 	timeout_wdog = timeout_wdog >> 10;
 
-	/* GTI_CWD_WDOG.CNT: reload counter is 16-bit */
+	 
 	timeout_wdog = (timeout_wdog + 0xff) >> 8;
 	if (timeout_wdog >= 0x10000)
 		timeout_wdog = 0xffff;
 
-	/*
-	 * GTI_CWD_WDOG.LEN is 24bit, lower 8-bits should be zero and
-	 * upper 16-bits are same as GTI_CWD_WDOG.CNT
-	 */
+	 
 	regval = readq(priv->base + GTI_CWD_WDOG(priv->wdt_timer_idx));
 	regval &= GTI_CWD_WDOG_MODE_MASK;
 	regval |= (timeout_wdog << (GTI_CWD_WDOG_CNT_SHIFT + 8)) |
@@ -190,7 +164,7 @@ static int gti_wdt_set_pretimeout(struct watchdog_device *wdev,
 	struct gti_wdt_priv *priv = watchdog_get_drvdata(wdev);
 	struct watchdog_device *wdog_dev = &priv->wdev;
 
-	/* pretimeout should 1/3 of max_timeout */
+	 
 	if (timeout * 3 <= wdog_dev->max_timeout)
 		return gti_wdt_settimeout(wdev, timeout * 3);
 
@@ -264,7 +238,7 @@ static int gti_wdt_probe(struct platform_device *pdev)
 
 	priv->data = of_device_get_match_data(dev);
 
-	/* default use last timer for watchdog */
+	 
 	priv->wdt_timer_idx = priv->data->gti_num_timers - 1;
 
 	err = of_property_read_u32(dev->of_node, "marvell,wdt-timer-index",
@@ -281,18 +255,15 @@ static int gti_wdt_probe(struct platform_device *pdev)
 	wdog_dev->info = &gti_wdt_ident,
 	wdog_dev->ops = &gti_wdt_ops,
 	wdog_dev->parent = dev;
-	/*
-	 * Watchdog counter is 24 bit where lower 8 bits are zeros
-	 * This counter decrements every 1024 clock cycles.
-	 */
+	 
 	max_pretimeout = (GTI_CWD_WDOG_CNT_MASK >> GTI_CWD_WDOG_CNT_SHIFT);
 	max_pretimeout &= ~0xFFUL;
 	max_pretimeout = (max_pretimeout * 1024) / priv->clock_freq;
 	wdog_dev->pretimeout = max_pretimeout;
 
-	/* Maximum timeout is 3 times the pretimeout */
+	 
 	wdog_dev->max_timeout = max_pretimeout * 3;
-	/* Minimum first timeout (pretimeout) is 1, so min_timeout as 3 */
+	 
 	wdog_dev->min_timeout = 3;
 	wdog_dev->timeout = wdog_dev->pretimeout;
 

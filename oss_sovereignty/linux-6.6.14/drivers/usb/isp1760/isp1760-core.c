@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the NXP ISP1760 chip
- *
- * Copyright 2021 Linaro, Rui Miguel Silva
- * Copyright 2014 Laurent Pinchart
- * Copyright 2007 Sebastian Siewior
- *
- * Contacts:
- *	Sebastian Siewior <bigeasy@linutronix.de>
- *	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	Rui Miguel Silva <rui.silva@linaro.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -32,21 +21,18 @@ static int isp1760_init_core(struct isp1760_device *isp)
 	struct isp1760_udc *udc = &isp->udc;
 	u32 otg_ctrl;
 
-	/* Low-level chip reset */
+	 
 	if (isp->rst_gpio) {
 		gpiod_set_value_cansleep(isp->rst_gpio, 1);
 		msleep(50);
 		gpiod_set_value_cansleep(isp->rst_gpio, 0);
 	}
 
-	/*
-	 * Reset the host controller, including the CPU interface
-	 * configuration.
-	 */
+	 
 	isp1760_field_set(hcd->fields, SW_RESET_RESET_ALL);
 	msleep(100);
 
-	/* Setup HW Mode Control: This assumes a level active-low interrupt */
+	 
 	if ((isp->devflags & ISP1760_FLAG_ANALOG_OC) && hcd->is_isp1763) {
 		dev_err(isp->dev, "isp1763 analog overcurrent not available\n");
 		return -EINVAL;
@@ -67,23 +53,13 @@ static int isp1760_init_core(struct isp1760_device *isp)
 	if (isp->devflags & ISP1760_FLAG_INTR_EDGE_TRIG)
 		isp1760_field_set(hcd->fields, HW_INTR_EDGE_TRIG);
 
-	/*
-	 * The ISP1761 has a dedicated DC IRQ line but supports sharing the HC
-	 * IRQ line for both the host and device controllers. Hardcode IRQ
-	 * sharing for now and disable the DC interrupts globally to avoid
-	 * spurious interrupts during HCD registration.
-	 */
+	 
 	if (isp->devflags & ISP1760_FLAG_ISP1761) {
 		isp1760_reg_write(udc->regs, ISP176x_DC_MODE, 0);
 		isp1760_field_set(hcd->fields, HW_COMN_IRQ);
 	}
 
-	/*
-	 * PORT 1 Control register of the ISP1760 is the OTG control register
-	 * on ISP1761.
-	 *
-	 * TODO: Really support OTG. For now we configure port 1 in device mode
-	 */
+	 
 	if (isp->devflags & ISP1760_FLAG_ISP1761) {
 		if (isp->devflags & ISP1760_FLAG_PERIPHERAL_EN) {
 			otg_ctrl = (ISP176x_HW_DM_PULLDOWN_CLEAR |
@@ -117,14 +93,7 @@ void isp1760_set_pullup(struct isp1760_device *isp, bool enable)
 		isp1760_field_set(udc->fields, HW_DP_PULLUP_CLEAR);
 }
 
-/*
- * ISP1760/61:
- *
- * 60kb divided in:
- * - 32 blocks @ 256  bytes
- * - 20 blocks @ 1024 bytes
- * -  4 blocks @ 8192 bytes
- */
+ 
 static const struct isp1760_memory_layout isp176x_memory_conf = {
 	.blocks[0]		= 32,
 	.blocks_size[0]		= 256,
@@ -138,14 +107,7 @@ static const struct isp1760_memory_layout isp176x_memory_conf = {
 	.payload_area_size	= 0xf000,
 };
 
-/*
- * ISP1763:
- *
- * 20kb divided in:
- * - 8 blocks @ 256  bytes
- * - 2 blocks @ 1024 bytes
- * - 4 blocks @ 4096 bytes
- */
+ 
 static const struct isp1760_memory_layout isp1763_memory_conf = {
 	.blocks[0]		= 8,
 	.blocks_size[0]		= 256,
@@ -251,7 +213,7 @@ static const struct reg_field isp1760_hc_reg_fields[] = {
 	[HW_DM_PULLDOWN]	= REG_FIELD(ISP176x_HC_OTG_CTRL, 2, 2),
 	[HW_DP_PULLDOWN]	= REG_FIELD(ISP176x_HC_OTG_CTRL, 1, 1),
 	[HW_DP_PULLUP]		= REG_FIELD(ISP176x_HC_OTG_CTRL, 0, 0),
-	/* Make sure the array is sized properly during compilation */
+	 
 	[HC_FIELD_MAX]		= {},
 };
 
@@ -323,7 +285,7 @@ static const struct reg_field isp1763_hc_reg_fields[] = {
 	[HW_DM_PULLDOWN_CLEAR]	= REG_FIELD(ISP1763_HC_OTG_CTRL_CLEAR, 2, 2),
 	[HW_DP_PULLDOWN_CLEAR]	= REG_FIELD(ISP1763_HC_OTG_CTRL_CLEAR, 1, 1),
 	[HW_DP_PULLUP_CLEAR]	= REG_FIELD(ISP1763_HC_OTG_CTRL_CLEAR, 0, 0),
-	/* Make sure the array is sized properly during compilation */
+	 
 	[HC_FIELD_MAX]		= {},
 };
 
@@ -409,7 +371,7 @@ static const struct reg_field isp1761_dc_reg_fields[] = {
 	[DC_CHIP_ID_HIGH]	= REG_FIELD(ISP176x_DC_CHIPID, 16, 31),
 	[DC_CHIP_ID_LOW]	= REG_FIELD(ISP176x_DC_CHIPID, 0, 15),
 	[DC_SCRATCH]		= REG_FIELD(ISP176x_DC_SCRATCH, 0, 15),
-	/* Make sure the array is sized properly during compilation */
+	 
 	[DC_FIELD_MAX]		= {},
 };
 
@@ -464,7 +426,7 @@ static const struct reg_field isp1763_dc_reg_fields[] = {
 	[DC_CHIP_ID_HIGH]	= REG_FIELD(ISP1763_DC_CHIPID_HIGH, 0, 15),
 	[DC_CHIP_ID_LOW]	= REG_FIELD(ISP1763_DC_CHIPID_LOW, 0, 15),
 	[DC_SCRATCH]		= REG_FIELD(ISP1763_DC_SCRATCH, 0, 15),
-	/* Make sure the array is sized properly during compilation */
+	 
 	[DC_FIELD_MAX]		= {},
 };
 
@@ -493,10 +455,7 @@ int isp1760_register(struct resource *mem, int irq, unsigned long irqflags,
 	int ret;
 	int i;
 
-	/*
-	 * If neither the HCD not the UDC is enabled return an error, as no
-	 * device would be registered.
-	 */
+	 
 	udc_enabled = ((devflags & ISP1760_FLAG_ISP1763) ||
 		       (devflags & ISP1760_FLAG_ISP1761));
 

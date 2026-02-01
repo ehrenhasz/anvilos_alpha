@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PAPR Energy attributes sniff test
- * This checks if the papr folders and contents are populated relating to
- * the energy and frequency attributes
- *
- * Copyright 2022, Pratik Rajesh Sampat, IBM Corp.
- */
+
+ 
 
 #include <errno.h>
 #include <stdio.h>
@@ -85,7 +79,7 @@ static int verify_energy_info(void)
 		attr_type = value_type(id);
 		FAIL_IF(attr_type == INVALID);
 
-		/* Check if the files exist and have data in them */
+		 
 		sprintf(file_name, "%s/%d/desc", path, id);
 		f = fopen(file_name, "r");
 		FAIL_IF(!f);

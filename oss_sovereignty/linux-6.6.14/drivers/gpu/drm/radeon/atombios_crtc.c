@@ -1,28 +1,4 @@
-/*
- * Copyright 2007-8 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- */
+ 
 
 #include <drm/drm_fixed.h>
 #include <drm/drm_fourcc.h>
@@ -89,7 +65,7 @@ static void atombios_scaler_setup(struct drm_crtc *crtc)
 	int index = GetIndexIntoMasterTable(COMMAND, EnableScaler);
 	struct radeon_encoder *radeon_encoder =
 		to_radeon_encoder(radeon_crtc->encoder);
-	/* fixme - fill in enc_priv for atom dac */
+	 
 	enum radeon_tv_std tv_std = TV_STD_NTSC;
 	bool is_tv = false, is_cv = false;
 
@@ -125,7 +101,7 @@ static void atombios_scaler_setup(struct drm_crtc *crtc)
 			args.ucTVStandard = ATOM_TV_NTSCJ;
 			break;
 		case TV_STD_SCART_PAL:
-			args.ucTVStandard = ATOM_TV_PAL; /* ??? */
+			args.ucTVStandard = ATOM_TV_PAL;  
 			break;
 		case TV_STD_SECAM:
 			args.ucTVStandard = ATOM_TV_SECAM;
@@ -294,7 +270,7 @@ void atombios_crtc_dpms(struct drm_crtc *crtc, int mode)
 		radeon_crtc->enabled = false;
 		break;
 	}
-	/* adjust pm to dpms */
+	 
 	radeon_pm_compute_clocks(rdev);
 }
 
@@ -451,11 +427,7 @@ static void atombios_crtc_program_ss(struct radeon_device *rdev,
 	union atom_enable_ss args;
 
 	if (enable) {
-		/* Don't mess with SS if percentage is 0 or external ss.
-		 * SS is already disabled previously, and disabling it
-		 * again can cause display problems if the pll is already
-		 * programmed.
-		 */
+		 
 		if (ss->percentage == 0)
 			return;
 		if (ss->type & ATOM_EXTERNAL_SS_MASK)
@@ -466,10 +438,7 @@ static void atombios_crtc_program_ss(struct radeon_device *rdev,
 			    rdev->mode_info.crtcs[i]->enabled &&
 			    i != crtc_id &&
 			    pll_id == rdev->mode_info.crtcs[i]->pll_id) {
-				/* one other crtc is using this pll don't turn
-				 * off spread spectrum as it might turn off
-				 * display on active crtc
-				 */
+				 
 				return;
 			}
 		}
@@ -570,27 +539,27 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 	int bpc = radeon_crtc->bpc;
 	bool is_duallink = radeon_dig_monitor_is_duallink(encoder, mode->clock);
 
-	/* reset the pll flags */
+	 
 	radeon_crtc->pll_flags = 0;
 
 	if (ASIC_IS_AVIVO(rdev)) {
 		if ((rdev->family == CHIP_RS600) ||
 		    (rdev->family == CHIP_RS690) ||
 		    (rdev->family == CHIP_RS740))
-			radeon_crtc->pll_flags |= (/*RADEON_PLL_USE_FRAC_FB_DIV |*/
+			radeon_crtc->pll_flags |= ( 
 				RADEON_PLL_PREFER_CLOSEST_LOWER);
 
-		if (ASIC_IS_DCE32(rdev) && mode->clock > 200000)	/* range limits??? */
+		if (ASIC_IS_DCE32(rdev) && mode->clock > 200000)	 
 			radeon_crtc->pll_flags |= RADEON_PLL_PREFER_HIGH_FB_DIV;
 		else
 			radeon_crtc->pll_flags |= RADEON_PLL_PREFER_LOW_REF_DIV;
 
 		if (rdev->family < CHIP_RV770)
 			radeon_crtc->pll_flags |= RADEON_PLL_PREFER_MINM_OVER_MAXP;
-		/* use frac fb div on APUs */
+		 
 		if (ASIC_IS_DCE41(rdev) || ASIC_IS_DCE61(rdev) || ASIC_IS_DCE8(rdev))
 			radeon_crtc->pll_flags |= RADEON_PLL_USE_FRAC_FB_DIV;
-		/* use frac fb div on RS780/RS880 */
+		 
 		if (((rdev->family == CHIP_RS780) || (rdev->family == CHIP_RS880))
 		    && !radeon_crtc->ss_enabled)
 			radeon_crtc->pll_flags |= RADEON_PLL_USE_FRAC_FB_DIV;
@@ -599,7 +568,7 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 	} else {
 		radeon_crtc->pll_flags |= RADEON_PLL_LEGACY;
 
-		if (mode->clock > 200000)	/* range limits??? */
+		if (mode->clock > 200000)	 
 			radeon_crtc->pll_flags |= RADEON_PLL_PREFER_HIGH_FB_DIV;
 		else
 			radeon_crtc->pll_flags |= RADEON_PLL_PREFER_LOW_REF_DIV;
@@ -616,7 +585,7 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 		}
 	}
 
-	/* use recommended ref_div for ss */
+	 
 	if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
 		if (radeon_crtc->ss_enabled) {
 			if (radeon_crtc->ss.refdiv) {
@@ -631,7 +600,7 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 	}
 
 	if (ASIC_IS_AVIVO(rdev)) {
-		/* DVO wants 2x pixel clock if the DVO chip is in 12 bit mode */
+		 
 		if (radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DVO1)
 			adjusted_clock = mode->clock * 2;
 		if (radeon_encoder->active_device & (ATOM_DEVICE_TV_SUPPORT))
@@ -645,7 +614,7 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 			radeon_crtc->pll_flags |= RADEON_PLL_USE_REF_DIV;
 	}
 
-	/* adjust pll for deep color modes */
+	 
 	if (encoder_mode == ATOM_ENCODER_MODE_HDMI) {
 		switch (bpc) {
 		case 8:
@@ -663,10 +632,7 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 		}
 	}
 
-	/* DCE3+ has an AdjustDisplayPll that will adjust the pixel clock
-	 * accordingly based on the encoder/transmitter to work around
-	 * special hw requirements.
-	 */
+	 
 	if (ASIC_IS_DCE3(rdev)) {
 		union adjust_pixel_clock args;
 		u8 frev, crev;
@@ -706,7 +672,7 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 				if (ENCODER_MODE_IS_DP(encoder_mode)) {
 					args.v3.sInput.ucDispPllConfig |=
 						DISPPLL_CONFIG_COHERENT_MODE;
-					/* 16200 or 27000 */
+					 
 					args.v3.sInput.usPixelClock = cpu_to_le16(dp_clock / 10);
 				} else if (radeon_encoder->devices & (ATOM_DEVICE_DFP_SUPPORT)) {
 					struct radeon_encoder_atom_dig *dig = radeon_encoder->enc_priv;
@@ -760,9 +726,7 @@ union set_pixel_clock {
 	PIXEL_CLOCK_PARAMETERS_V6 v6;
 };
 
-/* on DCE5, make sure the voltage is high enough to support the
- * required disp clk.
- */
+ 
 static void atombios_crtc_set_disp_eng_pll(struct radeon_device *rdev,
 				    u32 dispclk)
 {
@@ -781,17 +745,13 @@ static void atombios_crtc_set_disp_eng_pll(struct radeon_device *rdev,
 	case 1:
 		switch (crev) {
 		case 5:
-			/* if the default dcpll clock is specified,
-			 * SetPixelClock provides the dividers
-			 */
+			 
 			args.v5.ucCRTC = ATOM_CRTC_INVALID;
 			args.v5.usPixelClock = cpu_to_le16(dispclk);
 			args.v5.ucPpll = ATOM_DCPLL;
 			break;
 		case 6:
-			/* if the default dcpll clock is specified,
-			 * SetPixelClock provides the dividers
-			 */
+			 
 			args.v6.ulDispEngClkFreq = cpu_to_le32(dispclk);
 			if (ASIC_IS_DCE61(rdev) || ASIC_IS_DCE8(rdev))
 				args.v6.ucPpll = ATOM_EXT_PLL1;
@@ -886,7 +846,7 @@ static void atombios_crtc_program_pll(struct drm_crtc *crtc,
 			args.v5.usFbDiv = cpu_to_le16(fb_div);
 			args.v5.ulFbDivDecFrac = cpu_to_le32(frac_fb_div * 100000);
 			args.v5.ucPostDiv = post_div;
-			args.v5.ucMiscInfo = 0; /* HDMI depth, etc. */
+			args.v5.ucMiscInfo = 0;  
 			if (ss_enabled && (ss->type & ATOM_EXTERNAL_SS_MASK))
 				args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_REF_DIV_SRC;
 			if (encoder_mode == ATOM_ENCODER_MODE_HDMI) {
@@ -896,11 +856,11 @@ static void atombios_crtc_program_pll(struct drm_crtc *crtc,
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_24BPP;
 					break;
 				case 10:
-					/* yes this is correct, the atom define is wrong */
+					 
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_32BPP;
 					break;
 				case 12:
-					/* yes this is correct, the atom define is wrong */
+					 
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_30BPP;
 					break;
 				}
@@ -915,7 +875,7 @@ static void atombios_crtc_program_pll(struct drm_crtc *crtc,
 			args.v6.usFbDiv = cpu_to_le16(fb_div);
 			args.v6.ulFbDivDecFrac = cpu_to_le32(frac_fb_div * 100000);
 			args.v6.ucPostDiv = post_div;
-			args.v6.ucMiscInfo = 0; /* HDMI depth, etc. */
+			args.v6.ucMiscInfo = 0;  
 			if (ss_enabled && (ss->type & ATOM_EXTERNAL_SS_MASK))
 				args.v6.ucMiscInfo |= PIXEL_CLOCK_V6_MISC_REF_DIV_SRC;
 			if (encoder_mode == ATOM_ENCODER_MODE_HDMI) {
@@ -975,14 +935,14 @@ static bool atombios_crtc_prepare_pll(struct drm_crtc *crtc, struct drm_display_
 			radeon_connector->con_priv;
 		int dp_clock;
 
-		/* Assign mode clock for hdmi deep color max clock limit check */
+		 
 		radeon_connector->pixelclock_for_modeset = mode->clock;
 		radeon_crtc->bpc = radeon_get_monitor_bpc(connector);
 
 		switch (encoder_mode) {
 		case ATOM_ENCODER_MODE_DP_MST:
 		case ATOM_ENCODER_MODE_DP:
-			/* DP/eDP */
+			 
 			dp_clock = dig_connector->dp_clock / 10;
 			if (ASIC_IS_DCE4(rdev))
 				radeon_crtc->ss_enabled =
@@ -1006,7 +966,7 @@ static bool atombios_crtc_prepare_pll(struct drm_crtc *crtc, struct drm_display_
 										 &radeon_crtc->ss,
 										 ATOM_DP_SS_ID1);
 				}
-				/* disable spread spectrum on DCE3 DP */
+				 
 				radeon_crtc->ss_enabled = false;
 			}
 			break;
@@ -1044,7 +1004,7 @@ static bool atombios_crtc_prepare_pll(struct drm_crtc *crtc, struct drm_display_
 		}
 	}
 
-	/* adjust pixel clock as needed */
+	 
 	radeon_crtc->adjusted_clock = atombios_adjust_pll(crtc, mode);
 
 	return true;
@@ -1063,7 +1023,7 @@ static void atombios_crtc_set_pll(struct drm_crtc *crtc, struct drm_display_mode
 	struct radeon_pll *pll;
 	int encoder_mode = atombios_get_encoder_mode(radeon_crtc->encoder);
 
-	/* pass the actual clock to atombios_crtc_program_pll for DCE5,6 for HDMI */
+	 
 	if (ASIC_IS_DCE5(rdev) &&
 	    (encoder_mode == ATOM_ENCODER_MODE_HDMI) &&
 	    (radeon_crtc->bpc > 8))
@@ -1083,13 +1043,13 @@ static void atombios_crtc_set_pll(struct drm_crtc *crtc, struct drm_display_mode
 		break;
 	}
 
-	/* update pll params */
+	 
 	pll->flags = radeon_crtc->pll_flags;
 	pll->reference_div = radeon_crtc->pll_reference_div;
 	pll->post_div = radeon_crtc->pll_post_div;
 
 	if (radeon_encoder->active_device & (ATOM_DEVICE_TV_SUPPORT))
-		/* TV seems to prefer the legacy algo on some boards */
+		 
 		radeon_compute_pll_legacy(pll, radeon_crtc->adjusted_clock, &pll_clock,
 					  &fb_div, &frac_fb_div, &ref_div, &post_div);
 	else if (ASIC_IS_AVIVO(rdev))
@@ -1108,7 +1068,7 @@ static void atombios_crtc_set_pll(struct drm_crtc *crtc, struct drm_display_mode
 				  radeon_crtc->bpc, radeon_crtc->ss_enabled, &radeon_crtc->ss);
 
 	if (radeon_crtc->ss_enabled) {
-		/* calculate ss amount and step size */
+		 
 		if (ASIC_IS_DCE4(rdev)) {
 			u32 step_size;
 			u32 amount = (((fb_div * 10) + frac_fb_div) *
@@ -1149,7 +1109,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 	int r;
 	bool bypass_lut = false;
 
-	/* no fb bound */
+	 
 	if (!atomic && !crtc->primary->fb) {
 		DRM_DEBUG_KMS("No FB bound\n");
 		return 0;
@@ -1160,9 +1120,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 	else
 		target_fb = crtc->primary->fb;
 
-	/* If atomic, assume fb object is pinned & idle & fenced and
-	 * just update base pointers
-	 */
+	 
 	obj = target_fb->obj[0];
 	rbo = gem_to_radeon_bo(obj);
 	r = radeon_bo_reserve(rbo, false);
@@ -1233,7 +1191,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 #ifdef __BIG_ENDIAN
 		fb_swap = EVERGREEN_GRPH_ENDIAN_SWAP(EVERGREEN_GRPH_ENDIAN_8IN32);
 #endif
-		/* Greater 8 bpc fb needs to bypass hw-lut to retain precision */
+		 
 		bypass_lut = true;
 		break;
 	case DRM_FORMAT_BGRX1010102:
@@ -1243,7 +1201,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 #ifdef __BIG_ENDIAN
 		fb_swap = EVERGREEN_GRPH_ENDIAN_SWAP(EVERGREEN_GRPH_ENDIAN_8IN32);
 #endif
-		/* Greater 8 bpc fb needs to bypass hw-lut to retain precision */
+		 
 		bypass_lut = true;
 		break;
 	case DRM_FORMAT_XBGR8888:
@@ -1265,14 +1223,14 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 	if (tiling_flags & RADEON_TILING_MACRO) {
 		evergreen_tiling_fields(tiling_flags, &bankw, &bankh, &mtaspect, &tile_split);
 
-		/* Set NUM_BANKS. */
+		 
 		if (rdev->family >= CHIP_TAHITI) {
 			unsigned index, num_banks;
 
 			if (rdev->family >= CHIP_BONAIRE) {
 				unsigned tileb, tile_split_bytes;
 
-				/* Calculate the macrotile mode index. */
+				 
 				tile_split_bytes = 64 << tile_split;
 				tileb = 8 * 8 * target_fb->format->cpp[0];
 				tileb = min(tile_split_bytes, tileb);
@@ -1307,21 +1265,21 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 
 			fb_format |= EVERGREEN_GRPH_NUM_BANKS(num_banks);
 		} else {
-			/* NI and older. */
+			 
 			if (rdev->family >= CHIP_CAYMAN)
 				tmp = rdev->config.cayman.tile_config;
 			else
 				tmp = rdev->config.evergreen.tile_config;
 
 			switch ((tmp & 0xf0) >> 4) {
-			case 0: /* 4 banks */
+			case 0:  
 				fb_format |= EVERGREEN_GRPH_NUM_BANKS(EVERGREEN_ADDR_SURF_4_BANK);
 				break;
-			case 1: /* 8 banks */
+			case 1:  
 			default:
 				fb_format |= EVERGREEN_GRPH_NUM_BANKS(EVERGREEN_ADDR_SURF_8_BANK);
 				break;
-			case 2: /* 16 banks */
+			case 2:  
 				fb_format |= EVERGREEN_GRPH_NUM_BANKS(EVERGREEN_ADDR_SURF_16_BANK);
 				break;
 			}
@@ -1333,16 +1291,14 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 		fb_format |= EVERGREEN_GRPH_BANK_HEIGHT(bankh);
 		fb_format |= EVERGREEN_GRPH_MACRO_TILE_ASPECT(mtaspect);
 		if (rdev->family >= CHIP_BONAIRE) {
-			/* XXX need to know more about the surface tiling mode */
+			 
 			fb_format |= CIK_GRPH_MICRO_TILE_MODE(CIK_DISPLAY_MICRO_TILING);
 		}
 	} else if (tiling_flags & RADEON_TILING_MICRO)
 		fb_format |= EVERGREEN_GRPH_ARRAY_MODE(EVERGREEN_GRPH_ARRAY_1D_TILED_THIN1);
 
 	if (rdev->family >= CHIP_BONAIRE) {
-		/* Read the pipe config from the 2D TILED SCANOUT mode.
-		 * It should be the same for the other modes too, but not all
-		 * modes set the pipe config field. */
+		 
 		u32 pipe_config = (rdev->config.cik.tile_mode_array[10] >> 6) & 0x1f;
 
 		fb_format |= CIK_GRPH_PIPE_CONFIG(pipe_config);
@@ -1351,7 +1307,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 		fb_format |= SI_GRPH_PIPE_CONFIG(SI_ADDR_SURF_P8_32x32_8x16);
 	else if ((rdev->family == CHIP_VERDE) ||
 		 (rdev->family == CHIP_OLAND) ||
-		 (rdev->family == CHIP_HAINAN)) /* for completeness.  HAINAN has no display hw */
+		 (rdev->family == CHIP_HAINAN))  
 		fb_format |= SI_GRPH_PIPE_CONFIG(SI_ADDR_SURF_P4_8x16);
 
 	switch (radeon_crtc->crtc_id) {
@@ -1377,9 +1333,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 		break;
 	}
 
-	/* Make sure surface address is updated at vertical blank rather than
-	 * horizontal blank
-	 */
+	 
 	WREG32(EVERGREEN_GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset, 0);
 
 	WREG32(EVERGREEN_GRPH_PRIMARY_SURFACE_ADDRESS_HIGH + radeon_crtc->crtc_offset,
@@ -1393,11 +1347,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 	WREG32(EVERGREEN_GRPH_CONTROL + radeon_crtc->crtc_offset, fb_format);
 	WREG32(EVERGREEN_GRPH_SWAP_CONTROL + radeon_crtc->crtc_offset, fb_swap);
 
-	/*
-	 * The LUT only has 256 slots for indexing by a 8 bpc fb. Bypass the LUT
-	 * for > 8 bpc scanout to avoid truncation of fb indices to 8 msb's, to
-	 * retain the full precision throughout the pipeline.
-	 */
+	 
 	WREG32_P(EVERGREEN_GRPH_LUT_10BIT_BYPASS_CONTROL + radeon_crtc->crtc_offset,
 		 (bypass_lut ? EVERGREEN_LUT_10BIT_BYPASS_EN : 0),
 		 ~EVERGREEN_LUT_10BIT_BYPASS_EN);
@@ -1434,7 +1384,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 	WREG32(EVERGREEN_VIEWPORT_SIZE + radeon_crtc->crtc_offset,
 	       (viewport_w << 16) | viewport_h);
 
-	/* set pageflip to happen anywhere in vblank interval */
+	 
 	WREG32(EVERGREEN_MASTER_UPDATE_MODE + radeon_crtc->crtc_offset, 0);
 
 	if (!atomic && fb && fb != crtc->primary->fb) {
@@ -1446,7 +1396,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
 		radeon_bo_unreserve(rbo);
 	}
 
-	/* Bytes per pixel may have changed */
+	 
 	radeon_bandwidth_update(rdev);
 
 	return 0;
@@ -1469,7 +1419,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 	int r;
 	bool bypass_lut = false;
 
-	/* no fb bound */
+	 
 	if (!atomic && !crtc->primary->fb) {
 		DRM_DEBUG_KMS("No FB bound\n");
 		return 0;
@@ -1486,9 +1436,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 	if (unlikely(r != 0))
 		return r;
 
-	/* If atomic, assume fb object is pinned & idle & fenced and
-	 * just update base pointers
-	 */
+	 
 	if (atomic)
 		fb_location = radeon_bo_gpu_offset(rbo);
 	else {
@@ -1549,7 +1497,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 #ifdef __BIG_ENDIAN
 		fb_swap = R600_D1GRPH_SWAP_ENDIAN_32BIT;
 #endif
-		/* Greater 8 bpc fb needs to bypass hw-lut to retain precision */
+		 
 		bypass_lut = true;
 		break;
 	case DRM_FORMAT_XBGR8888:
@@ -1561,7 +1509,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 			fb_swap =
 			    (R600_D1GRPH_RED_CROSSBAR(R600_D1GRPH_RED_SEL_B) |
 			     R600_D1GRPH_BLUE_CROSSBAR(R600_D1GRPH_BLUE_SEL_R));
-		else /* DCE1 (R5xx) */
+		else  
 			fb_format |= AVIVO_D1GRPH_SWAP_RB;
 #ifdef __BIG_ENDIAN
 		fb_swap |= R600_D1GRPH_SWAP_ENDIAN_32BIT;
@@ -1591,9 +1539,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 	else
 		WREG32(AVIVO_D2VGA_CONTROL, 0);
 
-	/* Make sure surface address is update at vertical blank rather than
-	 * horizontal blank
-	 */
+	 
 	WREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset, 0);
 
 	if (rdev->family >= CHIP_RV770) {
@@ -1613,7 +1559,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 	if (rdev->family >= CHIP_R600)
 		WREG32(R600_D1GRPH_SWAP_CONTROL + radeon_crtc->crtc_offset, fb_swap);
 
-	/* LUT only has 256 slots for 8 bpc fb. Bypass for > 8 bpc scanout for precision */
+	 
 	WREG32_P(AVIVO_D1GRPH_LUT_SEL + radeon_crtc->crtc_offset,
 		 (bypass_lut ? AVIVO_LUT_10BIT_BYPASS_EN : 0), ~AVIVO_LUT_10BIT_BYPASS_EN);
 
@@ -1642,7 +1588,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 	WREG32(AVIVO_D1MODE_VIEWPORT_SIZE + radeon_crtc->crtc_offset,
 	       (viewport_w << 16) | viewport_h);
 
-	/* set pageflip to happen only at start of vblank interval (front porch) */
+	 
 	WREG32(AVIVO_D1MODE_MASTER_UPDATE_MODE + radeon_crtc->crtc_offset, 3);
 
 	if (!atomic && fb && fb != crtc->primary->fb) {
@@ -1654,7 +1600,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
 		radeon_bo_unreserve(rbo);
 	}
 
-	/* Bytes per pixel may have changed */
+	 
 	radeon_bandwidth_update(rdev);
 
 	return 0;
@@ -1689,7 +1635,7 @@ int atombios_crtc_set_base_atomic(struct drm_crtc *crtc,
 		return radeon_crtc_do_set_base(crtc, fb, x, y, 1);
 }
 
-/* properly set additional regs when using atombios */
+ 
 static void radeon_legacy_atom_fixup(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -1713,13 +1659,7 @@ static void radeon_legacy_atom_fixup(struct drm_crtc *crtc)
 	}
 }
 
-/**
- * radeon_get_pll_use_mask - look up a mask of which pplls are in use
- *
- * @crtc: drm crtc
- *
- * Returns the mask of which PPLLs (Pixel PLLs) are in use.
- */
+ 
 static u32 radeon_get_pll_use_mask(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -1738,15 +1678,7 @@ static u32 radeon_get_pll_use_mask(struct drm_crtc *crtc)
 	return pll_in_use;
 }
 
-/**
- * radeon_get_shared_dp_ppll - return the PPLL used by another crtc for DP
- *
- * @crtc: drm crtc
- *
- * Returns the PPLL (Pixel PLL) used by another crtc/encoder which is
- * also in DP mode.  For DP, a single PPLL can be used for all DP
- * crtcs/encoders.
- */
+ 
 static int radeon_get_shared_dp_ppll(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -1760,11 +1692,11 @@ static int radeon_get_shared_dp_ppll(struct drm_crtc *crtc)
 		test_radeon_crtc = to_radeon_crtc(test_crtc);
 		if (test_radeon_crtc->encoder &&
 		    ENCODER_MODE_IS_DP(atombios_get_encoder_mode(test_radeon_crtc->encoder))) {
-			/* PPLL2 is exclusive to UNIPHYA on DCE61 */
+			 
 			if (ASIC_IS_DCE61(rdev) && !ASIC_IS_DCE8(rdev) &&
 			    test_radeon_crtc->pll_id == ATOM_PPLL2)
 				continue;
-			/* for DP use the same PLL for all */
+			 
 			if (test_radeon_crtc->pll_id != ATOM_PPLL_INVALID)
 				return test_radeon_crtc->pll_id;
 		}
@@ -1772,14 +1704,7 @@ static int radeon_get_shared_dp_ppll(struct drm_crtc *crtc)
 	return ATOM_PPLL_INVALID;
 }
 
-/**
- * radeon_get_shared_nondp_ppll - return the PPLL used by another non-DP crtc
- *
- * @crtc: drm crtc
- *
- * Returns the PPLL (Pixel PLL) used by another non-DP crtc/encoder which can
- * be shared (i.e., same clock).
- */
+ 
 static int radeon_get_shared_nondp_ppll(struct drm_crtc *crtc)
 {
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
@@ -1800,17 +1725,17 @@ static int radeon_get_shared_nondp_ppll(struct drm_crtc *crtc)
 		test_radeon_crtc = to_radeon_crtc(test_crtc);
 		if (test_radeon_crtc->encoder &&
 		    !ENCODER_MODE_IS_DP(atombios_get_encoder_mode(test_radeon_crtc->encoder))) {
-			/* PPLL2 is exclusive to UNIPHYA on DCE61 */
+			 
 			if (ASIC_IS_DCE61(rdev) && !ASIC_IS_DCE8(rdev) &&
 			    test_radeon_crtc->pll_id == ATOM_PPLL2)
 				continue;
-			/* check if we are already driving this connector with another crtc */
+			 
 			if (test_radeon_crtc->connector == radeon_crtc->connector) {
-				/* if we are, return that pll */
+				 
 				if (test_radeon_crtc->pll_id != ATOM_PPLL_INVALID)
 					return test_radeon_crtc->pll_id;
 			}
-			/* for non-DP check the clock */
+			 
 			test_adjusted_clock = test_radeon_crtc->adjusted_clock;
 			if ((crtc->mode.clock == test_crtc->mode.clock) &&
 			    (adjusted_clock == test_adjusted_clock) &&
@@ -1822,43 +1747,7 @@ static int radeon_get_shared_nondp_ppll(struct drm_crtc *crtc)
 	return ATOM_PPLL_INVALID;
 }
 
-/**
- * radeon_atom_pick_pll - Allocate a PPLL for use by the crtc.
- *
- * @crtc: drm crtc
- *
- * Returns the PPLL (Pixel PLL) to be used by the crtc.  For DP monitors
- * a single PPLL can be used for all DP crtcs/encoders.  For non-DP
- * monitors a dedicated PPLL must be used.  If a particular board has
- * an external DP PLL, return ATOM_PPLL_INVALID to skip PLL programming
- * as there is no need to program the PLL itself.  If we are not able to
- * allocate a PLL, return ATOM_PPLL_INVALID to skip PLL programming to
- * avoid messing up an existing monitor.
- *
- * Asic specific PLL information
- *
- * DCE 8.x
- * KB/KV
- * - PPLL1, PPLL2 are available for all UNIPHY (both DP and non-DP)
- * CI
- * - PPLL0, PPLL1, PPLL2 are available for all UNIPHY (both DP and non-DP) and DAC
- *
- * DCE 6.1
- * - PPLL2 is only available to UNIPHYA (both DP and non-DP)
- * - PPLL0, PPLL1 are available for UNIPHYB/C/D/E/F (both DP and non-DP)
- *
- * DCE 6.0
- * - PPLL0 is available to all UNIPHY (DP only)
- * - PPLL1, PPLL2 are available for all UNIPHY (both DP and non-DP) and DAC
- *
- * DCE 5.0
- * - DCPLL is available to all UNIPHY (DP only)
- * - PPLL1, PPLL2 are available for all UNIPHY (both DP and non-DP) and DAC
- *
- * DCE 3.0/4.0/4.1
- * - PPLL1, PPLL2 are available for all UNIPHY (both DP and non-DP) and DAC
- *
- */
+ 
 static int radeon_atom_pick_pll(struct drm_crtc *crtc)
 {
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
@@ -1872,24 +1761,24 @@ static int radeon_atom_pick_pll(struct drm_crtc *crtc)
 	if (ASIC_IS_DCE8(rdev)) {
 		if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(radeon_crtc->encoder))) {
 			if (rdev->clock.dp_extclk)
-				/* skip PPLL programming if using ext clock */
+				 
 				return ATOM_PPLL_INVALID;
 			else {
-				/* use the same PPLL for all DP monitors */
+				 
 				pll = radeon_get_shared_dp_ppll(crtc);
 				if (pll != ATOM_PPLL_INVALID)
 					return pll;
 			}
 		} else {
-			/* use the same PPLL for all monitors with the same clock */
+			 
 			pll = radeon_get_shared_nondp_ppll(crtc);
 			if (pll != ATOM_PPLL_INVALID)
 				return pll;
 		}
-		/* otherwise, pick one of the plls */
+		 
 		if ((rdev->family == CHIP_KABINI) ||
 		    (rdev->family == CHIP_MULLINS)) {
-			/* KB/ML has PPLL1 and PPLL2 */
+			 
 			pll_in_use = radeon_get_pll_use_mask(crtc);
 			if (!(pll_in_use & (1 << ATOM_PPLL2)))
 				return ATOM_PPLL2;
@@ -1898,7 +1787,7 @@ static int radeon_atom_pick_pll(struct drm_crtc *crtc)
 			DRM_ERROR("unable to allocate a PPLL\n");
 			return ATOM_PPLL_INVALID;
 		} else {
-			/* CI/KV has PPLL0, PPLL1, and PPLL2 */
+			 
 			pll_in_use = radeon_get_pll_use_mask(crtc);
 			if (!(pll_in_use & (1 << ATOM_PPLL2)))
 				return ATOM_PPLL2;
@@ -1915,26 +1804,26 @@ static int radeon_atom_pick_pll(struct drm_crtc *crtc)
 
 		if ((radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_UNIPHY) &&
 		    (dig->linkb == false))
-			/* UNIPHY A uses PPLL2 */
+			 
 			return ATOM_PPLL2;
 		else if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(radeon_crtc->encoder))) {
-			/* UNIPHY B/C/D/E/F */
+			 
 			if (rdev->clock.dp_extclk)
-				/* skip PPLL programming if using ext clock */
+				 
 				return ATOM_PPLL_INVALID;
 			else {
-				/* use the same PPLL for all DP monitors */
+				 
 				pll = radeon_get_shared_dp_ppll(crtc);
 				if (pll != ATOM_PPLL_INVALID)
 					return pll;
 			}
 		} else {
-			/* use the same PPLL for all monitors with the same clock */
+			 
 			pll = radeon_get_shared_nondp_ppll(crtc);
 			if (pll != ATOM_PPLL_INVALID)
 				return pll;
 		}
-		/* UNIPHY B/C/D/E/F */
+		 
 		pll_in_use = radeon_get_pll_use_mask(crtc);
 		if (!(pll_in_use & (1 << ATOM_PPLL0)))
 			return ATOM_PPLL0;
@@ -1943,10 +1832,10 @@ static int radeon_atom_pick_pll(struct drm_crtc *crtc)
 		DRM_ERROR("unable to allocate a PPLL\n");
 		return ATOM_PPLL_INVALID;
 	} else if (ASIC_IS_DCE41(rdev)) {
-		/* Don't share PLLs on DCE4.1 chips */
+		 
 		if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(radeon_crtc->encoder))) {
 			if (rdev->clock.dp_extclk)
-				/* skip PPLL programming if using ext clock */
+				 
 				return ATOM_PPLL_INVALID;
 		}
 		pll_in_use = radeon_get_pll_use_mask(crtc);
@@ -1957,39 +1846,30 @@ static int radeon_atom_pick_pll(struct drm_crtc *crtc)
 		DRM_ERROR("unable to allocate a PPLL\n");
 		return ATOM_PPLL_INVALID;
 	} else if (ASIC_IS_DCE4(rdev)) {
-		/* in DP mode, the DP ref clock can come from PPLL, DCPLL, or ext clock,
-		 * depending on the asic:
-		 * DCE4: PPLL or ext clock
-		 * DCE5: PPLL, DCPLL, or ext clock
-		 * DCE6: PPLL, PPLL0, or ext clock
-		 *
-		 * Setting ATOM_PPLL_INVALID will cause SetPixelClock to skip
-		 * PPLL/DCPLL programming and only program the DP DTO for the
-		 * crtc virtual pixel clock.
-		 */
+		 
 		if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(radeon_crtc->encoder))) {
 			if (rdev->clock.dp_extclk)
-				/* skip PPLL programming if using ext clock */
+				 
 				return ATOM_PPLL_INVALID;
 			else if (ASIC_IS_DCE6(rdev))
-				/* use PPLL0 for all DP */
+				 
 				return ATOM_PPLL0;
 			else if (ASIC_IS_DCE5(rdev))
-				/* use DCPLL for all DP */
+				 
 				return ATOM_DCPLL;
 			else {
-				/* use the same PPLL for all DP monitors */
+				 
 				pll = radeon_get_shared_dp_ppll(crtc);
 				if (pll != ATOM_PPLL_INVALID)
 					return pll;
 			}
 		} else {
-			/* use the same PPLL for all monitors with the same clock */
+			 
 			pll = radeon_get_shared_nondp_ppll(crtc);
 			if (pll != ATOM_PPLL_INVALID)
 				return pll;
 		}
-		/* all other cases */
+		 
 		pll_in_use = radeon_get_pll_use_mask(crtc);
 		if (!(pll_in_use & (1 << ATOM_PPLL1)))
 			return ATOM_PPLL1;
@@ -1998,28 +1878,15 @@ static int radeon_atom_pick_pll(struct drm_crtc *crtc)
 		DRM_ERROR("unable to allocate a PPLL\n");
 		return ATOM_PPLL_INVALID;
 	} else {
-		/* on pre-R5xx asics, the crtc to pll mapping is hardcoded */
-		/* some atombios (observed in some DCE2/DCE3) code have a bug,
-		 * the matching btw pll and crtc is done through
-		 * PCLK_CRTC[1|2]_CNTL (0x480/0x484) but atombios code use the
-		 * pll (1 or 2) to select which register to write. ie if using
-		 * pll1 it will use PCLK_CRTC1_CNTL (0x480) and if using pll2
-		 * it will use PCLK_CRTC2_CNTL (0x484), it then use crtc id to
-		 * choose which value to write. Which is reverse order from
-		 * register logic. So only case that works is when pllid is
-		 * same as crtcid or when both pll and crtc are enabled and
-		 * both use same clock.
-		 *
-		 * So just return crtc id as if crtc and pll were hard linked
-		 * together even if they aren't
-		 */
+		 
+		 
 		return radeon_crtc->crtc_id;
 	}
 }
 
 void radeon_atom_disp_eng_pll_init(struct radeon_device *rdev)
 {
-	/* always set DCPLL */
+	 
 	if (ASIC_IS_DCE6(rdev))
 		atombios_crtc_set_disp_eng_pll(rdev, rdev->clock.default_dispclk);
 	else if (ASIC_IS_DCE4(rdev)) {
@@ -2029,7 +1896,7 @@ void radeon_atom_disp_eng_pll_init(struct radeon_device *rdev)
 								   rdev->clock.default_dispclk);
 		if (ss_enabled)
 			atombios_crtc_program_ss(rdev, ATOM_DISABLE, ATOM_DCPLL, -1, &ss);
-		/* XXX: DCE5, make sure voltage, dispclk is high enough */
+		 
 		atombios_crtc_set_disp_eng_pll(rdev, rdev->clock.default_dispclk);
 		if (ss_enabled)
 			atombios_crtc_program_ss(rdev, ATOM_ENABLE, ATOM_DCPLL, -1, &ss);
@@ -2075,7 +1942,7 @@ int atombios_crtc_mode_set(struct drm_crtc *crtc,
 	atombios_overscan_setup(crtc, mode, adjusted_mode);
 	atombios_scaler_setup(crtc);
 	radeon_cursor_reset(crtc);
-	/* update the hw version fpr dpm */
+	 
 	radeon_crtc->hw_mode = *adjusted_mode;
 
 	return 0;
@@ -2089,7 +1956,7 @@ static bool atombios_crtc_mode_fixup(struct drm_crtc *crtc,
 	struct drm_device *dev = crtc->dev;
 	struct drm_encoder *encoder;
 
-	/* assign the encoder to the radeon crtc to avoid repeated lookups later */
+	 
 	list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
 		if (encoder->crtc == crtc) {
 			radeon_crtc->encoder = encoder;
@@ -2112,9 +1979,9 @@ static bool atombios_crtc_mode_fixup(struct drm_crtc *crtc,
 		return false;
 	if (!atombios_crtc_prepare_pll(crtc, adjusted_mode))
 		return false;
-	/* pick pll */
+	 
 	radeon_crtc->pll_id = radeon_atom_pick_pll(crtc);
-	/* if we can't get a PPLL for a non-DP encoder, fail */
+	 
 	if ((radeon_crtc->pll_id == ATOM_PPLL_INVALID) &&
 	    !ENCODER_MODE_IS_DP(atombios_get_encoder_mode(radeon_crtc->encoder)))
 		return false;
@@ -2127,7 +1994,7 @@ static void atombios_crtc_prepare(struct drm_crtc *crtc)
 	struct drm_device *dev = crtc->dev;
 	struct radeon_device *rdev = dev->dev_private;
 
-	/* disable crtc pair power gating before programming */
+	 
 	if (ASIC_IS_DCE6(rdev))
 		atombios_powergate_crtc(crtc, ATOM_DISABLE);
 
@@ -2163,7 +2030,7 @@ static void atombios_crtc_disable(struct drm_crtc *crtc)
 			radeon_bo_unreserve(rbo);
 		}
 	}
-	/* disable the GRPH */
+	 
 	if (ASIC_IS_DCE4(rdev))
 		WREG32(EVERGREEN_GRPH_ENABLE + radeon_crtc->crtc_offset, 0);
 	else if (ASIC_IS_AVIVO(rdev))
@@ -2177,9 +2044,7 @@ static void atombios_crtc_disable(struct drm_crtc *crtc)
 		    rdev->mode_info.crtcs[i]->enabled &&
 		    i != radeon_crtc->crtc_id &&
 		    radeon_crtc->pll_id == rdev->mode_info.crtcs[i]->pll_id) {
-			/* one other crtc is using this pll don't turn
-			 * off the pll
-			 */
+			 
 			goto done;
 		}
 	}
@@ -2187,12 +2052,12 @@ static void atombios_crtc_disable(struct drm_crtc *crtc)
 	switch (radeon_crtc->pll_id) {
 	case ATOM_PPLL1:
 	case ATOM_PPLL2:
-		/* disable the ppll */
+		 
 		atombios_crtc_program_pll(crtc, radeon_crtc->crtc_id, radeon_crtc->pll_id,
 					  0, 0, ATOM_DISABLE, 0, 0, 0, 0, 0, false, &ss);
 		break;
 	case ATOM_PPLL0:
-		/* disable the ppll */
+		 
 		if ((rdev->family == CHIP_ARUBA) ||
 		    (rdev->family == CHIP_KAVERI) ||
 		    (rdev->family == CHIP_BONAIRE) ||

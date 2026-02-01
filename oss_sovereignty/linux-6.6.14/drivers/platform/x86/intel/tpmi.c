@@ -1,50 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel-tpmi : Driver to enumerate TPMI features and create devices
- *
- * Copyright (c) 2023, Intel Corporation.
- * All Rights Reserved.
- *
- * The TPMI (Topology Aware Register and PM Capsule Interface) provides a
- * flexible, extendable and PCIe enumerable MMIO interface for PM features.
- *
- * For example Intel RAPL (Running Average Power Limit) provides a MMIO
- * interface using TPMI. This has advantage over traditional MSR
- * (Model Specific Register) interface, where a thread needs to be scheduled
- * on the target CPU to read or write. Also the RAPL features vary between
- * CPU models, and hence lot of model specific code. Here TPMI provides an
- * architectural interface by providing hierarchical tables and fields,
- * which will not need any model specific implementation.
- *
- * The TPMI interface uses a PCI VSEC structure to expose the location of
- * MMIO region.
- *
- * This VSEC structure is present in the PCI configuration space of the
- * Intel Out-of-Band (OOB) device, which  is handled by the Intel VSEC
- * driver. The Intel VSEC driver parses VSEC structures present in the PCI
- * configuration space of the given device and creates an auxiliary device
- * object for each of them. In particular, it creates an auxiliary device
- * object representing TPMI that can be bound by an auxiliary driver.
- *
- * This TPMI driver will bind to the TPMI auxiliary device object created
- * by the Intel VSEC driver.
- *
- * The TPMI specification defines a PFS (PM Feature Structure) table.
- * This table is present in the TPMI MMIO region. The starting address
- * of PFS is derived from the tBIR (Bar Indicator Register) and "Address"
- * field from the VSEC header.
- *
- * Each TPMI PM feature has one entry in the PFS with a unique TPMI
- * ID and its access details. The TPMI driver creates device nodes
- * for the supported PM features.
- *
- * The names of the devices created by the TPMI driver start with the
- * "intel_vsec.tpmi-" prefix which is followed by a specific name of the
- * given PM feature (for example, "intel_vsec.tpmi-rapl.0").
- *
- * The device nodes are create by using interface "intel_vsec_add_aux()"
- * provided by the Intel VSEC driver.
- */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 #include <linux/bitfield.h>
@@ -61,20 +16,7 @@
 
 #include "vsec.h"
 
-/**
- * struct intel_tpmi_pfs_entry - TPMI PM Feature Structure (PFS) entry
- * @tpmi_id:	TPMI feature identifier (what the feature is and its data format).
- * @num_entries: Number of feature interface instances present in the PFS.
- *		 This represents the maximum number of Power domains in the SoC.
- * @entry_size:	Interface instance entry size in 32-bit words.
- * @cap_offset:	Offset from the PM_Features base address to the base of the PM VSEC
- *		register bank in KB.
- * @attribute:	Feature attribute: 0=BIOS. 1=OS. 2-3=Reserved.
- * @reserved:	Bits for use in the future.
- *
- * Represents one TPMI feature entry data in the PFS retrieved as is
- * from the hardware.
- */
+ 
 struct intel_tpmi_pfs_entry {
 	u64 tpmi_id:8;
 	u64 num_entries:8;
@@ -84,34 +26,14 @@ struct intel_tpmi_pfs_entry {
 	u64 reserved:14;
 } __packed;
 
-/**
- * struct intel_tpmi_pm_feature - TPMI PM Feature information for a TPMI ID
- * @pfs_header:	PFS header retireved from the hardware.
- * @vsec_offset: Starting MMIO address for this feature in bytes. Essentially
- *		 this offset = "Address" from VSEC header + PFS Capability
- *		 offset for this feature entry.
- * @vsec_dev:	Pointer to intel_vsec_device structure for this TPMI device
- *
- * Represents TPMI instance information for one TPMI ID.
- */
+ 
 struct intel_tpmi_pm_feature {
 	struct intel_tpmi_pfs_entry pfs_header;
 	unsigned int vsec_offset;
 	struct intel_vsec_device *vsec_dev;
 };
 
-/**
- * struct intel_tpmi_info - TPMI information for all IDs in an instance
- * @tpmi_features:	Pointer to a list of TPMI feature instances
- * @vsec_dev:		Pointer to intel_vsec_device structure for this TPMI device
- * @feature_count:	Number of TPMI of TPMI instances pointed by tpmi_features
- * @pfs_start:		Start of PFS offset for the TPMI instances in this device
- * @plat_info:		Stores platform info which can be used by the client drivers
- * @tpmi_control_mem:	Memory mapped IO for getting control information
- * @dbgfs_dir:		debugfs entry pointer
- *
- * Stores the information for all TPMI devices enumerated from a single PCI device.
- */
+ 
 struct intel_tpmi_info {
 	struct intel_tpmi_pm_feature *tpmi_features;
 	struct intel_vsec_device *vsec_dev;
@@ -122,18 +44,7 @@ struct intel_tpmi_info {
 	struct dentry *dbgfs_dir;
 };
 
-/**
- * struct tpmi_info_header - CPU package ID to PCI device mapping information
- * @fn:		PCI function number
- * @dev:	PCI device number
- * @bus:	PCI bus number
- * @pkg:	CPU Package id
- * @reserved:	Reserved for future use
- * @lock:	When set to 1 the register is locked and becomes read-only
- *		until next reset. Not for use by the OS driver.
- *
- * The structure to read hardware provided mapping information.
- */
+ 
 struct tpmi_info_header {
 	u64 fn:3;
 	u64 dev:5;
@@ -143,29 +54,23 @@ struct tpmi_info_header {
 	u64 lock:1;
 } __packed;
 
-/*
- * List of supported TMPI IDs.
- * Some TMPI IDs are not used by Linux, so the numbers are not consecutive.
- */
+ 
 enum intel_tpmi_id {
-	TPMI_ID_RAPL = 0, /* Running Average Power Limit */
-	TPMI_ID_PEM = 1, /* Power and Perf excursion Monitor */
-	TPMI_ID_UNCORE = 2, /* Uncore Frequency Scaling */
-	TPMI_ID_SST = 5, /* Speed Select Technology */
-	TPMI_CONTROL_ID = 0x80, /* Special ID for getting feature status */
-	TPMI_INFO_ID = 0x81, /* Special ID for PCI BDF and Package ID information */
+	TPMI_ID_RAPL = 0,  
+	TPMI_ID_PEM = 1,  
+	TPMI_ID_UNCORE = 2,  
+	TPMI_ID_SST = 5,  
+	TPMI_CONTROL_ID = 0x80,  
+	TPMI_INFO_ID = 0x81,  
 };
 
-/*
- * The size from hardware is in u32 units. This size is from a trusted hardware,
- * but better to verify for pre silicon platforms. Set size to 0, when invalid.
- */
+ 
 #define TPMI_GET_SINGLE_ENTRY_SIZE(pfs)							\
 ({											\
 	pfs->pfs_header.entry_size > SZ_1K ? 0 : pfs->pfs_header.entry_size << 2;	\
 })
 
-/* Used during auxbus device creation */
+ 
 static DEFINE_IDA(intel_vsec_tpmi_ida);
 
 struct intel_tpmi_plat_info *tpmi_get_platform_data(struct auxiliary_device *auxdev)
@@ -198,22 +103,19 @@ struct resource *tpmi_get_resource_at_index(struct auxiliary_device *auxdev, int
 }
 EXPORT_SYMBOL_NS_GPL(tpmi_get_resource_at_index, INTEL_TPMI);
 
-/* TPMI Control Interface */
+ 
 
 #define TPMI_CONTROL_STATUS_OFFSET	0x00
 #define TPMI_COMMAND_OFFSET		0x08
 
-/*
- * Spec is calling for max 1 seconds to get ownership at the worst
- * case. Read at 10 ms timeouts and repeat up to 1 second.
- */
+ 
 #define TPMI_CONTROL_TIMEOUT_US		(10 * USEC_PER_MSEC)
 #define TPMI_CONTROL_TIMEOUT_MAX_US	(1 * USEC_PER_SEC)
 
 #define TPMI_RB_TIMEOUT_US		(10 * USEC_PER_MSEC)
 #define TPMI_RB_TIMEOUT_MAX_US		USEC_PER_SEC
 
-/* TPMI Control status register defines */
+ 
 
 #define TPMI_CONTROL_STATUS_RB		BIT_ULL(0)
 
@@ -228,12 +130,12 @@ EXPORT_SYMBOL_NS_GPL(tpmi_get_resource_at_index, INTEL_TPMI);
 #define TPMI_CMD_PKT_LEN		2
 #define TPMI_CMD_STATUS_SUCCESS		0x40
 
-/* TPMI command data registers */
+ 
 #define TMPI_CONTROL_DATA_CMD		GENMASK_ULL(7, 0)
 #define TMPI_CONTROL_DATA_VAL		GENMASK_ULL(63, 32)
 #define TPMI_CONTROL_DATA_VAL_FEATURE	GENMASK_ULL(48, 40)
 
-/* Command to send via control interface */
+ 
 #define TPMI_CONTROL_GET_STATE_CMD	0x10
 
 #define TPMI_CONTROL_CMD_MASK		GENMASK_ULL(48, 40)
@@ -243,7 +145,7 @@ EXPORT_SYMBOL_NS_GPL(tpmi_get_resource_at_index, INTEL_TPMI);
 #define TPMI_STATE_DISABLED		BIT_ULL(0)
 #define TPMI_STATE_LOCKED		BIT_ULL(31)
 
-/* Mutex to complete get feature status without interruption */
+ 
 static DEFINE_MUTEX(tpmi_dev_lock);
 
 static int tpmi_wait_for_owner(struct intel_tpmi_info *tpmi_info, u8 owner)
@@ -266,33 +168,33 @@ static int tpmi_read_feature_status(struct intel_tpmi_info *tpmi_info, int featu
 
 	mutex_lock(&tpmi_dev_lock);
 
-	/* Wait for owner bit set to 0 (none) */
+	 
 	ret = tpmi_wait_for_owner(tpmi_info, TPMI_OWNER_NONE);
 	if (ret)
 		goto err_unlock;
 
-	/* set command id to 0x10 for TPMI_GET_STATE */
+	 
 	data = FIELD_PREP(TMPI_CONTROL_DATA_CMD, TPMI_CONTROL_GET_STATE_CMD);
 
-	/* 32 bits for DATA offset and +8 for feature_id field */
+	 
 	data |= FIELD_PREP(TPMI_CONTROL_DATA_VAL_FEATURE, feature_id);
 
-	/* Write at command offset for qword access */
+	 
 	writeq(data, tpmi_info->tpmi_control_mem + TPMI_COMMAND_OFFSET);
 
-	/* Wait for owner bit set to in-band */
+	 
 	ret = tpmi_wait_for_owner(tpmi_info, TPMI_OWNER_IN_BAND);
 	if (ret)
 		goto err_unlock;
 
-	/* Set Run Busy and packet length of 2 dwords */
+	 
 	control = TPMI_CONTROL_STATUS_RB;
 	control |= FIELD_PREP(TPMI_CONTROL_STATUS_LEN, TPMI_CMD_PKT_LEN);
 
-	/* Write at status offset for qword access */
+	 
 	writeq(control, tpmi_info->tpmi_control_mem + TPMI_CONTROL_STATUS_OFFSET);
 
-	/* Wait for Run Busy clear */
+	 
 	ret = readq_poll_timeout(tpmi_info->tpmi_control_mem + TPMI_CONTROL_STATUS_OFFSET,
 				 control, !(control & TPMI_CONTROL_STATUS_RB),
 				 TPMI_RB_TIMEOUT_US, TPMI_RB_TIMEOUT_MAX_US);
@@ -305,7 +207,7 @@ static int tpmi_read_feature_status(struct intel_tpmi_info *tpmi_info, int featu
 		goto done_proc;
 	}
 
-	/* Response is ready */
+	 
 	data = readq(tpmi_info->tpmi_control_mem + TPMI_COMMAND_OFFSET);
 	data = FIELD_GET(TMPI_CONTROL_DATA_VAL, data);
 
@@ -321,7 +223,7 @@ static int tpmi_read_feature_status(struct intel_tpmi_info *tpmi_info, int featu
 	ret = 0;
 
 done_proc:
-	/* Set CPL "completion" bit */
+	 
 	writeq(TPMI_CONTROL_STATUS_CPL, tpmi_info->tpmi_control_mem + TPMI_CONTROL_STATUS_OFFSET);
 
 err_unlock:
@@ -537,7 +439,7 @@ static void tpmi_set_control_base(struct auxiliary_device *auxdev,
 	if (!mem)
 		return;
 
-	/* mem is pointing to TPMI CONTROL base */
+	 
 	tpmi_info->tpmi_control_mem = mem;
 }
 
@@ -557,7 +459,7 @@ static const char *intel_tpmi_name(enum intel_tpmi_id id)
 	}
 }
 
-/* String Length for tpmi-"feature_name(upto 8 bytes)" */
+ 
 #define TPMI_FEATURE_NAME_LEN	14
 
 static int tpmi_create_device(struct intel_tpmi_info *tpmi_info,
@@ -602,12 +504,7 @@ static int tpmi_create_device(struct intel_tpmi_info *tpmi_info,
 	feature_vsec_dev->priv_data_size = sizeof(tpmi_info->plat_info);
 	feature_vsec_dev->ida = &intel_vsec_tpmi_ida;
 
-	/*
-	 * intel_vsec_add_aux() is resource managed, no explicit
-	 * delete is required on error or on module unload.
-	 * feature_vsec_dev and res memory are also freed as part of
-	 * device deletion.
-	 */
+	 
 	return intel_vsec_add_aux(vsec_dev->pcidev, &vsec_dev->auxdev.dev,
 				  feature_vsec_dev, feature_id_name);
 }
@@ -620,13 +517,7 @@ static int tpmi_create_devices(struct intel_tpmi_info *tpmi_info)
 	for (i = 0; i < vsec_dev->num_resources; i++) {
 		ret = tpmi_create_device(tpmi_info, &tpmi_info->tpmi_features[i],
 					 tpmi_info->pfs_start);
-		/*
-		 * Fail, if the supported features fails to create device,
-		 * otherwise, continue. Even if one device failed to create,
-		 * fail the loading of driver. Since intel_vsec_add_aux()
-		 * is resource managed, no clean up is required for the
-		 * successfully created devices.
-		 */
+		 
 		if (ret && ret != -EOPNOTSUPP)
 			return ret;
 	}
@@ -725,13 +616,7 @@ static int intel_vsec_tpmi_init(struct auxiliary_device *auxdev)
 
 		pfs->vsec_offset = pfs_start + pfs->pfs_header.cap_offset * TPMI_CAP_OFFSET_UNIT;
 
-		/*
-		 * Process TPMI_INFO to get PCI device to CPU package ID.
-		 * Device nodes for TPMI features are not created in this
-		 * for loop. So, the mapping information will be available
-		 * when actual device nodes created outside this
-		 * loop via tpmi_create_devices().
-		 */
+		 
 		if (pfs->pfs_header.tpmi_id == TPMI_INFO_ID)
 			tpmi_process_info(tpmi_info, pfs);
 
@@ -747,12 +632,7 @@ static int intel_vsec_tpmi_init(struct auxiliary_device *auxdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Allow debugfs when security policy allows. Everything this debugfs
-	 * interface provides, can also be done via /dev/mem access. If
-	 * /dev/mem interface is locked, don't allow debugfs to present any
-	 * information. Also check for CAP_SYS_RAWIO as /dev/mem interface.
-	 */
+	 
 	if (!security_locked_down(LOCKDOWN_DEV_MEM) && capable(CAP_SYS_RAWIO))
 		tpmi_dbgfs_register(tpmi_info);
 

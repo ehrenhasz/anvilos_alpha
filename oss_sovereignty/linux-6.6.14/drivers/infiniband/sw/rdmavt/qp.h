@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef DEF_RVTQP_H
 #define DEF_RVTQP_H
@@ -27,4 +25,4 @@ int rvt_wss_init(struct rvt_dev_info *rdi);
 void rvt_wss_exit(struct rvt_dev_info *rdi);
 int rvt_alloc_rq(struct rvt_rq *rq, u32 size, int node,
 		 struct ib_udata *udata);
-#endif          /* DEF_RVTQP_H */
+#endif           

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/clocksource.h>
 #include <linux/highmem.h>
@@ -92,24 +62,7 @@ static bool mlx5_modify_mtutc_allowed(struct mlx5_core_dev *mdev)
 
 static u32 mlx5_ptp_shift_constant(u32 dev_freq_khz)
 {
-	/* Optimal shift constant leads to corrections above just 1 scaled ppm.
-	 *
-	 * Two sets of equations are needed to derive the optimal shift
-	 * constant for the cyclecounter.
-	 *
-	 *    dev_freq_khz * 1000 / 2^shift_constant = 1 scaled_ppm
-	 *    ppb = scaled_ppm * 1000 / 2^16
-	 *
-	 * Using the two equations together
-	 *
-	 *    dev_freq_khz * 1000 / 1 scaled_ppm = 2^shift_constant
-	 *    dev_freq_khz * 2^16 / 1 ppb = 2^shift_constant
-	 *    dev_freq_khz = 2^(shift_constant - 16)
-	 *
-	 * then yields
-	 *
-	 *    shift_constant = ilog2(dev_freq_khz) + 16
-	 */
+	 
 
 	return min(ilog2(dev_freq_khz) + 16,
 		   ilog2((U32_MAX / NSEC_PER_MSEC) * dev_freq_khz));
@@ -163,7 +116,7 @@ static u64 mlx5_read_time(struct mlx5_core_dev *dev,
 	timer_h1 = ioread32be(real_time ? &dev->iseg->real_time_h :
 			      &dev->iseg->internal_timer_h);
 	if (timer_h != timer_h1) {
-		/* wrap around */
+		 
 		ptp_read_system_prets(sts);
 		timer_l = ioread32be(real_time ? &dev->iseg->real_time_l :
 				     &dev->iseg->internal_timer_l);
@@ -344,7 +297,7 @@ static int mlx5_ptp_adjtime_real_time(struct mlx5_core_dev *mdev, s64 delta)
 	if (!mlx5_modify_mtutc_allowed(mdev))
 		return 0;
 
-	/* HW time adjustment range is checked. If out of range, settime instead */
+	 
 	if (!mlx5_is_mtutc_time_adj_cap(mdev, delta)) {
 		struct timespec64 ts;
 		s64 ns;
@@ -457,14 +410,14 @@ static int mlx5_extts_configure(struct ptp_clock_info *ptp,
 	if (!MLX5_PPS_CAP(mdev))
 		return -EOPNOTSUPP;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 				PTP_RISING_EDGE |
 				PTP_FALLING_EDGE |
 				PTP_STRICT_FLAGS))
 		return -EOPNOTSUPP;
 
-	/* Reject requests to enable time stamping on both edges. */
+	 
 	if ((rq->extts.flags & PTP_STRICT_FLAGS) &&
 	    (rq->extts.flags & PTP_ENABLE_FEATURE) &&
 	    (rq->extts.flags & PTP_EXTTS_EDGES) == PTP_EXTTS_EDGES)
@@ -571,9 +524,7 @@ static int mlx5_perout_conf_out_pulse_duration(struct mlx5_core_dev *mdev,
 		ts.tv_nsec = rq->perout.on.nsec;
 		out_pulse_duration = (u32)timespec64_to_ns(&ts);
 	} else {
-		/* out_pulse_duration_ns should be up to 50% of the
-		 * pulse period as default
-		 */
+		 
 		ts.tv_sec = rq->perout.period.sec;
 		ts.tv_nsec = rq->perout.period.nsec;
 		out_pulse_duration = (u32)timespec64_to_ns(&ts) >> 1;
@@ -646,7 +597,7 @@ static int mlx5_perout_configure(struct ptp_clock_info *ptp,
 	if (!MLX5_PPS_CAP(mdev))
 		return -EOPNOTSUPP;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (mlx5_perout_verify_flags(mdev, rq->perout.flags))
 		return -EOPNOTSUPP;
 
@@ -910,7 +861,7 @@ static int mlx5_pps_event(struct notifier_block *nb,
 		} else {
 			ptp_event.type = PTP_CLOCK_EXTTS;
 		}
-		/* TODOL clock->ptp can be NULL if ptp_clock_register fails */
+		 
 		ptp_clock_event(clock->ptp, &ptp_event);
 		break;
 	case PTP_PF_PEROUT:
@@ -955,13 +906,7 @@ static void mlx5_init_overflow_period(struct mlx5_clock *clock)
 	u64 frac = 0;
 	u64 ns;
 
-	/* Calculate period in seconds to call the overflow watchdog - to make
-	 * sure counter is checked at least twice every wrap around.
-	 * The period is calculated as the minimum between max HW cycles count
-	 * (The clock source mask) and max amount of cycles that can be
-	 * multiplied by clock multiplier where the result doesn't exceed
-	 * 64bits.
-	 */
+	 
 	overflow_cycles = div64_u64(~0ULL >> 1, timer->cycles.mult);
 	overflow_cycles = min(overflow_cycles, div_u64(timer->cycles.mask, 3));
 
@@ -1045,10 +990,10 @@ void mlx5_init_clock(struct mlx5_core_dev *mdev)
 	mlx5_init_timer_clock(mdev);
 	INIT_WORK(&clock->pps_info.out_work, mlx5_pps_out);
 
-	/* Configure the PHC */
+	 
 	clock->ptp_info = mlx5_ptp_clock_info;
 
-	/* Initialize 1PPS data structures */
+	 
 	mlx5_init_pps(mdev);
 
 	clock->ptp = ptp_clock_register(&clock->ptp_info,

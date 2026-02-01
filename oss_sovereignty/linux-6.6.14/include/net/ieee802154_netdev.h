@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * An interface between IEEE802.15.4 device and rest of the kernel.
- *
- * Copyright (C) 2007-2012 Siemens AG
- *
- * Written by:
- * Pavel Smolenskiy <pavel.smolenskiy@gmail.com>
- * Maxim Gorbachyov <maxim.gorbachev@siemens.com>
- * Maxim Osipov <maxim.osipov@siemens.com>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+ 
+ 
 
 #ifndef IEEE802154_NETDEVICE_H
 #define IEEE802154_NETDEVICE_H
@@ -163,32 +152,20 @@ struct ieee802154_beacon_req_frame {
 	struct ieee802154_mac_cmd_pl mac_pl;
 };
 
-/* pushes hdr onto the skb. fields of hdr->fc that can be calculated from
- * the contents of hdr will be, and the actual value of those bits in
- * hdr->fc will be ignored. this includes the INTRA_PAN bit and the frame
- * version, if SECEN is set.
- */
+ 
 int ieee802154_hdr_push(struct sk_buff *skb, struct ieee802154_hdr *hdr);
 
-/* pulls the entire 802.15.4 header off of the skb, including the security
- * header, and performs pan id decompression
- */
+ 
 int ieee802154_hdr_pull(struct sk_buff *skb, struct ieee802154_hdr *hdr);
 
-/* parses the frame control, sequence number of address fields in a given skb
- * and stores them into hdr, performing pan id decompression and length checks
- * to be suitable for use in header_ops.parse
- */
+ 
 int ieee802154_hdr_peek_addrs(const struct sk_buff *skb,
 			      struct ieee802154_hdr *hdr);
 
-/* parses the full 802.15.4 header a given skb and stores them into hdr,
- * performing pan id decompression and length checks to be suitable for use in
- * header_ops.parse
- */
+ 
 int ieee802154_hdr_peek(const struct sk_buff *skb, struct ieee802154_hdr *hdr);
 
-/* pushes/pulls various frame types into/from an skb */
+ 
 int ieee802154_beacon_push(struct sk_buff *skb,
 			   struct ieee802154_beacon_frame *beacon);
 int ieee802154_mac_cmd_push(struct sk_buff *skb, void *frame,
@@ -318,10 +295,7 @@ static inline void ieee802154_addr_to_sa(struct ieee802154_addr_sa *sa,
 	}
 }
 
-/*
- * A control block of skb passed between the ARPHRD_IEEE802154 device
- * and other stack parts.
- */
+ 
 struct ieee802154_mac_cb {
 	u8 lqi;
 	u8 type;
@@ -420,14 +394,9 @@ struct ieee802154_llsec_ops {
 			  struct ieee802154_llsec_table **t);
 	void (*unlock_table)(struct net_device *dev);
 };
-/*
- * This should be located at net_device->ml_priv
- *
- * get_phy should increment the reference counting on returned phy.
- * Use wpan_wpy_put to put that reference.
- */
+ 
 struct ieee802154_mlme_ops {
-	/* The following fields are optional (can be NULL). */
+	 
 
 	int (*assoc_req)(struct net_device *dev,
 			struct ieee802154_addr *addr,

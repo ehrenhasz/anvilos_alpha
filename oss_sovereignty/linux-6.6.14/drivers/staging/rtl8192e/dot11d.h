@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information:
- * wlanfae <wlanfae@realtek.com>
- ******************************************************************************/
+ 
+ 
 #ifndef __INC_DOT11D_H
 #define __INC_DOT11D_H
 
@@ -22,15 +17,7 @@ enum dot11d_state {
 	DOT11D_STATE_DONE,
 };
 
-/**
- * struct rt_dot11d_info * @country_len: value greater than 0 if
- *		  @country_buffer contains valid country information element.
- * @channel_map: holds channel values
- *		0 - invalid,
- *		1 - valid (active scan),
- *		2 - valid (passive scan)
- * @country_src_addr - Source AP of the country IE
- */
+ 
 
 struct rt_dot11d_info {
 	bool enabled;

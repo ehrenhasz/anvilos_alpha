@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2018-2020 Broadcom.
- */
+
+ 
 
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -9,14 +7,14 @@
 
 #include "bcm_vk.h"
 
-/* TTYVK base offset is 0x30000 into BAR1 */
+ 
 #define BAR1_TTYVK_BASE_OFFSET	0x300000
-/* Each TTYVK channel (TO or FROM) is 0x10000 */
+ 
 #define BAR1_TTYVK_CHAN_OFFSET	0x100000
-/* Each TTYVK channel has TO and FROM, hence the * 2 */
+ 
 #define BAR1_TTYVK_BASE(index)	(BAR1_TTYVK_BASE_OFFSET + \
 				 ((index) * BAR1_TTYVK_CHAN_OFFSET * 2))
-/* TO TTYVK channel base comes before FROM for each index */
+ 
 #define TO_TTYK_BASE(index)	BAR1_TTYVK_BASE(index)
 #define FROM_TTYK_BASE(index)	(BAR1_TTYVK_BASE(index) + \
 				 BAR1_TTYVK_CHAN_OFFSET)
@@ -38,7 +36,7 @@ struct bcm_vk_tty_chan {
 
 #define VK_BAR0_REGSEG_TTY_DB_OFFSET	0x86c
 
-/* Poll every 1/10 of second - temp hack till we use MSI interrupt */
+ 
 #define SERIAL_TIMER_VALUE (HZ / 10)
 
 static void bcm_vk_tty_poll(struct timer_list *t)
@@ -74,20 +72,20 @@ static void bcm_vk_tty_wq_handler(struct work_struct *work)
 
 	for (i = 0; i < BCM_VK_NUM_TTY; i++) {
 		count = 0;
-		/* Check the card status that the tty channel is ready */
+		 
 		if ((card_status & BIT(i)) == 0)
 			continue;
 
 		vktty = &vk->tty[i];
 
-		/* Don't increment read index if tty app is closed */
+		 
 		if (!vktty->is_opened)
 			continue;
 
-		/* Fetch the wr offset in buffer from VK */
+		 
 		wr = vkread32(vk, BAR_1, VK_BAR_CHAN_WR(vktty, from));
 
-		/* safe to ignore until bar read gives proper size */
+		 
 		if (vktty->from_size == 0)
 			continue;
 
@@ -95,14 +93,11 @@ static void bcm_vk_tty_wq_handler(struct work_struct *work)
 			dev_err(&vk->pdev->dev,
 				"ERROR: wq handler ttyVK%d wr:0x%x > 0x%x\n",
 				i, wr, vktty->from_size);
-			/* Need to signal and close device in this case */
+			 
 			continue;
 		}
 
-		/*
-		 * Simple read of circular buffer and
-		 * insert into tty flip buffer
-		 */
+		 
 		while (vk->tty[i].rd != wr) {
 			c = vkread8(vk, BAR_1,
 				    VK_BAR_CHAN_DATA(vktty, from, vktty->rd));
@@ -116,7 +111,7 @@ static void bcm_vk_tty_wq_handler(struct work_struct *work)
 		if (count) {
 			tty_flip_buffer_push(&vktty->port);
 
-			/* Update read offset from shadow register to card */
+			 
 			vkwrite32(vk, vktty->rd, BAR_1,
 				  VK_BAR_CHAN_RD(vktty, from));
 		}
@@ -130,7 +125,7 @@ static int bcm_vk_tty_open(struct tty_struct *tty, struct file *file)
 	struct bcm_vk_tty *vktty;
 	int index;
 
-	/* initialize the pointer in case something fails */
+	 
 	tty->driver_data = NULL;
 
 	vk = (struct bcm_vk *)dev_get_drvdata(tty->dev);
@@ -145,15 +140,12 @@ static int bcm_vk_tty_open(struct tty_struct *tty, struct file *file)
 	vktty->to_offset = TO_TTYK_BASE(index);
 	vktty->from_offset = FROM_TTYK_BASE(index);
 
-	/* Do not allow tty device to be opened if tty on card not ready */
+	 
 	card_status = vkread32(vk, BAR_0, BAR_CARD_STATUS);
 	if (BCM_VK_INTF_IS_DOWN(card_status) || ((card_status & BIT(index)) == 0))
 		return -EBUSY;
 
-	/*
-	 * Get shadow registers of the buffer sizes and the "to" write offset
-	 * and "from" read offset
-	 */
+	 
 	vktty->to_size = vkread32(vk, BAR_1, VK_BAR_CHAN_SIZE(vktty, to));
 	vktty->wr = vkread32(vk, BAR_1,  VK_BAR_CHAN_WR(vktty, to));
 	vktty->from_size = vkread32(vk, BAR_1, VK_BAR_CHAN_SIZE(vktty, from));
@@ -198,7 +190,7 @@ static ssize_t bcm_vk_tty_write(struct tty_struct *tty, const u8 *buffer,
 	vk = dev_get_drvdata(tty->dev);
 	vktty = &vk->tty[index];
 
-	/* Simple write each byte to circular buffer */
+	 
 	for (i = 0; i < count; i++) {
 		vkwrite8(vk, buffer[i], BAR_1,
 			 VK_BAR_CHAN_DATA(vktty, to, vktty->wr));
@@ -206,7 +198,7 @@ static ssize_t bcm_vk_tty_write(struct tty_struct *tty, const u8 *buffer,
 		if (vktty->wr >= vktty->to_size)
 			vktty->wr = 0;
 	}
-	/* Update write offset from shadow register to card */
+	 
 	vkwrite32(vk, vktty->wr, BAR_1, VK_BAR_CHAN_WR(vktty, to));
 	bcm_vk_tty_doorbell(vk, 0);
 
@@ -240,10 +232,10 @@ int bcm_vk_tty_init(struct bcm_vk *vk, char *name)
 	if (IS_ERR(tty_drv))
 		return PTR_ERR(tty_drv);
 
-	/* Save struct tty_driver for uninstalling the device */
+	 
 	vk->tty_drv = tty_drv;
 
-	/* initialize the tty driver */
+	 
 	tty_drv->driver_name = KBUILD_MODNAME;
 	tty_drv->name = kstrdup(name, GFP_KERNEL);
 	if (!tty_drv->name) {
@@ -255,7 +247,7 @@ int bcm_vk_tty_init(struct bcm_vk *vk, char *name)
 	tty_drv->init_termios = tty_std_termios;
 	tty_set_operations(tty_drv, &serial_ops);
 
-	/* register the tty driver */
+	 
 	err = tty_register_driver(tty_drv);
 	if (err) {
 		dev_err(dev, "tty_register_driver failed\n");

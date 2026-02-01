@@ -1,35 +1,18 @@
-/* Read-write locks (native Windows implementation).
-   Copyright (C) 2005-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2005.
-   Based on GCC's gthr-win32.h.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include "windows-rwlock.h"
 
 #include <errno.h>
 #include <stdlib.h>
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 #undef CreateEvent
 #define CreateEvent CreateEventA
 
-/* In this file, the waitqueues are implemented as circular arrays.  */
+ 
 #define glwthread_waitqueue_t glwthread_carray_waitqueue_t
 
 static void
@@ -41,8 +24,7 @@ glwthread_waitqueue_init (glwthread_waitqueue_t *wq)
   wq->offset = 0;
 }
 
-/* Enqueues the current thread, represented by an event, in a wait queue.
-   Returns INVALID_HANDLE_VALUE if an allocation failure occurs.  */
+ 
 static HANDLE
 glwthread_waitqueue_add (glwthread_waitqueue_t *wq)
 {
@@ -55,10 +37,9 @@ glwthread_waitqueue_add (glwthread_waitqueue_t *wq)
       HANDLE *new_array =
         (HANDLE *) realloc (wq->array, new_alloc * sizeof (HANDLE));
       if (new_array == NULL)
-        /* No more memory.  */
+         
         return INVALID_HANDLE_VALUE;
-      /* Now is a good opportunity to rotate the array so that its contents
-         starts at offset 0.  */
+       
       if (wq->offset > 0)
         {
           unsigned int old_count = wq->count;
@@ -78,11 +59,10 @@ glwthread_waitqueue_add (glwthread_waitqueue_t *wq)
       wq->array = new_array;
       wq->alloc = new_alloc;
     }
-  /* Whether the created event is a manual-reset one or an auto-reset one,
-     does not matter, since we will wait on it only once.  */
+   
   event = CreateEvent (NULL, TRUE, FALSE, NULL);
   if (event == INVALID_HANDLE_VALUE)
-    /* No way to allocate an event.  */
+     
     return INVALID_HANDLE_VALUE;
   index = wq->offset + wq->count;
   if (index >= wq->alloc)
@@ -92,7 +72,7 @@ glwthread_waitqueue_add (glwthread_waitqueue_t *wq)
   return event;
 }
 
-/* Notifies the first thread from a wait queue and dequeues it.  */
+ 
 static void
 glwthread_waitqueue_notify_first (glwthread_waitqueue_t *wq)
 {
@@ -103,7 +83,7 @@ glwthread_waitqueue_notify_first (glwthread_waitqueue_t *wq)
     wq->offset = 0;
 }
 
-/* Notifies all threads from a wait queue and dequeues them all.  */
+ 
 static void
 glwthread_waitqueue_notify_all (glwthread_waitqueue_t *wq)
 {
@@ -136,46 +116,40 @@ glwthread_rwlock_rdlock (glwthread_rwlock_t *lock)
   if (!lock->guard.done)
     {
       if (InterlockedIncrement (&lock->guard.started) == 0)
-        /* This thread is the first one to need this lock.  Initialize it.  */
+         
         glwthread_rwlock_init (lock);
       else
         {
-          /* Don't let lock->guard.started grow and wrap around.  */
+           
           InterlockedDecrement (&lock->guard.started);
-          /* Yield the CPU while waiting for another thread to finish
-             initializing this lock.  */
+           
           while (!lock->guard.done)
             Sleep (0);
         }
     }
   EnterCriticalSection (&lock->lock);
-  /* Test whether only readers are currently running, and whether the runcount
-     field will not overflow, and whether no writer is waiting.  The latter
-     condition is because POSIX recommends that "write locks shall take
-     precedence over read locks", to avoid "writer starvation".  */
+   
   if (!(lock->runcount + 1 > 0 && lock->waiting_writers.count == 0))
     {
-      /* This thread has to wait for a while.  Enqueue it among the
-         waiting_readers.  */
+       
       HANDLE event = glwthread_waitqueue_add (&lock->waiting_readers);
       if (event != INVALID_HANDLE_VALUE)
         {
           DWORD result;
           LeaveCriticalSection (&lock->lock);
-          /* Wait until another thread signals this event.  */
+           
           result = WaitForSingleObject (event, INFINITE);
           if (result == WAIT_FAILED || result == WAIT_TIMEOUT)
             abort ();
           CloseHandle (event);
-          /* The thread which signalled the event already did the bookkeeping:
-             removed us from the waiting_readers, incremented lock->runcount.  */
+           
           if (!(lock->runcount > 0))
             abort ();
           return 0;
         }
       else
         {
-          /* Allocation failure.  Weird.  */
+           
           do
             {
               LeaveCriticalSection (&lock->lock);
@@ -196,43 +170,40 @@ glwthread_rwlock_wrlock (glwthread_rwlock_t *lock)
   if (!lock->guard.done)
     {
       if (InterlockedIncrement (&lock->guard.started) == 0)
-        /* This thread is the first one to need this lock.  Initialize it.  */
+         
         glwthread_rwlock_init (lock);
       else
         {
-          /* Don't let lock->guard.started grow and wrap around.  */
+           
           InterlockedDecrement (&lock->guard.started);
-          /* Yield the CPU while waiting for another thread to finish
-             initializing this lock.  */
+           
           while (!lock->guard.done)
             Sleep (0);
         }
     }
   EnterCriticalSection (&lock->lock);
-  /* Test whether no readers or writers are currently running.  */
+   
   if (!(lock->runcount == 0))
     {
-      /* This thread has to wait for a while.  Enqueue it among the
-         waiting_writers.  */
+       
       HANDLE event = glwthread_waitqueue_add (&lock->waiting_writers);
       if (event != INVALID_HANDLE_VALUE)
         {
           DWORD result;
           LeaveCriticalSection (&lock->lock);
-          /* Wait until another thread signals this event.  */
+           
           result = WaitForSingleObject (event, INFINITE);
           if (result == WAIT_FAILED || result == WAIT_TIMEOUT)
             abort ();
           CloseHandle (event);
-          /* The thread which signalled the event already did the bookkeeping:
-             removed us from the waiting_writers, set lock->runcount = -1.  */
+           
           if (!(lock->runcount == -1))
             abort ();
           return 0;
         }
       else
         {
-          /* Allocation failure.  Weird.  */
+           
           do
             {
               LeaveCriticalSection (&lock->lock);
@@ -242,7 +213,7 @@ glwthread_rwlock_wrlock (glwthread_rwlock_t *lock)
           while (!(lock->runcount == 0));
         }
     }
-  lock->runcount--; /* runcount becomes -1 */
+  lock->runcount--;  
   LeaveCriticalSection (&lock->lock);
   return 0;
 }
@@ -253,28 +224,23 @@ glwthread_rwlock_tryrdlock (glwthread_rwlock_t *lock)
   if (!lock->guard.done)
     {
       if (InterlockedIncrement (&lock->guard.started) == 0)
-        /* This thread is the first one to need this lock.  Initialize it.  */
+         
         glwthread_rwlock_init (lock);
       else
         {
-          /* Don't let lock->guard.started grow and wrap around.  */
+           
           InterlockedDecrement (&lock->guard.started);
-          /* Yield the CPU while waiting for another thread to finish
-             initializing this lock.  */
+           
           while (!lock->guard.done)
             Sleep (0);
         }
     }
-  /* It's OK to wait for this critical section, because it is never taken for a
-     long time.  */
+   
   EnterCriticalSection (&lock->lock);
-  /* Test whether only readers are currently running, and whether the runcount
-     field will not overflow, and whether no writer is waiting.  The latter
-     condition is because POSIX recommends that "write locks shall take
-     precedence over read locks", to avoid "writer starvation".  */
+   
   if (!(lock->runcount + 1 > 0 && lock->waiting_writers.count == 0))
     {
-      /* This thread would have to wait for a while.  Return instead.  */
+       
       LeaveCriticalSection (&lock->lock);
       return EBUSY;
     }
@@ -289,29 +255,27 @@ glwthread_rwlock_trywrlock (glwthread_rwlock_t *lock)
   if (!lock->guard.done)
     {
       if (InterlockedIncrement (&lock->guard.started) == 0)
-        /* This thread is the first one to need this lock.  Initialize it.  */
+         
         glwthread_rwlock_init (lock);
       else
         {
-          /* Don't let lock->guard.started grow and wrap around.  */
+           
           InterlockedDecrement (&lock->guard.started);
-          /* Yield the CPU while waiting for another thread to finish
-             initializing this lock.  */
+           
           while (!lock->guard.done)
             Sleep (0);
         }
     }
-  /* It's OK to wait for this critical section, because it is never taken for a
-     long time.  */
+   
   EnterCriticalSection (&lock->lock);
-  /* Test whether no readers or writers are currently running.  */
+   
   if (!(lock->runcount == 0))
     {
-      /* This thread would have to wait for a while.  Return instead.  */
+       
       LeaveCriticalSection (&lock->lock);
       return EBUSY;
     }
-  lock->runcount--; /* runcount becomes -1 */
+  lock->runcount--;  
   LeaveCriticalSection (&lock->lock);
   return 0;
 }
@@ -324,14 +288,14 @@ glwthread_rwlock_unlock (glwthread_rwlock_t *lock)
   EnterCriticalSection (&lock->lock);
   if (lock->runcount < 0)
     {
-      /* Drop a writer lock.  */
+       
       if (!(lock->runcount == -1))
         abort ();
       lock->runcount = 0;
     }
   else
     {
-      /* Drop a reader lock.  */
+       
       if (!(lock->runcount > 0))
         {
           LeaveCriticalSection (&lock->lock);
@@ -341,17 +305,16 @@ glwthread_rwlock_unlock (glwthread_rwlock_t *lock)
     }
   if (lock->runcount == 0)
     {
-      /* POSIX recommends that "write locks shall take precedence over read
-         locks", to avoid "writer starvation".  */
+       
       if (lock->waiting_writers.count > 0)
         {
-          /* Wake up one of the waiting writers.  */
+           
           lock->runcount--;
           glwthread_waitqueue_notify_first (&lock->waiting_writers);
         }
       else
         {
-          /* Wake up all waiting readers.  */
+           
           lock->runcount += lock->waiting_readers.count;
           glwthread_waitqueue_notify_all (&lock->waiting_readers);
         }

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * symlink.c - operations for configfs symlinks.
- *
- * Based on sysfs:
- * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
- *
- * configfs Copyright (C) 2005 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -16,7 +9,7 @@
 #include <linux/configfs.h>
 #include "configfs_internal.h"
 
-/* Protects attachments of new symlinks */
+ 
 DEFINE_MUTEX(configfs_symlink_mutex);
 
 static int item_depth(struct config_item * item)
@@ -46,7 +39,7 @@ static void fill_item_path(struct config_item * item, char * buffer, int length)
 	for (p = item; p && !configfs_is_root(p); p = p->ci_parent) {
 		int cur = strlen(config_item_name(p));
 
-		/* back up enough to print this bus id with '/' */
+		 
 		length -= cur;
 		memcpy(buffer + length, config_item_name(p), cur);
 		*(buffer + --length) = '/';
@@ -148,10 +141,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 	const struct config_item_type *type;
 
 	sd = dentry->d_parent->d_fsdata;
-	/*
-	 * Fake invisibility if dir belongs to a group/default groups hierarchy
-	 * being attached
-	 */
+	 
 	if (!configfs_dirent_is_ready(sd))
 		return -ENOENT;
 
@@ -163,30 +153,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 	    !type->ct_item_ops->allow_link)
 		goto out_put;
 
-	/*
-	 * This is really sick.  What they wanted was a hybrid of
-	 * link(2) and symlink(2) - they wanted the target resolved
-	 * at syscall time (as link(2) would've done), be a directory
-	 * (which link(2) would've refused to do) *AND* be a deep
-	 * fucking magic, making the target busy from rmdir POV.
-	 * symlink(2) is nothing of that sort, and the locking it
-	 * gets matches the normal symlink(2) semantics.  Without
-	 * attempts to resolve the target (which might very well
-	 * not even exist yet) done prior to locking the parent
-	 * directory.  This perversion, OTOH, needs to resolve
-	 * the target, which would lead to obvious deadlocks if
-	 * attempted with any directories locked.
-	 *
-	 * Unfortunately, that garbage is userland ABI and we should've
-	 * said "no" back in 2005.  Too late now, so we get to
-	 * play very ugly games with locking.
-	 *
-	 * Try *ANYTHING* of that sort in new code, and you will
-	 * really regret it.  Just ask yourself - what could a BOFH
-	 * do to me and do I want to find it out first-hand?
-	 *
-	 *  AV, a thoroughly annoyed bastard.
-	 */
+	 
 	inode_unlock(dir);
 	ret = get_target(symname, &path, &target_item, dentry->d_sb);
 	inode_lock(dir);
@@ -224,7 +191,7 @@ int configfs_unlink(struct inode *dir, struct dentry *dentry)
 	const struct config_item_type *type;
 	int ret;
 
-	ret = -EPERM;  /* What lack-of-symlink returns */
+	ret = -EPERM;   
 	if (!(sd->s_type & CONFIGFS_ITEM_LINK))
 		goto out;
 
@@ -240,11 +207,7 @@ int configfs_unlink(struct inode *dir, struct dentry *dentry)
 	dput(dentry);
 	configfs_put(sd);
 
-	/*
-	 * drop_link() must be called before
-	 * decrementing target's ->s_links, so that the order of
-	 * drop_link(this, target) and drop_item(target) is preserved.
-	 */
+	 
 	if (type && type->ct_item_ops &&
 	    type->ct_item_ops->drop_link)
 		type->ct_item_ops->drop_link(parent_item,

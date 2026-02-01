@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * This is i.MX low power i2c controller driver.
- *
- * Copyright 2016 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -25,22 +21,22 @@
 
 #define DRIVER_NAME "imx-lpi2c"
 
-#define LPI2C_PARAM	0x04	/* i2c RX/TX FIFO size */
-#define LPI2C_MCR	0x10	/* i2c contrl register */
-#define LPI2C_MSR	0x14	/* i2c status register */
-#define LPI2C_MIER	0x18	/* i2c interrupt enable */
-#define LPI2C_MCFGR0	0x20	/* i2c master configuration */
-#define LPI2C_MCFGR1	0x24	/* i2c master configuration */
-#define LPI2C_MCFGR2	0x28	/* i2c master configuration */
-#define LPI2C_MCFGR3	0x2C	/* i2c master configuration */
-#define LPI2C_MCCR0	0x48	/* i2c master clk configuration */
-#define LPI2C_MCCR1	0x50	/* i2c master clk configuration */
-#define LPI2C_MFCR	0x58	/* i2c master FIFO control */
-#define LPI2C_MFSR	0x5C	/* i2c master FIFO status */
-#define LPI2C_MTDR	0x60	/* i2c master TX data register */
-#define LPI2C_MRDR	0x70	/* i2c master RX data register */
+#define LPI2C_PARAM	0x04	 
+#define LPI2C_MCR	0x10	 
+#define LPI2C_MSR	0x14	 
+#define LPI2C_MIER	0x18	 
+#define LPI2C_MCFGR0	0x20	 
+#define LPI2C_MCFGR1	0x24	 
+#define LPI2C_MCFGR2	0x28	 
+#define LPI2C_MCFGR3	0x2C	 
+#define LPI2C_MCCR0	0x48	 
+#define LPI2C_MCCR1	0x50	 
+#define LPI2C_MFCR	0x58	 
+#define LPI2C_MFSR	0x5C	 
+#define LPI2C_MTDR	0x60	 
+#define LPI2C_MRDR	0x70	 
 
-/* i2c command */
+ 
 #define TRAN_DATA	0X00
 #define RECV_DATA	0X01
 #define GEN_STOP	0X02
@@ -74,14 +70,14 @@
 #define I2C_CLK_RATIO	2
 #define CHUNK_DATA	256
 
-#define I2C_PM_TIMEOUT		10 /* ms */
+#define I2C_PM_TIMEOUT		10  
 
 enum lpi2c_imx_mode {
-	STANDARD,	/* 100+Kbps */
-	FAST,		/* 400+Kbps */
-	FAST_PLUS,	/* 1.0+Mbps */
-	HS,		/* 3.4+Mbps */
-	ULTRA_FAST,	/* 5.0+Mbps */
+	STANDARD,	 
+	FAST,		 
+	FAST_PLUS,	 
+	HS,		 
+	ULTRA_FAST,	 
 };
 
 enum lpi2c_imx_pincfg {
@@ -122,7 +118,7 @@ static int lpi2c_imx_bus_busy(struct lpi2c_imx_struct *lpi2c_imx)
 	while (1) {
 		temp = readl(lpi2c_imx->base + LPI2C_MSR);
 
-		/* check for arbitration lost, clear if set */
+		 
 		if (temp & MSR_ALF) {
 			writel(temp, lpi2c_imx->base + LPI2C_MSR);
 			return -EAGAIN;
@@ -197,7 +193,7 @@ static void lpi2c_imx_stop(struct lpi2c_imx_struct *lpi2c_imx)
 	} while (1);
 }
 
-/* CLKLO = I2C_CLK_RATIO * CLKHI, SETHOLD = CLKHI, DATAVD = CLKHI/2 */
+ 
 static int lpi2c_imx_config(struct lpi2c_imx_struct *lpi2c_imx)
 {
 	u8 prescale, filt, sethold, datavd;
@@ -228,7 +224,7 @@ static int lpi2c_imx_config(struct lpi2c_imx_struct *lpi2c_imx)
 	if (prescale > 7)
 		return -EINVAL;
 
-	/* set MCFGR1: PINCFG, PRESCALE, IGNACK */
+	 
 	if (lpi2c_imx->mode == ULTRA_FAST)
 		pincfg = TWO_PIN_OO;
 	else
@@ -240,11 +236,11 @@ static int lpi2c_imx_config(struct lpi2c_imx_struct *lpi2c_imx)
 
 	writel(temp, lpi2c_imx->base + LPI2C_MCFGR1);
 
-	/* set MCFGR2: FILTSDA, FILTSCL */
+	 
 	temp = (filt << 16) | (filt << 24);
 	writel(temp, lpi2c_imx->base + LPI2C_MCFGR2);
 
-	/* set MCCR: DATAVD, SETHOLD, CLKHI, CLKLO */
+	 
 	sethold = clkhi;
 	datavd = clkhi >> 1;
 	temp = datavd << 24 | sethold << 16 | clkhi << 8 | clklo;
@@ -387,10 +383,7 @@ static void lpi2c_imx_read_rxfifo(struct lpi2c_imx_struct *lpi2c_imx)
 		lpi2c_imx->rx_buf[lpi2c_imx->delivered++] = data & 0xff;
 	} while (1);
 
-	/*
-	 * First byte is the length of remaining packet in the SMBus block
-	 * data read. Add it to msgs->len.
-	 */
+	 
 	if (lpi2c_imx->block_data) {
 		blocklen = lpi2c_imx->rx_buf[0];
 		lpi2c_imx->msglen += blocklen;
@@ -403,10 +396,10 @@ static void lpi2c_imx_read_rxfifo(struct lpi2c_imx_struct *lpi2c_imx)
 		return;
 	}
 
-	/* not finished, still waiting for rx data */
+	 
 	lpi2c_imx_set_rx_watermark(lpi2c_imx);
 
-	/* multiple receive commands */
+	 
 	if (lpi2c_imx->block_data) {
 		lpi2c_imx->block_data = 0;
 		temp = remaining;
@@ -461,7 +454,7 @@ static int lpi2c_imx_xfer(struct i2c_adapter *adapter,
 		if (result)
 			goto disable;
 
-		/* quick smbus */
+		 
 		if (num == 1 && msgs[0].len == 0)
 			goto stop;
 

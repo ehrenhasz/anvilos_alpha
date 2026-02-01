@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2019 Mohammad Rasim <mohammad.rasim96@gmail.com>
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-//
-// Keytable for the Videostrong KII Pro STB remote control
-//
+
+
+
 
 static struct rc_map_table kii_pro[] = {
 	{ 0x59, KEY_POWER },
@@ -22,17 +22,17 @@ static struct rc_map_table kii_pro[] = {
 	{ 0x0b, KEY_NEXTSONG},
 	{ 0x46, KEY_PLAYPAUSE },
 	{ 0x44, KEY_STOP },
-	{ 0x1f, KEY_FAVORITES},	//KEY_F5?
+	{ 0x1f, KEY_FAVORITES},	
 	{ 0x04, KEY_PVR },
 	{ 0x4d, KEY_EPG },
 	{ 0x02, KEY_INFO },
 	{ 0x09, KEY_SUBTITLE },
 	{ 0x01, KEY_AUDIO },
 	{ 0x0d, KEY_HOMEPAGE },
-	{ 0x11, KEY_TV },	// DTV ?
+	{ 0x11, KEY_TV },	
 	{ 0x06, KEY_UP },
 	{ 0x5a, KEY_LEFT },
-	{ 0x1a, KEY_ENTER },	// KEY_OK ?
+	{ 0x1a, KEY_ENTER },	
 	{ 0x1b, KEY_RIGHT },
 	{ 0x16, KEY_DOWN },
 	{ 0x45, KEY_MENU },
@@ -40,9 +40,9 @@ static struct rc_map_table kii_pro[] = {
 	{ 0x13, KEY_VOLUMEUP },
 	{ 0x17, KEY_VOLUMEDOWN },
 	{ 0x58, KEY_APPSELECT },
-	{ 0x12, KEY_VENDOR },	// mouse
-	{ 0x55, KEY_PAGEUP },	// KEY_CHANNELUP ?
-	{ 0x15, KEY_PAGEDOWN },	// KEY_CHANNELDOWN ?
+	{ 0x12, KEY_VENDOR },	
+	{ 0x55, KEY_PAGEUP },	
+	{ 0x15, KEY_PAGEDOWN },	
 	{ 0x52, KEY_1 },
 	{ 0x50, KEY_2 },
 	{ 0x10, KEY_3 },
@@ -52,7 +52,7 @@ static struct rc_map_table kii_pro[] = {
 	{ 0x4e, KEY_7 },
 	{ 0x4c, KEY_8 },
 	{ 0x0c, KEY_9 },
-	{ 0x18, KEY_WWW },	// KEY_F7
+	{ 0x18, KEY_WWW },	
 	{ 0x0f, KEY_0 },
 	{ 0x51, KEY_BACKSPACE },
 };

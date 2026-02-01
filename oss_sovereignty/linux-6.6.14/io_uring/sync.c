@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -42,7 +42,7 @@ int io_sync_file_range(struct io_kiocb *req, unsigned int issue_flags)
 	struct io_sync *sync = io_kiocb_to_cmd(req, struct io_sync);
 	int ret;
 
-	/* sync_file_range always requires a blocking context */
+	 
 	WARN_ON_ONCE(issue_flags & IO_URING_F_NONBLOCK);
 
 	ret = sync_file_range(req->file, sync->off, sync->len, sync->flags);
@@ -73,7 +73,7 @@ int io_fsync(struct io_kiocb *req, unsigned int issue_flags)
 	loff_t end = sync->off + sync->len;
 	int ret;
 
-	/* fsync always requires a blocking context */
+	 
 	WARN_ON_ONCE(issue_flags & IO_URING_F_NONBLOCK);
 
 	ret = vfs_fsync_range(req->file, sync->off, end > 0 ? end : LLONG_MAX,
@@ -101,7 +101,7 @@ int io_fallocate(struct io_kiocb *req, unsigned int issue_flags)
 	struct io_sync *sync = io_kiocb_to_cmd(req, struct io_sync);
 	int ret;
 
-	/* fallocate always requiring blocking context */
+	 
 	WARN_ON_ONCE(issue_flags & IO_URING_F_NONBLOCK);
 
 	ret = vfs_fallocate(req->file, sync->mode, sync->off, sync->len);

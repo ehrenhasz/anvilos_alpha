@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Jie Qiu <jie.qiu@mediatek.com>
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/clk.h>
@@ -154,7 +151,7 @@ struct mtk_hdmi_conf {
 struct mtk_hdmi {
 	struct drm_bridge bridge;
 	struct drm_bridge *next_bridge;
-	struct drm_connector *curr_conn;/* current connector (only valid when 'enabled') */
+	struct drm_connector *curr_conn; 
 	struct device *dev;
 	const struct mtk_hdmi_conf *conf;
 	struct phy *phy;
@@ -237,12 +234,7 @@ static void mtk_hdmi_hw_make_reg_writable(struct mtk_hdmi *hdmi, bool enable)
 {
 	struct arm_smccc_res res;
 
-	/*
-	 * MT8173 HDMI hardware has an output control bit to enable/disable HDMI
-	 * output. This bit can only be controlled in ARM supervisor mode.
-	 * The ARM trusted firmware provides an API for the HDMI driver to set
-	 * this control bit to enable HDMI output in supervisor mode.
-	 */
+	 
 	if (hdmi->conf && hdmi->conf->tz_disabled)
 		regmap_update_bits(hdmi->sys_regmap,
 				   hdmi->sys_offset + HDMI_SYS_CFG20,
@@ -505,7 +497,7 @@ static void mtk_hdmi_hw_audio_config(struct mtk_hdmi *hdmi, bool dst)
 	const u8 mask = HIGH_BIT_RATE | DST_NORMAL_DOUBLE | SACD_DST | DSD_SEL;
 	u8 val;
 
-	/* Disable high bitrate, set DST packet normal/double */
+	 
 	mtk_hdmi_clear_bits(hdmi, GRL_AOUT_CFG, HIGH_BIT_RATE_PACKET_ALIGN);
 
 	if (dst)
@@ -652,22 +644,18 @@ struct hdmi_acr_n {
 	unsigned int n[3];
 };
 
-/* Recommended N values from HDMI specification, tables 7-1 to 7-3 */
+ 
 static const struct hdmi_acr_n hdmi_rec_n_table[] = {
-	/* Clock, N: 32kHz 44.1kHz 48kHz */
+	 
 	{  25175, {  4576,  7007,  6864 } },
 	{  74176, { 11648, 17836, 11648 } },
 	{ 148352, { 11648,  8918,  5824 } },
 	{ 296703, {  5824,  4459,  5824 } },
 	{ 297000, {  3072,  4704,  5120 } },
-	{      0, {  4096,  6272,  6144 } }, /* all other TMDS clocks */
+	{      0, {  4096,  6272,  6144 } },  
 };
 
-/**
- * hdmi_recommended_n() - Return N value recommended by HDMI specification
- * @freq: audio sample rate in Hz
- * @clock: rounded TMDS clock in kHz
- */
+ 
 static unsigned int hdmi_recommended_n(unsigned int freq, unsigned int clock)
 {
 	const struct hdmi_acr_n *recommended;
@@ -703,13 +691,13 @@ static unsigned int hdmi_mode_clock_to_hz(unsigned int clock)
 {
 	switch (clock) {
 	case 25175:
-		return 25174825;	/* 25.2/1.001 MHz */
+		return 25174825;	 
 	case 74176:
-		return 74175824;	/* 74.25/1.001 MHz */
+		return 74175824;	 
 	case 148352:
-		return 148351648;	/* 148.5/1.001 MHz */
+		return 148351648;	 
 	case 296703:
-		return 296703297;	/* 297/1.001 MHz */
+		return 296703297;	 
 	default:
 		return clock * 1000;
 	}
@@ -838,7 +826,7 @@ static int mtk_hdmi_video_change_vpll(struct mtk_hdmi *hdmi, u32 clock)
 	unsigned long rate;
 	int ret;
 
-	/* The DPI driver already should have set TVDPLL to the correct rate */
+	 
 	ret = clk_set_rate(hdmi->clk[MTK_HDMI_CLK_HDMI_PLL], clock);
 	if (ret) {
 		dev_err(hdmi->dev, "Failed to set PLL to %u Hz: %d\n", clock,
@@ -1254,9 +1242,7 @@ static void mtk_hdmi_hpd_event(bool hpd, struct device *dev)
 	}
 }
 
-/*
- * Bridge callbacks
- */
+ 
 
 static enum drm_connector_status mtk_hdmi_bridge_detect(struct drm_bridge *bridge)
 {
@@ -1391,7 +1377,7 @@ static void mtk_hdmi_bridge_atomic_enable(struct drm_bridge *bridge,
 	struct drm_atomic_state *state = old_state->base.state;
 	struct mtk_hdmi *hdmi = hdmi_ctx_from_bridge(bridge);
 
-	/* Retrieve the connector through the atomic state. */
+	 
 	hdmi->curr_conn = drm_atomic_get_new_connector_for_encoder(state,
 								   bridge->encoder);
 
@@ -1439,7 +1425,7 @@ static int mtk_hdmi_dt_parse_pdata(struct mtk_hdmi *hdmi,
 		return ret;
 	}
 
-	/* The CEC module handles HDMI hotplug detection */
+	 
 	cec_np = of_get_compatible_child(np->parent, "mediatek,mt8173-cec");
 	if (!cec_np) {
 		dev_err(dev, "Failed to find CEC node\n");
@@ -1456,11 +1442,7 @@ static int mtk_hdmi_dt_parse_pdata(struct mtk_hdmi *hdmi,
 	of_node_put(cec_np);
 	hdmi->cec_dev = &cec_pdev->dev;
 
-	/*
-	 * The mediatek,syscon-hdmi property contains a phandle link to the
-	 * MMSYS_CONFIG device and the register offset of the HDMI_SYS_CFG
-	 * registers it contains.
-	 */
+	 
 	regmap = syscon_regmap_lookup_by_phandle(np, "mediatek,syscon-hdmi");
 	ret = of_property_read_u32_index(np, "mediatek,syscon-hdmi", 1,
 					 &hdmi->sys_offset);
@@ -1521,9 +1503,7 @@ put_device:
 	return ret;
 }
 
-/*
- * HDMI audio codec callbacks
- */
+ 
 
 static int mtk_hdmi_audio_hw_params(struct device *dev, void *data,
 				    struct hdmi_codec_daifmt *daifmt,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -13,34 +11,7 @@
 #include "lsdc_drv.h"
 #include "lsdc_output.h"
 
-/*
- * The display controller in LS7A2000 has two display pipes
- * Display pipe 0 is attached with a built-in transparent VGA encoder and
- * a built-in HDMI encoder.
- * Display pipe 1 has only one built-in HDMI encoder connected.
- *       ______________________                          _____________
- *      |             +-----+  |                        |             |
- *      | CRTC0 -+--> | VGA |  ----> VGA Connector ---> | VGA Monitor |<---+
- *      |        |    +-----+  |                        |_____________|    |
- *      |        |             |                         ______________    |
- *      |        |    +------+ |                        |              |   |
- *      |        +--> | HDMI | ----> HDMI Connector --> | HDMI Monitor |<--+
- *      |             +------+ |                        |______________|   |
- *      |            +------+  |                                           |
- *      |            | i2c6 |  <-------------------------------------------+
- *      |            +------+  |
- *      |                      |
- *      |    DC in LS7A2000    |
- *      |                      |
- *      |            +------+  |
- *      |            | i2c7 |  <--------------------------------+
- *      |            +------+  |                                |
- *      |                      |                          ______|_______
- *      |            +------+  |                         |              |
- *      | CRTC1 ---> | HDMI |  ----> HDMI Connector ---> | HDMI Monitor |
- *      |            +------+  |                         |______________|
- *      |______________________|
- */
+ 
 
 static int ls7a2000_connector_get_modes(struct drm_connector *connector)
 {
@@ -79,7 +50,7 @@ static const struct drm_connector_helper_funcs ls7a2000_connector_helpers = {
 	.get_modes = ls7a2000_connector_get_modes,
 };
 
-/* debugfs */
+ 
 
 #define LSDC_HDMI_REG(i, reg) {                               \
 	.name = __stringify_1(LSDC_HDMI##i##_##reg##_REG),    \
@@ -95,7 +66,7 @@ static const struct lsdc_reg32 ls7a2000_hdmi0_encoder_regs[] = {
 	LSDC_HDMI_REG(0, PHY_CAL),
 	LSDC_HDMI_REG(0, AUDIO_PLL_LO),
 	LSDC_HDMI_REG(0, AUDIO_PLL_HI),
-	{NULL, 0},  /* MUST be {NULL, 0} terminated */
+	{NULL, 0},   
 };
 
 static const struct lsdc_reg32 ls7a2000_hdmi1_encoder_regs[] = {
@@ -107,7 +78,7 @@ static const struct lsdc_reg32 ls7a2000_hdmi1_encoder_regs[] = {
 	LSDC_HDMI_REG(1, PHY_CAL),
 	LSDC_HDMI_REG(1, AUDIO_PLL_LO),
 	LSDC_HDMI_REG(1, AUDIO_PLL_HI),
-	{NULL, 0},  /* MUST be {NULL, 0} terminated */
+	{NULL, 0},   
 };
 
 static int ls7a2000_hdmi_encoder_regs_show(struct seq_file *m, void *data)
@@ -160,7 +131,7 @@ static void ls7a2000_hdmi1_late_register(struct drm_connector *connector,
 				 root, minor);
 }
 
-/* monitor present detection */
+ 
 
 static enum drm_connector_status
 ls7a2000_hdmi0_vga_connector_detect(struct drm_connector *connector, bool force)
@@ -219,12 +190,7 @@ static const struct drm_connector_funcs ls7a2000_hdmi_connector_funcs[2] = {
 	},
 };
 
-/* Even though some board has only one hdmi on display pipe 1,
- * We still need hook lsdc_encoder_funcs up on display pipe 0,
- * This is because we need its reset() callback get called, to
- * set the LSDC_HDMIx_CTRL_REG using software gpio emulated i2c.
- * Otherwise, the firmware may set LSDC_HDMIx_CTRL_REG blindly.
- */
+ 
 static void ls7a2000_hdmi0_encoder_reset(struct drm_encoder *encoder)
 {
 	struct drm_device *ddev = encoder->dev;
@@ -234,12 +200,12 @@ static void ls7a2000_hdmi0_encoder_reset(struct drm_encoder *encoder)
 	val = PHY_CLOCK_POL | PHY_CLOCK_EN | PHY_DATA_EN;
 	lsdc_wreg32(ldev, LSDC_CRTC0_DVO_CONF_REG, val);
 
-	/* using software gpio emulated i2c */
+	 
 	val = lsdc_rreg32(ldev, LSDC_HDMI0_INTF_CTRL_REG);
 	val &= ~HW_I2C_EN;
 	lsdc_wreg32(ldev, LSDC_HDMI0_INTF_CTRL_REG, val);
 
-	/* help the hdmi phy to get out of reset state */
+	 
 	lsdc_wreg32(ldev, LSDC_HDMI0_PHY_CTRL_REG, HDMI_PHY_RESET_N);
 
 	mdelay(20);
@@ -256,12 +222,12 @@ static void ls7a2000_hdmi1_encoder_reset(struct drm_encoder *encoder)
 	val = PHY_CLOCK_POL | PHY_CLOCK_EN | PHY_DATA_EN;
 	lsdc_wreg32(ldev, LSDC_CRTC1_DVO_CONF_REG, val);
 
-	/* using software gpio emulated i2c */
+	 
 	val = lsdc_rreg32(ldev, LSDC_HDMI1_INTF_CTRL_REG);
 	val &= ~HW_I2C_EN;
 	lsdc_wreg32(ldev, LSDC_HDMI1_INTF_CTRL_REG, val);
 
-	/*  help the hdmi phy to get out of reset state */
+	 
 	lsdc_wreg32(ldev, LSDC_HDMI1_PHY_CTRL_REG, HDMI_PHY_RESET_N);
 
 	mdelay(20);
@@ -302,7 +268,7 @@ static int ls7a2000_hdmi_set_avi_infoframe(struct drm_encoder *encoder,
 		return err;
 	}
 
-	/* Fixed infoframe configuration not linked to the mode */
+	 
 	infoframe.colorspace = HDMI_COLORSPACE_RGB;
 	infoframe.quantization_range = HDMI_QUANTIZATION_RANGE_DEFAULT;
 	infoframe.colorimetry = HDMI_COLORIMETRY_NONE;
@@ -341,12 +307,12 @@ static void ls7a2000_hdmi_atomic_disable(struct drm_encoder *encoder,
 	struct lsdc_device *ldev = to_lsdc(ddev);
 	u32 val;
 
-	/* Disable the hdmi phy */
+	 
 	val = lsdc_pipe_rreg32(ldev, LSDC_HDMI0_PHY_CTRL_REG, index);
 	val &= ~HDMI_PHY_EN;
 	lsdc_pipe_wreg32(ldev, LSDC_HDMI0_PHY_CTRL_REG, index, val);
 
-	/* Disable the hdmi interface */
+	 
 	val = lsdc_pipe_rreg32(ldev, LSDC_HDMI0_INTF_CTRL_REG, index);
 	val &= ~HDMI_INTERFACE_EN;
 	lsdc_pipe_wreg32(ldev, LSDC_HDMI0_INTF_CTRL_REG, index, val);
@@ -364,7 +330,7 @@ static void ls7a2000_hdmi_atomic_enable(struct drm_encoder *encoder,
 	unsigned int index = dispipe->index;
 	u32 val;
 
-	/* datasheet say it should larger than 48 */
+	 
 	val = 64 << HDMI_H_ZONE_IDLE_SHIFT | 64 << HDMI_V_ZONE_IDLE_SHIFT;
 
 	lsdc_pipe_wreg32(ldev, LSDC_HDMI0_ZONE_REG, index, val);
@@ -391,26 +357,7 @@ static void ls7a2000_hdmi_atomic_enable(struct drm_encoder *encoder,
 	drm_dbg(ddev, "HDMI-%u enabled\n", index);
 }
 
-/*
- *  Fout = M * Fin
- *
- *  M = (4 * LF) / (IDF * ODF)
- *
- *  IDF: Input Division Factor
- *  ODF: Output Division Factor
- *   LF: Loop Factor
- *    M: Required Mult
- *
- *  +--------------------------------------------------------+
- *  |     Fin (kHZ)     | M  | IDF | LF | ODF |   Fout(Mhz)  |
- *  |-------------------+----+-----+----+-----+--------------|
- *  |  170000 ~ 340000  | 10 | 16  | 40 |  1  | 1700 ~ 3400  |
- *  |   85000 ~ 170000  | 10 |  8  | 40 |  2  |  850 ~ 1700  |
- *  |   42500 ~  85000  | 10 |  4  | 40 |  4  |  425 ~ 850   |
- *  |   21250 ~  42500  | 10 |  2  | 40 |  8  | 212.5 ~ 425  |
- *  |   20000 ~  21250  | 10 |  1  | 40 | 16  |  200 ~ 212.5 |
- *  +--------------------------------------------------------+
- */
+ 
 static void ls7a2000_hdmi_phy_pll_config(struct lsdc_device *ldev,
 					 int fin,
 					 unsigned int index)
@@ -419,14 +366,10 @@ static void ls7a2000_hdmi_phy_pll_config(struct lsdc_device *ldev,
 	int count = 0;
 	u32 val;
 
-	/* Firstly, disable phy pll */
+	 
 	lsdc_pipe_wreg32(ldev, LSDC_HDMI0_PHY_PLL_REG, index, 0x0);
 
-	/*
-	 * Most of time, loongson HDMI require M = 10
-	 * for example, 10 = (4 * 40) / (8 * 2)
-	 * here, write "1" to the ODF will get "2"
-	 */
+	 
 
 	if (fin >= 170000)
 		val = (16 << HDMI_PLL_IDF_SHIFT) |
@@ -459,7 +402,7 @@ static void ls7a2000_hdmi_phy_pll_config(struct lsdc_device *ldev,
 
 	drm_dbg(ddev, "Fin of HDMI-%u: %d kHz\n", index, fin);
 
-	/* Wait hdmi phy pll lock */
+	 
 	do {
 		val = lsdc_pipe_rreg32(ldev, LSDC_HDMI0_PHY_PLL_REG, index);
 
@@ -501,16 +444,7 @@ static const struct drm_encoder_helper_funcs ls7a2000_encoder_helper_funcs = {
 	.atomic_mode_set = ls7a2000_hdmi_atomic_mode_set,
 };
 
-/*
- * For LS7A2000:
- *
- * 1) Most of board export one vga + hdmi output interface.
- * 2) Yet, Some boards export double hdmi output interface.
- * 3) Still have boards export three output(2 hdmi + 1 vga).
- *
- * So let's hook hdmi helper funcs to all display pipe, don't miss.
- * writing hdmi register do no harms.
- */
+ 
 int ls7a2000_output_init(struct drm_device *ddev,
 			 struct lsdc_display_pipe *dispipe,
 			 struct i2c_adapter *ddc,

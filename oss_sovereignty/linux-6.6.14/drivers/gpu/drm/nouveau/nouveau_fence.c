@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2007 Ben Skeggs.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/ktime.h>
 #include <linux/hrtimer.h>
@@ -107,10 +83,7 @@ nouveau_fence_context_del(struct nouveau_fence_chan *fctx)
 	nvif_event_dtor(&fctx->event);
 	fctx->dead = 1;
 
-	/*
-	 * Ensure that all accesses to fence->channel complete before freeing
-	 * the channel.
-	 */
+	 
 	synchronize_rcu();
 }
 
@@ -353,9 +326,7 @@ nouveau_fence_sync(struct nouveau_bo *nvbo, struct nouveau_channel *chan,
 	if (ret)
 		return ret;
 
-	/* Waiting for the writes first causes performance regressions
-	 * under some circumstances. So manually wait for the reads first.
-	 */
+	 
 	for (i = 0; i < 2; ++i) {
 		struct dma_resv_iter cursor;
 		struct dma_fence *fence;
@@ -451,12 +422,7 @@ static const char *nouveau_fence_get_timeline_name(struct dma_fence *f)
 	return !fctx->dead ? fctx->name : "dead channel";
 }
 
-/*
- * In an ideal world, read would not assume the channel context is still alive.
- * This function may be called from another device, running into free memory as a
- * result. The drm node should still be there, so we can derive the index from
- * the fence context.
- */
+ 
 static bool nouveau_fence_is_signaled(struct dma_fence *f)
 {
 	struct nouveau_fence *fence = from_fence(f);
@@ -477,17 +443,10 @@ static bool nouveau_fence_no_signaling(struct dma_fence *f)
 {
 	struct nouveau_fence *fence = from_fence(f);
 
-	/*
-	 * caller should have a reference on the fence,
-	 * else fence could get freed here
-	 */
+	 
 	WARN_ON(kref_read(&fence->base.refcount) <= 1);
 
-	/*
-	 * This needs uevents to work correctly, but dma_fence_add_callback relies on
-	 * being able to enable signaling. It will still get signaled eventually,
-	 * just not right away.
-	 */
+	 
 	if (nouveau_fence_is_signaled(f)) {
 		list_del(&fence->head);
 

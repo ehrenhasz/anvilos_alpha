@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- *                         Emil Myhrman (emil.myhrman@gmail.com)
- */
+
+ 
 
 #include <linux/wait.h>
 #include <linux/usb.h>
@@ -38,22 +33,22 @@ struct toneport_led {
 };
 
 struct usb_line6_toneport {
-	/* Generic Line 6 USB data */
+	 
 	struct usb_line6 line6;
 
-	/* Source selector */
+	 
 	int source;
 
-	/* Serial number of device */
+	 
 	u32 serial_number;
 
-	/* Firmware version (x 100) */
+	 
 	u8 firmware_version;
 
-	/* Device type */
+	 
 	enum line6_device_type type;
 
-	/* LED instances */
+	 
 	struct toneport_led leds[2];
 };
 
@@ -139,7 +134,7 @@ static int toneport_send_cmd(struct usb_device *usbdev, int cmd1, int cmd2)
 	return 0;
 }
 
-/* monitor info callback */
+ 
 static int snd_toneport_monitor_info(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_info *uinfo)
 {
@@ -150,7 +145,7 @@ static int snd_toneport_monitor_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* monitor get callback */
+ 
 static int snd_toneport_monitor_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
@@ -160,7 +155,7 @@ static int snd_toneport_monitor_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* monitor put callback */
+ 
 static int snd_toneport_monitor_put(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
@@ -186,7 +181,7 @@ static int snd_toneport_monitor_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-/* source info callback */
+ 
 static int snd_toneport_source_info(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_info *uinfo)
 {
@@ -205,7 +200,7 @@ static int snd_toneport_source_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* source get callback */
+ 
 static int snd_toneport_source_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
@@ -216,7 +211,7 @@ static int snd_toneport_source_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* source put callback */
+ 
 static int snd_toneport_source_put(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
@@ -241,7 +236,7 @@ static void toneport_startup(struct usb_line6 *line6)
 	line6_pcm_acquire(line6->line6pcm, LINE6_STREAM_MONITOR, true);
 }
 
-/* control definition */
+ 
 static const struct snd_kcontrol_new toneport_control_monitor = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Monitor Playback Volume",
@@ -252,7 +247,7 @@ static const struct snd_kcontrol_new toneport_control_monitor = {
 	.put = snd_toneport_monitor_put
 };
 
-/* source selector definition */
+ 
 static const struct snd_kcontrol_new toneport_control_source = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "PCM Capture Source",
@@ -263,19 +258,14 @@ static const struct snd_kcontrol_new toneport_control_source = {
 	.put = snd_toneport_source_put
 };
 
-/*
-	For the led on Guitarport.
-	Brightness goes from 0x00 to 0x26. Set a value above this to have led
-	blink.
-	(void cmd_0x02(byte red, byte green)
-*/
+ 
 
 static bool toneport_has_led(struct usb_line6_toneport *toneport)
 {
 	switch (toneport->type) {
 	case LINE6_GUITARPORT:
 	case LINE6_TONEPORT_GX:
-	/* add your device here if you are missing support for the LEDs */
+	 
 		return true;
 
 	default:
@@ -354,9 +344,7 @@ static bool toneport_has_source_select(struct usb_line6_toneport *toneport)
 	}
 }
 
-/*
-	Setup Toneport device.
-*/
+ 
 static int toneport_setup(struct usb_line6_toneport *toneport)
 {
 	u32 *ticks;
@@ -367,16 +355,16 @@ static int toneport_setup(struct usb_line6_toneport *toneport)
 	if (!ticks)
 		return -ENOMEM;
 
-	/* sync time on device with host: */
-	/* note: 32-bit timestamps overflow in year 2106 */
+	 
+	 
 	*ticks = (u32)ktime_get_real_seconds();
 	line6_write_data(line6, 0x80c6, ticks, 4);
 	kfree(ticks);
 
-	/* enable device: */
+	 
 	toneport_send_cmd(usbdev, 0x0301, 0x0000);
 
-	/* initialize source select: */
+	 
 	if (toneport_has_source_select(toneport))
 		toneport_send_cmd(usbdev,
 				  toneport_source_info[toneport->source].code,
@@ -390,9 +378,7 @@ static int toneport_setup(struct usb_line6_toneport *toneport)
 	return 0;
 }
 
-/*
-	Toneport device disconnected.
-*/
+ 
 static void line6_toneport_disconnect(struct usb_line6 *line6)
 {
 	struct usb_line6_toneport *toneport = line6_to_toneport(line6);
@@ -402,9 +388,7 @@ static void line6_toneport_disconnect(struct usb_line6 *line6)
 }
 
 
-/*
-	 Try to init Toneport device.
-*/
+ 
 static int toneport_init(struct usb_line6 *line6,
 			 const struct usb_device_id *id)
 {
@@ -416,19 +400,19 @@ static int toneport_init(struct usb_line6 *line6,
 	line6->disconnect = line6_toneport_disconnect;
 	line6->startup = toneport_startup;
 
-	/* initialize PCM subsystem: */
+	 
 	err = line6_init_pcm(line6, &toneport_pcm_properties);
 	if (err < 0)
 		return err;
 
-	/* register monitor control: */
+	 
 	err = snd_ctl_add(line6->card,
 			  snd_ctl_new1(&toneport_control_monitor,
 				       line6->line6pcm));
 	if (err < 0)
 		return err;
 
-	/* register source select control: */
+	 
 	if (toneport_has_source_select(toneport)) {
 		err =
 		    snd_ctl_add(line6->card,
@@ -451,14 +435,12 @@ static int toneport_init(struct usb_line6 *line6,
 	if (err)
 		return err;
 
-	/* register audio system: */
+	 
 	return snd_card_register(line6->card);
 }
 
 #ifdef CONFIG_PM
-/*
-	Resume Toneport device after reset.
-*/
+ 
 static int toneport_reset_resume(struct usb_interface *interface)
 {
 	int err;
@@ -473,7 +455,7 @@ static int toneport_reset_resume(struct usb_interface *interface)
 #define LINE6_DEVICE(prod) USB_DEVICE(0x0e41, prod)
 #define LINE6_IF_NUM(prod, n) USB_DEVICE_INTERFACE_NUMBER(0x0e41, prod, n)
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id toneport_id_table[] = {
 	{ LINE6_DEVICE(0x4750),    .driver_info = LINE6_GUITARPORT },
 	{ LINE6_DEVICE(0x4153),    .driver_info = LINE6_PODSTUDIO_GX },
@@ -492,8 +474,8 @@ static const struct line6_properties toneport_properties_table[] = {
 		.id = "GuitarPort",
 		.name = "GuitarPort",
 		.capabilities	= LINE6_CAP_PCM,
-		.altsetting = 2,  /* 1..4 seem to be ok */
-		/* no control channel */
+		.altsetting = 2,   
+		 
 		.ep_audio_r = 0x82,
 		.ep_audio_w = 0x01,
 	},
@@ -501,8 +483,8 @@ static const struct line6_properties toneport_properties_table[] = {
 		.id = "PODStudioGX",
 		.name = "POD Studio GX",
 		.capabilities	= LINE6_CAP_PCM,
-		.altsetting = 2,  /* 1..4 seem to be ok */
-		/* no control channel */
+		.altsetting = 2,   
+		 
 		.ep_audio_r = 0x82,
 		.ep_audio_w = 0x01,
 	},
@@ -510,8 +492,8 @@ static const struct line6_properties toneport_properties_table[] = {
 		.id = "PODStudioUX1",
 		.name = "POD Studio UX1",
 		.capabilities	= LINE6_CAP_PCM,
-		.altsetting = 2,  /* 1..4 seem to be ok */
-		/* no control channel */
+		.altsetting = 2,   
+		 
 		.ep_audio_r = 0x82,
 		.ep_audio_w = 0x01,
 	},
@@ -519,8 +501,8 @@ static const struct line6_properties toneport_properties_table[] = {
 		.id = "PODStudioUX2",
 		.name = "POD Studio UX2",
 		.capabilities	= LINE6_CAP_PCM,
-		.altsetting = 2,  /* defaults to 44.1kHz, 16-bit */
-		/* no control channel */
+		.altsetting = 2,   
+		 
 		.ep_audio_r = 0x82,
 		.ep_audio_w = 0x01,
 	},
@@ -528,8 +510,8 @@ static const struct line6_properties toneport_properties_table[] = {
 		.id = "TonePortGX",
 		.name = "TonePort GX",
 		.capabilities	= LINE6_CAP_PCM,
-		.altsetting = 2,  /* 1..4 seem to be ok */
-		/* no control channel */
+		.altsetting = 2,   
+		 
 		.ep_audio_r = 0x82,
 		.ep_audio_w = 0x01,
 	},
@@ -537,8 +519,8 @@ static const struct line6_properties toneport_properties_table[] = {
 		.id = "TonePortUX1",
 		.name = "TonePort UX1",
 		.capabilities	= LINE6_CAP_PCM,
-		.altsetting = 2,  /* 1..4 seem to be ok */
-		/* no control channel */
+		.altsetting = 2,   
+		 
 		.ep_audio_r = 0x82,
 		.ep_audio_w = 0x01,
 	},
@@ -546,16 +528,14 @@ static const struct line6_properties toneport_properties_table[] = {
 		.id = "TonePortUX2",
 		.name = "TonePort UX2",
 		.capabilities	= LINE6_CAP_PCM,
-		.altsetting = 2,  /* defaults to 44.1kHz, 16-bit */
-		/* no control channel */
+		.altsetting = 2,   
+		 
 		.ep_audio_r = 0x82,
 		.ep_audio_w = 0x01,
 	},
 };
 
-/*
-	Probe USB device.
-*/
+ 
 static int toneport_probe(struct usb_interface *interface,
 			  const struct usb_device_id *id)
 {

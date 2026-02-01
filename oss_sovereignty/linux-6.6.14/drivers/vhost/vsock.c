@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vhost transport for vsock
- *
- * Copyright (C) 2013-2015 Red Hat, Inc.
- * Author: Asias He <asias@redhat.com>
- *         Stefan Hajnoczi <stefanha@redhat.com>
- */
+
+ 
 #include <linux/miscdevice.h>
 #include <linux/atomic.h>
 #include <linux/module.h>
@@ -20,13 +14,9 @@
 #include "vhost.h"
 
 #define VHOST_VSOCK_DEFAULT_HOST_CID	2
-/* Max number of bytes transferred before requeueing the job.
- * Using this limit prevents one virtqueue from starving others. */
+ 
 #define VHOST_VSOCK_WEIGHT 0x80000
-/* Max number of packets transferred before requeueing the job.
- * Using this limit prevents one virtqueue from starving others with
- * small pkts.
- */
+ 
 #define VHOST_VSOCK_PKT_WEIGHT 256
 
 enum {
@@ -39,7 +29,7 @@ enum {
 	VHOST_VSOCK_BACKEND_FEATURES = (1ULL << VHOST_BACKEND_F_IOTLB_MSG_V2)
 };
 
-/* Used to track all the vhost_vsock instances on the system. */
+ 
 static DEFINE_MUTEX(vhost_vsock_mutex);
 static DEFINE_READ_MOSTLY_HASHTABLE(vhost_vsock_hash, 8);
 
@@ -47,11 +37,11 @@ struct vhost_vsock {
 	struct vhost_dev dev;
 	struct vhost_virtqueue vqs[2];
 
-	/* Link to global vhost_vsock_hash, writes use vhost_vsock_mutex */
+	 
 	struct hlist_node hash;
 
 	struct vhost_work send_pkt_work;
-	struct sk_buff_head send_pkt_queue; /* host->guest pending packets */
+	struct sk_buff_head send_pkt_queue;  
 
 	atomic_t queued_replies;
 
@@ -64,9 +54,7 @@ static u32 vhost_transport_get_local_cid(void)
 	return VHOST_VSOCK_DEFAULT_HOST_CID;
 }
 
-/* Callers that dereference the return value must hold vhost_vsock_mutex or the
- * RCU read lock.
- */
+ 
 static struct vhost_vsock *vhost_vsock_get(u32 guest_cid)
 {
 	struct vhost_vsock *vsock;
@@ -74,7 +62,7 @@ static struct vhost_vsock *vhost_vsock_get(u32 guest_cid)
 	hash_for_each_possible_rcu(vhost_vsock_hash, vsock, hash, guest_cid) {
 		u32 other_cid = vsock->guest_cid;
 
-		/* Skip instances that have no CID yet */
+		 
 		if (other_cid == 0)
 			continue;
 
@@ -103,7 +91,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
 	if (!vq_meta_prefetch(vq))
 		goto out;
 
-	/* Avoid further vmexits, we're already processing the virtqueue */
+	 
 	vhost_disable_notify(&vsock->dev, vq);
 
 	do {
@@ -132,9 +120,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
 
 		if (head == vq->num) {
 			virtio_vsock_skb_queue_head(&vsock->send_pkt_queue, skb);
-			/* We cannot finish yet if more buffers snuck in while
-			 * re-enabling notify.
-			 */
+			 
 			if (unlikely(vhost_enable_notify(&vsock->dev, vq))) {
 				vhost_disable_notify(&vsock->dev, vq);
 				continue;
@@ -159,23 +145,11 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
 		payload_len = skb->len;
 		hdr = virtio_vsock_hdr(skb);
 
-		/* If the packet is greater than the space available in the
-		 * buffer, we split it using multiple buffers.
-		 */
+		 
 		if (payload_len > iov_len - sizeof(*hdr)) {
 			payload_len = iov_len - sizeof(*hdr);
 
-			/* As we are copying pieces of large packet's buffer to
-			 * small rx buffers, headers of packets in rx queue are
-			 * created dynamically and are initialized with header
-			 * of current packet(except length). But in case of
-			 * SOCK_SEQPACKET, we also must clear message delimeter
-			 * bit (VIRTIO_VSOCK_SEQ_EOM) and MSG_EOR bit
-			 * (VIRTIO_VSOCK_SEQ_EOR) if set. Otherwise,
-			 * there will be sequence of packets with these
-			 * bits set. After initialized header will be copied to
-			 * rx buffer, these required bits will be restored.
-			 */
+			 
 			if (le32_to_cpu(hdr->flags) & VIRTIO_VSOCK_SEQ_EOM) {
 				hdr->flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
 				flags_to_restore |= VIRTIO_VSOCK_SEQ_EOM;
@@ -187,7 +161,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
 			}
 		}
 
-		/* Set the correct length in the header */
+		 
 		hdr->len = cpu_to_le32(payload_len);
 
 		nbytes = copy_to_iter(hdr, sizeof(*hdr), &iov_iter);
@@ -204,9 +178,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
 			break;
 		}
 
-		/* Deliver to monitoring devices all packets that we
-		 * will transmit.
-		 */
+		 
 		virtio_transport_deliver_tap_pkt(skb);
 
 		vhost_add_used(vq, head, sizeof(*hdr) + payload_len);
@@ -215,16 +187,11 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
 		skb_pull(skb, payload_len);
 		total_len += payload_len;
 
-		/* If we didn't send all the payload we can requeue the packet
-		 * to send it with the next available buffer.
-		 */
+		 
 		if (skb->len > 0) {
 			hdr->flags |= cpu_to_le32(flags_to_restore);
 
-			/* We are queueing the same skb to handle
-			 * the remaining bytes, and we want to deliver it
-			 * to monitoring devices in the next iteration.
-			 */
+			 
 			virtio_vsock_skb_clear_tap_delivered(skb);
 			virtio_vsock_skb_queue_head(&vsock->send_pkt_queue, skb);
 		} else {
@@ -233,9 +200,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
 
 				val = atomic_dec_return(&vsock->queued_replies);
 
-				/* Do we have resources to resume tx
-				 * processing?
-				 */
+				 
 				if (val + 1 == tx_vq->num)
 					restart_tx = true;
 			}
@@ -273,7 +238,7 @@ vhost_transport_send_pkt(struct sk_buff *skb)
 
 	rcu_read_lock();
 
-	/* Find the vhost_vsock according to guest context id  */
+	 
 	vsock = vhost_vsock_get(le64_to_cpu(hdr->dst_cid));
 	if (!vsock) {
 		rcu_read_unlock();
@@ -300,7 +265,7 @@ vhost_transport_cancel_pkt(struct vsock_sock *vsk)
 
 	rcu_read_lock();
 
-	/* Find the vhost_vsock according to guest context id  */
+	 
 	vsock = vhost_vsock_get(vsk->remote_addr.svm_cid);
 	if (!vsock)
 		goto out;
@@ -340,7 +305,7 @@ vhost_vsock_alloc_skb(struct vhost_virtqueue *vq,
 
 	len = iov_length(vq->iov, out);
 
-	/* len contains both payload and hdr */
+	 
 	skb = virtio_vsock_alloc_skb(len, GFP_KERNEL);
 	if (!skb)
 		return NULL;
@@ -358,11 +323,11 @@ vhost_vsock_alloc_skb(struct vhost_virtqueue *vq,
 
 	payload_len = le32_to_cpu(hdr->len);
 
-	/* No payload */
+	 
 	if (!payload_len)
 		return skb;
 
-	/* The pkt is too big or the length in the header is invalid */
+	 
 	if (payload_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE ||
 	    payload_len + sizeof(*hdr) > len) {
 		kfree_skb(skb);
@@ -382,13 +347,13 @@ vhost_vsock_alloc_skb(struct vhost_virtqueue *vq,
 	return skb;
 }
 
-/* Is there space left for replies to rx packets? */
+ 
 static bool vhost_vsock_more_replies(struct vhost_vsock *vsock)
 {
 	struct vhost_virtqueue *vq = &vsock->vqs[VSOCK_VQ_TX];
 	int val;
 
-	smp_rmb(); /* paired with atomic_inc() and atomic_dec_return() */
+	smp_rmb();  
 	val = atomic_read(&vsock->queued_replies);
 
 	return val < vq->num;
@@ -486,10 +451,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
 		struct virtio_vsock_hdr *hdr;
 
 		if (!vhost_vsock_more_replies(vsock)) {
-			/* Stop tx until the device processes already
-			 * pending replies.  Leave tx virtqueue
-			 * callbacks disabled.
-			 */
+			 
 			goto no_more_replies;
 		}
 
@@ -514,12 +476,12 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
 
 		total_len += sizeof(*hdr) + skb->len;
 
-		/* Deliver to monitoring devices all received packets */
+		 
 		virtio_transport_deliver_tap_pkt(skb);
 
 		hdr = virtio_vsock_hdr(skb);
 
-		/* Only accept correctly addressed packets */
+		 
 		if (le64_to_cpu(hdr->src_cid) == vsock->guest_cid &&
 		    le64_to_cpu(hdr->dst_cid) ==
 		    vhost_transport_get_local_cid())
@@ -581,9 +543,7 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
 		mutex_unlock(&vq->mutex);
 	}
 
-	/* Some packets may have been queued before the device was started,
-	 * let's kick the send worker to send them.
-	 */
+	 
 	vhost_vq_work_queue(&vsock->vqs[VSOCK_VQ_RX], &vsock->send_pkt_work);
 
 	mutex_unlock(&vsock->dev.mutex);
@@ -642,9 +602,7 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
 	struct vhost_vsock *vsock;
 	int ret;
 
-	/* This struct is large and allocation could fail, fall back to vmalloc
-	 * if there is no other way.
-	 */
+	 
 	vsock = kvmalloc(sizeof(*vsock), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
 	if (!vsock)
 		return -ENOMEM;
@@ -655,7 +613,7 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
 		goto out;
 	}
 
-	vsock->guest_cid = 0; /* no CID assigned yet */
+	vsock->guest_cid = 0;  
 
 	atomic_set(&vsock->queued_replies, 0);
 
@@ -687,18 +645,13 @@ static void vhost_vsock_reset_orphans(struct sock *sk)
 {
 	struct vsock_sock *vsk = vsock_sk(sk);
 
-	/* vmci_transport.c doesn't take sk_lock here either.  At least we're
-	 * under vsock_table_lock so the sock cannot disappear while we're
-	 * executing.
-	 */
+	 
 
-	/* If the peer is still valid, no need to reset connection */
+	 
 	if (vhost_vsock_get(vsk->remote_addr.svm_cid))
 		return;
 
-	/* If the close timeout is pending, let it expire.  This avoids races
-	 * with the timeout callback.
-	 */
+	 
 	if (vsk->close_work_scheduled)
 		return;
 
@@ -718,19 +671,14 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
 		hash_del_rcu(&vsock->hash);
 	mutex_unlock(&vhost_vsock_mutex);
 
-	/* Wait for other CPUs to finish using vsock */
+	 
 	synchronize_rcu();
 
-	/* Iterating over all connections for all CIDs to find orphans is
-	 * inefficient.  Room for improvement here. */
+	 
 	vsock_for_each_connected_socket(&vhost_transport.transport,
 					vhost_vsock_reset_orphans);
 
-	/* Don't check the owner, because we are in the release path, so we
-	 * need to stop the vsock device in any case.
-	 * vhost_vsock_stop() can not fail in this case, so we don't need to
-	 * check the return code.
-	 */
+	 
 	vhost_vsock_stop(vsock, false);
 	vhost_vsock_flush(vsock);
 	vhost_dev_stop(&vsock->dev);
@@ -747,22 +695,20 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 guest_cid)
 {
 	struct vhost_vsock *other;
 
-	/* Refuse reserved CIDs */
+	 
 	if (guest_cid <= VMADDR_CID_HOST ||
 	    guest_cid == U32_MAX)
 		return -EINVAL;
 
-	/* 64-bit CIDs are not yet supported */
+	 
 	if (guest_cid > U32_MAX)
 		return -EINVAL;
 
-	/* Refuse if CID is assigned to the guest->host transport (i.e. nested
-	 * VM), to make the loopback work.
-	 */
+	 
 	if (vsock_find_cid(guest_cid))
 		return -EADDRINUSE;
 
-	/* Refuse if CID is already in use */
+	 
 	mutex_lock(&vhost_vsock_mutex);
 	other = vhost_vsock_get(guest_cid);
 	if (other && other != vsock) {

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_PINCTRL_MT65XX_H
 #define _DT_BINDINGS_PINCTRL_MT65XX_H
@@ -38,4 +35,4 @@
 #define MTK_DRIVE_28mA 28
 #define MTK_DRIVE_32mA 32
 
-#endif /* _DT_BINDINGS_PINCTRL_MT65XX_H */
+#endif  

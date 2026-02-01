@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https:
 
 bool print_group (gid_t, bool);
 bool print_group_list (char const *, uid_t, gid_t, gid_t, bool, char);

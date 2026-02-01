@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #ifndef	_BRCM_PHY_RADIO_H_
 #define	_BRCM_PHY_RADIO_H_
@@ -1519,4 +1517,4 @@
 
 #define RADIO_2057_VCM_MASK			 0x7
 
-#endif				/* _BRCM_PHY_RADIO_H_ */
+#endif				 

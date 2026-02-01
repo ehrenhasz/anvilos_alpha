@@ -1,26 +1,4 @@
-/*
- * Copyright © 2014 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #include <linux/string_helpers.h>
 
@@ -54,14 +32,7 @@ struct i915_params i915_modparams __read_mostly = {
 #undef MEMBER
 };
 
-/*
- * Note: As a rule, keep module parameter sysfs permissions read-only
- * 0400. Runtime changes are only supported through i915 debugfs.
- *
- * For any exceptions requiring write access and runtime changes through module
- * parameter sysfs, prevent debugfs file creation by setting the parameter's
- * debugfs mode to 0.
- */
+ 
 
 i915_param_named(modeset, int, 0400,
 	"Use kernel modesetting [KMS] (0=disable, "
@@ -167,14 +138,14 @@ i915_param_named(mmio_debug, int, 0400,
 	"Enable the MMIO debug code for the first N failures (default: off). "
 	"This may negatively affect performance.");
 
-/* Special case writable file */
+ 
 i915_param_named(verbose_state_checks, bool, 0600,
 	"Enable verbose logs (ie. WARN_ON()) in case of unexpected hw state conditions.");
 
 i915_param_named_unsafe(nuclear_pageflip, bool, 0400,
 	"Force enable atomic functionality on platforms that don't have full support yet.");
 
-/* WA to get away with the default setting in VBT for early platforms.Will be removed */
+ 
 i915_param_named_unsafe(edp_vswing, int, 0400,
 	"Ignore/Override vswing pre-emph table selection from VBT "
 	"(0=use value from vbt [default], 1=low power swing(200mV),"
@@ -266,13 +237,7 @@ static void _param_print_charp(struct drm_printer *p, const char *name,
 		 unsigned long: _param_print_ulong,		\
 		 char *: _param_print_charp)(p, name, val)
 
-/**
- * i915_params_dump - dump i915 modparams
- * @params: i915 modparams
- * @p: the &drm_printer
- *
- * Pretty printer for i915 modparams.
- */
+ 
 void i915_params_dump(const struct i915_params *params, struct drm_printer *p)
 {
 #define PRINT(T, x, ...) _param_print(p, #x, params->x);
@@ -313,7 +278,7 @@ static void _param_free_charp(char **valp)
 		 char **: _param_free_charp,		\
 		 default: _param_nop)(valp)
 
-/* free the allocated members, *not* the passed in params itself */
+ 
 void i915_params_free(struct i915_params *params)
 {
 #define FREE(T, x, ...) _param_free(&params->x);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Referrence tracker self test.
- *
- * Copyright (c) 2021 Eric Dumazet <edumazet@google.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -89,17 +85,17 @@ static int __init test_ref_tracker_init(void)
 	alloctest_ref_tracker_alloc18(&ref_dir, &tracker[18]);
 	alloctest_ref_tracker_alloc19(&ref_dir, &tracker[19]);
 
-	/* free all trackers but first 0 and 1. */
+	 
 	for (i = 2; i < ARRAY_SIZE(tracker); i++)
 		alloctest_ref_tracker_free(&ref_dir, &tracker[i]);
 
-	/* Attempt to free an already freed tracker. */
+	 
 	alloctest_ref_tracker_free(&ref_dir, &tracker[2]);
 
 	while (!atomic_read(&test_ref_timer_done))
 		msleep(1);
 
-	/* This should warn about tracker[0] & tracker[1] being not freed. */
+	 
 	ref_tracker_dir_exit(&ref_dir);
 
 	return 0;

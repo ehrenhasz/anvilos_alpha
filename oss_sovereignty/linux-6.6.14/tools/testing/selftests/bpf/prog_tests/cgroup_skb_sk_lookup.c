@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <test_progs.h>
 
@@ -23,13 +23,13 @@ static void run_lookup_test(__u16 *g_serv_port, int out_sk)
 
 	*g_serv_port = addr.sin6_port;
 
-	/* Client outside of test cgroup should fail to connect by timeout. */
+	 
 	err = connect_fd_to_fd(out_sk, serv_sk, 1000);
 	if (CHECK(!err || errno != EINPROGRESS, "connect_fd_to_fd",
 		  "unexpected result err %d errno %d\n", err, errno))
 		goto cleanup;
 
-	/* Client inside test cgroup should connect just fine. */
+	 
 	in_sk = connect_to_fd(serv_sk, 0);
 	if (CHECK(in_sk < 0, "connect_to_fd", "errno %d\n", errno))
 		goto cleanup;
@@ -77,10 +77,7 @@ void test_cgroup_skb_sk_lookup(void)
 	const char *cg_path = "/foo";
 	int out_sk;
 
-	/* Create a socket before joining testing cgroup so that its cgroup id
-	 * differs from that of testing cgroup. Moving selftests process to
-	 * testing cgroup won't change cgroup id of an already created socket.
-	 */
+	 
 	out_sk = socket(AF_INET6, SOCK_STREAM, 0);
 	if (CHECK_FAIL(out_sk < 0))
 		return;

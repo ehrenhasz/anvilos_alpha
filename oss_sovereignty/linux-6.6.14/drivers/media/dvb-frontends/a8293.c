@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Allegro A8293 SEC driver
- *
- * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "a8293.h"
 
@@ -15,10 +11,7 @@ struct a8293_dev {
 	int volt_slew_nanos_per_mv;
 };
 
-/*
- * When increasing voltage, do so in minimal steps over time, minimizing
- * risk of vIN undervoltage.
- */
+ 
 
 static int a8293_set_voltage_slew(struct a8293_dev *dev,
 				  struct i2c_client *client,
@@ -41,12 +34,12 @@ static int a8293_set_voltage_slew(struct a8293_dev *dev,
 	dev_dbg(&client->dev, "set_voltage_slew fe_sec_voltage=%d\n",
 		fe_sec_voltage);
 
-	/* Read status register to clear any stale faults. */
+	 
 	ret = i2c_master_recv(client, &status, 1);
 	if (ret < 0)
 		goto err;
 
-	/* Determine previous voltage */
+	 
 	switch (dev->reg[0] & 0x2F) {
 	case 0x00:
 		prev_volt_idx = 0;
@@ -79,7 +72,7 @@ static int a8293_set_voltage_slew(struct a8293_dev *dev,
 		prev_volt_idx = 0;
 	}
 
-	/* Determine new voltage */
+	 
 	switch (fe_sec_voltage) {
 	case SEC_VOLTAGE_OFF:
 		new_volt_idx = 0;
@@ -95,7 +88,7 @@ static int a8293_set_voltage_slew(struct a8293_dev *dev,
 		goto err;
 	}
 
-	/* Slew to new voltage if new voltage is greater than current voltage */
+	 
 	this_volt_idx = prev_volt_idx;
 	if (this_volt_idx < new_volt_idx) {
 		while (this_volt_idx < new_volt_idx) {
@@ -112,7 +105,7 @@ static int a8293_set_voltage_slew(struct a8293_dev *dev,
 			this_volt_idx++;
 			usleep_range(min_wait_time, min_wait_time * 2);
 		}
-	} else { /* Else just set the voltage */
+	} else {  
 		reg0 = idx_to_reg[new_volt_idx];
 		reg0 |= A8293_FLAG_ODT;
 		ret = i2c_master_send(client, &reg0, 1);
@@ -121,7 +114,7 @@ static int a8293_set_voltage_slew(struct a8293_dev *dev,
 		dev->reg[0] = reg0;
 	}
 
-	/* TMODE=0, TGATE=1 */
+	 
 	reg1 = 0x82;
 	if (reg1 != dev->reg[1]) {
 		ret = i2c_master_send(client, &reg1, 1);
@@ -152,15 +145,15 @@ static int a8293_set_voltage_noslew(struct dvb_frontend *fe,
 
 	switch (fe_sec_voltage) {
 	case SEC_VOLTAGE_OFF:
-		/* ENB=0 */
+		 
 		reg0 = 0x10;
 		break;
 	case SEC_VOLTAGE_13:
-		/* VSEL0=1, VSEL1=0, VSEL2=0, VSEL3=0, ENB=1*/
+		 
 		reg0 = 0x31;
 		break;
 	case SEC_VOLTAGE_18:
-		/* VSEL0=0, VSEL1=0, VSEL2=0, VSEL3=1, ENB=1*/
+		 
 		reg0 = 0x38;
 		break;
 	default:
@@ -174,7 +167,7 @@ static int a8293_set_voltage_noslew(struct dvb_frontend *fe,
 		dev->reg[0] = reg0;
 	}
 
-	/* TMODE=0, TGATE=1 */
+	 
 	reg1 = 0x82;
 	if (reg1 != dev->reg[1]) {
 		ret = i2c_master_send(client, &reg1, 1);
@@ -200,7 +193,7 @@ static int a8293_set_voltage(struct dvb_frontend *fe,
 	dev_dbg(&client->dev, "set_voltage volt_slew_nanos_per_mv=%d\n",
 		volt_slew_nanos_per_mv);
 
-	/* Use slew version if slew rate is set to a sane value */
+	 
 	if (volt_slew_nanos_per_mv > 0 && volt_slew_nanos_per_mv < 1600)
 		a8293_set_voltage_slew(dev, client, fe_sec_voltage,
 				       volt_slew_nanos_per_mv);
@@ -227,12 +220,12 @@ static int a8293_probe(struct i2c_client *client)
 	dev->client = client;
 	dev->volt_slew_nanos_per_mv = pdata->volt_slew_nanos_per_mv;
 
-	/* check if the SEC is there */
+	 
 	ret = i2c_master_recv(client, buf, 2);
 	if (ret < 0)
 		goto err_kfree;
 
-	/* override frontend ops */
+	 
 	fe->ops.set_voltage = a8293_set_voltage;
 	fe->sec_priv = dev;
 	i2c_set_clientdata(client, dev);

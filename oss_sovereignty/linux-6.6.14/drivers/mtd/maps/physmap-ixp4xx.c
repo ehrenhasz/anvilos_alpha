@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel IXP4xx OF physmap add-on
- * Copyright (C) 2019 Linus Walleij <linus.walleij@linaro.org>
- *
- * Based on the ixp4xx.c map driver, originally written by:
- * Intel Corporation
- * Deepak Saxena <dsaxena@mvista.com>
- * Copyright (C) 2002 Intel Corporation
- * Copyright (C) 2003-2004 MontaVista Software, Inc.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -16,25 +7,7 @@
 #include <linux/mtd/xip.h>
 #include "physmap-ixp4xx.h"
 
-/*
- * Read/write a 16 bit word from flash address 'addr'.
- *
- * When the cpu is in little-endian mode it swizzles the address lines
- * ('address coherency') so we need to undo the swizzling to ensure commands
- * and the like end up on the correct flash address.
- *
- * To further complicate matters, due to the way the expansion bus controller
- * handles 32 bit reads, the byte stream ABCD is stored on the flash as:
- *     D15    D0
- *     +---+---+
- *     | A | B | 0
- *     +---+---+
- *     | C | D | 2
- *     +---+---+
- * This means that on LE systems each 16 bit word must be swapped. Note that
- * this requires CONFIG_MTD_CFI_BE_BYTE_SWAP to be enabled to 'unswap' the CFI
- * data and other flash commands which are always in D7-D0.
- */
+ 
 #ifndef CONFIG_CPU_BIG_ENDIAN
 
 static inline u16 flash_read16(void __iomem *addr)
@@ -74,11 +47,7 @@ static map_word ixp4xx_read16(struct map_info *map, unsigned long ofs)
 	return val;
 }
 
-/*
- * The IXP4xx expansion bus only allows 16-bit wide acceses
- * when attached to a 16-bit wide device (such as the 28F128J3A),
- * so we can't just memcpy_fromio().
- */
+ 
 static void ixp4xx_copy_from(struct map_info *map, void *to,
 			     unsigned long from, ssize_t len)
 {
@@ -117,7 +86,7 @@ int of_flash_probe_ixp4xx(struct platform_device *pdev,
 {
 	struct device *dev = &pdev->dev;
 
-	/* Multiplatform guard */
+	 
 	if (!of_device_is_compatible(np, "intel,ixp4xx-flash"))
 		return 0;
 

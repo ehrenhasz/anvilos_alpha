@@ -1,33 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * Copyright (c) 2010 Silicon Hive www.siliconhive.com.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
-/*
- * This file contains functions for buffer object structure management
- */
+
+ 
+ 
 #include <linux/kernel.h>
 #include <linux/types.h>
-#include <linux/gfp.h>		/* for GFP_ATOMIC */
+#include <linux/gfp.h>		 
 #include <linux/mm.h>
 #include <linux/mm_types.h>
 #include <linux/hugetlb.h>
 #include <linux/highmem.h>
-#include <linux/slab.h>		/* for kmalloc */
+#include <linux/slab.h>		 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/string.h>
@@ -50,7 +31,7 @@ static int __bo_init(struct hmm_bo_device *bdev, struct hmm_buffer_object *bo,
 	check_bodev_null_return(bdev, -EINVAL);
 	var_equal_return(hmm_bo_device_inited(bdev), 0, -EINVAL,
 			 "hmm_bo_device not inited yet.\n");
-	/* prevent zero size buffer object */
+	 
 	if (pgnr == 0) {
 		dev_err(atomisp_dev, "0 size buffer is not allowed.\n");
 		return -EINVAL;
@@ -59,7 +40,7 @@ static int __bo_init(struct hmm_bo_device *bdev, struct hmm_buffer_object *bo,
 	memset(bo, 0, sizeof(*bo));
 	mutex_init(&bo->mutex);
 
-	/* init the bo->list HEAD as an element of entire_bo_list */
+	 
 	INIT_LIST_HEAD(&bo->list);
 
 	bo->bdev = bdev;
@@ -103,19 +84,12 @@ static struct hmm_buffer_object *__bo_search_and_remove_from_free_rbtree(
 	}
 
 remove_bo_and_return:
-	/* NOTE: All nodes on free rbtree have a 'prev' that points to NULL.
-	 * 1. check if 'this->next' is NULL:
-	 *	yes: erase 'this' node and rebalance rbtree, return 'this'.
-	 */
+	 
 	if (!this->next) {
 		rb_erase(&this->node, &this->bdev->free_rbtree);
 		return this;
 	}
-	/* NOTE: if 'this->next' is not NULL, always return 'this->next' bo.
-	 * 2. check if 'this->next->next' is NULL:
-	 *	yes: change the related 'next/prev' pointer,
-	 *		return 'this->next' but the rbtree stays unchanged.
-	 */
+	 
 	temp_bo = this->next;
 	this->next = temp_bo->next;
 	if (temp_bo->next)
@@ -268,36 +242,20 @@ static struct hmm_buffer_object *__bo_break_up(struct hmm_bo_device *bdev,
 static void __bo_take_off_handling(struct hmm_buffer_object *bo)
 {
 	struct hmm_bo_device *bdev = bo->bdev;
-	/* There are 4 situations when we take off a known bo from free rbtree:
-	 * 1. if bo->next && bo->prev == NULL, bo is a rbtree node
-	 *	and does not have a linked list after bo, to take off this bo,
-	 *	we just need erase bo directly and rebalance the free rbtree
-	 */
+	 
 	if (!bo->prev && !bo->next) {
 		rb_erase(&bo->node, &bdev->free_rbtree);
-		/* 2. when bo->next != NULL && bo->prev == NULL, bo is a rbtree node,
-		 *	and has a linked list,to take off this bo we need erase bo
-		 *	first, then, insert bo->next into free rbtree and rebalance
-		 *	the free rbtree
-		 */
+		 
 	} else if (!bo->prev && bo->next) {
 		bo->next->prev = NULL;
 		rb_erase(&bo->node, &bdev->free_rbtree);
 		__bo_insert_to_free_rbtree(&bdev->free_rbtree, bo->next);
 		bo->next = NULL;
-		/* 3. when bo->prev != NULL && bo->next == NULL, bo is not a rbtree
-		 *	node, bo is the last element of the linked list after rbtree
-		 *	node, to take off this bo, we just need set the "prev/next"
-		 *	pointers to NULL, the free rbtree stays unchaged
-		 */
+		 
 	} else if (bo->prev && !bo->next) {
 		bo->prev->next = NULL;
 		bo->prev = NULL;
-		/* 4. when bo->prev != NULL && bo->next != NULL ,bo is not a rbtree
-		 *	node, bo is in the middle of the linked list after rbtree node,
-		 *	to take off this bo, we just set take the "prev/next" pointers
-		 *	to NULL, the free rbtree stays unchaged
-		 */
+		 
 	} else if (bo->prev && bo->next) {
 		bo->next->prev = bo->prev;
 		bo->prev->next = bo->next;
@@ -325,9 +283,7 @@ static struct hmm_buffer_object *__bo_merge(struct hmm_buffer_object *bo,
 	return next_bo;
 }
 
-/*
- * hmm_bo_device functions.
- */
+ 
 int hmm_bo_device_init(struct hmm_bo_device *bdev,
 		       struct isp_mmu_client *mmu_driver,
 		       unsigned int vaddr_start,
@@ -443,16 +399,7 @@ void hmm_bo_release(struct hmm_buffer_object *bo)
 
 	mutex_lock(&bdev->rbtree_mutex);
 
-	/*
-	 * FIX ME:
-	 *
-	 * how to destroy the bo when it is stilled MMAPED?
-	 *
-	 * ideally, this will not happened as hmm_bo_release
-	 * will only be called when kref reaches 0, and in mmap
-	 * operation the hmm_bo_ref will eventually be called.
-	 * so, if this happened, something goes wrong.
-	 */
+	 
 	if (bo->status & HMM_BO_MMAPED) {
 		mutex_unlock(&bdev->rbtree_mutex);
 		dev_dbg(atomisp_dev, "destroy bo which is MMAPED, do nothing\n");
@@ -507,10 +454,7 @@ void hmm_bo_device_exit(struct hmm_bo_device *bdev)
 
 	check_bodev_null_return_void(bdev);
 
-	/*
-	 * release all allocated bos even they a in use
-	 * and all bos will be merged into a big bo
-	 */
+	 
 	while (!RB_EMPTY_ROOT(&bdev->allocated_rbtree))
 		hmm_bo_release(
 		    rbtree_node_to_hmm_bo(bdev->allocated_rbtree.rb_node));
@@ -518,7 +462,7 @@ void hmm_bo_device_exit(struct hmm_bo_device *bdev)
 	dev_dbg(atomisp_dev, "%s: finished releasing all allocated bos!\n",
 		__func__);
 
-	/* free all bos to release all ISP virtual memory */
+	 
 	while (!list_empty(&bdev->entire_bo_list)) {
 		bo = list_to_hmm_bo(bdev->entire_bo_list.next);
 
@@ -602,7 +546,7 @@ struct hmm_buffer_object *hmm_bo_device_search_vmap_start(
 	spin_lock_irqsave(&bdev->list_lock, flags);
 	list_for_each(pos, &bdev->entire_bo_list) {
 		bo = list_to_hmm_bo(pos);
-		/* pass bo which has no vm_node allocated */
+		 
 		if ((bo->status & HMM_BO_MASK) == HMM_BO_FREE)
 			continue;
 		if (bo->vmap_addr == vaddr)
@@ -629,7 +573,7 @@ static void free_private_bo_pages(struct hmm_buffer_object *bo)
 	free_pages_bulk_array(bo->pgnr, bo->pages);
 }
 
-/*Allocate pages which will be used only by ISP*/
+ 
 static int alloc_private_pages(struct hmm_buffer_object *bo)
 {
 	const gfp_t gfp = __GFP_NOWARN | __GFP_RECLAIM | __GFP_FS;
@@ -669,14 +613,7 @@ static int alloc_vmalloc_pages(struct hmm_buffer_object *bo, void *vmalloc_addr)
 	return 0;
 }
 
-/*
- * allocate/free physical pages for the bo.
- *
- * type indicate where are the pages from. currently we have 3 types
- * of memory: HMM_BO_PRIVATE, HMM_BO_VMALLOC.
- *
- * vmalloc_addr is only valid when type is HMM_BO_VMALLOC.
- */
+ 
 int hmm_bo_alloc_pages(struct hmm_buffer_object *bo,
 		       enum hmm_bo_type type,
 		       void *vmalloc_addr)
@@ -725,9 +662,7 @@ status_err:
 	return -EINVAL;
 }
 
-/*
- * free physical pages of the bo.
- */
+ 
 void hmm_bo_free_pages(struct hmm_buffer_object *bo)
 {
 	check_bo_null_return_void(bo);
@@ -736,13 +671,13 @@ void hmm_bo_free_pages(struct hmm_buffer_object *bo)
 
 	check_bo_status_yes_goto(bo, HMM_BO_PAGE_ALLOCED, status_err2);
 
-	/* clear the flag anyway. */
+	 
 	bo->status &= (~HMM_BO_PAGE_ALLOCED);
 
 	if (bo->type == HMM_BO_PRIVATE)
 		free_private_bo_pages(bo);
 	else if (bo->type == HMM_BO_VMALLOC)
-		; /* No-op, nothing to do */
+		;  
 	else
 		dev_err(atomisp_dev, "invalid buffer type.\n");
 
@@ -764,9 +699,7 @@ int hmm_bo_page_allocated(struct hmm_buffer_object *bo)
 	return bo->status & HMM_BO_PAGE_ALLOCED;
 }
 
-/*
- * bind the physical pages to a virtual address space.
- */
+ 
 int hmm_bo_bind(struct hmm_buffer_object *bo)
 {
 	int ret;
@@ -797,17 +730,7 @@ int hmm_bo_bind(struct hmm_buffer_object *bo)
 		virt += (1 << PAGE_SHIFT);
 	}
 
-	/*
-	 * flush TBL here.
-	 *
-	 * theoretically, we donot need to flush TLB as we didnot change
-	 * any existed address mappings, but for Silicon Hive's MMU, its
-	 * really a bug here. I guess when fetching PTEs (page table entity)
-	 * to TLB, its MMU will fetch additional INVALID PTEs automatically
-	 * for performance issue. EX, we only set up 1 page address mapping,
-	 * meaning updating 1 PTE, but the MMU fetches 4 PTE at one time,
-	 * so the additional 3 PTEs are invalid.
-	 */
+	 
 	if (bo->start != 0x0)
 		isp_mmu_flush_tlb_range(&bdev->mmu, bo->start,
 					(bo->pgnr << PAGE_SHIFT));
@@ -819,7 +742,7 @@ int hmm_bo_bind(struct hmm_buffer_object *bo)
 	return 0;
 
 map_err:
-	/* unbind the physical pages with related virtual address space */
+	 
 	virt = bo->start;
 	for ( ; i > 0; i--) {
 		isp_mmu_unmap(&bdev->mmu, virt, 1);
@@ -842,9 +765,7 @@ status_err1:
 	return -EINVAL;
 }
 
-/*
- * unbind the physical pages with related virtual address space.
- */
+ 
 void hmm_bo_unbind(struct hmm_buffer_object *bo)
 {
 	unsigned int virt;
@@ -869,10 +790,7 @@ void hmm_bo_unbind(struct hmm_buffer_object *bo)
 		virt += pgnr_to_size(1);
 	}
 
-	/*
-	 * flush TLB as the address mapping has been removed and
-	 * related TLBs should be invalidated.
-	 */
+	 
 	isp_mmu_flush_tlb_range(&bdev->mmu, bo->start,
 				(bo->pgnr << PAGE_SHIFT));
 
@@ -914,7 +832,7 @@ void *hmm_bo_vmap(struct hmm_buffer_object *bo, bool cached)
 		return bo->vmap_addr;
 	}
 
-	/* cached status need to be changed, so vunmap first */
+	 
 	if (bo->status & HMM_BO_VMAPED || bo->status & HMM_BO_VMAPED_CACHED) {
 		vunmap(bo->vmap_addr);
 		bo->vmap_addr = NULL;
@@ -1029,9 +947,7 @@ static const struct vm_operations_struct hmm_bo_vm_ops = {
 	.close = hmm_bo_vm_close,
 };
 
-/*
- * mmap the bo to user space.
- */
+ 
 int hmm_bo_mmap(struct vm_area_struct *vma, struct hmm_buffer_object *bo)
 {
 	unsigned int start, end;
@@ -1047,10 +963,7 @@ int hmm_bo_mmap(struct vm_area_struct *vma, struct hmm_buffer_object *bo)
 	start = vma->vm_start;
 	end = vma->vm_end;
 
-	/*
-	 * check vma's virtual address space size and buffer object's size.
-	 * must be the same.
-	 */
+	 
 	if ((start + pgnr_to_size(pgnr)) != end) {
 		dev_warn(atomisp_dev,
 			 "vma's address space size not equal to buffer object's size");
@@ -1074,9 +987,7 @@ int hmm_bo_mmap(struct vm_area_struct *vma, struct hmm_buffer_object *bo)
 	vma->vm_ops = &hmm_bo_vm_ops;
 	vm_flags_set(vma, VM_IO | VM_DONTEXPAND | VM_DONTDUMP);
 
-	/*
-	 * call hmm_bo_vm_open explicitly.
-	 */
+	 
 	hmm_bo_vm_open(vma);
 
 	return 0;

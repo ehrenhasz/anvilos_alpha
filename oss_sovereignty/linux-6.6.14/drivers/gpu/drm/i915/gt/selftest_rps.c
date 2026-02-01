@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/pm_qos.h>
 #include <linux/sort.h>
@@ -22,8 +20,8 @@
 #include "selftests/igt_spinner.h"
 #include "selftests/librapl.h"
 
-/* Try to isolate the impact of cstates from determing frequency response */
-#define CPU_LATENCY 0 /* -1 to disable pm_qos, 0 to disable cstates */
+ 
+#define CPU_LATENCY 0  
 
 static void dummy_rps_work(struct work_struct *wrk)
 {
@@ -112,7 +110,7 @@ create_spin_counter(struct intel_engine_cs *engine,
 
 	loop = cs - base;
 
-	/* Unroll the loop to avoid MI_BB_START stalls impacting measurements */
+	 
 	for (i = 0; i < 1024; i++) {
 		*cs++ = MI_MATH(4);
 		*cs++ = MI_MATH_LOAD(MI_MATH_REG_SRCA, MI_MATH_REG(COUNT));
@@ -158,7 +156,7 @@ static u8 wait_for_freq(struct intel_rps *rps, u8 freq, int timeout_ms)
 	memset(history, freq, sizeof(history));
 	sleep = 20;
 
-	/* The PCU does not change instantly, but drifts towards the goal? */
+	 
 	end = jiffies + msecs_to_jiffies(timeout_ms);
 	do {
 		u8 act;
@@ -167,11 +165,11 @@ static u8 wait_for_freq(struct intel_rps *rps, u8 freq, int timeout_ms)
 		if (time_after(jiffies, end))
 			return act;
 
-		/* Target acquired */
+		 
 		if (act == freq)
 			return act;
 
-		/* Any change within the last N samples? */
+		 
 		if (!memchr_inv(history, act, sizeof(history)))
 			return act;
 
@@ -276,7 +274,7 @@ int live_rps_clock_interval(void *arg)
 
 		intel_uncore_write_fw(gt->uncore, GEN6_RP_CUR_UP_EI, 0);
 
-		/* Set the evaluation interval to infinity! */
+		 
 		intel_uncore_write_fw(gt->uncore,
 				      GEN6_RP_UP_EI, 0xffffffff);
 		intel_uncore_write_fw(gt->uncore,
@@ -288,7 +286,7 @@ int live_rps_clock_interval(void *arg)
 		if (wait_for(intel_uncore_read_fw(gt->uncore,
 						  GEN6_RP_CUR_UP_EI),
 			     10)) {
-			/* Just skip the test; assume lack of HW support */
+			 
 			pr_notice("%s: rps evaluation interval not ticking\n",
 				  engine->name);
 			err = -ENODEV;
@@ -311,7 +309,7 @@ int live_rps_clock_interval(void *arg)
 				preempt_enable();
 			}
 
-			/* Use the median of both cycle/dt; close enough */
+			 
 			sort(cycles_, 5, sizeof(*cycles_), cmp_u32, NULL);
 			cycles = (cycles_[1] + 2 * cycles_[2] + cycles_[3]) / 4;
 			sort(dt_, 5, sizeof(*dt_), cmp_u64, NULL);
@@ -351,7 +349,7 @@ int live_rps_clock_interval(void *arg)
 		if (igt_flush_test(gt->i915))
 			err = -EIO;
 
-		break; /* once is enough */
+		break;  
 	}
 
 	intel_rps_enable(&gt->rps);
@@ -362,7 +360,7 @@ int live_rps_clock_interval(void *arg)
 	intel_gt_pm_wait_for_idle(gt);
 	rps->work.func = saved_work;
 
-	if (err == -ENODEV) /* skipped, don't report a fail */
+	if (err == -ENODEV)  
 		err = 0;
 
 	return err;
@@ -378,17 +376,12 @@ int live_rps_control(void *arg)
 	struct igt_spinner spin;
 	int err = 0;
 
-	/*
-	 * Check that the actual frequency matches our requested frequency,
-	 * to verify our control mechanism. We have to be careful that the
-	 * PCU may throttle the GPU in which case the actual frequency used
-	 * will be lowered than requested.
-	 */
+	 
 
 	if (!intel_rps_is_enabled(rps))
 		return 0;
 
-	if (IS_CHERRYVIEW(gt->i915)) /* XXX fragile PCU */
+	if (IS_CHERRYVIEW(gt->i915))  
 		return 0;
 
 	if (igt_spinner_init(&spin, gt))
@@ -511,7 +504,7 @@ static void show_pcu_config(struct intel_rps *rps)
 	min_gpu_freq = rps->min_freq;
 	max_gpu_freq = rps->max_freq;
 	if (GRAPHICS_VER(i915) >= 9) {
-		/* Convert GT frequency to 50 HZ units */
+		 
 		min_gpu_freq /= GEN9_FREQ_SCALER;
 		max_gpu_freq /= GEN9_FREQ_SCALER;
 	}
@@ -557,7 +550,7 @@ static u64 measure_frequency_at(struct intel_rps *rps, u32 *cntr, int *freq)
 		x[i] = __measure_frequency(cntr, 2);
 	*freq = (*freq + read_cagf(rps)) / 2;
 
-	/* A simple triangle filter for better result stability */
+	 
 	sort(x, 5, sizeof(*x), cmp_u64, NULL);
 	return div_u64(x[1] + 2 * x[2] + x[3], 4);
 }
@@ -588,7 +581,7 @@ static u64 measure_cs_frequency_at(struct intel_rps *rps,
 		x[i] = __measure_cs_frequency(engine, 2);
 	*freq = (*freq + read_cagf(rps)) / 2;
 
-	/* A simple triangle filter for better result stability */
+	 
 	sort(x, 5, sizeof(*x), cmp_u64, NULL);
 	return div_u64(x[1] + 2 * x[2] + x[3], 4);
 }
@@ -608,16 +601,12 @@ int live_rps_frequency_cs(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * The premise is that the GPU does change frequency at our behest.
-	 * Let's check there is a correspondence between the requested
-	 * frequency, the actual frequency, and the observed clock rate.
-	 */
+	 
 
 	if (!intel_rps_is_enabled(rps))
 		return 0;
 
-	if (GRAPHICS_VER(gt->i915) < 8) /* for CS simplicity */
+	if (GRAPHICS_VER(gt->i915) < 8)  
 		return 0;
 
 	if (CPU_LATENCY >= 0)
@@ -707,10 +696,10 @@ int live_rps_frequency_cs(void *arg)
 					(int)DIV64_U64_ROUND_CLOSEST(100 * min.freq * count,
 								     act * min.count));
 
-				f = act; /* may skip ahead [pcu granularity] */
+				f = act;  
 			}
 
-			err = -EINTR; /* ignore error, continue on with test */
+			err = -EINTR;  
 		}
 
 err_vma:
@@ -747,16 +736,12 @@ int live_rps_frequency_srm(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * The premise is that the GPU does change frequency at our behest.
-	 * Let's check there is a correspondence between the requested
-	 * frequency, the actual frequency, and the observed clock rate.
-	 */
+	 
 
 	if (!intel_rps_is_enabled(rps))
 		return 0;
 
-	if (GRAPHICS_VER(gt->i915) < 8) /* for CS simplicity */
+	if (GRAPHICS_VER(gt->i915) < 8)  
 		return 0;
 
 	if (CPU_LATENCY >= 0)
@@ -845,10 +830,10 @@ int live_rps_frequency_srm(void *arg)
 					(int)DIV64_U64_ROUND_CLOSEST(100 * min.freq * count,
 								     act * min.count));
 
-				f = act; /* may skip ahead [pcu granularity] */
+				f = act;  
 			}
 
-			err = -EINTR; /* ignore error, continue on with test */
+			err = -EINTR;  
 		}
 
 err_vma:
@@ -877,15 +862,15 @@ err_vma:
 
 static void sleep_for_ei(struct intel_rps *rps, int timeout_us)
 {
-	/* Flush any previous EI */
+	 
 	usleep_range(timeout_us, 2 * timeout_us);
 
-	/* Reset the interrupt status */
+	 
 	rps_disable_interrupts(rps);
 	GEM_BUG_ON(rps->pm_iir);
 	rps_enable_interrupts(rps);
 
-	/* And then wait for the timeout, for real this time */
+	 
 	usleep_range(2 * timeout_us, 3 * timeout_us);
 }
 
@@ -1026,9 +1011,7 @@ int live_rps_interrupt(void *arg)
 	u32 pm_events;
 	int err = 0;
 
-	/*
-	 * First, let's check whether or not we are receiving interrupts.
-	 */
+	 
 
 	if (!intel_rps_has_interrupts(rps) || GRAPHICS_VER(gt->i915) < 6)
 		return 0;
@@ -1049,7 +1032,7 @@ int live_rps_interrupt(void *arg)
 	rps->work.func = dummy_rps_work;
 
 	for_each_engine(engine, gt, id) {
-		/* Keep the engine busy with a spinner; expect an UP! */
+		 
 		if (pm_events & GEN6_PM_RP_UP_THRESHOLD) {
 			intel_gt_pm_wait_for_idle(engine->gt);
 			GEM_BUG_ON(intel_rps_is_active(rps));
@@ -1065,7 +1048,7 @@ int live_rps_interrupt(void *arg)
 			intel_gt_pm_wait_for_idle(engine->gt);
 		}
 
-		/* Keep the engine awake but idle and check for DOWN */
+		 
 		if (pm_events & GEN6_PM_RP_DOWN_THRESHOLD) {
 			st_engine_heartbeat_disable(engine);
 			intel_rc6_disable(&gt->rc6);
@@ -1114,7 +1097,7 @@ static u64 measure_power(struct intel_rps *rps, int *freq)
 
 	*freq = (*freq + intel_rps_read_actual_frequency(rps)) / 2;
 
-	/* A simple triangle filter for better result stability */
+	 
 	sort(x, 5, sizeof(*x), cmp_u64, NULL);
 	return div_u64(x[1] + 2 * x[2] + x[3], 4);
 }
@@ -1135,11 +1118,7 @@ int live_rps_power(void *arg)
 	struct igt_spinner spin;
 	int err = 0;
 
-	/*
-	 * Our fundamental assumption is that running at lower frequency
-	 * actually saves power. Let's see if our RAPL measurement support
-	 * that theory.
-	 */
+	 
 
 	if (!intel_rps_is_enabled(rps) || GRAPHICS_VER(gt->i915) < 6)
 		return 0;
@@ -1238,12 +1217,7 @@ int live_rps_dynamic(void *arg)
 	struct igt_spinner spin;
 	int err = 0;
 
-	/*
-	 * We've looked at the bascs, and have established that we
-	 * can change the clock frequency and that the HW will generate
-	 * interrupts based on load. Now we check how we integrate those
-	 * moving parts into dynamic reclocking based on load.
-	 */
+	 
 
 	if (!intel_rps_is_enabled(rps) || GRAPHICS_VER(gt->i915) < 6)
 		return 0;

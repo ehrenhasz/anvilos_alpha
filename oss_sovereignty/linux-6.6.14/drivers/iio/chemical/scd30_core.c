@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensirion SCD30 carbon dioxide sensor core driver
- *
- * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -73,19 +69,15 @@ static int scd30_reset(struct scd30_state *state)
 	if (ret)
 		return ret;
 
-	/* sensor boots up within 2 secs */
+	 
 	msleep(2000);
-	/*
-	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
-	 * some controllers end up in error state. Try to recover by placing
-	 * any data on the bus.
-	 */
+	 
 	scd30_command_read(state, CMD_MEAS_READY, &val);
 
 	return 0;
 }
 
-/* simplified float to fixed point conversion with a scaling factor of 0.01 */
+ 
 static int scd30_float_to_fp(int float32)
 {
 	int fraction, shift,
@@ -93,18 +85,18 @@ static int scd30_float_to_fp(int float32)
 	    sign = (float32 & BIT(31)) ? -1 : 1,
 	    exp = (float32 & ~BIT(31)) >> 23;
 
-	/* special case 0 */
+	 
 	if (!exp && !mantissa)
 		return 0;
 
 	exp -= 127;
 	if (exp < 0) {
 		exp = -exp;
-		/* return values ranging from 1 to 99 */
+		 
 		return sign * ((((BIT(23) + mantissa) * 100) >> 23) >> exp);
 	}
 
-	/* return values starting at 100 */
+	 
 	shift = 23 - exp;
 	float32 = BIT(exp) + (mantissa >> shift);
 	fraction = mantissa & GENMASK(shift - 1, 0);
@@ -125,10 +117,7 @@ static int scd30_read_meas(struct scd30_state *state)
 	for (i = 0; i < ARRAY_SIZE(state->meas); i++)
 		state->meas[i] = scd30_float_to_fp(state->meas[i]);
 
-	/*
-	 * co2 is left unprocessed while temperature and humidity are scaled
-	 * to milli deg C and milli percent respectively.
-	 */
+	 
 	state->meas[SCD30_TEMP] *= 10;
 	state->meas[SCD30_HR] *= 10;
 
@@ -165,7 +154,7 @@ static int scd30_wait_meas_poll(struct scd30_state *state)
 		if (ret)
 			return -EIO;
 
-		/* new measurement available */
+		 
 		if (val)
 			break;
 
@@ -295,10 +284,7 @@ static int scd30_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec const
 	case IIO_CHAN_INFO_CALIBBIAS:
 		if (val < 0 || val > SCD30_TEMP_OFFSET_MAX)
 			break;
-		/*
-		 * Manufacturer does not explicitly specify min/max sensible
-		 * values hence check is omitted for simplicity.
-		 */
+		 
 		ret = scd30_command_write(state, CMD_TEMP_OFFSET / 10, val);
 	}
 	mutex_unlock(&state->lock);
@@ -355,11 +341,7 @@ static ssize_t sampling_frequency_available_show(struct device *dev, struct devi
 
 	do {
 		len += sysfs_emit_at(buf, len, "0.%09u ", 1000000000 / i);
-		/*
-		 * Not all values fit PAGE_SIZE buffer hence print every 6th
-		 * (each frequency differs by 6s in time domain from the
-		 * adjacent). Unlisted but valid ones are still accepted.
-		 */
+		 
 		i += 6;
 	} while (i <= SCD30_MEAS_INTERVAL_MAX_S);
 
@@ -471,11 +453,7 @@ static const struct iio_info scd30_info = {
 
 static const struct iio_chan_spec scd30_channels[] = {
 	{
-		/*
-		 * this channel is special in a sense we are pretending that
-		 * sensor is able to change measurement chamber pressure but in
-		 * fact we're just setting pressure compensation value
-		 */
+		 
 		.type = IIO_PRESSURE,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
 		.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW),
@@ -654,11 +632,7 @@ static int scd30_setup_trigger(struct iio_dev *indio_dev)
 
 	indio_dev->trig = iio_trigger_get(trig);
 
-	/*
-	 * Interrupt is enabled just before taking a fresh measurement
-	 * and disabled afterwards. This means we need to ensure it is not
-	 * enabled here to keep calls to enable/disable balanced.
-	 */
+	 
 	ret = devm_request_threaded_irq(dev, state->irq, scd30_irq_handler,
 					scd30_irq_thread_handler,
 					IRQF_TRIGGER_HIGH | IRQF_ONESHOT |

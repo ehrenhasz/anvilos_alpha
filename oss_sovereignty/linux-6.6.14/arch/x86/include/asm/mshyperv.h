@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_MSHYPER_H
 #define _ASM_X86_MSHYPER_H
 
@@ -11,12 +11,7 @@
 #include <asm/paravirt.h>
 #include <asm/mshyperv.h>
 
-/*
- * Hyper-V always provides a single IO-APIC at this MMIO address.
- * Ideally, the value should be looked up in ACPI tables, but it
- * is needed for mapping the IO-APIC early in boot on Confidential
- * VMs, before ACPI functions can be used.
- */
+ 
 #define HV_IOAPIC_BASE_ADDRESS 0xfec00000
 
 #define HV_VTL_NORMAL 0x0
@@ -53,10 +48,7 @@ bool hv_isolation_type_snp(void);
 bool hv_isolation_type_tdx(void);
 u64 hv_tdx_hypercall(u64 control, u64 param1, u64 param2);
 
-/*
- * DEFAULT INIT GPAT and SEGMENT LIMIT value in struct VMSA
- * to start AP in enlightened SEV guest.
- */
+ 
 #define HV_AP_INIT_GPAT_DEFAULT		0x0007040600070406ULL
 #define HV_AP_SEGMENT_LIMIT		0xffffffff
 
@@ -64,10 +56,7 @@ int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
 int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
 int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags);
 
-/*
- * If the hypercall involves no input or output parameters, the hypervisor
- * ignores the corresponding GPA pointer.
- */
+ 
 static inline u64 hv_do_hypercall(u64 control, void *input, void *output)
 {
 	u64 input_address = input ? virt_to_phys(input) : 0;
@@ -115,17 +104,17 @@ static inline u64 hv_do_hypercall(u64 control, void *input, void *output)
 			       "D"(output_address_hi), "S"(output_address_lo),
 			       THUNK_TARGET(hv_hypercall_pg)
 			     : "cc", "memory");
-#endif /* !x86_64 */
+#endif  
 	return hv_status;
 }
 
-/* Hypercall to the L0 hypervisor */
+ 
 static inline u64 hv_do_nested_hypercall(u64 control, void *input, void *output)
 {
 	return hv_do_hypercall(control | HV_HYPERCALL_NESTED, input, output);
 }
 
-/* Fast hypercall with 8 bytes of input and no output */
+ 
 static inline u64 _hv_do_fast_hypercall8(u64 control, u64 input1)
 {
 	u64 hv_status;
@@ -179,7 +168,7 @@ static inline u64 hv_do_fast_nested_hypercall8(u16 code, u64 input1)
 	return _hv_do_fast_hypercall8(control, input1);
 }
 
-/* Fast hypercall with 16 bytes of input */
+ 
 static inline u64 _hv_do_fast_hypercall16(u64 control, u64 input1, u64 input2)
 {
 	u64 hv_status;
@@ -315,7 +304,7 @@ static __always_inline u64 hv_raw_get_register(unsigned int reg)
 	return __rdmsr(reg);
 }
 
-#else /* CONFIG_HYPERV */
+#else  
 static inline void hyperv_init(void) {}
 static inline void hyperv_setup_mmu_ops(void) {}
 static inline void set_hv_tscchange_cb(void (*cb)(void)) {}
@@ -335,7 +324,7 @@ static inline void hv_set_register(unsigned int reg, u64 value) { }
 static inline u64 hv_get_register(unsigned int reg) { return 0; }
 static inline void hv_set_non_nested_register(unsigned int reg, u64 value) { }
 static inline u64 hv_get_non_nested_register(unsigned int reg) { return 0; }
-#endif /* CONFIG_HYPERV */
+#endif  
 
 
 #ifdef CONFIG_HYPERV_VTL_MODE

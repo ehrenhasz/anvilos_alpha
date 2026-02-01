@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID driver for CMedia CM6533 audio jack controls
- * and HS100B mute buttons
- *
- * Copyright (C) 2015 Ben Chen <ben_chen@bizlinktech.com>
- * Copyright (C) 2021 Thomas Weißschuh <linux@weissschuh.net>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -23,56 +17,42 @@ MODULE_LICENSE("GPL");
 
 #define HS100B_RDESC_ORIG_SIZE   60
 
-/* Fixed report descriptor of HS-100B audio chip
- * Bit 4 is an abolute Microphone mute usage instead of being unassigned.
- */
+ 
 static __u8 hs100b_rdesc_fixed[] = {
-	0x05, 0x0C,         /*  Usage Page (Consumer),          */
-	0x09, 0x01,         /*  Usage (Consumer Control),       */
-	0xA1, 0x01,         /*  Collection (Application),       */
-	0x15, 0x00,         /*      Logical Minimum (0),        */
-	0x25, 0x01,         /*      Logical Maximum (1),        */
-	0x09, 0xE9,         /*      Usage (Volume Inc),         */
-	0x09, 0xEA,         /*      Usage (Volume Dec),         */
-	0x75, 0x01,         /*      Report Size (1),            */
-	0x95, 0x02,         /*      Report Count (2),           */
-	0x81, 0x02,         /*      Input (Variable),           */
-	0x09, 0xE2,         /*      Usage (Mute),               */
-	0x95, 0x01,         /*      Report Count (1),           */
-	0x81, 0x06,         /*      Input (Variable, Relative), */
-	0x05, 0x0B,         /*      Usage Page (Telephony),     */
-	0x09, 0x2F,         /*      Usage (2Fh),                */
-	0x81, 0x02,         /*      Input (Variable),           */
-	0x09, 0x20,         /*      Usage (20h),                */
-	0x81, 0x06,         /*      Input (Variable, Relative), */
-	0x05, 0x0C,         /*      Usage Page (Consumer),      */
-	0x09, 0x00,         /*      Usage (00h),                */
-	0x95, 0x03,         /*      Report Count (3),           */
-	0x81, 0x02,         /*      Input (Variable),           */
-	0x26, 0xFF, 0x00,   /*      Logical Maximum (255),      */
-	0x09, 0x00,         /*      Usage (00h),                */
-	0x75, 0x08,         /*      Report Size (8),            */
-	0x95, 0x03,         /*      Report Count (3),           */
-	0x81, 0x02,         /*      Input (Variable),           */
-	0x09, 0x00,         /*      Usage (00h),                */
-	0x95, 0x04,         /*      Report Count (4),           */
-	0x91, 0x02,         /*      Output (Variable),          */
-	0xC0                /*  End Collection                  */
+	0x05, 0x0C,          
+	0x09, 0x01,          
+	0xA1, 0x01,          
+	0x15, 0x00,          
+	0x25, 0x01,          
+	0x09, 0xE9,          
+	0x09, 0xEA,          
+	0x75, 0x01,          
+	0x95, 0x02,          
+	0x81, 0x02,          
+	0x09, 0xE2,          
+	0x95, 0x01,          
+	0x81, 0x06,          
+	0x05, 0x0B,          
+	0x09, 0x2F,          
+	0x81, 0x02,          
+	0x09, 0x20,          
+	0x81, 0x06,          
+	0x05, 0x0C,          
+	0x09, 0x00,          
+	0x95, 0x03,          
+	0x81, 0x02,          
+	0x26, 0xFF, 0x00,    
+	0x09, 0x00,          
+	0x75, 0x08,          
+	0x95, 0x03,          
+	0x81, 0x02,          
+	0x09, 0x00,          
+	0x95, 0x04,          
+	0x91, 0x02,          
+	0xC0                 
 };
 
-/*
-*
-*CM6533 audio jack HID raw events:
-*
-*Plug in:
-*01000600 002083xx 080008c0 10000000
-*about 3 seconds later...
-*01000a00 002083xx 08000380 10000000
-*01000600 002083xx 08000380 10000000
-*
-*Plug out:
-*01000400 002083xx 080008c0 x0000000
-*/
+ 
 
 static const u8 ji_sfx[] = { 0x08, 0x00, 0x08, 0xc0 };
 static const u8 ji_in[]  = { 0x01, 0x00, 0x06, 0x00 };

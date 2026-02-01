@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _INET_COMMON_H
 #define _INET_COMMON_H
 
@@ -11,9 +11,7 @@
 extern const struct proto_ops inet_stream_ops;
 extern const struct proto_ops inet_dgram_ops;
 
-/*
- *	INET4 prototypes used by INET6
- */
+ 
 
 struct msghdr;
 struct net;
@@ -44,13 +42,13 @@ int __inet_listen_sk(struct sock *sk, int backlog);
 void inet_sock_destruct(struct sock *sk);
 int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
 int inet_bind_sk(struct sock *sk, struct sockaddr *uaddr, int addr_len);
-/* Don't allocate port at this moment, defer to connect. */
+ 
 #define BIND_FORCE_ADDRESS_NO_PORT	(1 << 0)
-/* Grab and release socket lock. */
+ 
 #define BIND_WITH_LOCK			(1 << 1)
-/* Called from BPF program. */
+ 
 #define BIND_FROM_BPF			(1 << 2)
-/* Skip CAP_NET_BIND_SERVICE check. */
+ 
 #define BIND_NO_CAP_NET_BIND_SERVICE	(1 << 3)
 int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 		u32 flags);

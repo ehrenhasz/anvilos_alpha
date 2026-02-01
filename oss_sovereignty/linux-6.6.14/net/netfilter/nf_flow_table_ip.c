@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -15,7 +15,7 @@
 #include <net/neighbour.h>
 #include <net/netfilter/nf_flow_table.h>
 #include <net/netfilter/nf_conntrack_acct.h>
-/* For layer 4 checksum field offset. */
+ 
 #include <linux/tcp.h>
 #include <linux/udp.h>
 
@@ -242,7 +242,7 @@ static int nf_flow_tuple_ip(struct nf_flowtable_ctx *ctx, struct sk_buff *skb,
 	return 0;
 }
 
-/* Based on ip_exceeds_mtu(). */
+ 
 static bool nf_flow_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
 {
 	if (skb->len <= mtu)

@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * timberdale.c timberdale FPGA MFD driver
- * Copyright (c) 2009 Intel Corporation
- */
 
-/* Supports:
- * Timberdale FPGA
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -47,7 +42,7 @@ struct timberdale_device {
 	} fw;
 };
 
-/*--------------------------------------------------------------------------*/
+ 
 
 static struct tsc2007_platform_data timberdale_tsc2007_platform_data = {
 	.model = 2003,
@@ -132,9 +127,7 @@ static struct spi_board_info timberdale_spi_8bit_board_info[] = {
 
 static struct xspi_platform_data timberdale_xspi_platform_data = {
 	.num_chipselect = 3,
-	/* bits per word and devices will be filled in runtime depending
-	 * on the HW config
-	 */
+	 
 };
 
 static const struct resource timberdale_spi_resources[] = {
@@ -234,7 +227,7 @@ static const struct resource timberdale_uartlite_resources[] = {
 };
 
 static struct i2c_board_info timberdale_adv7180_i2c_board_info = {
-	/* Requires jumper JP9 to be off */
+	 
 	I2C_BOARD_INFO("adv7180", 0x42 >> 1),
 	.irq = IRQ_TIMBERDALE_ADV7180
 };
@@ -283,64 +276,61 @@ static const struct resource timberdale_video_resources[] = {
 		.end	= LOGIWEND,
 		.flags	= IORESOURCE_MEM,
 	},
-	/*
-	note that the "frame buffer" is located in DMA area
-	starting at 0x1200000
-	*/
+	 
 };
 
 static struct timb_dma_platform_data timb_dma_platform_data = {
 	.nr_channels = 10,
 	.channels = {
 		{
-			/* UART RX */
+			 
 			.rx = true,
 			.descriptors = 2,
 			.descriptor_elements = 1
 		},
 		{
-			/* UART TX */
+			 
 			.rx = false,
 			.descriptors = 2,
 			.descriptor_elements = 1
 		},
 		{
-			/* MLB RX */
+			 
 			.rx = true,
 			.descriptors = 2,
 			.descriptor_elements = 1
 		},
 		{
-			/* MLB TX */
+			 
 			.rx = false,
 			.descriptors = 2,
 			.descriptor_elements = 1
 		},
 		{
-			/* Video RX */
+			 
 			.rx = true,
 			.bytes_per_line = 1440,
 			.descriptors = 2,
 			.descriptor_elements = 16
 		},
 		{
-			/* Video framedrop */
+			 
 		},
 		{
-			/* SDHCI RX */
+			 
 			.rx = true,
 		},
 		{
-			/* SDHCI TX */
+			 
 		},
 		{
-			/* ETH RX */
+			 
 			.rx = true,
 			.descriptors = 2,
 			.descriptor_elements = 1
 		},
 		{
-			/* ETH TX */
+			 
 			.rx = false,
 			.descriptors = 2,
 			.descriptor_elements = 1
@@ -593,7 +583,7 @@ static const struct mfd_cell timberdale_cells_bar0_cfg3[] = {
 };
 
 static const struct resource timberdale_sdhc_resources[] = {
-	/* located in bar 1 and bar 2 */
+	 
 	{
 		.start	= SDHC0OFFSET,
 		.end	= SDHC0END,
@@ -633,7 +623,7 @@ static ssize_t fw_ver_show(struct device *dev,
 
 static DEVICE_ATTR_RO(fw_ver);
 
-/*--------------------------------------------------------------------------*/
+ 
 
 static int timb_probe(struct pci_dev *dev,
 	const struct pci_device_id *id)
@@ -660,7 +650,7 @@ static int timb_probe(struct pci_dev *dev,
 		goto err_start;
 	}
 
-	/* create a resource for the PCI master register */
+	 
 	priv->ctl_mapbase = mapbase + CHIPCTLOFFSET;
 	if (!request_mem_region(priv->ctl_mapbase, CHIPCTLSIZE, "timb-ctl")) {
 		dev_err(&dev->dev, "Failed to request ctl mem\n");
@@ -673,7 +663,7 @@ static int timb_probe(struct pci_dev *dev,
 		goto err_ioremap;
 	}
 
-	/* read the HW config */
+	 
 	priv->fw.major = ioread32(priv->ctl_membase + TIMB_REV_MAJOR);
 	priv->fw.minor = ioread32(priv->ctl_membase + TIMB_REV_MINOR);
 	priv->fw.config = ioread32(priv->ctl_membase + TIMB_HW_CONFIG);
@@ -713,15 +703,15 @@ static int timb_probe(struct pci_dev *dev,
 	if (err)
 		goto err_create_file;
 
-	/* Reset all FPGA PLB peripherals */
+	 
 	iowrite32(0x1, priv->ctl_membase + TIMB_SW_RST);
 
-	/* update IRQ offsets in I2C board info */
+	 
 	for (i = 0; i < ARRAY_SIZE(timberdale_i2c_board_info); i++)
 		timberdale_i2c_board_info[i].irq =
 			msix_entries[timberdale_i2c_board_info[i].irq].vector;
 
-	/* Update the SPI configuration depending on the HW (8 or 16 bit) */
+	 
 	if (priv->fw.config & TIMB_HW_CONFIG_SPI_8BIT) {
 		timberdale_xspi_platform_data.bits_per_word = 8;
 		timberdale_xspi_platform_data.devices =
@@ -782,7 +772,7 @@ static int timb_probe(struct pci_dev *dev,
 		goto err_mfd2;
 	}
 
-	/* only version 0 and 3 have the iNand routed to SDHCI */
+	 
 	if (((priv->fw.config & TIMB_HW_VER_MASK) == TIMB_HW_VER0) ||
 		((priv->fw.config & TIMB_HW_VER_MASK) == TIMB_HW_VER3)) {
 		err = mfd_add_devices(&dev->dev, 1, timberdale_cells_bar2,

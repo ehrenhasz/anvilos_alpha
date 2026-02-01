@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L MTU3a PWM Timer driver
- *
- * Copyright (C) 2023 Renesas Electronics Corporation
- *
- * Hardware manual for this IP can be found here
- * https://www.renesas.com/eu/en/document/mah/rzg2l-group-rzg2lc-group-users-manual-hardware-0?language=en
- *
- * Limitations:
- * - When PWM is disabled, the output is driven to Hi-Z.
- * - While the hardware supports both polarities, the driver (for now)
- *   only handles normal polarity.
- * - HW uses one counter and two match components to configure duty_cycle
- *   and period.
- * - Multi-Function Timer Pulse Unit (a.k.a MTU) has 7 HW channels for PWM
- *   operations. (The channels are MTU{0..4, 6, 7}.)
- * - MTU{1, 2} channels have a single IO, whereas all other HW channels have
- *   2 IOs.
- * - Each IO is modelled as an independent PWM channel.
- * - rz_mtu3_channel_io_map table is used to map the PWM channel to the
- *   corresponding HW channel as there are difference in number of IOs
- *   between HW channels.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -36,40 +14,19 @@
 #define RZ_MTU3_MAX_PWM_CHANNELS	12
 #define RZ_MTU3_MAX_HW_CHANNELS		7
 
-/**
- * struct rz_mtu3_channel_io_map - MTU3 pwm channel map
- *
- * @base_pwm_number: First PWM of a channel
- * @num_channel_ios: number of IOs on the HW channel.
- */
+ 
 struct rz_mtu3_channel_io_map {
 	u8 base_pwm_number;
 	u8 num_channel_ios;
 };
 
-/**
- * struct rz_mtu3_pwm_channel - MTU3 pwm channel data
- *
- * @mtu: MTU3 channel data
- * @map: MTU3 pwm channel map
- */
+ 
 struct rz_mtu3_pwm_channel {
 	struct rz_mtu3_channel *mtu;
 	const struct rz_mtu3_channel_io_map *map;
 };
 
-/**
- * struct rz_mtu3_pwm_chip - MTU3 pwm private data
- *
- * @chip: MTU3 pwm chip data
- * @clk: MTU3 module clock
- * @lock: Lock to prevent concurrent access for usage count
- * @rate: MTU3 clock rate
- * @user_count: MTU3 usage count
- * @enable_count: MTU3 enable count
- * @prescale: MTU3 prescale
- * @channel_data: MTU3 pwm channel data
- */
+ 
 
 struct rz_mtu3_pwm_chip {
 	struct pwm_chip chip;
@@ -82,10 +39,7 @@ struct rz_mtu3_pwm_chip {
 	struct rz_mtu3_pwm_channel channel_data[RZ_MTU3_MAX_HW_CHANNELS];
 };
 
-/*
- * The MTU channels are {0..4, 6, 7} and the number of IO on MTU1
- * and MTU2 channel is 1 compared to 2 on others.
- */
+ 
 static const struct rz_mtu3_channel_io_map channel_map[] = {
 	{ 0, 2 }, { 2, 1 }, { 3, 1 }, { 4, 2 }, { 6, 2 }, { 8, 2 }, { 10, 2 }
 };
@@ -117,10 +71,7 @@ static u8 rz_mtu3_pwm_calculate_prescale(struct rz_mtu3_pwm_chip *rz_mtu3,
 	u32 prescaled_period_cycles;
 	u8 prescale;
 
-	/*
-	 * Supported prescale values are 1, 4, 16 and 64.
-	 * TODO: Support prescale values 2, 8, 32, 256 and 1024.
-	 */
+	 
 	prescaled_period_cycles = period_cycles >> 16;
 	if (prescaled_period_cycles >= 16)
 		prescale = 3;
@@ -175,11 +126,7 @@ static int rz_mtu3_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 	ch = priv - rz_mtu3_pwm->channel_data;
 
 	mutex_lock(&rz_mtu3_pwm->lock);
-	/*
-	 * Each channel must be requested only once, so if the channel
-	 * serves two PWMs and the other is already requested, skip over
-	 * rz_mtu3_request_channel()
-	 */
+	 
 	if (!rz_mtu3_pwm->user_count[ch]) {
 		is_mtu3_channel_available = rz_mtu3_request_channel(priv->mtu);
 		if (!is_mtu3_channel_available) {
@@ -252,7 +199,7 @@ static void rz_mtu3_pwm_disable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
 	priv = rz_mtu3_get_channel(rz_mtu3_pwm, pwm->hwpwm);
 	ch = priv - rz_mtu3_pwm->channel_data;
 
-	/* Disable output pins of MTU3 channel */
+	 
 	if (priv->map->base_pwm_number == pwm->hwpwm)
 		rz_mtu3_8bit_ch_write(priv->mtu, RZ_MTU3_TIORH, RZ_MTU3_TIOR_OC_RETAIN);
 	else
@@ -296,7 +243,7 @@ static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 		val = rz_mtu3_8bit_ch_read(priv->mtu, RZ_MTU3_TCR);
 		prescale = FIELD_GET(RZ_MTU3_TCR_TPCS, val);
 
-		/* With prescale <= 7 and pv <= 0xffff this doesn't overflow. */
+		 
 		tmp = NSEC_PER_SEC * (u64)pv << (2 * prescale);
 		state->period = DIV_ROUND_UP_ULL(tmp, rz_mtu3_pwm->rate);
 		tmp = NSEC_PER_SEC * (u64)dc << (2 * prescale);
@@ -336,12 +283,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 					NSEC_PER_SEC);
 	prescale = rz_mtu3_pwm_calculate_prescale(rz_mtu3_pwm, period_cycles);
 
-	/*
-	 * Prescalar is shared by multiple channels, so prescale can
-	 * NOT be modified when there are multiple channels in use with
-	 * different settings. Modify prescalar if other PWM is off or handle
-	 * it, if current prescale value is less than the one we want to set.
-	 */
+	 
 	if (rz_mtu3_pwm->enable_count[ch] > 1) {
 		if (rz_mtu3_pwm->prescale[ch] > prescale)
 			return -EBUSY;
@@ -355,10 +297,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 				      NSEC_PER_SEC);
 	dc = rz_mtu3_pwm_calculate_pv_or_dc(duty_cycles, prescale);
 
-	/*
-	 * If the PWM channel is disabled, make sure to turn on the clock
-	 * before writing the register.
-	 */
+	 
 	if (!pwm->state.enabled) {
 		int rc;
 
@@ -369,7 +308,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	val = RZ_MTU3_TCR_CKEG_RISING | prescale;
 
-	/* Counter must be stopped while updating TCR register */
+	 
 	if (rz_mtu3_pwm->prescale[ch] != prescale && rz_mtu3_pwm->enable_count[ch])
 		rz_mtu3_disable(priv->mtu);
 
@@ -386,18 +325,14 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	}
 
 	if (rz_mtu3_pwm->prescale[ch] != prescale) {
-		/*
-		 * Prescalar is shared by multiple channels, we cache the
-		 * prescalar value from first enabled channel and use the same
-		 * value for both channels.
-		 */
+		 
 		rz_mtu3_pwm->prescale[ch] = prescale;
 
 		if (rz_mtu3_pwm->enable_count[ch])
 			rz_mtu3_enable(priv->mtu);
 	}
 
-	/* If the PWM is not enabled, turn the clock off again to save power. */
+	 
 	if (!pwm->state.enabled)
 		pm_runtime_put(chip->dev);
 
@@ -503,10 +438,7 @@ static int rz_mtu3_pwm_probe(struct platform_device *pdev)
 	clk_rate_exclusive_get(rz_mtu3_pwm->clk);
 
 	rz_mtu3_pwm->rate = clk_get_rate(rz_mtu3_pwm->clk);
-	/*
-	 * Refuse clk rates > 1 GHz to prevent overflow later for computing
-	 * period and duty cycle.
-	 */
+	 
 	if (rz_mtu3_pwm->rate > NSEC_PER_SEC) {
 		ret = -EINVAL;
 		clk_rate_exclusive_put(rz_mtu3_pwm->clk);

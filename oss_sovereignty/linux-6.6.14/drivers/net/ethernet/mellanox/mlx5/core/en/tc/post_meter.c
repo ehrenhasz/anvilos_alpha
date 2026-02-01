@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "en/tc_priv.h"
 #include "post_meter.h"
@@ -134,9 +134,7 @@ mlx5e_post_meter_add_rule(struct mlx5e_priv *priv,
 
 	ret = mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
 
-	/* We did not create the counter, so we can't delete it.
-	 * Avoid freeing the counter when the attr is deleted in free_branching_attr
-	 */
+	 
 	attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_COUNT;
 
 	return ret;
@@ -309,7 +307,7 @@ mlx5e_post_meter_create_mtu_table(struct mlx5e_priv *priv,
 		goto err_ft;
 	}
 
-	/* create miss group */
+	 
 	memset(flow_group_in, 0, inlen);
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 1);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 1);

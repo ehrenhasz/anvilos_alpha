@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _KERNEL_EVENTS_INTERNAL_H
 #define _KERNEL_EVENTS_INTERNAL_H
 
@@ -6,7 +6,7 @@
 #include <linux/uaccess.h>
 #include <linux/refcount.h>
 
-/* Buffer handling */
+ 
 
 #define RING_BUFFER_WRITABLE		0x01
 
@@ -15,23 +15,23 @@ struct perf_buffer {
 	struct rcu_head			rcu_head;
 #ifdef CONFIG_PERF_USE_VMALLOC
 	struct work_struct		work;
-	int				page_order;	/* allocation order  */
+	int				page_order;	 
 #endif
-	int				nr_pages;	/* nr of data pages  */
-	int				overwrite;	/* can overwrite itself */
-	int				paused;		/* can write into ring buffer */
+	int				nr_pages;	 
+	int				overwrite;	 
+	int				paused;		 
 
-	atomic_t			poll;		/* POLL_ for wakeups */
+	atomic_t			poll;		 
 
-	local_t				head;		/* write position    */
-	unsigned int			nest;		/* nested writers    */
-	local_t				events;		/* event limit       */
-	local_t				wakeup;		/* wakeup stamp      */
-	local_t				lost;		/* nr records lost   */
+	local_t				head;		 
+	unsigned int			nest;		 
+	local_t				events;		 
+	local_t				wakeup;		 
+	local_t				lost;		 
 
-	long				watermark;	/* wakeup watermark  */
+	long				watermark;	 
 	long				aux_watermark;
-	/* poll crap */
+	 
 	spinlock_t			event_lock;
 	struct list_head		event_list;
 
@@ -39,10 +39,10 @@ struct perf_buffer {
 	unsigned long			mmap_locked;
 	struct user_struct		*mmap_user;
 
-	/* AUX area */
+	 
 	long				aux_head;
 	unsigned int			aux_nest;
-	long				aux_wakeup;	/* last aux_watermark boundary crossed by aux_head */
+	long				aux_wakeup;	 
 	unsigned long			aux_pgoff;
 	int				aux_nr_pages;
 	int				aux_overwrite;
@@ -97,11 +97,7 @@ extern struct page *
 perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff);
 
 #ifdef CONFIG_PERF_USE_VMALLOC
-/*
- * Back perf_mmap() with vmalloc memory.
- *
- * Required for architectures that have d-cache aliasing issues.
- */
+ 
 
 static inline int page_order(struct perf_buffer *rb)
 {
@@ -241,6 +237,6 @@ static inline bool arch_perf_have_user_stack_dump(void)
 }
 
 #define perf_user_stack_pointer(regs) 0
-#endif /* CONFIG_HAVE_PERF_USER_STACK_DUMP */
+#endif  
 
-#endif /* _KERNEL_EVENTS_INTERNAL_H */
+#endif  

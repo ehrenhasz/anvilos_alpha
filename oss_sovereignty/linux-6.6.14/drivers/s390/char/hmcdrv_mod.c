@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    HMC Drive DVD Module
- *
- *    Copyright IBM Corp. 2013
- *    Author(s): Ralf Hoppe (rhoppe@de.ibm.com)
- */
+
+ 
 
 #define KMSG_COMPONENT "hmcdrv"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -22,18 +17,14 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Copyright 2013 IBM Corporation");
 MODULE_DESCRIPTION("HMC drive DVD access");
 
-/*
- * module parameter 'cachesize'
- */
+ 
 static size_t hmcdrv_mod_cachesize = HMCDRV_CACHE_SIZE_DFLT;
 module_param_named(cachesize, hmcdrv_mod_cachesize, ulong, S_IRUGO);
 
-/**
- * hmcdrv_mod_init() - module init function
- */
+ 
 static int __init hmcdrv_mod_init(void)
 {
-	int rc = hmcdrv_ftp_probe(); /* perform w/o cache */
+	int rc = hmcdrv_ftp_probe();  
 
 	if (rc)
 		return rc;
@@ -51,9 +42,7 @@ static int __init hmcdrv_mod_init(void)
 	return rc;
 }
 
-/**
- * hmcdrv_mod_exit() - module exit function
- */
+ 
 static void __exit hmcdrv_mod_exit(void)
 {
 	hmcdrv_dev_exit();

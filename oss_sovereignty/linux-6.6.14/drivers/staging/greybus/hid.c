@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HID class driver for the Greybus.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/hid.h>
@@ -14,7 +9,7 @@
 #include <linux/slab.h>
 #include <linux/greybus.h>
 
-/* Greybus HID device's structure */
+ 
 struct gb_hid {
 	struct gb_bundle *bundle;
 	struct gb_connection		*connection;
@@ -30,9 +25,9 @@ struct gb_hid {
 	char				*inbuf;
 };
 
-/* Routines to get controller's information over greybus */
+ 
 
-/* Operations performed on greybus */
+ 
 static int gb_hid_get_desc(struct gb_hid *ghid)
 {
 	return gb_operation_sync(ghid->connection, GB_HID_TYPE_GET_DESC, NULL,
@@ -186,7 +181,7 @@ static int gb_hid_alloc_buffers(struct gb_hid *ghid, size_t bufsize)
 	return 0;
 }
 
-/* Routines dealing with reports */
+ 
 static void gb_hid_init_report(struct gb_hid *ghid, struct hid_report *report)
 {
 	unsigned int size;
@@ -196,11 +191,7 @@ static void gb_hid_init_report(struct gb_hid *ghid, struct hid_report *report)
 			      size))
 		return;
 
-	/*
-	 * hid->driver_lock is held as we are in probe function,
-	 * we just need to setup the input fields, so using
-	 * hid_report_raw_event is safe.
-	 */
+	 
 	hid_report_raw_event(ghid->hid, report->type, ghid->inbuf, size, 1);
 }
 
@@ -254,7 +245,7 @@ static int __gb_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
 
 	ret = gb_hid_set_report(ghid, report_type, report_id, buf, len);
 	if (report_id && ret >= 0)
-		ret++; /* add report_id to the number of transferred bytes */
+		ret++;  
 
 	return 0;
 }
@@ -275,7 +266,7 @@ static int gb_hid_raw_request(struct hid_device *hid, unsigned char reportnum,
 	}
 }
 
-/* HID Callbacks */
+ 
 static int gb_hid_parse(struct hid_device *hid)
 {
 	struct gb_hid *ghid = hid->driver_data;
@@ -359,7 +350,7 @@ static void gb_hid_close(struct hid_device *hid)
 
 	clear_bit(GB_HID_STARTED, &ghid->flags);
 
-	/* Save some power */
+	 
 	ret = gb_hid_set_power(ghid, GB_HID_TYPE_PWR_OFF);
 	if (ret)
 		dev_err(&ghid->connection->bundle->dev,
@@ -380,7 +371,7 @@ static int gb_hid_power(struct hid_device *hid, int lvl)
 	return 0;
 }
 
-/* HID structure to pass callbacks */
+ 
 static const struct hid_ll_driver gb_hid_ll_driver = {
 	.parse = gb_hid_parse,
 	.start = gb_hid_start,
@@ -408,9 +399,9 @@ static int gb_hid_init(struct gb_hid *ghid)
 	hid->driver_data = ghid;
 	hid->ll_driver = &gb_hid_ll_driver;
 	hid->dev.parent = &ghid->connection->bundle->dev;
-//	hid->bus = BUS_GREYBUS; /* Need a bustype for GREYBUS in <linux/input.h> */
 
-	/* Set HID device's name */
+
+	 
 	snprintf(hid->name, sizeof(hid->name), "%s %04X:%04X",
 		 dev_name(&ghid->connection->bundle->dev),
 		 hid->vendor, hid->product);

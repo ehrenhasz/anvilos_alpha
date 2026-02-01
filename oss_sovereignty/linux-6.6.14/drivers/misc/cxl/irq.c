@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
@@ -54,13 +52,7 @@ irqreturn_t cxl_irq_psl9(int irq, struct cxl_context *ctx, struct cxl_irq_info *
 		pr_devel("CXL interrupt: AFU Error 0x%016llx\n", irq_info->afu_err);
 
 		if (ctx->pending_afu_err) {
-			/*
-			 * This shouldn't happen - the PSL treats these errors
-			 * as fatal and will have reset the AFU, so there's not
-			 * much point buffering multiple AFU errors.
-			 * OTOH if we DO ever see a storm of these come in it's
-			 * probably best that we log them somewhere:
-			 */
+			 
 			dev_err_ratelimited(&ctx->afu->dev, "CXL AFU Error undelivered to pe %i: 0x%016llx\n",
 					    ctx->pe, irq_info->afu_err);
 		} else {
@@ -94,16 +86,7 @@ irqreturn_t cxl_irq_psl8(int irq, struct cxl_context *ctx, struct cxl_irq_info *
 	pr_devel("CXL interrupt %i for afu pe: %i DSISR: %#llx DAR: %#llx\n", irq, ctx->pe, dsisr, dar);
 
 	if (dsisr & CXL_PSL_DSISR_An_DS) {
-		/*
-		 * We don't inherently need to sleep to handle this, but we do
-		 * need to get a ref to the task's mm, which we can't do from
-		 * irq context without the potential for a deadlock since it
-		 * takes the task_lock. An alternate option would be to keep a
-		 * reference to the task's mm the entire time it has cxl open,
-		 * but to do that we need to solve the issue where we hold a
-		 * ref to the mm, but the mm can hold a ref to the fd after an
-		 * mmap preventing anything from being cleaned up.
-		 */
+		 
 		pr_devel("Scheduling segment miss handling for later pe: %i\n", ctx->pe);
 		return schedule_cxl_fault(ctx, dsisr, dar);
 	}
@@ -120,11 +103,7 @@ irqreturn_t cxl_irq_psl8(int irq, struct cxl_context *ctx, struct cxl_irq_info *
 		pr_devel("CXL interrupt: Access not permitted by virtual page class key protection\n");
 
 	if (dsisr & CXL_PSL_DSISR_An_DM) {
-		/*
-		 * In some cases we might be able to handle the fault
-		 * immediately if hash_page would succeed, but we still need
-		 * the task's mm, which as above we can't get without a lock
-		 */
+		 
 		pr_devel("Scheduling page fault handling for later pe: %i\n", ctx->pe);
 		return schedule_cxl_fault(ctx, dsisr, dar);
 	}
@@ -139,13 +118,7 @@ irqreturn_t cxl_irq_psl8(int irq, struct cxl_context *ctx, struct cxl_irq_info *
 		pr_devel("CXL interrupt: AFU Error 0x%016llx\n", irq_info->afu_err);
 
 		if (ctx->pending_afu_err) {
-			/*
-			 * This shouldn't happen - the PSL treats these errors
-			 * as fatal and will have reset the AFU, so there's not
-			 * much point buffering multiple AFU errors.
-			 * OTOH if we DO ever see a storm of these come in it's
-			 * probably best that we log them somewhere:
-			 */
+			 
 			dev_err_ratelimited(&ctx->afu->dev, "CXL AFU Error "
 					    "undelivered to pe %i: 0x%016llx\n",
 					    ctx->pe, irq_info->afu_err);
@@ -176,18 +149,7 @@ static irqreturn_t cxl_irq_afu(int irq, void *data)
 	__u16 range;
 	int r;
 
-	/*
-	 * Look for the interrupt number.
-	 * On bare-metal, we know range 0 only contains the PSL
-	 * interrupt so we could start counting at range 1 and initialize
-	 * afu_irq at 1.
-	 * In a guest, range 0 also contains AFU interrupts, so it must
-	 * be counted for. Therefore we initialize afu_irq at 0 to take into
-	 * account the PSL interrupt.
-	 *
-	 * For code-readability, it just seems easier to go over all
-	 * the ranges on bare-metal and guest. The end result is the same.
-	 */
+	 
 	for (r = 0; r < CXL_IRQ_RANGES; r++) {
 		irq_off = hwirq - ctx->irqs.offset[r];
 		range = ctx->irqs.range[r];
@@ -227,7 +189,7 @@ unsigned int cxl_map_irq(struct cxl *adapter, irq_hw_number_t hwirq,
 	unsigned int virq;
 	int result;
 
-	/* IRQ Domain? */
+	 
 	virq = irq_create_mapping(NULL, hwirq);
 	if (!virq) {
 		dev_warn(&adapter->dev, "cxl_map_irq: irq_create_mapping failed\n");
@@ -295,14 +257,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
 	struct cxl_irq_name *irq_name;
 	int alloc_count;
 
-	/*
-	 * In native mode, range 0 is reserved for the multiplexed
-	 * PSL interrupt. It has been allocated when the AFU was initialized.
-	 *
-	 * In a guest, the PSL interrupt is not mutliplexed, but per-context,
-	 * and is the first interrupt from range 0. It still needs to be
-	 * allocated, so bump the count by one.
-	 */
+	 
 	if (cpu_has_feature(CPU_FTR_HVMODE))
 		alloc_count = count;
 	else
@@ -313,7 +268,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
 		return rc;
 
 	if (cpu_has_feature(CPU_FTR_HVMODE)) {
-		/* Multiplexed PSL Interrupt */
+		 
 		ctx->irqs.offset[0] = ctx->afu->native->psl_hwirq;
 		ctx->irqs.range[0] = 1;
 	}
@@ -323,10 +278,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
 	if (!ctx->irq_bitmap)
 		goto out;
 
-	/*
-	 * Allocate names first.  If any fail, bail out before allocating
-	 * actual hardware IRQs.
-	 */
+	 
 	for (r = afu_irq_range_start(); r < CXL_IRQ_RANGES; r++) {
 		for (i = 0; i < ctx->irqs.range[r]; i++) {
 			irq_name = kmalloc(sizeof(struct cxl_irq_name),
@@ -340,7 +292,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
 				kfree(irq_name);
 				goto out;
 			}
-			/* Add to tail so next look get the correct order */
+			 
 			list_add_tail(&irq_name->list, &ctx->irq_names);
 			j++;
 		}
@@ -361,22 +313,13 @@ static void afu_register_hwirqs(struct cxl_context *ctx)
 	int r, i;
 	irqreturn_t (*handler)(int irq, void *data);
 
-	/* We've allocated all memory now, so let's do the irq allocations */
+	 
 	irq_name = list_first_entry(&ctx->irq_names, struct cxl_irq_name, list);
 	for (r = afu_irq_range_start(); r < CXL_IRQ_RANGES; r++) {
 		hwirq = ctx->irqs.offset[r];
 		for (i = 0; i < ctx->irqs.range[r]; hwirq++, i++) {
 			if (r == 0 && i == 0)
-				/*
-				 * The very first interrupt of range 0 is
-				 * always the PSL interrupt, but we only
-				 * need to connect a handler for guests,
-				 * because there's one PSL interrupt per
-				 * context.
-				 * On bare-metal, the PSL interrupt is
-				 * multiplexed and was setup when the AFU
-				 * was configured.
-				 */
+				 
 				handler = cxl_ops->psl_interrupt;
 			else
 				handler = cxl_irq_afu;

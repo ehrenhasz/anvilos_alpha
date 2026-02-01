@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2017 - 2021 Intel Corporation */
+
+ 
 #include "osdep.h"
 #include "type.h"
 #include "icrdma_hw.h"
@@ -49,18 +49,14 @@ static u64 icrdma_shifts[IRDMA_MAX_SHIFTS] = {
 	ICRDMA_COMMIT_FPM_CQCNT_S,
 };
 
-/**
- * icrdma_ena_irq - Enable interrupt
- * @dev: pointer to the device structure
- * @idx: vector index
- */
+ 
 static void icrdma_ena_irq(struct irdma_sc_dev *dev, u32 idx)
 {
 	u32 val;
 	u32 interval = 0;
 
 	if (dev->ceq_itr && dev->aeq->msix_idx != idx)
-		interval = dev->ceq_itr >> 1; /* 2 usec units */
+		interval = dev->ceq_itr >> 1;  
 	val = FIELD_PREP(IRDMA_GLINT_DYN_CTL_ITR_INDX, 0) |
 	      FIELD_PREP(IRDMA_GLINT_DYN_CTL_INTERVAL, interval) |
 	      FIELD_PREP(IRDMA_GLINT_DYN_CTL_INTENA, 1) |
@@ -72,11 +68,7 @@ static void icrdma_ena_irq(struct irdma_sc_dev *dev, u32 idx)
 		writel(val, dev->hw_regs[IRDMA_GLINT_DYN_CTL] + (idx - 1));
 }
 
-/**
- * icrdma_disable_irq - Disable interrupt
- * @dev: pointer to the device structure
- * @idx: vector index
- */
+ 
 static void icrdma_disable_irq(struct irdma_sc_dev *dev, u32 idx)
 {
 	if (dev->hw_attrs.uk_attrs.hw_rev != IRDMA_GEN_1)
@@ -85,13 +77,7 @@ static void icrdma_disable_irq(struct irdma_sc_dev *dev, u32 idx)
 		writel(0, dev->hw_regs[IRDMA_GLINT_DYN_CTL] + (idx - 1));
 }
 
-/**
- * icrdma_cfg_ceq- Configure CEQ interrupt
- * @dev: pointer to the device structure
- * @ceq_id: Completion Event Queue ID
- * @idx: vector index
- * @enable: True to enable, False disables
- */
+ 
 static void icrdma_cfg_ceq(struct irdma_sc_dev *dev, u32 ceq_id, u32 idx,
 			   bool enable)
 {

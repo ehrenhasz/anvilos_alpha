@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Analog Devices ADAU7118 8 channel PDM-to-I2S/TDM Converter driver
-//
-// Copyright 2019 Analog Devices Inc.
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -43,7 +43,7 @@ struct adau7118_data {
 	bool right_j;
 };
 
-/* Input Enable */
+ 
 static const struct snd_kcontrol_new adau7118_dapm_pdm_control[4] = {
 	SOC_DAPM_SINGLE("Capture Switch", ADAU7118_REG_ENABLES, 0, 1, 0),
 	SOC_DAPM_SINGLE("Capture Switch", ADAU7118_REG_ENABLES, 1, 1, 0),
@@ -52,7 +52,7 @@ static const struct snd_kcontrol_new adau7118_dapm_pdm_control[4] = {
 };
 
 static const struct snd_soc_dapm_widget adau7118_widgets_sw[] = {
-	/* Input Enable Switches */
+	 
 	SND_SOC_DAPM_SWITCH("PDM0", SND_SOC_NOPM, 0, 0,
 			    &adau7118_dapm_pdm_control[0]),
 	SND_SOC_DAPM_SWITCH("PDM1", SND_SOC_NOPM, 0, 0,
@@ -62,11 +62,11 @@ static const struct snd_soc_dapm_widget adau7118_widgets_sw[] = {
 	SND_SOC_DAPM_SWITCH("PDM3", SND_SOC_NOPM, 0, 0,
 			    &adau7118_dapm_pdm_control[3]),
 
-	/* PDM Clocks */
+	 
 	SND_SOC_DAPM_SUPPLY("PDM_CLK0", ADAU7118_REG_ENABLES, 4, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("PDM_CLK1", ADAU7118_REG_ENABLES, 5, 0, NULL, 0),
 
-	/* Output channels */
+	 
 	SND_SOC_DAPM_AIF_OUT("AIF1TX1", "Capture", 0, ADAU7118_REG_SPT_CX(0),
 			     0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TX2", "Capture", 0, ADAU7118_REG_SPT_CX(1),
@@ -272,7 +272,7 @@ static int adau7118_hw_params(struct snd_pcm_substream *substream,
 	u32 regval;
 
 	if (!st->slots) {
-		/* set stereo mode */
+		 
 		ret = snd_soc_component_update_bits(dai->component,
 						    ADAU7118_REG_SPT_CTRL1,
 						    ADAU7118_SAI_MODE_MASK,
@@ -294,15 +294,15 @@ static int adau7118_hw_params(struct snd_pcm_substream *substream,
 	if (st->right_j) {
 		switch (slots_width - data_width) {
 		case 8:
-			/* delay bclck by 8 */
+			 
 			regval = ADAU7118_DATA_FMT(2);
 			break;
 		case 12:
-			/* delay bclck by 12 */
+			 
 			regval = ADAU7118_DATA_FMT(3);
 			break;
 		case 16:
-			/* delay bclck by 16 */
+			 
 			regval = ADAU7118_DATA_FMT(4);
 			break;
 		default:
@@ -339,12 +339,12 @@ static int adau7118_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_component_get_bias_level(component) ==
 							SND_SOC_BIAS_OFF) {
-			/* power on */
+			 
 			ret = regulator_enable(st->iovdd);
 			if (ret)
 				return ret;
 
-			/* there's no timing constraints before enabling dvdd */
+			 
 			ret = regulator_enable(st->dvdd);
 			if (ret) {
 				regulator_disable(st->iovdd);
@@ -355,12 +355,12 @@ static int adau7118_set_bias_level(struct snd_soc_component *component,
 				return 0;
 
 			regcache_cache_only(st->map, false);
-			/* sync cache */
+			 
 			ret = snd_soc_component_cache_sync(component);
 		}
 		break;
 	case SND_SOC_BIAS_OFF:
-		/* power off */
+		 
 		ret = regulator_disable(st->dvdd);
 		if (ret)
 			return ret;
@@ -372,7 +372,7 @@ static int adau7118_set_bias_level(struct snd_soc_component *component,
 		if (st->hw_mode)
 			return 0;
 
-		/* cache only */
+		 
 		regcache_mark_dirty(st->map);
 		regcache_cache_only(st->map, true);
 
@@ -459,7 +459,7 @@ static int adau7118_regulator_setup(struct adau7118_data *st)
 			PTR_ERR(st->dvdd));
 		return PTR_ERR(st->dvdd);
 	}
-	/* just assume the device is in reset */
+	 
 	if (!st->hw_mode) {
 		regcache_mark_dirty(st->map);
 		regcache_cache_only(st->map, true);
@@ -472,7 +472,7 @@ static int adau7118_parset_dt(const struct adau7118_data *st)
 {
 	int ret;
 	u32 dec_ratio = 0;
-	/* 4 inputs */
+	 
 	u32 clk_map[4], regval;
 
 	if (st->hw_mode)
@@ -538,10 +538,7 @@ int adau7118_probe(struct device *dev, struct regmap *map, bool hw_mode)
 	if (!hw_mode) {
 		st->map = map;
 		adau7118_dai.ops = &adau7118_ops;
-		/*
-		 * Perform a full soft reset. This will set all register's
-		 * with their reset values.
-		 */
+		 
 		ret = regmap_update_bits(map, ADAU7118_REG_RESET,
 					 ADAU7118_FULL_SOFT_R_MASK,
 					 ADAU7118_FULL_SOFT_R(1));

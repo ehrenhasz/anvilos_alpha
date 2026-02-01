@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
 
@@ -64,7 +62,7 @@ static int mt76x0e_load_firmware(struct mt76x02_dev *dev)
 		goto out;
 	}
 
-	/* upload ILM. */
+	 
 	mt76_wr(dev, MT_MCU_PCIE_REMAP_BASE4, 0);
 	ilm_len = le32_to_cpu(hdr->ilm_len);
 	if (is_combo_chip) {
@@ -75,21 +73,21 @@ static int mt76x0e_load_firmware(struct mt76x02_dev *dev)
 	mt76_wr_copy(dev, MT_MCU_ILM_ADDR + offset, fw_payload + offset,
 		     ilm_len);
 
-	/* upload IVB. */
+	 
 	if (is_combo_chip) {
 		dev_dbg(dev->mt76.dev, "loading FW - IVB %u\n",
 			MT_MCU_IVB_SIZE);
 		mt76_wr_copy(dev, MT_MCU_IVB_ADDR, fw_payload, MT_MCU_IVB_SIZE);
 	}
 
-	/* upload DLM. */
+	 
 	mt76_wr(dev, MT_MCU_PCIE_REMAP_BASE4, MT_MCU_DLM_OFFSET);
 	dlm_len = le32_to_cpu(hdr->dlm_len);
 	dev_dbg(dev->mt76.dev, "loading FW - DLM %u\n", dlm_len);
 	mt76_wr_copy(dev, MT_MCU_ILM_ADDR,
 		     fw_payload + le32_to_cpu(hdr->ilm_len), dlm_len);
 
-	/* trigger firmware */
+	 
 	mt76_wr(dev, MT_MCU_PCIE_REMAP_BASE4, 0);
 	if (is_combo_chip)
 		mt76_wr(dev, MT_MCU_INT_LEVEL, 0x3);

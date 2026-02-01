@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_DNOTIFY_H
 #define _LINUX_DNOTIFY_H
-/*
- * Directory notification for Linux
- *
- * Copyright (C) 2000,2002 Stephen Rothwell
- */
+ 
 
 #include <linux/fs.h>
 
@@ -43,8 +39,8 @@ static inline int fcntl_dirnotify(int fd, struct file *filp, unsigned int arg)
 	return -EINVAL;
 }
 
-#endif /* CONFIG_DNOTIFY */
+#endif  
 
-#endif /* __KERNEL __ */
+#endif  
 
-#endif /* _LINUX_DNOTIFY_H */
+#endif  

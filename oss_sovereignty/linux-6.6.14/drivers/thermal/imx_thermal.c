@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright 2013 Freescale Semiconductor, Inc.
+
+
+
 
 #include <linux/clk.h>
 #include <linux/cpufreq.h>
@@ -21,12 +21,12 @@
 #define REG_CLR		0x8
 #define REG_TOG		0xc
 
-/* i.MX6 specific */
+ 
 #define IMX6_MISC0				0x0150
 #define IMX6_MISC0_REFTOP_SELBIASOFF		(1 << 3)
 #define IMX6_MISC1				0x0160
 #define IMX6_MISC1_IRQ_TEMPHIGH			(1 << 29)
-/* Below LOW and PANIC bits are only for TEMPMON_IMX6SX */
+ 
 #define IMX6_MISC1_IRQ_TEMPLOW			(1 << 28)
 #define IMX6_MISC1_IRQ_TEMPPANIC		(1 << 27)
 
@@ -46,14 +46,14 @@
 #define OCOTP_MEM0			0x0480
 #define OCOTP_ANA1			0x04e0
 
-/* Below TEMPSENSE2 is only for TEMPMON_IMX6SX */
+ 
 #define IMX6_TEMPSENSE2				0x0290
 #define IMX6_TEMPSENSE2_LOW_VALUE_SHIFT		0
 #define IMX6_TEMPSENSE2_LOW_VALUE_MASK		0xfff
 #define IMX6_TEMPSENSE2_PANIC_VALUE_SHIFT	16
 #define IMX6_TEMPSENSE2_PANIC_VALUE_MASK	0xfff0000
 
-/* i.MX7 specific */
+ 
 #define IMX7_ANADIG_DIGPROG			0x800
 #define IMX7_TEMPSENSE0				0x300
 #define IMX7_TEMPSENSE0_PANIC_ALARM_SHIFT	18
@@ -72,13 +72,13 @@
 #define IMX7_TEMPSENSE1_TEMP_VALUE_SHIFT	0
 #define IMX7_TEMPSENSE1_TEMP_VALUE_MASK		0x1ff
 
-/* The driver supports 1 passive trip point and 1 critical trip point */
+ 
 enum imx_thermal_trip {
 	IMX_TRIP_PASSIVE,
 	IMX_TRIP_CRITICAL,
 };
 
-#define IMX_POLLING_DELAY		2000 /* millisecond */
+#define IMX_POLLING_DELAY		2000  
 #define IMX_PASSIVE_DELAY		1000
 
 #define TEMPMON_IMX6Q			1
@@ -204,7 +204,7 @@ struct imx_thermal_data {
 	struct thermal_zone_device *tz;
 	struct thermal_cooling_device *cdev;
 	struct regmap *tempmon;
-	u32 c1, c2; /* See formula in imx_init_calib() */
+	u32 c1, c2;  
 	int temp_max;
 	int alarm_temp;
 	int last_temp;
@@ -271,13 +271,13 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
 	n_meas = (val & soc_data->temp_value_mask)
 		>> soc_data->temp_value_shift;
 
-	/* See imx_init_calib() for formula derivation */
+	 
 	if (data->socdata->version == TEMPMON_IMX7D)
 		*temp = (n_meas - data->c1 + 25) * 1000;
 	else
 		*temp = data->c2 - n_meas * data->c1;
 
-	/* Update alarm value to next higher trip point for TEMPMON_IMX6Q */
+	 
 	if (data->socdata->version == TEMPMON_IMX6Q) {
 		if (data->alarm_temp == trips[IMX_TRIP_PASSIVE].temperature &&
 			*temp >= trips[IMX_TRIP_PASSIVE].temperature)
@@ -295,7 +295,7 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
 		data->last_temp = *temp;
 	}
 
-	/* Reenable alarm IRQ if temperature below alarm temperature */
+	 
 	if (!data->irq_enabled && *temp < data->alarm_temp) {
 		data->irq_enabled = true;
 		enable_irq(data->irq);
@@ -345,11 +345,11 @@ static int imx_set_trip_temp(struct thermal_zone_device *tz, int trip_id,
 	if (ret)
 		return ret;
 
-	/* do not allow changing critical threshold */
+	 
 	if (trip.type == THERMAL_TRIP_CRITICAL)
 		return -EPERM;
 
-	/* do not allow passive to be set higher than critical */
+	 
 	if (temp < 0 || temp > trips[IMX_TRIP_CRITICAL].temperature)
 		return -EINVAL;
 
@@ -394,38 +394,17 @@ static int imx_init_calib(struct platform_device *pdev, u32 ocotp_ana1)
 		return -EINVAL;
 	}
 
-	/*
-	 * On i.MX7D, we only use the calibration data at 25C to get the temp,
-	 * Tmeas = ( Nmeas - n1) + 25; n1 is the fuse value for 25C.
-	 */
+	 
 	if (data->socdata->version == TEMPMON_IMX7D) {
 		data->c1 = (ocotp_ana1 >> 9) & 0x1ff;
 		return 0;
 	}
 
-	/*
-	 * The sensor is calibrated at 25 °C (aka T1) and the value measured
-	 * (aka N1) at this temperature is provided in bits [31:20] in the
-	 * i.MX's OCOTP value ANA1.
-	 * To find the actual temperature T, the following formula has to be used
-	 * when reading value n from the sensor:
-	 *
-	 * T = T1 + (N - N1) / (0.4148468 - 0.0015423 * N1) °C + 3.580661 °C
-	 *   = [T1' - N1 / (0.4148468 - 0.0015423 * N1) °C] + N / (0.4148468 - 0.0015423 * N1) °C
-	 *   = [T1' + N1 / (0.0015423 * N1 - 0.4148468) °C] - N / (0.0015423 * N1 - 0.4148468) °C
-	 *   = c2 - c1 * N
-	 *
-	 * with
-	 *
-	 *  T1' = 28.580661 °C
-	 *   c1 = 1 / (0.0015423 * N1 - 0.4297157) °C
-	 *   c2 = T1' + N1 / (0.0015423 * N1 - 0.4148468) °C
-	 *      = T1' + N1 * c1
-	 */
+	 
 	n1 = ocotp_ana1 >> 20;
 
-	temp64 = 10000000; /* use 10^7 as fixed point constant for values in formula */
-	temp64 *= 1000; /* to get result in °mC */
+	temp64 = 10000000;  
+	temp64 *= 1000;  
 	do_div(temp64, 15423 * n1 - 4148468);
 	data->c1 = temp64;
 	data->c2 = n1 * data->c1 + 28581;
@@ -437,30 +416,27 @@ static void imx_init_temp_grade(struct platform_device *pdev, u32 ocotp_mem0)
 {
 	struct imx_thermal_data *data = platform_get_drvdata(pdev);
 
-	/* The maximum die temp is specified by the Temperature Grade */
+	 
 	switch ((ocotp_mem0 >> 6) & 0x3) {
-	case 0: /* Commercial (0 to 95 °C) */
+	case 0:  
 		data->temp_grade = "Commercial";
 		data->temp_max = 95000;
 		break;
-	case 1: /* Extended Commercial (-20 °C to 105 °C) */
+	case 1:  
 		data->temp_grade = "Extended Commercial";
 		data->temp_max = 105000;
 		break;
-	case 2: /* Industrial (-40 °C to 105 °C) */
+	case 2:  
 		data->temp_grade = "Industrial";
 		data->temp_max = 105000;
 		break;
-	case 3: /* Automotive (-40 °C to 125 °C) */
+	case 3:  
 		data->temp_grade = "Automotive";
 		data->temp_max = 125000;
 		break;
 	}
 
-	/*
-	 * Set the critical trip point at 5 °C under max
-	 * Set the passive trip point at 10 °C under max (changeable via sysfs)
-	 */
+	 
 	trips[IMX_TRIP_PASSIVE].temperature = data->temp_max - (1000 * 10);
 	trips[IMX_TRIP_CRITICAL].temperature = data->temp_max - (1000 * 5);
 }
@@ -544,15 +520,12 @@ static const struct of_device_id of_imx_thermal_match[] = {
 	{ .compatible = "fsl,imx6q-tempmon", .data = &thermal_imx6q_data, },
 	{ .compatible = "fsl,imx6sx-tempmon", .data = &thermal_imx6sx_data, },
 	{ .compatible = "fsl,imx7d-tempmon", .data = &thermal_imx7d_data, },
-	{ /* end */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_imx_thermal_match);
 
 #ifdef CONFIG_CPU_FREQ
-/*
- * Create cooling device in case no #cooling-cells property is available in
- * CPU node
- */
+ 
 static int imx_thermal_register_legacy_cooling(struct imx_thermal_data *data)
 {
 	struct device_node *np;
@@ -624,15 +597,12 @@ static int imx_thermal_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* make sure the IRQ flag is clear before enabling irq on i.MX6SX */
+	 
 	if (data->socdata->version == TEMPMON_IMX6SX) {
 		regmap_write(map, IMX6_MISC1 + REG_CLR,
 			IMX6_MISC1_IRQ_TEMPHIGH | IMX6_MISC1_IRQ_TEMPLOW
 			| IMX6_MISC1_IRQ_TEMPPANIC);
-		/*
-		 * reset value of LOW ALARM is incorrect, set it to lowest
-		 * value to avoid false trigger of low alarm.
-		 */
+		 
 		regmap_write(map, data->socdata->low_alarm_ctrl + REG_SET,
 			     data->socdata->low_alarm_mask);
 	}
@@ -656,7 +626,7 @@ static int imx_thermal_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Make sure sensor is in known good state for measurements */
+	 
 	regmap_write(map, data->socdata->sensor_ctrl + REG_CLR,
 		     data->socdata->power_down_mask);
 	regmap_write(map, data->socdata->sensor_ctrl + REG_CLR,
@@ -683,13 +653,7 @@ static int imx_thermal_probe(struct platform_device *pdev)
 		goto legacy_cleanup;
 	}
 
-	/*
-	 * Thermal sensor needs clk on to get correct value, normally
-	 * we should enable its clk before taking measurement and disable
-	 * clk after measurement is done, but if alarm function is enabled,
-	 * hardware will auto measure the temperature periodically, so we
-	 * need to keep the clk always on for alarm function.
-	 */
+	 
 	ret = clk_prepare_enable(data->thermal_clk);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to enable thermal clk: %d\n", ret);
@@ -715,10 +679,10 @@ static int imx_thermal_probe(struct platform_device *pdev)
 		 data->temp_max / 1000, trips[IMX_TRIP_CRITICAL].temperature / 1000,
 		 trips[IMX_TRIP_PASSIVE].temperature / 1000);
 
-	/* Enable measurements at ~ 10 Hz */
+	 
 	regmap_write(map, data->socdata->measure_freq_ctrl + REG_CLR,
 		     data->socdata->measure_freq_mask);
-	measure_freq = DIV_ROUND_UP(32768, 10); /* 10 Hz */
+	measure_freq = DIV_ROUND_UP(32768, 10);  
 	regmap_write(map, data->socdata->measure_freq_ctrl + REG_SET,
 		     measure_freq << data->socdata->measure_freq_shift);
 	imx_set_alarm_temp(data, trips[IMX_TRIP_PASSIVE].temperature);
@@ -730,10 +694,10 @@ static int imx_thermal_probe(struct platform_device *pdev)
 		     data->socdata->power_down_mask);
 	regmap_write(map, data->socdata->sensor_ctrl + REG_SET,
 		     data->socdata->measure_temp_mask);
-	/* After power up, we need a delay before first access can be done. */
+	 
 	usleep_range(20, 50);
 
-	/* the core was configured and enabled just before */
+	 
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(data->dev);
 
@@ -789,13 +753,7 @@ static int __maybe_unused imx_thermal_suspend(struct device *dev)
 	struct imx_thermal_data *data = dev_get_drvdata(dev);
 	int ret;
 
-	/*
-	 * Need to disable thermal sensor, otherwise, when thermal core
-	 * try to get temperature before thermal sensor resume, a wrong
-	 * temperature will be read as the thermal sensor is powered
-	 * down. This is done in change_mode() operation called from
-	 * thermal_zone_device_disable()
-	 */
+	 
 	ret = thermal_zone_device_disable(data->tz);
 	if (ret)
 		return ret;
@@ -811,7 +769,7 @@ static int __maybe_unused imx_thermal_resume(struct device *dev)
 	ret = pm_runtime_force_resume(data->dev);
 	if (ret)
 		return ret;
-	/* Enabled thermal sensor after resume */
+	 
 	return thermal_zone_device_enable(data->tz);
 }
 
@@ -858,10 +816,7 @@ static int __maybe_unused imx_thermal_runtime_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * According to the temp sensor designers, it may require up to ~17us
-	 * to complete a measurement.
-	 */
+	 
 	usleep_range(20, 50);
 
 	return 0;

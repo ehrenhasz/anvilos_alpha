@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -48,33 +45,33 @@
 		},					\
 	}
 
-/* PSI-L source thread IDs, used for RX (DMA_DEV_TO_MEM) */
+ 
 static struct psil_ep am654_src_ep_map[] = {
-	/* SA2UL */
+	 
 	PSIL_SA2UL(0x4000, 0),
 	PSIL_SA2UL(0x4001, 0),
 	PSIL_SA2UL(0x4002, 0),
 	PSIL_SA2UL(0x4003, 0),
-	/* PRU_ICSSG0 */
+	 
 	PSIL_ETHERNET(0x4100),
 	PSIL_ETHERNET(0x4101),
 	PSIL_ETHERNET(0x4102),
 	PSIL_ETHERNET(0x4103),
-	/* PRU_ICSSG1 */
+	 
 	PSIL_ETHERNET(0x4200),
 	PSIL_ETHERNET(0x4201),
 	PSIL_ETHERNET(0x4202),
 	PSIL_ETHERNET(0x4203),
-	/* PRU_ICSSG2 */
+	 
 	PSIL_ETHERNET(0x4300),
 	PSIL_ETHERNET(0x4301),
 	PSIL_ETHERNET(0x4302),
 	PSIL_ETHERNET(0x4303),
-	/* PDMA0 - McASPs */
+	 
 	PSIL_PDMA_XY_TR(0x4400),
 	PSIL_PDMA_XY_TR(0x4401),
 	PSIL_PDMA_XY_TR(0x4402),
-	/* PDMA1 - SPI0-4 */
+	 
 	PSIL_PDMA_XY_PKT(0x4500),
 	PSIL_PDMA_XY_PKT(0x4501),
 	PSIL_PDMA_XY_PKT(0x4502),
@@ -95,18 +92,18 @@ static struct psil_ep am654_src_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0x4511),
 	PSIL_PDMA_XY_PKT(0x4512),
 	PSIL_PDMA_XY_PKT(0x4513),
-	/* PDMA1 - USART0-2 */
+	 
 	PSIL_PDMA_XY_PKT(0x4514),
 	PSIL_PDMA_XY_PKT(0x4515),
 	PSIL_PDMA_XY_PKT(0x4516),
-	/* CPSW0 */
+	 
 	PSIL_ETHERNET(0x7000),
-	/* MCU_PDMA0 - ADCs */
+	 
 	PSIL_PDMA_XY_TR(0x7100),
 	PSIL_PDMA_XY_TR(0x7101),
 	PSIL_PDMA_XY_TR(0x7102),
 	PSIL_PDMA_XY_TR(0x7103),
-	/* MCU_PDMA1 - MCU_SPI0-2 */
+	 
 	PSIL_PDMA_XY_PKT(0x7200),
 	PSIL_PDMA_XY_PKT(0x7201),
 	PSIL_PDMA_XY_PKT(0x7202),
@@ -119,16 +116,16 @@ static struct psil_ep am654_src_ep_map[] = {
 	PSIL_PDMA_XY_PKT(0x7209),
 	PSIL_PDMA_XY_PKT(0x720a),
 	PSIL_PDMA_XY_PKT(0x720b),
-	/* MCU_PDMA1 - MCU_USART0 */
+	 
 	PSIL_PDMA_XY_PKT(0x7212),
 };
 
-/* PSI-L destination thread IDs, used for TX (DMA_MEM_TO_DEV) */
+ 
 static struct psil_ep am654_dst_ep_map[] = {
-	/* SA2UL */
+	 
 	PSIL_SA2UL(0xc000, 1),
 	PSIL_SA2UL(0xc001, 1),
-	/* PRU_ICSSG0 */
+	 
 	PSIL_ETHERNET(0xc100),
 	PSIL_ETHERNET(0xc101),
 	PSIL_ETHERNET(0xc102),
@@ -137,7 +134,7 @@ static struct psil_ep am654_dst_ep_map[] = {
 	PSIL_ETHERNET(0xc105),
 	PSIL_ETHERNET(0xc106),
 	PSIL_ETHERNET(0xc107),
-	/* PRU_ICSSG1 */
+	 
 	PSIL_ETHERNET(0xc200),
 	PSIL_ETHERNET(0xc201),
 	PSIL_ETHERNET(0xc202),
@@ -146,7 +143,7 @@ static struct psil_ep am654_dst_ep_map[] = {
 	PSIL_ETHERNET(0xc205),
 	PSIL_ETHERNET(0xc206),
 	PSIL_ETHERNET(0xc207),
-	/* PRU_ICSSG2 */
+	 
 	PSIL_ETHERNET(0xc300),
 	PSIL_ETHERNET(0xc301),
 	PSIL_ETHERNET(0xc302),
@@ -155,7 +152,7 @@ static struct psil_ep am654_dst_ep_map[] = {
 	PSIL_ETHERNET(0xc305),
 	PSIL_ETHERNET(0xc306),
 	PSIL_ETHERNET(0xc307),
-	/* CPSW0 */
+	 
 	PSIL_ETHERNET(0xf000),
 	PSIL_ETHERNET(0xf001),
 	PSIL_ETHERNET(0xf002),

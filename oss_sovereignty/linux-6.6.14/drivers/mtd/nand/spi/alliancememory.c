@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author: Mario Kicherer <dev@kicherer.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -71,15 +69,7 @@ static int am_ooblayout_free(struct mtd_info *mtd, int section,
 	if (ecc_bytes < 0)
 		return ecc_bytes;
 
-	/*
-	 * It is unclear how many bytes are used for the bad block marker. We
-	 * reserve the common two bytes here.
-	 *
-	 * The free area in this kind of flash is divided into chunks where the
-	 * first 4 bytes of each chunk are unprotected. The number of chunks
-	 * depends on the specific model. The models with 4096+256 bytes pages
-	 * have 8 chunks, the others 4 chunks.
-	 */
+	 
 
 	region->offset = 2;
 	region->length = mtd->oobsize - 2 - ecc_bytes;
@@ -99,10 +89,7 @@ static int am_ecc_get_status(struct spinand_device *spinand, u8 status)
 		return 0;
 
 	case AM_STATUS_ECC_CORRECTED:
-		/*
-		 * use oobsize to determine the flash model and the maximum of
-		 * correctable errors and return maximum - 1 by convention
-		 */
+		 
 		if (spinand->base.mtd.oobsize == 64)
 			return 3;
 		else
@@ -112,10 +99,7 @@ static int am_ecc_get_status(struct spinand_device *spinand, u8 status)
 		return -EBADMSG;
 
 	case AM_STATUS_ECC_MAX_CORRECTED:
-		/*
-		 * use oobsize to determine the flash model and the maximum of
-		 * correctable errors
-		 */
+		 
 		if (spinand->base.mtd.oobsize == 64)
 			return 4;
 		else

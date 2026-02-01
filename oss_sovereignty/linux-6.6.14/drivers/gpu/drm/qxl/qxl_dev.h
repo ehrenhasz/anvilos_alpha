@@ -1,44 +1,13 @@
-/*
-   Copyright (C) 2009 Red Hat, Inc.
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are
-   met:
-
-       * Redistributions of source code must retain the above copyright
-	 notice, this list of conditions and the following disclaimer.
-       * Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
-	 the documentation and/or other materials provided with the
-	 distribution.
-       * Neither the name of the copyright holder nor the names of its
-	 contributors may be used to endorse or promote products derived
-	 from this software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS
-   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-   PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-   HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ 
 
 #ifndef H_QXL_DEV
 #define H_QXL_DEV
 
 #include <linux/types.h>
 
-/*
- * from spice-protocol
- * Release 0.10.0
- */
+ 
 
-/* enums.h */
+ 
 
 enum SpiceImageType {
 	SPICE_IMAGE_TYPE_BITMAP,
@@ -127,11 +96,11 @@ enum SpiceCursorType {
 	SPICE_CURSOR_TYPE_ENUM_END
 };
 
-/* qxl_dev.h */
+ 
 
 #pragma pack(push, 1)
 
-/* 0x100-0x11f reserved for spice, 0x1ff used for unstable work */
+ 
 #define QXL_DEVICE_ID_STABLE 0x0100
 
 enum {
@@ -156,7 +125,7 @@ enum {
 	QXL_PCI_RANGES
 };
 
-/* qxl-1 compat: append only */
+ 
 enum {
 	QXL_IO_NOTIFY_CMD,
 	QXL_IO_NOTIFY_CURSOR,
@@ -164,9 +133,9 @@ enum {
 	QXL_IO_UPDATE_IRQ,
 	QXL_IO_NOTIFY_OOM,
 	QXL_IO_RESET,
-	QXL_IO_SET_MODE,                  /* qxl-1 */
+	QXL_IO_SET_MODE,                   
 	QXL_IO_LOG,
-	/* appended for qxl-2 */
+	 
 	QXL_IO_MEMSLOT_ADD,
 	QXL_IO_MEMSLOT_DEL,
 	QXL_IO_DETACH_PRIMARY,
@@ -175,7 +144,7 @@ enum {
 	QXL_IO_DESTROY_PRIMARY,
 	QXL_IO_DESTROY_SURFACE_WAIT,
 	QXL_IO_DESTROY_ALL_SURFACES,
-	/* appended for qxl-3 */
+	 
 	QXL_IO_UPDATE_AREA_ASYNC,
 	QXL_IO_MEMSLOT_ADD_ASYNC,
 	QXL_IO_CREATE_PRIMARY_ASYNC,
@@ -184,14 +153,14 @@ enum {
 	QXL_IO_DESTROY_ALL_SURFACES_ASYNC,
 	QXL_IO_FLUSH_SURFACES_ASYNC,
 	QXL_IO_FLUSH_RELEASE,
-	/* appended for qxl-4 */
+	 
 	QXL_IO_MONITORS_CONFIG_ASYNC,
 
 	QXL_IO_RANGE_SIZE
 };
 
 typedef uint64_t QXLPHYSICAL;
-typedef int32_t QXLFIXED; /* fixed 28.4 */
+typedef int32_t QXLFIXED;  
 
 struct qxl_point_fix {
 	QXLFIXED x;
@@ -222,22 +191,22 @@ struct qxl_urect {
 	uint32_t right;
 };
 
-/* qxl-1 compat: append only */
+ 
 struct qxl_rom {
 	uint32_t magic;
 	uint32_t id;
 	uint32_t update_id;
 	uint32_t compression_level;
 	uint32_t log_level;
-	uint32_t mode;			  /* qxl-1 */
+	uint32_t mode;			   
 	uint32_t modes_offset;
 	uint32_t num_io_pages;
-	uint32_t pages_offset;		  /* qxl-1 */
-	uint32_t draw_area_offset;	  /* qxl-1 */
-	uint32_t surface0_area_size;	  /* qxl-1 name: draw_area_size */
+	uint32_t pages_offset;		   
+	uint32_t draw_area_offset;	   
+	uint32_t surface0_area_size;	   
 	uint32_t ram_header_offset;
 	uint32_t mm_clock;
-	/* appended for qxl-2 */
+	 
 	uint32_t n_surfaces;
 	uint64_t flags;
 	uint8_t slots_start;
@@ -245,7 +214,7 @@ struct qxl_rom {
 	uint8_t slot_gen_bits;
 	uint8_t slot_id_bits;
 	uint8_t slot_generation;
-	/* appended for qxl-4 */
+	 
 	uint8_t client_present;
 	uint8_t client_capabilities[58];
 	uint32_t client_monitors_config_crc;
@@ -256,7 +225,7 @@ struct qxl_rom {
 	} client_monitors_config;
 };
 
-/* qxl-1 compat: fixed */
+ 
 struct qxl_mode {
 	uint32_t id;
 	uint32_t x_res;
@@ -268,13 +237,13 @@ struct qxl_mode {
 	uint32_t orientation;
 };
 
-/* qxl-1 compat: fixed */
+ 
 struct qxl_modes {
 	uint32_t n_modes;
 	struct qxl_mode modes[];
 };
 
-/* qxl-1 compat: append only */
+ 
 enum qxl_cmd_type {
 	QXL_CMD_NOP,
 	QXL_CMD_DRAW,
@@ -284,7 +253,7 @@ enum qxl_cmd_type {
 	QXL_CMD_SURFACE,
 };
 
-/* qxl-1 compat: fixed */
+ 
 struct qxl_command {
 	QXLPHYSICAL data;
 	uint32_t type;
@@ -342,7 +311,7 @@ struct qxl_ring_header {
 	uint32_t notify_on_cons;
 };
 
-/* qxl-1 compat: append only */
+ 
 struct qxl_ram_header {
 	uint32_t magic;
 	uint32_t int_pending;
@@ -355,22 +324,22 @@ struct qxl_ram_header {
 	struct qxl_ring_header  release_ring_hdr;
 	uint64_t		release_ring[QXL_RELEASE_RING_SIZE];
 	struct qxl_rect update_area;
-	/* appended for qxl-2 */
+	 
 	uint32_t update_surface;
 	struct qxl_mem_slot mem_slot;
 	struct qxl_surface_create create_surface;
 	uint64_t flags;
 
-	/* appended for qxl-4 */
+	 
 
-	/* used by QXL_IO_MONITORS_CONFIG_ASYNC */
+	 
 	QXLPHYSICAL monitors_config;
 	uint8_t guest_capabilities[64];
 };
 
 union qxl_release_info {
-	uint64_t id;	  /* in  */
-	uint64_t next;	  /* out */
+	uint64_t id;	   
+	uint64_t next;	   
 };
 
 struct qxl_release_info_ext {
@@ -442,7 +411,7 @@ struct qxl_cursor_cmd {
 		} trail;
 		struct qxl_point_1_6 position;
 	} u;
-	/* todo: dynamic size from rom */
+	 
 	uint8_t device_data[QXL_CURSOR_DEVICE_DATA_SIZE];
 };
 
@@ -616,7 +585,7 @@ enum qxl_operator {
 	QXL_OP_XOR			 = 0x0b,
 	QXL_OP_ADD			 = 0x0c,
 	QXL_OP_SATURATE			 = 0x0d,
-	/* Note the jump here from 0x0d to 0x30 */
+	 
 	QXL_OP_MULTIPLY			 = 0x30,
 	QXL_OP_SCREEN			 = 0x31,
 	QXL_OP_OVERLAY			 = 0x32,
@@ -643,33 +612,14 @@ struct qxl_transform {
 	uint32_t	t12;
 };
 
-/* The flags field has the following bit fields:
- *
- *     operator:		[  0 -  7 ]
- *     src_filter:		[  8 - 10 ]
- *     mask_filter:		[ 11 - 13 ]
- *     src_repeat:		[ 14 - 15 ]
- *     mask_repeat:		[ 16 - 17 ]
- *     component_alpha:		[ 18 - 18 ]
- *     reserved:		[ 19 - 31 ]
- *
- * The repeat and filter values are those of pixman:
- *		REPEAT_NONE =		0
- *              REPEAT_NORMAL =		1
- *		REPEAT_PAD =		2
- *		REPEAT_REFLECT =	3
- *
- * The filter values are:
- *		FILTER_NEAREST =	0
- *		FILTER_BILINEAR	=	1
- */
+ 
 struct qxl_composite {
 	uint32_t		flags;
 
 	QXLPHYSICAL			src;
-	QXLPHYSICAL			src_transform;	/* May be NULL */
-	QXLPHYSICAL			mask;		/* May be NULL */
-	QXLPHYSICAL			mask_transform;	/* May be NULL */
+	QXLPHYSICAL			src_transform;	 
+	QXLPHYSICAL			mask;		 
+	QXLPHYSICAL			mask_transform;	 
 	struct qxl_point_1_6	src_origin;
 	struct qxl_point_1_6	mask_origin;
 };
@@ -801,7 +751,7 @@ enum qxl_image_flags {
 enum qxl_bitmap_flags {
 	QXL_BITMAP_DIRECT = (1 << 0),
 	QXL_BITMAP_UNSTABLE = (1 << 1),
-	QXL_BITMAP_TOP_DOWN = (1 << 2), /* == SPICE_BITMAP_FLAGS_TOP_DOWN */
+	QXL_BITMAP_TOP_DOWN = (1 << 2),  
 };
 
 #define QXL_SET_IMAGE_ID(image, _group, _unique) {              \
@@ -829,7 +779,7 @@ struct qxl_bitmap {
 	uint32_t y;
 	uint32_t stride;
 	QXLPHYSICAL palette;
-	QXLPHYSICAL data; /* data[0] ? */
+	QXLPHYSICAL data;  
 };
 
 struct qxl_surface_id {
@@ -843,17 +793,14 @@ struct qxl_encoder_data {
 
 struct qxl_image {
 	struct qxl_image_descriptor descriptor;
-	union { /* variable length */
+	union {  
 		struct qxl_bitmap bitmap;
 		struct qxl_encoder_data quic;
 		struct qxl_surface_id surface_image;
 	} u;
 };
 
-/* A QXLHead is a single monitor output backed by a QXLSurface.
- * x and y offsets are unsigned since they are used in relation to
- * the given surface, not the same as the x, y coordinates in the guest
- * screen reference frame. */
+ 
 struct qxl_head {
 	uint32_t id;
 	uint32_t surface_id;
@@ -866,11 +813,10 @@ struct qxl_head {
 
 struct qxl_monitors_config {
 	uint16_t count;
-	uint16_t max_allowed; /* If it is 0 no fixed limit is given by the
-				 driver */
+	uint16_t max_allowed;  
 	struct qxl_head heads[];
 };
 
 #pragma pack(pop)
 
-#endif /* _H_QXL_DEV */
+#endif  

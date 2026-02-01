@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8821AE_PHY_H__
 #define __RTL8821AE_PHY_H__
 
-/* MAX_TX_COUNT must always be set to 4, otherwise read
- * efuse table sequence will be wrong.
- */
+ 
 #define MAX_TX_COUNT				4
 #define	TX_1S					0
 #define	TX_2S					1

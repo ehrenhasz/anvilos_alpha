@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Freescale i.MX7ULP LPSPI driver
-//
-// Copyright 2016 Freescale Semiconductor, Inc.
-// Copyright 2018 NXP Semiconductors
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -28,12 +28,12 @@
 
 #define DRIVER_NAME "fsl_lpspi"
 
-#define FSL_LPSPI_RPM_TIMEOUT 50 /* 50ms */
+#define FSL_LPSPI_RPM_TIMEOUT 50  
 
-/* The maximum bytes that edma can transfer once.*/
+ 
 #define FSL_LPSPI_MAX_EDMA_BYTES  ((1 << 15) - 1)
 
-/* i.MX7ULP LPSPI registers */
+ 
 #define IMX7ULP_VERID	0x0
 #define IMX7ULP_PARAM	0x4
 #define IMX7ULP_CR	0x10
@@ -52,7 +52,7 @@
 #define IMX7ULP_RSR	0x70
 #define IMX7ULP_RDR	0x74
 
-/* General control register field define */
+ 
 #define CR_RRF		BIT(9)
 #define CR_RTF		BIT(8)
 #define CR_RST		BIT(1)
@@ -115,7 +115,7 @@ struct fsl_lpspi_data {
 
 	bool target_aborted;
 
-	/* DMA */
+	 
 	bool usedma;
 	struct completion dma_rx_completion;
 	struct completion dma_tx_completion;
@@ -123,7 +123,7 @@ struct fsl_lpspi_data {
 
 static const struct of_device_id fsl_lpspi_dt_ids[] = {
 	{ .compatible = "fsl,imx7ulp-spi", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_lpspi_dt_ids);
 
@@ -260,11 +260,7 @@ static void fsl_lpspi_set_cmd(struct fsl_lpspi_data *fsl_lpspi)
 	temp |= (fsl_lpspi->config.chip_select & 0x3) << 24;
 	if (!fsl_lpspi->is_target) {
 		temp |= fsl_lpspi->config.prescale << 27;
-		/*
-		 * Set TCR_CONT will keep SS asserted after current transfer.
-		 * For the first transfer, clear TCR_CONTC to assert SS.
-		 * For subsequent transfer, set TCR_CONTC to keep SS asserted.
-		 */
+		 
 		if (!fsl_lpspi->usedma) {
 			temp |= TCR_CONT;
 			if (fsl_lpspi->is_first_byte)
@@ -436,7 +432,7 @@ static int fsl_lpspi_setup_transfer(struct spi_controller *controller,
 	if (!fsl_lpspi->config.bpw)
 		fsl_lpspi->config.bpw = spi->bits_per_word;
 
-	/* Initialize the functions for transfer */
+	 
 	if (fsl_lpspi->config.bpw <= 8) {
 		fsl_lpspi->rx = fsl_lpspi_buf_rx_u8;
 		fsl_lpspi->tx = fsl_lpspi_buf_tx_u8;
@@ -503,15 +499,15 @@ static int fsl_lpspi_reset(struct fsl_lpspi_data *fsl_lpspi)
 	u32 temp;
 
 	if (!fsl_lpspi->usedma) {
-		/* Disable all interrupt */
+		 
 		fsl_lpspi_intctrl(fsl_lpspi, 0);
 	}
 
-	/* W1C for all flags in SR */
+	 
 	temp = 0x3F << 8;
 	writel(temp, fsl_lpspi->base + IMX7ULP_SR);
 
-	/* Clear FIFO and disable module */
+	 
 	temp = CR_RRF | CR_RTF;
 	writel(temp, fsl_lpspi->base + IMX7ULP_CR);
 
@@ -537,13 +533,13 @@ static int fsl_lpspi_calculate_timeout(struct fsl_lpspi_data *fsl_lpspi,
 {
 	unsigned long timeout = 0;
 
-	/* Time with actual data transfer and CS change delay related to HW */
+	 
 	timeout = (8 + 4) * size / fsl_lpspi->config.speed_hz;
 
-	/* Add extra second for scheduler related activities */
+	 
 	timeout += 1;
 
-	/* Double calculated timeout */
+	 
 	return msecs_to_jiffies(2 * timeout * MSEC_PER_SEC);
 }
 
@@ -593,7 +589,7 @@ static int fsl_lpspi_dma_transfer(struct spi_controller *controller,
 		transfer_timeout = fsl_lpspi_calculate_timeout(fsl_lpspi,
 							       transfer->len);
 
-		/* Wait eDMA to finish the data transfer.*/
+		 
 		timeout = wait_for_completion_timeout(&fsl_lpspi->dma_tx_completion,
 						      transfer_timeout);
 		if (!timeout) {
@@ -659,7 +655,7 @@ static int fsl_lpspi_dma_init(struct device *dev,
 {
 	int ret;
 
-	/* Prepare for TX DMA: */
+	 
 	controller->dma_tx = dma_request_chan(dev, "tx");
 	if (IS_ERR(controller->dma_tx)) {
 		ret = PTR_ERR(controller->dma_tx);
@@ -668,7 +664,7 @@ static int fsl_lpspi_dma_init(struct device *dev,
 		goto err;
 	}
 
-	/* Prepare for RX DMA: */
+	 
 	controller->dma_rx = dma_request_chan(dev, "rx");
 	if (IS_ERR(controller->dma_rx)) {
 		ret = PTR_ERR(controller->dma_rx);
@@ -881,7 +877,7 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
 		goto out_controller_put;
 	}
 
-	/* enable the clock */
+	 
 	ret = fsl_lpspi_init_rpm(fsl_lpspi);
 	if (ret)
 		goto out_controller_put;
@@ -922,10 +918,7 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
 	if (ret < 0)
 		dev_warn(&pdev->dev, "dma setup error %d, use pio\n", ret);
 	else
-		/*
-		 * disable LPSPI module IRQ when enable DMA mode successfully,
-		 * to prevent the unexpected LPSPI module IRQ events.
-		 */
+		 
 		disable_irq(irq);
 
 	ret = devm_spi_register_controller(&pdev->dev, controller);

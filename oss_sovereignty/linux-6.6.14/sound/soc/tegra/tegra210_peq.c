@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_peq.c - Tegra210 PEQ driver
-//
-// Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -29,29 +29,29 @@ static const struct reg_default tegra210_peq_reg_defaults[] = {
 };
 
 static const u32 biquad_init_gains[TEGRA210_PEQ_GAIN_PARAM_SIZE_PER_CH] = {
-	1495012349, /* Pre-gain */
+	1495012349,  
 
-	/* Gains : b0, b1, a0, a1, a2 */
-	536870912, -1073741824, 536870912, 2143508246, -1069773768, /* Band-0 */
-	134217728, -265414508, 131766272, 2140402222, -1071252997,  /* Band-1 */
-	268435456, -233515765, -33935948, 1839817267, -773826124,   /* Band-2 */
-	536870912, -672537913, 139851540, 1886437554, -824433167,   /* Band-3 */
-	268435456, -114439279, 173723964, 205743566, 278809729,     /* Band-4 */
-	1, 0, 0, 0, 0, /* Band-5 */
-	1, 0, 0, 0, 0, /* Band-6 */
-	1, 0, 0, 0, 0, /* Band-7 */
-	1, 0, 0, 0, 0, /* Band-8 */
-	1, 0, 0, 0, 0, /* Band-9 */
-	1, 0, 0, 0, 0, /* Band-10 */
-	1, 0, 0, 0, 0, /* Band-11 */
+	 
+	536870912, -1073741824, 536870912, 2143508246, -1069773768,  
+	134217728, -265414508, 131766272, 2140402222, -1071252997,   
+	268435456, -233515765, -33935948, 1839817267, -773826124,    
+	536870912, -672537913, 139851540, 1886437554, -824433167,    
+	268435456, -114439279, 173723964, 205743566, 278809729,      
+	1, 0, 0, 0, 0,  
+	1, 0, 0, 0, 0,  
+	1, 0, 0, 0, 0,  
+	1, 0, 0, 0, 0,  
+	1, 0, 0, 0, 0,  
+	1, 0, 0, 0, 0,  
+	1, 0, 0, 0, 0,  
 
-	963423114, /* Post-gain */
+	963423114,  
 };
 
 static const u32 biquad_init_shifts[TEGRA210_PEQ_SHIFT_PARAM_SIZE_PER_CH] = {
-	23, /* Pre-shift */
-	30, 30, 30, 30, 30, 0, 0, 0, 0, 0, 0, 0, /* Shift for bands */
-	28, /* Post-shift */
+	23,  
+	30, 30, 30, 30, 30, 0, 0, 0, 0, 0, 0, 0,  
+	28,  
 };
 
 static s32 biquad_coeff_buffer[TEGRA210_PEQ_GAIN_PARAM_SIZE_PER_CH];
@@ -70,10 +70,7 @@ static void tegra210_peq_read_ram(struct regmap *regmap, unsigned int reg_ctrl,
 
 	regmap_write(regmap, reg_ctrl, val);
 
-	/*
-	 * Since all ahub non-io modules work under same ahub clock it is not
-	 * necessary to check ahub read busy bit after every read.
-	 */
+	 
 	for (i = 0; i < size; i++)
 		regmap_read(regmap, reg_data, &data[i]);
 }
@@ -368,10 +365,10 @@ int tegra210_peq_component_init(struct snd_soc_component *cmpnt)
 		(TEGRA210_PEQ_BIQUAD_INIT_STAGE - 1) <<
 		TEGRA210_PEQ_CFG_BIQUAD_STAGES_SHIFT);
 
-	/* Initialize PEQ AHUB RAM with default params */
+	 
 	for (i = 0; i < TEGRA210_PEQ_MAX_CHANNELS; i++) {
 
-		/* Set default gain params */
+		 
 		tegra210_peq_write_ram(ope->peq_regmap,
 			TEGRA210_PEQ_CFG_RAM_CTRL,
 			TEGRA210_PEQ_CFG_RAM_DATA,
@@ -379,7 +376,7 @@ int tegra210_peq_component_init(struct snd_soc_component *cmpnt)
 			(u32 *)&biquad_init_gains,
 			TEGRA210_PEQ_GAIN_PARAM_SIZE_PER_CH);
 
-		/* Set default shift params */
+		 
 		tegra210_peq_write_ram(ope->peq_regmap,
 			TEGRA210_PEQ_CFG_RAM_SHIFT_CTRL,
 			TEGRA210_PEQ_CFG_RAM_SHIFT_DATA,

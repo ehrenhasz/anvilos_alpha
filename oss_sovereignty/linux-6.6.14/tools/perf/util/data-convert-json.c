@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * JSON export.
- *
- * Copyright (C) 2021, CodeWeavers Inc. <nfraser@codeweavers.com>
- */
+
+ 
 
 #include "data-convert.h"
 
@@ -38,14 +34,14 @@ struct convert_json {
 	u64 events_count;
 };
 
-// Outputs a JSON-encoded string surrounded by quotes with characters escaped.
+
 static void output_json_string(FILE *out, const char *s)
 {
 	fputc('"', out);
 	while (*s) {
 		switch (*s) {
 
-		// required escapes with special forms as per RFC 8259
+		
 		case '"':  fputs("\\\"", out); break;
 		case '\\': fputs("\\\\", out); break;
 		case '\b': fputs("\\b", out);  break;
@@ -55,7 +51,7 @@ static void output_json_string(FILE *out, const char *s)
 		case '\t': fputs("\\t", out);  break;
 
 		default:
-			// all other control characters must be escaped by hex code
+			
 			if (*s <= 0x1f)
 				fprintf(out, "\\u%04x", *s);
 			else
@@ -68,8 +64,8 @@ static void output_json_string(FILE *out, const char *s)
 	fputc('"', out);
 }
 
-// Outputs an optional comma, newline and indentation to delimit a new value
-// from the previous one in a JSON object or array.
+
+
 static void output_json_delimiters(FILE *out, bool comma, int depth)
 {
 	int i;
@@ -81,7 +77,7 @@ static void output_json_delimiters(FILE *out, bool comma, int depth)
 		fputc('\t', out);
 }
 
-// Outputs a printf format string (with delimiter) as a JSON value.
+
 __printf(4, 5)
 static void output_json_format(FILE *out, bool comma, int depth, const char *format, ...)
 {
@@ -93,7 +89,7 @@ static void output_json_format(FILE *out, bool comma, int depth, const char *for
 	va_end(args);
 }
 
-// Outputs a JSON key-value pair where the value is a string.
+
 static void output_json_key_string(FILE *out, bool comma, int depth,
 		const char *key, const char *value)
 {
@@ -103,7 +99,7 @@ static void output_json_key_string(FILE *out, bool comma, int depth,
 	output_json_string(out, value);
 }
 
-// Outputs a JSON key-value pair where the value is a printf format string.
+
 __printf(5, 6)
 static void output_json_key_format(FILE *out, bool comma, int depth,
 		const char *key, const char *format, ...)
@@ -383,21 +379,21 @@ int bt_convert__perf2json(const char *input_name, const char *output_name,
 		goto err_session_delete;
 	}
 
-	// The opening brace is printed manually because it isn't delimited from a
-	// previous value (i.e. we don't want a leading newline)
+	
+	
 	fputc('{', c.out);
 
-	// Version number for future-proofing. Most additions should be able to be
-	// done in a backwards-compatible way so this should only need to be bumped
-	// if some major breaking change must be made.
+	
+	
+	
 	output_json_format(c.out, false, 1, "\"linux-perf-json-version\": 1");
 
-	// Output headers
+	
 	output_json_format(c.out, true, 1, "\"headers\": {");
 	output_headers(session, &c);
 	output_json_format(c.out, false, 1, "}");
 
-	// Output samples
+	
 	output_json_format(c.out, true, 1, "\"samples\": [");
 	perf_session__process_events(session);
 	output_json_format(c.out, false, 1, "]");

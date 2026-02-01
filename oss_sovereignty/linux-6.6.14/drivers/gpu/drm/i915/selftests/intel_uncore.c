@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include "../i915_selftest.h"
 
@@ -32,21 +10,21 @@ static int intel_fw_table_check(const struct intel_forcewake_range *ranges,
 	s32 prev;
 
 	for (i = 0, prev = -1; i < num_ranges; i++, ranges++) {
-		/* Check that the table is watertight */
+		 
 		if (is_watertight && (prev + 1) != (s32)ranges->start) {
 			pr_err("%s: entry[%d]:(%x, %x) is not watertight to previous (%x)\n",
 			       __func__, i, ranges->start, ranges->end, prev);
 			return -EINVAL;
 		}
 
-		/* Check that the table never goes backwards */
+		 
 		if (prev >= (s32)ranges->start) {
 			pr_err("%s: entry[%d]:(%x, %x) is less than the previous (%x)\n",
 			       __func__, i, ranges->start, ranges->end, prev);
 			return -EINVAL;
 		}
 
-		/* Check that the entry is valid */
+		 
 		if (ranges->start >= ranges->end) {
 			pr_err("%s: entry[%d]:(%x, %x) has negative length\n",
 			       __func__, i, ranges->start, ranges->end);
@@ -171,24 +149,17 @@ static int live_forcewake_ops(void *arg)
 
 	GEM_BUG_ON(gt->awake);
 
-	/* vlv/chv with their pcu behave differently wrt reads */
+	 
 	if (IS_VALLEYVIEW(gt->i915) || IS_CHERRYVIEW(gt->i915)) {
 		pr_debug("PCU fakes forcewake badly; skipping\n");
 		return 0;
 	}
 
-	/*
-	 * Not quite as reliable across the gen as one would hope.
-	 *
-	 * Either our theory of operation is incorrect, or there remain
-	 * external parties interfering with the powerwells.
-	 *
-	 * https://bugs.freedesktop.org/show_bug.cgi?id=110210
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_DRM_I915_SELFTEST_BROKEN))
 		return 0;
 
-	/* We have to pick carefully to get the exact behaviour we need */
+	 
 	for (r = registers; r->name; r++)
 		if (IS_GRAPHICS_VER(gt->i915, r->min_graphics_ver, r->max_graphics_ver))
 			break;
@@ -236,7 +207,7 @@ static int live_forcewake_ops(void *arg)
 		val = readl(reg);
 		intel_uncore_forcewake_put(uncore, fw_domains);
 
-		/* Flush the forcewake release (delayed onto a timer) */
+		 
 		for_each_fw_domain_masked(domain, fw_domains, uncore, tmp) {
 			smp_store_mb(domain->active, false);
 			if (hrtimer_cancel(&domain->timer))
@@ -259,7 +230,7 @@ static int live_forcewake_ops(void *arg)
 			goto out_rpm;
 		}
 
-		/* We then expect the read to return 0 outside of the fw */
+		 
 		if (wait_for(readl(reg) == 0, 100)) {
 			pr_err("%s:%s=%0x, fw_domains 0x%x still up after 100ms!\n",
 			       engine->name, r->name, readl(reg), fw_domains);
@@ -287,9 +258,7 @@ static int live_forcewake_domains(void *arg)
 	    !IS_CHERRYVIEW(gt->i915))
 		return 0;
 
-	/*
-	 * This test may lockup the machine or cause GPU hangs afterwards.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_DRM_I915_SELFTEST_BROKEN))
 		return 0;
 
@@ -336,7 +305,7 @@ static int live_fw_table(void *arg)
 {
 	struct intel_gt *gt = arg;
 
-	/* Confirm the table we load is still valid */
+	 
 	return intel_fw_table_check(gt->uncore->fw_domains_table,
 				    gt->uncore->fw_domains_table_entries,
 				    GRAPHICS_VER(gt->i915) >= 9);

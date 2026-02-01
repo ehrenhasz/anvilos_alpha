@@ -1,31 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Ezequiel Garcia
- * Copyright (c) 2011 Free Electrons
- *
- * Driver parameter handling strongly based on drivers/mtd/ubi/build.c
- *   Copyright (c) International Business Machines Corp., 2006
- *   Copyright (c) Nokia Corporation, 2007
- *   Authors: Artem Bityutskiy, Frank Haverkamp
- */
 
-/*
- * Read-only block devices on top of UBI volumes
- *
- * A simple implementation to allow a block device to be layered on top of a
- * UBI volume. The implementation is provided by creating a static 1-to-1
- * mapping between the block device and the UBI volume.
- *
- * The addressed byte is obtained from the addressed block sector, which is
- * mapped linearly into the corresponding LEB:
- *
- *   LEB number = addressed byte / LEB size
- *
- * This feature is compiled in the UBI core, and adds a 'block' parameter
- * to allow early creation of block devices on top of UBI volumes. Runtime
- * block creation/removal for UBI volumes is provided through two UBI ioctls:
- * UBI_IOCVOLCRBLK and UBI_IOCVOLRMBLK.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -45,13 +21,13 @@
 #include "ubi-media.h"
 #include "ubi.h"
 
-/* Maximum number of supported devices */
+ 
 #define UBIBLOCK_MAX_DEVICES 32
 
-/* Maximum length of the 'block=' parameter */
+ 
 #define UBIBLOCK_PARAM_LEN 63
 
-/* Maximum number of comma-separated items in the 'block=' parameter */
+ 
 #define UBIBLOCK_PARAM_COUNT 2
 
 struct ubiblock_param {
@@ -64,10 +40,10 @@ struct ubiblock_pdu {
 	struct ubi_sgl usgl;
 };
 
-/* Numbers of elements set in the @ubiblock_param array */
+ 
 static int ubiblock_devs __initdata;
 
-/* MTD devices specification parameters */
+ 
 static struct ubiblock_param ubiblock_param[UBIBLOCK_MAX_DEVICES] __initdata;
 
 struct ubiblock {
@@ -85,10 +61,10 @@ struct ubiblock {
 	struct blk_mq_tag_set tag_set;
 };
 
-/* Linked list of all ubiblock instances */
+ 
 static LIST_HEAD(ubiblock_devices);
 static DEFINE_IDR(ubiblock_minor_idr);
-/* Protects ubiblock_devices and ubiblock_minor_idr */
+ 
 static DEFINE_MUTEX(devices_mutex);
 static int ubiblock_major;
 
@@ -119,7 +95,7 @@ static int __init ubiblock_set_param(const char *val,
 
 	strcpy(buf, val);
 
-	/* Get rid of the final newline */
+	 
 	if (buf[len - 1] == '\n')
 		buf[len - 1] = '\0';
 
@@ -128,12 +104,12 @@ static int __init ubiblock_set_param(const char *val,
 
 	param = &ubiblock_param[ubiblock_devs];
 	if (tokens[1]) {
-		/* Two parameters: can be 'ubi, vol_id' or 'ubi, vol_name' */
+		 
 		ret = kstrtoint(tokens[0], 10, &param->ubi_num);
 		if (ret < 0)
 			return -EINVAL;
 
-		/* Second param can be a number or a name */
+		 
 		ret = kstrtoint(tokens[1], 10, &param->vol_id);
 		if (ret < 0) {
 			param->vol_id = -1;
@@ -141,7 +117,7 @@ static int __init ubiblock_set_param(const char *val,
 		}
 
 	} else {
-		/* One parameter: must be device path */
+		 
 		strcpy(param->name, tokens[0]);
 		param->ubi_num = -1;
 		param->vol_id = -1;
@@ -184,7 +160,7 @@ static blk_status_t ubiblock_read(struct request *req)
 	u64 pos = blk_rq_pos(req) << 9;
 	int to_read = blk_rq_bytes(req);
 	int bytes_left = to_read;
-	/* Get LEB:offset address to read from */
+	 
 	int offset = do_div(pos, dev->leb_size);
 	int leb = pos;
 	struct req_iterator iter;
@@ -193,19 +169,12 @@ static blk_status_t ubiblock_read(struct request *req)
 
 	blk_mq_start_request(req);
 
-	/*
-	 * It is safe to ignore the return value of blk_rq_map_sg() because
-	 * the number of sg entries is limited to UBI_MAX_SG_COUNT
-	 * and ubi_read_sg() will check that limit.
-	 */
+	 
 	ubi_sgl_init(&pdu->usgl);
 	blk_rq_map_sg(req->q, req, pdu->usgl.sg);
 
 	while (bytes_left) {
-		/*
-		 * We can only read one LEB at a time. Therefore if the read
-		 * length is larger than one LEB size, we split the operation.
-		 */
+		 
 		if (offset + to_read > dev->leb_size)
 			to_read = dev->leb_size - offset;
 
@@ -234,18 +203,11 @@ static int ubiblock_open(struct gendisk *disk, blk_mode_t mode)
 
 	mutex_lock(&dev->dev_mutex);
 	if (dev->refcnt > 0) {
-		/*
-		 * The volume is already open, just increase the reference
-		 * counter.
-		 */
+		 
 		goto out_done;
 	}
 
-	/*
-	 * We want users to be aware they should only mount us as read-only.
-	 * It's just a paranoid check, as write requests will get rejected
-	 * in any case.
-	 */
+	 
 	if (mode & BLK_OPEN_WRITE) {
 		ret = -EROFS;
 		goto out_unlock;
@@ -284,7 +246,7 @@ static void ubiblock_release(struct gendisk *gd)
 
 static int ubiblock_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 {
-	/* Some tools might require this information */
+	 
 	geo->heads = 1;
 	geo->cylinders = 1;
 	geo->sectors = get_capacity(bdev->bd_disk);
@@ -358,7 +320,7 @@ int ubiblock_create(struct ubi_volume_info *vi)
 		return ret;
 	}
 
-	/* Check that the volume isn't already handled */
+	 
 	mutex_lock(&devices_mutex);
 	if (find_dev_nolock(vi->ubi_num, vi->vol_id)) {
 		ret = -EEXIST;
@@ -392,7 +354,7 @@ int ubiblock_create(struct ubi_volume_info *vi)
 	}
 
 
-	/* Initialize the gendisk of this ubiblock device */
+	 
 	gd = blk_mq_alloc_disk(&dev->tag_set, dev);
 	if (IS_ERR(gd)) {
 		ret = PTR_ERR(gd);
@@ -420,7 +382,7 @@ int ubiblock_create(struct ubi_volume_info *vi)
 
 	list_add_tail(&dev->list, &ubiblock_devices);
 
-	/* Must be the last step: anyone can call file ops from now on */
+	 
 	ret = device_add_disk(vi->dev, dev->gd, NULL);
 	if (ret)
 		goto out_remove_minor;
@@ -447,9 +409,9 @@ out_unlock:
 
 static void ubiblock_cleanup(struct ubiblock *dev)
 {
-	/* Stop new requests to arrive */
+	 
 	del_gendisk(dev->gd);
-	/* Finally destroy the blk queue */
+	 
 	dev_info(disk_to_dev(dev->gd), "released");
 	put_disk(dev->gd);
 	blk_mq_free_tag_set(&dev->tag_set);
@@ -468,14 +430,14 @@ int ubiblock_remove(struct ubi_volume_info *vi)
 		goto out_unlock;
 	}
 
-	/* Found a device, let's lock it so we can check if it's busy */
+	 
 	mutex_lock(&dev->dev_mutex);
 	if (dev->refcnt > 0) {
 		ret = -EBUSY;
 		goto out_unlock_dev;
 	}
 
-	/* Remove from device list */
+	 
 	list_del(&dev->list);
 	ubiblock_cleanup(dev);
 	mutex_unlock(&dev->dev_mutex);
@@ -497,11 +459,7 @@ static int ubiblock_resize(struct ubi_volume_info *vi)
 	u64 disk_capacity;
 	int ret;
 
-	/*
-	 * Need to lock the device list until we stop using the device,
-	 * otherwise the device struct might get released in
-	 * 'ubiblock_remove()'.
-	 */
+	 
 	mutex_lock(&devices_mutex);
 	dev = find_dev_nolock(vi->ubi_num, vi->vol_id);
 	if (!dev) {
@@ -539,10 +497,7 @@ static int ubiblock_notify(struct notifier_block *nb,
 
 	switch (notification_type) {
 	case UBI_VOLUME_ADDED:
-		/*
-		 * We want to enforce explicit block device creation for
-		 * volumes, so when a volume is added we do nothing.
-		 */
+		 
 		break;
 	case UBI_VOLUME_REMOVED:
 		ubiblock_remove(&nt->vi);
@@ -551,10 +506,7 @@ static int ubiblock_notify(struct notifier_block *nb,
 		ubiblock_resize(&nt->vi);
 		break;
 	case UBI_VOLUME_UPDATED:
-		/*
-		 * If the volume is static, a content update might mean the
-		 * size (i.e. used_bytes) was also changed.
-		 */
+		 
 		if (nt->vi.vol_type == UBI_STATIC_VOLUME)
 			ubiblock_resize(&nt->vi);
 		break;
@@ -572,10 +524,10 @@ static struct ubi_volume_desc * __init
 open_volume_desc(const char *name, int ubi_num, int vol_id)
 {
 	if (ubi_num == -1)
-		/* No ubi num, name must be a vol device path */
+		 
 		return ubi_open_volume_path(name, UBI_READONLY);
 	else if (vol_id == -1)
-		/* No vol_id, must be vol_name */
+		 
 		return ubi_open_volume_nm(ubi_num, name, UBI_READONLY);
 	else
 		return ubi_open_volume(ubi_num, vol_id, UBI_READONLY);
@@ -588,12 +540,7 @@ static void __init ubiblock_create_from_param(void)
 	struct ubi_volume_desc *desc;
 	struct ubi_volume_info vi;
 
-	/*
-	 * If there is an error creating one of the ubiblocks, continue on to
-	 * create the following ubiblocks. This helps in a circumstance where
-	 * the kernel command-line specifies multiple block devices and some
-	 * may be broken, but we still want the working ones to come up.
-	 */
+	 
 	for (i = 0; i < ubiblock_devs; i++) {
 		p = &ubiblock_param[i];
 
@@ -625,9 +572,9 @@ static void ubiblock_remove_all(void)
 
 	mutex_lock(&devices_mutex);
 	list_for_each_entry_safe(dev, next, &ubiblock_devices, list) {
-		/* The module is being forcefully removed */
+		 
 		WARN_ON(dev->desc);
-		/* Remove from device list */
+		 
 		list_del(&dev->list);
 		ubiblock_cleanup(dev);
 		kfree(dev);
@@ -643,17 +590,10 @@ int __init ubiblock_init(void)
 	if (ubiblock_major < 0)
 		return ubiblock_major;
 
-	/*
-	 * Attach block devices from 'block=' module param.
-	 * Even if one block device in the param list fails to come up,
-	 * still allow the module to load and leave any others up.
-	 */
+	 
 	ubiblock_create_from_param();
 
-	/*
-	 * Block devices are only created upon user requests, so we ignore
-	 * existing volumes.
-	 */
+	 
 	ret = ubi_register_volume_notifier(&ubiblock_notifier, 1);
 	if (ret)
 		goto err_unreg;

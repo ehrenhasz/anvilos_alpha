@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Red Hat, Inc.
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * Partial implementation of virtio 0.9. event index is used for signalling,
- * unconditionally. Design roughly follows linux kernel implementation in order
- * to be able to judge its performance.
- */
+
+ 
 #define _GNU_SOURCE
 #include "main.h"
 #include <stdlib.h>
@@ -21,21 +14,16 @@ struct data {
 
 struct vring ring;
 
-/* enabling the below activates experimental ring polling code
- * (which skips index reads on consumer in favor of looking at
- * high bits of ring id ^ 0x8000).
- */
-/* #ifdef RING_POLL */
-/* enabling the below activates experimental in-order code
- * (which skips ring updates and reads and writes len in descriptor).
- */
-/* #ifdef INORDER */
+ 
+ 
+ 
+ 
 
 #if defined(RING_POLL) && defined(INORDER)
 #error "RING_POLL and INORDER are mutually exclusive"
 #endif
 
-/* how much padding is needed to avoid false cache sharing */
+ 
 #define HOST_GUEST_PADDING 0x80
 
 struct guest {
@@ -52,15 +40,13 @@ struct guest {
 } guest;
 
 struct host {
-	/* we do not need to track last avail index
-	 * unless we have more than one in flight.
-	 */
+	 
 	unsigned short used_idx;
 	unsigned short called_used_idx;
 	unsigned char reserved[HOST_GUEST_PADDING - 4];
 } host;
 
-/* implemented by ring */
+ 
 void alloc_ring(void)
 {
 	int ret;
@@ -79,7 +65,7 @@ void alloc_ring(void)
 	guest.kicked_avail_idx = -1;
 	guest.last_used_idx = 0;
 #ifndef INORDER
-	/* Put everything in free lists. */
+	 
 	guest.free_head = 0;
 #endif
 	for (i = 0; i < ring_size - 1; i++)
@@ -95,7 +81,7 @@ void alloc_ring(void)
 	memset(data, 0, ring_size * sizeof *data);
 }
 
-/* guest side */
+ 
 int add_inbuf(unsigned len, void *buf, void *datap)
 {
 	unsigned head;
@@ -118,10 +104,7 @@ int add_inbuf(unsigned len, void *buf, void *datap)
 	desc[head].flags = VRING_DESC_F_NEXT;
 	desc[head].addr = (unsigned long)(void *)buf;
 	desc[head].len = len;
-	/* We do it like this to simulate the way
-	 * we'd have to flip it if we had multiple
-	 * descriptors.
-	 */
+	 
 	desc[head].flags &= ~VRING_DESC_F_NEXT;
 #ifndef INORDER
 	guest.free_head = desc[head].next;
@@ -130,19 +113,19 @@ int add_inbuf(unsigned len, void *buf, void *datap)
 	data[head].data = datap;
 
 #ifdef RING_POLL
-	/* Barrier A (for pairing) */
+	 
 	smp_release();
 	avail = guest.avail_idx++;
 	ring.avail->ring[avail & (ring_size - 1)] =
 		(head | (avail & ~(ring_size - 1))) ^ 0x8000;
 #else
 #ifndef INORDER
-	/* Barrier A (for pairing) */
+	 
 	smp_release();
 	avail = (ring_size - 1) & (guest.avail_idx++);
 	ring.avail->ring[avail] = head;
 #endif
-	/* Barrier A (for pairing) */
+	 
 	smp_release();
 #endif
 	ring.avail->idx = guest.avail_idx;
@@ -160,13 +143,13 @@ void *get_buf(unsigned *lenp, void **bufp)
 	index = ring.used->ring[head].id;
 	if ((index ^ guest.last_used_idx ^ 0x8000) & ~(ring_size - 1))
 		return NULL;
-	/* Barrier B (for pairing) */
+	 
 	smp_acquire();
 	index &= ring_size - 1;
 #else
 	if (ring.used->idx == guest.last_used_idx)
 		return NULL;
-	/* Barrier B (for pairing) */
+	 
 	smp_acquire();
 #ifdef INORDER
 	head = (ring_size - 1) & guest.last_used_idx;
@@ -209,16 +192,14 @@ bool used_empty()
 
 void disable_call()
 {
-	/* Doing nothing to disable calls might cause
-	 * extra interrupts, but reduces the number of cache misses.
-	 */
+	 
 }
 
 bool enable_call()
 {
 	vring_used_event(&ring) = guest.last_used_idx;
-	/* Flush call index write */
-	/* Barrier D (for pairing) */
+	 
+	 
 	smp_mb();
 	return used_empty();
 }
@@ -227,8 +208,8 @@ void kick_available(void)
 {
 	bool need;
 
-	/* Flush in previous flags write */
-	/* Barrier C (for pairing) */
+	 
+	 
 	smp_mb();
 	need = vring_need_event(vring_avail_event(&ring),
 				guest.avail_idx,
@@ -239,18 +220,16 @@ void kick_available(void)
 		kick();
 }
 
-/* host side */
+ 
 void disable_kick()
 {
-	/* Doing nothing to disable kicks might cause
-	 * extra interrupts, but reduces the number of cache misses.
-	 */
+	 
 }
 
 bool enable_kick()
 {
 	vring_avail_event(&ring) = host.used_idx;
-	/* Barrier C (for pairing) */
+	 
 	smp_mb();
 	return avail_empty();
 }
@@ -277,7 +256,7 @@ bool use_buf(unsigned *lenp, void **bufp)
 	head = ring.avail->ring[used_idx & (ring_size - 1)];
 	if ((used_idx ^ head ^ 0x8000) & ~(ring_size - 1))
 		return false;
-	/* Barrier A (for pairing) */
+	 
 	smp_acquire();
 
 	used_idx &= ring_size - 1;
@@ -286,7 +265,7 @@ bool use_buf(unsigned *lenp, void **bufp)
 	if (used_idx == ring.avail->idx)
 		return false;
 
-	/* Barrier A (for pairing) */
+	 
 	smp_acquire();
 
 	used_idx &= ring_size - 1;
@@ -304,11 +283,11 @@ bool use_buf(unsigned *lenp, void **bufp)
 #ifdef INORDER
 	desc->len = desc->len - 1;
 #else
-	/* now update used ring */
+	 
 	ring.used->ring[used_idx].id = head;
 	ring.used->ring[used_idx].len = desc->len - 1;
 #endif
-	/* Barrier B (for pairing) */
+	 
 	smp_release();
 	host.used_idx++;
 	ring.used->idx = host.used_idx;
@@ -320,8 +299,8 @@ void call_used(void)
 {
 	bool need;
 
-	/* Flush in previous flags write */
-	/* Barrier D (for pairing) */
+	 
+	 
 	smp_mb();
 	need = vring_need_event(vring_used_event(&ring),
 				host.used_idx,

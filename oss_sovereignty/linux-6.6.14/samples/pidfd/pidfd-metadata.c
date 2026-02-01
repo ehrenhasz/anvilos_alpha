@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <err.h>
@@ -61,15 +61,12 @@ static int pidfd_metadata_fd(pid_t pid, int pidfd)
 		return -1;
 	}
 
-	/*
-	 * Verify that the pid has not been recycled and our /proc/<pid> handle
-	 * is still valid.
-	 */
+	 
 	ret = sys_pidfd_send_signal(pidfd, 0, NULL, 0);
 	if (ret < 0) {
 		switch (errno) {
 		case EPERM:
-			/* Process exists, just not allowed to signal it. */
+			 
 			break;
 		default:
 			warn("Failed to signal process\n");

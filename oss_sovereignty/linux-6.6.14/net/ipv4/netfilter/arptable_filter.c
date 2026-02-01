@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Filtering ARP tables module.
- *
- * Copyright (C) 2002 David S. Miller (davem@redhat.com)
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netfilter/x_tables.h>

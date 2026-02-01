@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2019 Facebook */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 #include <sys/prctl.h>
@@ -102,40 +102,40 @@ void test_test_overhead(void)
 
 	setaffinity();
 
-	/* base line run */
+	 
 	test_run("base");
 
-	/* attach kprobe */
-	link = bpf_program__attach_kprobe(kprobe_prog, false /* retprobe */,
+	 
+	link = bpf_program__attach_kprobe(kprobe_prog, false  ,
 					  kprobe_func);
 	if (!ASSERT_OK_PTR(link, "attach_kprobe"))
 		goto cleanup;
 	test_run("kprobe");
 	bpf_link__destroy(link);
 
-	/* attach kretprobe */
-	link = bpf_program__attach_kprobe(kretprobe_prog, true /* retprobe */,
+	 
+	link = bpf_program__attach_kprobe(kretprobe_prog, true  ,
 					  kprobe_func);
 	if (!ASSERT_OK_PTR(link, "attach_kretprobe"))
 		goto cleanup;
 	test_run("kretprobe");
 	bpf_link__destroy(link);
 
-	/* attach raw_tp */
+	 
 	link = bpf_program__attach_raw_tracepoint(raw_tp_prog, "task_rename");
 	if (!ASSERT_OK_PTR(link, "attach_raw_tp"))
 		goto cleanup;
 	test_run("raw_tp");
 	bpf_link__destroy(link);
 
-	/* attach fentry */
+	 
 	link = bpf_program__attach_trace(fentry_prog);
 	if (!ASSERT_OK_PTR(link, "attach_fentry"))
 		goto cleanup;
 	test_run("fentry");
 	bpf_link__destroy(link);
 
-	/* attach fexit */
+	 
 	link = bpf_program__attach_trace(fexit_prog);
 	if (!ASSERT_OK_PTR(link, "attach_fexit"))
 		goto cleanup;

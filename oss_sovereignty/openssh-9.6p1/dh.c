@@ -1,27 +1,5 @@
-/* $OpenBSD: dh.c,v 1.74 2021/04/03 06:18:40 djm Exp $ */
-/*
- * Copyright (c) 2000 Niels Provos.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -69,35 +47,35 @@ parse_prime(int linenum, char *line, struct dhgroup *dhg)
 	cp = line;
 	if ((arg = strdelim(&cp)) == NULL)
 		return 0;
-	/* Ignore leading whitespace */
+	 
 	if (*arg == '\0')
 		arg = strdelim(&cp);
 	if (!arg || !*arg || *arg == '#')
 		return 0;
 
-	/* time */
+	 
 	if (cp == NULL || *arg == '\0')
 		goto truncated;
-	arg = strsep(&cp, " "); /* type */
+	arg = strsep(&cp, " ");  
 	if (cp == NULL || *arg == '\0')
 		goto truncated;
-	/* Ensure this is a safe prime */
+	 
 	n = strtonum(arg, 0, 5, &errstr);
 	if (errstr != NULL || n != MODULI_TYPE_SAFE) {
 		error("moduli:%d: type is not %d", linenum, MODULI_TYPE_SAFE);
 		goto fail;
 	}
-	arg = strsep(&cp, " "); /* tests */
+	arg = strsep(&cp, " ");  
 	if (cp == NULL || *arg == '\0')
 		goto truncated;
-	/* Ensure prime has been tested and is not composite */
+	 
 	n = strtonum(arg, 0, 0x1f, &errstr);
 	if (errstr != NULL ||
 	    (n & MODULI_TESTS_COMPOSITE) || !(n & ~MODULI_TESTS_COMPOSITE)) {
 		error("moduli:%d: invalid moduli tests flag", linenum);
 		goto fail;
 	}
-	arg = strsep(&cp, " "); /* tries */
+	arg = strsep(&cp, " ");  
 	if (cp == NULL || *arg == '\0')
 		goto truncated;
 	n = strtonum(arg, 0, 1<<30, &errstr);
@@ -105,19 +83,19 @@ parse_prime(int linenum, char *line, struct dhgroup *dhg)
 		error("moduli:%d: invalid primality trial count", linenum);
 		goto fail;
 	}
-	strsize = strsep(&cp, " "); /* size */
+	strsize = strsep(&cp, " ");  
 	if (cp == NULL || *strsize == '\0' ||
 	    (dhg->size = (int)strtonum(strsize, 0, 64*1024, &errstr)) == 0 ||
 	    errstr) {
 		error("moduli:%d: invalid prime length", linenum);
 		goto fail;
 	}
-	/* The whole group is one bit larger */
+	 
 	dhg->size++;
-	gen = strsep(&cp, " "); /* gen */
+	gen = strsep(&cp, " ");  
 	if (cp == NULL || *gen == '\0')
 		goto truncated;
-	prime = strsep(&cp, " "); /* prime */
+	prime = strsep(&cp, " ");  
 	if (cp != NULL || *prime == '\0') {
  truncated:
 		error("moduli:%d: truncated", linenum);
@@ -230,7 +208,7 @@ choose_dh(int min, int wantbits, int max)
 	return (dh_new_group(dhg.g, dhg.p));
 }
 
-/* diffie-hellman-groupN-sha1 */
+ 
 
 int
 dh_pub_is_valid(const DH *dh, const BIGNUM *dh_pub)
@@ -247,7 +225,7 @@ dh_pub_is_valid(const DH *dh, const BIGNUM *dh_pub)
 		logit("invalid public DH value: negative");
 		return 0;
 	}
-	if (BN_cmp(dh_pub, BN_value_one()) != 1) {	/* pub_exp <= 1 */
+	if (BN_cmp(dh_pub, BN_value_one()) != 1) {	 
 		logit("invalid public DH value: <= 1");
 		return 0;
 	}
@@ -257,7 +235,7 @@ dh_pub_is_valid(const DH *dh, const BIGNUM *dh_pub)
 		return 0;
 	}
 	if (!BN_sub(tmp, dh_p, BN_value_one()) ||
-	    BN_cmp(dh_pub, tmp) != -1) {		/* pub_exp > p-2 */
+	    BN_cmp(dh_pub, tmp) != -1) {		 
 		BN_clear_free(tmp);
 		logit("invalid public DH value: >= p-1");
 		return 0;
@@ -269,9 +247,7 @@ dh_pub_is_valid(const DH *dh, const BIGNUM *dh_pub)
 			bits_set++;
 	debug2("bits set: %d/%d", bits_set, BN_num_bits(dh_p));
 
-	/*
-	 * if g==2 and bits_set==1 then computing log_g(dh_pub) is trivial
-	 */
+	 
 	if (bits_set < 4) {
 		logit("invalid public DH value (%d/%d)",
 		    bits_set, BN_num_bits(dh_p));
@@ -294,10 +270,7 @@ dh_gen_key(DH *dh, int need)
 		return SSH_ERR_INVALID_ARGUMENT;
 	if (need < 256)
 		need = 256;
-	/*
-	 * Pollard Rho, Big step/Little Step attacks are O(sqrt(n)),
-	 * so double requested need here.
-	 */
+	 
 	if (!DH_set_length(dh, MINIMUM(need * 2, pbits - 1)))
 		return SSH_ERR_LIBCRYPTO_ERROR;
 
@@ -330,10 +303,7 @@ dh_new_group_asc(const char *gen, const char *modulus)
 	return NULL;
 }
 
-/*
- * This just returns the group, we still need to generate the exchange
- * value.
- */
+ 
 DH *
 dh_new_group(BIGNUM *gen, BIGNUM *modulus)
 {
@@ -349,7 +319,7 @@ dh_new_group(BIGNUM *gen, BIGNUM *modulus)
 	return dh;
 }
 
-/* rfc2409 "Second Oakley Group" (1024 bits) */
+ 
 DH *
 dh_new_group1(void)
 {
@@ -364,7 +334,7 @@ dh_new_group1(void)
 	return (dh_new_group_asc(gen, group1));
 }
 
-/* rfc3526 group 14 "2048-bit MODP Group" */
+ 
 DH *
 dh_new_group14(void)
 {
@@ -384,7 +354,7 @@ dh_new_group14(void)
 	return (dh_new_group_asc(gen, group14));
 }
 
-/* rfc3526 group 16 "4096-bit MODP Group" */
+ 
 DH *
 dh_new_group16(void)
 {
@@ -415,7 +385,7 @@ dh_new_group16(void)
 	return (dh_new_group_asc(gen, group16));
 }
 
-/* rfc3526 group 18 "8192-bit MODP Group" */
+ 
 DH *
 dh_new_group18(void)
 {
@@ -467,7 +437,7 @@ dh_new_group18(void)
 	return (dh_new_group_asc(gen, group18));
 }
 
-/* Select fallback group used by DH-GEX if moduli file cannot be read. */
+ 
 DH *
 dh_new_group_fallback(int max)
 {
@@ -483,13 +453,7 @@ dh_new_group_fallback(int max)
 	return dh_new_group18();
 }
 
-/*
- * Estimates the group order for a Diffie-Hellman group that has an
- * attack complexity approximately the same as O(2**bits).
- * Values from NIST Special Publication 800-57: Recommendation for Key
- * Management Part 1 (rev 3) limited by the recommended maximum value
- * from RFC4419 section 3.
- */
+ 
 u_int
 dh_estimate(int bits)
 {
@@ -502,4 +466,4 @@ dh_estimate(int bits)
 	return 8192;
 }
 
-#endif /* WITH_OPENSSL */
+#endif  

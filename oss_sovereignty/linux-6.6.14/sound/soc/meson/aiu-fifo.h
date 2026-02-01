@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2020 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+ 
+ 
 
 #ifndef _MESON_AIU_FIFO_H
 #define _MESON_AIU_FIFO_H
@@ -47,4 +44,4 @@ void aiu_fifo_shutdown(struct snd_pcm_substream *substream,
 int aiu_fifo_pcm_new(struct snd_soc_pcm_runtime *rtd,
 		     struct snd_soc_dai *dai);
 
-#endif /* _MESON_AIU_FIFO_H */
+#endif  

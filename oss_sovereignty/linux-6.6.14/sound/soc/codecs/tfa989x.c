@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Stephan Gerhold
- *
- * Register definitions/sequences taken from various tfa98xx kernel drivers:
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright (C) 2013 Sony Mobile Communications Inc.
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -18,28 +12,28 @@
 #define TFA989X_BATTERYVOLTAGE		0x01
 #define TFA989X_TEMPERATURE		0x02
 #define TFA989X_REVISIONNUMBER		0x03
-#define TFA989X_REVISIONNUMBER_REV_MSK	GENMASK(7, 0)	/* device revision */
+#define TFA989X_REVISIONNUMBER_REV_MSK	GENMASK(7, 0)	 
 #define TFA989X_I2SREG			0x04
-#define TFA989X_I2SREG_RCV		2	/* receiver mode */
-#define TFA989X_I2SREG_CHSA		6	/* amplifier input select */
+#define TFA989X_I2SREG_RCV		2	 
+#define TFA989X_I2SREG_CHSA		6	 
 #define TFA989X_I2SREG_CHSA_MSK		GENMASK(7, 6)
-#define TFA989X_I2SREG_I2SSR		12	/* sample rate */
+#define TFA989X_I2SREG_I2SSR		12	 
 #define TFA989X_I2SREG_I2SSR_MSK	GENMASK(15, 12)
 #define TFA989X_BAT_PROT		0x05
 #define TFA989X_AUDIO_CTR		0x06
 #define TFA989X_DCDCBOOST		0x07
 #define TFA989X_SPKR_CALIBRATION	0x08
 #define TFA989X_SYS_CTRL		0x09
-#define TFA989X_SYS_CTRL_PWDN		0	/* power down */
-#define TFA989X_SYS_CTRL_I2CR		1	/* I2C reset */
-#define TFA989X_SYS_CTRL_CFE		2	/* enable CoolFlux DSP */
-#define TFA989X_SYS_CTRL_AMPE		3	/* enable amplifier */
-#define TFA989X_SYS_CTRL_DCA		4	/* enable boost */
-#define TFA989X_SYS_CTRL_SBSL		5	/* DSP configured */
-#define TFA989X_SYS_CTRL_AMPC		6	/* amplifier enabled by DSP */
+#define TFA989X_SYS_CTRL_PWDN		0	 
+#define TFA989X_SYS_CTRL_I2CR		1	 
+#define TFA989X_SYS_CTRL_CFE		2	 
+#define TFA989X_SYS_CTRL_AMPE		3	 
+#define TFA989X_SYS_CTRL_DCA		4	 
+#define TFA989X_SYS_CTRL_SBSL		5	 
+#define TFA989X_SYS_CTRL_AMPC		6	 
 #define TFA989X_I2S_SEL_REG		0x0a
-#define TFA989X_I2S_SEL_REG_SPKR_MSK	GENMASK(10, 9)	/* speaker impedance */
-#define TFA989X_I2S_SEL_REG_DCFG_MSK	GENMASK(14, 11)	/* DCDC compensation */
+#define TFA989X_I2S_SEL_REG_SPKR_MSK	GENMASK(10, 9)	 
+#define TFA989X_I2S_SEL_REG_DCFG_MSK	GENMASK(14, 11)	 
 #define TFA989X_HIDE_UNHIDE_KEY	0x40
 #define TFA989X_PWM_CONTROL		0x41
 #define TFA989X_CURRENTSENSE1		0x46
@@ -81,7 +75,7 @@ static const struct regmap_config tfa989x_regmap = {
 	.cache_type	= REGCACHE_RBTREE,
 };
 
-static const char * const chsa_text[] = { "Left", "Right", /* "DSP" */ };
+static const char * const chsa_text[] = { "Left", "Right",   };
 static SOC_ENUM_SINGLE_DECL(chsa_enum, TFA989X_I2SREG, TFA989X_I2SREG_CHSA, chsa_text);
 static const struct snd_kcontrol_new chsa_mux = SOC_DAPM_ENUM("Amp Input", chsa_enum);
 
@@ -193,17 +187,17 @@ static int tfa9890_init(struct regmap *regmap)
 {
 	int ret;
 
-	/* temporarily allow access to hidden registers */
+	 
 	ret = regmap_write(regmap, TFA989X_HIDE_UNHIDE_KEY, 0x5a6b);
 	if (ret)
 		return ret;
 
-	/* update PLL registers */
+	 
 	ret = regmap_set_bits(regmap, 0x59, 0x3);
 	if (ret)
 		return ret;
 
-	/* hide registers again */
+	 
 	ret = regmap_write(regmap, TFA989X_HIDE_UNHIDE_KEY, 0x0000);
 	if (ret)
 		return ret;
@@ -217,14 +211,14 @@ static const struct tfa989x_rev tfa9890_rev = {
 };
 
 static const struct reg_sequence tfa9895_reg_init[] = {
-	/* some other registers must be set for optimal amplifier behaviour */
+	 
 	{ TFA989X_BAT_PROT, 0x13ab },
 	{ TFA989X_AUDIO_CTR, 0x001f },
 
-	/* peak voltage protection is always on, but may be written */
+	 
 	{ TFA989X_SPKR_CALIBRATION, 0x3c4e },
 
-	/* TFA989X_SYSCTRL_DCA = 0 */
+	 
 	{ TFA989X_SYS_CTRL, 0x024d },
 	{ TFA989X_PWM_CONTROL, 0x0308 },
 	{ TFA989X_CURRENTSENSE4, 0x0e82 },
@@ -245,17 +239,17 @@ static int tfa9897_init(struct regmap *regmap)
 {
 	int ret;
 
-	/* Reduce slewrate by clearing iddqtestbst to avoid booster damage */
+	 
 	ret = regmap_write(regmap, TFA989X_CURRENTSENSE3, 0x0300);
 	if (ret)
 		return ret;
 
-	/* Enable clipping */
+	 
 	ret = regmap_clear_bits(regmap, TFA989X_CURRENTSENSE4, 0x1);
 	if (ret)
 		return ret;
 
-	/* Set required TDM configuration */
+	 
 	return regmap_write(regmap, 0x14, 0x0);
 }
 
@@ -264,35 +258,17 @@ static const struct tfa989x_rev tfa9897_rev = {
 	.init	= tfa9897_init,
 };
 
-/*
- * Note: At the moment this driver bypasses the "CoolFlux DSP" built into the
- * TFA989X amplifiers. Unfortunately, there seems to be absolutely
- * no documentation for it - the public "short datasheets" do not provide
- * any information about the DSP or available registers.
- *
- * Usually the TFA989X amplifiers are configured through proprietary userspace
- * libraries. There are also some (rather complex) kernel drivers but even those
- * rely on obscure firmware blobs for configuration (so-called "containers").
- * They seem to contain different "profiles" with tuned speaker settings, sample
- * rates and volume steps (which would be better exposed as separate ALSA mixers).
- *
- * Bypassing the DSP disables volume control (and perhaps some speaker
- * optimization?), but at least allows using the speaker without obscure
- * kernel drivers and firmware.
- *
- * Ideally NXP (or now Goodix) should release proper documentation for these
- * amplifiers so that support for the "CoolFlux DSP" can be implemented properly.
- */
+ 
 static int tfa989x_dsp_bypass(struct regmap *regmap)
 {
 	int ret;
 
-	/* Clear CHSA to bypass DSP and take input from I2S 1 left channel */
+	 
 	ret = regmap_clear_bits(regmap, TFA989X_I2SREG, TFA989X_I2SREG_CHSA_MSK);
 	if (ret)
 		return ret;
 
-	/* Set DCDC compensation to off and speaker impedance to 8 ohm */
+	 
 	ret = regmap_update_bits(regmap, TFA989X_I2S_SEL_REG,
 				 TFA989X_I2S_SEL_REG_DCFG_MSK |
 				 TFA989X_I2S_SEL_REG_SPKR_MSK,
@@ -300,7 +276,7 @@ static int tfa989x_dsp_bypass(struct regmap *regmap)
 	if (ret)
 		return ret;
 
-	/* Set DCDC to follower mode and disable CoolFlux DSP */
+	 
 	return regmap_clear_bits(regmap, TFA989X_SYS_CTRL,
 				 BIT(TFA989X_SYS_CTRL_DCA) |
 				 BIT(TFA989X_SYS_CTRL_CFE) |
@@ -361,10 +337,10 @@ static int tfa989x_i2c_probe(struct i2c_client *i2c)
 	if (ret)
 		return ret;
 
-	/* Bypass regcache for reset and init sequence */
+	 
 	regcache_cache_bypass(regmap, true);
 
-	/* Dummy read to generate i2c clocks, required on some devices */
+	 
 	regmap_read(regmap, TFA989X_REVISIONNUMBER, &val);
 
 	ret = regmap_read(regmap, TFA989X_REVISIONNUMBER, &val);

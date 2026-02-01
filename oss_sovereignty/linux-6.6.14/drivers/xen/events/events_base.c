@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xen event channels
- *
- * Xen models interrupts with abstract event channels.  Because each
- * domain gets 1024 event channels, but NR_IRQ is not that large, we
- * must dynamically map irqs<->event channels.  The event channels
- * interface with the rest of the kernel by defining a xen interrupt
- * chip.  When an event is received, it is mapped to an irq and sent
- * through the normal interrupt processing path.
- *
- * There are four kinds of events which can be mapped to an event
- * channel:
- *
- * 1. Inter-domain notifications.  This includes all the virtual
- *    device events, since they're driven by front-ends in another domain
- *    (typically dom0).
- * 2. VIRQs, typically used for timers.  These are per-cpu events.
- * 3. IPIs.
- * 4. PIRQs - Hardware interrupts.
- *
- * Jeremy Fitzhardinge <jeremy@xensource.com>, XenSource Inc, 2007
- */
+
+ 
 
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
@@ -73,7 +52,7 @@
 #undef MODULE_PARAM_PREFIX
 #define MODULE_PARAM_PREFIX "xen."
 
-/* Interrupt types. */
+ 
 enum xen_irq_type {
 	IRQT_UNBOUND = 0,
 	IRQT_PIRQ,
@@ -82,18 +61,7 @@ enum xen_irq_type {
 	IRQT_EVTCHN
 };
 
-/*
- * Packed IRQ information:
- * type - enum xen_irq_type
- * event channel - irq->event channel mapping
- * cpu - cpu this event channel is bound to
- * index - type-specific information:
- *    PIRQ - vector, with MSB being "needs EIO", or physical IRQ of the HVM
- *           guest, or GSI (real passthrough IRQ) of the device.
- *    VIRQ - virq number
- *    IPI - IPI vector
- *    EVTCHN -
- */
+ 
 struct irq_info {
 	struct list_head list;
 	struct list_head eoi_list;
@@ -101,20 +69,20 @@ struct irq_info {
 	short refcnt;
 	u8 spurious_cnt;
 	u8 is_accounted;
-	short type;		/* type: IRQT_* */
-	u8 mask_reason;		/* Why is event channel masked */
+	short type;		 
+	u8 mask_reason;		 
 #define EVT_MASK_REASON_EXPLICIT	0x01
 #define EVT_MASK_REASON_TEMPORARY	0x02
 #define EVT_MASK_REASON_EOI_PENDING	0x04
-	u8 is_active;		/* Is event just being handled? */
+	u8 is_active;		 
 	unsigned irq;
-	evtchn_port_t evtchn;   /* event channel */
-	unsigned short cpu;     /* cpu bound */
-	unsigned short eoi_cpu; /* EOI must happen on this cpu-1 */
-	unsigned int irq_epoch; /* If eoi_cpu valid: irq_epoch of event */
-	u64 eoi_time;           /* Time in jiffies when to EOI. */
+	evtchn_port_t evtchn;    
+	unsigned short cpu;      
+	unsigned short eoi_cpu;  
+	unsigned int irq_epoch;  
+	u64 eoi_time;            
 	raw_spinlock_t lock;
-	bool is_static;           /* Is event channel static */
+	bool is_static;            
 
 	union {
 		unsigned short virq;
@@ -142,32 +110,22 @@ module_param(event_eoi_delay, uint, 0644);
 
 const struct evtchn_ops *evtchn_ops;
 
-/*
- * This lock protects updates to the following mapping and reference-count
- * arrays. The lock does not need to be acquired to read the mapping tables.
- */
+ 
 static DEFINE_MUTEX(irq_mapping_update_lock);
 
-/*
- * Lock hierarchy:
- *
- * irq_mapping_update_lock
- *   IRQ-desc lock
- *     percpu eoi_list_lock
- *       irq_info->lock
- */
+ 
 
 static LIST_HEAD(xen_irq_list_head);
 
-/* IRQ <-> VIRQ mapping. */
+ 
 static DEFINE_PER_CPU(int [NR_VIRQS], virq_to_irq) = {[0 ... NR_VIRQS-1] = -1};
 
-/* IRQ <-> IPI mapping */
+ 
 static DEFINE_PER_CPU(int [XEN_NR_IPIS], ipi_to_irq) = {[0 ... XEN_NR_IPIS-1] = -1};
-/* Cache for IPI event channels - needed for hot cpu unplug (avoid RCU usage). */
+ 
 static DEFINE_PER_CPU(evtchn_port_t [XEN_NR_IPIS], ipi_to_evtchn) = {[0 ... XEN_NR_IPIS-1] = 0};
 
-/* Event channel distribution data */
+ 
 static atomic_t channels_on_cpu[NR_CPUS];
 
 static int **evtchn_to_irq;
@@ -180,7 +138,7 @@ static bool (*pirq_needs_eoi)(unsigned irq);
 #define EVTCHN_COL(e)  (e % (PAGE_SIZE/sizeof(**evtchn_to_irq)))
 #define EVTCHN_PER_ROW (PAGE_SIZE / sizeof(**evtchn_to_irq))
 
-/* Xen will never allocate port zero for any purpose. */
+ 
 #define VALID_EVTCHN(chn)	((chn) != 0)
 
 static struct irq_info *legacy_info_ptrs[NR_IRQS_LEGACY];
@@ -226,7 +184,7 @@ static int set_evtchn_to_irq(evtchn_port_t evtchn, unsigned int irq)
 	col = EVTCHN_COL(evtchn);
 
 	if (evtchn_to_irq[row] == NULL) {
-		/* Unallocated irq entries return -1 anyway */
+		 
 		if (irq == -1)
 			return 0;
 
@@ -236,10 +194,7 @@ static int set_evtchn_to_irq(evtchn_port_t evtchn, unsigned int irq)
 
 		clear_evtchn_to_irq_row(evtchn_row);
 
-		/*
-		 * We've prepared an empty row for the mapping. If a different
-		 * thread was faster inserting it, we can drop ours.
-		 */
+		 
 		if (cmpxchg(&evtchn_to_irq[row], NULL, evtchn_row) != NULL)
 			free_page((unsigned long) evtchn_row);
 	}
@@ -257,7 +212,7 @@ int get_evtchn_to_irq(evtchn_port_t evtchn)
 	return READ_ONCE(evtchn_to_irq[EVTCHN_ROW(evtchn)][EVTCHN_COL(evtchn)]);
 }
 
-/* Get info for IRQ */
+ 
 static struct irq_info *info_for_irq(unsigned irq)
 {
 	if (irq < nr_legacy_irqs())
@@ -274,7 +229,7 @@ static void set_info_for_irq(unsigned int irq, struct irq_info *info)
 		irq_set_chip_data(irq, info);
 }
 
-/* Per CPU channel accounting */
+ 
 static void channels_on_cpu_dec(struct irq_info *info)
 {
 	if (!info->is_accounted)
@@ -306,17 +261,17 @@ static void delayed_free_irq(struct work_struct *work)
 					     rwork);
 	unsigned int irq = info->irq;
 
-	/* Remove the info pointer only now, with no potential users left. */
+	 
 	set_info_for_irq(irq, NULL);
 
 	kfree(info);
 
-	/* Legacy IRQ descriptors are managed by the arch. */
+	 
 	if (irq >= nr_legacy_irqs())
 		irq_free_desc(irq);
 }
 
-/* Constructors for packed IRQ information. */
+ 
 static int xen_irq_info_common_setup(struct irq_info *info,
 				     unsigned irq,
 				     enum xen_irq_type type,
@@ -412,9 +367,7 @@ static void xen_irq_info_cleanup(struct irq_info *info)
 	channels_on_cpu_dec(info);
 }
 
-/*
- * Accessors for packed IRQ information.
- */
+ 
 evtchn_port_t evtchn_from_irq(unsigned irq)
 {
 	const struct irq_info *info = NULL;
@@ -554,14 +507,7 @@ static void bind_evtchn_to_cpu(evtchn_port_t evtchn, unsigned int cpu,
 	channels_on_cpu_inc(info);
 }
 
-/**
- * notify_remote_via_irq - send event to remote end of event channel via irq
- * @irq: irq of event channel to send event to
- *
- * Unlike notify_remote_via_evtchn(), this is safe to use across
- * save/restore. Notifications on a broken connection are silently
- * dropped.
- */
+ 
 void notify_remote_via_irq(int irq)
 {
 	evtchn_port_t evtchn = evtchn_from_irq(irq);
@@ -667,7 +613,7 @@ static void xen_irq_lateeoi_locked(struct irq_info *info, bool spurious)
 
 	info->eoi_time = 0;
 
-	/* is_active hasn't been reset yet, do it now. */
+	 
 	smp_store_release(&info->is_active, 0);
 	do_unmask(info, EVT_MASK_REASON_EOI_PENDING);
 }
@@ -750,10 +696,7 @@ static void xen_irq_init(unsigned irq)
 	INIT_RCU_WORK(&info->rwork, delayed_free_irq);
 
 	set_info_for_irq(irq, info);
-	/*
-	 * Interrupt affinity setting can be immediate. No point
-	 * in delaying it until an interrupt is handled.
-	 */
+	 
 	irq_set_status_flags(irq, IRQ_MOVE_PCNTXT);
 
 	INIT_LIST_HEAD(&info->eoi_list);
@@ -782,16 +725,11 @@ static int __must_check xen_allocate_irq_gsi(unsigned gsi)
 {
 	int irq;
 
-	/*
-	 * A PV guest has no concept of a GSI (since it has no ACPI
-	 * nor access to/knowledge of the physical APICs). Therefore
-	 * all IRQs are dynamically allocated from the entire IRQ
-	 * space.
-	 */
+	 
 	if (xen_pv_domain() && !xen_initial_domain())
 		return xen_allocate_irq_dynamic();
 
-	/* Legacy IRQ descriptors are already allocated by the arch. */
+	 
 	if (gsi < nr_legacy_irqs())
 		irq = gsi;
 	else
@@ -819,7 +757,7 @@ static void xen_free_irq(unsigned irq)
 	queue_rcu_work(system_wq, &info->rwork);
 }
 
-/* Not called for lateeoi events. */
+ 
 static void event_handler_exit(struct irq_info *info)
 {
 	smp_store_release(&info->is_active, 0);
@@ -879,7 +817,7 @@ static unsigned int __startup_pirq(unsigned int irq)
 		goto out;
 
 	bind_pirq.pirq = pirq_from_irq(irq);
-	/* NB. We are happy to share unless we are probing. */
+	 
 	bind_pirq.flags = info->u.pirq.flags & PIRQ_SHAREABLE ?
 					BIND_PIRQ__WILL_SHARE : 0;
 	rc = HYPERVISOR_event_channel_op(EVTCHNOP_bind_pirq, &bind_pirq);
@@ -1003,16 +941,7 @@ static void __unbind_from_irq(unsigned int irq)
 	xen_free_irq(irq);
 }
 
-/*
- * Do not make any assumptions regarding the relationship between the
- * IRQ number returned here and the Xen pirq argument.
- *
- * Note: We don't assign an event channel until the irq actually started
- * up.  Return an existing irq if we've already got one for the gsi.
- *
- * Shareable implies level triggered, not shareable implies edge
- * triggered here.
- */
+ 
 int xen_bind_pirq_gsi_to_irq(unsigned gsi,
 			     unsigned pirq, int shareable, char *name)
 {
@@ -1036,9 +965,7 @@ int xen_bind_pirq_gsi_to_irq(unsigned gsi,
 	irq_op.irq = irq;
 	irq_op.vector = 0;
 
-	/* Only the privileged domain can do this. For non-priv, the pcifront
-	 * driver provides a PCI bus that does the call to do exactly
-	 * this in the priv domain. */
+	 
 	if (xen_initial_domain() &&
 	    HYPERVISOR_physdev_op(PHYSDEVOP_alloc_irq_vector, &irq_op)) {
 		xen_free_irq(irq);
@@ -1055,21 +982,7 @@ int xen_bind_pirq_gsi_to_irq(unsigned gsi,
 	}
 
 	pirq_query_unmask(irq);
-	/* We try to use the handler with the appropriate semantic for the
-	 * type of interrupt: if the interrupt is an edge triggered
-	 * interrupt we use handle_edge_irq.
-	 *
-	 * On the other hand if the interrupt is level triggered we use
-	 * handle_fasteoi_irq like the native code does for this kind of
-	 * interrupts.
-	 *
-	 * Depending on the Xen version, pirq_needs_eoi might return true
-	 * not only for level triggered interrupts but for edge triggered
-	 * interrupts too. In any case Xen always honors the eoi mechanism,
-	 * not injecting any more pirqs of the same kind if the first one
-	 * hasn't received an eoi yet. Therefore using the fasteoi handler
-	 * is the right choice either way.
-	 */
+	 
 	if (shareable)
 		irq_set_chip_and_handler_name(irq, &xen_pirq_chip,
 				handle_fasteoi_irq, name);
@@ -1140,19 +1053,12 @@ int xen_destroy_irq(int irq)
 
 	mutex_lock(&irq_mapping_update_lock);
 
-	/*
-	 * If trying to remove a vector in a MSI group different
-	 * than the first one skip the PIRQ unmap unless this vector
-	 * is the first one in the group.
-	 */
+	 
 	if (xen_initial_domain() && !(info->u.pirq.flags & PIRQ_MSI_GROUP)) {
 		unmap_irq.pirq = info->u.pirq.pirq;
 		unmap_irq.domid = info->u.pirq.domid;
 		rc = HYPERVISOR_physdev_op(PHYSDEVOP_unmap_pirq, &unmap_irq);
-		/* If another domain quits without making the pci_disable_msix
-		 * call, the Xen hypervisor takes care of freeing the PIRQs
-		 * (free_domain_pirqs).
-		 */
+		 
 		if ((rc == -ESRCH && info->u.pirq.domid != DOMID_SELF))
 			pr_info("domain %d does not have %d anymore\n",
 				info->u.pirq.domid, info->u.pirq.pirq);
@@ -1225,13 +1131,7 @@ static int bind_evtchn_to_irq_chip(evtchn_port_t evtchn, struct irq_chip *chip,
 			irq = ret;
 			goto out;
 		}
-		/*
-		 * New interdomain events are initially bound to vCPU0 This
-		 * is required to setup the event channel in the first
-		 * place and also important for UP guests because the
-		 * affinity setting is not invoked on them so nothing would
-		 * bind the channel.
-		 */
+		 
 		bind_evtchn_to_cpu(evtchn, 0, false);
 	} else {
 		struct irq_info *info = info_for_irq(irq);
@@ -1286,10 +1186,7 @@ static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
 			irq = ret;
 			goto out;
 		}
-		/*
-		 * Force the affinity mask to the target CPU so proc shows
-		 * the correct target.
-		 */
+		 
 		bind_evtchn_to_cpu(evtchn, cpu, true);
 	} else {
 		struct irq_info *info = info_for_irq(irq);
@@ -1349,13 +1246,7 @@ static int find_virq(unsigned int virq, unsigned int cpu, evtchn_port_t *evtchn)
 	return rc;
 }
 
-/**
- * xen_evtchn_nr_channels - number of usable event channel ports
- *
- * This may be less than the maximum supported by the current
- * hypervisor ABI. Use xen_evtchn_max_channels() for the maximum
- * supported.
- */
+ 
 unsigned xen_evtchn_nr_channels(void)
 {
         return evtchn_ops->nr_channels();
@@ -1403,10 +1294,7 @@ int bind_virq_to_irq(unsigned int virq, unsigned int cpu, bool percpu)
 			goto out;
 		}
 
-		/*
-		 * Force the affinity mask for percpu interrupts so proc
-		 * shows the correct target.
-		 */
+		 
 		bind_evtchn_to_cpu(evtchn, cpu, percpu);
 	} else {
 		struct irq_info *info = info_for_irq(irq);
@@ -1554,11 +1442,7 @@ void unbind_from_irqhandler(unsigned int irq, void *dev_id)
 }
 EXPORT_SYMBOL_GPL(unbind_from_irqhandler);
 
-/**
- * xen_set_irq_priority() - set an event channel priority.
- * @irq:irq bound to an event channel.
- * @priority: priority between XEN_IRQ_PRIORITY_MAX and XEN_IRQ_PRIORITY_MIN.
- */
+ 
 int xen_set_irq_priority(unsigned irq, unsigned priority)
 {
 	struct evtchn_set_priority set_priority;
@@ -1669,16 +1553,7 @@ void handle_irq_for_port(evtchn_port_t port, struct evtchn_loop_ctrl *ctrl)
 	if (irq == -1)
 		return;
 
-	/*
-	 * Check for timeout every 256 events.
-	 * We are setting the timeout value only after the first 256
-	 * events in order to not hurt the common case of few loop
-	 * iterations. The 256 is basically an arbitrary value.
-	 *
-	 * In case we are hitting the timeout we need to defer all further
-	 * EOIs in order to ensure to leave the event handling loop rather
-	 * sooner than later.
-	 */
+	 
 	if (!ctrl->defer_eoi && !(++ctrl->count & 0xff)) {
 		ktime_t kt = ktime_get();
 
@@ -1715,13 +1590,7 @@ int xen_evtchn_do_upcall(void)
 	int cpu = smp_processor_id();
 	struct evtchn_loop_ctrl ctrl = { 0 };
 
-	/*
-	 * When closing an event channel the associated IRQ must not be freed
-	 * until all cpus have left the event handling loop. This is ensured
-	 * by taking the rcu_read_lock() while handling events, as freeing of
-	 * the IRQ is handled via queue_rcu_work() _after_ closing the event
-	 * channel.
-	 */
+	 
 	rcu_read_lock();
 
 	do {
@@ -1731,24 +1600,20 @@ int xen_evtchn_do_upcall(void)
 
 		BUG_ON(!irqs_disabled());
 
-		virt_rmb(); /* Hypervisor can set upcall pending. */
+		virt_rmb();  
 
 	} while (vcpu_info->evtchn_upcall_pending);
 
 	rcu_read_unlock();
 
-	/*
-	 * Increment irq_epoch only now to defer EOIs only for
-	 * xen_irq_lateeoi() invocations occurring from inside the loop
-	 * above.
-	 */
+	 
 	__this_cpu_inc(irq_epoch);
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(xen_evtchn_do_upcall);
 
-/* Rebind a new event channel to an existing irq. */
+ 
 void rebind_evtchn_irq(evtchn_port_t evtchn, int irq)
 {
 	struct irq_info *info = info_for_irq(irq);
@@ -1756,16 +1621,14 @@ void rebind_evtchn_irq(evtchn_port_t evtchn, int irq)
 	if (WARN_ON(!info))
 		return;
 
-	/* Make sure the irq is masked, since the new event channel
-	   will also be masked. */
+	 
 	disable_irq(irq);
 
 	mutex_lock(&irq_mapping_update_lock);
 
-	/* After resume the irq<->evtchn mappings are all cleared out */
+	 
 	BUG_ON(get_evtchn_to_irq(evtchn) != -1);
-	/* Expect irq to have been bound before,
-	   so there should be a proper type */
+	 
 	BUG_ON(info->type == IRQT_UNBOUND);
 
 	(void)xen_irq_info_evtchn_setup(irq, evtchn, NULL);
@@ -1774,11 +1637,11 @@ void rebind_evtchn_irq(evtchn_port_t evtchn, int irq)
 
 	bind_evtchn_to_cpu(evtchn, info->cpu, false);
 
-	/* Unmask the event channel. */
+	 
 	enable_irq(irq);
 }
 
-/* Rebind an evtchn so that it gets delivered to a specific cpu */
+ 
 static int xen_rebind_evtchn_to_cpu(struct irq_info *info, unsigned int tcpu)
 {
 	struct evtchn_bind_vcpu bind_vcpu;
@@ -1790,21 +1653,14 @@ static int xen_rebind_evtchn_to_cpu(struct irq_info *info, unsigned int tcpu)
 	if (!xen_support_evtchn_rebind())
 		return -1;
 
-	/* Send future instances of this interrupt to other vcpu. */
+	 
 	bind_vcpu.port = evtchn;
 	bind_vcpu.vcpu = xen_vcpu_nr(tcpu);
 
-	/*
-	 * Mask the event while changing the VCPU binding to prevent
-	 * it being delivered on an unexpected VCPU.
-	 */
+	 
 	do_mask(info, EVT_MASK_REASON_TEMPORARY);
 
-	/*
-	 * If this fails, it usually just indicates that we're dealing with a
-	 * virq or IPI channel, which don't actually need to be rebound. Ignore
-	 * it, but don't do the xenlinux-level rebind in that case.
-	 */
+	 
 	if (HYPERVISOR_event_channel_op(EVTCHNOP_bind_vcpu, &bind_vcpu) >= 0)
 		bind_evtchn_to_cpu(evtchn, tcpu, false);
 
@@ -1813,11 +1669,7 @@ static int xen_rebind_evtchn_to_cpu(struct irq_info *info, unsigned int tcpu)
 	return 0;
 }
 
-/*
- * Find the CPU within @dest mask which has the least number of channels
- * assigned. This is not precise as the per cpu counts can be modified
- * concurrently.
- */
+ 
 static unsigned int select_target_cpu(const struct cpumask *dest)
 {
 	unsigned int cpu, best_cpu = UINT_MAX, minch = UINT_MAX;
@@ -1831,10 +1683,7 @@ static unsigned int select_target_cpu(const struct cpumask *dest)
 		}
 	}
 
-	/*
-	 * Catch the unlikely case that dest contains no online CPUs. Can't
-	 * recurse.
-	 */
+	 
 	if (best_cpu == UINT_MAX)
 		return select_target_cpu(cpu_online_mask);
 
@@ -1894,11 +1743,7 @@ static void lateeoi_ack_dynirq(struct irq_data *data)
 
 	if (VALID_EVTCHN(evtchn)) {
 		do_mask(info, EVT_MASK_REASON_EOI_PENDING);
-		/*
-		 * Don't call event_handler_exit().
-		 * Need to keep is_active non-zero in order to ignore re-raised
-		 * events after cpu affinity changes while a lateeoi is pending.
-		 */
+		 
 		clear_evtchn(evtchn);
 	}
 }
@@ -1943,8 +1788,7 @@ static void restore_pirqs(void)
 		gsi = info->u.pirq.gsi;
 		irq = info->irq;
 
-		/* save/restore of PT devices doesn't work, so at this point the
-		 * only devices present are GSI based emulated devices */
+		 
 		if (!gsi)
 			continue;
 
@@ -1979,7 +1823,7 @@ static void restore_cpu_virqs(unsigned int cpu)
 
 		BUG_ON(virq_from_irq(irq) != virq);
 
-		/* Get a new binding from Xen. */
+		 
 		bind_virq.virq = virq;
 		bind_virq.vcpu = xen_vcpu_nr(cpu);
 		if (HYPERVISOR_event_channel_op(EVTCHNOP_bind_virq,
@@ -1987,9 +1831,9 @@ static void restore_cpu_virqs(unsigned int cpu)
 			BUG();
 		evtchn = bind_virq.port;
 
-		/* Record the new mapping. */
+		 
 		(void)xen_irq_info_virq_setup(cpu, irq, evtchn, virq);
-		/* The affinity mask is still valid */
+		 
 		bind_evtchn_to_cpu(evtchn, cpu, false);
 	}
 }
@@ -2006,21 +1850,21 @@ static void restore_cpu_ipis(unsigned int cpu)
 
 		BUG_ON(ipi_from_irq(irq) != ipi);
 
-		/* Get a new binding from Xen. */
+		 
 		bind_ipi.vcpu = xen_vcpu_nr(cpu);
 		if (HYPERVISOR_event_channel_op(EVTCHNOP_bind_ipi,
 						&bind_ipi) != 0)
 			BUG();
 		evtchn = bind_ipi.port;
 
-		/* Record the new mapping. */
+		 
 		(void)xen_irq_info_ipi_setup(cpu, irq, evtchn, ipi);
-		/* The affinity mask is still valid */
+		 
 		bind_evtchn_to_cpu(evtchn, cpu, false);
 	}
 }
 
-/* Clear an irq's pending state, in preparation for polling on it */
+ 
 void xen_clear_irq_pending(int irq)
 {
 	struct irq_info *info = info_for_irq(irq);
@@ -2049,8 +1893,7 @@ bool xen_test_irq_pending(int irq)
 	return ret;
 }
 
-/* Poll waiting for an irq to become pending with timeout.  In the usual case,
- * the irq will be disabled so it won't deliver an interrupt. */
+ 
 void xen_poll_irq_timeout(int irq, u64 timeout)
 {
 	evtchn_port_t evtchn = evtchn_from_irq(irq);
@@ -2067,14 +1910,13 @@ void xen_poll_irq_timeout(int irq, u64 timeout)
 	}
 }
 EXPORT_SYMBOL(xen_poll_irq_timeout);
-/* Poll waiting for an irq to become pending.  In the usual case, the
- * irq will be disabled so it won't deliver an interrupt. */
+ 
 void xen_poll_irq(int irq)
 {
-	xen_poll_irq_timeout(irq, 0 /* no timeout */);
+	xen_poll_irq_timeout(irq, 0  );
 }
 
-/* Check whether the IRQ line is shared with other guests. */
+ 
 int xen_test_irq_shared(int irq)
 {
 	struct irq_info *info = info_for_irq(irq);
@@ -2096,14 +1938,14 @@ void xen_irq_resume(void)
 	unsigned int cpu;
 	struct irq_info *info;
 
-	/* New event-channel space is not 'live' yet. */
+	 
 	xen_evtchn_resume();
 
-	/* No IRQ <-> event-channel mappings. */
+	 
 	list_for_each_entry(info, &xen_irq_list_head, list) {
-		/* Zap event-channel binding */
+		 
 		info->evtchn = 0;
-		/* Adjust accounting */
+		 
 		channels_on_cpu_dec(info);
 	}
 
@@ -2132,7 +1974,7 @@ static struct irq_chip xen_dynamic_chip __read_mostly = {
 };
 
 static struct irq_chip xen_lateeoi_chip __read_mostly = {
-	/* The chip name needs to contain "xen-dyn" for irqbalance to work. */
+	 
 	.name			= "xen-dyn-lateeoi",
 
 	.irq_disable		= disable_dynirq,
@@ -2178,9 +2020,7 @@ static struct irq_chip xen_percpu_chip __read_mostly = {
 
 #ifdef CONFIG_X86
 #ifdef CONFIG_XEN_PVHVM
-/* Vector callbacks are better than PCI interrupts to receive event
- * channel notifications because we can receive vector callbacks on any
- * vcpu and we don't need PCI support or APIC interactions. */
+ 
 void xen_setup_callback_vector(void)
 {
 	uint64_t callback_via;
@@ -2194,10 +2034,7 @@ void xen_setup_callback_vector(void)
 	}
 }
 
-/*
- * Setup per-vCPU vector-type callbacks. If this setup is unavailable,
- * fallback to the global vector-type callback.
- */
+ 
 static __init void xen_init_setup_upcall_vector(void)
 {
 	if (!xen_have_vector_callback)
@@ -2224,7 +2061,7 @@ int xen_set_upcall_vector(unsigned int cpu)
 	if (rc)
 		return rc;
 
-	/* Trick toolstack to think we are enlightened. */
+	 
 	if (!cpu)
 		rc = xen_set_callback_via(1);
 
@@ -2244,8 +2081,8 @@ void xen_setup_callback_vector(void) {}
 static inline void xen_init_setup_upcall_vector(void) {}
 int xen_set_upcall_vector(unsigned int cpu) {}
 static inline void xen_alloc_callback_vector(void) {}
-#endif /* CONFIG_XEN_PVHVM */
-#endif /* CONFIG_X86 */
+#endif  
+#endif  
 
 bool xen_fifo_events = true;
 module_param_named(fifo_events, xen_fifo_events, bool, 0);
@@ -2294,7 +2131,7 @@ void __init xen_init_IRQ(void)
 				sizeof(*evtchn_to_irq), GFP_KERNEL);
 	BUG_ON(!evtchn_to_irq);
 
-	/* No event channels are 'live' right now. */
+	 
 	for (evtchn = 0; evtchn < xen_evtchn_nr_channels(); evtchn++)
 		mask_evtchn(evtchn);
 
@@ -2311,8 +2148,7 @@ void __init xen_init_IRQ(void)
 
 	if (xen_hvm_domain()) {
 		native_init_IRQ();
-		/* pci_xen_hvm_init must be called after native_init_IRQ so that
-		 * __acpi_register_gsi can point at the right function */
+		 
 		pci_xen_hvm_init();
 	} else {
 		int rc;

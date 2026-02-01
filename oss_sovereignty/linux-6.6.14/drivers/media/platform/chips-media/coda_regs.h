@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * linux/drivers/media/platform/chips-media/coda_regs.h
- *
- * Copyright (C) 2012 Vista Silicon SL
- *    Javier Martin <javier.martin@vista-silicon.com>
- *    Xavier Duret
- */
+ 
+ 
 
 #ifndef _REGS_CODA_H_
 #define _REGS_CODA_H_
 
-/* HW registers */
+ 
 #define CODA_REG_BIT_CODE_RUN			0x000
 #define		CODA_REG_RUN_ENABLE		(1 << 0)
 #define CODA_REG_BIT_CODE_DOWN			0x004
@@ -32,7 +26,7 @@
 #define		CODA9_SW_RESET_GDI_BUS    0x100
 #define CODA9_REG_BIT_SW_RESET_STATUS		0x034
 
-/* Static SW registers */
+ 
 #define CODA_REG_BIT_CODE_BUF_ADDR		0x100
 #define CODA_REG_BIT_WORK_BUF_ADDR		0x104
 #define CODA_REG_BIT_PARA_BUF_ADDR		0x108
@@ -134,14 +128,9 @@
 #define		CODA_H264_AUX_AVC		0
 #define		CODA_H264_AUX_MVC		1
 
-/*
- * Commands' mailbox:
- * registers with offsets in the range 0x180-0x1d0
- * have different meaning depending on the command being
- * issued.
- */
+ 
 
-/* Decoder Sequence Initialization */
+ 
 #define CODA_CMD_DEC_SEQ_BB_START		0x180
 #define CODA_CMD_DEC_SEQ_BB_SIZE		0x184
 #define CODA_CMD_DEC_SEQ_OPTION			0x188
@@ -162,7 +151,7 @@
 #define CODA7_RET_DEC_SEQ_ASPECT		0x1b0
 #define CODA9_RET_DEC_SEQ_BITRATE		0x1b4
 #define CODA_RET_DEC_SEQ_SUCCESS		0x1c0
-#define CODA_RET_DEC_SEQ_SRC_FMT		0x1c4 /* SRC_SIZE on CODA7 */
+#define CODA_RET_DEC_SEQ_SRC_FMT		0x1c4  
 #define CODA_RET_DEC_SEQ_SRC_SIZE		0x1c4
 #define CODA_RET_DEC_SEQ_SRC_F_RATE		0x1c8
 #define CODA9_RET_DEC_SEQ_ASPECT		0x1c8
@@ -179,7 +168,7 @@
 #define CODA_RET_DEC_SEQ_JPG_THUMB_IND		0x1e8
 #define CODA7_RET_DEC_SEQ_HEADER_REPORT		0x1ec
 
-/* Decoder Picture Run */
+ 
 #define CODA_CMD_DEC_PIC_ROT_MODE		0x180
 #define CODA_CMD_DEC_PIC_ROT_ADDR_Y		0x184
 #define CODA9_CMD_DEC_PIC_ROT_INDEX		0x184
@@ -227,7 +216,7 @@
 #define CODA9_RET_DEC_PIC_FRATE_NR		0x1f4
 #define CODA9_RET_DEC_PIC_FRATE_DR		0x1f8
 
-/* Encoder Sequence Initialization */
+ 
 #define CODA_CMD_ENC_SEQ_BB_START				0x180
 #define CODA_CMD_ENC_SEQ_BB_SIZE				0x184
 #define CODA_CMD_ENC_SEQ_OPTION				0x188
@@ -342,7 +331,7 @@
 #define CODA_CMD_ENC_SEQ_JPG_THUMB_SIZE				0x1a4
 #define CODA_CMD_ENC_SEQ_JPG_THUMB_OFFSET			0x1a8
 
-/* Encoder Parameter Change */
+ 
 #define CODA_CMD_ENC_PARAM_CHANGE_ENABLE	0x180
 #define		CODA_PARAM_CHANGE_RC_GOP			BIT(0)
 #define		CODA_PARAM_CHANGE_RC_INTRA_QP			BIT(1)
@@ -360,7 +349,7 @@
 #define CODA_CMD_ENC_PARAM_HEC_MODE		0x19c
 #define CODA_RET_ENC_PARAM_CHANGE_SUCCESS	0x1c0
 
-/* Encoder Picture Run */
+ 
 #define CODA9_CMD_ENC_PIC_SRC_INDEX		0x180
 #define CODA9_CMD_ENC_PIC_SRC_STRIDE		0x184
 #define CODA9_CMD_ENC_PIC_SUB_FRAME_SYNC	0x1a4
@@ -395,7 +384,7 @@
 #define CODA_RET_ENC_PIC_FLAG		0x1d0
 #define CODA_RET_ENC_PIC_SUCCESS	0x1d8
 
-/* Set Frame Buffer */
+ 
 #define CODA_CMD_SET_FRAME_BUF_NUM		0x180
 #define CODA_CMD_SET_FRAME_BUF_STRIDE		0x184
 #define CODA_CMD_SET_FRAME_SLICE_BB_START	0x188
@@ -425,7 +414,7 @@
 #define CODA9_CMD_SET_FRAME_MAX_DEC_SIZE	0x1b8
 #define CODA9_CMD_SET_FRAME_DELAY		0x1bc
 
-/* Encoder Header */
+ 
 #define CODA_CMD_ENC_HEADER_CODE	0x180
 #define		CODA_GAMMA_OFFSET	0
 #define		CODA_HEADER_H264_SPS	0
@@ -439,7 +428,7 @@
 #define CODA9_CMD_ENC_HEADER_FRAME_CROP_H	0x18c
 #define CODA9_CMD_ENC_HEADER_FRAME_CROP_V	0x190
 
-/* Get Version */
+ 
 #define CODA_CMD_FIRMWARE_VERNUM		0x1c0
 #define		CODA_FIRMWARE_PRODUCT(x)	(((x) >> 16) & 0xffff)
 #define		CODA_FIRMWARE_MAJOR(x)		(((x) >> 12) & 0x0f)

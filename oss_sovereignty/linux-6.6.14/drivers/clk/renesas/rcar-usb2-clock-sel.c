@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car USB2.0 clock selector
- *
- * Copyright (C) 2017 Renesas Electronics Corp.
- *
- * Based on renesas-cpg-mssr.c
- *
- * Copyright (C) 2015 Glider bvba
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -88,12 +80,7 @@ static void usb2_clock_sel_disable(struct clk_hw *hw)
 	reset_control_assert(priv->rsts);
 }
 
-/*
- * This module seems a mux, but this driver assumes a gate because
- * ehci/ohci platform drivers don't support clk_set_parent() for now.
- * If this driver acts as a gate, ehci/ohci-platform drivers don't need
- * any modification.
- */
+ 
 static const struct clk_ops usb2_clock_sel_clock_ops = {
 	.enable = usb2_clock_sel_enable,
 	.disable = usb2_clock_sel_disable,

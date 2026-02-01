@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus operations
- *
- * Copyright 2015-2016 Google Inc.
- */
+ 
+ 
 
 #ifndef _GB_AUDIO_MANAGER_PRIVATE_H_
 #define _GB_AUDIO_MANAGER_PRIVATE_H_
@@ -17,11 +13,11 @@ int gb_audio_manager_module_create(
 	struct kset *manager_kset,
 	int id, struct gb_audio_manager_module_descriptor *desc);
 
-/* module destroyed via kobject_put */
+ 
 
 void gb_audio_manager_module_dump(struct gb_audio_manager_module *module);
 
-/* sysfs control */
+ 
 void gb_audio_manager_sysfs_init(struct kobject *kobj);
 
-#endif /* _GB_AUDIO_MANAGER_PRIVATE_H_ */
+#endif  

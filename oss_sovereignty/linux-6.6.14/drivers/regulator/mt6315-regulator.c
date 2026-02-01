@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2021 MediaTek Inc.
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -207,7 +207,7 @@ static const struct of_device_id mt6315_of_match[] = {
 	{
 		.compatible = "mediatek,mt6315-regulator",
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, mt6315_of_match);

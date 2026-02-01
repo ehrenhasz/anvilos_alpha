@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2003-2008 Takahiro Hirofuchi
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/module.h>
@@ -16,11 +14,7 @@
 
 struct kmem_cache *stub_priv_cache;
 
-/*
- * busid_tables defines matching busids that usbip can grab. A user can change
- * dynamically what device is locally used and what device is exported to a
- * remote host.
- */
+ 
 #define MAX_BUSID 16
 static struct bus_id_priv busid_table[MAX_BUSID];
 static DEFINE_SPINLOCK(busid_table_lock);
@@ -29,20 +23,14 @@ static void init_busid_table(void)
 {
 	int i;
 
-	/*
-	 * This also sets the bus_table[i].status to
-	 * STUB_BUSID_OTHER, which is 0.
-	 */
+	 
 	memset(busid_table, 0, sizeof(busid_table));
 
 	for (i = 0; i < MAX_BUSID; i++)
 		spin_lock_init(&busid_table[i].busid_lock);
 }
 
-/*
- * Find the index of the busid by name.
- * Must be called with busid_table_lock held.
- */
+ 
 static int get_busid_idx(const char *busid)
 {
 	int i;
@@ -61,7 +49,7 @@ static int get_busid_idx(const char *busid)
 	return idx;
 }
 
-/* Returns holding busid_lock. Should call put_busid_priv() to unlock */
+ 
 struct bus_id_priv *get_busid_priv(const char *busid)
 {
 	int idx;
@@ -71,7 +59,7 @@ struct bus_id_priv *get_busid_priv(const char *busid)
 	idx = get_busid_idx(busid);
 	if (idx >= 0) {
 		bid = &(busid_table[idx]);
-		/* get busid_lock before returning */
+		 
 		spin_lock(&bid->busid_lock);
 	}
 	spin_unlock(&busid_table_lock);
@@ -91,7 +79,7 @@ static int add_match_busid(char *busid)
 	int ret = -1;
 
 	spin_lock(&busid_table_lock);
-	/* already registered? */
+	 
 	if (get_busid_idx(busid) >= 0) {
 		ret = 0;
 		goto out;
@@ -127,7 +115,7 @@ int del_match_busid(char *busid)
 	if (idx < 0)
 		goto out;
 
-	/* found */
+	 
 	ret = 0;
 
 	spin_lock(&busid_table[idx].busid_lock);
@@ -172,7 +160,7 @@ static ssize_t match_busid_store(struct device_driver *dev, const char *buf,
 	if (count < 5)
 		return -EINVAL;
 
-	/* busid needs to include \0 termination */
+	 
 	if (strscpy(busid, buf + 4, BUSID_SIZE) < 0)
 		return -EINVAL;
 
@@ -200,7 +188,7 @@ static int do_rebind(char *busid, struct bus_id_priv *busid_priv)
 {
 	int ret = 0;
 
-	/* device_attach() callers should hold parent lock for USB */
+	 
 	if (busid_priv->udev->dev.parent)
 		device_lock(busid_priv->udev->dev.parent);
 	ret = device_attach(&busid_priv->udev->dev);
@@ -217,7 +205,7 @@ static void stub_device_rebind(void)
 	struct bus_id_priv *busid_priv;
 	int i;
 
-	/* update status to STUB_BUSID_OTHER so probe ignores the device */
+	 
 	spin_lock(&busid_table_lock);
 	for (i = 0; i < MAX_BUSID; i++) {
 		if (busid_table[i].name[0] &&
@@ -228,7 +216,7 @@ static void stub_device_rebind(void)
 	}
 	spin_unlock(&busid_table_lock);
 
-	/* now run rebind - no need to hold locks. driver files are removed */
+	 
 	for (i = 0; i < MAX_BUSID; i++) {
 		if (busid_table[i].name[0] &&
 		    busid_table[i].shutdown_busid) {
@@ -246,7 +234,7 @@ static ssize_t rebind_store(struct device_driver *dev, const char *buf,
 	int len;
 	struct bus_id_priv *bid;
 
-	/* buf length should be less that BUSID_SIZE */
+	 
 	len = strnlen(buf, BUSID_SIZE);
 
 	if (!(len < BUSID_SIZE))
@@ -256,16 +244,16 @@ static ssize_t rebind_store(struct device_driver *dev, const char *buf,
 	if (!bid)
 		return -ENODEV;
 
-	/* mark the device for deletion so probe ignores it during rescan */
+	 
 	bid->status = STUB_BUSID_OTHER;
-	/* release the busid lock */
+	 
 	put_busid_priv(bid);
 
 	ret = do_rebind((char *) buf, bid);
 	if (ret < 0)
 		return ret;
 
-	/* delete device from busid_table */
+	 
 	del_match_busid((char *) buf);
 
 	return count;
@@ -408,13 +396,10 @@ static void __exit usbip_host_exit(void)
 	driver_remove_file(&stub_driver.drvwrap.driver,
 			   &driver_attr_rebind);
 
-	/*
-	 * deregister() calls stub_disconnect() for all devices. Device
-	 * specific data is cleared in stub_disconnect().
-	 */
+	 
 	usb_deregister_device_driver(&stub_driver);
 
-	/* initiate scan to attach devices */
+	 
 	stub_device_rebind();
 
 	kmem_cache_destroy(stub_priv_cache);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PACKET_INTERNAL_H__
 #define __PACKET_INTERNAL_H__
 
@@ -13,7 +13,7 @@ struct packet_mclist {
 	unsigned char		addr[MAX_ADDR_LEN];
 };
 
-/* kbdq - kernel block descriptor queue */
+ 
 struct tpacket_kbdq_core {
 	struct pgv	*pkbdq;
 	unsigned int	feature_req_word;
@@ -23,10 +23,7 @@ struct tpacket_kbdq_core {
 	unsigned short	kactive_blk_num;
 	unsigned short	blk_sizeof_priv;
 
-	/* last_kactive_blk_num:
-	 * trick to see if user-space has caught up
-	 * in order to avoid refreshing timer when every single pkt arrives.
-	 */
+	 
 	unsigned short	last_kactive_blk_num;
 
 	char		*pkblk_start;
@@ -41,14 +38,14 @@ struct tpacket_kbdq_core {
 
 	rwlock_t	blk_fill_in_prog_lock;
 
-	/* Default is set to 8ms */
+	 
 #define DEFAULT_PRB_RETIRE_TOV	(8)
 
 	unsigned short  retire_blk_tov;
 	unsigned short  version;
 	unsigned long	tov_in_jiffies;
 
-	/* timer to retire an outstanding block */
+	 
 	struct timer_list retire_blk_timer;
 };
 
@@ -107,7 +104,7 @@ struct packet_rollover {
 } ____cacheline_aligned_in_smp;
 
 struct packet_sock {
-	/* struct sock has to be the first member of packet_sock */
+	 
 	struct sock		sk;
 	struct packet_fanout	*fanout;
 	union  tpacket_stats_u	stats;
@@ -117,7 +114,7 @@ struct packet_sock {
 	spinlock_t		bind_lock;
 	struct mutex		pg_vec_lock;
 	unsigned long		flags;
-	int			ifindex;	/* bound device		*/
+	int			ifindex;	 
 	u8			vnet_hdr_sz;
 	__be16			num;
 	struct packet_rollover	*rollover;

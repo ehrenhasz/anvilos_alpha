@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include "usbip_common.h"
 #include "vhci_driver.h"
@@ -42,7 +40,7 @@ static int parse_status(const char *value)
 	int ret = 0;
 	char *c;
 
-	/* skip a header line */
+	 
 	c = strchr(value, '\n');
 	if (!c)
 		return -1;
@@ -68,13 +66,13 @@ static int parse_status(const char *value)
 				hub, port, status, speed, devid);
 		dbg("sockfd %u lbusid %s", sockfd, lbusid);
 
-		/* if a device is connected, look at it */
+		 
 		idev = &vhci_driver->idev[port];
 		memset(idev, 0, sizeof(*idev));
 
 		if (strncmp("hs", hub, 2) == 0)
 			idev->hub = HUB_SPEED_HIGH;
-		else /* strncmp("ss", hub, 2) == 0 */
+		else  
 			idev->hub = HUB_SPEED_SUPER;
 
 		idev->port	= port;
@@ -94,7 +92,7 @@ static int parse_status(const char *value)
 			}
 		}
 
-		/* go to the next line */
+		 
 		c = strchr(c, '\n');
 		if (!c)
 			break;
@@ -175,15 +173,7 @@ static int get_ncontrollers(void)
 	return n;
 }
 
-/*
- * Read the given port's record.
- *
- * To avoid buffer overflow we will read the entire line and
- * validate each part's size. The initial buffer is padded by 4 to
- * accommodate the 2 spaces, 1 newline and an additional character
- * which is needed to properly validate the 3rd part without it being
- * truncated to an acceptable length.
- */
+ 
 static int read_record(int rhport, char *host, unsigned long host_len,
 		char *port, unsigned long port_len, char *busid)
 {
@@ -216,7 +206,7 @@ static int read_record(int rhport, char *host, unsigned long host_len,
 	}
 	fclose(file);
 
-	/* validate the length of each of the 3 parts */
+	 
 	start = buffer;
 	for (part = 0; part < 3; part++) {
 		end = strchr(start, delim[part]);
@@ -238,7 +228,7 @@ static int read_record(int rhport, char *host, unsigned long host_len,
 	return 0;
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 int usbip_vhci_driver_open(void)
 {
@@ -251,7 +241,7 @@ int usbip_vhci_driver_open(void)
 		return -1;
 	}
 
-	/* will be freed in usbip_driver_close() */
+	 
 	hc_device =
 		udev_device_new_from_subsystem_sysname(udev_context,
 						       USBIP_VHCI_BUS_TYPE,
@@ -356,7 +346,7 @@ int usbip_vhci_get_free_port(uint32_t speed)
 
 int usbip_vhci_attach_device2(uint8_t port, int sockfd, uint32_t devid,
 		uint32_t speed) {
-	char buff[200]; /* what size should be ? */
+	char buff[200];  
 	char attach_attr_path[SYSFS_PATH_MAX];
 	char attr_attach[] = "attach";
 	const char *path;
@@ -387,7 +377,7 @@ static unsigned long get_devid(uint8_t busnum, uint8_t devnum)
 	return (busnum << 16) | devnum;
 }
 
-/* will be removed */
+ 
 int usbip_vhci_attach_device(uint8_t port, int sockfd, uint8_t busnum,
 		uint8_t devnum, uint32_t speed)
 {
@@ -400,7 +390,7 @@ int usbip_vhci_detach_device(uint8_t port)
 {
 	char detach_attr_path[SYSFS_PATH_MAX];
 	char attr_detach[] = "detach";
-	char buff[200]; /* what size should be ? */
+	char buff[200];  
 	const char *path;
 	int ret;
 

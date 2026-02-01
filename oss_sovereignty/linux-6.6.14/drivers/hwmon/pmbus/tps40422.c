@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for TI TPS40422
- *
- * Copyright (c) 2014 Nokia Solutions and Networks.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,7 +33,7 @@ static const struct i2c_device_id tps40422_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, tps40422_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver tps40422_driver = {
 	.driver = {
 		   .name = "tps40422",

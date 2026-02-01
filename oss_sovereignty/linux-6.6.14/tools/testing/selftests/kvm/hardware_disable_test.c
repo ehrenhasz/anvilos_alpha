@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This test is intended to reproduce a crash that happens when
- * kvm_arch_hardware_disable is called and it attempts to unregister the user
- * return notifiers.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -30,7 +26,7 @@ sem_t *sem;
 static void guest_code(void)
 {
 	for (;;)
-		;  /* Some busy work */
+		;   
 	printf("Should not be reached.\n");
 }
 
@@ -117,16 +113,13 @@ static void run_test(uint32_t run)
 	sem_post(sem);
 	for (i = 0; i < VCPU_NUM; ++i)
 		check_join(threads[i], &b);
-	/* Should not be reached */
+	 
 	TEST_ASSERT(false, "%s: [%d] child escaped the ninja\n", __func__, run);
 }
 
 void wait_for_child_setup(pid_t pid)
 {
-	/*
-	 * Wait for the child to post to the semaphore, but wake up periodically
-	 * to check if the child exited prematurely.
-	 */
+	 
 	for (;;) {
 		const struct timespec wait_period = { .tv_sec = 1 };
 		int status;
@@ -134,16 +127,11 @@ void wait_for_child_setup(pid_t pid)
 		if (!sem_timedwait(sem, &wait_period))
 			return;
 
-		/* Child is still running, keep waiting. */
+		 
 		if (pid != waitpid(pid, &status, WNOHANG))
 			continue;
 
-		/*
-		 * Child is no longer running, which is not expected.
-		 *
-		 * If it exited with a non-zero status, we explicitly forward
-		 * the child's status in case it exited with KSFT_SKIP.
-		 */
+		 
 		if (WIFEXITED(status))
 			exit(WEXITSTATUS(status));
 		else
@@ -164,7 +152,7 @@ int main(int argc, char **argv)
 		pid = fork();
 		TEST_ASSERT(pid >= 0, "%s: unable to fork", __func__);
 		if (pid == 0)
-			run_test(i); /* This function always exits */
+			run_test(i);  
 
 		pr_debug("%s: [%d] waiting semaphore\n", __func__, i);
 		wait_for_child_setup(pid);

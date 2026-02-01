@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2016  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/crc32.h>
 #include "qed.h"
@@ -43,7 +40,7 @@ int qed_selftest_register(struct qed_dev *cdev)
 	struct qed_ptt *p_ptt;
 	int rc = 0, i;
 
-	/* although performed by MCP, this test is per engine */
+	 
 	for_each_hwfn(cdev, i) {
 		p_hwfn = &cdev->hwfns[i];
 		p_ptt = qed_ptt_acquire(p_hwfn);
@@ -66,7 +63,7 @@ int qed_selftest_clock(struct qed_dev *cdev)
 	struct qed_ptt *p_ptt;
 	int rc = 0, i;
 
-	/* although performed by MCP, this test is per engine */
+	 
 	for_each_hwfn(cdev, i) {
 		p_hwfn = &cdev->hwfns[i];
 		p_ptt = qed_ptt_acquire(p_hwfn);
@@ -98,7 +95,7 @@ int qed_selftest_nvram(struct qed_dev *cdev)
 		return -EBUSY;
 	}
 
-	/* Acquire from MFW the amount of available images */
+	 
 	rc = qed_mcp_bist_nvm_get_num_images(p_hwfn, p_ptt, &num_images);
 	if (rc || !num_images) {
 		DP_ERR(p_hwfn, "Failed getting number of images\n");
@@ -106,11 +103,9 @@ int qed_selftest_nvram(struct qed_dev *cdev)
 		goto err0;
 	}
 
-	/* Iterate over images and validate CRC */
+	 
 	for (i = 0; i < num_images; i++) {
-		/* This mailbox returns information about the image required for
-		 * reading it.
-		 */
+		 
 		rc = qed_mcp_bist_nvm_get_image_att(p_hwfn, p_ptt,
 						    &image_att, i);
 		if (rc) {
@@ -120,23 +115,21 @@ int qed_selftest_nvram(struct qed_dev *cdev)
 			goto err0;
 		}
 
-		/* After MFW crash dump is collected - the image's CRC stops
-		 * being valid.
-		 */
+		 
 		if (image_att.image_type == NVM_TYPE_MDUMP)
 			continue;
 
 		DP_VERBOSE(p_hwfn, QED_MSG_SP, "image index %d, size %x\n",
 			   i, image_att.len);
 
-		/* Allocate a buffer for holding the nvram image */
+		 
 		buf = kzalloc(image_att.len, GFP_KERNEL);
 		if (!buf) {
 			rc = -ENOMEM;
 			goto err0;
 		}
 
-		/* Read image into buffer */
+		 
 		rc = qed_mcp_nvm_read(p_hwfn->cdev, image_att.nvm_start_addr,
 				      buf, image_att.len);
 		if (rc) {
@@ -145,17 +138,13 @@ int qed_selftest_nvram(struct qed_dev *cdev)
 			goto err1;
 		}
 
-		/* Convert the buffer into big-endian format (excluding the
-		 * closing 4 bytes of CRC).
-		 */
+		 
 		for (j = 0; j < image_att.len - 4; j += 4) {
 			val = cpu_to_be32(*(u32 *)&buf[j]);
 			*(u32 *)&buf[j] = (__force u32)val;
 		}
 
-		/* Calc CRC for the "actual" image buffer, i.e. not including
-		 * the last 4 CRC bytes.
-		 */
+		 
 		nvm_crc = *(u32 *)(buf + image_att.len - 4);
 		calc_crc = crc32(0xffffffff, buf, image_att.len - 4);
 		calc_crc = (__force u32)~cpu_to_be32(calc_crc);
@@ -167,9 +156,7 @@ int qed_selftest_nvram(struct qed_dev *cdev)
 			goto err1;
 		}
 
-		/* Done with this image; Free to prevent double release
-		 * on subsequent failure.
-		 */
+		 
 		kfree(buf);
 		buf = NULL;
 	}

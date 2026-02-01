@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH Video Output Unit (VOU) driver
- *
- * Copyright (C) 2010, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/delay.h>
@@ -27,7 +23,7 @@
 #include <media/videobuf2-v4l2.h>
 #include <media/videobuf2-dma-contig.h>
 
-/* Mirror addresses are not available for all registers */
+ 
 #define VOUER	0
 #define VOUCR	4
 #define VOUSTR	8
@@ -76,7 +72,7 @@ struct sh_vou_device {
 	struct sh_vou_pdata *pdata;
 	spinlock_t lock;
 	void __iomem *base;
-	/* State information */
+	 
 	struct v4l2_pix_format pix;
 	struct v4l2_rect rect;
 	struct list_head buf_list;
@@ -89,7 +85,7 @@ struct sh_vou_device {
 	struct mutex fop_lock;
 };
 
-/* Register access routines for sides A, B and mirror addresses */
+ 
 static void sh_vou_reg_a_write(struct sh_vou_device *vou_dev, unsigned int reg,
 			       u32 value)
 {
@@ -145,7 +141,7 @@ struct sh_vou_fmt {
 	unsigned char	pkf;
 };
 
-/* Further pixel formats can be added */
+ 
 static struct sh_vou_fmt vou_fmt[] = {
 	{
 		.pfmt	= V4L2_PIX_FMT_NV12,
@@ -233,7 +229,7 @@ static void sh_vou_stream_config(struct sh_vou_device *vou_dev)
 	sh_vou_reg_ab_write(vou_dev, VOUAIR, vou_dev->pix.width * row_coeff);
 }
 
-/* Locking: caller holds fop_lock mutex */
+ 
 static int sh_vou_queue_setup(struct vb2_queue *vq,
 		       unsigned int *nbuffers, unsigned int *nplanes,
 		       unsigned int sizes[], struct device *alloc_devs[])
@@ -261,7 +257,7 @@ static int sh_vou_buf_prepare(struct vb2_buffer *vb)
 	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
 
 	if (vb2_plane_size(vb, 0) < size) {
-		/* User buffer too small */
+		 
 		dev_warn(vou_dev->v4l2_dev.dev, "buffer too small (%lu < %u)\n",
 			 vb2_plane_size(vb, 0), size);
 		return -EINVAL;
@@ -271,7 +267,7 @@ static int sh_vou_buf_prepare(struct vb2_buffer *vb)
 	return 0;
 }
 
-/* Locking: caller holds fop_lock mutex and vq->irqlock spinlock */
+ 
 static void sh_vou_buf_queue(struct vb2_buffer *vb)
 {
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
@@ -307,7 +303,7 @@ static int sh_vou_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 	vou_dev->active = buf;
 
-	/* Start from side A: we use mirror addresses, so, set B */
+	 
 	sh_vou_reg_a_write(vou_dev, VOURPR, 1);
 	dev_dbg(vou_dev->v4l2_dev.dev, "%s: first buffer status 0x%x\n",
 		__func__, sh_vou_reg_a_read(vou_dev, VOUSTR));
@@ -315,18 +311,18 @@ static int sh_vou_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 	buf = list_entry(buf->list.next, struct sh_vou_buffer, list);
 
-	/* Second buffer - initialise register side B */
+	 
 	sh_vou_reg_a_write(vou_dev, VOURPR, 0);
 	sh_vou_schedule_next(vou_dev, &buf->vb);
 
-	/* Register side switching with frame VSYNC */
+	 
 	sh_vou_reg_a_write(vou_dev, VOURCR, 5);
 
 	sh_vou_stream_config(vou_dev);
-	/* Enable End-of-Frame (VSYNC) interrupts */
+	 
 	sh_vou_reg_a_write(vou_dev, VOUIR, 0x10004);
 
-	/* Two buffers on the queue - activate the hardware */
+	 
 	vou_dev->status = SH_VOU_RUNNING;
 	sh_vou_reg_a_write(vou_dev, VOUER, 0x107);
 	return 0;
@@ -340,9 +336,9 @@ static void sh_vou_stop_streaming(struct vb2_queue *vq)
 
 	v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0,
 					 video, s_stream, 0);
-	/* disable output */
+	 
 	sh_vou_reg_a_set(vou_dev, VOUER, 0, 1);
-	/* ...but the current frame will complete */
+	 
 	sh_vou_reg_a_set(vou_dev, VOUIR, 0, 0x30000);
 	msleep(50);
 	spin_lock_irqsave(&vou_dev->lock, flags);
@@ -364,7 +360,7 @@ static const struct vb2_ops sh_vou_qops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/* Video IOCTLs */
+ 
 static int sh_vou_querycap(struct file *file, void  *priv,
 			   struct v4l2_capability *cap)
 {
@@ -378,7 +374,7 @@ static int sh_vou_querycap(struct file *file, void  *priv,
 	return 0;
 }
 
-/* Enumerate formats, that the device can accept from the user */
+ 
 static int sh_vou_enum_fmt_vid_out(struct file *file, void  *priv,
 				   struct v4l2_fmtdesc *fmt)
 {
@@ -426,35 +422,17 @@ static void sh_vou_configure_geometry(struct sh_vou_device *vou_dev,
 
 	if (vou_dev->std & V4L2_STD_525_60) {
 		width_max = 858;
-		/* height_max = 262; */
+		 
 	} else {
 		width_max = 864;
-		/* height_max = 312; */
+		 
 	}
 
 	frame_in_height = pix->height / 2;
 	frame_out_height = rect->height / 2;
 	frame_out_top = rect->top / 2;
 
-	/*
-	 * Cropping scheme: max useful image is 720x480, and the total video
-	 * area is 858x525 (NTSC) or 864x625 (PAL). AK8813 / 8814 starts
-	 * sampling data beginning with fixed 276th (NTSC) / 288th (PAL) clock,
-	 * of which the first 33 / 25 clocks HSYNC must be held active. This
-	 * has to be configured in CR[HW]. 1 pixel equals 2 clock periods.
-	 * This gives CR[HW] = 16 / 12, VPR[HVP] = 138 / 144, which gives
-	 * exactly 858 - 138 = 864 - 144 = 720! We call the out-of-display area,
-	 * beyond DSR, specified on the left and top by the VPR register "black
-	 * pixels" and out-of-image area (DPR) "background pixels." We fix VPR
-	 * at 138 / 144 : 20, because that's the HSYNC timing, that our first
-	 * client requires, and that's exactly what leaves us 720 pixels for the
-	 * image; we leave VPR[VVP] at default 20 for now, because the client
-	 * doesn't seem to have any special requirements for it. Otherwise we
-	 * could also set it to max - 240 = 22 / 72. Thus VPR depends only on
-	 * the selected standard, and DPR and DSR are selected according to
-	 * cropping. Q: how does the client detect the first valid line? Does
-	 * HSYNC stay inactive during invalid (black) lines?
-	 */
+	 
 	black_left = width_max - VOU_MAX_IMAGE_WIDTH;
 	black_top = 20;
 
@@ -466,16 +444,13 @@ static void sh_vou_configure_geometry(struct sh_vou_device *vou_dev,
 		pix->width, frame_in_height, black_left, black_top,
 		rect->left, frame_out_top, dsr_h, dsr_v);
 
-	/* VOUISR height - half of a frame height in frame mode */
+	 
 	sh_vou_reg_ab_write(vou_dev, VOUISR, (pix->width << 16) | frame_in_height);
 	sh_vou_reg_ab_write(vou_dev, VOUVPR, (black_left << 16) | black_top);
 	sh_vou_reg_ab_write(vou_dev, VOUDPR, (rect->left << 16) | frame_out_top);
 	sh_vou_reg_ab_write(vou_dev, VOUDSR, (dsr_h << 16) | dsr_v);
 
-	/*
-	 * if necessary, we could set VOUHIR to
-	 * max(black_left + dsr_h, width_max) here
-	 */
+	 
 
 	if (w_idx)
 		vouvcr |= (1 << 15) | (vou_scale_h_fld[w_idx - 1] << 4);
@@ -485,7 +460,7 @@ static void sh_vou_configure_geometry(struct sh_vou_device *vou_dev,
 	dev_dbg(vou_dev->v4l2_dev.dev, "0x%08x: scaling 0x%x\n",
 		fmt->pfmt, vouvcr);
 
-	/* To produce a colour bar for testing set bit 23 of VOUVCR */
+	 
 	sh_vou_reg_ab_write(vou_dev, VOUVCR, vouvcr);
 	sh_vou_reg_ab_write(vou_dev, VOUDFR,
 			    fmt->pkf | (fmt->yf << 8) | (fmt->rgb << 16));
@@ -499,13 +474,10 @@ struct sh_vou_geometry {
 	int scale_idx_v;
 };
 
-/*
- * Find input geometry, that we can use to produce output, closest to the
- * requested rectangle, using VOU scaling
- */
+ 
 static void vou_adjust_input(struct sh_vou_geometry *geo, v4l2_std_id std)
 {
-	/* The compiler cannot know, that best and idx will indeed be set */
+	 
 	unsigned int best_err = UINT_MAX, best = 0, img_height_max;
 	int i, idx = 0;
 
@@ -514,20 +486,20 @@ static void vou_adjust_input(struct sh_vou_geometry *geo, v4l2_std_id std)
 	else
 		img_height_max = 576;
 
-	/* Image width must be a multiple of 4 */
+	 
 	v4l_bound_align_image(&geo->in_width,
 			      VOU_MIN_IMAGE_WIDTH, VOU_MAX_IMAGE_WIDTH, 2,
 			      &geo->in_height,
 			      VOU_MIN_IMAGE_HEIGHT, img_height_max, 1, 0);
 
-	/* Select scales to come as close as possible to the output image */
+	 
 	for (i = ARRAY_SIZE(vou_scale_h_num) - 1; i >= 0; i--) {
 		unsigned int err;
 		unsigned int found = geo->output.width * vou_scale_h_den[i] /
 			vou_scale_h_num[i];
 
 		if (found > VOU_MAX_IMAGE_WIDTH)
-			/* scales increase */
+			 
 			break;
 
 		err = abs(found - geo->in_width);
@@ -545,14 +517,14 @@ static void vou_adjust_input(struct sh_vou_geometry *geo, v4l2_std_id std)
 
 	best_err = UINT_MAX;
 
-	/* This loop can be replaced with one division */
+	 
 	for (i = ARRAY_SIZE(vou_scale_v_num) - 1; i >= 0; i--) {
 		unsigned int err;
 		unsigned int found = geo->output.height * vou_scale_v_den[i] /
 			vou_scale_v_num[i];
 
 		if (found > img_height_max)
-			/* scales increase */
+			 
 			break;
 
 		err = abs(found - geo->in_height);
@@ -569,10 +541,7 @@ static void vou_adjust_input(struct sh_vou_geometry *geo, v4l2_std_id std)
 	geo->scale_idx_v = idx;
 }
 
-/*
- * Find output geometry, that we can produce, using VOU scaling, closest to
- * the requested rectangle
- */
+ 
 static void vou_adjust_output(struct sh_vou_geometry *geo, v4l2_std_id std)
 {
 	unsigned int best_err = UINT_MAX, best = geo->in_width,
@@ -589,14 +558,14 @@ static void vou_adjust_output(struct sh_vou_geometry *geo, v4l2_std_id std)
 		img_height_max = 576;
 	}
 
-	/* Select scales to come as close as possible to the output image */
+	 
 	for (i = 0; i < ARRAY_SIZE(vou_scale_h_num); i++) {
 		unsigned int err;
 		unsigned int found = geo->in_width * vou_scale_h_num[i] /
 			vou_scale_h_den[i];
 
 		if (found > VOU_MAX_IMAGE_WIDTH)
-			/* scales increase */
+			 
 			break;
 
 		err = abs(found - geo->output.width);
@@ -619,14 +588,14 @@ static void vou_adjust_output(struct sh_vou_geometry *geo, v4l2_std_id std)
 
 	best_err = UINT_MAX;
 
-	/* This loop can be replaced with one division */
+	 
 	for (i = 0; i < ARRAY_SIZE(vou_scale_v_num); i++) {
 		unsigned int err;
 		unsigned int found = geo->in_height * vou_scale_v_num[i] /
 			vou_scale_v_den[i];
 
 		if (found > img_height_max)
-			/* scales increase */
+			 
 			break;
 
 		err = abs(found - geo->output.height);
@@ -691,7 +660,7 @@ static int sh_vou_set_fmt_vid_out(struct sh_vou_device *vou_dev,
 	struct sh_vou_geometry geo;
 	struct v4l2_subdev_format format = {
 		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
-		/* Revisit: is this the correct code? */
+		 
 		.format.code = MEDIA_BUS_FMT_YUYV8_2X8,
 		.format.field = V4L2_FIELD_INTERLACED,
 		.format.colorspace = V4L2_COLORSPACE_SMPTE170M,
@@ -717,7 +686,7 @@ static int sh_vou_set_fmt_vid_out(struct sh_vou_device *vou_dev,
 	mbfmt->height = geo.output.height;
 	ret = v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, pad,
 					 set_fmt, NULL, &format);
-	/* Must be implemented, so, don't check for -ENOIOCTLCMD */
+	 
 	if (ret < 0)
 		return ret;
 
@@ -729,7 +698,7 @@ static int sh_vou_set_fmt_vid_out(struct sh_vou_device *vou_dev,
 	else
 		img_height_max = 576;
 
-	/* Sanity checks */
+	 
 	if ((unsigned)mbfmt->width > VOU_MAX_IMAGE_WIDTH ||
 	    (unsigned)mbfmt->height > img_height_max ||
 	    mbfmt->code != MEDIA_BUS_FMT_YUYV8_2X8)
@@ -743,7 +712,7 @@ static int sh_vou_set_fmt_vid_out(struct sh_vou_device *vou_dev,
 		vou_adjust_input(&geo, vou_dev->std);
 	}
 
-	/* We tried to preserve output rectangle, but it could have changed */
+	 
 	vou_dev->rect = geo.output;
 	pix->width = geo.in_width;
 	pix->height = geo.in_height;
@@ -827,7 +796,7 @@ static int sh_vou_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 
 	ret = v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, video,
 					 s_std_output, std_id);
-	/* Shall we continue, if the subdev doesn't support .s_std_output()? */
+	 
 	if (ret < 0 && ret != -ENOIOCTLCMD)
 		return ret;
 
@@ -919,7 +888,7 @@ static int sh_vou_g_selection(struct file *file, void *fh,
 	return 0;
 }
 
-/* Assume a dull encoder, do all the work ourselves. */
+ 
 static int sh_vou_s_selection(struct file *file, void *fh,
 			      struct v4l2_selection *sel)
 {
@@ -933,7 +902,7 @@ static int sh_vou_s_selection(struct file *file, void *fh,
 	struct sh_vou_geometry geo;
 	struct v4l2_subdev_format format = {
 		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
-		/* Revisit: is this the correct code? */
+		 
 		.format.code = MEDIA_BUS_FMT_YUYV8_2X8,
 		.format.field = V4L2_FIELD_INTERLACED,
 		.format.colorspace = V4L2_COLORSPACE_SMPTE170M,
@@ -968,24 +937,21 @@ static int sh_vou_s_selection(struct file *file, void *fh,
 	geo.in_width = pix->width;
 	geo.in_height = pix->height;
 
-	/* Configure the encoder one-to-one, position at 0, ignore errors */
+	 
 	sd_sel.r.width = geo.output.width;
 	sd_sel.r.height = geo.output.height;
-	/*
-	 * We first issue a S_SELECTION, so that the subsequent S_FMT delivers the
-	 * final encoder configuration.
-	 */
+	 
 	v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, pad,
 				   set_selection, NULL, &sd_sel);
 	format.format.width = geo.output.width;
 	format.format.height = geo.output.height;
 	ret = v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, pad,
 					 set_fmt, NULL, &format);
-	/* Must be implemented, so, don't check for -ENOIOCTLCMD */
+	 
 	if (ret < 0)
 		return ret;
 
-	/* Sanity checks */
+	 
 	if ((unsigned)format.format.width > VOU_MAX_IMAGE_WIDTH ||
 	    (unsigned)format.format.height > img_height_max ||
 	    format.format.code != MEDIA_BUS_FMT_YUYV8_2X8)
@@ -994,13 +960,10 @@ static int sh_vou_s_selection(struct file *file, void *fh,
 	geo.output.width = format.format.width;
 	geo.output.height = format.format.height;
 
-	/*
-	 * No down-scaling. According to the API, current call has precedence:
-	 * https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/crop.html#cropping-structures
-	 */
+	 
 	vou_adjust_input(&geo, vou_dev->std);
 
-	/* We tried to preserve output rectangle, but it could have changed */
+	 
 	vou_dev->rect = geo.output;
 	pix->width = geo.in_width;
 	pix->height = geo.in_height;
@@ -1032,7 +995,7 @@ static irqreturn_t sh_vou_isr(int irq, void *dev_id)
 		if (printk_timed_ratelimit(&j, 500))
 			dev_warn(vou_dev->v4l2_dev.dev,
 				 "IRQ without active buffer: %x!\n", irq_status);
-		/* Just ack: buf_release will disable further interrupts */
+		 
 		sh_vou_reg_a_set(vou_dev, VOUIR, 0, 0x300);
 		spin_unlock(&vou_dev->lock);
 		return IRQ_HANDLED;
@@ -1044,14 +1007,14 @@ static irqreturn_t sh_vou_isr(int irq, void *dev_id)
 		irq_status, masked, vou_status, cnt);
 
 	cnt++;
-	/* side = vou_status & 0x10000; */
+	 
 
-	/* Clear only set interrupts */
+	 
 	sh_vou_reg_a_write(vou_dev, VOUIR, masked);
 
 	vb = vou_dev->active;
 	if (list_is_singular(&vb->list)) {
-		/* Keep cycling while no next buffer is available */
+		 
 		sh_vou_schedule_next(vou_dev, &vb->vb);
 		spin_unlock(&vou_dev->lock);
 		return IRQ_HANDLED;
@@ -1068,7 +1031,7 @@ static irqreturn_t sh_vou_isr(int irq, void *dev_id)
 				     struct sh_vou_buffer, list);
 
 	if (list_is_singular(&vou_dev->buf_list)) {
-		/* Keep cycling while no next buffer is available */
+		 
 		sh_vou_schedule_next(vou_dev, &vou_dev->active->vb);
 	} else {
 		struct sh_vou_buffer *new = list_entry(vou_dev->active->list.next,
@@ -1087,10 +1050,10 @@ static int sh_vou_hw_init(struct sh_vou_device *vou_dev)
 	u32 voucr = sh_vou_ntsc_mode(pdata->bus_fmt) << 29;
 	int i = 100;
 
-	/* Disable all IRQs */
+	 
 	sh_vou_reg_a_write(vou_dev, VOUIR, 0);
 
-	/* Reset VOU interfaces - registers unaffected */
+	 
 	sh_vou_reg_a_write(vou_dev, VOUSRR, 0x101);
 	while (--i && (sh_vou_reg_a_read(vou_dev, VOUSRR) & 0x101))
 		udelay(1);
@@ -1108,9 +1071,9 @@ static int sh_vou_hw_init(struct sh_vou_device *vou_dev)
 		voucr |= 1 << 26;
 	sh_vou_reg_ab_set(vou_dev, VOUCR, voucr, 0xfc000000);
 
-	/* Manual register side switching at first */
+	 
 	sh_vou_reg_a_write(vou_dev, VOURCR, 4);
-	/* Default - fixed HSYNC length, can be made configurable is required */
+	 
 	sh_vou_reg_ab_write(vou_dev, VOUMSR, 0x800000);
 
 	sh_vou_set_fmt_vid_out(vou_dev, &vou_dev->pix);
@@ -1118,7 +1081,7 @@ static int sh_vou_hw_init(struct sh_vou_device *vou_dev)
 	return 0;
 }
 
-/* File operations */
+ 
 static int sh_vou_open(struct file *file)
 {
 	struct sh_vou_device *vou_dev = video_drvdata(file);
@@ -1132,7 +1095,7 @@ static int sh_vou_open(struct file *file)
 		goto done_open;
 	if (v4l2_fh_is_singular_file(file) &&
 	    vou_dev->status == SH_VOU_INITIALISING) {
-		/* First open */
+		 
 		err = pm_runtime_resume_and_get(vou_dev->v4l2_dev.dev);
 		if (err < 0) {
 			v4l2_fh_release(file);
@@ -1160,7 +1123,7 @@ static int sh_vou_release(struct file *file)
 	is_last = v4l2_fh_is_singular_file(file);
 	_vb2_fop_release(file, NULL);
 	if (is_last) {
-		/* Last close */
+		 
 		vou_dev->status = SH_VOU_INITIALISING;
 		sh_vou_reg_a_set(vou_dev, VOUER, 0, 0x101);
 		pm_runtime_put(vou_dev->v4l2_dev.dev);
@@ -1169,7 +1132,7 @@ static int sh_vou_release(struct file *file)
 	return 0;
 }
 
-/* sh_vou display ioctl operations */
+ 
 static const struct v4l2_ioctl_ops sh_vou_ioctl_ops = {
 	.vidioc_querycap		= sh_vou_querycap,
 	.vidioc_enum_fmt_vid_out	= sh_vou_enum_fmt_vid_out,
@@ -1209,7 +1172,7 @@ static const struct video_device sh_vou_video_template = {
 	.name		= "sh_vou",
 	.fops		= &sh_vou_fops,
 	.ioctl_ops	= &sh_vou_ioctl_ops,
-	.tvnorms	= V4L2_STD_525_60, /* PAL only supported in 8-bit non-bt656 mode */
+	.tvnorms	= V4L2_STD_525_60,  
 	.vfl_dir	= VFL_DIR_TX,
 	.device_caps	= V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_READWRITE |
 			  V4L2_CAP_STREAMING,
@@ -1250,7 +1213,7 @@ static int sh_vou_probe(struct platform_device *pdev)
 	rect = &vou_dev->rect;
 	pix = &vou_dev->pix;
 
-	/* Fill in defaults */
+	 
 	vou_dev->std		= V4L2_STD_NTSC_M;
 	rect->left		= 0;
 	rect->top		= 0;
@@ -1288,7 +1251,7 @@ static int sh_vou_probe(struct platform_device *pdev)
 
 	video_set_drvdata(vdev, vou_dev);
 
-	/* Initialize the vb2 queue */
+	 
 	q = &vou_dev->queue;
 	q->type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 	q->io_modes = VB2_MMAP | VB2_DMABUF | VB2_WRITE;

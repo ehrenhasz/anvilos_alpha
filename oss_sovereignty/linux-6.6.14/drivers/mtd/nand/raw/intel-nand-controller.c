@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2020 Intel Corporation. */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -28,7 +28,7 @@
 #define EBU_CLC_RST		0x00000000u
 
 #define EBU_ADDR_SEL(n)		(0x020 + (n) * 4)
-/* 5 bits 26:22 included for comparison in the ADDR_SELx */
+ 
 #define EBU_ADDR_MASK(x)	((x) << 4)
 #define EBU_ADDR_SEL_REGEN	0x1
 
@@ -334,7 +334,7 @@ static int ebu_dma_start(struct ebu_nand_controller *ebu_host, u32 dir,
 	init_completion(dma_completion);
 	dma_async_issue_pending(chan);
 
-	/* Wait DMA to finish the data transfer.*/
+	 
 	timeout = wait_for_completion_timeout(dma_completion, msecs_to_jiffies(1000));
 	if (!timeout) {
 		dev_err(ebu_host->dev, "I/O Error in DMA RX (status %d)\n",
@@ -364,7 +364,7 @@ static void ebu_nand_trigger(struct ebu_nand_controller *ebu_host,
 
 	writel(ebu_host->nd_para0, ebu_host->hsnand + HSNAND_PARA0);
 
-	/* clear first, will update later */
+	 
 	writel(0xFFFFFFFF, ebu_host->hsnand + HSNAND_CMSG_0);
 	writel(0xFFFFFFFF, ebu_host->hsnand + HSNAND_CMSG_1);
 
@@ -453,7 +453,7 @@ static int ebu_nand_attach_chip(struct nand_chip *chip)
 	u32 blocksize = mtd->erasesize;
 	int bch_algo, start, val;
 
-	/* Default to an ECC size of 512 */
+	 
 	if (!chip->ecc.size)
 		chip->ecc.size = 512;
 
@@ -472,7 +472,7 @@ static int ebu_nand_attach_chip(struct nand_chip *chip)
 		return -EINVAL;
 	}
 
-	/* BCH ECC algorithm Settings for number of bits per 512B/1024B */
+	 
 	bch_algo = round_up(start + 1, 4);
 	for (val = start; val < bch_algo; val++) {
 		if (ecc_strength_ds == ecc_strength[val])
@@ -687,7 +687,7 @@ static int ebu_nand_probe(struct platform_device *pdev)
 	nand->controller = &ebu_host->controller;
 	nand->controller->ops = &ebu_nand_controller_ops;
 
-	/* Scan to find existence of the device */
+	 
 	ret = nand_scan(&ebu_host->chip, 1);
 	if (ret)
 		goto err_cleanup_dma;

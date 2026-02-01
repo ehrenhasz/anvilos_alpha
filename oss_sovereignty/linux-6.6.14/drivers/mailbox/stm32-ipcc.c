@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Authors: Ludovic Barre <ludovic.barre@st.com> for STMicroelectronics.
- *          Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -51,7 +47,7 @@ struct stm32_ipcc {
 	void __iomem *reg_base;
 	void __iomem *reg_proc;
 	struct clk *clk;
-	spinlock_t lock; /* protect access to IPCC registers */
+	spinlock_t lock;  
 	int irqs[IPCC_IRQ_NUM];
 	u32 proc_id;
 	u32 n_chans;
@@ -87,12 +83,12 @@ static irqreturn_t stm32_ipcc_rx_irq(int irq, void *data)
 	irqreturn_t ret = IRQ_NONE;
 	int proc_offset;
 
-	/* read 'channel occupied' status from other proc */
+	 
 	proc_offset = ipcc->proc_id ? -IPCC_PROC_OFFST : IPCC_PROC_OFFST;
 	tosr = readl_relaxed(ipcc->reg_proc + proc_offset + IPCC_XTOYSR);
 	mr = readl_relaxed(ipcc->reg_proc + IPCC_XMR);
 
-	/* search for unmasked 'channel occupied' */
+	 
 	status = tosr & FIELD_GET(RX_BIT_MASK, ~mr);
 
 	for (chan = 0; chan < ipcc->n_chans; chan++) {
@@ -122,7 +118,7 @@ static irqreturn_t stm32_ipcc_tx_irq(int irq, void *data)
 	tosr = readl_relaxed(ipcc->reg_proc + IPCC_XTOYSR);
 	mr = readl_relaxed(ipcc->reg_proc + IPCC_XMR);
 
-	/* search for unmasked 'channel free' */
+	 
 	status = ~tosr & FIELD_GET(TX_BIT_MASK, ~mr);
 
 	for (chan = 0; chan < ipcc->n_chans ; chan++) {
@@ -131,7 +127,7 @@ static irqreturn_t stm32_ipcc_tx_irq(int irq, void *data)
 
 		dev_dbg(dev, "%s: chan:%d tx\n", __func__, chan);
 
-		/* mask 'tx channel free' interrupt */
+		 
 		stm32_ipcc_set_bits(&ipcc->lock, ipcc->reg_proc + IPCC_XMR,
 				    TX_BIT_CHAN(chan));
 
@@ -151,11 +147,11 @@ static int stm32_ipcc_send_data(struct mbox_chan *link, void *data)
 
 	dev_dbg(ipcc->controller.dev, "%s: chan:%lu\n", __func__, chan);
 
-	/* set channel n occupied */
+	 
 	stm32_ipcc_set_bits(&ipcc->lock, ipcc->reg_proc + IPCC_XSCR,
 			    TX_BIT_CHAN(chan));
 
-	/* unmask 'tx channel free' interrupt */
+	 
 	stm32_ipcc_clr_bits(&ipcc->lock, ipcc->reg_proc + IPCC_XMR,
 			    TX_BIT_CHAN(chan));
 
@@ -175,7 +171,7 @@ static int stm32_ipcc_startup(struct mbox_chan *link)
 		return ret;
 	}
 
-	/* unmask 'rx channel occupied' interrupt */
+	 
 	stm32_ipcc_clr_bits(&ipcc->lock, ipcc->reg_proc + IPCC_XMR,
 			    RX_BIT_CHAN(chan));
 
@@ -188,7 +184,7 @@ static void stm32_ipcc_shutdown(struct mbox_chan *link)
 	struct stm32_ipcc *ipcc = container_of(link->mbox, struct stm32_ipcc,
 					       controller);
 
-	/* mask rx/tx interrupt */
+	 
 	stm32_ipcc_set_bits(&ipcc->lock, ipcc->reg_proc + IPCC_XMR,
 			    RX_BIT_CHAN(chan) | TX_BIT_CHAN(chan));
 
@@ -223,7 +219,7 @@ static int stm32_ipcc_probe(struct platform_device *pdev)
 
 	spin_lock_init(&ipcc->lock);
 
-	/* proc_id */
+	 
 	if (of_property_read_u32(np, "st,proc-id", &ipcc->proc_id)) {
 		dev_err(dev, "Missing st,proc-id\n");
 		return -ENODEV;
@@ -234,14 +230,14 @@ static int stm32_ipcc_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* regs */
+	 
 	ipcc->reg_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(ipcc->reg_base))
 		return PTR_ERR(ipcc->reg_base);
 
 	ipcc->reg_proc = ipcc->reg_base + ipcc->proc_id * IPCC_PROC_OFFST;
 
-	/* clock */
+	 
 	ipcc->clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(ipcc->clk))
 		return PTR_ERR(ipcc->clk);
@@ -252,7 +248,7 @@ static int stm32_ipcc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* irq */
+	 
 	for (i = 0; i < IPCC_IRQ_NUM; i++) {
 		ipcc->irqs[i] = platform_get_irq_byname(pdev, irq_name[i]);
 		if (ipcc->irqs[i] < 0) {
@@ -269,13 +265,13 @@ static int stm32_ipcc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* mask and enable rx/tx irq */
+	 
 	stm32_ipcc_set_bits(&ipcc->lock, ipcc->reg_proc + IPCC_XMR,
 			    RX_BIT_MASK | TX_BIT_MASK);
 	stm32_ipcc_set_bits(&ipcc->lock, ipcc->reg_proc + IPCC_XCR,
 			    XCR_RXOIE | XCR_TXOIE);
 
-	/* wakeup */
+	 
 	if (of_property_read_bool(np, "wakeup-source")) {
 		device_set_wakeup_capable(dev, true);
 
@@ -286,7 +282,7 @@ static int stm32_ipcc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* mailbox controller */
+	 
 	ipcc->n_chans = readl_relaxed(ipcc->reg_base + IPCC_HWCFGR);
 	ipcc->n_chans &= IPCFGR_CHAN_MASK;
 

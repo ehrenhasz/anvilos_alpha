@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -184,7 +183,7 @@ static struct clk_hw *
 spmi_pmic_div_clk_hw_get(struct of_phandle_args *clkspec, void *data)
 {
 	struct spmi_pmic_div_clk_cc *cc = data;
-	int idx = clkspec->args[0] - 1; /* Start at 1 instead of 0 */
+	int idx = clkspec->args[0] - 1;  
 
 	if (idx < 0 || idx >= cc->nclks) {
 		pr_err("%s: index value %u is invalid; allowed range [1, %d]\n",
@@ -270,7 +269,7 @@ static int spmi_pmic_clkdiv_probe(struct platform_device *pdev)
 
 static const struct of_device_id spmi_pmic_clkdiv_match_table[] = {
 	{ .compatible = "qcom,spmi-clkdiv" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, spmi_pmic_clkdiv_match_table);
 

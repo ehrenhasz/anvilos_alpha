@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebt_among
- *
- *	Authors:
- *	Grzegorz Borowiak <grzes@gnu.univ.gda.pl>
- *
- *  August, 2003
- *
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/ip.h>
 #include <linux/if_arp.h>
@@ -19,11 +11,7 @@
 static bool ebt_mac_wormhash_contains(const struct ebt_mac_wormhash *wh,
 				      const char *mac, __be32 ip)
 {
-	/* You may be puzzled as to how this code works.
-	 * Some tricks were used, refer to
-	 * 	include/linux/netfilter_bridge/ebt_among.h
-	 * as there you can find a solution of this mystery.
-	 */
+	 
 	const struct ebt_mac_wormhash_tuple *p;
 	int start, limit, i;
 	uint32_t cmp[2] = { 0, 0 };
@@ -145,11 +133,11 @@ ebt_among_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		if (get_ip_src(skb, &sip))
 			return false;
 		if (!(info->bitmask & EBT_AMONG_SRC_NEG)) {
-			/* we match only if it contains */
+			 
 			if (!ebt_mac_wormhash_contains(wh_src, smac, sip))
 				return false;
 		} else {
-			/* we match only if it DOES NOT contain */
+			 
 			if (ebt_mac_wormhash_contains(wh_src, smac, sip))
 				return false;
 		}
@@ -160,11 +148,11 @@ ebt_among_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		if (get_ip_dst(skb, &dip))
 			return false;
 		if (!(info->bitmask & EBT_AMONG_DST_NEG)) {
-			/* we match only if it contains */
+			 
 			if (!ebt_mac_wormhash_contains(wh_dst, dmac, dip))
 				return false;
 		} else {
-			/* we match only if it DOES NOT contain */
+			 
 			if (ebt_mac_wormhash_contains(wh_dst, dmac, dip))
 				return false;
 		}
@@ -180,7 +168,7 @@ static bool poolsize_invalid(const struct ebt_mac_wormhash *w)
 
 static bool wormhash_offset_invalid(int off, unsigned int len)
 {
-	if (off == 0) /* not present */
+	if (off == 0)  
 		return false;
 
 	if (off < (int)sizeof(struct ebt_among_info) ||
@@ -261,7 +249,7 @@ static struct xt_match ebt_among_mt_reg __read_mostly = {
 	.family		= NFPROTO_BRIDGE,
 	.match		= ebt_among_mt,
 	.checkentry	= ebt_among_mt_check,
-	.matchsize	= -1, /* special case */
+	.matchsize	= -1,  
 	.me		= THIS_MODULE,
 };
 

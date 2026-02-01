@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	GRE over IPv4 demultiplexer driver
- *
- *	Authors: Dmitry Kozlov (xeb@mail.ru)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -56,9 +52,7 @@ int gre_del_protocol(const struct gre_protocol *proto, u8 version)
 }
 EXPORT_SYMBOL_GPL(gre_del_protocol);
 
-/* Fills in tpi and returns header length to be pulled.
- * Note that caller must use pskb_may_pull() before pulling GRE header.
- */
+ 
 int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
 		     bool *csum_err, __be16 proto, int nhs)
 {
@@ -107,10 +101,7 @@ int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
 	} else {
 		tpi->seq = 0;
 	}
-	/* WCCP version 1 and 2 protocol decoding.
-	 * - Change protocol to IPv4/IPv6
-	 * - When dealing with WCCPv2, Skip extra 4 bytes in GRE header
-	 */
+	 
 	if (greh->flags == 0 && tpi->proto == htons(ETH_P_WCCP)) {
 		u8 _val, *val;
 
@@ -124,10 +115,7 @@ int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
 	}
 	tpi->hdr_len = hdr_len;
 
-	/* ERSPAN ver 1 and 2 protocol sets GRE key field
-	 * to 0 and sets the configured key in the
-	 * inner erspan header field
-	 */
+	 
 	if ((greh->protocol == htons(ETH_P_ERSPAN) && hdr_len != 4) ||
 	    greh->protocol == htons(ETH_P_ERSPAN2)) {
 		struct erspan_base_hdr *ershdr;

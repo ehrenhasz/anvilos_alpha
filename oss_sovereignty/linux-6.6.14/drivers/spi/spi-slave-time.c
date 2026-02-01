@@ -1,28 +1,4 @@
-/*
- * SPI slave handler reporting uptime at reception of previous SPI message
- *
- * This SPI slave handler sends the time of reception of the last SPI message
- * as two 32-bit unsigned integers in binary format and in network byte order,
- * representing the number of seconds and fractional seconds (in microseconds)
- * since boot up.
- *
- * Copyright (C) 2016-2017 Glider bvba
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Usage (assuming /dev/spidev2.0 corresponds to the SPI master on the remote
- * system):
- *
- *   # spidev_test -D /dev/spidev2.0 -p dummy-8B
- *   spi mode: 0x0
- *   bits per word: 8
- *   max speed: 500000 Hz (500 KHz)
- *   RX | 00 00 04 6D 00 09 5B BB ...
- *		^^^^^    ^^^^^^^^
- *		seconds  microseconds
- */
+ 
 
 #include <linux/completion.h>
 #include <linux/module.h>

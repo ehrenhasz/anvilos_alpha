@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HiSilicon INNO USB2 PHY Driver.
- *
- * Copyright (c) 2016-2017 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -15,12 +11,12 @@
 #include <linux/reset.h>
 
 #define INNO_PHY_PORT_NUM	2
-#define REF_CLK_STABLE_TIME	100	/* unit:us */
-#define UTMI_CLK_STABLE_TIME	200	/* unit:us */
-#define TEST_CLK_STABLE_TIME	2	/* unit:ms */
-#define PHY_CLK_STABLE_TIME	2	/* unit:ms */
-#define UTMI_RST_COMPLETE_TIME	2	/* unit:ms */
-#define POR_RST_COMPLETE_TIME	300	/* unit:us */
+#define REF_CLK_STABLE_TIME	100	 
+#define UTMI_CLK_STABLE_TIME	200	 
+#define TEST_CLK_STABLE_TIME	2	 
+#define PHY_CLK_STABLE_TIME	2	 
+#define UTMI_RST_COMPLETE_TIME	2	 
+#define POR_RST_COMPLETE_TIME	300	 
 
 #define PHY_TYPE_0	0
 #define PHY_TYPE_1	1
@@ -31,14 +27,14 @@
 #define PHY0_TEST_PORT_OFFSET	16
 #define PHY0_TEST_PORT		GENMASK(18, 16)
 #define PHY0_TEST_WREN		BIT(21)
-#define PHY0_TEST_CLK		BIT(22)	/* rising edge active */
-#define PHY0_TEST_RST		BIT(23)	/* low active */
+#define PHY0_TEST_CLK		BIT(22)	 
+#define PHY0_TEST_RST		BIT(23)	 
 #define PHY1_TEST_ADDR		GENMASK(11, 8)
 #define PHY1_TEST_PORT_OFFSET	12
 #define PHY1_TEST_PORT		BIT(12)
 #define PHY1_TEST_WREN		BIT(13)
-#define PHY1_TEST_CLK		BIT(14)	/* rising edge active */
-#define PHY1_TEST_RST		BIT(15)	/* low active */
+#define PHY1_TEST_CLK		BIT(14)	 
+#define PHY1_TEST_RST		BIT(15)	 
 
 #define PHY_CLK_ENABLE		BIT(2)
 
@@ -86,7 +82,7 @@ static void hisi_inno_phy_write_reg(struct hisi_inno_phy_priv *priv,
 
 static void hisi_inno_phy_setup(struct hisi_inno_phy_priv *priv)
 {
-	/* The phy clk is controlled by the port0 register 0x06. */
+	 
 	hisi_inno_phy_write_reg(priv, 0, 0x06, PHY_CLK_ENABLE);
 	msleep(PHY_CLK_STABLE_TIME);
 }
@@ -105,7 +101,7 @@ static int hisi_inno_phy_init(struct phy *phy)
 	reset_control_deassert(priv->por_rst);
 	udelay(POR_RST_COMPLETE_TIME);
 
-	/* Set up phy registers */
+	 
 	hisi_inno_phy_setup(priv);
 
 	reset_control_deassert(port->utmi_rst);

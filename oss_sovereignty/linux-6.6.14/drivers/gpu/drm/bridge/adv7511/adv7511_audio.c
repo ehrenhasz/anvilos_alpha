@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog Devices ADV7511 HDMI transmitter driver
- *
- * Copyright 2012 Analog Devices Inc.
- * Copyright (c) 2016, Linaro Limited
- */
+
+ 
 
 #include <sound/core.h>
 #include <sound/hdmi-codec.h>
@@ -165,28 +160,28 @@ static int audio_startup(struct device *dev, void *data)
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_AUDIO_CONFIG,
 				BIT(7), 0);
 
-	/* hide Audio infoframe updates */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_INFOFRAME_UPDATE,
 				BIT(5), BIT(5));
-	/* enable N/CTS, enable Audio sample packets */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_PACKET_ENABLE1,
 				BIT(5), BIT(5));
-	/* enable N/CTS */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_PACKET_ENABLE1,
 				BIT(6), BIT(6));
-	/* not copyrighted */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_AUDIO_CFG1,
 				BIT(5), BIT(5));
-	/* enable audio infoframes */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_PACKET_ENABLE1,
 				BIT(3), BIT(3));
-	/* AV mute disable */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_GC(0),
 				BIT(7) | BIT(6), BIT(7));
-	/* use Audio infoframe updated info */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_GC(1),
 				BIT(5), 0);
-	/* enable SPDIF receiver */
+	 
 	if (adv7511->audio_source == ADV7511_AUDIO_SOURCE_SPDIF)
 		regmap_update_bits(adv7511->regmap, ADV7511_REG_AUDIO_CONFIG,
 				   BIT(7), BIT(7));
@@ -213,10 +208,7 @@ static int adv7511_hdmi_i2s_get_dai_id(struct snd_soc_component *component,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * HDMI sound should be located as reg = <2>
-	 * Then, it is sound port 0
-	 */
+	 
 	if (of_ep.port == 2)
 		return 0;
 

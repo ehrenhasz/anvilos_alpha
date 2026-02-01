@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Verify that consecutive sends over packet tx_ring are mirrored
- * with their original content intact.
- */
+
+ 
 
 #define _GNU_SOURCE
 

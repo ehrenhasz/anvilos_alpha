@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Diolan DLN-2 USB-GPIO adapter
- *
- * Copyright (c) 2014 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -47,15 +43,12 @@ struct dln2_gpio {
 	struct platform_device *pdev;
 	struct gpio_chip gpio;
 
-	/*
-	 * Cache pin direction to save us one transfer, since the hardware has
-	 * separate commands to read the in and out values.
-	 */
+	 
 	DECLARE_BITMAP(output_enabled, DLN2_GPIO_MAX_PINS);
 
-	/* active IRQs - not synced to hardware */
+	 
 	DECLARE_BITMAP(unmasked_irqs, DLN2_GPIO_MAX_PINS);
-	/* active IRQS - synced to hardware */
+	 
 	DECLARE_BITMAP(enabled_irqs, DLN2_GPIO_MAX_PINS);
 	int irq_type[DLN2_GPIO_MAX_PINS];
 	struct mutex irq_lock;
@@ -161,7 +154,7 @@ static int dln2_gpio_request(struct gpio_chip *chip, unsigned offset)
 	if (ret < 0)
 		return ret;
 
-	/* cache the pin direction */
+	 
 	ret = dln2_transfer(dln2->pdev, DLN2_GPIO_PIN_GET_DIRECTION,
 			    &req, sizeof(req), &rsp, &len);
 	if (ret < 0)
@@ -479,7 +472,7 @@ static int dln2_gpio_probe(struct platform_device *pdev)
 
 	girq = &dln2->gpio.irq;
 	gpio_irq_chip_set_chip(girq, &dln2_irqchip);
-	/* The event comes from the outside so no parent handler */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;

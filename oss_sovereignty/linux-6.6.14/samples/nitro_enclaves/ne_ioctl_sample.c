@@ -1,76 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
 
-/**
- * DOC: Sample flow of using the ioctl interface provided by the Nitro Enclaves (NE)
- * kernel driver.
- *
- * Usage
- * -----
- *
- * Load the nitro_enclaves module, setting also the enclave CPU pool. The
- * enclave CPUs need to be full cores from the same NUMA node. CPU 0 and its
- * siblings have to remain available for the primary / parent VM, so they
- * cannot be included in the enclave CPU pool.
- *
- * See the cpu list section from the kernel documentation.
- * https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html#cpu-lists
- *
- *	insmod drivers/virt/nitro_enclaves/nitro_enclaves.ko
- *	lsmod
- *
- *	The CPU pool can be set at runtime, after the kernel module is loaded.
- *
- *	echo <cpu-list> > /sys/module/nitro_enclaves/parameters/ne_cpus
- *
- *	NUMA and CPU siblings information can be found using:
- *
- *	lscpu
- *	/proc/cpuinfo
- *
- * Check the online / offline CPU list. The CPUs from the pool should be
- * offlined.
- *
- *	lscpu
- *
- * Check dmesg for any warnings / errors through the NE driver lifetime / usage.
- * The NE logs contain the "nitro_enclaves" or "pci 0000:00:02.0" pattern.
- *
- *	dmesg
- *
- * Setup hugetlbfs huge pages. The memory needs to be from the same NUMA node as
- * the enclave CPUs.
- *
- * https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html
- *
- * By default, the allocation of hugetlb pages are distributed on all possible
- * NUMA nodes. Use the following configuration files to set the number of huge
- * pages from a NUMA node:
- *
- *	/sys/devices/system/node/node<X>/hugepages/hugepages-2048kB/nr_hugepages
- *	/sys/devices/system/node/node<X>/hugepages/hugepages-1048576kB/nr_hugepages
- *
- *	or, if not on a system with multiple NUMA nodes, can also set the number
- *	of 2 MiB / 1 GiB huge pages using
- *
- *	/sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- *	/sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
- *
- *	In this example 256 hugepages of 2 MiB are used.
- *
- * Build and run the NE sample.
- *
- *	make -C samples/nitro_enclaves clean
- *	make -C samples/nitro_enclaves
- *	./samples/nitro_enclaves/ne_ioctl_sample <path_to_enclave_image>
- *
- * Unload the nitro_enclaves module.
- *
- *	rmmod nitro_enclaves
- *	lsmod
- */
+ 
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,75 +23,40 @@
 #include <linux/nitro_enclaves.h>
 #include <linux/vm_sockets.h>
 
-/**
- * NE_DEV_NAME - Nitro Enclaves (NE) misc device that provides the ioctl interface.
- */
+ 
 #define NE_DEV_NAME			"/dev/nitro_enclaves"
 
-/**
- * NE_POLL_WAIT_TIME - Timeout in seconds for each poll event.
- */
+ 
 #define NE_POLL_WAIT_TIME		(60)
-/**
- * NE_POLL_WAIT_TIME_MS - Timeout in milliseconds for each poll event.
- */
+ 
 #define NE_POLL_WAIT_TIME_MS		(NE_POLL_WAIT_TIME * 1000)
 
-/**
- * NE_SLEEP_TIME - Amount of time in seconds for the process to keep the enclave alive.
- */
+ 
 #define NE_SLEEP_TIME			(300)
 
-/**
- * NE_DEFAULT_NR_VCPUS - Default number of vCPUs set for an enclave.
- */
+ 
 #define NE_DEFAULT_NR_VCPUS		(2)
 
-/**
- * NE_MIN_MEM_REGION_SIZE - Minimum size of a memory region - 2 MiB.
- */
+ 
 #define NE_MIN_MEM_REGION_SIZE		(2 * 1024 * 1024)
 
-/**
- * NE_DEFAULT_NR_MEM_REGIONS - Default number of memory regions of 2 MiB set for
- *			       an enclave.
- */
+ 
 #define NE_DEFAULT_NR_MEM_REGIONS	(256)
 
-/**
- * NE_IMAGE_LOAD_HEARTBEAT_CID - Vsock CID for enclave image loading heartbeat logic.
- */
+ 
 #define NE_IMAGE_LOAD_HEARTBEAT_CID	(3)
-/**
- * NE_IMAGE_LOAD_HEARTBEAT_PORT - Vsock port for enclave image loading heartbeat logic.
- */
+ 
 #define NE_IMAGE_LOAD_HEARTBEAT_PORT	(9000)
-/**
- * NE_IMAGE_LOAD_HEARTBEAT_VALUE - Heartbeat value for enclave image loading.
- */
+ 
 #define NE_IMAGE_LOAD_HEARTBEAT_VALUE	(0xb7)
 
-/**
- * struct ne_user_mem_region - User space memory region set for an enclave.
- * @userspace_addr:	Address of the user space memory region.
- * @memory_size:	Size of the user space memory region.
- */
+ 
 struct ne_user_mem_region {
 	void	*userspace_addr;
 	size_t	memory_size;
 };
 
-/**
- * ne_create_vm() - Create a slot for the enclave VM.
- * @ne_dev_fd:		The file descriptor of the NE misc device.
- * @slot_uid:		The generated slot uid for the enclave.
- * @enclave_fd :	The generated file descriptor for the enclave.
- *
- * Context: Process context.
- * Return:
- * * 0 on success.
- * * Negative return value on failure.
- */
+ 
 static int ne_create_vm(int ne_dev_fd, unsigned long *slot_uid, int *enclave_fd)
 {
 	int rc = -EINVAL;
@@ -185,14 +81,7 @@ static int ne_create_vm(int ne_dev_fd, unsigned long *slot_uid, int *enclave_fd)
 	return 0;
 }
 
-/**
- * ne_poll_enclave_fd() - Thread function for polling the enclave fd.
- * @data:	Argument provided for the polling function.
- *
- * Context: Process context.
- * Return:
- * * NULL on success / failure.
- */
+ 
 void *ne_poll_enclave_fd(void *data)
 {
 	int enclave_fd = *(int *)data;
@@ -205,7 +94,7 @@ void *ne_poll_enclave_fd(void *data)
 	fds[0].fd = enclave_fd;
 	fds[0].events = POLLIN | POLLERR | POLLHUP;
 
-	/* Keep on polling until the current process is terminated. */
+	 
 	while (1) {
 		printf("[iter %d] Polling ...\n", i);
 
@@ -243,21 +132,10 @@ void *ne_poll_enclave_fd(void *data)
 	return NULL;
 }
 
-/**
- * ne_alloc_user_mem_region() - Allocate a user space memory region for an enclave.
- * @ne_user_mem_region:	User space memory region allocated using hugetlbfs.
- *
- * Context: Process context.
- * Return:
- * * 0 on success.
- * * Negative return value on failure.
- */
+ 
 static int ne_alloc_user_mem_region(struct ne_user_mem_region *ne_user_mem_region)
 {
-	/**
-	 * Check available hugetlb encodings for different huge page sizes in
-	 * include/uapi/linux/mman.h.
-	 */
+	 
 	ne_user_mem_region->userspace_addr = mmap(NULL, ne_user_mem_region->memory_size,
 						  PROT_READ | PROT_WRITE,
 						  MAP_PRIVATE | MAP_ANONYMOUS |
@@ -271,17 +149,7 @@ static int ne_alloc_user_mem_region(struct ne_user_mem_region *ne_user_mem_regio
 	return 0;
 }
 
-/**
- * ne_load_enclave_image() - Place the enclave image in the enclave memory.
- * @enclave_fd :		The file descriptor associated with the enclave.
- * @ne_user_mem_regions:	User space memory regions allocated for the enclave.
- * @enclave_image_path :	The file path of the enclave image.
- *
- * Context: Process context.
- * Return:
- * * 0 on success.
- * * Negative return value on failure.
- */
+ 
 static int ne_load_enclave_image(int enclave_fd, struct ne_user_mem_region ne_user_mem_regions[],
 				 char *enclave_image_path)
 {
@@ -395,16 +263,7 @@ static int ne_load_enclave_image(int enclave_fd, struct ne_user_mem_region ne_us
 	return 0;
 }
 
-/**
- * ne_set_user_mem_region() - Set a user space memory region for the given enclave.
- * @enclave_fd :		The file descriptor associated with the enclave.
- * @ne_user_mem_region :	User space memory region to be set for the enclave.
- *
- * Context: Process context.
- * Return:
- * * 0 on success.
- * * Negative return value on failure.
- */
+ 
 static int ne_set_user_mem_region(int enclave_fd, struct ne_user_mem_region ne_user_mem_region)
 {
 	struct ne_user_memory_region mem_region = {
@@ -487,13 +346,7 @@ static int ne_set_user_mem_region(int enclave_fd, struct ne_user_mem_region ne_u
 	return 0;
 }
 
-/**
- * ne_free_mem_regions() - Unmap all the user space memory regions that were set
- *			   aside for the enclave.
- * @ne_user_mem_regions:	The user space memory regions associated with an enclave.
- *
- * Context: Process context.
- */
+ 
 static void ne_free_mem_regions(struct ne_user_mem_region ne_user_mem_regions[])
 {
 	unsigned int i = 0;
@@ -503,17 +356,7 @@ static void ne_free_mem_regions(struct ne_user_mem_region ne_user_mem_regions[])
 		       ne_user_mem_regions[i].memory_size);
 }
 
-/**
- * ne_add_vcpu() - Add a vCPU to the given enclave.
- * @enclave_fd :	The file descriptor associated with the enclave.
- * @vcpu_id:		vCPU id to be set for the enclave, either provided or
- *			auto-generated (if provided vCPU id is 0).
- *
- * Context: Process context.
- * Return:
- * * 0 on success.
- * * Negative return value on failure.
- */
+ 
 static int ne_add_vcpu(int enclave_fd, unsigned int *vcpu_id)
 {
 	int rc = -EINVAL;
@@ -567,16 +410,7 @@ static int ne_add_vcpu(int enclave_fd, unsigned int *vcpu_id)
 	return 0;
 }
 
-/**
- * ne_start_enclave() - Start the given enclave.
- * @enclave_fd :		The file descriptor associated with the enclave.
- * @enclave_start_info :	Enclave metadata used for starting e.g. vsock CID.
- *
- * Context: Process context.
- * Return:
- * * 0 on success.
- * * Negative return value on failure.
- */
+ 
 static int ne_start_enclave(int enclave_fd,  struct ne_enclave_start_info *enclave_start_info)
 {
 	int rc = -EINVAL;
@@ -636,17 +470,7 @@ static int ne_start_enclave(int enclave_fd,  struct ne_enclave_start_info *encla
 	return 0;
 }
 
-/**
- * ne_start_enclave_check_booted() - Start the enclave and wait for a heartbeat
- *				     from it, on a newly created vsock channel,
- *				     to check it has booted.
- * @enclave_fd :	The file descriptor associated with the enclave.
- *
- * Context: Process context.
- * Return:
- * * 0 on success.
- * * Negative return value on failure.
- */
+ 
 static int ne_start_enclave_check_booted(int enclave_fd)
 {
 	struct sockaddr_vm client_vsock_addr = {};
@@ -729,10 +553,7 @@ static int ne_start_enclave_check_booted(int enclave_fd)
 
 	client_vsock_fd = rc;
 
-	/*
-	 * Read the heartbeat value that the init process in the enclave sends
-	 * after vsock connect.
-	 */
+	 
 	rc = read(client_vsock_fd, &recv_buf, sizeof(recv_buf));
 	if (rc < 0) {
 		printf("Error in read [%m]\n");
@@ -747,7 +568,7 @@ static int ne_start_enclave_check_booted(int enclave_fd)
 		goto out;
 	}
 
-	/* Write the heartbeat value back. */
+	 
 	rc = write(client_vsock_fd, &recv_buf, sizeof(recv_buf));
 	if (rc < 0) {
 		printf("Error in write [%m]\n");
@@ -840,10 +661,7 @@ int main(int argc, char *argv[])
 	printf("Enclave memory regions were added\n");
 
 	for (i = 0; i < NE_DEFAULT_NR_VCPUS; i++) {
-		/*
-		 * The vCPU is chosen from the enclave vCPU pool, if the value
-		 * of the vcpu_id is 0.
-		 */
+		 
 		ne_vcpus[i] = 0;
 		rc = ne_add_vcpu(enclave_fd, &ne_vcpus[i]);
 		if (rc < 0) {

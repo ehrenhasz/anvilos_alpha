@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/virtio.h>
 #include <linux/virtio_config.h>
@@ -53,10 +53,7 @@ static void virtinput_recv_events(struct virtqueue *vq)
 	spin_unlock_irqrestore(&vi->lock, flags);
 }
 
-/*
- * On error we are losing the status update, which isn't critical as
- * this is typically used for stuff like keyboard leds.
- */
+ 
 static int virtinput_send_status(struct virtio_input *vi,
 				 u16 type, u16 code, s32 value)
 {
@@ -65,18 +62,7 @@ static int virtinput_send_status(struct virtio_input *vi,
 	unsigned long flags;
 	int rc;
 
-	/*
-	 * Since 29cc309d8bf1 (HID: hid-multitouch: forward MSC_TIMESTAMP),
-	 * EV_MSC/MSC_TIMESTAMP is added to each before EV_SYN event.
-	 * EV_MSC is configured as INPUT_PASS_TO_ALL.
-	 * In case of touch device:
-	 *   BE pass EV_MSC/MSC_TIMESTAMP to FE on receiving event from evdev.
-	 *   FE pass EV_MSC/MSC_TIMESTAMP back to BE.
-	 *   BE writes EV_MSC/MSC_TIMESTAMP to evdev due to INPUT_PASS_TO_ALL.
-	 *   BE receives extra EV_MSC/MSC_TIMESTAMP and pass to FE.
-	 *   >>> Each new frame becomes larger and larger.
-	 * Disable EV_MSC/MSC_TIMESTAMP forwarding for MT.
-	 */
+	 
 	if (vi->idev->mt && type == EV_MSC && code == MSC_TIMESTAMP)
 		return 0;
 
@@ -148,11 +134,7 @@ static void virtinput_cfg_bits(struct virtio_input *vi, int select, int subsel,
 	if (bitcount > bytes * 8)
 		bitcount = bytes * 8;
 
-	/*
-	 * Bitmap in virtio config space is a simple stream of bytes,
-	 * with the first byte carrying bits 0-7, second bits 8-15 and
-	 * so on.
-	 */
+	 
 	virtio_bits = kzalloc(bytes, GFP_KERNEL);
 	if (!virtio_bits)
 		return;
@@ -281,7 +263,7 @@ static int virtinput_probe(struct virtio_device *vdev)
 	vi->idev->dev.parent = &vdev->dev;
 	vi->idev->event = virtinput_status;
 
-	/* device -> kernel */
+	 
 	virtinput_cfg_bits(vi, VIRTIO_INPUT_CFG_EV_BITS, EV_KEY,
 			   vi->idev->keybit, KEY_CNT);
 	virtinput_cfg_bits(vi, VIRTIO_INPUT_CFG_EV_BITS, EV_REL,
@@ -293,7 +275,7 @@ static int virtinput_probe(struct virtio_device *vdev)
 	virtinput_cfg_bits(vi, VIRTIO_INPUT_CFG_EV_BITS, EV_SW,
 			   vi->idev->swbit,  SW_CNT);
 
-	/* kernel -> device */
+	 
 	virtinput_cfg_bits(vi, VIRTIO_INPUT_CFG_EV_BITS, EV_LED,
 			   vi->idev->ledbit, LED_CNT);
 	virtinput_cfg_bits(vi, VIRTIO_INPUT_CFG_EV_BITS, EV_SND,
@@ -385,7 +367,7 @@ static int virtinput_restore(struct virtio_device *vdev)
 #endif
 
 static unsigned int features[] = {
-	/* none */
+	 
 };
 static const struct virtio_device_id id_table[] = {
 	{ VIRTIO_ID_INPUT, VIRTIO_DEV_ANY_ID },

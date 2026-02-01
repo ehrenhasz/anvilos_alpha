@@ -1,25 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RadioTrack II driver
- * Copyright 1998 Ben Pfaff
- *
- * Based on RadioTrack I/RadioReveal (C) 1997 M. Kirkwood
- * Converted to new API by Alan Cox <alan@lxorguk.ukuu.org.uk>
- * Various bugfixes and enhancements by Russell Kroll <rkroll@exploits.org>
- *
- * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@cisco.com>
- * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
- *
- * Fully tested with actual hardware and the v4l2-compliance tool.
- */
 
-#include <linux/module.h>	/* Modules			*/
-#include <linux/init.h>		/* Initdata			*/
-#include <linux/ioport.h>	/* request_region		*/
-#include <linux/delay.h>	/* udelay			*/
-#include <linux/videodev2.h>	/* kernel radio structs		*/
+ 
+
+#include <linux/module.h>	 
+#include <linux/init.h>		 
+#include <linux/ioport.h>	 
+#include <linux/delay.h>	 
+#include <linux/videodev2.h>	 
 #include <linux/mutex.h>
-#include <linux/io.h>		/* outb, outb_p			*/
+#include <linux/io.h>		 
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
@@ -90,7 +78,7 @@ static int rtrack2_s_frequency(struct radio_isa_card *isa, u32 freq)
 
 static u32 rtrack2_g_signal(struct radio_isa_card *isa)
 {
-	/* bit set = no signal present	*/
+	 
 	return (inb(isa->io) & 2) ? 0 : 0xffff;
 }
 

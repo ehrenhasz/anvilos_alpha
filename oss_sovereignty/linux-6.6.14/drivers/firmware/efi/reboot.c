@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Intel Corporation; author Matt Fleming
- * Copyright (c) 2014 Red Hat, Inc., Mark Salter <msalter@redhat.com>
- */
+
+ 
 #include <linux/efi.h>
 #include <linux/reboot.h>
 
@@ -28,9 +25,7 @@ void efi_reboot(enum reboot_mode reboot_mode, const char *__unused)
 		break;
 	}
 
-	/*
-	 * If a quirk forced an EFI reset mode, always use that.
-	 */
+	 
 	if (efi_reboot_quirk_mode != -1)
 		efi_mode = efi_reboot_quirk_mode;
 
@@ -64,7 +59,7 @@ static int __init efi_shutdown_init(void)
 		return -ENODEV;
 
 	if (efi_poweroff_required()) {
-		/* SYS_OFF_PRIO_FIRMWARE + 1 so that it runs before acpi_power_off */
+		 
 		efi_sys_off_handler =
 			register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
 						 SYS_OFF_PRIO_FIRMWARE + 1,

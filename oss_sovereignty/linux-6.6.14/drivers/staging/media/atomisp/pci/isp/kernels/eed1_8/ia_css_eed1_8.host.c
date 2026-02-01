@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #ifndef IA_CSS_NO_DEBUG
 #include "ia_css_debug.h"
@@ -19,16 +7,11 @@
 
 #include "type_support.h"
 #include "assert_support.h"
-#include "math_support.h" /* for min and max */
+#include "math_support.h"  
 
 #include "ia_css_eed1_8.host.h"
 
-/* WARNING1: Number of inv points should be less or equal to 16,
- * due to implementation limitation. See kernel design document
- * for more details.
- * WARNING2: Do not modify the number of inv points without correcting
- * the EED1_8 kernel implementation assumptions.
- */
+ 
 #define NUMBER_OF_CHGRINV_POINTS 15
 #define NUMBER_OF_TCINV_POINTS 9
 #define NUMBER_OF_FCINV_POINTS 9
@@ -97,7 +80,7 @@ ia_css_eed1_8_vmem_encode(
 
 	(void)size;
 
-	/* Init */
+	 
 	for (i = 0; i < ISP_VEC_NELEMS; i++) {
 		to->e_dew_enh_x[0][i] = 0;
 		to->e_dew_enh_y[0][i] = 0;
@@ -117,16 +100,10 @@ ia_css_eed1_8_vmem_encode(
 		to->fcinv_c[0][i] = 0;
 	}
 
-	/* Constraints on dew_enhance_seg_x and dew_enhance_seg_y:
-	 * - values should be greater or equal to 0.
-	 * - values should be ascending.
-	 * - value of index zero is equal to 0.
-	 */
+	 
 
-	/* Checking constraints: */
-	/* TODO: investigate if an assert is the right way to report that
-	 * the constraints are violated.
-	 */
+	 
+	 
 	for (j = 0; j < IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS; j++) {
 		assert(from->dew_enhance_seg_x[j] > -1);
 		assert(from->dew_enhance_seg_y[j] > -1);
@@ -140,11 +117,7 @@ ia_css_eed1_8_vmem_encode(
 	assert(from->dew_enhance_seg_x[0] == 0);
 	assert(from->dew_enhance_seg_y[0] == 0);
 
-	/* Constraints on chgrinv_x, tcinv_x and fcinv_x:
-	 * - values should be greater or equal to 0.
-	 * - values should be ascending.
-	 * - value of index zero is equal to 0.
-	 */
+	 
 	assert(chgrinv_x[0] == 0);
 	assert(tcinv_x[0] == 0);
 	assert(fcinv_x[0] == 0);
@@ -161,13 +134,8 @@ ia_css_eed1_8_vmem_encode(
 		assert(fcinv_x[j] > fcinv_x[j - 1]);
 	}
 
-	/* The implementation of the calulating 1/x is based on the availability
-	 * of the OP_vec_shuffle16 operation.
-	 * A 64 element vector is split up in 4 blocks of 16 element. Each array is copied to
-	 * a vector 4 times, (starting at 0, 16, 32 and 48). All array elements are copied or
-	 * initialised as described in the KFS. The remaining elements of a vector are set to 0.
-	 */
-	/* TODO: guard this code with above assumptions */
+	 
+	 
 	for (i = 0; i < total_blocks; i++) {
 		base = shuffle_block * i;
 
@@ -184,19 +152,13 @@ ia_css_eed1_8_vmem_encode(
 			to->e_dew_enh_a[0][base + j] = min_t(int, max_t(int,
 							     from->dew_enhance_seg_slope[j],
 							     -8192), 8191);
-			/* Convert dew_enhance_seg_exp to flag:
-			 * 0 -> 0
-			 * 1...13 -> 1
-			 */
+			 
 			to->e_dew_enh_f[0][base + j] = (min_t(int, max_t(int,
 							      from->dew_enhance_seg_exp[j],
 							      0), 13) > 0);
 		}
 
-		/* Hard-coded to 0, in order to be able to handle out of
-		 * range input in the same way as the other segments.
-		 * See KFS for more details.
-		 */
+		 
 		to->e_dew_enh_a[0][base + (IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS - 1)] = 0;
 		to->e_dew_enh_f[0][base + (IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS - 1)] = 0;
 
@@ -257,10 +219,7 @@ ia_css_eed1_8_encode(
 	to->coring_neg0 = from->coring_neg0;
 	to->coring_neg_diff = (from->coring_neg1 - from->coring_neg0);
 
-	/* Note: (ISP_VEC_ELEMBITS -1)
-	 * TODO: currently the testbench does not support to use
-	 * ISP_VEC_ELEMBITS. Investigate how to fix this
-	 */
+	 
 	to->gain_exp = (13 - from->gain_exp);
 	to->gain_pos0 = from->gain_pos0;
 	to->gain_pos_diff = (from->gain_pos1 - from->gain_pos0);
@@ -272,7 +231,7 @@ ia_css_eed1_8_encode(
 	to->margin_neg0 = from->neg_margin0;
 	to->margin_neg_diff = (from->neg_margin1 - from->neg_margin0);
 
-	/* Encode DEWEnhance exp (e_dew_enh_asr) */
+	 
 	for (i = 0; i < (IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS - 1); i++) {
 		min_exp = max(min_exp, from->dew_enhance_seg_exp[i]);
 	}

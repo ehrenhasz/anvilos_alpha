@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Register map access API internal header
- *
- * Copyright 2011 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _REGMAP_INTERNAL_H
 #define _REGMAP_INTERNAL_H
@@ -61,13 +55,13 @@ struct regmap {
 	};
 	regmap_lock lock;
 	regmap_unlock unlock;
-	void *lock_arg; /* This is passed to lock/unlock functions */
+	void *lock_arg;  
 	gfp_t alloc_flags;
 	unsigned int reg_base;
 
-	struct device *dev; /* Device we do I/O on */
-	void *work_buf;     /* Scratch buffer used to format I/O */
-	struct regmap_format format;  /* Buffer format */
+	struct device *dev;  
+	void *work_buf;      
+	struct regmap_format format;   
 	const struct regmap_bus *bus;
 	void *bus_context;
 	const char *name;
@@ -110,7 +104,7 @@ struct regmap {
 	int (*reg_write)(void *context, unsigned int reg, unsigned int val);
 	int (*reg_update_bits)(void *context, unsigned int reg,
 			       unsigned int mask, unsigned int val);
-	/* Bulk read/write */
+	 
 	int (*read)(void *context, const void *reg_buf, size_t reg_size,
 		    void *val_buf, size_t val_size);
 	int (*write)(void *context, const void *data, size_t count);
@@ -120,62 +114,62 @@ struct regmap {
 	unsigned long read_flag_mask;
 	unsigned long write_flag_mask;
 
-	/* number of bits to (left) shift the reg value when formatting*/
+	 
 	int reg_shift;
 	int reg_stride;
 	int reg_stride_order;
 
-	/* If set, will always write field to HW. */
+	 
 	bool force_write_field;
 
-	/* regcache specific members */
+	 
 	const struct regcache_ops *cache_ops;
 	enum regcache_type cache_type;
 
-	/* number of bytes in reg_defaults_raw */
+	 
 	unsigned int cache_size_raw;
-	/* number of bytes per word in reg_defaults_raw */
+	 
 	unsigned int cache_word_size;
-	/* number of entries in reg_defaults */
+	 
 	unsigned int num_reg_defaults;
-	/* number of entries in reg_defaults_raw */
+	 
 	unsigned int num_reg_defaults_raw;
 
-	/* if set, only the cache is modified not the HW */
+	 
 	bool cache_only;
-	/* if set, only the HW is modified not the cache */
+	 
 	bool cache_bypass;
-	/* if set, remember to free reg_defaults_raw */
+	 
 	bool cache_free;
 
 	struct reg_default *reg_defaults;
 	const void *reg_defaults_raw;
 	void *cache;
-	/* if set, the cache contains newer data than the HW */
+	 
 	bool cache_dirty;
-	/* if set, the HW registers are known to match map->reg_defaults */
+	 
 	bool no_sync_defaults;
 
 	struct reg_sequence *patch;
 	int patch_regs;
 
-	/* if set, converts bulk read to single read */
+	 
 	bool use_single_read;
-	/* if set, converts bulk write to single write */
+	 
 	bool use_single_write;
-	/* if set, the device supports multi write mode */
+	 
 	bool can_multi_write;
 
-	/* if set, raw reads/writes are limited to this size */
+	 
 	size_t max_raw_read;
 	size_t max_raw_write;
 
 	struct rb_root range_tree;
-	void *selector_work_buf;	/* Scratch buffer used for selector */
+	void *selector_work_buf;	 
 
 	struct hwspinlock *hwlock;
 
-	/* if set, the regmap core can sleep */
+	 
 	bool can_sleep;
 };
 
@@ -223,7 +217,7 @@ struct regmap_range_node {
 struct regmap_field {
 	struct regmap *regmap;
 	unsigned int mask;
-	/* lsb */
+	 
 	unsigned int shift;
 	unsigned int reg;
 
@@ -248,7 +242,7 @@ static inline void regmap_debugfs_exit(struct regmap *map) { }
 static inline void regmap_debugfs_disable(struct regmap *map) { }
 #endif
 
-/* regcache core declarations */
+ 
 int regcache_init(struct regmap *map, const struct regmap_config *config);
 void regcache_exit(struct regmap *map);
 int regcache_read(struct regmap *map,
@@ -314,16 +308,13 @@ static inline unsigned int regcache_get_index_by_order(const struct regmap *map,
 }
 
 struct regmap_ram_data {
-	unsigned int *vals;  /* Allocatd by caller */
+	unsigned int *vals;   
 	bool *read;
 	bool *written;
 	enum regmap_endian reg_endian;
 };
 
-/*
- * Create a test register map with data stored in RAM, not intended
- * for practical use.
- */
+ 
 struct regmap *__regmap_init_ram(const struct regmap_config *config,
 				 struct regmap_ram_data *data,
 				 struct lock_class_key *lock_key,

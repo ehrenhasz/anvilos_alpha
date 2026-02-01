@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2017 - 2020 Intel Corporation.
- */
 
-/*
- * This file contains HFI1 support for VNIC functionality
- */
+ 
+
+ 
 
 #include <linux/io.h>
 #include <linux/if_vlan.h>
@@ -33,14 +29,14 @@ static DEFINE_SPINLOCK(vport_cntr_lock);
 #define VNIC_MASK (0xFF)
 #define VNIC_ID(val) ((1ull << 24) | ((val) & VNIC_MASK))
 
-/* hfi1_vnic_update_stats - update statistics */
+ 
 static void hfi1_vnic_update_stats(struct hfi1_vnic_vport_info *vinfo,
 				   struct opa_vnic_stats *stats)
 {
 	struct net_device *netdev = vinfo->netdev;
 	u8 i;
 
-	/* add tx counters on different queues */
+	 
 	for (i = 0; i < vinfo->num_tx_q; i++) {
 		struct opa_vnic_stats *qstats = &vinfo->stats[i];
 		struct rtnl_link_stats64 *qnstats = &vinfo->stats[i].netstats;
@@ -55,7 +51,7 @@ static void hfi1_vnic_update_stats(struct hfi1_vnic_vport_info *vinfo,
 		stats->netstats.tx_bytes += qnstats->tx_bytes;
 	}
 
-	/* add rx counters on different queues */
+	 
 	for (i = 0; i < vinfo->num_rx_q; i++) {
 		struct opa_vnic_stats *qstats = &vinfo->stats[i];
 		struct rtnl_link_stats64 *qnstats = &vinfo->stats[i].netstats;
@@ -98,11 +94,11 @@ static void hfi1_vnic_update_stats(struct hfi1_vnic_vport_info *vinfo,
 	netdev->stats.rx_dropped = stats->netstats.rx_dropped;
 }
 
-/* update_len_counters - update pkt's len histogram counters */
+ 
 static inline void update_len_counters(struct opa_vnic_grp_stats *grp,
 				       int len)
 {
-	/* account for 4 byte FCS */
+	 
 	if (len >= 1515)
 		grp->s_1519_max++;
 	else if (len >= 1020)
@@ -119,7 +115,7 @@ static inline void update_len_counters(struct opa_vnic_grp_stats *grp,
 		grp->s_64++;
 }
 
-/* hfi1_vnic_update_tx_counters - update transmit counters */
+ 
 static void hfi1_vnic_update_tx_counters(struct hfi1_vnic_vport_info *vinfo,
 					 u8 q_idx, struct sk_buff *skb, int err)
 {
@@ -133,7 +129,7 @@ static void hfi1_vnic_update_tx_counters(struct hfi1_vnic_vport_info *vinfo,
 
 	update_len_counters(tx_grp, skb->len);
 
-	/* rest of the counts are for good packets only */
+	 
 	if (unlikely(err))
 		return;
 
@@ -148,7 +144,7 @@ static void hfi1_vnic_update_tx_counters(struct hfi1_vnic_vport_info *vinfo,
 		tx_grp->untagged++;
 }
 
-/* hfi1_vnic_update_rx_counters - update receive counters */
+ 
 static void hfi1_vnic_update_rx_counters(struct hfi1_vnic_vport_info *vinfo,
 					 u8 q_idx, struct sk_buff *skb, int err)
 {
@@ -162,7 +158,7 @@ static void hfi1_vnic_update_rx_counters(struct hfi1_vnic_vport_info *vinfo,
 
 	update_len_counters(rx_grp, skb->len);
 
-	/* rest of the counts are for good packets only */
+	 
 	if (unlikely(err))
 		return;
 
@@ -177,7 +173,7 @@ static void hfi1_vnic_update_rx_counters(struct hfi1_vnic_vport_info *vinfo,
 		rx_grp->untagged++;
 }
 
-/* This function is overloaded for opa_vnic specific implementation */
+ 
 static void hfi1_vnic_get_stats64(struct net_device *netdev,
 				  struct rtnl_link_stats64 *stats)
 {
@@ -200,7 +196,7 @@ static u64 create_bypass_pbc(u32 vl, u32 dw_len)
 	return pbc;
 }
 
-/* hfi1_vnic_maybe_stop_tx - stop tx queue if required */
+ 
 static void hfi1_vnic_maybe_stop_tx(struct hfi1_vnic_vport_info *vinfo,
 				    u8 q_idx)
 {
@@ -228,7 +224,7 @@ static netdev_tx_t hfi1_netdev_start_xmit(struct sk_buff *skb,
 		goto tx_finish;
 	}
 
-	/* take out meta data */
+	 
 	mdata = (struct opa_vnic_skb_mdata *)skb->data;
 	skb_pull(skb, sizeof(*mdata));
 	if (unlikely(mdata->flags & OPA_VNIC_SKB_MDATA_ENCAP_ERR)) {
@@ -236,17 +232,13 @@ static netdev_tx_t hfi1_netdev_start_xmit(struct sk_buff *skb,
 		goto tx_finish;
 	}
 
-	/* add tail padding (for 8 bytes size alignment) and icrc */
+	 
 	pad_len = -(skb->len + OPA_VNIC_ICRC_TAIL_LEN) & 0x7;
 	pad_len += OPA_VNIC_ICRC_TAIL_LEN;
 
-	/*
-	 * pkt_len is how much data we have to write, includes header and data.
-	 * total_len is length of the packet in Dwords plus the PBC should not
-	 * include the CRC.
-	 */
+	 
 	pkt_len = (skb->len + pad_len) >> 2;
-	total_len = pkt_len + 2; /* PBC + packet */
+	total_len = pkt_len + 2;  
 
 	pbc = create_bypass_pbc(mdata->vl, total_len);
 
@@ -259,7 +251,7 @@ static netdev_tx_t hfi1_netdev_start_xmit(struct sk_buff *skb,
 		else if (err != -EBUSY)
 			vinfo->stats[q_idx].netstats.tx_carrier_errors++;
 	}
-	/* remove the header before updating tx counters */
+	 
 	skb_pull(skb, OPA_VNIC_HDR_LEN);
 
 	if (unlikely(err == -EBUSY)) {
@@ -269,7 +261,7 @@ static netdev_tx_t hfi1_netdev_start_xmit(struct sk_buff *skb,
 	}
 
 tx_finish:
-	/* update tx counters */
+	 
 	hfi1_vnic_update_tx_counters(vinfo, q_idx, skb, err);
 	dev_kfree_skb_any(skb);
 	return NETDEV_TX_OK;
@@ -288,7 +280,7 @@ static u16 hfi1_vnic_select_queue(struct net_device *netdev,
 	return sde->this_idx;
 }
 
-/* hfi1_vnic_decap_skb - strip OPA header from the skb (ethernet) packet */
+ 
 static inline int hfi1_vnic_decap_skb(struct hfi1_vnic_rx_queue *rxq,
 				      struct sk_buff *skb)
 {
@@ -298,7 +290,7 @@ static inline int hfi1_vnic_decap_skb(struct hfi1_vnic_rx_queue *rxq,
 
 	skb_pull(skb, OPA_VNIC_HDR_LEN);
 
-	/* Validate Packet length */
+	 
 	if (unlikely(skb->len > max_len))
 		vinfo->stats[rxq->idx].rx_oversize++;
 	else if (unlikely(skb->len < ETH_ZLEN))
@@ -344,10 +336,7 @@ void hfi1_vnic_bypass_rcv(struct hfi1_packet *packet)
 		vesw_id = HFI1_VNIC_GET_VESWID(packet->ebuf);
 		vinfo = get_vnic_port(dd, vesw_id);
 
-		/*
-		 * In case of invalid vesw id, count the error on
-		 * the first available vport.
-		 */
+		 
 		if (unlikely(!vinfo)) {
 			struct hfi1_vnic_vport_info *vinfo_tmp;
 
@@ -388,7 +377,7 @@ void hfi1_vnic_bypass_rcv(struct hfi1_packet *packet)
 
 	rc = hfi1_vnic_decap_skb(rxq, skb);
 
-	/* update rx counters */
+	 
 	hfi1_vnic_update_rx_counters(vinfo, rxq->idx, skb, rc);
 	if (unlikely(rc)) {
 		dev_kfree_skb_any(skb);
@@ -407,7 +396,7 @@ static int hfi1_vnic_up(struct hfi1_vnic_vport_info *vinfo)
 	struct net_device *netdev = vinfo->netdev;
 	int rc;
 
-	/* ensure virtual eth switch id is valid */
+	 
 	if (!vinfo->vesw_id)
 		return -EINVAL;
 
@@ -513,10 +502,7 @@ static void hfi1_vnic_set_vesw_id(struct net_device *netdev, int id)
 	struct hfi1_vnic_vport_info *vinfo = opa_vnic_dev_priv(netdev);
 	bool reopen = false;
 
-	/*
-	 * If vesw_id is being changed, and if the vnic port is up,
-	 * reset the vnic port to ensure new vesw_id gets picked up
-	 */
+	 
 	if (id != vinfo->vesw_id) {
 		mutex_lock(&vinfo->lock);
 		if (test_bit(HFI1_VNIC_UP, &vinfo->flags)) {
@@ -532,7 +518,7 @@ static void hfi1_vnic_set_vesw_id(struct net_device *netdev, int id)
 	}
 }
 
-/* netdev ops */
+ 
 static const struct net_device_ops hfi1_netdev_ops = {
 	.ndo_open = hfi1_netdev_open,
 	.ndo_stop = hfi1_netdev_close,

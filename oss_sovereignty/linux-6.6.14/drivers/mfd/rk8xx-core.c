@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MFD core driver for Rockchip RK8XX
- *
- * Copyright (c) 2014, Fuzhou Rockchip Electronics Co., Ltd
- * Copyright (C) 2016 PHYTEC Messtechnik GmbH
- *
- * Author: Chris Zhong <zyw@rock-chips.com>
- * Author: Zhang Qing <zhangqing@rock-chips.com>
- * Author: Wadim Egorov <w.egorov@phytec.de>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/mfd/rk808.h>
@@ -150,16 +141,16 @@ static const struct rk808_reg_data rk808_pre_init_reg[] = {
 
 static const struct rk808_reg_data rk817_pre_init_reg[] = {
 	{RK817_RTC_CTRL_REG, RTC_STOP, RTC_STOP},
-	/* Codec specific registers */
+	 
 	{ RK817_CODEC_DTOP_VUCTL, MASK_ALL, 0x03 },
 	{ RK817_CODEC_DTOP_VUCTIME, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DTOP_LPT_SRST, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DTOP_DIGEN_CLKE, MASK_ALL, 0x00 },
-	/* from vendor driver, CODEC_AREF_RTCFG0 not defined in data sheet */
+	 
 	{ RK817_CODEC_AREF_RTCFG0, MASK_ALL, 0x00 },
 	{ RK817_CODEC_AREF_RTCFG1, MASK_ALL, 0x06 },
 	{ RK817_CODEC_AADC_CFG0, MASK_ALL, 0xc8 },
-	/* from vendor driver, CODEC_AADC_CFG1 not defined in data sheet */
+	 
 	{ RK817_CODEC_AADC_CFG1, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DADC_VOLL, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DADC_VOLR, MASK_ALL, 0x00 },
@@ -177,7 +168,7 @@ static const struct rk808_reg_data rk817_pre_init_reg[] = {
 	{ RK817_CODEC_DMIC_LMT2, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DMIC_NG1, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DMIC_NG2, MASK_ALL, 0x00 },
-	/* from vendor driver, CODEC_ADAC_CFG0 not defined in data sheet */
+	 
 	{ RK817_CODEC_ADAC_CFG0, MASK_ALL, 0x00 },
 	{ RK817_CODEC_ADAC_CFG1, MASK_ALL, 0x07 },
 	{ RK817_CODEC_DDAC_POPD_DACST, MASK_ALL, 0x82 },
@@ -196,7 +187,7 @@ static const struct rk808_reg_data rk817_pre_init_reg[] = {
 	{ RK817_CODEC_DMIC_LMT2, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DMIC_NG1, MASK_ALL, 0x00 },
 	{ RK817_CODEC_DMIC_NG2, MASK_ALL, 0x00 },
-	/* from vendor driver, CODEC_ADAC_CFG0 not defined in data sheet */
+	 
 	{ RK817_CODEC_ADAC_CFG0, MASK_ALL, 0x00 },
 	{ RK817_CODEC_ADAC_CFG1, MASK_ALL, 0x07 },
 	{ RK817_CODEC_DDAC_POPD_DACST, MASK_ALL, 0x82 },
@@ -235,18 +226,18 @@ static const struct rk808_reg_data rk817_pre_init_reg[] = {
 };
 
 static const struct rk808_reg_data rk818_pre_init_reg[] = {
-	/* improve efficiency */
+	 
 	{ RK818_BUCK2_CONFIG_REG, BUCK2_RATE_MASK,  BUCK_ILMIN_250MA },
 	{ RK818_BUCK4_CONFIG_REG, BUCK_ILMIN_MASK,  BUCK_ILMIN_250MA },
 	{ RK818_BOOST_CONFIG_REG, BOOST_ILMIN_MASK, BOOST_ILMIN_100MA },
 	{ RK818_USB_CTRL_REG,	  RK818_USB_ILIM_SEL_MASK,
 						    RK818_USB_ILMIN_2000MA },
-	/* close charger when usb lower then 3.4V */
+	 
 	{ RK818_USB_CTRL_REG,	  RK818_USB_CHG_SD_VSEL_MASK,
 						    (0x7 << 4) },
-	/* no action when vref */
+	 
 	{ RK818_H5V_EN_REG,	  BIT(1),	    RK818_REF_RDY_CTRL },
-	/* enable HDMI 5V */
+	 
 	{ RK818_H5V_EN_REG,	  BIT(0),	    RK818_H5V_EN },
 	{ RK808_VB_MON_REG,	  MASK_ALL,	    VB_LO_ACT |
 						    VB_LO_SEL_3500MV },
@@ -288,7 +279,7 @@ static const struct regmap_irq rk805_irqs[] = {
 };
 
 static const struct regmap_irq rk806_irqs[] = {
-	/* INT_STS0 IRQs */
+	 
 	REGMAP_IRQ_REG(RK806_IRQ_PWRON_FALL, 0, RK806_INT_STS_PWRON_FALL),
 	REGMAP_IRQ_REG(RK806_IRQ_PWRON_RISE, 0, RK806_INT_STS_PWRON_RISE),
 	REGMAP_IRQ_REG(RK806_IRQ_PWRON, 0, RK806_INT_STS_PWRON),
@@ -297,7 +288,7 @@ static const struct regmap_irq rk806_irqs[] = {
 	REGMAP_IRQ_REG(RK806_IRQ_VDC_RISE, 0, RK806_INT_STS_VDC_RISE),
 	REGMAP_IRQ_REG(RK806_IRQ_VDC_FALL, 0, RK806_INT_STS_VDC_FALL),
 	REGMAP_IRQ_REG(RK806_IRQ_VB_LO, 0, RK806_INT_STS_VB_LO),
-	/* INT_STS1 IRQs */
+	 
 	REGMAP_IRQ_REG(RK806_IRQ_REV0, 1, RK806_INT_STS_REV0),
 	REGMAP_IRQ_REG(RK806_IRQ_REV1, 1, RK806_INT_STS_REV1),
 	REGMAP_IRQ_REG(RK806_IRQ_REV2, 1, RK806_INT_STS_REV2),
@@ -309,7 +300,7 @@ static const struct regmap_irq rk806_irqs[] = {
 };
 
 static const struct regmap_irq rk808_irqs[] = {
-	/* INT_STS */
+	 
 	[RK808_IRQ_VOUT_LO] = {
 		.mask = RK808_IRQ_VOUT_LO_MSK,
 		.reg_offset = 0,
@@ -339,7 +330,7 @@ static const struct regmap_irq rk808_irqs[] = {
 		.reg_offset = 0,
 	},
 
-	/* INT_STS2 */
+	 
 	[RK808_IRQ_PLUG_IN_INT] = {
 		.mask = RK808_IRQ_PLUG_IN_INT_MSK,
 		.reg_offset = 1,
@@ -351,7 +342,7 @@ static const struct regmap_irq rk808_irqs[] = {
 };
 
 static const struct regmap_irq rk818_irqs[] = {
-	/* INT_STS */
+	 
 	[RK818_IRQ_VOUT_LO] = {
 		.mask = RK818_IRQ_VOUT_LO_MSK,
 		.reg_offset = 0,
@@ -385,7 +376,7 @@ static const struct regmap_irq rk818_irqs[] = {
 		.reg_offset = 0,
 	},
 
-	/* INT_STS2 */
+	 
 	[RK818_IRQ_PLUG_IN] = {
 		.mask = RK818_IRQ_PLUG_IN_MSK,
 		.reg_offset = 1,

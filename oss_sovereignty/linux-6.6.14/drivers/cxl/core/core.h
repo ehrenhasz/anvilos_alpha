@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2020 Intel Corporation. */
+ 
+ 
 
 #ifndef __CXL_CORE_H__
 #define __CXL_CORE_H__
@@ -87,4 +87,4 @@ enum cxl_poison_trace_type {
 	CXL_POISON_TRACE_CLEAR,
 };
 
-#endif /* __CXL_CORE_H__ */
+#endif  

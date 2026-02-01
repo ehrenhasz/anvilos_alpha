@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BYD TouchPad PS/2 mouse driver
- *
- * Copyright (C) 2015 Chris Diamand <chris@diamand.org>
- * Copyright (C) 2015 Richard Pospesel
- * Copyright (C) 2015 Tai Chi Minh Ralph Eastwood
- * Copyright (C) 2015 Martin Wimpress
- * Copyright (C) 2015 Jay Kuri
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/input.h>
@@ -18,7 +10,7 @@
 #include "psmouse.h"
 #include "byd.h"
 
-/* PS2 Bits */
+ 
 #define PS2_Y_OVERFLOW	BIT_MASK(7)
 #define PS2_X_OVERFLOW	BIT_MASK(6)
 #define PS2_Y_SIGN	BIT_MASK(5)
@@ -28,174 +20,67 @@
 #define PS2_RIGHT	BIT_MASK(1)
 #define PS2_LEFT	BIT_MASK(0)
 
-/*
- * BYD pad constants
- */
+ 
 
-/*
- * True device resolution is unknown, however experiments show the
- * resolution is about 111 units/mm.
- * Absolute coordinate packets are in the range 0-255 for both X and Y
- * we pick ABS_X/ABS_Y dimensions which are multiples of 256 and in
- * the right ballpark given the touchpad's physical dimensions and estimate
- * resolution per spec sheet, device active area dimensions are
- * 101.6 x 60.1 mm.
- */
+ 
 #define BYD_PAD_WIDTH		11264
 #define BYD_PAD_HEIGHT		6656
 #define BYD_PAD_RESOLUTION	111
 
-/*
- * Given the above dimensions, relative packets velocity is in multiples of
- * 1 unit / 11 milliseconds.  We use this dt to estimate distance traveled
- */
+ 
 #define BYD_DT			11
-/* Time in jiffies used to timeout various touch events (64 ms) */
+ 
 #define BYD_TOUCH_TIMEOUT	msecs_to_jiffies(64)
 
-/* BYD commands reverse engineered from windows driver */
+ 
 
-/*
- * Swipe gesture from off-pad to on-pad
- *  0 : disable
- *  1 : enable
- */
+ 
 #define BYD_CMD_SET_OFFSCREEN_SWIPE		0x10cc
-/*
- * Tap and drag delay time
- *  0 : disable
- *  1 - 8 : least to most delay
- */
+ 
 #define BYD_CMD_SET_TAP_DRAG_DELAY_TIME		0x10cf
-/*
- * Physical buttons function mapping
- *  0 : enable
- *  4 : normal
- *  5 : left button custom command
- *  6 : right button custom command
- *  8 : disable
- */
+ 
 #define BYD_CMD_SET_PHYSICAL_BUTTONS		0x10d0
-/*
- * Absolute mode (1 byte X/Y resolution)
- *  0 : disable
- *  2 : enable
- */
+ 
 #define BYD_CMD_SET_ABSOLUTE_MODE		0x10d1
-/*
- * Two finger scrolling
- *  1 : vertical
- *  2 : horizontal
- *  3 : vertical + horizontal
- *  4 : disable
- */
+ 
 #define BYD_CMD_SET_TWO_FINGER_SCROLL		0x10d2
-/*
- * Handedness
- *  1 : right handed
- *  2 : left handed
- */
+ 
 #define BYD_CMD_SET_HANDEDNESS			0x10d3
-/*
- * Tap to click
- *  1 : enable
- *  2 : disable
- */
+ 
 #define BYD_CMD_SET_TAP				0x10d4
-/*
- * Tap and drag
- *  1 : tap and hold to drag
- *  2 : tap and hold to drag + lock
- *  3 : disable
- */
+ 
 #define BYD_CMD_SET_TAP_DRAG			0x10d5
-/*
- * Touch sensitivity
- *  1 - 7 : least to most sensitive
- */
+ 
 #define BYD_CMD_SET_TOUCH_SENSITIVITY		0x10d6
-/*
- * One finger scrolling
- *  1 : vertical
- *  2 : horizontal
- *  3 : vertical + horizontal
- *  4 : disable
- */
+ 
 #define BYD_CMD_SET_ONE_FINGER_SCROLL		0x10d7
-/*
- * One finger scrolling function
- *  1 : free scrolling
- *  2 : edge motion
- *  3 : free scrolling + edge motion
- *  4 : disable
- */
+ 
 #define BYD_CMD_SET_ONE_FINGER_SCROLL_FUNC	0x10d8
-/*
- * Sliding speed
- *  1 - 5 : slowest to fastest
- */
+ 
 #define BYD_CMD_SET_SLIDING_SPEED		0x10da
-/*
- * Edge motion
- *  1 : disable
- *  2 : enable when dragging
- *  3 : enable when dragging and pointing
- */
+ 
 #define BYD_CMD_SET_EDGE_MOTION			0x10db
-/*
- * Left edge region size
- *  0 - 7 : smallest to largest width
- */
+ 
 #define BYD_CMD_SET_LEFT_EDGE_REGION		0x10dc
-/*
- * Top edge region size
- *  0 - 9 : smallest to largest height
- */
+ 
 #define BYD_CMD_SET_TOP_EDGE_REGION		0x10dd
-/*
- * Disregard palm press as clicks
- *  1 - 6 : smallest to largest
- */
+ 
 #define BYD_CMD_SET_PALM_CHECK			0x10de
-/*
- * Right edge region size
- *  0 - 7 : smallest to largest width
- */
+ 
 #define BYD_CMD_SET_RIGHT_EDGE_REGION		0x10df
-/*
- * Bottom edge region size
- *  0 - 9 : smallest to largest height
- */
+ 
 #define BYD_CMD_SET_BOTTOM_EDGE_REGION		0x10e1
-/*
- * Multitouch gestures
- *  1 : enable
- *  2 : disable
- */
+ 
 #define BYD_CMD_SET_MULTITOUCH			0x10e3
-/*
- * Edge motion speed
- *  0 : control with finger pressure
- *  1 - 9 : slowest to fastest
- */
+ 
 #define BYD_CMD_SET_EDGE_MOTION_SPEED		0x10e4
-/*
- * Two finger scolling function
- *  0 : free scrolling
- *  1 : free scrolling (with momentum)
- *  2 : edge motion
- *  3 : free scrolling (with momentum) + edge motion
- *  4 : disable
- */
+ 
 #define BYD_CMD_SET_TWO_FINGER_SCROLL_FUNC	0x10e5
 
-/*
- * The touchpad generates a mixture of absolute and relative packets, indicated
- * by the last byte of each packet being set to one of the following:
- */
+ 
 #define BYD_PACKET_ABSOLUTE			0xf8
 #define BYD_PACKET_RELATIVE			0x00
-/* Multitouch gesture packets */
+ 
 #define BYD_PACKET_PINCH_IN			0xd8
 #define BYD_PACKET_PINCH_OUT			0x28
 #define BYD_PACKET_ROTATE_CLOCKWISE		0x29
@@ -261,11 +146,7 @@ static void byd_clear_touch(struct timer_list *t)
 
 	serio_continue_rx(psmouse->ps2dev.serio);
 
-	/*
-	 * Move cursor back to center of pad when we lose touch - this
-	 * specifically improves user experience when moving cursor with one
-	 * finger, and pressing a button with another.
-	 */
+	 
 	priv->abs_x = BYD_PAD_WIDTH / 2;
 	priv->abs_y = BYD_PAD_HEIGHT / 2;
 }
@@ -284,30 +165,30 @@ static psmouse_ret_t byd_process_byte(struct psmouse *psmouse)
 	if (psmouse->pktcnt < psmouse->pktsize)
 		return PSMOUSE_GOOD_DATA;
 
-	/* Otherwise, a full packet has been received */
+	 
 	switch (pkt[3]) {
 	case BYD_PACKET_ABSOLUTE:
-		/* Only use absolute packets for the start of movement. */
+		 
 		if (!priv->touch) {
-			/* needed to detect tap */
+			 
 			typeof(jiffies) tap_time =
 				priv->last_touch_time + BYD_TOUCH_TIMEOUT;
 			priv->touch = time_after(jiffies, tap_time);
 
-			/* init abs position */
+			 
 			priv->abs_x = pkt[1] * (BYD_PAD_WIDTH / 256);
 			priv->abs_y = (255 - pkt[2]) * (BYD_PAD_HEIGHT / 256);
 		}
 		break;
 	case BYD_PACKET_RELATIVE: {
-		/* Standard packet */
-		/* Sign-extend if a sign bit is set. */
+		 
+		 
 		u32 signx = pkt[0] & PS2_X_SIGN ? ~0xFF : 0;
 		u32 signy = pkt[0] & PS2_Y_SIGN ? ~0xFF : 0;
 		s32 dx = signx | (int) pkt[1];
 		s32 dy = signy | (int) pkt[2];
 
-		/* Update position based on velocity */
+		 
 		priv->abs_x += dx * BYD_DT;
 		priv->abs_y -= dy * BYD_DT;
 
@@ -327,7 +208,7 @@ static psmouse_ret_t byd_process_byte(struct psmouse *psmouse)
 
 	byd_report_input(psmouse);
 
-	/* Reset time since last touch. */
+	 
 	if (priv->touch) {
 		priv->last_touch_time = jiffies;
 		mod_timer(&priv->timer, jiffies + BYD_TOUCH_TIMEOUT);
@@ -346,24 +227,18 @@ static int byd_reset_touchpad(struct psmouse *psmouse)
 		u16 command;
 		u8 arg;
 	} seq[] = {
-		/*
-		 * Intellimouse initialization sequence, to get 4-byte instead
-		 * of 3-byte packets.
-		 */
+		 
 		{ PSMOUSE_CMD_SETRATE, 0xC8 },
 		{ PSMOUSE_CMD_SETRATE, 0x64 },
 		{ PSMOUSE_CMD_SETRATE, 0x50 },
 		{ PSMOUSE_CMD_GETID, 0 },
 		{ PSMOUSE_CMD_ENABLE, 0 },
-		/*
-		 * BYD-specific initialization, which enables absolute mode and
-		 * (if desired), the touchpad's built-in gesture detection.
-		 */
+		 
 		{ 0x10E2, 0x00 },
 		{ 0x10E0, 0x02 },
-		/* The touchpad should reply with 4 seemingly-random bytes */
+		 
 		{ 0x14E0, 0x01 },
-		/* Pairs of parameters and values. */
+		 
 		{ BYD_CMD_SET_HANDEDNESS, 0x01 },
 		{ BYD_CMD_SET_PHYSICAL_BUTTONS, 0x04 },
 		{ BYD_CMD_SET_TAP, 0x02 },
@@ -379,7 +254,7 @@ static int byd_reset_touchpad(struct psmouse *psmouse)
 		{ BYD_CMD_SET_RIGHT_EDGE_REGION, 0x00 },
 		{ BYD_CMD_SET_BOTTOM_EDGE_REGION, 0x00 },
 		{ BYD_CMD_SET_ABSOLUTE_MODE, 0x02 },
-		/* Finalize initialization. */
+		 
 		{ 0x10E0, 0x00 },
 		{ 0x10E2, 0x01 },
 	};
@@ -487,21 +362,21 @@ int byd_init(struct psmouse *psmouse)
 	psmouse->resync_time = 0;
 
 	__set_bit(INPUT_PROP_POINTER, dev->propbit);
-	/* Touchpad */
+	 
 	__set_bit(BTN_TOUCH, dev->keybit);
 	__set_bit(BTN_TOOL_FINGER, dev->keybit);
-	/* Buttons */
+	 
 	__set_bit(BTN_LEFT, dev->keybit);
 	__set_bit(BTN_RIGHT, dev->keybit);
 	__clear_bit(BTN_MIDDLE, dev->keybit);
 
-	/* Absolute position */
+	 
 	__set_bit(EV_ABS, dev->evbit);
 	input_set_abs_params(dev, ABS_X, 0, BYD_PAD_WIDTH, 0, 0);
 	input_set_abs_params(dev, ABS_Y, 0, BYD_PAD_HEIGHT, 0, 0);
 	input_abs_set_res(dev, ABS_X, BYD_PAD_RESOLUTION);
 	input_abs_set_res(dev, ABS_Y, BYD_PAD_RESOLUTION);
-	/* No relative support */
+	 
 	__clear_bit(EV_REL, dev->evbit);
 	__clear_bit(REL_X, dev->relbit);
 	__clear_bit(REL_Y, dev->relbit);

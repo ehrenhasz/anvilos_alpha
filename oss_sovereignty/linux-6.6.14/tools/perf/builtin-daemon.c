@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <internal/lib.h>
 #include <subcmd/parse-options.h>
 #include <api/fd/array.h>
@@ -33,37 +33,7 @@
 #define SESSION_CONTROL "control"
 #define SESSION_ACK     "ack"
 
-/*
- * Session states:
- *
- *   OK       - session is up and running
- *   RECONFIG - session is pending for reconfiguration,
- *              new values are already loaded in session object
- *   KILL     - session is pending to be killed
- *
- * Session object life and its state is maintained by
- * following functions:
- *
- *  setup_server_config
- *    - reads config file and setup session objects
- *      with following states:
- *
- *      OK       - no change needed
- *      RECONFIG - session needs to be changed
- *                 (run variable changed)
- *      KILL     - session needs to be killed
- *                 (session is no longer in config file)
- *
- *  daemon__reconfig
- *    - scans session objects and does following actions
- *      for states:
- *
- *      OK       - skip
- *      RECONFIG - session is killed and re-run with new config
- *      KILL     - session is killed
- *
- *    - all sessions have OK state on the function exit
- */
+ 
 enum daemon_session_state {
 	OK,
 	RECONFIG,
@@ -170,17 +140,17 @@ static int session_config(struct daemon *daemon, const char *var, const char *va
 	session = daemon__find_session(daemon, name);
 
 	if (!session) {
-		/* New session is defined. */
+		 
 		session = daemon__add_session(daemon, name);
 		if (!session)
 			return -ENOMEM;
 
 		pr_debug("reconfig: found new session %s\n", name);
 
-		/* Trigger reconfig to start it. */
+		 
 		session->state = RECONFIG;
 	} else if (session->state == KILL) {
-		/* Current session is defined, no action needed. */
+		 
 		pr_debug("reconfig: found current session %s\n", name);
 		session->state = OK;
 	}
@@ -201,10 +171,7 @@ static int session_config(struct daemon *daemon, const char *var, const char *va
 			if (!session->run)
 				return -ENOMEM;
 
-			/*
-			 * Either new or changed run value is defined,
-			 * trigger reconfig for the session.
-			 */
+			 
 			session->state = RECONFIG;
 		}
 	}
@@ -300,11 +267,7 @@ static int setup_server_config(struct daemon *daemon)
 
 	pr_debug("reconfig: started\n");
 
-	/*
-	 * Mark all sessions for kill, the server config
-	 * will set following states, see explanation at
-	 * enum daemon_session_state declaration.
-	 */
+	 
 	list_for_each_entry(session, &daemon->sessions, list)
 		session->state = KILL;
 
@@ -399,12 +362,7 @@ static pid_t handle_signalfd(struct daemon *daemon)
 	int status;
 	pid_t pid;
 
-	/*
-	 * Take signal fd data as pure signal notification and check all
-	 * the sessions state. The reason is that multiple signals can get
-	 * coalesced in kernel and we can receive only single signal even
-	 * if multiple SIGCHLD were generated.
-	 */
+	 
 	err = read(daemon->signal_fd, &si, sizeof(struct signalfd_siginfo));
 	if (err != sizeof(struct signalfd_siginfo)) {
 		pr_err("failed to read signal fd\n");
@@ -518,7 +476,7 @@ static int daemon_session__control(struct daemon_session *session,
 	int ret = -1;
 	ssize_t err;
 
-	/* open the control file */
+	 
 	scnprintf(control_path, sizeof(control_path), "%s/%s",
 		  session->base, SESSION_CONTROL);
 
@@ -527,7 +485,7 @@ static int daemon_session__control(struct daemon_session *session,
 		return -1;
 
 	if (do_ack) {
-		/* open the ack file */
+		 
 		scnprintf(ack_path, sizeof(ack_path), "%s/%s",
 			  session->base, SESSION_ACK);
 
@@ -538,7 +496,7 @@ static int daemon_session__control(struct daemon_session *session,
 		}
 	}
 
-	/* write the command */
+	 
 	len = strlen(msg);
 
 	err = writen(control, msg, len);
@@ -551,7 +509,7 @@ static int daemon_session__control(struct daemon_session *session,
 	if (!do_ack)
 		goto out;
 
-	/* wait for an ack */
+	 
 	pollfd.fd = ack;
 
 	if (!poll(&pollfd, 1, 2000)) {
@@ -637,21 +595,21 @@ enum {
 union cmd {
 	int cmd;
 
-	/* CMD_LIST */
+	 
 	struct {
 		int	cmd;
 		int	verbose;
 		char	csv_sep;
 	} list;
 
-	/* CMD_SIGNAL */
+	 
 	struct {
 		int	cmd;
 		int	sig;
 		char	name[SESSION_MAX];
 	} signal;
 
-	/* CMD_PING */
+	 
 	struct {
 		int	cmd;
 		char	name[SESSION_MAX];
@@ -677,19 +635,19 @@ static int cmd_session_list(struct daemon *daemon, union cmd *cmd, FILE *out)
 
 	if (csv_sep) {
 		fprintf(out, "%d%c%s%c%s%c%s/%s",
-			/* pid daemon  */
+			 
 			getpid(), csv_sep, "daemon",
-			/* base */
+			 
 			csv_sep, daemon->base,
-			/* output */
+			 
 			csv_sep, daemon->base, SESSION_OUTPUT);
 
 		fprintf(out, "%c%s/%s",
-			/* lock */
+			 
 			csv_sep, daemon->base, "lock");
 
 		fprintf(out, "%c%lu",
-			/* session up time */
+			 
 			csv_sep, (curr - daemon->start) / 60);
 
 		fprintf(out, "\n");
@@ -708,27 +666,27 @@ static int cmd_session_list(struct daemon *daemon, union cmd *cmd, FILE *out)
 	list_for_each_entry(session, &daemon->sessions, list) {
 		if (csv_sep) {
 			fprintf(out, "%d%c%s%c%s",
-				/* pid */
+				 
 				session->pid,
-				/* name */
+				 
 				csv_sep, session->name,
-				/* base */
+				 
 				csv_sep, session->run);
 
 			fprintf(out, "%c%s%c%s/%s",
-				/* session dir */
+				 
 				csv_sep, session->base,
-				/* session output */
+				 
 				csv_sep, session->base, SESSION_OUTPUT);
 
 			fprintf(out, "%c%s/%s%c%s/%s",
-				/* session control */
+				 
 				csv_sep, session->base, SESSION_CONTROL,
-				/* session ack */
+				 
 				csv_sep, session->base, SESSION_ACK);
 
 			fprintf(out, "%c%lu",
-				/* session up time */
+				 
 				csv_sep, (curr - session->start) / 60);
 
 			fprintf(out, "\n");
@@ -850,7 +808,7 @@ static int handle_server_socket(struct daemon *daemon, int sock_fd)
 
 	fclose(out);
 out:
-	/* If out is defined, then fd is closed via fclose. */
+	 
 	if (!out)
 		close(fd);
 	return ret;
@@ -985,11 +943,11 @@ static int daemon__reconfig(struct daemon *daemon)
 	struct daemon_session *session, *n;
 
 	list_for_each_entry_safe(session, n, &daemon->sessions, list) {
-		/* No change. */
+		 
 		if (session->state == OK)
 			continue;
 
-		/* Remove session. */
+		 
 		if (session->state == KILL) {
 			if (session->pid > 0) {
 				daemon_session__kill(session, daemon);
@@ -999,7 +957,7 @@ static int daemon__reconfig(struct daemon *daemon)
 			continue;
 		}
 
-		/* Reconfig session. */
+		 
 		if (session->pid > 0) {
 			daemon_session__kill(session, daemon);
 			pr_info("reconfig: session '%s' killed\n", session->name);
@@ -1057,10 +1015,7 @@ static bool process_inotify_event(struct daemon *daemon, char *buf, ssize_t len)
 	while (p < (buf + len)) {
 		struct inotify_event *event = (struct inotify_event *) p;
 
-		/*
-		 * We monitor config directory, check if our
-		 * config file was changes.
-		 */
+		 
 		if ((event->mask & IN_CLOSE_WRITE) &&
 		    !(event->mask & IN_ISDIR)) {
 			if (!strcmp(event->name, daemon->config_base))
@@ -1128,16 +1083,9 @@ static int lockf(int fd, int cmd, off_t len)
 
 	return flock(fd, LOCK_EX | LOCK_NB);
 }
-#endif // F_TLOCK
+#endif 
 
-/*
- * Each daemon tries to create and lock BASE/lock file,
- * if it's successful we are sure we're the only daemon
- * running over the BASE.
- *
- * Once daemon is finished, file descriptor to lock file
- * is closed and lock is released.
- */
+ 
 static int check_lock(struct daemon *daemon)
 {
 	char path[PATH_MAX];
@@ -1277,7 +1225,7 @@ static int __cmd_start(struct daemon *daemon, struct option parent_options[],
 	if (!foreground) {
 		err = go_background(daemon);
 		if (err) {
-			/* original process, exit normally */
+			 
 			if (err == 1)
 				err = 0;
 			daemon__exit(daemon);
@@ -1393,7 +1341,7 @@ out_fclose:
 	fclose(in);
 	free(line);
 out:
-	/* If in is defined, then fd is closed via fclose. */
+	 
 	if (!in)
 		close(fd);
 	return ret;

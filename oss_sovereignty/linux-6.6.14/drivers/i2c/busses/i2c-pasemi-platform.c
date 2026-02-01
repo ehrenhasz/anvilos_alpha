@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 The Asahi Linux Contributors
- *
- * PA Semi PWRficient SMBus host driver for Apple SoCs
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/i2c.h>

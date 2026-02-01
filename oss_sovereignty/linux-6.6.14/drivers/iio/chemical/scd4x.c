@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensirion SCD4X carbon dioxide sensor i2c driver
- *
- * Copyright (C) 2021 Protonic Holland
- * Author: Roan van Dijk <roan@protonic.nl>
- *
- * I2C slave address: 0x62
- *
- * Datasheets:
- * https://www.sensirion.com/file/datasheet_scd4x
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/crc8.h>
@@ -40,7 +30,7 @@
 #define SCD4X_PRESSURE_COMP_MAX_MBAR 1200
 #define SCD4X_READY_MASK 0x01
 
-/*Commands SCD4X*/
+ 
 enum scd4x_cmd {
 	CMD_START_MEAS          = 0x21b1,
 	CMD_READ_MEAS           = 0xec05,
@@ -63,7 +53,7 @@ enum scd4x_channel_idx {
 
 struct scd4x_state {
 	struct i2c_client *client;
-	/* maintain access to device, to prevent concurrent reads/writes */
+	 
 	struct mutex lock;
 	struct regulator *vdd;
 };
@@ -100,17 +90,14 @@ static int scd4x_send_command(struct scd4x_state *state, enum scd4x_cmd cmd)
 	char buf[SCD4X_COMMAND_BUF_SIZE];
 	int ret;
 
-	/*
-	 * Measurement needs to be stopped before sending commands.
-	 * Except stop and start command.
-	 */
+	 
 	if ((cmd != CMD_STOP_MEAS) && (cmd != CMD_START_MEAS)) {
 
 		ret = scd4x_send_command(state, CMD_STOP_MEAS);
 		if (ret)
 			return ret;
 
-		/* execution time for stopping measurement */
+		 
 		msleep_interruptible(500);
 	}
 
@@ -137,21 +124,18 @@ static int scd4x_read(struct scd4x_state *state, enum scd4x_cmd cmd,
 	int i, ret;
 	char crc;
 
-	/*
-	 * Measurement needs to be stopped before sending commands.
-	 * Except for reading measurement and data ready command.
-	 */
+	 
 	if ((cmd != CMD_GET_DATA_READY) && (cmd != CMD_READ_MEAS) &&
 	    (cmd != CMD_GET_AMB_PRESSURE)) {
 		ret = scd4x_send_command(state, CMD_STOP_MEAS);
 		if (ret)
 			return ret;
 
-		/* execution time for stopping measurement */
+		 
 		msleep_interruptible(500);
 	}
 
-	/* CRC byte for every 2 bytes of data */
+	 
 	response_sz += response_sz / 2;
 
 	put_unaligned_be16(cmd, buf);
@@ -170,7 +154,7 @@ static int scd4x_read(struct scd4x_state *state, enum scd4x_cmd cmd,
 		*rsp++ = buf[i + 1];
 	}
 
-	/* start measurement */
+	 
 	if ((cmd != CMD_GET_DATA_READY) && (cmd != CMD_READ_MEAS) &&
 	    (cmd != CMD_GET_AMB_PRESSURE)) {
 		ret = scd4x_send_command(state, CMD_START_MEAS);
@@ -193,21 +177,21 @@ static int scd4x_write(struct scd4x_state *state, enum scd4x_cmd cmd, uint16_t a
 	crc = crc8(scd4x_crc8_table, buf + 2, 2, CRC8_INIT_VALUE);
 	buf[4] = crc;
 
-	/* measurement needs to be stopped before sending commands */
+	 
 	if (cmd != CMD_SET_AMB_PRESSURE) {
 		ret = scd4x_send_command(state, CMD_STOP_MEAS);
 		if (ret)
 			return ret;
 	}
 
-	/* execution time */
+	 
 	msleep_interruptible(500);
 
 	ret = scd4x_i2c_xfer(state, buf, SCD4X_WRITE_BUF_SIZE, buf, 0);
 	if (ret)
 		return ret;
 
-	/* start measurement, except for forced calibration command */
+	 
 	if ((cmd != CMD_FRC) && (cmd != CMD_SET_AMB_PRESSURE)) {
 		ret = scd4x_send_command(state, CMD_START_MEAS);
 		if (ret)
@@ -230,10 +214,10 @@ static int scd4x_write_and_fetch(struct scd4x_state *state, enum scd4x_cmd cmd,
 	if (ret)
 		goto err;
 
-	/* execution time */
+	 
 	msleep_interruptible(400);
 
-	/* CRC byte for every 2 bytes of data */
+	 
 	response_sz += response_sz / 2;
 
 	ret = i2c_master_recv(client, buf, response_sz);
@@ -259,10 +243,7 @@ static int scd4x_write_and_fetch(struct scd4x_state *state, enum scd4x_cmd cmd,
 	return scd4x_send_command(state, CMD_START_MEAS);
 
 err:
-	/*
-	 * on error try to start the measurement,
-	 * puts sensor back into continuous measurement
-	 */
+	 
 	scd4x_send_command(state, CMD_START_MEAS);
 
 	return ret;
@@ -298,14 +279,14 @@ static int scd4x_wait_meas_poll(struct scd4x_state *state)
 			return -EIO;
 		val = be16_to_cpu(bval);
 
-		/* new measurement available */
+		 
 		if (val & 0x7FF)
 			return 0;
 
 		msleep_interruptible(1000);
 	} while (--tries);
 
-	/* try to start sensor on timeout */
+	 
 	ret = scd4x_send_command(state, CMD_START_MEAS);
 	if (ret)
 		dev_err(&client->dev, "failed to start measurement: %d\n", ret);
@@ -562,11 +543,7 @@ static const struct iio_info scd4x_info = {
 
 static const struct iio_chan_spec scd4x_channels[] = {
 	{
-		/*
-		 * this channel is special in a sense we are pretending that
-		 * sensor is able to change measurement chamber pressure but in
-		 * fact we're just setting pressure compensation value
-		 */
+		 
 		.type = IIO_PRESSURE,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
 		.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW),
@@ -724,7 +701,7 @@ static int scd4x_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* execution time */
+	 
 	msleep_interruptible(500);
 
 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL, scd4x_trigger_handler, NULL);

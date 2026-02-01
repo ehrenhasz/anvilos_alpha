@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Management Engine (FME) Partial Reconfiguration
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Kang Luwei <luwei.kang@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Wu Hao <hao.wu@intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Christopher Rauer <christopher.rauer@intel.com>
- *   Henry Mitchel <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/device.h>
@@ -86,21 +71,18 @@ static int fme_pr(struct platform_device *pdev, unsigned long arg)
 	if (port_pr.argsz < minsz || port_pr.flags)
 		return -EINVAL;
 
-	/* get fme header region */
+	 
 	fme_hdr = dfl_get_feature_ioaddr_by_id(&pdev->dev,
 					       FME_FEATURE_ID_HEADER);
 
-	/* check port id */
+	 
 	v = readq(fme_hdr + FME_HDR_CAP);
 	if (port_pr.port_id >= FIELD_GET(FME_CAP_NUM_PORTS, v)) {
 		dev_dbg(&pdev->dev, "port number more than maximum\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * align PR buffer per PR bandwidth, as HW ignores the extra padding
-	 * data automatically.
-	 */
+	 
 	length = ALIGN(port_pr.buffer_size, 4);
 
 	buf = vmalloc(length);
@@ -114,7 +96,7 @@ static int fme_pr(struct platform_device *pdev, unsigned long arg)
 		goto free_exit;
 	}
 
-	/* prepare fpga_image_info for PR */
+	 
 	info = fpga_image_info_alloc(&pdev->dev);
 	if (!info) {
 		ret = -ENOMEM;
@@ -125,7 +107,7 @@ static int fme_pr(struct platform_device *pdev, unsigned long arg)
 
 	mutex_lock(&pdata->lock);
 	fme = dfl_fpga_pdata_get_private(pdata);
-	/* fme device has been unregistered. */
+	 
 	if (!fme) {
 		ret = -EINVAL;
 		goto unlock_exit;
@@ -146,11 +128,7 @@ static int fme_pr(struct platform_device *pdev, unsigned long arg)
 
 	ret = fpga_region_program_fpga(region);
 
-	/*
-	 * it allows userspace to reset the PR region's logic by disabling and
-	 * reenabling the bridge to clear things out between acceleration runs.
-	 * so no need to hold the bridges after partial reconfiguration.
-	 */
+	 
 	if (region->get_bridges)
 		fpga_bridges_put(&region->bridge_list);
 
@@ -162,13 +140,7 @@ free_exit:
 	return ret;
 }
 
-/**
- * dfl_fme_create_mgr - create fpga mgr platform device as child device
- * @feature: sub feature info
- * @pdata: fme platform_device's pdata
- *
- * Return: mgr platform device if successful, and error code otherwise.
- */
+ 
 static struct platform_device *
 dfl_fme_create_mgr(struct dfl_feature_platform_data *pdata,
 		   struct dfl_feature *feature)
@@ -182,10 +154,7 @@ dfl_fme_create_mgr(struct dfl_feature_platform_data *pdata,
 
 	mgr_pdata.ioaddr = feature->ioaddr;
 
-	/*
-	 * Each FME has only one fpga-mgr, so allocate platform device using
-	 * the same FME platform device id.
-	 */
+	 
 	mgr = platform_device_alloc(DFL_FPGA_FME_MGR, fme->id);
 	if (!mgr)
 		return ERR_PTR(ret);
@@ -207,10 +176,7 @@ create_mgr_err:
 	return ERR_PTR(ret);
 }
 
-/**
- * dfl_fme_destroy_mgr - destroy fpga mgr platform device
- * @pdata: fme platform device's pdata
- */
+ 
 static void dfl_fme_destroy_mgr(struct dfl_feature_platform_data *pdata)
 {
 	struct dfl_fme *priv = dfl_fpga_pdata_get_private(pdata);
@@ -218,14 +184,7 @@ static void dfl_fme_destroy_mgr(struct dfl_feature_platform_data *pdata)
 	platform_device_unregister(priv->mgr);
 }
 
-/**
- * dfl_fme_create_bridge - create fme fpga bridge platform device as child
- *
- * @pdata: fme platform device's pdata
- * @port_id: port id for the bridge to be created.
- *
- * Return: bridge platform device if successful, and error code otherwise.
- */
+ 
 static struct dfl_fme_bridge *
 dfl_fme_create_bridge(struct dfl_feature_platform_data *pdata, int port_id)
 {
@@ -263,19 +222,13 @@ create_br_err:
 	return ERR_PTR(ret);
 }
 
-/**
- * dfl_fme_destroy_bridge - destroy fpga bridge platform device
- * @fme_br: fme bridge to destroy
- */
+ 
 static void dfl_fme_destroy_bridge(struct dfl_fme_bridge *fme_br)
 {
 	platform_device_unregister(fme_br->br);
 }
 
-/**
- * dfl_fme_destroy_bridges - destroy all fpga bridge platform device
- * @pdata: fme platform device's pdata
- */
+ 
 static void dfl_fme_destroy_bridges(struct dfl_feature_platform_data *pdata)
 {
 	struct dfl_fme *priv = dfl_fpga_pdata_get_private(pdata);
@@ -287,16 +240,7 @@ static void dfl_fme_destroy_bridges(struct dfl_feature_platform_data *pdata)
 	}
 }
 
-/**
- * dfl_fme_create_region - create fpga region platform device as child
- *
- * @pdata: fme platform device's pdata
- * @mgr: mgr platform device needed for region
- * @br: br platform device needed for region
- * @port_id: port id
- *
- * Return: fme region if successful, and error code otherwise.
- */
+ 
 static struct dfl_fme_region *
 dfl_fme_create_region(struct dfl_feature_platform_data *pdata,
 		      struct platform_device *mgr,
@@ -314,10 +258,7 @@ dfl_fme_create_region(struct dfl_feature_platform_data *pdata,
 	region_pdata.mgr = mgr;
 	region_pdata.br = br;
 
-	/*
-	 * Each FPGA device may have more than one port, so allocate platform
-	 * device using the same port platform device id.
-	 */
+	 
 	fme_region->region = platform_device_alloc(DFL_FPGA_FME_REGION, br->id);
 	if (!fme_region->region)
 		return ERR_PTR(ret);
@@ -342,19 +283,13 @@ create_region_err:
 	return ERR_PTR(ret);
 }
 
-/**
- * dfl_fme_destroy_region - destroy fme region
- * @fme_region: fme region to destroy
- */
+ 
 static void dfl_fme_destroy_region(struct dfl_fme_region *fme_region)
 {
 	platform_device_unregister(fme_region->region);
 }
 
-/**
- * dfl_fme_destroy_regions - destroy all fme regions
- * @pdata: fme platform device's pdata
- */
+ 
 static void dfl_fme_destroy_regions(struct dfl_feature_platform_data *pdata)
 {
 	struct dfl_fme *priv = dfl_fpga_pdata_get_private(pdata);
@@ -384,11 +319,11 @@ static int pr_mgmt_init(struct platform_device *pdev,
 	mutex_lock(&pdata->lock);
 	priv = dfl_fpga_pdata_get_private(pdata);
 
-	/* Initialize the region and bridge sub device list */
+	 
 	INIT_LIST_HEAD(&priv->region_list);
 	INIT_LIST_HEAD(&priv->bridge_list);
 
-	/* Create fpga mgr platform device */
+	 
 	mgr = dfl_fme_create_mgr(pdata, feature);
 	if (IS_ERR(mgr)) {
 		dev_err(&pdev->dev, "fail to create fpga mgr pdev\n");
@@ -397,14 +332,14 @@ static int pr_mgmt_init(struct platform_device *pdev,
 
 	priv->mgr = mgr;
 
-	/* Read capability register to check number of regions and bridges */
+	 
 	fme_cap = readq(fme_hdr + FME_HDR_CAP);
 	for (; i < FIELD_GET(FME_CAP_NUM_PORTS, fme_cap); i++) {
 		port_offset = readq(fme_hdr + FME_HDR_PORT_OFST(i));
 		if (!(port_offset & FME_PORT_OFST_IMP))
 			continue;
 
-		/* Create bridge for each port */
+		 
 		fme_br = dfl_fme_create_bridge(pdata, i);
 		if (IS_ERR(fme_br)) {
 			ret = PTR_ERR(fme_br);
@@ -413,7 +348,7 @@ static int pr_mgmt_init(struct platform_device *pdev,
 
 		list_add(&fme_br->node, &priv->bridge_list);
 
-		/* Create region for each port */
+		 
 		fme_region = dfl_fme_create_region(pdata, mgr,
 						   fme_br->br, i);
 		if (IS_ERR(fme_region)) {

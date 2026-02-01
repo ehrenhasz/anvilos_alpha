@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car M3-N System Controller
- * Copyright (C) 2018 Jacopo Mondi <jacopo+renesas@jmondi.org>
- *
- * Based on Renesas R-Car M3-W System Controller
- * Copyright (C) 2016 Glider bvba
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>

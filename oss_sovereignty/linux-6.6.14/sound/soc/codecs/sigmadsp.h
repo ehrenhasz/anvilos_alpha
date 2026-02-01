@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Load firmware files from Analog Devices SigmaStudio
- *
- * Copyright 2009-2011 Analog Devices Inc.
- */
+ 
+ 
 
 #ifndef __SIGMA_FIRMWARE_H__
 #define __SIGMA_FIRMWARE_H__

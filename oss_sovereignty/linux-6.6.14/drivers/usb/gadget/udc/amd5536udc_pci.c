@@ -1,37 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * amd5536udc_pci.c -- AMD 5536 UDC high/full speed USB device controller
- *
- * Copyright (C) 2005-2007 AMD (https://www.amd.com)
- * Author: Thomas Dahlmann
- */
 
-/*
- * The AMD5536 UDC is part of the x86 southbridge AMD Geode CS5536.
- * It is a USB Highspeed DMA capable USB device controller. Beside ep0 it
- * provides 4 IN and 4 OUT endpoints (bulk or interrupt type).
- *
- * Make sure that UDC is assigned to port 4 by BIOS settings (port can also
- * be used as host port) and UOC bits PAD_EN and APU are set (should be done
- * by BIOS init).
- *
- * UDC DMA requires 32-bit aligned buffers so DMA with gadget ether does not
- * work without updating NET_IP_ALIGN. Or PIO mode (module param "use_dma=0")
- * can be used with gadget ether.
- *
- * This file does pci device registration, and the core driver implementation
- * is done in amd5536udc.c
- *
- * The driver is split so as to use the core UDC driver which is based on
- * Synopsys device controller IP (different than HS OTG IP) in UDCs
- * integrated to SoC platforms.
- *
- */
+ 
 
-/* Driver strings */
+ 
+
+ 
 #define UDC_MOD_DESCRIPTION		"AMD 5536 UDC - USB Device Controller"
 
-/* system */
+ 
 #include <linux/device.h>
 #include <linux/dmapool.h>
 #include <linux/interrupt.h>
@@ -42,16 +17,16 @@
 #include <linux/prefetch.h>
 #include <linux/pci.h>
 
-/* udc specific */
+ 
 #include "amd5536udc.h"
 
-/* pointer to device object */
+ 
 static struct udc *udc;
 
-/* description */
+ 
 static const char name[] = "amd5536udc-pci";
 
-/* Reset all pci context */
+ 
 static void udc_pci_remove(struct pci_dev *pdev)
 {
 	struct udc		*dev;
@@ -59,14 +34,14 @@ static void udc_pci_remove(struct pci_dev *pdev)
 	dev = pci_get_drvdata(pdev);
 
 	usb_del_gadget_udc(&udc->gadget);
-	/* gadget driver must not be registered */
+	 
 	if (WARN_ON(dev->driver))
 		return;
 
-	/* dma pool cleanup */
+	 
 	free_dma_pools(dev);
 
-	/* reset controller */
+	 
 	writel(AMD_BIT(UDC_DEVCFG_SOFTRESET), &dev->regs->cfg);
 	free_irq(pdev->irq, dev);
 	iounmap(dev->virt_addr);
@@ -77,7 +52,7 @@ static void udc_pci_remove(struct pci_dev *pdev)
 	udc_remove(dev);
 }
 
-/* Called by pci bus driver to init pci context */
+ 
 static int udc_pci_probe(
 	struct pci_dev *pdev,
 	const struct pci_device_id *id
@@ -88,24 +63,24 @@ static int udc_pci_probe(
 	unsigned long		len;
 	int			retval = 0;
 
-	/* one udc only */
+	 
 	if (udc) {
 		dev_dbg(&pdev->dev, "already probed\n");
 		return -EBUSY;
 	}
 
-	/* init */
+	 
 	dev = kzalloc(sizeof(struct udc), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
 
-	/* pci setup */
+	 
 	if (pci_enable_device(pdev) < 0) {
 		retval = -ENODEV;
 		goto err_pcidev;
 	}
 
-	/* PCI resource allocation */
+	 
 	resource = pci_resource_start(pdev, 0);
 	len = pci_resource_len(pdev, 0);
 
@@ -129,13 +104,13 @@ static int udc_pci_probe(
 	}
 
 	spin_lock_init(&dev->lock);
-	/* udc csr registers base */
+	 
 	dev->csr = dev->virt_addr + UDC_CSR_ADDR;
-	/* dev registers base */
+	 
 	dev->regs = dev->virt_addr + UDC_DEVCFG_ADDR;
-	/* ep registers base */
+	 
 	dev->ep_regs = dev->virt_addr + UDC_EPREGS_ADDR;
-	/* fifo's base */
+	 
 	dev->rxfifo = (u32 __iomem *)(dev->virt_addr + UDC_RXFIFO_ADDR);
 	dev->txfifo = (u32 __iomem *)(dev->virt_addr + UDC_TXFIFO_ADDR);
 
@@ -147,7 +122,7 @@ static int udc_pci_probe(
 
 	pci_set_drvdata(pdev, dev);
 
-	/* chip revision for Hs AMD5536 */
+	 
 	dev->chiprev = pdev->revision;
 
 	pci_set_master(pdev);
@@ -158,14 +133,14 @@ static int udc_pci_probe(
 	dev->pdev = pdev;
 	dev->dev = &pdev->dev;
 
-	/* init dma pools */
+	 
 	if (use_dma) {
 		retval = init_dma_pools(dev);
 		if (retval != 0)
 			goto err_dma;
 	}
 
-	/* general probing */
+	 
 	if (udc_probe(dev)) {
 		retval = -ENODEV;
 		goto err_probe;
@@ -191,7 +166,7 @@ err_pcidev:
 	return retval;
 }
 
-/* PCI device parameters */
+ 
 static const struct pci_device_id pci_id[] = {
 	{
 		PCI_DEVICE(PCI_VENDOR_ID_AMD, 0x2096),
@@ -202,7 +177,7 @@ static const struct pci_device_id pci_id[] = {
 };
 MODULE_DEVICE_TABLE(pci, pci_id);
 
-/* PCI functions */
+ 
 static struct pci_driver udc_pci_driver = {
 	.name =		name,
 	.id_table =	pci_id,

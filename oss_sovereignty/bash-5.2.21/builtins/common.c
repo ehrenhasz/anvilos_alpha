@@ -1,22 +1,6 @@
-/* common.c - utility functions for all builtins */
+ 
 
-/* Copyright (C) 1987-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -66,23 +50,21 @@
 
 #if !defined (errno)
 extern int errno;   
-#endif /* !errno */
+#endif  
 
 extern const char * const bash_getcwd_errstr;
 
-/* Used by some builtins and the mainline code. */
+ 
 sh_builtin_func_t *last_shell_builtin = (sh_builtin_func_t *)NULL;
 sh_builtin_func_t *this_shell_builtin = (sh_builtin_func_t *)NULL;
 
-/* **************************************************************** */
-/*								    */
-/*	     Error reporting, usage, and option processing	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* This is a lot like report_error (), but it is for shell builtins
-   instead of shell control structures, and it won't ever exit the
-   shell. */
+ 
 
 static void
 builtin_error_prolog ()
@@ -140,7 +122,7 @@ builtin_warning (format, va_alist)
   fprintf (stderr, "\n");
 }
 
-/* Print a usage summary for the currently-executing builtin command. */
+ 
 void
 builtin_usage ()
 {
@@ -150,8 +132,7 @@ builtin_usage ()
   fflush (stderr);
 }
 
-/* Return if LIST is NULL else barf and jump to top_level.  Used by some
-   builtins that do not accept arguments. */
+ 
 void
 no_args (list)
      WORD_LIST *list;
@@ -164,8 +145,7 @@ no_args (list)
     }
 }
 
-/* Check that no options were given to the currently-executing builtin,
-   and return 0 if there were options. */
+ 
 int
 no_options (list)
      WORD_LIST *list;
@@ -207,8 +187,7 @@ sh_notfound (s)
   builtin_error (_("%s: not found"), s);
 }
 
-/* Function called when one of the builtin commands detects an invalid
-   option. */
+ 
 void
 sh_invalidopt (s)
      char *s;
@@ -270,7 +249,7 @@ void
 sh_noassign (s)
      const char *s;
 {
-  internal_error (_("%s: cannot assign"), s);	/* XXX */
+  internal_error (_("%s: cannot assign"), s);	 
 }
 
 void
@@ -326,7 +305,7 @@ sh_wrerror ()
 {
 #if defined (DONT_REPORT_BROKEN_PIPE_WRITE_ERRORS) && defined (EPIPE)
   if (errno != EPIPE)
-#endif /* DONT_REPORT_BROKEN_PIPE_WRITE_ERRORS && EPIPE */
+#endif  
   builtin_error (_("write error: %s"), strerror (errno));
 }
 
@@ -357,15 +336,13 @@ sh_chkwrite (s)
   return (s);
 }
 
-/* **************************************************************** */
-/*								    */
-/*	     Shell positional parameter manipulation		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Convert a WORD_LIST into a C-style argv.  Return the number of elements
-   in the list in *IP, if IP is non-null.  A convenience function for
-   loadable builtins; also used by `test'. */
+ 
 char **
 make_builtin_argv (list, ip)
      WORD_LIST *list;
@@ -378,10 +355,7 @@ make_builtin_argv (list, ip)
   return argv;
 }
 
-/* Remember LIST in $1 ... $9, and REST_OF_ARGS.  If DESTRUCTIVE is
-   non-zero, then discard whatever the existing arguments are, else
-   only discard the ones that are to be replaced.  Set POSPARAM_COUNT
-   to the number of args assigned (length of LIST). */
+ 
 void
 remember_args (list, destructive)
      WORD_LIST *list;
@@ -406,9 +380,7 @@ remember_args (list, destructive)
 	}
     }
 
-  /* If arguments remain, assign them to REST_OF_ARGS.
-     Note that copy_word_list (NULL) returns NULL, and
-     that dispose_words (NULL) does nothing. */
+   
   if (destructive || list)
     {
       dispose_words (rest_of_args);
@@ -429,7 +401,7 @@ shift_args (times)
   WORD_LIST *temp;
   int count;
 
-  if (times <= 0)		/* caller should check */
+  if (times <= 0)		 
     return;
 
   while (times-- > 0)
@@ -476,8 +448,7 @@ if (n != posparam_count)
 
 static int changed_dollar_vars;
 
-/* Have the dollar variables been reset to new values since we last
-   checked? */
+ 
 int
 dollar_vars_changed ()
 {
@@ -501,19 +472,13 @@ set_dollar_vars_changed ()
     changed_dollar_vars |= ARGS_INVOC;
 }
 
-/* **************************************************************** */
-/*								    */
-/*		Validating numeric input and arguments		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Read a numeric arg for this_command_name, the name of the shell builtin
-   that wants it.  LIST is the word list that the arg is to come from.
-   Accept only the numeric argument; report an error if other arguments
-   follow.  If FATAL is 1, call throw_to_top_level, which exits the
-   shell; if it's 2, call jump_to_top_level (DISCARD), which aborts the
-   current command; if FATAL is 0, return an indication of an invalid
-   number by setting *NUMOK == 0 and return -1. */
+ 
 int
 get_numeric_arg (list, fatal, count)
      WORD_LIST *list;
@@ -536,9 +501,9 @@ get_numeric_arg (list, fatal, count)
 	  sh_neednumarg (list->word->word ? list->word->word : "`'");
 	  if (fatal == 0)
 	    return 0;
-	  else if (fatal == 1)		/* fatal == 1; abort */
+	  else if (fatal == 1)		 
 	    throw_to_top_level ();
-	  else				/* fatal == 2; discard current command */
+	  else				 
 	    {
 	      top_level_cleanup ();
 	      jump_to_top_level (DISCARD);
@@ -550,7 +515,7 @@ get_numeric_arg (list, fatal, count)
   return (1);
 }
 
-/* Get an eight-bit status value from LIST */
+ 
 int
 get_exitstat (list)
      WORD_LIST *list;
@@ -564,12 +529,7 @@ get_exitstat (list)
 
   if (list == 0)
     {
-      /* If we're not running the DEBUG trap, the return builtin, when not
-	 given any arguments, uses the value of $? before the trap ran.  If
-	 given an argument, return uses it.  This means that the trap can't
-	 change $?.  The DEBUG trap gets to change $?, though, since that is
-	 part of its reason for existing, and because the extended debug mode
-	 does things with the return value. */
+       
       if (this_shell_builtin == return_builtin && running_trap > 0 && running_trap != DEBUG_TRAP+1)
 	return (trap_saved_exit_value);
       return (last_command_exit_value);
@@ -587,8 +547,7 @@ get_exitstat (list)
   return status;
 }
 
-/* Return the octal number parsed from STRING, or -1 to indicate
-   that the string contained a bad number. */
+ 
 int
 read_octal (string)
      char *string;
@@ -610,14 +569,13 @@ read_octal (string)
   return (result);
 }
 
-/* **************************************************************** */
-/*								    */
-/*	     Manipulating the current working directory		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Return a consed string which is the current working directory.
-   FOR_WHOM is the name of the caller for error printing.  */
+ 
 char *the_current_working_directory = (char *)NULL;
 
 char *
@@ -649,7 +607,7 @@ get_working_directory (for_whom)
   return (savestring (the_current_working_directory));
 }
 
-/* Make NAME our internal idea of the current working directory. */
+ 
 void
 set_working_directory (name)
      char *name;
@@ -658,11 +616,11 @@ set_working_directory (name)
   the_current_working_directory = savestring (name);
 }
 
-/* **************************************************************** */
-/*								    */
-/*	     	Job control support functions			    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 #if defined (JOB_CONTROL)
 int
@@ -701,7 +659,7 @@ get_job_by_name (name, flags)
 	      continue;
 	    }
 	  else if (flags & JM_FIRSTMATCH)
-	    return i;		/* return first match */
+	    return i;		 
 	  else if (job != NO_JOB)
 	    {
 	      if (this_shell_builtin)
@@ -719,7 +677,7 @@ get_job_by_name (name, flags)
   return (job);
 }
 
-/* Return the job spec found in LIST. */
+ 
 int
 get_job_spec (list)
      WORD_LIST *list;
@@ -755,20 +713,18 @@ get_job_spec (list)
     case '-':
       return (js.j_previous);
 
-    case '?':			/* Substring search requested. */
+    case '?':			 
       jflags |= JM_SUBSTRING;
       word++;
-      /* FALLTHROUGH */
+       
 
     default:
       return get_job_by_name (word, jflags);
     }
 }
-#endif /* JOB_CONTROL */
+#endif  
 
-/*
- * NOTE:  `kill' calls this function with forcecols == 0
- */
+ 
 int
 display_signal_list (list, forcecols)
      WORD_LIST *list;
@@ -790,8 +746,7 @@ display_signal_list (list, forcecols)
 
 	  if (posixly_correct && !forcecols)
 	    {
-	      /* This is for the kill builtin.  POSIX.2 says the signal names
-		 are displayed without the `SIG' prefix. */
+	       
 	      if (STREQN (name, "SIG", 3))
 		name += 3;
 	      printf ("%s%s", name, (i == NSIG - 1) ? "" : " ");
@@ -815,13 +770,12 @@ display_signal_list (list, forcecols)
       return result;
     }
 
-  /* List individual signal names or numbers. */
+   
   while (list)
     {
       if (legal_number (list->word->word, &lsignum))
 	{
-	  /* This is specified by Posix.2 so that exit statuses can be
-	     mapped into signal numbers. */
+	   
 	  if (lsignum > 128)
 	    lsignum -= 128;
 	  if (lsignum < 0 || lsignum >= NSIG)
@@ -839,8 +793,7 @@ display_signal_list (list, forcecols)
 	      list = list->next;
 	      continue;
 	    }
-	  /* POSIX.2 says that `kill -l signum' prints the signal name without
-	     the `SIG' prefix. */
+	   
 	  printf ("%s\n", (this_shell_builtin == kill_builtin && signum > 0) ? name + 3 : name);
 	}
       else
@@ -863,17 +816,13 @@ display_signal_list (list, forcecols)
   return (result);
 }
 
-/* **************************************************************** */
-/*								    */
-/*	    Finding builtin commands and their functions	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Perform a binary search and return the address of the builtin function
-   whose name is NAME.  If the function couldn't be found, or the builtin
-   is disabled or has no function associated with it, return NULL.
-   Return the address of the builtin.
-   DISABLED_OKAY means find it even if the builtin is disabled. */
+ 
 struct builtin *
 builtin_address_internal (name, disabled_okay)
      char *name;
@@ -895,9 +844,7 @@ builtin_address_internal (name, disabled_okay)
 
       if (j == 0)
 	{
-	  /* It must have a function pointer.  It must be enabled, or we
-	     must have explicitly allowed disabled functions to be found,
-	     and it must not have been deleted. */
+	   
 	  if (shell_builtins[mid].function &&
 	      ((shell_builtins[mid].flags & BUILTIN_DELETED) == 0) &&
 	      ((shell_builtins[mid].flags & BUILTIN_ENABLED) || disabled_okay))
@@ -913,7 +860,7 @@ builtin_address_internal (name, disabled_okay)
   return ((struct builtin *)NULL);
 }
 
-/* Return the pointer to the function implementing builtin command NAME. */
+ 
 sh_builtin_func_t *
 find_shell_builtin (name)
      char *name;
@@ -922,7 +869,7 @@ find_shell_builtin (name)
   return (current_builtin ? current_builtin->function : (sh_builtin_func_t *)NULL);
 }
 
-/* Return the address of builtin with NAME, whether it is enabled or not. */
+ 
 sh_builtin_func_t *
 builtin_address (name)
      char *name;
@@ -931,8 +878,7 @@ builtin_address (name)
   return (current_builtin ? current_builtin->function : (sh_builtin_func_t *)NULL);
 }
 
-/* Return the function implementing the builtin NAME, but only if it is a
-   POSIX.2 special builtin. */
+ 
 sh_builtin_func_t *
 find_special_builtin (name)
      char *name;
@@ -955,8 +901,7 @@ shell_builtin_compare (sbp1, sbp2)
   return (result);
 }
 
-/* Sort the table of shell builtins so that the binary search will work
-   in find_shell_builtin. */
+ 
 void
 initialize_shell_builtins ()
 {
@@ -972,13 +917,13 @@ builtin_help ()
 }
 #endif
 
-/* **************************************************************** */
-/*								    */
-/*	    Variable assignments during builtin commands	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Assign NAME=VALUE, passing FLAGS to the assignment functions. */
+ 
 SHELL_VAR *
 builtin_bind_variable (name, value, flags)
      char *name;
@@ -989,8 +934,7 @@ builtin_bind_variable (name, value, flags)
   int vflags, bindflags;
 
 #if defined (ARRAY_VARS)
-  /* Callers are responsible for calling this with array references that have
-     already undergone valid_array_reference checks (read, printf). */
+   
   vflags = assoc_expand_once ? (VA_NOEXPAND|VA_ONEWORD) : 0;
   bindflags = flags | (assoc_expand_once ? ASS_NOEXPAND : 0) | ASS_ALLOWALLSUB;
   if (flags & ASS_NOEXPAND)
@@ -1002,9 +946,9 @@ builtin_bind_variable (name, value, flags)
     v = bind_variable (name, value, flags);
   else
     v = assign_array_element (name, value, bindflags, (array_eltstate_t *)0);
-#else /* !ARRAY_VARS */
+#else  
   v = bind_variable (name, value, flags);
-#endif /* !ARRAY_VARS */
+#endif  
 
   if (v && readonly_p (v) == 0 && noassign_p (v) == 0)
     VUNSETATTR (v, att_invisible);
@@ -1039,8 +983,7 @@ builtin_find_indexed_array (array_name, flags)
     }
 
   entry = find_or_make_array_variable (array_name, 1);
-  /* With flags argument & 1, find_or_make_array_variable checks for readonly
-     and noassign variables and prints error messages. */
+   
   if (entry == 0)
     return entry;
   else if (array_p (entry) == 0)
@@ -1049,17 +992,16 @@ builtin_find_indexed_array (array_name, flags)
       return (SHELL_VAR *)NULL;
     }
   else if (invisible_p (entry))
-    VUNSETATTR (entry, att_invisible);	/* no longer invisible */
+    VUNSETATTR (entry, att_invisible);	 
 
   if (flags & 1)
     array_flush (array_cell (entry));
 
   return entry;
 }
-#endif /* ARRAY_VARS */	
+#endif  	
 
-/* Like check_unbind_variable, but for use by builtins (only matters for
-   error messages). */
+ 
 int
 builtin_unbind_variable (vname)
      const char *vname;
@@ -1090,15 +1032,12 @@ builtin_arrayref_flags (w, baseflags)
 
   vflags = baseflags;
 
-  /* Don't require assoc_expand_once if we have an argument that's already
-     passed through valid_array_reference and been expanded once. That
-     doesn't protect it from normal expansions like word splitting, so
-     proper quoting is still required. */
+   
   if (w->flags & W_ARRAYREF)
     vflags |= VA_ONEWORD|VA_NOEXPAND;
 
 #  if 0
-  /* This is a little sketchier but handles quoted arguments. */
+   
   if (assoc_expand_once && (t =  strchr (w->word, '[')) && t[strlen(t) - 1] == ']')
     vflags |= VA_ONEWORD|VA_NOEXPAND;
 #  endif
@@ -1106,11 +1045,11 @@ builtin_arrayref_flags (w, baseflags)
   return vflags;
 }
 
-/* **************************************************************** */
-/*								    */
-/*	    External interface to manipulate shell options	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 #if defined (ARRAY_VARS)
 int
@@ -1120,7 +1059,7 @@ set_expand_once (nval, uwp)
   int oa;
 
   oa = assoc_expand_once;
-  if (shell_compatibility_level > 51)	/* XXX - internal */
+  if (shell_compatibility_level > 51)	 
     {
       if (uwp)
 	unwind_protect_int (assoc_expand_once);

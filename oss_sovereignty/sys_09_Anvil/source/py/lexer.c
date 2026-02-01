@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -36,8 +12,8 @@
 
 #define TAB_SIZE (8)
 
-// TODO seems that CPython allows NULL byte in the input stream
-// don't know if that's intentional or not, but we don't allow it
+
+
 
 #define MP_LEXER_EOF ((unichar)MP_READER_EOF)
 #define CUR_CHAR(lex) ((lex)->chr0)
@@ -122,7 +98,7 @@ static bool is_string_or_bytes(mp_lexer_t *lex) {
                && is_char_following_following_or(lex, '\'', '\"'));
 }
 
-// to easily parse utf-8 identifiers we allow any raw byte with high bit set
+
 static bool is_head_of_identifier(mp_lexer_t *lex) {
     return is_letter(lex) || lex->chr0 == '_' || lex->chr0 >= 0x80;
 }
@@ -133,38 +109,38 @@ static bool is_tail_of_identifier(mp_lexer_t *lex) {
 
 static void next_char(mp_lexer_t *lex) {
     if (lex->chr0 == '\n') {
-        // a new line
+        
         ++lex->line;
         lex->column = 1;
     } else if (lex->chr0 == '\t') {
-        // a tab
+        
         lex->column = (((lex->column - 1 + TAB_SIZE) / TAB_SIZE) * TAB_SIZE) + 1;
     } else {
-        // a character worth one column
+        
         ++lex->column;
     }
 
-    // shift the input queue forward
+    
     lex->chr0 = lex->chr1;
     lex->chr1 = lex->chr2;
 
-    // and add the next byte from either the fstring args or the reader
+    
     #if MICROPY_PY_FSTRINGS
     if (lex->fstring_args_idx) {
-        // if there are saved chars, then we're currently injecting fstring args
+        
         if (lex->fstring_args_idx < lex->fstring_args.len) {
             lex->chr2 = lex->fstring_args.buf[lex->fstring_args_idx++];
         } else {
-            // no more fstring arg bytes
+            
             lex->chr2 = '\0';
         }
 
         if (lex->chr0 == '\0') {
-            // consumed all fstring data, restore saved input queue
+            
             lex->chr0 = lex->chr0_saved;
             lex->chr1 = lex->chr1_saved;
             lex->chr2 = lex->chr2_saved;
-            // stop consuming fstring arg data
+            
             vstr_reset(&lex->fstring_args);
             lex->fstring_args_idx = 0;
         }
@@ -175,15 +151,15 @@ static void next_char(mp_lexer_t *lex) {
     }
 
     if (lex->chr1 == '\r') {
-        // CR is a new line, converted to LF
+        
         lex->chr1 = '\n';
         if (lex->chr2 == '\n') {
-            // CR LF is a single new line, throw out the extra LF
+            
             lex->chr2 = lex->reader.readbyte(lex->reader.data);
         }
     }
 
-    // check if we need to insert a newline at end of file
+    
     if (lex->chr2 == MP_LEXER_EOF && lex->chr1 != MP_LEXER_EOF && lex->chr1 != '\n') {
         lex->chr2 = '\n';
     }
@@ -205,30 +181,30 @@ static void indent_pop(mp_lexer_t *lex) {
     lex->num_indent_level -= 1;
 }
 
-// some tricky operator encoding:
-//     <op>  = begin with <op>, if this opchar matches then begin here
-//     e<op> = end with <op>, if this opchar matches then end
-//     c<op> = continue with <op>, if this opchar matches then continue matching
-// this means if the start of two ops are the same then they are equal til the last char
+
+
+
+
+
 
 static const char *const tok_enc =
-    "()[]{},;~"   // singles
-    ":e="         // : :=
-    "<e=c<e="     // < <= << <<=
-    ">e=c>e="     // > >= >> >>=
-    "*e=c*e="     // * *= ** **=
-    "+e="         // + +=
-    "-e=e>"       // - -= ->
-    "&e="         // & &=
-    "|e="         // | |=
-    "/e=c/e="     // / /= // //=
-    "%e="         // % %=
-    "^e="         // ^ ^=
-    "@e="         // @ @=
-    "=e="         // = ==
-    "!.";         // start of special cases: != . ...
+    "()[]{},;~"   
+    ":e="         
+    "<e=c<e="     
+    ">e=c>e="     
+    "*e=c*e="     
+    "+e="         
+    "-e=e>"       
+    "&e="         
+    "|e="         
+    "/e=c/e="     
+    "%e="         
+    "^e="         
+    "@e="         
+    "=e="         
+    "!.";         
 
-// TODO static assert that number of tokens is less than 256 so we can safely make this table with byte sized entries
+
 static const uint8_t tok_enc_kind[] = {
     MP_TOKEN_DEL_PAREN_OPEN, MP_TOKEN_DEL_PAREN_CLOSE,
     MP_TOKEN_DEL_BRACKET_OPEN, MP_TOKEN_DEL_BRACKET_CLOSE,
@@ -250,8 +226,8 @@ static const uint8_t tok_enc_kind[] = {
     MP_TOKEN_DEL_EQUAL, MP_TOKEN_OP_DBL_EQUAL,
 };
 
-// must have the same order as enum in lexer.h
-// must be sorted according to strcmp
+
+
 static const char *const tok_kw[] = {
     "False",
     "None",
@@ -293,9 +269,9 @@ static const char *const tok_kw[] = {
     "yield",
 };
 
-// This is called with CUR_CHAR() before first hex digit, and should return with
-// it pointing to last hex digit
-// num_digits must be greater than zero
+
+
+
 static bool get_hex(mp_lexer_t *lex, size_t num_digits, mp_uint_t *result) {
     mp_uint_t num = 0;
     while (num_digits-- != 0) {
@@ -311,32 +287,32 @@ static bool get_hex(mp_lexer_t *lex, size_t num_digits, mp_uint_t *result) {
 }
 
 static void parse_string_literal(mp_lexer_t *lex, bool is_raw, bool is_fstring) {
-    // get first quoting character
+    
     char quote_char = '\'';
     if (is_char(lex, '\"')) {
         quote_char = '\"';
     }
     next_char(lex);
 
-    // work out if it's a single or triple quoted literal
+    
     size_t num_quotes;
     if (is_char_and(lex, quote_char, quote_char)) {
-        // triple quotes
+        
         next_char(lex);
         next_char(lex);
         num_quotes = 3;
     } else {
-        // single quotes
+        
         num_quotes = 1;
     }
 
     size_t n_closing = 0;
     #if MICROPY_PY_FSTRINGS
     if (is_fstring) {
-        // assume there's going to be interpolation, so prep the injection data
-        // fstring_args_idx==0 && len(fstring_args)>0 means we're extracting the args.
-        // only when fstring_args_idx>0 will we consume the arg data
-        // note: lex->fstring_args will be empty already (it's reset when finished)
+        
+        
+        
+        
         vstr_add_str(&lex->fstring_args, ".format(");
     }
     #endif
@@ -352,27 +328,27 @@ static void parse_string_literal(mp_lexer_t *lex, bool is_raw, bool is_fstring) 
             while (is_fstring && is_char(lex, '{')) {
                 next_char(lex);
                 if (is_char(lex, '{')) {
-                    // "{{" is passed through unchanged to be handled by str.format
+                    
                     vstr_add_byte(&lex->vstr, '{');
                     next_char(lex);
                 } else {
-                    // wrap each argument in (), e.g.
-                    // f"{a,b,}, {c}" --> "{}".format((a,b), (c),)
+                    
+                    
                     vstr_add_byte(&lex->fstring_args, '(');
-                    // remember the start of this argument (if we need it for f'{a=}').
+                    
                     size_t i = lex->fstring_args.len;
-                    // Extract characters inside the { until the bracket level
-                    // is zero and we reach the conversion specifier '!',
-                    // format specifier ':', or closing '}'. The conversion
-                    // and format specifiers are left unchanged in the format
-                    // string to be handled by str.format.
-                    // (MicroPython limitation) note: this is completely
-                    // unaware of Python syntax and will not handle any
-                    // expression containing '}' or ':'. e.g. f'{"}"}' or f'
-                    // {foo({})}'. However, detection of the '!' will
-                    // specifically ensure that it's followed by [rs] and
-                    // then either the format specifier or the closing
-                    // brace. This allows the use of e.g. != in expressions.
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     unsigned int nested_bracket_level = 0;
                     while (!is_end(lex) && (nested_bracket_level != 0
                                             || !(is_char_or(lex, ':', '}')
@@ -386,20 +362,20 @@ static void parse_string_literal(mp_lexer_t *lex, bool is_raw, bool is_fstring) 
                         } else if (c == ']' || c == '}') {
                             nested_bracket_level -= 1;
                         }
-                        // like the default case at the end of this function, stay 8-bit clean
+                        
                         vstr_add_byte(&lex->fstring_args, c);
                         next_char(lex);
                     }
                     if (lex->fstring_args.buf[lex->fstring_args.len - 1] == '=') {
-                        // if the last character of the arg was '=', then inject "arg=" before the '{'.
-                        // f'{a=}' --> 'a={}'.format(a)
+                        
+                        
                         vstr_add_strn(&lex->vstr, lex->fstring_args.buf + i, lex->fstring_args.len - i);
-                        // remove the trailing '='
+                        
                         lex->fstring_args.len--;
                     }
-                    // close the paren-wrapped arg to .format().
+                    
                     vstr_add_byte(&lex->fstring_args, ')');
-                    // comma-separate args to .format().
+                    
                     vstr_add_byte(&lex->fstring_args, ',');
                 }
                 vstr_add_byte(&lex->vstr, '{');
@@ -410,15 +386,15 @@ static void parse_string_literal(mp_lexer_t *lex, bool is_raw, bool is_fstring) 
                 next_char(lex);
                 unichar c = CUR_CHAR(lex);
                 if (is_raw) {
-                    // raw strings allow escaping of quotes, but the backslash is also emitted
+                    
                     vstr_add_char(&lex->vstr, '\\');
                 } else {
                     switch (c) {
-                        // note: "c" can never be MP_LEXER_EOF because next_char
-                        // always inserts a newline at the end of the input stream
+                        
+                        
                         case '\n':
                             c = MP_LEXER_EOF;
-                            break;                          // backslash escape the newline, just ignore it
+                            break;                          
                         case '\\':
                             break;
                         case '\'':
@@ -449,32 +425,32 @@ static void parse_string_literal(mp_lexer_t *lex, bool is_raw, bool is_fstring) 
                         case 'u':
                         case 'U':
                             if (lex->tok_kind == MP_TOKEN_BYTES) {
-                                // b'\u1234' == b'\\u1234'
+                                
                                 vstr_add_char(&lex->vstr, '\\');
                                 break;
                             }
-                            // Otherwise fall through.
+                            
                             MP_FALLTHROUGH
                         case 'x': {
                             mp_uint_t num = 0;
                             if (!get_hex(lex, (c == 'x' ? 2 : c == 'u' ? 4 : 8), &num)) {
-                                // not enough hex chars for escape sequence
+                                
                                 lex->tok_kind = MP_TOKEN_INVALID;
                             }
                             c = num;
                             break;
                         }
                         case 'N':
-                            // Supporting '\N{LATIN SMALL LETTER A}' == 'a' would require keeping the
-                            // entire Unicode name table in the core. As of Unicode 6.3.0, that's nearly
-                            // 3MB of text; even gzip-compressed and with minimal structure, it'll take
-                            // roughly half a meg of storage. This form of Unicode escape may be added
-                            // later on, but it's definitely not a priority right now. -- CJA 20140607
+                            
+                            
+                            
+                            
+                            
                             mp_raise_NotImplementedError(MP_ERROR_TEXT("unicode name escapes"));
                             break;
                         default:
                             if (c >= '0' && c <= '7') {
-                                // Octal sequence, 1-3 chars
+                                
                                 size_t digits = 3;
                                 mp_uint_t num = c - '0';
                                 while (is_following_odigit(lex) && --digits != 0) {
@@ -483,7 +459,7 @@ static void parse_string_literal(mp_lexer_t *lex, bool is_raw, bool is_fstring) 
                                 }
                                 c = num;
                             } else {
-                                // unrecognised escape character; CPython lets this through verbatim as '\' and then the character
+                                
                                 vstr_add_char(&lex->vstr, '\\');
                             }
                             break;
@@ -492,43 +468,43 @@ static void parse_string_literal(mp_lexer_t *lex, bool is_raw, bool is_fstring) 
                 if (c != MP_LEXER_EOF) {
                     #if MICROPY_PY_BUILTINS_STR_UNICODE
                     if (c < 0x110000 && lex->tok_kind == MP_TOKEN_STRING) {
-                        // Valid unicode character in a str object.
+                        
                         vstr_add_char(&lex->vstr, c);
                     } else if (c < 0x100 && lex->tok_kind == MP_TOKEN_BYTES) {
-                        // Valid byte in a bytes object.
+                        
                         vstr_add_byte(&lex->vstr, c);
                     }
                     #else
                     if (c < 0x100) {
-                        // Without unicode everything is just added as an 8-bit byte.
+                        
                         vstr_add_byte(&lex->vstr, c);
                     }
                     #endif
                     else {
-                        // Character out of range; this raises a generic SyntaxError.
+                        
                         lex->tok_kind = MP_TOKEN_INVALID;
                     }
                 }
             } else {
-                // Add the "character" as a byte so that we remain 8-bit clean.
-                // This way, strings are parsed correctly whether or not they contain utf-8 chars.
+                
+                
                 vstr_add_byte(&lex->vstr, CUR_CHAR(lex));
             }
         }
         next_char(lex);
     }
 
-    // check we got the required end quotes
+    
     if (n_closing < num_quotes) {
         lex->tok_kind = MP_TOKEN_LONELY_STRING_OPEN;
     }
 
-    // cut off the end quotes from the token text
+    
     vstr_cut_tail_bytes(&lex->vstr, n_closing);
 }
 
-// This function returns whether it has crossed a newline or not.
-// It therefore always return true if stop_at_newline is true
+
+
 static bool skip_whitespace(mp_lexer_t *lex, bool stop_at_newline) {
     while (!is_end(lex)) {
         if (is_physical_newline(lex)) {
@@ -543,9 +519,9 @@ static bool skip_whitespace(mp_lexer_t *lex, bool stop_at_newline) {
             while (!is_end(lex) && !is_physical_newline(lex)) {
                 next_char(lex);
             }
-            // will return true on next loop
+            
         } else if (is_char_and(lex, '\\', '\n')) {
-            // line-continuation, so don't return true
+            
             next_char(lex);
             next_char(lex);
         } else {
@@ -558,8 +534,8 @@ static bool skip_whitespace(mp_lexer_t *lex, bool stop_at_newline) {
 void mp_lexer_to_next(mp_lexer_t *lex) {
     #if MICROPY_PY_FSTRINGS
     if (lex->fstring_args.len && lex->fstring_args_idx == 0) {
-        // moving onto the next token means the literal string is complete.
-        // switch into injecting the format args.
+        
+        
         vstr_add_byte(&lex->fstring_args, ')');
         lex->chr0_saved = lex->chr0;
         lex->chr1_saved = lex->chr1;
@@ -567,22 +543,22 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
         lex->chr0 = lex->fstring_args.buf[0];
         lex->chr1 = lex->fstring_args.buf[1];
         lex->chr2 = lex->fstring_args.buf[2];
-        // we've already extracted 3 chars, but setting this non-zero also
-        // means we'll start consuming the fstring data
+        
+        
         lex->fstring_args_idx = 3;
     }
     #endif
 
-    // start new token text
+    
     vstr_reset(&lex->vstr);
 
-    // skip white space and comments
-    // set the newline tokens at the line and column of the preceding line:
-    // only advance on the pointer until a new line is crossed, save the
-    // line and column, and then readvance it
+    
+    
+    
+    
     bool had_physical_newline = skip_whitespace(lex, true);
 
-    // set token source information
+    
     lex->tok_line = lex->line;
     lex->tok_column = lex->column;
 
@@ -595,9 +571,9 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
         lex->emit_dent -= 1;
 
     } else if (had_physical_newline) {
-        // The cursor is at the end of the previous line, pointing to a
-        // physical newline. Skip any remaining whitespace, comments, and
-        // newlines.
+        
+        
+        
         skip_whitespace(lex, false);
 
         lex->tok_kind = MP_TOKEN_NEWLINE;
@@ -621,20 +597,20 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
         lex->tok_kind = MP_TOKEN_END;
 
     } else if (is_string_or_bytes(lex)) {
-        // a string or bytes literal
+        
 
-        // Python requires adjacent string/bytes literals to be automatically
-        // concatenated.  We do it here in the tokeniser to make efficient use of RAM,
-        // because then the lexer's vstr can be used to accumulate the string literal,
-        // in contrast to creating a parse tree of strings and then joining them later
-        // in the compiler.  It's also more compact in code size to do it here.
+        
+        
+        
+        
+        
 
-        // MP_TOKEN_END is used to indicate that this is the first string token
+        
         lex->tok_kind = MP_TOKEN_END;
 
-        // Loop to accumulate string/bytes literals
+        
         do {
-            // parse type codes
+            
             bool is_raw = false;
             bool is_fstring = false;
             mp_token_kind_t kind = MP_TOKEN_STRING;
@@ -657,7 +633,7 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
                 }
                 #if MICROPY_PY_FSTRINGS
                 if (is_char_following(lex, 'f')) {
-                    // raw-f-strings unsupported, immediately return (invalid) token.
+                    
                     lex->tok_kind = MP_TOKEN_FSTRING_RAW;
                     break;
                 }
@@ -666,7 +642,7 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
             #if MICROPY_PY_FSTRINGS
             else if (is_char(lex, 'f')) {
                 if (is_char_following(lex, 'r')) {
-                    // raw-f-strings unsupported, immediately return (invalid) token.
+                    
                     lex->tok_kind = MP_TOKEN_FSTRING_RAW;
                     break;
                 }
@@ -675,15 +651,15 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
             }
             #endif
 
-            // Set or check token kind
+            
             if (lex->tok_kind == MP_TOKEN_END) {
                 lex->tok_kind = kind;
             } else if (lex->tok_kind != kind) {
-                // Can't concatenate string with bytes
+                
                 break;
             }
 
-            // Skip any type code characters
+            
             if (n_char != 0) {
                 next_char(lex);
                 if (n_char == 2) {
@@ -691,10 +667,10 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
                 }
             }
 
-            // Parse the literal
+            
             parse_string_literal(lex, is_raw, is_fstring);
 
-            // Skip whitespace so we can check if there's another string following
+            
             skip_whitespace(lex, true);
 
         } while (is_string_or_bytes(lex));
@@ -702,20 +678,20 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
     } else if (is_head_of_identifier(lex)) {
         lex->tok_kind = MP_TOKEN_NAME;
 
-        // get first char (add as byte to remain 8-bit clean and support utf-8)
+        
         vstr_add_byte(&lex->vstr, CUR_CHAR(lex));
         next_char(lex);
 
-        // get tail chars
+        
         while (!is_end(lex) && is_tail_of_identifier(lex)) {
             vstr_add_byte(&lex->vstr, CUR_CHAR(lex));
             next_char(lex);
         }
 
-        // Check if the name is a keyword.
-        // We also check for __debug__ here and convert it to its value.  This is
-        // so the parser gives a syntax error on, eg, x.__debug__.  Otherwise, we
-        // need to check for this special token in many places in the compiler.
+        
+        
+        
+        
         const char *s = vstr_null_terminated_str(&lex->vstr);
         for (size_t i = 0; i < MP_ARRAY_SIZE(tok_kw); i++) {
             int cmp = strcmp(s, tok_kw[i]);
@@ -726,7 +702,7 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
                 }
                 break;
             } else if (cmp < 0) {
-                // Table is sorted and comparison was less-than, so stop searching
+                
                 break;
             }
         }
@@ -742,11 +718,11 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
             }
         }
 
-        // get first char
+        
         vstr_add_char(&lex->vstr, CUR_CHAR(lex));
         next_char(lex);
 
-        // get tail chars
+        
         while (!is_end(lex)) {
             if (!forced_integer && is_char_or(lex, 'e', 'E')) {
                 lex->tok_kind = MP_TOKEN_FLOAT_OR_IMAG;
@@ -770,7 +746,7 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
         }
 
     } else {
-        // search for encoded delimiter or operator
+        
 
         const char *t = tok_enc;
         size_t tok_enc_index = 0;
@@ -784,11 +760,11 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
         next_char(lex);
 
         if (*t == 0) {
-            // didn't match any delimiter or operator characters
+            
             lex->tok_kind = MP_TOKEN_INVALID;
 
         } else if (*t == '!') {
-            // "!=" is a special case because "!" is not a valid operator
+            
             if (is_char(lex, '=')) {
                 next_char(lex);
                 lex->tok_kind = MP_TOKEN_OP_NOT_EQUAL;
@@ -797,7 +773,7 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
             }
 
         } else if (*t == '.') {
-            // "." and "..." are special cases because ".." is not a valid operator
+            
             if (is_char_and(lex, '.', '.')) {
                 next_char(lex);
                 next_char(lex);
@@ -807,9 +783,9 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
             }
 
         } else {
-            // matched a delimiter or operator character
+            
 
-            // get the maximum characters for a valid token
+            
             t += 1;
             size_t t_index = tok_enc_index;
             while (*t == 'c' || *t == 'e') {
@@ -826,10 +802,10 @@ void mp_lexer_to_next(mp_lexer_t *lex) {
                 t += 2;
             }
 
-            // set token kind
+            
             lex->tok_kind = tok_enc_kind[tok_enc_index];
 
-            // compute bracket level for implicit line joining
+            
             if (lex->tok_kind == MP_TOKEN_DEL_PAREN_OPEN || lex->tok_kind == MP_TOKEN_DEL_BRACKET_OPEN || lex->tok_kind == MP_TOKEN_DEL_BRACE_OPEN) {
                 lex->nested_bracket_level += 1;
             } else if (lex->tok_kind == MP_TOKEN_DEL_PAREN_CLOSE || lex->tok_kind == MP_TOKEN_DEL_BRACKET_CLOSE || lex->tok_kind == MP_TOKEN_DEL_BRACE_CLOSE) {
@@ -845,7 +821,7 @@ mp_lexer_t *mp_lexer_new(qstr src_name, mp_reader_t reader) {
     lex->source_name = src_name;
     lex->reader = reader;
     lex->line = 1;
-    lex->column = (size_t)-2; // account for 3 dummy bytes
+    lex->column = (size_t)-2; 
     lex->emit_dent = 0;
     lex->nested_bracket_level = 0;
     lex->alloc_indent_level = MICROPY_ALLOC_LEXER_INDENT_INIT;
@@ -857,22 +833,22 @@ mp_lexer_t *mp_lexer_new(qstr src_name, mp_reader_t reader) {
     lex->fstring_args_idx = 0;
     #endif
 
-    // store sentinel for first indentation level
+    
     lex->indent_level[0] = 0;
 
-    // load lexer with start of file, advancing lex->column to 1
-    // start with dummy bytes and use next_char() for proper EOL/EOF handling
+    
+    
     lex->chr0 = lex->chr1 = lex->chr2 = 0;
     next_char(lex);
     next_char(lex);
     next_char(lex);
 
-    // preload first token
+    
     mp_lexer_to_next(lex);
 
-    // Check that the first token is in the first column unless it is a
-    // newline. Otherwise we convert the token kind to INDENT so that
-    // the parser gives a syntax error.
+    
+    
+    
     if (lex->tok_column != 1 && lex->tok_kind != MP_TOKEN_NEWLINE) {
         lex->tok_kind = MP_TOKEN_INDENT;
     }
@@ -919,8 +895,8 @@ void mp_lexer_free(mp_lexer_t *lex) {
 }
 
 #if 0
-// This function is used to print the current token and should only be
-// needed to debug the lexer, so it's not available via a config option.
+
+
 void mp_lexer_show_token(const mp_lexer_t *lex) {
     printf("(" UINT_FMT ":" UINT_FMT ") kind:%u str:%p len:%zu", lex->tok_line, lex->tok_column, lex->tok_kind, lex->vstr.buf, lex->vstr.len);
     if (lex->vstr.len > 0) {
@@ -941,4 +917,4 @@ void mp_lexer_show_token(const mp_lexer_t *lex) {
 }
 #endif
 
-#endif // MICROPY_ENABLE_COMPILER
+#endif 

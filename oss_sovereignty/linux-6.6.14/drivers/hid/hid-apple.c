@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  USB HID quirks support for Linux
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2006-2007 Jiri Kosina
- *  Copyright (c) 2008 Jiri Slaby <jirislaby@gmail.com>
- *  Copyright (c) 2019 Paul Pawlowski <paul@mrarm.io>
- */
 
-/*
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,11 +19,11 @@
 #define APPLE_RDESC_JIS		BIT(0)
 #define APPLE_IGNORE_MOUSE	BIT(1)
 #define APPLE_HAS_FN		BIT(2)
-/* BIT(3) reserved, was: APPLE_HIDDEV */
+ 
 #define APPLE_ISO_TILDE_QUIRK	BIT(4)
 #define APPLE_MIGHTYMOUSE	BIT(5)
 #define APPLE_INVERT_HWHEEL	BIT(6)
-/* BIT(7) reserved, was: APPLE_IGNORE_HIDINPUT */
+ 
 #define APPLE_NUMLOCK_EMULATION	BIT(8)
 #define APPLE_RDESC_BATTERY	BIT(9)
 #define APPLE_BACKLIGHT_CTL	BIT(10)
@@ -377,7 +367,7 @@ static const struct apple_key_translation *apple_find_translation(
 {
 	const struct apple_key_translation *trans;
 
-	/* Look for the translation */
+	 
 	for (trans = table; trans->from; trans++)
 		if (trans->from == from)
 			return trans;
@@ -502,7 +492,7 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
 						do_translate = asc->fn_on;
 						break;
 					default:
-						/* should never happen */
+						 
 						do_translate = false;
 					}
 				} else {
@@ -601,10 +591,7 @@ static void apple_battery_timer_tick(struct timer_list *t)
 	}
 }
 
-/*
- * MacBook JIS keyboard has wrong logical maximum
- * Magic Keyboard JIS has wrong logical maximum
- */
+ 
 static __u8 *apple_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
@@ -623,14 +610,7 @@ static __u8 *apple_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		rdesc[53] = rdesc[59] = 0xe7;
 	}
 
-	/*
-	 * Change the usage from:
-	 *   0x06, 0x00, 0xff, // Usage Page (Vendor Defined Page 1)  0
-	 *   0x09, 0x0b,       // Usage (Vendor Usage 0x0b)           3
-	 * To:
-	 *   0x05, 0x01,       // Usage Page (Generic Desktop)        0
-	 *   0x09, 0x06,       // Usage (Keyboard)                    2
-	 */
+	 
 	if ((asc->quirks & APPLE_RDESC_BATTERY) && *rsize == 83 &&
 	    rdesc[46] == 0x84 && rdesc[58] == 0x85) {
 		hid_info(hdev,
@@ -653,7 +633,7 @@ static void apple_setup_input(struct input_dev *input)
 {
 	set_bit(KEY_NUMLOCK, input->keybit);
 
-	/* Enable all needed keys */
+	 
 	apple_setup_key_translation(input, apple_fn_keys);
 	apple_setup_key_translation(input, powerbook_fn_keys);
 	apple_setup_key_translation(input, powerbook_numlock_keys);
@@ -674,7 +654,7 @@ static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 	if (usage->hid == (HID_UP_CUSTOM | 0x0003) ||
 			usage->hid == (HID_UP_MSVENDOR | 0x0003) ||
 			usage->hid == (HID_UP_HPVENDOR2 | 0x0003)) {
-		/* The fn key on Apple USB keyboards */
+		 
 		set_bit(EV_REP, hi->input->evbit);
 		hid_map_usage_clear(hi, usage, bit, max, EV_KEY, KEY_FN);
 		asc->fn_found = true;
@@ -682,7 +662,7 @@ static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		return 1;
 	}
 
-	/* we want the hid layer to go through standard path (set and ignore) */
+	 
 	return 0;
 }
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/netdevice.h>
@@ -89,13 +87,13 @@ static struct hnae_handle *hns_ae_get_handle(struct hnae_ae_dev *dev,
 		goto handle_err;
 	}
 	ae_handle = &vf_cb->ae_handle;
-	/* ae_handle Init  */
+	 
 	ae_handle->owner_dev = dsaf_dev->dev;
 	ae_handle->dev = dev;
 	ae_handle->q_num = qnum_per_vf;
 	ae_handle->coal_param = HNAE_LOWEST_LATENCY_COAL_PARAM;
 
-	/* find ring pair, and set vf id*/
+	 
 	for (ae_handle->vf_id = 0;
 		ae_handle->vf_id < vfnum_per_port; ae_handle->vf_id++) {
 		if (!ring_pair_cb->used_by_vf)
@@ -298,7 +296,7 @@ static int hns_ae_set_mtu(struct hnae_handle *handle, int new_mtu)
 	u32 rx_buf_size;
 	int i, ret;
 
-	/* when buf_size is 2048, max mtu is 6K for rx ring max bd num is 3. */
+	 
 	if (!AE_IS_VER1(mac_cb->dsaf_dev->dsaf_ver)) {
 		if (new_mtu <= BD_SIZE_2048_MAX_MTU)
 			rx_buf_size = 2048;
@@ -311,7 +309,7 @@ static int hns_ae_set_mtu(struct hnae_handle *handle, int new_mtu)
 	ret = hns_mac_set_mtu(mac_cb, new_mtu, rx_buf_size);
 
 	if (!ret) {
-		/* reinit ring buf_size */
+		 
 		for (i = 0; i < handle->q_num; i++) {
 			q = handle->qs[i];
 			q->rx_ring.buf_size = rx_buf_size;
@@ -359,7 +357,7 @@ static void hns_ae_stop(struct hnae_handle *handle)
 {
 	struct hns_mac_cb *mac_cb = hns_get_mac_cb(handle);
 
-	/* just clean tx fbd, neednot rx fbd*/
+	 
 	hns_rcb_wait_fbd_clean(handle->qs, handle->q_num, RCB_INT_FLAG_TX);
 
 	msleep(20);
@@ -370,7 +368,7 @@ static void hns_ae_stop(struct hnae_handle *handle)
 
 	hns_ae_ring_enable_all(handle, 0);
 
-	/* clean rx fbd. */
+	 
 	hns_rcb_wait_fbd_clean(handle->qs, handle->q_num, RCB_INT_FLAG_RX);
 
 	(void)hns_mac_vm_config_bc_en(mac_cb, 0, false);
@@ -447,7 +445,7 @@ static void hns_ae_adjust_link(struct hnae_handle *handle, int speed,
 		break;
 
 	case AE_VERSION_2:
-		/* chip need to clear all pkt inside */
+		 
 		hns_mac_disable(mac_cb, MAC_COMM_MODE_RX);
 		if (hns_ae_wait_flow_down(handle)) {
 			hns_mac_enable(mac_cb, MAC_COMM_MODE_RX);
@@ -479,7 +477,7 @@ static void hns_ae_get_pauseparam(struct hnae_handle *handle,
 
 	hns_mac_get_pauseparam(mac_cb, rx_en, tx_en);
 
-	/* Service port's pause feature is provided by DSAF, not mac */
+	 
 	if (handle->port_type == HNAE_PORT_SERVICE)
 		hns_dsaf_get_rx_mac_pause_en(dsaf_dev, mac_cb->mac_id, rx_en);
 }
@@ -503,7 +501,7 @@ static int hns_ae_set_pauseparam(struct hnae_handle *handle,
 	if (ret)
 		return ret;
 
-	/* Service port's pause feature is provided by DSAF, not mac */
+	 
 	if (handle->port_type == HNAE_PORT_SERVICE) {
 		ret = hns_dsaf_set_rx_mac_pause_en(dsaf_dev,
 						   mac_cb->mac_id, rx_en);
@@ -657,12 +655,12 @@ static void hns_ae_update_stats(struct hnae_handle *handle,
 
 	if (mac_cb->mac_type == HNAE_PORT_SERVICE) {
 		hns_dsaf_update_stats(dsaf_dev, port);
-		/* for port upline direction, i.e., rx. */
+		 
 		rx_missed_errors += dsaf_dev->hw_stats[port].bp_drop;
 		rx_missed_errors += dsaf_dev->hw_stats[port].pad_drop;
 		rx_missed_errors += dsaf_dev->hw_stats[port].crc_false;
 
-		/* for port downline direction, i.e., tx. */
+		 
 		port = port + DSAF_PPE_INODE_BASE;
 		hns_dsaf_update_stats(dsaf_dev, port);
 		tx_dropped += dsaf_dev->hw_stats[port].bp_drop;
@@ -889,15 +887,15 @@ static int hns_ae_get_rss(struct hnae_handle *handle, u32 *indir, u8 *key,
 {
 	struct hns_ppe_cb *ppe_cb = hns_get_ppe_cb(handle);
 
-	/* currently we support only one type of hash function i.e. Toep hash */
+	 
 	if (hfunc)
 		*hfunc = ETH_RSS_HASH_TOP;
 
-	/* get the RSS Key required by the user */
+	 
 	if (key)
 		memcpy(key, ppe_cb->rss_key, HNS_PPEV2_RSS_KEY_SIZE);
 
-	/* update the current hash->queue mappings from the shadow RSS table */
+	 
 	if (indir)
 		memcpy(indir, ppe_cb->rss_indir_table,
 		       HNS_PPEV2_RSS_IND_TBL_SIZE  * sizeof(*indir));
@@ -910,18 +908,18 @@ static int hns_ae_set_rss(struct hnae_handle *handle, const u32 *indir,
 {
 	struct hns_ppe_cb *ppe_cb = hns_get_ppe_cb(handle);
 
-	/* set the RSS Hash Key if specififed by the user */
+	 
 	if (key) {
 		memcpy(ppe_cb->rss_key, key, HNS_PPEV2_RSS_KEY_SIZE);
 		hns_ppe_set_rss_key(ppe_cb, ppe_cb->rss_key);
 	}
 
 	if (indir) {
-		/* update the shadow RSS table with user specified qids */
+		 
 		memcpy(ppe_cb->rss_indir_table, indir,
 		       HNS_PPEV2_RSS_IND_TBL_SIZE  * sizeof(*indir));
 
-		/* now update the hardware */
+		 
 		hns_ppe_set_indir_table(ppe_cb, ppe_cb->rss_indir_table);
 	}
 

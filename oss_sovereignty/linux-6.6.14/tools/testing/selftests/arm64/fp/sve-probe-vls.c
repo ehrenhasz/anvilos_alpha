@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015-2020 ARM Limited.
- * Original author: Dave Martin <Dave.Martin@arm.com>
- */
+
+ 
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -28,9 +25,7 @@ int main(int argc, char **argv)
 	if (!(getauxval(AT_HWCAP) & HWCAP_SVE))
 		ksft_exit_skip("SVE not available\n");
 
-	/*
-	 * Enumerate up to SVE_VQ_MAX vector lengths
-	 */
+	 
 	for (vq = SVE_VQ_MAX; vq > 0; --vq) {
 		vl = prctl(PR_SVE_SET_VL, vq * 16);
 		if (vl == -1)
@@ -55,7 +50,7 @@ int main(int argc, char **argv)
 	ksft_test_result_pass("Enumerated %d vector lengths\n", nvqs);
 	ksft_test_result_pass("All vector lengths valid\n");
 
-	/* Print out the vector lengths in ascending order: */
+	 
 	while (nvqs--)
 		ksft_print_msg("%u\n", 16 * vqs[nvqs]);
 

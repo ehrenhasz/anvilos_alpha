@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* iptables module for the packet checksum mangling
- *
- * (C) 2002 by Harald Welte <laforge@netfilter.org>
- * (C) 2010 Red Hat, Inc.
- *
- * Author: Michael S. Tsirkin <mst@redhat.com>
-*/
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>

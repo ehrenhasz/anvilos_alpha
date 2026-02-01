@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_VIDEO_CC_SM8350_H
 #define _DT_BINDINGS_CLK_QCOM_VIDEO_CC_SM8350_H
 
-/* Clocks */
+ 
 #define VIDEO_CC_AHB_CLK_SRC					0
 #define VIDEO_CC_MVS0_CLK					1
 #define VIDEO_CC_MVS0_CLK_SRC					2
@@ -26,7 +23,7 @@
 #define VIDEO_PLL0						15
 #define VIDEO_PLL1						16
 
-/* GDSCs */
+ 
 #define MVS0C_GDSC						0
 #define MVS1C_GDSC						1
 #define MVS0_GDSC						2

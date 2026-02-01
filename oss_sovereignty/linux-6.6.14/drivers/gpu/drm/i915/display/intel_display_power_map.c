@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -27,9 +25,9 @@
 #define I915_DECL_PW_DOMAINS(__name, ...) \
 	static const struct i915_power_domain_list __name = I915_PW_DOMAINS(__VA_ARGS__)
 
-/* Zero-length list assigns all power domains, a NULL list assigns none. */
+ 
 #define I915_PW_DOMAINS_NONE	NULL
-#define I915_PW_DOMAINS_ALL	/* zero-length list */
+#define I915_PW_DOMAINS_ALL	 
 
 #define I915_PW_INSTANCES(...) \
 	(const struct i915_power_well_instance_list) \
@@ -98,7 +96,7 @@ I915_DECL_PW_DOMAINS(hsw_pwdoms_display,
 	POWER_DOMAIN_PORT_DDI_LANES_B,
 	POWER_DOMAIN_PORT_DDI_LANES_C,
 	POWER_DOMAIN_PORT_DDI_LANES_D,
-	POWER_DOMAIN_PORT_CRT, /* DDI E */
+	POWER_DOMAIN_PORT_CRT,  
 	POWER_DOMAIN_VGA,
 	POWER_DOMAIN_AUDIO_MMIO,
 	POWER_DOMAIN_AUDIO_PLAYBACK,
@@ -132,7 +130,7 @@ I915_DECL_PW_DOMAINS(bdw_pwdoms_display,
 	POWER_DOMAIN_PORT_DDI_LANES_B,
 	POWER_DOMAIN_PORT_DDI_LANES_C,
 	POWER_DOMAIN_PORT_DDI_LANES_D,
-	POWER_DOMAIN_PORT_CRT, /* DDI E */
+	POWER_DOMAIN_PORT_CRT,  
 	POWER_DOMAIN_VGA,
 	POWER_DOMAIN_AUDIO_MMIO,
 	POWER_DOMAIN_AUDIO_PLAYBACK,
@@ -276,11 +274,7 @@ I915_DECL_PW_DOMAINS(chv_pwdoms_dpio_cmn_d,
 
 static const struct i915_power_well_desc chv_power_wells_main[] = {
 	{
-		/*
-		 * Pipe A power well is the new disp2d well. Pipe B and C
-		 * power wells don't actually exist. Pipe A power well is
-		 * required for any pipe to work.
-		 */
+		 
 		.instances = &I915_PW_INSTANCES(
 			I915_PW("display", &chv_pwdoms_display),
 		),
@@ -356,7 +350,7 @@ I915_DECL_PW_DOMAINS(skl_pwdoms_ddi_io_d,
 
 static const struct i915_power_well_desc skl_power_wells_pw_1[] = {
 	{
-		/* Handled by the DMC firmware */
+		 
 		.instances = &I915_PW_INSTANCES(
 			I915_PW("PW_1", I915_PW_DOMAINS_NONE,
 				.hsw.idx = SKL_PW_CTL_IDX_PW_1,
@@ -370,7 +364,7 @@ static const struct i915_power_well_desc skl_power_wells_pw_1[] = {
 
 static const struct i915_power_well_desc skl_power_wells_main[] = {
 	{
-		/* Handled by the DMC firmware */
+		 
 		.instances = &I915_PW_INSTANCES(
 			I915_PW("MISC_IO", I915_PW_DOMAINS_NONE,
 				.hsw.idx = SKL_PW_CTL_IDX_MISC_IO,
@@ -610,20 +604,7 @@ static const struct i915_power_well_desc_list glk_power_wells[] = {
 	I915_PW_DESCRIPTORS(glk_power_wells_main),
 };
 
-/*
- * ICL PW_0/PG_0 domains (HW/DMC control):
- * - PCI
- * - clocks except port PLL
- * - central power except FBC
- * - shared functions except pipe interrupts, pipe MBUS, DBUF registers
- * ICL PW_1/PG_1 domains (HW/DMC control):
- * - DBUF function
- * - PIPE_A and its planes, except VGA
- * - transcoder EDP + PSR
- * - transcoder DSI
- * - DDI_A
- * - FBC
- */
+ 
 #define ICL_PW_4_POWER_DOMAINS \
 	POWER_DOMAIN_PIPE_C, \
 	POWER_DOMAIN_PIPE_PANEL_FITTER_C
@@ -631,7 +612,7 @@ static const struct i915_power_well_desc_list glk_power_wells[] = {
 I915_DECL_PW_DOMAINS(icl_pwdoms_pw_4,
 	ICL_PW_4_POWER_DOMAINS,
 	POWER_DOMAIN_INIT);
-	/* VDSC/joining */
+	 
 
 #define ICL_PW_3_POWER_DOMAINS \
 	ICL_PW_4_POWER_DOMAINS, \
@@ -666,10 +647,7 @@ I915_DECL_PW_DOMAINS(icl_pwdoms_pw_4,
 I915_DECL_PW_DOMAINS(icl_pwdoms_pw_3,
 	ICL_PW_3_POWER_DOMAINS,
 	POWER_DOMAIN_INIT);
-	/*
-	 * - transcoder WD
-	 * - KVMR (HW control)
-	 */
+	 
 
 #define ICL_PW_2_POWER_DOMAINS \
 	ICL_PW_3_POWER_DOMAINS, \
@@ -678,9 +656,7 @@ I915_DECL_PW_DOMAINS(icl_pwdoms_pw_3,
 I915_DECL_PW_DOMAINS(icl_pwdoms_pw_2,
 	ICL_PW_2_POWER_DOMAINS,
 	POWER_DOMAIN_INIT);
-	/*
-	 * - KVMR (HW control)
-	 */
+	 
 
 I915_DECL_PW_DOMAINS(icl_pwdoms_dc_off,
 	ICL_PW_2_POWER_DOMAINS,
@@ -718,7 +694,7 @@ I915_DECL_PW_DOMAINS(icl_pwdoms_aux_tbt4,	POWER_DOMAIN_AUX_TBT4);
 
 static const struct i915_power_well_desc icl_power_wells_pw_1[] = {
 	{
-		/* Handled by the DMC firmware */
+		 
 		.instances = &I915_PW_INSTANCES(
 			I915_PW("PW_1", I915_PW_DOMAINS_NONE,
 				.hsw.idx = ICL_PW_CTL_IDX_PW_1,
@@ -1033,26 +1009,7 @@ I915_DECL_PW_DOMAINS(rkl_pwdoms_pw_3,
 	RKL_PW_3_POWER_DOMAINS,
 	POWER_DOMAIN_INIT);
 
-/*
- * There is no PW_2/PG_2 on RKL.
- *
- * RKL PW_1/PG_1 domains (under HW/DMC control):
- * - DBUF function (note: registers are in PW0)
- * - PIPE_A and its planes and VDSC/joining, except VGA
- * - transcoder A
- * - DDI_A and DDI_B
- * - FBC
- *
- * RKL PW_0/PG_0 domains (under HW/DMC control):
- * - PCI
- * - clocks except port PLL
- * - shared functions:
- *     * interrupts except pipe interrupts
- *     * MBus except PIPE_MBUS_DBOX_CTL
- *     * DBUF registers
- * - central power except FBC
- * - top-level GTC (DDI-level GTC is in the well associated with the DDI)
- */
+ 
 
 I915_DECL_PW_DOMAINS(rkl_pwdoms_dc_off,
 	RKL_PW_3_POWER_DOMAINS,
@@ -1117,9 +1074,7 @@ static const struct i915_power_well_desc_list rkl_power_wells[] = {
 	I915_PW_DESCRIPTORS(rkl_power_wells_ddi_aux),
 };
 
-/*
- * DG1 onwards Audio MMIO/VERBS lies in PG0 power well.
- */
+ 
 #define DG1_PW_3_POWER_DOMAINS \
 	TGL_PW_4_POWER_DOMAINS, \
 	POWER_DOMAIN_PIPE_B, \
@@ -1201,23 +1156,7 @@ static const struct i915_power_well_desc_list dg1_power_wells[] = {
 	I915_PW_DESCRIPTORS(rkl_power_wells_ddi_aux),
 };
 
-/*
- * XE_LPD Power Domains
- *
- * Previous platforms required that PG(n-1) be enabled before PG(n).  That
- * dependency chain turns into a dependency tree on XE_LPD:
- *
- *       PG0
- *        |
- *     --PG1--
- *    /       \
- *  PGA     --PG2--
- *         /   |   \
- *       PGB  PGC  PGD
- *
- * Power wells must be enabled from top to bottom and disabled from bottom
- * to top.  This allows pipes to be power gated independently.
- */
+ 
 
 #define XELPD_PW_D_POWER_DOMAINS \
 	POWER_DOMAIN_PIPE_D, \
@@ -1286,22 +1225,7 @@ I915_DECL_PW_DOMAINS(xelpd_pwdoms_pw_2,
 	XELPD_PW_2_POWER_DOMAINS,
 	POWER_DOMAIN_INIT);
 
-/*
- * XELPD PW_1/PG_1 domains (under HW/DMC control):
- *  - DBUF function (registers are in PW0)
- *  - Transcoder A
- *  - DDI_A and DDI_B
- *
- * XELPD PW_0/PW_1 domains (under HW/DMC control):
- *  - PCI
- *  - Clocks except port PLL
- *  - Shared functions:
- *     * interrupts except pipe interrupts
- *     * MBus except PIPE_MBUS_DBOX_CTL
- *     * DBUF registers
- *  - Central power except FBC
- *  - Top-level GTC (DDI-level GTC is in the well associated with the DDI)
- */
+ 
 
 I915_DECL_PW_DOMAINS(xelpd_pwdoms_dc_off,
 	XELPD_DC_OFF_PORT_POWER_DOMAINS,
@@ -1399,7 +1323,7 @@ static const struct i915_power_well_desc xelpd_power_wells_main[] = {
 		),
 		.ops = &icl_aux_power_well_ops,
 		.fixed_enable_delay = true,
-		/* WA_14017248603: adlp */
+		 
 		.enable_timeout = 500,
 	}, {
 		.instances = &I915_PW_INSTANCES(
@@ -1447,11 +1371,7 @@ static const struct i915_power_well_desc_list xehpd_power_wells[] = {
 	I915_PW_DESCRIPTORS(xelpd_power_wells_main),
 };
 
-/*
- * MTL is based on XELPD power domains with the exception of power gating for:
- * - DDI_IO (moved to PLL logic)
- * - AUX and AUX_IO functionality and register access for USBC1-4 (PICA always-on)
- */
+ 
 #define XELPDP_PW_2_POWER_DOMAINS \
 	XELPD_PW_B_POWER_DOMAINS, \
 	XELPD_PW_C_POWER_DOMAINS, \
@@ -1630,23 +1550,13 @@ __set_power_wells(struct i915_power_domains *power_domains,
 	__set_power_wells(power_domains, __power_well_descs, \
 			  ARRAY_SIZE(__power_well_descs))
 
-/**
- * intel_display_power_map_init - initialize power domain -> power well mappings
- * @power_domains: power domain state
- *
- * Creates all the power wells for the current platform, initializes the
- * dynamic state for them and initializes the mapping of each power well to
- * all the power domains the power well belongs to.
- */
+ 
 int intel_display_power_map_init(struct i915_power_domains *power_domains)
 {
 	struct drm_i915_private *i915 = container_of(power_domains,
 						     struct drm_i915_private,
 						     display.power.domains);
-	/*
-	 * The enabling order will be from lower to higher indexed wells,
-	 * the disabling order is reversed.
-	 */
+	 
 	if (!HAS_DISPLAY(i915)) {
 		power_domains->power_well_count = 0;
 		return 0;
@@ -1688,12 +1598,7 @@ int intel_display_power_map_init(struct i915_power_domains *power_domains)
 		return set_power_wells(power_domains, i9xx_power_wells);
 }
 
-/**
- * intel_display_power_map_cleanup - clean up power domain -> power well mappings
- * @power_domains: power domain state
- *
- * Cleans up all the state that was initialized by intel_display_power_map_init().
- */
+ 
 void intel_display_power_map_cleanup(struct i915_power_domains *power_domains)
 {
 	kfree(power_domains->power_wells);

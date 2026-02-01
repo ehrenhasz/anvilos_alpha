@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Device access for Dialog DA9063 modules
- *
- * Copyright 2012 Dialog Semiconductors Ltd.
- * Copyright 2013 Philipp Zabel, Pengutronix
- *
- * Author: Krystian Garbaciak, Dialog Semiconductor
- * Author: Michal Hajduk, Dialog Semiconductor
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -100,7 +91,7 @@ static const struct mfd_cell da9063_common_devs[] = {
 	},
 };
 
-/* Only present on DA9063 , not on DA9063L */
+ 
 static const struct mfd_cell da9063_devs[] = {
 	{
 		.name		= DA9063_DRVNAME_RTC,

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2001, 2007
- * Authors:	Fritz Elfert (felfert@millenux.com)
- * 		Peter Tiedemann (ptiedem@de.ibm.com)
- *	MPC additions :
- *		Belinda Thompson (belindat@us.ibm.com)
- *		Andy Richter (richtera@us.ibm.com)
- */
+
+ 
 
 #undef DEBUG
 #undef DEBUGDATA
@@ -93,9 +86,7 @@ const char *ctc_ch_event_names[] = {
 	[CTC_EVENT_TIMER]	= "Timer",
 	[CTC_EVENT_START]	= "Start",
 	[CTC_EVENT_STOP]	= "Stop",
-	/*
-	* additional MPC events
-	*/
+	 
 	[CTC_EVENT_SEND_XID]	= "XID Exchange",
 	[CTC_EVENT_RSWEEP_TIMER] = "MPC Group Sweep Timer",
 };
@@ -117,9 +108,7 @@ const char *ctc_ch_state_names[] = {
 	[CTC_STATE_TERM]	= "Terminating",
 	[CTC_STATE_DTERM]	= "Restarting",
 	[CTC_STATE_NOTOP]	= "Not operational",
-	/*
-	* additional MPC states
-	*/
+	 
 	[CH_XID0_PENDING]	= "Pending XID0 Start",
 	[CH_XID0_INPROGRESS]	= "In XID0 Negotiations ",
 	[CH_XID7_PENDING]	= "Pending XID7 P1 Start",
@@ -131,10 +120,7 @@ const char *ctc_ch_state_names[] = {
 
 static void ctcm_action_nop(fsm_instance *fi, int event, void *arg);
 
-/*
- * ----- static ctcm actions for channel statemachine -----
- *
-*/
+ 
 static void chx_txdone(fsm_instance *fi, int event, void *arg);
 static void chx_rx(fsm_instance *fi, int event, void *arg);
 static void chx_rxidle(fsm_instance *fi, int event, void *arg);
@@ -154,40 +140,17 @@ static void ctcm_chx_txiniterr(fsm_instance *fi, int event, void *arg);
 static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg);
 static void ctcm_chx_iofatal(fsm_instance *fi, int event, void *arg);
 
-/*
- * ----- static ctcmpc actions for ctcmpc channel statemachine -----
- *
-*/
+ 
 static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg);
 static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg);
 static void ctcmpc_chx_firstio(fsm_instance *fi, int event, void *arg);
-/* shared :
-static void ctcm_chx_setmode(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_start(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_haltio(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_stopped(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_stop(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_fail(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_setuperr(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_restart(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_rxiniterr(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_rxinitfail(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_rxdisc(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_txiniterr(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg);
-static void ctcm_chx_iofatal(fsm_instance *fi, int event, void *arg);
-*/
+ 
 static void ctcmpc_chx_attn(fsm_instance *fsm, int event, void *arg);
 static void ctcmpc_chx_attnbusy(fsm_instance *, int, void *);
 static void ctcmpc_chx_resend(fsm_instance *, int, void *);
 static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg);
 
-/*
- * Check return code of a preceding ccw_device call, halt_IO etc...
- *
- * ch	:	The channel, the error belongs to.
- * Returns the error code (!= 0) to inspect.
- */
+ 
 void ctcm_ccw_check_rc(struct channel *ch, int rc, char *msg)
 {
 	CTCM_DBF_TEXT_(ERROR, CTC_DBF_ERROR,
@@ -223,26 +186,14 @@ void ctcm_purge_skb_queue(struct sk_buff_head *q)
 	}
 }
 
-/*
- * NOP action for statemachines
- */
+ 
 static void ctcm_action_nop(fsm_instance *fi, int event, void *arg)
 {
 }
 
-/*
- * Actions for channel - statemachines.
- */
+ 
 
-/*
- * Normal data has been send. Free the corresponding
- * skb (it's in io_queue), reset dev->tbusy and
- * revert to idle state.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void chx_txdone(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -322,15 +273,7 @@ static void chx_txdone(fsm_instance *fi, int event, void *arg)
 	ctcm_clear_busy_do(dev);
 }
 
-/*
- * Initial data is sent.
- * Notify device statemachine that we are up and
- * running.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 void ctcm_chx_txidle(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -344,14 +287,7 @@ void ctcm_chx_txidle(fsm_instance *fi, int event, void *arg)
 	fsm_event(priv->fsm, DEV_EVENT_TXUP, ch->netdev);
 }
 
-/*
- * Got normal data, check for sanity, queue it up, allocate new buffer
- * trigger bottom half, and initiate next read.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void chx_rx(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -381,9 +317,7 @@ static void chx_rx(fsm_instance *fi, int event, void *arg)
 		goto again;
 	}
 
-	/*
-	 * VM TCP seems to have a bug sending 2 trailing bytes of garbage.
-	 */
+	 
 	switch (ch->protocol) {
 	case CTCM_PROTO_S390:
 	case CTCM_PROTO_OS390:
@@ -421,13 +355,7 @@ static void chx_rx(fsm_instance *fi, int event, void *arg)
 		ctcm_ccw_check_rc(ch, rc, "normal RX");
 }
 
-/*
- * Initialize connection by sending a __u16 of value 0.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void chx_firstio(fsm_instance *fi, int event, void *arg)
 {
 	int rc;
@@ -438,7 +366,7 @@ static void chx_firstio(fsm_instance *fi, int event, void *arg)
 		"%s(%s) : %02x",
 		CTCM_FUNTAIL, ch->id, fsmstate);
 
-	ch->sense_rc = 0;	/* reset unit check report control */
+	ch->sense_rc = 0;	 
 	if (fsmstate == CTC_STATE_TXIDLE)
 		CTCM_DBF_TEXT_(TRACE, CTC_DBF_DEBUG,
 			"%s(%s): remote side issued READ?, init.\n",
@@ -448,7 +376,7 @@ static void chx_firstio(fsm_instance *fi, int event, void *arg)
 		return;
 	if ((fsmstate == CTC_STATE_SETUPWAIT) &&
 	    (ch->protocol == CTCM_PROTO_OS390)) {
-		/* OS/390 resp. z/OS */
+		 
 		if (CHANNEL_DIRECTION(ch->flags) == CTCM_READ) {
 			*((__u16 *)ch->trans_skb->data) = CTCM_INITIAL_BLOCKLEN;
 			fsm_addtimer(&ch->timer, CTCM_TIME_5_SEC,
@@ -462,17 +390,13 @@ static void chx_firstio(fsm_instance *fi, int event, void *arg)
 		}
 		return;
 	}
-	/*
-	 * Don't setup a timer for receiving the initial RX frame
-	 * if in compatibility mode, since VM TCP delays the initial
-	 * frame until it has some data to send.
-	 */
+	 
 	if ((CHANNEL_DIRECTION(ch->flags) == CTCM_WRITE) ||
 	    (ch->protocol != CTCM_PROTO_S390))
 		fsm_addtimer(&ch->timer, CTCM_TIME_5_SEC, CTC_EVENT_TIMER, ch);
 
 	*((__u16 *)ch->trans_skb->data) = CTCM_INITIAL_BLOCKLEN;
-	ch->ccw[1].count = 2;	/* Transfer only length */
+	ch->ccw[1].count = 2;	 
 
 	fsm_newstate(fi, (CHANNEL_DIRECTION(ch->flags) == CTCM_READ)
 		     ? CTC_STATE_RXINIT : CTC_STATE_TXINIT);
@@ -482,13 +406,7 @@ static void chx_firstio(fsm_instance *fi, int event, void *arg)
 		fsm_newstate(fi, CTC_STATE_SETUPWAIT);
 		ctcm_ccw_check_rc(ch, rc, "init IO");
 	}
-	/*
-	 * If in compatibility mode since we don't setup a timer, we
-	 * also signal RX channel up immediately. This enables us
-	 * to send packets early which in turn usually triggers some
-	 * reply from VM TCP which brings up the RX channel to it's
-	 * final state.
-	 */
+	 
 	if ((CHANNEL_DIRECTION(ch->flags) == CTCM_READ) &&
 	    (ch->protocol == CTCM_PROTO_S390)) {
 		struct net_device *dev = ch->netdev;
@@ -497,15 +415,7 @@ static void chx_firstio(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Got initial data, check it. If OK,
- * notify device statemachine that we are up and
- * running.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void chx_rxidle(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -538,13 +448,7 @@ static void chx_rxidle(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Set channel into extended mode.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_setmode(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -562,13 +466,12 @@ static void ctcm_chx_setmode(fsm_instance *fi, int event, void *arg)
 	fsm_newstate(fi, CTC_STATE_SETUPWAIT);
 	CTCM_CCW_DUMP((char *)&ch->ccw[6], sizeof(struct ccw1) * 2);
 
-	if (event == CTC_EVENT_TIMER)	/* only for timer not yet locked */
+	if (event == CTC_EVENT_TIMER)	 
 		spin_lock_irqsave(get_ccwdev_lock(ch->cdev), saveflags);
-			/* Such conditional locking is undeterministic in
-			 * static view. => ignore sparse warnings here. */
+			 
 
 	rc = ccw_device_start(ch->cdev, &ch->ccw[6], 0, 0xff, 0);
-	if (event == CTC_EVENT_TIMER)	/* see above comments */
+	if (event == CTC_EVENT_TIMER)	 
 		spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev), saveflags);
 	if (rc != 0) {
 		fsm_deltimer(&ch->timer);
@@ -578,13 +481,7 @@ static void ctcm_chx_setmode(fsm_instance *fi, int event, void *arg)
 		ch->retry = 0;
 }
 
-/*
- * Setup channel.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_start(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch	= arg;
@@ -621,7 +518,7 @@ static void ctcm_chx_start(fsm_instance *fi, int event, void *arg)
 	ch->ccw[0].flags = CCW_FLAG_SLI | CCW_FLAG_CC;
 	ch->ccw[0].count = 0;
 	ch->ccw[0].cda = 0;
-	ch->ccw[2].cmd_code = CCW_CMD_NOOP;	/* jointed CE + DE */
+	ch->ccw[2].cmd_code = CCW_CMD_NOOP;	 
 	ch->ccw[2].flags = CCW_FLAG_SLI;
 	ch->ccw[2].count = 0;
 	ch->ccw[2].cda = 0;
@@ -641,13 +538,7 @@ static void ctcm_chx_start(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Shutdown a channel.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_haltio(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -661,17 +552,16 @@ static void ctcm_chx_haltio(fsm_instance *fi, int event, void *arg)
 
 	fsm_addtimer(&ch->timer, CTCM_TIME_5_SEC, CTC_EVENT_TIMER, ch);
 
-	if (event == CTC_EVENT_STOP)	/* only for STOP not yet locked */
+	if (event == CTC_EVENT_STOP)	 
 		spin_lock_irqsave(get_ccwdev_lock(ch->cdev), saveflags);
-			/* Such conditional locking is undeterministic in
-			 * static view. => ignore sparse warnings here. */
+			 
 	oldstate = fsm_getstate(fi);
 	fsm_newstate(fi, CTC_STATE_TERM);
 	rc = ccw_device_halt(ch->cdev, 0);
 
 	if (event == CTC_EVENT_STOP)
 		spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev), saveflags);
-			/* see remark above about conditional locking */
+			 
 
 	if (rc != 0 && rc != -EBUSY) {
 		fsm_deltimer(&ch->timer);
@@ -682,14 +572,7 @@ static void ctcm_chx_haltio(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Cleanup helper for chx_fail and chx_stopped
- * cleanup channels queue and notify interface statemachine.
- *
- * fi		An instance of a channel statemachine.
- * state	The next state (depending on caller).
- * ch		The channel to operate on.
- */
+ 
 static void ctcm_chx_cleanup(fsm_instance *fi, int state,
 		struct channel *ch)
 {
@@ -728,64 +611,32 @@ static void ctcm_chx_cleanup(fsm_instance *fi, int state,
 	}
 }
 
-/*
- * A channel has successfully been halted.
- * Cleanup it's queue and notify interface statemachine.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_stopped(fsm_instance *fi, int event, void *arg)
 {
 	ctcm_chx_cleanup(fi, CTC_STATE_STOPPED, arg);
 }
 
-/*
- * A stop command from device statemachine arrived and we are in
- * not operational mode. Set state to stopped.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_stop(fsm_instance *fi, int event, void *arg)
 {
 	fsm_newstate(fi, CTC_STATE_STOPPED);
 }
 
-/*
- * A machine check for no path, not operational status or gone device has
- * happened.
- * Cleanup queue and notify interface statemachine.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_fail(fsm_instance *fi, int event, void *arg)
 {
 	ctcm_chx_cleanup(fi, CTC_STATE_NOTOP, arg);
 }
 
-/*
- * Handle error during setup of channel.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_setuperr(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
 	struct net_device *dev = ch->netdev;
 	struct ctcm_priv *priv = dev->ml_priv;
 
-	/*
-	 * Special case: Got UC_RCRESET on setmode.
-	 * This means that remote side isn't setup. In this case
-	 * simply retry after some 10 secs...
-	 */
+	 
 	if ((fsm_getstate(fi) == CTC_STATE_SETUPWAIT) &&
 	    ((event == CTC_EVENT_UC_RCRESET) ||
 	     (event == CTC_EVENT_UC_RSRESET))) {
@@ -817,13 +668,7 @@ static void ctcm_chx_setuperr(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Restart a channel after an error.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_restart(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -841,11 +686,9 @@ static void ctcm_chx_restart(fsm_instance *fi, int event, void *arg)
 	fsm_addtimer(&ch->timer, CTCM_TIME_5_SEC, CTC_EVENT_TIMER, ch);
 	oldstate = fsm_getstate(fi);
 	fsm_newstate(fi, CTC_STATE_STARTWAIT);
-	if (event == CTC_EVENT_TIMER)	/* only for timer not yet locked */
+	if (event == CTC_EVENT_TIMER)	 
 		spin_lock_irqsave(get_ccwdev_lock(ch->cdev), saveflags);
-			/* Such conditional locking is a known problem for
-			 * sparse because its undeterministic in static view.
-			 * Warnings should be ignored here. */
+			 
 	rc = ccw_device_halt(ch->cdev, 0);
 	if (event == CTC_EVENT_TIMER)
 		spin_unlock_irqrestore(get_ccwdev_lock(ch->cdev), saveflags);
@@ -858,14 +701,7 @@ static void ctcm_chx_restart(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Handle error during RX initial handshake (exchange of
- * 0-length block header)
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_rxiniterr(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -874,7 +710,7 @@ static void ctcm_chx_rxiniterr(fsm_instance *fi, int event, void *arg)
 
 	if (event == CTC_EVENT_TIMER) {
 		if (!IS_MPCDEV(dev))
-			/* TODO : check if MPC deletes timer somewhere */
+			 
 			fsm_deltimer(&ch->timer);
 		if (ch->retry++ < 3)
 			ctcm_chx_restart(fi, event, arg);
@@ -893,14 +729,7 @@ static void ctcm_chx_rxiniterr(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Notify device statemachine if we gave up initialization
- * of RX channel.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_rxinitfail(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -914,13 +743,7 @@ static void ctcm_chx_rxinitfail(fsm_instance *fi, int event, void *arg)
 	fsm_event(priv->fsm, DEV_EVENT_RXDOWN, dev);
 }
 
-/*
- * Handle RX Unit check remote reset (remote disconnected)
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_rxdisc(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -932,9 +755,7 @@ static void ctcm_chx_rxdisc(fsm_instance *fi, int event, void *arg)
 			"%s: %s: remote disconnect - re-init ...",
 				CTCM_FUNTAIL, dev->name);
 	fsm_deltimer(&ch->timer);
-	/*
-	 * Notify device statemachine
-	 */
+	 
 	fsm_event(priv->fsm, DEV_EVENT_RXDOWN, dev);
 	fsm_event(priv->fsm, DEV_EVENT_TXDOWN, dev);
 
@@ -946,13 +767,7 @@ static void ctcm_chx_rxdisc(fsm_instance *fi, int event, void *arg)
 	ccw_device_halt(ch2->cdev, 0);
 }
 
-/*
- * Handle error during TX channel initialization.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_txiniterr(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -978,13 +793,7 @@ static void ctcm_chx_txiniterr(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Handle TX timeout by retrying operation.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -1002,8 +811,7 @@ static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg)
 				"%s: %s: retries exceeded",
 					CTCM_FUNTAIL, ch->id);
 		fsm_event(priv->fsm, DEV_EVENT_TXDOWN, dev);
-		/* call restart if not MPC or if MPC and mpcg fsm is ready.
-			use gptr as mpc indicator */
+		 
 		if (!(gptr && (fsm_getstate(gptr->fsm) != MPCG_STATE_READY)))
 			ctcm_chx_restart(fi, event, arg);
 		goto done;
@@ -1027,11 +835,9 @@ static void ctcm_chx_txretry(fsm_instance *fi, int event, void *arg)
 			goto done;
 		}
 		fsm_addtimer(&ch->timer, 1000, CTC_EVENT_TIMER, ch);
-		if (event == CTC_EVENT_TIMER) /* for TIMER not yet locked */
+		if (event == CTC_EVENT_TIMER)  
 			spin_lock_irqsave(get_ccwdev_lock(ch->cdev), saveflags);
-			/* Such conditional locking is a known problem for
-			 * sparse because its undeterministic in static view.
-			 * Warnings should be ignored here. */
+			 
 		if (do_debug_ccw)
 			ctcmpc_dumpit((char *)&ch->ccw[3],
 					sizeof(struct ccw1) * 3);
@@ -1050,13 +856,7 @@ done:
 	return;
 }
 
-/*
- * Handle fatal errors during an I/O command.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcm_chx_iofatal(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -1082,9 +882,7 @@ static void ctcm_chx_iofatal(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * The ctcm statemachine for a channel.
- */
+ 
 const fsm_node ch_fsm[] = {
 	{ CTC_STATE_STOPPED,	CTC_EVENT_STOP,		ctcm_action_nop  },
 	{ CTC_STATE_STOPPED,	CTC_EVENT_START,	ctcm_chx_start  },
@@ -1185,28 +983,11 @@ const fsm_node ch_fsm[] = {
 
 int ch_fsm_len = ARRAY_SIZE(ch_fsm);
 
-/*
- * MPC actions for mpc channel statemachine
- * handling of MPC protocol requires extra
- * statemachine and actions which are prefixed ctcmpc_ .
- * The ctc_ch_states and ctc_ch_state_names,
- * ctc_ch_events and ctc_ch_event_names share the ctcm definitions
- * which are expanded by some elements.
- */
+ 
 
-/*
- * Actions for mpc channel statemachine.
- */
+ 
 
-/*
- * Normal data has been send. Free the corresponding
- * skb (it's in io_queue), reset dev->tbusy and
- * revert to idle state.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 {
 	struct channel		*ch = arg;
@@ -1300,14 +1081,14 @@ static void ctcmpc_chx_txdone(fsm_instance *fi, int event, void *arg)
 			break;
 		i++;
 	}
-	/* p_header points to the last one we handled */
+	 
 	if (p_header)
-		p_header->pdu_flag |= PDU_LAST;	/*Say it's the last one*/
+		p_header->pdu_flag |= PDU_LAST;	 
 
 	header = skb_push(ch->trans_skb, TH_HEADER_LENGTH);
 	memset(header, 0, TH_HEADER_LENGTH);
 
-	header->th_ch_flag = TH_HAS_PDU;  /* Normal data */
+	header->th_ch_flag = TH_HAS_PDU;   
 	ch->th_seq_num++;
 	header->th_seq_num = ch->th_seq_num;
 
@@ -1361,14 +1142,7 @@ done:
 	return;
 }
 
-/*
- * Got normal data, check for sanity, queue it up, allocate new buffer
- * trigger bottom half, and initiate next read.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg)
 {
 	struct channel		*ch = arg;
@@ -1377,7 +1151,7 @@ static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg)
 	struct mpc_group	*grp = priv->mpcg;
 	struct sk_buff		*skb = ch->trans_skb;
 	struct sk_buff		*new_skb;
-	unsigned long		saveflags = 0;	/* avoids compiler warning */
+	unsigned long		saveflags = 0;	 
 	int len	= ch->max_bufsize - ch->irb->scsw.cmd.count;
 
 	CTCM_PR_DEBUG("%s: %s: cp:%i %s maxbuf : %04x, len: %04x\n",
@@ -1399,7 +1173,7 @@ static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg)
 		priv->stats.rx_dropped++;
 		priv->stats.rx_length_errors++;
 	} else {
-		/* must have valid th header or game over */
+		 
 		__u32	block_len = len;
 		len = TH_HEADER_LENGTH + XID2_LENGTH + 4;
 		new_skb = __dev_alloc_skb(ch->max_bufsize, GFP_ATOMIC);
@@ -1449,7 +1223,7 @@ again:
 			spin_lock_irqsave(
 				get_ccwdev_lock(ch->cdev), saveflags);
 		rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
-		if (dolock) /* see remark about conditional locking */
+		if (dolock)  
 			spin_unlock_irqrestore(
 				get_ccwdev_lock(ch->cdev), saveflags);
 		if (rc != 0)
@@ -1464,13 +1238,7 @@ again:
 
 }
 
-/*
- * Initialize connection by sending a __u16 of value 0.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 static void ctcmpc_chx_firstio(fsm_instance *fi, int event, void *arg)
 {
 	struct channel		*ch = arg;
@@ -1516,15 +1284,7 @@ done:
 	return;
 }
 
-/*
- * Got initial data, check it. If OK,
- * notify device statemachine that we are up and
- * running.
- *
- * fi		An instance of a channel statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from channel * upon call.
- */
+ 
 void ctcmpc_chx_rxidle(fsm_instance *fi, int event, void *arg)
 {
 	struct channel *ch = arg;
@@ -1532,7 +1292,7 @@ void ctcmpc_chx_rxidle(fsm_instance *fi, int event, void *arg)
 	struct ctcm_priv  *priv = dev->ml_priv;
 	struct mpc_group  *grp = priv->mpcg;
 	int rc;
-	unsigned long saveflags = 0;	/* avoids compiler warning */
+	unsigned long saveflags = 0;	 
 
 	fsm_deltimer(&ch->timer);
 	CTCM_PR_DEBUG("%s: %s: %s: cp:%i, chstate:%i grpstate:%i\n",
@@ -1540,7 +1300,7 @@ void ctcmpc_chx_rxidle(fsm_instance *fi, int event, void *arg)
 				fsm_getstate(fi), fsm_getstate(grp->fsm));
 
 	fsm_newstate(fi, CTC_STATE_RXIDLE);
-	/* XID processing complete */
+	 
 
 	switch (fsm_getstate(grp->fsm)) {
 	case MPCG_STATE_FLOWC:
@@ -1553,7 +1313,7 @@ void ctcmpc_chx_rxidle(fsm_instance *fi, int event, void *arg)
 		ch->ccw[1].count = ch->max_bufsize;
 		CTCM_CCW_DUMP((char *)&ch->ccw[0], sizeof(struct ccw1) * 3);
 		if (event == CTC_EVENT_START)
-			/* see remark about conditional locking */
+			 
 			spin_lock_irqsave(get_ccwdev_lock(ch->cdev), saveflags);
 		rc = ccw_device_start(ch->cdev, &ch->ccw[0], 0, 0xff, 0);
 		if (event == CTC_EVENT_START)
@@ -1574,11 +1334,7 @@ done:
 	return;
 }
 
-/*
- * ctcmpc channel FSM action
- * called from several points in ctcmpc_ch_fsm
- * ctcmpc only
- */
+ 
 static void ctcmpc_chx_attn(fsm_instance *fsm, int event, void *arg)
 {
 	struct channel	  *ch     = arg;
@@ -1592,7 +1348,7 @@ static void ctcmpc_chx_attn(fsm_instance *fsm, int event, void *arg)
 
 	switch (fsm_getstate(grp->fsm)) {
 	case MPCG_STATE_XID2INITW:
-		/* ok..start yside xid exchanges */
+		 
 		if (!ch->in_mpcgroup)
 			break;
 		if (fsm_getstate(ch->fsm) ==  CH_XID0_PENDING) {
@@ -1603,14 +1359,13 @@ static void ctcmpc_chx_attn(fsm_instance *fsm, int event, void *arg)
 			fsm_event(grp->fsm, MPCG_EVENT_XID0DO, ch);
 
 		} else if (fsm_getstate(ch->fsm) < CH_XID7_PENDING1)
-			/* attn rcvd before xid0 processed via bh */
+			 
 			fsm_newstate(ch->fsm, CH_XID7_PENDING1);
 		break;
 	case MPCG_STATE_XID2INITX:
 	case MPCG_STATE_XID0IOWAIT:
 	case MPCG_STATE_XID0IOWAIX:
-		/* attn rcvd before xid0 processed on ch
-		but mid-xid0 processing for group    */
+		 
 		if (fsm_getstate(ch->fsm) < CH_XID7_PENDING1)
 			fsm_newstate(ch->fsm, CH_XID7_PENDING1);
 		break;
@@ -1633,11 +1388,7 @@ static void ctcmpc_chx_attn(fsm_instance *fsm, int event, void *arg)
 	return;
 }
 
-/*
- * ctcmpc channel FSM action
- * called from one point in ctcmpc_ch_fsm
- * ctcmpc only
- */
+ 
 static void ctcmpc_chx_attnbusy(fsm_instance *fsm, int event, void *arg)
 {
 	struct channel	  *ch     = arg;
@@ -1653,9 +1404,9 @@ static void ctcmpc_chx_attnbusy(fsm_instance *fsm, int event, void *arg)
 
 	switch (fsm_getstate(grp->fsm)) {
 	case MPCG_STATE_XID0IOWAIT:
-		/* vtam wants to be primary.start yside xid exchanges*/
-		/* only receive one attn-busy at a time so must not  */
-		/* change state each time			     */
+		 
+		 
+		 
 		grp->changed_side = 1;
 		fsm_newstate(grp->fsm, MPCG_STATE_XID2INITW);
 		break;
@@ -1664,16 +1415,16 @@ static void ctcmpc_chx_attnbusy(fsm_instance *fsm, int event, void *arg)
 			grp->changed_side = 2;
 			break;
 		}
-		/* process began via call to establish_conn	 */
-		/* so must report failure instead of reverting	 */
-		/* back to ready-for-xid passive state		 */
+		 
+		 
+		 
 		if (grp->estconnfunc)
 				goto done;
-		/* this attnbusy is NOT the result of xside xid  */
-		/* collisions so yside must have been triggered  */
-		/* by an ATTN that was not intended to start XID */
-		/* processing. Revert back to ready-for-xid and  */
-		/* wait for ATTN interrupt to signal xid start	 */
+		 
+		 
+		 
+		 
+		 
 		if (fsm_getstate(ch->fsm) == CH_XID0_INPROGRESS) {
 			fsm_newstate(ch->fsm, CH_XID0_PENDING) ;
 			fsm_deltimer(&grp->timer);
@@ -1682,9 +1433,7 @@ static void ctcmpc_chx_attnbusy(fsm_instance *fsm, int event, void *arg)
 		fsm_event(grp->fsm, MPCG_EVENT_INOP, dev);
 		goto done;
 	case MPCG_STATE_XID2INITX:
-		/* XID2 was received before ATTN Busy for second
-		   channel.Send yside xid for second channel.
-		*/
+		 
 		if (grp->changed_side == 1) {
 			grp->changed_side = 2;
 			break;
@@ -1696,9 +1445,9 @@ static void ctcmpc_chx_attnbusy(fsm_instance *fsm, int event, void *arg)
 	case MPCG_STATE_XID7INITI:
 	case MPCG_STATE_XID7INITZ:
 	default:
-		/* multiple attn-busy indicates too out-of-sync      */
-		/* and they are certainly not being received as part */
-		/* of valid mpc group negotiations..		     */
+		 
+		 
+		 
 		fsm_event(grp->fsm, MPCG_EVENT_INOP, dev);
 				goto done;
 	}
@@ -1719,11 +1468,7 @@ done:
 	return;
 }
 
-/*
- * ctcmpc channel FSM action
- * called from several points in ctcmpc_ch_fsm
- * ctcmpc only
- */
+ 
 static void ctcmpc_chx_resend(fsm_instance *fsm, int event, void *arg)
 {
 	struct channel	   *ch	   = arg;
@@ -1735,11 +1480,7 @@ static void ctcmpc_chx_resend(fsm_instance *fsm, int event, void *arg)
 	return;
 }
 
-/*
- * ctcmpc channel FSM action
- * called from several points in ctcmpc_ch_fsm
- * ctcmpc only
- */
+ 
 static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg)
 {
 	struct channel *ach = arg;
@@ -1765,7 +1506,7 @@ static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg)
 				__func__, rch->th_seq_num);
 
 	if (fsm_getstate(wch->fsm) != CTC_STATE_TXIDLE) {
-		/* give the previous IO time to complete */
+		 
 		fsm_addtimer(&wch->sweep_timer,
 			200, CTC_EVENT_RSWEEP_TIMER, wch);
 		goto done;
@@ -1786,7 +1527,7 @@ static void ctcmpc_chx_send_sweep(fsm_instance *fsm, int event, void *arg)
 		skb_queue_tail(&wch->io_queue, skb);
 	}
 
-	/* send out the sweep */
+	 
 	wch->ccw[4].count = skb->len;
 
 	header = (struct th_sweep *)skb->data;
@@ -1832,9 +1573,7 @@ done:
 }
 
 
-/*
- * The ctcmpc statemachine for a channel.
- */
+ 
 
 const fsm_node ctcmpc_ch_fsm[] = {
 	{ CTC_STATE_STOPPED,	CTC_EVENT_STOP,		ctcm_action_nop  },
@@ -2039,17 +1778,9 @@ const fsm_node ctcmpc_ch_fsm[] = {
 
 int mpc_ch_fsm_len = ARRAY_SIZE(ctcmpc_ch_fsm);
 
-/*
- * Actions for interface - statemachine.
- */
+ 
 
-/*
- * Startup channels by sending CTC_EVENT_START to each channel.
- *
- * fi		An instance of an interface statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from struct net_device * upon call.
- */
+ 
 static void dev_action_start(fsm_instance *fi, int event, void *arg)
 {
 	struct net_device *dev = arg;
@@ -2068,13 +1799,7 @@ static void dev_action_start(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Shutdown channels by sending CTC_EVENT_STOP to each channel.
- *
- * fi		An instance of an interface statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from struct net_device * upon call.
- */
+ 
 static void dev_action_stop(fsm_instance *fi, int event, void *arg)
 {
 	int direction;
@@ -2115,21 +1840,14 @@ static void dev_action_restart(fsm_instance *fi, int event, void *arg)
 	if (IS_MPC(priv))
 		fsm_newstate(priv->mpcg->fsm, MPCG_STATE_RESET);
 
-	/* going back into start sequence too quickly can	  */
-	/* result in the other side becoming unreachable   due	  */
-	/* to sense reported when IO is aborted			  */
+	 
+	 
+	 
 	fsm_addtimer(&priv->restart_timer, restart_timer,
 			DEV_EVENT_START, dev);
 }
 
-/*
- * Called from channel statemachine
- * when a channel is up and running.
- *
- * fi		An instance of an interface statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from struct net_device * upon call.
- */
+ 
 static void dev_action_chup(fsm_instance *fi, int event, void *arg)
 {
 	struct net_device *dev = arg;
@@ -2183,14 +1901,7 @@ static void dev_action_chup(fsm_instance *fi, int event, void *arg)
 	}
 }
 
-/*
- * Called from device statemachine
- * when a channel has been shutdown.
- *
- * fi		An instance of an interface statemachine.
- * event	The event, just happened.
- * arg		Generic pointer, casted from struct net_device * upon call.
- */
+ 
 static void dev_action_chdown(fsm_instance *fi, int event, void *arg)
 {
 
@@ -2281,5 +1992,5 @@ const fsm_node dev_fsm[] = {
 
 int dev_fsm_len = ARRAY_SIZE(dev_fsm);
 
-/* --- This is the END my friend --- */
+ 
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-vbi-out.h - vbi output support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _VIVID_VBI_OUT_H_
 #define _VIVID_VBI_OUT_H_

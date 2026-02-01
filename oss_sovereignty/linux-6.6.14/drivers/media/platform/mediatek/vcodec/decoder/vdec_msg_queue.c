@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Yunfei Dong <yunfei.dong@mediatek.com>
- */
+
+ 
 
 #include <linux/freezer.h>
 #include <linux/interrupt.h>
@@ -14,18 +11,16 @@
 
 #define VDEC_MSG_QUEUE_TIMEOUT_MS 1500
 
-/* the size used to store lat slice header information */
+ 
 #define VDEC_LAT_SLICE_HEADER_SZ    (640 * SZ_1K)
 
-/* the size used to store avc error information */
+ 
 #define VDEC_ERR_MAP_SZ_AVC         (17 * SZ_1K)
 
 #define VDEC_RD_MV_BUFFER_SZ        (((SZ_4K * 2304 >> 4) + SZ_1K) << 1)
 #define VDEC_LAT_TILE_SZ            (64 * V4L2_AV1_MAX_TILE_COUNT)
 
-/* core will read the trans buffer which decoded by lat to decode again.
- * The trans buffer size of FHD and 4K bitstreams are different.
- */
+ 
 static int vde_msg_queue_get_trans_size(int width, int height)
 {
 	if (width > 1920 || height > 1088)
@@ -286,7 +281,7 @@ int vdec_msg_queue_init(struct vdec_msg_queue *msg_queue,
 	struct vdec_lat_buf *lat_buf;
 	int i, err;
 
-	/* already init msg queue */
+	 
 	if (msg_queue->wdma_addr.size)
 		return 0;
 

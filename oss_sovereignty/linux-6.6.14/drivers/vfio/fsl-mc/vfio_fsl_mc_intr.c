@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright 2013-2016 Freescale Semiconductor Inc.
- * Copyright 2019 NXP
- */
+
+ 
 
 #include <linux/vfio.h>
 #include <linux/slab.h>
@@ -19,11 +16,11 @@ static int vfio_fsl_mc_irqs_allocate(struct vfio_fsl_mc_device *vdev)
 	int irq_count;
 	int ret, i;
 
-	/* Device does not support any interrupt */
+	 
 	if (mc_dev->obj_desc.irq_count == 0)
 		return 0;
 
-	/* interrupts were already allocated for this device */
+	 
 	if (vdev->mc_irqs)
 		return 0;
 
@@ -33,7 +30,7 @@ static int vfio_fsl_mc_irqs_allocate(struct vfio_fsl_mc_device *vdev)
 	if (!mc_irq)
 		return -ENOMEM;
 
-	/* Allocate IRQs */
+	 
 	ret = fsl_mc_allocate_irqs(mc_dev);
 	if (ret) {
 		kfree(mc_irq);
@@ -74,7 +71,7 @@ static int vfio_set_trigger(struct vfio_fsl_mc_device *vdev,
 		irq->trigger = NULL;
 	}
 
-	if (fd < 0) /* Disable only */
+	if (fd < 0)  
 		return 0;
 
 	irq->name = kasprintf(GFP_KERNEL_ACCOUNT, "vfio-irq[%d](%s)",
@@ -170,17 +167,14 @@ int vfio_fsl_mc_set_irqs_ioctl(struct vfio_fsl_mc_device *vdev,
 		return -EINVAL;
 }
 
-/* Free All IRQs for the given MC object */
+ 
 void vfio_fsl_mc_irqs_cleanup(struct vfio_fsl_mc_device *vdev)
 {
 	struct fsl_mc_device *mc_dev = vdev->mc_dev;
 	int irq_count = mc_dev->obj_desc.irq_count;
 	int i;
 
-	/*
-	 * Device does not support any interrupt or the interrupts
-	 * were not configured
-	 */
+	 
 	if (!vdev->mc_irqs)
 		return;
 

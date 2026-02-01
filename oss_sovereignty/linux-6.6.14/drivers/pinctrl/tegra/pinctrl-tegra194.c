@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Pinctrl data for the NVIDIA Tegra194 pinmux
- *
- * Copyright (c) 2019-2021, NVIDIA CORPORATION.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of.h>
@@ -22,7 +9,7 @@
 
 #include "pinctrl-tegra.h"
 
-/* Define unique ID for each pins */
+ 
 enum {
 	TEGRA_PIN_DAP6_SCLK_PA0,
 	TEGRA_PIN_DAP6_DOUT_PA1,
@@ -251,7 +238,7 @@ enum {
 	TEGRA_PIN_CLK_32K_IN,
 };
 
-/* Table for pin descriptor */
+ 
 static const struct pinctrl_pin_desc tegra194_pins[] = {
 	PINCTRL_PIN(TEGRA_PIN_DAP6_SCLK_PA0, "DAP6_SCLK_PA0"),
 	PINCTRL_PIN(TEGRA_PIN_DAP6_DOUT_PA1, "DAP6_DOUT_PA1"),
@@ -1100,7 +1087,7 @@ static const unsigned int clk_32k_in_pins[] = {
 	TEGRA_PIN_CLK_32K_IN,
 };
 
-/* Define unique ID for each function */
+ 
 enum tegra_mux_dt {
 	TEGRA_MUX_RSVD0,
 	TEGRA_MUX_RSVD1,
@@ -1187,7 +1174,7 @@ enum tegra_mux_dt {
 	TEGRA_MUX_SDMMC4,
 };
 
-/* Make list of each function name */
+ 
 #define TEGRA_PIN_FUNCTION(lid) #lid
 
 static const char * const tegra194_functions[] = {
@@ -1344,7 +1331,7 @@ static const char * const tegra194_functions[] = {
 		.drvtype_bit = 13,				\
 		.lpdr_bit = e_lpdr,				\
 
-/* main drive pin groups */
+ 
 #define drive_soc_gpio33_pt0            DRV_PINGROUP_ENTRY_Y(0x1004,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define drive_soc_gpio32_ps7            DRV_PINGROUP_ENTRY_Y(0x100c,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define drive_soc_gpio31_ps6            DRV_PINGROUP_ENTRY_Y(0x1014,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
@@ -1532,7 +1519,7 @@ static const char * const tegra194_functions[] = {
 #define drive_directdc1_in_pv1          DRV_PINGROUP_ENTRY_N(no_entry)
 #define drive_directdc1_clk_pv0         DRV_PINGROUP_ENTRY_N(no_entry)
 
-/* AON drive pin groups */
+ 
 #define drive_shutdown_n                DRV_PINGROUP_ENTRY_Y(0x1004,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define drive_pmu_int_n                 DRV_PINGROUP_ENTRY_Y(0x100c,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)
 #define drive_safe_state_pee0           DRV_PINGROUP_ENTRY_Y(0x1014,	12,	5,	20,	5,	-1,	-1,	-1,	-1,	0)

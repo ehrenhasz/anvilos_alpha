@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver access RC5T583 power management chip.
- *
- * Copyright (c) 2011-2012, NVIDIA CORPORATION.  All rights reserved.
- * Author: Laxman dewangan <ldewangan@nvidia.com>
- *
- * Based on code
- *	Copyright (C) 2011 RICOH COMPANY,LTD
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/kernel.h>
@@ -156,7 +148,7 @@ static int rc5t583_clear_ext_power_req(struct rc5t583 *rc5t583,
 	int i;
 	uint8_t on_off_val = 0;
 
-	/*  Clear ONOFFSEL register */
+	 
 	if (pdata->enable_shutdown)
 		on_off_val = 0x1;
 
@@ -170,7 +162,7 @@ static int rc5t583_clear_ext_power_req(struct rc5t583 *rc5t583,
 		dev_warn(rc5t583->dev, "Error in writing reg %d error: %d\n",
 					RICOH_SWCTL_REG, ret);
 
-	/* Clear sleep sequence register */
+	 
 	for (i = RC5T583_SLPSEQ1; i <= RC5T583_SLPSEQ11; ++i) {
 		ret = rc5t583_write(rc5t583->dev, i, 0x0);
 		if (ret < 0)
@@ -183,7 +175,7 @@ static int rc5t583_clear_ext_power_req(struct rc5t583 *rc5t583,
 
 static bool volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* Enable caching in interrupt registers */
+	 
 	switch (reg) {
 	case RC5T583_INT_EN_SYS1:
 	case RC5T583_INT_EN_SYS2:
@@ -198,20 +190,20 @@ static bool volatile_reg(struct device *dev, unsigned int reg)
 		return false;
 
 	case RC5T583_GPIO_MON_IOIN:
-		/* This is gpio input register */
+		 
 		return true;
 
 	default:
-		/* Enable caching in gpio registers */
+		 
 		if ((reg >= RC5T583_GPIO_IOSEL) &&
 				(reg <= RC5T583_GPIO_GPOFUNC))
 			return false;
 
-		/* Enable caching in sleep seq registers */
+		 
 		if ((reg >= RC5T583_SLPSEQ1) && (reg <= RC5T583_SLPSEQ11))
 			return false;
 
-		/* Enable caching of regulator registers */
+		 
 		if ((reg >= RC5T583_REG_DC0CTL) && (reg <= RC5T583_REG_SR3CTL))
 			return false;
 		if ((reg >= RC5T583_REG_LDOEN1) &&
@@ -264,7 +256,7 @@ static int rc5t583_i2c_probe(struct i2c_client *i2c)
 
 	if (i2c->irq) {
 		ret = rc5t583_irq_init(rc5t583, i2c->irq, pdata->irq_base);
-		/* Still continue with warning, if irq init fails */
+		 
 		if (ret)
 			dev_warn(&i2c->dev, "IRQ init failed: %d\n", ret);
 	}

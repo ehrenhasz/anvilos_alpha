@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2013-2014 Samsung Electronics Co., Ltd
-//	http://www.samsung.com
-//
-//  Copyright (C) 2013 Google, Inc
+
+
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -18,14 +18,7 @@
 #include <linux/mfd/samsung/rtc.h>
 #include <linux/mfd/samsung/s2mps14.h>
 
-/*
- * Maximum number of retries for checking changes in UDR field
- * of S5M_RTC_UDR_CON register (to limit possible endless loop).
- *
- * After writing to RTC registers (setting time or alarm) read the UDR field
- * in S5M_RTC_UDR_CON register. UDR is auto-cleared when data have
- * been transferred.
- */
+ 
 #define UDR_READ_RETRY_CNT	5
 
 enum {
@@ -37,55 +30,33 @@ enum {
 	RTC_MONTH,
 	RTC_YEAR1,
 	RTC_YEAR2,
-	/* Make sure this is always the last enum name. */
+	 
 	RTC_MAX_NUM_TIME_REGS
 };
 
-/*
- * Registers used by the driver which are different between chipsets.
- *
- * Operations like read time and write alarm/time require updating
- * specific fields in UDR register. These fields usually are auto-cleared
- * (with some exceptions).
- *
- * Table of operations per device:
- *
- * Device     | Write time | Read time | Write alarm
- * =================================================
- * S5M8767    | UDR + TIME |           | UDR
- * S2MPS11/14 | WUDR       | RUDR      | WUDR + RUDR
- * S2MPS13    | WUDR       | RUDR      | WUDR + AUDR
- * S2MPS15    | WUDR       | RUDR      | AUDR
- */
+ 
 struct s5m_rtc_reg_config {
-	/* Number of registers used for setting time/alarm0/alarm1 */
+	 
 	unsigned int regs_count;
-	/* First register for time, seconds */
+	 
 	unsigned int time;
-	/* RTC control register */
+	 
 	unsigned int ctrl;
-	/* First register for alarm 0, seconds */
+	 
 	unsigned int alarm0;
-	/* First register for alarm 1, seconds */
+	 
 	unsigned int alarm1;
-	/*
-	 * Register for update flag (UDR). Typically setting UDR field to 1
-	 * will enable update of time or alarm register. Then it will be
-	 * auto-cleared after successful update.
-	 */
+	 
 	unsigned int udr_update;
-	/* Auto-cleared mask in UDR field for writing time and alarm */
+	 
 	unsigned int autoclear_udr_mask;
-	/*
-	 * Masks in UDR field for time and alarm operations.
-	 * The read time mask can be 0. Rest should not.
-	 */
+	 
 	unsigned int read_time_udr_mask;
 	unsigned int write_time_udr_mask;
 	unsigned int write_alarm_udr_mask;
 };
 
-/* Register map for S5M8767 */
+ 
 static const struct s5m_rtc_reg_config s5m_rtc_regs = {
 	.regs_count		= 8,
 	.time			= S5M_RTC_SEC,
@@ -94,12 +65,12 @@ static const struct s5m_rtc_reg_config s5m_rtc_regs = {
 	.alarm1			= S5M_ALARM1_SEC,
 	.udr_update		= S5M_RTC_UDR_CON,
 	.autoclear_udr_mask	= S5M_RTC_UDR_MASK,
-	.read_time_udr_mask	= 0, /* Not needed */
+	.read_time_udr_mask	= 0,  
 	.write_time_udr_mask	= S5M_RTC_UDR_MASK | S5M_RTC_TIME_EN_MASK,
 	.write_alarm_udr_mask	= S5M_RTC_UDR_MASK,
 };
 
-/* Register map for S2MPS13 */
+ 
 static const struct s5m_rtc_reg_config s2mps13_rtc_regs = {
 	.regs_count		= 7,
 	.time			= S2MPS_RTC_SEC,
@@ -113,7 +84,7 @@ static const struct s5m_rtc_reg_config s2mps13_rtc_regs = {
 	.write_alarm_udr_mask	= S2MPS_RTC_WUDR_MASK | S2MPS13_RTC_AUDR_MASK,
 };
 
-/* Register map for S2MPS11/14 */
+ 
 static const struct s5m_rtc_reg_config s2mps14_rtc_regs = {
 	.regs_count		= 7,
 	.time			= S2MPS_RTC_SEC,
@@ -127,10 +98,7 @@ static const struct s5m_rtc_reg_config s2mps14_rtc_regs = {
 	.write_alarm_udr_mask	= S2MPS_RTC_WUDR_MASK | S2MPS_RTC_RUDR_MASK,
 };
 
-/*
- * Register map for S2MPS15 - in comparison to S2MPS14 the WUDR and AUDR bits
- * are swapped.
- */
+ 
 static const struct s5m_rtc_reg_config s2mps15_rtc_regs = {
 	.regs_count		= 7,
 	.time			= S2MPS_RTC_SEC,
@@ -209,10 +177,7 @@ static int s5m8767_tm_to_data(struct rtc_time *tm, u8 *data)
 	return 0;
 }
 
-/*
- * Read RTC_UDR_CON register and wait till UDR field is cleared.
- * This indicates that time/alarm update ended.
- */
+ 
 static int s5m8767_wait_for_udr_update(struct s5m_rtc_info *info)
 {
 	int ret, retry = UDR_READ_RETRY_CNT;
@@ -304,7 +269,7 @@ static int s5m8767_rtc_set_alarm_reg(struct s5m_rtc_info *info)
 	case S2MPS15X:
 	case S2MPS14X:
 	case S2MPS13X:
-		/* No exceptions needed */
+		 
 		break;
 	default:
 		return -EINVAL;
@@ -319,7 +284,7 @@ static int s5m8767_rtc_set_alarm_reg(struct s5m_rtc_info *info)
 
 	ret = s5m8767_wait_for_udr_update(info);
 
-	/* On S2MPS13 the AUDR is not auto-cleared */
+	 
 	if (info->device_type == S2MPS13X)
 		regmap_update_bits(info->regmap, info->regs->udr_update,
 				   S2MPS13_RTC_AUDR_MASK, 0);
@@ -591,14 +556,14 @@ static int s5m8767_rtc_init_reg(struct s5m_rtc_info *info)
 
 	switch (info->device_type) {
 	case S5M8767X:
-		/* UDR update time. Default of 7.32 ms is too long. */
+		 
 		ret = regmap_update_bits(info->regmap, S5M_RTC_UDR_CON,
 				S5M_RTC_UDR_T_MASK, S5M_RTC_UDR_T_450_US);
 		if (ret < 0)
 			dev_err(info->dev, "%s: fail to change UDR time: %d\n",
 					__func__, ret);
 
-		/* Set RTC control register : Binary mode, 24hour mode */
+		 
 		data[0] = (1 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
 		data[1] = (0 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
 
@@ -613,12 +578,7 @@ static int s5m8767_rtc_init_reg(struct s5m_rtc_info *info)
 		if (ret < 0)
 			break;
 
-		/*
-		 * Should set WUDR & (RUDR or AUDR) bits to high after writing
-		 * RTC_CTRL register like writing Alarm registers. We can't find
-		 * the description from datasheet but vendor code does that
-		 * really.
-		 */
+		 
 		ret = s5m8767_rtc_set_alarm_reg(info);
 		break;
 
@@ -757,7 +717,7 @@ static int s5m_rtc_suspend(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(s5m_rtc_pm_ops, s5m_rtc_suspend, s5m_rtc_resume);
 
@@ -781,7 +741,7 @@ static struct platform_driver s5m_rtc_driver = {
 
 module_platform_driver(s5m_rtc_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Sangbeom Kim <sbkim73@samsung.com>");
 MODULE_DESCRIPTION("Samsung S5M/S2MPS14 RTC driver");
 MODULE_LICENSE("GPL");

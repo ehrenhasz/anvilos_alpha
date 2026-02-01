@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Traphandler
- * Copyright (C) 2014 Free Electrons
- *
- * Author: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/media-bus-format.h>
@@ -25,12 +19,7 @@
 
 #include "atmel_hlcdc_dc.h"
 
-/**
- * struct atmel_hlcdc_crtc_state - Atmel HLCDC CRTC state structure
- *
- * @base: base CRTC state
- * @output_mode: RGBXXX output mode
- */
+ 
 struct atmel_hlcdc_crtc_state {
 	struct drm_crtc_state base;
 	unsigned int output_mode;
@@ -42,14 +31,7 @@ drm_crtc_state_to_atmel_hlcdc_crtc_state(struct drm_crtc_state *state)
 	return container_of(state, struct atmel_hlcdc_crtc_state, base);
 }
 
-/**
- * struct atmel_hlcdc_crtc - Atmel HLCDC CRTC structure
- *
- * @base: base DRM CRTC structure
- * @dc: pointer to the atmel_hlcdc structure provided by the MFD device
- * @event: pointer to the current page flip event
- * @id: CRTC id (returned by drm_crtc_index)
- */
+ 
 struct atmel_hlcdc_crtc {
 	struct drm_crtc base;
 	struct atmel_hlcdc_dc *dc;
@@ -80,7 +62,7 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
 	unsigned int cfg = 0;
 	int div, ret;
 
-	/* get encoder from crtc */
+	 
 	drm_for_each_encoder(en_iter, ddev) {
 		if (en_iter->crtc == c) {
 			encoder = en_iter;
@@ -89,7 +71,7 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
 	}
 
 	if (encoder) {
-		/* Get the connector from encoder */
+		 
 		drm_connector_list_iter_begin(ddev, &iter);
 		drm_for_each_connector_iter(connector, &iter)
 			if (connector->encoder == encoder)
@@ -133,7 +115,7 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
 	if (div < 2) {
 		div = 2;
 	} else if (ATMEL_HLCDC_CLKDIV(div) & ~ATMEL_HLCDC_CLKDIV_MASK) {
-		/* The divider ended up too big, try a lower base rate. */
+		 
 		cfg &= ~ATMEL_HLCDC_CLKSEL;
 		prate /= 2;
 		div = DIV_ROUND_UP(prate, mode_rate);
@@ -145,11 +127,7 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
 		if (div_low >= 2 &&
 		    (10 * (prate / div_low - mode_rate) <
 		     (mode_rate - prate / div)))
-			/*
-			 * At least 10 times better when using a higher
-			 * frequency than requested, instead of a lower.
-			 * So, go with that.
-			 */
+			 
 			div = div_low;
 	}
 
@@ -479,7 +457,7 @@ static int atmel_hlcdc_crtc_enable_vblank(struct drm_crtc *c)
 	struct atmel_hlcdc_crtc *crtc = drm_crtc_to_atmel_hlcdc_crtc(c);
 	struct regmap *regmap = crtc->dc->hlcdc->regmap;
 
-	/* Enable SOF (Start Of Frame) interrupt for vblank counting */
+	 
 	regmap_write(regmap, ATMEL_HLCDC_IER, ATMEL_HLCDC_SOF);
 
 	return 0;

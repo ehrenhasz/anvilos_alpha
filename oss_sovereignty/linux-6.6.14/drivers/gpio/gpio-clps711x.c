@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  CLPS711X GPIO driver
- *
- *  Copyright (C) 2012,2013 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -38,7 +34,7 @@ static int clps711x_gpio_probe(struct platform_device *pdev)
 
 	switch (id) {
 	case 3:
-		/* PORTD is inverted logic for direction register */
+		 
 		err = bgpio_init(gc, &pdev->dev, 1, dat, NULL, NULL,
 				 NULL, dir, 0);
 		break;
@@ -53,7 +49,7 @@ static int clps711x_gpio_probe(struct platform_device *pdev)
 
 	switch (id) {
 	case 4:
-		/* PORTE is 3 lines only */
+		 
 		gc->ngpio = 3;
 		break;
 	default:

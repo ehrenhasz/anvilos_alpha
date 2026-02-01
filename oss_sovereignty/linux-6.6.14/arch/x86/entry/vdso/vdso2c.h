@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This file is included twice from vdso2c.c.  It generates code for 32-bit
- * and 64-bit vDSOs.  We need both for 64-bit builds, since 32-bit vDSOs
- * are built for 32-bit userspace.
- */
+ 
+ 
 
 static void BITSFUNC(copy)(FILE *outfile, const unsigned char *data, size_t len)
 {
@@ -17,12 +13,7 @@ static void BITSFUNC(copy)(FILE *outfile, const unsigned char *data, size_t len)
 }
 
 
-/*
- * Extract a section from the input data into a standalone blob.  Used to
- * capture kernel-only data that needs to persist indefinitely, e.g. the
- * exception fixup tables, but only in the kernel, i.e. the section can
- * be stripped from the final vDSO image.
- */
+ 
 static void BITSFUNC(extract)(const unsigned char *data, size_t data_len,
 			      FILE *outfile, ELF(Shdr) *sec, const char *name)
 {
@@ -45,7 +36,7 @@ static void BITSFUNC(go)(void *raw_addr, size_t raw_len,
 			 FILE *outfile, const char *image_name)
 {
 	int found_load = 0;
-	unsigned long load_size = -1;  /* Work around bogus warning */
+	unsigned long load_size = -1;   
 	unsigned long mapping_size;
 	ELF(Ehdr) *hdr = (ELF(Ehdr) *)raw_addr;
 	unsigned long i, syms_nr;
@@ -60,7 +51,7 @@ static void BITSFUNC(go)(void *raw_addr, size_t raw_len,
 	if (GET_LE(&hdr->e_type) != ET_DYN)
 		fail("input is not a shared object\n");
 
-	/* Walk the segment table. */
+	 
 	for (i = 0; i < GET_LE(&hdr->e_phnum); i++) {
 		if (GET_LE(&pt[i].p_type) == PT_LOAD) {
 			if (found_load)
@@ -90,7 +81,7 @@ static void BITSFUNC(go)(void *raw_addr, size_t raw_len,
 	if (!dyn)
 		fail("input has no PT_DYNAMIC section -- your toolchain is buggy\n");
 
-	/* Walk the dynamic table */
+	 
 	for (i = 0; dyn + i < dyn_end &&
 		     GET_LE(&dyn[i].d_tag) != DT_NULL; i++) {
 		typeof(dyn[i].d_tag) tag = GET_LE(&dyn[i].d_tag);
@@ -99,7 +90,7 @@ static void BITSFUNC(go)(void *raw_addr, size_t raw_len,
 			fail("vdso image contains dynamic relocations\n");
 	}
 
-	/* Walk the section table */
+	 
 	secstrings_hdr = raw_addr + GET_LE(&hdr->e_shoff) +
 		GET_LE(&hdr->e_shentsize)*GET_LE(&hdr->e_shstrndx);
 	secstrings = raw_addr + GET_LE(&secstrings_hdr->sh_offset);
@@ -123,7 +114,7 @@ static void BITSFUNC(go)(void *raw_addr, size_t raw_len,
 		GET_LE(&hdr->e_shentsize) * GET_LE(&symtab_hdr->sh_link);
 
 	syms_nr = GET_LE(&symtab_hdr->sh_size) / GET_LE(&symtab_hdr->sh_entsize);
-	/* Walk the symbol table */
+	 
 	for (i = 0; i < syms_nr; i++) {
 		unsigned int k;
 		ELF(Sym) *sym = raw_addr + GET_LE(&symtab_hdr->sh_offset) +
@@ -139,23 +130,18 @@ static void BITSFUNC(go)(void *raw_addr, size_t raw_len,
 					     required_syms[k].name);
 				}
 
-				/*
-				 * Careful: we use negative addresses, but
-				 * st_value is unsigned, so we rely
-				 * on syms[k] being a signed type of the
-				 * correct width.
-				 */
+				 
 				syms[k] = GET_LE(&sym->st_value);
 			}
 		}
 	}
 
-	/* Validate mapping addresses. */
+	 
 	for (i = 0; i < sizeof(special_pages) / sizeof(special_pages[0]); i++) {
 		INT_BITS symval = syms[special_pages[i]];
 
 		if (!symval)
-			continue;  /* The mapping isn't used; ignore it. */
+			continue;   
 
 		if (symval % 4096)
 			fail("%s must be a multiple of 4096\n",

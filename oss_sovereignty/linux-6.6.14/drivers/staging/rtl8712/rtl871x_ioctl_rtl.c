@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * rtl871x_ioctl_rtl.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define  _RTL871X_IOCTL_RTL_C_
 
@@ -342,9 +329,9 @@ uint oid_rt_supported_wireless_mode_hdl(struct oid_par_priv
 	if (poid_par_priv->type_of_oid != QUERY_OID)
 		return RNDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len >= sizeof(u32)) {
-		ulInfo |= 0x0100; /* WIRELESS_MODE_B */
-		ulInfo |= 0x0200; /* WIRELESS_MODE_G */
-		ulInfo |= 0x0400; /* WIRELESS_MODE_A */
+		ulInfo |= 0x0100;  
+		ulInfo |= 0x0200;  
+		ulInfo |= 0x0400;  
 		*(u32 *) poid_par_priv->information_buf = ulInfo;
 		*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
 	} else {
@@ -424,7 +411,7 @@ uint oid_rt_pro_rf_write_registry_hdl(struct oid_par_priv*
 	uint status = RNDIS_STATUS_SUCCESS;
 	struct _adapter *Adapter = poid_par_priv->adapter_context;
 
-	if (poid_par_priv->type_of_oid != SET_OID) /* QUERY_OID */
+	if (poid_par_priv->type_of_oid != SET_OID)  
 		return RNDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len ==
 	   (sizeof(unsigned long) * 3)) {
@@ -444,14 +431,14 @@ uint oid_rt_pro_rf_read_registry_hdl(struct oid_par_priv *poid_par_priv)
 	uint status = RNDIS_STATUS_SUCCESS;
 	struct _adapter *Adapter = poid_par_priv->adapter_context;
 
-	if (poid_par_priv->type_of_oid != SET_OID) /* QUERY_OID */
+	if (poid_par_priv->type_of_oid != SET_OID)  
 		return RNDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len == (sizeof(unsigned long) *
 						   3)) {
 		if (Adapter->mppriv.act_in_progress) {
 			status = RNDIS_STATUS_NOT_ACCEPTED;
 		} else {
-			/* init workparam */
+			 
 			Adapter->mppriv.act_in_progress = true;
 			Adapter->mppriv.workparam.bcompleted = false;
 			Adapter->mppriv.workparam.act_type = MPT_READ_RF;
@@ -459,13 +446,7 @@ uint oid_rt_pro_rf_read_registry_hdl(struct oid_par_priv *poid_par_priv)
 						poid_par_priv->information_buf;
 			Adapter->mppriv.workparam.io_value = 0xcccccccc;
 
-		/* RegOffsetValue	- The offset of RF register to read.
-		 * RegDataWidth	- The data width of RF register to read.
-		 * RegDataValue	- The value to read.
-		 * RegOffsetValue = *((unsigned long *)InformationBuffer);
-		 * RegDataWidth = *((unsigned long *)InformationBuffer+1);
-		 * RegDataValue =  *((unsigned long *)InformationBuffer+2);
-		 */
+		 
 			if (r8712_getrfreg_cmd(Adapter,
 			    *(unsigned char *)poid_par_priv->information_buf,
 			    (unsigned char *)&Adapter->mppriv.workparam.io_value
@@ -493,11 +474,7 @@ uint oid_rt_get_connect_state_hdl(struct oid_par_priv *poid_par_priv)
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
 		return RNDIS_STATUS_NOT_ACCEPTED;
-	/* nStatus==0	CheckingStatus
-	 * nStatus==1	Associated
-	 * nStatus==2	AdHocMode
-	 * nStatus==3	NotAssociated
-	 */
+	 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
 		ulInfo = CHECKINGSTATUS;
 	else if (check_fwstate(pmlmepriv, _FW_LINKED))

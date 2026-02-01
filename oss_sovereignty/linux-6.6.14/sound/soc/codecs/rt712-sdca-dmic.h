@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt712-sdca-dmic.h -- RT712 SDCA DMIC ALSA SoC audio driver header
- *
- * Copyright(c) 2023 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT712_SDW_DMIC_H__
 #define __RT712_SDW_DMIC_H__
@@ -30,7 +26,7 @@ struct rt712_sdca_dmic_kctrl_priv {
 	unsigned int invert;
 };
 
-/* SDCA (Channel) */
+ 
 #define CH_01	0x01
 #define CH_02	0x02
 #define CH_03	0x03
@@ -104,4 +100,4 @@ static const struct reg_default rt712_sdca_dmic_mbq_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT712_SDCA_ENT_USER_FU1E, RT712_SDCA_CTL_FU_VOLUME, CH_04), 0x0000 },
 };
 
-#endif /* __RT712_SDW_DMIC_H__ */
+#endif  

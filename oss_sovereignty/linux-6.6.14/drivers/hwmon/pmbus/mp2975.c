@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for MPS Multi-phase Digital VR Controllers
- *
- * Copyright (C) 2020 Nvidia Technologies Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -13,7 +9,7 @@
 #include <linux/of_device.h>
 #include "pmbus.h"
 
-/* Vendor specific registers. */
+ 
 #define MP2975_MFR_APS_HYS_R2		0x0d
 #define MP2975_MFR_SLOPE_TRIM3		0x1d
 #define MP2975_MFR_VR_MULTI_CONFIG_R1	0x0d
@@ -160,35 +156,35 @@ mp2975_vid2direct(int vrf, int val)
 #define MAX_LIN_MANTISSA	(1023 * 1000)
 #define MIN_LIN_MANTISSA	(511 * 1000)
 
-/* Converts a milli-unit DIRECT value to LINEAR11 format */
+ 
 static u16 mp2975_data2reg_linear11(s64 val)
 {
 	s16 exponent = 0, mantissa;
 	bool negative = false;
 
-	/* simple case */
+	 
 	if (val == 0)
 		return 0;
 
-	/* Reduce large mantissa until it fits into 10 bit */
+	 
 	while (val >= MAX_LIN_MANTISSA && exponent < 15) {
 		exponent++;
 		val >>= 1;
 	}
-	/* Increase small mantissa to improve precision */
+	 
 	while (val < MIN_LIN_MANTISSA && exponent > -15) {
 		exponent--;
 		val <<= 1;
 	}
 
-	/* Convert mantissa from milli-units to units */
+	 
 	mantissa = clamp_val(DIV_ROUND_CLOSEST_ULL(val, 1000), 0, 0x3ff);
 
-	/* restore sign */
+	 
 	if (negative)
 		mantissa = -mantissa;
 
-	/* Convert to 5 bit exponent, 11 bit mantissa */
+	 
 	return (mantissa & 0x7ff) | ((exponent << 11) & 0xf800);
 }
 
@@ -206,25 +202,10 @@ mp2975_read_phase(struct i2c_client *client, struct mp2975_data *data,
 		ret >>= 8;
 	ret &= 0xff;
 
-	/*
-	 * Output value is calculated as: (READ_CSx / 80 – 1.23) / (Kcs * Rcs)
-	 * where:
-	 * - Kcs is the DrMOS current sense gain of power stage, which is
-	 *   obtained from the register MP2975_MFR_VR_CONFIG1, bits 13-12 with
-	 *   the following selection of DrMOS (data->curr_sense_gain[page]):
-	 *   00b - 5µA/A, 01b - 8.5µA/A, 10b - 9.7µA/A, 11b - 10µA/A.
-	 * - Rcs is the internal phase current sense resistor which is constant
-	 *   value 1kΩ.
-	 */
+	 
 	ph_curr = ret * 100 - 9800;
 
-	/*
-	 * Current phase sensing, providing by the device is not accurate
-	 * for the light load. This because sampling of current occurrence of
-	 * bit weight has a big deviation for light load. For handling such
-	 * case phase current is represented as the maximum between the value
-	 * calculated  above and total rail current divided by number phases.
-	 */
+	 
 	ret = pmbus_read_word_data(client, page, phase, PMBUS_READ_IOUT);
 	if (ret < 0)
 		return ret;
@@ -298,7 +279,7 @@ static int mp2973_read_word_data(struct i2c_client *client, int page,
 
 	switch (reg) {
 	case PMBUS_STATUS_WORD:
-		/* MP2973 & MP2971 return PGOOD instead of PB_STATUS_POWER_GOOD_N. */
+		 
 		ret = pmbus_read_word_data(client, page, phase, reg);
 		ret ^= PB_STATUS_POWER_GOOD_N;
 		break;
@@ -315,9 +296,7 @@ static int mp2973_read_word_data(struct i2c_client *client, int page,
 		ret = DIV_ROUND_CLOSEST(ret, MP2975_VIN_UV_LIMIT_UNIT);
 		break;
 	case PMBUS_VOUT_OV_FAULT_LIMIT:
-		/*
-		 * MP2971 and mp2973 only supports tracking (ovp1) mode.
-		 */
+		 
 		ret = mp2975_read_word_helper(client, page, phase,
 					      MP2975_MFR_OVP_TH_SET,
 					      GENMASK(2, 0));
@@ -398,12 +377,7 @@ static int mp2975_read_word_data(struct i2c_client *client, int page,
 		ret = DIV_ROUND_CLOSEST(ret, MP2975_VIN_UV_LIMIT_UNIT);
 		break;
 	case PMBUS_VOUT_OV_FAULT_LIMIT:
-		/*
-		 * Register provides two values for over-voltage protection
-		 * threshold for fixed (ovp2) and tracking (ovp1) modes. The
-		 * minimum of these two values is provided as over-voltage
-		 * fault alarm.
-		 */
+		 
 		ret = mp2975_read_word_helper(client, page, phase,
 					      MP2975_MFR_OVP_TH_SET,
 					      GENMASK(2, 0));
@@ -476,10 +450,7 @@ static int mp2975_identify_multiphase_rail2(struct i2c_client *client,
 {
 	int ret;
 
-	/*
-	 * Identify multiphase for rail 2 - could be from 0 to data->max_phases[1].
-	 * In case phase number is zero – only page zero is supported
-	 */
+	 
 	ret = i2c_smbus_write_byte_data(client, PMBUS_PAGE, 2);
 	if (ret < 0)
 		return ret;
@@ -505,7 +476,7 @@ mp2975_set_phase_rail2(struct pmbus_driver_info *info, int num_phases)
 {
 	int i;
 
-	/* Set phases for rail 2 from upper to lower. */
+	 
 	for (i = 1; i <= num_phases; i++)
 		info->pfunc[MP2975_MAX_PHASE_RAIL1 - i] = PMBUS_HAVE_IOUT;
 }
@@ -520,21 +491,14 @@ mp2975_identify_multiphase(struct i2c_client *client, struct mp2975_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Identify multiphase for rail 1 - could be from 1 to data->max_phases[0]. */
+	 
 	ret = i2c_smbus_read_word_data(client, MP2975_MFR_VR_MULTI_CONFIG_R1);
 	if (ret <= 0)
 		return ret;
 
 	info->phases[0] = ret & GENMASK(3, 0);
 
-	/*
-	 * The device provides a total of $n PWM pins, and can be configured
-	 * to different phase count applications for rail 1 and rail 2.
-	 * Rail 1 can be set to $n phases, while rail 2 can be set to less than
-	 * that. When rail 1’s phase count is configured as 0, rail
-	 * 1 operates with 1-phase DCM. When rail 2 phase count is configured
-	 * as 0, rail 2 is disabled.
-	 */
+	 
 	if (info->phases[0] > data->max_phases[0])
 		return -EINVAL;
 
@@ -556,7 +520,7 @@ mp2975_identify_vid(struct i2c_client *client, struct mp2975_data *data,
 {
 	int ret;
 
-	/* Identify VID mode and step selection. */
+	 
 	ret = i2c_smbus_read_word_data(client, reg);
 	if (ret < 0)
 		return ret;
@@ -585,14 +549,14 @@ mp2975_identify_rails_vid(struct i2c_client *client, struct mp2975_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Identify VID mode for rail 1. */
+	 
 	ret = mp2975_identify_vid(client, data, info,
 				  MP2975_MFR_VR_MULTI_CONFIG_R1, 0,
 				  MP2975_IMVP9_EN_R1, MP2975_VID_STEP_SEL_R1);
 	if (ret < 0)
 		return ret;
 
-	/* Identify VID mode for rail 2, if connected. */
+	 
 	if (info->phases[1])
 		ret = mp2975_identify_vid(client, data, info,
 					  MP2975_MFR_VR_MULTI_CONFIG_R2, 1,
@@ -612,7 +576,7 @@ mp2973_identify_rails_vid(struct i2c_client *client, struct mp2975_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Identify VID mode for rail 1. */
+	 
 	ret = mp2975_identify_vid(client, data, info,
 				  MP2973_MFR_VR_MULTI_CONFIG_R1, 0,
 				  MP2973_IMVP9_EN_R1, MP2973_VID_STEP_SEL_R1);
@@ -620,7 +584,7 @@ mp2973_identify_rails_vid(struct i2c_client *client, struct mp2975_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Identify VID mode for rail 2, if connected. */
+	 
 	if (info->phases[1])
 		ret = mp2975_identify_vid(client, data, info,
 					  MP2973_MFR_VR_MULTI_CONFIG_R2, 1,
@@ -636,12 +600,7 @@ mp2975_current_sense_gain_get(struct i2c_client *client,
 {
 	int i, ret;
 
-	/*
-	 * Obtain DrMOS current sense gain of power stage from the register
-	 * MP2975_MFR_VR_CONFIG1, bits 13-12. The value is selected as below:
-	 * 00b - 5µA/A, 01b - 8.5µA/A, 10b - 9.7µA/A, 11b - 10µA/A. Other
-	 * values are invalid.
-	 */
+	 
 	for (i = 0 ; i < data->info.pages; i++) {
 		ret = i2c_smbus_write_byte_data(client, PMBUS_PAGE, i);
 		if (ret < 0)
@@ -680,14 +639,14 @@ mp2975_vref_get(struct i2c_client *client, struct mp2975_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Get voltage reference value for rail 1. */
+	 
 	ret = i2c_smbus_read_word_data(client, MP2975_MFR_READ_VREF_R1);
 	if (ret < 0)
 		return ret;
 
 	data->vref[0] = ret * data->vid_step[0];
 
-	/* Get voltage reference value for rail 2, if connected. */
+	 
 	if (data->info.pages == MP2975_PAGE_NUM) {
 		ret = i2c_smbus_read_word_data(client, MP2975_MFR_READ_VREF_R2);
 		if (ret < 0)
@@ -730,7 +689,7 @@ mp2975_vout_max_get(struct i2c_client *client, struct mp2975_data *data,
 {
 	int ret;
 
-	/* Get maximum reference voltage of VID-DAC in VID format. */
+	 
 	ret = i2c_smbus_read_word_data(client, PMBUS_VOUT_MAX);
 	if (ret < 0)
 		return ret;
@@ -746,7 +705,7 @@ mp2975_set_vout_format(struct i2c_client *client,
 {
 	int ret, i;
 
-	/* Enable DIRECT VOUT format 1mV/LSB */
+	 
 	if (data->chip_id == mp2975) {
 		ret = i2c_smbus_read_word_data(client, MP2975_MFR_DC_LOOP_CTRL);
 		if (ret < 0)
@@ -784,18 +743,14 @@ mp2975_vout_ov_scale_get(struct i2c_client *client, struct mp2975_data *data,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Get divider for over- and under-voltage protection thresholds
-	 * configuration from the Advanced Options of Auto Phase Shedding and
-	 * decay register.
-	 */
+	 
 	ret = i2c_smbus_read_word_data(client, MP2975_MFR_APS_DECAY_ADV);
 	if (ret < 0)
 		return ret;
 	thres_dev = ret & MP2975_PRT_THRES_DIV_OV_EN ? MP2975_PROT_DEV_OV_ON :
 						       MP2975_PROT_DEV_OV_OFF;
 
-	/* Select the gain of remote sense amplifier. */
+	 
 	ret = i2c_smbus_read_word_data(client, PMBUS_VOUT_SCALE_LOOP);
 	if (ret < 0)
 		return ret;
@@ -819,30 +774,26 @@ mp2975_vout_per_rail_config_get(struct i2c_client *client,
 		if (ret < 0)
 			continue;
 
-		/* Set VOUT format for READ_VOUT command : direct. */
+		 
 		ret = mp2975_set_vout_format(client, data, i);
 		if (ret < 0)
 			return ret;
 
-		/* Obtain maximum voltage values. */
+		 
 		ret = mp2975_vout_max_get(client, data, info, i);
 		if (ret < 0)
 			return ret;
 
-		/* Skip if reading Vref is unsupported */
+		 
 		if (data->chip_id != mp2975)
 			continue;
 
-		/* Obtain voltage reference offsets. */
+		 
 		ret = mp2975_vref_offset_get(client, data, i);
 		if (ret < 0)
 			return ret;
 
-		/*
-		 * Set over-voltage fixed value. Thresholds are provided as
-		 * fixed value, and tracking value. The minimum of them are
-		 * exposed as over-voltage critical threshold.
-		 */
+		 
 		data->vout_ov_fixed[i] = data->vref[i] +
 					 DIV_ROUND_CLOSEST(data->vref_off[i] *
 							   data->vout_scale,
@@ -923,13 +874,13 @@ static int mp2975_probe(struct i2c_client *client)
 
 	info = &data->info;
 
-	/* Identify multiphase configuration for rail 2. */
+	 
 	ret = mp2975_identify_multiphase_rail2(client, data);
 	if (ret < 0)
 		return ret;
 
 	if (ret) {
-		/* Two rails are connected. */
+		 
 		data->info.pages = MP2975_PAGE_NUM;
 		data->info.phases[1] = ret;
 		data->info.func[1] = MP2975_RAIL2_FUNC;
@@ -937,39 +888,39 @@ static int mp2975_probe(struct i2c_client *client)
 			data->info.num_regulators = MP2975_PAGE_NUM;
 	}
 
-	/* Identify multiphase configuration. */
+	 
 	ret = mp2975_identify_multiphase(client, data, info);
 	if (ret)
 		return ret;
 
 	if (data->chip_id == mp2975) {
-		/* Identify VID setting per rail. */
+		 
 		ret = mp2975_identify_rails_vid(client, data, info);
 		if (ret < 0)
 			return ret;
 
-		/* Obtain current sense gain of power stage. */
+		 
 		ret = mp2975_current_sense_gain_get(client, data);
 		if (ret)
 			return ret;
 
-		/* Obtain voltage reference values. */
+		 
 		ret = mp2975_vref_get(client, data, info);
 		if (ret)
 			return ret;
 
-		/* Obtain vout over-voltage scales. */
+		 
 		ret = mp2975_vout_ov_scale_get(client, data, info);
 		if (ret < 0)
 			return ret;
 	} else {
-		/* Identify VID setting per rail. */
+		 
 		ret = mp2973_identify_rails_vid(client, data, info);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Obtain offsets, maximum and format for vout. */
+	 
 	ret = mp2975_vout_per_rail_config_get(client, data, info);
 	if (ret)
 		return ret;

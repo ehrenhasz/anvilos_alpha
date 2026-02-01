@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NV04_DISPLAY_H__
 #define __NV04_DISPLAY_H__
 #include <subdev/bios.h>
@@ -29,7 +29,7 @@ struct nv04_crtc_reg {
 	uint8_t Attribute[21];
 	unsigned char DAC[768];
 
-	/* PCRTC regs */
+	 
 	uint32_t fb_start;
 	uint32_t crtc_cfg;
 	uint32_t cursor_cfg;
@@ -39,7 +39,7 @@ struct nv04_crtc_reg {
 	uint32_t crtc_850;
 	uint32_t crtc_eng_ctrl;
 
-	/* PRAMDAC regs */
+	 
 	uint32_t nv10_cursync;
 	struct nvkm_pll_vals pllvals;
 	uint32_t ramdac_gen_ctrl;
@@ -96,22 +96,22 @@ nv04_display(struct drm_device *dev)
 	return nouveau_display(dev)->priv;
 }
 
-/* nv04_display.c */
+ 
 int nv04_display_create(struct drm_device *);
 struct nouveau_connector *
 nv04_encoder_get_connector(struct nouveau_encoder *nv_encoder);
 
-/* nv04_crtc.c */
+ 
 int nv04_crtc_create(struct drm_device *, int index);
 
-/* nv04_dac.c */
+ 
 int nv04_dac_create(struct drm_connector *, struct dcb_output *);
 uint32_t nv17_dac_sample_load(struct drm_encoder *encoder);
 int nv04_dac_output_offset(struct drm_encoder *encoder);
 void nv04_dac_update_dacclk(struct drm_encoder *encoder, bool enable);
 bool nv04_dac_in_use(struct drm_encoder *encoder);
 
-/* nv04_dfp.c */
+ 
 int nv04_dfp_create(struct drm_connector *, struct dcb_output *);
 int nv04_dfp_get_bound_head(struct drm_device *dev, struct dcb_output *dcbent);
 void nv04_dfp_bind_head(struct drm_device *dev, struct dcb_output *dcbent,
@@ -119,14 +119,14 @@ void nv04_dfp_bind_head(struct drm_device *dev, struct dcb_output *dcbent,
 void nv04_dfp_disable(struct drm_device *dev, int head);
 void nv04_dfp_update_fp_control(struct drm_encoder *encoder, int mode);
 
-/* nv04_tv.c */
+ 
 int nv04_tv_identify(struct drm_device *dev, int i2c_index);
 int nv04_tv_create(struct drm_connector *, struct dcb_output *);
 
-/* nv17_tv.c */
+ 
 int nv17_tv_create(struct drm_connector *, struct dcb_output *);
 
-/* overlay.c */
+ 
 void nouveau_overlay_init(struct drm_device *dev);
 
 static inline bool

@@ -1,57 +1,38 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Defines for the EMIF driver
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- *
- * Benoit Cousson (b-cousson@ti.com)
- */
+ 
+ 
 #ifndef __EMIF_H
 #define __EMIF_H
 
-/*
- * Maximum number of different frequencies supported by EMIF driver
- * Determines the number of entries in the pointer array for register
- * cache
- */
+ 
 #define EMIF_MAX_NUM_FREQUENCIES			6
 
-/* State of the core voltage */
+ 
 #define DDR_VOLTAGE_STABLE				0
 #define DDR_VOLTAGE_RAMPING				1
 
-/* Defines for timing De-rating */
+ 
 #define EMIF_NORMAL_TIMINGS				0
 #define EMIF_DERATED_TIMINGS				1
 
-/* Length of the forced read idle period in terms of cycles */
+ 
 #define EMIF_READ_IDLE_LEN_VAL				5
 
-/*
- * forced read idle interval to be used when voltage
- * is changed as part of DVFS/DPS - 1ms
- */
+ 
 #define READ_IDLE_INTERVAL_DVFS				(1*1000000)
 
-/*
- * Forced read idle interval to be used when voltage is stable
- * 50us - or maximum value will do
- */
+ 
 #define READ_IDLE_INTERVAL_NORMAL			(50*1000000)
 
-/* DLL calibration interval when voltage is NOT stable - 1us */
+ 
 #define DLL_CALIB_INTERVAL_DVFS				(1*1000000)
 
 #define DLL_CALIB_ACK_WAIT_VAL				5
 
-/* Interval between ZQCS commands - hw team recommended value */
+ 
 #define EMIF_ZQCS_INTERVAL_US				(50*1000)
-/* Enable ZQ Calibration on exiting Self-refresh */
+ 
 #define ZQ_SFEXITEN_ENABLE				1
-/*
- * ZQ Calibration simultaneously on both chip-selects:
- * Needs one calibration resistor per CS
- */
+ 
 #define	ZQ_DUALCALEN_DISABLE				0
 #define	ZQ_DUALCALEN_ENABLE				1
 
@@ -59,36 +40,32 @@
 #define T_ZQCL_DEFAULT_NS				360
 #define T_ZQINIT_DEFAULT_NS				1000
 
-/* DPD_EN */
+ 
 #define DPD_DISABLE					0
 #define DPD_ENABLE					1
 
-/*
- * Default values for the low-power entry to be used if not provided by user.
- * OMAP4/5 has a hw bug(i735) due to which this value can not be less than 512
- * Timeout values are in DDR clock 'cycles' and frequency threshold in Hz
- */
+ 
 #define EMIF_LP_MODE_TIMEOUT_PERFORMANCE		2048
 #define EMIF_LP_MODE_TIMEOUT_POWER			512
 #define EMIF_LP_MODE_FREQ_THRESHOLD			400000000
 
-/* DDR_PHY_CTRL_1 values for EMIF4D - ATTILA PHY combination */
+ 
 #define EMIF_DDR_PHY_CTRL_1_BASE_VAL_ATTILAPHY		0x049FF000
 #define EMIF_DLL_SLAVE_DLY_CTRL_400_MHZ_ATTILAPHY	0x41
 #define EMIF_DLL_SLAVE_DLY_CTRL_200_MHZ_ATTILAPHY	0x80
 #define EMIF_DLL_SLAVE_DLY_CTRL_100_MHZ_AND_LESS_ATTILAPHY 0xFF
 
-/* DDR_PHY_CTRL_1 values for EMIF4D5 INTELLIPHY combination */
+ 
 #define EMIF_DDR_PHY_CTRL_1_BASE_VAL_INTELLIPHY		0x0E084200
 #define EMIF_PHY_TOTAL_READ_LATENCY_INTELLIPHY_PS	10000
 
-/* TEMP_ALERT_CONFIG - corresponding to temp gradient 5 C/s */
+ 
 #define TEMP_ALERT_POLL_INTERVAL_DEFAULT_MS		360
 
 #define EMIF_T_CSTA					3
 #define EMIF_T_PDLL_UL					128
 
-/* External PHY control registers magic values */
+ 
 #define EMIF_EXT_PHY_CTRL_1_VAL				0x04020080
 #define EMIF_EXT_PHY_CTRL_5_VAL				0x04010040
 #define EMIF_EXT_PHY_CTRL_6_VAL				0x01004010
@@ -113,7 +90,7 @@
 
 #define EMIF_INTELLI_PHY_DQS_GATE_OPENING_DELAY_PS	1200
 
-/* Registers offset */
+ 
 #define EMIF_MODULE_ID_AND_REVISION			0x0000
 #define EMIF_STATUS					0x0004
 #define EMIF_SDRAM_CONFIG				0x0008
@@ -254,9 +231,9 @@
 #define EMIF_EXT_PHY_CTRL_30				0x02e8
 #define EMIF_EXT_PHY_CTRL_30_SHDW			0x02ec
 
-/* Registers shifts and masks */
+ 
 
-/* EMIF_MODULE_ID_AND_REVISION */
+ 
 #define SCHEME_SHIFT					30
 #define SCHEME_MASK					(0x3 << 30)
 #define MODULE_ID_SHIFT					16
@@ -268,7 +245,7 @@
 #define MINOR_REVISION_SHIFT				0
 #define MINOR_REVISION_MASK				(0x3f << 0)
 
-/* STATUS */
+ 
 #define BE_SHIFT					31
 #define BE_MASK						(1 << 31)
 #define DUAL_CLK_MODE_SHIFT				30
@@ -284,7 +261,7 @@
 #define PHY_DLL_READY_SHIFT				2
 #define PHY_DLL_READY_MASK				(1 << 2)
 
-/* SDRAM_CONFIG */
+ 
 #define SDRAM_TYPE_SHIFT				29
 #define SDRAM_TYPE_MASK					(0x7 << 29)
 #define IBANK_POS_SHIFT					27
@@ -314,7 +291,7 @@
 #define PAGESIZE_SHIFT					0
 #define PAGESIZE_MASK					(0x7 << 0)
 
-/* SDRAM_CONFIG_2 */
+ 
 #define CS1NVMEN_SHIFT					30
 #define CS1NVMEN_MASK					(1 << 30)
 #define EBANK_POS_SHIFT					27
@@ -324,7 +301,7 @@
 #define RDBSIZE_SHIFT					0
 #define RDBSIZE_MASK					(0x7 << 0)
 
-/* SDRAM_REFRESH_CONTROL */
+ 
 #define INITREF_DIS_SHIFT				31
 #define INITREF_DIS_MASK				(1 << 31)
 #define SRT_SHIFT					29
@@ -336,7 +313,7 @@
 #define REFRESH_RATE_SHIFT				0
 #define REFRESH_RATE_MASK				(0xffff << 0)
 
-/* SDRAM_TIMING_1 */
+ 
 #define T_RTW_SHIFT					29
 #define T_RTW_MASK					(0x7 << 29)
 #define T_RP_SHIFT					25
@@ -354,7 +331,7 @@
 #define T_WTR_SHIFT					0
 #define T_WTR_MASK					(0x7 << 0)
 
-/* SDRAM_TIMING_2 */
+ 
 #define T_XP_SHIFT					28
 #define T_XP_MASK					(0x7 << 28)
 #define T_ODT_SHIFT					25
@@ -368,7 +345,7 @@
 #define T_CKE_SHIFT					0
 #define T_CKE_MASK					(0x7 << 0)
 
-/* SDRAM_TIMING_3 */
+ 
 #define T_PDLL_UL_SHIFT					28
 #define T_PDLL_UL_MASK					(0xf << 28)
 #define T_CSTA_SHIFT					24
@@ -384,7 +361,7 @@
 #define T_RAS_MAX_SHIFT					0
 #define T_RAS_MAX_MASK					(0xf << 0)
 
-/* POWER_MANAGEMENT_CONTROL */
+ 
 #define PD_TIM_SHIFT					12
 #define PD_TIM_MASK					(0xf << 12)
 #define DPD_EN_SHIFT					11
@@ -396,11 +373,11 @@
 #define CS_TIM_SHIFT					0
 #define CS_TIM_MASK					(0xf << 0)
 
-/* LPDDR2_MODE_REG_DATA */
+ 
 #define VALUE_0_SHIFT					0
 #define VALUE_0_MASK					(0x7f << 0)
 
-/* LPDDR2_MODE_REG_CONFIG */
+ 
 #define CS_SHIFT					31
 #define CS_MASK						(1 << 31)
 #define REFRESH_EN_SHIFT				30
@@ -408,7 +385,7 @@
 #define ADDRESS_SHIFT					0
 #define ADDRESS_MASK					(0xff << 0)
 
-/* OCP_CONFIG */
+ 
 #define SYS_THRESH_MAX_SHIFT				24
 #define SYS_THRESH_MAX_MASK				(0xf << 24)
 #define MPU_THRESH_MAX_SHIFT				20
@@ -416,15 +393,15 @@
 #define LL_THRESH_MAX_SHIFT				16
 #define LL_THRESH_MAX_MASK				(0xf << 16)
 
-/* PERFORMANCE_COUNTER_1 */
+ 
 #define COUNTER1_SHIFT					0
 #define COUNTER1_MASK					(0xffffffff << 0)
 
-/* PERFORMANCE_COUNTER_2 */
+ 
 #define COUNTER2_SHIFT					0
 #define COUNTER2_MASK					(0xffffffff << 0)
 
-/* PERFORMANCE_COUNTER_CONFIG */
+ 
 #define CNTR2_MCONNID_EN_SHIFT				31
 #define CNTR2_MCONNID_EN_MASK				(1 << 31)
 #define CNTR2_REGION_EN_SHIFT				30
@@ -438,7 +415,7 @@
 #define CNTR1_CFG_SHIFT					0
 #define CNTR1_CFG_MASK					(0xf << 0)
 
-/* PERFORMANCE_COUNTER_MASTER_REGION_SELECT */
+ 
 #define MCONNID2_SHIFT					24
 #define MCONNID2_MASK					(0xff << 24)
 #define REGION_SEL2_SHIFT				16
@@ -448,21 +425,21 @@
 #define REGION_SEL1_SHIFT				0
 #define REGION_SEL1_MASK				(0x3 << 0)
 
-/* PERFORMANCE_COUNTER_TIME */
+ 
 #define TOTAL_TIME_SHIFT				0
 #define TOTAL_TIME_MASK					(0xffffffff << 0)
 
-/* DLL_CALIB_CTRL */
+ 
 #define ACK_WAIT_SHIFT					16
 #define ACK_WAIT_MASK					(0xf << 16)
 #define DLL_CALIB_INTERVAL_SHIFT			0
 #define DLL_CALIB_INTERVAL_MASK				(0x1ff << 0)
 
-/* END_OF_INTERRUPT */
+ 
 #define EOI_SHIFT					0
 #define EOI_MASK					(1 << 0)
 
-/* SYSTEM_OCP_INTERRUPT_RAW_STATUS */
+ 
 #define DNV_SYS_SHIFT					2
 #define DNV_SYS_MASK					(1 << 2)
 #define TA_SYS_SHIFT					1
@@ -470,7 +447,7 @@
 #define ERR_SYS_SHIFT					0
 #define ERR_SYS_MASK					(1 << 0)
 
-/* LOW_LATENCY_OCP_INTERRUPT_RAW_STATUS */
+ 
 #define DNV_LL_SHIFT					2
 #define DNV_LL_MASK					(1 << 2)
 #define TA_LL_SHIFT					1
@@ -478,7 +455,7 @@
 #define ERR_LL_SHIFT					0
 #define ERR_LL_MASK					(1 << 0)
 
-/* SYSTEM_OCP_INTERRUPT_ENABLE_SET */
+ 
 #define EN_DNV_SYS_SHIFT				2
 #define EN_DNV_SYS_MASK					(1 << 2)
 #define EN_TA_SYS_SHIFT					1
@@ -486,7 +463,7 @@
 #define EN_ERR_SYS_SHIFT					0
 #define EN_ERR_SYS_MASK					(1 << 0)
 
-/* LOW_LATENCY_OCP_INTERRUPT_ENABLE_SET */
+ 
 #define EN_DNV_LL_SHIFT					2
 #define EN_DNV_LL_MASK					(1 << 2)
 #define EN_TA_LL_SHIFT					1
@@ -494,7 +471,7 @@
 #define EN_ERR_LL_SHIFT					0
 #define EN_ERR_LL_MASK					(1 << 0)
 
-/* SDRAM_OUTPUT_IMPEDANCE_CALIBRATION_CONFIG */
+ 
 #define ZQ_CS1EN_SHIFT					31
 #define ZQ_CS1EN_MASK					(1 << 31)
 #define ZQ_CS0EN_SHIFT					30
@@ -510,7 +487,7 @@
 #define ZQ_REFINTERVAL_SHIFT				0
 #define ZQ_REFINTERVAL_MASK				(0xffff << 0)
 
-/* TEMPERATURE_ALERT_CONFIG */
+ 
 #define TA_CS1EN_SHIFT					31
 #define TA_CS1EN_MASK					(1 << 31)
 #define TA_CS0EN_SHIFT					30
@@ -524,7 +501,7 @@
 #define TA_REFINTERVAL_SHIFT				0
 #define TA_REFINTERVAL_MASK				(0x3fffff << 0)
 
-/* OCP_ERROR_LOG */
+ 
 #define MADDRSPACE_SHIFT				14
 #define MADDRSPACE_MASK					(0x3 << 14)
 #define MBURSTSEQ_SHIFT					11
@@ -534,22 +511,22 @@
 #define MCONNID_SHIFT					0
 #define MCONNID_MASK					(0xff << 0)
 
-/* READ_WRITE_LEVELING_CONTROL */
+ 
 #define RDWRLVLFULL_START				0x80000000
 
-/* DDR_PHY_CTRL_1 - EMIF4D */
+ 
 #define DLL_SLAVE_DLY_CTRL_SHIFT_4D			4
 #define DLL_SLAVE_DLY_CTRL_MASK_4D			(0xFF << 4)
 #define READ_LATENCY_SHIFT_4D				0
 #define READ_LATENCY_MASK_4D				(0xf << 0)
 
-/* DDR_PHY_CTRL_1 - EMIF4D5 */
+ 
 #define DLL_HALF_DELAY_SHIFT_4D5			21
 #define DLL_HALF_DELAY_MASK_4D5				(1 << 21)
 #define READ_LATENCY_SHIFT_4D5				0
 #define READ_LATENCY_MASK_4D5				(0x1f << 0)
 
-/* DDR_PHY_CTRL_1_SHDW */
+ 
 #define DDR_PHY_CTRL_1_SHDW_SHIFT			5
 #define DDR_PHY_CTRL_1_SHDW_MASK			(0x7ffffff << 5)
 #define READ_LATENCY_SHDW_SHIFT				0
@@ -559,11 +536,7 @@
 #define EMIF_SRAM_AM43_REG_LAYOUT			0x00000001
 
 #ifndef __ASSEMBLY__
-/*
- * Structure containing shadow of important registers in EMIF
- * The calculation function fills in this structure to be later used for
- * initialisation and DVFS
- */
+ 
 struct emif_regs {
 	u32 freq;
 	u32 ref_ctrl_shdw;
@@ -603,5 +576,5 @@ void ti_emif_enter_sr(void);
 void ti_emif_exit_sr(void);
 void ti_emif_abort_sr(void);
 
-#endif /* __ASSEMBLY__ */
-#endif /* __EMIF_H */
+#endif  
+#endif  

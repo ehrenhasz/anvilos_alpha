@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Ltd
- */
+
+ 
 #include <linux/auxiliary_bus.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -118,7 +115,7 @@ struct qcom_battmgr_charge_time_request {
 struct qcom_battmgr_discharge_time_request {
 	struct pmic_glink_hdr hdr;
 	__le32 battery_id;
-	__le32 rate; /* 0 for current rate */
+	__le32 rate;  
 	__le32 reserved;
 };
 
@@ -135,37 +132,27 @@ struct qcom_battmgr_message {
 			char model[BATTMGR_STRING_LEN];
 		} strval;
 		struct {
-			/*
-			 * 0: mWh
-			 * 1: mAh
-			 */
+			 
 			__le32 power_unit;
 			__le32 design_capacity;
 			__le32 last_full_capacity;
-			/*
-			 * 0 nonrechargable
-			 * 1 rechargable
-			 */
+			 
 			__le32 battery_tech;
-			__le32 design_voltage; /* mV */
+			__le32 design_voltage;  
 			__le32 capacity_low;
 			__le32 capacity_warning;
 			__le32 cycle_count;
-			/* thousandth of persent */
+			 
 			__le32 accuracy;
 			__le32 max_sample_time_ms;
 			__le32 min_sample_time_ms;
 			__le32 max_average_interval_ms;
 			__le32 min_average_interval_ms;
-			/* granularity between low and warning */
+			 
 			__le32 capacity_granularity1;
-			/* granularity between warning and full */
+			 
 			__le32 capacity_granularity2;
-			/*
-			 * 0: no
-			 * 1: cold
-			 * 2: hot
-			 */
+			 
 			__le32 swappable;
 			__le32 capabilities;
 			char model_number[BATTMGR_STRING_LEN];
@@ -181,29 +168,16 @@ struct qcom_battmgr_message {
 			__le32 battery_id;
 		} info;
 		struct {
-			/*
-			 * BIT(0) discharging
-			 * BIT(1) charging
-			 * BIT(2) critical low
-			 */
+			 
 			__le32 battery_state;
-			/* mWh or mAh, based on info->power_unit */
+			 
 			__le32 capacity;
 			__le32 rate;
-			/* mv */
+			 
 			__le32 battery_voltage;
-			/*
-			 * BIT(0) power online
-			 * BIT(1) discharging
-			 * BIT(2) charging
-			 * BIT(3) battery critical
-			 */
+			 
 			__le32 power_state;
-			/*
-			 * 1: AC
-			 * 2: USB
-			 * 3: Wireless
-			 */
+			 
 			__le32 charging_source;
 			__le32 temperature;
 		} status;
@@ -306,10 +280,7 @@ struct qcom_battmgr {
 
 	struct work_struct enable_work;
 
-	/*
-	 * @lock is used to prevent concurrent power supply requests to the
-	 * firmware, as it then stops responding.
-	 */
+	 
 	struct mutex lock;
 };
 
@@ -964,7 +935,7 @@ static void qcom_battmgr_sc8280xp_strcpy(char *dest, const char *src)
 {
 	size_t len = src[0];
 
-	/* Some firmware versions return Pascal-style strings */
+	 
 	if (len < BATTMGR_STRING_LEN && len == strnlen(src + 1, BATTMGR_STRING_LEN - 1)) {
 		memcpy(dest, src + 1, len);
 		dest[len] = '\0';
@@ -1308,7 +1279,7 @@ static void qcom_battmgr_pdr_notify(void *priv, int state)
 static const struct of_device_id qcom_battmgr_of_variants[] = {
 	{ .compatible = "qcom,sc8180x-pmic-glink", .data = (void *)QCOM_BATTMGR_SC8280XP },
 	{ .compatible = "qcom,sc8280xp-pmic-glink", .data = (void *)QCOM_BATTMGR_SC8280XP },
-	/* Unmatched devices falls back to QCOM_BATTMGR_SM8350 */
+	 
 	{}
 };
 

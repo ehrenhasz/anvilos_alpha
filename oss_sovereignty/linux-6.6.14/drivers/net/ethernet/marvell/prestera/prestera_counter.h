@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2021 Marvell International Ltd. All rights reserved. */
+ 
+ 
 
 #ifndef _PRESTERA_COUNTER_H_
 #define _PRESTERA_COUNTER_H_
@@ -27,4 +27,4 @@ int prestera_counter_stats_get(struct prestera_counter *counter,
 			       struct prestera_counter_block *block,
 			       u32 counter_id, u64 *packets, u64 *bytes);
 
-#endif /* _PRESTERA_COUNTER_H_ */
+#endif  

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Kabylake I2S Machine Driver with MAXIM98927
- * RT5514 and RT5663 Codecs
- *
- * Copyright (C) 2017, Intel Corporation. All rights reserved.
- *
- * Modified from:
- *   Intel Kabylake I2S Machine driver supporting MAXIM98927 and
- *   RT5663 codecs
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -84,14 +75,10 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 	struct kbl_codec_private *priv = snd_soc_card_get_drvdata(card);
 	int ret = 0;
 
-	/*
-	 * MCLK/SCLK need to be ON early for a successful synchronization of
-	 * codec internal clock. And the clocks are turned off during
-	 * POST_PMD after the stream is stopped.
-	 */
+	 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Enable MCLK */
+		 
 		ret = clk_set_rate(priv->mclk, 24000000);
 		if (ret < 0) {
 			dev_err(card->dev, "Can't set rate for mclk, err: %d\n",
@@ -105,7 +92,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 			return ret;
 		}
 
-		/* Enable SCLK */
+		 
 		ret = clk_set_rate(priv->sclk, 3072000);
 		if (ret < 0) {
 			dev_err(card->dev, "Can't set rate for sclk, err: %d\n",
@@ -157,21 +144,21 @@ static struct snd_soc_jack_pin jack_pins[] = {
 };
 
 static const struct snd_soc_dapm_route kabylake_map[] = {
-	/* Headphones */
+	 
 	{ "Headphone Jack", NULL, "Platform Clock" },
 	{ "Headphone Jack", NULL, "HPOL" },
 	{ "Headphone Jack", NULL, "HPOR" },
 
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Left BE_OUT" },
 	{ "Right Spk", NULL, "Right BE_OUT" },
 
-	/* other jacks */
+	 
 	{ "Headset Mic", NULL, "Platform Clock" },
 	{ "IN1P", NULL, "Headset Mic" },
 	{ "IN1N", NULL, "Headset Mic" },
 
-	/* CODEC BE connections */
+	 
 	{ "Left HiFi Playback", NULL, "ssp0 Tx" },
 	{ "Right HiFi Playback", NULL, "ssp0 Tx" },
 	{ "ssp0 Tx", NULL, "spk_out" },
@@ -185,12 +172,12 @@ static const struct snd_soc_dapm_route kabylake_map[] = {
 	{ "codec1_in", NULL, "ssp0 Rx" },
 	{ "ssp0 Rx", NULL, "AIF1 Capture" },
 
-	/* IV feedback path */
+	 
 	{ "codec0_fb_in", NULL, "ssp0 Rx"},
 	{ "ssp0 Rx", NULL, "Left HiFi Capture" },
 	{ "ssp0 Rx", NULL, "Right HiFi Capture" },
 
-	/* DMIC */
+	 
 	{ "DMIC1L", NULL, "DMIC" },
 	{ "DMIC1R", NULL, "DMIC" },
 	{ "DMIC2L", NULL, "DMIC" },
@@ -235,10 +222,7 @@ static int kabylake_rt5663_codec_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
 	struct snd_soc_jack *jack;
 
-	/*
-	 * Headset buttons map to the google Reference headset.
-	 * These can be configured by userspace.
-	 */
+	 
 	ret = snd_soc_card_jack_new_pins(&kabylake_audio_card, "Headset Jack",
 					 SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 					 SND_JACK_BTN_2 | SND_JACK_BTN_3,
@@ -317,12 +301,7 @@ static int kbl_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/*
-	 * On this platform for PCM device we support,
-	 * 48Khz
-	 * stereo
-	 * 16 bit audio
-	 */
+	 
 
 	runtime->hw.channels_max = 2;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -351,19 +330,13 @@ static int kabylake_ssp_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 	struct snd_soc_dpcm *dpcm, *rtd_dpcm = NULL;
 
-	/*
-	 * The following loop will be called only for playback stream
-	 * In this platform, there is only one playback device on every SSP
-	 */
+	 
 	for_each_dpcm_fe(rtd, SNDRV_PCM_STREAM_PLAYBACK, dpcm) {
 		rtd_dpcm = dpcm;
 		break;
 	}
 
-	/*
-	 * This following loop will be called only for capture stream
-	 * In this platform, there is only one capture device on every SSP
-	 */
+	 
 	for_each_dpcm_fe(rtd, SNDRV_PCM_STREAM_CAPTURE, dpcm) {
 		rtd_dpcm = dpcm;
 		break;
@@ -372,14 +345,9 @@ static int kabylake_ssp_fixup(struct snd_soc_pcm_runtime *rtd,
 	if (!rtd_dpcm)
 		return -EINVAL;
 
-	/*
-	 * The above 2 loops are mutually exclusive based on the stream direction,
-	 * thus rtd_dpcm variable will never be overwritten
-	 */
+	 
 
-	/*
-	 * The ADSP will convert the FE rate to 48k, stereo, 24 bit
-	 */
+	 
 	if (!strcmp(rtd_dpcm->fe->dai_link->name, "Kbl Audio Port") ||
 	    !strcmp(rtd_dpcm->fe->dai_link->name, "Kbl Audio Headset Playback") ||
 	    !strcmp(rtd_dpcm->fe->dai_link->name, "Kbl Audio Capture Port")) {
@@ -394,10 +362,7 @@ static int kabylake_ssp_fixup(struct snd_soc_pcm_runtime *rtd,
 		else
 			chan->min = chan->max = 4;
 	}
-	/*
-	 * The speaker on the SSP0 supports S16_LE and not S24_LE.
-	 * thus changing the mask here
-	 */
+	 
 	if (!strcmp(rtd_dpcm->be->dai_link->name, "SSP0-Codec"))
 		snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S16_LE);
 
@@ -411,7 +376,7 @@ static int kabylake_rt5663_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int ret;
 
-	/* use ASRC for internal clocks, as PLL rate isn't multiple of BCLK */
+	 
 	rt5663_sel_asrc_clk_src(codec_dai->component,
 			RT5663_DA_STEREO_FILTER | RT5663_AD_STEREO_FILTER,
 			RT5663_CLK_SEL_I2S1_ASRC);
@@ -542,9 +507,9 @@ SND_SOC_DAILINK_DEF(ssp0_pin,
 	DAILINK_COMP_ARRAY(COMP_CPU("SSP0 Pin")));
 SND_SOC_DAILINK_DEF(ssp0_codec,
 	DAILINK_COMP_ARRAY(
-	/* Left */ COMP_CODEC(MAXIM_DEV0_NAME, KBL_MAXIM_CODEC_DAI),
-	/* Right */COMP_CODEC(MAXIM_DEV1_NAME, KBL_MAXIM_CODEC_DAI),
-	/* dmic */ COMP_CODEC(RT5514_DEV_NAME, KBL_REALTEK_DMIC_CODEC_DAI)));
+	  COMP_CODEC(MAXIM_DEV0_NAME, KBL_MAXIM_CODEC_DAI),
+	 COMP_CODEC(MAXIM_DEV1_NAME, KBL_MAXIM_CODEC_DAI),
+	  COMP_CODEC(RT5514_DEV_NAME, KBL_REALTEK_DMIC_CODEC_DAI)));
 
 SND_SOC_DAILINK_DEF(ssp1_pin,
 	DAILINK_COMP_ARRAY(COMP_CPU("SSP1 Pin")));
@@ -564,9 +529,9 @@ SND_SOC_DAILINK_DEF(idisp2_codec,
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:1f.3")));
 
-/* kabylake digital audio interface glue - connects codec <--> CPU */
+ 
 static struct snd_soc_dai_link kabylake_dais[] = {
-	/* Front End DAI links */
+	 
 	[KBL_DPCM_AUDIO_PB] = {
 		.name = "Kbl Audio Port",
 		.stream_name = "Audio",
@@ -643,10 +608,10 @@ static struct snd_soc_dai_link kabylake_dais[] = {
 		.dynamic = 1,
 		SND_SOC_DAILINK_REG(hdmi2, dummy, platform),
 	},
-	/* Back End DAI links */
-	/* single Back end dai for both max speakers and dmic */
+	 
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "SSP0-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -705,11 +670,7 @@ static int kabylake_set_bias_level(struct snd_soc_card *card,
 	if (IS_ERR(priv->mclk))
 		return 0;
 
-	/*
-	 * It's required to control mclk directly in the set_bias_level
-	 * function for rt5514 codec or the recording function could
-	 * break.
-	 */
+	 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
 		if (dapm->bias_level == SND_SOC_BIAS_ON) {
@@ -731,7 +692,7 @@ static int kabylake_set_bias_level(struct snd_soc_card *card,
 				dev_err(card->dev, "Can't enable mclk, err: %d\n",
 					ret);
 
-				/* mclk is already enabled in FW */
+				 
 				ret = 0;
 			}
 		}
@@ -773,9 +734,7 @@ static int kabylake_card_late_probe(struct snd_soc_card *card)
 	return hdac_hdmi_jack_port_init(component, &card->dapm);
 }
 
-/*
- * kabylake audio machine driver for  MAX98927 + RT5514 + RT5663
- */
+ 
 static struct snd_soc_card kabylake_audio_card = {
 	.name = "kbl-r5514-5663-max",
 	.owner = THIS_MODULE,
@@ -862,7 +821,7 @@ static struct platform_driver kabylake_audio = {
 
 module_platform_driver(kabylake_audio)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("Audio Machine driver-RT5663 RT5514 & MAX98927");
 MODULE_AUTHOR("Harsha Priya <harshapriya.n@intel.com>");
 MODULE_LICENSE("GPL v2");

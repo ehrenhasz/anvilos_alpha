@@ -1,18 +1,4 @@
-/*
- * Driver for the MPC5200 Fast Ethernet Controller
- *
- * Originally written by Dale Farnsworth <dfarnsworth@mvista.com> and
- * now maintained by Sylvain Munaut <tnt@246tNt.com>
- *
- * Copyright (C) 2007  Domen Puncer, Telargo, Inc.
- * Copyright (C) 2007  Sylvain Munaut <tnt@246tNt.com>
- * Copyright (C) 2003-2004  MontaVista, Software, Inc.
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- *
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -52,7 +38,7 @@
 
 #define DRIVER_NAME "mpc52xx-fec"
 
-/* Private driver data structure */
+ 
 struct mpc52xx_fec_priv {
 	struct net_device *ndev;
 	int duplex;
@@ -65,7 +51,7 @@ struct mpc52xx_fec_priv {
 	spinlock_t lock;
 	int msg_enable;
 
-	/* MDIO link details */
+	 
 	unsigned int mdio_speed;
 	struct device_node *phy_node;
 	enum phy_state link;
@@ -82,7 +68,7 @@ static void mpc52xx_fec_reset(struct net_device *dev);
 
 #define MPC52xx_MESSAGES_DEFAULT ( NETIF_MSG_DRV | NETIF_MSG_PROBE | \
 		NETIF_MSG_LINK | NETIF_MSG_IFDOWN | NETIF_MSG_IFUP)
-static int debug = -1;	/* the above default */
+static int debug = -1;	 
 module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "debugging messages level");
 
@@ -155,14 +141,14 @@ static int mpc52xx_fec_alloc_rx_buffers(struct net_device *dev, struct bcom_task
 		if (!skb)
 			return -EAGAIN;
 
-		/* zero out the initial receive buffers to aid debugging */
+		 
 		memset(skb->data, 0, FEC_RX_BUFFER_SIZE);
 		mpc52xx_fec_rx_submit(dev, skb);
 	}
 	return 0;
 }
 
-/* based on generic_adjust_link from fs_enet-main.c */
+ 
 static void mpc52xx_fec_adjust_link(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -184,9 +170,9 @@ static void mpc52xx_fec_adjust_link(struct net_device *dev)
 			rcntrl &= ~FEC_RCNTRL_DRT;
 			tcntrl &= ~FEC_TCNTRL_FDEN;
 			if (phydev->duplex == DUPLEX_FULL)
-				tcntrl |= FEC_TCNTRL_FDEN;	/* FD enable */
+				tcntrl |= FEC_TCNTRL_FDEN;	 
 			else
-				rcntrl |= FEC_RCNTRL_DRT;	/* disable Rx on Tx (HD) */
+				rcntrl |= FEC_RCNTRL_DRT;	 
 
 			out_be32(&fec->r_cntrl, rcntrl);
 			out_be32(&fec->x_cntrl, tcntrl);
@@ -294,7 +280,7 @@ static int mpc52xx_fec_close(struct net_device *dev)
 	free_irq(priv->t_irq, dev);
 
 	if (phydev) {
-		/* power down phy */
+		 
 		phy_stop(phydev);
 		phy_disconnect(phydev);
 	}
@@ -302,11 +288,7 @@ static int mpc52xx_fec_close(struct net_device *dev)
 	return 0;
 }
 
-/* This will only be invoked if your driver is _not_ in XOFF state.
- * What this means is that you need not check it, and that this
- * invariant will hold if you make sure that the netif_*_queue()
- * calls are done at the proper times.
- */
+ 
 static netdev_tx_t
 mpc52xx_fec_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
@@ -355,8 +337,7 @@ static void mpc52xx_fec_poll_controller(struct net_device *dev)
 #endif
 
 
-/* This handles BestComm transmit task interrupts
- */
+ 
 static irqreturn_t mpc52xx_fec_tx_interrupt(int irq, void *dev_id)
 {
 	struct net_device *dev = dev_id;
@@ -384,8 +365,8 @@ static irqreturn_t mpc52xx_fec_rx_interrupt(int irq, void *dev_id)
 {
 	struct net_device *dev = dev_id;
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
-	struct sk_buff *rskb; /* received sk_buff */
-	struct sk_buff *skb;  /* new sk_buff to enqueue in its place */
+	struct sk_buff *rskb;  
+	struct sk_buff *skb;   
 	struct bcom_fec_bd *bd;
 	u32 status, physaddr;
 	int length;
@@ -398,36 +379,34 @@ static irqreturn_t mpc52xx_fec_rx_interrupt(int irq, void *dev_id)
 					    (struct bcom_bd **)&bd);
 		physaddr = bd->skb_pa;
 
-		/* Test for errors in received frame */
+		 
 		if (status & BCOM_FEC_RX_BD_ERRORS) {
-			/* Drop packet and reuse the buffer */
+			 
 			mpc52xx_fec_rx_submit(dev, rskb);
 			dev->stats.rx_dropped++;
 			continue;
 		}
 
-		/* skbs are allocated on open, so now we allocate a new one,
-		 * and remove the old (with the packet) */
+		 
 		skb = netdev_alloc_skb(dev, FEC_RX_BUFFER_SIZE);
 		if (!skb) {
-			/* Can't get a new one : reuse the same & drop pkt */
+			 
 			dev_notice(&dev->dev, "Low memory - dropped packet.\n");
 			mpc52xx_fec_rx_submit(dev, rskb);
 			dev->stats.rx_dropped++;
 			continue;
 		}
 
-		/* Enqueue the new sk_buff back on the hardware */
+		 
 		mpc52xx_fec_rx_submit(dev, skb);
 
-		/* Process the received skb - Drop the spin lock while
-		 * calling into the network stack */
+		 
 		spin_unlock(&priv->lock);
 
 		dma_unmap_single(dev->dev.parent, physaddr, rskb->len,
 				 DMA_FROM_DEVICE);
 		length = status & BCOM_FEC_RX_BD_LEN_MASK;
-		skb_put(rskb, length - 4);	/* length without CRC32 */
+		skb_put(rskb, length - 4);	 
 		rskb->protocol = eth_type_trans(rskb, dev);
 		if (!skb_defer_rx_timestamp(rskb))
 			netif_rx(rskb);
@@ -449,13 +428,13 @@ static irqreturn_t mpc52xx_fec_interrupt(int irq, void *dev_id)
 
 	ievent = in_be32(&fec->ievent);
 
-	ievent &= ~FEC_IEVENT_MII;	/* mii is handled separately */
+	ievent &= ~FEC_IEVENT_MII;	 
 	if (!ievent)
 		return IRQ_NONE;
 
-	out_be32(&fec->ievent, ievent);		/* clear pending events */
+	out_be32(&fec->ievent, ievent);		 
 
-	/* on fifo error, soft-reset fec */
+	 
 	if (ievent & (FEC_IEVENT_RFIFO_ERROR | FEC_IEVENT_XFIFO_ERROR)) {
 
 		if (net_ratelimit() && (ievent & FEC_IEVENT_RFIFO_ERROR))
@@ -476,10 +455,7 @@ static irqreturn_t mpc52xx_fec_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Get the current statistics.
- * This may be called with the card open or closed.
- */
+ 
 static struct net_device_stats *mpc52xx_fec_get_stats(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -505,7 +481,7 @@ static struct net_device_stats *mpc52xx_fec_get_stats(struct net_device *dev)
 	stats->multicast = in_be32(&fec->rmon_r_mc_pkt);
 	stats->collisions = in_be32(&fec->rmon_t_col);
 
-	/* detailed rx_errors: */
+	 
 	stats->rx_length_errors = in_be32(&fec->rmon_r_undersize)
 					+ in_be32(&fec->rmon_r_oversize)
 					+ in_be32(&fec->rmon_r_frag)
@@ -516,7 +492,7 @@ static struct net_device_stats *mpc52xx_fec_get_stats(struct net_device *dev)
 	stats->rx_fifo_errors = in_be32(&fec->rmon_r_drop);
 	stats->rx_missed_errors = in_be32(&fec->rmon_r_drop);
 
-	/* detailed tx_errors: */
+	 
 	stats->tx_aborted_errors = 0;
 	stats->tx_carrier_errors = in_be32(&fec->ieee_t_cserr);
 	stats->tx_fifo_errors = in_be32(&fec->rmon_t_drop);
@@ -526,10 +502,7 @@ static struct net_device_stats *mpc52xx_fec_get_stats(struct net_device *dev)
 	return stats;
 }
 
-/*
- * Read MIB counters in order to reset them,
- * then zero all the stats fields in memory
- */
+ 
 static void mpc52xx_fec_reset_stats(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -544,9 +517,7 @@ static void mpc52xx_fec_reset_stats(struct net_device *dev)
 	memset(&dev->stats, 0, sizeof(dev->stats));
 }
 
-/*
- * Set or clear the multicast filter for this adaptor.
- */
+ 
 static void mpc52xx_fec_set_multicast_list(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -584,19 +555,14 @@ static void mpc52xx_fec_set_multicast_list(struct net_device *dev)
 	}
 }
 
-/**
- * mpc52xx_fec_hw_init
- * @dev: network device
- *
- * Setup various hardware setting, only needed once on start
- */
+ 
 static void mpc52xx_fec_hw_init(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 	struct mpc52xx_fec __iomem *fec = priv->fec;
 	int i;
 
-	/* Whack a reset.  We should wait for this. */
+	 
 	out_be32(&fec->ecntrl, FEC_ECNTRL_RESET);
 	for (i = 0; i < FEC_RESET_DELAY; ++i) {
 		if ((in_be32(&fec->ecntrl) & FEC_ECNTRL_RESET) == 0)
@@ -606,41 +572,30 @@ static void mpc52xx_fec_hw_init(struct net_device *dev)
 	if (i == FEC_RESET_DELAY)
 		dev_err(&dev->dev, "FEC Reset timeout!\n");
 
-	/* set pause to 0x20 frames */
+	 
 	out_be32(&fec->op_pause, FEC_OP_PAUSE_OPCODE | 0x20);
 
-	/* high service request will be deasserted when there's < 7 bytes in fifo
-	 * low service request will be deasserted when there's < 4*7 bytes in fifo
-	 */
+	 
 	out_be32(&fec->rfifo_cntrl, FEC_FIFO_CNTRL_FRAME | FEC_FIFO_CNTRL_LTG_7);
 	out_be32(&fec->tfifo_cntrl, FEC_FIFO_CNTRL_FRAME | FEC_FIFO_CNTRL_LTG_7);
 
-	/* alarm when <= x bytes in FIFO */
+	 
 	out_be32(&fec->rfifo_alarm, 0x0000030c);
 	out_be32(&fec->tfifo_alarm, 0x00000100);
 
-	/* begin transmittion when 256 bytes are in FIFO (or EOF or FIFO full) */
+	 
 	out_be32(&fec->x_wmrk, FEC_FIFO_WMRK_256B);
 
-	/* enable crc generation */
+	 
 	out_be32(&fec->xmit_fsm, FEC_XMIT_FSM_APPEND_CRC | FEC_XMIT_FSM_ENABLE_CRC);
-	out_be32(&fec->iaddr1, 0x00000000);	/* No individual filter */
-	out_be32(&fec->iaddr2, 0x00000000);	/* No individual filter */
+	out_be32(&fec->iaddr1, 0x00000000);	 
+	out_be32(&fec->iaddr2, 0x00000000);	 
 
-	/* set phy speed.
-	 * this can't be done in phy driver, since it needs to be called
-	 * before fec stuff (even on resume) */
+	 
 	out_be32(&fec->mii_speed, priv->mdio_speed);
 }
 
-/**
- * mpc52xx_fec_start
- * @dev: network device
- *
- * This function is called to start or restart the FEC during a link
- * change.  This happens on fifo errors or when switching between half
- * and full duplex.
- */
+ 
 static void mpc52xx_fec_start(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -649,65 +604,60 @@ static void mpc52xx_fec_start(struct net_device *dev)
 	u32 tcntrl;
 	u32 tmp;
 
-	/* clear sticky error bits */
+	 
 	tmp = FEC_FIFO_STATUS_ERR | FEC_FIFO_STATUS_UF | FEC_FIFO_STATUS_OF;
 	out_be32(&fec->rfifo_status, in_be32(&fec->rfifo_status) & tmp);
 	out_be32(&fec->tfifo_status, in_be32(&fec->tfifo_status) & tmp);
 
-	/* FIFOs will reset on mpc52xx_fec_enable */
+	 
 	out_be32(&fec->reset_cntrl, FEC_RESET_CNTRL_ENABLE_IS_RESET);
 
-	/* Set station address. */
+	 
 	mpc52xx_fec_set_paddr(dev, dev->dev_addr);
 
 	mpc52xx_fec_set_multicast_list(dev);
 
-	/* set max frame len, enable flow control, select mii mode */
-	rcntrl = FEC_RX_BUFFER_SIZE << 16;	/* max frame length */
+	 
+	rcntrl = FEC_RX_BUFFER_SIZE << 16;	 
 	rcntrl |= FEC_RCNTRL_FCE;
 
 	if (!priv->seven_wire_mode)
 		rcntrl |= FEC_RCNTRL_MII_MODE;
 
 	if (priv->duplex == DUPLEX_FULL)
-		tcntrl = FEC_TCNTRL_FDEN;	/* FD enable */
+		tcntrl = FEC_TCNTRL_FDEN;	 
 	else {
-		rcntrl |= FEC_RCNTRL_DRT;	/* disable Rx on Tx (HD) */
+		rcntrl |= FEC_RCNTRL_DRT;	 
 		tcntrl = 0;
 	}
 	out_be32(&fec->r_cntrl, rcntrl);
 	out_be32(&fec->x_cntrl, tcntrl);
 
-	/* Clear any outstanding interrupt. */
+	 
 	out_be32(&fec->ievent, 0xffffffff);
 
-	/* Enable interrupts we wish to service. */
+	 
 	out_be32(&fec->imask, FEC_IMASK_ENABLE);
 
-	/* And last, enable the transmit and receive processing. */
+	 
 	out_be32(&fec->ecntrl, FEC_ECNTRL_ETHER_EN);
 	out_be32(&fec->r_des_active, 0x01000000);
 }
 
-/**
- * mpc52xx_fec_stop
- * @dev: network device
- *
- * stop all activity on fec and empty dma buffers
- */
+ 
 static void mpc52xx_fec_stop(struct net_device *dev, bool may_sleep)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 	struct mpc52xx_fec __iomem *fec = priv->fec;
 	unsigned long timeout;
 
-	/* disable all interrupts */
+	 
 	out_be32(&fec->imask, 0);
 
-	/* Disable the rx task. */
+	 
 	bcom_disable(priv->rx_dmatsk);
 
-	/* Wait for tx queue to drain, but only if we're in process context */
+	 
 	if (may_sleep) {
 		timeout = jiffies + msecs_to_jiffies(2000);
 		while (time_before(jiffies, timeout) &&
@@ -730,11 +680,11 @@ static void mpc52xx_fec_stop(struct net_device *dev, bool may_sleep)
 
 	bcom_disable(priv->tx_dmatsk);
 
-	/* Stop FEC */
+	 
 	out_be32(&fec->ecntrl, in_be32(&fec->ecntrl) & ~FEC_ECNTRL_ETHER_EN);
 }
 
-/* reset fec and bestcomm tasks */
+ 
 static void mpc52xx_fec_reset(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -763,7 +713,7 @@ static void mpc52xx_fec_reset(struct net_device *dev)
 }
 
 
-/* ethtool interface */
+ 
 
 static u32 mpc52xx_fec_get_msglevel(struct net_device *dev)
 {
@@ -802,9 +752,9 @@ static const struct net_device_ops mpc52xx_fec_netdev_ops = {
 #endif
 };
 
-/* ======================================================================== */
-/* OF Driver                                                                */
-/* ======================================================================== */
+ 
+ 
+ 
 
 static int mpc52xx_fec_probe(struct platform_device *op)
 {
@@ -819,7 +769,7 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 	phys_addr_t rx_fifo;
 	phys_addr_t tx_fifo;
 
-	/* Get the ether ndev & it's private zone */
+	 
 	ndev = alloc_etherdev(sizeof(struct mpc52xx_fec_priv));
 	if (!ndev)
 		return -ENOMEM;
@@ -827,7 +777,7 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 	priv = netdev_priv(ndev);
 	priv->ndev = ndev;
 
-	/* Reserve FEC control zone */
+	 
 	rv = of_address_to_resource(np, 0, &mem);
 	if (rv) {
 		pr_err("Error while parsing device node resource\n");
@@ -847,7 +797,7 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 		goto err_netdev;
 	}
 
-	/* Init ether ndev with what we have */
+	 
 	ndev->netdev_ops	= &mpc52xx_fec_netdev_ops;
 	ndev->ethtool_ops	= &mpc52xx_fec_ethtool_ops;
 	ndev->watchdog_timeo	= FEC_WATCHDOG_TIMEOUT;
@@ -856,7 +806,7 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 
 	spin_lock_init(&priv->lock);
 
-	/* ioremap the zones */
+	 
 	priv->fec = ioremap(mem.start, sizeof(struct mpc52xx_fec));
 
 	if (!priv->fec) {
@@ -864,7 +814,7 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 		goto err_mem_region;
 	}
 
-	/* Bestcomm init */
+	 
 	rx_fifo = ndev->base_addr + offsetof(struct mpc52xx_fec, rfifo_data);
 	tx_fifo = ndev->base_addr + offsetof(struct mpc52xx_fec, tfifo_data);
 
@@ -877,38 +827,29 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 		goto err_rx_tx_dmatsk;
 	}
 
-	/* Get the IRQ we need one by one */
-		/* Control */
+	 
+		 
 	ndev->irq = irq_of_parse_and_map(np, 0);
 
-		/* RX */
+		 
 	priv->r_irq = bcom_get_task_irq(priv->rx_dmatsk);
 
-		/* TX */
+		 
 	priv->t_irq = bcom_get_task_irq(priv->tx_dmatsk);
 
-	/*
-	 * MAC address init:
-	 *
-	 * First try to read MAC address from DT
-	 */
+	 
 	rv = of_get_ethdev_address(np, ndev);
 	if (rv) {
 		struct mpc52xx_fec __iomem *fec = priv->fec;
 		u8 addr[ETH_ALEN] __aligned(4);
 
-		/*
-		 * If the MAC addresse is not provided via DT then read
-		 * it back from the controller regs
-		 */
+		 
 		*(u32 *)(&addr[0]) = in_be32(&fec->paddr1);
 		*(u16 *)(&addr[4]) = in_be32(&fec->paddr2) >> 16;
 		eth_hw_addr_set(ndev, addr);
 	}
 
-	/*
-	 * Check if the MAC address is valid, if not get a random one
-	 */
+	 
 	if (!is_valid_ether_addr(ndev->dev_addr)) {
 		eth_hw_addr_random(ndev);
 		dev_warn(&ndev->dev, "using random MAC address %pM\n",
@@ -917,32 +858,30 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 
 	priv->msg_enable = netif_msg_init(debug, MPC52xx_MESSAGES_DEFAULT);
 
-	/*
-	 * Link mode configuration
-	 */
+	 
 
-	/* Start with safe defaults for link connection */
+	 
 	priv->speed = 100;
 	priv->duplex = DUPLEX_HALF;
 	priv->mdio_speed = ((mpc5xxx_get_bus_frequency(&op->dev) >> 20) / 5) << 1;
 
-	/* The current speed preconfigures the speed of the MII link */
+	 
 	prop = of_get_property(np, "current-speed", &prop_size);
 	if (prop && (prop_size >= sizeof(u32) * 2)) {
 		priv->speed = prop[0];
 		priv->duplex = prop[1] ? DUPLEX_FULL : DUPLEX_HALF;
 	}
 
-	/* If there is a phy handle, then get the PHY node */
+	 
 	priv->phy_node = of_parse_phandle(np, "phy-handle", 0);
 
-	/* the 7-wire property means don't use MII mode */
+	 
 	if (of_property_read_bool(np, "fsl,7-wire-mode")) {
 		priv->seven_wire_mode = 1;
 		dev_info(&ndev->dev, "using 7-wire PHY mode\n");
 	}
 
-	/* Hardware init */
+	 
 	mpc52xx_fec_hw_init(ndev);
 	mpc52xx_fec_reset_stats(ndev);
 
@@ -950,7 +889,7 @@ static int mpc52xx_fec_probe(struct platform_device *op)
 	if (rv < 0)
 		goto err_node;
 
-	/* We're done ! */
+	 
 	platform_set_drvdata(op, ndev);
 	netdev_info(ndev, "%pOF MAC %pM\n",
 		    op->dev.of_node, ndev->dev_addr);
@@ -1048,9 +987,9 @@ static struct platform_driver mpc52xx_fec_driver = {
 };
 
 
-/* ======================================================================== */
-/* Module                                                                   */
-/* ======================================================================== */
+ 
+ 
+ 
 
 static struct platform_driver * const drivers[] = {
 #ifdef CONFIG_FEC_MPC52xx_MDIO

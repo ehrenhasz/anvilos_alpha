@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/device.h>
@@ -70,15 +70,13 @@ static int lima_pmu_hw_init(struct lima_ip *ip)
 
 	pmu_write(LIMA_PMU_INT_MASK, 0);
 
-	/* If this value is too low, when in high GPU clk freq,
-	 * GPU will be in unstable state.
-	 */
+	 
 	pmu_write(LIMA_PMU_SW_DELAY, 0xffff);
 
-	/* status reg 1=off 0=on */
+	 
 	stat = pmu_read(LIMA_PMU_STATUS);
 
-	/* power up all ip */
+	 
 	if (stat) {
 		pmu_write(LIMA_PMU_POWER_UP, stat);
 		err = lima_pmu_wait_cmd(ip);
@@ -99,10 +97,7 @@ static void lima_pmu_hw_fini(struct lima_ip *ip)
 	if (stat) {
 		pmu_write(LIMA_PMU_POWER_DOWN, stat);
 
-		/* Don't wait for interrupt on Mali400 if all domains are
-		 * powered off because the HW won't generate an interrupt
-		 * in this case.
-		 */
+		 
 		if (ip->dev->id == lima_gpu_mali400)
 			pmu_write(LIMA_PMU_INT_CLEAR, LIMA_PMU_INT_CMD_MASK);
 		else

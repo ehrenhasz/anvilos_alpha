@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2015 Vladimir Zapolskiy <vz@mleia.com>
- *
- * This code is released using a dual license strategy: BSD/GPL
- * You can choose the licence that better fits your requirements.
- *
- * Released under the terms of 3-clause BSD License
- * Released under the terms of GNU General Public License Version 2.0
- *
- */
+ 
 
 #ifndef __DT_BINDINGS_LPC32XX_CLOCK_H
 #define __DT_BINDINGS_LPC32XX_CLOCK_H
 
-/* LPC32XX System Control Block clocks */
+ 
 #define LPC32XX_CLK_RTC		1
 #define LPC32XX_CLK_DMA		2
 #define LPC32XX_CLK_MLC		3
@@ -50,9 +41,9 @@
 #define LPC32XX_CLK_HCLK_PLL	35
 #define LPC32XX_CLK_PERIPH	36
 
-/* LPC32XX USB clocks */
+ 
 #define LPC32XX_USB_CLK_I2C	1
 #define LPC32XX_USB_CLK_DEVICE	2
 #define LPC32XX_USB_CLK_HOST	3
 
-#endif /* __DT_BINDINGS_LPC32XX_CLOCK_H */
+#endif  

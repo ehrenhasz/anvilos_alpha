@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ptrace test for TAR, PPR, DSCR registers in the TM context
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "ptrace.h"
 #include "tm.h"
 #include "ptrace-tar.h"
@@ -24,20 +20,20 @@ trans:
 	cptr[1] = 0;
 	asm __volatile__(
 		"li	4, %[tar_1];"
-		"mtspr %[sprn_tar],  4;"	/* TAR_1 */
+		"mtspr %[sprn_tar],  4;"	 
 		"li	4, %[dscr_1];"
-		"mtspr %[sprn_dscr], 4;"	/* DSCR_1 */
-		"or     31,31,31;"		/* PPR_1*/
+		"mtspr %[sprn_dscr], 4;"	 
+		"or     31,31,31;"		 
 
 		"1: ;"
 		"tbegin.;"
 		"beq 2f;"
 
 		"li	4, %[tar_2];"
-		"mtspr %[sprn_tar],  4;"	/* TAR_2 */
+		"mtspr %[sprn_tar],  4;"	 
 		"li	4, %[dscr_2];"
-		"mtspr %[sprn_dscr], 4;"	/* DSCR_2 */
-		"or     1,1,1;"			/* PPR_2 */
+		"mtspr %[sprn_dscr], 4;"	 
+		"or     1,1,1;"			 
 		"tsuspend.;"
 		"li 0, 1;"
 		"stw 0, 0(%[cptr1]);"
@@ -49,7 +45,7 @@ trans:
 		"ori %[res], 0, 0;"
 		"b 3f;"
 
-		/* Transaction abort handler */
+		 
 		"2: ;"
 		"li 0, 1;"
 		"ori %[res], 0, 0;"
@@ -65,7 +61,7 @@ trans:
 		: "memory", "r0", "r3", "r4", "r5", "r6"
 		);
 
-	/* TM failed, analyse */
+	 
 	if (result) {
 		if (!cptr[0])
 			goto trans;

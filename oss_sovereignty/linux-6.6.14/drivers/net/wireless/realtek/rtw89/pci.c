@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2020  Realtek Corporation
- */
+
+ 
 
 #include <linux/pci.h>
 
@@ -212,7 +211,7 @@ rtw89_skb_put_rx_data(struct rtw89_dev *rtwdev, bool fs, bool ls,
 			    rx_info->len, desc_info->pkt_size, offset, fs, ls);
 		rtw89_hex_dump(rtwdev, RTW89_DBG_TXRX, "rx_data: ",
 			       skb->data, rx_info->len);
-		/* length of a single segment skb is desc_info->pkt_size */
+		 
 		if (fs && ls) {
 			copy_len = desc_info->pkt_size;
 		} else {
@@ -273,7 +272,7 @@ static u32 rtw89_pci_rxbd_deliver_skbs(struct rtw89_dev *rtwdev,
 
 		rx_ring->diliver_skb = new;
 
-		/* first segment has RX desc */
+		 
 		offset = desc_info->offset + desc_info->rxd_len;
 	} else {
 		offset = sizeof(struct rtw89_pci_rxbd_info);
@@ -323,7 +322,7 @@ static void rtw89_pci_rxbd_deliver(struct rtw89_dev *rtwdev,
 		if (!rx_cnt) {
 			rtw89_err(rtwdev, "failed to deliver RXBD skb\n");
 
-			/* skip the rest RXBD bufs */
+			 
 			rtw89_pci_rxbd_increase(rx_ring, cnt);
 			break;
 		}
@@ -351,7 +350,7 @@ static int rtw89_pci_poll_rxq_dma(struct rtw89_dev *rtwdev,
 
 	rtw89_pci_rxbd_deliver(rtwdev, rx_ring, cnt);
 
-	/* In case of flushing pending SKBs, the countdown may exceed. */
+	 
 	if (rtwdev->napi_budget_countdown <= 0)
 		return budget;
 
@@ -413,7 +412,7 @@ static void rtw89_pci_reclaim_txbd(struct rtw89_dev *rtwdev, struct rtw89_pci_tx
 
 		list_del_init(&txwd->list);
 
-		/* this skb has been freed by RPP */
+		 
 		if (skb_queue_len(&txwd->queue) == 0)
 			rtw89_pci_enqueue_txwd(tx_ring, txwd);
 	}
@@ -447,9 +446,7 @@ static void rtw89_pci_release_txwd_skb(struct rtw89_dev *rtwdev,
 
 	if (!list_empty(&txwd->list)) {
 		rtw89_pci_reclaim_txbd(rtwdev, tx_ring);
-		/* In low power mode, RPP can receive before updating of TX BD.
-		 * In normal mode, it should not happen so give it a warning.
-		 */
+		 
 		if (!rtwpci->low_power && !list_empty(&txwd->list))
 			rtw89_warn(rtwdev, "queue %d txwd %d is not idle\n",
 				   txch, seq);
@@ -546,7 +543,7 @@ static u32 rtw89_pci_release_tx_skbs(struct rtw89_dev *rtwdev,
 
 	rtw89_chip_query_rxdesc(rtwdev, &desc_info, skb->data, rxinfo_size);
 
-	/* first segment has RX desc */
+	 
 	offset = desc_info.offset + desc_info.rxd_len;
 	for (; offset + rpp_size <= rx_info->len; offset += rpp_size) {
 		rpp = (struct rtw89_pci_rpp_fmt *)(skb->data + offset);
@@ -576,7 +573,7 @@ static void rtw89_pci_release_tx(struct rtw89_dev *rtwdev,
 		if (!release_cnt) {
 			rtw89_err(rtwdev, "failed to release TX skbs\n");
 
-			/* skip the rest RXBD bufs */
+			 
 			rtw89_pci_rxbd_increase(rx_ring, cnt);
 			break;
 		}
@@ -607,7 +604,7 @@ static int rtw89_pci_poll_rpq_dma(struct rtw89_dev *rtwdev,
 out_unlock:
 	spin_unlock_bh(&rtwpci->trx_lock);
 
-	/* always release all RPQ */
+	 
 	work_done = min_t(int, cnt, budget);
 	rtwdev->napi_budget_countdown -= work_done;
 
@@ -678,7 +675,7 @@ EXPORT_SYMBOL(rtw89_pci_recognize_intrs_v1);
 
 static void rtw89_pci_clear_isr0(struct rtw89_dev *rtwdev, u32 isr00)
 {
-	/* write 1 clear */
+	 
 	rtw89_write32(rtwdev, R_AX_PCIE_HISR00, isr00);
 }
 
@@ -742,7 +739,7 @@ static void rtw89_pci_low_power_interrupt_handler(struct rtw89_dev *rtwdev)
 	struct rtw89_pci *rtwpci = (struct rtw89_pci *)rtwdev->priv;
 	int budget = NAPI_POLL_WEIGHT;
 
-	/* To prevent RXQ get stuck due to run out of budget. */
+	 
 	rtwdev->napi_budget_countdown = budget;
 
 	rtw89_pci_poll_rpq_dma(rtwdev, rtwpci, budget);
@@ -802,9 +799,7 @@ static irqreturn_t rtw89_pci_interrupt_handler(int irq, void *dev)
 
 	spin_lock_irqsave(&rtwpci->irq_lock, flags);
 
-	/* If interrupt event is on the road, it is still trigger interrupt
-	 * even we have done pci_stop() to turn off IMR.
-	 */
+	 
 	if (unlikely(!rtwpci->running)) {
 		irqret = IRQ_HANDLED;
 		goto exit;
@@ -925,7 +920,7 @@ static u32 rtw89_pci_get_avail_txbd_num(struct rtw89_pci_tx_ring *ring)
 {
 	struct rtw89_pci_dma_ring *bd_ring = &ring->bd_ring;
 
-	/* reserved 1 desc check ring is full or not */
+	 
 	if (bd_ring->rp > bd_ring->wp)
 		return bd_ring->rp - bd_ring->wp - 1;
 
@@ -998,10 +993,7 @@ static u32 __rtw89_pci_check_and_reclaim_tx_resource(struct rtw89_dev *rtwdev,
 	wd_cnt = wd_ring->curr_num;
 	min_cnt = min(bd_cnt, wd_cnt);
 	if (min_cnt == 0) {
-		/* This message can be frequently shown in low power mode or
-		 * high traffic with small FIFO chips, and we have recognized it as normal
-		 * behavior, so print with mask RTW89_DBG_TXRX in these situations.
-		 */
+		 
 		if (rtwpci->low_power || chip->small_fifo_size)
 			debug_mask = RTW89_DBG_TXRX;
 		else
@@ -1094,11 +1086,7 @@ static void __pci_flush_txch(struct rtw89_dev *rtwdev, u8 txch, bool drop)
 	u32 cur_idx, cur_rp;
 	u8 i;
 
-	/* Because the time taked by the I/O is a bit dynamic, it's hard to
-	 * define a reasonable fixed total timeout to use read_poll_timeout*
-	 * helper. Instead, we can ensure a reasonable polling times, so we
-	 * just use for loop with udelay here.
-	 */
+	 
 	for (i = 0; i < 60; i++) {
 		cur_idx = rtw89_read32(rtwdev, bd_ring->addr.idx);
 		cur_rp = FIELD_GET(TXBD_HW_IDX_MASK, cur_idx);
@@ -1119,7 +1107,7 @@ static void __rtw89_pci_ops_flush_txchs(struct rtw89_dev *rtwdev, u32 txchs,
 	u8 i;
 
 	for (i = 0; i < RTW89_TXCH_NUM; i++) {
-		/* It may be unnecessary to flush FWCMD queue. */
+		 
 		if (i == RTW89_TXCH_CH12)
 			continue;
 		if (info->tx_dma_ch_mask & BIT(i))
@@ -1292,10 +1280,7 @@ static int rtw89_pci_txbd_submit(struct rtw89_dev *rtwdev,
 	struct rtw89_pci_tx_wd *txwd;
 	int ret;
 
-	/* FWCMD queue doesn't have wd pages. Instead, it submits the CMD
-	 * buffer with WD BODY only. So here we don't need to check the free
-	 * pages of the wd ring.
-	 */
+	 
 	if (tx_ring->txch == RTW89_TXCH_CH12)
 		return rtw89_pci_fwcmd_submit(rtwdev, tx_ring, txbd, tx_req);
 
@@ -1337,7 +1322,7 @@ static int rtw89_pci_tx_write(struct rtw89_dev *rtwdev, struct rtw89_core_tx_req
 	u32 n_avail_txbd;
 	int ret = 0;
 
-	/* check the tx type and dma channel for fw cmd queue */
+	 
 	if ((txch == RTW89_TXCH_CH12 ||
 	     tx_req->tx_type == RTW89_CORE_TX_TYPE_FWCMD) &&
 	    (txch != RTW89_TXCH_CH12 ||
@@ -1877,7 +1862,7 @@ __get_target(struct rtw89_dev *rtwdev, u16 *target, enum rtw89_pcie_phy phy_rate
 	u16 val, tar;
 	int ret;
 
-	/* Enable counter */
+	 
 	ret = rtw89_read16_mdio(rtwdev, RAC_CTRL_PPR_V1, phy_rate, &val);
 	if (ret)
 		return ret;
@@ -1951,7 +1936,7 @@ static int rtw89_pci_auto_refclk_cal(struct rtw89_dev *rtwdev, bool autook_en)
 		rtw89_err(rtwdev, "[ERR]PCIe PHY rate %#x not support\n", val8);
 		return -EOPNOTSUPP;
 	}
-	/* Disable L1BD */
+	 
 	ret = rtw89_pci_read_config_byte(rtwdev, RTW89_PCIE_L1_CTRL, &bdr_ori);
 	if (ret) {
 		rtw89_err(rtwdev, "[ERR]pci config read %X\n", RTW89_PCIE_L1_CTRL);
@@ -1986,14 +1971,14 @@ static int rtw89_pci_auto_refclk_cal(struct rtw89_dev *rtwdev, bool autook_en)
 
 	if (!autook_en)
 		goto end;
-	/* Set div */
+	 
 	ret = rtw89_write16_mdio_clr(rtwdev, RAC_CTRL_PPR_V1, B_AX_DIV, phy_rate);
 	if (ret) {
 		rtw89_err(rtwdev, "[ERR]mdio_w16_pcie %X\n", RAC_CTRL_PPR_V1);
 		goto end;
 	}
 
-	/* Obtain div and margin */
+	 
 	ret = __get_target(rtwdev, &tar, phy_rate);
 	if (ret) {
 		rtw89_err(rtwdev, "[ERR]1st get target fail %d\n", ret);
@@ -2050,19 +2035,19 @@ static int rtw89_pci_auto_refclk_cal(struct rtw89_dev *rtwdev, bool autook_en)
 		goto end;
 	}
 
-	/* Enable function */
+	 
 	ret = rtw89_write16_mdio_set(rtwdev, RAC_CTRL_PPR_V1, B_AX_CALIB_EN, phy_rate);
 	if (ret) {
 		rtw89_err(rtwdev, "[ERR]mdio_w16_pcie %X\n", RAC_CTRL_PPR_V1);
 		goto end;
 	}
 
-	/* CLK delay = 0 */
+	 
 	ret = rtw89_pci_write_config_byte(rtwdev, RTW89_PCIE_CLK_CTRL,
 					  PCIE_CLKDLY_HW_0);
 
 end:
-	/* Set L1BD to ori */
+	 
 	if (l1_flag) {
 		ret = rtw89_pci_write_config_byte(rtwdev, RTW89_PCIE_L1_CTRL,
 						  bdr_ori);
@@ -2317,7 +2302,7 @@ static void rtw89_pci_clr_idx_all(struct rtw89_dev *rtwdev)
 	if (chip_id == RTL8852A || chip_id == RTL8852C)
 		val |= B_AX_CLR_ACH4_IDX | B_AX_CLR_ACH5_IDX |
 		       B_AX_CLR_ACH6_IDX | B_AX_CLR_ACH7_IDX;
-	/* clear DMA indexes */
+	 
 	rtw89_write32_set(rtwdev, R_AX_TXBD_RWPTR_CLR1, val);
 	if (chip_id == RTL8852A || chip_id == RTL8852C)
 		rtw89_write32_set(rtwdev, txbd_rwptr_clr2,
@@ -2482,7 +2467,7 @@ static int rtw89_pci_ops_deinit(struct rtw89_dev *rtwdev)
 	const struct rtw89_pci_info *info = rtwdev->pci_info;
 
 	if (rtwdev->chip->chip_id == RTL8852A) {
-		/* ltr sw trigger */
+		 
 		rtw89_write32_set(rtwdev, R_AX_LTR_CTRL_0, B_AX_APP_LTR_IDLE);
 	}
 	info->ltr_set(rtwdev, false);
@@ -2536,7 +2521,7 @@ static int rtw89_pci_ops_mac_pre_init(struct rtw89_dev *rtwdev)
 
 	rtw89_write32_set(rtwdev, info->dma_stop1.addr, B_AX_STOP_WPDMA);
 
-	/* stop DMA activities */
+	 
 	rtw89_pci_ctrl_dma_all(rtwdev, false);
 
 	ret = rtw89_pci_poll_dma_all_idle(rtwdev);
@@ -2548,7 +2533,7 @@ static int rtw89_pci_ops_mac_pre_init(struct rtw89_dev *rtwdev)
 	rtw89_pci_clr_idx_all(rtwdev);
 	rtw89_pci_mode_op(rtwdev);
 
-	/* fill TRX BD indexes */
+	 
 	rtw89_pci_ops_reset(rtwdev);
 
 	ret = rtw89_pci_rst_bdram_pcie(rtwdev);
@@ -2557,11 +2542,11 @@ static int rtw89_pci_ops_mac_pre_init(struct rtw89_dev *rtwdev)
 		return ret;
 	}
 
-	/* disable all channels except to FW CMD channel to download firmware */
+	 
 	rtw89_pci_ctrl_txdma_ch_pcie(rtwdev, false);
 	rtw89_pci_ctrl_txdma_fw_ch_pcie(rtwdev, true);
 
-	/* start DMA activities */
+	 
 	rtw89_pci_ctrl_dma_all(rtwdev, true);
 
 	return 0;
@@ -2661,20 +2646,20 @@ static int rtw89_pci_ops_mac_post_init(struct rtw89_dev *rtwdev)
 		return ret;
 	}
 	if (chip_id == RTL8852A) {
-		/* ltr sw trigger */
+		 
 		rtw89_write32_set(rtwdev, R_AX_LTR_CTRL_0, B_AX_APP_LTR_ACT);
 	}
 	if (chip_id == RTL8852A || chip_id == RTL8852B) {
-		/* ADDR info 8-byte mode */
+		 
 		rtw89_write32_set(rtwdev, R_AX_TX_ADDRESS_INFO_MODE_SETTING,
 				  B_AX_HOST_ADDR_INFO_8B_SEL);
 		rtw89_write32_clr(rtwdev, R_AX_PKTIN_SETTING, B_AX_WD_ADDR_INFO_LENGTH);
 	}
 
-	/* enable DMA for all queues */
+	 
 	rtw89_pci_ctrl_txdma_ch_pcie(rtwdev, true);
 
-	/* Release PCI IO */
+	 
 	rtw89_write32_clr(rtwdev, info->dma_stop1.addr,
 			  B_AX_STOP_WPDMA | B_AX_STOP_PCIEIO);
 
@@ -2903,7 +2888,7 @@ static int rtw89_pci_alloc_tx_wd_ring(struct rtw89_dev *rtwdev,
 	u32 page_offset;
 	int i;
 
-	/* FWCMD queue doesn't use txwd as pages */
+	 
 	if (txch == RTW89_TXCH_CH12)
 		return 0;
 
@@ -3503,22 +3488,7 @@ static void rtw89_pci_link_cfg(struct rtw89_dev *rtwdev)
 	u16 link_ctrl;
 	int ret;
 
-	/* Though there is standard PCIE configuration space to set the
-	 * link control register, but by Realtek's design, driver should
-	 * check if host supports CLKREQ/ASPM to enable the HW module.
-	 *
-	 * These functions are implemented by two HW modules associated,
-	 * one is responsible to access PCIE configuration space to
-	 * follow the host settings, and another is in charge of doing
-	 * CLKREQ/ASPM mechanisms, it is default disabled. Because sometimes
-	 * the host does not support it, and due to some reasons or wrong
-	 * settings (ex. CLKREQ# not Bi-Direction), it could lead to device
-	 * loss if HW misbehaves on the link.
-	 *
-	 * Hence it's designed that driver should first check the PCIE
-	 * configuration space is sync'ed and enabled, then driver can turn
-	 * on the other module that is actually working on the mechanism.
-	 */
+	 
 	ret = pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &link_ctrl);
 	if (ret) {
 		rtw89_err(rtwdev, "failed to read PCI cap, ret=%d\n", ret);
@@ -3754,7 +3724,7 @@ static void rtw89_pci_l2_hci_ldo(struct rtw89_dev *rtwdev)
 	if (rtwdev->chip->chip_id == RTL8852C)
 		return;
 
-	/* Hardware need write the reg twice to ensure the setting work */
+	 
 	rtw89_pci_write_config_byte(rtwdev, RTW89_PCIE_RST_MSTATE,
 				    RTW89_PCIE_BIT_CFG_RST_MSTATE);
 	rtw89_pci_write_config_byte(rtwdev, RTW89_PCIE_RST_MSTATE,

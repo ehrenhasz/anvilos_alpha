@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2023 Advanced Micro Devices, Inc.
-//
-// Authors: Syed Saba Kareem <Syed.SabaKareem@amd.com>
-//
 
-/*
- * Common file to be used by amd platforms
- */
+
+
+
+
+
+
+
+
+
+ 
 
 #include "amd.h"
 #include <linux/pci.h>
@@ -51,7 +49,7 @@ static void set_acp_pdm_ring_buffer(struct snd_pcm_substream *substream,
 	pdm_size = frames_to_bytes(runtime, runtime->buffer_size);
 	physical_addr = stream->reg_offset + MEM_WINDOW_START;
 
-	/* Init ACP PDM Ring buffer */
+	 
 	writel(physical_addr, adata->acp_base + ACP_WOV_RX_RINGBUFADDR);
 	writel(pdm_size, adata->acp_base + ACP_WOV_RX_RINGBUFSIZE);
 	writel(period_bytes, adata->acp_base + ACP_WOV_RX_INTR_WATERMARK_SIZE);
@@ -65,7 +63,7 @@ static void set_acp_pdm_clk(struct snd_pcm_substream *substream,
 	struct acp_dev_data *adata = dev_get_drvdata(dev);
 	unsigned int pdm_ctrl;
 
-	/* Enable default ACP PDM clk */
+	 
 	writel(PDM_CLK_FREQ_MASK, adata->acp_base + ACP_WOV_CLK_CTRL);
 	pdm_ctrl = readl(adata->acp_base + ACP_WOV_MISC_CTRL);
 	pdm_ctrl |= PDM_MISC_CTRL_MASK;
@@ -82,11 +80,11 @@ void restore_acp_pdm_params(struct snd_pcm_substream *substream,
 
 	soc_runtime = asoc_substream_to_rtd(substream);
 	dai = asoc_rtd_to_cpu(soc_runtime, 0);
-	/* Programming channel mask and sampling rate */
+	 
 	writel(adata->ch_mask, adata->acp_base + ACP_WOV_PDM_NO_OF_CHANNELS);
 	writel(PDM_DEC_64, adata->acp_base + ACP_WOV_PDM_DECIMATION_FACTOR);
 
-	/* Enabling ACP Pdm interuppts */
+	 
 	ext_int_ctrl = readl(ACP_EXTERNAL_INTR_CNTL(adata, 0));
 	ext_int_ctrl |= PDM_DMA_INTR_MASK;
 	writel(ext_int_ctrl, ACP_EXTERNAL_INTR_CNTL(adata, 0));
@@ -294,7 +292,7 @@ int acp_init(struct acp_chip_info *chip)
 {
 	int ret;
 
-	/* power on */
+	 
 	ret = acp_power_on(chip);
 	if (ret) {
 		pr_err("ACP power on failed\n");
@@ -302,7 +300,7 @@ int acp_init(struct acp_chip_info *chip)
 	}
 	writel(0x01, chip->base + ACP_CONTROL);
 
-	/* Reset */
+	 
 	ret = acp_reset(chip->base);
 	if (ret) {
 		pr_err("ACP reset failed\n");
@@ -316,7 +314,7 @@ int acp_deinit(void __iomem *base)
 {
 	int ret;
 
-	/* Reset */
+	 
 	ret = acp_reset(base);
 	if (ret)
 		return ret;

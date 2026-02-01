@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * An example software sink buffer for Intel TH MSU.
- *
- * Copyright (C) 2019 Intel Corporation.
- */
+
+ 
 
 #include <linux/intel_th.h>
 #include <linux/module.h>
@@ -47,7 +43,7 @@ static void msu_sink_unassign(void *data)
 	kfree(priv);
 }
 
-/* See also: msc.c: __msc_buffer_win_alloc() */
+ 
 static int msu_sink_alloc_window(void *data, struct sg_table **sgt, size_t size)
 {
 	struct msu_sink_private *priv = data;
@@ -80,7 +76,7 @@ static int msu_sink_alloc_window(void *data, struct sg_table **sgt, size_t size)
 	return nents;
 }
 
-/* See also: msc.c: __msc_buffer_win_free() */
+ 
 static void msu_sink_free_window(void *data, struct sg_table *sgt)
 {
 	struct msu_sink_private *priv = data;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qedr NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
@@ -25,7 +22,7 @@ static void _qede_rdma_dev_add(struct qede_dev *edev)
 	if (!qedr_drv)
 		return;
 
-	/* Leftovers from previous error recovery */
+	 
 	edev->rdma_info.exp_recovery = false;
 	edev->rdma_info.qedr_dev = qedr_drv->add(edev->cdev, edev->pdev,
 						 edev->ndev);
@@ -66,15 +63,13 @@ static void qede_rdma_complete_event(struct kref *ref)
 	struct qede_rdma_dev *rdma_dev =
 		container_of(ref, struct qede_rdma_dev, refcnt);
 
-	/* no more events will be added after this */
+	 
 	complete(&rdma_dev->event_comp);
 }
 
 static void qede_rdma_destroy_wq(struct qede_dev *edev)
 {
-	/* Avoid race with add_event flow, make sure it finishes before
-	 * we start accessing the list and cleaning up the work
-	 */
+	 
 	kref_put(&edev->rdma_info.refcnt, qede_rdma_complete_event);
 	wait_for_completion(&edev->rdma_info.event_comp);
 
@@ -90,7 +85,7 @@ int qede_rdma_dev_add(struct qede_dev *edev, bool recovery)
 	if (!qede_rdma_supported(edev))
 		return 0;
 
-	/* Cannot start qedr while recovering since it wasn't fully stopped */
+	 
 	if (recovery)
 		return 0;
 
@@ -118,7 +113,7 @@ void qede_rdma_dev_remove(struct qede_dev *edev, bool recovery)
 	if (!qede_rdma_supported(edev))
 		return;
 
-	/* Cannot remove qedr while recovering since it wasn't fully stopped */
+	 
 	if (!recovery) {
 		qede_rdma_destroy_wq(edev);
 		mutex_lock(&qedr_dev_list_lock);
@@ -216,7 +211,7 @@ void qede_rdma_unregister_driver(struct qedr_driver *drv)
 
 	mutex_lock(&qedr_dev_list_lock);
 	list_for_each_entry(edev, &qedr_dev_list, rdma_info.entry) {
-		/* If device has experienced recovery it was already removed */
+		 
 		if (edev->rdma_info.qedr_dev && !edev->rdma_info.exp_recovery)
 			_qede_rdma_dev_remove(edev);
 	}
@@ -307,18 +302,16 @@ static void qede_rdma_add_event(struct qede_dev *edev,
 {
 	struct qede_rdma_event_work *event_node;
 
-	/* If a recovery was experienced avoid adding the event */
+	 
 	if (edev->rdma_info.exp_recovery)
 		return;
 
 	if (!edev->rdma_info.qedr_dev || !edev->rdma_info.rdma_wq)
 		return;
 
-	/* We don't want the cleanup flow to start while we're allocating and
-	 * scheduling the work
-	 */
+	 
 	if (!kref_get_unless_zero(&edev->rdma_info.refcnt))
-		return; /* already being destroyed */
+		return;  
 
 	event_node = qede_rdma_get_free_event_node(edev);
 	if (!event_node)

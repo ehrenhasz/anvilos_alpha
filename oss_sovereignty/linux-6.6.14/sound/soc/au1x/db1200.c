@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DB1200/DB1300/DB1550 ASoC audio fabric support code.
- *
- * (c) 2008-2011 Manuel Lauss <manuel.lauss@googlemail.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -45,7 +40,7 @@ static const struct platform_device_id db1200_pids[] = {
 	{},
 };
 
-/*-------------------------  AC97 PART  ---------------------------*/
+ 
 
 SND_SOC_DAILINK_DEFS(db1200_ac97,
 	DAILINK_COMP_ARRAY(COMP_CPU("au1xpsc_ac97.1")),
@@ -90,14 +85,14 @@ static struct snd_soc_card db1550_ac97_machine = {
 	.num_links	= 1,
 };
 
-/*-------------------------  I2S PART  ---------------------------*/
+ 
 
 static int db1200_i2s_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 
-	/* WM8731 has its own 12MHz crystal */
+	 
 	snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_XTAL,
 				12000000, SND_SOC_CLOCK_IN);
 
@@ -171,7 +166,7 @@ static struct snd_soc_card db1550_i2s_machine = {
 	.num_links	= 1,
 };
 
-/*-------------------------  COMMON PART  ---------------------------*/
+ 
 
 static struct snd_soc_card *db1200_cards[] = {
 	&db1200_ac97_machine,

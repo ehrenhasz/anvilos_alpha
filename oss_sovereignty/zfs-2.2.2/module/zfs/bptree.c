@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/arc.h>
 #include <sys/bptree.h>
@@ -35,25 +14,15 @@
 #include <sys/dnode.h>
 #include <sys/spa.h>
 
-/*
- * A bptree is a queue of root block pointers from destroyed datasets. When a
- * dataset is destroyed its root block pointer is put on the end of the pool's
- * bptree queue so the dataset's blocks can be freed asynchronously by
- * dsl_scan_sync. This allows the delete operation to finish without traversing
- * all the dataset's blocks.
- *
- * Note that while bt_begin and bt_end are only ever incremented in this code,
- * they are effectively reset to 0 every time the entire bptree is freed because
- * the bptree's object is destroyed and re-created.
- */
+ 
 
 struct bptree_args {
-	bptree_phys_t *ba_phys;	/* data in bonus buffer, dirtied if freeing */
-	boolean_t ba_free;	/* true if freeing during traversal */
+	bptree_phys_t *ba_phys;	 
+	boolean_t ba_free;	 
 
-	bptree_itor_t *ba_func;	/* function to call for each blockpointer */
-	void *ba_arg;		/* caller supplied argument to ba_func */
-	dmu_tx_t *ba_tx;	/* caller supplied tx, NULL if not freeing */
+	bptree_itor_t *ba_func;	 
+	void *ba_arg;		 
+	dmu_tx_t *ba_tx;	 
 } bptree_args_t;
 
 uint64_t
@@ -67,10 +36,7 @@ bptree_alloc(objset_t *os, dmu_tx_t *tx)
 	    SPA_OLD_MAXBLOCKSIZE, DMU_OTN_UINT64_METADATA,
 	    sizeof (bptree_phys_t), tx);
 
-	/*
-	 * Bonus buffer contents are already initialized to 0, but for
-	 * readability we make it explicit.
-	 */
+	 
 	VERIFY3U(0, ==, dmu_bonus_hold(os, obj, FTAG, &db));
 	dmu_buf_will_dirty(db, tx);
 	bt = db->db_data;
@@ -123,11 +89,7 @@ bptree_add(objset_t *os, uint64_t obj, blkptr_t *bp, uint64_t birth_txg,
 	bptree_phys_t *bt;
 	bptree_entry_phys_t *bte;
 
-	/*
-	 * bptree objects are in the pool mos, therefore they can only be
-	 * modified in syncing context. Furthermore, this is only modified
-	 * by the sync thread, so no locking is necessary.
-	 */
+	 
 	ASSERT(dmu_tx_is_syncing(tx));
 
 	VERIFY3U(0, ==, dmu_bonus_hold(os, obj, FTAG, &db));
@@ -168,22 +130,7 @@ bptree_visit_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 	return (err);
 }
 
-/*
- * If "free" is set:
- *  - It is assumed that "func" will be freeing the block pointers.
- *  - If "func" returns nonzero, the bookmark will be remembered and
- *    iteration will be restarted from this point on next invocation.
- *  - If an i/o error is encountered (e.g. "func" returns EIO or ECKSUM),
- *    bptree_iterate will remember the bookmark, continue traversing
- *    any additional entries, and return 0.
- *
- * If "free" is not set, traversal will stop and return an error if
- * an i/o error is encountered.
- *
- * In either case, if zfs_free_leak_on_eio is set, i/o errors will be
- * ignored and traversal will continue (i.e. TRAVERSE_HARD will be passed to
- * traverse_dataset_destroyed()).
- */
+ 
 int
 bptree_iterate(objset_t *os, uint64_t obj, boolean_t free, bptree_itor_t func,
     void *arg, dmu_tx_t *tx)
@@ -234,14 +181,9 @@ bptree_iterate(objset_t *os, uint64_t obj, boolean_t free, bptree_itor_t func,
 		    bte.be_birth_txg, &bte.be_zb, flags,
 		    bptree_visit_cb, &ba);
 		if (free) {
-			/*
-			 * The callback has freed the visited block pointers.
-			 * Record our traversal progress on disk, either by
-			 * updating this record's bookmark, or by logically
-			 * removing this record by advancing bt_begin.
-			 */
+			 
 			if (err != 0) {
-				/* save bookmark for future resume */
+				 
 				ASSERT3U(bte.be_zb.zb_objset, ==,
 				    ZB_DESTROYED_OBJSET);
 				ASSERT0(bte.be_zb.zb_level);
@@ -249,23 +191,14 @@ bptree_iterate(objset_t *os, uint64_t obj, boolean_t free, bptree_itor_t func,
 				    sizeof (bte), &bte, tx);
 				if (err == EIO || err == ECKSUM ||
 				    err == ENXIO) {
-					/*
-					 * Skip the rest of this tree and
-					 * continue on to the next entry.
-					 */
+					 
 					err = 0;
 					ioerr = B_TRUE;
 				} else {
 					break;
 				}
 			} else if (ioerr) {
-				/*
-				 * This entry is finished, but there were
-				 * i/o errors on previous entries, so we
-				 * can't adjust bt_begin.  Set this entry's
-				 * be_birth_txg such that it will be
-				 * treated as a no-op in future traversals.
-				 */
+				 
 				bte.be_birth_txg = UINT64_MAX;
 				dmu_write(os, obj, i * sizeof (bte),
 				    sizeof (bte), &bte, tx);
@@ -284,7 +217,7 @@ bptree_iterate(objset_t *os, uint64_t obj, boolean_t free, bptree_itor_t func,
 	ASSERT(!free || err != 0 || ioerr ||
 	    ba.ba_phys->bt_begin == ba.ba_phys->bt_end);
 
-	/* if all blocks are free there should be no used space */
+	 
 	if (ba.ba_phys->bt_begin == ba.ba_phys->bt_end) {
 		if (zfs_free_leak_on_eio) {
 			ba.ba_phys->bt_bytes = 0;

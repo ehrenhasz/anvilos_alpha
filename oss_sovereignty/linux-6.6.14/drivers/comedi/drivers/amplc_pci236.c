@@ -1,36 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/amplc_pci236.c
- * Driver for Amplicon PCI236 DIO boards.
- *
- * Copyright (C) 2002-2014 MEV Ltd. <https://www.mev.co.uk/>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
-/*
- * Driver: amplc_pci236
- * Description: Amplicon PCI236
- * Author: Ian Abbott <abbotti@mev.co.uk>
- * Devices: [Amplicon] PCI236 (amplc_pci236)
- * Updated: Fri, 25 Jul 2014 15:32:40 +0000
- * Status: works
- *
- * Configuration options:
- *   none
- *
- * Manual configuration of PCI board (PCI236) is not supported; it is
- * configured automatically.
- *
- * The PCI236 board has a single 8255 appearing as subdevice 0.
- *
- * Subdevice 1 pretends to be a digital input device, but it always
- * returns 0 when read. However, if you run a command with
- * scan_begin_src=TRIG_EXT, a rising edge on port C bit 3 acts as an
- * external trigger, which can be used to wake up tasks.  This is like
- * the comedi_parport device.  If no interrupt is connected, then
- * subdevice 1 is unused.
- */
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -39,13 +9,13 @@
 #include "amplc_pc236.h"
 #include "plx9052.h"
 
-/* Disable, and clear, interrupts */
+ 
 #define PCI236_INTR_DISABLE	(PLX9052_INTCSR_LI1POL |	\
 				 PLX9052_INTCSR_LI2POL |	\
 				 PLX9052_INTCSR_LI1SEL |	\
 				 PLX9052_INTCSR_LI1CLRINT)
 
-/* Enable, and clear, interrupts */
+ 
 #define PCI236_INTR_ENABLE	(PLX9052_INTCSR_LI1ENAB |	\
 				 PLX9052_INTCSR_LI1POL |	\
 				 PLX9052_INTCSR_LI2POL |	\
@@ -57,7 +27,7 @@ static void pci236_intr_update_cb(struct comedi_device *dev, bool enable)
 {
 	struct pc236_private *devpriv = dev->private;
 
-	/* this will also clear the "local interrupt 1" latch */
+	 
 	outl(enable ? PCI236_INTR_ENABLE : PCI236_INTR_DISABLE,
 	     devpriv->lcr_iobase + PLX9052_INTCSR);
 }
@@ -66,11 +36,11 @@ static bool pci236_intr_chk_clr_cb(struct comedi_device *dev)
 {
 	struct pc236_private *devpriv = dev->private;
 
-	/* check if interrupt occurred */
+	 
 	if (!(inl(devpriv->lcr_iobase + PLX9052_INTCSR) &
 	      PLX9052_INTCSR_LI1STAT))
 		return false;
-	/* clear the interrupt */
+	 
 	pci236_intr_update_cb(dev, devpriv->enable_irq);
 	return true;
 }

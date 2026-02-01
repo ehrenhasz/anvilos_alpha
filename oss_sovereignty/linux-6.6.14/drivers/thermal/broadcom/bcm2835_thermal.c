@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Broadcom BCM2835 SoC temperature sensor
- *
- * Copyright (C) 2016 Martin Sperl
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -26,10 +22,7 @@
 #define BCM2835_TS_TSENSCTL_PRWDW		BIT(0)
 #define BCM2835_TS_TSENSCTL_RSTB		BIT(1)
 
-/*
- * bandgap reference voltage in 6 mV increments
- * 000b = 1178 mV, 001b = 1184 mV, ... 111b = 1220 mV
- */
+ 
 #define BCM2835_TS_TSENSCTL_CTRL_BITS		3
 #define BCM2835_TS_TSENSCTL_CTRL_SHIFT		2
 #define BCM2835_TS_TSENSCTL_CTRL_MASK		    \
@@ -46,10 +39,7 @@
 	GENMASK(BCM2835_TS_TSENSCTL_THOLD_BITS +     \
 		BCM2835_TS_TSENSCTL_THOLD_SHIFT - 1, \
 		BCM2835_TS_TSENSCTL_THOLD_SHIFT)
-/*
- * time how long the block to be asserted in reset
- * which based on a clock counter (TSENS clock assumed)
- */
+ 
 #define BCM2835_TS_TSENSCTL_RSTDELAY_SHIFT	18
 #define BCM2835_TS_TSENSCTL_RSTDELAY_BITS	8
 #define BCM2835_TS_TSENSCTL_REGULEN		BIT(26)
@@ -139,13 +129,7 @@ static const struct thermal_zone_device_ops bcm2835_thermal_ops = {
 	.get_temp = bcm2835_thermal_get_temp,
 };
 
-/*
- * Note: as per Raspberry Foundation FAQ
- * (https://www.raspberrypi.org/help/faqs/#performanceOperatingTemperature)
- * the recommended temperature range for the SoC -40C to +85C
- * so the trip limit is set to 80C.
- * this applies to all the BCM283X SoC
- */
+ 
 
 static const struct of_device_id bcm2835_thermal_of_match_table[] = {
 	{
@@ -203,7 +187,7 @@ static int bcm2835_thermal_probe(struct platform_device *pdev)
 			 "Clock %pCn running at %lu Hz is outside of the recommended range: 1.92 to 5MHz\n",
 			 data->clk, rate);
 
-	/* register of thermal sensor and get info from DT */
+	 
 	tz = devm_thermal_of_zone_register(&pdev->dev, 0, data,
 					   &bcm2835_thermal_ops);
 	if (IS_ERR(tz)) {
@@ -214,12 +198,7 @@ static int bcm2835_thermal_probe(struct platform_device *pdev)
 		goto err_clk;
 	}
 
-	/*
-	 * right now the FW does set up the HW-block, so we are not
-	 * touching the configuration registers.
-	 * But if the HW is not enabled, then set it up
-	 * using "sane" values used by the firmware right now.
-	 */
+	 
 	val = readl(data->regs + BCM2835_TS_TSENSCTL);
 	if (!(val & BCM2835_TS_TSENSCTL_RSTB)) {
 		struct thermal_trip trip;
@@ -227,10 +206,7 @@ static int bcm2835_thermal_probe(struct platform_device *pdev)
 
 		slope = thermal_zone_get_slope(tz);
 		offset = thermal_zone_get_offset(tz);
-		/*
-		 * For now we deal only with critical, otherwise
-		 * would need to iterate
-		 */
+		 
 		err = thermal_zone_get_trip(tz, 0, &trip);
 		if (err < 0) {
 			dev_err(&pdev->dev,
@@ -239,21 +215,21 @@ static int bcm2835_thermal_probe(struct platform_device *pdev)
 			goto err_tz;
 		}
 
-		/* set bandgap reference voltage and enable voltage regulator */
+		 
 		val = (BCM2835_TS_TSENSCTL_CTRL_DEFAULT <<
 		       BCM2835_TS_TSENSCTL_CTRL_SHIFT) |
 		      BCM2835_TS_TSENSCTL_REGULEN;
 
-		/* use the recommended reset duration */
+		 
 		val |= (0xFE << BCM2835_TS_TSENSCTL_RSTDELAY_SHIFT);
 
-		/*  trip_adc value from info */
+		 
 		val |= bcm2835_thermal_temp2adc(trip.temperature,
 						offset,
 						slope)
 			<< BCM2835_TS_TSENSCTL_THOLD_SHIFT;
 
-		/* write the value back to the register as 2 steps */
+		 
 		writel(val, data->regs + BCM2835_TS_TSENSCTL);
 		val |= BCM2835_TS_TSENSCTL_RSTB;
 		writel(val, data->regs + BCM2835_TS_TSENSCTL);
@@ -263,10 +239,7 @@ static int bcm2835_thermal_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, data);
 
-	/*
-	 * Thermal_zone doesn't enable hwmon as default,
-	 * enable it here
-	 */
+	 
 	err = thermal_add_hwmon_sysfs(tz);
 	if (err)
 		goto err_tz;

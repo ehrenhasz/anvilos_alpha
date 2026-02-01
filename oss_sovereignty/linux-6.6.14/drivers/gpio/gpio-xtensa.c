@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 TangoTec Ltd.
- * Author: Baruch Siach <baruch@tkos.co.il>
- *
- * Driver for the Xtensa LX4 GPIO32 Option
- *
- * Documentation: Xtensa LX4 Microprocessor Data Book, Section 2.22
- *
- * GPIO32 is a standard optional extension to the Xtensa architecture core that
- * provides preconfigured output and input ports for intra SoC signaling. The
- * GPIO32 option is implemented as 32bit Tensilica Instruction Extension (TIE)
- * output state called EXPSTATE, and 32bit input wire called IMPWIRE. This
- * driver treats input and output states as two distinct devices.
- *
- * Access to GPIO32 specific instructions is controlled by the CPENABLE
- * (Coprocessor Enable Bits) register. By default Xtensa Linux startup code
- * disables access to all coprocessors. This driver sets the CPENABLE bit
- * corresponding to GPIO32 before any GPIO32 specific instruction, and restores
- * CPENABLE state after that.
- *
- * This driver is currently incompatible with SMP. The GPIO32 extension is not
- * guaranteed to be available in all cores. Moreover, each core controls a
- * different set of IO wires. A theoretical SMP aware version of this driver
- * would need to have a per core workqueue to do the actual GPIO manipulation.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -31,7 +7,7 @@
 #include <linux/bitops.h>
 #include <linux/platform_device.h>
 
-#include <asm/coprocessor.h> /* CPENABLE read/write macros */
+#include <asm/coprocessor.h>  
 
 #ifndef XCHAL_CP_ID_XTIOP
 #error GPIO32 option is not enabled for your xtensa core variant
@@ -59,7 +35,7 @@ static inline void disable_cp(unsigned long flags, unsigned long cpenable)
 
 static inline unsigned long enable_cp(unsigned long *cpenable)
 {
-	*cpenable = 0; /* avoid uninitialized value warning */
+	*cpenable = 0;  
 	return 0;
 }
 
@@ -67,11 +43,11 @@ static inline void disable_cp(unsigned long flags, unsigned long cpenable)
 {
 }
 
-#endif /* XCHAL_HAVE_CP */
+#endif  
 
 static int xtensa_impwire_get_direction(struct gpio_chip *gc, unsigned offset)
 {
-	return GPIO_LINE_DIRECTION_IN; /* input only */
+	return GPIO_LINE_DIRECTION_IN;  
 }
 
 static int xtensa_impwire_get_value(struct gpio_chip *gc, unsigned offset)
@@ -89,12 +65,12 @@ static int xtensa_impwire_get_value(struct gpio_chip *gc, unsigned offset)
 static void xtensa_impwire_set_value(struct gpio_chip *gc, unsigned offset,
 				    int value)
 {
-	BUG(); /* output only; should never be called */
+	BUG();  
 }
 
 static int xtensa_expstate_get_direction(struct gpio_chip *gc, unsigned offset)
 {
-	return GPIO_LINE_DIRECTION_OUT; /* output only */
+	return GPIO_LINE_DIRECTION_OUT;  
 }
 
 static int xtensa_expstate_get_value(struct gpio_chip *gc, unsigned offset)

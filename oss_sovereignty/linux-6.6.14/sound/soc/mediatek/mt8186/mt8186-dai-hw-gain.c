@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI HW Gain Control
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include "mt8186-afe-common.h"
@@ -12,7 +12,7 @@
 #define HW_GAIN_1_EN_W_NAME "HW GAIN 1 Enable"
 #define HW_GAIN_2_EN_W_NAME "HW GAIN 2 Enable"
 
-/* dai component */
+ 
 static const struct snd_kcontrol_new mtk_hw_gain1_in_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("CONNSYS_I2S_CH1 Switch", AFE_CONN13_1,
 				    I_CONNSYS_I2S_CH1, 1, 0),
@@ -55,10 +55,10 @@ static int mtk_hw_gain_event(struct snd_soc_dapm_widget *w,
 			gain_con1 = AFE_GAIN2_CON1;
 		}
 
-		/* let hw gain ramp up, set cur gain to 0 */
+		 
 		regmap_update_bits(afe->regmap, gain_cur, AFE_GAIN1_CUR_MASK_SFT, 0);
 
-		/* set target gain to 0 */
+		 
 		regmap_update_bits(afe->regmap, gain_con1, GAIN1_TARGET_MASK_SFT, 0);
 		break;
 	default:
@@ -69,7 +69,7 @@ static int mtk_hw_gain_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget mtk_dai_hw_gain_widgets[] = {
-	/* inter-connections */
+	 
 	SND_SOC_DAPM_MIXER("HW_GAIN1_IN_CH1", SND_SOC_NOPM, 0, 0,
 			   mtk_hw_gain1_in_ch1_mix,
 			   ARRAY_SIZE(mtk_hw_gain1_in_ch1_mix)),
@@ -121,7 +121,7 @@ static const struct snd_kcontrol_new mtk_hw_gain_controls[] = {
 		   GAIN2_TARGET_SFT, GAIN2_TARGET_MASK, 0),
 };
 
-/* dai ops */
+ 
 static int mtk_dai_gain_hw_params(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params *params,
 				  struct snd_soc_dai *dai)
@@ -133,14 +133,14 @@ static int mtk_dai_gain_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(afe->dev, "%s(), id %d, stream %d, rate %d\n",
 		__func__, dai->id, substream->stream, rate);
 
-	/* rate */
+	 
 	regmap_update_bits(afe->regmap,
 			   dai->id == MT8186_DAI_HW_GAIN_1 ?
 			   AFE_GAIN1_CON0 : AFE_GAIN2_CON0,
 			   GAIN1_MODE_MASK_SFT,
 			   rate_reg << GAIN1_MODE_SFT);
 
-	/* sample per step */
+	 
 	regmap_update_bits(afe->regmap,
 			   dai->id == MT8186_DAI_HW_GAIN_1 ?
 			   AFE_GAIN1_CON0 : AFE_GAIN2_CON0,
@@ -155,7 +155,7 @@ static const struct snd_soc_dai_ops mtk_dai_gain_ops = {
 	.hw_params = mtk_dai_gain_hw_params,
 };
 
-/* dai driver */
+ 
 #define MTK_HW_GAIN_RATES (SNDRV_PCM_RATE_8000_48000 |\
 			   SNDRV_PCM_RATE_88200 |\
 			   SNDRV_PCM_RATE_96000 |\

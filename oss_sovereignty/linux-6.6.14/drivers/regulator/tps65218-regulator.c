@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tps65218-regulator.c
- *
- * Regulator driver for TPS65218 PMIC
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mod_devicetable.h>
@@ -70,11 +64,11 @@ static int tps65218_pmic_set_voltage_sel(struct regulator_dev *dev,
 	struct tps65218 *tps = rdev_get_drvdata(dev);
 	unsigned int rid = rdev_get_id(dev);
 
-	/* Set the voltage based on vsel value and write protect level is 2 */
+	 
 	ret = tps65218_set_bits(tps, dev->desc->vsel_reg, dev->desc->vsel_mask,
 				selector, TPS65218_PROTECT_L1);
 
-	/* Set GO bit for DCDC1/2 to initiate voltage transistion */
+	 
 	switch (rid) {
 	case TPS65218_DCDC_1:
 	case TPS65218_DCDC_2:
@@ -96,7 +90,7 @@ static int tps65218_pmic_enable(struct regulator_dev *dev)
 	if (rid < TPS65218_DCDC_1 || rid > TPS65218_LDO_1)
 		return -EINVAL;
 
-	/* Enable the regulator and password protection is level 1 */
+	 
 	return tps65218_set_bits(tps, dev->desc->enable_reg,
 				 dev->desc->enable_mask, dev->desc->enable_mask,
 				 TPS65218_PROTECT_L1);
@@ -110,7 +104,7 @@ static int tps65218_pmic_disable(struct regulator_dev *dev)
 	if (rid < TPS65218_DCDC_1 || rid > TPS65218_LDO_1)
 		return -EINVAL;
 
-	/* Disable the regulator and password protection is level 1 */
+	 
 	return tps65218_clear_bits(tps, dev->desc->enable_reg,
 				   dev->desc->enable_mask, TPS65218_PROTECT_L1);
 }
@@ -136,11 +130,7 @@ static int tps65218_pmic_set_suspend_disable(struct regulator_dev *dev)
 	if (rid > TPS65218_LDO_1)
 		return -EINVAL;
 
-	/*
-	 * Certain revisions of TPS65218 will need to have DCDC3 regulator
-	 * enabled always, otherwise an immediate system reboot will occur
-	 * during poweroff.
-	 */
+	 
 	if (rid == TPS65218_DCDC_3 && tps->rev == TPS65218_REV_2_1)
 		return 0;
 
@@ -156,7 +146,7 @@ static int tps65218_pmic_set_suspend_disable(struct regulator_dev *dev)
 				 tps->strobes[rid], TPS65218_PROTECT_L1);
 }
 
-/* Operations permitted on DCDC1, DCDC2 */
+ 
 static const struct regulator_ops tps65218_dcdc12_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= tps65218_pmic_enable,
@@ -170,7 +160,7 @@ static const struct regulator_ops tps65218_dcdc12_ops = {
 	.set_suspend_disable	= tps65218_pmic_set_suspend_disable,
 };
 
-/* Operations permitted on DCDC3, DCDC4 and LDO1 */
+ 
 static const struct regulator_ops tps65218_ldo1_dcdc34_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= tps65218_pmic_enable,
@@ -232,7 +222,7 @@ static const struct regulator_ops tps65218_ls23_ops = {
 	.get_current_limit	= regulator_get_current_limit_regmap,
 };
 
-/* Operations permitted on DCDC5, DCDC6 */
+ 
 static const struct regulator_ops tps65218_dcdc56_pmic_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= tps65218_pmic_enable,
@@ -314,7 +304,7 @@ static int tps65218_regulator_probe(struct platform_device *pdev)
 	config.driver_data = tps;
 	config.regmap = tps->regmap;
 
-	/* Allocate memory for strobes */
+	 
 	tps->strobes = devm_kcalloc(&pdev->dev,
 				    TPS65218_NUM_REGULATOR, sizeof(u8),
 				    GFP_KERNEL);
@@ -342,7 +332,7 @@ static int tps65218_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id tps65218_regulator_id_table[] = {
 	{ "tps65218-regulator", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65218_regulator_id_table);
 

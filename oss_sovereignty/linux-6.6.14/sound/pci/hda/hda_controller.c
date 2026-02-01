@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Implementation of primary alsa driver code base for Intel HD Audio.
- *
- *  Copyright(c) 2004 Intel Corporation. All rights reserved.
- *
- *  Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
- *                     PeiSen Hou <pshou@realtek.com.tw>
- */
+
+ 
 
 #include <linux/clocksource.h>
 #include <linux/delay.h>
@@ -18,7 +10,7 @@
 #include <linux/slab.h>
 
 #ifdef CONFIG_X86
-/* for art-tsc conversion */
+ 
 #include <asm/tsc.h>
 #endif
 
@@ -30,12 +22,12 @@
 #define CREATE_TRACE_POINTS
 #include "hda_controller_trace.h"
 
-/* DSP lock helpers */
+ 
 #define dsp_lock(dev)		snd_hdac_dsp_lock(azx_stream(dev))
 #define dsp_unlock(dev)		snd_hdac_dsp_unlock(azx_stream(dev))
 #define dsp_is_locked(dev)	snd_hdac_stream_is_locked(azx_stream(dev))
 
-/* assign a stream for the PCM */
+ 
 static inline struct azx_dev *
 azx_assign_device(struct azx *chip, struct snd_pcm_substream *substream)
 {
@@ -47,7 +39,7 @@ azx_assign_device(struct azx *chip, struct snd_pcm_substream *substream)
 	return stream_to_azx_dev(s);
 }
 
-/* release the assigned stream */
+ 
 static inline void azx_release_device(struct azx_dev *azx_dev)
 {
 	snd_hdac_stream_release(azx_stream(azx_dev));
@@ -80,9 +72,7 @@ static u64 azx_adjust_codec_delay(struct snd_pcm_substream *substream,
 	return (nsec > codec_nsecs) ? nsec - codec_nsecs : 0;
 }
 
-/*
- * PCM ops
- */
+ 
 
 static int azx_pcm_close(struct snd_pcm_substream *substream)
 {
@@ -132,7 +122,7 @@ static int azx_pcm_hw_free(struct snd_pcm_substream *substream)
 	struct azx_dev *azx_dev = get_azx_dev(substream);
 	struct hda_pcm_stream *hinfo = to_hda_pcm_stream(substream);
 
-	/* reset BDL address */
+	 
 	dsp_lock(azx_dev);
 	if (!dsp_is_locked(azx_dev))
 		snd_hdac_stream_cleanup(azx_stream(azx_dev));
@@ -185,7 +175,7 @@ static int azx_pcm_prepare(struct snd_pcm_substream *substream)
 	snd_hdac_stream_setup(azx_stream(azx_dev));
 
 	stream_tag = azx_dev->core.stream_tag;
-	/* CA-IBG chips need the playback stream starting from 1 */
+	 
 	if ((chip->driver_caps & AZX_DCAPS_CTX_WORKAROUND) &&
 	    stream_tag > chip->capture_streams)
 		stream_tag -= chip->capture_streams;
@@ -248,7 +238,7 @@ static int azx_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 
 	spin_lock(&bus->reg_lock);
 
-	/* first, set SYNC bits of corresponding streams */
+	 
 	snd_hdac_stream_sync_trigger(hstr, true, sbits, sync_reg);
 
 	snd_pcm_group_for_each_entry(s, substream) {
@@ -267,7 +257,7 @@ static int azx_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	snd_hdac_stream_sync(hstr, start, sbits);
 
 	spin_lock(&bus->reg_lock);
-	/* reset SYNC bits */
+	 
 	snd_hdac_stream_sync_trigger(hstr, false, sbits, sync_reg);
 	if (start)
 		snd_hdac_stream_timecounter_init(hstr, sbits);
@@ -297,7 +287,7 @@ unsigned int azx_get_position(struct azx *chip,
 
 	if (chip->get_position[stream])
 		pos = chip->get_position[stream](chip, azx_dev);
-	else /* use the position buffer as default */
+	else  
 		pos = azx_get_pos_posbuf(chip, azx_dev);
 
 	if (pos >= azx_dev->core.bufsize)
@@ -329,22 +319,7 @@ static snd_pcm_uframes_t azx_pcm_pointer(struct snd_pcm_substream *substream)
 			       azx_get_position(chip, azx_dev));
 }
 
-/*
- * azx_scale64: Scale base by mult/div while not overflowing sanely
- *
- * Derived from scale64_check_overflow in kernel/time/timekeeping.c
- *
- * The tmestamps for a 48Khz stream can overflow after (2^64/10^9)/48K which
- * is about 384307 ie ~4.5 days.
- *
- * This scales the calculation so that overflow will happen but after 2^64 /
- * 48000 secs, which is pretty large!
- *
- * In caln below:
- *	base may overflow, but since there isn’t any additional division
- *	performed on base it’s OK
- *	rem can’t overflow because both are 32-bit values
- */
+ 
 
 #ifdef CONFIG_X86
 static u64 azx_scale64(u64 base, u32 num, u32 den)
@@ -384,14 +359,14 @@ static int azx_get_sync_time(ktime_t *device,
 	else
 		direction = 0;
 
-	/* 0th stream tag is not used, so DMA ch 0 is for 1st stream tag */
+	 
 	do {
 		timeout = 100;
 		dma_select = (direction << GTSCC_CDMAS_DMA_DIR_SHIFT) |
 					(azx_dev->core.stream_tag - 1);
 		snd_hdac_chip_writel(azx_bus(chip), GTSCC, dma_select);
 
-		/* Enable the capture */
+		 
 		snd_hdac_chip_updatel(azx_bus(chip), GTSCC, 0, GTSCC_TSCCI_MASK);
 
 		while (timeout) {
@@ -407,18 +382,18 @@ static int azx_get_sync_time(ktime_t *device,
 			return -EIO;
 		}
 
-		/* Read wall clock counter */
+		 
 		wallclk_ctr = snd_hdac_chip_readl(azx_bus(chip), WALFCC);
 
-		/* Read TSC counter */
+		 
 		tsc_counter_l = snd_hdac_chip_readl(azx_bus(chip), TSCCL);
 		tsc_counter_h = snd_hdac_chip_readl(azx_bus(chip), TSCCU);
 
-		/* Read Link counter */
+		 
 		ll_counter_l = snd_hdac_chip_readl(azx_bus(chip), LLPCL);
 		ll_counter_h = snd_hdac_chip_readl(azx_bus(chip), LLPCU);
 
-		/* Ack: registers read done */
+		 
 		snd_hdac_chip_writel(azx_bus(chip), GTSCC, GTSCC_TSCCD_SHIFT);
 
 		tsc_counter = (tsc_counter_h << TSCCU_CCU_SHIFT) |
@@ -427,21 +402,12 @@ static int azx_get_sync_time(ktime_t *device,
 		ll_counter = (ll_counter_h << LLPC_CCU_SHIFT) |	ll_counter_l;
 		wallclk_cycles = wallclk_ctr & WALFCC_CIF_MASK;
 
-		/*
-		 * An error occurs near frame "rollover". The clocks in
-		 * frame value indicates whether this error may have
-		 * occurred. Here we use the value of 10 i.e.,
-		 * HDA_MAX_CYCLE_OFFSET
-		 */
+		 
 		if (wallclk_cycles < HDA_MAX_CYCLE_VALUE - HDA_MAX_CYCLE_OFFSET
 					&& wallclk_cycles > HDA_MAX_CYCLE_OFFSET)
 			break;
 
-		/*
-		 * Sleep before we read again, else we may again get
-		 * value near to MAX_CYCLE. Try to sleep for different
-		 * amount of time so we dont hit the same number again
-		 */
+		 
 		udelay(retry_count++);
 
 	} while (retry_count != HDA_MAX_CYCLE_READ_RETRY);
@@ -510,8 +476,8 @@ static int azx_get_time_info(struct snd_pcm_substream *substream,
 		*audio_ts = ns_to_timespec64(nsec);
 
 		audio_tstamp_report->actual_type = SNDRV_PCM_AUDIO_TSTAMP_TYPE_LINK;
-		audio_tstamp_report->accuracy_report = 1; /* rest of structure is valid */
-		audio_tstamp_report->accuracy = 42; /* 24 MHz WallClock == 42ns resolution */
+		audio_tstamp_report->accuracy_report = 1;  
+		audio_tstamp_report->accuracy = 42;  
 
 	} else if (is_link_time_supported(runtime, audio_tstamp_config)) {
 
@@ -538,7 +504,7 @@ static int azx_get_time_info(struct snd_pcm_substream *substream,
 		audio_tstamp_report->actual_type =
 			SNDRV_PCM_AUDIO_TSTAMP_TYPE_LINK_SYNCHRONIZED;
 		audio_tstamp_report->accuracy_report = 1;
-		/* 24 MHz WallClock == 42ns resolution */
+		 
 		audio_tstamp_report->accuracy = 42;
 
 	} else {
@@ -553,11 +519,11 @@ static const struct snd_pcm_hardware azx_pcm_hw = {
 				 SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
 				 SNDRV_PCM_INFO_MMAP_VALID |
-				 /* No full-resume yet implemented */
-				 /* SNDRV_PCM_INFO_RESUME |*/
+				  
+				  
 				 SNDRV_PCM_INFO_PAUSE |
 				 SNDRV_PCM_INFO_SYNC_START |
-				 SNDRV_PCM_INFO_HAS_WALL_CLOCK | /* legacy */
+				 SNDRV_PCM_INFO_HAS_WALL_CLOCK |  
 				 SNDRV_PCM_INFO_HAS_LINK_ATIME |
 				 SNDRV_PCM_INFO_NO_PERIOD_WAKEUP),
 	.formats =		SNDRV_PCM_FMTBIT_S16_LE,
@@ -604,24 +570,16 @@ static int azx_pcm_open(struct snd_pcm_substream *substream)
 	snd_pcm_limit_hw_rates(runtime);
 	snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 
-	/* avoid wrap-around with wall-clock */
+	 
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_BUFFER_TIME,
 				     20,
 				     178000000);
 
 	if (chip->align_buffer_size)
-		/* constrain buffer sizes to be multiple of 128
-		   bytes. This is more efficient in terms of memory
-		   access but isn't required by the HDA spec and
-		   prevents users from specifying exact period/buffer
-		   sizes. For example for 44.1kHz, a period size set
-		   to 20ms will be rounded to 19.59ms. */
+		 
 		buff_step = 128;
 	else
-		/* Don't enforce steps on buffer sizes, still need to
-		   be multiple of 4 bytes (HDA spec). Tested on Intel
-		   HDA controllers, may not work on all devices where
-		   option needs to be disabled */
+		 
 		buff_step = 4;
 
 	snd_pcm_hw_constraint_step(runtime, 0, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
@@ -638,7 +596,7 @@ static int azx_pcm_open(struct snd_pcm_substream *substream)
 		goto powerdown;
 	}
 	snd_pcm_limit_hw_rates(runtime);
-	/* sanity check */
+	 
 	if (snd_BUG_ON(!runtime->hw.channels_min) ||
 	    snd_BUG_ON(!runtime->hw.channels_max) ||
 	    snd_BUG_ON(!runtime->hw.formats) ||
@@ -650,10 +608,9 @@ static int azx_pcm_open(struct snd_pcm_substream *substream)
 		goto powerdown;
 	}
 
-	/* disable LINK_ATIME timestamps for capture streams
-	   until we figure out how to handle digital inputs */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
-		runtime->hw.info &= ~SNDRV_PCM_INFO_HAS_WALL_CLOCK; /* legacy */
+		runtime->hw.info &= ~SNDRV_PCM_INFO_HAS_WALL_CLOCK;  
 		runtime->hw.info &= ~SNDRV_PCM_INFO_HAS_LINK_ATIME;
 	}
 
@@ -737,7 +694,7 @@ int snd_hda_attach_pcm_stream(struct hda_bus *_bus, struct hda_codec *codec,
 		if (cpcm->stream[s].substreams)
 			snd_pcm_set_ops(pcm, s, &azx_pcm_ops);
 	}
-	/* buffer pre-allocation */
+	 
 	size = CONFIG_SND_HDA_PREALLOC_SIZE * 1024;
 	if (size > MAX_PREALLOC_SIZE)
 		size = MAX_PREALLOC_SIZE;
@@ -760,7 +717,7 @@ static unsigned int azx_command_addr(u32 cmd)
 	return addr;
 }
 
-/* receive a response */
+ 
 static int azx_rirb_get_response(struct hdac_bus *bus, unsigned int addr,
 				 unsigned int *res)
 {
@@ -795,26 +752,21 @@ static int azx_rirb_get_response(struct hdac_bus *bus, unsigned int addr,
 	}
 
 	if (chip->probing) {
-		/* If this critical timeout happens during the codec probing
-		 * phase, this is likely an access to a non-existing codec
-		 * slot.  Better to return an error and reset the system.
-		 */
+		 
 		return -EIO;
 	}
 
-	/* no fallback mechanism? */
+	 
 	if (!chip->fallback_to_single_cmd)
 		return -EIO;
 
-	/* a fatal communication error; need either to reset or to fallback
-	 * to the single_cmd mode
-	 */
+	 
 	if (hbus->allow_bus_reset && !hbus->response_reset && !hbus->in_reset) {
 		hbus->response_reset = 1;
 		dev_err(chip->card->dev,
 			"No response from codec, resetting bus: last cmd=0x%08x\n",
 			bus->last_cmd[addr]);
-		return -EAGAIN; /* give a chance to retry */
+		return -EAGAIN;  
 	}
 
 	dev_err(chip->card->dev,
@@ -826,25 +778,17 @@ static int azx_rirb_get_response(struct hdac_bus *bus, unsigned int addr,
 	return -EIO;
 }
 
-/*
- * Use the single immediate command instead of CORB/RIRB for simplicity
- *
- * Note: according to Intel, this is not preferred use.  The command was
- *       intended for the BIOS only, and may get confused with unsolicited
- *       responses.  So, we shouldn't use it for normal operation from the
- *       driver.
- *       I left the codes, however, for debugging/testing purposes.
- */
+ 
 
-/* receive a response */
+ 
 static int azx_single_wait_for_response(struct azx *chip, unsigned int addr)
 {
 	int timeout = 50;
 
 	while (timeout--) {
-		/* check IRV busy bit */
+		 
 		if (azx_readw(chip, IRS) & AZX_IRS_VALID) {
-			/* reuse rirb.res as the response return value */
+			 
 			azx_bus(chip)->rirb.res[addr] = azx_readl(chip, IR);
 			return 0;
 		}
@@ -857,7 +801,7 @@ static int azx_single_wait_for_response(struct azx *chip, unsigned int addr)
 	return -EIO;
 }
 
-/* send a command */
+ 
 static int azx_single_send_cmd(struct hdac_bus *bus, u32 val)
 {
 	struct azx *chip = bus_to_azx(bus);
@@ -866,9 +810,9 @@ static int azx_single_send_cmd(struct hdac_bus *bus, u32 val)
 
 	bus->last_cmd[azx_command_addr(val)] = val;
 	while (timeout--) {
-		/* check ICB busy bit */
+		 
 		if (!((azx_readw(chip, IRS) & AZX_IRS_BUSY))) {
-			/* Clear IRV valid bit */
+			 
 			azx_writew(chip, IRS, azx_readw(chip, IRS) |
 				   AZX_IRS_VALID);
 			azx_writel(chip, IC, val);
@@ -885,7 +829,7 @@ static int azx_single_send_cmd(struct hdac_bus *bus, u32 val)
 	return -EIO;
 }
 
-/* receive a response */
+ 
 static int azx_single_get_response(struct hdac_bus *bus, unsigned int addr,
 				   unsigned int *res)
 {
@@ -894,14 +838,9 @@ static int azx_single_get_response(struct hdac_bus *bus, unsigned int addr,
 	return 0;
 }
 
-/*
- * The below are the main callbacks from hda_codec.
- *
- * They are just the skeleton to call sub-callbacks according to the
- * current setting of chip->single_cmd.
- */
+ 
 
-/* send a command */
+ 
 static int azx_send_cmd(struct hdac_bus *bus, unsigned int val)
 {
 	struct azx *chip = bus_to_azx(bus);
@@ -914,7 +853,7 @@ static int azx_send_cmd(struct hdac_bus *bus, unsigned int val)
 		return snd_hdac_bus_send_cmd(bus, val);
 }
 
-/* get a response */
+ 
 static int azx_get_response(struct hdac_bus *bus, unsigned int addr,
 			    unsigned int *res)
 {
@@ -934,11 +873,9 @@ static const struct hdac_bus_ops bus_core_ops = {
 };
 
 #ifdef CONFIG_SND_HDA_DSP_LOADER
-/*
- * DSP loading code (e.g. for CA0132)
- */
+ 
 
-/* use the first stream for loading DSP */
+ 
 static struct azx_dev *
 azx_get_dsp_loader_dev(struct azx *chip)
 {
@@ -1015,15 +952,13 @@ void snd_hda_codec_load_dsp_cleanup(struct hda_codec *codec,
 	spin_unlock_irq(&bus->reg_lock);
 }
 EXPORT_SYMBOL_GPL(snd_hda_codec_load_dsp_cleanup);
-#endif /* CONFIG_SND_HDA_DSP_LOADER */
+#endif  
 
-/*
- * reset and start the controller registers
- */
+ 
 void azx_init_chip(struct azx *chip, bool full_reset)
 {
 	if (snd_hdac_bus_init_chip(azx_bus(chip), full_reset)) {
-		/* correct RINTCNT for CXT */
+		 
 		if (chip->driver_caps & AZX_DCAPS_CTX_WORKAROUND)
 			azx_writew(chip, RINTCNT, 0xc0);
 	}
@@ -1044,15 +979,13 @@ void azx_stop_chip(struct azx *chip)
 }
 EXPORT_SYMBOL_GPL(azx_stop_chip);
 
-/*
- * interrupt handler
- */
+ 
 static void stream_update(struct hdac_bus *bus, struct hdac_stream *s)
 {
 	struct azx *chip = bus_to_azx(bus);
 	struct azx_dev *azx_dev = stream_to_azx_dev(s);
 
-	/* check whether this IRQ is really acceptable */
+	 
 	if (!chip->ops->position_check ||
 	    chip->ops->position_check(chip, azx_dev)) {
 		spin_unlock(&bus->reg_lock);
@@ -1067,7 +1000,7 @@ irqreturn_t azx_interrupt(int irq, void *dev_id)
 	struct hdac_bus *bus = azx_bus(chip);
 	u32 status;
 	bool active, handled = false;
-	int repeat = 0; /* count for avoiding endless loop */
+	int repeat = 0;  
 
 #ifdef CONFIG_PM
 	if (azx_has_pm_runtime(chip))
@@ -1092,14 +1025,7 @@ irqreturn_t azx_interrupt(int irq, void *dev_id)
 
 		status = azx_readb(chip, RIRBSTS);
 		if (status & RIRB_INT_MASK) {
-			/*
-			 * Clearing the interrupt status here ensures that no
-			 * interrupt gets masked after the RIRB wp is read in
-			 * snd_hdac_bus_update_rirb. This avoids a possible
-			 * race condition where codec response in RIRB may
-			 * remain unserviced by IRQ, eventually falling back
-			 * to polling mode in azx_rirb_get_response.
-			 */
+			 
 			azx_writeb(chip, RIRBSTS, RIRB_INT_MASK);
 			active = true;
 			if (status & RIRB_INT_RESPONSE) {
@@ -1117,13 +1043,9 @@ irqreturn_t azx_interrupt(int irq, void *dev_id)
 }
 EXPORT_SYMBOL_GPL(azx_interrupt);
 
-/*
- * Codec initerface
- */
+ 
 
-/*
- * Probe the given codec address
- */
+ 
 static int probe_codec(struct azx *chip, int addr)
 {
 	unsigned int cmd = (addr << 28) | (AC_NODE_ROOT << 20) |
@@ -1156,7 +1078,7 @@ void snd_hda_bus_reset(struct hda_bus *bus)
 	bus->in_reset = 0;
 }
 
-/* HD-audio bus initialization */
+ 
 int azx_bus_init(struct azx *chip, const char *model)
 {
 	struct hda_bus *bus = &chip->bus;
@@ -1182,14 +1104,14 @@ int azx_bus_init(struct azx *chip, const char *model)
 	if (chip->driver_caps & AZX_DCAPS_4K_BDLE_BOUNDARY)
 		bus->core.align_bdle_4k = true;
 
-	/* enable sync_write flag for stable communication as default */
+	 
 	bus->core.sync_write = 1;
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(azx_bus_init);
 
-/* Probe codecs */
+ 
 int azx_probe_codecs(struct azx *chip, unsigned int max_slots)
 {
 	struct hdac_bus *bus = azx_bus(chip);
@@ -1199,30 +1121,22 @@ int azx_probe_codecs(struct azx *chip, unsigned int max_slots)
 	if (!max_slots)
 		max_slots = AZX_DEFAULT_CODECS;
 
-	/* First try to probe all given codec slots */
+	 
 	for (c = 0; c < max_slots; c++) {
 		if ((bus->codec_mask & (1 << c)) & chip->codec_probe_mask) {
 			if (probe_codec(chip, c) < 0) {
-				/* Some BIOSen give you wrong codec addresses
-				 * that don't exist
-				 */
+				 
 				dev_warn(chip->card->dev,
 					 "Codec #%d probe error; disabling it...\n", c);
 				bus->codec_mask &= ~(1 << c);
-				/* More badly, accessing to a non-existing
-				 * codec often screws up the controller chip,
-				 * and disturbs the further communications.
-				 * Thus if an error occurs during probing,
-				 * better to reset the controller chip to
-				 * get back to the sanity state.
-				 */
+				 
 				azx_stop_chip(chip);
 				azx_init_chip(chip, true);
 			}
 		}
 	}
 
-	/* Then create codec instances */
+	 
 	for (c = 0; c < max_slots; c++) {
 		if ((bus->codec_mask & (1 << c)) & chip->codec_probe_mask) {
 			struct hda_codec *codec;
@@ -1243,7 +1157,7 @@ int azx_probe_codecs(struct azx *chip, unsigned int max_slots)
 }
 EXPORT_SYMBOL_GPL(azx_probe_codecs);
 
-/* configure each codec instance */
+ 
 int azx_codec_configure(struct azx *chip)
 {
 	struct hda_codec *codec, *next;
@@ -1255,7 +1169,7 @@ int azx_codec_configure(struct azx *chip)
 	}
 
 	if (success) {
-		/* unregister failed codecs if any codec has been probed */
+		 
 		list_for_each_codec_safe(codec, next, &chip->bus) {
 			if (!codec->configured) {
 				codec_err(codec, "Unable to configure, disabling\n");
@@ -1276,16 +1190,13 @@ static int stream_direction(struct azx *chip, unsigned char index)
 	return SNDRV_PCM_STREAM_PLAYBACK;
 }
 
-/* initialize SD streams */
+ 
 int azx_init_streams(struct azx *chip)
 {
 	int i;
 	int stream_tags[2] = { 0, 0 };
 
-	/* initialize each stream (aka device)
-	 * assign the starting bdl address to each stream (device)
-	 * and initialize
-	 */
+	 
 	for (i = 0; i < chip->num_streams; i++) {
 		struct azx_dev *azx_dev = kzalloc(sizeof(*azx_dev), GFP_KERNEL);
 		int dir, tag;
@@ -1294,12 +1205,7 @@ int azx_init_streams(struct azx *chip)
 			return -ENOMEM;
 
 		dir = stream_direction(chip, i);
-		/* stream tag must be unique throughout
-		 * the stream direction group,
-		 * valid values 1...15
-		 * use separate stream tag if the flag
-		 * AZX_DCAPS_SEPARATE_STREAM_TAG is used
-		 */
+		 
 		if (chip->driver_caps & AZX_DCAPS_SEPARATE_STREAM_TAG)
 			tag = ++stream_tags[dir];
 		else

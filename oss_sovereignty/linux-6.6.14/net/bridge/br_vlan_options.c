@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020, Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+
+
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/rtnetlink.h>
@@ -36,7 +36,7 @@ static bool __vlan_tun_can_enter_range(const struct net_bridge_vlan *v_curr,
 	       vlan_tunid_inrange(v_curr, range_end);
 }
 
-/* check if the options' state of v_curr allow it to enter the range */
+ 
 bool br_vlan_opts_eq_range(const struct net_bridge_vlan *v_curr,
 			   const struct net_bridge_vlan *range_end)
 {
@@ -74,15 +74,15 @@ bool br_vlan_opts_fill(struct sk_buff *skb, const struct net_bridge_vlan *v,
 
 size_t br_vlan_opts_nl_size(void)
 {
-	return nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_ENTRY_STATE */
-	       + nla_total_size(0) /* BRIDGE_VLANDB_ENTRY_TUNNEL_INFO */
-	       + nla_total_size(sizeof(u32)) /* BRIDGE_VLANDB_TINFO_ID */
+	return nla_total_size(sizeof(u8))  
+	       + nla_total_size(0)  
+	       + nla_total_size(sizeof(u32))  
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-	       + nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_ENTRY_MCAST_ROUTER */
-	       + nla_total_size(sizeof(u32)) /* BRIDGE_VLANDB_ENTRY_MCAST_N_GROUPS */
-	       + nla_total_size(sizeof(u32)) /* BRIDGE_VLANDB_ENTRY_MCAST_MAX_GROUPS */
+	       + nla_total_size(sizeof(u8))  
+	       + nla_total_size(sizeof(u32))  
+	       + nla_total_size(sizeof(u32))  
 #endif
-	       + nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_ENTRY_NEIGH_SUPPRESS */
+	       + nla_total_size(sizeof(u8))  
 	       + 0;
 }
 
@@ -170,14 +170,11 @@ static int br_vlan_modify_tunnel(const struct net_bridge_port *p,
 			NL_SET_ERR_MSG_MOD(extack, "Missing tunnel id attribute");
 			return -ENOENT;
 		}
-		/* when working on vlan ranges this is the starting tunnel id */
+		 
 		tun_id = nla_get_u32(tun_tb[BRIDGE_VLANDB_TINFO_ID]);
-		/* vlan info attr is guaranteed by br_vlan_rtm_process_one */
+		 
 		vinfo = nla_data(tb[BRIDGE_VLANDB_ENTRY_INFO]);
-		/* tunnel ids are mapped to each vlan in increasing order,
-		 * the starting vlan is in BRIDGE_VLANDB_ENTRY_INFO and v is the
-		 * current vlan, so we compute: tun_id + v - vinfo->vid
-		 */
+		 
 		tun_id += v->vid - vinfo->vid;
 		break;
 	case RTM_DELLINK:
@@ -303,7 +300,7 @@ int br_vlan_process_options(const struct net_bridge *br,
 			break;
 
 		if (changed) {
-			/* vlan options changed, check for range */
+			 
 			if (!curr_start) {
 				curr_start = v;
 				curr_end = v;
@@ -318,7 +315,7 @@ int br_vlan_process_options(const struct net_bridge *br,
 			}
 			curr_end = v;
 		} else {
-			/* nothing changed and nothing to notify yet */
+			 
 			if (!curr_start)
 				continue;
 
@@ -443,27 +440,27 @@ out_err:
 static size_t rtnl_vlan_global_opts_nlmsg_size(const struct net_bridge_vlan *v)
 {
 	return NLMSG_ALIGN(sizeof(struct br_vlan_msg))
-		+ nla_total_size(0) /* BRIDGE_VLANDB_GLOBAL_OPTIONS */
-		+ nla_total_size(sizeof(u16)) /* BRIDGE_VLANDB_GOPTS_ID */
+		+ nla_total_size(0)  
+		+ nla_total_size(sizeof(u16))  
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-		+ nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_GOPTS_MCAST_SNOOPING */
-		+ nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_GOPTS_MCAST_IGMP_VERSION */
-		+ nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_GOPTS_MCAST_MLD_VERSION */
-		+ nla_total_size(sizeof(u32)) /* BRIDGE_VLANDB_GOPTS_MCAST_LAST_MEMBER_CNT */
-		+ nla_total_size(sizeof(u32)) /* BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_CNT */
-		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_LAST_MEMBER_INTVL */
-		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_MEMBERSHIP_INTVL */
-		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_INTVL */
-		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERY_INTVL */
-		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERY_RESPONSE_INTVL */
-		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_INTVL */
-		+ nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERIER */
-		+ br_multicast_querier_state_size() /* BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_STATE */
-		+ nla_total_size(0) /* BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS */
-		+ br_rports_size(&v->br_mcast_ctx) /* BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS */
+		+ nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u64))  
+		+ nla_total_size(sizeof(u64))  
+		+ nla_total_size(sizeof(u64))  
+		+ nla_total_size(sizeof(u64))  
+		+ nla_total_size(sizeof(u64))  
+		+ nla_total_size(sizeof(u64))  
+		+ nla_total_size(sizeof(u8))  
+		+ br_multicast_querier_state_size()  
+		+ nla_total_size(0)  
+		+ br_rports_size(&v->br_mcast_ctx)  
 #endif
-		+ nla_total_size(sizeof(u16)) /* BRIDGE_VLANDB_GOPTS_MSTI */
-		+ nla_total_size(sizeof(u16)); /* BRIDGE_VLANDB_GOPTS_RANGE */
+		+ nla_total_size(sizeof(u16))  
+		+ nla_total_size(sizeof(u16));  
 }
 
 static void br_vlan_global_opts_notify(const struct net_bridge *br,
@@ -475,10 +472,10 @@ static void br_vlan_global_opts_notify(const struct net_bridge *br,
 	struct sk_buff *skb;
 	int err = -ENOBUFS;
 
-	/* right now notifications are done only with rtnl held */
+	 
 	ASSERT_RTNL();
 
-	/* need to find the vlan due to flags/options */
+	 
 	v = br_vlan_find(br_vlan_group(br), vid);
 	if (!v)
 		return;
@@ -709,7 +706,7 @@ int br_vlan_rtm_process_global_options(struct net_device *dev,
 			break;
 
 		if (changed) {
-			/* vlan options changed, check for range */
+			 
 			if (!curr_start) {
 				curr_start = v;
 				curr_end = v;
@@ -723,7 +720,7 @@ int br_vlan_rtm_process_global_options(struct net_device *dev,
 			}
 			curr_end = v;
 		} else {
-			/* nothing changed and nothing to notify yet */
+			 
 			if (!curr_start)
 				continue;
 

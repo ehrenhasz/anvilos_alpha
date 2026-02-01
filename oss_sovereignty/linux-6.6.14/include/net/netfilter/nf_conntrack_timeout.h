@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_CONNTRACK_TIMEOUT_H
 #define _NF_CONNTRACK_TIMEOUT_H
 
@@ -97,7 +97,7 @@ static inline void nf_ct_destroy_timeout(struct nf_conn *ct)
 {
 	return;
 }
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 
 #ifdef CONFIG_NF_CONNTRACK_TIMEOUT
 struct nf_ct_timeout_hooks {
@@ -108,4 +108,4 @@ struct nf_ct_timeout_hooks {
 extern const struct nf_ct_timeout_hooks __rcu *nf_ct_timeout_hook;
 #endif
 
-#endif /* _NF_CONNTRACK_TIMEOUT_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2017 IBM Corp.
- */
+
+ 
 
 #include <linux/hugetlb.h>
 #include <linux/sched/mm.h>
@@ -25,7 +23,7 @@ bool cxllib_slot_is_supported(struct pci_dev *dev, unsigned long flags)
 	u32 phb_index;
 	u64 chip_id, capp_unit_id;
 
-	/* No flags currently supported */
+	 
 	if (flags)
 		return false;
 
@@ -38,7 +36,7 @@ bool cxllib_slot_is_supported(struct pci_dev *dev, unsigned long flags)
 	if (cxl_slot_is_switched(dev))
 		return false;
 
-	/* on p9, some pci slots are not connected to a CAPP unit */
+	 
 	rc = cxl_calc_capp_routing(dev, &chip_id, &phb_index, &capp_unit_id);
 	if (rc)
 		return false;
@@ -55,10 +53,7 @@ static int allocate_dummy_read_buf(void)
 	u64 buf, vaddr;
 	size_t buf_size;
 
-	/*
-	 * Dummy read buffer is 128-byte long, aligned on a
-	 * 256-byte boundary and we need the physical address.
-	 */
+	 
 	buf_size = CXL_DUMMY_READ_SIZE + (1ull << CXL_DUMMY_READ_ALIGN);
 	buf = (u64) kzalloc(buf_size, GFP_KERNEL);
 	if (!buf)
@@ -118,14 +113,7 @@ int cxllib_switch_phb_mode(struct pci_dev *dev, enum cxllib_mode mode,
 
 	switch (mode) {
 	case CXL_MODE_PCI:
-		/*
-		 * We currently don't support going back to PCI mode
-		 * However, we'll turn the invalidations off, so that
-		 * the firmware doesn't have to ack them and can do
-		 * things like reset, etc.. with no worries.
-		 * So always return EPERM (can't go back to PCI) or
-		 * EBUSY if we couldn't even turn off snooping
-		 */
+		 
 		rc = pnv_phb_to_cxl_mode(dev, OPAL_PHB_CAPI_MODE_SNOOP_OFF);
 		if (rc)
 			rc = -EBUSY;
@@ -133,7 +121,7 @@ int cxllib_switch_phb_mode(struct pci_dev *dev, enum cxllib_mode mode,
 			rc = -EPERM;
 		break;
 	case CXL_MODE_CXL:
-		/* DMA only supported on TVT1 for the time being */
+		 
 		if (flags != CXL_MODE_DMA_TVT1)
 			return -EINVAL;
 		rc = pnv_phb_to_cxl_mode(dev, OPAL_PHB_CAPI_MODE_DMA_TVT1);
@@ -148,13 +136,7 @@ int cxllib_switch_phb_mode(struct pci_dev *dev, enum cxllib_mode mode,
 }
 EXPORT_SYMBOL_GPL(cxllib_switch_phb_mode);
 
-/*
- * When switching the PHB to capi mode, the TVT#1 entry for
- * the Partitionable Endpoint is set in bypass mode, like
- * in PCI mode.
- * Configure the device dma to use TVT#1, which is done
- * by calling dma_set_mask() with a mask large enough.
- */
+ 
 int cxllib_set_device_dma(struct pci_dev *dev, unsigned long flags)
 {
 	int rc;
@@ -184,10 +166,7 @@ int cxllib_get_PE_attributes(struct task_struct *task,
 		struct mm_struct *mm = get_task_mm(task);
 		if (mm == NULL)
 			return -EINVAL;
-		/*
-		 * Caller is keeping a reference on mm_users for as long
-		 * as XSL uses the memory context
-		 */
+		 
 		attr->pid = mm->context.id;
 		mmput(mm);
 		attr->tid = task->thread.tidr;
@@ -230,12 +209,7 @@ int cxllib_handle_fault(struct mm_struct *mm, u64 addr, u64 size, u64 flags)
 	if (mm == NULL)
 		return -EFAULT;
 
-	/*
-	 * The buffer we have to process can extend over several pages
-	 * and may also cover several VMAs.
-	 * We iterate over all the pages. The page size could vary
-	 * between VMAs.
-	 */
+	 
 	rc = get_vma_info(mm, addr, &vma_start, &vma_end, &page_size);
 	if (rc)
 		return rc;
@@ -243,19 +217,7 @@ int cxllib_handle_fault(struct mm_struct *mm, u64 addr, u64 size, u64 flags)
 	for (dar = (addr & ~(page_size - 1)); dar < (addr + size);
 	     dar += page_size) {
 		if (dar < vma_start || dar >= vma_end) {
-			/*
-			 * We don't hold mm->mmap_lock while iterating, since
-			 * the lock is required by one of the lower-level page
-			 * fault processing functions and it could
-			 * create a deadlock.
-			 *
-			 * It means the VMAs can be altered between 2
-			 * loop iterations and we could theoretically
-			 * miss a page (however unlikely). But that's
-			 * not really a problem, as the driver will
-			 * retry access, get another page fault on the
-			 * missing page and call us again.
-			 */
+			 
 			rc = get_vma_info(mm, dar, &vma_start, &vma_end,
 					&page_size);
 			if (rc)

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2017 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/pagemap.h>
 #include <linux/module.h>
 #include <linux/mount.h>
@@ -15,16 +13,7 @@
 #include <linux/fs.h>
 #include "dax-private.h"
 
-/**
- * struct dax_device - anchor object for dax services
- * @inode: core vfs
- * @cdev: optional character interface for "device dax"
- * @private: dax driver private data
- * @flags: state and boolean properties
- * @ops: operations for this device
- * @holder_data: holder of a dax_device: could be filesystem or mapped device
- * @holder_ops: operations for the inner holder
- */
+ 
 struct dax_device {
 	struct inode inode;
 	struct cdev cdev;
@@ -71,13 +60,7 @@ void dax_remove_host(struct gendisk *disk)
 }
 EXPORT_SYMBOL_GPL(dax_remove_host);
 
-/**
- * fs_dax_get_by_bdev() - temporary lookup mechanism for filesystem-dax
- * @bdev: block device to find a dax_device for
- * @start_off: returns the byte offset into the dax_device that @bdev starts
- * @holder: filesystem or mapped device inside the dax_device
- * @ops: operations for the inner holder
- */
+ 
 struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev, u64 *start_off,
 		void *holder, const struct dax_holder_operations *ops)
 {
@@ -119,33 +102,22 @@ void fs_put_dax(struct dax_device *dax_dev, void *holder)
 	put_dax(dax_dev);
 }
 EXPORT_SYMBOL_GPL(fs_put_dax);
-#endif /* CONFIG_BLOCK && CONFIG_FS_DAX */
+#endif  
 
 enum dax_device_flags {
-	/* !alive + rcu grace period == no new operations / mappings */
+	 
 	DAXDEV_ALIVE,
-	/* gate whether dax_flush() calls the low level flush routine */
+	 
 	DAXDEV_WRITE_CACHE,
-	/* flag to check if device supports synchronous flush */
+	 
 	DAXDEV_SYNC,
-	/* do not leave the caches dirty after writes */
+	 
 	DAXDEV_NOCACHE,
-	/* handle CPU fetch exceptions during reads */
+	 
 	DAXDEV_NOMC,
 };
 
-/**
- * dax_direct_access() - translate a device pgoff to an absolute pfn
- * @dax_dev: a dax_device instance representing the logical memory range
- * @pgoff: offset in pages from the start of the device to translate
- * @nr_pages: number of consecutive pages caller can handle relative to @pfn
- * @mode: indicator on normal access or recovery write
- * @kaddr: output parameter that returns a virtual address mapping of pfn
- * @pfn: output parameter that returns an absolute pfn translation of @pgoff
- *
- * Return: negative errno if an error occurs, otherwise the number of
- * pages accessible at the device relative @pgoff.
- */
+ 
 long dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff, long nr_pages,
 		enum dax_access_mode mode, void **kaddr, pfn_t *pfn)
 {
@@ -174,11 +146,7 @@ size_t dax_copy_from_iter(struct dax_device *dax_dev, pgoff_t pgoff, void *addr,
 	if (!dax_alive(dax_dev))
 		return 0;
 
-	/*
-	 * The userspace address for the memory copy has already been validated
-	 * via access_ok() in vfs_write, so use the 'no check' version to bypass
-	 * the HARDENED_USERCOPY overhead.
-	 */
+	 
 	if (test_bit(DAXDEV_NOCACHE, &dax_dev->flags))
 		return _copy_from_iter_flushcache(addr, bytes, i);
 	return _copy_from_iter(addr, bytes, i);
@@ -190,11 +158,7 @@ size_t dax_copy_to_iter(struct dax_device *dax_dev, pgoff_t pgoff, void *addr,
 	if (!dax_alive(dax_dev))
 		return 0;
 
-	/*
-	 * The userspace address for the memory copy has already been validated
-	 * via access_ok() in vfs_red, so use the 'no check' version to bypass
-	 * the HARDENED_USERCOPY overhead.
-	 */
+	 
 	if (test_bit(DAXDEV_NOMC, &dax_dev->flags))
 		return _copy_mc_to_iter(addr, bytes, i);
 	return _copy_to_iter(addr, bytes, i);
@@ -207,11 +171,7 @@ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
 
 	if (!dax_alive(dax_dev))
 		return -ENXIO;
-	/*
-	 * There are no callers that want to zero more than one page as of now.
-	 * Once users are there, this check can be removed after the
-	 * device mapper code has been updated to split ranges across targets.
-	 */
+	 
 	if (nr_pages != 1)
 		return -EIO;
 
@@ -314,12 +274,7 @@ bool dax_alive(struct dax_device *dax_dev)
 }
 EXPORT_SYMBOL_GPL(dax_alive);
 
-/*
- * Note, rcu is not protecting the liveness of dax_dev, rcu is ensuring
- * that any fault handlers or operations that might have seen
- * dax_alive(), have completed.  Any operations that start after
- * synchronize_srcu() has run will abort upon seeing !dax_alive().
- */
+ 
 void kill_dax(struct dax_device *dax_dev)
 {
 	if (!dax_dev)
@@ -331,7 +286,7 @@ void kill_dax(struct dax_device *dax_dev)
 	clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
 	synchronize_srcu(&dax_srcu);
 
-	/* clear holder data */
+	 
 	dax_dev->holder_ops = NULL;
 	dax_dev->holder_data = NULL;
 }
@@ -475,26 +430,14 @@ void put_dax(struct dax_device *dax_dev)
 }
 EXPORT_SYMBOL_GPL(put_dax);
 
-/**
- * dax_holder() - obtain the holder of a dax device
- * @dax_dev: a dax_device instance
- *
- * Return: the holder's data which represents the holder if registered,
- * otherwize NULL.
- */
+ 
 void *dax_holder(struct dax_device *dax_dev)
 {
 	return dax_dev->holder_data;
 }
 EXPORT_SYMBOL_GPL(dax_holder);
 
-/**
- * inode_dax: convert a public inode into its dax_dev
- * @inode: An inode with i_cdev pointing to a dax_dev
- *
- * Note this is not equivalent to to_dax_dev() which is for private
- * internal use where we know the inode filesystem type == dax_fs_type.
- */
+ 
 struct dax_device *inode_dax(struct inode *inode)
 {
 	struct cdev *cdev = inode->i_cdev;

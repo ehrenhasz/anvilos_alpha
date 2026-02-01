@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright(c) 2021-2023 Intel Corporation
- */
+ 
+ 
 #ifndef __iwl_fw_uefi__
 #define __iwl_fw_uefi__
 
@@ -34,11 +32,7 @@ struct uefi_cnv_common_step_data {
 	u8 radio2;
 } __packed;
 
-/*
- * This is known to be broken on v4.19 and to work on v5.4.  Until we
- * figure out why this is the case and how to make it work, simply
- * disable the feature in old kernels.
- */
+ 
 #ifdef CONFIG_EFI
 void *iwl_uefi_get_pnvm(struct iwl_trans *trans, size_t *len);
 u8 *iwl_uefi_get_reduced_power(struct iwl_trans *trans, size_t *len);
@@ -48,7 +42,7 @@ int iwl_uefi_reduce_power_parse(struct iwl_trans *trans,
 void iwl_uefi_get_step_table(struct iwl_trans *trans);
 int iwl_uefi_handle_tlv_mem_desc(struct iwl_trans *trans, const u8 *data,
 				 u32 tlv_len, struct iwl_pnvm_image *pnvm_data);
-#else /* CONFIG_EFI */
+#else  
 static inline void *iwl_uefi_get_pnvm(struct iwl_trans *trans, size_t *len)
 {
 	return ERR_PTR(-EOPNOTSUPP);
@@ -78,7 +72,7 @@ iwl_uefi_handle_tlv_mem_desc(struct iwl_trans *trans, const u8 *data,
 {
 	return 0;
 }
-#endif /* CONFIG_EFI */
+#endif  
 
 #if defined(CONFIG_EFI) && defined(CONFIG_ACPI)
 void iwl_uefi_get_sgom_table(struct iwl_trans *trans, struct iwl_fw_runtime *fwrt);
@@ -88,4 +82,4 @@ void iwl_uefi_get_sgom_table(struct iwl_trans *trans, struct iwl_fw_runtime *fwr
 {
 }
 #endif
-#endif /* __iwl_fw_uefi__ */
+#endif  

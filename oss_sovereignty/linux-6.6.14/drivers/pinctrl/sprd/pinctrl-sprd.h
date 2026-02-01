@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver header file for pin controller driver
- * Copyright (C) 2017 Spreadtrum  - http://www.spreadtrum.com
- */
+ 
+ 
 
 #ifndef __PINCTRL_SPRD_H__
 #define __PINCTRL_SPRD_H__
@@ -44,7 +41,7 @@ struct sprd_pins_info {
 	unsigned int num;
 	enum pin_type type;
 
-	/* for global control pins configuration */
+	 
 	unsigned long bit_offset;
 	unsigned long bit_width;
 	unsigned int reg;
@@ -56,4 +53,4 @@ int sprd_pinctrl_core_probe(struct platform_device *pdev,
 int sprd_pinctrl_remove(struct platform_device *pdev);
 void sprd_pinctrl_shutdown(struct platform_device *pdev);
 
-#endif /* __PINCTRL_SPRD_H__ */
+#endif  

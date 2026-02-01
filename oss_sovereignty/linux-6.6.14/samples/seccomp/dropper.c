@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Naive system call dropper built on seccomp_filter.
- *
- * Copyright (c) 2012 The Chromium OS Authors <chromium-os-dev@chromium.org>
- * Author: Will Drewry <wad@chromium.org>
- *
- * The code may be used by anyone for any purpose,
- * and can serve as a starting point for developing
- * applications using prctl(PR_SET_SECCOMP, 2, ...).
- *
- * When run, returns the specified errno for the specified
- * system call number against the given architecture.
- *
- */
+
+ 
 
 #include <errno.h>
 #include <linux/audit.h>

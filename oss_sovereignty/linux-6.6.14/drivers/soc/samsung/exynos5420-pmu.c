@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2011-2015 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com/
-//
-// Exynos5420 - CPU PMU (Power Management Unit) support
+
+
+
+
+
+
 
 #include <linux/pm.h>
 #include <linux/soc/samsung/exynos-regs-pmu.h>
@@ -14,7 +14,7 @@
 #include "exynos-pmu.h"
 
 static const struct exynos_pmu_conf exynos5420_pmu_config[] = {
-	/* { .offset = offset, .val = { AFTR, LPA, SLEEP } */
+	 
 	{ EXYNOS5_ARM_CORE0_SYS_PWR_REG,		{ 0x0, 0x0, 0x0} },
 	{ EXYNOS5_DIS_IRQ_ARM_CORE0_LOCAL_SYS_PWR_REG,	{ 0x0, 0x0, 0x0} },
 	{ EXYNOS5_DIS_IRQ_ARM_CORE0_CENTRAL_SYS_PWR_REG, { 0x0, 0x0, 0x0} },
@@ -202,10 +202,7 @@ static void exynos5420_powerdown_conf(enum sys_powerdown mode)
 
 	this_cluster = MPIDR_AFFINITY_LEVEL(read_cpuid_mpidr(), 1);
 
-	/*
-	 * set the cluster id to IROM register to ensure that we wake
-	 * up with the current cluster.
-	 */
+	 
 	pmu_raw_writel(this_cluster, EXYNOS_IROM_DATA2);
 }
 
@@ -214,15 +211,11 @@ static void exynos5420_pmu_init(void)
 	unsigned int value;
 	int i;
 
-	/*
-	 * Set the CMU_RESET, CMU_SYSCLK and CMU_CLKSTOP registers
-	 * for local power blocks to Low initially as per Table 8-4:
-	 * "System-Level Power-Down Configuration Registers".
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(exynos5420_list_disable_pmu_reg); i++)
 		pmu_raw_writel(0, exynos5420_list_disable_pmu_reg[i]);
 
-	/* Enable USE_STANDBY_WFI for all CORE */
+	 
 	pmu_raw_writel(EXYNOS5420_USE_STANDBY_WFI_ALL, S5P_CENTRAL_SEQ_OPTION);
 
 	value  = pmu_raw_readl(EXYNOS_L2_OPTION(0));
@@ -233,11 +226,7 @@ static void exynos5420_pmu_init(void)
 	value &= ~EXYNOS_L2_USE_RETENTION;
 	pmu_raw_writel(value, EXYNOS_L2_OPTION(1));
 
-	/*
-	 * If L2_COMMON is turned off, clocks related to ATB async
-	 * bridge are gated. Thus, when ISP power is gated, LPI
-	 * may get stuck.
-	 */
+	 
 	value = pmu_raw_readl(EXYNOS5420_LPI_MASK);
 	value |= EXYNOS5420_ATB_ISP_ARM;
 	pmu_raw_writel(value, EXYNOS5420_LPI_MASK);
@@ -246,7 +235,7 @@ static void exynos5420_pmu_init(void)
 	value |= EXYNOS5420_ATB_KFC;
 	pmu_raw_writel(value, EXYNOS5420_LPI_MASK1);
 
-	/* Prevent issue of new bus request from L2 memory */
+	 
 	value = pmu_raw_readl(EXYNOS5420_ARM_COMMON_OPTION);
 	value |= EXYNOS5_SKIP_DEACTIVATE_ACEACP_IN_PWDN;
 	pmu_raw_writel(value, EXYNOS5420_ARM_COMMON_OPTION);
@@ -255,10 +244,10 @@ static void exynos5420_pmu_init(void)
 	value |= EXYNOS5_SKIP_DEACTIVATE_ACEACP_IN_PWDN;
 	pmu_raw_writel(value, EXYNOS5420_KFC_COMMON_OPTION);
 
-	/* This setting is to reduce suspend/resume time */
+	 
 	pmu_raw_writel(DUR_WAIT_RESET, EXYNOS5420_LOGIC_RESET_DURATION3);
 
-	/* Serialized CPU wakeup of Eagle */
+	 
 	pmu_raw_writel(SPREAD_ENABLE, EXYNOS5420_ARM_INTR_SPREAD_ENABLE);
 
 	pmu_raw_writel(SPREAD_USE_STANDWFI,

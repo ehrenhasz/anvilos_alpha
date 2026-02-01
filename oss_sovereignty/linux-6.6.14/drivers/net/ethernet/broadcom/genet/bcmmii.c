@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom GENET MDIO routines
- *
- * Copyright (c) 2014-2017 Broadcom
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/types.h>
@@ -31,7 +27,7 @@ static void bcmgenet_mac_config(struct net_device *dev)
 	struct phy_device *phydev = dev->phydev;
 	u32 reg, cmd_bits = 0;
 
-	/* speed */
+	 
 	if (phydev->speed == SPEED_1000)
 		cmd_bits = CMD_SPEED_1000;
 	else if (phydev->speed == SPEED_100)
@@ -40,12 +36,12 @@ static void bcmgenet_mac_config(struct net_device *dev)
 		cmd_bits = CMD_SPEED_10;
 	cmd_bits <<= CMD_SPEED_SHIFT;
 
-	/* duplex */
+	 
 	if (phydev->duplex != DUPLEX_FULL) {
 		cmd_bits |= CMD_HD_EN |
 			CMD_RX_PAUSE_IGNORE | CMD_TX_PAUSE_IGNORE;
 	} else {
-		/* pause capability defaults to Symmetric */
+		 
 		if (priv->autoneg_pause) {
 			bool tx_pause = 0, rx_pause = 0;
 
@@ -58,19 +54,14 @@ static void bcmgenet_mac_config(struct net_device *dev)
 				cmd_bits |= CMD_RX_PAUSE_IGNORE;
 		}
 
-		/* Manual override */
+		 
 		if (!priv->rx_pause)
 			cmd_bits |= CMD_RX_PAUSE_IGNORE;
 		if (!priv->tx_pause)
 			cmd_bits |= CMD_TX_PAUSE_IGNORE;
 	}
 
-	/* Program UMAC and RGMII block based on established
-	 * link speed, duplex, and pause. The speed set in
-	 * umac->cmd tell RGMII block which clock to use for
-	 * transmit -- 25MHz(100Mbps) or 125MHz(1Gbps).
-	 * Receive clock is provided by the PHY.
-	 */
+	 
 	reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
 	reg |= RGMII_LINK;
 	bcmgenet_ext_writel(priv, reg, EXT_RGMII_OOB_CTRL);
@@ -94,9 +85,7 @@ static void bcmgenet_mac_config(struct net_device *dev)
 				priv->eee.tx_lpi_enabled);
 }
 
-/* setup netdev link state when PHY link status change and
- * update UMAC and RGMII block when link up
- */
+ 
 void bcmgenet_mii_setup(struct net_device *dev)
 {
 	struct bcmgenet_priv *priv = netdev_priv(dev);
@@ -150,7 +139,7 @@ void bcmgenet_phy_power_set(struct net_device *dev, bool enable)
 	struct bcmgenet_priv *priv = netdev_priv(dev);
 	u32 reg = 0;
 
-	/* EXT_GPHY_CTRL is only valid for GENETv4 and onward */
+	 
 	if (GENET_IS_V4(priv) || priv->ephy_16nm) {
 		reg = bcmgenet_ext_readl(priv, EXT_GPHY_CTRL);
 		if (enable) {
@@ -201,11 +190,7 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
 		phy_name = "internal PHY";
 		fallthrough;
 	case PHY_INTERFACE_MODE_MOCA:
-		/* Irrespective of the actually configured PHY speed (100 or
-		 * 1000) GENETv4 only has an internal GPHY so we will just end
-		 * up masking the Gigabit features from what we support, not
-		 * switching to the EPHY
-		 */
+		 
 		if (GENET_IS_V4(priv))
 			port_ctrl = PORT_MODE_INT_GPHY;
 		else
@@ -227,11 +212,7 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
 
 	case PHY_INTERFACE_MODE_REVMII:
 		phy_name = "external RvMII";
-		/* of_mdiobus_register took care of reading the 'max-speed'
-		 * PHY property for us, effectively limiting the PHY supported
-		 * capabilities, use that knowledge to also configure the
-		 * Reverse MII interface correctly.
-		 */
+		 
 		if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
 				      dev->phydev->supported))
 			port_ctrl = PORT_MODE_EXT_RVMII_50;
@@ -240,18 +221,14 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
 		break;
 
 	case PHY_INTERFACE_MODE_RGMII:
-		/* RGMII_NO_ID: TXC transitions at the same time as TXD
-		 *		(requires PCB or receiver-side delay)
-		 *
-		 * ID is implicitly disabled for 100Mbps (RG)MII operation.
-		 */
+		 
 		phy_name = "external RGMII (no delay)";
 		id_mode_dis = BIT(16);
 		port_ctrl = PORT_MODE_EXT_GPHY;
 		break;
 
 	case PHY_INTERFACE_MODE_RGMII_TXID:
-		/* RGMII_TXID:	Add 2ns delay on TXC (90 degree shift) */
+		 
 		phy_name = "external RGMII (TX delay)";
 		port_ctrl = PORT_MODE_EXT_GPHY;
 		break;
@@ -270,10 +247,7 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
 	priv->ext_phy = !priv->internal_phy &&
 			(priv->phy_interface != PHY_INTERFACE_MODE_MOCA);
 
-	/* This is an external PHY (xMII), so we need to enable the RGMII
-	 * block for the interface to work, unconditionally clear the
-	 * Out-of-band disable since we do not need it.
-	 */
+	 
 	reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
 	reg &= ~OOB_DISABLE;
 	if (priv->ext_phy) {
@@ -304,32 +278,11 @@ int bcmgenet_mii_probe(struct net_device *dev)
 			PHY_BRCM_IDDQ_SUSPEND;
 	int ret;
 
-	/* Communicate the integrated PHY revision */
+	 
 	if (priv->internal_phy)
 		phy_flags = priv->gphy_rev;
 
-	/* This is an ugly quirk but we have not been correctly interpreting
-	 * the phy_interface values and we have done that across different
-	 * drivers, so at least we are consistent in our mistakes.
-	 *
-	 * When the Generic PHY driver is in use either the PHY has been
-	 * strapped or programmed correctly by the boot loader so we should
-	 * stick to our incorrect interpretation since we have validated it.
-	 *
-	 * Now when a dedicated PHY driver is in use, we need to reverse the
-	 * meaning of the phy_interface_mode values to something that the PHY
-	 * driver will interpret and act on such that we have two mistakes
-	 * canceling themselves so to speak. We only do this for the two
-	 * modes that GENET driver officially supports on Broadcom STB chips:
-	 * PHY_INTERFACE_MODE_RGMII and PHY_INTERFACE_MODE_RGMII_TXID. Other
-	 * modes are not *officially* supported with the boot loader and the
-	 * scripted environment generating Device Tree blobs for those
-	 * platforms.
-	 *
-	 * Note that internal PHY, MoCA and fixed-link configurations are not
-	 * affected because they use different phy_interface_t values or the
-	 * Generic PHY driver.
-	 */
+	 
 	switch (priv->phy_interface) {
 	case PHY_INTERFACE_MODE_RGMII:
 		phy_iface = PHY_INTERFACE_MODE_RGMII_ID;
@@ -380,27 +333,18 @@ int bcmgenet_mii_probe(struct net_device *dev)
 		}
 	}
 
-	/* Configure port multiplexer based on what the probed PHY device since
-	 * reading the 'max-speed' property determines the maximum supported
-	 * PHY speed which is needed for bcmgenet_mii_config() to configure
-	 * things appropriately.
-	 */
+	 
 	ret = bcmgenet_mii_config(dev, true);
 	if (ret) {
 		phy_disconnect(dev->phydev);
 		return ret;
 	}
 
-	/* The internal PHY has its link interrupts routed to the
-	 * Ethernet MAC ISRs. On GENETv5 there is a hardware issue
-	 * that prevents the signaling of link UP interrupts when
-	 * the link operates at 10Mbps, so fallback to polling for
-	 * those versions of GENET.
-	 */
+	 
 	if (priv->internal_phy && !GENET_IS_V5(priv))
 		dev->phydev->irq = PHY_MAC_INTERRUPT;
 
-	/* Indicate that the MAC is responsible for PHY PM */
+	 
 	dev->phydev->mac_managed_pm = true;
 
 	return 0;
@@ -433,9 +377,7 @@ static void bcmgenet_mii_pdata_init(struct bcmgenet_priv *priv,
 	struct bcmgenet_platform_data *pd = kdev->platform_data;
 
 	if (pd->phy_interface != PHY_INTERFACE_MODE_MOCA && pd->mdio_enabled) {
-		/*
-		 * Internal or external PHY with MDIO access
-		 */
+		 
 		if (pd->phy_address >= 0 && pd->phy_address < PHY_MAX_ADDR)
 			ppd->phy_mask = 1 << pd->phy_address;
 		else
@@ -476,9 +418,7 @@ static int bcmgenet_mii_register(struct bcmgenet_priv *priv)
 	ppd.wait_func_data = priv;
 	ppd.bus_name = "bcmgenet MII bus";
 
-	/* Unimac MDIO bus controller starts at UniMAC offset + MDIO_CMD
-	 * and is 2 * 32-bits word long, 8 bytes total.
-	 */
+	 
 	res.start = pres->start + GENET_UMAC_OFF + UMAC_MDIO_CMD;
 	res.end = res.start + 8;
 	res.flags = IORESOURCE_MEM;
@@ -492,7 +432,7 @@ static int bcmgenet_mii_register(struct bcmgenet_priv *priv)
 	if (!ppdev)
 		return -ENOMEM;
 
-	/* Retain this platform_device pointer for later cleanup */
+	 
 	priv->mii_pdev = ppdev;
 	ppdev->dev.parent = &pdev->dev;
 	if (dn)
@@ -532,11 +472,7 @@ static int bcmgenet_phy_interface_init(struct bcmgenet_priv *priv)
 
 	priv->phy_interface = phy_mode;
 
-	/* We need to specifically look up whether this PHY interface is
-	 * internal or not *before* we even try to probe the PHY driver
-	 * over MDIO as we may have shut down the internal PHY for power
-	 * saving purposes.
-	 */
+	 
 	if (priv->phy_interface == PHY_INTERFACE_MODE_INTERNAL)
 		priv->internal_phy = true;
 
@@ -549,12 +485,10 @@ static int bcmgenet_mii_of_init(struct bcmgenet_priv *priv)
 	struct phy_device *phydev;
 	int ret;
 
-	/* Fetch the PHY phandle */
+	 
 	priv->phy_dn = of_parse_phandle(dn, "phy-handle", 0);
 
-	/* In the case of a fixed PHY, the DT node associated
-	 * to the PHY is the Ethernet MAC DT node.
-	 */
+	 
 	if (!priv->phy_dn && of_phy_is_fixed_link(dn)) {
 		ret = of_phy_register_fixed_link(dn);
 		if (ret)
@@ -563,12 +497,12 @@ static int bcmgenet_mii_of_init(struct bcmgenet_priv *priv)
 		priv->phy_dn = of_node_get(dn);
 	}
 
-	/* Get the link mode */
+	 
 	ret = bcmgenet_phy_interface_init(priv);
 	if (ret)
 		return ret;
 
-	/* Make sure we initialize MoCA PHYs with a link down */
+	 
 	if (priv->phy_interface == PHY_INTERFACE_MODE_MOCA) {
 		phydev = of_phy_find_device(dn);
 		if (phydev) {
@@ -595,19 +529,14 @@ static int bcmgenet_mii_pd_init(struct bcmgenet_priv *priv)
 		snprintf(phy_name, MII_BUS_ID_SIZE, PHY_ID_FMT,
 			 mdio_bus_id, pd->phy_address);
 
-		/*
-		 * Internal or external PHY with MDIO access
-		 */
+		 
 		phydev = phy_attach(priv->dev, phy_name, pd->phy_interface);
 		if (IS_ERR(phydev)) {
 			dev_err(kdev, "failed to register PHY device\n");
 			return PTR_ERR(phydev);
 		}
 	} else {
-		/*
-		 * MoCA port or no MDIO access.
-		 * Use fixed PHY to represent the link layer.
-		 */
+		 
 		struct fixed_phy_status fphy_status = {
 			.link = 1,
 			.speed = pd->phy_speed,
@@ -622,7 +551,7 @@ static int bcmgenet_mii_pd_init(struct bcmgenet_priv *priv)
 			return PTR_ERR(phydev);
 		}
 
-		/* Make sure we initialize MoCA PHYs with a link down */
+		 
 		phydev->link = 0;
 
 	}

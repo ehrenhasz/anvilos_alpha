@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+ 
+ 
 #ifndef __SXGBE_MTL_H__
 #define __SXGBE_MTL_H__
 
@@ -98,4 +92,4 @@ struct sxgbe_mtl_ops {
 
 const struct sxgbe_mtl_ops *sxgbe_get_mtl_ops(void);
 
-#endif /* __SXGBE_MTL_H__ */
+#endif  

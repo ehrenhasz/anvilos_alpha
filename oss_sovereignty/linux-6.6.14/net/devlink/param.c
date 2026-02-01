@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include "devl_internal.h"
 
@@ -96,7 +93,7 @@ static const struct devlink_param devlink_param_generic[] = {
 
 static int devlink_param_generic_verify(const struct devlink_param *param)
 {
-	/* verify it match generic parameter by id and name */
+	 
 	if (param->id > DEVLINK_PARAM_GENERIC_ID_MAX)
 		return -EINVAL;
 	if (strcmp(param->name, devlink_param_generic[param->id].name))
@@ -113,7 +110,7 @@ static int devlink_param_driver_verify(const struct devlink_param *param)
 
 	if (param->id <= DEVLINK_PARAM_GENERIC_ID_MAX)
 		return -EINVAL;
-	/* verify no such name in generic params */
+	 
 	for (i = 0; i <= DEVLINK_PARAM_GENERIC_ID_MAX; i++)
 		if (!strcmp(param->name, devlink_param_generic[i].name))
 			return -EEXIST;
@@ -251,7 +248,7 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
 	int err;
 	int i;
 
-	/* Get value from driver part to driverinit configuration mode */
+	 
 	for (i = 0; i <= DEVLINK_PARAM_CMODE_MAX; i++) {
 		if (!devlink_param_cmode_is_supported(param, i))
 			continue;
@@ -339,10 +336,7 @@ static void devlink_param_notify(struct devlink *devlink,
 		cmd != DEVLINK_CMD_PORT_PARAM_NEW &&
 		cmd != DEVLINK_CMD_PORT_PARAM_DEL);
 
-	/* devlink_notify_register() / devlink_notify_unregister()
-	 * will replay the notifications if the params are added/removed
-	 * outside of the lifetime of the instance.
-	 */
+	 
 	if (!devl_is_registered(devlink))
 		return;
 
@@ -665,15 +659,7 @@ static void devlink_param_unregister(struct devlink *devlink,
 	kfree(param_item);
 }
 
-/**
- *	devl_params_register - register configuration parameters
- *
- *	@devlink: devlink
- *	@params: configuration parameters array
- *	@params_count: number of parameters provided
- *
- *	Register the configuration parameters supported by the driver.
- */
+ 
 int devl_params_register(struct devlink *devlink,
 			 const struct devlink_param *params,
 			 size_t params_count)
@@ -713,12 +699,7 @@ int devlink_params_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_params_register);
 
-/**
- *	devl_params_unregister - unregister configuration parameters
- *	@devlink: devlink
- *	@params: configuration parameters to unregister
- *	@params_count: number of parameters provided
- */
+ 
 void devl_params_unregister(struct devlink *devlink,
 			    const struct devlink_param *params,
 			    size_t params_count)
@@ -743,29 +724,7 @@ void devlink_params_unregister(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_params_unregister);
 
-/**
- *	devl_param_driverinit_value_get - get configuration parameter
- *					  value for driver initializing
- *
- *	@devlink: devlink
- *	@param_id: parameter ID
- *	@val: pointer to store the value of parameter in driverinit
- *	      configuration mode
- *
- *	This function should be used by the driver to get driverinit
- *	configuration for initialization after reload command.
- *
- *	Note that lockless call of this function relies on the
- *	driver to maintain following basic sane behavior:
- *	1) Driver ensures a call to this function cannot race with
- *	   registering/unregistering the parameter with the same parameter ID.
- *	2) Driver ensures a call to this function cannot race with
- *	   devl_param_driverinit_value_set() call with the same parameter ID.
- *	3) Driver ensures a call to this function cannot race with
- *	   reload operation.
- *	If the driver is not able to comply, it has to take the devlink->lock
- *	while calling this.
- */
+ 
 int devl_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
 				    union devlink_param_value *val)
 {
@@ -791,18 +750,7 @@ int devl_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
 }
 EXPORT_SYMBOL_GPL(devl_param_driverinit_value_get);
 
-/**
- *	devl_param_driverinit_value_set - set value of configuration
- *					  parameter for driverinit
- *					  configuration mode
- *
- *	@devlink: devlink
- *	@param_id: parameter ID
- *	@init_val: value of parameter to set for driverinit configuration mode
- *
- *	This function should be used by the driver to set driverinit
- *	configuration mode default value.
- */
+ 
 void devl_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
 				     union devlink_param_value init_val)
 {
@@ -841,18 +789,7 @@ void devlink_params_driverinit_load_new(struct devlink *devlink)
 	}
 }
 
-/**
- *	devl_param_value_changed - notify devlink on a parameter's value
- *				   change. Should be called by the driver
- *				   right after the change.
- *
- *	@devlink: devlink
- *	@param_id: parameter ID
- *
- *	This function should be used by the driver to notify devlink on value
- *	change, excluding driverinit configuration mode.
- *	For driverinit configuration mode driver should use the function
- */
+ 
 void devl_param_value_changed(struct devlink *devlink, u32 param_id)
 {
 	struct devlink_param_item *param_item;

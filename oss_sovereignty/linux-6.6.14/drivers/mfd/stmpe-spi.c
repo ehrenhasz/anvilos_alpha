@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST Microelectronics MFD: stmpe's spi client specific driver
- *
- * Copyright (C) ST Microelectronics SA 2011
- *
- * Author: Viresh Kumar <vireshk@kernel.org> for ST Microelectronics
- */
+
+ 
 
 #include <linux/spi/spi.h>
 #include <linux/interrupt.h>
@@ -67,7 +61,7 @@ static void spi_init(struct stmpe *stmpe)
 
 	spi->bits_per_word = 8;
 
-	/* This register is only present for stmpe811 */
+	 
 	if (stmpe->variant->id_val == 0x0811)
 		spi_reg_write(stmpe, STMPE811_REG_SPI_CFG, spi->mode);
 
@@ -88,7 +82,7 @@ stmpe_spi_probe(struct spi_device *spi)
 {
 	const struct spi_device_id *id = spi_get_device_id(spi);
 
-	/* don't exceed max specified rate - 1MHz - Limitation of STMPE */
+	 
 	if (spi->max_speed_hz > 1000000) {
 		dev_dbg(&spi->dev, "f(sample) %d KHz?\n",
 				(spi->max_speed_hz/1000));
@@ -116,7 +110,7 @@ static const struct of_device_id stmpe_spi_of_match[] = {
 	{ .compatible = "st,stmpe1601", },
 	{ .compatible = "st,stmpe2401", },
 	{ .compatible = "st,stmpe2403", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stmpe_spi_of_match);
 

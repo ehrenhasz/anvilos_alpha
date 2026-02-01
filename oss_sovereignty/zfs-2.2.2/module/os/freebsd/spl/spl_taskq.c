@@ -1,30 +1,4 @@
-/*
- * Copyright (c) 2009 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Copyright (c) 2012 Spectra Logic Corporation.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -53,11 +27,7 @@ __FBSDID("$FreeBSD$");
 static uint_t taskq_tsd;
 static uma_zone_t taskq_zone;
 
-/*
- * Global system-wide dynamic task queue available for all consumers. This
- * taskq is not intended for long-running tasks; instead, a dedicated taskq
- * should be created.
- */
+ 
 taskq_t *system_taskq = NULL;
 taskq_t *system_delay_taskq = NULL;
 taskq_t *dynamic_taskq = NULL;
@@ -130,9 +100,7 @@ __taskq_genid(void)
 {
 	taskqid_t tqid;
 
-	/*
-	 * Assume a 64-bit counter will not wrap in practice.
-	 */
+	 
 	tqid = atomic_add_64_nv(&tqidnext, 1);
 	VERIFY(tqid);
 	return (tqid);
@@ -298,13 +266,10 @@ taskq_cancel_id(taskq_t *tq, taskqid_t tid)
 		}
 	}
 	if (pend) {
-		/*
-		 * Tasks normally free themselves when run, but here the task
-		 * was cancelled so it did not free itself.
-		 */
+		 
 		taskq_free(ent);
 	}
-	/* Free the extra reference we added with taskq_lookup. */
+	 
 	taskq_free(ent);
 	return (rc);
 }
@@ -365,10 +330,7 @@ taskq_dispatch(taskq_t *tq, task_func_t func, void *arg, uint_t flags)
 		mflag = M_WAITOK;
 	else
 		mflag = M_NOWAIT;
-	/*
-	 * If TQ_FRONT is given, we want higher priority for this task, so it
-	 * can go at the front of the queue.
-	 */
+	 
 	prio = !!(flags & TQ_FRONT);
 
 	task = uma_zalloc(taskq_zone, mflag);
@@ -400,10 +362,7 @@ taskq_dispatch_ent(taskq_t *tq, task_func_t func, void *arg, uint32_t flags,
 {
 	int prio;
 
-	/*
-	 * If TQ_FRONT is given, we want higher priority for this task, so it
-	 * can go at the front of the queue.
-	 */
+	 
 	prio = !!(flags & TQ_FRONT);
 	task->tqent_id = 0;
 	task->tqent_func = func;

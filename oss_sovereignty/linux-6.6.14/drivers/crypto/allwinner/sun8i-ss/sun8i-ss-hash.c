@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ss-hash.c - hardware cryptographic offloader for
- * Allwinner A80/A83T SoC
- *
- * Copyright (C) 2015-2020 Corentin Labbe <clabbe@baylibre.com>
- *
- * This file add support for MD5 and SHA1/SHA224/SHA256.
- *
- * You could find the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 
 #include <crypto/hmac.h>
 #include <crypto/internal/hash.h>
@@ -119,7 +110,7 @@ int sun8i_ss_hash_init_tfm(struct crypto_ahash *tfm)
 	algt = container_of(alg, struct sun8i_ss_alg_template, alg.hash.base);
 	op->ss = algt->ss;
 
-	/* FALLBACK */
+	 
 	op->fallback_tfm = crypto_alloc_ahash(crypto_ahash_alg_name(tfm), 0,
 					      CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(op->fallback_tfm)) {
@@ -307,7 +298,7 @@ static int sun8i_ss_run_hash_task(struct sun8i_ss_dev *ss,
 	ss->flows[flow].stat_req++;
 #endif
 
-	/* choose between stream0/stream1 */
+	 
 	if (flow)
 		v |= SS_FLOW1;
 	else
@@ -373,7 +364,7 @@ static bool sun8i_ss_hash_need_fallback(struct ahash_request *areq)
 		return true;
 	}
 
-	/* we need to reserve one SG for the padding one */
+	 
 	if (sg_nents(areq->src) > MAX_SG - 1) {
 		algt->stat_fb_sgnum++;
 		return true;
@@ -381,11 +372,8 @@ static bool sun8i_ss_hash_need_fallback(struct ahash_request *areq)
 
 	sg = areq->src;
 	while (sg) {
-		/* SS can operate hash only on full block size
-		 * since SS support only MD5,sha1,sha224 and sha256, blocksize
-		 * is always 64
-		 */
-		/* Only the last block could be bounced to the pad buffer */
+		 
+		 
 		if (sg->length % 64 && sg_next(sg)) {
 			algt->stat_fb_sglen++;
 			return true;
@@ -456,18 +444,18 @@ static u64 hash_pad(__le32 *buf, unsigned int bufsize, u64 padi, u64 byte_count,
 		buf[k] = 0;
 
 	if (le) {
-		/* MD5 */
+		 
 		lebits = (__le64 *)&buf[j];
 		*lebits = cpu_to_le64(byte_count << 3);
 		j += 2;
 	} else {
 		if (bs == 64) {
-			/* sha1 sha224 sha256 */
+			 
 			bebits = (__be64 *)&buf[j];
 			*bebits = cpu_to_be64(byte_count << 3);
 			j += 2;
 		} else {
-			/* sha384 sha512*/
+			 
 			bebits = (__be64 *)&buf[j];
 			*bebits = cpu_to_be64(byte_count >> 61);
 			j += 2;
@@ -484,9 +472,7 @@ static u64 hash_pad(__le32 *buf, unsigned int bufsize, u64 padi, u64 byte_count,
 	return j;
 }
 
-/* sun8i_ss_hash_run - run an ahash request
- * Send the data of the request to the SS along with an extra SG with padding
- */
+ 
 int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
 {
 	struct ahash_request *areq = container_of(breq, struct ahash_request, base);
@@ -505,11 +491,7 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
 	int j, i, k, todo;
 	dma_addr_t addr_res, addr_pad, addr_xpad;
 	__le32 *bf;
-	/* HMAC step:
-	 * 0: normal hashing
-	 * 1: IPAD
-	 * 2: OPAD
-	 */
+	 
 	int hmac = 0;
 
 	algt = container_of(alg, struct sun8i_ss_alg_template, alg.hash.base);
@@ -558,7 +540,7 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
 			continue;
 		}
 		todo = min(len, sg_dma_len(sg));
-		/* only the last SG could be with a size not modulo64 */
+		 
 		if (todo % 64 == 0) {
 			rctx->t_src[i].addr = sg_dma_address(sg);
 			rctx->t_src[i].len = todo / 4;
@@ -586,7 +568,7 @@ retry:
 	byte_count = areq->nbytes;
 	if (tfmctx->keylen && hmac == 0) {
 		hmac = 1;
-		/* shift all SG one slot up, to free slot 0 for IPAD */
+		 
 		for (k = 6; k >= 0; k--) {
 			rctx->t_src[k + 1].addr = rctx->t_src[k].addr;
 			rctx->t_src[k + 1].len = rctx->t_src[k].len;
@@ -666,30 +648,7 @@ retry:
 
 	err = sun8i_ss_run_hash_task(ss, rctx, crypto_tfm_alg_name(areq->base.tfm));
 
-	/*
-	 * mini helper for checking dma map/unmap
-	 * flow start for hmac = 0 (and HMAC = 1)
-	 * HMAC = 0
-	 * MAP src
-	 * MAP res
-	 *
-	 * retry:
-	 * if hmac then hmac = 1
-	 *	MAP xpad (ipad)
-	 * if hmac == 2
-	 *	MAP res
-	 *	MAP xpad (opad)
-	 * MAP pad
-	 * ACTION!
-	 * UNMAP pad
-	 * if hmac
-	 *	UNMAP xpad
-	 * UNMAP res
-	 * if hmac < 2
-	 *	UNMAP SRC
-	 *
-	 * if hmac = 1 then hmac = 2 goto retry
-	 */
+	 
 
 	dma_unmap_single(ss->dev, addr_pad, j * 4, DMA_TO_DEVICE);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Routines supporting the Power 7+ Nest Accelerators driver
- *
- * Copyright (C) 2011-2012 International Business Machines Inc.
- *
- * Author: Kent Yoder <yoder1@us.ibm.com>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/internal/hash.h>
@@ -27,16 +21,7 @@
 #include "nx.h"
 
 
-/**
- * nx_hcall_sync - make an H_COP_OP hcall for the passed in op structure
- *
- * @nx_ctx: the crypto context handle
- * @op: PFO operation struct to pass in
- * @may_sleep: flag indicating the request can sleep
- *
- * Make the hcall, retrying while the hardware is busy. If we cannot yield
- * the thread, limit the number of retries to 10 here.
- */
+ 
 int nx_hcall_sync(struct nx_crypto_ctx *nx_ctx,
 		  struct vio_pfo_op    *op,
 		  u32                   may_sleep)
@@ -61,20 +46,7 @@ int nx_hcall_sync(struct nx_crypto_ctx *nx_ctx,
 	return rc;
 }
 
-/**
- * nx_build_sg_list - build an NX scatter list describing a single  buffer
- *
- * @sg_head: pointer to the first scatter list element to build
- * @start_addr: pointer to the linear buffer
- * @len: length of the data at @start_addr
- * @sgmax: the largest number of scatter list elements we're allowed to create
- *
- * This function will start writing nx_sg elements at @sg_head and keep
- * writing them until all of the data from @start_addr is described or
- * until sgmax elements have been written. Scatter list elements will be
- * created such that none of the elements describes a buffer that crosses a 4K
- * boundary.
- */
+ 
 struct nx_sg *nx_build_sg_list(struct nx_sg *sg_head,
 			       u8           *start_addr,
 			       unsigned int *len,
@@ -85,8 +57,7 @@ struct nx_sg *nx_build_sg_list(struct nx_sg *sg_head,
 	u64 sg_addr = (u64)start_addr;
 	u64 end_addr;
 
-	/* determine the start and end for this address range - slightly
-	 * different if this is in VMALLOC_REGION */
+	 
 	if (is_vmalloc_addr(start_addr))
 		sg_addr = page_to_phys(vmalloc_to_page(start_addr))
 			  + offset_in_page(sg_addr);
@@ -95,16 +66,7 @@ struct nx_sg *nx_build_sg_list(struct nx_sg *sg_head,
 
 	end_addr = sg_addr + *len;
 
-	/* each iteration will write one struct nx_sg element and add the
-	 * length of data described by that element to sg_len. Once @len bytes
-	 * have been described (or @sgmax elements have been written), the
-	 * loop ends. min_t is used to ensure @end_addr falls on the same page
-	 * as sg_addr, if not, we need to create another nx_sg element for the
-	 * data on the next page.
-	 *
-	 * Also when using vmalloc'ed data, every time that a system page
-	 * boundary is crossed the physical address needs to be re-calculated.
-	 */
+	 
 	for (sg = sg_head; sg_len < *len; sg++) {
 		u64 next_page;
 
@@ -132,19 +94,11 @@ struct nx_sg *nx_build_sg_list(struct nx_sg *sg_head,
 	}
 	*len = sg_len;
 
-	/* return the moved sg_head pointer */
+	 
 	return sg;
 }
 
-/**
- * nx_walk_and_build - walk a linux scatterlist and build an nx scatterlist
- *
- * @nx_dst: pointer to the first nx_sg element to write
- * @sglen: max number of nx_sg entries we're allowed to write
- * @sg_src: pointer to the source linux scatterlist to walk
- * @start: number of bytes to fast-forward past at the beginning of @sg_src
- * @src_len: number of bytes to walk in @sg_src
- */
+ 
 struct nx_sg *nx_walk_and_build(struct nx_sg       *nx_dst,
 				unsigned int        sglen,
 				struct scatterlist *sg_src,
@@ -156,7 +110,7 @@ struct nx_sg *nx_walk_and_build(struct nx_sg       *nx_dst,
 	unsigned int n, offset = 0, len = *src_len;
 	char *dst;
 
-	/* we need to fast forward through @start bytes first */
+	 
 	for (;;) {
 		scatterwalk_start(&walk, sg_src);
 
@@ -167,15 +121,13 @@ struct nx_sg *nx_walk_and_build(struct nx_sg       *nx_dst,
 		sg_src = sg_next(sg_src);
 	}
 
-	/* start - offset is the number of bytes to advance in the scatterlist
-	 * element we're currently looking at */
+	 
 	scatterwalk_advance(&walk, start - offset);
 
 	while (len && (nx_sg - nx_dst) < sglen) {
 		n = scatterwalk_clamp(&walk, len);
 		if (!n) {
-			/* In cases where we have scatterlist chain sg_next
-			 * handles with it properly */
+			 
 			scatterwalk_start(&walk, sg_next(walk.sg));
 			n = scatterwalk_clamp(&walk, len);
 		}
@@ -188,21 +140,14 @@ struct nx_sg *nx_walk_and_build(struct nx_sg       *nx_dst,
 		scatterwalk_advance(&walk, n);
 		scatterwalk_done(&walk, SCATTERWALK_FROM_SG, len);
 	}
-	/* update to_process */
+	 
 	*src_len -= len;
 
-	/* return the moved destination pointer */
+	 
 	return nx_sg;
 }
 
-/**
- * trim_sg_list - ensures the bound in sg list.
- * @sg: sg list head
- * @end: sg lisg end
- * @delta:  is the amount we need to crop in order to bound the list.
- * @nbytes: length of data in the scatterlists or data length - whichever
- *          is greater.
- */
+ 
 static long int trim_sg_list(struct nx_sg *sg,
 			     struct nx_sg *end,
 			     unsigned int delta,
@@ -224,11 +169,7 @@ static long int trim_sg_list(struct nx_sg *sg,
 		}
 	}
 
-	/* There are cases where we need to crop list in order to make it
-	 * a block size multiple, but we also need to align data. In order to
-	 * that we need to calculate how much we need to put back to be
-	 * processed
-	 */
+	 
 	oplen = (sg - end) * sizeof(struct nx_sg);
 	if (is_delta) {
 		data_back = (abs(oplen) / AES_BLOCK_SIZE) *  sg->len;
@@ -239,23 +180,7 @@ static long int trim_sg_list(struct nx_sg *sg,
 	return oplen;
 }
 
-/**
- * nx_build_sg_lists - walk the input scatterlists and build arrays of NX
- *                     scatterlists based on them.
- *
- * @nx_ctx: NX crypto context for the lists we're building
- * @iv: iv data, if the algorithm requires it
- * @dst: destination scatterlist
- * @src: source scatterlist
- * @nbytes: length of data described in the scatterlists
- * @offset: number of bytes to fast-forward past at the beginning of
- *          scatterlists.
- * @oiv: destination for the iv data, if the algorithm requires it
- *
- * This is common code shared by all the AES algorithms. It uses the crypto
- * scatterlist walk routines to traverse input and output scatterlists, building
- * corresponding NX scatterlists
- */
+ 
 int nx_build_sg_lists(struct nx_crypto_ctx  *nx_ctx,
 		      const u8              *iv,
 		      struct scatterlist    *dst,
@@ -288,21 +213,14 @@ int nx_build_sg_lists(struct nx_crypto_ctx  *nx_ctx,
 	if (*nbytes < total)
 		delta = *nbytes - (*nbytes & ~(AES_BLOCK_SIZE - 1));
 
-	/* these lengths should be negative, which will indicate to phyp that
-	 * the input and output parameters are scatterlists, not linear
-	 * buffers */
+	 
 	nx_ctx->op.inlen = trim_sg_list(nx_ctx->in_sg, nx_insg, delta, nbytes);
 	nx_ctx->op.outlen = trim_sg_list(nx_ctx->out_sg, nx_outsg, delta, nbytes);
 
 	return 0;
 }
 
-/**
- * nx_ctx_init - initialize an nx_ctx's vio_pfo_op struct
- *
- * @nx_ctx: the nx context to initialize
- * @function: the function code for the op
- */
+ 
 void nx_ctx_init(struct nx_crypto_ctx *nx_ctx, unsigned int function)
 {
 	spin_lock_init(&nx_ctx->lock);
@@ -365,10 +283,7 @@ static void nx_of_update_msc(struct device   *dev,
 	msc = (struct max_sync_cop *)p->value;
 	lenp = p->length;
 
-	/* You can't tell if the data read in for this property is sane by its
-	 * size alone. This is because there are sizes embedded in the data
-	 * structure. The best we can do is check lengths as we parse and bail
-	 * as soon as a length error is detected. */
+	 
 	bytes_so_far = 0;
 
 	while ((bytes_so_far + sizeof(struct max_sync_cop)) <= lenp) {
@@ -449,17 +364,7 @@ next_loop:
 	props->flags |= NX_OF_FLAG_MAXSYNCCOP_SET;
 }
 
-/**
- * nx_of_init - read openFirmware values from the device tree
- *
- * @dev: device handle
- * @props: pointer to struct to hold the properties values
- *
- * Called once at driver probe time, this function will read out the
- * openFirmware properties we use at runtime. If all the OF properties are
- * acceptable, when we exit this function props->flags will indicate that
- * we're ready to register our crypto algorithms.
- */
+ 
 static void nx_of_init(struct device *dev, struct nx_of *props)
 {
 	struct device_node *base_node = dev->of_node;
@@ -552,15 +457,7 @@ static void nx_unregister_shash(struct shash_alg *alg, u32 fc, u32 mode,
 		crypto_unregister_shash(alg);
 }
 
-/**
- * nx_register_algs - register algorithms with the crypto API
- *
- * Called from nx_probe()
- *
- * If all OF properties are in an acceptable state, the driver flags will
- * indicate that we're ready and we'll create our debugfs files and register
- * out crypto algorithms.
- */
+ 
 static int nx_register_algs(void)
 {
 	int rc = -1;
@@ -644,13 +541,7 @@ out:
 	return rc;
 }
 
-/**
- * nx_crypto_ctx_init - create and initialize a crypto api context
- *
- * @nx_ctx: the crypto api context
- * @fc: function code for the context
- * @mode: the function code specific mode for this context
- */
+ 
 static int nx_crypto_ctx_init(struct nx_crypto_ctx *nx_ctx, u32 fc, u32 mode)
 {
 	if (nx_driver.of.status != NX_OKAY) {
@@ -659,7 +550,7 @@ static int nx_crypto_ctx_init(struct nx_crypto_ctx *nx_ctx, u32 fc, u32 mode)
 		return -ENODEV;
 	}
 
-	/* we need an extra page for csbcpb_aead for these modes */
+	 
 	if (mode == NX_MODE_AES_GCM || mode == NX_MODE_AES_CCM)
 		nx_ctx->kmem_len = (5 * NX_PAGE_SIZE) +
 				   sizeof(struct nx_csbcpb);
@@ -671,7 +562,7 @@ static int nx_crypto_ctx_init(struct nx_crypto_ctx *nx_ctx, u32 fc, u32 mode)
 	if (!nx_ctx->kmem)
 		return -ENOMEM;
 
-	/* the csbcpb and scatterlists must be 4K aligned pages */
+	 
 	nx_ctx->csbcpb = (struct nx_csbcpb *)(round_up((u64)nx_ctx->kmem,
 						       (u64)NX_PAGE_SIZE));
 	nx_ctx->in_sg = (struct nx_sg *)((u8 *)nx_ctx->csbcpb + NX_PAGE_SIZE);
@@ -682,8 +573,7 @@ static int nx_crypto_ctx_init(struct nx_crypto_ctx *nx_ctx, u32 fc, u32 mode)
 			(struct nx_csbcpb *)((u8 *)nx_ctx->out_sg +
 					     NX_PAGE_SIZE);
 
-	/* give each context a pointer to global stats and their OF
-	 * properties */
+	 
 	nx_ctx->stats = &nx_driver.stats;
 	memcpy(nx_ctx->props, nx_driver.of.ap[fc][mode],
 	       sizeof(struct alg_props) * 3);
@@ -691,7 +581,7 @@ static int nx_crypto_ctx_init(struct nx_crypto_ctx *nx_ctx, u32 fc, u32 mode)
 	return 0;
 }
 
-/* entry points from the crypto tfm initializers */
+ 
 int nx_crypto_ctx_aes_ccm_init(struct crypto_aead *tfm)
 {
 	crypto_aead_set_reqsize(tfm, sizeof(struct nx_ccm_rctx));
@@ -735,14 +625,7 @@ int nx_crypto_ctx_aes_xcbc_init(struct crypto_tfm *tfm)
 				  NX_MODE_AES_XCBC_MAC);
 }
 
-/**
- * nx_crypto_ctx_exit - destroy a crypto api context
- *
- * @tfm: the crypto transform pointer for the context
- *
- * As crypto API contexts are destroyed, this exit hook is called to free the
- * memory associated with it.
- */
+ 
 void nx_crypto_ctx_exit(struct crypto_tfm *tfm)
 {
 	struct nx_crypto_ctx *nx_ctx = crypto_tfm_ctx(tfm);
@@ -815,7 +698,7 @@ static void nx_remove(struct vio_dev *viodev)
 }
 
 
-/* module wide initialization/cleanup */
+ 
 static int __init nx_init(void)
 {
 	return vio_register_driver(&nx_driver.viodriver);
@@ -832,7 +715,7 @@ static const struct vio_device_id nx_crypto_driver_ids[] = {
 };
 MODULE_DEVICE_TABLE(vio, nx_crypto_driver_ids);
 
-/* driver state structure */
+ 
 struct nx_crypto_driver nx_driver = {
 	.viodriver = {
 		.id_table = nx_crypto_driver_ids,

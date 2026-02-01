@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -686,20 +684,14 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
 	if (--dsi->refcount != 0)
 		return;
 
-	/*
-	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
-	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
-	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
-	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
-	 * after dsi is fully set.
-	 */
+	 
 	mtk_dsi_stop(dsi);
 
 	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
 	mtk_dsi_reset_engine(dsi);
 	mtk_dsi_lane0_ulp_mode_enter(dsi);
 	mtk_dsi_clk_ulp_mode_enter(dsi);
-	/* set the lane number as 0 to pull down mipi */
+	 
 	writel(0, dsi->regs + DSI_TXRX_CTRL);
 
 	mtk_dsi_disable(dsi);
@@ -723,7 +715,7 @@ static void mtk_dsi_lane_ready(struct mtk_dsi *dsi)
 		mtk_dsi_lane0_ulp_mode_leave(dsi);
 		mtk_dsi_clk_hs_mode(dsi, 0);
 		usleep_range(1000, 3000);
-		/* The reaction time after pulling up the mipi signal for dsi_rx */
+		 
 	}
 }
 
@@ -754,7 +746,7 @@ static int mtk_dsi_bridge_attach(struct drm_bridge *bridge,
 {
 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
 
-	/* Attach the panel or bridge to the dsi bridge */
+	 
 	return drm_bridge_attach(bridge->encoder, dsi->next_bridge,
 				 &dsi->bridge, flags);
 }

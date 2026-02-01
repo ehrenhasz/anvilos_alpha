@@ -1,24 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_16xx.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- * Project manager: S. Weber
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * Register I/O map
- */
+ 
 #define APCI16XX_IN_REG(x)		(((x) * 4) + 0x08)
 #define APCI16XX_OUT_REG(x)		(((x) * 4) + 0x14)
 #define APCI16XX_DIR_REG(x)		(((x) * 4) + 0x20)
@@ -36,11 +22,11 @@ struct apci16xx_boardinfo {
 static const struct apci16xx_boardinfo apci16xx_boardtypes[] = {
 	[BOARD_APCI1648] = {
 		.name		= "apci1648",
-		.n_chan		= 48,		/* 2 subdevices */
+		.n_chan		= 48,		 
 	},
 	[BOARD_APCI1696] = {
 		.name		= "apci1696",
-		.n_chan		= 96,		/* 3 subdevices */
+		.n_chan		= 96,		 
 	},
 };
 
@@ -108,11 +94,7 @@ static int apci16xx_auto_attach(struct comedi_device *dev,
 
 	dev->iobase = pci_resource_start(pcidev, 0);
 
-	/*
-	 * Work out the number of subdevices needed to support all the
-	 * digital i/o channels on the board. Each subdevice supports
-	 * up to 32 channels.
-	 */
+	 
 	n_subdevs = board->n_chan / 32;
 	if ((n_subdevs * 32) < board->n_chan) {
 		last = board->n_chan - (n_subdevs * 32);
@@ -125,7 +107,7 @@ static int apci16xx_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Initialize the TTL digital i/o subdevices */
+	 
 	for (i = 0; i < n_subdevs; i++) {
 		s = &dev->subdevices[i];
 		s->type		= COMEDI_SUBD_DIO;
@@ -136,7 +118,7 @@ static int apci16xx_auto_attach(struct comedi_device *dev,
 		s->insn_config	= apci16xx_insn_config;
 		s->insn_bits	= apci16xx_dio_insn_bits;
 
-		/* Default all channels to inputs */
+		 
 		s->io_bits	= 0;
 		outl(s->io_bits, dev->iobase + APCI16XX_DIR_REG(i));
 	}

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013, Michael Ellerman, IBM Corp.
- */
+ 
+ 
 
 #include <ppc-asm.h>
 

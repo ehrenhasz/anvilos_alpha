@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -17,9 +14,7 @@
 #include "scrub/btree.h"
 #include "xfs_ag.h"
 
-/*
- * Set us up to scrub free space btrees.
- */
+ 
 int
 xchk_setup_ag_allocbt(
 	struct xfs_scrub	*sc)
@@ -30,17 +25,14 @@ xchk_setup_ag_allocbt(
 	return xchk_setup_ag_btree(sc, false);
 }
 
-/* Free space btree scrubber. */
+ 
 
 struct xchk_alloc {
-	/* Previous free space extent. */
+	 
 	struct xfs_alloc_rec_incore	prev;
 };
 
-/*
- * Ensure there's a corresponding cntbt/bnobt record matching this
- * bnobt/cntbt record, respectively.
- */
+ 
 STATIC void
 xchk_allocbt_xref_other(
 	struct xfs_scrub	*sc,
@@ -80,7 +72,7 @@ xchk_allocbt_xref_other(
 		xchk_btree_xref_set_corrupt(sc, *pcur, 0);
 }
 
-/* Cross-reference with the other btrees. */
+ 
 STATIC void
 xchk_allocbt_xref(
 	struct xfs_scrub	*sc,
@@ -99,7 +91,7 @@ xchk_allocbt_xref(
 	xchk_xref_is_not_cow_staging(sc, agbno, len);
 }
 
-/* Flag failures for records that could be merged. */
+ 
 STATIC void
 xchk_allocbt_mergeable(
 	struct xchk_btree	*bs,
@@ -117,7 +109,7 @@ xchk_allocbt_mergeable(
 	memcpy(&ca->prev, irec, sizeof(*irec));
 }
 
-/* Scrub a bnobt/cntbt record. */
+ 
 STATIC int
 xchk_allocbt_rec(
 	struct xchk_btree		*bs,
@@ -138,7 +130,7 @@ xchk_allocbt_rec(
 	return 0;
 }
 
-/* Scrub the freespace btrees for some AG. */
+ 
 STATIC int
 xchk_allocbt(
 	struct xfs_scrub	*sc,
@@ -165,7 +157,7 @@ xchk_cntbt(
 	return xchk_allocbt(sc, XFS_BTNUM_CNT);
 }
 
-/* xref check that the extent is not free */
+ 
 void
 xchk_xref_is_used_space(
 	struct xfs_scrub	*sc,

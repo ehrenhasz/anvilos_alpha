@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef _LINUX_EXPORT_H
 #define _LINUX_EXPORT_H
 
@@ -6,22 +6,9 @@
 #include <linux/linkage.h>
 #include <linux/stringify.h>
 
-/*
- * Export symbols from the kernel to modules.  Forked from module.h
- * to reduce the amount of pointless cruft we feed to gcc when only
- * exporting a simple symbol or two.
- *
- * Try not to add #includes here.  It slows compilation and makes kernel
- * hackers place grumpy comments in header files.
- */
+ 
 
-/*
- * This comment block is used by fixdep. Please do not remove.
- *
- * When CONFIG_MODVERSIONS is changed from n to y, all source files having
- * EXPORT_SYMBOL variants must be re-compiled because genksyms is run as a
- * side effect of the *.o build rule.
- */
+ 
 
 #ifndef __ASSEMBLY__
 #ifdef MODULE
@@ -30,7 +17,7 @@ extern struct module __this_module;
 #else
 #define THIS_MODULE ((struct module *)0)
 #endif
-#endif /* __ASSEMBLY__ */
+#endif  
 
 #ifdef CONFIG_64BIT
 #define __EXPORT_SYMBOL_REF(sym)			\
@@ -52,11 +39,7 @@ extern struct module __this_module;
 
 #if defined(__DISABLE_EXPORTS)
 
-/*
- * Allow symbol exports to be disabled completely so that C code may
- * be reused in other execution contexts such as the UEFI stub or the
- * decompressor.
- */
+ 
 #define __EXPORT_SYMBOL(sym, license, ns)
 
 #elif defined(__GENKSYMS__)
@@ -88,4 +71,4 @@ extern struct module __this_module;
 #define EXPORT_SYMBOL_NS(sym, ns)	__EXPORT_SYMBOL(sym, "", __stringify(ns))
 #define EXPORT_SYMBOL_NS_GPL(sym, ns)	__EXPORT_SYMBOL(sym, "GPL", __stringify(ns))
 
-#endif /* _LINUX_EXPORT_H */
+#endif  

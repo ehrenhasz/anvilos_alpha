@@ -1,33 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  DWMAC Management Counters
 
-  Copyright (C) 2011  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
 #include "hwif.h"
 #include "mmc.h"
 
-/* MAC Management Counters register offset */
+ 
 
-#define MMC_CNTRL		0x00	/* MMC Control */
-#define MMC_RX_INTR		0x04	/* MMC RX Interrupt */
-#define MMC_TX_INTR		0x08	/* MMC TX Interrupt */
-#define MMC_RX_INTR_MASK	0x0c	/* MMC Interrupt Mask */
-#define MMC_TX_INTR_MASK	0x10	/* MMC Interrupt Mask */
+#define MMC_CNTRL		0x00	 
+#define MMC_RX_INTR		0x04	 
+#define MMC_TX_INTR		0x08	 
+#define MMC_RX_INTR_MASK	0x0c	 
+#define MMC_TX_INTR_MASK	0x10	 
 #define MMC_DEFAULT_MASK	0xffffffff
 
-/* MMC TX counter registers */
+ 
 
-/* Note:
- * _GB register stands for good and bad frames
- * _G is for good only.
- */
+ 
 #define MMC_TX_OCTETCOUNT_GB		0x14
 #define MMC_TX_FRAMECOUNT_GB		0x18
 #define MMC_TX_BROADCASTFRAME_G		0x1c
@@ -54,7 +44,7 @@
 #define MMC_TX_PAUSE_FRAME		0x70
 #define MMC_TX_VLAN_FRAME_G		0x74
 
-/* MMC RX counter registers */
+ 
 #define MMC_RX_FRAMECOUNT_GB		0x80
 #define MMC_RX_OCTETCOUNT_GB		0x84
 #define MMC_RX_OCTETCOUNT_G		0x88
@@ -79,10 +69,10 @@
 #define MMC_RX_FIFO_OVERFLOW		0xd4
 #define MMC_RX_VLAN_FRAMES_GB		0xd8
 #define MMC_RX_WATCHDOG_ERROR		0xdc
-/* IPC*/
+ 
 #define MMC_RX_IPC_INTR_MASK		0x100
 #define MMC_RX_IPC_INTR			0x108
-/* IPv4*/
+ 
 #define MMC_RX_IPV4_GD			0x110
 #define MMC_RX_IPV4_HDERR		0x114
 #define MMC_RX_IPV4_NOPAY		0x118
@@ -95,7 +85,7 @@
 #define MMC_RX_IPV4_FRAG_OCTETS		0x15c
 #define MMC_RX_IPV4_UDSBL_OCTETS	0x160
 
-/* IPV6*/
+ 
 #define MMC_RX_IPV6_GD_OCTETS		0x164
 #define MMC_RX_IPV6_HDERR_OCTETS	0x168
 #define MMC_RX_IPV6_NOPAY_OCTETS	0x16c
@@ -104,7 +94,7 @@
 #define MMC_RX_IPV6_HDERR		0x128
 #define MMC_RX_IPV6_NOPAY		0x12c
 
-/* Protocols*/
+ 
 #define MMC_RX_UDP_GD			0x130
 #define MMC_RX_UDP_ERR			0x134
 #define MMC_RX_TCP_GD			0x138
@@ -126,7 +116,7 @@
 #define MMC_RX_PKT_ASSEMBLY_OK		0x1d0
 #define MMC_RX_FPE_FRAG			0x1d4
 
-/* XGMAC MMC Registers */
+ 
 #define MMC_XGMAC_TX_OCTET_GB		0x14
 #define MMC_XGMAC_TX_PKT_GB		0x1c
 #define MMC_XGMAC_TX_BROAD_PKT_G	0x24
@@ -199,7 +189,7 @@ static void dwmac_mmc_ctrl(void __iomem *mmcaddr, unsigned int mode)
 		 MMC_CNTRL, value);
 }
 
-/* To mask all interrupts.*/
+ 
 static void dwmac_mmc_intr_all_mask(void __iomem *mmcaddr)
 {
 	writel(MMC_DEFAULT_MASK, mmcaddr + MMC_RX_INTR_MASK);
@@ -207,11 +197,7 @@ static void dwmac_mmc_intr_all_mask(void __iomem *mmcaddr)
 	writel(MMC_DEFAULT_MASK, mmcaddr + MMC_RX_IPC_INTR_MASK);
 }
 
-/* This reads the MAC core counters (if actaully supported).
- * by default the MMC core is programmed to reset each
- * counter after a read. So all the field of the mmc struct
- * have to be incremented.
- */
+ 
 static void dwmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
 {
 	mmc->mmc_tx_octetcount_gb += readl(mmcaddr + MMC_TX_OCTETCOUNT_GB);
@@ -247,7 +233,7 @@ static void dwmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
 	mmc->mmc_tx_pause_frame += readl(mmcaddr + MMC_TX_PAUSE_FRAME);
 	mmc->mmc_tx_vlan_frame_g += readl(mmcaddr + MMC_TX_VLAN_FRAME_G);
 
-	/* MMC RX counter registers */
+	 
 	mmc->mmc_rx_framecount_gb += readl(mmcaddr + MMC_RX_FRAMECOUNT_GB);
 	mmc->mmc_rx_octetcount_gb += readl(mmcaddr + MMC_RX_OCTETCOUNT_GB);
 	mmc->mmc_rx_octetcount_g += readl(mmcaddr + MMC_RX_OCTETCOUNT_G);
@@ -279,10 +265,10 @@ static void dwmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
 	mmc->mmc_rx_fifo_overflow += readl(mmcaddr + MMC_RX_FIFO_OVERFLOW);
 	mmc->mmc_rx_vlan_frames_gb += readl(mmcaddr + MMC_RX_VLAN_FRAMES_GB);
 	mmc->mmc_rx_watchdog_error += readl(mmcaddr + MMC_RX_WATCHDOG_ERROR);
-	/* IPC */
+	 
 	mmc->mmc_rx_ipc_intr_mask += readl(mmcaddr + MMC_RX_IPC_INTR_MASK);
 	mmc->mmc_rx_ipc_intr += readl(mmcaddr + MMC_RX_IPC_INTR);
-	/* IPv4 */
+	 
 	mmc->mmc_rx_ipv4_gd += readl(mmcaddr + MMC_RX_IPV4_GD);
 	mmc->mmc_rx_ipv4_hderr += readl(mmcaddr + MMC_RX_IPV4_HDERR);
 	mmc->mmc_rx_ipv4_nopay += readl(mmcaddr + MMC_RX_IPV4_NOPAY);
@@ -299,7 +285,7 @@ static void dwmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
 	mmc->mmc_rx_ipv4_udsbl_octets +=
 	    readl(mmcaddr + MMC_RX_IPV4_UDSBL_OCTETS);
 
-	/* IPV6 */
+	 
 	mmc->mmc_rx_ipv6_gd_octets += readl(mmcaddr + MMC_RX_IPV6_GD_OCTETS);
 	mmc->mmc_rx_ipv6_hderr_octets +=
 	    readl(mmcaddr + MMC_RX_IPV6_HDERR_OCTETS);
@@ -310,7 +296,7 @@ static void dwmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
 	mmc->mmc_rx_ipv6_hderr += readl(mmcaddr + MMC_RX_IPV6_HDERR);
 	mmc->mmc_rx_ipv6_nopay += readl(mmcaddr + MMC_RX_IPV6_NOPAY);
 
-	/* Protocols */
+	 
 	mmc->mmc_rx_udp_gd += readl(mmcaddr + MMC_RX_UDP_GD);
 	mmc->mmc_rx_udp_err += readl(mmcaddr + MMC_RX_UDP_ERR);
 	mmc->mmc_rx_tcp_gd += readl(mmcaddr + MMC_RX_TCP_GD);
@@ -371,11 +357,7 @@ static void dwxgmac_read_mmc_reg(void __iomem *addr, u32 reg, u32 *dest)
 		*dest = *dest + tmp;
 }
 
-/* This reads the MAC core counters (if actaully supported).
- * by default the MMC core is programmed to reset each
- * counter after a read. So all the field of the mmc struct
- * have to be incremented.
- */
+ 
 static void dwxgmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
 {
 	dwxgmac_read_mmc_reg(mmcaddr, MMC_XGMAC_TX_OCTET_GB,
@@ -415,7 +397,7 @@ static void dwxgmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
 	dwxgmac_read_mmc_reg(mmcaddr, MMC_XGMAC_TX_VLAN_PKT_G,
 			     &mmc->mmc_tx_vlan_frame_g);
 
-	/* MMC RX counter registers */
+	 
 	dwxgmac_read_mmc_reg(mmcaddr, MMC_XGMAC_RX_PKT_GB,
 			     &mmc->mmc_rx_framecount_gb);
 	dwxgmac_read_mmc_reg(mmcaddr, MMC_XGMAC_RX_OCTET_GB,

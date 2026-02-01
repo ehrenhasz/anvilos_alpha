@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2011, Lawrence Livermore National Security, LLC.
- * Copyright (c) 2015 by Chunwei Chen. All rights reserved.
- */
+ 
+ 
 
 
 #include <sys/sysmacros.h>
@@ -53,7 +31,7 @@ zpl_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	crhold(cr);
 	cookie = spl_fstrans_mark();
 
-	/* If we are a case insensitive fs, we need the real name */
+	 
 	if (zfsvfs->z_case == ZFS_CASE_INSENSITIVE) {
 		zfs_flags = FIGNORECASE;
 		pn_alloc(&pn);
@@ -71,11 +49,7 @@ zpl_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	spin_unlock(&dentry->d_lock);
 
 	if (error) {
-		/*
-		 * If we have a case sensitive fs, we do not want to
-		 * insert negative entries, so return NULL for ENOENT.
-		 * Fall through if the error is not ENOENT. Also free memory.
-		 */
+		 
 		if (ppn) {
 			pn_free(ppn);
 			if (error == -ENOENT)
@@ -89,10 +63,7 @@ zpl_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	}
 	ip = ZTOI(zp);
 
-	/*
-	 * If we are case insensitive, call the correct function
-	 * to install the name.
-	 */
+	 
 	if (ppn) {
 		struct dentry *new_dentry;
 		struct qstr ci_name;
@@ -201,10 +172,7 @@ zpl_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,
 	zidmap_t *user_ns = kcred->user_ns;
 #endif
 
-	/*
-	 * We currently expect Linux to supply rdev=0 for all sockets
-	 * and fifos, but we want to know if this behavior ever changes.
-	 */
+	 
 	if (S_ISSOCK(mode) || S_ISFIFO(mode))
 		ASSERT(rdev == 0);
 
@@ -266,10 +234,7 @@ zpl_tmpfile(struct inode *dir, struct dentry *dentry, umode_t mode)
 
 	crhold(cr);
 	vap = kmem_zalloc(sizeof (vattr_t), KM_SLEEP);
-	/*
-	 * The VFS does not apply the umask, therefore it is applied here
-	 * when POSIX ACLs are not enabled.
-	 */
+	 
 	if (!IS_POSIXACL(dir))
 		mode &= ~current_umask();
 	zpl_vap_init(vap, dir, mode, cr, userns);
@@ -277,7 +242,7 @@ zpl_tmpfile(struct inode *dir, struct dentry *dentry, umode_t mode)
 	cookie = spl_fstrans_mark();
 	error = -zfs_tmpfile(dir, vap, 0, mode, &ip, cr, 0, NULL, userns);
 	if (error == 0) {
-		/* d_tmpfile will do drop_nlink, so we should set it first */
+		 
 		set_nlink(ip, 1);
 #ifndef HAVE_TMPFILE_DENTRY
 		d_tmpfile(file, ip);
@@ -294,10 +259,7 @@ zpl_tmpfile(struct inode *dir, struct dentry *dentry, umode_t mode)
 #ifndef HAVE_TMPFILE_DENTRY
 		error = finish_open_simple(file, error);
 #endif
-		/*
-		 * don't need to handle error here, file is already in
-		 * unlinked set.
-		 */
+		 
 	}
 
 	spl_fstrans_unmark(cookie);
@@ -321,10 +283,7 @@ zpl_unlink(struct inode *dir, struct dentry *dentry)
 	cookie = spl_fstrans_mark();
 	error = -zfs_remove(ITOZ(dir), dname(dentry), cr, 0);
 
-	/*
-	 * For a CI FS we must invalidate the dentry to prevent the
-	 * creation of negative entries.
-	 */
+	 
 	if (error == 0 && zfsvfs->z_case == ZFS_CASE_INSENSITIVE)
 		d_invalidate(dentry);
 
@@ -396,10 +355,7 @@ zpl_rmdir(struct inode *dir, struct dentry *dentry)
 	cookie = spl_fstrans_mark();
 	error = -zfs_rmdir(ITOZ(dir), dname(dentry), NULL, cr, 0);
 
-	/*
-	 * For a CI FS we must invalidate the dentry to prevent the
-	 * creation of negative entries.
-	 */
+	 
 	if (error == 0 && zfsvfs->z_case == ZFS_CASE_INSENSITIVE)
 		d_invalidate(dentry);
 
@@ -431,9 +387,7 @@ zpl_getattr_impl(const struct path *path, struct kstat *stat, u32 request_mask,
 
 	cookie = spl_fstrans_mark();
 
-	/*
-	 * XXX query_flags currently ignored.
-	 */
+	 
 
 #ifdef HAVE_GENERIC_FILLATTR_IDMAP_REQMASK
 	error = -zfs_getattr_fast(user_ns, request_mask, ip, stat);
@@ -777,7 +731,7 @@ zpl_link(struct dentry *old_dentry, struct inode *dir, struct dentry *dentry)
 
 	crhold(cr);
 	zpl_inode_set_ctime_to_ts(ip, current_time(ip));
-	/* Must have an existing ref, so igrab() cannot return NULL */
+	 
 	VERIFY3P(igrab(ip), !=, NULL);
 
 	cookie = spl_fstrans_mark();
@@ -808,13 +762,13 @@ const struct inode_operations zpl_inode_operations = {
 #if defined(CONFIG_FS_POSIX_ACL)
 #if defined(HAVE_SET_ACL)
 	.set_acl	= zpl_set_acl,
-#endif /* HAVE_SET_ACL */
+#endif  
 #if defined(HAVE_GET_INODE_ACL)
 	.get_inode_acl	= zpl_get_acl,
 #else
 	.get_acl	= zpl_get_acl,
-#endif /* HAVE_GET_INODE_ACL */
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
+#endif  
 };
 
 #ifdef HAVE_RENAME2_OPERATIONS_WRAPPER
@@ -854,13 +808,13 @@ const struct inode_operations zpl_dir_inode_operations = {
 #if defined(CONFIG_FS_POSIX_ACL)
 #if defined(HAVE_SET_ACL)
 	.set_acl	= zpl_set_acl,
-#endif /* HAVE_SET_ACL */
+#endif  
 #if defined(HAVE_GET_INODE_ACL)
 	.get_inode_acl	= zpl_get_acl,
 #else
 	.get_acl	= zpl_get_acl,
-#endif /* HAVE_GET_INODE_ACL */
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
+#endif  
 #ifdef HAVE_RENAME2_OPERATIONS_WRAPPER
 	},
 	.rename2	= zpl_rename2,
@@ -901,11 +855,11 @@ const struct inode_operations zpl_special_inode_operations = {
 #if defined(CONFIG_FS_POSIX_ACL)
 #if defined(HAVE_SET_ACL)
 	.set_acl	= zpl_set_acl,
-#endif /* HAVE_SET_ACL */
+#endif  
 #if defined(HAVE_GET_INODE_ACL)
 	.get_inode_acl	= zpl_get_acl,
 #else
 	.get_acl	= zpl_get_acl,
-#endif /* HAVE_GET_INODE_ACL */
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
+#endif  
 };

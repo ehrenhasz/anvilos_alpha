@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Register definitions for Atmel AC97C
- *
- * Copyright (C) 2005-2009 Atmel Corporation
- */
+ 
+ 
 #ifndef __SOUND_ATMEL_AC97C_H
 #define __SOUND_ATMEL_AC97C_H
 
@@ -67,4 +63,4 @@
 #define AC97C_CHANNEL_NONE	0x0
 #define AC97C_CHANNEL_A		0x1
 
-#endif /* __SOUND_ATMEL_AC97C_H */
+#endif  

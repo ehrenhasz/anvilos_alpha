@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Flora Fu, MediaTek
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -27,7 +24,7 @@
 #define PWRAP_MT8135_BRIDGE_WDT_UNIT		0x50
 #define PWRAP_MT8135_BRIDGE_WDT_SRC_EN		0x54
 
-/* macro for wrapper status */
+ 
 #define PWRAP_GET_WACS_RDATA(x)		(((x) >> 0) & 0x0000ffff)
 #define PWRAP_GET_WACS_ARB_FSM(x)	(((x) >> 1) & 0x00000007)
 #define PWRAP_GET_WACS_FSM(x)		(((x) >> 16) & 0x00000007)
@@ -37,7 +34,7 @@
 #define PWRAP_STATE_INIT_DONE0_MT8186	BIT(22)
 #define PWRAP_STATE_INIT_DONE1		BIT(15)
 
-/* macro for WACS FSM */
+ 
 #define PWRAP_WACS_FSM_IDLE		0x00
 #define PWRAP_WACS_FSM_REQ		0x02
 #define PWRAP_WACS_FSM_WFDLE		0x04
@@ -46,12 +43,12 @@
 #define PWRAP_WACS_WACS_SYNC_IDLE	0x01
 #define PWRAP_WACS_SYNC_BUSY		0x00
 
-/* macro for device wrapper default value */
+ 
 #define PWRAP_DEW_READ_TEST_VAL		0x5aa5
 #define PWRAP_DEW_COMP_READ_TEST_VAL	0xa55a
 #define PWRAP_DEW_WRITE_TEST_VAL	0xa55a
 
-/* macro for manual command */
+ 
 #define PWRAP_MAN_CMD_SPI_WRITE_NEW	(1 << 14)
 #define PWRAP_MAN_CMD_SPI_WRITE		(1 << 13)
 #define PWRAP_MAN_CMD_OP_CSH		(0x0 << 8)
@@ -61,7 +58,7 @@
 #define PWRAP_MAN_CMD_OP_OUTD		(0x9 << 8)
 #define PWRAP_MAN_CMD_OP_OUTQ		(0xa << 8)
 
-/* macro for Watch Dog Timer Source */
+ 
 #define PWRAP_WDT_SRC_EN_STAUPD_TRIG		(1 << 25)
 #define PWRAP_WDT_SRC_EN_HARB_STAUPD_DLE	(1 << 20)
 #define PWRAP_WDT_SRC_EN_HARB_STAUPD_ALE	(1 << 6)
@@ -70,13 +67,13 @@
 					  PWRAP_WDT_SRC_EN_HARB_STAUPD_DLE | \
 					  PWRAP_WDT_SRC_EN_HARB_STAUPD_ALE)
 
-/* Group of bits used for shown slave capability */
+ 
 #define PWRAP_SLV_CAP_SPI	BIT(0)
 #define PWRAP_SLV_CAP_DUALIO	BIT(1)
 #define PWRAP_SLV_CAP_SECURITY	BIT(2)
 #define HAS_CAP(_c, _x)	(((_c) & (_x)) == (_x))
 
-/* Group of bits used for shown pwrap capability */
+ 
 #define PWRAP_CAP_BRIDGE	BIT(0)
 #define PWRAP_CAP_RESET		BIT(1)
 #define PWRAP_CAP_DCM		BIT(2)
@@ -85,7 +82,7 @@
 #define PWRAP_CAP_ARB		BIT(5)
 #define PWRAP_CAP_ARB_MT8186	BIT(8)
 
-/* defines for slave device wrapper registers */
+ 
 enum dew_regs {
 	PWRAP_DEW_BASE,
 	PWRAP_DEW_DIO_EN,
@@ -100,11 +97,11 @@ enum dew_regs {
 	PWRAP_DEW_CIPHER_MODE,
 	PWRAP_DEW_CIPHER_SWRST,
 
-	/* MT6323 only regs */
+	 
 	PWRAP_DEW_CIPHER_EN,
 	PWRAP_DEW_RDDMY_NO,
 
-	/* MT6358 only regs */
+	 
 	PWRAP_SMT_CON1,
 	PWRAP_DRV_CON1,
 	PWRAP_FILTER_CON0,
@@ -121,7 +118,7 @@ enum dew_regs {
 	PWRAP_RG_SPI_CON13,
 	PWRAP_SPISLV_KEY,
 
-	/* MT6359 only regs */
+	 
 	PWRAP_DEW_CRC_SWRST,
 	PWRAP_DEW_RG_EN_RECORD,
 	PWRAP_DEW_RECORD_CMD0,
@@ -143,7 +140,7 @@ enum dew_regs {
 	PWRAP_DEW_RG_SPI_RECORD_CLR,
 	PWRAP_DEW_RG_CMD_ALERT_CLR,
 
-	/* MT6397 only regs */
+	 
 	PWRAP_DEW_EVENT_OUT_EN,
 	PWRAP_DEW_EVENT_SRC_EN,
 	PWRAP_DEW_EVENT_SRC,
@@ -387,14 +384,14 @@ enum pwrap_regs {
 	PWRAP_SWINF_2_WDATA_31_0,
 	PWRAP_SWINF_2_RDATA_31_0,
 
-	/* MT2701 only regs */
+	 
 	PWRAP_ADC_CMD_ADDR,
 	PWRAP_PWRAP_ADC_CMD,
 	PWRAP_ADC_RDY_ADDR,
 	PWRAP_ADC_RDATA_ADDR1,
 	PWRAP_ADC_RDATA_ADDR2,
 
-	/* MT7622 only regs */
+	 
 	PWRAP_STA,
 	PWRAP_CLR,
 	PWRAP_DVFS_ADR8,
@@ -422,7 +419,7 @@ enum pwrap_regs {
 	PWRAP_DVFS_STEP_CTRL2,
 	PWRAP_SPI2_CTRL,
 
-	/* MT8135 only regs */
+	 
 	PWRAP_CSHEXT,
 	PWRAP_EVENT_IN_EN,
 	PWRAP_EVENT_DST_EN,
@@ -435,7 +432,7 @@ enum pwrap_regs {
 	PWRAP_CIPHER_LOAD,
 	PWRAP_CIPHER_START,
 
-	/* MT8173 only regs */
+	 
 	PWRAP_RDDMY,
 	PWRAP_SI_CK_CON,
 	PWRAP_DVFS_ADR0,
@@ -457,7 +454,7 @@ enum pwrap_regs {
 	PWRAP_SPMINF_STA,
 	PWRAP_CIPHER_EN,
 
-	/* MT8183 only regs */
+	 
 	PWRAP_SI_SAMPLE_CTRL,
 	PWRAP_CSLEXT_WRITE,
 	PWRAP_CSLEXT_READ,
@@ -478,7 +475,7 @@ enum pwrap_regs {
 	PWRAP_GPSINF_0_STA,
 	PWRAP_GPSINF_1_STA,
 
-	/* MT8516 only regs */
+	 
 	PWRAP_OP_TYPE,
 	PWRAP_MSB_FIRST,
 };
@@ -1333,24 +1330,12 @@ struct pmic_wrapper;
 
 struct pwrap_slv_regops {
 	const struct regmap_config *regmap;
-	/*
-	 * pwrap operations are highly associated with the PMIC types,
-	 * so the pointers added increases flexibility allowing determination
-	 * which type is used by the detection through device tree.
-	 */
+	 
 	int (*pwrap_read)(struct pmic_wrapper *wrp, u32 adr, u32 *rdata);
 	int (*pwrap_write)(struct pmic_wrapper *wrp, u32 adr, u32 wdata);
 };
 
-/**
- * struct pwrap_slv_type - PMIC device wrapper definitions
- * @dew_regs:      Device Wrapper (DeW) register offsets
- * @type:          PMIC Type (model)
- * @comp_dew_regs: Device Wrapper (DeW) register offsets for companion device
- * @comp_type:     Companion PMIC Type (model)
- * @regops:        Register R/W ops
- * @caps:          Capability flags for the target device
- */
+ 
 struct pwrap_slv_type {
 	const u32 *dew_regs;
 	enum pmic_type type;
@@ -1384,7 +1369,7 @@ struct pmic_wrapper_type {
 	u32 int1_en_all;
 	u32 spi_w;
 	u32 wdt_src;
-	/* Flags indicating the capability for the target pwrap */
+	 
 	u32 caps;
 	int (*init_reg_clock)(struct pmic_wrapper *wrp);
 	int (*init_soc_specific)(struct pmic_wrapper *wrp);
@@ -1421,14 +1406,7 @@ static bool pwrap_is_fsm_vldclr(struct pmic_wrapper *wrp)
 	return pwrap_get_fsm_state(wrp) == PWRAP_WACS_FSM_WFVLDCLR;
 }
 
-/*
- * Timeout issue sometimes caused by the last read command
- * failed because pmic wrap could not got the FSM_VLDCLR
- * in time after finishing WACS2_CMD. It made state machine
- * still on FSM_VLDCLR and timeout next time.
- * Check the status of FSM and clear the vldclr to recovery the
- * error.
- */
+ 
 static inline void pwrap_leave_fsm_vldclr(struct pmic_wrapper *wrp)
 {
 	if (pwrap_is_fsm_vldclr(wrp))
@@ -1560,13 +1538,7 @@ static int pwrap_write32(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
 			     ((wdata >> (msb * 16)) & 0xffff),
 			     PWRAP_WACS2_CMD);
 
-		/*
-		 * The pwrap_read operation is the requirement of hardware used
-		 * for the synchronization between two successive 16-bit
-		 * pwrap_writel operations composing one 32-bit bus writing.
-		 * Otherwise, we'll find the result fails on the lower 16-bit
-		 * pwrap writing.
-		 */
+		 
 		if (!msb)
 			pwrap_read(wrp, adr, &rdata);
 	}
@@ -1636,12 +1608,7 @@ static int pwrap_reset_spislave(struct pmic_wrapper *wrp)
 	return 0;
 }
 
-/*
- * pwrap_init_sidly - configure serial input delay
- *
- * This configures the serial input delay. We can configure 0, 2, 4 or 6ns
- * delay. Do a read test with all possible values and chose the best delay.
- */
+ 
 static int pwrap_init_sidly(struct pmic_wrapper *wrp)
 {
 	u32 i;
@@ -1678,12 +1645,12 @@ static int pwrap_init_dual_io(struct pmic_wrapper *wrp)
 	bool read_ok, tmp;
 	bool comp_read_ok = true;
 
-	/* Enable dual IO mode */
+	 
 	pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_DIO_EN], 1);
 	if (wrp->slave->comp_dew_regs)
 		pwrap_write(wrp, wrp->slave->comp_dew_regs[PWRAP_DEW_DIO_EN], 1);
 
-	/* Check IDLE & INIT_DONE in advance */
+	 
 	ret = readx_poll_timeout(pwrap_is_fsm_idle_and_sync_idle, wrp, tmp, tmp,
 				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
 	if (ret) {
@@ -1693,7 +1660,7 @@ static int pwrap_init_dual_io(struct pmic_wrapper *wrp)
 
 	pwrap_writel(wrp, 1, PWRAP_DIO_EN);
 
-	/* Read Test */
+	 
 	read_ok = pwrap_pmic_read_test(wrp, wrp->slave->dew_regs, PWRAP_DEW_READ_TEST_VAL);
 	if (wrp->slave->comp_dew_regs)
 		comp_read_ok = pwrap_pmic_read_test(wrp, wrp->slave->comp_dew_regs,
@@ -1709,27 +1676,16 @@ static int pwrap_init_dual_io(struct pmic_wrapper *wrp)
 	return 0;
 }
 
-/*
- * pwrap_init_chip_select_ext is used to configure CS extension time for each
- * phase during data transactions on the pwrap bus.
- */
+ 
 static void pwrap_init_chip_select_ext(struct pmic_wrapper *wrp, u8 hext_write,
 				       u8 hext_read, u8 lext_start,
 				       u8 lext_end)
 {
-	/*
-	 * After finishing a write and read transaction, extends CS high time
-	 * to be at least xT of BUS CLK as hext_write and hext_read specifies
-	 * respectively.
-	 */
+	 
 	pwrap_writel(wrp, hext_write, PWRAP_CSHEXT_WRITE);
 	pwrap_writel(wrp, hext_read, PWRAP_CSHEXT_READ);
 
-	/*
-	 * Extends CS low time after CSL and before CSH command to be at
-	 * least xT of BUS CLK as lext_start and lext_end specifies
-	 * respectively.
-	 */
+	 
 	pwrap_writel(wrp, lext_start, PWRAP_CSLEXT_START);
 	pwrap_writel(wrp, lext_end, PWRAP_CSLEXT_END);
 }
@@ -1811,7 +1767,7 @@ static bool pwrap_is_pmic_cipher_ready(struct pmic_wrapper *wrp)
 	if (!ret)
 		return ret;
 
-	/* If there's any companion, wait for it to be ready too */
+	 
 	if (wrp->slave->comp_dew_regs)
 		ret = __pwrap_is_pmic_cipher_ready(wrp, wrp->slave->comp_dew_regs);
 
@@ -1862,10 +1818,10 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
 		break;
 	}
 
-	/* Config cipher mode @PMIC */
+	 
 	pwrap_config_cipher(wrp, wrp->slave->dew_regs);
 
-	/* If there is any companion PMIC, configure cipher mode there too */
+	 
 	if (wrp->slave->comp_type > 0)
 		pwrap_config_cipher(wrp, wrp->slave->comp_dew_regs);
 
@@ -1886,7 +1842,7 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
 		break;
 	}
 
-	/* wait for cipher data ready@AP */
+	 
 	ret = readx_poll_timeout(pwrap_is_cipher_ready, wrp, tmp, tmp,
 				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
 	if (ret) {
@@ -1894,7 +1850,7 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
 		return ret;
 	}
 
-	/* wait for cipher data ready@PMIC */
+	 
 	ret = readx_poll_timeout(pwrap_is_pmic_cipher_ready, wrp, tmp, tmp,
 				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
 	if (ret) {
@@ -1903,7 +1859,7 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
 		return ret;
 	}
 
-	/* wait for cipher mode idle */
+	 
 	pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_CIPHER_MODE], 0x1);
 	ret = readx_poll_timeout(pwrap_is_fsm_idle_and_sync_idle, wrp, tmp, tmp,
 				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
@@ -1914,7 +1870,7 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
 
 	pwrap_writel(wrp, 1, PWRAP_CIPHER_MODE);
 
-	/* Write Test */
+	 
 	if (pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_WRITE_TEST],
 			PWRAP_DEW_WRITE_TEST_VAL) ||
 	    pwrap_read(wrp, wrp->slave->dew_regs[PWRAP_DEW_WRITE_TEST],
@@ -1932,12 +1888,12 @@ static int pwrap_init_security(struct pmic_wrapper *wrp)
 	u32 crc_val;
 	int ret;
 
-	/* Enable encryption */
+	 
 	ret = pwrap_init_cipher(wrp);
 	if (ret)
 		return ret;
 
-	/* Signature checking - using CRC */
+	 
 	ret = pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_CRC_EN], 0x1);
 	if (ret == 0 && wrp->slave->comp_dew_regs)
 		ret = pwrap_write(wrp, wrp->slave->comp_dew_regs[PWRAP_DEW_CRC_EN], 0x1);
@@ -1945,14 +1901,14 @@ static int pwrap_init_security(struct pmic_wrapper *wrp)
 	pwrap_writel(wrp, 0x1, PWRAP_CRC_EN);
 	pwrap_writel(wrp, 0x0, PWRAP_SIG_MODE);
 
-	/* CRC value */
+	 
 	crc_val = wrp->slave->dew_regs[PWRAP_DEW_CRC_VAL];
 	if (wrp->slave->comp_dew_regs)
 		crc_val |= wrp->slave->comp_dew_regs[PWRAP_DEW_CRC_VAL] << 16;
 
 	pwrap_writel(wrp, crc_val, PWRAP_SIG_ADR);
 
-	/* PMIC Wrapper Arbiter priority */
+	 
 	pwrap_writel(wrp,
 		     wrp->master->arb_en_all, PWRAP_HIPRIO_ARB_EN);
 
@@ -1961,7 +1917,7 @@ static int pwrap_init_security(struct pmic_wrapper *wrp)
 
 static int pwrap_mt8135_init_soc_specific(struct pmic_wrapper *wrp)
 {
-	/* enable pwrap events and pwrap bridge in AP side */
+	 
 	pwrap_writel(wrp, 0x1, PWRAP_EVENT_IN_EN);
 	pwrap_writel(wrp, 0xffff, PWRAP_EVENT_DST_EN);
 	writel(0x7f, wrp->bridge_base + PWRAP_MT8135_BRIDGE_IORD_ARB_EN);
@@ -1972,7 +1928,7 @@ static int pwrap_mt8135_init_soc_specific(struct pmic_wrapper *wrp)
 	writel(0x1, wrp->bridge_base + PWRAP_MT8135_BRIDGE_TIMER_EN);
 	writel(0x7ff, wrp->bridge_base + PWRAP_MT8135_BRIDGE_INT_EN);
 
-	/* enable PMIC event out and sources */
+	 
 	if (pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_EVENT_OUT_EN],
 			0x1) ||
 	    pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_EVENT_SRC_EN],
@@ -1986,7 +1942,7 @@ static int pwrap_mt8135_init_soc_specific(struct pmic_wrapper *wrp)
 
 static int pwrap_mt8173_init_soc_specific(struct pmic_wrapper *wrp)
 {
-	/* PMIC_DEWRAP enables */
+	 
 	if (pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_EVENT_OUT_EN],
 			0x1) ||
 	    pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_EVENT_SRC_EN],
@@ -2000,7 +1956,7 @@ static int pwrap_mt8173_init_soc_specific(struct pmic_wrapper *wrp)
 
 static int pwrap_mt2701_init_soc_specific(struct pmic_wrapper *wrp)
 {
-	/* GPS_INTF initialization */
+	 
 	switch (wrp->slave->type) {
 	case PMIC_MT6323:
 		pwrap_writel(wrp, 0x076c, PWRAP_ADC_CMD_ADDR);
@@ -2032,7 +1988,7 @@ static int pwrap_mt6795_init_soc_specific(struct pmic_wrapper *wrp)
 static int pwrap_mt7622_init_soc_specific(struct pmic_wrapper *wrp)
 {
 	pwrap_writel(wrp, 0, PWRAP_STAUPD_PRD);
-	/* enable 2wire SPI master */
+	 
 	pwrap_writel(wrp, 0x8000000, PWRAP_SPI2_CTRL);
 
 	return 0;
@@ -2068,7 +2024,7 @@ static int pwrap_init(struct pmic_wrapper *wrp)
 	case PWRAP_MT6795:
 		fallthrough;
 	case PWRAP_MT8173:
-		/* Enable DCM */
+		 
 		pwrap_writel(wrp, 3, PWRAP_DCM_EN);
 		pwrap_writel(wrp, 0, PWRAP_DCM_DBC_PRD);
 		break;
@@ -2077,7 +2033,7 @@ static int pwrap_init(struct pmic_wrapper *wrp)
 	}
 
 	if (HAS_CAP(wrp->slave->caps, PWRAP_SLV_CAP_SPI)) {
-		/* Reset SPI slave */
+		 
 		ret = pwrap_reset_spislave(wrp);
 		if (ret)
 			return ret;
@@ -2094,21 +2050,21 @@ static int pwrap_init(struct pmic_wrapper *wrp)
 		return ret;
 
 	if (HAS_CAP(wrp->slave->caps, PWRAP_SLV_CAP_SPI)) {
-		/* Setup serial input delay */
+		 
 		ret = pwrap_init_sidly(wrp);
 		if (ret)
 			return ret;
 	}
 
 	if (HAS_CAP(wrp->slave->caps, PWRAP_SLV_CAP_DUALIO)) {
-		/* Enable dual I/O mode */
+		 
 		ret = pwrap_init_dual_io(wrp);
 		if (ret)
 			return ret;
 	}
 
 	if (HAS_CAP(wrp->slave->caps, PWRAP_SLV_CAP_SECURITY)) {
-		/* Enable security on bus */
+		 
 		ret = pwrap_init_security(wrp);
 		if (ret)
 			return ret;
@@ -2129,7 +2085,7 @@ static int pwrap_init(struct pmic_wrapper *wrp)
 			return ret;
 	}
 
-	/* Setup the init done registers */
+	 
 	pwrap_writel(wrp, 1, PWRAP_INIT_DONE2);
 	pwrap_writel(wrp, 1, PWRAP_INIT_DONE0);
 	pwrap_writel(wrp, 1, PWRAP_INIT_DONE1);
@@ -2259,12 +2215,10 @@ static const struct of_device_id of_slave_match_tbl[] = {
 	{ .compatible = "mediatek,mt6358", .data = &pmic_mt6358 },
 	{ .compatible = "mediatek,mt6359", .data = &pmic_mt6359 },
 
-	/* The MT6380 PMIC only implements a regulator, so we bind it
-	 * directly instead of using a MFD.
-	 */
+	 
 	{ .compatible = "mediatek,mt6380-regulator", .data = &pmic_mt6380 },
 	{ .compatible = "mediatek,mt6397", .data = &pmic_mt6397 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_slave_match_tbl);
 
@@ -2400,8 +2354,8 @@ static const struct pmic_wrapper_type pwrap_mt8183 = {
 static struct pmic_wrapper_type pwrap_mt8195 = {
 	.regs = mt8195_regs,
 	.type = PWRAP_MT8195,
-	.arb_en_all = 0x777f, /* NEED CONFIRM */
-	.int_en_all = 0x180000, /* NEED CONFIRM */
+	.arb_en_all = 0x777f,  
+	.int_en_all = 0x180000,  
 	.int1_en_all = 0,
 	.spi_w = PWRAP_MAN_CMD_SPI_WRITE,
 	.wdt_src = PWRAP_WDT_SRC_MASK_ALL,
@@ -2439,8 +2393,8 @@ static struct pmic_wrapper_type pwrap_mt8186 = {
 	.regs = mt8186_regs,
 	.type = PWRAP_MT8186,
 	.arb_en_all = 0xfb27f,
-	.int_en_all = 0xfffffffe, /* disable WatchDog Timeout for bit 1 */
-	.int1_en_all =  0x000017ff, /* disable Matching interrupt for bit 13 */
+	.int_en_all = 0xfffffffe,  
+	.int1_en_all =  0x000017ff,  
 	.spi_w = PWRAP_MAN_CMD_SPI_WRITE,
 	.wdt_src = PWRAP_WDT_SRC_MASK_ALL,
 	.caps = PWRAP_CAP_INT1_EN | PWRAP_CAP_ARB_MT8186,
@@ -2463,7 +2417,7 @@ static const struct of_device_id of_pwrap_match_tbl[] = {
 	{ .compatible = "mediatek,mt8195-pwrap", .data = &pwrap_mt8195 },
 	{ .compatible = "mediatek,mt8365-pwrap", .data = &pwrap_mt8365 },
 	{ .compatible = "mediatek,mt8516-pwrap", .data = &pwrap_mt8516 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_pwrap_match_tbl);
 
@@ -2565,16 +2519,13 @@ static int pwrap_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_out3;
 
-	/* Enable internal dynamic clock */
+	 
 	if (HAS_CAP(wrp->master->caps, PWRAP_CAP_DCM)) {
 		pwrap_writel(wrp, 1, PWRAP_DCM_EN);
 		pwrap_writel(wrp, 0, PWRAP_DCM_DBC_PRD);
 	}
 
-	/*
-	 * The PMIC could already be initialized by the bootloader.
-	 * Skip initialization here in this case.
-	 */
+	 
 	if (!pwrap_readl(wrp, PWRAP_INIT_DONE2)) {
 		ret = pwrap_init(wrp);
 		if (ret) {
@@ -2596,14 +2547,11 @@ static int pwrap_probe(struct platform_device *pdev)
 		goto err_out4;
 	}
 
-	/* Initialize watchdog, may not be done by the bootloader */
+	 
 	if (!HAS_CAP(wrp->master->caps, PWRAP_CAP_ARB))
 		pwrap_writel(wrp, 0xf, PWRAP_WDT_UNIT);
 
-	/*
-	 * Since STAUPD was not used on mt8173 platform,
-	 * so STAUPD of WDT_SRC which should be turned off
-	 */
+	 
 	pwrap_writel(wrp, wrp->master->wdt_src, PWRAP_WDT_SRC_EN);
 	if (HAS_CAP(wrp->master->caps, PWRAP_CAP_WDT_SRC1))
 		pwrap_writel(wrp, wrp->master->wdt_src, PWRAP_WDT_SRC_EN_1);
@@ -2614,10 +2562,7 @@ static int pwrap_probe(struct platform_device *pdev)
 		pwrap_writel(wrp, 0x1, PWRAP_TIMER_EN);
 
 	pwrap_writel(wrp, wrp->master->int_en_all, PWRAP_INT_EN);
-	/*
-	 * We add INT1 interrupt to handle starvation and request exception
-	 * If we support it, we should enable it here.
-	 */
+	 
 	if (HAS_CAP(wrp->master->caps, PWRAP_CAP_INT1_EN))
 		pwrap_writel(wrp, wrp->master->int1_en_all, PWRAP_INT1_EN);
 

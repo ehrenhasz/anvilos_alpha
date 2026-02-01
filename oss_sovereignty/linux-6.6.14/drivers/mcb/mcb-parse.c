@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/types.h>
 #include <linux/ioport.h>
 #include <linux/slab.h>
@@ -63,11 +63,7 @@ static int chameleon_parse_gdd(struct mcb_bus *bus,
 	mdev->group = GDD_GRP(reg2);
 	mdev->inst = GDD_INS(reg2);
 
-	/*
-	 * If the BAR is missing, dev_mapbase is zero, or if the
-	 * device is IO mapped we just print a warning and go on with the
-	 * next device, instead of completely stop the gdd parser
-	 */
+	 
 	if (mdev->bar > bar_count - 1) {
 		pr_info("No BAR for 16z%03d\n", mdev->id);
 		ret = 0;
@@ -117,7 +113,7 @@ static void chameleon_parse_bar(void __iomem *base,
 	char __iomem *p = base;
 	int i;
 
-	/* skip reg1 */
+	 
 	p += sizeof(__le32);
 
 	for (i = 0; i < bar_count; i++) {
@@ -136,13 +132,7 @@ static int chameleon_get_bar(void __iomem **base, phys_addr_t mapbase,
 	__le32 reg;
 	u32 dtype;
 
-	/*
-	 * For those devices which are not connected
-	 * to the PCI Bus (e.g. LPC) there is a bar
-	 * descriptor located directly after the
-	 * chameleon header. This header is comparable
-	 * to a PCI header.
-	 */
+	 
 	dtype = get_next_dtype(*base);
 	if (dtype == CHAMELEON_DTYPE_BAR) {
 		reg = readl(*base);
@@ -191,9 +181,9 @@ int chameleon_parse_cells(struct mcb_bus *bus, phys_addr_t mapbase,
 	if (!header)
 		return -ENOMEM;
 
-	/* Extract header information */
+	 
 	memcpy_fromio(header, p, hsize);
-	/* We only support chameleon v2 at the moment */
+	 
 	header->magic = le16_to_cpu(header->magic);
 	if (header->magic != CHAMELEONV2_MAGIC) {
 		pr_err("Unsupported chameleon version 0x%x\n",

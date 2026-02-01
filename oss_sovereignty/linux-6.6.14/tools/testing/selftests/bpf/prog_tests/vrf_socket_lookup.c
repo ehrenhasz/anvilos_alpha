@@ -1,44 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/*
- * Topology:
- * ---------
- *     NS0 namespace         |   NS1 namespace
- *			     |
- *     +--------------+      |   +--------------+
- *     |    veth01    |----------|    veth10    |
- *     | 172.16.1.100 |      |   | 172.16.1.200 |
- *     |     bpf      |      |   +--------------+
- *     +--------------+      |
- *      server(UDP/TCP)      |
- *  +-------------------+    |
- *  |        vrf1       |    |
- *  |  +--------------+ |    |   +--------------+
- *  |  |    veth02    |----------|    veth20    |
- *  |  | 172.16.2.100 | |    |   | 172.16.2.200 |
- *  |  |     bpf      | |    |   +--------------+
- *  |  +--------------+ |    |
- *  |   server(UDP/TCP) |    |
- *  +-------------------+    |
- *
- * Test flow
- * -----------
- *  The tests verifies that socket lookup via TC is VRF aware:
- *  1) Creates two veth pairs between NS0 and NS1:
- *     a) veth01 <-> veth10 outside the VRF
- *     b) veth02 <-> veth20 in the VRF
- *  2) Attaches to veth01 and veth02 a program that calls:
- *     a) bpf_skc_lookup_tcp() with TCP and tcp_skc is true
- *     b) bpf_sk_lookup_tcp() with TCP and tcp_skc is false
- *     c) bpf_sk_lookup_udp() with UDP
- *     The program stores the lookup result in bss->lookup_status.
- *  3) Creates a socket TCP/UDP server in/outside the VRF.
- *  4) The test expects lookup_status to be:
- *     a) 0 from device in VRF to server outside VRF
- *     b) 0 from device outside VRF to server in VRF
- *     c) 1 from device in VRF to server in VRF
- *     d) 1 from device outside VRF to server outside VRF
- */
+
+ 
 
 #include <net/if.h>
 
@@ -148,7 +110,7 @@ static int setup(struct vrf_socket_lookup *skel)
 	SYS(fail, "ip netns add " NS0);
 	SYS(fail, "ip netns add " NS1);
 
-	/* NS0 <-> NS1 [veth01 <-> veth10] */
+	 
 	SYS(fail, "ip link add veth01 netns " NS0 " type veth peer name veth10"
 	    " netns " NS1);
 	SYS(fail, "ip -net " NS0 " addr add " IP4_ADDR_VETH01 "/24 dev veth01");
@@ -156,7 +118,7 @@ static int setup(struct vrf_socket_lookup *skel)
 	SYS(fail, "ip -net " NS1 " addr add " IP4_ADDR_VETH10 "/24 dev veth10");
 	SYS(fail, "ip -net " NS1 " link set dev veth10 up");
 
-	/* NS0 <-> NS1 [veth02 <-> veth20] */
+	 
 	SYS(fail, "ip link add veth02 netns " NS0 " type veth peer name veth20"
 	    " netns " NS1);
 	SYS(fail, "ip -net " NS0 " addr add " IP4_ADDR_VETH02 "/24 dev veth02");
@@ -164,7 +126,7 @@ static int setup(struct vrf_socket_lookup *skel)
 	SYS(fail, "ip -net " NS1 " addr add " IP4_ADDR_VETH20 "/24 dev veth20");
 	SYS(fail, "ip -net " NS1 " link set dev veth20 up");
 
-	/* veth02 -> vrf1  */
+	 
 	SYS(fail, "ip -net " NS0 " link add vrf1 type vrf table 11");
 	SYS(fail, "ip -net " NS0 " route add vrf vrf1 unreachable default"
 	    " metric 4278198272");
@@ -172,7 +134,7 @@ static int setup(struct vrf_socket_lookup *skel)
 	SYS(fail, "ip -net " NS0 " link set vrf1 up");
 	SYS(fail, "ip -net " NS0 " link set veth02 master vrf1");
 
-	/* Attach TC and XDP progs to veth devices in NS0 */
+	 
 	nstoken = open_netns(NS0);
 	if (!ASSERT_OK_PTR(nstoken, "setns " NS0))
 		goto fail;
@@ -243,7 +205,7 @@ static void _test_vrf_socket_lookup(struct vrf_socket_lookup *skel, int sotype,
 	if (!ASSERT_OK_PTR(nstoken, "setns " NS0))
 		goto done;
 
-	/* Open sockets in and outside VRF */
+	 
 	non_vrf_server = make_server(sotype, "0.0.0.0", NON_VRF_PORT, NULL);
 	if (!ASSERT_GE(non_vrf_server, 0, "make_server__outside_vrf_fd"))
 		goto done;
@@ -252,7 +214,7 @@ static void _test_vrf_socket_lookup(struct vrf_socket_lookup *skel, int sotype,
 	if (!ASSERT_GE(in_vrf_server, 0, "make_server__in_vrf_fd"))
 		goto done;
 
-	/* Perform test from NS1 */
+	 
 	close_netns(nstoken);
 	nstoken = open_netns(NS1);
 	if (!ASSERT_OK_PTR(nstoken, "setns " NS1))

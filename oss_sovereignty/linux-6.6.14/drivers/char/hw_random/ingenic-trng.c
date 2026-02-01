@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ingenic True Random Number Generator driver
- * Copyright (c) 2019 漆鹏振 (Qi Pengzhen) <aric.pzqi@ingenic.com>
- * Copyright (c) 2020 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -16,15 +12,15 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* DTRNG register offsets */
+ 
 #define TRNG_REG_CFG_OFFSET			0x00
 #define TRNG_REG_RANDOMNUM_OFFSET	0x04
 #define TRNG_REG_STATUS_OFFSET		0x08
 
-/* bits within the CFG register */
+ 
 #define CFG_GEN_EN					BIT(0)
 
-/* bits within the STATUS register */
+ 
 #define STATUS_RANDOM_RDY			BIT(0)
 
 struct ingenic_trng {
@@ -110,7 +106,7 @@ static int ingenic_trng_probe(struct platform_device *pdev)
 
 static const struct of_device_id ingenic_trng_of_match[] = {
 	{ .compatible = "ingenic,x1830-dtrng" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ingenic_trng_of_match);
 

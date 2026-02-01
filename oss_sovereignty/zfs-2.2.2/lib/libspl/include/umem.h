@@ -1,41 +1,10 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License, Version 1.0 only
- * (the "License").  You may not use this file except in compliance
- * with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #ifndef _LIBSPL_UMEM_H
 #define	_LIBSPL_UMEM_H
 
-/*
- * XXX: We should use the real portable umem library if it is detected
- * at configure time.  However, if the library is not available, we can
- * use a trivial malloc based implementation.  This obviously impacts
- * performance, but unless you are using a full userspace build of zpool for
- * something other than ztest, you are likely not going to notice or care.
- *
- * https://labs.omniti.com/trac/portableumem
- */
+ 
 #include <sys/debug.h>
 
 #include <stdlib.h>
@@ -48,15 +17,11 @@ extern "C" {
 
 typedef void vmem_t;
 
-/*
- * Flags for umem_alloc/umem_free
- */
-#define	UMEM_DEFAULT		0x0000  /* normal -- may fail */
-#define	UMEM_NOFAIL		0x0100  /* Never fails */
+ 
+#define	UMEM_DEFAULT		0x0000   
+#define	UMEM_NOFAIL		0x0100   
 
-/*
- * Flags for umem_cache_create()
- */
+ 
 #define	UMC_NODEBUG		0x00020000
 
 #define	UMEM_CACHE_NAMELEN	31
@@ -78,7 +43,7 @@ typedef struct umem_cache {
 	int			cache_cflags;
 } umem_cache_t;
 
-/* Prototypes for functions to provide defaults for umem envvars */
+ 
 const char *_umem_debug_init(void);
 const char *_umem_options_init(void);
 const char *_umem_logging_init(void);
@@ -137,11 +102,7 @@ umem_free(const void *ptr, size_t size __maybe_unused)
 	free((void *)ptr);
 }
 
-/*
- * umem_free_aligned was added for supporting portability
- * with non-POSIX platforms that require a different free
- * to be used with aligned allocations.
- */
+ 
 static inline void
 umem_free_aligned(void *ptr, size_t size __maybe_unused)
 {

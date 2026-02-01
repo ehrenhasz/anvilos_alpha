@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <linux/limits.h>
@@ -68,21 +68,14 @@ static int allocate_bytes(const char *cgroup, void *arg)
 	return 0;
 }
 
-/*
- * When trying to store a memcg page in zswap, if the memcg hits its memory
- * limit in zswap, writeback should not be triggered.
- *
- * This was fixed with commit 0bdf0efa180a("zswap: do not shrink if cgroup may
- * not zswap"). Needs to be revised when a per memcg writeback mechanism is
- * implemented.
- */
+ 
 static int test_no_invasive_cgroup_shrink(const char *root)
 {
 	size_t written_back_before, written_back_after;
 	int ret = KSFT_FAIL;
 	char *test_group;
 
-	/* Set up */
+	 
 	test_group = cg_name(root, "no_shrink_test");
 	if (!test_group)
 		goto out;
@@ -95,11 +88,11 @@ static int test_no_invasive_cgroup_shrink(const char *root)
 	if (get_zswap_written_back_pages(&written_back_before))
 		goto out;
 
-	/* Allocate 10x memory.max to push memory into zswap */
+	 
 	if (cg_run(test_group, allocate_bytes, (void *)MB(10)))
 		goto out;
 
-	/* Verify that no writeback happened because of the memcg allocation */
+	 
 	if (get_zswap_written_back_pages(&written_back_after))
 		goto out;
 	if (written_back_after == written_back_before)
@@ -133,18 +126,7 @@ static int no_kmem_bypass_child(const char *cgroup, void *arg)
 	return 0;
 }
 
-/*
- * When pages owned by a memcg are pushed to zswap by kswapd, they should be
- * charged to that cgroup. This wasn't the case before commit
- * cd08d80ecdac("mm: correctly charge compressed memory to its memcg").
- *
- * The test first allocates memory in a memcg, then raises min_free_kbytes to
- * a very high value so that the allocation falls below low wm, then makes
- * another allocation to trigger kswapd that should push the memcg-owned pages
- * to zswap and verifies that the zswap pages are correctly charged.
- *
- * To be run on a VM with at most 4G of memory.
- */
+ 
 static int test_no_kmem_bypass(const char *root)
 {
 	size_t min_free_kb_high, min_free_kb_low, min_free_kb_original;
@@ -158,7 +140,7 @@ static int test_no_kmem_bypass(const char *root)
 	char *test_group;
 	pid_t child_pid;
 
-	/* Read sys info and compute test values accordingly */
+	 
 	if (sysinfo(&sys_info) != 0)
 		return KSFT_FAIL;
 	if (sys_info.totalram > 5000000000)
@@ -176,14 +158,14 @@ static int test_no_kmem_bypass(const char *root)
 	stored_pages_threshold = sys_info.totalram / 5 / 4096;
 	trigger_allocation_size = sys_info.totalram / 20;
 
-	/* Set up test memcg */
+	 
 	if (cg_write(root, "cgroup.subtree_control", "+memory"))
 		goto out;
 	test_group = cg_name(root, "kmem_bypass_test");
 	if (!test_group)
 		goto out;
 
-	/* Spawn memcg child and wait for it to allocate */
+	 
 	set_min_free_kb(min_free_kb_low);
 	if (cg_create(test_group))
 		goto out;
@@ -194,7 +176,7 @@ static int test_no_kmem_bypass(const char *root)
 	while (!values->child_allocated && wait_child_iteration++ < 10000)
 		usleep(1000);
 
-	/* Try to wakeup kswapd and let it push child memory to zswap */
+	 
 	set_min_free_kb(min_free_kb_high);
 	for (int i = 0; i < 20; i++) {
 		size_t stored_pages;
@@ -210,7 +192,7 @@ static int test_no_kmem_bypass(const char *root)
 			break;
 		if (stored_pages < 0)
 			break;
-		/* If memory was pushed to zswap, verify it belongs to memcg */
+		 
 		if (stored_pages > stored_pages_threshold) {
 			int zswapped = cg_read_key_long(test_group, "memory.stat", "zswapped ");
 			int delta = stored_pages * 4096 - zswapped;
@@ -256,10 +238,7 @@ int main(int argc, char **argv)
 	if (!zswap_configured())
 		ksft_exit_skip("zswap isn't configured\n");
 
-	/*
-	 * Check that memory controller is available:
-	 * memory is listed in cgroup.controllers
-	 */
+	 
 	if (cg_read_strstr(root, "cgroup.controllers", "memory"))
 		ksft_exit_skip("memory controller isn't available\n");
 

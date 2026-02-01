@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Chen Zhong <chen.zhong@mediatek.com>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -53,12 +49,12 @@ static const struct mtk_gate_regs audio3_cg_regs = {
 };
 
 static const struct mtk_gate audio_clks[] = {
-	/* AUDIO0 */
+	 
 	GATE_AUDIO0(CLK_AUDIO_AFE, "audio_afe", "rtc", 2),
 	GATE_AUDIO0(CLK_AUDIO_HDMI, "audio_hdmi", "apll1_ck_sel", 20),
 	GATE_AUDIO0(CLK_AUDIO_SPDF, "audio_spdf", "apll1_ck_sel", 21),
 	GATE_AUDIO0(CLK_AUDIO_APLL, "audio_apll", "apll1_ck_sel", 23),
-	/* AUDIO1 */
+	 
 	GATE_AUDIO1(CLK_AUDIO_I2SIN1, "audio_i2sin1", "a1sys_hp_sel", 0),
 	GATE_AUDIO1(CLK_AUDIO_I2SIN2, "audio_i2sin2", "a1sys_hp_sel", 1),
 	GATE_AUDIO1(CLK_AUDIO_I2SIN3, "audio_i2sin3", "a1sys_hp_sel", 2),
@@ -75,7 +71,7 @@ static const struct mtk_gate audio_clks[] = {
 	GATE_AUDIO1(CLK_AUDIO_A1SYS, "audio_a1sys", "a1sys_hp_sel", 21),
 	GATE_AUDIO1(CLK_AUDIO_A2SYS, "audio_a2sys", "a2sys_hp_sel", 22),
 	GATE_AUDIO1(CLK_AUDIO_AFE_CONN, "audio_afe_conn", "a1sys_hp_sel", 23),
-	/* AUDIO2 */
+	 
 	GATE_AUDIO2(CLK_AUDIO_UL1, "audio_ul1", "a1sys_hp_sel", 0),
 	GATE_AUDIO2(CLK_AUDIO_UL2, "audio_ul2", "a1sys_hp_sel", 1),
 	GATE_AUDIO2(CLK_AUDIO_UL3, "audio_ul3", "a1sys_hp_sel", 2),
@@ -94,7 +90,7 @@ static const struct mtk_gate audio_clks[] = {
 	GATE_AUDIO2(CLK_AUDIO_AWB2, "audio_awb2", "a1sys_hp_sel", 15),
 	GATE_AUDIO2(CLK_AUDIO_DAI, "audio_dai", "a1sys_hp_sel", 16),
 	GATE_AUDIO2(CLK_AUDIO_MOD, "audio_mod", "a1sys_hp_sel", 17),
-	/* AUDIO3 */
+	 
 	GATE_AUDIO3(CLK_AUDIO_ASRCI3, "audio_asrci3", "asm_h_sel", 2),
 	GATE_AUDIO3(CLK_AUDIO_ASRCI4, "audio_asrci4", "asm_h_sel", 3),
 	GATE_AUDIO3(CLK_AUDIO_ASRCO3, "audio_asrco3", "asm_h_sel", 6),
@@ -143,7 +139,7 @@ static void clk_mt7622_aud_remove(struct platform_device *pdev)
 
 static const struct of_device_id of_match_clk_mt7622_aud[] = {
 	{ .compatible = "mediatek,mt7622-audsys", .data = &audio_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7622_aud);
 

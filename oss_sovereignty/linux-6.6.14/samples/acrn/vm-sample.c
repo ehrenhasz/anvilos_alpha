@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A sample program to run a User VM on the ACRN hypervisor
- *
- * This sample runs in a Service VM, which is a privileged VM of ACRN.
- * CONFIG_ACRN_HSM need to be enabled in the Service VM.
- *
- * Guest VM code in guest16.s will be executed after the VM launched.
- *
- * Copyright (C) 2020 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -66,7 +57,7 @@ int main(int argc, char **argv)
 	vcpu_num = create_vm.vcpu_num;
 	vmid = create_vm.vmid;
 
-	/* setup guest memory */
+	 
 	ram_map.type = ACRN_MEMMAP_RAM;
 	ram_map.vma_base = (__u64)guest_memory;
 	ram_map.len = GUEST_MEMORY_SIZE;
@@ -77,12 +68,12 @@ int main(int argc, char **argv)
 
 	memcpy(guest_memory, guest16, guest16_end-guest16);
 
-	/* setup vcpu registers */
+	 
 	memset(&regs, 0, sizeof(regs));
 	regs.vcpu_id = 0;
 	regs.vcpu_regs.rip = 0;
 
-	/* CR0_ET | CR0_NE */
+	 
 	regs.vcpu_regs.cr0 = 0x30U;
 	regs.vcpu_regs.cs_ar = 0x009FU;
 	regs.vcpu_regs.cs_sel = 0xF000U;
@@ -93,11 +84,11 @@ int main(int argc, char **argv)
 	ret = ioctl(hsm_fd, ACRN_IOCTL_SET_VCPU_REGS, &regs);
 	printf("Set up VM BSP registers! [%d]\n", ret);
 
-	/* create an ioreq client for this VM */
+	 
 	ret = ioctl(hsm_fd, ACRN_IOCTL_CREATE_IOREQ_CLIENT, 0);
 	printf("Created IO request client! [%d]\n", ret);
 
-	/* run vm */
+	 
 	ret = ioctl(hsm_fd, ACRN_IOCTL_START_VM, vmid);
 	printf("Start VM! [%d]\n", ret);
 

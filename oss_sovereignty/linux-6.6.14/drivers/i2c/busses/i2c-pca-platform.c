@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  i2c_pca_platform.c
- *
- *  Platform driver for the PCA9564 I2C controller.
- *
- *  Copyright (C) 2008 Pengutronix
- *
 
- */
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -27,14 +19,14 @@
 
 struct i2c_pca_pf_data {
 	void __iomem			*reg_base;
-	int				irq;	/* if 0, use polling */
+	int				irq;	 
 	struct gpio_desc		*gpio;
 	wait_queue_head_t		wait;
 	struct i2c_adapter		adap;
 	struct i2c_algo_pca_data	algo_data;
 };
 
-/* Read/Write functions for different register alignments */
+ 
 
 static int i2c_pca_pf_readbyte8(void *pd, int reg)
 {
@@ -84,7 +76,7 @@ static int i2c_pca_pf_waitforcompletion(void *pd)
 			i2c->algo_data.read_byte(i2c, I2C_PCA_CON)
 			& I2C_PCA_CON_SI, i2c->adap.timeout);
 	} else {
-		/* Do polling */
+		 
 		timeout = jiffies + i2c->adap.timeout;
 		do {
 			ret = time_before(jiffies, timeout);
@@ -138,7 +130,7 @@ static int i2c_pca_pf_probe(struct platform_device *pdev)
 	int irq;
 
 	irq = platform_get_irq_optional(pdev, 0);
-	/* If irq is 0, we do polling. */
+	 
 	if (irq < 0)
 		irq = 0;
 

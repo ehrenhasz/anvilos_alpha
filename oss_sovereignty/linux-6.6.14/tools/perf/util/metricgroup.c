@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, Intel Corporation.
- */
 
-/* Manage metrics and groups of metrics from JSON files */
+ 
+
+ 
 
 #include "metricgroup.h"
 #include "debug.h"
@@ -113,47 +111,29 @@ void metricgroup__rblist_exit(struct rblist *metric_events)
 	rblist__exit(metric_events);
 }
 
-/**
- * The metric under construction. The data held here will be placed in a
- * metric_expr.
- */
+ 
 struct metric {
 	struct list_head nd;
-	/**
-	 * The expression parse context importantly holding the IDs contained
-	 * within the expression.
-	 */
+	 
 	struct expr_parse_ctx *pctx;
 	const char *pmu;
-	/** The name of the metric such as "IPC". */
+	 
 	const char *metric_name;
-	/** Modifier on the metric such as "u" or NULL for none. */
+	 
 	const char *modifier;
-	/** The expression to parse, for example, "instructions/cycles". */
+	 
 	const char *metric_expr;
-	/** Optional threshold expression where zero value is green, otherwise red. */
+	 
 	const char *metric_threshold;
-	/**
-	 * The "ScaleUnit" that scales and adds a unit to the metric during
-	 * output.
-	 */
+	 
 	const char *metric_unit;
-	/**
-	 * Optional name of the metric group reported
-	 * if the Default metric group is being processed.
-	 */
+	 
 	const char *default_metricgroup_name;
-	/** Optional null terminated array of referenced metrics. */
+	 
 	struct metric_ref *metric_refs;
-	/**
-	 * Should events of the metric be grouped?
-	 */
+	 
 	bool group_events;
-	/**
-	 * Parsed events for the metric. Optional as events may be taken from a
-	 * different metric whose group contains all the IDs necessary for this
-	 * one.
-	 */
+	 
 	struct evlist *evlist;
 };
 
@@ -184,7 +164,7 @@ static bool metric__group_events(const struct pmu_metric *pm)
 	case MetricNoGroupEventsNmi:
 		if (!sysctl__nmi_watchdog_enabled())
 			return true;
-		metric__watchdog_constraint_hint(pm->metric_name, /*foot=*/false);
+		metric__watchdog_constraint_hint(pm->metric_name,  false);
 		return false;
 	case MetricNoGroupEventsSmt:
 		return !smt_on();
@@ -265,14 +245,7 @@ static bool contains_metric_id(struct evsel **metric_events, int num_events,
 	return false;
 }
 
-/**
- * setup_metric_events - Find a group of events in metric_evlist that correspond
- *                       to the IDs from a parsed metric expression.
- * @pmu: The PMU for the IDs.
- * @ids: the metric IDs to match.
- * @metric_evlist: the list of perf events.
- * @out_metric_events: holds the created metric events array.
- */
+ 
 static int setup_metric_events(const char *pmu, struct hashmap *ids,
 			       struct evlist *metric_evlist,
 			       struct evsel ***out_metric_events)
@@ -294,24 +267,15 @@ static int setup_metric_events(const char *pmu, struct hashmap *ids,
 	evlist__for_each_entry(metric_evlist, ev) {
 		struct expr_id_data *val_ptr;
 
-		/* Don't match events for the wrong hybrid PMU. */
+		 
 		if (!all_pmus && ev->pmu_name && evsel__is_hybrid(ev) &&
 		    strcmp(ev->pmu_name, pmu))
 			continue;
-		/*
-		 * Check for duplicate events with the same name. For
-		 * example, uncore_imc/cas_count_read/ will turn into 6
-		 * events per socket on skylakex. Only the first such
-		 * event is placed in metric_events.
-		 */
+		 
 		metric_id = evsel__metric_id(ev);
 		if (contains_metric_id(metric_events, matched_events, metric_id))
 			continue;
-		/*
-		 * Does this event belong to the parse context? For
-		 * combined or shared groups, this metric may not care
-		 * about this event.
-		 */
+		 
 		if (hashmap__find(ids, metric_id, &val_ptr)) {
 			pr_debug("Matched metric-id %s to %s\n", metric_id, evsel__name(ev));
 			metric_events[matched_events++] = ev;
@@ -328,18 +292,9 @@ static int setup_metric_events(const char *pmu, struct hashmap *ids,
 		ev = metric_events[i];
 		ev->collect_stat = true;
 
-		/*
-		 * The metric leader points to the identically named
-		 * event in metric_events.
-		 */
+		 
 		ev->metric_leader = ev;
-		/*
-		 * Mark two events with identical names in the same
-		 * group (or globally) as being in use as uncore events
-		 * may be duplicated for each pmu. Set the metric leader
-		 * of such events to be the event that appears in
-		 * metric_events.
-		 */
+		 
 		metric_id = evsel__metric_id(ev);
 		evlist__for_each_entry_continue(metric_evlist, ev) {
 			if (!strcmp(evsel__metric_id(ev), metric_id))
@@ -382,11 +337,11 @@ static bool match_pm_metric(const struct pmu_metric *pm, const char *pmu, const 
 	       match_metric(pm->metric_name, metric);
 }
 
-/** struct mep - RB-tree node for building printing information. */
+ 
 struct mep {
-	/** nd - RB-tree element. */
+	 
 	struct rb_node nd;
-	/** @metric_group: Owned metric group name, separated others with ';'. */
+	 
 	char *metric_group;
 	const char *metric_name;
 	const char *metric_desc;
@@ -631,10 +586,7 @@ static int decode_all_metric_ids(struct evlist *perf_evlist, const char *modifie
 			ret = -ENOMEM;
 			break;
 		}
-		/*
-		 * If the name is just the parsed event, use the metric-id to
-		 * give a more friendly display version.
-		 */
+		 
 		if (strstr(ev->name, "metric-id=")) {
 			bool has_slash = false;
 
@@ -684,14 +636,14 @@ static int metricgroup__build_event_string(struct strbuf *events,
 
 		pr_debug("found event %s\n", id);
 
-		/* Always move tool events outside of the group. */
+		 
 		ev = perf_tool_event__from_str(id);
 		if (ev != PERF_TOOL_NONE) {
 			has_tool_events = true;
 			tool_events[ev] = true;
 			continue;
 		}
-		/* Separate events with commas and open the group if necessary. */
+		 
 		if (no_group) {
 			if (group_events) {
 				ret = strbuf_addch(events, '{');
@@ -703,12 +655,7 @@ static int metricgroup__build_event_string(struct strbuf *events,
 			ret = strbuf_addch(events, ',');
 			RETURN_IF_NON_ZERO(ret);
 		}
-		/*
-		 * Encode the ID as an event string. Add a qualifier for
-		 * metric_id that is the original name except with characters
-		 * that parse-events can't parse replaced. For example,
-		 * 'msr@tsc@' gets added as msr/tsc,metric-id=msr!3tsc!3/
-		 */
+		 
 		sep = strchr(id, '@');
 		if (sep != NULL) {
 			ret = strbuf_add(events, id, sep - id);
@@ -776,10 +723,7 @@ int __weak arch_get_runtimeparam(const struct pmu_metric *pm __maybe_unused)
 	return 1;
 }
 
-/*
- * A singly linked list on the stack of the names of metrics being
- * processed. Used to identify recursion.
- */
+ 
 struct visited_metric {
 	const char *name;
 	const struct visited_metric *parent;
@@ -817,25 +761,7 @@ static int add_metric(struct list_head *metric_list,
 		      const struct visited_metric *visited,
 		      const struct pmu_metrics_table *table);
 
-/**
- * resolve_metric - Locate metrics within the root metric and recursively add
- *                    references to them.
- * @metric_list: The list the metric is added to.
- * @pmu: The PMU name to resolve metrics on, or "all" for all PMUs.
- * @modifier: if non-null event modifiers like "u".
- * @metric_no_group: Should events written to events be grouped "{}" or
- *                   global. Grouping is the default but due to multiplexing the
- *                   user may override.
- * @user_requested_cpu_list: Command line specified CPUs to record on.
- * @system_wide: Are events for all processes recorded.
- * @root_metric: Metrics may reference other metrics to form a tree. In this
- *               case the root_metric holds all the IDs and a list of referenced
- *               metrics. When adding a root this argument is NULL.
- * @visited: A singly linked list of metric names being added that is used to
- *           detect recursion.
- * @table: The table that is searched for metrics, most commonly the table for the
- *       architecture perf is running upon.
- */
+ 
 static int resolve_metric(struct list_head *metric_list,
 			  const char *pmu,
 			  const char *modifier,
@@ -850,20 +776,14 @@ static int resolve_metric(struct list_head *metric_list,
 	struct hashmap_entry *cur;
 	size_t bkt;
 	struct to_resolve {
-		/* The metric to resolve. */
+		 
 		struct pmu_metric pm;
-		/*
-		 * The key in the IDs map, this may differ from in case,
-		 * etc. from pm->metric_name.
-		 */
+		 
 		const char *key;
 	} *pending = NULL;
 	int i, ret = 0, pending_cnt = 0;
 
-	/*
-	 * Iterate all the parsed IDs and if there's a matching metric and it to
-	 * the pending array.
-	 */
+	 
 	hashmap__for_each_entry(root_metric->pctx->ids, cur, bkt) {
 		struct pmu_metric pm;
 
@@ -879,14 +799,11 @@ static int resolve_metric(struct list_head *metric_list,
 		}
 	}
 
-	/* Remove the metric IDs from the context. */
+	 
 	for (i = 0; i < pending_cnt; i++)
 		expr__del_id(root_metric->pctx, pending[i].key);
 
-	/*
-	 * Recursively add all the metrics, IDs are added to the root metric's
-	 * context.
-	 */
+	 
 	for (i = 0; i < pending_cnt; i++) {
 		ret = add_metric(metric_list, &pending[i].pm, modifier, metric_no_group,
 				 metric_no_threshold, user_requested_cpu_list, system_wide,
@@ -899,26 +816,7 @@ static int resolve_metric(struct list_head *metric_list,
 	return ret;
 }
 
-/**
- * __add_metric - Add a metric to metric_list.
- * @metric_list: The list the metric is added to.
- * @pm: The pmu_metric containing the metric to be added.
- * @modifier: if non-null event modifiers like "u".
- * @metric_no_group: Should events written to events be grouped "{}" or
- *                   global. Grouping is the default but due to multiplexing the
- *                   user may override.
- * @metric_no_threshold: Should threshold expressions be ignored?
- * @runtime: A special argument for the parser only known at runtime.
- * @user_requested_cpu_list: Command line specified CPUs to record on.
- * @system_wide: Are events for all processes recorded.
- * @root_metric: Metrics may reference other metrics to form a tree. In this
- *               case the root_metric holds all the IDs and a list of referenced
- *               metrics. When adding a root this argument is NULL.
- * @visited: A singly linked list of metric names being added that is used to
- *           detect recursion.
- * @table: The table that is searched for metrics, most commonly the table for the
- *       architecture perf is running upon.
- */
+ 
 static int __add_metric(struct list_head *metric_list,
 			const struct pmu_metric *pm,
 			const char *modifier,
@@ -948,10 +846,7 @@ static int __add_metric(struct list_head *metric_list,
 	}
 
 	if (is_root) {
-		/*
-		 * This metric is the root of a tree and may reference other
-		 * metrics that are added recursively.
-		 */
+		 
 		root_metric = metric__new(pm, modifier, metric_no_group, runtime,
 					  user_requested_cpu_list, system_wide);
 		if (!root_metric)
@@ -960,11 +855,7 @@ static int __add_metric(struct list_head *metric_list,
 	} else {
 		int cnt = 0;
 
-		/*
-		 * This metric was referenced in a metric higher in the
-		 * tree. Check if the same metric is already resolved in the
-		 * metric_refs list.
-		 */
+		 
 		if (root_metric->metric_refs) {
 			for (; root_metric->metric_refs[cnt].metric_name; cnt++) {
 				if (!strcmp(pm->metric_name,
@@ -973,51 +864,36 @@ static int __add_metric(struct list_head *metric_list,
 			}
 		}
 
-		/* Create reference. Need space for the entry and the terminator. */
+		 
 		root_metric->metric_refs = realloc(root_metric->metric_refs,
 						(cnt + 2) * sizeof(struct metric_ref));
 		if (!root_metric->metric_refs)
 			return -ENOMEM;
 
-		/*
-		 * Intentionally passing just const char pointers,
-		 * from 'pe' object, so they never go away. We don't
-		 * need to change them, so there's no need to create
-		 * our own copy.
-		 */
+		 
 		root_metric->metric_refs[cnt].metric_name = pm->metric_name;
 		root_metric->metric_refs[cnt].metric_expr = pm->metric_expr;
 
-		/* Null terminate array. */
+		 
 		root_metric->metric_refs[cnt+1].metric_name = NULL;
 		root_metric->metric_refs[cnt+1].metric_expr = NULL;
 	}
 
-	/*
-	 * For both the parent and referenced metrics, we parse
-	 * all the metric's IDs and add it to the root context.
-	 */
+	 
 	ret = 0;
 	expr = pm->metric_expr;
 	if (is_root && pm->metric_threshold) {
-		/*
-		 * Threshold expressions are built off the actual metric. Switch
-		 * to use that in case of additional necessary events. Change
-		 * the visited node name to avoid this being flagged as
-		 * recursion. If the threshold events are disabled, just use the
-		 * metric's name as a reference. This allows metric threshold
-		 * computation if there are sufficient events.
-		 */
+		 
 		assert(strstr(pm->metric_threshold, pm->metric_name));
 		expr = metric_no_threshold ? pm->metric_name : pm->metric_threshold;
 		visited_node.name = "__threshold__";
 	}
 	if (expr__find_ids(expr, NULL, root_metric->pctx) < 0) {
-		/* Broken metric. */
+		 
 		ret = -EINVAL;
 	}
 	if (!ret) {
-		/* Resolve referenced metrics. */
+		 
 		const char *pmu = pm->pmu ?: "cpu";
 
 		ret = resolve_metric(metric_list, pmu, modifier, metric_no_group,
@@ -1097,10 +973,7 @@ static int add_metric(struct list_head *metric_list,
 
 		count = arch_get_runtimeparam(pm);
 
-		/* This loop is added to create multiple
-		 * events depend on count value and add
-		 * those events to metric_list.
-		 */
+		 
 
 		for (j = 0; j < count && !ret; j++)
 			ret = __add_metric(metric_list, pm, modifier, metric_no_group,
@@ -1134,10 +1007,7 @@ out:
 	return ret;
 }
 
-/**
- * metric_list_cmp - list_sort comparator that sorts metrics with more events to
- *                   the front. tool events are excluded from the count.
- */
+ 
 static int metric_list_cmp(void *priv __maybe_unused, const struct list_head *l,
 			   const struct list_head *r)
 {
@@ -1161,11 +1031,7 @@ static int metric_list_cmp(void *priv __maybe_unused, const struct list_head *l,
 	return right_count - left_count;
 }
 
-/**
- * default_metricgroup_cmp - Implements complex key for the Default metricgroup
- *			     that first sorts by default_metricgroup_name, then
- *			     metric_name.
- */
+ 
 static int default_metricgroup_cmp(void *priv __maybe_unused,
 				   const struct list_head *l,
 				   const struct list_head *r)
@@ -1206,28 +1072,13 @@ static int metricgroup__add_metric_callback(const struct pmu_metric *pm,
 		data->has_match = true;
 		ret = add_metric(data->list, pm, data->modifier, metric_no_group,
 				 data->metric_no_threshold, data->user_requested_cpu_list,
-				 data->system_wide, /*root_metric=*/NULL,
-				 /*visited_metrics=*/NULL, table);
+				 data->system_wide,  NULL,
+				  NULL, table);
 	}
 	return ret;
 }
 
-/**
- * metricgroup__add_metric - Find and add a metric, or a metric group.
- * @pmu: The PMU name to search for metrics on, or "all" for all PMUs.
- * @metric_name: The name of the metric or metric group. For example, "IPC"
- *               could be the name of a metric and "TopDownL1" the name of a
- *               metric group.
- * @modifier: if non-null event modifiers like "u".
- * @metric_no_group: Should events written to events be grouped "{}" or
- *                   global. Grouping is the default but due to multiplexing the
- *                   user may override.
- * @user_requested_cpu_list: Command line specified CPUs to record on.
- * @system_wide: Are events for all processes recorded.
- * @metric_list: The list that the metric or metric group are added to.
- * @table: The table that is searched for metrics, most commonly the table for the
- *       architecture perf is running upon.
- */
+ 
 static int metricgroup__add_metric(const char *pmu, const char *metric_name, const char *modifier,
 				   bool metric_no_group, bool metric_no_threshold,
 				   const char *user_requested_cpu_list,
@@ -1251,10 +1102,7 @@ static int metricgroup__add_metric(const char *pmu, const char *metric_name, con
 			.system_wide = system_wide,
 			.has_match = false,
 		};
-		/*
-		 * Iterate over all metrics seeing if metric matches either the
-		 * name or group. When it does add the metric to the list.
-		 */
+		 
 		ret = pmu_metrics_table__for_each_metric(table, metricgroup__add_metric_callback,
 						       &data);
 		if (ret)
@@ -1281,35 +1129,17 @@ static int metricgroup__add_metric(const char *pmu, const char *metric_name, con
 
 		pmu_for_each_sys_metric(metricgroup__sys_event_iter, &data);
 	}
-	/* End of pmu events. */
+	 
 	if (!has_match)
 		ret = -EINVAL;
 
 out:
-	/*
-	 * add to metric_list so that they can be released
-	 * even if it's failed
-	 */
+	 
 	list_splice(&list, metric_list);
 	return ret;
 }
 
-/**
- * metricgroup__add_metric_list - Find and add metrics, or metric groups,
- *                                specified in a list.
- * @pmu: A pmu to restrict the metrics to, or "all" for all PMUS.
- * @list: the list of metrics or metric groups. For example, "IPC,CPI,TopDownL1"
- *        would match the IPC and CPI metrics, and TopDownL1 would match all
- *        the metrics in the TopDownL1 group.
- * @metric_no_group: Should events written to events be grouped "{}" or
- *                   global. Grouping is the default but due to multiplexing the
- *                   user may override.
- * @user_requested_cpu_list: Command line specified CPUs to record on.
- * @system_wide: Are events for all processes recorded.
- * @metric_list: The list that metrics are added to.
- * @table: The table that is searched for metrics, most commonly the table for the
- *       architecture perf is running upon.
- */
+ 
 static int metricgroup__add_metric_list(const char *pmu, const char *list,
 					bool metric_no_group,
 					bool metric_no_threshold,
@@ -1345,12 +1175,9 @@ static int metricgroup__add_metric_list(const char *pmu, const char *list,
 	free(list_copy);
 
 	if (!ret) {
-		/*
-		 * Warn about nmi_watchdog if any parsed metrics had the
-		 * NO_NMI_WATCHDOG constraint.
-		 */
-		metric__watchdog_constraint_hint(NULL, /*foot=*/true);
-		/* No metrics. */
+		 
+		metric__watchdog_constraint_hint(NULL,  true);
+		 
 		if (count == 0)
 			return -EINVAL;
 	}
@@ -1367,12 +1194,7 @@ static void metricgroup__free_metrics(struct list_head *metric_list)
 	}
 }
 
-/**
- * find_tool_events - Search for the pressence of tool events in metric_list.
- * @metric_list: List to take metrics from.
- * @tool_events: Array of false values, indices corresponding to tool events set
- *               to true if tool event is found.
- */
+ 
 static void find_tool_events(const struct list_head *metric_list,
 			     bool tool_events[PERF_TOOL_MAX])
 {
@@ -1391,13 +1213,7 @@ static void find_tool_events(const struct list_head *metric_list,
 	}
 }
 
-/**
- * build_combined_expr_ctx - Make an expr_parse_ctx with all !group_events
- *                           metric IDs, as the IDs are held in a set,
- *                           duplicates will be removed.
- * @metric_list: List to take metrics from.
- * @combined: Out argument for result.
- */
+ 
 static int build_combined_expr_ctx(const struct list_head *metric_list,
 				   struct expr_parse_ctx **combined)
 {
@@ -1432,18 +1248,7 @@ err_out:
 	return ret;
 }
 
-/**
- * parse_ids - Build the event string for the ids and parse them creating an
- *             evlist. The encoded metric_ids are decoded.
- * @metric_no_merge: is metric sharing explicitly disabled.
- * @fake_pmu: used when testing metrics not supported by the current CPU.
- * @ids: the event identifiers parsed from a metric.
- * @modifier: any modifiers added to the events.
- * @group_events: should events be placed in a weak group.
- * @tool_events: entries set true if the tool event of index could be present in
- *               the overall list of metrics.
- * @out_evlist: the created list of events.
- */
+ 
 static int parse_ids(bool metric_no_merge, struct perf_pmu *fake_pmu,
 		     struct expr_parse_ctx *ids, const char *modifier,
 		     bool group_events, const bool tool_events[PERF_TOOL_MAX],
@@ -1458,19 +1263,7 @@ static int parse_ids(bool metric_no_merge, struct perf_pmu *fake_pmu,
 	if (!metric_no_merge || hashmap__size(ids->ids) == 0) {
 		bool added_event = false;
 		int i;
-		/*
-		 * We may fail to share events between metrics because a tool
-		 * event isn't present in one metric. For example, a ratio of
-		 * cache misses doesn't need duration_time but the same events
-		 * may be used for a misses per second. Events without sharing
-		 * implies multiplexing, that is best avoided, so place
-		 * all tool events in every group.
-		 *
-		 * Also, there may be no ids/events in the expression parsing
-		 * context because of constant evaluation, e.g.:
-		 *    event1 if #smt_on else 0
-		 * Add a tool event to avoid a parse error on an empty string.
-		 */
+		 
 		perf_tool_event__for_each_event(i) {
 			if (tool_events[i]) {
 				char *tmp = strdup(perf_tool_event__to_str(i));
@@ -1501,8 +1294,8 @@ static int parse_ids(bool metric_no_merge, struct perf_pmu *fake_pmu,
 	}
 	pr_debug("Parsing metric events '%s'\n", events.buf);
 	parse_events_error__init(&parse_error);
-	ret = __parse_events(parsed_evlist, events.buf, /*pmu_filter=*/NULL,
-			     &parse_error, fake_pmu, /*warn_if_reordered=*/false);
+	ret = __parse_events(parsed_evlist, events.buf,  NULL,
+			     &parse_error, fake_pmu,  false);
 	if (ret) {
 		parse_events_error__print(&parse_error, events.buf);
 		goto err_out;
@@ -1546,7 +1339,7 @@ static int parse_groups(struct evlist *perf_evlist,
 	if (ret)
 		goto out;
 
-	/* Sort metrics from largest to smallest. */
+	 
 	list_sort(NULL, &metric_list, metric_list_cmp);
 
 	if (!metric_no_merge) {
@@ -1558,8 +1351,8 @@ static int parse_groups(struct evlist *perf_evlist,
 
 		if (!ret && combined && hashmap__size(combined->ids)) {
 			ret = parse_ids(metric_no_merge, fake_pmu, combined,
-					/*modifier=*/NULL,
-					/*group_events=*/false,
+					 NULL,
+					 false,
 					tool_events,
 					&combined_evlist);
 		}
@@ -1583,10 +1376,7 @@ static int parse_groups(struct evlist *perf_evlist,
 		if (combined_evlist && !m->group_events) {
 			metric_evlist = combined_evlist;
 		} else if (!metric_no_merge) {
-			/*
-			 * See if the IDs for this metric are a subset of an
-			 * earlier metric.
-			 */
+			 
 			list_for_each_entry(n, &metric_list, nd) {
 				if (m == n)
 					break;
@@ -1699,7 +1489,7 @@ int metricgroup__parse_groups(struct evlist *perf_evlist,
 
 	return parse_groups(perf_evlist, pmu, str, metric_no_group, metric_no_merge,
 			    metric_no_threshold, user_requested_cpu_list, system_wide,
-			    /*fake_pmu=*/NULL, metric_events, table);
+			     NULL, metric_events, table);
 }
 
 int metricgroup__parse_groups_test(struct evlist *evlist,
@@ -1708,11 +1498,11 @@ int metricgroup__parse_groups_test(struct evlist *evlist,
 				   struct rblist *metric_events)
 {
 	return parse_groups(evlist, "all", str,
-			    /*metric_no_group=*/false,
-			    /*metric_no_merge=*/false,
-			    /*metric_no_threshold=*/false,
-			    /*user_requested_cpu_list=*/NULL,
-			    /*system_wide=*/false,
+			     false,
+			     false,
+			     false,
+			     NULL,
+			     false,
 			    &perf_pmu__fake, metric_events, table);
 }
 
@@ -1817,7 +1607,7 @@ int metricgroup__copy_metric_events(struct evlist *evlist, struct cgroup *cgrp,
 			new_expr->runtime = old_expr->runtime;
 
 			if (old_expr->metric_refs) {
-				/* calculate number of metric_events */
+				 
 				for (nr = 0; old_expr->metric_refs[nr].metric_name; nr++)
 					continue;
 				alloc_size = sizeof(*new_expr->metric_refs);
@@ -1833,7 +1623,7 @@ int metricgroup__copy_metric_events(struct evlist *evlist, struct cgroup *cgrp,
 				new_expr->metric_refs = NULL;
 			}
 
-			/* calculate number of metric_events */
+			 
 			for (nr = 0; old_expr->metric_events[nr]; nr++)
 				continue;
 			alloc_size = sizeof(*new_expr->metric_events);
@@ -1844,7 +1634,7 @@ int metricgroup__copy_metric_events(struct evlist *evlist, struct cgroup *cgrp,
 				return -ENOMEM;
 			}
 
-			/* copy evsel in the same position */
+			 
 			for (idx = 0; idx < nr; idx++) {
 				evsel = old_expr->metric_events[idx];
 				evsel = evlist__find_evsel(evlist, evsel->core.idx);

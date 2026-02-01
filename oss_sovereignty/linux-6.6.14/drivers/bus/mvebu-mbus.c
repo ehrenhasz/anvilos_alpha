@@ -1,46 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Address map functions for Marvell EBU SoCs (Kirkwood, Armada
- * 370/XP, Dove, Orion5x and MV78xx0)
- *
- * The Marvell EBU SoCs have a configurable physical address space:
- * the physical address at which certain devices (PCIe, NOR, NAND,
- * etc.) sit can be configured. The configuration takes place through
- * two sets of registers:
- *
- * - One to configure the access of the CPU to the devices. Depending
- *   on the families, there are between 8 and 20 configurable windows,
- *   each can be use to create a physical memory window that maps to a
- *   specific device. Devices are identified by a tuple (target,
- *   attribute).
- *
- * - One to configure the access to the CPU to the SDRAM. There are
- *   either 2 (for Dove) or 4 (for other families) windows to map the
- *   SDRAM into the physical address space.
- *
- * This driver:
- *
- * - Reads out the SDRAM address decoding windows at initialization
- *   time, and fills the mvebu_mbus_dram_info structure with these
- *   information. The exported function mv_mbus_dram_info() allow
- *   device drivers to get those information related to the SDRAM
- *   address decoding windows. This is because devices also have their
- *   own windows (configured through registers that are part of each
- *   device register space), and therefore the drivers for Marvell
- *   devices have to configure those device -> SDRAM windows to ensure
- *   that DMA works properly.
- *
- * - Provides an API for platform code or device drivers to
- *   dynamically add or remove address decoding windows for the CPU ->
- *   device accesses. This API is mvebu_mbus_add_window_by_id(),
- *   mvebu_mbus_add_window_remap_by_id() and
- *   mvebu_mbus_del_window().
- *
- * - Provides a debugfs interface in /sys/kernel/debug/mvebu-mbus/ to
- *   see the list of CPU -> SDRAM windows and their configuration
- *   (file 'sdram') and the list of CPU -> devices windows and their
- *   configuration (file 'devices').
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -57,17 +16,13 @@
 #include <linux/memblock.h>
 #include <linux/syscore_ops.h>
 
-/*
- * DDR target is the same on all platforms.
- */
+ 
 #define TARGET_DDR		0
 
-/*
- * CPU Address Decode Windows registers
- */
+ 
 #define WIN_CTRL_OFF		0x0000
 #define   WIN_CTRL_ENABLE       BIT(0)
-/* Only on HW I/O coherency capable platforms */
+ 
 #define   WIN_CTRL_SYNCBARRIER  BIT(1)
 #define   WIN_CTRL_TGT_MASK     0xf0
 #define   WIN_CTRL_TGT_SHIFT    4
@@ -98,11 +53,11 @@
 
 #define DOVE_DDR_BASE_CS_OFF(n) ((n) << 4)
 
-/* Relative to mbusbridge_base */
+ 
 #define MBUS_BRIDGE_CTRL_OFF	0x0
 #define MBUS_BRIDGE_BASE_OFF	0x4
 
-/* Maximum number of windows, for all known platforms */
+ 
 #define MBUS_WINS_MAX           20
 
 struct mvebu_mbus_state;
@@ -119,9 +74,7 @@ struct mvebu_mbus_soc_data {
 			       struct seq_file *seq, void *v);
 };
 
-/*
- * Used to store the state of one MBus window across suspend/resume.
- */
+ 
 struct mvebu_mbus_win_data {
 	u32 ctrl;
 	u32 base;
@@ -142,7 +95,7 @@ struct mvebu_mbus_state {
 	const struct mvebu_mbus_soc_data *soc;
 	int hw_io_coherency;
 
-	/* Used during suspend/resume */
+	 
 	u32 mbus_bridge_ctrl;
 	u32 mbus_bridge_base;
 	struct mvebu_mbus_win_data wins[MBUS_WINS_MAX];
@@ -150,23 +103,7 @@ struct mvebu_mbus_state {
 
 static struct mvebu_mbus_state mbus_state;
 
-/*
- * We provide two variants of the mv_mbus_dram_info() function:
- *
- * - The normal one, where the described DRAM ranges may overlap with
- *   the I/O windows, but for which the DRAM ranges are guaranteed to
- *   have a power of two size. Such ranges are suitable for the DMA
- *   masters that only DMA between the RAM and the device, which is
- *   actually all devices except the crypto engines.
- *
- * - The 'nooverlap' one, where the described DRAM ranges are
- *   guaranteed to not overlap with the I/O windows, but for which the
- *   DRAM ranges will not have power of two sizes. They will only be
- *   aligned on a 64 KB boundary, and have a size multiple of 64
- *   KB. Such ranges are suitable for the DMA masters that DMA between
- *   the crypto SRAM (which is mapped through an I/O window) and a
- *   device. This is the case for the crypto engines.
- */
+ 
 
 static struct mbus_dram_target_info mvebu_mbus_dram_info;
 static struct mbus_dram_target_info mvebu_mbus_dram_info_nooverlap;
@@ -183,16 +120,14 @@ const struct mbus_dram_target_info *mv_mbus_dram_info_nooverlap(void)
 }
 EXPORT_SYMBOL_GPL(mv_mbus_dram_info_nooverlap);
 
-/* Checks whether the given window has remap capability */
+ 
 static bool mvebu_mbus_window_is_remappable(struct mvebu_mbus_state *mbus,
 					    const int win)
 {
 	return mbus->soc->win_remap_offset(win) != MVEBU_MBUS_NO_REMAP;
 }
 
-/*
- * Functions to manipulate the address decoding windows
- */
+ 
 
 static void mvebu_mbus_read_window(struct mvebu_mbus_state *mbus,
 				   int win, int *enabled, u64 *base,
@@ -249,7 +184,7 @@ static void mvebu_mbus_disable_window(struct mvebu_mbus_state *mbus,
 	}
 }
 
-/* Checks whether the given window number is available */
+ 
 
 static int mvebu_mbus_window_is_free(struct mvebu_mbus_state *mbus,
 				     const int win)
@@ -261,10 +196,7 @@ static int mvebu_mbus_window_is_free(struct mvebu_mbus_state *mbus,
 	return !(ctrl & WIN_CTRL_ENABLE);
 }
 
-/*
- * Checks whether the given (base, base+size) area doesn't overlap an
- * existing region
- */
+ 
 static int mvebu_mbus_window_conflicts(struct mvebu_mbus_state *mbus,
 				       phys_addr_t base, size_t size,
 				       u8 target, u8 attr)
@@ -287,10 +219,7 @@ static int mvebu_mbus_window_conflicts(struct mvebu_mbus_state *mbus,
 
 		wend = wbase + wsize;
 
-		/*
-		 * Check if the current window overlaps with the
-		 * proposed physical range
-		 */
+		 
 		if ((u64)base < wend && end > wbase)
 			return 0;
 	}
@@ -387,7 +316,7 @@ static int mvebu_mbus_alloc_window(struct mvebu_mbus_state *mbus,
 	}
 
 	for (win = 0; win < mbus->soc->num_wins; win++) {
-		/* Skip window if need remap but is not supported */
+		 
 		if ((remap != MVEBU_MBUS_NO_REMAP) &&
 		    !mvebu_mbus_window_is_remappable(mbus, win))
 			continue;
@@ -400,11 +329,9 @@ static int mvebu_mbus_alloc_window(struct mvebu_mbus_state *mbus,
 	return -ENOMEM;
 }
 
-/*
- * Debugfs debugging
- */
+ 
 
-/* Common function used for Dove, Kirkwood, Armada 370/XP and Orion 5x */
+ 
 static int mvebu_sdram_debug_show_orion(struct mvebu_mbus_state *mbus,
 					struct seq_file *seq, void *v)
 {
@@ -434,7 +361,7 @@ static int mvebu_sdram_debug_show_orion(struct mvebu_mbus_state *mbus,
 	return 0;
 }
 
-/* Special function for Dove */
+ 
 static int mvebu_sdram_debug_show_dove(struct mvebu_mbus_state *mbus,
 				       struct seq_file *seq, void *v)
 {
@@ -507,9 +434,7 @@ static int mvebu_devs_debug_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(mvebu_devs_debug);
 
-/*
- * SoC-specific functions and definitions
- */
+ 
 
 static unsigned int generic_mbus_win_cfg_offset(int win)
 {
@@ -518,18 +443,7 @@ static unsigned int generic_mbus_win_cfg_offset(int win)
 
 static unsigned int armada_370_xp_mbus_win_cfg_offset(int win)
 {
-	/* The register layout is a bit annoying and the below code
-	 * tries to cope with it.
-	 * - At offset 0x0, there are the registers for the first 8
-	 *   windows, with 4 registers of 32 bits per window (ctrl,
-	 *   base, remap low, remap high)
-	 * - Then at offset 0x80, there is a hole of 0x10 bytes for
-	 *   the internal registers base address and internal units
-	 *   sync barrier register.
-	 * - Then at offset 0x90, there the registers for 12
-	 *   windows, with only 2 registers of 32 bits per window
-	 *   (ctrl, base).
-	 */
+	 
 	if (win < 8)
 		return win << 4;
 	else
@@ -578,10 +492,7 @@ static unsigned int armada_xp_mbus_win_remap_offset(int win)
 		return MVEBU_MBUS_NO_REMAP;
 }
 
-/*
- * Use the memblock information to find the MBus bridge hole in the
- * physical address space.
- */
+ 
 static void __init
 mvebu_mbus_find_bridge_hole(uint64_t *start, uint64_t *end)
 {
@@ -589,17 +500,11 @@ mvebu_mbus_find_bridge_hole(uint64_t *start, uint64_t *end)
 	uint64_t i, s = 0;
 
 	for_each_mem_range(i, &reg_start, &reg_end) {
-		/*
-		 * This part of the memory is above 4 GB, so we don't
-		 * care for the MBus bridge hole.
-		 */
+		 
 		if ((u64)reg_start >= 0x100000000ULL)
 			continue;
 
-		/*
-		 * The MBus bridge hole is at the end of the RAM under
-		 * the 4 GB limit.
-		 */
+		 
 		if (reg_end > s)
 			s = reg_end;
 	}
@@ -608,11 +513,7 @@ mvebu_mbus_find_bridge_hole(uint64_t *start, uint64_t *end)
 	*end = 0x100000000ULL;
 }
 
-/*
- * This function fills in the mvebu_mbus_dram_info_nooverlap data
- * structure, by looking at the mvebu_mbus_dram_info data, and
- * removing the parts of it that overlap with I/O windows.
- */
+ 
 static void __init
 mvebu_mbus_setup_cpu_target_nooverlap(struct mvebu_mbus_state *mbus)
 {
@@ -631,26 +532,17 @@ mvebu_mbus_setup_cpu_target_nooverlap(struct mvebu_mbus_state *mbus)
 		size = w->size;
 		end = base + size;
 
-		/*
-		 * The CS is fully enclosed inside the MBus bridge
-		 * area, so ignore it.
-		 */
+		 
 		if (base >= mbus_bridge_base && end <= mbus_bridge_end)
 			continue;
 
-		/*
-		 * Beginning of CS overlaps with end of MBus, raise CS
-		 * base address, and shrink its size.
-		 */
+		 
 		if (base >= mbus_bridge_base && end > mbus_bridge_end) {
 			size -= mbus_bridge_end - base;
 			base = mbus_bridge_end;
 		}
 
-		/*
-		 * End of CS overlaps with beginning of MBus, shrink
-		 * CS size.
-		 */
+		 
 		if (base < mbus_bridge_base && end > mbus_bridge_base)
 			size -= end - mbus_bridge_base;
 
@@ -679,12 +571,7 @@ mvebu_mbus_default_setup_cpu_target(struct mvebu_mbus_state *mbus)
 		u32 base = readl(mbus->sdramwins_base + DDR_BASE_CS_OFF(i));
 		u32 size = readl(mbus->sdramwins_base + DDR_SIZE_CS_OFF(i));
 
-		/*
-		 * We only take care of entries for which the chip
-		 * select is enabled, and that don't have high base
-		 * address bits set (devices can only access the first
-		 * 32 bits of the memory).
-		 */
+		 
 		if ((size & DDR_SIZE_ENABLED) &&
 		    !(base & DDR_BASE_CS_HIGH_MASK)) {
 			struct mbus_dram_window *w;
@@ -719,7 +606,7 @@ mvebu_mbus_default_save_cpu_target(struct mvebu_mbus_state *mbus,
 		writel(size, store_addr++);
 	}
 
-	/* We've written 16 words to the store address */
+	 
 	return 16;
 }
 
@@ -734,17 +621,15 @@ mvebu_mbus_dove_setup_cpu_target(struct mvebu_mbus_state *mbus)
 	for (i = 0, cs = 0; i < 2; i++) {
 		u32 map = readl(mbus->sdramwins_base + DOVE_DDR_BASE_CS_OFF(i));
 
-		/*
-		 * Chip select enabled?
-		 */
+		 
 		if (map & 1) {
 			struct mbus_dram_window *w;
 
 			w = &mvebu_mbus_dram_info.cs[cs++];
 			w->cs_index = i;
-			w->mbus_attr = 0; /* CS address decoding done inside */
-					  /* the DDR controller, no need to  */
-					  /* provide attributes */
+			w->mbus_attr = 0;  
+					   
+					   
 			w->base = map & 0xff800000;
 			w->size = 0x100000 << (((map & 0x000f0000) >> 16) - 4);
 		}
@@ -767,7 +652,7 @@ mvebu_mbus_dove_save_cpu_target(struct mvebu_mbus_state *mbus,
 		writel(map, store_addr++);
 	}
 
-	/* We've written 4 words to the store address */
+	 
 	return 4;
 }
 
@@ -814,10 +699,7 @@ static const struct mvebu_mbus_soc_data dove_mbus_data = {
 	.show_cpu_target     = mvebu_sdram_debug_show_dove,
 };
 
-/*
- * Some variants of Orion5x have 4 remappable windows, some other have
- * only two of them.
- */
+ 
 static const struct mvebu_mbus_soc_data orion5x_4win_mbus_data = {
 	.num_wins            = 8,
 	.win_cfg_offset      = generic_mbus_win_cfg_offset,
@@ -871,9 +753,7 @@ static const struct of_device_id of_mvebu_mbus_ids[] = {
 	{ },
 };
 
-/*
- * Public API of the driver
- */
+ 
 int mvebu_mbus_add_window_remap_by_id(unsigned int target,
 				      unsigned int attribute,
 				      phys_addr_t base, size_t size,
@@ -933,14 +813,14 @@ int mvebu_mbus_get_dram_win_info(phys_addr_t phyaddr, u8 *target, u8 *attr)
 	const struct mbus_dram_target_info *dram;
 	int i;
 
-	/* Get dram info */
+	 
 	dram = mv_mbus_dram_info();
 	if (!dram) {
 		pr_err("missing DRAM information\n");
 		return -ENODEV;
 	}
 
-	/* Try to find matching DRAM window for phyaddr */
+	 
 	for (i = 0; i < dram->num_cs; i++) {
 		const struct mbus_dram_window *cs = dram->cs + i;
 
@@ -984,11 +864,7 @@ static __init int mvebu_mbus_debugfs_init(void)
 {
 	struct mvebu_mbus_state *s = &mbus_state;
 
-	/*
-	 * If no base has been initialized, doesn't make sense to
-	 * register the debugfs entries. We may be on a multiplatform
-	 * kernel that isn't running a Marvell EBU SoC.
-	 */
+	 
 	if (!s->mbuswins_base)
 		return 0;
 
@@ -1149,13 +1025,7 @@ int __init mvebu_mbus_init(const char *soc, phys_addr_t mbuswins_phys_base,
 }
 
 #ifdef CONFIG_OF
-/*
- * The window IDs in the ranges DT property have the following format:
- *  - bits 28 to 31: MBus custom field
- *  - bits 24 to 27: window target ID
- *  - bits 16 to 23: window attribute ID
- *  - bits  0 to 15: unused
- */
+ 
 #define CUSTOM(id) (((id) & 0xF0000000) >> 24)
 #define TARGET(id) (((id) & 0x0F000000) >> 24)
 #define ATTR(id)   (((id) & 0x00FF0000) >> 16)
@@ -1194,10 +1064,7 @@ static int __init mbus_dt_setup(struct mvebu_mbus_state *mbus,
 		u32 windowid = upper_32_bits(range.bus_addr);
 		u8 target, attr;
 
-		/*
-		 * An entry with a non-zero custom field do not
-		 * correspond to a static window, so skip it.
-		 */
+		 
 		if (CUSTOM(windowid))
 			continue;
 
@@ -1218,10 +1085,7 @@ static void __init mvebu_mbus_get_pcie_resources(struct device_node *np,
 	u32 reg[2];
 	int ret;
 
-	/*
-	 * These are optional, so we make sure that resource_size(x) will
-	 * return 0.
-	 */
+	 
 	memset(mem, 0, sizeof(struct resource));
 	mem->end = -1;
 	memset(io, 0, sizeof(struct resource));
@@ -1280,12 +1144,7 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
 		return -EINVAL;
 	}
 
-	/*
-	 * Set the resource to 0 so that it can be left unmapped by
-	 * mvebu_mbus_common_init() if the DT doesn't carry the
-	 * necessary information. This is needed to preserve backward
-	 * compatibility.
-	 */
+	 
 	memset(&mbusbridge_res, 0, sizeof(mbusbridge_res));
 
 	if (mbus_state.soc->has_mbus_bridge) {
@@ -1295,7 +1154,7 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
 
 	mbus_state.hw_io_coherency = is_coherent;
 
-	/* Get optional pcie-{mem,io}-aperture properties */
+	 
 	mvebu_mbus_get_pcie_resources(np, &mbus_state.pcie_mem_aperture,
 					  &mbus_state.pcie_io_aperture);
 
@@ -1310,7 +1169,7 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
 	if (ret)
 		return ret;
 
-	/* Setup statically declared windows in the DT */
+	 
 	return mbus_dt_setup(&mbus_state, np);
 }
 #endif

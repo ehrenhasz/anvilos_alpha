@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007, 2008, 2009 Siemens AG
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -16,10 +14,10 @@
 #include "sysfs.h"
 #include "core.h"
 
-/* name for sysfs, %d is appended */
+ 
 #define PHY_NAME "phy"
 
-/* RCU-protected (and RTNL for writers) */
+ 
 LIST_HEAD(cfg802154_rdev_list);
 int cfg802154_rdev_list_generation;
 
@@ -110,13 +108,13 @@ wpan_phy_new(const struct cfg802154_ops *ops, size_t priv_size)
 	rdev->wpan_phy_idx = atomic_inc_return(&wpan_phy_counter);
 
 	if (unlikely(rdev->wpan_phy_idx < 0)) {
-		/* ugh, wrapped! */
+		 
 		atomic_dec(&wpan_phy_counter);
 		kfree(rdev);
 		return NULL;
 	}
 
-	/* atomic_inc_return makes it start at 1, make it start at 0 */
+	 
 	rdev->wpan_phy_idx--;
 
 	INIT_LIST_HEAD(&rdev->wpan_dev_list);
@@ -152,10 +150,10 @@ int wpan_phy_register(struct wpan_phy *phy)
 	list_add_rcu(&rdev->list, &cfg802154_rdev_list);
 	cfg802154_rdev_list_generation++;
 
-	/* TODO phy registered lock */
+	 
 	rtnl_unlock();
 
-	/* TODO nl802154 phy notify */
+	 
 
 	return 0;
 }
@@ -173,14 +171,12 @@ void wpan_phy_unregister(struct wpan_phy *phy)
 		__count == 0; }));
 
 	rtnl_lock();
-	/* TODO nl802154 phy notify */
-	/* TODO phy registered lock */
+	 
+	 
 
 	WARN_ON(!list_empty(&rdev->wpan_dev_list));
 
-	/* First remove the hardware from everywhere, this makes
-	 * it impossible to find from userspace.
-	 */
+	 
 	list_del_rcu(&rdev->list);
 	synchronize_rcu();
 
@@ -215,7 +211,7 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
 	}
 
 	if (err) {
-		/* failed -- clean up to old netns */
+		 
 		net = wpan_phy_net(&rdev->wpan_phy);
 
 		list_for_each_entry_continue_reverse(wpan_dev,
@@ -267,10 +263,10 @@ static int cfg802154_netdev_notifier_call(struct notifier_block *nb,
 
 	rdev = wpan_phy_to_rdev(wpan_dev->wpan_phy);
 
-	/* TODO WARN_ON unspec type */
+	 
 
 	switch (state) {
-		/* TODO NETDEV_DEVTYPE */
+		 
 	case NETDEV_REGISTER:
 		dev->features |= NETIF_F_NETNS_LOCAL;
 		wpan_dev->identifier = ++rdev->wpan_dev_id;
@@ -291,21 +287,12 @@ static int cfg802154_netdev_notifier_call(struct notifier_block *nb,
 		rdev->opencount++;
 		break;
 	case NETDEV_UNREGISTER:
-		/* It is possible to get NETDEV_UNREGISTER
-		 * multiple times. To detect that, check
-		 * that the interface is still on the list
-		 * of registered interfaces, and only then
-		 * remove and clean it up.
-		 */
+		 
 		if (!list_empty(&wpan_dev->list)) {
 			list_del_rcu(&wpan_dev->list);
 			rdev->devlist_generation++;
 		}
-		/* synchronize (so that we won't find this netdev
-		 * from other code any more) and then clear the list
-		 * head so that the above code can safely check for
-		 * !list_empty() to avoid double-cleanup.
-		 */
+		 
 		synchronize_rcu();
 		INIT_LIST_HEAD(&wpan_dev->list);
 		break;

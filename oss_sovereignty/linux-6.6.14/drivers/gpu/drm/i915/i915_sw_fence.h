@@ -1,10 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * i915_sw_fence.h - library routines for N:M synchronisation points
- *
- * Copyright (C) 2016 Intel Corporation
- */
+ 
 
 #ifndef _I915_SW_FENCE_H_
 #define _I915_SW_FENCE_H_
@@ -12,7 +6,7 @@
 #include <linux/dma-fence.h>
 #include <linux/gfp.h>
 #include <linux/kref.h>
-#include <linux/notifier.h> /* for NOTIFY_DONE */
+#include <linux/notifier.h>  
 #include <linux/wait.h>
 
 struct completion;
@@ -37,7 +31,7 @@ struct i915_sw_fence {
 	int error;
 };
 
-#define I915_SW_FENCE_CHECKED_BIT	0 /* used internally for DAG checking */
+#define I915_SW_FENCE_CHECKED_BIT	0  
 
 void __i915_sw_fence_init(struct i915_sw_fence *fence,
 			  i915_sw_fence_notify_t fn,
@@ -120,4 +114,4 @@ i915_sw_fence_set_error_once(struct i915_sw_fence *fence, int error)
 		cmpxchg(&fence->error, 0, error);
 }
 
-#endif /* _I915_SW_FENCE_H_ */
+#endif  

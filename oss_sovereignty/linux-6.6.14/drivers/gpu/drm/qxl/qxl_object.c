@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alon Levy
- */
+ 
 
 #include <linux/iosys-map.h>
 #include <linux/io-mapping.h>
@@ -180,7 +157,7 @@ int qxl_bo_vmap_locked(struct qxl_bo *bo, struct iosys_map *map)
 	}
 	bo->map_count = 1;
 
-	/* TODO: Remove kptr in favor of map everywhere. */
+	 
 	if (bo->map.is_iomem)
 		bo->kptr = (void *)bo->map.vaddr_iomem;
 	else
@@ -231,7 +208,7 @@ fallback:
 	ret = qxl_bo_vmap_locked(bo, &bo_map);
 	if (ret)
 		return NULL;
-	rptr = bo_map.vaddr; /* TODO: Use mapping abstraction properly */
+	rptr = bo_map.vaddr;  
 
 	rptr += page_offset * PAGE_SIZE;
 	return rptr;
@@ -316,11 +293,7 @@ static void __qxl_bo_unpin(struct qxl_bo *bo)
 	ttm_bo_unpin(&bo->tbo);
 }
 
-/*
- * Reserve the BO before pinning the object.  If the BO was reserved
- * beforehand, use the internal version directly __qxl_bo_pin.
- *
- */
+ 
 int qxl_bo_pin(struct qxl_bo *bo)
 {
 	int r;
@@ -334,11 +307,7 @@ int qxl_bo_pin(struct qxl_bo *bo)
 	return r;
 }
 
-/*
- * Reserve the BO before pinning the object.  If the BO was reserved
- * beforehand, use the internal version directly __qxl_bo_unpin.
- *
- */
+ 
 int qxl_bo_unpin(struct qxl_bo *bo)
 {
 	int r;
@@ -366,7 +335,7 @@ void qxl_bo_force_delete(struct qxl_device *qdev)
 		mutex_lock(&qdev->gem.mutex);
 		list_del_init(&bo->list);
 		mutex_unlock(&qdev->gem.mutex);
-		/* this should unref the ttm bo */
+		 
 		drm_gem_object_put(&bo->tbo.base);
 	}
 }
@@ -386,7 +355,7 @@ int qxl_bo_check_id(struct qxl_device *qdev, struct qxl_bo *bo)
 	int ret;
 
 	if (bo->type == QXL_GEM_DOMAIN_SURFACE && bo->surface_id == 0) {
-		/* allocate a surface id for this surface now */
+		 
 		ret = qxl_surface_id_alloc(qdev, bo);
 		if (ret)
 			return ret;

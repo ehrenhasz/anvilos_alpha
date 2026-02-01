@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Atmel SSC driver
- *
- * Copyright (C) 2007 Atmel Corporation
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/list.h>
@@ -19,7 +15,7 @@
 
 #include "../../sound/soc/atmel/atmel_ssc_dai.h"
 
-/* Serialize access to ssc_list and user count */
+ 
 static DEFINE_MUTEX(user_lock);
 static LIST_HEAD(ssc_list);
 
@@ -107,7 +103,7 @@ static const struct platform_device_id atmel_ssc_devtypes[] = {
 		.name = "at91sam9g45_ssc",
 		.driver_data = (unsigned long) &at91sam9g45_config,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 
@@ -123,7 +119,7 @@ static const struct of_device_id atmel_ssc_dt_ids[] = {
 		.compatible = "atmel,at91sam9g45-ssc",
 		.data = &at91sam9g45_config,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_ssc_dt_ids);
@@ -224,7 +220,7 @@ static int ssc_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	/* disable all interrupts */
+	 
 	clk_prepare_enable(ssc->clk);
 	ssc_writel(ssc->regs, IDR, -1);
 	ssc_readl(ssc->regs, SR);

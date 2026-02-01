@@ -16,4 +16,4 @@ int up_read(struct rw_semaphore *sem);
 int down_write(struct rw_semaphore *sem);
 int up_write(struct rw_semaphore *sem);
 
-#endif /* _PERF_RWSEM_H */
+#endif  

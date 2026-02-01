@@ -1,16 +1,5 @@
 
-/*
- * edac_device.c
- * (C) 2007 www.douglaskthompson.com
- *
- * This file may be distributed under the terms of the
- * GNU General Public License.
- *
- * Written by Doug Thompson <norsk5@xmission.com>
- *
- * edac_device API implementation
- * 19 Jan 2007
- */
+ 
 
 #include <asm/page.h>
 #include <linux/uaccess.h>
@@ -28,13 +17,11 @@
 #include "edac_device.h"
 #include "edac_module.h"
 
-/* lock for the list: 'edac_device_list', manipulation of this list
- * is protected by the 'device_ctls_mutex' lock
- */
+ 
 static DEFINE_MUTEX(device_ctls_mutex);
 static LIST_HEAD(edac_device_list);
 
-/* Default workqueue processing interval on this instance, in msecs */
+ 
 #define DEFAULT_POLL_INTERVAL 1000
 
 #ifdef CONFIG_EDAC_DEBUG
@@ -48,11 +35,9 @@ static void edac_device_dump_device(struct edac_device_ctl_info *edac_dev)
 		 edac_dev->mod_name, edac_dev->ctl_name);
 	edac_dbg(3, "\tpvt_info = %p\n\n", edac_dev->pvt_info);
 }
-#endif				/* CONFIG_EDAC_DEBUG */
+#endif				 
 
-/*
- * @off_val: zero, 1, or other based offset
- */
+ 
 struct edac_device_ctl_info *
 edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instances,
 			   char *blk_name, unsigned nr_blocks, unsigned off_val,
@@ -105,14 +90,14 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 	dev_ctl->dev_idx	= device_index;
 	dev_ctl->nr_instances	= nr_instances;
 
-	/* Default logging of CEs and UEs */
+	 
 	dev_ctl->log_ce = 1;
 	dev_ctl->log_ue = 1;
 
-	/* Name of this edac device */
+	 
 	snprintf(dev_ctl->name, sizeof(dev_ctl->name),"%s", dev_name);
 
-	/* Initialize every Instance */
+	 
 	for (instance = 0; instance < nr_instances; instance++) {
 		inst = &dev_inst[instance];
 		inst->ctl = dev_ctl;
@@ -120,10 +105,10 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 		blk_p = &dev_blk[instance * nr_blocks];
 		inst->blocks = blk_p;
 
-		/* name of this instance */
+		 
 		snprintf(inst->name, sizeof(inst->name), "%s%u", dev_name, instance);
 
-		/* Initialize every block in each instance */
+		 
 		for (block = 0; block < nr_blocks; block++) {
 			blk = &blk_p[block];
 			blk->instance = inst;
@@ -133,13 +118,11 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 			edac_dbg(4, "instance=%d inst_p=%p block=#%d block_p=%p name='%s'\n",
 				 instance, inst, block, blk, blk->name);
 
-			/* if there are NO attributes OR no attribute pointer
-			 * then continue on to next block iteration
-			 */
+			 
 			if ((nr_attrib == 0) || (attrib_spec == NULL))
 				continue;
 
-			/* setup the attribute array for this block */
+			 
 			blk->nr_attribs = nr_attrib;
 			attrib_p = &dev_attrib[block*nr_instances*nr_attrib];
 			blk->block_attributes = attrib_p;
@@ -147,22 +130,16 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 			edac_dbg(4, "THIS BLOCK_ATTRIB=%p\n",
 				 blk->block_attributes);
 
-			/* Initialize every user specified attribute in this
-			 * block with the data the caller passed in
-			 * Each block gets its own copy of pointers,
-			 * and its unique 'value'
-			 */
+			 
 			for (attr = 0; attr < nr_attrib; attr++) {
 				attrib = &attrib_p[attr];
 
-				/* populate the unique per attrib
-				 * with the code pointers and info
-				 */
+				 
 				attrib->attr = attrib_spec[attr].attr;
 				attrib->show = attrib_spec[attr].show;
 				attrib->store = attrib_spec[attr].store;
 
-				attrib->block = blk;	/* up link */
+				attrib->block = blk;	 
 
 				edac_dbg(4, "alloc-attrib=%p attrib_name='%s' attrib-spec=%p spec-name=%s\n",
 					 attrib, attrib->attr.name,
@@ -173,22 +150,15 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 		}
 	}
 
-	/* Mark this instance as merely ALLOCATED */
+	 
 	dev_ctl->op_state = OP_ALLOC;
 
-	/*
-	 * Initialize the 'root' kobj for the edac_device controller
-	 */
+	 
 	err = edac_device_register_sysfs_main_kobj(dev_ctl);
 	if (err)
 		goto free;
 
-	/* at this point, the root kobj is valid, and in order to
-	 * 'free' the object, then the function:
-	 *	edac_device_unregister_sysfs_main_kobj() must be called
-	 * which will perform kobj unregistration and the actual free
-	 * will occur during the kobject callback operation
-	 */
+	 
 
 	return dev_ctl;
 
@@ -205,16 +175,7 @@ void edac_device_free_ctl_info(struct edac_device_ctl_info *ctl_info)
 }
 EXPORT_SYMBOL_GPL(edac_device_free_ctl_info);
 
-/*
- * find_edac_device_by_dev
- *	scans the edac_device list for a specific 'struct device *'
- *
- *	lock to be held prior to call:	device_ctls_mutex
- *
- *	Return:
- *		pointer to control structure managing 'dev'
- *		NULL if not found on list
- */
+ 
 static struct edac_device_ctl_info *find_edac_device_by_dev(struct device *dev)
 {
 	struct edac_device_ctl_info *edac_dev;
@@ -232,17 +193,7 @@ static struct edac_device_ctl_info *find_edac_device_by_dev(struct device *dev)
 	return NULL;
 }
 
-/*
- * add_edac_dev_to_global_list
- *	Before calling this function, caller must
- *	assign a unique value to edac_dev->dev_idx.
- *
- *	lock to be held prior to call:	device_ctls_mutex
- *
- *	Return:
- *		0 on success
- *		1 on failure.
- */
+ 
 static int add_edac_dev_to_global_list(struct edac_device_ctl_info *edac_dev)
 {
 	struct list_head *item, *insert_before;
@@ -250,12 +201,12 @@ static int add_edac_dev_to_global_list(struct edac_device_ctl_info *edac_dev)
 
 	insert_before = &edac_device_list;
 
-	/* Determine if already on the list */
+	 
 	rover = find_edac_device_by_dev(edac_dev->dev);
 	if (unlikely(rover != NULL))
 		goto fail0;
 
-	/* Insert in ascending order by 'dev_idx', so find position */
+	 
 	list_for_each(item, &edac_device_list) {
 		rover = list_entry(item, struct edac_device_ctl_info, link);
 
@@ -286,33 +237,18 @@ fail1:
 	return 1;
 }
 
-/*
- * del_edac_device_from_global_list
- */
+ 
 static void del_edac_device_from_global_list(struct edac_device_ctl_info
 						*edac_device)
 {
 	list_del_rcu(&edac_device->link);
 
-	/* these are for safe removal of devices from global list while
-	 * NMI handlers may be traversing list
-	 */
+	 
 	synchronize_rcu();
 	INIT_LIST_HEAD(&edac_device->link);
 }
 
-/*
- * edac_device_workq_function
- *	performs the operation scheduled by a workq request
- *
- *	this workq is embedded within an edac_device_ctl_info
- *	structure, that needs to be polled for possible error events.
- *
- *	This operation is to acquire the list mutex lock
- *	(thus preventing insertation or deletion)
- *	and then call the device's poll function IFF this device is
- *	running polled and there is a poll function defined.
- */
+ 
 static void edac_device_workq_function(struct work_struct *work_req)
 {
 	struct delayed_work *d_work = to_delayed_work(work_req);
@@ -320,13 +256,13 @@ static void edac_device_workq_function(struct work_struct *work_req)
 
 	mutex_lock(&device_ctls_mutex);
 
-	/* If we are being removed, bail out immediately */
+	 
 	if (edac_dev->op_state == OP_OFFLINE) {
 		mutex_unlock(&device_ctls_mutex);
 		return;
 	}
 
-	/* Only poll controllers that are running polled and have a check */
+	 
 	if ((edac_dev->op_state == OP_RUNNING_POLL) &&
 		(edac_dev->edac_check != NULL)) {
 			edac_dev->edac_check(edac_dev);
@@ -334,51 +270,33 @@ static void edac_device_workq_function(struct work_struct *work_req)
 
 	mutex_unlock(&device_ctls_mutex);
 
-	/* Reschedule the workq for the next time period to start again
-	 * if the number of msec is for 1 sec, then adjust to the next
-	 * whole one second to save timers firing all over the period
-	 * between integral seconds
-	 */
+	 
 	if (edac_dev->poll_msec == DEFAULT_POLL_INTERVAL)
 		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
 	else
 		edac_queue_work(&edac_dev->work, edac_dev->delay);
 }
 
-/*
- * edac_device_workq_setup
- *	initialize a workq item for this edac_device instance
- *	passing in the new delay period in msec
- */
+ 
 static void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 				    unsigned msec)
 {
 	edac_dbg(0, "\n");
 
-	/* take the arg 'msec' and set it into the control structure
-	 * to used in the time period calculation
-	 * then calc the number of jiffies that represents
-	 */
+	 
 	edac_dev->poll_msec = msec;
 	edac_dev->delay = msecs_to_jiffies(msec);
 
 	INIT_DELAYED_WORK(&edac_dev->work, edac_device_workq_function);
 
-	/* optimize here for the 1 second case, which will be normal value, to
-	 * fire ON the 1 second time event. This helps reduce all sorts of
-	 * timers firing on sub-second basis, while they are happy
-	 * to fire together on the 1 second exactly
-	 */
+	 
 	if (edac_dev->poll_msec == DEFAULT_POLL_INTERVAL)
 		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
 	else
 		edac_queue_work(&edac_dev->work, edac_dev->delay);
 }
 
-/*
- * edac_device_workq_teardown
- *	stop the workq processing on this edac_dev
- */
+ 
 static void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 {
 	if (!edac_dev->edac_check)
@@ -389,20 +307,14 @@ static void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 	edac_stop_work(&edac_dev->work);
 }
 
-/*
- * edac_device_reset_delay_period
- *
- *	need to stop any outstanding workq queued up at this time
- *	because we will be resetting the sleep time.
- *	Then restart the workq on the new delay
- */
+ 
 void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
 				    unsigned long msec)
 {
 	edac_dev->poll_msec = msec;
 	edac_dev->delay	    = msecs_to_jiffies(msec);
 
-	/* See comment in edac_device_workq_setup() above */
+	 
 	if (edac_dev->poll_msec == DEFAULT_POLL_INTERVAL)
 		edac_mod_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
 	else
@@ -430,19 +342,19 @@ int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
 	if (add_edac_dev_to_global_list(edac_dev))
 		goto fail0;
 
-	/* set load time so that error rate can be tracked */
+	 
 	edac_dev->start_time = jiffies;
 
-	/* create this instance's sysfs entries */
+	 
 	if (edac_device_create_sysfs(edac_dev)) {
 		edac_device_printk(edac_dev, KERN_WARNING,
 					"failed to create sysfs device\n");
 		goto fail1;
 	}
 
-	/* If there IS a check routine, then we are running POLLED */
+	 
 	if (edac_dev->edac_check != NULL) {
-		/* This instance is NOW RUNNING */
+		 
 		edac_dev->op_state = OP_RUNNING_POLL;
 
 		edac_device_workq_setup(edac_dev, edac_dev->poll_msec ?: DEFAULT_POLL_INTERVAL);
@@ -450,7 +362,7 @@ int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
 		edac_dev->op_state = OP_RUNNING_INTERRUPT;
 	}
 
-	/* Report action taken */
+	 
 	edac_device_printk(edac_dev, KERN_INFO,
 		"Giving out device to module %s controller %s: DEV %s (%s)\n",
 		edac_dev->mod_name, edac_dev->ctl_name, edac_dev->dev_name,
@@ -460,7 +372,7 @@ int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
 	return 0;
 
 fail1:
-	/* Some error, so remove the entry from the lsit */
+	 
 	del_edac_device_from_global_list(edac_dev);
 
 fail0:
@@ -477,25 +389,25 @@ struct edac_device_ctl_info *edac_device_del_device(struct device *dev)
 
 	mutex_lock(&device_ctls_mutex);
 
-	/* Find the structure on the list, if not there, then leave */
+	 
 	edac_dev = find_edac_device_by_dev(dev);
 	if (edac_dev == NULL) {
 		mutex_unlock(&device_ctls_mutex);
 		return NULL;
 	}
 
-	/* mark this instance as OFFLINE */
+	 
 	edac_dev->op_state = OP_OFFLINE;
 
-	/* deregister from global list */
+	 
 	del_edac_device_from_global_list(edac_dev);
 
 	mutex_unlock(&device_ctls_mutex);
 
-	/* clear workq processing on this instance */
+	 
 	edac_device_workq_teardown(edac_dev);
 
-	/* Tear down the sysfs entries for this instance */
+	 
 	edac_device_remove_sysfs(edac_dev);
 
 	edac_printk(KERN_INFO, EDAC_MC,
@@ -557,7 +469,7 @@ void edac_device_handle_ce_count(struct edac_device_ctl_info *edac_dev,
 		block->counters.ce_count += count;
 	}
 
-	/* Propagate the count up the 'totals' tree */
+	 
 	instance->counters.ce_count += count;
 	edac_dev->counters.ce_count += count;
 
@@ -603,7 +515,7 @@ void edac_device_handle_ue_count(struct edac_device_ctl_info *edac_dev,
 		block->counters.ue_count += count;
 	}
 
-	/* Propagate the count up the 'totals' tree */
+	 
 	instance->counters.ue_count += count;
 	edac_dev->counters.ue_count += count;
 
